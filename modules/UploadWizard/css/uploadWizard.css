@@ -1,0 +1,495 @@
+form.mwe-upwiz-form {
+	display: inline;
+}
+
+#upload-wizard {
+	margin-top: 18px;
+}
+
+/*
+.upload-section {
+	padding: 1em;
+	margin-bottom: 0.5em;
+	margin-top: 0.5em;
+	border: 1px solid #e0e0e0;
+}
+*/
+
+#mwe-upwiz-steparrows {
+}
+
+#mwe-upwiz-content {
+}
+
+.mwe-upwiz-clearing {
+	clear: left;
+	width: 100%;
+}
+
+#mwe-upwiz-steparrows ul {
+	list-style-type: none;
+	list-style-image: none;
+	padding: 0px;
+	margin: 0px;
+	position: relative;
+}
+
+#mwe-upwiz-steparrows ul li {
+	color: #999999;
+	float: left;
+	padding: 0px;
+	margin: 0px;
+}
+
+#mwe-upwiz-steparrows ul li span {
+	padding-top: 2px;
+	padding-bottom: 4px;
+}
+
+#mwe-upwiz-steparrows ul li span.mwe-arrow-text {
+	border-color: #e0e0e0;
+	border-style: solid;
+	border-width: 1px 0px 1px 0px;
+	padding-right: 10px;
+	padding-left: 24px;
+	z-index: 1;
+}
+
+#mwe-upwiz-steparrows ul li span.mwe-arrow {
+	position: relative;
+	left: 21px;
+	padding-right: 12px;
+	z-index: 2;
+	background: url('../images/grey-angle.gif') no-repeat right center;
+}
+
+#mwe-upwiz-steparrows ul li.mwe-upwiz-step-highlight span.mwe-arrow {
+	background: url('../images/black-angle.gif') no-repeat right center;
+}
+
+#mwe-upwiz-steparrows ul li.mwe-upwiz-step-highlight span.mwe-arrow-text {
+	border-color: #000000;
+}
+
+#mwe-upwiz-steparrows ul li.mwe-upwiz-step-highlight span.mwe-arrow-text {
+	padding-left: 12px;
+	font-weight: bold;
+	color: black;
+	border-left: 1px solid;
+}
+
+#mwe-upwiz-content {
+	padding: 1em;
+}
+
+.mwe-upwiz-add-files-0 {
+	margin-top: 20px;
+	text-align: center;
+	font-size: 16px;
+}
+
+#mwe-upwiz-add-file {
+}
+
+/* NOT a pseudoclass */
+#mwe-upwiz-add-file.hover {
+	text-decoration: underline;
+}
+
+/* perhaps a general class for links that are actually "buttons" */
+#mwe-upwiz-add-file, .mwe-upwiz-remove, .mwe-upwiz-more-options {
+	cursor: pointer;
+}
+
+/* CSS styling hack for file inputs - http://www.quirksmode.org/dom/inputfile.html */
+.mwe-upwiz-file-ctrl-container {
+	position: absolute;
+	overflow: hidden;
+}
+
+.mwe-upwiz-file-input, .mwe-upwiz-visible-file {
+	cursor: pointer;
+}
+
+/* file inputs are freakishly large to overflow the containing div -- we get a div 
+   that can act as a more styleable single-click file input */
+.mwe-upwiz-file-input, .disabler {
+	font-size: 100px;
+	-moz-opacity: 0.3; 
+	filter:alpha(opacity: 0);
+	opacity: 0; 
+	z-index: 2; 
+}
+
+.mwe-upwiz-file.filled, #mwe-upwiz-upload-ctrls {
+	padding: 4px;
+}
+
+.mwe-upwiz-file.filled {
+	height: 24px;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.mwe-upwiz-file-indicator, .mwe-upwiz-count {
+	float: left;
+	width: 92px;
+	margin-left: 8px;
+	text-align: center;
+}
+
+.mwe-upwiz-add-files-n {
+	float: left;
+	margin-top: 5px;
+	margin-left: 4px;
+}
+
+#mwe-upwiz-add-file-container.mwe-upwiz-add-files-n, .mwe-upwiz-visible-file, .mwe-upwiz-progress-bar-etr {
+	width: 300px;
+	height: 18px;
+	padding-left: 5px;
+}
+
+#mwe-upwiz-add-file-container.mwe-upwiz-add-files-n, .mwe-upwiz-visible-file {
+	float: left;
+}
+
+.mwe-upwiz-visible-file {
+	white-space: nowrap;
+	overflow: hidden;
+
+	background: white;
+
+	border-style: solid;
+	border-top-width: 2px;
+	border-left-width: 2px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-color: white;
+	/* border: 1px solid blue;  XXX just to make it visible for now */
+}
+
+.mwe-upwiz-visible-file.hover {
+	background: white;
+	border-color: #0645ad;
+}
+
+/* XXX we probably have a standard for this */
+.helper {
+	color: #cccccc; /* or whatever we do for greyed out text */
+	font-variant: italic, oblique;
+	text-align: center;
+}
+
+
+#mwe-upwiz-files {
+	margin-left: 50px;
+	margin-top: 20px;
+}
+
+.mwe-upwiz-file {
+	width: 410px;
+}
+
+#mwe-upwiz-upload-ctrls {
+	margin-top: 15px;
+	
+}
+
+#mwe-upwiz-add-file-container {
+	/* empty; this changes a lot */	
+}
+
+.mwe-upwiz-remove {
+	padding: 5px;
+	cursor: pointer;
+	text-align: center;
+}
+
+a.mwe-upwiz-remove:link, 
+a.mwe-upwiz-remove:active,
+a.mwe-upwiz-remove:visited {
+	color: #999999;	
+	text-decoration: none;
+}
+
+a.mwe-upwiz-remove:hover {
+	color: #ff0000;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.mwe-upwiz-remove-desc {
+	vertical-align: top;
+}
+
+a[disabled=true] {
+	color: #999999;
+	text-decoration: none;
+	cursor: default;
+}
+
+a[disabled=true]:hover {
+	text-decoration: none;
+}
+
+.mwe-upwiz-status-progress {
+	font-weight: bold;
+	color: #ff9900;
+}
+
+/* XXX add background of checkmark, with left-padding offset */
+.mwe-upwiz-status-completed {
+	font-weight: bold;
+	color: #009900;
+}
+
+.mwe-upwiz-progress-bar-etr {
+	float: left;
+}
+
+.mwe-upwiz-etr {
+	text-align: center;
+}
+
+
+.mwe-upwiz-upload-warning {
+	background: #ffffe0;
+}
+
+.mwe-upwiz-details-error {
+	display: none;
+	background: #ffffe0;
+}
+
+.mwe-upwiz-thumbnail {
+	width: 120px;  /* XXX should be same as configured thumbnail width in uploadWizard.js */
+	float: left;
+	margin-bottom: 12px;
+	margin-right: 12px;
+}
+
+#mwe-upwiz-deeds-thumbnails {
+	text-align: center;
+	vertical-align: middle;
+}
+
+.mwe-upwiz-smallthumbnail {
+	width: 60px;  /* XXX should be same as configured small thumbnail width in uploadWizard.js */
+	margin: 6px;
+}
+
+.mwe-upwiz-data {
+	float: left;
+}
+
+
+/* XXX add spinner gif instead, maybe */
+.busy {
+	background: yellow;
+}
+
+.mwe-upwiz-stepdiv {
+	height: 0px;
+	overflow: hidden;
+}
+
+#mwe-upwiz-stepdiv-file {
+	width: 550px;
+}
+
+
+/* XXX this has to be 'centered' beneath the 'x's -- this is about right for english but we need a more 
+   robust layout strategy for i18n */
+.proceed {
+	text-align: right; 	
+	width: 410px;
+}
+
+.shim {
+	float:right;
+	width: 1px;
+}
+
+.clearShim {
+	clear: both;
+	height: 1px;
+	overflow: hidden;
+}
+
+.mwe-checkbox-hang-indent {
+	float: left;
+	width: 24px;
+	margin-top: 6px;
+}
+
+.mwe-checkbox-hang-indent-text {
+	margin-left: 24px;
+}
+
+.mwe-small-print {
+	font-size: xx-small;
+}
+
+.mwe-upwiz-deed {
+	margin-left: 24px;
+}
+
+.mwe-upwiz-deed-name {
+	font-weight: bold;
+}
+
+.mwe-more-options, .mwe-fewer-options, .mwe-upwiz-macro-deeds-return, .mwe-upwiz-deed-header-link {
+	cursor: pointer;
+}
+
+.mwe-more-options, .mwe-fewer-options {
+	padding-bottom: 4px;
+}
+
+.mwe-more-options a:hover, .mwe-fewer-options a:hover {
+	text-decoration: none;
+}
+
+
+.mwe-upwiz-deed-license {
+	margin-left: 24px;
+}
+
+#mwe-upwiz-macro-deeds {
+	margin-top: 12px;
+	margin-bottom: 24px;
+}
+
+#mwe-upwiz-macro-files {
+	margin-top: 12px;
+}
+.mwe-upwiz-info-file {
+	border-bottom: 1px solid #e0e0e0;
+	margin-bottom: 12px;
+	padding-bottom: 12px;
+	width: 660px;
+}
+
+
+.mwe-upwiz-details-input {
+	width: 400px;
+	float: left;
+}
+
+.mwe-upwiz-desc-lang-select {
+	width: 130px;
+	font-family: sans-serif;
+	font-size: x-small;
+}
+
+.mwe-upwiz-desc-lang-container {
+	float: left;
+}
+
+.mwe-upwiz-desc-lang-text {
+	width: 240px;
+	overflow: hidden;
+	font-family: sans-serif; /* XXX is this right? */
+	font-size: x-small;
+}
+
+.mwe-upwiz-details-descriptions-add {
+	margin-bottom: 12px;
+	margin-left: 100px;
+}
+
+.mwe-long-textarea {
+	overflow: hidden;
+	font-family: sans-serif; /* XXX is this right? */
+	font-size: x-small;
+	width: 370px;
+}
+
+fieldset .mwe-long-textarea {
+	width: 280px;
+}
+
+
+
+.mwe-upwiz-details-label {
+	width: 100px;
+	float: left;
+}
+
+.mwe-upwiz-details-label-input {
+
+}
+
+.mwe-upwiz-details-filename. {
+	overflow: hidden;
+	width: 350px;
+}
+
+.mwe-upwiz-other-textarea {
+	width: 468px;
+} 
+
+fieldset.mwe-fieldset {
+	width: 450px;
+	border: 1px solid #cccccc;
+	padding-left: 12px;
+	padding-right: 12px;
+}
+
+legend.mwe-legend {
+	padding: 0.5em 0.5em 0.5em 0.33em;
+	color: #666666;
+}
+
+.masked-hidden {
+	visibility: hidden !important;
+}
+
+.mwe-upwiz-thirdparty-fields label {
+	width: 100px;
+	display: inline-block;
+}
+
+.mwe-upwiz-thirdparty-fields textarea {
+	margin: 5px 0px -3px 5px;
+}
+
+.mwe-upwiz-thirdparty-license {
+	margin-top: 8px;
+}
+
+.mwe-upwiz-deed-form-internal {
+	padding: 5px 0px 20px 20px;
+}
+
+
+.mwe-upwiz-copyright-info label {
+	display: inline-block;
+	padding-left: 15px;
+	text-indent: -15px;
+	margin-right: 15px;
+}
+
+/* the hanging indent checkboxes */
+.mwe-upwiz-copyright-info input.mwe-accept-deed {
+	width: 13px;
+	height: 13px;
+	padding: 0;
+	margin: 0px 3px 0px 0px;
+	vertical-align: bottom;
+	position: relative;
+	top: -1px;
+}
+
+
+.mwe-upwiz-custom-deed {
+	margin-top: 5px;
+}
+
+.mwe-upwiz-buttons {
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 1px solid #e0e0e0;
+	text-align: right;  /* works for now, only one 'next' button */
+}
+

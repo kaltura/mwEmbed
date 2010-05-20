@@ -1,0 +1,10 @@
+Developers should not modify the contents of mwEmbed.i18n.php directly. 
+
+mwEmbed.i18n.php is updated by maintenance scripts. 
+
+Two scripts write to this file:
+* mwEmbed/includes/maintenance/mergeJavascriptMsg.php
+Copies English messages from  every mwEmbed javascript module
+
+* Translate wiki script
+Copies the translate wiki localised msgs into the file. 

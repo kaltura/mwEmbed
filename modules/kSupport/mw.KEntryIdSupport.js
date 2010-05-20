@@ -1,0 +1,240 @@
+
+
+mw.KEntryIdSupport = function( options ) {
+	// Create a Player Manage
+	return this.init( options );
+};
+mw.KEntryIdSupport.prototype = {
+
+	// The Kaltura client local reference
+	kClient : null,
+	
+	// The Kaltura session state flag ( Kaltura client ready to take requests )  
+	// can be 'null', 'inprogress', 'ready' ( error results in null state ) 
+	kalturaSessionState: null,	
+	
+	// The session Ready Callback Queue
+	sessionReadyCallbackQueue : [], 
+	
+	// Constructor check settings etc
+	init: function( options ){
+	
+	},
+	
+	/**
+	* Add Player hooks for supporting Kaltura api stuff
+	*/ 
+	addPlayerHooks: function( ){
+		var _this = this;		
+		// Add the hooks to the player manager
+		$j( mw.playerManager ).bind( 'swapedPlayerIdEvent', function( event, swapedPlayerId ) {		
+			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
+			
+			// Add hook for check player sources to use local kEntry ID source check:
+			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
+				mw.log(" entryId:: checkPlayerSourcesEvent ");
+				_this.checkPlayerSources( embedPlayer, callback );
+			} );
+			
+			// Add hook for analytics ( based on "play" request )		
+			if( mw.getConfig( 'kAnalytics' ) == true ) {
+				mw.addKAnalytics( embedPlayer ) ;
+			}	
+		});
+	},
+	
+	/** 
+	* kEntry Check player sources function
+	* @param {Object} embedPlayer The player object
+	* @param {Function} callback Function called once player sources have been checked
+	*/ 
+	checkPlayerSources: function( embedPlayer, callback ){
+		var _this = this;	
+		
+		// Make sure we have an entry id:
+		var kEntryId = $j( embedPlayer ).attr( 'kEntryId' ); 
+		if( ! kEntryId ){
+			// Run the callback empty handed
+			callback( false );
+			return ;
+		}						
+		
+		// if Kaltura session is ready jump directly to entryId lookup
+		if( _this.kalturaSessionState == 'ready' ){
+			// Check for entry id directly
+			_this.addEntryIdSources( embedPlayer, callback ) ;
+		} else {		
+			// Add the player and callback to the callback Queue
+			_this.sessionReadyCallbackQueue.push( { 
+				'player' : embedPlayer,
+				'callback' : callback
+			} );
+			
+			if( _this.kalturaSessionState == 'inprogress' ){
+				mw.log( 'kaltura session setup in progress' );
+			}
+			
+			if( ! _this.kalturaSessionState ) {
+				_this.kalturaSessionState = 'inprogress'; 
+				// Setup global Kaltura session:
+				_this.setupSession ( function() {
+					// @@TODO check if session was successful
+					
+					// Once the session has been setup run the sessionReadyCallbackQueue
+					while( _this.sessionReadyCallbackQueue.length ){
+						var sessionPlayerSetup =  _this.sessionReadyCallbackQueue.shift();
+						_this.addEntryIdSources( embedPlayer, callback ) ;
+					}
+				} );
+			}
+		}
+	},
+	
+	/**
+	* Get the entry ID sources and apply them to the embedPlayer
+	* @param {Object} embedPlayer Player object to apply sources to
+	* @param {Function} callback Function to be called once sources are ready 
+	*/ 
+	addEntryIdSources: function ( embedPlayer, callback ) {
+		var kPartnerId =  mw.getConfig( 'kPartnerId' );
+		var kEntryId = $j( embedPlayer ).attr( 'kEntryId' ); 
+		var flaverGrabber = new KalturaFlavorAssetService( this.kClient ); 
+		flaverGrabber.getByEntryId ( function( status, data ) {
+			mw.log( 'addEntryIdSources found; ' + data.length + ' sources ' )
+			
+			// Setup the src defines
+			var iPadSrc = iPhoneSrc = oggSrc = null;
+			
+			// Set the poster
+			embedPlayer.poster = 'http://cdnakmi.kaltura.com/p/' + kPartnerId + '/sp/' +
+				kPartnerId + '00/thumbnail/entry_id/' + kEntryId + '/width/' +
+				 embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight()
+			
+			// Find a compatible stream
+			for( var i = 0 ; i < data.length; i ++ ) {
+				var asset = data[i];			
+				/*
+				the template of downloading a direct flavor is
+				http://cdn.kaltura.com/p/PARTNER_ID/sp/PARTNER_ID+00/flvclipper/entry_id
+				/XXXXXXX/flavor/XXXXXXXX/a.mp4?novar=0
+				*/
+				// Set up the current src string:
+				var src = 'http://cdnakmi.kaltura.com/p/' + kPartnerId +
+						'/sp/' +  kPartnerId + '00/flvclipper/entry_id/' +
+						kEntryId + '/flavor_param_id/' + asset.id ;
+								
+				
+				// Check the tags to read what type of mp4 source
+				if( data[i].fileExt == 'mp4' && data[i].tags.indexOf('ipad') != -1 ){					
+					iPadSrc = src + '/a.mp4?novar=0';
+				}
+				
+				// Check for iPhone src
+				if( data[i].fileExt == 'mp4' && data[i].tags.indexOf('iphone') != -1 ){
+					iPhoneSrc = src + 'a.mp4?novar=0';
+				}
+				
+				// Check for ogg source
+				if( data[i].fileExt == 'ogg' || data[i].fileExt == 'ogv'){
+					oggSrc = src + 'a.ogg?novar=0';
+				}				
+			}
+			
+			// Shortcut function to add source
+			function addSource( src, type ){
+				embedPlayer.mediaElement.tryAddSource(
+					$j('<source />')
+					.attr( {
+						'src' : src,
+						'type' : type
+					} )
+					.get( 0 )
+				);
+			}
+			
+			// If on an iPad use iPad or iPhone src
+			if( navigator.userAgent.indexOf('iPad') != -1 ) {
+				if( iPadSrc ){ 
+					addSource( iPadSrc, 'video/h264' );
+					return ;
+				} else if ( iPhoneSrc ) {
+					addSource( iPhoneSrc, 'video/h264' );
+					return ;
+				}
+			}
+			
+			// If on iphone just use iPhone src
+			if( navigator.userAgent.indexOf('iPhone') != -1 && iPhoneSrc ){
+				addSource( iPhoneSrc, 'video/h264' );
+				return ;
+			}
+			
+			// If not iphone or ipad add the iPad or iPhone h264 source for flash fallback
+			if( navigator.userAgent.indexOf('iPhone') == -1 && 
+				navigator.userAgent.indexOf('iPad') == -1 ){
+				if( iPadSrc ) {
+					addSource( iPadSrc, 'video/h264' );
+				} else if( iPhoneSrc ) {
+					addSource( iPhoneSrc, 'video/h264' );
+				}
+			}
+			
+			// Always add the oggSrc
+			if( oggSrc ) {
+				addSource( oggSrc, 'video/ogg' );
+			}
+			
+			// Done adding sources run callback
+			callback();
+				
+		}, kEntryId );
+		
+	},
+	/**
+	*  Setup The kaltura session
+	* @param {Function} callback Function called once the function is setup
+	*/ 
+	setupSession: function( callback ) {				 		
+		var _this = this;
+		// Setup the kConfig
+		var kConfig = new KalturaConfiguration( parseInt( mw.getConfig( 'kPartnerId' ) ) );
+		
+		// Assign the local kClient
+		this.kClient = new KalturaClient( kConfig );
+		
+		// Client session start
+		this.kClient.session.start(
+			// Callback function once session is ready 
+			function ( success, data ) {
+				_this.kClient.setKs(data);
+				// update the kalturaKS var
+				mw.setConfig( 'kalturaKS', data ),
+				mw.log('New session created::' + data);
+								
+				// Run the callback 
+				callback();
+			}, 
+			// @arg "admin secret" 
+			mw.getConfig( 'kAdminSecret' ),
+			// @arg session name  
+			"test_js_kcl", 
+			// @arg session type param 
+			KalturaSessionType.ADMIN
+		);
+		
+	}
+	
+	
+}
+		
+// Add player Mannager binding ( if playerManager not ready bind to when its ready )
+// @@NOTE we may want to move this into the loader since its more "action/loader" code
+if( mw.playerManager ){
+	var kEntrySupport = new mw.KEntryIdSupport();
+	kEntrySupport.addPlayerHooks();
+} else {
+	$j( mw ).bind( 'EmbedPlayerManagerReady', function(){		
+		var kEntrySupport = new mw.KEntryIdSupport();
+		kEntrySupport.addPlayerHooks();
+	});
+}
