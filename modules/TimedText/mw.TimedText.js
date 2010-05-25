@@ -399,10 +399,9 @@ mw.addMessages( {
 		
 		/**
 		* Checks if a source is "on"
-		* @return 
+		* @return {Boolean}
 		* 	true if source is on
 		* 	false if source is off
-		* @type {Boolean}
 		*/		
 		isSourceEnabled: function( source ) {
 			for(var i in this.enabledSources ) {
@@ -860,7 +859,7 @@ mw.addMessages( {
 	 *  with some timedText features
 	 *
 	 * @param {Object} source Source object to extend
-	 * @param {Object} {Optional} textProvider The text provider interface ( to load source from api ) 
+	 * @param {Object} textProvider [Optional] The text provider interface ( to load source from api ) 
 	 */
 	TextSource = function( source , textProvider) {
 		return this.init( source, textProvider );
@@ -1193,7 +1192,7 @@ mw.addMessages( {
 		
 		/**
 		 * Loads a single text source by titleKey
-		 * @param {titleKey}  
+		 * @param {Object} titleKey  
 		 */
 		loadTitleKey: function( titleKey, callback ) {
 			var request = {

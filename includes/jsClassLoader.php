@@ -244,7 +244,9 @@ class jsClassLoader {
 				throw new MWException( "Missing module: $moduleName \n" );
 			}
 		}
+
 	}
+
 	/**
 	 * Adds javascript autoloader class names and paths
 	 * to $wgScriptLoaderNamedPaths global
@@ -274,7 +276,7 @@ class jsClassLoader {
 			if( isset( $wgScriptLoaderNamedPaths[ $className ] ) ){
 
 				// Presently extensions don't register were the named path parent module
-				// so we just have a gnneral extension error.
+				// so we just have a general extension error.
 				$setInModuleError = ( self::$classParentModuleName [ $className ] )
 					? " set in module: " . self::$classParentModuleName [ $className ]
 					: " set in an extension ";

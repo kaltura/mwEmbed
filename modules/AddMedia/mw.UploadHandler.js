@@ -536,9 +536,7 @@ mw.UploadHandler.prototype = {
 			// Run the JS equivalent of SpecialUpload.php getInitialPageText	
 			comment_value = this.getCommentText( comment_value, license, copyStatus, source  );
 			this.rewriteDescriptionText = false;
-		}
-		var cat = $j( '#wpUploadDescription' );
-		debugger;
+		}		
 		mw.log( 'getUploadDescription:: new val:' + comment_value  );		
 		return comment_value;
 	},

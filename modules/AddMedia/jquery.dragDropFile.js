@@ -48,7 +48,7 @@ mw.addMessages( {
 			$j( 'body' ).append( 
 				$j('<div />')
 				.attr( {
-					'title' : gM( 'mwe-upload-multi', fileCount )
+					'title' : gM( 'mwe-upload-multi', fileCount ),
 					'id' : 'multiple_file_input'
 				} )
 				.css({

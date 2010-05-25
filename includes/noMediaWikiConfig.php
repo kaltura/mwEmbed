@@ -140,7 +140,10 @@ function wfMsgGetKey( $msgKey, $na, $langKey = false ) {
  * @param $langKey String Language key to be used
  */
 function wfLoadMsgKeys( $langKey ){
-	global $wgExtensionMessagesFiles, $wgMessageCache;
+	global $wgExtensionMessagesFiles, $wgMessageCache, $wgLoadedMsgKeysFlag;
+	if( $wgLoadedMsgKeysFlag ) {
+		return true;
+	}
 	foreach( $wgExtensionMessagesFiles as $msgFile ){
 		if( !is_file( $msgFile ) ) {
 			throw new MWException( "Missing msgFile: " . htmlspecialchars( $msgFile ) . "\n" );

@@ -325,8 +325,7 @@ var vlcEmbed = {
 	
 	/**
 	* Gets the current volume
-	* @return percent percent of total volume
-	* @type {Float} 
+	* @return {Float} percent percent of total volume
 	*/  
 	getVolumen:function() {		
 		if ( this.getPlayerElement() )

@@ -1208,19 +1208,21 @@ ctrlBuilder.prototype = {
 	showTextInterface: function() {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		mw.log('ttt:showTextInterface::');							
+		var loc = embedPlayer.$interface.find( '.rButton.timed-text' ).offset();
+		mw.log('showTextInterface::' + embedPlayer.id + ' t' + loc.top + ' r' + loc.right);							
+		
 		
 		var $menu = $j( '#timedTextMenu_' + embedPlayer.id );			
-		//This may be unnessesary .. we just need to show a sppiner somewhere
+		//This may be unnecessary .. we just need to show a spiner somewhere
 		if ( $menu.length != 0 ) {
 			// Hide show the menu:		
 			if( $menu.is( ':visible' ) ) {
 				$menu.hide( "fast" );
 			}else{			 
+				// move the menu to proper location				
 				$menu.show("fast");
 			}	
-		}else{			
-			var loc = embedPlayer.$interface.find( '.rButton.timed-text' ).offset();
+		}else{						
 			//Setup the menu: 		
 			$j('body').append( 
 				$j('<div>')		
@@ -1237,8 +1239,7 @@ ctrlBuilder.prototype = {
 					
 			);			
 			// Load text interface ( if not already loaded )
-			mw.load( 'TimedText', function() {
-				mw.log('ttt:TimedText CB .. do timedText bind::');
+			mw.load( 'TimedText', function() {				
 				$j( '#' + embedPlayer.id ).timedText( 'showMenu', '#timedTextMenu_' + embedPlayer.id );				
 			});		
 		}			

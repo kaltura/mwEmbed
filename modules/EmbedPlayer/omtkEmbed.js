@@ -83,7 +83,7 @@ var omtkEmbed = {
 		if ( this.playerElement.play ) {
 			// mw.log('omtk obj is missing .play (probably not omtk obj)');
 		}
-	},
+	}
 }
 // Some auto-called globals (bad) 
 function OMTK_P_complete() {

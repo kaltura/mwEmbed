@@ -127,7 +127,7 @@ RemoteMwTimedText.prototype = {
 	/**
 	* Gets the properties of a given title as a resource
 	* @param {String} fileTitle Title of media asset to embed
-	* @param {Function} {Optional} callback Function to call once asset is embedded
+	* @param {Function} callback [Optional] Function to call once asset is embedded
 	*/ 
 	getTitleResource: function( fileTitle, callback ) {
 		var _this = this;
@@ -181,7 +181,7 @@ RemoteMwTimedText.prototype = {
 				'poster'	 : page.imageinfo[0].thumburl,
 				'src'		 : page.imageinfo[0].url,					
 				'width' : page.imageinfo[0].width,
-				'height': page.imageinfo[0].height,
+				'height': page.imageinfo[0].height
 			};	
 	}
 };

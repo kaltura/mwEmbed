@@ -29,11 +29,11 @@ if ( ! window['mw'] ) {
 	window['mw'] = { };
 }
 
-
 /*
 * Set the mwEmbedVersion
 */
 var MW_EMBED_VERSION = '1.1f';
+
 
 /**
 * The global mw object:
@@ -88,11 +88,9 @@ var MW_EMBED_VERSION = '1.1f';
 	/**
 	* Set a default config value 
 	* Will only update configuration if no value is present
-	* @param [Mixed] name 
-	*	{Object} Will iderate through each key and call setDefaultConfig
-	* 	{String} Will set configuration by string name to value
-	* 
 	* @param [Mixed] value Set configuration name to value
+	*	  {Object} Will iderate through each key and call setDefaultConfig
+	* 	{String} Will set configuration by string name to value
 	*/
 	mw.setDefaultConfig = function( name, value ) {	
 		if( typeof name == 'object' ) {
@@ -141,7 +139,7 @@ var MW_EMBED_VERSION = '1.1f';
 				callback();
 		}
 		// Do Setup user config: 		
-		mw.load( [ '$j.cookie', 'JSON' ], function() {			
+		mw.load( [ '$j.cookie', 'JSON' ], function() {
 			if( $j.cookie( 'mwUserConfig' ) ) {
 				mwUserConfig = JSON.parse( $j.cookie( 'mwUserConfig' ) );
 			}
@@ -188,267 +186,6 @@ var MW_EMBED_VERSION = '1.1f';
 		if( mwUserConfig[ name ] )
 			return mwUserConfig[ name ];
 		return false;
-	}
-
-	// Create a new parser Object	
-	var parseObj = function( wikiText, options ) {
-		return this.init( wikiText, options )
-	}
-	parseObj.prototype = {
-		// the wikiText "DOM"... stores the parsed wikiText structure
-		// wtDOM : {}, (not yet supported )
-
-		pOut : '', // the parser output string container
-		init  :function( wikiText ) {
-			this.wikiText = wikiText;
-		},
-		updateText : function( wikiText ) {
-			this.wikiText = wikiText;
-			// invalidate the output (will force a re-parse )
-			this.pOut = '';
-		},
-		
-		/**
-		 * Quickly recursive / parse out templates:
-		 * This parser is only tested against msg templates see tests/testLang.html
-		 */
-		parse : function() {
-			function rdpp ( txt , cn ) {
-				var node = { };
-				// Inspect each char
-				for ( var a = 0; a < txt.length; a++ ) {
-					if ( txt[a] == '{' && txt[a + 1] == '{' ) {
-						a = a + 2;
-						node['p'] = node;
-						if ( !node['c'] )
-							node['c'] = new Array();
-
-						node['c'].push( rdpp( txt.substr( a ), true ) );
-					} else if ( txt[a] == '}' && txt[a + 1] == '}' ) {
-						a++;
-						if ( !node['p'] ) {
-							return node;
-						}
-						node = node['p'];
-					}
-					if ( !node['t'] ) {
-						node['t'] = '';
-					}
-					// Don't put }} closures into output:
-					if ( txt[a] &&  txt[a] != '}' ) {
-							node['t'] += txt[a];
-					}
-				}
-				return node;
-			}
-			/**
-			 * Parse template text as template name and named params
-			 * @param {String} ts Template String to be parsed 
-			 */
-			function parseTmplTxt( ts ) {
-				var tObj = { };
-								
-				// Get template name:
-				tname = ts.split( '\|' ).shift() ;
-				tname = tname.split( '\{' ).shift() ;
-				tname = tname.replace( /^\s+|\s+$/g, "" ); //trim
-
-				// Check for arguments:
-				if ( tname.split( ':' ).length == 1 ) {
-					tObj["name"] = tname;
-				} else {
-					tObj["name"] = tname.split( ':' ).shift();
-					tObj["arg"] = tname.split( ':' ).pop();
-				}
-									
-				var pSet = ts.split( '\|' );
-				pSet.splice( 0, 1 );
-				if ( pSet.length ) {
-					tObj.param = new Array();
-					for ( var pInx in pSet ) {
-						var tStr = pSet[ pInx ];
-						// check for empty param
-						if ( tStr == '' ) {
-							tObj.param[ pInx ] = '';
-							continue;
-						}
-						for ( var b = 0 ; b < tStr.length ; b++ ) {
-							if ( tStr[b] == '=' && b > 0 && b < tStr.length && tStr[b - 1] != '\\' ) {
-								// named param
-								tObj.param[ tStr.split( '=' ).shift() ] =	tStr.split( '=' ).pop();
-							} else {
-								// indexed param
-								tObj.param[ pInx ] = tStr;
-							}
-						}
-					}
-				}		
-				return tObj;
-			}
-			
-			/**
-			 * Get the Magic text from a template node
-			 */
-			function getMagicTxtFromTempNode( node ) {
-				node.tObj = parseTmplTxt ( node.t );
-				// Do magic swap if template key found in pMagicSet
-				if ( node.tObj.name in pMagicSet ) {
-					var nt = pMagicSet[ node.tObj.name ]( node.tObj );
-					return nt;
-				} else {
-					// don't swap just return text
-					return node.t;
-				}
-			}
-			
-			/**
-			 * recurse_magic_swap
-			 *
-			 * Go last child first swap upward: 
-			 */
-			var pNode = null;
-			function recurse_magic_swap( node ) {
-				if ( !pNode )
-					pNode = node;
-
-				if ( node['c'] ) {
-					// swap all the kids:
-					for ( var i in node['c'] ) {
-						var nt = recurse_magic_swap( node['c'][i] );
-						// swap it into current
-						if ( node.t ) {
-							node.t = node.t.replace( node['c'][i].t, nt );
-						}
-						// swap into parent
-						pNode.t  = pNode.t.replace( node['c'][i].t, nt );
-					}
-					// Do the current node:
-					var nt = getMagicTxtFromTempNode( node );
-					pNode.t = pNode.t.replace( node.t , nt );
-					// run the swap for the outer most node
-					return node.t;
-				} else {
-					// node.t = getMagicFromTempObj( node.t )
-					return getMagicTxtFromTempNode( node );
-				}
-			}
-			
-			// Parse out the template node structure:
-			this.pNode = rdpp ( this.wikiText );
-			
-			// Strip out the parent from the root	
-			this.pNode['p'] = null;
-			
-			// Do the recursive magic swap text:
-			this.pOut = recurse_magic_swap( this.pNode );
-		},
-		
-		/**
-		 * templates
-		 * 
-		 * Get a requested template from the wikitext (if available)
-		 * @param templateName
-		 */
-		templates: function( tname ) {
-			this.parse();
-			var tmplSet = new Array();
-			function getMatchingTmpl( node ) {
-				if ( node['c'] ) {
-					for ( var i in node['c'] ) {
-						getMatchingTmpl( node['c'] );
-					}
-				}
-				if ( tname && node.tObj ) {
-					if ( node.tObj['name'] == tname )
-						tmplSet.push( node.tObj );
-				} else if ( node.tObj ) {
-					tmplSet.push( node.tObj );
-				}
-			}
-			getMatchingTmpl( this.pNode );
-			return tmplSet;
-		},
-		
-		/**
-		* getTemplateVars
-		* returns a set of template values in a given wikitext page
-		* 
-		* NOTE: should be integrated with the usability wikitext parser
-		*/
-		getTemplateVars: function() {
-			//mw.log('matching against: ' + wikiText);
-			templateVars = new Array();
-			var tempVars = wikiText.match(/\{\{\{([^\}]*)\}\}\}/gi);
-															
-			// Clean up results:
-			for(var i=0; i < tempVars.length; i++) {
-				//match 
-				var tvar = tempVars[i].replace('{{{','').replace('}}}','');
-				
-				// Strip anything after a |
-				if(tvar.indexOf('|') != -1) {
-					tvar = tvar.substr(0, tvar.indexOf('|'));
-				}
-				
-				// Check for duplicates:
-				var do_add=true;
-				for(var j=0; j < templateVars.length; j++) {
-					if( templateVars[j] == tvar)
-						do_add=false;
-				}
-				
-				// Add the template vars to the output obj
-				if(do_add)
-					templateVars.push( tvar );
-			}
-			return templateVars;
-		},
-		
-		/**
-		 * Returns the transformed wikitext
-		 * 
-		 * Build output from swappable index 
-		 * 		(all transforms must be expanded in parse stage and linearly rebuilt)  
-		 * Alternatively we could build output using a place-holder & replace system 
-		 * 		(this lets us be slightly more sloppy with ordering and indexes, but probably slower)
-		 * 
-		 * Ideal: we build a 'wiki DOM' 
-		 * 		When editing you update the data structure directly
-		 * 		Then in output time you just go DOM->html-ish output without re-parsing anything			   
-		 */
-		getHTML : function() {
-			// wikiText updates should invalidate pOut
-			if ( this.pOut == '' ) {
-				this.parse();
-			}
-			return this.pOut;
-		}
-	};		
-	
-	/**
-	* MediaWiki wikitext "Parser" entry point:
-	*
-	* @param {String} wikiText the wikitext to be parsed
-	* @return {Object} parserObj returns a parser object that has methods for getting at
-	* things you would want
-	*/
-	mw.parser = function( wikiText, options) {
-		// return the parserObj
-		return new parseObj( wikiText, options ) ;	
-	}
-	
-	var pMagicSet = { };
-		
-	/**
-	 * addTemplateTransform to the parser 
-	 *
-	 * Lets you add a set template key to be transformed by a callback function
-	 *
-	 * @param {Object} magicSet key:callback
-	 */
-	mw.addTemplateTransform = function( magicSet ) {
-		for ( var i in magicSet )
-			pMagicSet[ i ] = magicSet[i];
 	}
 	
 	/**
@@ -1229,10 +966,9 @@ var MW_EMBED_VERSION = '1.1f';
 	* Check if the url is a request for the local domain
 	*  relative paths are "local" domain
 	* @param {String} url Url for local domain
-	* @return 
+	* @return {Boolean}
 	*	true if url domain is local or relative
 	* 	false if the domain is
-	* @type {Boolean} 	
 	*/
 	mw.isLocalDomain = function( url ) {
 		if( mw.parseUri( document.URL ).host == mw.parseUri( url ).host 
@@ -1538,7 +1274,8 @@ var MW_EMBED_VERSION = '1.1f';
 			if(log_elm) {
 				log_elm.value+=string+"\n";
 			}
-			*/			
+			*/
+			
 		}
 	}
 	
@@ -1640,7 +1377,7 @@ var MW_EMBED_VERSION = '1.1f';
 		// If jQuery is available and debug is off load the scirpt via jQuery 
 		//( will use XHR if on same domain ) 
 		if( mw.isset( 'window.jQuery' ) 
-			&& mw.getConfig( 'debug' ) === false
+			&& mw.getConfig( 'debug' ) === false 
 			&& !isCssFile ) 
 		{	
 			$j.getScript( url, myCallback); 		
@@ -1849,8 +1586,7 @@ var MW_EMBED_VERSION = '1.1f';
 	 *
 	 * @param {Float} sec Seconds
 	 * @param {Boolean} show_ms If milliseconds should be displayed.
-	 * @return String npt format  
-	 * @type {Float} 
+	 * @return {Float} String npt format  
 	 */
 	mw.seconds2npt = function( sec, show_ms ) {
 		if ( isNaN( sec ) ) {
@@ -1878,8 +1614,7 @@ var MW_EMBED_VERSION = '1.1f';
 	* Take hh:mm:ss,ms or hh:mm:ss.ms input, return the number of seconds
 	*
 	* @param {String} npt_str NPT time string
-	* @return Number of seconds 
-	* @type {Float} 
+	* @return {Float} Number of seconds 
 	*/
 	mw.npt2seconds = function ( npt_str ) {
 		if ( !npt_str ) {
@@ -2226,8 +1961,9 @@ var MW_EMBED_VERSION = '1.1f';
 					// Set up mvEmbed utility jQuery bindings
 					mw.dojQueryBindings();					
 					
-					// Speical Hack for condtional jquery ui inclution ( once Usability extension
-					//  registers the jquery.ui skin in mw.sytle this won't be needed:  
+					
+					// Special Hack for conditional jquery ui inclusion ( once Usability extension
+					//  registers the jquery.ui skin in mw.style this won't be needed:  
 					if( mw.hasJQueryUiCss() ){
 						mw.style[ mw.getConfig( 'jQueryUISkin' ) ] = true;
 					}
@@ -2260,8 +1996,8 @@ var MW_EMBED_VERSION = '1.1f';
 	
 	/**
 	* Checks for jquery ui css by name jquery-ui-1.7.2.css
-	*	NOTE: this is kind of a hack for usability jquery-ui
-	* 	in the future usability should register the class in mw.skin
+	*	NOTE: this is a hack for usability jquery-ui
+	* 	in the future usability should register a class in mw.skin
 	*
 	* @return true if found, return false if not found
 	*/
@@ -2269,7 +2005,7 @@ var MW_EMBED_VERSION = '1.1f';
 		var hasUiCss = false;
 		// Load the jQuery ui skin if usability skin not set
 		$j( 'link' ).each( function(  na, linkNode ){
-			if( $j( linkNode ).attr( 'href' ).indexOf('jquery-ui-1.7.2.css') != -1 ) {
+			if( $j( linkNode ).attr( 'href' ).indexOf( 'jquery-ui-1.7.2.css' ) != -1 ) {
 				hasUiCss = true;
 				return false;
 			}
@@ -2391,10 +2127,9 @@ var MW_EMBED_VERSION = '1.1f';
 	* NOTE: this only works for style sheets on the same domain :(
 	* 
 	* @param {String} styleRule Style rule name to check
-	* @return 
-	*	true if the rule exists
-	*	false if the rule does not exist
-	* @type {Boolean}
+	* @return {Boolean}
+	*	  true if the rule exists
+	*	  false if the rule does not exist
 	*/
 	mw.styleRuleExists = function ( styleRule ) {
 		// Set up the skin paths configuration		
@@ -2516,7 +2251,7 @@ var MW_EMBED_VERSION = '1.1f';
 					' class="ui-state-default ui-corner-all ui-icon_link ' +
 					className + '"><span class="ui-icon ui-icon-' + iconId + '" ></span>' +
 					'<span class="btnText">' + msg + '</span></a>';
-			}
+			};
 			
 			// Shortcut to jQuery button ( should replace all btnHtml with button )
 			var mw_default_button_options = {
@@ -2531,7 +2266,8 @@ var MW_EMBED_VERSION = '1.1f';
 				
 				// The icon id that precceeds the button link:
 				'icon_id' : 'carat-1-n' 
-			}
+			};
+			
 			$.button = function( options ) {
 				var options = $j.extend( mw_default_button_options, options);
 				
@@ -2554,7 +2290,7 @@ var MW_EMBED_VERSION = '1.1f';
 						.text( options.text )
 				);
 				return $btn;					
-			}
+			};
 			
 			// Shortcut to bind hover state
 			$.fn.buttonHover = function() {
@@ -2567,7 +2303,7 @@ var MW_EMBED_VERSION = '1.1f';
 					}
 				)
 				return this;
-			}
+			};
 			
 			/**
 			* Resize a dialog to fit the window
@@ -2588,9 +2324,9 @@ var MW_EMBED_VERSION = '1.1f';
 					'right':'0px',
 					'bottom':'0px'
 				} );
-			}	
+			};
 			
-		} )( jQuery );
+		} )( $j );
 	}	
 	
 } )( window.mw );

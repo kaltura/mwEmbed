@@ -34,8 +34,8 @@ var default_timed_effect_values = {
 	'pSeq': null,	 
 
 	// The requested edit action
-	'edit_action': null, 
-};
+	'edit_action': null
+}
 
 mw.TimedEffectsEdit = function( options ) {
 	return this.init( options );

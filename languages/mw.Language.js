@@ -3,7 +3,7 @@
 *
 * Localized Language support attempts to mirror some of the functionality of Language.php in MediaWiki
 * It contains methods for loading and transforming msg text
-*
+
 */
 
 ( function( mw ) {
@@ -28,11 +28,12 @@
 			messageCache[ i ] = msgSet[i];
 		}
 	}
-		
-	mw.currentClassMissingMessages = false;	
+
+	mw.currentClassMissingMessages = false;
+	
 	/**
 	* mw.addMessagesKey function
-	* Adds a msgKey to be pulled in remotely.
+	* Adds a messageKey to be pulled in remotely.
 	* 
 	* NOTE the script-loader should replace addMessageKeys with localized addMessages calls
 	*
@@ -53,6 +54,13 @@
 		return true;
 	}
 	
+	/** 
+	* Special function to register that all of the module messages need to be loaded.  
+	*/
+	mw.includeAllModuleMessages = function (){
+		mw.currentClassMissingMessages = true;
+	}
+		
 	/**
 	* NOTE: this is somewhat of a hack. But its only used in debug mode since
 	* normal msg loading happens via script-loader
@@ -71,94 +79,186 @@
 	 * Returns a transformed msg string
 	 *
 	 * it take a msg key and array of replacement values of form
-	 * $1, $2 and does relevant msgkey transformation returning
+	 * $1, $2 and does relevant messageKey transformation returning
 	 * the user msg.
 	 *
-	 * @param {String} msgKey The msg key as set by mw.addMessages
+	 * @param {String} messageKey The msg key as set by mw.addMessages
 	 * @param {Mixed} args  A string|jQuery Object or array of string|jQuery Objects
 	 *
-	 * extra paramaters are appended to the args array as numbered replacements
+	 * extra parameters are appended to the args array as numbered replacements
 	 *
 	 * @return string
 	 */
-	mw.getMsg = function( msgKey , args ) {		
-		
+	mw.getMsg = function( messageKey , args ) {		
+
 		// Check for missing message key
-		if ( ! messageCache[ msgKey ] ){
-			return '[' + msgKey + ']';
+		if ( ! messageCache[ messageKey ] ){
+			return '[' + messageKey + ']';
 		}				
 		// Check if we need to do args replacements: 
 		if( typeof args != 'undefined' ) {
 			
 			// Make arg into an array if its not already an array
-			if ( typeof args == 'string' 
+			if ( typeof args == 'string'
 				|| typeof args == 'number'
-				|| args instanceof jQuery) 
+				|| args instanceof jQuery ) 
 			{
 				args = [ args ];
 			}
 			
 			// Put any extra arguments into the args array
 			var extraArgs = $j.makeArray( arguments );
-			for(var i=2; i < extraArgs.length; i ++ ){		
+			for(var i=2; i < extraArgs.length; i ++ ) {		
 				args.push(  extraArgs[ i ] );
 			}
-			var ms =  mw.Language.msgReplaceArgs( messageCache[ msgKey ], args );
-		}else{
-			var ms = messageCache[ msgKey ];
+		}
+		// Fast check message text return  ( no arguments and no parsing needed )
+		if( ( !args || args.length == 0 ) 
+			&& messageCache[ messageKey ].indexOf( '{{' ) === -1 
+			&& messageCache[ messageKey ].indexOf( '[' ) === -1 
+		) {
+			return messageCache[ messageKey ];
 		}
 		
-		// A quick check to see if we need to send the msg to the 'parser'
-		if ( ms.indexOf( '{{' ) === -1 && ms.indexOf( '[' ) === -1 ) {									
-			return ms;	
-		}
-					
-		// Send the msg key through the parser
-		var pObj = mw.parser( ms );
+		// Else Setup the messageSwap object: 
+		var messageSwap = new mw.Language.messageSwapObject( messageCache[ messageKey ], args );
 		
-		// Return the transformed msg
-		return pObj.getHTML();
+		// Return the jQuery object or message string		
+		return messageSwap.getMsg();					
 	}
 	
 	/**
-	* Swap in an array of values for $1, $2, $n for a given msg key 
+	* A message Swap Object 
+	* Swap object manages message type swapping and returns jQuery or text output   
 	*
-	* @param string msgKey The msg key to lookup
-	* @param [Array] args  An array of string or jquery objects to be swapped in
-	* @return string
-	*/
-	mw.Language.msgReplaceArgs = function( message , args ) {		
-		// Replace Values
-		for ( var v = 0; v < args.length; v++ ) {				
-			if( typeof args[v] == 'undefined' ) {
-				continue;
-			}				
-			var replaceValue =  args[ v ];
+	* @param {String} message The text of the message
+	* @param {array} arguments A set of swap arguments
+	*/ 
+	
+	mw.Language.messageSwapObject = function( message, arguments ){
+		return this.init( message, arguments );
+	}	
+	
+	mw.Language.messageSwapObject.prototype= {		
+		/* constructor */
+		init: function( message, arguments ){
+			this.message = message;
+			this.arguments = arguments; 
 			
-			// Convert number if applicable
-			if( parseInt( replaceValue ) == replaceValue ) {
-				replaceValue = mw.Language.convertNumber( replaceValue );
+			// Set the includesjQueryArgs flag to false
+			includesjQueryArgs: false;
+		},
+		
+		// Return the transformed message text or jQuery object
+		getMsg: function(){					
+			// Get message with string swap
+			this.replaceStringArgs();
+						
+			// Check if we need to parse the string
+			if( this.message.indexOf( '{{' ) === -1 			
+				&& this.message.indexOf( '[' ) === -1
+				&& ! this.includesjQueryArgs  )
+			{
+				// replaceStringArgs is all we need, return the msg 
+				return this.message	
+			}
+						
+			// Else Send the messageText through the parser
+			var pObj = new mw.Parser( this.message );
+			
+			// Get template and link transformed text:
+			this.message = pObj.getHTML();
+			
+			// if jQuery arguments is false return message string
+			if(! this.includesjQueryArgs ){													
+				//Do string link substitution				
+				return this.message;
 			}
 			
-			// Message test replace arguments start at 1 instead of zero:
-			var rep = new RegExp( '\\$' + ( parseInt( v ) + 1 ), 'g' );
+			// jQuery arguments exist swap and return jQuery object
+			return this.getJQueryArgsReplace();
 						
-			// Check if we got passed in a jQuery object:			
-			if( replaceValue instanceof jQuery) {
-				// Convert message into jQuery object
-				if( ! message instanceof jQuery ){
-					message = $j('<span />').html( message );
+		},
+		
+		/**
+		* Swap in an array of values for $1, $2, $n for a given msg key 
+		*
+		* @param string messageKey The msg key to lookup
+		* @param {Array} args  An array of string or jquery objects to be swapped in
+		* @return string
+		*/
+		replaceStringArgs : function() {				
+			// Replace Values
+			for ( var v = 0; v < this.arguments.length; v++ ) {				
+				if( typeof this.arguments[v] == 'undefined' ) {
+					continue;
+				}				
+				var replaceValue =  this.arguments[ v ];
+				
+				// Convert number if applicable
+				if( parseInt( replaceValue ) == replaceValue ) {
+					replaceValue = mw.Language.convertNumber( replaceValue );
 				}
-				message = message.replace( rep, $j('<div />').append( replaceValue ).html() );
-			} else {
-				// Assume replaceValue is a string
-				message = message.replace( rep, replaceValue );
-			}				
-		}	
-		// If we did jQuery replacements return a jQuery object	
-		return message;
+				
+				// Message test replace arguments start at 1 instead of zero:
+				var argumentRegExp = new RegExp( '\\$' + ( parseInt( v ) + 1 ), 'g' );
+												
+				// Check if we got passed in a jQuery object:			
+				if( replaceValue instanceof jQuery) {
+					// Set the jQuery msg flag
+					this.includesjQueryArgs = true;
+					// Swap in a jQuery span place holder: 		
+					this.message = this.message.replace( argumentRegExp, 
+						'<span id="' + JQUERY_SWAP_STRING + v +'"></span>' );											
+				} else {
+					// Assume replaceValue is a string
+					this.message = this.message.replace( argumentRegExp, replaceValue );
+				}
+			}
+		},
+			
+		/**
+		* Return a jquery element with resolved swapped arguments. 
+		* return {Element} 
+		*/
+		getJQueryArgsReplace: function() {
+			var $jQueryMessage = false;
+			mw.log( 'msgReplaceJQueryArgs' );
+			for ( var v = 0; v < this.arguments.length; v++ ) {				
+				if( typeof this.arguments[v] == 'undefined' ) {
+					continue;
+				}				
+				var $replaceValue =  this.arguments[ v ];
+				// Only look for jQuery replacements
+				if( $replaceValue instanceof jQuery) {
+					// Setup the jqueryMessage if not set
+					if( !$jQueryMessage ){
+						// Setup the message as html to search for jquery swap points
+						$jQueryMessage = $j( '<span />' ).html( this.message );
+					}
+					mw.log(" current jQueryMessage::: " + $jQueryMessage.html() );
+					// Find swap target
+					var $swapTarget = $jQueryMessage.find( '#' + JQUERY_SWAP_STRING + v );
+					// Now we try and find the jQuerySwap points and replace with jQuery object preserving bindings.  
+					if( ! $swapTarget.length ){
+						mw.log( "Error could not find jQuery Swap target: " + v + ' by id: '+ JQUERY_SWAP_STRING + v 
+						 + ' In string: ' + this.message  ) ;
+						continue;
+					} 
+					
+					if( $swapTarget.html() != '' ) {
+						$replaceValue.html( $swapTarget.html() );
+					}
+										
+					// Swap for $swapTarget for $replaceValue swap target * preserveing the jQuery binding ) 
+					$swapTarget.replaceWith( $replaceValue );					
+				}
+			}
+			// Return the jQuery object ( if no jQuery substitution occurred we return false )
+			return $jQueryMessage;
+		}
 	}
-
+	
 	/**
 	* Get msg content without transformation
 	*
@@ -754,29 +854,34 @@
 	* 	[arg] The argument sent to the template  
 	* 	[params] The template parameters  
 	*/
-	mw.Language.procPLURAL = function( tObj ) {		
+	mw.Language.procPLURAL = function( templateObject ) {		
 		// Setup shortcuts
 		// ( gRuleSet is loaded from script-loader to contains local ruleset )
 		var rs = gRuleSet[ 'PLURAL' ];
 		
-		if( tObj.arg && tObj.param && mw.Language.convertPlural) {
+		if( templateObject.arg && templateObject.param && mw.Language.convertPlural) {
 			// Check if we have forms to replace
-			if ( tObj.param.length == 0 ) { 
+			if ( templateObject.param.length == 0 ) { 
 				return '';
 			}
 			// Restore the count into a Number ( if it got converted earlier )
-			var count = mw.Language.convertNumber( tObj.arg, true );
+			var count = mw.Language.convertNumber( templateObject.arg, true );
 			
 			// Do convertPlural call 					
-			return mw.Language.convertPlural( parseInt( count ), tObj.param );
+			return mw.Language.convertPlural( parseInt( count ), templateObject.param );
 			
 		}
 		// Could not process plural return first form or nothing
-		if( tObj.param[0] ) {
-			return tObj.param[0];
+		if( templateObject.param[0] ) {
+			return templateObject.param[0];
 		}
-		return '';		
+		return '';
 	};
+	
+	// NOTE:: add gender support here 
+	mw.Language.procGENDER = function( templateObject ){
+		return 'gender-not-supported-in-js-yet';
+	}
 	/*
 	* Base convertPlural function:
 	*/

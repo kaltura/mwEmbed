@@ -136,8 +136,7 @@ mw.TimedTextEdit.prototype = {
 	
 	/**
 	 * Creates an interface for a given stage id
-	 * @return the jquery interface
-	 * @type {Object}
+	 * @return {Object} the jquery interface
 	 */
 	createInterface: function( edit_stage_id) {
 		$target = $j('#tab-' + edit_stage_id);

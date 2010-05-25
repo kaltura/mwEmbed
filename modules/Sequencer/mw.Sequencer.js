@@ -1537,7 +1537,7 @@ mw.Sequencer.prototype = {
 		this.plObj.ctrlBuilder.addControlHooks( $j( '#' + this.timeline_id + '_pl_control' ) );
 
 		// render out the "jump" div
-		if ( this.timeline_mode == 'time' ) {
+		if ( this.timeline_mode == 'time' ) {  // Closure reports this line as inactive -papy
 			/*$j('#'+this.timeline_id+'_head_jump').width(pixle_length);
 			//output times every 50pixles
 			var out='';

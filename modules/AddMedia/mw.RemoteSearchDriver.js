@@ -30,8 +30,8 @@ mw.addMessages( {
 	"mwe-cc_sa_title" : "Share Alike",
 	"mwe-cc_pd_title" : "Public Domain",
 	"mwe-unknown_license" : "Unknown license",
-	"mwe-no-import-by-url" : "This user or wiki <b>cannot<\/b> import assets from remote URLs.<p>Do you need to login?<\/p><p>Is upload_by_url permission set for you?<br \/>Does the wiki have $1 enabled?<\/p>",
-	"mwe-no-import-by-url-linktext" : "$wgAllowCopyUploads",
+	"mwe-no-import-by-url" : "This user or wiki <b>cannot<\/b> import assets from remote URLs.<p>Do you need to login?<\/p><p>Is upload_by_url permission set for you?<br \/>Does the wiki have [$1 $wgAllowCopyUploads] enabled?<\/p>",
+	
 	"mwe-results_from" : "Results from $1",
 	"mwe-missing_desc_see_source" : "This asset is missing a description. Please see the $1 and help describe it.",
 	
@@ -61,8 +61,7 @@ mw.addMessages( {
 	"mwe-checking-resource" : "Checking for resource",
 	"mwe-resource-needs-import" : "Resource $1 needs to be imported to $2",
 	
-	"mwe-warning-upload-to-commons" : "$1 recommends you upload to Wikimedia Commons, only upload locally after you have read $2",
-	"mwe-local-upload-policy-link" : "local upload policy" ,
+	"mwe-warning-upload-to-commons" : "$1 recommends you upload to Wikimedia Commons, only upload locally after you have read [$2 local upload policy]",	
 	
 	"mwe-ftype-svg" : "SVG vector file",
 	"mwe-ftype-jpg" : "JPEG image file",
@@ -529,7 +528,7 @@ mw.RemoteSearchDriver.prototype = {
 	 * Get license icon html
 	 * @param license_key  the license key (ie "by-sa" or "by-nc-sa" etc)
 	 * 
-	 * @return {jQuery element} A div containing the license icons.
+	 * @return {Element} A div containing the license icons.
 	 */
 	getLicenseIconHtml: function( licenseObj ) {
 		
@@ -1288,8 +1287,7 @@ mw.RemoteSearchDriver.prototype = {
 				.attr( { 
 					'href' : $uploadLink.attr('href'),
 					'target' : '_new'
-				} )
-				.text( gM('mwe-local-upload-policy-link') )
+				} )				
 			),
 			// Unfortunately mediaWiki pages don't expose the title of the wiki 
 			// Could get in an api request ( just use domain for now)  
@@ -1479,9 +1477,8 @@ mw.RemoteSearchDriver.prototype = {
 						$j('<a />')
 						.attr({
 							'href' : 'http:\/\/www.mediawiki.org\/wiki\/Manual:$wgAllowCopyUploads',
-							'title' : gM( 'mwe-no-import-by-url-linktext' )
-						})
-						.text( gM( 'mwe-no-import-by-url-linktext' ) )
+							'title' : 'wgAllowCopyUploads'
+						})						
 					)
 				);
 			}
@@ -1553,7 +1550,7 @@ mw.RemoteSearchDriver.prototype = {
 	 * 
 	 * @param {Object} Object to store in context.
 	 * 
-	 * @return {function} A callback to retrieve the context.
+	 * @return {Function} A callback to retrieve the context.
 	 */
 	storeContext: function( contextObject ) {
 		var context = contextObject;
@@ -1824,7 +1821,7 @@ mw.RemoteSearchDriver.prototype = {
 	* @param {Number} resIndex the resource index to build unique ids
 	* @param {Object} resource the resource object 
 	*/
-	getResultHtmlList:function( provider, resIndex, resource ) {
+	getResultHtmlList: function( provider, resIndex, resource ) {
 		
 		var $resultBox = $j( '<div />' )
 			.addClass( 'mv_clip_list_result' )
@@ -2269,7 +2266,7 @@ mw.RemoteSearchDriver.prototype = {
 	/**
 	* Check if a given content provider is local.  
 	* @param {Object} provider Provider object to be checked
-	* @return 
+	* @return {Boolean}
 	*/
 	isProviderLocal: function( provider ) {
 		if ( provider.local ) {
@@ -2429,7 +2426,7 @@ mw.RemoteSearchDriver.prototype = {
 			$j.btnHtml( gM( 'mwe-do_import_resource' ), 'rsd_import_doimport', 'check' ) + 
 			' ' +
 			$j.btnHtml( gM( 'mwe-return-search-results' ), 'rsd_import_acancel', 'close' ) + ' '
-		)
+		);
 		
 		// Update video tag (if a video)
 		if ( resource.mime.indexOf( 'video/' ) !== -1 ) {
@@ -2472,7 +2469,7 @@ mw.RemoteSearchDriver.prototype = {
 					_this.doApiImport( resource, function() {
 						$j( '#rsd_resource_import' ).remove();
 						_this.clipEdit.updateInsertControlActions();
-						callback 
+						callback();
 					});
 				} else {
 					mw.log( "Error: import mode is not form or API (can not copy asset)" );
@@ -3025,7 +3022,7 @@ mw.RemoteSearchDriver.prototype = {
 	 * 
 	 * @param The current content provider.
 	 * 
-	 * @return {jQuery element} A description element for embedding.
+	 * @return {Element} A description element for embedding.
 	 */
 	createSearchDescription: function( provider ) {		
 		var resultsFromMsg = gM( 'mwe-results_from', 
@@ -3051,7 +3048,7 @@ mw.RemoteSearchDriver.prototype = {
 	* Results Header controls like box vs list view
 	* & search description
 	* 
-	* @return {jQuery element} The header for embedding in the result set.
+	* @return {Element} The header for embedding in the result set.
 	*/ 
 	createResultsHeader: function() {
 		var _this = this;
@@ -3078,7 +3075,7 @@ mw.RemoteSearchDriver.prototype = {
 	/**
 	 * Creates the footer of the search results (paging).
 	 * 
-	 * @return {jQuery element} The footer for embedding in the result set.
+	 * @return {Element} The footer for embedding in the result set.
 	 */
 	createResultsFooter: function() {
 		var _this = this;
@@ -3095,7 +3092,7 @@ mw.RemoteSearchDriver.prototype = {
 	/**
 	* Generates an HTML control for paging between search results.
 	*
-	* @return {jQuery element} paging control for current results  
+	* @return {Element} paging control for current results  
 	*/
 	createPagingControl: function( target ) {
 		var _this = this;

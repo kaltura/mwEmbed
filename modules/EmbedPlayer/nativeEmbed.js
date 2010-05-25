@@ -68,8 +68,9 @@ var nativeEmbed = {
 				
 		$j( this ).html(
 			_this.getNativePlayerHtml()
-		)					
-		// directly run postEmbedJS ( if playerElement is not avaliable it will retry ) 
+		);
+					
+		// Directly run postEmbedJS ( if playerElement is not available it will retry ) 
 		_this.postEmbedJS();
 	},
 	
@@ -190,6 +191,7 @@ var nativeEmbed = {
 	
 	/**
 	* Do a native seek by updating the currentTime
+	* @param {float} percentage Percent to seek to of full time
 	*/
 	doNativeSeek:function( percentage ) {
 		var _this = this;

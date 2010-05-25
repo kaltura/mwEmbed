@@ -492,10 +492,10 @@ baseRemoteSearch.prototype = {
 	/**
 	* Get the wiki embed code for a given resource object
 	*
-	* @param {Object} resource Resoruce to get embed wiki code for.
+	* @param {Object} resource Resource to get embed wiki code for.
 	*/
 	getEmbedWikiCode:function( resource ) {
-		var layout = ( resource.layout ) ? resource.layout:"right"
+		var layout = ( resource.layout ) ? resource.layout : "right";
 		var o = '[[' + this.rsd.canonicalFileNS + ':' + resource.target_resource_title + '|thumb|' + layout;
 
 		if ( !resource.target_width && resource.width ) {
@@ -506,7 +506,7 @@ baseRemoteSearch.prototype = {
 			o += '|' + resource.target_width + 'px';
 
 		if ( resource.inlineDesc )
-			o += '|' + resource.inlineDesc;
+			o += '|' + $j.trim( resource.inlineDesc );
 
 		o += ']]';
 		return o;

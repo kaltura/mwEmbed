@@ -149,9 +149,9 @@ mw.FirefoggGUI.prototype = {
 					'maxSize'      : 1080,
 					'videoQuality' : 6,
 					'audioQuality' : 3,
-					'noUpscaling'  : true,
+					'noUpscaling'  : true
 				}
-			},
+			}
 		}
 	},
 
@@ -180,7 +180,7 @@ mw.FirefoggGUI.prototype = {
 			'default'   : 1,
 			'range'     : { 'min': -1, 'max': 10 },
 			'type'      : 'slider',
-			'group'     : 'quality',
+			'group'     : 'quality'
 		},
 		'videoCodec': {
 			'default'   : "theora",
@@ -211,7 +211,7 @@ mw.FirefoggGUI.prototype = {
 		'videoBitrate': {
 			'range'     : { 'min' : 1, 'max' : 16778 },
 			'type'      : "slider",
-			'group'     : "advVideo",
+			'group'     : "advVideo"
 		} ,
 		'twopass': {
 			'type'      : "boolean",
@@ -290,7 +290,7 @@ mw.FirefoggGUI.prototype = {
 			'group'     : 'meta'
 		},
 		'license': {
-			'type'      : 'string',
+			'type'      : 'string'
 		},
 		'contact': {
 			'type'      : 'string',

@@ -5,6 +5,7 @@
 *  mediaPlayer Media player embed system ie: java, vlc or native.
 *  mediaElement Represents source media elements	
 *  ctrlBuilder Handles skinning of the player controls
+* 
 */
 
 mw.addMessages( {
@@ -255,17 +256,16 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 	*
 	* Rewrites all tags via a given selector
 	* 
-	* @param [ Optional ] {Object} attributes The embedPlayer options for the given video interface.
+	* @param {Object} attributes [ Optional ] The embedPlayer options for the given video interface.
 	* 	Attributes Object can inclued any key value pair that would otherwise be
 	*   an attribute in the html element. 
 	*	
 	*	also see: mw.getConfig( 'embedPlayerAttributes' )
 	*
-	* @param [ Optional ] {Function} callback Function to be called once video interfaces are ready
+	* @param {Function} callback [ Optional ] Function to be called once video interfaces are ready
 	*
 	*/
-	$.fn.embedPlayer = function( attributes, callback ) {	
-		//alert('embedPlayer on: ' + this.selector);
+	$.fn.embedPlayer = function( attributes, callback ) {
 		var playerSelect = this.selector;
 		
 		// Handle optional include of attributes argument:
@@ -274,12 +274,13 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 		}
 		
 		// Create the Global Embed Player Manager ( if not already created )  		
+		mw.log( "create the player manager:" );
 		if( ! mw.playerManager ) {
 			mw.log( "Create the player manager:" );
 			mw.playerManager = new EmbedPlayerManager();
 			// Run the global hooks that mw.playerManager is ready
 			$j( mw ).trigger( 'EmbedPlayerManagerReady' );
-		}		
+		}
 		
 		// Add the embedPlayer ready callback 
 		if( typeof callback == 'function' ){  
@@ -789,8 +790,7 @@ mediaSource.prototype = {
 	
 	/** 
 	* Title accessor function.
-	*	@return Title of the source.
-	*	@type String
+	*	@return {String} Title of the source.
 	*/
 	getTitle : function() {		
 		if( this.title ){
@@ -818,8 +818,7 @@ mediaSource.prototype = {
 	},
 	
 	/** Index accessor function.
-	*	@return the source's index within the enclosing mediaElement container.
-	*	@type Integer
+	*	@return {Integer} the source's index within the enclosing mediaElement container.
 	*/
 	getIndex : function() {
 		return this.index;
@@ -856,8 +855,7 @@ mediaSource.prototype = {
 	/** 
 	* Attempts to detect the type of a media file based on the URI.
 	*	@param {String} uri URI of the media file.
-	*	@return The guessed MIME type of the file.
-	*	@type String
+	*	@return {String} The guessed MIME type of the file.
 	*/
 	detectType: function( uri ) {
 		// NOTE: if media is on the same server as the javascript
@@ -967,8 +965,7 @@ mediaElement.prototype = {
 	
 	/**
 	* Check for Timed Text tracks
-	* @return True if text tracks exist, false if no text tracks are found
-	* @type Boolean
+	* @return {Boolean} True if text tracks exist, false if no text tracks are found
 	*/
 	textSourceExists: function() {
 		for ( var i = 0; i < this.sources.length; i++ ) {
@@ -986,8 +983,7 @@ mediaElement.prototype = {
 	* Returns the array of mediaSources of this element.
 	* 
 	* @param {String} [mime_filter] Filter criteria for set of mediaSources to return
-	* @return mediaSource elements.
-	* @type Array
+	* @return {Array} mediaSource elements.
 	*/
 	getSources: function( mimeFilter ) {
 		if ( !mimeFilter ) {
@@ -1170,7 +1166,7 @@ mediaElement.prototype = {
 		var source = new mediaSource( element );
 		
 		this.sources.push( source );	
-		mw.log( 'tryAddSource: added source ::' + source + 'sl:' + this.sources.length );	
+		//mw.log( 'tryAddSource: added source ::' + source + 'sl:' + this.sources.length );	
 		return source;
 	},
 	
@@ -1312,9 +1308,9 @@ mw.EmbedPlayer.prototype = {
 			} else {
 				this[attr] = playerAttributes[attr];
 			}
-			// string -> bollean
-			if( this[attr] == "false" ) this[attr] = false;
-			if( this[attr] == "true" ) this[attr] = true;
+			// string -> boolean
+			if( this[ attr ] == "false" ) this[attr] = false;
+			if( this[ attr ] == "true" ) this[attr] = true;
 		}
 				
 		// Hide "controls" if using native player controls: 
@@ -2652,14 +2648,18 @@ mw.EmbedPlayer.prototype = {
 		// Update the playerElement volume	
 		this.setPlayerElementVolume( percent );
 		
-		mw.log(" setVolume:: " + percent + ' this.volume is: ' + this.volume);		
+		//mw.log(" setVolume:: " + percent + ' this.volume is: ' + this.volume);		
 	},
 	
 	/**
-	* Updates the interface volume 
+	* Updates the interface volume
+	* TODO should move to ctrlBuilder
+	* @param 
 	*/
 	setInterfaceVolume: function( percent ) {
-		this.$interface.find( '.volume-slider' ).slider( 'value', percent * 100 );
+		if( this.supports[ 'volumeControl' ] ) {
+			this.$interface.find( '.volume-slider' ).slider( 'value', percent * 100 );
+		}
 	},	
 	
 	/**
@@ -3016,9 +3016,9 @@ mw.EmbedPlayer.prototype = {
 
 /**
   * mediaPlayer represents a media player plugin.
-  
+  *
   * @param {String} id id used for the plugin.
-  * @param {Array<String>} supported_types n array of supported MIME types.
+  * @param {Array} supported_types an array of supported MIME types.
   * @param {String} library external script containing the plugin interface code. 
   * @constructor
   */

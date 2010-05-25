@@ -120,7 +120,7 @@ class jsScriptLoader {
 				$this->output .= $this->getLocalizedScriptText( $classKey );
 			}
 
-			// mwEmbed is a core component so it includes loaders and other styles
+			// MwEmbed is a core component so it includes loaders and other styles
 			if( $classKey == 'mwEmbed' && $this->outputFormat != 'messages' ){
 				// Output core components ( parts of core mwEmbed that are in different files )
 				$coreComponentsList  = jsClassLoader::getComponentsList();
@@ -131,7 +131,7 @@ class jsScriptLoader {
 
 				// Output the loaders js
 				$loaderJS = jsClassLoader::getCombinedLoaderJs();
-				// Transform the loader text to remove debug statments and
+				// Transform the loader text to remove debug statements and
 				// update language msgs if any are present
 				$this->output .= $this->transformScriptText( $loaderJS , 'mwEmbed');
 
@@ -789,6 +789,7 @@ class jsScriptLoader {
 	/*
 	 * Transform script text with language key substitution
 	 * and clear out debug lines if present.
+	 * @param {String} $scriptText Text string to be transformed
 	 */
 	function transformScriptText( $scriptText , $moduleName){
 		global $wgEnableScriptLocalization;
@@ -800,8 +801,7 @@ class jsScriptLoader {
 		// Do language swap by index:
 		if ( $wgEnableScriptLocalization ){
 			// Get the mw.addMessage javascript from scriptText and moduleName
-			$addMessageJs  = $this->getAddMessagesFromScriptText( & $scriptString , $moduleName);
-
+			$addMessageJs  = $this->getAddMessagesFromScriptText( & $scriptText , $moduleName);
 			//@@NOTE getAddMessagesFromClass could identify which mode we are in and we would not need to
 			// try each of these search patterns in the same order as before.
 
@@ -882,7 +882,6 @@ class jsScriptLoader {
 		if( $matches[0][1] ){
 			$returnIndex[ 'efull' ] = $matches[0][1] + strlen( $matches[0][0] );
 		}
-
 		return $returnIndex;
 	}
 
@@ -956,6 +955,7 @@ class jsScriptLoader {
 		$moduleName = jsClassLoader::getClassModuleName( $className );
 		return $this->getAddMessagesFromScriptText( $scriptText, $moduleName );
 	}
+
 	/**
 	 * getAddMessagesFromScriptText generates a javascript addMesseges call for a given scriptText
 	 *
@@ -1033,7 +1033,7 @@ class jsScriptLoader {
 	 * @param {Array} $jmsg Associative array of message key -> message value pairs
 	 * @param {String} $langCode Language code override
 	 */
-	static public function updateMessageValues(& $messegeArray, $langCode = false){
+	static public function updateMessageValues( & $messegeArray, $langCode = false ){
 		global $wgLang;
 		// Check the langCode
 		if(!$langCode && $wgLang) {

@@ -26,7 +26,7 @@ var playlistEmbed = {
 		'fullscreen': false,
 		'time_display': true,
 		'volume_control': true,		
-		'overlays': true,	
+		'overlays': true	
 	},
 	 	
 	/**

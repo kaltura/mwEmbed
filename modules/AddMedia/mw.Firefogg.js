@@ -647,7 +647,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				var previewTimer = setInterval( function() {
 					if ( _this.fogg.status() != "encoding" ) {
 						clearInterval( previewTimer );
-						_this.show_preview == false;
+						_this.show_preview == false; // Closure compiler marks this as irrelevant -papy
 					}
 					if ( _this.show_preview == true ) {
 						v.load();

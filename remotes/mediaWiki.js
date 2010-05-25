@@ -4,7 +4,7 @@
  */
 var urlparts = getRemoteEmbedPath();
 var mwEmbedHostPath = urlparts[0];
-var mwRemoteVersion = 'r123';
+var mwRemoteVersion = 'r126';
 var mwUseScriptLoader = true;
 
 // Log the mwRemote version ( will determine what version of js we get )
@@ -21,9 +21,10 @@ for ( var i = 0; i < reqParts.length; i++ ) {
 		mwReqParam[ p[0] ] = p[1];
 	}
 }
+	
 
 // Use wikibits onLoad hook: ( since we don't have js2 / mw object loaded ) 
-addOnloadHook( function() {	
+addOnloadHook( function() {		
 	doPageSpecificRewrite();
 } );
 
@@ -355,8 +356,11 @@ function loadMwEmbed( classSet, callback ) {
 				rurl += 'window.jQuery';
 				coma = ',';
 			}	
-			// Add Core mwEmbed lib: 
-			rurl += coma + 'mwEmbed';
+			// Add Core mwEmbed lib ( if not already defined )
+			if( typeof MW_EMBED_VERSION == 'undefined' ){ 
+				rurl += coma + 'mwEmbed';
+				coma = ',';
+			}
 								
 			// Add requested classSet to scriptLoader request
 			for( var i=0; i < classSet.length; i++ ){
