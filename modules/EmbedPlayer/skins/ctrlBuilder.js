@@ -1564,7 +1564,7 @@ ctrlBuilder.prototype = {
 						)
 					);
 				}			
-				mw.log('get inner volume html');	
+				mw.log('get volumeControl html');	
 				//Return the inner html 
 				return $volumeOut.html();
 			}

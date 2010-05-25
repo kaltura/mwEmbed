@@ -785,4 +785,4 @@ Number.prototype.pxToEm = String.prototype.pxToEm = function(settings) {
 	return result;
 };
 
-} )(jQuery);
+} )( $j );

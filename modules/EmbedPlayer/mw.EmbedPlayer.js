@@ -292,7 +292,7 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 		} );		
 	}
 
-} )( jQuery );
+} )( $j );
 
 /**
 * EmbedPlayerManager

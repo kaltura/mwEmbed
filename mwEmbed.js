@@ -141,6 +141,9 @@ var MW_EMBED_VERSION = '1.1f';
 		}
 		// Do Setup user config: 		
 		mw.load( [ '$j.cookie', 'JSON' ], function() {
+			// IE acting strange .. seems to need rebinding? 
+			$j.cookie = jQuery.cookie;
+			
 			if( $j.cookie( 'mwUserConfig' ) ) {
 				mwUserConfig = JSON.parse( $j.cookie( 'mwUserConfig' ) );
 			}
@@ -1930,7 +1933,7 @@ var MW_EMBED_VERSION = '1.1f';
 				
 				// Add jQuery to $j var. 
 				if ( ! window[ '$j' ] ) {
-					window[ '$j' ] = jQuery.noConflict();				
+					window['$j'] = jQuery.noConflict();				
 				}
 				
 				// Get module loader.js, and language files 
@@ -2209,7 +2212,7 @@ var MW_EMBED_VERSION = '1.1f';
 	 *  Setup after jQuery is available ). 
 	 */
 	mw.dojQueryBindings = function() {
-		mw.log( 'mw.dojQueryBindings' );
+		
 		( function( $ ) {
 		
 			/**
