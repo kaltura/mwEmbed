@@ -69,7 +69,6 @@ var MW_EMBED_VERSION = '1.1f';
 	* 	{Object} value Set of values to be merged 
 	*/
 	mw.setConfig = function ( name, value ) {
-		mw.log("setConfig:: n:" + name + ' v:' + value);
 		if( typeof name == 'object' ) {
 			for( var i in name ) {
 				mw.setConfig( i, name[ i ] );
@@ -141,9 +140,8 @@ var MW_EMBED_VERSION = '1.1f';
 		}
 		// Do Setup user config: 		
 		mw.load( [ '$j.cookie', 'JSON' ], function() {
-			// IE acting strange .. seems to need rebinding? 
-			$j.cookie = jQuery.cookie;
-			
+			// NOTE: chrome / safari seems to clear $j no-conflict in some cases here 
+		    var $j = jQuery.noConflict();
 			if( $j.cookie( 'mwUserConfig' ) ) {
 				mwUserConfig = JSON.parse( $j.cookie( 'mwUserConfig' ) );
 			}
@@ -305,6 +303,9 @@ var MW_EMBED_VERSION = '1.1f';
 			// Ensure the callback is only called once per load instance 
 			var callback = function(){
 				if( instanceCallback ){
+					// Chrome and safari appear to local scope extended variables
+					// on the jQuery object and not propogate to $j. 
+					// for now reassing $j to jQuery after every load
 					instanceCallback( loadRequest );
 					instanceCallback = null;
 				}
@@ -1933,7 +1934,7 @@ var MW_EMBED_VERSION = '1.1f';
 				
 				// Add jQuery to $j var. 
 				if ( ! window[ '$j' ] ) {
-					window['$j'] = jQuery.noConflict();				
+					window[ '$j' ] = jQuery.noConflict();				
 				}
 				
 				// Get module loader.js, and language files 
@@ -2212,7 +2213,7 @@ var MW_EMBED_VERSION = '1.1f';
 	 *  Setup after jQuery is available ). 
 	 */
 	mw.dojQueryBindings = function() {
-		
+		mw.log( 'mw.dojQueryBindings' );
 		( function( $ ) {
 		
 			/**

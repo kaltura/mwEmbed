@@ -111,7 +111,7 @@ RemoteMwTimedText.prototype = {
 				$j( _this.target ).prepend(
 					$j('<h3>')
 						.html(  
-							gM(pageMsgKey, [ unescape(  mw.languages[ _this.langKey ] ),  $fileLink.html() ] ) 
+							gM(pageMsgKey, [ unescape( mw.Language.names[ _this.langKey ] ),  $fileLink.html() ] ) 
 						)
 				);							
 				// Select the language if possible: 

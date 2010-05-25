@@ -85,7 +85,7 @@
 }
 
 ui-widget-overlay{
-	background: url("images/ui-bg_diagonals-thick_20_666666_40x40.png") repeat scroll 50% 50% #666666;
+	background: url('images/ui-bg_diagonals-thick_20_666666_40x40.png') repeat scroll 50% 50% #666666;
 	opacity:0.5;
 }
 

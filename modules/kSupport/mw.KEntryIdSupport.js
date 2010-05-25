@@ -77,9 +77,12 @@ mw.KEntryIdSupport.prototype = {
 			if( ! _this.kalturaSessionState ) {
 				_this.kalturaSessionState = 'inprogress'; 
 				// Setup global Kaltura session:
-				_this.setupSession ( function() {
+				_this.setupSession ( function( status ) {
 					// @@TODO check if session was successful
-					
+					if( !status ){
+						// No sources added ( error ) 
+						callback();
+					}
 					// Once the session has been setup run the sessionReadyCallbackQueue
 					while( _this.sessionReadyCallbackQueue.length ){
 						var sessionPlayerSetup =  _this.sessionReadyCallbackQueue.shift();
@@ -99,8 +102,13 @@ mw.KEntryIdSupport.prototype = {
 		var kPartnerId =  mw.getConfig( 'kPartnerId' );
 		var kentryid = $j( embedPlayer ).attr( 'kentryid' ); 
 		var flaverGrabber = new KalturaFlavorAssetService( this.kClient ); 
-		flaverGrabber.getByEntryId ( function( status, data ) {
-			mw.log( 'addEntryIdSources found; ' + data.length + ' sources ' )
+		flaverGrabber.getByEntryId ( function( success, data ) {
+			if( ! success || ! data.length ) {
+				mw.log( "Error flaverGrabber getByEntryId:: no sources found ");
+				callback();
+				return false;
+			}
+			mw.log( 'addEntryIdSources found; ' + data.length + ' sources ' );
 			
 			// Setup the src defines
 			var iPadSrc = iPhoneSrc = oggSrc = null;
@@ -121,7 +129,7 @@ mw.KEntryIdSupport.prototype = {
 				// Set up the current src string:
 				var src = 'http://cdnakmi.kaltura.com/p/' + kPartnerId +
 						'/sp/' +  kPartnerId + '00/flvclipper/entry_id/' +
-						kentryid + '/flavor_param_id/' + asset.id ;
+						kentryid + '/flavor/' + asset.id ;
 								
 				
 				// Check the tags to read what type of mp4 source
@@ -163,13 +171,13 @@ mw.KEntryIdSupport.prototype = {
 				}
 			}
 			
-			// If on iphone just use iPhone src
+			// If on iPhone just use iPhone src
 			if( navigator.userAgent.indexOf('iPhone') != -1 && iPhoneSrc ){
 				addSource( iPhoneSrc, 'video/h264' );
 				return ;
 			}
 			
-			// If not iphone or ipad add the iPad or iPhone h264 source for flash fallback
+			// If not iPhone or iPad add the iPad or iPhone h264 source for flash fallback
 			if( navigator.userAgent.indexOf('iPhone') == -1 && 
 				navigator.userAgent.indexOf('iPad') == -1 ){
 				if( iPadSrc ) {
@@ -206,8 +214,14 @@ mw.KEntryIdSupport.prototype = {
 		this.kClient.session.start(
 			// Callback function once session is ready 
 			function ( success, data ) {
+				if( !success ){
+					mw.log( "Error in request ");
+					callback( false );
+					return ;
+				}
 				if( data.code ){
 					mw.log( "Error:: " +data.code + ' ' + data.message );
+					callback( false );
 					return ;
 				}
 				_this.kClient.setKs( data );
@@ -216,7 +230,7 @@ mw.KEntryIdSupport.prototype = {
 				mw.log('New session created::' + data);
 								
 				// Run the callback 
-				callback();
+				callback( true );
 			}, 
 			// @arg "admin secret" 
 			mw.getConfig( 'kAdminSecret' ),

@@ -184,10 +184,13 @@
 		* Swap in an array of values for $1, $2, $n for a given msg key 
 		*
 		* @param string messageKey The msg key to lookup
-		* @param {Array} args  An array of string or jquery objects to be swapped in
+		* @param {Array} args  An array of string or jQuery objects to be swapped in
 		* @return string
 		*/
-		replaceStringArgs : function() {				
+		replaceStringArgs : function() {
+			if( ! this.arguments ) { 
+				return ;			
+			}	
 			// Replace Values
 			for ( var v = 0; v < this.arguments.length; v++ ) {				
 				if( typeof this.arguments[v] == 'undefined' ) {

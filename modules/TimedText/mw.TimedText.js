@@ -230,7 +230,7 @@ mw.addMessages( {
 				// NOTE: Button target should be an option or config
 				$menuButton.unbind().menu( {
 					'content'	: _this.getMainMenu(),
-					'zindex' : mw.getConfig( 'fullScreenIndex' ),
+					'zindex' : mw.getConfig( 'fullScreenIndex' )+2,
 					'crumbDefaultText' : ' ',
 					'autoShow': autoShow,
 					'targetMenuContainer' : _this.menuTarget,
