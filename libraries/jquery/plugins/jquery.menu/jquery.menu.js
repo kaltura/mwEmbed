@@ -786,4 +786,4 @@ Number.prototype.pxToEm = String.prototype.pxToEm = function(settings) {
 };
 
 } )( jQuery );
-$j = jQuery.noConflict();
+

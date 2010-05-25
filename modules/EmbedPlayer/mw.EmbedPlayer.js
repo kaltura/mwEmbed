@@ -278,6 +278,7 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 			mw.log( "Create the player manager:" );
 			mw.playerManager = new EmbedPlayerManager();
 			// Run the global hooks that mw.playerManager is ready
+			mw.log( 'trigger: EmbedPlayerManagerReady');
 			$j( mw ).trigger( 'EmbedPlayerManagerReady' );
 		}
 		
@@ -1491,7 +1492,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		// Run embedPlayer sources hook 
-		mw.log("checkPlayerSourcesEvent");
+		mw.log(" trigger checkPlayerSourcesEvent");
 		$j( this ).trigger ( 'checkPlayerSourcesEvent', function(){
 			// Continue application flow and check for Timed Text
 			_this.checkForTimedText();

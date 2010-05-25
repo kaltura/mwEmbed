@@ -303,9 +303,6 @@ var MW_EMBED_VERSION = '1.1f';
 			// Ensure the callback is only called once per load instance 
 			var callback = function(){
 				if( instanceCallback ){
-					// Chrome and safari appear to local scope extended variables
-					// on the jQuery object and not propogate to $j. 
-					// for now reassing $j to jQuery after every load
 					instanceCallback( loadRequest );
 					instanceCallback = null;
 				}
@@ -1446,7 +1443,7 @@ var MW_EMBED_VERSION = '1.1f';
 			styleNode.appendChild( styleText );
 		}
 		var head = document.getElementsByTagName("head")[0];       
-		head.appendChild( styleNode );				
+		head.appendChild( styleNode );
 	};
 	
 	/**
@@ -2451,3 +2448,4 @@ if( window.jQuery ){
 		window[ '$' ] = jQuery.noConflict();
 	}
 }
+

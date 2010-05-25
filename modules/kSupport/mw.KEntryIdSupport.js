@@ -1,5 +1,3 @@
-
-
 mw.KEntryIdSupport = function( options ) {
 	// Create a Player Manage
 	return this.init( options );
@@ -27,6 +25,7 @@ mw.KEntryIdSupport.prototype = {
 	addPlayerHooks: function( ){
 		var _this = this;		
 		// Add the hooks to the player manager
+		mw.log(  'addPlayerHooks:: bind: swapedPlayerIdEvent' );
 		$j( mw.playerManager ).bind( 'swapedPlayerIdEvent', function( event, swapedPlayerId ) {		
 			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
 			
@@ -251,8 +250,12 @@ if( mw.playerManager ){
 	var kEntrySupport = new mw.KEntryIdSupport();
 	kEntrySupport.addPlayerHooks();
 } else {
-	$j( mw ).bind( 'EmbedPlayerManagerReady', function(){		
+	mw.log( 'bind:EmbedPlayerManagerReady');
+	$j( mw ).bind( 'EmbedPlayerManagerReady', function(){	
+		mw.log("RUN::EmbedPlayerManagerReady");
 		var kEntrySupport = new mw.KEntryIdSupport();
 		kEntrySupport.addPlayerHooks();
-	});
+	});	
 }
+
+
