@@ -273,10 +273,9 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 			callback = attributes;		
 		}
 		
-		// Create the Global Embed Player Manager ( if not already created )  		
-		mw.log( "create the player manager:" );
-		if( ! mw.playerManager ) {
-			mw.log( "Create the player manager:" );
+		// Create the Global Embed Player Manager ( if not already created )  				
+		if( ! mw.playerManager ) {			
+			mw.log( "create the player manager:" );
 			mw.playerManager = new EmbedPlayerManager();
 			// Run the global hooks that mw.playerManager is ready
 			$j( mw ).trigger( 'EmbedPlayerManagerReady' );

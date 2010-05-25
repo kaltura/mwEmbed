@@ -39,7 +39,7 @@ mw.KEntryIdSupport.prototype = {
 			// Add hook for analytics ( based on "play" request )		
 			if( mw.getConfig( 'kAnalytics' ) == true ) {
 				mw.addKAnalytics( embedPlayer ) ;
-			}	
+			}
 		});
 	},
 	
@@ -52,8 +52,8 @@ mw.KEntryIdSupport.prototype = {
 		var _this = this;	
 		
 		// Make sure we have an entry id:
-		var kEntryId = $j( embedPlayer ).attr( 'kEntryId' ); 
-		if( ! kEntryId ){
+		var kentryid = $j( embedPlayer ).attr( 'kentryid' ); 
+		if( ! kentryid ){
 			// Run the callback empty handed
 			callback( false );
 			return ;
@@ -97,7 +97,7 @@ mw.KEntryIdSupport.prototype = {
 	*/ 
 	addEntryIdSources: function ( embedPlayer, callback ) {
 		var kPartnerId =  mw.getConfig( 'kPartnerId' );
-		var kEntryId = $j( embedPlayer ).attr( 'kEntryId' ); 
+		var kentryid = $j( embedPlayer ).attr( 'kentryid' ); 
 		var flaverGrabber = new KalturaFlavorAssetService( this.kClient ); 
 		flaverGrabber.getByEntryId ( function( status, data ) {
 			mw.log( 'addEntryIdSources found; ' + data.length + ' sources ' )
@@ -107,7 +107,7 @@ mw.KEntryIdSupport.prototype = {
 			
 			// Set the poster
 			embedPlayer.poster = 'http://cdnakmi.kaltura.com/p/' + kPartnerId + '/sp/' +
-				kPartnerId + '00/thumbnail/entry_id/' + kEntryId + '/width/' +
+				kPartnerId + '00/thumbnail/entry_id/' + kentryid + '/width/' +
 				 embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight()
 			
 			// Find a compatible stream
@@ -121,7 +121,7 @@ mw.KEntryIdSupport.prototype = {
 				// Set up the current src string:
 				var src = 'http://cdnakmi.kaltura.com/p/' + kPartnerId +
 						'/sp/' +  kPartnerId + '00/flvclipper/entry_id/' +
-						kEntryId + '/flavor_param_id/' + asset.id ;
+						kentryid + '/flavor_param_id/' + asset.id ;
 								
 				
 				// Check the tags to read what type of mp4 source
@@ -187,7 +187,7 @@ mw.KEntryIdSupport.prototype = {
 			// Done adding sources run callback
 			callback();
 				
-		}, kEntryId );
+		}, kentryid );
 		
 	},
 	/**
@@ -196,7 +196,7 @@ mw.KEntryIdSupport.prototype = {
 	*/ 
 	setupSession: function( callback ) {				 		
 		var _this = this;
-		// Setup the kConfig
+		// Setup the kConfig		
 		var kConfig = new KalturaConfiguration( parseInt( mw.getConfig( 'kPartnerId' ) ) );
 		
 		// Assign the local kClient
@@ -206,7 +206,11 @@ mw.KEntryIdSupport.prototype = {
 		this.kClient.session.start(
 			// Callback function once session is ready 
 			function ( success, data ) {
-				_this.kClient.setKs(data);
+				if( data.code ){
+					mw.log( "Error:: " +data.code + ' ' + data.message );
+					return ;
+				}
+				_this.kClient.setKs( data );
 				// update the kalturaKS var
 				mw.setConfig( 'kalturaKS', data ),
 				mw.log('New session created::' + data);

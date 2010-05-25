@@ -69,6 +69,7 @@ var MW_EMBED_VERSION = '1.1f';
 	* 	{Object} value Set of values to be merged 
 	*/
 	mw.setConfig = function ( name, value ) {
+		mw.log("setConfig:: n:" + name + ' v:' + value);
 		if( typeof name == 'object' ) {
 			for( var i in name ) {
 				mw.setConfig( i, name[ i ] );

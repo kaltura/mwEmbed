@@ -15,10 +15,16 @@
 		'kalturaStatsServer' : 'http://www.kaltura.com/api_v3/index.php'
 	} );
 	
-	// Add the kEntryId attribute to the embed player
+	// Add the kentryid attribute to the embed player
 	mw.setConfig( 'embedPlayerAttributes', {
-		'kEntryId' : null
+		'kentryid' : null
+		
 	} );
+	
+	// Set the partner id and kAdmin secret
+	mw.setConfig('kPartnerId', '243342' );
+	mw.setConfig('kAdminSecret', '075a32aa066775c1b96713cb71541ae9' );
+	
 	
 	mw.addClassFilePaths( {
 		"mw.KEntryIdSupport" : "mw.KEntryIdSupport.js",
@@ -45,14 +51,49 @@
 		"OX.AJAST",
 		"MD5"
 	]
-	
-	var kLoadKalturaSupport = false;
-	
 
+	//Check if the document has kaltura objects ( for fall forward support ) 
+	$j( mw ).bind( 'LoaderEmbedPlayerDocumentHasPlayerTags', function( event, tagCheckObject ){
+		// Check if we have a global selector avaliable: 
+		var select =  'object[name=kaltura_player]';
+		if( $j( select ).length ) {
+			tagCheckObject.hasTags = true;
+						
+			// For now swap in "video" tags ( for iPhone )
+			// TODO in the future do something smarter possibly in the kentryid lib 
+			// instead of the loader.js
+			
+			//if( mw.isMobileSafari() ){
+				$j( select ).each( function( inx, element ){					
+					var dataUrl = $j( element ).attr('data');
+					var entryId = dataUrl.split('/').pop();
+					mw.log("Got EntryID: " + entryId + " from flash object")
+					
+					var height = $j( element ).attr('height');
+					var width = $j( element ).attr('width');					
+					var videoId = 'vid' + inx;
+					
+					$j( element ).replaceWith( 
+							$j( '<video />').attr({
+								'id' : videoId,
+								'kentryid': entryId
+							})
+							.css({
+								'width' : width + 'px',
+								'height' : height + 'px'
+							})
+					)					
+				});
+			//}			
+		}
+	});
+	
+	
+	var kLoadKalturaSupport = false;	
 	//Update the player loader request with timedText if the flag has been set 
-	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
+	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {	
 		// Check if any video tag uses the "entryId"  
-		if(  $j( playerElement ).attr( 'kEntryId' ) ) {
+		if(  $j( playerElement ).attr( 'kentryid' ) ) {
 			kLoadKalturaSupport = true;
 		}
 		

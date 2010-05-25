@@ -105,7 +105,12 @@ mw.documentHasPlayerTags = function() {
 			}
 		}
 	}
-	return false;
+	
+	var tagCheckObject = { 'hasTags' : false };
+	$j( mw ).trigger( 'LoaderEmbedPlayerDocumentHasPlayerTags', 
+			[ tagCheckObject ]);
+		 
+	return tagCheckObject.hasTags;
 };
 
 /**
