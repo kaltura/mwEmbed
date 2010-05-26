@@ -28,6 +28,9 @@ var nativeEmbed = {
 	// Store the progress event ( updated durring monitor )
 	progressEventData: null,
 	
+	// If the media loaded event has been fired  
+	mediaLoadedFlag: null,
+	
 	// Native player supported feature set
 	supports: {
 		'playHead' : true,
@@ -177,15 +180,17 @@ var nativeEmbed = {
 	},
 	
 	// basic monitor function to update buffer
-	/*monitor: function(){
+	monitor: function(){
 		var _this = this;
-		var vid = _this.getPlayerElement();        
-		if( vid.buffered && vid.buffered.end && vid.duration ) {
-			mw.log(" buff so far:" +  parseInt(((vid.buffered.end(0) / vid.duration) * 100)) );
-		}
+		var vid = _this.getPlayerElement();
+		
+		// Update the bufferedPercent
+		if( vid.buffered && vid.buffered.end && vid.duration ) {		
+			this.bufferedPercent = (vid.buffered.end(0) / vid.duration);
+		}		
 		_this.parent_monitor();
 	},
-	*/
+	
 	
 	/**
 	* Issue a seeking request. 
@@ -523,6 +528,12 @@ var nativeEmbed = {
 		if( typeof this.onLoadedCallback == 'function' ) {
 			this.onLoadedCallback();
 		}
+		
+		// Tigger "media loaded"
+		if( ! this.mediaLoadedFlag ){
+			$j( this ).trigger( 'mediaLoaded' );
+			this.mediaLoadedFlag = true;
+		}
 	},
 	
 	/**
@@ -535,7 +546,7 @@ var nativeEmbed = {
 		if( e.loaded && e.total ) {
 			this.bufferedPercent =   e.loaded / e.total;				
 			this.progressEventData = e.loaded;
-		}	
+		}		
 	},
 	
 	/**

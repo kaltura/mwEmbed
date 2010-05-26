@@ -29,6 +29,9 @@ mw.KAnalytics.prototype = {
 	// avoids sending lots of seeks while scrubbing 
 	lastSeekEventTime: 0,
 	
+	//Start Time
+	startReportTime: 0, 
+	
 	/** 
 	* Constructor for kAnalytics
 	* @param {Object} embedPlayer Player to apply Kaltura analytics to. 
@@ -56,8 +59,21 @@ mw.KAnalytics.prototype = {
 	*/
 	sendStatsEvent: function( KalturaStatsEventKey ){		
 		// Check if we have a monitorAnalytics callback 
+		
+		
 		if( typeof mw.getConfig( 'kalturaAnalyticsCallbackLog' ) == 'function' ) {
-			mw.getConfig( 'kalturaAnalyticsCallbackLog' )( KalturaStatsEventKey );
+			if( this.startReportTime == 0 ){
+				this.startReportTime = new Date().getTime();
+				var timeDelta = 0
+			}else{
+				var timeDelta = ( new Date().getTime() - this.startReportTime ) / 1000;
+			}			
+			
+			mw.getConfig( 'kalturaAnalyticsCallbackLog' )( 
+				KalturaStatsEventKey + 
+				' ( ' + parseInt( this.embedPlayer.currentTime * 1000 )+ ',' +
+				timeDelta + ' ) '
+			);
 		}
 		var eventKeyId = KalturaStatsEventType[ KalturaStatsEventKey ];
 		// Generate the reportSet
@@ -67,7 +83,7 @@ mw.KAnalytics.prototype = {
 			'action' : 'collect',
 			'clientTag' : 'mwEmbed.kAnalytics.html5',
 			'event:clientVer' : this.version,
-			'event:currentPoint' : 	this.embedPlayer.currentTime * 1000,
+			'event:currentPoint' : 	parseInt( this.embedPlayer.currentTime * 1000 ),
 			'event:duration' :	this.embedPlayer.getDuration(),
 			'event:eventTimestamp' : new Date().getTime(),			
 			'event:isFirstInSession' : 'false',

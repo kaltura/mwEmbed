@@ -1902,9 +1902,11 @@ mw.EmbedPlayer.prototype = {
 		// Make sure the ctrlBuilder bindings are up-to-date 
 		this.ctrlBuilder.addControlHooks();
 		
-		// Once the thumbnail is shown run the mediaReady trigger
-		mw.log("mediaLoaded");
-		$j( this ).trigger( 'mediaLoaded' );
+		// Once the thumbnail is shown run the mediaReady trigger (if not using native controls)
+		if( !this.useNativeControls() ){
+			mw.log("mediaLoaded");
+			$j( this ).trigger( 'mediaLoaded' );
+		}
 	},
 	
 	/**
@@ -2300,7 +2302,6 @@ mw.EmbedPlayer.prototype = {
 			)
 			// Bind native events:
 			this.applyMediaElementBindings();
-			
 		}
 		return ;
 	},
