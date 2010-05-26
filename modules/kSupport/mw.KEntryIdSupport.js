@@ -138,12 +138,12 @@ mw.KEntryIdSupport.prototype = {
 				
 				// Check for iPhone src
 				if( data[i].fileExt == 'mp4' && data[i].tags.indexOf('iphone') != -1 ){
-					iPhoneSrc = src + 'a.mp4?novar=0';
+					iPhoneSrc = src + '/a.mp4?novar=0';
 				}
 				
 				// Check for ogg source
 				if( data[i].fileExt == 'ogg' || data[i].fileExt == 'ogv'){
-					oggSrc = src + 'a.ogg?novar=0';
+					oggSrc = src + '/a.ogg?novar=0';
 				}				
 			}
 			
