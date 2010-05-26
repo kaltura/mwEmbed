@@ -1482,6 +1482,7 @@ mw.EmbedPlayer.prototype = {
 			 return ;
 		} 
 		
+		//@@TODO Should be moved to mediaWiki Api support module		
 		if ( this.apiTitleKey ) {
 			// Load media from external data
 			mw.log( 'checkPlayerSources: loading apiTitleKey data' );		

@@ -99,8 +99,8 @@ mw.KAnalytics.prototype = {
 		reportSet[ 'event:seek' ] = ( this.hasSeeked ) ? 'true' : 'false';
 		
 		// Set the 'event:entryId'
-		if( $j( this ).attr( 'kentryid' ) ){
-			reportSet[ 'event:entryId' ] = 	 $j( this ).attr( 'kentryid' );
+		if( this.embedPlayer.kentryid ){
+			reportSet[ 'event:entryId' ] = 	this.embedPlayer.kentryid;
 		} else { 
 			// if kentryid is not set, use the selected source url
 			reportSet[ 'event:entryId' ] = this.embedPlayer.getSrc();

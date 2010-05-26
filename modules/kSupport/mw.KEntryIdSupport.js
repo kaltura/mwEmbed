@@ -201,6 +201,7 @@ mw.KEntryIdSupport.prototype = {
 		}, kentryid );
 		
 	},
+	
 	/**
 	*  Setup The kaltura session
 	* @param {Function} callback Function called once the function is setup
