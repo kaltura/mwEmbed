@@ -73,14 +73,14 @@ function kAddScript(){
 	url+='&urid=' + kURID;
 	url+='&uselang=en';
 	
-	url+='&debug=true';	
+	//url+='&debug=true';	
 	
 	// IE8 and Chrome seem to get random symbol not defined 
 	// errors in conjunction witht he use of jQuery.noConflict()
 	// and dynamic "onLoad" tirggered jQuery loading ( so write it out) 	
-	document.write(unescape("%3Cscript src='" + url + "' type='text/javascript'%3E%3C/script%3E"));
+	//document.write(unescape("%3Cscript src='" + url + "' type='text/javascript'%3E%3C/script%3E"));
 	
-	/*
+	
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
 	script.src = url;
@@ -92,7 +92,7 @@ function kAddScript(){
 		}
 	};	
 	document.getElementsByTagName('body')[0].appendChild( script );				
-	*/
+	
 };	
 
 var kHaveRunQueued = false;

@@ -1089,8 +1089,7 @@ var MW_EMBED_VERSION = '1.1f';
 	/**
 	 * NOTE: should be moved to browser detection script
 	 */
-	mw.isMobileSafari = function(){
-		return true;
+	mw.isMobileSafari = function(){		
 		if ((navigator.userAgent.indexOf('iPhone') != -1) || 
 			(navigator.userAgent.indexOf('iPod') != -1) || 
 			(navigator.userAgent.indexOf('iPad') != -1)) {
