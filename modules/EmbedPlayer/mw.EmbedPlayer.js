@@ -1913,7 +1913,7 @@ mw.EmbedPlayer.prototype = {
 	* Refresh the player Controls 
 	*  Useful for updating for when new playback system is selected
 	*/	
-	refreshControls:function() {
+	refreshControls: function() {
 		if ( this.$interface.find( '.control-bar' ).length == 0 ) {
 			mw.log( 'Error: refreshControls::control-bar not present, no refresh' );
 			return ;
@@ -1974,7 +1974,7 @@ mw.EmbedPlayer.prototype = {
 	* Get missing plugin html (check for user included code)
 	* @param {String} [misssingType] missing type mime
 	*/
-	showPluginMissingHTML : function( misssingType ) {
+	showPluginMissingHTML: function( misssingType ) {
 		// Remove the loading spinner if present: 
 		$j('#loadSpiner_' + this.id ).remove();
 		
@@ -2018,7 +2018,7 @@ mw.EmbedPlayer.prototype = {
 	* Update the video time request via a time request string
 	* @param {String} time_req
 	*/
-	updateVideoTimeReq:function( time_req ) {
+	updateVideoTimeReq: function( time_req ) {
 		mw.log( 'f:updateVideoTimeReq' );
 		var time_parts = time_req.split( '/' );
 		this.updateVideoTime( time_parts[0], time_parts[1] );
@@ -2030,7 +2030,7 @@ mw.EmbedPlayer.prototype = {
 	* @param {String} start_npt the new start time in npt format
 	* @pamra {String} end_npt the new end time in npt format 
 	*/
-	updateVideoTime:function( start_npt, end_npt ) {
+	updateVideoTime: function( start_npt, end_npt ) {
 		// update media
 		this.mediaElement.updateSourceTimes( start_npt, end_npt );
 		

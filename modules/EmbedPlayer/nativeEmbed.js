@@ -165,6 +165,7 @@ var nativeEmbed = {
 		var vid = this.getPlayerElement();
 		if( ! vid ){
 			mw.log( " Error: applyMediaElementBindings without player elemnet");
+			return ;
 		}
 		// Bind events to local js methods:			
 		vid.addEventListener( 'canplaythrogh',  function() { $j( _this ).trigger('canplaythrough'); }, true);			 

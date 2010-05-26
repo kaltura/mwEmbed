@@ -53,7 +53,9 @@ var MW_EMBED_VERSION = '1.1f';
 	*/	
 		
 	// Local scope configuration var:
-	var mwConfig = { };
+	if( !mwConfig ){
+		var mwConfig = { };
+	}	
 	
 	// Local scope mwUserConfig var. Stores user configuration 
 	var mwUserConfig = { };
@@ -1087,9 +1089,15 @@ var MW_EMBED_VERSION = '1.1f';
 	}
 	
 	/**
+	 * Mobile Safari has special properties for html5 video::
+	 * 
 	 * NOTE: should be moved to browser detection script
 	 */
-	mw.isMobileSafari = function(){		
+	mw.isMobileSafari = function() {		
+		// check mobile safari foce ( for debug )
+		if( mw.getConfig( 'forceMobileSafari' ) ){
+			return true;
+		}
 		if ((navigator.userAgent.indexOf('iPhone') != -1) || 
 			(navigator.userAgent.indexOf('iPod') != -1) || 
 			(navigator.userAgent.indexOf('iPad') != -1)) {
@@ -1324,7 +1332,7 @@ var MW_EMBED_VERSION = '1.1f';
 	* Runs all the queued functions
 	* called by mwEmbedSetup
 	*/ 
-	mw.runReadyFunctions = function ( ) {		
+	mw.runReadyFunctions = function ( ) {
 		// Run all the queued functions: 
 		while( mwOnLoadFunctions.length ) {
 			mwOnLoadFunctions.shift()();
@@ -1380,6 +1388,7 @@ var MW_EMBED_VERSION = '1.1f';
 		//( will use XHR if on same domain ) 
 		if( mw.isset( 'window.jQuery' ) 
 			&& mw.getConfig( 'debug' ) === false 
+			&& $j
 			&& !isCssFile ) 
 		{	
 			$j.getScript( url, myCallback); 		

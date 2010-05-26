@@ -64,7 +64,7 @@
 			// TODO in the future do something smarter possibly in the kentryid lib 
 			// instead of the loader.js
 			
-			//if( mw.isMobileSafari() ){
+			if( mw.isMobileSafari() ){
 				$j( select ).each( function( inx, element ){					
 					var dataUrl = $j( element ).attr('data');
 					var entryId = dataUrl.split('/').pop();
@@ -85,7 +85,7 @@
 							})
 					)					
 				});
-			//}			
+			}			
 		}
 	});
 	
