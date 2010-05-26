@@ -75,11 +75,12 @@ function kAddScript(){
 	
 	url+='&debug=true';	
 	
-	// Unfortunately IE8 javascript system is evil
-	// And it gives "Object doesn't support this property or method" 
-	// on random $j calls with head.append( script ) insert so use document.write ::	
-	//document.write(unescape("%3Cscript src='" + url + "' type='text/javascript'%3E%3C/script%3E"));
+	// IE8 and Chrome seem to get random symbol not defined 
+	// errors in conjunction witht he use of jQuery.noConflict()
+	// and dynamic "onLoad" tirggered jQuery loading ( so write it out) 	
+	document.write(unescape("%3Cscript src='" + url + "' type='text/javascript'%3E%3C/script%3E"));
 	
+	/*
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
 	script.src = url;
@@ -90,7 +91,8 @@ function kAddScript(){
 			kRunQueued();
 		}
 	};	
-	document.getElementsByTagName('head')[0].appendChild( script );				
+	document.getElementsByTagName('body')[0].appendChild( script );				
+	*/
 };	
 
 var kHaveRunQueued = false;
@@ -112,33 +114,82 @@ function kRunQueued(){
 		mw.ready( kMwReadyQueue.pop() );
 	}
 }
+ 
 
 
 /**
- * Simple document ready 
- */
-var kAlreadyRunDomReadyFlag=0;
-
-if (document.addEventListener) {
-	document.addEventListener("DOMContentLoaded", function(){		
-		kAlreadyRunDomReadyFlag=1; kDomReady();
-	}, false)
-} else if (document.all && !window.opera){
-	document.write('<script type="text/javascript" id="contentloadtag" defer="defer" src="javascript:void(0)"><\/script>')
-	var contentloadtag=document.getElementById("contentloadtag")
-	contentloadtag.onreadystatechange=function(){
-	  if (this.readyState=="complete"){
-    	kAlreadyRunDomReadyFlag=1
-    	kDomReady()
-    }
-  }
+* DOM-ready setup ( similar to jQuery.ready )  
+*/
+var kAlreadyRunDomReadyFlag = false;
+function kRunMwDomReady(){
+	kAlreadyRunDomReadyFlag  = true;
+	kDomReady();
+}
+// Check if already ready: 
+if ( document.readyState === "complete" ) {
+	kRunMwDomReady();
 }
 
-window.onload=function(){
-  setTimeout(function(){
-	  if ( !kAlreadyRunDomReadyFlag ) 
-		  kDomReady();
-  }, 0)
-}
- 
+// Cleanup functions for the document ready method
+if ( document.addEventListener ) {
+	DOMContentLoaded = function() {
+		document.removeEventListener( "DOMContentLoaded", DOMContentLoaded, false );
+		kRunMwDomReady();
+	};
 
+} else if ( document.attachEvent ) {
+	DOMContentLoaded = function() {
+		// Make sure body exists, at least, in case IE gets a little overzealous (ticket #5443).
+		if ( document.readyState === "complete" ) {
+			document.detachEvent( "onreadystatechange", DOMContentLoaded );
+			kRunMwDomReady();
+		}
+	};
+}
+// Mozilla, Opera and webkit nightlies currently support this event
+if ( document.addEventListener ) {
+	// Use the handy event callback
+	document.addEventListener( "DOMContentLoaded", DOMContentLoaded, false );
+	
+	// A fallback to window.onload, that will always work
+	window.addEventListener( "load", mw.domReady, false );
+
+// If IE event model is used
+} else if ( document.attachEvent ) {
+	// ensure firing before onload,
+	// maybe late but safe also for iframes
+	document.attachEvent("onreadystatechange", DOMContentLoaded);
+	
+	// A fallback to window.onload, that will always work
+	window.attachEvent( "onload", kRunMwDomReady );
+
+	// If IE and not a frame
+	// continually check to see if the document is ready
+	var toplevel = false;
+
+	try {
+		toplevel = window.frameElement == null;
+	} catch(e) {}
+
+	if ( document.documentElement.doScroll && toplevel ) {
+		doScrollCheck();
+	}
+}
+// The DOM ready check for Internet Explorer
+function doScrollCheck() {
+	if ( kAlreadyRunDomReadyFlag ) {
+		return;
+	}
+
+	try {
+		// If IE is used, use the trick by Diego Perini
+		// http://javascript.nwbox.com/IEContentLoaded/
+		document.documentElement.doScroll("left");
+	} catch( error ) {
+		setTimeout( doScrollCheck, 1 );
+		return;
+	}
+
+	// and execute any waiting functions
+	kRunMwDomReady();
+}

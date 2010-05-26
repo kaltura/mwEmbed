@@ -301,7 +301,7 @@ var MW_EMBED_VERSION = '1.1f';
 		*/				
 		load: function( loadRequest, instanceCallback ) {
 			// Ensure the callback is only called once per load instance 
-			var callback = function(){
+			var callback = function(){				
 				if( instanceCallback ){
 					instanceCallback( loadRequest );
 					instanceCallback = null;
@@ -1090,6 +1090,7 @@ var MW_EMBED_VERSION = '1.1f';
 	 * NOTE: should be moved to browser detection script
 	 */
 	mw.isMobileSafari = function(){
+		return true;
 		if ((navigator.userAgent.indexOf('iPhone') != -1) || 
 			(navigator.userAgent.indexOf('iPod') != -1) || 
 			(navigator.userAgent.indexOf('iPad') != -1)) {

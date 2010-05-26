@@ -35,8 +35,8 @@ mw.KEntryIdSupport.prototype = {
 				_this.checkPlayerSources( embedPlayer, callback );
 			} );
 			
-			// Add hook for analytics ( based on "play" request )		
-			if( mw.getConfig( 'kAnalytics' ) == true ) {
+			// Check for enableKalturaAnalytics and enable Analytics
+			if( mw.getConfig( 'enableKalturaAnalytics' ) == true ) {
 				mw.addKAnalytics( embedPlayer ) ;
 			}
 		});
@@ -118,7 +118,7 @@ mw.KEntryIdSupport.prototype = {
 				 embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight()
 			
 			// Find a compatible stream
-			for( var i = 0 ; i < data.length; i ++ ) {
+			for( var i = 0 ; i < data.length; i ++ ) {				
 				var asset = data[i];			
 				/*
 				the template of downloading a direct flavor is
@@ -149,6 +149,7 @@ mw.KEntryIdSupport.prototype = {
 			
 			// Shortcut function to add source
 			function addSource( src, type ){
+				mw.log( 'kEntryId::addSource::' + src )
 				embedPlayer.mediaElement.tryAddSource(
 					$j('<source />')
 					.attr( {
@@ -163,9 +164,11 @@ mw.KEntryIdSupport.prototype = {
 			if( navigator.userAgent.indexOf('iPad') != -1 ) {
 				if( iPadSrc ){ 
 					addSource( iPadSrc, 'video/h264' );
+					callback();
 					return ;
 				} else if ( iPhoneSrc ) {
 					addSource( iPhoneSrc, 'video/h264' );
+					callback();
 					return ;
 				}
 			}
@@ -173,6 +176,7 @@ mw.KEntryIdSupport.prototype = {
 			// If on iPhone just use iPhone src
 			if( navigator.userAgent.indexOf('iPhone') != -1 && iPhoneSrc ){
 				addSource( iPhoneSrc, 'video/h264' );
+				callback();
 				return ;
 			}
 			

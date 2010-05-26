@@ -6,15 +6,15 @@
 //Global mw.addKAnalytics manager
 var mwKAnalyticsManager = {};
 mw.addKAnalytics = function( embedPlayer ) {
-	mwKAnalyticsManager[ embedPlayer.id ] = new mw.kAnalytics( embedPlayer ) ;
+	mwKAnalyticsManager[ embedPlayer.id ] = new mw.KAnalytics( embedPlayer ) ;
 } 
 
-// kAnalytics Constructor
-mw.kAnalytics = function( embedPlayer ){
+// KAnalytics Constructor
+mw.KAnalytics = function( embedPlayer ){
 	this.init( 	embedPlayer );
 }
 
-mw.kAnalytics.prototype = {
+mw.KAnalytics.prototype = {
 
 	// The version of kAnalytics
 	version : '0.1',
@@ -24,7 +24,11 @@ mw.kAnalytics.prototype = {
 	
 	// Report Set object
 	reportSet : null,
-		
+	
+	// Stores the last time we issued a seek event
+	// avoids sending lots of seeks while scrubbing 
+	lastSeekEventTime: 0,
+	
 	/** 
 	* Constructor for kAnalytics
 	* @param {Object} embedPlayer Player to apply Kaltura analytics to. 
@@ -50,15 +54,15 @@ mw.kAnalytics.prototype = {
 	* Get the current report set
 	* @param {Number} KalturaStatsEventType The eventType number.
 	*/
-	sendStatsEvent: function( KalturaStatsEventType ){		
+	sendStatsEvent: function( KalturaStatsEventKey ){		
 		// Check if we have a monitorAnalytics callback 
-		if( typeof mw.getConfig( 'analyticsCallbackLog' ) == 'function' ) {
-			mw.getConfig( 'analyticsCallbackLog' )( KalturaStatsEventType );
+		if( typeof mw.getConfig( 'kalturaAnalyticsCallbackLog' ) == 'function' ) {
+			mw.getConfig( 'kalturaAnalyticsCallbackLog' )( KalturaStatsEventKey );
 		}
-		
+		var eventKeyId = KalturaStatsEventType[ KalturaStatsEventKey ];
 		// Generate the reportSet
 		var reportSet = {
-			'event:eventType' :	KalturaStatsEventType,
+			'event:eventType' :	eventKeyId,
 					
 			'action' : 'collect',
 			'clientTag' : 'mwEmbed.kAnalytics.html5',
@@ -126,41 +130,48 @@ mw.kAnalytics.prototype = {
 		};
 		
 		// When the player is ready
-		b( 'playerReady', KalturaStatsEventType.WIDGET_LOADED );
+		b( 'playerReady', 'WIDGET_LOADED' );
 		
 		// When the poster or video ( when autoplay ) media is loaded 
-		b( 'mediaLoaded', KalturaStatsEventType.MEDIA_LOADED );
+		b( 'mediaLoaded', 'MEDIA_LOADED' );
 		
 		// When the play button is pressed or called from javascript			
-		b( 'playEvent', KalturaStatsEventType.PLAY );
+		b( 'playEvent', 'PLAY' );
 	
 		// When the show Share menu is displayed
-		b( 'showShareEvent', KalturaStatsEventType.OPEN_VIRAL );
+		b( 'showShareEvent', 'OPEN_VIRAL' );
 		
 		// When the show download menu is displayed 
-		b( 'showDownloadEvent', KalturaStatsEventType.OPEN_DOWNLOAD );
+		b( 'showDownloadEvent', 'OPEN_DOWNLOAD' );
 		
 		// When the clip starts to buffer ( not all player types )
-		b( 'bufferStartEvent', KalturaStatsEventType.BUFFER_START );
+		b( 'bufferStartEvent', 'BUFFER_START' );
 		
 		// When the clip is full bufferd
-		b( 'bufferEndEvent', KalturaStatsEventType.BUFFER_END );
+		b( 'bufferEndEvent', 'BUFFER_END' );
 		
 		// When the fullscreen button is pressed  
 		//( presently does not register iphone / ipad until it has js bindings )
-		b( 'openFullScreenEvent', KalturaStatsEventType.OPEN_FULL_SCREEN );
+		b( 'openFullScreenEvent', 'OPEN_FULL_SCREEN' );
 		
 		// When the close fullscreen button is pressed.
 		//( presently does not register iphone / ipad until it has js bindings ) 
-		b( 'closeFullScreenEvent', KalturaStatsEventType.CLOSE_FULL_SCREEN );
+		b( 'closeFullScreenEvent', 'CLOSE_FULL_SCREEN' );
 		
 		// When the user plays (after the ondone event was fired ) 
-		b( 'replayEvent', KalturaStatsEventType.REPLAY );	
+		b( 'replayEvent', 'REPLAY' );	
 	
 		// Bind on the seek event ( actual HTML5 binding ) 
 		$j( embedPlayer ).bind( 'onSeek', function( seekTarget ) {
-			// First send the seek event
-			_this.sendStatsEvent( KalturaStatsEventType.SEEK ); 
+			// Don't send a bunch of seeks on scrub:
+			if( _this.lastSeekEventTime == 0 || 
+				_this.lastSeekEventTime + 2000	< new Date().getTime() )
+			{
+				_this.sendStatsEvent( 'SEEK' ); 
+			}
+			mw.log("lsk:" + _this.lastSeekEventTime + ' npw: ' +  new Date().getTime());
+			// Update the last seekTime
+			_this.lastSeekEventTime =  new Date().getTime();
 			
 			// Then set local seek flags 
 			this.hasSeeked = true;		
@@ -208,22 +219,22 @@ mw.kAnalytics.prototype = {
 		if( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {
 					
 			_this._p25Once = true;			
-			_this.sendStatsEvent( KalturaStatsEventType.PLAY_REACHED_25 );
+			_this.sendStatsEvent( 'PLAY_REACHED_25' );
 									
 		} else if ( !_this._p50Once && percent >= .50 && seekPercent < .50 ) {
 		
 			_this._p50Once = true;
-			_this.sendStatsEvent( KalturaStatsEventType.PLAY_REACHED_50 );
+			_this.sendStatsEvent( 'PLAY_REACHED_50' );
 						
 		} else if( !_this._p75Once && percent >= .75 && seekPercent < .75 ) {
 			
 			_this._p75Once = true;
-			_this.sendStatsEvent( KalturaStatsEventType.PLAY_REACHED_75 );
+			_this.sendStatsEvent( 'PLAY_REACHED_75' );
 			
 		} else if(  !_this._p100Once && percent >= .98 && seekPercent < 1) {
 			
 			_this._p100Once = true;
-			_this.sendStatsEvent( KalturaStatsEventType.PLAY_REACHED_100 );
+			_this.sendStatsEvent( 'PLAY_REACHED_100' );
 			
 		}		
 	}

@@ -22,13 +22,13 @@
 	} );
 	
 	// Set the partner id and kAdmin secret
-	mw.setConfig('kPartnerId', '243342' );
-	mw.setConfig('kAdminSecret', '075a32aa066775c1b96713cb71541ae9' );
+	mw.setConfig( 'kPartnerId', '243342' );
+	mw.setConfig( 'kAdminSecret', '075a32aa066775c1b96713cb71541ae9' );
 	
 	
 	mw.addClassFilePaths( {
 		"mw.KEntryIdSupport" : "mw.KEntryIdSupport.js",
-		"mw.kAnalytics" : "mw.kAnalytics.js",
+		"mw.KAnalytics" : "mw.KAnalytics.js",
 		
 		"KalturaClientBase"	: "kalturaJsClient/KalturaClientBase.js",
 		"KalturaClient" : "kalturaJsClient/KalturaClient.js",
@@ -102,7 +102,7 @@
 		// And add the class to the request set and set the server is per-player specified. 
 		if( mw.getConfig( 'enableKalturaAnalytics' ) 
 			|| $j( playerElement ).attr( 'enableKalturaAnalytics' ) ){
-			kalturaSupportRequestSet.push( "mw.kAnalytics" );					
+			kalturaSupportRequestSet.push( "mw.KAnalytics" );					
 		}		
 		
 		// Add kaltura support hook

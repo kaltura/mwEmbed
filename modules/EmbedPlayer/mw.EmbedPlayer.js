@@ -1776,6 +1776,11 @@ mw.EmbedPlayer.prototype = {
 	*/ 
 	doSeek: function( percent ) {
 		var _this = this;
+		
+		this.seeking = true;
+		// Run the seeking hook
+		$j( this.embedPlayer ).trigger( 'onSeek' );
+		
 		// See if we should do a server side seek ( player idepenent ) 
 		if ( this.supportsURLTimeEncoding() ) {
 			// Make sure this.seek_time_sec is up-to-date:
@@ -1814,18 +1819,20 @@ mw.EmbedPlayer.prototype = {
 		mw.log( 'thum disp:' + this.thumbnail_disp );
 		var _this = this;				
 		
-		// Set "loading" here:
-		$j( '#' + _this.id ).html( 
-			$j( '<div />' )
-			.css({
-				'color' : 'black',
-				'width' : this.width + 'px',
-				'height' : this.height + 'px'
-			})
-			.text(
-				gM( 'mwe-embedplayer-loading_plugin' ) 
-			)
-		);
+		// Set "loading" here ( if displaying controls )
+		if( ! this.useNativeControls() ){ 
+			$j( this ).html( 
+				$j( '<div />' )
+				.css({
+					'color' : 'black',
+					'width' : this.width + 'px',
+					'height' : this.height + 'px'
+				})
+				.text(
+					gM( 'mwe-embedplayer-loading_plugin' ) 
+				)
+			);
+		}
 		
 		// Reset some play state flags: 
 		this.bufferStartFlag = false;
@@ -1843,9 +1850,7 @@ mw.EmbedPlayer.prototype = {
 	* On clip done action. Called once a clip is done playing
 	*/
 	onClipDone: function() {
-		mw.log( 'base:onClipDone' );		
-
-		
+		mw.log( 'base:onClipDone :: doneCount:' + this.donePlayingCount );				
 		// Stop the clip (load the thumbnail etc) 
 		this.stop();
 		this.seek_time_sec = 0;
@@ -2183,7 +2188,7 @@ mw.EmbedPlayer.prototype = {
 		var style_atr = '';
 		
 		
-		if( this.useNativeControls() ){	
+		if( this.useNativeControls() ){
 			this.showNativePlayer();
 			return ;
 		}		
@@ -2224,7 +2229,7 @@ mw.EmbedPlayer.prototype = {
 	 * @returns boolean true if the mwEmbed player interface should be used
 	 * 					false if the mwEmbed player interface should not be used
 	 */
-	useNativeControls: function() {
+	useNativeControls: function() {		
 		if( mw.getConfig('nativePlayerControls') == true ) {
 			return true;
 		}
@@ -2244,7 +2249,11 @@ mw.EmbedPlayer.prototype = {
 	 * since the device only supports a limited subset of the html5 and 
 	 * won't work with an html javascirpt interface
 	 */
-	showNativePlayer: function(){		
+	showNativePlayer: function(){	
+		var _this = this;
+		// Empty the player
+		$j(this).empty();
+		
 		// Remove the player loader spiner if it exists
 		$j('#loadSpiner_' + this.id ).remove();
 		
@@ -2275,15 +2284,23 @@ mw.EmbedPlayer.prototype = {
 			var videoAttribues = {
 				'id' : this.pid,
 				'poster': this.poster,
-				'src' : source.src,
+				'src' : source.src,				
 				'controls' : 'true'
 			}
 			if( this.loop ){
 				videoAttribues[ 'loop' ] = 'true';
 			}
+			var cssStyle = {
+				'width' : this.width,
+				'height' : this.height
+			};
+			
 			$j( '#' + this.pid ).replaceWith( 
-				_this.getNativePlayerHtml( videoAttribues )									
+				_this.getNativePlayerHtml( videoAttribues, cssStyle )									
 			)
+			// Bind native events:
+			this.applyMediaElementBindings();
+			
 		}
 		return ;
 	},
@@ -2513,7 +2530,8 @@ mw.EmbedPlayer.prototype = {
 	   	 
 	   	 //Run play hook: 
 	   	 mw.log("playEvent");
-	   	 $j( this ).trigger( 'playEvent' );   
+	   	 $j( this ).trigger( 'playEvent' );	   	
+	   	
 	   	  // If we previously finished playing this clip run the "replay hook"
 	   	 if( this.donePlayingCount > 0 ) {
 	   	 	mw.log("replayEvent");
@@ -2657,7 +2675,7 @@ mw.EmbedPlayer.prototype = {
 	* @param 
 	*/
 	setInterfaceVolume: function( percent ) {
-		if( this.supports[ 'volumeControl' ] ) {
+		if( this.supports[ 'volumeControl' ] && this.$interface.find( '.volume-slider' ).length ) {
 			this.$interface.find( '.volume-slider' ).slider( 'value', percent * 100 );
 		}
 	},	
@@ -2726,8 +2744,8 @@ mw.EmbedPlayer.prototype = {
 	*	true if playing
 	* 	false if not playing
 	*/
-	isPaused : function() {
-		return this.isPlaying() && this.paused;
+	isPaused: function() {
+		return this.paused;
 	},
 	
 	/**
@@ -2782,7 +2800,7 @@ mw.EmbedPlayer.prototype = {
 	*/
 	monitor: function() {
 		var _this = this;
-	 
+		
 		// Check for current time update outside of embed player 
 		this.checkForCurrentTimeSeek();
 		
@@ -3144,7 +3162,7 @@ mediaPlayers.prototype =
 	* Initializartion function sets the default order for players for
 	* a given mime type
 	*/
-	init : function() {
+	init: function() {
 		this.players = new Array();
 		this.loadPreferences();
 		
@@ -3343,8 +3361,8 @@ mw.EmbedTypes = {
 		// every browser supports html rendering:
 		this.players.addPlayer( htmlPlayer );
 		// In Mozilla, navigator.javaEnabled() only tells us about preferences, we need to
-		// search navigator.mimeTypes to see if it's installed
-		var javaEnabled = navigator.javaEnabled();
+		// search navigator.mimeTypes to see if it's installed	
+		var javaEnabled = navigator.javaEnabled();		
 		// Some browsers filter out duplicate mime types, hiding some plugins
 		var uniqueMimesOnly = $j.browser.opera || $j.browser.safari;
 		// Opera will switch off javaEnabled in preferences if java can't be found.

@@ -851,10 +851,9 @@ ctrlBuilder.prototype = {
 	 * The ctrl builder updates the interface on seeking 
 	 */
 	onSeek: function(){
+		mw.log( "ctrlBuilder:: onSeek" );
 		// Update the interface: 
 		this.setStatus( gM( 'mwe-embedplayer-seeking' ) );
-		// Run the seeking hook
-		$j( this.embedPlayer ).trigger( 'onSeek' );
 	},
 	
 	/**
