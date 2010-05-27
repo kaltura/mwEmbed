@@ -92,10 +92,9 @@ kalturaFilters.prototype = {
 		 * Create an HTML representation of the available search filters and append 
 		 * them to the given element.
 		 * 
-		 *  @return {jQuery element} The base element to which HTML items should be
+		 *  @return {Object} The base element to which HTML items should be
 		 *  appended.
-		 */
-		
+		 */		
 		getHTML: function() {
 			var _this = this;
 			mw.log( 'f: populateFilterContainer ' );
@@ -173,8 +172,7 @@ kalturaFilters.prototype = {
 			}
 			
 			return $box;
-		},
-		
+		}		
 };
 
 var kalturaSearch = function ( options ) {

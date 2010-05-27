@@ -1,6 +1,6 @@
 // Add support for html5 / mwEmbed elements to IE ( comment must come before js code ) 
 // For discussion and comments, see: http://remysharp.com/2009/01/07/html5-enabling-script/
-/*@cc_on'video source itext playlist'.replace(/\w+/g,function(n){document.createElement(n)})@*/
+/*@cc_on@if(@_jscript_version<9){'video audio source itext playlist'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/
 
 /**
  * ~mwEmbed ~
@@ -137,25 +137,19 @@ var MW_EMBED_VERSION = '1.1f';
 	var setupUserConfigFlag = false;
 	mw.setupUserConfig = function( callback ) {	
 		if( setupUserConfigFlag ) {
-			if( callback ) 
+			if( callback ) { 
 				callback();
+				}
 		}
 		// Do Setup user config: 		
-		mw.load( [ '$j.cookie', 'JSON' ], function() {
-			// NOTE: chrome / safari seems to clear $j no-conflict in some cases here 
-		    var $j = jQuery.noConflict();
+		mw.load( [ '$j.cookie', 'JSON' ], function() {			
 			if( $j.cookie( 'mwUserConfig' ) ) {
 				mwUserConfig = JSON.parse( $j.cookie( 'mwUserConfig' ) );
-			}
-			mw.log( 'mw UserConfig: ' +  $j.cookie( 'mwUserConfig' ) );
-			for(var i in mwUserConfig ) {
-				mw.log( 'i: ' + i + ' ' + mwUserConfig[ i ] ) ;
-			}
-			//debugger;
-			
+			}									
 			setupUserConfigFlag = true;
-			if( callback ) 
-				callback();				
+			if( callback ) {
+				callback();	
+			}			
 		});				
 	}
 

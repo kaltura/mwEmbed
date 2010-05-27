@@ -3,7 +3,7 @@
 */
 window.cortadoDomainLocations = {
 	'upload.wikimedia.org' : 'http://upload.wikimedia.org/jars/cortado.jar'
-}
+};
 
 var javaEmbed = {
 
@@ -49,7 +49,7 @@ var javaEmbed = {
 		// Add the duration attribute if set:	
 		if( this.getDuration() ){
 			appletCode += '<param name="duration" value="' + parseFloat( this.getDuration() )  + '" />' + "\n";
-		};
+		}
 		
 			appletCode += '<param name="bufferSize" value="4096" />' + "\n" +
 		'</applet>';
@@ -90,7 +90,7 @@ var javaEmbed = {
 	* Get the applet location
 	*/
 	getAppletLocation: function() {
-		var mediaSrc = this.getSrc()
+		var mediaSrc = this.getSrc();
 		if ( 
 			!mw.isLocalDomain( mediaSrc ) 
 			|| 

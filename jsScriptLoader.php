@@ -148,7 +148,7 @@ class jsScriptLoader {
 				}
 
 				// Output "special" IE comment tag to support "special" mwEmbed tags.
-				$this->notMinifiedTopOutput .='/*@cc_on\'video source itext playlist\'.replace(/\w+/g,function(n){document.createElement(n)})@*/'."\n";
+				$this->notMinifiedTopOutput .='/*@cc_on@if(@_jscript_version<9){\'video audio source itext playlist\'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/'."\n";
 			}
 		}
 

@@ -5,7 +5,6 @@
 *  mediaPlayer Media player embed system ie: java, vlc or native.
 *  mediaElement Represents source media elements	
 *  ctrlBuilder Handles skinning of the player controls
-* 
 */
 
 mw.addMessages( {
@@ -100,7 +99,7 @@ mw.setConfig( 'embedPlayerAttributes', {
 	// Autoplay if the media should start playing 
 	"autoplay" : false,
 	
-	// Loop attribute if the media should repeate on complete
+	// Loop attribute if the media should repeat on complete
 	"loop" : false, 
 	
 	// If the player controls should be displayed
@@ -128,10 +127,10 @@ mw.setConfig( 'embedPlayerAttributes', {
 	"previousVolume" : 1, 
 	
 	// Initial player volume: 
-	"volume" : .75,
+	"volume" : 0.75,
 	
 	// Caches the volume before a mute toggle
-	"preMuteVolume" : .75, 
+	"preMuteVolume" : 0.75, 
 	
 	// Media duration: Value is populated via 
 	//  custom durationHint attribute or via the media file once its played
@@ -249,7 +248,7 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 	*/
 	$.embedPlayers = function( attributes, callback) {
 		$j( mw.getConfig( 'rewritePlayerTags' ) ).embedPlayer( attributes, callback );
-	}
+	};
 	
 	/**		
 	* Selector based embedPlayer jQuery binding
@@ -257,8 +256,8 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 	* Rewrites all tags via a given selector
 	* 
 	* @param {Object} attributes [ Optional ] The embedPlayer options for the given video interface.
-	* 	Attributes Object can inclued any key value pair that would otherwise be
-	*   an attribute in the html element. 
+	*	Attributes Object can inclued any key value pair that would otherwise be
+	*	an attribute in the html element. 
 	*	
 	*	also see: mw.getConfig( 'embedPlayerAttributes' )
 	*
@@ -291,9 +290,9 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 		$j( playerSelect ).each( function(na, playerElement) {
 			mw.playerManager.addElement( playerElement, attributes);			
 		} );		
-	}
+	};
 
-} )( $j );
+} )( jQuery );
 
 /**
 * EmbedPlayerManager
@@ -347,7 +346,7 @@ EmbedPlayerManager.prototype = {
 	*	_this.setupSourcePlayer()
 	*	_this.inheritEmbedPlayer()
 	*	_this.selected_player.load()
-	* 	_this.showPlayer()
+	*	_this.showPlayer()
 	* 
 	* @param {Element} playerElement DOM element to be swapped 
 	* @param {Object} [Optional] attributes Extra attributes to apply to the player interface 
@@ -370,10 +369,7 @@ EmbedPlayerManager.prototype = {
 		mw.embedPlayerUpdateLibraryRequest( playerElement, playerDependencyRequest );
 		
 		// Load any skins we need then swap in the interface
-		mw.load( playerDependencyRequest, function() {				
-			// Set the wait for meta flag
-			var waitForMeta = _this.waitForMetaCheck( playerElement );
-						
+		mw.load( playerDependencyRequest, function() {												
 			// We should move all playlist handling to add-in 		
 			switch( playerElement.tagName.toLowerCase() ) {
 				case 'playlist':
@@ -398,7 +394,10 @@ EmbedPlayerManager.prototype = {
 				case 'video':
 				case 'audio':
 				// By default treat the rewrite request as "video"
-				default:												
+				default:
+					// Set the wait for meta flag
+					var waitForMeta = _this.waitForMetaCheck( playerElement );
+													
 					var ranPlayerSwapFlag = false;												
 					// Local callback to runPlayer swap once playerElement has metadata
 					function runPlayerSwap() {											
@@ -426,8 +425,8 @@ EmbedPlayerManager.prototype = {
 					
 						// Time-out of 5 seconds ( maybe still playable but no timely metadata ) 
 						setTimeout( runPlayerSwap, 5000 );
-					}else{ 
-						runPlayerSwap()
+					} else { 
+						runPlayerSwap();
 					}					
 				break;				
 		   }
@@ -455,8 +454,8 @@ EmbedPlayerManager.prototype = {
 		var height = $j( playerElement ).css( 'height' );
 	
 		// Css video defaults 
-		if( $j( playerElement ).css( 'width' ) == '300px' 
-			&&  $j( playerElement ).css( 'height' ) == '150px'
+		if( $j( playerElement ).css( 'width' ) == '300px' && 
+			$j( playerElement ).css( 'height' ) == '150px'
 		){
 			waitForMeta = true;
 		} else {			
@@ -477,7 +476,9 @@ EmbedPlayerManager.prototype = {
 		}
 		
 		// Google Chrome / safari gives 0 width height for unloaded media
-		if( $j(playerElement).attr( 'width' ) == 0 || $j(playerElement).attr( 'height' ) == 0 ) {
+		if( $j(playerElement).attr( 'width' ) === 0 || 
+			$j(playerElement).attr( 'height' ) === 0 
+		) {
 			waitForMeta = true;
 		}
 		
@@ -488,12 +489,12 @@ EmbedPlayerManager.prototype = {
 		
 		// Make sure we have a src attribute or source child 
 		// ( i.e not a video tag to be dynamically populated or looked up from xml resource description )
-		if( waitForMeta 
-			&& ( 
+		if( waitForMeta && 
+			( 
 				$j(playerElement).attr('src') ||
-				$j(playerElement).find("source[src]").length != 0
+				$j(playerElement).find("source[src]").length !== 0
 			)
-		){
+		) {
 			// Detect src type ( if no type set ) 
 			return true;
 		} else {		
@@ -663,7 +664,7 @@ mediaSource.prototype = {
 		// should check some other way. 
 		var pUrl = mw.parseUri ( this.src );
 		if ( typeof pUrl[ 'queryKey' ][ 't' ] != 'undefined' ) {
-			this[ 'URLTimeEncoding' ] = true;
+			this.URLTimeEncoding = true;
 		}
 		
 		var sourceAttr = mw.getConfig( 'embedPlayerSourceAttributes' );
@@ -762,8 +763,9 @@ mediaSource.prototype = {
 	* @return {String} the MIME type of the source.
 	*/
 	getMIMEType: function() {
-		if( this.mimeType )
+		if( this.mimeType ) {
 			return this.mimeType;
+		}
 		this.mimeType = this.detectType( this.src );
 		return this.mimeType;
 	},
@@ -776,10 +778,9 @@ mediaSource.prototype = {
 		if ( !seek_time_sec || !this.URLTimeEncoding ) {
 			return this.src;
 		}
-		if ( !this.end_npt ) {
-			var endvar = '';
-		} else {
-			var endvar = '/' + this.end_npt;
+		var endvar = '';
+		if ( this.end_npt ) {
+			endvar = '/' + this.end_npt;
 		}
 		return mw.replaceUrlParams( this.src,
 			{
@@ -834,8 +835,8 @@ mediaSource.prototype = {
 		// check if we have a URLTimeEncoding: 
 		if ( this.URLTimeEncoding ) {
 			var annoURL = mw.parseUri( this.src );
-			if ( annoURL.queryKey['t'] ) {
-				var times = annoURL.queryKey['t'].split( '/' );
+			if ( annoURL.queryKey.t ) {
+				var times = annoURL.queryKey.t.split( '/' );
 				this.start_npt = times[0];
 				this.end_npt = times[1];
 				this.startOffset = mw.npt2seconds( this.start_npt );
@@ -907,7 +908,7 @@ mediaSource.prototype = {
 */
 function mediaElement( element ) {
 	this.init( element );
-};
+}
 
 mediaElement.prototype = {
 	
@@ -970,8 +971,8 @@ mediaElement.prototype = {
 	textSourceExists: function() {
 		for ( var i = 0; i < this.sources.length; i++ ) {
 			mw.log( this.sources[i].mimeType );
-			if ( this.sources[i].mimeType == 'text/cmml' 
-				|| this.sources[i].mimeType == 'text/x-srt' ) 
+			if ( this.sources[i].mimeType == 'text/cmml' || 
+				 this.sources[i].mimeType == 'text/x-srt' ) 
 			{
 					return true;
 			}
@@ -993,8 +994,10 @@ mediaElement.prototype = {
 		var source_set = new Array();
 		for ( var i = 0; i < this.sources.length ; i++ ) {
 			if ( this.sources[i].mimeType &&
-			this.sources[i].mimeType.indexOf( mimeFilter ) != -1 )
+				 this.sources[i].mimeType.indexOf( mimeFilter ) != -1 ) 
+			{
 				source_set.push( this.sources[i] );
+			}
 		}
 		return source_set;
 	},
@@ -1006,8 +1009,9 @@ mediaElement.prototype = {
 	*/
 	getSourceById:function( source_id ) {
 		for ( var i = 0; i < this.sources.length ; i++ ) {
-			if ( this.sources[i].id ==  source_id )
+			if ( this.sources[i].id ==  source_id ) {
 				return this.sources[i];
+			}
 		}
 		return null;
 	},
@@ -1482,7 +1486,7 @@ mw.EmbedPlayer.prototype = {
 			 return ;
 		} 
 		
-		//@@TODO Should be moved to mediaWiki Api support module		
+		// NOTE: Should be moved to mediaWiki Api support module		
 		if ( this.apiTitleKey ) {
 			// Load media from external data
 			mw.log( 'checkPlayerSources: loading apiTitleKey data' );		
@@ -2232,7 +2236,7 @@ mw.EmbedPlayer.prototype = {
 	 * @returns boolean true if the mwEmbed player interface should be used
 	 * 					false if the mwEmbed player interface should not be used
 	 */
-	useNativeControls: function() {		
+	useNativeControls: function() {
 		if( mw.getConfig('nativePlayerControls') == true ) {
 			return true;
 		}
@@ -2252,7 +2256,7 @@ mw.EmbedPlayer.prototype = {
 	 * since the device only supports a limited subset of the html5 and 
 	 * won't work with an html javascirpt interface
 	 */
-	showNativePlayer: function(){	
+	showNativePlayer: function(){
 		var _this = this;
 		// Empty the player
 		$j(this).empty();
@@ -2287,7 +2291,7 @@ mw.EmbedPlayer.prototype = {
 			var videoAttribues = {
 				'id' : this.pid,
 				'poster': this.poster,
-				'src' : source.src,				
+				'src' : source.src,
 				'controls' : 'true'
 			}
 			if( this.loop ){
@@ -2532,7 +2536,7 @@ mw.EmbedPlayer.prototype = {
 	   	 
 	   	 //Run play hook: 
 	   	 mw.log("playEvent");
-	   	 $j( this ).trigger( 'playEvent' );	   	
+	   	 $j( this ).trigger( 'playEvent' );
 	   	
 	   	  // If we previously finished playing this clip run the "replay hook"
 	   	 if( this.donePlayingCount > 0 ) {
@@ -2674,10 +2678,12 @@ mw.EmbedPlayer.prototype = {
 	/**
 	* Updates the interface volume
 	* TODO should move to ctrlBuilder
-	* @param 
+	* @param {float} percent Pecentage volume to update interface
 	*/
 	setInterfaceVolume: function( percent ) {
-		if( this.supports[ 'volumeControl' ] && this.$interface.find( '.volume-slider' ).length ) {
+		if( this.supports[ 'volumeControl' ] && 
+			this.$interface.find( '.volume-slider' ).length 
+		) {
 			this.$interface.find( '.volume-slider' ).slider( 'value', percent * 100 );
 		}
 	},	
