@@ -980,7 +980,7 @@ mw.ApiProxy = { };
 					$j('#' +  options[ 'name' ] ).remove();
 				}, 10 );
 			}			
-		};		
+		};
 		
 		// Setupt the timeout check: 
 		setTimeout( function() {

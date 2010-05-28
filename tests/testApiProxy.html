@@ -3,8 +3,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Api Proxy Test</title>
-	<script type="text/javascript" src="../mwEmbed.js?debug=true"></script> 
-	<!-- <script type="text/javascript" src="../jsScriptLoader.php?class=mwEmbed,mw.ApiProxy&debug=true"></script>-->
+	<!--  <script type="text/javascript" src="../mwEmbed.js?debug=true"></script>  --> 
+	<script type="text/javascript" src="../jsScriptLoader.php?class=window.jQuery,mwEmbed"></script>
 <script type="text/javascript" >
 //HARD coded local test: 
 var remote_wiki_host = 'http://commons.wikimedia.org';
@@ -15,7 +15,7 @@ mw.ready( function(){
 	$j('#hostName').text( remote_wiki_host );		
 	//callback function here: 
 	$j('#setupDone').show('slow');
-	$j('#doHello').click( doHello ); 	
+	$j('#doHello').click( doHello );
 	$j('#doAppend').click( doAppend );	
 	$j('#doFileBrowse').click( doFileUpload );
 });

@@ -6,6 +6,8 @@
 function jsInterfaceReadyFunc(){
 	return true;
 }
+
+
 					
 var kplayerEmbed = {
 	

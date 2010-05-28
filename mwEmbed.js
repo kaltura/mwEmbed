@@ -386,12 +386,7 @@ var MW_EMBED_VERSION = '1.1f';
 				// Set the initial load state for every item in the loadSet
 				for( var i = 0; i < loadSet.length ; i++ ) {							
 					var loadName = loadSet[ i ];				
-					loadStates[ loadName ] = 0;					
-					// Check for style sheet dependencies
-					if( this.classStyleDependency[ loadName ] ) {						
-						loadStates[ this.classStyleDependency[ loadName ] ] = 0;
-					}
-									
+					loadStates[ loadName ] = 0;				
 				}						
 			}	
 			
@@ -465,6 +460,7 @@ var MW_EMBED_VERSION = '1.1f';
 						}						
 					}					
 				} else if ( this.moduleLoaders[ loadName ] ) {
+					
 					// Module loaders break up grouped script requests ( add the current groupClassKey )
 					if( groupClassKey != '' ) {
 						loadStates[ groupClassKey ] = 0;
@@ -521,7 +517,19 @@ var MW_EMBED_VERSION = '1.1f';
 		* @param {Function} callback Function to run once class is loaded 
 		*/
 		loadClass: function( className , callback) {		
-			var _this = this;						
+			var _this = this;		
+			// Check for css depedency on class name 
+			if( this.classStyleDependency[ className ] ) {				
+				if( ! mw.isset( this.classStyleDependency[ className ] )){
+					mw.log(" load dependent css class: "  + this.classStyleDependency[ className ]  );
+					_this.loadClass(  this.classStyleDependency[ className ] , function(){
+						// Continue the orginal loadClass request. 
+						_this.loadClass( className, callback );
+					});
+					return ;
+				}
+			}
+			
 			// Make sure the class is not already defined:
 			if ( mw.isset( className ) ) {
 				mw.log( 'Class ( ' + className + ' ) already defined ' );
@@ -534,8 +542,7 @@ var MW_EMBED_VERSION = '1.1f';
 			
 			
 			// If the scriptloader is enabled use the className as the scriptRequest: 
-			if( mw.getScriptLoaderPath() ) {
-				// replace $j with j since php strips the $ from the request class			
+			if( mw.getScriptLoaderPath() ) {		
 				scriptRequest =  className;
 			}else{
 				// Get the class url:
@@ -1365,9 +1372,11 @@ var MW_EMBED_VERSION = '1.1f';
 		// Add on the request parameters to the url:
 		url += ( url.indexOf( '?' ) == -1 )? '?' : '&';				
 		url += mw.getUrlParam();		
-				
-				
-		mw.log( 'mw.getScript: ' + url );
+			
+		// Only log sciprts ( Css is logged via "add css" )
+		if( !isCssFile ){		
+			mw.log( 'mw.getScript: ' + url );
+		}
 		
 		// If jQuery is available and debug is off load the scirpt via jQuery 
 		//( will use XHR if on same domain ) 
@@ -2032,7 +2041,7 @@ var MW_EMBED_VERSION = '1.1f';
 		}
 		
 		// Check if we are using a static package ( mwEmbed path includes -static )
-		if( mw.isStaticPackge ){
+		if( mw.isStaticPackge() ){			
 			callback();
 			return ;
 		}

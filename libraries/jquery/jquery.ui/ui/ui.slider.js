@@ -530,4 +530,3 @@ $.extend($.ui.slider, {
 });
 
 })(jQuery);
-

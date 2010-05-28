@@ -185,7 +185,7 @@ mw.KAnalytics.prototype = {
 			{
 				_this.sendStatsEvent( 'SEEK' ); 
 			}
-			mw.log("lsk:" + _this.lastSeekEventTime + ' npw: ' +  new Date().getTime());
+			
 			// Update the last seekTime
 			_this.lastSeekEventTime =  new Date().getTime();
 			

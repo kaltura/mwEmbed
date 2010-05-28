@@ -41,8 +41,10 @@ $wgExtensionMessagesFiles = array();
 
 /*Localization:*/
 $wgEnableScriptLocalization = true;
+
 // Array to store all loaded msgs
 $wgMessageCache = array();
+
 // flag for loading msgs
 $wgLoadedMsgKeysFlag = false;
 
@@ -54,7 +56,7 @@ $wgEnableScriptMinify = true;
 $wgUseGzip = true;
 
 // If the core loader.js should be used to set the module list.
-$wgUseMwEmbedLoaderModuleList = false;
+$wgUseMwEmbedLoaderModuleList = true;
 
 /**
  * Default value for chmoding of new directories.
