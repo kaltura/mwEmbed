@@ -7,7 +7,7 @@ var mwEmbedHostPath = urlparts[0];
 var mwRemoteVersion = 'r126';
 var mwUseScriptLoader = true;
 
-// Log the mwRemote version ( will determine what version of js we get )
+// Log the mwRemote version makes it easy to debug cache issues
 if( window.console ){
 	window.console.log( 'mwEmbed:remote:' + mwRemoteVersion );
 }
@@ -24,7 +24,7 @@ for ( var i = 0; i < reqParts.length; i++ ) {
 	
 
 // Use wikibits onLoad hook: ( since we don't have js2 / mw object loaded ) 
-addOnloadHook( function() {		
+addOnloadHook( function() {
 	doPageSpecificRewrite();
 } );
 

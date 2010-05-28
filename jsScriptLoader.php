@@ -138,15 +138,6 @@ class jsScriptLoader {
 				// Output the current language class js
 				$this->output .= jsClassLoader::getLanguageJs( $this->langCode );
 
-				// Check that mwEmbed required style sheets are part of the request,
-				// if not include them here
-				// This is so all mwEmbed requests get dependent interface css
-				foreach( array( 'mw.style.mwCommon' ) as $styleKey ){
-					if( !isset( $this->namedFileList[ $styleKey ] ) ) {
-						$this->output .= $this->getScriptText( $styleKey );
-					}
-				}
-
 				// Output "special" IE comment tag to support "special" mwEmbed tags.
 				$this->notMinifiedTopOutput .='/*@cc_on@if(@_jscript_version<9){\'video audio source itext playlist\'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/'."\n";
 			}

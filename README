@@ -1,6 +1,4 @@
-***********************************************
-*
-* mwEmbed version 1.1
+*********************************************** test
 *
 * For an overview of all mwEmbed files see: 
 * http://www.mediawiki.org/wiki/MwEmbed
@@ -13,7 +11,12 @@
 * 
 * Libraries used include their licence info in their included path 
 *
-* Copyright (C) 2007 - 2010 Michael Dale <mdale@wikimedia.org>,
+* Copyright (C) 2007 - 2010 Kaltura, Wikimedia Foundation
+* 
+* Sub modules and libraries carry specific copyright while the
+* the entire package is always reasleasable under the GPL 2
+* 
+* Author Michael Dale <mdale@wikimedia.org>,
 * and many others.
 *
 * This program is free software; you can redistribute it and/or modify
