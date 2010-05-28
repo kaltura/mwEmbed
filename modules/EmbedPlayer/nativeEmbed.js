@@ -378,7 +378,7 @@ var nativeEmbed = {
 	*
 	* @param {Float} percentage Value between 0 and 1 to set audio volume
 	*/	
-	setPlayerElementVolume: function( percentage ) {
+	setPlayerElementVolume : function( percentage ) {
 		if ( this.getPlayerElement() ) {
 			// Disable mute if positive volume			
 			if( percentage != 0 ) {

@@ -561,7 +561,7 @@ var MW_EMBED_VERSION = '1.1f';
 			// Issue the request to load the class (include class name in result callback:					
 			mw.getScript( scriptRequest, function( scriptRequest ) {
 			
-				// If its a "syle sheet" manually set its class to true
+				// If its a "style sheet" manually set its class to true
 				var ext = scriptRequest.substr( scriptRequest.split('?')[0].lastIndexOf( '.' ), 4 ).toLowerCase();
 				if( ext == '.css' &&	className.substr(0,8) == 'mw.style' ){				
 					mw.style[ className.substr( 9 ) ] = true;
@@ -576,36 +576,27 @@ var MW_EMBED_VERSION = '1.1f';
 				
 				// If ( debug mode ) and the script include is missing class messages
 				// do a separate request to retrieve the msgs
-				if( mw.currentClassMissingMessages ){
-					mw.loadClassMessages( className, function(){
-						//reset the currentClassMissingMessages flag
+				if( mw.currentClassMissingMessages ) {
+					mw.loadClassMessages( className, function() {
+						// Reset the currentClassMissingMessages flag
 						mw.currentClassMissingMessages = false;
-						// Run the onDone callback 
+						
+						// Run the onDone callback 					
 						mw.loadDone( className );
 					});
 				} else { 				
-					// Call load done ( when in debug mode the scriptLoader
-					// is not able to append the loadDone call
-					mw.loadDone( className );
+					// If not using the script-loader make sure the className is available before firing the loadDone
+					if( !mw.getScriptLoaderPath() ) {
+						mw.waitForObject( className, function( className ) {														
+							// Once object is ready run loadDone 
+							mw.loadDone( className );
+						} );
+					} else {
+						// loadDone should be appended to the bottom of the script-loader response 
+						//mw.loadDone( className );
+					}
 				}
-			} );	
-			//mw.log( 'done with running getScript request ' );
-			
-			/*
-			* ( If scriptLoader is not enabled )
-			* 
-			* Check if the class is ready: 
-			* ( not all browsers support onLoad script attribute )
-			* In the case of a "class" we can pull the javascript state until its ready
-			*/
-			if( !mw.getScriptLoaderPath() ) {
-				setTimeout( function() {
-					mw.waitForObject( className, function( className ) {														
-						// Once object is ready run loadDone 
-						mw.loadDone( className );
-					} );
-				}, 25 ); 
-			}
+			} );							
 		},				
 		
 		/**
@@ -1557,6 +1548,11 @@ var MW_EMBED_VERSION = '1.1f';
 			mwpath = src.substr( 0, src.indexOf( 'jsScriptLoader.php' ) );			
 		}	
 		
+		// For static packages mwEmbed packages start with: "mwEmbed-"
+		if( src.indexOf( 'mwEmbed-' ) !== -1 && src.indexOf( '-static' ) !== -1 ) {
+			mwpath = src.substr( 0, src.indexOf( 'mwEmbed-' ) );
+		}
+		
 		// Error out if we could not get the path:
 		if( mwpath === null ) {
 			mw.log( "Error could not get mwEmbed path " );
@@ -1667,21 +1663,23 @@ var MW_EMBED_VERSION = '1.1f';
 			// Check for mwEmbed.js and/or script loader
 			var src = js_elements[i].getAttribute( "src" );
 			if ( src ) {
-				if ( 
+				if ( // Check for mwEmbed.js ( debug mode )					
 					( src.indexOf( 'mwEmbed.js' ) !== -1 &&  src.indexOf( 'MediaWiki:Gadget') == -1 )
-				 	|| 
+				 	|| // Check for script-loader				 	
 				 	( 
 				 		( src.indexOf( 'mwScriptLoader.php' ) !== -1 || src.indexOf( 'jsScriptLoader.php' ) !== -1 )
 						&& 
 						src.indexOf( 'mwEmbed' ) !== -1 
-					) 
+					)
+					|| // Check for static mwEmbed package
+					( src.indexOf( 'mwEmbed' ) !== -1 && src.indexOf( 'static' ) !== -1 )
 				) {
 					mwEmbedSrc = src;
 					return mwEmbedSrc;
 				}
 			}
 		}
-		mw.log( 'Error: getMwEmbedScriptURL failed to get script path' );
+		mw.log( 'Error: getMwEmbedSrc failed to get script path' );
 		return false;
 	}	
 	
@@ -2032,9 +2030,29 @@ var MW_EMBED_VERSION = '1.1f';
 			callback();
 			return ;
 		}
+		
+		// Check if we are using a static package ( mwEmbed path includes -static )
+		if( mw.isStaticPackge ){
+			callback();
+			return ;
+		}
+
 		// Add the Core loader to the request
 		// The follow code is ONLY RUN in debug / raw file mode		
 		mw.load( 'loader.js', callback );
+	}
+	/**
+	* Checks if the javascript is a static package ( not using script-loader )
+	* @return {boolean} 
+	* 	true the included script is static
+	* 	false the included script 
+	*/ 
+	mw.isStaticPackge = function(){
+		var src = mw.getMwEmbedSrc();
+		if( src.indexOf('-static') !== -1 ){			
+			return true;	
+		}
+		return false;
 	}
 	
 	/**
@@ -2046,9 +2064,10 @@ var MW_EMBED_VERSION = '1.1f';
 	mw.checkModuleLoaderFiles = function( callback ) {
 		mw.log( 'doLoaderCheck::' );
 		
-		// Check if we are using scriptloader ( handles loader include automatically ) 
-		if( mw.getScriptLoaderPath() ) {
-				callback();	
+		// Check if we are using scriptloader ( handles loader include automatically )
+		// Or if mwEmbed is a static package ( all classes are already loaded )  
+		if( mw.getScriptLoaderPath() || mw.isStaticPackge() ) {
+			callback();	
 			return ;
 		}
 							
@@ -2428,7 +2447,11 @@ if( mw.getScriptLoaderPath() && !window.jQuery ) {
 	mw.log( 'Error: jQuery is required for mwEmbed, please update your script-loader request' );
 }
 
-/*
+if( mw.isStaticPackge() && !window.jQuery ){
+	alert( 'Error: jQuery is required for mwEmbed ');
+}
+
+/**
  * Hack to keep jQuery in $ when its
  * already there, but also use noConflict to get $j = jQuery
  * 
@@ -2451,4 +2474,3 @@ if( window.jQuery ){
 		window[ '$' ] = jQuery.noConflict();
 	}
 }
-

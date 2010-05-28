@@ -305,6 +305,9 @@ $messages['ja'] = array(
 	'mwe-load-drag-item' => 'ドラッグされた項目を読み込み中',
 	'mwe-ok' => 'OK',
 	'mwe-cancel' => '中止',
+	'mwe-enable-gadget' => 'マルチメディアベータ(mwEmbed)を全ページで有効化',
+	'mwe-enable-gadget-done' => 'マルチメディアベータのガジェットが有効です',
+	'mwe-must-login-gadget' => 'ガジェットを有効にするには<a target="_new" href="$1">ログイン</a>が必要です',
 	'mwe-test-plural' => '{{PLURAL:$1|$1のテスト}}を実行する',
 );
 
@@ -399,6 +402,13 @@ $messages['pl'] = array(
 	'mwe-error_load_lib' => 'Błąd – W plik JavaScript $1 brak jest możliwości pobrania oraz definicji $2',
 );
 
+/** Piedmontese (Piemontèis)
+ * @author Dragonòt
+ */
+$messages['pms'] = array(
+	'mwe-loading_txt' => 'A caria ...',
+);
+
 /** Portuguese (Português)
  * @author Hamilton Abreu
  * @author Malafaya
@@ -450,6 +460,22 @@ $messages['sv'] = array(
 $messages['te'] = array(
 	'mwe-ok' => 'సరే',
 	'mwe-cancel' => 'రద్దుచేయి',
+);
+
+/** Tagalog (Tagalog)
+ * @author AnakngAraw
+ */
+$messages['tl'] = array(
+	'mwe-loading_txt' => 'Ikinakarga ...',
+	'mwe-error_load_lib' => 'Kamalian: hindi makukuha ang JavaScript na $1 o hindi nagbigay kahulugan sa $2',
+	'mwe-apiproxy-setup' => 'Nagtatalaga ng pamalit na API',
+	'mwe-load-drag-item' => 'Ikinakarga ang hinilang bagay',
+	'mwe-ok' => 'Okey',
+	'mwe-cancel' => 'Huwag ituloy',
+	'mwe-enable-gadget' => 'Paganahin ang betang multimidya (mwEmbed) para sa lahat ng mga pahina',
+	'mwe-enable-gadget-done' => 'Pinagana ang gadyet na pangbetang multimidya',
+	'mwe-must-login-gadget' => 'Upang mapagana ang gadyet dapat kang <a target="_new" href="$1">lumagda</a>',
+	'mwe-test-plural' => 'Nagpatakbo ako ng {{PLURAL:$1|$1 pagsusulit|$1 mga pagsusulit}}',
 );
 
 $messages['tr'] = array(

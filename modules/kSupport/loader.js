@@ -54,7 +54,7 @@
 
 	//Check if the document has kaltura objects ( for fall forward support ) 
 	$j( mw ).bind( 'LoaderEmbedPlayerDocumentHasPlayerTags', function( event, tagCheckObject ){
-		mw.log('LoaderEmbedPlayerDocumentHasPlayerTags');
+		//mw.log('LoaderEmbedPlayerDocumentHasPlayerTags');
 		// Check if we have a global selector available: 
 		var select =  'object[name=kaltura_player]';
 		if( $j( select ).length ) {

@@ -51,7 +51,7 @@ class jsScriptLoader {
 	// The raw requested class
 	private static $rawClassList = '';
 
-	// The includeAllModuleMessages string regular expresion
+	// The includeAllModuleMessages string regular expression
 	private static $includeAllMsgsRegEx = "/mw\.includeAllModuleMessages\s*\(\s*\)\;?/";
 
 	/**
@@ -387,25 +387,24 @@ class jsScriptLoader {
 	 * Special function to transform css output and wrap in js call
 	 */
 	private function transformCssOutput( $classKey, $cssString , $path ='') {
+		global $wgScriptLoaderRelativeCss;
 		// Minify and update paths on cssString:
 		$cssOptions = array();
 
 		// Set comments preservation based on debug state
 		$cssOptions[ 'preserveComments' ] = ( $this->debug );
 
-		$serverUri = $this->getScriptLoaderUri();
-
 		// Check for the two jsScriptLoader entry points:
-		if( strpos( $serverUri, 'mwScriptLoader.php') !== false ){
+		if( $wgScriptLoaderRelativeCss ) {
 			// Using the local mediaWiki entry point we should have our $wgScriptPath global
 			global $wgScriptPath;
-			$cssOptions[ 'prependRelativePath' ] = $wgScriptPath . '/' . dirname( $path ) . '/';
-		} else if( strpos( $serverUri, 'jsScriptLoader.php') !== false ){
-			// NOTE:: We HAVE to use an absolute url remote jsScriptLoader.php entry point.
-			// this is because relative urls won't work when inserted into the DOM head
-			// ( ie we package the css with javascript )
-			$cssOptions[ 'prependRelativePath' ] =
-			str_replace('jsScriptLoader.php', '', $serverUri)
+			$prePendPath = ( $wgScriptPath == '' ) ? '' : $wgScriptPath . '/';
+			$cssOptions[ 'prependRelativePath' ] =  $prePendPath . dirname( $path ) . '/';
+		} else {
+			// Get the server URL
+			$serverUri = $this->getScriptLoaderUri();
+
+			$cssOptions[ 'prependRelativePath' ] = str_replace('jsScriptLoader.php', '', $serverUri)
 			. dirname( $path ) . '/';
 		}
 
@@ -950,7 +949,7 @@ class jsScriptLoader {
 	 * @param {String} $class Name of class to get inline messages for.
 	 * @return in-line msg javascript text or empty string if no msgs need to be localized.
 	 */
-	function getAddMessagesFromClass( $class ) {
+	function getAddMessagesFromClass( $className ) {
 		$scriptText = $this->getScriptText( $className );
 		$moduleName = jsClassLoader::getClassModuleName( $className );
 		return $this->getAddMessagesFromScriptText( $scriptText, $moduleName );
@@ -981,11 +980,10 @@ class jsScriptLoader {
 	 * @return {Array} decoded json array of message key value pairs
 	 */
 	function getMsgKeysFromScriptText( & $scriptString , $moduleName){
-		global $wgExtensionJavascriptModules, $wgExtensionMessagesFiles;
+		global $wgExtensionMessagesFiles;
 
 		// Try for includeAllModuleMsgs function call
-		if ( preg_match ( self::$includeAllMsgsRegEx, $scriptString ) !== false ) {
-
+		if ( preg_match ( self::$includeAllMsgsRegEx, $scriptString ) !== 0 ) {
 			// Get the module $messages keys
 			if( $moduleName && isset( $wgExtensionMessagesFiles[ $moduleName ] ) ) {
 

@@ -279,7 +279,7 @@
 		}	
 		
 		// Allow extension to extend the request. 
-		mw.log( 'LoaderEmbedPlayerUpdateRequest' );
+		//mw.log( 'LoaderEmbedPlayerUpdateRequest' );
 		
 		$j( mw ).trigger( 'LoaderEmbedPlayerUpdateRequest', 
 				[ playerElement, dependencyRequest ] );

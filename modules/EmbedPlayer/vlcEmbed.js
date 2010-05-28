@@ -317,7 +317,7 @@ var vlcEmbed = {
 	* Update the player volume
 	* @pram {Float} percent Percent of total volume
 	*/ 
-	setPlayerElementVolume: ( percent ) {
+	setPlayerElementVolume: function ( percent ) {
 		if ( this.getPlayerElement() ) {
 			this.playerElement.audio.volume = percent * 100;
 		}
