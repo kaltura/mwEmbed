@@ -300,7 +300,7 @@ mw.addMessages( {
 					var textElm = document.createElement( 'track' );
 					$j( textElm ).attr( {
 						'category' : 'SUB',
-						'lang' 	: textSource.srclang,
+						'srclang' 	: textSource.srclang,
 						'type' 	: _this.timedTextExtMime[ textSource.extension ],
 						'titleKey' 	: textSource.titleKey
 					} );
@@ -1281,7 +1281,7 @@ mw.addMessages( {
 				} else {
 					sources.push( {
 						'extension': extension,
-						'lang': langKey,
+						'srclang': langKey,
 						'titleKey': subPage.title
 					} );
 				}
