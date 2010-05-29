@@ -6,10 +6,10 @@
 * http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
 */
 
-var kURID = '1.1m';
+var kURID = '1.1n';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/jsScriptLoader.php';
-SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
+//SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
 
 // Define mw
 window['mw'] = {};
@@ -57,16 +57,6 @@ function kDomReady(){
 	}	
 }
 
-// IE8 and Chrome seem to get random symbol not defined 
-// errors in conjunction witht he use of jQuery.noConflict()
-// and dynamic "onLoad" tirggered jQuery loading ( so write it out) 
-// Add jQuery if not on the page already: 
-/*if( typeof window.jQuery == 'undefined' ) {
-	var url = SCRIPT_LOADER_URL + '?class=window.jQuery';
-	document.write(unescape("%3Cscript src='" + url + "' type='text/javascript'%3E%3C/script%3E"));
-};*/
-
-
 // Add the kaltura html5 mwEmbed script
 function kAddScript(){
 	var url = SCRIPT_LOADER_URL + '?class=';
@@ -77,9 +67,7 @@ function kAddScript(){
 	// Add mwEmbed and common style sheet
 	url+= 'mwEmbed,mw.style.mwCommon';	
 	url+='&urid=' + kURID;
-	url+='&uselang=en';
-	
-	url+='&debug=true';	
+	url+='&uselang=en';	
 	
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
@@ -92,9 +80,6 @@ function kAddScript(){
 		}
 	};	
 	document.getElementsByTagName('body')[0].appendChild( script );				
-	
-	
-	
 };	
 
 var kHaveRunQueued = false;
