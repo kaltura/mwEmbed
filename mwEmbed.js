@@ -23,10 +23,10 @@
  */
 
 /*
-* Setup the mw global: 
+* Setup the "mw" global: 
 */
-if ( ! window['mw'] ) {
-	window['mw'] = { };
+if ( typeof window.mw == 'undefined' ) {
+	window.mw = { };
 }
 
 /*
@@ -35,11 +35,11 @@ if ( ! window['mw'] ) {
 var MW_EMBED_VERSION = '1.1f';
 
 // Globals to pre-set ready functions in dynamic loading of mwEmbed 
-if( !preMwEmbedReady ){
-	preMwEmbedReady = [];	
+if( typeof preMwEmbedReady == 'undefined'){
+	var preMwEmbedReady = [];	
 }
 //Globals to pre-set config values in dynamic loading of mwEmbed
-if( ! preMwEmbedConfig ) {
+if( typeof preMwEmbedConfig == 'undefined') {
 	var preMwEmbedConfig = [];
 }
 
