@@ -1,4 +1,4 @@
-/*@cc_on'video audio source track playlist'.replace(/\w+/g,function(n){document.createElement(n)})@*/
+/*@cc_on@if(@_jscript_version<9){'video audio source track playlist'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/
 
 /**
 * mwEmbed loader 
@@ -9,38 +9,47 @@
 var kURID = '1.1n';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/jsScriptLoader.php';
-//SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
+SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
 
 // Define mw
 window['mw'] = {};
-kMwReadyQueue = [];
+
+// Setup preMwEmbedReady queue
+if( !preMwEmbedReady ){
+	var preMwEmbedReady = [];
+}
+// Wrap mw.ready to preMwEmbedReady values
 if( !mw.ready){
 	mw.ready = function( fn ){
-		kMwReadyQueue.push( fn );
+		preMwEmbedReady.push( fn );
 	}
 }
-kMwSetConfigQueue = [];
+// Setup a preMwEmbedConfig var
+if( ! preMwEmbedConfig ) {
+	var preMwEmbedConfig = [];
+}
 if( !mw.setConfig ){
 	mw.setConfig = function( set, value ){
 		var valueQueue = {};
 		if( value ) {			
-			valueQueue[ set	] = value;
-		} else {
-			valueQueue = set;
+			preMwEmbedConfig[ set	] = value;
+		} else if ( typeof set == 'object' ){
+			for( var i in set ){
+				preMwEmbedConfig[ i ] = set[i];
+			}
 		}
-		kMwSetConfigQueue.push( valueQueue );
 	}
 }
 // Chceck dom for kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
-function kDomReady(){	
+function kDomReady(){		
 	// If user javascript is using mw.ready add script
-	if( kMwReadyQueue.length ) {
+	if( preMwEmbedReady.length ) {
 		kAddScript();
 		return ;
 	}
 	
-	// If document includes audio | video tags
+	// If document includes audio or video tags
 	if( document.getElementsByTagName('video').length != 0
 		|| document.getElementsByTagName('audio').length != 0 ) {
 		kAddScript();
@@ -67,42 +76,16 @@ function kAddScript(){
 	// Add mwEmbed and common style sheet
 	url+= 'mwEmbed,mw.style.mwCommon';	
 	url+='&urid=' + kURID;
-	url+='&uselang=en';	
+	url+='&uselang=en';
+	
+	url+='&debug=true';
 	
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
 	script.src = url;
-	
-	// Attach handlers ( if using script loader it issues onDone callback as well )	 		
-	script.onload = script.onreadystatechange = function() {		
-		if (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") {
-			kRunQueued();
-		}
-	};	
+	// no handlers: 	
 	document.getElementsByTagName('body')[0].appendChild( script );				
-};	
-
-var kHaveRunQueued = false;
-function kRunQueued(){
-	if( kHaveRunQueued ){
-		return ;
-	}
-	kHaveRunQueued =  true;
-	var startLength = kMwSetConfigQueue.length;
-	
-	while( kMwSetConfigQueue.length ){
-		mw.setConfig( kMwSetConfigQueue.pop() );
-		if( kMwSetConfigQueue.length == startLength ){
-			// Error out ~ mwEMbed not defined? ~			
-			break;
-		}
-	}	
-	while( kMwReadyQueue.length ){
-		mw.ready( kMwReadyQueue.pop() );
-	}
-}
- 
-
+};
 
 /**
 * DOM-ready setup ( similar to jQuery.ready )  

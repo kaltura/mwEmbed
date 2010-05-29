@@ -34,6 +34,14 @@ if ( ! window['mw'] ) {
 */
 var MW_EMBED_VERSION = '1.1f';
 
+// Globals to pre-set ready functions in dynamic loading of mwEmbed 
+if( !preMwEmbedReady ){
+	preMwEmbedReady = [];	
+}
+//Globals to pre-set config values in dynamic loading of mwEmbed
+if( ! preMwEmbedConfig ) {
+	var preMwEmbedConfig = [];
+}
 
 /**
 * The global mw object:
@@ -1325,6 +1333,11 @@ var MW_EMBED_VERSION = '1.1f';
 	* called by mwEmbedSetup
 	*/ 
 	mw.runReadyFunctions = function ( ) {
+		// run any pre-setup ready functions		
+		while( preMwEmbedReady.length ){
+			preMwEmbedReady.shift()();
+		}
+		
 		// Run all the queued functions: 
 		while( mwOnLoadFunctions.length ) {
 			mwOnLoadFunctions.shift()();
@@ -1930,8 +1943,11 @@ var MW_EMBED_VERSION = '1.1f';
 		}				 
 		mwSetupFlag = true;			
 		
+		// Apply any pre-setup config: 		
+		mw.setConfig( preMwEmbedConfig );			
 		
-		mw.log( 'mw:setupMwEmbed :: ' + mw.getMwEmbedSrc() );			
+		
+		mw.log( 'mw:setupMwEmbed SRC:: ' + mw.getMwEmbedSrc() );			
 		
 		// Check core mwEmbed loader.js file ( to get configuration and paths )
 		mw.checkCoreLoaderFile( function(){						
