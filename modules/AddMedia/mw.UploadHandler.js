@@ -1013,13 +1013,8 @@ mw.UploadHandler.prototype = {
 								'href' : img.descriptionurl
 							} ),
 							
-							$j( '<img />' )
-							.attr( {
-								'border' : 0,
-								'width' : 15,
-								'height' : 11,
-								'src' : mw.getConfig( 'imagesPath' ) + 'magnify-clip.png'
-							} ), 
+							$j( '<div />' )
+							.addClass("rsd_magnify_clip"), 
 							
 							$j('<span />')
 							.html( gM( 'mwe-fileexists-thumb' ) )

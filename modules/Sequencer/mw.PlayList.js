@@ -1710,9 +1710,9 @@ var mvTransLib = {
 			
 		this[ 'type' ][ tObj.type ][ tObj.subtype ].u( tObj, percent, callback);
 	},
-	
+	// NOTE: transition images should be css based: 
 	getTransitionIcon:function( type, subtype ) {
-		return mw.getMwEmbedPath() + '/skins/common/transition_images/' + type + '_' + subtype + '.png';
+		return mw.getMwEmbedPath() + '/modules/Sequencer/css/transition_images/' + type + '_' + subtype + '.png';
 	},
 	
 	/**

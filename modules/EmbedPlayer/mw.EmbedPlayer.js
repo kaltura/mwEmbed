@@ -1831,9 +1831,7 @@ mw.EmbedPlayer.prototype = {
 					'width' : this.width + 'px',
 					'height' : this.height + 'px'
 				})
-				.text(
-					gM( 'mwe-embedplayer-loading_plugin' ) 
-				)
+				.loadingSpinner()
 			);
 		}
 		
@@ -3338,7 +3336,7 @@ mw.EmbedTypes = {
 	 * @constructor 
 	 */
 	 init: function() {
-		// detect supported types
+		// detect supported types	
 		this.detect();
 		this.detect_done = true;
 	},
@@ -3360,8 +3358,8 @@ mw.EmbedTypes = {
 	/**
 	* Detects what plug-ins the client supports 
 	*/
-	detect: function() {
-		mw.log( "embedPlayer: running detect" );
+	detect: function() {		
+		mw.log( "embedPlayer: running detect" );		
 		this.players = new mediaPlayers();
 		// every browser supports html rendering:
 		this.players.addPlayer( htmlPlayer );
@@ -3478,10 +3476,7 @@ mw.EmbedTypes = {
 						var descArray = flashDescription.split( " " );
 						var tempArrayMajor = descArray[2].split( "." );
 						var versionMajor = tempArrayMajor[0];
-						// mw.log("version of flash: " + versionMajor);
-						if ( versionMajor >= 10 ) {
-							this.players.addPlayer( omtkPlayer );
-						}
+						// mw.log("version of flash: " + versionMajor);					
 					}
 					continue;
 				}

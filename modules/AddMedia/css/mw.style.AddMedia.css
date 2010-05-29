@@ -13,6 +13,20 @@
 	text-decoration: underline;
 }
 
+.rsd_cookies_blocked_MSIE {
+	width: 506px;
+	height: 61px;
+	display:block;
+	background-image: url('images/cookies_blocked_MSIE_eye.png');
+}
+
+.rsd_magnify_clip {
+	background-image: url('images/magnify-clip.png');
+	width: 15px;
+	height: 11px;
+	display:block;
+}
+
 .rsd_control_container{	
 	margin: 10px 0;
 	width: 100%;

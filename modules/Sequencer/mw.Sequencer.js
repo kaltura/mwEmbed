@@ -817,7 +817,7 @@ mw.Sequencer.prototype = {
 		
 		// Load the clipEdit library if not already loaded:
 		mw.load( [
-			'mw.ClipEdit'
+			'ClipEdit'
 		], function() {
 			// Zero out the current editor:		
 			_this.myClipEditor = { };

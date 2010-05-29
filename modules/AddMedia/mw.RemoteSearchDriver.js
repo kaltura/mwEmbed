@@ -1186,11 +1186,11 @@ mw.RemoteSearchDriver.prototype = {
 						$j('<span />')
 						.text( gM('mwe-ie-eye-permision' ) ),
 												
-						$j('<img />' )
+						$j('<div />' )
 						.attr( {
-							'src': mw.getConfig('imagesPath' ) + 'cookies_blocked_MSIE_eye.png',
 							'alt' : gM('mwe-ie-eye-permision' )
 						})
+						.addClass( 'rsd_cookies_blocked_MSIE' )
 					);
 				}
 				
@@ -1768,6 +1768,9 @@ mw.RemoteSearchDriver.prototype = {
 			.width( this.thumb_width )
 			.height( this.thumb_width - 20 );
 		
+		// TODO we need to move these images sound_music_icon-80.png etc into the 
+		// AddMedia module and use the style sheet to refrence them 
+		
 		// Check for missing poster types for audio
 		if ( (resource.mime == 'audio/ogg' || resource.mime == 'application/ogg') 
 			&& !resource.poster ) {
@@ -2193,7 +2196,7 @@ mw.RemoteSearchDriver.prototype = {
 		var options = _this.getClipEditOptions( resource );
 		
 		// Display the mvClipEdit obj once we are done loading:
-		mw.load( 'mw.ClipEdit', function() {			
+		mw.load( 'ClipEdit', function() {			
 			// Run the image clip tools
 			_this.clipEdit = new mw.ClipEdit( options );
 		} );
@@ -2258,7 +2261,7 @@ mw.RemoteSearchDriver.prototype = {
 
 					// Add libraries resizable and hoverIntent to support video edit tools
 					var librarySet = [
-						'mw.ClipEdit', 
+						'ClipEdit', 
 						'$j.ui.resizable'
 					];
 					mw.load( librarySet, function() {						
@@ -2966,6 +2969,7 @@ mw.RemoteSearchDriver.prototype = {
 	createLayoutSelector: function() {
 
 		var _this = this;
+		// TODO this should be refactored so that the images paths are in css		
 		var darkBoxUrl = mw.getConfig( 'imagesPath' ) + 'box_layout_icon_dark.png';
 		var lightBoxUrl = mw.getConfig( 'imagesPath' ) + 'box_layout_icon.png';
 		var darkListUrl = mw.getConfig( 'imagesPath' ) + 'list_layout_icon_dark.png';

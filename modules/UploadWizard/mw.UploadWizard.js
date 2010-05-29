@@ -1078,7 +1078,7 @@ mw.UploadWizardDetails = function( upload, containerDiv ) {
 	// content area, it works. Vector is fine
 	$j( _this.dateInput ).datepicker( { 	
 		dateFormat: 'yy-mm-dd', // oddly, this means yyyy-mm-dd
-		buttonImage: '/js/mwEmbed/skins/common/images/calendar.gif',
+		buttonImage: mw.getMwEmbedPath() + 'skins/common/images/calendar.gif',
 		buttonImageOnly: false  // XXX determine what this does, docs are confusing
 	} );
 

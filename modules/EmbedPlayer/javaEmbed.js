@@ -91,6 +91,7 @@ var javaEmbed = {
 	*/
 	getAppletLocation: function() {
 		var mediaSrc = this.getSrc();
+		var applet_loc = false;
 		if ( 
 			!mw.isLocalDomain( mediaSrc ) 
 			|| 

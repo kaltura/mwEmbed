@@ -1,13 +1,4 @@
-#mv_overlay {
-	background:transparent url(images/transparent_bg.png) repeat scroll 0 0;
-	cursor:wait;
-	height:100%;
-	left:0;
-	position:fixed;
-	top:0;
-	width:100%;
-	z-index:99;
-}
+
 .modal_editor {
 	/*background:#AAA none repeat scroll 0 0;
 	border:3px solid #666666;*/
@@ -47,13 +38,8 @@
 	display:block;
 	padding:0px;
 	background-image: url('images/loading_ani.gif');
-}
-.mv_loading_bar_img{
-	width:220px;
-	height:19px;
-	display:inline;
-	position:absolute;
-	background-image: url('images/loading_bar_ani.gif');
+	margin-left: auto ;
+  	margin-right: auto ;	
 }
 
 /* jquery.ui overides */
