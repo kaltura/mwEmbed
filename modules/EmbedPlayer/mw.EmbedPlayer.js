@@ -553,8 +553,7 @@ EmbedPlayerManager.prototype = {
 					'width' : '32px',
 					'height' : '32px'
 				} )
-				.loadingSpinner()
-				.addClass( "loadingSpinner" )
+				.loadingSpinner()				
 			);
 		}
 		return true;

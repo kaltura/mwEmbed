@@ -82,21 +82,31 @@
 					$j( element ).replaceWith( 
 						$j('<div />')
 						.attr({
-							'id': videoId
+							'id': videoId,
 							'kentryid': entryId
 						})
 						.css({
 							'width' : width + 'px',
-							'height' : height + 'px'
+							'height' : height + 'px',
+							'position' : 'absolute'
 						})
 						.addClass( 'safariVideoSwap')
-						.loadingSpinner();
+						.append(
+							$j('<div />')
+							.css( {
+								'margin' : 'auto',
+								'top' : '35%',
+								'position' : 'relative',
+								'width' : '32px',
+								'height' : '32px'
+							} )
+							.loadingSpinner()
+						)
 					)						
 				});
-				if( loadEmbedPlayerFlag ){					
+				if( loadEmbedPlayerFlag ){									
 					mw.load('EmbedPlayer', function(){
-						// Remove the general loading spinner ( embedPlayer takes over )
-						$j('.loadingSpinner').remove();
+						// Remove the general loading spinner ( embedPlayer takes over )						
 						$j('.safariVideoSwap').embedPlayer();
 					})
 				}
