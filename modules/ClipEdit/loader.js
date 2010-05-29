@@ -23,4 +23,4 @@ mw.addModuleLoader( 'ClipEdit', function( callback ){
 			callback( 'ClipEdit' );
 		}
 	 );
-})
+});
