@@ -46,10 +46,10 @@ $j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement,
 		mwLoadTimedTextFlag = true;	
 	}
 		
-	// If add timed text flag not already set check for itext, and sources
+	// If add timed text flag not already set check for track, and sources
 	if( ! mwLoadTimedTextFlag ) {
-		if( $j( playerElement ).find( 'itext' ).length != 0 ) {
-			// Has an itext child include timed text request
+		if( $j( playerElement ).find( 'track' ).length != 0 ) {
+			// Has an track child include timed text request
 			mwLoadTimedTextFlag = true;
 		}
 		// Check for ROE pointer or apiTitleKey

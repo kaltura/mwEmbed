@@ -360,7 +360,7 @@ ctrlBuilder.prototype = {
 		.animate( _this.getFullscreenPlayerCss() );
 		
 		// Resize the timed text font size per window width	
-		$interface.find( '.itext' ).css( _this.getFullscreenTextCss() );		
+		$interface.find( '.track' ).css( _this.getFullscreenTextCss() );		
 		
 		// Reposition play-btn-large ( this is unfortunately not easy to position with 'margin': 'auto'
 		$interface.find('.play-btn-large').animate( _this.getFullscreenPlayButtonCss() )		
@@ -406,7 +406,7 @@ ctrlBuilder.prototype = {
 				$interface.find('.play-btn-large').css(  _this.getFullscreenPlayButtonCss() );
 				
 				// Update the timed text size  
-				$interface.find( '.itext' ).css( _this.getFullscreenTextCss() );
+				$interface.find( '.track' ).css( _this.getFullscreenTextCss() );
 			}
 		});
 		
@@ -483,7 +483,7 @@ ctrlBuilder.prototype = {
 		} );
 		
 		// Restore text size: 
-		$interface.find( '.itext' ).css({
+		$interface.find( '.track' ).css({
 			'font-size' : '100%'
 		})
 	},
@@ -582,7 +582,7 @@ ctrlBuilder.prototype = {
 		this.embedPlayer.$interface.find( '.control-bar')
 			.fadeOut( animateDuration );
 					
-		this.embedPlayer.$interface.find( '.itext' )
+		this.embedPlayer.$interface.find( '.track' )
 			.stop()
 			.animate( { 
 				'bottom' : 10 
@@ -596,8 +596,8 @@ ctrlBuilder.prototype = {
 	showControlBar : function(){
 		var animateDuration = 'slow';	
 		$j( this.embedPlayer.getPlayerElement() ).css('z-index', '1')	
-		// Move up itext if present
-		this.embedPlayer.$interface.find( '.itext' )
+		// Move up track if present
+		this.embedPlayer.$interface.find( '.track' )
 			.animate( 
 				{ 
 					'bottom' : this.getHeight() + 10 

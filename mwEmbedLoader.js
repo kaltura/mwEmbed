@@ -1,4 +1,4 @@
-/*@cc_on'video source itext playlist'.replace(/\w+/g,function(n){document.createElement(n)})@*/
+/*@cc_on'video audio source track playlist'.replace(/\w+/g,function(n){document.createElement(n)})@*/
 
 /**
 * mwEmbed loader 
@@ -57,29 +57,29 @@ function kDomReady(){
 	}	
 }
 
+// IE8 and Chrome seem to get random symbol not defined 
+// errors in conjunction witht he use of jQuery.noConflict()
+// and dynamic "onLoad" tirggered jQuery loading ( so write it out) 
+// Add jQuery if not on the page already: 
+/*if( typeof window.jQuery == 'undefined' ) {
+	var url = SCRIPT_LOADER_URL + '?class=window.jQuery';
+	document.write(unescape("%3Cscript src='" + url + "' type='text/javascript'%3E%3C/script%3E"));
+};*/
+
+
 // Add the kaltura html5 mwEmbed script
 function kAddScript(){
-	var url = SCRIPT_LOADER_URL;
+	var url = SCRIPT_LOADER_URL + '?class=';
 	
-	// Add the class param
-	url+= '?class=';
-	
-	// Add jQuery if not on the page already: 
-	if( typeof window['jQuery'] == 'undefined') {
-		url+='window.jQuery,';		
+	if( typeof window.jQuery == 'undefined' ) {
+		url+='window.jQuery,'
 	}
-	
-	url+='mwEmbed';
+	// Add mwEmbed and common style sheet
+	url+= 'mwEmbed,mw.style.mwCommon';	
 	url+='&urid=' + kURID;
 	url+='&uselang=en';
 	
-	//url+='&debug=true';	
-	
-	// IE8 and Chrome seem to get random symbol not defined 
-	// errors in conjunction witht he use of jQuery.noConflict()
-	// and dynamic "onLoad" tirggered jQuery loading ( so write it out) 	
-	//document.write(unescape("%3Cscript src='" + url + "' type='text/javascript'%3E%3C/script%3E"));
-	
+	url+='&debug=true';	
 	
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
@@ -92,6 +92,8 @@ function kAddScript(){
 		}
 	};	
 	document.getElementsByTagName('body')[0].appendChild( script );				
+	
+	
 	
 };	
 
@@ -180,7 +182,6 @@ function doScrollCheck() {
 	if ( kAlreadyRunDomReadyFlag ) {
 		return;
 	}
-
 	try {
 		// If IE is used, use the trick by Diego Perini
 		// http://javascript.nwbox.com/IEContentLoaded/
@@ -189,7 +190,6 @@ function doScrollCheck() {
 		setTimeout( doScrollCheck, 1 );
 		return;
 	}
-
 	// and execute any waiting functions
 	kRunMwDomReady();
 }

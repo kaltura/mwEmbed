@@ -1,6 +1,6 @@
 // Add support for html5 / mwEmbed elements to IE ( comment must come before js code ) 
 // For discussion and comments, see: http://remysharp.com/2009/01/07/html5-enabling-script/
-/*@cc_on@if(@_jscript_version<9){'video audio source itext playlist'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/
+/*@cc_on@if(@_jscript_version<9){'video audio source track playlist'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/
 
 /**
  * ~mwEmbed ~
@@ -1382,7 +1382,7 @@ var MW_EMBED_VERSION = '1.1f';
 		//( will use XHR if on same domain ) 
 		if( mw.isset( 'window.jQuery' ) 
 			&& mw.getConfig( 'debug' ) === false 
-			&& $j
+			&& typeof $j != 'undefined'
 			&& !isCssFile ) 
 		{	
 			$j.getScript( url, myCallback); 		
@@ -1934,8 +1934,7 @@ var MW_EMBED_VERSION = '1.1f';
 		mw.log( 'mw:setupMwEmbed :: ' + mw.getMwEmbedSrc() );			
 		
 		// Check core mwEmbed loader.js file ( to get configuration and paths )
-		mw.checkCoreLoaderFile( function(){
-			
+		mw.checkCoreLoaderFile( function(){						
 			// Make sure we have jQuery 
 			mw.load( 'window.jQuery', function() {	
 				
@@ -2204,8 +2203,13 @@ var MW_EMBED_VERSION = '1.1f';
 		// Set the onDomReady Flag
 		mwDomReadyFlag = true;	
 		
-		// Setup MwEmbed 
-		mw.setupMwEmbed();
+		// Give us a chance to get to the bottom of the script. 
+		// When loading mwEmbed asynchronously the dom ready gets called  
+		// directly and in some browsers beets the $j = jQuery.noConflict(); call 
+		// and causes symbol undefined errors.  
+		setTimeout(function(){
+			mw.setupMwEmbed();
+		},1);
 	}	
 	
 	/**

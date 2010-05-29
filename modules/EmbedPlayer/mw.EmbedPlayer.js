@@ -222,7 +222,7 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 	'default',
 	
 	// Language key used for subtitle tracks
-	'lang',
+	'srclang',
 	
 	// titleKey ( used for api lookups )  
 	'titleKey',
@@ -945,7 +945,7 @@ mediaElement.prototype = {
 			_this.tryAddSource( videoElement );
 		}
 			
-		$j( videoElement ).find( 'source,itext' ).each( function( ) {			
+		$j( videoElement ).find( 'source,track' ).each( function( ) {			
 			_this.tryAddSource( this );
 		} );		
 	},

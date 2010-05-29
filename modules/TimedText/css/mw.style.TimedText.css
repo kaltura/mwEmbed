@@ -1,4 +1,4 @@
-.itext span {
+.track span {
 	color: white;	
 	letter-spacing: 0.04em;	
 	text-align: center;
@@ -9,10 +9,10 @@
 	*/	
 	background-color: #333;
 }
-.itext span a {
+.track span a {
 	text-decoration: none;
 	color : #BBF;	
 }
-.itext span a:visited{
+.track span a:visited{
 	color : #BBF;	
 }
