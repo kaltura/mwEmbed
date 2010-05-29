@@ -139,7 +139,7 @@ if ( document.addEventListener ) {
 	document.addEventListener( "DOMContentLoaded", DOMContentLoaded, false );
 	
 	// A fallback to window.onload, that will always work
-	window.addEventListener( "load", mw.domReady, false );
+	window.addEventListener( "load", kRunMwDomReady, false );
 
 // If IE event model is used
 } else if ( document.attachEvent ) {
