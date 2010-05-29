@@ -81,7 +81,7 @@
 		
 		"ctrlBuilder"		: "skins/ctrlBuilder.js",
 	
-	  "mw.style.EmbedPlayer" : "mw.style.EmbedPlayer.css",
+		"mw.style.EmbedPlayer" : "mw.style.EmbedPlayer.css",
 		
 		"mw.style.kskin" 	: "skins/kskin/EmbedPlayer.css",	
 		"kskinConfig"		: "skins/kskin/kskinConfig.js",

@@ -51,12 +51,14 @@ mw.KEntryIdSupport.prototype = {
 		var _this = this;	
 		
 		// Make sure we have an entry id:
-		var kentryid = $j( embedPlayer ).attr( 'kentryid' ); 
+		var kentryId = $j( embedPlayer ).attr( 'kentryid' ); 
 		if( ! kentryid ){
 			// Run the callback empty handed
 			callback( false );
 			return ;
-		}						
+		}
+		// Make sure we have a widget id: 
+		var widgetId
 		
 		// if Kaltura session is ready jump directly to entryId lookup
 		if( _this.kalturaSessionState == 'ready' ){
@@ -76,7 +78,7 @@ mw.KEntryIdSupport.prototype = {
 			if( ! _this.kalturaSessionState ) {
 				_this.kalturaSessionState = 'inprogress'; 
 				// Setup global Kaltura session:
-				_this.setupSession ( function( status ) {
+				_this.setupSession ( widgetId, function( status ) {
 					// @@TODO check if session was successful
 					if( !status ){
 						// No sources added ( error ) 
@@ -98,23 +100,28 @@ mw.KEntryIdSupport.prototype = {
 	* @param {Function} callback Function to be called once sources are ready 
 	*/ 
 	addEntryIdSources: function ( embedPlayer, callback ) {
-		var kPartnerId =  mw.getConfig( 'kPartnerId' );
-		var kentryid = $j( embedPlayer ).attr( 'kentryid' ); 
+		
+		var kEntryId = $j( embedPlayer ).attr( 'kentryid' ); 
+		
+		var widgetId =  $j( embedPlayer ).attr( 'widgetid' );
+		
+		// Assing the partnerId from the wdigetid
+		var kPartnerId = widgetId.replace(/_/, '');
+		
 		var flaverGrabber = new KalturaFlavorAssetService( this.kClient ); 
 		flaverGrabber.getByEntryId ( function( success, data ) {
 			if( ! success || ! data.length ) {
 				mw.log( "Error flaverGrabber getByEntryId:: no sources found ");
 				callback();
 				return false;
-			}
-			mw.log( 'addEntryIdSources found; ' + data.length + ' sources ' );
+			}			
 			
 			// Setup the src defines
 			var iPadSrc = iPhoneSrc = oggSrc = null;
 			
 			// Set the poster
 			embedPlayer.poster = 'http://cdnakmi.kaltura.com/p/' + kPartnerId + '/sp/' +
-				kPartnerId + '00/thumbnail/entry_id/' + kentryid + '/width/' +
+				kPartnerId + '00/thumbnail/entry_id/' + kEntryId + '/width/' +
 				 embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight()
 			
 			// Find a compatible stream
@@ -128,7 +135,7 @@ mw.KEntryIdSupport.prototype = {
 				// Set up the current src string:
 				var src = 'http://cdnakmi.kaltura.com/p/' + kPartnerId +
 						'/sp/' +  kPartnerId + '00/flvclipper/entry_id/' +
-						kentryid + '/flavor/' + asset.id ;
+						kentryId + '/flavor/' + asset.id ;
 								
 				
 				// Check the tags to read what type of mp4 source
@@ -198,7 +205,9 @@ mw.KEntryIdSupport.prototype = {
 			// Done adding sources run callback
 			callback();
 				
-		}, kentryid );
+		},
+		/*getByEntryId @arg kEntryId */
+		kEntryId );
 		
 	},
 	
@@ -206,16 +215,19 @@ mw.KEntryIdSupport.prototype = {
 	*  Setup The kaltura session
 	* @param {Function} callback Function called once the function is setup
 	*/ 
-	setupSession: function( callback ) {				 		
+	setupSession: function(widgetId,  callback ) {				 		
 		var _this = this;
+		// Assing the partnerId from the wdigetid
+		var kPartnerId = widgetId.replace(/_/, '');
+		
 		// Setup the kConfig		
-		var kConfig = new KalturaConfiguration( parseInt( mw.getConfig( 'kPartnerId' ) ) );
+		var kConfig = new KalturaConfiguration( parseInt( kPartnerId ) );
 		
 		// Assign the local kClient
 		this.kClient = new KalturaClient( kConfig );
 		
 		// Client session start
-		this.kClient.session.start(
+		this.kClient.session.startWidgetSession(
 			// Callback function once session is ready 
 			function ( success, data ) {
 				if( !success ){
@@ -236,12 +248,8 @@ mw.KEntryIdSupport.prototype = {
 				// Run the callback 
 				callback( true );
 			}, 
-			// @arg "admin secret" 
-			mw.getConfig( 'kAdminSecret' ),
-			// @arg session name  
-			"test_js_kcl", 
-			// @arg session type param 
-			KalturaSessionType.ADMIN
+			// @arg "widgetId" 
+			widgetId
 		);
 		
 	}

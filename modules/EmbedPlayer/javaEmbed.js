@@ -103,7 +103,7 @@ var javaEmbed = {
 			}
 		} else {
 			// Should be identical to cortado.jar
-			applet_loc = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/cortado/cortado-january.jar';			
+			applet_loc = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/cortado/cortado-ovtk-stripped-0.6.0.jar';			
 		}
 		return applet_loc;
 	},

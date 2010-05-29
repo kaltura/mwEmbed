@@ -15,16 +15,11 @@
 		'kalturaStatsServer' : 'http://www.kaltura.com/api_v3/index.php'
 	} );
 	
-	// Add the kentryid attribute to the embed player
+	// Add the kentryid and kpartnerid attribute to the embed player
 	mw.setConfig( 'embedPlayerAttributes', {
-		'kentryid' : null
-		
-	} );
-	
-	// Set the partner id and kAdmin secret
-	mw.setConfig( 'kPartnerId', '243342' );
-	mw.setConfig( 'kAdminSecret', '075a32aa066775c1b96713cb71541ae9' );
-	
+		'kentryid' : null,
+		'kpartnerid' : null
+	} );	
 	
 	mw.addClassFilePaths( {
 		"mw.KEntryIdSupport" : "mw.KEntryIdSupport.js",
@@ -61,50 +56,77 @@
 			tagCheckObject.hasTags = true;
 						
 			// FALLFORWARD only for mobile safari::
-			//
-			// For now swap in "video" tags ( for iPhone )
-			// TODO in the future do something smarter possibly in the kentryid lib 
-			// instead of the loader.js
+			// this is kind of hevey weight for loader.js 
+			// maybe move most of this to 
 			
-			if( mw.isMobileSafari() ){
+			if( mw.isMobileSafari() ) {
 				var loadEmbedPlayerFlag = false;
 				$j( select ).each( function( inx, element ){
 					loadEmbedPlayerFlag = true;
 					var dataUrl = $j( element ).attr('data');
-					var entryId = dataUrl.split('/').pop();
+					var dataUrlParts = dataUrl.split('/');
+					var entryId = dataUrlParts.pop();
 					mw.log("Got EntryID: " + entryId + " from flash object")
+					// Search backward for 'widgetId'
+					var widgetId = false;					
+					while( dataUrlParts.length ){
+						var curUrlPart =  dataUrlParts.pop();
+						if( curUrlPart == 'wid'){
+							widgetId = prevUrlPart;
+							break;
+						}
+						prevUrlPart = curUrlPart;
+					}
 					
 					var height = $j( element ).attr('height');
 					var width = $j( element ).attr('width');					
 					var videoId = 'vid' + inx;
 					
-					// Replace with a spiner
-					$j( element ).replaceWith( 
-						$j('<div />')
-						.attr({
-							'id': videoId,
-							'kentryid': entryId
+					var $imgThumb = '';
+					if( widgetId ) {
+						var partnerId = widgetId.replace(/_/,'');
+						var thumb_url = 'http://cdnakmi.kaltura.com/p/' + partnerId + '/sp/' +
+						partnerId + '00/thumbnail/entry_id/' + entryId + '/width/' +
+						height + '/height/' + width;
+						$imgThumb = $j('<img />').attr({
+							'src' : thumb_url 
 						})
 						.css({
 							'width' : width + 'px',
 							'height' : height + 'px',
 							'position' : 'absolute'
+						});
+					}
+					
+					// Replace with a spinner
+					$j( element ).replaceWith( 
+						$j('<div />')
+						.attr({
+							'id': videoId,
+							'kentryid': entryId,
+							'widgetid' : widgetId
 						})
+						.css( {
+							'width' : width + 'px',
+							'height' : height + 'px',
+							'position' : 'absolute'
+						} )
 						.addClass( 'safariVideoSwap')
 						.append(
+							$imgThumb, 
 							$j('<div />')
-							.css( {
+							.css({
 								'margin' : 'auto',
 								'top' : '35%',
 								'position' : 'relative',
 								'width' : '32px',
 								'height' : '32px'
-							} )
+							})
 							.loadingSpinner()
 						)
 					)						
 				});
-				if( loadEmbedPlayerFlag ){									
+				if( loadEmbedPlayerFlag ){					
 					mw.load('EmbedPlayer', function(){
 						// Remove the general loading spinner ( embedPlayer takes over )						
 						$j('.safariVideoSwap').embedPlayer();
