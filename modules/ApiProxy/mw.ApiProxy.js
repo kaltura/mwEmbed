@@ -137,7 +137,7 @@ mw.ApiProxy = { };
 				// check for basic status "ok"
 				if( iframeData['status'] == 'ok' ) {
 					// Hide the loading spinner
-					$j( options.target ).find('.loading_spinner').fadeOut('fast');
+					$j( options.target ).find('.loadingSpinner').fadeOut('fast');
 					mw.log("iframe ready callback");
 					$j( '#' + iFrameName ).fadeIn( 'fast' );	
 					return ;

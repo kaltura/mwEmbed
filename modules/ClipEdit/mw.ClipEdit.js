@@ -401,7 +401,7 @@ mw.ClipEdit.prototype = {
 				'title'	: _this.parentSequence.plObj.mTitle,
 				'text'	:	template_wiki_text
 			};
-			$j( _this.resource.embed ).html( mw.loading_spinner() );
+			$j( _this.resource.embed ).loadingSpinner();
 
 			var apiUrl = _this.parentSequence.plObj.interface_url;
 			mw.getJSON( apiUrl, request, function( data ) {

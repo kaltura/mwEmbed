@@ -1085,7 +1085,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	* @param {String} msg_txt text text of the loader msg
 	*/
 	mw.addLoaderDialog = function( msg_txt ) {
-		mw.addDialog( msg_txt, msg_txt + '<br>' + mw.loading_spinner() );
+		mw.addDialog( msg_txt, msg_txt + '<br>' + 
+				$j('<div />').loadingSpinner().html() 
+		);
 	}
 	
 	/**
@@ -1288,18 +1290,6 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			
 		}
 	}
-	
-	/**
-	* Get a loading spinner html
-	* NOTE: this is depreciated use jQuery binding $j(target).loadingSpinner()" instead 
-	*
-	* @param {String} [Optional] style Style string to apply to the spinner 
-	*/
-	mw.loading_spinner = function( style ) {
-		var style_txt = ( style ) ? style : '';
-		return '<div class="loading_spinner" style="' + style_txt + '"></div>';
-	}
-	
 	
 	//Setup the local mwOnLoadFunctions array: 
 	var mwOnLoadFunctions = [];
@@ -2271,7 +2261,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				if ( this ) {
 					$j( this ).html(
 						$j( '<div />' )
-						.addClass( "loading_spinner" )  
+						.addClass( "loadingSpinner" )  
 					 );
 				}			
 				return this;

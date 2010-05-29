@@ -28,7 +28,7 @@ mw.addMessages( {
 	"mwe-upload-in-new-win-link" : "upload in the new window or tab",
 	"mwe-upload-refresh" : "refresh your upload list",
 	
-	"mwe-ie-inline-upload" : "Inline uploading is currently disabled for Internet Exploer. You can $1 then $2"
+	"mwe-ie-inline-upload" : "Inline uploading is currently disabled for Internet Explorer. You can $1, then $2"
 } );
 
 var default_form_options = {
@@ -198,7 +198,7 @@ mw.UploadForm = { };
 					$j( '#wpUploadBtn' )
 					.attr( 'disabled', null )
 					.parent()
-					.find( '.loading_spinner' )
+					.find( '.loadingSpinner' )
 					.remove();				
 				},
 				
@@ -281,7 +281,7 @@ mw.UploadForm = { };
 					$j( '#wpUploadBtn' )
 					.attr( 'disabled', null )
 					.parent()
-					.find( '.loading_spinner' )
+					.find( '.loadingSpinner' )
 					.remove();				
 				},
 				// Timeout callback

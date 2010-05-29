@@ -791,7 +791,7 @@ mw.Sequencer.prototype = {
 		mw.log( "sequence:doEditTransition" );
 		var _this = this;
 		// Add a loading image
-		mw.loading_spinner( '#transitions_ic' );
+		$j( '#transitions_ic' ).loadingSpinner();
 		mw.load( [
 			'$j.fn.ColorPicker',
 			'mw.TimedEffectsEdit'
@@ -813,7 +813,7 @@ mw.Sequencer.prototype = {
 		mw.log( 'seq:doEditClip' );
 		var _this = this;
 
-		mw.loading_spinner( '#clipedit_ic' );
+		$j( '#clipedit_ic' ).loadingSpinner();
 		
 		// Load the clipEdit library if not already loaded:
 		mw.load( [

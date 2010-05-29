@@ -87,7 +87,7 @@ RemoteMwTimedText.prototype = {
 			//Select the timed text for the page: 
 			
 			//remove the loader
-			$j('.loading_spinner').remove();
+			$j('.loadingSpinner').remove();
 			
 			var player = $j('#timed-text-player-embed').get(0);
 			

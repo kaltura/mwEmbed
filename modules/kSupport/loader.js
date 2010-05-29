@@ -60,12 +60,16 @@
 		if( $j( select ).length ) {
 			tagCheckObject.hasTags = true;
 						
+			// FALLFORWARD only for mobile safari::
+			//
 			// For now swap in "video" tags ( for iPhone )
 			// TODO in the future do something smarter possibly in the kentryid lib 
 			// instead of the loader.js
 			
 			if( mw.isMobileSafari() ){
-				$j( select ).each( function( inx, element ){					
+				var loadEmbedPlayerFlag = false;
+				$j( select ).each( function( inx, element ){
+					loadEmbedPlayerFlag = true;
 					var dataUrl = $j( element ).attr('data');
 					var entryId = dataUrl.split('/').pop();
 					mw.log("Got EntryID: " + entryId + " from flash object")
@@ -74,17 +78,28 @@
 					var width = $j( element ).attr('width');					
 					var videoId = 'vid' + inx;
 					
+					// Replace with a spiner
 					$j( element ).replaceWith( 
-							$j( '<video />').attr({
-								'id' : videoId,
-								'kentryid': entryId
-							})
-							.css({
-								'width' : width + 'px',
-								'height' : height + 'px'
-							})
-					)					
+						$j('<div />')
+						.attr({
+							'id': videoId
+							'kentryid': entryId
+						})
+						.css({
+							'width' : width + 'px',
+							'height' : height + 'px'
+						})
+						.addClass( 'safariVideoSwap')
+						.loadingSpinner();
+					)						
 				});
+				if( loadEmbedPlayerFlag ){					
+					mw.load('EmbedPlayer', function(){
+						// Remove the general loading spinner ( embedPlayer takes over )
+						$j('.loadingSpinner').remove();
+						$j('.safariVideoSwap').embedPlayer();
+					})
+				}
 			}			
 		}
 	});

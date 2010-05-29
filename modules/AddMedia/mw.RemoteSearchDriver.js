@@ -30,10 +30,10 @@ mw.addMessages( {
 	"mwe-cc_sa_title" : "Share Alike",
 	"mwe-cc_pd_title" : "Public Domain",
 	"mwe-unknown_license" : "Unknown license",
-	"mwe-no-import-by-url" : "This user or wiki <b>cannot<\/b> import assets from remote URLs.<p>Do you need to login?<\/p><p>Is upload_by_url permission set for you?<br \/>Does the wiki have [$1 $wgAllowCopyUploads] enabled?<\/p>",
-	
+	"mwe-no-import-by-url" : "This user or wiki <b>cannot<\/b> import assets from remote URLs.<p>Do you need to login?<\/p><p>Is upload_by_url permission set for you?<br \/>Does the wiki have $1 enabled?<\/p>",
+	"mwe-no-import-by-url-linktext" : "$wgAllowCopyUploads",
 	"mwe-results_from" : "Results from $1",
-	"mwe-missing_desc_see_source" : "This asset is missing a description. Please see the $1 and help describe it.",
+	"mwe-missing_desc_see_source" : "This asset is missing a description. Please check the [$1 source] and help describe it.",
 	
 	"rsd_config_error" : "Add media wizard configuration error: $1",
 	"mwe-your-recent-uploads" : "Your recent uploads to $1",
@@ -61,7 +61,8 @@ mw.addMessages( {
 	"mwe-checking-resource" : "Checking for resource",
 	"mwe-resource-needs-import" : "Resource $1 needs to be imported to $2",
 	
-	"mwe-warning-upload-to-commons" : "$1 recommends you upload to Wikimedia Commons, only upload locally after you have read [$2 local upload policy]",	
+	"mwe-warning-upload-to-commons" : "$1 recommends you upload to Wikimedia Commons, only upload locally after you have read $2",
+	"mwe-local-upload-policy-link" : "local upload policy" ,
 	
 	"mwe-ftype-svg" : "SVG vector file",
 	"mwe-ftype-jpg" : "JPEG image file",
@@ -528,7 +529,7 @@ mw.RemoteSearchDriver.prototype = {
 	 * Get license icon html
 	 * @param license_key  the license key (ie "by-sa" or "by-nc-sa" etc)
 	 * 
-	 * @return {Element} A div containing the license icons.
+	 * @return {jQuery element} A div containing the license icons.
 	 */
 	getLicenseIconHtml: function( licenseObj ) {
 		
@@ -829,7 +830,7 @@ mw.RemoteSearchDriver.prototype = {
 					'left' : '0px',
 					'bottom' : '3em',
 					'right' : '0px'
-				} )
+				})
 		);
 		// Get layout
 		mw.log( 'width: ' + $j( window ).width() +  ' height: ' + $j( window ).height() );
@@ -853,8 +854,7 @@ mw.RemoteSearchDriver.prototype = {
 				_this.onCancelResourceEdit();
 				$j( this ).parents( '.ui-dialog' ).fadeOut( 'slow' );
 			}
-		} );
-				
+		} );		
 		$j( _this.target_container ).dialogFitWindow();
 		
 		// Add the window resize hook to keep dialog layout
@@ -1287,7 +1287,8 @@ mw.RemoteSearchDriver.prototype = {
 				.attr( { 
 					'href' : $uploadLink.attr('href'),
 					'target' : '_new'
-				} )				
+				} )
+				.text( gM('mwe-local-upload-policy-link') )
 			),
 			// Unfortunately mediaWiki pages don't expose the title of the wiki 
 			// Could get in an api request ( just use domain for now)  
@@ -1350,7 +1351,7 @@ mw.RemoteSearchDriver.prototype = {
 		}
 		
 		// Set the content to loading while we do the search:
-		this.$resultsContainer.html( mw.loading_spinner() );
+		this.$resultsContainer.loadingSpinner();
 		
 		// Make sure the search library is loaded and issue the search request
 		this.performProviderSearch( provider );
@@ -1477,8 +1478,9 @@ mw.RemoteSearchDriver.prototype = {
 						$j('<a />')
 						.attr({
 							'href' : 'http:\/\/www.mediawiki.org\/wiki\/Manual:$wgAllowCopyUploads',
-							'title' : 'wgAllowCopyUploads'
-						})						
+							'title' : gM( 'mwe-no-import-by-url-linktext' )
+						})
+						.text( gM( 'mwe-no-import-by-url-linktext' ) )
 					)
 				);
 			}
@@ -1550,7 +1552,7 @@ mw.RemoteSearchDriver.prototype = {
 	 * 
 	 * @param {Object} Object to store in context.
 	 * 
-	 * @return {Function} A callback to retrieve the context.
+	 * @return {function} A callback to retrieve the context.
 	 */
 	storeContext: function( contextObject ) {
 		var context = contextObject;
@@ -1821,7 +1823,7 @@ mw.RemoteSearchDriver.prototype = {
 	* @param {Number} resIndex the resource index to build unique ids
 	* @param {Object} resource the resource object 
 	*/
-	getResultHtmlList: function( provider, resIndex, resource ) {
+	getResultHtmlList:function( provider, resIndex, resource ) {
 		
 		var $resultBox = $j( '<div />' )
 			.addClass( 'mv_clip_list_result' )
@@ -1913,7 +1915,7 @@ mw.RemoteSearchDriver.prototype = {
 				'position' : 'absolute',
 				'left' : '2px',
 				'top' : '5px',
-				'bottom' : '20px', 
+				'bottom' : '10px', 
 				'width' : ( editWidth + 5 ) + 'px',
 				'overflow' : 'auto',
 				'padding' : '5px'
@@ -1931,7 +1933,7 @@ mw.RemoteSearchDriver.prototype = {
 				'left' : ( editWidth + 25 ) + 'px',
 				'right' :'0px', 
 				'top' : '5px',
-				'bottom' : '20px',
+				'bottom' : '10px',
 				'padding' : '5px'			
 			})
 			.loadingSpinner();						
@@ -2063,6 +2065,13 @@ mw.RemoteSearchDriver.prototype = {
 				} )		
 			)
 		}
+		
+		// Also fade in the container:
+		$j( '#rsd_resource_edit' ).animate( {
+			'opacity': 1,
+			'background-color': '#FFF',
+			'z-index': 99
+		} );
 
 		// Show the editor itself
 		if ( mediaType == 'image' ) {
@@ -2266,7 +2275,7 @@ mw.RemoteSearchDriver.prototype = {
 	/**
 	* Check if a given content provider is local.  
 	* @param {Object} provider Provider object to be checked
-	* @return {Boolean}
+	* @return 
 	*/
 	isProviderLocal: function( provider ) {
 		if ( provider.local ) {
@@ -2420,14 +2429,13 @@ mw.RemoteSearchDriver.prototype = {
 		);
 			
 		var buttonPaneSelector = _this.target_container + '~ .ui-dialog-buttonpane';
-		$j( buttonPaneSelector )		
-		.html (
+		$j( buttonPaneSelector ).html (
 			// Add the buttons to the bottom:
 			$j.btnHtml( gM( 'mwe-do_import_resource' ), 'rsd_import_doimport', 'check' ) + 
 			' ' +
 			$j.btnHtml( gM( 'mwe-return-search-results' ), 'rsd_import_acancel', 'close' ) + ' '
 		);
-		
+
 		// Update video tag (if a video)
 		if ( resource.mime.indexOf( 'video/' ) !== -1 ) {
 			var target_rewrite_id = $j( _this.target_container ).attr( 'id' ) + '_rsd_pv_vid';
@@ -2447,7 +2455,7 @@ mw.RemoteSearchDriver.prototype = {
 			.buttonHover()
 			.click( function() {
 				mw.log( " Do preview asset update" );
-				$j( '#rsd_import_desc' ).html( mw.loading_spinner() );
+				$j( '#rsd_import_desc' ).loadingSpinner() ;
 				// load the preview text:
 				mw.parseWikiText(
 					$j( '#wpUploadDescription' ).val(), 
@@ -2469,7 +2477,7 @@ mw.RemoteSearchDriver.prototype = {
 					_this.doApiImport( resource, function() {
 						$j( '#rsd_resource_import' ).remove();
 						_this.clipEdit.updateInsertControlActions();
-						callback();
+						callback 
 					});
 				} else {
 					mw.log( "Error: import mode is not form or API (can not copy asset)" );
@@ -3022,7 +3030,7 @@ mw.RemoteSearchDriver.prototype = {
 	 * 
 	 * @param The current content provider.
 	 * 
-	 * @return {Element} A description element for embedding.
+	 * @return {jQuery element} A description element for embedding.
 	 */
 	createSearchDescription: function( provider ) {		
 		var resultsFromMsg = gM( 'mwe-results_from', 
@@ -3048,7 +3056,7 @@ mw.RemoteSearchDriver.prototype = {
 	* Results Header controls like box vs list view
 	* & search description
 	* 
-	* @return {Element} The header for embedding in the result set.
+	* @return {jQuery element} The header for embedding in the result set.
 	*/ 
 	createResultsHeader: function() {
 		var _this = this;
@@ -3075,7 +3083,7 @@ mw.RemoteSearchDriver.prototype = {
 	/**
 	 * Creates the footer of the search results (paging).
 	 * 
-	 * @return {Element} The footer for embedding in the result set.
+	 * @return {jQuery element} The footer for embedding in the result set.
 	 */
 	createResultsFooter: function() {
 		var _this = this;
@@ -3092,7 +3100,7 @@ mw.RemoteSearchDriver.prototype = {
 	/**
 	* Generates an HTML control for paging between search results.
 	*
-	* @return {Element} paging control for current results  
+	* @return {jQuery element} paging control for current results  
 	*/
 	createPagingControl: function( target ) {
 		var _this = this;

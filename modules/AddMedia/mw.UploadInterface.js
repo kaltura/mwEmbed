@@ -228,10 +228,7 @@ mw.UploadDialogInterface.prototype = {
 
 		if ( !title_txt )
 			title_txt = _this.getProgressTitle();
-
-		if ( !msg )
-			msg = mw.loading_spinner( 'left:40%;top:40px;' );
-
+		
 		if ( !buttons ) {
 			// If no buttons are specified, add a close button
 			buttons = {};
@@ -241,7 +238,11 @@ mw.UploadDialogInterface.prototype = {
 		}
 		
 		$j( '#upProgressDialog' ).dialog( 'option', 'title',  title_txt );
-		$j( '#upProgressDialog' ).html( msg );
+		if ( !msg ) {
+			$j( '#upProgressDialog' ).loadingSpinner();
+		} else {
+			$j( '#upProgressDialog' ).html( msg );
+		}
 		$j( '#upProgressDialog' ).dialog( 'option', 'buttons', buttons );
 	},
 	

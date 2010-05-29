@@ -22,7 +22,7 @@ mw.ready( function(){
 
 function doHello(){
 	mw.log('to a hello user');
-	$j('#helloTarget').html( mw.loading_spinner() );
+	$j('#helloTarget').loadingSpinner();
 	//first get the user name:
 	getUserName( function( user_name ){	
 		$j('#helloTarget').addClass('UserNameFound').hide().text( user_name  ).fadeIn('slow');
@@ -48,7 +48,7 @@ function getUserName( callback ){
 
 // Simple "hello from api proxy" append on talk page
 function doAppend(){
-	$j('#appendTarget').html( mw.loading_spinner() );
+	$j('#appendTarget').loadingSpinner();
 	//get user name
 	getUserName( function( userName ){
 		var eTitle = 'User_talk:' + userName;

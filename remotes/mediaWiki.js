@@ -159,7 +159,7 @@ function mwSetPageToLoading(){
 	importStylesheetURI( mwEmbedHostPath + '/skins/mvpcf/EmbedPlayer.css?' + mwGetReqArgs() );
 	var body = document.getElementById('bodyContent');
 	var oldBodyHTML = body.innerHTML;
-	body.innerHTML = '<div class="loading_spinner"></div>';
+	body.innerHTML = '<div class="loadingSpinner"></div>';
 	return oldBodyHTML;
 }
 /**

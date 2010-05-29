@@ -268,7 +268,7 @@ mw.UploadApiProcessor.prototype = {
 				// Check if we have a stashed key:
 				if ( _this.warnings_sessionkey ) {
 					//set to "loading"
-					$j( '#upProgressDialog' ).html( mw.loading_spinner() );
+					$j( '#upProgressDialog' ).loadingSpinner();
 					//setup request:
 					var request = {
 						'action': 'upload',
