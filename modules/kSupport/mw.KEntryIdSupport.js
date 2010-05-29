@@ -52,13 +52,13 @@ mw.KEntryIdSupport.prototype = {
 		
 		// Make sure we have an entry id:
 		var kentryId = $j( embedPlayer ).attr( 'kentryid' ); 
-		if( ! kentryid ){
+		if( ! kentryId ){
 			// Run the callback empty handed
 			callback( false );
 			return ;
 		}
 		// Make sure we have a widget id: 
-		var widgetId
+		var widgetId = $j( embedPlayer ).attr( 'kwidgetid' ); 
 		
 		// if Kaltura session is ready jump directly to entryId lookup
 		if( _this.kalturaSessionState == 'ready' ){
@@ -103,15 +103,17 @@ mw.KEntryIdSupport.prototype = {
 		
 		var kEntryId = $j( embedPlayer ).attr( 'kentryid' ); 
 		
-		var widgetId =  $j( embedPlayer ).attr( 'widgetid' );
+		var widgetId =  $j( embedPlayer ).attr( 'kwidgetid' );
 		
 		// Assing the partnerId from the wdigetid
 		var kPartnerId = widgetId.replace(/_/, '');
 		
-		var flaverGrabber = new KalturaFlavorAssetService( this.kClient ); 
-		flaverGrabber.getByEntryId ( function( success, data ) {
+		var flavorGrabber = new KalturaFlavorAssetService( this.kClient ); 
+		flavorGrabber.getByEntryId ( function( success, data ) {			
 			if( ! success || ! data.length ) {
+				
 				mw.log( "Error flaverGrabber getByEntryId:: no sources found ");
+				
 				callback();
 				return false;
 			}			
@@ -216,7 +218,7 @@ mw.KEntryIdSupport.prototype = {
 	* @param {Function} callback Function called once the function is setup
 	*/ 
 	setupSession: function(widgetId,  callback ) {				 		
-		var _this = this;
+		var _this = this;		
 		// Assing the partnerId from the wdigetid
 		var kPartnerId = widgetId.replace(/_/, '');
 		
@@ -229,7 +231,7 @@ mw.KEntryIdSupport.prototype = {
 		// Client session start
 		this.kClient.session.startWidgetSession(
 			// Callback function once session is ready 
-			function ( success, data ) {
+			function ( success, data ) {				
 				if( !success ){
 					mw.log( "Error in request ");
 					callback( false );
@@ -240,10 +242,10 @@ mw.KEntryIdSupport.prototype = {
 					callback( false );
 					return ;
 				}
-				_this.kClient.setKs( data );
+				_this.kClient.setKs( data.ks );
 				// update the kalturaKS var
-				mw.setConfig( 'kalturaKS', data ),
-				mw.log('New session created::' + data);
+				mw.setConfig( 'kalturaKS', data.ks ),
+				mw.log('New session created::' + data.ks );
 								
 				// Run the callback 
 				callback( true );

@@ -42,6 +42,7 @@ if( !mw.setConfig ){
 }
 // Chceck dom for kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
+
 function kDomReady(){		
 	// If user javascript is using mw.ready add script
 	if( preMwEmbedReady.length ) {
@@ -56,14 +57,19 @@ function kDomReady(){
 		return ;
 	}
 	
-	// If document includes kaltura embed tags
-	for(var i=0; i < document.getElementsByTagName('object').length; i++) {
-		var embedTag = document.getElementsByTagName('object')[i];
-		if( embedTag.getAttribute( 'name' ) == 'kaltura_player' ) {			
-			kAddScript();
-			return ;
+	// If document includes kaltura embed tags && isMobile safari: 
+	if ((navigator.userAgent.indexOf('iPhone') != -1) || 
+			(navigator.userAgent.indexOf('iPod') != -1) || 
+			(navigator.userAgent.indexOf('iPad') != -1)) {
+		
+		for(var i=0; i < document.getElementsByTagName('object').length; i++) {
+			var embedTag = document.getElementsByTagName('object')[i];
+			if( embedTag.getAttribute( 'name' ) == 'kaltura_player' ) {											
+				kAddScript();
+				return ;
+			}
 		}
-	}	
+	}
 }
 
 // Add the kaltura html5 mwEmbed script

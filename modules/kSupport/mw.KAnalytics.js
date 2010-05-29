@@ -1,9 +1,9 @@
 /**
-* Kaltura style analytics reporting class
-*/
+ * Kaltura style analytics reporting class
+ */
 
 
-//Global mw.addKAnalytics manager
+// Global mw.addKAnalytics manager
 var mwKAnalyticsManager = {};
 mw.addKAnalytics = function( embedPlayer ) {
 	mwKAnalyticsManager[ embedPlayer.id ] = new mw.KAnalytics( embedPlayer ) ;
@@ -26,16 +26,18 @@ mw.KAnalytics.prototype = {
 	reportSet : null,
 	
 	// Stores the last time we issued a seek event
-	// avoids sending lots of seeks while scrubbing 
+	// avoids sending lots of seeks while scrubbing
 	lastSeekEventTime: 0,
 	
-	//Start Time
+	// Start Time
 	startReportTime: 0, 
 	
-	/** 
-	* Constructor for kAnalytics
-	* @param {Object} embedPlayer Player to apply Kaltura analytics to. 
-	*/
+	/**
+	 * Constructor for kAnalytics
+	 * 
+	 * @param {Object}
+	 *            embedPlayer Player to apply Kaltura analytics to.
+	 */
 	init: function( embedPlayer ) {
 	
 		// Setup the local reference to the embed player
@@ -54,11 +56,13 @@ mw.KAnalytics.prototype = {
 	},
 	
 	/**
-	* Get the current report set
-	* @param {Number} KalturaStatsEventType The eventType number.
-	*/
+	 * Get the current report set
+	 * 
+	 * @param {Number}
+	 *            KalturaStatsEventType The eventType number.
+	 */
 	sendStatsEvent: function( KalturaStatsEventKey ){		
-		// Check if we have a monitorAnalytics callback 
+		// Check if we have a monitorAnalytics callback
 		
 		
 		if( typeof mw.getConfig( 'kalturaAnalyticsCallbackLog' ) == 'function' ) {
@@ -95,7 +99,7 @@ mw.KAnalytics.prototype = {
 			'ks' : mw.getConfig( 'kalturaKS' ),
 			'service' : 'stats'	
 		};		
-		// Set the seek condition: 
+		// Set the seek condition:
 		reportSet[ 'event:seek' ] = ( this.hasSeeked ) ? 'true' : 'false';
 		
 		// Set the 'event:entryId'
@@ -106,7 +110,7 @@ mw.KAnalytics.prototype = {
 			reportSet[ 'event:entryId' ] = this.embedPlayer.getSrc();
 		}			
 		
-		// Add the kalturaStats container if missing. 
+		// Add the kalturaStats container if missing.
 		if( $j( '#kalturaStats_' + this.embedPlayer.id ).length == 0 ){
 			$j( 'body').append( 
 				$j('<div />').attr( {
@@ -121,7 +125,7 @@ mw.KAnalytics.prototype = {
 			$j( this.embedPlayer ).attr( 'kalturaStatsServer') : 
 			mw.getConfig( 'kalturaStatsServer' );
 
-		// Add the reportSet to the url : 
+		// Add the reportSet to the url :
 		reportUrl+= '?' + $j.param( reportSet );
 		
 		$j( '#kalturaStats_' + this.embedPlayer.id ).append( 
@@ -130,8 +134,8 @@ mw.KAnalytics.prototype = {
 	},
 	
 	/**
-	* Adds the hooks for the player stats reporting 
-	*/ 
+	 * Adds the hooks for the player stats reporting
+	 */ 
 	addPlayerHooks: function(){
 	
 		// Setup local reference to embedPlayer
@@ -148,16 +152,16 @@ mw.KAnalytics.prototype = {
 		// When the player is ready
 		b( 'playerReady', 'WIDGET_LOADED' );
 		
-		// When the poster or video ( when autoplay ) media is loaded 
+		// When the poster or video ( when autoplay ) media is loaded
 		b( 'mediaLoaded', 'MEDIA_LOADED' );
 		
-		// When the play button is pressed or called from javascript			
+		// When the play button is pressed or called from javascript
 		b( 'playEvent', 'PLAY' );
 	
 		// When the show Share menu is displayed
 		b( 'showShareEvent', 'OPEN_VIRAL' );
 		
-		// When the show download menu is displayed 
+		// When the show download menu is displayed
 		b( 'showDownloadEvent', 'OPEN_DOWNLOAD' );
 		
 		// When the clip starts to buffer ( not all player types )
@@ -166,18 +170,20 @@ mw.KAnalytics.prototype = {
 		// When the clip is full bufferd
 		b( 'bufferEndEvent', 'BUFFER_END' );
 		
-		// When the fullscreen button is pressed  
-		//( presently does not register iphone / ipad until it has js bindings )
+		// When the fullscreen button is pressed
+		// ( presently does not register iphone / ipad until it has js bindings
+		// )
 		b( 'openFullScreenEvent', 'OPEN_FULL_SCREEN' );
 		
 		// When the close fullscreen button is pressed.
-		//( presently does not register iphone / ipad until it has js bindings ) 
+		// ( presently does not register iphone / ipad until it has js bindings
+		// )
 		b( 'closeFullScreenEvent', 'CLOSE_FULL_SCREEN' );
 		
-		// When the user plays (after the ondone event was fired ) 
+		// When the user plays (after the ondone event was fired )
 		b( 'replayEvent', 'REPLAY' );	
 	
-		// Bind on the seek event ( actual HTML5 binding ) 
+		// Bind on the seek event ( actual HTML5 binding )
 		$j( embedPlayer ).bind( 'onSeek', function( seekTarget ) {
 			// Don't send a bunch of seeks on scrub:
 			if( _this.lastSeekEventTime == 0 || 
@@ -189,40 +195,40 @@ mw.KAnalytics.prototype = {
 			// Update the last seekTime
 			_this.lastSeekEventTime =  new Date().getTime();
 			
-			// Then set local seek flags 
+			// Then set local seek flags
 			this.hasSeeked = true;		
 			this.lastSeek = seekTarget;	
 		} );
 		
-		// Let updateTimeStats handle the currentTime monitor timing 
+		// Let updateTimeStats handle the currentTime monitor timing
 
 		$j( embedPlayer ).bind( 'monitorEvent', function(){
 			_this.updateTimeStats();			
 		}); 
 				
 		// Not usable in the html5 player at this point in time:
-		/*		
-			KalturaStatsEventType.OPEN_EDIT = 8;
-			KalturaStatsEventType.OPEN_REPORT = 11;
-			KalturaStatsEventType.OPEN_UPLOAD = 18;
-			KalturaStatsEventType.SAVE_PUBLISH = 19;
-			KalturaStatsEventType.CLOSE_EDITOR = 20;
-			
-			KalturaStatsEventType.PRE_BUMPER_PLAYED = 21;
-			KalturaStatsEventType.POST_BUMPER_PLAYED = 22;
-			KalturaStatsEventType.BUMPER_CLICKED = 23;
-			
-			KalturaStatsEventType.FUTURE_USE_1 = 24;
-			KalturaStatsEventType.FUTURE_USE_2 = 25;
-			KalturaStatsEventType.FUTURE_USE_3 = 26;
-		*/
+		/*
+		 * KalturaStatsEventType.OPEN_EDIT = 8;
+		 * KalturaStatsEventType.OPEN_REPORT = 11;
+		 * KalturaStatsEventType.OPEN_UPLOAD = 18;
+		 * KalturaStatsEventType.SAVE_PUBLISH = 19;
+		 * KalturaStatsEventType.CLOSE_EDITOR = 20;
+		 * 
+		 * KalturaStatsEventType.PRE_BUMPER_PLAYED = 21;
+		 * KalturaStatsEventType.POST_BUMPER_PLAYED = 22;
+		 * KalturaStatsEventType.BUMPER_CLICKED = 23;
+		 * 
+		 * KalturaStatsEventType.FUTURE_USE_1 = 24;
+		 * KalturaStatsEventType.FUTURE_USE_2 = 25;
+		 * KalturaStatsEventType.FUTURE_USE_3 = 26;
+		 */
 	},
 	
 	/**
-	* Send updates for time stats
-	*/  
+	 * Send updates for time stats
+	 */  
 	updateTimeStats: function() {
-		// Setup local references: 
+		// Setup local references:
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
 		

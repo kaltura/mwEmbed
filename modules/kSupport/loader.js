@@ -18,7 +18,7 @@
 	// Add the kentryid and kpartnerid attribute to the embed player
 	mw.setConfig( 'embedPlayerAttributes', {
 		'kentryid' : null,
-		'kpartnerid' : null
+		'kwidgetid' : null
 	} );	
 	
 	mw.addClassFilePaths( {
@@ -96,15 +96,14 @@
 							'height' : height + 'px',
 							'position' : 'absolute'
 						});
-					}
-					
+					}		
 					// Replace with a spinner
 					$j( element ).replaceWith( 
 						$j('<div />')
 						.attr({
 							'id': videoId,
 							'kentryid': entryId,
-							'widgetid' : widgetId
+							'kwidgetid' : widgetId
 						})
 						.css( {
 							'width' : width + 'px',
