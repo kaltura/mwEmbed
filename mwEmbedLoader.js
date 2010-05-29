@@ -6,10 +6,10 @@
 * http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
 */
 
-var kURID = '1.1n';
+var kURID = '1.1o';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/jsScriptLoader.php';
-SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
+//SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
 
 // Define mw
 window['mw'] = {};
@@ -78,7 +78,7 @@ function kAddScript(){
 	url+='&urid=' + kURID;
 	url+='&uselang=en';
 	
-	url+='&debug=true';
+	//url+='&debug=true';
 	
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
