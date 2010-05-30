@@ -4,7 +4,7 @@
  */
 var urlparts = getRemoteEmbedPath();
 var mwEmbedHostPath = urlparts[0];
-var mwRemoteVersion = 'r126';
+var mwRemoteVersion = 'r127';
 var mwUseScriptLoader = true;
 
 // Log the mwRemote version makes it easy to debug cache issues
@@ -52,7 +52,7 @@ function doPageSpecificRewrite() {
 	}
 	
 	// Timed text display:
-	if ( wgPageName.indexOf( "TimedText" ) === 0 ) {
+	if ( wgPageName.indexOf( "TimedText:" ) === 0 ) {
 		if( wgAction == 'view' ){
 			var orgBody = mwSetPageToLoading();
 			//load the "player" ( includes call to  loadMwEmbed )
@@ -74,7 +74,7 @@ function doPageSpecificRewrite() {
 	}
 	
 	// Remote Sequencer
-	if( wgPageName.indexOf( "Sequence" ) === 0 ){	
+	/*if( wgPageName.indexOf( "Sequence:" ) === 0 ){	
 		console.log( 'spl: ' + typeof mwSetPageToLoading );
 		// If on a view page set content to "loading" 
 		mwSetPageToLoading();
@@ -93,7 +93,7 @@ function doPageSpecificRewrite() {
 				} );
 			} );
 		} );
-	}
+	}*/
 	
 	
 	// Upload page -> Firefogg / upload API / uploadWizard integration
