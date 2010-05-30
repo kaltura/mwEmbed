@@ -105,15 +105,13 @@ mw.KEntryIdSupport.prototype = {
 		
 		var widgetId =  $j( embedPlayer ).attr( 'kwidgetid' );
 		
-		// Assing the partnerId from the wdigetid
+		// Assign the partnerId from the wdigetid
 		var kPartnerId = widgetId.replace(/_/, '');
 		
 		var flavorGrabber = new KalturaFlavorAssetService( this.kClient ); 
 		flavorGrabber.getByEntryId ( function( success, data ) {			
-			if( ! success || ! data.length ) {
-				
-				mw.log( "Error flaverGrabber getByEntryId:: no sources found ");
-				
+			if( ! success || ! data.length ) {				
+				mw.log( "Error flavorGrabber getByEntryId:: no sources found ");				
 				callback();
 				return false;
 			}			
@@ -218,8 +216,9 @@ mw.KEntryIdSupport.prototype = {
 	* @param {Function} callback Function called once the function is setup
 	*/ 
 	setupSession: function(widgetId,  callback ) {				 		
-		var _this = this;		
-		// Assing the partnerId from the wdigetid
+		var _this = this;
+		
+		// Assign the partnerId from the wdigetid
 		var kPartnerId = widgetId.replace(/_/, '');
 		
 		// Setup the kConfig		
@@ -241,12 +240,12 @@ mw.KEntryIdSupport.prototype = {
 					mw.log( "Error:: " +data.code + ' ' + data.message );
 					callback( false );
 					return ;
-				}
-				_this.kClient.setKs( data.ks );
+				}				
 				// update the kalturaKS var
 				mw.setConfig( 'kalturaKS', data.ks ),
 				mw.log('New session created::' + data.ks );
-								
+				_this.kClient.setKs( data.ks );
+				
 				// Run the callback 
 				callback( true );
 			}, 
