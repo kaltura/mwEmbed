@@ -74,12 +74,14 @@ function doPageSpecificRewrite() {
 	}
 	
 	// Remote Sequencer
-	/*if( wgPageName.indexOf( "Sequence:" ) === 0 ){	
-		console.log( 'spl: ' + typeof mwSetPageToLoading );
+	if( wgPageName.indexOf( "Sequence:" ) === 0 ){		
+		//console.log( 'spl: ' + typeof mwSetPageToLoading );
 		// If on a view page set content to "loading" 
 		mwSetPageToLoading();
 		// Loading with loadMwEmbed not so big a deal since "sequencer is huge
 		loadMwEmbed( function(){
+			$j('#bodyContent').text ( 'Sequencer interface under development ');
+			/*
 			mw.load( 'Sequencer', function(){
 				mw.load( 'RemoteMwSequencer', function(){
 					mw.log('RemoteMwSequencer loaded' ); 
@@ -92,8 +94,9 @@ function doPageSpecificRewrite() {
 						myRemote.updateUI();
 				} );
 			} );
+			*/
 		} );
-	}*/
+	}
 	
 	
 	// Upload page -> Firefogg / upload API / uploadWizard integration
@@ -236,7 +239,7 @@ function rewrite_for_OggHandler( vidIdList ) {
 		src = re.exec( rewriteHTML )[2];
 
 		var apiTitleKey = src.split( '/' );
-		apiTitleKey = unescape( apiTitleKey[ apiTitleKey.length - 1 ] );
+		apiTitleKey = decodeURI( apiTitleKey[ apiTitleKey.length - 1 ] );
 
 		var re = new RegExp( /length(&quot;:?\s*)*([^,]*)/ );
 		var dv = parseFloat( re.exec( rewriteHTML )[2] );

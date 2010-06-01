@@ -22,6 +22,22 @@ $messages['en'] = array(
 	'mwe-test-plural' => 'I ran {{PLURAL:$1|$1 test|$1 tests}}',
 );
 
+/** Message documentation (Message documentation)
+ * @author EugeneZelenko
+ * @author Fryed-peach
+ */
+$messages['qqq'] = array(
+	'mwe-loading_txt' => '{{Identical|Loading}}',
+	'mwe-error_load_lib' => 'Parameters:
+* $1 Corresponds to the JavaScript file that was not retrievable or does not define its class name.
+* $2 Is the class name that was associated with the JavaScript file that was not found or could not be retrieved.',
+	'mwe-ok' => '{{Identical|OK}}',
+	'mwe-cancel' => '{{Identical|Cancel}}',
+);
+
+/** Afrikaans (Afrikaans)
+ * @author Naudefj
+ */
 $messages['af'] = array(
 	'mwe-loading_txt' => 'laai ...',
 	'mwe-error_load_lib' => 'Fout: JavaScript $1 kon nie gevind word of definieer nie $2 nie',
@@ -43,6 +59,16 @@ $messages['aln'] = array(
 	'mwe-enable-gadget-done' => 'Multimedia beta vegël ka qenë i aktivizuar',
 );
 
+/** Aragonese (Aragonés)
+ * @author Juanpabl
+ */
+$messages['an'] = array(
+	'mwe-cancel' => 'Cancelar',
+);
+
+/** Arabic (العربية)
+ * @author OsamaK
+ */
 $messages['ar'] = array(
 	'mwe-loading_txt' => 'يحمل...',
 	'mwe-cancel' => 'ألغِ',
@@ -83,19 +109,27 @@ $messages['br'] = array(
 	'mwe-test-plural' => 'Sevenet em eus $1 amprouadenn{{PLURAL:$1||}}',
 );
 
+/** Bosnian (Bosanski)
+ * @author CERminator
+ */
 $messages['bs'] = array(
 	'mwe-loading_txt' => 'učitavam ...',
 	'mwe-apiproxy-setup' => 'Postavljanje API proksija',
 	'mwe-ok' => 'U redu',
 	'mwe-cancel' => 'Odustani',
 );
+
+/** Czech (Česky)
+ * @author Mormegil
+ */
 $messages['cs'] = array(
 	'mwe-loading_txt' => 'Načítá se …',
 	'mwe-cancel' => 'Storno',
 );
 
+/** Welsh (Cymraeg) */
 $messages['cy'] = array(
-	'mwe-loading_txt' => 'wrthi\'n llwytho ...',
+	'mwe-loading_txt' => "wrthi'n llwytho ...",
 );
 
 /** German (Deutsch)
@@ -115,6 +149,9 @@ $messages['de'] = array(
 	'mwe-test-plural' => '{{PLURAL:$1|$1 Test|$1 Tests}} durchlaufen',
 );
 
+/** Zazaki (Zazaki)
+ * @author Aspar
+ */
 $messages['diq'] = array(
 	'mwe-loading_txt' => 'bar beno...',
 	'mwe-error_load_lib' => 'xeta: $1 JavaScript re nêresiyeno ya zi pê $2yi şınasnaye niyo.',
@@ -140,9 +177,17 @@ $messages['dsb'] = array(
 	'mwe-test-plural' => 'Som {{PLURAL:$1|$1 test|$1 testa|$1 testy|$1 testow}} pśewjadł',
 );
 
+/** Greek (Ελληνικά)
+ * @author Crazymadlover
+ */
 $messages['el'] = array(
 	'mwe-loading_txt' => 'φόρτωση ...',
+	'mwe-cancel' => 'Ακύρωση',
 );
+
+/** Esperanto (Esperanto)
+ * @author Yekrats
+ */
 $messages['eo'] = array(
 	'mwe-loading_txt' => 'ŝarĝante ...',
 	'mwe-cancel' => 'Nuligi',
@@ -164,14 +209,27 @@ $messages['es'] = array(
 	'mwe-test-plural' => 'Realicé {{PLURAL:$1|$1 prueba|$1 pruebas}}',
 );
 
+/** Basque (Euskara)
+ * @author An13sa
+ */
 $messages['eu'] = array(
 	'mwe-loading_txt' => 'Kargatzen ...',
 	'mwe-ok' => 'Ados',
 	'mwe-cancel' => 'Ezeztatu',
 );
 
+/** Finnish (Suomi)
+ * @author Crt
+ * @author Str4nd
+ */
 $messages['fi'] = array(
+	'mwe-loading_txt' => 'Ladataan...',
+	'mwe-error_load_lib' => 'Virhe: JavaScript $1 ei ollut haettavissa tai se ei määrittele luokkaa $2',
+	'mwe-apiproxy-setup' => 'Pystytetään API-välityspalvelinta',
+	'mwe-ok' => 'OK',
 	'mwe-cancel' => 'Peruuta',
+	'mwe-must-login-gadget' => 'Sinun tulee <a target="_new" href="$1">kirjautua sisään</a>, jotta voisit käyttää pienoisohjelmaa',
+	'mwe-test-plural' => 'Ajoin {{PLURAL:$1|$1 testin|$1 testiä}}',
 );
 
 /** French (Français)
@@ -208,6 +266,9 @@ $messages['gl'] = array(
 	'mwe-test-plural' => '{{PLURAL:$1|Fíxose unha proba|Fixéronse $1 probas}}',
 );
 
+/** Swiss German (Alemannisch)
+ * @author Als-Holder
+ */
 $messages['gsw'] = array(
 	'mwe-loading_txt' => 'Am Lade ...',
 	'mwe-error_load_lib' => 'Fähler: s JavaScript $1 het nit chenne glade wäre oder s losst $2 nit zue',
@@ -217,6 +278,9 @@ $messages['gsw'] = array(
 	'mwe-cancel' => 'Abbräche',
 );
 
+/** Hebrew (עברית)
+ * @author Rotemliss
+ */
 $messages['he'] = array(
 	'mwe-loading_txt' => 'בטעינה ...',
 	'mwe-error_load_lib' => 'שגיאה: לא ניתן היה לטעון את ספריית ה־JavaScript בשם $1 או שהיא אינה מגדירה את $2',
@@ -275,6 +339,10 @@ $messages['ia'] = array(
 	'mwe-test-plural' => 'Io ha executate {{PLURAL:$1|$1 test|$1 tests}}',
 );
 
+/** Indonesian (Bahasa Indonesia)
+ * @author Irwangatot
+ * @author IvanLanin
+ */
 $messages['id'] = array(
 	'mwe-loading_txt' => 'memuat...',
 	'mwe-error_load_lib' => 'Kesalahan: JavaScript $1 tidak dapat diambil atau tidak mendefinisikan $2',
@@ -290,6 +358,9 @@ $messages['ig'] = array(
 	'mwe-cancel' => 'Emekwàlà',
 );
 
+/** Italian (Italiano)
+ * @author Gianfranco
+ */
 $messages['it'] = array(
 	'mwe-cancel' => 'Annulla',
 );
@@ -311,11 +382,17 @@ $messages['ja'] = array(
 	'mwe-test-plural' => '{{PLURAL:$1|$1のテスト}}を実行する',
 );
 
+/** Korean (한국어)
+ * @author Kwj2772
+ */
 $messages['ko'] = array(
 	'mwe-loading_txt' => '불러오는 중...',
 	'mwe-cancel' => '취소',
 );
 
+/** Colognian (Ripoarisch)
+ * @author Purodha
+ */
 $messages['ksh'] = array(
 	'mwe-loading_txt' => 'aam Laade …',
 	'mwe-size-gigabytes' => '$1&nbsp;GB',
@@ -346,7 +423,7 @@ $messages['lb'] = array(
 $messages['mk'] = array(
 	'mwe-loading_txt' => 'Вчитувам...',
 	'mwe-error_load_lib' => 'Грешка: JavaScript $1 не е достапен или не определува $2',
-	'mwe-apiproxy-setup' => 'Поставувам API прокси',
+	'mwe-apiproxy-setup' => 'Поставувам API застапник (proxy)',
 	'mwe-load-drag-item' => 'Го вчитувам повлечениот елемент',
 	'mwe-ok' => 'ОК',
 	'mwe-cancel' => 'Откажи',
@@ -384,6 +461,9 @@ $messages['nl'] = array(
 	'mwe-test-plural' => '{{PLURAL:$1|$1 test|$1 tests}} uitgevoerd',
 );
 
+/** Occitan (Occitan)
+ * @author Cedric31
+ */
 $messages['oc'] = array(
 	'mwe-loading_txt' => 'cargament ...',
 	'mwe-error_load_lib' => 'Error : JavaScript $1 a pas pogut èsser trobat o definís pas $2',
@@ -393,10 +473,16 @@ $messages['oc'] = array(
 	'mwe-cancel' => 'Anullar',
 );
 
+/** Deitsch (Deitsch)
+ * @author Xqt
+ */
 $messages['pdc'] = array(
 	'mwe-ok' => 'OK',
 );
 
+/** Polish (Polski)
+ * @author Sp5uhe
+ */
 $messages['pl'] = array(
 	'mwe-loading_txt' => 'ładowanie ...',
 	'mwe-error_load_lib' => 'Błąd – W plik JavaScript $1 brak jest możliwości pobrania oraz definicji $2',
@@ -442,6 +528,9 @@ $messages['ru'] = array(
 	'mwe-test-plural' => 'Я прошёл {{PLURAL:$1|$1 проверку|$1 проверки|$1 проверок}}',
 );
 
+/** Slovak (Slovenčina)
+ * @author Helix84
+ */
 $messages['sk'] = array(
 	'mwe-loading_txt' => 'načítava sa ...',
 	'mwe-error_load_lib' => 'Error: JavaScript $1 nebolo možné získať alebo neobsahuje definíciu $2',
@@ -457,6 +546,9 @@ $messages['sv'] = array(
 	'mwe-cancel' => 'Avbryt',
 );
 
+/** Telugu (తెలుగు)
+ * @author Veeven
+ */
 $messages['te'] = array(
 	'mwe-ok' => 'సరే',
 	'mwe-cancel' => 'రద్దుచేయి',
@@ -478,6 +570,9 @@ $messages['tl'] = array(
 	'mwe-test-plural' => 'Nagpatakbo ako ng {{PLURAL:$1|$1 pagsusulit|$1 mga pagsusulit}}',
 );
 
+/** Turkish (Türkçe)
+ * @author Joseph
+ */
 $messages['tr'] = array(
 	'mwe-loading_txt' => 'yükleniyor ...',
 	'mwe-error_load_lib' => 'Hata: $1 JavaScripti erişilebilir değil ya da $2 tanımlı değil',
@@ -487,12 +582,18 @@ $messages['tr'] = array(
 	'mwe-cancel' => 'İptal',
 );
 
+/** Vèneto (Vèneto)
+ * @author Candalua
+ */
 $messages['vec'] = array(
-	'mwe-loading_txt' => 'so\' drio cargar ...',
+	'mwe-loading_txt' => "so' drio cargar ...",
 	'mwe-ok' => 'Va ben',
 	'mwe-cancel' => 'Anula',
 );
 
+/** Vietnamese (Tiếng Việt)
+ * @author Minh Nguyen
+ */
 $messages['vi'] = array(
 	'mwe-loading_txt' => 'đang tải …',
 	'mwe-size-kilobytes' => '$1 kB',

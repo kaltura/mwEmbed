@@ -17,6 +17,9 @@ var defaultAddMediaConfig = {
 		// If we should display buttons to switch between "box" and "detailed" view
 		'displayResultFormatButton' : false,
 		
+		// To use the "uploadWizard 
+		'uploadEngine' : 'uploadWizard',
+		
 		// Here we can setup the content provider overrides
 		'enabled_providers': ['wiki_commons'],
 		// The local wiki API URL:

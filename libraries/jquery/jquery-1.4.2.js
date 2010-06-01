@@ -4618,7 +4618,7 @@ jQuery.extend({
 			try {
 				style[ name ] = value;
 			} catch ( e ){
-				// hmm e
+				// IE throws script errors on some style values -dale
 			}
 		}
 

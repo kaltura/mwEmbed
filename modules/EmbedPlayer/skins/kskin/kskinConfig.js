@@ -363,7 +363,7 @@ var kskinConfig = {
 		var _this = this;	
 		var $target = embedPlayer.$interface.find( '.menu-credits' );
 		
-		var apiUrl = mw.getApiProviderURL( embedPlayer.apiProvider );
+		var apiUrl = mw.getApiProviderURL( embedPlayer.apiProvider );		
 		var fileTitle = 'File:' + embedPlayer.apiTitleKey.replace(/File:|Image:/, '');
 		
 		// Get the image info

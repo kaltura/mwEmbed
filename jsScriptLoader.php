@@ -8,6 +8,12 @@
 // ( has to be hard coded rather than config based for fast non-mediawiki config hits )
 $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/includes/cache';
 
+// Check if being used in mediaWiki ( jsScriptLoader.php is NOT an entry point )
+if( is_file ( dirname( __FILE__ ) .'../mwScriptLoader.php' )
+ 	&& !defined( 'SCRIPTLOADER_MEDIAWIKI') ) {	
+	die( 'jsScriptLoader.php is not an entry point when used with the JS2 extension' );
+}
+
 // Check if we are an entry point or being used as part of MEDIAWIKI:
 if ( !defined( 'MEDIAWIKI' ) && !defined( 'SCRIPTLOADER_MEDIAWIKI') ) {
 	$myScriptLoader = new jsScriptLoader();

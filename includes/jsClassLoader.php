@@ -282,8 +282,9 @@ class jsClassLoader {
 				$setInModuleError = ( self::$classParentModuleName [ $className ] )
 					? " set in module: " . self::$classParentModuleName [ $className ]
 					: " set in an extension ";
-
-				throw new MWException( "Error class $className already $setInModuleError \n" );
+				
+				throw new MWException( "Error class $className already $setInModuleError , " . 
+					" can't reassign in " . self::$currentModuleName . "\n" );
 			}
 
 			// Else update the global $wgScriptLoaderNamedPaths ( all scriptloader named paths )

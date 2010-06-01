@@ -155,7 +155,7 @@ var LINK_SWAP_STRING = 'ZreplaceZ';
 			* @param text to swapped 
 			*/
 			function linkSwapText( text ) {
-				mw.log( "linkSwapText::" + text );
+				//mw.log( "linkSwapText::" + text );
 				var re = new RegExp( /\[([^\s]+[\s]+[^\]]*)\]/g );
 				var matchSet = text.match( re );
 				
@@ -165,11 +165,11 @@ var LINK_SWAP_STRING = 'ZreplaceZ';
 
 				text = text.replace( re , LINK_SWAP_STRING );				
 				
-				for(var i=0; i < matchSet.length; i++){
+				for( var i=0; i < matchSet.length; i++ ) {
 				    // Strip the leading [ and trailing ]
 				    var matchParts = matchSet[i].substr(1, matchSet[i].length-2);
 																   				   
-				    // Check for special jQuery type swap and replace inner ZjQuerySwapZ not value 
+				    // Check for special jQuery type swap and replace inner JQUERY_SWAP_STRING not value 
 					if( matchParts.indexOf( JQUERY_SWAP_STRING ) !== -1 ) {				
 						// parse the link as html						
 						var  $matchParts = $j('<span>' +  matchParts + '</span>' );						

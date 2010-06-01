@@ -4,6 +4,10 @@
 window.cortadoDomainLocations = {
 	'upload.wikimedia.org' : 'http://upload.wikimedia.org/jars/cortado.jar'
 };
+// Set the default location for CortadoApplet
+mw.setDefaultConfig( 'relativeCortadoAppletPath',
+		mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/cortado/cortado-ovtk-stripped-0.6.0.jar'
+);
 
 var javaEmbed = {
 
@@ -95,7 +99,9 @@ var javaEmbed = {
 		if ( 
 			!mw.isLocalDomain( mediaSrc ) 
 			|| 
-			!mw.isLocalDomain( mw.getMwEmbedPath() ) 
+			!mw.isLocalDomain( mw.getMwEmbedPath() 
+			||
+			mw.getConfig( 'relativeCortadoAppletPath' ) === false ) 
 		){
 			if ( window.cortadoDomainLocations[ mw.parseUri( mediaSrc ).host ] ) {
 				applet_loc =  window.cortadoDomainLocations[ mw.parseUri( mediaSrc ).host ];
@@ -104,7 +110,7 @@ var javaEmbed = {
 			}
 		} else {
 			// Should be identical to cortado.jar
-			applet_loc = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/cortado/cortado-ovtk-stripped-0.6.0.jar';			
+			applet_loc = mw.getConfig( 'relativeCortadoAppletPath' );		
 		}
 		return applet_loc;
 	},

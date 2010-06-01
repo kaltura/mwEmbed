@@ -3,42 +3,35 @@
 /*@cc_on@if(@_jscript_version<9){'video audio source track playlist'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/
 
 /**
- * ~mwEmbed ~
- * For details see: http://www.mediawiki.org/wiki/MwEmbed
+ * @license
+ * mwEmbed
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * 
+ * @copyright (C) 2010 Kaltura 
+ * @author Michael Dale ( michael.dale at kaltura.com )
+ * 
+ * @url http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
  *
- * All MediaWiki code is released under the GPL2.
- * also see: http://svn.wikimedia.org/viewvc/mediawiki/trunk/phase3/COPYING?view=markup
- *
- * @author Michael Dale ( mdale at wikimedia.org )
- * @author and others
- *
- * mwEmbed uses the following libraries: 
- *
- * jQuery: 
- * http://jquery.com/ & jquery.ui
- *
- * mw.parseUri:
- * http://stevenlevithan.com/demo/parseuri/js/
- *
+ * Libraries used include code license in headers
  */
 
-/*
+/**
 * Setup the "mw" global: 
 */
 if ( typeof window.mw == 'undefined' ) {
 	window.mw = { };
 }
 
-/*
+/**
 * Set the mwEmbedVersion
 */
-var MW_EMBED_VERSION = '1.1f';
+var MW_EMBED_VERSION = '1.1g';
 
 // Globals to pre-set ready functions in dynamic loading of mwEmbed 
 if( typeof preMwEmbedReady == 'undefined'){
 	var preMwEmbedReady = [];	
 }
-//Globals to pre-set config values in dynamic loading of mwEmbed
+// Globals to pre-set config values in dynamic loading of mwEmbed
 if( typeof preMwEmbedConfig == 'undefined') {
 	var preMwEmbedConfig = [];
 }
@@ -51,7 +44,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	mw.version = MW_EMBED_VERSION
 	
 	// List valid skins here:
-	mw.valid_skins = [ 'mvpcf', 'kskin' ];		
+	mw.validSkins = [ 'mvpcf', 'kskin' ];
 		
 	// Storage variable for loaded style sheet keys	
 	mw.style = { };
@@ -109,7 +102,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}
 			return ;
 		}	
-		// Only update the controls if undefined
+		// Only update the controls if undefined ( ie don't override false properties )
 		if( typeof mwConfig[ name ] == 'undefined') {
 			mwConfig[ name ] = value;
 		}
@@ -422,8 +415,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		},
 						
 		/**
-		* Get grouped load state for script loader.
-		* Groups the loadSet into a single sequential array
+		* Get grouped load state for script loader
 		* 
 		* Groups the scriptRequest where possible: 
 		* 	Modules include "loader code" so they are separated
@@ -1595,7 +1587,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	}
 
 	/**
-	 * Given a float number of seconds, returns npt format response.
+	 * Given a float number of seconds, returns npt format response. 
+	 * ( ignore days for now )
 	 *
 	 * @param {Float} sec Seconds
 	 * @param {Boolean} show_ms If milliseconds should be displayed.
@@ -1603,24 +1596,37 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 */
 	mw.seconds2npt = function( sec, show_ms ) {
 		if ( isNaN( sec ) ) {
-			// mw.log("warning: trying to get npt time on NaN:" + sec);
-			return '0:0:0';
+			mw.log("Warning: trying to get npt time on NaN:" + sec);			
+			return '0:00:00';
 		}
-		var hours = Math.floor( sec / 3600 );
-		var minutes = Math.floor( ( sec / 60 ) % 60 );
-		var seconds = sec % 60;
+		
+		var tm = mw.seconds2Measurements( sec )
+				
 		// Round the number of seconds to the required number of significant digits
 		if ( show_ms ) {
-			seconds = Math.round( seconds * 1000 ) / 1000;
+			tm.seconds = Math.round( tm.seconds * 1000 ) / 1000;
 		} else {
-			seconds = Math.round( seconds );
+			tm.seconds = Math.round( tm.seconds );
 		}
-		if ( seconds < 10 )
-			seconds = '0' +	seconds;
-		if ( minutes < 10 )
-			minutes = '0' + minutes;
+		if ( tm.seconds < 10 )
+			tm.seconds = '0' +	tm.seconds;
+		if ( tm.minutes < 10 )
+			tm.minutes = '0' + tm.minutes;
 	
-		return hours + ":" + minutes + ":" + seconds;
+		return tm.hours + ":" + tm.minutes + ":" + tm.seconds;
+	}
+	
+	/**
+	 * Given seconds return array with 'days', 'hours', 'min', 'seconds' 
+	 * @param {float} sec Seconds to be converted into time mesurements  
+	 */
+	mw.seconds2Measurements = function ( sec ){
+		var tm = {};
+		tm.days = Math.floor( sec / ( 3600 * 24 ) )
+		tm.hours = Math.floor( sec / 3600 );
+		tm.minutes = Math.floor( ( sec / 60 ) % 60 );
+		tm.seconds = sec % 60;
+		return tm;
 	}
 	
 	/**

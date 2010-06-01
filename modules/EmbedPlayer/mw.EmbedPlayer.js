@@ -1331,9 +1331,9 @@ mw.EmbedPlayer.prototype = {
 		// Set the skin name from the class  
 		var	sn = $j(element).attr( 'class' );
 		if ( sn && sn != '' ) {
-			for ( var n = 0; n < mw.valid_skins.length; n++ ) {
-				if ( sn.indexOf( mw.valid_skins[n] ) !== -1 ) {
-					this.skinName = mw.valid_skins[ n ];
+			for ( var n = 0; n < mw.validSkins.length; n++ ) {
+				if ( sn.indexOf( mw.validSkins[n] ) !== -1 ) {
+					this.skinName = mw.validSkins[ n ];
 				}
 			}
 		}

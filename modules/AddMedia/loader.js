@@ -67,7 +67,7 @@
 				'$j.ui.tabs',
 				'$j.ui.sortable',
 
-        'mw.style.AddMedia'
+				'mw.style.AddMedia'
 			]
 		];
 		mw.load( request , function() {

@@ -261,12 +261,12 @@
 		if( ! playerClassName ){
 			playerClassName = mw.getConfig( 'playerSkinName' );
 		}		
-		for( var n=0; n < mw.valid_skins.length ; n++ ) {
+		for( var n=0; n < mw.validSkins.length ; n++ ) {
 			// Get any other skins that we need to load 
 			// That way skin js can be part of the single script-loader request: 
-			if( playerClassName.indexOf( mw.valid_skins[ n ] ) !== -1) {
+			if( playerClassName.indexOf( mw.validSkins[ n ] ) !== -1) {
 				// Add skin name to playerSkins
-				playerSkins[ mw.valid_skins[ n ] ] = true;
+				playerSkins[ mw.validSkins[ n ] ] = true;
 			}
 		}
 		
