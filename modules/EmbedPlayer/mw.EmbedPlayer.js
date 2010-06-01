@@ -29,7 +29,7 @@ mw.addMessages( {
 	"mwe-embedplayer-download_full" : "Download full video file:",
 	"mwe-embedplayer-download_right_click" : "To download, right click and select <i>Save link as...<\/i>",
 	"mwe-embedplayer-download_clip" : "Download video",
-	"mwe-embedplayer-download_text" : "Download text (<a style=\"color:white\" title=\"cmml\" href=\"http:\/\/wiki.xiph.org\/index.php\/CMML\">CMML<\/a> xml):",
+	"mwe-embedplayer-download_text" : "Download text",
 	"mwe-embedplayer-download" : "Download",
 	"mwe-embedplayer-share" : "Share",
 	"mwe-embedplayer-credits" : "Credits",
@@ -795,7 +795,7 @@ mediaSource.prototype = {
 		if( this.title ){
 			return this.title;
 		}
-			
+		
 		// Return a Title based on mime type: 
 		switch( this.getMIMEType() ) {
 			case 'video/h264' :
@@ -810,7 +810,13 @@ mediaSource.prototype = {
 			case 'audio/ogg' :
 				return gM( 'mwe-embedplayer-video-audio' );
 			break;
-		} 
+		}
+		
+		// Return tilte based on file name:
+		var urlParts = mw.parseUri( this.getSrc() );
+		if( urlParts.file ){
+			return urlParts.file;
+		}
 		
 		// Return the mime type string if not known type.
 		return this.mimeType;

@@ -1311,7 +1311,7 @@ ctrlBuilder.prototype = {
 		if( $textList.find('li').length != 0 ) {
 			$target.append(
 				$j('<h2 />')
-				.text( gM( 'mwe-embedplayer-download_text' ) ),
+				.html( gM( 'mwe-embedplayer-download_text' ) ),
 				$textList
 			)
 		}		

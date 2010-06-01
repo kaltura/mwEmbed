@@ -30,7 +30,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-download_full' => 'Download full video file:',
 	'mwe-embedplayer-download_right_click' => 'To download, right click and select <i>Save link as...</i>',
 	'mwe-embedplayer-download_clip' => 'Download video',
-	'mwe-embedplayer-download_text' => 'Download text (<a style="color:white" title="cmml" href="http://wiki.xiph.org/index.php/CMML">CMML</a> xml):',
+	'mwe-embedplayer-download_text' => 'Download text',
 	'mwe-embedplayer-download' => 'Download',
 	'mwe-embedplayer-share' => 'Share',
 	'mwe-embedplayer-credits' => 'Credits',
