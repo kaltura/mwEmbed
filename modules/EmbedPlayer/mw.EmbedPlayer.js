@@ -381,9 +381,9 @@ EmbedPlayerManager.prototype = {
 						// Swap in playlist player interface
 						_this.swapEmbedPlayerElement( playerElement, playerInterface );	
 						
-						// Pass the id to any hook that needs to interface prior to checkPlayerSources
-						mw.log("swapedPlayerIdEvent");
-						$j( _this ).trigger ( 'swapedPlayerIdEvent',  playerInterface.id );
+						// Pass the id to any hook that needs to interface prior to checkPlayerSources 
+						mw.log("addElement :: trigger :: newEmbedPlayerEvent");
+						$j( mw ).trigger ( 'newEmbedPlayerEvent',  playerInterface.id );
 						
 											
 						// Issue the checkPlayerSources call to the new playlist interface: 				
@@ -409,8 +409,8 @@ EmbedPlayerManager.prototype = {
 						_this.swapEmbedPlayerElement( playerElement, playerInterface );								
 						
 						// Pass the id to any hook that needs to interface prior to checkPlayerSources
-						mw.log("swapedPlayerIdEvent");
-						$j( _this ).trigger ( 'swapedPlayerIdEvent',  playerInterface.id );
+						mw.log("addElement :: trigger :: newEmbedPlayerEvent");
+						$j( mw ).trigger ( 'newEmbedPlayerEvent',  playerInterface.id );
 						
 						// Issue the checkPlayerSources call to the new player interface:
 						// make sure to use the element that is in the DOM:						
@@ -577,7 +577,7 @@ EmbedPlayerManager.prototype = {
 		$j('#loadSpiner_' + player.id ).remove();
 		
 		// Run the player ready trigger
-		mw.log("playerReady");
+		mw.log( "playerReady" );
 		$j( player ).trigger( 'playerReady' );
 		
 		var is_ready = true; 
@@ -1008,7 +1008,7 @@ mediaElement.prototype = {
 	
 	/**
 	* Selects a source by id
-	* @param {String} source_id Id of the srouce to select. 
+	* @param {String} source_id Id of the source to select. 
 	* @return {MediaSource} The selected mediaSource or null if not found  
 	*/
 	getSourceById:function( source_id ) {
@@ -1482,30 +1482,33 @@ mw.EmbedPlayer.prototype = {
 	*/
 	checkPlayerSources: function() {
 		mw.log( 'f:checkPlayerSources: ' + this.id );
-		var _this = this;		
-		var sourceCount = this.mediaElement.getPlayableSources().length;				
+		var _this = this;
 		
-		if( sourceCount != 0 ) {
-			 _this.checkForTimedText();
-			 return ;
-		} 
+		// Scope the end of check for player sources so it can be called in a callback  
+		var finishCheckPlayerSources = function(){
+			// Run embedPlayer sources hook 						
+			if ( $j( _this ).data('events') ){			
+				mw.log(" checkPlayerSources:: trigger checkPlayerSourcesEvent" );						
+				$j( _this ).trigger ( 'checkPlayerSourcesEvent', function() {
+					// Continue application flow and check for Timed Text
+					_this.checkForTimedText();
+				} );
+			} else { 
+				_this.checkForTimedText();
+			}
+		}
 		
-		// NOTE: Should be moved to mediaWiki Api support module		
-		if ( this.apiTitleKey ) {
+		// NOTE: Should could be moved to mediaWiki Api support module		
+		if ( _this.apiTitleKey ) {
 			// Load media from external data
 			mw.log( 'checkPlayerSources: loading apiTitleKey data' );		
 			_this.loadSourceFromApi( function(){				
-				_this.checkForTimedText();
+				finishCheckPlayerSources();
 			} );
 			return ;
+		} else { 
+			finishCheckPlayerSources();
 		}
-		
-		// Run embedPlayer sources hook 
-		mw.log(" trigger checkPlayerSourcesEvent");
-		$j( this ).trigger ( 'checkPlayerSourcesEvent', function(){
-			// Continue application flow and check for Timed Text
-			_this.checkForTimedText();
-		});
 	},
 	
 	/**
@@ -1826,27 +1829,42 @@ mw.EmbedPlayer.prototype = {
 	doEmbedPlayer: function() {
 		mw.log( 'f:doEmbedPlayer::' + this.selected_player.id );
 		mw.log( 'thum disp:' + this.thumbnail_disp );
-		var _this = this;				
+		var _this = this;
 		
-		// Set "loading" here ( if displaying controls )
-		if( ! this.useNativeControls() ){ 
-			$j( this ).html( 
-				$j( '<div />' )
-				.css({
-					'color' : 'black',
-					'width' : this.width + 'px',
-					'height' : this.height + 'px'
-				})
-				.loadingSpinner()
-			);
-		}
+		var doEmbedPlayerLocal = function(){
+			// Set "loading" here ( if displaying controls )
+			if( ! _this.useNativeControls() ){ 
+				$j( _this ).html( 
+					$j( '<div />' )
+					.css({
+						'color' : 'black',
+						'width' : _this.width + 'px',
+						'height' : _this.height + 'px'
+					})
+					.loadingSpinner()
+				);
+			}
+			
+			// Reset some play state flags: 
+			_this.bufferStartFlag = false;
+			_this.bufferEndFlag = false;
+			
+			// Make sure the player is		
+			mw.log( 'performing embed for ' + _this.id );
+		};
+				
+		// If no binded events, run the local doEmbedPlayer function directly:  
+		if( $j( this ).data('events').length == 0 ){
+			doEmbedPlayerLocal();
+		} else {
+			// Trigger the doEmbedPlayer event / hook with callback  
+			$j( this ).trigger( 'doEmbedPlayerEvent', function(){
+				//done
+				doEmbedPlayerLocal();
+			});
+		} 
 		
-		// Reset some play state flags: 
-		this.bufferStartFlag = false;
-		this.bufferEndFlag = false;
 		
-		// Make sure the player is		
-		mw.log( 'performing embed for ' + _this.id );
 		// mw.log('should embed:' + embed_code);		
 		_this.doEmbedHTML() 		
 	},
@@ -2503,6 +2521,7 @@ mw.EmbedPlayer.prototype = {
 		mw.log( "EmbedPlayer:: play" );
 		// Hide any overlay:
 		this.ctrlBuilder.closeMenuOverlay();
+		
 		// Check if thumbnail is being displayed and embed html
 		if ( this.thumbnail_disp ) {
 			if ( !this.selected_player ) {

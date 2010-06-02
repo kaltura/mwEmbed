@@ -73,6 +73,7 @@ mw.KAnalytics.prototype = {
 				var timeDelta = ( new Date().getTime() - this.startReportTime ) / 1000;
 			}			
 			
+			// Update the log for debugging 
 			mw.getConfig( 'kalturaAnalyticsCallbackLog' )( 
 				KalturaStatsEventKey + 
 				' ( ' + parseInt( this.embedPlayer.currentTime * 1000 )+ ',' +
@@ -80,6 +81,8 @@ mw.KAnalytics.prototype = {
 			);
 		}
 		var eventKeyId = KalturaStatsEventType[ KalturaStatsEventKey ];
+		// XXX switch over to KalturaStatsService
+		
 		// Generate the reportSet
 		var reportSet = {
 			'event:eventType' :	eventKeyId,

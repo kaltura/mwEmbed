@@ -25,8 +25,8 @@ mw.KEntryIdSupport.prototype = {
 	addPlayerHooks: function( ){
 		var _this = this;		
 		// Add the hooks to the player manager
-		mw.log(  'addPlayerHooks:: bind: swapedPlayerIdEvent' );
-		$j( mw.playerManager ).bind( 'swapedPlayerIdEvent', function( event, swapedPlayerId ) {		
+		mw.log(  'addPlayerHooks:: bind: newEmbedPlayerEvent' );
+		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {		
 			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
 			
 			// Add hook for check player sources to use local kEntry ID source check:

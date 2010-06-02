@@ -1,0 +1,36 @@
+/**
+* SwarmTransport loader
+*/
+
+/**
+* Default player module configuration 
+*/
+( function( mw ) {
+	
+	mw.addClassFilePaths( {
+		'mw.SwarmTransport' : 'mw.SwarmTransport.js' 
+	} );
+	
+	mw.setDefaultConfig( {
+	 	/** 
+	 	* If enableSwarmTransport should be enabled as a video transport mechanism
+	 	*/ 
+ 		'enableSwarmTransport': true,
+ 		
+ 		/**
+ 		* If the swarm transport plugin should be recommended if the user does not have it installed. 
+ 		*/ 	 	
+ 		'recomendSwarmTransport' : false  
+	} );
+	
+	// Add the mw.SwarmTransport to the embedPlayer loader
+	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {	
+		// If the swarm transport is enabled add mw.SwarmTransport to the request.   
+		if( mw.getConfig( 'enableSwarmTransport' ) ) {
+			if( $j.inArray( 'mw.SwarmTransport', classRequest ) == -1 )  {
+				classRequest.push( 'mw.SwarmTransport' );
+			}
+		}
+	});			
+	
+})( window.mw );
