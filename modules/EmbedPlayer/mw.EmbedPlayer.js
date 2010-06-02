@@ -1488,8 +1488,9 @@ mw.EmbedPlayer.prototype = {
 		var finishCheckPlayerSources = function(){
 			// Run embedPlayer sources hook 						
 			if ( $j( _this ).data('events') ){			
-				mw.log(" checkPlayerSources:: trigger checkPlayerSourcesEvent" );						
-				$j( _this ).trigger ( 'checkPlayerSourcesEvent', function() {
+				mw.log(" checkPlayerSources:: trigger checkPlayerSourcesEvent" );				
+				$j( _this ).trigger ( 'checkPlayerSourcesEvent', function() {	
+					debugger;
 					// Continue application flow and check for Timed Text
 					_this.checkForTimedText();
 				} );

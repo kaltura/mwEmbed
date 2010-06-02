@@ -8,14 +8,14 @@
 ( function( mw ) {
 	
 	mw.addClassFilePaths( {
-		'mw.SwarmTransport' : 'mw.SwarmTransport.js' 
-	} );
+		"mw.SwarmTransport" : "mw.SwarmTransport.js" 
+	});
 	
 	mw.setDefaultConfig( {
 	 	/** 
 	 	* If enableSwarmTransport should be enabled as a video transport mechanism
 	 	*/ 
- 		'enableSwarmTransport': true,
+ 		'enableSwarmTransport': false,
  		
  		/**
  		* If the swarm transport plugin should be recommended if the user does not have it installed. 

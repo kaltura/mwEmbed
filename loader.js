@@ -51,7 +51,7 @@ var mwEnabledModuleList = [
 	'ApiProxy',
 	'Sequencer',
 	'TimedText',
-	'kSupport',
+	'KalturaSupport',
 	'SwarmTransport'
 ];
 

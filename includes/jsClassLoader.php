@@ -79,7 +79,7 @@ class jsClassLoader {
 				'/mwEnabledModuleList\s*\=\s*\[(.*)\]/siU',
 				'jsClassLoader::preg_buildModuleList',
 				$fileContent
-			);
+			);			
 		}
 
 		// Change to the root mediawiki directory ( loader.js paths are relative to root mediawiki directory )
@@ -257,6 +257,7 @@ class jsClassLoader {
 	 */
 	private static function preg_classPathLoader( $jsvar ) {
 		global $wgScriptLoaderNamedPaths;
+	
 		if ( !isset( $jsvar[1] ) ) {
 			return false;
 		}
@@ -264,7 +265,10 @@ class jsClassLoader {
 		$jClassSet = FormatJson::decode( '{' . $jsvar[1] . '}', true );
 		// Check for null json decode:
 		if( $jClassSet == NULL ){
-			return false;
+			throw new MWException( "Error could not parser javascript class list in \n ".
+				self::$directoryContext ."/loader.js\n".
+				"Is the class list JSON formated? using \" not ' ?\n" .  
+			  	htmlspecialchars( $jsvar[1] ) . "\n\n");			
 		}
 
 		foreach ( $jClassSet as $className => $classPath ) {
@@ -289,7 +293,7 @@ class jsClassLoader {
 
 			// Else update the global $wgScriptLoaderNamedPaths ( all scriptloader named paths )
 			$wgScriptLoaderNamedPaths[ $className ] = $classPath;
-
+	
 			// Register the parent module ( javascript module specific )
 			self::$classParentModuleName [ $className ] = self::$currentModuleName ;
 		}

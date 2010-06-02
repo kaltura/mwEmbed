@@ -30,9 +30,9 @@ mw.KEntryIdSupport.prototype = {
 			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
 			
 			// Add hook for check player sources to use local kEntry ID source check:
-			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
+			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {	
 				mw.log(" entryId:: checkPlayerSourcesEvent ");
-				_this.checkPlayerSources( embedPlayer, callback );
+				_this.checkPlayerSources( embedPlayer, callback );				
 			} );
 			
 			// Check for enableKalturaAnalytics and enable Analytics
