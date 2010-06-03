@@ -79,7 +79,7 @@
 		"quicktimeEmbed"	: "quicktimeEmbed.js",
 		"vlcEmbed"			: "vlcEmbed.js",
 		
-		"ctrlBuilder"		: "skins/ctrlBuilder.js",
+		"ctrlBuilder"		: "skins/ctrlBuilder.js",		
 	
 		"mw.style.EmbedPlayer" : "mw.style.EmbedPlayer.css",
 		
@@ -184,6 +184,7 @@
 				'$j.ui',			
 				'mw.EmbedPlayer',
 				'ctrlBuilder',
+				'$j.fn.hoverIntent',
 				'mw.style.EmbedPlayer',
 				'$j.cookie',
 				// Add JSON lib if browsers does not define "JSON" natively

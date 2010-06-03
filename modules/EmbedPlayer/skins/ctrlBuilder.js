@@ -517,7 +517,7 @@ ctrlBuilder.prototype = {
 		
 		// Setup target shortcut to	control-bar
 		$target = embedPlayer.$interface;	
-		var mouseIn = false;
+
 		// Add hide show bindings for control overlay (if overlay is enabled ) 
 		if( ! _this.checkOverlayControls() ) {
 			$interface.unbind().show();		
@@ -529,38 +529,20 @@ ctrlBuilder.prototype = {
 				// ( once the user touched the video "don't hide" ) 
 			} );
 			// Add a special absolute overlay for hover ( to keep menu displayed 
-			$interface.hover(
-				function(){						
+			$interface.hoverIntent({
+				'timeout' : 2000,
+				'over' : function(){						
 					// Show controls with a set timeout ( avoid fade in fade out on short mouse over )				
-					setTimeout( function() {
-						if( mouseIn ){
-							_this.showControlBar()
-						}
-					}, 250 );
-					mouseIn = true;
+					_this.showControlBar()					
 				},
-				function(){
-					mouseIn = false;
-					// Hide controls ( delay hide if menu is visible )
-					function hideCheck(){					
-						if ( $interface.find( '.overlay-win' ).length != 0 
-						||  $j('.menuPositionHelper').is(':visible' ) ) {
-							setTimeout( hideCheck, 250 );
-							return ;
-						}	
-						if( _this.checkOverlayControls() && !mouseIn ) {
-							_this.hideControlBar();
-						}
-												
-					}
-					// Don't remove until user is out of player for 1 second
-					setTimeout( hideCheck, 2000 );
+				'out' : function(){
+					_this.hideControlBar();
 				}
-			);
+			});
 		}
 				
 		// Add recommend firefox if we have non-native playback:
-		if ( _this.checkNativeWarning( ) ) {
+		if ( _this.checkNativeWarning( ) ) {			
 			_this.doWarningBindinng(
 				'showNativePlayerWarning',
 				gM( 'mwe-embedplayer-for_best_experience' ) 
@@ -624,12 +606,7 @@ ctrlBuilder.prototype = {
 		
 		// Show interface controls
 		this.embedPlayer.$interface.find( '.control-bar')
-			.fadeIn( animateDuration );
-			
-		// Hide the warning if present
-		if( this.addWarningFlag  ){
-			$j( '#warningOverlay_' + this.embedPlayer.id ).fadeIn( animateDuration );
-		}		
+			.fadeIn( animateDuration );			
 	},
 	
 	/**
@@ -703,20 +680,11 @@ ctrlBuilder.prototype = {
 		mw.log( 'ctrlBuilder: doWarningBindinng: ' + preferenceId +  ' wm: ' + warningMsg);
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
-		var _this = this;
+		var _this = this;			
 		
-		// Check the global config and cookie:  
-		if( mw.getConfig( preferenceId ) == false || $j.cookie( preferenceId ) == 'false' ) {
-			this.addWarningFlag = false;
-			return false;
-		} else {
-			// Do add the warning flag: 
-			_this.addWarningFlag  = true;
-		}
-		
-		
-		$j( embedPlayer ).hover(
-			function() {							
+		$j( embedPlayer ).hoverIntent({
+			'timeout': 2000,
+			'over': function() {				
 				if ( $j( '#warningOverlay_' + embedPlayer.id ).length == 0 ) {
 					var toppos = ( embedPlayer.instanceOf == 'mvPlayList' ) ? 25 : 10;
 					
@@ -771,13 +739,16 @@ ctrlBuilder.prototype = {
 						$j('<span />')
 						.text( gM( 'mwe-embedplayer-do_not_warn_again' ) )
 					)
+				}								
+				// Check the global config before showing the warning
+				if ( mw.getConfig( preferenceId ) === true  ){
+					$j( '#warningOverlay_' + embedPlayer.id ).fadeIn( 'slow' );
 				}				
-				// Hide show will be tied to player controls																	
 			},
-			function() {
-				// Hide show handled by playerControlBar
+			'out': function() {	
+				$j( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
 			}
-		);
+		});
 	},
 	
 	/**
