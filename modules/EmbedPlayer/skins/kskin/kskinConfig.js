@@ -33,7 +33,7 @@ var kskinConfig = {
 		},		
 		'options': {
 			'w':50,
-			'o':function() {
+			'o':function( ctrlObj ) {				
 				return $j( '<div />' )
 					.attr( 'title',  gM( 'mwe-embedplayer-player_options' ) )
 					.addClass( "ui-state-default ui-corner-bl rButton k-options" )
@@ -194,7 +194,8 @@ var kskinConfig = {
 	* Close the menu overlay
 	*/
 	closeMenuOverlay: function( ) {
-		mw.log(" close menu overlay" );
+		mw.log(" close menu overlay" );			
+		
 		var $optionsMenu = this.$playerTarget.find( '.k-options' );
 		var $kmenu = this.$playerTarget.find( '.k-menu' );
 		$kmenu.fadeOut( "fast", function() {
@@ -202,6 +203,9 @@ var kskinConfig = {
 				.text ( gM( 'mwe-embedplayer-menu_btn' ) );
 		} );
 		this.$playerTarget.find( '.play-btn-large' ).fadeIn( 'fast' );
+		
+		// Set close overlay menu flag: 
+		this.displayOptionsMenuFlag = false;
 	},
 	
 	/**
@@ -210,11 +214,15 @@ var kskinConfig = {
 	showMenuOverlay: function( $ktxt ) {
 		var $optionsMenu = this.$playerTarget.find( '.k-options' );
 		var $kmenu = this.$playerTarget.find( '.k-menu' );
+		
 		$kmenu.fadeIn( "fast", function() {
 			$optionsMenu.find( 'span' )
 				.text ( gM( 'mwe-embedplayer-close_btn' ) );
 		} );
 		this.$playerTarget.find( '.play-btn-large' ).fadeOut( 'fast' );
+		
+		// Set the Options Menu display flag to true:
+		this.displayOptionsMenuFlag = true;
 	},
 	
 	/**

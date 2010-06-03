@@ -310,12 +310,8 @@ function onKdpReady( playerId ) {
 
 
 
-
 /*!	SWFObject v2.2 <http://code.google.com/p/swfobject/> 
 	is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
-* 
-*  NOTE: we should seperate this out into a seperate file. It requires some minor
-*  	refactoring in how embedPlayer[s] are loaded.
 */
 
 var swfobject = function() {
@@ -352,15 +348,12 @@ var swfobject = function() {
 		- Is executed directly for optimal performance
 	*/	
 	ua = function() {
-		var w3cdom = typeof doc.getElementById != UNDEF && 
-					 typeof doc.getElementsByTagName != UNDEF && 
-					 typeof doc.createElement != UNDEF,
+		var w3cdom = typeof doc.getElementById != UNDEF && typeof doc.getElementsByTagName != UNDEF && typeof doc.createElement != UNDEF,
 			u = nav.userAgent.toLowerCase(),
 			p = nav.platform.toLowerCase(),
 			windows = p ? /win/.test(p) : /win/.test(u),
 			mac = p ? /mac/.test(p) : /mac/.test(u),
-			
-			webkit = /webkit/.test(u) ? parseFloat(u.replace(/^.*webkit\/(\d+(\.\d+)?).*$/, "$1")) : false, 
+			webkit = /webkit/.test(u) ? parseFloat(u.replace(/^.*webkit\/(\d+(\.\d+)?).*$/, "$1")) : false, // returns either the webkit version or false if not webkit
 			ie = !+"\v1", // feature detection based on Andrea Giammarchi's solution: http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
 			playerVersion = [0,0,0],
 			d = null;
@@ -518,10 +511,14 @@ var swfobject = function() {
 			var counter = 0;
 			(function(){
 				if (typeof t.GetVariable != UNDEF) {
-					var d = t.GetVariable("$version");
-					if (d) {
-						d = d.split(" ")[1].split(",");
-						ua.pv = [parseInt(d[0], 10), parseInt(d[1], 10), parseInt(d[2], 10)];
+					try{
+						var d = t.GetVariable("$version");
+						if (d) {
+							d = d.split(" ")[1].split(",");
+							ua.pv = [parseInt(d[0], 10), parseInt(d[1], 10), parseInt(d[2], 10)];
+						}
+					} catch( e ){
+						// error in grabbing flash version 
 					}
 				}
 				else if (counter < 10) {
@@ -1094,4 +1091,3 @@ var swfobject = function() {
 		}
 	};
 }();
-

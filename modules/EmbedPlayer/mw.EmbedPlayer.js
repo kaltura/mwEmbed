@@ -344,7 +344,7 @@ EmbedPlayerManager.prototype = {
 	*	_this.checkForTimedText()
 	*	_this.setupSourcePlayer()
 	*	_this.inheritEmbedPlayer()
-	*	_this.selected_player.load()
+	*	_this.selectedPlayer.load()
 	*	_this.showPlayer()
 	* 
 	* @param {Element} playerElement DOM element to be swapped 
@@ -363,33 +363,15 @@ EmbedPlayerManager.prototype = {
 		this.playerList.push( playerElement.id );		
 		
 		// Check for player attributes such as skins or plugins attributes 
-		// that add to the request set			
+		// that add to the request set	
 		var playerDependencyRequest = [ ];
+		
 		mw.embedPlayerUpdateLibraryRequest( playerElement, playerDependencyRequest );
 		
 		// Load any skins we need then swap in the interface
 		mw.load( playerDependencyRequest, function() {												
 			// We should move all playlist handling to add-in 		
-			switch( playerElement.tagName.toLowerCase() ) {
-				case 'playlist':
-					// Make sure we have the necessary playlist libs loaded:
-					mw.load( 'mw.PlayList', function() {
-					
-						// Create playlist player interface
-						var playlistPlayer = new mw.PlayList( playerElement, attributes );
-						
-						// Swap in playlist player interface
-						_this.swapEmbedPlayerElement( playerElement, playerInterface );	
-						
-						// Pass the id to any hook that needs to interface prior to checkPlayerSources 
-						mw.log("addElement :: trigger :: newEmbedPlayerEvent");
-						$j( mw ).trigger ( 'newEmbedPlayerEvent',  playerInterface.id );
-						
-											
-						// Issue the checkPlayerSources call to the new playlist interface: 				
-						$j( '#' + playlistPlayer.id ).get(0).showPlayer();		
-					} );
-				break;					
+			switch( playerElement.tagName.toLowerCase() ) {					
 				case 'video':
 				case 'audio':
 				// By default treat the rewrite request as "video"
@@ -424,11 +406,13 @@ EmbedPlayerManager.prototype = {
 					
 						// Time-out of 5 seconds ( maybe still playable but no timely metadata ) 
 						setTimeout( runPlayerSwap, 5000 );
+						return ;
 					} else { 
 						runPlayerSwap();
+						return ;
 					}					
-				break;				
-		   }
+				break;
+		   }		   
 	   });
 	},
 	
@@ -1324,6 +1308,10 @@ mw.EmbedPlayer.prototype = {
 			if( this[ attr ] == "false" ) this[attr] = false;
 			if( this[ attr ] == "true" ) this[attr] = true;
 		}
+		
+		if( this.apiTitleKey ){
+			this.apiTitleKey = unescape( this.apiTitleKey );
+		}
 				
 		// Hide "controls" if using native player controls: 
 		if( this.useNativeControls() ){
@@ -1636,16 +1624,16 @@ mw.EmbedPlayer.prototype = {
 				mw.log( 'no sources, type:' + this.type + ' check for html' );						
 				// do load player if just displaying innerHTML: 
 				if ( this.pc.type == 'text/html' ) {
-					this.selected_player = mw.EmbedTypes.players.defaultPlayer( 'text/html' );
-					mw.log( 'set selected player:' + this.selected_player.mimeType );
+					this.selectedPlayer = mw.EmbedTypes.players.defaultPlayer( 'text/html' );
+					mw.log( 'set selected player:' + this.selectedPlayer.mimeType );
 				}
 			}
 		} else {
-			this.selected_player = mw.EmbedTypes.players.defaultPlayer( this.mediaElement.selectedSource.mimeType );
+			this.selectedPlayer = mw.EmbedTypes.players.defaultPlayer( this.mediaElement.selectedSource.mimeType );
 		}
 		
-		if ( this.selected_player ) {
-			mw.log( "Playback system: " + this.selected_player.library );					
+		if ( this.selectedPlayer ) {
+			mw.log( "Playback system: " + this.selectedPlayer.library );					
 						
 			// Inherit the playback system of the selected player:			
 			this.inheritEmbedPlayer();
@@ -1688,14 +1676,14 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		// Set up the new embedObj
-		mw.log( 'f: inheritEmbedPlayer: embedding with ' + this.selected_player.library );
+		mw.log( 'f: inheritEmbedPlayer: embedding with ' + this.selectedPlayer.library );
 		var _this = this;
 		
 		// Load the selected player		
-		this.selected_player.load( function() {
-			mw.log( _this.selected_player.library + " player loaded" );
+		this.selectedPlayer.load( function() {
+			mw.log( _this.selectedPlayer.library + " player loaded" );
 			// Get embed library player Interface
-			var playerInterface = window[ _this.selected_player.library + 'Embed' ];			
+			var playerInterface = window[ _this.selectedPlayer.library + 'Embed' ];			
 			
 			for ( var method in playerInterface ) {  
 				if ( _this[method] && !_this['parent_' + method] ) {
@@ -1726,8 +1714,8 @@ mw.EmbedPlayer.prototype = {
 	*/
 	selectPlayer: function( player ) {		
 		var _this = this;
-		if ( this.selected_player.id != player.id ) {
-			this.selected_player = player;			
+		if ( this.selectedPlayer.id != player.id ) {
+			this.selectedPlayer = player;			
 			this.inheritEmbedPlayer( function() { 
 				// Update the controls for the new selected player
 				_this.refreshControls();
@@ -1831,7 +1819,7 @@ mw.EmbedPlayer.prototype = {
 	* issues a loading request
 	*/
 	doEmbedPlayer: function() {
-		mw.log( 'f:doEmbedPlayer::' + this.selected_player.id );
+		mw.log( 'f:doEmbedPlayer::' + this.selectedPlayer.id );
 		mw.log( 'thum disp:' + this.thumbnail_disp );
 		var _this = this;
 		
@@ -2528,8 +2516,8 @@ mw.EmbedPlayer.prototype = {
 		
 		// Check if thumbnail is being displayed and embed html
 		if ( this.thumbnail_disp ) {
-			if ( !this.selected_player ) {
-				mw.log( 'no selected_player' );					
+			if ( !this.selectedPlayer ) {
+				mw.log( 'no selectedPlayer' );					
 				this.showPluginMissingHTML();
 			} else {
 				this.thumbnail_disp = false;
@@ -2802,7 +2790,7 @@ mw.EmbedPlayer.prototype = {
 			mw.getJSON( {
 				'action' : 'playtracking',
 				'filename' : this.apiTitleKey,
-				'client' : this.selected_player.library + ' && ' + navigator.userAgent   
+				'client' : this.selectedPlayer.library + ' && ' + navigator.userAgent   
 			}, function( data ) {
 				mw.log( 'done logging play request' );
 			} );
@@ -3310,10 +3298,10 @@ mediaPlayers.prototype =
 	* @param {String} mimeType Mime type for the associated player stream
 	*/
 	setPlayerPreference : function( playerId, mimeType ) {	
-		var selected_player = null;		
+		var selectedPlayer = null;		
 		for ( var i = 0; i < this.players.length; i++ ) {
 			if ( this.players[i].id == playerId ) {
-				selected_player = this.players[i];
+				selectedPlayer = this.players[i];
 				mw.log( 'choosing ' + playerId + ' for ' + mimeType );
 				this.preference[ mimeType ] = playerId;		
 				mw.setUserConfig( 'playerPref', this.preference );
@@ -3321,14 +3309,14 @@ mediaPlayers.prototype =
 			}
 		}
 		// Update All the player instances:		
-		if ( selected_player ) {
+		if ( selectedPlayer ) {
 			var playerList = mw.playerManager.getPlayerList();			 
 			for ( var i = 0; i < playerList.length; i++ ) {
 				var embed = $j( '#' + playerList[i] ).get( 0 );
 				if ( embed.mediaElement.selectedSource && ( embed.mediaElement.selectedSource.mimeType == mimeType ) )
 				{
-					embed.selectPlayer( selected_player );
-					mw.log( 'using ' + embed.selected_player.getName() + ' for ' + embed.mediaElement.selectedSource.getTitle() );
+					embed.selectPlayer( selectedPlayer );
+					mw.log( 'using ' + embed.selectedPlayer.getName() + ' for ' + embed.mediaElement.selectedSource.getTitle() );
 				}
 			}
 		}
@@ -3344,7 +3332,6 @@ mediaPlayers.prototype =
 		if( typeof preferenceConfig == 'object' ) {
 			this.preference = preferenceConfig;
 		}
-		//debugger;
 	}	
 };
 
@@ -3390,7 +3377,7 @@ mw.EmbedTypes = {
 	*/
 	detect: function() {		
 		mw.log( "embedPlayer: running detect" );		
-		this.players = new mediaPlayers();		
+		this.players = new mediaPlayers();			
 		// every browser supports html rendering:
 		this.players.addPlayer( htmlPlayer );
 		// In Mozilla, navigator.javaEnabled() only tells us about preferences, we need to
@@ -3514,6 +3501,7 @@ mw.EmbedTypes = {
 		}
 		
 		// Allow extensions to detect and add their own "players" 
+		mw.log("trigger::embedPlayerUpdateMediaPlayersEvent");
 		$j( mw ).trigger( 'embedPlayerUpdateMediaPlayersEvent' , this.players );		
 		
 	},

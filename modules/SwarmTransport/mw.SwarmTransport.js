@@ -8,7 +8,9 @@ mw.includeAllModuleMessages();
 * Define mw.SwarmTransport object: 
 */
 mw.SwarmTransport = {
-	addPlayerHooks: function(){
+	loadingHttpseed2tstream: false,
+	
+	addPlayerHooks: function(){	
 		var _this = this; 
 		// Bind some hooks to every player:  		
 		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {
@@ -16,21 +18,20 @@ mw.SwarmTransport = {
 			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
 											
 			// Setup the "embedCode" binding to swap in an updated url
-			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
-			
+			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {				
 				// Confirm SwarmTransport add-on is available ( defines swarmTransport var )  
 				if( typeof window['swarmTransport'] != 'undefined' ){			
-					
+					_this.addSwarmPlayer( embedPlayer );
 					mw.log(" SwarmTransport :: checkPlayerSourcesEvent ");
 					_this.addSwarmSource( embedPlayer, callback );
 										
 				} else {								
 					// No swarm support just directly issue the callback 
-					callback();					
+					callback();	
 				}
 			} );
 			
-			// Check if we have a "recommend" binding and provide an xpi link			
+			// Check if we have a "recommend" binding and provide an xpi install link			
 			mw.log('bind::addControlBindingsEvent');
 			$j( embedPlayer ).bind( 'addControlBindingsEvent', function(){				
 				if( mw.getConfig( 'recommendSwarmTransport' ) &&  
@@ -43,38 +44,38 @@ mw.SwarmTransport = {
 				}
 			});
 					
-		} );	
-	
-		
-		
-		$j( mw ).bind( 'embedPlayerUpdateMediaPlayersEvent', function( event, mediaPlayers){
-			// Detect support for SwarmTransport
-			if( typeof window['swarmTransport'] != 'undefined' ){
-				// Add the swarmTransport playerType
-				mediaPlayers.defaultPlayers['video/swarmTransport'] = ['native'];
-				
-				// For now swarm transport only supports ogg ( probably add webm in the future ) 
-				// Native html5 player  
-				var swarmTransportPlayer = new mediaPlayer( 'swarmTransportPlayer', ['video/swarmTransport' ], 'native' );
-				
-				// Add the swarmTransport "player"
-				mediaPlayers.addPlayer( swarmTransportPlayer );							
-			} 						
-		});
+		} );		
 					
 	},
 	
+	addSwarmPlayer: function( embedPlayer ){
+		// Add the swarmTransport playerType	
+		mw.EmbedTypes.players.defaultPlayers['video/swarmTransport'] = ['native'];
+		
+		// Build the swarm Transport Player
+		var swarmTransportPlayer = new mediaPlayer( 'swarmTransportPlayer', ['video/swarmTransport' ], 'native' );
+		
+		// Add the swarmTransport "player"
+		mw.EmbedTypes.players.addPlayer( swarmTransportPlayer );				
+	},
+	
 	addSwarmSource: function( embedPlayer, callback ) {
+		var _this = this;
 		
 		// Setup function to run in context based on callback result
 		var finishAddSwarmSource = function(){
 			// Get the highest quality source that the system can playback 
 			// ( for now just grab the first ogg/theora )
-			var source = embedPlayer.mediaElement.getSources( 'video/ogg' )[0];		
+			var source = embedPlayer.mediaElement.getSources( 'video/ogg' )[0];	
+			if( ! source ){
+				mw.log("Error: addSwarmSource: could not find video/ogg source");
+				callback();
+				return ;
+			}
 			var absoluteSource =  mw.absoluteUrl( source.getSrc() );
 			var swarmSrc = httpseed2tstream( absoluteSource );
 			
-			mw.log('addSwarmSource for: ' + source.getSrc()  + "\nGot:" + swarmSrc );
+			mw.log('addSwarmSource for: ' + source.getSrc()  + "\n\nGot:" + swarmSrc );
 			
 			embedPlayer.mediaElement.tryAddSource( 
 				$j('<source />')
@@ -92,9 +93,19 @@ mw.SwarmTransport = {
 		// p2p next does not have a lookup service rather a static file that defines a function 
 		// by the name of httpseed2tstream ( check if httpseed2tstream is defined ) 
 		if ( typeof httpseed2tstream == 'undefined' ) {
-			mw.load('http://wikipedia.p2p-next.org/tlookup.js', function(){
-				finishAddSwarmSource();
-			} );
+			// Check if we already started loading httpseed2tstream
+			if( this.loadingHttpseed2tstream ){
+				mw.waitForObject( 'httpseed2tstream', function(){
+					finishAddSwarmSource();	
+				});
+				return ; 
+			}
+			this.loadingHttpseed2tstream = true;
+			// Should do a check to avoid loading tlookup multiple times			
+			mw.load( 'http://wikipedia.p2p-next.org/tlookup.js', function(){
+				finishAddSwarmSource();	
+			});
+			
 		} else {
 			finishAddSwarmSource();	
 		}

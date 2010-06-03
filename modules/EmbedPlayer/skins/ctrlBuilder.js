@@ -1123,7 +1123,7 @@ ctrlBuilder.prototype = {
 				for ( var i = 0; i < supportingPlayers.length ; i++ ) {									
 									
 					// Add link to select the player if not already selected )
-					if( embedPlayer.selected_player.id == supportingPlayers[i].id && is_selected ) {	
+					if( embedPlayer.selectedPlayer.id == supportingPlayers[i].id && is_selected ) {	
 						// Active player ( no link )
 						$playerLine = $j( '<span />' )
 						.text( 

@@ -1,4 +1,4 @@
-/*@cc_on@if(@_jscript_version<9){'video audio source track playlist'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/
+/*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/
 
 /**
 * mwEmbed loader 
@@ -8,8 +8,8 @@
 
 var kURID = '1.1o';
 // Static script loader url: 
-var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/jsScriptLoader.php';
-//SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
+//var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/jsScriptLoader.php';
+SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
 
 // Define mw
 window['mw'] = {};
@@ -73,7 +73,7 @@ function kDomReady(){
 }
 
 // Add the kaltura html5 mwEmbed script
-function kAddScript(){
+function kAddScript(){	
 	var url = SCRIPT_LOADER_URL + '?class=';
 	
 	if( typeof window.jQuery == 'undefined' ) {
@@ -84,7 +84,7 @@ function kAddScript(){
 	url+='&urid=' + kURID;
 	url+='&uselang=en';
 	
-	//url+='&debug=true';
+	url+='&debug=true';
 	
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';

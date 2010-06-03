@@ -10,12 +10,12 @@
 	mw.addClassFilePaths( {
 		"mw.SwarmTransport" : "mw.SwarmTransport.js" 
 	});
-	
+
 	mw.setDefaultConfig({
 	 	/** 
-	 	* If enableSwarmTransport should be enabled as a video transport mechanism
+	 	* If SwarmTransport should be enabled as a video transport mechanism
 	 	*/ 
- 		'enableSwarmTransport': false,
+ 		'enableSwarmTransport': true,
  		
  		/**
  		* If the swarm transport plugin should be recommended if the user does not have it installed. 
@@ -24,7 +24,7 @@
 	});
 	
 	// Add the mw.SwarmTransport to the embedPlayer loader:
-	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {	
+	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {			
 		// If the swarm transport is enabled add mw.SwarmTransport to the request.   
 		if( mw.getConfig( 'enableSwarmTransport' ) ) {
 			if( $j.inArray( 'mw.SwarmTransport', classRequest ) == -1 )  {

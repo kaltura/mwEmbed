@@ -13,6 +13,26 @@ mw.addClassFilePaths( {
 	"playlistEmbed" : "playlistEmbed.js"
 } );
 
+
+// Add the mw.SmilPlayer to the embedPlayer loader:
+$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
+	
+	// Check if the playerElement includes a smil source.
+	var includeSmilPlayer = false;
+	if( $j( playerElement ).attr('type' ) == 'application/smil' ) {
+		includeSmilPlayer = true;
+	} else { 
+		// check child sources
+		$( playerElement ).find( 'source' )
+	}
+	
+		
+	// If the swarm transport is enabled add mw.SwarmTransport to the request.   	
+	if( $j.inArray( 'mw.SwarmTransport', classRequest ) == -1 )  {
+		classRequest.push( 'mw.SwarmTransport' );
+	}
+});
+
 mw.addModuleLoader( 'FirefoggRender', function( callback) {
 	mw.load( [
 		'mw.Firefogg', 

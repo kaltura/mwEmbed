@@ -141,25 +141,29 @@
 					
 				var posTop = (  $j( element ).height() ) ? 
 					parseInt( pos.top + ( .4 * $j( element ).height() ) ) : 
-					pos.top + 30;			
-							
-				$j('body').append(
-					$j('<div />')
-					.loadingSpinner()
-					.attr('id', 'loadSpiner_' + $j( element ).attr('id') )
-					.css({
-						'width' : 32,
-						'height' : 32,
-						'position': 'absolute',
-						'top' : posTop + 'px',
-						'left' : posLeft + 'px'
-					})						
-				)
+					pos.top + 30;
+				
+				// Check for the loadingSpiner: 			
+				if( $j('#loadSpiner_' + $j( element ).attr('id') ).length == 0 ){
+					$j('body').append(
+						$j('<div />')
+						.loadingSpinner()
+						.addClass( 'embedPlayerLoadDiv' )
+						.css({
+							'width' : 32,
+							'height' : 32,
+							'position': 'absolute',
+							'top' : posTop + 'px',
+							'left' : posLeft + 'px'
+						})						
+					)
+				}
 					
 				//$j( element ).hide();
 			});									
 			// Load the embedPlayer module ( then run queued hooks )
 			mw.load( 'EmbedPlayer', function ( ) {
+				$j('.embedPlayerLoadDiv').remove();
 				// Rewrite the rewritePlayerTags with the 
 				$j( mw.getConfig( 'rewritePlayerTags' ) ).embedPlayer();				
 				// Run the setup callback now that we have setup all the players

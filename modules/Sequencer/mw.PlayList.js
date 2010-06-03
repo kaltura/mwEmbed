@@ -7,6 +7,8 @@
  * 
  * @author: Michael Dale  mdale@wikimedia.org
  * @license GPL2
+ 
+ ( deprecated in favor of mw.SequencePlayer.js )
  */
 var mw_default_playlist_attributes = {
 	// playlist attributes :
