@@ -33,11 +33,11 @@ mw.SwarmTransport = {
 			// Check if we have a "recommend" binding and provide an xpi link			
 			mw.log('bind::addControlBindingsEvent');
 			$j( embedPlayer ).bind( 'addControlBindingsEvent', function(){				
-				if( mw.getConfig( 'recomendSwarmTransport' ) &&  
+				if( mw.getConfig( 'recommendSwarmTransport' ) &&  
 					typeof window['swarmTransport'] == 'undefined' &&
 					$j.browser.mozilla ) {
 					embedPlayer.ctrlBuilder.doWarningBindinng( 
-						'recomendSwarmTransport',
+						'recommendSwarmTransport',
 						_this.getRecomendSwarmMessage()						
 					);
 				}

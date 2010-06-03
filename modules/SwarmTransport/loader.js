@@ -20,7 +20,7 @@
  		/**
  		* If the swarm transport plugin should be recommended if the user does not have it installed. 
  		*/ 	 	
- 		'recomendSwarmTransport' : false  
+ 		'recommendSwarmTransport' : false  
 	});
 	
 	// Add the mw.SwarmTransport to the embedPlayer loader:
