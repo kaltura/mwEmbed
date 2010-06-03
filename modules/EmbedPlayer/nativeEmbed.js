@@ -557,9 +557,10 @@ var nativeEmbed = {
 	*  Used to update the bufferedPercent
 	*/	
 	onended: function() {
-		var _this = this		
+		var _this = this;
 		//mw.log( 'native:onended:' + this.playerElement.currentTime + ' real dur:' +  this.getDuration() );							
 		// run abstract player onEned if the abstract player still things we are playing
+		
 		if( this.isPlaying() ){
 			this.onClipDone();
 		}

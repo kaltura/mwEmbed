@@ -4,6 +4,7 @@
 window.cortadoDomainLocations = {
 	'upload.wikimedia.org' : 'http://upload.wikimedia.org/jars/cortado.jar'
 };
+
 // Set the default location for CortadoApplet
 mw.setDefaultConfig( 'relativeCortadoAppletPath',
 		mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/cortado/cortado-ovtk-stripped-0.6.0.jar'
@@ -109,7 +110,7 @@ var javaEmbed = {
 				applet_loc  = 'http://theora.org/cortado.jar';
 			}
 		} else {
-			// Should be identical to cortado.jar
+			// Get the local relative cortado applet location: 
 			applet_loc = mw.getConfig( 'relativeCortadoAppletPath' );		
 		}
 		return applet_loc;

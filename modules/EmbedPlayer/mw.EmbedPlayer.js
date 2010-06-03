@@ -620,7 +620,7 @@ mediaSource.prototype = {
 	title: null,
 	
 	// True if the source has been marked as the default.
-	marked_default:false,
+	markedDefault: false,
 	
 	// True if the source supports url specification of offset and duration 
 	URLTimeEncoding:false,
@@ -654,8 +654,7 @@ mediaSource.prototype = {
 	*/
 	init : function( element ) {		
 		// mw.log('adding mediaSource: ' + element);
-		this.src = $j( element ).attr( 'src' );
-		this.marked_default = false;
+		this.src = $j( element ).attr( 'src' );		
 		
 		// Set default URLTimeEncoding if we have a time  url:
 		// not ideal way to discover if content is on an oggz_chop server. 
@@ -697,9 +696,13 @@ mediaSource.prototype = {
 			this.mimeType = 'audio/ogg';
 		}
 			
-		// Check for parent elements ( supplies categories in "itext" )
+		// Check for parent elements ( supplies categories in "track" )
 		if( $j( element ).parent().attr('category') ) {			
 			this.category =  $j( element ).parent().attr('category');			
+		}
+		
+		if( $j( element ).attr( 'default' ) ){
+			this.markedDefault = true;
 		}
 						
 		// Get the url duration ( if applicable )
@@ -1045,23 +1048,24 @@ mediaElement.prototype = {
 		mw.log( 'f:autoSelectSource:' );
 		// Select the default source
 		var playableSources = this.getPlayableSources();
-		var flash_flag = ogg_flag = false;		
-		
+		var flash_flag = ogg_flag = false;
+				
+		// Set via user-preference
 		for ( var source = 0; source < playableSources.length; source++ ) {
-			var mimeType = playableSources[source].mimeType;
-			
-			// Set via marked default: 
-			if ( playableSources[ source ].marked_default ) {
-				mw.log( 'set via marked default: ' + playableSources[source].marked_default );
-				this.selectedSource = playableSources[source];
-				return true;
-			}
-			
-			// Set via user-preference
+			var mimeType = playableSources[source].mimeType;					
 			if ( mw.EmbedTypes.players.preference[ 'format_preference' ] == mimeType ) {
 				 mw.log( 'set via preference: ' + playableSources[source].mimeType );
 				 this.selectedSource = playableSources[source];
 				 return true;
+			}
+		}
+		
+		// Set via marked default: 
+		for ( var source = 0; source < playableSources.length; source++ ) {
+			if ( playableSources[ source ].markedDefault ) {
+				mw.log( 'set via marked default: ' + playableSources[source].markedDefault );
+				this.selectedSource = playableSources[source];
+				return true;
 			}
 		}
 		
@@ -1144,7 +1148,7 @@ mediaElement.prototype = {
 	/**
 	* Checks if media is a playable type
 	*/
-	isPlayableType: function( mimeType ) {
+	isPlayableType: function( mimeType ) {	
 		if ( mw.EmbedTypes.players.defaultPlayer( mimeType ) ) {
 			return true;
 		} else {
@@ -1184,7 +1188,7 @@ mediaElement.prototype = {
 	* @returns {Array} of playbale sources
 	*/
 	getPlayableSources: function() {
-		 var playableSources = [];
+		 var playableSources = [];		 
 		 for ( var i = 0; i < this.sources.length; i++ ) {
 			 if ( this.isPlayableType( this.sources[i].mimeType ) ) {
 				 playableSources.push( this.sources[i] );
@@ -1490,7 +1494,6 @@ mw.EmbedPlayer.prototype = {
 			if ( $j( _this ).data('events') ){			
 				mw.log(" checkPlayerSources:: trigger checkPlayerSourcesEvent" );				
 				$j( _this ).trigger ( 'checkPlayerSourcesEvent', function() {	
-					debugger;
 					// Continue application flow and check for Timed Text
 					_this.checkForTimedText();
 				} );
@@ -1602,7 +1605,7 @@ mw.EmbedPlayer.prototype = {
 	*/
 	checkForTimedText: function( ) {
 		var _this = this;
-		mw.log( 'checkForTimedText: ' + this.id );
+		mw.log( 'checkForTimedText: ' + _this.id );
 		// Check for timedText support
 		if( this.isTimedTextSupported() ) {			
 			mw.load( 'TimedText', function() {
@@ -1926,7 +1929,7 @@ mw.EmbedPlayer.prototype = {
 		this.paused = true;
 		this.thumbnail_disp = true;
 		// Make sure the ctrlBuilder bindings are up-to-date 
-		this.ctrlBuilder.addControlHooks();
+		this.ctrlBuilder.addControlBindings();
 		
 		// Once the thumbnail is shown run the mediaReady trigger (if not using native controls)
 		if( !this.useNativeControls() ){
@@ -3145,8 +3148,8 @@ var kplayer = new mediaPlayer('kplayer', ['video/x-flv', 'video/h264'], 'kplayer
 // Java based player
 var cortadoPlayer = new mediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'application/ogg'], 'java' );
 
-// Native html5 player
-var oggNativePlayer = new mediaPlayer( 'oggNative', ['video/ogg', 'audio/ogg', 'application/ogg'], 'native' );
+// Native html5 player  
+var oggNativePlayer = new mediaPlayer( 'oggNative', ['video/ogg', 'audio/ogg', 'application/ogg' ], 'native' );
 
 var h264NativePlayer = new mediaPlayer( 'h264Native', ['video/h264'], 'native' );
 
@@ -3185,7 +3188,7 @@ mediaPlayers.prototype =
 	preference : { },
 	
 	// Stores the default set of players for a given mime type
-	default_players : { },	
+	defaultPlayers : { },	
 	
 	/**
 	* Initializartion function sets the default order for players for
@@ -3196,20 +3199,19 @@ mediaPlayers.prototype =
 		this.loadPreferences();
 		
 		// set up default players order for each library type		
-		this.default_players['video/x-flv'] = ['kplayer', 'vlc'];
-		this.default_players['video/h264'] = ['native', 'kplayer', 'vlc'];
+		this.defaultPlayers['video/x-flv'] = ['kplayer', 'vlc'];
+		this.defaultPlayers['video/h264'] = ['native', 'kplayer', 'vlc'];
 		
-		this.default_players['video/ogg'] = ['native', 'vlc', 'java', 'generic'];
-		this.default_players['application/ogg'] = ['native', 'vlc', 'java', 'generic'];
-		this.default_players['audio/ogg'] = ['native', 'vlc', 'java' ];
-		this.default_players['video/mp4'] = ['vlc'];
+		this.defaultPlayers['video/ogg'] = ['native', 'vlc', 'java', 'generic'];
+		this.defaultPlayers['application/ogg'] = ['native', 'vlc', 'java', 'generic'];
+		this.defaultPlayers['audio/ogg'] = ['native', 'vlc', 'java' ];
+		this.defaultPlayers['video/mp4'] = ['vlc'];
 		
-		this.default_players['text/html'] = ['html'];
-		this.default_players['image/jpeg'] = ['html'];
-		this.default_players['image/png'] = ['html'];
-		this.default_players['image/svg'] = ['html'];		
-		
-		
+		this.defaultPlayers['text/html'] = ['html'];
+		this.defaultPlayers['image/jpeg'] = ['html'];
+		this.defaultPlayers['image/png'] = ['html'];
+		this.defaultPlayers['image/svg'] = ['html'];			
+					
 	},
 	
 	/**
@@ -3224,6 +3226,8 @@ mediaPlayers.prototype =
 				return ;
 			}
 		}
+		
+		
 		// Add the player:
 		this.players.push( player );
 	},
@@ -3248,19 +3252,19 @@ mediaPlayers.prototype =
 	*	Array of players that support a the requested mime type
 	*/
 	getMIMETypePlayers: function( mimeType ) {
-		var mime_players = new Array();
-		var _this = this;
-		if ( this.default_players[mimeType] ) {
-			$j.each( this.default_players[ mimeType ], function( d, lib ) {
-				var library = _this.default_players[ mimeType ][ d ];
+		var mimePlayers = new Array();
+		var _this = this;		
+		if ( this.defaultPlayers[mimeType] ) {
+			$j.each( this.defaultPlayers[ mimeType ], function( d, lib ) {
+				var library = _this.defaultPlayers[ mimeType ][ d ];
 				for ( var i = 0; i < _this.players.length; i++ ) {
 					if ( _this.players[i].library == library && _this.players[i].supportsMIMEType( mimeType ) ) {
-						mime_players.push( _this.players[i] );
+						mimePlayers.push( _this.players[i] );
 					}
 				}
 			} );
 		}
-		return mime_players;
+		return mimePlayers;
 	},
 	
 	/**
@@ -3273,17 +3277,17 @@ mediaPlayers.prototype =
 	*/
 	defaultPlayer : function( mimeType ) {	
 		//mw.log( "get defaultPlayer for " + mimeType );
-		var mime_players = this.getMIMETypePlayers( mimeType );
-		if ( mime_players.length > 0 )
+		var mimePlayers = this.getMIMETypePlayers( mimeType );
+		if ( mimePlayers.length > 0 )
 		{
 			// Check for prior preference for this mime type
-			for ( var i = 0; i < mime_players.length; i++ ) {
-				if ( mime_players[i].id == this.preference[mimeType] )
-					return mime_players[i];
+			for ( var i = 0; i < mimePlayers.length; i++ ) {
+				if ( mimePlayers[i].id == this.preference[mimeType] )
+					return mimePlayers[i];
 			}
 			// Otherwise just return the first compatible player
-			// (it will be chosen according to the default_players list
-			return mime_players[0];
+			// (it will be chosen according to the defaultPlayers list
+			return mimePlayers[0];
 		}
 		//mw.log( 'No default player found for ' + mimeType );
 		return null;
@@ -3386,7 +3390,7 @@ mw.EmbedTypes = {
 	*/
 	detect: function() {		
 		mw.log( "embedPlayer: running detect" );		
-		this.players = new mediaPlayers();
+		this.players = new mediaPlayers();		
 		// every browser supports html rendering:
 		this.players.addPlayer( htmlPlayer );
 		// In Mozilla, navigator.javaEnabled() only tells us about preferences, we need to
@@ -3507,7 +3511,11 @@ mw.EmbedTypes = {
 					continue;
 				}
 			}
-		}		
+		}
+		
+		// Allow extensions to detect and add their own "players" 
+		$j( mw ).trigger( 'embedPlayerUpdateMediaPlayersEvent' , this.players );		
+		
 	},
 	
 	/**

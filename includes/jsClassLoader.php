@@ -79,7 +79,7 @@ class jsClassLoader {
 				'/mwEnabledModuleList\s*\=\s*\[(.*)\]/siU',
 				'jsClassLoader::preg_buildModuleList',
 				$fileContent
-			);			
+			);
 		}
 
 		// Change to the root mediawiki directory ( loader.js paths are relative to root mediawiki directory )
@@ -232,7 +232,7 @@ class jsClassLoader {
 
 		$mwEmbedAbsolutePath = ( $wgMwEmbedDirectory == '' )? $IP:  $IP .'/' .$wgMwEmbedDirectory;
 
-		foreach( $moduleSet as $na => $moduleName ){
+		foreach( $moduleSet as $na => $moduleName ) {
 			// Skip empty module names
 			if(trim( $moduleName ) == '' ){
 				continue;
@@ -257,7 +257,6 @@ class jsClassLoader {
 	 */
 	private static function preg_classPathLoader( $jsvar ) {
 		global $wgScriptLoaderNamedPaths;
-	
 		if ( !isset( $jsvar[1] ) ) {
 			return false;
 		}
@@ -265,10 +264,7 @@ class jsClassLoader {
 		$jClassSet = FormatJson::decode( '{' . $jsvar[1] . '}', true );
 		// Check for null json decode:
 		if( $jClassSet == NULL ){
-			throw new MWException( "Error could not parser javascript class list in \n ".
-				self::$directoryContext ."/loader.js\n".
-				"Is the class list JSON formated? using \" not ' ?\n" .  
-			  	htmlspecialchars( $jsvar[1] ) . "\n\n");			
+			return false;
 		}
 
 		foreach ( $jClassSet as $className => $classPath ) {
@@ -286,14 +282,12 @@ class jsClassLoader {
 				$setInModuleError = ( self::$classParentModuleName [ $className ] )
 					? " set in module: " . self::$classParentModuleName [ $className ]
 					: " set in an extension ";
-				
-				throw new MWException( "Error class $className already $setInModuleError , " . 
-					" can't reassign in " . self::$currentModuleName . "\n" );
+
+				throw new MWException( "Error class $className already $setInModuleError \n" );
 			}
 
 			// Else update the global $wgScriptLoaderNamedPaths ( all scriptloader named paths )
 			$wgScriptLoaderNamedPaths[ $className ] = $classPath;
-	
 			// Register the parent module ( javascript module specific )
 			self::$classParentModuleName [ $className ] = self::$currentModuleName ;
 		}

@@ -1534,7 +1534,7 @@ mw.Sequencer.prototype = {
 		this.plObj.updateBaseStatus();
 
 		// once the controls are in the DOM add hooks:
-		this.plObj.ctrlBuilder.addControlHooks( $j( '#' + this.timeline_id + '_pl_control' ) );
+		this.plObj.ctrlBuilder.addControlBindings( $j( '#' + this.timeline_id + '_pl_control' ) );
 
 		// render out the "jump" div
 		if ( this.timeline_mode == 'time' ) {  // Closure reports this line as inactive -papy
