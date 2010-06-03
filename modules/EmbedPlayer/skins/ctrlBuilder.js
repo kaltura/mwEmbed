@@ -50,7 +50,7 @@ ctrlBuilder.prototype = {
 	fullscreenMode: false,
 	
 	// Flag to store if a warning binding has been added 
-	addedWarningFlag: false,
+	addWarningFlag: false,
 	
 	/**
 	* Initialization Object for the control builder
@@ -601,8 +601,8 @@ ctrlBuilder.prototype = {
 			}, 'slow' );
 		
 		// Hide the warning if present
-		if( this.addedWarningFlag ){
-			$j( '#gnp_' + this.embedPlayer.id ).fadeOut( 'slow' );
+		if( this.addWarningFlag ){
+			$j( '#warningOverlay_' + this.embedPlayer.id ).fadeOut( 'slow' );
 		}
 	},
 	
@@ -627,8 +627,8 @@ ctrlBuilder.prototype = {
 			.fadeIn( animateDuration );
 			
 		// Hide the warning if present
-		if( this.addedWarningFlag  ){
-			$j( '#gnp_' + this.embedPlayer.id ).fadeIn( animateDuration );
+		if( this.addWarningFlag  ){
+			$j( '#warningOverlay_' + this.embedPlayer.id ).fadeIn( animateDuration );
 		}		
 	},
 	
@@ -663,16 +663,7 @@ ctrlBuilder.prototype = {
 	* dependent on mediaElement being setup 
 	*/ 
 	checkNativeWarning: function( ) {				
-		// Check the global config 
-		if( mw.getConfig( 'showNativePlayerWarning' ) == false ) {
-			return false;
-		}	
-		
-		// Check the user cookie to see if user requested to hide it
-		if ( $j.cookie( 'showNativePlayerWarning' ) == 'false' ) {
-			return false;
-		}		
-		
+	
 		// If the resolution is too small don't display the warning
 		if( this.embedPlayer.getPlayerHeight() < 199 ){
 			return false;
@@ -714,21 +705,25 @@ ctrlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
 		
-		// make sure we don't stack warnings
-		if( this.addedWarningFlag ){
-			mw.log("Error already added warning skiping " + preferenceId  );
+		// Check the global config and cookie:  
+		if( mw.getConfig( preferenceId ) == false || $j.cookie( preferenceId ) == 'false' ) {
+			this.addWarningFlag = false;
+			return false;
+		} else {
+			// Do add the warning flag: 
+			_this.addWarningFlag  = true;
 		}
-		this.addedWarningFlag  = true;
+		
 		
 		$j( embedPlayer ).hover(
 			function() {							
-				if ( $j( '#gnp_' + embedPlayer.id ).length == 0 ) {
+				if ( $j( '#warningOverlay_' + embedPlayer.id ).length == 0 ) {
 					var toppos = ( embedPlayer.instanceOf == 'mvPlayList' ) ? 25 : 10;
 					
 					$j( this ).append(
 						$j('<div />')
 						.attr( {
-							'id': "gnp_" + embedPlayer.id								
+							'id': "warningOverlay_" + embedPlayer.id								
 						} )
 						.addClass( 'ui-state-highlight ui-corner-all' )
 						.css({
@@ -738,12 +733,13 @@ ctrlBuilder.prototype = {
 							'color' : '#111',
 							'top' : toppos + 'px',
 							'left' : '10px',
-							'right' : '10px'
+							'right' : '10px',
+							'padding' : '4px'
 						})
 						.html( warningMsg  )
 					)
 					
-					$targetWarning = $j( '#gnp_' + embedPlayer.id );			
+					$targetWarning = $j( '#warningOverlay_' + embedPlayer.id );			
 										
 					$targetWarning.append( 					 
 						$j('<br />')
@@ -762,7 +758,9 @@ ctrlBuilder.prototype = {
 								$j.cookie( preferenceId, false, { expires: 7 } );
 								// Set the current instance
 								mw.setConfig( preferenceId, false );
-								$j( '#gnp_' + embedPlayer.id ).fadeOut( 'slow' );
+								$j( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
+								// set the local prefrence to false
+								_this.addWarningFlag = false;
 							} else {
 								mw.setConfig( preferenceId, true );
 								$j.cookie( preferenceId, true );
