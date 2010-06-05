@@ -70,24 +70,25 @@
 	// Add class file paths 
 	mw.addClassFilePaths( {
 		"mw.EmbedPlayer"	: "mw.EmbedPlayer.js",
-		"flowplayerEmbed"	: "flowplayerEmbed.js",
-		"kplayerEmbed"		: "kplayerEmbed.js",
-		"genericEmbed"		: "genericEmbed.js",
-		"htmlEmbed"			: "htmlEmbed.js",
-		"javaEmbed"			: "javaEmbed.js",
-		"nativeEmbed"		: "nativeEmbed.js",
-		"quicktimeEmbed"	: "quicktimeEmbed.js",
-		"vlcEmbed"			: "vlcEmbed.js",
 		
-		"ctrlBuilder"		: "skins/ctrlBuilder.js",		
+		"mw.EmbedPlayerKplayer"	: "mw.EmbedPlayerKplayer.js",
+		"mw.EmbedPlayerGeneric"	: "mw.EmbedPlayerGeneric.js",
+		"mw.EmbedPlayerHtml" : "mw.EmbedPlayerHtml.js",
+		"mw.EmbedPlayerJava": "mw.EmbedPlayerJava.js",
+		"mw.EmbedPlayerNative"	: "mw.EmbedPlayerNative.js",
+		
+		"mw.EmbedPlayerVlc" : "mw.EmbedPlayerVlc.js",
+		
+		"mw.PlayerControlBuilder" : "skins/mw.PlayerControlBuilder.js",		
 	
-		"mw.style.EmbedPlayer" : "mw.style.EmbedPlayer.css",
+		"mw.style.EmbedPlayer" : "skins/mw.style.EmbedPlayer.css",
 		
-		"mw.style.kskin" 	: "skins/kskin/EmbedPlayer.css",	
-		"kskinConfig"		: "skins/kskin/kskinConfig.js",
+		"mw.style.PlayerSkinKskin" 	: "skins/kskin/mw.style.PlayerSkinKskin.css",
+			
+		"mw.PlayerSkinKskin"		: "skins/kskin/mw.PlayerSkinKskin.js",
 		
-		"mvpcfConfig"		: "skins/mvpcf/mvpcfConfig.js",
-		"mw.style.mvpcf" 	: "skins/mvpcf/EmbedPlayer.css"	
+		"mw.PlayerSkinMvpcf"		: "skins/mvpcf/mw.PlayerSkinMvpcf.js",
+		"mw.style.PlayerSkinMvpcf" 	: "skins/mvpcf/mw.style.PlayerSkinMvpcf.css"	
 	} );
 
 	/**
@@ -130,7 +131,7 @@
 				if ( $j( element ).attr( "id" ) == '' ) {
 					$j( element ).attr( "id",  'v' + ( rewriteElementCount++ ) );
 				}
-								
+
 				// Add an absolute positioned loader
 				var pos = $j( element ).offset();
 				mw.log( ' l: ' + pos.left + ' t: ' + pos.top ); 
@@ -141,33 +142,28 @@
 					
 				var posTop = (  $j( element ).height() ) ? 
 					parseInt( pos.top + ( .4 * $j( element ).height() ) ) : 
-					pos.top + 30;
-				
-				// Check for the loadingSpiner: 			
-				if( $j('#loadSpiner_' + $j( element ).attr('id') ).length == 0 ){
-					$j('body').append(
-						$j('<div />')
-						.loadingSpinner()
-						.addClass( 'embedPlayerLoadDiv' )
-						.css({
-							'width' : 32,
-							'height' : 32,
-							'position': 'absolute',
-							'top' : posTop + 'px',
-							'left' : posLeft + 'px'
-						})						
-					)
-				}
-					
-				//$j( element ).hide();
+					pos.top + 30;			
+							
+				$j('body').append(
+					$j('<div />')
+					.loadingSpinner()
+					.attr('id', 'loadingSpinner_' + $j( element ).attr('id') )
+					.addClass('playerLoadingSpinner')
+					.css({
+						'width' : 32,
+						'height' : 32,
+						'position': 'absolute',
+						'top' : posTop + 'px',
+						'left' : posLeft + 'px'
+					})						
+				)
 			});									
 			// Load the embedPlayer module ( then run queued hooks )
-			mw.load( 'EmbedPlayer', function ( ) {
-				$j('.embedPlayerLoadDiv').remove();
+			mw.load( 'EmbedPlayer', function ( ) {												
 				// Rewrite the rewritePlayerTags with the 
 				$j( mw.getConfig( 'rewritePlayerTags' ) ).embedPlayer();				
 				// Run the setup callback now that we have setup all the players
-				callback();
+				callback();							
 			})
 		} else {
 			callback();
@@ -187,7 +183,7 @@
 			[
 				'$j.ui',			
 				'mw.EmbedPlayer',
-				'ctrlBuilder',
+				'mw.PlayerControlBuilder',
 				'$j.fn.hoverIntent',
 				'mw.style.EmbedPlayer',
 				'$j.cookie',
@@ -201,9 +197,8 @@
 			]
 			
 		];
-			
-		// Get the class of all embed video elements 
-		// to add the skin to the load request
+
+		// Pass every tag being rewritten through the update request function
 		$j( mw.getConfig( 'rewritePlayerTags' ) ).each( function() {	
 			var playerElement = this;		
 			mw.embedPlayerUpdateLibraryRequest( playerElement,  dependencyRequest[ 0 ] )			
@@ -217,22 +212,20 @@
 		// Do short detection, to avoid extra player library request in ~most~ cases. 
 		//( If browser is firefox include native, if browser is IE include java ) 
 		if( $j.browser.msie ) {
-			dependencyRequest[0].push( 'javaEmbed' )		
+			dependencyRequest[0].push( 'mw.EmbedPlayeJava' )		
 		}
 				
 		// Safari gets slower load since we have to detect ogg support 
 		if( !!document.createElement('video').canPlayType &&  !$j.browser.safari  ) {		
-			dependencyRequest[0].push( 'nativeEmbed' )
+			dependencyRequest[0].push( 'mw.EmbedPlayerNative' )
 		}		
 		
 		// Load the video libs:
-		mw.load( dependencyRequest, function() {			
+		mw.load( dependencyRequest, function() {	
 			// Setup userConfig 
 			mw.setupUserConfig( function() {
 				// Remove no video html elements:
-				$j( '.videonojs' ).remove();
-				
-				
+				$j( '.videonojs' ).remove();				
 				
 				// Detect supported players:  
 				mw.EmbedTypes.init();		
@@ -247,7 +240,7 @@
 			} ); // setupUserConfig
 		} );		
 	} );
-
+	
 	/**
 	 * Takes a embed player element and updates a request object with any 
 	 * dependent libraries per that tags attributes.
@@ -266,21 +259,28 @@
 		if( ! playerClassName ){
 			playerClassName = mw.getConfig( 'playerSkinName' );
 		}		
+		// compre with lower case: 
+		playerClassName = playerClassName.toLowerCase();
 		for( var n=0; n < mw.validSkins.length ; n++ ) {
 			// Get any other skins that we need to load 
 			// That way skin js can be part of the single script-loader request: 
-			if( playerClassName.indexOf( mw.validSkins[ n ] ) !== -1) {
+			if( playerClassName.indexOf( mw.validSkins[ n ].toLowerCase() ) !== -1) {
 				// Add skin name to playerSkins
-				playerSkins[ mw.validSkins[ n ] ] = true;
+				playerSkins[ mw.validSkins[ n ].toLowerCase() ] = true;
 			}
 		}
+	
 		
 		// Add the player skins css and js to the load request:	
 		for( var pSkin in playerSkins ) {
+			// Make sure first letter of skin is upper case to load skin class: 
+			var f = pSkin.charAt(0).toUpperCase();
+    		pSkin =  f + pSkin.substr(1);
+    	
 			// Add skin js
-			dependencyRequest.push(  pSkin  + 'Config' );	
+			dependencyRequest.push( 'mw.PlayerSkin' + pSkin );	
 			// Add the skin css 
-			dependencyRequest.push( 'mw.style.' + pSkin );
+			dependencyRequest.push( 'mw.style.PlayerSkin' + pSkin );
 		}	
 		
 		// Allow extension to extend the request. 
@@ -288,6 +288,7 @@
 		
 		$j( mw ).trigger( 'LoaderEmbedPlayerUpdateRequest', 
 				[ playerElement, dependencyRequest ] );
+
 	}
 
 } )( window.mw );

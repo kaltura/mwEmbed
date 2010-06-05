@@ -3,17 +3,17 @@
 */
 
 /**
-* ctrlBuilder object
+* mw.PlayerControlBuilder object
 *	@param the embedPlayer element we are targeting
 */
-var ctrlBuilder = function( embedPlayer, options ) {
+mw.PlayerControlBuilder = function( embedPlayer, options ) {
 	return this.init( embedPlayer, options );
 };
 
 /**
  * ControlsBuilder prototype:
  */
-ctrlBuilder.prototype = {
+mw.PlayerControlBuilder.prototype = {
 	//Default Local values: 
 	
 	// Parent css Class name
@@ -52,6 +52,9 @@ ctrlBuilder.prototype = {
 	// Flag to store if a warning binding has been added 
 	addWarningFlag: false,
 	
+	// Flag to store state of overlay on player  
+	displayOptionsMenuFlag: false, 
+	
 	/**
 	* Initialization Object for the control builder
 	*
@@ -61,14 +64,15 @@ ctrlBuilder.prototype = {
 		var _this = this;
 		this.embedPlayer = embedPlayer;
 
-		// Check for skin overrides for ctrlBuilder
-		if ( window[ embedPlayer.skinName + 'Config' ] ) {
+		// Check for skin overrides for controlBuilder
+		var skinClass =  embedPlayer.skinName[0].toUpperCase() +  embedPlayer.skinName.substr( 1 );		
+		if ( mw['PlayerSkin' + skinClass  ]) {
 		
 			// Clone as to not override prototype with the skin config
-			var _this = $j.extend( true, { }, this, window[ embedPlayer.skinName + 'Config'] );	
+			var _this = $j.extend( true, { }, this, mw['PlayerSkin' + skinClass ] );	
 			return _this;
 		}
-		// Return the ctrlBuilder Object: 
+		// Return the controlBuilder Object: 
 		return this;
 	},
 	
@@ -87,7 +91,7 @@ ctrlBuilder.prototype = {
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 		
-		// Set up local ctrlBuilder
+		// Set up local controlBuilder
 		var _this = this;
 
 		// Remove any old controls & old overlays:
@@ -205,8 +209,8 @@ ctrlBuilder.prototype = {
 		var fullHeight =  $j( window ).height() ;
 		
 		// Set target width
-		targetWidth = fullWidth;
-		targetHeight = targetWidth * ( embedPlayer.getHeight() / embedPlayer.getWidth()  ) 
+		var targetWidth = fullWidth;
+		var targetHeight = targetWidth * ( embedPlayer.getHeight() / embedPlayer.getWidth()  ) 
 		// Check if it exceeds the height constraint: 
 		if( targetHeight >  fullHeight ){		
 			targetHeight = fullHeight;				
@@ -268,7 +272,7 @@ ctrlBuilder.prototype = {
 	* Do full-screen mode 
 	*/ 
 	doFullScreenPlayer: function() {
-		mw.log(" ctrlBuilder :: toggle full-screen ");									
+		mw.log(" controlBuilder :: toggle full-screen ");									
 		// Setup pointer to control builder :
 		var _this = this;
 		
@@ -448,7 +452,7 @@ ctrlBuilder.prototype = {
 		$interface.animate( {
 			'top' : this.windowOffset.top,
 			'left' : this.windowOffset.left,
-			// height is embedPlayer height + ctrlBuilder height: 
+			// height is embedPlayer height + controlBuilder height: 
 			'height' : interfaceHeight,
 			'width' : embedPlayer.getWidth()					
 		},function(){			
@@ -569,7 +573,18 @@ ctrlBuilder.prototype = {
 	* Hide the control bar. 
 	*/
 	hideControlBar : function(){
-		var animateDuration = 'slow';	 	
+		var animateDuration = 'slow';
+		var _this = this;			
+		
+		// Do not hide control bar if overlay menu item is being displayed:
+		if( _this.displayOptionsMenuFlag ||  				
+			$j( '#timedTextMenu_' + this.embedPlayer.id ).is( ':visible' ) ) {
+			setTimeout( function(){
+				_this.hideControlBar();
+			}, 200 );
+			return ;
+		}
+		
 		
 		// Hide the control bar
 		this.embedPlayer.$interface.find( '.control-bar')
@@ -581,11 +596,7 @@ ctrlBuilder.prototype = {
 			.animate( { 
 				'bottom' : 10 
 			}, 'slow' );
-		
-		// Hide the warning if present
-		if( this.addWarningFlag ){
-			$j( '#warningOverlay_' + this.embedPlayer.id ).fadeOut( 'slow' );
-		}
+
 	},
 	
 	/**
@@ -594,7 +605,7 @@ ctrlBuilder.prototype = {
 	showControlBar : function(){
 		var animateDuration = 'slow';	
 		$j( this.embedPlayer.getPlayerElement() ).css('z-index', '1')	
-		
+		mw.log( 'showControlBar' );
 		// Move up text track if present
 		this.embedPlayer.$interface.find( '.track' )
 			.animate( 
@@ -677,7 +688,7 @@ ctrlBuilder.prototype = {
 	* 
 	*/
 	doWarningBindinng: function( preferenceId, warningMsg ) {
-		mw.log( 'ctrlBuilder: doWarningBindinng: ' + preferenceId +  ' wm: ' + warningMsg);
+		mw.log( 'controlBuilder: doWarningBindinng: ' + preferenceId +  ' wm: ' + warningMsg);
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 		var _this = this;			
@@ -825,7 +836,7 @@ ctrlBuilder.prototype = {
 		$optionsMenu = $j( '<ul />' );
 		for( var i in this.optionMenuItems ){
 		
-			// Make sure its supported in the current ctrlBuilder config: 
+			// Make sure its supported in the current controlBuilder config: 
 			if( ! this.supportedMenuItems[ i ] 	) {
 			 	continue;
 			}
@@ -838,7 +849,7 @@ ctrlBuilder.prototype = {
 	},	
 		
 	/**
-	* Allow the ctrlBuilder to do interface actions onDone
+	* Allow the controlBuilder to do interface actions onDone
 	*/
 	onClipDone: function(){
 		// Related videos could be shown here 
@@ -848,7 +859,7 @@ ctrlBuilder.prototype = {
 	 * The ctrl builder updates the interface on seeking 
 	 */
 	onSeek: function(){
-		mw.log( "ctrlBuilder:: onSeek" );
+		mw.log( "controlBuilder:: onSeek" );
 		// Update the interface: 
 		this.setStatus( gM( 'mwe-embedplayer-seeking' ) );
 	},
@@ -921,8 +932,11 @@ ctrlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var $overlay = embedPlayer.$interface.find( '.overlay-win,.ui-widget-overlay,.ui-widget-shadow' );
 		
+		this.displayOptionsMenuFlag = false;
+		mw.log(' closeMenuOverlay: ' + this.displayOptionsMenuFlag);
+		
 		$overlay.fadeOut( "slow", function() {
-			$overlay.remove();
+			$overlay.remove();		
 		} );
 		// Show the big play button: 
 		embedPlayer.$interface.find( '.play-btn-large' ).fadeIn( 'slow' );
@@ -938,6 +952,10 @@ ctrlBuilder.prototype = {
 	displayOverlay: function( overlayContent ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
+		mw.log( 'displayOverlay::' );
+		//	set the overlay display flag to true:
+		this.displayOptionsMenuFlag = true;
+		mw.log(" set displayOptionsMenuFlag:: " + this.displayOptionsMenuFlag);
 		
 		if ( !this.supportedComponets[ 'overlays' ] ) {
 			embedPlayer.stop();
@@ -1104,9 +1122,10 @@ ctrlBuilder.prototype = {
 		.append( 
 			$j( '<h2 />' )
 			.text( gM( 'mwe-embedplayer-choose_player' )  )
-		);
-		
+		);		
+
 		$j.each( embedPlayer.mediaElement.getPlayableSources(), function( sourceId, source ) {
+			
 			var playable = mw.EmbedTypes.players.defaultPlayer( source.getMIMEType() );			
 			var is_selected = ( source == embedPlayer.mediaElement.selectedSource );			
 			
@@ -1118,6 +1137,7 @@ ctrlBuilder.prototype = {
 			if ( playable ) {
 				$playerList = $j('<ul />');
 				// output the player select code:
+		
 				var supportingPlayers = mw.EmbedTypes.players.getMIMETypePlayers( source.getMIMEType() );
 
 				for ( var i = 0; i < supportingPlayers.length ; i++ ) {									
@@ -1146,7 +1166,7 @@ ctrlBuilder.prototype = {
 								var default_player_id = iparts[1];
 								mw.log( 'source id: ' +  sourceId + ' player id: ' + default_player_id );
 				
-								embedPlayer.ctrlBuilder.closeMenuOverlay();
+								embedPlayer.controlBuilder.closeMenuOverlay();
 								
 								// Close fullscreen if we are in fullscreen mode
 								if( _this.fullscreenMode ){
@@ -1205,10 +1225,10 @@ ctrlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var loc = embedPlayer.$interface.find( '.rButton.timed-text' ).offset();
 		mw.log('showTextInterface::' + embedPlayer.id + ' t' + loc.top + ' r' + loc.right);							
-		
+				
 		
 		var $menu = $j( '#timedTextMenu_' + embedPlayer.id );			
-		//This may be unnecessary .. we just need to show a spiner somewhere
+		//This may be unnecessary .. we just need to show a spinner somewhere
 		if ( $menu.length != 0 ) {
 			// Hide show the menu:		
 			if( $menu.is( ':visible' ) ) {
@@ -1237,7 +1257,7 @@ ctrlBuilder.prototype = {
 			mw.load( 'TimedText', function() {				
 				$j( '#' + embedPlayer.id ).timedText( 'showMenu', '#timedTextMenu_' + embedPlayer.id );				
 			});		
-		}			
+		}		
 	},
 	
 	/**
@@ -1434,7 +1454,7 @@ ctrlBuilder.prototype = {
 							.addClass( 'ui-icon ui-icon-wrench' )
 						)	
 						.buttonHover()		
-						// Options binding:
+						// Options binding:						
 						.menu( {
 							'content' : ctrlObj.getOptionsMenu(),
 							'zindex' : mw.getConfig( 'fullScreenIndex' ) + 1, 		
@@ -1512,7 +1532,7 @@ ctrlBuilder.prototype = {
 						)
 						// Captions binding:
 						.buttonHover()
-						.click( function() {			
+						.click( function() {									
 							ctrlObj.showTextInterface();
 						} )						
 			}

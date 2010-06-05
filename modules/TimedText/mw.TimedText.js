@@ -212,7 +212,7 @@ mw.addMessages( {
 			if( this.embedPlayer.supports[ 'overlays' ] ){
 				var positionOpts = {
 					'directionV' : 'up',								
-					'offsetY' : this.embedPlayer.ctrlBuilder.getHeight(),
+					'offsetY' : this.embedPlayer.controlBuilder.getHeight(),
 					'directionH' : 'left',
 					'offsetX' : -28
 				};		
@@ -773,7 +773,7 @@ mw.addMessages( {
 		 */
 		addItextDiv: function( category ) {
 			mw.log(" addItextDiv: " +  category )
-			// Get the relative positioned player class from the ctrlBuilder:
+			// Get the relative positioned player class from the controlBuilder:
 			var $playerTarget =  this.embedPlayer.$interface;
 			
 			//Remove any existing track divs for this player;
@@ -786,7 +786,7 @@ mw.addMessages( {
 					.addClass( 'track' + ' ' + 'track_' + category )
 					.css( {							
 						'position':'absolute',
-						'bottom': ( this.embedPlayer.ctrlBuilder.getHeight() + 10 ),
+						'bottom': ( this.embedPlayer.controlBuilder.getHeight() + 10 ),
 						'width': '100%',
 						'display': 'block',
 						'opacity': .8,
@@ -797,19 +797,19 @@ mw.addMessages( {
 					)									
 				
 				// If in fullscreen mode update the text size: 
-				if( this.embedPlayer.ctrlBuilder.fullscreenMode ){
+				if( this.embedPlayer.controlBuilder.fullscreenMode ){
 					$track.css(
-						this.embedPlayer.ctrlBuilder.getFullscreenTextCss()
+						this.embedPlayer.controlBuilder.getFullscreenTextCss()
 					);					
 				}
 				$playerTarget.append( $track );
 				// Resize the interface for layoutMode == 'ontop' ( if not in fullscreen )  
-				// NOTE this shoudl be a call to ctrlBuilder not handled here inline
-				if( ! this.embedPlayer.ctrlBuilder.fullscreenMode ){
-					if( this.embedPlayer.ctrlBuilder.checkOverlayControls() ){
+				// NOTE this shoudl be a call to controlBuilder not handled here inline
+				if( ! this.embedPlayer.controlBuilder.fullscreenMode ){
+					if( this.embedPlayer.controlBuilder.checkOverlayControls() ){
 						var playerHeight = this.embedPlayer.getHeight();
 					} else {
-						var playerHeight = this.embedPlayer.getHeight() + this.embedPlayer.ctrlBuilder.getHeight();
+						var playerHeight = this.embedPlayer.getHeight() + this.embedPlayer.controlBuilder.getHeight();
 					}
 					// Restore the player height	
 					this.embedPlayer.$interface.animate({
@@ -836,9 +836,9 @@ mw.addMessages( {
 						) 
 				);		
 				// Add some height for the bar and interface
-				var height = ( belowBarHeight + 8 )  + this.embedPlayer.getHeight() + this.embedPlayer.ctrlBuilder.getHeight();				
+				var height = ( belowBarHeight + 8 )  + this.embedPlayer.getHeight() + this.embedPlayer.controlBuilder.getHeight();				
 				// Resize the interface for layoutMode == 'below' ( if not in full screen)
-				if( ! this.embedPlayer.ctrlBuilder.fullscreenMode ){
+				if( ! this.embedPlayer.controlBuilder.fullscreenMode ){
 					this.embedPlayer.$interface.animate({
 						'height': height
 					})

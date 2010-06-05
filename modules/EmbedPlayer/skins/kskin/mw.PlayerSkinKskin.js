@@ -6,7 +6,7 @@ mw.addMessages( {
 	"mwe-embedplayer-credit-title" : "Title: $1"
 } );
 
-var kskinConfig = {
+mw.PlayerSkinKskin = {
 
 	// The parent class for all kskin css: 
 	playerClass: 'k-player',
@@ -288,7 +288,7 @@ var kskinConfig = {
 	/**
 	* Shows a selected menu_item
 	*
-	* NOTE: this should be merged with parent ctrlBuilder optionMenuItems 
+	* NOTE: this should be merged with parent mw.PlayerControlBuilder optionMenuItems 
 	* binding mode
 	* 
 	* @param {String} menu_itme Menu item key to display

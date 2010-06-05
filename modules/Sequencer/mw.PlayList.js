@@ -127,7 +127,7 @@ mw.PlayList.prototype = {
 			this.layout.title_bar_height = 0;
 		} 
 		// setup the controlBuilder object:
-		this.ctrlBuilder = new ctrlBuilder( this );	
+		this.controlBuilder = new mw.PlayerControlBuilder( this );	
 	},
 	// run inheritEmbedPlayer on every clip (we have changed the playback method) 
 	inheritEmbedPlayer:function() {
@@ -455,7 +455,7 @@ mw.PlayList.prototype = {
 			})
 			.wrap( 
 				$j('<div>')
-				.addClass( 'interface_wrap ' + this.ctrlBuilder.playerClass )
+				.addClass( 'interface_wrap ' + this.controlBuilder.playerClass )
 				.css({				
 					'width': parseInt( this.width ),
 					'height': parseInt( this.height )
@@ -467,7 +467,7 @@ mw.PlayList.prototype = {
 		this.$interface = $j( this ).parent( '.interface_wrap' );
 		
 		// Empty out the old interface: 
-		this.ctrlBuilder.embedPlayer = this;
+		this.controlBuilder.embedPlayer = this;
 		
 		if ( this.controls == true && $j('#ptitle_' + this.id).length == 0 ) {					
 			// prepend the title (ontop) if not there
@@ -483,7 +483,7 @@ mw.PlayList.prototype = {
 				.attr('id', 'ptitle_' + this.id)
 			);
 			// add the controls:					        
-			this.ctrlBuilder.addControls( );
+			this.controlBuilder.addControls( );
 		} 
 		
 		this.setupClipDisplay();						
@@ -951,7 +951,7 @@ mw.PlayList.prototype = {
 	*/
 	getControlsHTML:function() {
 		// get controls from current clip  (add some playlist specific controls:		  			
-		return this.ctrlBuilder.getControls( this );
+		return this.controlBuilder.getControls( this );
 	},
 	
 	/**

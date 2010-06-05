@@ -9,10 +9,10 @@ function jsInterfaceReadyFunc(){
 
 
 					
-var kplayerEmbed = {
+mw.EmbedPlayerKplayer = {
 	
 	// Instance name: 
-	instanceOf:'kplayerEmbed',
+	instanceOf:'Kplayer',
 	
 	// List of supported features: 
 	supports: {
@@ -205,7 +205,7 @@ var kplayerEmbed = {
 			this.doPlayThenSeek( percentage )
 		}				
 		// Run the onSeeking interface update
-		this.ctrlBuilder.onSeek(); 
+		this.controlBuilder.onSeek(); 
 	},
 	
 	/**

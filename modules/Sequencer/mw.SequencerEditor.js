@@ -145,11 +145,11 @@ var sequencerDefaultValues = {
 	// Track Object 
 	tracks: { }
 }
-mw.Sequencer = function( iObj ) {
+mw.SequenceEditor = function( iObj ) {
 	return this.init( iObj );
 };
 // Set up the mvSequencer object
-mw.Sequencer.prototype = {
+mw.SequenceEditor.prototype = {
 	// The menu_items Object contains: default html, js setup/loader functions
 	menu_items : {
 		'clipedit': {

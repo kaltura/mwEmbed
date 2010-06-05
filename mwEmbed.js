@@ -1,6 +1,6 @@
 // Add support for html5 / mwEmbed elements to IE ( comment must come before js code ) 
 // For discussion and comments, see: http://remysharp.com/2009/01/07/html5-enabling-script/
-/*@cc_on@if(@_jscript_version<9){'video audio source track playlist'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/
+/*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/
 
 /**
  * @license
@@ -298,7 +298,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		*/				
 		load: function( loadRequest, instanceCallback ) {
 			// Ensure the callback is only called once per load instance 
-			var callback = function(){				
+			var callback = function(){
+				//mw.log( 'instanceCallback::running callback: ' + instanceCallback );
 				if( instanceCallback ){
 					instanceCallback( loadRequest );
 					instanceCallback = null;
@@ -399,7 +400,13 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				mw.log("loadMany: load: " + loadName ); 					
 				this.load( loadName, function ( loadName ) {										
 					loadStates[ loadName ] = 1;
-					//mw.log( loadName + ' finished of: ' + JSON.stringify( loadStates ) );
+					
+					/*
+					for( var i in loadStates ) {
+						mw.log( loadName + ' finished of: ' + i + ' : ' + loadStates[i]   );
+					}
+					*/
+					
 					//Check if all load request states are set 1					
 					var loadDone = true;
 					for( var j in loadStates ) {
@@ -564,7 +571,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			
 			// Set the loadDone callback per the provided className				
 			mw.setLoadDoneCB( className, callback );
-			
+						
 			// Issue the request to load the class (include class name in result callback:					
 			mw.getScript( scriptRequest, function( scriptRequest ) {
 			
@@ -582,15 +589,17 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				}
 				
 				// If ( debug mode ) and the script include is missing class messages
-				// do a separate request to retrieve the msgs
+				// do a separate request to retrieve the msgs			
 				if( mw.currentClassMissingMessages ) {
-					mw.loadClassMessages( className, function() {
-						// Reset the currentClassMissingMessages flag
-						mw.currentClassMissingMessages = false;
-						
-						// Run the onDone callback 					
+					mw.log( " className " + className + " is missing messages"  );
+					// Reset the currentClassMissingMessages flag
+					mw.currentClassMissingMessages = false;
+					
+					// Load msgs for this class: 
+					mw.loadClassMessages( className, function() {						
+						// Run the onDone callback 		
 						mw.loadDone( className );
-					});
+					} );
 				} else { 				
 					// If not using the script-loader make sure the className is available before firing the loadDone
 					if( !mw.getScriptLoaderPath() ) {
@@ -660,11 +669,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	
 	/**
 	* Load done callback for script loader
-	*  this enables webkit browsers don't have to check if variables are "ready"
 	* @param {String} requestName Name of the load request
 	*/	
-	mw.loadDone =  function( requestName ) {		
-		//mw.log( "LoadDone: " + requestName + ' run callback ');
+	mw.loadDone =  function( requestName ) {				
 		if( !mwLoadDoneCB[ requestName ] ) {			
 			return true;
 		}
@@ -677,6 +684,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}
 			var func = mwLoadDoneCB[ requestName ].pop();			
 			if( typeof func == 'function' ) {
+				//mw.log( "LoadDone: " + requestName + ' run callback::' + func);
 				func( requestName );
 			}else{
 				mw.log('mwLoadDoneCB: Error non callback function on stack');

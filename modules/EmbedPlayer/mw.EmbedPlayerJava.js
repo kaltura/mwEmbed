@@ -7,13 +7,13 @@ window.cortadoDomainLocations = {
 
 // Set the default location for CortadoApplet
 mw.setDefaultConfig( 'relativeCortadoAppletPath',
-		mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/cortado/cortado-ovtk-stripped-0.6.0.jar'
+	mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/cortado/cortado-ovtk-stripped-0.6.0.jar'
 );
 
-var javaEmbed = {
+mw.EmbedPlayerJava = {
 
 	// Instance name:
-	instanceOf: 'javaEmbed',
+	instanceOf: 'Java',
 	
 	// Supported feature set of the cortado applet: 		
 	supports: {
@@ -162,7 +162,7 @@ var javaEmbed = {
 		}
 		
 		// Run the onSeeking interface update
-		this.ctrlBuilder.onSeek();
+		this.controlBuilder.onSeek();
 	},
 	
 	/**

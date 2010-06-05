@@ -20,8 +20,9 @@ mw.SwarmTransport = {
 			// Setup the "embedCode" binding to swap in an updated url
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {				
 				// Confirm SwarmTransport add-on is available ( defines swarmTransport var )  
-				if( typeof window['swarmTransport'] != 'undefined' ){			
-					_this.addSwarmPlayer( embedPlayer );
+				if( typeof window['swarmTransport'] != 'undefined' ){
+					
+					// Add the swarm source
 					mw.log(" SwarmTransport :: checkPlayerSourcesEvent ");
 					_this.addSwarmSource( embedPlayer, callback );
 										
@@ -37,41 +38,44 @@ mw.SwarmTransport = {
 				if( mw.getConfig( 'recommendSwarmTransport' ) &&  
 					typeof window['swarmTransport'] == 'undefined' &&
 					$j.browser.mozilla ) {
-					embedPlayer.ctrlBuilder.doWarningBindinng( 
+					embedPlayer.controlBuilder.doWarningBindinng( 
 						'recommendSwarmTransport',
 						_this.getRecomendSwarmMessage()						
 					);
 				}
 			});
 					
-		} );		
+		} );	
+		
+		
+		// Add the swarmTransport player to available player types: 
+		$j( mw ).bind( 'EmbedPlayerManagerReady', function( event ) {
+			// Add the swarmTransport playerType	
+			mw.EmbedTypes.players.defaultPlayers['video/swarmTransport'] = ['Native'];
+			
+			// Build the swarm Transport Player
+			var swarmTransportPlayer = new mediaPlayer( 'swarmTransportPlayer', ['video/swarmTransport' ], 'Native' );
+			
+			// Add the swarmTransport "player"
+			mw.EmbedTypes.players.addPlayer( swarmTransportPlayer );	
+		});
 					
-	},
-	
-	addSwarmPlayer: function( embedPlayer ){
-		// Add the swarmTransport playerType	
-		mw.EmbedTypes.players.defaultPlayers['video/swarmTransport'] = ['native'];
-		
-		// Build the swarm Transport Player
-		var swarmTransportPlayer = new mediaPlayer( 'swarmTransportPlayer', ['video/swarmTransport' ], 'native' );
-		
-		// Add the swarmTransport "player"
-		mw.EmbedTypes.players.addPlayer( swarmTransportPlayer );				
 	},
 	
 	addSwarmSource: function( embedPlayer, callback ) {
 		var _this = this;
 		
+		var source = embedPlayer.mediaElement.getSources( 'video/ogg' )[0];	
+		if( ! source ){
+			mw.log("Error: addSwarmSource: could not find video/ogg source to gennerate torrent from");
+			callback();
+			return ;
+		}
+		
 		// Setup function to run in context based on callback result
 		var finishAddSwarmSource = function(){
 			// Get the highest quality source that the system can playback 
-			// ( for now just grab the first ogg/theora )
-			var source = embedPlayer.mediaElement.getSources( 'video/ogg' )[0];	
-			if( ! source ){
-				mw.log("Error: addSwarmSource: could not find video/ogg source");
-				callback();
-				return ;
-			}
+			// ( for now just grab the first ogg/theora )			
 			var absoluteSource =  mw.absoluteUrl( source.getSrc() );
 			var swarmSrc = httpseed2tstream( absoluteSource );
 			

@@ -1,13 +1,18 @@
 /*
  * Used to embed HTML as a movie clip
  * for use with mv_playlist SMIL additions
+ * 
+ * NOTE:  will likely be depricated 
  */
 var pcHtmlEmbedDefaults = {
 	// default duration of 4 seconds	
 	'dur':4 
 }
 
-var htmlEmbed = {
+mw.EmbedPlayerHtml = {
+	
+	// Instance name: 
+	instanceOf: 'Html',	
 
 	// List of supported features
 	supports: {

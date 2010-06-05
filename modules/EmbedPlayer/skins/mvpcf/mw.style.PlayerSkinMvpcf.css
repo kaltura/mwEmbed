@@ -3,19 +3,16 @@
  */
 
 /*Video player*/
-.mv-player {
-	color: #FFF;
-}
  
 /* large play button: */
 .mv-player .play-btn-large { 
-	width:130px; 
-	height:96px; 
-	background: url(images/player_big_play_button.png) !important; 
-	position:absolute; 
-	cursor:pointer; 
-	border:none !important;
-	z-index:1; 
+	width : 130px; 
+	height : 96px; 
+	background : url(images/player_big_play_button.png) !important; 
+	position : absolute; 
+	cursor : pointer; 
+	border : none !important;
+	z-index : 1; 
 }
 /*.ui-state-default */
 

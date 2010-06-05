@@ -171,26 +171,37 @@ function mwSetPageToLoading(){
 */
 function mwLoadPlayer( callback ){
 	// the jsPlayerRequest includes both javascript and style sheets for the embedPlayer 
-	var jsPlayerRequest = [
+	var jsPlayerRequest = [	 
+	                       
 		'mw.EmbedPlayer', 
+		'mw.style.EmbedPlayer',
 		'$j.ui', 
-		'ctrlBuilder', 
+		'mw.PlayerControlBuilder', 
+		'$j.fn.hoverIntent',		
 		'$j.cookie', 
+		'JSON',
 		'$j.ui.slider', 
 		'kskinConfig',
 		'mw.style.kskin',
 		'$j.fn.menu',
 		'mw.style.jquerymenu',
-		'mw.TimedText' 
+		
+		// Timed Text module
+		'mw.TimedText',
+		'mw.style.TimedText',
+		
+		// mwSwarmTransport module
+		'mw.SwarmTransport'
+		
 	];		
 	// Quick sniff use java if IE and native if firefox 
 	// ( other browsers will run detect and get on-demand )
 	if (navigator.userAgent.indexOf("MSIE") != -1){
-		jsPlayerRequest.push( 'javaEmbed' );
+		jsPlayerRequest.push( 'mw.EmbedPlayeJava' );
 	}
 		
 	if ( navigator.userAgent &&  navigator.userAgent.indexOf("Firefox") != -1 ){
-		jsPlayerRequest.push( 'nativeEmbed' );
+		jsPlayerRequest.push( 'mw.EmbedPlayeNative' );
 	}
 	
 	loadMwEmbed( jsPlayerRequest, function() {

@@ -2,6 +2,6 @@
 mvpcf skin config
 */
 
-var mvpcfConfig = {
+mw.PlayerSkinMvpcf = {
 	playerClass : 'mv-player'
 };

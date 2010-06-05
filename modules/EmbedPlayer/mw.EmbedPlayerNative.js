@@ -3,10 +3,10 @@
 * 
 * Enables embedPlayer support for native html5 browser playback system
 */
-var nativeEmbed = {
+mw.EmbedPlayerNative = {
 
 	//Instance Name
-	instanceOf:'nativeEmbed',
+	instanceOf: 'Native',
 	
 	// Counts the number of times we tried to access the video element 
 	grab_try_count:0,
@@ -206,7 +206,7 @@ var nativeEmbed = {
 		
 		
 		// Run the onSeeking interface update
-		this.ctrlBuilder.onSeek();
+		this.controlBuilder.onSeek();
 		
 		// @@todo check if the clip is loaded here (if so we can do a local seek)
 		if ( this.supportsURLTimeEncoding() ) {
@@ -472,7 +472,7 @@ var nativeEmbed = {
 			$j( this ).trigger( 'onSeek' );
 			
 			// Run the onSeeking interface update
-			this.ctrlBuilder.onSeek();			
+			this.controlBuilder.onSeek();			
 			
 			// Trigger the html5 "seeking" trigger
 			mw.log("native:seeking:trigger:: " + this.seeking);			
