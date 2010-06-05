@@ -187,7 +187,7 @@ class jsScriptLoader {
 		if ( $this->errorMsg != '' ) {
 			//just set the content type (don't send cache header)
 			header( 'Content-Type: text/javascript' );
-			echo 'alert(\'Error With ScriptLoader ::' .
+			echo 'if(console.log)console.log(\'Error With ScriptLoader ::' .
 					 str_replace( "\n", '\'+"\n"+' . "\n'",
 					 	xml::escapeJsString( $this->errorMsg )
 					 ) . '\');'."\n";
