@@ -528,12 +528,13 @@ mw.PlayerControlBuilder.prototype = {
 		} else { // hide show controls: 
 			//$interface.css({'background-color': 'red'});
 			// Bind a startTouch to show controls
-			$interface.bind( 'touchstart', function() {
+			$interface.unbind().bind( 'touchstart', function() {
 				_this.showControlBar();
 				// ( once the user touched the video "don't hide" ) 
 			} );
+			
 			// Add a special absolute overlay for hover ( to keep menu displayed 
-			$interface.hoverIntent({
+			$interface.unbind().hoverIntent({
 				'timeout' : 2000,
 				'over' : function(){						
 					// Show controls with a set timeout ( avoid fade in fade out on short mouse over )				

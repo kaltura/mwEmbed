@@ -9,7 +9,7 @@
 var kURID = '1.1n';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/jsScriptLoader.php';
-//SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
+SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
 
 // Define mw
 window['mw'] = {};
