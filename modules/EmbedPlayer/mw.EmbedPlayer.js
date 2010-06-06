@@ -1712,7 +1712,7 @@ mw.EmbedPlayer.prototype = {
 				}
 				_this[ method ] = playerInterface[method];
 			}											
-			// Run any constructor code: 
+			// Update feature support 
 			_this.updateFeatureSupport();
 			
 			_this.getDuration();
@@ -1737,9 +1737,19 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		if ( this.selectedPlayer.id != player.id ) {
 			this.selectedPlayer = player;			
-			this.inheritEmbedPlayer( function() { 
-				// Update the controls for the new selected player
-				_this.refreshControls();
+			this.inheritEmbedPlayer(function(){
+				_this.controlBuilder.showControlBar();
+				// We have to re-bind hoverIntent ( has to happen in this scope )
+				_this.$interface.hoverIntent({
+					'sensitivity': 4,
+					'timeout' : 2000,
+					'over' : function(){										
+						_this.controlBuilder.showControlBar();
+					},
+					'out' : function(){
+						_this.controlBuilder.hideControlBar();
+					}
+				})		
 			});			
 		}
 	},		
@@ -1948,19 +1958,6 @@ mw.EmbedPlayer.prototype = {
 	},
 	
 	/**
-	* Refresh the player Controls 
-	*  Useful for updating for when new playback system is selected
-	*/	
-	refreshControls: function() {
-		if ( this.$interface.find( '.control-bar' ).length == 0 ) {
-			mw.log( 'Error: refreshControls::control-bar not present, no refresh' );
-			return ;
-		}
-		// Do update controls: 
-		this.controlBuilder.addControls();
-	},
-	
-	/**
 	* Show the player
 	*/
 	showPlayer : function () {	
@@ -2014,7 +2011,7 @@ mw.EmbedPlayer.prototype = {
 	*/
 	showPluginMissingHTML: function( misssingType ) {
 		// Remove the loading spinner if present: 
-		$j('#loadSpiner_' + this.id ).remove();
+		$j('.playerLoadingSpinner').remove();
 		
 		// If the native video is already displayed hide it: 
 		if( $j( '#' + this.pid ).length != 0 ){
@@ -2050,6 +2047,7 @@ mw.EmbedPlayer.prototype = {
 		  	)
 		  )
 		}
+		// hide
 	},
 	
 	/**

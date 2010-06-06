@@ -95,7 +95,12 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 
 		// Remove any old controls & old overlays:
+		mw.log("Remove old embedPlayer control bar:");
 		embedPlayer.$interface.find( '.control-bar,.overlay-win' ).remove();
+		
+		// Reset flag: 
+		_this.displayOptionsMenuFlag = false;
+		
 		
 		// Setup the controlBar container
 		var $controlBar = $j('<div />')
@@ -125,10 +130,10 @@ mw.PlayerControlBuilder.prototype = {
 		// Add the controls to the interface
 		embedPlayer.$interface.append( $controlBar );
 	
-		// Add the Controls with their bindings
+		// Add the Controls Component
 		this.addControlComponents();
 	
-		// Add hooks once Controls are in DOM
+		// Add top level Controls bindings
 		this.addControlBindings();
 	},
 	
@@ -519,26 +524,26 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;		
 		var $interface = embedPlayer.$interface;
 		
-		// Setup target shortcut to	control-bar
-		$target = embedPlayer.$interface;	
-
+		// Remove any old interface bindings
+		$interface.unbind();
+		
 		// Add hide show bindings for control overlay (if overlay is enabled ) 
 		if( ! _this.checkOverlayControls() ) {
-			$interface.unbind().show();		
+			$interface.show();		
 		} else { // hide show controls: 
 			//$interface.css({'background-color': 'red'});
 			// Bind a startTouch to show controls
-			$interface.unbind().bind( 'touchstart', function() {
+			$interface.bind( 'touchstart', function() {
 				_this.showControlBar();
 				// ( once the user touched the video "don't hide" ) 
-			} );
-			
+			} );			
 			// Add a special absolute overlay for hover ( to keep menu displayed 
-			$interface.unbind().hoverIntent({
+			$interface.hoverIntent({
+				'sensitivity': 4,
 				'timeout' : 2000,
 				'over' : function(){						
 					// Show controls with a set timeout ( avoid fade in fade out on short mouse over )				
-					_this.showControlBar()					
+					_this.showControlBar();
 				},
 				'out' : function(){
 					_this.hideControlBar();
@@ -603,7 +608,7 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	* Show the control bar
 	*/
-	showControlBar : function(){
+	showControlBar: function(){
 		var animateDuration = 'slow';	
 		$j( this.embedPlayer.getPlayerElement() ).css('z-index', '1')	
 		mw.log( 'showControlBar' );
@@ -1095,7 +1100,7 @@ mw.PlayerControlBuilder.prototype = {
       		.addClass( 'ui-state-default ui-corner-all copycode' )
       		.text( gM( 'mwe-embedplayer-copy-code' ) )
       		.click(function() {
-				$target.find( 'textarea' ).focus().select();
+      			$shareInterface.find( 'textarea' ).focus().select();
 				// Copy the text if supported:
 				if ( document.selection ) {
 					CopiedTxt = document.selection.createRange();

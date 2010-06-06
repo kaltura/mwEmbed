@@ -2,11 +2,10 @@
 * The "kaltura player" embedPlayer interface for fallback h.264 and flv video format support
 */
 
-
+// Called from the kdp.swf
 function jsInterfaceReadyFunc(){
 	return true;
 }
-
 
 					
 mw.EmbedPlayerKplayer = {
@@ -67,7 +66,8 @@ mw.EmbedPlayerKplayer = {
 			$j('<div />')
 			.attr( 'id', this.pid + '_container' )
 		);
-		
+		// call swm dom loaded function: 
+		swfobject.callDomLoadFunctions();
 		// Do the flash embedding with embedSWF		
 		swfobject.embedSWF( 
 			playerPath + "/kdp3.swf", 
@@ -80,6 +80,21 @@ mw.EmbedPlayerKplayer = {
 			params, 
 			attributes
 		);
+		
+		// Direct object embed
+		/*$j( this ).html(
+		 '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="780" height="420">'+
+	        '<param name="movie" value="myContent.swf" />'+
+	        '<!--[if !IE]>-->'+
+	        '<object type="application/x-shockwave-flash" data="myContent.swf" width="780" height="420">'+
+	        '<!--<![endif]-->'+
+	          '<p> error with flash embed</p>'
+	        '<!--[if !IE]>-->'+
+	        '</object>'+
+	        '<!--<![endif]-->'+
+	      '</object>'
+	   )*/
+
 		
 		setTimeout( function() {
 			_this.postEmbedJS();							
@@ -383,56 +398,8 @@ var swfobject = function() {
 			catch(e) {}
 		}
 		return { w3:w3cdom, pv:playerVersion, wk:webkit, ie:ie, win:windows, mac:mac };
-	}(),
-	
-	/* Cross-browser onDomLoad
-		- Will fire an event as soon as the DOM of a web page is loaded
-		- Internet Explorer workaround based on Diego Perini's solution: http://javascript.nwbox.com/IEContentLoaded/
-		- Regular onload serves as fallback
-	*/ 
-	onDomLoad = function() {
-		if (!ua.w3) { return; }
-		if ((typeof doc.readyState != UNDEF && doc.readyState == "complete") || (typeof doc.readyState == UNDEF && (doc.getElementsByTagName("body")[0] || doc.body))) { // function is fired after onload, e.g. when script is inserted dynamically 
-			callDomLoadFunctions();
-		}
-		if (!isDomLoaded) {
-			if (typeof doc.addEventListener != UNDEF) {
-				doc.addEventListener("DOMContentLoaded", callDomLoadFunctions, false);
-			}		
-			if (ua.ie && ua.win) {
-				doc.attachEvent(ON_READY_STATE_CHANGE, function() {
-					if (doc.readyState == "complete") {
-						doc.detachEvent(ON_READY_STATE_CHANGE, arguments.callee);
-						callDomLoadFunctions();
-					}
-				});
-				if (win == top) { // if not inside an iframe
-					(function(){
-						if (isDomLoaded) { return; }
-						try {
-							doc.documentElement.doScroll("left");
-						}
-						catch(e) {
-							setTimeout(arguments.callee, 0);
-							return;
-						}
-						callDomLoadFunctions();
-					})();
-				}
-			}
-			if (ua.wk) {
-				(function(){
-					if (isDomLoaded) { return; }
-					if (!/loaded|complete/.test(doc.readyState)) {
-						setTimeout(arguments.callee, 0);
-						return;
-					}
-					callDomLoadFunctions();
-				})();
-			}
-			addLoadEvent(callDomLoadFunctions);
-		}
 	}();
+		
 	
 	function callDomLoadFunctions() {
 		if (isDomLoaded) { return; }
@@ -958,6 +925,11 @@ var swfobject = function() {
 			if (ua.w3) {
 				return getObjectById(objectIdStr);
 			}
+		},
+		// XXX added by mdale ( since we know the dom is ready,
+		// this works better. 
+		callDomLoadFunctions: function(){
+			callDomLoadFunctions();	
 		},
 		
 		embedSWF: function(swfUrlStr, replaceElemIdStr, widthStr, heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn) {
