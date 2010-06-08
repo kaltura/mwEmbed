@@ -15,9 +15,15 @@ if ( !mwApiProxyConfig ){
 }
 
 // The default mwApiProxyConfig config 
-// (presently hard coded but should read from user and site config)  
+// xxx todo whitelist all inter-wiki actions
 var mwApiProxyDefaultConfig = {
-	'master_whitelist' 	: [ 'en.wikipedia.org', 'prototype.wikimedia.org', 'localhost', '127.1.1.100' ],
+	'master_whitelist' 	: [ 
+		'en.wikipedia.org', 
+		'commons.wikimedia.org', 
+		'prototype.wikimedia.org', 
+		'localhost', 
+		'127.1.1.100' 
+	],
 	'master_blacklist'	: []
 };
 

@@ -10,7 +10,7 @@ mw.addMessages( {
 } );
 
 var kalturaFilters = function ( options ) {
-	return this.init( options );
+	this.init( options );
 }
 
 kalturaFilters.prototype = {
@@ -28,8 +28,7 @@ kalturaFilters.prototype = {
 		* @param Object options Set of options for the search
 		*/
 		init: function( options ) {
-			this.resetFilters();			
-			return this;
+			this.resetFilters();
 		},
 		
 		resetFilters: function() {			

@@ -13,7 +13,7 @@
  */
 
 var flickrSearch = function ( options ) {
-	return this.init( options );
+	this.init( options );
 }
 flickrSearch.prototype = {
 	dtUrl : 'http://www.flickr.com/photos/',

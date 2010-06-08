@@ -32,13 +32,15 @@ mw.KEntryIdSupport.prototype = {
 			// Add hook for check player sources to use local kEntry ID source check:
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {	
 				mw.log(" entryId:: checkPlayerSourcesEvent ");
-				_this.checkPlayerSources( embedPlayer, callback );				
+				_this.checkPlayerSources( embedPlayer, function(){
+					// We can only enable kaltura analytics if we have a session if we have a client										
+					if( mw.getConfig( 'enableKalturaAnalytics' ) == true && _this.kClient ) {
+						mw.addKAnalytics( embedPlayer, _this.kClient ) ;
+					}					
+					callback();
+				} );				
 			} );
-			
-			// Check for enableKalturaAnalytics and enable Analytics
-			if( mw.getConfig( 'enableKalturaAnalytics' ) == true ) {
-				mw.addKAnalytics( embedPlayer ) ;
-			}
+						
 		});
 	},
 	
@@ -81,8 +83,9 @@ mw.KEntryIdSupport.prototype = {
 				_this.setupSession ( widgetId, function( status ) {
 					// @@TODO check if session was successful
 					if( !status ){
-						// No sources added ( error ) 
+						mw.log( "Error: checkPlayerSources:: No sources added ( error ) " );  
 						callback();
+						return ;
 					}
 					// Once the session has been setup run the sessionReadyCallbackQueue
 					while( _this.sessionReadyCallbackQueue.length ){
@@ -100,13 +103,13 @@ mw.KEntryIdSupport.prototype = {
 	* @param {Function} callback Function to be called once sources are ready 
 	*/ 
 	addEntryIdSources: function ( embedPlayer, callback ) {
-		
+		mw.log('KEntrySupport: addEntryIdSources entry Id :: ' + $j( embedPlayer ).attr( 'kentryid' ) );
 		var kEntryId = $j( embedPlayer ).attr( 'kentryid' ); 
 		
 		var widgetId =  $j( embedPlayer ).attr( 'kwidgetid' );
 		
-		// Assign the partnerId from the wdigetid
-		var kPartnerId = widgetId.replace(/_/, '');
+		// Assign the partnerId from the widgetId
+		var kPartnerId = widgetId.replace(/_/g, '');
 		
 		var flavorGrabber = new KalturaFlavorAssetService( this.kClient ); 
 		flavorGrabber.getByEntryId ( function( success, data ) {			
@@ -135,7 +138,7 @@ mw.KEntryIdSupport.prototype = {
 				// Set up the current src string:
 				var src = 'http://cdnakmi.kaltura.com/p/' + kPartnerId +
 						'/sp/' +  kPartnerId + '00/flvclipper/entry_id/' +
-						kentryId + '/flavor/' + asset.id ;
+						kEntryId + '/flavor/' + asset.id ;
 								
 				
 				// Check the tags to read what type of mp4 source

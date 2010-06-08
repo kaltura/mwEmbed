@@ -71,7 +71,10 @@ mw.Smil.prototype = {
 		this.layout = null;
 		
 		// Clear out the body 
-		this.body = null;	
+		this.body = null;
+		
+		// Clear out the top level duration
+		this.duration = null;
 	},
 	
 	/**
@@ -81,29 +84,118 @@ mw.Smil.prototype = {
 		if( this.$dom ) {
 			return this.$dom;
 		}
-		mw.log( "Error SMIL Dom not available " ) ;
+		mw.log( "Error SMIL Dom not available" ) ;
 		return ;
 	},
 	
 	/**
-	*  Get the smil html at a given time 
+	* Get the smil html at a given time 
 	* @param {object} size The target size width, height
 	* @param {float} time The target time to be displayed
 	*/
 	getHtmlDOM: function ( size, time ){		
-		if( !this.layout ){			
-			this.layout = new mw.SmilLayout( this.getDom().find( 'layout' ) );
-		}		
-		if( !this.body ){
-			this.body = new mw.SmilBody( this.getDom().find( 'body' ) );
-		}
-		// Get the layout DOM
-		$layoutDOM = this.layout.getHtmlDOM( { 'width': size.width, 'height': size.height });
+		mw.log("getHtmlDOM:: " + size.width + ' time: ' + time);
 		
-		mw.log( "mw.Smil :: getHtmlDOM :: " );
-		// Have the body object update the layoutDOM for its given time. 		
-		return this.body.updateLayout( $layoutDOM );
+		// Have the layout object return the layout HTML DOM					
+		return this.getLayout().getHtmlDOM( size, time );
+	},
+	
+	/**
+	 * Get the smil layout object, with reference to the body 
+	 */
+	getLayout: function() {
+		if( !this.layout ) {
+			this.layout = new mw.SmilLayout( this );
+		}
+		return this.layout;
+	},
+	
+	/**
+	 * Get the smil body object
+	 */
+	getBody: function(){		
+		if( !this.body ){
+			this.body = new mw.SmilBody( this );
+		}
+		return this.body;
+	},
+	
+	/**
+	 * Get the duration form the 
+	 */
+	getDuration: function(){
+		// return 0 while we don't have the $dom loaded
+		if( !this.$dom ){
+			return 0;
+		}
+		
+		if( !this.duration ){
+			this.duration = this.getBody().getDuration();
+		}
+		return this.duration;		
 	}
+}
+/**
+ * Some Utility functions
+ */
+
+/** 
+ * Parse smil time function
+ * http://www.w3.org/TR/SMIL3/smil-timing.html#Timing-ClockValueSyntax
+ * 
+ * Smil time has the following structure: 
+ *  
+ * Clock-value         ::= ( Full-clock-value | Partial-clock-value | Timecount-value )
+ * Full-clock-value    ::= Hours ":" Minutes ":" Seconds ("." Fraction)?
+ * Partial-clock-value ::= Minutes ":" Seconds ("." Fraction)?
+ * Timecount-value     ::= Timecount ("." Fraction)? (Metric)?
+ * Metric              ::= "h" | "min" | "s" | "ms"
+ * Hours               ::= DIGIT+ // any positive number 
+ * Minutes             ::= 2DIGIT // range from 00 to 59 
+ * Seconds             ::= 2DIGIT // range from 00 to 59 
+ * Fraction            ::= DIGIT+
+ * Timecount           ::= DIGIT+
+ * 2DIGIT              ::= DIGIT DIGIT
+ * DIGIT               ::= [0-9]
+ * 
+ * @param {mixed} timeValue time value of smil structure
+ * @ return {float} Seconds from time value 
+ */
+mw.SmilParseTime =  function( timeValue ){
+	// If timeValue is already a number return seconds: 
+	if( ! isNaN( timeValue ) ){
+		return parseFloat( timeValue );
+	}
+	// Trim whitespace
+	timeValue = $j.trim( timeValue );
+
+	// First check for hh:mm:ss time: 
+	if ( timeValue.split( ':' ).length == 3 ||  timeValue.split( ':' ).length == 2 ) {
+		return mw.npt2seconds( timeValue );
+	}
+	
+	var timeFactor = null
+	// Check for metric hours
+	if( timeValue.substr( -1 ) == 'h' ){
+		timeFactor = 3600 ;
+	}
+	// Min metric
+	if( timeValue.substr( -3 ) == 'min' ){
+		timeFactor = 60;
+	}
+	// Seconds 
+	if( timeValue.substr( -1 ) == 's'){
+		timeFactor = 1;
+	}
+	// Millaseconds
+	if( timeValue.substr( -2 ) == 'ms'){
+		timeFactor = .001;
+	}
+	
+	if( timeFactor){
+		return parseFloat( parseFloat( timeValue ) * timeFactor );
+	}
+	mw.log("Error could not parse time: " + timeValue);
 }
 
 

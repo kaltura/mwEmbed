@@ -23,7 +23,7 @@ mw.SwarmTransport = {
 				if( typeof window['swarmTransport'] != 'undefined' ){
 					
 					// Add the swarm source
-					mw.log(" SwarmTransport :: checkPlayerSourcesEvent ");
+					mw.log(" SwarmTransport :: checkPlayerSourcesEvent " + swapedPlayerId);
 					_this.addSwarmSource( embedPlayer, callback );
 										
 				} else {								
@@ -67,7 +67,7 @@ mw.SwarmTransport = {
 		
 		var source = embedPlayer.mediaElement.getSources( 'video/ogg' )[0];	
 		if( ! source ){
-			mw.log("Error: addSwarmSource: could not find video/ogg source to gennerate torrent from");
+			mw.log("Warning: addSwarmSource: could not find video/ogg source to gennerate torrent from");
 			callback();
 			return ;
 		}
@@ -79,7 +79,7 @@ mw.SwarmTransport = {
 			var absoluteSource =  mw.absoluteUrl( source.getSrc() );
 			var swarmSrc = httpseed2tstream( absoluteSource );
 			
-			mw.log('addSwarmSource for: ' + source.getSrc()  + "\n\nGot:" + swarmSrc );
+			//mw.log('addSwarmSource for: ' + source.getSrc()  + "\n\nGot:" + swarmSrc );
 			
 			embedPlayer.mediaElement.tryAddSource( 
 				$j('<source />')

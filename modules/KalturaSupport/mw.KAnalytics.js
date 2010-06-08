@@ -2,16 +2,18 @@
  * Kaltura style analytics reporting class
  */
 
+// Temporary hack for anayltics response
+window['Kaltura'] = true;
 
 // Global mw.addKAnalytics manager
 var mwKAnalyticsManager = {};
-mw.addKAnalytics = function( embedPlayer ) {
-	mwKAnalyticsManager[ embedPlayer.id ] = new mw.KAnalytics( embedPlayer ) ;
+mw.addKAnalytics = function( embedPlayer, kalturaClient ) {
+	mwKAnalyticsManager[ embedPlayer.id ] = new mw.KAnalytics( embedPlayer, kalturaClient ) ;
 } 
 
 // KAnalytics Constructor
-mw.KAnalytics = function( embedPlayer ){
-	this.init( 	embedPlayer );
+mw.KAnalytics = function( embedPlayer, kalturaClient ){
+	this.init( 	embedPlayer, kalturaClient );
 }
 
 mw.KAnalytics.prototype = {
@@ -38,7 +40,7 @@ mw.KAnalytics.prototype = {
 	 * @param {Object}
 	 *            embedPlayer Player to apply Kaltura analytics to.
 	 */
-	init: function( embedPlayer ) {
+	init: function( embedPlayer, kalturaClient ) {
 	
 		// Setup the local reference to the embed player
 		this.embedPlayer = embedPlayer;
@@ -51,8 +53,12 @@ mw.KAnalytics.prototype = {
 		this.hasSeeked = false;
 		this.lastSeek = 0;
 		
+		// Setup the stats service
+		this.kalturaCollector = new KalturaStatsService( kalturaClient );
+		
 		// Add relevant hooks for reporting beacons
 		this.addPlayerHooks();		
+				
 	},
 	
 	/**
@@ -61,79 +67,49 @@ mw.KAnalytics.prototype = {
 	 * @param {Number}
 	 *            KalturaStatsEventType The eventType number.
 	 */
-	sendStatsEvent: function( KalturaStatsEventKey ){		
-		// Check if we have a monitorAnalytics callback
+	sendStatsEvent: function( KalturaStatsEventKey ){					
+		var _this = this;
 		
-		
-		if( typeof mw.getConfig( 'kalturaAnalyticsCallbackLog' ) == 'function' ) {
-			if( this.startReportTime == 0 ){
-				this.startReportTime = new Date().getTime();
-				var timeDelta = 0
-			}else{
-				var timeDelta = ( new Date().getTime() - this.startReportTime ) / 1000;
-			}			
-			
-			// Update the log for debugging 
-			mw.getConfig( 'kalturaAnalyticsCallbackLog' )( 
-				KalturaStatsEventKey + 
-				' ( ' + parseInt( this.embedPlayer.currentTime * 1000 )+ ',' +
-				timeDelta + ' ) '
-			);
-		}
+		// get the id for the given event: 	
 		var eventKeyId = KalturaStatsEventType[ KalturaStatsEventKey ];
-		// XXX switch over to KalturaStatsService
 		
-		// Generate the reportSet
-		var reportSet = {
-			'event:eventType' :	eventKeyId,
-					
-			'action' : 'collect',
-			'clientTag' : 'mwEmbed.kAnalytics.html5',
-			'event:clientVer' : this.version,
-			'event:currentPoint' : 	parseInt( this.embedPlayer.currentTime * 1000 ),
-			'event:duration' :	this.embedPlayer.getDuration(),
-			'event:eventTimestamp' : new Date().getTime(),			
-			'event:isFirstInSession' : 'false',
-			'event:objectType' : 'KalturaStatsEvent',
-			'event:partnerId' :	mw.getConfig( 'kPartnerId' ),			
-			'event:sessionId' : mw.getConfig( 'kSessionId' ),
-			'event:uiconfId' : 0,
-			'ignoreNull' : 1,
-			'ks' : mw.getConfig( 'kalturaKS' ),
-			'service' : 'stats'	
+		// Generate the status event 
+		var eventSet = {
+			'eventType' :	eventKeyId,
+								
+			'clientVer' : this.version,
+			'currentPoint' : 	parseInt( this.embedPlayer.currentTime * 1000 ),
+			'duration' :	this.embedPlayer.getDuration(),
+			'eventTimestamp' : new Date().getTime(),			
+			'isFirstInSession' : 'false',
+			'objectType' : 'KalturaStatsEvent',
+			'partnerId' :	mw.getConfig( 'kPartnerId' ),			
+			'sessionId' : mw.getConfig( 'kSessionId' ),
+			'uiconfId' : 0,			
 		};		
+		
 		// Set the seek condition:
-		reportSet[ 'event:seek' ] = ( this.hasSeeked ) ? 'true' : 'false';
+		eventSet[ 'seek' ] = ( this.hasSeeked ) ? 'true' : 'false';
 		
 		// Set the 'event:entryId'
 		if( this.embedPlayer.kentryid ){
-			reportSet[ 'event:entryId' ] = 	this.embedPlayer.kentryid;
+			eventSet[ 'entryId' ] = this.embedPlayer.kentryid;
 		} else { 
 			// if kentryid is not set, use the selected source url
-			reportSet[ 'event:entryId' ] = this.embedPlayer.getSrc();
-		}			
+			eventSet[ 'entryId' ] = this.embedPlayer.getSrc();
+		}					
 		
-		// Add the kalturaStats container if missing.
-		if( $j( '#kalturaStats_' + this.embedPlayer.id ).length == 0 ){
-			$j( 'body').append( 
-				$j('<div />').attr( {
-					'id' : 'kalturaStats_' + this.embedPlayer.id
-				} )
-				.hide()
-			);		
+		// Check if kalturaAnalyticsCallbackLog is enabled:
+		if( typeof mw.getConfig( 'kalturaAnalyticsCallbackLog' ) == 'function' ) {
+			mw.getConfig( 'kalturaAnalyticsCallbackLog' )( KalturaStatsEventKey + ' sent ');
 		}		
-		// Append the image to the hidden kalturaStats div
-		var reportUrl = 
-			( $j( this.embedPlayer ).attr( 'kalturaStatsServer') ) ?
-			$j( this.embedPlayer ).attr( 'kalturaStatsServer') : 
-			mw.getConfig( 'kalturaStatsServer' );
-
-		// Add the reportSet to the url :
-		reportUrl+= '?' + $j.param( reportSet );
-		
-		$j( '#kalturaStats_' + this.embedPlayer.id ).append( 
-			$j('<img />').attr( 'src', reportUrl )
-		);
+		this.kalturaCollector.collect( function(){			 
+			// Check if kalturaAnalyticsCallbackLog is enabled: 
+			if( typeof mw.getConfig( 'kalturaAnalyticsCallbackLog' ) == 'function' ) {
+				// Update the log for debugging 
+				mw.getConfig( 'kalturaAnalyticsCallbackLog' )( KalturaStatsEventKey + ' confirmed ' );				
+			}
+		}, eventSet);		
 	},
 	
 	/**

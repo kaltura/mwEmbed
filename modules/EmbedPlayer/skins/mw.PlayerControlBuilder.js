@@ -94,8 +94,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Set up local controlBuilder
 		var _this = this;
 
-		// Remove any old controls & old overlays:
-		mw.log("Remove old embedPlayer control bar:");
+		// Remove any old controls & old overlays:		
 		embedPlayer.$interface.find( '.control-bar,.overlay-win' ).remove();
 		
 		// Reset flag: 
@@ -639,12 +638,13 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.getConfig( 'overlayControls' ) === false){
 			return false;
 		} 
+		
 		// If disabled via the player
 		if( this.embedPlayer.overlayControls === false ){
 			return false;
 		} 
-		// don't hide controls when content "height" is 0 ( audio tags ) 
-		if( this.embedPlayer.height == 0 ){
+		// don't hide controls when content "height" is 0 ( audio tags ) 		
+		if( this.embedPlayer.getPlayerHeight() == 0 ){
 			return false;
 		}
 		// Past alll tests OverlayControls is true: 
@@ -1550,7 +1550,7 @@ mw.PlayerControlBuilder.prototype = {
 		'volumeControl': {
 			'w' : 28,
 			'o' : function( ctrlObj ) {
-				mw.log(' set up volume out');
+				mw.log( ' set up volume control for: ' + ctrlObj.embedPlayer.id );
 				$volumeOut = $j( '<span />' );
 				if ( ctrlObj.volume_layout == 'horizontal' ) {
 					$volumeOut.append(  
@@ -1568,8 +1568,7 @@ mw.PlayerControlBuilder.prototype = {
 				 		$j( '<span />' )
 				 		.addClass( "ui-icon ui-icon-volume-on" )
 				 	)
-				 );
-				mw.log(' if verticle add container ');		
+				 );				
 				if ( ctrlObj.volume_layout == 'vertical' ) {
 					$volumeOut.find('.volume_control').append( 	
 						$j( '<div />' )
@@ -1584,8 +1583,7 @@ mw.PlayerControlBuilder.prototype = {
 							.addClass ( "volume-slider" )
 						)
 					);
-				}			
-				mw.log('get inner volume html');	
+				}							
 				//Return the inner html 
 				return $volumeOut.html();
 			}

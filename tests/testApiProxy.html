@@ -158,9 +158,10 @@ function doFileUpload(){
 <body>
 <h3> Simple API proxy testing system </h3>
 
-<div id="setupProxy">Proxy for:  <span id="hostName"></span> <br><span style="font-size:small">( be sure to enable the mwEmbed gadget or add importScriptURI( 'path_to_local_mw_install' + /js/remoteMwEmbed.js ) to your User skin .js page </span></div>
+<div id="setupProxy">Proxy for:  <span id="hostName"></span> <br>
+<span style="font-size:small"> this proxy will only work on a limited set of domains that the gadget allows proxy request from </span></div>
 <div id="setupDone" style="display:none;">
-	<br> <a href="#" id="doHello" >Hello User:</a> <span id="helloTarget"></span>
+	<br> <a href="#" id="doHello" >Hello User:</a> <span style="width:200px" id="helloTarget"></span>
 	
 	<br><br><br> <a href="#" id="doAppend">Append Msg to Talk page:</a>
 	<div id="appendTarget"></div>

@@ -13,9 +13,9 @@
 
 	mw.setDefaultConfig({
 	 	/** 
-	 	* If SwarmTransport should be enabled as a video transport mechanism
+	 	* If SwarmTransport should be enabled by default as video transport mechanism
 	 	*/ 
- 		'enableSwarmTransport': true,
+ 		'enableSwarmTransport': false,
  		
  		/**
  		* If the swarm transport plugin should be recommended if the user does not have it installed. 

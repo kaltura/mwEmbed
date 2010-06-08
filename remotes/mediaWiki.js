@@ -4,13 +4,14 @@
  */
 var urlparts = getRemoteEmbedPath();
 var mwEmbedHostPath = urlparts[0];
-var mwRemoteVersion = 'r127';
+var mwRemoteVersion = 'r129';
 var mwUseScriptLoader = true;
 
 // Log the mwRemote version makes it easy to debug cache issues
 if( window.console ){
 	window.console.log( 'mwEmbed:remote:' + mwRemoteVersion );
 }
+
 
 // Setup up request Params: 
 var reqParts = urlparts[1].substring( 1 ).split( '&' );
@@ -21,7 +22,41 @@ for ( var i = 0; i < reqParts.length; i++ ) {
 		mwReqParam[ p[0] ] = p[1];
 	}
 }
-	
+
+// Check if debug mode and disable script grouping  
+if( mwReqParam['debug'] ) {
+	mwUseScriptLoader = false;
+}
+
+// Setup up some globals to wrap mwEmbed mw.ready and mw.setConfig functions
+
+//Setup preMwEmbedReady queue
+if( !preMwEmbedReady ){
+	var preMwEmbedReady = [];
+}
+// Wrap mw.ready to preMwEmbedReady values
+if( !mw.ready){
+	mw.ready = function( fn ){
+		preMwEmbedReady.push( fn );
+	}
+}
+// Setup a preMwEmbedConfig var
+if( ! preMwEmbedConfig ) {
+	var preMwEmbedConfig = [];
+}
+if( !mw.setConfig ){
+	mw.setConfig = function( set, value ){
+		var valueQueue = {};
+		if( value ) {			
+			preMwEmbedConfig[ set	] = value;
+		} else if ( typeof set == 'object' ){
+			for( var i in set ){
+				preMwEmbedConfig[ i ] = set[i];
+			}
+		}
+	}
+}
+
 
 // Use wikibits onLoad hook: ( since we don't have js2 / mw object loaded ) 
 addOnloadHook( function() {
@@ -49,6 +84,7 @@ function doPageSpecificRewrite() {
 		], function() {
 			mw.load( mwEmbedHostPath + '/remotes/AddMediaWizardEditPage.js?' + mwGetReqArgs() );
 		} );
+		return ;
 	}
 	
 	// Timed text display:
@@ -70,6 +106,7 @@ function doPageSpecificRewrite() {
 					myRemote.updateUI();
 				} );
 			} );
+			return ;
 		}
 	}
 	
@@ -96,6 +133,7 @@ function doPageSpecificRewrite() {
 			} );
 			*/
 		} );
+		return ;
 	}
 	
 	
@@ -115,7 +153,10 @@ function doPageSpecificRewrite() {
 			'$j.ui.draggable'
 		];
 		var scriptUrl = mwEmbedHostPath + '/remotes/' + scriptName + '?' + mwGetReqArgs();
-		loadMwEmbed(libraries, function() { mw.load( scriptUrl ) } );
+		loadMwEmbed(libraries, function() { 
+			mw.load( scriptUrl ) 
+		} );
+		return ;
 	}
 	
 	// Special api proxy page
@@ -124,13 +165,15 @@ function doPageSpecificRewrite() {
 		loadMwEmbed( [ 'mw.ApiProxy' ], function() {
 			mw.load( mwEmbedHostPath + '/remotes/apiProxyPage.js?' + mwGetReqArgs() );
 		} );
+		return ;
 	}
 	
 	// Special api proxy page for nested callback of hash url
 	// Can be replaced with: 
 	if ( wgPageName == 'MediaWiki:ApiProxyNestedCb' ) {
 		// Note top.mw.ApiProxy.nested frame needs to be on the same domain
-		top.mw.ApiProxy.nested( window.location.href.split("#")[1] || false );		
+		top.mw.ApiProxy.nested( window.location.href.split("#")[1] || false );	
+		return ;
 	}
 		
 	// OggHandler rewrite for view pages:
@@ -152,8 +195,16 @@ function doPageSpecificRewrite() {
 				// Do utility rewrite of OggHandler content:
 				rewrite_for_OggHandler( vidIdList );
 			} );
-		} );
+		} );	
+		return ;
 	}
+	
+	// IF we did not match any rewrite ( but we do have a ready function ) load mwEmbed
+	if( preMwEmbedReady.length ){
+		loadMwEmbed( function(){
+			// mwEmbed loaded
+		});
+	}	
 }
 /*
 * Sets the mediaWiki content to "loading" 
@@ -170,9 +221,10 @@ function mwSetPageToLoading(){
 * ( front-loaded to avoid extra requests )
 */
 function mwLoadPlayer( callback ){
-	// the jsPlayerRequest includes both javascript and style sheets for the embedPlayer 
+
+	// The jsPlayerRequest includes both javascript and style sheets for the embedPlayer 
 	var jsPlayerRequest = [	 
-	                       
+		'mw.style.mwCommon',	                       
 		'mw.EmbedPlayer', 
 		'mw.style.EmbedPlayer',
 		'$j.ui', 
@@ -181,8 +233,10 @@ function mwLoadPlayer( callback ){
 		'$j.cookie', 
 		'JSON',
 		'$j.ui.slider', 
-		'kskinConfig',
-		'mw.style.kskin',
+		
+		'mw.PlayerSkinKskin',
+		'mw.style.PlayerSkinKskin',
+		
 		'$j.fn.menu',
 		'mw.style.jquerymenu',
 		
@@ -197,11 +251,11 @@ function mwLoadPlayer( callback ){
 	// Quick sniff use java if IE and native if firefox 
 	// ( other browsers will run detect and get on-demand )
 	if (navigator.userAgent.indexOf("MSIE") != -1){
-		jsPlayerRequest.push( 'mw.EmbedPlayeJava' );
+		jsPlayerRequest.push( 'mw.EmbedPlayerJava' );
 	}
 		
 	if ( navigator.userAgent &&  navigator.userAgent.indexOf("Firefox") != -1 ){
-		jsPlayerRequest.push( 'mw.EmbedPlayeNative' );
+		jsPlayerRequest.push( 'mw.EmbedPlayerNative' );
 	}
 	
 	loadMwEmbed( jsPlayerRequest, function() {
@@ -218,15 +272,15 @@ function rewrite_for_OggHandler( vidIdList ) {
 		// Don't process empty vids
 		if ( !vidId ){
 			return ;
-		}
-		
+		}			
 			
 		tag_type = 'video';
 				
 		// Check type:
 		var pwidth = $j( '#' + vidId ).width();
-		var $pimg = $j( '#' + vidId + ' img:first' );		
-		if(  $pimg.attr('src') && $pimg.attr('src').split('/').pop() == 'play.png'){
+		var $pimg = $j( '#' + vidId + ' img:first' );
+		var imgSring = $pimg.attr('src').split('/').pop();		
+		if(  $pimg.attr('src') &&  imgSring == 'play.png' || imgSring == 'fileicon-ogg.png' ){
 			tag_type = 'audio';
 			poster_attr = '';		
 			pheight = 0;
@@ -260,19 +314,31 @@ function rewrite_for_OggHandler( vidIdList ) {
 		offset = re.exec( rewriteHTML );
 		var offset_attr = ( offset && offset[2] )? 'startOffset="' + offset[2] + '" ' : '';
 		
-		// Check if file is from commons and therefore should explictly set apiProvider to commons: 
+		// Check if file is from commons and therefore should explicitly set apiProvider to commons: 
 		var apiProviderAttr = ( src.indexOf( 'wikipedia\/commons' ) != -1 )?'apiProvider="commons" ': '';		
 
+		var autoPlayAttr = '';
+		// If in a gallery box we will be displaying the video larger in a lightbox
+		if( $j( '#' + vidId ).parents( '.gallerybox' ).length ){
+			// Update the width to 400 and keep scale
+			pwidth = 400;
+			if( pheight != 0 ) {
+				pheight = pwidth * ( $j( '#' + vidId ).height() / $j( '#' + vidId ).width() );
+			}			
+			autoPlayAttr = ' autoplay="true" ';
+		}
+		
 		if ( src ) {
 			var html_out = '';
 			
 			var common_attr = ' id="mwe_' + vidId + '" ' +
-					'apiTitleKey="' + apiTitleKey + '" ' +
-					'src="' + src + '" ' +
-					apiProviderAttr + 
-					duration_attr +
-					offset_attr + ' ' +
-					'class="kskin" ';
+				'apiTitleKey="' + apiTitleKey + '" ' +
+				'src="' + src + '" ' +
+				autoPlayAttr + 
+				apiProviderAttr + 
+				duration_attr +
+				offset_attr + ' ' +
+				'class="kskin" ';
 								
 			if ( tag_type == 'audio' ) {
 				if( pwidth < 250 ){
@@ -286,19 +352,98 @@ function rewrite_for_OggHandler( vidIdList ) {
 				'style="width:' + pwidth + 'px;height:' + pheight + 'px;">' +
 				'</video>';
 			}
-			// Set the video tag inner html and update the height
-			$j( '#' + vidId ).after( html_out ).remove();
+			
+					
+			// If the video is part of a "gallery box" use light-box linker instead
+			if( $j( '#' + vidId ).parents( '.gallerybox' ).length ){				
+				$j( '#' + vidId ).after(
+					 $j( '<div />')
+					.css( { 
+						'width' : $pimg.attr('width' ), 
+						'height' :$pimg.attr( 'height' ),
+						'position' : 'relative'
+					})
+					.addClass( 'k-player' )
+					.append(
+						// The poster image 
+						$j( '<img />' )
+						.css( {
+							'width' : '100%',
+							'height' : '100%'
+						})
+						.attr( 'src', $pimg.attr('src') ),
+						
+						// A play button:
+						$j( '<div />' )
+						.css( {
+							'position' : 'absolute',
+							'top' : ( parseInt( $pimg.attr( 'height' ) ) /2 ) -25,
+							'maring-left' : 'auto',
+							'maring-right' : 'auto'
+						}) 
+						
+						.addClass( 'play-btn-large' )
+						.buttonHover()
+						.click( function(){		
+							var _this = this;
+									
+							var dialogHeight = ( $j( this ).data( 'playerHeight') == 0 	)? 175 :
+												( $j( this ).data( 'playerHeight') - 25 );
+							var buttons = {};
+							buttons[ gM( 'mwe-ok' ) ] = function(){
+								var embedPlayer = $j( '#mwe_' + $j( _this ).data( 'playerId' ) ).get(0);
+								// stop the player ( more healthy way to remove the video from the dom )
+								if( embedPlayer ) {
+									embedPlayer.stop();
+								}
+								// close the dialog
+								$j(this).dialog( 'close' ).remove();
+							};
+							mw.addDialog( 					
+								decodeURIComponent( $j( this ).data( 'title' ).replace(/_/g, ' ') ),
+								$j( this ).data( 'embedCode' ),
+								buttons
+							)
+							// Dialog size setup is a bit strange:							
+							.css( {
+								'height' : dialogHeight + 'px'
+							})
+							.parent().css( {
+								// we hard code the default resolution to 400 above
+								'width' : '435px',							
+							} )
+							
+							//alert( $j('#mwTempLoaderDialog').html() );
+							
+							// Update the embed code to use the mwEmbed player: 		
+							$j.embedPlayers( function(){								
+								var embedPlayer = $j( '#mwe_' + $j( _this ).data( 'playerId' ) ).get(0);
+								// Show the control bar for two seconds (auto play is confusing without it )
+								embedPlayer.controlBuilder.showControlBar();
+								setTimeout( function(){								
+									embedPlayer.controlBuilder.hideControlBar();
+								}, 4000 ); 
+							});															
+						})
+						.data( 'playerId', vidId )
+						.data( 'embedCode', html_out )		
+						.data( 'title' , apiTitleKey )						
+						.data( 'playerHeight', pheight )
+					)			
+				).remove();
+					
+			} else {
+				// Set the video tag inner html remove extra player
+				$j( '#' + vidId ).after( html_out ).remove();		
+				$j( '#mwe_' + vidId ).embedPlayer();	 
+			}			
 
-			// Do the actual rewrite 
-			//mw.log("rewrite: "+ vidId );	
-			$j( '#mwe_' + vidId ).embedPlayer();
-			//issue an async request to rewrite the next clip
+			// Issue an async request to rewrite the next clip
 			if ( vidIdList.length != 0 ) {
-				setTimeout( function() {
+				setTimeout( function() {					
 					procVidId( vidIdList.pop() )
 				}, 1 );
 			}
-
 		}		
 	};
 	// Process current top item in vidIdList
@@ -332,11 +477,13 @@ function getRemoteEmbedPath() {
 */ 
 function mwGetReqArgs() {
 	var rurl = '';
-	if ( mwReqParam['debug'] )
+	if ( mwReqParam['debug'] ){
 		rurl += 'debug=true&';
+	}
 
-	if ( mwReqParam['uselang'] )
+	if ( mwReqParam['uselang'] ){
 		rurl += 'uselang=' + mwReqParam['uselang'] + '&';
+	}
 
 	if ( mwReqParam['urid'] ) {
 		rurl += 'urid=' + mwReqParam['urid'];
@@ -388,8 +535,17 @@ function loadMwEmbed( classSet, callback ) {
 			rurl += '&' + mwGetReqArgs();
 			importScriptURI( rurl );
 		} else { 
-			// Ignore classSet (will be loaded onDemand )
+			// load mwEmbed js
 			importScriptURI( mwEmbedHostPath + '/mwEmbed.js?' + mwGetReqArgs() );
+			
+			// Load the class set as part of mwReady callback
+			var instanceCallback = callback;
+			var callback = function(){
+				mw.load( classSet, function(){
+					instanceCallback();
+				})
+			}
+			
 		}
 	}
 	waitMwEmbedReady( callback );
@@ -427,7 +583,7 @@ function mwCheckForGadget(){
 	}
 	
 	
-	scripts = document.getElementsByTagName( 'script' );
+	var scripts = document.getElementsByTagName( 'script' );
 	
 	// Check for document paramater withJS and ignore found gadget
 	if( typeof getParamValue == 'undefined' && typeof getURLParamValue == 'undefined'){
@@ -510,7 +666,7 @@ function mwSubmitGadgetPref( gadget_id ){
 			'value' : gadget_id
 		} );
 				
-		// Submit the prefrences
+		// Submit the preferences
 		$j.post( form.url, form.data, function( pageHTML ){
 			var form = mwGetFormFromPage ( pageHTML );
 			if(!form){

@@ -37,11 +37,8 @@ mw.EmbedPlayerNative = {
 		'pause' : true,
 		'fullscreen' : true,
 		'timeDisplay' : true,
-		'volumeControl' : true,
-		
-		'overlays' : true,
-		// if the object supports playlist functions
-		'playlist_swap_loader' : true 		
+		'volumeControl' : true,		
+		'overlays' : true
 	},	
 	/** 
 	 * updates the supported features given the "type of player" 
@@ -186,7 +183,7 @@ mw.EmbedPlayerNative = {
 		var vid = _this.getPlayerElement();
 		
 		// Update the bufferedPercent
-		if( vid.buffered && vid.buffered.end && vid.duration ) {		
+		if( vid && vid.buffered && vid.buffered.end && vid.duration ) {		
 			this.bufferedPercent = (vid.buffered.end(0) / vid.duration);
 		}		
 		_this.parent_monitor();

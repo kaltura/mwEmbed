@@ -60,6 +60,9 @@ class jsScriptLoader {
 	// The includeAllModuleMessages string regular expression
 	private static $includeAllMsgsRegEx = "/mw\.includeAllModuleMessages\s*\(\s*\)\;?/";
 
+	//Temporary store for message js
+	private static $addMessageJs = '';
+
 	/**
 	 * Output the javascript from cache
 	 *
@@ -98,7 +101,7 @@ class jsScriptLoader {
 		try {
 			jsClassLoader::loadClassPaths();
 		} catch( Exception $e ) {
-			$this->errorMsg .= $e->getMessage() ;		
+			$this->errorMsg .= $e->getMessage() ;
 		}
 
 		// Reset the requestKey:
@@ -148,15 +151,15 @@ class jsScriptLoader {
 				// Output the current language class js
 				$this->output .= jsClassLoader::getLanguageJs( $this->langCode );
 
-				// Add the required core mwEmbed style sheets Commted out 
-				// because when creating stand alone packages js package with css 
-				// the paths get messed up.  				
-				/*				
+				// Add the required core mwEmbed style sheets Commted out
+				// because when creating stand alone packages js package with css
+				// the paths get messed up.
+				/*
 				if( !isset( $this->namedFileList[ 'mw.style.mwCommon' ] ) ) {
 					$this->output .= $this->getScriptText( 'mw.style.mwCommon' );
 				}
 				*/
-				
+
 				// Output "special" IE comment tag to support "special" mwEmbed tags.
 				$this->notMinifiedTopOutput .='/*@cc_on@if(@_jscript_version<9){\'video audio source itext playlist\'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/'."\n";
 			}
@@ -725,7 +728,7 @@ class jsScriptLoader {
 		try {
 			jsClassLoader::loadClassPaths();
 		} catch( Exception $e ) {
-			$this->errorMsg .= $e->getMessage() ;		
+			$this->errorMsg .= $e->getMessage() ;
 		}
 
 		if ( isset( $wgScriptLoaderNamedPaths[ $reqClass ] ) ) {
@@ -813,13 +816,23 @@ class jsScriptLoader {
 
 		// Do language swap by index:
 		if ( $wgEnableScriptLocalization ){
-			// Get the mw.addMessage javascript from scriptText and moduleName
-			$addMessageJs  = $this->getAddMessagesFromScriptText( $scriptText , $moduleName);
 			//@@NOTE getAddMessagesFromClass could identify which mode we are in and we would not need to
 			// try each of these search patterns in the same order as before.
 
+			// Get the mw.addMessage javascript
+			self::$addMessageJs  = $this->getAddMessagesFromScriptText( $scriptText , $moduleName);
+
 			// Check for mw.includeAllModuleMsgs() call to be replaced with all the msgs
-			$scriptText = preg_replace( self::$includeAllMsgsRegEx, $addMessageJs, $scriptText, 1, $count );
+			// Use preg_replace_callback to avoid back-refrence substitution
+			$scriptText = preg_replace_callback(
+				self::$includeAllMsgsRegEx,
+				'jsScriptLoader::preg_addMessageJs',
+			 	$scriptText,
+			 	1,
+			 	$count
+			 );
+
+
 			if( $count != 0 ){
 				return $scriptText;
 			}
@@ -828,21 +841,23 @@ class jsScriptLoader {
 			$inx = self::getAddMessagesIndex( $scriptText );
 			if( $inx ){
 				// Return the final string (without double {})
-				return substr($scriptText, 0, $inx['sfull']) . $addMessageJs . substr($scriptText, $inx['efull']);
+				return substr($scriptText, 0, $inx['sfull']) . self::$addMessageJs . substr($scriptText, $inx['efull']);
 			}
 
 			// Replace mw.addMessageKeys with localized msgs in javascript string
 			$inx = self::getAddMessageKeyIndex( $scriptText );
 			if( $inx ) {
 				// Return the final string (without double {})
-				return substr( $scriptText, 0, $inx['sfull'] ). $addMessageJs . substr($scriptText, $inx['efull']);
+				return substr( $scriptText, 0, $inx['sfull'] ). self::$addMessageJs . substr($scriptText, $inx['efull']);
 			}
 		}
 		// Return the javascript str unmodified if we did not transform with the localisation
 		return $scriptText;
 	}
-
-
+	/* simple function to return addMessageJs without preg_replace back reference substitution */
+	private static function preg_addMessageJs(){
+		return self::$addMessageJs;
+	}
 	/**
 	 * Get the "addMesseges" function index ( for replacing msg text with localized json )
 	 *

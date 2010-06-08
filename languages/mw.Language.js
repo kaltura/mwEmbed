@@ -28,7 +28,7 @@
 			messageCache[ i ] = msgSet[i];
 		}
 	}
-
+	// By default set the current class missing messages flag to default. 
 	mw.currentClassMissingMessages = false;
 	
 	/**
@@ -62,8 +62,10 @@
 	}
 		
 	/**
-	* NOTE: this is somewhat of a hack. But its only used in debug mode since
-	* normal msg loading happens via script-loader
+	* Load messages for a given named javascript class.
+	* This worked in concunktion with the scriptLoader  
+	* @param {string} className Name of class file to be loaded
+	* @param {function} callback Function to be called once class messages are loaded. 
 	*/ 
 	mw.loadClassMessages = function( className, callback ) {		
 		// Check if wgScriptLoaderPath is set ( else guess the path relative to mwEmbed)
@@ -136,7 +138,7 @@
 	*/ 
 	
 	mw.Language.messageSwapObject = function( message, arguments ){
-		return this.init( message, arguments );
+		this.init( message, arguments );
 	}	
 	
 	mw.Language.messageSwapObject.prototype= {		

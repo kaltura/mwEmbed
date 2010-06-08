@@ -495,6 +495,13 @@ $messages['pms'] = array(
 	'mwe-loading_txt' => 'A caria ...',
 );
 
+/** Pashto (پښتو)
+ * @author Ahmed-Najib-Biabani-Ibrahimkhel
+ */
+$messages['ps'] = array(
+	'mwe-ok' => 'ښه',
+);
+
 /** Portuguese (Português)
  * @author Hamilton Abreu
  * @author Malafaya
@@ -536,6 +543,16 @@ $messages['sk'] = array(
 	'mwe-error_load_lib' => 'Error: JavaScript $1 nebolo možné získať alebo neobsahuje definíciu $2',
 );
 
+/** Serbian Cyrillic ekavian (Српски (ћирилица))
+ * @author Михајло Анђелковић
+ */
+$messages['sr-ec'] = array(
+	'mwe-loading_txt' => 'Учитавање ...',
+	'mwe-ok' => 'ОК',
+	'mwe-cancel' => 'Поништи',
+	'mwe-test-plural' => 'Покренуо/ла сам {{PLURAL:$1|$1 тест|$1 тестова}}',
+);
+
 /** Swedish (Svenska)
  * @author Dafer45
  * @author GameOn
@@ -558,7 +575,7 @@ $messages['te'] = array(
  * @author AnakngAraw
  */
 $messages['tl'] = array(
-	'mwe-loading_txt' => 'Ikinakarga ...',
+	'mwe-loading_txt' => 'Ikinakarga...',
 	'mwe-error_load_lib' => 'Kamalian: hindi makukuha ang JavaScript na $1 o hindi nagbigay kahulugan sa $2',
 	'mwe-apiproxy-setup' => 'Nagtatalaga ng pamalit na API',
 	'mwe-load-drag-item' => 'Ikinakarga ang hinilang bagay',

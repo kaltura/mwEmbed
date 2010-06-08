@@ -35,8 +35,8 @@ var rsd_default_rss_item_mapping = {
 	'category'  : '.media:category@label|url'
 };
 
-var baseRemoteSearch = function( iObj ) {
-	return this.init( iObj );
+var baseRemoteSearch = function( options ) {
+	this.init( options );
 };
 baseRemoteSearch.prototype = {
 

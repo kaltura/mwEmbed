@@ -52,7 +52,8 @@ var mwEnabledModuleList = [
 	'Sequencer',
 	'TimedText',
 	'SmilPlayer',
-	'SwarmTransport'
+	'SwarmTransport',
+	'KalturaSupport'
 ];
 
 /**

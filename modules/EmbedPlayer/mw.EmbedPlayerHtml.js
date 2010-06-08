@@ -22,10 +22,7 @@ mw.EmbedPlayerHtml = {
 		'timeDisplay':true,
 		'volumeControl':true,
 
-		'overlays':true,
-		
-		// if the object supports playlist functions
-		'playlist_swap_loader':true 
+		'overlays':true,		
 	},
 	
 	// If the player is "ready to play"

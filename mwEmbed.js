@@ -281,12 +281,12 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		*		Using defined class names avoids loading the same class
 		*		twice by first checking if the "class variable" is defined
 		*	
-		*	{String} Absolute or relative to mwEmbed file path. 
+		*	{String} Absolute or relative to url path
 		*		The same file won't be loaded twice
 		*
 		*	{Array} can be an array of any combination of the above strings.
-		*		Will be loaded in-order or in a single 
-		*		script-loader request if scriptLoader is enabled 
+		*		Will be loaded in-order or in a single script-loader request 
+		*		if scriptLoader is available.  
 		*
 		* 	{Array} {Array} Can be a set of Arrays for loading.		 
 		*		Some browsers execute included scripts out of order. 
@@ -989,7 +989,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 * @param {String} [apiUrl] Optional target API URL (uses default local api if unset) 
 	 * @param {String} title The wiki page title you want to edit	 
 	 * @param {callback} callback Function to pass the token to. 
-	 * 						issues callback with "false" if token not retrived
+	 * 						issues callback with "false" if token not retrieved
 	 */
 	mw.getToken = function( apiUrl, title, callback ) {
 		// Make the apiUrl be optional: 
@@ -999,7 +999,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			apiUrl = mw.getLocalApiUrl();	
 		}		
 		
-		mw.log( 'mw:getToken' );		
+		mw.log( 'mw:getToken' );
 		
 		var request = {			
 			'prop': 'info',
@@ -1082,12 +1082,15 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	* addLoaderDialog
 	*  small helper for displaying a loading dialog
 	*
-	* @param {String} msg_txt text text of the loader msg
+	* @param {String} dialogHtml text Html of the loader msg
 	*/
-	mw.addLoaderDialog = function( msg_txt ) {
-		mw.addDialog( msg_txt, msg_txt + '<br>' + 
-				$j('<div />').loadingSpinner().html() 
+	mw.addLoaderDialog = function( dialogHtml ) {
+		$dialog = mw.addDialog( dialogHtml, dialogHtml + '<br>' + 
+				$j('<div />')
+				.loadingSpinner()
+				.html() 
 		);
+		return $dialog;
 	}
 	
 	/**
@@ -1106,34 +1109,38 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			return true;
 		}
 		return false;
-	},
+	}
 	
 	/**
 	* Add a (temporary) dialog window:
 	* @param {String} title Title string for the dialog
-	* @param {String} msg_html String to be inserted in msg box
-	* @param {Mixed} buttons A button object for the dialog 
-	*					Can be 'ok' for oky button.
+	* @param {String} dialogHtml String to be inserted in msg box
+	* @param {Mixed} buttonOption A button object for the dialog 
+	*					Can be a string for the close buton
 	*/
-	mw.addDialog = function ( title, msg_html, buttons ) {
-		$j( '#mwe_tmp_loader' ).remove();
+	mw.addDialog = function ( title, dialogHtml, buttons ) {
+		$j( '#mwTempLoaderDialog' ).remove();
+		
 		// Append the style free loader ontop: 
 		$j( 'body' ).append( 
 			$j('<div />') 
 			.attr( {
-				'id' : "mwe_tmp_loader",
+				'id' : "mwTempLoaderDialog",
 				'title' : title
 			})
 			.css('display', 'none')
-			.html( msg_html )
+			.html( dialogHtml )
 		);
+		
 		// Special buttons == ok gives empty give a single "oky" -> "close"
-		if ( buttons == 'ok' ) {
+		if ( typeof buttons == 'string' ) {
+			var buttonMsg = buttons;
 			buttons = { };
-			buttons[ gM( 'mwe-ok' ) ] = function() {
-				$j( '#mwe_tmp_loader' ).close();
+			buttons[ buttonMsg ] = function() {
+				$j( '#mwTempLoaderDialog' ).dialog( 'close' );
 			}
-		}
+		} 
+		
 		// Load the dialog classes
 		mw.load([
 			[
@@ -1143,7 +1150,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				'$j.ui.dialog'
 			]
 		], function() {
-			$j( '#mwe_tmp_loader' ).dialog( {
+			$j( '#mwTempLoaderDialog' ).dialog( {
 				'bgiframe': true,
 				'draggable': false,
 				'resizable': false,
@@ -1152,6 +1159,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				'buttons': buttons
 			} );
 		} );
+		return $j( '#mwTempLoaderDialog' );
 	}
 	
 	/**
@@ -1162,7 +1170,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if( !mw.isset( '$j.ui.dialog' ) ) {
 			return false;
 		}
-		$j( '#mwe_tmp_loader' ).dialog( 'destroy' ).remove();
+		$j( '#mwTempLoaderDialog' ).dialog( 'destroy' ).remove();
 	}
 	
 	
@@ -1626,7 +1634,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	
 	/**
 	 * Given seconds return array with 'days', 'hours', 'min', 'seconds' 
-	 * @param {float} sec Seconds to be converted into time mesurements  
+	 * @param {float} sec Seconds to be converted into time measurements  
 	 */
 	mw.seconds2Measurements = function ( sec ){
 		var tm = {};
@@ -2261,6 +2269,44 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	}
 	 
 	/**
+	 * Runs all the triggers on a given object with a single "callback"
+	 * 
+	 * Normal tirgger calls will run the callback directly multiple times
+	 * for every binded function. 
+	 * 
+	 * With runTriggersCallback() callback is not called until all the 
+	 * binded events have been run. 	 
+	 * 
+	 * @param {object} targetObject Target object to run triggers on
+	 * @param {string} triggerName	Name of trigger to be run
+	 * @param {function} callback Function called once all triggers have been run
+	 * 
+	 */
+	mw.runTriggersCallback = function( targetObject, triggerName, callback ){
+		// If events are not present directly run callback 
+		if( ! $j( targetObject ).data( 'events' ) ||
+				! $j( targetObject ).data( 'events' )[ triggerName ] ) {
+			callback();
+			return ;
+		}		
+		var callbackCount = $j( targetObject ).data( 'events' )[ triggerName ].length;			
+		if( !callbackCount ){
+			// No events run the callback directly
+			callback();
+			return ;
+		}
+	
+		mw.log(" runTriggersCallback:: " + callbackCount );
+		var callInx = 0;
+		$j( targetObject ).trigger( 'checkPlayerSourcesEvent', function() {
+			callInx++;
+			if( callInx == callbackCount ){										
+				// Run callback
+				callback();
+			}
+		} );
+	}
+	/**
 	 * Utility jQuery bindings
 	 *  Setup after jQuery is available ). 
 	 */
@@ -2321,7 +2367,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				// The text of the button link
 				'text' : '',
 				
-				// The icon id that precceeds the button link:
+				// The icon id that precedes the button link:
 				'icon_id' : 'carat-1-n' 
 			};
 			

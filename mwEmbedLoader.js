@@ -10,7 +10,12 @@ var kURID = '1.1n';
 var kURID = new Date().getTime();
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/jsScriptLoader.php';
-SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
+var SCRIPT_FORCE_DEBUG = false;
+
+// Lines are for local testing: 
+//SCRIPT_FORCE_DEBUG = true;
+//SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
+
 
 // Define mw
 window['mw'] = {};
@@ -43,8 +48,12 @@ if( !mw.setConfig ){
 }
 // Chceck dom for kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
-
-function kDomReady(){		
+kRanDomReadyFlag = false;
+function kDomReady(){
+	if( kRanDomReadyFlag ){
+		return ;
+	}
+	kRanDomReadyFlag = true;
 	// If user javascript is using mw.ready add script
 	if( preMwEmbedReady.length ) {
 		kAddScript();
@@ -59,9 +68,12 @@ function kDomReady(){
 	}
 	
 	// If document includes kaltura embed tags && isMobile safari: 
-	if ((navigator.userAgent.indexOf('iPhone') != -1) || 
-			(navigator.userAgent.indexOf('iPod') != -1) || 
-			(navigator.userAgent.indexOf('iPad') != -1)) {
+	if (
+		(navigator.userAgent.indexOf('iPhone') != -1) || 
+		(navigator.userAgent.indexOf('iPod') != -1) || 
+		(navigator.userAgent.indexOf('iPad') != -1) ||
+		(document.URL.indexOf('forceMobileSafari') != -1 ) // to debug in chrome / desktop safari
+	) {
 		
 		for(var i=0; i < document.getElementsByTagName('object').length; i++) {
 			var embedTag = document.getElementsByTagName('object')[i];
@@ -85,7 +97,9 @@ function kAddScript(){
 	url+='&urid=' + kURID;
 	url+='&uselang=en';
 	
-	url+='&debug=true';
+	if ( SCRIPT_FORCE_DEBUG ){
+		url+='&debug=true';
+	}
 	
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';

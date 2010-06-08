@@ -2,6 +2,11 @@
 /**
 * Extends EmbedPlayer to wrap smil playback in the html5 video tag abstraction. 
 */
+
+//Get all our message text
+mw.includeAllModuleMessages();
+
+// Setup the EmbedPlayerSmil object:
 mw.EmbedPlayerSmil = {
 
 	// Instance Name
@@ -9,13 +14,14 @@ mw.EmbedPlayerSmil = {
 	
 	// Player supported feature set
 	supports: {
-		'play_head': true,
-		'pause': true,
-		'fullscreen': true,
-		'time_display': true,
-		'volume_control': true,		
-		'overlays': true
-	},
+		'playHead' : true,
+		'pause' : true,
+		'fullscreen' : true,
+		'timeDisplay' : true,
+		'volumeControl' : true,
+		
+		'overlays' : true
+	},	
 	 	
 	/**
 	* Put the embed player into the container
@@ -30,24 +36,44 @@ mw.EmbedPlayerSmil = {
 				'width' : '100%',
 				'height' : '100%',
 				'position' : 'relative'
-			})
-			.loadingSpinner()
-		);			
+			})	
+		);		
+		// Add a loading spinner if we don't already have one		
+		/*if( $j('#loadingSpinner_' + this.id ).length ){
+			$j('#smilCanvas_' + this.id ).loadingSpinner();
+		}*/
 		
-		// Create the smilPlayer 
-		this.smil = new mw.Smil();
-		
-		// Load the smil 
-		this.smil.loadFromUrl( this.getSrc(), function(){						
+		// Update the embed player
+		this.getSmil( function( smil ){				
 			// XXX might want to move this into mw.SMIL
 			$j( _this ).html( 
-				_this.smil.getHtmlDOM( {
+				smil.getHtmlDOM( {
 					'width': _this.getWidth(), 
 					'height': _this.getHeight() 
 				} )
 			)
-		} ); 		
+		});
 		
+	},
+	
+	getSmil: function( callback ){
+		if( !this.smil ) {
+			// Create the Smil engine object 
+			this.smil = new mw.Smil();
+			
+			// Load the smil 
+			this.smil.loadFromUrl( this.getSrc(), function(){
+				callback( this.smil ); 
+			});
+		} else { 
+			callback( this.smil );
+		}
+	},
+	
+	getDuration: function(){
+		if( this.smil ){
+			return this.smil.getDuration();
+		}
 	},
 	
 	/**
@@ -67,7 +93,7 @@ mw.EmbedPlayerSmil = {
 			this.parent_updateThumbnailHTML();
 			return ;
 		}
-		// If no thumb could be gennerated use the first frame of smil: 
+		// If no thumb could be generated use the first frame of smil: 
 		this.doEmbedPlayer(); 
 	},
 

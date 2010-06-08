@@ -385,7 +385,6 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			return ;
 		}
 		mw.log( 'should show install link');
-
 		// Otherwise show the "install Firefogg" message
 		var firefoggUrl = _this.getFirefoggInstallUrl();
 		if( firefoggUrl ) {			
@@ -402,9 +401,10 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				this.target_please_install = this.selector + ' ~ .target_please_install';
 			}				
 			// Add the install msg 
-			$j( _this.target_please_install )
-				.html( upMsg + 
-					gM( 'fogg-please-install', [
+			$j( _this.target_please_install )			
+				.append( 
+					upMsg,
+					gM( 'fogg-please-install',
 						// Install link
 						$j('<a />')
 						.text( gM( "fogg-please-install-install-linktext" ) )
@@ -417,7 +417,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 							'href' : 'http://commons.wikimedia.org/wiki/Commons:Firefogg',
 							'target' : '_new' 
 						} )
-					])					
+					)					
 				)
 				.css( 'padding', '10px' )
 				.show();

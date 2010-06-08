@@ -6,8 +6,8 @@
 * http://lucene.apache.org/solr/
 */
 
-var archiveOrgSearch = function ( iObj ) {
-	return this.init( iObj );
+var archiveOrgSearch = function ( options ) {
+	this.init( options );
 }
 archiveOrgSearch.prototype = {
 
