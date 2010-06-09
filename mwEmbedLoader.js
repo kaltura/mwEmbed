@@ -88,7 +88,7 @@ function kDomReady(){
 // Add the kaltura html5 mwEmbed script
 function kAddScript(){	
 	var url = SCRIPT_LOADER_URL + '?class=';
-	alert( window.jQuery );
+	
 	if( typeof window.jQuery == 'undefined' ) {
 		url+='window.jQuery,'
 	}
