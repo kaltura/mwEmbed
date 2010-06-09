@@ -6,15 +6,15 @@
 * http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
 */
 
-var kURID = '1.1n';
+var kURID = '1.1o';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/jsScriptLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
-kURID = new Date().getTime();
+//SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
+//kURID = new Date().getTime();
 
 
 // Define mw
