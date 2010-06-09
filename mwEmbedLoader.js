@@ -1,19 +1,20 @@
 /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/
 
 /**
-* mwEmbed loader 
-* For more info on mwEmbed stand alone / kaltura html5 library see: 
+* Kaltura html5 library loader 
+* For more info on mwEmbed / kaltura html5 library see: 
 * http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
 */
 
-var kURID = '1.1m';
+var kURID = '1.1n';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/jsScriptLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 
-// Lines are for local testing: 
+// These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
 //SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
+//kURID = new Date().getTime();
 
 
 // Define mw
@@ -87,14 +88,47 @@ function kDomReady(){
 // Add the kaltura html5 mwEmbed script
 function kAddScript(){	
 	var url = SCRIPT_LOADER_URL + '?class=';
-	
+	alert( window.jQuery );
 	if( typeof window.jQuery == 'undefined' ) {
 		url+='window.jQuery,'
 	}
 	// Add mwEmbed and common style sheet
-	url+= 'mwEmbed,mw.style.mwCommon';	
+	url+= 'mwEmbed';	
 	
 	// Add all the classes needed for video 
+	var jsPlayerRequest = [	 
+		// core skin: 
+		'mw.style.mwCommon',	      
+		'mw.style.jqueryUiRedmond',
+		
+		// embed player:                  
+		'mw.EmbedPlayer', 
+		'mw.style.EmbedPlayer',		
+		'mw.PlayerControlBuilder',
+		
+		// default skin: 
+		'mw.PlayerSkinMvpcf',
+		'mw.style.PlayerSkinMvpcf',
+		
+		// common playback methods:
+		'mw.EmbedPlayerNative',
+		'mw.EmbedPlayerKplayer',
+		'mw.EmbedPlayerJava',
+		
+		// jQuery helpers
+		'$j.ui',  
+		'$j.fn.hoverIntent',		
+		'$j.cookie', 
+		'JSON',	
+		'$j.ui.slider', 							
+		'$j.fn.menu',
+		'mw.style.jquerymenu',		
+		
+		// Timed Text module
+		'mw.TimedText',
+		'mw.style.TimedText'		
+	];
+	url+= ',' + jsPlayerRequest.join(',');
 	
 	url+='&urid=' + kURID;
 	url+='&uselang=en';
