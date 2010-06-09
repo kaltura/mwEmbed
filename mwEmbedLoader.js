@@ -13,8 +13,8 @@ var SCRIPT_FORCE_DEBUG = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
-//kURID = new Date().getTime();
+SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
+kURID = new Date().getTime();
 
 
 // Define mw
@@ -35,9 +35,9 @@ if( ! preMwEmbedConfig ) {
 	var preMwEmbedConfig = [];
 }
 if( !mw.setConfig ){
-	mw.setConfig = function( set, value ){
+	mw.setConfig = function( set, value ){		
 		var valueQueue = {};
-		if( value ) {			
+		if( typeof value != 'undefined'  ) {			
 			preMwEmbedConfig[ set	] = value;
 		} else if ( typeof set == 'object' ){
 			for( var i in set ){
@@ -46,7 +46,7 @@ if( !mw.setConfig ){
 		}
 	}
 }
-// Chceck dom for kaltura embeds ( fall forward ) 
+// Check dom for kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
 kRanDomReadyFlag = false;
 function kDomReady(){
@@ -140,7 +140,7 @@ function kAddScript(){
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
 	script.src = url;
-	// no handlers: 	
+	// no handlers: 		
 	document.getElementsByTagName('body')[0].appendChild( script );				
 };
 

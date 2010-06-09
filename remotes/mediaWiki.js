@@ -47,7 +47,7 @@ if( ! preMwEmbedConfig ) {
 if( !mw.setConfig ){
 	mw.setConfig = function( set, value ){
 		var valueQueue = {};
-		if( value ) {			
+		if( typeof value != 'undefined' ) {			
 			preMwEmbedConfig[ set	] = value;
 		} else if ( typeof set == 'object' ){
 			for( var i in set ){
