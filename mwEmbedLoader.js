@@ -7,7 +7,6 @@
 */
 
 var kURID = '1.1m';
-var kURID = new Date().getTime();
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/jsScriptLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -94,6 +93,9 @@ function kAddScript(){
 	}
 	// Add mwEmbed and common style sheet
 	url+= 'mwEmbed,mw.style.mwCommon';	
+	
+	// Add all the classes needed for video 
+	
 	url+='&urid=' + kURID;
 	url+='&uselang=en';
 	
