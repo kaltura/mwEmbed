@@ -79,7 +79,7 @@ mw.EmbedPlayerHtml = {
 	/**
 	* Seeks to a given percent and updates the pauseTime
 	*
-	* @param {Float} perc Pecentage to seek into the virtual player
+	* @param {Float} perc Percentage to seek into the virtual player
 	*/
 	doSeek:function( perc ) {
 		this.pauseTime = perc * this.getDuration();
@@ -89,7 +89,7 @@ mw.EmbedPlayerHtml = {
 	/** 
 	* Sets the current Time 
 	*
-	* @param {Float} perc Pecentage to seek into the virtual player
+	* @param {Float} perc Percentage to seek into the virtual player
 	* @param {Function} callback Function called once time has been updated
 	*/
 	setCurrentTime:function( perc, callback ) {
@@ -140,8 +140,8 @@ mw.EmbedPlayerHtml = {
 	*/	
 	renderTimelineThumbnail:function( options ) {
 		mw.log( "HTMLembed req w, height: " + options.width + ' ' + options.height );
-		// generate a scaled down version _that_ we can clone if nessisary
-		// add a not vissiable container to the body:
+		// generate a scaled down version _that_ we can clone if necessary 
+		// add a not visible container to the body:
 		var do_refresh = ( typeof options['refresh'] != 'undefined' ) ? true:false;
 
 		var thumb_render_id =   this.id + '_thumb_render_' + options.height;
@@ -187,7 +187,7 @@ mw.EmbedPlayerHtml = {
 	},
 	/*
 	* Updates the thumb time
-	* (does nothings since we display a single frame renderd html page)
+	* (does nothings since we display a single frame rendered  html page)
 	*
 	* @param {Float} float_time Ignored 	
 	*/

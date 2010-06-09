@@ -1996,7 +1996,10 @@ mw.EmbedPlayer.prototype = {
 				
 		if ( this.autoplay ) {			
 			mw.log( 'showPlayer::activating autoplay' );
-			_this.play();			
+			// Issue a non-blocking play request 
+			setTimeout(function(){
+				_this.play();
+			},0)					
 		}
 		
 	},
@@ -2817,12 +2820,7 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		
 		// Check for current time update outside of embed player 
-		this.checkForCurrentTimeSeek();
-		
-		// Only do updates if playing:
-		if( ! this.isPlaying() ){
-			return ;
-		}
+		this.checkForCurrentTimeSeek();			
 		
 		// Update currentTime via embedPlayer
 		_this.currentTime  = _this.getPlayerElementTime();
@@ -2843,7 +2841,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// update the mute state from the player element
 		if( _this.muted != _this.getPlayerElementMuted() ){
-			mw.log(" muted does not mach embed player::" );
+			mw.log("monitor:: muted does not mach embed player" );
 			this.toggleMute();
 		} 				
 

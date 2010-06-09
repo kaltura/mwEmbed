@@ -104,11 +104,7 @@ mw.KAnalytics.prototype = {
 			mw.getConfig( 'kalturaAnalyticsCallbackLog' )( KalturaStatsEventKey + ' sent ');
 		}		
 		this.kalturaCollector.collect( function(){			 
-			// Check if kalturaAnalyticsCallbackLog is enabled: 
-			if( typeof mw.getConfig( 'kalturaAnalyticsCallbackLog' ) == 'function' ) {
-				// Update the log for debugging 
-				mw.getConfig( 'kalturaAnalyticsCallbackLog' )( KalturaStatsEventKey + ' confirmed ' );				
-			}
+			// kalturaCollector has a callback but we dont' "care" about its response. 
 		}, eventSet);		
 	},
 	

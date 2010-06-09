@@ -84,6 +84,7 @@ mw.SmilBody.prototype = {
 			this.elementsInRange.push( $node );
 			mw.log("Add ref to elementsInRange:: " + nodeType + " length:"  + this.elementsInRange.length);
 		}
+		
 		// Return the node Duration for startOffset updates
 		return this.getNodeDuration( $node );
 	},
@@ -118,7 +119,7 @@ mw.SmilBody.prototype = {
 		if( $node.children().length ){
 			$node.children().each( function( inx, childNode ){				
 				// If in a sequence add to duration 		
-				var childDuration = _this.getNodeDuration( $j( childNode ) );							
+				var childDuration = _this.getNodeDuration( $j( childNode ), forceRefresh );							
 				if( blockType == 'seq' ){
 					$node.data( 'implictDuration', $node.data('implictDuration') + childDuration ); 			
 				}			
@@ -157,7 +158,7 @@ mw.SmilBody.prototype = {
 	 */
 	getNodeSmilType: function( $node ){
 		var blockType = $j( $node ).get(0).nodeName;
-		blockMap = {
+		var blockMap = {
 			'body':'seq',
 			'animation':'ref',
 			'audio' : 'ref',
@@ -171,77 +172,4 @@ mw.SmilBody.prototype = {
 		return blockType;
 	}
 	
-	
-	/**
-	* Recurse parse out smil elements
-	
-	recurseSmilBlocks: function( $node, blockStore ){
-		var _this = this;
-
-		// Recursively parse the body for "<par>" and <seq>"
-		$node.children().each( function( inx, childNode ){
-			debugger;
-			mw.log( 'on node: ' +  childNode.nodeName);
-			var smilBlock = { 
-					'name' : childNode.nodeName 
-				};			
-			switch( childNode.nodeName ) {
-				case 'par': 
-					smilBlock = new mw.SmilPar( childNode );					
-				break;
-				case 'seq':
-					smilBlock = new mw.SmilSeq( childNode );
-				break;
-				default:
-					mw.log(childNode.nodeName + ' ( not recognized tag )');
-					smilBlock = new mw.SmilElement( childNode ); 
-				break;
-			}	
-			
-			// Add smilBlock to the current smilBlock
-			blockStore.push( smilBlock );
-			
-			// If children have children add a block store and recurse
-			if( $j( childNode ).children().length ) {					
-				_this.recurseSmilBlocks( $j( childNode ),  smilBlock.smilBlocks );
-			}
-		});
-	},
-	*/
-	
 }
-
-/**
- * Base smil element 
-
-mw.SmilElement = function( parElement ){
-	this.init(  parElement );
-}
-mw.SmilElement.prototype = {
-	init: function( element ){
-		this.tag = element.nodeName;
-		this.$dom = $j( element );
-		this.blockStore = [];	
-	}
-} */
-
-/**
-* Par Block
-* http://www.w3.org/TR/2008/REC-SMIL3-20081201/smil-timing.html#edef-par
-
-mw.SmilPar = function( parElement ){
-	this.init(  parElement );
-}
-// Inhert the SmilElement prototype
-mw.SmilPar.prototype = mw.SmilElement.prototype
-*/ 
-/**  
-* Seq Block 
-* http://www.w3.org/TR/2008/REC-SMIL3-20081201/smil-timing.html#edef-seq
-
-mw.SmilSeq = function( seqElement ){
-	this.init(  seqElement );
-}
-//Inhert the SmilElement prototype
-mw.SmilSeq.prototype = mw.SmilElement.prototype;
-*/

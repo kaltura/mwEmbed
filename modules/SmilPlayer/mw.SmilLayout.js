@@ -6,6 +6,12 @@ mw.SmilLayout = function( $layout ){
 }
 
 mw.SmilLayout.prototype = {
+	// Stores the number of assets we are currently loading		
+	mediaLoadingCount : 0,
+	
+	// Stores the callback function for once assets are loaded
+	mediaLoadedCallback : null,
+	
 	// Constructor: 
 	init: function( smilObject ){	
 		// Setup a pointer to parent smil Object
@@ -17,8 +23,8 @@ mw.SmilLayout.prototype = {
 		// Reset the htmlDOM cache
 		this.$rootLayout = null;
 	},	
-	
-	getHtmlDOM: function( size , time ){
+		
+	getHtmlDOM: function( size , time, callback ){
 		var _this = this;
 		mw.log("SmilLayout:: getHtmlDOM:: " + size.width + ' time: ' + time ); 
 		// Setup target Size: 
@@ -38,10 +44,24 @@ mw.SmilLayout.prototype = {
 		
 		mw.log(" got " + drawElements.length + " drawElements" );
 		
+		
+		// Reset the media loaded flag
+		if( _this.mediaLoadingCount != 0 ) {
+			mw.log("Error: media still loading, possible stacking seeking requests?");
+			_this.mediaLoadingCount = 0;
+		}
+		// Set the media loaded callback
+		if( callback ) {
+			_this.mediaLoadedCallback = callback;
+		}
+		
 		// Draw layout
 		$j.each( drawElements , function(inx, smilElement ) {
 			_this.drawElement( smilElement, time );
 		} )		
+		
+		
+		
 		return this.$rootLayout;
 	},
 		
@@ -86,7 +106,7 @@ mw.SmilLayout.prototype = {
 	 * Get a text element per given time
 	 * xxx we need to use "relativeTime" 
 	 */
-	getSmilTextHtml: function( smilElement, relativeTime ) {
+	getSmilTextHtml: function( textElement, relativeTime ) {
 		var _this = this;
 		mw.log( " Get TEXT Html ");	
 				
@@ -94,11 +114,11 @@ mw.SmilLayout.prototype = {
 		var textValue = '';		
 		
 		// Check if we have child transforms and select the transform that is in range
-		if( $j( smilElement ).children().length ){
+		if( $j( textElement ).children().length ){
 			var bucketText = '';
 			var textBuckets = [];
 			var clearInx = 0;
-			var el = $j( smilElement ).get(0);
+			var el = $j( textElement ).get(0);
 			for ( var i=0; i < el.childNodes.length; i++ ) {	
 				var node = el.childNodes[i];
 				// Check for text Node type: 
@@ -122,11 +142,11 @@ mw.SmilLayout.prototype = {
 				}
 			}			
 		} else {
-			textValue = $j( smilElement ).text();
+			textValue = $j( textElement ).text();
 			mw.log( 'Direct text value to: ' + textValue);
 		}		
 		
-		var textCss = _this.transformSmilCss( smilElement );
+		var textCss = _this.transformSmilCss( textElement );
 		
 		// Make the font size fixed so it can be scaled
 		// based on: http://style.cleverchimp.com/font_size_intervals/altintervals.html
@@ -165,31 +185,31 @@ mw.SmilLayout.prototype = {
 	
 	/**
 	 * Get Image html per given smil element and requested time 
+	 * @param {element} imgElement The image tag element to be updated
 	 */
-	getSmilImgHtml: function( smilElement, relativeTime ) {
-		// Check if we have child transforms and select the transform that is in range
-		
+	getSmilImgHtml: function( imgElement, relativeTime ) {
+		// Check if we have child transforms and select the transform that is in range		
 		var panZoom = null;
-		if( $j( smilElement ).children().length ){
-			$j( smilElement ).children().each(function(inx, childNode ){
+		if( $j( imgElement ).children().length ){
+			$j( imgElement ).children().each(function(inx, childNode ){
 				if( childNode.nodeName == 'animate' ){
-					// add begin / duration to animation bucket
+					// add begin / duration to animation bucket ( computed value )					
 					
-					// get panZoom value
-					
-					// calculate animation position 
+					// get panZoom value									
 				}
 			})
+			// calculate animation position 
 		} else {
-			// just set pan zoom from smilElement ( if set )
-			if( $j( smilElement ).attr('panZoom') ){
-				panZoom = this.parsePanZoom( $j( smilElement ).attr('panZoom') );
+			// Set pan zoom from imgElement ( if set )
+			if( $j( imgElement ).attr('panZoom') ){
+				panZoom = this.parsePanZoom( $j( imgElement ).attr('panZoom') );
 			}			
 		}
+		mw.log( "Add image:" + this.smil.getAssetUrl( $j( imgElement ).attr( 'src' ) ) );
 		// XXX get context of smil document for relative or absolute paths: 
 		return $j('<img />')
 				.attr( {
-					'src' : 'panzoom/' + $j( smilElement ).attr( 'src' )
+					'src' : this.smil.getAssetUrl( $j( imgElement ).attr( 'src' ) )
 				} )
 				.css( {
 					'width': '100%',
@@ -198,7 +218,8 @@ mw.SmilLayout.prototype = {
 	},
 	
 	/**
-	 *  Parse pan attribute zoom strings 
+	 *  Parse pan zoom attribute string 
+	 * @param panZoomString
 	 */
 	parsePanZoom: function( panZoomString ){
 		var pz = panZoomString.split(',');

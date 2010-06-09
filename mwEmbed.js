@@ -1839,8 +1839,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	mw.absoluteUrl = function( src, contextUrl ) {
 		var parsedSrc =  mw.parseUri( src );		
 		// Source is already absolute return:
-		if( parsedSrc.protocol != '')
+		if( parsedSrc.protocol != '') {
 			return src;				
+		}
 		
 		// Get parent Url location the context URL	
 		if( contextUrl) {	
@@ -1889,42 +1890,6 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		return text;
 	};
 	
-	/**
-	* Takes in a string returns an xml dom object 
-	* 
-	* NOTE: this should be depreciated in favor of jquery xml parsing
-	* $j( xml_string )
-	*
-	* @param {String} str String of XML content to be parsed
-	* @return 
-	* 	{Object} XML
-	*	false If XML could not be parsed 
-	*
-	*/
-	mw.parseXML = function ( str ) {
-		if ( $j.browser.msie ) {
-			// Attempt to parse as XML for IE
-			var xmldata = new ActiveXObject( "Microsoft.XMLDOM" );
-			xmldata.async = "false";
-			try{
-				xmldata.loadXML( str );
-				return xmldata;
-			} catch (e) {
-				mw.log( 'XML parse ERROR: ' + e.message );
-				return false;
-			}
-		}
-		
-		// For others (Firefox, Safari etc, older browsers 
-		// Some don't have native DOMParser either fallback defined bellow.
-		try {
-			var xmldata = ( new DOMParser() ).parseFromString( str, "text/xml" );
-		} catch ( e ) {
-			mw.log( 'XML parse ERROR: ' + e.message );
-			return false;
-		}		
-		return xmldata;
-	}
 		
 	// Array of setup functions
 	var mwSetupFunctions = [];

@@ -1,4 +1,3 @@
-
 /**
 * Extends EmbedPlayer to wrap smil playback in the html5 video tag abstraction. 
 */
@@ -37,12 +36,8 @@ mw.EmbedPlayerSmil = {
 				'height' : '100%',
 				'position' : 'relative'
 			})	
-		);		
-		// Add a loading spinner if we don't already have one		
-		/*if( $j('#loadingSpinner_' + this.id ).length ){
-			$j('#smilCanvas_' + this.id ).loadingSpinner();
-		}*/
-		
+		);			
+				
 		// Update the embed player
 		this.getSmil( function( smil ){				
 			// XXX might want to move this into mw.SMIL
@@ -52,10 +47,13 @@ mw.EmbedPlayerSmil = {
 					'height': _this.getHeight() 
 				} )
 			)
-		});
-		
+		});		
 	},
 	
+	/**
+	* Get the smil object. If the smil object does not exist create one with the source url:
+	* @param callback 
+	*/
 	getSmil: function( callback ){
 		if( !this.smil ) {
 			// Create the Smil engine object 
@@ -70,6 +68,9 @@ mw.EmbedPlayerSmil = {
 		}
 	},
 	
+	/**
+	* Get the duration of smil document. 
+	*/
 	getDuration: function(){
 		if( this.smil ){
 			return this.smil.getDuration();
@@ -85,7 +86,7 @@ mw.EmbedPlayerSmil = {
 	},
 	
 	/**
-	* update the thumbnail html
+	* Update the thumbnail html
 	*/
 	updateThumbnailHTML: function() {
 		// If we have a "poster" use that;		

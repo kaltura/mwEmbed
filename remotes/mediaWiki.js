@@ -316,8 +316,7 @@ function rewrite_for_OggHandler( vidIdList ) {
 		
 		// Check if file is from commons and therefore should explicitly set apiProvider to commons: 
 		var apiProviderAttr = ( src.indexOf( 'wikipedia\/commons' ) != -1 )?'apiProvider="commons" ': '';		
-
-		var autoPlayAttr = '';
+		
 		// If in a gallery box we will be displaying the video larger in a lightbox
 		if( $j( '#' + vidId ).parents( '.gallerybox' ).length ){
 			// Update the width to 400 and keep scale
@@ -325,7 +324,6 @@ function rewrite_for_OggHandler( vidIdList ) {
 			if( pheight != 0 ) {
 				pheight = pwidth * ( $j( '#' + vidId ).height() / $j( '#' + vidId ).width() );
 			}			
-			autoPlayAttr = ' autoplay="true" ';
 		}
 		
 		if ( src ) {
@@ -333,8 +331,7 @@ function rewrite_for_OggHandler( vidIdList ) {
 			
 			var common_attr = ' id="mwe_' + vidId + '" ' +
 				'apiTitleKey="' + apiTitleKey + '" ' +
-				'src="' + src + '" ' +
-				autoPlayAttr + 
+				'src="' + src + '" ' + 
 				apiProviderAttr + 
 				duration_attr +
 				offset_attr + ' ' +
@@ -387,8 +384,8 @@ function rewrite_for_OggHandler( vidIdList ) {
 						.click( function(){		
 							var _this = this;
 									
-							var dialogHeight = ( $j( this ).data( 'playerHeight') == 0 	)? 175 :
-												( $j( this ).data( 'playerHeight') - 25 );
+							var dialogHeight = ( pheight == 0 	)? 175 :
+												( pheight - 25 );
 							var buttons = {};
 							buttons[ gM( 'mwe-ok' ) ] = function(){
 								var embedPlayer = $j( '#mwe_' + $j( _this ).data( 'playerId' ) ).get(0);
@@ -400,8 +397,8 @@ function rewrite_for_OggHandler( vidIdList ) {
 								$j(this).dialog( 'close' ).remove();
 							};
 							mw.addDialog( 					
-								decodeURIComponent( $j( this ).data( 'title' ).replace(/_/g, ' ') ),
-								$j( this ).data( 'embedCode' ),
+								decodeURIComponent( apiTitleKey.replace(/_/g, ' ') ),
+								html_out,
 								buttons
 							)
 							// Dialog size setup is a bit strange:							
@@ -411,24 +408,22 @@ function rewrite_for_OggHandler( vidIdList ) {
 							.parent().css( {
 								// we hard code the default resolution to 400 above
 								'width' : '435px',							
-							} )
-							
-							//alert( $j('#mwTempLoaderDialog').html() );
+							} )							
 							
 							// Update the embed code to use the mwEmbed player: 		
-							$j.embedPlayers( function(){								
-								var embedPlayer = $j( '#mwe_' + $j( _this ).data( 'playerId' ) ).get(0);
+							$j( '#mwe_' + vidId ).embedPlayer( function(){								
+								var embedPlayer = $j( '#mwe_' + vidId ).get(0);
+								embedPlayer.play();
 								// Show the control bar for two seconds (auto play is confusing without it )
 								embedPlayer.controlBuilder.showControlBar();
-								setTimeout( function(){								
-									embedPlayer.controlBuilder.hideControlBar();
-								}, 4000 ); 
+								// hide the controls if they should they are overlayed on the video
+								if( embedPlayer.controlBuilder.checkOverlayControls() ){
+									setTimeout( function(){												
+										embedPlayer.controlBuilder.hideControlBar();
+									}, 4000 ); 
+								}
 							});															
-						})
-						.data( 'playerId', vidId )
-						.data( 'embedCode', html_out )		
-						.data( 'title' , apiTitleKey )						
-						.data( 'playerHeight', pheight )
+						})						
 					)			
 				).remove();
 					

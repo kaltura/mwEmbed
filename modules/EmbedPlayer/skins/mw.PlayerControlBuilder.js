@@ -644,9 +644,9 @@ mw.PlayerControlBuilder.prototype = {
 			return false;
 		} 
 		// don't hide controls when content "height" is 0 ( audio tags ) 		
-		if( this.embedPlayer.getPlayerHeight() == 0 ){
+		if( this.embedPlayer.getPlayerHeight() == 0 ){			
 			return false;
-		}
+		}		
 		// Past alll tests OverlayControls is true: 
 		return true; 
 	},

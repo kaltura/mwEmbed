@@ -196,7 +196,7 @@ metavidSearch.prototype = {
 	* Get html to embed the resource into a page:
 	*
 	* @param {Object} resource Resource to be embed
-	* @param {Object} options Resource  Optiosn for embeind ( like max_width )
+	* @param {Object} options Resource  Options for embedding ( like max_width )
 	*/
 	getEmbedHTML: function( resource , options ) {
 	    if ( !options )
@@ -261,4 +261,42 @@ metavidSearch.prototype = {
 		d.setFullYear( year_full, dParts[1] - 1, dParts[2] );
 		return d;
 	}
+}
+
+
+/**
+* Takes in a string returns an xml dom object 
+* 
+* NOTE: this should be deprecated in favor of jquery xml parsing
+* $j( xml_string )
+*
+* @param {String} str String of XML content to be parsed
+* @return 
+* 	{Object} XML
+*	false If XML could not be parsed 
+*
+*/
+mw.parseXML = function ( str ) {
+	if ( $j.browser.msie ) {
+		// Attempt to parse as XML for IE
+		var xmldata = new ActiveXObject( "Microsoft.XMLDOM" );
+		xmldata.async = "false";
+		try{
+			xmldata.loadXML( str );
+			return xmldata;
+		} catch (e) {
+			mw.log( 'XML parse ERROR: ' + e.message );
+			return false;
+		}
+	}
+	
+	// For others (Firefox, Safari etc, older browsers 
+	// Some don't have native DOMParser either fallback defined bellow.
+	try {
+		var xmldata = ( new DOMParser() ).parseFromString( str, "text/xml" );
+	} catch ( e ) {
+		mw.log( 'XML parse ERROR: ' + e.message );
+		return false;
+	}		
+	return xmldata;
 }
