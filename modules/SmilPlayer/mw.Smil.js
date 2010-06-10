@@ -159,7 +159,7 @@ mw.Smil.prototype = {
 	}
 }
 /**
- * Some Utility functions
+ * Some Smil Utility functions
  */
 
 /** 

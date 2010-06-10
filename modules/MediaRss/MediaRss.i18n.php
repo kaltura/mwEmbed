@@ -8,5 +8,5 @@
 
 $messages = array();
 $messages['en'] = array(
-	"mwe-embedplayer-ogg-player-smilPlayer" => "Smil javascript player",
+
 );

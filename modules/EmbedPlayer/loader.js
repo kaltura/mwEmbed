@@ -116,7 +116,7 @@
 
 	/**
 	* Add a DOM ready check for player tags 
-	
+	*
 	* We use mw.addDOMReadyHook instead of mw.ready so that
 	* player interfaces are ready once mw.ready is called. 
 	*/
@@ -148,7 +148,7 @@
 					$j('<div />')
 					.loadingSpinner()
 					.attr('id', 'loadingSpinner_' + $j( element ).attr('id') )
-					.addClass('playerLoadingSpinner')
+					.addClass( 'playerLoadingSpinner' )
 					.css({
 						'width' : 32,
 						'height' : 32,

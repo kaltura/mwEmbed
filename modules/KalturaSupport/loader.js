@@ -24,6 +24,7 @@
 	mw.addClassFilePaths( {
 		"mw.KEntryIdSupport" : "mw.KEntryIdSupport.js",
 		"mw.KAnalytics" : "mw.KAnalytics.js",
+		"mw.KPlaylist"	: "mw.KPlaylist.js", 
 		
 		"KalturaClientBase"	: "kalturaJsClient/KalturaClientBase.js",
 		"KalturaClient" : "kalturaJsClient/KalturaClient.js",

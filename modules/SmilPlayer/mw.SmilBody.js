@@ -57,10 +57,10 @@ mw.SmilBody.prototype = {
 		}
 		
 		// Means we need to seek ahead
-		if( startOffset < time ){
-			mw.log("Seek ahead: startOffset is" + startOffset + ' < ' + time );
+		/*if( startOffset < time ){
+			mw.log( "Seek ahead: startOffset is: " + startOffset + ' < ' + time );
 			return ;
-		}		
+		}*/		
 		
 		// If 'par' or 'seq' recurse to get elements for layout
 		if( nodeType == 'par'|| nodeType == 'seq' ) {		

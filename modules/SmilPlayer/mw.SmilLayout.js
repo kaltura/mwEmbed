@@ -1,6 +1,5 @@
 
 
-
 mw.SmilLayout = function( $layout ){
 	return this.init( $layout );
 }
@@ -31,8 +30,9 @@ mw.SmilLayout.prototype = {
 		this.targetWidth = size.width;
 		this.targetHeight = size.height;
 		
-			if( !time )
-				time = 0;
+		if( !time ) {
+			time = 0;
+		}
 		
 		// Get the root layout HTML and  append the html regions
 		this
@@ -47,9 +47,10 @@ mw.SmilLayout.prototype = {
 		
 		// Reset the media loaded flag
 		if( _this.mediaLoadingCount != 0 ) {
-			mw.log("Error: media still loading, possible stacking seeking requests?");
+			mw.log( "Error: media still loading, possible stacking seeking requests?" );
 			_this.mediaLoadingCount = 0;
 		}
+		
 		// Set the media loaded callback
 		if( callback ) {
 			_this.mediaLoadedCallback = callback;
@@ -60,8 +61,7 @@ mw.SmilLayout.prototype = {
 			_this.drawElement( smilElement, time );
 		} )		
 		
-		
-		
+				
 		return this.$rootLayout;
 	},
 		
