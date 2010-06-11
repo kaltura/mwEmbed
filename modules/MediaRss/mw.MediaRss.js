@@ -1,5 +1,5 @@
 /**
-* MediaRss Embeder. Enables the embeding of a mediaRss playlist using the mwEmbed player   
+* MediaRss Embeder. Enables the embedding of a mediaRss playlist using the mwEmbed player   
 */ 
 mw.MediaRss = function( options ){
 	return this.init( options );
@@ -19,6 +19,8 @@ mw.MediaRss.prototype = {
 	// Stores the list of clips
 	clipList : [],
 	
+	// Stores the cached player size: 
+	targetPlayerSize: null,
 	
 	init: function( options ) {
 		this.src = options.src;			
@@ -37,61 +39,71 @@ mw.MediaRss.prototype = {
 		// Set the target to loadingSpinner: 
 		$j( this.target ).loadingSpinner();
 		
-		this.updateTargetSize();
-			
-		this.getRss( function(){
+		this.getRss( function(){			
 			// Empty the target and setup player and playerList divs
 			$j( _this.target )
 			.empty()
-			.append( 
+			.append(
 				$j( '<div />' )							
 					.addClass( 'media-rss-video-player')
-					.css({
-						'width' : _this.targetWidth + 'px',
-						'height' : this.videoHeight + 'px';
-					})
+					.css( _this.getTargetPlayerSize() )
 				,
 				$j( '<div />')
 					.addClass( 'media-rss-video-list' )
 			);
 			
 			// Add the player
-			this.updatePlayer(  _this.clipIndex  );
+			_this.updatePlayer(  _this.clipIndex  );
 			
 			// Add the selectable media list
-			this.addMediaList(); 
+			_this.addMediaList(); 
 		});	
 	},
 	
 	/**
 	* Update the target size of the player
 	*/
-	updateTargetSize: function(){
+	getTargetPlayerSize: function( ){		
+		if( this.targetPlayerSize ){
+			return this.targetPlayerSize;
+		} 
 		// Get the target width and height: ( should be based on layout or 
 		this.targetWidth = $j( this.target ).width();
 		this.targetHeight = $j( this.target ).height();
 		
-		// Update the video height via the aspect ratio
+		
+		/* vertical layout */				
+		
 		var pa = this.playerAspect.split(':');
-		this.videoHeight = parseInt( ( pa[0] / pa[1] ) * this.targetWidth );
+		this.targetPlayerSize = {
+			'width' : this.targetWidth + 'px',
+			'height' : parseInt( ( pa[1] / pa[0]  ) * this.targetWidth )
+		};
+		
+		return this.targetPlayerSize;	
+	},
 	
-	}
 	/**
 	* addPlayer to the target output
 	*/
 	updatePlayer: function( clipIndex ){
-			
-		var $item = this.$rss.find('item')[ clipIndex ];
+		var _this = this;
+		var $item = $j( this.$rss.find('item')[ clipIndex ] );
 		
-		$video = $j( '<video />');
+		var $video = $j( '<video />')
+			.css(
+				_this.getTargetPlayerSize() 
+			);
 		
 		// Get the poster image:  
 		if( $item.find( 'media:thumbnail' ).length && $item.find( 'media:thumbnail' ).attr('url' ) ){
 			$video.attr( 'poster', $item.find( 'media:thumbnail' ).attr('url' ) );
 		}
-		
+		mw.log( 'total media content: ' + this.$rss.find( 'media:content' ).length );
+		mw.log( 'UpdatePlayer:: Item media content:  ' + $item.find( 'media:content' ).length );
 		// Get the sources
 		$item.find( 'media:content' ).each( function( inx, mediaContent ){
+			mw.log( 'Update source:' + $j( mediaContent ).attr('url' ) );
 			var $source = $j('<source />');
 			if( $j( mediaContent ).attr('url' ) ){
 				$source.attr('src', $j( mediaContent ).attr('url' ) ); 
@@ -99,18 +111,15 @@ mw.MediaRss.prototype = {
 			if( $j( mediaContent ).attr('type' ) ){
 				$source.attr('type', $j( mediaContent ).attr('type' ) );
 			}
-			// xxx could check for duration consistancy 
+			// xxx could check for duration consistency between media and tag. 
 			if( $j( mediaContent ).attr('duration' ) ){
 				$video.attr('durationHint', $j( mediaContent ).attr('duration' ) );
 			}
 			$video.append( $source );
 		});
 		
-		
-		$j( this.target + ' .media-rss-video-player' ).html( $video );
-		
 		// Get the items duration, description, 
-		debugger;
+		$j( this.target + ' .media-rss-video-player' ).html( $video );					
 	},
 	
 	/** 
@@ -124,8 +133,9 @@ mw.MediaRss.prototype = {
 		return false;
 	},
 	
+	
 	getRss: function( callback ){
-		var _this.		
+		var _this = this;		
 		if( _this.$rss ){
 			callback( _this.$rss );
 			return ;
@@ -137,6 +147,5 @@ mw.MediaRss.prototype = {
 			_this.$rss = $j( data );
 			callback( _this.$rss ); 
 		});
-	}
-	
+	}	
 }
