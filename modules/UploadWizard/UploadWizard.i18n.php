@@ -16,11 +16,12 @@ $messages['en'] = array(
 	'uploadwizard-desc' => 'Upload wizard, developed for the Multimedia Usability grant',
 	'mwe-loading-upwiz' => 'Loading upload wizard',
 	'mwe-upwiz-code-unknown' => 'Unknown language',
-	'mwe-upwiz-step-file' => '1. Upload your files',
-	'mwe-upwiz-step-deeds' => '2. Add licenses',
-	'mwe-upwiz-step-details' => '3. Add descriptions',
-	'mwe-upwiz-step-thanks' => '4. Use your files',
-	'mwe-upwiz-intro' => "Welcome to Wikimedia Commons, a repository of images, sounds, and movies that anyone can freely download and use. Add to humanity's knowledge by uploading files that could be used for an educational purpose.",
+	'mwe-upwiz-step-file' => 'Upload',
+	'mwe-upwiz-step-deeds' => 'Release rights',
+	'mwe-upwiz-step-details' => 'Describe',
+	'mwe-upwiz-step-thanks' => 'Use',
+	'mwe-upwiz-intro' => "Welcome to Wikimedia Commons, a repository of images, sounds and movies that anyone can freely download and use.
+Add to humanity's knowledge by uploading files that could be used for an educational purpose.",
 	'mwe-upwiz-add-file-n' => 'Add another file',
 	'mwe-upwiz-add-file-0' => 'Click here to upload a file',
 	'mwe-upwiz-browse' => 'Browse...',
@@ -64,9 +65,9 @@ $messages['en'] = array(
 	'mwe-upwiz-media-type' => 'Media type',
 	'mwe-upwiz-date-created' => 'Date created',
 	'mwe-upwiz-location' => 'Location',
-	'mwe-upwiz-copyright-info' => 'Copyright information',
+	'mwe-upwiz-copyright-info' => 'Release rights',
 	'mwe-upwiz-author' => 'Author(s)',
-	'mwe-upwiz-license' => 'License',
+	'mwe-upwiz-license' => 'Release rights',
 	'mwe-upwiz-about-format' => 'About the file',
 	'mwe-upwiz-autoconverted' => 'This file was automatically converted to the $1 format',
 	'mwe-upwiz-filename-tag' => 'File name:',
@@ -82,11 +83,12 @@ $messages['en'] = array(
 	'mwe-upwiz-thanks-url' => '<b>To link to it in HTML</b>, copy this HTML code:',
 	'mwe-upwiz-upload-error-bad-filename-extension' => 'This wiki does not accept filenames with the extension "$1".',
 	'mwe-upwiz-upload-error-duplicate' => 'This file was previously uploaded to this wiki.',
-	'mwe-upwiz-upload-error-stashed-anyway' => 'Post anyway?',
+	'mwe-upwiz-upload-error-stashed-anyway' => 'Upload anyway?',
 	'mwe-upwiz-ok' => 'OK',
 	'mwe-upwiz-cancel' => 'Cancel',
 	'mwe-upwiz-change' => '(change)',
-	'mwe-upwiz-fileexists' => 'A file with this name exists already. Please check <b><tt>$1</tt></b> if you are not sure if you want to replace it.',
+	'mwe-upwiz-fileexists' => 'A file with this name exists already.
+Please check <b><tt>$1</tt></b> if you are not sure if you want to replace it.',
 	'mwe-upwiz-thumbnail-more' => 'Enlarge',
 	'mwe-upwiz-overwrite' => 'Replace the file',
 	'mwe-copyright-macro' => 'As above',
@@ -94,14 +96,20 @@ $messages['en'] = array(
 	'mwe-upwiz-next' => 'Next',
 	'mwe-upwiz-home' => 'Go to wiki home page',
 	'mwe-upwiz-upload-another' => 'Upload more files',
-	'mwe-prevent-close' => 'Your files are still uploading. Are you sure you want to navigate away from this page?',
+	'mwe-prevent-close' => 'Your files are still uploading.
+Are you sure you want to navigate away from this page?',
 	'mwe-upwiz-files-complete' => 'Your files finished uploading!',
 	'mwe-upwiz-tooltip-author' => 'The name of the person who took the photo, or painted the picture, drew the drawing, etc.',
 	'mwe-upwiz-tooltip-source' => 'Where this digital file came from -- could be a URL, or a book or publication',
-	'mwe-upwiz-tooltip-sign' => 'You can use your wiki user name or your real name. In both cases, this will be linked to your wiki user page',
-	'mwe-upwiz-tooltip-title' => 'A short title for the file. You may use plain language with spaces, but no line breaks. This title must be unlike all other titles in this wiki.',
-	'mwe-upwiz-tooltip-description' => 'Briefly describe everything notable about the work. For a photo, mention the main things that are depicted, the occasion or the place.',
-	'mwe-upwiz-tooltip-other' => 'Any other information you want to include about this work. You may use wikitext code.',
+	'mwe-upwiz-tooltip-sign' => 'You can use your wiki user name or your real name.
+In both cases, this will be linked to your wiki user page',
+	'mwe-upwiz-tooltip-title' => 'A short title for the file.
+You may use plain language with spaces, but no line breaks.
+This title must be unlike all other titles in this wiki.',
+	'mwe-upwiz-tooltip-description' => 'Briefly describe everything notable about the work.
+For a photo, mention the main things that are depicted, the occasion or the place.',
+	'mwe-upwiz-tooltip-other' => 'Any other information you want to include about this work.
+You may use wikitext code.',
 	'mwe-upwiz-tooltip-more-info' => 'Learn more.',
 	'mwe-upwiz-file-need-file' => 'Please add an upload first.',
 	'mwe-upwiz-file-need-start' => 'Please press this button to start your uploads.',
@@ -112,11 +120,20 @@ $messages['en'] = array(
 	'mwe-upwiz-license-incompatible-cc' => 'You can only choose one kind of Creative Commons license.',
 	'mwe-upwiz-license-show-all' => 'Use a different license',
 	'mwe-upwiz-license-show-recommended' => 'Use the recommended license',
-	'mwe-upwiz-error-author-blank' => 'You must sign the field below with your username or real name.',
-	'mwe-upwiz-error-author-too-long' => 'Your signature is too long. Make it shorter than $1 {{PLURAL:$1|character|characters}}.',
-	'mwe-upwiz-error-author-too-short' => 'Your signature is too short. Make it longer than $1 {{PLURAL:$1|character|characters}}.',
-	'mwe-upwiz-error-author-bad-chars' => 'Your signature contains symbols that aren\'t allowed. Please don\'t use wikitext or HTML here, just your username or real name.',
-
+	'mwe-upwiz-error-signature-blank' => 'You must sign the field below with your username or real name.',
+	'mwe-upwiz-error-signature-too-long' => 'Your signature is too long.
+Make it shorter than $1 {{PLURAL:$1|character|characters}}.',
+	'mwe-upwiz-error-signature-too-short' => 'Your signature is too short.
+Make it longer than $1 {{PLURAL:$1|character|characters}}.',
+	'mwe-upwiz-error-signature-bad-chars' => 'Your signature contains symbols that are not allowed.
+Please do not use wikitext or HTML here, just your username or real name.',
+	'mwe-upwiz-error-blank' => 'This field is required.',
+	'mwe-upwiz-error-too-long' => 'This field is too long.
+Make it shorter than $1 {{PLURAL:$1|character|characters}}.',
+	'mwe-upwiz-error-too-short' => 'This field is too short.
+Make it longer than $1 {{PLURAL:$1|character|characters}}.',
+	'mwe-upwiz-error-bad-chars' => 'This field contains symbols that are not allowed.
+Please do not use wikitext or HTML here, just your username or real name.' // FIXME (?) Does not appear to related to username. Bad copy-paste?
 );
 
 /** Message documentation (Message documentation)
