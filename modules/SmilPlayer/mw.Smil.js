@@ -58,7 +58,7 @@ mw.Smil.prototype = {
 		// Try for direct load ( api cross domain loading is handled outside of SmilInterface
 		$j.get( url, function( data ) {
 			_this.loadFromString( data );
-			// XXX check success or falure
+			// XXX check success or failure
 			callback();
 		});
 	},

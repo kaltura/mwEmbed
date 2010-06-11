@@ -1600,8 +1600,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			return src.split('?')[0];						
 		}
 		return false;
-	}
-
+	}	
+	
 	/**
 	 * Given a float number of seconds, returns npt format response. 
 	 * ( ignore days for now )

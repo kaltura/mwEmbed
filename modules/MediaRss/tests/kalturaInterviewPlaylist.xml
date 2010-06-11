@@ -5,18 +5,20 @@
 	<title>Kaltura's mRss</title>
 	<link>/index.php/partnerservices2/executeplaylist?uid=&amp;partner_id=224962&amp;subp_id=22496200&amp;format=8&amp;ks=%7Bks%7D&amp;playlist_id=0_eat1eoc9&amp;amp;</link>
 <item>
-	<description>Kaltura Item</description>
+	<description>Test item</description>
 <guid isPermaLink="false">224962|0_ch2dcq4g</guid>
 	<link></link>
 	<pubDate>2010-06-02 09:36:11</pubDate>
-	<media:content url="http://cdn.kaltura.com/p/224962/sp/22496200/flvclipper/entry_id/0_ch2dcq4g/version/0/ext/flv" type="video/x-flv" medium="video" duration="2083" lang="en"/>
+	<media:content url="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_iphone270P.m4v" type="video/h264" medium="video" duration="33" lang="en"/>
+	<media:content url="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_400p.ogv" type="video/ogg" medium="video" duration="33" lang="en"/>
  <media:title type="plain">
-Johan Janssens (@johanjanssens)</media:title>
+Big buck bunny test clip
+</media:title>
 <media:description>
-Interview with Johan Janssens at JandBeyond 2010, The first international Joomla Conference. About the his experience with Joomla and the community.</media:description>
+test description.</media:description>
 <media:keywords>
   Johan Janssens (@johanjanssens) jab10, jandbeyond, jab third day, day 3, joomla, interview Interview with Johan Janssens at JandBeyond 2010, The first international Joomla Conference. About the his experience with Joomla and the community. </media:keywords>
-<media:thumbnail url="http://cdn.kaltura.com/p/224962/sp/22496200/thumbnail/entry_id/0_ch2dcq4g/version/100001/width/640/height/480"/>
+<media:thumbnail url="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb480.jpg"/>
 <media:credit role="kaltura partner">
 224962</media:credit>
 <kaltura:entryId>

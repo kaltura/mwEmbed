@@ -20,11 +20,11 @@ mw.addClassFilePaths( {
 		// Set the target 
 		options['target'] = _this.selector;
 		
-		// Load the mediaRss class ( if not already loaded ) 
-		mw.load ( 'mw.MediaRss', function(){	
+		// Load the mediaRss class ( if not already loaded ) 		
+		mw.load ( ['EmbedPlayer',  'mw.MediaRss'], function(){	
 			// load and display the media Rss
 			var myMediaRss = new mw.MediaRss( options );
 			myMediaRss.drawUI();		
-		}); 
+		}); 		
 	}
 } )( jQuery );

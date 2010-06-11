@@ -109,6 +109,8 @@ mw.EmbedPlayerNative = {
 		var tagName = ( this.isAudio() ) ? 'audio' : 'video';
 			
 		return	$j( '<' + tagName + ' />' )
+			// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag. 
+			.addClass( 'nativeEmbedPlayerPid' )
 			.attr( playerAttribtues )
 			.css( cssSet );
 	},		

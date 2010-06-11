@@ -237,7 +237,7 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 * Adds jQuery binding for embedPlayer  
 */
 ( function( $ ) {
-	
+	 
 	/*
 	* embeds all players that match the rewrite player tags config
 	* Passes off request to the embedPlayer selector: 
@@ -287,7 +287,12 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 				
 		// Add each selected element to the player manager:		
 		$j( playerSelect ).each( function(na, playerElement) {
-			mw.playerManager.addElement( playerElement, attributes);			
+			// make sure the video tag was not gennerated by our own native player: 
+			if( $j( playerElement ).hasClass( 'nativeEmbedPlayerPid' ) ){
+				mw.log( '$j.embedPlayer skip native player: ' + playerElement );
+			} else {
+				mw.playerManager.addElement( playerElement, attributes);
+			}			
 		} );		
 	};
 
@@ -1896,36 +1901,49 @@ mw.EmbedPlayer.prototype = {
 	* On clip done action. Called once a clip is done playing
 	*/
 	onClipDone: function() {
-		mw.log( 'base:onClipDone :: doneCount:' + this.donePlayingCount );				
-		// Stop the clip (load the thumbnail etc) 
-		this.stop();
-		this.seek_time_sec = 0;
-		this.updatePlayHead( 0 );
-		var _this = this;
+		mw.log( 'base:onClipDone ::' + this.id + ' doneCount:' + this.donePlayingCount );						
+		var _this = this;				
 				
-		if ( this.width < 200 ) {
-			return ;
-		}
 		
-		// Update the clip done playing count:
-		this.donePlayingCount ++;
+		// Only run stoped once: 
+		if( !this.isStoped() ){
+			// Stop the monitor: 
+			this.stopMonitor();
+			
+			// Update the clip done playing count:
+			this.donePlayingCount ++;
 		
-		// Check if we have the "loop" property set
-		if( this.loop ) {
-			this.play();
-			return; 
+			// Fire the html5 ended binding
+			mw.log( "ended" );
+			var onDoneActionObject = {
+				'runBaseControlDone' : true
+			}				
+			
+			// run the ended trigger ( allow the ended object to prevent default actions ) 				
+			$j( this ).trigger( 'ended', onDoneActionObject );
+			
+			if( onDoneActionObject.runBaseControlDone ){
+			
+				// Check if we have the "loop" property set
+				if( this.loop ) {
+					this.play();
+					return; 
+				}
+			
+				// Stop the clip (load the thumbnail etc) 
+				this.stop();
+				this.seek_time_sec = 0;
+				this.updatePlayHead( 0 );
+				
+				// Make sure we are not in preview mode( no end clip actions in preview mode) 
+				if ( this.preview_mode ) {
+					return ;
+				}	
+			
+				// Do the controlBuilder onClip done interface
+				this.controlBuilder.onClipDone();
+			}
 		}
-													
-		// Make sure we are not in preview mode( no end clip actions in preview mode) 
-		if ( this.preview_mode ) {
-			return ;
-		}
-		// Do the controlBuilder onClip done interface
-		this.controlBuilder.onClipDone();
-		
-		// Fire the html5 ended binding
-		mw.log("ended");
-		$j( this ).trigger( 'ended' );
 				
 	},
 	
@@ -2794,6 +2812,11 @@ mw.EmbedPlayer.prototype = {
 		return this.thumbnail_disp;
 	},	
 	
+	// xxx temporary hack we need a better stop monitor system
+	stopMonitor: function(){
+		this.thumbnail_disp = true;
+	},
+	
 	/**
 	 * Checks if the currentTime was updated outside of 
 	 * the getPlayerElementTime function
@@ -2862,7 +2885,7 @@ mw.EmbedPlayer.prototype = {
 			}
 			// Check if we are "done"
 			var endPresentationTime = ( this.startOffset ) ? ( this.startOffset + this.duration ) : this.duration;
-			if ( this.currentTime > endPresentationTime ) {
+			if ( this.currentTime >= endPresentationTime ) {
 				mw.log( "should run clip done :: " + this.currentTime + ' > ' +  endPresentationTime  );
 				this.onClipDone();
 			}

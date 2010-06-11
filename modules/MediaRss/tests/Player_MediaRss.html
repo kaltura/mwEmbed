@@ -15,14 +15,18 @@
 	// For testing safari in chrome / 
 	if( document.URL.indexOf('forceMobileSafari') != -1 ){		
 		mw.setConfig( 'forceMobileSafari' , true );
-	}			
-	mw.setConfig( 'overlayControls', false );
-	
+	}	
+		
 	mw.ready(function(){	
 		$j('#mediaRssTarget').mediaRssPlayer({
 			'src' : "kalturaInterviewPlaylist.xml",
 			'layout' : 'vertical'
 		});
+		
+		$j('#mediaRssTargetHorizontal').mediaRssPlayer({
+			'src' : "kalturaInterviewPlaylist.xml",
+			'layout' : 'horizontal'
+		})
 	});
 </script>
 </head>
@@ -34,9 +38,12 @@
 	src="media/kalturaInterviewPlaylist.xml"  width="500" height="730" > </div>
 -->
  
-Sample Media Rss ( <a href="kalturaInterviewPlaylist.xml">kalturaInterviewPlay.xml</a> )
+Sample Media Rss ( <a href="kalturaInterviewPlaylist.xml">kalturaInterviewPlay.xml</a> ) Vertical 
 
-	 <div style="width:500px;height:500px" id="mediaRssTarget"> </div>
-	 	
+	 <div style="width:400px;height:500px" id="mediaRssTarget"> </div>
+<br/><br/><br/>
+Sample Media Rss ( <a href="kalturaInterviewPlaylist.xml">kalturaInterviewPlay.xml</a> ) horizontal 
+	 <div style="width:700px;height:300px" id="mediaRssTargetHorizontal"> </div>
+<br/><br/><br/>
 </body>
 </html>
