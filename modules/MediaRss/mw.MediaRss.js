@@ -1,5 +1,5 @@
 /**
-* MediaRss Embeder. Enables the embedding of a mediaRss playlist using the mwEmbed player   
+* MediaRss Embed. Enables the embedding of a mediaRss playlist using the mwEmbed player   
 */ 
 mw.MediaRss = function( options ){
 	return this.init( options );
@@ -219,8 +219,7 @@ mw.MediaRss.prototype = {
 			$j( 'mediarss' + _this.clipIndex );
 			
 			// Setup ondone playing binding to play next clip			
-			$j( '#mrss_' + _this.id + '_' + _this.clipIndex ).bind( 'ended', function(event, onDoneActionObject ){														
-											
+			$j( '#mrss_' + _this.id + '_' + _this.clipIndex ).bind( 'ended', function(event, onDoneActionObject ){										
 				// Play next clip
 				if( _this.clipIndex + 1 < _this.getClipCount() ){
 					// Update the onDone action object to not run the base control done: 
@@ -236,9 +235,7 @@ mw.MediaRss.prototype = {
 					mw.log("Reached end of playlist run normal end action" );
 					// Update the onDone action object to not run the base control done: 
 					onDoneActionObject.runBaseControlDone = true;
-				}
-				
-				
+				}								
 			})
 						
 			// Run the callback if its set
