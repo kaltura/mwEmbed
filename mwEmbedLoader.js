@@ -6,7 +6,7 @@
 * http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
 */
 
-var kURID = '1.1o';
+var kURID = '1.1p';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/jsScriptLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
