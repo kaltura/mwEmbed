@@ -65,9 +65,7 @@
 				'$j.ui.draggable',
 				'$j.ui.dialog',
 				'$j.ui.tabs',
-				'$j.ui.sortable',
-
-				'mw.style.AddMedia'
+				'$j.ui.sortable'
 			]
 		];
 		mw.load( request , function() {

@@ -241,7 +241,7 @@ mw.RemoteSearchDriver.prototype = {
 		*	@apiUrl: the url to query against given the library type:
 		*	
 		*	@lib: the search library to use corresponding to the
-		*		search object ie: 'mediaWiki' = new mediaWikiSearchSearch()
+		*		search object ie: 'mediaWiki' = new mediaWikiSearch()
 		*
 		*	@tab_img: the tab image (if set to false use title text)
 		*		if === "true" use standard location skin/images/{provider_id}_tab.png
@@ -2076,12 +2076,12 @@ mw.RemoteSearchDriver.prototype = {
 			'z-index': 99
 		} );
 
-		// Show the editor itself
+		// Show image editor tools
 		if ( mediaType == 'image' ) {
 			_this.showImageEditor( resource );
 		} else if ( mediaType == 'video' || mediaType == 'audio' ) {
 			_this.showVideoEditor( resource );
-		}
+		}		
 	},
 	
 	/*
@@ -2159,7 +2159,7 @@ mw.RemoteSearchDriver.prototype = {
 		actions['insert'] = function( resource ) {
 			_this.insertResource( resource );
 		}
-		// If not directly inserting the resource is support a preview option:
+		// If not directly inserting the resource, support a preview option:
 		if ( _this.import_url_mode != 'remote_link' ) {
 			actions['preview'] = function( resource ) {
 				_this.showPreview( resource )
@@ -2195,11 +2195,12 @@ mw.RemoteSearchDriver.prototype = {
 		var _this = this;
 		var options = _this.getClipEditOptions( resource );
 		
-		// Display the mvClipEdit obj once we are done loading:
-		mw.load( 'ClipEdit', function() {			
-			// Run the image clip tools
+		mw.load( [ 
+			'mw.ClipEdit',
+		 	'mw.style.ClipEdit'
+		 ], function() {	
 			_this.clipEdit = new mw.ClipEdit( options );
-		} );
+		});
 	},
 
 	/**
@@ -2261,7 +2262,8 @@ mw.RemoteSearchDriver.prototype = {
 
 					// Add libraries resizable and hoverIntent to support video edit tools
 					var librarySet = [
-						'ClipEdit', 
+						 'mw.ClipEdit',
+						 'mw.style.ClipEdit',
 						'$j.ui.resizable'
 					];
 					mw.load( librarySet, function() {						
@@ -2480,7 +2482,8 @@ mw.RemoteSearchDriver.prototype = {
 					_this.doApiImport( resource, function() {
 						$j( '#rsd_resource_import' ).remove();
 						_this.clipEdit.updateInsertControlActions();
-						callback 
+						if( callback )
+							callback();
 					});
 				} else {
 					mw.log( "Error: import mode is not form or API (can not copy asset)" );
@@ -2726,7 +2729,7 @@ mw.RemoteSearchDriver.prototype = {
 		mw.log( ":doApiImport:" );
 		mw.addLoaderDialog( gM( 'mwe-importing_asset' ) );
 		
-		alert( 'do copy-by-url import currently dissabled ');
+		alert( 'do copy-by-url import currently disabled');
 		
 		// Load the BaseUploadInterface:
 		mw.load( 
@@ -2807,7 +2810,7 @@ mw.RemoteSearchDriver.prototype = {
 			$j( _this.target_container ).dialog( 'option', 'title', 
 				gM( 'mwe-preview_insert_resource', resource.title ) );
 
-			// Update buttons preview:
+			// Update buttons
 			$j( buttonPaneSelector )
 				.html(
 					$j.btnHtml( gM( 'rsd_do_insert' ), 'preview_do_insert', 'check' ) + ' ' )
@@ -2825,8 +2828,10 @@ mw.RemoteSearchDriver.prototype = {
 				.text( gM('mwe-do-more-modification' ) )
 				.click( function() {
 					$j( '#rsd_preview_display' ).remove();
+					
 					// Restore title:
 					$j( _this.target_container ).dialog( 'option', 'title', origTitle );
+					
 					// Restore buttons (from the clipEdit object::)
 					_this.clipEdit.updateInsertControlActions();
 					return false;
@@ -2838,15 +2843,16 @@ mw.RemoteSearchDriver.prototype = {
 			var pos = $j( _this.target_textbox ).textSelection( 'getCaretPosition' );			
 			var editWikiText = $j( _this.target_textbox ).val();
 			var wikiText = editWikiText.substr(0, pos) + embed_code + editWikiText.substr( pos );
+			
 			mw.parseWikiText( 
 				wikiText,
 				_this.target_title,
-				function( phtml ) {
-					$j( '#rsd_preview_display' ).html( phtml );
+				function( previewHtml ) {
+					$j( '#rsd_preview_display' ).html( previewHtml );
 					if( mw.documentHasPlayerTags() ) {
 						mw.load( 'EmbedPlayer', function() {							
 							// Update the display of video tag items (if any) 
-							$j( mw.getConfig( 'rewritePlayerTags' ) ).embedPlayer();
+							$j.embedPlayers();
 						});
 					}
 				}

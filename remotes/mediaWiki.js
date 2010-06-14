@@ -4,7 +4,7 @@
  */
 var urlparts = getRemoteEmbedPath();
 var mwEmbedHostPath = urlparts[0];
-var mwRemoteVersion = 'r130';
+var mwRemoteVersion = 'r134';
 var mwUseScriptLoader = true;
 
 // Log the mwRemote version makes it easy to debug cache issues
@@ -23,10 +23,17 @@ for ( var i = 0; i < reqParts.length; i++ ) {
 	}
 }
 
+// Allow the document.URL to trigger the debug flag with "debug=true" in its url 
+if( document.URL.indexOf( 'debug=true' ) !== -1 ){
+	mwReqParam['debug'] = true;
+}
+
 // Check if debug mode and disable script grouping  
 if( mwReqParam['debug'] ) {
 	mwUseScriptLoader = false;
 }
+
+
 
 // Setup up some globals to wrap mwEmbed mw.ready and mw.setConfig functions
 
@@ -78,6 +85,8 @@ function doPageSpecificRewrite() {
 	if ( wgAction == 'edit' || wgAction == 'submit' ) {
 		loadMwEmbed( [ 
 			'mw.RemoteSearchDriver',
+			'mw.ClipEdit',
+		 	'mw.style.ClipEdit',
 			'$j.fn.textSelection', 
 			'$j.ui', 
 			'$j.ui.sortable' 
@@ -223,8 +232,7 @@ function mwSetPageToLoading(){
 function mwLoadPlayer( callback ){
 
 	// The jsPlayerRequest includes both javascript and style sheets for the embedPlayer 
-	var jsPlayerRequest = [	 
-		'mw.style.mwCommon',	                       
+	var jsPlayerRequest = [	                    
 		'mw.EmbedPlayer', 
 		'mw.style.EmbedPlayer',
 		'$j.ui', 
@@ -514,7 +522,7 @@ function loadMwEmbed( classSet, callback ) {
 			}	
 			// Add Core mwEmbed lib ( if not already defined )
 			if( typeof MW_EMBED_VERSION == 'undefined' ){ 
-				rurl += coma + 'mwEmbed';
+				rurl += coma + 'mwEmbed,mw.style.mwCommon';
 				coma = ',';
 			}
 								

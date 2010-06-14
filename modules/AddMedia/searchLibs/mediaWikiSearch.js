@@ -10,7 +10,7 @@ mediaWikiSearch.prototype = {
 	* Inherits the base search object and passes along options
 	* @constructor
 	*/
-	init:function( options ) {
+	init: function( options ) {
 		// init base class and inherit: 
 		var baseSearch = new baseRemoteSearch( options );
 		for ( var i in baseSearch ) {

@@ -18,7 +18,7 @@ mw.addModuleLoader( 'ClipEdit', function( callback ){
 		[
 		 'mw.ClipEdit',
 		 'mw.style.ClipEdit'
-        ], 
+        ],  
         function(){
 			callback( 'ClipEdit' );
 		}

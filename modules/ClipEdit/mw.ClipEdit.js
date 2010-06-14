@@ -72,7 +72,7 @@ var default_clipedit_values = {
 	* The set of tools to enable by default 'all' tools are enabled
 	* Can be any sub array of mvClipEdit.toolset 
 	*
-	* crop: tool for croping the image layout
+	* crop: tool for cropping the image layout
 	* layout: tool for adjusting the layout of the image
 	*/
 	'enabled_tools' : 'all',
@@ -80,8 +80,8 @@ var default_clipedit_values = {
 	// Edit profile either "inpage" or "sequence"
 	'profile': 'inpage' 
 }
-mw.ClipEdit = function( iObj ) {
-	return this.init( iObj );
+mw.ClipEdit = function( options ) {
+	return this.init( options );
 };
 mw.ClipEdit.prototype = {
 	// Selected tool
@@ -700,7 +700,7 @@ mw.ClipEdit.prototype = {
 		} else if ( this.getMediaType() == 'video' ) {
 			this.applyVideoStartEnd();
 		}
-		// copy over the desc text to the resource object
+		// copy over the description text to the resource object
 		_this.resource['inlineDesc'] = $j( '#mv_inline_img_desc' ).val();
 	},
 	
@@ -802,7 +802,7 @@ mw.ClipEdit.prototype = {
 					
 					$j( '<span />' )					
 					.addClass( 'mw_crop_msg_load')
-					.text(  gM( 'mwe-clipedit-loading_txt' )  )
+					.text(  gM( 'mwe-loading_txt' )  )
 					.hide(),
 					
 					$j( '<a />' )
@@ -841,8 +841,7 @@ mw.ClipEdit.prototype = {
 					mw.log( 'click:mv_crop_button: base width: ' + _this.resource.width + ' bh: ' + _this.resource.height );
 					if ( $j( '#mw_crop_button' ).hasClass( 'mw_crop_button_selected' ) ) {
 						_this.applyCrop();
-					} else {
-						mw.log( 'click:turn on' );
+					} else {						
 						_this.doCropInterface();
 					}
 				} );
@@ -871,7 +870,7 @@ mw.ClipEdit.prototype = {
 	/**
 	* Show Image Controls
 	*/
-	showImageControls:function() {
+	showImageControls: function() {
 		var _this = this;
 		var $tool_target = $j( '#' + this.target_control_display );
 		mw.log( 'tool target len: ' + $tool_target.length );
@@ -898,7 +897,7 @@ mw.ClipEdit.prototype = {
 	/**
 	* Apply Image Crop to the edit resource image
 	*/
-	applyCrop:function() {
+	applyCrop: function() {
 		var _this = this;
 		$j( '.mw_apply_crop' ).hide();
 		$j( '.mw_crop_msg' ).show();
@@ -961,7 +960,7 @@ mw.ClipEdit.prototype = {
 	/**
 	* Do the crop Interface
 	*/
-	doCropInterface:function() {
+	doCropInterface: function() {
 		var _this = this;
 		$j( '.mw_crop_msg' ).hide();
 		$j( '.mw_crop_msg_load' ).show();		
