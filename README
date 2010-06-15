@@ -63,6 +63,44 @@ Using __mwEmbed__ in your own applications is as simple as adding a script inclu
 * __Easy to integrate__ - Integrate to any existing web CMS, pre-integrated into Media Wiki (powering Wikipedia, MetaVid).
 * Integrated into Kaltura Video Platform based on the Kaltura JS Client library (Coming soon...)
 
+## Examples
+
+### Fall Forward from Flash to html5 for iPhone & iPad Support
+
+__mwEmbed__ may be installed in conjunction with existing kaltura integrations to provide fall forward from flash to html5 to enable video embedding for iPhone and iPad.
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Fall forward from Flash to html5</title>
+
+      <script type="text/javascript" src="http://html5.kaltura.org/js"></script>
+
+      <script type="text/javascript">
+        mw.setConfig( 'overlayControls', false );
+      </script>
+    </head>
+    <body>
+      <h2>Fall forward from Flash to html5</h2>
+
+      <object id="kaltura_player" name="kaltura_player"
+        type="application/x-shockwave-flash"
+        allowFullScreen="true" allowNetworking="all"
+        allowScriptAccess="always" height="330" width="400"
+        data="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao">
+        <param name="allowFullScreen" value="true" />
+        <param name="allowNetworking" value="all" />
+        <param name="allowScriptAccess" value="always" />
+        <param name="bgcolor" value="#000000" />
+        <param name="flashVars" value="&" />
+        <param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao" />
+      </object>
+ 
+    </body>
+    </html>
+
+> \* Fall forward support requires requires [Kaltura Enterprise](http://corp.kaltura.com) support to deliver properly encoded video.  Once you have a Kaltura account, contact technical support to request that your account be configured to provide fall forward support.
+
 ## Background
 
 This project started as a part of the MediaWiki HTML5 media functionality project. 
@@ -105,11 +143,19 @@ You may check out a read-only working copy anonymously over HTTP:<br />
 <span style="padding: 0px 0px 5px 0px; color:#885555;">If you'd like commit access, please submit a request to <a href="../join-project?lightframe" rel="lightframe[|width:570px; height:650px; scrolling: auto;]">join this project.</a>.</span>
 </p>
 
+## Compile Developer Docs
+
+    java -jar jsrun.jar app/run.js /home/papyromancer/src/mwEmbed/loader.js /home/papyromancer/src/mwEmbed/mwEmbed.js /home/papyromancer/src/mwEmbed/mwEmbedLoader.js /home/papyromancer/src/mwEmbed/modules/**/*/*.js -t=templates/jsdoc
+
+## Additional Resources
+
 For an overview of all mwEmbed files see: 
 http://www.mediawiki.org/wiki/MwEmbed
 
 For stand alone usage see: 
 http://kaltura.org/project/HTML5_Media_JavaScript_Library
+
+## License and Copyright Information
 
 All mwEmbed code is Released under the GPL2 as 
 a stand alone component of mediaWiki
