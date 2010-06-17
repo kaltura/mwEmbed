@@ -1,28 +1,14 @@
-h1. mwEmbed
+h1. mwEmbed Integrators Guide
 
 p. This javascript library enables you to take advantage of the "html5 @<video>@ and @<audio>@ tags":https://developer.mozilla.org/En/Using_audio_and_video_in_FireFox today with a consistent player interface across all major browsers including Internet Explorer.
 
 p. The library supports a seamless fallback with Flash based playback (using Kaltura's media player -- KDP3) or Java Cortado for browsers that don't yet feature HTML5 video & audio support.  Upon detection of the client browser, the Kaltura HTML5 library chooses the right codec to use (specified in the source attributes) and the right player to display.  So whether you're using flash, h264, ogg-theora, or WebM -- Kaltura's library will make sure it is played on all browsers with the same html based UI.
 
-p. While support for HTML5 video is growing, there is large percentage of the web browser market that is presently best served by the Adobe Flash plugin and an associated player. A base component of the Kaltura HTML5 javascript library bridges this gap, by cascading to an underlining Flash player in browsers that do not support the native HTML5 video player. In addition, Kaltura's player maintains a unified look & feel across formats and browsers. Kaltura's platform provides automatic transcoding into all supported formats (OGG, H.264, MOV, FLV etc.)
-p. *Coming soon!* Kalturas' HTML5 video player will soon support all advanced video management capabilities, including analytics and monetization, making it commercially viable on devices, such as the Apple iPhone, that do not support Flash.
+p. While support for HTML5 video is growing, there is large percentage of the web browser market that is presently best served by the Adobe Flash plugin and an associated player. A base component of the Kaltura HTML5 javascript library bridges this gap, by cascading to an underlining Flash player in browsers that do not support the native HTML5 video player. In addition, Kaltura's player maintains a unified look & feel across formats and browsers. Kaltura's platform provides automatic transcoding into all supported formats (WebM, OGG, H.264, MOV, FLV etc.)
 
-h2. The jQuery of HTML5 media
+p. *Coming soon!* Kalturas' HTML5 video player will soon support all advanced video management capabilities, including analytics and monetization, making it commercially viable on devices such as the Apple iPhone, that do not support Flash.
 
-* *mwEmbed* is built on "jQuery":http://jquery.com/ and "jQueryUI":http://jqueryui.com/ so it's easy to theme, customize and extend.
-* supports the royalty free, patent unencumbered open media formats "ogg theora/vorbis":http://xiph.org/ .
-
-bq. This enables websites to distribute video without "future content distribution costs":http://mpegla.com/news/n_03-11-17_avc.html associated with the h.264 codec. With theora sporting "similar qualities":http://people.xiph.org/%7Egreg/video/ytcompare/comparison.html at web bitrates its a win, win to start adoption ogg!
-
-bq. If your already distributing h.264 formats, *mwEmbed* supports a smooth transition with fallback to h.264 sources with the same html/css interface player skin as the ogg content.
-
-* supports emerging subtitles and timed text formats for future prof accessibility.
-* includes an easy to integrate free license asset search system for grabbing free content from repositories such as the "Internet Archive":http://www.archive.org/index.php, "Wikimedia Commons":http://commons.wikimedia.org/wiki/Main_Page , and "Flickr":http://www.flickr.com/ . This lets you integrate quick access to freely reusable illustrative image or short web clip for your web app.
-* includes components for flexible client side transcoding of assets via the "Firefogg":http://firefogg.org/ browser extension.
-
-bq. Firefogg integration lets video sites avoid intermediary transcode formats for user contributed media, distribute transcode costs, and lets the website provide specific transcoding settings directly to the client at the point of upload.
-
-h2. Getting stated with the library
+h2. Basic Usage
 
 p. Using *mwEmbed* in your own applications is as simple as adding a script include of the library javascript, @http://html5.kaltura.org/js@ and then using the normal html5 video tag, ie @<video src="myOgg.ogg">@ .
 
@@ -52,77 +38,17 @@ bc. <!DOCTYPE html>
 * If you would like to support html5 with h.264 ( safari, IE9, google chrome) and support a flash fallback for older versions of IE you include an h.264 source. For best compatibility your mp4 source should ideally use a h.264 profile compatible with mobile devices such as the iPhone.  <a href="http://corp.kaltura.com/">Kaltura hosted Solutions</a> include iPhone support. Desktop video encoding software such as <a href="http://handbrake.fr/">handbreak</a> also includes iPhone profiles. 
 * If you would like to change the theme you can change the class attribute @<video class="kskin">@ more info about custom theming is on the way. 
 
-h2. Library features and showcase
+h2. Fall Forward from Flash to html5 for iPhone & iPad Support
 
-* *Cross browser & Format compatibility* [see live demo: <a title="HTML5 Video Player with jQueryUI theme support" href="http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Fallback.html" rel="lightframe[|width:550px; height:650px; scrolling: auto;]">Video Player</a>, <a title="HTML5 Audio Player with jQueryUI theme support" href="http://www.kaltura.org/apis/html5lib/mwEmbed/tests/Player_Audio.html" rel="lightframe[|width:500px; height:500px; scrolling: auto;]">Audio Player</a>\] - Will work on all major browsers, and with any online supported video format. Gracefully identifys the best playback engine (Native HTML5, Flash, VLC or Java Cortado) for your settings and video format.
-* *Easy to skin* [<a title="HTML5 Video Player with jQueryUI theme support" target="_blank" href="http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html">see live demo</a>] - Based on HTML, CSS and jQuery, skinning is amazingly easy and flexible. No need external or compiled resources (like Flash), or complicated development environments. Skin and Theme will be consistent through all UI and playback engines. Built in support for for the jquery Theme Roller for easy theming.
-* *Easy to Extend, Javascript modules* -- Quick, clean and easy way of extending. Write once and the code will be compatible with all browsers and all playback engines. 
-* *Javascript libraries for web applications* that allow much more then simple playback. Create a full featured web-video experience - <a title="HTML5 with jQueryUI content ingestion wizard" href="http://www.kaltura.org/apis/html5lib/kplayer-examples/Add_Media_Wizard.html" rel="lightframe[|width:850px; height:500px; scrolling: auto;]">Import and upload wizard</a>, <a title="HTML5 with jQueryUI online video editor" href="http://www.kaltura.org/apis/html5lib/mwEmbed/tests/Sequence_Editor.html" rel="lightframe[|width:900px; height:700px; scrolling: auto;]">Video Editor</a> ( not fully functional in stand alone mode yet ), <a title="FireOgg integration - Client Side Transcoding" href="http://www.kaltura.org/apis/html5lib/mwEmbed/example_usage/Firefogg_Make_Advanced.html" rel="lightframe[|width:550px; height:650px; scrolling: auto;]">Client Side Encoding (FireOgg)</a>.
-* *Easy to integrate* -- Integrate to any existing web CMS, pre-integrated into Media Wiki (powering Wikipedia, MetaVid).
-* Integrated into Kaltura Video Platform based on the Kaltura JS Client library (Coming soon...)
+p. *mwEmbed* may be installed in conjunction with existing Kaltura integrations to provide fall forward from flash to html5 to enable video embedding for iPhone and iPad.
 
-h2. Examples
-
-h3. Inserting a video by Kaltura EntryID
-
-*mwEmbed* uses "Kaltura's Javascript Client Library":http://www.kaltura.org/project/Client_Library_JavaScript to connect to connect to a Kaltura server and pull the appropriate video flavor for a client's browser.
-
-bc. <!DOCTYPE html>
-<html>
-<head>
-        <title>Player from Kaltura EntryID</title>
-        <script type="text/javascript" src="http://html5.kaltura.org/js"></script> 
-<script type="text/javascript">
-mw.ready( function(){
-	mw.setConfig( 'overlayControls', false );	
-	$j('#showVideo').click( function(){
-		// Set the partner id and kAdmin secret
-		mw.setConfig('kPartnerId', $j('#kPartnerId').val() );
-		mw.setConfig('kAdminSecret', $j('#kAdminSecret').val() );
-		$j( '#videoContainer' ).loadingSpinner();				
-		mw.load( 'EmbedPlayer', function(){
-			$j( '#videoContainer' ).html(
-				'<video id="vid" width="400" height="300" '+ 
-					'kentryid="' + $j( '#kentryid' ).val()  + '">' +
-				'</video>'
-			);			
-			// Rewrite all the players on the page
-			$j('#vid').embedPlayer( {
-				'kentryid' : $j('#kentryid').val()				
-			} );
-		});
-	});
-} );
-</script>
-</head>
-<body>
-	<h3> Kaltura Player </h3>
-	<span style="width:300px;float:left">
-		Partner id: <input id="kPartnerId" size="15" value="243342"><br />
-		Admin Secret <input id="kAdminSecret" size="15" value="075a32aa066775c1b96713cb71541ae9"><br />
-		Entry id: <input id="kentryid" size="15" value="0_swup5zao"> <br />
-	</span>
-	<textarea style="width:300px;height:120px;float:left">
-Analytic Events:
-	</textarea>
-	<div style="clear:both" ></div>
-	<input id="showVideo" type="button" value="Show Video">
-	<div id="videoContainer" > </div>
-</body>
-</html>
-
-h3. Fall Forward from Flash to html5 for iPhone & iPad Support
-
-*mwEmbed* may be installed in conjunction with existing kaltura integrations to provide fall forward from flash to html5 to enable video embedding for iPhone and iPad.
+p. Installing html5 support to an existing Kaltura integration is as simple as adding a javascript tag to include @http://html5.kaltura.org/js@.  The library will automatically replace your Flash embed with an html5 @<video>@ element on browsers capable of parsing the tag.
 
 bc. <!DOCTYPE html>
 <html>
 <head>
   <title>Fall forward from Flash to html5</title>
   <script type="text/javascript" src="http://html5.kaltura.org/js"></script>
-  <script type="text/javascript">
-    mw.setConfig( 'overlayControls', false );
-  </script>
 </head>
 <body>
   <h2>Fall forward from Flash to html5</h2>
@@ -141,25 +67,34 @@ bc. <!DOCTYPE html>
 </body>
 </html>
 
-* Fall forward support requires requires [Kaltura Enterprise](http://corp.kaltura.com) support to deliver properly encoded video.  Once you have a Kaltura account, contact technical support to request that your account be configured to provide fall forward support.
+h2. Library features and showcase
 
-h2. Background
+* *mwEmbed* is built on "jQuery":http://jquery.com/ and "jQueryUI":http://jqueryui.com/ so it's easy to theme, customize and extend.
+* supports the *royalty free*, patent unencumbered *open media* formats "ogg theora/vorbis":http://xiph.org/ .
 
-p. This project started as a part of the MediaWiki HTML5 media functionality project. 
+bq. This enables websites to distribute video without "future content distribution costs":http://mpegla.com/news/n_03-11-17_avc.html associated with the h.264 codec.
 
-p. *mwEmbed* provides the basis for other MediaWiki media functionality. For more info see <a href="http://www.mediawiki.org/wiki/Media_Projects_Overview">the projects overview on MediaWiki</a> and the associated integration (currently called <a href="http://www.mediawiki.org/wiki/JS2_Overview">js2</a>) 
+bq. If your already distributing h.264 formats, *mwEmbed* supports a smooth transition with fallback to h.264 sources with the same html/css interface player skin as the ogg content.
 
-h2. More...
+* supports emerging *subtitles and timed text* formats for future proof accessibility.
+* includes an easy to integrate free license *asset search system* for grabbing free content from repositories such as the "Internet Archive":http://www.archive.org/index.php, "Wikimedia Commons":http://commons.wikimedia.org/wiki/Main_Page , and "Flickr":http://www.flickr.com/ . This lets you integrate quick access to freely reusable illustrative image or short web clip for your web app.
+* includes components for flexible *client side transcoding* of assets via the "Firefogg":http://firefogg.org/ browser extension.
 
-p. There are many other options (like thumbnail, poster, size, inline transcript display etc.) provided with this library. 
+bq. Firefogg integration lets video sites avoid intermediary transcode formats for user contributed media, distribute transcode costs, and lets the website provide specific transcoding settings directly to the client at the point of upload.
 
-p. The general goal of this project is to fully support the html5 video spec and provide a rich interface for creating online rich-media experiences based on html5 video and audio.
+* *Cross browser & Format compatibility* [see live demo: <a title="HTML5 Video Player with jQueryUI theme support" href="http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Fallback.html" rel="lightframe[|width:550px; height:650px; scrolling: auto;]">Video Player</a>, <a title="HTML5 Audio Player with jQueryUI theme support" href="http://www.kaltura.org/apis/html5lib/mwEmbed/tests/Player_Audio.html" rel="lightframe[|width:500px; height:500px; scrolling: auto;]">Audio Player</a>\] - Will work on all major browsers, and with any online supported video format. Gracefully identifys the best playback engine (Native HTML5, Flash, VLC or Java Cortado) for your settings and video format.
+* *Easy to skin* [<a title="HTML5 Video Player with jQueryUI theme support" target="_blank" href="http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html">see live demo</a>] - Based on HTML, CSS and jQuery, skinning is amazingly easy and flexible. No need external or compiled resources (like Flash), or complicated development environments. Skin and Theme will be consistent through all UI and playback engines. Built in support for for the jquery Theme Roller for easy theming.
+* *Easy to Extend, Javascript modules* -- Quick, clean and easy way of extending. Write once and the code will be compatible with all browsers and all playback engines. 
+* *Javascript libraries for web applications* that allow much more then simple playback. Create a full featured web-video experience - <a title="HTML5 with jQueryUI content ingestion wizard" href="http://www.kaltura.org/apis/html5lib/kplayer-examples/Add_Media_Wizard.html" rel="lightframe[|width:850px; height:500px; scrolling: auto;]">Import and upload wizard</a>, <a title="HTML5 with jQueryUI online video editor" href="http://www.kaltura.org/apis/html5lib/mwEmbed/tests/Sequence_Editor.html" rel="lightframe[|width:900px; height:700px; scrolling: auto;]">Video Editor</a> ( not fully functional in stand alone mode yet ), <a title="FireOgg integration - Client Side Transcoding" href="http://www.kaltura.org/apis/html5lib/mwEmbed/example_usage/Firefogg_Make_Advanced.html" rel="lightframe[|width:550px; height:650px; scrolling: auto;]">Client Side Encoding (FireOgg)</a>.
+* *Easy to integrate* -- Integrate to any existing web CMS, pre-integrated into Media Wiki (powering Wikipedia, MetaVid).
 
-p. This site, "metavid.org":http://metavid.org/ , makes heavy use of the library.  Remote embedding of metavid content also uses the library. 
+h2. Troubleshooting
 
-p. If your site uses this library, please let us know and share your experience, feature requests and bugs on the bug tracker and forums.
+h3. Kaltura Specific Setup
 
-h2. HTML5 @<video>@ MIME type
+p. In order to use the full functionality of this library you should obtain a trial account with "Kaltura":http://corp.kaltura.com/ and request a support technician setup your account to provide html5 flavored video codecs.
+
+h3. HTML5 @<video>@ MIME type
 
 p. Note that if the MIME types for Theora video are not set on the server, the video may not show or show a gray box containing an X (if JavaScript is enabled).
 
@@ -178,7 +113,17 @@ AddType video/ogg .ogg
 
 p. Your web host may provide an easy interface to MIME type configuration changes for new technologies until a global update naturally occurs.
 
-h2.  Get Project Source Code
+h2. Background
+
+p. This project started as a part of the MediaWiki HTML5 media functionality project. 
+
+p. *mwEmbed* provides the basis for other MediaWiki media functionality. For more info see <a href="http://www.mediawiki.org/wiki/Media_Projects_Overview">the projects overview on MediaWiki</a> and the associated integration (currently called <a href="http://www.mediawiki.org/wiki/JS2_Overview">js2</a>) 
+
+h2. Become a Developer
+
+p. if you find this software useful, stop by #kaltura in FreeNode.
+
+h3.  Get Project Source Code
 
 <p class="note">MwEmbed is released under the GPL2 and hosted by the wikimedia foundation.<br />
 You may check out a read-only working copy anonymously over HTTP:<br />
@@ -186,11 +131,13 @@ You may check out a read-only working copy anonymously over HTTP:<br />
 <span style="padding: 0px 0px 5px 0px; color:#885555;">If you'd like commit access, please submit a request to <a href="../join-project?lightframe" rel="lightframe[|width:570px; height:650px; scrolling: auto;]">join this project.</a>.</span>
 </p>
 
-h2. Compile Developer Docs
+h3. Compile Developer Docs
 
 bc. java -jar jsrun.jar app/run.js /home/papyromancer/src/mwEmbed/loader.js /home/papyromancer/src/mwEmbed/mwEmbed.js /home/papyromancer/src/mwEmbed/mwEmbedLoader.js /home/papyromancer/src/mwEmbed/modules/**/*/*.js -t=templates/jsdoc
 
-h2. Additional Resources
+bc. redcloth README > docs/README.html
+
+h3. Additional Resources
 
 p. For an overview of all mwEmbed files see: 
 http://www.mediawiki.org/wiki/MwEmbed
