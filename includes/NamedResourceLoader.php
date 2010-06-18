@@ -1,12 +1,12 @@
 <?php
 /**
- * The javascript class loader handles loading lists of available
+ * The javascript resource loader handles loading lists of available
  * javascript classes into php from their defined locations in javascript.
  */
 
 if ( !defined( 'MEDIAWIKI' ) ) die( 1 );
 
-class jsClassLoader {
+class NamedResourceLoader {
 	// The list of mwEmbed core components that make up the base mwEmbed class
 	private static $coreComponentsList = array();
 
@@ -17,26 +17,26 @@ class jsClassLoader {
 	private static $combinedLoadersJs = '';
 
 	// Reg Exp that supports extracting classes from loaders
-	private static $classReplaceExp = '/mw\.addClassFilePaths\s*\(\s*{(.*)}\s*\)\s*\;/siU';
+	private static $classReplaceExp = '/mw\.addResourcePaths\s*\(\s*{(.*)}\s*\)\s*\;/siU';
 
-	// Flag to specify if the javascript class paths have been loaded.
+	// Flag to specify if the javascript resource paths have been loaded.
 	private static $classesLoaded = false;
 
 	// The current directory context. Used in loading javascript modules outside of the mwEmbed folder
 	private static $directoryContext = '';
 
-	// Stores class parent moduleName
-	private static $classParentModuleName = array();
+	// Stores resource parent moduleName
+	private static $resourceParentModuleName = array();
 
 	// The current module name used for callback functions in regular expressions
 	private static $currentModuleName = '';
 
 	/**
-	 * Get the javascript class paths from javascript files
+	 * Get the javascript resource paths from javascript files
 	 */
-	public static function loadClassPaths(){
+	public static function loadResourcePaths(){
 		global $wgMwEmbedDirectory, $wgExtensionJavascriptModules, $wgUseMwEmbedLoaderModuleList,
-		$wgScriptLoaderNamedPaths, $wgExtensionMessagesFiles, $IP;
+		$wgResourceLoaderNamedPaths, $wgExtensionMessagesFiles, $IP;
 
 		// Only run once
 		if( self::$classesLoaded ) {
@@ -45,7 +45,7 @@ class jsClassLoader {
 		self::$classesLoaded = true;
 
 		// Start the profiler if running
-		$fname = 'jsClassLoader::loadClassPaths';
+		$fname = 'NamedResourceLoader::loadResourcePaths';
 		wfProfileIn( $fname );
 
 
@@ -68,7 +68,7 @@ class jsClassLoader {
 		// Get the list of core component into self::$coreComponentsList
 		preg_replace_callback(
 			'/mwCoreComponentList\s*\=\s*\[(.*)\]/siU',
-			'jsClassLoader::preg_buildComponentList',
+			'NamedResourceLoader::preg_buildComponentList',
 			$fileContent
 		);
 
@@ -77,7 +77,7 @@ class jsClassLoader {
 			// Get the list of enabled modules into $moduleList
 			preg_replace_callback(
 				'/mwEnabledModuleList\s*\=\s*\[(.*)\]/siU',
-				'jsClassLoader::preg_buildModuleList',
+				'NamedResourceLoader::preg_buildModuleList',
 				$fileContent
 			);
 		}
@@ -158,7 +158,7 @@ class jsClassLoader {
 		// Run the replace callback:
 		preg_replace_callback(
 			self::$classReplaceExp,
-			'jsClassLoader::preg_classPathLoader',
+			'NamedResourceLoader::preg_classPathLoader',
 			$fileContent
 		);
 	}
@@ -182,7 +182,7 @@ class jsClassLoader {
 	 * @return the combined loader jss
 	 */
 	public static function getCombinedLoaderJs(){
-		self::loadClassPaths();
+		self::loadResourcePaths();
 		return self::$combinedLoadersJs;
 	}
 
@@ -190,7 +190,7 @@ class jsClassLoader {
 	 * Get the list of enabled modules
 	 */
 	public static function getModuleList(){
-		self::loadClassPaths();
+		self::loadResourcePaths();
 		return self::$moduleList;
 	}
 
@@ -198,7 +198,7 @@ class jsClassLoader {
 	* Get the list of enabled components
 	*/
 	public static function getComponentsList(){
-		self::loadClassPaths();
+		self::loadResourcePaths();
 		return self::$coreComponentsList;
 	}
 
@@ -250,13 +250,13 @@ class jsClassLoader {
 	}
 
 	/**
-	 * Adds javascript autoloader class names and paths
-	 * to $wgScriptLoaderNamedPaths global
+	 * Adds javascript autoloader resource names and paths
+	 * to $wgResourceLoaderNamedPaths global
 	 *
-	 * @param string $jvar Json string with class name list
+	 * @param string $jvar Json string with resource name list
 	 */
 	private static function preg_classPathLoader( $jsvar ) {
-		global $wgScriptLoaderNamedPaths;
+		global $wgResourceLoaderNamedPaths;
 		if ( !isset( $jsvar[1] ) ) {
 			return false;
 		}
@@ -264,46 +264,46 @@ class jsClassLoader {
 		$jClassSet = FormatJson::decode( '{' . $jsvar[1] . '}', true );
 		// Check for null json decode:
 		if( $jClassSet == NULL ){
-			$moduleName = ( self::$classParentModuleName [ $className ] )
-				? self::$classParentModuleName [ $className ]
+			$moduleName = ( self::$resourceParentModuleName [ $resourceName ] )
+				? self::$resourceParentModuleName [ $resourceName ]
 				: ' loader set in extension ';
 
-			throw new MWException( "Error could not decode javascript class list for module:" . $moduleName ." \n" );
+			throw new MWException( "Error could not decode javascript resource list for module:" . $moduleName ." \n" );
 			return false;
 		}
 
-		foreach ( $jClassSet as $className => $classPath ) {
-			// Strip $ from class (as they are stripped on URL request parameter input)
-			$className = str_replace( '$', '', $className );
+		foreach ( $jClassSet as $resourceName => $classPath ) {
+			// Strip $ from resource (as they are stripped on URL request parameter input)
+			$resourceName = str_replace( '$', '', $resourceName );
 			$classPath =  ( self::$directoryContext == '' )? $classPath :  self::$directoryContext . '/' . $classPath;
 
 			// Throw an error if we already have defined this class:
 			// This prevents a module from registering a shared class
 			// or multiple modules using the same className
-			if( isset( $wgScriptLoaderNamedPaths[ $className ] ) ){
+			if( isset( $wgResourceLoaderNamedPaths[ $resourceName ] ) ){
 
 				// Presently extensions don't register were the named path parent module
 				// so we just have a general extension error.
-				$setInModuleError = ( self::$classParentModuleName [ $className ] )
-					? " set in module: " . self::$classParentModuleName [ $className ]
+				$setInModuleError = ( self::$resourceParentModuleName [ $resourceName ] )
+					? " set in module: " . self::$resourceParentModuleName [ $resourceName ]
 					: " set in an extension ";
 
-				throw new MWException( "Error class $className already $setInModuleError \n" );
+				throw new MWException( "Error resource $resourceName already $setInModuleError \n" );
 			}
 
-			// Else update the global $wgScriptLoaderNamedPaths ( all scriptloader named paths )
-			$wgScriptLoaderNamedPaths[ $className ] = $classPath;
+			// Else update the global $wgResourceLoaderNamedPaths ( all scriptloader named paths )
+			$wgResourceLoaderNamedPaths[ $resourceName ] = $classPath;
 			// Register the parent module ( javascript module specific )
-			self::$classParentModuleName [ $className ] = self::$currentModuleName ;
+			self::$resourceParentModuleName [ $resourceName ] = self::$currentModuleName ;
 		}
 	}
 	/**
-	* Return the module name for a given class or false if not found
-	* @param $className Class to get the module for
+	* Return the module name for a given resource or false if not found
+	* @param $resourceName resource to get the module for
 	*/
-	public function getClassModuleName( $className ){
-		if( isset( self::$classParentModuleName [ $className ] ) ){
-			return self::$classParentModuleName [ $className ];
+	public function getModuleNameForResource( $resourceName ){
+		if( isset( self::$resourceParentModuleName [ $resourceName ] ) ){
+			return self::$resourceParentModuleName [ $resourceName ];
 		} else {
 			return false;
 		}

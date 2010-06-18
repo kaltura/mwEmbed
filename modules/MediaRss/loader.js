@@ -2,7 +2,7 @@
 * MediaRssPlayer 
 */
 
-mw.addClassFilePaths( {
+mw.addResourcePaths( {
 	"mw.MediaRss" : "mw.MediaRss.js"
 });
 

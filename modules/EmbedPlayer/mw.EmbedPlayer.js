@@ -280,6 +280,11 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 			$j( mw ).trigger( 'EmbedPlayerManagerReady' );
 		}
 		
+		// If we have not detected player yet do that: 
+		if( ! mw.EmbedTypes.players ){
+			mw.EmbedTypes.init();
+		}		
+		
 		// Add the embedPlayer ready callback 
 		if( typeof callback == 'function' ){  
 			mw.playerManager.addCallback( callback );
@@ -1503,7 +1508,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Scope the end of check for player sources so it can be called in a callback  
 		var finishCheckPlayerSources = function(){
-			// Run embedPlayer sources hook			
+			// Run embedPlayer sources hook		
 			mw.runTriggersCallback( _this, 'checkPlayerSourcesEvent', function(){							
 				_this.checkForTimedText();
 			})			
@@ -1707,7 +1712,8 @@ mw.EmbedPlayer.prototype = {
 		
 		// Load the selected player		
 		this.selectedPlayer.load( function() {
-			mw.log( _this.selectedPlayer.library + " player loaded for " + _this.id );
+			mw.log( 'EmbedPlayer:: ' + _this.selectedPlayer.library + " player loaded for " + _this.id );
+			
 			// Get embed library player Interface
 			var playerInterface = mw[ 'EmbedPlayer' + _this.selectedPlayer.library  ];			
 			
@@ -1716,13 +1722,15 @@ mw.EmbedPlayer.prototype = {
 					_this['parent_' + method] = _this[method];
 				}
 				_this[ method ] = playerInterface[method];
-			}											
+			}				
+										
 			// Update feature support 
 			_this.updateFeatureSupport();
 			
 			_this.getDuration();
+			
 			_this.showPlayer();
-			// Call the global player mannager to inform this video interface is 100% ready: 
+			// Call the global player manager to inform this video interface is ready: 
 			mw.playerManager.playerReady( _this );
 			
 			// Run the callback if provided
@@ -1855,8 +1863,8 @@ mw.EmbedPlayer.prototype = {
 	* issues a loading request
 	*/
 	doEmbedPlayer: function() {
-		mw.log( 'f:doEmbedPlayer::' + this.selectedPlayer.id );
-		mw.log( 'thum disp:' + this.thumbnail_disp );
+		mw.log( 'EmbedPlayer :: doEmbedPlayer::' + this.selectedPlayer.id );
+		//mw.log( 'thum disp:' + this.thumbnail_disp );
 		var _this = this;
 		
 		var doEmbedPlayerLocal = function(){
@@ -1959,7 +1967,7 @@ mw.EmbedPlayer.prototype = {
 		this.controlBuilder.closeMenuOverlay();
 		
 		// update the thumbnail html: 
-		this.updateThumbnailHTML();
+		this.updatePosterHTML();
 		
 		this.paused = true;
 		this.thumbnail_disp = true;
@@ -1977,7 +1985,7 @@ mw.EmbedPlayer.prototype = {
 	* Show the player
 	*/
 	showPlayer : function () {	
-		mw.log( 'Show player: ' + this.id );	
+		mw.log( 'EmbedPlayer:: Show player: ' + this.id );	
 		var _this = this;
 		// Set-up the local controlBuilder instance: 
 		this.controlBuilder = new mw.PlayerControlBuilder( this );		
@@ -2001,7 +2009,7 @@ mw.EmbedPlayer.prototype = {
 		this.$interface = $j( this ).parent( '.interface_wrap' );				
 		
 		// Update Thumbnail for the "player" 
-		this.updateThumbnailHTML();		
+		this.updatePosterHTML();		
 		
 		// Add controls if enabled:
 		if ( this.controls ) {			
@@ -2152,7 +2160,7 @@ mw.EmbedPlayer.prototype = {
 				}
 			);
 			if ( !this.thumbnail_updating ) {
-				this.updateThumbnail( this.last_thumb_url , false );
+				this.updatePoster( this.last_thumb_url , false );
 				this.last_thumb_url = null;
 			}
 		}
@@ -2174,7 +2182,7 @@ mw.EmbedPlayer.prototype = {
 	* 	true switch happens instantly
 	* 	false / undefined animated cross fade
 	*/
-	updateThumbnail : function( src, quick_switch ) {
+	updatePosterSrc: function( src, quick_switch ) {
 		// make sure we don't go to the same url if we are not already updating: 
 		if ( !this.thumbnail_updating && $j( '#img_thumb_' + this.id ).attr( 'src' ) == src )
 			return false;
@@ -2224,7 +2232,7 @@ mw.EmbedPlayer.prototype = {
 						if ( _this.last_thumb_url ) {
 							var src_url = _this.last_thumb_url;
 							_this.last_thumb_url = null;
-							_this.updateThumbnail( src_url );
+							_this.updatePosterSrc( src_url );
 						}
 				} );
 			}
@@ -2236,8 +2244,8 @@ mw.EmbedPlayer.prototype = {
 	* playing, configuring the player, inline cmml display, HTML linkback,
 	* download, and embed code.
 	*/
-	updateThumbnailHTML: function () {
-		mw.log( 'embedPlayer:updateThumbnailHTML::' + this.id );
+	updatePosterHTML: function () {
+		mw.log( 'embedPlayer:updatePosterHTML::' + this.id );
 		var thumb_html = '';
 		var class_atr = '';
 		var style_atr = '';
@@ -2252,7 +2260,7 @@ mw.EmbedPlayer.prototype = {
 		var posterSrc = ( this.poster ) ? this.poster : 
 						mw.getConfig( 'imagesPath' ) + 'vid_default_thumb.jpg';				
 		
-		// Poster support is not very consistant in browsers
+		// Poster support is not very consistent in browsers
 		// use a jpg poster image:  
 		$j( this ).html(
 			$j( '<img />' )

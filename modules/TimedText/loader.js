@@ -4,7 +4,7 @@
 // Scope everything in "mw"  ( keeps the global namespace clean ) 
 ( function( mw ) {
 	
-mw.addClassFilePaths( {
+mw.addResourcePaths( {
 	"mw.TimedText" : "mw.TimedText.js",
 	"mw.style.TimedText" : "css/mw.style.TimedText.css",
 		

@@ -56,7 +56,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	// Local scope configuration var:
 	if( !mwConfig ){
 		var mwConfig = { };
-	}	
+	}
 	
 	// Local scope mwUserConfig var. Stores user configuration 
 	var mwUserConfig = { };
@@ -277,7 +277,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		* 		code needed to check config and load the module dependencies
 		*
 		*	{String} Name of a class to loaded. 
-		* 		Classes are added via addClassFilePaths function
+		* 		Classes are added via addResourcePaths function
 		*		Using defined class names avoids loading the same class
 		*		twice by first checking if the "class variable" is defined
 		*	
@@ -329,7 +329,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			if( this.moduleLoaders[ loadRequest ] && 
 				typeof ( this.moduleLoaders[ loadRequest ] ) == 'function' 
 			) {
-				mw.log("mw.load: loadModule:" + loadRequest );
+				//mw.log("mw.load: loadModule:" + loadRequest );
 				// Run the module with the parent callback 
 				this.moduleLoaders[ loadRequest ]( callback );	
 				return ;
@@ -337,7 +337,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			
 			// Check for javascript class 
 			if( this.getClassPath( loadRequest ) ) {		
-				mw.log('mw.load: loadClass: ' + loadRequest );
+				//mw.log('mw.load: loadClass: ' + loadRequest );
 				this.loadClass( loadRequest, callback );																	
 				return ;
 			}
@@ -372,7 +372,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				// Get the grouped loadStates variable 
 				loadStates = this.getGroupLoadState( loadSet );
 				if( mw.isEmpty( loadStates ) ) {
-					mw.log( 'loadMany:all classes already loaded');
+					//mw.log( 'loadMany:all classes already loaded');
 					callback();
 					return ;
 				}						
@@ -393,11 +393,11 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}	
 			
 			// We are infact loading many:
-			mw.log("mw.load: LoadMany:: " + loadSet );
+			//mw.log("mw.load: LoadMany:: " + loadSet );
 						
 			// Issue the load request check check loadStates to see if we are "done"
 			for( var loadName in loadStates ) {				
-				mw.log("loadMany: load: " + loadName ); 					
+				//mw.log("loadMany: load: " + loadName ); 					
 				this.load( loadName, function ( loadName ) {										
 					loadStates[ loadName ] = 1;
 					
@@ -539,7 +539,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			
 			// Make sure the class is not already defined:
 			if ( mw.isset( className ) ) {
-				mw.log( 'Class ( ' + className + ' ) already defined ' );
+				//mw.log( 'Class ( ' + className + ' ) already defined ' );
 				callback( className );
 				return ; 									
 			}
@@ -635,7 +635,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		*  classSet must be strict JSON to allow the 
 		*  php scriptLoader to parse the file paths.  
 	 	*/
-	 	addClassFilePaths: function( classSet ) {
+	 	addResourcePaths: function( classSet ) {
 	 		var prefix = ( mw.getConfig( 'loaderContext' ) )?
 	 			mw.getConfig( 'loaderContext' ): '';
 	 		
@@ -737,8 +737,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	/**
 	* Add Class File Paths entry point:  
 	*/
-	mw.addClassFilePaths = function ( classSet ) {	
-		return mw.loader.addClassFilePaths( classSet );
+	mw.addResourcePaths = function ( classSet ) {	
+		return mw.loader.addResourcePaths( classSet );
 	}
 	
 	mw.addClassStyleDependency = function ( classSet ) {
@@ -1042,7 +1042,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 * @param {Boolean} fresh A fresh check is issued.	 	
 	 */
 	 // Stub feature apiUserNameCache to avoid multiple calls 
-	 // ( a more general api cache framework should be devloped ) 
+	 // ( a more general api framework should be developed  ) 
 	 var apiUserNameCache = {};
 	 mw.getUserName = function( apiUrl, callback, fresh ){	 		 	
 	 	if( typeof apiUrl == 'function' ){
@@ -1055,7 +1055,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 	if( mw.isLocalDomain( apiUrl ) ){	 		
 	 		if( typeof wgUserName != 'undefined' &&  wgUserName !== null ) {
 	 			callback( wgUserName )
-	 			return ;
+	 			// In case someone called this function without a callback
+	 			return wgUserName;
 	 		}
 	 	}
 	 	if( ! fresh && apiUserNameCache[ apiUrl ]  ) {
@@ -1286,7 +1287,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	* @param {String} string String to output to console
 	*/
 	mw.log = function( string ) {
-	
+
 		// Add any prepend debug strings if necessary 		
 		if ( mw.getConfig( 'pre-append-log' ) ){
 			string = mw.getConfig( 'pre-append-log' ) + string;		
@@ -1521,8 +1522,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				'href' : url
 			} )
 		);
-		// Precently no easy way to check css "onLoad" attribute 
-		// In genneral sheets are loaded via script-loader. 
+		// No easy way to check css "onLoad" attribute 
+		// In production sheets are loaded via script-loader and fire the onDone function call.  
 		if( callback ) {
 			callback();
 		}
@@ -1575,14 +1576,14 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}
 		
 		// Check for scriptLoader include of mwEmbed: 
-		if ( src.indexOf( 'mwScriptLoader.php' ) !== -1 ) {
+		if ( src.indexOf( 'mwResourceLoader.php' ) !== -1 ) {
 			// Script loader is in the root of MediaWiki, Include the default mwEmbed extension path:
-			mwpath =  src.substr( 0, src.indexOf( 'mwScriptLoader.php' ) ) + mw.getConfig( 'mediaWikiEmbedPath' );						
+			mwpath =  src.substr( 0, src.indexOf( 'mwResourceLoader.php' ) ) + mw.getConfig( 'mediaWikiEmbedPath' );						
 		}
 		
-		// Script-loader has jsScriptLoader name when local:
-		if( src.indexOf( 'jsScriptLoader.php' ) !== -1 ) {
-			mwpath = src.substr( 0, src.indexOf( 'jsScriptLoader.php' ) );			
+		// Script-loader has ResourceLoader name when local:
+		if( src.indexOf( 'ResourceLoader.php' ) !== -1 ) {
+			mwpath = src.substr( 0, src.indexOf( 'ResourceLoader.php' ) );			
 		}	
 		
 		// For static packages mwEmbed packages start with: "mwEmbed-"
@@ -1610,8 +1611,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	*/
 	mw.getScriptLoaderPath = function( ) {		
 		var src = mw.getMwEmbedSrc();
-		if ( src.indexOf( 'mwScriptLoader.php' ) !== -1  ||
-			src.indexOf( 'jsScriptLoader.php' ) !== -1 )
+		if ( src.indexOf( 'mwResourceLoader.php' ) !== -1  ||
+			src.indexOf( 'ResourceLoader.php' ) !== -1 )
 		{
 			// Return just the script part of the url
 			return src.split('?')[0];						
@@ -1718,7 +1719,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					( src.indexOf( 'mwEmbed.js' ) !== -1 &&  src.indexOf( 'MediaWiki:Gadget') == -1 )
 				 	|| // Check for script-loader				 	
 				 	( 
-				 		( src.indexOf( 'mwScriptLoader.php' ) !== -1 || src.indexOf( 'jsScriptLoader.php' ) !== -1 )
+				 		( src.indexOf( 'mwResourceLoader.php' ) !== -1 || src.indexOf( 'ResourceLoader.php' ) !== -1 )
 						&& 
 						src.indexOf( 'mwEmbed' ) !== -1 
 					)
@@ -2265,19 +2266,24 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 * 
 	 */
 	mw.runTriggersCallback = function( targetObject, triggerName, callback ){
+		mw.log( ' runTriggersCallback:: ' + triggerName  );
 		// If events are not present directly run callback 
 		if( ! $j( targetObject ).data( 'events' ) ||
 				! $j( targetObject ).data( 'events' )[ triggerName ] ) {
+			mw.log( ' trigger name not found: ' + triggerName  );
 			callback();
 			return ;
 		}		
-		var callbackCount = $j( targetObject ).data( 'events' )[ triggerName ].length;			
-		if( !callbackCount ){
+		var callbackSet = $j( targetObject ).data( 'events' )[ triggerName ];
+		if( !callbackSet || callbackSet.length === 0  ){
+			mw.log( ' No events run the callback directly: ' + triggerName  );
 			// No events run the callback directly
 			callback();
 			return ;
 		}
-	
+		// Set the callbackCount
+		var callbackCount = ( callbackSet.length )? callbackSet.length : 1;
+		
 		mw.log(" runTriggersCallback:: " + callbackCount );
 		var callInx = 0;
 		$j( targetObject ).trigger( 'checkPlayerSourcesEvent', function() {

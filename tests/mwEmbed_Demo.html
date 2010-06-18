@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
 	<title>mwEmbed Testing Kit</title>
@@ -34,8 +34,8 @@
         speed:'fast'
       });
   
-      $("#docs").resizable({ alsoResize: '#docs_iframe' });
-      $("#docs").draggable();
+      $("#docbox").resizable();
+      $("#docbox").draggable();
       $("#js-console").resizable();
       $("#js-console").draggable();
 
@@ -175,35 +175,15 @@
 
     </div><!-- END demo_player -->
 
-    <div id="docs" class="ui-widget-content">
-      
-      <div id="menu">
-        <ul class="sf-menu sf-horizontal"> 
-          <li><a href="#README" id="readme_button">Readme</a></li>
-          <li><a href="#JsDocs" id="jsdocs_button">Api Docs</a>
-            <!-- <ul>
-              <li><a href="#class-index">class index list</a></li>
-            </ul> -->
-          </li>
-        </ul>
+    <div id="docbox" class="ui-widget-content">
+    <h3 class="ui-widget-header">mwEmbed Documentation</h3>
+    <p> there will be a menu here to switch between the README and the generated docs</p>
+     <div id="jsdocs">
+        <iframe src="../docs/index.html" width="90%" height="80%">
+        </iframe>
       </div>
-   <script type="text/javascript"> 
-    $("#readme_button").click(function () {
-      $("#README").show();
-      $("#jsdocs").hide();
-    });
-    $("#jsdocs_button").click(function () {
-      $("#README").hide();
-      $("#jsdocs").show();
-    });
-  </script>
-      <div id="docs_iframe">
 
-      <iframe id="README" src="../docs/README.html"></iframe>
-      <iframe id="jsdocs" style="display:none" src="../docs/jsdoc/index.html"></iframe>
-      </div>
-    </div>
-
+    </div><!-- end sideBox -->
 
     <div id="js-console" class="ui-widget-content">
     <h3 class="ui-widget-header">mwEmbed Controls</h3>

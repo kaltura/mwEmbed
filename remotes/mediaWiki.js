@@ -4,7 +4,7 @@
  */
 var urlparts = getRemoteEmbedPath();
 var mwEmbedHostPath = urlparts[0];
-var mwRemoteVersion = 'r134';
+var mwRemoteVersion = 'r136';
 var mwUseScriptLoader = true;
 
 // Log the mwRemote version makes it easy to debug cache issues
@@ -512,7 +512,7 @@ function loadMwEmbed( classSet, callback ) {
 	// Inject mwEmbed if needed
 	if ( typeof MW_EMBED_VERSION == 'undefined' ) {
 		if ( mwUseScriptLoader ) {
-			var rurl = mwEmbedHostPath + '/jsScriptLoader.php?class=';
+			var rurl = mwEmbedHostPath + '/ResourceLoader.php?class=';
 			
 			var coma = '';
 			// Add jQuery too if we need it: 

@@ -21,9 +21,6 @@ mw.Smil = function( options ){
 	return this.init( options );
 }
 mw.Smil.prototype = {
-
-	// If smil is being loaded lazy init 
-	loadingSmil: null ,
 	
 	// Store the mw.SmilLayout object 
 	layout : null,
@@ -31,16 +28,22 @@ mw.Smil.prototype = {
 	// Stores the mw.SmilBody object
 	body : null,
 	
+	// Handles buffer information display elements
+	buffer: null,
+	
 	// Stores the smil document for this object ( for relative image paths ) 
 	smilUrl: null,
 	
+	// The abstract emebed player parent 
+	embedPlayer: null,
 	
 	/** 
 	* Constructor
-	* @param {Object} options Set of options for the smil interface 
+	* @param {Object} embedPlayer Refrence to the embedPlayer driving the smil object 
 	*/
-	init: function( options ) {
-
+	init: function( embedPlayer ) {
+		mw.log(" Smil:: init with player: " +  embedPlayer.id );
+		this.embedPlayer = embedPlayer;
 	},
 	
 	/** 
@@ -51,12 +54,10 @@ mw.Smil.prototype = {
 	loadFromUrl: function( url , callback ) {
 		var _this = this;
 		this.smilUrl = url; 
-		mw.log( 'Smil: loadFromUrl : ' + url );
-		// Set the loading flag to true: 
-		this.loadingSmil = true;		
+		mw.log( 'Smil::loadFromUrl : ' + url );		
 		
 		// Try for direct load ( api cross domain loading is handled outside of SmilInterface
-		$j.get( url, function( data ) {
+		$j.get( url, function( data ) {		 
 			_this.loadFromString( data );
 			// XXX check success or failure
 			callback();
@@ -71,6 +72,8 @@ mw.Smil.prototype = {
 		// Load the parsed string into the local "dom"
 		this.$dom = $j( smilXmlString );
 		
+		mw.log( "Smil::loadFromString: loaded smil dom: " + this.$dom );
+		
 		// Clear out the layout
 		this.layout = null;
 		
@@ -79,6 +82,9 @@ mw.Smil.prototype = {
 		
 		// Clear out the top level duration
 		this.duration = null;
+		
+		// Clear out the "buffer" object
+		this.buffer = null;
 	},
 	
 	/**
@@ -101,9 +107,32 @@ mw.Smil.prototype = {
 	*/
 	getHtmlDOM: function ( size, time, callback ){		
 		mw.log("getHtmlDOM:: " + size.width + ' time: ' + time);
-		
+
 		// Have the layout object return the layout HTML DOM					
 		return this.getLayout().getHtmlDOM( size, time );
+	},
+	
+	renderTime: function( time, callback ) {
+		// Get the render target: 
+		var $renderTarget = this.embedPlayer.getRenderTarget();
+		
+		// Add the core layout ( not time based )
+		$renderTarget.append( 
+			this.getLayout().getHtml()
+		)
+		
+		// Update the render target with bodyElements for the requested time
+		this.getBody().renderTime( time );
+				
+		// Wait until buffer is ready
+	    this.checkBufferTimeReady( time, callback );
+	},
+	
+	getBuffer: function(){
+		if( ! this.buffer ) {
+			this.buffer = new mw.SmilBuffer( this ) ;
+		}
+		return this.buffer; 
 	},
 	
 	/** 
@@ -136,7 +165,7 @@ mw.Smil.prototype = {
 	/**
 	 * Get the duration form the 
 	 */
-	getDuration: function(){
+	getDuration: function(){		
 		// return 0 while we don't have the $dom loaded
 		if( !this.$dom ){
 			return 0;

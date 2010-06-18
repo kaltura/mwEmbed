@@ -1,6 +1,6 @@
 <?php
 /**
- * This core jsScriptLoader class provides the script loader functionality
+ * This core ResourceLoader provides the resource loader functionality
  * @file
  */
 
@@ -8,26 +8,26 @@
 // ( has to be hard coded rather than config based for fast non-mediawiki config hits )
 $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/includes/cache';
 
-// Check if being used in mediaWiki ( jsScriptLoader.php is NOT an entry point )
-if( is_file ( dirname( __FILE__ ) .'../mwScriptLoader.php' )
+// Check if being used in mediaWiki ( ResourceLoader.php is NOT an entry point )
+if( is_file ( dirname( __FILE__ ) .'../mwResourceLoader.php' )
  	&& !defined( 'SCRIPTLOADER_MEDIAWIKI') ) {
-	die( 'jsScriptLoader.php is not an entry point when used with the JS2 extension' );
+	die( 'ResourceLoader.php is not an entry point when used with the JS2 extension' );
 }
 
 // Check if we are an entry point or being used as part of MEDIAWIKI:
 if ( !defined( 'MEDIAWIKI' ) && !defined( 'SCRIPTLOADER_MEDIAWIKI') ) {
-	$myScriptLoader = new jsScriptLoader();
-	if( $myScriptLoader->outputFromCache() ) {
+	$myResourceLoader = new ResourceLoader();
+	if( $myResourceLoader->outputFromCache() ) {
 		exit();
 	}
-	// No cache hit, load stand alone ScriptLoader config
+	// No cache hit, load stand alone Resource Loader config
 
 	// ( if running as a remote, mediaWiki variables / functions are already included as part of mediaWiki )
 	require_once( realpath( dirname( __FILE__ ) ) . '/includes/noMediaWikiConfig.php' );
-	$myScriptLoader->doScriptLoader();
+	$myResourceLoader->doResourceLoader();
 }
 
-class jsScriptLoader {
+class ResourceLoader {
 
 	// The list of named javascript & css files
 	private $namedFileList = array();
@@ -84,7 +84,7 @@ class jsScriptLoader {
 	}
 
 	/**
-	 * Core scriptLoader driver:
+	 * Core resourceLoader driver:
 	 *
 	 * 	get request key
 	 *  builds javascript string
@@ -93,13 +93,13 @@ class jsScriptLoader {
 	 *  sends the headers
 	 *  outputs js
 	 */
-	function doScriptLoader() {
-		global 	$wgScriptLoaderNamedPaths, $IP, $wgUseFileCache;
+	function doResourceLoader() {
+		global 	$wgResourceLoaderNamedPaths, $IP, $wgUseFileCache;
 
-		// Load the javascript class paths:
-		require_once( realpath( dirname( __FILE__ ) ) . "/includes/jsClassLoader.php");
+		// Load the resource paths:
+		require_once( realpath( dirname( __FILE__ ) ) . "/includes/NamedResourceLoader.php");
 		try {
-			jsClassLoader::loadClassPaths();
+			NamedResourceLoader::loadResourcePaths();
 		} catch( Exception $e ) {
 			$this->errorMsg .= $e->getMessage() ;
 		}
@@ -115,48 +115,48 @@ class jsScriptLoader {
 
 		// Setup script loader header ( to easy identify file data )
 		if( $this->outputFormat == 'js' ) {
-			$this->output .= 'var mwScriptLoaderDate = "' .
+			$this->output .= 'var mwResourceLoaderDate = "' .
 			xml::escapeJsString( date( 'c' ) ) . '";'  . "\n";
-			$this->output .= 'var mwScriptLoaderRequestKey = "' .
+			$this->output .= 'var mwResourceLoaderRequestKey = "' .
 			xml::escapeJsString( $this->requestKey ) . '";'  . "\n";
 		}
 
 		// Build the output
 		// Swap in the appropriate language per js_file
-		foreach ( $this->namedFileList as $classKey => $filePath ) {
+		foreach ( $this->namedFileList as $resourceName => $filePath ) {
 			// Check if we are exclusively getting messages
 			if( $this->outputFormat == 'messages' ) {
 				// Get only the message code
-				$this->output .= $this->getAddMessagesFromClass( $classKey );
+				$this->output .= $this->getResourceMessageJS( $resourceName );
 			} else {
 				// Process the full class
-				$this->output .= $this->getLocalizedScriptText( $classKey );
+				$this->output .= $this->getLocalizedScriptText( $resourceName );
 			}
 
 			// MwEmbed is a core component so it includes loaders and other styles
-			if( $classKey == 'mwEmbed' && $this->outputFormat != 'messages' ){
+			if( $resourceName == 'mwEmbed' && $this->outputFormat != 'messages' ){
 				// Output core components ( parts of core mwEmbed that are in different files )
-				$coreComponentsList  = jsClassLoader::getComponentsList();
+				$coreComponentsList  = NamedResourceLoader::getComponentsList();
 				foreach( $coreComponentsList as $componentClassName ) {
 					// Output the core component via the script loader:
 					$this->output .= $this->getLocalizedScriptText( $componentClassName );
 				}
 
 				// Output the loaders js
-				$loaderJS = jsClassLoader::getCombinedLoaderJs();
+				$loaderJS = NamedResourceLoader::getCombinedLoaderJs();
 				// Transform the loader text to remove debug statements and
 				// update language msgs if any are present
 				$this->output .= $this->transformScriptText( $loaderJS , 'mwEmbed');
 
-				// Output the current language class js
-				$this->output .= jsClassLoader::getLanguageJs( $this->langCode );
+				// Output the current language resource js
+				$this->output .= NamedResourceLoader::getLanguageJs( $this->langCode );
 
 				// Add the required core mwEmbed style sheets Commted out
 				// because when creating stand alone packages js package with css
 				// the paths get messed up.
 				/*
 				if( !isset( $this->namedFileList[ 'mw.style.mwCommon' ] ) ) {
-					$this->output .= $this->getScriptText( 'mw.style.mwCommon' );
+					$this->output .= $this->getResourceText( 'mw.style.mwCommon' );
 				}
 				*/
 
@@ -166,7 +166,7 @@ class jsScriptLoader {
 		}
 
 		/**
-		 * Add a mw.loadDone class callback if there was no "error" in getting any of the classes
+		 * Add a mw.loadDone resource callback if there was no "error" in getting any of the classes
 		 */
 		if ( $this->errorMsg == '' && $this->outputFormat == 'js' ){
 			$this->output .= self::getOnDoneCallback( );
@@ -201,14 +201,14 @@ class jsScriptLoader {
 		}
 	}
 	/**
-	 * Get the loadDone javascript callback for a given class list
+	 * Get the loadDone javascript callback for a given resource list
 	 *
 	 * Enables a done loading callback for browsers like older safari
 	 * that did not consistently support the <script>.onload call
 	 * or IE that sometimes gets undefined symbols at onload
 	 * call time for associated script content
 	 *
-	 * @return String javascript to tell mwEmbed that the requested class set is loaded
+	 * @return String javascript to tell mwEmbed that the requested resource set is loaded
 	 */
 	static private function getOnDoneCallback( ){
 		return 'if(typeof mw !=\'undefined\' && mw.loadDone){mw.loadDone(\'' .
@@ -291,17 +291,17 @@ class jsScriptLoader {
 	/**
 	 * Get the javascript or css text content from a given classKey
 	 *
-	 * @param {String} $classKey Class Key to grab text for
+	 * @param {String} $resourceName Resource Key to grab text for
 	 * @param {String} [$filePath] Optional file path to get js text
 	 * @return unknown
 	 */
-	function getScriptText( $classKey ){
+	function getResourceText( $resourceName ){
 		$output = '';
 		// Special case: title classes
-		if ( substr( $classKey, 0, 3 ) == 'WT:' ) {
+		if ( substr( $resourceName, 0, 3 ) == 'WT:' ) {
 			global $wgUser;
 			// Get just the title part
-			$titleBlock = substr( $classKey, 3 );
+			$titleBlock = substr( $resourceName, 3 );
 			if ( $titleBlock[0] == '-' ) {
 				// Special case of "-" title
 				$parts = explode( '|', $titleBlock );
@@ -354,7 +354,7 @@ class jsScriptLoader {
 					$fileContents = $a->getContent() . "\n";
 					// transform the output if the file is of type css:
 					$output.= ( $ext == 'css' ) ?
-						$this->transformCssOutput( $classKey, $fileContents ) :
+						$this->transformCssOutput( $resourceName, $fileContents ) :
 						$fileContents;
 					return $output;
 				}
@@ -362,10 +362,10 @@ class jsScriptLoader {
 		}
 
 		// Deal with the classKey as a file:
-		$filePath = self::getPathFromClass( $classKey );
+		$filePath = self::getPathFromClass( $resourceName );
 
 		if( ! $filePath ) {
-			$this->errorMsg .= "\nError could not get file path: ". xml::escapeJsString( $classKey )  ."\n";
+			$this->errorMsg .= "\nError could not get file path: ". xml::escapeJsString( $resourceName )  ."\n";
 			return false;
 		}
 
@@ -382,7 +382,7 @@ class jsScriptLoader {
 				}
 				// Transform the css output if the file is css
 				$output.= ( $ext == 'css' ) ?
-					$this->transformCssOutput( $classKey, $fileContents, $filePath ) :
+					$this->transformCssOutput( $resourceName, $fileContents, $filePath ) :
 					$fileContents;
 
 				return $output;
@@ -392,14 +392,14 @@ class jsScriptLoader {
 			}
 		}
 		// If we did not return some js
-		$this->errorMsg .= "\nUnknown error in getting scriptText for key: " . xml::escapeJsString( $classKey ) . "\n";
+		$this->errorMsg .= "\nUnknown error in getting scriptText for key: " . xml::escapeJsString( $resourceName ) . "\n";
 		return false;
 	}
 
 	/**
 	 * Special function to transform css output and wrap in js call
 	 */
-	private function transformCssOutput( $classKey, $cssString , $path ='') {
+	private function transformCssOutput( $resourceName, $cssString , $path ='') {
 		global $wgScriptLoaderRelativeCss;
 		// Minify and update paths on cssString:
 		$cssOptions = array();
@@ -407,7 +407,7 @@ class jsScriptLoader {
 		// Set comments preservation based on debug state
 		$cssOptions[ 'preserveComments' ] = ( $this->debug );
 
-		// Check for the two jsScriptLoader entry points:
+		// Check for the two ResourceLoader entry points:
 		if( $wgScriptLoaderRelativeCss ) {
 			// Using the local mediaWiki entry point we should have our $wgScriptPath global
 			global $wgScriptPath;
@@ -415,9 +415,9 @@ class jsScriptLoader {
 			$cssOptions[ 'prependRelativePath' ] =  $prePendPath . dirname( $path ) . '/';
 		} else {
 			// Get the server URL
-			$serverUri = $this->getScriptLoaderUri();
+			$serverUri = $this->getResourceLoaderUri();
 
-			$cssOptions[ 'prependRelativePath' ] = str_replace('jsScriptLoader.php', '', $serverUri)
+			$cssOptions[ 'prependRelativePath' ] = str_replace('ResourceLoader.php', '', $serverUri)
 			. dirname( $path ) . '/';
 		}
 
@@ -431,7 +431,7 @@ class jsScriptLoader {
 
 		// Output Format is "javascript" return the string in an addStyleString call
 		// CSS classes should be of form mw.style.{className}
-		$cssStyleName = str_replace('mw.style.', '', $classKey );
+		$cssStyleName = str_replace('mw.style.', '', $resourceName );
 		return 'mw.addStyleString("' . Xml::escapeJsString( $cssStyleName )
 		. '", "' . Xml::escapeJsString( $cssString ) . '");' . "\n";
 	}
@@ -439,7 +439,7 @@ class jsScriptLoader {
 	/**
 	 * Get the URI of the scriptLoader
 	 */
-	private function getScriptLoaderUri() {
+	private function getResourceLoaderUri() {
 		// protocol is http or https
 		$protocol = 'http';
 		if ($_SERVER['SERVER_PORT'] == 443 || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on')) {
@@ -524,7 +524,7 @@ class jsScriptLoader {
 	 * validate classes and generate request key
 	 */
 	function postProcRequestVars(){
-		global $wgContLanguageCode, $wgScriptLoaderNamedPaths,
+		global $wgContLanguageCode, $wgResourceLoaderNamedPaths,
 		$wgStyleVersion;
 
 		// Set debug flag
@@ -560,12 +560,12 @@ class jsScriptLoader {
 
 		// Check for the requested classes
 		if ( $reqClassList ) {
-			// sanitize the class list and populate namedFileList
+			// sanitize the Resource list and populate namedFileList
 			foreach ( $reqClassList as $reqClass ) {
 				if ( trim( $reqClass ) != '' ) {
 					if ( substr( $reqClass, 0, 3 ) == 'WT:' ) {
 						$doAddWT = false;
-						// Check for special case '-' class for user-generated JS
+						// Check for special case '-' resource for user-generated JS
 						if( substr( $reqClass, 3, 1) == '-'){
 							$doAddWT = true;
 						}else{
@@ -657,7 +657,7 @@ class jsScriptLoader {
 
 		// Check for the requested classes
 		if ( $reqClassList && count( $reqClassList ) > 0 ) {
-			// Clean the class list and populate namedFileList
+			// Clean the resource list and populate namedFileList
 			foreach (  $reqClassList as $reqClass ) {
 				//do some simple checks:
 				if ( trim( $reqClass ) != '' ){
@@ -665,7 +665,7 @@ class jsScriptLoader {
 						// Wiki page requests (must end with .js):
 						$requestKey .= $reqClass;
 					}else if( substr( $reqClass, 0, 3 ) != 'WT:' ){
-						// Normal class requests:
+						// Normal resource requests:
 						$reqClass = preg_replace( "/[^A-Za-z0-9_\-\.]/", '', $reqClass );
 						$requestKey .= $reqClass;
 					}else{
@@ -719,20 +719,20 @@ class jsScriptLoader {
 	/**
 	 * Get a file path for a given class
 	 *
-	 * @param {String} $reqClass Class key to get the path for
-	 * @return path of the class or "false"
+	 * @param {String} $reqClass Resource key to get the path for
+	 * @return path of the resource or "false"
 	 */
 	public static function getPathFromClass( $reqClass ){
-		global $wgScriptLoaderNamedPaths;
-		// Make sure the class is loaded:
+		global $wgResourceLoaderNamedPaths;
+		// Make sure the resource is loaded:
 		try {
-			jsClassLoader::loadClassPaths();
+			NamedResourceLoader::loadResourcePaths();
 		} catch( Exception $e ) {
 			$this->errorMsg .= $e->getMessage() ;
 		}
 
-		if ( isset( $wgScriptLoaderNamedPaths[ $reqClass ] ) ) {
-			return $wgScriptLoaderNamedPaths[ $reqClass ];
+		if ( isset( $wgResourceLoaderNamedPaths[ $reqClass ] ) ) {
+			return $wgResourceLoaderNamedPaths[ $reqClass ];
 		} else {
 			return false;
 		}
@@ -784,19 +784,19 @@ class jsScriptLoader {
 	 * Strips debug statements:  mw.log( 'msg' );
 	 * Localizes the javascript calling the languageMsgReplace function
 	 *
-	 * @param {String} $className Name of class to be processed.
+	 * @param {String} $resourceName Name of resource to be processed.
 	 * @return processed javascript string
 	 */
-	function getLocalizedScriptText( $className ){
+	function getLocalizedScriptText( $resourceName ){
 		global $wgEnableScriptLocalization;
 
 		// Get the script text:
-		$scriptText = $this->getScriptText( $className );
+		$scriptText = $this->getResourceText( $resourceName );
 		if( !$scriptText ) {
-			// Specific error already reported in getScriptText()
+			// Specific error already reported in getResourceText()
 			return '';
 		}
-		$moduleName = jsClassLoader::getClassModuleName( $className );
+		$moduleName = NamedResourceLoader::getModuleNameForResource( $resourceName );
 		$scriptText = $this->transformScriptText( $scriptText, $moduleName );
 
 		// Return the js string unmodified if we did not transform with the localisation.
@@ -816,7 +816,7 @@ class jsScriptLoader {
 
 		// Do language swap by index:
 		if ( $wgEnableScriptLocalization ){
-			//@@NOTE getAddMessagesFromClass could identify which mode we are in and we would not need to
+			//@@NOTE getResourceMessageJS could identify which mode we are in and we would not need to
 			// try each of these search patterns in the same order as before.
 
 			// Get the mw.addMessage javascript
@@ -826,7 +826,7 @@ class jsScriptLoader {
 			// Use preg_replace_callback to avoid back-refrence substitution
 			$scriptText = preg_replace_callback(
 				self::$includeAllMsgsRegEx,
-				'jsScriptLoader::preg_addMessageJs',
+				'ResourceLoader::preg_addMessageJs',
 			 	$scriptText,
 			 	1,
 			 	$count
@@ -975,12 +975,12 @@ class jsScriptLoader {
 	 * Generates an in-line addMessege call for page output.
 	 * For use with OutputPage when the script-loader is disabled.
 	 *
-	 * @param {String} $class Name of class to get inline messages for.
+	 * @param {String} $resourceName of resource to get inline messages for.
 	 * @return in-line msg javascript text or empty string if no msgs need to be localized.
 	 */
-	function getAddMessagesFromClass( $className ) {
-		$scriptText = $this->getScriptText( $className );
-		$moduleName = jsClassLoader::getClassModuleName( $className );
+	function getResourceMessageJS( $resourceName ) {
+		$scriptText = $this->getResourceText( $resourceName );
+		$moduleName = NamedResourceLoader::getModuleNameForResource( $resourceName );
 		return $this->getAddMessagesFromScriptText( $scriptText, $moduleName );
 	}
 
@@ -1005,7 +1005,7 @@ class jsScriptLoader {
 	/**
 	 * Get the set of message associated from scriptText
 	 *
-	 * @param {String} $className Class to restive msgs from
+	 * @param {String} $resourceName Resource to restive messages from
 	 * @return {Array} decoded json array of message key value pairs
 	 */
 	function getMsgKeysFromScriptText( & $scriptString , $moduleName){
@@ -1102,7 +1102,7 @@ class jsScriptLoader {
 }
 
 /*
- *  A simple version of HTMLFileCache so that the scriptLoader can operate stand alone
+ *  A simple version of HTMLFileCache so that the resourceLoader can operate stand alone
  */
 class simpleFileCache {
 	var $mFileCache;
@@ -1162,7 +1162,7 @@ class simpleFileCache {
 	 * Loads and outputs the file from the file cache
 	 */
 	public function outputFile() {
-		if ( jsScriptLoader::clientAcceptsGzip() && substr( $this->filename, -3 ) == '.gz'  ) {
+		if ( ResourceLoader::clientAcceptsGzip() && substr( $this->filename, -3 ) == '.gz'  ) {
 			header( 'Content-Encoding: gzip' );
 			readfile( $this->filename );
 			return true;

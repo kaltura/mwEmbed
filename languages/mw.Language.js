@@ -70,7 +70,7 @@
 	mw.loadClassMessages = function( className, callback ) {		
 		// Check if wgScriptLoaderPath is set ( else guess the path relative to mwEmbed)
 		if ( typeof wgScriptLoaderLocation == 'undefined' || ! wgScriptLoaderLocation ){
-			wgScriptLoaderLocation = mw.getMwEmbedPath() + 'jsScriptLoader.php';
+			wgScriptLoaderLocation = mw.getMwEmbedPath() + 'ResourceLoader.php';
 		}
 		// Run the addMessages script-loader call
 		mw.getScript( wgScriptLoaderLocation + '?class=' + className + '&format=messages', callback);		

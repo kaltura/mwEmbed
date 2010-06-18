@@ -22,59 +22,60 @@ mw.SmilLayout.prototype = {
 		// Reset the htmlDOM cache
 		this.$rootLayout = null;
 	},	
-		
-	getHtmlDOM: function( size , time, callback ){
-		var _this = this;
-		mw.log("SmilLayout:: getHtmlDOM:: " + size.width + ' time: ' + time ); 
-		// Setup target Size: 
-		this.targetWidth = size.width;
-		this.targetHeight = size.height;
-		
-		if( !time ) {
-			time = 0;
-		}
-		
-		// Get the root layout HTML and  append the html regions
-		this
-			.getRootLayoutHtml()
-			.appendHtmlRegions()
-
-		// Get all the draw elements from the body this time: 
-		var drawElements = this.smil.getBody().getElementForTime( time );
-		
-		mw.log(" got " + drawElements.length + " drawElements" );
-		
-		
-		// Reset the media loaded flag
-		if( _this.mediaLoadingCount != 0 ) {
-			mw.log( "Error: media still loading, possible stacking seeking requests?" );
-			_this.mediaLoadingCount = 0;
-		}
-		
-		// Set the media loaded callback
-		if( callback ) {
-			_this.mediaLoadedCallback = callback;
-		}
-		
-		// Draw layout
-		$j.each( drawElements , function(inx, smilElement ) {
-			_this.drawElement( smilElement, time );
-		} )		
-		
+	
+	/**
+	* get Html DOM
+	*/
+	getHtml: function(){
+		var _this = this;		
 				
-		return this.$rootLayout;
-	},
+		// Setup target Size: 
+		this.targetWidth = this.smil.embedPlayer.getWidth();
+		this.targetHeight = this.smil.embedPlayer.getHeight();		
 		
-	// Draw the element 
-	drawElement: function( smilElement, time ) {		
+		mw.log("SmilLayout:: getHtml:: " + this.targetWidth  );
+										
+		return this.getRootLayout();
+	},
+	
+	getRootLayout: function(){
+		var _this = this;
+		mw.log( "SmilLayout::getRootLayout:" );  
+		if( !this.$rootLayout ){
+			this.$rootLayout = $j('<div />' )
+					.attr('rel', 'root-layout' )
+					.css( {
+						'position': 'absolute',
+						'width' : '100%',
+						'height' : '100%'
+					});
+				
+			// Update the root layout css 
+			this.$rootLayout.css( _this.getRootLayoutCss() )
+			// Update the root layout html
+			this.$rootLayout.html( _this.getRootLayoutHtml() );
+		}
+		return this.$rootLayout;	
+	},
+	
+	/**
+	* drawElement smilElement
+	*/ 
+	drawElement: function( smilElement, time ) {
 		var _this = this;
 		var regionId =  $j( smilElement ).attr( 'region');
-		var nodeName = $j( smilElement ).get(0).nodeName ;		
+		var nodeName = $j( smilElement ).get(0).nodeName ;	
+			
 		mw.log("Draw: " + nodeName + ' into ' + regionId );
+		var $regionTarget =  this.$rootLayout.find( '#' + regionId );
 		// Check for region target in $rootLayout
-		if( this.$rootLayout.find( '#' + regionId ).length == 0 ) {
+		if( $regionTarget.length == 0 ) {
 			mw.log( "Error Could not find region:" + regionId + " for " + nodeName);
 			return ;
+		}
+		// Check that the element does not already exist
+		if( $j( smilElement ).attr('id') && $regionTarget.find( '#' + $j( smilElement ).attr('id') ) ){
+			mw.log( "Error:: SmilLayout draw element that is already present: "  +  $j( smilElement ).attr('id') );
 		}
 		
 		// Append the transformed Smil to its target region
@@ -85,6 +86,7 @@ mw.SmilLayout.prototype = {
 	
 	/**
 	 * Get the transformed smil element in html format
+	 * @param 
 	 */
 	getSmilElementHtml: function ( smilElement, time ) {
 		var nodeName = $j( smilElement ).get(0).nodeName ;
@@ -99,8 +101,32 @@ mw.SmilLayout.prototype = {
 		}	
 		mw.log( "Error: Could not find smil layout transform for element type: " + nodeName );
 		return $j('<span />')
-					.text( 'Error: unkown type:' + nodeName );
+					.text( 'Error: unknown type:' + nodeName );
 	},
+	
+	/**
+	* Updates all the active elements for a given time
+	* @param time the requested time to be updated. 
+	* @param deltaTarget if a delta target is supplied we add a css animation transform for that delta    
+	*/	
+	updateSmilTime: function( time, deltaTarget ){
+		// for every active element tranform per time request
+		
+		// 
+	},
+	
+	/**
+	* Update SmilBuffer
+	* updates the buffer percentage for the entire clip set 
+	* ( mw.SmilBuffer )  
+	*/
+	
+	/**
+	* buffered callback 
+	* utility function to run a callback once a given buffer time
+	* has been reached.
+	* ( mw.SmilBuffer )  
+	*/
 	
 	/**
 	 * Get a text element per given time
@@ -218,7 +244,7 @@ mw.SmilLayout.prototype = {
 	},
 	
 	/**
-	 *  Parse pan zoom attribute string 
+	 * Parse pan zoom attribute string 
 	 * @param panZoomString
 	 */
 	parsePanZoom: function( panZoomString ){
@@ -238,10 +264,11 @@ mw.SmilLayout.prototype = {
 	/**
 	* Add all the regions to the root layout 
 	*/
-	appendHtmlRegions: function(){
-		var _this = this;		
+	getRootLayoutHtml: function(){
+		var _this = this;
+		var $layoutContainer = $j( '<div />' );
 		this.$dom.find( 'region' ).each( function( inx, regionElement ) {			
-			_this.$rootLayout.append( 
+			$layoutContainer.append( 
 				$j( '<div />' )
 				.attr('rel', 'region' )
 				.css( 'position', 'absolute' )
@@ -255,22 +282,14 @@ mw.SmilLayout.prototype = {
 				)
 			);							
 		});		
-		return this;
+		return $layoutContainer.children();
 	},
 	
 	/**
 	* Get the root layout object with updated html properties 
 	*/	
-	getRootLayoutHtml: function(){
-		// Set the in
-		this.$rootLayout = $j('<div />' )
-						.attr('rel', 'root-layout' )
-						.css( {
-							'position': 'absolute',
-							'width' : '100%',
-							'height' : '100%'
-						});
-						
+	getRootLayoutCss: function( ){
+			
 		if( this.$dom.find( 'root-layout').length ) {			
 			if( this.$dom.find( 'root-layout').length > 1 ) {
 				mw.log( "Error document should only contain one root-layout element" );
@@ -292,10 +311,10 @@ mw.SmilLayout.prototype = {
 			$j.extend( rootLayoutCss, this.transformSizeToTarget() );
 			
 			// Update the layout css			
-			this.$rootLayout.css( rootLayoutCss );			
+			return rootLayoutCss;			
 		}
-		
-		return this;
+		mw.log("Error: SmilLayout, could not find root-layout element " ) ;
+		return {};
 	},
 	
 	/**

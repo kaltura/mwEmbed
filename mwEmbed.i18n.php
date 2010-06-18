@@ -276,6 +276,10 @@ $messages['gsw'] = array(
 	'mwe-load-drag-item' => 'Am Lade vu mitgschleipfte Poschte',
 	'mwe-ok' => 'OK',
 	'mwe-cancel' => 'Abbräche',
+	'mwe-enable-gadget' => 'D Beta-Version vum  Multimedia-Heälferli (mwEmbed) fir alli Syte aktiviere',
+	'mwe-enable-gadget-done' => 'Beta-Version vum Multimedia-Hälferli isch aktiviert wore',
+	'mwe-must-login-gadget' => 'Go s Hälferli aktiviere chenne, muesch di <a target="_new" href="$1">aamälde</a>',
+	'mwe-test-plural' => '{{PLURAL:$1|$1 Tescht|$1 Tescht}} uusgfiert',
 );
 
 /** Hebrew (עברית)
@@ -551,6 +555,14 @@ $messages['sr-ec'] = array(
 	'mwe-ok' => 'ОК',
 	'mwe-cancel' => 'Поништи',
 	'mwe-test-plural' => 'Покренуо/ла сам {{PLURAL:$1|$1 тест|$1 тестова}}',
+);
+
+/** Serbian Latin ekavian (Srpski (latinica)) */
+$messages['sr-el'] = array(
+	'mwe-loading_txt' => 'Učitavanje ...',
+	'mwe-ok' => 'OK',
+	'mwe-cancel' => 'Poništi',
+	'mwe-test-plural' => 'Pokrenuo/la sam {{PLURAL:$1|$1 test|$1 testova}}',
 );
 
 /** Swedish (Svenska)

@@ -2,7 +2,7 @@
 * Clip edit loader:
 */
 
-mw.addClassFilePaths( {
+mw.addResourcePaths( {
 	"mw.ClipEdit" : "mw.ClipEdit.js",
 	"mw.style.ClipEdit" : "css/mw.style.ClipEdit.css",
 	"$j.fn.ColorPicker"	: "colorpicker/js/colorpicker.js",

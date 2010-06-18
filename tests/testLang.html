@@ -79,7 +79,7 @@ mw.ready( function(){
 			
 			function doLangTest(){
 				// Get the current language mw.testLang js
-				$j.getScript( '../../../mwScriptLoader.php?class=mw.testLang&debug=true&uselang='+langKey, function(){						
+				$j.getScript( '../../../mwResourceLoader.php?class=mw.testLang&debug=true&uselang='+langKey, function(){						
 					var o='';
 					o+='<tr><td colspan="6" height="20" style="font-size:large"><b>Lang:' + langKey + '</b></td></tr>';		
 					//now for each langage msg: 

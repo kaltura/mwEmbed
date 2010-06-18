@@ -68,7 +68,7 @@
 	} );
 
 	// Add class file paths 
-	mw.addClassFilePaths( {
+	mw.addResourcePaths( {
 		"mw.EmbedPlayer"	: "mw.EmbedPlayer.js",
 		
 		"mw.EmbedPlayerKplayer"	: "mw.EmbedPlayerKplayer.js",
@@ -228,9 +228,7 @@
 				$j( '.videonojs' ).remove();				
 				
 				// Detect supported players:  
-				mw.EmbedTypes.init();		
-				
-				//mw.log(" run callback: " + callback );
+				mw.EmbedTypes.init();				
 							
 				// Run the callback with name of the module  
 				if( typeof callback == 'function' )	{

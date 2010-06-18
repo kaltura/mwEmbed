@@ -1,7 +1,7 @@
 /*
 * Sequencer loader
 */
-mw.addClassFilePaths( {
+mw.addResourcePaths( {
 	
 	"mw.Sequencer"			: "mw.Sequencer.js",
 	"mw.SeqRemoteSearchDriver" : "mw.SeqRemoteSearchDriver.js",	

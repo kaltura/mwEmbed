@@ -53,8 +53,7 @@ var mwEnabledModuleList = [
 	'TimedText',
 	'SmilPlayer',
 	'MediaRss',
-	'SwarmTransport',
-	'KalturaSupport'
+	'SwarmTransport'
 ];
 
 /**
@@ -129,14 +128,14 @@ mw.setConfig( 'loaderContext', '' );
 /**
  * Core set of mwEmbed classes:
  */
-mw.addClassFilePaths( {
+mw.addResourcePaths( {
 	"mwEmbed"				: "mwEmbed.js",
 	"window.jQuery"			: "libraries/jquery/jquery-1.4.2.js",		
 	
 	"mw.Language"			: "languages/mw.Language.js",
 	"mw.Parser"				: "languages/mw.Parser.js",
 
-	"JSON" : "libraries/json/json2.js",
+	"JSON" 					: "libraries/json/json2.js",
 
 	"$j.replaceText.js"		: "libraries/jquery/plugins/jquery.replaceText.js",
 	

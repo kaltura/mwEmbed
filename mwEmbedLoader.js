@@ -6,19 +6,22 @@
 * http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
 */
 
-var kURID = '1.1p';
+var kURID = '1.1q';
 // Static script loader url: 
-var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/jsScriptLoader.php';
+var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = '../mwEmbed/jsScriptLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 
 // Define mw
 window['mw'] = {};
+
+// Define the dom ready flag
+var kAlreadyRunDomReadyFlag = false;
 
 // Setup preMwEmbedReady queue
 if( !preMwEmbedReady ){
@@ -28,6 +31,8 @@ if( !preMwEmbedReady ){
 if( !mw.ready){
 	mw.ready = function( fn ){
 		preMwEmbedReady.push( fn );
+		// Check if mw.ready was called after the dom is ready:
+		kCheckAddScript();
 	}
 }
 // Setup a preMwEmbedConfig var
@@ -49,7 +54,7 @@ if( !mw.setConfig ){
 // Check dom for kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
 kRanDomReadyFlag = false;
-function kDomReady(){
+function kCheckAddScript(){
 	if( kRanDomReadyFlag ){
 		return ;
 	}
@@ -147,10 +152,9 @@ function kAddScript(){
 /**
 * DOM-ready setup ( similar to jQuery.ready )  
 */
-var kAlreadyRunDomReadyFlag = false;
 function kRunMwDomReady(){
 	kAlreadyRunDomReadyFlag  = true;
-	kDomReady();
+	kCheckAddScript();
 }
 // Check if already ready: 
 if ( document.readyState === "complete" ) {

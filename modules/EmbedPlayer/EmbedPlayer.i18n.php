@@ -86,6 +86,7 @@ $messages['af'] = array(
 	'mwe-embedplayer-ogg-player-flowplayer' => 'Flowplayer',
 	'mwe-embedplayer-ogg-player-selected' => '(gekies)',
 	'mwe-embedplayer-ogg-player-omtkplayer' => 'OMTK Flash Vorbis',
+	'mwe-embedplayer-playerSelect' => '',
 	'mwe-embedplayer-embed_site_or_blog' => 'Voeg by jou webblad of webjoernaal',
 );
 
@@ -302,6 +303,13 @@ $messages['de'] = array(
 	'mwe-embedplayer-video-ogg' => 'Ogg-Video',
 	'mwe-embedplayer-video-audio' => 'Ogg-Audiodatei',
 	'mwe-embedplayer-missing-source' => 'Es konnte kein Videoclip gefunden werden. Prüfe ob der von dir eingebettete Code eine Quelle und/ oder einen API-Schlüssel enthält',
+);
+
+/** German (formal address) (Deutsch (Sie-Form))
+ * @author Kghbln
+ */
+$messages['de-formal'] = array(
+	'mwe-embedplayer-missing-source' => 'Es konnte kein Videoclip gefunden werden. Prüfen Sie ob der von Ihnen eingebettete Code eine Quelle und/ oder einen API-Schlüssel enthält',
 );
 
 /** Zazaki (Zazaki) */
@@ -1149,7 +1157,7 @@ $messages['mk'] = array(
 	'mwe-embedplayer-loading_plugin' => 'Го вчитувам приклучокот...',
 	'mwe-embedplayer-select_playback' => 'Постави изведбени нагодувања',
 	'mwe-embedplayer-link_back' => 'Обратна врска',
-	'mwe-embedplayer-error_swap_vid' => 'Грешка: mwEmbed не можеше да ја смени видео-ознаката за mwEmbed интерфејсот',
+	'mwe-embedplayer-error_swap_vid' => 'Грешка: mwEmbed не можеше да ја смени видео-ознаката за mwEmbed-посредникот',
 	'mwe-embedplayer-add_to_end_of_sequence' => 'Додај на крајот од низата',
 	'mwe-embedplayer-missing_video_stream' => 'Видео-податотеката за овој канал недостасува',
 	'mwe-embedplayer-play_clip' => 'Пушти снимка',
@@ -1323,6 +1331,45 @@ Via <a href="http://commons.wikimedia.org/wiki/Commons:Hulp_voor_mediabestanden"
 	'mwe-embedplayer-missing-source' => 'Er is geen bronvideo gevonden. Controleer uw of inbeddingdcode een API-sleutel bevat',
 );
 
+/** Norwegian (bokmål)‬ (‪Norsk (bokmål)‬)
+ * @author Nghtwlkr
+ */
+$messages['no'] = array(
+	'mwe-embedplayer-credit-title' => 'Tittel: $1',
+	'mwe-embedplayer-play_clip' => 'Spill av klipp',
+	'mwe-embedplayer-pause_clip' => 'Paus klipp',
+	'mwe-embedplayer-volume_control' => 'Volumkontroll',
+	'mwe-embedplayer-player_fullscreen' => 'Fullskjerm',
+	'mwe-embedplayer-next_clip_msg' => 'Spill av neste klipp',
+	'mwe-embedplayer-prev_clip_msg' => 'Spill av forrige klipp',
+	'mwe-embedplayer-current_clip_msg' => 'Fortsett å spille av dette klippet',
+	'mwe-embedplayer-seek_to' => 'Søk $1',
+	'mwe-embedplayer-paused' => 'pauset',
+	'mwe-embedplayer-download_right_click' => 'For å laste ned, høyreklikk og velg <i>Lagre lenke som...</i>',
+	'mwe-embedplayer-download_clip' => 'Last ned video',
+	'mwe-embedplayer-download_text' => 'Last ned tekst (<a style="color:white" title="cmml" href="http://wiki.xiph.org/index.php/CMML">CMML</a> xml):',
+	'mwe-embedplayer-download' => 'Last ned',
+	'mwe-embedplayer-share' => 'Del',
+	'mwe-embedplayer-choose_player' => 'Velg videospiller',
+	'mwe-embedplayer-no-player' => 'Ingen spiller tilgjengelig for $1',
+	'mwe-embedplayer-share_this_video' => 'Del denne videoen',
+	'mwe-embedplayer-menu_btn' => 'Meny',
+	'mwe-embedplayer-close_btn' => 'Lukk',
+	'mwe-embedplayer-ogg-player-vlc-player' => 'VLC-spiller',
+	'mwe-embedplayer-ogg-player-oggNative' => 'HTML5 Ogg-spiller',
+	'mwe-embedplayer-ogg-player-h264Native' => 'HTML5 H.264-spiller',
+	'mwe-embedplayer-ogg-player-quicktime-activex' => 'QuickTime ActiveX',
+	'mwe-embedplayer-ogg-player-kplayer' => 'Kaltura-spiller',
+	'mwe-embedplayer-ogg-player-omtkplayer' => 'OMTK Flash Vorbis',
+	'mwe-embedplayer-for_best_experience' => 'For en bedre opplevelse av videoavspillingen anbefaler vi <b><a href="http://www.mozilla.com/en-US/firefox/upgrade.html?from=mwEmbed">den nyeste Firefox</a>.</b>',
+	'mwe-embedplayer-playerSelect' => 'Spillere',
+	'mwe-embedplayer-copy-code' => 'Kopier kode',
+	'mwe-embedplayer-video-h264' => 'H.264-video',
+	'mwe-embedplayer-video-flv' => 'Flash-video',
+	'mwe-embedplayer-video-ogg' => 'Ogg-video',
+	'mwe-embedplayer-video-audio' => 'Ogg-audio',
+);
+
 /** Occitan (Occitan) */
 $messages['oc'] = array(
 	'mwe-embedplayer-loading_plugin' => 'cargament del plugin ...',
@@ -1412,6 +1459,14 @@ $messages['pl'] = array(
 	'mwe-embedplayer-do_not_warn_again' => 'Od teraz ignoruj.',
 	'mwe-embedplayer-embed_site_or_blog' => 'Umieść na swojej stronie lub blogu',
 	'mwe-embedplayer-related_videos' => 'Podobne filmy',
+);
+
+/** Pashto (پښتو)
+ * @author Ahmed-Najib-Biabani-Ibrahimkhel
+ */
+$messages['ps'] = array(
+	'mwe-embedplayer-download' => 'ښکته کول',
+	'mwe-embedplayer-close_btn' => 'تړل',
 );
 
 /** Portuguese (Português)
@@ -1563,6 +1618,38 @@ $messages['sk'] = array(
 	'mwe-embedplayer-do_not_warn_again' => 'Nateraz nezobrazovať',
 );
 
+/** Serbian Cyrillic ekavian (Српски (ћирилица))
+ * @author Михајло Анђелковић
+ */
+$messages['sr-ec'] = array(
+	'mwe-embedplayer-credit-title' => 'Наслов: $1',
+	'mwe-embedplayer-ogg-player-vlc-player' => 'VLC плејер',
+	'mwe-embedplayer-ogg-player-oggNative' => 'HTML5 Ogg плејер',
+	'mwe-embedplayer-ogg-player-h264Native' => 'HTML5 H.264 плејер',
+	'mwe-embedplayer-ogg-player-oggPlugin' => 'Генерички Ogg плагин',
+	'mwe-embedplayer-ogg-player-quicktime-mozilla' => 'QuickTime плагин',
+	'mwe-embedplayer-ogg-player-quicktime-activex' => 'QuickTime ActiveX',
+	'mwe-embedplayer-video-h264' => 'H.264 видео',
+	'mwe-embedplayer-video-flv' => 'Флеш видео',
+	'mwe-embedplayer-video-ogg' => 'Ogg видео',
+	'mwe-embedplayer-video-audio' => 'Ogg аудио',
+);
+
+/** Serbian Latin ekavian (Srpski (latinica)) */
+$messages['sr-el'] = array(
+	'mwe-embedplayer-credit-title' => 'Naslov: $1',
+	'mwe-embedplayer-ogg-player-vlc-player' => 'VLC plejer',
+	'mwe-embedplayer-ogg-player-oggNative' => 'HTML5 Ogg plejer',
+	'mwe-embedplayer-ogg-player-h264Native' => 'HTML5 H.264 plejer',
+	'mwe-embedplayer-ogg-player-oggPlugin' => 'Generički Ogg plagin',
+	'mwe-embedplayer-ogg-player-quicktime-mozilla' => 'QuickTime plagin',
+	'mwe-embedplayer-ogg-player-quicktime-activex' => 'QuickTime ActiveX',
+	'mwe-embedplayer-video-h264' => 'H.264 video',
+	'mwe-embedplayer-video-flv' => 'Fleš video',
+	'mwe-embedplayer-video-ogg' => 'Ogg video',
+	'mwe-embedplayer-video-audio' => 'Ogg audio',
+);
+
 /** Swedish (Svenska)
  * @author Dafer45
  */
@@ -1586,6 +1673,7 @@ $messages['sv'] = array(
 	'mwe-embedplayer-close_btn' => 'Stäng',
 	'mwe-embedplayer-ogg-player-selected' => '(vald)',
 	'mwe-embedplayer-related_videos' => 'Relaterade videos',
+	'mwe-embedplayer-seeking' => 'söker',
 );
 
 /** Telugu (తెలుగు) */
@@ -1594,6 +1682,70 @@ $messages['te'] = array(
 	'mwe-embedplayer-menu_btn' => 'మెనూ',
 	'mwe-embedplayer-close_btn' => 'మూసివేయి',
 	'mwe-embedplayer-related_videos' => 'సంబంధిత దృశ్యకాలు',
+);
+
+/** Tagalog (Tagalog)
+ * @author AnakngAraw
+ */
+$messages['tl'] = array(
+	'mwe-embedplayer-credit-title' => 'Pamagat: $1',
+	'mwe-embedplayer-loading_plugin' => 'Ikinakarga ang pampasak ...',
+	'mwe-embedplayer-select_playback' => 'Itakda ang nais sa pagpapaandar',
+	'mwe-embedplayer-link_back' => 'Ikawing pabalik',
+	'mwe-embedplayer-error_swap_vid' => 'Kamalian: hindi nagawang pagpalitin ng mwEmbed ang tatak ng bidyo para sa hangganang-mukha ng mwEmbed',
+	'mwe-embedplayer-add_to_end_of_sequence' => 'Idagdag sa huli ng sunuran',
+	'mwe-embedplayer-missing_video_stream' => 'Nawawala ang talaksan ng biyo para sa daloy na ito',
+	'mwe-embedplayer-play_clip' => 'Paandarin ang putol',
+	'mwe-embedplayer-pause_clip' => 'Ihinto ang putol',
+	'mwe-embedplayer-volume_control' => 'Pangtaban ng lakas ng tunog',
+	'mwe-embedplayer-player_options' => 'Pagpipiliang pangpampaandar',
+	'mwe-embedplayer-timed_text' => 'Tekstong inoorasan',
+	'mwe-embedplayer-player_fullscreen' => 'Buong panooran',
+	'mwe-embedplayer-next_clip_msg' => 'Paandarin ang susunod na putol',
+	'mwe-embedplayer-prev_clip_msg' => 'Paandarin ang nakaraang putol',
+	'mwe-embedplayer-current_clip_msg' => 'Ipagpatuloy ang pagpapaandar ng putol na ito',
+	'mwe-embedplayer-seek_to' => 'Hanapin ang $1',
+	'mwe-embedplayer-paused' => 'hininto',
+	'mwe-embedplayer-download_segment' => 'Ikargang pababa ang napili:',
+	'mwe-embedplayer-download_full' => 'Ikargang pababa ang buong talaksan ng bidyo:',
+	'mwe-embedplayer-download_right_click' => 'Upang maikargang paibaba, pindutin ang kanan at piliin ang <i>Sagipin ang kawing bilang...</i>',
+	'mwe-embedplayer-download_clip' => 'Ikargang pababa ang bidyo',
+	'mwe-embedplayer-download_text' => 'Ikargang paibaba ang teksto (<a style="color:white" title="cmml" href="http://wiki.xiph.org/index.php/CMML">CMML</a> xml):',
+	'mwe-embedplayer-download' => 'Ikargang pababa',
+	'mwe-embedplayer-share' => 'Ipamahagi',
+	'mwe-embedplayer-credits' => 'Mga banggit-pagkilala',
+	'mwe-embedplayer-clip_linkback' => 'Pahina ng pinagmulan ng putol',
+	'mwe-embedplayer-choose_player' => 'Piliin ang pampaandar ng bidyo',
+	'mwe-embedplayer-no-player' => 'Walang makuhang pampaandar para sa $1',
+	'mwe-embedplayer-share_this_video' => 'Ipamahagi ang bidyong ito',
+	'mwe-embedplayer-video_credits' => 'Mga banggit-pagkilala ng bidyo',
+	'mwe-embedplayer-kaltura-platform-title' => 'Plataporma ng bukas na pinagmulan ng bidyo ng Kaltura',
+	'mwe-embedplayer-menu_btn' => 'Putahe',
+	'mwe-embedplayer-close_btn' => 'Isara',
+	'mwe-embedplayer-ogg-player-vlc-player' => 'Pampaandar ng VLC',
+	'mwe-embedplayer-ogg-player-oggNative' => 'Pampaandar ng HTML5 Ogg',
+	'mwe-embedplayer-ogg-player-h264Native' => 'Pampaandar ng HTML5 H.264',
+	'mwe-embedplayer-ogg-player-oggPlugin' => 'Panlahatang pamasak ng Ogg',
+	'mwe-embedplayer-ogg-player-quicktime-mozilla' => 'Pampasak ng QuickTime',
+	'mwe-embedplayer-ogg-player-quicktime-activex' => 'ActiveX ng QuickTime',
+	'mwe-embedplayer-ogg-player-flowplayer' => 'Pampaandar na Flowplayer',
+	'mwe-embedplayer-ogg-player-kplayer' => 'Pampaandar ng Kaltura',
+	'mwe-embedplayer-ogg-player-selected' => '(napili na)',
+	'mwe-embedplayer-ogg-player-omtkplayer' => 'OMTK Flash Vorbis',
+	'mwe-embedplayer-generic_missing_plugin' => 'Parang hindi tinatangkilik ng pantingin-tingin mo ang sumusunod na mga uri ng pampaandar: <b>$1</b><br />Dalawin ang pahina ng <a href="http://commons.wikimedia.org/wiki/Commons:Media_help">Mga paraan ng pagpapaandar</a> upang makapagkargang paibaba ng isang pampaandar.<br />',
+	'mwe-embedplayer-for_best_experience' => 'Para sa mas mainam na karanasan ng pagpapaandar ng bidyo iminumungkahi namin ang <b><a href="http://www.mozilla.com/en-US/firefox/upgrade.html?from=mwEmbed">pinakabagong Firefox</a>.</b>',
+	'mwe-embedplayer-do_not_warn_again' => 'Balewalain muna sa ngayon.',
+	'mwe-embedplayer-playerSelect' => 'Mga pampaandar',
+	'mwe-embedplayer-read_before_embed' => '<a href="http://mediawiki.org/wiki/Security_Notes_on_Remote_Embedding" target="_new">Basahin ito</a> bago ibaon.',
+	'mwe-embedplayer-embed_site_or_blog' => 'Ibaon sa isang pahina',
+	'mwe-embedplayer-related_videos' => 'Kaugnay na mga bidyo',
+	'mwe-embedplayer-seeking' => 'hinahanap',
+	'mwe-embedplayer-copy-code' => 'Kopyahin ang kodigo',
+	'mwe-embedplayer-video-h264' => 'Bidyong H.264',
+	'mwe-embedplayer-video-flv' => 'Bidyong kisap',
+	'mwe-embedplayer-video-ogg' => 'Bidyong Ogg',
+	'mwe-embedplayer-video-audio' => 'Tunog na Ogg',
+	'mwe-embedplayer-missing-source' => 'Walang natagpuang pinagmulang bidyo.  Suriin kung ang iyong kodigo ng pagbaon ay may isang pinagmulan o susing API',
 );
 
 /** Turkish (Türkçe) */

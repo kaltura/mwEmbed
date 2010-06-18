@@ -28,7 +28,7 @@ $wgScriptPath = '';
 $wgUseFileCache = true;
 
 // Named paths for the script loader
-$wgScriptLoaderNamedPaths = array();
+$wgResourceLoaderNamedPaths = array();
 
 //If the scriptLoader should use relative css
 $wgScriptLoaderRelativeCss = false;
@@ -66,7 +66,7 @@ $wgDirectoryMode = 0777;
 $wgJsMimeType = 'text/javascript';
 
 // Get the autoload classes
-require_once( realpath( dirname( __FILE__ ) ) . '/jsClassLoader.php' );
+require_once( realpath( dirname( __FILE__ ) ) . '/NamedResourceLoader.php' );
 
 // Get the JSmin class:
 require_once( realpath( dirname( __FILE__ ) ) . '/library/JSMin.php' );

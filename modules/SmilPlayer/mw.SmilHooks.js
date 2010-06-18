@@ -31,14 +31,13 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {
 									
 	// Setup the "embedCode" binding to swap in an updated url
 	$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
-		mw.log(" smil enter checkPlayerSources");
+		mw.log( " smil enter checkPlayerSources" );
 		// Get the first smil source: 
-		mw.log(" SOURCE IS: " + embedPlayer.mediaElement.getSources( 'application/smil' )[0].getSrc() );
-		embedPlayer.smil = new mw.Smil();
+		mw.log( "Source is: " + embedPlayer.mediaElement.getSources( 'application/smil' )[0].getSrc() );
+		embedPlayer.smil = new mw.Smil( embedPlayer );
 		
 		// Load the smil url as part of "source check"
 		embedPlayer.smil.loadFromUrl(  embedPlayer.mediaElement.getSources( 'application/smil' )[0].getSrc(), function(){
-			mw.log(" DONE LOAING SMIL FROM UDL");
 			callback(); 
 		});
 	} );

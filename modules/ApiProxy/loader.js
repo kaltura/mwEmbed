@@ -1,6 +1,6 @@
 /* apiProxy Loader */
 
-mw.addClassFilePaths( {
+mw.addResourcePaths( {
 	"mw.ApiProxy"	: "mw.ApiProxy.js"
 } );
 

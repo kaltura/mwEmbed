@@ -194,7 +194,7 @@ mw.PlayerSkinKskin = {
 	* Close the menu overlay
 	*/
 	closeMenuOverlay: function( ) {
-		mw.log(" close menu overlay" );			
+		mw.log("PlayerSkin: close menu overlay" );			
 		
 		var $optionsMenu = this.$playerTarget.find( '.k-options' );
 		var $kmenu = this.$playerTarget.find( '.k-menu' );

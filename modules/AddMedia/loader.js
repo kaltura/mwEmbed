@@ -9,7 +9,7 @@
 	});
 	
 	// Add class file paths ( From ROOT )
-	mw.addClassFilePaths( {
+	mw.addResourcePaths( {
 		"$j.fn.dragDropFile"	: "jquery.dragDropFile.js",
 			
 		"mw.UploadForm"			: "mw.UploadForm.js",

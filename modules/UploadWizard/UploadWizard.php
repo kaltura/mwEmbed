@@ -46,7 +46,7 @@ $wgAutoloadLocalClasses[ 'SpecialUploadWizard' ] = $dir . 'SpecialUploadWizard.p
 $wgSpecialPages['UploadWizard'] = 'SpecialUploadWizard';
 $wgSpecialPageGroups['UploadWizard'] = 'media';
 
-$wgScriptLoaderNamedPaths[ 'UploadWizardPage' ] = 'extensions/UploadWizard/UploadWizardPage.js';
+$wgResourceLoaderNamedPaths[ 'UploadWizardPage' ] = 'extensions/UploadWizard/UploadWizardPage.js';
 
 // Set up the javascript path for the loader and localization file.
 $wgExtensionJavascriptModules[ 'UploadWizard' ] = 'extensions/UploadWizard';

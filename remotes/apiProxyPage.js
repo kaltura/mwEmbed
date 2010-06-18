@@ -20,6 +20,7 @@ var mwApiProxyDefaultConfig = {
 	'master_whitelist' 	: [ 
 		'en.wikipedia.org', 
 		'commons.wikimedia.org', 
+		'usability.wikimedia.org',
 		'prototype.wikimedia.org', 
 		'localhost', 
 		'127.1.1.100' 

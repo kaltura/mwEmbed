@@ -2,47 +2,95 @@
  * The smil body also see: 
  * http://www.w3.org/TR/2008/REC-SMIL3-20081201/smil-structure.html#edef-body
  */
-mw.SmilBody = function( $body ){
-	return this.init( $body );
+mw.SmilBody = function( smilObject ){
+	return this.init( smilObject );
 }
 
 mw.SmilBody.prototype = {
 		
-	// Used to store elements for getElementForTime method 
+	// Used to store elements for getElementsForTime method 
 	elementsInRange: [],
+	
+	// Index of auto assigned ids
+	idIndex : 0,
 	
 	// Constructor: 
 	init: function( smilObject ){		
 		this.smil = smilObject;
 		this.$dom = this.smil.getDom().find( 'body' );
+		
+		// Assign ids to smil body elements
+		this.assignIds( this.$dom );
+	},
+	
+	/**
+	* Assigns body smil elements id (for content that has a html representation "ref" & "smilText" ) 
+	*	( enables fast sync between smilDom and htmlDom )  
+	*/
+	assignIds: function( $node ) {
+		var _this = this;
+		if( !$node.attr('id')
+			&& !$node.attr( 'xml:id' )
+			&& ( 
+				_this.getNodeSmilType( $node ) == 'ref'
+				|| _this.getNodeSmilType( $node ) == 'smilText'
+			)
+		){			
+			$node.attr('id', _this.smil.embedPlayer.id + '_ref_' + _this.idIndex );
+			mw.log('SmilBody:: gave: ' + $node.get(0).nodeName + ' id: ' + $node.attr('id') );
+			_this.idIndex++;
+		}
+		
+		// Recurse to all the nodes children 
+		if( $node.children().length ) {	
+			$node.children().each( function( inx, childNode ){
+				_this.assignIds( $j( childNode ) );
+			});
+		}
+	},
+	
+	/**
+	* Render the body elements for a given time, use layout engine to draw elements 
+	*/
+	renderTime: function( time ){
+		var _this = this;
+		// Get all the draw elements from the body this time: 
+		var drawElements = this.getElementsForTime( time );		
+		mw.log(" got " + drawElements.length + " drawElements" );
+						
+		// Render the active elements using the layout engine		
+		$j.each( drawElements , function(inx, smilElement ) {
+			_this.smil.getLayout().drawElement( smilElement, time );
+		} )		
 	},
 	
 	/**
 	 * Gets all the elements for a given time. 
 	 * 
 	 */ 
-	getElementForTime: function ( time ) {
+	getElementsForTime: function ( time ) {
 		var startOffset = 0;
-		if( !time )
+		if( !time ) {
 			time =0;
+		}
 		// Empty out the requested element set: 
 		this.elementsInRange = [];
-		this.getElementForTimeRecurse( this.$dom, time, startOffset);
+		this.getElementsForTimeRecurse( this.$dom, time, startOffset);
 		return this.elementsInRange;
 	},	
 	
 	/**
-	 * getElementForTimeRecurse
+	 * getElementsForTimeRecurse
 	 * @param {Object} $node NOde to recursively search for elements in the given time range
 	 */ 
-	getElementForTimeRecurse: function( $node, time, startOffset){
+	getElementsForTimeRecurse: function( $node, time, startOffset){
 		// Setup local pointers:
 		var nodeDuration = this.getNodeDuration( $node );
 		var nodeType = this.getNodeSmilType( $node );
 		var nodeParentType = this.getNodeSmilType( $node.parent() );		
 		var _this = this;
 		
-		mw.log( "getElementForTimeRecurse::" + 
+		mw.log( "getElementsForTimeRecurse::" + 
 			' time: ' + time  + 
 			' nodeName: ' + $j( $node ).get(0).nodeName +
 			' nodeType: ' + nodeType + 
@@ -67,7 +115,7 @@ mw.SmilBody.prototype = {
 			if( $node.children().length ) {	
 				$node.children().each( function( inx, childNode ){
 					mw.log(" recurse:: startOffset:" + nodeType  + ' start offset:' + startOffset );
-					var childDur = _this.getElementForTimeRecurse( $j( childNode ), time, startOffset);
+					var childDur = _this.getElementsForTimeRecurse( $j( childNode ), time, startOffset);
 					// If element parent is a 'seq' increment startOffset: 
 					if( nodeType == 'seq' ) {
 						mw.log(" Parent Seq:: add child dur: " + childDur );
@@ -77,15 +125,14 @@ mw.SmilBody.prototype = {
 			}			
 		}
 		
-		// If the nodeType is "ref" find the its associated transformations 
-		// add to this.elementsInRange array
+		// If the nodeType is "ref" add to this.elementsInRange array
 		if( nodeType == 'ref' || nodeType == 'smilText' ) {			
 			// Ref type get the 
 			this.elementsInRange.push( $node );
 			mw.log("Add ref to elementsInRange:: " + nodeType + " length:"  + this.elementsInRange.length);
 		}
 		
-		// Return the node Duration for startOffset updates
+		// Return the node Duration for tracking startOffset
 		return this.getNodeDuration( $node );
 	},
 	
@@ -93,7 +140,7 @@ mw.SmilBody.prototype = {
 	 * Returns the smil body duration
 	 * ( wraps getDurationRecurse to get top level duration ) 
 	 */	
-	getDuration: function(){
+	getDuration: function(){		
 		this.duration = this.getNodeDuration( this.$dom );	
 		mw.log("smilBody:: getDuration: " + this.duration );
 		return this.duration;	
