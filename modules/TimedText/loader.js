@@ -14,6 +14,10 @@ mw.addResourcePaths( {
 	"RemoteMwTimedText" : "remotes/RemoteMwTimedText.js"
 } );
 
+mw.setDefaultConfig( {
+	'TimedText.showAddTextLink' : true
+});
+
 var mwTimedTextRequestSet = [ 
 	'$j.fn.menu', 
 	'mw.TimedText',

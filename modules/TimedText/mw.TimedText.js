@@ -464,10 +464,12 @@ mw.addMessages( {
 					//$j.getLineItem( gM('mwe-timedtext-search'),  'search')
 				);
 			}
-			// Put in the "Make Transcript" link
-			$menu.append(
-				_this.getLiAddText()
-			); 
+			// Put in the "Make Transcript" link if config enabled and we have an api key
+			if( mw.getConfig( 'TimedText.showAddTextLink' ) && _this.embedPlayer.apiTitleKey ){
+				$menu.append(
+					_this.getLiAddText()
+				); 
+			}
 			
 										
 			return $menu;
