@@ -21,7 +21,7 @@
 		'kwidgetid' : null
 	} );	
 	
-	mw.addClassFilePaths( {
+	mw.addResourcePaths( {
 		"mw.KEntryIdSupport" : "mw.KEntryIdSupport.js",
 		"mw.KAnalytics" : "mw.KAnalytics.js",
 		"mw.KPlaylist"	: "mw.KPlaylist.js", 
