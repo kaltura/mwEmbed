@@ -1749,20 +1749,22 @@ mw.EmbedPlayer.prototype = {
 	selectPlayer: function( player ) {		
 		var _this = this;
 		if ( this.selectedPlayer.id != player.id ) {
-			this.selectedPlayer = player;			
-			this.inheritEmbedPlayer(function(){
-				_this.controlBuilder.showControlBar();
+			this.selectedPlayer = player;					
+			this.inheritEmbedPlayer( function(){
 				// We have to re-bind hoverIntent ( has to happen in this scope )
-				_this.$interface.hoverIntent({
-					'sensitivity': 4,
-					'timeout' : 2000,
-					'over' : function(){										
-						_this.controlBuilder.showControlBar();
-					},
-					'out' : function(){
-						_this.controlBuilder.hideControlBar();
-					}
-				})		
+				if( _this.controls && _this.controlBuilder.checkOverlayControls() ){
+					_this.controlBuilder.showControlBar();				
+					_this.$interface.hoverIntent({
+						'sensitivity': 4,
+						'timeout' : 2000,
+						'over' : function(){										
+							_this.controlBuilder.showControlBar();
+						},
+						'out' : function(){
+							_this.controlBuilder.hideControlBar();
+						}
+					})
+				}		
 			});			
 		}
 	},		

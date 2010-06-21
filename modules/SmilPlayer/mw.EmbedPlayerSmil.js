@@ -31,17 +31,32 @@ mw.EmbedPlayerSmil = {
 	doEmbedPlayer: function() {
 		var _this = this;
 		mw.log("EmbedPlayerSmil::doEmbedPlayer: " + this.id ) ;
-		
-		// Set "loading" spinner here) 
-		 
-		// Update the embed player by rending time zero: 
-		this.getSmil( function( smil ){				
-			mw.log("EmbedPlayer:: smil loaded " );
-			// Render the first frame	
-			smil.renderTime( 0, function(){
-				mw.log("EmbedPlayerSmil::doEmbedPlayer:: render callback ready " ); 
+				
+		this.setCurrentTime( 0, function(){
+			mw.log("EmbedPlayerSmil::doEmbedPlayer:: render callback ready " );
+		}); 				
+	},
+	
+	/**
+	 * Seeks to the requested time and issues a callback when ready / displayed
+	 * @param {float} time Time in seconds to seek to
+	 * @param {function} callback Function to be called once currentTime is loaded and displayed 
+	 */
+	setCurrentTime: function( time, callback ) {
+		mw.log('EmbedPlayerSmil::setCurrentTime: ' + time );
+		// Set "loading" spinner here)
+		$j( this ).append(
+			$j( '<div />')
+			.attr('id', 'loadingSpinner_' + this.id )
+			.loadingSpinner()
+		);
+		var _this = this;
+		this.getSmil( function( smil ){	
+			smil.renderTime( time, function(){
+				$j('#loadingSpinner_' + _this.id ).hide();
+				callback();
 			} );
-		});					
+		});
 	},
 	
 	/**
@@ -63,8 +78,7 @@ mw.EmbedPlayerSmil = {
 			}
 			this.$renderTarget =  $j('#smilCanvas_' + this.id );
 		}
-		return this.$renderTarget;
-		
+		return this.$renderTarget;		
 	},
 	
 	play: function(){
@@ -118,14 +132,5 @@ mw.EmbedPlayerSmil = {
 		}
 		// If no thumb could be found use the first frame of smil: 
 		this.doEmbedPlayer(); 
-	},
-
-	/**
-	 * Seeks to the requested time and issues a callback when ready / displayed
-	 * @param {float} time Time in seconds to seek to
-	 * @param {function} callback Function to be called once currentTime is loaded and displayed 
-	 */
-	setCurrentTime : function( time, callback ) {
-		
 	}
 }

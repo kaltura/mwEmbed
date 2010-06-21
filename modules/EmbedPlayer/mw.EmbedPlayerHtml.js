@@ -232,7 +232,7 @@ mw.EmbedPlayerHtml = {
 		// mw.log('f:getThumbnailHTML: got thumb: '+out);
 		return out;
 	},
-	updateThumbnailHTML: function(){
+	updatePosterHTML: function(){
 		$j( this ).css( 'background', '#fff');
 		$j( this ).html( this.getThumbnailHTML() );
 	},

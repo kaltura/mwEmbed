@@ -1,4 +1,4 @@
-<layout id="full" name="player" skinPath="assets/skin.swf">
+<layout id="full" skinPath="assets/skin.swf">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
       <Canvas height="100%" width="100%" id="PlayerHolder" styleName="black">

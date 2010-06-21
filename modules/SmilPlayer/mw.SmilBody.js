@@ -55,12 +55,19 @@ mw.SmilBody.prototype = {
 	renderTime: function( time ){
 		var _this = this;
 		// Get all the draw elements from the body this time: 
-		var drawElements = this.getElementsForTime( time );		
-		mw.log(" got " + drawElements.length + " drawElements" );
-						
-		// Render the active elements using the layout engine		
-		$j.each( drawElements , function(inx, smilElement ) {
-			_this.smil.getLayout().drawElement( smilElement, time );
+		var elementList = this.getElementsForTime( time );		
+		mw.log("SmilBody::renderTime: draw " + elementList.length + " elementList" );
+								
+		$j.each( elementList , function( inx, smilElement ) {
+			// xxx need to 
+			// var relativeTime = time - smilElement.parentTimeOffset;
+			var relativeTime = time - $j( smilElement ) .data ( 'parentStartOffset' );
+			
+			// Render the active elements using the layout engine
+			_this.smil.getLayout().drawElement( smilElement, relativeTime );
+			
+			// Transform the elements per animate engine
+			_this.smil.getAnimate().transformElement( smilElement, relativeTime );
 		} )		
 	},
 	
@@ -90,6 +97,11 @@ mw.SmilBody.prototype = {
 		var nodeParentType = this.getNodeSmilType( $node.parent() );		
 		var _this = this;
 		
+		// Set startOffset to zero if not defined. 
+		if( !startOffset ) {
+			startOffset = 0;
+		}
+		
 		mw.log( "getElementsForTimeRecurse::" + 
 			' time: ' + time  + 
 			' nodeName: ' + $j( $node ).get(0).nodeName +
@@ -111,7 +123,7 @@ mw.SmilBody.prototype = {
 		}*/		
 		
 		// If 'par' or 'seq' recurse to get elements for layout
-		if( nodeType == 'par'|| nodeType == 'seq' ) {		
+		if( nodeType == 'par'|| nodeType == 'seq' ) {
 			if( $node.children().length ) {	
 				$node.children().each( function( inx, childNode ){
 					mw.log(" recurse:: startOffset:" + nodeType  + ' start offset:' + startOffset );
@@ -126,7 +138,9 @@ mw.SmilBody.prototype = {
 		}
 		
 		// If the nodeType is "ref" add to this.elementsInRange array
-		if( nodeType == 'ref' || nodeType == 'smilText' ) {			
+		if( nodeType == 'ref' || nodeType == 'smilText' ) {		
+			// Add the parent startOffset 
+			$node.data('parentStartOffset', startOffset );
 			// Ref type get the 
 			this.elementsInRange.push( $node );
 			mw.log("Add ref to elementsInRange:: " + nodeType + " length:"  + this.elementsInRange.length);
@@ -180,8 +194,8 @@ mw.SmilBody.prototype = {
 		}				
 		// Check the explicit duration attribute: 
 		if( $node.attr('dur') ) {			
-			//mw.log(" return dur: " + mw.SmilParseTime( $node.attr('dur') ) );			
-			$node.data('computedDuration', mw.SmilParseTime( $node.attr('dur') ) );
+			//mw.log(" return dur: " + mw.smil.parseTime( $node.attr('dur') ) );			
+			$node.data('computedDuration', this.smil.parseTime( $node.attr('dur') ) );
 		} else { 
 			// Else return the implictDuration ( built from its children )
 			if( $node.data( 'implictDuration' ) ){

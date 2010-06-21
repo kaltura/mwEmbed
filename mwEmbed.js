@@ -190,7 +190,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	/**
 	* Add a hook system for a target object / interface	
 	*
-	* This can be used as an alternative to heavy inheritance systems.
+	* depricated you should instead use jQuery's bind and trigger 
 	*
 	* @param {Object} targetObj Interface Object to add hook system to.   
 	*/

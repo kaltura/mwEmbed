@@ -15,14 +15,15 @@ mw.SmilBuffer.prototype = {
 	/**
 	* Runs a callback once the buffer time is ready.
 	*/
-	bufferTimeReady: function( time, callback ) {
+	timeIsBuffered: function( time, callback ) {
+		
 		// Get active body elements
 		var activeElements = this.smil.getBody().getElementsForTime( time );
 		// Check load status per temporal offset 
 		
-		// setTimeout to call self untill ready
+		// setTimeout to call self until buffer is ready
 		
-		// temp hack ( assume ready ): 
+		// temp ( assume ready ): 
 		callback();
 	}
 }

@@ -7,10 +7,10 @@
  * 
  * Sequence player wraps smil into the video tag
  * 
- * It lets you controls smil timeline like you would an html5 video tag element
+ * Provides an html5 video tag like api to a smil document. 
  *
- * It supports frame by frame rendering of "smil"
- * Its supports basic "drop frame" live playback of "smil" 
+ * Supports frame by frame rendering of "smil"
+ * Supports "drop frame" realtime playback of "smil" 
  * 
  * Extends the "embedPlayer" and represents the playlist as a single video stream
  * 
@@ -28,8 +28,11 @@ mw.Smil.prototype = {
 	// Stores the mw.SmilBody object
 	body : null,
 	
-	// Handles buffer information display elements
+	// Stores the mw.SmilBuffer object
 	buffer: null,
+	
+	// Stores the mw.SmilAnimate object  
+	animate: null, 
 	
 	// Stores the smil document for this object ( for relative image paths ) 
 	smilUrl: null,
@@ -39,7 +42,7 @@ mw.Smil.prototype = {
 	
 	/** 
 	* Constructor
-	* @param {Object} embedPlayer Refrence to the embedPlayer driving the smil object 
+	* @param {Object} embedPlayer Reference to the embedPlayer driving the smil object 
 	*/
 	init: function( embedPlayer ) {
 		mw.log(" Smil:: init with player: " +  embedPlayer.id );
@@ -98,25 +101,12 @@ mw.Smil.prototype = {
 		return ;
 	},
 	
-	/**
-	* Get the smil html at a given time 
-	* @param {object} size The target size width, height
-	* @param {float} time The target time to be displayed
-	* @param {callback} callback Function to call once layout is ready 
-	* 	( all images and videos are "ready to play" ) 
-	*/
-	getHtmlDOM: function ( size, time, callback ){		
-		mw.log("getHtmlDOM:: " + size.width + ' time: ' + time);
-
-		// Have the layout object return the layout HTML DOM					
-		return this.getLayout().getHtmlDOM( size, time );
-	},
-	
+		
 	renderTime: function( time, callback ) {
 		// Get the render target: 
 		var $renderTarget = this.embedPlayer.getRenderTarget();
 		
-		// Add the core layout ( not time based )
+		// Add the core layout ( not time based )		
 		$renderTarget.append( 
 			this.getLayout().getHtml()
 		)
@@ -125,9 +115,12 @@ mw.Smil.prototype = {
 		this.getBody().renderTime( time );
 				
 		// Wait until buffer is ready
-	    this.checkBufferTimeReady( time, callback );
+	    this.getBuffer().timeIsBuffered( time, callback );
 	},
 	
+	/**
+	* Get the smil buffer object
+	*/
 	getBuffer: function(){
 		if( ! this.buffer ) {
 			this.buffer = new mw.SmilBuffer( this ) ;
@@ -135,11 +128,14 @@ mw.Smil.prototype = {
 		return this.buffer; 
 	},
 	
-	/** 
-	 * Function called continuously to keep sync smil "in sync"
-	 */
-	syncWithTime: function( time ){
-		mw.log( 'smil sync: ' + time);
+	/**
+	* Get the animate object
+	*/ 
+	getAnimate: function(){
+		if( ! this.animate ){
+			this.animate = new mw.SmilAnimate( this );
+		}
+		return this.animate;
 	},
 	
 	/**
@@ -162,6 +158,16 @@ mw.Smil.prototype = {
 		return this.body;
 	},
 	
+	/** 
+	 * Function called continuously to keep sync smil "in sync" 
+	 * Checks buffer states... 
+	 */
+	syncWithTime: function( time ){
+		/* .. not yet implementd ... */
+		mw.log( 'smil sync: ' + time);
+	},
+	
+	
 	/**
 	 * Get the duration form the 
 	 */
@@ -175,8 +181,20 @@ mw.Smil.prototype = {
 			this.duration = this.getBody().getDuration();
 		}
 		return this.duration;		
-	}, 
-	
+	},
+	/**
+	* maps a smil element id to a html safe id 
+	* as a decendent subname of the embedPlayer parent
+	*
+	* @param {Object} smilElement Element to get id for
+	*/  
+	getAssetId: function( smilElement ){
+		if(! $j( smilElement ).attr('id') ) {
+			mw.log("Error: getAssetId smilElement missing id " ) ;
+			return false; 
+		}
+		return this.embedPlayer.id + '_' + $j( smilElement ).attr('id');
+	},
 	/**
 	* Get an absolute path to asset based on the smil URL
 	* @param {string} assetPath Path to asset to be transformed into url
@@ -185,70 +203,71 @@ mw.Smil.prototype = {
 		// Context url is the smil document url: 		
 		var contextUrl = mw.absoluteUrl( this.smilUrl );		
 		return mw.absoluteUrl( assetPath, contextUrl );
+	},
+	/**
+	 * Some Smil Utility functions
+	 */
+	
+	/** 
+	 * Parse smil time function
+	 * http://www.w3.org/TR/SMIL3/smil-timing.html#Timing-ClockValueSyntax
+	 * 
+	 * Smil time has the following structure: 
+	 *  
+	 * Clock-value         ::= ( Full-clock-value | Partial-clock-value | Timecount-value )
+	 * Full-clock-value    ::= Hours ":" Minutes ":" Seconds ("." Fraction)?
+	 * Partial-clock-value ::= Minutes ":" Seconds ("." Fraction)?
+	 * Timecount-value     ::= Timecount ("." Fraction)? (Metric)?
+	 * Metric              ::= "h" | "min" | "s" | "ms"
+	 * Hours               ::= DIGIT+ // any positive number 
+	 * Minutes             ::= 2DIGIT // range from 00 to 59 
+	 * Seconds             ::= 2DIGIT // range from 00 to 59 
+	 * Fraction            ::= DIGIT+
+	 * Timecount           ::= DIGIT+
+	 * 2DIGIT              ::= DIGIT DIGIT
+	 * DIGIT               ::= [0-9]
+	 * 
+	 * @param {mixed} timeValue time value of smil structure
+	 * @ return {float} Seconds from time value 
+	 */
+	parseTime : function( timeValue ){
+		// If timeValue is already a number return seconds: 
+		if( ! isNaN( timeValue ) ){
+			return parseFloat( timeValue );
+		}
+		// Trim whitespace
+		timeValue = $j.trim( timeValue );
+	
+		// First check for hh:mm:ss time: 
+		if ( timeValue.split( ':' ).length == 3 ||  timeValue.split( ':' ).length == 2 ) {
+			return mw.npt2seconds( timeValue );
+		}
+		
+		var timeFactor = null
+		// Check for metric hours
+		if( timeValue.substr( -1 ) == 'h' ){
+			timeFactor = 3600 ;
+		}
+		// Min metric
+		if( timeValue.substr( -3 ) == 'min' ){
+			timeFactor = 60;
+		}
+		// Seconds 
+		if( timeValue.substr( -1 ) == 's'){
+			timeFactor = 1;
+		}
+		// Millaseconds
+		if( timeValue.substr( -2 ) == 'ms'){
+			timeFactor = .001;
+		}
+		
+		if( timeFactor){
+			return parseFloat( parseFloat( timeValue ) * timeFactor );
+		}
+		mw.log("Error could not parse time: " + timeValue);
 	}
 }
-/**
- * Some Smil Utility functions
- */
 
-/** 
- * Parse smil time function
- * http://www.w3.org/TR/SMIL3/smil-timing.html#Timing-ClockValueSyntax
- * 
- * Smil time has the following structure: 
- *  
- * Clock-value         ::= ( Full-clock-value | Partial-clock-value | Timecount-value )
- * Full-clock-value    ::= Hours ":" Minutes ":" Seconds ("." Fraction)?
- * Partial-clock-value ::= Minutes ":" Seconds ("." Fraction)?
- * Timecount-value     ::= Timecount ("." Fraction)? (Metric)?
- * Metric              ::= "h" | "min" | "s" | "ms"
- * Hours               ::= DIGIT+ // any positive number 
- * Minutes             ::= 2DIGIT // range from 00 to 59 
- * Seconds             ::= 2DIGIT // range from 00 to 59 
- * Fraction            ::= DIGIT+
- * Timecount           ::= DIGIT+
- * 2DIGIT              ::= DIGIT DIGIT
- * DIGIT               ::= [0-9]
- * 
- * @param {mixed} timeValue time value of smil structure
- * @ return {float} Seconds from time value 
- */
-mw.SmilParseTime =  function( timeValue ){
-	// If timeValue is already a number return seconds: 
-	if( ! isNaN( timeValue ) ){
-		return parseFloat( timeValue );
-	}
-	// Trim whitespace
-	timeValue = $j.trim( timeValue );
-
-	// First check for hh:mm:ss time: 
-	if ( timeValue.split( ':' ).length == 3 ||  timeValue.split( ':' ).length == 2 ) {
-		return mw.npt2seconds( timeValue );
-	}
-	
-	var timeFactor = null
-	// Check for metric hours
-	if( timeValue.substr( -1 ) == 'h' ){
-		timeFactor = 3600 ;
-	}
-	// Min metric
-	if( timeValue.substr( -3 ) == 'min' ){
-		timeFactor = 60;
-	}
-	// Seconds 
-	if( timeValue.substr( -1 ) == 's'){
-		timeFactor = 1;
-	}
-	// Millaseconds
-	if( timeValue.substr( -2 ) == 'ms'){
-		timeFactor = .001;
-	}
-	
-	if( timeFactor){
-		return parseFloat( parseFloat( timeValue ) * timeFactor );
-	}
-	mw.log("Error could not parse time: " + timeValue);
-}
 
 
   

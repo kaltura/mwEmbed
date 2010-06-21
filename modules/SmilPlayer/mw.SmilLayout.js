@@ -24,7 +24,7 @@ mw.SmilLayout.prototype = {
 	},	
 	
 	/**
-	* get Html DOM
+	* Get Html DOM
 	*/
 	getHtml: function(){
 		var _this = this;		
@@ -59,29 +59,29 @@ mw.SmilLayout.prototype = {
 	},
 	
 	/**
-	* drawElement smilElement
+	* RenderElement smilElement at a given time. 
+	* If the element does not exist in the html dom add it.
+	* Updates a given element for the requested time 
 	*/ 
 	drawElement: function( smilElement, time ) {
 		var _this = this;
 		var regionId =  $j( smilElement ).attr( 'region');
 		var nodeName = $j( smilElement ).get(0).nodeName ;	
 			
-		mw.log("Draw: " + nodeName + ' into ' + regionId );
+		mw.log( "SmilLayout::drawElement: " + nodeName + '.' + $j( smilElement ).attr('id' ) + ' into ' + regionId );
 		var $regionTarget =  this.$rootLayout.find( '#' + regionId );
+		
 		// Check for region target in $rootLayout
 		if( $regionTarget.length == 0 ) {
-			mw.log( "Error Could not find region:" + regionId + " for " + nodeName);
+			mw.log( "Error in SmilLayout::renderElement, Could not find region:" + regionId + " for " + nodeName);
 			return ;
 		}
-		// Check that the element does not already exist
-		if( $j( smilElement ).attr('id') && $regionTarget.find( '#' + $j( smilElement ).attr('id') ) ){
-			mw.log( "Error:: SmilLayout draw element that is already present: "  +  $j( smilElement ).attr('id') );
-		}
 		
-		// Append the transformed Smil to its target region
-		this.$rootLayout.find( '#' + regionId ).append(
-			this.getSmilElementHtml( smilElement, time)
-		)	
+		// Check that the element is already in the dom
+		if( $regionTarget.find( '#' + this.smil.getAssetId( smilElement ) ).length == 0 ){
+			// Append the Smil to the target region
+			$regionTarget.append( this.getSmilElementHtml( smilElement ) )
+		}		
 	},
 	
 	/**
@@ -98,78 +98,42 @@ mw.SmilLayout.prototype = {
 			case 'img': 
 				return this.getSmilImgHtml( smilElement, time);
 			break;			
-		}	
+		}
 		mw.log( "Error: Could not find smil layout transform for element type: " + nodeName );
 		return $j('<span />')
 					.text( 'Error: unknown type:' + nodeName );
 	},
 	
+	
+	
+	
 	/**
 	* Updates all the active elements for a given time
 	* @param time the requested time to be updated. 
 	* @param deltaTarget if a delta target is supplied we add a css animation transform for that delta    
-	*/	
 	updateSmilTime: function( time, deltaTarget ){
 		// for every active element tranform per time request
 		
 		// 
 	},
-	
-	/**
-	* Update SmilBuffer
-	* updates the buffer percentage for the entire clip set 
-	* ( mw.SmilBuffer )  
 	*/
-	
-	/**
-	* buffered callback 
-	* utility function to run a callback once a given buffer time
-	* has been reached.
-	* ( mw.SmilBuffer )  
-	*/
+		
 	
 	/**
 	 * Get a text element per given time
 	 * xxx we need to use "relativeTime" 
 	 */
 	getSmilTextHtml: function( textElement, relativeTime ) {
-		var _this = this;
-		mw.log( " Get TEXT Html ");	
+		var _this = this;			
 				
-		// Empty initial text value
-		var textValue = '';		
+		// Empty initial text value				
+		var textValue = '';
 		
-		// Check if we have child transforms and select the transform that is in range
-		if( $j( textElement ).children().length ){
-			var bucketText = '';
-			var textBuckets = [];
-			var clearInx = 0;
-			var el = $j( textElement ).get(0);
-			for ( var i=0; i < el.childNodes.length; i++ ) {	
-				var node = el.childNodes[i];
-				// Check for text Node type: 
-				if( node.nodeType == 3 ) {					
-					bucketText += node.nodeValue;
-				} else if( node.nodeName == 'clear'){
-					var clearTime = mw.SmilParseTime(  $j( node ).attr( 'begin') );
-					// append bucket
-					textBuckets.push( {
-						'text' : bucketText,
-						'clearTime' : clearTime 
-					} );
-				}
-			}			
-			// Get the text node in range given time:
-			for( var i =0; i < textBuckets.length ; i++){
-				var bucket = textBuckets[i];
-				if( relativeTime < bucket.clearTime ){
-					textValue = bucket.text;
-					break;
-				}
-			}			
-		} else {
-			textValue = $j( textElement ).text();
+		// If the textElement has no child node directly set the text value 
+		// 	( if has child nodes, text will be selected by time in transformTextForTime ) 
+		if( $j( textElement ).children().length == 0 ){
 			mw.log( 'Direct text value to: ' + textValue);
+			textValue = $j( textElement ).text();				
 		}		
 		
 		var textCss = _this.transformSmilCss( textElement );
@@ -198,14 +162,15 @@ mw.SmilLayout.prototype = {
 
 		// Return the htmlElement 
 		return $j('<span />')
+			.attr( 'id' , this.smil.getAssetId( textElement ) )
 			// Wrap in font-size percentage relative to virtual size
 			.css( 'font-size',  ( ( this.targetWidth / this.virtualWidth )*100 ) + '%' )
-			.append(  
+			.html(  
 				$j('<span />')
 				// Transform smil css into html css: 
 				.css( textCss	)
 				// Add the text value
-				.text( textValue )
+				.text( textValue )			
 			);
 	},
 	
@@ -235,6 +200,7 @@ mw.SmilLayout.prototype = {
 		// XXX get context of smil document for relative or absolute paths: 
 		return $j('<img />')
 				.attr( {
+					'id' : this.smil.getAssetId( imgElement ), 
 					'src' : this.smil.getAssetUrl( $j( imgElement ).attr( 'src' ) )
 				} )
 				.css( {
@@ -316,6 +282,7 @@ mw.SmilLayout.prototype = {
 		mw.log("Error: SmilLayout, could not find root-layout element " ) ;
 		return {};
 	},
+
 	
 	/**
 	* Translate a root layout pixel point into a percent location

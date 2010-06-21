@@ -6,15 +6,15 @@
 * http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
 */
 
-var kURID = '1.1q';
+var kURID = '1.1r';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 
 // These Lines are for local testing: 
-SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
-//kURID = new Date().getTime();
+//SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
+kURID = new Date().getTime();
 
 
 // Define mw
@@ -32,7 +32,9 @@ if( !mw.ready){
 	mw.ready = function( fn ){
 		preMwEmbedReady.push( fn );
 		// Check if mw.ready was called after the dom is ready:
-		kCheckAddScript();
+		if( kAlreadyRunDomReadyFlag ){
+			kCheckAddScript();
+		}
 	}
 }
 // Setup a preMwEmbedConfig var
@@ -53,12 +55,7 @@ if( !mw.setConfig ){
 }
 // Check dom for kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
-kRanDomReadyFlag = false;
 function kCheckAddScript(){
-	if( kRanDomReadyFlag ){
-		return ;
-	}
-	kRanDomReadyFlag = true;
 	// If user javascript is using mw.ready add script
 	if( preMwEmbedReady.length ) {
 		kAddScript();
@@ -79,7 +76,7 @@ function kCheckAddScript(){
 		(navigator.userAgent.indexOf('iPad') != -1) ||
 		(document.URL.indexOf('forceMobileSafari') != -1 ) // to debug in chrome / desktop safari
 	) {
-		
+		// Check for kaltura objects in the page
 		for(var i=0; i < document.getElementsByTagName('object').length; i++) {
 			var embedTag = document.getElementsByTagName('object')[i];
 			if( embedTag.getAttribute( 'name' ) == 'kaltura_player' ) {											
@@ -91,7 +88,12 @@ function kCheckAddScript(){
 }
 
 // Add the kaltura html5 mwEmbed script
-function kAddScript(){	
+var kAddedScript = false;
+function kAddScript(){
+	if( kAddedScript ){
+		return ;
+	}
+	kAddedScript = true;	
 	var url = SCRIPT_LOADER_URL + '?class=';
 	
 	if( typeof window.jQuery == 'undefined' ) {
