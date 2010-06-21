@@ -30,8 +30,7 @@
 		"KalturaClient" : "kalturaJsClient/KalturaClient.js",
 		"KalturaAccessControlService" : "kalturaJsClient/KalturaServices.js",
 		"KalturaAccessControlOrderBy" : "kalturaJsClient/KalturaTypes.js",
-		"KalturaAccessControl" : "kalturaJsClient/KalturaVO.js",
-		"OX.AJAST" : "kalturaJsClient/ox.ajast.js",		
+		"KalturaAccessControl" : "kalturaJsClient/KalturaVO.js",				
 		"MD5" : "kalturaJsClient/webtoolkit.md5.js"
 	} );
 	
@@ -50,15 +49,17 @@
 
 	//Check if the document has kaltura objects ( for fall forward support ) 
 	$j( mw ).bind( 'LoaderEmbedPlayerDocumentHasPlayerTags', function( event, tagCheckObject ){
-		//mw.log('LoaderEmbedPlayerDocumentHasPlayerTags');
+	
+		mw.log('KalturaSupport :: Loader.js :: LoaderEmbedPlayerDocumentHasPlayerTags');
 		// Check if we have a global selector available: 
 		var select =  'object[name=kaltura_player]';
+		mw.log( 'KalturaSupport found:: ' + $j( select ).length + ' is mobile::' +  mw.isMobileSafari() );
 		if( $j( select ).length ) {
 			tagCheckObject.hasTags = true;
 						
 			// FALLFORWARD only for mobile safari::
-			// this is kind of hevey weight for loader.js 
-			// maybe move most of this to 
+			// this is kind of heavy weight for loader.js 
+			// maybe move most of this to kEntryId support
 			
 			if( mw.isMobileSafari() ) {
 				var loadEmbedPlayerFlag = false;
@@ -67,7 +68,9 @@
 					var dataUrl = $j( element ).attr('data');
 					var dataUrlParts = dataUrl.split('/');
 					var entryId = dataUrlParts.pop();
+					
 					mw.log("Got EntryID: " + entryId + " from flash object")
+					
 					// Search backward for 'widgetId'
 					var widgetId = false;					
 					while( dataUrlParts.length ){
@@ -95,9 +98,12 @@
 						.css({
 							'width' : width + 'px',
 							'height' : height + 'px',
-							'position' : 'absolute'
+							'position' : 'absolute',
+							'top' : '0px',
+							'left' : '0px'								
 						});
 					}		
+					var elementCss = {};
 					// Replace with a spinner
 					$j( element ).replaceWith( 
 						$j('<div />')
@@ -109,12 +115,16 @@
 						.css( {
 							'width' : width + 'px',
 							'height' : height + 'px',
-							'position' : 'absolute'
+							'position': 'relative',
+							'display' : 'block',
+							'float' : 'left',
+							'padding' : '3px'
 						} )
 						.addClass( 'safariVideoSwap')
 						.append(
 							$imgThumb, 
 							$j('<div />')
+							.attr('id', 'loadingSpinner_' + videoId )
 							.css({
 								'margin' : 'auto',
 								'top' : '35%',
@@ -126,8 +136,9 @@
 						)
 					)						
 				});
+			
 				if( loadEmbedPlayerFlag ){					
-					mw.load('EmbedPlayer', function(){
+					mw.load('EmbedPlayer', function(){						
 						// Remove the general loading spinner ( embedPlayer takes over )						
 						$j('.safariVideoSwap').embedPlayer();
 					})

@@ -83,14 +83,13 @@ mw.KEntryIdSupport.prototype = {
 				_this.setupSession ( widgetId, function( status ) {
 					// @@TODO check if session was successful
 					if( !status ){
-						mw.log( "Error: checkPlayerSources:: No sources added ( error ) " );  
-						callback();
+						mw.log( "Error: checkPlayerSources:: No sources added ( error ) " );  						
 						return ;
 					}
 					// Once the session has been setup run the sessionReadyCallbackQueue
 					while( _this.sessionReadyCallbackQueue.length ){
-						var sessionPlayerSetup =  _this.sessionReadyCallbackQueue.shift();
-						_this.addEntryIdSources( embedPlayer, callback ) ;
+						var sessionItem =  _this.sessionReadyCallbackQueue.shift();
+						_this.addEntryIdSources( sessionItem.player, sessionItem.callback ) ;
 					}
 				} );
 			}
@@ -240,7 +239,7 @@ mw.KEntryIdSupport.prototype = {
 					return ;
 				}
 				if( data.code ){
-					mw.log( "Error:: " +data.code + ' ' + data.message );
+					mw.log( "Kaltura:: startWidgetSession:: Error:: " +data.code + ' ' + data.message );
 					callback( false );
 					return ;
 				}				
@@ -261,7 +260,7 @@ mw.KEntryIdSupport.prototype = {
 	
 }
 		
-// Add player Mannager binding ( if playerManager not ready bind to when its ready )
+// Add player Manager binding ( if playerManager not ready bind to when its ready )
 // @@NOTE we may want to move this into the loader since its more "action/loader" code
 if( mw.playerManager ){
 	var kEntrySupport = new mw.KEntryIdSupport();

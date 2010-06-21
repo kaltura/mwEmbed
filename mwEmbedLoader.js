@@ -13,7 +13,7 @@ var SCRIPT_FORCE_DEBUG = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 
@@ -77,11 +77,17 @@ function kCheckAddScript(){
 		(document.URL.indexOf('forceMobileSafari') != -1 ) // to debug in chrome / desktop safari
 	) {
 		// Check for kaltura objects in the page
+		var usedIdSet = [];
 		for(var i=0; i < document.getElementsByTagName('object').length; i++) {
 			var embedTag = document.getElementsByTagName('object')[i];
 			if( embedTag.getAttribute( 'name' ) == 'kaltura_player' ) {											
 				kAddScript();
-				return ;
+				var kId = embedTag.getAttribute( 'id' );
+				if( usedIdSet[ kId ] ) {
+					// Update the id ( append index )
+					embedTag.setAttribute( 'id',  kId + '_' + i);
+				}
+				usedIdSet[ embedTag.getAttribute( 'id' ) ] = true;
 			}
 		}
 	}
@@ -92,7 +98,7 @@ var kAddedScript = false;
 function kAddScript(){
 	if( kAddedScript ){
 		return ;
-	}
+	}	
 	kAddedScript = true;	
 	var url = SCRIPT_LOADER_URL + '?class=';
 	

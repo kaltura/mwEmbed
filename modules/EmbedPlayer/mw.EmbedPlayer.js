@@ -2319,7 +2319,7 @@ mw.EmbedPlayer.prototype = {
 		// Empty the player
 		$j(this).empty();
 		
-		// Remove the player loader spiner if it exists
+		// Remove the player loader spinner if it exists
 		$j('#loadingSpinner_' + this.id ).remove();
 		
 		// Check if we need to refresh mobile safari
@@ -2348,8 +2348,8 @@ mw.EmbedPlayer.prototype = {
 			}		
 					
 			var videoAttribues = {
-				'id' : this.pid,
-				'poster': this.poster,
+				'id' : _this.pid,
+				'poster': _this.poster,
 				'src' : source.src,
 				'controls' : 'true'
 			}
@@ -2357,16 +2357,27 @@ mw.EmbedPlayer.prototype = {
 				videoAttribues[ 'loop' ] = 'true';
 			}
 			var cssStyle = {
-				'width' : this.width,
-				'height' : this.height
-			};
-			
+				'width' : _this.width,
+				'height' : _this.height
+			};			
 			$j( '#' + this.pid ).replaceWith( 
 				_this.getNativePlayerHtml( videoAttribues, cssStyle )									
 			)
 			// Bind native events:
 			this.applyMediaElementBindings();
 		}
+		return ;
+	},
+	/**
+	* Should be set via native embed support  
+	*/
+	getNativePlayerHtml: function(){
+		return $j('<div />' ).html( 'Error: Trying to get native html5 player without native support for codec' );
+	},
+	/**
+	* Should be set via native embed support  
+	*/
+	applyMediaElementBindings: function(){
 		return ;
 	},
 	
