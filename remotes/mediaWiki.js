@@ -9,7 +9,7 @@ var mwUseScriptLoader = true;
 
 // Log the mwRemote version makes it easy to debug cache issues
 if( window.console ){
-	window.console.log( 'mwEmbed:remote:' + mwRemoteVersion );
+	window.console.log( 'mwEmbed:remote: ' + mwRemoteVersion );
 }
 
 
@@ -200,7 +200,7 @@ function doPageSpecificRewrite() {
 			//Load the "EmbedPlayer" module: 
 			// All the actual code was requested in our single script-loader call 
 			//  but the "load" request applies the setup.
-			mw.load( 'EmbedPlayer', function() {
+			mw.load( 'EmbedPlayer', function() {				
 				// Do utility rewrite of OggHandler content:
 				rewrite_for_OggHandler( vidIdList );
 			} );
@@ -437,8 +437,8 @@ function rewrite_for_OggHandler( vidIdList ) {
 					
 			} else {
 				// Set the video tag inner html remove extra player
-				$j( '#' + vidId ).after( html_out ).remove();		
-				$j( '#mwe_' + vidId ).embedPlayer();	 
+				$j( '#' + vidId ).after( html_out ).remove();				
+				$j( '#mwe_' + vidId ).embedPlayer();
 			}			
 
 			// Issue an async request to rewrite the next clip

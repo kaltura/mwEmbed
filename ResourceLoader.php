@@ -378,7 +378,7 @@ class ResourceLoader {
 			if( $fileContents ){
 				// Add the file name if debug is enabled
 				if ( $this->debug ){
-					$output .= "\n/**\n* File: " . xml::escapeJsString( $filePath ) . "\n*/\n";
+					$output .= "\n\n/**\n* File: " . xml::escapeJsString( $filePath ) . "\n*/\n";
 				}
 				// Transform the css output if the file is css
 				$output.= ( $ext == 'css' ) ?

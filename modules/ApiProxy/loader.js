@@ -1,14 +1,13 @@
 /* apiProxy Loader */
 
-mw.addResourcePaths( {
-	"mw.ApiProxy"	: "mw.ApiProxy.js"
-} );
-
-mw.addModuleLoader( 'ApiProxy', function( callback ) {
-	mw.load( [
-		'mw.ApiProxy',
-		'JSON'
-	], function() {
-		callback( 'ApiProxy' );
-	});
-});
+// Wrap in mw to not pollute global namespace
+( function( mw ) {
+	mw.addResourcePaths( {
+		"mw.ApiProxy"	: "mw.ApiProxy.js"
+	} );
+	
+	mw.addModuleLoader( 'ApiProxy', [
+		'JSON',
+		'mw.ApiProxy'	
+	]);
+} )( window.mw );

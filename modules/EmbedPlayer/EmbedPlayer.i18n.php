@@ -210,34 +210,53 @@ $messages['bs'] = array(
 	'mwe-embedplayer-related_videos' => 'Povezani snimci',
 );
 
-/** Czech (Česky) */
+/** Czech (Česky)
+ * @author Mormegil
+ */
 $messages['cs'] = array(
+	'mwe-embedplayer-credit-title' => 'Název: $1',
 	'mwe-embedplayer-play_clip' => 'Přehrát klip',
 	'mwe-embedplayer-pause_clip' => 'Pozastavit klip',
 	'mwe-embedplayer-volume_control' => 'Ovládání hlasitosti',
 	'mwe-embedplayer-player_options' => 'Možnosti přehrávače',
+	'mwe-embedplayer-timed_text' => 'Titulky',
 	'mwe-embedplayer-player_fullscreen' => 'Celá obrazovka',
 	'mwe-embedplayer-seek_to' => 'Přesun na $1',
+	'mwe-embedplayer-paused' => 'pozastaveno',
 	'mwe-embedplayer-download_full' => 'Stažení celého videosouboru:',
 	'mwe-embedplayer-download' => 'Stáhnout',
 	'mwe-embedplayer-share' => 'Sdílet',
+	'mwe-embedplayer-credits' => 'O souboru',
 	'mwe-embedplayer-choose_player' => 'Vybrat přehrávač videa',
+	'mwe-embedplayer-no-player' => 'Pro $1 není dostupný žádný přehrávač',
 	'mwe-embedplayer-share_this_video' => 'Sdílet toto video',
+	'mwe-embedplayer-kaltura-platform-title' => 'Otevřená platforma pro video Kaltura',
+	'mwe-embedplayer-menu_btn' => 'Menu',
 	'mwe-embedplayer-close_btn' => 'Zavřít',
+	'mwe-embedplayer-ogg-player-vlc-player' => 'Přehrávač VLC',
+	'mwe-embedplayer-ogg-player-oggNative' => 'HTML5 přehrávač Ogg',
+	'mwe-embedplayer-ogg-player-h264Native' => 'HTML5 přehrávač H.264',
 	'mwe-embedplayer-ogg-player-oggPlugin' => 'Generický zásuvný modul Ogg',
 	'mwe-embedplayer-ogg-player-quicktime-mozilla' => 'Zásuvný modul QuickTime',
 	'mwe-embedplayer-ogg-player-quicktime-activex' => 'ActiveX prvek QuickTime',
 	'mwe-embedplayer-ogg-player-cortado' => 'Java Cortado',
 	'mwe-embedplayer-ogg-player-flowplayer' => 'Flowplayer',
+	'mwe-embedplayer-ogg-player-kplayer' => 'Přehrávač Kaltura',
 	'mwe-embedplayer-ogg-player-selected' => '(vybraný)',
 	'mwe-embedplayer-ogg-player-omtkplayer' => 'OMTK Flash Vorbis',
 	'mwe-embedplayer-generic_missing_plugin' => 'Váš prohlížeč patrně nepodporuje následující způsob přehrávání: <b>$1</b><br />Přehrávač si můžete stáhnout prostřednictvím stránky <a href="http://commons.wikimedia.org/wiki/Commons:N%C3%A1pov%C4%9Bda_k_multim%C3%A9di%C3%ADm">nápovědy k multimédiím</a>.<br />',
-	'mwe-embedplayer-for_best_experience' => 'Pro příjemnější přehrávání videa doporučujeme:<br /><b><a href="http://www.mozilla-europe.org/cs/firefox/?from=mwEmbed">Firefox 3.5</a>.</b>',
+	'mwe-embedplayer-for_best_experience' => 'Pro příjemnější přehrávání videa doporučujeme <br /><b><a href="http://www.mozilla-europe.org/cs/firefox/?from=mwEmbed">aktuální Firefox</a>.</b>',
 	'mwe-embedplayer-do_not_warn_again' => 'Skrýt toto hlášení.',
+	'mwe-embedplayer-playerSelect' => 'Přehrávače',
 	'mwe-embedplayer-read_before_embed' => 'Před vkládáním <a href="http://mediawiki.org/wiki/Security_Notes_on_Remote_Embedding" target="_new">čtěte upozornění</a>.',
 	'mwe-embedplayer-embed_site_or_blog' => 'Vložení na stránku',
+	'mwe-embedplayer-related_videos' => 'Související videa',
 	'mwe-embedplayer-seeking' => 'přesun',
 	'mwe-embedplayer-copy-code' => 'Kopírovat kód',
+	'mwe-embedplayer-video-h264' => 'Video v H.264',
+	'mwe-embedplayer-video-flv' => 'Video ve Flashi',
+	'mwe-embedplayer-video-ogg' => 'Video v Ogg',
+	'mwe-embedplayer-video-audio' => 'Zvuk v Ogg',
 );
 
 /** German (Deutsch)

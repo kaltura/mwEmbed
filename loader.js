@@ -52,7 +52,7 @@ var mwEnabledModuleList = [
 	'Sequencer',
 	'TimedText',
 	'SmilPlayer',
-	'MediaRss',
+	'MediaRss',	
 	'SwarmTransport',
 	'KalturaSupport'
 ];
@@ -110,7 +110,10 @@ mw.setDefaultConfig ( {
 	'userLanguage' : 'en',
 	
 	// Set the default providers ( you can add more provider via {provider_id}_apiurl = apiUrl	  
-	'commons_apiurl' : 'http://commons.wikimedia.org/w/api.php'
+	'commons_apiurl' : 'http://commons.wikimedia.org/w/api.php',
+	
+	// Set the default loader group strategy
+	'loader.groupStrategy' : 'module'
 			
 } );
 
@@ -193,7 +196,7 @@ mw.addResourcePaths( {
 } );
 
 // Add a special css dependency for $j.ui 
-mw.addClassStyleDependency( {
+mw.addStyleResourceDependency( {
 	'$j.ui' : ( 'mw.style.' + mw.getConfig( 'jQueryUISkin' ) )	
 } );
 

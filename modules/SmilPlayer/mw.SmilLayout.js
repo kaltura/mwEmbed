@@ -43,12 +43,12 @@ mw.SmilLayout.prototype = {
 		mw.log( "SmilLayout::getRootLayout:" );  
 		if( !this.$rootLayout ){
 			this.$rootLayout = $j('<div />' )
-					.attr('rel', 'root-layout' )
-					.css( {
-						'position': 'absolute',
-						'width' : '100%',
-						'height' : '100%'
-					});
+				.addClass( 'smilRootLayout' ) 
+				.css( {
+					'position': 'absolute',
+					'width' : '100%',
+					'height' : '100%'
+				});
 				
 			// Update the root layout css 
 			this.$rootLayout.css( _this.getRootLayoutCss() )
@@ -236,8 +236,10 @@ mw.SmilLayout.prototype = {
 		this.$dom.find( 'region' ).each( function( inx, regionElement ) {			
 			$layoutContainer.append( 
 				$j( '<div />' )
-				.attr('rel', 'region' )
-				.css( 'position', 'absolute' )
+				.addClass('smilRegion' )				
+				.css({ 
+					'position' : 'absolute'
+				})
 				// Transform the smil attributes into html attributes
 				.attr( _this.transformSmilAttributes( regionElement ) )
 				// Transform the css attributes into percentages

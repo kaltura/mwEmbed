@@ -117,8 +117,8 @@
 	/**
 	* Add a DOM ready check for player tags 
 	*
-	* We use mw.addDOMReadyHook instead of mw.ready so that
-	* player interfaces are ready once mw.ready is called. 
+	* We use mw.addSetupHook instead of mw.ready so that
+	* mwEmbed player is setup before any other mw.ready calls
 	*/
 	mw.addSetupHook( function( callback ) {
 		if( mw.documentHasPlayerTags() ) {
@@ -127,22 +127,20 @@
 			// Set each player to loading ( as early on as possible ) 
 			$j( mw.getConfig( 'rewritePlayerTags' ) ).each( function( index, element ){
 								
-				// Assign an the element an ID (if its missing one)			
+				// Assign an the element an ID ( if its missing one )			
 				if ( $j( element ).attr( "id" ) == '' ) {
 					$j( element ).attr( "id",  'v' + ( rewriteElementCount++ ) );
 				}
 
 				// Add an absolute positioned loader
-				var pos = $j( element ).offset();
-				mw.log( ' l: ' + pos.left + ' t: ' + pos.top ); 
-				
+				var pos = $j( element ).offset();				
 				var posLeft = (  $j( element ).width() ) ? 
 					parseInt( pos.left + ( .4 * $j( element ).width() ) ) : 
 					pos.left + 30;
 					
 				var posTop = (  $j( element ).height() ) ? 
 					parseInt( pos.top + ( .4 * $j( element ).height() ) ) : 
-					pos.top + 30;			
+					pos.top + 30;
 							
 				$j('body').append(
 					$j('<div />')
@@ -159,21 +157,19 @@
 				)
 			});									
 			// Load the embedPlayer module ( then run queued hooks )
-			mw.load( 'EmbedPlayer', function ( ) {												
+			mw.load( 'EmbedPlayer', function ( ) {										
 				// Rewrite the rewritePlayerTags with the 
 				$j( mw.getConfig( 'rewritePlayerTags' ) ).embedPlayer();				
-				// Run the setup callback now that we have setup all the players
-				callback();							
 			})
-		} else {
-			callback();
 		}
+		// Run the setupFlag to continue setup		
+		callback();
 	});
 
 	/**
 	* Add the module loader function:
 	*/
-	mw.addModuleLoader( 'EmbedPlayer', function( callback ) {
+	mw.addModuleLoader( 'EmbedPlayer', function() {
 		var _this = this;		
 		// Set module specific class videonojs to loading:
 		$j( '.videonojs' ).html( gM( 'mwe-embedplayer-loading_txt' ) );
@@ -220,23 +216,8 @@
 			dependencyRequest[0].push( 'mw.EmbedPlayerNative' )
 		}		
 		
-		// Load the video libs:
-		mw.load( dependencyRequest, function() {	
-			// Setup userConfig 
-			mw.setupUserConfig( function() {
-				// Remove no video html elements:
-				$j( '.videonojs' ).remove();				
-				
-				// Detect supported players:  
-				mw.EmbedTypes.init();				
-							
-				// Run the callback with name of the module  
-				if( typeof callback == 'function' )	{
-					callback( 'EmbedPlayer' );		
-				}
-				
-			} ); // setupUserConfig
-		} );		
+		// Return the set of libs to be loaded
+		return dependencyRequest;					
 	} );
 	
 	/**

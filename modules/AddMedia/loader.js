@@ -1,7 +1,8 @@
 /**
 * Loader for libAddMedia module:
 */
-// Scope everything in "mw"  ( keeps the global namespace clean ) 
+
+// Wrap in mw to not pollute global namespace
 ( function( mw ) {
 
 	mw.addMessages( {
@@ -34,8 +35,7 @@
 	} );	
 	
 	// Upload form includes "datapicker" 
-	mw.addModuleLoader( 'AddMedia.UploadForm', function( callback ){
-		var request = [
+	mw.addModuleLoader( 'AddMedia.UploadForm', [
 			[
 				'mw.UploadForm',
 				'$j.ui'				
@@ -43,17 +43,13 @@
 			[
 				'$j.ui.datepicker'
 			]
-		];
-		mw.load( request , function() {
-			callback( 'AddMedia.UploadForm' );
-		} );
-	})
+		] 
+	);		
 		
 	//Setup the addMediaWizard module
-	mw.addModuleLoader( 'AddMedia.addMediaWizard', function( callback ) {
-		// Load all the required libs:
-		
-		var request = [
+	mw.addModuleLoader( 'AddMedia.addMediaWizard', 
+		// Define loader set: 
+		[
 			[	'mw.RemoteSearchDriver',
 				'mw.style.AddMedia',
 				'$j.cookie',
@@ -67,11 +63,7 @@
 				'$j.ui.tabs',
 				'$j.ui.sortable'
 			]
-		];
-		mw.load( request , function() {
-			callback( 'AddMedia.addMediaWizard' );
-		} );
-	});
+		] );
 	
 	//Set a variable for the base upload interface for easy inclution
 	var baseUploadlibs = [
@@ -91,11 +83,7 @@
 	* Upload interface loader: 
 	*/
 	
-	mw.addModuleLoader( 'AddMedia.UploadHandler', function( callback ) {
-		mw.load( baseUploadlibs , function() {
-			callback( 'AddMedia.BaseUploadHandler' );
-		});
-	});
+	mw.addModuleLoader( 'AddMedia.UploadHandler', baseUploadlibs );
 	
 	/**
 	 * The Firefogg loaders
@@ -107,15 +95,9 @@
 	var mwBaseFirefoggReq = baseUploadlibs.slice( 0 )
 	mwBaseFirefoggReq[ 0 ].push( 'mw.Firefogg' );
 	
-	mw.addModuleLoader( 'AddMedia.firefogg', function( callback ) {
-		
-		//Load firefogg libs
-		mw.load( mwBaseFirefoggReq, function() {
-			callback( 'AddMedia.firefogg' );
-		});
-	} );
+	mw.addModuleLoader( 'AddMedia.firefogg', mwBaseFirefoggReq );
 	
-	mw.addModuleLoader( 'AddMedia.FirefoggGUI', function( callback ) {		
+	mw.addModuleLoader( 'AddMedia.FirefoggGUI', function() {		
 		// Clone the array: 
 		var request = mwBaseFirefoggReq.slice( 0 ) ;
 		
@@ -127,21 +109,7 @@
 			'$j.ui.slider',
 			'$j.ui.datepicker'
 		] );
-		
-		mw.load( request, function() {
-			callback( 'AddMedia.FirefoggGUI' );
-		});
-	} );	
-	
-	mw.addModuleLoader( 'AddMedia.firefoggRender', function( callback ) {
-		mw.load( [
-			'mw.UploadHandler',
-			'mw.UploadInterface',
-			'mw.Firefogg',
-			'mw.FirefoggRender'
-		], function() {
-			callback( 'AddMedia.firefoggRender' );
-		});	
-	});
+		return request;
+	} );
 
 } )( window.mw );

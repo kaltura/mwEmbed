@@ -523,6 +523,14 @@ $messages['pt'] = array(
 	'mwe-test-plural' => 'Fiz $1 {{PLURAL:$1|teste|testes}}',
 );
 
+/** Brazilian Portuguese (Português do Brasil)
+ * @author Luckas Blade
+ */
+$messages['pt-br'] = array(
+	'mwe-loading_txt' => 'Carregando ...',
+	'mwe-cancel' => 'Cancelar',
+);
+
 /** Russian (Русский)
  * @author Александр Сигачёв
  */

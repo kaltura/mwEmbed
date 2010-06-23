@@ -36,5 +36,6 @@
 				classRequest.push( 'mw.SwarmTransport' );
 			}
 		}
-	});		
+	});
+			
 })( window.mw );

@@ -88,7 +88,7 @@ mw.SmilBody.prototype = {
 	
 	/**
 	 * getElementsForTimeRecurse
-	 * @param {Object} $node NOde to recursively search for elements in the given time range
+	 * @param {Object} $node Node to recursively search for elements in the given time range
 	 */ 
 	getElementsForTimeRecurse: function( $node, time, startOffset){
 		// Setup local pointers:
@@ -102,13 +102,13 @@ mw.SmilBody.prototype = {
 			startOffset = 0;
 		}
 		
-		mw.log( "getElementsForTimeRecurse::" + 
+		/*mw.log( "getElementsForTimeRecurse::" + 
 			' time: ' + time  + 
 			' nodeName: ' + $j( $node ).get(0).nodeName +
 			' nodeType: ' + nodeType + 
 			' nodeDur: ' + nodeDuration  + 
 			' offset: ' + startOffset
-		);
+		);*/
 		
 		// If startOffset is > time skip node and all its children
 		if( startOffset > time ){
@@ -126,11 +126,11 @@ mw.SmilBody.prototype = {
 		if( nodeType == 'par'|| nodeType == 'seq' ) {
 			if( $node.children().length ) {	
 				$node.children().each( function( inx, childNode ){
-					mw.log(" recurse:: startOffset:" + nodeType  + ' start offset:' + startOffset );
+					//mw.log(" recurse:: startOffset:" + nodeType  + ' start offset:' + startOffset );
 					var childDur = _this.getElementsForTimeRecurse( $j( childNode ), time, startOffset);
 					// If element parent is a 'seq' increment startOffset: 
 					if( nodeType == 'seq' ) {
-						mw.log(" Parent Seq:: add child dur: " + childDur );
+						//mw.log(" Parent Seq:: add child dur: " + childDur );
 						startOffset += childDur;
 					}
 				});
@@ -143,7 +143,7 @@ mw.SmilBody.prototype = {
 			$node.data('parentStartOffset', startOffset );
 			// Ref type get the 
 			this.elementsInRange.push( $node );
-			mw.log("Add ref to elementsInRange:: " + nodeType + " length:"  + this.elementsInRange.length);
+			//mw.log("Add ref to elementsInRange:: " + nodeType + " length:"  + this.elementsInRange.length);
 		}
 		
 		// Return the node Duration for tracking startOffset
