@@ -110,6 +110,8 @@ p. Or by adding the "AddType" configuration directive in httpd.conf -
 bc. AddType video/ogg .ogm
 AddType video/ogg .ogv
 AddType video/ogg .ogg
+AddType video/mp4 .mp4
+AddType video/webm .webm
 
 p. Your web host may provide an easy interface to MIME type configuration changes for new technologies until a global update naturally occurs.
 
