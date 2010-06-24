@@ -13,7 +13,7 @@ var SCRIPT_FORCE_DEBUG = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_LOADER_URL = '../mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 

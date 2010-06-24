@@ -336,7 +336,7 @@ mw.PlayerSkinKskin = {
 			.addClass( "credits_box ui-corner-all" )
 			.loadingSpinner()
 		);
-
+		
 		if( mw.getConfig( 'EmbedPlayer.kalturaAttribution' ) == true ){
 			$target.append( 
 				$j( '<div />' )
