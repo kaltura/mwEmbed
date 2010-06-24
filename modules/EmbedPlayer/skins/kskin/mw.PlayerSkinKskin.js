@@ -45,7 +45,9 @@ mw.PlayerSkinKskin = {
 		},
 		'volumeControl': {
 			'w':40
-		},
+		},		
+		// No kalturaAttribution component for kSkin ( its integrated into the credits screen ) 
+		'kalturaAttribution' : false,
 		
 		// Time display: 
 		'timeDisplay': {
@@ -336,7 +338,7 @@ mw.PlayerSkinKskin = {
 			.addClass( "credits_box ui-corner-all" )
 			.loadingSpinner()
 		);
-		
+
 		if( mw.getConfig( 'EmbedPlayer.kalturaAttribution' ) == true ){
 			$target.append( 
 				$j( '<div />' )
