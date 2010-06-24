@@ -30,7 +30,7 @@
 		"videoSize" : "400x300",
 	
 		// If the video player should attribute kaltura	
-		"kalturaAttribution" : true,
+		"EmbedPlayer.kalturaAttribution" : true,
 		 
 		 // Set the browser player warning flag to true by default ( applies to all players so its not part of attribute defaults above ) 
 		"showNativePlayerWarning" : true,

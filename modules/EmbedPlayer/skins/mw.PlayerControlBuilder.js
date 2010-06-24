@@ -85,7 +85,7 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	
 	/**
-	* Add the controls html to palyer interface
+	* Add the controls html to player interface
 	*/
 	addControls: function() {
 		// Set up local pointer to the embedPlayer
@@ -162,7 +162,7 @@ mw.PlayerControlBuilder.prototype = {
 			this.supportedComponets['timedText'] = true;
 		}		
 		// Check for kalturaAttribution 	
-		if( mw.getConfig( 'kalturaAttribution' ) ){							 
+		if( mw.getConfig( 'EmbedPlayer.kalturaAttribution' ) ){							 
 			this.supportedComponets[ 'kalturaAttribution' ] = true;
 		}
 		

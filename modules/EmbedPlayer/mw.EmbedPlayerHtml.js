@@ -2,7 +2,7 @@
  * Used to embed HTML as a movie clip
  * for use with mv_playlist SMIL additions
  * 
- * NOTE:  will likely be depricated 
+ * NOTE:  will be deprecated 
  */
 var pcHtmlEmbedDefaults = {
 	// default duration of 4 seconds	
