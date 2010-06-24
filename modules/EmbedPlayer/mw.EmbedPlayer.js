@@ -1750,8 +1750,10 @@ mw.EmbedPlayer.prototype = {
 	selectPlayer: function( player ) {		
 		var _this = this;
 		if ( this.selectedPlayer.id != player.id ) {
-			this.selectedPlayer = player;					
+			this.selectedPlayer = player;
 			this.inheritEmbedPlayer( function(){
+				// Hide / remove track container
+				_this.$interface.find( '.track' ).remove();  
 				// We have to re-bind hoverIntent ( has to happen in this scope )
 				if( _this.controls && _this.controlBuilder.checkOverlayControls() ){
 					_this.controlBuilder.showControlBar();				
@@ -2879,8 +2881,10 @@ mw.EmbedPlayer.prototype = {
 		if( _this.volume != _this.previousVolume ) {			
 			_this.setInterfaceVolume( _this.volume );
 		}
+		
 		// Update the previus volume 
-		_this.previousVolume = _this.volume;		
+		_this.previousVolume = _this.volume;	
+			
 		// Update the volume from the player element
 		_this.volume = this.getPlayerElementVolume();
 		
@@ -2888,9 +2892,9 @@ mw.EmbedPlayer.prototype = {
 		if( _this.muted != _this.getPlayerElementMuted() ){
 			mw.log("monitor:: muted does not mach embed player" );
 			this.toggleMute();
-		} 				
-
-		//mw.log(' ct: ' + this.currentTime + ' dur: ' + ( parseInt( this.duration ) + 1 )  + ' is seek: ' + this.seeking );		
+		}
+		
+		//mw.log( 'Monitor:: ' + this.currentTime + ' duration: ' + ( parseInt( this.getDuration() ) + 1 )  + ' is seek: ' + this.seeking );		
 		if ( this.currentTime && this.currentTime > 0  && this.duration ) {
 			if ( !this.userSlide && !this.seeking ) {
 				if ( parseInt( this.startOffset ) != 0 ) {				
@@ -2936,12 +2940,17 @@ mw.EmbedPlayer.prototype = {
 			$j( this ).trigger( 'progress', this.progressEventData );
 		}
 				
-		// Call monitor at 250ms interval. 
+		// Call monitor at 250ms interval. ( use  setInterval to avoid stacking monitor requests ) 
 		if( ! this.isStoped() ) {
-			setTimeout( function(){
-				_this.monitor();
-			}, 250 )
-		}		
+			if( !this.monitorInterval ){
+				this.monitorInterval = setInterval( function(){
+					_this.monitor();
+				}, 250 )
+			}
+		} else {
+			// If stoped "stop" monitor: 
+			clearInterval( this.monitorInterval );
+		}
 		
 		//mw.log('trigger:monitor:: ' + this.currentTime );		
 		$j( this ).trigger( 'monitorEvent' );
