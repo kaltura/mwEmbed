@@ -36,6 +36,16 @@ bc. <!DOCTYPE html>
 * If you would like to support html5 with h.264 ( safari, IE9, google chrome) and support a flash fallback for older versions of IE you include an h.264 source. For best compatibility your mp4 source should ideally use a h.264 profile compatible with mobile devices such as the iPhone.  <a href="http://corp.kaltura.com/">Kaltura hosted Solutions</a> include iPhone support. Desktop video encoding software such as <a href="http://handbrake.fr/">handbreak</a> also includes iPhone profiles. 
 * If you would like to change the theme you can change the class attribute @<video class="kskin">@ more info about custom theming is on the way. 
 
+h2. Skinning
+
+p. You can remove the kaltura attribution for the player by adding the following javascript: 
+
+bc. <script type="text/javascript">mw.setConfig('EmbedPlayer.kalturaAttribution', false );</script>
+
+p. You can add a custom jquery ui theme by using the theme wizard: "http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html":http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html
+
+p. Downloading that theme and adding a reference to jquery-ui-.custom.css after the mwEmbed-player-static.css file.
+
 h2. Fall Forward from Flash to html5 for iPhone & iPad Support
 
 p. *Kaltura's HTML5 Video Library* may be installed in conjunction with existing flash video integrations to provide fall forward from flash to html5 to enable video embedding for iPhone and iPad.
