@@ -425,7 +425,7 @@ function rewrite_for_OggHandler( vidIdList ) {
 								// Show the control bar for two seconds (auto play is confusing without it )
 								embedPlayer.controlBuilder.showControlBar();
 								// hide the controls if they should they are overlayed on the video
-								if( embedPlayer.controlBuilder.checkEmbedPlayer.OverlayControls() ){
+								if( embedPlayer.controlBuilder.checkOverlayControls() ){
 									setTimeout( function(){												
 										embedPlayer.controlBuilder.hideControlBar();
 									}, 4000 ); 

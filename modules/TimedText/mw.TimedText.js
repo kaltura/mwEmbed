@@ -808,7 +808,7 @@ mw.addMessages( {
 				// Resize the interface for layoutMode == 'ontop' ( if not in fullscreen )  
 				// NOTE this shoudl be a call to controlBuilder not handled here inline
 				if( ! this.embedPlayer.controlBuilder.fullscreenMode ){
-					if( this.embedPlayer.controlBuilder.checkEmbedPlayer.OverlayControls() ){
+					if( this.embedPlayer.controlBuilder.checkOverlayControls() ){
 						var playerHeight = this.embedPlayer.getHeight();
 					} else {
 						var playerHeight = this.embedPlayer.getHeight() + this.embedPlayer.controlBuilder.getHeight();
