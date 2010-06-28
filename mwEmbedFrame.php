@@ -149,10 +149,10 @@ class mwEmbedFrame {
 			//Set some iframe embed config:
 
 			// Do not overlay controls since we cant dynamically resize the embed window.
-			mw.setConfig( 'overlayControls', false );
+			mw.setConfig( 'EmbedPlayer.OverlayControls', false );
 
 			// We can't support full screen in object context since it requires outter page DOM control
-			mw.setConfig( 'enableFullscreen', false );
+			mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
 		</script>
     </head>
     <body>

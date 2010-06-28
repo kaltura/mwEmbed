@@ -159,8 +159,8 @@ mw.setConfig( 'embedPlayerAttributes', {
 	"apiProvider" : null,
 	
 	// If the player controls should be overlayed 
-	//( Global default via config overlayControls in module loader.js)  
-	"overlayControls" : true,
+	//( Global default via config EmbedPlayer.OverlayControls in module loader.js)  
+	"EmbedPlayer.OverlayControls" : true,
 	
 	// ROE url ( for xml based metadata )
 	// also see: http://wiki.xiph.org/ROE
@@ -246,7 +246,7 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 	* @param {Function} callback Function to call once embedding is done
 	*/
 	$.embedPlayers = function( attributes, callback) {
-		$j( mw.getConfig( 'rewritePlayerTags' ) ).embedPlayer( attributes, callback );
+		$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer( attributes, callback );
 	};
 	
 	/**		
@@ -574,7 +574,7 @@ EmbedPlayerManager.prototype = {
 	* once players are "ready"
 	* 
 	* This enables mw.ready event to expose video tag 
-	* elemetns as if the videotag was supported natively. 
+	* elements as if the videotag was supported natively. 
 	*
 	* @param {Object} player The EmbedPlayer object
 	*/
@@ -1197,7 +1197,7 @@ mediaElement.prototype = {
 	/**
 	* Get playable sources
 	*
-	* @returns {Array} of playbale sources
+	* @returns {Array} of playable sources
 	*/
 	getPlayableSources: function() {
 		 var playableSources = [];		 
@@ -1368,9 +1368,12 @@ mw.EmbedPlayer.prototype = {
 		
 		// Set the default skin if unset: 
 		if ( !this.skinName ) {
-			this.skinName = mw.getConfig( 'playerSkinName' );
+			this.skinName = mw.getConfig( 'EmbedPlayer.SkinName' );
 		}
-			
+		
+		if( !this.monitorRate ){
+			this.monitorRate = mw.getConfig( 'EmbedPlayer.MonitorRate' );
+		}
 		
 		// Make sure startOffset is cast as an float:		   
 		if ( this.startOffset && this.startOffset.split( ':' ).length >= 2 ) {
@@ -1467,7 +1470,7 @@ mw.EmbedPlayer.prototype = {
 				// Note: ideally firefox would not do random guesses at css values 	
 				( (this.height == 150 || this.height == 64 ) && this.width == 300 )
 			) {			
-			var defaultSize = mw.getConfig( 'videoSize' ).split( 'x' );
+			var defaultSize = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
 			this['width'] = defaultSize[0];
 			
 			// Special height default for audio tag ( if not set )  
@@ -1541,7 +1544,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Set local apiProvider via config if not defined
 		if( !_this.apiProvider ) {
-			_this.apiProvider = mw.getConfig( 'apiProvider' );
+			_this.apiProvider = mw.getConfig( 'EmbedPlayer.ApiProvider' );
 		}	
 		
 		// Setup the request
@@ -1708,12 +1711,12 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		// Set up the new embedObj
-		mw.log( 'f: inheritEmbedPlayer: embedding with ' + this.selectedPlayer.library );
+		mw.log( 'EmbedPlayer::inheritEmbedPlayer: embedding with ' + this.selectedPlayer.library );
 		var _this = this;
 		
 		// Load the selected player		
 		this.selectedPlayer.load( function() {
-			mw.log( 'EmbedPlayer:: ' + _this.selectedPlayer.library + " player loaded for " + _this.id );
+			mw.log( 'EmbedPlayer::inheritEmbedPlayer ' + _this.selectedPlayer.library + " player loaded for " + _this.id );
 			
 			// Get embed library player Interface
 			var playerInterface = mw[ 'EmbedPlayer' + _this.selectedPlayer.library  ];			
@@ -1834,7 +1837,7 @@ mw.EmbedPlayer.prototype = {
 		// Run the seeking hook
 		$j( this.embedPlayer ).trigger( 'onSeek' );
 		
-		// See if we should do a server side seek ( player idepenent ) 
+		// See if we should do a server side seek ( player independent ) 
 		if ( this.supportsURLTimeEncoding() ) {
 			// Make sure this.seek_time_sec is up-to-date:
 			this.seek_time_sec = mw.npt2seconds( this.start_npt ) + parseFloat( percent * this.getDuration() );
@@ -1918,8 +1921,8 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;				
 				
 		
-		// Only run stoped once: 
-		if( !this.isStoped() ){
+		// Only run stopped once: 
+		if( !this.isStopped() ){
 			// Stop the monitor: 
 			this.stopMonitor();
 			
@@ -2118,7 +2121,7 @@ mw.EmbedPlayer.prototype = {
 	* Render a thumbnail at a given time
 	* NOTE: Should overwrite by embed library if we can render frames natively
 	*
-	* @param {Object} options Options for rendred timeline thumb 
+	* @param {Object} options Options for rendered timeline thumb 
 	*/ 
 	renderTimelineThumbnail: function( options ) {
 		var my_thumb_src = this.mediaElement.getPosterSrc();
@@ -2298,10 +2301,10 @@ mw.EmbedPlayer.prototype = {
 	 * 					false if the mwEmbed player interface should not be used
 	 */
 	useNativeControls: function() {
-		if( mw.getConfig('nativePlayerControls') == true ) {
+		if( mw.getConfig('EmbedPlayer.NativeControls') === true ) {
 			return true;
 		}
-		if( mw.getConfig('nativePlayerControlsMobileSafari' ) &&
+		if( mw.getConfig('EmbedPlayer.NativeControlsMobileSafari' ) &&
 		 	mw.isMobileSafari()
 		){
 			return true;
@@ -2388,7 +2391,7 @@ mw.EmbedPlayer.prototype = {
 	* Gets code to embed the player remotely for "share" this player links
 	*/	
 	getEmbeddingHTML: function() {
-		switch( mw.getConfig( 'shareEmbedMode' ) ){
+		switch( mw.getConfig( 'EmbedPlayer.ShareEmbedMode' ) ){
 			case 'object':
 				return this.getShareEmbedObject()
 			break;
@@ -2563,7 +2566,7 @@ mw.EmbedPlayer.prototype = {
 	/**
 	* The Play Action
 	*
-	* Handles play requests, updates relevet states:
+	* Handles play requests, updates relevant states:
 	*  seeking =false
 	*  paused = false
 	* Updates pause button
@@ -2734,7 +2737,7 @@ mw.EmbedPlayer.prototype = {
 		// Set the local volume attribute				
 		this.previousVolume = this.volume = percent;
 		
-		// Un-mute if setting possitive volume
+		// Un-mute if setting positive volume
 		if( percent != 0 ){
 			this.muted = false;			
 		}
@@ -2748,7 +2751,7 @@ mw.EmbedPlayer.prototype = {
 	/**
 	* Updates the interface volume
 	* TODO should move to controlBuilder
-	* @param {float} percent Pecentage volume to update interface
+	* @param {float} percent Percentage volume to update interface
 	*/
 	setInterfaceVolume: function( percent ) {
 		if( this.supports[ 'volumeControl' ] && 
@@ -2759,24 +2762,24 @@ mw.EmbedPlayer.prototype = {
 	},	
 	
 	/**
-	* Abstract Update volumen Method must be overided by plug-in / player interface
+	* Abstract Update volume Method must be override by plug-in / player interface
 	*/
 	setPlayerElementVolume: function( percent ) {
 		mw.log(' error player does not support volume adjustment' );
 	},
 	
 	/**
-	* Abstract get volumen Method must be overided by plug-in / player interface
-	* (if player does not ovrride we return the abstract player value )	
+	* Abstract get volume Method must be override by plug-in / player interface
+	* (if player does not override we return the abstract player value )	
 	*/
 	getPlayerElementVolume: function(){
-		//mw.log(' error player does not support geting volume property' );
+		//mw.log(' error player does not support getting volume property' );
 		return this.volume;		
 	},
 	
 	/**
-	* Abstract get volumen muted property  must be overided by plug-in / player interface
-	* (if player does not ovride we return the abstract player value )	
+	* Abstract get volume muted property  must be overwritten by plug-in / player interface
+	* (if player does not override we return the abstract player value )	
 	*/
 	getPlayerElementMuted: function(){
 		//mw.log(' error player does not support getting mute property' );
@@ -2832,7 +2835,7 @@ mw.EmbedPlayer.prototype = {
 	*	true if stopped
 	* 	false if playing
 	*/
-	isStoped: function() {
+	isStopped: function() {
 		return this.thumbnail_disp;
 	},	
 	
@@ -2847,7 +2850,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	checkForCurrentTimeSeek: function(){
 		var _this = this;
-		// Check if a javascript currentTime change based seek has occured
+		// Check if a javascript currentTime change based seek has occurred
 		if( _this.previousTime != _this.currentTime && !this.userSlide && !this.seeking){
 			// If the time has been updated and is in range issue a seek
 			if( _this.getDuration() && _this.currentTime <= _this.getDuration() ){
@@ -2882,7 +2885,7 @@ mw.EmbedPlayer.prototype = {
 			_this.setInterfaceVolume( _this.volume );
 		}
 		
-		// Update the previus volume 
+		// Update the previous volume 
 		_this.previousVolume = _this.volume;	
 			
 		// Update the volume from the player element
@@ -2895,7 +2898,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		//mw.log( 'Monitor:: ' + this.currentTime + ' duration: ' + ( parseInt( this.getDuration() ) + 1 )  + ' is seek: ' + this.seeking );		
-		if ( this.currentTime && this.currentTime > 0  && this.duration ) {
+		if ( this.currentTime >= 0  && this.duration ) {			
 			if ( !this.userSlide && !this.seeking ) {
 				if ( parseInt( this.startOffset ) != 0 ) {				
 					// If start offset include that calculation 
@@ -2917,7 +2920,7 @@ mw.EmbedPlayer.prototype = {
 			}
 		} else {
 			// Media lacks duration just show end time			
-			if ( this.isStoped() ) {
+			if ( this.isStopped() ) {
 				this.controlBuilder.setStatus( this.getTimeRange() );
 			} else if ( this.isPaused() ) {
 				this.controlBuilder.setStatus( gM( 'mwe-embedplayer-paused' ) );
@@ -2941,14 +2944,14 @@ mw.EmbedPlayer.prototype = {
 		}
 				
 		// Call monitor at 250ms interval. ( use  setInterval to avoid stacking monitor requests ) 
-		if( ! this.isStoped() ) {
+		if( ! this.isStopped() ) {
 			if( !this.monitorInterval ){
 				this.monitorInterval = setInterval( function(){
 					_this.monitor();
-				}, 250 )
+				}, this.monitorRate )
 			}
 		} else {
-			// If stoped "stop" monitor: 
+			// If stopped "stop" monitor: 
 			clearInterval( this.monitorInterval );
 		}
 		
@@ -2957,7 +2960,7 @@ mw.EmbedPlayer.prototype = {
 	},	
 	
 	/**
-	 * Abstarct getPlayerElementTime function 
+	 * Abstract getPlayerElementTime function 
 	 */
 	getPlayerElementTime: function(){
 		mw.log("Error: getPlayerElementTime should be implemented by embed library");
@@ -3010,7 +3013,7 @@ mw.EmbedPlayer.prototype = {
 	},
 	
 	/**
-	* Highligh a section of video on the playhead	
+	* Highlight a section of video on the playhead	
 	*
 	* @param {Object} options Provides "start" time & "end" time to highlight
 	*/	
@@ -3161,7 +3164,7 @@ mediaPlayer.prototype = {
 		//Load player library ( upper case the first letter of the library )
 		mw.load( [
 			'mw.EmbedPlayer' + this.library[0].toUpperCase() + this.library.substr(1)
-		], function() {									
+		], function() {
 			callback();
 		} );
 	}
@@ -3170,7 +3173,7 @@ mediaPlayer.prototype = {
 /** 
 * players and supported mime types 
 * In an ideal world we would query the  plugin to get what mime
-*  types it supports in practice not always reliable/avaliable
+*  types it supports in practice not always reliable/available
 * 
 * We can't cleanly store these values per library since player library is loaded post player detection
 * 

@@ -11,17 +11,26 @@
 	
 	// Add class file paths ( From ROOT )
 	mw.addResourcePaths( {
-		"mw.LanguageUpWiz"			: "mw.LanguageUpWiz.js",
-		"mw.UploadWizard"		: "mw.UploadWizard.js",
-		"mw.style.uploadWizard" : "css/uploadWizard.css",
+		"mw.LanguageUpWiz"		: "js/mw.LanguageUpWiz.js",
+		"mw.UploadWizard"		: "js/mw.UploadWizard.js",
+		"mw.style.uploadWizard" 	: "styles/uploadWizard.css",
 		
-		"mw.UploadApiProcessor"		: "mw.UploadApiProcessor.js",
-		"mw.IframeTransport"		: "mw.IframeTransport.js",
-		"mw.ApiUploadHandler"		: "mw.ApiUploadHandler.js",
-		"mw.DestinationChecker"		: "mw.DestinationChecker.js",
+		"mw.UploadApiProcessor"		: "js/mw.UploadApiProcessor.js",
+		"mw.IframeTransport"		: "js/mw.IframeTransport.js",
+		"mw.ApiUploadHandler"		: "js/mw.ApiUploadHandler.js",
+		"mw.DestinationChecker"		: "js/mw.DestinationChecker.js",
 
-		"mw.MockUploadHandler"		: "mw.MockUploadHandler.js"			
-		
+		"mw.MockUploadHandler"		: "js/mw.MockUploadHandler.js",		
+
+		"$j.fn.tipsy"			: "js/jquery/plugins/jquery.tipsy.js",
+		"mw.style.tipsy"		: "styles/jquery.tipsy.css",
+
+		"$j.fn.morphCrossfade"		: "js/jquery/plugins/jquery.morphCrossfade.js",
+
+		"$j.fn.validate"		: "js/jquery/plugins/jquery.validate.js",
+
+		"$j.fn.arrowSteps"		: "js/jquery/plugins/jquery.arrowSteps.js",
+		"mw.style.arrowSteps"		: "styles/jquery.arrowSteps.css"
 	});	
 	
 	//Set a variable for the base upload interface for easy inclution
@@ -51,10 +60,16 @@
 			'$j.ui.dialog',
 			'$j.ui.draggable',			
 			'$j.ui.datepicker',
-			'$j.effects.core',
+			'$j.effects',
 			'$j.effects.slide',
-			'$j.effects.pulsate',
+			//'$j.effects.pulsate',
 			'$j.fn.autocomplete',
+			'$j.fn.tipsy',
+			'mw.style.tipsy',
+			'$j.fn.morphCrossfade',
+			'$j.fn.validate',
+			'$j.fn.arrowSteps',
+			'mw.style.arrowSteps',
 			'mw.style.autocomplete'
 		],
 		[

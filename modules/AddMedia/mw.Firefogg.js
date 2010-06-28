@@ -6,7 +6,7 @@
 mw.addMessages({
 	"mwe-upload-transcoded-status" : "Transcoded",
 	"mwe-upload-transcode-in-progress" : "Transcode and upload in progress (do not close this window)",	
-	"fogg-transcoding" : "Encoding video to Ogg",	
+	"fogg-transcoding" : "Encoding video",	
 	"fogg-select_file" : "Select file",	
 	"fogg-select_new_file" : "Select new file",
 	"fogg-select_url" : "Select URL",
@@ -634,8 +634,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			if ( v.src != _this.fogg.previewUrl ) {
 				mw.log( 'init preview with url:' + _this.fogg.previewUrl );
 				v.src = _this.fogg.previewUrl;
-
-				// Once it's loaded, seek to the end
+				// Once it's loaded, seek to the end ( for ogg ) 
 				v.removeEventListener( "loadedmetadata", seekToEnd, true );
 				v.addEventListener( "loadedmetadata", seekToEnd, true );
 
@@ -647,7 +646,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				var previewTimer = setInterval( function() {
 					if ( _this.fogg.status() != "encoding" ) {
 						clearInterval( previewTimer );
-						_this.show_preview == false; // Closure compiler marks this as irrelevant -papy
+						_this.show_preview == false; 
 					}
 					if ( _this.show_preview == true ) {
 						v.load();
@@ -784,7 +783,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	doLocalEncodeAndSave: function() {
 		var _this = this;
 		if ( !this.fogg ) {
-			mw.log( 'doLocalEncodeAndSave: no Firefogg object!' );
+			mw.log( 'Error: doLocalEncodeAndSave: no Firefogg object!' );
 			return false;
 		}
 		// Setup the interface progress indicator:
@@ -792,8 +791,9 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			'title' : gM( 'fogg-transcoding' ),
 			'statusType' : 'transcode' 
 		} );
+		
 		// Add the preview controls if transcoding:  
-		if ( !_this.getEncoderSettings()[ 'passthrough' ] ) {
+		if ( !_this.getEncoderSettings()[ 'passthrough' ] && _this.current_encoder_settings['videoCodec'] != 'vp8' ) {
 			_this.createPreviewControls();
 		}
 		
@@ -801,6 +801,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		// Firefogg shows the "save as" dialog box, and sets the path chosen as 
 		// the destination for a later encode() call.
 		if ( !this.fogg.saveVideoAs() ) {
+			_this.ui.close();
 			// User clicked "cancel"
 			return false;
 		}
@@ -824,7 +825,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		var _this = this;
 		_this.ui.setPrompt( gM( 'fogg-encoding-done' ),
 			gM( 'fogg-encoding-done' ) + '<br>' +
-			//show the video at full resolution upto 720px wide
+			// Show the video at full resolution upto 720px wide
 			'<video controls="true" style="margin:auto" id="fogg_final_vid" '+ 
 			'src="' +_this.fogg.previewUrl + '"></video>'
 		);
@@ -895,7 +896,14 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				' passthrough:' + settings['passthrough'] );
 				
 			this.current_encoder_settings = settings;
+		}		
+		//Update the format based on codec selection
+		if( this.current_encoder_settings['videoCodec'] == 'vp8' ){
+			this.fogg.setFormat('webm');
+		} else {
+			this.fogg.setFormat('ogg');
 		}
+		
 		return this.current_encoder_settings;
 	},
 
@@ -1131,6 +1139,8 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		
 		var encoderSettings = this.getEncoderSettings();
 		
+		// Check for special encode settings that remap things. 
+		
 		// Check if encoderSettings passthrough is on ( then skip the encode )				
 		if( encoderSettings['passthrough'] == true) {			
 			// Firefogg requires an encode request to setup a the file to be uploaded.
@@ -1147,7 +1157,10 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		var encodingStatus = function() {
 			var status = _this.fogg.status();
 
-			if ( _this.show_preview == true && _this.fogg.state == 'encoding' ) {
+			if ( _this.show_preview == true 
+				&& _this.fogg.state == 'encoding' 
+				// No way to seek in VP8 atm
+				&& _this.current_encoder_settings['videoCodec'] != 'vp8') {
 				_this.renderPreview();
 			}
 

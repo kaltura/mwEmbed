@@ -38,20 +38,26 @@ mw.SmilLayout.prototype = {
 		return this.getRootLayout();
 	},
 	
+	/*
+	* Get layout
+	*/
 	getRootLayout: function(){
 		var _this = this;
 		mw.log( "SmilLayout::getRootLayout:" );  
 		if( !this.$rootLayout ){
 			this.$rootLayout = $j('<div />' )
+				.attr( 'id', _this.smil.embedPlayer.id + '_smil-root-layout' )
 				.addClass( 'smilRootLayout' ) 
 				.css( {
 					'position': 'absolute',
 					'width' : '100%',
-					'height' : '100%'
+					'height' : '100%',
+					'overflow': 'hidden'
 				});
 				
 			// Update the root layout css 
-			this.$rootLayout.css( _this.getRootLayoutCss() )
+			this.$rootLayout.css( _this.getRootLayoutCss() );
+			
 			// Update the root layout html
 			this.$rootLayout.html( _this.getRootLayoutHtml() );
 		}
@@ -59,106 +65,163 @@ mw.SmilLayout.prototype = {
 	},
 	
 	/**
-	* RenderElement smilElement at a given time. 
-	* If the element does not exist in the html dom add it.
-	* Updates a given element for the requested time 
+	* Draw a smilElement to the layout. 
+	*  
+	* If the element does not exist in the html dom add it.	
 	*/ 
-	drawElement: function( smilElement, time ) {
-		var _this = this;
-		var regionId =  $j( smilElement ).attr( 'region');
-		var nodeName = $j( smilElement ).get(0).nodeName ;	
-			
-		mw.log( "SmilLayout::drawElement: " + nodeName + '.' + $j( smilElement ).attr('id' ) + ' into ' + regionId );
-		var $regionTarget =  this.$rootLayout.find( '#' + regionId );
+	drawElement: function( smilElement ) {
+		var _this = this;		
+		// Check for quick "show" path:
+		var $targetElement = this.$rootLayout.find( '#' + this.smil.getAssetId( smilElement ) ) 
+		if( $targetElement.length ){
+			$targetElement.show();
+		}
 		
-		// Check for region target in $rootLayout
-		if( $regionTarget.length == 0 ) {
-			mw.log( "Error in SmilLayout::renderElement, Could not find region:" + regionId + " for " + nodeName);
-			return ;
+		// Else draw the node into the regionTarget 
+							
+		//mw.log( "SmilLayout::drawElement: " + nodeName + '.' + $j( smilElement ).attr('id' ) + ' into ' + regionId );
+		var regionId =  $j( smilElement ).attr( 'region');
+		if( regionId ){
+			var $regionTarget =  this.$rootLayout.find( '#' + regionId );		
+			// Check for region target in $rootLayout
+			if( $regionTarget.length == 0 ) {
+				mw.log( "Error in SmilLayout::renderElement, Could not find region:" + regionId );
+				return ;
+			}
+		} else {
+			// No region provided use the rootLayout: 
+			$regionTarget = this.$rootLayout;
 		}
 		
 		// Check that the element is already in the dom
-		if( $regionTarget.find( '#' + this.smil.getAssetId( smilElement ) ).length == 0 ){
+		var $targetElement =  $regionTarget.find( '#' + this.smil.getAssetId( smilElement ) );
+		if( $targetElement.length == 0 ){
+			mw.log(" drawElement:: " + this.smil.getAssetId( smilElement ) );				
 			// Append the Smil to the target region
-			$regionTarget.append( this.getSmilElementHtml( smilElement ) )
+			$regionTarget.append( 
+				_this.getSmilElementHtml( smilElement )
+			)
+		} else {
+			// Make sure the element is visable ( may be faster to just call show directly)  
+			if( $targetElement.is(':hidden') ) {
+				$targetElement.show();
+			}			
 		}		
+	},
+	
+	/**
+	* Hide a smilElement in the layout
+	*/	
+	hideElement: function( smilElement ){
+		// Check that the element is already in the dom
+		var $targetElement = this.$rootLayout.find( '#' + this.smil.getAssetId( smilElement ) );
+		if( $targetElement.length ){
+			// Issue a quick hide request
+			$targetElement.hide();
+		}
 	},
 	
 	/**
 	 * Get the transformed smil element in html format
 	 * @param 
 	 */
-	getSmilElementHtml: function ( smilElement, time ) {
-		var nodeName = $j( smilElement ).get(0).nodeName ;
-		mw.log("Get Smil Element Html: " + nodeName );
-		switch( nodeName.toLowerCase() ){
+	getSmilElementHtml: function( smilElement ) {	
+		var smilType = this.smil.getRefType( smilElement )				
+		switch( smilType ){
+			// Not part of strict smil, but saves time being able have an "html" display mode
+			case 'cdata_html': 
+				return this.getSmilCDATAHtml( smilElement );
+			break;
+			case 'video': 
+				return this.getSmilVideoHtml( smilElement );
+			break;
+			// Smil Text: http://www.w3.org/TR/SMIL/smil-text.html (obviously we support a subset )
 			case 'smiltext':
-				return this.getSmilTextHtml( smilElement, time);
+				return this.getSmilTextHtml( smilElement );
 			break;
 			case 'img': 
-				return this.getSmilImgHtml( smilElement, time);
+				return this.getSmilImgHtml( smilElement );
 			break;			
 		}
-		mw.log( "Error: Could not find smil layout transform for element type: " + nodeName );
+		mw.log( "Error: Could not find smil layout transform for element type: " +
+				smilType + ' of type ' + $j( smilElement ).attr( 'type' ) );
+				
 		return $j('<span />')
-					.text( 'Error: unknown type:' + nodeName );
-	},
-	
-	
-	
+				.attr( 'id' , this.smil.getAssetId( smilElement ) )
+				.css( {
+					'position' : 'absolute',
+					'zindex' : 9999 // xxx need to clean up z-index system
+				})
+				.text( 'Error: unknown type:' + smilType );
+	},	
 	
 	/**
-	* Updates all the active elements for a given time
-	* @param time the requested time to be updated. 
-	* @param deltaTarget if a delta target is supplied we add a css animation transform for that delta    
-	updateSmilTime: function( time, deltaTarget ){
-		// for every active element tranform per time request
-		
-		// 
-	},
+	* Return the video
 	*/
-		
+	getSmilVideoHtml: function( videoElement ){
+		return $j('<video />')
+			.attr( {
+				'id' : this.smil.getAssetId( videoElement ), 
+				'src' : this.smil.getAssetUrl( $j( videoElement ).attr( 'src' ) )
+			} )
+			.css( {
+				'width': '100%',
+				'height' : '100%'
+			} )
+	},
 	
 	/**
-	 * Get a text element per given time
-	 * xxx we need to use "relativeTime" 
+	 * Get Smil CDATA ( passed through jQuery .clean as part of fragment creation )
+	 * XXX Security XXX 
+	 * Here we are parsing in SMIL -> HTML should be careful about XSS or script elevation 
+	 *
+	 * @@TODO check all sources are "local" only smil and enforce domain on all asset sources
 	 */
-	getSmilTextHtml: function( textElement, relativeTime ) {
+	getSmilCDATAHtml: function( smilElement ){
+		// Get "clean" smil data
+		var el = $j( smilElement ).get(0);	
+		var xmlCdata = '';
+		for ( var i=0; i < el.childNodes.length; i++ ) {	
+			var node = el.childNodes[i];
+			// Check for text cdata Node type: 
+			if( node.nodeType == 4 ) {					
+				xmlCdata += node.nodeValue;
+			}
+		}
+		
+		var textCss = this.transformSmilCss( smilElement );		
+		
+		// Return the cdata		
+		return $j('<div />')
+			.attr( 'id' , this.smil.getAssetId( smilElement ) )
+			// Wrap in font-size percentage relative to virtual size
+			.css( 'font-size',  ( ( this.targetWidth / this.virtualWidth )*100 ) + '%' )
+			.append(
+				// We pass the xmlCdata via jQuery fragment creation, this runs jquery.clean()  
+				// and filters the result html. 				
+				$j( xmlCdata )
+				.css( textCss )
+			);
+			
+	},
+	
+	/**
+	 * Get a text element html	 
+	 */
+	getSmilTextHtml: function( textElement ) {
 		var _this = this;			
 				
 		// Empty initial text value				
 		var textValue = '';
 		
 		// If the textElement has no child node directly set the text value 
-		// 	( if has child nodes, text will be selected by time in transformTextForTime ) 
+		// 	( if has child nodes, text will be selected by time in SmilAnimate.transformTextForTime ) 
 		if( $j( textElement ).children().length == 0 ){
 			mw.log( 'Direct text value to: ' + textValue);
 			textValue = $j( textElement ).text();				
-		}		
-		
-		var textCss = _this.transformSmilCss( textElement );
-		
-		// Make the font size fixed so it can be scaled
-		// based on: http://style.cleverchimp.com/font_size_intervals/altintervals.html
-		var sizeMap = {
-			'xx-small' : '.57em',				
-			'x-small' : '.69em',
-			'small' : '.83em', 
-			'medium' : '1em',
-			'large' : '1.2em',
-			'x-large' : '1.43em',
-			'xx-large' : '1.72em'
-		}				
-		if( sizeMap[ textCss['font-size'] ] ){
-			textCss['font-size'] = sizeMap[ textCss['font-size'] ];
 		}
 		
-		// If the font size is pixel based parent span will have no effect, 
-		// directly resize the pixels
-		if( textCss['font-size'] && textCss['font-size'].indexOf('px') != -1 ){
-			textCss['font-size'] = ( parseFloat( textCss['font-size'] ) 
-				* ( this.targetWidth / this.virtualWidth ) ) + 'px';
-		}
+		var textCss = _this.transformSmilCss( textElement );			
 
 		// Return the htmlElement 
 		return $j('<span />')
@@ -178,24 +241,9 @@ mw.SmilLayout.prototype = {
 	 * Get Image html per given smil element and requested time 
 	 * @param {element} imgElement The image tag element to be updated
 	 */
-	getSmilImgHtml: function( imgElement, relativeTime ) {
+	getSmilImgHtml: function( imgElement ) {
 		// Check if we have child transforms and select the transform that is in range		
-		var panZoom = null;
-		if( $j( imgElement ).children().length ){
-			$j( imgElement ).children().each(function(inx, childNode ){
-				if( childNode.nodeName == 'animate' ){
-					// add begin / duration to animation bucket ( computed value )					
-					
-					// get panZoom value									
-				}
-			})
-			// calculate animation position 
-		} else {
-			// Set pan zoom from imgElement ( if set )
-			if( $j( imgElement ).attr('panZoom') ){
-				panZoom = this.parsePanZoom( $j( imgElement ).attr('panZoom') );
-			}			
-		}
+		var panZoom = null;		
 		mw.log( "Add image:" + this.smil.getAssetUrl( $j( imgElement ).attr( 'src' ) ) );
 		// XXX get context of smil document for relative or absolute paths: 
 		return $j('<img />')
@@ -280,8 +328,7 @@ mw.SmilLayout.prototype = {
 			
 			// Update the layout css			
 			return rootLayoutCss;			
-		}
-		mw.log("Error: SmilLayout, could not find root-layout element " ) ;
+		}		
 		return {};
 	},
 
@@ -393,6 +440,30 @@ mw.SmilLayout.prototype = {
 				cssAttributes[ smilAttributeToCss[ attr.nodeName ]] = attr.nodeValue;	
 			}
 		}		
+		
+		// Make the font size fixed so it can be scaled
+		// based on: http://style.cleverchimp.com/font_size_intervals/altintervals.html
+		var sizeMap = {
+			'xx-small' : '.57em',				
+			'x-small' : '.69em',
+			'small' : '.83em', 
+			'medium' : '1em',
+			'large' : '1.2em',
+			'x-large' : '1.43em',
+			'xx-large' : '1.72em'
+		}				
+		if( sizeMap[ cssAttributes['font-size'] ] ){
+			cssAttributes['font-size'] = sizeMap[ cssAttributes['font-size'] ];
+		}
+		
+		// If the font size is pixel based parent span will have no effect, 
+		// directly resize the pixels
+		if( cssAttributes['font-size'] && cssAttributes['font-size'].indexOf('px') != -1 ){
+			cssAttributes['font-size'] = ( parseFloat( cssAttributes['font-size'] ) 
+				* ( this.targetWidth / this.virtualWidth ) ) + 'px';
+		}
+		
+		
 		// Translate rootLayout properties into div 
 		return cssAttributes;
 	}

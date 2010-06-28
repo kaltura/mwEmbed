@@ -15,6 +15,12 @@
 	} );
 	
 	mw.setDefaultConfig( {
+			// If the Timed Text interface should be displayed: 
+		// 'always' Displays link and call to contribute always
+		// 'auto' Looks for child timed text elements or "apiTitleKey" & load interface
+		// 'off' Does not display the timed text interface
+		"TimedText.showInterface" : "auto",
+		
 		/**
 		* If the "add timed text" link / interface should be exposed
 		*/
@@ -44,8 +50,8 @@
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
 		
 		var mwLoadTimedTextFlag = false;
-		// Check for the textInterface config flag 
-		if( mw.getConfig( 'textInterface' ) == 'always' ) {
+		// Check for the TimedText.showInterface config flag 
+		if( mw.getConfig( 'TimedText.showInterface' ) == 'always' ) {
 			mwLoadTimedTextFlag = true;	
 		}
 			

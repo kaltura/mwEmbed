@@ -20,7 +20,8 @@
 */
 var mwCoreComponentList = [
 	'mw.Parser',
-	'mw.Language'	
+	'mw.Language',
+	'mw.Api'	
 ];
 
 
@@ -69,25 +70,6 @@ mw.setDefaultConfig ( {
 	
 	// Default jquery ui skin name
 	'jQueryUISkin' : 'jqueryUiRedmond',	
-	
-	/**
-	* If jQuery / mwEmbed should be loaded.
-	*
-	* This flag is automatically set to true if: 
-	*  Any script calls mw.ready ( callback_function )
-	*  Page DOM includes any tags set in config.rewritePlayerTags at onDomReady 
-	*  ( embedPlayer module )
-	*
-	* This flag increases page performance on pages that do not use mwEmbed 
-	* and don't already load jQuery 
-	*
-	* For example when including the mwEmbed.js in your blog template 
-	* mwEmbed will only load extra js on blog posts that include the video tag.
-	*
-	* NOTE: Future architecture will probably do away with this flag and refactor it into 
-	* a smaller 'remotePageMwEmbed.js' script similar to ../remoteMwEmbed.js
-	*/ 
-	'runSetupMwEmbed' : false,	
 
 	// The mediaWiki path of mwEmbed  
 	'mediaWikiEmbedPath' : 'js/mwEmbed/',
@@ -136,8 +118,9 @@ mw.addResourcePaths( {
 	"mwEmbed"				: "mwEmbed.js",
 	"window.jQuery"			: "libraries/jquery/jquery-1.4.2.js",		
 	
-	"mw.Language"			: "languages/mw.Language.js",
-	"mw.Parser"				: "languages/mw.Parser.js",
+	"mw.Language"			: "components/mw.Language.js",
+	"mw.Parser"				: "components/mw.Parser.js",
+	"mw.Api"				: "components/mw.Api.js",
 
 	"JSON" 					: "libraries/json/json2.js",
 

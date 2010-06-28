@@ -14,14 +14,19 @@ mw.EmbedPlayerSmil = {
 	// The jQuery target location to render smil html
 	$renderTarget: null, 
 	
+	// Store the actual play time
+	smilPlayTime: 0,
+	
+	// Store the pause time 
+	smilPauseTime: 0,
+	
 	// Player supported feature set
 	supports: {
 		'playHead' : true,
 		'pause' : true,
 		'fullscreen' : true,
 		'timeDisplay' : true,
-		'volumeControl' : true,
-		
+		'volumeControl' : true,		
 		'overlays' : true
 	},	
 	 	
@@ -43,18 +48,26 @@ mw.EmbedPlayerSmil = {
 	 * @param {function} callback Function to be called once currentTime is loaded and displayed 
 	 */
 	setCurrentTime: function( time, callback ) {
-		mw.log('EmbedPlayerSmil::setCurrentTime: ' + time );
+		mw.log('EmbedPlayerSmil::setCurrentTime: ' + time );		
 		// Set "loading" spinner here)
 		$j( this ).append(
-			$j( '<div />')
+			$j( '<div />')			
 			.attr('id', 'loadingSpinner_' + this.id )
 			.loadingSpinner()
 		);
+		// Start seek
+		this.controlBuilder.onSeek();
+		this.smilPlayTime = time;
 		var _this = this;
 		this.getSmil( function( smil ){	
 			smil.renderTime( time, function(){
-				$j('#loadingSpinner_' + _this.id ).hide();
-				callback();
+				mw.log( "setCurrentTime:: renderTime callback" );
+				$j('#loadingSpinner_' + _this.id ).remove();
+				
+				_this.monitor();
+				if( callback ){
+					callback();
+				}
 			} );
 		});
 	},
@@ -65,7 +78,7 @@ mw.EmbedPlayerSmil = {
 	getRenderTarget: function(){
 		if( !this.$renderTarget ){
 			if( $j('#smilCanvas_' + this.id ).length === 0  ) {
-				// if no render target exist create one: 
+				// If no render target exist create one: 
 				$j( this ).html( 	
 					$j( '<div />')
 					.attr('id', 'smilCanvas_' + this.id )
@@ -82,8 +95,62 @@ mw.EmbedPlayerSmil = {
 	},
 	
 	play: function(){
-		mw.log("EmbedPlayerSmil::play (not yet supported)" );
+		mw.log(" EmbedPlayerSmil::play " );		
+		// update the interface
+		this.parent_play();
+		
+		// Set start clock time: 		
+		this.clockStartTime = new Date().getTime();		
+		
+		this.getSmil( function( smil ){
+			this.smil = smil;
+		})
+		// Start up monitor:
+		this.monitor();
 	},
+	
+	stop: function(){
+		this.smilPlayTime = 0;
+		this.smilPauseTime = 0;
+		this.setCurrentTime( 0 );		
+		this.parent_stop();
+	},
+	
+	/**
+	* Preserves the pause time across for timed playback 
+	*/
+	pause: function() {
+		mw.log( 'EmbedPlayerSmil::pause at time' +  this.smilPlayTime );
+		this.smilPauseTime = this.smilPlayTime;	
+		// Update the interface
+		this.parent_pause();							
+	},
+	
+	/**
+	* Get the embed player time
+	*/
+	getPlayerElementTime: function() {
+		return this.smilPlayTime;
+	},
+		
+	
+	/**
+	 * Monitor function render a given time
+	 */
+	monitor: function(){
+		// Update the smilPlayTime
+		if( !this.isPaused() ){
+			this.smilPlayTime = this.smilPauseTime + ( ( new Date().getTime() - this.clockStartTime ) / 1000 );
+
+			// xxx check buffer to see if we need to pause playback
+				
+			// Issue an animate time request with monitorDelta 
+			this.smil.animateTime( this.smilPlayTime, this.monitorRate ); 
+		}
+
+		this.parent_monitor();
+	},
+	
 	/**
 	* Get the smil object. If the smil object does not exist create one with the source url:
 	* @param callback 
@@ -105,12 +172,15 @@ mw.EmbedPlayerSmil = {
 	/**
 	* Get the duration of smil document. 
 	*/
-	getDuration: function(){		
-		if( this.smil ){
-			return this.smil.getDuration();
-		} else {
-			return this.parent_getDuration();
+	getDuration: function(){
+		if( !this.duration ){		
+			if( this.smil ){
+				this.duration = this.smil.getDuration();
+			} else {
+				this.duration = this.parent_getDuration();
+			}
 		}
+		return this.duration;
 	},
 	
 	/**

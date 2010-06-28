@@ -4,6 +4,12 @@
 // Wrap in mw to not pollute global namespace
 ( function( mw ) {
 
+	mw.setDefaultConfig( {
+		// The framerate for the smil player
+		'SmilPlayer.framerate': 30 
+	} );
+	
+
 	mw.addResourcePaths( {
 		"mw.SmilHooks" : "mw.SmilHooks.js",
 		
@@ -26,7 +32,7 @@
 			"mw.SmilBuffer",
 			"mw.SmilAnimate",
 			"mw.EmbedPlayerSmil"
-		]; 
+		];
 			
 		// Add smil library set if needed
 		if( mw.CheckElementForSMIL( playerElement )  ) {				

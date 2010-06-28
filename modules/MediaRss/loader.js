@@ -9,6 +9,22 @@
 		"mw.MediaRss" : "mw.MediaRss.js"
 	});
 	
+	// Set the default config
+	mw.setDefaultConfig( {
+		// Playlist layout 'vertical' or 'horizontal' 
+		'MediaRss.layout' : 'vertical',
+		
+		// Player aspect ratio
+		'MediaRss.playerAspect' : '4:3',
+		
+		// Width of item thubmnails 
+		'MediaRss.itemThumbWidth' : '60',
+		
+		// Height of the mediaRss title
+		'MediaRss.titleHeight' : '20'
+	} );
+		
+	
 } )( window.mw );
 
 // Add the jQuery hook: 

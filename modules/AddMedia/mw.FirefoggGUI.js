@@ -3,7 +3,8 @@
  */
 
 mw.addMessages({
-	"fogg-save_local_file" : "Save Ogg",
+	"fogg-wont-upload-to-server" : "Note: Your video file will be locally encoded and not upload to any server",
+	"fogg-save_local_file" : "Encode to File",	
 	"fogg-help-sticky" : "Help (click to stick)",
 	"fogg-cg-preset" : "Preset: <strong>$1<\/strong>",
 	"fogg-cg-quality" : "Basic quality and resolution control",
@@ -12,9 +13,11 @@ mw.addMessages({
 	"fogg-cg-advVideo" : "Advanced video encoding controls",
 	"fogg-cg-advAudio" : "Advanced audio encoding controls",
 	"fogg-preset-custom" : "Custom settings",
-	"fogg-webvideo-desc" : "Web video Theora, Vorbis 400 kbit\/s and 400px maximum width",
-	"fogg-savebandwidth-desc" : "Low bandwidth Theora, Vorbis 164 kbit\/s and 200px maximum width",
-	"fogg-highquality-desc" : "High quality Theora, Vorbis 1080px maximum width",
+	"fogg-webvideo-desc" : "Ogg Web video Theora, Vorbis  600 kbit\/s and 400px maximum width",	
+	"fogg-savebandwidth-desc" : "Ogg Low bandwidth Theora, Vorbis 164 kbit\/s and 200px maximum width",
+	"fogg-highquality-desc" : "Ogg High quality Theora, Vorbis 1080px maximum width",
+	"fogg-webvideo-webm-desc" : "Webm Web video VP8 600 kbit\/s and 480px maximum width",
+	"fogg-highquality-webm-desc" : "Webm High quality VP8 1080px maximum width",
 	"fogg-videoQuality-title" : "Video quality",
 	"fogg-videoQuality-help" : "Used to set the <i>visual quality<\/i> of the encoded video (not used if you set bitrate in advanced controls below).",
 	"fogg-starttime-title" : "Start second",
@@ -24,7 +27,7 @@ mw.addMessages({
 	"fogg-audioQuality-title" : "Audio quality",
 	"fogg-audioQuality-help" : "Used to set the <i>acoustic quality<\/i> of the encoded audio (not used if you set bitrate in advanced controls below).",
 	"fogg-videoCodec-title" : "Video codec",
-	"fogg-videoCodec-help" : "Used to select the clip video codec. Presently only Theora is supported. More about the <a target=\"_new\" href=\"http:\/\/en.wikipedia.org\/wiki\/Theora\">Theora codec<\/a>.",
+	"fogg-videoCodec-help" : "Select the clip video codec. More about the <a target=\"_new\" href=\"http:\/\/en.wikipedia.org\/wiki\/Theora\">Theora codec<\/a>. More about the <a target=\"_new\" href=\"http:\/\/en.wikipedia.org\/wiki\/Webm\">VP8 codec<\/a>",
 	"fogg-audioCodec-title" : "Audio codec",
 	"fogg-audioCodec-help" : "Used to set the clip audio codec. Presently only Vorbis is supported. More about the <a target=\"_new\" href=\"http:\/\/en.wikipedia.org\/wiki\/Vorbis\">Vorbis codec<\/a>",
 	"fogg-width-title" : "Video width",
@@ -121,7 +124,7 @@ mw.FirefoggGUI.prototype = {
 			'custom': {
 				'descKey': 'fogg-preset-custom',
 				'conf': {}
-			},
+			},		
 			'webvideo': {
 				'desc': gM( 'fogg-webvideo-desc' ),
 				'conf': {
@@ -151,11 +154,31 @@ mw.FirefoggGUI.prototype = {
 					'audioQuality' : 3,
 					'noUpscaling'  : true
 				}
+			},
+			'webvideo_webm': {
+				'desc': gM( 'fogg-webvideo-webm-desc' ),
+				'conf': {
+					'videoCodec' : 'vp8',
+					'maxSize'      : 480,
+					'videoBitrate' : 544,
+					'audioBitrate' : 96,
+					'noUpscaling'  : true
+				}
+			},
+			'webvideo_webmhq': {
+				'desc' : gM('fogg-highquality-webm-desc'),
+				'conf' : {
+					'videoCodec' : 'vp8',
+					'maxSize'      : 1080,
+					'videoQuality' : 6,
+					'audioQuality' : 3,
+					'noUpscaling'  : true
+				}
 			}
 		}
 	},
 
-	// Customised configuration hashtable
+	// Customized configuration hashtable
 	local_settings: {},
 
 	// Core Firefogg default encoder configuration
@@ -184,7 +207,7 @@ mw.FirefoggGUI.prototype = {
 		},
 		'videoCodec': {
 			'default'   : "theora",
-			'selectVal' : [ 'theora' ],
+			'selectVal' : [ 'theora', 'vp8' ],
 			'type'      : "select",
 			'group'     : "quality"
 		},
@@ -452,7 +475,6 @@ mw.FirefoggGUI.prototype = {
 			'</span>' +
 			'</label></td><td valign="top">';
 		// Get the default value (or an empty string if there is no default)
-
 		var defaultValue = this.default_encoder_config[configKey]['default'];
 		if ( !defaultValue ) {
 			defaultValue = '';
@@ -497,7 +519,7 @@ mw.FirefoggGUI.prototype = {
 				for ( var i in configEntry.selectVal ) {
 					var val = configEntry.selectVal[i];
 					if ( typeof val == 'string' ) {
-						var sel = ( configEntry.selectVal[i] == val ) ? ' selected' : '';
+						var sel = ( defaultValue == val ) ? ' selected' : '';
 						out += '<option value="' + val + '"'+sel+'>' + val + '</option>';
 					} else if ( typeof val == 'object' ) {
 						for ( var key in val ) {
@@ -738,16 +760,17 @@ mw.FirefoggGUI.prototype = {
 	/**
 	 * Update the UI due to a change in preset
 	 */
-	updatePresetSelection: function( presetKey ) {
+	updatePresetSelection: function( presetKey ) {			
 		// Update the local configuration
-		this.local_settings['default'] = presetKey;
+		this.local_settings['default'] = presetKey;		
 		mw.log( 'update preset desc: ' + presetKey );
 		var presetDesc = '';
 		if ( this.local_settings.presets[presetKey].desc ) {
 			presetDesc = this.local_settings.presets[presetKey].desc;
 		} else {
 			presetDesc = gM( 'fogg-preset-' + presetKey );
-		}
+		}		
+		
 		// Update the preset title
 		$j( this.selector + ' .gd_preset' )
 			.html( gM( 'fogg-cg-preset', presetDesc ) );
@@ -755,7 +778,7 @@ mw.FirefoggGUI.prototype = {
 		$j( this.selector + ' ._preset_select' ).val( presetKey );
 	},
 
-	/*
+	/**
 	 * Update the interface due to a change in a particular config key
 	 */
 	updateInterfaceValue: function( confKey, val ) {
@@ -852,9 +875,10 @@ mw.FirefoggGUI.prototype = {
 	 * into which a video has already been selected. Overrides the base method.
 	 */
 	getEncoderSettings: function() {
-		if ( this.current_encoder_settings != null ) {
-			return this.current_encoder_settings;
-		}
+		// update the encoder settings (from local settings)
+		var pKey = this.local_settings['default'];
+		// Update the current encoder settings: 
+		this.current_encoder_settings = this.local_settings.presets[ pKey ].conf;
 
 		// Call the base function
 		// Note that settings will be a reference and can be modified
@@ -981,10 +1005,7 @@ mw.FirefoggGUI.prototype = {
 		this.updateValuesInHtml();
 	},
 
-	doEncode: function( progressCallback, doneCallback ) {
-		// update the encoder settings (from local settings)
-		pKey = this.local_settings['default'];
-		this.current_encoder_settings = this.local_settings.presets[ pKey ].conf;
+	doEncode: function( progressCallback, doneCallback ) {		
 		this.basefogg_doEncode( progressCallback, doneCallback );
 	},
 

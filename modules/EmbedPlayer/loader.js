@@ -16,41 +16,41 @@
 		
 		// If the player controls should be overlaid on top of the video ( if supported by playback method)
 		// can be set to false per embed player via overlayControls attribute 
-		'overlayControls' : true,
+		'EmbedPlayer.OverlayControls' : true,
 		
 		// A default apiProvider ( ie where to lookup subtitles, video properties etc )
 		// NOTE: Each player instance can also specify a specific provider  
-		"apiProvider" : "commons",
+		"EmbedPlayer.ApiProvider" : "commons",
 		
 		// What tags will be re-written to video player by default
 		// Set to empty string or null to avoid automatic video tag rewrites to embedPlayer 	
-		"rewritePlayerTags" : "video,audio,playlist",
+		"EmbedPlayer.RewriteTags" : "video,audio,playlist",
 	
 		// Default video size ( if no size provided )	
-		"videoSize" : "400x300",
+		"EmbedPlayer.DefaultSize" : "400x300",
 	
 		// If the video player should attribute kaltura	
-		"EmbedPlayer.kalturaAttribution" : true,
+		"EmbedPlayer.KalturaAttribution" : true,
 		 
 		 // Set the browser player warning flag to true by default ( applies to all players so its not part of attribute defaults above ) 
-		"showNativePlayerWarning" : true,
+		"EmbedPlayer.ShowNativeWarning" : true,
 		
 		// If fullscreen is global enabled. 
-		"enableFullscreen" : true,
+		"EmbedPlayer.EnableFullscreen" : true,
 		
 		// If mwEmbed should use the Native player controls
 		// this will prevent video tag rewriting and skinning
 		// useful for devices such as iPad / iPod that
 		// don't fully support DOM overlays or don't expose full-screen 
 		// functionality to javascript  
-		"nativePlayerControls" : false,
+		"EmbedPlayer.NativeControls" : false,
 		
-		// If mwembed should use native controls on mobile safari
-		"nativePlayerControlsMobileSafari" : true,
+		// If mwEmbed should use native controls on mobile safari
+		"EmbedPlayer.NativeControlsMobileSafari" : true,
 		
 		
 		// The z-index given to the player interface during full screen ( high z-index )  
-		"fullScreenIndex" : 999998,
+		"EmbedPlayer.fullScreenZIndex" : 999998,
 		
 		// The default share embed mode ( can be "object" or "videojs" )
 		//
@@ -61,10 +61,13 @@
 		//	 	rewrite the player on the remote page DOM  
 		//		Video tag embedding is much more mash-up friendly but exposes
 		//		the remote site to the mwEmbed js. 
-		"shareEmbedMode" : 'object',
+		"EmbedPlayer.ShareEmbedMode" : 'object',
 		
 		// Default player skin name
-		"playerSkinName" : "mvpcf"	
+		"EmbedPlayer.SkinName" : "mvpcf",	
+		
+		// Number of milliseconds between interface updates 		
+		'EmbedPlayer.MonitorRate' : 250
 	} );
 
 	// Add class file paths 
@@ -92,12 +95,12 @@
 	} );
 
 	/**
-	* Check the current DOM for any tags in "rewritePlayerTags"
+	* Check the current DOM for any tags in "EmbedPlayer.RewriteTags"
 	* 
 	* NOTE: this function can be part of setup can run prior to jQuery being ready
 	*/
 	mw.documentHasPlayerTags = function() {
-		var rewriteTags = mw.getConfig( 'rewritePlayerTags' );				
+		var rewriteTags = mw.getConfig( 'EmbedPlayer.RewriteTags' );				
 		if( rewriteTags ) {
 			var jtags = rewriteTags.split( ',' );
 			for ( var i = 0; i < jtags.length; i++ ) { 
@@ -125,7 +128,7 @@
 			var  rewriteElementCount = 0;
 			
 			// Set each player to loading ( as early on as possible ) 
-			$j( mw.getConfig( 'rewritePlayerTags' ) ).each( function( index, element ){
+			$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).each( function( index, element ){
 								
 				// Assign an the element an ID ( if its missing one )			
 				if ( $j( element ).attr( "id" ) == '' ) {
@@ -158,8 +161,8 @@
 			});									
 			// Load the embedPlayer module ( then run queued hooks )
 			mw.load( 'EmbedPlayer', function ( ) {										
-				// Rewrite the rewritePlayerTags with the 
-				$j( mw.getConfig( 'rewritePlayerTags' ) ).embedPlayer();				
+				// Rewrite the EmbedPlayer.RewriteTags with the 
+				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer();				
 			})
 		}
 		// Run the setupFlag to continue setup		
@@ -171,8 +174,8 @@
 	*/
 	mw.addModuleLoader( 'EmbedPlayer', function() {
 		var _this = this;		
-		// Set module specific class videonojs to loading:
-		$j( '.videonojs' ).html( gM( 'mwe-embedplayer-loading_txt' ) );
+		// Hide videonojs class
+		$j( '.videonojs' ).hide();
 		
 		// Set up the embed video player class request: (include the skin js as well)
 		var dependencyRequest = [
@@ -195,7 +198,7 @@
 		];
 
 		// Pass every tag being rewritten through the update request function
-		$j( mw.getConfig( 'rewritePlayerTags' ) ).each( function() {	
+		$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).each( function() {	
 			var playerElement = this;		
 			mw.embedPlayerUpdateLibraryRequest( playerElement,  dependencyRequest[ 0 ] )			
 		} );
@@ -236,7 +239,7 @@
 		
 		// Set playerClassName to default	
 		if( ! playerClassName ){
-			playerClassName = mw.getConfig( 'playerSkinName' );
+			playerClassName = mw.getConfig( 'EmbedPlayer.SkinName' );
 		}		
 		// compre with lower case: 
 		playerClassName = playerClassName.toLowerCase();

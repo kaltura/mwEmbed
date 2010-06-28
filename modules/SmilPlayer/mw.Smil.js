@@ -37,7 +37,7 @@ mw.Smil.prototype = {
 	// Stores the smil document for this object ( for relative image paths ) 
 	smilUrl: null,
 	
-	// The abstract emebed player parent 
+	// The abstract embeed player parent 
 	embedPlayer: null,
 	
 	/** 
@@ -115,7 +115,17 @@ mw.Smil.prototype = {
 		this.getBody().renderTime( time );
 				
 		// Wait until buffer is ready
-	    this.getBuffer().timeIsBuffered( time, callback );
+	    this.getBuffer().timeIsReady( time, callback );
+	},
+	
+	/**
+	* We use animateTime instead of a tight framerate loop
+	* so that we can optimize with css transformations
+	* 
+	*/
+	animateTime: function( time, timeDelta ){		
+		//mw.log("Smil::animateTime: " + time + ' delta: ' + timeDelta ); 	
+		this.getBody().renderTime( time, timeDelta );
 	},
 	
 	/**
@@ -169,7 +179,7 @@ mw.Smil.prototype = {
 	
 	
 	/**
-	 * Get the duration form the 
+	 * Get the duration form the smil body
 	 */
 	getDuration: function(){		
 		// return 0 while we don't have the $dom loaded
@@ -182,9 +192,14 @@ mw.Smil.prototype = {
 		}
 		return this.duration;		
 	},
+		
+	/**
+	 * Some Smil Utility functions
+	 */
+	
 	/**
 	* maps a smil element id to a html safe id 
-	* as a decendent subname of the embedPlayer parent
+	* as a decedent subname of the embedPlayer parent
 	*
 	* @param {Object} smilElement Element to get id for
 	*/  
@@ -193,8 +208,13 @@ mw.Smil.prototype = {
 			mw.log("Error: getAssetId smilElement missing id " ) ;
 			return false; 
 		}
+		if( ! this.embedPlayer ||  ! this.embedPlayer.id ) {
+			mw.log("Error: getAssetId missing parent embedPlayer");
+			return false;
+		}
 		return this.embedPlayer.id + '_' + $j( smilElement ).attr('id');
 	},
+	
 	/**
 	* Get an absolute path to asset based on the smil URL
 	* @param {string} assetPath Path to asset to be transformed into url
@@ -204,9 +224,32 @@ mw.Smil.prototype = {
 		var contextUrl = mw.absoluteUrl( this.smilUrl );		
 		return mw.absoluteUrl( assetPath, contextUrl );
 	},
+	
 	/**
-	 * Some Smil Utility functions
+	 * Get the smil resource type based on nodeName and type attribute
 	 */
+	getRefType: function( smilElement ) {		
+		if( $j( smilElement ).length == 0 ){
+			mw.log('Error: Smil::getRefType on empty smilElement');
+			return;
+		}
+		// Get the smil type
+		var smilType = $j( smilElement ).get(0).nodeName.toLowerCase();	
+		if( smilType == 'ref' ){
+			// If the smilType is ref, check for a content type
+			switch( $j( smilElement ).attr( 'type' ) ) {
+				case 'text/html':
+					smilType = 'cdata_html';
+				break;
+				case 'video/ogg':
+				case 'video/h.264':
+				case 'video/webm':
+					smilType = 'video';
+				break;
+			}
+		}
+		return smilType;
+	},
 	
 	/** 
 	 * Parse smil time function

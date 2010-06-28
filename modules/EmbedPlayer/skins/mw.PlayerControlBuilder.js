@@ -85,7 +85,7 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	
 	/**
-	* Add the controls html to player interface
+	* Add the controls html to palyer interface
 	*/
 	addControls: function() {
 		// Set up local pointer to the embedPlayer
@@ -162,12 +162,12 @@ mw.PlayerControlBuilder.prototype = {
 			this.supportedComponets['timedText'] = true;
 		}		
 		// Check for kalturaAttribution 	
-		if( mw.getConfig( 'EmbedPlayer.kalturaAttribution' ) ){							 
+		if( mw.getConfig( 'EmbedPlayer.KalturaAttribution' ) ){							 
 			this.supportedComponets[ 'kalturaAttribution' ] = true;
 		}
 		
 		// Check global fullscreen enabled flag
-		if( mw.getConfig( 'enableFullscreen' ) === false ){
+		if( mw.getConfig( 'EmbedPlayer.EnableFullscreen' ) === false ){
 			this.supportedComponets[ 'fullscreen'] = false; 
 		}
 
@@ -306,7 +306,7 @@ mw.PlayerControlBuilder.prototype = {
 			$j( '<div />' )
 			.addClass( 'mw-fullscreen-overlay' )
 			// Set some arbitrary high z-index
-			.css('z-index', mw.getConfig( 'fullScreenIndex' ) ) 		
+			.css('z-index', mw.getConfig( 'EmbedPlayer.fullScreenZIndex' ) ) 		
 			.hide()
 			.fadeIn("slow")
 		);			
@@ -323,7 +323,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Change the z-index of the interface
 		$interface.css( {
 			'position' : 'fixed',
-			'z-index' : mw.getConfig( 'fullScreenIndex' ) + 1,
+			'z-index' : mw.getConfig( 'EmbedPlayer.fullScreenZIndex' ) + 1,
 			'top' : this.windowOffset.top,
 			'left' : this.windowOffset.left
 		} );		
@@ -635,7 +635,7 @@ mw.PlayerControlBuilder.prototype = {
 			return false;
 		}
 		// If the config is false
-		if( mw.getConfig( 'overlayControls' ) === false){
+		if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) == false){
 			return false;
 		} 
 		
@@ -657,7 +657,10 @@ mw.PlayerControlBuilder.prototype = {
 	* dependent on mediaElement being setup 
 	*/ 
 	checkNativeWarning: function( ) {				
-	
+		if( mw.getConfig( 'EmbedPlayer.ShowNativeWarning' ) === false ){
+			return false;
+		}
+		
 		// If the resolution is too small don't display the warning
 		if( this.embedPlayer.getPlayerHeight() < 199 ){
 			return false;
@@ -1463,7 +1466,7 @@ mw.PlayerControlBuilder.prototype = {
 						// Options binding:						
 						.menu( {
 							'content' : ctrlObj.getOptionsMenu(),
-							'zindex' : mw.getConfig( 'fullScreenIndex' ) + 1, 		
+							'zindex' : mw.getConfig( 'EmbedPlayer.fullScreenZIndex' ) + 1, 		
 							'positionOpts': {
 								'directionV' : 'up',								
 								'offsetY' : 30,

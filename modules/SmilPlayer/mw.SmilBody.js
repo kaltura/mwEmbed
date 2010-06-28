@@ -11,11 +11,18 @@ mw.SmilBody.prototype = {
 	// Used to store elements for getElementsForTime method 
 	elementsInRange: [],
 	
+	// Used to store elements out of range for getElementsForTime method
+	elementsOutOfRange: [],
+	
 	// Index of auto assigned ids
 	idIndex : 0,
 	
+	// Cache of ids of previous list of active elements
+	// This lets us cache a valid element list for a given amount of time
+	cacheElementList: {},
+	
 	// Constructor: 
-	init: function( smilObject ){		
+	init: function( smilObject ){
 		this.smil = smilObject;
 		this.$dom = this.smil.getDom().find( 'body' );
 		
@@ -35,7 +42,7 @@ mw.SmilBody.prototype = {
 				_this.getNodeSmilType( $node ) == 'ref'
 				|| _this.getNodeSmilType( $node ) == 'smilText'
 			)
-		){			
+		){
 			$node.attr('id', _this.smil.embedPlayer.id + '_ref_' + _this.idIndex );
 			mw.log('SmilBody:: gave: ' + $node.get(0).nodeName + ' id: ' + $node.attr('id') );
 			_this.idIndex++;
@@ -52,45 +59,57 @@ mw.SmilBody.prototype = {
 	/**
 	* Render the body elements for a given time, use layout engine to draw elements 
 	*/
-	renderTime: function( time ){
+	renderTime: function( time, deltaTime ){
 		var _this = this;
+		 
 		// Get all the draw elements from the body this time: 
-		var elementList = this.getElementsForTime( time );		
-		mw.log("SmilBody::renderTime: draw " + elementList.length + " elementList" );
-								
-		$j.each( elementList , function( inx, smilElement ) {
-			// xxx need to 
-			// var relativeTime = time - smilElement.parentTimeOffset;
-			var relativeTime = time - $j( smilElement ) .data ( 'parentStartOffset' );
-			
-			// Render the active elements using the layout engine
-			_this.smil.getLayout().drawElement( smilElement, relativeTime );
-			
-			// Transform the elements per animate engine
-			_this.smil.getAnimate().transformElement( smilElement, relativeTime );
-		} )		
+		var elementList = this.getElementsForTime( time ,
+			/* SMIL Element in Range */ 
+			function( smilElement) {				
+				// var relativeTime = time - smilElement.parentTimeOffset;
+				var relativeTime = time - $j( smilElement ).data ( 'parentStartOffset' );
+				
+				// Render the active elements using the layout engine
+				_this.smil.getLayout().drawElement( smilElement );
+				
+				// Transform the elements per animate engine				
+				_this.smil.getAnimate().animateTransform( smilElement, relativeTime, deltaTime );
+			},
+			/* SMIL Element out of range */
+			function( smilElement ){
+				// Hide the element in the layout 
+				_this.smil.getLayout().hideElement( smilElement );
+			}
+		);
+	},
+	
+	/**
+	* Check if we have a valid element cache: 
+	* XXX not yet working.
+	*/
+	isValidElementCache: function( time ){
+		if( time > this.cacheElementList.validStart && time > this.cacheElementList.validEnd ) {
+			return this.cacheElementList.elements; 
+		}
 	},
 	
 	/**
 	 * Gets all the elements for a given time. 
-	 * 
 	 */ 
-	getElementsForTime: function ( time ) {
+	getElementsForTime: function ( time , inRangeCallback, outOfRangeCallback ) {
 		var startOffset = 0;
 		if( !time ) {
 			time =0;
-		}
-		// Empty out the requested element set: 
-		this.elementsInRange = [];
-		this.getElementsForTimeRecurse( this.$dom, time, startOffset);
-		return this.elementsInRange;
-	},	
+		}		
+		// Empty out the requested element set: 		
+		this.getElementsForTimeRecurse( this.$dom, time, startOffset, inRangeCallback, outOfRangeCallback);
+	},
 	
 	/**
 	 * getElementsForTimeRecurse
 	 * @param {Object} $node Node to recursively search for elements in the given time range
 	 */ 
-	getElementsForTimeRecurse: function( $node, time, startOffset){
+	getElementsForTimeRecurse: function( $node, time, startOffset, inRangeCallback, outOfRangeCallback){
 		// Setup local pointers:
 		var nodeDuration = this.getNodeDuration( $node );
 		var nodeType = this.getNodeSmilType( $node );
@@ -101,51 +120,45 @@ mw.SmilBody.prototype = {
 		if( !startOffset ) {
 			startOffset = 0;
 		}
-		
-		/*mw.log( "getElementsForTimeRecurse::" + 
-			' time: ' + time  + 
-			' nodeName: ' + $j( $node ).get(0).nodeName +
-			' nodeType: ' + nodeType + 
-			' nodeDur: ' + nodeDuration  + 
-			' offset: ' + startOffset
-		);*/
-		
-		// If startOffset is > time skip node and all its children
-		if( startOffset > time ){
-			mw.log(" Reached end, startOffset is:" + startOffset + ' > ' + time );
-			return ;
-		}
-		
-		// Means we need to seek ahead
-		/*if( startOffset < time ){
-			mw.log( "Seek ahead: startOffset is: " + startOffset + ' < ' + time );
-			return ;
-		}*/		
-		
+								
+				
 		// If 'par' or 'seq' recurse to get elements for layout
-		if( nodeType == 'par'|| nodeType == 'seq' ) {
+		if( nodeType == 'par' || nodeType == 'seq' ) {
 			if( $node.children().length ) {	
 				$node.children().each( function( inx, childNode ){
-					//mw.log(" recurse:: startOffset:" + nodeType  + ' start offset:' + startOffset );
-					var childDur = _this.getElementsForTimeRecurse( $j( childNode ), time, startOffset);
-					// If element parent is a 'seq' increment startOffset: 
+					// mw.log(" recurse:: startOffset:" + nodeType  + ' start offset:' + startOffset );
+					var childDur = _this.getElementsForTimeRecurse( 
+						$j( childNode ), 
+						time, 
+						startOffset, 
+						inRangeCallback, 
+						outOfRangeCallback 
+					);
+					// If element parent is a 'seq' increment startOffset as we recurse for each child
 					if( nodeType == 'seq' ) {
 						//mw.log(" Parent Seq:: add child dur: " + childDur );
 						startOffset += childDur;
-					}
+					}					
 				});
 			}			
-		}
+		}							
 		
-		// If the nodeType is "ref" add to this.elementsInRange array
+		// If the nodeType is "ref" or smilText run the callback
 		if( nodeType == 'ref' || nodeType == 'smilText' ) {		
 			// Add the parent startOffset 
-			$node.data('parentStartOffset', startOffset );
-			// Ref type get the 
-			this.elementsInRange.push( $node );
-			//mw.log("Add ref to elementsInRange:: " + nodeType + " length:"  + this.elementsInRange.length);
-		}
-		
+			$node.data( 'parentStartOffset', startOffset );			
+			
+			// Check if element is in range: 
+			if( time >= startOffset && time <= ( startOffset + nodeDuration)  ){
+				if( inRangeCallback ){
+					inRangeCallback( $node );
+				}	
+			} else {
+				if( outOfRangeCallback ){
+					outOfRangeCallback( $node );
+				}
+			}
+		}		
 		// Return the node Duration for tracking startOffset
 		return this.getNodeDuration( $node );
 	},
@@ -171,12 +184,14 @@ mw.SmilBody.prototype = {
 		) {
 			return $node.data('computedDuration');
 		}
+		
 		var _this = this;		
 		var duration = 0;		
+		
 		// Set the block type to 
 		var blockType = this.getNodeSmilType( $node );
 				
-		// recurse on children
+		// Recurse on children
 		if( $node.children().length ){
 			$node.children().each( function( inx, childNode ){				
 				// If in a sequence add to duration 		
@@ -191,7 +206,8 @@ mw.SmilBody.prototype = {
 					}
 				}
 			});		
-		}				
+		}
+						
 		// Check the explicit duration attribute: 
 		if( $node.attr('dur') ) {			
 			//mw.log(" return dur: " + mw.smil.parseTime( $node.attr('dur') ) );			
@@ -221,6 +237,7 @@ mw.SmilBody.prototype = {
 		var blockType = $j( $node ).get(0).nodeName;
 		var blockMap = {
 			'body':'seq',
+			'ref' : 'ref',
 			'animation':'ref',
 			'audio' : 'ref',
 			'img' : 'ref',
@@ -231,6 +248,5 @@ mw.SmilBody.prototype = {
 			blockType = blockMap[ blockType ];
 		}
 		return blockType;
-	}
-	
+	}	
 }

@@ -5,15 +5,6 @@ mw.MediaRss = function( options ){
 	return this.init( options );
 };
 
-// Set the default config
-mw.setDefaultConfig( {
-	'MediaRss.layout' : 'vertical',
-	'MediaRss.playerAspect' : '4:3',
-	'MediaRss.itemThumbWidth' : '60',
-	'MediaRss.titleHeight' : '20'
-} );
-
-
 mw.MediaRss.prototype = {
 
 	// Set the media rss namespace

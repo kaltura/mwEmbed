@@ -225,7 +225,7 @@ mw.addMessages( {
 				// NOTE: Button target should be an option or config
 				$menuButton.unbind().menu( {
 					'content'	: _this.getMainMenu(),
-					'zindex' : mw.getConfig( 'fullScreenIndex' )+2,
+					'zindex' : mw.getConfig( 'EmbedPlayer.fullScreenZIndex' )+2,
 					'crumbDefaultText' : ' ',
 					'autoShow': autoShow,
 					'targetMenuContainer' : _this.menuTarget,
@@ -808,7 +808,7 @@ mw.addMessages( {
 				// Resize the interface for layoutMode == 'ontop' ( if not in fullscreen )  
 				// NOTE this shoudl be a call to controlBuilder not handled here inline
 				if( ! this.embedPlayer.controlBuilder.fullscreenMode ){
-					if( this.embedPlayer.controlBuilder.checkOverlayControls() ){
+					if( this.embedPlayer.controlBuilder.checkEmbedPlayer.OverlayControls() ){
 						var playerHeight = this.embedPlayer.getHeight();
 					} else {
 						var playerHeight = this.embedPlayer.getHeight() + this.embedPlayer.controlBuilder.getHeight();

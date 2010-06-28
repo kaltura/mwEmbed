@@ -708,7 +708,7 @@ mw.PlayList.prototype = {
 				return false;
 			}
 			
-			if ( !this.cur_clip.embed.isStoped() )
+			if ( !this.cur_clip.embed.isStopped() )
 				 this.cur_clip.embed.stop();
 			this.activeClipList.remove( this.cur_clip )
 			
