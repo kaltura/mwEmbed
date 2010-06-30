@@ -11,6 +11,9 @@ mw.SmilLayout.prototype = {
 	// Stores the callback function for once assets are loaded
 	mediaLoadedCallback : null,
 	
+	//Stores the current top z-index for "putting things on top" 
+	topZindex: 1,
+	
 	// Constructor: 
 	init: function( smilObject ){	
 		// Setup a pointer to parent smil Object
@@ -65,6 +68,13 @@ mw.SmilLayout.prototype = {
 	},
 	
 	/**
+	 * Get and increment the top zindex counter: 
+	 */
+	getTopZIndex: function(){
+		return this.topZindex++;	
+	},
+	
+	/**
 	* Draw a smilElement to the layout. 
 	*  
 	* If the element does not exist in the html dom add it.	
@@ -75,22 +85,17 @@ mw.SmilLayout.prototype = {
 		var $targetElement = this.$rootLayout.find( '#' + this.smil.getAssetId( smilElement ) ) 
 		if( $targetElement.length ){
 			$targetElement.show();
+			return ;
 		}
 		
 		// Else draw the node into the regionTarget 
 							
 		//mw.log( "SmilLayout::drawElement: " + nodeName + '.' + $j( smilElement ).attr('id' ) + ' into ' + regionId );
-		var regionId =  $j( smilElement ).attr( 'region');
-		if( regionId ){
-			var $regionTarget =  this.$rootLayout.find( '#' + regionId );		
-			// Check for region target in $rootLayout
-			if( $regionTarget.length == 0 ) {
-				mw.log( "Error in SmilLayout::renderElement, Could not find region:" + regionId );
-				return ;
-			}
-		} else {
-			// No region provided use the rootLayout: 
-			$regionTarget = this.$rootLayout;
+		var $regionTarget = this.getRegionTarget( smilElement );
+		
+		// Make sure we have a $regionTarget
+		if( !$regionTarget ){
+			return ;
 		}
 		
 		// Check that the element is already in the dom
@@ -102,11 +107,30 @@ mw.SmilLayout.prototype = {
 				_this.getSmilElementHtml( smilElement )
 			)
 		} else {
-			// Make sure the element is visable ( may be faster to just call show directly)  
+			// Make sure the element is visible ( may be faster to just call show directly)  
 			if( $targetElement.is(':hidden') ) {
 				$targetElement.show();
-			}			
-		}		
+			}
+		}
+	},
+	
+	/**
+	 * Get a region target for a given smilElement 
+	 */
+	getRegionTarget: function( smilElement ){
+		var regionId =  $j( smilElement ).attr( 'region');
+		if( regionId ){
+			var $regionTarget =  this.$rootLayout.find( '#' + regionId );		
+			// Check for region target in $rootLayout
+			if( $regionTarget.length == 0 ) {
+				mw.log( "Error in SmilLayout::renderElement, Could not find region:" + regionId );
+				return false;
+			}
+		} else {
+			// No region provided use the rootLayout: 
+			$regionTarget = this.$rootLayout;
+		}
+		return $regionTarget;
 	},
 	
 	/**
@@ -135,7 +159,7 @@ mw.SmilLayout.prototype = {
 			case 'video': 
 				return this.getSmilVideoHtml( smilElement );
 			break;
-			// Smil Text: http://www.w3.org/TR/SMIL/smil-text.html (obviously we support a subset )
+			// Smil Text: http://www.w3.org/TR/SMIL/smil-text.html ( obviously we support a subset )
 			case 'smiltext':
 				return this.getSmilTextHtml( smilElement );
 			break;
@@ -164,10 +188,7 @@ mw.SmilLayout.prototype = {
 				'id' : this.smil.getAssetId( videoElement ), 
 				'src' : this.smil.getAssetUrl( $j( videoElement ).attr( 'src' ) )
 			} )
-			.css( {
-				'width': '100%',
-				'height' : '100%'
-			} )
+			.addClass( 'smilFillWindow' )
 	},
 	
 	/**
@@ -251,10 +272,7 @@ mw.SmilLayout.prototype = {
 					'id' : this.smil.getAssetId( imgElement ), 
 					'src' : this.smil.getAssetUrl( $j( imgElement ).attr( 'src' ) )
 				} )
-				.css( {
-					'width': '100%',
-					'height' : '100%'
-				})
+				.addClass( 'smilFillWindow' )
 	},
 	
 	/**

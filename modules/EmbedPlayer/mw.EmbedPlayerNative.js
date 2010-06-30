@@ -78,7 +78,7 @@ mw.EmbedPlayerNative = {
 	 * Get the native player embed code.
 	 * 
 	 * @param {object} playerAttribtues Attributes to be override in function call
-	 * @return {object} jQuery player code object 
+	 * @return {object} cssSet css to apply to the player 
 	 */
 	getNativePlayerHtml: function( playerAttribtues, cssSet ){
 		if( !playerAttribtues) {

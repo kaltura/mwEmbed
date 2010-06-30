@@ -15,10 +15,11 @@
 		
 		"mw.Smil" : "mw.Smil.js",
 		"mw.SmilLayout" : "mw.SmilLayout.js",
+		"mw.style.SmilLayout" : "mw.style.SmilLayout.css",		
 		"mw.SmilBody" : "mw.SmilBody.js",
 		"mw.SmilBuffer" : "mw.SmilBuffer.js",
 		"mw.SmilAnimate" : "mw.SmilAnimate.js",
-		
+		"mw.SmilTransitions" : "mw.SmilTransitions.js",		
 		"mw.EmbedPlayerSmil" : "mw.EmbedPlayerSmil.js"
 	} );
 	
@@ -28,15 +29,16 @@
 		    "mw.SmilHooks",
 			"mw.Smil",
 			"mw.SmilLayout",
+			"mw.style.SmilLayout",
 			"mw.SmilBody",
 			"mw.SmilBuffer",
 			"mw.SmilAnimate",
+			"mw.SmilTransitions",
 			"mw.EmbedPlayerSmil"
 		];
 			
 		// Add smil library set if needed
-		if( mw.CheckElementForSMIL( playerElement )  ) {				
-			// If the swarm transport is enabled add mw.SwarmTransport to the request.   			
+		if( mw.CheckElementForSMIL( playerElement )  ) {  			
 			$j.merge(resourceRequest, smilPlayerLibrarySet);
 		}
 	} );

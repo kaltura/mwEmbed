@@ -68,7 +68,8 @@ mw.addMessages({
 	"fogg-license-title" : "License",
 	"fogg-license-help" : "The license of the clip (preferably a Creative Commons URL).",
 	"fogg-contact-title" : "Contact",
-	"fogg-contact-help" : "Contact link"
+	"fogg-contact-help" : "Contact link",
+	"fogg-gui-title" : "Make web video"
 });
 
 /**
@@ -769,8 +770,11 @@ mw.FirefoggGUI.prototype = {
 			presetDesc = this.local_settings.presets[presetKey].desc;
 		} else {
 			presetDesc = gM( 'fogg-preset-' + presetKey );
-		}		
-		
+		}
+		if( presetKey != 'custom' ){
+			// Copy the preset into custom settings
+			this.local_settings.presets['custom']['conf'] = $j.extend( {},  this.local_settings.presets[presetKey]['conf'] );
+		}
 		// Update the preset title
 		$j( this.selector + ' .gd_preset' )
 			.html( gM( 'fogg-cg-preset', presetDesc ) );
@@ -814,7 +818,7 @@ mw.FirefoggGUI.prototype = {
 	 * return it.
 	 */
 	updateLocalValue: function( confKey, value ) {		
-		if ( typeof this.default_encoder_config[confKey] == 'undefined' ) {		
+		if ( typeof this.default_encoder_config[ confKey ] == 'undefined' ) {		
 			mw.log( "Error: could not update conf key: " + confKey )
 			return value;
 		}

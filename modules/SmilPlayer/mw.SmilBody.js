@@ -61,6 +61,7 @@ mw.SmilBody.prototype = {
 	*/
 	renderTime: function( time, deltaTime ){
 		var _this = this;
+		mw.log( "renderTime:: " + time );
 		 
 		// Get all the draw elements from the body this time: 
 		var elementList = this.getElementsForTime( time ,
@@ -79,6 +80,9 @@ mw.SmilBody.prototype = {
 			function( smilElement ){
 				// Hide the element in the layout 
 				_this.smil.getLayout().hideElement( smilElement );
+				
+				// Expire transitions if needed
+				_this.smil.getTransitions().elementOutOfRange( smilElement, time );				
 			}
 		);
 	},

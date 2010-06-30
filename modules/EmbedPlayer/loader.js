@@ -7,13 +7,7 @@
 */
 ( function( mw ) {
 	
-	mw.setDefaultConfig( {
-		// If the Timed Text interface should be displayed: 
-		// 'always' Displays link and call to contribute always
-		// 'auto' Looks for child timed text elements or "apiTitleKey" & load interface
-		// 'off' Does not display the timed text interface	
-		"textInterface" : "auto",
-		
+	mw.setDefaultConfig( {		
 		// If the player controls should be overlaid on top of the video ( if supported by playback method)
 		// can be set to false per embed player via overlayControls attribute 
 		'EmbedPlayer.OverlayControls' : true,

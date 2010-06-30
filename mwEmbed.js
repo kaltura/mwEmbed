@@ -2125,9 +2125,36 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				if ( this ) {
 					$j( this ).html(
 						$j( '<div />' )
-						.addClass( "loadingSpinner" )  
-					 );
-				}			
+							.addClass( "loadingSpinner" )
+					);
+				}
+				/* 
+	          //var csstransforms = false;
+	          if ( Modernizr.csstransforms ) {
+	            var barNumber = 7;
+	            var barContent = '';
+	            var barSpacingDegrees = 360 / barNumber;
+	            var barOpacityDelta = 1 / (barNumber);
+	            for (i = 1; i < barNumber+1; i++) {
+	              barContent += '<div class="bar' + i + '" style="-moz-transform:rotate(' + (i-1) * barSpacingDegrees + 'deg) translate(0, -40px);-webkit-transform:rotate(' + (i-1) * barSpacingDegrees + 'deg) translate(0, -40px);opacity:' + (i) * barOpacityDelta + '; background:#000"/>';
+	            }
+						  $j( this ).html(
+							  $j( '<div />' )
+							  .addClass( "cssLoadingSpinner" )
+	              .html( barContent )
+						  );
+	            var rotations = 0;
+	            setInterval( function ( ) {
+	              $j('.cssLoadingSpinner')
+	                .css('-moz-transform','rotate('+rotations+'deg)')
+	                .css('-webkit-transform','rotate('+rotations+'deg)');
+	              if( rotations == 360 ) {
+	                rotations = 0;
+	              }
+	              rotations += 5;
+	            }, 25);
+	          }
+	          */
 				return this;
 			}
 			

@@ -49,10 +49,10 @@ mw.EmbedPlayerKplayer = {
 		
 		//flashvars.host = "www.kaltura.com";
 		flashvars.externalInterfaceDisabled = 'false';
-		//flashvars.skinPath = playerPath + '/skin.swf';
+		flashvars.skinPath = playerPath + '/skin.swf';
 		
 		flashvars["full.skinPath"] = playerPath + '/LightDoodleskin.swf';
-		
+			
 		var params = { };
 		params.quality = "best";
 		params.wmode = "opaque";

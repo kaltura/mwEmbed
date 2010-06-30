@@ -597,7 +597,9 @@ $messages['ia'] = array(
 	'mwe-clipedit-layout_left' => 'Disposition del imagine a sinistra',
 );
 
-/** Indonesian (Bahasa Indonesia) */
+/** Indonesian (Bahasa Indonesia)
+ * @author Farras
+ */
 $messages['id'] = array(
 	'mwe-clipedit-crop' => 'Potong gambar',
 	'mwe-clipedit-apply_crop' => 'Terapkan pemotongan gambar',
@@ -623,6 +625,9 @@ $messages['id'] = array(
 	'mwe-clipedit-inline-description' => 'Judul',
 	'mwe-clipedit-edit-video-tools' => 'Alat Penyuntingan Video:',
 	'mwe-clipedit-duration' => 'Durasi:',
+	'mwe-clipedit-layout' => 'Tampilan',
+	'mwe-clipedit-layout_right' => 'Tampilan gambar sisi kanan',
+	'mwe-clipedit-layout_left' => 'Tampilan gambar sisi kiri',
 );
 
 /** Igbo (Igbo)
@@ -882,7 +887,9 @@ $messages['oc'] = array(
 	'mwe-clipedit-duration' => 'Durada :',
 );
 
-/** Polish (Polski) */
+/** Polish (Polski)
+ * @author Sp5uhe
+ */
 $messages['pl'] = array(
 	'mwe-clipedit-crop' => 'Kadruj',
 	'mwe-clipedit-apply_crop' => 'Skadruj obrazek',
@@ -891,6 +898,7 @@ $messages['pl'] = array(
 	'mwe-clipedit-insert_into_sequence' => 'Wstaw do sekwencji',
 	'mwe-clipedit-preview_insert' => 'Podgląd wstawienia',
 	'mwe-clipedit-cancel_image_insert' => 'Anuluj wstawienie',
+	'mwe-clipedit-sc_attributes' => 'Edycja szczegółów klipu',
 	'mwe-clipedit-sc_inoutpoints' => 'Ustaw czasy początku i końca',
 	'mwe-clipedit-sc_overlays' => 'Nakładki',
 	'mwe-clipedit-sc_audio' => 'Kontrola dźwięku',
@@ -908,6 +916,9 @@ $messages['pl'] = array(
 	'mwe-clipedit-inline-description' => 'Nagłówek',
 	'mwe-clipedit-edit-video-tools' => 'Narzędzia edycji wideo:',
 	'mwe-clipedit-duration' => 'Czas trwania',
+	'mwe-clipedit-layout' => 'Układ',
+	'mwe-clipedit-layout_right' => 'Układ z ilustracjami sformatowanymi do prawej',
+	'mwe-clipedit-layout_left' => 'Układ z ilustracjami sformatowanymi do lewej',
 );
 
 /** Pashto (پښتو)
@@ -967,8 +978,22 @@ $messages['pt-br'] = array(
 	'mwe-clipedit-cancel_image_insert' => 'Cancelar a inserção',
 	'mwe-clipedit-sc_attributes' => 'Edição dos detalhes do clipe',
 	'mwe-clipedit-sc_inoutpoints' => 'Estabelecer pontos de entrada e saída',
+	'mwe-clipedit-sc_overlays' => 'Sobreposições',
+	'mwe-clipedit-sc_audio' => 'Controle de som',
 	'mwe-clipedit-sc_duration' => 'Duração',
+	'mwe-clipedit-template_properties' => 'Propriedades do modelo',
+	'mwe-clipedit-custom_title' => 'Título personalizado',
+	'mwe-clipedit-edit_properties' => 'Editar propriedades',
 	'mwe-clipedit-other_properties' => 'Outras propriedades',
+	'mwe-clipedit-resource_page' => 'Página de recursos:',
+	'mwe-clipedit-set_in_out_points' => 'Estabelecer pontos de entrada e saída',
+	'mwe-clipedit-start_time' => 'Hora de início',
+	'mwe-clipedit-end_time' => 'Hora de fim',
+	'mwe-clipedit-preview_inout' => 'Prever pontos de entrada e saída',
+	'mwe-clipedit-edit-tools' => 'Instrumentos de edição',
+	'mwe-clipedit-inline-description' => 'Título',
+	'mwe-clipedit-edit-video-tools' => 'Ferramentas de edição de vídeo:',
+	'mwe-clipedit-duration' => 'Duração:',
 );
 
 /** Russian (Русский)

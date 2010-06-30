@@ -34,6 +34,9 @@ mw.Smil.prototype = {
 	// Stores the mw.SmilAnimate object  
 	animate: null, 
 	
+	// Stores the mw.SmilTransisions object
+	transitions: null,
+	
 	// Stores the smil document for this object ( for relative image paths ) 
 	smilUrl: null,
 	
@@ -114,8 +117,8 @@ mw.Smil.prototype = {
 		// Update the render target with bodyElements for the requested time
 		this.getBody().renderTime( time );
 				
-		// Wait until buffer is ready
-	    this.getBuffer().timeIsReady( time, callback );
+		// Wait until buffer is ready and run the callback
+	    this.getBuffer().addAssetsReadyCallback( callback );
 	},
 	
 	/**
@@ -166,6 +169,15 @@ mw.Smil.prototype = {
 			this.body = new mw.SmilBody( this );
 		}
 		return this.body;
+	},
+	/**
+	 * Get the transitions object
+	 */
+	getTransitions: function(){
+		if( !this.transitions ){
+			this.transitions = new mw.SmilTransitions( this );
+		}
+		return this.transitions;
 	},
 	
 	/** 
