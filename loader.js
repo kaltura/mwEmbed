@@ -69,7 +69,7 @@ mw.setDefaultConfig ( {
 	'enabledModules' : mwEnabledModuleList, 
 	
 	// Default jquery ui skin name
-	'jQueryUISkin' : 'jqueryUiRedmond',	
+	'jQueryUISkin' : 'redmond',	
 
 	// The mediaWiki path of mwEmbed  
 	'mediaWikiEmbedPath' : 'js/mwEmbed/',
@@ -137,8 +137,13 @@ mw.addResourcePaths( {
 	"$j.fn.datePicker"		: "libraries/jquery/plugins/jquery.datePicker.js",
 	"$j.ui"					: "libraries/jquery/jquery.ui/ui/ui.core.js",	
 	
-	"mw.style.jqueryUiRedmond" : "libraries/jquery/jquery.ui/themes/redmond/jquery-ui-1.7.1.custom.css",
-	"mw.style.jqueryUiSmoothness"	: "libraries/jquery/jquery.ui/themes/smoothness/jquery-ui-1.7.1.custom.css",
+	/* jQuery ui themes */
+	"mw.style.ui.redmond" : "skins/jquery.ui.themes/redmond/jquery-ui-1.7.1.custom.css",
+	"mw.style.ui.darkness" : "skins/jquery.ui.themes/darkness/jquery-ui-1.7.1.custom.css",
+	"mw.style.ui.le-frog" : "skins/jquery.ui.themes/le-frog/jquery-ui-1.7.1.custom.css",
+	"mw.style.ui.start" : "skins/jquery.ui.themes/start/jquery-ui-1.7.1.custom.css",
+	"mw.style.ui.sunny" : "skins/jquery.ui.themes/sunny/jquery-ui-1.7.1.custom.css",
+
 	"mw.style.mwCommon"		: "skins/common/common.css",	
 
 	"$j.cookie"				: "libraries/jquery/plugins/jquery.cookie.js",
@@ -180,6 +185,6 @@ mw.addResourcePaths( {
 
 // Add a special css dependency for $j.ui 
 mw.addStyleResourceDependency( {
-	'$j.ui' : ( 'mw.style.' + mw.getConfig( 'jQueryUISkin' ) )	
+	'$j.ui' : ( 'mw.style.ui.' + mw.getConfig( 'jQueryUISkin' ) )	
 } );
 

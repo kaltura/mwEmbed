@@ -1799,7 +1799,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					
 					
 					// Special Hack for conditional jquery ui inclusion ( once Usability extension
-					//  registers the jquery.ui skin in mw.style this won't be needed:  
+					//  registers the jquery.ui skin in mw.style this won't be needed ) 
 					if( mw.hasJQueryUiCss() ){
 						mw.style[ mw.getConfig( 'jQueryUISkin' ) ] = true;
 					}
@@ -1844,7 +1844,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		$j( 'link' ).each( function(  na, linkNode ){
 			if( $j( linkNode ).attr( 'href' ).indexOf( 'jquery-ui-1.7.2.css' ) != -1 ) {
 				hasUiCss = true;
-				return false;
+				return true;
 			}
 		} );
 		return hasUiCss;		
