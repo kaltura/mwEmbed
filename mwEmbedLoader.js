@@ -16,7 +16,6 @@ var SCRIPT_FORCE_DEBUG = false;
 //SCRIPT_LOADER_URL = '../mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
-
 // Define mw
 window['mw'] = {};
 
@@ -112,7 +111,7 @@ function kAddScript(){
 	var jsPlayerRequest = [	 
 		// core skin: 
 		'mw.style.mwCommon',	      
-		'mw.style.jqueryUiRedmond',
+		'mw.style.ui_redmond',
 		
 		// embed player:                  
 		'mw.EmbedPlayer', 
