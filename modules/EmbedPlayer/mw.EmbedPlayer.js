@@ -162,7 +162,7 @@ mw.setConfig( 'embedPlayerAttributes', {
 	// The apiProvider where to lookup the title key
 	"apiProvider" : null,
 	
-	// If the player controls should be overlayed 
+	// If the player controls should be overlaid 
 	//( Global default via config EmbedPlayer.OverlayControls in module loader.js)  
 	"EmbedPlayer.OverlayControls" : true,
 	
@@ -184,7 +184,7 @@ mw.setConfig( 'embedPlayerAttributes', {
 	"download_link" : true,
 	
 	// Content type of the media
-	"type" : null	  
+	"type" : null
 });
 
 /**
@@ -386,74 +386,67 @@ EmbedPlayerManager.prototype = {
 		mw.embedPlayerUpdateLibraryRequest( playerElement, playerDependencyRequest );
 		
 		// Load any skins we need then swap in the interface
-		mw.load( playerDependencyRequest, function() {							
-			// We should move all playlist handling to add-in 
-			switch( playerElement.tagName.toLowerCase() ) {					
-				case 'video':
-				case 'audio':
-				// By default treat the rewrite request as "video"
-				default:			
-					var waitForMeta = true;					
-					
-					// Be sure to "stop" the target ( sometimes firefox keeps playing the video even 
-					// though its been removed from the DOM )					
-					if( playerElement.pause )
-						playerElement.pause();
-				
-					// Let extensions determine if its worthwhile to wait for metadata:
-					// We pass an object to the trigger to preserve reference values		
-					var eventObject = { 
-						'playerElement':playerElement, 
-						'waitForMeta' : waitForMeta
-					}
-					
-					$j( mw ).trigger( 'addElementWaitForMetaEvent', eventObject );
-					// update the waitForMeta 
-					waitForMeta = eventObject['waitForMeta'];
-					
-					
-					// Set the wait for meta flag if unset by extension
-					if( waitForMeta ){
-						waitForMeta = _this.waitForMetaCheck( playerElement );
-					}
+		mw.load( playerDependencyRequest, function() {								
+			var waitForMeta = true;					
 			
-					var ranPlayerSwapFlag = false;					
-									
-					// Local callback to runPlayer swap once playerElement has metadata
-					function runPlayerSwap() {			
-						if( ranPlayerSwapFlag ){
-							return ;	
-						}
-						mw.log("runPlayerSwap::" + $j( playerElement ).attr('id') );
-						ranPlayerSwapFlag = true;	
-						var playerInterface = new mw.EmbedPlayer( playerElement , attributes);
+			// Be sure to "stop" the target ( sometimes firefox keeps playing the video even 
+			// though its been removed from the DOM )					
+			if( playerElement.pause ){
+				playerElement.pause();
+			}
 						
-						_this.swapEmbedPlayerElement( playerElement, playerInterface );								
-												
-						
-						// Pass the id to any hook that needs to interface prior to checkPlayerSources
-						mw.log("addElement :: trigger :: newEmbedPlayerEvent");
-						$j( mw ).trigger ( 'newEmbedPlayerEvent',  playerInterface.id );
-						
-						// Issue the checkPlayerSources call to the new player interface:
-						// make sure to use the element that is in the DOM:						
-						$j( '#' + playerInterface.id ).get(0).checkPlayerSources();	
-					}
-									
-					if( waitForMeta ) {						
-						mw.log('DO WaitForMeta ( video missing height (' + $j( playerElement ).attr('height') + '), width (' + $j( playerElement ).attr('width') + ') or duration' );
-						playerElement.removeEventListener( "loadedmetadata", runPlayerSwap, true );
-						playerElement.addEventListener( "loadedmetadata", runPlayerSwap, true );
-					
-						// Time-out of 5 seconds ( maybe still playable but no timely metadata ) 
-						setTimeout( runPlayerSwap, 5000 );
-						return ;
-					} else { 
-						runPlayerSwap();
-						return ;
-					}				
-				break;
-		   }		   
+			// Let extensions determine if its worthwhile to wait for metadata:
+			// We pass an object to the trigger to preserve reference values		
+			var eventObject = { 
+				'playerElement':playerElement, 
+				'waitForMeta' : waitForMeta
+			}
+			
+			$j( mw ).trigger( 'addElementWaitForMetaEvent', eventObject );
+			// update the waitForMeta 
+			waitForMeta = eventObject[ 'waitForMeta' ];
+			
+			
+			// Set the wait for meta flag if unset by extension
+			if( waitForMeta ){
+				waitForMeta = _this.waitForMetaCheck( playerElement );
+			}
+	
+			var ranPlayerSwapFlag = false;					
+							
+			// Local callback to runPlayer swap once playerElement has metadata
+			function runPlayerSwap() {			
+				if( ranPlayerSwapFlag ){
+					return ;	
+				}
+				mw.log("runPlayerSwap::" + $j( playerElement ).attr('id') );
+				ranPlayerSwapFlag = true;	
+				var playerInterface = new mw.EmbedPlayer( playerElement , attributes);
+				
+				_this.swapEmbedPlayerElement( playerElement, playerInterface );								
+										
+				
+				// Pass the id to any hook that needs to interface prior to checkPlayerSources
+				mw.log("addElement :: trigger :: newEmbedPlayerEvent");
+				$j( mw ).trigger ( 'newEmbedPlayerEvent',  playerInterface.id );
+				
+				// Issue the checkPlayerSources call to the new player interface:
+				// make sure to use the element that is in the DOM:						
+				$j( '#' + playerInterface.id ).get(0).checkPlayerSources();	
+			}
+							
+			if( waitForMeta ) {						
+				mw.log('DO WaitForMeta ( video missing height (' + $j( playerElement ).attr('height') + '), width (' + $j( playerElement ).attr('width') + ') or duration' );
+				playerElement.removeEventListener( "loadedmetadata", runPlayerSwap, true );
+				playerElement.addEventListener( "loadedmetadata", runPlayerSwap, true );
+			
+				// Time-out of 5 seconds ( maybe still playable but no timely metadata ) 
+				setTimeout( runPlayerSwap, 5000 );
+				return ;
+			} else { 
+				runPlayerSwap();
+				return ;
+			}		   
 	   });
 	},
 	
@@ -968,18 +961,18 @@ mediaElement.prototype = {
 	* @param {Element} videoElement Element that has src attribute or has children source elements 
 	*/
 	init: function( videoElement ) {
-		var _this = this;
-		mw.log( videoElement.id + ' Initializing mediaElement...' );
+		var _this = this;		
+		mw.log( "mediaElement::init:" + videoElement.id  );
 		this.sources = new Array();			
 										
 		// Process the videoElement as a source element:
 		if ( $j( videoElement ).attr( "src" ) ) {
 			_this.tryAddSource( videoElement );
 		}
-			
+		// Process elements source children
 		$j( videoElement ).find( 'source,track' ).each( function( ) {			
 			_this.tryAddSource( this );
-		} );		
+		} );			
 	},
 	
 	/** 
@@ -1329,7 +1322,7 @@ mw.EmbedPlayer.prototype = {
 	* @param {Object} customAttributes Attributes supplied via argument (rather than applied to the element) 
 	*/
 	init: function( element, customAttributes ) {	
-		var _this = this;	
+		var _this = this;		
 		// Set customAttributes if unset: 
 		if ( !customAttributes ) {
 			customAttributes = { };
@@ -1426,7 +1419,22 @@ mw.EmbedPlayer.prototype = {
 		
 		// Add the mediaElement object with the elements sources:  
 		this.mediaElement = new mediaElement( element );
-
+		  
+		// Process attribute "sources" for dynamic embedding
+		if( customAttributes.sources && customAttributes.sources.length ){
+			for( var i =0; i < customAttributes.sources.length ; i ++ ){
+				var customSource =  customAttributes.sources[i];
+				if( customSource.src ){
+					var $source = $j('<source />')
+						.attr( 'src', customSource.src );	
+					
+					if( customSource.type ){
+						$source.attr('type', customSource.type )
+					}
+					this.mediaElement.tryAddSource( $source.get(0) );
+				}
+			}
+		}
 	},
 	
 	/**
