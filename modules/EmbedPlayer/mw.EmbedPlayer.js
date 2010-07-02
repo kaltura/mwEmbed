@@ -1419,7 +1419,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Add the mediaElement object with the elements sources:  
 		this.mediaElement = new mediaElement( element );
-		  
+		
 		// Process attribute "sources" for dynamic embedding
 		if( customAttributes.sources && customAttributes.sources.length ){
 			for( var i =0; i < customAttributes.sources.length ; i ++ ){
@@ -1427,9 +1427,12 @@ mw.EmbedPlayer.prototype = {
 				if( customSource.src ){
 					var $source = $j('<source />')
 						.attr( 'src', customSource.src );	
-					
+					// xxx todo pull list of valid source attributes from mediaSource prototype
 					if( customSource.type ){
 						$source.attr('type', customSource.type )
+					}
+					if( customSource.title ){
+						$source.attr('title', customSource.title );
 					}
 					this.mediaElement.tryAddSource( $source.get(0) );
 				}
