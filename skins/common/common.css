@@ -41,7 +41,22 @@
 	margin-left: auto ;
   	margin-right: auto ;	
 }
+.cssLoadingSpinner {
+  position:relative;
+  width:100px;
+  height:100px;
+  //margin:25px;
+  -moz-border-radius:100px;
+  float:left;
+  -moz-transform:scale(0.3);
+  -webkit-transform:scale(0.3);
 
+  /* not used right now: */
+  -webkit-animation-name: rotateThis;
+  -webkit-animation-duration:2s;
+  -webkit-animation-iteration-count:infinite;
+  -webkit-animation-timing-function:linear;
+}
 /* jquery.ui overides */
 
 .ui-icon_link {

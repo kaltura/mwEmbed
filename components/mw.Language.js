@@ -295,6 +295,272 @@
 	}
 	
 	/**
+	 * Plural form transformations, needed for some languages.
+	 * For example, there are 3 form of plural in Russian and Polish,
+	 * depending on "count mod 10". See [[w:Plural]]
+	 * For English it is pretty simple.
+	 *
+	 * Invoked by putting {{plural:count|wordform1|wordform2}}
+	 * or {{plural:count|wordform1|wordform2|wordform3}}
+	 *
+	 * Example: {{plural:{{NUMBEROFARTICLES}}|article|articles}}
+	 *
+	 * @param count Integer: non-localized number
+	 * @param forms Array: different plural forms
+	 * @return string Correct form of plural for count in this language
+	 */	 
+	
+	/**
+	* Base gender transform function
+	*/
+	mw.Language.gender = function( gender, forms ) {
+		if ( ! forms.length ) { 
+			return ''; 
+		}
+		forms = mw.Language.preConvertPlural( forms, 2 );
+		if ( gender === 'male' ) return forms[0];
+		if ( gender === 'female' ) return forms[1];
+		return ( forms[2] ) ? forms[2] : forms[0];
+	};
+	
+	/**
+	* Process the PLURAL template substitution 
+	* @param {Object} template Template object 
+	* 
+	* 	{{Template:argument|params}}
+	* 
+	* 	Template object should include:
+	* 	[arg] The argument sent to the template  
+	* 	[params] The template parameters  
+	*/
+	mw.Language.procPLURAL = function( templateObject ) {		
+		// Setup shortcuts
+		// ( gRuleSet is loaded from script-loader to contains local ruleset )
+		var rs = gRuleSet[ 'PLURAL' ];
+		
+		if( templateObject.arg && templateObject.param && mw.Language.convertPlural) {
+			// Check if we have forms to replace
+			if ( templateObject.param.length == 0 ) { 
+				return '';
+			}
+			// Restore the count into a Number ( if it got converted earlier )
+			var count = mw.Language.convertNumber( templateObject.arg, true );
+			
+			// Do convertPlural call 					
+			return mw.Language.convertPlural( parseInt( count ), templateObject.param );
+			
+		}
+		// Could not process plural return first form or nothing
+		if( templateObject.param[0] ) {
+			return templateObject.param[0];
+		}
+		return '';
+	};
+	
+	// NOTE:: add gender support here 
+	mw.Language.procGENDER = function( templateObject ){
+		return 'gender-not-supported-in-js-yet';
+	}
+	/*
+	* Base convertPlural function:
+	*/
+	mw.Language.convertPlural = function( count, forms ){	
+		if ( !forms || forms.length == 0 ) { 
+			return ''; 
+		}	
+		return ( parseInt( count ) == 1 ) ? forms[0] : forms[1];
+	};
+	/**
+	 * Checks that convertPlural was given an array and pads it to requested
+	 * amount of forms by copying the last one.
+	 *
+	 * @param {Array} forms Forms given to convertPlural
+	 * @param {Integer} count How many forms should there be at least
+	 * @return {Array} Padded array of forms or an exception if not an array
+	 */
+	mw.Language.preConvertPlural = function( forms, count ) {		
+		while ( forms.length < count ) {
+			forms.push( forms[ forms.length-1 ] );
+		}		
+		return forms;
+	};
+	
+	/**
+	 * Init the digitTransformTable ( populated by language classes where applicable ) 
+	 */
+	mw.Language.digitTransformTable = null;
+	
+	/** 
+	 * Convert a number using the digitTransformTable 
+	 * @param Number number to be converted
+	 * @param Bollean typeInt if we should return a number of type int 
+	 */
+	mw.Language.convertNumber = function( number, typeInt ) {
+		if( !mw.Language.digitTransformTable )
+			return number;
+		
+		// Set the target Transform table: 
+		var transformTable = mw.Language.digitTransformTable;
+		
+		// Check if the "restore" to latin number flag is set: 
+		if( typeInt ) {			
+			if( parseInt( number ) == number )	
+				return number;
+			var tmp = [];
+			for( var i in transformTable ) {
+				tmp[ transformTable[ i ] ] = i;
+			}
+			transformTable = tmp;
+		}
+		
+		var numberString =  '' + number;
+		var convertedNumber = '';
+		for( var i =0; i < numberString.length; i++) {
+			if( transformTable[ numberString[i] ] ) {
+				convertedNumber += transformTable[ numberString[i] ];
+			}else{
+				convertedNumber += numberString[i];
+			}
+		}
+		return ( typeInt )? parseInt( convertedNumber) : convertedNumber;
+	}
+	
+	/**
+	 * Checks if a language key is valid ( is part of languageCodeList )
+	 * @param {String} langKey Language key to be checked
+	 * @return true if valid language, false if not
+	 */
+	mw.isValidLang = function( langKey ) {
+		return ( mw.Language.names[ langKey ] )? true : false;
+	}		
+	
+	/**
+	* Get a language transform key
+	* returns default "en" fallback if none found
+	* @param String langKey The language key to be checked	
+	*/
+	mw.getLangTransformKey = function( langKey ) {		
+		if( mw.Language.fallbackTransformMap[ langKey ] ) {
+			langKey = mw.Language.fallbackTransformMap[ langKey ];
+		}
+		// Make sure the langKey has a transformClass: 
+		for( var i = 0; i < mw.Language.transformClass.length ; i++ ) {
+			if( langKey == mw.Language.transformClass[i] ){
+				return langKey
+			}
+		}
+		// By default return the base 'en' class
+		return 'en';
+	}
+	
+	/**
+	 * getRemoteMsg loads remote msg strings
+	 *
+	 * @param {Mixed} msgSet the set of msg to load remotely
+	 * @param function callback  the callback to issue once string is ready
+	 */
+	mw.getRemoteMsg = function( msgSet, callback ) {
+		var ammessages = '';
+		if ( typeof msgSet == 'object' ) {
+			for ( var i in msgSet ) {
+				if( !messageCache[ i ] ) { 
+					ammessages += msgSet[i] + '|';
+				}
+			}
+		} else if ( typeof msgSet == 'string' ) {
+			if( !messageCache[ i ] ) {
+				ammessages += msgSet;
+			}
+		}
+		if ( ammessages == '' ) {
+			mw.log( 'no remote msgs to get' );
+			callback();
+			return false;
+		}
+		var request = {
+			'meta': 'allmessages',
+			'ammessages': ammessages
+		}
+		mw.getJSON( request, function( data ) {
+			if ( data.query.allmessages ) {
+				var msgs = data.query.allmessages;
+				for ( var i in msgs ) {
+					var ld = { };
+					ld[ msgs[i]['name'] ] = msgs[i]['*'];
+					mw.addMessages( ld );
+				}
+			}
+			callback();
+		} );
+	}
+	
+	/**
+	 * Format a size in bytes for output, using an appropriate
+	 * unit (B, KB, MB or GB) according to the magnitude in question
+	 *
+	 * @param size Size to format
+	 * @return string Plain text (not HTML)
+	 */
+	mw.Language.formatSize = function ( size ) {
+		// For small sizes no decimal places are necessary
+		var round = 0;
+		var msg = '';
+		if ( size > 1024 ) {
+			size = size / 1024;
+			if ( size > 1024 ) {
+				size = size / 1024;
+				// For MB and bigger two decimal places are smarter
+				round = 2;
+				if ( size > 1024 ) {
+					size = size / 1024;
+					msg = 'mwe-size-gigabytes';
+				} else {
+					msg = 'mwe-size-megabytes';
+				}
+			} else {
+				msg = 'mwe-size-kilobytes';
+			}
+		} else {
+			msg = 'mwe-size-bytes';
+		}
+		// JavaScript does not let you choose the precision when rounding
+		var p = Math.pow( 10, round );
+		size = Math.round( size * p ) / p;
+		return gM( msg , size );
+	};
+	
+	/**
+	 * Format a number
+	 * @param {Number} num Number to be formated
+	 * NOTE: add il8n support to lanuages/class/Language{langCode}.js
+	 */
+	mw.Language.formatNumber = function( num ) {
+		/*
+		*	addSeparatorsNF
+		* @param Str: The number to be formatted, as a string or number.		
+		* @param outD: The decimal character for the output, such as ',' for the number 100,2
+		* @param sep: The separator character for the output, such as ',' for the number 1,000.2
+		*/
+		function addSeparatorsNF( nStr, outD, sep ) {
+			nStr += '';
+			var dpos = nStr.indexOf( '.' );
+			var nStrEnd = '';
+			if ( dpos != -1 ) {
+				nStrEnd = outD + nStr.substring( dpos + 1, nStr.length );
+				nStr = nStr.substring( 0, dpos );
+			}
+			var rgx = /(\d+)(\d{3})/;
+			while ( rgx.test( nStr ) ) {
+				nStr = nStr.replace( rgx, '$1' + sep + '$2' );
+			}
+			return nStr + nStrEnd;
+		}
+		// @@todo read language code and give periods or comas: 
+		return addSeparatorsNF( num, '.', ',' );
+	}
+	
+	
+	/**
 	 * List of all languages mediaWiki supports ( Avoid an api call to get this same info )
 	 * http://commons.wikimedia.org/w/api.php?action=query&meta=siteinfo&siprop=languages&format=jsonfm
 	 */
@@ -820,270 +1086,6 @@
 		'wa' : 'fr'
 	};
 	
-	/**
-	 * Plural form transformations, needed for some languages.
-	 * For example, there are 3 form of plural in Russian and Polish,
-	 * depending on "count mod 10". See [[w:Plural]]
-	 * For English it is pretty simple.
-	 *
-	 * Invoked by putting {{plural:count|wordform1|wordform2}}
-	 * or {{plural:count|wordform1|wordform2|wordform3}}
-	 *
-	 * Example: {{plural:{{NUMBEROFARTICLES}}|article|articles}}
-	 *
-	 * @param count Integer: non-localized number
-	 * @param forms Array: different plural forms
-	 * @return string Correct form of plural for count in this language
-	 */	 
-	
-	/**
-	* Base gender transform function
-	*/
-	mw.Language.gender = function( gender, forms ) {
-		if ( ! forms.length ) { 
-			return ''; 
-		}
-		forms = mw.Language.preConvertPlural( forms, 2 );
-		if ( gender === 'male' ) return forms[0];
-		if ( gender === 'female' ) return forms[1];
-		return ( forms[2] ) ? forms[2] : forms[0];
-	};
-	
-	/**
-	* Process the PLURAL template substitution 
-	* @param {Object} template Template object 
-	* 
-	* 	{{Template:argument|params}}
-	* 
-	* 	Template object should include:
-	* 	[arg] The argument sent to the template  
-	* 	[params] The template parameters  
-	*/
-	mw.Language.procPLURAL = function( templateObject ) {		
-		// Setup shortcuts
-		// ( gRuleSet is loaded from script-loader to contains local ruleset )
-		var rs = gRuleSet[ 'PLURAL' ];
-		
-		if( templateObject.arg && templateObject.param && mw.Language.convertPlural) {
-			// Check if we have forms to replace
-			if ( templateObject.param.length == 0 ) { 
-				return '';
-			}
-			// Restore the count into a Number ( if it got converted earlier )
-			var count = mw.Language.convertNumber( templateObject.arg, true );
-			
-			// Do convertPlural call 					
-			return mw.Language.convertPlural( parseInt( count ), templateObject.param );
-			
-		}
-		// Could not process plural return first form or nothing
-		if( templateObject.param[0] ) {
-			return templateObject.param[0];
-		}
-		return '';
-	};
-	
-	// NOTE:: add gender support here 
-	mw.Language.procGENDER = function( templateObject ){
-		return 'gender-not-supported-in-js-yet';
-	}
-	/*
-	* Base convertPlural function:
-	*/
-	mw.Language.convertPlural = function( count, forms ){	
-		if ( !forms || forms.length == 0 ) { 
-			return ''; 
-		}	
-		return ( parseInt( count ) == 1 ) ? forms[0] : forms[1];
-	};
-	/**
-	 * Checks that convertPlural was given an array and pads it to requested
-	 * amount of forms by copying the last one.
-	 *
-	 * @param {Array} forms Forms given to convertPlural
-	 * @param {Integer} count How many forms should there be at least
-	 * @return {Array} Padded array of forms or an exception if not an array
-	 */
-	mw.Language.preConvertPlural = function( forms, count ) {		
-		while ( forms.length < count ) {
-			forms.push( forms[ forms.length-1 ] );
-		}		
-		return forms;
-	};
-	
-	/**
-	 * Init the digitTransformTable ( populated by language classes where applicable ) 
-	 */
-	mw.Language.digitTransformTable = null;
-	
-	/** 
-	 * Convert a number using the digitTransformTable 
-	 * @param Number number to be converted
-	 * @param Bollean typeInt if we should return a number of type int 
-	 */
-	mw.Language.convertNumber = function( number, typeInt ) {
-		if( !mw.Language.digitTransformTable )
-			return number;
-		
-		// Set the target Transform table: 
-		var transformTable = mw.Language.digitTransformTable;
-		
-		// Check if the "restore" to latin number flag is set: 
-		if( typeInt ) {			
-			if( parseInt( number ) == number )	
-				return number;
-			var tmp = [];
-			for( var i in transformTable ) {
-				tmp[ transformTable[ i ] ] = i;
-			}
-			transformTable = tmp;
-		}
-		
-		var numberString =  '' + number;
-		var convertedNumber = '';
-		for( var i =0; i < numberString.length; i++) {
-			if( transformTable[ numberString[i] ] ) {
-				convertedNumber += transformTable[ numberString[i] ];
-			}else{
-				convertedNumber += numberString[i];
-			}
-		}
-		return ( typeInt )? parseInt( convertedNumber) : convertedNumber;
-	}
-	
-	/**
-	 * Checks if a language key is valid ( is part of languageCodeList )
-	 * @param {String} langKey Language key to be checked
-	 * @return true if valid language, false if not
-	 */
-	mw.isValidLang = function( langKey ) {
-		return ( mw.Language.names[ langKey ] )? true : false;
-	}
-	
-	/**
-	* Get a language transform key
-	* returns default "en" fallback if none found
-	* @param String langKey The language key to be checked	
-	*/
-	mw.getLangTransformKey = function( langKey ) {		
-		if( mw.Language.fallbackTransformMap[ langKey ] ) {
-			langKey = mw.Language.fallbackTransformMap[ langKey ];
-		}
-		// Make sure the langKey has a transformClass: 
-		for( var i = 0; i < mw.Language.transformClass.length ; i++ ) {
-			if( langKey == mw.Language.transformClass[i] ){
-				return langKey
-			}
-		}
-		// By default return the base 'en' class
-		return 'en';
-	}
-	
-	/**
-	 * getRemoteMsg loads remote msg strings
-	 *
-	 * @param {Mixed} msgSet the set of msg to load remotely
-	 * @param function callback  the callback to issue once string is ready
-	 */
-	mw.getRemoteMsg = function( msgSet, callback ) {
-		var ammessages = '';
-		if ( typeof msgSet == 'object' ) {
-			for ( var i in msgSet ) {
-				if( !messageCache[ i ] ) { 
-					ammessages += msgSet[i] + '|';
-				}
-			}
-		} else if ( typeof msgSet == 'string' ) {
-			if( !messageCache[ i ] ) {
-				ammessages += msgSet;
-			}
-		}
-		if ( ammessages == '' ) {
-			mw.log( 'no remote msgs to get' );
-			callback();
-			return false;
-		}
-		var request = {
-			'meta': 'allmessages',
-			'ammessages': ammessages
-		}
-		mw.getJSON( request, function( data ) {
-			if ( data.query.allmessages ) {
-				var msgs = data.query.allmessages;
-				for ( var i in msgs ) {
-					var ld = { };
-					ld[ msgs[i]['name'] ] = msgs[i]['*'];
-					mw.addMessages( ld );
-				}
-			}
-			callback();
-		} );
-	}
-	
-	/**
-	 * Format a size in bytes for output, using an appropriate
-	 * unit (B, KB, MB or GB) according to the magnitude in question
-	 *
-	 * @param size Size to format
-	 * @return string Plain text (not HTML)
-	 */
-	mw.Language.formatSize = function ( size ) {
-		// For small sizes no decimal places are necessary
-		var round = 0;
-		var msg = '';
-		if ( size > 1024 ) {
-			size = size / 1024;
-			if ( size > 1024 ) {
-				size = size / 1024;
-				// For MB and bigger two decimal places are smarter
-				round = 2;
-				if ( size > 1024 ) {
-					size = size / 1024;
-					msg = 'mwe-size-gigabytes';
-				} else {
-					msg = 'mwe-size-megabytes';
-				}
-			} else {
-				msg = 'mwe-size-kilobytes';
-			}
-		} else {
-			msg = 'mwe-size-bytes';
-		}
-		// JavaScript does not let you choose the precision when rounding
-		var p = Math.pow( 10, round );
-		size = Math.round( size * p ) / p;
-		return gM( msg , size );
-	};
-	
-	/**
-	 * Format a number
-	 * @param {Number} num Number to be formated
-	 * NOTE: add il8n support to lanuages/class/Language{langCode}.js
-	 */
-	mw.Language.formatNumber = function( num ) {
-		/*
-		*	addSeparatorsNF
-		* @param Str: The number to be formatted, as a string or number.		
-		* @param outD: The decimal character for the output, such as ',' for the number 100,2
-		* @param sep: The separator character for the output, such as ',' for the number 1,000.2
-		*/
-		function addSeparatorsNF( nStr, outD, sep ) {
-			nStr += '';
-			var dpos = nStr.indexOf( '.' );
-			var nStrEnd = '';
-			if ( dpos != -1 ) {
-				nStrEnd = outD + nStr.substring( dpos + 1, nStr.length );
-				nStr = nStr.substring( 0, dpos );
-			}
-			var rgx = /(\d+)(\d{3})/;
-			while ( rgx.test( nStr ) ) {
-				nStr = nStr.replace( rgx, '$1' + sep + '$2' );
-			}
-			return nStr + nStrEnd;
-		}
-		// @@todo read language code and give periods or comas: 
-		return addSeparatorsNF( num, '.', ',' );
-	}
 	
 }) ( window.mw );
 

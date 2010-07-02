@@ -1,10 +1,3 @@
-Developers should not modify the contents of mwEmbed.i18n.php directly. 
+These language classes have been ported from the php mediaWiki language classes. 
 
-mwEmbed.i18n.php is updated by maintenance scripts. 
-
-Two scripts write to this file:
-* mwEmbed/includes/maintenance/mergeJavascriptMsg.php
-Copies English messages from  every mwEmbed javascript module
-
-* Translate wiki script
-Copies the translate wiki localised msgs into the file. 
+For testing see JS2Support extension that compares javascript output to mediawiki output  

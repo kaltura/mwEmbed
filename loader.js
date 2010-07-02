@@ -121,7 +121,7 @@ mw.addResourcePaths( {
 	"mw.Language"			: "components/mw.Language.js",
 	"mw.Parser"				: "components/mw.Parser.js",
 	"mw.Api"				: "components/mw.Api.js",
-
+	"Modernizr" 			: "libraries/jquery/plugins/modernizr.js",
 	"JSON" 					: "libraries/json/json2.js",
 
 	"$j.replaceText.js"		: "libraries/jquery/plugins/jquery.replaceText.js",
