@@ -310,11 +310,12 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		* 		
 		*/				
 		load: function( loadRequest, instanceCallback ) {
+			//mw.log("mw.load:: " + loadRequest );
 			// Ensure the callback is only called once per load instance 
 			var callback = function(){
 				//mw.log( 'instanceCallback::running callback: ' + instanceCallback );
 				if( instanceCallback ){
-					// We pass the loadRequest back to the callback for easy debuging of concurrency issues.
+					// We pass the loadRequest back to the callback for easy debugging of concurrency issues.
 					// ( normally its not used ) 
 					instanceCallback( loadRequest );
 					instanceCallback = null;
@@ -323,7 +324,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 						
 			// Check for empty loadRequest ( directly return the callback ) 
 			if( mw.isEmpty( loadRequest ) ) {
-				mw.log( 'Empty load request: ' + loadRequest );
+				mw.log( 'Empty load request: ( ' + loadRequest + ' ) ' );
 				callback( loadRequest );
 				return ;
 			}									
@@ -341,7 +342,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}  
 					
 			// Check for the module name loader function 
-			if( this.moduleLoaders[ loadRequest ] ) {					
+			if( this.moduleLoaders[ loadRequest ] ) {						
 				var resourceSet = this.getModuleResourceSet( loadRequest );				
 				if( !resourceSet ){
 					mw.log( "mw.load:: Error with module loader: " + loadRequest + ' ( no resource set defined )' );
@@ -364,8 +365,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}
 			
 			// Check for javascript resource 
-			if( this.getResourcePath( loadRequest ) ) {		
-				//mw.log('mw.load: loadResource: ' + loadRequest );
+			if( this.getResourcePath( loadRequest ) ) {						
 				this.loadResource( loadRequest, callback );																	
 				return ;
 			}
@@ -433,8 +433,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}	
 			
 			// We are infact loading many:
-			//mw.log("mw.load: LoadMany:: " + loadSet );
-						
+			mw.log("mw.load: LoadMany:: " + loadSet );
+			
 			// Issue the load request check check loadStates to see if we are "done"
 			for( var loadName in loadStates ) {				
 				//mw.log("loadMany: load: " + loadName ); 					
@@ -579,8 +579,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		*/ 
 		runModuleLoadQueue: function(){		
 			var _this = this;			
-			
-			var runModuleFunctionQueue = function(){
+			mw.log( "mw.runModuleLoadQueue:: "  );
+			var cat = _this.moduleLoadQueue;			
+			var runModuleFunctionQueue = function(){				
 				// Run all the callbacks 
 				for( var moduleName in _this.moduleLoadQueue ){
 					while( _this.moduleLoadQueue[moduleName].functionQueue.length ) {
@@ -604,6 +605,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				});
 				return ;
 			}
+			
 			// Else do per module group loading
 			if( mw.getConfig( 'loader.groupStrategy' ) == 'module' ) {				
 				var fullResourceList = [];
@@ -690,25 +692,27 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			return moduleList;
 		},
 		/**
-		* Loads javascript associated with a resourceName
+		* Loads javascript or css associated with a resourceName
 		*
 		* @param {String} resourceName Name of resource to load
 		* @param {Function} callback Function to run once resource is loaded 
 		*/
-		loadResource: function( resourceName , callback) {		
-			var _this = this;		
+		loadResource: function( resourceName , callback) {
+			//mw.log("LoadResource:" + resourceName ); 		
+			var _this = this;			
+					
 			// Check for css dependency on resource name 
 			if( this.resourceStyleDependency[ resourceName ] ) {				
 				if( ! mw.isset( this.resourceStyleDependency[ resourceName ] )){
-					mw.log(" load dependent css resource: "  + this.resourceStyleDependency[ resourceName ]  );
-					_this.loadResource(  this.resourceStyleDependency[ resourceName ] , function(){
+					mw.log("loadResource:: dependent css resource: "  + this.resourceStyleDependency[ resourceName ]  );
+					_this.loadResource( this.resourceStyleDependency[ resourceName ] , function() {
 						// Continue the original loadResource request. 
 						_this.loadResource( resourceName, callback );
 					});
 					return ;
 				}
-			}
-			
+			}			
+						
 			// Make sure the resource is not already defined:
 			if ( mw.isset( resourceName ) ) {
 				//mw.log( 'Class ( ' + resourceName + ' ) already defined ' );
@@ -723,7 +727,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			// If the scriptloader is enabled use the resourceName as the scriptRequest: 
 			if( mw.getResourceLoaderPath() ) {		
 				scriptRequest =  resourceName;
-			}else{
+			}else{				
 				// Get the resource url:
 				var baseClassPath = this.getResourcePath( resourceName );													
 				// Add the mwEmbed path if not a root path or a full url
@@ -736,17 +740,15 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				if( ! scriptRequest ) {
 					mw.log( "Error Could not get url for resource " + resourceName  );						
 					return false;
-				}	
+				}				
 			}			
 			// Include resource defined check for older browsers
 			var resourceDone = false;
 			
 			// Set the loadDone callback per the provided resourceName				
 			mw.setLoadDoneCB( resourceName, callback );
-						
 			// Issue the request to load the resource (include resource name in result callback:					
-			mw.getScript( scriptRequest, function( scriptRequest ) {
-			
+			mw.getScript( scriptRequest, function( scriptRequest ) {			
 				// If its a "style sheet" manually set its resource to true
 				var ext = scriptRequest.substr( scriptRequest.split('?')[0].lastIndexOf( '.' ), 4 ).toLowerCase();
 				if( ext == '.css' &&	resourceName.substr(0,8) == 'mw.style' ){				
@@ -1131,8 +1133,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		} else {	
 			/**
 			 * Old IE and non-Firebug debug: ( commented out for now ) 
-			 */
-			/*
+			 */			
 			var log_elm = document.getElementById('mv_js_log');
 			if(!log_elm) {
 				document.getElementsByTagName("body")[0].innerHTML = document.getElementsByTagName("body")[0].innerHTML +
@@ -1144,9 +1145,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}
 			if(log_elm) {
 				log_elm.value+=string+"\n";
-			}
-			*/
-			
+			}		
 		}
 	}
 	
@@ -1182,12 +1181,11 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	* called by mwEmbedSetup
 	*/ 
 	mw.runReadyFunctions = function ( ) {
-		mw.log('mw.runReadyFunctions');		
+		mw.log('mw.runReadyFunctions: ' + mwOnLoadFunctions.length );				
 		// Run any pre-setup ready functions		
 		while( preMwEmbedReady.length ){
 			preMwEmbedReady.shift()();
-		}
-		
+		}		
 		// Run all the queued functions: 
 		while( mwOnLoadFunctions.length ) {
 			mwOnLoadFunctions.shift()();
@@ -1212,6 +1210,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	* @param {Function} callback Function to call once script is loaded   
 	*/
 	mw.getScript = function( scriptRequest, callback ) {
+		//mw.log( "mw.getScript::" + scriptRequest );
 		// Setup the local scope callback instace 
 		var myCallback = function(){
 			if( callback ) {
@@ -1801,14 +1800,12 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					// Special Hack for conditional jquery ui inclusion ( once Usability extension
 					//  registers the jquery.ui skin in mw.style this won't be needed ) 
 					if( mw.hasJQueryUiCss() ){
-						mw.style[ mw.getConfig( 'jQueryUISkin' ) ] = true;
-					}
+						mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;						
+					}		
 					
 					
 					// Make sure style sheets are loaded: 
-					mw.load( ['mw.style.mwCommon'] , function(){	
-					
-						
+					mw.load( ['mw.style.mwCommon'] , function(){											
 						// Run all the setup function hooks 
 						// NOTE: setup functions are added via addSetupHook calls
 						// and must include a callback.
@@ -1823,7 +1820,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 								mw.runReadyFunctions();
 							}
 						}
-						runSetupFunctions();	
+						runSetupFunctions();		
 					} );
 					
 				} );									
@@ -1839,7 +1836,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	* @return true if found, return false if not found
 	*/
 	mw.hasJQueryUiCss = function(){
-		var hasUiCss = false;
+		var hasUiCss = false;				
 		// Load the jQuery ui skin if usability skin not set
 		$j( 'link' ).each( function(  na, linkNode ){
 			if( $j( linkNode ).attr( 'href' ).indexOf( 'jquery-ui-1.7.2.css' ) != -1 ) {

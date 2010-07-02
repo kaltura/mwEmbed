@@ -94,8 +94,8 @@
 	* NOTE: this function can be part of setup can run prior to jQuery being ready
 	*/
 	mw.documentHasPlayerTags = function() {
-		var rewriteTags = mw.getConfig( 'EmbedPlayer.RewriteTags' );				
-		if( rewriteTags ) {
+		var rewriteTags = mw.getConfig( 'EmbedPlayer.RewriteTags' );			
+		if( rewriteTags ) {			
 			var jtags = rewriteTags.split( ',' );
 			for ( var i = 0; i < jtags.length; i++ ) { 
 				if( document.getElementsByTagName( jtags[i] )[0] ) {				
@@ -118,6 +118,7 @@
 	* mwEmbed player is setup before any other mw.ready calls
 	*/
 	mw.addSetupHook( function( callback ) {
+		mw.log( 'Document::' + mw.documentHasPlayerTags() );
 		if( mw.documentHasPlayerTags() ) {
 			var  rewriteElementCount = 0;
 			
@@ -153,8 +154,9 @@
 					})						
 				)
 			});									
-			// Load the embedPlayer module ( then run queued hooks )
-			mw.load( 'EmbedPlayer', function ( ) {										
+			// Load the embedPlayer module ( then run queued hooks )			
+			mw.load( 'EmbedPlayer', function ( ) {		
+				mw.log("EmbedPlayer:: do rewrite tags");
 				// Rewrite the EmbedPlayer.RewriteTags with the 
 				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer();				
 			})

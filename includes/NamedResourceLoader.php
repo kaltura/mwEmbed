@@ -264,11 +264,7 @@ class NamedResourceLoader {
 		$jClassSet = FormatJson::decode( '{' . $jsvar[1] . '}', true );
 		// Check for null json decode:
 		if( $jClassSet == NULL ){
-			$moduleName = ( self::$resourceParentModuleName [ $resourceName ] )
-				? self::$resourceParentModuleName [ $resourceName ]
-				: ' loader set in extension ';
-
-			throw new MWException( "Error could not decode javascript resource list for module:" . $moduleName ." \n" );
+			throw new MWException( "Error could not decode javascript resource list for module: " + self::$currentModuleName + "\n" );
 			return false;
 		}
 
