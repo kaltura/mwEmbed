@@ -1134,7 +1134,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			/**
 			 * Old IE and non-Firebug debug: ( commented out for now ) 
 			 */			
-			var log_elm = document.getElementById('mv_js_log');
+			/*var log_elm = document.getElementById('mv_js_log');
 			if(!log_elm) {
 				document.getElementsByTagName("body")[0].innerHTML = document.getElementsByTagName("body")[0].innerHTML +
 					'<div style="position:absolute;z-index:500;bottom:0px;left:0px;right:0px;height:200px;">'+
@@ -1145,7 +1145,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}
 			if(log_elm) {
 				log_elm.value+=string+"\n";
-			}		
+			}*/	
 		}
 	}
 	
