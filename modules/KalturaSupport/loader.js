@@ -65,7 +65,17 @@
 				$j( select ).each( function( inx, element ){
 					loadEmbedPlayerFlag = true;
 					
-					var kEmbedSettings = mw.getKalturaEmbedSettingsFromUrl( $j( element ).attr('data') );							
+					// Setup the flashvars variable
+					var flashvars = {};
+					var flashVarsString = $j( element ).find( "param[name='flashvars']" ).val();
+					var flashVarPairs = flashVarsString.split('&');
+					for( var i in flashVarPairs ) {
+						var parts = flashVarPairs.split('=');
+						flashvars[ parts[0] ] = parts[1];
+					}
+					
+					var kEmbedSettings = mw.getKalturaEmbedSettings( $j( element ).attr('data'), flashvars );
+					
 					mw.log("Got kEmbedSettings.entryId: " + kEmbedSettings.entryId + " from flash object")					
 					
 					var height = $j( element ).attr('height');
@@ -152,11 +162,14 @@
 		}			
 	} );	
 	
-	mw.getKalturaEmbedSettingsFromUrl = function( swfUrl ){
+	mw.getKalturaEmbedSettings = function( swfUrl, flashvars ){
 		// If the url does not include kwidget or entry_id probably not a kaltura settings url:
 		if( swfUrl.indexOf('kwidget') == -1 || swfUrl.indexOf('entry_id') == -1 ){
 			return {};
 		}
+		if( !flashvars )
+			flashvars= {};
+		
 		var dataUrlParts = swfUrl.split('/');
 		var embedSettings = {};
 		
@@ -175,6 +188,10 @@
 			embedSettings.widgetId = widgetId;
 			// Also set the partner id;
 			embedSettings.partnerId = widgetId.replace(/_/,'');
+		}
+		// Flash vars take precedence: 
+		for( var i in  flashvars){
+			embedSettings[i] = flashvars[i];
 		}
 		return embedSettings;
 	};

@@ -70,17 +70,14 @@ function kOverideSwfObject(){
 		// override embedObjec for our own ends
 		window['swfobject']['embedSWF'] = function( swfUrlStr, replaceElemIdStr, widthStr,
 				heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn)
-		{
-			var kEmbedSettings = kGetKalturaEmbedSettingsFromUrl( swfUrlStr );
+		{			
+			var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
 			// Check if mobile safari: 
 		
 			if( kBrowserAgentShouldUseHTML5() && kEmbedSettings.entryId ){
 				// Make sure we have kaltura script: 
 				kAddScript();
-				mw.ready(function(){
-					// get partner id from swf embed url:
-					var kEmbedSettings = mw.getKalturaEmbedSettingsFromUrl( swfUrlStr );
-					
+				mw.ready(function(){					
 					var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceElemIdStr ).width();
 					var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceElemIdStr ).height();
 
@@ -90,7 +87,7 @@ function kOverideSwfObject(){
 					$j('#' + replaceElemIdStr ).css({
 						'width' : width,
 						'height' : height,
-					}).embedPlayer({						
+					}).embedPlayer({
 						'poster': poster,
 						'kentryid': kEmbedSettings.entryId,
 						'kwidgetid' : kEmbedSettings.widgetId
@@ -287,14 +284,16 @@ function doScrollCheck() {
 	kRunMwDomReady();
 }
 // Copied from kalturaSupport loader mw.getKalturaEmbedSettingsFromUrl 
-kGetKalturaEmbedSettingsFromUrl = function( swfUrl ){
+kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 	// If the url does not include kwidget or entry_id probably not a kaltura settings url:
 	if( swfUrl.indexOf('kwidget') == -1 || swfUrl.indexOf('entry_id') == -1 ){
 		return {};
 	}
+	if( !flashvars )
+		flashvars= {};
 	
 	var dataUrlParts = swfUrl.split('/');
-	var embedSettings = {};	
+	var embedSettings = {};
 	
 	embedSettings.entryId =  dataUrlParts.pop();		
 	// Search backward for 'widgetId'
@@ -311,6 +310,10 @@ kGetKalturaEmbedSettingsFromUrl = function( swfUrl ){
 		embedSettings.widgetId = widgetId;
 		// Also set the partner id;
 		embedSettings.partnerId = widgetId.replace(/_/,'');
+	}
+	// Flash vars take precedence: 
+	for( var i in  flashvars){
+		embedSettings[i] = flashvars[i];
 	}
 	return embedSettings;
 };

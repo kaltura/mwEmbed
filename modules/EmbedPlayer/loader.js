@@ -129,30 +129,13 @@
 				if ( $j( element ).attr( "id" ) == '' ) {
 					$j( element ).attr( "id",  'v' + ( rewriteElementCount++ ) );
 				}
-
+				
 				// Add an absolute positioned loader
-				var pos = $j( element ).offset();				
-				var posLeft = (  $j( element ).width() ) ? 
-					parseInt( pos.left + ( .4 * $j( element ).width() ) ) : 
-					pos.left + 30;
-					
-				var posTop = (  $j( element ).height() ) ? 
-					parseInt( pos.top + ( .4 * $j( element ).height() ) ) : 
-					pos.top + 30;
-							
-				$j('body').append(
-					$j('<div />')
-					.loadingSpinner()
+				$j( element )
+					.getAbsoluteOverlaySpinner()
 					.attr('id', 'loadingSpinner_' + $j( element ).attr('id') )
-					.addClass( 'playerLoadingSpinner' )
-					.css({
-						'width' : 32,
-						'height' : 32,
-						'position': 'absolute',
-						'top' : posTop + 'px',
-						'left' : posLeft + 'px'
-					})						
-				)
+					.addClass( 'playerLoadingSpinner' );
+								
 			});									
 			// Load the embedPlayer module ( then run queued hooks )			
 			mw.load( 'EmbedPlayer', function ( ) {		
