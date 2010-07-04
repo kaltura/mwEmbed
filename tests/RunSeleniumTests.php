@@ -26,8 +26,8 @@ define( 'MEDIAWIKI', true );
 define( 'SELENIUMTEST', true );
 
 // Here, you can override standard setting
-if ( file_exists( 'selenium/LocalSeleniumSettings.php' ) ) {
-	include_once 'selenium/LocalSeleniumSettings.php';
+if ( file_exists( 'selenium_framework/LocalSeleniumSettings.php' ) ) {
+	include_once 'selenium_framework/LocalSeleniumSettings.php';
 } else {
 	echo "You must provide local settings in LocalSeleniumSettings.php\n";
 	die( -1 );
@@ -41,7 +41,7 @@ if ( $wgSeleniumTestsRunMode == 'cli' && php_sapi_name() != 'cli' ) {
 
 // Get command line parameters
 if ( $wgSeleniumTestsRunMode == 'cli' ) {
-	require_once( dirname( __FILE__ ) . '/commandLine.inc' );
+	require_once( dirname( __FILE__ ) . '/selenium_framework/commandLine.inc' );
 	if ( isset( $options['help'] ) ) {
 		echo <<<ENDS
 MediaWiki $wgVersion Selenium Framework tester
@@ -64,12 +64,12 @@ require_once 'PHPUnit/Framework.php';
 require_once 'PHPUnit/Extensions/SeleniumTestCase.php';
 
 // include seleniumTestsuite
-require_once 'selenium/SeleniumTestHTMLLogger.php';
-require_once 'selenium/SeleniumTestConsoleLogger.php';
-require_once 'selenium/SeleniumTestListener.php';
-require_once 'selenium/Selenium.php';
-require_once 'selenium/SeleniumTestSuite.php';
-require_once 'selenium/SeleniumTestCase.php';
+require_once 'selenium_framework/SeleniumTestHTMLLogger.php';
+require_once 'selenium_framework/SeleniumTestConsoleLogger.php';
+require_once 'selenium_framework/SeleniumTestListener.php';
+require_once 'selenium_framework/Selenium.php';
+require_once 'selenium_framework/SeleniumTestSuite.php';
+require_once 'selenium_framework/SeleniumTestCase.php';
 
 $result = new PHPUnit_Framework_TestResult;
 switch ( $wgSeleniumTestsRunMode ) {

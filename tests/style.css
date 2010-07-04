@@ -8,8 +8,8 @@ html, body { margin:0; padding:0; }
 body, td, th, pre, code, select, option, input, textarea {
   font-family:"Trebuchet MS", Arial, Sans-serif;
   font-size:10pt;
-  color: white;
-  background-color: black;
+  color: black;
+  background-color: white;
 }
 
 #container { width:700px; margin:10px auto; overflow:hidden; }

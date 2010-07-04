@@ -3,12 +3,12 @@
 <head>
 	<title>mwEmbed Testing Kit</title>
 
+  <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="jslib/jquery.js"></script> 
   <link type="text/css" rel="stylesheet" href="jslib/syntax/prettify.css" /> 
   <link rel="stylesheet" type="text/css" media="screen" href="jslib/menu/css/superfish.css" /> 
   <link rel="stylesheet" type="text/css" media="screen" href="jslib/menu/css/superfish-vertical.css" /> 
-	<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
-
-  <script type="text/javascript" src="jslib/jquery.js"></script> 
+	
   <script type="text/javascript" src="jslib/syntax/prettify.js"></script> 
   <script type="text/javascript" src="jslib/menu/hoverIntent.js"></script> 
   <script type="text/javascript" src="jslib/menu/superfish.js"></script> 
@@ -16,8 +16,13 @@
 
   <script type="text/javascript" src="../libraries/jquery/jquery.ui/ui/ui.resizable.js"></script> 
   <script type="text/javascript" src="../libraries/jquery/jquery.ui/ui/ui.draggable.js"></script> 
+ 
+
+  <script type="text/javascript" src="../mwEmbed.js?debug=true"></script> 
+  <!-- 
   <script type="text/javascript" src="http://html5.kaltura.org/js" > </script>
-  <!-- <script type="text/javascript" src="../mwEmbed.js?debug=true"></script> -->
+  
+    -->
 
   <script type="text/javascript"> 
     $(function () {
@@ -56,8 +61,8 @@
  		    poster="http://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Elephants_Dream.ogg/seek%3D13-Elephants_Dream.ogg.jpg"
  		    duration="10:53" 
  		    linkback="http://www.elephantsdream.org/" > 		
-	      <source type="video/ogg" src="http://ia311040.us.archive.org/3/items/ElephantsDream/ed_1024.ogv" >
-	      <source type="video/h264" src="http://ia311040.us.archive.org/3/items/ElephantsDream/ed_hd_512kb.mp4" >
+	      <source type="video/webm" src="media/out500.webm" >
+	      <source type="video/ogg" src="media/out500.ogv" >
 	
 		<!--  Subtitles -->
 	
@@ -175,7 +180,7 @@
 
     </div><!-- END demo_player -->
 
-    <div id="docbox" class="ui-widget-content">
+    <!-- <div id="docbox" class="ui-widget-content">
     <h3 class="ui-widget-header">mwEmbed Documentation</h3>
     <p> there will be a menu here to switch between the README and the generated docs</p>
      <div id="jsdocs">
@@ -183,16 +188,16 @@
         </iframe>
       </div>
 
-    </div><!-- end sideBox -->
+    </div> end sideBox -->
 
-    <div id="js-console" class="ui-widget-content">
+    <!-- <div id="js-console" class="ui-widget-content">
     <h3 class="ui-widget-header">mwEmbed Controls</h3>
     <p>Textboxes and buttons for interacting with the demonstration player.</p>
     </div>
 
       <div id="help" style="display:none;">
         <p>Instructions will go here</p>
-      </div><!-- END help -->
+      </div> END help -->
 
 
   </div><!-- END content -->
