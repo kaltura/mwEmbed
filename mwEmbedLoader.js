@@ -12,15 +12,21 @@ var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = '../mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = '../mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
-// Define mw
-window['mw'] = {};
+// Define mw ( if not already set ) 
+if( !window['mw'] ){
+	window['mw'] = {};
+}
 
 // Define the dom ready flag
 var kAlreadyRunDomReadyFlag = false;
+
+// Try and override the swfObject at runtime
+// In case it was included before mwEmbedLoader and the embedSWF call is inline 
+kOverideSwfObject();
 
 // Setup preMwEmbedReady queue
 if( !preMwEmbedReady ){
@@ -50,8 +56,55 @@ if( !mw.setConfig ){
 				preMwEmbedConfig[ i ] = set[i];
 			}
 		}
+	}	
+}
+// Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
+function kOverideSwfObject(){
+	// Check if already override
+	if( window['swfobject'] && window['swfobject']['originalEmbedSWF'] ){
+		return ;	
+	}
+	
+	if( window['swfobject'] && window['swfobject']['embedSWF'] ){
+		window['swfobject']['originalEmbedSWF'] = window['swfobject']['embedSWF'];
+		// override embedObjec for our own ends
+		window['swfobject']['embedSWF'] = function( swfUrlStr, replaceElemIdStr, widthStr,
+				heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn)
+		{
+			var kEmbedSettings = kGetKalturaEmbedSettingsFromUrl( swfUrlStr );
+			// Check if mobile safari: 
+		
+			if( kBrowserAgentShouldUseHTML5() && kEmbedSettings.entryId ){
+				// Make sure we have kaltura script: 
+				kAddScript();
+				mw.ready(function(){
+					// get partner id from swf embed url:
+					var kEmbedSettings = mw.getKalturaEmbedSettingsFromUrl( swfUrlStr );
+					
+					var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceElemIdStr ).width();
+					var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceElemIdStr ).height();
+
+					var poster = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
+						kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
+						height + '/height/' + width;
+					$j('#' + replaceElemIdStr ).css({
+						'width' : width,
+						'height' : height,
+					}).embedPlayer({						
+						'poster': poster,
+						'kentryid': kEmbedSettings.entryId,
+						'kwidgetid' : kEmbedSettings.widgetId
+					});
+				});
+			} else {				
+				// Else call the original EmbedSWF with all its arguments 
+				window['swfobject']['originalEmbedSWF']( swfUrlStr, replaceElemIdStr, widthStr,
+						heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn )
+			}
+		}
 	}
 }
+
 // Check dom for kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
 function kCheckAddScript(){
@@ -69,12 +122,7 @@ function kCheckAddScript(){
 	}
 	
 	// If document includes kaltura embed tags && isMobile safari: 
-	if (
-		(navigator.userAgent.indexOf('iPhone') != -1) || 
-		(navigator.userAgent.indexOf('iPod') != -1) || 
-		(navigator.userAgent.indexOf('iPad') != -1) ||
-		(document.URL.indexOf('forceMobileSafari') != -1 ) // to debug in chrome / desktop safari
-	) {
+	if ( kBrowserAgentShouldUseHTML5() ) {
 		// Check for kaltura objects in the page
 		var usedIdSet = [];
 		for(var i=0; i < document.getElementsByTagName('object').length; i++) {
@@ -90,6 +138,14 @@ function kCheckAddScript(){
 			}
 		}
 	}
+}
+function kBrowserAgentShouldUseHTML5(){
+	return (  (navigator.userAgent.indexOf('iPhone') != -1) || 
+	(navigator.userAgent.indexOf('iPod') != -1) || 
+	(navigator.userAgent.indexOf('iPad') != -1) ||
+	// to debug in chrome / desktop safari
+	(document.URL.indexOf('forceMobileSafari') != -1 )
+	);	
 }
 
 // Add the kaltura html5 mwEmbed script
@@ -160,8 +216,9 @@ function kAddScript(){
 * DOM-ready setup ( similar to jQuery.ready )  
 */
 function kRunMwDomReady(){
-	kAlreadyRunDomReadyFlag  = true;
-	kCheckAddScript();
+	kAlreadyRunDomReadyFlag  = true;	
+	kOverideSwfObject();
+	kCheckAddScript();	
 }
 // Check if already ready: 
 if ( document.readyState === "complete" ) {
@@ -229,3 +286,31 @@ function doScrollCheck() {
 	// and execute any waiting functions
 	kRunMwDomReady();
 }
+// Copied from kalturaSupport loader mw.getKalturaEmbedSettingsFromUrl 
+kGetKalturaEmbedSettingsFromUrl = function( swfUrl ){
+	// If the url does not include kwidget or entry_id probably not a kaltura settings url:
+	if( swfUrl.indexOf('kwidget') == -1 || swfUrl.indexOf('entry_id') == -1 ){
+		return {};
+	}
+	
+	var dataUrlParts = swfUrl.split('/');
+	var embedSettings = {};	
+	
+	embedSettings.entryId =  dataUrlParts.pop();		
+	// Search backward for 'widgetId'
+	var widgetId = false;					
+	while( dataUrlParts.length ){
+		var curUrlPart =  dataUrlParts.pop();
+		if( curUrlPart == 'wid'){
+			widgetId = prevUrlPart;
+			break;
+		}
+		prevUrlPart = curUrlPart;
+	}
+	if( widgetId ){
+		embedSettings.widgetId = widgetId;
+		// Also set the partner id;
+		embedSettings.partnerId = widgetId.replace(/_/,'');
+	}
+	return embedSettings;
+};

@@ -293,7 +293,7 @@ mw.SequenceEditor.prototype = {
 		} else {
 			$j( this.target_sequence_container + ' .seq_save_cancel' ).html(  gM( 'mwe-no_edit_permissions' ) );
 		}
-		// assing bindings
+		// assign bindings
 		$j( this.target_sequence_container + ' .seq_edit_cancel' ).unbind().click( function() {
 			var x = window.confirm( gM( 'mwe-edit_cancel_confirm' ) );
 			if ( x ) {
@@ -306,12 +306,26 @@ mw.SequenceEditor.prototype = {
 			// pop up progress dialog ~requesting edit line summary~
 			// remove any other save dialog
 			$j( '#seq_save_dialog' ).remove();
-			$j( 'body' ).append( '<div id="seq_save_dialog" title="' + gM( 'mwe-edit_save' ) + '">' +
-						'<span class="mw-summary">' +
-							'<label for="seq_save_summary">Edit summary: </label>' +
-						'</span>' +
-						'<input id="seq_save_summary" tabindex="1" maxlength="200" value="" size="30" name="seq_save_summary"/>' +
-					'</div>' );
+			$j( 'body' ).append( 
+					$j('<div />').attr({
+						'id':"seq_save_dialog",
+						'title': gM( 'mwe-edit_save' ) 
+					}).append(
+						$j('<span />')
+						.addClass( 'mw-summary')
+						.append(
+							$j('<label />').attr('for', 'seq_save_summary')
+						),
+						$j('<input />')
+						.attr({
+							'id' : 'seq_save_summary',
+							'tabindex' : 1,
+							'maxlength' : 200,
+							'size': 30,
+							'name' : 'seq_save_summary'
+						})
+					)
+				);
 			var bConf = { };
 			bConf[ gM( 'mwe-cancel' ) ] = function() {
 				$j( this ).dialog( 'close' );

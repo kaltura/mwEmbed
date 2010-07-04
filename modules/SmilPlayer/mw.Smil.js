@@ -16,7 +16,7 @@
  * 
  */
  
- /* Add the hooks needed for playback */
+/* Add the hooks needed for playback */
 mw.Smil = function( options ){	
 	return this.init( options );
 }
@@ -40,7 +40,7 @@ mw.Smil.prototype = {
 	// Stores the smil document for this object ( for relative image paths ) 
 	smilUrl: null,
 	
-	// The abstract embeed player parent 
+	// The abstract embed player parent 
 	embedPlayer: null,
 	
 	/** 
@@ -104,15 +104,12 @@ mw.Smil.prototype = {
 		return ;
 	},
 	
-		
+	/**
+	 * Render a specific time
+	 */
 	renderTime: function( time, callback ) {
-		// Get the render target: 
-		var $renderTarget = this.embedPlayer.getRenderTarget();
-		
-		// Add the core layout ( not time based )		
-		$renderTarget.append( 
-			this.getLayout().getHtml()
-		)
+		// Setup the layout if not already setup: 
+		this.getLayout().setupLayout( this.embedPlayer.getRenderTarget() );
 		
 		// Update the render target with bodyElements for the requested time
 		this.getBody().renderTime( time );
@@ -120,6 +117,7 @@ mw.Smil.prototype = {
 		// Wait until buffer is ready and run the callback
 	    this.getBuffer().addAssetsReadyCallback( callback );
 	},
+	
 	
 	/**
 	* We use animateTime instead of a tight framerate loop
@@ -129,6 +127,42 @@ mw.Smil.prototype = {
 	animateTime: function( time, timeDelta ){		
 		//mw.log("Smil::animateTime: " + time + ' delta: ' + timeDelta ); 	
 		this.getBody().renderTime( time, timeDelta );
+	},
+	
+	/**
+	 * Pause all animations and playback
+	 */
+	pause: function( currentTime ){
+		this.getBody().pause( currentTime );
+	},
+	
+	/**
+	 * 	Checks if the playback is in sync with the current time
+	 * @return {boolean} 
+	 * 	true if playback is insync, 
+	 * 	false if not in sync with all animation elements ( video tag for now )		
+	 */
+	getPlaybackSyncDelta: function( currentTime ){
+		return this.getAnimate().getPlaybackSyncDelta( currentTime );
+	},
+	
+	getBufferedPercent: function(){
+		// Get the clip buffered percent
+		return this.getBuffer().getBufferedPercent();
+	},
+	
+	/**
+	 * Get the set of audio ranges for flattening. 
+	 */
+	getAudioTimeSet: function(){
+		return this.getBody().getFlatAudioTimeLine();
+	},
+	
+	/**
+	 * Pass on the request to start buffering the entire sequence of clips 
+	 */
+	startBuffer: function(){
+		this.getBuffer().startBuffer();
 	},
 	
 	/**
@@ -207,10 +241,10 @@ mw.Smil.prototype = {
 		
 	/**
 	 * Some Smil Utility functions
-	 */
+	 */	
 	
 	/**
-	* maps a smil element id to a html safe id 
+	* maps a smil element id to a html 'safer' id 
 	* as a decedent subname of the embedPlayer parent
 	*
 	* @param {Object} smilElement Element to get id for
@@ -246,9 +280,15 @@ mw.Smil.prototype = {
 			return;
 		}
 		// Get the smil type
-		var smilType = $j( smilElement ).get(0).nodeName.toLowerCase();	
+		var smilType = $j( smilElement ).get(0).nodeName.toLowerCase();
+		
+		if( this.getBody().smilBlockTypeMap[ smilType ] != 'ref' ){
+			mw.log("Error: trying to get ref type of node that is not a ref" + smilType);
+			return null; 
+		}
+		
+		// If the smilType is ref, check for a content type
 		if( smilType == 'ref' ){
-			// If the smilType is ref, check for a content type
 			switch( $j( smilElement ).attr( 'type' ) ) {
 				case 'text/html':
 					smilType = 'cdata_html';
@@ -257,6 +297,9 @@ mw.Smil.prototype = {
 				case 'video/h.264':
 				case 'video/webm':
 					smilType = 'video';
+				break;
+				case 'audio/ogg':
+					smilType = 'audio';
 				break;
 			}
 		}
@@ -320,6 +363,7 @@ mw.Smil.prototype = {
 			return parseFloat( parseFloat( timeValue ) * timeFactor );
 		}
 		mw.log("Error could not parse time: " + timeValue);
+		return 0;
 	}
 }
 

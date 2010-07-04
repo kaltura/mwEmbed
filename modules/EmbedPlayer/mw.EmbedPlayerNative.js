@@ -59,7 +59,7 @@ mw.EmbedPlayerNative = {
 		
 		mw.log( "native play url:" + this.getSrc() + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
 		
-		// Check if using native contorls and already the "pid" is already in the DOM
+		// Check if using native controls and already the "pid" is already in the DOM
 		if( this.useNativeControls && $j( '#' + this.pid ).length &&
 			typeof $j( '#' + this.pid ).get(0).play != 'undefined' ) {
 			_this.postEmbedJS();

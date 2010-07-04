@@ -24,21 +24,15 @@ mw.SmilLayout.prototype = {
 		
 		// Reset the htmlDOM cache
 		this.$rootLayout = null;
-	},	
+	},
 	
 	/**
-	* Get Html DOM
-	*/
-	getHtml: function(){
-		var _this = this;		
-				
-		// Setup target Size: 
-		this.targetWidth = this.smil.embedPlayer.getWidth();
-		this.targetHeight = this.smil.embedPlayer.getHeight();		
-		
-		mw.log("SmilLayout:: getHtml:: " + this.targetWidth  );
-										
-		return this.getRootLayout();
+	 * Setup the layout if not already setup
+	 */
+	setupLayout: function( $renderTarget ){
+		if( ! $renderTarget.find( '.smilRootLayout').length ) {
+			$renderTarget.append( this.getRootLayout() );
+		}
 	},
 	
 	/*
@@ -46,8 +40,12 @@ mw.SmilLayout.prototype = {
 	*/
 	getRootLayout: function(){
 		var _this = this;
-		mw.log( "SmilLayout::getRootLayout:" );  
-		if( !this.$rootLayout ){
+		mw.log( "SmilLayout::getRootLayout:" );
+		if( !this.$rootLayout ){						
+			// Setup target Size: 
+			this.targetWidth = this.smil.embedPlayer.getWidth();
+			this.targetHeight = this.smil.embedPlayer.getHeight();		
+			
 			this.$rootLayout = $j('<div />' )
 				.attr( 'id', _this.smil.embedPlayer.id + '_smil-root-layout' )
 				.addClass( 'smilRootLayout' ) 
@@ -68,7 +66,7 @@ mw.SmilLayout.prototype = {
 	},
 	
 	/**
-	 * Get and increment the top zindex counter: 
+	 * Get and increment the top z-index counter: 
 	 */
 	getTopZIndex: function(){
 		return this.topZindex++;	
@@ -78,6 +76,7 @@ mw.SmilLayout.prototype = {
 	* Draw a smilElement to the layout. 
 	*  
 	* If the element does not exist in the html dom add it.	
+	* @parma {Element} smilElement to be drawn. 
 	*/ 
 	drawElement: function( smilElement ) {
 		var _this = this;		
@@ -159,6 +158,9 @@ mw.SmilLayout.prototype = {
 			case 'video': 
 				return this.getSmilVideoHtml( smilElement );
 			break;
+			case 'audio':
+				return this.getSmilAudioHtml( smilElement );
+			break;
 			// Smil Text: http://www.w3.org/TR/SMIL/smil-text.html ( obviously we support a subset )
 			case 'smiltext':
 				return this.getSmilTextHtml( smilElement );
@@ -182,13 +184,25 @@ mw.SmilLayout.prototype = {
 	/**
 	* Return the video
 	*/
-	getSmilVideoHtml: function( videoElement ){
+	getSmilVideoHtml: function( smilElement ){
 		return $j('<video />')
 			.attr( {
-				'id' : this.smil.getAssetId( videoElement ), 
-				'src' : this.smil.getAssetUrl( $j( videoElement ).attr( 'src' ) )
+				'id' : this.smil.getAssetId( smilElement ), 
+				'src' : this.smil.getAssetUrl( $j( smilElement ).attr( 'src' ) )
 			} )
 			.addClass( 'smilFillWindow' )
+	},
+	
+	/**
+	 * Return audio element ( by default audio tracks are hidden )
+	 */
+	getSmilAudioHtml: function ( smilElement ){
+		return $j('<audio />')
+		.attr( {
+			'id' : this.smil.getAssetId( smilElement ), 
+			'src' : this.smil.getAssetUrl( $j( smilElement ).attr( 'src' ) )
+		} )
+		.css( 'display', 'none');
 	},
 	
 	/**

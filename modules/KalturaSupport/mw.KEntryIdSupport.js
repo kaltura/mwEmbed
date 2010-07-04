@@ -25,7 +25,7 @@ mw.KEntryIdSupport.prototype = {
 	addPlayerHooks: function( ){
 		var _this = this;		
 		// Add the hooks to the player manager
-		mw.log(  'addPlayerHooks:: bind: newEmbedPlayerEvent' );
+		mw.log(  'KEntryIdSupport::addPlayerHooks:: bind: newEmbedPlayerEvent' );
 		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {		
 			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
 			
@@ -35,8 +35,8 @@ mw.KEntryIdSupport.prototype = {
 				_this.checkPlayerSources( embedPlayer, function(){
 					// We can only enable kaltura analytics if we have a session if we have a client										
 					if( mw.getConfig( 'enableKalturaAnalytics' ) == true && _this.kClient ) {
-						mw.addKAnalytics( embedPlayer, _this.kClient ) ;
-					}					
+						mw.addKAnalytics( embedPlayer, _this.kClient );
+					}
 					callback();
 				} );				
 			} );
@@ -53,7 +53,8 @@ mw.KEntryIdSupport.prototype = {
 		var _this = this;	
 		
 		// Make sure we have an entry id:
-		var kentryId = $j( embedPlayer ).attr( 'kentryid' ); 
+		var kentryId = $j( embedPlayer ).attr( 'kentryid' );
+		mw.log('KEntryIdSupport:: look for ketnry id sources:: ' + kentryId);
 		if( ! kentryId ){
 			// Run the callback empty handed
 			callback( false );
@@ -102,9 +103,8 @@ mw.KEntryIdSupport.prototype = {
 	* @param {Function} callback Function to be called once sources are ready 
 	*/ 
 	addEntryIdSources: function ( embedPlayer, callback ) {
-		mw.log('KEntrySupport: addEntryIdSources entry Id :: ' + $j( embedPlayer ).attr( 'kentryid' ) );
-		var kEntryId = $j( embedPlayer ).attr( 'kentryid' ); 
-		
+		mw.log('KEntryIdSupport:: addEntryIdSources entry Id :: ' + $j( embedPlayer ).attr( 'kentryid' ) );
+		var kEntryId = $j( embedPlayer ).attr( 'kentryid' ); 		
 		var widgetId =  $j( embedPlayer ).attr( 'kwidgetid' );
 		
 		// Assign the partnerId from the widgetId
@@ -234,12 +234,12 @@ mw.KEntryIdSupport.prototype = {
 			// Callback function once session is ready 
 			function ( success, data ) {				
 				if( !success ){
-					mw.log( "Error in request ");
+					mw.log( "KEntryIdSupport:: Error in request ");
 					callback( false );
 					return ;
 				}
 				if( data.code ){
-					mw.log( "Kaltura:: startWidgetSession:: Error:: " +data.code + ' ' + data.message );
+					mw.log( "KEntryIdSupport:: startWidgetSession:: Error:: " +data.code + ' ' + data.message );
 					callback( false );
 					return ;
 				}				
@@ -262,13 +262,13 @@ mw.KEntryIdSupport.prototype = {
 		
 // Add player Manager binding ( if playerManager not ready bind to when its ready )
 // @@NOTE we may want to move this into the loader since its more "action/loader" code
-if( mw.playerManager ){
+if( mw.playerManager ){	
 	var kEntrySupport = new mw.KEntryIdSupport();
 	kEntrySupport.addPlayerHooks();
 } else {
-	mw.log( 'bind:EmbedPlayerManagerReady');
+	mw.log( 'KEntryIdSupport::bind:EmbedPlayerManagerReady');
 	$j( mw ).bind( 'EmbedPlayerManagerReady', function(){	
-		mw.log("RUN::EmbedPlayerManagerReady");
+		mw.log("KEntryIdSupport::EmbedPlayerManagerReady");
 		var kEntrySupport = new mw.KEntryIdSupport();
 		kEntrySupport.addPlayerHooks();
 	});	

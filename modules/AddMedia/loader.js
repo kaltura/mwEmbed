@@ -65,7 +65,7 @@
 			]
 		] );
 	
-	//Set a variable for the base upload interface for easy inclution
+	//Set a variable for the base upload interface for easy inclusion
 	var baseUploadlibs = [
 		[
 			'mw.UploadHandler',

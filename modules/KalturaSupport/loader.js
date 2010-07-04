@@ -36,8 +36,7 @@
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
 	var kalturaSupportRequestSet = [
-		"mw.KEntryIdSupport",
-		
+		"mw.KEntryIdSupport",		
 		"KalturaClientBase",
 		"KalturaClient",
 		"KalturaAccessControlService",
@@ -56,8 +55,8 @@
 		mw.log( 'KalturaSupport found:: ' + $j( select ).length + ' is mobile::' +  mw.isMobileSafari() );
 		if( $j( select ).length ) {
 			tagCheckObject.hasTags = true;
-						
-			// FALLFORWARD only for mobile safari::
+			
+			// FALLFORWARD only for mobile safari ::
 			// this is kind of heavy weight for loader.js 
 			// maybe move most of this to kEntryId support
 			
@@ -65,33 +64,18 @@
 				var loadEmbedPlayerFlag = false;
 				$j( select ).each( function( inx, element ){
 					loadEmbedPlayerFlag = true;
-					var dataUrl = $j( element ).attr('data');
-					var dataUrlParts = dataUrl.split('/');
-					var entryId = dataUrlParts.pop();
 					
-					mw.log("Got EntryID: " + entryId + " from flash object")
-					
-					// Search backward for 'widgetId'
-					var widgetId = false;					
-					while( dataUrlParts.length ){
-						var curUrlPart =  dataUrlParts.pop();
-						if( curUrlPart == 'wid'){
-							widgetId = prevUrlPart;
-							break;
-						}
-						prevUrlPart = curUrlPart;
-					}
+					var kEmbedSettings = mw.getKalturaEmbedSettingsFromUrl( $j( element ).attr('data') );							
+					mw.log("Got kEmbedSettings.entryId: " + kEmbedSettings.entryId + " from flash object")					
 					
 					var height = $j( element ).attr('height');
 					var width = $j( element ).attr('width');					
-					var videoId = 'vid' + inx;
-					
+					var videoId = 'vid' + inx;					
 					var $imgThumb = '';
-					if( widgetId ) {
-						var partnerId = widgetId.replace(/_/,'');
-						var thumb_url = 'http://cdnakmi.kaltura.com/p/' + partnerId + '/sp/' +
-						partnerId + '00/thumbnail/entry_id/' + entryId + '/width/' +
-						height + '/height/' + width;
+					if( kEmbedSettings.partnerId ){
+						var thumb_url = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
+										partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
+										height + '/height/' + width;
 						$imgThumb = $j('<img />').attr({
 							'src' : thumb_url 
 						})
@@ -102,15 +86,15 @@
 							'top' : '0px',
 							'left' : '0px'								
 						});
-					}		
+					}
 					var elementCss = {};
 					// Replace with a spinner
 					$j( element ).replaceWith( 
 						$j('<div />')
 						.attr({
 							'id': videoId,
-							'kentryid': entryId,
-							'kwidgetid' : widgetId
+							'kentryid': kEmbedSettings.entryId,
+							'kwidgetid' : kEmbedSettings.widgetId
 						})
 						.css( {
 							'width' : width + 'px',
@@ -150,7 +134,7 @@
 	var kLoadKalturaSupport = false;	
 	//Update the player loader request with timedText if the flag has been set 
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {	
-		// Check if any video tag uses the "entryId"  
+		// Check if any video tag uses the "kEmbedSettings.entryId"  
 		if(  $j( playerElement ).attr( 'kentryid' ) ) {
 			kLoadKalturaSupport = true;
 		}
@@ -167,5 +151,32 @@
 			$j.merge( classRequest, kalturaSupportRequestSet );
 		}			
 	} );	
+	
+	mw.getKalturaEmbedSettingsFromUrl = function( swfUrl ){
+		// If the url does not include kwidget or entry_id probably not a kaltura settings url:
+		if( swfUrl.indexOf('kwidget') == -1 || swfUrl.indexOf('entry_id') == -1 ){
+			return {};
+		}
+		var dataUrlParts = swfUrl.split('/');
+		var embedSettings = {};
+		
+		embedSettings.entryId =  dataUrlParts.pop();		
+		// Search backward for 'widgetId'
+		var widgetId = false;					
+		while( dataUrlParts.length ){
+			var curUrlPart =  dataUrlParts.pop();
+			if( curUrlPart == 'wid'){
+				widgetId = prevUrlPart;
+				break;
+			}
+			prevUrlPart = curUrlPart;
+		}
+		if( widgetId ){
+			embedSettings.widgetId = widgetId;
+			// Also set the partner id;
+			embedSettings.partnerId = widgetId.replace(/_/,'');
+		}
+		return embedSettings;
+	};
 		
 } )( window.mw );

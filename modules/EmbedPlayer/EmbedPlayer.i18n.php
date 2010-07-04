@@ -61,6 +61,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-embed_site_or_blog' => 'Embed on a page',
 	'mwe-embedplayer-related_videos' => 'Related videos',
 	'mwe-embedplayer-seeking' => 'seeking',
+	'mwe-embedplayer-buffering' => 'buffering',
 	'mwe-embedplayer-copy-code' => 'Copy code',
 	'mwe-embedplayer-video-h264' => 'H.264 video',
 	'mwe-embedplayer-video-flv' => 'Flash video',

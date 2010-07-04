@@ -10,7 +10,7 @@ mw.SmilAnimate.prototype = {
 	init: function( smilObject ){		
 		this.smil = smilObject;
 		
-		this.framerate = mw.getConfig( 'SmilPlayer.framerate' );
+		this.framerate = mw.getConfig( 'SmilPlayer.framerate');
 		
 		this.callbackRate = 1000 / this.framerate;
 		this.animateInterval = [];
@@ -19,8 +19,46 @@ mw.SmilAnimate.prototype = {
 	/**
 	 * Pause any active animation or video playback
 	 */
-	pauseAnimation: function(){
-		
+	pauseAnimation: function( smilElement ){
+		// Pause the animation of a given element ( presently just video )		
+		switch( this.smil.getRefType( smilElement ) ){
+			case 'video':
+				$j ( '#' + this.smil.getAssetId( smilElement ) ).get( 0 ).pause();
+			break;
+		}
+		// non-video elements just pause by clearing any animation loops
+		if( this.animateInterval[ this.smil.getAssetId( smilElement ) ]  ){
+			clearInterval( this.animateInterval[ this.smil.getAssetId( smilElement ) ]  );
+		}
+	},
+	
+	/**
+	 * Checks if assets are insync 
+	 *  re
+	 */
+	getPlaybackSyncDelta: function( time ){
+		var _this = this;
+		// Get all the elements for the current time:
+		var maxOutOfSync = 0;
+		this.smil.getBody().getElementsForTime( time, function( smilElement ){
+			//mw.log( 'check element: '+ time + ' ' +  _this.smil.getAssetId( smilElement ) );
+			// var relativeTime = time - smilElement.parentTimeOffset;
+			var relativeTime = time - $j( smilElement ).data ( 'startOffset' );
+			switch( _this.smil.getRefType( smilElement ) ){
+				case 'video':
+					var vid = $j ( '#' + _this.smil.getAssetId( smilElement ) ).get( 0 );
+					var vidTime = ( !vid || !vid.currentTime )? 0 : vid.currentTime;					
+					//mw.log( "getPlaybackSyncDelta:: video time should be: " + relativeTime + ' video time is: ' + vidTime );
+					
+					var syncOffset = ( relativeTime -vidTime );
+					if( syncOffset >  maxOutOfSync ){
+						maxOutOfSync = syncOffset;
+					}
+				break;
+			}
+		});
+		// Return the max out of sync element
+		return maxOutOfSync;
 	},
 	
 	/**
@@ -30,19 +68,27 @@ mw.SmilAnimate.prototype = {
 	* @param {float} deltaTime Extra time interval to be animated between animateTransform calls
 	*/
 	animateTransform: function( smilElement, animateTime, deltaTime ){
-		var _this = this;							
+		var _this = this;
+		//mw.log("SmilAnimate::animateTransform:" + smilElement.id + ' AnimateTime: ' + animateTime + ' delta:' + deltaTime);
 		
-		// check for deltaTime to animate over, if zero, then we should just transformElement directly: 
+		// Check for deltaTime to animate over, if zero
 		if( !deltaTime || deltaTime === 0 ){
+			// transformElement directly ( no playback or animation loop ) 
 			_this.transformElement( smilElement, animateTime );
+			
+			// Also update the smil Element transition directly
+			this.smil.getTransitions().transformTransitionOverlay( smilElement, animateTime );
+
+			// We are not playing return directly: 
 			return ;
-		} else if( this.smil.getRefType( smilElement ) == 'video' ){
-			// If we have a animation delta time, for some types such as video we should not transform
-			this.transformVideoForPlayback( smilElement, animateTime );
-			return;
 		}
+			
 		
-		
+		// Check for special playback types that for playback animation action:
+		if( this.smil.getRefType( smilElement ) == 'video' ){
+			this.transformVideoForPlayback( smilElement, animateTime );
+		}
+				
 		// Check if the current smilElement has any transforms to be done
 		if( ! this.checkForTransformUpdate( smilElement, animateTime, deltaTime ) ){
 			// xxx no animate loop needed for element: smilElement
@@ -65,6 +111,7 @@ mw.SmilAnimate.prototype = {
 					// Set the animate Time delta 
 					animateTimeDelta += _this.callbackRate;
 					
+					// See if the animation has expired: 
 					if( animateTimeDelta > deltaTime || timeElapsed > deltaTime ){
 						// Stop animating:
 						clearInterval( _this.animateInterval[ _this.smil.getAssetId( smilElement ) ]  );
@@ -78,7 +125,7 @@ mw.SmilAnimate.prototype = {
 					}
 					
 					// Do the transform request: 				
-					_this.transformElement( smilElement, animateTime + ( animateTimeDelta/1000 ) );
+					_this.transformAnimateFrame( smilElement, animateTime + ( animateTimeDelta/1000 ) );
 				}, 
 				this.callbackRate 
 			);	
@@ -97,8 +144,7 @@ mw.SmilAnimate.prototype = {
 				return true;
 			 }
 		}
-		
-		
+				
 		// NOTE: our img node check avoids deltaTime check but its assumed to not matter much
 		// since any our supported keyframe granularity will be equal to deltaTime ie 1/4 a second. 		
 		if( refType == 'img' ){
@@ -129,8 +175,17 @@ mw.SmilAnimate.prototype = {
 		//mw.log( 'checkForTransformUpdate::' + nodeName +' ' +  animateTime );	
 		return false;
 	},
-	
-	
+	/** 
+	 * Transform Element in an inner animation loop
+	 */
+	transformAnimateFrame: function( smilElement, animateTime ){
+		// Video has no inner animation per-frame transforms 
+		if( this.smil.getRefType( smilElement ) != 'video' ){
+			this.transformElement( smilElement, animateTime );	
+		}
+		// Update the smil Element transition:
+		this.smil.getTransitions().transformTransitionOverlay( smilElement, animateTime );		
+	},
 	/** 
 	* Transform a smil element for a requested time.
 	*
@@ -149,9 +204,7 @@ mw.SmilAnimate.prototype = {
 			case 'video':
 				this.transformVideoForTime( smilElement, animateTime );
 			break;
-		}			
-		// Update the smil Element transition:
-		this.smil.getTransitions().transformTransitionOverlay( smilElement, animateTime );		
+		}					
 	},
 	
 	/**
@@ -161,22 +214,43 @@ mw.SmilAnimate.prototype = {
 	 */
 	transformVideoForTime: function( smilElement, animateTime ){
 		// Get the video element 
-		var vid = $j ( '#' + this.smil.getAssetId( smilElement ) ).get( 0 );		
+		var assetId = this.smil.getAssetId( smilElement );
+		var vid = $j ( '#' + assetId ).get( 0 );		
 				
 		// Check for "start offset"					
 				
-		mw.log( "transformVideoForTime:: ct:" +vid.currentTime + ' should be: ' + animateTime );
+		//mw.log( "SmilAnimate::transformVideoForTime:" + assetId + " ct:" +vid.currentTime + ' should be: ' + animateTime );
+		
 		// Register a buffer ready callback
 		this.smil.getBuffer().videoBufferSeek( smilElement, animateTime, function() {			
 			mw.log( "transformVideoForTime:: seek complete ");
 		});
 	},
+	
 	/** 
 	 * Used to support video playback
 	 */
-	transformVideoForPlayback: function( smilElement, animateTime ){
-		// xxx should fire buffer delay for now just play: 
-		$j ( '#' + this.smil.getAssetId( smilElement ) ).get( 0 ).play();
+	transformVideoForPlayback: function( smilElement, animateTime ){ 
+		var $vid = $j ( '#' + this.smil.getAssetId( smilElement ) );		
+		// Make the video is being displayed and get a pointer to the video element:
+		var vid = $vid.show().get( 0 );
+		
+		// Set volume to master volume 
+		vid.volume = this.smil.embedPlayer.volume;
+		
+		// Seek to correct time if off by more than 1 second 
+		// ( buffer delays management things insync below this range )
+		
+		// Check the buffer if we can play this time and the video is "paused" ( if so start playback )
+		if( this.smil.getBuffer().canPlayTime( smilElement, animateTime ) 
+			&& vid.paused
+		) {
+			//mw.log( "transformVideoForPlayback:: should play:" + animateTime );
+			vid.play();
+			return ;
+		}		
+		// Else issue the initial "play" request
+		vid.play();		
 	},
 	
 	/**

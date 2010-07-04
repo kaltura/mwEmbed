@@ -162,7 +162,7 @@ mw.PlayerControlBuilder.prototype = {
 			this.supportedComponets['timedText'] = true;
 		}		
 		// Check for kalturaAttribution 	
-		if( mw.getConfig( 'EmbedPlayer.KalturaAttribution' ) ){							 
+		if( mw.getConfig( 'EmbedPlayer.KalturaAttribution' ) ){			
 			this.supportedComponets[ 'kalturaAttribution' ] = true;
 		}
 		
@@ -868,7 +868,7 @@ mw.PlayerControlBuilder.prototype = {
 	 * The ctrl builder updates the interface on seeking 
 	 */
 	onSeek: function(){
-		mw.log( "controlBuilder:: onSeek" );
+		//mw.log( "controlBuilder:: onSeek" );
 		// Update the interface: 
 		this.setStatus( gM( 'mwe-embedplayer-seeking' ) );
 	},
