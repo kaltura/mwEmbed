@@ -64,6 +64,7 @@ mw.addMessages( {
 	"mwe-embedplayer-embed_site_or_blog" : "Embed on a page",
 	"mwe-embedplayer-related_videos" : "Related videos",
 	"mwe-embedplayer-seeking" : "seeking",
+	"mwe-embedplayer-buffering" : "buffering",
 	"mwe-embedplayer-copy-code" : "Copy code",	
 	"mwe-embedplayer-video-h264" : "H.264 video",
 	"mwe-embedplayer-video-flv" : "Flash video",
@@ -1359,21 +1360,21 @@ mw.EmbedPlayer.prototype = {
 			customAttributes = { };
 		}		
 		
-		var playerAttributes = mw.getConfig( 'embedPlayerAttributes' ); 		
+		var playerAttributes = mw.getConfig( 'embedPlayerAttributes' ); 
 		
 		// Setup the player Interface from supported attributes:
 		for ( var attr in playerAttributes ) {
 			if ( customAttributes[ attr ] || customAttributes[ attr ] === false ) {
 				this[ attr ] = customAttributes[ attr ];
-			} else if (  $j( element ).attr( attr ) ) {
-				this[ attr ] = $j( element ).attr( attr );
+			} else if ( element.getAttribute( attr ) ) {
+				this[ attr ] = element.getAttribute( attr );
 			} else {
 				this[attr] = playerAttributes[attr];
 			}
 			// string -> boolean
 			if( this[ attr ] == "false" ) this[attr] = false;
 			if( this[ attr ] == "true" ) this[attr] = true;
-		}		
+		}
 		
 		if( this.apiTitleKey ){
 			this.apiTitleKey = unescape( this.apiTitleKey );
@@ -3029,10 +3030,10 @@ mw.EmbedPlayer.prototype = {
 		$buffer = this.$interface.find( '.mw_buffer' );		
 		// Update the buffer progress bar (if available )
 		if ( this.bufferedPercent != 0 ) {
-			// mw.log('bufferedPercent: ' + this.bufferedPercent);			
-			if ( this.bufferedPercent > 1 )
+			//mw.log('Update buffer css: ' + ( this.bufferedPercent * 100 ) + '% ' + $buffer.length );			
+			if ( this.bufferedPercent > 1 ){
 				this.bufferedPercent = 1;
-			
+			}
 			$buffer.css({
 				"width" : ( this.bufferedPercent * 100 ) + '%'
 			});
