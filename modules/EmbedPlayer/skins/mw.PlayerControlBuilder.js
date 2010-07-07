@@ -65,7 +65,7 @@ mw.PlayerControlBuilder.prototype = {
 		this.embedPlayer = embedPlayer;
 
 		// Check for skin overrides for controlBuilder
-		var skinClass =  embedPlayer.skinName[0].toUpperCase() +  embedPlayer.skinName.substr( 1 );		
+		var skinClass =  embedPlayer.skinName.substr(0,1).toUpperCase() +  embedPlayer.skinName.substr( 1 );		
 		if ( mw['PlayerSkin' + skinClass  ]) {
 		
 			// Clone as to not override prototype with the skin config
