@@ -1,4 +1,4 @@
-/*
+/**
 * Loader for smilPlayer
 */
 // Wrap in mw to not pollute global namespace
@@ -47,7 +47,7 @@
 	/**
 	* Check if a video tag element has a smil source
 	*/ 
-	mw.CheckElementForSMIL = function( element ){
+	mw.CheckElementForSMIL = function( element ){		
 		if( $j( element ) .attr('type' ) == 'application/smil' ||
 			( $j( element ).attr('src' ) && 
 		 	$j( element ).attr('src' ).substr( -4) == 'smil' ) ) 

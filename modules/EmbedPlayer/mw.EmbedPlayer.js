@@ -3197,7 +3197,7 @@ mediaPlayer.prototype = {
 	load: function( callback ) {			
 		//Load player library ( upper case the first letter of the library )
 		mw.load( [
-			'mw.EmbedPlayer' + this.library[0].toUpperCase() + this.library.substr(1)
+			'mw.EmbedPlayer' + this.library.substr(0,1).toUpperCase() + this.library.substr(1)
 		], function() {
 			callback();
 		} );
