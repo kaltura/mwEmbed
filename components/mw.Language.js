@@ -44,9 +44,10 @@
 	*/
 	mw.addMessageKeys = function( msgSet ) {
 		// Check if any msg key from this class is missing
-		for( var i in msgSet ){
-			if( ! messageCache[ i ] ) {
-				// Set the missing messages flag ( script-loader is probably off) 
+		for( i=0; i < msgSet.length; i++ ){
+			msgKey = msgSet[i];
+			if( ! messageCache[ msgKey ] ) {
+				// Set the missing messages flag  
 				mw.currentClassMissingMessages = true;
 				return false;
 			}
