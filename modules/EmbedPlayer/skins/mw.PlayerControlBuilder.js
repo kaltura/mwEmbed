@@ -634,15 +634,17 @@ mw.PlayerControlBuilder.prototype = {
 		if( ! this.embedPlayer.supports['overlays'] ){
 			return false;
 		}
-		// If the config is false
-		if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) == false){
-			return false;
-		} 
 		
 		// If disabled via the player
 		if( this.embedPlayer.overlayControls === false ){
 			return false;
 		} 
+		
+		// If the config is false
+		if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) == false){
+			return false;
+		} 
+				
 		// don't hide controls when content "height" is 0 ( audio tags ) 		
 		if( this.embedPlayer.getPlayerHeight() == 0 ){			
 			return false;

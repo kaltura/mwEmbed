@@ -6,14 +6,14 @@
 * http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
 */
 
-var kURID = '1.1t';
+var kURID = '1.1q';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = '../mwEmbed/ResourceLoader.php';
+//SCRIPT_LOADER_URL = 'http://10.0.0.193/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 // Define mw ( if not already set ) 
@@ -59,7 +59,7 @@ if( !mw.setConfig ){
 	}	
 }
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
-function kOverideSwfObject(){
+function kOverideSwfObject(){	
 	// Check if already override
 	if( window['swfobject'] && window['swfobject']['originalEmbedSWF'] ){
 		return ;	
@@ -116,10 +116,11 @@ function kCheckAddScript(){
 		|| document.getElementsByTagName('audio').length != 0 ) {
 		kAddScript();
 		return ;
-	}
+	}	
 	
 	// If document includes kaltura embed tags && isMobile safari: 
 	if ( kBrowserAgentShouldUseHTML5() ) {
+	
 		// Check for kaltura objects in the page
 		var usedIdSet = [];
 		for(var i=0; i < document.getElementsByTagName('object').length; i++) {
@@ -208,11 +209,10 @@ function kAddScript(){
 	// no handlers: 		
 	document.getElementsByTagName('body')[0].appendChild( script );				
 };
-
 /**
 * DOM-ready setup ( similar to jQuery.ready )  
 */
-function kRunMwDomReady(){
+function kRunMwDomReady(){	
 	kAlreadyRunDomReadyFlag  = true;	
 	kOverideSwfObject();
 	kCheckAddScript();	

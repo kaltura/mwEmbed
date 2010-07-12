@@ -41,7 +41,7 @@ mw.SmilTransitions.prototype = {
 			$transition = this.smil.$dom.find( '#' + $j( smilElement ).attr( 'transOut' ) );
 			// Check if the transition is in range
 			var duration = this.smil.parseTime( $transition.attr('dur') );
-			var nodeDuration = this.smil.getBody().getNodeDuration( smilElement ); 
+			var nodeDuration = this.smil.getBody().getClipDuration( smilElement ); 
 			if( animateTime > ( nodeDuration - duration ) ){			
 				var percent = animateTime - ( nodeDuration - duration ) / duration;
 				// Invert the percentage for "transOut"

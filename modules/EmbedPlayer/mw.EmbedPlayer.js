@@ -165,7 +165,7 @@ mw.setConfig( 'embedPlayerAttributes', {
 	
 	// If the player controls should be overlaid 
 	//( Global default via config EmbedPlayer.OverlayControls in module loader.js)  
-	"EmbedPlayer.OverlayControls" : true,
+	"overlayControls" : true,
 	
 	// ROE url ( for xml based metadata )
 	// also see: http://wiki.xiph.org/ROE
@@ -421,7 +421,7 @@ EmbedPlayerManager.prototype = {
 				if( ranPlayerSwapFlag ){
 					return ;	
 				}
-				mw.log("runPlayerSwap::" + $j( playerElement ).attr('id') );
+				mw.log("mwEmbedPlayer::runPlayerSwap::" + $j( playerElement ).attr('id') );
 				ranPlayerSwapFlag = true;	
 				var playerInterface = new mw.EmbedPlayer( playerElement , attributes);
 				
@@ -429,7 +429,7 @@ EmbedPlayerManager.prototype = {
 										
 				
 				// Pass the id to any hook that needs to interface prior to checkPlayerSources
-				mw.log("addElement :: trigger :: newEmbedPlayerEvent");
+				mw.log("mwEmbedPlayer::addElement :trigger :: newEmbedPlayerEvent");
 				$j( mw ).trigger ( 'newEmbedPlayerEvent',  playerInterface.id );
 				
 				// Issue the checkPlayerSources call to the new player interface:
@@ -438,7 +438,7 @@ EmbedPlayerManager.prototype = {
 			}
 							
 			if( waitForMeta ) {						
-				mw.log('DO WaitForMeta ( video missing height (' + $j( playerElement ).attr('height') + '), width (' + $j( playerElement ).attr('width') + ') or duration' );
+				mw.log('mwEmbedPlayer::WaitForMeta ( video missing height (' + $j( playerElement ).attr('height') + '), width (' + $j( playerElement ).attr('width') + ') or duration' );
 				playerElement.removeEventListener( "loadedmetadata", runPlayerSwap, true );
 				playerElement.addEventListener( "loadedmetadata", runPlayerSwap, true );
 			
@@ -1465,30 +1465,29 @@ mw.EmbedPlayer.prototype = {
 	*/
 	setPlayerSize: function( element ) {					
 		
-		this['height'] = parseInt( $j(element).css( 'height' ) );
-		this['width'] = parseInt( $j(element).css( 'width' ) );		
+		this.height = parseInt( $j(element).css( 'height' ) );
+		this.width = parseInt( $j(element).css( 'width' ) );		
 		
-		if( !this['height']  && !this['width'] ) {
-			this['height'] = parseInt( $j(element).attr( 'height' ) );
-			this['width'] = parseInt( $j(element).attr( 'width' ) );
+		if( !this.height  && !this.width ) {
+			this.height = parseInt( $j(element).attr( 'height' ) );
+			this.width = parseInt( $j(element).attr( 'width' ) );
 		}			
 				
 		// Special case for audio 
 		// Firefox sets audio height to "0px" while webkit uses 32px .. force zero:  
-		if(  element.tagName.toLowerCase() == 'audio' && this['height'] == '32') {
-			this['height'] = 0;
+		if(  element.tagName.toLowerCase() == 'audio' && this.height == '32' ) {
+			this.height = 0;
 		}		
 		
 		// Use default aspect ration to get height or width ( if rewriting a non-audio player )
-		if(  element.tagName.toLowerCase() != 'audio' ) {
-			if( this['height']  &&  !this['width'] && this.videoAspect  ) {
-				var aspect = this.videoAspect.split( ':' );
-				this['width'] = parseInt( this.height * ( aspect[0] / aspect[1] ) );
-			}
-			
-			if( this['width']  &&  !this['height'] && this.videoAspect  ) {
-				var aspect = this.videoAspect.split( ':' );
-				this['height'] = parseInt( this.width * ( aspect[1] / aspect[0] ) );
+		if(  element.tagName.toLowerCase() != 'audio' && this.videoAspect ) {
+			var aspect = this.videoAspect.split( ':' );						
+			if( this.height  &&  !this.width  ) {				
+				this.width = parseInt( this.height * ( aspect[0] / aspect[1] ) );
+			}			
+			if( this.width  &&  !this.height ) {
+				var apectRatio = ( aspect[1] / aspect[0] );
+				this.height = parseInt( this.width * ( aspect[1] / aspect[0] ) );
 			}
 		}
 		
@@ -1496,23 +1495,37 @@ mw.EmbedPlayer.prototype = {
 		// or in IE we get NaN for width height
 		// 	 
 		// NOTE: browsers that do support height width should set "waitForMeta" flag in addElement 		
-		if( ( isNaN( this['height'] ) && isNaN( this['width'] ) ) ||
-			( this['height'] == -1 || this['width'] == -1 )   ||
+		if( ( isNaN( this.height ) && isNaN( this.width ) ) ||
+			( this.height == -1 || this.width == -1 )   ||
 				// Check for firefox defaults
 				// Note: ideally firefox would not do random guesses at css values 	
 				( (this.height == 150 || this.height == 64 ) && this.width == 300 )
 			) {			
 			var defaultSize = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
-			this['width'] = defaultSize[0];
+			this.width = defaultSize[0];
 			
 			// Special height default for audio tag ( if not set )  
 			if( element.tagName.toLowerCase() == 'audio' ) {
-				this['height'] = 0;
+				this.height = 0;
 			}else{
-				this['height'] = defaultSize[1];
+				this.height = defaultSize[1];
 			}
 		}	
 		
+	},
+	/**
+	 * Resize the player to a new size
+	 */
+	resizePlayer: function( size , animate){
+		this.width = size.width;
+		this.hegith = size.height;
+		if( animate ){
+			$j(this).animate(size);
+			this.$interface.animate( size );
+		}else{
+			$j(this).css(size);
+			this.$interface.css( size );
+		}
 	},
 	
 	/**
@@ -1812,7 +1825,7 @@ mw.EmbedPlayer.prototype = {
 	*
 	* @return start_npt and end_npt time if present
 	*/	
-	getTimeRange: function() {
+	getTimeRange: function() {		
 		var end_time = (this.controlBuilder.longTimeDisp)? '/' + mw.seconds2npt( this.getDuration() ) : '';
 		var default_time_range = '0:00:00' + end_time;		
 		if ( !this.mediaElement )
@@ -2720,6 +2733,7 @@ mw.EmbedPlayer.prototype = {
 		if ( this.thumbnail_disp ) {
 			// already in stooped state
 			mw.log( 'already in stopped state' );
+			this.controlBuilder.setStatus( this.getTimeRange() );
 		} else {
 			// rewrite the html to thumbnail disp
 			this.showThumbnail();
@@ -3460,7 +3474,10 @@ mw.EmbedTypes = {
 		this.players.addPlayer( htmlPlayer );
 		// In Mozilla, navigator.javaEnabled() only tells us about preferences, we need to
 		// search navigator.mimeTypes to see if it's installed	
-		var javaEnabled = navigator.javaEnabled();		
+		try{
+			var javaEnabled = navigator.javaEnabled();
+		} catch ( e ){
+		}
 		// Some browsers filter out duplicate mime types, hiding some plugins
 		var uniqueMimesOnly = $j.browser.opera || $j.browser.safari;
 		// Opera will switch off javaEnabled in preferences if java can't be found.

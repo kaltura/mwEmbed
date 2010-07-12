@@ -19,7 +19,11 @@ mw.SmilAnimate.prototype = {
 	/**
 	 * Pause any active animation or video playback
 	 */
-	pauseAnimation: function( smilElement ){
+	pauseAnimation: function( smilElement ){		
+		// Check if the element is in the html dom: 
+		if( !$j ( '#' + this.smil.getAssetId( smilElement ) ).length ){
+			return ;
+		}
 		// Pause the animation of a given element ( presently just video )		
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'video':
@@ -216,14 +220,20 @@ mw.SmilAnimate.prototype = {
 		// Get the video element 
 		var assetId = this.smil.getAssetId( smilElement );
 		var vid = $j ( '#' + assetId ).get( 0 );		
+		
+		var videoSeekTime = animateTime;
+		//Add the clipBegin if set
+		if( $j( smilElement ).attr( 'clipBegin') && 
+				this.smil.parseTime( $j( smilElement ).attr( 'clipBegin') ) )
+		{
+			videoSeekTime += this.smil.parseTime( $j( smilElement ).attr( 'clipBegin') );  
+		}
 				
-		// Check for "start offset"					
-				
-		//mw.log( "SmilAnimate::transformVideoForTime:" + assetId + " ct:" +vid.currentTime + ' should be: ' + animateTime );
+		//mw.log( "SmilAnimate::transformVideoForTime:" + assetId + " ct:" +vid.currentTime + ' should be: ' + videoSeekTime );
 		
 		// Register a buffer ready callback
-		this.smil.getBuffer().videoBufferSeek( smilElement, animateTime, function() {			
-			mw.log( "transformVideoForTime:: seek complete ");
+		this.smil.getBuffer().videoBufferSeek( smilElement, videoSeekTime, function() {			
+			//mw.log( "transformVideoForTime:: seek complete ");
 		});
 	},
 	
@@ -231,7 +241,11 @@ mw.SmilAnimate.prototype = {
 	 * Used to support video playback
 	 */
 	transformVideoForPlayback: function( smilElement, animateTime ){ 
-		var $vid = $j ( '#' + this.smil.getAssetId( smilElement ) );		
+		var $vid = $j ( '#' + this.smil.getAssetId( smilElement ) );	
+		
+		// Set activePlayback flag ( informs edit and buffer actions ) 
+		$j( smilElement ).data('activePlayback', true)
+		
 		// Make the video is being displayed and get a pointer to the video element:
 		var vid = $vid.show().get( 0 );
 		
@@ -245,7 +259,7 @@ mw.SmilAnimate.prototype = {
 		if( this.smil.getBuffer().canPlayTime( smilElement, animateTime ) 
 			&& vid.paused
 		) {
-			//mw.log( "transformVideoForPlayback:: should play:" + animateTime );
+			//mw.log( "transformVideoForPlayback:: should play:" + animateTime );						
 			vid.play();
 			return ;
 		}		
@@ -321,7 +335,7 @@ mw.SmilAnimate.prototype = {
 		if( !animateInRange  ) {
 			if( animateTime == 0 ) {
 				// just a hack for now ( should read from previous animation or from source attribute
-				//this.updateElementLayout( smilImgElement, { 'top':1,'left':1,'width':1, 'height':1 } );
+				// this.updateElementLayout( smilImgElement, { 'top':1,'left':1,'width':1, 'height':1 } );
 				var $target = $j( '#' + this.smil.getAssetId( smilImgElement ));
 				$target.css( {
 					'top' : '0px',

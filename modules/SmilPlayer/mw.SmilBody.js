@@ -28,7 +28,8 @@ mw.SmilBody.prototype = {
 		'audio' : 'ref',
 		'img' : 'ref',
 		'textstream' : 'ref',
-		'video' : 'ref'
+		'video' : 'ref',
+		'smiltext' : 'ref'
 	},
 	
 	// Constructor: 
@@ -48,12 +49,8 @@ mw.SmilBody.prototype = {
 		var _this = this;
 		if( !$node.attr('id')
 			&& !$node.attr( 'xml:id' )
-			&& ( 
-				_this.getNodeSmilType( $node ) == 'ref'
-				|| _this.getNodeSmilType( $node ) == 'smilText'
-			)
 		){
-			$node.attr('id', _this.smil.embedPlayer.id + '_ref_' + _this.idIndex );
+			$node.attr('id', _this.getNodeSmilType( $node ) + '_' + _this.idIndex );
 			mw.log('SmilBody:: gave: ' + $node.get(0).nodeName + ' id: ' + $node.attr('id') );
 			_this.idIndex++;
 		}
@@ -89,8 +86,14 @@ mw.SmilBody.prototype = {
 			},
 			/* SMIL Element out of range */
 			function( smilElement ){
+				// Stop the animation or playback 
+				_this.smil.getAnimate().pauseAnimation( smilElement )
+				
 				// Hide the element in the layout 
 				_this.smil.getLayout().hideElement( smilElement );
+				
+				// Update activePlayback flag
+				$j( smilElement ).data('activePlayback', false)
 				
 				// Expire transitions if needed
 				_this.smil.getTransitions().elementOutOfRange( smilElement, time );				
@@ -157,9 +160,9 @@ mw.SmilBody.prototype = {
 				var audioObj = {
 					'type' : nodeType,
 					'src' : _this.smil.getAssetUrl ( $node.attr('src') ),
-					'duration' : _this.getNodeDuration( $node ),
+					'duration' : _this.getClipDuration( $node ),
 					'startTime' : $node.data( 'startOffset' ),
-					'offset' : 0 // have to add in media-offset support
+					'offset' : _this.smil.parseTime( $node.attr( 'clipBegin') )  
 				};
 				
 				// If audioTimeline is empty insert directly 
@@ -228,10 +231,10 @@ mw.SmilBody.prototype = {
 		// Recurse on every ref element and run relevant callbacks
 		this.getRefElementsRecurse( this.$dom, 0, function( $node ){
 			var startOffset = $node.data( 'startOffset' );
-			var nodeDuration = _this.getNodeDuration( $node );
+			var nodeDuration = _this.getClipDuration( $node );
 			
 			// Check if element is in range: 
-			if( time >= startOffset && time <= ( startOffset + nodeDuration) ){
+			if( time >= startOffset && time < ( startOffset + nodeDuration) ){
 				if( typeof inRangeCallback == 'function' ){
 					inRangeCallback( $node );
 				}	
@@ -244,16 +247,28 @@ mw.SmilBody.prototype = {
 	},
 	
 	/**
-	 * getElementsForTimeRecurse
-	 * @param {Object} $node Node to recursively search for elements in the given time range
-	 */ 
+	 * get the sequence elements from a given par node if no node is provied assume root
+	 * @param {element=} $parNode Optional parNode to list all sequence timelines 
+	 */
+	getSeqElements: function( $node ){
+		if( ! $node ){
+			$node = this.$dom;
+		}
+		return $node.find('seq');
+	},
+	
 	
 	/**
 	 * Recurse over all body elements, issues a callback on all ref and smilText nodes
 	 * adds startOffset info for easy timeline checks.
+	 *  @param {Object} $node Node Starting point
 	 */
 	getRefElementsRecurse: function( $node, startOffset, callback ){
 		var _this = this;
+		
+		// Make sure $node is wrapped in jQuery object
+		$node = $j( $node );
+		
 		// Setup local pointers:		
 		var nodeType = this.getNodeSmilType( $node );
 		
@@ -290,15 +305,15 @@ mw.SmilBody.prototype = {
 			callback( $node )
 		}
 		// Return the node Duration for tracking startOffset
-		return this.getNodeDuration( $node );
+		return this.getClipDuration( $node );
 	},
 	
 	/**
 	 * Returns the smil body duration
 	 * ( wraps getDurationRecurse to get top level node duration ) 
 	 */	
-	getDuration: function(){		
-		this.duration = this.getNodeDuration( this.$dom );	
+	getDuration: function( forceRefresh ){		
+		this.duration = this.getClipDuration( this.$dom , forceRefresh);	
 		mw.log("smilBody:: getDuration: " + this.duration );
 		return this.duration;	
 	},
@@ -308,11 +323,16 @@ mw.SmilBody.prototype = {
 	 * @param {jQueryObject} $node 
 	 * @param {boolean} forceRefresh If a fresh duration should be calculated 
 	 */
-	getNodeDuration: function( $node, forceRefresh ){		
+	getClipDuration: function( $node, forceRefresh ){		
 		if( !forceRefresh && 
 			$node.data('computedDuration') != null
 		) {
 			return $node.data('computedDuration');
+		}
+		if( forceRefresh ){
+			//clear out implictDuration
+			$node.data( 'implictDuration', false );
+			$node.data( 'computedDuration', false );
 		}
 		
 		var _this = this;		
@@ -325,7 +345,7 @@ mw.SmilBody.prototype = {
 		if( $node.children().length ){
 			$node.children().each( function( inx, childNode ){				
 				// If in a sequence add to duration 		
-				var childDuration = _this.getNodeDuration( $j( childNode ), forceRefresh );							
+				var childDuration = _this.getClipDuration( $j( childNode ), forceRefresh );							
 				if( blockType == 'seq' ){
 					$node.data( 'implictDuration', $node.data('implictDuration') + childDuration ); 			
 				}			

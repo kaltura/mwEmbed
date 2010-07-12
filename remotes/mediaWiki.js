@@ -124,23 +124,13 @@ function doPageSpecificRewrite() {
 		//console.log( 'spl: ' + typeof mwSetPageToLoading );
 		// If on a view page set content to "loading" 
 		mwSetPageToLoading();
-		// Loading with loadMwEmbed not so big a deal since "sequencer is huge
-		loadMwEmbed( function(){
-			$j('#bodyContent').text ( 'Sequencer interface under development ');
-			/*
-			mw.load( 'Sequencer', function(){
-				mw.load( 'RemoteMwSequencer', function(){
-					mw.log('RemoteMwSequencer loaded' ); 
-						var myRemote = new RemoteMwSequencer( {
-							'action': wgAction,
-							'title' : wgTitle,
-							'target': '#bodyContent'
-						});	
-						// Update the UI
-						myRemote.updateUI();
-				} );
-			} );
-			*/
+		loadMwEmbed( [ 'mw.RemoteSequenceEdit' ], function(){
+			var remote = new mw.RemoteSequenceEdit({
+				'action': wgAction,
+				'title' : wgTitle,
+				'target' : '#bodyContent'
+			});
+			remote.drawUI();
 		} );
 		return ;
 	}

@@ -68,9 +68,13 @@
 					// Setup the flashvars variable
 					var flashvars = {};
 					var flashVarsString = $j( element ).find( "param[name='flashvars']" ).val();
+					// try alternate case: 
+					if( !flashVarsString ){
+						flashVarsString = $j( element ).find( "param[name='flashVars']" ).val();
+					}
 					var flashVarPairs = flashVarsString.split('&');
 					for( var i in flashVarPairs ) {
-						var parts = flashVarPairs.split('=');
+						var parts = flashVarPairs[i].split('=');
 						flashvars[ parts[0] ] = parts[1];
 					}
 					
@@ -84,7 +88,7 @@
 					var $imgThumb = '';
 					if( kEmbedSettings.partnerId ){
 						var thumb_url = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
-										partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
+										kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
 										height + '/height/' + width;
 						$imgThumb = $j('<img />').attr({
 							'src' : thumb_url 
