@@ -13,7 +13,7 @@ var SCRIPT_FORCE_DEBUG = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://10.0.0.193/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_LOADER_URL = 'http://192.168.1.100/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 // Define mw ( if not already set ) 
@@ -70,7 +70,7 @@ function kOverideSwfObject(){
 		// override embedObjec for our own ends
 		window['swfobject']['embedSWF'] = function( swfUrlStr, replaceElemIdStr, widthStr,
 				heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn)
-		{			
+		{						
 			var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
 			// Check if mobile safari: 
 		
@@ -79,8 +79,7 @@ function kOverideSwfObject(){
 				kAddScript();
 				mw.ready(function(){					
 					var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceElemIdStr ).width();
-					var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceElemIdStr ).height();
-
+					var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceElemIdStr ).height();				
 					var poster = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
 						kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
 						height + '/height/' + width;
@@ -206,7 +205,7 @@ function kAddScript(){
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
 	script.src = url;
-	// no handlers: 		
+	// no handlers: 			
 	document.getElementsByTagName('body')[0].appendChild( script );				
 };
 /**

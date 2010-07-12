@@ -141,7 +141,7 @@ mw.PlayerControlBuilder.prototype = {
 	*/ 
 	addControlComponents: function( ) {
 		var _this = this;			
-		mw.log( 'f:controlsBuilder:: opt:' + this.options );
+		mw.log( 'PlayerControlBuilder::controlsBuilder:: opt:' + this.options );
 		
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
@@ -197,7 +197,7 @@ mw.PlayerControlBuilder.prototype = {
 					);
 					this.available_width -= this.components[ component_id ].w;
 				} else {
-					mw.log( 'Not enough space for control component:' + component_id );
+					mw.log( 'PlayerControlBuilder::Not enough space for control component:' + component_id );
 				}
 			}
 		}
@@ -276,7 +276,7 @@ mw.PlayerControlBuilder.prototype = {
 	* Do full-screen mode 
 	*/ 
 	doFullScreenPlayer: function() {
-		mw.log(" controlBuilder :: toggle full-screen ");									
+		mw.log("PlayerControlBuilder::toggle full-screen ");									
 		// Setup pointer to control builder :
 		var _this = this;
 		
@@ -358,7 +358,7 @@ mw.PlayerControlBuilder.prototype = {
 				if( $j( this ).css( 'position' ) == 'absolute' ) {				
 					_this.parentsAbsolute.push( $j( this ) );				
 					$j( this ).css( 'position', null );
-					mw.log(' should update position: ' +  $j( this ).css( 'position' ) );
+					mw.log('PlayerControlBuilder::Update position: ' +  $j( this ).css( 'position' ) );
 				}
 			} );
 		} )
@@ -449,7 +449,7 @@ mw.PlayerControlBuilder.prototype = {
 			? embedPlayer.getHeight() 
 			: embedPlayer.getHeight() + _this.getHeight();
 			
-		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
+		mw.log( 'PlayerControlBuilder::restoreWindowPlayer: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
 		$j('.mw-fullscreen-overlay').fadeOut( 'slow' );
 		
 		// Restore interface: 		
@@ -479,7 +479,7 @@ mw.PlayerControlBuilder.prototype = {
 			$j('body').css( 'overflow', 'auto' );
 			
 		} );
-		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
+		mw.log( 'PlayerControlBuilder::Restore embedPlayer: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
 		// Restore the player: 
 		$j( embedPlayer ).animate( {
 			'top' : '0px',
@@ -570,7 +570,7 @@ mw.PlayerControlBuilder.prototype = {
 			this.addSkinControlBindings();
 		}
 		
-		mw.log('tirgger::addControlBindingsEvent');
+		mw.log('PlayerControlBuilder::tirgger:addControlBindingsEvent');
 		$j( embedPlayer ).trigger( 'addControlBindingsEvent');
 	},
 	
@@ -610,7 +610,7 @@ mw.PlayerControlBuilder.prototype = {
 	showControlBar: function(){
 		var animateDuration = 'slow';	
 		$j( this.embedPlayer.getPlayerElement() ).css('z-index', '1')	
-		mw.log( 'showControlBar' );
+		mw.log( 'PlayerControlBuilder::showControlBar' );
 		// Move up text track if present
 		this.embedPlayer.$interface.find( '.track' )
 			.animate( 
@@ -699,7 +699,7 @@ mw.PlayerControlBuilder.prototype = {
 	* 
 	*/
 	doWarningBindinng: function( preferenceId, warningMsg ) {
-		mw.log( 'controlBuilder: doWarningBindinng: ' + preferenceId +  ' wm: ' + warningMsg);
+		mw.log( 'PlayerControlBuilder::doWarningBindinng: ' + preferenceId +  ' wm: ' + warningMsg);
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 		var _this = this;			
@@ -780,7 +780,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var _this = this;		
 		embedPlayer.$interface.find( '.volume_control span' ).unbind().buttonHover().click( function() {
-			mw.log( 'Volume control toggle' );
+			mw.log( 'PlayerControlBuilder::Volume control toggle' );
 			embedPlayer.toggleMute();
 		} );
 		

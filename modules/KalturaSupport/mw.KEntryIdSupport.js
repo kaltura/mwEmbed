@@ -31,7 +31,7 @@ mw.KEntryIdSupport.prototype = {
 			
 			// Add hook for check player sources to use local kEntry ID source check:
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {	
-				mw.log(" entryId:: checkPlayerSourcesEvent ");
+				mw.log("KEntryIdSupport::entryId:: checkPlayerSourcesEvent ");
 				_this.checkPlayerSources( embedPlayer, function(){
 					// We can only enable kaltura analytics if we have a session if we have a client										
 					if( mw.getConfig( 'enableKalturaAnalytics' ) == true && _this.kClient ) {
