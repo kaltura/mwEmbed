@@ -1,6 +1,7 @@
 /**
 * Playlist Embed. Enables the embedding of a playlist playlist using the mwEmbed player   
 */ 
+
 mw.Playlist = function( options ){
 	return this.init( options );
 };
@@ -15,17 +16,18 @@ mw.Playlist.prototype = {
 	
 	// constructor
 	init: function( options ) {
+		
 		this.src = options.src;			
 		
 		this.target = options.target;	
 		
-		this.id = ( options.id )? options.id : $j( this.target ).attr('id');
+		this.id = ( options.id )? options.id : $j( this.target ).attr( 'id' );
 		if( !this.id ){
-			// Give it a random id if unset:
+			// Give it a rand om id if unset:
 			this.id = 'playlist_' + Math.random();
 		}
 		
-		// Set the sourceHandler if proivded
+		// Set the sourceHandler if provided
 		if( options.sourceHandler )
 			this.sourceHandler = options.sourceHandler;
 		
@@ -62,22 +64,23 @@ mw.Playlist.prototype = {
 	drawUI: function(){
 		var _this = this;
 		// Set the target to loadingSpinner: 
-		$j( this.target ).loadingSpinner();
+		$j( this.target ).empty().loadingSpinner();
 		
-		this.getSourceHandler( function( sourceHandler ){					
+		this.loadPlaylistHandler( function( playlistHandler ){			
+			mw.log("mw.Playlist::loaded playlist handler");
 			// Empty the target and setup player and playerList divs
 			$j( _this.target )
 			.empty()
 			.append(
 				$j( '<span />' )							
 					.addClass( 'media-rss-video-player')
-					.css( {
+					.css({
 						'float' : 'left'
 					})
 				,
 				$j( '<div />')					
 					.addClass( 'media-rss-video-list' )					
-					.css({ 
+					.css({
 						'float' : 'right',
 						'overflow-y' : 'auto' ,
 						'overflow-x' : 'hidden'
@@ -142,18 +145,17 @@ mw.Playlist.prototype = {
 			};
 		}		
 		
-		return this.targetPlayerSize;	
+		return this.targetPlayerSize;
 	},
 	
 	/**
-	* addPlayer to the target output
+	* update the player
 	*/
 	updatePlayer: function( clipIndex , callback ){
-		var _this = this;
-					
+		var _this = this;					
 		var playerSize = _this.getTargetPlayerSize() ;
 		
-		// xxx some enhacements to embedPlayer could support storing data with a video embed
+		// xxx some enhancements to embedPlayer could support storing data with a video embed
 		// so we don't have to overload the id
 		var $video = $j( '<video />' )
 			.attr({
@@ -162,77 +164,81 @@ mw.Playlist.prototype = {
 			})
 			.css(
 				playerSize
-			);
+			)
+			// Add custom attributes: 
+			.attr(  _this.sourceHandler.getCustomClipAttributes( clipIndex ) );
 		
 		// Get the sources ( jquery does not support namespaces so use native selector )
 		// xxx Chrome chokes on a normal find so we can't use: 
 		// $item.find( 'media\\:content' ).each( function( inx, mediaContent ){
-		var clipSources = this.sourceHandler.getClipSources( clipIndex );
-		if( clipSources ){
-			for( var i =0; i < clipSources.length; i++ ){
-				var $source = $j('<source />')
-					.attr(  clipSources[i] );															
-				$video.append( $source );
+		this.sourceHandler.getClipSources( clipIndex, function( clipSources ){
+			
+			if( clipSources ){
+				for( var i =0; i < clipSources.length; i++ ){					
+					var $source = $j('<source />')
+						.attr(  clipSources[i] );															
+					$video.append( $source );
+				}
 			}
-		}
-				
-		// Build the title
-		var $title = $j('<div />' )
-			.css( { 
-				'height' : _this.titleHeight,
-				'font-size' : '85%',
-				'width' :  playerSize.width
-			} )
-			.text( 
-				_this.sourceHandler.getClipTitle( clipIndex ) 
-			)
-			.addClass( 'ui-state-default ui-widget-header' )
-			
-			
-		$j( this.target + ' .media-rss-video-player' )
-			.empty()
-			.append(
-				$title, 		
-				$video
-			);
-		
-		// Update the video tag with the embedPlayer
-		$j.embedPlayers( function(){			
-			
-			// Setup ondone playing binding to play next clip			
-			$j( '#mrss_' + _this.id + '_' + _this.clipIndex ).bind( 'ended', function(event, onDoneActionObject ){										
-				// Play next clip
-				if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
-					// Update the onDone action object to not run the base control done: 
-					onDoneActionObject.runBaseControlDone = false;
-					_this.clipIndex++;
-										
-					// ( if on ipad update the src and don't refresh )
-					_this.updatePlayer( _this.clipIndex, function(){
-						_this.play();
-					})					
 					
-				} else {
-					mw.log("Reached end of playlist run normal end action" );
-					// Update the onDone action object to not run the base control done: 
-					onDoneActionObject.runBaseControlDone = true;
-				}								
-			})
+			// Build the title
+			var $title = $j('<div />' )
+				.css( { 
+					'height' : _this.titleHeight,
+					'font-size' : '85%',
+					'width' :  playerSize.width
+				} )
+				.text( 
+					_this.sourceHandler.getClipTitle( clipIndex ) 
+				)
+				.addClass( 'ui-state-default ui-widget-header' )
+				
+				
+			$j( _this.target + ' .media-rss-video-player' )
+				.empty()
+				.append(
+					$title, 		
+					$video
+				);
+			
+			// Update the video tag with the embedPlayer
+			$j.embedPlayers( function(){				
+				// Setup ondone playing binding to play next clip			
+				$j( '#mrss_' + _this.id + '_' + _this.clipIndex ).bind( 'ended', function(event, onDoneActionObject ){										
+					// Play next clip
+					if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
+						// Update the onDone action object to not run the base control done: 
+						onDoneActionObject.runBaseControlDone = false;
+						_this.clipIndex++;
+											
+						// ( if on ipad update the src and don't refresh )
 						
-			// Run the callback if its set
-			if( callback ){
-				callback();
-			}				 
-		} );
+						_this.updatePlayer( _this.clipIndex, function(){
+							_this.play();
+						})					
+						
+					} else {
+						mw.log("Reached end of playlist run normal end action" );
+						// Update the onDone action object to not run the base control done: 
+						onDoneActionObject.runBaseControlDone = true;
+					}								
+				})
+							
+				// Run the callback if its set
+				if( callback ){
+					callback();
+				}				 
+			} );
+			
+			// Update the player list if present: 
+			 
+			$j( _this.target + ' .clipItemBlock')
+				.removeClass( 'ui-state-active' )
+				.addClass( 'ui-state-default' )
+				.eq( clipIndex ) 
+				.addClass( 'ui-state-active' )			
 		
-		// Update the player list if present: 
-		 
-		$j( _this.target + ' .clipItemBlock')
-			.removeClass( 'ui-state-active' )
-			.addClass( 'ui-state-default' )
-			.eq( clipIndex ) 
-			.addClass( 'ui-state-active' )
-		
+		});			
 	},
 	
 	/** 
@@ -241,8 +247,10 @@ mw.Playlist.prototype = {
 	addMediaList: function() {
 		var _this = this;
 		$targetItemList = $j( this.target + ' .media-rss-video-list');
-
+		
 		$j.each( this.sourceHandler.getClipList(), function( inx, clip ){
+			mw.log( 'mw.Playlist::addMediaList: On clip: ' + clip);
+			
 			// Output each item with the current selected index:				
 			$itemBlock = $j('<div />')
 				.addClass( 'ui-widget-content ui-corner-all' )
@@ -317,23 +325,24 @@ mw.Playlist.prototype = {
 	/**
 	 * Load the playlist driver from a source
 	 */
-	getSourceHandler: function( callback ){
+	loadPlaylistHandler: function( callback ){
 		var _this = this;		
-		if( _this.sourceHandler ){
-			callback( _this.sourceHandler );
-			return ;
-		};
-		switch( this.type ){
-			case 'application/rss+xml':			
-				_this.sourceHandler = new mw.PlaylistHandlerMediaRss( this );
-			break;
-		}
-		// load playlist
-		_this.sourceHandler.loadFromSrc( function(){			
+		if( !_this.sourceHandler ){
+			switch( this.type ){
+				case 'application/rss+xml':			
+					_this.sourceHandler = new mw.PlaylistHandlerMediaRss( this );
+				break;
+			}
+		};		
+		// load the playlist 
+		_this.sourceHandler.loadPlaylist( function(){			
 			callback( _this.sourceHandler );
 		});
 	}, 
 	
+	/**
+	 * Set the playlsit source handler
+	 */
 	setSourceHandler: function ( sourceHandler ){
 		this.sourceHandler = sourceHandler;
 	}

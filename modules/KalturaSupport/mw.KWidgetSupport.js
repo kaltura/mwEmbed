@@ -40,16 +40,7 @@ mw.KWidgetSupport.prototype = {
 					callback();
 				} );				
 			} );						
-		} );
-		
-		$j( mw ).bind('newPlaylistPlayerEvent', function( event, playlistPlayer ){			
-			_this.setupSession( playlistPlayer.widgetId, function(){
-				// Add the kClient to the playlist player
-				playlistPlayer.kClient = _this.kClient;
-				// draw the playlist
-				playlistPlayer.drawUI();
-			})
-		});
+		} );		
 	},
 	
 	/** 
@@ -63,8 +54,8 @@ mw.KWidgetSupport.prototype = {
 		var widgetId = $j( embedPlayer ).attr( 'kwidgetid' ); 
 		
 		// Setup global Kaltura session:
-		_this.setupSession ( widgetId, function( ) {
-			this.addKSources( player, callback);
+		_this.setupSession ( widgetId, function( ) {			
+			_this.addEntryIdSource( embedPlayer, callback);
 		} );
 	},
 	
@@ -77,26 +68,54 @@ mw.KWidgetSupport.prototype = {
 		var kEntryId = $j( embedPlayer ).attr( 'kentryid' );
 		// Assign the partnerId from the widgetId
 		
-		// Assign the partnerId from the widgetId ( for thumbnail  )
+		// Assign the partnerId from the widgetId ( for thumbnail )
 		var widgetId =  $j( embedPlayer ).attr( 'kwidgetid' );
-		var kPartnerId = widgetId.replace(/_/g, '');
-
+		this.kPartnerId = widgetId.replace(/_/g, '');	
+		
+		// Set the poster
+		embedPlayer.poster = 'http://cdnakmi.kaltura.com/p/' + this.kPartnerId + '/sp/' +
+		this.kPartnerId + '00/thumbnail/entry_id/' + kEntryId + '/width/' +
+			embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight();
+			 
+		this.getEntryIdSources( kEntryId, function( sources ){
+			for( var i=0;i < sources.length ; i++){
+				mw.log( 'kEntryId::addSource::' +  sources[i].src );		
+				embedPlayer.mediaElement.tryAddSource(
+					$j('<source />')
+					.attr( {
+						'src' : sources[i].src,
+						'type' : sources[i].type
+					} )
+					.get( 0 )
+				);
+			}
+		});
+		
+	},
+	
+	/**
+	 * Get client entry id sources: 
+	 */
+	getEntryIdSources: function( kEntryId, callback ){
+		var _this = this;
+		var sources = [];
 		var flavorGrabber = new KalturaFlavorAssetService( this.kClient );
 		
+		var addSource = function ( src, type ){
+			sources.push( {
+				'src': src,
+				'type': type
+			} );
+		}
 		flavorGrabber.getByEntryId ( function( success, data ) {			
 			if( ! success || ! data.length ) {				
 				mw.log( "Error flavorGrabber getByEntryId:" + kEntryId + " no sources found ");				
-				callback();
+				callback([]);
 				return false;
 			}			
 			
 			// Setup the src defines
-			var iPadSrc = iPhoneSrc = oggSrc = null;
-			
-			// Set the poster
-			embedPlayer.poster = 'http://cdnakmi.kaltura.com/p/' + kPartnerId + '/sp/' +
-				kPartnerId + '00/thumbnail/entry_id/' + kEntryId + '/width/' +
-				 embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight()
+			var iPadSrc = iPhoneSrc = oggSrc = null;		
 			
 			// Find a compatible stream
 			for( var i = 0 ; i < data.length; i ++ ) {				
@@ -107,8 +126,8 @@ mw.KWidgetSupport.prototype = {
 				/XXXXXXX/flavor/XXXXXXXX/a.mp4?novar=0
 				*/
 				// Set up the current src string:
-				var src = 'http://cdnakmi.kaltura.com/p/' + kPartnerId +
-						'/sp/' +  kPartnerId + '00/flvclipper/entry_id/' +
+				var src = 'http://cdnakmi.kaltura.com/p/' + _this.kPartnerId +
+						'/sp/' +  _this.kPartnerId + '00/flvclipper/entry_id/' +
 						kEntryId + '/flavor/' + asset.id ;
 								
 				
@@ -127,37 +146,24 @@ mw.KWidgetSupport.prototype = {
 					oggSrc = src + '/a.ogg?novar=0';
 				}				
 			}
-			
-			// Shortcut function to add source
-			function addSource( src, type ){
-				mw.log( 'kEntryId::addSource::' + src )
-				embedPlayer.mediaElement.tryAddSource(
-					$j('<source />')
-					.attr( {
-						'src' : src,
-						'type' : type
-					} )
-					.get( 0 )
-				);
-			}
-			
+						
 			// If on an iPad use iPad or iPhone src
 			if( navigator.userAgent.indexOf('iPad') != -1 ) {
 				if( iPadSrc ){ 
 					addSource( iPadSrc, 'video/h264' );
-					callback();
+					callback( sources );
 					return ;
 				} else if ( iPhoneSrc ) {
-					addSource( iPhoneSrc, 'video/h264' );
-					callback();
+					addSource( iPhoneSrc, 'video/h264');
+					callback( sources );
 					return ;
 				}
 			}
 			
 			// If on iPhone just use iPhone src
 			if( navigator.userAgent.indexOf('iPhone') != -1 && iPhoneSrc ){
-				addSource( iPhoneSrc, 'video/h264' );
-				callback();
+				addSource(  iPhoneSrc, 'video/h264' );
+				callback( sources );
 				return ;
 			}
 			
@@ -177,12 +183,10 @@ mw.KWidgetSupport.prototype = {
 			}
 			
 			// Done adding sources run callback
-			callback();
-				
+			callback( sources );				
 		},
 		/*getByEntryId @arg kEntryId */
 		kEntryId );
-		
 	},
 	
 	/**
@@ -190,8 +194,7 @@ mw.KWidgetSupport.prototype = {
 	* @param {Function} callback Function called once the function is setup
 	*/ 
 	setupSession: function(widgetId,  callback ) {				 		
-		var _this = this;
-		
+		var _this = this;		
 		// if Kaltura session is ready jump directly to callback
 		if( _this.kalturaSessionState == 'ready' ){
 			// Check for entry id directly
@@ -199,10 +202,7 @@ mw.KWidgetSupport.prototype = {
 			return ;
 		}		
 		// Add the player and callback to the callback Queue
-		_this.sessionReadyCallbackQueue.push( { 
-			'player' : embedPlayer,
-			'callback' : callback
-		} );
+		_this.sessionReadyCallbackQueue.push( callback );
 		// if setup is in progress return 
 		if( _this.kalturaSessionState == 'inprogress' ){
 			mw.log( 'kaltura session setup in progress' );
@@ -214,10 +214,10 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		// Assign the partnerId from the wdigetid
-		var kPartnerId = widgetId.replace(/_/, '');
+		this.kPartnerId = widgetId.replace(/_/, '');
 		
 		// Setup the kConfig		
-		var kConfig = new KalturaConfiguration( parseInt( kPartnerId ) );
+		var kConfig = new KalturaConfiguration( parseInt( this.kPartnerId ) );
 		
 		// Assign the local kClient
 		this.kClient = new KalturaClient( kConfig );
@@ -237,7 +237,6 @@ mw.KWidgetSupport.prototype = {
 					return ;
 				}				
 				// update the kalturaKS var
-				mw.setConfig( 'kalturaKS', data.ks ),
 				mw.log('New session created::' + data.ks );
 				_this.kClient.setKs( data.ks );
 				
@@ -248,36 +247,49 @@ mw.KWidgetSupport.prototype = {
 			widgetId
 		);					
 	},
-	sessionSetupDone : function( status ){
+	sessionSetupDone : function( status ){		
 		var _this = this;
+		mw.log( "KWidgetSupport::sessionSetupDone" );
+		
 		this.kalturaSessionState = 'ready';
 		// check if the session setup failed. 
-		if( !status){
+		if( !status ){
 			return false;
 		}
 		// Once the session has been setup run the sessionReadyCallbackQueue
-		while( _this.sessionReadyCallbackQueue.length ){
-			var sessionItem =  this.sessionReadyCallbackQueue.shift();
-			this.addKSources( sessionItem.player, sessionItem.callback ) ;
+		while( _this.sessionReadyCallbackQueue.length ) {
+			 _this.sessionReadyCallbackQueue.shift()();
 		}
-	}	
+	}
 }
 
 // Add the playlist binding
 
+// Setup the kWidgetSupport global 
+window.kWidgetSupport = new mw.KWidgetSupport();
 
-		
 // Add player Manager binding ( if playerManager not ready bind to when its ready )
 // @@NOTE we may want to move this into the loader since its more "action/loader" code
 if( mw.playerManager ){	
-	var kEntrySupport = new mw.KWidgetSupport();
-	kEntrySupport.addPlayerHooks();
+	kWidgetSupport.addPlayerHooks();
 } else {
 	mw.log( 'KWidgetSupport::bind:EmbedPlayerManagerReady');
 	$j( mw ).bind( 'EmbedPlayerManagerReady', function(){	
-		mw.log("KWidgetSupport::EmbedPlayerManagerReady");
-		var kWidgetSupport = new mw.KWidgetSupport();
+		mw.log( "KWidgetSupport::EmbedPlayerManagerReady" );	
 		kWidgetSupport.addPlayerHooks();
 	});	
+}
+
+/**
+ * Register a global shortcuts for the kaltura client. 
+ */
+mw.getKalturaClientSession = function( widgetid, callback ){
+	kWidgetSupport.setupSession( widgetid, function(){
+		// return the kClient: 
+		callback( kWidgetSupport.kClient )
+	});
+}
+mw.getKalturaEntryIdSources = function( entryId, callback ){
+	kWidgetSupport.getEntryIdSources( entryId, callback);
 }
 

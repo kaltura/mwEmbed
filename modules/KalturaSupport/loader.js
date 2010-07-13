@@ -43,9 +43,12 @@
 		"KalturaAccessControlService",
 		"KalturaAccessControlOrderBy",
 		"KalturaAccessControl",
-		"OX.AJAST",
 		"MD5"
-	]
+	];
+	
+	mw.addModuleLoader( 'KalturaPlaylist', function() {
+		return $j.merge( kalturaSupportRequestSet, ['mw.PlaylistHandlerKaltura']);
+	});
 
 	//Check if the document has kaltura objects ( for fall forward support ) 
 	$j( mw ).bind( 'LoaderEmbedPlayerDocumentHasPlayerTags', function( event, tagCheckObject ){
@@ -117,7 +120,7 @@
 							});							
 						}
 					} else {
-						//assume playlist 
+						// Assume playlist 
 						loadPlaylistFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaPlaylistSwap';
 					}
@@ -148,19 +151,21 @@
 							})
 							.loadingSpinner()
 						)
-					)						
+					)					
 				});
 						
 				if( loadPlaylistFlag ){
 					kLoadKalturaSupport = true;
-					mw.load(['EmbedPlayer', 'Playlist', 'mw.PlaylistHandlerKaltura', ], function(){		
+					mw.load(['EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){
 						// kalturaPlaylistObject has player loader built in: 
-						$j('.mwEmbedKalturaPlaylistSwap').each(function( inx, playlistTarget ){
-							var kalturaPlaylistHanlder = new mw.PlaylistHandlerKaltura()
-							var playlistPlayer = $j(target).playlist({
+						$j('.mwEmbedKalturaPlaylistSwap').each(function( inx, playlistTarget ){									
+							var kalturaPlaylistHanlder = new mw.PlaylistHandlerKaltura({
+								'uiconfid' : $j(playlistTarget ).attr( 'kuiconfid' ),
+								'widgetid' : $j(playlistTarget ).attr( 'kwidgetid' )
+							});							
+							var playlistPlayer = $j( '#' + playlistTarget.id ).playlist({
 								'sourceHandler' : kalturaPlaylistHanlder
-							})
-							$j( mw ).trigger( 'newPlaylistPlayerEvent',  playlistPlayer );
+							});  														
 						});
 					});
 				}
@@ -171,13 +176,13 @@
 						$j('.mwEmbedKalturaVideoSwap').embedPlayer();
 					})
 				}
-			}			
+			}
 		}
 	});
 		
 	var kLoadKalturaSupport = false;	
 	//Update the player loader request with timedText if the flag has been set 
-	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {	
+	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {		
 		// Check if any video tag uses the "kEmbedSettings.entryId"  
 		if(  $j( playerElement ).attr( 'kentryid' ) ) {
 			kLoadKalturaSupport = true;

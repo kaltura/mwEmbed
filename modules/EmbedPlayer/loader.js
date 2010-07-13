@@ -237,9 +237,7 @@
 			dependencyRequest.push( 'mw.style.PlayerSkin' + pSkin );
 		}	
 		
-		// Allow extension to extend the request. 
-		//mw.log( 'LoaderEmbedPlayerUpdateRequest' );
-		
+		// Allow extension to extend the request. 				
 		$j( mw ).trigger( 'LoaderEmbedPlayerUpdateRequest', 
 				[ playerElement, dependencyRequest ] );
 

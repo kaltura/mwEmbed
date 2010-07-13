@@ -14,7 +14,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	/**
 	 * load the playlist source file with a callback 
 	 */
-	loadFromSrc: function( callback ){
+	loadPlaylist: function( callback ){
 		var _this = this;
 		// check if we already have the $rss loaded
 		if( this.$rss ){
@@ -36,7 +36,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		return this.$rss.find('item').length;
 	},
 	
-	getClipSources: function( clipIndex ){
+	getClipSources: function( clipIndex, callback ){
 		var _this = this;
 		var $item = $j( this.$rss.find('item')[ clipIndex ] );
 		var clipSources = [];
@@ -55,8 +55,12 @@ mw.PlaylistHandlerMediaRss.prototype = {
 				clipSources.push( clipSource );
 			}
 		});
-		return clipSources;
+		callback( clipSources );
 	}, 
+	
+	getCustomClipAttributes: function( clipIndex ){
+		return {};
+	},
 	
 	getClipList: function(){
 		return this.$rss.find('item');			

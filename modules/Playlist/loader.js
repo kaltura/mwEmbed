@@ -36,7 +36,8 @@
 // Add the jQuery hook: 
 ( function( $ ) {
 	$.fn.playlist = function( options ){
-		var _this = this;	
+		var _this = this;		
+		
 		if ( !this.selector ) {
 			mw.log( "Error: Calling mediaRssPlayer with empty selector " + this.selector);
 			return ;
