@@ -1,0 +1,67 @@
+
+
+.mwe-sequence-edit .timelineTrackContainer{
+	position: absolute;
+	border: solid thin #999;
+	top: 4px;	
+	left:4px;
+	right: 4px;
+	bottom: 4px;
+}
+
+.mwe-sequence-edit .trackNameContainer{
+	overflow:hidden;	
+}
+.mwe-sequence-edit .clipTrackSetContainer{	
+	overflow-x: scroll;	
+}
+
+.mwe-sequence-edit .clipTrackSet{
+	height: 100px;
+	background-color: #EEE;	
+	border: solid thin #999;
+	list-style-position: inside;  
+	cursor: hand; 
+	cursor: pointer;
+	margin:0px;
+	padding: 4px;
+}
+
+.mwe-sequence-edit .trackNames{
+	height: 100px;
+	background-color: #EEE;	
+	border: solid thin #999;
+	padding:4px
+}
+
+.mwe-sequence-edit .timelineClip{
+	float: left;
+	position: relative;
+	margin: 5px;
+	background-color: #FFF;		
+	border: 2px solid #555;
+	overflow: hidden;
+	width:120px;
+	height:90px;
+	list-style:circle outside none;
+}
+
+.mwe-sequence-edit .thumbTraget {	
+	width:120px;
+	height:90px;
+}
+.mwe-sequence-edit .clipSortTarget {
+	background-color:#6F6;
+	border:2px dashed #000;			
+}
+.mwe-sequence-edit .timelineClip:hover{
+	border: 2px solid #66F;
+}
+.mwe-sequence-edit .selectedClip{
+	border: 2px solid #F66;
+}
+.mwe-sequence-edit .selectedClip:hover{
+	border: 2px solid #F22;
+}
+
+
