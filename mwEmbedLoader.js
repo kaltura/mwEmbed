@@ -12,8 +12,8 @@ var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.1.100/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://192.168.1.100/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 // Define mw ( if not already set ) 
@@ -74,23 +74,27 @@ function kOverideSwfObject(){
 			var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
 			// Check if mobile safari: 
 		
-			if( kBrowserAgentShouldUseHTML5() && kEmbedSettings.entryId ){
+			if( kBrowserAgentShouldUseHTML5() && kEmbedSettings.uiconfId ){
 				// Make sure we have kaltura script: 
 				kAddScript();
+				// Setup the embedPlayer attributes
+				var embedPlayerAttributes = {
+						'kwidgetid' : kEmbedSettings.widgetId,
+						'kuiconfid' : kEmbedSettings.uiconfId
+				}
+				if( kEmbedSettings.entryId ){
+					embedPlayerAttributes.kentryid = kEmbedSettings.entryId;
+					embedPlayerAttributes.poster = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
+					kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
+					height + '/height/' + width;
+				}
 				mw.ready(function(){					
 					var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceElemIdStr ).width();
-					var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceElemIdStr ).height();				
-					var poster = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
-						kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
-						height + '/height/' + width;
+					var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceElemIdStr ).height();					
 					$j('#' + replaceElemIdStr ).css({
 						'width' : width,
 						'height' : height
-					}).embedPlayer({
-						'poster': poster,
-						'kentryid': kEmbedSettings.entryId,
-						'kwidgetid' : kEmbedSettings.widgetId
-					});
+					}).kalturaEmbedPlayer( embedPlayerAttributes );
 				});
 			} else {				
 				// Else call the original EmbedSWF with all its arguments 
@@ -285,32 +289,37 @@ function doScrollCheck() {
 // Copied from kalturaSupport loader mw.getKalturaEmbedSettingsFromUrl 
 kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 	// If the url does not include kwidget or entry_id probably not a kaltura settings url:
-	if( swfUrl.indexOf('kwidget') == -1 || swfUrl.indexOf('entry_id') == -1 ){
+	if( swfUrl.indexOf('kwidget') == -1 ){
 		return {};
 	}
 	if( !flashvars )
 		flashvars= {};
 	
 	var dataUrlParts = swfUrl.split('/');
-	var embedSettings = {};
+	var embedSettings = {};		
 	
-	embedSettings.entryId =  dataUrlParts.pop();		
-	// Search backward for 'widgetId'
-	var widgetId = false;					
+	// Search backward for key value pairs 		
+	var prevUrlPart = null;
 	while( dataUrlParts.length ){
 		var curUrlPart =  dataUrlParts.pop();
-		if( curUrlPart == 'wid'){
-			widgetId = prevUrlPart;
+		switch( curUrlPart ){
+			case 'wid':
+				embedSettings.widgetId = prevUrlPart;
+				embedSettings.partnerId = prevUrlPart.replace(/_/,'');
+			break;
+			case 'entry_id':
+				embedSettings.entryId = prevUrlPart;
+			break;
+			case 'uiconf_id':
+				embedSettings.uiconfId = prevUrlPart;
+			break;
+			case 'cache_st':
+				embedSettings.cacheSt = prevUrlPart;
 			break;
 		}
 		prevUrlPart = curUrlPart;
 	}
-	if( widgetId ){
-		embedSettings.widgetId = widgetId;
-		// Also set the partner id;
-		embedSettings.partnerId = widgetId.replace(/_/,'');
-	}
-	// Flash vars take precedence: 
+	// Add in Flash vars embedSettings ( they take precedence over embed url ) 
 	for( var i in  flashvars){
 		embedSettings[i] = flashvars[i];
 	}

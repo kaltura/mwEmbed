@@ -33,7 +33,7 @@ mw.addMessages( {
 	"mwe-embedplayer-download_full" : "Download full video file:",
 	"mwe-embedplayer-download_right_click" : "To download, right click and select <i>Save link as...<\/i>",
 	"mwe-embedplayer-download_clip" : "Download video",
-	"mwe-embedplayer-download_text" : "Download text",
+	"mwe-embedplayer-download_text" : "Download timed text",
 	"mwe-embedplayer-download" : "Download",
 	"mwe-embedplayer-share" : "Share",
 	"mwe-embedplayer-credits" : "Credits",
@@ -269,12 +269,19 @@ mw.setConfig( 'embedPlayerSourceAttributes', [
 	*
 	*/
 	$.fn.embedPlayer = function( attributes, callback ) {
-		var playerSelect = this.selector;			
+		var playerSelect = this.selector;
+		
+		// Define attributes if unset
+		if( !attributes ) {
+			attributes = {};
+		}
+		
 		// Handle optional include of attributes argument:
 		if( typeof attributes == 'function' ){
 			callback = attributes;
 			attributes = {};
 		}
+		
 		
 		// If we are dynamically embedding on a "div" check if we can 
 		// add a poster image behind the loader:
@@ -2129,7 +2136,9 @@ mw.EmbedPlayer.prototype = {
 			$j( '#' + this.pid ).hide()
 		}
 		if( this.mediaElement.sources.length == 0 ){
-			$j( this ).html(
+			// hide the pid if present:
+			$j( '#pid_' + this.id ).hide();
+			$j( this ).show().html(
 				$j('<span />').text( 
 					gM('mwe-embedplayer-missing-source')
 				)

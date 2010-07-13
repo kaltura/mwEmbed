@@ -15,16 +15,17 @@
 		'kalturaStatsServer' : 'http://www.kaltura.com/api_v3/index.php'
 	} );
 	
-	// Add the kentryid and kpartnerid attribute to the embed player
+	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
 	mw.setConfig( 'embedPlayerAttributes', {
 		'kentryid' : null,
-		'kwidgetid' : null
+		'kwidgetid' : null,
+		'kuiconfid' : null
 	} );	
 	
 	mw.addResourcePaths( {
-		"mw.KEntryIdSupport" : "mw.KEntryIdSupport.js",
+		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
 		"mw.KAnalytics" : "mw.KAnalytics.js",
-		"mw.KPlaylist"	: "mw.KPlaylist.js", 
+		"mw.PlaylistHandlerKaltura"	: "mw.PlaylistHandlerKaltura.js", 
 		
 		"KalturaClientBase"	: "kalturaJsClient/KalturaClientBase.js",
 		"KalturaClient" : "kalturaJsClient/KalturaClient.js",
@@ -36,7 +37,7 @@
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
 	var kalturaSupportRequestSet = [
-		"mw.KEntryIdSupport",		
+		"mw.KWidgetSupport",		
 		"KalturaClientBase",
 		"KalturaClient",
 		"KalturaAccessControlService",
@@ -61,10 +62,11 @@
 			// maybe move most of this to kEntryId support
 			
 			if( mw.isMobileSafari() ) {
-				var loadEmbedPlayerFlag = false;
-				$j( select ).each( function( inx, element ){
-					loadEmbedPlayerFlag = true;
-					
+				// setup load flags
+				var loadEmbedPlayerFlag = loadPlaylistFlag = false;
+				$j( select ).each( function( inx, element ){	
+					// clear the kalturaSwapObjectClass
+					var kalturaSwapObjectClass = '';
 					// Setup the flashvars variable
 					var flashvars = {};
 					var flashVarsString = $j( element ).find( "param[name='flashvars']" ).val();
@@ -80,36 +82,50 @@
 					
 					var kEmbedSettings = mw.getKalturaEmbedSettings( $j( element ).attr('data'), flashvars );
 					
-					mw.log("Got kEmbedSettings.entryId: " + kEmbedSettings.entryId + " from flash object")					
+					// check if its a playlist or a entryId
+					mw.log("Got kEmbedSettings.entryId: " + kEmbedSettings.entryId + " uiConf: " + kEmbedSettings.uiconfId)
 					
 					var height = $j( element ).attr('height');
 					var width = $j( element ).attr('width');					
 					var videoId = 'vid' + inx;					
-					var $imgThumb = '';
-					if( kEmbedSettings.partnerId ){
-						var thumb_url = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
-										kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
-										height + '/height/' + width;
-						$imgThumb = $j('<img />').attr({
-							'src' : thumb_url 
-						})
-						.css({
-							'width' : width + 'px',
-							'height' : height + 'px',
-							'position' : 'absolute',
-							'top' : '0px',
-							'left' : '0px'								
-						});
-					}
+					var $imgThumb = '';		
 					var elementCss = {};
-					// Replace with a spinner
+					
+					// Setup the video embed attributes: 
+					var videoEmbedAttributes = {	
+						'id': videoId,							
+						'kwidgetid' : kEmbedSettings.widgetId,
+						'kuiconfid' : kEmbedSettings.uiconfId
+					}
+					if( kEmbedSettings.entryId ){	
+						loadEmbedPlayerFlag = true;
+						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
+						videoEmbedAttributes.kentryid = kEmbedSettings.entryId;
+						if( kEmbedSettings.partnerId ){
+							var thumb_url = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
+											kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
+											height + '/height/' + width;
+							$imgThumb = $j('<img />').attr({
+								'src' : thumb_url 
+							})
+							.css({
+								'width' : width + 'px',
+								'height' : height + 'px',
+								'position' : 'absolute',
+								'top' : '0px',
+								'left' : '0px'								
+							});							
+						}
+					} else {
+						//assume playlist 
+						loadPlaylistFlag = true;
+						kalturaSwapObjectClass = 'mwEmbedKalturaPlaylistSwap';
+					}
+					
+					// Replace with a mwEmbedKalturaVideoSwap
 					$j( element ).replaceWith( 
 						$j('<div />')
-						.attr({
-							'id': videoId,
-							'kentryid': kEmbedSettings.entryId,
-							'kwidgetid' : kEmbedSettings.widgetId
-						})
+						.attr( videoEmbedAttributes )
 						.css( {
 							'width' : width + 'px',
 							'height' : height + 'px',
@@ -118,7 +134,7 @@
 							'float' : 'left',
 							'padding' : '3px'
 						} )
-						.addClass( 'safariVideoSwap')
+						.addClass( kalturaSwapObjectClass )
 						.append(
 							$imgThumb, 
 							$j('<div />')
@@ -134,11 +150,25 @@
 						)
 					)						
 				});
-			
+						
+				if( loadPlaylistFlag ){
+					kLoadKalturaSupport = true;
+					mw.load(['EmbedPlayer', 'Playlist', 'mw.PlaylistHandlerKaltura', ], function(){		
+						// kalturaPlaylistObject has player loader built in: 
+						$j('.mwEmbedKalturaPlaylistSwap').each(function( inx, playlistTarget ){
+							var kalturaPlaylistHanlder = new mw.PlaylistHandlerKaltura()
+							var playlistPlayer = $j(target).playlist({
+								'sourceHandler' : kalturaPlaylistHanlder
+							})
+							$j( mw ).trigger( 'newPlaylistPlayerEvent',  playlistPlayer );
+						});
+					});
+				}
+				
 				if( loadEmbedPlayerFlag ){					
-					mw.load('EmbedPlayer', function(){						
+					mw.load('EmbedPlayer', function(){		
 						// Remove the general loading spinner ( embedPlayer takes over )						
-						$j('.safariVideoSwap').embedPlayer();
+						$j('.mwEmbedKalturaVideoSwap').embedPlayer();
 					})
 				}
 			}			
@@ -168,32 +198,37 @@
 	
 	mw.getKalturaEmbedSettings = function( swfUrl, flashvars ){
 		// If the url does not include kwidget or entry_id probably not a kaltura settings url:
-		if( swfUrl.indexOf('kwidget') == -1 || swfUrl.indexOf('entry_id') == -1 ){
+		if( swfUrl.indexOf('kwidget') == -1 ){
 			return {};
 		}
 		if( !flashvars )
 			flashvars= {};
 		
 		var dataUrlParts = swfUrl.split('/');
-		var embedSettings = {};
+		var embedSettings = {};		
 		
-		embedSettings.entryId =  dataUrlParts.pop();		
-		// Search backward for 'widgetId'
-		var widgetId = false;					
+		// Search backward for key value pairs 		
+		var prevUrlPart = null;
 		while( dataUrlParts.length ){
 			var curUrlPart =  dataUrlParts.pop();
-			if( curUrlPart == 'wid'){
-				widgetId = prevUrlPart;
+			switch( curUrlPart ){
+				case 'wid':
+					embedSettings.widgetId = prevUrlPart;
+					embedSettings.partnerId = prevUrlPart.replace(/_/,'');
+				break;
+				case 'entry_id':
+					embedSettings.entryId = prevUrlPart;
+				break;
+				case 'uiconf_id':
+					embedSettings.uiconfId = prevUrlPart;
+				break;
+				case 'cache_st':
+					embedSettings.cacheSt = prevUrlPart;
 				break;
 			}
 			prevUrlPart = curUrlPart;
 		}
-		if( widgetId ){
-			embedSettings.widgetId = widgetId;
-			// Also set the partner id;
-			embedSettings.partnerId = widgetId.replace(/_/,'');
-		}
-		// Flash vars take precedence: 
+		// Add in Flash vars embedSettings ( they take precedence over embed url ) 
 		for( var i in  flashvars){
 			embedSettings[i] = flashvars[i];
 		}

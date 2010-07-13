@@ -50,10 +50,10 @@ var mwEnabledModuleList = [
 	'ClipEdit',
 	'EmbedPlayer',
 	'ApiProxy',
-	'Sequencer',
+	'SequenceEdit',
 	'TimedText',
 	'SmilPlayer',
-	'MediaRss',	
+	'Playlist',	
 	'SwarmTransport',
 	'KalturaSupport'
 ];

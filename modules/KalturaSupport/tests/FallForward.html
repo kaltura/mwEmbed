@@ -1,0 +1,80 @@
+<html>
+<head>
+<title>Fall forward html5</title>
+
+<script type="text/javascript" src="../../../mwEmbed.js?debug=true>"></script> 
+
+<!--
+<script type="text/javascript" src="http://html5.kaltura.org/js"></script>
+<script type="text/javascript" src="http://html5.kaltura.org/js"></script>  
+<script type="text/javascript" src="../mwEmbed/mwEmbed.js?debug=true>"></script>  
+<script type="text/javascript" src="../mwEmbed/ResourceLoader.php?class=window.jQuery,mwEmbed&debug=true"></script> 
+-->
+  
+<script type="text/javascript">
+	if( document.URL.indexOf('forceMobileSafari') != -1 ){		
+		mw.setConfig( 'forceMobileSafari' , true );
+	}			
+	mw.setConfig( 'EmbedPlayer.OverlayControls', false );
+	mw.setConfig( 'kalturaAnalyticsCallbackLog', function( monitorEvent ){
+		$j('#analyticsLog').append( monitorEvent + "\n");
+	});	
+
+</script>
+</head>
+<body>
+<h2> Fall forward: ( kaltura embed code on iPad / iPhone ) + analytics </h2>
+<a href="?forceMobileSafari"> Force Mobile Safari</a> for testing with desktop chrome and safari.
+<br />
+
+<p>testing for HTML script</p> 
+<!--  
+<p>
+<object id="kaltura_player"
+name="kaltura_player"
+type="application/x-shockwave-flash"
+allowFullScreen="true"
+allowNetworking="all"
+allowScriptAccess="always"
+height="330"
+width="400"
+xmlns:dc="http://purl.org/dc/terms/"
+xmlns:media="http://search.yahoo.com/searchmonkey/media/"
+rel="media:video"
+resource="http://www.kaltura.com/index.php/kwidget/cache_st/1278527685/wid/_301982/uiconf_id/48130/entry_id/0_sskv9qe8" 
+data="http://www.kaltura.com/index.php/kwidget/cache_st/1278527685/wid/_301982/uiconf_id/48130/entry_id/0_sskv9qe8">
+	<param name="allowFullScreen" value="true" />
+	<param name="allowNetworking" value="all" />
+	<param name="allowScriptAccess" value="always" />
+	<param name="bgcolor" value="#000000" />
+	<param name="flashVars" value="&#038;" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1278527685/wid/_301982/uiconf_id/48130/entry_id/0_sskv9qe8" />
+	<a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/technology/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/overview">video solutions</a> <a href="http://corp.kaltura.com/technology/video_player">video player</a> <a rel="media:thumbnail" href="http://cdn.kaltura.com/p/301982/sp/30198200/thumbnail/entry_id/0_sskv9qe8/width/120/height/90/bgcolor/000000/type/2" /> <span property="dc:description" content="" /><span property="media:title" content="Jim_Slater.flv" /> <span property="media:width" content="400" /><span property="media:height" content="330" /> <span property="media:type" content="application/x-shockwave-flash" /><span property="media:duration" content="{DURATION}" /> 
+</object></p>
+--> 
+<p>
+<object id="kaltura_player" 
+name="kaltura_player" 
+type="application/x-shockwave-flash" 
+allowFullScreen="true" 
+allowNetworking="all" 
+allowScriptAccess="always"
+height="330"
+width="740"
+xmlns:dc="http://purl.org/dc/terms/"
+xmlns:media="http://search.yahoo.com/searchmonkey/media/"
+rel="media:video"
+resource="http://www.kaltura.com/index.php/kwidget/cache_st/1278527928/wid/_301982/uiconf_id/1847722"
+data="http://www.kaltura.com/index.php/kwidget/cache_st/1278527928/wid/_301982/uiconf_id/1847722">
+	<param name="allowFullScreen" value="true" />
+	<param name="allowNetworking" value="all"/>
+	<param name="allowScriptAccess" value="always"/>
+	<param name="bgcolor" value="#000000"/>
+	<param name="flashVars" value="&#038;" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1278527928/wid/_301982/uiconf_id/1847722" />
+	<a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/technology/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/overview">video solutions</a> <a href="http://corp.kaltura.com/technology/video_player">video player</a>  
+</object></p>  
+
+
+</body>
+</html>

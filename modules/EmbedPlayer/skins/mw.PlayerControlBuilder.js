@@ -1300,48 +1300,49 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log( 'showDownloadWithSources::' + $target.length );
 		var embedPlayer = this.embedPlayer;
 		// Empty the target:
-		$target.empty();
-		
+		$target.empty();		
 		var $mediaList = $j( '<ul />' );
 		var $textList =  $j( '<ul />' );
-		$j.each( embedPlayer.mediaElement.getSources(), function( index, source ) {
-			if(  source.getSrc() ) {
-				mw.log("add src: "  + source.getTitle() );
-				var $dl_line = $j( '<li />').append(
-					$j('<a />')					
-					.attr( 'href', source.getSrc() )
-					.text(  source.getTitle() )
-				);		
-				// Add link to correct "bucket" 
-							
-				//Add link to time segment:
-				if ( source.getSrc().indexOf( '?t=' ) !== -1 ) {
-					$target.append( $dl_line );
-				} else if ( this.getMIMEType() == "text/cmml" || this.getMIMEType() == "text/x-srt" ) {
-					// Add link to text list
-					$textList.append( $dl_line );
-				} else {
-					// Add link to media list
-					$mediaList.append( $dl_line );
-				}
-				
-			}
-		} );
-		if( $mediaList.find('li').length != 0 ) {
-			$target.append(
-				$j('<h2 />')
-				.text( gM( 'mwe-embedplayer-download_full' ) ),
-				$mediaList
-			)
-		}
 		
-		if( $textList.find('li').length != 0 ) {
-			$target.append(
-				$j('<h2 />')
-				.html( gM( 'mwe-embedplayer-download_text' ) ),
-				$textList
-			)
-		}		
+		// Get any hooked downloadalbe sources			
+		mw.runTriggersCallback( embedPlayer, 'getDownloadSourcesEvent', function(){					
+			$j.each( embedPlayer.mediaElement.getSources(), function( index, source ) {
+				if(  source.getSrc() ) {			
+					mw.log("add src: "  + source.getTitle() );
+					var $dl_line = $j( '<li />').append(
+						$j('<a />')					
+						.attr( 'href', source.getSrc() )
+						.text(  source.getTitle() )
+					);	
+					//Add link to time segment:
+					if ( source.getSrc().indexOf( '?t=' ) !== -1 ) {
+						$target.append( $dl_line );
+					} else if ( source.getMIMEType().indexOf('text') != -1 ){
+						// Add link to text list
+						$textList.append( $dl_line );
+					} else {
+						// Add link to media list
+						$mediaList.append( $dl_line );
+					}
+					
+				}
+			} );
+			if( $mediaList.find('li').length != 0 ) {
+				$target.append(
+					$j('<h2 />')
+					.text( gM( 'mwe-embedplayer-download_full' ) ),
+					$mediaList
+				)
+			}
+			
+			if( $textList.find('li').length != 0 ) {
+				$target.append(
+					$j('<h2 />')
+					.html( gM( 'mwe-embedplayer-download_text' ) ),
+					$textList
+				)
+			}		
+		});
 	},
 	
 	

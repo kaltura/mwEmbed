@@ -6,30 +6,36 @@
 ( function( mw ) {
 
 	mw.addResourcePaths( {
-		"mw.MediaRss" : "mw.MediaRss.js"
+		"mw.Playlist" : "mw.Playlist.js",
+		"mw.PlaylistHandlerMediaRss" : "mw.PlaylistHandlerMediaRss.js"
 	});
 	
 	// Set the default config
 	mw.setDefaultConfig( {
 		// Playlist layout 'vertical' or 'horizontal' 
-		'MediaRss.layout' : 'vertical',
+		'Playlist.layout' : 'vertical',
 		
 		// Player aspect ratio
-		'MediaRss.playerAspect' : '4:3',
+		'Playlist.playerAspect' : '4:3',
 		
 		// Width of item thubmnails 
-		'MediaRss.itemThumbWidth' : '60',
+		'Playlist.itemThumbWidth' : '60',
 		
 		// Height of the mediaRss title
-		'MediaRss.titleHeight' : '20'
+		'Playlist.titleHeight' : '20',
+			
+		// Default playlist type:
+		'Playlist.defaultType' : 'application/rss+xml'
 	} );
 		
+	// Module loader ( right now its just a stub for mw.MediaRss )
+	mw.addModuleLoader( 'Playlist', [ "mw.Playlist", "mw.PlaylistHandlerMediaRss" ] );
 	
 } )( window.mw );
 
 // Add the jQuery hook: 
 ( function( $ ) {
-	$.fn.mediaRssPlayer = function( options ){
+	$.fn.playlist = function( options ){
 		var _this = this;	
 		if ( !this.selector ) {
 			mw.log( "Error: Calling mediaRssPlayer with empty selector " + this.selector);
@@ -42,10 +48,10 @@
 		options[ 'target' ] = _this.selector;
 		
 		// Load the mediaRss class ( if not already loaded ) 		
-		mw.load ( ['EmbedPlayer',  'mw.MediaRss'], function(){	
+		mw.load ( ['EmbedPlayer',  'Playlist'], function(){	
 			// load and display the media Rss
-			var myMediaRss = new mw.MediaRss( options );
-			myMediaRss.drawUI();		
+			var myPlaylist = new mw.Playlist( options );
+			myPlaylist.drawUI();		
 		}); 		
 	}
 } )( jQuery );

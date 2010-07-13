@@ -21,7 +21,7 @@ mw.KAnalytics.prototype = {
 	// The version of kAnalytics
 	version : '0.1',
 	
-	// Local refrance to embedPlayer
+	// Local reference to embedPlayer
 	embedPlayer: null,
 	
 	// Report Set object

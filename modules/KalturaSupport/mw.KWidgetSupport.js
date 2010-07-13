@@ -1,8 +1,8 @@
-mw.KEntryIdSupport = function( options ) {
+mw.KWidgetSupport = function( options ) {
 	// Create a Player Manage
 	return this.init( options );
 };
-mw.KEntryIdSupport.prototype = {
+mw.KWidgetSupport.prototype = {
 
 	// The Kaltura client local reference
 	kClient : null,
@@ -25,13 +25,13 @@ mw.KEntryIdSupport.prototype = {
 	addPlayerHooks: function( ){
 		var _this = this;		
 		// Add the hooks to the player manager
-		mw.log(  'KEntryIdSupport::addPlayerHooks:: bind: newEmbedPlayerEvent' );
+		mw.log(  'KWidgetSupport::addPlayerHooks:: bind: newEmbedPlayerEvent' );
 		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {		
 			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
 			
 			// Add hook for check player sources to use local kEntry ID source check:
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {	
-				mw.log("KEntryIdSupport::entryId:: checkPlayerSourcesEvent ");
+				mw.log("KWidgetSupport::checkPlayerSourcesEvent ");
 				_this.checkPlayerSources( embedPlayer, function(){
 					// We can only enable kaltura analytics if we have a session if we have a client										
 					if( mw.getConfig( 'enableKalturaAnalytics' ) == true && _this.kClient ) {
@@ -39,8 +39,16 @@ mw.KEntryIdSupport.prototype = {
 					}
 					callback();
 				} );				
-			} );
-						
+			} );						
+		} );
+		
+		$j( mw ).bind('newPlaylistPlayerEvent', function( event, playlistPlayer ){			
+			_this.setupSession( playlistPlayer.widgetId, function(){
+				// Add the kClient to the playlist player
+				playlistPlayer.kClient = _this.kClient;
+				// draw the playlist
+				playlistPlayer.drawUI();
+			})
 		});
 	},
 	
@@ -51,50 +59,13 @@ mw.KEntryIdSupport.prototype = {
 	*/ 
 	checkPlayerSources: function( embedPlayer, callback ){
 		var _this = this;	
-		
-		// Make sure we have an entry id:
-		var kentryId = $j( embedPlayer ).attr( 'kentryid' );
-		mw.log('KEntryIdSupport:: look for ketnry id sources:: ' + kentryId);
-		if( ! kentryId ){
-			// Run the callback empty handed
-			callback( false );
-			return ;
-		}
 		// Make sure we have a widget id: 
 		var widgetId = $j( embedPlayer ).attr( 'kwidgetid' ); 
 		
-		// if Kaltura session is ready jump directly to entryId lookup
-		if( _this.kalturaSessionState == 'ready' ){
-			// Check for entry id directly
-			_this.addEntryIdSources( embedPlayer, callback ) ;
-		} else {		
-			// Add the player and callback to the callback Queue
-			_this.sessionReadyCallbackQueue.push( { 
-				'player' : embedPlayer,
-				'callback' : callback
-			} );
-			
-			if( _this.kalturaSessionState == 'inprogress' ){
-				mw.log( 'kaltura session setup in progress' );
-			}
-			
-			if( ! _this.kalturaSessionState ) {
-				_this.kalturaSessionState = 'inprogress'; 
-				// Setup global Kaltura session:
-				_this.setupSession ( widgetId, function( status ) {
-					// @@TODO check if session was successful
-					if( !status ){
-						mw.log( "Error: checkPlayerSources:: No sources added ( error ) " );  						
-						return ;
-					}
-					// Once the session has been setup run the sessionReadyCallbackQueue
-					while( _this.sessionReadyCallbackQueue.length ){
-						var sessionItem =  _this.sessionReadyCallbackQueue.shift();
-						_this.addEntryIdSources( sessionItem.player, sessionItem.callback ) ;
-					}
-				} );
-			}
-		}
+		// Setup global Kaltura session:
+		_this.setupSession ( widgetId, function( ) {
+			this.addKSources( player, callback);
+		} );
 	},
 	
 	/**
@@ -102,18 +73,19 @@ mw.KEntryIdSupport.prototype = {
 	* @param {Object} embedPlayer Player object to apply sources to
 	* @param {Function} callback Function to be called once sources are ready 
 	*/ 
-	addEntryIdSources: function ( embedPlayer, callback ) {
-		mw.log('KEntryIdSupport:: addEntryIdSources entry Id :: ' + $j( embedPlayer ).attr( 'kentryid' ) );
-		var kEntryId = $j( embedPlayer ).attr( 'kentryid' ); 		
-		var widgetId =  $j( embedPlayer ).attr( 'kwidgetid' );
-		
+	addEntryIdSource: function( embedPlayer, callback ) {
+		var kEntryId = $j( embedPlayer ).attr( 'kentryid' );
 		// Assign the partnerId from the widgetId
-		var kPartnerId = widgetId.replace(/_/g, '');
 		
-		var flavorGrabber = new KalturaFlavorAssetService( this.kClient ); 
+		// Assign the partnerId from the widgetId ( for thumbnail  )
+		var widgetId =  $j( embedPlayer ).attr( 'kwidgetid' );
+		var kPartnerId = widgetId.replace(/_/g, '');
+
+		var flavorGrabber = new KalturaFlavorAssetService( this.kClient );
+		
 		flavorGrabber.getByEntryId ( function( success, data ) {			
 			if( ! success || ! data.length ) {				
-				mw.log( "Error flavorGrabber getByEntryId:: no sources found ");				
+				mw.log( "Error flavorGrabber getByEntryId:" + kEntryId + " no sources found ");				
 				callback();
 				return false;
 			}			
@@ -220,6 +192,27 @@ mw.KEntryIdSupport.prototype = {
 	setupSession: function(widgetId,  callback ) {				 		
 		var _this = this;
 		
+		// if Kaltura session is ready jump directly to callback
+		if( _this.kalturaSessionState == 'ready' ){
+			// Check for entry id directly
+			callback();
+			return ;
+		}		
+		// Add the player and callback to the callback Queue
+		_this.sessionReadyCallbackQueue.push( { 
+			'player' : embedPlayer,
+			'callback' : callback
+		} );
+		// if setup is in progress return 
+		if( _this.kalturaSessionState == 'inprogress' ){
+			mw.log( 'kaltura session setup in progress' );
+			return;
+		}
+		// else setup the session: 
+		if( ! _this.kalturaSessionState ) {
+			_this.kalturaSessionState = 'inprogress'; 
+		}
+		
 		// Assign the partnerId from the wdigetid
 		var kPartnerId = widgetId.replace(/_/, '');
 		
@@ -234,13 +227,13 @@ mw.KEntryIdSupport.prototype = {
 			// Callback function once session is ready 
 			function ( success, data ) {				
 				if( !success ){
-					mw.log( "KEntryIdSupport:: Error in request ");
-					callback( false );
+					mw.log( "KWidgetSupport:: Error in request ");
+					_this.sessionSetupDone( false );
 					return ;
 				}
 				if( data.code ){
-					mw.log( "KEntryIdSupport:: startWidgetSession:: Error:: " +data.code + ' ' + data.message );
-					callback( false );
+					mw.log( "KWidgetSupport:: startWidgetSession:: Error:: " +data.code + ' ' + data.message );
+					_this.sessionSetupDone( false );
 					return ;
 				}				
 				// update the kalturaKS var
@@ -249,29 +242,42 @@ mw.KEntryIdSupport.prototype = {
 				_this.kClient.setKs( data.ks );
 				
 				// Run the callback 
-				callback( true );
+				_this.sessionSetupDone( true );
 			}, 
 			// @arg "widgetId" 
 			widgetId
-		);
-		
-	}
-	
-	
+		);					
+	},
+	sessionSetupDone : function( status ){
+		var _this = this;
+		this.kalturaSessionState = 'ready';
+		// check if the session setup failed. 
+		if( !status){
+			return false;
+		}
+		// Once the session has been setup run the sessionReadyCallbackQueue
+		while( _this.sessionReadyCallbackQueue.length ){
+			var sessionItem =  this.sessionReadyCallbackQueue.shift();
+			this.addKSources( sessionItem.player, sessionItem.callback ) ;
+		}
+	}	
 }
+
+// Add the playlist binding
+
+
 		
 // Add player Manager binding ( if playerManager not ready bind to when its ready )
 // @@NOTE we may want to move this into the loader since its more "action/loader" code
 if( mw.playerManager ){	
-	var kEntrySupport = new mw.KEntryIdSupport();
+	var kEntrySupport = new mw.KWidgetSupport();
 	kEntrySupport.addPlayerHooks();
 } else {
-	mw.log( 'KEntryIdSupport::bind:EmbedPlayerManagerReady');
+	mw.log( 'KWidgetSupport::bind:EmbedPlayerManagerReady');
 	$j( mw ).bind( 'EmbedPlayerManagerReady', function(){	
-		mw.log("KEntryIdSupport::EmbedPlayerManagerReady");
-		var kEntrySupport = new mw.KEntryIdSupport();
-		kEntrySupport.addPlayerHooks();
+		mw.log("KWidgetSupport::EmbedPlayerManagerReady");
+		var kWidgetSupport = new mw.KWidgetSupport();
+		kWidgetSupport.addPlayerHooks();
 	});	
 }
-
 

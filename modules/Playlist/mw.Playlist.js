@@ -1,54 +1,58 @@
 /**
-* MediaRss Embed. Enables the embedding of a mediaRss playlist using the mwEmbed player   
+* Playlist Embed. Enables the embedding of a playlist playlist using the mwEmbed player   
 */ 
-mw.MediaRss = function( options ){
+mw.Playlist = function( options ){
 	return this.init( options );
 };
 
-mw.MediaRss.prototype = {
-
-	// Set the media rss namespace
-	mediaNS: 'http://search.yahoo.com/mrss/',
+mw.Playlist.prototype = {
 
 	// Stores the current clip index to be played 
 	clipIndex: 0,
-	
-	// Stores the list of clips
-	clipList : [],
 	
 	// Stores the cached player size: 
 	targetPlayerSize: null,
 	
 	// constructor
 	init: function( options ) {
-		this.src = options.src;					
+		this.src = options.src;			
+		
 		this.target = options.target;	
 		
 		this.id = ( options.id )? options.id : $j( this.target ).attr('id');
 		if( !this.id ){
 			// Give it a random id if unset:
-			this.id = Math.random();
-		}	
+			this.id = 'playlist_' + Math.random();
+		}
 		
-		// Set default options or use MediaRss 
+		// Set the sourceHandler if proivded
+		if( options.sourceHandler )
+			this.sourceHandler = options.sourceHandler;
+		
+		
+		this.type = ( options.type ) ? 
+			options.type: 
+			mw.getConfig('Playlist.defaultType' );
+		
+		// Set default options or use layout 
 		this.layout = ( options.layout ) ?  
 			options.layout : 
-			mw.getConfig( 'MediaRss.layout' );
+			mw.getConfig( 'Playlist.layout' );
 		
 		// Player aspect ratio
 		this.playerAspect = ( options.playerAspect ) ?  
 			options.playerAspect : 
-			mw.getConfig( 'MediaRss.playerAspect' );
+			mw.getConfig( 'Playlist.playerAspect' );
 		
 		// Item thumb width 	
 		this.itemThumbWidth = ( options.itemThumbWidth ) ? 
 			options.itemThumbWidth : 
-			mw.getConfig('MediaRss.itemThumbWidth');
+			mw.getConfig('Playlist.itemThumbWidth');
 		
 		// Default title height: 
 		this.titleHeight = ( options.titleHeight ) ? 
 			options.titleHeight :
-			mw.getConfig( 'MediaRss.titleHeight' );
+			mw.getConfig( 'Playlist.titleHeight' );
 				
 	},
 	
@@ -60,7 +64,7 @@ mw.MediaRss.prototype = {
 		// Set the target to loadingSpinner: 
 		$j( this.target ).loadingSpinner();
 		
-		this.getRss( function(){			
+		this.getSourceHandler( function( sourceHandler ){					
 			// Empty the target and setup player and playerList divs
 			$j( _this.target )
 			.empty()
@@ -85,7 +89,7 @@ mw.MediaRss.prototype = {
 			_this.addMediaList(); 
 			
 			// Add the player
-			_this.updatePlayer(  _this.clipIndex, function(){
+			_this.updatePlayer( _this.clipIndex, function(){
 				// Update the list height ( vertical layout )
 				if( _this.layout == 'vertical' ){
 					var targetListHeight = ( $j( _this.target ).height() - $j( _this.target + ' .media-rss-video-player' ).height() );
@@ -146,44 +150,32 @@ mw.MediaRss.prototype = {
 	*/
 	updatePlayer: function( clipIndex , callback ){
 		var _this = this;
-		
-		var $item = $j( this.$rss.find('item')[ clipIndex ] );
-		
+					
 		var playerSize = _this.getTargetPlayerSize() ;
 		
 		// xxx some enhacements to embedPlayer could support storing data with a video embed
 		// so we don't have to overload the id
 		var $video = $j( '<video />' )
-			.attr( 'id', 'mrss_' + this.id + '_' + clipIndex )
+			.attr({
+				'id' : 'mrss_' + this.id + '_' + clipIndex,
+				'poster' : _this.sourceHandler.getClipPoster( clipIndex ) 
+			})
 			.css(
 				playerSize
 			);
-			
-		$video.attr( 'poster', _this.getItemPoster( clipIndex ) );
 		
 		// Get the sources ( jquery does not support namespaces so use native selector )
-		// xxx Chrome chokes on a normal find so we can't use: ( works in firefox ) 
+		// xxx Chrome chokes on a normal find so we can't use: 
 		// $item.find( 'media\\:content' ).each( function( inx, mediaContent ){
-		
-		$j.each( $item.get(0).getElementsByTagNameNS( _this.mediaNS, 'content' ), function( inx, mediaContent){
-			if( $j( mediaContent ).get(0).nodeName  == 'media:content' ){
-			
-				mw.log( 'Update source:' + $j( mediaContent ).attr('url' ) );
-				var $source = $j('<source />');
-				if( $j( mediaContent ).attr('url' ) ){
-					$source.attr('src', $j( mediaContent ).attr('url' ) ); 
-				}
-				if( $j( mediaContent ).attr('type' ) ){
-					$source.attr('type', $j( mediaContent ).attr('type' ) );
-				}
-				// xxx could check for duration consistency between media and tag. 
-				if( $j( mediaContent ).attr( 'duration' ) ) {
-					$video.attr('durationHint', $j( mediaContent ).attr('duration' ) );
-				}
+		var clipSources = this.sourceHandler.getClipSources( clipIndex );
+		if( clipSources ){
+			for( var i =0; i < clipSources.length; i++ ){
+				var $source = $j('<source />')
+					.attr(  clipSources[i] );															
 				$video.append( $source );
 			}
-		});		
-		
+		}
+				
 		// Build the title
 		var $title = $j('<div />' )
 			.css( { 
@@ -192,12 +184,11 @@ mw.MediaRss.prototype = {
 				'width' :  playerSize.width
 			} )
 			.text( 
-				_this.getItemTitle( clipIndex ) 
+				_this.sourceHandler.getClipTitle( clipIndex ) 
 			)
 			.addClass( 'ui-state-default ui-widget-header' )
 			
 			
-		// Get the items duration, description, 
 		$j( this.target + ' .media-rss-video-player' )
 			.empty()
 			.append(
@@ -206,13 +197,12 @@ mw.MediaRss.prototype = {
 			);
 		
 		// Update the video tag with the embedPlayer
-		$j.embedPlayers( function(){
-			$j( 'mediarss' + _this.clipIndex );
+		$j.embedPlayers( function(){			
 			
 			// Setup ondone playing binding to play next clip			
 			$j( '#mrss_' + _this.id + '_' + _this.clipIndex ).bind( 'ended', function(event, onDoneActionObject ){										
 				// Play next clip
-				if( _this.clipIndex + 1 < _this.getClipCount() ){
+				if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
 					// Update the onDone action object to not run the base control done: 
 					onDoneActionObject.runBaseControlDone = false;
 					_this.clipIndex++;
@@ -251,8 +241,9 @@ mw.MediaRss.prototype = {
 	addMediaList: function() {
 		var _this = this;
 		$targetItemList = $j( this.target + ' .media-rss-video-list');
-		// Output each item with the current selected index:
-		this.$rss.find('item').each( function(inx, item ){			
+
+		$j.each( this.sourceHandler.getClipList(), function( inx, clip ){
+			// Output each item with the current selected index:				
 			$itemBlock = $j('<div />')
 				.addClass( 'ui-widget-content ui-corner-all' )
 				
@@ -261,6 +252,7 @@ mw.MediaRss.prototype = {
 			} else {
 				$itemBlock.addClass( 'ui-state-default' );
 			}
+			
 			// Add a single row table with image, title then duration 
 			$itemBlock.append( 
 				$j( '<table />')
@@ -276,17 +268,17 @@ mw.MediaRss.prototype = {
 						.append( 
 							$j('<img />')
 							.attr({ 
-								'alt' : _this.getItemTitle( inx ),
-								'src' : _this.getItemPoster( inx )
+								'alt' : _this.sourceHandler.getClipTitle( inx ),
+								'src' : _this.sourceHandler.getClipPoster( inx )
 							})
 							.css( 'width', _this.itemThumbWidth ) 
 						),
 						$j( '<td />')
-						.text( _this.getItemTitle( inx ) ),
+						.text( _this.sourceHandler.getClipTitle( inx ) ),
 						
 						$j( '<td />')
 						.css( 'width', '50px') 
-						.text( _this.getItemDuration( inx ) )
+						.text( _this.sourceHandler.getClipDuration( inx ) )
 						
 					)											
 				) // table row
@@ -321,68 +313,28 @@ mw.MediaRss.prototype = {
 		$j( this.target + ' .media-rss-video-player .interface_wrap').children().get(0).play();
 	},
 	
+	
 	/**
-	* Get an items poster image ( return missing thumb src if not found )
-	*/ 
-	getItemPoster: function ( clipIndex ){						
-		var $item =  this.$rss.find('item').eq( clipIndex );				
-		var mediaThumb = $item.get(0).getElementsByTagNameNS( this.mediaNS, 'thumbnail' );
-		mw.log( 'MEDIAthumb: ' + $j( mediaThumb ).attr('url' ) );
-		if( mediaThumb && $j( mediaThumb ).attr('url' ) ){ 		
-			return $j( mediaThumb ).attr('url' );
-		}		
-		
-		// return missing thumb url
-		return mw.getConfig( 'imagesPath' ) + 'vid_default_thumb.jpg';
-	},	
-		
-	/** 
-	* Get an item title from the $rss source
-	*/
-	getItemTitle: function( clipIndex ){
-		var $item = this.$rss.find('item').eq(  clipIndex ) ;
-		var mediaTitle = $item.get(0).getElementsByTagNameNS( this.mediaNS, 'title' );
-		if( mediaTitle ){
-			return $j( mediaTitle ).text();
-		}
-		mw.log("Error could not find title for clip: " + clipIndex );
-		return gM('mwe-mediarss-untitled');
-	},
-	
-	getItemDuration: function ( clipIndex ) {		
-		// return the first found media duration 
-		var $item = this.$rss.find('item').eq( clipIndex ) ;		
-		var itemDuration = 0; 
-		$j( $item.get(0).getElementsByTagNameNS( this.mediaNS, 'content' ) ).each( function( inx, mediaContent ){
-			if( $j( mediaContent ).attr( 'duration' ) ) {
-				itemDuration = $j( mediaContent ).attr( 'duration' );
-				// end for loop
-				return false;
-			}
-		});		
-		return mw.seconds2npt( itemDuration )
-	},
-	
-	// Get clip count
-	getClipCount: function(){
-		if( !this.$rss ){
-			mw.log("Error no rss to count items" );
-		}
-		return this.$rss.find('item').length;
-	},
-	
-	getRss: function( callback ){
+	 * Load the playlist driver from a source
+	 */
+	getSourceHandler: function( callback ){
 		var _this = this;		
-		if( _this.$rss ){
-			callback( _this.$rss );
+		if( _this.sourceHandler ){
+			callback( _this.sourceHandler );
 			return ;
 		};
-				
-		// Get the source content and put it into the $rss object 		
-		$j.get( mw.absoluteUrl( this.src ), function( data ){
-			// Store the local representation of the xml:
-			_this.$rss = $j( data );
-			callback( _this.$rss ); 
+		switch( this.type ){
+			case 'application/rss+xml':			
+				_this.sourceHandler = new mw.PlaylistHandlerMediaRss( this );
+			break;
+		}
+		// load playlist
+		_this.sourceHandler.loadFromSrc( function(){			
+			callback( _this.sourceHandler );
 		});
-	}	
+	}, 
+	
+	setSourceHandler: function ( sourceHandler ){
+		this.sourceHandler = sourceHandler;
+	}
 }

@@ -2175,7 +2175,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 *            callback Function called once all triggers have been run
 	 * 
 	 */
-	mw.runTriggersCallback = function( targetObject, triggerName, callback ){
+	mw.runTriggersCallback = function( targetObject, triggerName, callback ){		
 		mw.log( ' runTriggersCallback:: ' + triggerName  );
 		// If events are not present directly run callback
 		if( ! $j( targetObject ).data( 'events' ) ||
@@ -2196,7 +2196,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		
 		mw.log(" runTriggersCallback:: " + callbackCount );
 		var callInx = 0;
-		$j( targetObject ).trigger( 'checkPlayerSourcesEvent', function() {
+		$j( targetObject ).trigger( triggerName, function() {
 			callInx++;
 			if( callInx == callbackCount ){										
 				// Run callback
