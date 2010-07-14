@@ -64,9 +64,11 @@ mw.KWidgetSupport.prototype = {
 	* @param {Function} callback Function to be called once sources are ready 
 	*/ 
 	addEntryIdSource: function( embedPlayer, callback ) {
+		var _this = this;
 		var kEntryId = $j( embedPlayer ).attr( 'kentryid' );
 		// Assign the partnerId from the widgetId
 		mw.log( 'KWidgetSupport::addEntryIdSource:' + kEntryId);
+		
 		// Assign the partnerId from the widgetId ( for thumbnail )
 		var widgetId =  $j( embedPlayer ).attr( 'kwidgetid' );
 		this.kPartnerId = widgetId.replace(/_/g, '');	
@@ -77,8 +79,9 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight();
 			 
 		this.getEntryIdSources( kEntryId, function( sources ){
+			mw.log( "getEntryIdSources:: found " + sources.length + ' for entryid: ' + kEntryId + ' ' + ' partner id: ' + _this.kPartnerId);
 			for( var i=0;i < sources.length ; i++){
-				mw.log( 'kEntryId::addSource::' +  sources[i].src );		
+				mw.log( 'kEntryId::addSource::' +  sources[i].src );
 				embedPlayer.mediaElement.tryAddSource(
 					$j('<source />')
 					.attr( {

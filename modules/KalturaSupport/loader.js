@@ -20,7 +20,7 @@
 		'kentryid' : null,
 		'kwidgetid' : null,
 		'kuiconfid' : null
-	} );	
+	});
 	
 	mw.addResourcePaths( {
 		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
@@ -80,11 +80,18 @@
 					var flashVarPairs = flashVarsString.split('&');
 					for( var i in flashVarPairs ) {
 						var parts = flashVarPairs[i].split('=');
-						flashvars[ parts[0] ] = parts[1];
+						flashvars[ parts[0] ] = unescape( parts[1] );
 					}
 					
-					var kEmbedSettings = mw.getKalturaEmbedSettings( $j( element ).attr('data'), flashvars );
+					// Get the swf source from the element: 
+					var swfSource =  $j( element ).attr( 'data' );
+					// try to get the source from a param if not defined in the top level embed. 
+					if( !swfSource ) {
+						swfSource = $j( element ).find( "param[name=data]").attr( 'value' );						                                      
+					}
 					
+					var kEmbedSettings = mw.getKalturaEmbedSettings( swfSource, flashvars );
+
 					// check if its a playlist or a entryId
 					mw.log("Got kEmbedSettings.entryId: " + kEmbedSettings.entryId + " uiConf: " + kEmbedSettings.uiconfId)
 					
@@ -93,14 +100,14 @@
 					var videoId = 'vid' + inx;					
 					var $imgThumb = '';		
 					var elementCss = {};
-					
+				
 					// Setup the video embed attributes: 
 					var videoEmbedAttributes = {	
-						'id': videoId,							
+						'id': videoId,	
 						'kwidgetid' : kEmbedSettings.widgetId,
 						'kuiconfid' : kEmbedSettings.uiconfId
 					}
-					if( kEmbedSettings.entryId ){	
+					if( kEmbedSettings.entryId ) {	
 						loadEmbedPlayerFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
 						videoEmbedAttributes.kentryid = kEmbedSettings.entryId;
@@ -109,7 +116,7 @@
 											kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
 											height + '/height/' + width;
 							$imgThumb = $j('<img />').attr({
-								'src' : thumb_url 
+								'src' : thumb_url
 							})
 							.css({
 								'width' : width + 'px',
@@ -119,10 +126,16 @@
 								'left' : '0px'								
 							});							
 						}
-					} else {
+					} else {						
 						// Assume playlist 
 						loadPlaylistFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaPlaylistSwap';
+						// check if we can get the playlist id from a url in the embed code 
+						// ( some version of kaltura embed code work this way)
+						if( flashvars['playlistAPI.kpl0Url'] ){
+							videoEmbedAttributes['kplaylistid'] = mw.parseUri( flashvars['playlistAPI.kpl0Url'] ).queryKey['playlist_id'];							
+						}
+						
 					}
 					
 					// Replace with a mwEmbedKalturaVideoSwap
@@ -153,15 +166,18 @@
 						)
 					)					
 				});
-						
+				
+				// Do loading then rewrite each tag: 
+				
 				if( loadPlaylistFlag ){
 					kLoadKalturaSupport = true;
-					mw.load(['EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){
+					mw.load( [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){
 						// kalturaPlaylistObject has player loader built in: 
-						$j('.mwEmbedKalturaPlaylistSwap').each(function( inx, playlistTarget ){									
+						$j('.mwEmbedKalturaPlaylistSwap').each(function( inx, playlistTarget ) {							
 							var kalturaPlaylistHanlder = new mw.PlaylistHandlerKaltura({
-								'uiconfid' : $j(playlistTarget ).attr( 'kuiconfid' ),
-								'widgetid' : $j(playlistTarget ).attr( 'kwidgetid' )
+								'uiconfid' : $j( playlistTarget ).attr( 'kuiconfid' ),
+								'widgetid' : $j( playlistTarget ).attr( 'kwidgetid' ),
+								'playlistid':  $j( playlistTarget ).attr( 'kplaylistid' )
 							});							
 							var playlistPlayer = $j( '#' + playlistTarget.id ).playlist({
 								'layout': 'horizontal',
@@ -202,7 +218,7 @@
 		}			
 	} );	
 	
-	mw.getKalturaEmbedSettings = function( swfUrl, flashvars ){
+	mw.getKalturaEmbedSettings = function( swfUrl, flashvars ){		
 		// If the url does not include kwidget or entry_id probably not a kaltura settings url:
 		if( swfUrl.indexOf('kwidget') == -1 ){
 			return {};

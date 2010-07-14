@@ -106,7 +106,7 @@ mw.Playlist.prototype = {
 				if( _this.layout == 'vertical' ){
 					var targetListHeight = ( $j( _this.target ).height() - $j( _this.target + ' .media-rss-video-player' ).height() );
 					mw.log( ' targetHeight: ' + $j( _this.target ).height()  + ' - ' + $j( _this.target + ' .media-rss-video-player' ).height() + ' = ' + targetListHeight );
-					$j( _this.target + ' .media-rss-video-list').css( {
+					$j( _this.target + ' .media-rss-video-list' ).css( {
 						'height' : targetListHeight,
 						'width' : '100%'
 					} ).fadeIn();		
@@ -146,14 +146,18 @@ mw.Playlist.prototype = {
 				'height' : parseInt( ( pa[1] / pa[0]  ) * this.targetWidth )
 			};
 		} else {
-			/* horizontal layout */
+		/* horizontal layout */
 			var pa = this.playerAspect.split(':');
 			this.targetPlayerSize = {
 				'height' : ( this.targetHeight - this.titleHeight ) + 'px',
 				'width' : parseInt( ( pa[0] / pa[1]  ) * this.targetHeight )
 			};
 		}		
-		
+		if( this.targetPlayerSize.width > this.targetWidth ){
+			var pa = this.playerAspect.split(':');
+			this.targetPlayerSize.width =  this.targetWidth;
+			this.targetPlayerSize.height =  parseInt( ( pa[1] / pa[0]  ) * this.targetWidth );
+		}
 		return this.targetPlayerSize;
 	},
 	
@@ -214,19 +218,19 @@ mw.Playlist.prototype = {
 						$video.append( $source );
 					}
 				}
-				_this.addVideoPlayer( $video );
+				_this.addVideoPlayer( $video , callback);
 			});
 		} else {
-			this.addVideoPlayer( $video );
+			this.addVideoPlayer( $video , callback);
 		}
 	},
 	
-	addVideoPlayer: function( $video ){
+	addVideoPlayer: function( $video , callback){
 		var _this = this;
-		$j( _this.target + ' .media-rss-video-player' ).append( $video )
-			
+		$j( _this.target + ' .media-rss-video-player' ).append( $video );
+		
 		// Update the video tag with the embedPlayer
-		$j.embedPlayers( function(){				
+		$j.embedPlayers( function(){						
 			// Setup ondone playing binding to play next clip			
 			$j( '#mrss_' + _this.id + '_' + _this.clipIndex ).bind( 'ended', function(event, onDoneActionObject ){										
 				// Play next clip
@@ -299,7 +303,11 @@ mw.Playlist.prototype = {
 						
 						$j( '<td />')
 						.css( 'width', '50px') 
-						.text( _this.sourceHandler.getClipDuration( inx ) )
+						.text( 
+							mw.seconds2npt(
+								_this.sourceHandler.getClipDuration( inx )
+							)
+						)
 						
 					)											
 				) // table row
@@ -331,8 +339,11 @@ mw.Playlist.prototype = {
 	* Start playback for current clip
 	*/
 	play: function(){
-		// Get the player and play: 
-		$j( this.target + ' .media-rss-video-player .interface_wrap').children().get(0).play();
+		// Get the player and play:
+		var vid = $j( this.target + ' .media-rss-video-player .interface_wrap').children().get(0);
+		if( vid && vid.play ){
+			vid.play();
+		}
 	},
 	
 	
