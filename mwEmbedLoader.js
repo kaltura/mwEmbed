@@ -77,20 +77,24 @@ function kOverideSwfObject(){
 			if( kBrowserAgentShouldUseHTML5() && kEmbedSettings.uiconfId ){
 				// Make sure we have kaltura script: 
 				kAddScript();
-				// Setup the embedPlayer attributes
-				var embedPlayerAttributes = {
-						'kwidgetid' : kEmbedSettings.widgetId,
-						'kuiconfid' : kEmbedSettings.uiconfId
-				}
-				if( kEmbedSettings.entryId ){
-					embedPlayerAttributes.kentryid = kEmbedSettings.entryId;
-					embedPlayerAttributes.poster = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
-					kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
-					height + '/height/' + width;
-				}
-				mw.ready(function(){					
+				mw.ready(function(){
+					
+					// Setup the embedPlayer attributes
+					var embedPlayerAttributes = {
+							'kwidgetid' : kEmbedSettings.widgetId,
+							'kuiconfid' : kEmbedSettings.uiconfId
+					}					
+					
 					var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceElemIdStr ).width();
-					var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceElemIdStr ).height();					
+					var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceElemIdStr ).height();
+					
+					if( kEmbedSettings.entryId ){
+						embedPlayerAttributes.kentryid = kEmbedSettings.entryId;
+						embedPlayerAttributes.poster = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
+						kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
+						height + '/height/' + width;
+					}
+					
 					$j('#' + replaceElemIdStr ).css({
 						'width' : width,
 						'height' : height
