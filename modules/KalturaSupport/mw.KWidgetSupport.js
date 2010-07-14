@@ -51,8 +51,7 @@ mw.KWidgetSupport.prototype = {
 	checkPlayerSources: function( embedPlayer, callback ){
 		var _this = this;	
 		// Make sure we have a widget id: 
-		var widgetId = $j( embedPlayer ).attr( 'kwidgetid' ); 
-		
+		var widgetId = $j( embedPlayer ).attr( 'kwidgetid' ); 	
 		// Setup global Kaltura session:
 		_this.setupSession ( widgetId, function( ) {			
 			_this.addEntryIdSource( embedPlayer, callback);
@@ -67,7 +66,7 @@ mw.KWidgetSupport.prototype = {
 	addEntryIdSource: function( embedPlayer, callback ) {
 		var kEntryId = $j( embedPlayer ).attr( 'kentryid' );
 		// Assign the partnerId from the widgetId
-		
+		mw.log( 'KWidgetSupport::addEntryIdSource:' + kEntryId);
 		// Assign the partnerId from the widgetId ( for thumbnail )
 		var widgetId =  $j( embedPlayer ).attr( 'kwidgetid' );
 		this.kPartnerId = widgetId.replace(/_/g, '');	
@@ -89,6 +88,7 @@ mw.KWidgetSupport.prototype = {
 					.get( 0 )
 				);
 			}
+			callback();
 		});
 		
 	},
@@ -195,6 +195,8 @@ mw.KWidgetSupport.prototype = {
 	*/ 
 	setupSession: function(widgetId,  callback ) {				 		
 		var _this = this;		
+		mw.log( 'KWidgetSupport::setupSession: widgetId:' + widgetId );
+		
 		// if Kaltura session is ready jump directly to callback
 		if( _this.kalturaSessionState == 'ready' ){
 			// Check for entry id directly

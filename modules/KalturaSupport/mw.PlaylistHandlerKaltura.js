@@ -19,13 +19,22 @@ mw.PlaylistHandlerKaltura.prototype = {
 			mw.log( 'PlaylistHandlerKaltura:: getKalturaClientSession: setup ' + kClient);
 			var uiconfGrabber = new KalturaUiConfService( kClient );
 			uiconfGrabber.get( function( status, data ) {
-				mw.log( "PlaylistHandlerKaltura:: got uiconf: " + data.confFileFeatures.length );
-				var $uiConf = $j(  data.confFileFeatures );
-				var kplid = $uiConf.find("uiVars [key='kpl0EntryId']").attr('value');
+				if( data.confFileFeatures && data.confFileFeatures != 'null') {
+					mw.log( "PlaylistHandlerKaltura:: got uiconf: " + data.confFileFeatures.length );
+					var $uiConf = $j(  data.confFileFeatures );
+					var kplid = $uiConf.find("uiVars [key='kpl0EntryId']").attr('value');
+				} else {
+					var kplid = data.id;
+				}
 				var kPlaylistGrabber = new KalturaPlaylistService( kClient );
 				kPlaylistGrabber.execute( function( status, playlistData ) {
-					mw.log( 'kPlaylistGrabber::Got playlist data::' +  playlistData.length );
-					_this.clipList = playlistData;			
+					if( ! playlistData.length ){
+						mw.log("Error: kaltura playlist handler could not load playlist")
+						_this.clipList = [];
+					} else { 
+						mw.log( 'kPlaylistGrabber::Got playlist data::' +  playlistData.length );
+						_this.clipList = playlistData;			
+					}
 					callback();
 				}, kplid);
 			}, _this.uiconfid );

@@ -164,6 +164,7 @@
 								'widgetid' : $j(playlistTarget ).attr( 'kwidgetid' )
 							});							
 							var playlistPlayer = $j( '#' + playlistTarget.id ).playlist({
+								'layout': 'horizontal',
 								'sourceHandler' : kalturaPlaylistHanlder
 							});  														
 						});
