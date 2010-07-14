@@ -98,7 +98,7 @@ function kOverideSwfObject(){
 					$j('#' + replaceElemIdStr ).css({
 						'width' : width,
 						'height' : height
-					}).kalturaEmbedPlayer( embedPlayerAttributes );
+					}).embedPlayer( embedPlayerAttributes );
 				});
 			} else {				
 				// Else call the original EmbedSWF with all its arguments 
