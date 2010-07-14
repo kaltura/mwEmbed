@@ -2,6 +2,9 @@
 * Playlist Embed. Enables the embedding of a playlist playlist using the mwEmbed player   
 */ 
 
+//Get all our message text
+mw.includeAllModuleMessages();
+
 mw.Playlist = function( options ){
 	return this.init( options );
 };
@@ -70,7 +73,7 @@ mw.Playlist.prototype = {
 			mw.log("mw.Playlist::loaded playlist handler");
 			// check if load failed or empty playlist
 			if( _this.sourceHandler.getClipList().length == 0 ){
-				$j( _this.target ).empty().text( gm)
+				$j( _this.target ).empty().text( gM('mwe-playlist-empty') )
 				return ;	
 			}
 			
@@ -259,7 +262,7 @@ mw.Playlist.prototype = {
 		$targetItemList = $j( this.target + ' .media-rss-video-list');
 		
 		$j.each( this.sourceHandler.getClipList(), function( inx, clip ){
-			mw.log( 'mw.Playlist::addMediaList: On clip: ' + clip);
+			mw.log( 'mw.Playlist::addMediaList: On clip: ' + inx);
 			
 			// Output each item with the current selected index:				
 			$itemBlock = $j('<div />')
@@ -320,6 +323,7 @@ mw.Playlist.prototype = {
 			$targetItemList.append( 
 				$itemBlock
 			)
+			mw.log("added item block : " + $targetItemList.children().length );
 		});
 	},
 	
