@@ -143,7 +143,7 @@ mw.addResourcePaths( {
 	"mw.style.ui_start" : "skins/jquery.ui.themes/start/jquery-ui-1.7.2.css",
 	"mw.style.ui_sunny" : "skins/jquery.ui.themes/sunny/jquery-ui-1.7.2.css",
 	
-	"mw.style.mwCommon"		: "skins/common/common.css",	
+	"mw.style.mwCommon"		: "skins/common/mw.style.mwCommon.css",	
 
 	"$j.cookie"				: "libraries/jquery/plugins/jquery.cookie.js",
 	

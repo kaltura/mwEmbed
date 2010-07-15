@@ -26,7 +26,7 @@ mw.Playlist.prototype = {
 		
 		this.id = ( options.id )? options.id : $j( this.target ).attr( 'id' );
 		if( !this.id ){
-			// Give it a rand om id if unset:
+			// Give it a random id if unset:
 			this.id = 'playlist_' + Math.random();
 		}
 		

@@ -2,7 +2,7 @@
  * Kaltura style analytics reporting class
  */
 
-// Temporary hack for anayltics response
+// Temporary hack to avoid undefined symbol which responds with "kaltura" 
 window['Kaltura'] = true;
 
 // Global mw.addKAnalytics manager
