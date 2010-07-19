@@ -1890,8 +1890,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					
 					// Special Hack for conditional jquery ui inclusion ( once
 					// Usability extension
-					// registers the jquery.ui skin in mw.style this won't be
-					// needed )
+					// registers the jquery.ui skin in mw.style 		
 					if( mw.hasJQueryUiCss() ){
 						mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;						
 					}		
@@ -1938,6 +1937,15 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				return true;
 			}
 		} );
+		// Check all the "style" nodes for @import of jquery-ui-1.7.2.css
+		// xxx Note: we could do this a bit cleaner with regEx
+		$j( 'style' ).each( function( na, styleNode ){
+			if( $j( styleNode ).text().indexOf( '@import' ) != -1 
+				&& $j( styleNode ).text().indexOf( 'jquery-ui-1.7.2.css' ) != -1  ){
+					hasUiCss=true;
+			}
+		});
+				
 		return hasUiCss;		
 	}
 	

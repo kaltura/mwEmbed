@@ -273,7 +273,7 @@ mw.SmilBuffer.prototype = {
 			return ;
 		}
 		this.assetLoadingSet.push( assetId );
-	},
+	},		
 	
 	/**
 	* Asset is ready, check queue and issue callback if empty 
@@ -295,21 +295,26 @@ mw.SmilBuffer.prototype = {
 	/**
 	 * Clip ready for grabbing a frame such as a canvas thumb
 	 */
-	canGrabRelativeTime: function( smilElement, relativeTime, callback ){
+	bufferedSeek: function( smilElement, relativeTime, callback ){
 		var absoluteTime = relativeTime;
 		if( $j( smilElement ).attr('clipBegin') ){
 			absoluteTime += this.smil.parseTime( $j( smilElement ).attr('clipBegin') );
 		}
+		$j( smilElement ).data('activeSeek', true);
+		var instanceCallback = function(){
+			$j( smilElement ).data('activeSeek', false);
+			callback();
+		}
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'video':
-				this.videoBufferSeek( smilElement, absoluteTime, callback )
+				this.videoBufferSeek( smilElement, absoluteTime, instanceCallback )
 			break;
 			case 'img':
-				this.loadImageCallback( smilElement, callback );
+				this.loadImageCallback( smilElement, instanceCallback );
 			break;
 			default:
 				// Assume other formats are directly displayed
-				callback();
+				instanceCallback();
 			break;
 		}		
 	},
@@ -428,8 +433,7 @@ mw.SmilBuffer.prototype = {
 		// Read the video state: http://www.w3.org/TR/html5/video.html#dom-media-have_nothing
 		if( $vid.attr('readyState') == 0 /* HAVE_NOTHING */ ){ 
 			// Check that we have metadata ( so we can issue the seek ) 
-			$vid.unbind( 'loadedmetadata' ).bind( 'loadedmetadata', function(){
-				
+			$vid.unbind( 'loadedmetadata' ).bind( 'loadedmetadata', function(){				
 				runSeekCallback();
 			} );
 		}else { 

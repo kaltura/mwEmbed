@@ -134,9 +134,24 @@ mw.Smil.prototype = {
 	 */
 	animateTime : function(time, timeDelta) {
 		// mw.log("Smil::animateTime: " + time + ' delta: ' + timeDelta );
-		this.getBody().renderTime(time, timeDelta);
+		this.getBody().renderTime( time, timeDelta );
 	},
-
+	
+	/**
+	 * Checks if two times are within the framerate time range 
+	 * useful for results of a seek request no exactly matching
+	 * the seek time.  
+	 */	
+	isSameFrameTime: function( time1, time2){
+		var frameRange = 1 / mw.getConfig( 'SmilPlayer.framerate');
+		if ( Math.abs( time1 - time2 ) <  frameRange ) {
+			mw.log( Math.abs( time1 - time2 ) +  ' IS < ' + frameRange );
+			return true;
+		} else {
+			return false;
+		}
+	},
+	
 	/**
 	 * Pause all animations and playback
 	 */

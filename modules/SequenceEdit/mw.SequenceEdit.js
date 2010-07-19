@@ -97,8 +97,7 @@ mw.SequenceEdit.prototype = {
 	 */
 	drawUI: function( ){
 		var _this = this;
-		mw.log("SequenceEdit:: drawUI to: " + this.interfaceContainer + 
-				' ' + this.getContainer().length);
+		mw.log( "SequenceEdit:: drawUI to: " + this.interfaceContainer + ' ' + this.getContainer().length );
 		
 		// Add the ui layout
 		this.getContainer().html(

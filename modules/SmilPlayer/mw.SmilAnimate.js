@@ -216,7 +216,7 @@ mw.SmilAnimate.prototype = {
 	 * @param {Element} smilElement Smil video element to be transformed
 	 * @param {time} animateTime Relative time to be transformed
 	 */
-	transformVideoForTime: function( smilElement, animateTime ){
+	transformVideoForTime: function( smilElement, animateTime, callback ){
 		// Get the video element 
 		var assetId = this.smil.getAssetId( smilElement );
 		var vid = $j ( '#' + assetId ).get( 0 );		
@@ -224,7 +224,7 @@ mw.SmilAnimate.prototype = {
 		var videoSeekTime = animateTime;
 		//Add the clipBegin if set
 		if( $j( smilElement ).attr( 'clipBegin') && 
-				this.smil.parseTime( $j( smilElement ).attr( 'clipBegin') ) )
+			this.smil.parseTime( $j( smilElement ).attr( 'clipBegin') ) ) 
 		{
 			videoSeekTime += this.smil.parseTime( $j( smilElement ).attr( 'clipBegin') );  
 		}
@@ -233,7 +233,9 @@ mw.SmilAnimate.prototype = {
 		
 		// Register a buffer ready callback
 		this.smil.getBuffer().videoBufferSeek( smilElement, videoSeekTime, function() {			
-			//mw.log( "transformVideoForTime:: seek complete ");
+			//mw.log( "transformVideoForTime:: seek complete ")
+			if( callback )
+				callback();
 		});
 	},
 	

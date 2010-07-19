@@ -71,10 +71,9 @@
 		
 		// Add timed text items if flag set. 
 		// its oky if we merge in multiple times the loader can handle it
-		if( mwLoadTimedTextFlag ) {
+		if( mwLoadTimedTextFlag ) {			
 			$j.merge( classRequest, mwTimedTextRequestSet );
 		}	
-	
 	} );
 		
 	

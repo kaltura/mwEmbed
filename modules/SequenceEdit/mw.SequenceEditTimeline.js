@@ -115,8 +115,8 @@ mw.SequenceEditTimeline.prototype = {
 		// For every ref node in this sequence draw its thumb: 
 		smil.getBody().getRefElementsRecurse( sequenceNode, startOffset, function( $node ){				
 			// Check Buffer for when the first frame of the smilNode can be grabbed: 		
-			smil.getBuffer().canGrabRelativeTime( $node, 0, function(){
-				//mw.log("getTrackClipInterface::canGrabRelativeTime for " + smil.getAssetId( $node ));
+			smil.getBuffer().bufferedSeek( $node, 0, function(){
+				//mw.log("getTrackClipInterface::bufferedSeek for " + smil.getAssetId( $node ));
 				_this.drawClipThumb( $node , 0);
 			});
 		});
@@ -348,9 +348,11 @@ mw.SequenceEditTimeline.prototype = {
 	// Draw a clip thumb into the timeline clip target
 	drawClipThumb: function ( $node , relativeTime ){		
 		var _this = this;
-		var smil = this.sequenceEdit.getSmil();
+		var smil = this.sequenceEdit.getSmil();	
+		
+		
 		// Buffer the asset then render it into the layout target:
-		smil.getBuffer().canGrabRelativeTime( $node, relativeTime, function(){		
+		smil.getBuffer().bufferedSeek( $node, relativeTime, function(){		
 			var $timelineClip = $j( '#' + _this.getTimelineClipId( $node ) );
 			// Add Thumb target and remove loader
 			$timelineClip.append(
@@ -408,13 +410,22 @@ mw.SequenceEditTimeline.prototype = {
 			)
 			// remove loader
 			.find('.loadingSpinner').remove();
-			// Add thumb
-			smil.getLayout().drawElementThumb( 
-				$j( '#' + _this.getTimelineClipId( $node ) ).find('.thumbTraget'), 
-				$node, 
-				relativeTime
-			)
-		})		
+			
+			var $thumbTarget = $j( '#' + _this.getTimelineClipId( $node ) ).find('.thumbTraget');
+			
+			// Check for a "poster" image use that temporarily while we wait for the video to seek and draw
+			if( $node.attr('poster') ){
+				$thumbTarget.append( 
+					$j('<img />')
+					.attr( 'src', smil.getAssetUrl( $node.attr('poster') ) )
+					.css('height', $thumbTarget.height() )
+				)
+			}					
+			
+			// Add the seek, add to canvas and draw thumb request
+			smil.getLayout().drawElementThumb( $thumbTarget, $node, relativeTime );
+		
+		})
 	},
 	/**
 	 * Gets an sequence track control interface 

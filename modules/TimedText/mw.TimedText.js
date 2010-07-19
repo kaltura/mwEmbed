@@ -155,16 +155,13 @@ mw.addMessages( {
 			// Set up embedPlayer hooks:			
 			$j( embedPlayer ).bind( 'monitorEvent', function() {				
 				_this.monitor();
+				return false;
 			} );
-			// Add the play and download source setup functions	
+							
 			$j( embedPlayer ).bind( 'playEvent', function() {
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
 			} );
-			
-			$j( embedPlayer ).bind( 'getDownloadSourcesEvent', function( event, callback ){				
-				_this.setupTextSources( callback );				
-			});
 		},
 		
 		/**
@@ -288,7 +285,7 @@ mw.addMessages( {
 				mw.log("Error: loading source without apiProvider or apiTitleKey");
 				return ;
 			}
-			// For now only support mediaWikTrack provider library
+			//For now only support mediaWikTrack provider library
 			this.textProvider = new mw.MediaWikTrackProvider( {
 				'provider_id' : provider_id,
 				'apiUrl': apiUrl,
@@ -301,20 +298,13 @@ mw.addMessages( {
 					var textSource = textSources[ i ];
 					// Try to insert the track source: 
 					var textElm = document.createElement( 'track' );
-
 					$j( textElm ).attr( {
 						'category' : 'SUB',
 						'srclang' 	: textSource.srclang,
 						'type' 	: _this.timedTextExtMime[ textSource.extension ],
-						'titleKey' 	: textSource.titleKey,
-						'src' : _this.textProvider.getDownloadLink( textSource.titleKey ),
-						'title': gM( 'mwe-timedtext-key-language', 
-									[
-									 textSource.srclang, 
-									 unescape( mw.Language.names[ textSource.srclang ] )	
-									]
-								)
-					} );									
+						'titleKey' 	: textSource.titleKey
+					} );
+					//debugger;
 					// Add the sources to the parent embedPlayer 
 					// ( in case other interfaces want to access them )
 					var embedSource = _this.embedPlayer.mediaElement.tryAddSource( textElm );	
@@ -364,8 +354,8 @@ mw.addMessages( {
 			// If no userLang, source try enabling English:
 			if( this.enabledSources.length == 0 ) {
 				for( var i in this.textSources ) {
-					var source = this.textSources[ i ].toLowerCase();
-					if( source.srclang == 'en' ) {
+					var source = this.textSources[ i ];
+					if( source.srclang.toLowerCase() == 'en' ) {
 						this.enabledSources.push( source );
 						return ;
 					}
@@ -444,7 +434,7 @@ mw.addMessages( {
 		* calls a few sub-functions:
 		* Basic menu layout:
 		*		Chose Language
-		*			All Subtitles here ( if we have categories list them ) 
+		*			All Subtiles here ( if we have categories list them ) 
 		*		Layout	
 		*			Bellow video
 		*			Ontop video ( only available to supported plugins )
@@ -531,10 +521,25 @@ mw.addMessages( {
 			//See if the source is currently "on"
 			var source_icon = ( this.isSourceEnabled( source ) )? 'bullet' : 'radio-on'; 
 			
-			return $j.getLineItem( source.title, source_icon, function() {
-				mw.log(" call selectTextSource:: " + source.title);
-				_this.selectTextSource( source ); 
-			});			
+			if( source.title ) {
+				return $j.getLineItem( source.title, source_icon, function() {
+					mw.log(" call selectTextSource");
+					_this.selectTextSource( source ); 
+				});
+			}
+			
+			if( source.srclang ) {
+				var langKey = source.srclang.toLowerCase();
+				_this.getLanguageName ( langKey );
+				return $j.getLineItem( 
+					gM('mwe-timedtext-key-language', [langKey, unescape( mw.Language.names[ source.srclang ] )	] ), 
+					source_icon,
+					function() {
+						mw.log(" call selectTextSource");
+						_this.selectTextSource( source ); 
+					} 
+				);
+			}
 		},			
 		
 		/**
@@ -920,21 +925,7 @@ mw.addMessages( {
 				mw.log("Error: no handler for type: " + this.getMIMEType() );
 				return ;
 			}
-			
-			// Try to load src via textProvider safer for cross domain: 
-			if( this.textProvider && this.titleKey ) {
-				this.textProvider.loadTitleKey( this.titleKey, function( data ) {
-					if( data ) {
-						_this.captions = handler( data );
-					}
-					if( callback ) { 
-						callback();
-					}
-					return ;
-				});
-			}
-			
-			// else try to load src via src attr:
+			// Try to load src via src attr:
 			if( this.getSrc() ) {
 				// Issue the direct load request ( if we can ) 
 				if ( !mw.isLocalDomain( this.getSrc() ) ) {
@@ -952,6 +943,19 @@ mw.addMessages( {
 				}, 'text' );
 				return ;
 			}			
+			
+			// Try to load src via textProvider:
+			if( this.textProvider && this.titleKey ) {
+				this.textProvider.loadTitleKey( this.titleKey, function( data ) {
+					if( data ) {
+						_this.captions = handler( data );
+					}
+					if( callback ) { 
+						callback();
+					}
+					return ;
+				});
+			}
 		},
 		
 		/**
@@ -1140,6 +1144,17 @@ mw.addMessages( {
 	 * text provider objects let you map your player to a timed text provider 
 	 * can provide discovery, and contribution push back
 	 * 
+	
+	// Will add a base class once we are serving more than just mediaWiki "commons"  
+	mw.BaseTextProvider = function() {
+		return this.init(); 
+	}
+	mw.BaseTextProvider.prototype = {
+		init: function() {
+			
+		}
+	} 
+
 	 */
 	 var default_textProvider_attr = [
 		'apiUrl',
@@ -1210,9 +1225,7 @@ mw.addMessages( {
 				callback( _this.getSources( sourcePages ) );
 			} );
 		},
-		getDownloadLink: function( assetKey ){
-			return this.apiUrl.replace( /api.php/, 'index.php' ) + '?title=' + assetKey + '&action=raw&ctype=text/x-srt'
-		},
+		
 		/**
 		 * Get the subtitle pages
 		 * @param {String} titleKey Title to get subtitles for

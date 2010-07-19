@@ -13,36 +13,36 @@ mw.SequenceEditMenu.prototype = {
 	},
 	drawMenu:function(){
 		var _this = this;
-		var $menuTarget = this.sequenceEdit.getMenuTarget();
+		var $menuTarget = this.sequenceEdit.getMenuTarget();	
+		$menuTarget.empty()
+		// check if we should have a save button
+		if(false){
+			$menuTarget.append(
+				$j.button({
+					'text' : gM('mwe-sequenceedit-save-sequence'),
+					'icon_id': 'disk'
+				})
+				.buttonHover()
+			)
+		}
+		
+		// check if we should have a render button
+		if(true){
+			$menuTarget.append(
+				$j.button({
+					'text' : gM('mwe-sequenceedit-render-sequence'),
+					'icon_id': 'video'
+				})
+				.buttonHover()
+				.click(function(){
+					_this.sequenceEdit.getRender().renderDialog();
+				})
+			)
+		}
+		
+		// check if we should include credits
 		if( mw.getConfig( 'SequenceEdit.KalturaAttribution' ) ){
-			$menuTarget.empty()
-			// check if we should have a save button
-			if(false){
-				$menuTarget.append(
-					$j.button({
-						'text' : gM('mwe-sequenceedit-save-sequence'),
-						'icon_id': 'disk'
-					})
-					.buttonHover()
-				)
-			}
-			
-			// check if we should have a render button
-			if(true){
-				$menuTarget.append(
-					$j.button({
-						'text' : gM('mwe-sequenceedit-render-sequence'),
-						'icon_id': 'video'
-					})
-					.buttonHover()
-					.click(function(){
-						_this.sequenceEdit.getRender().renderDialog();
-					})
-				)
-			}
-			
-			// check if we should include credits
-			if(true){
+			if( true ){
 				$menuTarget.append(
 					$j('<span />')
 					.css( 'float', 'right' )

@@ -144,7 +144,7 @@ class mwEmbedFrame {
 				margin-bottom: 0px;
 			}
 		</style>
-		<script type="text/javascript" src="ResourceLoader.php?class=mwEmbed,window.jQuery&debug=true"></script>
+		<script type="text/javascript" src="ResourceLoader.php?class=window.jQuery,mwEmbed"></script>
 		<script type="text/javascript">
 			//Set some iframe embed config:
 

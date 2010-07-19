@@ -65,7 +65,7 @@ mw.PlayerControlBuilder.prototype = {
 		this.embedPlayer = embedPlayer;
 
 		// Check for skin overrides for controlBuilder
-		var skinClass =  embedPlayer.skinName.substr(0,1).toUpperCase() +  embedPlayer.skinName.substr( 1 );		
+		var skinClass =  embedPlayer.skinName[0].toUpperCase() +  embedPlayer.skinName.substr( 1 );		
 		if ( mw['PlayerSkin' + skinClass  ]) {
 		
 			// Clone as to not override prototype with the skin config
@@ -141,7 +141,7 @@ mw.PlayerControlBuilder.prototype = {
 	*/ 
 	addControlComponents: function( ) {
 		var _this = this;			
-		mw.log( 'PlayerControlBuilder::controlsBuilder:: opt:' + this.options );
+		mw.log( 'f:controlsBuilder:: opt:' + this.options );
 		
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
@@ -197,7 +197,7 @@ mw.PlayerControlBuilder.prototype = {
 					);
 					this.available_width -= this.components[ component_id ].w;
 				} else {
-					mw.log( 'PlayerControlBuilder::Not enough space for control component:' + component_id );
+					mw.log( 'Not enough space for control component:' + component_id );
 				}
 			}
 		}
@@ -276,7 +276,7 @@ mw.PlayerControlBuilder.prototype = {
 	* Do full-screen mode 
 	*/ 
 	doFullScreenPlayer: function() {
-		mw.log("PlayerControlBuilder::toggle full-screen ");									
+		mw.log(" controlBuilder :: toggle full-screen ");									
 		// Setup pointer to control builder :
 		var _this = this;
 		
@@ -358,7 +358,7 @@ mw.PlayerControlBuilder.prototype = {
 				if( $j( this ).css( 'position' ) == 'absolute' ) {				
 					_this.parentsAbsolute.push( $j( this ) );				
 					$j( this ).css( 'position', null );
-					mw.log('PlayerControlBuilder::Update position: ' +  $j( this ).css( 'position' ) );
+					mw.log(' should update position: ' +  $j( this ).css( 'position' ) );
 				}
 			} );
 		} )
@@ -449,7 +449,7 @@ mw.PlayerControlBuilder.prototype = {
 			? embedPlayer.getHeight() 
 			: embedPlayer.getHeight() + _this.getHeight();
 			
-		mw.log( 'PlayerControlBuilder::restoreWindowPlayer: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
+		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
 		$j('.mw-fullscreen-overlay').fadeOut( 'slow' );
 		
 		// Restore interface: 		
@@ -479,7 +479,7 @@ mw.PlayerControlBuilder.prototype = {
 			$j('body').css( 'overflow', 'auto' );
 			
 		} );
-		mw.log( 'PlayerControlBuilder::Restore embedPlayer: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
+		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
 		// Restore the player: 
 		$j( embedPlayer ).animate( {
 			'top' : '0px',
@@ -570,7 +570,7 @@ mw.PlayerControlBuilder.prototype = {
 			this.addSkinControlBindings();
 		}
 		
-		mw.log('PlayerControlBuilder::tirgger:addControlBindingsEvent');
+		mw.log('tirgger::addControlBindingsEvent');
 		$j( embedPlayer ).trigger( 'addControlBindingsEvent');
 	},
 	
@@ -610,7 +610,7 @@ mw.PlayerControlBuilder.prototype = {
 	showControlBar: function(){
 		var animateDuration = 'slow';	
 		$j( this.embedPlayer.getPlayerElement() ).css('z-index', '1')	
-		mw.log( 'PlayerControlBuilder::showControlBar' );
+		mw.log( 'showControlBar' );
 		// Move up text track if present
 		this.embedPlayer.$interface.find( '.track' )
 			.animate( 
@@ -699,7 +699,7 @@ mw.PlayerControlBuilder.prototype = {
 	* 
 	*/
 	doWarningBindinng: function( preferenceId, warningMsg ) {
-		mw.log( 'PlayerControlBuilder::doWarningBindinng: ' + preferenceId +  ' wm: ' + warningMsg);
+		mw.log( 'controlBuilder: doWarningBindinng: ' + preferenceId +  ' wm: ' + warningMsg);
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 		var _this = this;			
@@ -780,7 +780,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var _this = this;		
 		embedPlayer.$interface.find( '.volume_control span' ).unbind().buttonHover().click( function() {
-			mw.log( 'PlayerControlBuilder::Volume control toggle' );
+			mw.log( 'Volume control toggle' );
 			embedPlayer.toggleMute();
 		} );
 		
@@ -1300,49 +1300,48 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log( 'showDownloadWithSources::' + $target.length );
 		var embedPlayer = this.embedPlayer;
 		// Empty the target:
-		$target.empty();		
+		$target.empty();
+		
 		var $mediaList = $j( '<ul />' );
 		var $textList =  $j( '<ul />' );
-		
-		// Get any hooked downloadalbe sources			
-		mw.runTriggersCallback( embedPlayer, 'getDownloadSourcesEvent', function(){					
-			$j.each( embedPlayer.mediaElement.getSources(), function( index, source ) {
-				if(  source.getSrc() ) {			
-					mw.log("add src: "  + source.getTitle() );
-					var $dl_line = $j( '<li />').append(
-						$j('<a />')					
-						.attr( 'href', source.getSrc() )
-						.text(  source.getTitle() )
-					);	
-					//Add link to time segment:
-					if ( source.getSrc().indexOf( '?t=' ) !== -1 ) {
-						$target.append( $dl_line );
-					} else if ( source.getMIMEType().indexOf('text') != -1 ){
-						// Add link to text list
-						$textList.append( $dl_line );
-					} else {
-						// Add link to media list
-						$mediaList.append( $dl_line );
-					}
-					
+		$j.each( embedPlayer.mediaElement.getSources(), function( index, source ) {
+			if(  source.getSrc() ) {
+				mw.log("add src: "  + source.getTitle() );
+				var $dl_line = $j( '<li />').append(
+					$j('<a />')					
+					.attr( 'href', source.getSrc() )
+					.text(  source.getTitle() )
+				);		
+				// Add link to correct "bucket" 
+							
+				//Add link to time segment:
+				if ( source.getSrc().indexOf( '?t=' ) !== -1 ) {
+					$target.append( $dl_line );
+				} else if ( this.getMIMEType() == "text/cmml" || this.getMIMEType() == "text/x-srt" ) {
+					// Add link to text list
+					$textList.append( $dl_line );
+				} else {
+					// Add link to media list
+					$mediaList.append( $dl_line );
 				}
-			} );
-			if( $mediaList.find('li').length != 0 ) {
-				$target.append(
-					$j('<h2 />')
-					.text( gM( 'mwe-embedplayer-download_full' ) ),
-					$mediaList
-				)
+				
 			}
-			
-			if( $textList.find('li').length != 0 ) {
-				$target.append(
-					$j('<h2 />')
-					.html( gM( 'mwe-embedplayer-download_text' ) ),
-					$textList
-				)
-			}		
-		});
+		} );
+		if( $mediaList.find('li').length != 0 ) {
+			$target.append(
+				$j('<h2 />')
+				.text( gM( 'mwe-embedplayer-download_full' ) ),
+				$mediaList
+			)
+		}
+		
+		if( $textList.find('li').length != 0 ) {
+			$target.append(
+				$j('<h2 />')
+				.html( gM( 'mwe-embedplayer-download_text' ) ),
+				$textList
+			)
+		}		
 	},
 	
 	

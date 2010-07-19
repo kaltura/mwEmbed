@@ -378,7 +378,27 @@ mw.SmilBody.prototype = {
 		}		
 		return $node.data('computedDuration');		
 	},
-	
+	/**
+	 * Get the asset duration for a clip
+	 * @param {element} $node the smil clip that we want to get duration for
+	 * @param {function} callback Function to be called once asset duration is known. 
+	 */
+	getClipAssetDuration: function( $node, callback ){
+		this.smil.getBuffer().loadElement( $node );
+		// xxx check if the type is "video or audio" else nothing to return 
+		
+		var vid = $j( '#' + this.smil.getAssetId( $node ) ).get(0);
+		if( vid.duration ){
+			callback( vid.duration );
+		}
+		// Duration ready callback: 
+		var durationReady = function(){
+			callback( vid.duration  );
+		}
+		// else setup a load biding
+		vid.removeEventListener( "loadedmetadata", durationReady, true );
+		vid.addEventListener( "loadedmetadata", durationReady, true );
+	},
 	/**
 	 * Maps a few smil tags to smil types 
 	 * 

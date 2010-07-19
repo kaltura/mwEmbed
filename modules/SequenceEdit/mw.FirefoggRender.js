@@ -152,7 +152,7 @@ mw.FirefoggRender.prototype = {
 					_this.doNextFrame();
 				},1 )
 			}
-		} );
+		}, true /* hide the buffer overlay */ );
 	},
 	
 	/**	

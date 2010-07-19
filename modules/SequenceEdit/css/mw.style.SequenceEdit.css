@@ -64,4 +64,12 @@
 	border: 2px solid #F22;
 }
 
+.mwe-sequence-edit .trimStartThumb, .trimEndThumb {
+	float : left;
+	display:block;
+	width : 80px;
+	height : 60px;
+	overflow: hidden;
+	border: 2px solid #555;
+}
 

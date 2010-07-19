@@ -68,6 +68,7 @@ mw.SequenceEditPlayer.prototype = {
 		var clipEndTime = startOffset + 
 			this.sequenceEdit.getSmil().getBody().getClipDuration( smilClip );
 		this.getEmbedPlayer().setCurrentTime( startOffset, function(){
+			mw.log("SequenceEditPlayer::Preview clip: " + startOffset + ' to ' + clipEndTime);
 			_this.getEmbedPlayer().play( clipEndTime );
 		})
 	},
