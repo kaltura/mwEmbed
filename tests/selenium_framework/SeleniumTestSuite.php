@@ -15,7 +15,7 @@ class SeleniumTestSuite extends PHPUnit_Framework_TestSuite {
 	public function setUp() {
 		$this->selenium = Selenium::getInstance();
 		$this->selenium->start();
-		$this->login();
+		//$this->login();
 		// $this->loadPage( 'Testpage', 'edit' );
 	}
 
