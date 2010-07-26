@@ -1,20 +1,19 @@
-mw.SequenceEditRender = function( sequenceEditor ) {
-	return this.init( sequenceEditor );
+mw.SequencerRender = function( sequenceror ) {
+	return this.init( sequenceror );
 };
 
-// Set up the mvSequencer object
-mw.SequenceEditRender.prototype = {
-	init: function( sequenceEditor ){
-		this.sequenceEditor = sequenceEditor;
+mw.SequencerRender.prototype = {
+	init: function( sequenceror ){
+		this.sequenceror = sequenceror;
 	},
 	
 	renderDialog: function(){
 		var _this = this;
 		
-		var $renderDialog = mw.addDialog( 
-			gM('mwe-sequenceedit-render-sequence'),
-			$j('<div />').loadingSpinner()			
-		)
+		var $renderDialog = mw.addDialog( {
+			'title' : gM('mwe-sequenceedit-render-sequence'),
+			'content' : $j('<div />').loadingSpinner()			
+		} )
 		
 		mw.load( ['AddMedia.firefogg','mw.FirefoggRender'], function(){
 			$renderDialog
@@ -32,7 +31,7 @@ mw.SequenceEditRender.prototype = {
 		}).attr({
 			'id' : 'firefoggRenderVideo',
 			'type' : 'application/smil',
-			'src' : _this.sequenceEditor.getSmilSource()
+			'src' : _this.sequenceror.getSmilSource()
 		}).embedPlayer(function(){
 			// status area
 			$j('#firefoggRenderVideo').after( 
@@ -40,7 +39,7 @@ mw.SequenceEditRender.prototype = {
 			)
 			
 			// update the player smil to the latest from the editor
-			$j('#firefoggRenderVideo').smil.$dom = _this.sequenceEditor.smil.$dom;
+			$j('#firefoggRenderVideo').smil.$dom = _this.sequenceror.smil.$dom;
 			// refresh the duration 
 			$j('#firefoggRenderVideo').getDuration( true );
 	

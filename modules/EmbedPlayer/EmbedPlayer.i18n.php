@@ -67,7 +67,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-video-flv' => 'Flash video',
 	'mwe-embedplayer-video-ogg' => 'Ogg video',
 	'mwe-embedplayer-video-audio' => 'Ogg audio',
-	'mwe-embedplayer-missing-source' => 'No source video was found. Check that your API key includes html5 playable sources',
+	'mwe-embedplayer-missing-source' => 'No source video was found',
 );
 
 /** Afrikaans (Afrikaans) */

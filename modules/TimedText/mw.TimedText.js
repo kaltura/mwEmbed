@@ -225,7 +225,7 @@ mw.addMessages( {
 				// NOTE: Button target should be an option or config
 				$menuButton.unbind().menu( {
 					'content'	: _this.getMainMenu(),
-					'zindex' : mw.getConfig( 'EmbedPlayer.fullScreenZIndex' )+2,
+					'zindex' : mw.getConfig( 'EmbedPlayer.fullScreenZIndex' ) + 2,
 					'crumbDefaultText' : ' ',
 					'autoShow': autoShow,
 					'targetMenuContainer' : _this.menuTarget,

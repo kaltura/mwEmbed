@@ -5,11 +5,17 @@ Version: 3.0, 03.31.2009
 By: Maggie Costello Wachs (maggie@filamentgroup.com) and Scott Jehl (scott@filamentgroup.com)
 	http://www.filamentgroup.com
 	* reference articles: http://www.filamentgroup.com/lab/jquery_ipod_style_drilldown_menu/
+
+* modified by Michael Dale, ( michael.dale@kaltura.com ) 
 		
 Copyright (c) 2009 Filament Group
 Dual licensed under the MIT (filamentgroup.com/examples/mit-license.txt) and GPL (filamentgroup.com/examples/gpl-license.txt) licenses.
 
-NOTE: mvEmbed will switch to jquery ui menu once that is released
+NOTE: mwEmbed will switch to jquery ui menu once that is released
+NOTE: This menu contains several customizations for use in mwEmbed modules::
+
+* added getLineItem helper function 
+* added special class "divider" that is non selectable menu item horizontal hr 
 --------------------------------------------------------------------*/
 
 
@@ -173,11 +179,11 @@ function Menu(caller, options) {
 	this.showMenu = function() {
 		mw.log('$j.menu:: show menu' );					
 		killAllMenus();
-		mw.log('done:: killAllMenus' );		
+		mw.log('jquery.menu:: killAllMenus' );		
 		if ( ! menu.menuExists) { 
 			menu.create() 
 		};		
-		mw.log('done:: menu.create' );		
+		mw.log('jquery.menu:: menu.create' );		
 		caller
 			.addClass('fg-menu-open')
 			.addClass(options.callerOnState);
@@ -185,7 +191,7 @@ function Menu(caller, options) {
 			menu.kill(); 
 			return false; 
 		});
-		mw.log('done:: menu. binding container' );
+		mw.log('jquery.menu:: menu. binding container' );
 		
 		container.hide().slideDown(options.showSpeed).find('.fg-menu:eq(0)');
 		menu.menuOpen = true;
@@ -289,7 +295,7 @@ function Menu(caller, options) {
 		
 		// aria roles & attributes
 		container.find( 'ul' ).attr('role', 'menu').eq(0).attr('aria-activedescendant','active-menuitem').attr('aria-labelledby', caller.attr('id'));
-		container.find( 'li' ).attr('role', 'menuitem');
+		container.find( 'li:not(.divider)' ).attr('role', 'menuitem');
 		container.find( 'li:has(ul)' ).attr('aria-haspopup', 'true').find('ul').attr('aria-expanded', 'false');
 		container.find( 'a' ).attr('tabindex', '-1');
 		

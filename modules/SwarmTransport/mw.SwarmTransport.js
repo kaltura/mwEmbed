@@ -74,7 +74,7 @@ mw.SwarmTransport = {
 		// Setup the torrent request:
 		var torrentLookupRequest = {
 			'url' : mw.absoluteUrl( source.getSrc() )
-		}
+		};
 				
 		// Setup function to run in context based on callback result
 		$j.getJSON(

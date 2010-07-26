@@ -608,6 +608,7 @@ $messages['id'] = array(
 	'mwe-clipedit-insert_into_sequence' => 'Sisipkan pada urutan',
 	'mwe-clipedit-preview_insert' => 'Sisipkan pratayang',
 	'mwe-clipedit-cancel_image_insert' => 'Batalkan penyisipan',
+	'mwe-clipedit-sc_attributes' => 'Suntingan detail klip',
 	'mwe-clipedit-sc_inoutpoints' => 'Atur titik masuk-keluar',
 	'mwe-clipedit-sc_overlays' => 'Hamparan',
 	'mwe-clipedit-sc_audio' => 'Kontrol audio',
@@ -733,6 +734,7 @@ $messages['lb'] = array(
 	'mwe-clipedit-cancel_image_insert' => 'Drasetzen ofbriechen',
 	'mwe-clipedit-sc_attributes' => 'Detailer vum Videclip änneren',
 	'mwe-clipedit-sc_inoutpoints' => 'Eran-Eraus Punkte festleeën',
+	'mwe-clipedit-sc_overlays' => 'Iwwerlagerungen',
 	'mwe-clipedit-sc_audio' => 'Audiosteierung',
 	'mwe-clipedit-sc_duration' => 'Dauer',
 	'mwe-clipedit-template_properties' => 'Eegeschafte vun der Schabloun',
@@ -747,6 +749,8 @@ $messages['lb'] = array(
 	'mwe-clipedit-edit-video-tools' => 'Video-Tools änneren:',
 	'mwe-clipedit-duration' => 'Dauer:',
 	'mwe-clipedit-layout' => 'Layout',
+	'mwe-clipedit-layout_right' => 'Layout vum Bild op der rietser Säit',
+	'mwe-clipedit-layout_left' => 'Layout vum Bild op der lénker Säit',
 );
 
 /** Macedonian (Македонски)
@@ -994,6 +998,9 @@ $messages['pt-br'] = array(
 	'mwe-clipedit-inline-description' => 'Título',
 	'mwe-clipedit-edit-video-tools' => 'Ferramentas de edição de vídeo:',
 	'mwe-clipedit-duration' => 'Duração:',
+	'mwe-clipedit-layout' => 'Posicionamento',
+	'mwe-clipedit-layout_right' => 'Imagem posicionada à direita',
+	'mwe-clipedit-layout_left' => 'Imagem posicionada à esquerda',
 );
 
 /** Russian (Русский)

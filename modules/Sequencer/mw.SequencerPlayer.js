@@ -2,17 +2,17 @@
 //Wrap in mw closure to avoid global leakage
 ( function( mw ) {
 	
-mw.SequenceEditPlayer = function( sequenceEdit ) {
-	return this.init( sequenceEdit );
+mw.SequencerPlayer = function( sequencer ) {
+	return this.init( sequencer );
 };
 
 // Set up the mvSequencer object
-mw.SequenceEditPlayer.prototype = {
+mw.SequencerPlayer.prototype = {
 	// The id of the sequence player	
 	smilPlayerId: null, // lazy init
 	
-	init: function( sequenceEdit ){
-		this.sequenceEdit = sequenceEdit;
+	init: function( sequencer ){
+		this.sequencer = sequencer;
 	},	
 	
 	/**
@@ -20,8 +20,8 @@ mw.SequenceEditPlayer.prototype = {
 	 */
 	drawPlayer: function( callback ){
 		var _this = this;
-		var $playerTarget = this.sequenceEdit.getContainer().find( '.mwseq-player' );
-		var smilSource =  this.sequenceEdit.getSmilSource()
+		var $playerTarget = this.sequencer.getContainer().find( '.mwseq-player' );
+		var smilSource =  this.sequencer.getSmilSource()
 		if( ! smilSource ){
 			$playerTarget.append( 
 				gM( 'mwe-sequenceedit-no-sequence-start-new', 
@@ -66,22 +66,22 @@ mw.SequenceEditPlayer.prototype = {
 		// Seek and play start of smilClip  
 		var startOffset = $j( smilClip ).data('startOffset');
 		var clipEndTime = startOffset + 
-			this.sequenceEdit.getSmil().getBody().getClipDuration( smilClip );
+			this.sequencer.getSmil().getBody().getClipDuration( smilClip );
 		this.getEmbedPlayer().setCurrentTime( startOffset, function(){
-			mw.log("SequenceEditPlayer::Preview clip: " + startOffset + ' to ' + clipEndTime);
+			mw.log("SequencerPlayer::Preview clip: " + startOffset + ' to ' + clipEndTime);
 			_this.getEmbedPlayer().play( clipEndTime );
 		})
 	},
 	
 	closePreivew: function(){
 		// restore border
-		this.sequenceEdit.getContainer().find( '.mwseq-player' )
+		this.sequencer.getContainer().find( '.mwseq-player' )
 			.css({'border': null});
 	},
 	
 	
 	resizePlayer: function(){		
-		mw.log("SequenceEditPlayer:: resizePlayer: " + $j('#' + this.getSmilPlayerId() ).length );		
+		mw.log("SequencerPlayer:: resizePlayer: " + $j('#' + this.getSmilPlayerId() ).length );		
 		this.getEmbedPlayer()
 			.resizePlayer(  
 				this.getPlayerSize(),
@@ -91,10 +91,10 @@ mw.SequenceEditPlayer.prototype = {
 	
 	getPlayerSize: function(){
 		var size = {};
-		var $playerContainer = this.sequenceEdit.getContainer().find('.mwseq-player'); 
+		var $playerContainer = this.sequencer.getContainer().find('.mwseq-player'); 
 		size.width = $playerContainer.width();			
-		if( this.sequenceEdit.videoAspect ){
-			var aspect = this.sequenceEdit.videoAspect.split( ':' );											
+		if( this.sequencer.videoAspect ){
+			var aspect = this.sequencer.videoAspect.split( ':' );											
 			var apectRatio = ( aspect[1] / aspect[0] );
 			size.height = parseInt( size.width * ( aspect[1] / aspect[0] ) );
 		} else {
@@ -118,7 +118,7 @@ mw.SequenceEditPlayer.prototype = {
 	 */
 	getSmilPlayerId: function(){
 		if( !this.smilPlayerId ){				
-			this.smilPlayerId = this.sequenceEdit.getId() + '_smilPlayer';
+			this.smilPlayerId = this.sequencer.getId() + '_smilPlayer';
 		}
 		return this.smilPlayerId;
 	}

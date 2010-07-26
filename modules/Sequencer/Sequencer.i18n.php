@@ -1,6 +1,6 @@
 <?php
 /*
- * Internationalisation for SequenceEdit
+ * Internationalisation for Sequencer
  *
  * @file
  * @ingroup Extensions
@@ -25,8 +25,30 @@ $messages['en'] = array(
 	'mwe-sequenceedit-clip-duration' => 'Clip duration',
 
 	'mwe-sequenceedit-save-sequence' => 'Save sequence',
+	'mwe-sequenceedit-sequence-xml' => 'Sequence smil xml',
 	'mwe-sequenceedit-render-sequence' => 'Render sequence to file',
 	'mwe-sequenceedit-create-sequence' => 'Create sequence',
+
+
+	'mwe-sequenceedit-menu-sequence' => 'Sequence',
+	'mwe-sequenceedit-menu-sequence-new' => 'New',
+	'mwe-sequenceedit-menu-sequence-new-desc' => 'Create a new sequence',
+
+	'mwe-sequenceedit-menu-sequence-open' => 'Open',
+	'mwe-sequenceedit-menu-sequence-open-desc' => 'Open a sequence for editing',
+
+	'mwe-sequenceedit-menu-sequence-save' => 'Save Sequence',
+	'mwe-sequenceedit-menu-sequence-publish' => 'Publish',
+	'mwe-sequenceedit-menu-sequence-renderdisk' => 'Render to disk',
+
+	'mwe-sequenceedit-menu-edit' => 'Edit',
+	'mwe-sequenceedit-menu-edit-undo' => 'Undo',
+	'mwe-sequenceedit-menu-edit-redo' => 'Redo',
+	'mwe-sequenceedit-menu-edit-selectall' => 'Select all',
+
+	'mwe-sequenceedit-menu-view' => 'View',
+	'mwe-sequenceedit-menu-view-history' => 'Revision history',
+	'mwe-sequenceedit-menu-view-smilxml' => 'Sequence SMIL XML',
 
 
 	'mwe-sequenceedit-transition_in' => 'Transition in',

@@ -56,7 +56,7 @@ mw.addMessages( {
 	"mwe-embedplayer-ogg-player-kplayer" : "Kaltura player",
 	"mwe-embedplayer-ogg-player-selected" : "(selected)",
 	"mwe-embedplayer-generic_missing_plugin" : "You browser does not appear to support the following playback type: <b>$1<\/b><br \/>Visit the <a href=\"http:\/\/commons.wikimedia.org\/wiki\/Commons:Media_help\">Playback methods<\/a> page to download a player.<br \/>",
-	"mwe-embedplayer-missing-source" : "No source video was found. Check that your API key includes html5 playable sources",
+	"mwe-embedplayer-missing-source" : "No source video was found",
 	"mwe-embedplayer-for_best_experience" : "For a better video playback experience we recommend the <b><a href=\"http:\/\/www.mozilla.com\/en-US\/firefox\/upgrade.html?from=mwEmbed\">latest Firefox<\/a>.<\/b>",
 	"mwe-embedplayer-do_not_warn_again" : "Dismiss for now.",
 	"mwe-embedplayer-playerSelect" : "Players",

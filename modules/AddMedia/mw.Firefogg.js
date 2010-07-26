@@ -351,9 +351,9 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			gM( 'fogg-for_improved_uploads' ) + ' ' : gM( 'fogg-not-installed') + ' ';
 		
 		// Show the "use latest Firefox" message if necessary
-		mw.log( 'bv: ' + mw.versionIsAtLeast( '1.9.1', $j.browser.version ) );
+		mw.log( 'mw.Firefogg:: browser: ' + mw.versionIsAtLeast( '1.9.1', $j.browser.version ) );
 		if ( !( $j.browser.mozilla && mw.versionIsAtLeast( '1.9.1', $j.browser.version ) ) ) {
-			mw.log( 'show use latest::' + _this.target_use_latest_firefox );
+			mw.log( 'mw.Firefogg::show use latest::' + _this.target_use_latest_firefox );
 			
 			// Add the use_latest if not present: 
 			if ( !this.target_use_latest_firefox ) {
@@ -385,7 +385,8 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			$j( _this.target_use_latest_firefox ).show();
 			return ;
 		}
-		mw.log( 'should show install link');
+		mw.log( 'mw.Firefogg::should show install link');
+		
 		// Otherwise show the "install Firefogg" message
 		var firefoggUrl = _this.getFirefoggInstallUrl();
 		if( firefoggUrl ) {			
@@ -884,6 +885,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	 * into which a video has already been selected.
 	 */
 	getEncoderSettings: function() {
+		// set the current_encoder_settings form the default_encoder_settings if not yet set 
 		if ( this.current_encoder_settings == null ) {
 		
 			// Clone the default settings			
@@ -915,8 +917,15 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				' passthrough:' + settings['passthrough'] );
 				
 			this.current_encoder_settings = settings;
-		}		
-		//Update the format based on codec selection
+		}	
+		
+		// Remove maxSize if width or height is set:
+		if( ( this.current_encoder_settings['width'] || this.current_encoder_settings['height'] ) 
+		    && this.current_encoder_settings['maxSize'] ){
+			delete this.current_encoder_settings['maxSize'];
+		}
+
+		// Update the format based on codec selection
 		if( this.current_encoder_settings['videoCodec'] == 'vp8' ){
 			this.fogg.setFormat('webm');
 		} else {

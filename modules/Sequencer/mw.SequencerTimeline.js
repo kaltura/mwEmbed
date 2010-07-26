@@ -2,12 +2,12 @@
 //Wrap in mw closure to avoid global leakage
 ( function( mw ) {
 	
-mw.SequenceEditTimeline = function( sequenceEdit ) {
-	return this.init( sequenceEdit );
+mw.SequencerTimeline = function( sequencer ) {
+	return this.init( sequencer );
 };
 
 // Set up the mvSequencer object
-mw.SequenceEditTimeline.prototype = {
+mw.SequencerTimeline.prototype = {
 	// Lazy init $timelineTracksContainer
 	$timelineTracksContainer : null,
 	
@@ -20,12 +20,12 @@ mw.SequenceEditTimeline.prototype = {
 		'width' : 120
 	},
 	
-	init: function( sequenceEdit ){
-		this.sequenceEdit = sequenceEdit;
+	init: function( sequencer ){
+		this.sequencer = sequencer;
 	},
 
 	getTimelineContainer: function(){
-		return this.sequenceEdit.getContainer().find('.mwseq-timeline');
+		return this.sequencer.getContainer().find('.mwseq-timeline');
 	},
 	
 	getTracksContainer: function(){
@@ -65,13 +65,13 @@ mw.SequenceEditTimeline.prototype = {
 		this.getTimelineContainer().empty();
 		
 		// Get the top level sequence tracks 
-		var seqTracks = this.sequenceEdit.getSmil().getBody().getSeqElements();		
+		var seqTracks = this.sequencer.getSmil().getBody().getSeqElements();		
 		var trackType = 'video'; 
 		// for now just two tracks first is video second is audio 
 		for( var trackIndex=0; trackIndex < seqTracks.length; trackIndex++){
 			
 			if( trackType == 'audio' ){
-				mw.log("SequenceEditTimeline::Error only two tracks presently suppoted");
+				mw.log("SequencerTimeline::Error only two tracks presently suppoted");
 				break;
 			}
 			// Draw the sequence track
@@ -98,15 +98,12 @@ mw.SequenceEditTimeline.prototype = {
 			//_this.getTracksContainer().find('.timelineClip').removeClass( 'selectedClip' );
 		})
 		// Load and display all clip thumbnails 		
-		this.drawTrackThumbs(  trackIndex, sequenceNode, trackType );
-		
-		
-		
+		this.drawTrackThumbs(  trackIndex, sequenceNode, trackType );		
 	},
 	
 	drawTrackThumbs: function( trackIndex, sequenceNode, trackType ){
 		var _this = this;
-		var smil = this.sequenceEdit.getSmil();
+		var smil = this.sequencer.getSmil();
 		
 		// Get all the refs that are children of the sequenceNode with associated offsets and durations
 		// for now assume all tracks start at zero:
@@ -127,11 +124,11 @@ mw.SequenceEditTimeline.prototype = {
 	getTrackClipInterface: function( trackIndex, sequenceNode, trackType ){
 		var _this = this;
 		// setup a local pointer to the smil engine: 
-		var smil = this.sequenceEdit.getSmil();
+		var smil = this.sequencer.getSmil();
 		// Get all the refs that are children of the sequenceNode with associated offsets and durations
 		// for now assume all tracks start at zero:
 		var startOffset = 0;
-		var clipTrackSetId = this.sequenceEdit.getId() + '_clipTrackSet_' + trackIndex;			
+		var clipTrackSetId = this.sequencer.getId() + '_clipTrackSet_' + trackIndex;			
         
 		var $clipTrackSet = 
 			$j('<ul />')
@@ -181,16 +178,16 @@ mw.SequenceEditTimeline.prototype = {
 				.click(function(){
 					//Add clip to selection
 					_this.handleMultiSelect( this );
-				})								
-			);			
+				})				
+			);						
 		})				
 		// Give the track set a width relative to the number of clips 
 		$clipTrackSet.css('width', ($clipTrackSet.find( '.timelineClip' ).length + 1) * 
-				( this.timelineThumbSize.width + 12 ) 
-			);
+			( this.timelineThumbSize.width + 12 ) 
+		);
 		
 		// Add global TrackClipInterface bindings:
-		var keyBindings = this.sequenceEdit.getKeyBindings();		 
+		var keyBindings = this.sequencer.getKeyBindings();		 
 		keyBindings.bindEvent({
 			'escape': function(){
 				_this.getTimelineContainer().find( '.selectedClip' ).removeClass( 'selectedClip' );
@@ -203,17 +200,17 @@ mw.SequenceEditTimeline.prototype = {
 	},
 	// calls the edit interface passing in the selected clip:
 	editClip: function( selectedClip ){
-		var smil = this.sequenceEdit.getSmil();
+		var smil = this.sequencer.getSmil();
 		// get the smil element for the edit tool:
 		var smilClip = smil.$dom.find('#' + $j( selectedClip ).data('smilId') );		
-		this.sequenceEdit.getEditTools().drawClipEditTool( smilClip );
+		this.sequencer.getEditTools().drawClipEditTool( smilClip );
 	},
 	
 	/**
 	 * @param {Element} selectedClip to be removed
 	 */
 	removeClip: function(selectedClip){
-		var smil = this.sequenceEdit.getSmil();
+		var smil = this.sequencer.getSmil();
 		// remove  clip directly 
 		if( selectedClip ){
 			// Remove from smil dom:
@@ -223,14 +220,14 @@ mw.SequenceEditTimeline.prototype = {
 				$j(this).remove() 
 			});			
 			// Invalidate / update embedPlayer duration: 
-			this.sequenceEdit.getEmbedPlayer().getDuration( true );
+			this.sequencer.getEmbedPlayer().getDuration( true );
 		}
 	},
 	/**
 	 * Remove selected clips and update the smil player
 	 */
 	removeSelectedClips: function(  ){		
-		var smil = this.sequenceEdit.getSmil();
+		var smil = this.sequencer.getSmil();
 		// modify the smil.dom and rebuild
 		this.getTimelineContainer().find( '.selectedClip' ).each(function( inx, selectedClip ){
 			// Remove from smil dom:
@@ -239,11 +236,11 @@ mw.SequenceEditTimeline.prototype = {
 			$j( selectedClip ).remove();			
 		})		
 		// Invalidate / update embedPlayer duration: 
-		this.sequenceEdit.getEmbedPlayer().getDuration( true );
+		this.sequencer.getEmbedPlayer().getDuration( true );
 	},
 	handleReorder: function ( movedClip ){
 		var _this = this;
-		var smil = this.sequenceEdit.getSmil();
+		var smil = this.sequencer.getSmil();
 		var movedIndex = null;
 		
 		var clipIndex = $j( movedClip ).index();
@@ -281,16 +278,16 @@ mw.SequenceEditTimeline.prototype = {
 		});
 		
 		// Invalidate / update embedPlayer duration / clip offsets 
-		_this.sequenceEdit.getEmbedPlayer().getDuration( true );
+		_this.sequencer.getEmbedPlayer().getDuration( true );
 	},
 	/**
 	 * Handle multiple selections based on what clips was just "cliked" 
 	 */
 	handleMultiSelect: function( clickClip ){
-		var keyBindings = this.sequenceEdit.getKeyBindings();
+		var keyBindings = this.sequencer.getKeyBindings();
 		var $target = this.getTimelineContainer();
-		var smil = this.sequenceEdit.getSmil();
-		var embedPlayer = this.sequenceEdit.getEmbedPlayer();
+		var smil = this.sequencer.getSmil();
+		var embedPlayer = this.sequencer.getEmbedPlayer();
 		
 		
 		// Add the selectedClip class to the clickClip
@@ -342,86 +339,96 @@ mw.SequenceEditTimeline.prototype = {
 	},
 	
 	getTimelineClipId: function( $node ){
-		return this.sequenceEdit.getSmil().getAssetId( $node ) + '_timelineClip';
+		return this.sequencer.getSmil().getAssetId( $node ) + '_timelineClip';
 	},
 	
 	// Draw a clip thumb into the timeline clip target
 	drawClipThumb: function ( $node , relativeTime ){		
 		var _this = this;
-		var smil = this.sequenceEdit.getSmil();	
+		var smil = this.sequencer.getSmil();	
 		
+		
+		var $timelineClip = $j( '#' + _this.getTimelineClipId( $node ) );
+		// Add Thumb target and remove loader
+		$timelineClip.empty().append(
+			$j('<div />')					
+			.addClass("thumbTraget"),
+
+			// Edit clip button: 
+			$j('<div />')
+			.css({
+				'position' : 'absolute',
+				'right' : '32px',
+				'bottom' : '5px',
+				'padding' : '2px',
+				'cursor' : 'pointer'
+			})
+			.addClass( 'clipEditLink ui-state-default ui-corner-all' )
+			.append( 
+				$j('<span />')
+				.addClass( 'ui-icon ui-icon-scissors' )
+			)
+			.hide()
+			.buttonHover()
+			.click( function(){
+				_this.editClip( $timelineClip )
+			}),
+			
+			// Remove clip button: 
+			$j('<div />')
+			.css({
+				'position' : 'absolute',
+				'right' : '5px',
+				'bottom' : '5px',
+				'padding' : '2px',
+				'cursor' : 'pointer'
+			})
+			.addClass( 'clipRemoveLink ui-state-default ui-corner-all' )
+			.append( 
+				$j('<span />')
+				.addClass( 'ui-icon ui-icon-trash' )
+			)
+			.hide()
+			.buttonHover()
+			.click( function(){					
+				_this.removeClip( $timelineClip )
+			})
+		)
+		// Add mouse over thumb "edit", "remove"  button
+		.hover(
+			function(){
+				$timelineClip.find('.clipEditLink,.clipRemoveLink').fadeIn();
+			},
+			function(){
+				$timelineClip.find('.clipEditLink,.clipRemoveLink').fadeOut();
+			}
+		)
+		// remove loader
+		.find('.loadingSpinner').remove();
+		
+		var $thumbTarget = $j( '#' + _this.getTimelineClipId( $node ) ).find('.thumbTraget');
+		
+		// Check for a "poster" image use that temporarily while we wait for the video to seek and draw
+		if( $node.attr('poster') ){			
+			var img = new Image();
+			$j( img )
+			.css( {
+				'top': '0px',
+				'position' : 'absolute',
+				'opacity' : '.8',
+				'left': '0px',
+				'height': _this.timelineThumbSize.height
+			})
+			.attr( 'src', smil.getAssetUrl( $node.attr('poster') ) )
+			.load( function(){
+				if( $thumbTarget.children().length == 0 ){
+					$thumbTarget.html(this);	
+				}
+			})				
+		}			
 		
 		// Buffer the asset then render it into the layout target:
-		smil.getBuffer().bufferedSeek( $node, relativeTime, function(){		
-			var $timelineClip = $j( '#' + _this.getTimelineClipId( $node ) );
-			// Add Thumb target and remove loader
-			$timelineClip.append(
-				$j('<div />')					
-				.addClass("thumbTraget"),
-
-				// Edit clip button: 
-				$j('<div />')
-				.css({
-					'position' : 'absolute',
-					'right' : '32px',
-					'bottom' : '5px',
-					'padding' : '2px',
-					'cursor' : 'pointer'
-				})
-				.addClass( 'clipEditLink ui-state-default ui-corner-all' )
-				.append( 
-					$j('<span />')
-					.addClass( 'ui-icon ui-icon-scissors' )
-				)
-				.hide()
-				.buttonHover()
-				.click( function(){
-					_this.editClip( $timelineClip )
-				}),
-				
-				// Remove clip button: 
-				$j('<div />')
-				.css({
-					'position' : 'absolute',
-					'right' : '5px',
-					'bottom' : '5px',
-					'padding' : '2px',
-					'cursor' : 'pointer'
-				})
-				.addClass( 'clipRemoveLink ui-state-default ui-corner-all' )
-				.append( 
-					$j('<span />')
-					.addClass( 'ui-icon ui-icon-trash' )
-				)
-				.hide()
-				.buttonHover()
-				.click( function(){					
-					_this.removeClip( $timelineClip )
-				})
-			)
-			// Add mouse over thumb "edit", "remove"  button
-			.hover(
-				function(){
-					$timelineClip.find('.clipEditLink,.clipRemoveLink').fadeIn();
-				},
-				function(){
-					$timelineClip.find('.clipEditLink,.clipRemoveLink').fadeOut();
-				}
-			)
-			// remove loader
-			.find('.loadingSpinner').remove();
-			
-			var $thumbTarget = $j( '#' + _this.getTimelineClipId( $node ) ).find('.thumbTraget');
-			
-			// Check for a "poster" image use that temporarily while we wait for the video to seek and draw
-			if( $node.attr('poster') ){
-				$thumbTarget.append( 
-					$j('<img />')
-					.attr( 'src', smil.getAssetUrl( $node.attr('poster') ) )
-					.css('height', $thumbTarget.height() )
-				)
-			}					
-			
+		smil.getBuffer().bufferedSeek( $node, relativeTime, function(){			
 			// Add the seek, add to canvas and draw thumb request
 			smil.getLayout().drawElementThumb( $thumbTarget, $node, relativeTime );
 		
@@ -450,7 +457,7 @@ mw.SequenceEditTimeline.prototype = {
 		}
 		// Wrap the track name in a box that matches the trackNames 
 		return $j('<div />')
-				.attr('id', this.sequenceEdit.getId() + '_trackName_' + trackIndex)
+				.attr('id', this.sequencer.getId() + '_trackName_' + trackIndex)
 				.addClass('trackNames ui-corner-all')
 				.append(
 					$trackNameInterface
@@ -467,7 +474,7 @@ mw.SequenceEditTimeline.prototype = {
 	
 	getSequenceTrackId: function( index, sequenceNode ){
 		if( ! $j( sequenceNode ).data('id') ){
-			$j( sequenceNode ).data('id', this.sequenceEdit.getId() + '_sequenceTrack_' + index );
+			$j( sequenceNode ).data('id', this.sequencer.getId() + '_sequenceTrack_' + index );
 		}
 		return  $j( sequenceNode ).data('id');		
 	}

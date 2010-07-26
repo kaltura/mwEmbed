@@ -142,7 +142,7 @@ mw.KAnalytics.prototype = {
 		// When the clip starts to buffer ( not all player types )
 		b( 'bufferStartEvent', 'BUFFER_START' );
 		
-		// When the clip is full bufferd
+		// When the clip is full buffered
 		b( 'bufferEndEvent', 'BUFFER_END' );
 		
 		// When the fullscreen button is pressed
@@ -233,6 +233,6 @@ mw.KAnalytics.prototype = {
 			_this._p100Once = true;
 			_this.sendStatsEvent( 'PLAY_REACHED_100' );
 			
-		}		
+		}
 	}
 }

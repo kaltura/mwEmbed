@@ -112,6 +112,10 @@ mw.Smil.prototype = {
 		mw.log("Error SMIL Dom not available");
 		return;
 	},
+	
+	getXMLString: function(){
+		return (new XMLSerializer()).serializeToString(this.$dom.get(0));		
+	},
 
 	/**
 	 * Render a specific time
@@ -305,7 +309,7 @@ mw.Smil.prototype = {
 	 * @param {string}
 	 *            assetPath Path to asset to be transformed into url
 	 */
-	getAssetUrl : function(assetPath) {
+	getAssetUrl : function( assetPath ) {
 		// Context url is the smil document url:
 		var contextUrl = mw.absoluteUrl(this.smilUrl);
 		return mw.absoluteUrl(assetPath, contextUrl);

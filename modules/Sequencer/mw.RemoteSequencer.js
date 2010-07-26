@@ -10,10 +10,10 @@ mw.addMessageKeys( [
 	"mwe-sequenceedit-create-sequence"
 ]);
 
-mw.RemoteSequenceEdit = function( options ) {
+mw.RemoteSequencer = function( options ) {
 	return this.init( options ); 
 };
-mw.RemoteSequenceEdit.prototype = {
+mw.RemoteSequencer.prototype = {
 	/**
 	* @constructor
 	* @param {Object} options RemoteMwSequencer options
@@ -54,8 +54,8 @@ mw.RemoteSequenceEdit.prototype = {
 	},
 	showEditor: function(){
 		$j('body').append( '<div id="seqcontainer" style="position:absolute;top:5px;bottom:10px;left:10px;right:10px;" />' );
-		mw.load( 'SequenceEdit', function(){ 	 			
-			$j('#seqcontainer').sequenceEdit({
+		mw.load( 'Sequencer', function(){ 	 			
+			$j('#seqcontainer').sequencer({
 	    		'smilSource' : 'SampleEditorSequenceSmil.xml',
 	    		//set the add media wizard to only include commons:   
 	    		'AddMediaConf':{

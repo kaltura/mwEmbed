@@ -124,8 +124,8 @@ function doPageSpecificRewrite() {
 		//console.log( 'spl: ' + typeof mwSetPageToLoading );
 		// If on a view page set content to "loading" 
 		mwSetPageToLoading();
-		loadMwEmbed( [ 'mw.RemoteSequenceEdit' ], function(){
-			var remote = new mw.RemoteSequenceEdit({
+		loadMwEmbed( [ 'mw.RemoteSequencer' ], function(){
+			var remote = new mw.RemoteSequencer({
 				'action': wgAction,
 				'title' : wgTitle,
 				'target' : '#bodyContent'
@@ -394,11 +394,11 @@ function rewrite_for_OggHandler( vidIdList ) {
 								// close the dialog
 								$j(this).dialog( 'close' ).remove();
 							};
-							mw.addDialog( 					
-								decodeURIComponent( apiTitleKey.replace(/_/g, ' ') ),
-								html_out,
-								buttons
-							)
+							mw.addDialog( {				
+								'title' : decodeURIComponent( apiTitleKey.replace(/_/g, ' ') ),
+								'content' : html_out,
+								'buttons' : buttons
+							})
 							// Dialog size setup is a bit strange:							
 							.css( {
 								'height' : dialogHeight + 'px'

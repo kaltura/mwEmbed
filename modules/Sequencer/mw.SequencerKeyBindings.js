@@ -6,28 +6,28 @@
  * jQuery helper for input focus binding 
  */
 ( function( $ ) {
-	$.fn.sequenceEditInput = function( sequenceEdit ) {
+	$.fn.sequencerInput = function( sequencer ) {
 		$j(this)
 			.focus( function(){
-				sequenceEdit.getKeyBindings().onFocus();
+				sequencer.getKeyBindings().onFocus();
 			})
 			.blur( function(){
-				sequenceEdit.getKeyBindings().onBlur();
+				sequencer.getKeyBindings().onBlur();
 			})
 		return this;
 	}		
 } )( jQuery );
 
-mw.SequenceEditKeyBindings = function( sequenceEdit ) {
-	return this.init( sequenceEdit );
+mw.SequencerKeyBindings = function( sequencer ) {
+	return this.init( sequencer );
 };
-mw.SequenceEditKeyBindings.prototype = {
+mw.SequencerKeyBindings.prototype = {
 	// set of key flags:
 	shiftDown: false,
 	ctrlDown: false,
 		
-	init: function( sequenceEdit ){
-		this.sequenceEdit = sequenceEdit;
+	init: function( sequencer ){
+		this.sequencer = sequencer;
 		this.setupKeyBindigs()		
 	},
 	
@@ -66,7 +66,7 @@ mw.SequenceEditKeyBindings.prototype = {
 		var _this = this;
 		// Set up key bindings
 		$j( window ).keydown( function( e ) {
-			mw.log( 'SequenceEditKeyBindings::pushed down on:' + e.which );
+			mw.log( 'SequencerKeyBindings::pushed down on:' + e.which );
 			if ( e.which == 16 )
 				_this.shiftDown = true;
 
@@ -85,7 +85,7 @@ mw.SequenceEditKeyBindings.prototype = {
 
 		} );
 		$j( window ).keyup( function( e ) {
-			mw.log( 'SequenceEditKeyBindings::key up on ' + e.which );
+			mw.log( 'SequencerKeyBindings::key up on ' + e.which );
 			// User let go of "shift" turn off multi-select
 			if ( e.which == 16 )
 				_this.shiftDown = false;

@@ -346,17 +346,17 @@ mw.TimedTextEdit.prototype = {
 						window.location.reload();
 					}
 					//Edit success
-					mw.addDialog( 
-						gM( "mwe-timedtext-upload-text-done"), 
-						gM("mwe-timedtext-upload-text-success"), 
-						buttons
-					)	
+					mw.addDialog( {
+						'title' : gM( "mwe-timedtext-upload-text-done"), 
+						'content' : gM("mwe-timedtext-upload-text-success"), 
+						'buttons' : buttons
+					})	
 				}else{
-					mw.addDialog(
-						gM( "mwe-timedtext-upload-text-fail-title"),
-						gM( "mwe-timedtext-upload-text-fail-desc"),
-						'ok'
-					)
+					mw.addDialog({
+						'title' : gM( "mwe-timedtext-upload-text-fail-title"),
+						'content' :gM( "mwe-timedtext-upload-text-fail-desc"),
+						'buttons' : gM( 'mwe-ok' )
+					})
 				}
 			});
 		})

@@ -277,6 +277,16 @@
 		// Missing key placeholder
 		return '&lt;' + key + '&gt;';
 	}
+	/**
+	 * Check if a message key is defined
+	 * @return {Boolean} true if msg is defined, false if msg is not set 
+	 */
+	mw.Language.isMsgKeyDefined = function( msgKey ){
+		if( messageCache[ msgKey ] ){
+			return true
+		}
+		return false;
+	}
 	
 	/**
 	* Add Supported Magic Words to parser
@@ -425,7 +435,7 @@
 		}
 		return ( typeInt )? parseInt( convertedNumber) : convertedNumber;
 	}
-	
+
 	/**
 	 * Checks if a language key is valid ( is part of languageCodeList )
 	 * @param {String} langKey Language key to be checked

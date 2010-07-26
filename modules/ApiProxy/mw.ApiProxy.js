@@ -582,11 +582,11 @@ mw.ApiProxy = { };
 			gM( 'mwe-remember-loging' )  
 		)
 		
-		mw.addDialog( 
-			gM( 'mwe-proxy-not-ready' ), 
-			$dialogMsg,
-			buttons
-		)
+		mw.addDialog( {
+			'title' : gM( 'mwe-proxy-not-ready' ), 
+			'content' : $dialogMsg,
+			'buttons' : buttons
+		})
 	}	
 	
 	/**

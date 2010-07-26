@@ -5,14 +5,14 @@
 //Wrap in mw closure to avoid global leakage
 ( function( mw ) {
 	
-mw.SequenceEditTools = function( sequenceEdit ) {
-	return this.init( sequenceEdit );
+mw.SequencerTools = function( sequencer ) {
+	return this.init( sequencer );
 };
 
 // Set up the mvSequencer object
-mw.SequenceEditTools.prototype = {
-	init: function(	sequenceEdit ){
-		this.sequenceEdit = sequenceEdit;
+mw.SequencerTools.prototype = {
+	init: function(	sequencer ){
+		this.sequencer = sequencer;
 	},
 	defaultText : gM('mwe-sequenceedit-no_selected_resource'),
 	tools:{
@@ -42,18 +42,18 @@ mw.SequenceEditTools.prototype = {
 		'time' : {
 			update : function( _this, smilClip, attributeName, value){
 				// Validate time
-				var seconds = _this.sequenceEdit.getSmil().parseTime( value );
+				var seconds = _this.sequencer.getSmil().parseTime( value );
 				$j( smilClip ).attr( attributeName, mw.seconds2npt( seconds ) );
 				// Update the clip duration :
-				_this.sequenceEdit.getEmbedPlayer().getDuration( true );
+				_this.sequencer.getEmbedPlayer().getDuration( true );
 				
 				// Seek to "this clip" 
-				_this.sequenceEdit.getEmbedPlayer().setCurrentTime( 
+				_this.sequencer.getEmbedPlayer().setCurrentTime( 
 					$j( smilClip ).data('startOffset')
 				);								
 			},			
 			getSmilVal : function( _this, smilClip, attributeName ){
-				var smil = _this.sequenceEdit.getSmil();	
+				var smil = _this.sequencer.getSmil();	
 				return mw.seconds2npt( 
 						smil.parseTime( 
 							$j( smilClip ).attr( attributeName ) 
@@ -67,7 +67,7 @@ mw.SequenceEditTools.prototype = {
 			'icon' : 'play',
 			'title' : gM('mwe-sequenceedit-preview'),
 			'action': function( _this, smilClip, toolId){				
-				_this.sequenceEdit.getPlayer().previewClip( smilClip );
+				_this.sequencer.getPlayer().previewClip( smilClip );
 			}
 		},
 		'cancel':{
@@ -83,15 +83,15 @@ mw.SequenceEditTools.prototype = {
 				}
 				
 				// Update the clip duration :
-				_this.sequenceEdit.getEmbedPlayer().getDuration( true );
+				_this.sequencer.getEmbedPlayer().getDuration( true );
 				
 				// Update the embed player
-				_this.sequenceEdit.getEmbedPlayer().setCurrentTime( 
+				_this.sequencer.getEmbedPlayer().setCurrentTime( 
 					$j( smilClip ).data('startOffset')
 				);
 
 				// Close / empty the toolWindow
-				_this.sequenceEdit.getEditToolTarget().html(
+				_this.sequencer.getEditToolTarget().html(
 					_this.defaultText
 				)
 			}
@@ -100,7 +100,7 @@ mw.SequenceEditTools.prototype = {
 	editWidgets: {
 		'trimTimeline':{
 			'update': function( _this, target, smilClip ){				
-				var smil = _this.sequenceEdit.getSmil();
+				var smil = _this.sequencer.getSmil();
 				// Update the preview thumbs
 				var clipBeginTime = $j('#editTool_trim_clipBegin').val();
 				if( !clipBeginTime ){
@@ -130,7 +130,7 @@ mw.SequenceEditTools.prototype = {
 			},
 			// Return the trimTimeline edit widget
 			'draw': function( _this, target, smilClip ){
-				var smil = _this.sequenceEdit.getSmil();
+				var smil = _this.sequencer.getSmil();
 				// For now just have a thumbnail and a slider 
 				$j(target).append(
 					$j('<div />')					
@@ -164,7 +164,7 @@ mw.SequenceEditTools.prototype = {
 					// Return a trim tool binded to smilClip id update value events. 
 					$j(target).append(
 						$j('<div />')
-						.attr( 'id', _this.sequenceEdit.id + '_trimTimeline' )
+						.attr( 'id', _this.sequencer.id + '_trimTimeline' )
 						.css({
 							'width': '100%',
 							'margin': '5px'
@@ -214,11 +214,11 @@ mw.SequenceEditTools.prototype = {
 		return 'editTool_' + toolId + '_' + attributeName;
 	},
 	drawClipEditTool: function( smilClip ){
-		$target = this.sequenceEdit.getEditToolTarget();
+		$target = this.sequencer.getEditToolTarget();
  
 		var toolId = '';
 		// get the toolId based on what "ref type" smilClip is:
-		switch( this.sequenceEdit.getSmil().getRefType( smilClip ) ){
+		switch( this.sequencer.getSmil().getRefType( smilClip ) ){
 			case 'video':
 				toolId = 'trim';
 			break;
@@ -341,7 +341,7 @@ mw.SequenceEditTools.prototype = {
 					'size': 6
 				})
 				.data('initialValue', initialValue )
-				.sequenceEditInput( _this.sequenceEdit )
+				.sequencerInput( _this.sequencer )
 				.val( initialValue )
 				.change(function(){					
 					// Run the editableType update function: 
