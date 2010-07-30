@@ -43,6 +43,9 @@ mw.Smil.prototype = {
 
 	// The abstract embed player parent
 	embedPlayer : null,
+	
+	// The jQuery dom object of the smil xml
+	$dom : null,
 
 	/**
 	 * Constructor
@@ -81,13 +84,13 @@ mw.Smil.prototype = {
 	 * Set smil from xml string
 	 * 
 	 * @param {string}
-	 *            SmilXmlString Xml string of smil to be processed
+	 *            SmilXmlString Xml string of smil to be loaded
 	 */
-	loadFromString : function(smilXmlString) {
+	loadFromString : function( smilXmlString ) {
 		// Load the parsed string into the local "dom"
-		this.$dom = $j(smilXmlString);
+		this.$dom = $j( smilXmlString );
 
-		mw.log("Smil::loadFromString: loaded smil dom: " + this.$dom);
+		mw.log("Smil::loadFromString: loaded smil dom: " + this.$dom.length + "\n" + smilXmlString );
 
 		// Clear out the layout
 		this.layout = null;
@@ -101,7 +104,10 @@ mw.Smil.prototype = {
 		// Clear out the "buffer" object
 		this.buffer = null;
 	},
-
+	updateFromString: function( smilXmlString ){
+		var tmpDom = $j( smilXmlString );
+		// merge in xml changes? 
+	},
 	/**
 	 * Internal function to get the jQuery smil dom
 	 */
@@ -143,13 +149,13 @@ mw.Smil.prototype = {
 	
 	/**
 	 * Checks if two times are within the framerate time range 
-	 * useful for results of a seek request no exactly matching
-	 * the seek time.  
+	 * useful for results of a seek request not exactly matching
+	 * the seek time, but within a single frame.
 	 */	
-	isSameFrameTime: function( time1, time2){
+	isSameFrameTime: function( time1, time2 ){
 		var frameRange = 1 / mw.getConfig( 'SmilPlayer.framerate');
 		if ( Math.abs( time1 - time2 ) <  frameRange ) {
-			mw.log( Math.abs( time1 - time2 ) +  ' IS < ' + frameRange );
+			//mw.log( Math.abs( time1 - time2 ) +  ' IS < ' + frameRange );
 			return true;
 		} else {
 			return false;

@@ -67,7 +67,7 @@ mw.SmilBuffer.prototype = {
 			var nodeBuffredTime = relativeStartTime + 
 				( _this.smil.getBody().getClipDuration( smilElement ) * nodeBufferedPercent );
 			
-			//mw.log(" asset:" +  $j( smilElement ).attr('id') + ' is buffred:' + nodeBufferedPercent  + 'buffer time: ' + nodeBuffredTime );
+			//mw.log(" asset:" +  $j( smilElement ).attr('id') + ' is buffered:' + nodeBufferedPercent  + 'buffer time: ' + nodeBuffredTime );
 			
 			
 			// Update min time buffered ( if the element is not 100% buffered ) 			

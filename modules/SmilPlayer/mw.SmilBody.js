@@ -50,8 +50,16 @@ mw.SmilBody.prototype = {
 		if( !$node.attr('id')
 			&& !$node.attr( 'xml:id' )
 		){
-			$node.attr('id', _this.getNodeSmilType( $node ) + '_' + _this.idIndex );
+			var idString = _this.getNodeSmilType( $node ) + '_' + _this.idIndex;
+			// Make sure the id does not already exist ( should be a rare case ) 
+			while( this.$dom.find( '#' + idString ).length != 0 ){
+				_this.idIndex++;
+				idString = _this.getNodeSmilType( $node ) + '_' + _this.idIndex;
+			}
+			// Apply the unique id attribute 
+			$node.attr('id',  idString);
 			mw.log('SmilBody:: gave: ' + $node.get(0).nodeName + ' id: ' + $node.attr('id') );
+			// Increment the index: 
 			_this.idIndex++;
 		}
 		
@@ -409,6 +417,8 @@ mw.SmilBody.prototype = {
 	 * animation, audio, img, text, textstream and video -> 'ref',  
 	 */
 	getNodeSmilType: function( $node ){
+		if( typeof wgMyCoolGlobal != 'undefined')
+			debugger;
 		var blockType = $j( $node ).get(0).nodeName;
 		
 		if( this.smilBlockTypeMap[ blockType ] ){

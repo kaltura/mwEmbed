@@ -65,7 +65,7 @@ mw.EmbedPlayerSmil = {
 	
 	/**
 	 * set the virtual smil volume ( will key all underling assets against this volume )
-	 * ( of course we don't try to normalize across clips anything like that right now )
+	 * ( we can't presently "normalize" across clips )
 	 */
 	setPlayerElementVolume: function( percent ){
 		this.volume = percent;
@@ -80,8 +80,10 @@ mw.EmbedPlayerSmil = {
 		//mw.log('EmbedPlayerSmil::setCurrentTime: ' + time );		
 		// Set "loading" spinner here)
 		if( !hideLoader ){
-			$j( this ).getAbsoluteOverlaySpinner()
-				.attr('id', 'loadingSpinner_' + this.id )
+			if( $j('#loadingSpinner_' + this.id  ).length == 0 ){
+				$j( this ).getAbsoluteOverlaySpinner()
+					.attr('id', 'loadingSpinner_' + this.id )
+			}
 		}
 		// Start seek
 		this.controlBuilder.onSeek();
