@@ -85,7 +85,7 @@ mw.KAnalytics.prototype = {
 			'objectType' : 'KalturaStatsEvent',
 			'partnerId' :	mw.getConfig( 'kPartnerId' ),			
 			'sessionId' : mw.getConfig( 'kSessionId' ),
-			'uiconfId' : 0,			
+			'uiconfId' : 0
 		};		
 		
 		// Set the seek condition:

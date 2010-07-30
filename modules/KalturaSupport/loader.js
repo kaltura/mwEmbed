@@ -36,13 +36,13 @@
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
 	var kalturaSupportRequestSet = [
-		"mw.KWidgetSupport",		
 		"KalturaClientBase",
 		"KalturaClient",
 		"KalturaAccessControlService",
 		"KalturaAccessControlOrderBy",
 		"KalturaAccessControl",
-		"MD5"
+		"MD5",
+		"mw.KWidgetSupport" 
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
@@ -133,8 +133,7 @@
 						// ( some version of kaltura embed code work this way)
 						if( flashvars['playlistAPI.kpl0Url'] ){
 							videoEmbedAttributes['kplaylistid'] = mw.parseUri( flashvars['playlistAPI.kpl0Url'] ).queryKey['playlist_id'];							
-						}
-						
+						}					
 					}
 					
 					// Replace with a mwEmbedKalturaVideoSwap

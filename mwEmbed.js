@@ -1227,17 +1227,18 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		} else {	
 			/**
 			 * Old IE and non-Firebug debug: ( commented out for now )
-			 */			
-			/*
-			 * var log_elm = document.getElementById('mv_js_log'); if(!log_elm) {
-			 * document.getElementsByTagName("body")[0].innerHTML =
-			 * document.getElementsByTagName("body")[0].innerHTML + '<div
-			 * style="position:absolute;z-index:500;bottom:0px;left:0px;right:0px;height:200px;">'+ '<textarea
-			 * id="mv_js_log" cols="120" rows="12"></textarea>'+ '</div>';
-			 * 
-			 * var log_elm = document.getElementById('mv_js_log'); } if(log_elm) {
-			 * log_elm.value+=string+"\n"; }
-			 */	
+			 */						
+			/*var log_elm = document.getElementById('mv_js_log'); 
+			if(!log_elm) {				
+				document.getElementsByTagName("body")[0].innerHTML += '<div ' +
+					'style="position:absolute;z-index:500;bottom:0px;left:0px;right:0px;height:200px;">' + 
+					'<textarea id="mv_js_log" cols="120" rows="12"></textarea>' + 
+				'</div>';
+			}
+			var log_elm = document.getElementById('mv_js_log'); 
+			if(log_elm) {
+				log_elm.value+=string+"\n"; 
+			}*/			
 		}
 	}
 	
@@ -2417,7 +2418,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 /**
  * Set DOM-ready call We copy jQuery( document ).ready here since sometimes
  * mwEmbed.js is included without jQuery and we need our own "ready" system so
- * that mwEmbed interfaces can support async built out and the inclution of
+ * that mwEmbed interfaces can support async built out and the include of
  * jQuery.
  */
 var mwDomIsReady = false;
