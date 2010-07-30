@@ -382,7 +382,9 @@ EmbedPlayerManager.prototype = {
 	* @param {Function} callback Function to be called once players are ready 
 	*/
 	addCallback: function( callback ) {
-		this.callbackFunctions.push( callback );
+		if( typeof callback == 'function' ){
+			this.callbackFunctions.push( callback );
+		}
 	},
 	
 	/**
@@ -665,7 +667,7 @@ EmbedPlayerManager.prototype = {
 			mw.log( "EmbedPlayer::All on-page players ready run playerMannager callbacks" );
 			// Run queued functions 
 			if( _this.callbackFunctions ) {
-				while ( _this.callbackFunctions.length ) {
+				while ( _this.callbackFunctions.length ) {					
 					_this.callbackFunctions.shift()();
 				}
 			}

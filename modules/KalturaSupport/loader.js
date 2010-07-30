@@ -9,8 +9,7 @@
 
 	// For now just store the keys in the javascript  
 	// ( need to get clarity on why this is even needed )
-	mw.setDefaultConfig( {
-		
+	mw.setDefaultConfig( {		
 		'enableKalturaAnalytics' : true,
 		'kalturaStatsServer' : 'http://www.kaltura.com/api_v3/index.php'
 	} );
@@ -256,5 +255,5 @@
 		}
 		return embedSettings;
 	};
-		
+	
 } )( window.mw );
