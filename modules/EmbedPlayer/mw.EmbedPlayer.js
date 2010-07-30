@@ -486,11 +486,13 @@ EmbedPlayerManager.prototype = {
 			}
 							
 			if( waitForMeta ) {						
-				mw.log('EmbedPlayer::WaitForMeta ( video missing height (' + 
+				
+				/*mw.log('EmbedPlayer::WaitForMeta ( video missing height (' + 
 						$j( playerElement ).attr('height') + '), width (' + 
 						$j( playerElement ).attr('width') + ') or duration: ' +
 						$j( playerElement ).attr('duration') 
-				);
+				);*/
+				
 				playerElement.removeEventListener( "loadedmetadata", runPlayerSwap, true );
 				playerElement.addEventListener( "loadedmetadata", runPlayerSwap, true );
 			
