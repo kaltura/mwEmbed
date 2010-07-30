@@ -101,7 +101,7 @@ class ResourceLoader {
 		try {
 			NamedResourceLoader::loadResourcePaths();
 		} catch( Exception $e ) {
-			$this->errorMsg .= $e->getMessage() ;
+			$this->errorMsg .= "loadResourcePaths:" . $e->getMessage() ;
 		}
 
 		// Reset the requestKey:
@@ -182,7 +182,7 @@ class ResourceLoader {
 		if ( $wgUseFileCache && !$this->debug ) {
 			$status = $this->sFileCache->saveToFileCache( $this->output );
 			if ( $status !== true ) {
-				$this->errorMsg .= $status;
+				$this->errorMsg .= "Could not save file to cache::" . $status;
 			}
 		}
 
@@ -190,7 +190,7 @@ class ResourceLoader {
 		if ( $this->errorMsg != '' ) {
 			//just set the content type (don't send cache header)
 			header( 'Content-Type: text/javascript' );
-			echo 'if(console.log)console.log(\'Error With ScriptLoader ::' .
+			echo 'if(console.log)console.log(\'Error With ResourceLoader ::' .
 					 str_replace( "\n", '\'+"\n"+' . "\n'",
 					 	xml::escapeJsString( $this->errorMsg )
 					 ) . '\');'."\n";
@@ -728,7 +728,7 @@ class ResourceLoader {
 		try {
 			NamedResourceLoader::loadResourcePaths();
 		} catch( Exception $e ) {
-			$this->errorMsg .= $e->getMessage() ;
+			$this->errorMsg .= "getPathFromClass: " . $e->getMessage() ;
 		}
 
 		if ( isset( $wgResourceLoaderNamedPaths[ $reqClass ] ) ) {
