@@ -17,7 +17,7 @@ class NamedResourceLoader {
 	private static $combinedLoadersJs = '';
 
 	// Reg Exp that supports extracting classes from loaders
-	private static $classReplaceExp = '/mw\.addResourcePaths\s*\(\s*{(.*)}\s*\)\s*\;/siU';
+	private static $classReplaceExp = '/mw\.addResourcePaths\s*\(\s*{(.*)}\s*\)\s*[\;\n]/siU';
 
 	// Flag to specify if the javascript resource paths have been loaded.
 	private static $classesLoaded = false;

@@ -53,7 +53,7 @@ mw.SequencerPlayer.prototype = {
 			'overlayControls' : false
 		}, function(){
 			// Set the player interface to autoMargin ( need to fix css propagation in embed player) 			
-			$j( '#' + _this.getSmilPlayerId() ).parent('.interface_wrap').css('margin', 'auto');
+			$j( '#' + _this.getSmilPlayerId() ).parent('.mwplayer_interface').css('margin', 'auto');
 			if( callback ){
 				callback();
 			}

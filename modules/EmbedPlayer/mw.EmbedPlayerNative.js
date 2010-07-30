@@ -312,12 +312,12 @@ mw.EmbedPlayerNative = {
 	* Get the embed player time
 	*/
 	getPlayerElementTime: function() {		
-		var _this = this;		
+		var _this = this;	
 		// Make sure we have .vid obj
 		this.getPlayerElement(); 
 		
 		if ( !this.playerElement ) {
-			mw.log( 'could not find video embed: ' + this.id + ' stop monitor' );
+			mw.log( 'Error: mwEmbedPlayer::getPlayerElementTime: missing ' + this.id + ' stop monitor' );
 			return false;
 		}									
 		// Return the playerElement currentTime				
@@ -448,7 +448,7 @@ mw.EmbedPlayerNative = {
 	/**
 	* Get /update the playerElement value 
 	*/ 
-	getPlayerElement: function () {
+	getPlayerElement: function () {		
 		this.playerElement = $j( '#' + this.pid ).get( 0 );
 		return this.playerElement;
 	},
@@ -519,8 +519,8 @@ mw.EmbedPlayerNative = {
 	*/
 	onloadedmetadata: function() {
 		this.getPlayerElement();
-		mw.log( 'f:onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );		
-		if ( ! isNaN( this.playerElement.duration ) ) {
+		if (  this.playerElement && ! isNaN( this.playerElement.duration ) ) {
+			mw.log( 'f:onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );		
 			this.duration = this.playerElement.duration;
 		}
 		

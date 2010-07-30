@@ -54,7 +54,7 @@
 		// "videojs" will include the source javascript and video tag to
 		//	 	rewrite the player on the remote page DOM  
 		//		Video tag embedding is much more mash-up friendly but exposes
-		//		the remote site to the mwEmbed js. 
+		//		the remote site to the mwEmbed javascript and can be a xss issue. 
 		"EmbedPlayer.ShareEmbedMode" : 'object',
 		
 		// Default player skin name

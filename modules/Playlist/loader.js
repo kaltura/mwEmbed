@@ -30,6 +30,7 @@
 		
 	// Module loader ( right now its just a stub for mw.MediaRss )
 	mw.addModuleLoader( 'Playlist', [ "mw.Playlist", "mw.PlaylistHandlerMediaRss" ] );
+		
 	
 } )( window.mw );
 

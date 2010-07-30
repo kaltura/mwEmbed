@@ -31,9 +31,17 @@ mw.Playlist.prototype = {
 		}
 		
 		// Set the sourceHandler if provided
-		if( options.sourceHandler )
+		if( options.sourceHandler ) {
 			this.sourceHandler = options.sourceHandler;
+		}
 		
+
+		// Set binding to disable "waitForMeta" for playlist items ( we know the size and length )
+		$j( mw ).bind( 'addElementWaitForMetaEvent', function(even, waitForMetaObject ){		
+			if( $j( waitForMetaObject[ 'playerElement' ] ).hasClass( 'mwPlaylist') ){
+				waitForMetaObject[ 'waitForMeta' ] = false;
+			}
+		});
 		
 		this.type = ( options.type ) ? 
 			options.type: 
@@ -102,6 +110,7 @@ mw.Playlist.prototype = {
 			
 			// Add the player
 			_this.updatePlayer( _this.clipIndex, function(){
+				
 				// Update the list height ( vertical layout )
 				if( _this.layout == 'vertical' ){
 					var targetListHeight = ( $j( _this.target ).height() - $j( _this.target + ' .media-rss-video-player' ).height() );
@@ -170,6 +179,7 @@ mw.Playlist.prototype = {
 		
 		// Build and output the title
 		var $title = $j('<div />' )
+			.addClass( 'playlist-title')
 			.css( { 
 				'height' : _this.titleHeight,
 				'font-size' : '85%',
@@ -178,14 +188,10 @@ mw.Playlist.prototype = {
 			.text( 
 				_this.sourceHandler.getClipTitle( clipIndex ) 
 			)
-			.addClass( 'ui-state-default ui-widget-header' )		
-			
-		$j( _this.target + ' .media-rss-video-player' )
-			.empty()
-			.append(
-				$title
-			);
+			.addClass( 'ui-state-default ui-widget-header' )
 		
+		$j( _this.target + ' .media-rss-video-player' ).find('.playlist-title').remove( );
+		$j( _this.target + ' .media-rss-video-player' ).prepend( $title );						
 		
 		// Update the player list if present: 			 
 		$j( _this.target + ' .clipItemBlock')
@@ -200,47 +206,79 @@ mw.Playlist.prototype = {
 				'id' : 'mrss_' + this.id + '_' + clipIndex,
 				'poster' : _this.sourceHandler.getClipPoster( clipIndex ) 
 			})
+			.addClass( 'mwPlaylist' )
 			.css(
 				playerSize
 			)
 			// Add custom attributes: 
 			.attr(  _this.sourceHandler.getCustomClipAttributes( clipIndex ) );
 		
-		// if we don't have an api based lookup ( kentryid ) lookup the sources from the 
-		// playlist provider: 
-		if( ! $video.attr( 'kentryid' ) ){
-			this.sourceHandler.getClipSources( clipIndex, function( clipSources ){
-				
-				if( clipSources ){
-					for( var i =0; i < clipSources.length; i++ ){					
-						var $source = $j('<source />')
-							.attr(  clipSources[i] );															
-						$video.append( $source );
-					}
+		// lookup the sources from the playlist provider: 		
+		this.sourceHandler.getClipSources( clipIndex, function( clipSources ){			
+			if( clipSources ){
+				for( var i =0; i < clipSources.length; i++ ){					
+					var $source = $j('<source />')
+						.attr(  clipSources[i] );															
+					$video.append( $source );
 				}
-				_this.addVideoPlayer( $video , callback);
-			});
-		} else {
-			this.addVideoPlayer( $video , callback);
-		}
+			}			
+			_this.addVideoPlayer( $video , callback);
+		});
 	},
 	
 	addVideoPlayer: function( $video , callback){
 		var _this = this;
-		$j( _this.target + ' .media-rss-video-player' ).append( $video );
+		// If on mobile safari just swap the sources ( don't replace the video ) 
+		// ( mobile safari can't javascript start the video ) 
+		// see: http://developer.apple.com/iphone/search/search.php?simp=1&num=10&Search=html5+autoplay
+		var addVideoPlayerToDom = true;				
+		if( mw.isMobileSafari() ){
+			// Check for a current video:	
+			var $inDomVideo = $j( _this.target + ' .media-rss-video-player video' );			
+			if( $inDomVideo.length == 0 ){
+				addVideoPlayerToDom= true;
+			} else {
+				addVideoPlayerToDom = false;
+				// Update the inDomVideo object:
+				// NOTE: this hits a lot of internal stuff should !  
+				// XXX Should refactor to use embedPlayer interfaces!
+				var vidInterface = $j( _this.target + ' .media-rss-video-player' ).find('.mwplayer_interface div').get(0)
+				vidInterface.id = $video.attr('id');
+				vidInterface.pid = 'pid_' + $video.attr('id');
+				vidInterface.duration = null;
+				if( $video.attr('kentryid') ){						
+					vidInterface.kentryid = $video.attr('kentryid');
+				}
+				// Update the current video target source
+				$inDomVideo.attr({
+					'id' : 'pid_' + $video.attr('id'),
+					'src':  $video.find( 'source').attr('src') 
+				});
+				
+			}
+		} else {
+			// Remove the old video player ( non-mobile safari ) 
+			// xxx NOTE: need to check fullscreen support might be better to universally swap the src )
+			$j( _this.target + ' .media-rss-video-player' ).remove( 'video' );
+		}
+		
+		if( addVideoPlayerToDom ) {
+			// replace the video: 
+			$j( _this.target + ' .media-rss-video-player' ).append( $video );
+		}
 		
 		// Update the video tag with the embedPlayer
 		$j.embedPlayers( function(){						
 			// Setup ondone playing binding to play next clip			
-			$j( '#mrss_' + _this.id + '_' + _this.clipIndex ).bind( 'ended', function(event, onDoneActionObject ){										
+			$j( '#mrss_' + _this.id + '_' + _this.clipIndex ).unbind('ended').bind( 'ended', function(event, onDoneActionObject ){										
 				// Play next clip
 				if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
 					// Update the onDone action object to not run the base control done: 
 					onDoneActionObject.runBaseControlDone = false;
 					_this.clipIndex++;
 										
-					// ( if on ipad update the src and don't refresh )						
-					_this.updatePlayer( _this.clipIndex, function(){
+					// update the player and play the next clip						
+					_this.updatePlayer( _this.clipIndex, function(){						
 						_this.play();
 					})					
 					
@@ -249,8 +287,7 @@ mw.Playlist.prototype = {
 					// Update the onDone action object to not run the base control done: 
 					onDoneActionObject.runBaseControlDone = true;
 				}
-			})
-						
+			})			
 			// Run the callback if its set
 			if( callback ){
 				callback();
@@ -340,8 +377,10 @@ mw.Playlist.prototype = {
 	*/
 	play: function(){
 		// Get the player and play:
-		var vid = $j( this.target + ' .media-rss-video-player .interface_wrap').children().get(0);
-		if( vid && vid.play ){
+		var vid = $j('#mrss_' + this.id + '_' + this.clipIndex ).get(0);	
+		//alert( 'play: '+ )
+		if( vid && vid.play ){			
+			vid.load();
 			vid.play();
 		}
 	},

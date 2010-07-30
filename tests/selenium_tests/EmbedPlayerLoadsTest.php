@@ -20,8 +20,8 @@ class EmbedPlayerLoads extends SeleniumTestCase
     
     $this->waitForPageToLoad(10000);
     
-    $this->isElementPresent("//div[@class='interface_wrap k-player']", 10000);
-    $this->isElementPresent("//div[@class='interface_wrap mv-player']", 10000);
+    $this->isElementPresent("//div[@class='mwplayer_interface k-player']", 10000);
+    $this->isElementPresent("//div[@class='mwplayer_interface mv-player']", 10000);
     $this->isElementPresent("//div[@class='ui-state-default play-btn-large']", 10000);
 
 	}
