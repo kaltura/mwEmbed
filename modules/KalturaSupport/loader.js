@@ -176,9 +176,13 @@
 								'uiconfid' : $j( playlistTarget ).attr( 'kuiconfid' ),
 								'widgetid' : $j( playlistTarget ).attr( 'kwidgetid' ),
 								'playlistid':  $j( playlistTarget ).attr( 'kplaylistid' )
-							});							
+							});			
+							// quick non-ui conf check for layout mode							
+							var layout = ( $j( playlistTarget ).attr('width') > 
+											$j( playlistTarget ).attr('height')
+										 )? 'horizontal' : 'vertical';
 							var playlistPlayer = $j( '#' + playlistTarget.id ).playlist({
-								'layout': 'horizontal',
+								'layout': layout,
 								'sourceHandler' : kalturaPlaylistHanlder
 							});  														
 						});

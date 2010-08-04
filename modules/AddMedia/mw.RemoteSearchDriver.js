@@ -74,7 +74,7 @@ mw.addMessages( {
 	"rsd-wiki_commons-title": "Wikimedia Commons",
 	"rsd-wiki_commons": "Wikimedia Commons, an archive of freely-licensed educational media content (images, sound and video clips)",
 
-	"rsd-kaltura-title" : "All sources",
+	"rsd-kaltura-title" : "Kaltura search ( all sources )",
 	"rsd-kaltura" : "Kaltura aggregated search for free-licensed media across multiple search providers",
 
 	"rsd-this_wiki-title" : "This wiki",
@@ -104,6 +104,14 @@ var default_remote_search_options = {
 	// The target button or link that will invoke the search interface
 	'target_invoke_button': null, 
 
+	// Default id for search target input
+	'target_search_input' : '#rsd_q',
+	
+	/**
+	 * Callback functions:  
+	 */
+	'resourceSelectionCallback' : null,
+	
 	/**
 	* import_url_mode
 	*  Can be 'api', 'autodetect', 'remote_link'
@@ -146,8 +154,11 @@ var default_remote_search_options = {
 	// 'nc' ( non-commercial ), 'all' ( all found licenses are "ok")	 
 	'enabled_licenses' : ['pd', 'by', 'sa' ], 
 	
+	// If the input text should be displayed 
+	'displaySearchInput' : true,
+	
 	// If we should display resource icons
-	'displayResourceInfoIcons' : true,
+	'displayResourceInfoIcons' : true,	
 	
 	// If we should display the result format button.
 	'displayResultFormatButton': true,
@@ -166,7 +177,6 @@ var default_remote_search_options = {
 
 	$.fn.addMediaWizard = function( options, callback ) {
 		options['target_invoke_button'] = this.selector;
-		options['instance_name'] = 'rsdMVRS';
 		window['rsdMVRS'] = new mw.RemoteSearchDriver( options );
 		if( callback ) {
 			callback( window['rsdMVRS'] );
@@ -442,7 +452,7 @@ mw.RemoteSearchDriver.prototype = {
 	*/
 	init: function( options ) {
 		var _this = this;
-		mw.log( 'remoteSearchDriver:init' );
+		mw.log( 'RemoteSearchDriver:init' );
 		
 		// Add in a local "id" reference to each provider
 		for ( var provider_id in this.content_providers ) {
@@ -730,11 +740,11 @@ mw.RemoteSearchDriver.prototype = {
 		var query = _this.getDefaultQuery();
 		
 		// Refresh the container if "upload" or "changed query"  
-		if ( query !=  $j( '#rsd_q' ).val() 
+		if ( query !=  $j( this.target_search_input ).val() 
 			|| 
 			this.current_provider == 'upload' )  
 		{
-			$j( '#rsd_q' ).val( query );
+			$j( this.target_search_input ).val( query );
 			_this.updateResults();
 		}
 		// $j(_this.target_container).dialog("open");
@@ -872,12 +882,16 @@ mw.RemoteSearchDriver.prototype = {
 				
 		var $mainContainer = $j( this.target_container );
 
-		var $controlContainer = this.createControlContainer();
+		// Add the provider seleciton
+		$mainContainer.append( this.createProviderSelection() );
 		
-		$mainContainer.append( $controlContainer );
+		// Add the searchInput control if it should be displayed: 
+		if( this.displaySearchInput ){
+			$mainContainer.append( this.createSearchInput() );
+		};
 			
 		this.$resultsContainer = $j('<div />').attr({
-			id: "rsd_results_container"
+			id : "rsd_results_container"
 		});
 		
 		$mainContainer.append( this.$filtersContainer );
@@ -885,7 +899,7 @@ mw.RemoteSearchDriver.prototype = {
 		
 		// Run the default search:
 		if ( this.getDefaultQuery() ){
-			this.updateResults();
+			_this.updateResults();
 		}
 
 		// Add bindings
@@ -920,59 +934,11 @@ mw.RemoteSearchDriver.prototype = {
 		// Setup base cancel button binding
 		this.onCancelResourceEdit();
 	},
-
-	/**
-	 * Creates the search control (i.e. Search textbox, search button, provider filter).
-	 * @return A jQuery-generated HTML element ready to be injected in the main container.
-	 */
-	createControlContainer: function() {
+	
+	createProviderSelection: function(){
 		var _this = this;
-		var $controlContainer = $j( '<div />' )
-			.addClass( "rsd_control_container" );
-
-		var $searchForm = $j( '<form />' ).attr({
-			id : "rsd_form", 
-			action : "javascript:return false"
-		});
-
 		var $providerSelection = $j( '<ul />' )
 			.addClass( "ui-provider-selection" );
-		
-		var $searchButton = $j.button({
-			icon_id: 'search', 
-			text: gM( 'mwe-media_search' ) })
-				.addClass( 'rsd_search_button' )
-				.buttonHover()
-				.click(function () {					
-					if( _this.current_provider == 'upload' ){
-						_this.current_provider = _this.previus_provider; 
-					}
-					_this.updateResults( _this.current_provider, true );
-					return false;
-				});
-			
-		var $searchBox = $j( '<input />' )
-			.addClass( 'ui-corner-all' )
-			.attr({
-				'type' : "text",
-				'tabindex' : 1,
-				'value' : _this.getDefaultQuery(),
-				'maxlength' : 512,
-				'id' : "rsd_q",
-				'name' : "rsd_q",
-				'size' : 20,
-				'autocomplete' : "off"
-			})
-		// Prevent searching for empty input.
-		.keyup(function () {
-			if ( $searchBox.val().length == 0 ) {
-				$searchButton.addClass('ui-button-disabled');
-			}
-			else {
-				$searchButton.removeClass("ui-button-disabled");
-			}
-		});
-		
 		// Add enabled search providers.
 		for ( var providerName in this.content_providers ) {
 			var content_providers = this.content_providers;
@@ -1002,10 +968,61 @@ mw.RemoteSearchDriver.prototype = {
 				$providerSelection.append( $listItem );
 			}
 		}
-		
-		$searchForm.append( $providerSelection );
+		return $providerSelection;
+	},
+	/**
+	 * Creates the search control (i.e. Search textbox, search button, provider filter).
+	 * @return A jQuery-generated HTML element ready to be injected in the main container.
+	 */
+	createSearchInput: function() {
+		var _this = this;
+		var $controlContainer = $j( '<div />' )
+			.addClass( "rsd_control_container" );
+
+		var $searchForm = $j( '<form />' ).attr({
+			id : "rsd_form", 
+			action : "javascript:return false"
+		});
+
+			
+		var $searchButton = $j.button({			
+				icon_id: 'search', 
+				text: gM( 'mwe-media_search' ) 
+			})
+			.addClass( 'rsd_search_button' )
+			.click(function () {					
+				if( _this.current_provider == 'upload' ){
+					_this.current_provider = _this.previus_provider; 
+				}
+				_this.updateResults( _this.current_provider, true );
+				return false;
+			});
+			
+		var $searchBox = $j( '<input />' )
+			.addClass( 'ui-corner-all' )
+			.attr({
+				'type' : "text",
+				'tabindex' : 1,
+				'value' : _this.getDefaultQuery(),
+				'maxlength' : 512,
+				'id' : "rsd_q",
+				'name' : "rsd_q",
+				'size' : 20,
+				'autocomplete' : "off"
+			})
+		// Prevent searching for empty input.
+		.keyup(function () {
+			if ( $searchBox.val().length == 0 ) {
+				$searchButton.addClass('ui-button-disabled');
+			}
+			else {
+				$searchButton.removeClass("ui-button-disabled");
+			}
+		});
+
 		$searchForm.append( $searchBox );
 		$searchForm.append( $searchButton );
+		
 		// Add optional upload buttons.
 		if ( this.content_providers['upload'].enabled) {
 			$uploadButton = $j.button( { icon_id: 'disk', text: gM( 'mwe-upload_tab' ) })
@@ -1323,11 +1340,11 @@ mw.RemoteSearchDriver.prototype = {
 		
 		// Check if we need to update:
 		if ( typeof provider.sObj != 'undefined' ) {
-			if ( provider.sObj.last_query == $j( '#rsd_q' ).val() 
+			if ( provider.sObj.last_query == $j( this.target_search_input ).val() 
 				&& provider.sObj.last_offset == provider.offset ) {
 				
 				mw.log( 'last query is: ' + provider.sObj.last_query + 
-					' matches: ' +  $j( '#rsd_q' ).val() + ' no search needed');
+					' matches: ' +  $j( this.target_search_input ).val() + ' no search needed');
 				
 				// Show search results directly							
 				this.showResults( );
@@ -1344,7 +1361,7 @@ mw.RemoteSearchDriver.prototype = {
 			}
 		}
 
-		if ( $j ( '#rsd_q' ).val().length == 0 ) {
+		if ( $j ( this.target_search_input ).val().length == 0 ) {
 			this.$resultsContainer.empty();
 			this.$resultsContainer.text( 'Please insert a search string above.' );
 			return;
@@ -1525,7 +1542,7 @@ mw.RemoteSearchDriver.prototype = {
 			var context = _this.storeContext( d.getTime() );
 			_this.currentRequest = context();
 			mw.log( "ProviderCallBack Generated " + context() )
-			provider.sObj.getSearchResults( $j( '#rsd_q' ).val() , 
+			provider.sObj.getSearchResults( $j( _this.target_search_input ).val() , 
 				function( resultStatus ) {				
 					mw.log( "ProviderCallBack Received  " + context() );
 					if( _this.currentRequest != context() ) {
@@ -1706,7 +1723,7 @@ mw.RemoteSearchDriver.prototype = {
 			$resultsContainer.append( _this.createResultsFooter() );
 		}
 		
-		mw.log( 'did numResults :: ' + numResults + ' append: ' + $j( '#rsd_q' ).val() );		
+		mw.log( 'did numResults :: ' + numResults + ' append: ' + $j( this.target_search_input ).val() );		
 		
 		// Add "no search results" text
 		$j( '#rsd_no_search_res' ).remove();
@@ -1718,7 +1735,7 @@ mw.RemoteSearchDriver.prototype = {
 			 	);
 			} else {
 				$resultsContainer.append( 
-					gM( 'rsd_no_results', $j( '#rsd_q' ).val() )
+					gM( 'rsd_no_results', $j( this.target_search_input ).val() )
 				) ;
 			}
 		}
@@ -1890,7 +1907,15 @@ mw.RemoteSearchDriver.prototype = {
 		// Resource click action: (bring up the resource editor)
 		$j( '.rsd_res_item' ).unbind().click( function() {		
 			var resource = _this.getResourceFromId( $j( this ).attr( "id" ) );
-			_this.showResourceEditor( resource );
+			
+			// xxx These hooks should really be managed via bindings not options like this: 
+			var showResourceEditor = true;
+			if( typeof _this.resourceSelectionCallback == 'function' ){
+				showResourceEditor = _this.resourceSelectionCallback( resource );
+			} 
+			if( showResourceEditor ){
+				_this.showResourceEditor( resource );
+			}
 			return false;
 		} )
 		// Add a "bind" class

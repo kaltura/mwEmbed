@@ -118,16 +118,21 @@ mw.Playlist.prototype = {
 					$j( _this.target + ' .media-rss-video-list' ).css( {
 						'height' : targetListHeight,
 						'width' : '100%'
-					} ).fadeIn();		
+					} )
 				} else {
 					var targetListWidth = ( $j( _this.target ).width() - $j( _this.target + ' .media-rss-video-player' ).width() );
 					mw.log( 'targetListWidth:' + $j( _this.target ).width() + ' - pw: ' +   $j( _this.target + ' .media-rss-video-player' ).width()  + ' = '  + targetListWidth );
 					$j( _this.target + ' .media-rss-video-list').css( {
 						'width' : targetListWidth,
 						'height' : '100%'
-					} )
-					.fadeIn();					
-				}					
+					} )			
+				}	
+				// show the video list and apply the swipe binding 
+				$j( _this.target + ' .media-rss-video-list')
+					.fadeIn()
+				if( mw.isMobileSafari() ){			
+					iScroll( $j( _this.target + ' .media-rss-video-list').get(0)
+				}
 			}  );
 										
 					

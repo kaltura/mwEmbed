@@ -6,6 +6,7 @@
 ( function( mw ) {
 
 	mw.addResourcePaths( {
+		"iScroll" : "iScroll.js",
 		"mw.Playlist" : "mw.Playlist.js",
 		"mw.PlaylistHandlerMediaRss" : "mw.PlaylistHandlerMediaRss.js"
 	});
@@ -28,8 +29,15 @@
 		'Playlist.defaultType' : 'application/rss+xml'
 	} );
 		
-	// Module loader ( right now its just a stub for mw.MediaRss )
-	mw.addModuleLoader( 'Playlist', [ "mw.Playlist", "mw.PlaylistHandlerMediaRss" ] );
+	// Module loader 
+	mw.addModuleLoader( 'Playlist', function(){
+		var resourceList = ["mw.Playlist", "mw.PlaylistHandlerMediaRss" ]
+		// xxx should detect touch support rather than mobile safari check
+		if( mw.isMobileSafari() ){			
+			resourceList.push( "iScroll" );
+		}
+		return resourceList;
+	});
 		
 	
 } )( window.mw );
