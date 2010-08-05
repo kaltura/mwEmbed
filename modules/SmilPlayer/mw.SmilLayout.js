@@ -81,7 +81,7 @@ mw.SmilLayout.prototype = {
 	drawElement: function( smilElement ) {
 		var _this = this;		
 		// Check for quick "show" path:
-		var $targetElement = this.$rootLayout.find( '#' + this.smil.getAssetId( smilElement ) ) 
+		var $targetElement = this.$rootLayout.find( '#' + this.smil.getPageDomId( smilElement ) ) 
 		if( $targetElement.length ){
 			$targetElement.show();
 			return ;
@@ -98,9 +98,9 @@ mw.SmilLayout.prototype = {
 		}
 		
 		// Check that the element is already in the dom
-		var $targetElement =  $regionTarget.find( '#' + this.smil.getAssetId( smilElement ) );
+		var $targetElement =  $regionTarget.find( '#' + this.smil.getPageDomId( smilElement ) );
 		if( $targetElement.length == 0 ){
-			mw.log(" drawElement:: " + this.smil.getAssetId( smilElement ) );				
+			mw.log(" drawElement:: " + this.smil.getPageDomId( smilElement ) );				
 			// Append the Smil to the target region
 			$regionTarget.append( 
 				_this.getSmilElementHtml( smilElement )
@@ -114,6 +114,7 @@ mw.SmilLayout.prototype = {
 	},
 	
 	drawElementThumb: function( $target, $node, relativeTime ){			
+		mw.log('SmilLayout::drawElementThumb: ' + relativeTime );
 		// parse the time incase it came in as human input
 		relativeTime = this.smil.parseTime( relativeTime );
 		switch ( this.smil.getRefType( $node )){
@@ -144,7 +145,7 @@ mw.SmilLayout.prototype = {
 	getVideoCanvasThumb: function($target, $node, relativeTime ){
 		var _this = this;
 		var naturaSize = {};					
-		var drawElement = $j( '#' + this.smil.getAssetId( $node ) ).get(0);	
+		var drawElement = $j( '#' + this.smil.getPageDomId( $node ) ).get(0);	
 		
 		var drawFrame = function( drawElement ){
 			if( !drawElement ){
@@ -186,7 +187,7 @@ mw.SmilLayout.prototype = {
 			$tmpFrameNode.attr('id', $node.attr('id') + '_tmpFrameNode' );				
 			this.smil.getBuffer().bufferedSeek( $tmpFrameNode, relativeTime, function(){
 				// update the drawElement 
-				drawElement = $j( '#' + _this.smil.getAssetId( $tmpFrameNode ) ).get(0);
+				drawElement = $j( '#' + _this.smil.getPageDomId( $tmpFrameNode ) ).get(0);
 				drawFrame( drawElement );
 				// remove the temporary node from dom
 				$j( drawElement ).remove();
@@ -218,7 +219,7 @@ mw.SmilLayout.prototype = {
 	*/	
 	hideElement: function( smilElement ){
 		// Check that the element is already in the dom
-		var $targetElement = this.$rootLayout.find( '#' + this.smil.getAssetId( smilElement ) );
+		var $targetElement = this.$rootLayout.find( '#' + this.smil.getPageDomId( smilElement ) );
 		if( $targetElement.length ){
 			// Issue a quick hide request
 			$targetElement.hide();
@@ -255,7 +256,7 @@ mw.SmilLayout.prototype = {
 				smilType + ' of type ' + $j( smilElement ).attr( 'type' ) );
 				
 		return $j('<span />')
-				.attr( 'id' , this.smil.getAssetId( smilElement ) )
+				.attr( 'id' , this.smil.getPageDomId( smilElement ) )
 				.css( {
 					'position' : 'absolute',
 					'zindex' : 9999 // xxx need to clean up z-index system
@@ -269,7 +270,7 @@ mw.SmilLayout.prototype = {
 	getSmilVideoHtml: function( smilElement ){
 		return $j('<video />')
 			.attr( {
-				'id' : this.smil.getAssetId( smilElement ), 
+				'id' : this.smil.getPageDomId( smilElement ), 
 				'src' : this.smil.getAssetUrl( $j( smilElement ).attr( 'src' ) )
 			} )
 			.addClass( 'smilFillWindow' )
@@ -281,7 +282,7 @@ mw.SmilLayout.prototype = {
 	getSmilAudioHtml: function ( smilElement ){
 		return $j('<audio />')
 		.attr( {
-			'id' : this.smil.getAssetId( smilElement ), 
+			'id' : this.smil.getPageDomId( smilElement ), 
 			'src' : this.smil.getAssetUrl( $j( smilElement ).attr( 'src' ) )
 		} )
 		.css( 'display', 'none');
@@ -357,7 +358,7 @@ mw.SmilLayout.prototype = {
 		
 		// Return the cdata		
 		return $j('<div />')
-			.attr( 'id' , this.smil.getAssetId( smilElement ) )
+			.attr( 'id' , this.smil.getPageDomId( smilElement ) )
 			// Wrap in font-size percentage relative to virtual size
 			.css( {
 				'font-size': ( scalePercent *100 ) + '%' 
@@ -387,7 +388,7 @@ mw.SmilLayout.prototype = {
 
 		// Return the htmlElement 
 		return $j('<span />')
-			.attr( 'id' , this.smil.getAssetId( textElement ) )
+			.attr( 'id' , this.smil.getPageDomId( textElement ) )
 			// Wrap in font-size percentage relative to virtual size
 			.css( 'font-size',  ( ( this.targetWidth / this.getVirtualWidth() )*100 ) + '%' )
 			.html(  
@@ -433,7 +434,7 @@ mw.SmilLayout.prototype = {
 		mw.log( "Add image:" + this.smil.getAssetUrl( $j( imgElement ).attr( 'src' ) ) );
 		var $image = $j('<img />')
 		.attr( {
-			'id' : this.smil.getAssetId( imgElement ), 
+			'id' : this.smil.getPageDomId( imgElement ), 
 			'src' : this.smil.getAssetUrl( $j( imgElement ).attr( 'src' ) )
 		} );
 		if( $image.get(0).naturalHeight ){

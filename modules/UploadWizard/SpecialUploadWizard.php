@@ -13,7 +13,7 @@ class SpecialUploadWizard extends SpecialPage {
 
 	// $request is the request (usually wgRequest)
 	// $par is everything in the URL after Special:UploadWizard. Not sure what we can use it for
-    public function __construct( $request=null ) {
+	public function __construct( $request=null ) {
 		global $wgEnableJS2, $wgEnableAPI, $wgRequest;
 
 		if (! $wgEnableJS2) {
@@ -31,9 +31,14 @@ class SpecialUploadWizard extends SpecialPage {
 
 		$this->simpleForm = new UploadWizardSimpleForm();
 		$this->simpleForm->setTitle( $this->getTitle() );
-    }
+	}
 
-	public function execute() {
+	/**
+	 * Replaces default execute method
+	 * Checks whether uploading enabled, user permissions okay, 
+	 * @param subpage, e.g. the "foo" in Special:UploadWizard/foo. 
+	 */
+	public function execute( $subPage ) {
 		global $wgUser, $wgOut, $wgMessageCache;
 
 		# Check uploading enabled
@@ -82,19 +87,17 @@ class SpecialUploadWizard extends SpecialPage {
 		$this->simpleForm->show();
 		$wgOut->addHTML('</noscript>');
 
-
-		//$j('#firstHeading').html("Upload wizard");
-
-		$this->addJS();
+		$this->addJS( $subPage );
 	}
 
 	/**
 	 * Adds some global variables for our use, as well as initializes the UploadWizard
+	 * @param subpage, e.g. the "foo" in Special:UploadWizard/foo
 	 */
-	public function addJS() {
+	public function addJS( $subPage ) {
 		global $wgUser, $wgOut;
 		global $wgUseAjax, $wgAjaxLicensePreview, $wgEnableAPI;
-		global $wgEnableFirefogg, $wgFileExtensions, $wgCanonicalNamespaceNames;
+		global $wgEnableFirefogg, $wgFileExtensions;
 
 		$wgOut->addScript( Skin::makeVariablesScript( array(
 			// uncertain if this is relevant. Can we do license preview with API?
@@ -105,26 +108,18 @@ class SpecialUploadWizard extends SpecialPage {
 			// what is acceptable in this wiki
 			'wgFileExtensions' => $wgFileExtensions,
 
+			// XXX page should fetch its own edit token
 			// our edit token
 			'wgEditToken' => $wgUser->editToken(),
+		
+			'wgSubPage' => $subPage
 
-			// URL prefixes in this MediaWiki, e.g. images under Image:
-			'wgCanonicalNamespaceNames' => $wgCanonicalNamespaceNames 
-
-			// 'wgFilenamePrefixBlacklist' => UploadBase::getFilenamePrefixBlacklist();
-
-
-			// in the future, we ought to be telling JS land other things,
-			// like: requirements for publication, acceptable licenses, etc.
+			// XXX need to have a better function for testing viability of a filename
+			// 'wgFilenamePrefixBlacklist' => UploadBase::getFilenamePrefixBlacklist()
 
 			) )
 		);
 
-
-//
-//		$initScript = <<<EOD
-//EOD;
-//		$wgOut->addScript( Html::inlineScript( $initScript ) );
 		// not sure why -- can we even load libraries with an included script, or does that cause things to be out of order?
 		global $wgScriptPath;
 		$wgOut->addNamedResource( 'UploadWizardPage', 'page');

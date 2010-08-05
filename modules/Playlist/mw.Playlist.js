@@ -79,7 +79,7 @@ mw.Playlist.prototype = {
 		
 		this.loadPlaylistHandler( function( playlistHandler ){			
 			mw.log("mw.Playlist::loaded playlist handler");
-			// check if load failed or empty playlist
+			// Check if load failed or empty playlist
 			if( _this.sourceHandler.getClipList().length == 0 ){
 				$j( _this.target ).empty().text( gM('mwe-playlist-empty') )
 				return ;	
@@ -94,14 +94,21 @@ mw.Playlist.prototype = {
 					.css({
 						'float' : 'left'
 					})
-				,
-				$j( '<div />')					
-					.addClass( 'media-rss-video-list' )					
+				,				
+				$j( '<div />')		
+					.addClass( 'media-rss-video-list-wrapper' )									
 					.css({
-						'float' : 'right',
-						'overflow-y' : 'auto' ,
-						'overflow-x' : 'hidden'
-					})			
+						'position' : 'relative',
+					    'z-index' : '1',
+					    'width': '400px',
+					    'height': '300px',
+					    'overflow' : 'auto'
+					})
+					.append( 
+						$j( '<div />')
+						.addClass( 'media-rss-video-list' )
+						.attr('id', _this.id + '_videolist')
+					)
 					.hide()		
 			);
 			
@@ -113,27 +120,27 @@ mw.Playlist.prototype = {
 				
 				// Update the list height ( vertical layout )
 				if( _this.layout == 'vertical' ){
-					var targetListHeight = ( $j( _this.target ).height() - $j( _this.target + ' .media-rss-video-player' ).height() );
-					mw.log( ' targetHeight: ' + $j( _this.target ).height()  + ' - ' + $j( _this.target + ' .media-rss-video-player' ).height() + ' = ' + targetListHeight );
-					$j( _this.target + ' .media-rss-video-list' ).css( {
+					var targetListHeight = ( $j( _this.target ).height() - $j( _this.target + ' .media-rss-video-player' ).height() );				
+					$j( _this.target + ' .media-rss-video-list-wrapper' ).css( {
 						'height' : targetListHeight,
 						'width' : '100%'
 					} )
 				} else {
 					var targetListWidth = ( $j( _this.target ).width() - $j( _this.target + ' .media-rss-video-player' ).width() );
-					mw.log( 'targetListWidth:' + $j( _this.target ).width() + ' - pw: ' +   $j( _this.target + ' .media-rss-video-player' ).width()  + ' = '  + targetListWidth );
-					$j( _this.target + ' .media-rss-video-list').css( {
+					$j( _this.target + ' .media-rss-video-list-wrapper').css( {
 						'width' : targetListWidth,
 						'height' : '100%'
 					} )			
-				}	
-				// show the video list and apply the swipe binding 
-				$j( _this.target + ' .media-rss-video-list')
-					.fadeIn()
-				if( mw.isMobileSafari() ){			
-					iScroll( $j( _this.target + ' .media-rss-video-list').get(0)
 				}
-			}  );
+				// show the video list and apply the swipe binding 
+				$j( _this.target ).find('.media-rss-video-list-wrapper').fadeIn();				
+				if( mw.isMobileSafari() ){			
+					document.addEventListener('touchmove', function(e){ e.preventDefault(); });							
+					var myScroll = iScroll( _this.id + '_videolist' );		
+					setTimeout(function () { myScroll.refresh(); }, 0);
+				}
+				
+			});
 										
 					
 		});	

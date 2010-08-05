@@ -27,7 +27,7 @@ mw.SmilTransitions.prototype = {
 			if( transitionDuration > animateTime  ){				
 				var percent = animateTime / transitionDuration;
 				/* mw.log("SmilTransitions: " + $j( smilElement ).attr( 'transIn' ) + " in range for " + 
-						this.smil.getAssetId( smilElement ) + " draw:" + percent );
+						this.smil.getPageDomId( smilElement ) + " draw:" + percent );
 				*/
 				this.drawTransition( percent, $transition, smilElement );	
 				transitionInRange = true;
@@ -142,13 +142,13 @@ mw.SmilTransitions.prototype = {
 			},
 			'crossfade': function( _this, percent, $transition, smilElement ){
 				// fade "ourselves" ... in cases of overlapping timelines this will create a true cross fade
-				$j( '#' + _this.smil.getAssetId( smilElement )  ).css( 'opacity', percent );
+				$j( '#' + _this.smil.getPageDomId( smilElement )  ).css( 'opacity', percent );
 			}
 		}		
 	},
 	
 	getTransitionOverlayId: function( $transition, smilElement) {
-		 return this.smil.getAssetId( smilElement ) + '_' + $transition.attr('id');	
+		 return this.smil.getPageDomId( smilElement ) + '_' + $transition.attr('id');	
 	}
 	
 

@@ -603,7 +603,6 @@ function mwCheckForGadget(){
 		.css({
 			'font-size': '90%'
 		})
-		.buttonHover()
 		.click(function (){
 			if( !wgUserName ){
 				$j( this )

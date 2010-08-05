@@ -16,8 +16,7 @@ mw.SwarmTransport = {
 			// Setup local reference to embedPlayer interface
 			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
 											
-			// Setup the "embedCode" binding to swap in an updated url
-			
+			// Setup the "embedCode" binding to swap in an updated url			
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {		
 				// Confirm SwarmTransport add-on is available ( defines swarmTransport var )  
 				if( typeof window['swarmTransport'] != 'undefined' ){					
@@ -31,7 +30,7 @@ mw.SwarmTransport = {
 			} );
 			
 			// Check if we have a "recommend" binding and provide an xpi install link			
-			mw.log('bind::addControlBindingsEvent');
+			mw.log('SwarmTransport::bind:addControlBindingsEvent');
 			$j( embedPlayer ).bind( 'addControlBindingsEvent', function(){				
 				if( mw.getConfig( 'SwarmTransport.recommend' ) &&  
 					typeof window['swarmTransport'] == 'undefined' &&
@@ -74,8 +73,9 @@ mw.SwarmTransport = {
 		// Setup the torrent request:
 		var torrentLookupRequest = {
 			'url' : mw.absoluteUrl( source.getSrc() )
-		};
-				
+		}
+
+		mw.log( 'SwarmTransport:: lookup torrent url: ' + mw.getConfig( 'SwarmTransport.torrentLookupUrl' ) + "\n" + mw.absoluteUrl( source.getSrc() ));
 		// Setup function to run in context based on callback result
 		$j.getJSON(
 			mw.getConfig( 'SwarmTransport.torrentLookupUrl' ) + '?jsonp=?', 

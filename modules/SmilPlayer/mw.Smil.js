@@ -86,33 +86,41 @@ mw.Smil.prototype = {
 	 * @param {string}
 	 *            SmilXmlString Xml string of smil to be loaded
 	 */
-	loadFromString : function( smilXmlString ) {
+	loadFromString: function( smilXmlString ) {
 		// Load the parsed string into the local "dom"
 		this.$dom = $j( smilXmlString );
-
 		mw.log("Smil::loadFromString: loaded smil dom: " + this.$dom.length + "\n" + smilXmlString );
-
-		// Clear out the layout
-		this.layout = null;
-
-		// Clear out the body
-		this.body = null;
-
-		// Clear out the top level duration
-		this.duration = null;
-
-		// Clear out the "buffer" object
-		this.buffer = null;
 	},
 	updateFromString: function( smilXmlString ){
-		var tmpDom = $j( smilXmlString );
-		// merge in xml changes? 
+		delete this.$dom; 
+		// jQuery strips some html native tags when parsing xml passed into jQuery 
+		// since smil has html tags ( "body" "head" ) we need to first convert it to
+		// an xml object:: 
+		this.$dom = $j( this.getXMLDomObject( smilXmlString ) );
+		
+		// Remove any non-smil nodes that are in the page dom
+		this.getBody().syncPageDom();
 	},
+	// simple XML DOMParser object parser wrapper
+	// xxx Add error handling 
+	getXMLDomObject: function( smilXmlString ){
+		if (window.DOMParser){
+			parser=new DOMParser();
+			xmlDoc=parser.parseFromString(smilXmlString, "text/xml");
+		} else // Internet Explorer 
+		{
+			xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+			xmlDoc.async="false";
+			xmlDoc.loadXML( smilXmlString );
+		}
+		return xmlDoc;
+	},
+	
 	/**
 	 * Internal function to get the jQuery smil dom
 	 */
 	getDom : function() {
-		if (this.$dom) {
+		if ( this.$dom ) {
 			return this.$dom;
 		}
 		mw.log("Error SMIL Dom not available");
@@ -131,7 +139,7 @@ mw.Smil.prototype = {
 		this.getLayout().setupLayout(this.embedPlayer.getRenderTarget());
 
 		// Update the render target with bodyElements for the requested time
-		this.getBody().renderTime(time);
+		this.getBody().renderTime( time );
 
 		// Wait until buffer is ready and run the callback
 		this.getBuffer().addAssetsReadyCallback(callback);
@@ -269,11 +277,12 @@ mw.Smil.prototype = {
 		}
 		return this.duration;
 	},
+	
 	removeById: function ( smilElementId ) {
 		var $smilElement =  this.$dom.find( '#' + smilElementId );
 
 		// Remove from layout
-		this.getLayout().getRootLayout().find( '#' + this.getAssetId( $smilElement ) )
+		this.getLayout().getRootLayout().find( '#' + this.getPageDomId( $smilElement ) )
 			.remove();
 		
 		// Remove from dom
@@ -293,18 +302,33 @@ mw.Smil.prototype = {
 	 * @param {Object}
 	 *            smilElement Element to get id for
 	 */
-	getAssetId : function(smilElement) {
-		if (!$j(smilElement).attr('id')) {
+	getPageDomId : function( smilNode ) {
+		if (! $j(smilNode).attr('id') ) {
 			mw.log("Error: getAssetId smilElement missing id ");
 			return false;
 		}
-		if (!this.embedPlayer || !this.embedPlayer.id) {
+		var embedPlayer = this.getEmbedPlayer();
+		if ( !embedPlayer || !embedPlayer.id ) {
 			mw.log("Error: getAssetId missing parent embedPlayer");
 			return false;
 		}
-		return this.embedPlayer.id + '_' + $j(smilElement).attr('id');
+		return embedPlayer.id + '_' + $j( smilNode ).attr('id');
 	},
 	
+	/**
+	 * Get the smil id for an pageNode 
+	 */
+	getSmilDomId: function ( pageNode ){
+		if( !$j( pageNode ).length ) {
+			mw.log("Error: getSmilDomId for pageNode that is not in dom");
+			return false;
+		}
+		return $j( pageNode ).attr('id').replace( '/' + this.getEmbedPlayer().id + '_/', '');
+	},
+	
+	/**
+	 * get the embed player
+	 */
 	getEmbedPlayer: function(){
 		return this.embedPlayer;
 	},

@@ -111,7 +111,7 @@
 	* mwEmbed player is setup before any other mw.ready calls
 	*/
 	mw.addSetupHook( function( callback ) {
-		mw.log( 'Document::' + mw.documentHasPlayerTags() );
+		mw.log( 'EmbedPlayer:: Document::' + mw.documentHasPlayerTags() );
 		if( mw.documentHasPlayerTags() ) {
 			var  rewriteElementCount = 0;
 			

@@ -21,18 +21,18 @@ mw.SmilAnimate.prototype = {
 	 */
 	pauseAnimation: function( smilElement ){		
 		// Check if the element is in the html dom: 
-		if( !$j ( '#' + this.smil.getAssetId( smilElement ) ).length ){
+		if( !$j ( '#' + this.smil.getPageDomId( smilElement ) ).length ){
 			return ;
 		}
 		// Pause the animation of a given element ( presently just video )		
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'video':
-				$j ( '#' + this.smil.getAssetId( smilElement ) ).get( 0 ).pause();
+				$j ( '#' + this.smil.getPageDomId( smilElement ) ).get( 0 ).pause();
 			break;
 		}
 		// non-video elements just pause by clearing any animation loops
-		if( this.animateInterval[ this.smil.getAssetId( smilElement ) ]  ){
-			clearInterval( this.animateInterval[ this.smil.getAssetId( smilElement ) ]  );
+		if( this.animateInterval[ this.smil.getPageDomId( smilElement ) ]  ){
+			clearInterval( this.animateInterval[ this.smil.getPageDomId( smilElement ) ]  );
 		}
 	},
 	
@@ -45,12 +45,12 @@ mw.SmilAnimate.prototype = {
 		// Get all the elements for the current time:
 		var maxOutOfSync = 0;
 		this.smil.getBody().getElementsForTime( time, function( smilElement ){
-			//mw.log( 'check element: '+ time + ' ' +  _this.smil.getAssetId( smilElement ) );
+			//mw.log( 'check element: '+ time + ' ' +  _this.smil.getPageDomId( smilElement ) );
 			// var relativeTime = time - smilElement.parentTimeOffset;
 			var relativeTime = time - $j( smilElement ).data ( 'startOffset' );
 			switch( _this.smil.getRefType( smilElement ) ){
 				case 'video':
-					var vid = $j ( '#' + _this.smil.getAssetId( smilElement ) ).get( 0 );
+					var vid = $j ( '#' + _this.smil.getPageDomId( smilElement ) ).get( 0 );
 					var vidTime = ( !vid || !vid.currentTime )? 0 : vid.currentTime;					
 					//mw.log( "getPlaybackSyncDelta:: video time should be: " + relativeTime + ' video time is: ' + vidTime );
 					
@@ -102,13 +102,13 @@ mw.SmilAnimate.prototype = {
 		// We have a delta spawn an short animateInterval 
 		
 		// Clear any old animation loop	( can be caused by overlapping play requests or slow animation )	
-		clearInterval( this.animateInterval[ this.smil.getAssetId( smilElement ) ]  );
+		clearInterval( this.animateInterval[ this.smil.getPageDomId( smilElement ) ]  );
 		
 		// Start a new animation interval  		 
 		var animationStartTime = new Date().getTime();
 		var animateTimeDelta =  0;
 		
-		this.animateInterval[ this.smil.getAssetId( smilElement ) ] = 
+		this.animateInterval[ this.smil.getPageDomId( smilElement ) ] = 
 			setInterval(
 				function(){
 					var timeElapsed =  new Date().getTime() - animationStartTime;
@@ -118,7 +118,7 @@ mw.SmilAnimate.prototype = {
 					// See if the animation has expired: 
 					if( animateTimeDelta > deltaTime || timeElapsed > deltaTime ){
 						// Stop animating:
-						clearInterval( _this.animateInterval[ _this.smil.getAssetId( smilElement ) ]  );
+						clearInterval( _this.animateInterval[ _this.smil.getPageDomId( smilElement ) ]  );
 						return ;
 					}
 					
@@ -218,7 +218,7 @@ mw.SmilAnimate.prototype = {
 	 */
 	transformVideoForTime: function( smilElement, animateTime, callback ){
 		// Get the video element 
-		var assetId = this.smil.getAssetId( smilElement );
+		var assetId = this.smil.getPageDomId( smilElement );
 		var vid = $j ( '#' + assetId ).get( 0 );		
 		
 		var videoSeekTime = animateTime;
@@ -243,7 +243,7 @@ mw.SmilAnimate.prototype = {
 	 * Used to support video playback
 	 */
 	transformVideoForPlayback: function( smilElement, animateTime ){ 
-		var $vid = $j ( '#' + this.smil.getAssetId( smilElement ) );	
+		var $vid = $j ( '#' + this.smil.getPageDomId( smilElement ) );	
 		
 		// Set activePlayback flag ( informs edit and buffer actions ) 
 		$j( smilElement ).data('activePlayback', true)
@@ -303,7 +303,7 @@ mw.SmilAnimate.prototype = {
 				
 		// Update the text value target
 		// xxx need to profile update vs check value
-		$j( '#' + this.smil.getAssetId( textElement )  )
+		$j( '#' + this.smil.getPageDomId( textElement )  )
 		.html( 
 			$j('<span />')
 			// Add the text value
@@ -338,7 +338,7 @@ mw.SmilAnimate.prototype = {
 			if( animateTime == 0 ) {
 				// just a hack for now ( should read from previous animation or from source attribute
 				// this.updateElementLayout( smilImgElement, { 'top':1,'left':1,'width':1, 'height':1 } );
-				var $target = $j( '#' + this.smil.getAssetId( smilImgElement ));
+				var $target = $j( '#' + this.smil.getPageDomId( smilImgElement ));
 				$target.css( {
 					'top' : '0px',
 					'left'  :'0px',
@@ -403,7 +403,7 @@ mw.SmilAnimate.prototype = {
 		// translate values into % values
 		// NOTE this is dependent on the media being "loaded" and having natural width and height
 		var namedValueOrder = ['left', 'top', 'width', 'height' ];
-		var htmlAsset = $j( '#' + this.smil.getAssetId( smilImgElement ) ).get(0);
+		var htmlAsset = $j( '#' + this.smil.getPageDomId( smilImgElement ) ).get(0);
 		
 		var percentValues = {};
 		for( var i =0 ;i < targetValue.length ; i++ ){
@@ -434,9 +434,9 @@ mw.SmilAnimate.prototype = {
 		//mw.log("updateElementLayout::" + percentValues.top + ' ' + percentValues.left + ' ' + percentValues.width + ' ' + percentValues.height );
 		
 		// get a pointer to the html target:
-		var $target = $j( '#' + this.smil.getAssetId( smilElement ));
+		var $target = $j( '#' + this.smil.getPageDomId( smilElement ));
 		
-		var htmlAsset = $j( '#' + this.smil.getAssetId( smilElement ) ).get(0);
+		var htmlAsset = $j( '#' + this.smil.getPageDomId( smilElement ) ).get(0);
 		
 		// xxx best way may be to use canvas and a fitting system. 
 		

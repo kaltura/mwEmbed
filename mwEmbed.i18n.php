@@ -105,7 +105,7 @@ $messages['br'] = array(
 	'mwe-cancel' => 'Nullañ',
 	'mwe-enable-gadget' => 'Gweredekaat liesvedia beta (mwEmbed) war an holl bajennoù',
 	'mwe-enable-gadget-done' => 'Gweredekaet eo bet ar gadjet liesvedia beta',
-	'mwe-must-login-gadget' => 'Evit gweredekaat ar gadjet e rankoc\'h <a target="_new" href="$1">kevreañ</a>',
+	'mwe-must-login-gadget' => 'Evit gweredekaat ar gadjet e rankit <a target="_new" href="$1">kevreañ</a>',
 	'mwe-test-plural' => 'Sevenet em eus $1 amprouadenn{{PLURAL:$1||}}',
 );
 
@@ -344,6 +344,7 @@ $messages['ia'] = array(
 );
 
 /** Indonesian (Bahasa Indonesia)
+ * @author Farras
  * @author Irwangatot
  * @author IvanLanin
  */
@@ -354,6 +355,10 @@ $messages['id'] = array(
 	'mwe-load-drag-item' => 'Memuat butir terseret',
 	'mwe-ok' => 'Oke',
 	'mwe-cancel' => 'Batalkan',
+	'mwe-enable-gadget' => 'Aktifkan beta multimedia (mwEmbed) untuk semua halaman',
+	'mwe-enable-gadget-done' => 'Gadget beta multimedia telah diaktifkan',
+	'mwe-must-login-gadget' => 'Untuk mengaktifkan gadget Anda harus <a target="_new" href="$1">masuk log</a>',
+	'mwe-test-plural' => 'Saya menjalankan {{PLURAL:$1|$1 tes|$1 tes}}',
 );
 
 /** Igbo (Igbo) */
@@ -465,6 +470,22 @@ $messages['nl'] = array(
 	'mwe-test-plural' => '{{PLURAL:$1|$1 test|$1 tests}} uitgevoerd',
 );
 
+/** Norwegian (bokmål)‬ (‪Norsk (bokmål)‬)
+ * @author Nghtwlkr
+ */
+$messages['no'] = array(
+	'mwe-loading_txt' => 'Laster ...',
+	'mwe-error_load_lib' => 'Feil: JavaScript $1 kunne ikke gjenhentes eller definerer ikke $2',
+	'mwe-apiproxy-setup' => 'Setter opp API-mellomtjener',
+	'mwe-load-drag-item' => 'Laster dratt element',
+	'mwe-ok' => 'OK',
+	'mwe-cancel' => 'Avbryt',
+	'mwe-enable-gadget' => 'Aktiver multimedia-beta (mwEmbed) for alle sider',
+	'mwe-enable-gadget-done' => 'Skjermelement for multimedia-beta har blitt aktivert',
+	'mwe-must-login-gadget' => 'For å aktivere skjermelement må du <a target="_new" href="$1">logge inn</a>',
+	'mwe-test-plural' => 'Jeg kjørte {{PLURAL:$1|én test|$1 tester}}',
+);
+
 /** Occitan (Occitan)
  * @author Cedric31
  */
@@ -493,10 +514,20 @@ $messages['pl'] = array(
 );
 
 /** Piedmontese (Piemontèis)
+ * @author Borichèt
  * @author Dragonòt
  */
 $messages['pms'] = array(
 	'mwe-loading_txt' => 'A caria ...',
+	'mwe-error_load_lib' => 'Eror: JavaScript $1 as peul pa trovesse o a definiss pa $2',
+	'mwe-apiproxy-setup' => 'Amposté ël proxy API',
+	'mwe-load-drag-item' => "carié l'element tirà",
+	'mwe-ok' => 'Va bin',
+	'mwe-cancel' => 'Scancela',
+	'mwe-enable-gadget' => 'Abìlita la beta multimedia (mwEmbed) për tute le pàgine',
+	'mwe-enable-gadget-done' => "L'acessòri beta multimedia a l'é stàit abilità",
+	'mwe-must-login-gadget' => 'Për abilité l\'acessòri a dev <a target="_new" href="$1">intré ant ël sistema</a>',
+	'mwe-test-plural' => "I l'heu fàit {{PLURAL:$1|$1 test|$1 test}}",
 );
 
 /** Pashto (پښتو)
@@ -504,6 +535,7 @@ $messages['pms'] = array(
  */
 $messages['ps'] = array(
 	'mwe-ok' => 'ښه',
+	'mwe-cancel' => 'ناګارل',
 );
 
 /** Portuguese (Português)
@@ -524,11 +556,20 @@ $messages['pt'] = array(
 );
 
 /** Brazilian Portuguese (Português do Brasil)
+ * @author Giro720
  * @author Luckas Blade
  */
 $messages['pt-br'] = array(
 	'mwe-loading_txt' => 'Carregando ...',
+	'mwe-error_load_lib' => 'Erro: O JavaScript $1 não pode ser importado ou não define $2',
+	'mwe-apiproxy-setup' => 'Configurando proxy da API',
+	'mwe-load-drag-item' => 'Carregando o objeto arrastado',
+	'mwe-ok' => 'OK',
 	'mwe-cancel' => 'Cancelar',
+	'mwe-enable-gadget' => 'Ativar multimídia beta beta (mwEmbed) para todas as páginas',
+	'mwe-enable-gadget-done' => 'Gadget de multimídia beta foi ativado',
+	'mwe-must-login-gadget' => 'Para ativar o gadget você deve estar <a target="_new" href="$1">autenticado</a>',
+	'mwe-test-plural' => 'Eu fiz $1 {{PLURAL:$1|teste|testes}}',
 );
 
 /** Russian (Русский)
@@ -545,6 +586,14 @@ $messages['ru'] = array(
 	'mwe-enable-gadget-done' => 'Включён гаджет бета-мультимедиа',
 	'mwe-must-login-gadget' => 'Для включения гаджета вам следует <a target="_new" href="$1">представиться</a>.',
 	'mwe-test-plural' => 'Я прошёл {{PLURAL:$1|$1 проверку|$1 проверки|$1 проверок}}',
+);
+
+/** Rusyn (русиньскый язык)
+ * @author Gazeb
+ */
+$messages['rue'] = array(
+	'mwe-ok' => 'ОК',
+	'mwe-cancel' => 'Сторно',
 );
 
 /** Slovak (Slovenčina)
@@ -636,5 +685,10 @@ $messages['vi'] = array(
 	'mwe-size-kilobytes' => '$1 kB',
 	'mwe-ok' => 'OK',
 	'mwe-cancel' => 'Hủy bỏ',
+);
+
+/** Wu (吴语) */
+$messages['wuu'] = array(
+	'mwe-cancel' => '取消',
 );
 

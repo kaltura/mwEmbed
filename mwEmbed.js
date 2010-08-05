@@ -475,7 +475,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}	
 			
 			// We are infact loading many:
-			mw.log("mw.load: LoadMany:: " + loadSet );
+			//mw.log("mw.load: LoadMany:: " + loadSet );
 			
 			// Issue the load request check check loadStates to see if we are
 			// "done"
@@ -1088,7 +1088,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			var buttonMsg = options.buttons;
 			buttons = { };
 			options.buttons[ buttonMsg ] = function() {
-				$j( '#mwTempLoaderDialog' ).dialog( 'close' );
+				$j( this ).dialog( 'close' );
 			}
 		}				
 		
@@ -1216,7 +1216,6 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 *            string String to output to console
 	 */
 	mw.log = function( string ) {
-
 		// Add any prepend debug strings if necessary
 		if ( mw.getConfig( 'pre-append-log' ) ){
 			string = mw.getConfig( 'pre-append-log' ) + string;		
@@ -2364,12 +2363,14 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					$btn.addClass( options['class'] )
 				}	
 								
-				$btn.append(
-					$j('<span />').addClass( 'ui-icon ui-icon-' + options.icon_id ),
-					$j('<span />').addClass( 'btnText' )
-						.text( options.text )
-				);
-				return $btn;					
+				
+				// return the button: 
+				return $btn.append(
+						$j('<span />').addClass( 'ui-icon ui-icon-' + options.icon_id ),
+						$j('<span />').addClass( 'btnText' )
+							.text( options.text )
+					)
+					.buttonHover(); // add buttonHover binding;					
 			};
 			
 			// Shortcut to bind hover state

@@ -188,6 +188,7 @@ mw.setConfig( 'embedPlayerAttributes', {
 	"type" : null
 });
 
+
 /**
  * The base source attribute checks
  * also see: http://dev.w3.org/html5/spec/Overview.html#the-source-element
@@ -269,6 +270,7 @@ mw.setDefaultConfig( 'embedPlayerSourceAttributes', [
 	*
 	*/
 	$.fn.embedPlayer = function( attributes, callback ) {
+		mw.log( 'EmbedPlayer:: fn.embedPlayer' );
 		var playerSelect = this.selector;
 		
 		// Define attributes if unset
@@ -450,9 +452,10 @@ EmbedPlayerManager.prototype = {
 			var eventObject = { 
 				'playerElement':playerElement, 
 				'waitForMeta' : waitForMeta
-			}
+			};
 			
 			$j( mw ).trigger( 'addElementWaitForMetaEvent', eventObject );
+			
 			// update the waitForMeta 
 			waitForMeta = eventObject[ 'waitForMeta' ];
 			
@@ -485,13 +488,12 @@ EmbedPlayerManager.prototype = {
 				$j( '#' + playerInterface.id ).get(0).checkPlayerSources();	
 			}
 							
-			if( waitForMeta ) {						
-				
-				/*mw.log('EmbedPlayer::WaitForMeta ( video missing height (' + 
+			if( waitForMeta ) {										
+				mw.log('EmbedPlayer::WaitForMeta ( video missing height (' + 
 						$j( playerElement ).attr('height') + '), width (' + 
 						$j( playerElement ).attr('width') + ') or duration: ' +
 						$j( playerElement ).attr('duration') 
-				);*/
+				);
 				
 				playerElement.removeEventListener( "loadedmetadata", runPlayerSwap, true );
 				playerElement.addEventListener( "loadedmetadata", runPlayerSwap, true );
@@ -3682,3 +3684,4 @@ mw.EmbedTypes = {
 		return hasObj;
 	}
 };
+

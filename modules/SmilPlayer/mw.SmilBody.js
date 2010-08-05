@@ -1,4 +1,4 @@
-/** 
+/**
  * The smil body also see: 
  * http://www.w3.org/TR/2008/REC-SMIL3-20081201/smil-structure.html#edef-body
  */
@@ -35,10 +35,13 @@ mw.SmilBody.prototype = {
 	// Constructor: 
 	init: function( smilObject ){
 		this.smil = smilObject;
-		this.$dom = this.smil.getDom().find( 'body' );
 		
 		// Assign ids to smil body elements
-		this.assignIds( this.$dom );
+		this.assignIds( this.getDom() );
+	},
+	
+	getDom: function(){
+		return this.smil.getDom().find('body');
 	},
 	
 	/**
@@ -52,7 +55,7 @@ mw.SmilBody.prototype = {
 		){
 			var idString = _this.getNodeSmilType( $node ) + '_' + _this.idIndex;
 			// Make sure the id does not already exist ( should be a rare case ) 
-			while( this.$dom.find( '#' + idString ).length != 0 ){
+			while( this.getDom().find( '#' + idString ).length != 0 ){
 				_this.idIndex++;
 				idString = _this.getNodeSmilType( $node ) + '_' + _this.idIndex;
 			}
@@ -151,8 +154,7 @@ mw.SmilBody.prototype = {
 				if( smallTime === null ){
 					smallTime = audioTimeline[i]['startTime'];
 					smallIndex = i;
-				}
-				
+				}				
 				if( audioTimeline[i]['startTime'] < smallTime ){
 					smallTime = audioTimeline[i]['startTime'];
 					smallIndex = i;
@@ -161,7 +163,7 @@ mw.SmilBody.prototype = {
 			return smallIndex = i;
 		}
 		// Build an audio timeline starting from the top level node: 
-		this.getRefElementsRecurse( this.$dom, 0, function( $node ){
+		this.getRefElementsRecurse( this.getDom(), 0, function( $node ){
 			var nodeType = _this.smil.getRefType( $node ) ;
 			// Check if the node is audio ( first in wins / "audio" wins over video) 
 			if( nodeType == 'audio' || nodeType == 'video' ) {
@@ -221,8 +223,7 @@ mw.SmilBody.prototype = {
 					return a.startTime - b.startTime;
 				});
 			}
-		});
-		
+		});		
 		return audioTimeline;
 	},
 	
@@ -237,7 +238,7 @@ mw.SmilBody.prototype = {
 			time =0;
 		}		
 		// Recurse on every ref element and run relevant callbacks
-		this.getRefElementsRecurse( this.$dom, 0, function( $node ){
+		this.getRefElementsRecurse( this.getDom(), 0, function( $node ){
 			var startOffset = $node.data( 'startOffset' );
 			var nodeDuration = _this.getClipDuration( $node );
 			
@@ -255,12 +256,12 @@ mw.SmilBody.prototype = {
 	},
 	
 	/**
-	 * get the sequence elements from a given par node if no node is provied assume root
+	 * get the sequence elements from a given par node if no node is provided assume root
 	 * @param {element=} $parNode Optional parNode to list all sequence timelines 
 	 */
 	getSeqElements: function( $node ){
 		if( ! $node ){
-			$node = this.$dom;
+			$node = this.getDom();
 		}
 		return $node.find('seq');
 	},
@@ -268,8 +269,9 @@ mw.SmilBody.prototype = {
 	
 	/**
 	 * Recurse over all body elements, issues a callback on all ref and smilText nodes
-	 * adds startOffset info for easy timeline checks.
 	 *  @param {Object} $node Node Starting point
+	 *  @param {Number} startOffset Stores startOffset for given node
+	 *  @param {Function} callback Function called for every ref node 
 	 */
 	getRefElementsRecurse: function( $node, startOffset, callback ){
 		var _this = this;
@@ -321,7 +323,7 @@ mw.SmilBody.prototype = {
 	 * ( wraps getDurationRecurse to get top level node duration ) 
 	 */	
 	getDuration: function( forceRefresh ){		
-		this.duration = this.getClipDuration( this.$dom , forceRefresh);	
+		this.duration = this.getClipDuration( this.getDom() , forceRefresh );
 		mw.log("smilBody:: getDuration: " + this.duration );
 		return this.duration;	
 	},
@@ -339,7 +341,7 @@ mw.SmilBody.prototype = {
 		}
 		if( forceRefresh ){
 			//clear out implictDuration
-			$node.data( 'implictDuration', false );
+			$node.data( 'implictDuration', 0);
 			$node.data( 'computedDuration', false );
 		}
 		
@@ -350,7 +352,7 @@ mw.SmilBody.prototype = {
 		var blockType = this.getNodeSmilType( $node );
 				
 		// Recurse on children
-		if( $node.children().length ){
+		if( $node.children().length ){			
 			$node.children().each( function( inx, childNode ){				
 				// If in a sequence add to duration 		
 				var childDuration = _this.getClipDuration( $j( childNode ), forceRefresh );							
@@ -363,7 +365,7 @@ mw.SmilBody.prototype = {
 						$node.data( 'implictDuration',  childDuration); 
 					}
 				}
-			});		
+			});			
 		}
 						
 		// Check the explicit duration attribute: 
@@ -371,11 +373,11 @@ mw.SmilBody.prototype = {
 			var computedDuration = this.smil.parseTime( $node.attr('dur') ) ;
 			// Check for "begin" that extends the duration by begin time
 			if( $node.attr( 'begin') ){
-				computedDuration+= this.smil.parseTime( $node.attr('begin') );
+				computedDuration += this.smil.parseTime( $node.attr('begin') );
 			}  
 			//mw.log(" return dur: " + mw.smil.parseTime( $node.attr('dur') ) );			
 			$node.data('computedDuration', computedDuration );
-		} else { 
+		} else {
 			// Else return use implictDuration ( built from its children )
 			if( $node.data( 'implictDuration' ) ){
 				//mw.log(" implictDuration:: " + $node.data( 'implictDuration' ) ); 
@@ -386,6 +388,7 @@ mw.SmilBody.prototype = {
 		}		
 		return $node.data('computedDuration');		
 	},
+	
 	/**
 	 * Get the asset duration for a clip
 	 * @param {element} $node the smil clip that we want to get duration for
@@ -395,7 +398,7 @@ mw.SmilBody.prototype = {
 		this.smil.getBuffer().loadElement( $node );
 		// xxx check if the type is "video or audio" else nothing to return 
 		
-		var vid = $j( '#' + this.smil.getAssetId( $node ) ).get(0);
+		var vid = $j( '#' + this.smil.getPageDomId( $node ) ).get(0);
 		if( vid.duration ){
 			callback( vid.duration );
 		}
@@ -407,6 +410,22 @@ mw.SmilBody.prototype = {
 		vid.removeEventListener( "loadedmetadata", durationReady, true );
 		vid.addEventListener( "loadedmetadata", durationReady, true );
 	},
+	
+	/**
+	 * Sync the in page assets with the smil dom
+	 */ 
+	syncPageDom: function(){
+		var _this = this;
+		//  Check that all top level layout items exist in the smil dom
+		$j.each( $j( this.smil.getEmbedPlayer() ).find('.smilRootLayout'), function(inx, pageNode){
+			// Check if the node is in the smil dom
+			if( _this.smil.$dom.find( '#' + _this.smil.getSmilDomId( pageNode ) ).length == 0 ){
+				// remove from pageDom
+				$j( pageNode ).remove();
+			}
+		});
+	},
+	
 	/**
 	 * Maps a few smil tags to smil types 
 	 * 
@@ -417,8 +436,6 @@ mw.SmilBody.prototype = {
 	 * animation, audio, img, text, textstream and video -> 'ref',  
 	 */
 	getNodeSmilType: function( $node ){
-		if( typeof wgMyCoolGlobal != 'undefined')
-			debugger;
 		var blockType = $j( $node ).get(0).nodeName;
 		
 		if( this.smilBlockTypeMap[ blockType ] ){

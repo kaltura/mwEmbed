@@ -154,8 +154,6 @@ mw.addResourcePaths( {
 	"$j.fn.textSelection" 	: "libraries/jquery/plugins/jquery.textSelection.js",
 	"$j.browserTest"		: "libraries/jquery/plugins/jquery.browserTest.js",
 	"$j.fn.jWizard"			: "libraries/jquery/plugins/jquery.jWizard.js",
-	"$j.fn.tipsy"			: "jquery/plugins/jquery.tipsy.js",
-	"mw.style.tipsy"		: "jquery/plugins/jquery.tipsy.css",
 
 	"$j.effects.blind"		: "libraries/jquery/jquery.ui/ui/effects.blind.js",
 	"$j.effects.drop"		: "libraries/jquery/jquery.ui/ui/effects.drop.js",
@@ -175,7 +173,7 @@ mw.addResourcePaths( {
 	"$j.ui.dialog"			: "libraries/jquery/jquery.ui/ui/ui.dialog.js",
 	"$j.ui.resizable"		: "libraries/jquery/jquery.ui/ui/ui.resizable.js",
 	"$j.ui.tabs"			: "libraries/jquery/jquery.ui/ui/ui.tabs.js",
-	"$j.effects.core"		: "libraries/jquery/jquery.ui/ui/effects.core.js",
+	"$j.effects"		: "libraries/jquery/jquery.ui/ui/effects.core.js",
 	"$j.effects.highlight"	: "libraries/jquery/jquery.ui/ui/effects.highlight.js",
 	"$j.effects.slide"		: "libraries/jquery/jquery.ui/ui/effects.slide.js",
 	"$j.ui.accordion"		: "libraries/jquery/jquery.ui/ui/ui.accordion.js",
@@ -184,7 +182,7 @@ mw.addResourcePaths( {
 
 } );
 
-// Add a special css dependency for $j.ui 
+// Add a special css dependency for $j.ui
 mw.addStyleResourceDependency( {
 	'$j.ui' : ( 'mw.style.ui_' + mw.getConfig( 'jQueryUISkin' ) )	
 } );

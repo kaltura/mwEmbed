@@ -1,16 +1,15 @@
 <?php
 /**
- * Add Media Wizard extension
+ * UploadWizard extension
  *
  * @file
  * @ingroup Extensions
  *
- * This file contains the include file for the Add Media Wizard support
- * The addMediaWizard is dependent on JS2Support and
- * the core "AddMedia" module
+ * This file contains the include file for UploadWizard
+ * This is dependent on JS2Support.
  *
  * Usage: Include the following line in your LocalSettings.php
- * require_once( "$IP/extensions/JS2Support/AddMediaWizard/AddMediaWizard.php" );
+ * require_once( "$IP/extensions/UploadWizard/UploadWizard.php" );
  *
  * @author Neil Kandalgaonkar <neil@wikimedia.org>
  * @license GPL v2 or later

@@ -51,14 +51,13 @@
 
 	//Check if the document has kaltura objects ( for fall forward support ) 
 	$j( mw ).bind( 'LoaderEmbedPlayerDocumentHasPlayerTags', function( event, tagCheckObject ){
-	
-		mw.log('KalturaSupport :: Loader.js :: LoaderEmbedPlayerDocumentHasPlayerTags');
+		
+		mw.log('KalturaSupport :: Loader.js :: LoaderEmbedPlayerDocumentHasPlayerTags, objects in page: ' + $j( 'object' ).length );
 		// Check if we have a global selector available: 
-		var select =  'object[name=kaltura_player]';
+		var select =  "object[name=kaltura_player]";
 		mw.log( 'KalturaSupport found:: ' + $j( select ).length + ' is mobile::' +  mw.isMobileSafari() );
 		if( $j( select ).length ) {
-			tagCheckObject.hasTags = true;
-			
+			tagCheckObject.hasTags = true;			
 			// FALLFORWARD only for mobile safari ::
 			// this is kind of heavy weight for loader.js 
 			// maybe move most of this to kEntryId support
@@ -171,16 +170,16 @@
 					kLoadKalturaSupport = true;
 					mw.load( [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){
 						// kalturaPlaylistObject has player loader built in: 
-						$j('.mwEmbedKalturaPlaylistSwap').each(function( inx, playlistTarget ) {							
+						$j('.mwEmbedKalturaPlaylistSwap').each( function( inx, playlistTarget ) {							
 							var kalturaPlaylistHanlder = new mw.PlaylistHandlerKaltura({
 								'uiconfid' : $j( playlistTarget ).attr( 'kuiconfid' ),
 								'widgetid' : $j( playlistTarget ).attr( 'kwidgetid' ),
 								'playlistid':  $j( playlistTarget ).attr( 'kplaylistid' )
 							});			
 							// quick non-ui conf check for layout mode							
-							var layout = ( $j( playlistTarget ).attr('width') > 
-											$j( playlistTarget ).attr('height')
-										 )? 'horizontal' : 'vertical';
+							var layout = ( $j( playlistTarget ).width() > $j( playlistTarget ).height() ) 
+											? 'horizontal' : 'vertical';												
+							
 							var playlistPlayer = $j( '#' + playlistTarget.id ).playlist({
 								'layout': layout,
 								'sourceHandler' : kalturaPlaylistHanlder
@@ -189,7 +188,8 @@
 					});
 				}
 				
-				if( loadEmbedPlayerFlag ){					
+				if( loadEmbedPlayerFlag ){	
+					mw.log("KalturaLoader:: load EmbedPlayer");
 					mw.load('EmbedPlayer', function(){		
 						// Remove the general loading spinner ( embedPlayer takes over )						
 						$j('.mwEmbedKalturaVideoSwap').embedPlayer();

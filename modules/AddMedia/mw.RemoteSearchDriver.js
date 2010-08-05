@@ -112,6 +112,8 @@ var default_remote_search_options = {
 	 */
 	'resourceSelectionCallback' : null,
 	
+	'displaySearchResultsCallback' : null,
+	
 	/**
 	* import_url_mode
 	*  Can be 'api', 'autodetect', 'remote_link'
@@ -1740,6 +1742,10 @@ mw.RemoteSearchDriver.prototype = {
 			}
 		}
 		this.addResultBindings();
+		
+		if( typeof this.displaySearchResultsCallback == 'function'){
+			this.displaySearchResultsCallback();
+		}
 	},
 	
 	/**
