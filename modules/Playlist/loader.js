@@ -6,7 +6,6 @@
 ( function( mw ) {
 
 	mw.addResourcePaths( {
-		//"iScroll" : "iScroll.js",
 		"mw.Playlist" : "mw.Playlist.js",
 		"mw.PlaylistHandlerMediaRss" : "mw.PlaylistHandlerMediaRss.js"
 	});
