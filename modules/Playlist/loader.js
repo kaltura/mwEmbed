@@ -6,7 +6,7 @@
 ( function( mw ) {
 
 	mw.addResourcePaths( {
-		"iScroll" : "iScroll.js",
+		//"iScroll" : "iScroll.js",
 		"mw.Playlist" : "mw.Playlist.js",
 		"mw.PlaylistHandlerMediaRss" : "mw.PlaylistHandlerMediaRss.js"
 	});
@@ -33,9 +33,9 @@
 	mw.addModuleLoader( 'Playlist', function(){
 		var resourceList = ["mw.Playlist", "mw.PlaylistHandlerMediaRss" ]
 		// xxx should detect touch support rather than mobile safari check
-		if( mw.isMobileSafari() ){			
+		/*if( mw.isMobileSafari() ){			
 			resourceList.push( "iScroll" );
-		}
+		}*/
 		return resourceList;
 	});
 		

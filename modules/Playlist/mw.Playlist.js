@@ -94,14 +94,21 @@ mw.Playlist.prototype = {
 					.css({
 						'float' : 'left'
 					})
-				,				
-				$j( '<div />')		
+				,			
+				$j( '<div />')
+				.addClass( 'media-rss-video-list' )
+				.attr('id', _this.id + '_videolist')
+				.css({
+					'position' : 'absolute',
+				    'z-index' : '1',
+				    'overflow' : 'auto'
+				})
+				.hide()
+				/*$j( '<div />')		
 					.addClass( 'media-rss-video-list-wrapper' )									
 					.css({
 						'position' : 'relative',
 					    'z-index' : '1',
-					    'width': '400px',
-					    'height': '300px',
 					    'overflow' : 'auto'
 					})
 					.append( 
@@ -109,7 +116,8 @@ mw.Playlist.prototype = {
 						.addClass( 'media-rss-video-list' )
 						.attr('id', _this.id + '_videolist')
 					)
-					.hide()		
+					.hide()
+				*/		
 			);
 			
 			// Add the selectable media list
@@ -121,23 +129,92 @@ mw.Playlist.prototype = {
 				// Update the list height ( vertical layout )
 				if( _this.layout == 'vertical' ){
 					var targetListHeight = ( $j( _this.target ).height() - $j( _this.target + ' .media-rss-video-player' ).height() );				
-					$j( _this.target + ' .media-rss-video-list-wrapper' ).css( {
+					$j( _this.target + ' .media-rss-video-list' ).css( {
 						'height' : targetListHeight,
 						'width' : '100%'
 					} )
 				} else {
+					// Update horizontal layout
 					var targetListWidth = ( $j( _this.target ).width() - $j( _this.target + ' .media-rss-video-player' ).width() );
-					$j( _this.target + ' .media-rss-video-list-wrapper').css( {
-						'width' : targetListWidth,
+					$j( _this.target + ' .media-rss-video-list').css( {
+						'width' : targetListWidth,		
 						'height' : '100%'
 					} )			
 				}
+				var $videoList = $j( _this.target + ' .media-rss-video-list' );
+				$videoList.show()
 				// show the video list and apply the swipe binding 
 				$j( _this.target ).find('.media-rss-video-list-wrapper').fadeIn();				
 				if( mw.isMobileSafari() ){			
+					// iScroll is buggy with current version of iPad / iPhone use scroll buttons instead
+					/*
 					document.addEventListener('touchmove', function(e){ e.preventDefault(); });							
 					var myScroll = iScroll( _this.id + '_videolist' );		
 					setTimeout(function () { myScroll.refresh(); }, 0);
+					*/ 
+					// add space for scroll buttons: 
+					$j( _this.target + ' .media-rss-video-list' ).css( {
+						'position' : 'absolute',
+						'height' : null,
+						'top' : '0px',
+						'bottom' : '30px',
+						'right': '0px'
+					})
+					if( _this.layout == 'vertical' ){
+						$j( _this.target + ' .media-rss-video-list' ).css({
+							'top' :  $j( _this.target + ' .media-rss-video-player' ).height()							
+						})
+					}
+					// Add scroll buttons:
+					$j( _this.target ).append( 
+						$j( '<div />').css({
+							'position' : 'absolute',
+							'bottom' : '0px',
+							'right': '0px',
+							'height' : '25px',
+							'width' : $j( _this.target + ' .media-rss-video-list').width()
+						})
+						.append(								
+							$j.button({ 
+								'text' : 'scroll down',
+								'icon_id' : 'circle-arrow-s' 
+							})
+							.css('float', 'right')
+							.click(function(){
+								var clipListCount = $videoList.children().length;
+								var clipSize = $videoList.children(':first').height();
+								var curTop = $videoList.attr('scrollTop');			
+								
+								var targetPos = curTop +  (clipSize * 3);
+								if( targetPos > clipListCount * clipSize ){
+									targetPos = ( clipListCount * ( clipSize -1 ) );
+								}								
+								mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
+								$videoList.animate({'scrollTop': targetPos }, 500 );
+								
+						       return false;
+							}),
+							$j.button({
+								'text' : 'scroll up',
+								'icon_id' : 'circle-arrow-n'
+							})
+							.css('float', 'left')
+							.click(function(){
+								var clipListCount = $videoList.children().length;
+								var clipSize = $videoList.children(':first').height();
+								var curTop = $videoList.attr('scrollTop');			
+								
+								var targetPos = curTop -  (clipSize * 3);
+								if( targetPos < 0 ){
+									targetPos = 0
+								}								
+								mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
+								$videoList.animate({'scrollTop': targetPos }, 500 );
+								
+								return false;
+							})
+						)
+					)
 				}
 				
 			});
