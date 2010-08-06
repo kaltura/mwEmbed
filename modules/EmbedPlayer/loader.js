@@ -126,7 +126,7 @@
 				// Add an absolute positioned loader
 				$j( element )
 					.getAbsoluteOverlaySpinner()
-					.attr('id', 'loadingSpinner_' + $j( element ).attr('id') )
+					.attr( 'id', 'loadingSpinner_' + $j( element ).attr('id') )
 					.addClass( 'playerLoadingSpinner' );
 								
 			});									
@@ -232,7 +232,8 @@
     		pSkin =  f + pSkin.substr(1);
     	
 			// Add skin js
-			dependencyRequest.push( 'mw.PlayerSkin' + pSkin );	
+			dependencyRequest.push( 'mw.PlayerSkin' + pSkin );
+			
 			// Add the skin css 
 			dependencyRequest.push( 'mw.style.PlayerSkin' + pSkin );
 		}	

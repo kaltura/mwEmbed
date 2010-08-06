@@ -79,9 +79,9 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight();
 			 
 		this.getEntryIdSources( kEntryId, function( sources ){
-			mw.log( "getEntryIdSources:: found " + sources.length + ' for entryid: ' + kEntryId + ' ' + ' partner id: ' + _this.kPartnerId);
+			mw.log( "kEntryId:: getEntryIdSources::" + embedPlayer.id + " found " + sources.length + ' for entryid: ' + kEntryId + ' ' + ' partner id: ' + _this.kPartnerId);
 			for( var i=0;i < sources.length ; i++){
-				mw.log( 'kEntryId::addSource::' +  sources[i].src );
+				mw.log( 'kEntryId::addSource::' + embedPlayer.id + ' : ' +  sources[i].src );
 				embedPlayer.mediaElement.tryAddSource(
 					$j('<source />')
 					.attr( {

@@ -281,7 +281,13 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 * @key Name of resource
 		 * @value Class file path
 		 */
-		resourcePaths : { }, 			
+		resourcePaths : { },
+		
+		/**
+		 * Stores resources that have been requested ( to avoid re-requesting the same resources )
+		 * in concurrent requests )
+		 */
+		requestedResourceQueue: { },		
 		
 		/**
 		 * javascript Resource Paths
@@ -324,6 +330,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 */				
 		load: function( loadRequest, instanceCallback ) {			
 			// mw.log("mw.load:: " + loadRequest );
+			var _this = this;
 
 			// Throw out any loadRequests that are not strings
 			loadRequest = this.cleanLoadRequest( loadRequest );
@@ -366,7 +373,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				if( !resourceSet ){
 					mw.log( "mw.load:: Error with module loader: " + loadRequest + ' ( no resource set defined )' );
 					return ;
-				}
+				}									
 				
 				// xxx should use refactor "ready" stuff into a "domReady" class
 				// So we would not have local scope globals like this:
@@ -375,7 +382,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					// mw.ready has run
 					this.load( resourceSet, callback );
 				} else {
-					this.addToModuleLoaderQueue( 
+					this.addToModuleLoaderQueue(
 						loadRequest, 
 						resourceSet,
 						callback
@@ -391,11 +398,27 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}
 			
 			// Try loading as a "file" or via ScriptLoader
-			if( loadRequest ) { 				
+			if( loadRequest ) {				
+				// Check if this resource was already requested
+				if( typeof this.requestedResourceQueue[ loadRequest ] == 'object' ){					
+					this.requestedResourceQueue[ loadRequest ].push( callback );
+					return ; 
+				} else {
+					this.requestedResourceQueue[ loadRequest ] = [];
+				}
+				
 				if( loadRequest.indexOf( '.js' ) == -1 && !mw.getResourceLoaderPath() ) {
 					mw.log( 'Error: are you sure ' + loadRequest + ' is a file ( is it missing a resource path? ) ' );
 				}				
-				mw.getScript( loadRequest, callback );
+				mw.getScript( loadRequest, function(){
+					// Check if we have requestedResources queue items: 
+					while( _this.requestedResourceQueue[ loadRequest ].length ){						
+						_this.requestedResourceQueue[ loadRequest ].shift()( loadRequest );
+					}
+					callback( loadRequest ); 
+					// empty the load request queue: 
+					_this.requestedResourceQueue[ loadRequest ] = [];
+				});
 				return ;
 			}
 			
@@ -480,7 +503,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			// Issue the load request check check loadStates to see if we are
 			// "done"
 			for( var loadName in loadStates ) {				
-				// mw.log("loadMany: load: " + loadName );
+				mw.log("loadMany: load: " + loadName );
 				this.load( loadName, function ( loadName ) {										
 					loadStates[ loadName ] = 1;
 					
@@ -533,20 +556,19 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			// Setup grouped loadStates Set:
 			var groupClassKey = ''; 
 			var coma = '';			
+			var uniqueResourceName = {};
 			for( var i=0; i < groupedLoadSet.length; i++ ) {										
-				var loadName = groupedLoadSet[ i ];	
-								
-				
+				var loadName = groupedLoadSet[ i ];												
 				if( this.getResourcePath( loadName )  ) {
-					// Only add to group request if not already set:
-					if ( !mw.isset( loadName ) ) {
+					// Check if not already in request queue and not defined in global namespace
+					if( !mw.isset( loadName ) && ! uniqueResourceName[ loadName] ){
 						groupClassKey += coma + loadName
 						coma = ',';
 						
 						// Check for style sheet dependencies
 						if( this.resourceStyleDependency[ loadName ] ){
 							groupClassKey += coma + this.resourceStyleDependency[ loadName ];
-						}						
+						}								
 					}					
 				} else if ( this.moduleLoaders[ loadName ] ) {
 					
@@ -556,9 +578,12 @@ if( typeof preMwEmbedConfig == 'undefined') {
 						loadStates[ groupClassKey ] = 0;
 						groupClassKey = coma = '';
 					}
-					// Add the module to the loadSate
-					loadStates[ loadName ] = 0;
+					if( ! uniqueResourceName[ loadName] ){
+						// Add the module to the loadSate
+						loadStates[ loadName ] = 0;
+					}
 				}					
+				uniqueResourceName[ loadName] = true;
 			}				
 			
 			// Add groupClassKey if set:
@@ -1324,7 +1349,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		var isCssFile = ( ext == '.css') ? true : false ;
 		
 		if( scriptLoaderPath &&  isResourceName ) {
-			url = scriptLoaderPath + '?class=' + scriptRequest;				
+			url = scriptLoaderPath + '?class=' + scriptRequest ;				
 		} else {
 			// Add the mwEmbed path if a relative path request
 			url = ( isResourceName ) ? mw.getMwEmbedPath() : '';
@@ -1377,7 +1402,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		// mw.log(" append script: " + script.src );
 		// Append the script to the DOM:
 		head.appendChild( script );
-	};
+	};		
 	
 	/**
 	 * Add a style sheet string to the document head

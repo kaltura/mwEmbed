@@ -28,7 +28,7 @@ mw.KAnalytics.prototype = {
 	reportSet : null,
 	
 	// Stores the last time we issued a seek event
-	// avoids sending lots of seeks while scrubbing
+	// avoids sending lots of seeks while scrubbing 
 	lastSeekEventTime: 0,
 	
 	// Start Time
