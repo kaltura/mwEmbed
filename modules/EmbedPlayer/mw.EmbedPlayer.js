@@ -1616,7 +1616,7 @@ mw.EmbedPlayer.prototype = {
 		// Scope the end of check for player sources so it can be called in a callback  
 		var finishCheckPlayerSources = function(){
 			// Run embedPlayer sources hook		
-			mw.runTriggersCallback( _this, 'checkPlayerSourcesEvent', function(){							
+			mw.runTriggersCallback( _this, 'checkPlayerSourcesEvent', function(){				
 				_this.checkForTimedText();
 			})			
 		}

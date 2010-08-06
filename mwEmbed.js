@@ -2244,7 +2244,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			callback();
 			return ;
 		}		
-		var callbackSet = $j( targetObject ).data( 'events' )[ triggerName ];
+		var callbackSet = $j( targetObject ).data( 'events' )[ triggerName ];		
 		if( !callbackSet || callbackSet.length === 0  ){
 			mw.log( ' No events run the callback directly: ' + triggerName  );
 			// No events run the callback directly
@@ -2256,9 +2256,10 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		
 		mw.log(" runTriggersCallback:: " + callbackCount );
 		var callInx = 0;
-		$j( targetObject ).trigger( triggerName, function() {
+		$j( targetObject ).trigger( triggerName, function() {		
 			callInx++;
-			if( callInx == callbackCount ){										
+			if( callInx == callbackCount ){				
+				mw.log(" callbackCountReached run:: " + callback);
 				// Run callback
 				callback();
 			}
@@ -2547,6 +2548,10 @@ if( mw.isStaticPackge() && !window.jQuery ){
  */
 
 if( window.jQuery ){
+	if( ! mw.versionIsAtLeast( '1.4.0', jQuery.fn.jquery ) ){
+		if( console.log )
+			console.log( 'Error mwEmbed requires jQuery 1.4 or above' );
+	}
 	var dollarFlag = false;	
 	if( $ && $.fn && $.fn.jquery ) {
 		// NOTE we could check the version of

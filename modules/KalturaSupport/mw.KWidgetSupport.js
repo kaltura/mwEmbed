@@ -28,10 +28,9 @@ mw.KWidgetSupport.prototype = {
 		mw.log(  'KWidgetSupport::addPlayerHooks:: bind: newEmbedPlayerEvent' );
 		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {		
 			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
-			
 			// Add hook for check player sources to use local kEntry ID source check:
-			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {	
-				mw.log("KWidgetSupport::checkPlayerSourcesEvent ");
+			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {				
+				mw.log(" KWidgetSupport::checkPlayerSourcesEvent ");
 				_this.checkPlayerSources( embedPlayer, function(){
 					// We can only enable kaltura analytics if we have a session if we have a client										
 					if( mw.getConfig( 'enableKalturaAnalytics' ) == true && _this.kClient ) {
@@ -81,7 +80,7 @@ mw.KWidgetSupport.prototype = {
 		this.getEntryIdSources( kEntryId, function( sources ){
 			mw.log( "kEntryId:: getEntryIdSources::" + embedPlayer.id + " found " + sources.length + ' for entryid: ' + kEntryId + ' ' + ' partner id: ' + _this.kPartnerId);
 			for( var i=0;i < sources.length ; i++){
-				mw.log( 'kEntryId::addSource::' + embedPlayer.id + ' : ' +  sources[i].src );
+				mw.log( 'kEntryId::addSource::' + embedPlayer.id + ' : ' +  sources[i].src + ' type: ' +  sources[i].type);
 				embedPlayer.mediaElement.tryAddSource(
 					$j('<source />')
 					.attr( {
