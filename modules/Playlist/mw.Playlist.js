@@ -420,9 +420,9 @@ mw.Playlist.prototype = {
 							$j('<img />')
 							.attr({ 
 								'alt' : _this.sourceHandler.getClipTitle( inx ),
-								'src' : _this.sourceHandler.getClipPoster( inx ),
-								'width' : _this.itemThumbWidth
-							})							
+								'src' : _this.sourceHandler.getClipPoster( inx )
+							})
+							.css( 'width', _this.itemThumbWidth + 'px') 
 						),
 						$j( '<td />')
 						.text( _this.sourceHandler.getClipTitle( inx ) ),
