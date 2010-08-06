@@ -128,17 +128,13 @@ You can add a custom jquery ui theme by using the theme wizard: [http://www.kalt
 
 ## Skinning and Themeing
 
-[Theme Wizard]: http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html
+[jQuery UI ThemeRoller]: http://jqueryui.com/themeroller/
 
-You can add a custom jquery ui theme by using the [Theme Wizard][].  Downloading that theme and adding a reference to jquery-ui-.custom.css after the mwEmbed-player-static.css file.
+You can add a custom jQuery UI theme by using [jQuery UI ThemeRoller][]. Download the custom theme and add a reference to jquery-ui-1.8.2.custom.css after the mwEmbed-player-static.css file, and remove any existing reference jquery-ui.css.
 
-A few sample jquery ui skins are included in the skins/jquery.ui.themes folder of the [HTML5 Video Player][].
+A few sample jQuery UI themes are included in the skins/jquery.ui.themes folder of the [HTML5 Video Player][].
 
 You can remove the kaltura attribution for the player by adding the following javascript:
-
-    <script type="text/javascript">mw.setConfig('EmbedPlayer.kalturaAttribution', false );</script>
-
-You can remove the kaltura attribution for the player by adding the following javascript: 
 
     <script type="text/javascript">mw.setConfig('EmbedPlayer.kalturaAttribution', false );</script>
 
