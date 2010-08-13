@@ -3058,7 +3058,8 @@ mw.EmbedPlayer.prototype = {
 		if( ! this.isStopped() ) {
 			if( !this.monitorInterval ){
 				this.monitorInterval = setInterval( function(){
-					_this.monitor();
+					if( _this.monitor )
+						_this.monitor();
 				}, this.monitorRate )
 			}
 		} else {

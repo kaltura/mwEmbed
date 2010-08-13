@@ -22,12 +22,14 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			return ;
 		}
 		// Note this only works with local sources
-		$j.get( mw.absoluteUrl( this.playlist.src ), function( data ){
+		$j.get( mw.absoluteUrl( this.getSrc() ), function( data ){
 			_this.$rss = $j( data );			
 			callback( _this.$rss );
 		});
 	},
-	
+	getSrc: function(){
+		return this.playlist.src;
+	},
 	// Get clip count
 	getClipCount: function(){
 		if( !this.$rss ){
@@ -71,7 +73,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	getClipPoster: function ( clipIndex ){						
 		var $item =  this.$rss.find('item').eq( clipIndex );				
 		var mediaThumb = $item.get(0).getElementsByTagNameNS( this.mediaNS, 'thumbnail' );
-		mw.log( 'MEDIAthumb: ' + $j( mediaThumb ).attr('url' ) );
+		mw.log( 'mw.PlaylistMediaRss::getClipPoster: ' + $j( mediaThumb ).attr('url' ) );
 		if( mediaThumb && $j( mediaThumb ).attr('url' ) ){ 		
 			return $j( mediaThumb ).attr('url' );
 		}		

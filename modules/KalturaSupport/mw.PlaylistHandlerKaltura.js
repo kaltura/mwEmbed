@@ -20,7 +20,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 	loadPlaylist: function ( callback ){
 		var _this = this;
-		mw.log("mw.Playlist::load playlist handler");		 	
+		mw.log( "mw.Playlist::load playlist handler" );		 	
 		// Get the kaltura client:
 		mw.getKalturaClientSession( this.widgetid, function( kClient ) {
 			
@@ -52,7 +52,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		var _this = this;
 		mw.log('loadPlaylistById:' + playlistId );
 		var kPlaylistGrabber = new KalturaPlaylistService( kClient );
-		kPlaylistGrabber.execute( function( status, playlistData ) {
+		kPlaylistGrabber.execute( function( status, playlistData ) {			
 			if( !  playlistData.length ){						
 				mw.log("Error: kaltura playlist:" + playlistId + " could not load:" + playlistData.code)
 				_this.clipList = [];

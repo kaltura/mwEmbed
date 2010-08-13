@@ -189,7 +189,7 @@ mw.Playlist.prototype = {
 								if( targetPos > clipListCount * clipSize ){
 									targetPos = ( clipListCount * ( clipSize -1 ) );
 								}								
-								mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
+								//mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
 								$videoList.animate({'scrollTop': targetPos }, 500 );
 								
 						       return false;

@@ -25,6 +25,7 @@
 		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
 		"mw.KAnalytics" : "mw.KAnalytics.js",
 		"mw.PlaylistHandlerKaltura"	: "mw.PlaylistHandlerKaltura.js", 
+		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
 		
 		"KalturaClientBase"	: "kalturaJsClient/KalturaClientBase.js",
 		"KalturaClient" : "kalturaJsClient/KalturaClient.js",
@@ -46,7 +47,11 @@
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
-		return $j.merge( kalturaSupportRequestSet, ['mw.PlaylistHandlerKaltura']);
+		return $j.merge( kalturaSupportRequestSet, 
+				[ 
+				  'mw.PlaylistHandlerKaltura', 
+				  'mw.PlaylistHandlerKalturaRss'
+				]);
 	});
 
 	//Check if the document has kaltura objects ( for fall forward support ) 
@@ -131,7 +136,10 @@
 						// check if we can get the playlist id from a url in the embed code 
 						// ( some version of kaltura embed code work this way)
 						if( flashvars['playlistAPI.kpl0Url'] ){
-							videoEmbedAttributes['kplaylistid'] = mw.parseUri( flashvars['playlistAPI.kpl0Url'] ).queryKey['playlist_id'];							
+							videoEmbedAttributes['kplaylistid'] = mw.parseUri( flashvars['playlistAPI.kpl0Url'] ).queryKey['playlist_id'];
+							if( !videoEmbedAttributes['kplaylistid']){
+								videoEmbedAttributes['kplaylistid'] = flashvars['playlistAPI.kpl0Url'];
+							}
 						}					
 					}
 					
@@ -168,14 +176,26 @@
 				
 				if( loadPlaylistFlag ){
 					kLoadKalturaSupport = true;
-					mw.load( [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){
+					var playlistRequest = [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ];
+										
+					mw.load( playlistRequest, function(){
 						// kalturaPlaylistObject has player loader built in: 
-						$j('.mwEmbedKalturaPlaylistSwap').each( function( inx, playlistTarget ) {							
-							var kalturaPlaylistHanlder = new mw.PlaylistHandlerKaltura({
+						$j('.mwEmbedKalturaPlaylistSwap').each( function( inx, playlistTarget ) {	
+							var playlistConfig = {
 								'uiconfid' : $j( playlistTarget ).attr( 'kuiconfid' ),
 								'widgetid' : $j( playlistTarget ).attr( 'kwidgetid' ),
 								'playlistid':  $j( playlistTarget ).attr( 'kplaylistid' )
-							});			
+							};		
+							debugger;
+							
+							// Check if we have a mediaRss url as the playlistId
+							var parsedPlaylistId = mw.parseUri( $j( playlistTarget ).attr( 'kplaylistid' ) );
+							if( parsedPlaylistId.host == parsedPlaylistId.source  ){								
+								var kalturaPlaylistHanlder = new mw.PlaylistHandlerKalturaRss( playlistConfig );	
+							} else {
+								var kalturaPlaylistHanlder = new mw.PlaylistHandlerKaltura( playlistConfig );	
+							}
+							
 							// quick non-ui conf check for layout mode							
 							var layout = ( $j( playlistTarget ).width() > $j( playlistTarget ).height() ) 
 											? 'horizontal' : 'vertical';												
