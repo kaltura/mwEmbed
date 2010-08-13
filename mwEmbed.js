@@ -2549,8 +2549,10 @@ if( mw.isStaticPackge() && !window.jQuery ){
 
 if( window.jQuery ){
 	if( ! mw.versionIsAtLeast( '1.4.0', jQuery.fn.jquery ) ){
-		if( console.log )
+		// Use console.log to force debug statement even in minified version
+		if( console && console.log ){
 			console.log( 'Error mwEmbed requires jQuery 1.4 or above' );
+		}
 	}
 	var dollarFlag = false;	
 	if( $ && $.fn && $.fn.jquery ) {
