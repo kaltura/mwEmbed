@@ -83,9 +83,9 @@
 					var flashVarPairs = flashVarsString.split('&');
 					for( var i in flashVarPairs ) {
 						var parts = flashVarPairs[i].split('=');
-						flashvars[ parts[0] ] = unescape( parts[1] );
-					}
-					
+						flashvars[ parts[0] ] = unescape( parts.slice(1).join('=') );
+					}			
+			
 					// Get the swf source from the element: 
 					var swfSource =  $j( element ).attr( 'data' );
 					// try to get the source from a param if not defined in the top level embed. 
@@ -137,7 +137,7 @@
 						// ( some version of kaltura embed code work this way)
 						if( flashvars['playlistAPI.kpl0Url'] ){
 							videoEmbedAttributes['kplaylistid'] = mw.parseUri( flashvars['playlistAPI.kpl0Url'] ).queryKey['playlist_id'];
-							if( !videoEmbedAttributes['kplaylistid']){
+							if( ! videoEmbedAttributes['kplaylistid'] ){
 								videoEmbedAttributes['kplaylistid'] = flashvars['playlistAPI.kpl0Url'];
 							}
 						}					
@@ -185,15 +185,13 @@
 								'uiconfid' : $j( playlistTarget ).attr( 'kuiconfid' ),
 								'widgetid' : $j( playlistTarget ).attr( 'kwidgetid' ),
 								'playlistid':  $j( playlistTarget ).attr( 'kplaylistid' )
-							};		
-							debugger;
+							};									
 							
 							// Check if we have a mediaRss url as the playlistId
-							var parsedPlaylistId = mw.parseUri( $j( playlistTarget ).attr( 'kplaylistid' ) );
-							if( parsedPlaylistId.host == parsedPlaylistId.source  ){								
-								var kalturaPlaylistHanlder = new mw.PlaylistHandlerKalturaRss( playlistConfig );	
-							} else {
-								var kalturaPlaylistHanlder = new mw.PlaylistHandlerKaltura( playlistConfig );	
+							if( mw.isUrl( playlistConfig.playlistid ) ) {	
+								var kalturaPlaylistHanlder = new mw.PlaylistHandlerKalturaRss( playlistConfig );								
+							} else {						
+								var kalturaPlaylistHanlder = new mw.PlaylistHandlerKaltura( playlistConfig );
 							}
 							
 							// quick non-ui conf check for layout mode							
@@ -241,10 +239,6 @@
 	} );	
 	
 	mw.getKalturaEmbedSettings = function( swfUrl, flashvars ){		
-		// If the url does not include kwidget or entry_id probably not a kaltura settings url:
-		if( swfUrl.indexOf('kwidget') == -1 ){
-			return {};
-		}
 		if( !flashvars )
 			flashvars= {};
 		
@@ -256,6 +250,10 @@
 		while( dataUrlParts.length ){
 			var curUrlPart =  dataUrlParts.pop();
 			switch( curUrlPart ){
+				case 'p':
+					embedSettings.widgetId = '_' + prevUrlPart;
+					embedSettings.partnerId = prevUrlPart;
+				break;
 				case 'wid':
 					embedSettings.widgetId = prevUrlPart;
 					embedSettings.partnerId = prevUrlPart.replace(/_/,'');

@@ -1823,6 +1823,18 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			return parsedUrl.protocol + '://' + parsedUrl.authority + parsedUrl.directory + src;
 		}
 	};	
+	/**
+	 * Check if a given source string is likely a url   
+	 * 
+	 * @return {boolean} 
+	 * 	true if a url 
+	 * 	false if a string
+	 */
+	mw.isUrl = function( src ){
+		var parsedSrc = mw.parseUri( src );
+		// if the url is just a string source and host will match
+		return ( parsedSrc.host != parsedSrc.source );
+	};
 	
 	/**
 	 * Escape quotes in a text string

@@ -29,8 +29,9 @@ mw.KWidgetSupport.prototype = {
 		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {		
 			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
 			// Add hook for check player sources to use local kEntry ID source check:
-			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {				
-				mw.log(" KWidgetSupport::checkPlayerSourcesEvent ");
+			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {	
+				
+				mw.log(" KWidgetSupport::checkPlayerSourcesEvent for " + embedPlayer.id);
 				_this.checkPlayerSources( embedPlayer, function(){
 					// We can only enable kaltura analytics if we have a session if we have a client										
 					if( mw.getConfig( 'enableKalturaAnalytics' ) == true && _this.kClient ) {
@@ -38,6 +39,7 @@ mw.KWidgetSupport.prototype = {
 					}
 					callback();
 				} );				
+				
 			} );						
 		} );		
 	},
@@ -49,10 +51,13 @@ mw.KWidgetSupport.prototype = {
 	*/ 
 	checkPlayerSources: function( embedPlayer, callback ){
 		var _this = this;	
-		// Make sure we have a widget id: 
-		var widgetId = $j( embedPlayer ).attr( 'kwidgetid' ); 	
+		// Make sure we have a widget id: 		 
+		if( !$j( embedPlayer ).attr( 'kwidgetid' ) ){
+			callback();
+			return ;
+		}
 		// Setup global Kaltura session:
-		_this.setupSession ( widgetId, function( ) {			
+		_this.getKalturaSession ( $j( embedPlayer ).attr( 'kwidgetid' ), function( ) {			
 			_this.addEntryIdSource( embedPlayer, callback);
 		} );
 	},
@@ -195,9 +200,9 @@ mw.KWidgetSupport.prototype = {
 	*  Setup The kaltura session
 	* @param {Function} callback Function called once the function is setup
 	*/ 
-	setupSession: function(widgetId,  callback ) {				 		
+	getKalturaSession: function(widgetId,  callback ) {				 		
 		var _this = this;		
-		mw.log( 'KWidgetSupport::setupSession: widgetId:' + widgetId );
+		mw.log( 'KWidgetSupport::getKalturaSession: widgetId:' + widgetId );
 		
 		// if Kaltura session is ready jump directly to callback
 		if( _this.kalturaSessionState == 'ready' ){
@@ -267,10 +272,11 @@ mw.KWidgetSupport.prototype = {
 	}
 }
 
-// Add the playlist binding
+//Setup the kWidgetSupport global if not already set
+if( !window.kWidgetSupport ){
+	window.kWidgetSupport = new mw.KWidgetSupport();
+}
 
-// Setup the kWidgetSupport global 
-window.kWidgetSupport = new mw.KWidgetSupport();
 
 // Add player Manager binding ( if playerManager not ready bind to when its ready )
 // @@NOTE we may want to move this into the loader since its more "action/loader" code
@@ -285,10 +291,11 @@ if( mw.playerManager ){
 }
 
 /**
- * Register a global shortcuts for the kaltura client. 
+ * Register a global shortcuts for the kaltura client session creation 
  */
 mw.getKalturaClientSession = function( widgetid, callback ){
-	kWidgetSupport.setupSession( widgetid, function(){
+	
+	kWidgetSupport.getKalturaSession( widgetid, function(){
 		// return the kClient: 
 		callback( kWidgetSupport.kClient )
 	});
