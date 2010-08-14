@@ -2562,7 +2562,7 @@ if( mw.isStaticPackge() && !window.jQuery ){
 if( window.jQuery ){
 	if( ! mw.versionIsAtLeast( '1.4.0', jQuery.fn.jquery ) ){
 		// Use console.log to force debug statement even in minified version
-		if( console && console.log ){
+		if ( window.console ) {
 			console.log( 'Error mwEmbed requires jQuery 1.4 or above' );
 		}
 	}
