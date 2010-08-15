@@ -1,4 +1,4 @@
-# Kaltura HTML5 Media Javascript Library
+
 
 ## Library Overview
 
@@ -123,18 +123,22 @@ Installing html5 support to an existing Kaltura integration is as simple as addi
 
 ## Themeing with jQuery-UI
 
-You can add a custom jquery ui theme by using the theme wizard: [http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html](http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html). Note that although the themeroller only works in Firefox, the temes you create with it will work in multiple browsers.
+You can add a custom jQuery UI theme by using the theme wizard: [http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html](http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html). Note that although the themeroller only works in Firefox, the temes you create with it will work in multiple browsers.
 
 
 ## Skinning and Themeing
 
 [jQuery UI ThemeRoller]: http://jqueryui.com/themeroller/
 
-You can add a custom jQuery UI theme by using [jQuery UI ThemeRoller][]. Download the custom theme and add a reference to jquery-ui-1.8.2.custom.css after the mwEmbed-player-static.css file, and remove any existing reference jquery-ui.css.
+You can add a custom jquery ui theme by using the [jQuery UI ThemeRoller][].  Downloading that theme and adding a reference to jquery-ui-.custom.css after the mwEmbed-player-static.css file.
 
 A few sample jQuery UI themes are included in the skins/jquery.ui.themes folder of the [HTML5 Video Player][].
 
 You can remove the kaltura attribution for the player by adding the following javascript:
+
+    <script type="text/javascript">mw.setConfig('EmbedPlayer.kalturaAttribution', false );</script>
+
+You can remove the kaltura attribution for the player by adding the following javascript: 
 
     <script type="text/javascript">mw.setConfig('EmbedPlayer.kalturaAttribution', false );</script>
 
@@ -163,7 +167,7 @@ For full un-minified source see [HTML5 Video Player][]
 In the `<head>` of your page you will need jQuery and the mwEmbed-player package:
 
     <!-- If your page already includes jQuery you can skip this step -->
-    <script type="text/javascript" src="kaltura-html5player-widget/jquery-1.4.2.min.js" ></scirpt>
+    <script type="text/javascript" src="kaltura-html5player-widget/jquery-1.4.2.min.js" ></script>
 
     <!-- Include the css and javascript  -->
     <link rel="stylesheet" href="kaltura-html5player-widget/skins/jquery.ui.themes/jquery-ui-1.7.2.custom.css"></link> 
