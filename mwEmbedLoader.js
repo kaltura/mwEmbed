@@ -21,6 +21,12 @@ if( !window['mw'] ){
 	window['mw'] = {};
 }
 
+// Magic url paramater to enable debug mode
+if( document.URL.indexOf('debugKalturaPlayer=') != -1 ){
+	SCRIPT_FORCE_DEBUG = true;
+}
+
+
 // Define the dom ready flag
 var kAlreadyRunDomReadyFlag = false;
 

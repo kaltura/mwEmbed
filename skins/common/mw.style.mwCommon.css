@@ -179,3 +179,19 @@ ul.ui-provider-selection li a {
 	float: right;
 	margin-right: 10px;
 }
+
+
+/**
+* Special Video player play-btn 
+* Lets us use root common style sheets with jquery based skins
+* ( without additional assets in the embedPlayer skins folder )
+*/
+.mv-player .play-btn-large {
+	width : 130px; 
+	height : 96px; 
+	background : url(images/player_big_play_button.png) !important; 
+	position : absolute; 
+	cursor : pointer; 
+	border : none !important;
+	z-index : 1; 
+}

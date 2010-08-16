@@ -1,22 +1,9 @@
-/*
+/**
  * reference player skin 
  */
 
-/*Video player*/
- 
-/* large play button: */
-.mv-player .play-btn-large { 
-	width : 130px; 
-	height : 96px; 
-	background : url(images/player_big_play_button.png) !important; 
-	position : absolute; 
-	cursor : pointer; 
-	border : none !important;
-	z-index : 1; 
-}
+
 /*.ui-state-default */
-
-
 .mv-player a:link {color: #2060c1; text-decoration: underline;}
 .mv-player a:visited {color: #2060c1; text-decoration: underline;}
 /*a:visited {color: #75a5e4; text-decoration: underline;}*/ /*Not sure if you want this*/

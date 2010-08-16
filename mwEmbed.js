@@ -1987,23 +1987,30 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 * @return true if found, return false if not found
 	 */
 	mw.hasJQueryUiCss = function(){
-		var hasUiCss = false;				
+		var hasUiCss = false;
+		var cssStyleSheetNames = ['jquery-ui-1.7.2.css', 'jquery-ui.css'];
 		// Load the jQuery ui skin if usability skin not set
 		$j( 'link' ).each( function(  na, linkNode ){
-			if( $j( linkNode ).attr( 'href' ).indexOf( 'jquery-ui-1.7.2.css' ) != -1 ) {
-				hasUiCss = true;
-				return true;
-			}
+			$j.each( cssStyleSheetNames, function(inx, sheetName ){
+				if( $j( linkNode ).attr( 'href' ).indexOf( sheetName ) != -1 ){
+					hasUiCss = true;
+					return true;
+				}
+			})
 		} );
-		// Check all the "style" nodes for @import of jquery-ui-1.7.2.css
+		// Check all the "style" nodes for @import for sheet name
 		// xxx Note: we could do this a bit cleaner with regEx
 		$j( 'style' ).each( function( na, styleNode ){
-			if( $j( styleNode ).text().indexOf( '@import' ) != -1 
-				&& $j( styleNode ).text().indexOf( 'jquery-ui-1.7.2.css' ) != -1  ){
+			$j.each( cssStyleSheetNames, function(inx, sheetName ){
+				if( $j( styleNode ).text().indexOf( '@import' ) != -1 
+					&& 
+					$j( styleNode ).text().indexOf( sheetName ) != -1  )
+				{
 					hasUiCss=true;
-			}
-		});
-				
+					return true;
+				}
+			});
+		});				
 		return hasUiCss;		
 	}
 	

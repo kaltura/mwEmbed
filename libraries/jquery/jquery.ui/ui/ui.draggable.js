@@ -580,8 +580,11 @@ $.ui.plugin.add("draggable", "cursor", {
 		t.css("cursor", o.cursor);
 	},
 	stop: function(event, ui) {
-		var o = $(this).data('draggable').options;
-		if (o._cursor) $('body').css("cursor", o._cursor);
+		// ensure draggable data options exist 
+		if( $(this).data('draggable') ){
+			var o = $(this).data('draggable').options;
+			if (o._cursor) $('body').css("cursor", o._cursor);
+		}
 	}
 });
 
