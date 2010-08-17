@@ -81,7 +81,7 @@
 						flashVarsString = $j( element ).find( "param[name='flashVars']" ).val();
 					}
 					var flashVarPairs = flashVarsString.split('&');
-					for( var i in flashVarPairs ) {
+					for( var i =0; i < flashVarPairs.length; i++ ) {
 						var parts = flashVarPairs[i].split('=');
 						flashvars[ parts[0] ] = unescape( parts.slice(1).join('=') );
 					}			
