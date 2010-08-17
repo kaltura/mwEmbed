@@ -33,6 +33,9 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			callback( _this.$rss );
 		});
 	},
+	hasMultiplePlaylists: function(){
+		return false;
+	},
 	getSrc: function(){
 		return this.playlist.src;
 	},

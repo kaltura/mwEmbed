@@ -8,7 +8,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 	uiconfid: null,
 	widgetid: null,
-	playlistid: null,	
+	playlistid: null,
+	playlistSet : [],
 	
 	init: function ( options ){
 		this.uiconfid =  options.uiconfid;
@@ -16,6 +17,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if( options.playlistid ){
 			this.playlistid = options.playlistid;
 		}
+		
 	},	
 	
 	loadPlaylist: function ( callback ){
@@ -31,28 +33,53 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 			
 			var uiconfGrabber = new KalturaUiConfService( kClient );
-			uiconfGrabber.get( function( status, data ) {
-				if( data.confFileFeatures && data.confFileFeatures != 'null') {					
-					var $uiConf = $j(  data.confFileFeatures );
-					var playlistId = $uiConf.find("uiVars [key='kpl0EntryId']").attr('value');
-					if( !playlistId ){
-						mw.log( "Error could not find entry id:\n" + data.confFileFeatures );
+			uiconfGrabber.get( function( status, data ) {				
+				if( data.confFileFeatures && data.confFileFeatures != 'null') {
+
+					// Add all playlists to playlistSet
+					var $uiConf = $j(  data.confFileFeatures );		
+					for( var i=0; i < 50 ; i ++ ){
+						var playlistId  = $uiConf.find("uiVars [key='kpl" + i +"EntryId']").attr('value');
+						var playlistName = $uiConf.find("uiVars [key='playlistAPI.kpl" + i + "Name']").attr('value');
+						if( playlistId && playlistName ){
+							_this.playlistSet.push( { 
+								'name' : playlistName,
+								'playlistId' : playlistId
+							} )
+						} else {
+							break;
+						}
 					}
+					if( !_this.playlistSet[0] ){
+						mw.log( "Error could not playlist entry id:\n" + data.confFileFeatures );
+						return false;
+					}														
 				} else {
-					var playlistId = data.id;
+					_this.playlistSet[0] = {'playlistId' : data.id };
 				}
-				mw.log( "PlaylistHandlerKaltura:: got uiconf of length " + data.confFileFeatures.length + 
-						' Got kaltura playlist id: ' + playlistId);
-				_this.loadPlaylistById( playlistId, kClient, callback)
+				mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );
+				
+				// Set the playlist to the first playlist
+				_this.setPlaylistIndex( 0 );
+				_this.loadPlaylistById( _this.playlistid, kClient, callback );								
 			}, _this.uiconfid );
 		});
+	},
+	hasMultiplePlaylists: function(){
+		return ( this.playlistSet.length > 1 )
+	},
+	getPlaylistSet: function(){
+		return this.playlistSet;
+	},
+	setPlaylistIndex: function( playlistIndex ){
+		this.playlistid = this.playlistSet[ playlistIndex ].playlistId;		
 	},
 	
 	loadPlaylistById: function( playlistId, kClient, callback ){
 		var _this = this;
-		mw.log('loadPlaylistById:' + playlistId );
+		mw.log('loadPlaylistById:' + playlistId );		
 		var kPlaylistGrabber = new KalturaPlaylistService( kClient );
-		kPlaylistGrabber.execute( function( status, playlistData ) {			
+		kPlaylistGrabber.execute( function( status, playlistData ) {
 			if( !  playlistData.length ){						
 				mw.log("Error: kaltura playlist:" + playlistId + " could not load:" + playlistData.code)
 				_this.clipList = [];
@@ -61,8 +88,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 				_this.clipList = playlistData;			
 			}
 			callback();
-		}, playlistId);
+		}, playlistId );
 	},	
+	
 	/**
 	 * get clip count
 	 * @return {number} Number of clips in playlist

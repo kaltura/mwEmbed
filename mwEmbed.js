@@ -503,7 +503,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			// Issue the load request check check loadStates to see if we are
 			// "done"
 			for( var loadName in loadStates ) {				
-				mw.log("loadMany: load: " + loadName );
+				//mw.log("loadMany: load: " + loadName );
 				this.load( loadName, function ( loadName ) {										
 					loadStates[ loadName ] = 1;
 					
@@ -1698,7 +1698,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		var urid = mw.parseUri( mwEmbedSrc ).queryKey['urid']
 		
 		// If we're in debug mode, get a fresh unique request key and pass on
-		// "debug" param
+		// "debug" param         	
 		if ( mw.parseUri( mwEmbedSrc ).queryKey['debug'] == 'true' ) {		
 			mw.setConfig( 'debug', true );			
 			var d = new Date();
@@ -2393,7 +2393,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			};
 			
 			$.button = function( options ) {
-				var options = $j.extend( mw_default_button_options, options);
+				var options = $j.extend( {}, mw_default_button_options, options);
 				
 				// Button:
 				var $btn = $j('<a />')			
