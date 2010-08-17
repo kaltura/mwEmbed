@@ -75,7 +75,7 @@ mw.addMessages( {
 /*
 * The default video attributes supported by embedPlayer
 */ 
-mw.setConfig( 'embedPlayerAttributes', {
+mw.setConfig( 'EmbedPlayer.Attributes', {
 	/* 
 	* Base html element attributes: 
 	*/	
@@ -264,7 +264,7 @@ mw.setDefaultConfig( 'embedPlayerSourceAttributes', [
 	*	Attributes Object can include any key value pair that would otherwise be
 	*	an attribute in the html element. 
 	*	
-	*	also see: mw.getConfig( 'embedPlayerAttributes' )
+	*	also see: mw.getConfig( 'EmbedPlayer.Attributes' )
 	*
 	* @param {Function=} callback Optional Function to be called once video interfaces are ready
 	*
@@ -1394,14 +1394,18 @@ mw.EmbedPlayer.prototype = {
 			customAttributes = { };
 		}		
 		
-		var playerAttributes = mw.getConfig( 'embedPlayerAttributes' ); 
-		
+		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );		
 		// Setup the player Interface from supported attributes:
 		for ( var attr in playerAttributes ) {
 			if ( customAttributes[ attr ] || customAttributes[ attr ] === false ) {
 				this[ attr ] = customAttributes[ attr ];
-			} else if ( element.getAttribute( attr ) ) {
-				this[ attr ] = element.getAttribute( attr );
+			} else if ( element.getAttribute( attr ) != null ) {
+				// boolean attributes
+				if( element.getAttribute( attr ) == '' ){
+					this[ attr ] = true;
+				} else {
+					this[ attr ] = element.getAttribute( attr );
+				}
 			} else {
 				this[attr] = playerAttributes[attr];
 			}

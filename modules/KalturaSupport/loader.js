@@ -15,7 +15,7 @@
 	} );
 	
 	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
-	mw.setConfig( 'embedPlayerAttributes', {
+	mw.setConfig( 'EmbedPlayer.Attributes', {
 		'kentryid' : null,
 		'kwidgetid' : null,
 		'kuiconfid' : null
