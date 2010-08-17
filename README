@@ -228,11 +228,12 @@ You may check out a read-only working copy anonymously over HTTP:<br />
 
 <h2 id="compile_docs">Compile Developer Docs</h2>
 
-    java -jar jsrun.jar app/run.js /home/papyromancer/src/mwEmbed/loader.js /home/papyromancer/src/mwEmbed/mwEmbed.js /home/papyromancer/src/mwEmbed/mwEmbedLoader.js /home/papyromancer/src/mwEmbed/modules/**/*/*.js -t=templates/jsdoc
+    java -jar ~/src/jsdoc-toolkit/jsrun.jar ~/src/jsdoc-toolkit/app/run.js -t=/home/papyromancer/src/jsdoc-toolkit/templates/jsdoc/ mwEmbed.js loader.js mwEmbedLoader.js ./modules/**/*/*.js
 
 
     cat overview.markdown features.markdown basic_usage.markdown advanced_examples.markdown mit.markdown troubleshooting.markdown showcase.markdown license.markdown > README
     cat overview.markdown features.markdown basic_usage.markdown mit.markdown troubleshooting.markdown showcase.markdown > README.mit
+
     bluecloth README > docs/README.html
 
 <h2 id="additionally">Additional Resources</h2>
