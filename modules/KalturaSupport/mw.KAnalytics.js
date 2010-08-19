@@ -76,7 +76,7 @@ mw.KAnalytics.prototype = {
 		// Generate the status event 
 		var eventSet = {
 			'eventType' :	eventKeyId,
-								
+			
 			'clientVer' : this.version,
 			'currentPoint' : 	parseInt( this.embedPlayer.currentTime * 1000 ),
 			'duration' :	this.embedPlayer.getDuration(),
@@ -86,7 +86,11 @@ mw.KAnalytics.prototype = {
 			'partnerId' :	mw.getConfig( 'kPartnerId' ),			
 			'sessionId' : mw.getConfig( 'kSessionId' ),
 			'uiconfId' : 0
-		};		
+		};				
+		
+		if( isNaN( eventSet.duration )  ){
+			eventSet.duration = 0;
+		}
 		
 		// Set the seek condition:
 		eventSet[ 'seek' ] = ( this.hasSeeked ) ? 'true' : 'false';
@@ -98,7 +102,7 @@ mw.KAnalytics.prototype = {
 			// if kentryid is not set, use the selected source url
 			eventSet[ 'entryId' ] = this.embedPlayer.getSrc();
 		}					
-		
+		//alert( 'Send Kaltura Event: ' + ' dur:' + eventSet.duration );
 		// Check if kalturaAnalyticsCallbackLog is enabled:
 		if( typeof mw.getConfig( 'kalturaAnalyticsCallbackLog' ) == 'function' ) {
 			mw.getConfig( 'kalturaAnalyticsCallbackLog' )( KalturaStatsEventKey + ' sent ');
