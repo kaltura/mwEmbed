@@ -228,14 +228,16 @@
 		// Check if we have analytics globally or per playerElement enabled 
 		// And add the class to the request set and set the server is per-player specified. 
 		if( mw.getConfig( 'enableKalturaAnalytics' ) 
-			|| $j( playerElement ).attr( 'enableKalturaAnalytics' ) ){
+			|| $j( playerElement ).attr( 'enableKalturaAnalytics' ) ){			
 			kalturaSupportRequestSet.push( "mw.KAnalytics" );					
 		}		
 		
 		// Add kaltura support hook
 		if( kLoadKalturaSupport ) {
 			for(var i =0; i < kalturaSupportRequestSet.length; i++ ){
-				classRequest.push( kalturaSupportRequestSet[i] );
+				if( $j.inArray(kalturaSupportRequestSet[i], classRequest ) == -1 ){
+					classRequest.push( kalturaSupportRequestSet[i] );
+				}
 			}
 		}		
 	} );	
