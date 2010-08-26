@@ -36,18 +36,22 @@
 	} );
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
-	var kalturaSupportRequestSet = [		
-	  'KalturaClientBase',
-	  'KalturaClient',
-	  'KalturaAccessControlService',
-	  'KalturaAccessControlOrderBy',
-	  'KalturaAccessControl',
-	  'MD5',
-	  'mw.KWidgetSupport'
+	var kalturaSupportRequestSet = [
+		[ 
+		  'KalturaClientBase'
+		] ,
+		[ 
+		  'KalturaClient',
+		  'KalturaAccessControlService',
+		  'KalturaAccessControlOrderBy',
+		  'KalturaAccessControl',
+		  'MD5',
+		  'mw.KWidgetSupport'
+		]
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
-		return $j.merge( kalturaSupportRequestSet, 
+		return $j.merge( kalturaSupportRequestSet[ 1 ], 
 				[ 
 				  'mw.PlaylistHandlerKaltura', 
 				  'mw.PlaylistHandlerKalturaRss'
@@ -229,7 +233,7 @@
 		// And add the class to the request set and set the server is per-player specified. 
 		if( mw.getConfig( 'enableKalturaAnalytics' ) 
 			|| $j( playerElement ).attr( 'enableKalturaAnalytics' ) ){
-			kalturaSupportRequestSet.push( "mw.KAnalytics" );					
+			kalturaSupportRequestSet[1].push( "mw.KAnalytics" );					
 		}		
 		
 		// Add kaltura support hook
