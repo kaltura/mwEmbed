@@ -43,15 +43,16 @@
 	  'KalturaAccessControlOrderBy',
 	  'KalturaAccessControl',
 	  'MD5',
-	  'mw.KWidgetSupport'
+	  'mw.KWidgetSupport',
+	  'mw.KAnalytics'
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
 		return $j.merge( kalturaSupportRequestSet, 
-				[ 
-				  'mw.PlaylistHandlerKaltura', 
-				  'mw.PlaylistHandlerKalturaRss'
-				]);
+			[ 
+			  'mw.PlaylistHandlerKaltura', 
+			  'mw.PlaylistHandlerKalturaRss'
+			]);
 	});
 
 	//Check if the document has kaltura objects ( for fall forward support ) 
@@ -223,13 +224,6 @@
 		// Check if any video tag uses the "kEmbedSettings.entryId"  
 		if(  $j( playerElement ).attr( 'kentryid' ) ) {
 			kLoadKalturaSupport = true;
-		}
-		
-		// Check if we have analytics globally or per playerElement enabled 
-		// And add the class to the request set and set the server is per-player specified. 
-		if( mw.getConfig( 'enableKalturaAnalytics' ) 
-			|| $j( playerElement ).attr( 'enableKalturaAnalytics' ) ){			
-			kalturaSupportRequestSet.push( "mw.KAnalytics" );					
 		}		
 		
 		// Add kaltura support hook
