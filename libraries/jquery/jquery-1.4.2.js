@@ -1820,7 +1820,7 @@ jQuery.event = {
 
 				// Only trigger if we've ever bound an event for it
 				if ( jQuery.event.global[ type ] ) {
-					jQuery.each( jQuery.cache, function() {
+					jQuery.each( jQuery.cache, function() {						
 						if ( this.events && this.events[type] ) {
 							jQuery.event.trigger( event, data, this.handle.elem );
 						}

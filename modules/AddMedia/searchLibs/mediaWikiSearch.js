@@ -183,14 +183,18 @@ mediaWikiSearch.prototype = {
 				}
 				
 				// Get the url safe titleKey from the descriptionurl
-				var titleKey = page.imageinfo[0].descriptionurl.split( '/' );
-				titleKey = unescape( titleKey[ titleKey.length - 1 ] );				
+				var titleKey = page.imageinfo[0].descriptionurl.split( '/' )
+					;
+				titleKey = unescape( 
+						titleKey[ titleKey.length - 1 ]
+						.replace( 'index.php?title=', '') 
+					);				
 				
 				var resource = 	{
 					'id'		 : page_id,
 					'titleKey'	 : titleKey,
 					'link'		 : page.imageinfo[0].descriptionurl,
-					'title'		 : page.title.replace(/File:|.jpg|.png|.svg|.ogg|.ogv|.oga/ig, ''),
+					'title'		 : page.title.replace(/Image:|File:|.jpg|.png|.svg|.ogg|.ogv|.oga/ig, ''),
 					'poster'	 : page.imageinfo[0].thumburl,
 					'thumbwidth' : page.imageinfo[0].thumbwidth,
 					'thumbheight': page.imageinfo[0].thumbheight,

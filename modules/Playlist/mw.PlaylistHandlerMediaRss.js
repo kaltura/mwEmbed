@@ -7,6 +7,9 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	// Set the media rss namespace
 	mediaNS: 'http://search.yahoo.com/mrss/',
 			
+	// If playback should continue to the next clip on clip complete
+	autoContinue: true,
+	
 	init: function ( Playlist ){
 		this.playlist = Playlist;
 	},

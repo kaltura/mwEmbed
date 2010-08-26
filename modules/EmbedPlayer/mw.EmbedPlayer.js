@@ -430,7 +430,7 @@ EmbedPlayerManager.prototype = {
 		
 		// Check for player attributes such as skins or plugins attributes 
 		// that add to the request set	
-		var playerDependencyRequest = [ ];
+		var playerDependencyRequest = [];
 		
 		// merge in any custom attributes
 		$j.extend( playerElement, attributes );

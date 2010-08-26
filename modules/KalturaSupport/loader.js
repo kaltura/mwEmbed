@@ -36,14 +36,14 @@
 	} );
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
-	var kalturaSupportRequestSet = [
-		"KalturaClientBase",
-		"KalturaClient",
-		"KalturaAccessControlService",
-		"KalturaAccessControlOrderBy",
-		"KalturaAccessControl",
-		"MD5",
-		"mw.KWidgetSupport" 
+	var kalturaSupportRequestSet = [		
+	  'KalturaClientBase',
+	  'KalturaClient',
+	  'KalturaAccessControlService',
+	  'KalturaAccessControlOrderBy',
+	  'KalturaAccessControl',
+	  'MD5',
+	  'mw.KWidgetSupport'
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
@@ -233,9 +233,11 @@
 		}		
 		
 		// Add kaltura support hook
-		if( kLoadKalturaSupport ) {			
-			$j.merge( classRequest, kalturaSupportRequestSet );
-		}			
+		if( kLoadKalturaSupport ) {
+			for(var i =0; i < kalturaSupportRequestSet.length; i++ ){
+				classRequest.push( kalturaSupportRequestSet[i] );
+			}
+		}		
 	} );	
 	
 	mw.getKalturaEmbedSettings = function( swfUrl, flashvars ){		

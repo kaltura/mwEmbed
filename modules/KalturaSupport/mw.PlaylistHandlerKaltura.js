@@ -11,6 +11,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 	playlistid: null,
 	playlistSet : [],
 	
+	// If playback should continue to the next clip on clip complete
+	autoContinue: true,
+	
 	init: function ( options ){
 		this.uiconfid =  options.uiconfid;
 		this.widgetid = options.widgetid;			
@@ -33,11 +36,17 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 			
 			var uiconfGrabber = new KalturaUiConfService( kClient );
-			uiconfGrabber.get( function( status, data ) {				
+			uiconfGrabber.get( function( status, data ) {							
 				if( data.confFileFeatures && data.confFileFeatures != 'null') {
 
 					// Add all playlists to playlistSet
-					var $uiConf = $j(  data.confFileFeatures );		
+					var $uiConf = $j(  data.confFileFeatures );
+					mw.log( $uiConf.html() );
+					// check for autoContinue ( we check false state so that by default we autoContinue ) 
+					_this.autoContinue = 
+						( $uiConf.find("uiVars [key='playlistAPI.autoContinue']").attr('value') == 'false' )? false: true
+															
+					// Find all the playlists by number  
 					for( var i=0; i < 50 ; i ++ ){
 						var playlistId  = $uiConf.find("uiVars [key='kpl" + i +"EntryId']").attr('value');
 						var playlistName = $uiConf.find("uiVars [key='playlistAPI.kpl" + i + "Name']").attr('value');

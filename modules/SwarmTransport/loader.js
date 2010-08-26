@@ -33,7 +33,7 @@
 		// If the swarm transport is enabled add mw.SwarmTransport to the request.   
 		if( mw.getConfig( 'SwarmTransport.enable' ) ) {
 			if( $j.inArray( 'mw.SwarmTransport', classRequest ) == -1 )  {
-				classRequest.push( 'mw.SwarmTransport' );
+				classRequest.push( [ 'mw.SwarmTransport' ]);
 			}
 		}
 	});

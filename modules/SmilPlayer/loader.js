@@ -38,7 +38,7 @@
 		];
 			
 		// Add smil library set if needed
-		if( mw.CheckElementForSMIL( playerElement )  ) {  			
+		if( mw.CheckElementForSMIL( playerElement ) ) {  			
 			$j.merge(resourceRequest, smilPlayerLibrarySet);
 		}
 	} );

@@ -172,7 +172,9 @@
 		// Pass every tag being rewritten through the update request function
 		$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).each( function() {	
 			var playerElement = this;		
-			mw.embedPlayerUpdateLibraryRequest( playerElement,  dependencyRequest[ 0 ] )			
+			var dog = dependencyRequest;
+			debugger;
+			mw.embedPlayerUpdateLibraryRequest( playerElement,  dependencyRequest )			
 		} );
 		
 		// Add PNG fix code needed:
@@ -212,8 +214,7 @@
 		// Set playerClassName to default	
 		if( ! playerClassName ){
 			playerClassName = mw.getConfig( 'EmbedPlayer.SkinName' );
-		}		
-		// compre with lower case: 
+		}
 		playerClassName = playerClassName.toLowerCase();
 		for( var n=0; n < mw.validSkins.length ; n++ ) {
 			// Get any other skins that we need to load 
@@ -223,7 +224,6 @@
 				playerSkins[ mw.validSkins[ n ].toLowerCase() ] = true;
 			}
 		}
-	
 		
 		// Add the player skins css and js to the load request:	
 		for( var pSkin in playerSkins ) {
@@ -236,12 +236,11 @@
 			
 			// Add the skin css 
 			dependencyRequest.push( 'mw.style.PlayerSkin' + pSkin );
-		}	
+		}
 		
 		// Allow extension to extend the request. 				
 		$j( mw ).trigger( 'LoaderEmbedPlayerUpdateRequest', 
 				[ playerElement, dependencyRequest ] );
-
 	}
 
 } )( window.mw );

@@ -470,25 +470,27 @@ mw.Playlist.prototype = {
 		
 		// Update the video tag with the embedPlayer
 		$j.embedPlayers( function(){						
-			// Setup ondone playing binding to play next clip			
-			$j( '#mrss_' + _this.id + '_' + _this.clipIndex ).unbind('ended').bind( 'ended', function(event, onDoneActionObject ){										
-				// Play next clip
-				if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
-					// Update the onDone action object to not run the base control done: 
-					onDoneActionObject.runBaseControlDone = false;
-					_this.clipIndex++;
-										
-					// update the player and play the next clip						
-					_this.updatePlayer( _this.clipIndex, function(){						
-						_this.play();
-					})					
-					
-				} else {
-					mw.log("Reached end of playlist run normal end action" );
-					// Update the onDone action object to not run the base control done: 
-					onDoneActionObject.runBaseControlDone = true;
-				}
-			})			
+			// Setup ondone playing binding to play next clip (if autoContinue is true )			
+			if( _this.sourceHandler.autoContinue == true ){
+				$j( '#mrss_' + _this.id + '_' + _this.clipIndex ).unbind('ended').bind( 'ended', function(event, onDoneActionObject ){										
+					// Play next clip
+					if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
+						// Update the onDone action object to not run the base control done: 
+						onDoneActionObject.runBaseControlDone = false;
+						_this.clipIndex++;
+											
+						// update the player and play the next clip						
+						_this.updatePlayer( _this.clipIndex, function(){						
+							_this.play();
+						})					
+						
+					} else {
+						mw.log("Reached end of playlist run normal end action" );
+						// Update the onDone action object to not run the base control done: 
+						onDoneActionObject.runBaseControlDone = true;
+					}
+				})
+			}
 			// Run the callback if its set
 			if( callback ){
 				callback();

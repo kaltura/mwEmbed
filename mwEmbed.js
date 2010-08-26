@@ -329,7 +329,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 * 
 		 */				
 		load: function( loadRequest, instanceCallback ) {			
-			// mw.log("mw.load:: " + loadRequest );
+			mw.log("mw.load:: " + loadRequest );
 			var _this = this;
 
 			// Throw out any loadRequests that are not strings
@@ -399,6 +399,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			
 			// Try loading as a "file" or via ScriptLoader
 			if( loadRequest ) {				
+				
 				// Check if this resource was already requested
 				if( typeof this.requestedResourceQueue[ loadRequest ] == 'object' ){					
 					this.requestedResourceQueue[ loadRequest ].push( callback );
@@ -407,7 +408,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					this.requestedResourceQueue[ loadRequest ] = [];
 				}
 				
-				if( loadRequest.indexOf( '.js' ) == -1 && !mw.getResourceLoaderPath() ) {
+				if( loadRequest.indexOf( '.js' ) == -1 && !mw.getResourceLoaderPath() ) {					
 					mw.log( 'Error: are you sure ' + loadRequest + ' is a file ( is it missing a resource path? ) ' );
 				}				
 				mw.getScript( loadRequest, function(){
@@ -465,7 +466,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 * @param {Function}
 		 *            callback Function to call once all scripts are loaded.
 		 */ 
-		loadMany: function( loadSet, callback ) {				
+		loadMany: function( loadSet, callback ) {		
 			var _this = this;
 			// Setup up the local "loadStates"
 			var loadStates = { };
@@ -481,7 +482,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					return ;
 				}						
 			}else{									
-				// Check if its a dependency set ( nested objects )
+				// Check if its a dependency set ( nested arrays )
 				if( typeof loadSet [ 0 ] == 'object' ) {		
 					_this.dependencyChainCallFlag[ loadSet ] = false;
 					// Load sets of resources ( to preserver order for some
@@ -606,6 +607,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 *            are requested in array order.
 		 */ 
 		loadDependencyChain: function( loadChain, callback ) {
+			mw.log("LoadDependencyChain:: dependency set length " + loadChain.length );
 			var _this = this;						
 			// Load with dependency checks
 			var callSet = loadChain.shift();
@@ -2278,7 +2280,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		$j( targetObject ).trigger( triggerName, function() {		
 			callInx++;
 			if( callInx == callbackCount ){				
-				mw.log(" callbackCountReached run:: " + callback);
+				//mw.log(" callbackCountReached run:: " + callback);
 				// Run callback
 				callback();
 			}
