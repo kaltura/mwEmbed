@@ -137,8 +137,8 @@ function kCheckAddScript(){
 		// Check for kaltura objects in the page
 		var usedIdSet = [];
 		for(var i=0; i < document.getElementsByTagName('object').length; i++) {
-			var embedTag = document.getElementsByTagName('object')[i];
-			if( embedTag.getAttribute( 'name' ) == 'kaltura_player' ) {											
+			var embedTag = document.getElementsByTagName('object')[i];			
+			if( embedTag.getAttribute( 'name' ).substr(0, 14) == 'kaltura_player' ) {											
 				kAddScript();
 				var kId = embedTag.getAttribute( 'id' );
 				if( usedIdSet[ kId ] ) {
