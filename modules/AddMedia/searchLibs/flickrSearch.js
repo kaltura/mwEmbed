@@ -16,7 +16,7 @@ var flickrSearch = function ( options ) {
 	this.init( options );
 }
 flickrSearch.prototype = {
-	dtUrl : 'http://www.flickr.com/photos/',
+	detailsUrl : 'http://www.flickr.com/photos/',
 	// @@todo probably would be good to read the api-key from configuration
 	apikey : '2867787a545cc66c0bce6f2e57aca1d1',
 	// What license we are interested in
@@ -102,7 +102,7 @@ flickrSearch.prototype = {
 		var resource = {
 			'titleKey'	 : flickrResource.title + '.jpg',
 			'resourceKey': flickrResource.id,
-			'link'		 : _this.dtUrl + flickrResource.pathalias + '/' + flickrResource.id,
+			'link'		 : _this.detailsUrl + flickrResource.pathalias + '/' + flickrResource.id,
 			'title'		 : flickrResource.title,
 			'thumbwidth' : flickrResource.width_t,
 			'thumbheight': flickrResource.height_t,

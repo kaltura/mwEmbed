@@ -328,12 +328,12 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 *            callback Function called once loading is complete
 		 * 
 		 */				
-		load: function( loadRequest, instanceCallback ) {			
-			mw.log("mw.load:: " + loadRequest );
+		load: function( loadRequest, instanceCallback ) {						
 			var _this = this;
 
 			// Throw out any loadRequests that are not strings
 			loadRequest = this.cleanLoadRequest( loadRequest );
+			mw.log("mw.load:: " + loadRequest );
 
 			// Ensure the callback is only called once per load instance
 			var callback = function(){
@@ -1153,7 +1153,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 *         undefined
 	 */	
 	mw.isset = function( objectPath ) {
-		if ( !objectPath ) {
+		if ( !objectPath || typeof objectPath != 'string') {
 			return false;
 		}			
 		var pathSet = objectPath.split( '.' );

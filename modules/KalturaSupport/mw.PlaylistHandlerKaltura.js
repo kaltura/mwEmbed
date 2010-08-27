@@ -40,8 +40,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				if( data.confFileFeatures && data.confFileFeatures != 'null') {
 
 					// Add all playlists to playlistSet
-					var $uiConf = $j(  data.confFileFeatures );
-					mw.log( $uiConf.html() );
+					var $uiConf = $j(  data.confFileFeatures );					
 					// check for autoContinue ( we check false state so that by default we autoContinue ) 
 					_this.autoContinue = 
 						( $uiConf.find("uiVars [key='playlistAPI.autoContinue']").attr('value') == 'false' )? false: true
