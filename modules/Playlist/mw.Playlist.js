@@ -77,10 +77,10 @@ mw.Playlist.prototype = {
 		// Set the target to loadingSpinner: 
 		$j( this.target ).empty().loadingSpinner();
 		
-		this.loadPlaylist( function( ){			
+		this.loadPlaylistHandler( function( sourceHandler ){			
 			mw.log("mw.Playlist::loaded playlist set");
 			// Check if load failed or empty playlist
-			if( _this.sourceHandler.getClipList().length == 0 ){
+			if( sourceHandler.getClipList().length == 0 ){
 				$j( _this.target ).empty().text( gM('mwe-playlist-empty') )
 				return ;	
 			}
@@ -593,7 +593,7 @@ mw.Playlist.prototype = {
 	/**
 	 * Load the playlist driver from a source
 	 */
-	loadPlaylist: function( callback ){
+	loadPlaylistHandler: function( callback ){
 		var _this = this;		
 		if( !_this.sourceHandler ){
 			switch( this.type ){
@@ -604,7 +604,7 @@ mw.Playlist.prototype = {
 		};		
 		// load the playlist 
 		_this.sourceHandler.loadPlaylist( function(){			
-			callback();
+			callback( _this.sourceHandler );
 		});
 	}, 
 	

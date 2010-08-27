@@ -6,7 +6,7 @@
 * http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
 */
 
-var kURID = '1.1r';
+var kURID = '1.1q';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -132,21 +132,10 @@ function kCheckAddScript(){
 	}	
 	
 	// If document includes kaltura embed tags && isMobile safari: 
-	if ( kBrowserAgentShouldUseHTML5() ) {
-	
-		// Check for kaltura objects in the page
-		var usedIdSet = [];
-		for(var i=0; i < document.getElementsByTagName('object').length; i++) {
-			var embedTag = document.getElementsByTagName('object')[i];			
-			if( embedTag.getAttribute( 'name' ).substr(0, 14) == 'kaltura_player' ) {											
-				kAddScript();
-				var kId = embedTag.getAttribute( 'id' );
-				if( usedIdSet[ kId ] ) {
-					// Update the id ( append index )
-					embedTag.setAttribute( 'id',  kId + '_' + i);
-				}
-				usedIdSet[ embedTag.getAttribute( 'id' ) ] = true;
-			}
+	if ( kBrowserAgentShouldUseHTML5() ) {	
+		// Check for Kaltura objects in the page
+		if( kGetKalturaPlayerList().length ){
+			kAddScript();
 		}
 	}
 }
@@ -296,12 +285,43 @@ function doScrollCheck() {
 	// and execute any waiting functions
 	kRunMwDomReady();
 }
-// Copied from kalturaSupport loader mw.getKalturaEmbedSettingsFromUrl 
-kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
-	// If the url does not include kwidget or entry_id probably not a kaltura settings url:
-	if( swfUrl.indexOf('kwidget') == -1 ){
-		return {};
+
+/**
+ * Get the list of embed objects on the page that are 'kaltura players'
+ * Copied from kalturaSupport loader mw.getKalturaPlayerList  
+ */
+kGetKalturaPlayerList = function(){
+	var kalturaPlayers = [];
+	// check all objects for kaltura compatible urls 
+	var objectList = document.getElementsByTagName('object');		
+	var tryAddKalturaEmbed = function( url ){
+		var settings = kGetKalturaEmbedSettings( url );
+		if( settings && settings.uiconfId && settings.widgetId ){
+			kalturaPlayers.push(  objectList[i] );
+			return true;
+		}
+		return false;
 	}
+	for( var i =0; i < objectList.length; i++){
+		if( objectList[i].getAttribute('data') ){
+			if( tryAddKalturaEmbed( objectList[i].getAttribute('data') ) )
+				continue;
+		}
+		var paramTags = objectList[i].getElementsByTagName('param');
+		for( var j = 0; j < paramTags.length; j++){
+			if( paramTags[j].getAttribute('name') == 'data' 
+				||
+				paramTags[j].getAttribute('name') == 'src' )
+			{
+				if( tryAddKalturaEmbed( paramTags[j].getAttribute('value') ) )
+					break;
+			}
+		}
+	}		
+	return kalturaPlayers;
+}
+// Copied from kalturaSupport loader mw.getKalturaEmbedSettings  
+kGetKalturaEmbedSettings = function( swfUrl, flashvars ){		
 	if( !flashvars )
 		flashvars= {};
 	
@@ -313,6 +333,10 @@ kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 	while( dataUrlParts.length ){
 		var curUrlPart =  dataUrlParts.pop();
 		switch( curUrlPart ){
+			case 'p':
+				embedSettings.widgetId = '_' + prevUrlPart;
+				embedSettings.partnerId = prevUrlPart;
+			break;
 			case 'wid':
 				embedSettings.widgetId = prevUrlPart;
 				embedSettings.partnerId = prevUrlPart.replace(/_/,'');

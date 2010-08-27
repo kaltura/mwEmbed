@@ -57,12 +57,9 @@
 
 	//Check if the document has kaltura objects ( for fall forward support ) 
 	$j( mw ).bind( 'LoaderEmbedPlayerDocumentHasPlayerTags', function( event, tagCheckObject ){
-		
-		mw.log('KalturaSupport :: Loader.js :: LoaderEmbedPlayerDocumentHasPlayerTags, objects in page: ' + $j( 'object' ).length );
-		// Check if we have a global selector available: 
-		var select =  "object[name=kaltura_player]";
-		mw.log( 'KalturaSupport found:: ' + $j( select ).length + ' is mobile::' +  mw.isMobileSafari() );
-		if( $j( select ).length ) {
+					
+		mw.log( 'KalturaSupport found:: ' + mw.getKalturaPlayerList().length + ' is mobile::' +  mw.isMobileSafari() );
+		if( mw.getKalturaPlayerList().length ) {
 			tagCheckObject.hasTags = true;			
 			// FALLFORWARD only for mobile safari ::
 			// this is kind of heavy weight for loader.js 
@@ -71,7 +68,7 @@
 			if( mw.isMobileSafari() ) {
 				// setup load flags
 				var loadEmbedPlayerFlag = loadPlaylistFlag = false;
-				$j( select ).each( function( inx, element ){	
+				$j.each(mw.getKalturaPlayerList(), function( inx, element ){	
 					// clear the kalturaSwapObjectClass
 					var kalturaSwapObjectClass = '';
 					// Setup the flashvars variable
@@ -234,7 +231,41 @@
 				}
 			}
 		}		
-	} );	
+	} );
+	
+	/**
+	 * Get the list of embed objects on the page that are 'kaltura players' 
+	 */
+	mw.getKalturaPlayerList = function(){
+		var kalturaPlayers = [];
+		// check all objects for kaltura compatible urls 
+		var objectList = document.getElementsByTagName('object');		
+		var tryAddKalturaEmbed = function( url ){
+			var settings = mw.getKalturaEmbedSettings( url );
+			if( settings && settings.entryId && settings.widgetId ){
+				kalturaPlayers.push(  objectList[i] );
+				return true
+			}
+			return false;
+		}
+		for( var i =0; i < objectList.length; i++){
+			if( objectList[i].getAttribute('data') ){
+				if( tryAddKalturaEmbed( objectList[i].getAttribute('data') ) )
+					continue;
+			}
+			var paramTags = objectList[i].getElementsByTagName('param');
+			for( var j = 0; j < paramTags.length; j++){
+				if( paramTags[j].getAttribute('name') == 'data' 
+					||
+					paramTags[j].getAttribute('name') == 'src' )
+				{
+					if( tryAddKalturaEmbed( paramTags[j].getAttribute('value') ) )
+						break;
+				}
+			}
+		}		
+		return kalturaPlayers;
+	}
 	
 	mw.getKalturaEmbedSettings = function( swfUrl, flashvars ){		
 		if( !flashvars )
