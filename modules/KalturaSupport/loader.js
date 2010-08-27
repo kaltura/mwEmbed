@@ -242,7 +242,7 @@
 		var objectList = document.getElementsByTagName('object');		
 		var tryAddKalturaEmbed = function( url ){
 			var settings = mw.getKalturaEmbedSettings( url );
-			if( settings && settings.entryId && settings.widgetId ){
+			if( settings && settings.uiconfId && settings.widgetId ){
 				kalturaPlayers.push(  objectList[i] );
 				return true
 			}
