@@ -83,11 +83,12 @@ mw.Playlist.prototype = {
 			if( _this.sourceHandler.getClipList().length == 0 ){
 				$j( _this.target ).empty().text( gM('mwe-playlist-empty') )
 				return ;	
-			}			
+			}
 			
 			// Empty the target and setup player and playerList divs
 			$j( _this.target )
 			.empty()
+			.css('position', 'relative' )
 			.append(
 				$j( '<span />' )							
 					.addClass( 'media-rss-video-player')
