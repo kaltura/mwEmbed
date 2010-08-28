@@ -4,7 +4,7 @@
  */
 var urlparts = getRemoteEmbedPath();
 var mwEmbedHostPath = urlparts[0];
-var mwRemoteVersion = 'r137';
+var mwRemoteVersion = 'r139';
 var mwUseScriptLoader = true;
 
 // Log the mwRemote version makes it easy to debug cache issues
@@ -12,7 +12,10 @@ if( window.console ){
 	window.console.log( 'mwEmbed:remote: ' + mwRemoteVersion );
 }
 
-
+// Make sure mw exists::
+if( typeof window.mw == 'undefined'){
+	window.mw = {};
+}
 // Setup up request Params: 
 var reqParts = urlparts[1].substring( 1 ).split( '&' );
 var mwReqParam = { };
@@ -32,8 +35,6 @@ if( document.URL.indexOf( 'debug=true' ) !== -1 ){
 if( mwReqParam['debug'] ) {
 	mwUseScriptLoader = false;
 }
-
-
 
 // Setup up some globals to wrap mwEmbed mw.ready and mw.setConfig functions
 
@@ -64,7 +65,6 @@ if( !mw.setConfig ){
 	}
 }
 
-
 // Use wikibits onLoad hook: ( since we don't have js2 / mw object loaded ) 
 addOnloadHook( function() {
 	doPageSpecificRewrite();
@@ -82,7 +82,7 @@ function doPageSpecificRewrite() {
 	window.ranMwRewrites = 'done';
 	
 	// Add media wizard
-	if ( wgAction == 'edit' || wgAction == 'submit' ) {
+	if ( ( wgAction == 'edit' && wgPageName.indexOf( "Sequence:" ) ) || wgAction == 'submit' ) {
 		loadMwEmbed( [ 
 			'mw.RemoteSearchDriver',
 			'mw.ClipEdit',
@@ -120,18 +120,30 @@ function doPageSpecificRewrite() {
 	}
 	
 	// Remote Sequencer
-	if( wgPageName.indexOf( "Sequence:" ) === 0 ){		
+	if( wgPageName.indexOf( "Sequence:" ) === 0 ){			
 		//console.log( 'spl: ' + typeof mwSetPageToLoading );
 		// If on a view page set content to "loading" 
-		mwSetPageToLoading();
-		loadMwEmbed( [ 'mw.RemoteSequencer' ], function(){
-			var remote = new mw.RemoteSequencer({
-				'action': wgAction,
-				'title' : wgTitle,
-				'target' : '#bodyContent'
-			});
-			remote.drawUI();
-		} );
+		if( wgAction == 'view' || wgAction == 'edit' ){
+			if( wgAction == 'view' ){
+				mwSetPageToLoading();
+			}
+			if( wgAction == 'edit' ){
+				mwAddCommonStyleSheet();
+				var body = document.getElementById( 'bodyContent' );
+				body.innerHTML = "<div class=\"loadingSpinner sequenceLoader\"></div>" + body.innerHTML;				
+			}
+			loadMwEmbed( [ 'mw.MediaWikiRemoteSequencer' ], function(){
+				$j('#editform').hide();
+				$j('.sequenceLoader').hide();
+				
+				var remote = new mw.MediaWikiRemoteSequencer({
+					'action': wgAction,
+					'title' : wgTitle,
+					'target' : '#bodyContent'
+				});
+				remote.drawUI();
+			} );
+		}
 		return ;
 	}
 	
@@ -162,7 +174,7 @@ function doPageSpecificRewrite() {
 	if ( wgPageName == 'MediaWiki:ApiProxy' ) {
 		var wgEnableIframeApiProxy = true;		
 		loadMwEmbed( [ 'mw.ApiProxy' ], function() {
-			mw.load( mwEmbedHostPath + '/remotes/apiProxyPage.js?' + mwGetReqArgs() );
+			mw.load( mwEmbedHostPath + '/modules/ApiProxy/ApiProxyPage.js?' + mwGetReqArgs() );
 		} );
 		return ;
 	}
@@ -209,11 +221,20 @@ function doPageSpecificRewrite() {
 * Sets the mediaWiki content to "loading" 
 */
 function mwSetPageToLoading(){
-	importStylesheetURI( mwEmbedHostPath + '/skins/mvpcf/EmbedPlayer.css?' + mwGetReqArgs() );
+	mwAddCommonStyleSheet();
 	var body = document.getElementById('bodyContent');
 	var oldBodyHTML = body.innerHTML;
-	body.innerHTML = '<div class="loadingSpinner"></div>';
+	body.innerHTML = '<div class="loadingSpinner"></div>';	
 	return oldBodyHTML;
+}
+function mwAddCommonStyleSheet(){
+	importStylesheetURI( mwEmbedHostPath + '/skins/common/mw.style.mwCommon.css?' + mwGetReqArgs() );
+	// Set the style to defined ( so that when mw won't load the style sheet again) 
+	if( !mw.style ){
+		mw.style = { 'mwCommon' : true };
+	} else {
+		mw.style['mwCommon'] = true;
+	}
 }
 /**
 * Similar to the player loader in /modules/embedPlayer/loader.js
@@ -274,9 +295,9 @@ function rewrite_for_OggHandler( vidIdList ) {
 			
 		tag_type = 'video';
 				
-		// Check type:
-		var pwidth = $j( '#' + vidId ).width();
+		// Check type:		
 		var $pimg = $j( '#' + vidId + ' img:first' );
+		var pwidth = $pimg.width();
 		var imgSring = $pimg.attr('src').split('/').pop();		
 		if(  $pimg.attr('src') &&  imgSring == 'play.png' || imgSring == 'fileicon-ogg.png' ){
 			tag_type = 'audio';
@@ -347,7 +368,6 @@ function rewrite_for_OggHandler( vidIdList ) {
 				'style="width:' + pwidth + 'px;height:' + pheight + 'px;">' +
 				'</video>';
 			}
-			
 					
 			// If the video is part of a "gallery box" use light-box linker instead
 			if( $j( '#' + vidId ).parents( '.gallerybox' ).length ){				
@@ -598,7 +618,7 @@ function mwCheckForGadget(){
 	mw.log('gadget not installed, show install menu');	
 	var $gadgetBtn = $j.button({
 			'text' : gM( 'mwe-enable-gadget' ),
-			'icon_id': 'check'
+			'icon': 'check'
 		})
 		.css({
 			'font-size': '90%'

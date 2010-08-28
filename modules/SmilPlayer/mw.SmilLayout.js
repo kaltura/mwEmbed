@@ -114,8 +114,12 @@ mw.SmilLayout.prototype = {
 	},
 	
 	drawElementThumb: function( $target, $node, relativeTime ){			
-		mw.log('SmilLayout::drawElementThumb: ' + relativeTime );
-		// parse the time incase it came in as human input
+		mw.log('SmilLayout::drawElementThumb: ' + $node.attr('id') + ' relative time:' + relativeTime );	
+		if( $target.length == 0 ){
+			mw.log("Error drawElementThumb to empty target");
+			return ;
+		}
+		// parse the time in case it came in as human input
 		relativeTime = this.smil.parseTime( relativeTime );
 		switch ( this.smil.getRefType( $node )){
 			case 'video':				
@@ -125,10 +129,10 @@ mw.SmilLayout.prototype = {
 				// xxx we could eventually use canvas as well but for now just add it at 100%
 				$target.html(
 					this.getSmilImgHtml( $node, {
-							'width' : $target.width(),
-							'height' : $target.height()
-						})
-				);				
+						'width' : $target.width(),
+						'height' : $target.height()
+					})
+				);
 			break;
 			case 'cdata_html':
 				// Scale down the html into the target width
@@ -136,8 +140,20 @@ mw.SmilLayout.prototype = {
 					this.getSmilCDATAHtml( $node, $target.width() )
 				)
 			break;
-			case 'audio':
-				// draw an audio icon in the target
+			case 'audio':			
+				var titleStr = ( $node.attr('title') )?  $node.attr('title') : gM( 'mwe-sequencer-untitled-audio' )
+				// draw an audio icon / title the target
+				$target.append(
+					$j('<span />')
+					.addClass( 'ui-icon ui-icon-volume-on')
+					.attr('title', titleStr)
+					.css( 'position', 'absolute')
+					,
+					$j('<span />')
+					.attr('title', titleStr)
+					.css({'position': 'absolute', 'left':'16px'})
+					.text( titleStr )
+				)
 			break;
 		}							
 	},
@@ -189,7 +205,7 @@ mw.SmilLayout.prototype = {
 				// update the drawElement 
 				drawElement = $j( '#' + _this.smil.getPageDomId( $tmpFrameNode ) ).get(0);
 				drawFrame( drawElement );
-				// remove the temporary node from dom
+				// Remove the temporary node from dom
 				$j( drawElement ).remove();
 			})			
 		}

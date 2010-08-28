@@ -25,37 +25,12 @@ mw.SequencerKeyBindings.prototype = {
 	// set of key flags:
 	shiftDown: false,
 	ctrlDown: false,
-		
+	/* events */
+	
 	init: function( sequencer ){
 		this.sequencer = sequencer;
 		this.setupKeyBindigs()		
 	},
-	
-	bindEvent: function( eventType, callback){
-		if( typeof eventType == 'object' ){
-			for( var i in eventType ){
-				this.bindEvent( i, eventType[i] );
-			}
-		}
-		switch( eventType ){		
-			case 'copy':
-				this.copyEvent = callback;
-				break;
-			case 'cut':
-				this.cutEvent = callback;
-				break;
-			case 'paste' :
-				this.pasteEvent = callback;
-				break;
-			case 'escape' :
-				this.escapeEvent = callback;
-				break;
-			case 'delete':
-				this.deleteEvent = callback;
-				break;
-		}
-		return this;
-	},	
 	onFocus: function( ){		
 		this.inputFocus = true;		
 	},
@@ -74,14 +49,14 @@ mw.SequencerKeyBindings.prototype = {
 				_this.ctrlDown = true;
 
 			if ( ( e.which == 67 && _this.ctrlDown ) && !_this.inputFocus )
-				_this.copyEvent();
+				$j( _this ).trigger( 'copy ');
 
 			if ( ( e.which == 88 && _this.ctrlDown ) && !_this.inputFocus )
-				_this.cutEvent();
+				$j( _this ).trigger( 'cut ');
 
 			// Paste cips on v + ctrl while not focused on a text area:
 			if ( ( e.which == 86 && _this.ctrlDown ) && !_this.inputFocus )
-				_this.pasteEvent();
+				$j( _this ).trigger( 'paste ');
 
 		} );
 		$j( window ).keyup( function( e ) {
@@ -95,12 +70,12 @@ mw.SequencerKeyBindings.prototype = {
 
 			// Escape key ( deselect )
 			if ( e.which == 27 )
-				_this.escapeEvent();
+				$j( _this ).trigger( 'escape' );				
 
 
 			// Backspace or Delete key while not focused on a text area:
 			if ( ( e.which == 8 || e.which == 46 ) && !_this.inputFocus )
-				_this.deleteEvent();
+				$j( _this ).trigger( 'delete' );
 		} );
 	}
 	

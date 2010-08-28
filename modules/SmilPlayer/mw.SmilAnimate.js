@@ -197,7 +197,7 @@ mw.SmilAnimate.prototype = {
 	* @param {float} animateTime The relative time to be transformed. 
 	*/
 	transformElement: function( smilElement, animateTime ) {		
-		mw.log("SmilAnimate::transformForTime:" + animateTime );
+		//mw.log("SmilAnimate::transformForTime:" + animateTime );
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'smiltext':
 				this.transformTextForTime( smilElement, animateTime );

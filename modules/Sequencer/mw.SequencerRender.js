@@ -11,7 +11,7 @@ mw.SequencerRender.prototype = {
 		var _this = this;
 		
 		var $renderDialog = mw.addDialog( {
-			'title' : gM('mwe-sequenceedit-render-sequence'),
+			'title' : gM('mwe-sequencer-render-sequence'),
 			'content' : $j('<div />').loadingSpinner()			
 		} )
 		

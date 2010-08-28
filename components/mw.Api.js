@@ -8,7 +8,7 @@
 	
 	/**
 	* 
-	* Helper function to get revision text for a given title
+	* Helper function to get latest revision text for a given title
 	* 
 	* Assumes "follow redirects" 
 	* 

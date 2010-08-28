@@ -344,8 +344,13 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	/**
 	* Show the install firefogg msg
 	*/
-	showInstallFirefog: function() {
+	showInstallFirefog: function( target ) {
 		var _this = this;
+		
+		if( target ){
+			this.target_use_latest_firefox = target;
+			this.target_please_install = target;
+		}
 		
 		var upMsg = ( _this.form_type == 'upload' ) ?
 			gM( 'fogg-for_improved_uploads' ) + ' ' : gM( 'fogg-not-installed') + ' ';

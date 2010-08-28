@@ -21,44 +21,36 @@ mw.SequencerPlayer.prototype = {
 	drawPlayer: function( callback ){
 		var _this = this;
 		var $playerTarget = this.sequencer.getContainer().find( '.mwseq-player' );
-		var smilSource =  this.sequencer.getSmilSource()
-		if( ! smilSource ){
-			$playerTarget.append( 
-				gM( 'mwe-sequenceedit-no-sequence-start-new', 
-					$j('<a />').click(function(){
-						alert( 'Browse for assets / start new sequence' );
+		
+		this.sequencer.getSmilSource( function( smilSource ){
+			mw.log("SequencePlayer::drawPlayer: Built player target url length:" + smilSource.length );
+			// Add the player
+			$playerTarget.html(
+				$j('<video />').css(
+					_this.getPlayerSize()
+				).attr({
+					'id' : _this.getSmilPlayerId()
+				}).append(
+					$j('<source />').attr({
+						'type' : 'application/smil',
+						'src' : smilSource
 					})
 				)
-			)
-			return ;
-		}			
-		
-		// Else add the player
-		$playerTarget.html(
-			$j('<video />').css(
-				this.getPlayerSize()
-			).attr({
-				'id' : this.getSmilPlayerId()
-			}).append(
-				$j('<source />').attr({
-					'type' : 'application/smil',
-					'src' : smilSource
-				})
-			)
-		);			
-		// Draw the player ( keep the playhead for now )
-		// xxx we will eventually replace the playhead with sequence 
-		// based playhead interface for doing easy trims. 
-		$j( '#' + this.getSmilPlayerId() ).embedPlayer({
-			'overlayControls' : false
-		}, function(){
-			// Set the player interface to autoMargin ( need to fix css propagation in embed player) 			
-			$j( '#' + _this.getSmilPlayerId() ).parent('.mwplayer_interface').css('margin', 'auto');
-			if( callback ){
-				callback();
-			}
-		})
-	
+			);			
+			
+			// Draw the player ( keep the playhead for now )
+			// xxx we will eventually replace the playhead with sequence 
+			// based playhead interface for doing easy trims
+			$j( '#' + _this.getSmilPlayerId() ).embedPlayer({
+				'overlayControls' : false
+			}, function(){
+				// Set the player interface to autoMargin ( need to fix css propagation in embed player) 			
+				$j( '#' + _this.getSmilPlayerId() ).parent('.interface_wrap').css('margin', 'auto');
+				if( callback ){
+					callback();
+				}
+			})
+		});	
 	},
 	
 	previewClip: function( smilClip ){
@@ -93,8 +85,8 @@ mw.SequencerPlayer.prototype = {
 		var size = {};
 		var $playerContainer = this.sequencer.getContainer().find('.mwseq-player'); 
 		size.width = $playerContainer.width();			
-		if( this.sequencer.videoAspect ){
-			var aspect = this.sequencer.videoAspect.split( ':' );											
+		if( this.sequencer.options.videoAspect ){
+			var aspect = this.sequencer.options.videoAspect.split( ':' );											
 			var apectRatio = ( aspect[1] / aspect[0] );
 			size.height = parseInt( size.width * ( aspect[1] / aspect[0] ) );
 		} else {
@@ -107,12 +99,14 @@ mw.SequencerPlayer.prototype = {
 		}			
 		return size;
 	},
+	
 	/**
-	 * get the embedplayer object instance
+	 * Get the embedplayer object instance
 	 */
 	getEmbedPlayer: function(){
 		return $j( '#' + this.getSmilPlayerId() ).get(0);
 	},
+	
 	/**
 	 * Get a player id
 	 */

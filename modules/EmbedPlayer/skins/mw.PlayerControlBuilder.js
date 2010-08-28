@@ -649,7 +649,10 @@ mw.PlayerControlBuilder.prototype = {
 		if( this.embedPlayer.getPlayerHeight() == 0 ){			
 			return false;
 		}		
-		// Past alll tests OverlayControls is true: 
+		if( this.embedPlayer.controls === false ){
+			return false;
+		}
+		// Past all tests OverlayControls is true: 
 		return true; 
 	},
 	

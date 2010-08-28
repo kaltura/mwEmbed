@@ -111,6 +111,12 @@
 	* mwEmbed player is setup before any other mw.ready calls
 	*/
 	mw.addSetupHook( function( callback ) {
+		mw.rewritePagePlayerTags();
+		// Run the setupFlag to continue setup		
+		callback();
+	});
+	
+	mw.rewritePagePlayerTags = function() {
 		mw.log( 'EmbedPlayer:: Document::' + mw.documentHasPlayerTags() );
 		if( mw.documentHasPlayerTags() ) {
 			var  rewriteElementCount = 0;
@@ -126,7 +132,7 @@
 				// Add an absolute positioned loader
 				$j( element )
 					.getAbsoluteOverlaySpinner()
-					.attr( 'id', 'loadingSpinner_' + $j( element ).attr('id') )
+					.attr('id', 'loadingSpinner_' + $j( element ).attr('id') )
 					.addClass( 'playerLoadingSpinner' );
 								
 			});									
@@ -137,9 +143,7 @@
 				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer();				
 			})
 		}
-		// Run the setupFlag to continue setup		
-		callback();
-	});
+	}
 
 	/**
 	* Add the module loader function:
@@ -171,8 +175,8 @@
 
 		// Pass every tag being rewritten through the update request function
 		$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).each( function() {	
-			var playerElement = this;			
-			mw.embedPlayerUpdateLibraryRequest( playerElement,  dependencyRequest )			
+			var playerElement = this;		
+			mw.embedPlayerUpdateLibraryRequest( playerElement,  dependencyRequest[ 0 ] )			
 		} );
 		
 		// Add PNG fix code needed:

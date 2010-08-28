@@ -17,6 +17,8 @@
  * 
  */
 
+mw.includeAllModuleMessages();
+
 /* Add the hooks needed for playback */
 mw.Smil = function(options) {
 	return this.init(options);
@@ -39,7 +41,7 @@ mw.Smil.prototype = {
 	transitions : null,
 
 	// Stores the smil document for this object ( for relative image paths )
-	smilUrl : null,
+	smilContextUrl : null,
 
 	// The abstract embed player parent
 	embedPlayer : null,
@@ -47,6 +49,8 @@ mw.Smil.prototype = {
 	// The jQuery dom object of the smil xml
 	$dom : null,
 
+	// Cache for the duration of the smil sequence 
+	duration: null,
 	/**
 	 * Constructor
 	 * 
@@ -68,18 +72,34 @@ mw.Smil.prototype = {
 	 */
 	loadFromUrl : function(url, callback) {
 		var _this = this;
-		this.smilUrl = url;
+		// Check for data url
+		var dataUrlKey = 'data:text/xml;charset=utf-8,';
+		if( url.indexOf( dataUrlKey ) === 0 ){
+			_this.loadFromString(
+				unescape( url.substr( dataUrlKey.length ) )
+			);
+			// xxx Note we could in theory have a data url with remote 'context' 
+			// ie cross domain smil loading ( for now assume document.URL context for data urls )  
+			this.smilContextUrl = document.URL;
+			callback();
+			return ;
+		}
+		// Else context url is the remote 
+		this.smilContextUrl = url;
 		mw.log('Smil::loadFromUrl : ' + url);
 
 		// Try for direct load ( api cross domain loading is handled outside of
 		// SmilInterface
-		$j.get(url, function(data) {
-			_this.loadFromString(data);
+		$j.get(url, function( xmlData) {
+			_this.loadFromXMLData( xmlData )			
 			// XXX check success or failure
-				callback();
-			});
+			callback();
+		});
 	},
-
+	// Set the $dom from xmlData
+	loadFromXMLData: function( xmlData ){
+		this.$dom = $j( xmlData );
+	},
 	/**
 	 * Set smil from xml string
 	 * 
@@ -88,9 +108,12 @@ mw.Smil.prototype = {
 	 */
 	loadFromString: function( smilXmlString ) {
 		// Load the parsed string into the local "dom"
-		this.$dom = $j( smilXmlString );
+		this.$dom = $j( this.getXMLDomObject( smilXmlString ) );
 		mw.log("Smil::loadFromString: loaded smil dom: " + this.$dom.length + "\n" + smilXmlString );
 	},
+	/**
+	 * Update the smil dom via an xmlString
+	 */
 	updateFromString: function( smilXmlString ){
 		delete this.$dom; 
 		// jQuery strips some html native tags when parsing xml passed into jQuery 
@@ -241,7 +264,7 @@ mw.Smil.prototype = {
 	 */
 	getBody : function() {
 		if (!this.body) {
-			this.body = new mw.SmilBody(this);
+			this.body = new mw.SmilBody( this );
 		}
 		return this.body;
 	},
@@ -268,11 +291,12 @@ mw.Smil.prototype = {
 	 * Get the duration form the smil body
 	 */
 	getDuration : function( forceRefresh ) {
+		//mw.log("Smil::getDuration: refresh: " + this.duration + ' refresh:' +  forceRefresh);		
 		// return 0 while we don't have the $dom loaded
 		if (!this.$dom) {
 			return 0;
 		}
-		if (!this.duration || forceRefresh ) {
+		if ( this.duration == null || forceRefresh === true ) {
 			this.duration = this.getBody().getDuration( forceRefresh );
 		}
 		return this.duration;
@@ -341,7 +365,7 @@ mw.Smil.prototype = {
 	 */
 	getAssetUrl : function( assetPath ) {
 		// Context url is the smil document url:
-		var contextUrl = mw.absoluteUrl(this.smilUrl);
+		var contextUrl = mw.absoluteUrl(this.smilContextUrl);
 		return mw.absoluteUrl(assetPath, contextUrl);
 	},
 

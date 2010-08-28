@@ -6,7 +6,7 @@
 * Set the jQuery bindings: 
 */ 
 ( function( $ ) {
-	$.fn.firefoggRender = function( options, callback ) {
+	$.fn.firefoggRender = function( options ) {
 		if(!options)
 			options = {};
 		options.playerTarget = this.selector;		
@@ -39,7 +39,16 @@ mw.FirefoggRender.prototype = {
 
 	// Start time for rendering
 	startTime: 0,
-		
+	
+	// Callback for when the render with a pointer to the firefogg object
+	doneRenderCallback: null,
+	
+	// Bollean attribute if we should save to local file
+	saveToLocalFile : true,
+	
+	// Callback function for render progress
+	onProgress: null,
+	
 	// Constructor 
 	init:function( options ) {
 		var _this = this;
@@ -66,19 +75,30 @@ mw.FirefoggRender.prototype = {
 		
 		// Extend the render options with any provided details
 		if( options['renderOptions'] ){
-			this.renderOptions = $j.extend( this.renderOptions, options['renderOptions'] );
+			this.renderOptions = $j.extend( {}, this.renderOptions, options['renderOptions'] );
 		}
 		
 		if( options ['statusTarget']){
 			this.statusTarget = options ['statusTarget'];
 		}	
 		
+		if( options [ 'doneRenderCallback' ] ){
+			this.doneRenderCallback =  options [ 'doneRenderCallback' ];
+		}
+		// xxx should probably be a normal event binding .. oh well
+		if( options['onProgress'] ){
+			this.onProgress = options['onProgress'];
+		}
+		
+		
+		if( typeof options['saveToLocalFile'] != 'undefiend' ){
+			this.saveToLocalFile = options['saveToLocalFile'] ;
+		}
 		// If no height width provided use target DOM width/height
 		if( !this.renderOptions.width && !this.renderOptions.height ) {
 			this.renderOptions.width = $j(this.playerTarget).width();
 			this.renderOptions.height = $j(this.playerTarget).height();
 		}		
-		
 		
 	},
 	getPlayer: function(){
@@ -87,9 +107,11 @@ mw.FirefoggRender.prototype = {
 	// Start rendering
 	doRender: function() {
 		var _this = this;
-		// Make sure we get a target destination
-		if( !_this.fogg.saveVideoAs() ){
-			return false;
+		// Check if we save the file to disk:
+		if( this.saveToLocalFile ){		
+			if( !_this.fogg.saveVideoAs() ){			
+				return false;
+			}
 		}
 		// Set the render time to "startTime" of the render request
 		this.renderTime = this.startTime;
@@ -122,6 +144,8 @@ mw.FirefoggRender.prototype = {
 			// Update previusAudioTime
 			previusAudioTime = currentAudio.startTime + currentAudio.duration;
 		}		
+		// xxx localize status? 
+		$j( _this.statusTarget ).text( 'rendering' );
 		// Now issue the save video as call	
 		_this.doNextFrame();
 		return true;
@@ -136,19 +160,22 @@ mw.FirefoggRender.prototype = {
 		/*mw.log( "FirefoggRender::doNextFrame: on " + ( Math.round( _this.renderTime * 10 ) / 10 ) + " of " +
 			( Math.round( _this.player.getDuration() * 10 ) / 10 ) );
 		*/
+		if( this.onProgress ){
+			this.onProgress(
+				_this.renderTime / _this.getPlayer().getDuration()
+			)
+		}
 		
-		_this.getPlayer().setCurrentTime( _this.renderTime, function() {								
-			
+		_this.getPlayer().setCurrentTime( _this.renderTime, function() {											
 			_this.fogg.addFrame( $j( _this.playerTarget ).attr( 'id' ) );
-			$j( _this.statusTarget ).text( "AddFrame::" + ( Math.round( _this.renderTime * 1000 ) / 1000 ) );
-			
+			//	$j( _this.statusTarget ).text( "AddFrame::" + ( Math.round( _this.renderTime * 1000 ) / 1000 ) );
 			_this.renderTime += _this.interval;
 			 
 			if ( _this.renderTime >= _this.getPlayer().getDuration() || ! _this.continueRendering ) {
 				_this.doFinalRender();
 			} else {			
-				// Don't block on render requests
-				setTimeout(function(){
+				// Don't block on render
+				setTimeout( function(){
 					_this.doNextFrame();
 				},1 )
 			}
@@ -165,23 +192,34 @@ mw.FirefoggRender.prototype = {
 	/**
 	* Issue the call to firefogg to render out the ogg video
 	*/ 
-	doFinalRender: function() {
+	doFinalRender: function() {		
 		mw.log("FirefoggRender:: doFinalRenderr" );
 		this.fogg.render();
-		this.updateStatus();
+		this.checkRenderStatus();		
 	},
 	
 	/**
 	* Update the render status
 	*/
-	updateStatus: function() {
-		var _this = this;
+	checkRenderStatus: function() {
+		var _this = this;		
+		// Check if we are still rendering 
 		var rstatus = _this.fogg.renderstatus();
-	    $j( _this.statusTarget ).text( rstatus );
+	    $j( _this.statusTarget ).text( rstatus );	    
 	    if ( rstatus != 'done' && rstatus != 'rendering failed' ) {
 	        setTimeout( function() {
-	        	_this.updateStatus();
+	        	_this.checkRenderStatus();
 	        }, 100 );
+	        return ;
+	    }
+	    if( rstatus == 'rendering failed' ){
+	    	mw.log("Error: rendering failed");
+	    	return ;
+	    }
+	    if( this.doneRenderCallback ){
+	    	// Pass the firefogg object to the render done callback for other operations 
+	    	// ( such as uploading the asset ) 
+	    	this.doneRenderCallback( this.fogg )
 	    }
 	}
 }

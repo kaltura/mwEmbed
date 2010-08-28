@@ -17,10 +17,9 @@ mw.addResourcePaths( {
 	"SyntaxHighlighter.brushes.Xml" : "scripts/shBrushXml.js",
 	"SyntaxHighlighter.brushes.CSS" : "scripts/shBrushCss.js",
 	"SyntaxHighlighter.brushes.JScript" : "scripts/shBrushJScript.js"
-} );
+})
 
-mw.setDefaultConfig( 
-		'SyntaxHighlighter.brushNames',  
+mw.setDefaultConfig( 'SyntaxHighlighter.brushNames',  
 		{
 			'Xml': ['xml', 'xhtml', 'xslt', 'html', 'xhtml'],
 			'JScript': ['js', 'jscript', 'javascript'],

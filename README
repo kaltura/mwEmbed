@@ -123,16 +123,16 @@ Installing html5 support to an existing Kaltura integration is as simple as addi
 
 ## Themeing with jQuery-UI
 
-You can add a custom jQuery UI theme by using the theme wizard: [http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html](http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html). Note that although the themeroller only works in Firefox, the temes you create with it will work in multiple browsers.
+You can add a custom jquery ui theme by using the theme wizard: [http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html](http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html). Note that although the themeroller only works in Firefox, the temes you create with it will work in multiple browsers.
 
 
 ## Skinning and Themeing
 
-[jQuery UI ThemeRoller]: http://jqueryui.com/themeroller/
+[Theme Wizard]: http://www.kaltura.org/apis/html5lib/kplayer-examples/Player_Themable.html
 
-You can add a custom jquery ui theme by using the [jQuery UI ThemeRoller][].  Downloading that theme and adding a reference to jquery-ui-.custom.css after the mwEmbed-player-static.css file.
+You can add a custom jquery ui theme by using the [Theme Wizard][].  Downloading that theme and adding a reference to jquery-ui-.custom.css after the mwEmbed-player-static.css file.
 
-A few sample jQuery UI themes are included in the skins/jquery.ui.themes folder of the [HTML5 Video Player][].
+A few sample jquery ui skins are included in the skins/jquery.ui.themes folder of the [HTML5 Video Player][].
 
 You can remove the kaltura attribution for the player by adding the following javascript:
 
@@ -167,7 +167,7 @@ For full un-minified source see [HTML5 Video Player][]
 In the `<head>` of your page you will need jQuery and the mwEmbed-player package:
 
     <!-- If your page already includes jQuery you can skip this step -->
-    <script type="text/javascript" src="kaltura-html5player-widget/jquery-1.4.2.min.js" ></script>
+    <script type="text/javascript" src="kaltura-html5player-widget/jquery-1.4.2.min.js" ></scirpt>
 
     <!-- Include the css and javascript  -->
     <link rel="stylesheet" href="kaltura-html5player-widget/skins/jquery.ui.themes/jquery-ui-1.7.2.custom.css"></link> 
@@ -228,12 +228,11 @@ You may check out a read-only working copy anonymously over HTTP:<br />
 
 <h2 id="compile_docs">Compile Developer Docs</h2>
 
-    java -jar ~/src/jsdoc-toolkit/jsrun.jar ~/src/jsdoc-toolkit/app/run.js -t=/home/papyromancer/src/jsdoc-toolkit/templates/jsdoc/ mwEmbed.js loader.js mwEmbedLoader.js ./modules/**/*/*.js
+    java -jar jsrun.jar app/run.js /home/papyromancer/src/mwEmbed/loader.js /home/papyromancer/src/mwEmbed/mwEmbed.js /home/papyromancer/src/mwEmbed/mwEmbedLoader.js /home/papyromancer/src/mwEmbed/modules/**/*/*.js -t=templates/jsdoc
 
 
     cat overview.markdown features.markdown basic_usage.markdown advanced_examples.markdown mit.markdown troubleshooting.markdown showcase.markdown license.markdown > README
     cat overview.markdown features.markdown basic_usage.markdown mit.markdown troubleshooting.markdown showcase.markdown > README.mit
-
     bluecloth README > docs/README.html
 
 <h2 id="additionally">Additional Resources</h2>

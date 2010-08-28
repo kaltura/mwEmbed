@@ -8,13 +8,21 @@ mw.includeAllModuleMessages();
 * Setup the sequencer jQuery binding:
 */
 ( function( $ ) {
-	$.fn.sequencer = function( options ) {
+	$.fn.sequencer = function( options ) {			
 		// Debugger
 		if( $j( this.selector ).length == 0 ){
 			mw.log("Sequencer::Error missing target container");
 			return; 
-		}
+		}		
 		var seqContainer = $j( this.selector ).get(0);
+		// support jquery ui style 'destroy' call 
+		if( options == 'destroy' ){
+			if( seqContainer['sequencer'] )
+				delete seqContainer['sequencer'];				
+			return this;
+		}
+			
+		
 		// Check if we already have a sequencer associated with this target
 		if( seqContainer['sequencer'] ){
 			// xxx todo: pass on the options / action
@@ -31,7 +39,7 @@ mw.includeAllModuleMessages();
 		// Draw the sequencer UI
 		seqContainer['sequencer'].drawUI();
 		
-		//Return the sequence jquery object
+		// Return the sequence jquery object
 		return this;
 		
 	}
@@ -45,7 +53,12 @@ mw.includeAllModuleMessages();
  */
 var mw_sequenceedit_default_options = {
 	'interfaceContainer' : null,
+	'title': null,
 	'smilSource' : null,
+	'newSequence' : null,
+	'server' : null,
+	'addMedia': null,
+	'onExitCallback' : null,
 	'videoAspect' : '4:3'
 }
 mw.Sequencer = function( options ) {
@@ -55,7 +68,9 @@ mw.Sequencer = function( options ) {
 // Set up the mvSequencer object
 mw.Sequencer.prototype = {
 	// lazy init id for the sequencer instance. 
-	id: null, 
+	id: null,
+	// Holds sequencer configuration options 
+	options: {},
 	
 	init: function( options ){
 		if(!options){
@@ -64,14 +79,30 @@ mw.Sequencer.prototype = {
 		//	Validate and set default options :
 		for( var optionName in mw_sequenceedit_default_options ){
 			if( typeof options[ optionName] != 'undefined'){
-				this[optionName] =  options[ optionName] ;
+				this.options[optionName] =  options[ optionName] ;
 			} else {
-				this[optionName] = mw_sequenceedit_default_options[ optionName ]
+				this.options[optionName] = mw_sequenceedit_default_options[ optionName ]
 			}
 		}
-		// For style properties assign top level mwe-sequence-edit class
+		
+		// Move specific options into core
+		if( this.options.smilSource ){
+			this.smilSource = options.smilSource;
+		}
+		if( this.options.interfaceContainer ){
+			this.interfaceContainer = this.options.interfaceContainer
+		}
+		
+		// For style properties assign top level mwe-sequencer class
 		this.getContainer()
-			.addClass('mwe-sequence-edit');
+			.addClass('mwe-sequencer');
+	},
+	
+	getOption: function( optionName ){
+		if( this.options[ optionName ]){
+			return this.options[ optionName ]
+		}
+		return false;
 	},
 	
 	// Return the container id for the sequence
@@ -84,12 +115,21 @@ mw.Sequencer.prototype = {
 			this.id = this.getContainer().attr('id');
 		}
 		return this.id;
-	},
+	},	
+	
 	/**
-	 * @return smilSource url
+	 * Update the smil xml and then update the interface
 	 */
-	getSmilSource: function(){
-		return this.smilSource;
+	updateSmilXML: function( smilXML ){
+		mw.log( "Sequencer::updateSmilXML" );
+		var _this = this;		
+		// Update the embedPlayer smil: 
+		this.getSmil().updateFromString( smilXML );			
+		// Get a duration ( forceRefresh to clear the cache ) 
+		this.getEmbedPlayer().getDuration( true );		
+				
+		// Redraw the timeline
+		this.getTimeline().drawTimeline();		
 	},
 	
 	/**
@@ -103,12 +143,12 @@ mw.Sequencer.prototype = {
 		this.getContainer().html(
 			this.getUiLayout()
 		)
+		
 		// Once the layout is in the dom setup resizableLayout "layout" options
 		this.applyLayoutBindings();			
-		
+				 		
 		// Add the smil player
-		//xxx deal with the case of an empty player~~
-		this.getPlayer().drawPlayer( function(){
+		_this.getPlayer().drawPlayer( function(){
 			// Once the player and smil is loaded ::
 			// start buffering
 			_this.getEmbedPlayer().load();
@@ -116,11 +156,69 @@ mw.Sequencer.prototype = {
 			// Add the timeline
 			_this.getTimeline().drawTimeline();	
 			
-		});		
-		// Draw the top level menu
-		this.getMenu().drawMenu();
-		
+			// Draw the top level menu
+			_this.getMenu().drawMenu();
+			
+			// initialize the edit stack to support undo / redo actions  
+			_this.getActionsEdit().setupEditStack();
+		});
+			
 	},
+	/**
+	 * Load a smil source if newSequence flag is set create new sequence source 
+	 * @param {function} callback Function called with smilSource 
+	 */
+	getSmilSource: function( callback ){		
+		var _this = this;
+		if( !_this.smilSource ){
+			if( _this.getOption( 'newSequence' ) ){			
+				_this.smilSource = _this.getDataUrl( _this.getNewSmilXML() );	
+			} else {
+				mw.log( "Load smil source from server" )
+				// Load from the server
+				_this.getServer().getSmilXml( function( smilXml ){
+					_this.smilSource = _this.getDataUrl( smilXml );
+					callback( _this.smilSource )	
+				})
+				// Wait for server to return smil source
+				return ;
+			}
+		}
+		// return the smilSource
+		callback( _this.smilSource )
+	},
+	getDataUrl: function( xmlString ){
+		if( ! xmlString ){
+			xmlString = this.getSmil().getXMLString();
+		}
+		return 'data:text/xml;charset=utf-8,' + escape( xmlString );
+	},
+	getNewSmilXML: function( ){
+		var title = ( this.getOption('title') ) ?
+					this.getOption('title') :
+					gM('mwe-sequencer-untitled-sequence');
+		return '<?xml version="1.0" encoding="UTF-8"?>' +
+			"\n" + '<smil baseProfile="Language" version="3.0" xmlns="http://www.w3.org/ns/SMIL">' +
+			"\n\t" + '<head>' +
+			"\n\t\t" + '<meta name="title" content="' + mw.escapeQuotesHTML( title ) + '" />' +
+			"\n\t" + '</head>' + 
+			"\n\t" + '<body>' + 
+			"\n\t\t" + '<par>' +
+			"\n\t\t\t" + '<seq title="Video Track 1" tracktype="video">' + 
+			"\n\t\t\t" + '</seq>' +		
+			"\n\t\t\t" + '<seq title="Audio track 1" tracktype="audio">' +
+			"\n\t\t\t" + '</seq>' +	
+			"\n\t\t" + '</par>' +
+			"\n\t" + '</body>' + 
+			"\n" + '</smil>';	
+	},
+	getServer: function(){
+		if( !this.server ){
+			this.server = new mw.SequencerServer( this );
+		}
+		return this.server;
+	},
+	
 	getMenu: function(){
 		if( !this.menu){
 			this.menu = new mw.SequencerMenu( this ); 
@@ -153,9 +251,6 @@ mw.Sequencer.prototype = {
 		}
 		return this.actionsEdit;
 	},
-	
-	
-	
 	getRender: function(){
 		if( !this.render ){
 			this.render = new mw.SequencerRender( this );
@@ -177,13 +272,24 @@ mw.Sequencer.prototype = {
 		}
 		return this.timeline;
 	},
-	getEditTools: function(){
+	getTools: function(){
 		if( !this.editTools ){
 			this.editTools = new mw.SequencerTools( this );
 		}
 		return this.editTools;
 	},
-	
+	getAddMedia: function(){
+		if( ! this.addMedia ){
+			this.addMedia = new mw.SequencerAddMedia( this );
+		}
+		return this.addMedia;
+	},
+	getAddByUrl: function(){
+		if( ! this.addByUrl ){
+			this.addByUrl = new mw.SequencerAddByUrl( this );
+		}
+		return this.addByUrl
+	},
 	getKeyBindings:function(){
 		if( ! this.keyBindings ){
 			this.keyBindings = new mw.SequencerKeyBindings( this );
@@ -208,7 +314,7 @@ mw.Sequencer.prototype = {
 			
 			/* timeline container */
 			'south__minSize' : 160,
-			'south__size' : 150,
+			'south__size' : 200,
 			'south__onresize' : function(){
 				_this.getTimeline().resizeTimeline();
 			}
@@ -219,6 +325,7 @@ mw.Sequencer.prototype = {
 	 * Get the UI layout
 	 */
 	getUiLayout: function(){
+		var _this = this;
 		// xxx There is probably a cleaner way to generate a list of jQuery objects than $j('new').children();
 		return $j('<div />').append( 
 		    $j('<div />')			
@@ -231,14 +338,14 @@ mw.Sequencer.prototype = {
 				'left' : '0px',
 				'background' : '#fff'
 			})
-			.text('Menu')
+			.text( gM('mwe-sequencer-loading-menu') )
 			,		
 			
 			$j('<div />')
 			.addClass('resizableLayout')
 			.css({
 				'position':'absolute',								
-				'top': '25px',
+				'top': '27px',
 				'left': '0px',
 				'right': '0px',
 				'bottom':'0px'
@@ -246,15 +353,16 @@ mw.Sequencer.prototype = {
 			.append( 			
 				$j('<div />')
 					.addClass( "ui-layout-center mwseq-edit" )
-					.html( this.getEditTools().defaultText ),
+					.html(  _this.getTools().getDefaultText() ),
 				$j('<div />')
 					.addClass( "ui-layout-east mwseq-player" )
-					.text( gM('mwe-sequenceedit-loading_player') ),	
+					.text( gM('mwe-sequencer-loading-player') ),	
 				$j('<div />')
 					.addClass( "ui-layout-south mwseq-timeline" )
-					.text( gM('mwe-sequenceedit-loading_timeline') )				
+					.text( gM('mwe-sequencer-loading-timeline') )				
 			)
-		).children();
+		)
+		.children();
 	},
 
 	getMenuTarget: function(){
@@ -265,8 +373,7 @@ mw.Sequencer.prototype = {
 	},
 	getContainer: function(){
 		return $j( this.interfaceContainer );
-	}
-	
+	}	
 }
 
 } )( window.mw );	

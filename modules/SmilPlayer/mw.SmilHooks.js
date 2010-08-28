@@ -43,7 +43,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {
 		// Make sure there is a smil source: 
 		if( embedPlayer.mediaElement.getSources( 'application/smil' ).length ){
 			// Get the first smil source: 
-			mw.log( "Source is: " + embedPlayer.mediaElement.getSources( 'application/smil' )[0].getSrc() );
+			//mw.log( "Source is: " + embedPlayer.mediaElement.getSources( 'application/smil' )[0].getSrc() );
 	
 			// Add the smil engine to the embed player: 
 			embedPlayer.smil = new mw.Smil( embedPlayer );

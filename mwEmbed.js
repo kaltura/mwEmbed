@@ -47,7 +47,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	mw.validSkins = [ 'mvpcf', 'kskin' ];
 		
 	// Storage variable for loaded style sheet keys
-	mw.style = { };
+	if( ! mw.style ){
+		mw.style = { };
+	}
 	
 	/**
 	 * Configuration System:
@@ -328,12 +330,12 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 *            callback Function called once loading is complete
 		 * 
 		 */				
-		load: function( loadRequest, instanceCallback ) {						
+		load: function( loadRequest, instanceCallback ) {			
+			// mw.log("mw.load:: " + loadRequest );
 			var _this = this;
 
 			// Throw out any loadRequests that are not strings
 			loadRequest = this.cleanLoadRequest( loadRequest );
-			mw.log("mw.load:: " + loadRequest );
 
 			// Ensure the callback is only called once per load instance
 			var callback = function(){
@@ -399,7 +401,6 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			
 			// Try loading as a "file" or via ScriptLoader
 			if( loadRequest ) {				
-				
 				// Check if this resource was already requested
 				if( typeof this.requestedResourceQueue[ loadRequest ] == 'object' ){					
 					this.requestedResourceQueue[ loadRequest ].push( callback );
@@ -408,7 +409,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					this.requestedResourceQueue[ loadRequest ] = [];
 				}
 				
-				if( loadRequest.indexOf( '.js' ) == -1 && !mw.getResourceLoaderPath() ) {					
+				if( loadRequest.indexOf( '.js' ) == -1 && !mw.getResourceLoaderPath() ) {
 					mw.log( 'Error: are you sure ' + loadRequest + ' is a file ( is it missing a resource path? ) ' );
 				}				
 				mw.getScript( loadRequest, function(){
@@ -466,7 +467,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 * @param {Function}
 		 *            callback Function to call once all scripts are loaded.
 		 */ 
-		loadMany: function( loadSet, callback ) {		
+		loadMany: function( loadSet, callback ) {				
 			var _this = this;
 			// Setup up the local "loadStates"
 			var loadStates = { };
@@ -482,7 +483,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					return ;
 				}						
 			}else{									
-				// Check if its a dependency set ( nested arrays )
+				// Check if its a dependency set ( nested objects )
 				if( typeof loadSet [ 0 ] == 'object' ) {		
 					_this.dependencyChainCallFlag[ loadSet ] = false;
 					// Load sets of resources ( to preserver order for some
@@ -607,7 +608,6 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 *            are requested in array order.
 		 */ 
 		loadDependencyChain: function( loadChain, callback ) {
-			mw.log("LoadDependencyChain:: dependency set length " + loadChain.length );
 			var _this = this;						
 			// Load with dependency checks
 			var callSet = loadChain.shift();
@@ -1029,7 +1029,10 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 *            dialogHtml text Html of the loader msg
 	 */
 	mw.addLoaderDialog = function( dialogHtml ) {
-		$dialog = mw.addDialog( {
+		if( typeof dialogHtml == 'undefined'){
+			dialogHtml ='';
+		}
+		var $dialog = mw.addDialog( {
 			'title' : dialogHtml, 
 			'content' : dialogHtml + '<br>' + 
 				$j('<div />')
@@ -1040,22 +1043,20 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	}
 	
 	/**
-	 * Mobile Safari has special properties for html5 video::
-	 * 
-	 * NOTE: should be moved to browser detection script
+	 * Close the loader dialog created with addLoaderDialog
 	 */
-	mw.isMobileSafari = function() {		
-		// check mobile safari foce ( for debug )
-		if( mw.getConfig( 'forceMobileSafari' ) ){
-			return true;
+	mw.closeLoaderDialog = function() {
+		// Make sure the dialog resource is present
+		if( !mw.isset( '$j.ui.dialog' ) ) {
+			return false;
 		}
-		if ((navigator.userAgent.indexOf('iPhone') != -1) || 
-			(navigator.userAgent.indexOf('iPod') != -1) || 
-			(navigator.userAgent.indexOf('iPad') != -1)) {
-			return true;
-		}
-		return false;
-	}
+		// Close with timeout since jquery ui binds with timeout: 
+		// ui dialog line 530
+		setTimeout( function(){
+			$j( '#mwTempLoaderDialog' )
+			.dialog( 'destroy' );
+		} , 10);			
+	}	
 	
 	/**
 	 * Add a (temporary) dialog window:
@@ -1129,19 +1130,25 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			$j( '#mwTempLoaderDialog' ).dialog( options );
 		} );
 		return $j( '#mwTempLoaderDialog' );
-	}
+	}	
 	
 	/**
-	 * Close the loader dialog created with addLoaderDialog
+	 * Mobile Safari has special properties for html5 video::
+	 * 
+	 * NOTE: should be moved to browser detection script
 	 */
-	mw.closeLoaderDialog = function() {
-		// Make sure the dialog resource is present
-		if( !mw.isset( '$j.ui.dialog' ) ) {
-			return false;
+	mw.isMobileSafari = function() {		
+		// check mobile safari foce ( for debug )
+		if( mw.getConfig( 'forceMobileSafari' ) ){
+			return true;
 		}
-		$j( '#mwTempLoaderDialog' ).dialog( 'destroy' ).remove();
+		if ((navigator.userAgent.indexOf('iPhone') != -1) || 
+			(navigator.userAgent.indexOf('iPod') != -1) || 
+			(navigator.userAgent.indexOf('iPad') != -1)) {
+			return true;
+		}
+		return false;
 	}
-	
 	
 	/**
 	 * Similar to php isset function checks if the variable exists. Does a safe
@@ -1700,7 +1707,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		var urid = mw.parseUri( mwEmbedSrc ).queryKey['urid']
 		
 		// If we're in debug mode, get a fresh unique request key and pass on
-		// "debug" param         	
+		// "debug" param
 		if ( mw.parseUri( mwEmbedSrc ).queryKey['debug'] == 'true' ) {		
 			mw.setConfig( 'debug', true );			
 			var d = new Date();
@@ -1798,13 +1805,15 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	
 	/**
 	 * getAbsoluteUrl takes a src and returns the absolute location given the
-	 * document.URL
+	 * document.URL or a contextUrl param
 	 * 
-	 * @param {String}
-	 *            src path or url
+	 * @param {String} src path or url
+	 * @param {String} contextUrl The domain / context for creating an absolute url 
+	 * 	from a relative path
 	 * @return {String} absolute url
 	 */
 	mw.absoluteUrl = function( src, contextUrl ) {
+		
 		var parsedSrc =  mw.parseUri( src );		
 		// Source is already absolute return:
 		if( parsedSrc.protocol != '') {
@@ -1812,7 +1821,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}
 		
 		// Get parent Url location the context URL
-		if( contextUrl) {	
+		if( contextUrl ) {	
 			var parsedUrl = mw.parseUri( contextUrl );			
 		} else {
 			var parsedUrl = mw.parseUri( document.URL );
@@ -1872,7 +1881,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}
 		return text;		
 	};
-		
+	
+	
 	// Array of setup functions
 	var mwSetupFunctions = [];
 	
@@ -2391,33 +2401,37 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				'text' : '',
 				
 				// The icon id that precedes the button link:
-				'icon_id' : 'carat-1-n' 
+				'icon' : 'carat-1-n' 
 			};
 			
 			$.button = function( options ) {
 				var options = $j.extend( {}, mw_default_button_options, options);
 				
 				// Button:
-				var $btn = $j('<a />')			
+				var $button = $j('<a />')			
 					.attr('href', '#')
 					.addClass( 'ui-state-default ui-corner-all ui-icon_link' );
 				// Add css if set:
 				if( options.css ) {
-					$btn.css( options.css )
+					$button.css( options.css )
 				}
 									
 				if( options['class'] ) {
-					$btn.addClass( options['class'] )
+					$button.addClass( options['class'] )
 				}	
 								
 				
 				// return the button: 
-				return $btn.append(
-						$j('<span />').addClass( 'ui-icon ui-icon-' + options.icon_id ),
-						$j('<span />').addClass( 'btnText' )
-							.text( options.text )
-					)
-					.buttonHover(); // add buttonHover binding;					
+				$button.append(
+						$j('<span />').addClass( 'ui-icon ui-icon-' + options.icon ),
+						$j('<span />').addClass( 'btnText' )	
+						.text( options.text )
+				)
+				.buttonHover(); // add buttonHover binding;		
+				if( !options.text ){
+					$button.css('padding', '1em');
+				}
+				return $button;
 			};
 			
 			// Shortcut to bind hover state
@@ -2570,8 +2584,7 @@ if( mw.isStaticPackge() && !window.jQuery ){
 
 if( window.jQuery ){
 	if( ! mw.versionIsAtLeast( '1.4.0', jQuery.fn.jquery ) ){
-		// Use console.log to force debug statement even in minified version
-		if ( window.console ) {
+		if( console && console.log ) {
 			console.log( 'Error mwEmbed requires jQuery 1.4 or above' );
 		}
 	}

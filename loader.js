@@ -147,7 +147,6 @@ mw.addResourcePaths( {
 	"mw.style.mwCommon"		: "skins/common/mw.style.mwCommon.css",	
 
 	"$j.cookie"				: "libraries/jquery/plugins/jquery.cookie.js",
-	"$j.fn.swipe"			: "libraries/jquery/plugins/jquery.swipe.js",
 	
 	"$j.contextMenu"		: "libraries/jquery/plugins/jquery.contextMenu.js",
 	"$j.fn.suggestions"		: "libraries/jquery/plugins/jquery.suggestions.js",

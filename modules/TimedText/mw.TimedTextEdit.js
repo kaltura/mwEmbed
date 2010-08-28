@@ -207,29 +207,28 @@ mw.TimedTextEdit.prototype = {
 		$target.append( 
 			//Get a little helper input filed to update the language
 			$j('<input />')
-				.attr( {
-					'id' : "timed-text-langKey-input",
-					'type' : "text",
-					'maxlength' : "10",
-					'size' :"3"
-				} )
-				.change(function() {
-					var langKey = $j(this).val();
-					if( mw.languages[ langKey ] ) {
-						$buttonTarget.find('.btnText').text( 
-							unescape( mw.languages[ langKey ] )
-						);
-					}
-				}),
+			.attr( {
+				'id' : "timed-text-langKey-input",
+				'type' : "text",
+				'maxlength' : "10",
+				'size' :"3"
+			} )
+			.change(function() {
+				var langKey = $j(this).val();
+				if( mw.languages[ langKey ] ) {
+					$buttonTarget.find('.btnText').text( 
+						unescape( mw.languages[ langKey ] )
+					);
+				}
+			}),
 			// Get a jQuery button object with language menu:
 			$j.button( {
 				'style': { 'float' : 'left' },
 				'class': 'language-select-btn',
 				'text': gM('mwe-timedtext-select-language'),
-				'icon_id': 'triangle-1-e'
-			} ).attr('id', 'language-select')
-			.unbind()
-			.buttonHover()
+				'icon': 'triangle-1-e'
+			} )
+			.attr('id', 'language-select')
 		)
 
 		
@@ -299,10 +298,8 @@ mw.TimedTextEdit.prototype = {
 			$j.button( {
 				'style': { 'float' : 'left' },
 				'text': gM('mwe-timedtext-upload-text'),
-				'icon_id': 'disk'
+				'icon': 'disk'
 			} )
-			.unbind()
-			.buttonHover()
 			.click( function() {
 				_this.uploadTextFile();
 			})
