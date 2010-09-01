@@ -32,7 +32,7 @@ mw.SwarmTransport = {
 			// Check if we have a "recommend" binding and provide an xpi install link			
 			mw.log('SwarmTransport::bind:addControlBindingsEvent');
 			$j( embedPlayer ).bind( 'addControlBindingsEvent', function(){				
-				if( mw.getConfig( 'SwarmTransport.recommend' ) &&  
+				if( mw.getConfig( 'SwarmTransport.Recommend' ) &&  
 					typeof window['swarmTransport'] == 'undefined' &&
 					$j.browser.mozilla ) 
 				{
@@ -75,10 +75,10 @@ mw.SwarmTransport = {
 			'url' : mw.absoluteUrl( source.getSrc() )
 		}
 
-		mw.log( 'SwarmTransport:: lookup torrent url: ' + mw.getConfig( 'SwarmTransport.torrentLookupUrl' ) + "\n" + mw.absoluteUrl( source.getSrc() ));
+		mw.log( 'SwarmTransport:: lookup torrent url: ' + mw.getConfig( 'SwarmTransport.TorrentLookupUrl' ) + "\n" + mw.absoluteUrl( source.getSrc() ));
 		// Setup function to run in context based on callback result
 		$j.getJSON(
-			mw.getConfig( 'SwarmTransport.torrentLookupUrl' ) + '?jsonp=?', 
+			mw.getConfig( 'SwarmTransport.TorrentLookupUrl' ) + '?jsonp=?', 
 			torrentLookupRequest, 
 			function( data ){
 				// Check if the torrent is ready:

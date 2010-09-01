@@ -55,8 +55,7 @@ var mwEnabledModuleList = [
 	'SmilPlayer',
 	'Playlist',	
 	'SwarmTransport',
-	'SyntaxHighlighter',
-	'KalturaSupport'
+	'SyntaxHighlighter'
 ];
 
 /**
@@ -97,7 +96,7 @@ mw.setDefaultConfig ( {
 	
 	// Set the default loader group strategy
 	'loader.groupStrategy' : 'module'
-			
+		
 } );
 
 /**

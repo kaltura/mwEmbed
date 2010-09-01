@@ -22,7 +22,7 @@ mw.SequencerAddMedia.prototype = {
 		var _this = this;		
 		if( ! _this.remoteSearchDriver ){
 			// Get any sequencer configured options 
-			var addMediaOptions = _this.sequencer.getOption('AddMedia');
+			var addMediaOptions = _this.sequencer.getOption('addMedia');			
 			addMediaOptions = $j.extend( {
 				'target_container' : _this.sequencer.getEditToolTarget(),
 				'target_search_input' : _this.sequencer.getMenuTarget().find('input.searchMedia'),					
@@ -122,29 +122,13 @@ mw.SequencerAddMedia.prototype = {
 			// Check if input value can be handled by url
 			var inputValue = _this.sequencer.getMenuTarget().find('input.searchMedia').val();
 			if( _this.sequencer.getAddByUrl().isUrl( inputValue) ){
-				 _this.sequencer.addByUrlDialog().addByUrl( remoteSearchDriver, inputValue );
+				 _this.sequencer.getAddByUrl().addByUrlDialog( remoteSearchDriver, inputValue );
 			} else {
 				// Else just use the remoteSearchDriver search interface
 				remoteSearchDriver.createUI();
 			}
 		});			
-	},
-	/**
-	 * Handles url asset importing
-	 * xxx should probably re factor into separate class
-	 *  
-	 * 	Checks for commons ulr profile, future profiles could include flickr, youtube etc.  
-	 *  tries to ascertain content type by url and directly load the media
-	 *  @param {String} url to be imported to the sequence  
-	 */
-	proccessUrlRequest: function( url ){
-		// Check if its a local domain ( we can directly request the "head" of the file to get its type )
-		
-		// Check url type
-		var parsedUrl = mw.parseUri( url );
-		if( host == 'commons.wikimedia.org' ){
-		}
-	},
+	},	
 	
 	/**
 	 * Get the resource object from a provided asset
@@ -204,7 +188,10 @@ mw.SequencerAddMedia.prototype = {
 		if( resource.mime.indexOf( 'image/' ) != -1 ){
 			tagType = 'img';		
 		}
-		if( resource.mime.indexOf( 'video/') != -1 ){
+		if( resource.mime.indexOf( 'video/') != -1 
+			||
+			resource.mime.indexOf( 'application/ogg' ) != -1 )
+		{
 			tagType = 'video';
 		}
 		if( resource.mime.indexOf( 'audio/') != -1 ){
@@ -212,11 +199,18 @@ mw.SequencerAddMedia.prototype = {
 		}
 		var $smilRef = $j( '<' + tagType + ' />')	
 		
-		// Set the default duration 
+		// Set the default duration for images
 		if( tagType == 'img' ){
 			$smilRef.attr( 'dur', mw.getConfig( 'Sequencer.AddMediaImageDuration' ) );
 		}		
 		
+		// Set the default duration to the media duration:
+		if( resource.duration ){
+			// Set the media full duration
+			$smilRef.attr( 'durationHint', resource.duration );
+			// By default the imported resource is its entire duration
+			$smilRef.attr( 'dur', resource.duration );
+		}
 		// Set all available params
 		var resourceAttributeMap = {
 			'type' :  'mime',

@@ -14,7 +14,7 @@
 		
 		// A default apiProvider ( ie where to lookup subtitles, video properties etc )
 		// NOTE: Each player instance can also specify a specific provider  
-		"EmbedPlayer.ApiProvider" : "commons",
+		"EmbedPlayer.ApiProvider" : "local",
 		
 		// What tags will be re-written to video player by default
 		// Set to empty string or null to avoid automatic video tag rewrites to embedPlayer 	

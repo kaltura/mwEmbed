@@ -15,23 +15,23 @@
 	 	/** 
 	 	* If SwarmTransport should be enabled by default as video transport mechanism
 	 	*/ 
- 		'SwarmTransport.enable': true,
+ 		'SwarmTransport.Enable': true,
  		
  		/**
  		* If the swarm transport plugin should be recommended if the user does not have it installed. 
  		*/ 	 	
- 		'SwarmTransport.recommend' : false,
+ 		'SwarmTransport.Recommend' : false,
  		
  		/**
  		* Lookup service url
  		*/
- 		'SwarmTransport.torrentLookupUrl' : 'http://url2torrent.net/get/'
+ 		'SwarmTransport.TorrentLookupUrl' : 'http://url2torrent.net/get/'
 	});
 	
 	// Add the mw.SwarmTransport to the embedPlayer loader:
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {			
 		// If the swarm transport is enabled add mw.SwarmTransport to the request.   
-		if( mw.getConfig( 'SwarmTransport.enable' ) ) {
+		if( mw.getConfig( 'SwarmTransport.Enable' ) ) {
 			if( $j.inArray( 'mw.SwarmTransport', classRequest ) == -1 )  {
 				classRequest.push( [ 'mw.SwarmTransport' ]);
 			}

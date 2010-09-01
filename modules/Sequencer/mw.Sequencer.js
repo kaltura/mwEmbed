@@ -124,12 +124,16 @@ mw.Sequencer.prototype = {
 		mw.log( "Sequencer::updateSmilXML" );
 		var _this = this;		
 		// Update the embedPlayer smil: 
-		this.getSmil().updateFromString( smilXML );			
+		this.getSmil().updateFromString( smilXML );	
+		
 		// Get a duration ( forceRefresh to clear the cache ) 
 		this.getEmbedPlayer().getDuration( true );		
 				
 		// Redraw the timeline
-		this.getTimeline().drawTimeline();		
+		this.getTimeline().drawTimeline();
+		
+		// if a tool is displayed update the tool:	
+		this.getTools().updateToolDisplay();
 	},
 	
 	/**

@@ -10,6 +10,7 @@ var kURID = '1.1q';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
+var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
@@ -21,11 +22,13 @@ if( !window['mw'] ){
 	window['mw'] = {};
 }
 
-// Magic url paramater to enable debug mode
-if( document.URL.indexOf('debugKalturaPlayer=') != -1 ){
+// Magic url parameter to enable debug mode
+if( document.URL.indexOf('debugKalturaPlayer=true') != -1 ){
 	SCRIPT_FORCE_DEBUG = true;
 }
-
+if( document.URL.indexOf('debugKalturaForceJquery=true') != -1 ){
+	FORCE_LOAD_JQUERY = true
+}
 
 // Define the dom ready flag
 var kAlreadyRunDomReadyFlag = false;
@@ -155,16 +158,16 @@ function kAddScript(){
 		return ;
 	}	
 	kAddedScript = true;	
-	var url = SCRIPT_LOADER_URL + '?class=';
+	var url = SCRIPT_LOADER_URL + '?class=';	
+	var jsPlayerRequest = [];
 	
-	if( typeof window.jQuery == 'undefined' ) {
-		url+='window.jQuery,'
+	if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
+		jsPlayerRequest.push( 'window.jQuery' )
 	}
-	// Add mwEmbed and common style sheet
-	url+= 'mwEmbed';	
 	
 	// Add all the classes needed for video 
-	var jsPlayerRequest = [	 
+	jsPlayerRequest = jsPlayerRequest.concat( [	 
+	    'mwEmbed',
 		// core skin: 
 		'mw.style.mwCommon',	      
 		'mw.style.ui_redmond',
@@ -195,8 +198,8 @@ function kAddScript(){
 		// Timed Text module
 		'mw.TimedText',
 		'mw.style.TimedText'		
-	];
-	url+= ',' + jsPlayerRequest.join(',');
+	]);
+	url+= jsPlayerRequest.join(',');
 	
 	url+='&urid=' + kURID;
 	url+='&uselang=en';

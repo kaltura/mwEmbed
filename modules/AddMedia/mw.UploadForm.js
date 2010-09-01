@@ -401,7 +401,7 @@ mw.UploadForm = { };
 							remoteSearchDriver.addResourceEditLoader();
 					
 							//Add the uploaded result
-							searchProvider.sObj.addByTitle( wTitle, function( resource ) {
+							searchProvider.sObj.getByTitle( wTitle, function( resource ) {
 								// Update the recent uploads ( background task ) 
 								remoteSearchDriver.showUserRecentUploads( uploadTargetId );																	
 								// Pull up resource editor:

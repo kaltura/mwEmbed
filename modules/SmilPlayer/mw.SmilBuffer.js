@@ -295,8 +295,8 @@ mw.SmilBuffer.prototype = {
 	/**
 	 * Clip ready for grabbing a frame such as a canvas thumb
 	 */
-	bufferedSeek: function( smilElement, relativeTime, callback ){
-		mw.log("SmilBuffer::bufferedSeek:" + this.smil.getPageDomId( smilElement ) + ' time:' + relativeTime );
+	bufferedSeekRelativeTime: function( smilElement, relativeTime, callback ){
+		mw.log("SmilBuffer::bufferedSeekRelativeTime:" + this.smil.getPageDomId( smilElement ) + ' time:' + relativeTime );
 		
 		var absoluteTime = relativeTime;		
 		if( $j( smilElement ).attr('clipBegin') ){

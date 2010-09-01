@@ -2031,31 +2031,34 @@ mw.EmbedPlayer.prototype = {
 	* On clip done action. Called once a clip is done playing
 	*/
 	onClipDone: function() {
-		mw.log( 'EmbedPlayer::onClipDone:' + this.id + ' doneCount:' + this.donePlayingCount );						
+		mw.log( 'EmbedPlayer::onClipDone:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );						
 		var _this = this;				
-				
-		
+						
 		// Only run stopped once: 
 		if( !this.isStopped() ){
 			// Stop the monitor: 
 			this.stopMonitor();
 			
+			// Show the control bar:
+			this.controlBuilder.showControlBar();	
+			
 			// Update the clip done playing count:
 			this.donePlayingCount ++;
 		
 			// Fire the html5 ended binding
-			mw.log( "ended" );
 			var onDoneActionObject = {
 				'runBaseControlDone' : true
 			}				
 			
-			// run the ended trigger ( allow the ended object to prevent default actions ) 				
+			// Run the ended trigger ( allow the ended object to prevent default actions ) 			
+			mw.log("EmbedPlayer::onClipDone:Trigger ended");
 			$j( this ).trigger( 'ended', onDoneActionObject );
 			
 			if( onDoneActionObject.runBaseControlDone ){
 			
 				// Check if we have the "loop" property set
 				if( this.loop ) {
+					this.stop();
 					this.play();
 					return; 
 				}
@@ -2750,11 +2753,14 @@ mw.EmbedPlayer.prototype = {
 	*	There is no general way to pause the video
 	*  must be overwritten by embed object to support this functionality.
 	*/
-	pause: function() {
-		var _this = this;		
-		// mw.log('mwEmbed:do pause');		
-		// (playing) do pause		
-		this.paused = true;
+	pause: function( event ) {
+		var _this = this;	
+		if( this.paused === false ){
+			this.paused = true;
+			mw.log('EmbedPlayer:trigger pause');
+			$j( this ).trigger('pause');
+		}
+		mw.log('mwEmbed:embedPlayer::pause() ');	
 				
 		// update the ctrl "paused state"				
 		this.$interface.find('.play-btn span' )
@@ -2767,7 +2773,7 @@ mw.EmbedPlayer.prototype = {
 		.click( function() {
 			_this.play();
 		} )
-		.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );
+		.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );				
 	},
 	
 	/**
@@ -2781,37 +2787,33 @@ mw.EmbedPlayer.prototype = {
 	*/
 	stop: function() {
 		var _this = this;
-		mw.log( 'mvEmbed:stop:' + this.id );		
+		mw.log( 'mvEmbed:stop:' + this.id );			
+		
 		// no longer seeking:
 		this.didSeekJump = false;
 		
-		// reset current time and prev time and seek offset
-		this.currentTime = this.previousTime = 	this.serverSeekTime = 0; 
+		// Reset current time and prev time and seek offset
+		this.currentTime = this.previousTime = 	this.serverSeekTime = 0; 		
 		
-		// Previous player set time		
+		// Issue pause to update interface (only call this parent) 
+		if( !this.paused ){
+			this.paused = true;
+			// update the interface
+			if ( this['parent_pause'] ) {
+				this.parent_pause();
+			} else {
+				this.pause();
+			}
+		}	
 		
-		// First issue pause to update interface (only call this parent) 
-		if ( this['parent_pause'] ) {
-			this.parent_pause();
-		} else {
-			this.pause();
-		}
+		// Rewrite the html to thumbnail disp
+		this.showThumbnail();
+		this.bufferedPercent = 0; // reset buffer state			
+		this.controlBuilder.setStatus( this.getTimeRange() );
 		
-		// Reset the currentTime: 
-		this.currentTime = 0;
-		
-		// Check if thumbnail is being displayed in which case do nothing
-		if ( this.thumbnail_disp ) {
-			// already in stooped state
-			mw.log( 'already in stopped state' );
-			this.controlBuilder.setStatus( this.getTimeRange() );
-		} else {
-			// rewrite the html to thumbnail disp
-			this.showThumbnail();
-			this.bufferedPercent = 0; // reset buffer state
-			this.updatePlayHead( 0 );
-			this.controlBuilder.setStatus( this.getTimeRange() );
-		}
+		// Reset the playhead
+		mw.log("EmbedPlayer::Stop:: Reset play head")
+		this.updatePlayHead( 0 );
 		
 		//Bind play-btn-large play 
 		this.$interface.find( '.play-btn-large' )
@@ -3132,10 +3134,10 @@ mw.EmbedPlayer.prototype = {
 	* @param {Float} perc Value between 0 and 1 for position of playhead
 	*/
 	updatePlayHead: function( perc ) {
-		$play_head = this.$interface.find( '.play_head' );
-		if ( this.controls &&  $play_head.length != 0 ) {
+		$playHead = this.$interface.find( '.play_head' );
+		if ( this.controls &&  $playHead.length != 0 ) {
 			var val = parseInt( perc * 1000 );
-			$play_head.slider( 'value', val );
+			$playHead.slider( 'value', val );
 		}		
 	},
 	

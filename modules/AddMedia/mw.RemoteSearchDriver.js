@@ -297,7 +297,8 @@ mw.RemoteSearchDriver.prototype = {
 			'homepage': 'http://kaltura.com',
 			'apiUrl': 'http://kaldev.kaltura.com/michael/aggregator.php',
 			
-			'detailsUrl' : 	wgServer + wgArticlePath,
+			'detailsUrl' : 	'http://videos.kaltura.com/$1',
+				
 			'lib': 'kaltura',
 			'resource_prefix' : '',
 			'tab_image':false
@@ -310,6 +311,8 @@ mw.RemoteSearchDriver.prototype = {
 			'enabled': 1,
 			'homepage': 'http://commons.wikimedia.org/wiki/Main_Page',
 			'apiUrl': 'http://commons.wikimedia.org/w/api.php',
+			'detailsUrl' : 	'http://commons.wikimedia.org/wiki/$1',
+			
 			'lib': 'mediaWiki',
 			'tab_img': true,
 			
@@ -335,6 +338,8 @@ mw.RemoteSearchDriver.prototype = {
 			'homepage': 'http://www.archive.org/about/about.php',
 
 			'apiUrl': 'http://www.archive.org/advancedsearch.php',
+			'detailsUrl' : 	'http://www.archive.org/details/$1',
+			
 			'lib': 'archiveOrg',
 			'local': false,
 			'resource_prefix': 'AO_',
@@ -346,9 +351,10 @@ mw.RemoteSearchDriver.prototype = {
 		*/
 		'flickr': {
 			'enabled': 1,
-			'homepage': 'http://www.flickr.com/about/',
-
+			'homepage': 'http://www.flickr.com/about/',			
 			'apiUrl': 'http://www.flickr.com/services/rest/',
+			'detailsUrl' : 'http://www.flickr.com/photos/',
+			
 			'lib': 'flickr',
 			'local': false,
 			// Just prefix with Flickr_ for now.
@@ -363,6 +369,8 @@ mw.RemoteSearchDriver.prototype = {
 			'enabled': 1,
 			'homepage': 'http://metavid.org/wiki/Metavid_Overview',
 			'apiUrl': 'http://metavid.org/w/index.php?title=Special:MvExportSearch',
+			'detailsUrl' : 'http://metavid.org/wiki/Stream:$1',
+			
 			'lib': 'metavid',			
 			'local': false, 
 			
@@ -1631,6 +1639,20 @@ mw.RemoteSearchDriver.prototype = {
 			callback( provider );
 		} );
 	},
+	/**
+	 * get a resource from a url loads the provider if not already initialized 
+	 */
+	getResourceFromUrl: function ( provider, url, callback){		
+		if (!provider.sObj) {
+			this.loadSearchLib( provider, function( provider ){				
+				provider.sObj.getResourceFromUrl( url, callback);
+			});
+		}
+		else {
+			provider.sObj.getResourceFromUrl( url, callback);
+		}
+	},
+	
 	
 	/**
 	* Get a resource object from a resource id

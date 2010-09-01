@@ -158,7 +158,7 @@ RemoteMwTimedText.prototype = {
 						_this.embedByTitle( pt[1], callback);
 						return ;
 					} else {
-						mw.log( 'Error: addByTitle could not process redirect' );
+						mw.log( 'Error: getTitleResource could not process redirect' );
 						callback( false );
 						return false;
 					}

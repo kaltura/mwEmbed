@@ -323,7 +323,7 @@ mw.PlayerSkinKskin = {
 	},
 	
 	/**
-	* Show the credit screen (presently specific to kaltura skin )
+	* Show the credit screen ( presently specific to kaltura skin )
 	*/  
 	showCredits: function() {
 		// Set up the shortcuts:	

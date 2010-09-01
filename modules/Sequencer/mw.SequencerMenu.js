@@ -36,7 +36,7 @@ mw.SequencerMenu.prototype = {
 			'save_divider': 'divider',
 			'save' : {
 				'icon' : 'disk',
-				'disabled' : true,
+				'disabled' : false,
 				'shortCut' : 'ctrl S',
 				'action' : function( _this ){
 					mw.log("SequencerMenu::save");

@@ -5,9 +5,15 @@
 // Wrap in mw to not pollute global namespace
 ( function( mw ) {
 	
+	// Loader configuration options ( all runtime options are stored in mw.SequencerConfig.js )
+	mw.setDefaultConfig({
+		'Sequencer.KalturaPlayerEditOverlay' : true
+	});
+	
+	
 	mw.addResourcePaths( {				
 		"mw.Sequencer"	: "mw.Sequencer.js",		
-		"mw.style.Sequencer" : "mw.style.Sequencer.css",
+		"mw.style.Sequencer" : "mw.style.Sequencer.css",		
 		
 		"mw.SequencerConfig" : "mw.SequencerConfig.js",
 		
@@ -30,6 +36,8 @@
 		"$j.fn.layout"		: "ui.layout/ui.layout-1.2.0.js",
 		
 		"mw.MediaWikiRemoteSequencer" : "remotes/mw.MediaWikiRemoteSequencer.js",		
+		"mw.style.SequencerRemote" : "remotes/mw.style.SequencerRemote.css",
+		
 		"mw.style.Sequencer" : "css/mw.style.Sequencer.css"
 		
 	} );
@@ -90,6 +98,17 @@
 			]
 		];	
 	});
+	
+	// If doing player overlays include remote for player hooks 
+	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {		
+		if( mw.getConfig( 'Sequencer.KalturaPlayerEditOverlay' )){
+			if( $j.inArray( 'mw.MediaWikiRemoteSequencer', classRequest ) == -1 )  {
+				classRequest.push('mw.MediaWikiRemoteSequencer');
+				classRequest.push('mw.style.SequencerRemote');
+			}
+		}
+	})
+	
 	
 } )( window.mw );	
 		

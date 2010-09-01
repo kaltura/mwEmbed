@@ -36,6 +36,8 @@ if( mwReqParam['debug'] ) {
 	mwUseScriptLoader = false;
 }
 
+
+
 // Setup up some globals to wrap mwEmbed mw.ready and mw.setConfig functions
 
 //Setup preMwEmbedReady queue
@@ -132,17 +134,22 @@ function doPageSpecificRewrite() {
 				var body = document.getElementById( 'bodyContent' );
 				body.innerHTML = "<div class=\"loadingSpinner sequenceLoader\"></div>" + body.innerHTML;				
 			}
-			loadMwEmbed( [ 'mw.MediaWikiRemoteSequencer' ], function(){
-				$j('#editform').hide();
-				$j('.sequenceLoader').hide();
-				
-				var remote = new mw.MediaWikiRemoteSequencer({
-					'action': wgAction,
-					'title' : wgTitle,
-					'target' : '#bodyContent'
-				});
-				remote.drawUI();
-			} );
+			if( window.mwSequencerRemote  ){
+				window.mwSequencerRemote.drawUI();
+			} else {
+				loadMwEmbed( [ 'mw.MediaWikiRemoteSequencer', 'mw.style.SequencerRemote' ], function(){
+					$j('#editform,.mw-newarticletext').hide();
+					$j('.sequenceLoader').hide();
+					
+					window.mwSequencerRemote = new mw.MediaWikiRemoteSequencer({
+						'action': wgAction,
+						'title' : wgTitle,
+						'target' : '#bodyContent'
+					});
+					window.mwSequencerRemote.drawUI();
+				} );
+			}
+			
 		}
 		return ;
 	}
@@ -173,9 +180,9 @@ function doPageSpecificRewrite() {
 	// Special api proxy page
 	if ( wgPageName == 'MediaWiki:ApiProxy' ) {
 		var wgEnableIframeApiProxy = true;		
-		loadMwEmbed( [ 'mw.ApiProxy' ], function() {
+		loadMwEmbed( [ 'mw.ApiProxy' ], function(){
 			mw.load( mwEmbedHostPath + '/modules/ApiProxy/ApiProxyPage.js?' + mwGetReqArgs() );
-		} );
+		});
 		return ;
 	}
 	
@@ -336,8 +343,8 @@ function rewrite_for_OggHandler( vidIdList ) {
 		// Check if file is from commons and therefore should explicitly set apiProvider to commons: 
 		var apiProviderAttr = ( src.indexOf( 'wikipedia\/commons' ) != -1 )?'apiProvider="commons" ': '';		
 		
-		// If in a gallery box we will be displaying the video larger in a lightbox
-		if( $j( '#' + vidId ).parents( '.gallerybox' ).length ){
+		// If in a gallery box or filehistory we will be displaying the video larger in a lightbox
+		if( $j( '#' + vidId ).parents( '.gallerybox,.filehistory' ).length ){
 			// Update the width to 400 and keep scale
 			pwidth = 400;
 			if( pheight != 0 ) {
@@ -370,7 +377,7 @@ function rewrite_for_OggHandler( vidIdList ) {
 			}
 					
 			// If the video is part of a "gallery box" use light-box linker instead
-			if( $j( '#' + vidId ).parents( '.gallerybox' ).length ){				
+			if( $j( '#' + vidId ).parents( '.gallerybox,.filehistory' ).length ){				
 				$j( '#' + vidId ).after(
 					 $j( '<div />')
 					.css( { 
@@ -390,7 +397,7 @@ function rewrite_for_OggHandler( vidIdList ) {
 						
 						// A play button:
 						$j( '<div />' )
-						.css( {
+						.css({
 							'position' : 'absolute',
 							'top' : ( parseInt( $pimg.attr( 'height' ) ) /2 ) -25,
 							'maring-left' : 'auto',
@@ -519,14 +526,21 @@ function loadMwEmbed( classSet, callback ) {
 	if( typeof classSet == 'function') {
 		callback = classSet;
 	}	
+
 	// Inject mwEmbed if needed
 	if ( typeof MW_EMBED_VERSION == 'undefined' ) {
 		if ( mwUseScriptLoader ) {
 			var rurl = mwEmbedHostPath + '/ResourceLoader.php?class=';
 			
 			var coma = '';
+			
+			
 			// Add jQuery too if we need it: 
-			if ( typeof window.jQuery == 'undefined' ) {
+			if ( typeof window.jQuery == 'undefined' 
+				||
+				// force load jquery if version 1.3.2 ( issues ) 
+				jQuery.fn.jquery == '1.3.2') 
+			{
 				rurl += 'window.jQuery';
 				coma = ',';
 			}	
@@ -548,17 +562,29 @@ function loadMwEmbed( classSet, callback ) {
 			rurl += '&' + mwGetReqArgs();
 			importScriptURI( rurl );
 		} else { 
-			// load mwEmbed js
-			importScriptURI( mwEmbedHostPath + '/mwEmbed.js?' + mwGetReqArgs() );
 			
-			// Load the class set as part of mwReady callback
-			var instanceCallback = callback;
-			var callback = function(){
-				mw.load( classSet, function(){
-					instanceCallback();
-				})
+			// force load jQuery ( issues with '1.3.2' .data handling 
+			if( jQuery && jQuery.fn.jquery== '1.3.2' ){
+				console.log('load: ' + mwEmbedHostPath + '/libraries/jquery/jquery-1.4.2.js' );
+				importScriptURI( mwEmbedHostPath + '/libraries/jquery/jquery-1.4.2.js?' + mwGetReqArgs() );
 			}
-			
+			waitForJQueryUpgrade = function(){
+				if( jQuery && jQuery.fn.jquery== '1.3.2' ){					
+					setTimeout( waitForJQueryUpgrade, 20);
+				} else {
+					// load mwEmbed js
+					importScriptURI( mwEmbedHostPath + '/mwEmbed.js?' + mwGetReqArgs() );
+					
+					// Load the class set as part of mwReady callback
+					var instanceCallback = callback;
+					var callback = function(){
+						mw.load( classSet, function(){
+							instanceCallback();
+						})
+					}
+				}
+			}
+			waitForJQueryUpgrade();
 		}
 	}
 	waitMwEmbedReady( callback );

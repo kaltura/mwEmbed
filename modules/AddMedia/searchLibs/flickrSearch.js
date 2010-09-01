@@ -15,8 +15,7 @@
 var flickrSearch = function ( options ) {
 	this.init( options );
 }
-flickrSearch.prototype = {
-	detailsUrl : 'http://www.flickr.com/photos/',
+flickrSearch.prototype = {	
 	// @@todo probably would be good to read the api-key from configuration
 	apikey : '2867787a545cc66c0bce6f2e57aca1d1',
 	// What license we are interested in

@@ -67,6 +67,10 @@ baseRemoteSearch.prototype = {
 		return this;
 	},
 	
+	getResourceFromUrl: function( url, callback ){
+		mw.log("Error getResourceFromUrl must be implemented by remoteSearch provider");	
+	},
+	
 	/**
 	* Base search results 
 	* Does some common initialisation for search results  	

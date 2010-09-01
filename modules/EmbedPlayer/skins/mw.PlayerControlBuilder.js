@@ -1309,7 +1309,7 @@ mw.PlayerControlBuilder.prototype = {
 		var $textList =  $j( '<ul />' );
 		$j.each( embedPlayer.mediaElement.getSources(), function( index, source ) {
 			if(  source.getSrc() ) {
-				mw.log("add src: "  + source.getTitle() );
+				mw.log("showDownloadWithSources:: Add src: "  + source.getTitle() );
 				var $dl_line = $j( '<li />').append(
 					$j('<a />')					
 					.attr( 'href', source.getSrc() )

@@ -18,7 +18,8 @@
 	height: 305px;
 }
 .mv-player .control-bar {
-	height: 29px;		
+	height: 29px;	
+	z-index: 2;	
 }
 .mv-player .controlInnerSmall {
 /*	width: 430px;*/

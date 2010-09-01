@@ -7,12 +7,10 @@
 	mw.setDefaultConfig( {
 		// The framerate for the smil player
 		'SmilPlayer.framerate': 30 
-	} );
-	
+	} );	
 
 	mw.addResourcePaths( {
-		"mw.SmilHooks" : "mw.SmilHooks.js",
-		
+		"mw.SmilHooks" : "mw.SmilHooks.js",		
 		"mw.Smil" : "mw.Smil.js",
 		"mw.SmilLayout" : "mw.SmilLayout.js",
 		"mw.style.SmilLayout" : "mw.style.SmilLayout.css",		
@@ -55,11 +53,11 @@
 		 	return true;
 		 }
 		 var loadSmil = false;
-		 $j( element ).find( 'source' ).each( function(inx, sourceElement){
+		 $j( element ).find( 'source' ).each( function( inx, sourceElement ){
 			if( mw.CheckElementForSMIL( sourceElement ) ){
 				loadSmil = true;
 				return true;
-			}			
+			}		
 		});	 
 		return loadSmil;
 	};
