@@ -55,7 +55,8 @@ var mwEnabledModuleList = [
 	'SmilPlayer',
 	'Playlist',	
 	'SwarmTransport',
-	'SyntaxHighlighter'
+	'SyntaxHighlighter',
+	'KalturaSupport'
 ];
 
 /**
