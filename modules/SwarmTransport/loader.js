@@ -15,7 +15,7 @@
 	 	/** 
 	 	* If SwarmTransport should be enabled by default as video transport mechanism
 	 	*/ 
- 		'SwarmTransport.Enable': true,
+ 		'SwarmTransport.Enable': false,
  		
  		/**
  		* If the swarm transport plugin should be recommended if the user does not have it installed. 

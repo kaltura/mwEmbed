@@ -7,7 +7,7 @@
 	
 	// Loader configuration options ( all runtime options are stored in mw.SequencerConfig.js )
 	mw.setDefaultConfig({
-		'Sequencer.KalturaPlayerEditOverlay' : true
+		'Sequencer.KalturaPlayerEditOverlay' : false
 	});
 	
 	

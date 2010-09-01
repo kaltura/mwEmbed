@@ -66,6 +66,9 @@ if( !mw.setConfig ){
 		}
 	}
 }
+// Setup wikimedia specific config
+mw.setConfig( 'Sequencer.KalturaPlayerEditOverlay', true );
+mw.setConfig( 'SwarmTransport.Enable', true );
 
 // Use wikibits onLoad hook: ( since we don't have js2 / mw object loaded ) 
 addOnloadHook( function() {
