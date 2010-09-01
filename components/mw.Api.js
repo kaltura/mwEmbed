@@ -104,7 +104,7 @@
 	*
 	* @param {Mixed} url or data request
 	* @param {Mixed} data or callback
-	* @param {Function} callbcak function called on success
+	* @param {Function} callback function called on success
 	* @param {Function} callbackTimeout - optional function called on timeout
 	* 	Setting timeout callback also avoids default timed-out dialog for proxy requests
 	*/	
