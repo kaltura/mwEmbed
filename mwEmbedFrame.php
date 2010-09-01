@@ -13,10 +13,6 @@
  * <iframe src="mwEmbedFrame.php?src={SRC URL}&poster={POSTER URL}&width={WIDTH}etc"> </iframe>
  */
 
-//Setup the script local script cache directory
-// ( has to be hard coded rather than config based for fast non-mediawiki config hits )
-$wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/includes/cache';
-
 // Setup the mwEmbedFrame
 $myMwEmbedFrame = new mwEmbedFrame();
 
