@@ -8,7 +8,7 @@
 
 var kURID = '1.1q';
 // Static script loader url: 
-var SCRIPT_LOADER_URL = 'http://html5.kaltura.org/ResourceLoader.php';
+var SCRIPT_LOADER_URL = 'http://cdn.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
