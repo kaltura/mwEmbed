@@ -1580,7 +1580,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	resizePlayer: function( size , animate){
 		this.width = size.width;
-		this.hegith = size.height;
+		this.height = size.height;
 		if( animate ){
 			$j(this).animate(size);
 			this.$interface.animate( size );
