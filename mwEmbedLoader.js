@@ -4,11 +4,30 @@
 * Kaltura html5 library loader 
 * For more info on mwEmbed / kaltura html5 library see: 
 * http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
+* 
+* HTML5 Library usage is driven by html5 attributes see: 
+* http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html
+* 
+* Kaltura Configuration options are set via mw.setConfig( option, value ) or 
+* mw.setConfig( {json set of option value pairs } );
+* 
+*	// Enable analytics tracking for html5 devices
+*	'Kaltura.EnableAnalytics' : true
+*	
+*	// Base url for your api
+*	'Kaltura.ServiceUrl' : 'http://www.kaltura.com'
+*	
+*	// Path to kaltura api 
+*	'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
+*	
+*	// The CDN url that hosts your assets.
+*	'Kaltura.CdnUrl' : 'http://cdn.kaltura.com'
+*
 */
 
 var kURID = '1.1r';
 // Static script loader url: 
-var SCRIPT_LOADER_URL = 'http://kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
+var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
@@ -65,8 +84,9 @@ if( !mw.setConfig ){
 				preMwEmbedConfig[ i ] = set[i];
 			}
 		}
-	}	
+	}
 }
+
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
 function kOverideSwfObject(){	
 	// Check if already override

@@ -75,6 +75,7 @@ mw.Smil.prototype = {
 		// Check for data url
 		var dataUrlKey = 'data:text/xml;charset=utf-8,';
 		if( url.indexOf( dataUrlKey ) === 0 ){
+			// Load the smil document from the data url:
 			_this.loadFromString(
 				unescape( url.substr( dataUrlKey.length ) )
 			);
@@ -366,7 +367,23 @@ mw.Smil.prototype = {
 	getAssetUrl : function( assetPath ) {
 		// Context url is the smil document url:
 		var contextUrl = mw.absoluteUrl(this.smilContextUrl);
-		return mw.absoluteUrl(assetPath, contextUrl);
+		var absoluteUrl = mw.absoluteUrl(assetPath, contextUrl);
+		// Restrict any display url 
+		if( mw.getConfig( 'SmilPlayer.AssetDomainWhiteList' ) != '*' ){
+			var approvedDomainList = mw.getConfig( 'SmilPlayer.AssetDomainWhiteList' );
+			var approved = false;
+			for( var i =0; i < approvedDomainList.length; i++){
+				if( mw.parseUri( absoluteUrl ).host == approvedDomainList[i] ){
+					approved = true;
+				}
+			}
+			if( ! approved ){
+				mw.log("Error: getAssetUrl: Asset url " + absoluteUrl + ' is not smil player asset domains:' + approvedDomainList);
+				return mw.getConfig('imagesPath') + 'vid_default_thumb.jpg';
+			}
+		}
+		
+		return absoluteUrl;
 	},
 
 	/**
@@ -389,6 +406,7 @@ mw.Smil.prototype = {
 		// If the smilType is ref, check for a content type
 		if (smilType == 'ref') {
 			switch ($j(smilElement).attr('type')) {
+			case 'application/x-wikitemplate':
 			case 'text/html':
 				smilType = 'cdata_html';
 				break;

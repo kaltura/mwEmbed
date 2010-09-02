@@ -504,8 +504,8 @@ function KalturaConfiguration(partnerId)
 }
 
 KalturaConfiguration.prototype.logger		= null;
-KalturaConfiguration.prototype.serviceUrl	= "http://www.kaltura.com";
-KalturaConfiguration.prototype.serviceBase 	= "/api_v3/index.php?service=";
+KalturaConfiguration.prototype.serviceUrl	= mw.getConfig( 'Kaltura.ServiceUrl' );
+KalturaConfiguration.prototype.serviceBase 	= mw.getConfig( 'Kaltura.ServiceBase' );
 KalturaConfiguration.prototype.partnerId	= null;
 KalturaConfiguration.prototype.format		= KalturaClientBase.prototype.KALTURA_SERVICE_FORMAT_JSONP;
 KalturaConfiguration.prototype.clientTag	= "html5";

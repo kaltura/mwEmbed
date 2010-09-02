@@ -34,7 +34,7 @@ mw.KWidgetSupport.prototype = {
 				mw.log(" KWidgetSupport::checkPlayerSourcesEvent for " + embedPlayer.id);
 				_this.checkPlayerSources( embedPlayer, function(){
 					// We can only enable kaltura analytics if we have a session if we have a client										
-					if( mw.getConfig( 'enableKalturaAnalytics' ) == true && _this.kClient ) {
+					if( mw.getConfig( 'Kaltura.EnableAnalytics' ) == true && _this.kClient ) {
 						mw.addKAnalytics( embedPlayer, _this.kClient );
 					}
 					callback();
@@ -78,7 +78,7 @@ mw.KWidgetSupport.prototype = {
 		this.kPartnerId = widgetId.replace(/_/g, '');	
 		
 		// Set the poster
-		embedPlayer.poster = 'http://cdnakmi.kaltura.com/p/' + this.kPartnerId + '/sp/' +
+		embedPlayer.poster = mw.getConfig( 'Kaltura.CdnUrl' ) + '/p/' + this.kPartnerId + '/sp/' +
 		this.kPartnerId + '00/thumbnail/entry_id/' + kEntryId + '/width/' +
 			embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight();
 			 
@@ -133,7 +133,7 @@ mw.KWidgetSupport.prototype = {
 				/XXXXXXX/flavor/XXXXXXXX/a.mp4?novar=0
 				*/
 				// Set up the current src string:
-				var src = 'http://cdnakmi.kaltura.com/p/' + _this.kPartnerId +
+				var src = mw.getConfig('Kaltura.CdnUrl') + '/p/' + _this.kPartnerId +
 						'/sp/' +  _this.kPartnerId + '00/flvclipper/entry_id/' +
 						kEntryId + '/flavor/' + asset.id ;
 								

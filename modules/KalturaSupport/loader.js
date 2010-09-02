@@ -10,8 +10,10 @@
 	// For now just store the keys in the javascript  
 	// ( need to get clarity on why this is even needed )
 	mw.setDefaultConfig( {		
-		'enableKalturaAnalytics' : true,
-		'kalturaStatsServer' : 'http://www.kaltura.com/api_v3/index.php'
+		'Kaltura.EnableAnalytics' : true,
+		'Kaltura.ServiceUrl' : 'http://www.kaltura.com',
+		'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
+		'Kaltura.CdnUrl' : 'http://cdn.kaltura.com'
 	} );
 	
 	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
@@ -113,7 +115,7 @@
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
 						videoEmbedAttributes.kentryid = kEmbedSettings.entryId;
 						if( kEmbedSettings.partnerId ){
-							var thumb_url = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
+							var thumb_url = mw.getConfig( 'Kaltura.CdnUrl') + '/p/' + kEmbedSettings.partnerId + '/sp/' +
 											kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
 											height + '/height/' + width;
 							$imgThumb = $j('<img />').attr({

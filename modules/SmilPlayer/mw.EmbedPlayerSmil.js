@@ -50,7 +50,8 @@ mw.EmbedPlayerSmil = {
 	* Put the embed player into the container
 	*/
 	doEmbedPlayer: function() {
-		var _this = this;
+		var _this = this;		
+		
 		// check if we have already embed the player:
 		if( this.smilPlayerEmbedded ){
 			return; 
@@ -148,8 +149,17 @@ mw.EmbedPlayerSmil = {
 	play: function( playSegmentEndTime ){
 		var _this = this;
 		mw.log(" EmbedPlayerSmil::play " + _this.smilPlayTime + ' to ' + playSegmentEndTime + ' pause time: ' + this.smilPauseTime );		
+
+		// Set thumbnail_disp to false 
+		this.thumbnail_disp = false;
+		
+		// Update clock start time 
+		_this.clockStartTime = new Date().getTime()
+		
 		// Update the interface
 		this.parent_play();
+
+		// xxx set player to 'loading / buffering'
 		
 		// Update the playSegmentEndTime flag
 		if( ! playSegmentEndTime ){
@@ -159,13 +169,18 @@ mw.EmbedPlayerSmil = {
 		}
 		
 		// Make sure this.smil is ready : 
-		this.getSmil( function( smil ){			
+		this.getSmil( function( smil ){		
+			
 			// Start buffering the movie 
 			_this.smil.startBuffer();
-						
+			
+			if( isNaN( _this.smilPlayTime ) ){
+				_this.smilPlayTime  = 0;
+			}
 			// Sync with current smilPlayTime
-			_this.clockStartTime = new Date().getTime() -( _this.smilPlayTime * 1000 );
-
+			_this.clockStartTime = new Date().getTime() - ( _this.smilPlayTime * 1000 );
+			mw.log('smil callback set clockTime: ' + new Date().getTime() +
+					'-' + ' splaytime:  ' + _this.smilPlayTime +' x1000' );
 			// Zero out the pause time:
 			_this.smilPauseTime = 0;
 			
@@ -187,6 +202,7 @@ mw.EmbedPlayerSmil = {
 	},
 	
 	stop: function(){
+		mw.log("EmbedSmilPlayer:: stop");
 		this.smilPlayTime = 0;
 		this.smilPauseTime = 0;
 		this.setCurrentTime( 0 );		
@@ -218,8 +234,9 @@ mw.EmbedPlayerSmil = {
 	/**
 	 * Monitor function render a given time
 	 */
-	monitor: function(){		
+	monitor: function(){
 		// Get a local variable of the new target time: 		
+		//mw.log("smilPlayer::monitor: isPlaying:" + this.isPlaying() + ' pausedForBuffer:' +  this.pausedForBuffer + ' playtime:' + this.smilPlayTime);
 		
 		// Check if we reached playSegmentEndTime and pause playback  
 		if( this.playSegmentEndTime && this.smilPlayTime >= this.playSegmentEndTime ) {
@@ -255,13 +272,14 @@ mw.EmbedPlayerSmil = {
 			
 			if( !this.pausedForBuffer ){
 				// Update playtime if not pausedForBuffer				
-				this.smilPlayTime =  this.smilPauseTime + ( ( new Date().getTime() - this.clockStartTime ) / 1000 );
-				/*
-				mw.log(" update smilPlayTime: " + this.smilPauseTime + " getTime: " + new Date().getTime() + 
+				this.smilPlayTime =  this.smilPauseTime + 
+					( ( new Date().getTime() - this.clockStartTime ) / 1000 );
+				
+				/*mw.log(" update smilPlayTime: " + this.smilPauseTime + " getTime: " + new Date().getTime() + 
 						' - clockStartTime: ' + this.clockStartTime + ' = ' + 
 						( ( new Date().getTime() - this.clockStartTime ) / 1000 )  + 
-						" \n time:" + this.smilPlayTime );
-				*/
+						" \n time:" + this.smilPlayTime );*/
+				
 			}
 			
 			// Reset the pausedForBuffer flag: 

@@ -6,7 +6,14 @@
 
 	mw.setDefaultConfig( {
 		// The framerate for the smil player
-		'SmilPlayer.framerate': 30 
+		'SmilPlayer.framerate': 30,
+		
+		// Array of Asset approved domains or keyword '*' for no restriction
+		// Before any asset is displayed its domain is checked against this array of wildcard domains
+		// Additionally best effort is made to check any text/html asset references  
+		// for example [ '*.wikimedia.org', 'en.wikipeida.org']
+		'SmilPlayer.AssetDomainWhiteList' : '*'
+
 	} );	
 
 	mw.addResourcePaths( {

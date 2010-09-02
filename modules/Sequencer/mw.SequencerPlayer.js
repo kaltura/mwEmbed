@@ -25,8 +25,13 @@ mw.SequencerPlayer.prototype = {
 		this.sequencer.getSmilSource( function( smilSource ){
 			mw.log("SequencePlayer::drawPlayer: Built player target url length:" + smilSource.length );
 			// Add the player
+			var $video = $j('<video />');
+			// Set the title key if we have it if we have a title key
+			if( _this.sequencer.getServer().getTitleKey() ){
+				$video.attr('apiTitleKey',  _this.sequencer.getServer().getTitleKey() );
+			}
 			$playerTarget.html(
-				$j('<video />').css(
+				$video.css(
 					_this.getPlayerSize()
 				).attr({
 					'id' : _this.getSmilPlayerId()

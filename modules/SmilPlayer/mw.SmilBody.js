@@ -129,9 +129,7 @@ mw.SmilBody.prototype = {
 	 * Also See: http://www.firefogg.org/dev/render.html
 	 * 
 	 * Note if we could "blend" or play two audio files at the same time
-	 *  none of this would be needed 
-	 *  
-	 *  ie this code should be replaced once we add improved audio support
+	 *  that would be more ideal.
 	 * 
 	 * @return {Object} an array of audio with the following properties: 
 	 * 	start The start offset of the audio asset. 

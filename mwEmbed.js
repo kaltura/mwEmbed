@@ -1135,11 +1135,11 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	/**
 	 * Mobile Safari has special properties for html5 video::
 	 * 
-	 * NOTE: should be moved to browser detection script
+	 * NOTE: should be phased out in favor of browser feature detection script
 	 */
 	mw.isMobileSafari = function() {		
 		// check mobile safari foce ( for debug )
-		if( mw.getConfig( 'forceMobileSafari' ) ){
+		if( mw.getConfig( 'forceMobileSafari' ) || document.URL.indexOf('forceMobileSafari') != -1 ){
 			return true;
 		}
 		if ((navigator.userAgent.indexOf('iPhone') != -1) || 

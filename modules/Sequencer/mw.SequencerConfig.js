@@ -38,12 +38,6 @@ mw.setDefaultConfig({
 	"Sequencer.TimelineTrackHeight" : 100,
 	
 	// Default timeline audio or collapsed timeline height 
-	"Sequencer.TimelineColapsedTrackSize" : 35,
-
-	// Asset domain restriction array of domains or keyword 'none'
-	// Before any asset is displayed its domain is checked against this array of wildcard domains
-	// Additionally best effort is made to check any text/html asset references  
-	// for example [ '*.wikimedia.org', 'en.wikipeida.org']
-	"Sequencer.DomainRestriction" : 'none'
+	"Sequencer.TimelineColapsedTrackSize" : 35
 })
 	

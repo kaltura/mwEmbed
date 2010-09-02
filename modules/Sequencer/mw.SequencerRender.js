@@ -25,14 +25,19 @@ mw.SequencerRender.prototype = {
 	
 	getEmbedVideoRender: function(){
 		var _this = this;
-		return $j('<video />').css({
+		var $video = $j('<video />').css({
 			'width': 400,
 			'height': 300
 		}).attr({
 			'id' : 'firefoggRenderVideo',
 			'type' : 'application/smil',
 			'src' : _this.sequenceror.getSmilSource()
-		}).embedPlayer(function(){
+		})
+		// Set the title key if we have it
+		if( _this.sequencer.getServer().getTitleKey() ){
+			$video.attr('apiTitleKey',  _this.sequencer.getServer().getTitleKey() );
+		}
+		return $video.embedPlayer(function(){
 			// status area
 			$j('#firefoggRenderVideo').after( 
 				$j('<div />').attr('id', 'targetFoggStatus')		
