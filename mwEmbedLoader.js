@@ -206,8 +206,10 @@ function kAddScript(){
 		'mw.EmbedPlayerKplayer',
 		'mw.EmbedPlayerJava',
 		
-		// jQuery helpers
+		// jQuery lib
 		'$j.ui',  
+		'$j.widget',
+		'$j.ui.mouse',
 		'$j.fn.hoverIntent',		
 		'$j.cookie', 
 		'JSON',	

@@ -38,7 +38,8 @@
 	mw.addModuleLoader( 'AddMedia.UploadForm', [
 			[
 				'mw.UploadForm',
-				'$j.ui'				
+				'$j.ui',
+				'$j.widget'
 			],
 			[
 				'$j.ui.datepicker'
@@ -58,6 +59,7 @@
 				'$j.ui'
 			], [
 				'$j.ui.resizable',
+				'$j.ui.mouse',
 				'$j.ui.draggable',
 				'$j.ui.dialog',
 				'$j.ui.tabs',
@@ -75,6 +77,7 @@
 		[
 			'$j.ui.progressbar',
 			'$j.ui.dialog',
+			'$j.ui.mouse',
 			'$j.ui.draggable'
 		]
 	];

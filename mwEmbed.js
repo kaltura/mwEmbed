@@ -1105,7 +1105,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		// Build the uiRequest
 		var uiRequest = [ '$j.ui.dialog' ];
 		if( options.draggable ){
-			uiRequest.push( '$j.ui.draggable' )
+			uiRequest.push( '$j.ui.mouse' )
+			uiRequest.push( '$j.ui.draggable' )		
 		}
 		if( options.resizable ){
 			uiRequest.push( '$j.ui.resizable' );
@@ -1123,7 +1124,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		// Load the dialog resources
 		mw.load([
 			[
-				'$j.ui'
+				'$j.ui',
+				'$j.widget'
 			],
 			uiRequest
 		], function() {

@@ -156,7 +156,8 @@
 		// Set up the embed video player class request: (include the skin js as well)
 		var dependencyRequest = [
 			[
-				'$j.ui',			
+				'$j.ui',				
+				'$j.widget',
 				'mw.EmbedPlayer',
 				'mw.PlayerControlBuilder',
 				'$j.fn.hoverIntent',
@@ -166,6 +167,7 @@
 				'JSON'
 			],
 			[
+			 	'$j.ui.mouse',
 				'$j.fn.menu',			
 				'mw.style.jquerymenu',
 				'$j.ui.slider'

@@ -94,6 +94,7 @@ function doPageSpecificRewrite() {
 		 	'mw.style.ClipEdit',
 			'$j.fn.textSelection', 
 			'$j.ui', 
+			'$j.widget',
 			'$j.ui.sortable' 
 		], function() {
 			mw.load( mwEmbedHostPath + '/remotes/AddMediaWizardEditPage.js?' + mwGetReqArgs() );
@@ -169,6 +170,7 @@ function doPageSpecificRewrite() {
 			'mw.UploadInterface',
 			'mw.Firefogg', 
 			'$j.ui',
+			'$j.ui.mouse',
 			'$j.ui.progressbar', 
 			'$j.ui.dialog', 
 			'$j.ui.draggable'

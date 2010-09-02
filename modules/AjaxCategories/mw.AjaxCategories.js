@@ -108,7 +108,8 @@ mw.AjaxCategories.prototype = {
 		// Make sure the suggestion plugin is loaded. Load everything else while we're at it
 		mw.load(
 		[
-			'$j.ui',			
+			'$j.ui',		
+			'$j.widget',
 			'$j.ui.dialog', 
 			'$j.fn.suggestions'
 		],

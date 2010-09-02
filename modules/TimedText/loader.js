@@ -81,6 +81,7 @@
 	mw.addModuleLoader( 'TimedText.Edit', [ 
 		[
 			'$j.ui',
+			'$j.widget',
 			'$j.fn.menu', 
 			"mw.style.jquerymenu",
 			
