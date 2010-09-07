@@ -1,0 +1,345 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>KDP3 | Kaltura Dynamic Player version 3 JavaScript Playgrond ( HTML5 backend player ) </title>
+	
+	<script type="text/javascript" src="kdp3_mapping_files/jquery.js"></script>
+	<script type="text/javascript" src="kdp3_mapping_files/swfobject.js"></script>
+	<script type="text/javascript" src="kdp3_mapping_files/prettify.js"></script>
+	
+	
+	<script type="text/javascript" src="../../../mwEmbedLoader.js"></script> 
+	<!-- <script type="text/javascript" src="http://html5.kaltura.org/js"></script> -->
+	
+	<link type="text/css" rel="stylesheet" href="kdp3_mapping_files/prettify.css">
+	<style type="text/css">
+		html, body { margin:0; padding:0; }
+		body, td, th, pre, code, select, option, input, textarea { font-family:"Trebuchet MS", Arial, Sans-serif; font-size:10pt; }
+		#container { width:800px; margin:10px auto; overflow:hidden; }
+		.demo { height:200px; width:790px; margin:0; border:1px solid gray; font-family:Verdana; font-size:10px; background:white; overflow:auto; }
+		.describe { height:200px; width:790px; margin:0; border:1px solid gray; font-family:Verdana; font-size:10px; background:white; overflow:auto; border-top:none; }
+		#kdp3 { margin-top:10px; }
+		div.code { }
+		pre { display:block; }
+		.syntaxhighlighter { margin:0 0 0 0 !important; padding:0 !important; }
+		input { font-size:14px; }
+		h3 { color:#aabbaa; font-size:1.4em; } 
+		h4 { font-size:1.2em; margin:8px 0 0; padding:0; padding-bottom:2px; }
+		p { margin:0; padding:0; }
+		ul, ol { margin:0; padding:0; margin-left:20px; }
+		ul li, ol li { margin:2px; list-style-position:outside; }
+		.describetext { color:#666666; }
+		pre, code {margin:0;}
+		img { margin:0;padding:0;border:none; }
+		a img { margin:5px; }
+		.footer { background:none; border-top:5px solid #eee; width:100%; }
+		.footer-conts { width:480px; margin: auto auto;  }
+		.sideBox { background-color:#FFFFFF; border:1px solid #eee; float:left; margin:10px 0 20px 40px; padding:1px; width:310px; }
+		.sideBox .content { background:#eee; padding:10px 12px; }
+		.sideBox ul.menu { margin-top:12px; margin:0 0 0 20px; border:medium none; list-style:none outside none; text-align:left; }
+		.sideBox ul li { background:none repeat scroll 0 0 transparent; margin:6px 0; padding:0; }
+		dfn { border-bottom:1px dotted green; color:green; cursor:default; font-style:normal; }
+		.controls { padding: 5px; }
+		#controls_menu {  }
+	</style>
+	<script type="text/javascript">
+		
+		var notificationslist = ['startUp',
+								'durationChange',
+								'initiatApp',
+								'changeMedia',
+								'cleanMedia',
+								'skinLoaded',
+								'skinLoadFailed',
+								'entryReady',
+								'entryFailed',
+								'sourceReady',
+								'loadMedia',
+								'mediaLoading',
+								'mediaReady',
+								'mediaUnloaded',
+								'mediaLoadError',
+								'mediaError',
+								'rootResize',
+								'mediaViewableChange',
+								'pre1start',
+								'post1start',
+								'doPause',
+								'doPlay',
+								'doPlayEntry',
+								'doStop',
+								'doSeek',
+								'doIntelligentSeek',
+								'doSwitch',
+								'kdpReady',
+								'kdpEmpty',
+								'layoutReady',
+								'playerStateChange',
+								'playerReady',
+								'playerContainerReady',
+								'playerPaused',
+								'playerPlayed',
+								'playerSeekStart',
+								'playerSeekEnd',
+								'playerPlayEnd',
+								'playerUpdatePlayhead',
+								'playerDimensionChange',
+								'openFullScreen',
+								'closeFullScreen',
+								'changeVolume',
+								'volumeChanged',
+								'enableGui',
+								'fastForward',
+								'stopFastForward',
+								'bytesDownloadedChange',
+								'bytesTotalChange',
+								'bufferProgress',
+								'bufferChange',
+								'playerDownloadComplete',
+								'endEntrySession',
+								'endPreSession',
+								'endPostSession',
+								'durationChange',
+								'hasCloseFullScreen',
+								'hasOpenedFullScreen',
+								'switchingChange',
+								'scrubberDragStart',
+								'scrubberDragEnd',
+								'alert',
+								'showUiElement',
+								'cancelAlerts',
+								'enableAlerts',
+								'freePreviewEnd'];
+		
+		function jsCallbackReady () {
+			$('#kdp3').get(0).addJsListener("volumeChanged", "volumeChangedHandler");
+			$('#kdp3').get(0).addJsListener("playerStateChange", "playerStateChangeHandler");
+			$('#kdp3').get(0).addJsListener("durationChange", "durationChangeHandler");
+			$('#kdp3').get(0).addJsListener("playerUpdatePlayhead", "playerUpdatePlayheadHandler");
+			$('#kdp3').get(0).addJsListener("bytesTotalChange", "bytesTotalChangeHandler");
+			$('#kdp3').get(0).addJsListener("bytesDownloadedChange", "bytesDownloadedChangeHandler");
+			
+			for (var i=0; i < notificationslist.length; ++i) {
+				if (notificationslist[i] != 'playerUpdatePlayhead') {
+					$('#kdp3').get(0).addJsListener(notificationslist[i], notificationslist[i]+"Handler2");
+					codeBlock = 'function '+notificationslist[i]+'Handler2(data, id) {if ($("#stopListeners").attr("checked") == false){$("#notifications").text($("#notifications").text() + "'+notificationslist[i]+': ");printobj(data);}}';
+					appendScript (codeBlock);
+				}
+			}
+		}
+		
+		function printobj (obj) {
+			x = '';
+			if (typeof(obj) == 'object') {
+				for (var key in obj) {
+					x += key + " => " + obj[key] + ", ";
+				}
+			} else {
+				x = obj;
+			}
+			var oldscroll = $("#notifications").scrollTop();
+			$("#notifications").text($("#notifications").text() + x + '\n');
+			if ($('#autoscroll').attr('checked') == true)
+				$("#notifications").scrollTop($("#notifications").get(0).scrollHeight); 
+			else
+				$("#notifications").scrollTop(oldscroll);
+		}
+		
+		function appendScript (code) {
+			x = '<' + 'script type="text/javascript" >' + code +'</' + 'script>';
+			$('body').append(x);
+		}
+		
+		function statisticsHandler (data, id) {
+			$('#notifications').text($('#notifications').text() + '\n' + data);
+		}
+		
+		function bytesTotalChangeHandler (data, id) {
+			$('#bytestotal').text(data.newValue);
+		}
+		
+		function bytesDownloadedChangeHandler (data, id) {
+			$('#bytesloaded').text(data.newValue);
+		}
+		
+		var newVolume = 0;
+		var oldVolume = 1;
+		function volumeChangedHandler (data, id) {
+			$('#volumeLevel').text(data.newVolume);
+		}
+		
+		function playerStateChangeHandler (data, id) {
+			$('#playerstate').text(data);
+		}
+		
+		function durationChangeHandler (data, id) {
+			$('#videoduration').text(data.newValue);
+		}
+		
+		function playerUpdatePlayheadHandler(data, id) {
+			if ($('#listenToUpdate').attr('checked') == true) {
+				$("#notifications").text($("#notifications").text() + "playerUpdatePlayhead: ");
+				printobj(data);
+			}
+			$('#videotime').text(data);
+		}
+	</script>
+	
+	<script type="text/javascript">
+		var flashvars = {};
+		flashvars.autoPlay = "false";
+		//flashvars.entryId = "http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb.flv";
+		//flashvars.sourceType = "url";
+		flashvars.entryId = "0_l4xrt3og";
+		flashvars.sourceType = "entryId";
+		flashvars.debugMode = "true";
+		flashvars.fileSystemMode = "true";
+		flashvars.widgetId = "_225762";
+		flashvars.partnerId = "225762";
+		flashvars.pluginDomain = "plugins/";
+		flashvars.kml = "local";
+		flashvars.kmlPath = "config.xml";
+		flashvars.host = "www.kaltura.com";
+		flashvars.cdnHost = "cdn.kaltura.com";
+		flashvars.externalInterfaceDisabled = "false";
+		//DEFINE CUSTOM SKIN URL -
+		//flashvars.skinPath = "http://localhost/kdp3-js-playground/themes/kdp-skin/skin.swf";
+		/*
+		//DEFINE OPENX BANNER USING WATERMARK PLUGIN - 
+		flashvars['bannerad.watermarkClickPath']='http://d1.openx.org/ck.php?n=a45b33cc';
+		flashvars['bannerad.watermarkPath']='http://d1.openx.org/avw.php?zoneid=110118&cb=22&n=a45b33cc';
+		flashvars['bannerad.width']=468;
+		flashvars['bannerad.height']=60;
+		flashvars['bannerad.plugin']=true;
+		flashvars['bannerad.position']='firstChild';
+		flashvars['bannerad.relativeTo']='player';
+		flashvars['bannerad.className']='Watermark';
+		*/
+		var params = {};
+		params.quality = "best";
+		params.wmode = "opaque";
+		params.allowfullscreen = "true";
+		params.allowscriptaccess = "always";
+		
+		var attributes = {};
+		attributes.id = "kdp3";
+		attributes.name = "kdp3";
+		attributes.styleclass = "player";
+		swfobject.embedSWF("kdp3.swf", "kdp3", "570", "380", "10.0.0", "jslib/expressInstall.swf", flashvars, params, attributes);
+	</script><style media="screen" type="text/css">#kdp3 {visibility:hidden}</style>
+</head><div firebugversion="1.5.4" style="display: none;" id="_firebugConsole"></div><body>
+<div id="controls_menu" class="sideBox">
+	<div class="content">
+		<strong><a href="http://www.kaltura.org/demos/kdp3/docs.html">[Go to KDP3 Docs]</a></strong>
+		<h2>Player Control</h2>
+        <dfn title="Click the play, pause or stop buttons to control the player playback. Set a time in seconds to the seek field and click the 'seek to' button to jump to that seconds in the playing media">Playback control:</dfn>&nbsp;<a href="http://www.kaltura.org/demos/kdp3/docs.html#sendnotification">[docs]</a>
+        <div class="controls">
+			<a href="#" onclick="$('#kdp3').get(0).sendNotification('doPlay');return false;">Play</a> | <a href="#" onclick="$('#kdp3').get(0).sendNotification('doPause');return false;">Pause</a> | <a href="#" onclick="$('#kdp3').get(0).sendNotification('doStop');return false;">Stop</a> 
+        </div>
+        <div class="controls">
+			Seek to: <input size="4" id="seekto" value="25" type="text"><button onclick="$('#kdp3').get(0).sendNotification('doSeek', parseFloat($('#seekto').val()));return false;">Seek</button>
+        </div>
+		<br>
+        <dfn title="Use the controls below to mute or unmute the player volume or enter a number between 0 and 1 in the 'Set volume' field and click the 'Change' button to set the player volume">Volume control:</dfn>
+        <div class="controls">
+			<a href="#" onclick="newVolume=$('#kdp3').get(0).evaluate('{video.volume}');if(newVolume>0)oldVolume=newVolume;$('#kdp3').get(0).sendNotification('changeVolume', 0);return false;">Mute</a> | <a href="#" onclick="$('#kdp3').get(0).sendNotification('changeVolume', oldVolume);return false;">Unmute</a>
+        </div>
+		<div class="controls">
+			Set volume: <input size="2" id="vol" value="1" type="text"><span style="color: rgb(85, 85, 85);">(0-1)</span>&nbsp;<button onclick="$('#kdp3').get(0).sendNotification('changeVolume', parseFloat($('#vol').val()));return false;">Change</button>
+		</div>
+		<br>
+		<dfn title="Common statistics that are available, these are basically listeners to events and evaluation of KDP objects">Player statistics</dfn>&nbsp;<a href="http://www.kaltura.org/demos/kdp3/docs.html#addlistener">[docs]</a>
+        <div class="controls">
+          Duration: <span id="videoduration">0</span><br>
+          Current time: <span id="videotime">0</span><br>
+          Player state: <span id="playerstate">paused</span><br>
+          Bytes - (Total: <span id="bytestotal">0</span>, Loaded: <span id="bytesloaded">0</span>)<br>
+          Volume: <span id="volumeLevel">1</span>
+        </div>
+		<br>
+		<div>
+			<dfn title="The box below lists all the events that are handled by KDP, for readability, we do not list the playerUpdatePlayhead notification by default, since it is being called too often, tick the playerUpdatePlayhead checkbox below to list this notification as well">Notifications:</dfn>&nbsp;<a href="http://www.kaltura.org/demos/kdp3/docs.html#addlistener">[docs]</a><input id="autoscroll" checked="checked" type="checkbox"><label for="autoscroll">AutoScroll?</label>
+			<textarea id="notifications" style="height: 80px; width: 285px;">skinLoaded:
+ kdp3
+rootResize: width =&gt; 570, height =&gt; 380, 
+layoutReady: kdp3
+changeMedia: entryId =&gt; 0_l4xrt3og, flavorId =&gt; undefined, 
+enableGui: true
+entryReady: conversionQuality =&gt; 82122, searchProviderType =&gt; 
+-2147483648, flavorParamsIds =&gt; 0,5,4,1728492,1728512, creditUserName
+ =&gt; null, dataUrl =&gt; 
+http://cdnbakmi.kaltura.com/p/225762/sp/22576200/flvclipper/entry_id/0_l4xrt3og/version/0,
+ sourceType =&gt; 6, creditUrl =&gt; null, mediaDate =&gt; -2147483648, 
+mediaType =&gt; 1, searchProviderId =&gt; null, views =&gt; 3081, 
+duration =&gt; 288, msDuration =&gt; 288000, durationType =&gt; null, 
+width =&gt; 512, height =&gt; 288, plays =&gt; 1057, description =&gt; 
+Harvard Business School (HBS) is the graduate business school of Harvard
+ University in Boston, Massachusetts and one of the world's most 
+prestigious business schools. The school offers a full-time MBA program,
+ doctoral programs, and many executive education programs. It owns 
+Harvard Business School Publishing, which publishes business books, 
+online management tools for corporate learning, case studies, and the 
+monthly Harvard Business Review. It is ranked 1st among American 
+business schools by the U.S. News &amp; World Report,[2] and 3rd in the 
+Financial Times Global MBA Rankings 2010,[3] behind London Business 
+School and The University of Pennsylvania's Wharton School of Business. 
+It is consistently ranked in the top ten of other national and global 
+business school rankings, and is one of six Ivy League business 
+schools.[4], searchText =&gt; harvard Harvard Business School (HBS) is 
+the graduate business school of Harvard University in Boston, 
+Massachusetts and one of the worlds most prestigious business schools. 
+The school offers a full-time MBA program, doctoral programs, and many 
+executive education programs. It owns Harvard Business School 
+Publishing, which publishes business books, online management tools for 
+corporate learning, case studies, and the monthly Harvard Business 
+Review. It is ranked 1st among American business schools by the U.S. 
+News &amp; World Report,[2] and 3rd in the Financial Times Global MBA 
+Rankings 2010,[3] behind London Business School and The University of 
+Pennsylvanias Wharton School of Business. It is consistently ranked in 
+the top ten of other national and global business school rankings, and 
+is one of six Ivy League business schools.[4], adminTags =&gt; null, 
+moderationCount =&gt; 0, createdAt =&gt; 1270741243, licenseType =&gt; 
+-1, startDate =&gt; -2147483648, totalRank =&gt; 63, name =&gt; harvard,
+ status =&gt; 2, endDate =&gt; -2147483648, rank =&gt; 3, categories 
+=&gt; Sample Bulk, userId =&gt; __ADMIN__225362, id =&gt; 0_l4xrt3og, 
+accessControlId =&gt; 108462, type =&gt; 1, tags =&gt; , 
+moderationStatus =&gt; 6, votes =&gt; 21, downloadUrl =&gt; 
+http://cdnbakmi.kaltura.com/p/225762/sp/22576200/raw/entry_id/0_l4xrt3og/version/0,
+ thumbnailUrl =&gt; 
+http://cdnbakmi.kaltura.com/p/225762/sp/22576200/thumbnail/entry_id/0_l4xrt3og/version/100039,
+ partnerId =&gt; 225762, groupId =&gt; -2147483648, partnerData =&gt; 
+null, version =&gt; 0, uid =&gt; 0A58DA1C-E761-36A3-45B7-EB56F874B816, 
+objectType =&gt; KalturaMediaEntry, categoriesIds =&gt; 261712, 
+showUiElement: id =&gt; liveToggleStatus, show =&gt; false, 
+showUiElement: id =&gt; offlineMessage, show =&gt; false, 
+sourceReady: kdp3
+playerStateChange: loading
+mediaLoading: kdp3
+bufferProgress: newTime =&gt; 2, 
+mediaViewableChange: kdp3
+playerStateChange: ready
+playerReady: kdp3
+kdpReady: kdp3
+mediaReady: kdp3
+enableGui: true
+playerStateChange: paused
+playerPaused: kdp3
+playerStateChange: buffering
+playerStateChange: paused
+playerPaused: kdp3
+bytesDownloadedChange: newValue =&gt; 0, 
+</textarea><br>
+			<input id="listenToUpdate" type="checkbox"><label for="listenToUpdate">Listen to playerUpdatePlayhead</label>&nbsp;<a href="http://www.kaltura.org/demos/kdp3/docs.html#notifications">[docs]</a><br>
+			<input id="stopListeners" type="checkbox"><label for="stopListeners">Stop listening?</label>&nbsp;<a href="http://www.kaltura.org/demos/kdp3/docs.html#removelistener">[docs]</a>
+		</div>
+	</div>
+</div>
+<div id="container">
+	<h1 class="title">Kaltura Dynamic Player version 3 ( HTML5lib backend test ) </h1>
+	<p>Hover over the parameters or APIs from the list for description, click to test &amp; learn more.</p>
+	<object style="visibility: visible;" data="kdp3_mapping_files/kdp3.swf" class="player" name="kdp3" id="kdp3" type="application/x-shockwave-flash" width="570" height="380"><param value="best" name="quality"><param value="opaque" name="wmode"><param value="true" name="allowfullscreen"><param value="always" name="allowscriptaccess"><param value="autoPlay=false&amp;entryId=0_l4xrt3og&amp;sourceType=entryId&amp;debugMode=true&amp;fileSystemMode=true&amp;widgetId=_225762&amp;partnerId=225762&amp;pluginDomain=plugins/&amp;kml=local&amp;kmlPath=config.xml&amp;host=www.kaltura.com&amp;cdnHost=cdn.kaltura.com&amp;externalInterfaceDisabled=false" name="flashvars"></object>
+</div>	
+<div id="cleardiv" style="clear: both; margin-top: 10px;"></div>
+</body></html>

@@ -29,8 +29,7 @@ mw.KWidgetSupport.prototype = {
 		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {		
 			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
 			// Add hook for check player sources to use local kEntry ID source check:
-			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {	
-				
+			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {				
 				mw.log(" KWidgetSupport::checkPlayerSourcesEvent for " + embedPlayer.id);
 				_this.checkPlayerSources( embedPlayer, function(){
 					// We can only enable kaltura analytics if we have a session if we have a client										

@@ -2865,7 +2865,8 @@ mw.EmbedPlayer.prototype = {
 		// Update the playerElement volume	
 		this.setPlayerElementVolume( percent );
 		
-		//mw.log(" setVolume:: " + percent + ' this.volume is: ' + this.volume);		
+		//mw.log(" setVolume:: " + percent + ' this.volume is: ' + this.volume);	
+		$j( this ).trigger('volumeChanged', percent );
 	},
 	
 	/**
@@ -3006,8 +3007,9 @@ mw.EmbedPlayer.prototype = {
 		
 		// Check if volume was set outside of embed player function
 		//mw.log( ' this.volume: ' + _this.volume + '  prev Volume:: ' + _this.previousVolume );
-		if( _this.volume != _this.previousVolume ) {			
+		if( _this.volume != _this.previousVolume ) {				
 			_this.setInterfaceVolume( _this.volume );
+			$j( this ).trigger('volumeChanged', _this.volume );
 		}
 		
 		// Update the previous volume 

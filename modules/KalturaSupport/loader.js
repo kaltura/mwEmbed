@@ -46,6 +46,7 @@
 	  'KalturaAccessControl',
 	  'MD5',
 	  'mw.KWidgetSupport',
+	  'mw.KDPMapping',
 	  'mw.KAnalytics'
 	];
 	
