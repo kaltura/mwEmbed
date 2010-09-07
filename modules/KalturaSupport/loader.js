@@ -80,11 +80,13 @@
 					if( !flashVarsString ){
 						flashVarsString = $j( element ).find( "param[name='flashVars']" ).val();
 					}
-					var flashVarPairs = flashVarsString.split('&');
-					for( var i =0; i < flashVarPairs.length; i++ ) {
-						var parts = flashVarPairs[i].split('=');
-						flashvars[ parts[0] ] = unescape( parts.slice(1).join('=') );
-					}			
+					if( flashVarsString ){
+						var flashVarPairs = flashVarsString.split('&');
+						for( var i =0; i < flashVarPairs.length; i++ ) {
+							var parts = flashVarPairs[i].split('=');
+							flashvars[ parts[0] ] = unescape( parts.slice(1).join('=') );
+						}			
+					}
 			
 					// Get the swf source from the element: 
 					var swfSource =  $j( element ).attr( 'data' );

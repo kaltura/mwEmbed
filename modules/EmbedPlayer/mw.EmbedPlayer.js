@@ -519,7 +519,8 @@ EmbedPlayerManager.prototype = {
 	*/			 
 	waitForMetaCheck: function( playerElement ){
 		var waitForMeta = false;		
-		
+		if( !playerElement )
+			return ;
 		// If we don't have a native player don't wait for metadata
 		if( !mw.EmbedTypes.players.isSupportedPlayer( 'oggNative') &&
 			!mw.EmbedTypes.players.isSupportedPlayer( 'h264Native' ) )
