@@ -850,14 +850,8 @@ mw.RemoteSearchDriver.prototype = {
 				.attr({
 					'id' : 'rsd_modal_target',
 					'title' : gM( 'mwe-add_media_wizard' ) 
-				})
-				.css( {
-					'position' : 'absolute',
-					'top' : '3em',
-					'left' : '0px',
-					'bottom' : '3em',
-					'right' : '0px'
-				})
+				})	
+				.css("position", 'relative')
 		);
 		// Get layout
 		mw.log( 'width: ' + $j( window ).width() +  ' height: ' + $j( window ).height() );
@@ -872,6 +866,9 @@ mw.RemoteSearchDriver.prototype = {
 			bgiframe: true,
 			autoOpen: true,
 			modal: true,
+			width: $j(window).width()-10,
+			height: $j(window).height()-10,
+			position : 'center',
 			draggable: false,
 			resizable: false,
 			buttons: cancelButton,
@@ -882,7 +879,7 @@ mw.RemoteSearchDriver.prototype = {
 				$j( this ).parents( '.ui-dialog' ).fadeOut( 'slow' );
 			}
 		} );		
-		$j( _this.target_container ).dialogFitWindow();
+		//$j( _this.target_container ).dialogFitWindow();
 		
 		// Add the window resize hook to keep dialog layout
 		$j( window ).resize( function() {

@@ -2503,5 +2503,5 @@ $.fn.layout = function (opts) {
 	,	cssHeight:		cssH
 	};
 
-}
+};
 })( jQuery );

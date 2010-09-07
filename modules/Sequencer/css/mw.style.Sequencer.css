@@ -5,7 +5,6 @@
 	top: 4px;	
 	left:4px;
 	right: 4px;
-
 }
 
 .mwe-sequencer .trackNameContainer{
@@ -13,6 +12,7 @@
 }
 .mwe-sequencer .clipTrackSetContainer{	
 	overflow-x: scroll;	
+	overflow-y: hidden !important;
 }
 
 .mwe-sequencer .clipTrackSet{	

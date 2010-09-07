@@ -101,4 +101,4 @@ mw.SequencerActionsView.prototype = {
 
 		return formatted;
 	}
-}
+};

@@ -36,6 +36,10 @@ var FORCE_LOAD_JQUERY = false;
 //SCRIPT_LOADER_URL = 'http://192.168.1.100/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
+if( typeof console != 'undefined' && console.log ) {
+	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
+}
+
 // Define mw ( if not already set ) 
 if( !window['mw'] ){
 	window['mw'] = {};
@@ -88,47 +92,71 @@ if( !mw.setConfig ){
 }
 
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
-function kOverideSwfObject(){	
-	// Check if already override
-	if( window['swfobject'] && window['swfobject']['originalEmbedSWF'] ){
-		return ;	
+function kOverideSwfObject(){
+
+	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTarget, widthStr, heightStr ){
+		// Make sure we have kaltura script: 
+		kAddScript();
+		
+		// Add a ready event to re-write: 
+		mw.ready(function(){			
+			// Setup the embedPlayer attributes
+			var embedPlayerAttributes = {
+					'kwidgetid' : kEmbedSettings.widgetId,
+					'kuiconfid' : kEmbedSettings.uiconfId
+			}					
+			
+			var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceElemIdStr ).width();
+			var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceElemIdStr ).height();
+			
+			if( kEmbedSettings.entryId ){
+				embedPlayerAttributes.kentryid = kEmbedSettings.entryId;
+				embedPlayerAttributes.poster = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
+				kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
+				height + '/height/' + width;
+			}			
+			$j('#' + replaceTarget ).css({
+				'width' : width,
+				'height' : height
+			}).embedPlayer( embedPlayerAttributes );
+		});
 	}
 	
-	if( window['swfobject'] && window['swfobject']['embedSWF'] ){
+	// SWFObject v 1.5 
+	if( window['SWFObject']  && !window['SWFObject'].prototype['originalWrite']){
+		window['SWFObject'].prototype['originalWrite'] = window['SWFObject'].prototype.write;
+		window['SWFObject'].prototype['write'] = function( targetId ){			
+			var flashVarsSet = this.params.flashVars.split('&');
+			flashVars = {};
+			for( var i =0 ;i < flashVarsSet.length; i ++){
+				var flashVar = flashVarsSet[i].split('=');
+				if( flashVar[0] &&   flashVar[1]){
+					flashVars[ flashVar[0] ] = flashVar[1];
+				}
+			}						
+			
+			var kEmbedSettings = kGetKalturaEmbedSettings( this.attributes.swf, flashVars);
+			if( kBrowserAgentShouldUseHTML5() && kEmbedSettings.uiconfId ){
+				doEmbedSettingsWrite( kEmbedSettings, targetId, this.attributes.width, this.attributes.height);
+			} else { 
+				// use the original flash player embed:  
+				this.originalWrite( targetId );
+			}					
+		}
+	}
+
+	// SWFObject v 2.0
+	if( window['swfobject'] && !window['swfobject']['embedSWF'] ){
 		window['swfobject']['originalEmbedSWF'] = window['swfobject']['embedSWF'];
-		// override embedObjec for our own ends
+		// override embedObject for our own ends
 		window['swfobject']['embedSWF'] = function( swfUrlStr, replaceElemIdStr, widthStr,
 				heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn)
 		{						
 			var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
 			// Check if mobile safari: 
-		
+			
 			if( kBrowserAgentShouldUseHTML5() && kEmbedSettings.uiconfId ){
-				// Make sure we have kaltura script: 
-				kAddScript();
-				mw.ready(function(){
-					
-					// Setup the embedPlayer attributes
-					var embedPlayerAttributes = {
-							'kwidgetid' : kEmbedSettings.widgetId,
-							'kuiconfid' : kEmbedSettings.uiconfId
-					}					
-					
-					var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceElemIdStr ).width();
-					var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceElemIdStr ).height();
-					
-					if( kEmbedSettings.entryId ){
-						embedPlayerAttributes.kentryid = kEmbedSettings.entryId;
-						embedPlayerAttributes.poster = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
-						kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
-						height + '/height/' + width;
-					}
-					
-					$j('#' + replaceElemIdStr ).css({
-						'width' : width,
-						'height' : height
-					}).embedPlayer( embedPlayerAttributes );
-				});
+				doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
 			} else {				
 				// Else call the original EmbedSWF with all its arguments 
 				window['swfobject']['originalEmbedSWF']( swfUrlStr, replaceElemIdStr, widthStr,

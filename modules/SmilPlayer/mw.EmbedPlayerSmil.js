@@ -65,7 +65,7 @@ mw.EmbedPlayerSmil = {
 	},
 	
 	/**
-	 * set the virtual smil volume ( will key all underling assets against this volume )
+	 * Set the virtual smil volume ( will key all underling assets against this volume )
 	 * ( we can't presently "normalize" across clips )
 	 */
 	setPlayerElementVolume: function( percent ){

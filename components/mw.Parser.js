@@ -33,7 +33,8 @@ var LINK_SWAP_STRING = 'ZreplaceZ';
 	*/	
 	mw.Parser = function( wikiText, options) {
 		// return the parserObj
-		this.init( wikiText, options ) ;	
+		this.init( wikiText, options ) ;
+		return this;
 	};
 	
 	mw.Parser.prototype = {
@@ -42,7 +43,13 @@ var LINK_SWAP_STRING = 'ZreplaceZ';
 		pOut: false,
 		
 		init: function( wikiText, parserOptions ) {
-			this.wikiText = wikiText;					
+			this.wikiText = wikiText;	
+			
+			var defaultParserOptions = {
+				'templateParCount' : 2
+			}			
+			
+			this.options = $j.extend( defaultParserOptions, parserOptions);
 		},		
 		 		
 		// Update the text value
@@ -52,24 +59,40 @@ var LINK_SWAP_STRING = 'ZreplaceZ';
 			// invalidate the output ( will force a re-parse )
 			this.pOut = false;
 		},
-		
+		// checks if the required number of parenthesis are found
+		// xxx this is just a stop gap solution 
+		checkParlookAheadOpen: function(text, a){
+			if( this.options.templateParCount == 2 ){
+				return  ( text[a] == '{' && text[a + 1] == '{' );
+			} else if( this.options.templateParCount == 3 ) {
+				return  ( text[a] == '{' && text[a + 1] == '{'  && text[a + 2] == '{');
+			}
+		},
+		checkParlookAheadClose: function( text, a){
+			if( this.options.templateParCount == 2 ){
+				return  ( text[a] == '}' && text[a + 1] == '}' );
+			} else if( this.options.templateParCount == 3 ) {
+				return  ( text[a] == '}' && text[a + 1] == '}'  && text[a + 2] == '}');
+			}	
+		},
 		/**
 		 * Quickly recursive / parse out templates:		 
 		 */
 		parse: function() {
+			var _this = this;
 			function recurseTokenizeNodes ( text ) {
 				var node = { };
 				// Inspect each char
 				for ( var a = 0; a < text.length; a++ ) {
-					if ( text[a] == '{' && text[a + 1] == '{' ) {
-						a = a + 2;
+					if ( _this.checkParlookAheadOpen( text, a ) ) {
+						a = a +  _this.options.templateParCount;
 						node['parent'] = node;
 						if ( !node['child'] ) {
 							node['child'] = new Array();
 						}
 
 						node['child'].push( recurseTokenizeNodes( text.substr( a ) ) );
-					} else if ( text[a] == '}' && text[a + 1] == '}' ) {
+					} else if ( _this.checkParlookAheadClose( text, a ) ) {
 						a++;
 						if ( !node['parent'] ) {
 							return node;

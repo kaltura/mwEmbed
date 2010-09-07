@@ -62,4 +62,4 @@ mw.SequencerRender.prototype = {
 			}
 		})	
 	}
-}
+};

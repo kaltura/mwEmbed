@@ -29,7 +29,8 @@ mw.SmilBody.prototype = {
 		'img' : 'ref',
 		'textstream' : 'ref',
 		'video' : 'ref',
-		'smiltext' : 'ref'
+		'smiltext' : 'ref',
+		'mwtemplate' : 'ref'
 	},
 	
 	// Constructor: 
@@ -82,23 +83,25 @@ mw.SmilBody.prototype = {
 	*/
 	renderTime: function( time, deltaTime ){
 		var _this = this;
-		//mw.log( "renderTime:: " + time );
-		 
+		//mw.log( "SmilBody::renderTime:: " + time  + ' delta: '+ deltaTime);
+		
 		// Get all the draw elements from the body this time: 
 		this.getElementsForTime( time ,
 			/* SMIL Element in Range */ 
-			function( smilElement) {				
+			function( smilElement) {	
+				//mw.log("SmilBody::renderTime: Element in Range" + $j( smilElement ).attr('id'));
 				// var relativeTime = time - smilElement.parentTimeOffset;
 				var relativeTime = time - $j( smilElement ).data ( 'startOffset' );
 				
 				// Render the active elements using the layout engine
 				_this.smil.getLayout().drawElement( smilElement );
 				
-				// Transform the elements per animate engine				
+				// Transform the elements via animate engine
 				_this.smil.getAnimate().animateTransform( smilElement, relativeTime, deltaTime );
 			},
 			/* SMIL Element out of range */
 			function( smilElement ){
+				//mw.log("SmilBody::renderTime: Element out of Range" + $j( smilElement ).attr('id'));
 				// Stop the animation or playback 
 				_this.smil.getAnimate().pauseAnimation( smilElement )
 				
@@ -120,6 +123,7 @@ mw.SmilBody.prototype = {
 	pause: function( currentTime ){
 		var _this = this;
 		this.getElementsForTime( currentTime , function( smilElement ){
+			mw.log("SmilBody::pause: Element in Range" + $j( smilElement ).attr('id'));
 			_this.smil.getAnimate().pauseAnimation( smilElement )
 		});
 	},
@@ -239,9 +243,16 @@ mw.SmilBody.prototype = {
 		}		
 		// Recurse on every ref element and run relevant callbacks
 		this.getRefElementsRecurse( this.getDom(), 0, function( $node ){
+
 			var startOffset = $node.data( 'startOffset' );
 			var nodeDuration = _this.getClipDuration( $node );
 			
+			/*
+			 * mw.log("Checking if ref: " + $node.attr('id') + ' is in range:' + time + ' >= ' +
+					$node.data( 'startOffset' )  + ' && '+ time +' < ' +startOffset + ' + ' + nodeDuration + "\n" +
+					' inrage cb: ' + typeof inRangeCallback + ' eval::' +
+					( time >= startOffset && time < ( startOffset + nodeDuration) ) + "\n\n" );
+			*/		
 			// Check if element is in range: 
 			if( time >= startOffset && time < ( startOffset + nodeDuration) ){
 				if( typeof inRangeCallback == 'function' ){
@@ -283,7 +294,7 @@ mw.SmilBody.prototype = {
 		
 		// Setup local pointers:		
 		var nodeType = this.getNodeSmilType( $node );
-		
+
 		// If 'par' or 'seq' recurse on children 
 		if( nodeType == 'par' || nodeType == 'seq' ) {
 			if( $node.children().length ) {	
@@ -324,7 +335,7 @@ mw.SmilBody.prototype = {
 	 * Returns the smil body duration
 	 * ( wraps getDurationRecurse to get top level node duration ) 
 	 */	
-	getDuration: function( forceRefresh ){		
+	getDuration: function( forceRefresh ){
 		this.duration = this.getClipDuration( this.getDom(), forceRefresh );		
 		return this.duration;	
 	},
@@ -405,7 +416,7 @@ mw.SmilBody.prototype = {
 		this.smil.getBuffer().loadElement( $node );
 		// xxx check if the type is "video or audio" else nothing to return 
 		
-		var vid = $j( '#' + this.smil.getPageDomId( $node ) ).get(0);
+		var vid = $j( '#' + this.smil.getSmilElementPlayerID( $node ) ).get(0);
 		if( vid.duration ){
 			callback( vid.duration );
 		}

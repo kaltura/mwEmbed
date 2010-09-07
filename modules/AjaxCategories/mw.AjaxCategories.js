@@ -110,6 +110,7 @@ mw.AjaxCategories.prototype = {
 		[
 			'$j.ui',		
 			'$j.widget',
+			'$j.ui.position',
 			'$j.ui.dialog', 
 			'$j.fn.suggestions'
 		],
@@ -167,7 +168,7 @@ mw.AjaxCategories.prototype = {
 	confirmEdit : function( page, fn, actionSummary, doneFn ) {
 		// Load jQuery UI
 		mw.load(
-			['$j.ui', '$j.ui.dialog', '$j.fn.suggestions'],
+			['$j.ui', '$j.ui.position', '$j.ui.dialog', '$j.fn.suggestions'],
 			function() {
 				// Produce a confirmation dialog
 

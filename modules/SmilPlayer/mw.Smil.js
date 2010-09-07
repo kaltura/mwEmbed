@@ -307,7 +307,7 @@ mw.Smil.prototype = {
 		var $smilElement =  this.$dom.find( '#' + smilElementId );
 
 		// Remove from layout
-		this.getLayout().getRootLayout().find( '#' + this.getPageDomId( $smilElement ) )
+		this.getLayout().getRootLayout().find( '#' + this.getSmilElementPlayerID( $smilElement ) )
 			.remove();
 		
 		// Remove from dom
@@ -327,8 +327,8 @@ mw.Smil.prototype = {
 	 * @param {Object}
 	 *            smilElement Element to get id for
 	 */
-	getPageDomId : function( smilNode ) {
-		if (! $j(smilNode).attr('id') ) {
+	getSmilElementPlayerID : function( smilElement ) {
+		if (! $j( smilElement ).attr('id') ) {
 			mw.log("Error: getAssetId smilElement missing id ");
 			return false;
 		}
@@ -337,7 +337,7 @@ mw.Smil.prototype = {
 			mw.log("Error: getAssetId missing parent embedPlayer");
 			return false;
 		}
-		return embedPlayer.id + '_' + $j( smilNode ).attr('id');
+		return embedPlayer.id + '_' + $j( smilElement ).attr('id');
 	},
 	
 	/**
@@ -367,7 +367,7 @@ mw.Smil.prototype = {
 	getAssetUrl : function( assetPath ) {
 		// Context url is the smil document url:
 		var contextUrl = mw.absoluteUrl(this.smilContextUrl);
-		var absoluteUrl = mw.absoluteUrl(assetPath, contextUrl);
+		var absoluteUrl = mw.absoluteUrl( assetPath, contextUrl );
 		// Restrict any display url 
 		if( mw.getConfig( 'SmilPlayer.AssetDomainWhiteList' ) != '*' ){
 			var approvedDomainList = mw.getConfig( 'SmilPlayer.AssetDomainWhiteList' );
@@ -386,6 +386,69 @@ mw.Smil.prototype = {
 		return absoluteUrl;
 	},
 
+	// filter 'raw' user htmlData 
+	getFilterdHtml: function( htmlData ){
+		var _this = this;
+		// We pass the htmlData via jQuery fragment creation, this runs
+		// jquery.clean() and filters the result html of script tags and the like
+		var $html = $j( '<div />' ).append( 
+			$j( htmlData )
+		);
+		// Links go to a new window and are disable when smaller than player size
+		$html.find('a').each( function(inx, link ){
+			// escape link output as to not include scirpt execution
+			$j(link).attr('href', 
+					mw.escapeQuotesHTML( $j(link).attr('href') )
+			)
+		});		
+		
+		// Make every asset url absolute and restrict domain of assets 
+		// ( if player is configured to restrict asset domains )
+		$html.find('img,video,audio,track,iframe,object,embed,form').each(function(inx, node){
+			if( $j(node).attr('src') ){
+				$j(node).attr('src', 
+					_this.getAssetUrl( $j(node).attr('src') )
+				)
+			}
+			if( $j(node).attr('data') ){
+				$j(node).attr('data', 
+					_this.getAssetUrl(  $j(node).attr('src') )
+				)
+			}
+			// xxx don't know if we really need a form inside of smil. 
+			if( $j(node).attr('action') ){
+				if( $j(node).attr('action').toLowerCase().indexOf('javascript') != -1 ){
+					 $j(node).attr('action')= null;
+				} else {
+					$j(node).attr('action', 
+						_this.getAssetUrl( $j(node).attr('src') )
+					)
+				}
+			}
+		})
+		
+		// Script and html bindings should have been striped with $j.clean 
+		// but just in case remove any suspect elements with 'script' attributes
+		$html.find('script,' +
+				// body and frameset event attributes
+				'[onload],[onunload],' +
+				
+				// Form element events:
+				'[onblur],[onchange],[onfocus],[onreset],[onselect],[onsubmit],' +
+				
+				// Image events:
+				'[onabort],' + 
+				
+				// Keyboard events
+				'[onkeydown],[onkeypress],[onkeyup],',
+				
+				// Mouse events
+				'[onclick],[onclick],[ondblclick],[onmousedown],' +
+				'[onmousemove],[onmouseout],[onmouseover],[onmouseup]'
+		).remove();
+		
+		return $html;
+	},
 	/**
 	 * Get the smil resource type based on nodeName and type attribute
 	 */
@@ -407,6 +470,8 @@ mw.Smil.prototype = {
 		if (smilType == 'ref') {
 			switch ($j(smilElement).attr('type')) {
 			case 'application/x-wikitemplate':
+				smilType= 'mwtemplate';
+				break;
 			case 'text/html':
 				smilType = 'cdata_html';
 				break;

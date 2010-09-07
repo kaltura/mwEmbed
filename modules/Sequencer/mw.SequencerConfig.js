@@ -6,38 +6,40 @@
  * the mw.setConfig() method 
  * 
  */
+// Wrap in mw closure
+( function( mw ) {
+	// Define the class name 
+	mw.SequencerConfig = true;
+	
+	mw.setDefaultConfig({
+		// If the sequencer should attribute kaltura
+		"Sequencer.KalturaAttribution" : true,
+		
+		// If a the sequencer should open new windows 
+		"Sequencer.SpawnNewWindows" : true,
+		
+		// If a the sequencer should include withJS=MediaWiki:mwEmbed in created urls  
+		"Sequencer.WithJsMwEmbedUrlHelper" : true,
+		
+		// The size of the undo stack 
+		"Sequencer.NumberOfUndos" : 100,
+		
+		// Default image duration
+		"Sequencer.AddMediaImageDuration" : 2,
+		
+		// Default image source width
+		"Sequencer.AddMediaImageWidth" : 640,	
+		
+		// If a asset can be directly added to the sequence by url
+		// ( if disabled only urls that are part addMedia can be added ) 
+		"Sequencer.AddAssetByUrl" : true,
+		
+		// Default timeline clip timeline track height
+		"Sequencer.TimelineTrackHeight" : 100,
+		
+		// Default timeline audio or collapsed timeline height 
+		"Sequencer.TimelineColapsedTrackSize" : 35
+	});
 
-// Define the class name 
-mw.SequencerConfig = true;
-
-mw.setDefaultConfig({
-	// If the sequencer should attribute kaltura
-	"Sequencer.KalturaAttribution" : true,
-	
-	// If a the sequencer should open new windows 
-	"Sequencer.SpawnNewWindows" : true,
-	
-	// If a the sequencer should include withJS=MediaWiki:mwEmbed in created urls 
-	// ( save gards ) against users that are 'trying' the 
-	"Sequencer.WithJsMwEmbedUrlHelper" : true,
-	
-	// The size of the undo stack 
-	"Sequencer.NumberOfUndos" : 100,
-	
-	// Default image duration
-	"Sequencer.AddMediaImageDuration" : 2,
-	
-	// Default image source width
-	"Sequencer.AddMediaImageWidth" : 640,	
-	
-	// If a asset can be directly added to the sequence by url
-	// ( if disabled only urls that are part addMedia can be added ) 
-	"Sequencer.AddAssetByUrl" : true,
-	
-	// Default timeline clip timeline track height
-	"Sequencer.TimelineTrackHeight" : 100,
-	
-	// Default timeline audio or collapsed timeline height 
-	"Sequencer.TimelineColapsedTrackSize" : 35
-})
+} )( window.mw );	
 	

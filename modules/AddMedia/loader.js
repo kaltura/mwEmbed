@@ -60,6 +60,8 @@
 			], [
 				'$j.ui.resizable',
 				'$j.ui.mouse',
+				'$j.widget',				
+				'$j.ui.position',
 				'$j.ui.draggable',
 				'$j.ui.dialog',
 				'$j.ui.tabs',
@@ -72,12 +74,14 @@
 		[
 			'mw.UploadHandler',
 			'mw.UploadInterface',
-			'$j.ui'
+			'$j.ui',
+			'$j.widget'
 		],
 		[
 			'$j.ui.progressbar',
-			'$j.ui.dialog',
+			'$j.ui.position',
 			'$j.ui.mouse',
+			'$j.ui.dialog',
 			'$j.ui.draggable'
 		]
 	];

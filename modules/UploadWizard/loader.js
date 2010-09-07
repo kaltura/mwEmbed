@@ -61,6 +61,8 @@
 	var libraries = [ 
 		[
 			'$j.ui',
+			'$j.widget',
+			'$j.ui.position',
 			'$j.ui.progressbar',
 			'$j.ui.dialog',
 			'$j.ui.draggable',			

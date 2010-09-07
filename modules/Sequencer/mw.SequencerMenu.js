@@ -43,16 +43,24 @@ mw.SequencerMenu.prototype = {
 					_this.sequencer.getActionsSequence().save();
 				}
 			},
-			/*'renderdisk' : {
+			'renderdisk' : {
 				'icon' : 'gear',
 				'action' : function( _this ){
-					_this.sequencer.getRender().renderDialog();
+					_this.sequencer.getActionsSequence().renderToDisk();					
+				},
+				'condition': function( _this ){
+					// Only display if no server is defined:
+					return !(  _this.sequencer.getServer().isConfigured() )						
 				}
-			},*/
+			},
 			'publish': {
 				'icon' : 'gear',
 				'action' : function( _this ){
 					_this.sequencer.getActionsSequence().publish();
+				},
+				'condition': function( _this ){
+					// Only display if publishing server is present
+					return (  _this.sequencer.getServer().isConfigured() )
 				}
 			},
 			'exit_divider': 'divider',
@@ -120,7 +128,7 @@ mw.SequencerMenu.prototype = {
 		$menuTarget.empty().disableSelection();
 		
 		for( var menuKey in this.menuConfig ){	
-			// Create a function to preserve menuKey binding scope
+			// Create a closure to preserve menuKey binding scope
 			function drawTopMenu( menuKey ){
 				// Add the menu target		
 				$menuTarget
@@ -147,12 +155,14 @@ mw.SequencerMenu.prototype = {
 			}
 			drawTopMenu( menuKey );
 		}		
+		
 		// Add any menuWidgets
 		for( var widgetKey in this.menuWidgets ){
 			$menuTarget.append( 
 				this.menuWidgets[widgetKey]( this )
 			);
 		}
+		
 		// Append close button to the upper right 
 		$menuTarget.append( 
 			$j.button({
@@ -227,12 +237,22 @@ mw.SequencerMenu.prototype = {
 					$j('<li />')
 					.addClass('divider')
 					.append( $j('<hr />').css('width', '80%') )
-				);				
-			} else {	
-				$menu.append(				
-					_this.getMenuItem( menuKey, menuItemKey )
-				)
+				);	
+				continue;
+			} 
+			
+			// Check if we have a conditional include
+			if( menuItem.condition && 
+				typeof menuItem.condition == 'function' &&
+				!menuItem.condition( _this ) 
+			){
+				continue;
 			}
+					
+			// Do a normal menu item include:  		
+			$menu.append(				
+				_this.getMenuItem( menuKey, menuItemKey )
+			)			
 		}
 		return $menu;
 	},

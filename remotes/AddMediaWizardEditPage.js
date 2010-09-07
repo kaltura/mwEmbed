@@ -79,7 +79,8 @@ mw.ready( function() {
 				var $targetFileButton = $j( ".toolbar [rel='file']" );
 				
 				$targetFileButton
-				.attr( 'title', gM( 'mwe-loading-add-media-wiz' ) );
+				.attr( 'title', gM( 'mwe-loading-add-media-wiz' ) )
+				.unbind()				
 				
 				mw.load( 'AddMedia.addMediaWizard', function() {
 					if( $targetFileButton.length != 0 ) {
@@ -88,6 +89,6 @@ mw.ready( function() {
 				} );
 			}
 		}
-	}, 120 )
+	}, 100 )
 
 } );

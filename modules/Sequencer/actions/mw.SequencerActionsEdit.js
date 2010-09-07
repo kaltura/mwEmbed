@@ -123,4 +123,4 @@ mw.SequencerActionsEdit.prototype = {
 			this.sequencer.getMenu().disableMenuItem( 'edit', 'redo' );
 		}
 	}
-}
+};

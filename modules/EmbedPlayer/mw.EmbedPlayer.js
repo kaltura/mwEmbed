@@ -302,7 +302,7 @@ mw.setDefaultConfig( 'embedPlayerSourceAttributes', [
 					var height = ( attributes.height )? attributes.height : '100%';
 				}
 				
-				mw.log('EmbedPlayer:: set loading background img' + posterSrc);
+				mw.log('EmbedPlayer:: set loading background: ' + posterSrc);
 				$j( playerElement ).append(
 					$j( '<img />' )
 					.attr( 'src', posterSrc)

@@ -78,5 +78,4 @@ mw.SequencerKeyBindings.prototype = {
 				$j( _this ).trigger( 'delete' );
 		} );
 	}
-	
-}
+};

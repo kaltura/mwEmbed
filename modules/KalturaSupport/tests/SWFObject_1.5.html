@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US"> 
+ 
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+ <script type="text/javascript"  src="SWFObject.1.5.js"></script> 
+
+<title>swfOjbect fallforward test</title> 
+ 
+</head> 
+<body > 
+	<div id="targetDiv"></div>
+	
+	<script type="text/javascript" src="../../../mwEmbedLoader.js"></script>  
+	
+ <script type="text/javascript">
+ mw.ready(function(){
+	 var kaltura_swf = new SWFObject("http://www.kaltura.com/index.php/kwidget/cache_st/1272070736/wid/_210202/uiconf_id/1366372/entry_id/0_hyg8mx5i", "", "400", "365", "9", "#ffffff");        
+	 kaltura_swf.addParam("wmode", "opaque");        
+	 kaltura_swf.addParam("allowScriptAccess", "always");        
+	 kaltura_swf.addParam("allowFullScreen", "TRUE");        
+	 kaltura_swf.addParam("allowNetworking", "all");        
+	 kaltura_swf.addParam("flashVars", "externalInterfaceDisabled=0&uid=2");
+	 kaltura_swf.write("targetDiv");
+ })
+ </script>   
+</body> 
+</html>

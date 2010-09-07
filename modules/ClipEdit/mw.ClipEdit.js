@@ -171,10 +171,10 @@ mw.ClipEdit.prototype = {
 		* Edit the "duration" of a given resource
 		*
 		* supports resource types:
-		*	['image', 'template']
+		*	['image', 'mwtemplate']
 		*/
 		'duration': {
-			'media' : ['image', 'template'],
+			'media' : ['image', 'mwtemplate'],
 			'doEdit':function( _this, target ) {
 				function doUpdateDur( inputElm ) {
 					mw.log( "update duration:" + $j( inputElm ).val() );

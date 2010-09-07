@@ -1081,7 +1081,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			'bgiframe': true,
 			'draggable': true,
 			'resizable': false,
-			'modal': true
+			'modal': true,
+			'position' : ['center', 'center']
 		}, options );
 		
 		if( ! options.title || ! options.content ){
@@ -1096,9 +1097,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				'id' : "mwTempLoaderDialog",
 				'title' : options.title
 			})
-			.css({
-				'display': 'none'
-			})
+			.hide()
 			.append( options.content )
 		);
 	
@@ -1125,11 +1124,21 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		mw.load([
 			[
 				'$j.ui',
-				'$j.widget'
+				'$j.widget',
+				'$j.ui.position'
 			],
 			uiRequest
 		], function() {
-			$j( '#mwTempLoaderDialog' ).dialog( options );
+			var $dialog = $j( '#mwTempLoaderDialog' ).show().dialog( options );
+			// center the dialog 
+			// xxx figure out why jquery ui is messing up here			
+			$j( '#mwTempLoaderDialog' ).parent('.ui-dialog').css({
+				'position' : 'absolute',
+				'left' : '50%',
+				'margin-left': -1 * $dialog.width()/2,
+				'top' : '50%',
+				'margin-top': -1 * $dialog.height()/2
+			});			
 		} );
 		return $j( '#mwTempLoaderDialog' );
 	}	
