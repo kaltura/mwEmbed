@@ -163,10 +163,10 @@
 				'mw.style.EmbedPlayer',
 				'$j.cookie',
 				// Add JSON lib if browsers does not define "JSON" natively
-				'JSON'
+				'JSON',
+				'$j.widget'
 			],
-			[
-			 	'$j.widget',
+			[			 
 			 	'$j.ui.mouse',
 				'$j.fn.menu',			
 				'mw.style.jquerymenu',

@@ -1604,11 +1604,10 @@ mw.PlayerControlBuilder.prototype = {
 			'w' : 100,
 			'o' : function( ctrlObj ) {
 				return $j( '<div />' )
-						.addClass( "ui-widget time-disp" )
-						.append( 
-							ctrlObj.embedPlayer.getTimeRange()
-						)
-						
+				.addClass( "ui-widget time-disp" )
+				.append( 
+					ctrlObj.embedPlayer.getTimeRange()
+				)	
 			}
 		},
 		
