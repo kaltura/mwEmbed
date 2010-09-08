@@ -2456,13 +2456,12 @@ mw.EmbedPlayer.prototype = {
 		$j('#loadingSpinner_' + this.id ).remove();
 		
 		// Check if we need to refresh mobile safari
-		/*var mobileSafairNeedsRefresh = false;
-		if( $j( '#' + this.pid ).attr('controls') === false ){
+		var mobileSafairNeedsRefresh = false;
+		if( $j( '#' + this.pid ).attr('controls') === false 
+				&& 
+			!$j( '#' + this.pid ).hasClass('PlayerThemer')	){
 			mobileSafairNeedsRefresh = true;
-		}*/		
-		
-		// For now always refersh ( buggy display control behavior in iPad ) 
-		mobileSafairNeedsRefresh = false;		
+		}					
 		
 		// iPad does not handle video tag update for attributes like "controls" 
 		// so we have to do a full replace ( if controls are not included initially ) 		
