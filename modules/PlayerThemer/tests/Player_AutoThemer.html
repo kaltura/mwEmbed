@@ -22,6 +22,7 @@
 					.removeClass('cnn_mtt1plybttnon')
 			}
 		);
+			
 		$j('#cnnCVP1').playerThemer(
 			{
 				// Overide any default Interface componets config::				 
@@ -35,64 +36,146 @@
 <!-- 
 	
  -->
-<span style="font-size:22px"> Sample AutoThemer ( sample html ) Quick copy css from <a href="http://cnn.com">cnn.com</a> example </span><br />
+<span style="font-size:22px"> Sample AutoThemer "making player theming easy" </span><br />
 <br/>
+
 <div id="cnn_maintoplive">
-	<div class="cnn_relpostn" style="width:416px;height:280px">
-		<div id="cnnCVP1">
-			<div class="cnn_mtt1img">
-				<video class="PlayerThemer" style="height:234px;width:416px;" 
-					durationHint="33"
-					 poster="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb480.jpg"
-					 src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_iphone.m4v"					
-					>
-					<img class="playerPoster" height="234" width="416" border="0" alt="" src="http://i2.cdn.turner.com/cnn/2010/images/09/07/ac.tuchman.bachmann.campaign.cnn.416x234.jpg">
-				</video>				
-			</div>						
-			<div  class="centerPlayButton cnn_mtt1plybttn" id="cnnCVP2">
-				<div id="play_button">
-					<a href="#">
-						<img border="0" src="http://i.cdn.turner.com/cnn/.element/img/3.0/1px.gif">
-					</a>
-				</div>
-			</div>
-			<div class="widgetOverlay" style="position:absolute;top:5px;right:10px;font-size:x-small;">
-				<span style="background-color:#000;margin:-1px;padding:2px;color:#FFF">INFO</span>
-				<span style="background-color:#000;margin:-1px;padding:2px;color:#FFF">MORE VIDEOS</span>
-				<span style="background-color:#000;margin:-1px;padding:2px;color:#FFF">SHARE</span>
-			</div>
-			<div class="playControlMin">
-				<div class="scrubber" style="bottom:0px;height:5px;background-color:#666;opacity:.8;right:0px;left:0px;position:absolute;">
-					<div class="playProgress" style="color:red;width:50%"></div>
-				</div>
-			</div>
-			<div class="playControlFull" style="position:absolute;bottom:46px;height:25px;opacity:.8;right:0px;left:0px;background-color:#111">
-				<div class="playButton" style="cursor:pointer;position:absolute;left:0px;width:34px;height:25px;background: url(AutoThemerFiles/play_button.png)"></div>				
-				<div class="pauseButton" style="cursor:pointer;position:absolute;left:0px;width:34px;height:25px;background: url(AutoThemerFiles/pause_button.png)"></div>								
-				<div class="scrubber" style="cursor:pointer;position:absolute;left:35px;right:66px;top:10px;height:6px;background-color:#666">
-					<div class="playHandle" style="z-index:3;position:absolute;top:-5px;background: url(AutoThemerFiles/playhead.png);width:9px;height:16px"></div>
-					<div class="playProgress" style="z-index:2;position:absolute;color:red;width:0%;height:6px;left:0px;top:0px;"></div>	
-					<div class="bufferProgress" style="z-index:1;position:absolute;color:#AAA;width:0%;height:6px;left:0px;top:0px;"></div>									
-				</div>
-				<div class="volume" style="cursor:pointer;position:absolute;right:33px;width:33px;height:25px;background: url(AutoThemerFiles/volume_button.png)">
-					<div class="volumeSlider">
-						<div class="sliderHandle"></div> 
+	<div style="width:300px;float:left">
+		<span style="font-size:14px"> Works with existing html:</span>
+		<span style="font-size:14px"> <br />
+		1) Design your player in dreamweaver / html5 editor of your choice around an html5 embed tag.<br />  
+		2) Add class names to your player elements ( ie <i>centerPlayButton, playButton, pauseButton etc.</i><br />  
+		3) Call <i>$j('#playerTarget').playerThemer( { ..custom options .. })</i>. 
+		( Custom options allow detailed customization of what is displayed when, more on that later ). <br /><br />
+		Once  <i>playerThemer</i> is called your player is driven by <a href="http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library">kaltura html5 lib</a> adding support for: <br /> 
+		* player bindings, ( playhead updates, status updates, iPad overlays )<br />
+		* player interface actions ( fullscreen, playhead scruber etc )<br /> 
+		* analytics tools ( normalize html5 events across implementations for easy
+			analytics events bindings ) <br />		
+		* And lots of other kaltura and html5 related features / modules 
+			( html5 subtitle timedText,   		
+		</span>
+	</div>
+	<div style="width:416px;float:right;">
+		<h3>Fully binded player</h3>
+		
+		<div class="cnn_relpostn" style="width:416px;height:280px;">
+			<div id="cnnCVP1">
+				<div class="cnn_mtt1img">
+					<video class="PlayerThemer" style="height:234px;width:416px;" 
+						durationHint="33"
+						 poster="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb480.jpg"
+						 src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_iphone.m4v"					
+						>
+						<img class="playerPoster" height="234" width="416" border="0" alt="" src="http://i2.cdn.turner.com/cnn/2010/images/09/07/ac.tuchman.bachmann.campaign.cnn.416x234.jpg">
+					</video>				
+				</div>						
+				<div  class="centerPlayButton cnn_mtt1plybttn" id="cnnCVP2">
+					<div id="play_button">
+						<a href="#">
+							<img border="0" src="http://i.cdn.turner.com/cnn/.element/img/3.0/1px.gif">
+						</a>
 					</div>
 				</div>
-				<div class="fullscreen" style="cursor:pointer;position:absolute;right:0px;width:33px;height:25px;background: url(AutoThemerFiles/fullscreen_button.png)"></div>				
-			</div>
-			<div class="bottomTitle" style="position:absolute;bottom:0px;height:47px;left:0px;right:0px;background-color:#000">
-				<div class="cnn_mtt1imghtitle">
-					<h1>
-						<span>
-						<a href="/2010/POLITICS/09/07/bachmann.campaign/index.html?hpt=C1">
-							Big Buck Bunny with CNN player
-						</a>
-						</span>
-					</h1>
+				<div class="widgetOverlay" style="position:absolute;top:5px;right:10px;font-size:x-small;">
+					<span style="background-color:#000;margin:-1px;padding:2px;color:#FFF">INFO</span>
+					<span style="background-color:#000;margin:-1px;padding:2px;color:#FFF">MORE VIDEOS</span>
+					<span style="background-color:#000;margin:-1px;padding:2px;color:#FFF">SHARE</span>
 				</div>
-				<div class="source" style="position:absolute;bottom:0px;left:0px;height:20px;color:#fff">
-					Source: <a href="#">CNN</a>
+				<div class="playControlMin">
+					<div class="scrubber" style="bottom:0px;height:5px;background-color:#666;opacity:.8;right:0px;left:0px;position:absolute;">
+						<div class="playProgress" style="color:red;width:50%"></div>
+					</div>
+				</div>
+				<div class="playControlFull" style="position:absolute;bottom:46px;height:25px;opacity:.8;right:0px;left:0px;background-color:#111">
+					<div class="playButton" style="cursor:pointer;position:absolute;left:0px;width:34px;height:25px;background: url(AutoThemerFiles/play_button.png)"></div>				
+					<div class="pauseButton" style="cursor:pointer;position:absolute;left:0px;width:34px;height:25px;background: url(AutoThemerFiles/pause_button.png)"></div>								
+					<div class="scrubber" style="cursor:pointer;position:absolute;left:35px;right:66px;top:10px;height:6px;background-color:#666">
+						<div class="playHandle" style="z-index:3;position:absolute;top:-5px;background: url(AutoThemerFiles/playhead.png);width:9px;height:16px"></div>
+						<div class="playProgress" style="z-index:2;position:absolute;color:red;width:0%;height:6px;left:0px;top:0px;"></div>	
+						<div class="bufferProgress" style="z-index:1;position:absolute;color:#AAA;width:0%;height:6px;left:0px;top:0px;"></div>									
+					</div>
+					<div class="volume" style="cursor:pointer;position:absolute;right:33px;width:33px;height:25px;background: url(AutoThemerFiles/volume_button.png)">
+						<div class="volumeSlider">
+							<div class="sliderHandle"></div> 
+						</div>
+					</div>
+					<div class="fullscreen" style="cursor:pointer;position:absolute;right:0px;width:33px;height:25px;background: url(AutoThemerFiles/fullscreen_button.png)"></div>				
+				</div>
+				<div class="bottomTitle" style="position:absolute;bottom:0px;height:47px;left:0px;right:0px;background-color:#000">
+					<div class="cnn_mtt1imghtitle">
+						<h1>
+							<span>
+							<a href="/2010/POLITICS/09/07/bachmann.campaign/index.html?hpt=C1">
+								Big Buck Bunny with CNN player
+							</a>
+							</span>
+						</h1>
+					</div>
+					<div class="source" style="position:absolute;bottom:0px;left:0px;height:20px;color:#fff">
+						Source: <a href="#">CNN</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<br />
+		<h3>Before binding ( raw html ) </h3>
+		<div class="cnn_relpostn" style="width:416px;height:280px;">
+			<div id="cnnCVP1">
+				<div class="cnn_mtt1img">
+					<video class="PlayerThemer" style="height:234px;width:416px;" 
+						durationHint="33"
+						 poster="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb480.jpg"
+						 src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_iphone.m4v"					
+						>
+						<img class="playerPoster" height="234" width="416" border="0" alt="" src="http://i2.cdn.turner.com/cnn/2010/images/09/07/ac.tuchman.bachmann.campaign.cnn.416x234.jpg">
+					</video>				
+				</div>						
+				<div  class="centerPlayButton cnn_mtt1plybttn" id="cnnCVP2">
+					<div id="play_button">
+						<a href="#">
+							<img border="0" src="http://i.cdn.turner.com/cnn/.element/img/3.0/1px.gif">
+						</a>
+					</div>
+				</div>
+				<div class="widgetOverlay" style="position:absolute;top:5px;right:10px;font-size:x-small;">
+					<span style="background-color:#000;margin:-1px;padding:2px;color:#FFF">INFO</span>
+					<span style="background-color:#000;margin:-1px;padding:2px;color:#FFF">MORE VIDEOS</span>
+					<span style="background-color:#000;margin:-1px;padding:2px;color:#FFF">SHARE</span>
+				</div>
+				<div class="playControlMin">
+					<div class="scrubber" style="bottom:0px;height:5px;background-color:#666;opacity:.8;right:0px;left:0px;position:absolute;">
+						<div class="playProgress" style="color:red;width:50%"></div>
+					</div>
+				</div>
+				<div class="playControlFull" style="position:absolute;bottom:46px;height:25px;opacity:.8;right:0px;left:0px;background-color:#111">
+					<div class="playButton" style="cursor:pointer;position:absolute;left:0px;width:34px;height:25px;background: url(AutoThemerFiles/play_button.png)"></div>				
+					<div class="pauseButton" style="cursor:pointer;position:absolute;left:0px;width:34px;height:25px;background: url(AutoThemerFiles/pause_button.png)"></div>								
+					<div class="scrubber" style="cursor:pointer;position:absolute;left:35px;right:66px;top:10px;height:6px;background-color:#666">
+						<div class="playHandle" style="z-index:3;position:absolute;top:-5px;background: url(AutoThemerFiles/playhead.png);width:9px;height:16px"></div>
+						<div class="playProgress" style="z-index:2;position:absolute;color:red;width:0%;height:6px;left:0px;top:0px;"></div>	
+						<div class="bufferProgress" style="z-index:1;position:absolute;color:#AAA;width:0%;height:6px;left:0px;top:0px;"></div>									
+					</div>
+					<div class="volume" style="cursor:pointer;position:absolute;right:33px;width:33px;height:25px;background: url(AutoThemerFiles/volume_button.png)">
+						<div class="volumeSlider">
+							<div class="sliderHandle"></div> 
+						</div>
+					</div>
+					<div class="fullscreen" style="cursor:pointer;position:absolute;right:0px;width:33px;height:25px;background: url(AutoThemerFiles/fullscreen_button.png)"></div>				
+				</div>
+				<div class="bottomTitle" style="position:absolute;bottom:0px;height:47px;left:0px;right:0px;background-color:#000">
+					<div class="cnn_mtt1imghtitle">
+						<h1>
+							<span>
+							<a href="/2010/POLITICS/09/07/bachmann.campaign/index.html?hpt=C1">
+								Big Buck Bunny with CNN player
+							</a>
+							</span>
+						</h1>
+					</div>
+					<div class="source" style="position:absolute;bottom:0px;left:0px;height:20px;color:#fff">
+						Source: <a href="#">CNN</a>
+					</div>
 				</div>
 			</div>
 		</div>
