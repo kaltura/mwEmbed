@@ -33,7 +33,7 @@ var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.1.100/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_LOADER_URL = 'http://192.168.38.169/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -247,7 +247,10 @@ function kAddScript(){
 		
 		// Timed Text module
 		'mw.TimedText',
-		'mw.style.TimedText'		
+		'mw.style.TimedText',
+		
+		// Player themer module
+		'mw.PlayerThemer'
 	]);
 	url+= jsPlayerRequest.join(',');
 	

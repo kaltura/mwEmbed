@@ -2595,7 +2595,7 @@ if( mw.isStaticPackge() && !window.jQuery ){
 
 if( window.jQuery ){
 	if( ! mw.versionIsAtLeast( '1.4.0', jQuery.fn.jquery ) ){
-		if( console && console.log ) {
+		if( window.console && window.console.log ) {
 			console.log( 'Error mwEmbed requires jQuery 1.4 or above' );
 		}
 	}

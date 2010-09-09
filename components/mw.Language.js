@@ -434,7 +434,7 @@
 			}
 		}
 		return ( typeInt )? parseInt( convertedNumber) : convertedNumber;
-	}
+	};
 
 	/**
 	 * Checks if a language key is valid ( is part of languageCodeList )
@@ -443,7 +443,7 @@
 	 */
 	mw.isValidLang = function( langKey ) {
 		return ( mw.Language.names[ langKey ] )? true : false;
-	}		
+	};		
 	
 	/**
 	* Get a language transform key
@@ -462,7 +462,7 @@
 		}
 		// By default return the base 'en' class
 		return 'en';
-	}
+	};
 	
 	/**
 	 * getRemoteMsg loads remote msg strings
