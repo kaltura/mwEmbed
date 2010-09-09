@@ -49,7 +49,7 @@ mw.EmbedPlayerSmil = {
 	/**
 	* Put the embed player into the container
 	*/
-	doEmbedPlayer: function() {
+	doEmbedHTML: function() {
 		var _this = this;		
 		
 		// check if we have already embed the player:
@@ -57,10 +57,10 @@ mw.EmbedPlayerSmil = {
 			return; 
 		}
 		this.smilPlayerEmbedded = true;
-		mw.log("EmbedPlayerSmil::doEmbedPlayer: " + this.id + " time:" + this.smilPlayTime ) ;
+		mw.log("EmbedPlayerSmil::doEmbedHTML: " + this.id + " time:" + this.smilPlayTime ) ;
 				
 		this.setCurrentTime( this.smilPlayTime, function(){
-			mw.log("EmbedPlayerSmil::doEmbedPlayer:: render callback ready " );
+			mw.log("EmbedPlayerSmil::doEmbedHTML:: render callback ready " );
 		}); 				
 	},
 	
@@ -350,7 +350,7 @@ mw.EmbedPlayerSmil = {
 			return ;
 		}
 		// If no thumb could be found use the first frame of smil: 
-		this.doEmbedPlayer(); 
+		this.doEmbedHTML(); 
 	},
 	
 	/**

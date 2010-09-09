@@ -12,7 +12,7 @@
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
 		if( $j( playerElement ).hasClass('PlayerThemer') ){ 
 			// Set the player useNativeControls attribute
-			$j( playerElement ).attr('useNativeControls', true);	
+			$j( playerElement ).attr('usenativecontrols', true);	
 
 			// Add playerThemer to the request:  
 			if( $j.inArray( 'mw.PlayerThemer', classRequest ) == -1 ){

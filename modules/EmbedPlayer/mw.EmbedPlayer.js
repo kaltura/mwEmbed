@@ -168,7 +168,7 @@ mw.setConfig( 'EmbedPlayer.Attributes', {
 	"overlayControls" : true,
 	
 	// Attribute to use 'native' controls 
-	"useNativeControls" : false,
+	"usenativecontrols" : false,
 	
 	// ROE url ( for xml based metadata )
 	// also see: http://wiki.xiph.org/ROE
@@ -1982,54 +1982,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	setCurrentTime: function( time, callback ) {
 		mw.log( 'Error: base embed setCurrentTime can not frame serve (override via plugin)' );
-	},
-	
-	/**
-	* Setup the embed player 
-	* issues a loading request
-	*/
-	doEmbedPlayer: function() {
-		mw.log( 'EmbedPlayer::doEmbedPlayer::' + this.selectedPlayer.id );
-		//mw.log( 'thum disp:' + this.thumbnail_disp );
-		var _this = this;
-		
-		var doEmbedPlayerLocal = function(){
-			// Set "loading" here ( if displaying controls )
-			if( ! _this.shouldUseNativeControls() ){ 
-				$j( _this ).html( 
-					$j( '<div />' )
-					.css({
-						'color' : 'black',
-						'width' : _this.width + 'px',
-						'height' : _this.height + 'px'
-					})					
-				);
-			}
-			
-			// Reset some play state flags: 
-			_this.bufferStartFlag = false;
-			_this.bufferEndFlag = false;
-			
-			// Make sure the player is		
-			mw.log( 'EmbedPlayer::performing embed for ' + _this.id );
-		};
-				
-		// If no binded events, run the local doEmbedPlayer function directly:  
-		if( $j( this ).data('events') &&  $j( this ).data('events').length == 0 ){
-			doEmbedPlayerLocal();
-		} else {
-			// Trigger the doEmbedPlayer event / hook with callback  
-			$j( this ).trigger( 'doEmbedPlayerEvent', function(){
-				//done
-				doEmbedPlayerLocal();
-			});
-		} 
-		
-		// mw.log('should embed:' + embed_code);		
-		_this.doEmbedHTML() 		
-	},
-	
-	
+	},	
 	
 	/**
 	* On clip done action. Called once a clip is done playing
@@ -2424,7 +2377,7 @@ mw.EmbedPlayer.prototype = {
 	 * 					false if the mwEmbed player interface should not be used
 	 */
 	shouldUseNativeControls: function() {
-		if( this.useNativeControls === true ){
+		if( this.usenativecontrols === true ){
 			return true;
 		}
 		
@@ -2455,13 +2408,22 @@ mw.EmbedPlayer.prototype = {
 		// Remove the player loader spinner if it exists
 		$j('#loadingSpinner_' + this.id ).remove();
 		
+		
 		// Check if we need to refresh mobile safari
-		var mobileSafairNeedsRefresh = false;
-		if( $j( '#' + this.pid ).attr('controls') === false 
-				&& 
-			!$j( '#' + this.pid ).hasClass('PlayerThemer')	){
+		var mobileSafairNeedsRefresh = false;					
+		
+		
+		// Unhide the original video element
+		if( !$j( '#' + this.pid ).hasClass('PlayerThemer') ){
+			$j( '#' + this.pid )
+			.css( {
+				'position' : 'absolute'
+			} )
+			.show()
+			.attr('controls', 'true');
+			
 			mobileSafairNeedsRefresh = true;
-		}					
+		}
 		
 		// iPad does not handle video tag update for attributes like "controls" 
 		// so we have to do a full replace ( if controls are not included initially ) 		
@@ -2469,15 +2431,7 @@ mw.EmbedPlayer.prototype = {
 			var source = this.mediaElement.getSources( 'video/h264' )[0];
 			if( source && ! source.src ){
 				mw.log( 'Error: should have caught no playable sources for mobile safari earlier' );
-			}		
-					
-			// Unhide the original video element
-			$j( '#' + this.pid )
-			.css( {
-				'position' : 'absolute'
-			} )
-			.show()
-			.attr('controls', 'true');
+			}					
 			
 			var videoAttribues = {
 				'id' : _this.pid,
@@ -2713,7 +2667,7 @@ mw.EmbedPlayer.prototype = {
 				return; 
 			} else {
 				this.thumbnail_disp = false;
-				this.doEmbedPlayer();				
+				this.doEmbedHTML();				
 			}
 		} else {
 			// the plugin is already being displayed			
