@@ -38,8 +38,9 @@ mw.SmilAnimate.prototype = {
 	},
 	
 	/**
-	 * Checks if assets are insync 
-	 *  re
+	 * Checks if assets are insync and returns the difference 
+	 *  @param {float} time Playback time to be checked
+	 *  @return {floag} the max out of sync time for any media element being played back.  
 	 */
 	getPlaybackSyncDelta: function( time ){
 		var _this = this;
@@ -50,12 +51,13 @@ mw.SmilAnimate.prototype = {
 			// var relativeTime = time - smilElement.parentTimeOffset;
 			var relativeTime = time - $j( smilElement ).data ( 'startOffset' );
 			switch( _this.smil.getRefType( smilElement ) ){
+				case 'audio':
 				case 'video':
-					var vid = $j ( '#' + _this.smil.getSmilElementPlayerID( smilElement ) ).get( 0 );
-					var vidTime = ( !vid || !vid.currentTime )? 0 : vid.currentTime;					
+					var media = $j ( '#' + _this.smil.getSmilElementPlayerID( smilElement ) ).get( 0 );
+					var mediaTime = ( !vid || !vid.currentTime )? 0 : vid.currentTime;					
 					//mw.log( "getPlaybackSyncDelta:: video time should be: " + relativeTime + ' video time is: ' + vidTime );
 					
-					var syncOffset = ( relativeTime -vidTime );
+					var syncOffset = ( relativeTime -mediaTime );
 					if( syncOffset >  maxOutOfSync ){
 						maxOutOfSync = syncOffset;
 					}

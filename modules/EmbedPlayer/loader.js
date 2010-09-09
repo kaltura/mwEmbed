@@ -137,7 +137,7 @@
 			});									
 			// Load the embedPlayer module ( then run queued hooks )			
 			mw.load( 'EmbedPlayer', function ( ) {		
-				mw.log("EmbedPlayer:: do rewrite tags");
+				mw.log("EmbedPlayer:: do rewrite players:" + $j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).length );
 				// Rewrite the EmbedPlayer.RewriteTags with the 
 				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer();				
 			})
