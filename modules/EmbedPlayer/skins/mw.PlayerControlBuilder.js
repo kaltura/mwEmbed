@@ -813,7 +813,7 @@ mw.PlayerControlBuilder.prototype = {
 			);
 		}
 		
-		// Setup play-head slider:
+		// Setup volume slider:
 		var sliderConf = {
 			range: "min",
 			value: 80,

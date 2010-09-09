@@ -2695,13 +2695,15 @@ mw.EmbedPlayer.prototype = {
 		 	_this.pause();
 	   	 } )
 	   	 .attr( 'title', gM( 'mwe-embedplayer-pause_clip' ) );
-	   	 	   	 
-	   	
-	   	  // If we previously finished playing this clip run the "replay hook"
-	   	 if( this.donePlayingCount > 0 ) {
+
+		// Start the monitor if not already started
+		this.monitor();
+		
+	   	 // If we previously finished playing this clip run the "replay hook"
+	   	if( this.donePlayingCount > 0 ) {
 	   	 	mw.log("replayEvent");
 	   	 	$j( this ).trigger( 'replayEvent' );
-	   	 }
+	   	}
 	},
 	
 	
@@ -3104,14 +3106,14 @@ mw.EmbedPlayer.prototype = {
 	*
 	* @param {Float} perc Value between 0 and 1 for position of playhead
 	*/
-	updatePlayHead: function( perc ) {	
+	updatePlayHead: function( perc ) {			
 		$playHead = this.$interface.find( '.play_head' );
 		if ( this.controls &&  $playHead.length != 0 ) {
 			var val = parseInt( perc * 1000 );
 			$playHead.slider( 'value', val );
 		}
-		// @@todo should fix this name: 
-		$j(this).trigger('updatePlayHeadPercent', perc);
+		// @@todo should have 'progress' trigger the same as html5
+		$j( this ).trigger('updatePlayHeadPercent', perc);
 	},
 	
 	/**

@@ -31,6 +31,9 @@
 		);
 	});
 </script>
+<style type="text/css">
+
+</style>
 </head>
 <body>
 <!-- 
@@ -89,17 +92,20 @@
 				<div class="playControlFull" style="position:absolute;bottom:46px;height:25px;opacity:.8;right:0px;left:0px;background-color:#111">
 					<div class="playButton" style="cursor:pointer;position:absolute;left:0px;width:34px;height:25px;background: url(AutoThemerFiles/play_button.png)"></div>				
 					<div class="pauseButton" style="cursor:pointer;position:absolute;left:0px;width:34px;height:25px;background: url(AutoThemerFiles/pause_button.png)"></div>								
-					<div class="scrubber" style="cursor:pointer;position:absolute;left:35px;right:66px;top:10px;height:6px;background-color:#666">
+					<div class="playScrubber" style="cursor:pointer;position:absolute;left:35px;right:66px;top:10px;height:6px;background-color:#666">
 						<div class="playHandle" style="z-index:3;position:absolute;top:-5px;background: url(AutoThemerFiles/playhead.png);width:9px;height:16px"></div>
 						<div class="playProgress" style="z-index:2;position:absolute;color:red;width:0%;height:6px;left:0px;top:0px;"></div>	
 						<div class="bufferProgress" style="z-index:1;position:absolute;color:#AAA;width:0%;height:6px;left:0px;top:0px;"></div>									
 					</div>
-					<div class="volume" style="cursor:pointer;position:absolute;right:33px;width:33px;height:25px;background: url(AutoThemerFiles/volume_button.png)">
-						<div class="volumeSlider">
-							<div class="sliderHandle"></div> 
+					<div class="volumeButton" style="cursor:pointer;position:absolute;right:33px;width:33px;height:25px;background: url(AutoThemerFiles/volume_button.png)">
+						<div class="volumeSliderContainer" style="cursor:pointer;position:absolute;width:25px;top:-80px;left:7px;height:80px;background:#111;">
+							<div class="volumeSlider ui-slider-handle" style="position:absolute;left:12px;top:10px;bottom:5px;width:2px;height:65px;background-color:#999;">
+								<div class="volumeHandle" style="position:absolute;left:-7px;width:16px;height:9px;background:url(AutoThemerFiles/slider_horizontal.png)"></div>
+							</div> 							
 						</div>
 					</div>
-					<div class="fullscreen" style="cursor:pointer;position:absolute;right:0px;width:33px;height:25px;background: url(AutoThemerFiles/fullscreen_button.png)"></div>				
+				
+					<div class="fullscreenButton" style="cursor:pointer;position:absolute;right:0px;width:33px;height:25px;background: url(AutoThemerFiles/fullscreen_button.png)"></div>				
 				</div>
 				<div class="bottomTitle" style="position:absolute;bottom:0px;height:47px;left:0px;right:0px;background-color:#000">
 					<div class="cnn_mtt1imghtitle">
@@ -123,8 +129,8 @@
 		<div class="cnn_relpostn" style="width:416px;height:280px;">
 			<div id="cnnCVP1">
 				<div class="cnn_mtt1img">
-					<img src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb480.jpg" style="width:416px;height:280px;" >						
-					</video>				
+					<img src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb480.jpg"						 				
+						>											
 				</div>						
 				<div  class="centerPlayButton cnn_mtt1plybttn" id="cnnCVP2">
 					<div id="play_button">
@@ -146,17 +152,20 @@
 				<div class="playControlFull" style="position:absolute;bottom:46px;height:25px;opacity:.8;right:0px;left:0px;background-color:#111">
 					<div class="playButton" style="cursor:pointer;position:absolute;left:0px;width:34px;height:25px;background: url(AutoThemerFiles/play_button.png)"></div>				
 					<div class="pauseButton" style="cursor:pointer;position:absolute;left:0px;width:34px;height:25px;background: url(AutoThemerFiles/pause_button.png)"></div>								
-					<div class="scrubber" style="cursor:pointer;position:absolute;left:35px;right:66px;top:10px;height:6px;background-color:#666">
+					<div class="playScrubber" style="cursor:pointer;position:absolute;left:35px;right:66px;top:10px;height:6px;background-color:#666">
 						<div class="playHandle" style="z-index:3;position:absolute;top:-5px;background: url(AutoThemerFiles/playhead.png);width:9px;height:16px"></div>
 						<div class="playProgress" style="z-index:2;position:absolute;color:red;width:0%;height:6px;left:0px;top:0px;"></div>	
 						<div class="bufferProgress" style="z-index:1;position:absolute;color:#AAA;width:0%;height:6px;left:0px;top:0px;"></div>									
 					</div>
-					<div class="volume" style="cursor:pointer;position:absolute;right:33px;width:33px;height:25px;background: url(AutoThemerFiles/volume_button.png)">
-						<div class="volumeSlider">
-							<div class="sliderHandle"></div> 
+					<div class="volumeButton" style="cursor:pointer;position:absolute;right:33px;width:33px;height:25px;background: url(AutoThemerFiles/volume_button.png)">
+						<div class="volumeSliderContainer" style="cursor:pointer;position:absolute;width:25px;top:-80px;left:7px;height:80px;background:#111;">
+							<div class="volumeSlider ui-slider-handle" style="position:absolute;left:12px;top:10px;bottom:5px;width:2px;height:65px;background-color:#999;">
+								<div class="volumeHandle" style="position:absolute;left:-7px;width:16px;height:9px;background:url(AutoThemerFiles/slider_horizontal.png)"></div>
+							</div> 							
 						</div>
 					</div>
-					<div class="fullscreen" style="cursor:pointer;position:absolute;right:0px;width:33px;height:25px;background: url(AutoThemerFiles/fullscreen_button.png)"></div>				
+				
+					<div class="fullscreenButton" style="cursor:pointer;position:absolute;right:0px;width:33px;height:25px;background: url(AutoThemerFiles/fullscreen_button.png)"></div>				
 				</div>
 				<div class="bottomTitle" style="position:absolute;bottom:0px;height:47px;left:0px;right:0px;background-color:#000">
 					<div class="cnn_mtt1imghtitle">
@@ -174,7 +183,9 @@
 				</div>
 			</div>
 		</div>
+		
 	</div>
+	
 </div>
 
 

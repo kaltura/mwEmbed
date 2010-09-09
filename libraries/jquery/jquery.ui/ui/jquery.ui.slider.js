@@ -83,7 +83,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 			// but worked best visually with a variety of themes
 			this.range.addClass( "ui-widget-header" );
 		}
-
+		
 		if ( $( ".ui-slider-handle", this.element ).length === 0 ) {
 			$( "<a href='#'></a>" )
 				.appendTo( this.element )
