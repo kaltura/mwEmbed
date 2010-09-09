@@ -128,7 +128,6 @@
 				if ( $j( element ).attr( "id" ) == '' ) {
 					$j( element ).attr( "id",  'v' + ( rewriteElementCount++ ) );
 				}
-				
 				// Add an absolute positioned loader
 				$j( element )
 					.getAbsoluteOverlaySpinner()
