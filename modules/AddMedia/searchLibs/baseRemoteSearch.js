@@ -56,7 +56,7 @@ baseRemoteSearch.prototype = {
 	num_results		: 0,
 
 	/**
-	* Initialise the baseRemoteSearch 
+	* Initialize the baseRemoteSearch 
 	* @param {Object} options The set of options for the remote search class
 	*/
 	init: function( options ) {	

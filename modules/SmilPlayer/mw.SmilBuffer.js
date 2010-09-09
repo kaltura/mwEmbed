@@ -121,8 +121,6 @@ mw.SmilBuffer.prototype = {
 		// Get all active elements for requested bufferTime		
 		this.smil.getBody().getElementsForTime( bufferTime, function( smilElement){
 			// If the element is in "activePlayback" ( don't try to load it )
-			/*mw.log('continueBufferLoad::' + _this.smil.getPageDomId( smilElement ) 
-					+ $j( smilElement ).data('activePlayback' ));*/
 			if( ! $j( smilElement ).data('activePlayback' ) ){
 				// Start loading active assets 
 				_this.loadElement( smilElement );
@@ -138,7 +136,7 @@ mw.SmilBuffer.prototype = {
 			var timeBuffered = _this.getBufferedPercent() * _this.smil.getDuration();			
 			//mw.log( 'ContinueBufferLoad::Timed buffered: ' + timeBuffered );
 			_this.continueBufferLoad( timeBuffered );
-		}, this.smil.embedPlayer.monitorRate * 2 );
+		}, this.smil.embedPlayer.monitorRate * 4 );
 		
 	},
 	
@@ -149,25 +147,25 @@ mw.SmilBuffer.prototype = {
 		var _this = this;
 		
 		// If the element is not already in the DOM add it as an invisible element 
-		if( $j( '#' + this.smil.getPageDomId( smilElement ) ).length == 0 ){			
+		if( $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).length == 0 ){			
 			// Draw the element
 			_this.smil.getLayout().drawElement( smilElement );
 			// Hide the element ( in modern browsers this should not cause a flicker 
 			// because DOM update are displayed at a given dom draw rate )
 			_this.smil.getLayout().hideElement( smilElement );
-			mw.log('loadElement::Add:' + this.smil.getPageDomId( smilElement )+ ' len: ' +  $j( '#' + this.smil.getPageDomId( smilElement ) ).length );
-		}		
+			mw.log('loadElement::Add:' + this.smil.getSmilElementPlayerID( smilElement )+ ' len: ' +  $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).length );
+		}
+
 		// Start "loading" the asset (for now just video ) 
-		// but in theory we could set something up with large images
+		// but in theory we could set something up with large images / templates etc.
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'video':
-				var vid = $j( '#' + this.smil.getPageDomId( smilElement ) ).get(0);
+				var vid = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).get(0);
 				if( !vid ){
 					break;
 				}
 				// The load request does not work very well instead .play() then .pause() and seek when on display
-				// vid.load();
-				
+				// vid.load();				
 				// Since we can't use "load" across html5 implementations do some hacks: 
 				if( vid.paused &&  this.getVideoPercetLoaded( smilElement ) == 0 ){
 					// Issue the load / play request 
@@ -175,7 +173,7 @@ mw.SmilBuffer.prototype = {
 					vid.volume = 0;					
 					// XXX seek to clipBegin if provided ( we don't need to load before that point )				
 				} else {
-					//mw.log("loadElement:: pause video: " + this.smil.getPageDomId( smilElement ));
+					//mw.log("loadElement:: pause video: " + this.smil.getSmilElementPlayerID( smilElement ));
 					// else we have some percentage loaded pause playback 
 					//( should continue to load the asset )
 					vid.pause();
@@ -195,7 +193,7 @@ mw.SmilBuffer.prototype = {
 		}
 		// for other ref types check if element is in the dom
 		// xxx todo hook into image loader hook
-		if( $j( '#' + this.smil.getPageDomId( smilElement ) ).length == 0 ){
+		if( $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).length == 0 ){
 			return 0;
 		} else {			
 			return 1;
@@ -207,7 +205,7 @@ mw.SmilBuffer.prototype = {
 	 */
 	getVideoPercetLoaded: function ( smilElement ){
 		var _this = this;
-		var assetId = this.smil.getPageDomId( smilElement );
+		var assetId = this.smil.getSmilElementPlayerID( smilElement );
 		var $vid = $j( '#' + assetId );
 		
 		// if the asset is not in the DOM return zero: 
@@ -296,7 +294,7 @@ mw.SmilBuffer.prototype = {
 	 * Clip ready for grabbing a frame such as a canvas thumb
 	 */
 	bufferedSeekRelativeTime: function( smilElement, relativeTime, callback ){
-		mw.log("SmilBuffer::bufferedSeekRelativeTime:" + this.smil.getPageDomId( smilElement ) + ' time:' + relativeTime );
+		mw.log("SmilBuffer::bufferedSeekRelativeTime:" + this.smil.getSmilElementPlayerID( smilElement ) + ' time:' + relativeTime );
 		
 		var absoluteTime = relativeTime;		
 		if( $j( smilElement ).attr('clipBegin') ){
@@ -309,13 +307,17 @@ mw.SmilBuffer.prototype = {
 		}
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'video':
-				this.videoBufferSeek( smilElement, absoluteTime, instanceCallback )
-			break;
+			case 'audio': 
+				this.mediaBufferSeek( smilElement, absoluteTime, instanceCallback )
+			break;			
 			case 'img':
 				this.loadImageCallback( smilElement, instanceCallback );
 			break;
+			case 'mwtemplate':
+				this.loadMwTemplate( smilElement, instanceCallback );
+			break;
 			default:
-				// Assume other formats are directly displayed
+				// Assume other formats are non-blocking and directly displayed
 				instanceCallback();
 			break;
 		}		
@@ -340,7 +342,7 @@ mw.SmilBuffer.prototype = {
 	 */
 	canPlayVideoTime: function( smilVideoElement, time ){
 		var _this = this;
-		var assetId = this.smil.getPageDomId( smilVideoElement );
+		var assetId = this.smil.getSmilElementPlayerID( smilVideoElement );
 		var $vid = $j( '#' + assetId );
 		var vid = $j( '#' + assetId ).get( 0 );
 		// if the video element is not in the dom its not ready: 
@@ -381,26 +383,35 @@ mw.SmilBuffer.prototype = {
 			}
 		}, false);
 	},
+	loadMwTemplate: function( smilElement, callback ){
+		var assetId = this.smil.getSmilElementPlayerID( smilElement );
+
+		// Set a load callback for the asset: 
+		$j( smilElement ).data('loadCallback',callback);		
+		this.loadElement( smilElement );
+		mw.log( "loadMwTemplateCallback:: drwa img: " + assetId  + ' ' + $j( '#' +  assetId ).length );
+	},
 	
 	loadImageCallback: function ( smilElement, callback ){		
-		var assetId = this.smil.getPageDomId( smilElement );
+		var assetId = this.smil.getSmilElementPlayerID( smilElement );
 		// Make sure the image is in the dom ( load it )
-		this.loadElement( smilElement );
-		mw.log( "loadImageCallback:: drwa img: " + assetId  + $j( '#' +  assetId ).length );
+		this.loadElement( smilElement );	
+		mw.log( "loadImageCallback:: drwa img: " + assetId + ' found:'  + $j( '#' +  assetId ).length );
 		// If we already have naturalHeight no need for loading callback 
 		if( $j( '#' +  assetId ).get(0).naturalHeight ){
+			mw.log( "loadImageCallback: " +assetId + ' already ready: run callback' );
 			callback();
 		} else {
-			$j( '#' +  assetId ).load( callback );
+			$j( '#' +  assetId ).find('img').load( callback );
 		}
 	},
 	
-	videoBufferSeek: function ( smilElement, seekTime, callback ){
+	mediaBufferSeek: function ( smilElement, seekTime, callback ){
 		var _this = this;
-		//mw.log("SmilBuffer::videoBufferSeek: " + this.smil.getPageDomId( smilElement ) +' time:' + seekTime );
+		mw.log("SmilBuffer::mediaBufferSeek: " + this.smil.getSmilElementPlayerID( smilElement ) +' time:' + seekTime );
 		
 		// Get the asset target:		
-		var assetId = this.smil.getPageDomId( smilElement );
+		var assetId = this.smil.getSmilElementPlayerID( smilElement );
 		
 		// Make sure the target video is in the dom: 
 		this.loadElement( smilElement );		

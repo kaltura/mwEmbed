@@ -2702,6 +2702,7 @@ mw.EmbedPlayer.prototype = {
 	   	 }
 	},
 	
+	
 	/**
 	 * Maps the html5 load request. There is no general way to "load" clips so
 	 * underling plugin-player libs should override.

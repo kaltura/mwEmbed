@@ -20,19 +20,20 @@ mw.SmilAnimate.prototype = {
 	 * Pause any active animation or video playback
 	 */
 	pauseAnimation: function( smilElement ){		
-		// Check if the element is in the html dom: 
-		if( !$j ( '#' + this.smil.getPageDomId( smilElement ) ).length ){
+		// Check if the element is in the html player dom: 
+		if( !$j ( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).length ){
 			return ;
 		}
 		// Pause the animation of a given element ( presently just video )		
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'video':
-				$j ( '#' + this.smil.getPageDomId( smilElement ) ).get( 0 ).pause();
+			case 'audio':
+				$j ( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).get( 0 ).pause();
 			break;
 		}
 		// non-video elements just pause by clearing any animation loops
-		if( this.animateInterval[ this.smil.getPageDomId( smilElement ) ]  ){
-			clearInterval( this.animateInterval[ this.smil.getPageDomId( smilElement ) ]  );
+		if( this.animateInterval[ this.smil.getSmilElementPlayerID( smilElement ) ]  ){
+			clearInterval( this.animateInterval[ this.smil.getSmilElementPlayerID( smilElement ) ]  );
 		}
 	},
 	
@@ -45,12 +46,12 @@ mw.SmilAnimate.prototype = {
 		// Get all the elements for the current time:
 		var maxOutOfSync = 0;
 		this.smil.getBody().getElementsForTime( time, function( smilElement ){
-			//mw.log( 'check element: '+ time + ' ' +  _this.smil.getPageDomId( smilElement ) );
+			//mw.log( 'check element: '+ time + ' ' +  _this.smil.getSmilElementPlayerID( smilElement ) );
 			// var relativeTime = time - smilElement.parentTimeOffset;
 			var relativeTime = time - $j( smilElement ).data ( 'startOffset' );
 			switch( _this.smil.getRefType( smilElement ) ){
 				case 'video':
-					var vid = $j ( '#' + _this.smil.getPageDomId( smilElement ) ).get( 0 );
+					var vid = $j ( '#' + _this.smil.getSmilElementPlayerID( smilElement ) ).get( 0 );
 					var vidTime = ( !vid || !vid.currentTime )? 0 : vid.currentTime;					
 					//mw.log( "getPlaybackSyncDelta:: video time should be: " + relativeTime + ' video time is: ' + vidTime );
 					
@@ -89,8 +90,10 @@ mw.SmilAnimate.prototype = {
 			
 		
 		// Check for special playback types that for playback animation action:
-		if( this.smil.getRefType( smilElement ) == 'video' ){
-			this.transformVideoForPlayback( smilElement, animateTime );
+		if( this.smil.getRefType( smilElement ) == 'video' 
+			|| 
+			this.smil.getRefType( smilElement ) == 'audio' ){
+			this.transformMediaForPlayback( smilElement, animateTime );
 		}
 				
 		// Check if the current smilElement has any transforms to be done
@@ -102,13 +105,13 @@ mw.SmilAnimate.prototype = {
 		// We have a delta spawn an short animateInterval 
 		
 		// Clear any old animation loop	( can be caused by overlapping play requests or slow animation )	
-		clearInterval( this.animateInterval[ this.smil.getPageDomId( smilElement ) ]  );
+		clearInterval( this.animateInterval[ this.smil.getSmilElementPlayerID( smilElement ) ]  );
 		
 		// Start a new animation interval  		 
 		var animationStartTime = new Date().getTime();
 		var animateTimeDelta =  0;
 		
-		this.animateInterval[ this.smil.getPageDomId( smilElement ) ] = 
+		this.animateInterval[ this.smil.getSmilElementPlayerID( smilElement ) ] = 
 			setInterval(
 				function(){
 					var timeElapsed =  new Date().getTime() - animationStartTime;
@@ -118,7 +121,7 @@ mw.SmilAnimate.prototype = {
 					// See if the animation has expired: 
 					if( animateTimeDelta > deltaTime || timeElapsed > deltaTime ){
 						// Stop animating:
-						clearInterval( _this.animateInterval[ _this.smil.getPageDomId( smilElement ) ]  );
+						clearInterval( _this.animateInterval[ _this.smil.getSmilElementPlayerID( smilElement ) ]  );
 						return ;
 					}
 					
@@ -218,7 +221,7 @@ mw.SmilAnimate.prototype = {
 	 */
 	transformVideoForTime: function( smilElement, animateTime, callback ){
 		// Get the video element 
-		var assetId = this.smil.getPageDomId( smilElement );
+		var assetId = this.smil.getSmilElementPlayerID( smilElement );
 		var vid = $j ( '#' + assetId ).get( 0 );		
 		
 		var videoSeekTime = animateTime;
@@ -232,7 +235,7 @@ mw.SmilAnimate.prototype = {
 		//mw.log( "SmilAnimate::transformVideoForTime:" + assetId + " ct:" +vid.currentTime + ' should be: ' + videoSeekTime );
 		
 		// Register a buffer ready callback
-		this.smil.getBuffer().videoBufferSeek( smilElement, videoSeekTime, function() {			
+		this.smil.getBuffer().mediaBufferSeek( smilElement, videoSeekTime, function() {			
 			//mw.log( "transformVideoForTime:: seek complete ")
 			if( callback )
 				callback();
@@ -242,8 +245,8 @@ mw.SmilAnimate.prototype = {
 	/** 
 	 * Used to support video playback
 	 */
-	transformVideoForPlayback: function( smilElement, animateTime ){ 
-		var $vid = $j ( '#' + this.smil.getPageDomId( smilElement ) );	
+	transformMediaForPlayback: function( smilElement, animateTime ){ 
+		var $vid = $j ( '#' + this.smil.getSmilElementPlayerID( smilElement ) );	
 		
 		// Set activePlayback flag ( informs edit and buffer actions ) 
 		$j( smilElement ).data('activePlayback', true)
@@ -261,7 +264,7 @@ mw.SmilAnimate.prototype = {
 		if( this.smil.getBuffer().canPlayTime( smilElement, animateTime ) 
 			&& vid.paused
 		) {
-			//mw.log( "transformVideoForPlayback:: should play:" + animateTime );						
+			//mw.log( "transformMediaForPlayback:: should play:" + animateTime );						
 			vid.play();
 			return ;
 		}		
@@ -303,7 +306,7 @@ mw.SmilAnimate.prototype = {
 				
 		// Update the text value target
 		// xxx need to profile update vs check value
-		$j( '#' + this.smil.getPageDomId( textElement )  )
+		$j( '#' + this.smil.getSmilElementPlayerID( textElement )  )
 		.html( 
 			$j('<span />')
 			// Add the text value
@@ -413,33 +416,37 @@ mw.SmilAnimate.prototype = {
 				switch( namedValueOrder[i] ){
 					case 'left':
 					case 'width':
-						percentValues[ namedValueOrder[i] ] = 
-							( parseFloat( targetValue[i] ) 	/ naturalSize.width ) * 100
+						percentValues[ namedValueOrder[i] ] =  
+							( ( parseFloat( targetValue[i] ) 	/ naturalSize.width ) * 100 ) + '%';
 					break;
 					case 'height':
 					case 'top':
 						percentValues[ namedValueOrder[i] ] =  
-							( parseFloat( targetValue[i] ) / naturalSize.height ) * 100 
+							( ( parseFloat( targetValue[i] ) / naturalSize.height ) * 100 ) + '%';
 					break;
 				}				
 			} else {
-				percentValues[ namedValueOrder[i] ] = parseFloat( targetValue[i] );
-			} 
+				percentValues[ namedValueOrder[i] ] = parseFloat( targetValue[i] ) + '%';
+			}
 		}
 		return percentValues;
 	},
 	
 	// xxx need to refactor move to "smilLayout"
-	updateElementLayout: function( smilElement, percentValues ){
+	updateElementLayout: function( smilElement, percentValues, $target, htmlElement ){
 		var _this = this;
-		mw.log("updateElementLayout::" + ' ' + percentValues.left + ' ' + percentValues.top + ' ' + percentValues.width + ' ' + percentValues.height );
+		//mw.log("updateElementLayout::" + ' ' + percentValues.left + ' ' + percentValues.top + ' ' + percentValues.width + ' ' + percentValues.height );
 		
 		// get a pointer to the html target:
-		var $target = $j( '#' + this.smil.getPageDomId( smilElement ));	
-		var htmlElement = $j( '#' + this.smil.getPageDomId( smilElement ) ).get(0);
-
-		// Wrap the target with its natura size ( if not already ) 
-		if( $target.parent('.refTransformWrap').length == 0 ){
+		if( !$target ) {
+			$target = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ));
+		}
+		if( !htmlElement){
+			htmlElement = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).get(0);
+		}
+		
+		// Wrap the target with its natural size ( if not already ) 
+		if( $target.parent( '.refTransformWrap' ).length == 0 ){
 			$target		
 			.wrap( 
 				$j( '<div />' )
@@ -451,19 +458,23 @@ mw.SmilAnimate.prototype = {
 					'width'	: '100%',
 					'height' : '100%'
 				} )
-				.addClass('refTransformWrap') 
+				.addClass( 'refTransformWrap' ) 
 			)
 		}	
 		
 		_this.smil.getLayout().getNaturalSize( htmlElement, function( natrualSize ){
 			// XXX note we have locked aspect so we can use 'width' here:
-			var sizeCss = _this.smil.getLayout().getDominateAspectTransform( natrualSize,  null, percentValues.width );			
+			
+			var sizeCss = _this.smil.getLayout().getDominateAspectTransform( natrualSize,  null, percentValues.width );
+			//mw.log( ' w: ' + sizeCss.width + ' h ' + sizeCss.height + ' of : ' + $target.get(0).nodeName );
 			// Run the css transform
 			$target.css( { 
-				'position' : 'absolute', 
+				'position' : 'absolute',
 				'left' : percentValues.left,
-				'top' : percentValues.top			
-			}).css( sizeCss );
+				'top' : percentValues.top
+			})
+			.css( sizeCss );
+			//mw.log(' target width: ' + $target.css('width') );
 		});
 	},
 	

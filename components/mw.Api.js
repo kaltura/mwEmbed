@@ -42,11 +42,13 @@
 			}
 			var pages = data.query.pages;			
 			for(var i in pages) {
-				page = pages[ i ];
-				if( page[ 'revisions' ] && page[ 'revisions' ][0]['*'] ) {
+				var page = pages[ i ];				
+				if( page[ 'revisions' ] && typeof page[ 'revisions' ][0]['*'] != 'undefined' ) {					
 					callback( page[ 'revisions' ][0]['*'] );
+					return ;
 				}
 			}
+			callback( false );
 		} );
 	}		
 	
