@@ -396,9 +396,9 @@ mw.Smil.prototype = {
 		);
 		// Links go to a new window and are disable when smaller than player size
 		$html.find('a').each( function(inx, link ){
-			// escape link output as to not include scirpt execution
+			// Escape link output as to not include scirpt execution
 			$j(link).attr('href', 
-					mw.escapeQuotesHTML( $j(link).attr('href') )
+				mw.escapeQuotesHTML( $j(link).attr('href') )
 			)
 		});		
 		
@@ -448,6 +448,16 @@ mw.Smil.prototype = {
 		).remove();
 		
 		return $html;
+	},
+	getTitleKey: function( smilElement ){
+		// check directly for the attribute: 
+		if( $j(smilElement).attr('apititlekey') ){
+			return  $j(smilElement).attr('apititlekey') ;
+		}
+		if( $j(smilElement).find("param[name='apiTitleKey']").length ) {
+			return $j(smilElement).find("param[name='apiTitleKey']").attr('value');
+		}
+		return false;
 	},
 	/**
 	 * Get the smil resource type based on nodeName and type attribute

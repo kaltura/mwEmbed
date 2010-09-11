@@ -151,8 +151,16 @@ class ResourceLoader {
 
 				// Output the current language resource js
 				$this->output .= NamedResourceLoader::getLanguageJs( $this->langCode );
-
-				// Add the required core mwEmbed style sheets Commted out
+				
+				// Output the localSettings.js
+				$localSettingsJsPath = realpath( dirname( __FILE__ ) ) . '/localSettings.js';
+				if( is_file( $localSettingsJsPath ) ){
+					wfSuppressWarnings();
+					$this->output .= file_get_contents( $localSettingsJsPath );
+					wfRestoreWarnings();
+				}								
+	
+				// Add the required core mwEmbed style sheets removed for now
 				// because when creating stand alone packages js package with css
 				// the paths get messed up.
 				/*

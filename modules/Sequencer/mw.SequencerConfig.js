@@ -27,8 +27,15 @@
 		// Default image duration
 		"Sequencer.AddMediaImageDuration" : 2,
 		
-		// Default image source width
-		"Sequencer.AddMediaImageWidth" : 640,	
+		// NOTE these values 800x600 are the default display 
+		// size for assets in wikimedia commons and helps avoid server side resizes 
+		// and gives the asset a better chance of being served from the cache
+		
+		// Default import image source width
+		"Sequencer.AddMediaImageWidth" : 800,
+		
+		// Default import image source height
+		"Sequencer.AddMediaImageHeight" : 600,	
 		
 		// If a asset can be directly added to the sequence by url
 		// ( if disabled only urls that are part addMedia can be added ) 

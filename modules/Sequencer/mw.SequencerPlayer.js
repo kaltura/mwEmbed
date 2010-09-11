@@ -58,7 +58,7 @@ mw.SequencerPlayer.prototype = {
 		});	
 	},
 	
-	previewClip: function( smilClip ){
+	previewClip: function( smilClip, donePreivewCallback ){
 		var _this = this;
 		// Seek and play start of smilClip  
 		var startOffset = $j( smilClip ).data('startOffset');
@@ -67,6 +67,8 @@ mw.SequencerPlayer.prototype = {
 		this.getEmbedPlayer().setCurrentTime( startOffset, function(){
 			mw.log("SequencerPlayer::Preview clip: " + startOffset + ' to ' + clipEndTime);
 			_this.getEmbedPlayer().play( clipEndTime );
+			// bind end of segment action
+			$j( _this.sequencer.getEmbedPlayer() ).bind( 'playSegmentEnd', donePreivewCallback);
 		})
 	},
 	

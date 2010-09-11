@@ -22,14 +22,14 @@ mw.SequencerActionsView.prototype = {
 		// For now just show the sequence output
 		$viewSmilXmlDialog = mw.addDialog({
 			'title' : gM('mwe-sequencer-menu-view-smilxml'),
-			'dragable': true,	
-			'height' : 480,
-			'width' : 640,
-			'resizable': true,		
-			'content' : $j('<div />')
+			'dragable': true,
+			'width' : 800,
+			'height' : 600,	
+			'resizable': false,		
+			'content' : $j('<div />')				
 				.append(
 				// Add a loading div
-				$j('<div />')
+				$j('<div />')			
 				.addClass('syntaxhighlighter_loader')
 				.loadingSpinner(),
 				
@@ -47,6 +47,7 @@ mw.SequencerActionsView.prototype = {
 		// load and run the syntax highlighter:
 		$j( $viewSmilXmlDialog.find('pre') ).syntaxHighlighter( function(){
 			$viewSmilXmlDialog.find('.syntaxhighlighter_loader').remove();
+			$viewSmilXmlDialog.find('.syntaxhighlighter').css('height', '520px');
 			$viewSmilXmlDialog.find('pre').fadeIn();
 		});
 		

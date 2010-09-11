@@ -2153,18 +2153,24 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				
 			}
 			if ( ! langLoaderRequest.length ) {
-				callback();
+				addLocalSettings();
 				return ;
 			}
 				
 			// Load the launage if set
 			mw.load( langLoaderRequest, function(){			
-				mw.log( 'Done moduleLoaderCheck request' );
-				// Set the mwModuleLoaderCheckFlag flag to true
-				mwModuleLoaderCheckFlag = true;
-				callback();
+				mw.log( 'Done moduleLoaderCheck request' );			
+				addLocalSettings();
 			} );
 		}		
+		function addLocalSettings(){
+			mw.log("Load loacal settings")
+			mw.load( 'localSettings.js', function(){
+				// Set the mwModuleLoaderCheckFlag flag to true
+				mwModuleLoaderCheckFlag = true;		
+				callback();
+			})
+		}
 					
 	}
 	

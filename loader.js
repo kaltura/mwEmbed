@@ -53,11 +53,9 @@ var mwEnabledModuleList = [
 	'Sequencer',
 	'TimedText',
 	'SmilPlayer',
-	'PlayerThemer',
 	'Playlist',	
 	'SwarmTransport',
-	'SyntaxHighlighter',
-	'KalturaSupport'
+	'SyntaxHighlighter'
 ];
 
 /**
