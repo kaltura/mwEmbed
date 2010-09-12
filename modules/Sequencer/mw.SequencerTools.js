@@ -16,7 +16,7 @@ mw.SequencerTools.prototype = {
 	},
 	
 	// The current smil clip ( lazy init )
-	currentSmilClip: null,
+	currentsmilElement: null,
 	
 	// The current selected tool ( lazy init )
 	currentToolId: null,
@@ -27,10 +27,10 @@ mw.SequencerTools.prototype = {
 			'editWidgets' : [ 'trimTimeline' ], 
 			'editableAttributes' : ['clipBegin','dur' ],			
 			'contentTypes': ['video', 'audio']
-		},
+		},			
 		'duration':{			 
 			'editableAttributes' : [ 'dur' ],
-			'contentTypes': ['img']
+			'contentTypes': ['img', 'cdata_html', 'mwtemplate']
 		},
 		'panzoom' : {
 			'editWidgets' : ['panzoom'],
@@ -38,9 +38,14 @@ mw.SequencerTools.prototype = {
 			'contentTypes': [ 'img'], // xxx todo add video support
 			'animate' : 'true'
 		},
+		'templateedit':{
+			'editWidgets' : ['edittemplate'],
+			'editableAttributes' : [ 'apititlekey' ],
+			'contentTypes' : ['mwtemplate']
+		},
 		'transitions' : {
 			'editableAttributes' : [ 'transIn', 'transOut' ],
-			'contentTypes': ['video', 'img' ]
+			'contentTypes': ['video', 'img', 'mwtemplate' ]
 		}
 	},
 	editableAttributes:{		
@@ -53,10 +58,15 @@ mw.SequencerTools.prototype = {
 			'title' : gM('mwe-sequencer-clip-duration' )
 		},
 		'panZoom' :{
-			'type' : 'display',
+			'type' : 'string',
 			'inputSize' : 15,
 			'title' : gM('mwe-sequencer-clip-panzoom' ),
-			'defaultValue' : '0, 0, 100%, 100%'
+			'defaultValue' : '0%, 0%, 100%, 100%'
+		},
+		'apititlekey' : {
+			'type' : 'string',
+			'inputSize' : 30,
+			'title' : gM('mwe-sequencer-template-name' )
 		},
 		'transIn' : {
 			'type' : 'select',
@@ -65,17 +75,48 @@ mw.SequencerTools.prototype = {
 		'transOut' : {
 			'type' : 'select',
 			'selectValues' : [ 'fadeFromColor', 'crossfade' ]
+		},
+		// Special child node type
+		'param' : {
+			'type' : 'childParam',
+			'inputSize' : 30
 		}
 	},
 	editableTypes: {
-		'display': {
-			update: function( _this, smilClip, attributeName, value){
-				$j( smilClip ).attr( attributeName, value);
+		'childParam': {
+			update: function( _this, smilElement, paramName, value){				
+				// Check if the param already exists
+				$paramNode = $j( smilElement ).find( "[name='"+ paramName + "']" );				
+				if( $paramNode.length == 0){
+					$j( smilElement ).append(
+						$j('<param />').attr({
+							'name': paramName,
+							'value' : value
+						})
+					)
+				} else {
+					// Update the param value
+					$paramNode.attr( 'value', value);
+				}
+				mw.log("editableTypes::Should have updated smilElement param: " + paramName 
+						+ ' to : ' + $j( smilElement ).find( "[name='"+ paramName + '"]' ).attr( 'value') );				
+			},
+			getSmilVal: function( _this, smilElement, paramName ){							
+				$paramNode =  $j( smilElement ).find( "[name='"+ paramName + "']" );
+				if( $paramNode.length == 0){
+					return '';
+				}
+				return $paramNode.attr('value');
+			}
+		},
+		'string': {
+			update: function( _this, smilElement, attributeName, value){
+				$j( smilElement ).attr( attributeName, value);
 				// update the display
 			},
-			getSmilVal : function( _this, smilClip, attributeName ){
-				if( $j( smilClip ).attr( attributeName ) ){
-					return $j( smilClip ).attr( attributeName ) 
+			getSmilVal : function( _this, smilElement, attributeName ){
+				if( $j( smilElement ).attr( attributeName ) ){
+					return $j( smilElement ).attr( attributeName ) 
 				}
 				// Check for a default value
 				if( _this.editableAttributes[ attributeName ].defaultValue  ){
@@ -85,44 +126,106 @@ mw.SequencerTools.prototype = {
 			}
 		},
 		'time' : {
-			update : function( _this, smilClip, attributeName, value){
+			update : function( _this, smilElement, attributeName, value){
 				// Validate time
 				var seconds = _this.sequencer.getSmil().parseTime( value );
-				$j( smilClip ).attr( attributeName, mw.seconds2npt( seconds ) );
+				$j( smilElement ).attr( attributeName, mw.seconds2npt( seconds ) );
 				// Update the clip duration :
 				_this.sequencer.getEmbedPlayer().getDuration( true );
 				
 				// Seek to "this clip" 
 				_this.sequencer.getEmbedPlayer().setCurrentTime( 
-					$j( smilClip ).data('startOffset')
+					$j( smilElement ).data('startOffset')
 				);								
 			},			
-			getSmilVal : function( _this, smilClip, attributeName ){
+			getSmilVal : function( _this, smilElement, attributeName ){
 				var smil = _this.sequencer.getSmil();	
 				return mw.seconds2npt( 
 						smil.parseTime( 
-							$j( smilClip ).attr( attributeName ) 
+							$j( smilElement ).attr( attributeName ) 
 						)
 					);
 			}
 		}
 	},
 	editActions: {
+		'sourcePage':{
+			'displayCheck': function( _this, smilElement ){
+				if( _this.sequencer.getSmil().getTitleKey( smilElement ) 
+					&& 
+					_this.sequencer.getServer().isConfigured() 
+				){
+					return true;
+				}
+				return false;							
+			},
+			'icon': 'info',
+			'title': gM('mwe-sequencer-asset-source'),
+			'action' : function( clickButton, _this, smilElement ){				
+				// Update the link
+				$j( clickButton )
+				.attr({
+					'href': _this.sequencer.getServer().getAssetViewUrl(
+							$j(smilElement).find("param[name='apiTitleKey']").attr('value')
+							)
+					,
+					'target' : '_new'
+				})
+				// follow the link the link
+				return true;
+			}	
+		},			
 		'preview' : {
 			'icon' : 'play',
 			'title' : gM('mwe-sequencer-preview'),
-			'action': function( _this, smilClip ){				
-				_this.sequencer.getPlayer().previewClip( smilClip );
+			'action': function( clickButton, _this, smilElement ){				
+				_this.sequencer.getPlayer().previewClip( smilElement, function(){
+					// preview done, restore original state:
+					$j(clickButton).replaceWith ( 
+						_this.getEditAction( smilElement, 'preview' ) 
+					)
+				});
 				// xxx todo  update preview button to "pause" / "play" 
+				var doPause = function(){
+					$j( clickButton ).find( '.ui-icon')
+						.removeClass( 'ui-icon-pause' )
+						.addClass( 'ui-icon-play' )
+					$j( clickButton ).find('.btnText').text(
+						gM('mwe-sequencer-preview-continue')
+					)
+					_this.sequencer.getEmbedPlayer().pause();
+				}
+				var doPlay = function(){
+					// setup pause button: 
+					$j( clickButton ).find( '.ui-icon')
+						.removeClass( 'ui-icon-play' )
+						.addClass( 'ui-icon-pause' )
+					$j( clickButton ).find('.btnText').text(
+						gM('mwe-sequencer-preview-pause')
+					)
+					// keep the target preview end time: 
+					// xxx should probably refactor this.. a bit of abstraction leak here: 
+					_this.sequencer.getEmbedPlayer().play(
+						_this.sequencer.getEmbedPlayer().playSegmentEndTime
+					);
+				}
+				$j( clickButton ).unbind().click(function(){
+					if( _this.sequencer.getEmbedPlayer().paused ){
+						doPlay();
+					} else {
+						doPause();						
+					}					
+				})
+				doPlay();
 			}
-		},
+		},		
 		'cancel' : {
 			'icon': 'close',
-			'title' : gM('mwe-cancel'),
-			'action' : function( _this, smilClip ){
+			'title' : gM('mwe-sequencer-clip-cancel-edit'),
+			'action' : function(clickButton,  _this, smilElement ){
 				$j.each( 
 					_this.getToolSet( 
-						_this.sequencer.getSmil().getRefType( smilClip ) 
+						_this.sequencer.getSmil().getRefType( smilElement ) 
 					), 
 					function( inx, toolId ){
 						var tool = _this.tools[toolId];
@@ -130,7 +233,7 @@ mw.SequencerTools.prototype = {
 							var attributeName = tool.editableAttributes[i]; 
 							var $editToolInput = $j('#' + _this.getEditToolInputId( toolId, attributeName ) );  					
 							// Restore all original attribute values
-							smilClip.attr( attributeName, $editToolInput.data('initialValue') );
+							smilElement.attr( attributeName, $editToolInput.data('initialValue') );
 						}				
 					}
 				);
@@ -140,7 +243,7 @@ mw.SequencerTools.prototype = {
 				
 				// Update the embed player
 				_this.sequencer.getEmbedPlayer().setCurrentTime( 
-					$j( smilClip ).data('startOffset')
+					$j( smilElement ).data('startOffset')
 				);
 
 				// Close / empty the toolWindow
@@ -149,18 +252,109 @@ mw.SequencerTools.prototype = {
 		}
 	},
 	editWidgets: {
+		'edittemplate':{
+			'onChange' : function( _this, smilElement, target ){
+				// Clear the smilElement template cache: 
+				$j( smilElement ).data('templateHtmlCache', null);
+				// Re draw the smilElement in the player
+				var smil = _this.sequencer.getSmil();
+				$playerTarget = $j('#' + smil.getSmilElementPlayerID( smilElement ) );
+				$playerTarget.loadingSpinner();
+				smil.getLayout().getSmilTemplateHtml( smilElement, $playerTarget, function(){
+					mw.log("SequencerTools::editWidgets: smil template updated");
+				});
+			},
+			'draw': function( _this, target, smilElement ){
+				// Parse the set of templates from the template text cache
+				$j( target ).loadingSpinner();
+			
+				if( ! $j( smilElement).attr('apititlekey') ){
+					mw.log("Error: can't grab template without title key")
+					return ;
+				}
+				// Get the template wikitext 
+				_this.sequencer
+				.getServer()
+				.getTemplateText( $j( smilElement).attr('apititlekey'), function( templateText ){
+					mw.log("GotTemplateText: " + templateText );
+					if( ! templateText || typeof templateText != 'string' ){
+						mw.log("Error: could not get wikitext form titlekey: " +  $j( smilElement).attr('apititlekey'))
+						return ;
+					}
+					$j( target ).empty().append( 
+						$j('<h3 />').text( gM('mwe-sequencer-edittemplate-params') )
+					)
+					
+					// This is not supposed to be perfect .. 
+					// just get you 'most' of the input vars 'most' of the time via the greedy regEx:
+					var templateVars = templateText.match(/\{\{\{([^\}]*)\}\}\}/gi);							
+					var cleanTemplateParams = {};		
+					
+					for( i =0;i<templateVars.length; i++ ){
+						var tVar = templateVars[i];
+						// Remove all {{{ and }}}
+						tVar = tVar.replace(/\{\{\{/, '' ).replace( /\}\}\}/, '');
+						// Check for | operator
+						if( tVar.indexOf("|") != -1 ){
+							// Only the first version of the template var
+							tVar = tVar.split( '|')[0];
+						}
+						cleanTemplateParams[ tVar ] = true;
+					}					
+					// Output input boxes for each template var as a param
+					for( var paramName in cleanTemplateParams ){
+						$j( target ).append( 
+							_this.getEditableAttribute(
+									smilElement, 
+									'edittemplate', 
+									'param',  
+									paramName
+							)
+							.find('input')
+							// Bind the change event:
+							.change(function(){
+								_this.editWidgets.edittemplate.onChange(
+									_this, 
+									smilElement, 
+									target
+								)
+							})
+							.parent()
+							,							
+							$j('<div />')
+							.css('clear', 'both')
+						)
+					}
+					
+					
+				});
+			}
+		},
 		'panzoom' : {
-			'onChange': function( _this, target, smilClip ){
+			'onChange': function( _this, smilElement, target ){
 				var panZoomVal = $j('#' +_this.getEditToolInputId( 'panzoom', 'panZoom')).val();
 				mw.log("panzoom change:" + panZoomVal );
+				
 				// Update on the current smil clip display:
 				_this.sequencer.getSmil()
 				.getLayout()
 				.panZoomLayout(
-					smilClip
+					smilElement
 				);
+				var $thumbTraget  = $j( '#' + _this.sequencer.getTimeline().getTimelineClipId( smilElement ) ).find('.thumbTraget');
+				// Update the timeline clip display
+				// xxx this should be abstracted to timeline handler for clip updates
+				_this.sequencer.getSmil()
+				.getLayout()
+				.panZoomLayout(
+					smilElement, 
+					$thumbTraget,
+					$thumbTraget.find('img').get(0)
+				)
+				// Register the change for undo redo
+				_this.sequencer.getActionsEdit().registerEdit();
 			},
-			'draw': function( _this, target, smilClip ){				
+			'draw': function( _this, target, smilElement ){				
 				var orginalHelperCss = {
 					'position' : 'absolute',
 					'width' : 100,
@@ -172,7 +366,7 @@ mw.SequencerTools.prototype = {
 				// Add a input box binding: 				
 				$j('#' +_this.getEditToolInputId( 'panzoom', 'panZoom'))
 				.change(function(){
-					_this.editWidgets.panzoom.onChange( _this, target, smilClip);
+					_this.editWidgets.panzoom.onChange( _this, smilElement, target );
 				})
 				
 				$j( target ).append( 
@@ -193,7 +387,7 @@ mw.SequencerTools.prototype = {
 						// Restore default SMIL setting
 						_this.editableTypes['display'].update(
 							_this, 
-							smilClip, 
+							smilElement, 
 							'panzoom',
 							_this.editableAttributes['panzoom'].defaultValue
 						)
@@ -220,7 +414,7 @@ mw.SequencerTools.prototype = {
 				);
 				var startPanZoomVal = '';
 				var setStartPanZoomVal = function(){
-					 startPanZoomVal = $j( smilClip ).attr( 'panZoom');
+					 startPanZoomVal = $j( smilElement ).attr( 'panZoom');
 					if(! startPanZoomVal ){
 						startPanZoomVal = _this.editableAttributes['panZoom'].defaultValue;
 					}	
@@ -230,11 +424,11 @@ mw.SequencerTools.prototype = {
 					var pz = startPanZoomVal.split(',');
 					// Set the new percent offset to x/2 
 					if( layout.left ){
-						pz[0] = ( parseInt( pz[0] ) - ( layout.left ) ) + '%';
+						pz[0] = ( parseInt( pz[0] ) - ( layout.left / 4 ) ) + '%';
 					}
 					
 					if( layout.top ){
-						pz[1] = ( parseInt( pz[1] ) - ( layout.top ) )+ '%';
+						pz[1] = ( parseInt( pz[1] ) - ( layout.top / 4 ) )+ '%';
 					}
 					
 					if( layout.width ) {						
@@ -243,16 +437,17 @@ mw.SequencerTools.prototype = {
 						// right now only keep aspect is supported do size hack::
 						pz[3] = parseInt( pz[2] )  * _this.sequencer.getSmil().getLayout().getTargetAspectRatio();
 						// only have 2 significant digits
-						pz[3] = ( Math.round( pz[3]* 100 ) / 100 ) + '%';						
-					}
-					// Trim all the values
+										
+					}					
+					// Trim and round all % values
 					for(var i=0; i < pz.length; i++){
+						pz[i] = ( Math.round( parseInt( pz[i] ) * 1000 ) / 1000 ) + '%';		
 						pz[i] = $j.trim( pz[i] );
 					}
 					var smilPanZoomValue = pz.join(', ');					
 					
 					// Update the smil DOM: 
-					$j( smilClip ).attr( 'panZoom', smilPanZoomValue );
+					$j( smilElement ).attr( 'panZoom', smilPanZoomValue );
 					
 					// Update the user input tool input value:
 					$j('#' +_this.getEditToolInputId( 'panzoom', 'panZoom')).val( smilPanZoomValue );
@@ -261,7 +456,7 @@ mw.SequencerTools.prototype = {
 					_this.sequencer.getSmil()
 					.getLayout()
 					.panZoomLayout(
-						smilClip
+						smilElement						
 					);
 				}
 				// Add bindings
@@ -281,6 +476,8 @@ mw.SequencerTools.prototype = {
 						// run the onChange ?
 						// Restore original css for the layout helper 
 						$j(this).css( orginalHelperCss )
+						// trigger the 'change'
+						_this.editWidgets.panzoom.onChange( _this, smilElement, target );
 					}
 				})
 				.css('cursor', 'move')
@@ -301,13 +498,15 @@ mw.SequencerTools.prototype = {
 					stop: function( event, ui){						
 						// Restore original css
 						$j(this).css( orginalHelperCss )
+						// trigger the change
+						_this.editWidgets.panzoom.onChange( _this, smilElement, target );
 					}
 				})
 				
 			}
 		},
 		'trimTimeline' : {
-			'onChange': function( _this, target, smilClip ){				
+			'onChange': function( _this, smilElement, target){				
 				var smil = _this.sequencer.getSmil();
 				// Update the preview thumbs
 				
@@ -317,9 +516,9 @@ mw.SequencerTools.prototype = {
 					var clipDur = $j('#editTool_trim_dur').val();
 					if( clipDur ){
 						// Render a thumbnail for the updated duration  
-						smil.getLayout().drawElementThumb( 
+						smil.getLayout().drawSmilElementToTarget( 							
+							smilElement,
 							$j( target ).find('.trimEndThumb'),
-							smilClip,
 							clipDur
 						);
 					}
@@ -329,21 +528,21 @@ mw.SequencerTools.prototype = {
 				if( !clipBeginTime ){
 					$j(target).find('.trimStartThumb').hide();
 				} else {
-					mw.log("Should update trimStartThumb::" +  $j(smilClip).attr('clipBegin') );
+					mw.log("Should update trimStartThumb::" +  $j(smilElement).attr('clipBegin') );
 					// Render a thumbnail for relative start time = 0  
-					smil.getLayout().drawElementThumb( 
-						$j( target ).find('.trimStartThumb'), 
-						smilClip, 
+					smil.getLayout().drawSmilElementToTarget( 						
+						smilElement, 
+						$j( target ).find('.trimStartThumb'),
 						0,
 						updateDurationThumb()
 					)
 				}
 			},
 			// Return the trimTimeline edit widget
-			'draw': function( _this, target, smilClip ){
+			'draw': function( _this, target, smilElement ){
 				var smil = _this.sequencer.getSmil();
 				// check if thumbs are supported 
-				if( _this.sequencer.getSmil().getRefType( smilClip ) == 'video' ){ 
+				if( _this.sequencer.getSmil().getRefType( smilElement ) == 'video' ){ 
 					$j(target).append(
 						$j('<div />')					
 						.addClass( 'trimStartThumb ui-corner-all' ),					
@@ -352,39 +551,67 @@ mw.SequencerTools.prototype = {
 						$j('<div />').addClass('ui-helper-clearfix') 
 					)			
 				}
+				// The local scope fullClipDuration
+				var fullClipDuration = null;
+				
+				// Some slider functions
+				var sliderToTime = function( sliderval ){
+					return parseInt( fullClipDuration * ( sliderval / 1000 ) );
+				}
+				var timeToSlider = function( time ){					
+					return parseInt( ( time / fullClipDuration ) * 1000 );
+				}
+				
+				
+				var onInputChange = function( sliderIndex, timeValue ){
+					// Register the change
+					_this.editWidgets.trimTimeline.onChange( _this, smilElement, target);
+					// Update the slider
+					if( fullClipDuration ){
+						$j('#'+_this.sequencer.id + '_trimTimeline' )
+							.slider( 
+									"values", 
+									sliderIndex, 
+									timeToSlider( timeValue )
+							);					
+					}
+				}
 				
 				// Add a trim binding: 				 
-				$j('#' + _this.getEditToolInputId( 'trim', 'clipBegin') +
-				   ',#' + _this.getEditToolInputId( 'trim', 'dur') )
-				.change( function(){
-					_this.editWidgets.trimTimeline.onChange( _this, target, smilClip);
-				})
+				$j('#' + _this.getEditToolInputId( 'trim', 'clipBegin') )
+				.change( function(){					
+					var timeValue = smil.parseTime(  $j(this).val() );
+					onInputChange( 0, timeValue);
+				});
 				
-				// Update the thumbnails:
-				_this.editWidgets.trimTimeline.onChange( _this, target, smilClip);
+				 $j('#' + _this.getEditToolInputId( 'trim', 'dur') ) 
+				.change( function(){			
+					var timeValue = smil.parseTime(  $j(this).val() ) + 
+					 smil.parseTime( $j('#' + _this.getEditToolInputId( 'trim', 'clipBegin') ).val() );
+					onInputChange( 1, timeValue );
+				});
+				 
+				// Update the thumbnails:				
+				_this.editWidgets.trimTimeline.onChange( _this, smilElement, target);
 				
 				// Get the clip full duration to build out the timeline selector
-				smil.getBody().getClipAssetDuration( smilClip, function( fullClipDuration ) {
-					
-					var sliderToTime = function( sliderval ){
-						return parseInt( fullClipDuration * ( sliderval / 1000 ) );
-					}
-					var timeToSlider = function( time ){
-						return parseInt( ( time / fullClipDuration ) * 1000 );
-					}
+				smil.getBody().getClipAssetDuration( smilElement, function( clipDuration ) {
+					// update the local scope global 
+					fullClipDuration = clipDuration;
+				
 					var startSlider = timeToSlider( smil.parseTime( $j('#editTool_trim_clipBegin').val() ) );
 					var sliderValues = [
 					    startSlider,
 					    startSlider + timeToSlider( smil.parseTime( $j('#editTool_trim_dur').val() ) )
 					];								
-					// Return a trim tool binded to smilClip id update value events. 
+					// Return a trim tool binded to smilElement id update value events. 
 					$j(target).append(
 						$j('<div />')
 						.attr( 'id', _this.sequencer.id + '_trimTimeline' )
 						.css({
 							'position': 'absolute',
-							'left' : '15px',
-							'right' : '15px',
+							'left' : '25px',
+							'right' : '35px',
 							'margin': '5px'
 						})
 						.slider({
@@ -405,13 +632,13 @@ mw.SequencerTools.prototype = {
 								var attributeValue = 0, sliderIndex  = 0;
 								
 								// Update clipBegin 
-								_this.editableTypes['time'].update( _this, smilClip, 'clipBegin',  sliderToTime( ui.values[ 0 ] ) );
+								_this.editableTypes['time'].update( _this, smilElement, 'clipBegin',  sliderToTime( ui.values[ 0 ] ) );
 								
 								// Update dur
-								_this.editableTypes['time'].update( _this, smilClip, 'dur',   sliderToTime( ui.values[ 1 ]- ui.values[0] ) );
+								_this.editableTypes['time'].update( _this, smilElement, 'dur',   sliderToTime( ui.values[ 1 ]- ui.values[0] ) );
 																				
 								// update the widget display
-								_this.editWidgets.trimTimeline.onChange( _this, target, smilClip);
+								_this.editWidgets.trimTimeline.onChange( _this, smilElement, target);
 								
 								// Register the edit state for undo / redo 
 								_this.sequencer.getActionsEdit().registerEdit();
@@ -436,7 +663,7 @@ mw.SequencerTools.prototype = {
 		)
 	},
 	getEditToolInputId: function( toolId, attributeName){
-		return 'editTool_' + toolId + '_' + attributeName;
+		return 'editTool_' + toolId + '_' + attributeName.replace('/\s/', '');
 	},
 	/**
 	 * update the current displayed tool ( when an undo, redo or history jump changes smil state ) 
@@ -461,12 +688,12 @@ mw.SequencerTools.prototype = {
 		}
 		return toolSet;
 	},
-	drawClipEditTools: function( smilClip, selectedToolId ){
+	drawClipEditTools: function( smilElement, selectedToolId ){
 		var _this = this;
 		
 		// Update the current clip and tool :
-		if( smilClip ){
-			this.setCurrentSmilClip( smilClip );
+		if( smilElement ){
+			this.setCurrentsmilElement( smilElement );
 		}
 		if( selectedToolId ){
 			this.setCurrentToolId( selectedToolId );
@@ -485,13 +712,13 @@ mw.SequencerTools.prototype = {
 		this.sequencer.getEditToolTarget().empty().append(
 			$toolsContainer
 		);
-		// Get the entire tool set based on what "ref type" smilClip is:
+		// Get the entire tool set based on what "ref type" smilElement is:
 		var toolSet =  this.getToolSet(  
 							this.sequencer.getSmil().getRefType( 
-								this.getCurrentSmilClip() 
+								this.getCurrentsmilElement() 
 							) 
 						);
-		mw.log( 'Adding ' + toolSet.length + ' tools for ' + this.sequencer.getSmil().getRefType( this.getCurrentSmilClip() ) );
+		mw.log( 'Adding ' + toolSet.length + ' tools for ' + this.sequencer.getSmil().getRefType( this.getCurrentsmilElement() ) );
 		
 		$j.each( toolSet, function( inx, toolId ){
 			
@@ -526,7 +753,7 @@ mw.SequencerTools.prototype = {
 			for( var i=0; i < tool.editableAttributes.length ; i++ ){
 				attributeName = tool.editableAttributes[i];
 				$toolContainer.append(
-					_this.getEditableAttribute( smilClip, toolId, attributeName )
+					_this.getEditableAttribute( smilElement, toolId, attributeName )
 				);
 			}
 			
@@ -550,7 +777,7 @@ mw.SequencerTools.prototype = {
 					_this.editWidgets[editWidgetId].draw( 
 						_this, 
 						$j( '#editWidgets_' + editWidgetId ),
-						smilClip
+						smilElement
 					)
 					// Output a float divider: 
 					$toolContainer.append( $j('<div />').addClass( 'ui-helper-clearfix' ) );
@@ -559,23 +786,28 @@ mw.SequencerTools.prototype = {
 		});
 		
 		// Add tab bindings
-		$toolsContainer.tabs({
-			select: function(event, ui) {
-			
-			}
-		})
+		$toolsContainer.tabs();
+		
 		// Build out global edit Actions buttons after the container
 		for( var editActionId in this.editActions ){		
-			$toolsContainer.after( 
-				this.getEditAction( smilClip, editActionId )
-			)	
+			// Check if the edit action has a conditional display:
+			var displayEidtAction = true;
+			
+			if( this.editActions[ editActionId ].displayCheck ){
+				displayEidtAction =  this.editActions[ editActionId ].displayCheck( _this,  smilElement );
+			}			
+			if( displayEidtAction ){
+				$toolsContainer.after( 
+					this.getEditAction( smilElement, editActionId )
+				)	
+			}
 		}
 	},
-	getCurrentSmilClip: function(){
-		return this.currentSmilClip;
+	getCurrentsmilElement: function(){
+		return this.currentsmilElement;
 	},
-	setCurrentSmilClip: function( smilClip ){
-		this.currentSmilClip = smilClip;
+	setCurrentsmilElement: function( smilElement ){
+		this.currentsmilElement = smilElement;
 	},
 	getCurrentToolId: function(){
 		return this.currentToolId;
@@ -584,7 +816,7 @@ mw.SequencerTools.prototype = {
 		this.currentToolId = toolId;
 	},
 	
-	getEditAction: function( smilClip, editActionId ){		
+	getEditAction: function( smilElement, editActionId ){		
 		if(! this.editActions[ editActionId ]){
 			mw.log("Error: getEditAction: " + editActionId + ' not found ');
 			return ;
@@ -600,12 +832,12 @@ mw.SequencerTools.prototype = {
 				'margin': '5px'
 			})
 			.click( function(){
-				editAction.action( _this, smilClip );
+				return editAction.action( this, _this, smilElement );
 			})
 		return $actionButton;
 	},
 	/* get the editiable attribute input html */
-	getEditableAttribute: function( smilClip, toolId, attributeName ){
+	getEditableAttribute: function( smilElement, toolId, attributeName, paramName ){
 		if( ! this.editableAttributes[ attributeName ] ){
 			mw.log("Error: editableAttributes : " + attributeName + ' not found');
 			return; 
@@ -617,15 +849,21 @@ mw.SequencerTools.prototype = {
 			mw.log(" Error: No editableTypes interface for " + editType);
 			return ;	
 		}
+		// Set the update key to the paramName if provided:
+		var updateKey = ( paramName ) ? paramName : attributeName;
+		
 		var initialValue =  _this.editableTypes[ editType ].getSmilVal(
 			_this, 
-			smilClip, 
-			attributeName
+			smilElement, 
+			updateKey
 		);
 		// Set the default input size 
 		var inputSize = ( _this.editableAttributes[ attributeName ].inputSize)? 
 				_this.editableAttributes[ attributeName ].inputSize : 6;
-		
+
+		// Set paramName based attributes: 
+		var attributeTitle = ( editAttribute.title ) ? editAttribute.title : paramName + ':';
+
 		return $j( '<div />' )
 			.css({
 				'float': 'left',
@@ -639,22 +877,22 @@ mw.SequencerTools.prototype = {
 			.append( 
 				$j('<span />')
 				.css('margin', '5px')
-				.text( editAttribute.title ),
+				.text( attributeTitle ),
 				
 				$j('<input />')
 				.attr( {
-					'id' : _this.getEditToolInputId( toolId, attributeName),
+					'id' : _this.getEditToolInputId( toolId, updateKey ),
 					'size': inputSize
 				})
 				.data('initialValue', initialValue )
 				.sequencerInput( _this.sequencer )
 				.val( initialValue )
-				.change(function(){					
+				.change(function(){							
 					// Run the editableType update function: 
 					_this.editableTypes[ editType ].update( 
 							_this, 
-							smilClip, 
-							attributeName, 
+							smilElement, 
+							updateKey, 
 							$j( this ).val() 
 					);				
 					// widgets can bind directly to this change action. 					

@@ -177,7 +177,7 @@ mw.FirefoggRender.prototype = {
 				// Don't block on render
 				setTimeout( function(){
 					_this.doNextFrame();
-				},1 )
+				}, 10 );
 			}
 		}, true /* hide the buffer overlay */ );
 	},
@@ -222,4 +222,4 @@ mw.FirefoggRender.prototype = {
 	    	this.doneRenderCallback( this.fogg )
 	    }
 	}
-}
+};

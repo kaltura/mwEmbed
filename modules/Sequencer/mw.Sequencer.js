@@ -181,6 +181,10 @@ mw.Sequencer.prototype = {
 				mw.log( "Load smil source from server" )
 				// Load from the server
 				_this.getServer().getSmilXml( function( smilXml ){
+					// xxx should parse the sequence data 
+					if( smilXml == '' ){
+						smilXml = _this.getNewSmilXML();
+					}
 					_this.smilSource = _this.getDataUrl( smilXml );
 					callback( _this.smilSource )	
 				})

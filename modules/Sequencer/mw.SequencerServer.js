@@ -6,6 +6,8 @@
 
 //Wrap in mw closure
 ( function( mw ) {
+	
+	var SEQUENCER_PAYLOADKEY = '@gadgetSequencePayload@_$%^%';
 		
 	mw.SequencerServer = function( sequencer ) {
 		return this.init( sequencer );
@@ -35,6 +37,9 @@
 		// Flags if the sequence was successfully saved in this session
 		sequenceSaved: false,
 		
+		//Template cache of wikitext for templates loaded in this session
+		templateTextCache: [],
+		
 		/**
 		 * init the sequencer
 		 */
@@ -59,17 +64,25 @@
 					this.pagePathUrl = serverConfig.pagePathUrl;
 				}
 				
+				if( serverConfig.userName ){
+					this.userName = serverConfig.userName;
+				}
+				
 			}
 			if( this.isConfigured() ){
 				mw.log("Error: Sequencer server needs a full serverConfig to be initialized")
 				return false;
 			}
 		},
-		
-
+		getUserName: function(){
+			return this.userName;
+		},
+		getTitleKey: function(){
+			return this.titleKey;
+		},
 		// Check if the server exists / is configured 
 		isConfigured: function( ){
-			if( !this.apiType || !this.apiUrl || !this.titleKey){
+			if( !this.apiUrl || !this.titleKey){
 				return false;
 			}
 			return true;
@@ -88,14 +101,70 @@
 		 * Get up to date sequence xml from the server 
 		 */
 		getSmilXml: function( callback ){
-			var _this = this; 				
-			mw.getTitleText( this.getApiUrl(), this.titleKey, function( smilXml ){
+			var _this = this; 						
+			mw.getTitleText( this.getApiUrl(), this.getTitleKey(), function( smilPage ){				
+				// Check for remote payload wrapper 
+				// XXX need to support multipe pages in single context 		
+				_this.currentSequencePage =  _this.parseSequencerPage( smilPage );
 				// Cache the latest serverSmil ( for local change checks ) 
 				// ( save requests automatically respond with warnings on other user updates ) 
-				_this.serverSmilXml = smilXml;
-				callback( smilXml );	
+				_this.serverSmilXml = _this.currentSequencePage.sequenceXML ;
+				
+				// Cache the pre / post bits
+				
+				callback( _this.serverSmilXml  );	
 			})
 		},		
+		wrapSequencerWikiText : function( xmlString ){
+			var _this = this;
+			if( !_this.currentSequencePage.pageStart ){
+				 _this.currentSequencePage.pageStart ="\nTo edit this sequence " + 
+					'[{{fullurl:{{FULLPAGENAME}}|withJS=MediaWiki:MwEmbed.js}} enable the sequencer] for this page'; 
+			}
+			return _this.currentSequencePage.pageStart + 
+				"\n\n<!-- " + SEQUENCER_PAYLOADKEY + "\n" + 
+				xmlString +
+				"\n\n " + SEQUENCER_PAYLOADKEY + " -->\n" + 
+				_this.currentSequencePage.pageEnd;
+		},
+		
+		parseSequencerPage : function( pageText ){
+			var _this = this;
+			var startKey = '<!-- ' + SEQUENCER_PAYLOADKEY;
+			var endKey = SEQUENCER_PAYLOADKEY + ' -->';
+			// If the key is not found fail
+			if( !pageText || pageText.indexOf( startKey ) == -1  ||  pageText.indexOf(endKey) == -1 ){
+				mw.log("Error could not find sequence payload");
+				return '';
+			}			
+			// trim the output:
+			return {
+				'pageStart' :   $j.trim( 
+					pageText.substring(0, pageText.indexOf( startKey ) ) 
+				),					
+				'sequenceXML' :  $j.trim( 
+					pageText.substring( pageText.indexOf( startKey ) +  startKey.length, 
+										pageText.indexOf(endKey ) 
+									) 
+				),				
+				'pageEnd' : $j.trim( 
+					pageText.substring( pageText.indexOf(endKey) + endKey.length  )
+				)
+			}
+		},
+		
+		
+		getTemplateText: function( templateTitle, callback ){
+			var _this = this; 	
+			if( this.templateTextCache[templateTitle] ){
+				callback( this.templateTextCache[templateTitle] );
+				return ;
+			}
+			mw.getTitleText( this.getApiUrl(),templateTitle, function( templateText ){
+				_this.templateTextCache[templateTitle] = templateText;
+				callback(templateText);
+			});
+		},
 		// Check if there have been local changes 
 		hasLocalChanges: function(){
 			return ( this.serverSmilXml != this.sequencer.getSmil().getXMLString() );  
@@ -111,7 +180,7 @@
 				callback ( this.saveToken );
 				return ;	
 			}
-			mw.getToken( this.getApiUrl(), this.titleKey, function( saveToken ){
+			mw.getToken( this.getApiUrl(), this.getTitleKey(), function( saveToken ){
 				_this.saveToken = saveToken;
 				callback ( _this.saveToken )
 			});
@@ -130,7 +199,7 @@
 					'action' : 'edit',
 					'summary' : saveSummary,
 					'title' : _this.titleKey,
-					'text' : sequenceXML,
+					'text' : _this.wrapSequencerWikiText( sequenceXML ),
 					'token': token
 				};
 				mw.getJSON( _this.getApiUrl(), request, function( data ) {
@@ -146,7 +215,7 @@
 					}
 				})
 			})
-		},
+		},			
 		
 		/**
 		 * Check if the published file is up-to-date with the saved sequence 
@@ -210,19 +279,92 @@
 				callback( false );
 			});
 		},
+		
+		updateSequenceFileDescription: function( callback ){
+			var _this = this;
+			mw.getToken( _this.getApiUrl(), 'File:' + _this.getVideoFileName(), function( token ){
+				var pageText = ''
+				// Check if we should use commons asset description template:
+				if( mw.parseUri( _this.getApiUrl() ).host == 'commons.wikimedia.org' ){
+					pageText = _this.getCommonsDescriptionText()
+				} else {
+					pageText = _this.getBaseFileDescription()
+				}
+				var request = {
+					'action':'edit',
+					'token' : token, 
+					'title' : 'File:' + _this.getVideoFileName(),
+					'summary' : 'Automated sequence description page for published sequence: ' + _this.getTitleKey(),
+					'text' : pageText
+				};
+				mw.getJSON( _this.getApiUrl(), request, function(data){
+					if( data && data.edit && data.edit.result == "Success"){
+						callback( true );
+					} else {
+						callback( false )
+					}
+				});
+			})
+		},
+		getBaseFileDescription: function(){
+			var _this = this;
+			return 'Published sequence for [['+ _this.getTitleKey() + ']]';
+		},
+		getCommonsDescriptionText: function(){
+			var _this = this;
+			
+			var descText ="{{Information\n" +  
+				"|Description=" + _this.getBaseFileDescription() + "\n" + 
+				"|Source= Sequence Sources assets include:\n";
+			
+			// loop over every asset:
+			this.sequencer.getSmil().getBody().getRefElementsRecurse(null, 0, function( $node ){
+				var $apiKeyParam =  $node.children("param[name='apiTitleKey']"); 
+				if( $apiKeyParam.length ){
+					descText+= "* [[:" + $apiKeyParam.attr('value') + "]]\n";
+				}
+			});
+			var pad2 = function(num){
+				if( parseInt( num ) < 10 ){
+					return '0' + num;
+				}
+				return num;
+			}
+			var dt = new Date();
+			descText+='|Date=' +  dt.getFullYear() + '-' + 
+						pad2(dt.getMonth()+1) + '-' + 
+						pad2(dt.getDate()) + "\n" +
+				"|Author=Last edit by [[User:" + _this.getUserName() + "]]\n" +  
+				"|Permission= {{Cc-by-nc-sa-2.0-dual}}" + "\n" +				
+				"}}";
+			
+			// Add Published Sequence category ( for now )
+			descText += "\n[[Category:Published Sequence]]\n";
+			return descText;
+		},
+		
 		/**
 		 * Get the sequence description page url
 		 * @param {String} Optional Sequence title key
 		 */
 		getSequenceViewUrl: function( titleKey ){
 			if( !titleKey )
-				titleKey = this.titleKey;
+				titleKey = this.getTitleKey();
 			// Check that we have a pagePathUrl config: 
 			if( !this.pagePathUrl ){
 				return false;
 			}
 			return this.pagePathUrl.replace( '$1', 'Sequence:' + titleKey);
 		},
+		
+		getAssetViewUrl: function( titleKey ){
+			// Check that we have a pagePathUrl config: 
+			if( !this.pagePathUrl ){
+				return false;
+			}
+			return this.pagePathUrl.replace( '$1', titleKey );
+		},
+		
 		/**
 		 * Get the sequencer 'edit' url
 		 */
@@ -236,7 +378,7 @@
 		 * @return {String}
 		 */
 		getVideoFileName: function(){
-			return this.titleKey.replace( ':', '-') + '.ogv';
+			return this.getTitleKey().replace( ':', '-') + '.ogv';
 		},
 		
 		// get upload settings runs the callback with the post url and request data 

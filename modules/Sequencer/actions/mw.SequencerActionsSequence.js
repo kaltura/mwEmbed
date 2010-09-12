@@ -167,7 +167,7 @@ mw.SequencerActionsSequence.prototype = {
 		if( !_this.sequencer.getServer().hasLocalChanges() ){		
 			$dialog.html( gM('mwe-sequencer-save-no-changes') );
 			var closeButton = {};
-			closeButton[gM('mwe-ok')]= function(){ $j(this).dialog('close') };
+			closeButton[ gM('mwe-ok') ]= function(){ $j(this).dialog('close') };
 			$dialog.dialog( "option", "buttons", closeButton);	
 			return ;
 		}
@@ -240,6 +240,22 @@ mw.SequencerActionsSequence.prototype = {
 		// give the input focus
 		.find('input').focus()
 	},	
+	renderToDisk: function(){
+		var _this = this;
+		// add a loading dialog
+		var $dialog = mw.addDialog({
+			'resizable':'true',
+			'title' : gM('mwe-sequencer-menu-sequence-publish-desc'),			
+			'content' : gM('mwe-sequencer-loading-publish-render'),
+			'width' : 450,
+			'height' : 470,
+			'draggable' : false,
+			'resizable' : false
+		});		
+		mw.load( ['AddMedia.firefogg','FirefoggRender'], function(){
+			_this.doPublish( $dialog, true );
+		});
+	},
 	/**
 	 * Display the publish dialog 
 	 * ( confirm the user has firefogg and rights to save a new version of the file )
@@ -252,7 +268,9 @@ mw.SequencerActionsSequence.prototype = {
 			'title' : gM('mwe-sequencer-menu-sequence-publish-desc'),			
 			'content' : gM('mwe-sequencer-loading-publish-render'),
 			'width' : 450,
-			'height' : 400
+			'height' : 470,
+			'draggable' : false,
+			'resizable' : false
 		});
 		
 		// Check if we have unsaved changes ( don't publish unsaved changes )
@@ -287,11 +305,8 @@ mw.SequencerActionsSequence.prototype = {
 			}
 		});
 	},
-	doPublish: function( $dialog ){		
+	doPublish: function( $dialog, localFile ){		
 		var _this = this;
-		// disable drag and resize
-		$dialog.dialog("option", "draggable", false )
-		$dialog.dialog( "option", "resizable", false );
 		
 		// Get a Firefogg object to check if firefogg is installed
 		var myFogg = new mw.Firefogg( {
@@ -344,7 +359,7 @@ mw.SequencerActionsSequence.prototype = {
 			// Start up the render
 			var foggRender = $j('#publishVideoTarget').firefoggRender({
 				'statusTarget' : '#firefoggStatusTarget',
-				'saveToLocalFile' : false,
+				'saveToLocalFile' : localFile,
 				'onProgress' : function( progress ){
 					var progressPrecent = ( Math.round( progress * 10000 ) / 100 ); 
 					$j('#firefoggPercentDone').text( 
@@ -358,7 +373,11 @@ mw.SequencerActionsSequence.prototype = {
 					$j("#firefoggProgressbar .ui-progressbar-value").css('width', Math.round( progress * 10000 ) / 100 + '%');
 				},
 				'doneRenderCallback': function( fogg ){
-					_this.uploadRenderedVideo( $dialog, fogg );
+					if( localFile ){
+						$dialog.html( gM('mwe-sequencer-save_done') );
+					} else {
+						_this.uploadRenderedVideo( $dialog, fogg );
+					}
 				}
 			});
 			var buttons = {};
@@ -368,7 +387,10 @@ mw.SequencerActionsSequence.prototype = {
 			}
 			// Add cancel button 
 			$dialog.dialog( "option", "buttons", buttons );	
-			foggRender.doRender();
+			if( !foggRender.doRender() ){
+				// do render returns false on firefox gui cancel close the dialog:
+				$dialog.dialog("close");
+			}
 		});		
 	},
 	
@@ -436,11 +458,17 @@ mw.SequencerActionsSequence.prototype = {
 		$dialog.html( gM('mwe-sequencer-publishing-updatepage' ) );
 		
 		// Update the file description
-		this.sequencer.getServer().updateSequenceFileDescription(function(){
-			
-		});
-		
-		
+		this.sequencer.getServer().updateSequenceFileDescription( function( status ){
+			if( status === true ){
+				_this.fileDescriptionSuccess( $dialog );
+			} else {
+				// xxx do better error handling 
+				$dialog.empty().text( gM( 'mwe-sequencer-publishing-error-adding-desc' ) ); 
+			}
+		});					
+	},
+	fileDescriptionSuccess: function( $dialog ){
+		var _this = this;
 		// Success link to the sequence page / ok closes dialog
 		$dialog.dialog( 'option', 'title', gM('mwe-sequencer-publishing-success' ) );
 		var button = {};
@@ -506,4 +534,4 @@ mw.SequencerActionsSequence.prototype = {
 			}
 		);
 	}	
-}
+};

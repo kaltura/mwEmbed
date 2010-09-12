@@ -4,7 +4,7 @@
  */
 var urlparts = getRemoteEmbedPath();
 var mwEmbedHostPath = urlparts[0];
-var mwRemoteVersion = 'r139';
+var mwRemoteVersion = 'r144';
 var mwUseScriptLoader = true;
 
 // Log the mwRemote version makes it easy to debug cache issues
@@ -30,13 +30,13 @@ for ( var i = 0; i < reqParts.length; i++ ) {
 if( document.URL.indexOf( 'debug=true' ) !== -1 ){
 	mwReqParam['debug'] = true;
 }
-
 // Check if debug mode and disable script grouping  
 if( mwReqParam['debug'] ) {
 	mwUseScriptLoader = false;
 }
 
-
+//mwReqParam['debug'] =false;
+//mwUseScriptLoader = true;
 
 // Setup up some globals to wrap mwEmbed mw.ready and mw.setConfig functions
 
@@ -66,9 +66,16 @@ if( !mw.setConfig ){
 		}
 	}
 }
-// Setup wikimedia specific config
+
+
+/*******************************
+* Wikimedia specific config 
+********************************/
 mw.setConfig( 'Sequencer.KalturaPlayerEditOverlay', true );
+mw.setConfig( 'EmbedPlayer.KalturaAttribution', true );	
 mw.setConfig( 'SwarmTransport.Enable', true );
+mw.setConfig( 'SmilPlayer.AssetDomainWhiteList', ['upload.wikimedia.org'] );
+
 
 // Use wikibits onLoad hook: ( since we don't have js2 / mw object loaded ) 
 addOnloadHook( function() {
@@ -86,20 +93,25 @@ function doPageSpecificRewrite() {
 	}
 	window.ranMwRewrites = 'done';
 	
-	// Add media wizard
-	if ( ( wgAction == 'edit' && wgPageName.indexOf( "Sequence:" ) ) || wgAction == 'submit' ) {
-		loadMwEmbed( [ 
-			'mw.RemoteSearchDriver',
-			'mw.ClipEdit',
-		 	'mw.style.ClipEdit',
-			'$j.fn.textSelection', 
-			'$j.ui', 
-			'$j.widget',
-			'$j.ui.sortable' 
-		], function() {
-			mw.load( mwEmbedHostPath + '/remotes/AddMediaWizardEditPage.js?' + mwGetReqArgs() );
-		} );
-		return ;
+	// Add media wizard ( only if not on a sequence page
+	if ( wgAction == 'edit' || wgAction == 'submit' ) {
+		if( wgPageName.indexOf( "Sequence:" ) != 0 ){
+			setTimeout(function(){
+				loadMwEmbed( [ 
+					'mw.RemoteSearchDriver',
+					'mw.ClipEdit',
+				 	'mw.style.ClipEdit',
+					'$j.fn.textSelection', 
+					'$j.ui', 
+					'$j.widget',
+					'$j.ui.mouse',
+					'$j.ui.sortable' 
+				], function() {							
+						mw.load( mwEmbedHostPath + '/remotes/AddMediaWizardEditPage.js?' + mwGetReqArgs() );
+				} );		
+			},100);
+			return ;
+		}
 	}
 	
 	// Timed text display:
@@ -124,7 +136,7 @@ function doPageSpecificRewrite() {
 			return ;
 		}
 	}
-	
+
 	// Remote Sequencer
 	if( wgPageName.indexOf( "Sequence:" ) === 0 ){			
 		//console.log( 'spl: ' + typeof mwSetPageToLoading );
@@ -141,8 +153,9 @@ function doPageSpecificRewrite() {
 			if( window.mwSequencerRemote  ){
 				window.mwSequencerRemote.drawUI();
 			} else {
-				loadMwEmbed( [ 'mw.MediaWikiRemoteSequencer', 'mw.style.SequencerRemote' ], function(){
-					$j('#editform,.mw-newarticletext').hide();
+				mwLoadPlayer(function(){
+					// wait for wikieditor to do its thing			
+					$j('#editform,.mw-newarticletext,#toolbar').hide();
 					$j('.sequenceLoader').hide();
 					
 					window.mwSequencerRemote = new mw.MediaWikiRemoteSequencer({
@@ -150,8 +163,10 @@ function doPageSpecificRewrite() {
 						'title' : wgTitle,
 						'target' : '#bodyContent'
 					});
-					window.mwSequencerRemote.drawUI();
-				} );
+					window.mwSequencerRemote.drawUI();						
+				
+					//setTimeout(function(){
+				})
 			}
 			
 		}
@@ -170,7 +185,8 @@ function doPageSpecificRewrite() {
 			'mw.UploadInterface',
 			'mw.Firefogg', 
 			'$j.ui',
-			'$j.ui.mouse',
+			'$j.widget',
+			'$j.ui.position',
 			'$j.ui.progressbar', 
 			'$j.ui.dialog', 
 			'$j.ui.draggable'
@@ -255,14 +271,18 @@ function mwAddCommonStyleSheet(){
 function mwLoadPlayer( callback ){
 
 	// The jsPlayerRequest includes both javascript and style sheets for the embedPlayer 
-	var jsPlayerRequest = [	                    
+	var jsPlayerRequest = [
+		'$j.ui',
+		'$j.widget',
+		'$j.ui.mouse',
+
+	    '$j.cookie',
 		'mw.EmbedPlayer', 
 		'mw.style.EmbedPlayer',
-		'$j.ui', 
+		
 		'mw.PlayerControlBuilder', 
-		'$j.fn.hoverIntent',		
-		'$j.cookie', 
-		'JSON',
+		'$j.fn.hoverIntent',				
+		'JSON',		
 		'$j.ui.slider', 
 		
 		'mw.PlayerSkinKskin',
@@ -276,8 +296,11 @@ function mwLoadPlayer( callback ){
 		'mw.style.TimedText',
 		
 		// mwSwarmTransport module
-		'mw.SwarmTransport'
+		'mw.SwarmTransport',
 		
+		// Sequencer remote: 
+		'mw.MediaWikiRemoteSequencer',
+		'mw.style.SequencerRemote'
 	];		
 	// Quick sniff use java if IE and native if firefox 
 	// ( other browsers will run detect and get on-demand )
@@ -426,19 +449,13 @@ function rewrite_for_OggHandler( vidIdList ) {
 								// close the dialog
 								$j(this).dialog( 'close' ).remove();
 							};
-							mw.addDialog( {				
+							var $dialog = mw.addDialog( {				
 								'title' : decodeURIComponent( apiTitleKey.replace(/_/g, ' ') ),
 								'content' : html_out,
-								'buttons' : buttons
-							})
-							// Dialog size setup is a bit strange:							
-							.css( {
-								'height' : dialogHeight + 'px'
-							})
-							.parent().css( {
-								// we hard code the default resolution to 400 above
-								'width' : '435px',							
-							} )							
+								'buttons' : buttons,
+								'height' : dialogHeight,
+								'width' : 425
+							})							
 							
 							// Update the embed code to use the mwEmbed player: 		
 							$j( '#mwe_' + vidId ).embedPlayer( function(){								
@@ -531,68 +548,70 @@ function loadMwEmbed( classSet, callback ) {
 	if( typeof classSet == 'function') {
 		callback = classSet;
 	}	
-
-	// Inject mwEmbed if needed
-	if ( typeof MW_EMBED_VERSION == 'undefined' ) {
-		if ( mwUseScriptLoader ) {
-			var rurl = mwEmbedHostPath + '/ResourceLoader.php?class=';
-			
-			var coma = '';
-			
-			
-			// Add jQuery too if we need it: 
-			if ( typeof window.jQuery == 'undefined' 
-				||
-				// force load jquery if version 1.3.2 ( issues ) 
-				jQuery.fn.jquery == '1.3.2') 
-			{
-				rurl += 'window.jQuery';
-				coma = ',';
-			}	
-			// Add Core mwEmbed lib ( if not already defined )
-			if( typeof MW_EMBED_VERSION == 'undefined' ){ 
-				rurl += coma + 'mwEmbed,mw.style.mwCommon';
-				coma = ',';
-			}
-								
-			// Add requested classSet to scriptLoader request
-			for( var i=0; i < classSet.length; i++ ){
-				var cName =  classSet[i];
-				if( !mwCheckObjectPath( cName ) ){
-					rurl +=  ',' + cName;
-				}
-			}
-			
-			// Add the remaining arguments
-			rurl += '&' + mwGetReqArgs();
-			importScriptURI( rurl );
-		} else { 
-			
-			// force load jQuery ( issues with '1.3.2' .data handling 
-			if( jQuery && jQuery.fn.jquery== '1.3.2' ){
-				console.log('load: ' + mwEmbedHostPath + '/libraries/jquery/jquery-1.4.2.js' );
-				importScriptURI( mwEmbedHostPath + '/libraries/jquery/jquery-1.4.2.js?' + mwGetReqArgs() );
-			}
-			waitForJQueryUpgrade = function(){
-				if( jQuery && jQuery.fn.jquery== '1.3.2' ){					
-					setTimeout( waitForJQueryUpgrade, 20);
-				} else {
-					// load mwEmbed js
-					importScriptURI( mwEmbedHostPath + '/mwEmbed.js?' + mwGetReqArgs() );
-					
-					// Load the class set as part of mwReady callback
-					var instanceCallback = callback;
-					var callback = function(){
-						mw.load( classSet, function(){
-							instanceCallback();
-						})
-					}
-				}
-			}
-			waitForJQueryUpgrade();
-		}
+	if ( typeof MW_EMBED_VERSION != 'undefined' ) {
+		mw.load( classSet, callback)
+		return ;
 	}
-	waitMwEmbedReady( callback );
+	// Inject mwEmbed 	
+	if ( mwUseScriptLoader ) {
+		var rurl = mwEmbedHostPath + '/ResourceLoader.php?class=';
+		
+		var coma = '';
+		
+		
+		// Add jQuery too if we need it: 
+		if ( typeof window.jQuery == 'undefined' 
+			||
+			// force load jquery if version 1.3.2 ( issues with '1.3.2' .data handling )
+			jQuery.fn.jquery == '1.3.2') 
+		{			
+			rurl += 'window.jQuery';
+			coma = ',';
+		}	
+		// Add Core mwEmbed lib ( if not already defined )
+		if( typeof MW_EMBED_VERSION == 'undefined' ){ 
+			rurl += coma + 'mwEmbed,mw.style.mwCommon';
+			coma = ',';
+		}
+							
+		// Add requested classSet to scriptLoader request
+		for( var i=0; i < classSet.length; i++ ){
+			var cName =  classSet[i];
+			if( !mwCheckObjectPath( cName ) ){
+				rurl +=  ',' + cName;
+			}
+		}
+		// force add our updated version of $j.cookie
+		rurl +=',$j.cookie';
+		
+		// Add the remaining arguments
+		rurl += '&' + mwGetReqArgs();
+		importScriptURI( rurl );
+		waitMwEmbedReady( callback );
+	} else { 
+		
+		// Force load jQuery for debug mode 		
+		var jQueryRequested = false;
+		waitForJQueryUpgrade = function(){
+			if( jQuery && jQuery.fn.jquery== '1.3.2' ){
+				if( ! jQueryRequested ){
+					jQueryRequested = true;
+					importScriptURI( mwEmbedHostPath + '/libraries/jquery/jquery-1.4.2.js?' + mwGetReqArgs() );
+				}
+				setTimeout( waitForJQueryUpgrade, 5);
+			} else {
+				// load mwEmbed js
+				importScriptURI( mwEmbedHostPath + '/mwEmbed.js?' + mwGetReqArgs() );
+				waitMwEmbedReady( function(){
+					// Load the class set as part of mwReady callback
+					mw.load( classSet, function(){
+						callback();
+					})
+				});
+			}
+		}
+		waitForJQueryUpgrade();
+	}		
 }
 
 /**
@@ -604,9 +623,9 @@ function waitMwEmbedReady( callback ) {
 		setTimeout( function() {
 			waitMwEmbedReady( callback );
 		}, 10 );
-	} else {
+	} else {		
 		// Make sure mwEmbed is "setup" by using the addOnLoadHook: 
-		mw.ready( function(){
+		mw.ready( function(){			
 			callback();
 			
 			// All enabled pages should check if we have the gadget already installed 

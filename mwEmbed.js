@@ -1132,13 +1132,13 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			var $dialog = $j( '#mwTempLoaderDialog' ).show().dialog( options );
 			// center the dialog 
 			// xxx figure out why jquery ui is messing up here			
-			$j( '#mwTempLoaderDialog' ).parent('.ui-dialog').css({
+			/*$j( '#mwTempLoaderDialog' ).parent('.ui-dialog').css({
 				'position' : 'absolute',
 				'left' : '50%',
 				'margin-left': -1 * $dialog.width()/2,
 				'top' : '50%',
 				'margin-top': -1 * $dialog.height()/2
-			});			
+			});	*/		
 		} );
 		return $j( '#mwTempLoaderDialog' );
 	}	

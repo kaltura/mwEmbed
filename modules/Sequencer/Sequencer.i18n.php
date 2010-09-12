@@ -8,19 +8,19 @@
 
 $messages = array();
 $messages['en'] = array(
-	'mwe-sequencer-loading-sequencer' => 'Loading sequencer ...',	
+	'mwe-sequencer-loading-sequencer' => 'Loading sequencer ...',
 
 	'mwe-sequencer-you-can-edit-this-video' => 'You can [$1 edit this video]',
 	'mwe-sequencer-using-kaltura-video-editor' => 'Using the [$1 Kaltura] video editor',
 
 	'mwe-sequencer-visual-editor'=> "Visual sequence editor",
 	'mwe-sequencer-text-editor-warn'=> 'Text XML editor ( not recommended ) ',
-	'mwe-sequencer-restore-text-edit' => '[$1 Restore text editor] ( note this <i>highly</i> recommended that you use the visual editor )',
+	'mwe-sequencer-restore-text-edit' => '[$1 Restore text editor] ( It\'s <i>highly</i> recommended that you use the visual editor',
 
 	'mwe-sequencer-loading-timeline' => 'Loading timeline ...',
 	'mwe-sequencer-loading-player' => 'Loading player ...',
 	'mwe-sequencer-loading-menu' => 'Loading menu ...',
-	'mwe-sequencer-loading-asset' => 'Loading asset ...',	
+	'mwe-sequencer-loading-asset' => 'Loading asset ...',
 
 	'mwe-sequencer-no_selected_resource' => '<h3>No resource selected</h3> Select a clip to enable editing.',
 	'mwe-sequencer-untitled-sequence' => 'Untitled sequence',
@@ -45,15 +45,24 @@ $messages['en'] = array(
 	'mwe-sequencer-tools-panzoomhelper-desc' => 'Resize and move the <i>layout helper</i> to update layout',
 	'mwe-sequencer-tools-panzoomhelper-resetlayout' => 'Reset layout',
 
+	'mwe-sequencer-tools-templateedit' => 'Edit template',
+	'mwe-sequencer-template-name' => 'Template page name',
+	'mwe-sequencer-tools-templateedit-desc' => 'Edit template parameters',
+	'mwe-sequencer-edittemplate-params' => 'Template parameters',
+
 	'mwe-sequencer-tools-transitions' => 'Transitions',
 	'mwe-sequencer-tools-transitions-desc' => 'Set in and out Transitions',
 	'mwe-sequencer-clip-transin' => 'Transition in',
 	'mwe-sequencer-clip-transout' => 'Transition out',
 
+	'mwe-sequencer-clip-cancel-edit' => 'Cancel clip edit',
 	'mwe-sequencer-preview' => 'Preview',
+	'mwe-sequencer-preview-pause' => 'Pause preview',
+	'mwe-sequencer-preview-continue' => 'Continue preview',
 	'mwe-sequencer-apply-changes' => 'Apply changes',
 	'mwe-sequencer-start-time' => 'Start time',
-	
+	'mwe-sequencer-asset-source' => 'Source page',
+
 
 	'mwe-sequencer-loading_user_rights' => 'Loading user rights ...',
 	'mwe-sequencer-sequence-xml' => 'Sequence smil xml',
@@ -72,7 +81,7 @@ $messages['en'] = array(
 	'mwe-sequencer-menu-sequence-open-desc' => 'Open a sequence for editing',
 
 	'mwe-sequencer-menu-sequence-save' => 'Save',
-	'mwe-sequencer-menu-sequence-save-desc' => 'Save sequence changes',	
+	'mwe-sequencer-menu-sequence-save-desc' => 'Save sequence changes',
 	'mwe-sequencer-menu-sequence-publish' => 'Publish',
 	'mwe-sequencer-menu-sequence-publish-desc' => 'Publish sequence',
 	'mwe-sequencer-menu-sequence-renderdisk' => 'Render to disk',
@@ -91,18 +100,21 @@ $messages['en'] = array(
 	'mwe-sequencer-menu-view-smilxml' => 'Sequence SMIL XML',
 
 	'mwe-sequencer-url-or-search' => 'URL or search term',
+	'mwe-sequencer-import-url-not-supported' => 'Only asset page urls from $1 presently supported',
+
 	'mwe-sequencer-get-media' => 'Get media',
 	'mwe-sequencer-insert-resource' => 'Insert resource into sequence',
 	'mwe-sequencer-insert'=> 'Insert into sequence',
 
 	'mwe-sequencer-no-server-defined' => 'No server has been defined for this sequence session. You will not be able to save sequences',
-	
+
 	'mwe-sequencer-no_edit_permissions' => 'Can not save sequence',
 	'mwe-sequencer-no_edit_permissions-desc' => 'You do not have permissions to save changes to this sequence',
 
 	'mwe-sequencer-save-no-changes' => 'There are no new edits to save',
 	'mwe-sequencer-save-summary' => 'Please enter a short summary of changes:',
-	'mwe-sequencer-edit_cancel' => 'Cancel sequence edit',	
+	'mwe-sequencer-edit_cancel' => 'Cancel sequence edit',
+
 	'mwe-sequencer-saving_wait' => 'Save in progress (please wait)',
 	'mwe-sequencer-save_done' => 'Save complete',
 
@@ -114,28 +126,31 @@ $messages['en'] = array(
 	'mwe-sequencer-published-out-of-date' =>'This published sequence is not the most recent version. Select <i>sequence -> publish</i> in the <b>[$1 sequence editor]</b> to publish this sequence',
 
 	'mwe-sequencer-already-published' => "The most recent version of this sequence is already published",
-	
+
 	'mwe-sequencer-loading-publish-render' => 'Loading publisher...',
 	'mwe-sequencer-please-save-publish' => 'Please save changes before you publish',
 	'mwe-sequencer-running-publish' => 'Publishing sequence, please wait...',
 	'mwe-sequencer-publishing-status' => 'Publish status:',
 	'mwe-sequencer-publishing-error' => 'Publish error',
 	'mwe-sequencer-publishing-error-upload-desc' => 'There was an error in uploading the published file',
+	'mwe-sequencer-publishing-error-adding-desc' => 'There was an error adding the file description',
+	'mwe-sequencer-publishing-uploading' => 'Uploading published file',
+	'mwe-sequencer-publishing-updatepage' => 'Updating sequence description',
 
 	'mwe-sequencer-publishing-success' => 'Publish success',
 	'mwe-sequencer-publishing-success-desc' => 'Sequence has successfully been published. [$1 Published file]',
 
-	
+
 	'mwe-sequencer-effects' => 'Effects stack',
 	'mwe-sequencer-remove_transition' => 'Remove transition',
 	'mwe-sequencer-edit_transin' => 'Edit transition into clip',
 	'mwe-sequencer-edit_transout' => 'Edit transition out of clip',
 	'mwe-sequencer-add-transition' => 'Add a transition',
-	'mwe-sequencer-menu_clipedit' => 'Edit media',	
+	'mwe-sequencer-menu_clipedit' => 'Edit media',
 	'mwe-sequencer-menu_cliplib' => 'Add media',
 	'mwe-sequencer-menu_resource_overview' => 'Resource overview',
 	'mwe-sequencer-menu_options' => 'Options',
-	
+
 
 
 	'mwe-sequencer-edit_cancel_confirm' => 'Are you sure you want to cancel your edit? Changes will be lost.',
@@ -148,7 +163,7 @@ $messages['en'] = array(
 	'mwe-sequencer-pixle2sec' => 'pixels to seconds',
 	'mwe-sequencer-rmclip' => 'Remove clip',
 	'mwe-sequencer-clip_in' => 'clip in',
-	'mwe-sequencer-clip_out' => 'clip out',	
+	'mwe-sequencer-clip_out' => 'clip out',
 	'mwe-sequencer-editor_options' => 'Editor options',
 	'mwe-sequencer-editor_mode' => 'Editor mode',
 	'mwe-sequencer-simple_editor_desc' => 'simple editor (iMovie style)',

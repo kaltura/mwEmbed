@@ -129,7 +129,7 @@ mw.SmilBuffer.prototype = {
 		// Loop on loading until all elements are loaded
 		setTimeout( function(){
 			if( _this.getBufferedPercent() == 1 ){
-				mw.log( "smilBuffer::continueBufferLoad:: done loading buffer "); 
+				mw.log( "smilBuffer::continueBufferLoad:: done loading buffer for " + bufferTime); 
 				return ;
 			}
 			// get the percentage buffered, translated into buffer time and call continueBufferLoad with a timeout
@@ -159,24 +159,25 @@ mw.SmilBuffer.prototype = {
 		// Start "loading" the asset (for now just video ) 
 		// but in theory we could set something up with large images / templates etc.
 		switch( this.smil.getRefType( smilElement ) ){
+			case 'audio':
 			case 'video':
-				var vid = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).get(0);
-				if( !vid ){
+				var media = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).get(0);
+				if( !media ){
 					break;
 				}
 				// The load request does not work very well instead .play() then .pause() and seek when on display
-				// vid.load();				
+				// media.load();				
 				// Since we can't use "load" across html5 implementations do some hacks: 
-				if( vid.paused &&  this.getVideoPercetLoaded( smilElement ) == 0 ){
+				if( media.paused &&  this.getMediaPercetLoaded( smilElement ) == 0 ){
 					// Issue the load / play request 
-					vid.play();
-					vid.volume = 0;					
+					media.play();
+					media.volume = 0;					
 					// XXX seek to clipBegin if provided ( we don't need to load before that point )				
 				} else {
 					//mw.log("loadElement:: pause video: " + this.smil.getSmilElementPlayerID( smilElement ));
 					// else we have some percentage loaded pause playback 
 					//( should continue to load the asset )
-					vid.pause();
+					media.pause();
 				}
 			break;
 		}
@@ -188,11 +189,12 @@ mw.SmilBuffer.prototype = {
 	getElementPercentLoaded: function( smilElement ){
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'video':
-				return this.getVideoPercetLoaded( smilElement );
+			case 'audio':
+				return this.getMediaPercetLoaded( smilElement );
 			break;
 		}
 		// for other ref types check if element is in the dom
-		// xxx todo hook into image loader hook
+		// xxx todo hook into image / template loaders
 		if( $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).length == 0 ){
 			return 0;
 		} else {			
@@ -203,7 +205,7 @@ mw.SmilBuffer.prototype = {
 	/**
 	 * Get the percentage of a video asset that has been loaded 
 	 */
-	getVideoPercetLoaded: function ( smilElement ){
+	getMediaPercetLoaded: function ( smilElement ){
 		var _this = this;
 		var assetId = this.smil.getSmilElementPlayerID( smilElement );
 		var $vid = $j( '#' + assetId );
@@ -362,7 +364,7 @@ mw.SmilBuffer.prototype = {
 		}
 		// Check if _this.videoLoadedPercent is in range of duration
 		// xxx might need to take into consideration startOfsset 
-		if( _this.getVideoPercetLoaded( smilVideoElement ) > vid.duration / time ){
+		if( _this.getMediaPercetLoaded( smilVideoElement ) > vid.duration / time ){
 			return true;
 		}
 		// not likely that the video is loaded for the requested time, return false

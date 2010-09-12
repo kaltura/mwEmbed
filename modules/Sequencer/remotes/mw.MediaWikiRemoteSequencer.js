@@ -47,7 +47,7 @@ mw.getRemoteSequencerLink = function( url ){
 		url+='withJS=MediaWiki:MwEmbed.js';
 	}
 	return url;
-},
+};
 
 // Add player pause binding if config is set::
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayerId ) {

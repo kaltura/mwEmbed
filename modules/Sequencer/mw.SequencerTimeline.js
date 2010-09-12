@@ -64,9 +64,9 @@ mw.SequencerTimeline.prototype = {
 		this.trackLayout.resizeAll();
 	},
 	getTimelineContainerHeight: function(){
-		var _this = this;
+		var _this = this;		
 		// Start with vertical space for one more track
-		var timelineHeight = mw.getConfig( 'Sequencer.TimelineTrackHeight' );
+		var timelineHeight = 60;
 		var smilSequenceTracks = this.sequencer.getSmil().getBody().getSeqElements();
 		$j.each(smilSequenceTracks, function( trackIndex, smilSequenceTrack ){
 			timelineHeight+= _this.getSequenceTrackHeight( smilSequenceTrack )
@@ -113,7 +113,7 @@ mw.SequencerTimeline.prototype = {
 		var trackStack =0;
 		// Draw all the tracks
 		$j.each(smilSequenceTracks, function( trackIndex, smilSequenceTrack ){
-			trackStack++;
+			trackStack++;		
 			_this.drawSequenceTrack( trackIndex, smilSequenceTrack, function(){
 				trackStack--;
 				if( trackStack == 0 && callback ){
@@ -159,7 +159,7 @@ mw.SequencerTimeline.prototype = {
 	 */
 	drawTrackClips: function( $clipTrackSet, smilSequenceTrack, callback ){
 		var _this = this;
-		mw.log( 'drawTrackClips:: existing length: ' + 
+		mw.log( 'SequncerTimeline:: drawTrackClips: existing length: ' + 
 				$clipTrackSet.children().length + ' id: ' + $clipTrackSet.attr('id') );
 		// Setup a local pointer to the smil engine: 
 		var smil = this.sequencer.getSmil();
@@ -168,19 +168,22 @@ mw.SequencerTimeline.prototype = {
 		
 		var seqOrder = 0;
 		var reOrderTimelineFlag = false;
-		
+
 		// Get all the refs that are children of the smilSequenceTrack with associated offsets and durations
 		// for now assume all tracks start at zero time:
 		var startOffset = 0;		
 		var thumbRenderStack = 0;
-		smil.getBody().getRefElementsRecurse( smilSequenceTrack, startOffset, function( $node ){			
+		var trackRendering = false;
+		smil.getBody().getRefElementsRecurse( smilSequenceTrack, startOffset, function( smilElement ){	
+			mw.log("SequncerTimeline:: drawTrackClips node type: " + $j(smilElement).get(0).nodeName.toLowerCase() );
 			var reRenderThumbFlag = false;			
 			// Draw the node onto the timeline if the clip is not already there:
-			var $timelineClip = $clipTrackSet.find( '#' + _this.getTimelineClipId( $node ) )
+			var $timelineClip = $clipTrackSet.find( '#' + _this.getTimelineClipId( smilElement ) )
 			if( $timelineClip.length == 0 ){
-				mw.log(" ADD: " + _this.getTimelineClipId( $node ) + ' to ' + $clipTrackSet.attr('id') );
-				$timelineClip = _this.getTimelineClip( smilSequenceTrack, $node );
+				mw.log("SequencerTimeline::drawTrackClips: ADD: " + _this.getTimelineClipId( smilElement ) + ' to ' + $clipTrackSet.attr('id') );				
+				$timelineClip = _this.getTimelineClip( smilSequenceTrack, smilElement );
 				// Set the index order on the clip
+				
 				$timelineClip.data( 'indexOrder', $clipTrackSet.children().length );
 				if( $previusClip ){
 					$previusClip.after( 
@@ -195,26 +198,29 @@ mw.SequencerTimeline.prototype = {
 				reRenderThumbFlag = true;
 			} else { 
 				// Confirm clip is in the correct indexOrder
-				// mw.log( 'indexOrder::' +  $timelineClip.attr('id') + ' '+ $timelineClip.data('indexOrder') + ' == ' + $node.data('indexOrder'));
-				if( $timelineClip.data('indexOrder') != $node.data('indexOrder') ){
+				// mw.log( 'indexOrder::' +  $timelineClip.attr('id') + ' '+ $timelineClip.data('indexOrder') + ' == ' + smilElement.data('indexOrder'));
+				if( $timelineClip.data('indexOrder') != $j( smilElement).data('indexOrder') ){
 					reOrderTimelineFlag = true;
-				}							
+				}
 			}
 			
 			// xxx Check if the start time was changed to set reRenderThumbFlag 			
-			if ( reRenderThumbFlag ){				
+			if ( reRenderThumbFlag ){			
+				trackRendering = true;
 				thumbRenderStack++;
-				// Issue a relative draw Thumb request for the start time			
-				smil.getBuffer().bufferedSeekRelativeTime( $node, 0, function(){					
-					mw.log("getTrackClipInterface::bufferedSeekRelativeTime for " + smil.getPageDomId( $node ));
-					_this.drawClipThumb( $node , 0, function(){
-						thumbRenderStack--;
-						if( thumbRenderStack == 0 ){
-							callback();
-						}
-					});
-				});
+				// Update the timeline clip layout														
+				mw.log("getTrackClipInterface::bufferedSeekRelativeTime for " + smil.getSmilElementPlayerID( smilElement ));
+				_this.drawClipThumb( smilElement , 0, function(){
+					// Clip is ready decrement the thum render queue 
+					thumbRenderStack--;												
+					// Check if all the sequence track thumbs have been rendered can issue the sequence render callback:
+					if( thumbRenderStack == 0 ){
+						mw.log("SequencerTimeline:: Done with all thumb for" + $clipTrackSet.attr('id'));
+						callback();
+					}
+				});					
 			}
+			
 			
 			// Update the $previusClip 
 			$previusClip = $timelineClip;
@@ -258,6 +264,13 @@ mw.SequencerTimeline.prototype = {
 		$j( keyBindings ).bind('delete', function(){
 				_this.removeSelectedClips();
 		});
+		
+		if(!trackRendering){
+			mw.log("SequencerTimeline:: trackNot rendering run drawTrack callback");
+			if( callback ) 
+				callback();
+		}
+		
 	},
 	
 	getTrackSetId:function( trackIndex ){
@@ -327,9 +340,7 @@ mw.SequencerTimeline.prototype = {
 				
 		return $j('<li />')
 			.attr('id',  _this.getTimelineClipId( $node ) )	
-			.data( {
-				'smilId': $node.attr('id'),				
-			})
+			.data( 'smilId', $node.attr('id') )
 			.css( 'height', this.getSequenceTrackHeight( smilSequenceTrack) - 10 )
 			.addClass( 'timelineClip ui-corner-all' )
 			.loadingSpinner()				
@@ -342,8 +353,8 @@ mw.SequencerTimeline.prototype = {
 	editClip: function( selectedClip ){
 		var smil = this.sequencer.getSmil();
 		// get the smil element for the edit tool:
-		var smilClip = smil.$dom.find( '#' + $j( selectedClip ).data('smilId') );	
-		this.sequencer.getTools().drawClipEditTools( smilClip );
+		var smilElement = smil.$dom.find( '#' + $j( selectedClip ).data('smilId') );	
+		this.sequencer.getTools().drawClipEditTools( smilElement );
 	},	
 	
 	/**
@@ -392,12 +403,13 @@ mw.SequencerTimeline.prototype = {
 	 * Insert a smilClip to the smil dom and sequencer and display the edit
 	 * 	interface with a 'cancel' insert button
 	 */
-	insertSmilClipEdit: function( smilClip, trackIndex, clipIndex  ){
+	insertSmilClipEdit: function( smilElement, trackIndex, clipIndex  ){
 		var _this = this;
+		mw.log("SequencerTimeline:: insertSmilClipEdit ");
 		// Handle optional arguments
 		if( typeof trackIndex == 'undefined' ){
 			// default audio to audio track
-			if( _this.sequencer.getSmil().getRefType( smilClip ) == 'audio' ){
+			if( _this.sequencer.getSmil().getRefType( smilElement ) == 'audio' ){
 				trackIndex = this.getTrackIndexType('audio');
 			} else {
 				trackIndex = this.getTrackIndexType('video');
@@ -409,24 +421,24 @@ mw.SequencerTimeline.prototype = {
 			return ;
 		}
 		
-		// Before insert ensure the smilClip has an id: 
-		this.sequencer.getSmil().getBody().assignIds( $j( smilClip ) );
+		// Before insert ensure the smilElement has an id: 
+		this.sequencer.getSmil().getBody().assignIds( $j( smilElement ) );
 
 		// Add the smil resource to the smil track		
 		var $smilSequenceTrack = $j( this.sequencer.getSmil().getBody().getSeqElements()[ trackIndex ] );		
 		if( typeof clipIndex == 'undefined' || clipIndex >= $smilSequenceTrack.children().length ){
 			$smilSequenceTrack.append( 
-				$j( smilClip ).get(0)
+				$j( smilElement ).get(0)
 			)
 		} else {
 			$smilSequenceTrack.children().eq( clipIndex ).before( 
-				$j( smilClip ).get(0) 
+				$j( smilElement ).get(0) 
 			)
 		}
 		
 		// Update the dom timeline		
 		_this.drawTimeline(function(){
-
+			
 			// Invalidate / update embedPlayer duration / clip offsets 
 			_this.sequencer.getEmbedPlayer().getDuration( true );			
 			
@@ -434,9 +446,9 @@ mw.SequencerTimeline.prototype = {
 			_this.sequencer.getActionsEdit().registerEdit();
 			
 			// Select the current clip		
-			var $timelineClip = $clipTrackSet.find('#' + _this.getTimelineClipId( smilClip ) )
+			var $timelineClip = $clipTrackSet.find('#' + _this.getTimelineClipId( smilElement ) )
 			if( $timelineClip.length == 0 ){
-				mw.log("Error: insertSmilClipEdit: could not find clip: " + _this.getTimelineClipId( smilClip ) );
+				mw.log("Error: insertSmilClipEdit: could not find clip: " + _this.getTimelineClipId( smilElement ) );
 			}
 			_this.getTimelineContainer().find( '.selectedClip' ).removeClass( 'selectedClip' );				
 			$timelineClip.addClass( 'selectedClip' );		
@@ -452,6 +464,7 @@ mw.SequencerTimeline.prototype = {
 	},
 	
 	handleReorder: function ( movedClip ){
+		mw.log("SequencerTimeline:: handleReorder");
 		var _this = this;
 		var smil = this.sequencer.getSmil();
 		var movedIndex = null;				
@@ -602,12 +615,12 @@ mw.SequencerTimeline.prototype = {
 		});
 	},
 		
-	getTimelineClipId: function( $node ){
-		return this.sequencer.getSmil().getPageDomId( $node ) + '_timelineClip';
+	getTimelineClipId: function( smilElement ){
+		return this.sequencer.getSmil().getSmilElementPlayerID( smilElement ) + '_timelineClip';
 	},
 	
 	// Draw a clip thumb into the timeline clip target
-	drawClipThumb: function ( $node , relativeTime, callback ){		
+	drawClipThumb: function ( smilElement , relativeTime, callback ){		
 		var _this = this;
 		var smil = this.sequencer.getSmil();	
 		
@@ -618,7 +631,7 @@ mw.SequencerTimeline.prototype = {
 			'cursor' : 'pointer'
 		};
 		
-		var $timelineClip = $j( '#' + _this.getTimelineClipId( $node ) );
+		var $timelineClip = $j( '#' + _this.getTimelineClipId( smilElement ) );
 		// Add Thumb target and remove loader
 		$timelineClip.empty().append(
 								
@@ -679,10 +692,10 @@ mw.SequencerTimeline.prototype = {
 		// remove loader
 		.find('.loadingSpinner').remove();
 		
-		var $thumbTarget = $j( '#' + _this.getTimelineClipId( $node ) ).find('.thumbTraget');
+		var $thumbTarget = $j( '#' + _this.getTimelineClipId( smilElement ) ).find('.thumbTraget');
 		
 		// Check for a "poster" image use that temporarily while we wait for the video to seek and draw
-		if( $node.attr('poster') ){			
+		if( $j( smilElement ) .attr('poster') ){			
 			var img = new Image();
 			$j( img )
 			.css( {
@@ -692,7 +705,7 @@ mw.SequencerTimeline.prototype = {
 				'left': '0px',
 				'height': _this.timelineThumbSize.height
 			})
-			.attr( 'src', smil.getAssetUrl( $node.attr('poster') ) )
+			.attr( 'src', smil.getAssetUrl( smilElement.attr('poster') ) )
 			.load( function(){			
 				if( $thumbTarget.children().length == 0 ){					
 					$thumbTarget.html( img );	
@@ -704,15 +717,24 @@ mw.SequencerTimeline.prototype = {
 				if( $thumbTarget.children().length == 0 ){
 					mw.log( "SequencerTimeline::drawClipThumb: force image fallabck:: " + img.src);
 					$thumbTarget.html( img );
+					if( callback ){					
+						callback();
+						callback = null;
+					}
 				}
 			}, 5000);
 		}			
 		
 		// Buffer the asset then render it into the layout target:		
-		smil.getBuffer().bufferedSeekRelativeTime( $node, relativeTime, function(){					
+		smil.getBuffer().bufferedSeekRelativeTime( smilElement, relativeTime, function(){					
 			// Add the seek, Add to canvas and draw thumb request
-			smil.getLayout().drawElementThumb( $thumbTarget, $node, relativeTime, callback );
-		
+			smil.getLayout().drawSmilElementToTarget( smilElement, $thumbTarget, relativeTime, function(){
+				// Run the callback and un-set it for the current closure
+				if( callback ){					
+					callback();
+					callback = null;
+				}
+			});		
 		})
 	},
 	/**
