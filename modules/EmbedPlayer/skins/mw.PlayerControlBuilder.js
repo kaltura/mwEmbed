@@ -2,6 +2,7 @@
 * Msg text is inherited from embedPlayer 
 */
 
+( function( mw ) {
 /**
 * mw.PlayerControlBuilder object
 *	@param the embedPlayer element we are targeting
@@ -43,7 +44,10 @@ mw.PlayerControlBuilder.prototype = {
 		'download' : true, 
 		
 		// Share the video menu
-		'share' : true
+		'share' : true,
+		
+		// Player library link
+		'aboutPlayerLibrary': true
 	},	
 	
 	// Flag to store the current fullscreen mode
@@ -161,9 +165,9 @@ mw.PlayerControlBuilder.prototype = {
 		if( embedPlayer.isTimedTextSupported() ){
 			this.supportedComponets['timedText'] = true;
 		}		
-		// Check for kalturaAttribution 	
-		if( mw.getConfig( 'EmbedPlayer.KalturaAttribution' ) ){			
-			this.supportedComponets[ 'kalturaAttribution' ] = true;
+		// Check for Attribution button 	
+		if( mw.getConfig( 'EmbedPlayer.AttributionButton' ) ){
+			this.supportedComponets[ 'attributionButton' ] = true;
 		}
 		
 		// Check global fullscreen enabled flag
@@ -935,6 +939,19 @@ mw.PlayerControlBuilder.prototype = {
 					$j( ctrlObj.embedPlayer ).trigger( 'showShareEvent' );
 				}
 			)
+		}, 
+		
+		'aboutPlayerLibrary' : function( ctrlObj ){
+			return $j.getLineItem( 			
+					gM( 'mwe-embedplayer-about-library' ),
+					'info',
+					function( ) {
+						ctrlObj.displayOverlay( 
+							ctrlObj.aboutPlayerLibrary()
+						);	
+						$j( ctrlObj.embedPlayer ).trigger( 'aboutPlayerLibrary' );
+					}
+				)
 		}
 	},
 	
@@ -1050,7 +1067,25 @@ mw.PlayerControlBuilder.prototype = {
 		
 		return false; // onclick action return false
 	},	
-	
+	aboutPlayerLibrary: function(){
+		return $j( '<div />' )
+			.append(
+				$j( '<h3 />' )
+					.text( 
+						gM('mwe-embedplayer-about-library') 
+					)
+				,
+				$j( '<span />')
+					.append(
+						gM('mwe-embedplayer-about-library-desc', 
+							$j('<a />').attr({
+								'href' : MW_EMBED_LIBRARY_PAGE,
+								'target' : '_new'
+							})
+						)
+					)			
+			)
+	},
 	/**
 	* Get the "share" interface
 	* 
@@ -1428,15 +1463,31 @@ mw.PlayerControlBuilder.prototype = {
 		},
 		
 		/**
-		* The kaltura attribution button
+		* The Attribution button ( by default this is kaltura-icon
 		*/
-		'kalturaAttribution' : {
+		'attributionButton' : {
 			'w' : 28,
-			'o' : function( ctrlObj ){			
+			'o' : function( ctrlObj ){		
+				var buttonConfig = mw.getConfig( 'EmbedPlayer.AttributionButton');
+				
+				var $icon = $j('<span />')
+				.addClass( 'ui-icon' );
+				if( buttonConfig['class'] ){
+					$icon.addClass( buttonConfig['class'] )
+				} 
+				// Check for source ( by configuration convention this is a 16x16 image
+				if( buttonConfig.iconurl ){
+					$icon.append( 
+						$j('<img />')
+						.css({'width': '16px', 'height': '16px'})
+						.attr('src', buttonConfig.iconurl )
+					)
+				}
+				
 				return $j('<a />')
 					.attr({
-						'href': 'http://kaltura.com',
-						'title' : gM( 'mwe-embedplayer-kaltura-platform-title' ),
+						'href': buttonConfig.href,
+						'title' : buttonConfig.title,
 						'target' : '_new'
 					})
 					.append(
@@ -1447,10 +1498,9 @@ mw.PlayerControlBuilder.prototype = {
 							'left' : '2px'
 						})
 						.append( 
-							$j('<span />')
-							.addClass( 'ui-icon kaltura-icon' )
+							$icon
 						)
-					)						
+					)				
 			}
 		},
 		
@@ -1687,3 +1737,6 @@ mw.PlayerControlBuilder.prototype = {
 		}
 	}
 };
+
+
+} )( window.mw );

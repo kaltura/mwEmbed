@@ -6,6 +6,7 @@
 * Default player module configuration 
 */
 ( function( mw ) {
+	window['MW_EMBED_LIBRARY_PAGE'] = 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library';
 	
 	mw.setDefaultConfig( {		
 		// If the player controls should be overlaid on top of the video ( if supported by playback method)
@@ -25,8 +26,19 @@
 	
 		// If the video player should attribute kaltura	
 		"EmbedPlayer.KalturaAttribution" : true,
+
+		// The attribution button
+		'EmbedPlayer.AttributionButton' :{
+			'title' : 'Kaltura html5 video library',
+		    'href' :  MW_EMBED_LIBRARY_PAGE,
+		    // Style icon to be applied 
+		    'class' : 'kaltura-icon',
+		    // An icon image url ( should be a 16x16 image or data url )  
+		    'iconurl' : false
+		},
+
 		 
-		 // Set the browser player warning flag to true by default ( applies to all players so its not part of attribute defaults above ) 
+		// Set the browser player warning flag displays warning for non optimal playback 
 		"EmbedPlayer.ShowNativeWarning" : true,
 		
 		// If fullscreen is global enabled. 
