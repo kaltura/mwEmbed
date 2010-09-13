@@ -106,8 +106,8 @@ function kOverideSwfObject(){
 					'kuiconfid' : kEmbedSettings.uiconfId
 			}					
 			
-			var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceElemIdStr ).width();
-			var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceElemIdStr ).height();
+			var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceTarget ).width();
+			var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceTarget ).height();
 			
 			if( kEmbedSettings.entryId ){
 				embedPlayerAttributes.kentryid = kEmbedSettings.entryId;
@@ -136,7 +136,7 @@ function kOverideSwfObject(){
 			}						
 			
 			var kEmbedSettings = kGetKalturaEmbedSettings( this.attributes.swf, flashVars);
-			if( kBrowserAgentShouldUseHTML5() && kEmbedSettings.uiconfId ){
+			if( kBrowserAgentShouldUseHTML5() && kEmbedSettings.uiconfId ){				
 				doEmbedSettingsWrite( kEmbedSettings, targetId, this.attributes.width, this.attributes.height);
 			} else { 
 				// use the original flash player embed:  
