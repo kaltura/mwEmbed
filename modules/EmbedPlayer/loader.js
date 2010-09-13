@@ -145,10 +145,10 @@
 					.getAbsoluteOverlaySpinner()
 					.attr('id', 'loadingSpinner_' + $j( element ).attr('id') )
 					.addClass( 'playerLoadingSpinner' );
-								
+					
 			});									
 			// Load the embedPlayer module ( then run queued hooks )			
-			mw.load( 'EmbedPlayer', function ( ) {		
+			mw.load( 'EmbedPlayer', function ( ) {				
 				mw.log("EmbedPlayer:: do rewrite players:" + $j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).length );
 				// Rewrite the EmbedPlayer.RewriteTags with the 
 				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer();				

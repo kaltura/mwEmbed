@@ -88,8 +88,8 @@ mw.SmilBody.prototype = {
 		// Get all the draw elements from the body this time: 
 		this.getElementsForTime( time ,
 			/* SMIL Element in Range */ 
-			function( smilElement) {	
-				//mw.log("SmilBody::renderTime: Element in Range" + $j( smilElement ).attr('id'));
+			function( smilElement) {					
+				//mw.log("SmilBody::renderTime: Element in Range:" + $j( smilElement ).attr('id'));
 				// var relativeTime = time - smilElement.parentTimeOffset;
 				var relativeTime = time - $j( smilElement ).data ( 'startOffset' );
 				
@@ -101,7 +101,7 @@ mw.SmilBody.prototype = {
 			},
 			/* SMIL Element out of range */
 			function( smilElement ){
-				//mw.log("SmilBody::renderTime: Element out of Range" + $j( smilElement ).attr('id'));
+				//mw.log("SmilBody::renderTime: Element out of Range:" + $j( smilElement ).attr('id'));
 				// Stop the animation or playback 
 				_this.smil.getAnimate().pauseAnimation( smilElement )
 				
@@ -112,7 +112,7 @@ mw.SmilBody.prototype = {
 				$j( smilElement ).data('activePlayback', false)
 				
 				// Expire transitions if needed
-				_this.smil.getTransitions().elementOutOfRange( smilElement, time );				
+				_this.smil.getTransitions().hideTransitionElements( smilElement, time );				
 			}
 		);
 	},
@@ -247,12 +247,12 @@ mw.SmilBody.prototype = {
 			var startOffset = $node.data( 'startOffset' );
 			var nodeDuration = _this.getClipDuration( $node );
 			
-			/*
-			 * mw.log("Checking if ref: " + $node.attr('id') + ' is in range:' + time + ' >= ' +
+			
+			/*mw.log("Checking if ref: " + $node.attr('id') + ' is in range:' + time + ' >= ' +
 					$node.data( 'startOffset' )  + ' && '+ time +' < ' +startOffset + ' + ' + nodeDuration + "\n" +
 					' inrage cb: ' + typeof inRangeCallback + ' eval::' +
-					( time >= startOffset && time < ( startOffset + nodeDuration) ) + "\n\n" );
-			*/		
+					( time >= startOffset && time < ( startOffset + nodeDuration) ) + "\n\n" );*/
+			
 			// Check if element is in range: 
 			if( time >= startOffset && time < ( startOffset + nodeDuration) ){
 				if( typeof inRangeCallback == 'function' ){

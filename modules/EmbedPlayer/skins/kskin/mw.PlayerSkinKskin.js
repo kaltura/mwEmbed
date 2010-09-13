@@ -88,6 +88,9 @@ mw.PlayerSkinKskin = {
 				$menuBar = $j( '<ul />' )
 					.addClass( 'k-menu-bar' );
 					
+				// dont include about player menu item ( FIXME should be moved to a init function )
+				delete ctrlObj.supportedMenuItems['aboutPlayerLibrary'];
+				
 				// Output menu item containers: 
 				for ( var menuItem in ctrlObj.supportedMenuItems ) {
 					$menuBar.append( 

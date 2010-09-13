@@ -10,57 +10,68 @@ mw.SmilTransitions.prototype = {
 		this.smil = smilObject;	
 	},
 	
+	getTransitionInRange: function( smilElement, animateTime ) {
+		var _this = this;
+		var inRangeTransitions = [];
+		var transitionDirections = ['transIn', 'transOut'];
+		$j.each( transitionDirections, function(inx, transitionDirection ){						
+			if( $j( smilElement ).attr( transitionDirection ) ){
+				$transition = _this.smil.$dom.find( '#' + $j( smilElement ).attr( transitionDirection) );
+				var transitionDuration = _this.smil.parseTime( $transition.attr('dur') );
+				// Check if the transition is in range				
+				var percent = false;
+				if( transitionDirection == 'transIn' ){
+					if ( transitionDuration > animateTime  ){
+						percent = animateTime / transitionDuration;
+					}
+				}
+				if( transitionDirection == 'transOut' ){
+					var nodeDuration = _this.smil.getBody().getClipDuration( smilElement ); 
+					if( animateTime > ( nodeDuration - transitionDuration ) ){			
+						percent = animateTime - ( nodeDuration - transitionDuration ) / transitionDuration;
+					}					
+					// Invert the percentage for "transOut"
+					percent = 1 - percent;
+				}
+				if( percent !== false ){
+					inRangeTransitions.push( {
+						'transition': $transition,
+						'percent': percent
+					})
+				}			
+			}
+		});
+		return inRangeTransitions;
+	},
+	
+	// Returns true if a transition is in rage false if not
+	hasTransitionInRange : function( smilElement, animateTime ) {
+		return ( this.getTransitionInRange(  smilElement, animateTime ) != 0 ); 
+	},
+	
+	// hide any associative transition overlays ( ie the element is no longer displayed )  
+	hideElementOverlays: function( smilElement ){
+		
+	},
+	
 	// Generates a transition overlay based on the transition type  
 	transformTransitionOverlay: function( smilElement, animateTime ) {
+		var _this = this;
 		/*mw.log('SmilTransitions::transformTransitionOverlay:' + animateTime + 
 				' tIn:' + $j( smilElement ).attr( 'transIn' )  + 
-				' tOut:' + $j( smilElement ).attr( 'transOut' ) );		
-		*/
-		// Get the transition type and id: 
-		var transitionInRange = false;		
+				' tOut:' + $j( smilElement ).attr( 'transOut' ) );*/		
 		
-		if( $j( smilElement ).attr( 'transIn' ) ){		
-			$transition = this.smil.$dom.find( '#' + $j( smilElement ).attr( 'transIn' ) );
-			// Check if the transition is in range
-			var transitionDuration = this.smil.parseTime( $transition.attr('dur') );
-			//mw.log("SmilTransitions: test: td:" + transitionDuration + ' > ' + animateTime);
-			if( transitionDuration > animateTime  ){				
-				var percent = animateTime / transitionDuration;
-				/* mw.log("SmilTransitions: " + $j( smilElement ).attr( 'transIn' ) + " in range for " + 
-						this.smil.getSmilElementPlayerID( smilElement ) + " draw:" + percent );
-				*/
-				this.drawTransition( percent, $transition, smilElement );	
-				transitionInRange = true;
-			} else {
-				// Out of range hide this overlay
-				$j( '#' + this.getTransitionOverlayId( $transition, smilElement ) ).hide();			
-			}
-		}
-		
-		if( $j( smilElement ).attr( 'transOut' ) ){
-			$transition = this.smil.$dom.find( '#' + $j( smilElement ).attr( 'transOut' ) );
-			// Check if the transition is in range
-			var duration = this.smil.parseTime( $transition.attr('dur') );
-			var nodeDuration = this.smil.getBody().getClipDuration( smilElement ); 
-			if( animateTime > ( nodeDuration - duration ) ){			
-				var percent = animateTime - ( nodeDuration - duration ) / duration;
-				// Invert the percentage for "transOut"
-				percent = 1 - percent;
-				
-				this.drawTransition( percent, $transition, smilElement );
-				transitionInRange = true;
-			} else {
-				// Hide this overlay
-				$j( '#' + this.getTransitionOverlayId( $transition, smilElement ) ).hide();	
-			}
-		}
-		return transitionInRange;
+		// Get the transition in range 
+		var transitionInRange = this.getTransitionInRange( smilElement, animateTime );
+		$j.each( transitionInRange, function(inx, tran){
+			_this.drawTransition( tran.percent, tran.transition, smilElement );
+		});		
 	},	
 	
 	/**
-	 * elementOutOfRange check if an elements transition overlays are out of range and hide them
+	 * hideTransitionElements hides transition overlays that are out of range
 	 */
-	elementOutOfRange: function ( smilElement, time ){
+	hideTransitionElements: function ( smilElement ){
 		// for now just hide
 		if( $j( smilElement ).attr( 'transIn' ) ){		
 			$j( '#' + 
@@ -118,7 +129,7 @@ mw.SmilTransitions.prototype = {
 	transitionFunctionMap : {
 		'fade' : {
 			'fadeFromColor': function( _this, percent, $transition, smilElement ){
-				// Add the overlay if missing
+				// Add the overlay if missing						
 				var transitionOverlayId = _this.getTransitionOverlayId( $transition, smilElement );		
 				if( $j( '#' + transitionOverlayId  ).length == 0 ){
 					
@@ -138,7 +149,7 @@ mw.SmilTransitions.prototype = {
 				percent = 1 - percent;	
 				
 				// Update the overlay opacity
-				$j( '#' + transitionOverlayId  ).css( 'opacity', percent );
+				$j( '#' + transitionOverlayId  ).show().css( 'opacity', percent );
 			},
 			'crossfade': function( _this, percent, $transition, smilElement ){
 				// fade "ourselves" ... in cases of overlapping timelines this will create a true cross fade

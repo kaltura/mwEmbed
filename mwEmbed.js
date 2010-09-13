@@ -2356,11 +2356,11 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			$.fn.getAbsoluteOverlaySpinner = function(){
 				var pos = $j( this ).offset();				
 				var posLeft = (  $j( this ).width() ) ? 
-					parseInt( pos.left + ( .4 * $j( this ).width() ) ) : 
+					parseInt( pos.left + ( .5 * $j( this ).width() ) -16 ) : 
 					pos.left + 30;
 					
 				var posTop = (  $j( this ).height() ) ? 
-					parseInt( pos.top + ( .4 * $j( this ).height() ) ) : 
+					parseInt( pos.top + ( .5 * $j( this ).height() ) -16 ) : 
 					pos.top + 30;
 				
 				var $spinner = $j('<div />')

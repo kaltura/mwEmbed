@@ -178,7 +178,7 @@
 			}
 		}, mw.getConfig( 'defaultRequestTimeout' ) * 1000  );
 		
-		mw.log("run getJSON: " + mw.replaceUrlParams( url, data ) );
+		//mw.log("run getJSON: " + mw.replaceUrlParams( url, data ) );
 				
 		// Check if the request requires a "post" 
 		if( mw.checkRequestPost( data )  ) {
