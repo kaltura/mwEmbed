@@ -902,6 +902,12 @@ mediaSource.prototype = {
 			case 'audio/ogg' :
 				return gM( 'mwe-embedplayer-video-audio' );
 			break;
+			case 'video/mpeg' :
+				return 'MPEG video'; // FIXME: i18n
+			break;
+			case 'video/x-msvideo' :
+				return 'AVI video'; // FIXME: i18n
+			break;
 		}
 		
 		// Return tilte based on file name:
@@ -991,6 +997,15 @@ mediaSource.prototype = {
 			break;
 			case '.xml':
 				return 'text/xml';
+			break;
+			case '.avi':
+				return 'video/x-msvideo';
+			break;
+			case '.mpg':
+				return 'video/mpeg';
+			break;
+			case '.mpeg':
+				return 'video/mpeg';
 			break;
 		}
 	}
@@ -3298,7 +3313,7 @@ var h264NativePlayer = new mediaPlayer( 'h264Native', ['video/h264'], 'Native' )
 var webmNativePlayer = new mediaPlayer( 'webmNative', ['video/webm'], 'Native' );
 
 // VLC player
-var vlcMineList = ['video/ogg', 'audio/ogg', 'application/ogg', 'video/x-flv', 'video/mp4',  'video/h264'];
+var vlcMineList = ['video/ogg', 'audio/ogg', 'application/ogg', 'video/x-flv', 'video/mp4',  'video/h264', 'video/x-msvideo', 'video/mpeg'];
 var vlcPlayer = new mediaPlayer( 'vlc-player', vlcMineList, 'Vlc' );
 
 // Generic plugin
@@ -3344,6 +3359,8 @@ mediaPlayers.prototype =
 		this.defaultPlayers['application/ogg'] = ['Native', 'Vlc', 'Java', 'Generic'];
 		this.defaultPlayers['audio/ogg'] = ['Native', 'Vlc', 'Java' ];
 		this.defaultPlayers['video/mp4'] = ['Vlc'];
+		this.defaultPlayers['video/mpeg'] = ['Vlc'];
+		this.defaultPlayers['video/x-msvideo'] = ['Vlc'];
 		
 		this.defaultPlayers['text/html'] = ['Html'];
 		this.defaultPlayers['image/jpeg'] = ['Html'];
@@ -3620,6 +3637,11 @@ mw.EmbedTypes = {
 					continue;
 				}
 		
+				if ( (type == 'video/mpeg' || type=='video/x-msvideo') &&
+                                     pluginName.toLowerCase() == 'vlc multimedia plugin' ) {
+                                  this.players.addPlayer( vlcMozillaPlayer );
+                                }
+                                
 				if ( type == 'application/ogg' ) {
 					if ( pluginName.toLowerCase() == 'vlc multimedia plugin' ) {
 						this.players.addPlayer( vlcMozillaPlayer );
