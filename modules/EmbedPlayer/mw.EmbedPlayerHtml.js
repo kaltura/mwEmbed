@@ -22,7 +22,7 @@ mw.EmbedPlayerHtml = {
 		'timeDisplay':true,
 		'volumeControl':true,
 
-		'overlays':true,		
+		'overlays':true
 	},
 	
 	// If the player is "ready to play"
