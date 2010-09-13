@@ -232,11 +232,11 @@
 		// Add the skin to the request 		
 		var skinCaseName =  skinName.charAt(0).toUpperCase() + skinName.substr(1);
 		// The skin js:		
-		if( $j.inArray( 'mw.PlayerSkin' + skinCaseName, dependencyRequest ) == -1 ){
+		if( $j.inArray( 'mw.PlayerSkin' + skinCaseName, dependencyRequest ) == -1 ) {
 			dependencyRequest.push( 'mw.PlayerSkin' + skinCaseName );
 		}
 		// The skin css
-		if( $j.inArray( 'mw.style.PlayerSkin' + skinCaseName, dependencyRequest ) == -1 ){
+		if( $j.inArray( 'mw.style.PlayerSkin' + skinCaseName, dependencyRequest ) == -1 ) {
 			dependencyRequest.push( 'mw.style.PlayerSkin' + skinCaseName );
 		}
 	

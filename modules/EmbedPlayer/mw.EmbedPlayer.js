@@ -615,6 +615,7 @@ EmbedPlayerManager.prototype = {
 			$j( targetElement )
 			.attr('id', playerInterface.pid )
 			.addClass( 'nativeEmbedPlayerPid' )
+			.show()
 			.after( 
 				$j( swapPlayerElement ).css('display', 'none')
 			)
@@ -2430,8 +2431,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Check if we need to refresh mobile safari
 		var mobileSafairNeedsRefresh = false;					
-		
-		
+				
 		// Unhide the original video element
 		if( !$j( '#' + this.pid ).hasClass('PlayerThemer') ){
 			$j( '#' + this.pid )
@@ -2450,7 +2450,7 @@ mw.EmbedPlayer.prototype = {
 			var source = this.mediaElement.getSources( 'video/h264' )[0];
 			if( source && ! source.src ){
 				mw.log( 'Error: should have caught no playable sources for mobile safari earlier' );
-			}					
+			}
 			
 			var videoAttribues = {
 				'id' : _this.pid,
@@ -2458,6 +2458,7 @@ mw.EmbedPlayer.prototype = {
 				'src' : source.src,
 				'controls' : 'true'
 			}
+			
 			if( this.loop ){
 				videoAttribues[ 'loop' ] = 'true';
 			}
