@@ -138,7 +138,13 @@ mw.SequencerTimeline.prototype = {
 			)
 			$clipTrackName = $j( '#' + this.getTrackNameInterfaceId( trackIndex ) );
 		}
-		// xxx check for specific smilSequenceTrack updates that require TrackNameInterface update
+		// Update the TrackNameInterface duration on every draw::
+		/*$clipTrackName.find('.trackDuration').text( 
+			mw.seconds2npt( 
+				this.sequencer.getSmil().getBody().getClipDuration( smilSequenceTrack )
+			)
+		)*/
+		
 		
 		
 		// Add Sequence track container if not present 
@@ -776,7 +782,15 @@ mw.SequencerTimeline.prototype = {
 			$trackNameTitle.find('span').attr('title', $j( smilSequenceTrack ).attr('title') );
 		} 
 		
-		$trackNameContainer.append( $trackNameTitle )
+		$trackNameContainer.append( 
+				$trackNameTitle
+				,				
+				// Also append a trackDuration span
+				$j( '<br />')
+				,
+				$j( '<span />').addClass('trackDuration')
+				
+		)
 		// Wrap the track name in a box that matches the trackNames 
 		return $trackNameContainer;
 	},

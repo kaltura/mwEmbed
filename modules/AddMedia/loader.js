@@ -58,9 +58,9 @@
 				'$j.browserTest', // ( textSelection uses browserTest ) 
 				'$j.ui'
 			], [
-				'$j.ui.resizable',
+				'$j.widget',
 				'$j.ui.mouse',
-				'$j.widget',				
+				'$j.ui.resizable',				
 				'$j.ui.position',
 				'$j.ui.draggable',
 				'$j.ui.dialog',

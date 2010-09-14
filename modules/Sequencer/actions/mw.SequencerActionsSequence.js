@@ -356,41 +356,46 @@ mw.SequencerActionsSequence.prototype = {
 		}, function(){
 			// this should be depreciated ( hidden interface bug in mwEmbed ) 
 			$j('#publishVideoTarget').parent().show();
-			// Start up the render
-			var foggRender = $j('#publishVideoTarget').firefoggRender({
-				'statusTarget' : '#firefoggStatusTarget',
-				'saveToLocalFile' : localFile,
-				'onProgress' : function( progress ){
-					var progressPrecent = ( Math.round( progress * 10000 ) / 100 ); 
-					$j('#firefoggPercentDone').text( 
-							progressPrecent + 
-						'%'
-					)
-					$j("#firefoggProgressbar").progressbar({
-						"value" : Math.round( progress * 100 )
-					});
-					// xxx WTF? no idea why progressbar above is not working 
-					$j("#firefoggProgressbar .ui-progressbar-value").css('width', Math.round( progress * 10000 ) / 100 + '%');
-				},
-				'doneRenderCallback': function( fogg ){
-					if( localFile ){
-						$dialog.html( gM('mwe-sequencer-save_done') );
-					} else {
-						_this.uploadRenderedVideo( $dialog, fogg );
+			
+			// wait 100ms before starting the firefogg render ( avoids page lock 
+			// and ensures we don't get a loading spinner for first frame of render) 
+			setTimeout(function(){
+				// Start up the render
+				var foggRender = $j('#publishVideoTarget').firefoggRender({
+					'statusTarget' : '#firefoggStatusTarget',
+					'saveToLocalFile' : localFile,
+					'onProgress' : function( progress ){
+						var progressPrecent = ( Math.round( progress * 10000 ) / 100 ); 
+						$j('#firefoggPercentDone').text( 
+								progressPrecent + 
+							'%'
+						)
+						$j("#firefoggProgressbar").progressbar({
+							"value" : Math.round( progress * 100 )
+						});
+						// xxx WTF? no idea why progressbar above is not working 
+						$j("#firefoggProgressbar .ui-progressbar-value").css('width', Math.round( progress * 10000 ) / 100 + '%');
+					},
+					'doneRenderCallback': function( fogg ){
+						if( localFile ){
+							$dialog.html( gM('mwe-sequencer-save_done') );
+						} else {
+							_this.uploadRenderedVideo( $dialog, fogg );
+						}
 					}
+				});
+				var buttons = {};
+				buttons[ gM('mwe-cancel') ] = function(){
+					foggRender.stopRender();
+					$j( this ).dialog( 'close' );
 				}
-			});
-			var buttons = {};
-			buttons[ gM('mwe-cancel') ] = function(){
-				foggRender.stopRender();
-				$j( this ).dialog( 'close' );
-			}
-			// Add cancel button 
-			$dialog.dialog( "option", "buttons", buttons );	
-			if( !foggRender.doRender() ){
-				// do render returns false on firefox gui cancel close the dialog:
-				$dialog.dialog("close");
-			}
+				// Add cancel button 
+				$dialog.dialog( "option", "buttons", buttons );	
+				if( !foggRender.doRender() ){
+					// do render returns false on firefox gui cancel close the dialog:
+					$dialog.dialog("close");
+				}
+			}, 100);
 		});		
 	},
 	

@@ -118,7 +118,7 @@
 		wrapSequencerWikiText : function( xmlString ){
 			var _this = this;
 			if( !_this.currentSequencePage.pageStart ){
-				 _this.currentSequencePage.pageStart ="\nTo edit this sequence " + 
+				 _this.currentSequencePage.pageStart ="\nTo edit or view this sequence " + 
 					'[{{fullurl:{{FULLPAGENAME}}|withJS=MediaWiki:MwEmbed.js}} enable the sequencer] for this page'; 
 			}
 			return _this.currentSequencePage.pageStart + 
@@ -283,7 +283,7 @@
 		updateSequenceFileDescription: function( callback ){
 			var _this = this;
 			mw.getToken( _this.getApiUrl(), 'File:' + _this.getVideoFileName(), function( token ){
-				var pageText = ''
+				var pageText = '';
 				// Check if we should use commons asset description template:
 				if( mw.parseUri( _this.getApiUrl() ).host == 'commons.wikimedia.org' ){
 					pageText = _this.getCommonsDescriptionText()
@@ -301,21 +301,27 @@
 					if( data && data.edit && data.edit.result == "Success"){
 						callback( true );
 					} else {
-						callback( false )
+						callback( false );
 					}
 				});
 			})
 		},
+		
 		getBaseFileDescription: function(){
 			var _this = this;
 			return 'Published sequence for [['+ _this.getTitleKey() + ']]';
 		},
+		
 		getCommonsDescriptionText: function(){
 			var _this = this;
 			
-			var descText ="{{Information\n" +  
-				"|Description=" + _this.getBaseFileDescription() + "\n" + 
-				"|Source= Sequence Sources assets include:\n";
+			var descText = '<!-- ' +  
+			"Note: this is an automated file description for a published video sequence. \n"
+			"Changes to this wikitext will be overwiten. Please add metadata and categories to\n" + 
+			 _this.getTitleKey() + " instead --> \n" + 
+			 "{{Information\n" +  
+			"|Description=" + _this.getBaseFileDescription() + "\n" + 
+			"|Source= Sequence Sources assets include:\n";
 			
 			// loop over every asset:
 			this.sequencer.getSmil().getBody().getRefElementsRecurse(null, 0, function( $node ){
@@ -335,11 +341,13 @@
 						pad2(dt.getMonth()+1) + '-' + 
 						pad2(dt.getDate()) + "\n" +
 				"|Author=Last edit by [[User:" + _this.getUserName() + "]]\n" +  
-				"|Permission= {{Cc-by-nc-sa-2.0-dual}}" + "\n" +				
+				"For full editor list see history page of [[" + _this.getTitleKey() + "]] \n" +
+				"|Permission={{Cc-by-sa-3.0}} and {{GFDL|migration=redundant}}" + "\n" +				
 				"}}";
 			
-			// Add Published Sequence category ( for now )
+			// Add Published Sequence category ( for now ) 
 			descText += "\n[[Category:Published Sequence]]\n";
+			
 			return descText;
 		},
 		
@@ -370,7 +378,7 @@
 		 */
 		getSequenceEditUrl: function( titleKey ){
 			var viewUrl = this.getSequenceViewUrl( titleKey );
-			return mw.replaceUrlParams(viewUrl, {'action':'edit'})
+			return mw.replaceUrlParams(viewUrl, {'action':'edit'});
 		},
 		
 		/**
@@ -386,7 +394,7 @@
 			var _this = this;
 			mw.getToken( this.getApiUrl(), 'File:' + this.getVideoFileName(), function( saveToken ){
 				// xxx Get the latest save comment 
-				_this.getSaveSummary(function( saveSummary ){			
+				_this.getSaveSummary( function( saveSummary ){			
 					var request = {
 						'token' : saveToken,
 						'action' : 'upload',
@@ -404,7 +412,7 @@
 		sequencePublishUploadDone: function(){
 			this.sequencePublished = true;	
 		}
-	}
+	};
 
 
 } )( window.mw );	

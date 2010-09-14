@@ -2713,7 +2713,7 @@ mw.RemoteSearchDriver.prototype = {
 	getTemplateDescription: function( resource ) {
 		// setup the resource description from resource description:
 		// FIXME: i18n, namespace
-		var description = '{{Information ' + "\n";
+		var description ='{{Information ' + "\n";
 
 		if ( resource.desc ) {
 			description += '|Description= ' + resource.desc + "\n";

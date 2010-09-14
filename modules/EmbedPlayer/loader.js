@@ -33,7 +33,7 @@
 		    'href' :  MW_EMBED_LIBRARY_PAGE,
 		    // Style icon to be applied 
 		    'class' : 'kaltura-icon',
-		    // An icon image url ( should be a 16x16 image or data url )  
+		    // An icon image url ( should be a 12x12 image or data url )  
 		    'iconurl' : false
 		},
 
@@ -145,10 +145,10 @@
 					.getAbsoluteOverlaySpinner()
 					.attr('id', 'loadingSpinner_' + $j( element ).attr('id') )
 					.addClass( 'playerLoadingSpinner' );
-					
+								
 			});									
 			// Load the embedPlayer module ( then run queued hooks )			
-			mw.load( 'EmbedPlayer', function ( ) {				
+			mw.load( 'EmbedPlayer', function ( ) {		
 				mw.log("EmbedPlayer:: do rewrite players:" + $j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).length );
 				// Rewrite the EmbedPlayer.RewriteTags with the 
 				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer();				
@@ -232,11 +232,11 @@
 		// Add the skin to the request 		
 		var skinCaseName =  skinName.charAt(0).toUpperCase() + skinName.substr(1);
 		// The skin js:		
-		if( $j.inArray( 'mw.PlayerSkin' + skinCaseName, dependencyRequest ) == -1 ) {
+		if( $j.inArray( 'mw.PlayerSkin' + skinCaseName, dependencyRequest ) == -1 ){
 			dependencyRequest.push( 'mw.PlayerSkin' + skinCaseName );
 		}
 		// The skin css
-		if( $j.inArray( 'mw.style.PlayerSkin' + skinCaseName, dependencyRequest ) == -1 ) {
+		if( $j.inArray( 'mw.style.PlayerSkin' + skinCaseName, dependencyRequest ) == -1 ){
 			dependencyRequest.push( 'mw.style.PlayerSkin' + skinCaseName );
 		}
 	

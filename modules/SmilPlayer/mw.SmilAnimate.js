@@ -74,7 +74,7 @@ mw.SmilAnimate.prototype = {
 	*/
 	animateTransform: function( smilElement, animateTime, deltaTime ){
 		var _this = this;
-		//mw.log("SmilAnimate::animateTransform:" + smilElement.id + ' AnimateTime: ' + animateTime + ' delta:' + deltaTime);
+		//mw.log("SmilAnimate::animateTransform:" + $j( smilElement).attr('id') + ' AnimateTime: ' + animateTime + ' delta:' + deltaTime);
 		
 		// Check for deltaTime to animate over, if zero
 		if( !deltaTime || deltaTime === 0 ){
@@ -145,6 +145,13 @@ mw.SmilAnimate.prototype = {
 	checkForTransformUpdate: function( smilElement, animateTime, deltaTime ){
 		// Get the node type: 		
 		var refType = this.smil.getRefType( smilElement )
+		// Check for transtion in range
+		if( refType != 'audio' 
+			&& 
+			this.smil.getTransitions().hasTransitionInRange( smilElement, animateTime ) 
+		){
+			return true;
+		}
 		
 		// Let transition check for updates
 		if( refType == 'img' || refType=='video' ){
@@ -187,15 +194,15 @@ mw.SmilAnimate.prototype = {
 	 * Transform Element in an inner animation loop
 	 */
 	transformAnimateFrame: function( smilElement, animateTime ){
-		// Audio / Video has no inner animation per-frame transforms 
-		if( this.smil.getRefType( smilElement ) != 'video' 
-			&& 
-			this.smil.getRefType( smilElement ) != 'audio' 
-		){
+		var refType =  this.smil.getRefType( smilElement );
+		// Audio / Video has no inner animation per-frame transforms ( aside from  
+		if( refType != 'video'	&& refType != 'audio' ){
 			this.transformElement( smilElement, animateTime );	
 		}
-		// Update the smil Element transition:
-		this.smil.getTransitions().transformTransitionOverlay( smilElement, animateTime );		
+		// Update the smil Element transition ( applies to all visual media types ) 
+		if( refType != 'audio' ){
+			this.smil.getTransitions().transformTransitionOverlay( smilElement, animateTime );
+		}
 	},
 	
 	/** 
@@ -214,10 +221,8 @@ mw.SmilAnimate.prototype = {
 				this.transformImageForTime( smilElement, animateTime );
 			break;			
 			case 'video':
-				this.transformMediaForTime( smilElement, animateTime );
-			break;
 			case 'audio':
-				// audio has no frame transform ( only playback )
+				this.transformMediaForTime( smilElement, animateTime );
 			break;
 		}					
 	},

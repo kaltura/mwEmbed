@@ -37,7 +37,7 @@ mw.addMessageKeys( [
  * 	   
  *  @param {String} url The url to be wrapped  
  */
-mw.getRemoteSequencerLink = function( url ){
+mw.getRemoteSequencerLink = function( url ){	
 	if( mw.getConfig( 'Sequencer.WithJsMwEmbedUrlHelper' ) ){
 		if( url.indexOf('?') == -1){
 			url+='?'
@@ -52,27 +52,30 @@ mw.getRemoteSequencerLink = function( url ){
 // Add player pause binding if config is set::
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayerId ) {
 	if( mw.getConfig( 'Sequencer.KalturaPlayerEditOverlay' )){
+		
 		var embedPlayer = $j( '#' + embedPlayerId ).get(0);
-
-		$j( embedPlayer ).bind( 'pause', function() {
-			// For now don't overlay smil players ( used in editor ) 
-			// xxx in the future we should have an editor class
-			if( embedPlayer.supports['overlays'] &&  embedPlayer.instanceOf.toLowerCase() != 'smil' ){
-				mw.remoteSequencerAddEditOverlay( embedPlayerId )
-				// xxx should use getter setter
-				embedPlayer.controlBuilder.displayOptionsMenuFlag = true;
-			}			
+		
+		// hide if the main menu is requested 
+		$j( embedPlayer ).bind( 'displayMenuOverlay', function(){			
+			$j( embedPlayer ).siblings( '.kalturaEditOverlay' ).fadeOut( 'fast' );
+		});
+		
+		$j( embedPlayer ).bind( 'pause', function() {		
+			mw.remoteSequencerAddEditOverlay( embedPlayerId )
+			// xxx should use getter setter
+			embedPlayer.controlBuilder.displayOptionsMenuFlag = true;		
 			return true;
-		})
-		$j( embedPlayer ).bind( 'onend', function( onDoneAction ){
+		});
+		
+		$j( embedPlayer ).bind( 'ended', function( onDoneAction ){			
 			// pause event should fire 
-			//mw.remoteSequencerAddEditOverlay( embedPlayerId )
+			mw.remoteSequencerAddEditOverlay( embedPlayerId );
 			
-			// show the credits screen after 3 seconds 
-			setTimeout(function(){
+			// show the credits screen after 3 seconds 1/2 second to fade in
+			setTimeout(function(){				
 				$j( embedPlayer ).siblings( '.kalturaEditOverlay' ).fadeOut( 'fast' );
 				embedPlayer.$interface.find('.k-menu').fadeIn('fast');
-			},3000)
+			}, 3500)
 			
 			// On end runs before interface bindings (give the dom 10ms to build out the menu )
 			setTimeout(function(){
@@ -84,10 +87,23 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayerId ) {
 			embedPlayer.controlBuilder.displayOptionsMenuFlag = false;
 			return true ;
 		});
+		
 	}
 });
 mw.remoteSequencerAddEditOverlay = function( embedPlayerId ){
 	var embedPlayer = $j( '#' + embedPlayerId ).get(0);
+
+	// Check if we can do the overlay::
+	if( !embedPlayer.supports['overlays'] 
+	|| embedPlayer.instanceOf.toLowerCase() == 'smil'
+	|| embedPlayer.getHeight() < 180 
+	|| embedPlayer.getWidth() < 240
+	// Require that the video is a flat sequence special key: Sequence-
+	|| embedPlayer.apiTitleKey.indexOf('Sequence-') != 0
+	){		
+		return ;
+	}
+	
 	if(! $j( '#' + embedPlayerId ).siblings( '.kalturaEditOverlay' ).length ){
 		var editLink = '#';
 		if( mw.isLocalDomain( mw.getApiProviderURL( embedPlayer.apiProvider ) ) 
@@ -100,12 +116,14 @@ mw.remoteSequencerAddEditOverlay = function( embedPlayerId ){
 			seqTitle = seqTitle.substr(0, seqTitle.length -4 );
 			// not ideal details page builder but 'should work' ::
 			editLink = mw.getApiProviderURL( embedPlayer.apiProvider ).replace( 'api.php', 'index.php' );
-			editLink = mw.replaceUrlParams( editLink, 
-					{
-						'title' : seqTitle,
-						'action' : 'edit' 
-					}
-			);
+			editLink = mw.getRemoteSequencerLink (
+					mw.replaceUrlParams( editLink, 
+						{
+							'title' : seqTitle,
+							'action' : 'edit' 
+						}
+					)
+				);
 		}
 		var kalturaLinkAttr = {
 				'href': 'http://kaltura.com', 
@@ -192,9 +210,12 @@ mw.MediaWikiRemoteSequencer.prototype = {
 	* @param {Object} options RemoteMwSequencer options
 	*/
 	init: function( options ) {
-		this.action = ( options.action )? options.action : this.action;
-		this.title = ( options.title )? options.title : this.title;
-		this.target = ( options.target )? options.target : this.target;
+		if( ! options.action || ! options.titleKey || ! options.target){
+			mw.log("Error sequence remote missing action, title or target");
+		}
+		this.action =  options.action;
+		this.titleKey = options.titleKey;
+		this.target =  options.target;
 	},	
 	
 	drawUI: function() {
@@ -215,8 +236,8 @@ mw.MediaWikiRemoteSequencer.prototype = {
 		var _this = this;
 		if( wgArticleId == 0 ) {
 			// Update create button 
-			$j('#ca-edit span a')
-				.text( gM('mwe-sequencer-create-sequence' ))
+			$j('#ca-edit a')
+				.html( $j('<span />').text( gM('mwe-sequencer-create-sequence' ) ) )
 				.click(function(){
 					_this.showEditor();
 					return false;
@@ -232,8 +253,8 @@ mw.MediaWikiRemoteSequencer.prototype = {
 			);
 		} else {						
 			// Update edit button 
-			$j('#ca-edit span a')
-				.text( gM('mwe-sequencer-edit-sequence' ))
+			$j('#ca-edit a')
+				.html( $j('<span />').text( gM('mwe-sequencer-edit-sequence' ) ) )
 				.click(function(){
 					_this.showEditor();
 					return false;
@@ -242,6 +263,17 @@ mw.MediaWikiRemoteSequencer.prototype = {
 			_this.displayPlayerEmbed();							
 		}
 	},	
+	
+	showViewFlattenedFile: function(){
+		var _this = this;
+		//just update the edit button: 
+		$j('#ca-edit a')
+		.html( $j('<span />').text( gM('mwe-sequencer-edit-sequence' ) ) )
+		.click(function(){
+			_this.showEditor();
+			return false;
+		})		
+	},
 	
 	showEditUI: function(){
 		var _this = this;
@@ -278,13 +310,13 @@ mw.MediaWikiRemoteSequencer.prototype = {
 			.append( 
 				gM("mwe-sequencer-restore-text-edit", $j('<a />').click(function(){
 					$j('#sequencerContainer').hide();
-					$j('#editform').show();
+					$j('#editform,#toolbar').show();
 				}) )
 			)
 			.css( {'cursor': 'pointer', 'font-size':'x-small' })
 		);
 		// load the sequence editor with the sequencerContainer target
-		mw.load( 'Sequencer', function(){ 	 				
+		mw.load( 'Sequencer', function(){ 
 			$j('#sequencerContainer').sequencer( _this.getSequencerConfig() );
 		});
 	},
@@ -436,7 +468,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 
 		return '[[' + this.getSequenceFileKey() + "|thumb|400px|right|\n\n" + 
 		 "Sequence " + this.getTitle() + " \n\n" +
-		 "<br/>Edit this sequence with the [" +
+		 "&lt;br&gt;Edit this sequence with the [" +
 		 mw.getRemoteSequencerLink ( editLink ) +
 		 ' kaltura editor] ]]';		
 	},	
@@ -453,7 +485,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 				'top' : '5px',
 				'bottom' : '5px',
 				'left' : '5px',
-				'right' : '5px',	
+				'right' : '6px',	
 				'background': '#FFF'
 			})			
 			.append(
@@ -464,7 +496,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 				.css( {'width':'200px', 'margin':'auto'})
 			)
 		)
-		mw.load( 'Sequencer', function(){
+		mw.load( 'Sequencer', function(){					
 			// Send a jquery ui style destroy command ( in case the editor is re-invoked )
 			$j('#edit_sequence_container').sequencer( 'destroy');
 			$j('#edit_sequence_container').sequencer( _this.getSequencerConfig() );
@@ -483,9 +515,10 @@ mw.MediaWikiRemoteSequencer.prototype = {
 			server: {
 				'type' : 'mediaWiki',
 				'url' : _this.getApiUrl(),
-				'titleKey' : wgPageName,
-				'pagePathUrl' : wgServer + wgArticlePath
-			},
+				'titleKey' : _this.titleKey,
+				'pagePathUrl' : wgServer + wgArticlePath,
+				'userName' : wgUserName
+			},			
     		// Set the add media wizard to only include commons:   
     		addMedia : {
     			 'enabled_providers':[ 'wiki_commons' ],	    			 
@@ -511,21 +544,6 @@ mw.MediaWikiRemoteSequencer.prototype = {
 		return mw.absoluteUrl( wgScript.replace('index.php', 'api.php') );
 	}
 	
-	// Check page type 
-	
-	// "view" page 	
-	
-	// set page content to "loading"
-	// get wikitext of page via api
-	// grab xml
-	// update page with sequence and 
-	
-	
-	//"edit" page
-	// grab textbox text, 
-	// set page to loading
-	// display sequence editor in "body" with -> full-screen link
-};	//Setup the remote configuration
-	
+};
 	
 } )( window.mw );	

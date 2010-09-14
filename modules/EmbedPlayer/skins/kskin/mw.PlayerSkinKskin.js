@@ -206,6 +206,9 @@ mw.PlayerSkinKskin = {
 				.text ( gM( 'mwe-embedplayer-menu_btn' ) );
 		} );
 		this.$playerTarget.find( '.play-btn-large' ).fadeIn( 'fast' );
+
+		// re display the control bar if hidden: 
+		this.showControlBar();
 		
 		// Set close overlay menu flag: 
 		this.displayOptionsMenuFlag = false;
@@ -223,6 +226,8 @@ mw.PlayerSkinKskin = {
 				.text ( gM( 'mwe-embedplayer-close_btn' ) );
 		} );
 		this.$playerTarget.find( '.play-btn-large' ).fadeOut( 'fast' );
+		
+		$j(this.embedPlayer).trigger( 'displayMenuOverlay' );
 		
 		// Set the Options Menu display flag to true:
 		this.displayOptionsMenuFlag = true;

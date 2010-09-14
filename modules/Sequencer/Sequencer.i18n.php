@@ -52,8 +52,9 @@ $messages['en'] = array(
 
 	'mwe-sequencer-tools-transitions' => 'Transitions',
 	'mwe-sequencer-tools-transitions-desc' => 'Set in and out Transitions',
-	'mwe-sequencer-clip-transin' => 'Transition in',
-	'mwe-sequencer-clip-transout' => 'Transition out',
+	'mwe-sequencer-tools-transitions-transIn' => 'Transition in',
+	'mwe-sequencer-tools-transitions-transOut' => 'Transition out',
+	'mwe-sequencer-tools-transitions-color' => 'Color',
 
 	'mwe-sequencer-clip-cancel-edit' => 'Cancel clip edit',
 	'mwe-sequencer-preview' => 'Preview',
@@ -61,7 +62,7 @@ $messages['en'] = array(
 	'mwe-sequencer-preview-continue' => 'Continue preview',
 	'mwe-sequencer-apply-changes' => 'Apply changes',
 	'mwe-sequencer-start-time' => 'Start time',
-	'mwe-sequencer-asset-source' => 'Source page',
+	'mwe-sequencer-asset-source' => 'Source asset page',
 
 
 	'mwe-sequencer-loading_user_rights' => 'Loading user rights ...',

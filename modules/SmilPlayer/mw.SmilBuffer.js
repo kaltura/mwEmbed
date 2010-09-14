@@ -410,7 +410,7 @@ mw.SmilBuffer.prototype = {
 	
 	mediaBufferSeek: function ( smilElement, seekTime, callback ){
 		var _this = this;
-		mw.log("SmilBuffer::mediaBufferSeek: " + this.smil.getSmilElementPlayerID( smilElement ) +' time:' + seekTime );
+		//mw.log("SmilBuffer::mediaBufferSeek: " + this.smil.getSmilElementPlayerID( smilElement ) +' time:' + seekTime );
 		
 		// Get the asset target:		
 		var assetId = this.smil.getSmilElementPlayerID( smilElement );

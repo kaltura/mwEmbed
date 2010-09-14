@@ -904,7 +904,7 @@ mw.PlayerControlBuilder.prototype = {
 				gM( 'mwe-embedplayer-choose_player' ),
 				'gear',
 				function( ) {
-					ctrlObj.displayOverlay(  
+					ctrlObj.displayMenuOverlay(  
 						ctrlObj.getPlayerSelect()
 					);						
 				}
@@ -917,7 +917,7 @@ mw.PlayerControlBuilder.prototype = {
 				 gM( 'mwe-embedplayer-download' ),
 				'disk',
 				function( ) {
-					ctrlObj.displayOverlay( gM('mwe-embedplayer-loading_txt' ) );					
+					ctrlObj.displayMenuOverlay( gM('mwe-embedplayer-loading_txt' ) );					
 					// Call show download with the target to be populated
 					ctrlObj.showDownload(  		
 						ctrlObj.embedPlayer.$interface.find( '.overlay-content' ) 
@@ -933,7 +933,7 @@ mw.PlayerControlBuilder.prototype = {
 				gM( 'mwe-embedplayer-share' ),
 				'mail-closed',
 				function( ) {
-					ctrlObj.displayOverlay( 
+					ctrlObj.displayMenuOverlay( 
 						ctrlObj.getShare()
 					);	
 					$j( ctrlObj.embedPlayer ).trigger( 'showShareEvent' );
@@ -946,7 +946,7 @@ mw.PlayerControlBuilder.prototype = {
 					gM( 'mwe-embedplayer-about-library' ),
 					'info',
 					function( ) {
-						ctrlObj.displayOverlay( 
+						ctrlObj.displayMenuOverlay( 
 							ctrlObj.aboutPlayerLibrary()
 						);	
 						$j( ctrlObj.embedPlayer ).trigger( 'aboutPlayerLibrary' );
@@ -961,8 +961,8 @@ mw.PlayerControlBuilder.prototype = {
 	closeMenuOverlay: function(){
 		var _this = this;	
 		var embedPlayer = this.embedPlayer;
-		var $overlay = embedPlayer.$interface.find( '.overlay-win,.ui-widget-overlay,.ui-widget-shadow' );
-		
+		var $overlay = embedPlayer.$interface.find( '.overlay-win,.ui-widget-overlay,.ui-widget-shadow' );				
+			
 		this.displayOptionsMenuFlag = false;
 		mw.log(' closeMenuOverlay: ' + this.displayOptionsMenuFlag);
 		
@@ -971,6 +971,10 @@ mw.PlayerControlBuilder.prototype = {
 		} );
 		// Show the big play button: 
 		embedPlayer.$interface.find( '.play-btn-large' ).fadeIn( 'slow' );
+		
+		
+		$j(embedPlayer).trigger( 'closeMenuOverlay' );
+		
 		return false; // onclick action return false
 	},
 	
@@ -991,6 +995,8 @@ mw.PlayerControlBuilder.prototype = {
 		if ( !this.supportedComponets[ 'overlays' ] ) {
 			embedPlayer.stop();
 		}						  
+
+		
 		// Hide the big play button: 
 		embedPlayer.$interface.find( '.play-btn-large' ).hide();		
 		
@@ -1064,6 +1070,11 @@ mw.PlayerControlBuilder.prototype = {
 		)
 		.find( '.overlay-win' )
 		.fadeIn( "slow" );					
+		
+		
+		// trigger menu overlay display
+		alert('triger displayMenuOverlay');
+		$j(embedPlayer).trigger( 'displayMenuOverlay' );
 		
 		return false; // onclick action return false
 	},	

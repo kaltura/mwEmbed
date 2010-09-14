@@ -2643,7 +2643,7 @@ mw.EmbedPlayer.prototype = {
 	doLinkBack: function() {
 		if ( ! this.linkback && this.roe && this.mediaElement.addedROEData == false ) {
 			var _this = this;
-			this.displayOverlay( gM( 'mwe-embedplayer-loading_txt' ) );
+			this.displayMenuOverlay( gM( 'mwe-embedplayer-loading_txt' ) );
 			this.getMvJsonUrl( this.roe, function( data ) {
 				_this.mediaElement.addROE( data );
 				_this.doLinkBack();
@@ -2654,7 +2654,7 @@ mw.EmbedPlayer.prototype = {
 			} else if ( this.mediaElement.linkback ) {
 				window.location = this.mediaElement.linkback;
 			} else {
-				this.displayOverlay( gM( 'mwe-embedplayer-could_not_find_linkback' ) );
+				this.displayMenuOverlay( gM( 'mwe-embedplayer-could_not_find_linkback' ) );
 			}
 		}
 	},		
@@ -3070,6 +3070,7 @@ mw.EmbedPlayer.prototype = {
 		} else {
 			// If stopped "stop" monitor: 
 			clearInterval( this.monitorInterval );
+			this.monitorInterval = 0;
 		}
 		
 		//mw.log('trigger:monitor:: ' + this.currentTime );		
