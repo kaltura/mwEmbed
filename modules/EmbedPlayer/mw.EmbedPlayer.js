@@ -11,68 +11,7 @@
  * Add the messages text: 
  */
  
-mw.addMessages( {
-	"mwe-embedplayer-loading_plugin" : "Loading plugin ...",
-	"mwe-embedplayer-select_playback" : "Set playback preference",
-	"mwe-embedplayer-link_back" : "Link back",
-	"mwe-embedplayer-error_swap_vid" : "Error: mwEmbed was unable to swap the video tag for the mwEmbed interface",
-	"mwe-embedplayer-add_to_end_of_sequence" : "Add to end of sequence",
-	"mwe-embedplayer-missing_video_stream" : "The video file for this stream is missing",
-	"mwe-embedplayer-play_clip" : "Play clip",
-	"mwe-embedplayer-pause_clip" : "Pause clip",
-	"mwe-embedplayer-volume_control" : "Volume control",
-	"mwe-embedplayer-player_options" : "Player options",
-	"mwe-embedplayer-timed_text" : "Timed text",
-	"mwe-embedplayer-player_fullscreen" : "Fullscreen",
-	"mwe-embedplayer-next_clip_msg" : "Play next clip",
-	"mwe-embedplayer-prev_clip_msg" : "Play previous clip",
-	"mwe-embedplayer-current_clip_msg" : "Continue playing this clip",
-	"mwe-embedplayer-seek_to" : "Seek $1",
-	"mwe-embedplayer-paused" : "paused",
-	"mwe-embedplayer-download_segment" : "Download selection:",
-	"mwe-embedplayer-download_full" : "Download full video file:",
-	"mwe-embedplayer-download_right_click" : "To download, right click and select <i>Save link as...<\/i>",
-	"mwe-embedplayer-download_clip" : "Download video",
-	"mwe-embedplayer-download_text" : "Download timed text",
-	"mwe-embedplayer-download" : "Download",
-	"mwe-embedplayer-share" : "Share",
-	"mwe-embedplayer-about-library" : "About kaltura player",
-	"mwe-embedplayer-about-library-desc" : "Kaltura's HTML5 Media Library enables you to take advantage of the html5 &lt;video&gt; and &lt;audio&gt; tags today with a consistent player interface across all major browsers. <br> <br> [$1 More about the kaltura player library]",
-	"mwe-embedplayer-credits" : "Credits",
-	"mwe-embedplayer-clip_linkback" : "Clip source page",
-	"mwe-embedplayer-choose_player" : "Choose video player",
-	"mwe-embedplayer-no-player" : "No player available for $1", 
-	"mwe-embedplayer-share_this_video" : "Share this video",
-	"mwe-embedplayer-video_credits" : "Video credits",
-	"mwe-embedplayer-kaltura-platform-title" : "Kaltura open source video platform",
-	"mwe-embedplayer-menu_btn" : "Menu",
-	"mwe-embedplayer-close_btn" : "Close",
-	"mwe-embedplayer-ogg-player-vlc-player" : "VLC player",
-	"mwe-embedplayer-ogg-player-oggNative" : "HTML5 Ogg player",
-	"mwe-embedplayer-ogg-player-h264Native" : "HTML5 H.264 player",
-	"mwe-embedplayer-ogg-player-oggPlugin" : "Generic Ogg plugin",
-	"mwe-embedplayer-ogg-player-quicktime-mozilla" : "QuickTime plugin",
-	"mwe-embedplayer-ogg-player-quicktime-activex" : "QuickTime ActiveX",
-	"mwe-embedplayer-ogg-player-cortado" : "Java Cortado",
-	"mwe-embedplayer-ogg-player-flowplayer" : "Flowplayer",
-	"mwe-embedplayer-ogg-player-kplayer" : "Kaltura player",
-	"mwe-embedplayer-ogg-player-selected" : "(selected)",
-	"mwe-embedplayer-generic_missing_plugin" : "You browser does not appear to support the following playback type: <b>$1<\/b><br \/>Visit the <a href=\"http:\/\/commons.wikimedia.org\/wiki\/Commons:Media_help\">Playback methods<\/a> page to download a player.<br \/>",
-	"mwe-embedplayer-missing-source" : "No source video was found",
-	"mwe-embedplayer-for_best_experience" : "For a better video playback experience we recommend the <b><a href=\"http:\/\/www.mozilla.com\/en-US\/firefox\/upgrade.html?from=mwEmbed\">latest Firefox<\/a>.<\/b>",
-	"mwe-embedplayer-do_not_warn_again" : "Dismiss for now.",
-	"mwe-embedplayer-playerSelect" : "Players",
-	"mwe-embedplayer-read_before_embed" : "<a href=\"http:\/\/mediawiki.org\/wiki\/Security_Notes_on_Remote_Embedding\" target=\"_new\">Read this<\/a> before embedding.",
-	"mwe-embedplayer-embed_site_or_blog" : "Embed on a page",
-	"mwe-embedplayer-related_videos" : "Related videos",
-	"mwe-embedplayer-seeking" : "seeking",
-	"mwe-embedplayer-buffering" : "buffering",
-	"mwe-embedplayer-copy-code" : "Copy code",	
-	"mwe-embedplayer-video-h264" : "H.264 video",
-	"mwe-embedplayer-video-flv" : "Flash video",
-	"mwe-embedplayer-video-ogg" : "Ogg video",
-	"mwe-embedplayer-video-audio" : "Ogg audio"
-} );
+mw.includeAllModuleMessages();
 
 /*
 * The default video attributes supported by embedPlayer
@@ -3602,7 +3541,7 @@ mw.EmbedTypes = {
 					}
 					
 					//	 Test for ogg
-					if (  dummyvid.canPlayType( "video/ogg;codecs=\"theora,vorbis\"" ) ) {
+					if (  dummyvid.canPlayType( 'video/ogg; codecs="theora,vorbis"' ) ) {
 						this.players.addPlayer( oggNativePlayer );						
 					// older versions of safari do not support canPlayType,
 				   	// but xiph qt registers mimetype via quicktime plugin
@@ -3613,7 +3552,7 @@ mw.EmbedTypes = {
 			} catch ( e ) {
 				mw.log( 'could not run canPlayType ' + e );
 			}		
-		}
+		} 
 		
 		 // "navigator" plugins
 		if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {

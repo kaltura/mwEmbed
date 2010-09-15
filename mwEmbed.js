@@ -1,6 +1,6 @@
-// Add support for html5 / mwEmbed elements to IE ( comment must come before js code ) 
-// For discussion and comments, see: http://remysharp.com/2009/01/07/html5-enabling-script/
-/*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/
+// Add support for html5 / mwEmbed elements to browsers that do not support the elements natively 
+// For discussion and comments, see: http://ejohn.org/blog/html5-shiv/
+'video audio source track'.replace(/\w+/g, function(n){ document.createElement(n) });
 
 /**
  * @license
@@ -1268,11 +1268,11 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		
 		if ( window.console ) {
 			window.console.log( string );
-		} else {	
+		} else {
 			/**
 			 * Old IE and non-Firebug debug: ( commented out for now )
 			 */						
-			/*var log_elm = document.getElementById('mv_js_log'); 
+			var log_elm = document.getElementById('mv_js_log'); 
 			if(!log_elm) {				
 				document.getElementsByTagName("body")[0].innerHTML += '<div ' +
 					'style="position:absolute;z-index:500;bottom:0px;left:0px;right:0px;height:200px;">' + 
@@ -1282,7 +1282,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			var log_elm = document.getElementById('mv_js_log'); 
 			if(log_elm) {
 				log_elm.value+=string+"\n"; 
-			}*/			
+			}
 		}
 	}
 	
@@ -1390,6 +1390,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if( mw.isset( 'window.jQuery' ) 
 			&& mw.getConfig( 'debug' ) === false 
 			&& typeof $j != 'undefined'
+			&& mw.parseUri( url ).protocal != 'file'
 			&& !isCssFile ) 
 		{	
 			$j.getScript( url, myCallback); 		
@@ -1539,7 +1540,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if( src.indexOf( 'ResourceLoader.php' ) !== -1 ) {
 			mwpath = src.substr( 0, src.indexOf( 'ResourceLoader.php' ) );			
 		}	
-		
+			
 		// For static packages mwEmbed packages start with: "mwEmbed-"
 		if( src.indexOf( 'mwEmbed-' ) !== -1 && src.indexOf( '-static' ) !== -1 ) {
 			mwpath = src.substr( 0, src.indexOf( 'mwEmbed-' ) );
@@ -1823,28 +1824,36 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 * 	from a relative path
 	 * @return {String} absolute url
 	 */
-	mw.absoluteUrl = function( src, contextUrl ) {
+mw.absoluteUrl = function( src, contextUrl ) {
 		
 		var parsedSrc =  mw.parseUri( src );		
+
 		// Source is already absolute return:
 		if( parsedSrc.protocol != '') {
 			return src;				
 		}
 		
 		// Get parent Url location the context URL
-		if( contextUrl ) {	
-			var parsedUrl = mw.parseUri( contextUrl );			
-		} else {
-			var parsedUrl = mw.parseUri( document.URL );
+		if( !contextUrl ) {	
+					contextUrl = document.URL;
+		}		
+		var parsedUrl = mw.parseUri( contextUrl );	
+	
+		// Check for IE local file that does not flip the slashes 	
+		if( parsedUrl.directory == '' && parsedUrl.protocol == 'file' ){			
+			// pop off the file
+			var fileUrl = contextUrl.split( '\\');
+			fileUrl.pop();
+			return 	fileUrl.join('\\') + '\\' + src;		
 		}
-		
+
 		// Check for leading slash:
 		if( src.indexOf( '/' ) === 0 ) {
 			return parsedUrl.protocol + '://' + parsedUrl.authority + src;
-		}else{
+		}else{			
 			return parsedUrl.protocol + '://' + parsedUrl.authority + parsedUrl.directory + src;
 		}
-	};	
+	};
 	/**
 	 * Check if a given source string is likely a url   
 	 * 
@@ -2164,11 +2173,18 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			} );
 		}		
 		function addLocalSettings(){
-			mw.log("Load loacal settings")
-			mw.load( 'localSettings.js', function(){
+			var continueCallback = function(){
 				// Set the mwModuleLoaderCheckFlag flag to true
 				mwModuleLoaderCheckFlag = true;		
 				callback();
+			}
+			if( mw.getConfig( 'LoadLocalSettings') != true ){
+				continueCallback();
+				return; 
+			}
+			mw.log("Load loacal settings")
+			mw.load( 'localSettings.js', function(){
+				continueCallback();
 			})
 		}
 					

@@ -2,10 +2,6 @@
 * Skin js allows you to override contrlBuilder html/class output
 */
 
-mw.addMessages( {
-	"mwe-embedplayer-credit-title" : "Title: $1"
-} );
-
 mw.PlayerSkinKskin = {
 
 	// The parent class for all kskin css: 

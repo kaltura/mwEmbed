@@ -160,14 +160,12 @@ class ResourceLoader {
 					wfRestoreWarnings();
 				}								
 	
-				// Add the required core mwEmbed style sheets removed for now
-				// because when creating stand alone packages js package with css
+				// Add the required core mwEmbed style sheets 
+				// removed for now because when creating stand alone packages js package with css
 				// the paths get messed up.
-				/*
-				if( !isset( $this->namedFileList[ 'mw.style.mwCommon' ] ) ) {
+				/*if( !isset( $this->namedFileList[ 'mw.style.mwCommon' ] ) ) {
 					$this->output .= $this->getResourceText( 'mw.style.mwCommon' );
-				}
-				*/
+				}*/
 
 				// Output "special" IE comment tag to support "special" mwEmbed tags.
 				$this->notMinifiedTopOutput .='/*@cc_on@if(@_jscript_version<9){\'video audio source itext playlist\'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/'."\n";

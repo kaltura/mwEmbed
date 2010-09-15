@@ -70,6 +70,12 @@ mw.setDefaultConfig ( {
 	// Default enabled modules: 
 	'enabledModules' : mwEnabledModuleList, 
 	
+	// If the localSettings.js should be loaded ( true by default ) 
+	'LoadLocalSettings' : true, 
+	
+	// If the module messages should be loaded in debug mode ( true by default) 
+	'LoadModuleMessagesInDebug' : true,
+	
 	// Default jquery ui skin name
 	'jQueryUISkin' : 'redmond',	
 

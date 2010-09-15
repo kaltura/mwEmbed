@@ -32,8 +32,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.38.169/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://192.168.1.101/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -180,10 +180,9 @@ function kCheckAddScript(){
 		|| document.getElementsByTagName('audio').length != 0 ) {
 		kAddScript();
 		return ;
-	}	
-	
+	}		
 	// If document includes kaltura embed tags && isMobile safari: 
-	if ( kBrowserAgentShouldUseHTML5() ) {	
+	if ( kBrowserAgentShouldUseHTML5() ) {		
 		// Check for Kaltura objects in the page
 		if( kGetKalturaPlayerList().length ){
 			kAddScript();
@@ -194,14 +193,16 @@ function kBrowserAgentShouldUseHTML5(){
 	return (  (navigator.userAgent.indexOf('iPhone') != -1) || 
 	(navigator.userAgent.indexOf('iPod') != -1) || 
 	(navigator.userAgent.indexOf('iPad') != -1) ||
+	(navigator.userAgent.indexOf('Android 2.') != -1) || 
 	// to debug in chrome / desktop safari
 	(document.URL.indexOf('forceMobileSafari') != -1 )
-	);	
+	);
 }
 
 // Add the kaltura html5 mwEmbed script
 var kAddedScript = false;
 function kAddScript(){
+	
 	if( kAddedScript ){
 		return ;
 	}	
@@ -263,7 +264,7 @@ function kAddScript(){
 	
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
-	script.src = url;
+	script.src = url;	
 	// no handlers: 			
 	document.getElementsByTagName('body')[0].appendChild( script );				
 };

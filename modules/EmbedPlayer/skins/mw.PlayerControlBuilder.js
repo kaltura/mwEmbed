@@ -984,10 +984,10 @@ mw.PlayerControlBuilder.prototype = {
 	* 
 	* @param {String} overlayContent content to be displayed
 	*/
-	displayOverlay: function( overlayContent ) {
+	displayMenuOverlay: function( overlayContent ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		mw.log( 'displayOverlay::' );
+		mw.log( 'displayMenuOverlay::' );
 		//	set the overlay display flag to true:
 		this.displayOptionsMenuFlag = true;
 		mw.log(" set displayOptionsMenuFlag:: " + this.displayOptionsMenuFlag);
@@ -1069,11 +1069,9 @@ mw.PlayerControlBuilder.prototype = {
 			$overlayShadow
 		)
 		.find( '.overlay-win' )
-		.fadeIn( "slow" );					
+		.fadeIn( "slow" );							
 		
-		
-		// trigger menu overlay display
-		alert('triger displayMenuOverlay');
+		// trigger menu overlay display		
 		$j(embedPlayer).trigger( 'displayMenuOverlay' );
 		
 		return false; // onclick action return false

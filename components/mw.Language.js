@@ -59,7 +59,9 @@
 	* Special function to register that all of the module messages need to be loaded.  
 	*/
 	mw.includeAllModuleMessages = function (){
-		mw.currentClassMissingMessages = true;
+		if( mw.getConfig('LoadModuleMessagesInDebug') ){
+			mw.currentClassMissingMessages = true;
+		}
 	}
 		
 	/**

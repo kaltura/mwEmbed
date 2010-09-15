@@ -11,36 +11,7 @@
  *
  */ 
 
-mw.addMessages( {
-	"mwe-timedtext-back-btn" : "Back",
-	"mwe-timedtext-choose-text" : "Chose text",
-	"mwe-timedtext-add-timed-text" : "Add timed text",
-	"mwe-timedtext-loading-text-edit" : "Loading timed text editor", 
-	
-	"mwe-timedtext-search" : "Search clip",
-	
-	"mwe-timedtext-layout" : "Layout", 
-	"mwe-timedtext-layout-ontop" : "Ontop of video",
-	"mwe-timedtext-layout-below": "Below video", 
-	"mwe-timedtext-layout-off" : "Hide subtitles",
-	
-	"mwe-timedtext-loading-text" : "Loading text ...",
-	
-	"mwe-timedtext-key-language": "$1, $2",
-	
-	"mwe-timedtext-textcat-cc" : "Captions",
-	"mwe-timedtext-textcat-sub" : "Subtitles",
-	"mwe-timedtext-textcat-tad" : "Audio description",
-	"mwe-timedtext-textcat-ktv" : "Karaoke",
-	"mwe-timedtext-textcat-tik" : "Ticker text",
-	"mwe-timedtext-textcat-ar" : "Active regions",
-	"mwe-timedtext-textcat-nb" : "Annotation",
-	"mwe-timedtext-textcat-meta" : "Timed metadata",
-	"mwe-timedtext-textcat-trx" : "Transcript",
-	"mwe-timedtext-textcat-lrc" : "Lyrics",
-	"mwe-timedtext-textcat-lin" : "Linguistic markup",
-	"mwe-timedtext-textcat-cue" : "Cue points"
-} );
+mw.includeAllModuleMessages();
 
 // Bind to mw ( for uncluttered global namespace ) 
 ( function( $ ) {

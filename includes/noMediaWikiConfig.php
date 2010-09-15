@@ -151,6 +151,9 @@ function wfLoadMsgKeys( $langKey ){
 	if( $wgLoadedMsgKeysFlag ) {
 		return true;
 	}
+	if( !$wgMessageCache ){
+		$wgMessageCache = array();
+	}
 	foreach( $wgExtensionMessagesFiles as $msgFile ){
 		if( !is_file( $msgFile ) ) {
 			throw new MWException( "Missing msgFile: " . htmlspecialchars( $msgFile ) . "\n" );
