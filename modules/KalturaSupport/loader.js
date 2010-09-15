@@ -61,14 +61,13 @@
 	//Check if the document has kaltura objects ( for fall forward support ) 
 	$j( mw ).bind( 'LoaderEmbedPlayerDocumentHasPlayerTags', function( event, tagCheckObject ){
 					
-		mw.log( 'KalturaSupport found:: ' + mw.getKalturaPlayerList().length + ' is mobile::' +  mw.isMobileSafari() );
+		mw.log( 'KalturaSupport found:: ' + mw.getKalturaPlayerList().length + ' is mobile::' +  mw.isMobileHTML5() );
 		if( mw.getKalturaPlayerList().length ) {
 			tagCheckObject.hasTags = true;			
 			// FALLFORWARD only for mobile safari ::
 			// this is kind of heavy weight for loader.js 
-			// maybe move most of this to kEntryId support
-			
-			if( mw.isMobileSafari() ) {
+			// maybe move most of this to kEntryId support			
+			if( mw.isMobileHTML5() ) {
 				// setup load flags
 				var loadEmbedPlayerFlag = loadPlaylistFlag = false;
 				$j.each(mw.getKalturaPlayerList(), function( inx, element ){	
@@ -144,8 +143,7 @@
 								videoEmbedAttributes['kplaylistid'] = flashvars['playlistAPI.kpl0Url'];
 							}
 						}					
-					}
-					
+					}					
 					// Replace with a mwEmbedKalturaVideoSwap
 					$j( element ).replaceWith( 
 						$j('<div />')

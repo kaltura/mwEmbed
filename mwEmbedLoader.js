@@ -34,8 +34,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.1.101/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://192.168.1.101/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -191,13 +191,13 @@ function kCheckAddScript(){
 		}
 	}
 }
-function kBrowserAgentShouldUseHTML5(){
+function kBrowserAgentShouldUseHTML5(){	
 	return (  (navigator.userAgent.indexOf('iPhone') != -1) || 
 	(navigator.userAgent.indexOf('iPod') != -1) || 
 	(navigator.userAgent.indexOf('iPad') != -1) ||
 	(navigator.userAgent.indexOf('Android 2.') != -1) || 
 	// to debug in chrome / desktop safari
-	(document.URL.indexOf('forceMobileSafari') != -1 )
+	(document.URL.indexOf('forceMobileHTML5') != -1 )
 	);
 }
 

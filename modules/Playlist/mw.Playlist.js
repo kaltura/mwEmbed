@@ -257,7 +257,7 @@ mw.Playlist.prototype = {
 				$videoList.show()
 				// show the video list and apply the swipe binding 
 				$j( _this.target ).find('.media-rss-video-list-wrapper').fadeIn();				
-				if( mw.isMobileSafari() ){			
+				if( mw.isMobileHTML5() ){			
 					// iScroll is buggy with current version of iPad / iPhone use scroll buttons instead
 					/*
 					document.addEventListener('touchmove', function(e){ e.preventDefault(); });							
@@ -434,7 +434,7 @@ mw.Playlist.prototype = {
 		// ( mobile safari can't javascript start the video ) 
 		// see: http://developer.apple.com/iphone/search/search.php?simp=1&num=10&Search=html5+autoplay
 		var addVideoPlayerToDom = true;				
-		if( mw.isMobileSafari() ){
+		if( mw.isMobileHTML5() ){
 			// Check for a current video:	
 			var $inDomVideo = $j( _this.target + ' .media-rss-video-player video' );			
 			if( $inDomVideo.length == 0 ){

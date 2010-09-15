@@ -1144,22 +1144,24 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	}	
 	
 	/**
-	 * Mobile Safari has special properties for html5 video::
+	 * Mobile HTML5 has special properties for html5 video::
 	 * 
-	 * NOTE: should be phased out in favor of browser feature detection script
+	 * NOTE: should be phased out in favor of browser feature detection where possible
 	 */
-	mw.isMobileSafari = function() {		
+	mw.isMobileHTML5 = function() {
 		// check mobile safari foce ( for debug )
-		if( mw.getConfig( 'forceMobileSafari' ) || document.URL.indexOf('forceMobileSafari') != -1 ){
+		if( mw.getConfig( 'forceMobileHTML5' ) || document.URL.indexOf('forceMobileHTML5') != -1 ){
 			return true;
 		}
-		if ((navigator.userAgent.indexOf('iPhone') != -1) || 
-			(navigator.userAgent.indexOf('iPod') != -1) || 
-			(navigator.userAgent.indexOf('iPad') != -1)) {
+		if (( navigator.userAgent.indexOf('iPhone') != -1) || 
+			( navigator.userAgent.indexOf('iPod') != -1) || 
+			( navigator.userAgent.indexOf('iPad') != -1) ||
+			( navigator.userAgent.indexOf('Android 2.') != -1 )  
+		) {
 			return true;
 		}
 		return false;
-	}
+	};
 	
 	/**
 	 * Similar to php isset function checks if the variable exists. Does a safe
@@ -1185,7 +1187,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}
 		}
 		return true;
-	}
+	};
 	
 	/**
 	 * Wait for a object to be defined and the call the callback
@@ -1266,9 +1268,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			string = mw.getConfig( 'pre-append-log' ) + string;		
 		}
 		
-		if ( window.console ) {
-			window.console.log( string );
-		} else {
+		//if ( window.console ) {
+		//	window.console.log( string );
+		//} else {
 			/**
 			 * Old IE and non-Firebug debug: ( commented out for now )
 			 */						
@@ -1282,8 +1284,10 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			var log_elm = document.getElementById('mv_js_log'); 
 			if(log_elm) {
 				log_elm.value+=string+"\n"; 
+				// scroll to bottom: 
+				log_elm.scrollTop = log_elm.scrollHeight;
 			}
-		}
+		//}
 	}
 	
 	// Setup the local mwOnLoadFunctions array:

@@ -46,7 +46,7 @@ mw.EmbedPlayerNative = {
 	updateFeatureSupport: function(){
 		// iWhatever devices appear to have a broken
 		// dom overlay implementation of video atm. (hopefully iphone OS 4 fixes this )
-		if( mw.isMobileSafari() ) {
+		if( mw.isMobileHTML5() ) {
 			this.supports.overlays = false;
 		}				
 	},
