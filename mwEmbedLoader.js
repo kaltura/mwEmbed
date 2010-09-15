@@ -11,6 +11,8 @@
 * Kaltura Configuration options are set via mw.setConfig( option, value ) or 
 * mw.setConfig( {json set of option value pairs } );
 * 
+* Some config options and their defualt values: 
+* 
 *	// Enable analytics tracking for html5 devices
 *	'Kaltura.EnableAnalytics' : true
 *	

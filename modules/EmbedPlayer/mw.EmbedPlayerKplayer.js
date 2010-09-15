@@ -208,6 +208,7 @@ mw.EmbedPlayerKplayer = {
 	doSeek: function( percentage ) {
 		var _this = this;
 		if ( this.supportsURLTimeEncoding() ){
+			alert(  this.supportsURLTimeEncoding );
 			// 	Make sure we could not do a local seek instead:
 			if ( !( percentage <  this.bufferedPercent &&  this.playerElement.duration &&  !this.didSeekJump )) {
 			// We support URLTimeEncoding call parent seek:
@@ -215,7 +216,6 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		} 
-
 
 		if( this.playerElement ) {
 			var seekTime = percentage * this.getDuration(); 
