@@ -1221,8 +1221,8 @@ mw.PlayerControlBuilder.prototype = {
 							.click( function() {
 								var iparts = $j( this ).attr( 'id' ).replace(/sc_/ , '' ).split( '_' );
 								var sourceId = iparts[0];
-								var default_player_id = iparts[1];
-								mw.log( 'source id: ' +  sourceId + ' player id: ' + default_player_id );
+								var player_id = iparts[1];
+								mw.log( 'source id: ' +  sourceId + ' player id: ' + player_id );
 				
 								embedPlayer.controlBuilder.closeMenuOverlay();
 								
@@ -1232,10 +1232,11 @@ mw.PlayerControlBuilder.prototype = {
 								}
 								
 								embedPlayer.mediaElement.selectSource( sourceId );
-				
+								var playableSources = embedPlayer.mediaElement.getPlayableSources();
+								
 								mw.EmbedTypes.players.setPlayerPreference( 
-									default_player_id,
-									embedPlayer.mediaElement.sources[ sourceId ].getMIMEType() 
+									player_id,
+									playableSources[ sourceId ].getMIMEType() 
 								);
 				
 								// Issue a stop

@@ -173,12 +173,12 @@ mw.EmbedPlayerNative = {
 		// Bind events to local js methods:			
 		vid.addEventListener( 'canplaythrogh',  function() { $j( _this ).trigger('canplaythrough'); }, true);			 
 		vid.addEventListener( 'loadedmetadata', function() { _this.onloadedmetadata() }, true);
-		vid.addEventListener( 'progress', function( e ) { _this.onprogress( e );  }, true);
+		vid.addEventListener( 'progress', function( e ) { if( _this.onprogress ) { _this.onprogress( e ); }  }, true);
 		vid.addEventListener( 'ended', function() {  _this.onended() }, true);		
 		vid.addEventListener( 'seeking', function() { _this.onSeeking() }, true);
 		vid.addEventListener( 'seeked', function() { _this.onSeeked() }, true);			
 		
-		vid.addEventListener( 'pause', function() { _this.onPaused() }, true );
+		vid.addEventListener( 'pause', function() { if( _this.onPaused ) { _this.onPaused() } }, true );
 		vid.addEventListener( 'play', function(){ _this.onPlay() }, true );			
 		vid.addEventListener( 'volumechange', function(){ _this.onVolumeChange() } , true );
 	},
@@ -363,6 +363,15 @@ mw.EmbedPlayerNative = {
 			// re-start the monitor: 
 			this.monitor();
 		}
+	},
+	/**
+	 * Stop the player ( end all listeners ) 
+	 */
+	stop:function(){
+		if( this.playerElement ){
+			$j( this.playerElement ).unbind();
+		}
+		this.parent_stop();
 	},
 	
 	/**

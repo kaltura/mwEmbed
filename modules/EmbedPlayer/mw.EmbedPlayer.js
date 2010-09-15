@@ -1092,7 +1092,7 @@ mediaElement.prototype = {
 	/** 
 	* Selects the default source via cookie preference, default marked, or by id order
 	*/
-	autoSelectSource: function() {
+	autoSelectSource: function() { 
 		mw.log( 'EmbedPlayer::mediaElement::autoSelectSource:' + this.id);
 		// Select the default source
 		var playableSources = this.getPlayableSources();
@@ -1102,7 +1102,7 @@ mediaElement.prototype = {
 		for ( var source = 0; source < playableSources.length; source++ ) {
 			var mimeType = playableSources[source].mimeType;					
 			if ( mw.EmbedTypes.players.preference[ 'format_preference' ] == mimeType ) {
-				 mw.log( 'set via preference: ' + playableSources[source].mimeType );
+				 mw.log( 'Set via preference: ' + playableSources[source].mimeType );
 				 this.selectedSource = playableSources[source];
 				 return true;
 			}
@@ -1111,17 +1111,18 @@ mediaElement.prototype = {
 		// Set via marked default: 
 		for ( var source = 0; source < playableSources.length; source++ ) {
 			if ( playableSources[ source ].markedDefault ) {
-				mw.log( 'set via marked default: ' + playableSources[source].markedDefault );
+				mw.log( 'Set via marked default: ' + playableSources[source].markedDefault );
 				this.selectedSource = playableSources[source];
 				return true;
 			}
 		}
 		
-		// Set native client for flash
+		// Prefer native playback 
 		for ( var source = 0; source < playableSources.length; source++ ) {
 			var mimeType = playableSources[source].mimeType;
 			var player =  mw.EmbedTypes.players.defaultPlayer( mimeType );
-			if ( this.isOgg( mimeType )	&& player && player.library == 'Native'	) {
+			if ( player && player.library == 'Native'	) {
+				mw.log('Set native playback');
 				this.selectedSource = playableSources[ source ];
 				return true;
 			}			
@@ -1138,7 +1139,8 @@ mediaElement.prototype = {
 					||
 					player.library == 'Kplayer'
 				)
-			) {				
+			) {	
+				mw.log('Set h264 via native or flash fallback');
 				this.selectedSource = playableSources[ source ];
 				return true;
 			}
@@ -3406,7 +3408,7 @@ mediaPlayers.prototype =
 	* @param {String} mimeType Mime type for the associated player stream
 	*/
 	setPlayerPreference : function( playerId, mimeType ) {	
-		var selectedPlayer = null;		
+		var selectedPlayer = null;				
 		for ( var i = 0; i < this.players.length; i++ ) {
 			if ( this.players[i].id == playerId ) {
 				selectedPlayer = this.players[i];
