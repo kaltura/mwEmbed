@@ -1268,13 +1268,14 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			string = mw.getConfig( 'pre-append-log' ) + string;		
 		}
 		
-		//if ( window.console ) {
-		//	window.console.log( string );
-		//} else {
+		if ( window.console ) {
+			window.console.log( string );
+		} else {
 			/**
 			 * Old IE and non-Firebug debug: ( commented out for now )
 			 */						
-			var log_elm = document.getElementById('mv_js_log'); 
+		
+			/*var log_elm = document.getElementById('mv_js_log'); 
 			if(!log_elm) {				
 				document.getElementsByTagName("body")[0].innerHTML += '<div ' +
 					'style="position:absolute;z-index:500;bottom:0px;left:0px;right:0px;height:200px;">' + 
@@ -1286,8 +1287,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				log_elm.value+=string+"\n"; 
 				// scroll to bottom: 
 				log_elm.scrollTop = log_elm.scrollHeight;
-			}
-		//}
+			}*/
+		}
 	}
 	
 	// Setup the local mwOnLoadFunctions array:
