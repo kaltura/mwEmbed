@@ -2430,7 +2430,7 @@ mw.EmbedPlayer.prototype = {
 		
 		
 		// Check if we need to refresh mobile safari
-		var mobileSafairNeedsRefresh = false;					
+		var mobileSafariNeedsRefresh = false;					
 				
 		// Unhide the original video element
 		if( !$j( '#' + this.pid ).hasClass('PlayerThemer') ){
@@ -2441,12 +2441,12 @@ mw.EmbedPlayer.prototype = {
 			.show()
 			.attr('controls', 'true');
 			
-			mobileSafairNeedsRefresh = true;
+			mobileSafariNeedsRefresh = true;
 		}
 		
 		// iPad does not handle video tag update for attributes like "controls" 
 		// so we have to do a full replace ( if controls are not included initially ) 		
-		if( mw.isMobileSafari() && mobileSafairNeedsRefresh ) {
+		if( mw.isMobileSafari() && mobileSafariNeedsRefresh ) {
 			var source = this.mediaElement.getSources( 'video/h264' )[0];
 			if( source && ! source.src ){
 				mw.log( 'Error: should have caught no playable sources for mobile safari earlier' );
