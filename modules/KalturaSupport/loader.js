@@ -28,6 +28,7 @@
 		"mw.KAnalytics" : "mw.KAnalytics.js",
 		"mw.PlaylistHandlerKaltura"	: "mw.PlaylistHandlerKaltura.js", 
 		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
+		"mw.KDPMapping" : "mw.KDPMapping.js",
 		
 		"KalturaClientBase"	: "kalturaJsClient/KalturaClientBase.js",
 		"KalturaClient" : "kalturaJsClient/KalturaClient.js",
@@ -45,8 +46,7 @@
 	  'KalturaAccessControlOrderBy',
 	  'KalturaAccessControl',
 	  'MD5',
-	  'mw.KWidgetSupport',
-	  'mw.KDPMapping',
+	  'mw.KWidgetSupport',	  
 	  'mw.KAnalytics'
 	];
 	

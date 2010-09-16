@@ -35,7 +35,7 @@ var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.1.101/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_LOADER_URL = 'http://192.168.38.21/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -209,15 +209,16 @@ function kAddScript(){
 		return ;
 	}	
 	kAddedScript = true;	
-	var url = SCRIPT_LOADER_URL + '?class=';	
-	var jsPlayerRequest = [];
 	
+	var jsRequestSet = [];
+	
+	var corePlayer=[];
 	if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
-		jsPlayerRequest.push( 'window.jQuery' )
+		corePlayer.push( 'window.jQuery' )
 	}
-	
+		
 	// Add all the classes needed for video 
-	jsPlayerRequest = jsPlayerRequest.concat( [	 
+	corePlayer = corePlayer.concat( [	 
 	    'mwEmbed',
 		// core skin: 
 		'mw.style.mwCommon',	      
@@ -255,20 +256,51 @@ function kAddScript(){
 		// Player themer module
 		'mw.PlayerThemer'
 	]);
-	url+= jsPlayerRequest.join(',');
+	jsRequestSet.push( corePlayer );
 	
+	var objectPlayerList = kGetKalturaPlayerList()
+	// Check if we are doing object rewrite ( add the kaltura library ) 
+	if ( kBrowserAgentShouldUseHTML5() && objectPlayerList.length ){
+		jsRequestSet.push( ['KalturaClientBase',
+		  'KalturaClient',
+		  'KalturaAccessControlService',
+		  'KalturaAccessControlOrderBy',
+		  'KalturaAccessControl',
+		  'MD5',
+		  'mw.KWidgetSupport',
+		  'mw.KAnalytics'] );		
+	}
+	
+	// Check if we are doing a playlist: 
+	loadPlaylist = false;
+	for( var i=0;i < objectPlayerList.length;i++ ){
+		var settings = objectPlayerList[i]
+		if( !settings.entryId ){
+			loadPlaylist = true;
+		}
+	}
+	if( loadPlaylist ){
+		jsRequestSet.push([
+		   'mw.Playlist',
+		   'mw.PlaylistHandlerMediaRss',
+		   'mw.PlaylistHandlerKaltura', 
+		   'mw.PlaylistHandlerKalturaRss'
+		]);
+	}
+	var url = SCRIPT_LOADER_URL + '?class=';	
+	// Request each jsRequestSet
+	for( var i = 0; i < jsRequestSet.length ; i++ ){
+		url+= jsRequestSet[i].join(',') + ',';
+	}
 	url+='&urid=' + kURID;
 	url+='&uselang=en';
-	
 	if ( SCRIPT_FORCE_DEBUG ){
 		url+='&debug=true';
 	}
-	
 	var script = document.createElement( 'script' );
-	script.type = 'text/javascript';
-	script.src = url;	
-	// no handlers: 			
-	document.getElementsByTagName('body')[0].appendChild( script );				
+	script.type = 'text/javascript';	
+	script.src = url;				
+	document.getElementsByTagName('body')[0].appendChild( script );	
 };
 /**
 * DOM-ready setup ( similar to jQuery.ready )  
@@ -356,7 +388,7 @@ kGetKalturaPlayerList = function(){
 	var tryAddKalturaEmbed = function( url ){
 		var settings = kGetKalturaEmbedSettings( url );
 		if( settings && settings.uiconfId && settings.widgetId ){
-			kalturaPlayers.push(  objectList[i] );
+			kalturaPlayers.push(  settings );
 			return true;
 		}
 		return false;

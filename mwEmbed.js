@@ -1513,18 +1513,13 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}
 	};
 	
-	
-	// Local mwEmbedPath variable ( for cache of mw.getMwEmbedPath )
-	var mwEmbedPath = null;
-				
+	mw.getRelativeMwEmbedPath = function(){
+		return mw.getMwEmbedPath(true);
+	};		
 	/**
 	 * Get the path to the mwEmbed folder
 	 */
-	mw.getMwEmbedPath = function() {
-		if ( mwEmbedPath ) {
-			return mwEmbedPath;
-		}	
-			
+	mw.getMwEmbedPath = function( relativePath ) {			
 		// Get mwEmbed src:
 		var src = mw.getMwEmbedSrc();
 		var mwpath = null;
@@ -1558,8 +1553,10 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}
 		
 		// Update the cached var with the absolute path:
-		mwEmbedPath = mw.absoluteUrl( mwpath )	;			
-		return mwEmbedPath;
+		if( !relativePath ){
+			mwpath = mw.absoluteUrl( mwpath )	;
+		}
+		return mwpath;
 	}
 	
 	/**
@@ -1840,7 +1837,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		
 		// Get parent Url location the context URL
 		if( !contextUrl ) {	
-					contextUrl = document.URL;
+			contextUrl = document.URL;
 		}		
 		var parsedUrl = mw.parseUri( contextUrl );	
 	

@@ -31,13 +31,20 @@ mw.EmbedPlayerKplayer = {
 	* Write the Embed html to the target 
 	*/
 	doEmbedHTML : function () {
-		var _this = this;
-		var playerPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';				
+		var _this = this;		
 		
 		mw.log("kPlayer:: embed src::" + _this.getSrc() );
 		var flashvars = {};
 		flashvars.autoPlay = "true";
+		var playerPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';		
 		flashvars.entryId = mw.absoluteUrl( _this.getSrc() );
+		
+		// Use a relative url if the protocal is file://		
+		if( mw.parseUri( document.URL).protocol == 'file' ) {
+			playerPath = mw.getRelativeMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';				
+			flashvars.entryId  =  _this.getSrc();			
+		}
+		
 		flashvars.debugMode = "true";
 		flashvars.fileSystemMode = "true";
 		flashvars.widgetId = "_7463";

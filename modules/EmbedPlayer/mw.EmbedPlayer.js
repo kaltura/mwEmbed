@@ -2420,7 +2420,9 @@ mw.EmbedPlayer.prototype = {
 	* Should be set via native embed support  
 	*/
 	getNativePlayerHtml: function(){
-		return $j('<div />' ).html( 'Error: Trying to get native html5 player without native support for codec' );
+		return $j('<div />' )
+			.css( 'width', this.getWidth() )
+			.html( 'Error: Trying to get native html5 player without native support for codec' );
 	},
 	/**
 	* Should be set via native embed support  
