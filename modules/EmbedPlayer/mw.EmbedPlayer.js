@@ -2416,26 +2416,24 @@ mw.EmbedPlayer.prototype = {
 		}
 		// Android only can play with a special play button ( no native controls in the dom , and no auto-play )
 		// and only with 'native display'
-		if( mw.isAndroid2() ){		
-			if( $j('#' + _this.id + '_android_play').length == 0 ){
-				$j( '#' + _this.pid ).after( 
-					$j('<div />')				
-					.css({
-						'position' : 'relative',
-						'top' : -1 * ( .5 * _this.getPlayerHeight() ) - 52,
-						'left' : ( .5 * _this.getPlayerWidth() ) - 75
-					})
-					.attr( {
-						'id' : _this.id + '_android_play',
-						'title'	: gM( 'mwe-embedplayer-play_clip' ),
-						'class'	: "ui-state-default play-btn-large"
-					} )
-					.click( function() {
-						_this.play();
-						// no need to hide the play button since android 
-					} )
-				)
-			}
+		if( mw.isAndroid2() ){
+			$j( '#' + _this.pid ).siblings('.play-btn-large').remove();
+			$j( '#' + _this.pid ).after( 
+				$j('<div />')				
+				.css({
+					'position' : 'relative',
+					'top' : -1 * ( .5 * _this.getPlayerHeight() ) - 52,
+					'left' : ( .5 * _this.getPlayerWidth() ) - 75
+				})
+				.attr( {				
+					'title'	: gM( 'mwe-embedplayer-play_clip' ),
+					'class'	: "ui-state-default play-btn-large"
+				} )
+				.click( function() {
+					_this.play();
+					// no need to hide the play button since android plays fullscreen
+				} )
+			)
 		}		
 		return ;
 	},

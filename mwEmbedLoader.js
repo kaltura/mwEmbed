@@ -27,15 +27,15 @@
 *
 */
 
-var kURID = '1.1q';
+var kURID = '1.1r';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.38.21/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://192.168.38.21/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -261,6 +261,7 @@ function kAddScript(){
 	var objectPlayerList = kGetKalturaPlayerList()
 	// Check if we are doing object rewrite ( add the kaltura library ) 
 	if ( kBrowserAgentShouldUseHTML5() && objectPlayerList.length ){
+		//kaltura client libraries:
 		jsRequestSet.push( ['KalturaClientBase',
 		  'KalturaClient',
 		  'KalturaAccessControlService',
@@ -268,25 +269,32 @@ function kAddScript(){
 		  'KalturaAccessControl',
 		  'MD5',
 		  'mw.KWidgetSupport',
-		  'mw.KAnalytics'] );		
-	}
-	
-	// Check if we are doing a playlist: 
-	loadPlaylist = false;
-	for( var i=0;i < objectPlayerList.length;i++ ){
-		var settings = objectPlayerList[i]
-		if( !settings.entryId ){
-			loadPlaylist = true;
-		}
-	}
-	if( loadPlaylist ){
+		  'mw.KAnalytics'] );	
+		
+		// kaltura playlist support ( so small relative to client libraries that we always include it
 		jsRequestSet.push([
 		   'mw.Playlist',
 		   'mw.PlaylistHandlerMediaRss',
 		   'mw.PlaylistHandlerKaltura', 
 		   'mw.PlaylistHandlerKalturaRss'
 		]);
+		// Conditional playlist include is disabled 
+		// This avoids mangled cache on sites that have kaltura players and kaltura players with playlists		
+		/*
+		// Check if we are doing a playlist 
+		loadPlaylist = false;
+		for( var i=0;i < objectPlayerList.length;i++ ){
+			var settings = objectPlayerList[i]
+			if( !settings.entryId ){
+				loadPlaylist = true;
+			}
+		}
+		if( loadPlaylist ){
+		
+		}
+		*/
 	}
+		
 	var url = SCRIPT_LOADER_URL + '?class=';	
 	// Request each jsRequestSet
 	for( var i = 0; i < jsRequestSet.length ; i++ ){
