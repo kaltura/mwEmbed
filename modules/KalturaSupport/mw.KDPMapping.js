@@ -31,8 +31,7 @@
 		
 		addPlayerHooks: function(){
 			var _this = this;
-			// Add the hooks to the player manager
-			mw.log(  'KWidgetSupport::addPlayerHooks:: bind: newEmbedPlayerEvent' );
+			// Add the hooks to the player manager			
 			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {		
 				var embedPlayer = $j( '#' + swapedPlayerId ).get(0);				
 				// Add the addJsListener and sendNotification maps
@@ -48,7 +47,7 @@
 		/**
 		 * Master event list
 		 */
-		bindListenEvent( embedPlayer, eventName, callback ){
+		bindListenEvent: function( embedPlayer, eventName, callback ){
 			switch( eventName ){
 				case 'volumeChanged': 
 					$j( embedPlayer ).bind('volumeChanged', function(percent){
@@ -56,13 +55,17 @@
 					});
 					break;
 				case 'playerStateChange':
-					// kind of tricky should do a few bindings to 'pause', 'play', 'ended', 'buffering/loading'
+					
+					// Kind of tricky should do a few bindings to 'pause', 'play', 'ended', 'buffering/loading'
 					$j( embedPlayer ).bind('pause', function(){
+						debugger;
 						callback( 'pause', embedPlayer.id );
 					});
+					
 					$j( embedPlayer ).bind('play', function(){
 						callback( 'play', embedPlayer.id );
 					});
+					
 					break;
 				case 'durationChange': 
 					//@@todo add in duration change support
@@ -79,7 +82,7 @@
 		/**
 		 * Master send action list: 
 		 */
-		sendNotification: function( embedPlayer, notificationName, notificationData ){
+		sendNotification: function( embedPlayer, notificationName, notificationData ){			
 			switch( notificationName ){
 				case 'doPlay':
 					embedPlayer.play();

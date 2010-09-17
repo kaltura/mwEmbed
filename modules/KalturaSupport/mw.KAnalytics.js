@@ -5,16 +5,17 @@
 // Temporary hack to avoid undefined symbol which responds with "kaltura" 
 window['Kaltura'] = true;
 
-// Global mw.addKAnalytics manager
+// KAnalytics Constructor
+mw.KAnalytics = function( embedPlayer, kalturaClient ){
+	this.init( 	embedPlayer, kalturaClient );
+}
+
+//Global mw.addKAnalytics manager
 var mwKAnalyticsManager = {};
 mw.addKAnalytics = function( embedPlayer, kalturaClient ) {
 	mwKAnalyticsManager[ embedPlayer.id ] = new mw.KAnalytics( embedPlayer, kalturaClient ) ;
 } 
 
-// KAnalytics Constructor
-mw.KAnalytics = function( embedPlayer, kalturaClient ){
-	this.init( 	embedPlayer, kalturaClient );
-}
 
 mw.KAnalytics.prototype = {
 
@@ -239,4 +240,5 @@ mw.KAnalytics.prototype = {
 			
 		}
 	}
-}
+};
+

@@ -1280,7 +1280,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		} else {
 			/**
 			 * Old IE and non-Firebug debug: ( commented out for now )
-			 */						
+			 */		
 		
 			/*var log_elm = document.getElementById('mv_js_log'); 
 			if(!log_elm) {				

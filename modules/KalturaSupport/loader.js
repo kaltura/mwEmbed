@@ -28,7 +28,7 @@
 		"mw.KAnalytics" : "mw.KAnalytics.js",
 		"mw.PlaylistHandlerKaltura"	: "mw.PlaylistHandlerKaltura.js", 
 		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
-		"mw.KDPMapping" : "mw.KDPMapping.js",
+		"mw.KDPMapping" : "mw.KDPMapping.js",		
 		
 		"KalturaClientBase"	: "kalturaJsClient/KalturaClientBase.js",
 		"KalturaClient" : "kalturaJsClient/KalturaClient.js",
@@ -47,7 +47,8 @@
 	  'KalturaAccessControl',
 	  'MD5',
 	  'mw.KWidgetSupport',	  
-	  'mw.KAnalytics'
+	  'mw.KAnalytics',
+	  'mw.KDPMapping'
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
@@ -258,7 +259,7 @@
 			}
 			var paramTags = objectList[i].getElementsByTagName('param');
 			for( var j = 0; j < paramTags.length; j++){
-				if( paramTags[j].getAttribute('name') == 'data' 
+				if( paramTags[j].getAttribute('name') == 'data'
 					||
 					paramTags[j].getAttribute('name') == 'src' )
 				{
@@ -270,7 +271,7 @@
 		return kalturaPlayers;
 	}
 	
-	mw.getKalturaEmbedSettings = function( swfUrl, flashvars ){		
+	mw.getKalturaEmbedSettings = function( swfUrl, flashvars ){
 		if( !flashvars )
 			flashvars= {};
 		

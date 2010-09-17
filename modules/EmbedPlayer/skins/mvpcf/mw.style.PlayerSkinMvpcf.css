@@ -49,11 +49,6 @@
 	position:relative;
 }
 
-.controls a{
-	display: block;
-	height: 100%;
-	width: 100%;
-}
 .mv-player .volume_icon {
 	float: right;
 	display: inline;

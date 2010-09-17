@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
+<head>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>KDP3 | Kaltura Dynamic Player version 3 JavaScript Playgrond ( HTML5 backend player ) </title>
@@ -10,8 +11,9 @@
 	<script type="text/javascript" src="kdp3_mapping_files/prettify.js"></script>
 	
 	
-	<script type="text/javascript" src="../../../mwEmbedLoader.js"></script> 
+	 <script type="text/javascript" src="../../../mwEmbedLoader.js"></script> 
 	<!-- <script type="text/javascript" src="http://html5.kaltura.org/js"></script> -->
+	<!--<script type="text/javascript" src="../../../mwEmbed.js"></script>-->
 	
 	<link type="text/css" rel="stylesheet" href="kdp3_mapping_files/prettify.css">
 	<style type="text/css">
@@ -192,20 +194,21 @@
 		flashvars.autoPlay = "false";
 		//flashvars.entryId = "http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb.flv";
 		//flashvars.sourceType = "url";
-		flashvars.entryId = "0_l4xrt3og";
+		flashvars.entryId = "0_swup5zao";
 		flashvars.sourceType = "entryId";
 		flashvars.debugMode = "true";
 		flashvars.fileSystemMode = "true";
-		flashvars.widgetId = "_225762";
-		flashvars.partnerId = "225762";
+		flashvars.widgetId = "_243342";
+		flashvars.partnerId = "243342";
 		flashvars.pluginDomain = "plugins/";
 		flashvars.kml = "local";
-		flashvars.kmlPath = "config.xml";
+		flashvars.kmlPath = "http://www.kaltura.org/demos/kdp3/config.xml";
 		flashvars.host = "www.kaltura.com";
 		flashvars.cdnHost = "cdn.kaltura.com";
 		flashvars.externalInterfaceDisabled = "false";
-		//DEFINE CUSTOM SKIN URL -
-		//flashvars.skinPath = "http://localhost/kdp3-js-playground/themes/kdp-skin/skin.swf";
+		flashvars.skinPath = "http://www.kaltura.org/demos/kdp3/assets/skin.swf";
+		flashvars["full.skinPath"] = "http://www.kaltura.org/demos/kdp3/assets/skin.swf";
+		//DEFINE CUSTOM SKIN URL -		
 		/*
 		//DEFINE OPENX BANNER USING WATERMARK PLUGIN - 
 		flashvars['bannerad.watermarkClickPath']='http://d1.openx.org/ck.php?n=a45b33cc';
@@ -227,10 +230,13 @@
 		attributes.id = "kdp3";
 		attributes.name = "kdp3";
 		attributes.styleclass = "player";
-		swfobject.embedSWF("kdp3.swf", "kdp3", "570", "380", "10.0.0", "jslib/expressInstall.swf", flashvars, params, attributes);
-	</script><style media="screen" type="text/css">#kdp3 {visibility:hidden}</style>
-</head><div firebugversion="1.5.4" style="display: none;" id="_firebugConsole"></div><body>
-<div id="controls_menu" class="sideBox">
+		
+		swfobject.embedSWF("http://www.kaltura.org/demos/kdp3/kdp3.swf", "kdp3", "570", "380", "10.0.0", "jslib/expressInstall.swf", flashvars, params, attributes);
+		
+	</script>	
+</head>
+<body>
+	<div id="controls_menu" class="sideBox">
 	<div class="content">
 		<strong><a href="http://www.kaltura.org/demos/kdp3/docs.html">[Go to KDP3 Docs]</a></strong>
 		<h2>Player Control</h2>
@@ -261,76 +267,8 @@
 		<br>
 		<div>
 			<dfn title="The box below lists all the events that are handled by KDP, for readability, we do not list the playerUpdatePlayhead notification by default, since it is being called too often, tick the playerUpdatePlayhead checkbox below to list this notification as well">Notifications:</dfn>&nbsp;<a href="http://www.kaltura.org/demos/kdp3/docs.html#addlistener">[docs]</a><input id="autoscroll" checked="checked" type="checkbox"><label for="autoscroll">AutoScroll?</label>
-			<textarea id="notifications" style="height: 80px; width: 285px;">skinLoaded:
- kdp3
-rootResize: width =&gt; 570, height =&gt; 380, 
-layoutReady: kdp3
-changeMedia: entryId =&gt; 0_l4xrt3og, flavorId =&gt; undefined, 
-enableGui: true
-entryReady: conversionQuality =&gt; 82122, searchProviderType =&gt; 
--2147483648, flavorParamsIds =&gt; 0,5,4,1728492,1728512, creditUserName
- =&gt; null, dataUrl =&gt; 
-http://cdnbakmi.kaltura.com/p/225762/sp/22576200/flvclipper/entry_id/0_l4xrt3og/version/0,
- sourceType =&gt; 6, creditUrl =&gt; null, mediaDate =&gt; -2147483648, 
-mediaType =&gt; 1, searchProviderId =&gt; null, views =&gt; 3081, 
-duration =&gt; 288, msDuration =&gt; 288000, durationType =&gt; null, 
-width =&gt; 512, height =&gt; 288, plays =&gt; 1057, description =&gt; 
-Harvard Business School (HBS) is the graduate business school of Harvard
- University in Boston, Massachusetts and one of the world's most 
-prestigious business schools. The school offers a full-time MBA program,
- doctoral programs, and many executive education programs. It owns 
-Harvard Business School Publishing, which publishes business books, 
-online management tools for corporate learning, case studies, and the 
-monthly Harvard Business Review. It is ranked 1st among American 
-business schools by the U.S. News &amp; World Report,[2] and 3rd in the 
-Financial Times Global MBA Rankings 2010,[3] behind London Business 
-School and The University of Pennsylvania's Wharton School of Business. 
-It is consistently ranked in the top ten of other national and global 
-business school rankings, and is one of six Ivy League business 
-schools.[4], searchText =&gt; harvard Harvard Business School (HBS) is 
-the graduate business school of Harvard University in Boston, 
-Massachusetts and one of the worlds most prestigious business schools. 
-The school offers a full-time MBA program, doctoral programs, and many 
-executive education programs. It owns Harvard Business School 
-Publishing, which publishes business books, online management tools for 
-corporate learning, case studies, and the monthly Harvard Business 
-Review. It is ranked 1st among American business schools by the U.S. 
-News &amp; World Report,[2] and 3rd in the Financial Times Global MBA 
-Rankings 2010,[3] behind London Business School and The University of 
-Pennsylvanias Wharton School of Business. It is consistently ranked in 
-the top ten of other national and global business school rankings, and 
-is one of six Ivy League business schools.[4], adminTags =&gt; null, 
-moderationCount =&gt; 0, createdAt =&gt; 1270741243, licenseType =&gt; 
--1, startDate =&gt; -2147483648, totalRank =&gt; 63, name =&gt; harvard,
- status =&gt; 2, endDate =&gt; -2147483648, rank =&gt; 3, categories 
-=&gt; Sample Bulk, userId =&gt; __ADMIN__225362, id =&gt; 0_l4xrt3og, 
-accessControlId =&gt; 108462, type =&gt; 1, tags =&gt; , 
-moderationStatus =&gt; 6, votes =&gt; 21, downloadUrl =&gt; 
-http://cdnbakmi.kaltura.com/p/225762/sp/22576200/raw/entry_id/0_l4xrt3og/version/0,
- thumbnailUrl =&gt; 
-http://cdnbakmi.kaltura.com/p/225762/sp/22576200/thumbnail/entry_id/0_l4xrt3og/version/100039,
- partnerId =&gt; 225762, groupId =&gt; -2147483648, partnerData =&gt; 
-null, version =&gt; 0, uid =&gt; 0A58DA1C-E761-36A3-45B7-EB56F874B816, 
-objectType =&gt; KalturaMediaEntry, categoriesIds =&gt; 261712, 
-showUiElement: id =&gt; liveToggleStatus, show =&gt; false, 
-showUiElement: id =&gt; offlineMessage, show =&gt; false, 
-sourceReady: kdp3
-playerStateChange: loading
-mediaLoading: kdp3
-bufferProgress: newTime =&gt; 2, 
-mediaViewableChange: kdp3
-playerStateChange: ready
-playerReady: kdp3
-kdpReady: kdp3
-mediaReady: kdp3
-enableGui: true
-playerStateChange: paused
-playerPaused: kdp3
-playerStateChange: buffering
-playerStateChange: paused
-playerPaused: kdp3
-bytesDownloadedChange: newValue =&gt; 0, 
-</textarea><br>
+			<textarea id="notifications" style="height: 80px; width: 285px;">
+			</textarea><br>
 			<input id="listenToUpdate" type="checkbox"><label for="listenToUpdate">Listen to playerUpdatePlayhead</label>&nbsp;<a href="http://www.kaltura.org/demos/kdp3/docs.html#notifications">[docs]</a><br>
 			<input id="stopListeners" type="checkbox"><label for="stopListeners">Stop listening?</label>&nbsp;<a href="http://www.kaltura.org/demos/kdp3/docs.html#removelistener">[docs]</a>
 		</div>
