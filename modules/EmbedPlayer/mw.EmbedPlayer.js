@@ -2338,7 +2338,7 @@ mw.EmbedPlayer.prototype = {
 	 * @returns boolean true if the mwEmbed player interface should be used
 	 * 					false if the mwEmbed player interface should not be used
 	 */
-	shouldUseNativeControls: function() {
+	shouldUseNativeControls: function() {		
 		if( this.usenativecontrols === true ){
 			return true;
 		}
@@ -2374,7 +2374,7 @@ mw.EmbedPlayer.prototype = {
 		// Check if we need to refresh mobile safari
 		var mobileSafariNeedsRefresh = false;					
 				
-		// Unhide the original video element
+		// Unhide the original video element if not part of a playerThemer embed
 		if( !$j( '#' + this.pid ).hasClass('PlayerThemer') ){
 			$j( '#' + this.pid )
 			.css( {
@@ -2407,13 +2407,36 @@ mw.EmbedPlayer.prototype = {
 			var cssStyle = {
 				'width' : _this.width,
 				'height' : _this.height
-			};			
+			};
 			$j( '#' + this.pid ).replaceWith( 
 				_this.getNativePlayerHtml( videoAttribues, cssStyle )									
 			)
 			// Bind native events:
 			this.applyMediaElementBindings();
 		}
+		// Android only can play with a special play button ( no native controls in the dom , and no auto-play )
+		// and only with 'native display'
+		if( mw.isAndroid2() ){		
+			if( $j('#' + _this.id + '_android_play').length == 0 ){
+				$j( '#' + _this.pid ).after( 
+					$j('<div />')				
+					.css({
+						'position' : 'relative',
+						'top' : -1 * ( .5 * _this.getPlayerHeight() ) - 52,
+						'left' : ( .5 * _this.getPlayerWidth() ) - 75
+					})
+					.attr( {
+						'id' : _this.id + '_android_play',
+						'title'	: gM( 'mwe-embedplayer-play_clip' ),
+						'class'	: "ui-state-default play-btn-large"
+					} )
+					.click( function() {
+						_this.play();
+						// no need to hide the play button since android 
+					} )
+				)
+			}
+		}		
 		return ;
 	},
 	/**
@@ -3545,7 +3568,7 @@ mw.EmbedTypes = {
 						this.players.addPlayer( h264NativePlayer );
 					}
 					// For now if Android assume we support h264Native (FIXME test on real devices )
-					if (navigator.userAgent.indexOf('Android 2.') != -1){
+					if ( mw.isAndroid2() ){
 						this.players.addPlayer( h264NativePlayer );
 					}
 					
