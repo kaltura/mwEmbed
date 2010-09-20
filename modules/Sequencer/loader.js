@@ -19,18 +19,19 @@
 		
 		"mw.SequencerServer" : "mw.SequencerServer.js",
 		"mw.SequencerAddMedia" : "mw.SequencerAddMedia.js",
-		"mw.SequencerAddByUrl" : "mw.SequencerAddByUrl.js",
+		"mw.SequencerAddByUri" : "mw.SequencerAddByUri.js",
 		"mw.SequencerPlayer" : "mw.SequencerPlayer.js",
 		"mw.SequencerTimeline" : "mw.SequencerTimeline.js",
 		"mw.SequencerKeyBindings" : "mw.SequencerKeyBindings.js",
-		"mw.SequencerTools" : "mw.SequencerTools.js",		
+		"mw.SequencerTools" : "tools/mw.SequencerTools.js",		
 		"mw.SequencerMenu" : "mw.SequencerMenu.js", 
 		
 		"mw.SequencerActionsSequence" : "actions/mw.SequencerActionsSequence.js",
 		"mw.SequencerActionsView" : "actions/mw.SequencerActionsView.js",
 		"mw.SequencerActionsEdit" : "actions/mw.SequencerActionsEdit.js",
 		
-		"mw.SequencerRender" : "mw.SequencerRender.js",
+		"$j.fn.jPicker" : "tools/jPicker/jpicker-1.1.5.js",
+		"mw.style.jPicker" : "tools/jPicker/css/jPicker-1.1.5.css",			
 		
 		"mw.FirefoggRender"	: "mw.FirefoggRender.js",
 		"$j.fn.layout"		: "ui.layout/ui.layout-1.2.0.js",
@@ -63,17 +64,17 @@
 				'mw.SequencerConfig'
 			],		
 			[										
-				'$j.contextMenu',
-				
+				'$j.contextMenu',				
 				'mw.SequencerServer',				
-				'mw.SequencerAddByUrl',
+				'mw.SequencerAddByUri',
 				'mw.SequencerAddMedia',
-				'mw.SequencerPlayer',
-				'mw.SequencerRender',
+				'mw.SequencerPlayer',				
 				
 				'mw.SequencerTimeline',
 				'mw.SequencerKeyBindings',
 				'mw.SequencerTools',
+				"$j.fn.jPicker",
+				"mw.style.jPicker",
 				
 				'mw.SequencerMenu',
 				'mw.SequencerActionsSequence',
@@ -86,9 +87,9 @@
 			 	
 			 	'$j.fn.layout',
 			 	
-				// UI components used in the sequencer interface: 
-			 	'$j.ui.mouse',			 	
+				// UI components used in the sequencer interface: 		 	
 			 	'$j.widget',
+			 	'$j.ui.mouse',	
 			 	'$j.ui.position',
 				'$j.ui.accordion',
 				'$j.ui.dialog',

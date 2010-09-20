@@ -125,7 +125,7 @@ mw.SequencerMenu.prototype = {
 		var _this = this;
 		var $menuTarget = this.sequencer.getMenuTarget();
 		// empty and disable select for menu items
-		$menuTarget.empty().disableSelection();
+		$menuTarget.empty();
 		
 		for( var menuKey in this.menuConfig ){	
 			// Create a closure to preserve menuKey binding scope
@@ -142,6 +142,7 @@ mw.SequencerMenu.prototype = {
 					.attr( 'id', _this.sequencer.id + '_' + menuKey + '_topMenuItem')
 					.addClass( 'ui-state-default' )
 					.buttonHover()
+					.disableSelection()
 			    	// Add menu binding: 
 			    	.menu({
 						content: _this.getMenuSet( menuKey ),
@@ -185,7 +186,7 @@ mw.SequencerMenu.prototype = {
 				$j('<span />')
 				.css({ 
 					'float': 'right',
-					'font-size': '12px'
+					'font-size': '10.5px'
 				})
 				.append( 
 					gM('mwe-sequencer-sequencer_credit_line',

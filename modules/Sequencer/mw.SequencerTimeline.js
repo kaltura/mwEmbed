@@ -138,12 +138,21 @@ mw.SequencerTimeline.prototype = {
 			)
 			$clipTrackName = $j( '#' + this.getTrackNameInterfaceId( trackIndex ) );
 		}
-		// Update the TrackNameInterface duration on every draw::
-		/*$clipTrackName.find('.trackDuration').text( 
-			mw.seconds2npt( 
-				this.sequencer.getSmil().getBody().getClipDuration( smilSequenceTrack )
-			)
-		)*/
+		
+		var updateTrackDuration = function(){
+			// Update the TrackNameInterface duration on every draw::
+			$clipTrackName.find('.trackDuration')
+			.fadeOut('slow', function(){				
+				$j(this).text( 
+					mw.seconds2npt( 
+						_this.sequencer.getSmil().getBody().getClipDuration( $j( smilSequenceTrack )  )
+					)
+				).fadeIn( 'slow') 
+			})
+		}
+		// Bind the update event to every time the duration is re-calculated
+		$j( this.sequencer.getEmbedPlayer() ).bind( 'durationchange', updateTrackDuration )
+		updateTrackDuration();
 		
 		
 		
@@ -357,6 +366,9 @@ mw.SequencerTimeline.prototype = {
 	},
 	// calls the edit interface passing in the selected clip:
 	editClip: function( selectedClip ){
+		// commit any input changes 
+		$j( document.activeElement ).change();
+		
 		var smil = this.sequencer.getSmil();
 		// get the smil element for the edit tool:
 		var smilElement = smil.$dom.find( '#' + $j( selectedClip ).data('smilId') );	

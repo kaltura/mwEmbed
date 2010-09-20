@@ -105,11 +105,8 @@ mw.remoteSequencerAddEditOverlay = function( embedPlayerId ){
 	}
 	
 	if(! $j( '#' + embedPlayerId ).siblings( '.kalturaEditOverlay' ).length ){
-		var editLink = '#';
-		if( mw.isLocalDomain( mw.getApiProviderURL( embedPlayer.apiProvider ) ) 
-				&& 
-			embedPlayer.apiTitleKey )
-		{			
+		var editLink = '#';		
+		if( ! mw.isLocalDomain( mw.getApiProviderURL( embedPlayer.apiProvider ) ) ) {			
 			var seqTitle = embedPlayer.apiTitleKey
 				.replace( 'Sequence-', 'Sequence:')
 			// strip the extension
@@ -165,7 +162,7 @@ mw.remoteSequencerAddEditOverlay = function( embedPlayerId ){
 							'href': editLink,
 							'target': '_new'
 						})
-						.click(function(){						
+						.click(function(){										
 							// load the editor in-place if on the same domain as the sequence
 							if( editLink == '#' ){
 								if( ! window.mwSequencerRemote ){
@@ -219,7 +216,6 @@ mw.MediaWikiRemoteSequencer.prototype = {
 	},	
 	
 	drawUI: function() {
-		
 		// Check page action 
 		if( this.action == 'view' ) {	
 			this.showViewUI();
@@ -277,26 +273,8 @@ mw.MediaWikiRemoteSequencer.prototype = {
 	
 	showEditUI: function(){
 		var _this = this;
-		$j('#bodyContent').prepend(
-			// Append switch visual / text editor links
-			/*$j('<div />')
-			.append( 
-				$j.button({ 
-					'icon' : 'video',
-					'text' : gM( "mwe-sequencer-visual-editor")
-				}).click( function(){
-					$j('#editform').hide();				
-					$j('#sequencerContainer').show();					
-				}),
-				$j.button({
-					'icon' : 'script',
-					'text' : gM("mwe-sequencer-text-editor-warn")
-				}).click(function(){
-					$j('#sequencerContainer').hide();
-					$j('#editform').show();
-				})			
-			)*/
-		).append( 				
+		$j('#bodyContent')
+		.append( 				
 			$j('<div />')
 			.css({
 				'position' : 'relative',
@@ -323,7 +301,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 	
 	
 	getSequenceFileKey: function(){
-		return 'File:' + wgPageName.replace( 'Sequence:', 'Sequence-') + '.ogv';
+		return 'File:' + wgPageName.replace( /:/g, '-') + '.ogv';
 	},
 	
 	displayPlayerEmbed: function(){

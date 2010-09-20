@@ -117,9 +117,10 @@ mw.SequencerAddMedia.prototype = {
 		
 		this.getSearchDriver( function( remoteSearchDriver ){
 			// Check if input value can be handled by url
-			var inputValue = _this.sequencer.getMenuTarget().find('input.searchMedia').val();
-			if( _this.sequencer.getAddByUrl().isUrl( inputValue) ){
-				 _this.sequencer.getAddByUrl().addByUrlDialog( remoteSearchDriver, inputValue );
+			var inputValue = _this.sequencer.getMenuTarget().find('input.searchMedia').val();				
+			
+			if( _this.sequencer.getAddByUri().isUri( inputValue) ){
+				 _this.sequencer.getAddByUri().addByUriDialog( remoteSearchDriver, inputValue );
 			} else {
 				// Else just use the remoteSearchDriver search interface
 				remoteSearchDriver.createUI();

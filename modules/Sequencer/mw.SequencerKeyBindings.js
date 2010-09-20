@@ -31,7 +31,7 @@ mw.SequencerKeyBindings.prototype = {
 		this.sequencer = sequencer;
 		this.setupKeyBindigs()		
 	},
-	onFocus: function( ){		
+	onFocus: function( ){				
 		this.inputFocus = true;		
 	},
 	onBlur: function(){
@@ -56,8 +56,7 @@ mw.SequencerKeyBindings.prototype = {
 
 			// Paste cips on v + ctrl while not focused on a text area:
 			if ( ( e.which == 86 && _this.ctrlDown ) && !_this.inputFocus )
-				$j( _this ).trigger( 'paste ');
-
+				$j( _this ).trigger( 'paste ');			
 		} );
 		$j( window ).keyup( function( e ) {
 			mw.log( 'SequencerKeyBindings::key up on ' + e.which );
@@ -76,6 +75,7 @@ mw.SequencerKeyBindings.prototype = {
 			// Backspace or Delete key while not focused on a text area:
 			if ( ( e.which == 8 || e.which == 46 ) && !_this.inputFocus )
 				$j( _this ).trigger( 'delete' );
+						
 		} );
 	}
 };

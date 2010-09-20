@@ -34,7 +34,9 @@ mw.SequencerPlayer.prototype = {
 				$video.css(
 					_this.getPlayerSize()
 				).attr({
-					'id' : _this.getSmilPlayerId()
+					'id' : _this.getSmilPlayerId(),
+					'attributionbutton' : false,
+					'overlaycontrols' : false
 				}).append(
 					$j('<source />').attr({
 						'type' : 'application/smil',
@@ -46,9 +48,7 @@ mw.SequencerPlayer.prototype = {
 			// Draw the player ( keep the playhead for now )
 			// xxx we will eventually replace the playhead with sequence 
 			// based playhead interface for doing easy trims
-			$j( '#' + _this.getSmilPlayerId() ).embedPlayer({
-				'overlayControls' : false
-			}, function(){
+			$j( '#' + _this.getSmilPlayerId() ).embedPlayer({}, function(){
 				// Set the player interface to autoMargin ( need to fix css propagation in embed player) 			
 				$j( '#' + _this.getSmilPlayerId() ).parent('.interface_wrap').css('margin', 'auto');
 				if( callback ){
@@ -91,19 +91,15 @@ mw.SequencerPlayer.prototype = {
 	getPlayerSize: function(){
 		var size = {};
 		var $playerContainer = this.sequencer.getContainer().find('.mwseq-player'); 
-		size.width = $playerContainer.width();			
-		if( this.sequencer.options.videoAspect ){
-			var aspect = this.sequencer.options.videoAspect.split( ':' );											
-			var apectRatio = ( aspect[1] / aspect[0] );
-			size.height = parseInt( size.width * ( aspect[1] / aspect[0] ) );
-		} else {
-			size.height = $playerContainer.width();
-		}
-		// Check if we exceeded the max height 
-		if( size.height > $playerContainer.height() ){
-			size.height = $playerContainer.height();
-			size.width =  parseInt( size.height * ( aspect[0] / aspect[1] ) );
-		}			
+		
+		var aspect = this.sequencer.options.videoAspect.split( ':' );	
+		size.width = $playerContainer.width() - 8;
+		size.height = parseInt( size.width * ( aspect[1] / aspect[0] ) );
+		
+		if( size.height >  $playerContainer.height() - 35 ){
+			size.height = $playerContainer.height()- 35
+			size.width = parseInt( size.height * ( aspect[0] / aspect[1] ) );
+		}						
 		return size;
 	},
 	

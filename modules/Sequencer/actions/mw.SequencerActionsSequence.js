@@ -291,17 +291,17 @@ mw.SequencerActionsSequence.prototype = {
 		
 		// Check if the published version is already the latest 
 		_this.sequencer.getServer().isPublished( function( isPublished ){
-			if( !isPublished ){
-				mw.load( ['AddMedia.firefogg','FirefoggRender'], function(){
-					_this.doPublish( $dialog )
-				});
-			} else {
+			if( isPublished ){
 				$dialog.empty().text( gM('mwe-sequencer-already-published') )
 				var buttons = {};
 				buttons[ gM('mwe-ok') ] = function(){
 					$j( this ).dialog( 'close' );
 				}
 				$dialog.dialog( 'option', 'buttons', buttons);
+			} else {
+				mw.load( ['AddMedia.firefogg','FirefoggRender'], function(){
+					_this.doPublish( $dialog, false )
+				});				
 			}
 		});
 	},
@@ -376,7 +376,7 @@ mw.SequencerActionsSequence.prototype = {
 						// xxx WTF? no idea why progressbar above is not working 
 						$j("#firefoggProgressbar .ui-progressbar-value").css('width', Math.round( progress * 10000 ) / 100 + '%');
 					},
-					'doneRenderCallback': function( fogg ){
+					'doneRenderCallback': function( fogg ){					
 						if( localFile ){
 							$dialog.html( gM('mwe-sequencer-save_done') );
 						} else {
@@ -418,7 +418,7 @@ mw.SequencerActionsSequence.prototype = {
 			// Parts of this code are replicated in firefogg upload handler
 			// xxx should refactor so they share a common handler
 			if( fogg.status() == 'upload done' ){
-				var response_text = fogg.responseText;
+				var response_text = fogg.responseText;				
 				if ( !response_text ) {
 					try {
 						var pstatus = JSON.parse( fogg.uploadstatus() );
@@ -438,6 +438,7 @@ mw.SequencerActionsSequence.prototype = {
 						var apiResult = null;
 					}
 				}
+				
 				// Check the api response 				
 				if ( !apiResult || apiResult.error || ( apiResult.upload && 
 						( apiResult.upload.result == "Failure" || apiResult.upload.error ) ) ) {
@@ -458,7 +459,7 @@ mw.SequencerActionsSequence.prototype = {
 		})		
 	},
 	uploadSuccess: function($dialog, apiResult){
-		var _this = this;	
+		var _this = this;
 		// Update the description page:
 		$dialog.html( gM('mwe-sequencer-publishing-updatepage' ) );
 		

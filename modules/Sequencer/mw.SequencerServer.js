@@ -40,6 +40,9 @@
 		//Template cache of wikitext for templates loaded in this session
 		templateTextCache: [],
 		
+		// Current sequence page
+		currentSequencePage: {},
+		
 		/**
 		 * init the sequencer
 		 */
@@ -117,7 +120,7 @@
 		},		
 		wrapSequencerWikiText : function( xmlString ){
 			var _this = this;
-			if( !_this.currentSequencePage.pageStart ){
+			if( !_this.currentSequencePage || !_this.currentSequencePage.pageStart ){
 				 _this.currentSequencePage.pageStart ="\nTo edit or view this sequence " + 
 					'[{{fullurl:{{FULLPAGENAME}}|withJS=MediaWiki:MwEmbed.js}} enable the sequencer] for this page'; 
 			}
@@ -291,14 +294,15 @@
 					pageText = _this.getBaseFileDescription()
 				}
 				var request = {
-					'action':'edit',
+					'action': 'edit',
 					'token' : token, 
 					'title' : 'File:' + _this.getVideoFileName(),
 					'summary' : 'Automated sequence description page for published sequence: ' + _this.getTitleKey(),
 					'text' : pageText
 				};
-				mw.getJSON( _this.getApiUrl(), request, function(data){
-					if( data && data.edit && data.edit.result == "Success"){
+												
+				mw.getJSON( _this.getApiUrl(), request, function( data ){
+					if( data && data.edit && data.edit.result == "Success" ){
 						callback( true );
 					} else {
 						callback( false );
@@ -307,21 +311,23 @@
 			})
 		},
 		
-		getBaseFileDescription: function(){
-			var _this = this;
-			return 'Published sequence for [['+ _this.getTitleKey() + ']]';
+		getBaseFileDescription: function(){					
+			return 'Published sequence for [[' + this.getTitleKey() + ']]';
 		},
 		
 		getCommonsDescriptionText: function(){
 			var _this = this;
 			
-			var descText = '<!-- ' +  
-			"Note: this is an automated file description for a published video sequence. \n"
-			"Changes to this wikitext will be overwiten. Please add metadata and categories to\n" + 
-			 _this.getTitleKey() + " instead --> \n" + 
+			var descText = "<!-- " +
+			"Note: this is an automated file description for a published video sequence. \n" + 
+			"Changes to this wikitext will be overwiten. Please add metadata and categories to\n" +
+			_this.getTitleKey() +
+			" instead --> \n" + 
 			 "{{Information\n" +  
 			"|Description=" + _this.getBaseFileDescription() + "\n" + 
 			"|Source= Sequence Sources assets include:\n";
+			
+			
 			
 			// loop over every asset:
 			this.sequencer.getSmil().getBody().getRefElementsRecurse(null, 0, function( $node ){
@@ -386,7 +392,7 @@
 		 * @return {String}
 		 */
 		getVideoFileName: function(){
-			return this.getTitleKey().replace( ':', '-') + '.ogv';
+			return this.getTitleKey().replace( /:/g, '-') + '.ogv';
 		},
 		
 		// get upload settings runs the callback with the post url and request data 

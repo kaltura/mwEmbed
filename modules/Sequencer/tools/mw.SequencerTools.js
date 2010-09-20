@@ -36,18 +36,17 @@ mw.SequencerTools.prototype = {
 			'editWidgets' : ['panzoom'],
 			'editableAttributes' : [ 'panZoom' ],
 			'contentTypes': [ 'img'], // xxx todo add video support
-			'animate' : 'true'
+			'supportsKeyFrames' : 'true'
 		},
 		'templateedit' : {
 			'editWidgets' : ['editTemplate'],
 			'editableAttributes' : [ 'apititlekey' ],
 			'contentTypes' : ['mwtemplate']
-		}
-		/*,
+		},
 		'transitions' : {			
 			'editWidgets' : ['editTransitions'],		
 			'contentTypes': ['video', 'img', 'mwtemplate' ]
-		}*/
+		}
 	},
 	editableAttributes:{		
 		'clipBegin':{
@@ -280,7 +279,8 @@ mw.SequencerTools.prototype = {
 						'value' : 'fadeToColor', 
 						'editType' : 'hidden'
 					}
-				},		
+				}
+				/*,		
 				'crossfade' : {
 					'extends': 'fade',
 					'selectable' : ['transIn', 'transOut'],
@@ -288,7 +288,7 @@ mw.SequencerTools.prototype = {
 						'value' : 'crossfade',
 						'editType' : 'hidden'
 					}
-				}				
+				}*/				
 			},
 			buildAttributeSet: function( transitionType ){
 				var attributes = {};
@@ -383,27 +383,120 @@ mw.SequencerTools.prototype = {
 							})
 						)
 					} else if ( transitionAttribute.editType == 'color' ){
-						$inputBox = _this.getInputBox({
-							'title' : gM('mwe-sequencer-tools-transitions-color'),
-							'inputSize' : 8,
-							'initialValue' : initialValue,
-							'change': function(){
-								var cat = $j(this).val();
-								debugger;
-							}
-						})
-						// xxx add the color picker:						
-						$editTransitionsSet.append( $inputBox );
+						// Add the color picker:						
+						$editTransitionsSet.append( 
+							_this.getInputBox({
+								'title' : gM('mwe-sequencer-tools-transitions-color'),
+								'inputSize' : 8,
+								'initialValue' : initialValue								
+							})
+							.addClass("jColorPicker")
+						);		
+						$editTransitionsSet.find('.jColorPicker input').jPicker( 
+								_editTransitions.colorPickerConfig,
+								function(color){
+									// commit color ( update undo / redo )
+									
+								},
+								function(color){
+									// live preview of selection ( update player )
+									//mw.log('update: ' + attributeKey + ' set to: #' + color.val('hex'));
+									$smilTransitionElement.attr( attributeKey, '#' + color.val('hex') );
+									_editTransitions.onChange( _this, smilElement );
+								}					
+							)
+						// adjust the position of the color button:
+						$editTransitionsSet.find('.jColorPicker .Icon').css('top', '-5px');
 					}
 				})
 				return $editTransitionsSet;
 			},			
+			/** 
+			 * Could move to a more central location if we use the color picker other places
+			 */ 
+			colorPickerConfig: {
+				'window' : {
+				 	'expandable': true,
+					'effects' : {
+						'type' : 'show'
+					},
+					'position' : {
+						'x' : '10px',
+						'y' : 'bottom'
+					}
+				},			
+				'images' : {
+					'clientPath' : mw.getMwEmbedPath() + 'modules/Sequencer/tools/jPicker/images/'
+				},
+				'localization' : {
+					 'text' : {
+						'title' : gM('mwe-sequencer-color-picker-title'),
+						'newColor' : gM('mwe-sequencer-menu-sequence-new'),
+						'currentColor' : gM('mwe-sequencer-color-picker-current'),
+						'ok' : gM('mwe-ok'),
+						'cancel': gM('mwe-cancel')
+				    },
+				    'tooltips':{
+				      'colors':
+				      {
+				        'newColor': gM('mwe-sequencer-color-picker-new-color'),
+				        'currentColor': gM('mwe-sequencer-color-picker-currentColor')  
+				      },
+				      'buttons':
+				      {
+				        ok: gM('mwe-sequencer-color-picker-commit' ),
+				        cancel: gM('mwe-sequencer-color-picker-cancel-desc')
+				      },
+				      'hue':
+				      {
+				        radio: gM('mwe-sequencer-color-picker-hue-desc'), 
+				        textbox: gM('mwe-sequencer-color-picker-hue-textbox') 
+				      },
+				      'saturation':
+				      {
+				        radio: gM('mwe-sequencer-color-picker-saturation-desc'), 
+				        textbox: gM('mwe-sequencer-color-picker-saturation-textbox') 
+				      },
+				      'value':
+				      {
+				        radio: gM('mwe-sequencer-color-picker-value-desc'),
+				        textbox: gM('mwe-sequencer-color-picker-value-textbox') 
+				      },
+				      'red':
+				      {
+				        radio: gM('mwe-sequencer-color-picker-red-desc'), 
+				        textbox: gM('mwe-sequencer-color-picker-red-textbox') 
+				      },
+				      'green':
+				      {
+				        radio: gM('mwe-sequencer-color-picker-green-desc'),
+				        textbox: gM('mwe-sequencer-color-picker-green-textbox')
+				      },
+				      'blue':
+				      {
+				        radio: gM('mwe-sequencer-color-picker-blue-desc'),
+				        textbox: gM('mwe-sequencer-color-picker-blue-textbox')
+				      },
+				      'alpha':
+				      {
+				        radio:  gM('mwe-sequencer-color-picker-alpha-desc'),
+				        textbox: gM('mwe-sequencer-color-picker-alpha-textbox') 
+				      },
+				      'hex':
+				      {
+				        textbox: gM('mwe-sequencer-color-picker-hex-desc'), 
+				        alpha: gM('mwe-sequencer-color-picker-hex-textbox') 
+				      }
+				    }
+
+				}
+			},
 			
 			'onChange': function( _this, smilElement ){
 				// Update the sequence duration :
 				_this.sequencer.getEmbedPlayer().getDuration( true );
 				
-				// Seek to "this clip" 
+				// xxx we should re-display the current time 
 				_this.sequencer.getEmbedPlayer().setCurrentTime( 
 					$j( smilElement ).data('startOffset')
 				);	
@@ -448,7 +541,7 @@ mw.SequencerTools.prototype = {
 							_editTransitions.getBindedTranstionEdit(
 								_this, smilElement, transitionType
 							)
-						)
+						)												
 						// Update the smil attribute:  
 						$j( smilElement ).attr( 
 							transitionDirection, 
@@ -479,7 +572,7 @@ mw.SequencerTools.prototype = {
 					_editTransitions.onChange( _this, smilElement );
 				});
 				// add the transition widget to the target
-				$j( target ).append( $transitionWidget );
+				$j( target ).append( $transitionWidget );				
 			}						
 		},
 		'editTemplate':{
@@ -512,7 +605,7 @@ mw.SequencerTools.prototype = {
 						return ;
 					}
 					$j( target ).empty().append( 
-						$j('<h3 />').text( gM('mwe-sequencer-editTemplate-params') )
+						$j('<h3 />').text( gM('mwe-sequencer-edittemplate-params') )
 					)
 					
 					// This is not supposed to be perfect .. 
@@ -738,7 +831,7 @@ mw.SequencerTools.prototype = {
 			'onChange': function( _this, smilElement ){				
 				var smil = _this.sequencer.getSmil();
 				// Update the preview thumbs
-				
+				var $target = $j( '#editWidgets_trimTimeline' );
 				// (local function so it can be updated after the start time is done with its draw ) 
 				var updateDurationThumb = function(){
 					// Check the duration:
@@ -747,7 +840,7 @@ mw.SequencerTools.prototype = {
 						// Render a thumbnail for the updated duration  
 						smil.getLayout().drawSmilElementToTarget( 							
 							smilElement,
-							$j( target ).find('.trimEndThumb'),
+							$target.find('.trimEndThumb'),
 							clipDur
 						);
 					}
@@ -755,13 +848,13 @@ mw.SequencerTools.prototype = {
 				
 				var clipBeginTime = $j('#editTool_trim_clipBegin').val();
 				if( !clipBeginTime ){
-					$j(target).find('.trimStartThumb').hide();
+					$target.find('.trimStartThumb').hide();
 				} else {
 					mw.log("Should update trimStartThumb::" +  $j(smilElement).attr('clipBegin') );
 					// Render a thumbnail for relative start time = 0  
 					smil.getLayout().drawSmilElementToTarget( 						
 						smilElement, 
-						$j( target ).find('.trimStartThumb'),
+						$target.find('.trimStartThumb'),
 						0,
 						updateDurationThumb()
 					)
@@ -785,10 +878,10 @@ mw.SequencerTools.prototype = {
 				
 				// Some slider functions
 				var sliderToTime = function( sliderval ){
-					return parseInt( fullClipDuration * ( sliderval / 1000 ) );
+					return parseInt( fullClipDuration * ( sliderval / 100000 ) );
 				}
 				var timeToSlider = function( time ){					
-					return parseInt( ( time / fullClipDuration ) * 1000 );
+					return parseInt( ( time / fullClipDuration ) * 100000 );
 				}
 				
 				
@@ -846,7 +939,7 @@ mw.SequencerTools.prototype = {
 						.slider({
 							range: true,
 							min: 0,
-							max: 1000,
+							max: 100000,
 							values: sliderValues,
 							slide: function(event, ui) {	
 							
@@ -930,9 +1023,13 @@ mw.SequencerTools.prototype = {
 		
 		$toolsContainer = $j('<div />')
 		.addClass( 'editToolsContainer' )
-		.css( {
-			'height': '80%',
-			'overflow': 'auto'
+		.css( {			
+			'overflow': 'auto',
+			'position':'absolute',
+			'top' : '0px',
+			'left': '0px',
+			'right': '0px',
+			'bottom': '37px'
 		})
 		.append( 
 			$j('<ul />') 
@@ -1025,6 +1122,15 @@ mw.SequencerTools.prototype = {
 			selected : toolTabIndex
 		});
 		
+		var $editActions = $j('<div />')
+		.css({
+			'position' : 'absolute',
+			'bottom' : '0px',
+			'height' : '37px',
+			'left' : '0px',
+			'right' : '0px',
+			'overflow' : 'auto'
+		});
 		// Build out global edit Actions buttons after the container
 		for( var editActionId in this.editActions ){		
 			// Check if the edit action has a conditional display:
@@ -1034,11 +1140,12 @@ mw.SequencerTools.prototype = {
 				displayEidtAction =  this.editActions[ editActionId ].displayCheck( _this,  smilElement );
 			}			
 			if( displayEidtAction ){
-				$toolsContainer.after( 
+				$editActions.append( 
 					this.getEditAction( smilElement, editActionId )
 				)	
 			}
 		}
+		$j( this.sequencer.getEditToolTarget() ).append( $editActions )
 	},
 	getCurrentsmilElement: function(){
 		return this.currentsmilElement;
