@@ -33,7 +33,7 @@ if( typeof preMwEmbedReady == 'undefined'){
 }
 // Globals to pre-set config values in dynamic loading of mwEmbed
 if( typeof preMwEmbedConfig == 'undefined') {
-	var preMwEmbedConfig = [];
+	var preMwEmbedConfig = {};
 }
 
 /**
@@ -113,6 +113,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			mwConfig[ name ] = value;
 		}
 	}
+	
+	// Apply any pre-setup config:
+	mw.setConfig( preMwEmbedConfig );
 	
 	/**
 	 * Getter for configuration values
@@ -1939,10 +1942,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		if( mwSetupFlag ) {
 			return ;
 		}				 
-		mwSetupFlag = true;			
-		
-		// Apply any pre-setup config:
-		mw.setConfig( preMwEmbedConfig );			
+		mwSetupFlag = true;					
 		
 		
 		mw.log( 'mw:setupMwEmbed SRC:: ' + mw.getMwEmbedSrc() );			
