@@ -48,18 +48,18 @@
 	);		
 		
 	//Setup the addMediaWizard module
-	mw.addModuleLoader( 'AddMedia.addMediaWizard', 
-		// Define loader set: 
+	mw.addModuleLoader( 'AddMedia.addMediaWizard',
+		// Define loader set:
 		[
 			[	'mw.RemoteSearchDriver',
 				'mw.style.AddMedia',
 				'$j.cookie',
 				'$j.fn.textSelection',
 				'$j.browserTest', // ( textSelection uses browserTest ) 
-				'$j.ui'
-			], [
+				'$j.ui',
 				'$j.widget',
 				'$j.ui.mouse',
+			], [				
 				'$j.ui.resizable',				
 				'$j.ui.position',
 				'$j.ui.draggable',

@@ -280,7 +280,7 @@ mw.RemoteSearchDriver.prototype = {
 			'apiUrl':  ( wgServer && wgScriptPath ) ? 
 				wgServer + wgScriptPath + '/api.php' : null,			
 			
-			'detailsUrl' : 	wgServer + wgArticlePath,
+			'detailsUrl' : 	( wgServer &&  wgArticlePath )? wgServer + wgArticlePath : null,
 			
 			'lib': 'mediaWiki',
 			'homepage' : ( wgServer && wgScript ) ? 
@@ -866,8 +866,8 @@ mw.RemoteSearchDriver.prototype = {
 			bgiframe: true,
 			autoOpen: true,
 			modal: true,
-			width: $j(window).width()-10,
-			height: $j(window).height()-10,
+			width: $j(window).width()-50,
+			height: $j(window).height()-50,
 			position : 'center',
 			draggable: false,
 			resizable: false,
@@ -2016,7 +2016,7 @@ mw.RemoteSearchDriver.prototype = {
 				'position' : 'absolute',
 				'top' : '0px',
 				'left' : '0px', 
-				'bottom' : '0px',
+				'bottom' : '30px',
 				'right' : '4px',
 				'background-color' : '#FFF'
 			} )
