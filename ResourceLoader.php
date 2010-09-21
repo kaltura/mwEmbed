@@ -16,6 +16,12 @@ if( is_file ( dirname( __FILE__ ) .'../mwResourceLoader.php' )
 
 // Check if we are an entry point or being used as part of MEDIAWIKI:
 if ( !defined( 'MEDIAWIKI' ) && !defined( 'SCRIPTLOADER_MEDIAWIKI') ) {
+
+        // Allow an installation an optional PHP customization/overrides file
+	if ( is_file ( dirname( __FILE__ ) .'/../localSettings.php' ) ) {
+	  require_once dirname( __FILE__ ) .'/../localSettings.php';
+	}
+
 	$myResourceLoader = new ResourceLoader();
 	if( $myResourceLoader->outputFromCache() ) {
 		exit();
