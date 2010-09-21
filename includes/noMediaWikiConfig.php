@@ -82,8 +82,11 @@ function wfDebug() {
 	return false;
 }
 
+if (!function_exists('wfTempDir'))
+{
 function wfTempDir(){
 	return realpath( dirname( __FILE__ ) ) . '/includes/cache';
+}
 }
 
 /**
