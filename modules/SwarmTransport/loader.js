@@ -8,12 +8,14 @@
 ( function( mw ) {
 	
 	mw.addResourcePaths( {
-		"mw.SwarmTransport" : "mw.SwarmTransport.js" 
+		"mw.SwarmTransport" : "mw.SwarmTransport.js",
+		"mw.EmbedPlayerSwarmVlc" : "mw.EmbedPlayerSwarmVlc.js"
 	});
 
 	mw.setDefaultConfig({
 	 	/** 
-	 	* If SwarmTransport should be enabled by default as video transport mechanism
+	 	* If SwarmTransport should be enabled as video transport mechanism
+	 	* Enabling SwarmTransport loads mw.SwarmTransport, vlc and swarmvlc embed if in IE. 
 	 	*/ 
  		'SwarmTransport.Enable': false,
  		
@@ -34,6 +36,13 @@
 		if( mw.getConfig( 'SwarmTransport.Enable' ) ) {
 			if( $j.inArray( 'mw.SwarmTransport', classRequest ) == -1 )  {
 				classRequest.push( [ 'mw.SwarmTransport' ]);
+				// if IE / ActiveX				
+				// Look for swarm player:
+				if( mw.EmbedTypes.testActiveX( 'P2PNext.SwarmPlayer' ) ){
+					// Add vlc and swarmVlc to request
+					classRequest.push( 'mw.EmbedPlayerVlc' );
+					classRequest.push( 'mw.EmbedPlayerSwarmVlc' );
+				}
 			}
 		}
 	});
