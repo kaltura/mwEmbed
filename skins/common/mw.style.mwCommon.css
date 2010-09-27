@@ -185,10 +185,10 @@ ul.ui-provider-selection li a {
 * Lets us use root common style sheets with jquery based skins
 * ( without additional assets in the embedPlayer skins folder )
 */
-.play-btn-large {
+.mv-player .play-btn-large {
 	width : 130px; 
 	height : 96px; 
-	background : url(images/player_big_play_button.png) !important; 
+	background : url(images/player_big_play_button.png); 
 	position : absolute; 
 	cursor : pointer; 
 	border : none !important;
