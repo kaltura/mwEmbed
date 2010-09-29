@@ -12,11 +12,10 @@
  */
  
 mw.includeAllModuleMessages();
-
 /*
 * The default video attributes supported by embedPlayer
 */ 
-mw.setConfig( 'EmbedPlayer.Attributes', {
+mw.setDefaultConfig( 'EmbedPlayer.Attributes', {
 	/* 
 	* Base html element attributes: 
 	*/	
@@ -231,10 +230,14 @@ mw.setDefaultConfig( 'embedPlayerSourceAttributes', [
 			attributes = {};
 		}
 		
-		
-		// If we are dynamically embedding on a "div" check if we can 
-		// add a poster image behind the loader:
 		$j( playerSelect ).each( function( index, playerElement) {					
+			// make sure the playerElement has an id: 
+			if( $j( playerElement ).attr('id') =='' ){
+				$j( playerElement ).attr( "id",  'mwe_v' + ( index ) );
+			}
+			
+			// If we are dynamically embedding on a "div" check if we can 
+			// add a poster image behind the loader:
 			if( playerElement.nodeName.toLowerCase() == 'div' 
 				&& ( attributes.poster || $j(playerElement).attr( 'poster' ) ) ){
 				var posterSrc =  ( attributes.poster ) ? attributes.poster : $j(playerElement).attr( 'poster' );
@@ -402,7 +405,7 @@ EmbedPlayerManager.prototype = {
 			// Let extensions determine if its worthwhile to wait for metadata:
 			// We pass an object to the trigger to preserve reference values		
 			var eventObject = { 
-				'playerElement':playerElement, 
+				'playerElement' : playerElement, 
 				'waitForMeta' : waitForMeta
 			};			
 			$j( mw ).trigger( 'addElementWaitForMetaEvent', eventObject );
@@ -426,13 +429,21 @@ EmbedPlayerManager.prototype = {
 				ranPlayerSwapFlag = true;	
 				mw.log("EmbedPlayer::runPlayerSwap::" + $j( playerElement ).attr('id') );
 				
-				var playerInterface = new mw.EmbedPlayer( playerElement , attributes);
+				var playerInterface = new mw.EmbedPlayer( playerElement , attributes);				
+				var swapPlayer = _this.swapEmbedPlayerElement( playerElement, playerInterface );								
 				
-				_this.swapEmbedPlayerElement( playerElement, playerInterface );								
-										
+				// Copy over any data attributes from the playerElement 
+				if( mw.getConfig( 'EmbedPlayer.DataAttributes' ) ) {
+					var dataAttr = mw.getConfig( 'EmbedPlayer.DataAttributes' )
+					for( var i in dataAttr ){
+						if( $j( playerElement ).data( i ) ){
+							$j( '#' + playerInterface.id ).data( i, $j( playerElement ).data( i ) );
+						}
+					}
+				}
 				
 				// Pass the id to any hook that needs to interface prior to checkPlayerSources
-				mw.log("EmbedPlayer::addElement :trigger :: newEmbedPlayerEvent");
+				mw.log("EmbedPlayer::addElement :trigger " + playerInterface.id );
 				$j( mw ).trigger ( 'newEmbedPlayerEvent',  playerInterface.id );
 				
 				// Issue the checkPlayerSources call to the new player interface:
@@ -546,7 +557,7 @@ EmbedPlayerManager.prototype = {
 		// Create a new element to swap the player interface into
 		var swapPlayerElement = document.createElement('div');				
 				
-		// get properties / methods from playerInterface
+		// Get properties / methods from playerInterface
 		for ( var method in playerInterface ) {			
 			if ( method != 'readyState' ) { // readyState crashes IE ( don't include ) 			
 				swapPlayerElement[ method ] = playerInterface[ method ];
@@ -554,13 +565,13 @@ EmbedPlayerManager.prototype = {
 		}
 		
 		// Check if we are using native controls ( should keep the video embed around )
-		if( playerInterface.shouldUseNativeControls() ) {
+		if( playerInterface.useNativePlayerControls() ) {
 			$j( targetElement )
-			.attr('id', playerInterface.pid )
+			.attr( 'id', playerInterface.pid )
 			.addClass( 'nativeEmbedPlayerPid' )
 			.show()
 			.after( 
-				$j( swapPlayerElement ).css('display', 'none')
+				$j( swapPlayerElement ).css( 'display', 'none' )
 			)
 		} else {
 			$j( targetElement ).replaceWith( swapPlayerElement );
@@ -575,7 +586,7 @@ EmbedPlayerManager.prototype = {
 		
 		// If we don't already have a loadSpiner add one: 
 		if( $j('#loadingSpinner_' + playerInterface.id ).length == 0 ){
-			if( playerInterface.shouldUseNativeControls() ) {
+			if( playerInterface.useNativePlayerControls() ) {
 				$j( targetElement )
 					.getAbsoluteOverlaySpinner()
 					.attr('id', 'loadingSpinner_' + playerInterface.id ) 
@@ -586,7 +597,7 @@ EmbedPlayerManager.prototype = {
 				);
 			}
 		}
-		return true;
+		return swapPlayerElement;
 	},
 	
 	
@@ -1357,7 +1368,7 @@ mw.EmbedPlayer.prototype = {
 		}		
 		
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );		
-		// Setup the player Interface from supported attributes:
+		// Setup the player Interface from supported attributes:		
 		for ( var attr in playerAttributes ) {
 			if ( customAttributes[ attr ] || customAttributes[ attr ] === false ) {
 				this[ attr ] = customAttributes[ attr ];
@@ -1374,14 +1385,14 @@ mw.EmbedPlayer.prototype = {
 			// string -> boolean
 			if( this[ attr ] == "false" ) this[attr] = false;
 			if( this[ attr ] == "true" ) this[attr] = true;
-		}
+		}		
 		
 		if( this.apiTitleKey ){
 			this.apiTitleKey = unescape( this.apiTitleKey );
 		}
 				
 		// Hide "controls" if using native player controls: 
-		if( this.shouldUseNativeControls() ){
+		if( this.useNativePlayerControls() ){
 			_this.controls = false;
 		}
 		
@@ -1607,9 +1618,19 @@ mw.EmbedPlayer.prototype = {
 			finishCheckPlayerSources();
 		}
 	},
+	/**
+	 * Insert and play a video source ( useful for ads or bumper videos )
+	 * 
+	 * Only works while video is in active play back.
+	 * Only tested with native playback atm.   
+	 */
+	insertAndPlaySource: function( source ){
+		mw.log("Error: only native playback supports insertAndPlaySource right now");
+	},
 	
 	/**
 	* Load Source video info from mediaWiki Api title key (  this.apiTitleKey )
+	* @@todo move this to mediaWiki 'api' module
 	* @param {Function} callback Function called once loading is complete
 	*/
 	loadSourceFromApi: function( callback ){
@@ -2023,7 +2044,7 @@ mw.EmbedPlayer.prototype = {
 		this.controlBuilder.addControlBindings();
 		
 		// Once the thumbnail is shown run the mediaReady trigger (if not using native controls)
-		if( !this.shouldUseNativeControls() ){
+		if( !this.useNativePlayerControls() ){
 			mw.log("mediaLoaded");
 			$j( this ).trigger( 'mediaLoaded' );
 		}
@@ -2301,7 +2322,7 @@ mw.EmbedPlayer.prototype = {
 		var style_atr = '';
 		
 		
-		if( this.shouldUseNativeControls() ){
+		if( this.useNativePlayerControls() ){
 			this.showNativePlayer();
 			return ;
 		}		
@@ -2342,7 +2363,7 @@ mw.EmbedPlayer.prototype = {
 	 * @returns boolean true if the mwEmbed player interface should be used
 	 * 					false if the mwEmbed player interface should not be used
 	 */
-	shouldUseNativeControls: function() {		
+	useNativePlayerControls: function() {		
 		if( this.usenativecontrols === true ){
 			return true;
 		}

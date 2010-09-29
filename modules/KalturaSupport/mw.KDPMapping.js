@@ -44,6 +44,7 @@
 				}
 			});
 		},
+		
 		/**
 		 * Master event list
 		 */

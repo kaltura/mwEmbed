@@ -92,8 +92,8 @@ mw.EmbedPlayerHtml = {
 	* @param {Float} perc Percentage to seek into the virtual player
 	* @param {Function} callback Function called once time has been updated
 	*/
-	setCurrentTime:function( perc, callback ) {
-		this.pauseTime = perc * this.getDuration();
+	setCurrentTime:function( time, callback ) {
+		this.pauseTime = time;
 		if( callback )
 			callback();
 	},

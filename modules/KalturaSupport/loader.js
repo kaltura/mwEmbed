@@ -23,6 +23,10 @@
 		'kuiconfid' : null
 	});
 	
+	mw.setConfig( 'EmbedPlayer.DataAttributes', {		
+		'kuiconf' : null
+	});
+	
 	mw.addResourcePaths( {
 		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
 		"mw.KAnalytics" : "mw.KAnalytics.js",
@@ -72,7 +76,7 @@
 				// setup load flags
 				var loadEmbedPlayerFlag = loadPlaylistFlag = false;
 				$j.each(mw.getKalturaPlayerList(), function( inx, element ){	
-					// clear the kalturaSwapObjectClass
+					// Clear the kalturaSwapObjectClass
 					var kalturaSwapObjectClass = '';
 					// Setup the flashvars variable
 					var flashvars = {};

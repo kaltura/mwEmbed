@@ -72,7 +72,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		callback( clipSources );
 	}, 
 	
-	getCustomClipAttributes: function( clipIndex ){
+	applyCustomClipData: function( embedPlayer, clipIndex ){
 		return {};
 	},
 	

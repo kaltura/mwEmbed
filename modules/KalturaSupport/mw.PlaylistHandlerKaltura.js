@@ -11,6 +11,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 	playlistid: null,
 	playlistSet : [],
 	
+	// ui conf data
+	uiConfData : null,
+	
 	// If playback should continue to the next clip on clip complete
 	autoContinue: true,
 	
@@ -29,19 +32,37 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Get the kaltura client:
 		mw.getKalturaClientSession( this.widgetid, function( kClient ) {
 			
+			// Manage state for parallel loading of ui-conf with playlistid
+			var loadingPlaylistFromId = false;
+			var gotPlaylistFromId = false;
+			var gotUiConfData = false;
+			
+			var instanceCallback = function(){				
+				if( gotPlaylistFromId && gotUiConfData ){
+					callback();
+				}
+			};
+			
 			// See if we have a playlist from the setup: 
 			if( _this.playlistid ) {
-				_this.loadPlaylistById( _this.playlistid, kClient, callback);
-				return ;
+				loadingPlaylistFromId = true;
+				_this.loadPlaylistById( _this.playlistid, kClient, function(){
+					gotPlaylistFromId = true;
+					instanceCallback();
+				});
 			}
 			
-			var uiconfGrabber = new KalturaUiConfService( kClient );
-			uiconfGrabber.get( function( status, data ) {							
+			// Get playlist uiConf data
+			var uiconfGrabber = new KalturaUiConfService( kClient );		
+			uiconfGrabber.get( function( status, data ) {	
+				gotUiConfData = true;
+				_this.uiConfData = data;
 				if( data.confFileFeatures && data.confFileFeatures != 'null') {
-
+						
 					// Add all playlists to playlistSet
-					var $uiConf = $j(  data.confFileFeatures );					
-					// check for autoContinue ( we check false state so that by default we autoContinue ) 
+					var $uiConf = $j(  data.confFileFeatures );				
+					
+					// Check for autoContinue ( we check false state so that by default we autoContinue ) 
 					_this.autoContinue = 
 						( $uiConf.find("uiVars [key='playlistAPI.autoContinue']").attr('value') == 'false' )? false: true
 															
@@ -57,8 +78,16 @@ mw.PlaylistHandlerKaltura.prototype = {
 						} else {
 							break;
 						}
-					}
+					}				
 					if( !_this.playlistSet[0] ){
+						// Check if we where already loading from an playlist id and run callback
+						// xxx this is odd flow, but its because even if a embed object has
+						// a playlist id it does not mean the playlist does not have multiple
+						// playlists associated with via its widget / uiconf id. 
+						if( loadingPlaylistFromId ){
+							instanceCallback();
+							return ;
+						}
 						mw.log( "Error could not playlist entry id:\n" + data.confFileFeatures );
 						return false;
 					}														
@@ -69,7 +98,12 @@ mw.PlaylistHandlerKaltura.prototype = {
 				
 				// Set the playlist to the first playlist
 				_this.setPlaylistIndex( 0 );
-				_this.loadPlaylistById( _this.playlistid, kClient, callback );								
+				// Load playlist by Id and set load flag:
+				_this.loadPlaylistById( _this.playlistid, kClient, function(){
+					gotPlaylistFromId = true;
+					instanceCallback();
+				});
+				
 			}, _this.uiconfid );
 		});
 	},
@@ -87,20 +121,20 @@ mw.PlaylistHandlerKaltura.prototype = {
 		var _this = this;
 		mw.log('loadPlaylistById:' + playlistId );		
 		var kPlaylistGrabber = new KalturaPlaylistService( kClient );
-		kPlaylistGrabber.execute( function( status, playlistData ) {
+		kPlaylistGrabber.execute( function( status, playlistData ) {					
 			if( !  playlistData.length ){						
 				mw.log("Error: kaltura playlist:" + playlistId + " could not load:" + playlistData.code)
 				_this.clipList = [];
 			} else { 
 				mw.log( 'kPlaylistGrabber::Got playlist of length::' +  playlistData.length );
 				_this.clipList = playlistData;			
-			}
+			}			
 			callback();
 		}, playlistId );
 	},	
 	
 	/**
-	 * get clip count
+	 * Get clip count
 	 * @return {number} Number of clips in playlist
 	 */
 	getClipCount: function(){		
@@ -125,12 +159,14 @@ mw.PlaylistHandlerKaltura.prototype = {
 		});
 	},
 	
-	getCustomClipAttributes:function( clipIndex ){
-		return {
+	applyCustomClipData:function( embedPlayer, clipIndex ){
+		$j( embedPlayer ).attr({
 			'kentryid' : this.getClip( clipIndex ).id,
 			'kwidgetid' : this.widgetid
-		}
+		});		
+		$j( embedPlayer ).data( 'kuiconf', this.uiConfData );
 	},
+	
 	/**
 	* Get an items poster image ( return missing thumb src if not found )
 	*/ 

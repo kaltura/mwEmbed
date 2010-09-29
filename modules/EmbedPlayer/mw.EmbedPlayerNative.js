@@ -40,6 +40,9 @@ mw.EmbedPlayerNative = {
 		'volumeControl' : true,		
 		'overlays' : true
 	},	
+	
+	insertAndPlayingConfig : false,
+	
 	/** 
 	 * updates the supported features given the "type of player" 
 	 */
@@ -64,7 +67,7 @@ mw.EmbedPlayerNative = {
 		mw.log( "native play url:" + this.getSrc() + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
 		
 		// Check if using native controls and already the "pid" is already in the DOM
-		if( this.shouldUseNativeControls() && $j( '#' + this.pid ).length &&
+		if( this.useNativePlayerControls() && $j( '#' + this.pid ).length &&
 			typeof $j( '#' + this.pid ).get(0).play != 'undefined' ) {
 			_this.postEmbedJS();
 			return ;
@@ -239,11 +242,68 @@ mw.EmbedPlayerNative = {
 		mw.log( 'native::doNativeSeek::' + percentage );
 		this.seeking = true;
 		this.seek_time_sec = 0;		
-		this.doSeekedCallback( ( percentage * this.duration ) , function(){
+		this.setCurrentTime( ( percentage * this.duration ) , function(){
 			_this.seeking = false;
 			_this.monitor();
-		})
+		})			
+	},
+	
+	insertAndPlaySource: function( src , options ){
+		mw.log("NativeEmbed:: insertAndPlaySource: " + src  + ' insertAndPlayingConfig:' + this.insertAndPlayingConfig);
+		if(!options)
+			options = {};
 		
+		if( options.lockUI  ){
+			this.playerElement.controls = false;
+		}
+		
+		// Make sure to capture the original source
+		if(! this.insertAndPlayingConfig ){
+			//alert( 'setup this.insertAndPlayingConfig ');
+			this.insertAndPlayingConfig = {
+				'src' : this.getSrc(),
+				'time' : this.currentTime,
+				'callback' : options.callback,
+				'restoreControls' : options.lockUI
+			}
+		}
+		// Try to directly playback the source 
+		this.switchSrc( src );
+		
+	},
+	restoreSourcePlayback: function( ){
+		var _this = this;
+		mw.log("restoreSourcePlayback:: empty out insertAndPlayingConfig");		
+		if( !this.insertAndPlayingConfig) {
+			mw.log("Error: called restored playback with empty insertAndPlayingConfig")
+			return;
+		}			
+		this.switchSrc( this.insertAndPlayingConfig.src );
+		if( this.insertAndPlayingConfig.restoreControls ){
+			this.playerElement.controls = true;
+		}
+		// run the seek: 
+		this.setCurrentTime( this.insertAndPlayingConfig.time,function(){
+			_this.play();
+		});
+		
+		var callback = this.insertAndPlayingConfig.callback;
+		// Remove insert and playing config flag
+		this.insertAndPlayingConfig = false;
+		//alert("insertAndPlayingConfig:: " + this.insertAndPlayingConfig);
+		// Run the callback 
+		if( callback )
+			callback();
+	},
+	switchSrc: function( src ){
+		if( this.getPlayerElement() ){
+			try{
+				//this.playerElement.pause();
+				this.playerElement.src = src;				
+			} catch( e ){
+				mw.log("Error: possible error in swiching source playback");
+			}
+		}
 	},
 	
 	/**
@@ -281,37 +341,36 @@ mw.EmbedPlayerNative = {
 	* @param {Float} position Seconds to set the time to
 	* @param {Function} callback Function called once time has been set. 
 	*/
-	setCurrentTime: function( position , callback ) {	
-		var _this = this;
-		//mw.log( 'native:setCurrentTime::: ' + position + ' :  dur: ' + _this.getDuration() );
-		this.getPlayerElement();
-		if ( !this.playerElement ) {
-			this.load( function() {				
-				_this.doSeekedCallback( position, callback );		
-			} );
-		} else {
-			_this.doSeekedCallback( position, callback );		
+	setCurrentTime: function( time , callback, callbackCount ) {	
+		var _this = this;			
+		if( !callbackCount )
+			callbackCount = 0;
+		this.getPlayerElement();		
+		if( _this.playerElement.readyState >= 1 ){
+			if( _this.playerElement.currentTime == time ){
+				callback();
+				return; 
+			}			
+			var once = function( event ) {		
+				if( callback ){
+					callback();
+				}
+				_this.playerElement.removeEventListener( 'seeked', once, false );
+			};				
+			// Assume we will get to add the Listener before the seek is done		
+			_this.playerElement.addEventListener( 'seeked', once, false );
+			_this.playerElement.currentTime = time;
+		} else {			
+			if( callbackCount >= 300 ){
+				mw.log("Error with seek request, media never in ready state");
+				return ; 
+			}
+			setTimeout( function(){
+				_this.setCurrentTime( time, callback , callbackCount++);
+			}, 10 );
 		}
 	},
-	
-	/**
-	* Do the seek request with a callback
-	* 
-	* @param {Float} position Position in seconds
-	* @param {Function} callback Function to call once seeking completes
-	*/
-	doSeekedCallback : function( position, callback ) {
-		var _this = this;			
-		this.getPlayerElement();		
-		var once = function( event ) {			
-			callback();
-			_this.playerElement.removeEventListener( 'seeked', once, false );
-		};		
-		// Assume we will get to add the Listener before the seek is done
-		_this.playerElement.currentTime = position;
-		_this.playerElement.addEventListener( 'seeked', once, false );						
-	},
-	
+
 	/**
 	* Get the embed player time
 	*/
@@ -516,10 +575,9 @@ mw.EmbedPlayerNative = {
 	* Handle the native play event 
 	*/
 	onPlay: function(){
-		mw.log("embedPlayer:native::play");
-		if( !this.isPlaying () ){
-			this.play();
-		}
+		mw.log("embedPlayer:native::play");		
+		// Update the interface
+		this.parent_play();
 	},
 	
 	/**	
@@ -569,7 +627,14 @@ mw.EmbedPlayerNative = {
 	*/	
 	onended: function() {
 		var _this = this;
-		mw.log( 'EmbedPlayer:native:onended:' + this.playerElement.currentTime + ' real dur:' +  this.getDuration() );			
+		mw.log( 'EmbedPlayer:native: onended:' + this.playerElement.currentTime + ' real dur:' +  this.getDuration() +
+				' insertAndPlayingConfig: ' + this.insertAndPlayingConfig);
+		
+		if( this.insertAndPlayingConfig ){
+			this.restoreSourcePlayback();
+			this.insertAndPlayingConfig = false;
+			return ;
+		}			
 		this.onClipDone();
 	}
 };

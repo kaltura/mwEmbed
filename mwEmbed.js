@@ -107,10 +107,19 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}
 			return ;
 		}	
-		// Only update the controls if undefined ( ie don't override false
-		// properties )
-		if( typeof mwConfig[ name ] == 'undefined') {
-			mwConfig[ name ] = value;
+		// Only update the controls if undefined 
+		
+		if( typeof mwConfig[ name ] == 'undefined' ) {			
+			mwConfig[ name ] = value;	
+			return ;
+		}
+		// Check if we should "merge" the config
+		if( typeof value == 'object' && typeof mwConfig[ name ] == 'object' ) {
+			for( var i in value ){
+				if( typeof mwConfig[ name ][ i ] == 'undefined' ){
+					mwConfig[ name ][ i ] = value[ i ];
+				}
+			}
 		}
 	};
 	

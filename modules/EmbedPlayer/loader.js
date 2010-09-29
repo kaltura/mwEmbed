@@ -177,10 +177,10 @@
 				// Add JSON lib if browsers does not define "JSON" natively
 				'JSON',
 				'$j.ui',
-				'$j.widget',
-				'$j.ui.mouse'
+				'$j.widget'
 			],
-			[			 			 	
+			[			 	
+				'$j.ui.mouse',
 				'$j.fn.menu',			
 				'mw.style.jquerymenu',
 				'$j.ui.slider'

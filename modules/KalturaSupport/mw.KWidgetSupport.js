@@ -25,8 +25,9 @@ mw.KWidgetSupport.prototype = {
 	addPlayerHooks: function( ){
 		var _this = this;		
 		// Add the hooks to the player manager
-		mw.log(  'KWidgetSupport::addPlayerHooks:: bind: newEmbedPlayerEvent' );
-		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {		
+
+		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {	
+			mw.log(  'KWidgetSupport:: newEmbedPlayerEvent: ' + swapedPlayerId );
 			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
 			// Add hook for check player sources to use local kEntry ID source check:
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {				
@@ -37,8 +38,7 @@ mw.KWidgetSupport.prototype = {
 						mw.addKAnalytics( embedPlayer, _this.kClient );
 					}
 					callback();
-				} );				
-				
+				} );	
 			} );						
 		} );		
 	},
@@ -55,12 +55,113 @@ mw.KWidgetSupport.prototype = {
 			callback();
 			return ;
 		}
-		// Setup global Kaltura session:
-		_this.getKalturaSession ( $j( embedPlayer ).attr( 'kwidgetid' ), function( ) {			
-			_this.addEntryIdSource( embedPlayer, callback);
+		var gotSources = false;
+		var gotUiConf = false;
+		
+		var instanceCallback = function(){
+			mw.log( 'KWidget::checkPlayerSources: gotSources:' +gotSources + ' gotUiConf:' + gotUiConf );
+			if( gotSources && gotUiConf ){
+				callback();
+			}
+		}
+		// Setup Kaltura session:
+		_this.getKalturaSession ( $j( embedPlayer ).attr( 'kwidgetid' ), function( ) {
+			
+			// Get the main entry id sources
+			_this.addEntryIdSource( embedPlayer, function(){
+				gotSources = true;
+				instanceCallback();			
+			});			
+			
+			// Do a parallel uiConf config request 
+			_this.addUiConf( embedPlayer, function(){
+				gotUiConf = true;
+				instanceCallback();
+			} );					
 		} );
 	},
+	/**
+	 * Adds the bindings for the uiConf 
+	 */
+	addUiConf: function( embedPlayer, callback ){
+		var _this = this;
+		
+		this.loadUiConfData(embedPlayer, function( uiConf ) {			
+			if( !uiConf ){
+				mw.log("Could not get uiConf for emmbed:" + embedPlayer.kwidgetid );
+				callback();
+				return; 
+			}
+			
+			// Check for the bumper plugin ( note we should probably have a separate uiConf js class )
+			var $uiConf = $j( uiConf.confFileFeatures );
+						
+			// Check if the bumper plugin is enabled:
+			var $bumbPlug = $uiConf.find("uiVars var[key='bumper.plugin']");
+			
+			if(  $bumbPlug.attr('value') == 'true' ){
+				// Build the bumper object
+				var bumper = {};			
+				$uiConf.find("uiVars var").each(function(inx, node ){
+					var bumpIndex = $j(node).attr('key').indexOf('bumper.');
+					if(  bumpIndex !== -1 ){					
+						// string to boolean
+						var bumperValue = ( $j(node).attr('value') == "true" )? true : $j(node).attr('value');
+						bumperValue = ( bumperValue == "false" )? false: bumperValue;
+						bumper[  $j(node).attr('key').replace('bumper.', '') ] =  bumperValue;						
+					}
+				})			
+				var bumperPlayCount = 0;
+				// Get the bumper entryid				
+				if( bumper.bumperEntryID ){
+					mw.log( "KWidget:: addUiConf: get sources for " + bumper.bumperEntryID);
+					_this.getDeviceEntryIdSources( bumper.bumperEntryID, function( sources ){						
+						$j( embedPlayer ).bind('play', function(){			
+							if( bumper.playOnce && bumperPlayCount!= 0){
+								return true;
+							}								
+							bumperPlayCount++;
+							// Call the special insertAndPlaySource function 
+							// ( used for ads or any non-complex video inserts ) 
+							embedPlayer.insertAndPlaySource( sources[0].src, bumper);								
+						})
+						// Bind the bumper into location play						
+						callback();
+					});
+				}
+			} else {
+				mw.log('KWidget:: addUiConf: No bumper plugin ');
+				callback();
+			}
+		})	
+	},
 	
+	/**
+	 * Load the ui Conf data
+	 */
+	loadUiConfData: function( embedPlayer, callback ){		
+		// Check for uiconf data is already loaded
+		if( $j( embedPlayer ).data( 'kuiconf' ) ){
+			callback( $j( embedPlayer ).data( 'kuiconf' ) );
+			return ; 
+		}
+		var uiConfId = ( embedPlayer.kuiconfid ) ? embedPlayer.kuiconfid : false; 
+		if( !uiConfId && embedPlayer.kwidgetid ) {
+			uiConfId = embedPlayer.kwidgetid.replace( '_', '' );
+		}
+		// Add the kuiconf data as an attribute: 
+		var uiconfGrabber = new KalturaUiConfService(  this.kClient );		
+		uiconfGrabber.get( function( status, data ) {	
+			if( status ){
+				$j( embedPlayer ).data( 'kuiconf', data );
+				callback( $j( embedPlayer ).data( 'kuiconf' ) );
+			} else{
+				mw.log( "Error: loadUiConfData: failed to load uiConf data");	
+				callback( )
+			}
+		}, uiConfId);
+		return false;		
+	},	
 	/**
 	* Get the entry ID sources and apply them to the embedPlayer
 	* @param {Object} embedPlayer Player object to apply sources to
@@ -81,8 +182,8 @@ mw.KWidgetSupport.prototype = {
 		this.kPartnerId + '00/thumbnail/entry_id/' + kEntryId + '/width/' +
 			embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight();
 			 
-		this.getEntryIdSources( kEntryId, function( sources ){
-			mw.log( "kEntryId:: getEntryIdSources::" + embedPlayer.id + " found " + sources.length + ' for entryid: ' + kEntryId + ' ' + ' partner id: ' + _this.kPartnerId );
+		this.getDeviceEntryIdSources( kEntryId, function( sources ){
+			mw.log( "kEntryId:: getDeviceEntryIdSources::" + embedPlayer.id + " found " + sources.length + ' for entryid: ' + kEntryId + ' ' + ' partner id: ' + _this.kPartnerId );
 			for( var i=0;i < sources.length ; i++){
 				mw.log( 'kEntryId::addSource::' + embedPlayer.id + ' : ' +  sources[i].src + ' type: ' +  sources[i].type);
 				embedPlayer.mediaElement.tryAddSource(
@@ -102,7 +203,7 @@ mw.KWidgetSupport.prototype = {
 	/**
 	 * Get client entry id sources: 
 	 */
-	getEntryIdSources: function( kEntryId, callback ){
+	getDeviceEntryIdSources: function( kEntryId, callback ){
 		var _this = this;
 		var sources = [];
 		var flavorGrabber = new KalturaFlavorAssetService( this.kClient );
@@ -160,7 +261,7 @@ mw.KWidgetSupport.prototype = {
 					callback( sources );
 					return ;
 				} else if ( iPhoneSrc ) {
-					addSource( iPhoneSrc, 'video/h264');
+					addSource( iPhoneSrc, 'video/h264' );
 					callback( sources );
 					return ;
 				}
@@ -183,7 +284,7 @@ mw.KWidgetSupport.prototype = {
 				}
 			}
 			
-			// Always add the oggSrc
+			// Always add the oggSrc if we got to this point
 			if( oggSrc ) {
 				addSource( oggSrc, 'video/ogg' );
 			}
@@ -300,6 +401,6 @@ mw.getKalturaClientSession = function( widgetid, callback ){
 	});
 }
 mw.getKalturaEntryIdSources = function( entryId, callback ){
-	kWidgetSupport.getEntryIdSources( entryId, callback);
+	kWidgetSupport.getDeviceEntryIdSources( entryId, callback);
 }
 

@@ -132,7 +132,7 @@ mw.Playlist.prototype = {
 				var $plListSet = $j( _this.target ).find(  '.playlistSet-list' );
 				
 				$j.each( playlistSet, function( inx, playlist){
-					// add a divider
+					// Add a divider
 					if( inx != 0 ){
 						$plListSet.append( $j('<span />').text( ' | ') )
 					}
@@ -264,7 +264,7 @@ mw.Playlist.prototype = {
 					var myScroll = iScroll( _this.id + '_videolist' );		
 					setTimeout(function () { myScroll.refresh(); }, 0);
 					*/ 
-					// add space for scroll buttons: 
+					// Add space for scroll buttons: 
 					var curTop = $j( _this.target + ' .media-rss-video-list' ).css('top');
 					if(!curTop) curTop = '0px';
 					$j( _this.target + ' .media-rss-video-list' ).css( {
@@ -404,16 +404,18 @@ mw.Playlist.prototype = {
 		
 		// Build the video tag object: 
 		var $video = $j( '<video />' )
-			.attr({
-				'id' : 'mrss_' + this.id + '_' + clipIndex,
-				'poster' : _this.sourceHandler.getClipPoster( clipIndex ) 
-			})
-			.addClass( 'mwPlaylist' )
-			.css(
-				playerSize
-			)
-			// Add custom attributes: 
-			.attr(  _this.sourceHandler.getCustomClipAttributes( clipIndex ) );
+		.attr({
+			'id' : _this.getVideoPlayerId( clipIndex ),
+			'poster' : _this.sourceHandler.getClipPoster( clipIndex ) 
+		})
+		.addClass( 'mwPlaylist' )
+		.css(
+			playerSize
+		)
+		
+		// Add custom attributes: 
+		_this.sourceHandler.applyCustomClipData( $video, clipIndex );
+		
 		
 		// lookup the sources from the playlist provider: 		
 		this.sourceHandler.getClipSources( clipIndex, function( clipSources ){			
@@ -428,29 +430,50 @@ mw.Playlist.prototype = {
 		});
 	},
 	
+	getVideoPlayerId: function( clipIndex ){
+		if( ! clipIndex ) {
+			clipIndex = this.clipIndex;
+		}
+		return 'mrss_' + this.id + '_' + clipIndex;
+	},
+	
 	addVideoPlayer: function( $video , callback){
-		var _this = this;
+		var _this = this;		
 		// If on mobile safari just swap the sources ( don't replace the video ) 
 		// ( mobile safari can't javascript start the video ) 
 		// see: http://developer.apple.com/iphone/search/search.php?simp=1&num=10&Search=html5+autoplay
-		var addVideoPlayerToDom = true;				
-		if( mw.isMobileHTML5() ){
+		var addVideoPlayerToDom = true;			
+		
+		if( mw.isMobileHTML5() ){	
 			// Check for a current video:	
 			var $inDomVideo = $j( _this.target + ' .media-rss-video-player video' );			
 			if( $inDomVideo.length == 0 ){
-				addVideoPlayerToDom= true;
+				addVideoPlayerToDom = true;
 			} else {
 				addVideoPlayerToDom = false;
 				// Update the inDomVideo object:
-				// NOTE: this hits a lot of internal stuff should !  
+				// NOTE: this hits a lot of internal stuff 
 				// XXX Should refactor to use embedPlayer interfaces!
 				var vidInterface = $j( _this.target + ' .media-rss-video-player' ).find('.mwplayer_interface div').get(0)
-				vidInterface.id = $video.attr('id');
+				// Copy over the video attributes to the the videoInterface 
+				$j( $video[0].attributes ).each( function(attrName, attrValue){ 					
+					vidInterface[ attrName ] = attrValue;
+				})
 				vidInterface.pid = 'pid_' + $video.attr('id');
-				vidInterface.duration = null;
-				if( $video.attr('kentryid') ){						
-					vidInterface.kentryid = $video.attr('kentryid');
+				// Update the interface restore source ( xxx this is a pretty ugly hack )
+				vidInterface.mediaElement.sources = [];
+				$video.find('source').each(function(inx, source){
+					vidInterface.mediaElement.tryAddSource( source ) ;
+				});				 
+				
+				// Update the video interface id: 
+				$j(  vidInterface ).attr('id', $video.attr('id'));				
+				
+				
+				if( $video.data('kuiconf') ){
+					$j( vidInterface ).data( 'kuiconf', $video.data('kuiconf') )
 				}
+				
 				// Update the current video target source
 				$inDomVideo.attr({
 					'id' : 'pid_' + $video.attr('id'),
@@ -470,10 +493,12 @@ mw.Playlist.prototype = {
 		}
 		
 		// Update the video tag with the embedPlayer
-		$j.embedPlayers( function(){						
+		$j.embedPlayers( function(){				
+			var embedPlayer =  $j('#' +_this.getVideoPlayerId( _this.clipIndex ) ).get(0);	
+				
 			// Setup ondone playing binding to play next clip (if autoContinue is true )			
 			if( _this.sourceHandler.autoContinue == true ){
-				$j( '#mrss_' + _this.id + '_' + _this.clipIndex ).unbind('ended').bind( 'ended', function(event, onDoneActionObject ){										
+				$j( embedPlayer ).unbind('ended').bind( 'ended', function(event, onDoneActionObject ){										
 					// Play next clip
 					if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
 						// Update the onDone action object to not run the base control done: 
@@ -492,6 +517,7 @@ mw.Playlist.prototype = {
 					}
 				})
 			}
+			mw.log("player should be readY: " + _this.clipIndex + ' ' + $j('#' +_this.getVideoPlayerId() ) );
 			// Run the callback if its set
 			if( callback ){
 				callback();
@@ -563,7 +589,7 @@ mw.Playlist.prototype = {
 				mw.log( 'clicked on: ' + $j( this ).data( 'clipIndex') ); 
 				// Update _this.clipIndex
 				_this.clipIndex = $j( this ).data( 'clipIndex' );
-				_this.updatePlayer( _this.clipIndex, function(){
+				_this.updatePlayer( _this.clipIndex, function(){					
 					_this.play();
 				} );
 			}) //close $itemBlock
@@ -579,14 +605,11 @@ mw.Playlist.prototype = {
 	/**
 	* Start playback for current clip
 	*/
-	play: function(){
+	play: function(){		
+		mw.log("Play current clip: " + this.getVideoPlayerId()  + ' ' + $j('#' + this.getVideoPlayerId() ).length );
 		// Get the player and play:
-		var vid = $j('#mrss_' + this.id + '_' + this.clipIndex ).get(0);	
-		//alert( 'play: '+ )
-		if( vid && vid.play ){			
-			vid.load();
-			vid.play();
-		}
+		var embedPlayer = $j('#' + this.getVideoPlayerId() ).get(0);			
+		embedPlayer.play();
 	},
 	
 	
