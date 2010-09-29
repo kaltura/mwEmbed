@@ -134,7 +134,7 @@ var LINK_SWAP_STRING = 'ZreplaceZ';
 				paramSet.splice( 0, 1 );
 				if ( paramSet.length ) {
 					templateObject.param = new Array();
-					for ( var pInx in paramSet ) {
+					for ( var pInx =0; pInx < paramSet.length; pInx++ ) {
 						var paramString = paramSet[ pInx ];
 						// check for empty param
 						if ( paramString == '' ) {

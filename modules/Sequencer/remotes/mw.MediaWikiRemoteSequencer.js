@@ -7,7 +7,6 @@
 
 // Wrap in mw to not pollute global namespace
 ( function( mw ) {
-	
 
 mw.addMessageKeys( [
 	"mwe-sequencer-no-sequence-create",
@@ -60,18 +59,23 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayerId ) {
 			$j( embedPlayer ).siblings( '.kalturaEditOverlay' ).fadeOut( 'fast' );
 		});
 		
-		$j( embedPlayer ).bind( 'pause', function() {		
-			mw.remoteSequencerAddEditOverlay( embedPlayerId )
+		$j( embedPlayer ).bind( 'pause', function() {
+			// don't display if near the end of playback ( causes double fade in conflict with ended event ) 		
+			mw.remoteSequencerAddEditOverlay( embedPlayerId );
+			
 			// xxx should use getter setter
 			embedPlayer.controlBuilder.displayOptionsMenuFlag = true;		
 			return true;
 		});
 		
-		$j( embedPlayer ).bind( 'ended', function( onDoneAction ){			
+		$j( embedPlayer ).bind( 'ended', function( onDoneAction ){
+			if( embedPlayer.currentTime != 0 ){
+				return ;
+			}
 			// pause event should fire 
 			mw.remoteSequencerAddEditOverlay( embedPlayerId );
 			
-			// show the credits screen after 3 seconds 1/2 second to fade in
+			// show the credits screen after 3 seconds 1/2 seconds
 			setTimeout(function(){				
 				$j( embedPlayer ).siblings( '.kalturaEditOverlay' ).fadeOut( 'fast' );
 				embedPlayer.$interface.find('.k-menu').fadeIn('fast');
@@ -105,23 +109,21 @@ mw.remoteSequencerAddEditOverlay = function( embedPlayerId ){
 	}
 	
 	if(! $j( '#' + embedPlayerId ).siblings( '.kalturaEditOverlay' ).length ){
-		var editLink = '#';		
-		if( ! mw.isLocalDomain( mw.getApiProviderURL( embedPlayer.apiProvider ) ) ) {			
-			var seqTitle = embedPlayer.apiTitleKey
-				.replace( 'Sequence-', 'Sequence:')
-			// strip the extension
-			seqTitle = seqTitle.substr(0, seqTitle.length -4 );
-			// not ideal details page builder but 'should work' ::
-			editLink = mw.getApiProviderURL( embedPlayer.apiProvider ).replace( 'api.php', 'index.php' );
-			editLink = mw.getRemoteSequencerLink (
-					mw.replaceUrlParams( editLink, 
-						{
-							'title' : seqTitle,
-							'action' : 'edit' 
-						}
-					)
-				);
-		}
+	
+		var seqTitle = embedPlayer.apiTitleKey
+			.replace( 'Sequence-', 'Sequence:')
+		// strip the extension
+		seqTitle = seqTitle.substr(0, seqTitle.length -4 );
+		// not ideal details page builder but 'should work' ::
+		var editLink = mw.getApiProviderURL( embedPlayer.apiProvider ).replace( 'api.php', 'index.php' );
+		editLink = mw.getRemoteSequencerLink (
+				mw.replaceUrlParams( editLink, 
+					{
+						'title' : seqTitle,
+						'action' : 'edit' 
+					}
+				)
+			);
 		var kalturaLinkAttr = {
 				'href': 'http://kaltura.com', 
 				'target' : '_new',
@@ -138,7 +140,7 @@ mw.remoteSequencerAddEditOverlay = function( embedPlayerId ){
 				'background' : 'none repeat scroll 0 0 #FFF',
 				'color' : 'black',
 				'opacity': 0.9,
-				'z-index': 999
+				'z-index': 1
 			})						
 			.append(
 				$j('<div />')
@@ -213,6 +215,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 		this.action =  options.action;
 		this.titleKey = options.titleKey;
 		this.target =  options.target;
+		this.catLinks = options.catLinks;
 	},	
 	
 	drawUI: function() {
@@ -307,7 +310,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 	displayPlayerEmbed: function(){
 		var _this = this;
 		// load the embedPlayer module: 
-		mw.load('EmbedPlayer', function(){
+		mw.load( 'EmbedPlayer', function(){
 			// Check if the sequence has been flattened and is up to date:
 			var request = {
 				'action': 'query',
@@ -391,6 +394,9 @@ mw.MediaWikiRemoteSequencer.prototype = {
 					} 
 				}
 				var width = ( imageinfo && imageinfo.thumbwidth )?imageinfo.thumbwidth : '400px';
+				
+				// Copy the category links if present
+	
 				// Display embed sequence
 				$j( _this.target ).empty().append(
 					$j('<div />')
@@ -434,7 +440,15 @@ mw.MediaWikiRemoteSequencer.prototype = {
 					
 					// Add a clear both to give content body height
 					$j('<div />').css( { 'clear': 'both' } )
+					
 				)
+				// add cat links if set;
+				if( _this.catLinks ){
+					$j( _this.target ).append(
+						$j('<div />').html(  _this.catLinks )
+					);
+				}
+				
 				// Rewrite the player
 				$j('#embedSequencePlayer').embedPlayer();				
 			}); // load json player data			
@@ -512,10 +526,10 @@ mw.MediaWikiRemoteSequencer.prototype = {
 		}
 	},	
 	getApiTitleKey: function(){
-		return wgTitle;
+		return wgPageName;
 	},
 	getTitle: function(){
-		return wgTitle.replace( 'Sequence:', '').replace('_', ' ');
+		return wgPageName.replace( 'Sequence:', '').replace('_', ' ');
 	},
 	// Get the api url ( for now use whatever the page context is ) 
 	getApiUrl: function(){

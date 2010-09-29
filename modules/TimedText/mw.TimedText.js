@@ -22,7 +22,7 @@ mw.includeAllModuleMessages();
 	 */
 	mw.TimedText = function( embedPlayer, options ) {
 		return this.init( embedPlayer, options);
-	}
+	};
 	mw.TimedText.prototype = {
 		
 		/** 
@@ -102,7 +102,7 @@ mw.includeAllModuleMessages();
 		 */
 		init: function( embedPlayer, options ) {
 			var _this = this;
-			mw.log("TimedText: init() ")
+			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;	
 			this.options = options;
 			
@@ -463,7 +463,7 @@ mw.includeAllModuleMessages();
 				// Close the loader:
 				mw.closeLoaderDialog();
 				_this.editText.showUI();
-			})
+			});
 		},
 		
 		/**
@@ -480,7 +480,7 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			return $j.getLineItem( gM( 'mwe-timedtext-add-timed-text'), 'script', function() {
 				_this.showTimedTextEditUI( 'add' );
-			} )
+			} );
 		},
 		
 		/**
@@ -521,7 +521,7 @@ mw.includeAllModuleMessages();
 	 		if( mw.Language.names[ lang_key ]) {
 	 			return mw.Language.names[ lang_key ];
 	 		}
-	 		return false
+	 		return false;
 	 	},
 		
 		/** 
@@ -551,7 +551,7 @@ mw.includeAllModuleMessages();
 						function() {
 							_this.selectLayout( layoutMode );
 						} ) 
-					)
+					);
 			});
 			return $ul;
 		},
@@ -614,7 +614,7 @@ mw.includeAllModuleMessages();
 			source.load( function() {
 				// Refresh the interface: 
 				_this.refreshDisplay();
-			})
+			});
 		},
 		
 		/**
@@ -626,7 +626,7 @@ mw.includeAllModuleMessages();
 			// Refresh the Menu (if it has a target to refresh) 
 			if( this.menuTarget ) {
 				mw.log('bind menu refresh display');
-				this.bindMenu(  this.menuTarget, false )
+				this.bindMenu(  this.menuTarget, false );
 			}
 			// Issues a "monitor" command to update the timed text for the new layout
 			this.monitor();
@@ -769,12 +769,11 @@ mw.includeAllModuleMessages();
 						$j('<span \>')
 					)									
 				
-				// If in fullscreen mode update the text size: 
-				if( this.embedPlayer.controlBuilder.fullscreenMode ){
-					$track.css(
-						this.embedPlayer.controlBuilder.getFullscreenTextCss()
-					);					
-				}
+				// Scale the text Relative to player size:  			
+				$track.css(
+					this.embedPlayer.controlBuilder.getInterfaceSizeTextCss()
+				);					
+				
 				$playerTarget.append( $track );
 				// Resize the interface for layoutMode == 'ontop' ( if not in fullscreen )  
 				// NOTE this shoudl be a call to controlBuilder not handled here inline
@@ -950,6 +949,7 @@ mw.includeAllModuleMessages();
 				if( time >= caption.start  && 
 					time <= caption.end ) {
 					this.prevIndex = i;
+					//mw.log("Start cap time: " + caption.start + ' End time: ' + caption.end );
 					return caption.content;
 				}
 			}
@@ -1165,7 +1165,9 @@ mw.includeAllModuleMessages();
 		loadTitleKey: function( titleKey, callback ) {
 			var request = {
 				'action': 'parse',
-				'page': titleKey
+				'page': titleKey,
+				'smaxage' : 300, 
+				'maxage' : 300
 			};
 			mw.getJSON( this.apiUrl, request, function( data ) {
 				if ( data && data.parse && data.parse.text['*'] ) {
@@ -1209,7 +1211,9 @@ mw.includeAllModuleMessages();
 				'apprefix' : titleKey,
 				'apnamespace' : this.getTimedTextNS(),
 				'aplimit' : 200,
-				'prop':'revisions'
+				'prop':'revisions',
+				'smaxage' : 300, 
+				'maxage' : 300
 			};
 			mw.getJSON( this.apiUrl, request, function( sourcePages ) {
 				// If "timedText" is not a valid namespace try "just" with prefix: 

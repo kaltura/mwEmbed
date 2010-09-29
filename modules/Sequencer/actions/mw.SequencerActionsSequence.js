@@ -35,7 +35,7 @@ mw.SequencerActionsSequence.prototype = {
 		// XXX todo we should have an autocomplete on sequence name!
 		
 		var buttons = {};
-		buttons[ gM('mwe-cancel') ] = function(){ $j( this ).dialog( 'cancel' ) };
+		buttons[ gM('mwe-cancel') ] = function(){ $j( this ).dialog( 'cancel' ); };
 		
 		// For now just support server based open .. ideally we could browse for file
 		var $dialog = mw.addDialog({
@@ -80,7 +80,7 @@ mw.SequencerActionsSequence.prototype = {
 				// Follow the link
 				return true;
 			})
-		)
+		);
 	},
 	/**
 	 * present an open dialog to the user, and open the sequence in a new window
@@ -101,7 +101,7 @@ mw.SequencerActionsSequence.prototype = {
 		// XXX todo we should have an autocomplete on sequence name!
 		
 		var buttons = {};
-		buttons[ gM('mwe-cancel') ] = function(){ $j( this ).dialog( 'cancel' ) };
+		buttons[ gM('mwe-cancel') ] = function(){ $j( this ).dialog( 'cancel' ); };
 		
 		// For now just support server based open .. ideally we could browse for file
 		var $dialog = mw.addDialog({
@@ -146,7 +146,7 @@ mw.SequencerActionsSequence.prototype = {
 				// Follow the link
 				return true;
 			})
-		)
+		);
 	},
 	save: function(){
 		var _this = this;	
@@ -167,7 +167,7 @@ mw.SequencerActionsSequence.prototype = {
 		if( !_this.sequencer.getServer().hasLocalChanges() ){		
 			$dialog.html( gM('mwe-sequencer-save-no-changes') );
 			var closeButton = {};
-			closeButton[ gM('mwe-ok') ]= function(){ $j(this).dialog('close') };
+			closeButton[ gM('mwe-ok') ]= function(){ $j(this).dialog('close'); };
 			$dialog.dialog( "option", "buttons", closeButton);	
 			return ;
 		}
@@ -350,16 +350,19 @@ mw.SequencerActionsSequence.prototype = {
 			})
 
 		);		
+		
 		// Embed the player and continue application flow			
 		$j('#publishVideoTarget').embedPlayer({
 			'controls' : false
 		}, function(){
-			// this should be depreciated ( hidden interface bug in mwEmbed ) 
-			$j('#publishVideoTarget').parent().show();
-			
+								
 			// wait 100ms before starting the firefogg render ( avoids page lock 
 			// and ensures we don't get a loading spinner for first frame of render) 
 			setTimeout(function(){
+				
+				// this should be depreciated ( hidden interface bug in mwEmbed ?) 
+				$j('#publishVideoTarget').parent().show();
+				
 				// Start up the render
 				var foggRender = $j('#publishVideoTarget').firefoggRender({
 					'statusTarget' : '#firefoggStatusTarget',

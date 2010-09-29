@@ -13,8 +13,7 @@
  * Color Picker page:   (http://johndyer.name/post/2007/09/PhotoShop-like-JavaScript-Color-Picker.aspx)
  *
  */
-(function($, version)
-{
+(function($, version) {
   Math.precision = function(value, precision)
     {
       if (precision === undefined) precision = 0;
@@ -719,7 +718,7 @@
               function()
               {
                 changeEvents = null;
-              }
+              };
           $.extend(true, $this, // public properties and methods
             {
               val: val,
@@ -1982,4 +1981,5 @@
           }
         }
     };
+  
 })(jQuery, '1.1.5');

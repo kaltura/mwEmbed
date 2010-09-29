@@ -110,7 +110,7 @@ mw.Smil.prototype = {
 	loadFromString: function( smilXmlString ) {
 		// Load the parsed string into the local "dom"
 		this.$dom = $j( this.getXMLDomObject( smilXmlString ) );
-		mw.log("Smil::loadFromString: loaded smil dom: " + this.$dom.length + "\n" + smilXmlString );
+		mw.log("Smil::loadFromString: loaded smil dom: " + this.$dom.children().length + "\n" + smilXmlString );
 	},
 	/**
 	 * Update the smil dom via an xmlString
@@ -125,6 +125,7 @@ mw.Smil.prototype = {
 		// Remove any non-smil nodes that are in the page dom
 		this.getBody().syncPageDom();
 	},
+	
 	// simple XML DOMParser object parser wrapper
 	// xxx Add error handling 
 	getXMLDomObject: function( smilXmlString ){
@@ -158,9 +159,9 @@ mw.Smil.prototype = {
 	/**
 	 * Render a specific time
 	 */
-	renderTime : function(time, callback) {
+	renderTime : function(time, callback) {		
 		// Setup the layout if not already setup:
-		this.getLayout().setupLayout(this.embedPlayer.getRenderTarget());
+		this.getLayout().setupLayout( this.embedPlayer.getRenderTarget() );
 
 		// Update the render target with bodyElements for the requested time
 		this.getBody().renderTime( time );
@@ -171,8 +172,7 @@ mw.Smil.prototype = {
 
 	/**
 	 * We use animateTime instead of a tight framerate loop so that we can
-	 * optimize with css transformations
-	 * 
+	 * optimize with browser css transformations 
 	 */
 	animateTime : function(time, timeDelta) {
 		// mw.log("Smil::animateTime: " + time + ' delta: ' + timeDelta );
@@ -296,9 +296,14 @@ mw.Smil.prototype = {
 		// return 0 while we don't have the $dom loaded
 		if (!this.$dom) {
 			return 0;
-		}
+		}		
 		if ( this.duration == null || forceRefresh === true ) {
+			var orgDuration = this.duration;
 			this.duration = this.getBody().getDuration( forceRefresh );
+			// Trigger the duration change event: 
+			if( orgDuration !=  this.duration ){
+				$j( this.getEmbedPlayer() ).trigger('durationchange');	
+			}
 		}
 		return this.duration;
 	},
@@ -399,7 +404,7 @@ mw.Smil.prototype = {
 			// Escape link output as to not include scirpt execution
 			$j(link).attr('href', 
 				mw.escapeQuotesHTML( $j(link).attr('href') )
-			)
+			);
 		});		
 		
 		// Make every asset url absolute and restrict domain of assets 
@@ -408,17 +413,17 @@ mw.Smil.prototype = {
 			if( $j(node).attr('src') ){
 				$j(node).attr('src', 
 					_this.getAssetUrl( $j(node).attr('src') )
-				)
+				);
 			}
 			if( $j(node).attr('data') ){
 				$j(node).attr('data', 
 					_this.getAssetUrl(  $j(node).attr('src') )
-				)
+				);
 			}
-			// xxx don't know if we really need a form inside of smil. 
+			// remove form action
 			if( $j(node).attr('action') ){
 				if( $j(node).attr('action').toLowerCase().indexOf('javascript') != -1 ){
-					 $j(node).attr('action')= null;
+					 $j(node).attr('action',  '');
 				} else {
 					$j(node).attr('action', 
 						_this.getAssetUrl( $j(node).attr('src') )

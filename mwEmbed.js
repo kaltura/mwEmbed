@@ -1,6 +1,6 @@
 // Add support for html5 / mwEmbed elements to browsers that do not support the elements natively 
 // For discussion and comments, see: http://ejohn.org/blog/html5-shiv/
-'video audio source track'.replace(/\w+/g, function(n){ document.createElement(n) });
+'video audio source track'.replace(/\w+/g, function(n){ document.createElement(n); });
 
 /**
  * @license
@@ -33,7 +33,7 @@ if( typeof preMwEmbedReady == 'undefined'){
 }
 // Globals to pre-set config values in dynamic loading of mwEmbed
 if( typeof preMwEmbedConfig == 'undefined') {
-	var preMwEmbedConfig = {};
+	var preMwEmbedConfig = [];
 }
 
 /**
@@ -41,7 +41,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
  */
 ( function( mw ) {
 	// The version of mwEmbed
-	mw.version = MW_EMBED_VERSION
+	mw.version = MW_EMBED_VERSION;
 	
 	// List valid skins here:
 	mw.validSkins = [ 'mvpcf', 'kskin' ];
@@ -60,7 +60,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		var mwConfig = { };
 	}
 	
-	// Local scope mwUserConfig var. Stores user configuration
+	// mw scope mwUserConfig var. Stores user configuration
 	var mwUserConfig = { };
 	
 	/**
@@ -89,7 +89,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		} else {
 			mwConfig[ name ] = value;
 		}
-	}
+	};
 	
 	/**
 	 * Set a default config value Will only update configuration if no value is
@@ -112,10 +112,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if( typeof mwConfig[ name ] == 'undefined') {
 			mwConfig[ name ] = value;
 		}
-	}
-	
-	// Apply any pre-setup config:
-	mw.setConfig( preMwEmbedConfig );
+	};
 	
 	/**
 	 * Getter for configuration values
@@ -129,7 +126,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if( mwConfig[ name ] )
 			return mwConfig[ name ];
 		return false;
-	}
+	};
 
 	/**
 	 * Loads the mwUserConfig from a cookie.
@@ -164,7 +161,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				callback();	
 			}			
 		});				
-	}
+	};
 
 	/**
 	 * Save a user configuration var to a cookie & local global variable Loads
@@ -185,7 +182,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		
 		// Update the cookie ( '$j.cookie' & 'JSON' should already be loaded )
 		$j.cookie( 'mwUserConfig', JSON.stringify( mwUserConfig ) );
-	}
+	};
 	
 	/**
 	 * Save a user configuration var to a cookie & local global variable
@@ -199,7 +196,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if( mwUserConfig[ name ] )
 			return mwUserConfig[ name ];
 		return false;
-	}
+	};
 	
 	/**
 	 * Add a hook system for a target object / interface
@@ -228,8 +225,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			if( ! this.hooks[ hookName ] ) {
 				this.hooks[ hookName ] = [ ];
 			}
-			this.hooks[ hookName ].push( hookFunction )
-		}
+			this.hooks[ hookName ].push( hookFunction );
+		};
 		
 		/**
 		 * Runs all the hooks by a given name with reference to the host object
@@ -249,8 +246,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					}
 				}
 			}
-		}
-	} 
+		};
+	};
 	
 	// Add hooks system to the core "mw" object
 	mw.addHookSystem( mw );
@@ -351,7 +348,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					instanceCallback( loadRequest );
 					instanceCallback = null;
 				}
-			}			
+			};
 			
 			// Check for empty loadRequest ( directly return the callback )
 			if( mw.isEmpty( loadRequest ) ) {
@@ -567,7 +564,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				if( this.getResourcePath( loadName )  ) {
 					// Check if not already in request queue and not defined in global namespace
 					if( !mw.isset( loadName ) && ! uniqueResourceName[ loadName] ){
-						groupClassKey += coma + loadName
+						groupClassKey += coma + loadName;
 						coma = ',';
 						
 						// Check for style sheet dependencies
@@ -662,7 +659,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 						_this.moduleLoadQueue[moduleName].functionQueue.shift()();					
 					}
 				}
-			}
+			};
 			
 			// Check for single request or javascript debug based loading:
 			if( !mw.getResourceLoaderPath() || mw.getConfig( 'loader.groupStrategy' ) == 'single'  ){
@@ -734,7 +731,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 						}
 					}
 					runModuleFunctionQueue();					
-				}
+				};
 				// Local instance of load requests to retain resourceSet
 				// context:
 				var localLoadCallInstance = function( moduleName, resourceSet ){
@@ -742,7 +739,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 						 _this.moduleLoadQueue[ moduleName ].loaded = true;
 						checkModulesDone();
 					});
-				}
+				};
 				
 				// Load the shared resources
 				mw.load( sharedResourceList, function(){
@@ -926,10 +923,10 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 */
 	 	getResourcePath: function( resourceName ) {
 	 		if( this.resourcePaths[ resourceName ] )
-	 			return this.resourcePaths[ resourceName ]
+	 			return this.resourcePaths[ resourceName ];
 	 		return false;
 	 	}	 	
-	}
+	};
 	
 	/**
 	 * Load done callback for script loader
@@ -972,7 +969,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	mw.setLoadDoneCB = function( requestName, callback ) {
 		// If the requestName is already done loading just callback
 		if( mwLoadDoneCB[ requestName ] == 'done' ) {
-			callback( requestName )
+			callback( requestName );
 		}
 		// Setup the function queue if unset
 		if( typeof mwLoadDoneCB[ requestName ] != 'object' ) {
@@ -993,32 +990,32 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 */	
 	mw.load = function( loadRequest, callback ) {
 		return mw.loader.load( loadRequest, callback );
-	}
+	};
 	
 	/**
 	 * Add module entry point: Adds a module to the mwLoader object
 	 */
 	mw.addModuleLoader = function ( name, loaderFunction ) {
 		return mw.loader.addModuleLoader( name, loaderFunction );		
-	}
+	};
 	
 	/**
 	 * Add Class File Paths entry point:
 	 */
 	mw.addResourcePaths = function ( resourceSet ) {	
 		return mw.loader.addResourcePaths( resourceSet );
-	}
+	};
 	
 	mw.addStyleResourceDependency = function ( resourceSet ) {
 		return mw.loader.addStyleResourceDependency( resourceSet );
-	}
+	};
 	
 	/**
 	 * Get Class File Path entry point:
 	 */
 	mw.getResourcePath = function( resourceName ) {
 		return mw.loader.getResourcePath( resourceName );
-	}
+	};
 	
 	
 	/**
@@ -1043,7 +1040,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				.html() 
 		});
 		return $dialog;
-	}
+	};
 	
 	/**
 	 * Close the loader dialog created with addLoaderDialog
@@ -1059,7 +1056,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			$j( '#mwTempLoaderDialog' )
 			.dialog( 'destroy' );
 		} , 10);			
-	}	
+	};
 	
 	/**
 	 * Add a (temporary) dialog window:
@@ -1089,7 +1086,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}, options );
 		
 		if( ! options.title || ! options.content ){
-			mw.log("Error: mwEmbed addDialog missing required options ( title, content ) ")
+			mw.log("Error: mwEmbed addDialog missing required options ( title, content ) ");
 			return ;
 		}
 		
@@ -1107,8 +1104,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		// Build the uiRequest
 		var uiRequest = [ '$j.ui.dialog' ];
 		if( options.draggable ){
-			uiRequest.push( '$j.ui.mouse' )
-			uiRequest.push( '$j.ui.draggable' )		
+			uiRequest.push( '$j.ui.mouse' );
+			uiRequest.push( '$j.ui.draggable' );		
 		}
 		if( options.resizable ){
 			uiRequest.push( '$j.ui.resizable' );
@@ -1120,7 +1117,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			buttons = { };
 			options.buttons[ buttonMsg ] = function() {
 				$j( this ).dialog( 'close' );
-			}
+			};
 		}				
 		
 		// Load the dialog resources
@@ -1128,6 +1125,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			[
 				'$j.ui',
 				'$j.widget',
+			    '$j.ui.mouse',
 				'$j.ui.position'
 			],
 			uiRequest
@@ -1144,7 +1142,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			});	*/		
 		} );
 		return $j( '#mwTempLoaderDialog' );
-	}	
+	};
 	
 	/**
 	 * Mobile HTML5 has special properties for html5 video::
@@ -1229,13 +1227,13 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		
 		// If the object is defined ( or we are done loading from a callback )
 		if ( mw.isset( objectName ) || mwLoadDoneCB[ objectName ] == 'done' ) {			
-			callback( objectName )
+			callback( objectName );
 		}else{
 			setTimeout( function( ) {
 				mw.waitForObject( objectName, callback, _callNumber);
 			}, 25);
 		}
-	}
+	};
 	
 	/**
 	 * Check if an object is empty or if its an empty string.
@@ -1261,7 +1259,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		
 		// Else object is empty:
 		return true;
-	}
+	};
 	
 	/**
 	 * Log a string msg to the console
@@ -1299,7 +1297,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				log_elm.scrollTop = log_elm.scrollHeight;
 			}*/
 		}
-	}
+	};
 	
 	// Setup the local mwOnLoadFunctions array:
 	var mwOnLoadFunctions = [];
@@ -1327,7 +1325,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			// If mwReadyFlag is already "true" issue the callback directly:
 			callback();
 		}		
-	}	
+	};
 	
 	/**
 	 * Runs all the queued functions called by mwEmbedSetup
@@ -1350,7 +1348,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		// Once we have run all the queued functions
 		mw.loader.runModuleLoadQueue();
 		
-	}
+	};
 	
 	
 	/**
@@ -1370,7 +1368,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			if( callback ) {
 				callback( scriptRequest );
 			}
-		}
+		};
 		// Set the base url based scriptLoader availability & type of
 		// scriptRequest
 		// ( presently script loader only handles "classes" not relative urls:
@@ -1400,7 +1398,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			mw.log( 'mw.getScript: ' + url );
 		}
 		
-		// If jQuery is available and debug is off load the scirpt via jQuery
+		// If jQuery is available and debug is off load the script via jQuery
 		// ( will use XHR if on same domain )
 		if( mw.isset( 'window.jQuery' ) 
 			&& mw.getConfig( 'debug' ) === false 
@@ -1567,7 +1565,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			mwpath = mw.absoluteUrl( mwpath )	;
 		}
 		return mwpath;
-	}
+	};
 	
 	/**
 	 * Get Script loader path
@@ -1584,7 +1582,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			return src.split('?')[0];						
 		}
 		return false;
-	}	
+	};
 	
 	/**
 	 * Given a float number of seconds, returns npt format response. ( ignore
@@ -1602,7 +1600,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			return '0:00:00';
 		}
 		
-		var tm = mw.seconds2Measurements( sec )
+		var tm = mw.seconds2Measurements( sec );
 				
 		// Round the number of seconds to the required number of significant
 		// digits
@@ -1615,7 +1613,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			tm.seconds = '0' +	tm.seconds;
 		}
 		if( tm.hours == 0 ){
-			hoursStr = ''
+			hoursStr = '';
 		} else {
 			if ( tm.minutes < 10 )
 				tm.minutes = '0' + tm.minutes;
@@ -1623,7 +1621,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			hoursStr = tm.hours + ":"; 
 		}
 		return hoursStr + tm.minutes + ":" + tm.seconds;
-	}
+	};
 	
 	/**
 	 * Given seconds return array with 'days', 'hours', 'min', 'seconds'
@@ -1633,12 +1631,12 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 */
 	mw.seconds2Measurements = function ( sec ){
 		var tm = {};
-		tm.days = Math.floor( sec / ( 3600 * 24 ) )
+		tm.days = Math.floor( sec / ( 3600 * 24 ) );
 		tm.hours = Math.floor( sec / 3600 );
 		tm.minutes = Math.floor( ( sec / 60 ) % 60 );
 		tm.seconds = sec % 60;
 		return tm;
-	}
+	};
 	
 	/**
 	 * Take hh:mm:ss,ms or hh:mm:ss.ms input, return the number of seconds
@@ -1674,7 +1672,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		sec = sec.replace( /,\s?/, '.' );
 		// Return seconds float
 		return parseInt( hour * 3600 ) + parseInt( min * 60 ) + parseFloat( sec );
-	}	
+	};
 	
 	// Local mwEmbedSrc variable ( for cache of mw.getMwEmbedSrc )
 	var mwEmbedSrc = null; 
@@ -1711,7 +1709,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}
 		mw.log( 'Error: getMwEmbedSrc failed to get script path' );
 		return false;
-	}	
+	};
 	
 	// Local mwUrlParam variable ( for cache of mw.getUrlParam )
 	var mwUrlParam = null;
@@ -1728,7 +1726,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		var req_param = '';
 		
 		// If we already have a URI, add it to the param request:
-		var urid = mw.parseUri( mwEmbedSrc ).queryKey['urid']
+		var urid = mw.parseUri( mwEmbedSrc ).queryKey['urid'];
 		
 		// If we're in debug mode, get a fresh unique request key and pass on
 		// "debug" param
@@ -1753,7 +1751,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		// Update the local cache and return the value
 		mwUrlParam = req_param;			
 		return mwUrlParam;
-	}
+	};
 	
 	/**
 	 * Replace url parameters via newParams key value pairs
@@ -1786,7 +1784,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			amp = '&';
 		}
 		return new_url;
-	}
+	};
 	
 	/**
 	 * parseUri 1.2.2 (c) Steven Levithan <stevenlevithan.com> MIT License
@@ -1907,7 +1905,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			'"' : "&quot;",
 			'<' : "&lt;",
 			'>' : "&gt;"
-		}
+		};
 		for( var i in replaceMap ){
 			text = text.split(i).join( replaceMap[i]);
 		}
@@ -1942,7 +1940,10 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		if( mwSetupFlag ) {
 			return ;
 		}				 
-		mwSetupFlag = true;					
+		mwSetupFlag = true;			
+		
+		// Apply any pre-setup config:
+		mw.setConfig( preMwEmbedConfig );			
 		
 		
 		mw.log( 'mw:setupMwEmbed SRC:: ' + mw.getMwEmbedSrc() );			
@@ -1956,66 +1957,68 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				if ( ! window[ '$j' ] ) {
 					window[ '$j' ] = jQuery.noConflict();				
 				}
-				
-				// Get module loader.js, and language files
-				// ( will hit callback directly if set via resource loader )
-				mw.checkModuleLoaderFiles( function() {
-													
-					// Set the User language
-					if( typeof wgUserLanguage != 'undefined' && mw.isValidLang( wgUserLanguage) ) {				
-						mw.setConfig( 'userLanguage', wgUserLanguage )
-					}else{
-						// Grab it from the included url
-						var langKey = mw.parseUri( mw.getMwEmbedSrc() ).queryKey['uselang'];
-						if ( langKey && mw.isValidLang( langKey ) ) {	
-							mw.setConfig( 'userLanguage', langKey);
-						}
-					}					
-					
-					// Update the image path
-					mw.setConfig( 'imagesPath', mw.getMwEmbedPath() + 'skins/common/images/' );	
-					
-					// Set up AJAX to not send dynamic URLs for loading scripts
-					$j.ajaxSetup( {
-						cache: true
-					} );
-					
-					// Update the magic keywords
-					mw.Language.magicSetup();
-					
-					// Set up mvEmbed utility jQuery bindings
-					mw.dojQueryBindings();					
-					
-					
-					// Special Hack for conditional jquery ui inclusion ( once
-					// Usability extension
-					// registers the jquery.ui skin in mw.style 		
-					if( mw.hasJQueryUiCss() ){
-						mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;						
-					}		
-					
-					
-					// Make sure style sheets are loaded:
-					mw.load( ['mw.style.mwCommon'] , function(){											
-						// Run all the setup function hooks
-						// NOTE: setup functions are added via addSetupHook
-						// calls
-						// and must include a callback.
-						//
-						// Once complete we can run .ready() queued functions
-						function runSetupFunctions() {							
-							if( mwSetupFunctions.length ) {
-								mwSetupFunctions.shift()( function() {
-									runSetupFunctions();
-								} );
-							}else{
-								mw.runReadyFunctions();
+				// Setup user config: 
+				mw.setupUserConfig( function(){
+					// Get module loader.js, and language files
+					// ( will hit callback directly if set via resource loader )
+					mw.checkModuleLoaderFiles( function() {
+														
+						// Set the User language
+						if( typeof wgUserLanguage != 'undefined' && mw.isValidLang( wgUserLanguage) ) {				
+							mw.setConfig( 'userLanguage', wgUserLanguage );
+						}else{
+							// Grab it from the included url
+							var langKey = mw.parseUri( mw.getMwEmbedSrc() ).queryKey['uselang'];
+							if ( langKey && mw.isValidLang( langKey ) ) {	
+								mw.setConfig( 'userLanguage', langKey);
 							}
-						}
-						runSetupFunctions();		
-					} );
-					
-				} );									
+						}					
+						
+						// Update the image path
+						mw.setConfig( 'imagesPath', mw.getMwEmbedPath() + 'skins/common/images/' );	
+						
+						// Set up AJAX to not send dynamic URLs for loading scripts
+						$j.ajaxSetup( {
+							cache: true
+						} );
+						
+						// Update the magic keywords
+						mw.Language.magicSetup();
+						
+						// Set up mvEmbed utility jQuery bindings
+						mw.dojQueryBindings();					
+						
+						
+						// Special Hack for conditional jquery ui inclusion ( once
+						// Usability extension
+						// registers the jquery.ui skin in mw.style 		
+						if( mw.hasJQueryUiCss() ){
+							mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;						
+						}		
+						
+						
+						// Make sure style sheets are loaded:
+						mw.load( ['mw.style.mwCommon'] , function(){											
+							// Run all the setup function hooks
+							// NOTE: setup functions are added via addSetupHook
+							// calls
+							// and must include a callback.
+							//
+							// Once complete we can run .ready() queued functions
+							function runSetupFunctions() {							
+								if( mwSetupFunctions.length ) {
+									mwSetupFunctions.shift()( function() {
+										runSetupFunctions();
+									} );
+								}else{
+									mw.runReadyFunctions();
+								}
+							}
+							runSetupFunctions();		
+						} );
+						
+					} );									
+				});
 			});
 		});
 	};
@@ -2037,7 +2040,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 					hasUiCss = true;
 					return true;
 				}
-			})
+			});
 		} );
 		// Check all the "style" nodes for @import for sheet name
 		// xxx Note: we could do this a bit cleaner with regEx
@@ -2053,7 +2056,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			});
 		});				
 		return hasUiCss;		
-	}
+	};
 	
 	/**
 	 * Loads the core mwEmbed "loader.js" file config
@@ -2074,7 +2077,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		
 		// Check if we are using a static package ( mwEmbed path includes
 		// -static )
-		if( mw.isStaticPackge() ){			
+		if( mw.isStaticPackge() ){
 			callback();
 			return ;
 		}
@@ -2082,7 +2085,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		// Add the Core loader to the request
 		// The follow code is ONLY RUN in debug / raw file mode
 		mw.load( 'loader.js', callback );
-	}
+	};
 	
 	/**
 	 * Checks if the javascript is a static package ( not using resource loader )
@@ -2096,7 +2099,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			return true;	
 		}
 		return false;
-	}
+	};
 	
 	/**
 	 * Check for resource loader module loaders, and localization files
@@ -2186,18 +2189,18 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				// Set the mwModuleLoaderCheckFlag flag to true
 				mwModuleLoaderCheckFlag = true;		
 				callback();
-			}
+			};
 			if( mw.getConfig( 'LoadLocalSettings') != true ){
 				continueCallback();
 				return; 
 			}
-			mw.log("Load loacal settings")
+			mw.log("Load loacal settings");
 			mw.load( 'localSettings.js', function(){
 				continueCallback();
-			})
+			});
 		}
 					
-	}
+	};
 	
 	/**
 	 * Checks if a css style rule exists
@@ -2218,9 +2221,9 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			var rules = null;			
 			try{
 				if ( document.styleSheets[i].cssRules )
-					rules = document.styleSheets[i].cssRules
+					rules = document.styleSheets[i].cssRules;
 				else if (document.styleSheets[0].rules)
-					rules = document.styleSheets[i].rules
+					rules = document.styleSheets[i].rules;
 				for(var j=0 ; j < rules.length ; j++ ) {
 					var rule = rules[j].selectorText;											
 					if( rule && rule.indexOf( styleRule ) != -1 ) {
@@ -2232,7 +2235,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			}
 		}
 		return false;	
-	}
+	};
 	
 	// Flag to register the domReady has been called
 	var mwDomReadyFlag = false;
@@ -2260,7 +2263,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		setTimeout(function(){
 			mw.setupMwEmbed();
 		},1);
-	}	
+	};
 	
 	/**
 	 * A version comparison utility function Handles version of types
@@ -2277,7 +2280,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 	 *         version is less than minVersion
 	 */
 	mw.versionIsAtLeast = function( minVersion, clientVersion ) {
-		var minVersionParts = minVersion.split('.')
+		var minVersionParts = minVersion.split('.');
 		var clientVersionParts = clientVersion.split('.');
 		for( var i =0; i <  minVersionParts.length; i++ ) {
 			if( parseInt( clientVersionParts[i] ) > parseInt( minVersionParts[i] ) ) {
@@ -2289,7 +2292,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		}
 		// Same version:
 		return true;
-	}
+	};
 	 
 	/**
 	 * Runs all the triggers on a given object with a single "callback"
@@ -2337,7 +2340,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				callback();
 			}
 		} );
-	}
+	};
 	/**
 	 * Utility jQuery bindings Setup after jQuery is available ).
 	 */
@@ -2373,7 +2376,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				 * rotations == 360 ) { rotations = 0; } rotations += 5; }, 25); }
 				 */
 				return this;
-			}
+			};
 			/**
 			 * Add an absolute overlay spinner useful for cases where the
 			 * element does not display child elements, ( images, video )
@@ -2399,7 +2402,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 					});
 				$j('body').append( $spinner	);
 				return $spinner;
-			}
+			};
 			
 			/**
 			 * dragDrop file loader
@@ -2412,7 +2415,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 						$j( _this.selector ).dragDropFile();
 					} );
 				}
-			}							
+			};					
 	
 			/**
 			 * Shortcut to a themed button Should be depreciated for $.button
@@ -2455,11 +2458,11 @@ mw.absoluteUrl = function( src, contextUrl ) {
 					.addClass( 'ui-state-default ui-corner-all ui-icon_link' );
 				// Add css if set:
 				if( options.css ) {
-					$button.css( options.css )
+					$button.css( options.css );
 				}
 									
 				if( options['class'] ) {
-					$button.addClass( options['class'] )
+					$button.addClass( options['class'] );
 				}	
 								
 				
@@ -2485,7 +2488,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 					function() {
 						$j( this ).removeClass( 'ui-state-hover' );
 					}
-				)
+				);
 				return this;
 			};
 			
@@ -2514,7 +2517,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			};
 			
 		} )( $j );
-	}	
+	};
 	
 } )( window.mw );
 
@@ -2529,7 +2532,7 @@ var mwDomIsReady = false;
 function runMwDomReady(){
 	mwDomIsReady  = true;
 	if( mw.domReady ){
-		mw.domReady()
+		mw.domReady();
 	}
 }
 // Check if already ready:

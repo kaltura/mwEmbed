@@ -166,7 +166,7 @@ mw.PlayerControlBuilder.prototype = {
 			this.supportedComponets['timedText'] = true;
 		}		
 		// Check for Attribution button 	
-		if( mw.getConfig( 'EmbedPlayer.AttributionButton' ) ){
+		if( mw.getConfig( 'EmbedPlayer.AttributionButton' ) && embedPlayer.attributionbutton ){
 			this.supportedComponets[ 'attributionButton' ] = true;
 		}
 		
@@ -250,11 +250,11 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	* Get the fullscreen text css
 	*/
-	getFullscreenTextCss: function() {
-		// Some arbitrary scale relative to window size
-		var textSize = ( $j( window ).width() / 8 ) + 20;
+	getInterfaceSizeTextCss: function() {
+		// Some arbitrary scale relative to window size ( 400px wide is text size 105% )
+		var textSize = this.embedPlayer.$interface.width() / 3.8;		
 		if( textSize < 95 )  textSize = 95;
-		if( textSize > 250 ) textSize = 250;
+		if( textSize > 200 ) textSize = 200;
 		//mw.log(' win size is: ' + $j( window ).width() + ' ts: ' + textSize );
 		return {
 			'font-size' : textSize + '%'
@@ -365,7 +365,10 @@ mw.PlayerControlBuilder.prototype = {
 					mw.log(' should update position: ' +  $j( this ).css( 'position' ) );
 				}
 			} );
-		} )
+			
+			// Resize the timed text font size per new player width	
+			$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss() );		
+		} );
 		
 		// Set the player height width: 
 		$j( embedPlayer ).css( {
@@ -373,9 +376,7 @@ mw.PlayerControlBuilder.prototype = {
 		} )
 		// Animate a zoom ( while keeping aspect )
 		.animate( _this.getFullscreenPlayerCss() );
-		
-		// Resize the timed text font size per window width	
-		$interface.find( '.track' ).css( _this.getFullscreenTextCss() );		
+				
 		
 		// Reposition play-btn-large ( this is unfortunately not easy to position with 'margin': 'auto'
 		$interface.find('.play-btn-large').animate( _this.getFullscreenPlayButtonCss() )		
@@ -421,7 +422,7 @@ mw.PlayerControlBuilder.prototype = {
 				$interface.find('.play-btn-large').css(  _this.getFullscreenPlayButtonCss() );
 				
 				// Update the timed text size  
-				$interface.find( '.track' ).css( _this.getFullscreenTextCss() );
+				$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss() );
 			}
 		});
 		
@@ -482,6 +483,9 @@ mw.PlayerControlBuilder.prototype = {
 			// Restore the body scroll bar
 			$j('body').css( 'overflow', 'auto' );
 			
+			// Resize the timed text font size per window width	
+			$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss() );
+			
 		} );
 		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
 		// Restore the player: 
@@ -496,11 +500,7 @@ mw.PlayerControlBuilder.prototype = {
 			'left' 	: ( ( embedPlayer.getPlayerWidth() - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
 			'top'	: ( ( embedPlayer.getPlayerHeight() -this.getComponentHeight( 'playButtonLarge' ) ) / 2 )
 		} );
-		
-		// Restore text size: 
-		$interface.find( '.track' ).css({
-			'font-size' : '100%'
-		})
+				
 	},
 	
 	/**
@@ -557,7 +557,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Add recommend firefox if we have non-native playback:
 		if ( _this.checkNativeWarning( ) ) {			
 			_this.doWarningBindinng(
-				'showNativePlayerWarning',
+				'EmbedPlayer.ShowNativeWarning',
 				gM( 'mwe-embedplayer-for_best_experience' ) 
 			);
 		}
@@ -605,7 +605,7 @@ mw.PlayerControlBuilder.prototype = {
 			.animate( { 
 				'bottom' : 10 
 			}, 'slow' );
-
+		
 	},
 	
 	/**
@@ -613,7 +613,11 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	showControlBar: function(){
 		var animateDuration = 'slow';	
-		$j( this.embedPlayer.getPlayerElement() ).css('z-index', '1')	
+		if(! this.embedPlayer )
+			return ;
+		if( this.embedPlayer.getPlayerElement ){
+			$j( this.embedPlayer.getPlayerElement() ).css( 'z-index', '1' );
+		}
 		mw.log( 'showControlBar' );
 		// Move up text track if present
 		this.embedPlayer.$interface.find( '.track' )
@@ -625,7 +629,7 @@ mw.PlayerControlBuilder.prototype = {
 			); 
 		
 		// Show interface controls
-		this.embedPlayer.$interface.find( '.control-bar')
+		this.embedPlayer.$interface.find( '.control-bar' )
 			.fadeIn( animateDuration );			
 	},
 	
@@ -640,7 +644,7 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		
 		// If disabled via the player
-		if( this.embedPlayer.overlayControls === false ){
+		if( this.embedPlayer.overlaycontrols === false ){
 			return false;
 		} 
 		
@@ -673,17 +677,22 @@ mw.PlayerControlBuilder.prototype = {
 		// If the resolution is too small don't display the warning
 		if( this.embedPlayer.getPlayerHeight() < 199 ){
 			return false;
-		}				
-		
+		}						
 		// See if we have we have ogg support
 		var supportingPlayers = mw.EmbedTypes.players.getMIMETypePlayers( 'video/ogg' );
 		for ( var i = 0; i < supportingPlayers.length; i++ ) {
-			if ( supportingPlayers[i].id == 'oggNative' ) {
+						
+			if ( supportingPlayers[i].id == 'oggNative' 
+				&& 
+				// xxx google chrome has broken oggNative playback:
+				// http://code.google.com/p/chromium/issues/detail?id=56180
+				! /chrome/.test(navigator.userAgent.toLowerCase() ) 
+			){
 				return false;
 			}
 		}
 		
-		// Check for h264 and or flash/flv source and playback support and dont' show wanring 
+		// Check for h264 and or flash/flv source and playback support and don't show warning 
 		if( 
 			( mw.EmbedTypes.players.getMIMETypePlayers( 'video/h264' ).length 
 			&& this.embedPlayer.mediaElement.getSources( 'video/h264' ).length )
@@ -713,9 +722,12 @@ mw.PlayerControlBuilder.prototype = {
 		
 		$j( embedPlayer ).hoverIntent({
 			'timeout': 2000,
-			'over': function() {				
-				if ( $j( '#warningOverlay_' + embedPlayer.id ).length == 0 ) {
-					var toppos = ( embedPlayer.instanceOf == 'mvPlayList' ) ? 25 : 10;
+			'over': function() {
+				// don't do the overlay if already playing
+				if( embedPlayer.isPlaying() ){
+					return ;
+				}
+				if ( $j( '#warningOverlay_' + embedPlayer.id ).length == 0 ) {					
 					
 					$j( this ).append(
 						$j('<div />')
@@ -728,7 +740,7 @@ mw.PlayerControlBuilder.prototype = {
 							'display' : 'none',
 							'background' : '#FFF',
 							'color' : '#111',
-							'top' : toppos + 'px',
+							'top' : '10px',
 							'left' : '10px',
 							'right' : '10px',
 							'padding' : '4px'
@@ -1170,7 +1182,9 @@ mw.PlayerControlBuilder.prototype = {
 	* @param {Object} $target jQuery target for output
 	*/
 	getPlayerSelect: function( ) {		
-		mw.log('getPlayerSelect::');		
+		mw.log('ControlBuilder::getPlayerSelect: source:' + 
+				this.embedPlayer.mediaElement.selectedSource.getSrc() +
+				' player: ' + this.embedPlayer.selectedPlayer.id );		
 		
 		var embedPlayer = this.embedPlayer;
 		
@@ -1184,22 +1198,22 @@ mw.PlayerControlBuilder.prototype = {
 
 		$j.each( embedPlayer.mediaElement.getPlayableSources(), function( sourceId, source ) {
 			
-			var playable = mw.EmbedTypes.players.defaultPlayer( source.getMIMEType() );			
-			var is_selected = ( source == embedPlayer.mediaElement.selectedSource );			
+			var isPlayable = (typeof mw.EmbedTypes.players.defaultPlayer( source.getMIMEType() ) == 'object' );			
+			var is_selected = ( source.getSrc() == embedPlayer.mediaElement.selectedSource.getSrc() );						
 			
 			$playerSelect.append( 
 				$j( '<h2 />' )
 				.text( source.getTitle() )
 			);
 			
-			if ( playable ) {
+			if ( isPlayable ) {
 				$playerList = $j('<ul />');
 				// output the player select code:
 		
 				var supportingPlayers = mw.EmbedTypes.players.getMIMETypePlayers( source.getMIMEType() );
 
-				for ( var i = 0; i < supportingPlayers.length ; i++ ) {									
-									
+				for ( var i = 0; i < supportingPlayers.length ; i++ ) {		
+
 					// Add link to select the player if not already selected )
 					if( embedPlayer.selectedPlayer.id == supportingPlayers[i].id && is_selected ) {	
 						// Active player ( no link )

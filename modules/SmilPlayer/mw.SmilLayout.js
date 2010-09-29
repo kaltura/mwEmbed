@@ -41,10 +41,11 @@ mw.SmilLayout.prototype = {
 	/**
 	 * Setup the layout if not already setup
 	 */
-	setupLayout: function( $renderTarget ){
+	setupLayout: function( $renderTarget ){		
 		if( ! $renderTarget.find( '.smilRootLayout').length ) {
 			$renderTarget.append( this.getRootLayout() );
 		}
+		this.$rootLayout =$renderTarget.find( '.smilRootLayout');		
 	},
 	
 	getTargetAspectRatio:function(){
@@ -56,8 +57,8 @@ mw.SmilLayout.prototype = {
 	 */
 	getRootLayout: function(){
 		var _this = this;
-		mw.log( "SmilLayout::getRootLayout:" );
-		if( !this.$rootLayout ){						
+		mw.log( "SmilLayout::getRootLayout:" );		
+		if( !this.$rootLayout ) {					
 			// Setup target Size:
 			this.targetWidth = this.smil.embedPlayer.getWidth();
 			this.targetHeight = this.smil.embedPlayer.getHeight();		
@@ -135,7 +136,10 @@ mw.SmilLayout.prototype = {
 					.attr('id', _this.smil.getSmilElementPlayerID( smilElement ) )
 					.css({
 						'width':'100%',
-						'height':'100%'
+						'height':'100%',
+						'position' : 'absolute',
+						'top' : '0px',
+						'left' : '0px'
 					})
 				$regionTarget.append( $target )
 				this.drawSmilElementToTarget( smilElement, $target );
@@ -281,7 +285,7 @@ mw.SmilLayout.prototype = {
 				.find( 'canvas')
 					.get(0)	
 					.getContext('2d')
-					.drawImage( drawElement, 0, 0)				
+					.drawImage( drawElement, 0, 0);			
 			} catch (e){
 				mw.log("Error:: getVideoCanvasThumb : could not draw canvas image");
 			}
@@ -307,7 +311,7 @@ mw.SmilLayout.prototype = {
 				drawFrame( drawElement );
 				// Remove the temporary node from dom
 				$j( drawElement ).remove();
-			})			
+			});		
 		}
 	},
 	
@@ -333,7 +337,8 @@ mw.SmilLayout.prototype = {
 	/**
 	 * Hide a smilElement in the layout
 	 */	
-	hideElement: function( smilElement ){
+	hideElement: function( smilElement ){		
+		mw.log(" hide: " + this.smil.getSmilElementPlayerID( smilElement ));
 		// Check that the element is already in the dom
 		var $targetElement = this.$rootLayout.find( '#' + this.smil.getSmilElementPlayerID( smilElement ) );
 		if( $targetElement.length ){
@@ -365,7 +370,10 @@ mw.SmilLayout.prototype = {
 			'id' : this.smil.getSmilElementPlayerID( smilElement ), 
 			'src' : this.smil.getAssetUrl( $j( smilElement ).attr( 'src' ) )
 		} )
-		.css( 'display', 'none');
+		.css( {
+			'width': '0px',
+			'height' : '0px'
+		});
 	},
 	
 	/**
@@ -431,7 +439,7 @@ mw.SmilLayout.prototype = {
 				
 		var request = {
 			'action' : 'parse',
-			'text': wikiTextTemplateCall,
+			'text': wikiTextTemplateCall
 		};
 		// Check if we have the titleKey for the sequence and use that as context title
 		var titleKey = this.smil.getEmbedPlayer().apiTitleKey;
@@ -583,8 +591,13 @@ mw.SmilLayout.prototype = {
 			'id' : this.smil.getSmilElementPlayerID( smilImg ), 
 			'src' : this.smil.getAssetUrl( $j( smilImg ).attr( 'src' ) )
 		} )
-		// default width 100%
-		.css('width', '100%')
+		// default width 100% upper left
+		.css({
+			'position' : 'absolute',
+			'top' : '0px',
+			'left' : '0px',
+			'width': '100%'
+		})
 			
 		return $image;	
 	},
@@ -607,13 +620,13 @@ mw.SmilLayout.prototype = {
 		if( img.naturalWidth ){
 			callback(  {
 				'width' : img.naturalWidth,
-				'height' : img.naturalHeight,
+				'height' : img.naturalHeight
 			} )
 		} else {
 			$j( img ).load(function(){
 				callback( {
 					'width' : this.naturalWidth,
-					'height' : this.naturalHeight,
+					'height' : this.naturalHeight
 				} )
 			});
 		}
@@ -671,6 +684,7 @@ mw.SmilLayout.prototype = {
 				'height' : this.smil.embedPlayer.getHeight()
 			};
 		}
+	
 		// Fit the image per the provided targetWidth closure
 		/*mw.log( 'getDominateAspectTransform:: naspect:' + 
 				( natrualSize.width / natrualSize.height ) + 
@@ -955,7 +969,7 @@ mw.SmilLayout.prototype = {
 						
 		// convert named font sizes to em: 
 		if( this.emFontSizeMap[ cssAttributes['font-size'] ] ){
-			cssAttributes['font-size'] = sizeMap[ cssAttributes['font-size'] ];
+			cssAttributes['font-size'] = this.emFontSizeMap[ cssAttributes['font-size'] ];
 		}
 		
 		// If the font size is pixel based parent span will have no effect,

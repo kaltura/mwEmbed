@@ -106,10 +106,13 @@ mw.setConfig( 'EmbedPlayer.Attributes', {
 	
 	// If the player controls should be overlaid 
 	//( Global default via config EmbedPlayer.OverlayControls in module loader.js)  
-	"overlayControls" : true,
+	"overlaycontrols" : true,
 	
 	// Attribute to use 'native' controls 
 	"usenativecontrols" : false,
+	
+	// If the player should include an attribution button:
+	'attributionbutton' : true,
 	
 	// ROE url ( for xml based metadata )
 	// also see: http://wiki.xiph.org/ROE
@@ -861,13 +864,6 @@ mediaSource.prototype = {
 		return this.mimeType;
 	},
 	
-	/** Index accessor function.
-	*	@return {Integer} the source's index within the enclosing mediaElement container.
-	*/
-	getIndex : function() {
-		return this.index;
-	},
-	
 	/** 
 	 * 
 	 * Get Duration of the media in milliseconds from the source url.
@@ -1545,13 +1541,20 @@ mw.EmbedPlayer.prototype = {
 	 * Resize the player to a new size
 	 */
 	resizePlayer: function( size , animate){
+		mw.log("EmbedPlayer::resizePlayer:" + size.width + ' x ' + size.height );
 		this.width = size.width;
 		this.height = size.height;
+		var playerSize = {'width' : this.width, 'height' : this.height };
+		// check if height needs to include interface contorls
+		if( ! this.controlBuilder.checkOverlayControls() ){
+			size.height = size.height + this.controlBuilder.height;
+		}
+		
 		if( animate ){
-			$j(this).animate(size);
+			$j(this).animate(playerSize);
 			this.$interface.animate( size );
 		}else{
-			$j(this).css(size);
+			$j(this).css(playerSize);
 			this.$interface.css( size );
 		}
 	},
@@ -1588,13 +1591,14 @@ mw.EmbedPlayer.prototype = {
 			// Run embedPlayer sources hook		
 			mw.runTriggersCallback( _this, 'checkPlayerSourcesEvent', function(){				
 				_this.checkForTimedText();
-			})			
-		}
+			});			
+		};
 		
-		// NOTE: Should could be moved to mediaWiki Api support module		
-		if ( _this.apiTitleKey ) {
+		// NOTE: Should could be moved to mediaWiki Api support module
+		// only load from api if sources are empty: 
+		if ( _this.apiTitleKey && this.mediaElement.sources.length == 0) {
 			// Load media from external data
-			mw.log( 'EmbedPlayer::checkPlayerSources: loading apiTitleKey data' );		
+			mw.log( 'EmbedPlayer::checkPlayerSources: loading apiTitleKey:' + _this.apiTitleKey );		
 			_this.loadSourceFromApi( function(){				
 				finishCheckPlayerSources();
 			} );
@@ -1628,10 +1632,10 @@ mw.EmbedPlayer.prototype = {
 			'iiprop': 'url|size|dimensions|metadata',
 			'iiurlwidth': _this.width,
 			'redirects' : true // automatically resolve redirects
-		} 
-	
+		};
+
 		// Run the request:
-		mw.getJSON( mw.getApiProviderURL( this.apiProvider ), request, function( data ){
+		mw.getJSON( mw.getApiProviderURL( _this.apiProvider ), request, function( data ){
 			if ( data.query.pages ) {
 				for ( var i in data.query.pages ) {
 					if( i == '-1' ) {
@@ -2479,6 +2483,10 @@ mw.EmbedPlayer.prototype = {
 		} else if( this.apiTitleKey ) {			
 			iframeUrl += 'apiTitleKey=' + escape( this.apiTitleKey ) + '&';
 			if ( this.apiProvider ) {
+				// Commons always uses the commons api provider ( special hack should refactor ) 
+				if( mw.parseUri( document.URL ).host == 'commons.wikimedia.org'){
+					 this.apiProvider = 'commons';
+				}
 				iframeUrl += 'apiProvider=' + escape( this.apiProvider ) + '&';
 			}
 		} else {			
@@ -2817,7 +2825,7 @@ mw.EmbedPlayer.prototype = {
 		// Update the playerElement volume	
 		this.setPlayerElementVolume( percent );
 		
-		//mw.log(" setVolume:: " + percent + ' this.volume is: ' + this.volume);	
+		//mw.log(" setVolume:: " + percent + ' this.volume is: ' + this.volume);		
 		$j( this ).trigger('volumeChanged', percent );
 	},
 	
@@ -2959,7 +2967,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Check if volume was set outside of embed player function
 		//mw.log( ' this.volume: ' + _this.volume + '  prev Volume:: ' + _this.previousVolume );
-		if( _this.volume != _this.previousVolume ) {				
+		if( Math.round( _this.volume * 100 ) != Math.round( _this.previousVolume * 100 ) ) {				
 			_this.setInterfaceVolume( _this.volume );
 			$j( this ).trigger('volumeChanged', _this.volume );
 		}
@@ -2971,8 +2979,8 @@ mw.EmbedPlayer.prototype = {
 		_this.volume = this.getPlayerElementVolume();
 		
 		// update the mute state from the player element
-		if( _this.muted != _this.getPlayerElementMuted() ){
-			mw.log("monitor:: muted does not mach embed player" );
+		if( _this.muted != _this.getPlayerElementMuted() && ! _this.isStopped() ){
+			mw.log( "EmbedPlayer::monitor: muted does not mach embed player" );
 			_this.toggleMute();
 			// Make sure they match: 
 			_this.muted = _this.getPlayerElementMuted(); 
@@ -3436,7 +3444,7 @@ mediaPlayers.prototype =
 		for ( var i = 0; i < this.players.length; i++ ) {
 			if ( this.players[i].id == playerId ) {
 				selectedPlayer = this.players[i];
-				mw.log( 'choosing ' + playerId + ' for ' + mimeType );
+				mw.log( 'EmbedPlayer::setPlayerPreference: choosing ' + playerId + ' for ' + mimeType );
 				this.preference[ mimeType ] = playerId;		
 				mw.setUserConfig( 'playerPref', this.preference );
 				break;
@@ -3450,7 +3458,7 @@ mediaPlayers.prototype =
 				if ( embed.mediaElement.selectedSource && ( embed.mediaElement.selectedSource.mimeType == mimeType ) )
 				{
 					embed.selectPlayer( selectedPlayer );
-					mw.log( 'using ' + embed.selectedPlayer.getName() + ' for ' + embed.mediaElement.selectedSource.getTitle() );
+					mw.log( 'EmbedPlayer::setPlayerPreference:  using ' + embed.selectedPlayer.getName() + ' for ' + embed.mediaElement.selectedSource.getTitle() );
 				}
 			}
 		}
@@ -3519,12 +3527,14 @@ mw.EmbedTypes = {
 		try{
 			var javaEnabled = navigator.javaEnabled();
 		} catch ( e ){
+			
 		}
 		// Some browsers filter out duplicate mime types, hiding some plugins
 		var uniqueMimesOnly = $j.browser.opera || $j.browser.safari;
+		
 		// Opera will switch off javaEnabled in preferences if java can't be found.
 		// And it doesn't register an application/x-java-applet mime type like Mozilla does.
-		if ( javaEnabled ) {
+		if ( javaEnabled && ( navigator.appName == 'Opera' ) ) {
 			this.players.addPlayer( cortadoPlayer );
 		}
 		
@@ -3544,6 +3554,7 @@ mw.EmbedTypes = {
 			 if ( this.testActiveX( 'JavaWebStart.isInstalled' ) ) {
 				 this.players.addPlayer( cortadoPlayer );
 			 }
+			 
 			 // quicktime (currently off) 
 			 // if ( this.testActiveX( 'QuickTimeCheckObject.QuickTimeCheck.1' ) )
 			 //	this.players.addPlayer(quicktimeActiveXPlayer);			 
@@ -3662,7 +3673,7 @@ mw.EmbedTypes = {
 	* @param {String} name Name of ActiveXObject to look for 
 	*/
 	testActiveX : function ( name ) {
-		mw.log(" test testActiveX: " + name);
+		mw.log("EmbedPlayer::detect: test testActiveX: " + name);
 		var hasObj = true;
 		try {
 			// No IE, not a class called "name", it's a variable

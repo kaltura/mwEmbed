@@ -63,6 +63,14 @@ mw.SequencerMenu.prototype = {
 					return (  _this.sequencer.getServer().isConfigured() )
 				}
 			},
+			'help_divider': 'divider',
+			'help': {
+				'icon' : 'info',
+				'action' : function(){					
+					// follow link to 
+					//$j( this ).attr('href', )
+				}	
+			},
 			'exit_divider': 'divider',
 			'exit' : {
 				'icon' : 'power',

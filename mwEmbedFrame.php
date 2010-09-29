@@ -66,6 +66,11 @@ class mwEmbedFrame {
 		if( isset($_GET['apiTitleKey'])){
 			$this->apiTitleKey = htmlspecialchars( $_GET['apiTitleKey'] );
 		}
+		
+		if( isset($_GET['apiProvider'])){
+			$this->apiProvider = htmlspecialchars( $_GET['apiProvider'] );
+		}
+		
 		if( isset( $_GET['poster'] ) ){
 			$this->poster = htmlspecialchars( $_GET['poster'] );
 		}
@@ -97,6 +102,9 @@ class mwEmbedFrame {
 		// Output attributes
 		if( $this->apiTitleKey ){
 			$o.= 'apiTitleKey="' . htmlspecialchars( $this->apiTitleKey ) . '" ';
+		}
+		if( $this->apiProvider ){
+			$o.= 'apiProvider="' . htmlspecialchars( $this->apiProvider ) . '" ';			
 		}
 		if( $this->poster ){
 			$o.= 'poster="' . htmlspecialchars( $this->poster ) . '" ';
@@ -139,8 +147,8 @@ class mwEmbedFrame {
 				margin-right: 0px;
 				margin-bottom: 0px;
 			}
-		</style>
-		<script type="text/javascript" src="ResourceLoader.php?class=window.jQuery,mwEmbed"></script>
+		</style>		
+		<script type="text/javascript" src="ResourceLoader.php?class=window.jQuery,mwEmbed,mw.style.mwCommon,$j.fn.menu,mw.style.jquerymenu,mw.EmbedPlayer,mw.EmbedPlayerNative,mw.EmbedPlayerJava,mw.PlayerControlBuilder,$j.fn.hoverIntent,mw.style.EmbedPlayer,$j.cookie,$j.ui,mw.style.ui_redmond,$j.widget,$j.ui.mouse,mw.PlayerSkinKskin,mw.style.PlayerSkinKskin,mw.TimedText,mw.style.TimedText,$j.ui.slider"></script>
 		<script type="text/javascript">
 			//Set some iframe embed config:
 
@@ -149,6 +157,7 @@ class mwEmbedFrame {
 
 			// We can't support full screen in object context since it requires outter page DOM control
 			mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
+			
 		</script>
     </head>
     <body>

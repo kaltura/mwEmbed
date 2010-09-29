@@ -73,7 +73,7 @@
 				
 			}
 			if( this.isConfigured() ){
-				mw.log("Error: Sequencer server needs a full serverConfig to be initialized")
+				mw.log("Error: Sequencer server needs a full serverConfig to be initialized");
 				return false;
 			}
 		},
@@ -107,22 +107,32 @@
 			var _this = this; 						
 			mw.getTitleText( this.getApiUrl(), this.getTitleKey(), function( smilPage ){				
 				// Check for remote payload wrapper 
-				// XXX need to support multipe pages in single context 		
-				_this.currentSequencePage =  _this.parseSequencerPage( smilPage );
+				// XXX need to support multiple pages in single context 		
+				_this.currentSequencePage =  _this.parseSequencerPage( smilPage );				
 				// Cache the latest serverSmil ( for local change checks ) 
-				// ( save requests automatically respond with warnings on other user updates ) 
-				_this.serverSmilXml = _this.currentSequencePage.sequenceXML ;
+				// ( save requests automatically respond with warnings on other user updates )
+				if( _this.currentSequencePage.sequenceXML ){
+					_this.serverSmilXml = _this.currentSequencePage.sequenceXML ;
+				} else {
+					// empty result
+					_this.serverSmilXml = '';
+				}
 				
-				// Cache the pre / post bits
-				
+				// Cache the pre / post bits				
 				callback( _this.serverSmilXml  );	
-			})
+			});
 		},		
 		wrapSequencerWikiText : function( xmlString ){
 			var _this = this;
-			if( !_this.currentSequencePage || !_this.currentSequencePage.pageStart ){
+			if( !_this.currentSequencePage ){
+				_this.currentSequencePage= {};
+			}
+			if( !_this.currentSequencePage.pageStart ){ 			
 				 _this.currentSequencePage.pageStart ="\nTo edit or view this sequence " + 
 					'[{{fullurl:{{FULLPAGENAME}}|withJS=MediaWiki:MwEmbed.js}} enable the sequencer] for this page'; 
+			}
+			if(!_this.currentSequencePage.pageEnd ){
+				_this.currentSequencePage.pageEnd ='';
 			}
 			return _this.currentSequencePage.pageStart + 
 				"\n\n<!-- " + SEQUENCER_PAYLOADKEY + "\n" + 
@@ -137,8 +147,8 @@
 			var endKey = SEQUENCER_PAYLOADKEY + ' -->';
 			// If the key is not found fail
 			if( !pageText || pageText.indexOf( startKey ) == -1  ||  pageText.indexOf(endKey) == -1 ){
-				mw.log("Error could not find sequence payload");
-				return '';
+				mw.log( "Error could not find sequence payload" );
+				return {};
 			}			
 			// trim the output:
 			return {
@@ -153,7 +163,7 @@
 				'pageEnd' : $j.trim( 
 					pageText.substring( pageText.indexOf(endKey) + endKey.length  )
 				)
-			}
+			};
 		},
 		
 		
@@ -174,7 +184,7 @@
 		},
 		// Check if the sequence was saved in this edit session
 		hasSequenceBeenSavedOrPublished: function(){
-			return this.sequenceSaved || this.sequencePublished
+			return ( this.sequenceSaved || this.sequencePublished );
 		},
 		// Get a save token, if unable to do so return false 
 		getSaveToken: function( callback ){
@@ -185,7 +195,7 @@
 			}
 			mw.getToken( this.getApiUrl(), this.getTitleKey(), function( saveToken ){
 				_this.saveToken = saveToken;
-				callback ( _this.saveToken )
+				callback ( _this.saveToken );
 			});
 		},
 		
@@ -195,7 +205,7 @@
 			mw.log("SequenceServer::Save: " + saveSummary );
 			this.getSaveToken( function( token ){
 				if( !token ){
-					callback( false, 'could not get edit token')
+					callback( false, 'could not get edit token');
 					return ;
 				}
 				var request = {
@@ -204,11 +214,11 @@
 					'title' : _this.titleKey,
 					'text' : _this.wrapSequencerWikiText( sequenceXML ),
 					'token': token
-				};
+				};				
 				mw.getJSON( _this.getApiUrl(), request, function( data ) {
 					if( data.edit && data.edit.result == 'Success' ) {
 						// Update the latest local variables
-						_this.saveSummary = saveSummary
+						_this.saveSummary = saveSummary;
 						_this.sequenceSaved = true;
 						_this.serverSmilXml = sequenceXML;
 						callback( true );
@@ -216,8 +226,8 @@
 						// xxx Should have more error handling ( conflict version save etc )
 						callback( false, 'failed to save to server');
 					}
-				})
-			})
+				});
+			});
 		},			
 		
 		/**
@@ -289,9 +299,9 @@
 				var pageText = '';
 				// Check if we should use commons asset description template:
 				if( mw.parseUri( _this.getApiUrl() ).host == 'commons.wikimedia.org' ){
-					pageText = _this.getCommonsDescriptionText()
+					pageText = _this.getCommonsDescriptionText();
 				} else {
-					pageText = _this.getBaseFileDescription()
+					pageText = _this.getBaseFileDescription();
 				}
 				var request = {
 					'action': 'edit',
@@ -308,7 +318,7 @@
 						callback( false );
 					}
 				});
-			})
+			});
 		},
 		
 		getBaseFileDescription: function(){					
@@ -341,18 +351,18 @@
 					return '0' + num;
 				}
 				return num;
-			}
+			};
 			var dt = new Date();
 			descText+='|Date=' +  dt.getFullYear() + '-' + 
 						pad2(dt.getMonth()+1) + '-' + 
 						pad2(dt.getDate()) + "\n" +
-				"|Author=Last edit by [[User:" + _this.getUserName() + "]]\n" +  
+				"|Author=Published by [[User:" + _this.getUserName() + "]]\n" +  
 				"For full editor list see history page of [[" + _this.getTitleKey() + "]] \n" +
 				"|Permission={{Cc-by-sa-3.0}} and {{GFDL|migration=redundant}}" + "\n" +				
 				"}}";
 			
 			// Add Published Sequence category ( for now ) 
-			descText += "\n[[Category:Published Sequence]]\n";
+			descText += "\n[[Category:Published sequences]]\n";
 			
 			return descText;
 		},
@@ -406,9 +416,9 @@
 						'action' : 'upload',
 						'format': 'json',
 						'filename': _this.getVideoFileName(),
-						'comment': 'Published Sequence: ' + saveSummary,
+						'comment': 'Published [[' + _this.getTitleKey() + ']] : ' + saveSummary,
 						'ignorewarnings' : true
-					}
+					};
 					// Return the apiUrl and request
 					callback( _this.getApiUrl(), request );
 				});

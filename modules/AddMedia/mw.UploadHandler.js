@@ -85,12 +85,12 @@ var defaultUploadHandlerOptions = {
 		// Update the selecto to include pointer to upload handler 		
 		var selectorElement = $j( this.selector ).get( 0 );
 		selectorElement[ 'uploadHandler' ] = myUpload;
-	}
+	};
 } )( jQuery );
 
 mw.UploadHandler = function( options ) {
 	return this.init( options );
-}
+};
 
 mw.UploadHandler.prototype = {
 	
@@ -232,7 +232,7 @@ mw.UploadHandler.prototype = {
 					'name': 'comment',
 					'type' : 'hidden'
 				})
-			)
+			);
 		}
 		
 		var uploadDesc =  _this.getUploadDescription();
@@ -305,7 +305,7 @@ mw.UploadHandler.prototype = {
 		} else if ( _this.upload_mode == 'autodetect' ) {
 			mw.log( 'detectUploadMode::' + _this.upload_mode + ' api:' + _this.apiUrl );
 			if( !_this.apiUrl ) {
-				mw.log( 'Error: can\'t autodetect mode without api url' );
+				mw.log( 'Error: cant autodetect mode without api url' );
 				return;
 			}
 
@@ -320,7 +320,7 @@ mw.UploadHandler.prototype = {
 					return mw.log( 'Error: bad api results' );
 				}
 				if ( typeof data.paraminfo.modules[0].classname == 'undefined' ) {
-					mw.log( 'Autodetect Upload Mode: \'post\' ' );
+					mw.log( 'Autodetect Upload Mode: post ' );
 					_this.upload_mode = 'post';
 					callback( 'post' );
 				} else {
@@ -398,7 +398,7 @@ mw.UploadHandler.prototype = {
 					'name' : "action", 
 					'value' : "upload"
 				})
-			)
+			);
 		}		
 
 		// Add JSON response format (jsonfm so that IE does not prompt save dialog box on iframe result )
@@ -410,7 +410,7 @@ mw.UploadHandler.prototype = {
 					'name' : "format",
 					'value' : "jsonfm"
 				})
-			) 
+			);
 		}		
 		
 		// Map a new hidden form
@@ -504,7 +504,7 @@ mw.UploadHandler.prototype = {
 			'comment'   : this.getUploadDescription(),
 			'watch'     : ( $j( '#wpWatchthis' ).is( ':checked' ) ) ? 'true' : 'false',
 			'ignorewarnings': ($j('#wpIgnoreWarning' ).is( ':checked' ) ) ? 'true' : 'false'
-		}			
+		};	
 		this.doHttpUpload( httpUpConf );
 	},
 	
@@ -535,7 +535,7 @@ mw.UploadHandler.prototype = {
 			
 			// Run the JS equivalent of SpecialUpload.php getInitialPageText	
 			comment_value = this.getCommentText( comment_value, license, copyStatus, source  );
-			this.rewriteDescriptionText = false;
+			//this.rewriteDescriptionText = false;
 		}		
 		mw.log( 'getUploadDescription:: new val:' + comment_value  );		
 		return comment_value;
@@ -552,15 +552,15 @@ mw.UploadHandler.prototype = {
 	* @param {String} source The source filed			
 	*/
 	getCommentText: function( comment, license, copyStatus, source ) {				
-		var pageText = '== ' + gM( 'filedesc' ) + " ==\n" + comment + "\n";
+		var pageText = '== ' + gM( 'mwe-filedesc' ) + " ==\n" + comment + "\n";
 		if( copyStatus ){
-			pageText +=  '== ' + gM( 'filestatus' ) + " ==\n" + copyStatus + "\n";
+			pageText +=  '== ' + gM( 'mwe-filestatus' ) + " ==\n" + copyStatus + "\n";
 		}
 		if( source ){
-			pageText += '== ' + gM( 'filesource' ) + " ==\n" + source  + "\n";
+			pageText += '== ' + gM( 'mwe-filesource' ) + " ==\n" + source  + "\n";
 		}
 		if ( license ) {
-			pageText += '== ' + gM( 'license-header' ) + " ==\n" + '{{' + license + '}}' + "\n"; 
+			pageText += '== ' + gM( 'mwe-license-header' ) + " ==\n" + '{{' + license + '}}' + "\n"; 
 		}		
 		return pageText;
 	},
@@ -771,7 +771,7 @@ mw.UploadHandler.prototype = {
 		if ( apiRes.upload && apiRes.upload.imageinfo && apiRes.upload.imageinfo.descriptionurl ) {							
 			// Call the completion callback if available.
 			if ( typeof _this.doneUploadCb == 'function' ) {
-					_this.doneUploadCb( apiRes )
+					_this.doneUploadCb( apiRes );
 					// Close the ui
 					_this.ui.close();
 					return true;
@@ -833,7 +833,7 @@ mw.UploadHandler.prototype = {
 					_this.processApiResult( data );
 			} );
 		} else {
-			mw.log( 'No session key re-sending upload' )
+			mw.log( 'No session key re-sending upload' );
 			//Do a stashed upload
 			$j( '#wpIgnoreWarning' ).attr( 'checked', true );
 			$j( _this.form ).submit();
@@ -876,7 +876,7 @@ mw.UploadHandler.prototype = {
 			this.editToken = $j("form[name='token']").val();
 		}
 		if( !this.editToken ){
-			mw.log("Error: can not find edit token ")
+			mw.log("Error: can not find edit token ");
 			return false;
 		}
 		return this.editToken;
@@ -948,14 +948,14 @@ mw.UploadHandler.prototype = {
 			
 			if ( !data || !data.query || !data.query.pages ) {
 				// Ignore a null result
-				mw.log(" No data in DestCheck result")
+				mw.log(" No data in DestCheck result");
 				return;
 			}
 
 			if ( data.query.pages[-1] ) {
 				// No conflict found
-				mw.log(" No pages in DestCheck result")
-				return;
+				mw.log(" No pages in DestCheck result");
+				return false;
 			}
 			for ( var page_id in data.query.pages ) {
 				if ( !data.query.pages[ page_id ].imageinfo ) {
@@ -966,7 +966,7 @@ mw.UploadHandler.prototype = {
 				if ( data.query.normalized ) {
 					var ntitle = data.query.normalized[0].to;
 				} else {
-					var ntitle = data.query.pages[ page_id ].title
+					var ntitle = data.query.pages[ page_id ].title;
 				}
 				var img = data.query.pages[ page_id ].imageinfo[0];
 				
@@ -983,7 +983,7 @@ mw.UploadHandler.prototype = {
 						.attr( linkAttr )
 						.text( ntitle )
 					)
-				)
+				);
 				
 				var $imageLink = $j('<a />')
 					.addClass( 'image' )
@@ -1039,5 +1039,6 @@ mw.UploadHandler.prototype = {
 				);				
 			}
 		} );
-	}
+	};
+	
 })( jQuery );

@@ -166,8 +166,12 @@ function Menu(caller, options) {
 		if (options.flyOutOnState) { container.find('li a').removeClass(options.flyOutOnState); };	
 		if (options.callerOnState) { 	caller.removeClass(options.callerOnState); };			
 		if (container.is('.fg-menu-ipod')) { menu.resetDrilldownMenu(); };
-		if (container.is('.fg-menu-flyout')) { menu.resetFlyoutMenu(); };	
-		container.parent().hide();	
+		if (container.is('.fg-menu-flyout')) { menu.resetFlyoutMenu(); };
+		if( ! options.keepPosition ){
+			container.parent().hide();	
+		} else {
+			container.hide();
+		}
 		menu.menuOpen = false;
 		$(document).unbind('click', killAllMenus);
 		$(document).unbind('keydown');
@@ -283,14 +287,18 @@ function Menu(caller, options) {
 	
 	this.create = function() {
 		mw.log( "jquery.menu.create ");	
+		
 		container.css({ 
 			'width' : options.width 
 		})
-		.appendTo('body')
 		.find( 'ul:first' )
 		.not( '.fg-menu-breadcrumb' )
 		.addClass('fg-menu');
 		
+		if(!options.keepPosition){
+			container.appendTo('body')
+		}
+			
 		
 		container.find('ul, li a').addClass('ui-corner-all');
 		
@@ -345,8 +353,9 @@ function Menu(caller, options) {
 				function() { $(this).removeClass(options.linkHoverSecondary); }
 			);
 		};					
-		
-		menu.setPosition(container, caller, options);
+		if( !options.keepPosition ){
+			menu.setPosition(container, caller, options);
+		}
 		menu.menuExists = true;
 				
 		if( typeof options.createMenuCallback == 'function' ){

@@ -84,11 +84,10 @@ function wfDebug() {
 
 if (!function_exists('wfTempDir'))
 {
-function wfTempDir(){
-	return realpath( dirname( __FILE__ ) ) . '/includes/cache';
+	function wfTempDir(){
+		return realpath( dirname( __FILE__ ) ) . '/includes/cache';
+	}
 }
-}
-
 /**
  * Make directory, and make all parent directories if they don't exist
  *

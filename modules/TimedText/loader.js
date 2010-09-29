@@ -82,6 +82,7 @@
 		[
 			'$j.ui',
 			'$j.widget',
+			'$j.ui.mouse',
 			'$j.ui.position',
 			'$j.fn.menu', 
 			"mw.style.jquerymenu",

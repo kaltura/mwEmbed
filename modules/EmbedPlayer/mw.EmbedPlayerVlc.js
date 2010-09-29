@@ -38,7 +38,7 @@ mw.EmbedPlayerVlc = {
 		$j( this ).html(
 			'<object classid="clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921" ' +
 				'codebase="http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab#Version=0,8,6,0" ' +
-				'id="' + this.pid + '" events="True" height="' + this.getHeight() + '" width="' + this.getWidth() + '"' +
+				'id="' + this.pid + '" events="True" height="' + this.getPlayerHeight() + '" width="' + this.getPlayerWidth() + '"' +
 				'>' +
 					'<param name="MRL" value="">' +
 					'<param name="ShowDisplay" value="True">' +
@@ -129,7 +129,7 @@ mw.EmbedPlayerVlc = {
 			if ( ( this.playerElement.input.state == 3 ) && ( this.playerElement.input.position != percent ) )
 			{
 				this.playerElement.input.position = percent;
-				this.setStatus( 'seeking...' );
+				this.controlBuilder.setStatus( 'seeking...' );
 			}
 		} else {
 			this.doPlayThenSeek( percent );
@@ -173,10 +173,10 @@ mw.EmbedPlayerVlc = {
 		this.getPlayerElement();
 		if ( !this.playerElement )
 			return ;
-		if ( this.playerElement.log ) {
-			// mw.log( 'state:' + this.playerElement.input.state);
-			// mw.log('time: ' + this.playerElement.input.time);
-			// mw.log('pos: ' + this.playerElement.input.position);
+		try{
+			//mw.log( 'state:' + this.playerElement.input.state);
+			//mw.log('time: ' + this.playerElement.input.time);
+			//mw.log('pos: ' + this.playerElement.input.position);
 			if ( this.playerElement.log.messages.count > 0 ) {
 				// there is one or more messages in the log
 				var iter = this.playerElement.log.messages.iterator();
@@ -191,6 +191,7 @@ mw.EmbedPlayerVlc = {
 				// clear the log once finished to avoid clogging
 				this.playerElement.log.messages.clear();
 			}
+			
 			var newState = this.playerElement.input.state;
 			if ( this.prevState != newState ) {
 				   if ( newState == 0 )
@@ -222,6 +223,8 @@ mw.EmbedPlayerVlc = {
 				// current media is playing
 				this.onPlaying();
 			}
+		} catch( e ){
+			mw.log("EmbedPlayerVlc::Monitor error");
 		}
 		// update the status and check timmer via universal parent monitor
 		this.parent_monitor();
@@ -232,10 +235,10 @@ mw.EmbedPlayerVlc = {
 	*  @@note: should be localized: 
 	*/
 	onOpen: function() {
-		this.setStatus( "Opening..." );
+		this.controlBuilder.setStatus( "Opening..." );
 	},
 	onBuffer: function() {
-		this.setStatus( "Buffering..." );
+		this.controlBuilder.setStatus( "Buffering..." );
 	},
 	onPlay: function() {
 		this.onPlaying();
@@ -299,8 +302,12 @@ mw.EmbedPlayerVlc = {
 	*/
 	pause : function() {
 		this.parent_pause(); // update the interface if paused via native control
-		if ( this.getPlayerElement() ) {
-			this.playerElement.playlist.togglePause();
+		if ( this.getPlayerElement() ) {			
+			try{
+				this.playerElement.playlist.togglePause();				
+			} catch( e ){
+				mw.log("EmbedPlayerVlc could not pause video " + e);
+			}
 		}
 	},
 	
@@ -338,16 +345,20 @@ mw.EmbedPlayerVlc = {
 	*/
 	fullscreen : function() {
 		if ( this.playerElement ) {
-			if ( this.playerElement.video )
-				this.playerElement.video.toggleFullscreen();
-		}
-		this.parent_fullscreen();
+			if ( this.playerElement.video ){
+				try{
+					this.playerElement.video.toggleFullscreen();
+				} catch ( e ){
+					mw.log("VlcEmbed toggle fullscreen : possible error: " + e);
+				}
+			}
+		}		
 	},
 		
 	/**
 	* Get the embed vlc object
 	*/ 
-	getPlayerElement : function() {
+	getPlayerElement : function() {	
 		this.playerElement = $j( '#' + this.pid ).get(0);
 		return this.playerElement;		
 	}

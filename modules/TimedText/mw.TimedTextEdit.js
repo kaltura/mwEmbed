@@ -185,7 +185,7 @@ mw.TimedTextEdit.prototype = {
 		$j('#timed-text-file-preview')
 		.css({
 			'width':'100%',
-			'height': ( $target.find( '.rightcolumn' ).height() - $j('#timed-text-rightcolum-desc').height() ) + 'px'
+			'height': '300px'
 		});
 		
 		// Add Select file:
@@ -215,9 +215,9 @@ mw.TimedTextEdit.prototype = {
 			} )
 			.change(function() {
 				var langKey = $j(this).val();
-				if( mw.languages[ langKey ] ) {
+				if( mw.Language.names[ langKey ] ) {
 					$buttonTarget.find('.btnText').text( 
-						unescape( mw.languages[ langKey ] )
+						unescape( mw.Language.names[ langKey ] )
 					);
 				}
 			}),
@@ -233,6 +233,7 @@ mw.TimedTextEdit.prototype = {
 
 		
 		var $buttonTarget = $target.find('.language-select-btn');
+		
 		// Add menu container: 
 		var loc = $buttonTarget.position();
 		$target.append( 
@@ -241,10 +242,8 @@ mw.TimedTextEdit.prototype = {
 			.attr( 'id', 'upload-language-select' )
 			.loadingSpinner()			
 			.css( {
-				'position' 	: 'absolute',
-				'z-index' 	: 10,
-				'top' 		: ( loc.top + 40 ) + 'px',
-				'left' 		: parseInt( loc.left ) + 'px',
+				'position' 	: 'relative',
+				'z-index' 	: 10,				
 				'height'	: '180px',
 				'width' 	: '180px',
 				'overflow'	: 'auto', 	
@@ -254,11 +253,16 @@ mw.TimedTextEdit.prototype = {
 			.hide()	
 		);	
 		// Add menu binding to button target
-		$buttonTarget.menu( {
-			'content'	: _this.getLanguageList(),		
-			'backLinkText' : gM( 'mwe-timedtext-back-btn' ),
-			'targetMenuContainer': '#upload-language-select'							
-		} );
+		setTimeout(function(){
+			$buttonTarget.menu( {
+				'content'	: _this.getLanguageList(),		
+				'backLinkText' : gM( 'mwe-timedtext-back-btn' ),
+				'targetMenuContainer': '#upload-language-select',
+				'keepPosition' : true
+			} );
+			// force the layout ( menu binding does strange things ) 
+			$j('#upload-language-select').css( {'left': '315px', 'top' : '87px', 'position' : 'absolute'});
+		},10);
 		
 		
 		//Add upload input bindings:
@@ -279,9 +283,9 @@ mw.TimedTextEdit.prototype = {
 				var langKey = $j(this).val().split( '.' );
 				var extension = langKey.pop();
 				langKey = langKey.pop();
-				if( mw.languages[ langKey ] ) {
+				if( mw.Language.names[ langKey ] ) {
 					$buttonTarget.find('.btnText').text( 
-						unescape( mw.languages[ langKey ] )
+						unescape( mw.Language.names[ langKey ] )
 					);
 					// Update the key code
 					$j('#timed-text-langKey-input').val( langKey );
@@ -338,22 +342,29 @@ mw.TimedTextEdit.prototype = {
 					buttons[ gM("mwe-timedtext-upload-text-another")] = function() {
 						// just close the current dialog: 
 						$j( this ).dialog('close');
-					}
+					};
 					buttons[ gM( "mwe-timedtext-upload-text-done-uploading" ) ] = function() {
 						window.location.reload();
-					}
+					};					
 					//Edit success
-					mw.addDialog( {
-						'title' : gM( "mwe-timedtext-upload-text-done"), 
-						'content' : gM("mwe-timedtext-upload-text-success"), 
-						'buttons' : buttons
-					})	
+					setTimeout(function(){
+						mw.addDialog( {
+							'width' : '400px',
+							'title' : gM( "mwe-timedtext-upload-text-done"), 
+							'content' : gM("mwe-timedtext-upload-text-success"), 
+							'buttons' : buttons
+						});
+					},10 );
 				}else{
-					mw.addDialog({
-						'title' : gM( "mwe-timedtext-upload-text-fail-title"),
-						'content' :gM( "mwe-timedtext-upload-text-fail-desc"),
-						'buttons' : gM( 'mwe-ok' )
-					})
+					//Edit fail
+					setTimeout(function(){
+						mw.addDialog({
+							'width' : '400px',
+							'title' : gM( "mwe-timedtext-upload-text-fail-title"),
+							'content' :gM( "mwe-timedtext-upload-text-fail-desc"),
+							'buttons' : gM( 'mwe-ok' )
+						});
+					},10 );
 				}
 			});
 		})
@@ -374,8 +385,8 @@ mw.TimedTextEdit.prototype = {
 		var _this = this;
 		var $langMenu = $j( '<ul>' );
 		// Loop through all supported languages: 
-		for ( var langKey in mw.languages ) {
-			var language = mw.languages [ langKey ];
+		for ( var langKey in mw.Language.names ) {
+			var language = mw.Language.names [ langKey ];
 			var source_icon = 'radio-on';
 			//check if the key is in the _this.parentTimedText source array
 			for( var i in _this.parentTimedText.textSources ) {
@@ -393,15 +404,16 @@ mw.TimedTextEdit.prototype = {
 	},
 	getLangMenuItem: function( langKey , source_icon) { 
 		return $j.getLineItem(
-			langKey + ' - ' + unescape( mw.languages[ langKey ] ),
+			langKey + ' - ' + unescape( mw.Language.names[ langKey ] ),
 			source_icon,
-			function() {
+			function() {				
 				mw.log( "Selected: " + langKey );
 				// Update the input box text
 				$j('#timed-text-langKey-input').val( langKey );
-				// Update the menu item:
-				$j( '#language-select' ).val( unescape( mw.languages[ langKey ] ) )
-		} );
+				// Update the menu item:				
+				$j('#language-select').find('.btnText').text( unescape( mw.Language.names[ langKey ] ) )				
+			} 
+			);
 	},
 	/**
 	 * Creates the interface dialog container
@@ -430,17 +442,22 @@ mw.TimedTextEdit.prototype = {
 		$j( _this.target_container ).dialog( {
 			bgiframe: true,
 			autoOpen: true,
+			width: $j(window).width()-50,
+			height: $j(window).height()-50,
+			position : 'center',
 			modal: true,
 			draggable: false,
 			resizable: false,
 			buttons: cancelButton,
 			close: function() {
-				// if we are 'editing' we should confirm they want to exist:
+				// @@TODO if we are 'editing' we should confirm they want to exist:
 				$j( this ).parents( '.ui-dialog' ).fadeOut( 'slow' );
 			}
 		} );
-		
-		$j( _this.target_container ).dialogFitWindow();
+		// set a non-blocking fit window request
+		setTimeout(function(){
+			$j( _this.target_container ).dialogFitWindow();
+		},10);
 		
 		// Add the window resize hook to keep dialog layout
 		$j( window ).resize( function() {

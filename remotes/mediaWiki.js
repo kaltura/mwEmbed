@@ -4,7 +4,7 @@
  */
 var urlparts = getRemoteEmbedPath();
 var mwEmbedHostPath = urlparts[0];
-var mwRemoteVersion = 'r145';
+var mwRemoteVersion = 'r155';
 var mwUseScriptLoader = true;
 
 // Log the mwRemote version makes it easy to debug cache issues
@@ -81,9 +81,13 @@ mw.setConfig( 'SmilPlayer.AssetDomainWhiteList', ['upload.wikimedia.org'] );
 
 
 // Use wikibits onLoad hook: ( since we don't have js2 / mw object loaded ) 
-addOnloadHook( function() {
-	doPageSpecificRewrite();
-} );
+if( window.jQuery ){	
+	jQuery( document ).ready( doPageSpecificRewrite );
+} else {
+	addOnloadHook( function() {	
+		doPageSpecificRewrite();
+	} );
+}
 
 
 /**
@@ -144,8 +148,12 @@ function doPageSpecificRewrite() {
 	if( wgPageName.indexOf( "Sequence:" ) === 0 ){			
 		//console.log( 'spl: ' + typeof mwSetPageToLoading );
 		// If on a view page set content to "loading" 
-		if( wgAction == 'view' || wgAction == 'edit' ){
+		if( ( wgAction == 'view' || wgAction == 'edit' ) 
+			&& 
+			document.URL.indexOf('&diff=') == -1
+		){
 			if( wgAction == 'view' ){
+				var catLinksHtml = document.getElementById('catlinks');
 				mwSetPageToLoading();
 			}
 			if( wgAction == 'edit' ){
@@ -163,8 +171,9 @@ function doPageSpecificRewrite() {
 					
 					window.mwSequencerRemote = new mw.MediaWikiRemoteSequencer({
 						'action': wgAction,
-						'titleKey' : wgTitle,
-						'target' : '#bodyContent'
+						'titleKey' : wgPageName,
+						'target' : '#bodyContent',
+						'catLinks' : catLinksHtml
 					});
 					window.mwSequencerRemote.drawUI();						
 				
@@ -184,11 +193,12 @@ function doPageSpecificRewrite() {
 		var libraries = [];		
 		scriptName = 'uploadPage.js';
    		libraries = [
-			'mw.UploadHandler',
+			
 			'mw.UploadInterface',
-			'mw.Firefogg', 
+			'mw.Firefogg',		
 			'$j.ui',
 			'$j.widget',
+			'$j.ui.mouse',
 			'$j.ui.position',
 			'$j.ui.progressbar', 
 			'$j.ui.dialog', 
@@ -264,7 +274,7 @@ function doPageSpecificRewrite() {
 */
 function mwSetPageToLoading(){
 	mwAddCommonStyleSheet();
-	var body = document.getElementById('bodyContent');
+	var body = document.getElementById( 'bodyContent' );
 	var oldBodyHTML = body.innerHTML;
 	body.innerHTML = '<div class="loadingSpinner"></div>';	
 	return oldBodyHTML;
@@ -327,6 +337,8 @@ function mwLoadPlayer( callback ){
 	}
 	
 	loadMwEmbed( jsPlayerRequest, function() {
+		// hide the novideojs if present
+		$j( '.videonojs' ).hide();
 		callback();
 	});
 }
@@ -353,7 +365,7 @@ function rewrite_for_OggHandler( vidIdList ) {
 			poster_attr = '';		
 			pheight = 0;
 		}else{
-			var poster_attr = 'poster = "' + $pimg.attr( 'src' ) + '" ';
+			var poster_attr = ' poster = "' + $pimg.attr( 'src' ) + '" ';
 			var pheight = $pimg.attr( 'height' );
 		}
 		
@@ -387,11 +399,11 @@ function rewrite_for_OggHandler( vidIdList ) {
 		
 		// If in a gallery box or filehistory we will be displaying the video larger in a lightbox
 		if( $j( '#' + vidId ).parents( '.gallerybox,.filehistory' ).length ){
-			// Update the width to 400 and keep scale
 			pwidth = 400;
+			// Update the width to 400 and keep scale			
 			if( pheight != 0 ) {
-				pheight = pwidth * ( $j( '#' + vidId ).height() / $j( '#' + vidId ).width() );
-			}			
+				pheight = pwidth * (  $j( '#' + vidId + ' img' ).height() / $j( '#' + vidId + ' img' ).width() );
+			}							
 		}
 		
 		if ( src ) {
@@ -449,17 +461,11 @@ function rewrite_for_OggHandler( vidIdList ) {
 						.addClass( 'play-btn-large' )
 						.buttonHover()
 						.click( function(){		
-							var _this = this;
-									
+							var _this = this;							
 							var dialogHeight = ( pheight == 0 	)? 175 :
-												( pheight - 25 );
+												( pheight + 130 );
 							var buttons = {};
-							buttons[ gM( 'mwe-ok' ) ] = function(){
-								var embedPlayer = $j( '#mwe_' + $j( _this ).data( 'playerId' ) ).get(0);
-								// stop the player ( more healthy way to remove the video from the dom )
-								if( embedPlayer ) {
-									embedPlayer.stop();
-								}
+							buttons[ gM( 'mwe-ok' ) ] = function(){							
 								// close the dialog
 								$j(this).dialog( 'close' ).remove();
 							};
@@ -468,13 +474,19 @@ function rewrite_for_OggHandler( vidIdList ) {
 								'content' : html_out,
 								'buttons' : buttons,
 								'height' : dialogHeight,
-								'width' : 425
-							})							
+								'width' : 430,
+								'close': function(event, ui) { 									
+									var embedPlayer = $j( '#mwe_' + vidId ).get(0);
+									// stop the player before we close the dialog
+									if( embedPlayer ) {
+										embedPlayer.stop();
+									}
+								}	
+							});					
 							
 							// Update the embed code to use the mwEmbed player: 		
-							$j( '#mwe_' + vidId ).embedPlayer( function(){								
-								var embedPlayer = $j( '#mwe_' + vidId ).get(0);
-								embedPlayer.play();
+							$j( '#mwe_' + vidId ).embedPlayer( { 'autoplay' : true }, function(){								
+								var embedPlayer = $j( '#mwe_' + vidId ).get(0);								
 								// Show the control bar for two seconds (auto play is confusing without it )
 								embedPlayer.controlBuilder.showControlBar();
 								// hide the controls if they should they are overlayed on the video
@@ -591,12 +603,20 @@ function loadMwEmbed( classSet, callback ) {
 		// Add requested classSet to scriptLoader request
 		for( var i=0; i < classSet.length; i++ ){
 			var cName =  classSet[i];
+			// always include our version of the library ( too many crazy conflicts with old library versions ) 
+			rurl +=  ',' + cName;
+			/*
 			if( !mwCheckObjectPath( cName ) ){
-				rurl +=  ',' + cName;
-			}
+				
+			} else { 
+				// Check for old version of jquery ui components
+				if( $j.ui.version == '1.7.1' ){
+					if(cName.indexOf('$j.ui') != -1 ){
+						rurl +=  ',' + cName;
+					}
+				}
+			}*/
 		}
-		// force add our updated version of $j.cookie
-		rurl +=',$j.cookie';
 		
 		// Add the remaining arguments
 		rurl += '&' + mwGetReqArgs();

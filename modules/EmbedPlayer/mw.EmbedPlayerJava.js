@@ -219,7 +219,11 @@ mw.EmbedPlayerJava = {
 		this.getPlayerElement();
 		this.parent_play();
 		if ( this.playerElement ) {
-			this.playerElement.play();
+			try{
+				this.playerElement.play();
+			}catch( e ){
+				mw.log("EmbedPlayerJava::Could not issue play request");
+			}
 		}
 	},
 	

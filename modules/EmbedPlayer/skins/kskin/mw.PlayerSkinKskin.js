@@ -114,7 +114,8 @@ mw.PlayerSkinKskin = {
 						'top' : '0px',
 						'left' : '0px',
 						'bottom' : '0px',
-						'right' : '45px'			
+						'right' : '45px',
+						'overflow' : 'hidden'
 					} )
 				for ( var menuItem in ctrlObj.supportedMenuItems ) {
 					$menuScreens.append(

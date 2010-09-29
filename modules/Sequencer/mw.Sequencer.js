@@ -166,7 +166,7 @@ mw.Sequencer.prototype = {
 			_this.getMenu().drawMenu();
 			
 			// initialize the edit stack to support undo / redo actions  
-			_this.getActionsEdit().setupEditStack();
+			_this.getActionsEdit().setupEditStack();			
 		});
 			
 	},
@@ -187,7 +187,7 @@ mw.Sequencer.prototype = {
 					if( smilXml == '' ){
 						smilXml = _this.getNewSmilXML();
 					}
-					_this.smilSource = _this.getDataUrl( smilXml );
+					_this.smilSource = _this.getDataUrl( smilXml );					
 					callback( _this.smilSource )	
 				})
 				// Wait for server to return smil source

@@ -54,7 +54,7 @@ $messages['en'] = array(
 	'mwe-timedtext-textcat-lin' => 'Linguistic markup',
 	'mwe-timedtext-textcat-cue' => 'Cue points',
 	'mwe-timedtext-language-subtitles-for-clip' => '$1 subtitles for clip: $2',
-	'mwe-timedtext-language-no-subtitles-for-clip' => 'No $1 subtitles where found for clip: $2',
+	'mwe-timedtext-language-no-subtitles-for-clip' => 'No $1 subtitles where found for clip: $2'
 );
 
 /** Message documentation (Message documentation)

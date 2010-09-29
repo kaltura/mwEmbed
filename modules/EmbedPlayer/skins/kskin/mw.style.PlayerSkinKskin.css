@@ -188,7 +188,7 @@
 	opacity: 0.9;
 	position: absolute;
 	top: 0;	
-	z-index: 999;
+	z-index: 2;
 }
 
 .k-player .k-menu-bar li a {

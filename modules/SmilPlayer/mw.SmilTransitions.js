@@ -111,7 +111,7 @@ mw.SmilTransitions.prototype = {
 		// Run the transitionFunctionMap update: 
 		this.transitionFunctionMap[ $transition.attr('type') ]
 		                          [ $transition.attr( 'subtype' ) ]
-		                          (this, percent, $transition, smilElement )
+		                            (this, percent, $transition, smilElement )
 	},
 	
 	/**
@@ -139,11 +139,13 @@ mw.SmilTransitions.prototype = {
 						$j('<div />')
 							.attr('id', transitionOverlayId)
 							.addClass( 'smilFillWindow' )
-							.addClass( 'smilTransitionOverlay' )
-							.css( 'background-color', $transition.attr( 'fadeColor'))
+							.addClass( 'smilTransitionOverlay' )						
 					);
 					mw.log('fadeFromColor:: added: ' + transitionOverlayId);														
 				}
+				//mw.log(' SET COLOR:: ' + $transition.attr( 'fadeColor') );
+				// Update the color: 
+				$j( '#' + transitionOverlayId  ).css( 'background-color', $transition.attr( 'fadeColor'))
 				
 				// Invert the percentage since we setting opacity from full color we are fading from		
 				percent = 1 - percent;	

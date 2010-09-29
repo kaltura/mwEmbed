@@ -33,9 +33,11 @@ mw.SequencerKeyBindings.prototype = {
 	},
 	onFocus: function( ){				
 		this.inputFocus = true;		
+		mw.log("text focus");
 	},
 	onBlur: function(){
 		this.inputFocus = false;
+		mw.log("text blur");
 	},	
 	setupKeyBindigs: function(){
 		var _this = this;

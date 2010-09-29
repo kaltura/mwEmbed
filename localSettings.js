@@ -3,8 +3,7 @@
 * 
 * This file is automatically included in any resourceLoader or mwEmbed.js request 
 * 
-* You can put any mw.setConfig('moduleOption', value ) calls in here.  
+* You can put any mw.setConfig('ModuleName.Option', value ) calls in here.  
 * 
 * In a fresh svn checkout this file will always be empty. 
-* 
 */

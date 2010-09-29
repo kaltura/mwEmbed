@@ -143,7 +143,7 @@ mw.Playlist.prototype = {
 							.click( function(){								
 								 _this.sourceHandler.setPlaylistIndex( inx );
 								 $j( _this.target + ' .media-rss-video-list').loadingSpinner();
-								 _this.sourceHandler.loadPlaylist( function(){
+								 _this.loadPlaylist( function(){
 									 $j( _this.target + ' .media-rss-video-list').empty();
 									_this.addMediaList(); 
 								 });
@@ -291,7 +291,7 @@ mw.Playlist.prototype = {
 						.append(								
 							$j.button({ 
 								'text' : 'scroll down',
-								'icon' : 'circle-arrow-s' 
+								'icon_id' : 'circle-arrow-s' 
 							})
 							.css('float', 'right')
 							.click(function(){
@@ -310,7 +310,7 @@ mw.Playlist.prototype = {
 							}),
 							$j.button({
 								'text' : 'scroll up',
-								'icon' : 'circle-arrow-n'
+								'icon_id' : 'circle-arrow-n'
 							})
 							.css('float', 'left')
 							.click(function(){

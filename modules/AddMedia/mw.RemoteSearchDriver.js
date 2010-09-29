@@ -1636,8 +1636,9 @@ mw.RemoteSearchDriver.prototype = {
 			callback( provider );
 		} );
 	},
+	
 	/**
-	 * get a resource from a url loads the provider if not already initialized 
+	 * Get a resource from a url loads the provider if not already initialized 
 	 */
 	getResourceFromUrl: function ( provider, url, callback){		
 		if (!provider.sObj) {
@@ -1650,7 +1651,19 @@ mw.RemoteSearchDriver.prototype = {
 		}
 	},
 	
-	
+	/**
+	 * Get a resource from a titleKey loads the provider if not already initialized 
+	 */
+	getResourceFromTitleKey: function ( provider, title, callback){		
+		if (!provider.sObj) {
+			this.loadSearchLib( provider, function( provider ){				
+				provider.sObj.getByTitle( title, callback);
+			});
+		}
+		else {
+			provider.sObj.getByTitle( title, callback);
+		}
+	},
 	/**
 	* Get a resource object from a resource id
 	*

@@ -167,7 +167,7 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var vid = this.getPlayerElement();
 		if( ! vid ){
-			mw.log( " Error: applyMediaElementBindings without player element");
+			mw.log( " Error: applyMediaElementBindings without player elemnet");
 			return ;
 		}
 		// Bind events to local js methods:			

@@ -16,8 +16,11 @@ if( is_file ( dirname( __FILE__ ) .'../mwResourceLoader.php' )
 
 // Check if we are an entry point or being used as part of MEDIAWIKI:
 if ( !defined( 'MEDIAWIKI' ) && !defined( 'SCRIPTLOADER_MEDIAWIKI') ) {
+	// Load stand alone Resource Loader config
+	// ( if running as a remote, mediaWiki variables / functions are already included as part of mediaWiki )
+	require_once( realpath( dirname( __FILE__ ) ) . '/includes/noMediaWikiConfig.php' );
 
-        // Allow an installation an optional PHP customization/overrides file
+    // Allow an installation an optional PHP customization/overrides file
 	if ( is_file ( dirname( __FILE__ ) .'/../localSettings.php' ) ) {
 	  require_once dirname( __FILE__ ) .'/../localSettings.php';
 	}
@@ -26,10 +29,6 @@ if ( !defined( 'MEDIAWIKI' ) && !defined( 'SCRIPTLOADER_MEDIAWIKI') ) {
 	if( $myResourceLoader->outputFromCache() ) {
 		exit();
 	}
-	// No cache hit, load stand alone Resource Loader config
-
-	// ( if running as a remote, mediaWiki variables / functions are already included as part of mediaWiki )
-	require_once( realpath( dirname( __FILE__ ) ) . '/includes/noMediaWikiConfig.php' );
 	$myResourceLoader->doResourceLoader();
 }
 
@@ -203,7 +202,7 @@ class ResourceLoader {
 		if ( $this->errorMsg != '' ) {
 			//just set the content type (don't send cache header)
 			header( 'Content-Type: text/javascript' );
-			echo 'if(console.log)console.log(\'Error With ResourceLoader ::' .
+			echo 'if(console && console.log)console.log(\'Error With ResourceLoader ::' .
 					 str_replace( "\n", '\'+"\n"+' . "\n'",
 					 	xml::escapeJsString( $this->errorMsg )
 					 ) . '\');'."\n";
@@ -224,8 +223,8 @@ class ResourceLoader {
 	 * @return String javascript to tell mwEmbed that the requested resource set is loaded
 	 */
 	static private function getOnDoneCallback( ){
-		return 'if(typeof mw !=\'undefined\' && mw.loadDone){mw.loadDone(\'' .
-			htmlspecialchars( self::$rawClassList ) . '\');};';
+		return "\n" . 'if( typeof mw !=\'undefined\' && mw.loadDone ){ mw.loadDone(\'' .
+			htmlspecialchars( self::$rawClassList ) . '\')};';
 	}
 
 	/**

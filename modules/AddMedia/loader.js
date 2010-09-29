@@ -39,7 +39,8 @@
 			[
 				'mw.UploadForm',
 				'$j.ui',
-				'$j.widget'
+				'$j.widget',
+				'$j.ui.mouse'
 			],
 			[
 				'$j.ui.datepicker'
@@ -48,18 +49,18 @@
 	);		
 		
 	//Setup the addMediaWizard module
-	mw.addModuleLoader( 'AddMedia.addMediaWizard',
-		// Define loader set:
+	mw.addModuleLoader( 'AddMedia.addMediaWizard', 
+		// Define loader set: 
 		[
 			[	'mw.RemoteSearchDriver',
 				'mw.style.AddMedia',
 				'$j.cookie',
 				'$j.fn.textSelection',
 				'$j.browserTest', // ( textSelection uses browserTest ) 
-				'$j.ui',
+				'$j.ui'
+			], [
 				'$j.widget',
 				'$j.ui.mouse',
-			], [				
 				'$j.ui.resizable',				
 				'$j.ui.position',
 				'$j.ui.draggable',
@@ -75,12 +76,12 @@
 			'mw.UploadHandler',
 			'mw.UploadInterface',
 			'$j.ui',
+			'$j.ui.mouse',
 			'$j.widget'
 		],
 		[
 			'$j.ui.progressbar',
-			'$j.ui.position',
-			'$j.ui.mouse',
+			'$j.ui.position',			
 			'$j.ui.dialog',
 			'$j.ui.draggable'
 		]

@@ -4,10 +4,11 @@
 * Does some transformations to normal wiki timed Text pages to make them look
 * like the php output that we will eventually want to have 
 */
-mw.addMessages( {
-	"mwe-language-subtitles-for-clip": "$1 subtitles for clip: $2",
-	"mwe-language-no-subtitles-for-clip": "No $1 subtitles where found for clip: $2"
-});
+
+mw.addMessageKeys( [
+	"mwe-timedtext-language-subtitles-for-clip",
+	"mwe-timedtext-language-no-subtitles-for-clip"
+]);
 
 RemoteMwTimedText = function( options ) {
 	return this.init( options );
@@ -103,9 +104,9 @@ RemoteMwTimedText.prototype = {
 			player.timedText.setupTextSources( function() {
 				
 				var source = player.timedText.getSourceByLanguage( _this.langKey );
-				var pageMsgKey = 'mwe-language-subtitles-for-clip';
+				var pageMsgKey = 'mwe-timedtext-language-subtitles-for-clip';
 				if( ! source ) {
-					pageMsgKey = "mwe-language-no-subtitles-for-clip"
+					pageMsgKey = "mwe-timedtext-language-no-subtitles-for-clip"
 				}
 				// Add the page msg to the top 
 				$j( _this.target ).prepend(

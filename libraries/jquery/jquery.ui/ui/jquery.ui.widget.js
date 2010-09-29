@@ -7,7 +7,7 @@
  *
  * http://docs.jquery.com/UI/Widget
  */
-(function( $, undefined ) {
+(function( $ ) {
 
 var _remove = $.fn.remove;
 
@@ -90,7 +90,7 @@ $.widget.bridge = function( name, object ) {
 					methodValue = instance && $.isFunction( instance[options] ) ?
 						instance[ options ].apply( instance, args ) :
 						instance;
-				if ( methodValue !== instance && methodValue !== undefined ) {
+				if ( methodValue !== instance && methodValue !== 'undefined' ) {
 					returnValue = methodValue;
 					return false;
 				}
@@ -173,7 +173,7 @@ $.Widget.prototype = {
 		}
 
 		if  (typeof key === "string" ) {
-			if ( value === undefined ) {
+			if ( value === 'undefined' ) {
 				return this.options[ key ];
 			}
 			options = {};
