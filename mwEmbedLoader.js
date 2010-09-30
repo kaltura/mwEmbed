@@ -26,15 +26,15 @@
 *	'Kaltura.CdnUrl' : 'http://cdn.kaltura.com'
 *
 */
-var kURID = '1.1t';
+var kURID = '1.1r';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://192.168.1.102/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_FORCE_DEBUG = true;
+//SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -124,8 +124,9 @@ function kOverideSwfObject(){
 	if( window['SWFObject']  && !window['SWFObject'].prototype['originalWrite']){
 		window['SWFObject'].prototype['originalWrite'] = window['SWFObject'].prototype.write;
 		window['SWFObject'].prototype['write'] = function( targetId ){		
-			kAddReadyHook(function(){
-				var flashVarsSet = this.params.flashVars.split('&');
+			var _this = this;
+			mw.ready(function(){
+				var flashVarsSet = ( _this.params.flashVars )? _this.params.flashVars.split('&'): [];
 				flashVars = {};
 				for( var i =0 ;i < flashVarsSet.length; i ++){
 					var flashVar = flashVarsSet[i].split('=');
@@ -134,9 +135,9 @@ function kOverideSwfObject(){
 					}
 				}						
 				
-				var kEmbedSettings = kGetKalturaEmbedSettings( this.attributes.swf, flashVars);
+				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, flashVars);
 				if( kBrowserAgentShouldUseHTML5() && kEmbedSettings.uiconfId ){				
-					doEmbedSettingsWrite( kEmbedSettings, targetId, this.attributes.width, this.attributes.height);
+					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else { 				
 					// use the original flash player embed:  
 					this.originalWrite( targetId );
