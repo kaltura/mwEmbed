@@ -208,8 +208,7 @@ mw.EmbedPlayerNative = {
 		mw.log( 'Native::doSeek p: ' + percentage + ' : '  + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seek_time_sec );
 		this.seeking = true;
 		// Run the seeking hook
-		$j( this.embedPlayer ).trigger( 'onSeek' );
-		
+		$j( this.embedPlayer ).trigger( 'onSeek' );		
 		
 		// Run the onSeeking interface update
 		this.controlBuilder.onSeek();
@@ -273,33 +272,45 @@ mw.EmbedPlayerNative = {
 	},
 	restoreSourcePlayback: function( ){
 		var _this = this;
-		mw.log("restoreSourcePlayback:: empty out insertAndPlayingConfig");		
+		mw.log( "RestoreSourcePlayback:: empty out insertAndPlayingConfig" );		
 		if( !this.insertAndPlayingConfig) {
 			mw.log("Error: called restored playback with empty insertAndPlayingConfig")
 			return;
 		}			
-		this.switchSrc( this.insertAndPlayingConfig.src );
-		if( this.insertAndPlayingConfig.restoreControls ){
-			this.playerElement.controls = true;
-		}
-		// run the seek: 
-		this.setCurrentTime( this.insertAndPlayingConfig.time,function(){
-			_this.play();
-		});
-		
-		var callback = this.insertAndPlayingConfig.callback;
+		this.switchSrc( this.insertAndPlayingConfig.src );		
+		//this.playerElement.play();
 		// Remove insert and playing config flag
-		this.insertAndPlayingConfig = false;
+		this.insertAndPlayingConfig = false;				
+		
+		var time = this.insertAndPlayingConfig.time;
+		var callback = this.insertAndPlayingConfig.callback;
+		
+		// run the seek: 
+		this.setCurrentTime( time ,function(){			
+			if( this.insertAndPlayingConfig.restoreControls ){
+				this.playerElement.controls = true;
+			}			
+		});
+		// Give some time for ipad to figure out whats going on: 
+		setTimeout(function(){			
+			_this.playerElement.load();
+			_this.playerElement.play();
+		},100);
+			
 		//alert("insertAndPlayingConfig:: " + this.insertAndPlayingConfig);
 		// Run the callback 
-		if( callback )
+		if( callback ){
 			callback();
+		}
 	},
 	switchSrc: function( src ){
+		mw.log( 'switchSrc' )
 		if( this.getPlayerElement() ){
 			try{
 				//this.playerElement.pause();
-				this.playerElement.src = src;				
+				this.playerElement.src = src;		
+				this.playerElement.load();
+				this.playerElement.play();
 			} catch( e ){
 				mw.log("Error: possible error in swiching source playback");
 			}
@@ -402,11 +413,13 @@ mw.EmbedPlayerNative = {
 	* Pause the video playback
 	* calls parent_pause to update the interface
 	*/
-	pause: function() {
-		this.getPlayerElement();
+	pause: function( ) {
+		this.getPlayerElement();		
 		this.parent_pause(); // update interface		
 		if ( this.playerElement ) { // update player
-			this.playerElement.pause();
+			if( !this.playerElement.paused ){
+				this.playerElement.pause();
+			}
 		}
 	},
 	
@@ -414,11 +427,15 @@ mw.EmbedPlayerNative = {
 	* Play back the video stream
 	*  calls parent_play to update the interface
 	*/
-	play: function() {
-		this.getPlayerElement();
+	play: function( ) {
+			
+		this.getPlayerElement();		
 		this.parent_play(); // update interface
 		if ( this.playerElement && this.playerElement.play ) {
-			this.playerElement.play();
+			// issue a play request if the media is paused:
+			if( this.playerElement.paused ){
+				this.playerElement.play();
+			}
 			// re-start the monitor: 
 			this.monitor();
 		}
@@ -567,15 +584,15 @@ mw.EmbedPlayerNative = {
 	* Handle the native paused event
 	*/ 
 	onPaused: function(){
-		mw.log( "embedPlayer:native:paused" );
-		this.pause();		
+		mw.log( "EmbedPlayer:native: OnPaused" );
+		this.parent_pause();	
 	},
 	
 	/**
 	* Handle the native play event 
 	*/
 	onPlay: function(){
-		mw.log("embedPlayer:native::play");		
+		mw.log("EmbedPlayer:native:: OnPlay");		
 		// Update the interface
 		this.parent_play();
 	},
@@ -626,7 +643,7 @@ mw.EmbedPlayerNative = {
 	*  Used to update the bufferedPercent
 	*/	
 	onended: function() {
-		var _this = this;
+		var _this = this;	
 		mw.log( 'EmbedPlayer:native: onended:' + this.playerElement.currentTime + ' real dur:' +  this.getDuration() +
 				' insertAndPlayingConfig: ' + this.insertAndPlayingConfig);
 		

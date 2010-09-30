@@ -2667,9 +2667,8 @@ mw.EmbedPlayer.prototype = {
 	* Starts the "monitor" 
 	*/
 	play: function() {
-		var _this = this;
-		mw.log( "EmbedPlayer:: play" );		
-	  
+		var _this = this;			
+		mw.log( "EmbedPlayer:: play" );			  
 		// Hide any overlay:
 		this.controlBuilder.closeMenuOverlay();
 		
@@ -2691,7 +2690,7 @@ mw.EmbedPlayer.prototype = {
 	 	 // Run play hook (if we were previously in paused state ) 
 		if( this.paused ){
 			this.paused = false;
-		   	mw.log("trigger play event::");
+		   	mw.log("trigger play event::");		   	
 		   	$j( this ).trigger( 'play' );
 		}
 		
@@ -2736,12 +2735,13 @@ mw.EmbedPlayer.prototype = {
 	*  must be overwritten by embed object to support this functionality.
 	*/
 	pause: function( event ) {
-		var _this = this;	
+		var _this = this;
+
 		// only trigger the pause event if not already in paused state: 
 		if( this.paused === false ){
 			this.paused = true;
 			mw.log('EmbedPlayer:trigger pause');
-			$j( this ).trigger('pause');
+			//$j( this ).trigger('pause' );
 		}		
 				
 		// update the ctrl "paused state"				
@@ -2769,7 +2769,7 @@ mw.EmbedPlayer.prototype = {
 	*/
 	stop: function() {
 		var _this = this;
-		mw.log( 'mvEmbed:stop:' + this.id );			
+		mw.log( 'EmbedPlayer::stop:' + this.id );			
 		
 		// no longer seeking:
 		this.didSeekJump = false;

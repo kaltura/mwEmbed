@@ -111,19 +111,19 @@ mw.KWidgetSupport.prototype = {
 						bumper[  $j(node).attr('key').replace('bumper.', '') ] =  bumperValue;						
 					}
 				})			
-				var bumperPlayCount = 0;
+				embedPlayer.bumperPlayCount = 0;
 				// Get the bumper entryid				
 				if( bumper.bumperEntryID ){
 					mw.log( "KWidget:: addUiConf: get sources for " + bumper.bumperEntryID);
 					_this.getDeviceEntryIdSources( bumper.bumperEntryID, function( sources ){						
-						$j( embedPlayer ).bind('play', function(){			
-							if( bumper.playOnce && bumperPlayCount!= 0){
+						$j( embedPlayer ).bind('play', function(){							
+							if( bumper.playOnce && embedPlayer.bumperPlayCount >= 1){
 								return true;
-							}								
-							bumperPlayCount++;
+							}	
+							embedPlayer.bumperPlayCount++;
 							// Call the special insertAndPlaySource function 
-							// ( used for ads or any non-complex video inserts ) 
-							embedPlayer.insertAndPlaySource( sources[0].src, bumper);								
+							// ( used for ads / video inserts ) 
+							embedPlayer.insertAndPlaySource( sources[0].src, bumper);									
 						})
 						// Bind the bumper into location play						
 						callback();

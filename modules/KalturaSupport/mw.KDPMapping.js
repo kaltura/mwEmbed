@@ -58,12 +58,12 @@
 				case 'playerStateChange':
 					
 					// Kind of tricky should do a few bindings to 'pause', 'play', 'ended', 'buffering/loading'
-					$j( embedPlayer ).bind('pause', function(){
-						debugger;
+					$j( embedPlayer ).bind('pause', function(){						
 						callback( 'pause', embedPlayer.id );
 					});
 					
 					$j( embedPlayer ).bind('play', function(){
+						mw.log('PLAYBIND:: mw.KDPMapping ');
 						callback( 'play', embedPlayer.id );
 					});
 					

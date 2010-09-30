@@ -129,7 +129,7 @@ mw.Playlist.prototype = {
 				);
 				$j( _this.target ).append( $plListContainer );
 				
-				var $plListSet = $j( _this.target ).find(  '.playlistSet-list' );
+				var $plListSet = $j( _this.target ).find( '.playlistSet-list' );
 				
 				$j.each( playlistSet, function( inx, playlist){
 					// Add a divider
@@ -276,7 +276,7 @@ mw.Playlist.prototype = {
 					})
 					if( _this.layout == 'vertical' ){
 						$j( _this.target + ' .media-rss-video-list' ).css({
-							'top' :  $j( _this.target + ' .media-rss-video-player' ).height()							
+							'top' :  $j( _this.target + ' .media-rss-video-player' ).height() + 8							
 						})
 					}
 					// Add scroll buttons:
@@ -426,7 +426,7 @@ mw.Playlist.prototype = {
 					$video.append( $source );
 				}
 			}			
-			_this.addVideoPlayer( $video , callback);
+			_this.updateVideoPlayer( $video , callback);
 		});
 	},
 	
@@ -437,20 +437,20 @@ mw.Playlist.prototype = {
 		return 'mrss_' + this.id + '_' + clipIndex;
 	},
 	
-	addVideoPlayer: function( $video , callback){
+	updateVideoPlayer: function( $video , callback){
 		var _this = this;		
 		// If on mobile safari just swap the sources ( don't replace the video ) 
 		// ( mobile safari can't javascript start the video ) 
 		// see: http://developer.apple.com/iphone/search/search.php?simp=1&num=10&Search=html5+autoplay
-		var addVideoPlayerToDom = true;			
+		var updateVideoPlayerToDom = true;			
 		
 		if( mw.isMobileHTML5() ){	
 			// Check for a current video:	
 			var $inDomVideo = $j( _this.target + ' .media-rss-video-player video' );			
 			if( $inDomVideo.length == 0 ){
-				addVideoPlayerToDom = true;
+				updateVideoPlayerToDom = true;
 			} else {
-				addVideoPlayerToDom = false;
+				updateVideoPlayerToDom = false;
 				// Update the inDomVideo object:
 				// NOTE: this hits a lot of internal stuff 
 				// XXX Should refactor to use embedPlayer interfaces!
@@ -467,7 +467,7 @@ mw.Playlist.prototype = {
 				});				 
 				
 				// Update the video interface id: 
-				$j(  vidInterface ).attr('id', $video.attr('id'));				
+				$j(  vidInterface ).attr('id', $video.attr('id'));					
 				
 				
 				if( $video.data('kuiconf') ){
@@ -479,7 +479,8 @@ mw.Playlist.prototype = {
 					'id' : 'pid_' + $video.attr('id'),
 					'src':  $video.find( 'source').attr('src') 
 				});
-				
+				// issue the load request 
+				$inDomVideo.get(0).load();
 			}
 		} else {
 			// Remove the old video player ( non-mobile safari ) 
@@ -487,7 +488,7 @@ mw.Playlist.prototype = {
 			$j( _this.target + ' .media-rss-video-player' ).remove( 'video' );
 		}
 		
-		if( addVideoPlayerToDom ) {
+		if( updateVideoPlayerToDom ) {
 			// replace the video: 
 			$j( _this.target + ' .media-rss-video-player' ).append( $video );
 		}
@@ -587,11 +588,19 @@ mw.Playlist.prototype = {
 			} )
 			.click( function(){
 				mw.log( 'clicked on: ' + $j( this ).data( 'clipIndex') ); 
+				// Make sure the existing player is "playing " (safari can't play async with javascript )
+				/*if( mw.isMobileHTML5() ){			
+					var embedPlayer = $j('#' + _this.getVideoPlayerId() ).get(0);
+					//embedPlayer.playerElement.play();
+				}*/				
+				
 				// Update _this.clipIndex
 				_this.clipIndex = $j( this ).data( 'clipIndex' );
-				_this.updatePlayer( _this.clipIndex, function(){					
+					
+				_this.updatePlayer( _this.clipIndex, function(){
 					_this.play();
 				} );
+				
 			}) //close $itemBlock
 
 			// Add the itemBlock to the targetItem list
@@ -600,18 +609,16 @@ mw.Playlist.prototype = {
 			)
 			mw.log("added item block : " + $targetItemList.children().length );
 		});
-	},
+	},	
 	
-	/**
-	* Start playback for current clip
-	*/
-	play: function(){		
-		mw.log("Play current clip: " + this.getVideoPlayerId()  + ' ' + $j('#' + this.getVideoPlayerId() ).length );
-		// Get the player and play:
-		var embedPlayer = $j('#' + this.getVideoPlayerId() ).get(0);			
-		embedPlayer.play();
+	play: function(){
+		var embedPlayer = $j('#' + this.getVideoPlayerId() ).get(0);
+		if( mw.isMobileHTML5() ){								
+			embedPlayer.playerElement.play();
+		} else{ 
+			embedPlayer.play();
+		}
 	},
-	
 	
 	/**
 	 * Load the playlist driver from a source
