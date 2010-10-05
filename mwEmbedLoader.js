@@ -140,7 +140,7 @@ function kOverideSwfObject(){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else { 				
 					// use the original flash player embed:  
-					this.originalWrite( targetId );
+					_this.originalWrite( targetId );
 				}	
 			});
 		}
