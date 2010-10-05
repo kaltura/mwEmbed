@@ -122,7 +122,9 @@ function doPageSpecificRewrite() {
 	}
 	
 	// Timed text display:
-	if ( wgPageName.indexOf( "TimedText:" ) === 0 ) {
+	if ( wgPageName.indexOf( "TimedText:" ) === 0 
+			&& 
+		document.URL.indexOf('&diff=') == -1) {
 		if( wgAction == 'view' ){
 			var orgBody = mwSetPageToLoading();
 			//load the "player" ( includes call to  loadMwEmbed )
