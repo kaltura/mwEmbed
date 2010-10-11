@@ -95,7 +95,7 @@
 					embedPlayer.stop();
 					break;
 				case 'doSeek':
-					// kaltura doSeek is in seconds rather than percentage:
+					// Kaltura doSeek is in seconds rather than percentage:
 					var percent = parseFloat( notificationData ) / embedPlayer.getDuration();
 					embedPlayer.doSeek( percent );
 					break;

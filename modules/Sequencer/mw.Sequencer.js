@@ -4,7 +4,7 @@
 
 mw.includeAllModuleMessages();
 
-/*
+/**
 * Setup the sequencer jQuery binding:
 */
 
@@ -17,7 +17,7 @@ mw.includeAllModuleMessages();
 		}		
 		var seqContainer = $j( this.selector ).get(0);
 
-		// Support jquery ui style 'destroy' call 
+		// Support jQuery ui style 'destroy' call 
 		if( options == 'destroy' ){
 			if( seqContainer['sequencer'] )
 				delete seqContainer['sequencer'];				
@@ -41,10 +41,10 @@ mw.includeAllModuleMessages();
 		// Draw the sequencer UI
 		seqContainer['sequencer'].drawUI();
 		
-		// Return the sequence jquery object
+		// Return the sequence jQuery object
 		return this;
 		
-	}
+	};
 } )( jQuery );
 
 //Wrap in mw closure to avoid global leakage
@@ -62,7 +62,7 @@ var mw_sequenceedit_default_options = {
 	'addMedia': null,
 	'onExitCallback' : null,
 	'videoAspect' : '4:3'
-}
+};
 mw.Sequencer = function( options ) {
 	return this.init( options );
 };
@@ -83,7 +83,7 @@ mw.Sequencer.prototype = {
 			if( typeof options[ optionName] != 'undefined'){
 				this.options[optionName] =  options[ optionName] ;
 			} else {
-				this.options[optionName] = mw_sequenceedit_default_options[ optionName ]
+				this.options[optionName] = mw_sequenceedit_default_options[ optionName ];
 			}
 		}
 		
@@ -92,7 +92,7 @@ mw.Sequencer.prototype = {
 			this.smilSource = options.smilSource;
 		}
 		if( this.options.interfaceContainer ){
-			this.interfaceContainer = this.options.interfaceContainer
+			this.interfaceContainer = this.options.interfaceContainer;
 		}
 		
 		// For style properties assign top level mwe-sequencer class
@@ -102,7 +102,7 @@ mw.Sequencer.prototype = {
 	
 	getOption: function( optionName ){
 		if( this.options[ optionName ]){
-			return this.options[ optionName ]
+			return this.options[ optionName ];
 		}
 		return false;
 	},
@@ -148,7 +148,7 @@ mw.Sequencer.prototype = {
 		// Add the ui layout
 		this.getContainer().html(
 			this.getUiLayout()
-		)
+		);
 		
 		// Once the layout is in the dom setup resizableLayout "layout" options
 		this.applyLayoutBindings();			
@@ -180,7 +180,7 @@ mw.Sequencer.prototype = {
 			if( _this.getOption( 'newSequence' ) ){			
 				_this.smilSource = _this.getDataUrl( _this.getNewSmilXML() );	
 			} else {
-				mw.log( "Load smil source from server" )
+				mw.log( "Load smil source from server" );
 				// Load from the server
 				_this.getServer().getSmilXml( function( smilXml ){
 					// xxx should parse the sequence data 
@@ -188,14 +188,14 @@ mw.Sequencer.prototype = {
 						smilXml = _this.getNewSmilXML();
 					}
 					_this.smilSource = _this.getDataUrl( smilXml );					
-					callback( _this.smilSource )	
-				})
+					callback( _this.smilSource );
+				});
 				// Wait for server to return smil source
 				return ;
 			}
 		}
 		// return the smilSource
-		callback( _this.smilSource )
+		callback( _this.smilSource );
 	},
 	getDataUrl: function( xmlString ){
 		if( ! xmlString ){
@@ -292,7 +292,7 @@ mw.Sequencer.prototype = {
 		if( ! this.addByUri ){
 			this.addByUri = new mw.SequencerAddByUri( this );
 		}
-		return this.addByUri
+		return this.addByUri;
 	},
 	getKeyBindings:function(){
 		if( ! this.keyBindings ){

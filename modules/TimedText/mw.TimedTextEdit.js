@@ -39,7 +39,8 @@ mw.TimedTextEdit.prototype = {
 	textEditStages:{
 		'upload':{
 			'icon' : 'folder-open'
-		},
+		}
+		/*
 		'transcribe':{
 			'icon' : 'comment'
 		},
@@ -49,6 +50,7 @@ mw.TimedTextEdit.prototype = {
 		'translate':{
 			'icon' : 'flag'
 		}
+		*/
 	},
 	
 	/**

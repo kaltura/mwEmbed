@@ -209,7 +209,7 @@ mw.SmilBody.prototype = {
 						}
 					}
 				}
-				// add audioObject to end ( currentAudioObj has latest startTime
+				// Add audioObject to end ( currentAudioObj has latest startTime
 				if( ! addedAudioFlag &&  audioEndTime > currentAudioEndTime ){
 					var audioObjDuration = ( audioEndTime - currentAudioEndTime );
 					if( currentAudioEndTime + audioObjDuration > _this.getDuration() ){
@@ -346,7 +346,7 @@ mw.SmilBody.prototype = {
 	 * @param {boolean} forceRefresh If a fresh duration should be calculated 
 	 */
 	getClipDuration: function( $node, forceRefresh ){			
-		/* 
+		/**
 		 * mw.log( 'SmilBody::getClipDuration: node children::' + 
 		 *		$node.children().length + 'calle: ' + arguments.callee.toString() );
 		*/

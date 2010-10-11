@@ -25,7 +25,7 @@ if ( typeof window.mw == 'undefined' ) {
 /**
  * Set the mwEmbedVersion
  */
-var MW_EMBED_VERSION = '1.1g';
+var MW_EMBED_VERSION = '1.1h';
 
 // Globals to pre-set ready functions in dynamic loading of mwEmbed
 if( typeof preMwEmbedReady == 'undefined'){
@@ -1600,10 +1600,10 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 * @param {Float}
 	 *            sec Seconds
 	 * @param {Boolean}
-	 *            show_ms If milliseconds should be displayed.
+	 *            verbose If hours and milliseconds should padded be displayed.
 	 * @return {Float} String npt format
 	 */
-	mw.seconds2npt = function( sec, show_ms ) {
+	mw.seconds2npt = function( sec, verbose ) {
 		if ( isNaN( sec ) ) {
 			mw.log("Warning: trying to get npt time on NaN:" + sec);			
 			return '0:00:00';
@@ -1613,7 +1613,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				
 		// Round the number of seconds to the required number of significant
 		// digits
-		if ( show_ms ) {
+		if ( verbose ) {
 			tm.seconds = Math.round( tm.seconds * 1000 ) / 1000;
 		} else {
 			tm.seconds = Math.round( tm.seconds );
@@ -1621,13 +1621,18 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if ( tm.seconds < 10 ){
 			tm.seconds = '0' +	tm.seconds;
 		}
-		if( tm.hours == 0 ){
+		if( tm.hours == 0 && !verbose  ){
 			hoursStr = '';
 		} else {
-			if ( tm.minutes < 10 )
+			if ( tm.minutes < 10 && verbose) {
 				tm.minutes = '0' + tm.minutes;
+			}
 			
-			hoursStr = tm.hours + ":"; 
+			if( tm.hours < 10 && verbose){
+				tm.hours = '0' + tm.hours; 
+			}
+			
+			hoursStr = tm.hours + ':';
 		}
 		return hoursStr + tm.minutes + ":" + tm.seconds;
 	};
@@ -1951,7 +1956,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		}				 
 		mwSetupFlag = true;			
 		
-		// Apply any pre-setup config:
+		// Apply any pre-setup config:		
 		mw.setConfig( preMwEmbedConfig );			
 		
 		
@@ -2187,7 +2192,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				return ;
 			}
 				
-			// Load the launage if set
+			// Load the language if set
 			mw.load( langLoaderRequest, function(){			
 				mw.log( 'Done moduleLoaderCheck request' );			
 				addLocalSettings();

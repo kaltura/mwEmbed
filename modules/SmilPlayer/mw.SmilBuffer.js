@@ -153,7 +153,8 @@ mw.SmilBuffer.prototype = {
 			// Hide the element ( in modern browsers this should not cause a flicker 
 			// because DOM update are displayed at a given dom draw rate )
 			_this.smil.getLayout().hideElement( smilElement );
-			mw.log('loadElement::Add:' + this.smil.getSmilElementPlayerID( smilElement )+ ' len: ' +  $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).length );
+			mw.log('loadElement::Add:' + this.smil.getSmilElementPlayerID( smilElement ) + 
+					' len: ' +  $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).length );
 		}
 
 		// Start "loading" the asset (for now just video ) 

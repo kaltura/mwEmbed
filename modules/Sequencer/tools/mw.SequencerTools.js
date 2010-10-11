@@ -45,7 +45,7 @@ mw.SequencerTools.prototype = {
 		},
 		'transitions' : {			
 			'editWidgets' : ['editTransitions'],		
-			'contentTypes': ['video', 'img', 'mwtemplate' ]
+			'contentTypes': ['video', 'img', 'cdata_html', 'mwtemplate' ]
 		}
 	},
 	editableAttributes:{		
@@ -833,7 +833,7 @@ mw.SequencerTools.prototype = {
 				// Update the preview thumbs
 				var $target = $j( '#editWidgets_trimTimeline' );
 				// (local function so it can be updated after the start time is done with its draw ) 
-				var updateDurationThumb = function(){
+				/*var updateDurationThumb = function(){
 					// Check the duration:
 					var clipDur = $j('#editTool_trim_dur').val();
 					if( clipDur ){
@@ -859,6 +859,7 @@ mw.SequencerTools.prototype = {
 						updateDurationThumb()
 					)
 				}
+				*/
 				
 				// Register the edit state for undo / redo 
 				_this.sequencer.getActionsEdit().registerEdit();
@@ -868,7 +869,7 @@ mw.SequencerTools.prototype = {
 				var smil = _this.sequencer.getSmil();
 				var sliderScale = 2000 // assume slider is never more than 2000 pixles wide. 
 				// check if thumbs are supported 
-				if( _this.sequencer.getSmil().getRefType( smilElement ) == 'video' ){ 
+				/*if( _this.sequencer.getSmil().getRefType( smilElement ) == 'video' ){ 
 					$j(target).append(
 						$j('<div />')					
 						.addClass( 'trimStartThumb ui-corner-all' ),					
@@ -876,7 +877,7 @@ mw.SequencerTools.prototype = {
 						.addClass( 'trimEndThumb ui-corner-all' ),
 						$j('<div />').addClass('ui-helper-clearfix') 
 					)			
-				}
+				}*/
 				// The local scope fullClipDuration
 				var fullClipDuration = null;
 				

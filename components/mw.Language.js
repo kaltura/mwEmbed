@@ -27,7 +27,7 @@
 		for ( var i in msgSet ) {
 			messageCache[ i ] = msgSet[i];
 		}
-	}
+	};
 	// By default set the current class missing messages flag to default. 
 	mw.currentClassMissingMessages = false;
 	
@@ -53,14 +53,14 @@
 			}
 		}
 		return true;
-	}
+	};
 	
 	/** 
 	* Special function to register that all of the module messages need to be loaded.  
 	*/
 	mw.includeAllModuleMessages = function (){
 		mw.currentClassMissingMessages = true;
-	}
+	};
 		
 	/**
 	* Load messages for a given named javascript class.
@@ -75,7 +75,7 @@
 		}
 		// Run the addMessages script-loader call
 		mw.getScript( wgScriptLoaderLocation + '?class=' + className + '&format=messages', callback);		
-	}
+	};
 	
 	
 	/**
@@ -128,7 +128,7 @@
 		
 		// Return the jQuery object or message string		
 		return messageSwap.getMsg();					
-	}
+	};
 	
 	/**
 	* A message Swap Object 
@@ -140,7 +140,7 @@
 	
 	mw.Language.messageSwapObject = function( message, arguments ){
 		this.init( message, arguments );
-	}	
+	};
 	
 	mw.Language.messageSwapObject.prototype= {		
 		/* constructor */
@@ -163,7 +163,7 @@
 				&& ! this.includesjQueryArgs  )
 			{
 				// replaceStringArgs is all we need, return the msg 
-				return this.message	
+				return this.message;
 			}
 						
 			// Else Send the messageText through the parser
@@ -263,7 +263,7 @@
 			// Return the jQuery object ( if no jQuery substitution occurred we return false )
 			return $jQueryMessage;
 		}
-	}
+	};
 	
 	/**
 	* Get msg content without transformation
@@ -276,7 +276,7 @@
 
 		// Missing key placeholder
 		return '&lt;' + key + '&gt;';
-	}
+	};
 	/**
 	 * Check if a message key is defined
 	 * @return {Boolean} true if msg is defined, false if msg is not set 
@@ -286,7 +286,7 @@
 			return true
 		}
 		return false;
-	}
+	};
 	
 	/**
 	* Add Supported Magic Words to parser
@@ -371,7 +371,8 @@
 	// NOTE:: add gender support here 
 	mw.Language.procGENDER = function( templateObject ){
 		return 'gender-not-supported-in-js-yet';
-	}
+	};
+	
 	/*
 	* Base convertPlural function:
 	*/

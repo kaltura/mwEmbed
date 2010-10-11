@@ -362,7 +362,7 @@ mw.SequencerTimeline.prototype = {
 			.click(function(){
 				//Add clip to selection
 				_this.handleMultiSelect( this );
-			})				
+			});
 	},
 	// calls the edit interface passing in the selected clip:
 	editClip: function( selectedClip ){
@@ -387,7 +387,7 @@ mw.SequencerTimeline.prototype = {
 			$j( selectedClip ).fadeOut('fast', function(){
 				$j(this).remove();
 			});
-		})		
+		});
 		
 		// Invalidate / update embedPlayer duration: 
 		this.sequencer.getEmbedPlayer().getDuration( true );

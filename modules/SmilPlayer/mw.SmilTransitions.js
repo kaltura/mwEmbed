@@ -28,10 +28,10 @@ mw.SmilTransitions.prototype = {
 				if( transitionDirection == 'transOut' ){
 					var nodeDuration = _this.smil.getBody().getClipDuration( smilElement ); 
 					if( animateTime > ( nodeDuration - transitionDuration ) ){			
-						percent = animateTime - ( nodeDuration - transitionDuration ) / transitionDuration;
-					}					
-					// Invert the percentage for "transOut"
-					percent = 1 - percent;
+						percent = ( animateTime - ( nodeDuration - transitionDuration ) ) / transitionDuration;
+						// Invert the percentage for "transOut"
+						//percent = 1 - percent;
+					}										
 				}
 				if( percent !== false ){
 					inRangeTransitions.push( {
@@ -128,7 +128,7 @@ mw.SmilTransitions.prototype = {
 	 */
 	transitionFunctionMap : {
 		'fade' : {
-			'fadeFromColor': function( _this, percent, $transition, smilElement ){
+			'_doColorOverlay': function( _this, percent, $transition, smilElement ){
 				// Add the overlay if missing						
 				var transitionOverlayId = _this.getTransitionOverlayId( $transition, smilElement );		
 				if( $j( '#' + transitionOverlayId  ).length == 0 ){
@@ -147,11 +147,17 @@ mw.SmilTransitions.prototype = {
 				// Update the color: 
 				$j( '#' + transitionOverlayId  ).css( 'background-color', $transition.attr( 'fadeColor'))
 				
-				// Invert the percentage since we setting opacity from full color we are fading from		
-				percent = 1 - percent;	
-				
 				// Update the overlay opacity
 				$j( '#' + transitionOverlayId  ).show().css( 'opacity', percent );
+			},
+			'fadeFromColor': function( _this, percent, $transition, smilElement ){
+				// Invert the percentage since we setting opacity from full color we are fading from		
+				percent = 1 - percent;
+				
+				this._doColorOverlay( _this, percent, $transition, smilElement );
+			},
+			'fadeToColor': function( _this, percent, $transition, smilElement ){
+				this._doColorOverlay( _this, percent, $transition, smilElement );				
 			},
 			'crossfade': function( _this, percent, $transition, smilElement ){
 				// fade "ourselves" ... in cases of overlapping timelines this will create a true cross fade

@@ -108,6 +108,10 @@ $messages['en'] = array(
 	'mwe-sequencer-menu-sequence-publish' => 'Publish',
 	'mwe-sequencer-menu-sequence-publish-desc' => 'Publish sequence',
 	'mwe-sequencer-menu-sequence-renderdisk' => 'Render to disk',
+	
+	'mwe-sequencer-menu-sequence-help' => 'Help',
+	'mwe-sequencer-menu-sequence-help-desc' => 'Sequencer help page',
+
 	'mwe-sequencer-menu-sequence-exit' => 'Exit',
 	'mwe-sequencer-menu-sequence-exit-desc' => 'Exit the sequencer',
 	'mwe-sequencer-confirm-exit' => 'Are you sure you want to exit?',

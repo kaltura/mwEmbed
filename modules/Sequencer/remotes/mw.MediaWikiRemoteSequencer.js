@@ -39,9 +39,9 @@ mw.addMessageKeys( [
 mw.getRemoteSequencerLink = function( url ){	
 	if( mw.getConfig( 'Sequencer.WithJsMwEmbedUrlHelper' ) ){
 		if( url.indexOf('?') == -1){
-			url+='?'
+			url+='?';
 		} else {
-			url+='&'
+			url+='&';
 		}
 		url+='withJS=MediaWiki:MwEmbed.js';
 	}
@@ -49,10 +49,10 @@ mw.getRemoteSequencerLink = function( url ){
 };
 
 // Add player pause binding if config is set::
-$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayerId ) {
+$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 	if( mw.getConfig( 'Sequencer.KalturaPlayerEditOverlay' )){
 		
-		var embedPlayer = $j( '#' + embedPlayerId ).get(0);
+		var embedPlayerId = $j( embedPlayer ).attr( 'id' );
 		
 		// hide if the main menu is requested 
 		$j( embedPlayer ).bind( 'displayMenuOverlay', function(){			
@@ -60,7 +60,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayerId ) {
 		});
 		
 		$j( embedPlayer ).bind( 'pause', function() {
-			// don't display if near the end of playback ( causes double fade in conflict with ended event ) 		
+			// Don't display if near the end of playback ( causes double fade in conflict with ended event ) 		
 			mw.remoteSequencerAddEditOverlay( embedPlayerId );
 			
 			// xxx should use getter setter

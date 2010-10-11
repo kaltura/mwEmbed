@@ -9,7 +9,7 @@ Date:		September 2008
 .fg-menu-container { position: absolute; top:0; left:-999px; padding: .4em;  overflow: hidden; }
 .fg-menu-container.fg-menu-flyout { overflow: visible; }
 
-.fg-menu, .fg-menu ul { list-style-type:none; padding: 0; margin:0; }
+.fg-menu, .fg-menu ul { list-style:none none; padding: 0; margin:0; }
 
 .fg-menu { position:relative; }
 .fg-menu-flyout .fg-menu { position:static; }

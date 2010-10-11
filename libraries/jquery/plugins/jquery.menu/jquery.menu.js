@@ -35,13 +35,13 @@ $.getLineItem = function( string, icon , callback) {
 	var $li = $j( '<li>' ).append(		
 		$j('<a>')
 			.attr('href', '#')
-			.click( callback )			
-	)
+			.click( callback )
+	);
 	if( icon ) {
 		$li.find( 'a' ).append(	
 			$j('<span style="float:left;"></span>')
 				.addClass( 'ui-icon ui-icon-' + icon ) 
-		)		
+		);
 	}		
 	$li.find( 'a' ).append( $j('<span>').text( string ) );
 	//mw.log(' li html: ' + $j('<div>').append( $li ).html() );

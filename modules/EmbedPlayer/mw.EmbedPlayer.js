@@ -261,7 +261,7 @@ mw.setDefaultConfig( 'embedPlayerSourceAttributes', [
 						'width' : width,
 						'height' : height
 					})
-				)				
+				);				
 			}
 		});
 		
@@ -302,7 +302,7 @@ mw.setDefaultConfig( 'embedPlayerSourceAttributes', [
 				callback();
 			}
 				
-		})
+		});
 	};
 
 } )( jQuery );
@@ -434,7 +434,7 @@ EmbedPlayerManager.prototype = {
 				
 				// Copy over any data attributes from the playerElement 
 				if( mw.getConfig( 'EmbedPlayer.DataAttributes' ) ) {
-					var dataAttr = mw.getConfig( 'EmbedPlayer.DataAttributes' )
+					var dataAttr = mw.getConfig( 'EmbedPlayer.DataAttributes' );
 					for( var i in dataAttr ){
 						if( $j( playerElement ).data( i ) ){
 							$j( '#' + playerInterface.id ).data( i, $j( playerElement ).data( i ) );
@@ -444,7 +444,7 @@ EmbedPlayerManager.prototype = {
 				
 				// Pass the id to any hook that needs to interface prior to checkPlayerSources
 				mw.log("EmbedPlayer::addElement :trigger " + playerInterface.id );
-				$j( mw ).trigger ( 'newEmbedPlayerEvent',  playerInterface.id );
+				$j( mw ).trigger ( 'newEmbedPlayerEvent', $j( '#' + playerInterface.id ).get(0) );
 				
 				// Issue the checkPlayerSources call to the new player interface:
 				// make sure to use the element that is in the DOM:						
@@ -572,7 +572,7 @@ EmbedPlayerManager.prototype = {
 			.show()
 			.after( 
 				$j( swapPlayerElement ).css( 'display', 'none' )
-			)
+			);
 		} else {
 			$j( targetElement ).replaceWith( swapPlayerElement );
 		}
@@ -589,7 +589,7 @@ EmbedPlayerManager.prototype = {
 			if( playerInterface.useNativePlayerControls() ) {
 				$j( targetElement )
 					.getAbsoluteOverlaySpinner()
-					.attr('id', 'loadingSpinner_' + playerInterface.id ) 
+					.attr('id', 'loadingSpinner_' + playerInterface.id );
 			}else{
 				$j( swapPlayerElement ).append( 
 					$j('<div />')
@@ -642,7 +642,7 @@ EmbedPlayerManager.prototype = {
 			}
 		}
 	}
-}
+};
 
 /**
   * mediaSource class represents a source for a media element.
@@ -1472,7 +1472,7 @@ mw.EmbedPlayer.prototype = {
 						.attr( 'src', customSource.src );	
 					// xxx todo pull list of valid source attributes from mediaSource prototype
 					if( customSource.type ){
-						$source.attr('type', customSource.type )
+						$source.attr('type', customSource.type );
 					}
 					if( customSource.title ){
 						$source.attr('title', customSource.title );
@@ -1618,6 +1618,7 @@ mw.EmbedPlayer.prototype = {
 			finishCheckPlayerSources();
 		}
 	},
+	
 	/**
 	 * Insert and play a video source ( useful for ads or bumper videos )
 	 * 
@@ -1722,7 +1723,6 @@ mw.EmbedPlayer.prototype = {
 	/**
 	* Check for timed Text support 
 	* and load necessary libraries
-	* 
 	*/
 	checkForTimedText: function( ) {
 		var _this = this;

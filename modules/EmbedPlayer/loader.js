@@ -6,12 +6,13 @@
 * Default player module configuration 
 */
 ( function( mw ) {
-	window['MW_EMBED_LIBRARY_PAGE'] = 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library';
 	
 	mw.setDefaultConfig( {		
 		// If the player controls should be overlaid on top of the video ( if supported by playback method)
 		// can be set to false per embed player via overlayControls attribute 
 		'EmbedPlayer.OverlayControls' : true,
+		
+		'EmbedPlayer.LibraryPage':  'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 		
 		// A default apiProvider ( ie where to lookup subtitles, video properties etc )
 		// NOTE: Each player instance can also specify a specific provider  
@@ -30,7 +31,7 @@
 		// The attribution button
 		'EmbedPlayer.AttributionButton' :{
 			'title' : 'Kaltura html5 video library',
-		    'href' :  MW_EMBED_LIBRARY_PAGE,
+		    'href' :  'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 		    // Style icon to be applied 
 		    'class' : 'kaltura-icon',
 		    // An icon image url ( should be a 12x12 image or data url )  

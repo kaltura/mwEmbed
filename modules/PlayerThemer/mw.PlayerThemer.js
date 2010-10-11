@@ -43,7 +43,7 @@ mw.PlayerThemer.prototype = {
 		},
 		'widgetOverlay' : {
 			'show' : ['stop', 'paused'],
-			'hide' : ['playing']
+			'hide' : ['playing']		
 		},
 		'bottomTitle' : {
 			'show' : ['stop'],

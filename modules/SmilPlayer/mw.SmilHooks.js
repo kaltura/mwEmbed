@@ -31,9 +31,7 @@ $j( mw ).bind( 'addElementWaitForMetaEvent', function( event, waitForMetaObject 
 });
 
 // Bind the smil check for sources
-$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {
-	// Setup local reference to embedPlayer interface
-	var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
+$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 	// Add the smil player ( in case we were dynamically loaded and EmbedPlayerManagerReady has already been called )
 	mw.SmilHooks.addSmilPlayer();
 									

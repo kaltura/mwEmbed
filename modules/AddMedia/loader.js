@@ -75,11 +75,11 @@
 		[
 			'mw.UploadHandler',
 			'mw.UploadInterface',
-			'$j.ui',
-			'$j.ui.mouse',
-			'$j.widget'
+			'$j.ui'
 		],
 		[
+			'$j.widget',
+			'$j.ui.mouse',
 			'$j.ui.progressbar',
 			'$j.ui.position',			
 			'$j.ui.dialog',

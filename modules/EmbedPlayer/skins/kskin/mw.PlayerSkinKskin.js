@@ -390,7 +390,7 @@ mw.PlayerSkinKskin = {
 			if ( data.query.pages ) {
 				for ( var i in data.query.pages ) {
 					var imageProps = data.query.pages[i];
-					// Check properites for "missing" 
+					// Check properties for "missing" 
 					if( imageProps.imageinfo && imageProps.imageinfo[0] && imageProps.imageinfo[0].descriptionurl ){					
 						// Found page 
 						$target.find( '.credits_box' ).html(

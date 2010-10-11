@@ -108,17 +108,17 @@ mw.PlayerControlBuilder.prototype = {
 		// Setup the controlBar container
 		var $controlBar = $j('<div />')
 			.addClass( 'ui-state-default ui-widget-header ui-helper-clearfix control-bar' )
-			.css( 'height', this.height )			
+			.css( 'height', this.height );	
 		
 		$controlBar.css( {
 			'position': 'absolute',
 			'bottom' : '0px',
 			'left' : '0px',
 			'right' : '0px'
-		} )
+		} );
 		// Check for overlay controls: 
 		if( _this.checkOverlayControls() ) {
-			$controlBar.hide()
+			$controlBar.hide();
 			// Make sure the interface is correct height: 
 			embedPlayer.$interface.css( {
 				'height' : parseInt( embedPlayer.height )
@@ -218,7 +218,7 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Set target width
 		var targetWidth = fullWidth;
-		var targetHeight = targetWidth * ( embedPlayer.getHeight() / embedPlayer.getWidth()  ) 
+		var targetHeight = targetWidth * ( embedPlayer.getHeight() / embedPlayer.getWidth()  );
 		// Check if it exceeds the height constraint: 
 		if( targetHeight >  fullHeight ){		
 			targetHeight = fullHeight;				
@@ -233,7 +233,7 @@ mw.PlayerControlBuilder.prototype = {
 			'width' : targetWidth,
 			'top' : offsetTop,
 			'left': offsetLeft
-		}
+		};
 	},
 	
 	/**
@@ -244,7 +244,7 @@ mw.PlayerControlBuilder.prototype = {
 		return {
 			'left' : ( (  pos.width - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
 			'top' : ( ( pos.height - this.getComponentHeight( 'playButtonLarge' ) ) / 2 )
-		}
+		};
 	},
 	
 	/**
@@ -258,7 +258,7 @@ mw.PlayerControlBuilder.prototype = {
 		//mw.log(' win size is: ' + $j( window ).width() + ' ts: ' + textSize );
 		return {
 			'font-size' : textSize + '%'
-		}
+		};
 	},
 	
 	/**
@@ -379,7 +379,7 @@ mw.PlayerControlBuilder.prototype = {
 				
 		
 		// Reposition play-btn-large ( this is unfortunately not easy to position with 'margin': 'auto'
-		$interface.find('.play-btn-large').animate( _this.getFullscreenPlayButtonCss() )		
+		$interface.find('.play-btn-large').animate( _this.getFullscreenPlayButtonCss() );
 		
 		// Bind mouse move in interface to hide control bar
 		_this.mouseMovedFlag = false;
@@ -414,7 +414,7 @@ mw.PlayerControlBuilder.prototype = {
 					'left' : '0px',
 					'width' : $j( window ).width(),
 					'height' :  $j( window ).height()			
-				} )
+				} );
 				// Update player size
 				$j( embedPlayer ).css( _this.getFullscreenPlayerCss() );
 				
@@ -494,7 +494,7 @@ mw.PlayerControlBuilder.prototype = {
 			'left' : '0px',
 			'width' : embedPlayer.getWidth(),
 			'height' : embedPlayer.getHeight()
-		})
+		});
 		// Restore the play button
 		$interface.find('.play-btn-large').animate( {
 			'left' 	: ( ( embedPlayer.getPlayerWidth() - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
@@ -746,7 +746,7 @@ mw.PlayerControlBuilder.prototype = {
 							'padding' : '4px'
 						})
 						.html( warningMsg  )
-					)
+					);
 					
 					$targetWarning = $j( '#warningOverlay_' + embedPlayer.id );			
 										
@@ -779,7 +779,7 @@ mw.PlayerControlBuilder.prototype = {
 					$targetWarning.append( 
 						$j('<span />')
 						.text( gM( 'mwe-embedplayer-do_not_warn_again' ) )
-					)
+					);
 				}								
 				// Check the global config before showing the warning
 				if ( mw.getConfig( preferenceId ) === true  ){
@@ -850,7 +850,7 @@ mw.PlayerControlBuilder.prototype = {
 				mw.log('change::update volume:' + percent);				
 				embedPlayer.setVolume( percent );
 			}
-		}
+		};
 		
 		if ( this.volume_layout == 'vertical' ) {
 			sliderConf[ 'orientation' ] = "vertical";
@@ -920,7 +920,7 @@ mw.PlayerControlBuilder.prototype = {
 						ctrlObj.getPlayerSelect()
 					);						
 				}
-			)
+			);
 		},	
 								
 		// Download the file menu
@@ -936,7 +936,7 @@ mw.PlayerControlBuilder.prototype = {
 					);	
 					$j( ctrlObj.embedPlayer ).trigger( 'showDownloadEvent' );
 				}
-			)
+			);
 		},		
 		
 		// Share the video menu
@@ -950,7 +950,7 @@ mw.PlayerControlBuilder.prototype = {
 					);	
 					$j( ctrlObj.embedPlayer ).trigger( 'showShareEvent' );
 				}
-			)
+			);
 		}, 
 		
 		'aboutPlayerLibrary' : function( ctrlObj ){
@@ -963,7 +963,7 @@ mw.PlayerControlBuilder.prototype = {
 						);	
 						$j( ctrlObj.embedPlayer ).trigger( 'aboutPlayerLibrary' );
 					}
-				)
+				);
 		}
 	},
 	
@@ -1064,7 +1064,7 @@ mw.PlayerControlBuilder.prototype = {
 				$j('<div />')
 					.addClass( 'overlay-content' )					
 					.append( overlayContent )
-			)
+			);
 			
 		// Clone the overlay menu css: 
 		var shadowCss = jQuery.extend( true, {}, overlayMenuCss );
@@ -1100,12 +1100,12 @@ mw.PlayerControlBuilder.prototype = {
 					.append(
 						gM('mwe-embedplayer-about-library-desc', 
 							$j('<a />').attr({
-								'href' : MW_EMBED_LIBRARY_PAGE,
+								'href' : mw.getConfig( 'EmbedPlayer.LibraryPage' ),
 								'target' : '_new'
 							})
 						)
 					)			
-			)
+			);
 	},
 	/**
 	* Get the "share" interface
@@ -1135,7 +1135,7 @@ mw.PlayerControlBuilder.prototype = {
 	        		gM( 'mwe-embedplayer-embed_site_or_blog' )
 	        	)
 	        )
-	    )
+	    );
         
        $shareInterface.append(
         	$j( '<h2 />' )
@@ -1242,7 +1242,7 @@ mw.PlayerControlBuilder.prototype = {
 								
 								// Close fullscreen if we are in fullscreen mode
 								if( _this.fullscreenMode ){
-									_this.restoreWindowPlayer()
+									_this.restoreWindowPlayer();
 								}
 								
 								embedPlayer.mediaElement.selectSource( sourceId );
@@ -1261,10 +1261,10 @@ mw.PlayerControlBuilder.prototype = {
 							} )
 							.hover(
 								function(){
-									$j( this ).addClass('ui-state-active')
+									$j( this ).addClass('ui-state-active');
 								},
 								function(){
-									$j( this ).removeClass('ui-state-active')
+									$j( this ).removeClass('ui-state-active');
 								}
 							);
 					}
@@ -1282,7 +1282,7 @@ mw.PlayerControlBuilder.prototype = {
 				
 			} else {
 				// No player available: 
-				$playerSelect.append( gM( 'mwe-embedplayer-no-player',  source.getTitle() ) ) 
+				$playerSelect.append( gM( 'mwe-embedplayer-no-player',  source.getTitle() ) );
 			}
 		} );
 		
@@ -1394,7 +1394,7 @@ mw.PlayerControlBuilder.prototype = {
 				$j('<h2 />')
 				.text( gM( 'mwe-embedplayer-download_full' ) ),
 				$mediaList
-			)
+			);
 		}
 		
 		if( $textList.find('li').length != 0 ) {
@@ -1402,7 +1402,7 @@ mw.PlayerControlBuilder.prototype = {
 				$j('<h2 />')
 				.html( gM( 'mwe-embedplayer-download_text' ) ),
 				$textList
-			)
+			);
 		}		
 	},
 	
@@ -1430,7 +1430,7 @@ mw.PlayerControlBuilder.prototype = {
 		if ( this.components[ component_id ] 
 			&& this.components[ component_id ].h ) 
 		{
-			return this.components[ component_id ].h
+			return this.components[ component_id ].h;
 		}
 		return false;
 	},
@@ -1444,7 +1444,7 @@ mw.PlayerControlBuilder.prototype = {
 		if ( this.components[ component_id ] 
 			&& this.components[ component_id ].w ) 
 		{
-			return this.components[ component_id ].w
+			return this.components[ component_id ].w;
 		}
 		return false;
 	},
@@ -1497,7 +1497,7 @@ mw.PlayerControlBuilder.prototype = {
 				var $icon = $j('<span />')
 				.addClass( 'ui-icon' );
 				if( buttonConfig['class'] ){
-					$icon.addClass( buttonConfig['class'] )
+					$icon.addClass( buttonConfig['class'] );
 				} 
 				// Check for source ( by configuration convention this is a 16x16 image
 				if( buttonConfig.iconurl ){
@@ -1505,7 +1505,7 @@ mw.PlayerControlBuilder.prototype = {
 						$j('<img />')
 						.css({'width': '16px', 'height': '16px'})
 						.attr('src', buttonConfig.iconurl )
-					)
+					);
 				}
 				
 				return $j('<a />')
@@ -1524,7 +1524,7 @@ mw.PlayerControlBuilder.prototype = {
 						.append( 
 							$icon
 						)
-					)				
+					);	
 			}
 		},
 		
@@ -1622,7 +1622,7 @@ mw.PlayerControlBuilder.prototype = {
 						.buttonHover()
 						.click( function() {									
 							ctrlObj.showTextInterface();
-						} )						
+						} );			
 			}
 		},
 		
@@ -1681,7 +1681,7 @@ mw.PlayerControlBuilder.prototype = {
 				.addClass( "ui-widget time-disp" )
 				.append( 
 					ctrlObj.embedPlayer.getTimeRange()
-				)	
+				);
 			}
 		},
 		

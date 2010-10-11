@@ -288,7 +288,7 @@ mw.EmbedPlayerSmil = {
 			// Reset the pausedForBuffer flag: 
 			this.pausedForBuffer = false;
 			
-			mw.log( "Call animateTime: " + this.smilPlayTime);
+			//mw.log( "Call animateTime: " + this.smilPlayTime);
 			// Issue an animate time request with monitorDelta 
 			this.smil.animateTime( this.smilPlayTime, this.monitorRate ); 
 		}
@@ -319,8 +319,9 @@ mw.EmbedPlayerSmil = {
 	* Get the duration of smil document. 
 	*/
 	getDuration: function( forceRefresh ){
-		if( forceRefresh )
+		if( forceRefresh ){
 			this.duration = null;
+		}
 		if( !this.duration ){
 			if( this.smil ){
 				this.duration = this.smil.getDuration( forceRefresh  );

@@ -293,7 +293,7 @@
 	 * @param {Boolean} fresh A fresh check is issued.	 	
 	 */
 	 // Stub feature apiUserNameCache to avoid multiple calls 
-	 // ( a more general api framework should be developed  ) 
+	 // ( a more general api cache framework should be developed  ) 
 	 var apiUserNameCache = {};
 	 mw.getUserName = function( apiUrl, callback, fresh ){	 		 	
 	 	if( typeof apiUrl == 'function' ){
@@ -319,7 +319,7 @@
 		var request = {
 			'action':'query',
 			'meta':'userinfo'
-		}
+		};
 		
 		// Do request 
 		mw.getJSON( apiUrl, request, function( data ) {

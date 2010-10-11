@@ -12,16 +12,13 @@ mw.SwarmTransport = {
 	addPlayerHooks: function(){	
 		var _this = this; 
 		// Bind some hooks to every player:
-		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {
-			// Setup local reference to embedPlayer interface
-			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
+		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 											
 			// Setup the "embedCode" binding to swap in an updated url			
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {		
 				// Confirm SwarmTransport add-on is available ( defines swarmTransport var )  
 				if( _this.getPluginLibrary() ){		
-					// Add the swarm source
-					mw.log(" SwarmTransport :: checkPlayerSourcesEvent " + swapedPlayerId);
+					// Add the swarm source					
 					_this.addSwarmSource( embedPlayer, function(){
 						// Update the source if paused					
 						if( embedPlayer.paused ) {
@@ -77,7 +74,7 @@ mw.SwarmTransport = {
 	addSwarmSource: function( embedPlayer, callback ) {
 		var _this = this;
 
-		// xxx todo: also grab the webm source if supported.  
+		// xxx todo: also grab the WebM source if supported.  
 		var source = embedPlayer.mediaElement.getSources( 'video/ogg' )[0];	
 		if( ! source ){
 			mw.log("Warning: addSwarmSource: could not find video/ogg source to generate torrent from");
@@ -87,9 +84,10 @@ mw.SwarmTransport = {
 		// Setup the torrent request:
 		var torrentLookupRequest = {
 			'url' : mw.absoluteUrl( source.getSrc() )
-		}
+		};
 
 		mw.log( 'SwarmTransport:: lookup torrent url: ' + mw.getConfig( 'SwarmTransport.TorrentLookupUrl' ) + "\n" + mw.absoluteUrl( source.getSrc() ));
+		
 		// Setup function to run in context based on callback result
 		$j.getJSON(
 			mw.getConfig( 'SwarmTransport.TorrentLookupUrl' ) + '?jsonp=?', 

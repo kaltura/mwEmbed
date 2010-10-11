@@ -50,7 +50,7 @@ mw.SequencerMenu.prototype = {
 				},
 				'condition': function( _this ){
 					// Only display if no server is defined:
-					return !(  _this.sequencer.getServer().isConfigured() )						
+					return !(  _this.sequencer.getServer().isConfigured() );	
 				}
 			},
 			'publish': {
@@ -60,22 +60,19 @@ mw.SequencerMenu.prototype = {
 				},
 				'condition': function( _this ){
 					// Only display if publishing server is present
-					return (  _this.sequencer.getServer().isConfigured() )
+					return (  _this.sequencer.getServer().isConfigured() );
 				}
 			},
 			'help_divider': 'divider',
 			'help': {
 				'icon' : 'info',
-				'action' : function(){					
-					// follow link to 
-					//$j( this ).attr('href', )
-				}	
+				'href' : 'http://commons.wikimedia.org/wiki/Commons:Sequencer'
 			},
 			'exit_divider': 'divider',
 			'exit' : {
 				'icon' : 'power',
 				'action' : function( _this ){
-					mw.log( 'check for save')
+					mw.log( 'check for save');
 					_this.sequencer.getActionsSequence().exit();					
 				}
 			}
@@ -157,10 +154,10 @@ mw.SequencerMenu.prototype = {
 						showSpeed: 100,
 						createMenuCallback: function(){
 			    			// Sync the disabled enabled state to menu
-			    			_this.syncMenuState( menuKey )
+			    			_this.syncMenuState( menuKey );
 			    		}
 					})					
-				)
+				);
 			}
 			drawTopMenu( menuKey );
 		}		
@@ -202,7 +199,7 @@ mw.SequencerMenu.prototype = {
 						'http://wikimedia.org'
 					)
 				)
-			)
+			);
 		}
 	},
 	/**
@@ -217,7 +214,7 @@ mw.SequencerMenu.prototype = {
 			mw.log('sync: ' + menuItemKey + ' in-dom:' + $menuItem.length + ' isd:' + isDisabled);
 			if( $menuItem.hasClass( 'disabled') ){
 				if( ! isDisabled ){
-					$menuItem.removeClass( 'disabled' )
+					$menuItem.removeClass( 'disabled' );
 				}
 			} else {
 				if( isDisabled ){
@@ -226,7 +223,9 @@ mw.SequencerMenu.prototype = {
 			}
 		}
 	},
-	/* return a top menuItem with all its associated menuItems */
+	/**
+	 * Return a top menuItem with all its associated menuItems 
+	 */
 	getMenuSet: function( menuKey ){
 		var _this = this;
 		var menuConfig = this.menuConfig;
@@ -261,7 +260,7 @@ mw.SequencerMenu.prototype = {
 			// Do a normal menu item include:  		
 			$menu.append(				
 				_this.getMenuItem( menuKey, menuItemKey )
-			)			
+			);			
 		}
 		return $menu;
 	},
@@ -275,23 +274,27 @@ mw.SequencerMenu.prototype = {
 			menuItem.icon, 
 			function(){
 				if( typeof menuItem.action == 'function'){
-					menuItem.action( _this );
-					return ;
+					return menuItem.action( _this );
 				}
-				mw.log( "Error:: SequencerMenu:: no action item for " + menuKey + '-' + menuItemKey );
+				return true;
 			}
 		);
+		
+		// Check if the menu item has a direct link:
+		if( menuItem.href ) {
+			$li.find('a').attr({ 'href' : menuItem.href, 'target' : '_new' } );
+		}
 		
 		if( menuItem.disabled === true ){
 			$li.addClass( 'disabled' );
 		}		
 		
 		// Set the ID for easy reference
-		$li.attr( 'id',  _this.getMenuItemId( menuKey, menuItemKey ) )
+		$li.attr( 'id',  _this.getMenuItemId( menuKey, menuItemKey ) );
 		
 		// Set the tooltip / title if provided
 		if( mw.Language.isMsgKeyDefined( 'mwe-sequencer-menu-' + menuKey + '-' + menuItemKey + '-desc' ) ){
-			$li.attr( 'title', gM('mwe-sequencer-menu-' + menuKey + '-' + menuItemKey + '-desc') )
+			$li.attr( 'title', gM('mwe-sequencer-menu-' + menuKey + '-' + menuItemKey + '-desc') );
 		}
 		
 		return $li;

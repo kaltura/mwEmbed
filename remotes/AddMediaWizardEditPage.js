@@ -63,7 +63,7 @@ mw.ready( function() {
 			mw.log( 'Do old toolbar bind:' );
 			didWikiEditorBind = true;				
 			$j( '#toolbar' ).append( '<img style="cursor:pointer" id="btn-add-media-wiz" src="' +
-				mw.getConfig( 'images_path' ) + 'Button_add_media.png">' );			
+				mw.getConfig( 'imagesPath' ) + 'Button_add_media.png">' );			
 			
 			$j( '#btn-add-media-wiz' ).attr( 'title', gM( 'mwe-loading-add-media-wiz' ) );			
 			mw.load( 'AddMedia.addMediaWizard', function() {				

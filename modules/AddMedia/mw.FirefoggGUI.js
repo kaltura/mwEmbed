@@ -96,7 +96,7 @@ mw.addMessages({
 
 mw.FirefoggGUI = function( iObj ) {
 	return this.init( iObj );
-}
+};
 var default_mvAdvFirefogg_config = {
 	// Config groups to include
 	'config_groups': [ 'preset', 'range', 'quality', 'meta', 'advVideo', 'advAudio' ],
@@ -109,7 +109,7 @@ var default_mvAdvFirefogg_config = {
 
 	// The control container
 	'target_control_container': false
-}
+};
 
 mw.FirefoggGUI.prototype = {
 	// The configuration group names
@@ -219,13 +219,13 @@ mw.FirefoggGUI.prototype = {
 			'group'     : "quality"
 		},
 		'width': {
-			'range'     : { 'min': 0, 'max': 1080 },
+			'range'     : { 'min': 0, 'max': 4096 },
 			'step'      : 4,
 			'type'      : 'slider',
 			'group'     : "quality"
 		},
 		'height': {
-			'range'     : { 'min': 0, 'max' : 1080 },
+			'range'     : { 'min': 0, 'max' : 3072 },
 			'step'      : 4,
 			'type'      : "slider",
 			'group'     : "quality"
@@ -413,7 +413,7 @@ mw.FirefoggGUI.prototype = {
 			case 'target_btn_save_local_file':
 				var icon;
 				if ( target == 'target_btn_save_local_file' ) {
-					icon = 'ui-icon-video'
+					icon = 'ui-icon-video';
 				} else {
 					icon = 'ui-icon-folder-open';
 				}
@@ -545,32 +545,6 @@ mw.FirefoggGUI.prototype = {
 		return out;
 	},
 
-	/**
-	 * Show a dialog box asking the user to select a source URL.
-	 * FIXME: half-written, doesn't work at all. 
-	 */
-	/*
-	selectSourceUrl: function() {
-		// FIXME: i18n
-		var url = prompt( "Please enter the source media url you would like " + 
-				"to transcode from.", "http://" );
-		if ( !url ) {
-			return;
-		}
-
-		// update the mode:
-		this.sourceMode = 'url';
-		this.sourceUrl = url;
-		this.clearSourceInfoCache();
-		this.updateSourceFileUI();
-		// update the input target
-		$j( this.target_input_file_name ) 
-			.unbind()
-			.val( url )
-			.removeAttr( 'readonly' );
-	},
-	*/
-
 	bindControls: function() {
 		var _this = this;
 		_this.basefogg_bindControls();
@@ -633,7 +607,7 @@ mw.FirefoggGUI.prototype = {
 					function() {
 						var configKey = _this.getClassId( this, 'help_' );
 						if( !helpState[configKey] )
-							$j( _this.selector + ' .helpRow_' + configKey ).hide( 'slow' )
+							$j( _this.selector + ' .helpRow_' + configKey ).hide( 'slow' );
 					}
 				);
 
@@ -672,7 +646,7 @@ mw.FirefoggGUI.prototype = {
 							$j( this ).val() ) 
 						);
 						_this.updatePresetSelection( 'custom' );
-					})
+					});
 					break;
 				case 'date':
 					$j( this.selector + ' ._' + configKey ).datepicker({
