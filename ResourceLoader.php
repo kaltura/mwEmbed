@@ -16,14 +16,14 @@ if( is_file ( dirname( __FILE__ ) .'../mwResourceLoader.php' )
 
 // Check if we are an entry point or being used as part of MEDIAWIKI:
 if ( !defined( 'MEDIAWIKI' ) && !defined( 'SCRIPTLOADER_MEDIAWIKI') ) {
-	// Load stand alone Resource Loader config
-	// ( if running as a remote, mediaWiki variables / functions are already included as part of mediaWiki )
-	require_once( realpath( dirname( __FILE__ ) ) . '/includes/noMediaWikiConfig.php' );
-
     // Allow an installation an optional PHP customization/overrides file
 	if ( is_file ( dirname( __FILE__ ) .'/../localSettings.php' ) ) {
 	  require_once dirname( __FILE__ ) .'/../localSettings.php';
 	}
+
+	// Load stand alone Resource Loader config
+	// ( if running as a remote, mediaWiki variables / functions are already included as part of mediaWiki )
+	require_once( realpath( dirname( __FILE__ ) ) . '/includes/noMediaWikiConfig.php' );
 
 	$myResourceLoader = new ResourceLoader();
 	if( $myResourceLoader->outputFromCache() ) {
