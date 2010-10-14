@@ -296,7 +296,7 @@ mw.setDefaultConfig( 'embedPlayerSourceAttributes', [
 					mw.playerManager.addElement( playerElement, attributes);
 				}	
 				
-			} );
+			});
 			// run the callback directly if no players were added to the playerManager 
 			if( !addedToPlayerManager && callback ){
 				callback();

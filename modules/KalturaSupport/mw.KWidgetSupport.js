@@ -26,9 +26,7 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;		
 		// Add the hooks to the player manager
 
-		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {	
-			mw.log(  'KWidgetSupport:: newEmbedPlayerEvent: ' + swapedPlayerId );
-			var embedPlayer = $j( '#' + swapedPlayerId ).get(0);
+		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {	
 			// Add hook for check player sources to use local kEntry ID source check:
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {				
 				mw.log(" KWidgetSupport::checkPlayerSourcesEvent for " + embedPlayer.id);
@@ -94,8 +92,13 @@ mw.KWidgetSupport.prototype = {
 			}
 			
 			// Check for the bumper plugin ( note we should probably have a separate uiConf js class )
-			var $uiConf = $j( uiConf.confFileFeatures );
-						
+			var $uiConf = $j( uiConf.confFileFeatures );			
+			
+			// Check if the ad plugin is enabled:
+			if( $uiConf.find('advertising').lenth && $uiConf.find('advertising').attr('enabled') == 'true' ){
+				mw.addKalturaAds( embedPlayer, $uiConf.find('advertising') );
+			}
+			
 			// Check if the bumper plugin is enabled:
 			var $bumbPlug = $uiConf.find("uiVars var[key='bumper.plugin']");
 			
@@ -115,7 +118,10 @@ mw.KWidgetSupport.prototype = {
 				// Get the bumper entryid				
 				if( bumper.bumperEntryID ){
 					mw.log( "KWidget:: addUiConf: get sources for " + bumper.bumperEntryID);
-					_this.getDeviceEntryIdSources( bumper.bumperEntryID, function( sources ){						
+					_this.getDeviceEntryIdSources( bumper.bumperEntryID, function( sources ){
+						
+						// Add to the bumper per entry id:
+						
 						$j( embedPlayer ).bind('play', function(){							
 							if( bumper.playOnce && embedPlayer.bumperPlayCount >= 1){
 								return true;
@@ -123,9 +129,9 @@ mw.KWidgetSupport.prototype = {
 							embedPlayer.bumperPlayCount++;
 							// Call the special insertAndPlaySource function 
 							// ( used for ads / video inserts ) 
-							embedPlayer.insertAndPlaySource( sources[0].src, bumper);									
+							embedPlayer.insertAndPlaySource( sources[0].src, bumper );									
 						})
-						// Bind the bumper into location play						
+						// Bind the bumper into location play
 						callback();
 					});
 				}

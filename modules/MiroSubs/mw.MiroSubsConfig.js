@@ -64,17 +64,17 @@ mw.MiroSubsConfig = {
 		var _this = this;
 		return {
 			// By default the config status is 'ok'
-			'status' : 'ok',
+			'status': 'ok',
 			
 			// Default language key 'en':
-			'languageKey' : 'en',
+			'languageKey': 'en',
 			
 			'closeListener': function(){
 				// close event refresh page? 
 				// make sure any close dialog is 'closed'
 				mw.closeLoaderDialog();
 			},
-			'videoURL' : _this.getVideoURL(),
+			'videoURL': _this.getVideoURL(),
 			'save': function( miroSubs, doneSaveCallback, cancelCallback) {
 				// Convert the miroSubs to srt				
 				var srtText = _this.miroSubs2Srt( miroSubs );
@@ -86,6 +86,8 @@ mw.MiroSubsConfig = {
 					}
 				});				
 			},
+			'mediaURL': mw.getMwEmbedPath() + 'modules/MiroSubs/mirosubs/media/',
+			'skipFinished': true,
 			'permalink': 'http://commons.wikimedia.org',
 			// not sure if this is needed
 			'login': function( ){

@@ -6,7 +6,7 @@
 ( function( mw ) {
 	mw.addMessages( {
 		"mwe-mirosubs-add-universal-subtitles" :   "Universal subtitles editor",
-		"mwe-mirosubs-loading-universal-subtitles" : "Loading <i>universal subtitles</i> editor"
+		"mwe-mirosubs-loading-universal-subtitles" : "Loading universal subtitles editor"
 	});
 	// add as loader dependency  'mw.style.mirosubsMenu' 
 	

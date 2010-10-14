@@ -245,77 +245,7 @@ mw.EmbedPlayerNative = {
 			_this.seeking = false;
 			_this.monitor();
 		})			
-	},
-	
-	insertAndPlaySource: function( src , options ){
-		mw.log("NativeEmbed:: insertAndPlaySource: " + src  + ' insertAndPlayingConfig:' + this.insertAndPlayingConfig);
-		if(!options)
-			options = {};
-		
-		if( options.lockUI  ){
-			this.playerElement.controls = false;
-		}
-		
-		// Make sure to capture the original source
-		if(! this.insertAndPlayingConfig ){
-			//alert( 'setup this.insertAndPlayingConfig ');
-			this.insertAndPlayingConfig = {
-				'src' : this.getSrc(),
-				'time' : this.currentTime,
-				'callback' : options.callback,
-				'restoreControls' : options.lockUI
-			}
-		}
-		// Try to directly playback the source 
-		this.switchSrc( src );
-		
-	},
-	restoreSourcePlayback: function( ){
-		var _this = this;
-		mw.log( "RestoreSourcePlayback:: empty out insertAndPlayingConfig" );		
-		if( !this.insertAndPlayingConfig) {
-			mw.log("Error: called restored playback with empty insertAndPlayingConfig")
-			return;
-		}			
-		this.switchSrc( this.insertAndPlayingConfig.src );		
-		//this.playerElement.play();
-		// Remove insert and playing config flag
-		this.insertAndPlayingConfig = false;				
-		
-		var time = this.insertAndPlayingConfig.time;
-		var callback = this.insertAndPlayingConfig.callback;
-		
-		// run the seek: 
-		this.setCurrentTime( time ,function(){			
-			if( this.insertAndPlayingConfig.restoreControls ){
-				this.playerElement.controls = true;
-			}			
-		});
-		// Give some time for ipad to figure out whats going on: 
-		setTimeout(function(){			
-			_this.playerElement.load();
-			_this.playerElement.play();
-		},100);
-			
-		//alert("insertAndPlayingConfig:: " + this.insertAndPlayingConfig);
-		// Run the callback 
-		if( callback ){
-			callback();
-		}
-	},
-	switchSrc: function( src ){
-		mw.log( 'switchSrc' )
-		if( this.getPlayerElement() ){
-			try{
-				//this.playerElement.pause();
-				this.playerElement.src = src;		
-				this.playerElement.load();
-				this.playerElement.play();
-			} catch( e ){
-				mw.log("Error: possible error in swiching source playback");
-			}
-		}
-	},
+	},	
 	
 	/**
 	* Seek in a existing stream
@@ -647,11 +577,6 @@ mw.EmbedPlayerNative = {
 		mw.log( 'EmbedPlayer:native: onended:' + this.playerElement.currentTime + ' real dur:' +  this.getDuration() +
 				' insertAndPlayingConfig: ' + this.insertAndPlayingConfig);
 		
-		if( this.insertAndPlayingConfig ){
-			this.restoreSourcePlayback();
-			this.insertAndPlayingConfig = false;
-			return ;
-		}			
 		this.onClipDone();
 	}
 };

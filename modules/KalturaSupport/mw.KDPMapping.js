@@ -32,8 +32,7 @@
 		addPlayerHooks: function(){
 			var _this = this;
 			// Add the hooks to the player manager			
-			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, swapedPlayerId ) {		
-				var embedPlayer = $j( '#' + swapedPlayerId ).get(0);				
+			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {						
 				// Add the addJsListener and sendNotification maps
 				embedPlayer.addJsListener = function(listenerString, callback){
 					_this.bindListenEvent( embedPlayer, listenerString, callback )
