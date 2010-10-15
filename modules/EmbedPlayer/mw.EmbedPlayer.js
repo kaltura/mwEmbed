@@ -2141,7 +2141,7 @@ mw.EmbedPlayer.prototype = {
 		  		})
 		  		.text( gM( 'mwe-embedplayer-download_clip' ) )
 		  	)
-		  )
+		  );
 		}
 		// hide
 	},
@@ -2415,8 +2415,10 @@ mw.EmbedPlayer.prototype = {
 		// so we have to do a full replace ( if controls are not included initially ) 		
 		if( mw.isMobileHTML5() && mobileSafariNeedsRefresh ) {
 			var source = this.mediaElement.getSources( 'video/h264' )[0];
-			if( source && ! source.src ){
-				mw.log( 'Error: should have caught no playable sources for mobile safari earlier' );
+			// XXX note this should be updated once mobile supports h.264  
+			if( !source || !source.src ){
+				mw.log( 'Warning: Your probably fakeing the iPhone userAgent ( no h.264 source )' );
+				source = this.mediaElement.getSources( 'video/ogg' )[0];
 			}
 			
 			var videoAttribues = {

@@ -345,11 +345,13 @@ mw.includeAllModuleMessages();
 		
 		// Get the current source sub captions
 		getCurrentSubSource: function( callback ){
+			mw.log("getCurrentSubSource:: enabled source:" + this.enabledSources.length);
 			for( var i =0; i < this.enabledSources.length; i++ ){
 				var source = this.enabledSources[i];
 				if( source.category == 'SUB' ){
 					source.load( function(){
 						callback( source);
+						return ;
 					});
 				}
 			}
@@ -902,6 +904,7 @@ mw.includeAllModuleMessages();
 			if( _this.loaded ) {
 				if( callback ) { 
 					callback();
+					return ;
 				}
 			};
 			_this.loaded = true;
@@ -1007,17 +1010,19 @@ mw.includeAllModuleMessages();
 			//Check if the p matches the "all in one line" match: 
 			var m = currentPtext.replace('--&gt;', '-->').match(/\d+\s(\d+):(\d+):(\d+)(?:,(\d+))?\s*--?>\s*(\d+):(\d+):(\d+)(?:,(\d+))?\n?(.*)/);
 			if (m) {
+				var startMs = (m[4])? (parseInt(m[4], 10) / 1000):0;
+				var endMs = (m[8])? (parseInt(m[8], 10) / 1000) : 0;
 				captions.push({
 				'start': 
 					(parseInt(m[1], 10) * 60 * 60) +
 					(parseInt(m[2], 10) * 60) +
 					(parseInt(m[3], 10)) +
-					(parseInt(m[4], 10) / 1000),
+					startMs ,
 				'end':
 					(parseInt(m[5], 10) * 60 * 60) +
 					(parseInt(m[6], 10) * 60) +
 					(parseInt(m[7], 10)) +
-					(parseInt(m[8], 10) / 1000),
+					endMs,
 				'content': $j.trim( m[9] )
 				});
 				return 'next';
@@ -1035,16 +1040,18 @@ mw.includeAllModuleMessages();
 			//Check only for time match:
 			var m = currentPtext.replace('--&gt;', '-->').match(/(\d+):(\d+):(\d+)(?:,(\d+))?\s*--?>\s*(\d+):(\d+):(\d+)(?:,(\d+))?/);
 			if (m) {
+				var startMs = (m[4])? (parseInt(m[4], 10) / 1000):0;
+				var endMs = (m[8])? (parseInt(m[8], 10) / 1000) : 0;
 				curentCap['start']= 
 					(parseInt(m[1], 10) * 60 * 60) +
 					(parseInt(m[2], 10) * 60) +
 					(parseInt(m[3], 10)) +
-					(parseInt(m[4], 10) / 1000);
+					startMs;
 				curentCap['end']=
 					(parseInt(m[5], 10) * 60 * 60) +
 					(parseInt(m[6], 10) * 60) +
 					(parseInt(m[7], 10)) +
-					(parseInt(m[8], 10) / 1000);
+					endMs;
 				return 'next';
 			}
 			//Else content for the curentCap

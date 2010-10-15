@@ -50,7 +50,7 @@
 			}
 			callback( false );
 		} );
-	}		
+	};
 	
 	/**
 	* Issues the wikitext parse call 
@@ -181,7 +181,7 @@
 		//mw.log("run getJSON: " + mw.replaceUrlParams( url, data ) );
 				
 		// Check if the request requires a "post" 
-		if( mw.checkRequestPost( data )  ) {
+		if( mw.checkRequestPost( data ) || data['_method'] == 'post'  ) {
 		
 			// Check if we need to setup a proxy
 			if( ! mw.isLocalDomain( url ) ) {
@@ -195,8 +195,7 @@
 					mw.ApiProxy.doRequest( url, data, callback, timeoutCallback);				
 				} );
 								
-			} else {
-							
+			} else {							
 				// Do the request an ajax post 
 				$j.post( url, data, myCallback, 'json');				
 			}

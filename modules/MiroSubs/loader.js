@@ -18,7 +18,7 @@
 	});
 	
 	mw.setDefaultConfig( {
-		'MiroSubs.EnableUniversalSubsEditor': false
+		'MiroSubs.EnableUniversalSubsEditor': true
 	})
 	
 	mw.addModuleLoader( 'MiroSubs', function(){
@@ -50,7 +50,7 @@
 								}, 500);
 								// Show the dialog	
 								setTimeout(function(){
-									mirosubs.api.openDialog( config );
+									mirosubs.api.openDialog( config );									
 								}, 800);
 							});					
 						});

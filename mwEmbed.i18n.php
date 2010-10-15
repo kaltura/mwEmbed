@@ -25,9 +25,11 @@ $messages['en'] = array(
 /** Message documentation (Message documentation)
  * @author EugeneZelenko
  * @author Fryed-peach
+ * @author Nike
  */
 $messages['qqq'] = array(
 	'mwe-loading_txt' => '{{Identical|Loading}}',
+	'mwe-size-gigabytes' => 'Size (of a file, typically) in gibibytes (1 gibibyte = 1024×1024×1024 bytes).',
 	'mwe-error_load_lib' => 'Parameters:
 * $1 Corresponds to the JavaScript file that was not retrievable or does not define its class name.
 * $2 Is the class name that was associated with the JavaScript file that was not found or could not be retrieved.',
@@ -282,6 +284,11 @@ $messages['gsw'] = array(
 	'mwe-test-plural' => '{{PLURAL:$1|$1 Tescht|$1 Tescht}} uusgfiert',
 );
 
+/** Hausa (هَوُسَ) */
+$messages['ha'] = array(
+	'mwe-cancel' => 'Soke',
+);
+
 /** Hebrew (עברית)
  * @author Rotemliss
  */
@@ -417,12 +424,14 @@ $messages['ksh'] = array(
  */
 $messages['lb'] = array(
 	'mwe-loading_txt' => 'lueden ...',
+	'mwe-error_load_lib' => 'Feeler: JavaScript $1 konnt net ofgeruf ginn oder definéiert $2 net',
 	'mwe-apiproxy-setup' => 'API-Proxy astellen',
 	'mwe-load-drag-item' => 'Den agebonnen Objet gëtt gelueden',
 	'mwe-ok' => 'OK',
 	'mwe-cancel' => 'Ofbriechen',
 	'mwe-enable-gadget' => 'Multimedia-Beta-Gadget (mwEmbed) fir all Säiten aktivéieren',
 	'mwe-enable-gadget-done' => 'De Multimedia-Beta-Gadget gouf aktivéiert',
+	'mwe-must-login-gadget' => 'Fir de Gadget aktivéieren ze kënne musst Dir Iech <a target="_new" href="$1">aloggen</a>',
 	'mwe-test-plural' => 'Ech hunn {{PLURAL:$1|$1 Test|$1 Tester}} gemaach',
 );
 
@@ -452,6 +461,13 @@ $messages['ml'] = array(
 	'mwe-load-drag-item' => 'വലിച്ചിട്ടത് ശേഖരിക്കുന്നു',
 	'mwe-ok' => 'ശരി',
 	'mwe-cancel' => 'റദ്ദാക്കുക',
+);
+
+/** Erzya (Эрзянь)
+ * @author Botuzhaleny-sodamo
+ */
+$messages['myv'] = array(
+	'mwe-loading_txt' => 'Йовкстамозо моли…',
 );
 
 /** Dutch (Nederlands)
@@ -511,6 +527,14 @@ $messages['pdc'] = array(
 $messages['pl'] = array(
 	'mwe-loading_txt' => 'ładowanie ...',
 	'mwe-error_load_lib' => 'Błąd – W plik JavaScript $1 brak jest możliwości pobrania oraz definicji $2',
+	'mwe-apiproxy-setup' => 'Konfiguracja proxy dla API',
+	'mwe-load-drag-item' => 'Ładowanie przeciągniętego elementu',
+	'mwe-ok' => 'OK',
+	'mwe-cancel' => 'Anuluj',
+	'mwe-enable-gadget' => 'Włącz wersję testową multimediów (wmEmbed) na wszystkich stronach',
+	'mwe-enable-gadget-done' => 'Testowy gadżet multimediów został włączony',
+	'mwe-must-login-gadget' => 'Gadżet można włączyć dopiero po <a target="_new" href="$1">zalogowaniu się</a>',
+	'mwe-test-plural' => 'Wykonałem $1 {{PLURAL:$1|test|testy|testów}}',
 );
 
 /** Piedmontese (Piemontèis)
@@ -588,7 +612,7 @@ $messages['ru'] = array(
 	'mwe-test-plural' => 'Я прошёл {{PLURAL:$1|$1 проверку|$1 проверки|$1 проверок}}',
 );
 
-/** Rusyn (русиньскый язык)
+/** Rusyn (Русиньскый)
  * @author Gazeb
  */
 $messages['rue'] = array(
@@ -668,6 +692,11 @@ $messages['tr'] = array(
 	'mwe-cancel' => 'İptal',
 );
 
+/** Urdu (اردو) */
+$messages['ur'] = array(
+	'mwe-cancel' => 'منسوخ',
+);
+
 /** Vèneto (Vèneto)
  * @author Candalua
  */
@@ -679,16 +708,31 @@ $messages['vec'] = array(
 
 /** Vietnamese (Tiếng Việt)
  * @author Minh Nguyen
+ * @author Vinhtantran
  */
 $messages['vi'] = array(
 	'mwe-loading_txt' => 'đang tải …',
 	'mwe-size-kilobytes' => '$1 kB',
+	'mwe-error_load_lib' => 'Lỗi: JavaScript $1 không truy xuất được hoặc không định nghĩa $2',
+	'mwe-apiproxy-setup' => 'Đang thiết lập proxy API',
+	'mwe-load-drag-item' => 'Đang tải các mục đã kéo',
 	'mwe-ok' => 'OK',
 	'mwe-cancel' => 'Hủy bỏ',
+	'mwe-enable-gadget' => 'Kích hoạt đa phương tiện bản beta (mwEmbed) cho mọi trang',
+	'mwe-enable-gadget-done' => 'Công cụ đa năng đa phương tiện bản beta đã được kích hoạt',
+	'mwe-must-login-gadget' => 'Để kích hoạt công cụ đa năng bạn phải <a target="_new" href="$1">đăng nhập</a>',
+	'mwe-test-plural' => 'Tôi đã chạy {{PLURAL:$1|$1 mẫu thử|$1 mẫu thử}}',
 );
 
 /** Wu (吴语) */
 $messages['wuu'] = array(
+	'mwe-cancel' => '取消',
+);
+
+/** Simplified Chinese (‪中文(简体)‬) */
+$messages['zh-hans'] = array(
+	'mwe-loading_txt' => '载入中……',
+	'mwe-ok' => '确定',
 	'mwe-cancel' => '取消',
 );
 

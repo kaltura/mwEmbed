@@ -442,7 +442,8 @@ mw.SmilLayout.prototype = {
 				
 		var request = {
 			'action' : 'parse',
-			'text': wikiTextTemplateCall
+			'text': wikiTextTemplateCall,
+			'_method' : 'post'
 		};
 		// Check if we have the titleKey for the sequence and use that as context title
 		var titleKey = this.smil.getEmbedPlayer().apiTitleKey;

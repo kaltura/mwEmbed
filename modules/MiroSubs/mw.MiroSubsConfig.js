@@ -1,4 +1,7 @@
 
+// include all module messages
+mw.includeAllModuleMessages();
+
 /** 
  * Generates a miro subs config also see:
  * http://dev.universalsubtitles.org/widget/api_demo.html
@@ -76,15 +79,42 @@ mw.MiroSubsConfig = {
 			},
 			'videoURL': _this.getVideoURL(),
 			'save': function( miroSubs, doneSaveCallback, cancelCallback) {
+				// Close down the editor 
+				// @@( no way to turn off bindings )		
+				// @@FIXME add api Close dialog
+				// mirosubs.api.closeDialog();
+				doneSaveCallback();
+				$j('.mirosubs-modal-widget-bg,.mirosubs-modal-widget').hide();
+
 				// Convert the miroSubs to srt				
-				var srtText = _this.miroSubs2Srt( miroSubs );
-				_this.saveSrtText( srtText, function(status){
-					if( status ){
-						doneSaveCallback();
-					} else {
-						cancelCallback();
+				var srtText = _this.miroSubs2Srt( miroSubs );			
+				$saveDialog = _this.getSaveDialogSummary( function( summary ){
+					if( summary === false ){
+						// Return to current page without saving the text 
+						location.reload(true);				
+						return ;
 					}
-				});				
+					_this.saveSrtText( srtText, summary, function(status){											
+						// No real error handling right now
+						// refresh page regardless of save or cancel						
+											
+						if( status ){
+							$saveDialog
+							.dialog("option", 'title', gM('mwe-mirosubs-subs-saved') )
+							.html( gM('mwe-mirosubs-thankyou-contribution') );
+						} else {
+							$saveDialog
+							.dialog("option", 'title', gM('mwe-mirosubs-subs-saved-error') )
+							.html( gM('mwe-mirosubs-subs-saved-error') );
+						}
+						// Either way the only button is OK and it refreshes the page:
+						var button = {};
+						button[ gM('mwe-ok') ] = function(){
+							location.reload(true);
+						};
+						$saveDialog.dialog("option", "buttons", button );
+					});				
+				});
 			},
 			'mediaURL': mw.getMwEmbedPath() + 'modules/MiroSubs/mirosubs/media/',
 			'skipFinished': true,
@@ -96,8 +126,46 @@ mw.MiroSubsConfig = {
 			'embedCode' : 'some code to embed'
 		};	
 	},
-	saveSrtText: function( srtText, calllback ){
-		var _this = this;
+	getSaveDialogSummary: function( callback ){
+		// Add a dialog to get save summary
+		var buttons ={};
+		buttons[ gM('mwe-mirosubs-save-subs') ] = function(){
+			var summary = $j('#mwe-mirosubs-save-summary').val();
+			// Append link to gadget: 
+			summary+= ' using [[Commons:UniversalSubtitles|UniversalSubs]]';
+			callback( summary );	
+			// set dialog to loading
+			$j( this ).html( $j('<div />').append( 
+					gM('mwe-mirosubs-saving-subs'), 
+					$j('<div />')
+					.loadingSpinner()	
+				)
+			)
+			.dialog( "option", "buttons", false )
+			.dialog( "option", "title", gM('mwe-mirosubs-saving-subs') );
+		};
+		buttons[ gM('mwe-cancel') ] = function(){
+			callback( false );
+			$j( this ).dialog( 'close' );
+		};
+		// Reduce the z-index so we can put the model ontop: 
+		//$j('.mirosubs-modal-widget-bg,.mirosubs-modal-widget').css( 'z-index', 10 );
+		var $dialog = mw.addDialog( {
+			'title' : gM("mwe-mirosubs-save-summary"), 
+			'width' : 450,
+			'content' : $j('<div />').append(
+					$j('<h3 />').text( gM("mwe-mirosubs-save-summary") ),
+					$j('<input/>').attr({
+						'id' : 'mwe-mirosubs-save-summary',
+						'size': '35'
+					}).val( gM('mwe-mirosubs-save-default') )
+				),
+			'buttons' : buttons
+		});		  
+		return $dialog;
+	},
+	saveSrtText: function( srtText, summary, callback ){
+		var _this = this;		
 		var timedTextTitle = 'TimedText:' + 
 			this.embedPlayer.apiTitleKey +  
 			'.' + this.config.languageKey + '.srt';
@@ -110,15 +178,15 @@ mw.MiroSubsConfig = {
 			var request = {
 				'action':'edit',
 				'title': timedTextTitle,
-				'summary': "Updated subtitles with [[Help:Gadget-MwEmbed/UniversalSubs|UniversalSubs]]",
 				'text': srtText,
+				'summary': summary,	
 				'token': token
 			};
 			mw.getJSON( apiUrl, request, function(data){
 				if( data.edit.result == "Success" ){
-					calllback( true );
+					callback( true );
 				} else {
-					calllback( false );
+					callback( false );
 				}
 			});
 		});		
@@ -150,10 +218,12 @@ mw.MiroSubsConfig = {
 	
 	// Get the existing subtitles in miro format	
 	getSubsInMiroFormat: function( callback ){
-		var _this = this;
-		var miroSubs = [];		
+		var _this = this;		
 		var playerTimedText = this.embedPlayer.timedText;
+		
+		var letters = 'abcdefghijklmnopqrstuvwxyz';
 		playerTimedText.setupTextSources( function(){
+			var miroJsonSubs = [];
 			// NOTE the autoselected default language is a tricky issue
 			// We need to add support for language selection in the config object save callback
 			
@@ -163,16 +233,17 @@ mw.MiroSubsConfig = {
 				_this.config.languageKey = source.srclang;
 				for( var i = 0; i < captions.length ; i ++ ){
 					var caption = captions[i];
-					miroSubs.push({
-						'subtitle_id': i,
+					// get random letters					
+					miroJsonSubs.push({						
+						'subtitle_id': 'sub_' + i,
 						'text': caption.content,
 						'start_time': caption.start,
 						'end_time': caption.end,
 						'sub_order': i
 					});
 				}
-			});	
-			callback( miroSubs );
+			});				
+			callback( miroJsonSubs );
 		});			
 	}
 };

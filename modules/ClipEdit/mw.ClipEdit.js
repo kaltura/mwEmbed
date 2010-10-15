@@ -2,37 +2,8 @@
 *	mw.ClipEdit handles the edit interfaces for images and video
 */
 
-// set gMsg object:
-mw.addMessages( {
-	"mwe-clipedit-crop" : "Crop image",
-	"mwe-clipedit-apply_crop" : "Apply crop to image",
-	"mwe-clipedit-reset_crop" : "Reset crop",
-	"mwe-clipedit-insert_image_page" : "Insert into page",
-	"mwe-clipedit-insert_into_sequence" : "Insert into sequence",
-	"mwe-clipedit-preview_insert" : "Preview insert",
-	"mwe-clipedit-cancel_image_insert" : "Cancel insert",
-	"mwe-clipedit-sc_attributes" : "Clip detail edit",
-	"mwe-clipedit-sc_inoutpoints" : "Set in-out points",
-	"mwe-clipedit-sc_overlays" : "Overlays",
-	"mwe-clipedit-sc_audio" : "Audio control",
-	"mwe-clipedit-sc_duration" : "Duration",
-	"mwe-clipedit-template_properties" : "Template properties",
-	"mwe-clipedit-custom_title" : "Custom title",
-	"mwe-clipedit-edit_properties" : "Edit properties",
-	"mwe-clipedit-other_properties" : "Other properties",
-	"mwe-clipedit-resource_page" : "Resource page:",
-	"mwe-clipedit-set_in_out_points" : "Set in-out points",
-	"mwe-clipedit-start_time" : "Start time",
-	"mwe-clipedit-end_time" : "End time",
-	"mwe-clipedit-preview_inout" : "Preview in-out points",
-	"mwe-clipedit-edit-tools" : "Edit tools",
-	"mwe-clipedit-inline-description" : "Caption",
-	"mwe-clipedit-edit-video-tools" : "Edit video tools:",
-	"mwe-clipedit-duration" : "Duration:",
-	"mwe-clipedit-layout" : "Layout",
-	"mwe-clipedit-layout_right" : "Right side image layout",
-	"mwe-clipedit-layout_left" : "Left side image layout"
-} );
+// include all module messages
+mw.includeAllModuleMessages();
 
 /**
 * The default clipEdit values

@@ -2342,8 +2342,8 @@ mw.RemoteSearchDriver.prototype = {
 
 					// Add libraries resizable and hoverIntent to support video edit tools
 					var librarySet = [
-						 'mw.ClipEdit',
-						 'mw.style.ClipEdit',
+						'mw.ClipEdit',
+						'mw.style.ClipEdit',
 						'$j.ui.resizable'
 					];
 					mw.load( librarySet, function() {						

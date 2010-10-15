@@ -12,7 +12,7 @@
 		options.playerTarget = this.selector;		
 		var myFogg = new mw.FirefoggRender( options );
 		return myFogg;
-	}		
+	};	
 } )( jQuery );
 
 
@@ -117,7 +117,7 @@ mw.FirefoggRender.prototype = {
 		this.renderTime = this.startTime;
 		
 		// Get the interval from renderOptions framerate
-		this.interval =  1 / this.renderOptions.framerate
+		this.interval =  1 / this.renderOptions.framerate;
 		
 		// Set the continue rendering flag to true:
 		this.continueRendering = true;
@@ -163,7 +163,7 @@ mw.FirefoggRender.prototype = {
 		if( this.onProgress ){
 			this.onProgress(
 				_this.renderTime / _this.getPlayer().getDuration()
-			)
+			);
 		}
 		
 		_this.getPlayer().setCurrentTime( _this.renderTime, function() {											
@@ -219,7 +219,7 @@ mw.FirefoggRender.prototype = {
 	    if( this.doneRenderCallback ){
 	    	// Pass the firefogg object to the render done callback for other operations 
 	    	// ( such as uploading the asset ) 
-	    	this.doneRenderCallback( this.fogg )
+	    	this.doneRenderCallback( this.fogg );
 	    }
 	}
 };

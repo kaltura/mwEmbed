@@ -22,7 +22,7 @@ mw.includeAllModuleMessages();
 /* Add the hooks needed for playback */
 mw.Smil = function(options) {
 	return this.init(options);
-}
+};
 mw.Smil.prototype = {
 
 	// Store the mw.SmilLayout object
@@ -92,7 +92,7 @@ mw.Smil.prototype = {
 		// Try for direct load ( api cross domain loading is handled outside of
 		// SmilInterface
 		$j.get(url, function( xmlData) {
-			_this.loadFromXMLData( xmlData )			
+			_this.loadFromXMLData( xmlData );	
 			// XXX check success or failure
 			callback();
 		});
@@ -427,7 +427,7 @@ mw.Smil.prototype = {
 				} else {
 					$j(node).attr('action', 
 						_this.getAssetUrl( $j(node).attr('src') )
-					)
+					);
 				}
 			}
 		})
