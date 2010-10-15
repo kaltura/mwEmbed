@@ -268,7 +268,9 @@ function kAddScript(){
 		  'MD5',
 		  'mw.KWidgetSupport',
 		  'mw.KAnalytics', 
-		  'mw.KDPMapping'
+		  'mw.KDPMapping',
+		  'mw.MobilePlayerTimeline',		
+		  'mw.KAds'
 		]);	
 		
 		// kaltura playlist support ( so small relative to client libraries that we always include it )

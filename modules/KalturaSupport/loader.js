@@ -13,7 +13,8 @@
 		'Kaltura.EnableAnalytics' : true,
 		'Kaltura.ServiceUrl' : 'http://www.kaltura.com',
 		'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
-		'Kaltura.CdnUrl' : 'http://cdn.kaltura.com'
+		'Kaltura.CdnUrl' : 'http://cdn.kaltura.com',
+		'Kaltura.xmlProxyUrl' : mw.getMwEmbedPath() + 'modules/KalturaSupport/simplePhpXMLProxy.php'
 	} );
 	
 	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
@@ -34,6 +35,9 @@
 		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
 		"mw.KDPMapping" : "mw.KDPMapping.js",		
 		
+		"mw.MobileAdTimeline" : "mw.MobileAdTimeline.js",		
+		"mw.KAds" : "mw.KAds.js", 
+		
 		"KalturaClientBase"	: "kalturaJsClient/KalturaClientBase.js",
 		"KalturaClient" : "kalturaJsClient/KalturaClient.js",
 		"KalturaAccessControlService" : "kalturaJsClient/KalturaServices.js",
@@ -52,7 +56,9 @@
 	  'MD5',
 	  'mw.KWidgetSupport',	  
 	  'mw.KAnalytics',
-	  'mw.KDPMapping'
+	  'mw.KDPMapping',
+	  'mw.MobilePlayerTimeline',		
+	  'mw.KAds' 
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {

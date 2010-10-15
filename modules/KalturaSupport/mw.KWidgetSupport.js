@@ -95,7 +95,7 @@ mw.KWidgetSupport.prototype = {
 			var $uiConf = $j( uiConf.confFileFeatures );			
 			
 			// Check if the ad plugin is enabled:
-			if( $uiConf.find('advertising').lenth && $uiConf.find('advertising').attr('enabled') == 'true' ){
+			if( $uiConf.find('advertising').length && $uiConf.find('advertising').attr('enabled') == 'true' ){
 				mw.addKalturaAds( embedPlayer, $uiConf.find('advertising') );
 			}
 			
@@ -118,10 +118,8 @@ mw.KWidgetSupport.prototype = {
 				// Get the bumper entryid				
 				if( bumper.bumperEntryID ){
 					mw.log( "KWidget:: addUiConf: get sources for " + bumper.bumperEntryID);
-					_this.getDeviceEntryIdSources( bumper.bumperEntryID, function( sources ){
-						
-						// Add to the bumper per entry id:
-						
+					_this.getDeviceEntryIdSources( bumper.bumperEntryID, function( sources ){						
+						// Add to the bumper per entry id:						
 						$j( embedPlayer ).bind('play', function(){							
 							if( bumper.playOnce && embedPlayer.bumperPlayCount >= 1){
 								return true;
