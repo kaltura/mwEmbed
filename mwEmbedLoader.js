@@ -260,7 +260,8 @@ function kAddScript(){
 	// Check if we are doing object rewrite ( add the kaltura library ) 
 	if ( kBrowserAgentShouldUseHTML5() && objectPlayerList.length ){
 		// kaltura client libraries:
-		jsRequestSet.push( ['KalturaClientBase',
+		jsRequestSet.push( [
+		  'KalturaClientBase',
 		  'KalturaClient',
 		  'KalturaAccessControlService',
 		  'KalturaAccessControlOrderBy',

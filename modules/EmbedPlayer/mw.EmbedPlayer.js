@@ -2670,6 +2670,7 @@ mw.EmbedPlayer.prototype = {
 	*/
 	play: function() {
 		var _this = this;			
+		
 		mw.log( "EmbedPlayer:: play" );			  
 		// Hide any overlay:
 		this.controlBuilder.closeMenuOverlay();
@@ -2693,7 +2694,7 @@ mw.EmbedPlayer.prototype = {
 		if( this.paused ){
 			this.paused = false;
 		   	mw.log("trigger play event::");		   	
-		   	$j( this ).trigger( 'play' );
+		   	//$j( this ).trigger( 'play' );
 		}
 		
 		

@@ -3,12 +3,20 @@
 <head>
 <title>Player sources</title>
 
-<script type="text/javascript" src="../../../mwEmbed.js?debug=true"></script>
+<!--   <script type="text/javascript" src="../../../mwEmbed.js?debug=true"></script> -->
+<script type="text/javascript" src="../../../mwEmbedLoader.js"></script>
+<script type="text/javascript">
+	mw.ready(function(){
+		$j('#myVid').bind('play', function(){
+			mw.log('play event' );
+		});	
+	});
+</script>
 </head>
 <body>
 
 
-<video poster="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/elephants-dream.jpg"
+<video id="myVid" poster="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/elephants-dream.jpg"
 	 duration="10:53" preload="auto">
   <source type="video/webm" src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/elephants-dream_400p.webm" />
   <source type="video/h264" src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/elephants-dream_iphone.m4v" />
