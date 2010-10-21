@@ -76,7 +76,7 @@ mw.UploadDialogInterface.prototype = {
 			bgiframe: true,
 			modal: true,
 			draggable: true,
-			width: 400,
+			width: 450,
 			heigh: 200,
 			beforeclose: function( event, ui ) {
 				// If the upload is not complete, ask the user if they want to cancel
@@ -135,7 +135,7 @@ mw.UploadDialogInterface.prototype = {
 			.attr( 'id', 'up-etr' )
 			.css( 'float', 'right' )
 			.text( gM( 'mwe-uploaded-time-remaining', '' ) )
-		)
+		);
 		
 		// Add the status container to dialog div
 		$j( '#upProgressDialog' ).empty().append( $progressContainer	);

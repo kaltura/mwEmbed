@@ -15,7 +15,7 @@
 	} );
 	
 	mw.setDefaultConfig( {
-			// If the Timed Text interface should be displayed: 
+		// If the Timed Text interface should be displayed: 
 		// 'always' Displays link and call to contribute always
 		// 'auto' Looks for child timed text elements or "apiTitleKey" & load interface
 		// 'off' Does not display the timed text interface
@@ -24,7 +24,10 @@
 		/**
 		* If the "add timed text" link / interface should be exposed
 		*/
-		'TimedText.showAddTextLink' : true
+		'TimedText.showAddTextLink' : true,
+		
+		// The category for listing videos that need transcription:
+		'TimedText.NeedsTranscriptCategory' : 'Needs Subtitles'
 	});
 	
 	var mwTimedTextRequestSet = [ 

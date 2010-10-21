@@ -71,7 +71,7 @@ mw.ApiProxy = { };
 		
 		// Do the proxy req:
 		doFrameProxy( context );
-	}
+	};
 
 	/**
 	* Generates a remote browse file iframe window
@@ -151,7 +151,7 @@ mw.ApiProxy = { };
 							if( options.selectFileCb ) {
 								options.selectFileCb( iframeData[ 'fileName' ] );
 							}
-						break						
+						break;		
 						// Set the doneUploadCb if set in the browseFile options
 						case 'doneUploadCb':
 							mw.log( "should call cb: " + options.doneUploadCb );
@@ -270,7 +270,7 @@ mw.ApiProxy = { };
 	 */
 	$.nested = function( hashResult ) {
 		// Close the loader if present: 
-		mw.closeLoaderDialog();
+		//mw.closeLoaderDialog();
 		
 		mw.log( '$.proxy.nested callback :: ' + decodeURIComponent( hashResult ) );	
 		
@@ -552,10 +552,10 @@ mw.ApiProxy = { };
 			mw.addLoaderDialog( gM( 'mwe-re-trying' ) );			
 			// Re try the same context request:
 			doFrameProxy( context );			
-		}
+		};
 		buttons[ gM( 'mwe-cancel' ) ] = function() {
 			mw.closeLoaderDialog ( );
-		}
+		};
 		
 		// Setup the login link: 
 		var pUri =  mw.parseUri( getServerFrame( context ) );			

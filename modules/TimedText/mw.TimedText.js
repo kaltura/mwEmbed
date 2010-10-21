@@ -250,7 +250,7 @@ mw.includeAllModuleMessages();
 			}
 			
 			// Try to get sources from text provider:
-			var provider_id = ( this.embedPlayer.apiProvider ) ?  this.embedPlayer.apiProvider : 'local'; 
+			var provider_id = ( this.embedPlayer.apiProvider ) ? this.embedPlayer.apiProvider : 'local'; 
 			var apiUrl = mw.getApiProviderURL( provider_id );
 			var assetKey = 	this.embedPlayer.apiTitleKey;
 			if( !apiUrl || !assetKey ) {
@@ -270,13 +270,24 @@ mw.includeAllModuleMessages();
 					var textSource = textSources[ i ];
 					// Try to insert the track source: 
 					var textElm = document.createElement( 'track' );
-					$j( textElm ).attr( {
+					$j( textElm ).attr({
 						'category' : 'SUB',
 						'srclang' 	: textSource.srclang,
 						'type' 	: _this.timedTextExtMime[ textSource.extension ],
 						'titleKey' 	: textSource.titleKey
-					} );
-					//debugger;
+					});
+					
+					// Build the url for downloading the text: 
+					$j( textElm ).attr('src', 
+						_this.textProvider.apiUrl.replace('api.php', 'index.php?title=') +
+						textSource.titleKey + '&action=raw&ctype=text/x-srt'
+					);
+					
+					// Add a title
+					$j( textElm ).attr('title', 
+						gM('mwe-timedtext-key-language', [textSource.srclang, unescape( mw.Language.names[ textSource.srclang ] )	] )
+					);
+
 					// Add the sources to the parent embedPlayer 
 					// ( in case other interfaces want to access them )
 					var embedSource = _this.embedPlayer.mediaElement.tryAddSource( textElm );	
@@ -449,7 +460,7 @@ mw.includeAllModuleMessages();
 			
 			// Build the source list menu item:	
 			$menu = $j( '<ul>' );
-			// Chouse text menu item ( if there are sources)
+			// Show text menu item ( if there are sources)
 			if( _this.textSources.length != 0 ) {
 				$menu.append( 
 					$j.getLineItem( gM( 'mwe-timedtext-choose-text'), 'comment' ).append(
@@ -460,19 +471,110 @@ mw.includeAllModuleMessages();
 						_this.getLayoutMenu()
 					)								
 				);
+			} else {
+				// Add a link to request timed text for this clip:
+				$menu.append( 
+					$j.getLineItem( gM( 'mwe-timedtext-request-subs'), 'comment', function(){						
+						_this.getAddSubRequest();
+					})
+				);
 			}
+			
 			// Put in the "Make Transcript" link if config enabled and we have an api key
 			if( mw.getConfig( 'TimedText.showAddTextLink' ) && _this.embedPlayer.apiTitleKey ){
 				$menu.append(
 					_this.getLiAddText()
 				); 
-			}
+			}			
 			
+			// Allow other modules to add to the timed text menu: 
 			$j( _this.embedPlayer ).trigger( 'TimedText.BuildCCMenu', $menu ) ;
 			
 			return $menu;
 		},
 		
+		// Simple interface to add a transcription request
+		getAddSubRequest: function(){
+			var _this = this;
+			var buttons = {};			
+			buttons[ gM('mwe-timedtext-request-subs') ] = function(){
+				var apiUrl =  _this.textProvider.apiUrl;
+				var videoTitle = 'File:' + _this.embedPlayer.apiTitleKey.replace('File:|Image:', ''); 
+				var catName = mw.getConfig( 'TimedText.NeedsTranscriptCategory' );
+				var $dialog = $j(this);
+				
+				var buttonOk= {};
+				buttonOk[gM('mwe-ok')] =function(){
+					$j(this).dialog('close');
+				};
+				// Set the loadingSpinner:
+				$j( this ).loadingSpinner();
+				// Turn off buttons while loading
+				$dialog.dialog( 'option', 'buttons', null );								
+
+				// Check if the category does not already exist:				
+				mw.getJSON( apiUrl, {'titles': videoTitle, 'prop': 'categories'}, function(data){
+					if( data && data.query && data.query.pages ){
+						for( var i in data.query.pages ){
+							// we only request a single page: 
+							var categories = data.query.pages[i].categories;
+							for(var j =0; j < categories.length; j++){
+								if( categories[j].title.indexOf( catName ) != -1 ){									
+									$dialog.html( gM('mwe-timedtext-request-already-done') );
+									$dialog.dialog( 'option', 'buttons', buttonOk);
+									return ;
+								}
+							}
+						}
+					}		
+					
+					// Else category not found add to category:	
+					// check if the user is logged in: 
+					mw.getUserName( apiUrl, function( userName ){
+						if( !userName ){
+							$dialog.html( gM('mwe-timedtext-request-subs-fail') );
+							return ;
+						}
+						// Get an edit token:
+						mw.getToken( apiUrl, videoTitle, function( token ) {
+							if( !token ){
+								$dialog.html( gM('mwe-timedtext-request-subs-fail') );
+								return ;
+							}
+							var request = {
+								'action' : 'edit',
+								'summary' : 'Added request for subtitles using [[Commons:MwEmbed|MwEmbed]]',
+								'title' : videoTitle,
+								'appendtext' : "\n[[Category:" + catName + "]]",
+								'token': token
+							};
+							// Do the edit request:
+							mw.getJSON( apiUrl, request, function(data){
+								if( data.edit && data.edit.newrevid){
+									$dialog.html( gM('mwe-timedtext-request-subs-done',
+											apiUrl.replace('api.php', 'index.php') +
+											'?title=Category:' + catName.replace(' ', '_')
+										)
+									);								
+								} else {
+									$dialog.html( gM('mwe-timedtext-request-subs-fail') );
+								}
+								$dialog.dialog( 'option', 'buttons', buttonOk );
+							});
+						});
+					});														
+				});				
+			};
+			buttons[ gM('mwe-cancel') ] = function(){
+				$j(this).dialog('close');
+			};
+			mw.addDialog({
+				'title' : gM( 'mwe-timedtext-request-subs'),
+				'width' : 450,
+				'content' : gM('mwe-timedtext-request-subs-desc'),
+				'buttons' : buttons
+			});
+		},
 		/**
 		 * Shows the timed text edit ui
 		 * 
@@ -929,9 +1031,25 @@ mw.includeAllModuleMessages();
 				mw.log("Error: no handler for type: " + this.getMIMEType() );
 				return ;
 			}
-			// Try to load src via src attr:
+			
+			// Try to load src via textProvider:
+			if( this.textProvider && this.titleKey ) {
+				this.textProvider.loadTitleKey( this.titleKey, function( data ) {
+					if( data ) {
+						_this.captions = handler( data );
+					}				
+					// Update the loaded state:
+					_this.loaded = true;
+					if( callback ) { 
+						callback();
+					}
+				});
+				return ;
+			}
+			
+			// Try to load src via XHR source	
 			if( this.getSrc() ) {
-				// Issue the direct load request ( if we can ) 
+				// Issue the direct load request 
 				if ( !mw.isLocalDomain( this.getSrc() ) ) {
 					mw.log("Error: cant load crossDomain src:" + this.getSrc()  );
 					return ;
@@ -948,20 +1066,7 @@ mw.includeAllModuleMessages();
 				return ;
 			}			
 			
-			// Try to load src via textProvider:
-			if( this.textProvider && this.titleKey ) {
-				this.textProvider.loadTitleKey( this.titleKey, function( data ) {
-					if( data ) {
-						_this.captions = handler( data );
-					}				
-					// Update the loaded state:
-					_this.loaded = true;
-					if( callback ) { 
-						callback();
-					}
-					return ;
-				});
-			}
+			
 		},
 		
 		/**

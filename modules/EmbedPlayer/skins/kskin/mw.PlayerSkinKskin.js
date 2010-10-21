@@ -312,7 +312,7 @@ mw.PlayerSkinKskin = {
 			break; 
 			case 'download' :
 				embedPlayer.$interface.find( '.menu-download').text( 
-					gM('mwe-embedplayer-loading_txt' ) 
+					gM('mwe-loading_txt' ) 
 				);
 				// Call show download with the target to be populated
 				this.showDownload(

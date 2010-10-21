@@ -55,6 +55,11 @@ $messages['en'] = array(
 	'mwe-timedtext-textcat-cue' => 'Cue points',
 	'mwe-timedtext-language-subtitles-for-clip' => '$1 subtitles for clip: $2',
 	'mwe-timedtext-language-no-subtitles-for-clip' => 'No $1 subtitles where found for clip: $2',
+	'mwe-timedtext-request-subs' => 'Request transcription',
+	'mwe-timedtext-request-subs-desc' => 'Add a request for this video file to be transcribed',
+	'mwe-timedtext-request-subs-done' => 'Transcription request added. [$1 See all transcribe requests]',
+	'mwe-timedtext-request-subs-fail' => 'Failed to add transcription request, Are you logged in? ',
+	'mwe-timedtext-request-already-done' => 'A transcription of this video has already been requested',	
 );
 
 /** Message documentation (Message documentation)

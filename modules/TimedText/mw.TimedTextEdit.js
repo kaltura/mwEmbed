@@ -356,7 +356,7 @@ mw.TimedTextEdit.prototype = {
 							'content' : gM("mwe-timedtext-upload-text-success"), 
 							'buttons' : buttons
 						});
-					},10 );
+					}, 10 );
 				}else{
 					//Edit fail
 					setTimeout(function(){

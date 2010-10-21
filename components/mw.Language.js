@@ -272,7 +272,7 @@
 	*/
 	mw.Language.msgNoTrans = function( key ) {
 		if ( messageCache[ key ] )
-			return messageCache[ key ]
+			return messageCache[ key ];
 
 		// Missing key placeholder
 		return '&lt;' + key + '&gt;';
