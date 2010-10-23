@@ -47,7 +47,7 @@ var LINK_SWAP_STRING = 'ZreplaceZ';
 			
 			var defaultParserOptions = {
 				'templateParCount' : 2
-			}			
+			};			
 			
 			this.options = $j.extend( defaultParserOptions, parserOptions);
 		},		

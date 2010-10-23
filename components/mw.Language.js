@@ -15,7 +15,6 @@
 	* Setup the lang object
 	*/
 	var messageCache = { };
-	var gRuleSet = { };
 
 	/**
 	* mw.addMessages function
@@ -298,7 +297,7 @@
 			mw.addTemplateTransform ( {
 				'PLURAL' : mw.Language.procPLURAL,
 				'GENDER' : mw.Language.procGENDER
-			} )
+			} );
 
 			mw.Language.doneSetup = true;
 		}
@@ -344,11 +343,7 @@
 	* 	[arg] The argument sent to the template  
 	* 	[params] The template parameters  
 	*/
-	mw.Language.procPLURAL = function( templateObject ) {		
-		// Setup shortcuts
-		// ( gRuleSet is loaded from script-loader to contains local ruleset )
-		var rs = gRuleSet[ 'PLURAL' ];
-		
+	mw.Language.procPLURAL = function( templateObject ) {				
 		if( templateObject.arg && templateObject.param && mw.Language.convertPlural) {
 			// Check if we have forms to replace
 			if ( templateObject.param.length == 0 ) { 

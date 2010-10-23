@@ -6,10 +6,6 @@
  *
  * This enables sharing mwEmbed player without js includes ie:
  *
- * <object data="mwEmbedFrame.php?apiTitleKey=MyFile.ogg" > </object>
- *
- * or
- *
  * <iframe src="mwEmbedFrame.php?src={SRC URL}&poster={POSTER URL}&width={WIDTH}etc"> </iframe>
  */
 
@@ -26,30 +22,19 @@ class mwEmbedFrame {
 	/**
 	 * Variables set by the Frame request:
 	 */
-	// The default width of the embedFrame
-	var $width = null;
-
-	// The default height of the embedFrame
-	var $height = null;
-
-	// The apiTitleKey used for mediaWiki asset lookup
-	var $apiTitleKey = null;
-
-	// The entryId used for kaltura media asset lookup
-	var $entryId = null;
-
-	// The player skin ( can be mvpcf or kskin )
-	var $skin = null;
-
-	// The duration of the media asset.
-	var $durationHint = null;
+	var $playerAttributes = array(
+		'apiTitleKey',
+		'apiProvider',
+		'durationHint',
+		'poster',
+		'kEntryId',
+		'kWidgetId'	,
+		'skin'
+	);
 
 	// When used in direct source mode the source asset.
 	// NOTE: can be an array of sources in cases of "many" sources set
 	var $sources = array();
-
-	// Poster src url for video embed
-	var $poster = null;
 
 	function __construct(){
 		//parse input:
@@ -61,19 +46,15 @@ class mwEmbedFrame {
 	}
 
 	// Parse the embedFrame request and sanitize input
-	private function parseRequest(){
-		// Check for apiTitleKey request
-		if( isset($_GET['apiTitleKey'])){
-			$this->apiTitleKey = htmlspecialchars( $_GET['apiTitleKey'] );
+	private function parseRequest(){		
+		// Check for attributes
+		foreach( $this->playerAttributes as $attributeKey){
+			if( isset( $_GET[ $attributeKey ] ) ){				
+				$this->$attributeKey = htmlspecialchars( $_GET[$attributeKey] );
+			}
 		}
-		
-		if( isset($_GET['apiProvider'])){
-			$this->apiProvider = htmlspecialchars( $_GET['apiProvider'] );
-		}
-		
-		if( isset( $_GET['poster'] ) ){
-			$this->poster = htmlspecialchars( $_GET['poster'] );
-		}
+				
+		// Process the special "src" attribute
 		if( isset( $_GET['src'] ) ){
 			if( is_array( $_GET['src'] ) ){
 				foreach($_GET['src'] as $src ){
@@ -83,44 +64,14 @@ class mwEmbedFrame {
 				$this->sources = array( htmlspecialchars( $_GET['src'] ) );
 			}
 		}
-		if( isset($_GET['skin'])){
-			$this->skin = htmlspecialchars( $_GET['skin'] );
-		}
-
-		if( isset($_GET['width'])){
-			$this->width = (int)$_GET['width'];
-		}
-		if( isset( $_GET['height'] ) ){
-			$this->height = (int)$_GET['height'];
-		}
-		if( isset( $_GET['durationHint'] ) ){
-			$this->durationHint = $_GET['durationHint'];
-		}
+	
 	}
 	private function getVideoTag(){
-		$o = '<video ';
-		// Output attributes
-		if( $this->apiTitleKey ){
-			$o.= 'apiTitleKey="' . htmlspecialchars( $this->apiTitleKey ) . '" ';
-		}
-		if( $this->apiProvider ){
-			$o.= 'apiProvider="' . htmlspecialchars( $this->apiProvider ) . '" ';			
-		}
-		if( $this->poster ){
-			$o.= 'poster="' . htmlspecialchars( $this->poster ) . '" ';
-		}
-		if( $this->skin ){
-			$o.= 'class="' . htmlspecialchars( $this->skin ) . '" ';
-		}
-		if( $this->width || $this->height){
-			$o.= 'style="';
-			if( $this->width ){
-				$o.= 'width:' . htmlspecialchars( $this->width ) . 'px;';
-			}
-			if( $this->height ){
-				$o.= 'height:' . htmlspecialchars( $this->height ) . 'px;';
-			}
-			$o.= '" ';
+		// Add default video tag with 100% width / height 
+		// ( parent embed is responsible for setting the iframe size )
+		$o = '<video style="width:100%;height:100%"';
+		foreach( $this->playerAttributes as $attributeKey){
+			$o.= ' ' . $attributeKey . '="' . htmlspecialchars( $this->$attributeKey ) . '"';
 		}
 		//Close the video attributes
 		$o.='>';
@@ -134,6 +85,24 @@ class mwEmbedFrame {
 		return $o;
 	}
 	private function outputEmbedFrame( ){
+		// Setup the embed string based on attribute set:
+		$embedResourceList = 'window.jQuery,mwEmbed,mw.style.mwCommon,$j.fn.menu,mw.style.jquerymenu,mw.EmbedPlayer,mw.EmbedPlayerNative,mw.EmbedPlayerJava,mw.PlayerControlBuilder,$j.fn.hoverIntent,mw.style.EmbedPlayer,$j.cookie,$j.ui,mw.style.ui_redmond,$j.widget,$j.ui.mouse,mw.PlayerSkinKskin,mw.style.PlayerSkinKskin,mw.TimedText,mw.style.TimedText,$j.ui.slider';
+		
+		if( $this->kEntryId ){
+			 $embedResourceList.= ',' . implode(',', array(	
+			 		'KalturaClientBase',
+					'KalturaClient',
+					'KalturaAccessControlService',
+					'KalturaAccessControlOrderBy',
+					'KalturaAccessControl',
+					'MD5',
+					'mw.KWidgetSupport',
+					'mw.KAnalytics', 
+					'mw.KDPMapping',
+					'mw.MobilePlayerTimeline',		
+					'mw.KAds'
+			) );
+		}   
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -148,7 +117,7 @@ class mwEmbedFrame {
 				margin-bottom: 0px;
 			}
 		</style>		
-		<script type="text/javascript" src="ResourceLoader.php?class=window.jQuery,mwEmbed,mw.style.mwCommon,$j.fn.menu,mw.style.jquerymenu,mw.EmbedPlayer,mw.EmbedPlayerNative,mw.EmbedPlayerJava,mw.PlayerControlBuilder,$j.fn.hoverIntent,mw.style.EmbedPlayer,$j.cookie,$j.ui,mw.style.ui_redmond,$j.widget,$j.ui.mouse,mw.PlayerSkinKskin,mw.style.PlayerSkinKskin,mw.TimedText,mw.style.TimedText,$j.ui.slider"></script>
+		<script type="text/javascript" src="ResourceLoader.php?class=<?php echo $embedResourceList?>"></script>
 		<script type="text/javascript">
 			//Set some iframe embed config:
 
