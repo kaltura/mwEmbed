@@ -1086,7 +1086,6 @@ mw.SequencerTools.prototype = {
 			// Append the tooltab container
 			$toolsContainer.append(
 				$j('<div />')
-				.css({'height' : '100%' })
 				.attr('id', 'tooltab_' + toolId )		
 				.append(
 					$j('<h3 />').text( gM('mwe-sequencer-tools-' + toolId + '-desc') )

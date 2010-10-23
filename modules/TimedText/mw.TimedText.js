@@ -266,26 +266,26 @@ mw.includeAllModuleMessages();
 					
 			// Load the textProvider sources
 			this.textProvider.loadSources( assetKey,  function( textSources ) {
-				for( var i in textSources ) {
+				for( var i=0; i < textSources.length; i++ ) {
 					var textSource = textSources[ i ];
 					// Try to insert the track source: 
 					var textElm = document.createElement( 'track' );
 					$j( textElm ).attr({
-						'category' : 'SUB',
+						'category'	: 'SUB',
 						'srclang' 	: textSource.srclang,
-						'type' 	: _this.timedTextExtMime[ textSource.extension ],
+						'type'		: _this.timedTextExtMime[ textSource.extension ],
 						'titleKey' 	: textSource.titleKey
 					});
 					
 					// Build the url for downloading the text: 
 					$j( textElm ).attr('src', 
 						_this.textProvider.apiUrl.replace('api.php', 'index.php?title=') +
-						textSource.titleKey + '&action=raw&ctype=text/x-srt'
+						encodeURIComponent( textSource.titleKey ) + '&action=raw&ctype=text/x-srt'
 					);
 					
 					// Add a title
 					$j( textElm ).attr('title', 
-						gM('mwe-timedtext-key-language', [textSource.srclang, unescape( mw.Language.names[ textSource.srclang ] )	] )
+						gM('mwe-timedtext-key-language', [textSource.srclang, mw.Language.names[ textSource.srclang ] ] )
 					);
 
 					// Add the sources to the parent embedPlayer 
@@ -325,7 +325,7 @@ mw.includeAllModuleMessages();
 			this.enabledSources = [];
 									
 			// Check if any source matches our "local"
-			for( var i in this.textSources ) {
+			for( var i=0; i < this.textSources.length; i++ ) {
 				var source = this.textSources[ i ];		
 				if( this.config.userLanugage  &&
 					this.config.userLanugage == source.srclang.toLowerCase() ) {
@@ -336,7 +336,7 @@ mw.includeAllModuleMessages();
 			}
 			// If no userLang, source try enabling English:
 			if( this.enabledSources.length == 0 ) {
-				for( var i in this.textSources ) {
+				for( var i=0; i < this.textSources.length; i++ ) {
 					var source = this.textSources[ i ];
 					if( source.srclang.toLowerCase() == 'en' ) {
 						this.enabledSources.push( source );
@@ -346,7 +346,7 @@ mw.includeAllModuleMessages();
 			}
 			// If still no source try the first source we get; 
 			if( this.enabledSources.length == 0 ) {
-				for( var i in this.textSources ) {
+				for( var i=0; i < this.textSources.length; i++ ) {
 					var source = this.textSources[ i ];
 					this.enabledSources.push( source );
 					return ;
@@ -370,8 +370,8 @@ mw.includeAllModuleMessages();
 		},
 		
 		// Get sub captions by language key:
-		getSubCaptions: function( langKey, callback ){			
-			for( var i in this.textSources ) {
+		getSubCaptions: function( langKey, callback ){
+			for( var i=0; i < this.textSources.length; i++ ) {
 				var source = this.textSources[ i ];
 				if( source.srclang.toLowerCase() == langKey ) {
 					var source = this.textSources[ i ];
@@ -387,7 +387,7 @@ mw.includeAllModuleMessages();
 		*  Should be called anytime enabled Source list is updated
 		*/
 		loadEnabledSources: function() {
-			for(var i in this.enabledSources ) {
+			for(var i=0; i < this.enabledSources.length; i++ ) {
 				var enabledSource = this.enabledSources[ i ];
 				if( ! enabledSource.loaded )
 					enabledSource.load();
@@ -410,7 +410,7 @@ mw.includeAllModuleMessages();
 		* 	false if source is off
 		*/		
 		isSourceEnabled: function( source ) {
-			for(var i in this.enabledSources ) {
+			for(var i=0; i < this.enabledSources.length; i++ ) {
 				var enabledSource = this.enabledSources[i];
 				if( source.id ) {
 					if( source.id == enabledSource.id )
@@ -428,7 +428,7 @@ mw.includeAllModuleMessages();
 		* Get a source object by language, returns "false" if not found
 		*/
 		getSourceByLanguage: function ( langKey ) {
-			for(var i in this.textSources) {
+			for(var i=0; i < this.textSources.length; i++) {
 				var source = this.textSources[ i ];
 				if( source.srclang == langKey )
 					return source;
@@ -503,6 +503,9 @@ mw.includeAllModuleMessages();
 				var catName = mw.getConfig( 'TimedText.NeedsTranscriptCategory' );
 				var $dialog = $j(this);
 				
+				var subRequestCategoryUrl = apiUrl.replace('api.php', 'index.php') +
+					'?title=Category:' + catName.replace(/ /g, '_');
+				
 				var buttonOk= {};
 				buttonOk[gM('mwe-ok')] =function(){
 					$j(this).dialog('close');
@@ -520,7 +523,7 @@ mw.includeAllModuleMessages();
 							var categories = data.query.pages[i].categories;
 							for(var j =0; j < categories.length; j++){
 								if( categories[j].title.indexOf( catName ) != -1 ){									
-									$dialog.html( gM('mwe-timedtext-request-already-done') );
+									$dialog.html( gM('mwe-timedtext-request-already-done', subRequestCategoryUrl ) );
 									$dialog.dialog( 'option', 'buttons', buttonOk);
 									return ;
 								}
@@ -551,10 +554,8 @@ mw.includeAllModuleMessages();
 							// Do the edit request:
 							mw.getJSON( apiUrl, request, function(data){
 								if( data.edit && data.edit.newrevid){
-									$dialog.html( gM('mwe-timedtext-request-subs-done',
-											apiUrl.replace('api.php', 'index.php') +
-											'?title=Category:' + catName.replace(' ', '_')
-										)
+									
+									$dialog.html( gM('mwe-timedtext-request-subs-done', subRequestCategoryUrl )
 									);								
 								} else {
 									$dialog.html( gM('mwe-timedtext-request-subs-fail') );
@@ -635,7 +636,7 @@ mw.includeAllModuleMessages();
 				var langKey = source.srclang.toLowerCase();
 				_this.getLanguageName ( langKey );
 				return $j.getLineItem( 
-					gM('mwe-timedtext-key-language', [langKey, unescape( mw.Language.names[ source.srclang ] )	] ), 
+					gM('mwe-timedtext-key-language', [langKey, mw.Language.names[ source.srclang ]	] ), 
 					source_icon,
 					function() {						
 						_this.selectTextSource( source ); 
@@ -772,12 +773,14 @@ mw.includeAllModuleMessages();
 		getLanguageMenu: function() {
 			var _this = this;
 
-			// See if we have categories to worry about:
+			// See if we have categories to worry about
+			// associative array of SUB etc categories. Each category contains an array of textSources.
+			var catSourceList = {};
+			var catSourceCount = 0;
 
-			var catSourceList = [ ];
 			// ( All sources should have a category (depreciate ) 
 			var sourcesWithoutCategory = [ ];
-			for( var i in this.textSources ) {
+			for( var i=0; i < this.textSources.length; i++ ) {
 				var source = this.textSources[ i ];
 				if( source.category ) {
 					var catKey = source.category ;
@@ -785,6 +788,7 @@ mw.includeAllModuleMessages();
 					if( !catSourceList[ catKey ] ) {
 						// Set up catList pointer: 
 						catSourceList[ catKey ] = [ ];
+						catSourceCount++;
 					}
 					// Append to the source category key menu item:
 					catSourceList[ catKey ].push(
@@ -796,10 +800,10 @@ mw.includeAllModuleMessages();
 			}
 			var $langMenu = $j('<ul>');
 			// Check if we have multiple categories ( if not just list them under the parent menu item)
-			if( catSourceList.length > 1 ) {
+			if( catSourceCount > 1 ) {
 				for(var catKey in catSourceList) {
 					$catChildren = $j('<ul>');
-					for(var i in catSourceList[ catKey ]) {
+					for(var i=0; i < catSourceList[ catKey ].length; i++) {
 						$catChildren.append(
 							catSourceList[ catKey ][i]
 						);
@@ -813,7 +817,7 @@ mw.includeAllModuleMessages();
 				}
 			} else {
 				for(var catKey in catSourceList) {
-					for(var i in catSourceList[ catKey ]) {
+					for(var i=0; i < catSourceList[ catKey ].length; i++) {
 						$langMenu.append(
 							catSourceList[ catKey ][i]
 						);
@@ -821,7 +825,7 @@ mw.includeAllModuleMessages();
 				}
 			}		
 			
-			for(var i in sourcesWithoutCategory) {
+			for(var i=0; i < sourcesWithoutCategory.length; i++) {
 				$langMenu.append( sourcesWithoutCategory[i] );
 			}
 			
@@ -845,7 +849,7 @@ mw.includeAllModuleMessages();
 			if( text === this.prevText[ source.category ] )
 				return ;
 			
-			//mw.log( 'updateTextDisplay: ' + text );	
+			mw.log( 'mw.TimedText:: updateTextDisplay: ' + text );	
 					
 			var $playerTarget =  this.embedPlayer.$interface;
 			var $textTarget = $playerTarget.find( '.track_' + source.category + ' span' );
@@ -1038,6 +1042,7 @@ mw.includeAllModuleMessages();
 					if( data ) {
 						_this.captions = handler( data );
 					}				
+					mw.log("mw.TimedText:: parsed " + _this.captions.length + ' captions');
 					// Update the loaded state:
 					_this.loaded = true;
 					if( callback ) { 
@@ -1085,8 +1090,12 @@ mw.includeAllModuleMessages();
 				var startIndex = 0;
 			}			 			
 			// Start looking for the text via time, return first match: 
-			for( var i = startIndex ; i < this.captions.length; i ++ ) {
+			for( var i = startIndex ; i < this.captions.length; i++ ) {				
 				caption = this.captions[ i ];
+				// Don't handle captions with 0 or -1 end time: 
+				if( caption.end == 0 || caption.end  == -1)
+					continue;
+				
 				if( time >= caption.start  && 
 					time <= caption.end ) {
 					this.prevIndex = i;
@@ -1113,7 +1122,10 @@ mw.includeAllModuleMessages();
 			//mw.log( 'pText: ' + currentPtext );
 			
 			//Check if the p matches the "all in one line" match: 
-			var m = currentPtext.replace('--&gt;', '-->').match(/\d+\s(\d+):(\d+):(\d+)(?:,(\d+))?\s*--?>\s*(\d+):(\d+):(\d+)(?:,(\d+))?\n?(.*)/);
+			var m = currentPtext
+			.replace('--&gt;', '-->')
+			.match(/\d+\s([\d\-]+):([\d\-]+):([\d\-]+)(?:,([\d\-]+))?\s*--?>\s*([\d\-]+):([\d\-]+):([\d\-]+)(?:,([\d\-]+))?\n?(.*)/);
+			
 			if (m) {
 				var startMs = (m[4])? (parseInt(m[4], 10) / 1000):0;
 				var endMs = (m[8])? (parseInt(m[8], 10) / 1000) : 0;
@@ -1130,7 +1142,7 @@ mw.includeAllModuleMessages();
 					endMs,
 				'content': $j.trim( m[9] )
 				});
-				return 'next';
+				return true;
 			} 
 			// Else check for multi-line match:
 			if( parseInt( currentPtext ) ==  currentPtext ) {
@@ -1140,7 +1152,7 @@ mw.includeAllModuleMessages();
 				curentCap = {
 					'content': ''
 				};	
-				return 'next';
+				return true;
 			}
 			//Check only for time match:
 			var m = currentPtext.replace('--&gt;', '-->').match(/(\d+):(\d+):(\d+)(?:,(\d+))?\s*--?>\s*(\d+):(\d+):(\d+)(?:,(\d+))?/);
@@ -1157,7 +1169,7 @@ mw.includeAllModuleMessages();
 					(parseInt(m[6], 10) * 60) +
 					(parseInt(m[7], 10)) +
 					endMs;
-				return 'next';
+				return true;
 			}
 			//Else content for the curentCap
 			if( currentPtext != '<br>' ) {
@@ -1187,7 +1199,7 @@ mw.includeAllModuleMessages();
 		// Get captions
 		var captions = [];
 		var caplist = srt.split('\n\n');
-		for (var i = 0; i < caplist.length; i=i+1) {
+		for (var i = 0; i < caplist.length; i++) {
 	 		var caption = "";
 			var content, start, end, s;
 			caption = caplist[i];
@@ -1386,7 +1398,7 @@ mw.includeAllModuleMessages();
 			// look for text tracks:
 			var foundTextTracks = false;
 			var sources = [];
-			for ( var i in sourcePages.query.allpages ) {
+			for ( var i=0; i < sourcePages.query.allpages.length; i++ ) {
 				
 				var subPage = sourcePages.query.allpages[i];
 				var langKey = subPage.title.split( '.' );
@@ -1405,7 +1417,7 @@ mw.includeAllModuleMessages();
 					sources.push( {
 						'extension': extension,
 						'srclang': langKey,
-						'titleKey': subPage.title
+						'titleKey': subPage.title.replace( / /g, "_")
 					} );
 				}
 			}

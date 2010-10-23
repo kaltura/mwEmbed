@@ -286,7 +286,7 @@ baseRemoteSearch.prototype = {
 						 
 		// No output give error: 
 		mw.log( "ERROR:: no embed code for mime type: " + resource.mime );	
-		return 'Error missing embed code for: ' + escape( resource.mime );		
+		return 'Error missing embed code for: ' + mw.escapeQuotesHTML( resource.mime );		
 	},
 	
 	/*

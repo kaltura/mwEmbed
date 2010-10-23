@@ -83,8 +83,13 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}
 		// Check if we should "merge" the config
 		if( typeof value == 'object' && typeof mwConfig[ name ] == 'object' ) {
-			for( var i in value ){
-				mwConfig[ name ][ i ] = value[ i ];
+			if ( value.constructor.toString().indexOf("Array") == -1 ){
+				for( var i in value ){
+					mwConfig[ name ][ i ] = value[ i ];
+				}
+			} else {
+				// merge in the array 
+				mwConfig[ name ] = mwConfig[ name ].concat( value );
 			}
 		} else {
 			mwConfig[ name ] = value;
@@ -115,11 +120,16 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}
 		// Check if we should "merge" the config
 		if( typeof value == 'object' && typeof mwConfig[ name ] == 'object' ) {
-			for( var i in value ){
-				if( typeof mwConfig[ name ][ i ] == 'undefined' ){
-					mwConfig[ name ][ i ] = value[ i ];
+			if ( value.constructor.toString().indexOf("Array") == -1 ){
+				for( var i in value ){
+					if( typeof mwConfig[ name ][ i ] == 'undefined' ){
+						mwConfig[ name ][ i ] = value[ i ];
+					}
 				}
-			}
+			} else {
+				// merge in the array 
+				mwConfig[ name ] = mwConfig[ name ].concat( value);
+			}			
 		}
 	};
 	
@@ -388,17 +398,17 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				
 				// xxx should use refactor "ready" stuff into a "domReady" class
 				// So we would not have local scope globals like this:
-				//if ( mwReadyFlag ) {
-				// Load the module directly if load request is after
-				// mw.ready has run
-				this.load( resourceSet, callback );
-				//} else {
-				//	this.addToModuleLoaderQueue(
-				//		loadRequest, 
-				//		resourceSet,
-				//		callback
-				//	);
-				//}
+				if ( mwReadyFlag ) {
+					// Load the module directly if load request is after
+					// mw.ready has run
+					this.load( resourceSet, callback );
+				} else {
+					this.addToModuleLoaderQueue(
+						loadRequest, 
+						resourceSet,
+						callback
+					);
+				}
 				return ;
 			}
 			
@@ -1281,8 +1291,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 */
 	mw.log = function( string ) {
 		// Add any prepend debug strings if necessary
-		if ( mw.getConfig( 'pre-append-log' ) ){
-			string = mw.getConfig( 'pre-append-log' ) + string;		
+		if ( mw.getConfig( 'Mw.LogPrepend' ) ){
+			string = mw.getConfig( 'Mw.LogPrepend' ) + string;		
 		}
 		
 		if ( window.console ) {
@@ -2326,7 +2336,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 	 * 
 	 */
 	mw.runTriggersCallback = function( targetObject, triggerName, callback ){		
-		mw.log( ' runTriggersCallback:: ' + triggerName  );
+		mw.log( 'mw.runTriggersCallback:: ' + triggerName  );
 		// If events are not present directly run callback
 		if( ! $j( targetObject ).data( 'events' ) ||
 				! $j( targetObject ).data( 'events' )[ triggerName ] ) {

@@ -18,9 +18,6 @@
 		// If a the sequencer should open new windows 
 		"Sequencer.SpawnNewWindows" : true,
 		
-		// If a the sequencer should include withJS=MediaWiki:mwEmbed in created urls  
-		"Sequencer.WithJsMwEmbedUrlHelper" : true,
-		
 		// The size of the undo stack 
 		"Sequencer.NumberOfUndos" : 100,
 		

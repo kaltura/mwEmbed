@@ -574,7 +574,7 @@ mw.PlayerControlBuilder.prototype = {
 			this.addSkinControlBindings();
 		}
 		
-		mw.log('tirgger::addControlBindingsEvent');
+		mw.log('trigger::addControlBindingsEvent');
 		$j( embedPlayer ).trigger( 'addControlBindingsEvent');
 	},
 	
@@ -1757,7 +1757,7 @@ mw.PlayerControlBuilder.prototype = {
 					} );
 		
 				// Up the z-index of the default status indicator:
-				$playHead.find( 'ui-slider-handle' ).css( 'z-index', 4 );
+				$playHead.find( '.ui-slider-handle' ).css( 'z-index', 4 );
 				$playHead.find( '.ui-slider-range' ).addClass( 'ui-corner-all' ).css( 'z-index', 2 );
 		
 				// Add buffer html: 

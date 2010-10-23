@@ -77,7 +77,7 @@ mw.Smil.prototype = {
 		if( url.indexOf( dataUrlKey ) === 0 ){
 			// Load the smil document from the data url:
 			_this.loadFromString(
-				unescape( url.substr( dataUrlKey.length ) )
+				decodeURIComponent( url.substr( dataUrlKey.length ) )
 			);
 			// xxx Note we could in theory have a data url with remote 'context' 
 			// ie cross domain smil loading ( for now assume document.URL context for data urls )  

@@ -22,7 +22,7 @@ mw.addMessages( {
 } );
 
 /**
- * Set the base uploadInterface   
+ * Set the base uploadInterface
  */
 mw.UploadInterface = { };
 
@@ -30,7 +30,7 @@ mw.UploadInterface = { };
  * Upload Dialog Interface
  */
 mw.UploadDialogInterface = function( uploadHandler ) {
-	// Set a reference the uploadHandler if provided  
+	// Set a reference the uploadHandler if provided
 	if( uploadHandler ) {
 		this.uploadHandler = uploadHandler;
 	}
@@ -151,11 +151,11 @@ mw.UploadDialogInterface.prototype = {
 	
 	/**
 	 * Update the progress bar to a given completion fraction (between 0 and 1)
-     * NOTE: This progress bar is used for encoding AND for upload. The dialog title is set elsewhere
-     * 
-     * @param {Float} progress Progress float
-     * @param {Number} [loaded] optional Bytes loaded
-     * @param {Number} [contentLength] optional Length of content
+	 * NOTE: This progress bar is used for encoding AND for upload. The dialog title is set elsewhere
+	 * 
+	 * @param {Float} progress Progress float
+	 * @param {Number} [loaded] optional Bytes loaded
+	 * @param {Number} [contentLength] optional Length of content
 	 */
 	updateProgress: function( fraction, loaded, contentLength ) {
 		var _this = this;
@@ -232,12 +232,12 @@ mw.UploadDialogInterface.prototype = {
 		if ( !buttons ) {
 			// If no buttons are specified, add a close button
 			buttons = {};
-			buttons[ gM( 'mwe-ok' ) ] =  function() {
+			buttons[ gM( 'mwe-ok' ) ] = function() {
 				$j( this ).dialog( 'close' ).remove();
 			};
 		}
 		
-		$j( '#upProgressDialog' ).dialog( 'option', 'title',  title_txt );
+		$j( '#upProgressDialog' ).dialog( 'option', 'title', title_txt );
 		if ( !msg ) {
 			$j( '#upProgressDialog' ).loadingSpinner();
 		} else {
@@ -357,7 +357,7 @@ mw.UploadDialogInterface.prototype = {
 		// If nothing above was able to set the error
 		// set simple unknown-error
 		if ( apiRes.upload && apiRes.upload.error ) {
-			mw.log( ' apiRes.upload.error: ' +  apiRes.upload.error );						
+			mw.log( ' apiRes.upload.error: ' + apiRes.upload.error );						
 			_this.setPrompt(
 				gM( 'mwe-uploaderror' ),
 				gM( 'mwe-unknown-error' ) + '<br>',
@@ -438,7 +438,7 @@ mw.UploadDialogInterface.prototype = {
 	
 	/**
 	* Send an upload action to the upload handler.
-	* @param {Object} action  			
+	* @param {Object} action
 	*/ 
 	sendUploadAction: function( action ) {
 		this.uploadHandler.uploadHandlerAction( action );
@@ -513,7 +513,7 @@ mw.UploadIframeUI.prototype = {
 	* init 
 	* @param {Function} callbackProxy Function that reciveds
 	* 	all the method calls to be pass along as msgs to the 
-	* 	other domain via iframe proxy or eventually html5 sendMsg  
+	* 	other domain via iframe proxy or eventually html5 sendMsg
 	*/
 	init: function( callbackProxy ){
 		var _this = this;
@@ -522,7 +522,7 @@ mw.UploadIframeUI.prototype = {
 
 	// Don't call update progress more than once every 3 seconds 
 	// Since it involves loading a cached iframe. Once we support html5 
-	// cross domain "sendMsg" then we can pass all updates   
+	// cross domain "sendMsg" then we can pass all updates
 	updateProgress: function( fraction ) {
 		if( ( new Date() ).getTime() - this.lastProgressTime > 3000 ){
 			this.lastProgressTime = ( new Date() ).getTime()			
@@ -545,7 +545,7 @@ mw.UploadIframeUI.prototype = {
 		this.callbackProxy( 'setLoading' );
 	},
 	
-	// Pass on the show api errror:  
+	// Pass on the show api errror:
 	showApiError: function ( apiRes ){
 		this.callbackProxy( 'showApiError', apiRes );
 	},

@@ -25,8 +25,8 @@ mw.addMessages( {
 	"mwe-upload-misc-error" : "Unknown upload error",	
 	"mwe-wgfogg_warning_bad_extension" : "You have selected a file with an unsupported extension (<a href=\"http:\/\/commons.wikimedia.org\/wiki\/Commons:Firefogg#Supported_File_Types\">more information<\/a>).",	
 	"mwe-thumbnail-more" : "Enlarge",	
-	"mwe-license-header" : "Licensing",
-	"mwe-filedesc" : "Summary",
+	"mwe-license-header" : "{{int:license-header}}",
+	"mwe-filedesc" : "{{int:filedesc}}",
 	"mwe-filesource" : "Source:",
 	"mwe-filestatus" : "Copyright status:"
 });
@@ -82,7 +82,7 @@ var defaultUploadHandlerOptions = {
 			myUpload.setupForm( );
 		}
 		
-		// Update the selecto to include pointer to upload handler 		
+		// Update the selector to include pointer to upload handler 		
 		var selectorElement = $j( this.selector ).get( 0 );
 		selectorElement[ 'uploadHandler' ] = myUpload;
 	};
@@ -140,8 +140,13 @@ mw.UploadHandler.prototype = {
 		} else { 					
 			// Setup the default DialogInterface UI
 			this.ui = new mw.UploadDialogInterface();
-		}		
-		
+		}
+
+		// Don't rewrite on reuploads
+		if( $j("[name='wpForReUpload']").val() ) {
+			this.rewriteDescriptionText = false;
+		}
+
 		// Setup ui uploadHandler pointer
 		this.ui.uploadHandler = this;		
 		
@@ -552,7 +557,7 @@ mw.UploadHandler.prototype = {
 	* @param {String} source The source filed			
 	*/
 	getCommentText: function( comment, license, copyStatus, source ) {				
-		var pageText = '== ' + gM( 'mwe-filedesc' ) + " ==\n" + comment + "\n";
+		var pageText = '== ' + mw.Language.msgNoTrans( 'mwe-filedesc' ) + " ==\n" + comment + "\n";
 		if( copyStatus ){
 			pageText +=  '== ' + gM( 'mwe-filestatus' ) + " ==\n" + copyStatus + "\n";
 		}
@@ -560,8 +565,8 @@ mw.UploadHandler.prototype = {
 			pageText += '== ' + gM( 'mwe-filesource' ) + " ==\n" + source  + "\n";
 		}
 		if ( license ) {
-			pageText += '== ' + gM( 'mwe-license-header' ) + " ==\n" + '{{' + license + '}}' + "\n"; 
-		}		
+			pageText += '== ' + mw.Language.msgNoTrans( 'mwe-license-header' ) + " ==\n" + '{{' + license + '}}' + "\n"; 
+		}
 		return pageText;
 	},
 

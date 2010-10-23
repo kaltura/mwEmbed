@@ -296,7 +296,7 @@ mw.setDefaultConfig( 'embedPlayerSourceAttributes', [
 					mw.playerManager.addElement( playerElement, attributes);
 				}	
 				
-			});
+			} );
 			// run the callback directly if no players were added to the playerManager 
 			if( !addedToPlayerManager && callback ){
 				callback();
@@ -1130,7 +1130,7 @@ mediaElement.prototype = {
 			var mimeType = playableSources[source].mimeType;
 			var player =  mw.EmbedTypes.players.defaultPlayer( mimeType );
 			if ( player && player.library == 'Native'	) {
-				mw.log('Set native playback');
+				mw.log('EmbedPlayer::Set native playback');
 				this.selectedSource = playableSources[ source ];
 				return true;
 			}			
@@ -1193,9 +1193,9 @@ mediaElement.prototype = {
 	*/
 	hasStreamOfMIMEType: function( mimeType )
 	{
-		for ( source in this.sources )
+		for ( var i = 0; i < this.sources.length; i++ )
 		{
-			if ( this.sources[source].getMIMEType() == mimeType ){
+			if ( this.sources[i].getMIMEType() == mimeType ){
 				return true;
 			}
 		}
@@ -1766,8 +1766,6 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		if ( this.selectedPlayer ) {
-			mw.log( "Playback system: " + this.selectedPlayer.library );					
-						
 			// Inherit the playback system of the selected player:			
 			this.inheritEmbedPlayer();
 		} else {
@@ -2500,45 +2498,49 @@ mw.EmbedPlayer.prototype = {
 	*/ 
 	getShareEmbedObject: function(){		
 		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
+		var params = {};
 		
 		if ( this.roe ) {
-			iframeUrl += 'roe=' + escape( this.roe ) + '&';
-		} else if( this.apiTitleKey ) {			
-			iframeUrl += 'apiTitleKey=' + escape( this.apiTitleKey ) + '&';
+			params.roe = this.roe;
+		} else if( this.apiTitleKey ) {
+			params.apiTitleKey = this.apiTitleKey;
 			if ( this.apiProvider ) {
 				// Commons always uses the commons api provider ( special hack should refactor ) 
 				if( mw.parseUri( document.URL ).host == 'commons.wikimedia.org'){
 					 this.apiProvider = 'commons';
 				}
-				iframeUrl += 'apiProvider=' + escape( this.apiProvider ) + '&';
+				params.apiProvider = this.apiProvider;
 			}
 		} else {			
 			// Output all the video sources:
 			for( var i=0; i < this.mediaElement.sources.length; i++ ){
 				var source = this.mediaElement.sources[i];
 				if( source.src ) {
-					iframeUrl += 'src[]=' + escape( mw.absoluteUrl( source.src ) ) + '&';
+					params['src[]'] = mw.absoluteUrl( source.src );
 				}
 			}
 			// Output the poster attr
 			if( this.poster ){
-				iframeUrl += 'poster=' + escape( this.poster ) + '&';
+				params.poster = this.poster;
 			}
 		}
 		
 		// Set the skin if set to something other than default
 		if( this.skinName ){
-			iframeUrl += 'skin=' + escape( this.skinName ) + '&';
+			params.skin = this.skinName;
 		}
 		
 		if( this.duration ) {
-			iframeUrl +='durationHint=' + escape( parseFloat( this.duration ) ) + '&';
+			params.durationHint = parseFloat( this.duration );
 		}
 		// Set width / height of iframe embed ( child iframe / object can't read parent frame size )
-		if( this.width || this.height ){
-			iframeUrl += ( this.width )? 'width=' + parseInt( this.width ) + '&' : '';
-			iframeUrl += ( this.height )? 'height=' +parseInt( this.height ) + '&' : '';
+		if( this.width ){
+			params.width = parseInt( this.width );
 		}
+		if( this.height ){
+			params.height = parseInt( this.height );
+		}
+		iframeUrl += $j.param( params );
 		
 		// Set up embedFrame src path
 		var embedCode = '&lt;object data=&quot;' + mw.escapeQuotesHTML( iframeUrl ) + '&quot; ';
@@ -2639,7 +2641,7 @@ mw.EmbedPlayer.prototype = {
 	doLinkBack: function() {
 		if ( ! this.linkback && this.roe && this.mediaElement.addedROEData == false ) {
 			var _this = this;
-			this.displayMenuOverlay( gM( 'mwe-embedplayer-loading_txt' ) );
+			this.displayMenuOverlay( gM( 'mwe-loading_txt' ) );
 			this.getMvJsonUrl( this.roe, function( data ) {
 				_this.mediaElement.addROE( data );
 				_this.doLinkBack();
@@ -2670,7 +2672,6 @@ mw.EmbedPlayer.prototype = {
 	*/
 	play: function() {
 		var _this = this;			
-		
 		mw.log( "EmbedPlayer:: play" );			  
 		// Hide any overlay:
 		this.controlBuilder.closeMenuOverlay();

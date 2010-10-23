@@ -219,7 +219,7 @@ mw.ApiProxy = { };
 		
 		// Return the name of the browseFile frame
 		return iFrameName;
-	}
+	};
 	
 	/**
 	 * Output a server msg to a server iFrame 
@@ -259,7 +259,7 @@ mw.ApiProxy = { };
 		}, function( ) {
 			mw.log( "sendServerMsg iframe done loading" );
 		} );
-	}
+	};
 	
 	/**
 	 * The nested iframe action that passes its result back up to the top frame instance 
@@ -304,7 +304,7 @@ mw.ApiProxy = { };
 		if( context.callback ){			
 			context.callback( resultObject );
 		}			
-	}
+	};
 	
 	
 	/**
@@ -326,7 +326,7 @@ mw.ApiProxy = { };
 				serverSendUploadHandlerAction( frameMsg.uiAction );
 			break;
 		}
-	}
+	};
 	
 	/** 
 	* Api server proxy entry point: 
@@ -343,7 +343,7 @@ mw.ApiProxy = { };
 		sendClientMsg( { 'state':'ok' } );
 		
 		return serverHandleRequest();											
-	}
+	};
 	
 	/**
 	* Local scoped helper functions:
@@ -368,7 +368,7 @@ mw.ApiProxy = { };
 		
 		// Return the proxy context
 		return proxyContext [ contextKey ];
-	}
+	};
 	
 	/**
 	* Get a context from a contextKey
@@ -382,7 +382,7 @@ mw.ApiProxy = { };
 			return false;
 		}
 		return proxyContext [ contextKey ];;
-	}
+	};
 	
 	/**
 	* Get the client frame path 
@@ -400,7 +400,7 @@ mw.ApiProxy = { };
 			// Update the context to include the nestedCallbackFlag flag in the request			
 			return nestedServerFrame;
 		}
-	}
+	};
 	
 	/**
 	* Get the server Frame path per requested Api url
@@ -417,7 +417,7 @@ mw.ApiProxy = { };
 	* @param {URL} apiUrl The url of the api server
 	*/
 	// Include gadget js ( in case the user has not enabled the gadget on that domain )
-	var gadgetWithJS = '?withJS=MediaWiki:MwEmbed.js';
+
 	//var gadgetWithJS = '';
 	
 	function getServerFrame( context ) {
@@ -427,10 +427,15 @@ mw.ApiProxy = { };
 		}
 		var parsedUrl = mw.parseUri( context.apiUrl );
 		
-		var pageName = ( context.pageName ) ? context.pageName :  'ApiProxy'
+		var pageName = ( context.pageName ) ? context.pageName :  'ApiProxy';
 		
-		return 	parsedUrl.protocol + '://' + parsedUrl.authority 
-			+ '/w/index.php/MediaWiki:' + pageName + gadgetWithJS;
+		var pageUrl = parsedUrl.protocol + '://' + parsedUrl.authority 
+		+ '/w/index.php/MediaWiki:' + pageName;
+		
+		if( mw.getConfig( 'Mw.AppendWithJS' ) ){
+			pageUrl+= '?' + mw.getConfig( 'Mw.AppendWithJS' );
+		}
+		return pageUrl;
 	}
 	
 	/** 
@@ -447,7 +452,7 @@ mw.ApiProxy = { };
 			'clientFrame' : getClientFrame( context ),
 			'action' : 'apiRequest',
 			'request' : context[ 'apiReq' ]
-		}
+		};
 				  
 		mw.log( "Do frame proxy request on src: \n" + getServerFrame( context ) + "\n" + JSON.stringify(  context[ 'apiReq' ] ) );		
 		appendIframe( {	
@@ -483,9 +488,9 @@ mw.ApiProxy = { };
 		mw.log('Client frame: ' + clientRequest.clientFrame );
 							
 		/**
-		* HERE WE CHECK IF THE DOMAIN IS ALLOWED per the proxyConfig	
-		*/		
-		return isAllowedClientFrame( clientRequest.clientFrame );							
+		* CHECK IF THE DOMAIN IS ALLOWED per the ApiProxy config:	
+		*/							
+		return  isAllowedClientFrame( clientRequest.clientFrame );;
 	}
 	
 	/**
@@ -495,29 +500,54 @@ mw.ApiProxy = { };
 	function isAllowedClientFrame( clientFrame ) {
 		var clientDomain =  mw.parseUri( clientFrame ).host ;
 		// Get the proxy config
-		var proxyConfig = mw.getConfig( 'apiProxyConfig' );
 		
 		// Check master blacklist
-		for ( var i in proxyConfig.master_blacklist ) {
-			if ( clientDomain == proxyConfig.master_blacklist ) {
-				mw.log( 'domain: ' + clientDomain + ' is blacklisted ( no request )' );
-				return false;
-			}
-		}		 
+		if( mw.getConfig('ApiProxy.DomainBlackList') && mw.getConfig('ApiProxy.DomainBlackList').length ){
+			var domainBlackList = mw.getConfig('ApiProxy.DomainBlackList');
+			for ( var i =0; i < domainBlackList.length; i++ ) {
+				var blackDomain = domainBlackList[i];
+				// Check if domain check is a RegEx:
+				if( typeof blackDomain == 'object' ){
+					if( clientDomain.match( blackDomain ) ){
+						return false;
+					}
+				} else {
+					// just do a direct domain check: 
+					if( clientDomain == blackDomain ){
+						return false;
+					}
+				}
+			}		
+		}
+		
 		// Check the master whitelist:
-		for ( var i in proxyConfig.master_whitelist ) {
-			if ( clientDomain ==  proxyConfig.master_whitelist[ i ] ) {
-				return true;
+		if( mw.getConfig('ApiProxy.DomainWhiteList') && mw.getConfig('ApiProxy.DomainWhiteList').length ){
+			var domainWhiteList =  mw.getConfig('ApiProxy.DomainWhiteList');
+			for ( var i =0; i < domainWhiteList.length; i++ ) {
+				whiteDomain = domainWhiteList[i];
+				// Check if domain check is a RegEx:
+				if( typeof whiteDomain == 'object' ){
+					if( clientDomain.match( whiteDomain ) ) {
+						return true;
+					}
+				} else {
+					if( clientDomain == whiteDomain ){
+						return true;
+					}
+				}
 			}
 		}
+		
 		// FIXME Add in user based approval :: 
 		
 		// FIXME offer the user the ability to "approve" requested domain save to
 		// their user preference setup )
 		
 		// FIXME grab and check domain against the users whitelist and permissions 	
+		
+		// for now just return false if the domain is not in the approved list
 		return false;		
-	}
+	};
 	
 	/**
 	* Get the client request from the document hash
@@ -525,14 +555,14 @@ mw.ApiProxy = { };
 	*/
 	function getClientRequest() {
 		// Read the anchor data package from the requesting url
-		var hashMsg = unescape( mw.parseUri( document.URL ).anchor );
+		var hashMsg = decodeURIComponent( mw.parseUri( document.URL ).anchor );
 		try {
 			return JSON.parse( hashMsg );
 		} catch ( e ) {
 			mw.log( "ProxyServer:: could not parse anchor" );
 			return false;
 		}		
-	}
+	};
 	
 	/**
 	* Dialog to send the user if a proxy to the remote server could not be created 
@@ -587,7 +617,7 @@ mw.ApiProxy = { };
 			'content' : $dialogMsg,
 			'buttons' : buttons
 		})
-	}	
+	};
 	
 	/**
 	* API iFrame Server::
@@ -619,7 +649,7 @@ mw.ApiProxy = { };
 		}
 		mw.log( "Error could not handle client request" );
 		return false;
-	}
+	};
 	
  	/**
 	* Api iFrame request:

@@ -576,7 +576,7 @@ mw.EmbedPlayerNative = {
 		var _this = this;	
 		mw.log( 'EmbedPlayer:native: onended:' + this.playerElement.currentTime + ' real dur:' +  this.getDuration() +
 				' insertAndPlayingConfig: ' + this.insertAndPlayingConfig);
-		
+	
 		this.onClipDone();
 	}
 };

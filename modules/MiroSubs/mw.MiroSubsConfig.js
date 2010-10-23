@@ -7,6 +7,23 @@ mw.includeAllModuleMessages();
  * http://dev.universalsubtitles.org/widget/api_demo.html
  */
 mw.MiroSubsConfig = {	
+	openDialog: function( embedPlayer, dialogReadyCallback ){
+		var _this = this;
+		this.getConfig( embedPlayer , function( config ){
+			if( !config ){
+				return ;
+			}
+			// xxx NOTE there are some weird async display issues
+			// that only seem to be resolvable with timeouts for DOM actions							
+			setTimeout(function(){
+				dialogReadyCallback();															
+			}, 100);
+			// Show the dialog	
+			setTimeout(function(){
+				_this.mirosubs = mirosubs.api.openDialog( config );
+			}, 800);
+		});					
+	},
 	/**
 	 * @param {Function} callback is called with two arguments 'status', 'config'
 	 */
@@ -22,14 +39,18 @@ mw.MiroSubsConfig = {
 		this.embedPlayer = embedPlayer;
 		
 		// Set initial config
-		this.config = this.getDefaultConfig();				
+		this.config = this.getDefaultConfig();
 		
 		// Make sure we are logged in::		
 		mw.getUserName( function( userName ){
 			mw.log( "MiroSubsConfig::getUserName: " + userName );
 			if( !userName ){
-				mw.log("Error: MiroSubsConfig user not logged in");
-				callback( { 'status':'error', 'error': gM('mwe-mirosubs-not-loggedin') } );			
+				mw.addDialog({
+					'title' : gM('mwe-mirosubs-subs-please-login'),
+					'content' : gM('mwe-mirosubs-subs-please-login-desc')
+				});
+				callback( false );			
+				return false;
 			} else {
 				_this.config.username = userName;		
 				if( _this.isConfigReady( callback ) ){
@@ -67,57 +88,57 @@ mw.MiroSubsConfig = {
 		var _this = this;
 		return {
 			// By default the config status is 'ok'
-			'status': 'ok',
+			'status' : 'ok',
 			
 			// Default language key 'en':
-			'languageKey': 'en',
+			'languageKey' : 'en',
 			
 			'closeListener': function(){
 				// close event refresh page? 
 				// make sure any close dialog is 'closed'
 				mw.closeLoaderDialog();
 			},
-			'videoURL': _this.getVideoURL(),
-			'save': function( miroSubs, doneSaveCallback, cancelCallback) {
+			'videoURL' : _this.getVideoURL(),
+			'save': function( miroSubs, doneSaveCallback, cancelCallback) {				
 				// Close down the editor 
-				// @@( no way to turn off bindings )		
-				// @@FIXME add api Close dialog
-				// mirosubs.api.closeDialog();
 				doneSaveCallback();
-				$j('.mirosubs-modal-widget-bg,.mirosubs-modal-widget').hide();
+				// Close the miro subs widget: 
+				_this.mirosubs.close();				
 
-				// Convert the miroSubs to srt				
-				var srtText = _this.miroSubs2Srt( miroSubs );			
-				$saveDialog = _this.getSaveDialogSummary( function( summary ){
-					if( summary === false ){
-						// Return to current page without saving the text 
-						location.reload(true);				
-						return ;
-					}
-					_this.saveSrtText( srtText, summary, function(status){											
-						// No real error handling right now
-						// refresh page regardless of save or cancel						
-											
-						if( status ){
-							$saveDialog
-							.dialog("option", 'title', gM('mwe-mirosubs-subs-saved') )
-							.html( gM('mwe-mirosubs-thankyou-contribution') );
-						} else {
-							$saveDialog
-							.dialog("option", 'title', gM('mwe-mirosubs-subs-saved-error') )
-							.html( gM('mwe-mirosubs-subs-saved-error') );
+				// Convert the miroSubs to srt
+				// again strange issues with miroSubs give it time to close
+				setTimeout( function(){
+					var srtText = _this.miroSubs2Srt( miroSubs );			
+					$saveDialog = _this.getSaveDialogSummary( function( summary ){
+						if( summary === false ){
+							// Return to current page without saving the text 
+							location.reload(true);				
+							return ;
 						}
-						// Either way the only button is OK and it refreshes the page:
-						var button = {};
-						button[ gM('mwe-ok') ] = function(){
-							location.reload(true);
-						};
-						$saveDialog.dialog("option", "buttons", button );
-					});				
-				});
+						_this.saveSrtText( srtText, summary, function(status){											
+							// No real error handling right now
+							// refresh page regardless of save or cancel						
+												
+							if( status ){
+								$saveDialog
+								.dialog("option", 'title', gM('mwe-mirosubs-subs-saved') )
+								.html( gM('mwe-mirosubs-thankyou-contribution') );
+							} else {
+								$saveDialog
+								.dialog("option", 'title', gM('mwe-mirosubs-subs-saved-error') )
+								.html( gM('mwe-mirosubs-subs-saved-error') );
+							}
+							// Either way the only button is OK and it refreshes the page:
+							var button = {};
+							button[ gM('mwe-ok') ] = function(){
+								location.reload(true);
+							};
+							$saveDialog.dialog("option", "buttons", button );
+						});				
+					});
+				}, 100 );
 			},
-			'mediaURL': mw.getMwEmbedPath() + 'modules/MiroSubs/mirosubs/media/',
-			'skipFinished': true,
+			'mediaURL': mw.getMwEmbedPath() + 'modules/MiroSubs/mirosubs/media/',			
 			'permalink': 'http://commons.wikimedia.org',
 			// not sure if this is needed
 			'login': function( ){
@@ -132,7 +153,7 @@ mw.MiroSubsConfig = {
 		buttons[ gM('mwe-mirosubs-save-subs') ] = function(){
 			var summary = $j('#mwe-mirosubs-save-summary').val();
 			// Append link to gadget: 
-			summary+= ' using [[Commons:UniversalSubtitles|UniversalSubs]]';
+			summary+= ' using [[Commons:Universal_Subtitles|UniversalSubs]]';
 			callback( summary );	
 			// set dialog to loading
 			$j( this ).html( $j('<div />').append( 
@@ -221,7 +242,6 @@ mw.MiroSubsConfig = {
 		var _this = this;		
 		var playerTimedText = this.embedPlayer.timedText;
 		
-		var letters = 'abcdefghijklmnopqrstuvwxyz';
 		playerTimedText.setupTextSources( function(){
 			var miroJsonSubs = [];
 			// NOTE the autoselected default language is a tricky issue
@@ -233,16 +253,21 @@ mw.MiroSubsConfig = {
 				_this.config.languageKey = source.srclang;
 				for( var i = 0; i < captions.length ; i ++ ){
 					var caption = captions[i];
-					// get random letters					
-					miroJsonSubs.push({						
+					var miroSub = {
 						'subtitle_id': 'sub_' + i,
 						'text': caption.content,
-						'start_time': caption.start,
-						'end_time': caption.end,
-						'sub_order': i
-					});
+						'sub_order': i+1
+					};
+					if( caption.end == 0){						
+						miroSub.start_time = -1;
+						miroSub.end_time = -1;						
+					} else {
+						miroSub.start_time =  caption.start;
+						miroSub.end_time = caption.end;
+					}
+					miroJsonSubs.push( miroSub );
 				}
-			});				
+			});
 			callback( miroJsonSubs );
 		});			
 	}

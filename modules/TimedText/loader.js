@@ -27,7 +27,7 @@
 		'TimedText.showAddTextLink' : true,
 		
 		// The category for listing videos that need transcription:
-		'TimedText.NeedsTranscriptCategory' : 'Needs Subtitles'
+		'TimedText.NeedsTranscriptCategory' : 'Videos needing subtitles'
 	});
 	
 	var mwTimedTextRequestSet = [ 

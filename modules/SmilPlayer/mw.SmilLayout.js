@@ -430,7 +430,7 @@ mw.SmilLayout.prototype = {
 		$j( smilElement).find('param').each(function( inx, paramNode ){
 			paramText +='|' + $j( paramNode ).attr('name') + 
 						'= ' +  
-						unescape(  $j( paramNode ).attr('value') ) + 
+						$j( paramNode ).attr('value') + 
 						"\n";
 		});
 		// Close up the template call

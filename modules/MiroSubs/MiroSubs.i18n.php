@@ -9,8 +9,7 @@
 $messages = array();
 
 $messages['en'] = array(
-	'mwe-mirosubs-add-universal-subtitles' => 'Universal subtitles editor',
-	'mwe-mirosubs-not-loggedin' => 'Please login to edit subtitles with universal subtitles',
+	'mwe-mirosubs-add-universal-subtitles' => 'Universal subtitles editor',	
 	'mwe-mirosubs-loading-universal-subtitles' => 'Loading universal subtitles editor',
 	'mwe-mirosubs-save-summary' => 'Summary of subtitle edits',
 	'mwe-mirosubs-save-default' => 'Edited subtitles',	
@@ -19,4 +18,6 @@ $messages['en'] = array(
 	'mwe-mirosubs-subs-saved' => 'Subtitles saved',
 	'mwe-mirosubs-thankyou-contribution' => 'Thank you for your subtitle contribution',
 	'mwe-mirosubs-subs-saved-error' => 'Error in saving subtitles',
+	'mwe-mirosubs-subs-please-login' => 'Please login',
+	'mwe-mirosubs-subs-please-login-desc' => 'Please login, to use the universal subtitles editor'
 );

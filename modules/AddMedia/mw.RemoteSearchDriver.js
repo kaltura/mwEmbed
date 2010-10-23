@@ -1439,7 +1439,7 @@ mw.RemoteSearchDriver.prototype = {
 	checkCopyURLApiResult: function( data, callback ) {
 		var _this = this;
 		// Api checks:
-		for ( var i in data.paraminfo.modules[0].parameters ) {
+		for ( var i=0; i < data.paraminfo.modules[0].parameters.length; i++ ) {
 			var pname = data.paraminfo.modules[0].parameters[i].name;
 			if ( pname == 'url' ) {
 				mw.log( 'Autodetect Upload Mode: api: copy by url:: ' );
@@ -1479,7 +1479,7 @@ mw.RemoteSearchDriver.prototype = {
 			'uiprop' : 'rights' 
 		};
 		mw.getJSON( _this.upload_api_target, request, function( data ) {
-			for ( var i in data.query.userinfo.rights ) {
+			for ( var i=0; i < data.query.userinfo.rights.length; i++ ) {
 				var right = data.query.userinfo.rights[i];
 				// mw.log('checking: ' + right ) ;
 				if ( right == 'upload_by_url' ) {

@@ -124,10 +124,12 @@
 	* mwEmbed player is setup before any other mw.ready calls
 	*/
 	mw.addSetupHook( function( callback ) {
-		mw.rewritePagePlayerTags( callback );
+		mw.rewritePagePlayerTags();
+		// Run the setupFlag to continue setup		
+		callback();
 	});
 	
-	mw.rewritePagePlayerTags = function( callback ) {
+	mw.rewritePagePlayerTags = function() {
 		mw.log( 'EmbedPlayer:: Document::' + mw.documentHasPlayerTags() );
 		if( mw.documentHasPlayerTags() ) {
 			var  rewriteElementCount = 0;
@@ -149,8 +151,8 @@
 			// Load the embedPlayer module ( then run queued hooks )			
 			mw.load( 'EmbedPlayer', function ( ) {		
 				mw.log("EmbedPlayer:: do rewrite players:" + $j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).length );
-				// Rewrite the EmbedPlayer.RewriteTags with the 				
-				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer({}, callback);		
+				// Rewrite the EmbedPlayer.RewriteTags with the 
+				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer();				
 			})
 		}
 	}

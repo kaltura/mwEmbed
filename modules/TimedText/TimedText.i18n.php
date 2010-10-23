@@ -59,7 +59,7 @@ $messages['en'] = array(
 	'mwe-timedtext-request-subs-desc' => 'Add a request for this video file to be transcribed',
 	'mwe-timedtext-request-subs-done' => 'Transcription request added. [$1 See all transcribe requests]',
 	'mwe-timedtext-request-subs-fail' => 'Failed to add transcription request, Are you logged in? ',
-	'mwe-timedtext-request-already-done' => 'A transcription of this video has already been requested',	
+	'mwe-timedtext-request-already-done' => 'A transcription of this video has already been requested. [$1 See all transcribe requests]',	
 );
 
 /** Message documentation (Message documentation)

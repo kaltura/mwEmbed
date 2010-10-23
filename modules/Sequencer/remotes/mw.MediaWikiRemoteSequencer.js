@@ -37,13 +37,13 @@ mw.addMessageKeys( [
  *  @param {String} url The url to be wrapped  
  */
 mw.getRemoteSequencerLink = function( url ){	
-	if( mw.getConfig( 'Sequencer.WithJsMwEmbedUrlHelper' ) ){
+	if( mw.getConfig( 'Mw.AppendWithJS' ) ){
 		if( url.indexOf('?') == -1){
 			url+='?';
 		} else {
 			url+='&';
 		}
-		url+='withJS=MediaWiki:MwEmbed.js';
+		url+= mw.getConfig( 'Mw.AppendWithJS' );
 	}
 	return url;
 };
@@ -310,7 +310,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 	displayPlayerEmbed: function(){
 		var _this = this;
 		// load the embedPlayer module: 
-		mw.load( 'EmbedPlayer', function(){
+		mw.load('EmbedPlayer', function(){
 			// Check if the sequence has been flattened and is up to date:
 			var request = {
 				'action': 'query',

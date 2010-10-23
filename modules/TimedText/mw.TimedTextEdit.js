@@ -207,7 +207,7 @@ mw.TimedTextEdit.prototype = {
 		
 		
 		$target.append( 
-			//Get a little helper input filed to update the language
+			//Get a little helper input field to update the language
 			$j('<input />')
 			.attr( {
 				'id' : "timed-text-langKey-input",
@@ -219,7 +219,7 @@ mw.TimedTextEdit.prototype = {
 				var langKey = $j(this).val();
 				if( mw.Language.names[ langKey ] ) {
 					$buttonTarget.find('.btnText').text( 
-						unescape( mw.Language.names[ langKey ] )
+						mw.Language.names[ langKey ]
 					);
 				}
 			}),
@@ -287,7 +287,7 @@ mw.TimedTextEdit.prototype = {
 				langKey = langKey.pop();
 				if( mw.Language.names[ langKey ] ) {
 					$buttonTarget.find('.btnText').text( 
-						unescape( mw.Language.names[ langKey ] )
+						mw.Language.names[ langKey ]
 					);
 					// Update the key code
 					$j('#timed-text-langKey-input').val( langKey );
@@ -406,14 +406,14 @@ mw.TimedTextEdit.prototype = {
 	},
 	getLangMenuItem: function( langKey , source_icon) { 
 		return $j.getLineItem(
-			langKey + ' - ' + unescape( mw.Language.names[ langKey ] ),
+			langKey + ' - ' + mw.Language.names[ langKey ],
 			source_icon,
 			function() {				
 				mw.log( "Selected: " + langKey );
 				// Update the input box text
 				$j('#timed-text-langKey-input').val( langKey );
 				// Update the menu item:				
-				$j('#language-select').find('.btnText').text( unescape( mw.Language.names[ langKey ] ) )				
+				$j('#language-select').find('.btnText').text( mw.Language.names[ langKey ] )				
 			} 
 			);
 	},
