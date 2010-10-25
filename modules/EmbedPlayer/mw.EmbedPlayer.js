@@ -2659,6 +2659,7 @@ mw.EmbedPlayer.prototype = {
 		   	mw.log("trigger play event::" + !this.paused);		   	
 		   	$j( this ).trigger( 'play' );
 		}
+		this.paused = false;
 		
 		mw.log( "EmbedPlayer:: play" );			  
 		// Hide any overlay:
@@ -2726,7 +2727,8 @@ mw.EmbedPlayer.prototype = {
 			this.paused = true;
 			mw.log('EmbedPlayer:trigger pause:' + this.paused);
 			$j( this ).trigger('pause' );
-		}		
+		}	
+		this.paused = true;
 				
 		// update the ctrl "paused state"				
 		this.$interface.find('.play-btn span' )
