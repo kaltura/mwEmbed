@@ -74,7 +74,12 @@
 		"EmbedPlayer.SkinName" : "mvpcf",	
 		
 		// Number of milliseconds between interface updates 		
-		'EmbedPlayer.MonitorRate' : 250
+		'EmbedPlayer.MonitorRate' : 250, 
+		
+		// If the embedPlayer should accept arguments from 
+		'EmbedPlayer.EnalbeIFramePlayerServer' : false,
+		
+		'EmbedPLayer.IFramePlayer.DomainWhiteList' : '*'
 	} );
 
 	// Add class file paths 
@@ -98,7 +103,10 @@
 		"mw.PlayerSkinKskin"		: "skins/kskin/mw.PlayerSkinKskin.js",
 		
 		"mw.PlayerSkinMvpcf"		: "skins/mvpcf/mw.PlayerSkinMvpcf.js",
-		"mw.style.PlayerSkinMvpcf" 	: "skins/mvpcf/mw.style.PlayerSkinMvpcf.css"	
+		"mw.style.PlayerSkinMvpcf" 	: "skins/mvpcf/mw.style.PlayerSkinMvpcf.css",
+		
+		"mw.IFramePlayerApiServer" : "mw.IFramePlayerApiServer.js",
+		"mw.IFramePlayerApiClient" : "mw.IFramePlayerApiClient.js"
 	} );
 
 	/**
@@ -185,8 +193,7 @@
 				'$j.fn.menu',			
 				'mw.style.jquerymenu',
 				'$j.ui.slider'
-			]
-			
+			]			
 		];
 
 		// Pass every tag being rewritten through the update request function
@@ -242,7 +249,13 @@
 		if( $j.inArray( 'mw.style.PlayerSkin' + skinCaseName, dependencyRequest ) == -1 ){
 			dependencyRequest.push( 'mw.style.PlayerSkin' + skinCaseName );
 		}
-	
+		
+		// Check if the iFrame player server is enabled: 
+		if( mw.getConfig('EmbedPlayer.EnalbeIFramePlayerServer') ){
+			dependencyRequest.push(	'mw.IFramePlayerApiServer' );
+		}
+
+		
 		// Allow extension to extend the request. 				
 		$j( mw ).trigger( 'LoaderEmbedPlayerUpdateRequest', 
 				[ playerElement, dependencyRequest ] );
