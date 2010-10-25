@@ -35,7 +35,7 @@
 <script type="text/javascript">
 	mw.ready(function(){
 		// note we should do a complete event maping: 
-		var playerEvents = ['play', 'pause', 'seeking', 'seeked'];
+		var playerEvents = ['play', 'pause', 'seeking', 'seeked' ];
 		$j.each(playerEvents, function( na, eventName ){
 			$j('#myVid').bind(eventName, function(){
 				$j('#playerLog').append( eventName + "\n");

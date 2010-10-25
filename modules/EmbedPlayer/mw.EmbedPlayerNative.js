@@ -25,11 +25,38 @@ mw.EmbedPlayerNative = {
 	// NOTE the bug where onSeeked does not seem fire consistently may no longer be applicable	 
 	prevCurrentTime: -1,
 	
-	// Store the progress event ( updated durring monitor )
+	// Store the progress event ( updated during monitor )
 	progressEventData: null,
 	
 	// If the media loaded event has been fired  
 	mediaLoadedFlag: null,
+	
+	// All the native events per: 
+	// http://www.w3.org/TR/html5/video.html#mediaevents
+	nativeEvents : [
+		'loadstart',
+		'progress',
+		'suspend',
+		'abort',
+		'error',
+		'emptied',
+		'stalled',
+		'play', 
+		'pause', 
+		'loadedmetadata',
+		'loadeddata',
+		'waiting',
+		'playing',
+		'canplay',
+		'canplaythough',
+		'seeking', 
+		'seeked',
+		'timeupdate',
+		'ended',
+		'ratechange',
+		'durationchange',
+		'volumechange'
+	],
 	
 	// Native player supported feature set
 	supports: {
@@ -432,6 +459,7 @@ mw.EmbedPlayerNative = {
 	onVolumeChange: function(){
 		//mw.log( "native::volumechange::trigger" );
 		//this.volume = this.playerElement.volume;
+		$j( this ).trigger( 'volumechange' );
 	},
 	
 	/**

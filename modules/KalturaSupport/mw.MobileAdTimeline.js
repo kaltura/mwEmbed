@@ -30,8 +30,7 @@ mw.MobileAdTimeline = function( embedPlayer ){
 	return this.init( embedPlayer);
 }
 
-mw.MobileAdTimeline.prototype = {
-		
+mw.MobileAdTimeline.prototype = {		
 	/**
 	 * Display timeline targets: ( false by default) 
 	 */
@@ -50,7 +49,7 @@ mw.MobileAdTimeline.prototype = {
 	
 	init: function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
-		// bind to the "play" and "end"
+		// Bind to the "play" and "end"
 		this.bindPlayer();
 	},
 	
