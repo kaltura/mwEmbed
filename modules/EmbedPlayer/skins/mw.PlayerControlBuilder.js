@@ -117,13 +117,7 @@ mw.PlayerControlBuilder.prototype = {
 			'right' : '0px'
 		} );
 		// Check for overlay controls: 
-		if( _this.checkOverlayControls() ) {
-			$controlBar.hide();
-			// Make sure the interface is correct height: 
-			embedPlayer.$interface.css( {
-				'height' : parseInt( embedPlayer.height )
-			} );
-		} else {
+		if( ! _this.checkOverlayControls() ) {			
 			// Add some space to interface for the control bar ( if not overlaying controls )
 			embedPlayer.$interface.css( {
 				'height' : parseInt( embedPlayer.height ) + parseInt( this.height ) +2
@@ -495,10 +489,11 @@ mw.PlayerControlBuilder.prototype = {
 			'width' : embedPlayer.getWidth(),
 			'height' : embedPlayer.getHeight()
 		});
+		
 		// Restore the play button
 		$interface.find('.play-btn-large').animate( {
-			'left' 	: ( ( embedPlayer.getPlayerWidth() - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
-			'top'	: ( ( embedPlayer.getPlayerHeight() -this.getComponentHeight( 'playButtonLarge' ) ) / 2 )
+			'left' 	: ( ( embedPlayer.getWidth() - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
+			'top'	: ( ( embedPlayer.getHeight() -this.getComponentHeight( 'playButtonLarge' ) ) / 2 )
 		} );
 				
 	},
@@ -638,6 +633,7 @@ mw.PlayerControlBuilder.prototype = {
 	* set to true for the player or via config
 	*/
 	checkOverlayControls: function(){
+		
 		//if the player "supports" overlays: 
 		if( ! this.embedPlayer.supports['overlays'] ){
 			return false;
@@ -653,8 +649,9 @@ mw.PlayerControlBuilder.prototype = {
 			return false;
 		} 
 				
-		// don't hide controls when content "height" is 0 ( audio tags ) 		
-		if( this.embedPlayer.getPlayerHeight() == 0 ){			
+		// Don't hide controls when content "height" is 0px ( audio tags )
+		if( this.embedPlayer.getPlayerHeight() === 0 && 
+			$j(this.embedPlayer).css('height').indexOf('%') == -1 ){			
 			return false;
 		}		
 		if( this.embedPlayer.controls === false ){

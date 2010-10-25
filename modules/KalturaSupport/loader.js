@@ -57,7 +57,7 @@
 	  'mw.KWidgetSupport',	  
 	  'mw.KAnalytics',
 	  'mw.KDPMapping',
-	  'mw.MobilePlayerTimeline',		
+	  'mw.MobileAdTimeline',		
 	  'mw.KAds' 
 	];
 	

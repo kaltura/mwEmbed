@@ -27,10 +27,11 @@ class mwEmbedFrame {
 		'apiProvider',
 		'durationHint',
 		'poster',
-		'kEntryId',
-		'kWidgetId'	,
-		'skin'
+		'kentryid',
+		'kwidgetid'	,
+		'skin'			
 	);
+	var $playerIframeId = 'iframeVid';
 
 	// When used in direct source mode the source asset.
 	// NOTE: can be an array of sources in cases of "many" sources set
@@ -53,7 +54,12 @@ class mwEmbedFrame {
 				$this->$attributeKey = htmlspecialchars( $_GET[$attributeKey] );
 			}
 		}
-				
+
+		// Check for debug flag
+		if( isset( $_GET['debug'] ) ){
+			$this->debug = true;
+		}
+		
 		// Process the special "src" attribute
 		if( isset( $_GET['src'] ) ){
 			if( is_array( $_GET['src'] ) ){
@@ -66,12 +72,14 @@ class mwEmbedFrame {
 		}
 	
 	}
-	private function getVideoTag(){
+	private function getVideoTag( ){
 		// Add default video tag with 100% width / height 
 		// ( parent embed is responsible for setting the iframe size )
-		$o = '<video style="width:100%;height:100%"';
+		$o = '<video id="' . htmlspecialchars( $this->playerIframeId ) . '" style="width:100%;height:100%"';
 		foreach( $this->playerAttributes as $attributeKey){
-			$o.= ' ' . $attributeKey . '="' . htmlspecialchars( $this->$attributeKey ) . '"';
+			if( isset( $this->$attributeKey ) ){
+				$o.= ' ' . $attributeKey . '="' . htmlspecialchars( $this->$attributeKey ) . '"';
+			}
 		}
 		//Close the video attributes
 		$o.='>';
@@ -81,14 +89,14 @@ class mwEmbedFrame {
 				$o.= '<source src="' . htmlspecialchars( $src ) . '"></source>';
 			}
 		}
-		$o.= '</video>';
+		$o.= '</video>';		
 		return $o;
 	}
 	private function outputEmbedFrame( ){
 		// Setup the embed string based on attribute set:
 		$embedResourceList = 'window.jQuery,mwEmbed,mw.style.mwCommon,$j.fn.menu,mw.style.jquerymenu,mw.EmbedPlayer,mw.EmbedPlayerNative,mw.EmbedPlayerJava,mw.PlayerControlBuilder,$j.fn.hoverIntent,mw.style.EmbedPlayer,$j.cookie,$j.ui,mw.style.ui_redmond,$j.widget,$j.ui.mouse,mw.PlayerSkinKskin,mw.style.PlayerSkinKskin,mw.TimedText,mw.style.TimedText,$j.ui.slider';
 		
-		if( $this->kEntryId ){
+		if( $this->kentryid ){
 			 $embedResourceList.= ',' . implode(',', array(	
 			 		'KalturaClientBase',
 					'KalturaClient',
@@ -99,7 +107,7 @@ class mwEmbedFrame {
 					'mw.KWidgetSupport',
 					'mw.KAnalytics', 
 					'mw.KDPMapping',
-					'mw.MobilePlayerTimeline',		
+					'mw.MobileAdTimeline',		
 					'mw.KAds'
 			) );
 		}   
@@ -110,32 +118,42 @@ class mwEmbedFrame {
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 		<title>mwEmbed iframe</title>
 		<style type="text/css">
-			body {
-				margin-left: 0px;
-				margin-top: 0px;
-				margin-right: 0px;
-				margin-bottom: 0px;
+			body {				
+				margin:0;					
+				position:fixed;
+				top:0px;
+				left:0px;
+				bottom:0px;
+				right:0px;
+				
 			}
-		</style>		
-		<script type="text/javascript" src="ResourceLoader.php?class=<?php echo $embedResourceList?>"></script>
+		</style>
+		<script type="text/javascript" src="ResourceLoader.php?class=<?php 
+		echo $embedResourceList;
+		if( $this->debug ){
+			echo '&debug=true';
+		} 
+		?>"></script>
+		
 		<script type="text/javascript">
 			//Set some iframe embed config:
-
-			// Do not overlay controls since we cant dynamically resize the embed window.
-			mw.setConfig( 'EmbedPlayer.OverlayControls', false );
-
 			// We can't support full screen in object context since it requires outter page DOM control
 			mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
 			
+			mw.ready(function(){						
+				// Trigger fullscreen so that iframe resize keeps player size		
+				$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
+				.get(0).fullscreen();
+			});
 		</script>
     </head>
     <body>
     <?
-    // Check if we have code to output player embed
-    if( $this->apiTitleKey || count( $this->sources ) != 0 ) {
+    // Check if we have a way to get sources:
+    if( $this->apiTitleKey || $this->kentryid || count( $this->sources ) != 0 ) {
 		echo $this->getVideoTag();
     } else {
-    	echo "Error: mwEmbedFrame missing required parameter ( src or apiTitleKey )";
+    	echo "Error: mwEmbedFrame missing required parameter for video sources";
     }
     ?>
     </body>

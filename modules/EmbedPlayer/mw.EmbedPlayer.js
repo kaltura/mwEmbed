@@ -440,7 +440,7 @@ EmbedPlayerManager.prototype = {
 							$j( '#' + playerInterface.id ).data( i, $j( playerElement ).data( i ) );
 						}
 					}
-				}
+				}								
 				
 				// Pass the id to any hook that needs to interface prior to checkPlayerSources
 				mw.log("EmbedPlayer::addElement :trigger " + playerInterface.id );
@@ -580,8 +580,8 @@ EmbedPlayerManager.prototype = {
 		
 		// Set swapPlayerElement has height / width set and set to loading:		
 		$j( swapPlayerElement ).css( {			
-			'width' : playerInterface.width + 'px',
-			'height' : playerInterface.height + 'px'
+			'width' : playerInterface.width,
+			'height' : playerInterface.height
 		} );
 		
 		// If we don't already have a loadSpiner add one: 
@@ -1385,10 +1385,12 @@ mw.EmbedPlayer.prototype = {
 			// string -> boolean
 			if( this[ attr ] == "false" ) this[attr] = false;
 			if( this[ attr ] == "true" ) this[attr] = true;
-		}		
+		}
+		//
+		
 		
 		if( this.apiTitleKey ){
-			this.apiTitleKey = unescape( this.apiTitleKey );
+			this.apiTitleKey = decodeURI( this.apiTitleKey );
 		}
 				
 		// Hide "controls" if using native player controls: 
@@ -1499,14 +1501,31 @@ mw.EmbedPlayer.prototype = {
 	* @param {Element} element Source element to grab size from 
 	*/
 	setPlayerSize: function( element ) {					
+	
+		this.height = $j(element).css( 'height' );
+		this.width = $j(element).css( 'width' );		
 		
-		this.height = parseInt( $j(element).css( 'height' ) );
-		this.width = parseInt( $j(element).css( 'width' ) );		
-		
-		if( !this.height  && !this.width ) {
-			this.height = parseInt( $j(element).attr( 'height' ) );
-			this.width = parseInt( $j(element).attr( 'width' ) );
-		}			
+		// Set to parent size ( resize events will cause player size updates) 
+		if( this.height.indexOf('100%') != -1 || this.width.indexOf('100%') != -1  ){
+			$relativeParent = $j(element).parents().filter(function() { 
+			  // reduce to only relative position or "body" elements				  
+			  return $j(this).is('body') || $j(this).css('position') == 'relative';
+			}).slice(0,1); // grab only the "first"
+			this.width = $relativeParent.width();
+			this.height =  $relativeParent.height();
+		}
+		// make sure height and width are a number  
+		this.height = parseInt( this.height );
+		this.width = parseInt( this.width );
+
+		// Set via attribute if CSS is zero or NaN and we have an attribute value:   
+		this.height = ( this.height==0 || isNaN( this.height ) 
+				&& $j(element).attr( 'height' ) ) ? 
+						parseInt( $j(element).attr( 'height' ) ): this.height;
+		this.width = ( this.width == 0 || isNaN( this.width ) 
+				&& $j(element).attr( 'width' ) )? 
+						parseInt( $j(element).attr( 'width' ) ): this.width;
+				
 				
 		// Special case for audio 
 		// Firefox sets audio height to "0px" while webkit uses 32px .. force zero:  
@@ -1556,7 +1575,7 @@ mw.EmbedPlayer.prototype = {
 		this.width = size.width;
 		this.height = size.height;
 		var playerSize = {'width' : this.width, 'height' : this.height };
-		// check if height needs to include interface contorls
+		// check if height needs to include interface controls
 		if( ! this.controlBuilder.checkOverlayControls() ){
 			size.height = size.height + this.controlBuilder.height;
 		}
@@ -1576,7 +1595,7 @@ mw.EmbedPlayer.prototype = {
 	* @return {Number} pixel height of the video
 	*/	
 	getPlayerWidth: function() {
-		return parseInt( this.width );
+		return $j( this ).width();
 	},
 	
 	/**
@@ -1585,7 +1604,7 @@ mw.EmbedPlayer.prototype = {
 	* @return {Number} pixel height of the video
 	*/
 	getPlayerHeight: function() {		
-		return parseInt( this.height );
+		return $j( this ).height();
 	},
 
 	/**
@@ -1726,7 +1745,7 @@ mw.EmbedPlayer.prototype = {
 	*/
 	checkForTimedText: function( ) {
 		var _this = this;
-		mw.log( 'EmbedPlayer::checkForTimedText: ' + _this.id + " height: " + this.height );
+		mw.log( 'EmbedPlayer::checkForTimedText: ' + _this.id );
 		// Check for timedText support
 		if( this.isTimedTextSupported() ) {			
 			mw.load( 'TimedText', function() {
@@ -2052,7 +2071,7 @@ mw.EmbedPlayer.prototype = {
 	* Show the player
 	*/
 	showPlayer : function () {	
-		mw.log( 'EmbedPlayer:: Show player: ' + this.id );	
+		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height);	
 		var _this = this;
 		// Set-up the local controlBuilder instance: 
 		this.controlBuilder = new mw.PlayerControlBuilder( this );		
@@ -2065,8 +2084,8 @@ mw.EmbedPlayer.prototype = {
 				$j('<div>')
 				.addClass( 'mwplayer_interface ' + this.controlBuilder.playerClass )
 				.css({				
-					'width' : parseInt( this.width ) + 'px',
-					'height' : parseInt( this.height ) + 'px',
+					'width' : this.width,
+					'height' : this.height,
 					'position' : 'relative'
 				})
 			)
@@ -2177,32 +2196,7 @@ mw.EmbedPlayer.prototype = {
 			this.serverSeekTime = mw.npt2seconds( start_npt );
 		}
 	},
-	
-	/**
-	* Render a thumbnail at a given time
-	* NOTE: Should overwrite by embed library if we can render frames natively
-	*
-	* @param {Object} options Options for rendered timeline thumb 
-	*/ 
-	renderTimelineThumbnail: function( options ) {
-		var my_thumb_src = this.mediaElement.getPosterSrc();
-		// check if our thumbnail has a time attribute: 
-		if ( my_thumb_src.indexOf( 't=' ) !== -1 ) {
-			var time_ntp =  mw.seconds2npt ( options.time + parseInt( this.startOffset ) );
-			my_thumb_src = mw.replaceUrlParams( my_thumb_src, { 
-				't' : time_ntp, 
-				'size' : options.size 
-			});
-		}
-		var thumb_class = ( typeof options['thumb_class'] != 'undefined' ) ? options['thumb_class'] : '';
-		return '<div class="ui-corner-all ' + thumb_class + '" src="' + my_thumb_src + '" ' +
-				'style="height:' + options.height + 'px;' +
-				'width:' + options.width + 'px" >' +
-					 '<img src="' + my_thumb_src + '" ' +
-						'style="height:' + options.height + 'px;' +
-						'width:' + options.width + 'px">' +
-				'</div>';
-	},
+
 	
 	/**
 	* Update Thumb time with npt formated time
@@ -2482,8 +2476,8 @@ mw.EmbedPlayer.prototype = {
 	*/	
 	getEmbeddingHTML: function() {
 		switch( mw.getConfig( 'EmbedPlayer.ShareEmbedMode' ) ){
-			case 'object':
-				return this.getShareEmbedObject()
+			case 'iframe':
+				return this.getShareIframeObject();
 			break;
 			case 'videojs':
 				return this.getShareEmbedVideoJs();
@@ -2532,31 +2526,18 @@ mw.EmbedPlayer.prototype = {
 		
 		if( this.duration ) {
 			params.durationHint = parseFloat( this.duration );
-		}
-		// Set width / height of iframe embed ( child iframe / object can't read parent frame size )
-		if( this.width ){
-			params.width = parseInt( this.width );
-		}
-		if( this.height ){
-			params.height = parseInt( this.height );
-		}
+		}	
 		iframeUrl += $j.param( params );
 		
 		// Set up embedFrame src path
-		var embedCode = '&lt;object data=&quot;' + mw.escapeQuotesHTML( iframeUrl ) + '&quot; ';
+		var embedCode = '&lt;iframe src=&quot;' + mw.escapeQuotesHTML( iframeUrl ) + '&quot; ';
 		
-		// Set width / height of embed object ( give extra space for controls ) 
-		if( this.width || this.height ){
-			embedCode += ( this.width )? 'width=&quot;' + this.width +'&quot; ': '';
-			embedCode += ( this.height )? 'height=&quot;' + 
-				parseInt( this.height + this.controlBuilder.getHeight() + 2 ) + 
-				'&quot; ': '';
-		}
-		//Make sure overflow is hidden: 
-		embedCode += 'style=&quot;overflow:hidden&quot; ';
-		
+		// Set width / height of embed object  		
+		embedCode += 'width=&quot;' + this.getPlayerWidth() +'&quot; ';
+		embedCode += 'height=&quot;' + this.getPlayerHeight() + '&quot; ';
+			
 		// Close up the embedCode tag: 
-		embedCode+='&gt;&lt/object&gt;';
+		embedCode+='&gt;&lt/iframe&gt;';
 		
 		// Return the embed code
 		return embedCode;

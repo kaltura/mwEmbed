@@ -398,17 +398,17 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				
 				// xxx should use refactor "ready" stuff into a "domReady" class
 				// So we would not have local scope globals like this:
-				if ( mwReadyFlag ) {
+				//if ( mwReadyFlag ) {
 					// Load the module directly if load request is after
 					// mw.ready has run
 					this.load( resourceSet, callback );
-				} else {
-					this.addToModuleLoaderQueue(
-						loadRequest, 
-						resourceSet,
-						callback
-					);
-				}
+				//} else {
+				//	this.addToModuleLoaderQueue(
+				//		loadRequest, 
+				//		resourceSet,
+				//		callback
+				//	);
+				//}
 				return ;
 			}
 			
