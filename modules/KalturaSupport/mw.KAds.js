@@ -18,9 +18,8 @@ mw.KAds.prototype = {
 	init: function( embedPlayer, $adConfig ){
 		var _this = this; 
 		this.embedPlayer = embedPlayer;
-		this.$adConfig = $adConfig;
-		this.parseAdConfig();
-		// load the Ads
+		this.$adConfig = $adConfig;		
+		// Load the Ads
 		_this.loadAds( function(){
 			mw.log("All ads have been loaded");
 		})			
@@ -50,7 +49,7 @@ mw.KAds.prototype = {
 						// make sure we have a valid callback: 
 						if( adDisplayConf ){						
 							// Add to the player timeline bindings ( hopefully before the user hits 'play' )
-							mw.addToPlayerTimeline( 
+							mw.addAdToPlayerTimeline( 
 								_this.embedPlayer, 
 								node.nodeName,							
 								$j.extend( displayConf, adDisplayConf ) // merge in adDisplayConf

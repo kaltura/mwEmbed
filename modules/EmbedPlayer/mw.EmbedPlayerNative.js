@@ -522,8 +522,8 @@ mw.EmbedPlayerNative = {
 	* Handle the native play event 
 	*/
 	onPlay: function(){
-		mw.log("EmbedPlayer:native:: OnPlay");		
-		// Update the interface
+		mw.log("EmbedPlayer:native:: OnPlay");	
+		// Update the interface ( if paused ) 		
 		this.parent_play();
 	},
 	

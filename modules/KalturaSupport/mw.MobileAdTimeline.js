@@ -19,9 +19,9 @@
  * @param {Object} timeType Stores the target string can be 'start', 'bumper', 'end', or 'overlay'->  
  * @param {Object} displayConf DisplayConf object see mw.MobilePlayerTimeline.display
  */
-mw.addToPlayerTimeline = function( embedPlayer, timeType, displayConf ){
+mw.addAdToPlayerTimeline = function( embedPlayer, timeType, displayConf ){
 	if( !embedPlayer.playerTimeline ){
-		embedPlayer.playerTimeline = new mw.MobileAdTimeline();
+		embedPlayer.playerTimeline = new mw.MobileAdTimeline( embedPlayer );
 	}
 	embedPlayer.playerTimeline.addToTimeline( timeType, displayConf )
 }
@@ -54,15 +54,13 @@ mw.MobileAdTimeline.prototype = {
 		this.bindPlayer();
 	},
 	
-	bindPlayer: function(){
-		
-		var _this = this;
-		
+	bindPlayer: function(){		
+		alert("bind Player");
+		var _this = this;		
 		// Setup the original source
-		_this.originalSrc = embedPlayer.getSrc();		
-
-		$j( _this.embedPlayer ).bind( 'play', function(){
-			
+		_this.originalSrc = _this.embedPlayer.getSrc();		
+		$j( _this.embedPlayer ).bind( 'play', function(){	
+			alert('moblie tl play');
 			// Disable overlays for preroll / bumper
 			_this.overlaysEnabled = false;			
 			
@@ -112,7 +110,7 @@ mw.MobileAdTimeline.prototype = {
 			}
 			// Play the source then run the callback
 			_this.switchPlaySrc( 
-				displayConf.src, 
+				displayConf.src,
 				function(){ /* switch complete callback */
 					if(  displayConf.events ) {
 						_this.bindAdEvents(  displayConf.events );

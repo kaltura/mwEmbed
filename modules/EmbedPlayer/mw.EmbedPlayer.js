@@ -2652,7 +2652,14 @@ mw.EmbedPlayer.prototype = {
 	* Starts the "monitor" 
 	*/
 	play: function() {
-		var _this = this;			
+		var _this = this;
+		// Run play hook (if we we did not bind the native player ) 
+		if( this.paused && this.useNativePlayerControls() ){
+			this.paused = false;
+		   	mw.log("trigger play event::" + !this.paused);		   	
+		   	$j( this ).trigger( 'play' );
+		}
+		
 		mw.log( "EmbedPlayer:: play" );			  
 		// Hide any overlay:
 		this.controlBuilder.closeMenuOverlay();
@@ -2670,14 +2677,7 @@ mw.EmbedPlayer.prototype = {
 		} else {
 			// the plugin is already being displayed			
 			this.seeking = false;
-		}
-		
-	 	 // Run play hook (if we were previously in paused state ) 
-		if( this.paused ){
-			this.paused = false;
-		   	mw.log("trigger play event::");		   	
-		   	//$j( this ).trigger( 'play' );
-		}
+		}		
 		
 		
 		this.$interface.find('.play-btn span')
@@ -2721,12 +2721,11 @@ mw.EmbedPlayer.prototype = {
 	*/
 	pause: function( event ) {
 		var _this = this;
-
-		// only trigger the pause event if not already in paused state: 
-		if( this.paused === false ){
+		// Trigger the pause event if not already paused and using native controls: 
+		if( this.paused === false && this.useNativePlayerControls() ){
 			this.paused = true;
-			mw.log('EmbedPlayer:trigger pause');
-			//$j( this ).trigger('pause' );
+			mw.log('EmbedPlayer:trigger pause:' + this.paused);
+			$j( this ).trigger('pause' );
 		}		
 				
 		// update the ctrl "paused state"				
