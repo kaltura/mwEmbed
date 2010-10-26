@@ -20,6 +20,7 @@
  * @param {Object} displayConf DisplayConf object see mw.MobilePlayerTimeline.display
  */
 mw.addAdToPlayerTimeline = function( embedPlayer, timeType, displayConf ){
+	mw.log("MobileAdTimeline::Add " + timeType + ' dispCof: ' + displayConf );
 	if( !embedPlayer.playerTimeline ){
 		embedPlayer.playerTimeline = new mw.MobileAdTimeline( embedPlayer );
 	}
@@ -54,19 +55,17 @@ mw.MobileAdTimeline.prototype = {
 	},
 	
 	bindPlayer: function(){		
-		alert("bind Player");
 		var _this = this;		
 		// Setup the original source
 		_this.originalSrc = _this.embedPlayer.getSrc();		
 		$j( _this.embedPlayer ).bind( 'play', function(){	
-			alert('moblie tl play');
 			// Disable overlays for preroll / bumper
 			_this.overlaysEnabled = false;			
 			
 			// Chain display of preroll and then bumper: 
-			_this.display( 'preroll' , function(){				
+			_this.display( 'preroll' , function(){		
 				_this.display( 'bumper', function(){
-					var vid = this.getNativePlayerElement();
+					var vid = _this.getNativePlayerElement();
 					// Enable overlays ( for monitor overlay events )
 					_this.overlaysEnabled = true;		
 					
@@ -95,9 +94,10 @@ mw.MobileAdTimeline.prototype = {
 	
 	display: function( timeTargetType, doneCallback ){		
 		var _this = this;
+		mw.log("MobileAdTimeline::display:" + timeTargetType + ' val:' + this.timelineTargets[ timeTargetType ] );
 		// If the displayConf is empty go directly to the callback:
 		if( !this.timelineTargets[ timeTargetType ] ){
-			callback();
+			doneCallback();
 			return ;
 		} 
 		var displayConf = this.timelineTargets[ timeTargetType ];		
@@ -106,32 +106,23 @@ mw.MobileAdTimeline.prototype = {
 		if( displayConf.type == 'videoSource' ){
 			if( displayConf.lockUI ){
 				_this.getNativePlayerElement().controls = false;
-			}
+			};
 			// Play the source then run the callback
 			_this.switchPlaySrc( 
 				displayConf.src,
-				function(){ /* switch complete callback */
-					if(  displayConf.events ) {
-						_this.bindAdEvents(  displayConf.events );
-					}					
+				function( videoElement ){ /* switch complete callback */					
+					// Run the bind call for any bindEvents in the displayConf:  
+					$j.each( displayConf.bindEvents, function( inx, bindFunction ){
+						if( typeof bindFunction == 'function' ){
+							bindFunction( videoElement );
+						}
+					});
 				}, 
-				doneCallback 
+				doneCallback
 			)
 			 
-		}
-		if( displayConf.type == 'vast' ){
-			// handle all vast features with provided 'timeTargetType' 
-		}
-		
-	},
-	bindAdEvents: function ( adEvents ){
-		// Add any displayConf bindings ( like ad event inserts )
-		if( adEvents ){
-			for( var i =0; i < adEvents.length; i++ ){
-				//@@todo add each event trigger
-			}
-		}
-	},
+		}		
+	},	
 	
 	addToTimeline: function( timeType, displayConf ){
 		// Validate the timeType
@@ -147,7 +138,7 @@ mw.MobileAdTimeline.prototype = {
 		var vid = this.getNativePlayerElement();
 		if( vid ){
 			try{				
-				// remove all native player bindings
+				// Remove all native player bindings
 				$j(vid).unbind();
 				vid.src = src;
 				setTimeout( function(){	
@@ -159,7 +150,7 @@ mw.MobileAdTimeline.prototype = {
 							doneCallback();
 						})
 						if( typeof switchCallback == 'function'){
-							switchCallback();
+							switchCallback( vid );
 						}
 					}, 100)
 				},100 );

@@ -147,14 +147,14 @@ $enable_native   = false;
 $valid_url_regex = '/.*/';
 
 $enable_fullHeaders = true;
-$contentType_regex = '/text\/xml/';
+$contentType_regex = '/(text|application)\/xml/';
 $validateXML = true;
 $proxyCookies = true;
 $proxySession = true;
 
 // ############################################################################
 
-$url = $_GET['url'];
+$url = urldecode( $_GET['url'] );
 
 if ( !$url ) {
   

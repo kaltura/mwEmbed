@@ -14,7 +14,10 @@
 		'Kaltura.ServiceUrl' : 'http://www.kaltura.com',
 		'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
 		'Kaltura.CdnUrl' : 'http://cdn.kaltura.com',
-		'Kaltura.xmlProxyUrl' : mw.getMwEmbedPath() + 'modules/KalturaSupport/simplePhpXMLProxy.php'
+		'Kaltura.XmlProxyUrl' : mw.getMwEmbedPath() + 'modules/KalturaSupport/simplePhpXMLProxy.php',
+		
+		// A video file for 
+		'Kaltura.MissingFlavorVideoUrl' : 'http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_uypqlsor/flavor/1_lljfzesm/a.mp4?novar=0'
 	} );
 	
 	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player

@@ -7,7 +7,7 @@
 var mwKAdManager = {};
 mw.addKalturaAds = function( embedPlayer, $adConfig ) {
 	mwKAdManager[ embedPlayer.id ] = new mw.KAds( embedPlayer, $adConfig ) ;
-} 
+}
 
 mw.KAds = function( embedPlayer,   $adConfig) {
 	// Create a Player Manager
@@ -45,13 +45,15 @@ mw.KAds.prototype = {
 				if( $j(node).attr('url')  ){
 					loadQueueCount++;
 					// Load and parse the adXML into displayConf format
-					_this.loadAdXml( $j(node).attr('url'), function( adDisplayConf ){
+					_this.getAdDisplayConf( $j(node).attr('url'), function( adDisplayConf ){
+						
+						var timeType = node.nodeName.toLowerCase;
 						// make sure we have a valid callback: 
-						if( adDisplayConf ){						
+						if( adDisplayConf ){									
 							// Add to the player timeline bindings ( hopefully before the user hits 'play' )
 							mw.addAdToPlayerTimeline( 
 								_this.embedPlayer, 
-								node.nodeName,							
+								timeType,							
 								$j.extend( displayConf, adDisplayConf ) // merge in adDisplayConf
 							)
 						};
@@ -70,29 +72,232 @@ mw.KAds.prototype = {
 			callback();
 		}
 	},
-	loadAdXml: function( adUrl, callback ){
-		var proxyUrl = mw.getConfig( 'Kaltura.xmlProxyUrl' );
+	getAdDisplayConf: function( adUrl, callback ){
+		var _this = this;
+		var proxyUrl = mw.getConfig( 'Kaltura.XmlProxyUrl' );
 		if( !proxyUrl){
 			mw.log("Error: mw.KAds : missing kaltura proxy url ( can't load ad ) ");
 			return; 
 		}
 		// In theory if on the same server we don't need to proxy 
-		// ( but ad servers are almost always on a different server)		
+		// ( but ad servers are almost always on a different server )		
 		// @@todo also we should explore html5 based cross domain request 
 		// if the servers set the proper access permissions 
-		// ( because cookies don't work well with the proxy ) 
-		$j.getJSON( proxyUrl + '?url=' + adUrl + '&callback=?', function( result ){
+		// ( because cookies won't work well with the proxy ) 
+		$j.getJSON( proxyUrl + '?url=' + encodeURIComponent( adUrl ) + '&callback=?', function( result ){
 			var adDisplayConf = {};
 			if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
 				mw.log("Error: loadAdXml error with http response");
 				callback(false);
 				return ;
 			}
-			// Parse the 'content' callback ( for now only VAST is of this type )
-			adDisplayConf['$vast'] = $j( result['content'] );
-			adDisplayConf.type = 'vast';
-			// @@todo we may want to abstract VAST a bit more if we support multiple types 
-			callback( adDisplayConf );
+			var adFormat = 'unknown'
+				
+			// Check result['contents']  for "<vast> </vast> tag
+			var lowerCaseXml = result['contents'].toLowerCase();
+			if( lowerCaseXml.indexOf('<vast') != -1 &&
+				lowerCaseXml.indexOf('</vast>')	){
+				adFormat = 'vast';
+			}
+			
+			switch( adFormat ){
+				case 'vast':
+					callback( _this.getVastAdDisplayConf( result['contents'] ) );
+					return ;
+				break;
+			}					
+			mw.log("Error: could not parse adFormat from add content: \n" + result['contents']);
+			callback( {} );
 		})
+	},
+	
+	/**
+	 * VAST support
+	 * 
+	 * @@FIXME we should move vast support into its own class / support module
+	 */
+	
+	// Convert the vast ad display format into a display conf:
+	getVastAdDisplayConf: function( xmlString){
+		var _this = this;
+		var adConf = {};
+		var $vast = $j( xmlString );
+		// Get the basic set of sequences
+		adConf.sequences = [];
+		$vast.find('creative').each( function(na, node){
+			var seqId = $j( node ).attr('sequence');
+			var $creative = $j( node );
+			// Create the sequence by id ( if not already set )
+			if(!adConf.sequences[seqId] ){
+				adConf.sequences[seqId] = {};
+			}
+			// Set a local pointer to the current sequence: 
+			var currentSeq = adConf.sequences[seqId];
+			// Set duration 
+			if( $creative.find('duration') ){
+				currentSeq.duration = mw.npt2seconds(  $creative.find('duration').text() );
+			}
+			
+			// Set tracking events: 
+			$creative.find('trackingEvents Tracking').each(function(na, tracking){
+				if( ! currentSeq.bindEvents ){
+					currentSeq.bindEvents = [];
+				}
+				currentSeq.bindEvents.push( function( embedPlayer ){						
+					_this.bindVastEvent(embedPlayer, $j(tracking).attr('event'),  $j(tracking).text() );
+				});				
+			});
+			
+			// Set the media file:
+			$creative.find('MediaFiles MediaFile').each( function( na, mediaFile ){
+				//@@NOTE we could check other attributes like delivery="progressive"
+				//@@NOTE for now we are only interested in support for iOS / android devices
+				// so only h264. ( in the future we could add ogg ) 
+				if(  $j( mediaFile ).attr('type') == 'video/h264' ){
+					adConf.VideoFile = $j( mediaFile ).text();
+				}
+			});
+			// Set videoFile to default if not set: 
+			if( !adConf.VideoFile ){
+				adConf.VideoFile = mw.getConfig( 'Kaltura.MissingFlavorVideoUrl' );
+			}
+			
+			// Set the CompanionAds if present: 
+			$creative.find('CompanionAds Companion').each( function( na, companionNode ){
+				if( !adConf.companions ) {
+					adConf.companions = [];
+				}
+				// Build the curentCompanion
+				var companionObj = {};
+				var companionAttr = ['width', 'height', 'id', 'expandedWidth', 'expandedHeight'];
+				$j.each( companionAttr, function(na, attr){
+					if( $j( companionNode ).attr( attr ) ){
+						companionObj[attr] = $j( companionNode ).attr( attr );
+					}
+				});
+				
+				// Check for companion type: 
+				if( $j( companionNode ).find( 'StaticResource' ).length ) {
+					if( $j( companionNode ).find( 'StaticResource' ).attr('creativeType') ) {						
+						companionObj.$html = _this.getCompanionHtml( companionNode, companionObj )
+						mw.log("kAds:: Set Companing html via StaticResource \n" + $j('<div />').append( companionObj.$html ).html() );
+					}											
+				}
+				// Check for iframe type
+				if( $j( companionNode ).find('IFrameResource').length ){
+					mw.log("kAds:: Set Companing html via IFrameResource \n" + $j( companionNode ).find('IFrameResource').text() )
+					companionObj.$html = 
+						$j('<iframe />').attr({
+							'src' : $j( companionNode ).find('IFrameResource').text(),
+							'width' : companionObj['width'],
+							'height' : companionObj['height']
+						});	
+				}
+				// Check for html type
+				if( $j( companionNode ).find('HTMLResource').length ){
+					mw.log("kAds:: Set Companing html via HTMLResource \n" + $j( companionNode ).find('HTMLResource').text() )
+					// Wrap the HTMLResource in a jQuery call: 
+					companionObj.$html=  $j( 
+							$j( companionNode ).find('HTMLResource').text()
+						)
+				}
+				debugger;
+				// Add the companion to the ad config: 
+				adConf.companions.push(companionObj)
+			});
+			
+		});
+		
+	},
+	/**
+	 * Process the companion node
+	 * @param {Object} 
+	 * 		companionNode the xml node to grab companion info from
+	 * @param {Object} 
+	 * 		companionObj the object which stores parsed companion data 
+	 */
+	getCompanionHtml: function( companionNode, companionObj ){
+		var _this = this;
+		companionObj['contentType'] = $j( companionNode ).find( 'StaticResource' ).attr('creativeType');
+		companionObj['resourceUri'] =  $j( companionNode ).find( 'StaticResource' ).html();
+		// @@FIXME Strip CDATA!
+		debugger;
+		if( $j( companionNode ).find('CompanionClickThrough').text() != '' ){
+			companionObj['resourceLink'] = $j( companionNode ).find('CompanionClickThrough').text(); 
+		}
+		if( $j( companionNode ).find('AltText').text() != '' ){						
+			companionObj['AltText'] = $j( companionNode ).find('AltText').text();
+		}
+		
+		// Build companionObj html
+		$companionHtml = $j('<div />'); 
+		switch( companionObj['contentType'] ){
+			case 'image/gif':
+			case 'image/jpeg':
+			case 'image/png':
+				var $img = $j('<img />').attr({
+					'src' : companionObj['resourceUri']
+				})
+				.css({
+					'width' : companionObj['width'] + 'px', 
+					'height' : companionObj['height'] + 'px'
+				});
+				
+				if( companionObj['AltText'] ){
+					$img.attr('alt', companionObj['AltText'] );
+				}
+				// Add the image to the $companionHtml
+				if( companionObj['resourceLink'] ){
+					$companionHtml = $j('<a />')
+						.attr({
+							'href' : companionObj['resourceLink']
+						}).append( $img );
+				} else {
+					$companionHtml = $img;
+				}
+			break;
+			case 'application/x-shockwave-flash':
+				var flashObjectId = $j( companionNode ).attr('id') + '_flash';
+				
+				// @@FIXME we have to A) load this via a proxy 
+				// and B) use smokescreen.js or equivalent to "try" and render on iPad
+				
+				$companionHtml =  $j('<OBJECT />').attr({
+						'classid' : "clsid:D27CDB6E-AE6D-11cf-96B8-444553540000",
+						'codebase' : "http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0",
+						'WIDTH' : companionObj['width'] ,
+						"HEIGHT" :  companionObj['height'],
+						"id" : flashObjectId
+					})
+					.append(
+						$j('<PARAM />').attr({
+							'NAME' : 'movie',
+							'VALUE' : companionObj['resourceUri']
+						}),
+						$j('<PARAM />').attr({
+							'NAME' : 'quality',
+							'VALUE' : 'high'
+						}),
+						$j('<PARAM />').attr({
+							'NAME' : 'bgcolor',
+							'VALUE' : '#FFFFFF'
+						}),
+						$j('<EMBED />').attr({
+							'href' : companionObj['resourceUri'],
+							'quality' : 'high',
+							'bgcolor' :  '#FFFFFF',
+							'WIDTH' : companionObj['width'],
+							'HEIGHT' : companionObj['height'],
+							'NAME' : flashObjectId,
+							'TYPE' : "application/x-shockwave-flash",
+							'PLUGINSPAGE' : "http://www.macromedia.com/go/getflashplayer"
+						})
+					);
+			break;
+		}
+		return $companionHtml;
+	},
+	bindVastEvent: function( embedPlayer, eventName, eventBecon ){
+		mw.log('bindVastEvent::' + eventName + ' becon:' + eventBecon );
 	}
 }

@@ -260,6 +260,7 @@ mw.KWidgetSupport.prototype = {
 						
 			// If on an iPad use iPad or iPhone src
 			if( navigator.userAgent.indexOf('iPad') != -1 ) {
+				mw.log( "KwidgetSupport:: Add iPad source");
 				if( iPadSrc ){ 
 					addSource( iPadSrc, 'video/h264' );
 					callback( sources );
@@ -273,6 +274,7 @@ mw.KWidgetSupport.prototype = {
 			
 			// If on iPhone just use iPhone src
 			if( navigator.userAgent.indexOf('iPhone') != -1 && iPhoneSrc ){
+				mw.log( "KwidgetSupport:: Add iPhone source");
 				addSource(  iPhoneSrc, 'video/h264' );
 				callback( sources );
 				return ;
@@ -281,6 +283,7 @@ mw.KWidgetSupport.prototype = {
 			// If not iPhone or iPad add the iPad or iPhone h264 source for flash fallback
 			if( navigator.userAgent.indexOf('iPhone') == -1 && 
 				navigator.userAgent.indexOf('iPad') == -1 ){
+				mw.log( "KwidgetSupport:: Add from flash h264 fallback" );
 				if( iPadSrc ) {
 					addSource( iPadSrc, 'video/h264' );
 				} else if( iPhoneSrc ) {
