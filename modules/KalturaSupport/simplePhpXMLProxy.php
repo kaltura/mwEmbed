@@ -8,7 +8,7 @@
 // * added validate xml and content type
 // * added X-Forwarded-For header for geoLookup services
 // @@todo add cache and 304 support
-// @@todo add crossdomain.xml lookup and cache support ( to better emulate flash ) 
+// @@todo add crossdomain.xml lookup ( to better emulate flash ) 
 // 
 // Project Home - http://benalman.com/projects/php-simple-proxy/
 // GitHub       - http://github.com/cowboy/php-simple-proxy/

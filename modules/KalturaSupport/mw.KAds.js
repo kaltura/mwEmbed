@@ -118,7 +118,7 @@ mw.KAds.prototype = {
 	 */
 	
 	// Convert the vast ad display format into a display conf:
-	getVastAdDisplayConf: function( xmlString){
+	getVastAdDisplayConf: function( xmlString ){
 		var _this = this;
 		var adConf = {};
 		var $vast = $j( xmlString );
@@ -179,7 +179,7 @@ mw.KAds.prototype = {
 				// Check for companion type: 
 				if( $j( companionNode ).find( 'StaticResource' ).length ) {
 					if( $j( companionNode ).find( 'StaticResource' ).attr('creativeType') ) {						
-						companionObj.$html = _this.getCompanionHtml( companionNode, companionObj )
+						companionObj.$html = _this.getStaticResourceHtml( companionNode, companionObj )
 						mw.log("kAds:: Set Companing html via StaticResource \n" + $j('<div />').append( companionObj.$html ).html() );
 					}											
 				}
@@ -210,24 +210,18 @@ mw.KAds.prototype = {
 		
 	},
 	/**
-	 * Process the companion node
+	 * get html for a static resource 
 	 * @param {Object} 
 	 * 		companionNode the xml node to grab companion info from
 	 * @param {Object} 
 	 * 		companionObj the object which stores parsed companion data 
 	 */
-	getCompanionHtml: function( companionNode, companionObj ){
+	getStaticResourceHtml: function( companionNode, companionObj ){
 		var _this = this;
 		companionObj['contentType'] = $j( companionNode ).find( 'StaticResource' ).attr('creativeType');
-		companionObj['resourceUri'] =  $j( companionNode ).find( 'StaticResource' ).html();
-		// @@FIXME Strip CDATA!
-		debugger;
-		if( $j( companionNode ).find('CompanionClickThrough').text() != '' ){
-			companionObj['resourceLink'] = $j( companionNode ).find('CompanionClickThrough').text(); 
-		}
-		if( $j( companionNode ).find('AltText').text() != '' ){						
-			companionObj['AltText'] = $j( companionNode ).find('AltText').text();
-		}
+		companionObj['resourceUri'] = _this.getCdataFromNode( 
+				$j( companionNode ).find( 'StaticResource' ) 
+		);
 		
 		// Build companionObj html
 		$companionHtml = $j('<div />'); 
@@ -243,14 +237,19 @@ mw.KAds.prototype = {
 					'height' : companionObj['height'] + 'px'
 				});
 				
-				if( companionObj['AltText'] ){
-					$img.attr('alt', companionObj['AltText'] );
+				if( $j( companionNode ).find('AltText').html() != '' ){	
+					$img.attr('alt', _this.getCdataFromNode( 
+							 $j( companionNode ).find('AltText')
+						)
+					);
 				}
 				// Add the image to the $companionHtml
-				if( companionObj['resourceLink'] ){
+				if( $j( companionNode ).find('CompanionClickThrough').html() != '' ){
 					$companionHtml = $j('<a />')
 						.attr({
-							'href' : companionObj['resourceLink']
+							'href' : _this.getCdataFromNode(
+											$j( companionNode ).find('CompanionClickThrough') 
+									)
 						}).append( $img );
 				} else {
 					$companionHtml = $img;
@@ -299,5 +298,15 @@ mw.KAds.prototype = {
 	},
 	bindVastEvent: function( embedPlayer, eventName, eventBecon ){
 		mw.log('bindVastEvent::' + eventName + ' becon:' + eventBecon );
+	},
+	/**
+	 * There does no seem to be a clean way to get CDATA node text via jquery or 
+	 * via native browser functions. So here we just strip the CDATA tags and 
+	 * return the text value
+	 */
+	getCdataFromNode: function ( node ){		
+		return $j.trim( decodeURIComponent( $j( node ).html() )  )
+			.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
+			.replace(/\]\]\-?\-?\>/, '');		
 	}
 }

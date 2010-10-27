@@ -715,7 +715,9 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log( 'controlBuilder: doWarningBindinng: ' + preferenceId +  ' wm: ' + warningMsg);
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
-		var _this = this;			
+		var _this = this;
+		
+		// make sure the 
 		
 		$j( embedPlayer ).hoverIntent({
 			'timeout': 2000,
@@ -758,30 +760,28 @@ mw.PlayerControlBuilder.prototype = {
 							'type' : "checkbox",
 							'name' : 'ffwarn_' + embedPlayer.id
 						})							
-						.click( function() {
-							if ( $j( this ).is( ':checked' ) ) {
-								// Set up a cookie for 7 days:
-								$j.cookie( preferenceId, false, { expires: 7 } );
-								// Set the current instance
-								mw.setConfig( preferenceId, false );
-								$j( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
-								// set the local prefrence to false
-								_this.addWarningFlag = false;
-							} else {
-								mw.setConfig( preferenceId, true );
-								$j.cookie( preferenceId, true );
-							}
+						.click( function() {							
+							mw.log("WarningBindinng:: set " + preferenceId + ' to hidewarning ' );
+							// Set up a cookie for 30 days:
+							$j.cookie( preferenceId, 'hidewarning', { expires: 30 } );
+							// Set the current instance
+							mw.setConfig( preferenceId, false );
+							$j( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
+							// set the local prefrence to false
+							_this.addWarningFlag = false;							
 						} )							
 					);
 					$targetWarning.append( 
-						$j('<span />')
+						$j('<label />')
 						.text( gM( 'mwe-embedplayer-do_not_warn_again' ) )
+						.attr( 'for', 'ffwarn_' + embedPlayer.id )
 					);
 				}								
 				// Check the global config before showing the warning
-				if ( mw.getConfig( preferenceId ) === true  ){
+				if ( mw.getConfig( preferenceId ) === true && $j.cookie( preferenceId ) != 'hidewarning' ){
+					mw.log("WarningBindinng:: show warning " + mw.getConfig( preferenceId ) + ' cookie: '+ $j.cookie( preferenceId ) + 'typeof:' + typeof $j.cookie( preferenceId ));
 					$j( '#warningOverlay_' + embedPlayer.id ).fadeIn( 'slow' );
-				}				
+				};
 			},
 			'out': function() {	
 				$j( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
