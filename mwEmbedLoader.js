@@ -109,7 +109,9 @@ function kOverideSwfObject(){
 			
 			if( kEmbedSettings.entryId ){
 				embedPlayerAttributes.kentryid = kEmbedSettings.entryId;
-				embedPlayerAttributes.poster = 'http://cdnakmi.kaltura.com/p/' + kEmbedSettings.partnerId + '/sp/' +
+				var kCdn = ( preMwEmbedConfig['Kaltura.CdnUrl'] ) ? preMwEmbedConfig['Kaltura.CdnUrl'] : 'http://cdnakmi.kaltura.com';
+				
+				embedPlayerAttributes.poster = kCdn + '/p/' + kEmbedSettings.partnerId + '/sp/' +
 				kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
 				height + '/height/' + width;
 			}			
