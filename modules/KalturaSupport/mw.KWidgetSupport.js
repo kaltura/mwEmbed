@@ -232,9 +232,7 @@ mw.KWidgetSupport.prototype = {
 			for( var i = 0 ; i < data.length; i ++ ) {				
 				var asset = data[i];			
 				/*
-				the template of downloading a direct flavor is
-				http://cdn.kaltura.com/p/PARTNER_ID/sp/PARTNER_ID+00/flvclipper/entry_id
-				/XXXXXXX/flavor/XXXXXXXX/a.mp4?novar=0
+				* the template of downloading a direct flavor is
 				*/
 				// Set up the current src string:
 				var src = mw.getConfig('Kaltura.CdnUrl') + '/p/' + _this.kPartnerId +

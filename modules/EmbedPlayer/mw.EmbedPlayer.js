@@ -510,7 +510,7 @@ EmbedPlayerManager.prototype = {
 			}
 		}
 		
-		//Firefox ~ sometimes ~ gives -1 for unloaded media
+		// Firefox ~ sometimes ~ gives -1 for unloaded media
 		if ( $j(playerElement).attr( 'width' ) == -1 || $j(playerElement).attr( 'height' ) == -1 ) {
 			waitForMeta = true; 
 		}
@@ -922,6 +922,7 @@ mediaSource.prototype = {
 			break;
 			case '.m4v':
 			case '.mp4':
+			case '.mov':
 				return 'video/h264';
 			break;
 			case 'webm':

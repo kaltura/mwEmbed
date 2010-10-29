@@ -201,7 +201,6 @@ mw.KAds.prototype = {
 							$j( companionNode ).find('HTMLResource').text()
 						)
 				}
-				debugger;
 				// Add the companion to the ad config: 
 				adConf.companions.push(companionObj)
 			});
@@ -210,7 +209,7 @@ mw.KAds.prototype = {
 		
 	},
 	/**
-	 * get html for a static resource 
+	 * Get html for a static resource 
 	 * @param {Object} 
 	 * 		companionNode the xml node to grab companion info from
 	 * @param {Object} 
