@@ -973,7 +973,7 @@ mw.PlayerControlBuilder.prototype = {
 		var $overlay = embedPlayer.$interface.find( '.overlay-win,.ui-widget-overlay,.ui-widget-shadow' );				
 			
 		this.displayOptionsMenuFlag = false;
-		mw.log(' closeMenuOverlay: ' + this.displayOptionsMenuFlag);
+		//mw.log(' closeMenuOverlay: ' + this.displayOptionsMenuFlag);
 		
 		$overlay.fadeOut( "slow", function() {
 			$overlay.remove();		

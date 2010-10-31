@@ -16,6 +16,7 @@ mw.ready( function(){
 	$j('#showVideo').click( function(){		
 		$j( '#videoContainer' ).loadingSpinner();				
 		mw.load( 'EmbedPlayer', function(){
+			
 			$j( '#videoContainer' ).html(
 				$j('<video />')
 				.css({

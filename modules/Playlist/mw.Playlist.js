@@ -557,7 +557,7 @@ mw.Playlist.prototype = {
 					$j('<tr />')							
 					.append( 
 						$j( '<td />')
-						.css('width', _this.itemThumbWidth )
+						.css('width', _this.itemThumbWidth + 'px' )
 						.append( 
 							$j('<img />')
 							.attr({ 
