@@ -21,22 +21,6 @@
 		}
 	});
 	
-	// Set up the binding / loader
-	( function( $ ) {
-		$.fn.playerThemer = function( options ){
-			var _this = this;
-			if( !this.selector ){
-				mw.log("Error empty selector for playerThemer ")
-				return ;
-			}			
-			mw.load( 'mw.PlayerThemer', function(){
-				$j( _this.selector ).each(function( inx, targetElement ){
-					$j( targetElement ).data('themer', new mw.PlayerThemer( targetElement, options ) );
-				});				
-			})
-			return this;
-		}	
-		
-	} )( jQuery );
+	
 	
 })( window.mw );

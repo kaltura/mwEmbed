@@ -10,6 +10,7 @@ mw.PlayerThemer = function( themeContainer, options ) {
 	return this.init( themeContainer, options);
 }
 mw.PlayerThemer.prototype = {
+		
 	/**
 	 * Master Theme Config: 
 	 */
@@ -22,8 +23,7 @@ mw.PlayerThemer.prototype = {
 		 * 'selector' target selector
 		 * 'visible' visible states:
 		 * 	 'stop', 'playing', 'playerFocus', 'playerNoFocus', 'seeking' 
-		 */
-	
+		 */	
 		'centerPlayButton': {			
 			'show' : ['stop', 'paused'],
 			'hide' : ['playing', 'seeking'],
