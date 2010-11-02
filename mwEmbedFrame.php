@@ -141,7 +141,7 @@ class mwEmbedFrame {
 			mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
 
 			// Enable the iframe player server:
-			mw.setConfig( 'EmbedPlayer.EnalbeIFramePlayerServer', true );
+			mw.setConfig( 'EmbedPlayer.EnableIFramePlayerServer', true );
 			
 			mw.ready(function(){						
 				// Trigger fullscreen so that iframe resize keeps player size		
