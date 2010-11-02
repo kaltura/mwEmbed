@@ -77,7 +77,7 @@
 		'EmbedPlayer.MonitorRate' : 250, 
 		
 		// If the embedPlayer should accept arguments from 
-		'EmbedPlayer.EnalbeIFramePlayerServer' : false,
+		'EmbedPlayer.EnableIFramePlayerServer' : false,
 		
 		'EmbedPLayer.IFramePlayer.DomainWhiteList' : '*'
 	} );
@@ -251,7 +251,7 @@
 		}
 		
 		// Check if the iFrame player server is enabled: 
-		if( mw.getConfig('EmbedPlayer.EnalbeIFramePlayerServer') ){
+		if( mw.getConfig('EmbedPlayer.EnableIFramePlayerServer') ){
 			dependencyRequest.push(	'mw.IFramePlayerApiServer' );
 		}
 

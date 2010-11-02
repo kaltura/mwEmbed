@@ -45,7 +45,7 @@ mw.IFramePlayerApiServer.prototype = {
 	},
 	hanldeMsg: function( event ){
 		// Check if the server should even be enabled 
-		if( !mw.getConfig( 'EmbedPlayer.EnalbeIFramePlayerServer' )){
+		if( !mw.getConfig( 'EmbedPlayer.EnableIFramePlayerServer' )){
 			return false;
 		}
 		
