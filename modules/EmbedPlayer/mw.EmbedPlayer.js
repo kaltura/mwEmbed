@@ -2365,7 +2365,7 @@ mw.EmbedPlayer.prototype = {
 			return true;
 		}
 		if( mw.getConfig('EmbedPlayer.NativeControlsMobileSafari' ) &&
-		 	mw.isMobileHTML5()
+		 	mw.isHTML5FallForwardNative()
 		){
 			return true;
 		} 
@@ -2406,7 +2406,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// iPad does not handle video tag update for attributes like "controls" 
 		// so we have to do a full replace ( if controls are not included initially ) 		
-		if( mw.isMobileHTML5() && mobileSafariNeedsRefresh ) {
+		if( mw.isHTML5FallForwardNative() && mobileSafariNeedsRefresh ) {
 			var source = this.mediaElement.getSources( 'video/h264' )[0];
 			// XXX note this should be updated once mobile supports h.264  
 			if( !source || !source.src ){
@@ -3551,7 +3551,7 @@ mw.EmbedTypes = {
 			// check for flash		 
 			if ( this.testActiveX( 'ShockwaveFlash.ShockwaveFlash' ) ) {			
 				this.players.addPlayer( kplayer );
-				//this.players.addPlayer( flowPlayer );
+				// this.players.addPlayer( flowPlayer );
 			}
 			 // VLC
 			 if ( this.testActiveX( 'VideoLAN.VLCPlugin.2' ) ) {
@@ -3611,7 +3611,7 @@ mw.EmbedTypes = {
 				if ( semicolonPos > -1 ) {
 					type = type.substr( 0, semicolonPos );
 				}
-				// mw.log('on type: '+type);
+				// mw.log( 'on type: ' + type );
 				var pluginName = navigator.mimeTypes[i].enabledPlugin ? navigator.mimeTypes[i].enabledPlugin.name : '';
 				if ( !pluginName ) {
 					// In case it is null or undefined
@@ -3628,9 +3628,9 @@ mw.EmbedTypes = {
 				}
 		
 				if ( (type == 'video/mpeg' || type=='video/x-msvideo') &&
-                                     pluginName.toLowerCase() == 'vlc multimedia plugin' ) {
-                                  this.players.addPlayer( vlcMozillaPlayer );
-                                }
+                     pluginName.toLowerCase() == 'vlc multimedia plugin' ) {
+					this.players.addPlayer( vlcMozillaPlayer );
+                }
                                 
 				if ( type == 'application/ogg' ) {
 					if ( pluginName.toLowerCase() == 'vlc multimedia plugin' ) {

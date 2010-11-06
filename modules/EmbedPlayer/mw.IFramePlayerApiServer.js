@@ -28,12 +28,15 @@ mw.IFramePlayerApiServer.prototype = {
 	init: function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
 		this.addIframeListener();
+		this.addIframePusher();
 	},
-	
+	/**
+	 * Listens to requested methods and triggers their action
+	 */
 	addIframeListener: function(){
 		var _this = this;		
-		if (window.addEventListener) {
-			// For standards-compliant web browsers
+		if ( window.addEventListener ) {
+			// For standards web browsers
 			window.addEventListener("message", function(event){
 				_this.hanldeMsg( event )
 			}, false);
@@ -43,6 +46,14 @@ mw.IFramePlayerApiServer.prototype = {
 			});
 		}
 	},
+	
+	addIframePusher
+	
+	/**
+	 * Handle a message event and pass it off to the embedPlayer
+	 * 
+	 * @param {string} event
+	 */
 	hanldeMsg: function( event ){
 		// Check if the server should even be enabled 
 		if( !mw.getConfig( 'EmbedPlayer.EnableIFramePlayerServer' )){
@@ -56,15 +67,19 @@ mw.IFramePlayerApiServer.prototype = {
 		
 		// Decode the message 
 		msgObject = JSON.parse( event.data );
-		if( msgObject.method ){
-			// Deal with variadic argument set: 
-			var argString = '';
-			for( var i=0;i < msgObject.args; i++){
-				argString += ', msgObject.args[i]';
-			}
-			eval( 'this.embedPlayer.' + msgObject.method + '(' + argString + ')' );			
+		if( msgObject.method && this.embedPlayer[method] ){
+			this.embedPlayer[method].apply( msgObject.args );			
 		}
 	},
+	
+	/**
+	 * Check an origin domain against the configuration value: 'EmbedPLayer.IFramePlayer.DomainWhiteList'
+	 *  Returns true if the origin domain is allowed to communicate with the embedPlayer
+	 *  otherwise returns false. 
+	 * 
+	 * @parma {string} origin
+	 * 		The origin domain to be checked
+	 */
 	eventDomainCheck: function( origin ){
 		if( mw.getConfig( 'EmbedPLayer.IFramePlayer.DomainWhiteList' ) ){
 			// NOTE this is very similar to the apiProxy function: 
@@ -74,7 +89,7 @@ mw.IFramePlayerApiServer.prototype = {
 				return true;
 			}
 			// @@FIXME we should also check protocol to avoid
-			// http to https escalation 
+			// http vs https
 			var originDomain = mw.parseUri( origin ).host;
 			
 			// Check the domains: 
@@ -94,6 +109,5 @@ mw.IFramePlayerApiServer.prototype = {
 		}			
 		// If no passing domain was found return false
 		return false;
-	}
-	
+	}	
 }

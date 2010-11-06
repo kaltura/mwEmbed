@@ -11,7 +11,7 @@
 * Kaltura Configuration options are set via mw.setConfig( option, value ) or 
 * mw.setConfig( {json set of option value pairs } );
 * 
-* Some config options and their defualt values: 
+* Some config options and their default values: 
 * 
 *	// Enable analytics tracking for html5 devices
 *	'Kaltura.EnableAnalytics' : true
@@ -26,15 +26,15 @@
 *	'Kaltura.CdnUrl' : 'http://cdn.kaltura.com'
 *
 */
-var kURID = '1.1q';
+var kURID = '1.1r';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -95,6 +95,7 @@ if( !mw.setConfig ){
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
 function kOverideSwfObject(){
 	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTarget, widthStr, heightStr ){		
+		
 		// Add a ready event to re-write: 
 		mw.ready(function(){
 			
@@ -138,7 +139,7 @@ function kOverideSwfObject(){
 				}						
 				
 				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, flashVars);
-				if( kBrowserAgentShouldUseHTML5() && kEmbedSettings.uiconfId ){				
+				if( kIsHTML5FallForward() && kEmbedSettings.uiconfId ){				
 					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else { 				
 					// use the original flash player embed:  
@@ -151,14 +152,14 @@ function kOverideSwfObject(){
 	// SWFObject v 2.0
 	if( window['swfobject'] && !window['swfobject']['originalEmbedSWF'] ){
 		window['swfobject']['originalEmbedSWF'] = window['swfobject']['embedSWF'];
-		// override embedObject for our own ends
+		// Override embedObject for our own ends
 		window['swfobject']['embedSWF'] = function( swfUrlStr, replaceElemIdStr, widthStr,
 				heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn)
 		{
 			kAddReadyHook(function(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
 				// Check if mobile safari: 			
-				if( kBrowserAgentShouldUseHTML5() && kEmbedSettings.widgetId ){
+				if( kIsHTML5FallForward() && kEmbedSettings.widgetId ){
 					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
 				} else {										
 					// Else call the original EmbedSWF with all its arguments 
@@ -170,7 +171,7 @@ function kOverideSwfObject(){
 	}
 }
 
-// Check dom for kaltura embeds ( fall forward ) 
+// Check DOM for Kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
 function kCheckAddScript(){
 	// If user javascript is using mw.ready add script
@@ -186,19 +187,49 @@ function kCheckAddScript(){
 		return ;
 	}		
 	// If document includes kaltura embed tags && isMobile safari: 
-	if ( kBrowserAgentShouldUseHTML5() &&  kGetKalturaPlayerList().length ) {		
+	if ( kIsHTML5FallForward() &&  kGetKalturaPlayerList().length ) {		
 		// Check for Kaltura objects in the page
 		kAddScript();
 	}
 }
-function kBrowserAgentShouldUseHTML5(){	
-	return (  (navigator.userAgent.indexOf('iPhone') != -1) || 
-	(navigator.userAgent.indexOf('iPod') != -1) || 
-	(navigator.userAgent.indexOf('iPad') != -1) ||
-	(navigator.userAgent.indexOf('Android 2.') != -1) || 
-	// to debug in chrome / desktop safari
-	(document.URL.indexOf('forceMobileHTML5') != -1 )
-	);
+// Fallforward by default prefers flash, uses html5 only if flash is not installed or not avaliable 
+function kIsHTML5FallForward(){	
+	// Check for a mobile html5 user agent:
+	if (  (navigator.userAgent.indexOf('iPhone') != -1) || 
+		(navigator.userAgent.indexOf('iPod') != -1) || 
+		(navigator.userAgent.indexOf('iPad') != -1) ||
+		(navigator.userAgent.indexOf('Android 2.') != -1) || 
+		// to debug in chrome / desktop safari
+		(document.URL.indexOf('forceMobileHTML5') != -1 )
+	){
+		return true;
+	}
+	// Check if the client does not have flash and has the video tag
+	if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
+		for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
+			if ( navigator.mimeTypes[i] == 'application/x-shockwave-flash' ) {
+				// flash is installed don't use html5
+				return false;
+			}
+		}
+	}
+	// for IE: 
+	var hasObj = true;
+	try {
+		var obj = new ActiveXObject( 'ShockwaveFlash.ShockwaveFlash' );
+	} catch ( e ) {
+		hasObj = false;
+	}
+	if( hasObj ){
+		return false;
+	}
+	// No flash return true if the browser supports html5 video tag with basic support for canPlayType:
+	var dummyvid = document.createElement( "video" );
+	if( dummyvid.canPlayType ) {
+		return true;
+	}
+	// No video tag or flash, return false ( normal "install flash" user flow )
+	return false;
 }
 
 // Add the kaltura html5 mwEmbed script
@@ -212,13 +243,19 @@ function kAddScript(){
 	
 	var jsRequestSet = [];
 	
-	var corePlayer=[];
 	if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
-		corePlayer.push( 'window.jQuery' )
+		jsRequestSet.push( ['window.jQuery'] )
 	}
-		
+	
+	// Check if we are using an iframe ( load only the iframe api client ) 
+	if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
+		jsRequestSet.push( ['mw.IFramePlayerApiClient'] );
+		kLoadJsRequestSet( jsRequestSet );
+		return ;
+	}
+	
 	// Add all the classes needed for video 
-	corePlayer = corePlayer.concat( [	 
+	jsRequestSet.push( [	 
 	    'mwEmbed',
 		// core skin: 
 		'mw.style.mwCommon',	      
@@ -256,12 +293,11 @@ function kAddScript(){
 		// Player themer module
 		'mw.PlayerThemer'
 	]);
-	jsRequestSet.push( corePlayer );
 	
-	var objectPlayerList = kGetKalturaPlayerList()
+	var objectPlayerList = kGetKalturaPlayerList();
 	// Check if we are doing object rewrite ( add the kaltura library ) 
-	if ( kBrowserAgentShouldUseHTML5() && objectPlayerList.length ){
-		// kaltura client libraries:
+	if ( kIsHTML5FallForward() && objectPlayerList.length ){
+		// Kaltura client libraries:
 		jsRequestSet.push( [
 		  'KalturaClientBase',
 		  'KalturaClient',
@@ -283,23 +319,11 @@ function kAddScript(){
 		   'mw.PlaylistHandlerKaltura', 
 		   'mw.PlaylistHandlerKalturaRss'
 		]);
-		// Conditional playlist include is disabled 
-		// This avoids mangled cache on sites that have kaltura players and kaltura players with playlists		
-		/*
-		// Check if we are doing a playlist 
-		loadPlaylist = false;
-		for( var i=0;i < objectPlayerList.length;i++ ){
-			var settings = objectPlayerList[i]
-			if( !settings.entryId ){
-				loadPlaylist = true;
-			}
-		}
-		if( loadPlaylist ){
-		
-		}
-		*/
 	}
-		
+	kLoadJsRequestSet( jsRequestSet );
+};
+
+function kLoadJsRequestSet( jsRequestSet ){
 	var url = SCRIPT_LOADER_URL + '?class=';	
 	// Request each jsRequestSet
 	for( var i = 0; i < jsRequestSet.length ; i++ ){
@@ -314,7 +338,8 @@ function kAddScript(){
 	script.type = 'text/javascript';	
 	script.src = url;	
 	document.getElementsByTagName('body')[0].appendChild( script );	
-};
+}
+
 /**
 * DOM-ready setup ( similar to jQuery.ready )  
 */
@@ -383,11 +408,11 @@ if ( document.addEventListener ) {
 	} catch(e) {}
 
 	if ( document.documentElement.doScroll && toplevel ) {
-		doScrollCheck();
+		kdoScrollCheck();
 	}
 }
 // The DOM ready check for Internet Explorer
-function doScrollCheck() {
+function kdoScrollCheck() {
 	if ( kAlreadyRunDomReadyFlag ) {
 		return;
 	}
@@ -438,6 +463,7 @@ kGetKalturaPlayerList = function(){
 	}		
 	return kalturaPlayers;
 }
+
 // Copied from kalturaSupport loader mw.getKalturaEmbedSettings  
 kGetKalturaEmbedSettings = function( swfUrl, flashvars ){		
 	if( !flashvars )

@@ -4,11 +4,11 @@
 //
 // *Version: 1.6, Last updated: 1/24/2009*
 // *Update by michael.dale@kaltura.com*
-
 // * added validate xml and content type
 // * added X-Forwarded-For header for geoLookup services
 // @@todo add cache and 304 support
 // @@todo add crossdomain.xml lookup ( to better emulate flash ) 
+//	( Adding crossdomain.xml lookup is important because we pass X-Forward-For header ) 
 // 
 // Project Home - http://benalman.com/projects/php-simple-proxy/
 // GitHub       - http://github.com/cowboy/php-simple-proxy/

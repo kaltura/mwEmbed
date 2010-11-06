@@ -14,7 +14,7 @@
 		mw.setConfig( 'forceMobileHTML5' , true );
 	}			
 	mw.setConfig( 'EmbedPlayer.OverlayControls', false );
-	mw.setConfig( 'kalturaAnalyticsCallbackLog', function( monitorEvent ){
+	mw.setConfig( 'Kaltura.AnalyticsCallback', function( monitorEvent ){
 		$j('#analyticsLog').append( monitorEvent + "\n");
 	});
 

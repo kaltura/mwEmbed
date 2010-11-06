@@ -17,10 +17,6 @@ mw.EmbedPlayerNative = {
 	//Callback fired once video is "loaded" 
 	onLoadedCallback: null,
 	
-	//For retrying a player embed with a distinct url
-	// NOTE: this bug workaround may no longer be applicable	
-	urlAppend:'',
-	
 	// The previous "currentTime" to sniff seek actions 
 	// NOTE the bug where onSeeked does not seem fire consistently may no longer be applicable	 
 	prevCurrentTime: -1,
@@ -74,7 +70,7 @@ mw.EmbedPlayerNative = {
 	updateFeatureSupport: function(){
 		// iWhatever devices appear to have a broken
 		// dom overlay implementation of video atm. (hopefully iphone OS 4 fixes this )
-		if( mw.isMobileHTML5() ) {
+		if( mw.isHTML5FallForwardNative() ) {
 			this.supports.overlays = false;
 		}				
 	},
@@ -183,18 +179,17 @@ mw.EmbedPlayerNative = {
 			mw.log( " Error: applyMediaElementBindings without player elemnet");
 			return ;
 		}
-		
-		// Bind events to local js methods:			
-		vid.addEventListener( 'canplaythrogh',  function() { $j( _this ).trigger('canplaythrough'); }, true);			 
-		vid.addEventListener( 'loadedmetadata', function() { _this.onloadedmetadata() }, true);
-		vid.addEventListener( 'progress', function( e ) { if( _this.onprogress ) { _this.onprogress( e ); }  }, true);
-		vid.addEventListener( 'ended', function() {  _this.onended() }, true);		
-		vid.addEventListener( 'seeking', function() { _this.onSeeking() }, true);
-		vid.addEventListener( 'seeked', function() { _this.onSeeked() }, true);			
-		
-		vid.addEventListener( 'pause', function() { if( _this.onPaused ) { _this.onPaused() } }, true );
-		vid.addEventListener( 'play', function(){ _this.onPlay() }, true );			
-		vid.addEventListener( 'volumechange', function(){ _this.onVolumeChange() } , true );
+		$j.each( nativeEvents, function( inx, eventName ){
+			$j( vid ).bind( eventName , function(){
+				// Check if there is local handler: 
+				if( _this['on' + eventName ] ){
+					_this['on' + eventName ].apply( arguments );
+				} else {
+					// no local handler directly propagate the event to the abstract object: 
+					$j( _this ).trigger( eventName, arguments )
+				}
+			})
+		});
 	},
 	
 	// basic monitor function to update buffer
@@ -245,7 +240,8 @@ mw.EmbedPlayerNative = {
 	
 	/**
 	* Do a native seek by updating the currentTime
-	* @param {float} percentage Percent to seek to of full time
+	* @param {float} percentage 
+	* 		Percent to seek to of full time
 	*/
 	doNativeSeek: function( percentage ) {
 		var _this = this;
@@ -261,7 +257,8 @@ mw.EmbedPlayerNative = {
 	/**
 	* Seek in a existing stream
 	*
-	* @param {Float} percentage Percentage of the stream to seek to between 0 and 1
+	* @param {Float} percentage 
+	* 		Percentage of the stream to seek to between 0 and 1
 	*/
 	doPlayThenSeek: function( percentage ) {
 		mw.log( 'native::doPlayThenSeek::' );
@@ -290,8 +287,10 @@ mw.EmbedPlayerNative = {
 	/**
 	* Set the current time with a callback
 	* 
-	* @param {Float} position Seconds to set the time to
-	* @param {Function} callback Function called once time has been set. 
+	* @param {Float} position 
+	* 		Seconds to set the time to
+	* @param {Function} callback 
+	* 		Function called once time has been set. 
 	*/
 	setCurrentTime: function( time , callback, callbackCount ) {	
 		var _this = this;			
@@ -337,17 +336,6 @@ mw.EmbedPlayerNative = {
 		}									
 		// Return the playerElement currentTime				
 		return this.playerElement.currentTime;
-	},
-	
-	/**
-	* Get video src URI
-	* appends this.urlAppend for unique urls for re-requesting src urls on broken playback 
-	*/
-	getSrc: function() {
-		var src = this.parent_getSrc();
-		if (  this.urlAppend != '' )
-			return src + ( ( src.indexOf( '?' ) == -1 ) ? '?':'&' ) + this.urlAppend;
-		return src;
 	},	
 	
 	/**
@@ -436,15 +424,6 @@ mw.EmbedPlayerNative = {
 			return this.playerElement.muted;
 		}
 	},
-			
-	/**
-	* Handle volume change are handled via "monitor" as to not do too many binding triggers per seconds.
-	*/
-	onVolumeChange: function(){
-		//mw.log( "native::volumechange::trigger" );
-		//this.volume = this.playerElement.volume;
-		$j( this ).trigger( 'volumechange' );
-	},
 	
 	/**
 	* Get the native media duration
@@ -492,7 +471,7 @@ mw.EmbedPlayerNative = {
 	* Local method for seeking event
 	*  fired when "seeking" 
 	*/
-	onSeeking: function() {	
+	onseeking: function() {	
 		mw.log( "native:onSeeking");
 		// Trigger the html5 seeking event 
 		//( if not already set from interface )
@@ -514,7 +493,7 @@ mw.EmbedPlayerNative = {
 	* Local method for seeked event
 	*  fired when done seeking 
 	*/
-	onSeeked: function() {
+	onseeked: function() {
 		mw.log("native:onSeeked");
 		
 		mw.log("native:onSeeked:trigger");
@@ -529,7 +508,7 @@ mw.EmbedPlayerNative = {
 	/**
 	* Handle the native paused event
 	*/ 
-	onPaused: function(){
+	onpause: function(){
 		mw.log( "EmbedPlayer:native: OnPaused" );
 		this.parent_pause();	
 	},
@@ -537,7 +516,7 @@ mw.EmbedPlayerNative = {
 	/**
 	* Handle the native play event 
 	*/
-	onPlay: function(){
+	onplay: function(){
 		mw.log("EmbedPlayer:native:: OnPlay");	
 		// Update the interface ( if paused ) 		
 		this.parent_play();
@@ -573,7 +552,10 @@ mw.EmbedPlayerNative = {
 	* Local method for progress event
 	*  fired as the video is downloaded / buffered
 	*
-	*  Used to update the bufferedPercent
+	*  Used to update the bufferedPercent 
+	*  
+	*  Note: this way of updating buffer was only supported in firefox 3.x and
+	*  not supported in firefox 4.x
 	*/
 	onprogress: function( e ) {			
 		if( e.loaded && e.total ) {

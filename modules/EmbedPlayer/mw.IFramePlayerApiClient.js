@@ -6,26 +6,26 @@
 
 // Add the jQuery binding
 ( function( $ ) {	
-	$.fn.iFramePlayer = function( options ){
-		
-		var iframe = $(this.selector).get(0);				
-		var cat = new mw.IFramePlayerApiClient( iframe, options );		
+	$.fn.iFramePlayer = function( options ){	
+		var iframe = $(this.selector).get(0)
+		if( !iframe['playerApi'] ){
+			iframe['playerApi'] = new mw.IFramePlayerApiClient( iframe, options );		
+		}
 	};
-	
 } )( jQuery );
 
 mw.IFramePlayerApiClient = function( iframe, options ){
 	return this.init( iframe , options);
 }
 mw.IFramePlayerApiClient.prototype = {
-	exportedMethods: [
+	'exportedMethods': [
 	   'play',
 	   'pause'
 	],
-	exportedBindings: [
+	'exportedBindings': [
 	   'ended'
 	],
-	init: function( iframe , options ){
+	'init': function( iframe , options ){
 		this.iframe = iframe;		
 		if( !options.targetOrigin ){
 			mw.log("Error: IFramePlayerApiClient please supply a target origin");
@@ -35,7 +35,7 @@ mw.IFramePlayerApiClient.prototype = {
 		}		
 		this.addPlayerApi();
 	},
-	addPlayerApi: function(){
+	'addPlayerApi': function(){
 		var _this = this;
 		$j.each( this.exportedMethods, function(na, method){
 			_this.iframe[ method ] = function(){
@@ -43,7 +43,7 @@ mw.IFramePlayerApiClient.prototype = {
 			};
 		});			
 	},
-	postMethod: function( method , args){
+	'postMethod' : function( method , args){
 		mw.log("IFramePlayer:: Post method: '" + method + "' with " + args.length + " arguments");
 		var methodMsg = {
 			'method' : method

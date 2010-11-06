@@ -9,6 +9,7 @@
  * Note by Michael Dale: Smokescreen has been announced as 'open source' but the 
  * license has not yet been selected. This should NOT be used commercially
  * until the license issues have been cleared up.
+ * 
  */
 var Smokescreen=function(url,element,width,height,name,params){
 goog={};goog.global=this;goog.provide=function(a){a=a.split(".");var b=goog.global;for(var c in a){var d=a[c];d in b||(b[d]={});b=b[d]}};goog.require=function(){};

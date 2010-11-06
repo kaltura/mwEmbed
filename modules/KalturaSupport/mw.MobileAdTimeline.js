@@ -1,16 +1,19 @@
-
 /**
  * mw.MobilePlayerTimeline handles basic timelines of clips in the mobile platform
+ * 
+ * MobileAdTimeline is targets VAST as the display representation and its 
+ * timelineTargets support the VAST display types. Future updates may 
+ * handle more ad types and timeline targets. 
  * 
  * in mobile html5 ( iOS ) to switch clips you have to do some trickery 
  * because only one video tag can be active in the page: 
  * 
- * Source changes work via: 
+ * Player src changes work with the following timeline: 
  *  issuing a "src change"
  *  then issue the "load" wait a few seconds then issue the "play"
  *  once restoring the source we need to seek to parent offset position
  *  
- * MobileAdTimeline is targets VAST as the display representation 
+ * 
  */
 
 /**
@@ -47,7 +50,11 @@ mw.MobileAdTimeline.prototype = {
 	
 	// Original source of embedPlayer
 	originalSrc: false,
-	
+	/**
+	 * @constructor
+	 * @param {Object} EmbedPlayer
+	 * 		The embedPlayer object
+	 */
 	init: function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
 		// Bind to the "play" and "end"
@@ -92,6 +99,16 @@ mw.MobileAdTimeline.prototype = {
 		
 	},
 	
+	/**
+	 * Display a given timeline target, if the timeline target affects the 
+	 * core video playback bindings, it will wait until the subclip completes
+	 * before issuing the "doneCallback" 
+	 * 
+	 * @param {string} timeTargetType
+	 * 		Identify what timeline type to be displayed. Can be: preroll, bumper, overlay, postroll
+	 * @param {function} doneCallback
+	 * 		The callback function called once the display request has been completed
+	 */
 	display: function( timeTargetType, doneCallback ){		
 		var _this = this;
 		mw.log("MobileAdTimeline::display:" + timeTargetType + ' val:' + this.timelineTargets[ timeTargetType ] );
@@ -123,7 +140,11 @@ mw.MobileAdTimeline.prototype = {
 			 
 		}		
 	},	
-	
+	/**
+	 * addToTimeline adds a given display configuration to the timelineTargets
+	 *  @param {string} timeType
+	 *  @param {object} displayConf
+	 */
 	addToTimeline: function( timeType, displayConf ){
 		// Validate the timeType
 		if( typeof this.timelineTargets[ timeType ] != 'undefined' ){
@@ -159,6 +180,9 @@ mw.MobileAdTimeline.prototype = {
 			}
 		}
 	},	
+	/**
+	 * Get a direct ref to the inDom video element
+	 */
 	getNativePlayerElement: function(){
 		return this.embedPlayer.getPlayerElement();
 	}

@@ -1149,39 +1149,56 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			],
 			uiRequest
 		], function() {
-			var $dialog = $j( '#mwTempLoaderDialog' ).show().dialog( options );
-			// center the dialog 
-			// xxx figure out why jquery ui is messing up here			
-			/*$j( '#mwTempLoaderDialog' ).parent('.ui-dialog').css({
-				'position' : 'absolute',
-				'left' : '50%',
-				'margin-left': -1 * $dialog.width()/2,
-				'top' : '50%',
-				'margin-top': -1 * $dialog.height()/2
-			});	*/		
+			var $dialog = $j( '#mwTempLoaderDialog' ).show().dialog( options );				
 		} );
 		return $j( '#mwTempLoaderDialog' );
 	};
 	
 	/**
-	 * Mobile HTML5 has special properties for html5 video::
+	 * Fallforward system by default prefers flash.
 	 * 
+	 * This is separate from the EmbedPlayer library detection to provide package loading control
 	 * NOTE: should be phased out in favor of browser feature detection where possible
+	 * 
 	 */
-	mw.isMobileHTML5 = function() {
-		// check mobile safari foce ( for debug )
-		if( mw.getConfig( 'forceMobileHTML5' ) || document.URL.indexOf('forceMobileHTML5') != -1 ){
-			return true;
-		}
-		if (( navigator.userAgent.indexOf('iPhone') != -1) || 
-			( navigator.userAgent.indexOf('iPod') != -1) || 
-			( navigator.userAgent.indexOf('iPad') != -1) ||
-			( mw.isAndroid2() )  
+	mw.isHTML5FallForwardNative = function(){
+		// Check for a mobile html5 user agent:
+		if (  (navigator.userAgent.indexOf('iPhone') != -1) || 
+			(navigator.userAgent.indexOf('iPod') != -1) || 
+			(navigator.userAgent.indexOf('iPad') != -1) ||
+			(navigator.userAgent.indexOf('Android 2.') != -1) || 
+			// to debug in chrome / desktop safari
+			(document.URL.indexOf('forceMobileHTML5') != -1 )
 		) {
 			return true;
 		}
+		// Check if the client has flash the video tag
+		if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
+			for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
+				if ( navigator.mimeTypes[i].type == 'application/x-shockwave-flash' ) {
+					// flash is installed don't use html5
+					return false;
+				}
+			}
+		}
+		// For IE: 
+		var hasObj = true;
+		try {
+			var obj = new ActiveXObject( 'ShockwaveFlash.ShockwaveFlash' );
+		} catch ( e ) {
+			hasObj = false;
+		}
+		if( hasObj ){
+			return false;
+		}		
+		// No flash return true if the browser supports html5 video tag with basic support for canPlayType:
+		var dummyvid = document.createElement( "video" );
+		if( dummyvid.canPlayType ) {
+			return true;
+		}
+		// No video tag or flash, return false ( normal "install flash" user flow )
 		return false;
-	};
+	}
 	// Android 2 has some restrictions vs other mobile platforms 
 	mw.isAndroid2 = function(){
 		if ( navigator.userAgent.indexOf('Android 2.') != -1) {

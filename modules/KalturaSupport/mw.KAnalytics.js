@@ -2,7 +2,7 @@
  * Kaltura style analytics reporting class
  */
 
-// Temporary hack to avoid undefined symbol which responds with "kaltura" 
+// Avoid undefined symbol for javascript response "Kaltura" from the api
 window['Kaltura'] = true;
 
 // KAnalytics Constructor
@@ -10,12 +10,12 @@ mw.KAnalytics = function( embedPlayer, kalturaClient ){
 	this.init( 	embedPlayer, kalturaClient );
 }
 
-//Global mw.addKAnalytics manager
-var mwKAnalyticsManager = {};
+// Add analytics to the embed player: 
 mw.addKAnalytics = function( embedPlayer, kalturaClient ) {
-	mwKAnalyticsManager[ embedPlayer.id ] = new mw.KAnalytics( embedPlayer, kalturaClient ) ;
-} 
-
+	if( ! embedPlayer.kAnalytics ) {
+		embedPlayer.kAnalytics = new mw.KAnalytics( embedPlayer, kalturaClient );
+	}
+}
 
 mw.KAnalytics.prototype = {
 
@@ -39,7 +39,9 @@ mw.KAnalytics.prototype = {
 	 * Constructor for kAnalytics
 	 * 
 	 * @param {Object}
-	 *            embedPlayer Player to apply Kaltura analytics to.
+	 *          embedPlayer Player to apply Kaltura analytics to.
+	 * @parma {Object} 
+	 * 			kalturaClient Kaltura client object for the api session.  
 	 */
 	init: function( embedPlayer, kalturaClient ) {
 	
@@ -58,7 +60,7 @@ mw.KAnalytics.prototype = {
 		this.kalturaCollector = new KalturaStatsService( kalturaClient );
 		
 		// Add relevant hooks for reporting beacons
-		this.addPlayerHooks();		
+		this.bindPlayerEvents();		
 				
 	},
 	
@@ -68,7 +70,7 @@ mw.KAnalytics.prototype = {
 	 * @param {Number}
 	 *            KalturaStatsEventType The eventType number.
 	 */
-	sendStatsEvent: function( KalturaStatsEventKey ){					
+	sendAnalyticsEvent: function( KalturaStatsEventKey ){					
 		var _this = this;
 		
 		// get the id for the given event: 	
@@ -104,19 +106,19 @@ mw.KAnalytics.prototype = {
 			eventSet[ 'entryId' ] = this.embedPlayer.getSrc();
 		}					
 		//alert( 'Send Kaltura Event: ' + ' dur:' + eventSet.duration );
-		// Check if kalturaAnalyticsCallbackLog is enabled:
-		if( typeof mw.getConfig( 'kalturaAnalyticsCallbackLog' ) == 'function' ) {
-			mw.getConfig( 'kalturaAnalyticsCallbackLog' )( KalturaStatsEventKey + ' sent ');
+		// Check if Kaltura.AnalyticsCallback is enabled:
+		if( typeof mw.getConfig( 'Kaltura.AnalyticsCallback' ) == 'function' ) {
+			mw.getConfig( 'Kaltura.AnalyticsCallback' )( KalturaStatsEventKey + ' sent ');
 		}		
 		this.kalturaCollector.collect( function(){			 
-			// kalturaCollector has a callback but we dont' "care" about its response. 
+			// kalturaCollector has a callback but not used here. 
 		}, eventSet);		
 	},
 	
 	/**
-	 * Adds the hooks for the player stats reporting
+	 * Binds player events for analytics reporting
 	 */ 
-	addPlayerHooks: function(){
+	bindPlayerEvents: function(){
 	
 		// Setup local reference to embedPlayer
 		var embedPlayer = this.embedPlayer;
@@ -125,7 +127,7 @@ mw.KAnalytics.prototype = {
 		// Setup shortcut anonymous function for player bindings
 		var b = function( hookName, eventType ){
 			$j( _this.embedPlayer ).bind( hookName, function(){
-				_this.sendStatsEvent( eventType )
+				_this.sendAnalyticsEvent( eventType )
 			});
 		};
 		
@@ -151,8 +153,7 @@ mw.KAnalytics.prototype = {
 		b( 'bufferEndEvent', 'BUFFER_END' );
 		
 		// When the fullscreen button is pressed
-		// ( presently does not register iphone / ipad until it has js bindings
-		// )
+		// ( presently does not register iPhone / iPad until it has js bindings )
 		b( 'openFullScreenEvent', 'OPEN_FULL_SCREEN' );
 		
 		// When the close fullscreen button is pressed.
@@ -163,13 +164,13 @@ mw.KAnalytics.prototype = {
 		// When the user plays (after the ondone event was fired )
 		b( 'replayEvent', 'REPLAY' );	
 	
-		// Bind on the seek event ( actual HTML5 binding )
+		// Bind on the seek event
 		$j( embedPlayer ).bind( 'onSeek', function( seekTarget ) {
 			// Don't send a bunch of seeks on scrub:
 			if( _this.lastSeekEventTime == 0 || 
 				_this.lastSeekEventTime + 2000	< new Date().getTime() )
 			{
-				_this.sendStatsEvent( 'SEEK' ); 
+				_this.sendAnalyticsEvent( 'SEEK' ); 
 			}
 			
 			// Update the last seekTime
@@ -186,8 +187,11 @@ mw.KAnalytics.prototype = {
 			_this.updateTimeStats();			
 		}); 
 				
-		// Not usable in the html5 player at this point in time:
+		 
 		/*
+		 * Other kaltura event types that are presently not usable in the 
+		 * html5 player at this point in time:
+		 * 
 		 * KalturaStatsEventType.OPEN_EDIT = 8;
 		 * KalturaStatsEventType.OPEN_REPORT = 11;
 		 * KalturaStatsEventType.OPEN_UPLOAD = 18;
@@ -221,22 +225,22 @@ mw.KAnalytics.prototype = {
 		if( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {
 					
 			_this._p25Once = true;			
-			_this.sendStatsEvent( 'PLAY_REACHED_25' );
+			_this.sendAnalyticsEvent( 'PLAY_REACHED_25' );
 									
 		} else if ( !_this._p50Once && percent >= .50 && seekPercent < .50 ) {
 		
 			_this._p50Once = true;
-			_this.sendStatsEvent( 'PLAY_REACHED_50' );
+			_this.sendAnalyticsEvent( 'PLAY_REACHED_50' );
 						
 		} else if( !_this._p75Once && percent >= .75 && seekPercent < .75 ) {
 			
 			_this._p75Once = true;
-			_this.sendStatsEvent( 'PLAY_REACHED_75' );
+			_this.sendAnalyticsEvent( 'PLAY_REACHED_75' );
 			
 		} else if(  !_this._p100Once && percent >= .98 && seekPercent < 1) {
 			
 			_this._p100Once = true;
-			_this.sendStatsEvent( 'PLAY_REACHED_100' );
+			_this.sendAnalyticsEvent( 'PLAY_REACHED_100' );
 			
 		}
 	}
