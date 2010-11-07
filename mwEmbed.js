@@ -1161,7 +1161,17 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 * NOTE: should be phased out in favor of browser feature detection where possible
 	 * 
 	 */
-	mw.isHTML5FallForwardNative = function(){
+	mw.isHTML5FallForwardNative = function(){	
+		// Check if the client has flash the video tag
+		if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
+			for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
+				if ( navigator.mimeTypes[i].type == 'application/x-shockwave-flash' ) {
+					// flash is installed don't use html5
+					return false;
+				}
+			}
+		}
+		
 		// Check for a mobile html5 user agent:
 		if (  (navigator.userAgent.indexOf('iPhone') != -1) || 
 			(navigator.userAgent.indexOf('iPod') != -1) || 
@@ -1172,15 +1182,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		) {
 			return true;
 		}
-		// Check if the client has flash the video tag
-		if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
-			for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
-				if ( navigator.mimeTypes[i].type == 'application/x-shockwave-flash' ) {
-					// flash is installed don't use html5
-					return false;
-				}
-			}
-		}
+		
 		// For IE: 
 		var hasObj = true;
 		try {

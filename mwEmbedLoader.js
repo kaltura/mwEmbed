@@ -33,8 +33,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_FORCE_DEBUG = true;
+//SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -194,6 +194,16 @@ function kCheckAddScript(){
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not avaliable 
 function kIsHTML5FallForward(){	
+	// Check if the client does not have flash and has the video tag
+	if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
+		for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
+			if ( navigator.mimeTypes[i] == 'application/x-shockwave-flash' ) {
+				// flash is installed don't use html5
+				return false;
+			}
+		}
+	}
+	
 	// Check for a mobile html5 user agent:
 	if (  (navigator.userAgent.indexOf('iPhone') != -1) || 
 		(navigator.userAgent.indexOf('iPod') != -1) || 
@@ -204,15 +214,7 @@ function kIsHTML5FallForward(){
 	){
 		return true;
 	}
-	// Check if the client does not have flash and has the video tag
-	if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
-		for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
-			if ( navigator.mimeTypes[i] == 'application/x-shockwave-flash' ) {
-				// flash is installed don't use html5
-				return false;
-			}
-		}
-	}
+	
 	// for IE: 
 	var hasObj = true;
 	try {
