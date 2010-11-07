@@ -689,6 +689,13 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		}
 		
+		// Chrome's webM support is oky though: 
+		if(  /chrome/.test(navigator.userAgent.toLowerCase() ) && 
+			mw.EmbedTypes.players.getMIMETypePlayers( 'video/webm' ).length ){
+			return false;
+		}
+		
+		
 		// Check for h264 and or flash/flv source and playback support and don't show warning 
 		if( 
 			( mw.EmbedTypes.players.getMIMETypePlayers( 'video/h264' ).length 
