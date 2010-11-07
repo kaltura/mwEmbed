@@ -68,7 +68,7 @@ mw.IFramePlayerApiServer.prototype = {
 		// Decode the message 
 		msgObject = JSON.parse( event.data );
 		if( msgObject.method && this.embedPlayer[method] ){
-			this.embedPlayer[method].apply( msgObject.args );			
+			this.embedPlayer[method].apply( this.embedPlayer, msgObject.args );			
 		}
 	},
 	

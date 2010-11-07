@@ -47,6 +47,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-ogg-player-vlc-player' => 'VLC player',
 	'mwe-embedplayer-ogg-player-oggNative' => 'HTML5 Ogg player',
 	'mwe-embedplayer-ogg-player-h264Native' => 'HTML5 H.264 player',
+	'mwe-embedplayer-ogg-player-webmNative' => 'HTML5 WebM player',
 	'mwe-embedplayer-ogg-player-oggPlugin' => 'Generic Ogg plugin',
 	'mwe-embedplayer-ogg-player-quicktime-mozilla' => 'QuickTime plugin',
 	'mwe-embedplayer-ogg-player-quicktime-activex' => 'QuickTime ActiveX',

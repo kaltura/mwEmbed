@@ -914,46 +914,46 @@ mediaSource.prototype = {
 		// ( this will detect media mime type independently of the url name)
 		// http://www.jibbering.com/2002/4/httprequest.html
 		var end_inx =  ( uri.indexOf( '?' ) != -1 ) ? uri.indexOf( '?' ) : uri.length;
-		var no_param_uri = uri.substr( 0, end_inx );
-		switch( no_param_uri.substr( no_param_uri.lastIndexOf( '.' ), 4 ).toLowerCase() ) {
+		var no_param_uri = uri.substr( 0, end_inx );		
+		switch( no_param_uri.substr( no_param_uri.lastIndexOf( '.' )+1 ).toLowerCase() ) {
 			case 'smil':
-			case '.sml':
+			case 'sml':
 				return 'application/smil'
 			break;
-			case '.m4v':
-			case '.mp4':
-			case '.mov':
+			case 'm4v':
+			case 'mp4':
+			case 'mov':
 				return 'video/h264';
 			break;
-			case 'webm':
+			case 'webm':			
 				return 'video/webm';
 			break;
-			case '.srt':
+			case 'srt':
 				return 'text/x-srt';
 			break;
-			case '.flv':
+			case 'flv':
 				return 'video/x-flv';
 			break;
-			case '.ogg':
-			case '.ogv':
+			case 'ogg':
+			case 'ogv':
 				return 'video/ogg';
 			break;
-			case '.oga':
+			case 'oga':
 				return 'audio/ogg';
 			break;
-			case '.anx':
+			case 'anx':
 				return 'video/ogg';
 			break;
-			case '.xml':
+			case 'xml':
 				return 'text/xml';
 			break;
-			case '.avi':
+			case 'avi':
 				return 'video/x-msvideo';
 			break;
-			case '.mpg':
+			case 'mpg':
 				return 'video/mpeg';
 			break;
-			case '.mpeg':
+			case 'mpeg':
 				return 'video/mpeg';
 			break;
 		}
@@ -1033,8 +1033,7 @@ mediaElement.prototype = {
 	* @return {Boolean} True if text tracks exist, false if no text tracks are found
 	*/
 	textSourceExists: function() {
-		for ( var i = 0; i < this.sources.length; i++ ) {
-			mw.log('EmbedPlayer::textSourceExists:'+  this.sources[i].mimeType );
+		for ( var i = 0; i < this.sources.length; i++ ) {			
 			if ( this.sources[i].mimeType == 'text/cmml' || 
 				 this.sources[i].mimeType == 'text/x-srt' ) 
 			{
@@ -1102,11 +1101,16 @@ mediaElement.prototype = {
 	* Selects the default source via cookie preference, default marked, or by id order
 	*/
 	autoSelectSource: function() { 
-		mw.log( 'EmbedPlayer::mediaElement::autoSelectSource:' + this.id);
+		mw.log( 'EmbedPlayer::mediaElement::autoSelectSource' );
 		// Select the default source
 		var playableSources = this.getPlayableSources();
 		var flash_flag = ogg_flag = false;
-				
+		
+		// Check if there are any playableSources
+		if( playableSources.length == 0 ){
+			return false;
+		}
+		
 		// Set via user-preference
 		for ( var source = 0; source < playableSources.length; source++ ) {
 			var mimeType = playableSources[source].mimeType;					
@@ -1251,7 +1255,7 @@ mediaElement.prototype = {
 			 if ( this.isPlayableType( this.sources[i].mimeType ) ) {
 				 playableSources.push( this.sources[i] );
 			 } else {
-				 //mw.log( "type " + this.sources[i].mimeType + 'is not playable' );
+				 mw.log( "type " + this.sources[i].mimeType + ' is not playable' );
 			 }
 		 };
 		 return playableSources;
@@ -1766,7 +1770,7 @@ mw.EmbedPlayer.prototype = {
 	* Sets load error if no source is playable 
 	*/	
 	setupSourcePlayer: function() {
-		mw.log("EmbedPlayer::setupSourcePlayer: " + this.id );
+		mw.log("EmbedPlayer::setupSourcePlayer: " + this.id  + ' sources: ' + this.mediaElement.sources.length );
 		// Autoseletct the media source		
 		this.mediaElement.autoSelectSource();
 		
@@ -1788,21 +1792,8 @@ mw.EmbedPlayer.prototype = {
 		if ( this.selectedPlayer ) {
 			// Inherit the playback system of the selected player:			
 			this.inheritEmbedPlayer();
-		} else {
-			// No source's playable
-			var missingType = '';
-			var or = '';
-			for ( var i = 0; i < this.mediaElement.sources.length; i++ ) {
-				missingType += or + this.mediaElement.sources[i].mimeType;
-				or = ' or ';
-			}
-			// Get from parent playlist if set: 		
-			if ( this.pc ){
-				missingType = this.pc.type;
-			}
-														
-			mw.log( 'No player found for given source type ' + missingType );
-			this.showPluginMissingHTML( missingType );
+		} else {		
+			this.showPluginMissingHTML();
 			
 			// Call the global player manager to inform this video interface is "ready" for page callback to be proccessed.  
 			mw.playerManager.playerReady( this );
@@ -2121,7 +2112,14 @@ mw.EmbedPlayer.prototype = {
 	* Get missing plugin html (check for user included code)
 	* @param {String} [misssingType] missing type mime
 	*/
-	showPluginMissingHTML: function( misssingType ) {
+	showPluginMissingHTML: function( ) {
+		// Get mime type for unsuported formats:
+		var missingType = '';
+		var or = '';
+		for ( var i = 0; i < this.mediaElement.sources.length; i++ ) {
+			missingType += or + this.mediaElement.sources[i].mimeType;
+			or = ' or ';
+		}		
 		// Remove the loading spinner if present: 
 		$j('.playerLoadingSpinner').remove();
 		
@@ -2144,13 +2142,10 @@ mw.EmbedPlayer.prototype = {
 		// Check if we have user defined missing html msg: 		
 		if ( this.user_missing_plugin_html ) {
 		  $j( this ).html(  this.user_missing_plugin_html );
-		} else {
-		  if ( !misssingType ){
-			  misssingType = '';
-		  }		   		 
+		} else { 		
 		  $j( this ).html(
 		  	$j('<div />').append(
-		  		gM( 'mwe-embedplayer-generic_missing_plugin', misssingType ),
+		  		gM( 'mwe-embedplayer-generic_missing_plugin', missingType ),
 		  		$j( '<br />' ),
 		  		$j( '<a />' )
 		  		.attr( {
@@ -2669,7 +2664,6 @@ mw.EmbedPlayer.prototype = {
 		// Check if thumbnail is being displayed and embed html
 		if ( this.thumbnail_disp ) {
 			if ( !this.selectedPlayer ) {
-				mw.log( 'no selectedPlayer' );					
 				this.showPluginMissingHTML();
 				return; 
 			} else {
@@ -3339,6 +3333,7 @@ mediaPlayers.prototype =
 		this.defaultPlayers['video/h264'] = ['Native', 'Kplayer', 'Vlc'];
 		
 		this.defaultPlayers['video/ogg'] = ['Native', 'Vlc', 'Java', 'Generic'];
+		this.defaultPlayers['video/webm'] = ['Native', 'Vlc'];
 		this.defaultPlayers['application/ogg'] = ['Native', 'Vlc', 'Java', 'Generic'];
 		this.defaultPlayers['audio/ogg'] = ['Native', 'Vlc', 'Java' ];
 		this.defaultPlayers['video/mp4'] = ['Vlc'];
@@ -3576,7 +3571,7 @@ mw.EmbedTypes = {
 				var dummyvid = document.createElement( "video" );
 				if( dummyvid.canPlayType ) {
 					// Add the webm player
-					if( dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"') ){
+					if( dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"') ){						
 						this.players.addPlayer( webmNativePlayer ); 
 					}
 										

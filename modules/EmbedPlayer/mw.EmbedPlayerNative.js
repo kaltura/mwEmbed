@@ -179,11 +179,11 @@ mw.EmbedPlayerNative = {
 			mw.log( " Error: applyMediaElementBindings without player elemnet");
 			return ;
 		}
-		$j.each( nativeEvents, function( inx, eventName ){
+		$j.each( _this.nativeEvents, function( inx, eventName ){
 			$j( vid ).bind( eventName , function(){
 				// Check if there is local handler: 
 				if( _this['on' + eventName ] ){
-					_this['on' + eventName ].apply( arguments );
+					_this['on' + eventName ].apply( _this, arguments );
 				} else {
 					// no local handler directly propagate the event to the abstract object: 
 					$j( _this ).trigger( eventName, arguments )
@@ -520,7 +520,7 @@ mw.EmbedPlayerNative = {
 		mw.log("EmbedPlayer:native:: OnPlay");	
 		// Update the interface ( if paused ) 		
 		this.parent_play();
-	},
+	},	
 	
 	/**	
 	* Local method for metadata ready
