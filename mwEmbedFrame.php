@@ -145,28 +145,18 @@ class mwEmbedFrame {
 				right:0px;
 				
 			}
-		</style>
-    </head>
-    <body>    
-    <?
-    // Check if we have a way to get sources:
-    if( isset( $this->apiTitleKey ) || isset( $this->kentryid ) || count( $this->sources ) != 0 ) {
-		echo $this->getVideoTag();
-    } else {
-    	echo "Error: mwEmbedFrame missing required parameter for video sources</body></html>";
-    	exit(1);
-    }    
-    ?>
-    
-   		<script type="text/javascript" src="<?php echo str_replace( 'mwEmbedFrame.php', '', $_SERVER['SCRIPT_NAME'] ); ?>ResourceLoader.php?class=<?php 
-			echo $embedResourceList;
-			if( $this->debug ){
-				echo '&debug=true';
-			} 
+		</style>		
+		<script type="text/javascript" src="<?php echo str_replace( 'mwEmbedFrame.php', '', $_SERVER['SCRIPT_NAME'] ); ?>ResourceLoader.php?class=<?php 
+		// @@TODO we should move this over to using the mwEmbedLoader.js so we don't have to mannage the resource list in two places. 
+		//  ( this will matter less once we migrate to the new mediaWiki resource loader framework) 
+		echo $embedResourceList;
+		if( $this->debug ){
+			echo '&debug=true';
+		} 
 		?>"></script>
 		
 		<script type="text/javascript">
-			// Set some iframe embed config:
+			//Set some iframe embed config:
 			// We can't support full screen in object context since it requires outter page DOM control
 			mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
 
@@ -184,6 +174,18 @@ class mwEmbedFrame {
 				});
 			});
 		</script>
+		
+    </head>
+    <body>    
+    <?
+    // Check if we have a way to get sources:
+    if( isset( $this->apiTitleKey ) || isset( $this->kentryid ) || count( $this->sources ) != 0 ) {
+		echo $this->getVideoTag();
+    } else {
+    	echo "Error: mwEmbedFrame missing required parameter for video sources</body></html>";
+    	exit(1);
+    }    
+    ?>       		
     </body>
 </html>
 <?php

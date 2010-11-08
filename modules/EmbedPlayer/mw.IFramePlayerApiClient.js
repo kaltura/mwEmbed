@@ -20,9 +20,6 @@ mw.IFramePlayerApiClient.prototype = {
 		this.iframe = iframe;
 		this.playerProxy = playerProxy;
 		
-		// Setup the originPage as the current url: 		
-		this.originPage = document.location.href; 
-		
 		// Set the iframe server  		
 		var srcParts = mw.parseUri( mw.absoluteUrl( $j(this.iframe).attr('src') ) );
 		this.iframeServer = srcParts.protocol + '://' + srcParts.authority;

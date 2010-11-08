@@ -25,7 +25,7 @@
 *	// The CDN url that hosts your assets.
 *	'Kaltura.CdnUrl' : 'http://cdn.kaltura.com'
 */
-var kURID = '1.1t';
+var kURID = '1.1u';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;

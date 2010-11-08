@@ -172,8 +172,8 @@ class ResourceLoader {
 					$this->output .= $this->getResourceText( 'mw.style.mwCommon' );
 				}*/
 
-				// Output "special" IE comment tag to support "special" mwEmbed tags.
-				$this->notMinifiedTopOutput .='/*@cc_on@if(@_jscript_version<9){\'video audio source itext playlist\'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/'."\n";
+				// Output "special" IE comment tag to support video tags mwEmbed tags.
+				$this->notMinifiedTopOutput .= '/*@cc_on@if(@_jscript_version<9){\'video audio source track\'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/'."\n";
 			}
 		}
 
