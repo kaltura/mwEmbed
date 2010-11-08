@@ -95,8 +95,8 @@
   // 
   //  Nothing.
   
-  $[postMessage] = function( message, target_url, target ) {	 
-    if ( !target_url ) { return; }
+  $[postMessage] = function( message, target_url, target ) {	  
+	if ( !target_url ) { return; }
     
     // Serialize the message if not a string. Note that this is the only real
     // jQuery dependency for this script. If removed, this script could be

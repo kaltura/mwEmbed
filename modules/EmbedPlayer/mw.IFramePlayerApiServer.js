@@ -42,7 +42,7 @@ mw.IFramePlayerApiServer.prototype = {
 		var _this = this;		
 		$j.receiveMessage( function( event ) {			
 			_this.hanldeMsg( event );
-		});	
+		}, this.parentUrl );	
 	},
 	
 	/**

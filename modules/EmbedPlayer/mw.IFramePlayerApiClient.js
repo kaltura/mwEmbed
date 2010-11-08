@@ -15,21 +15,14 @@ mw.IFramePlayerApiClient.prototype = {
 	// Local store of the post message ( not updated by user js )
 	'_prevPlayerProxy': {},
 	
-	// Stores the current playerProxy ( can be updated by user js ) 
-	
+	// Stores the current playerProxy ( can be updated by user js ) 	
 	'init': function( iframe , playerProxy, options ){				
 		this.iframe = iframe;
 		this.playerProxy = playerProxy;
-		if( !options )
-			options = {};
 		
-		// If targetOrigin is unset, set to local domain: 
-		if( !options.targetOrigin ){	
-			var urlLocal = mw.parseUri( document.URL );
-			this.targetOrigin = urlLocal.protocol + '://' + urlLocal.authority;
-		} else {
-			this.targetOrigin = options.targetOrigin;
-		}	
+		// Setup the originPage as the current url: 		
+		this.originPage = document.location.href; 
+		
 		// Set the iframe server  		
 		var srcParts = mw.parseUri( mw.absoluteUrl( $j(this.iframe).attr('src') ) );
 		this.iframeServer = srcParts.protocol + '://' + srcParts.authority;
@@ -107,10 +100,10 @@ mw.IFramePlayerApiClient.prototype = {
 	},
 	
 	'postMessage': function( msgObj ){
-		mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObj ) + "\norgin:" + this.targetOrigin + "\niframe src:" + $j( this.iframe ).attr('src') );			
-		$j.postMessage( 
+		mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObj ) );
+		$j.postMessage(
 			JSON.stringify( msgObj ),  
-			this.targetOrigin, 
+			mw.absoluteUrl( $j( this.iframe ).attr('src') ), 
 			this.iframe.contentWindow 
 		);
 	}
