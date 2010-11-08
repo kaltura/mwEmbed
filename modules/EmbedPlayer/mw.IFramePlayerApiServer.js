@@ -67,7 +67,7 @@ mw.IFramePlayerApiServer.prototype = {
 		$j.each( this.exportedBindings, function( inx, bindName ){
 			$j( _this.embedPlayer ).bind( bindName, function( event ){
 				var argSet = {};
-				mw.log("IframeServer::PostBind:: " + bindName );
+				mw.log("IFramePlayerApiServer::PostBind:: " + bindName );
 				// @@FIXME Per event 'useful data' extraction				
 				_this.postMessage({
 					'triggerName' : bindName,
@@ -120,7 +120,7 @@ mw.IFramePlayerApiServer.prototype = {
 	 * @param {string} event
 	 */
 	'hanldeMsg': function( event ){
-		mw.log( 'IframePlayerServer:: hanldeMsg ');
+		mw.log( 'IFramePlayerApiServer:: hanldeMsg ');
 		// Check if the server should even be enabled 
 		if( !mw.getConfig( 'EmbedPlayer.EnableIFramePlayerServer' )){
 			mw.log( 'Error: EmbedPlayer.EnableIFramePlayerServer is false');

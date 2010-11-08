@@ -13,7 +13,7 @@ mw.IFramePlayerApiClient.prototype = {
 	],
 	
 	// Local store of the post message ( not updated by user js )
-	'_prevPlayerProxy' : {},
+	'_prevPlayerProxy': {},
 	
 	// Stores the current playerProxy ( can be updated by user js ) 
 	
@@ -50,7 +50,7 @@ mw.IFramePlayerApiClient.prototype = {
 		});		
 	},
 	
-	'addPlayerReciveApi' : function(){
+	'addPlayerReciveApi': function(){
 		var _this = this;
 		$j.receiveMessage( function( event ){
 			_this.hanldeReciveMsg( event )
@@ -60,7 +60,7 @@ mw.IFramePlayerApiClient.prototype = {
 	/**
 	 *  Handle received events
 	 */
-	'hanldeReciveMsg' : function( event ){
+	'hanldeReciveMsg': function( event ){
 		var _this = this;
 		//mw.log("IframePlayerApiClient:: hanldeReciveMsg ");
 		// Confirm the event is coming for the target host:
@@ -99,20 +99,20 @@ mw.IFramePlayerApiClient.prototype = {
 			}
 		}
 		// Trigger any binding events 
-		if( typeof msgObject.triggerName != 'undefined' && msgObject.triggerArgs != 'undefined'){			
+		if( typeof msgObject.triggerName != 'undefined' && msgObject.triggerArgs != 'undefined') {
 			mw.log('IFramePlayerApiClient:: trigger: ' + msgObject.triggerName );
 			$j( _this.playerProxy ).trigger( msgObject.triggerName,  msgObject.triggerArgs );  
-		}		
+		}
 		// @@TODO:: Allow extending modules to wrap these api events ( kaltura kdp javascript emulation ? ) 		
 	},
 	
-	'postMessage' : function( msgObj ){
-		mw.log("IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObj ) );			
+	'postMessage': function( msgObj ){
+		mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObj ) + ' orgin:' + this.targetOrigin );			
 		$j.postMessage( 
 			JSON.stringify( msgObj ),  
 			this.targetOrigin, 
 			this.iframe.contentWindow 
-		);		
+		);
 	}
 };
 
