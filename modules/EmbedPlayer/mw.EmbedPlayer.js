@@ -2529,8 +2529,8 @@ mw.EmbedPlayer.prototype = {
 	*/
 	play: function() {
 		var _this = this;
-		// Run play hook (if we we did not bind the native player ) 
-		if( this.paused && this.useNativePlayerControls() ){
+		
+		if( this.paused && this.bubbleEventCheck() ){
 			this.paused = false;
 		   	mw.log("trigger play event::" + !this.paused);		   	
 		   	$j( this ).trigger( 'play' );
@@ -2577,7 +2577,17 @@ mw.EmbedPlayer.prototype = {
 	   	 	$j( this ).trigger( 'replayEvent' );
 	   	}
 	},
-	
+	/**
+	 * Returns true if the event should be triggered or false if not
+	 * @@FIXME:: firefox nightlies now Do NOT bubble events. 
+	 * 	Once release tag every version after that
+	 */
+	bubbleEventCheck: function(){
+		if( $j.browser.webkit ){
+			return true;
+		}
+		return false;
+	},
 	
 	/**
 	 * Maps the html5 load request. There is no general way to "load" clips so
@@ -2598,7 +2608,7 @@ mw.EmbedPlayer.prototype = {
 	pause: function( event ) {
 		var _this = this;
 		// Trigger the pause event if not already paused and using native controls: 
-		if( this.paused === false && this.useNativePlayerControls() ){
+		if( this.paused === false && this.bubbleEventCheck() ){
 			this.paused = true;
 			mw.log('EmbedPlayer:trigger pause:' + this.paused);
 			$j( this ).trigger('pause' );

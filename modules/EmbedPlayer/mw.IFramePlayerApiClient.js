@@ -100,6 +100,7 @@ mw.IFramePlayerApiClient.prototype = {
 		}
 		// Trigger any binding events 
 		if( typeof msgObject.triggerName != 'undefined' && msgObject.triggerArgs != 'undefined'){			
+			mw.log('IFramePlayerApiClient:: trigger: ' + msgObject.triggerName );
 			$j( _this.playerProxy ).trigger( msgObject.triggerName,  msgObject.triggerArgs );  
 		}		
 		// @@TODO:: Allow extending modules to wrap these api events ( kaltura kdp javascript emulation ? ) 		

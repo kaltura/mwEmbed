@@ -14,7 +14,8 @@
 *  fallback iframe cross domain hack will target IE6/7
 */
 // Bind apiServer to newEmbedPlayers:
-$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {	
+$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
+	
 	embedPlayer['iFrameServer'] = new mw.IFramePlayerApiServer( embedPlayer )
 });
 
@@ -48,7 +49,7 @@ mw.IFramePlayerApiServer.prototype = {
 	/**
 	 * Add iframe sender bindings:
 	 */
-	'addIframeSender': function(){
+	'addIframeSender': function(){		
 		var _this = this;		
 		// Get the parent page URL as it was passed in, for browsers that don't support
 		// window.postMessage (this URL could be hard-coded).
@@ -62,12 +63,15 @@ mw.IFramePlayerApiServer.prototype = {
 		$j( this.embedPlayer ).bind( 'playerReady', function(){
 			_this.sendPlayerAttributes();
 		});
-		
+
 		$j.each( this.exportedBindings, function( inx, bindName ){
-			$j( _this.embedPlayer ).bind( bindName, function( event ){				
+			$j( _this.embedPlayer ).bind( bindName, function( event ){
+				var argSet = {};
+				mw.log("IframeServer::PostBind:: " + bindName );
+				// @@FIXME Per event 'useful data' extraction				
 				_this.postMessage({
 					'triggerName' : bindName,
-					'triggerArgs' : event
+					'triggerArgs' : argSet
 				})
 			});
 		});
@@ -98,6 +102,7 @@ mw.IFramePlayerApiServer.prototype = {
 		try {
 			var messageString = JSON.stringify( msgObj );
 		} catch ( e ){
+			debugger;
 			mw.log("Error: could not JSON object: " + msgObj + ' ' + e);
 			return ;
 		}
