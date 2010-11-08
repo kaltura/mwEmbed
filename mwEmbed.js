@@ -1178,15 +1178,20 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			return true;
 		}
 		
-		// Check if the client has flash the video tag
+		// Check if the client does not have flash and has the video tag
 		if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
 			for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
-				if ( navigator.mimeTypes[i].type == 'application/x-shockwave-flash' ) {
+				var type = navigator.mimeTypes[i].type;
+				var semicolonPos = type.indexOf( ';' );
+				if ( semicolonPos > -1 ) {
+					type = type.substr( 0, semicolonPos );
+				}
+				if (type == 'application/x-shockwave-flash' ) {
 					// flash is installed don't use html5
 					return false;
 				}
 			}
-		}			
+		}		
 		
 		// For IE: 
 		var hasObj = true;

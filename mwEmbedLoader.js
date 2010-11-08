@@ -25,7 +25,7 @@
 *	// The CDN url that hosts your assets.
 *	'Kaltura.CdnUrl' : 'http://cdn.kaltura.com'
 */
-var kURID = '1.1r';
+var kURID = '1.1s';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -208,7 +208,12 @@ function kIsHTML5FallForward(){
 	// Check if the client does not have flash and has the video tag
 	if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
 		for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
-			if ( navigator.mimeTypes[i] == 'application/x-shockwave-flash' ) {
+			var type = navigator.mimeTypes[i].type;
+			var semicolonPos = type.indexOf( ';' );
+			if ( semicolonPos > -1 ) {
+				type = type.substr( 0, semicolonPos );
+			}
+			if (type == 'application/x-shockwave-flash' ) {
 				// flash is installed don't use html5
 				return false;
 			}
