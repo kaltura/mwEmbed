@@ -140,7 +140,11 @@ mw.IFramePlayerApiServer.prototype = {
 		}
 		// Update a attribute
 		if( typeof msgObject.attrName != 'undefined' && typeof msgObject.attrValue != 'undefined' ){
-			$j( this.embedPlayer ).attr( msgObject.attrName, msgObject.attrValue)
+			try{
+				$j( this.embedPlayer ).attr( msgObject.attrName, msgObject.attrValue)
+			} catch(e){
+				// possible error cant set attribute msgObject.attrName
+			}
 		}
 	},
 	

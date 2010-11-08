@@ -82,9 +82,13 @@ mw.IFramePlayerApiClient.prototype = {
 		// Update any attributes
 		if( msgObject.attributes ){
 			for( var i in msgObject.attributes ){
-				if( i != 'id' ){
-					this.playerProxy[ i ] = msgObject.attributes[i];
-					this._prevPlayerProxy[i] = msgObject.attributes[i];
+				if( i != 'id' && i != 'class' && i != 'style' ){
+					try{
+						this.playerProxy[ i ] = msgObject.attributes[i];
+						this._prevPlayerProxy[i] = msgObject.attributes[i];
+					} catch( e ){
+						mw.log("Error could not set:" + i );
+					}
 				}
 			}
 		}
