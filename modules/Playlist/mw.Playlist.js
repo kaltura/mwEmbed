@@ -143,7 +143,7 @@ mw.Playlist.prototype = {
 							.click( function(){								
 								 _this.sourceHandler.setPlaylistIndex( inx );
 								 $j( _this.target + ' .media-rss-video-list').loadingSpinner();
-								 _this.loadPlaylist( function(){
+								 _this.sourceHandler.loadPlaylist( function(){
 									 $j( _this.target + ' .media-rss-video-list').empty();
 									_this.addMediaList(); 
 								 });
