@@ -350,8 +350,7 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	// xxx fixme integrate with new callback system ( resource loader rewrite )
 	if( callback ){
 		script.onload = callback;
-	}
-	console.log( url );
+	}	
 	document.getElementsByTagName('head')[0].appendChild( script );
  
 }
