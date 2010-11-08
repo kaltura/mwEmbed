@@ -82,6 +82,129 @@
 		'EmbedPLayer.IFramePlayer.DomainWhiteList' : '*'
 	} );
 
+	
+	/*
+	* The default video attributes supported by embedPlayer
+	*/ 
+	mw.setDefaultConfig( 'EmbedPlayer.Attributes', {
+		/* 
+		* Base html element attributes: 
+		*/	
+		
+		// id: Auto-populated if unset   
+		"id" : null,
+		
+		// Width: alternate to "style" to set player width
+		"width" : null,
+		
+		// Height: alternative to "style" to set player height
+		"height" : null,		
+
+		/* 
+		* Base html5 video element attributes / states
+		* also see:  http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html
+		*/
+
+		// Media src URI, can be relative or absolute URI
+		"src" : null,
+		
+		// Poster attribute for displaying a place holder image before loading or playing the video
+		"poster": null, 
+		
+		// Autoplay if the media should start playing 
+		"autoplay" : false,
+		
+		// Loop attribute if the media should repeat on complete
+		"loop" : false, 
+		
+		// If the player controls should be displayed
+		"controls" : true,
+		
+		// Video starts "paused" 
+		"paused" : true,
+		
+		// ReadyState an attribute informs clients of video loading state: 
+		// see: http://www.whatwg.org/specs/web-apps/current-work/#readystate	
+		"readyState" : 0,  
+		
+		// Loading state of the video element
+		"networkState" : 0,
+		
+		// Current playback position 
+		"currentTime"  :0, 
+		
+		// Previous player set time
+		// Lets javascript use $j('#videoId').get(0).currentTime = newTime;
+		"previousTime" :0, 
+		
+		// Previous player set volume
+		// Lets javascript use $j('#videoId').get(0).volume = newVolume;
+		"previousVolume" : 1, 
+		
+		// Initial player volume: 
+		"volume" : 0.75,
+		
+		// Caches the volume before a mute toggle
+		"preMuteVolume" : 0.75, 
+		
+		// Media duration: Value is populated via 
+		//  custom durationHint attribute or via the media file once its played
+		"duration"  :null,   
+		
+		// Mute state
+		"muted" : false,
+		
+		/**
+		* Custom attributes for embedPlayer player:
+		* (not part of the html5 video spec)  
+		*/
+		
+		// Default video aspect ratio
+		'videoAspect': '4:3',
+		
+		// Start time of the clip
+		"start" : 0,
+		
+		// End time of the clip
+		"end" : null,	
+		
+		// A apiTitleKey for looking up subtitles, credits and related videos
+		"apiTitleKey" : null,
+		
+		// The apiProvider where to lookup the title key
+		"apiProvider" : null,
+		
+		// If the player controls should be overlaid 
+		//( Global default via config EmbedPlayer.OverlayControls in module loader.js)  
+		"overlaycontrols" : true,
+		
+		// Attribute to use 'native' controls 
+		"usenativecontrols" : false,
+		
+		// If the player should include an attribution button:
+		'attributionbutton' : true,
+		
+		// ROE url ( for xml based metadata )
+		// also see: http://wiki.xiph.org/ROE
+		"roe" : null,
+
+		// If serving an ogg_chop segment use this to offset the presentation time
+		// ( for some plugins that use ogg page time rather than presentation time ) 
+		"startOffset" : 0, 
+		
+		// Thumbnail (same as poster) 
+		"thumbnail" : null,
+		
+		// Source page for media asset ( used for linkbacks in remote embedding )  
+		"linkback" : null,
+		
+		// If the download link should be shown
+		"download_link" : true,
+		
+		// Content type of the media
+		"type" : null
+	});
+	
 	// Add class file paths 
 	mw.addResourcePaths( {
 		"mw.EmbedPlayer"	: "mw.EmbedPlayer.js",
@@ -119,7 +242,7 @@
 		}
 		
 		var tagCheckObject = { 'hasTags' : false };
-		$j( mw ).trigger( 'LoaderEmbedPlayerDocumentHasPlayerTags', 
+		$j( mw ).trigger( 'LoaderEmbedPlayerCheckForPlayerTags', 
 				[ tagCheckObject ]);
 			 
 		return tagCheckObject.hasTags;
@@ -252,7 +375,8 @@
 		
 		// Check if the iFrame player server is enabled: 
 		if( mw.getConfig('EmbedPlayer.EnableIFramePlayerServer') ){
-			dependencyRequest.push(	'mw.IFramePlayerApiServer' );
+			dependencyRequest.push(	'$j.postMessage' );
+			dependencyRequest.push(	'mw.IFramePlayerApiServer' );			
 		}
 
 		

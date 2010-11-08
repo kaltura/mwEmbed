@@ -48,7 +48,7 @@ mw.KWidgetSupport.prototype = {
 	*/ 
 	checkPlayerSources: function( embedPlayer, callback ){
 		var _this = this;	
-		mw.log(' kWidget support check for sources' + $j( embedPlayer ).attr( 'kentryid' ) );
+		mw.log(' kWidgetSupport::check for sources: ' + $j( embedPlayer ).attr( 'kentryid' ) );
 		// Check if entry id is a url ( add the source directly ) 
 		if( $j( embedPlayer ).attr( 'kentryid' ).indexOf('://') != -1 ){
 			embedPlayer.mediaElement.tryAddSource(

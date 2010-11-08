@@ -23,40 +23,76 @@ mw.IFramePlayerApiServer = function( embedPlayer ){
 	this.init( embedPlayer );
 }
 
-mw.IFramePlayerApiServer.prototype = {
-	
-	init: function( embedPlayer ){
+mw.IFramePlayerApiServer.prototype = {	
+		
+	'init': function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
 		this.addIframeListener();
-		this.addIframePusher();
+		this.addIframeSender();
 	},
+	
 	/**
 	 * Listens to requested methods and triggers their action
 	 */
-	addIframeListener: function(){
+	'addIframeListener': function(){
 		var _this = this;		
-		if ( window.addEventListener ) {
-			// For standards web browsers
-			window.addEventListener("message", function(event){
-				_this.hanldeMsg( event )
-			}, false);
-		} else {
-			window.attachEvent("onmessage", function(event){
-				_this.hanldeMsg( event )
-			});
-		}
+		$j.receiveMessage( function( event ) {
+			_this.hanldeMsg( event );
+		});	
 	},
 	
-	addIframePusher
+	/**
+	 * Add iframe sender bindings:
+	 */
+	'addIframeSender': function(){
+		var _this = this;		
+		// Get the parent page URL as it was passed in, for browsers that don't support
+		// window.postMessage (this URL could be hard-coded).
+		this.parentUrl = decodeURIComponent( document.location.hash.replace( /^#/, '' ) );
+		
+		// On monitor event package the attributes for cross domain delivery:
+		$j( this.embedPlayer ).bind( 'monitorEvent', function(){			
+			_this.sendPlayerAttributes();
+		})
+		// Set the initial attributes once player is "ready"
+		$j( this.embedPlayer ).bind( 'playerReady', function(){
+			_this.sendPlayerAttributes();
+		});
+	},
+	
+	/**
+	 * Send all the player attributes to the host
+	 */
+	'sendPlayerAttributes': function(){
+		var _this = this;
+		
+		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
+		var attrSet = { };
+		for( var i in playerAttributes ){
+			if( typeof this.embedPlayer[ i ] != 'undefined' ){
+				attrSet[i] = this.embedPlayer[ i ];
+			}
+		}
+		//mw.log( "IframePlayerApiServer:: sendPlayerAttributes: " + JSON.stringify( attrSet ) );
+		// By default postMessage sends the message to the parent frame:		
+		$j.postMessage( 
+			JSON.stringify( {
+				'attributes' : attrSet 
+			} ),
+			_this.parentUrl,
+			window.parent
+		);
+	},
 	
 	/**
 	 * Handle a message event and pass it off to the embedPlayer
 	 * 
 	 * @param {string} event
 	 */
-	hanldeMsg: function( event ){
+	'hanldeMsg': function( event ){
 		// Check if the server should even be enabled 
 		if( !mw.getConfig( 'EmbedPlayer.EnableIFramePlayerServer' )){
+			mw.log( 'Error: EmbedPlayer.EnableIFramePlayerServer is false');
 			return false;
 		}
 		
@@ -64,11 +100,16 @@ mw.IFramePlayerApiServer.prototype = {
 			mw.log( 'Error: ' + event.origin + ' domain origin not allowed to send player events');
 			return false;
 		}		
-		
 		// Decode the message 
-		msgObject = JSON.parse( event.data );
-		if( msgObject.method && this.embedPlayer[method] ){
-			this.embedPlayer[method].apply( this.embedPlayer, msgObject.args );			
+		var msgObject = JSON.parse( event.data );
+
+		// Call a method:
+		if( msgObject.method && this.embedPlayer[ msgObject.method ] ){
+			this.embedPlayer[ msgObject.method ].apply( this.embedPlayer, $j.makeArray( msgObject.args ) );			
+		}
+		// Update a attribute
+		if( typeof msgObject.attrName != 'undefined' && typeof msgObject.attrValue != 'undefined' ){
+			$j( this.embedPlayer ).attr( msgObject.attrName, msgObject.attrValue)
 		}
 	},
 	
@@ -80,7 +121,7 @@ mw.IFramePlayerApiServer.prototype = {
 	 * @parma {string} origin
 	 * 		The origin domain to be checked
 	 */
-	eventDomainCheck: function( origin ){
+	'eventDomainCheck': function( origin ){
 		if( mw.getConfig( 'EmbedPLayer.IFramePlayer.DomainWhiteList' ) ){
 			// NOTE this is very similar to the apiProxy function: 
 			var domainWhiteList =  mw.getConfig('EmbedPLayer.IFramePlayer.DomainWhiteList');
@@ -109,5 +150,5 @@ mw.IFramePlayerApiServer.prototype = {
 		}			
 		// If no passing domain was found return false
 		return false;
-	}	
-}
+	}
+};

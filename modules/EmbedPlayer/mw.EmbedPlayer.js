@@ -12,134 +12,13 @@
  */
  
 mw.includeAllModuleMessages();
-/*
-* The default video attributes supported by embedPlayer
-*/ 
-mw.setDefaultConfig( 'EmbedPlayer.Attributes', {
-	/* 
-	* Base html element attributes: 
-	*/	
-	
-	// id: Auto-populated if unset   
-	"id" : null,
-	
-	// Width: alternate to "style" to set player width
-	"width" : null,
-	
-	// Height: alternative to "style" to set player height
-	"height" : null,		
-
-	/* 
-	* Base html5 video element attributes / states
-	* also see:  http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html
-	*/
-
-	// Media src URI, can be relative or absolute URI
-	"src" : null,
-	
-	// Poster attribute for displaying a place holder image before loading or playing the video
-	"poster": null, 
-	
-	// Autoplay if the media should start playing 
-	"autoplay" : false,
-	
-	// Loop attribute if the media should repeat on complete
-	"loop" : false, 
-	
-	// If the player controls should be displayed
-	"controls" : true,
-	
-	// Video starts "paused" 
-	"paused" : true,
-	
-	// ReadyState an attribute informs clients of video loading state: 
-	// see: http://www.whatwg.org/specs/web-apps/current-work/#readystate	
-	"readyState" : 0,  
-	
-	// Loading state of the video element
-	"networkState" : 0,
-	
-	// Current playback position 
-	"currentTime"  :0, 
-	
-	// Previous player set time
-	// Lets javascript use $j('#videoId').get(0).currentTime = newTime;
-	"previousTime" :0, 
-	
-	// Previous player set volume
-	// Lets javascript use $j('#videoId').get(0).volume = newVolume;
-	"previousVolume" : 1, 
-	
-	// Initial player volume: 
-	"volume" : 0.75,
-	
-	// Caches the volume before a mute toggle
-	"preMuteVolume" : 0.75, 
-	
-	// Media duration: Value is populated via 
-	//  custom durationHint attribute or via the media file once its played
-	"duration"  :null,   
-	
-	// Mute state
-	"muted" : false,
-	
-	/**
-	* Custom attributes for embedPlayer player:
-	* (not part of the html5 video spec)  
-	*/
-	
-	// Default video aspect ratio
-	'videoAspect': '4:3',
-	
-	// Start time of the clip
-	"start" : 0,
-	
-	// End time of the clip
-	"end" : null,	
-	
-	// A apiTitleKey for looking up subtitles, credits and related videos
-	"apiTitleKey" : null,
-	
-	// The apiProvider where to lookup the title key
-	"apiProvider" : null,
-	
-	// If the player controls should be overlaid 
-	//( Global default via config EmbedPlayer.OverlayControls in module loader.js)  
-	"overlaycontrols" : true,
-	
-	// Attribute to use 'native' controls 
-	"usenativecontrols" : false,
-	
-	// If the player should include an attribution button:
-	'attributionbutton' : true,
-	
-	// ROE url ( for xml based metadata )
-	// also see: http://wiki.xiph.org/ROE
-	"roe" : null,
-
-	// If serving an ogg_chop segment use this to offset the presentation time
-	// ( for some plugins that use ogg page time rather than presentation time ) 
-	"startOffset" : 0, 
-	
-	// Thumbnail (same as poster) 
-	"thumbnail" : null,
-	
-	// Source page for media asset ( used for linkbacks in remote embedding )  
-	"linkback" : null,
-	
-	// If the download link should be shown
-	"download_link" : true,
-	
-	// Content type of the media
-	"type" : null
-});
 
 
 /**
  * The base source attribute checks
  * also see: http://dev.w3.org/html5/spec/Overview.html#the-source-element
  */
-mw.setDefaultConfig( 'embedPlayerSourceAttributes', [
+mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [
 	// source id
 	'id',
 	
@@ -708,7 +587,7 @@ mediaSource.prototype = {
 			this.URLTimeEncoding = true;
 		}
 		
-		var sourceAttr = mw.getConfig( 'embedPlayerSourceAttributes' );
+		var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes' );
 		
 		for ( var i = 0; i < sourceAttr.length; i++ ) { // array loop:
 			var attr = sourceAttr[ i ];
@@ -910,7 +789,7 @@ mediaSource.prototype = {
 	*/
 	detectType: function( uri ) {
 		// NOTE: if media is on the same server as the javascript
-		// we can issue a HEAD request and read the mime type of the media...
+		// we can issue a HEAD request and read the mime type of the media ...
 		// ( this will detect media mime type independently of the url name)
 		// http://www.jibbering.com/2002/4/httprequest.html
 		var end_inx =  ( uri.indexOf( '?' ) != -1 ) ? uri.indexOf( '?' ) : uri.length;
@@ -1573,24 +1452,21 @@ mw.EmbedPlayer.prototype = {
 		
 	},
 	/**
-	 * Resize the player to a new size
+	 * Resize the player to a new size preserving aspect ratio
+	 *  Wraps the controlBuilder.resizePlayer function
 	 */
 	resizePlayer: function( size , animate){
 		mw.log("EmbedPlayer::resizePlayer:" + size.width + ' x ' + size.height );
-		this.width = size.width;
-		this.height = size.height;
-		var playerSize = {'width' : this.width, 'height' : this.height };
-		// check if height needs to include interface controls
-		if( ! this.controlBuilder.checkOverlayControls() ){
-			size.height = size.height + this.controlBuilder.height;
-		}
 		
-		if( animate ){
-			$j(this).animate(playerSize);
-			this.$interface.animate( size );
-		}else{
-			$j(this).css(playerSize);
-			this.$interface.css( size );
+		// Check if we are native display then resize the playerElement directly
+		if( this.useNativePlayerControls() ){
+			if( animate ){
+				$j( this.getPlayerElement() ).animate( size );
+			} else {
+				$j( this.getPlayerElement() ).css( size );
+			}
+		} else {		
+			this.controlBuilder.resizePlayer( size, animate);
 		}
 	},
 	
@@ -1793,10 +1669,7 @@ mw.EmbedPlayer.prototype = {
 			// Inherit the playback system of the selected player:			
 			this.inheritEmbedPlayer();
 		} else {		
-			this.showPluginMissingHTML();
-			
-			// Call the global player manager to inform this video interface is "ready" for page callback to be proccessed.  
-			mw.playerManager.playerReady( this );
+			this.showPluginMissingHTML();					
 		}
 	},
 	
@@ -1844,6 +1717,7 @@ mw.EmbedPlayer.prototype = {
 			_this.getDuration();
 			
 			_this.showPlayer();
+			
 			// Call the global player manager to inform this video interface is ready: 
 			mw.playerManager.playerReady( _this );
 			
@@ -2068,6 +1942,7 @@ mw.EmbedPlayer.prototype = {
 		// Set-up the local controlBuilder instance: 
 		this.controlBuilder = new mw.PlayerControlBuilder( this );		
 		var _this = this;
+		
 		// Make sure we have mwplayer_interface
 		if( $j( this ).parent( '.mwplayer_interface' ).length == 0 ) {
 			// Select "player"				
@@ -2078,10 +1953,15 @@ mw.EmbedPlayer.prototype = {
 				.css({				
 					'width' : this.width,
 					'height' : this.height,
-					'position' : 'relative'
+					'position' : 'relative',
+					'background' : '#000'
 				})
 			)
+			// position the "player" absolute inside the relative interface parent: 
+			.css('position', 'absolute');
 		}
+
+		
 				
 		//Set up local jQuery object reference to "mwplayer_interface" 
 		this.$interface = $j( this ).parent( '.mwplayer_interface' );				

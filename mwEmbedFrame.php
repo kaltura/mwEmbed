@@ -28,7 +28,9 @@ class mwEmbedFrame {
 		'durationHint',
 		'poster',
 		'kentryid',
-		'kwidgetid'	,
+		'kwidgetid',
+		'kuiconfid',
+		'kplaylistid',
 		'skin'			
 	);
 	var $playerIframeId = 'iframeVid';
@@ -47,27 +49,47 @@ class mwEmbedFrame {
 	}
 
 	// Parse the embedFrame request and sanitize input
-	private function parseRequest(){		
+	private function parseRequest(){	
+		// Check for / attribute type request and update "REQUEST" global 
+		// ( uses kaltura standard entry_id/{entryId} request )
+		// normalize to the REQUEST object
+		// @@FIXME: this should be moved over to a kaltura specific iframe implementation  
+		if( $_SERVER['REQUEST_URI'] ){
+			$kalturaUrlMap = Array( 
+				'entry_id' => 'kentryid',
+				'uiconf_id' => 'kuiconfid',
+				'wid' => 'kwidgetid',
+				'playlist_id' => 'kplaylistid'
+			);
+			$urlParts = explode( '/', $_SERVER['REQUEST_URI'] );
+			foreach( $urlParts as $inx => $urlPart ){
+				foreach( $kalturaUrlMap as $urlKey => $reqeustAttribute ){					
+					if( $urlPart == $reqeustAttribute && isset( $urlParts[$inx+1] ) ){
+						$_REQUEST[ $reqeustAttribute ] = $urlParts[$inx+1];
+					}				
+				}				
+			}
+		}		
 		// Check for attributes
 		foreach( $this->playerAttributes as $attributeKey){
-			if( isset( $_GET[ $attributeKey ] ) ){				
-				$this->$attributeKey = htmlspecialchars( $_GET[$attributeKey] );
+			if( isset( $_REQUEST[ $attributeKey ] ) ){				
+				$this->$attributeKey = htmlspecialchars( $_REQUEST[$attributeKey] );
 			}
 		}
 
 		// Check for debug flag
-		if( isset( $_GET['debug'] ) ){
+		if( isset( $_REQUEST['debug'] ) ){
 			$this->debug = true;
 		}
 		
 		// Process the special "src" attribute
-		if( isset( $_GET['src'] ) ){
-			if( is_array( $_GET['src'] ) ){
-				foreach($_GET['src'] as $src ){
+		if( isset( $_REQUEST['src'] ) ){
+			if( is_array( $_REQUEST['src'] ) ){
+				foreach($_REQUEST['src'] as $src ){
 					$this->sources[] = htmlspecialchars( $src );
 				}
 			} else {
-				$this->sources = array( htmlspecialchars( $_GET['src'] ) );
+				$this->sources = array( htmlspecialchars( $_REQUEST['src'] ) );
 			}
 		}
 	
@@ -111,8 +133,7 @@ class mwEmbedFrame {
 					'mw.KAds'
 			) );
 		}   
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+?><!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
@@ -128,7 +149,19 @@ class mwEmbedFrame {
 				
 			}
 		</style>
-		<script type="text/javascript" src="ResourceLoader.php?class=<?php 
+    </head>
+    <body>    
+    <?
+    // Check if we have a way to get sources:
+    if( isset( $this->apiTitleKey ) || isset( $this->kentryid ) || count( $this->sources ) != 0 ) {
+		echo $this->getVideoTag();
+    } else {
+    	echo "Error: mwEmbedFrame missing required parameter for video sources</body></html>";
+    	exit(1);
+    }    
+    ?>
+    
+   		<script type="text/javascript" src="<?php echo str_replace( 'mwEmbedFrame.php', '', $_SERVER['SCRIPT_NAME'] ); ?>ResourceLoader.php?class=<?php 
 		echo $embedResourceList;
 		if( $this->debug ){
 			echo '&debug=true';
@@ -144,21 +177,16 @@ class mwEmbedFrame {
 			mw.setConfig( 'EmbedPlayer.EnableIFramePlayerServer', true );
 			
 			mw.ready(function(){						
-				// Trigger fullscreen so that iframe resize keeps player size		
-				$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
-				.get(0).fullscreen();
+				// Bind window resize to reize the player: 
+				$j(window).resize(function(){											
+					$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
+						.get(0).resizePlayer({
+							'width' : $j(window).width(),
+							'height' :  $j(window).height()
+						}); 
+				});
 			});
 		</script>
-    </head>
-    <body>
-    <?
-    // Check if we have a way to get sources:
-    if( isset( $this->apiTitleKey ) || isset( $this->kentryid ) || count( $this->sources ) != 0 ) {
-		echo $this->getVideoTag();
-    } else {
-    	echo "Error: mwEmbedFrame missing required parameter for video sources";
-    }
-    ?>
     </body>
 </html>
 <?php

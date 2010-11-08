@@ -33,8 +33,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -194,16 +194,7 @@ function kCheckAddScript(){
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not avaliable 
 function kIsHTML5FallForward(){	
-	// Check if the client does not have flash and has the video tag
-	if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
-		for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
-			if ( navigator.mimeTypes[i] == 'application/x-shockwave-flash' ) {
-				// flash is installed don't use html5
-				return false;
-			}
-		}
-	}
-	
+
 	// Check for a mobile html5 user agent:
 	if (  (navigator.userAgent.indexOf('iPhone') != -1) || 
 		(navigator.userAgent.indexOf('iPod') != -1) || 
@@ -215,15 +206,28 @@ function kIsHTML5FallForward(){
 		return true;
 	}
 	
+	// Check if the client does not have flash and has the video tag
+	if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
+		for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
+			if ( navigator.mimeTypes[i] == 'application/x-shockwave-flash' ) {
+				// flash is installed don't use html5
+				return false;
+			}
+		}
+	}
+
+	
 	// for IE: 
 	var hasObj = true;
-	try {
-		var obj = new ActiveXObject( 'ShockwaveFlash.ShockwaveFlash' );
-	} catch ( e ) {
-		hasObj = false;
-	}
-	if( hasObj ){
-		return false;
+	if( typeof ActiveXObject != 'undefined' ){
+		try {
+			var obj = new ActiveXObject( 'ShockwaveFlash.ShockwaveFlash' );
+		} catch ( e ) {
+			hasObj = false;
+		}
+		if( hasObj ){
+			return false;
+		}
 	}
 	// No flash return true if the browser supports html5 video tag with basic support for canPlayType:
 	var dummyvid = document.createElement( "video" );
@@ -250,8 +254,8 @@ function kAddScript(){
 	}
 	
 	// Check if we are using an iframe ( load only the iframe api client ) 
-	if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
-		jsRequestSet.push( ['mw.IFramePlayerApiClient'] );
+	if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){		
+		jsRequestSet.push( [ 'mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage', 'mw.IFramePlayerApiClient' ] );
 		kLoadJsRequestSet( jsRequestSet );
 		return ;
 	}
@@ -325,7 +329,7 @@ function kAddScript(){
 	kLoadJsRequestSet( jsRequestSet );
 };
 
-function kLoadJsRequestSet( jsRequestSet ){
+function kLoadJsRequestSet( jsRequestSet, callback ){
 	var url = SCRIPT_LOADER_URL + '?class=';	
 	// Request each jsRequestSet
 	for( var i = 0; i < jsRequestSet.length ; i++ ){
@@ -338,8 +342,14 @@ function kLoadJsRequestSet( jsRequestSet ){
 	}
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';	
-	script.src = url;	
-	document.getElementsByTagName('body')[0].appendChild( script );	
+	script.src = url;
+	
+	// xxx fixme integrate with new callback system ( resource loader rewrite )
+	if( callback ){
+		script.onload = callback;
+	}
+	document.getElementsByTagName('body')[0].appendChild( script );
+ 
 }
 
 /**

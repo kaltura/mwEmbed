@@ -21,13 +21,13 @@
 	} );
 	
 	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
-	mw.setConfig( 'EmbedPlayer.Attributes', {
+	mw.mergeConfig( 'EmbedPlayer.Attributes', {
 		'kentryid' : null,
 		'kwidgetid' : null,
 		'kuiconfid' : null
 	});
 	
-	mw.setConfig( 'EmbedPlayer.DataAttributes', {		
+	mw.mergeConfig( 'EmbedPlayer.DataAttributes', {		
 		'kuiconf' : null
 	});
 	
@@ -72,19 +72,19 @@
 			]);
 	});
 
-	//Check if the document has kaltura objects ( for fall forward support ) 
-	$j( mw ).bind( 'LoaderEmbedPlayerDocumentHasPlayerTags', function( event, tagCheckObject ){
-					
-		mw.log( 'KalturaSupport found:: ' + mw.getKalturaPlayerList().length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
-		if( mw.getKalturaPlayerList().length ) {
+	// Check if the document has kaltura objects ( for fall forward support ) 
+	$j( mw ).bind( 'LoaderEmbedPlayerCheckForPlayerTags', function( event, tagCheckObject ){
+		var kalturaObjectPlayerList = mw.getKalturaPlayerList();
+		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
+		if( kalturaObjectPlayerList.length ) {
 			tagCheckObject.hasTags = true;			
-			// FALLFORWARD only for mobile safari ::
+			// FALLFORWARD only for fallforward native players
 			// this is kind of heavy weight for loader.js 
 			// maybe move most of this to kEntryId support			
 			if( mw.isHTML5FallForwardNative() ) {
 				// setup load flags
 				var loadEmbedPlayerFlag = loadPlaylistFlag = false;
-				$j.each(mw.getKalturaPlayerList(), function( inx, element ){	
+				$j.each( kalturaObjectPlayerList, function( inx, element ){	
 					// Clear the kalturaSwapObjectClass
 					var kalturaSwapObjectClass = '';
 					// Setup the flashvars variable
@@ -187,8 +187,42 @@
 					)					
 				});
 				
-				// Do loading then rewrite each tag: 
+				// Check if we are doing iFrame rewrite ( skip local library loading )
+				if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){
+					// Establish the "server" domain via mwEmbed path: 
+					var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
+					var iframeServer = mwPathUri.protocol + '://' + mwPathUri.host;
+					// Load the iFrame player client ( if not already loaded )
+					mw.load( ['mw.EmbedPlayerNative', '$j.postmessage', 'mw.IFramePlayerApiClient'], function(){
+						$j('.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap').each(function( inx, playerTarget ) {
+							// Output the iframe request in kaltura /{key}/{value} request format: 
+							var iframeRequest = '';
+							var iframeRequestKeys = ['kwidgetid', 'kuiconfid', 'kplaylistid', 'kentryid']
+							for( var i = 0; i < iframeRequestKeys.length ; i++ ){								
+								if( $j(playerTarget).attr( iframeRequestKeys[i] ) ){
+									iframeRequest+= '/' + iframeRequestKeys[i] + 
+										'/' + encodeURIComponent( $j(playerTarget).attr( iframeRequestKeys[i] ) );
+								}															
+							}
+							// Add the parent frame location as a hash url:
+							iframeRequest+= '#' + encodeURIComponent( document.location.href )
+							var $iframe = $j('<iframe />').attr({
+								'id' : $j( playerTarget ).attr('id'),
+								'class' : $j( playerTarget ).attr('class' ),
+								'style' : $j( playerTarget ).attr('style' ),
+								'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest										
+							}).css('border', '0px');
+							$j( playerTarget ).replaceWith( $iframe );
+							$j( playerTarget ).iFramePlayer({
+								'iframeServer' : iframeServer
+							});
+						});
+					});
+					// Don't do any other rewrites or library loading
+					return true;
+				}
 				
+				// Do loading then rewrite each tag: 				
 				if( loadPlaylistFlag ){
 					kLoadKalturaSupport = true;
 					var playlistRequest = [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ];

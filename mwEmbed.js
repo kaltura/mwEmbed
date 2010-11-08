@@ -81,19 +81,32 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}
 			return ;
 		}
+		mwConfig[ name ] = value;
+	};
+	/**
+	 * Merge in a configuration value: 
+	 */
+	mw.mergeConfig = function( name, value ){
+		if( typeof name == 'object' ) {
+			$j.each( name, function( inx, val) {
+				mw.setConfig( inx, val );
+			});
+			return ;
+		}
 		// Check if we should "merge" the config
 		if( typeof value == 'object' && typeof mwConfig[ name ] == 'object' ) {
-			if ( value.constructor.toString().indexOf("Array") == -1 ){
+			if ( $j.isArray( value ) ){
+				// merge in the array 
+				mwConfig[ name ] = mwConfig[ name ].concat( value );				
+			} else {
 				for( var i in value ){
 					mwConfig[ name ][ i ] = value[ i ];
 				}
-			} else {
-				// merge in the array 
-				mwConfig[ name ] = mwConfig[ name ].concat( value );
 			}
-		} else {
-			mwConfig[ name ] = value;
+			return ;
 		}
+		// else do a normal setConfig
+		mwConfig[ name ] = value;
 	};
 	
 	/**
@@ -120,16 +133,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}
 		// Check if we should "merge" the config
 		if( typeof value == 'object' && typeof mwConfig[ name ] == 'object' ) {
-			if ( value.constructor.toString().indexOf("Array") == -1 ){
-				for( var i in value ){
-					if( typeof mwConfig[ name ][ i ] == 'undefined' ){
-						mwConfig[ name ][ i ] = value[ i ];
-					}
-				}
-			} else {
-				// merge in the array 
-				mwConfig[ name ] = mwConfig[ name ].concat( value);
-			}			
+			mw.mergeConfig( name, value);		
 		}
 	};
 	
@@ -1161,16 +1165,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 * NOTE: should be phased out in favor of browser feature detection where possible
 	 * 
 	 */
-	mw.isHTML5FallForwardNative = function(){	
-		// Check if the client has flash the video tag
-		if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
-			for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
-				if ( navigator.mimeTypes[i].type == 'application/x-shockwave-flash' ) {
-					// flash is installed don't use html5
-					return false;
-				}
-			}
-		}
+	mw.isHTML5FallForwardNative = function(){
 		
 		// Check for a mobile html5 user agent:
 		if (  (navigator.userAgent.indexOf('iPhone') != -1) || 
@@ -1182,6 +1177,16 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		) {
 			return true;
 		}
+		
+		// Check if the client has flash the video tag
+		if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
+			for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
+				if ( navigator.mimeTypes[i].type == 'application/x-shockwave-flash' ) {
+					// flash is installed don't use html5
+					return false;
+				}
+			}
+		}			
 		
 		// For IE: 
 		var hasObj = true;
@@ -1877,7 +1882,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 * 	from a relative path
 	 * @return {String} absolute url
 	 */
-mw.absoluteUrl = function( src, contextUrl ) {
+	mw.absoluteUrl = function( src, contextUrl ) {
 		
 		var parsedSrc =  mw.parseUri( src );		
 
