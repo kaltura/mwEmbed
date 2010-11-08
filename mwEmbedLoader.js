@@ -32,8 +32,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -437,7 +437,7 @@ function kdoScrollCheck() {
 		// http://javascript.nwbox.com/IEContentLoaded/
 		document.documentElement.doScroll("left");
 	} catch( error ) {
-		setTimeout( doScrollCheck, 1 );
+		setTimeout( kdoScrollCheck, 1 );
 		return;
 	}
 	// and execute any waiting functions
