@@ -107,7 +107,7 @@ mw.IFramePlayerApiClient.prototype = {
 	},
 	
 	'postMessage': function( msgObj ){
-		mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObj ) + ' orgin:' + this.targetOrigin );			
+		mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObj ) + "\norgin:" + this.targetOrigin + "\niframe src:" + $j( this.iframe ).attr('src') );			
 		$j.postMessage( 
 			JSON.stringify( msgObj ),  
 			this.targetOrigin, 

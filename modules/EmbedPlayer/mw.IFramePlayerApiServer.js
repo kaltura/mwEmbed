@@ -14,8 +14,7 @@
 *  fallback iframe cross domain hack will target IE6/7
 */
 // Bind apiServer to newEmbedPlayers:
-$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
-	
+$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {	
 	embedPlayer['iFrameServer'] = new mw.IFramePlayerApiServer( embedPlayer )
 });
 
@@ -68,7 +67,8 @@ mw.IFramePlayerApiServer.prototype = {
 			$j( _this.embedPlayer ).bind( bindName, function( event ){
 				var argSet = {};
 				mw.log("IFramePlayerApiServer::PostBind:: " + bindName );
-				// @@FIXME Per event 'useful data' extraction				
+				// @@FIXME Per event 'useful data' extraction
+				// update argSet from 'event'
 				_this.postMessage({
 					'triggerName' : bindName,
 					'triggerArgs' : argSet

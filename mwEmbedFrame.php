@@ -159,14 +159,14 @@ class mwEmbedFrame {
     ?>
     
    		<script type="text/javascript" src="<?php echo str_replace( 'mwEmbedFrame.php', '', $_SERVER['SCRIPT_NAME'] ); ?>ResourceLoader.php?class=<?php 
-		echo $embedResourceList;
-		if( $this->debug ){
-			echo '&debug=true';
-		} 
+			echo $embedResourceList;
+			if( $this->debug ){
+				echo '&debug=true';
+			} 
 		?>"></script>
 		
 		<script type="text/javascript">
-			//Set some iframe embed config:
+			// Set some iframe embed config:
 			// We can't support full screen in object context since it requires outter page DOM control
 			mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
 

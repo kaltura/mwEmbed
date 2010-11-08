@@ -32,8 +32,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_FORCE_DEBUG = true;
+//SCRIPT_LOADER_URL = 'http://192.168.38.18/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -172,7 +172,7 @@ function kOverideSwfObject(){
 
 // Check DOM for Kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
-function kCheckAddScript(){
+function kCheckAddScript(){	
 	// If user javascript is using mw.ready add script
 	if( preMwEmbedReady.length ) {
 		kAddScript();
@@ -220,7 +220,7 @@ function kIsHTML5FallForward(){
 		}
 	}
 
-	
+	debugger;
 	// for IE: 
 	var hasObj = true;
 	if( typeof ActiveXObject != 'undefined' ){
@@ -244,8 +244,7 @@ function kIsHTML5FallForward(){
 
 // Add the kaltura html5 mwEmbed script
 var kAddedScript = false;
-function kAddScript(){
-	
+function kAddScript(){	
 	if( kAddedScript ){
 		return ;
 	}	
@@ -339,10 +338,10 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	for( var i = 0; i < jsRequestSet.length ; i++ ){
 		url+= jsRequestSet[i].join(',') + ',';
 	}
-	url+='&urid=' + kURID;
-	url+='&uselang=en';
+	url+= '&urid=' + kURID;
+	url+= '&uselang=en';
 	if ( SCRIPT_FORCE_DEBUG ){
-		url+='&debug=true';
+		url+= '&debug=true';
 	}
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';	
@@ -352,7 +351,8 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	if( callback ){
 		script.onload = callback;
 	}
-	document.getElementsByTagName('body')[0].appendChild( script );
+	console.log( url );
+	document.getElementsByTagName('head')[0].appendChild( script );
  
 }
 
@@ -367,13 +367,11 @@ function kAddReadyHook( callback ){
 		kReadyHookSet.push( callback );
 	}
 }
-function kRunMwDomReady(){	
-	kAlreadyRunDomReadyFlag  = true;
-	
+function kRunMwDomReady(){		
+	kAlreadyRunDomReadyFlag  = true;	
 	while( kReadyHookSet.length ){
 		kReadyHookSet.shift()();
-	}
-	
+	}	
 	kOverideSwfObject();
 	kCheckAddScript();	
 }
@@ -421,14 +419,15 @@ if ( document.addEventListener ) {
 
 	try {
 		toplevel = window.frameElement == null;
-	} catch(e) {}
-
+	} catch(e) {
+		
+	}
 	if ( document.documentElement.doScroll && toplevel ) {
-		kdoScrollCheck();
+		doScrollCheck();
 	}
 }
 // The DOM ready check for Internet Explorer
-function kdoScrollCheck() {
+function doScrollCheck() {
 	if ( kAlreadyRunDomReadyFlag ) {
 		return;
 	}
@@ -437,7 +436,7 @@ function kdoScrollCheck() {
 		// http://javascript.nwbox.com/IEContentLoaded/
 		document.documentElement.doScroll("left");
 	} catch( error ) {
-		setTimeout( kdoScrollCheck, 1 );
+		setTimeout( doScrollCheck, 1 );
 		return;
 	}
 	// and execute any waiting functions
