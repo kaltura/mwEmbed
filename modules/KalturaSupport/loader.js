@@ -193,7 +193,7 @@
 					var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
 					var iframeServer = mwPathUri.protocol + '://' + mwPathUri.host;
 					// Load the iFrame player client ( if not already loaded )
-					mw.load( ['mw.EmbedPlayerNative', '$j.postmessage', 'mw.IFramePlayerApiClient'], function(){
+					mw.load( ['mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient'], function(){
 						$j('.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap').each(function( inx, playerTarget ) {
 							// Output the iframe request in kaltura /{key}/{value} request format: 
 							var iframeRequest = '';
@@ -204,8 +204,13 @@
 										'/' + encodeURIComponent( $j(playerTarget).attr( iframeRequestKeys[i] ) );
 								}															
 							}
+							// Add debug flag if set: 
+							if( mw.getConfig( 'debug' ) ){
+								iframeRequest+='/?debug=true';
+							}
 							// Add the parent frame location as a hash url:
 							iframeRequest+= '#' + encodeURIComponent( document.location.href )
+							var iframeId = $j( playerTarget ).attr('id');
 							var $iframe = $j('<iframe />').attr({
 								'id' : $j( playerTarget ).attr('id'),
 								'class' : $j( playerTarget ).attr('class' ),
@@ -213,7 +218,8 @@
 								'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest										
 							}).css('border', '0px');
 							$j( playerTarget ).replaceWith( $iframe );
-							$j( playerTarget ).iFramePlayer({
+							
+							$j( '#' + iframeId ).iFramePlayer({
 								'iframeServer' : iframeServer
 							});
 						});

@@ -375,8 +375,9 @@
 		
 		// Check if the iFrame player server is enabled: 
 		if( mw.getConfig('EmbedPlayer.EnableIFramePlayerServer') ){
-			dependencyRequest.push(	'$j.postMessage' );
-			dependencyRequest.push(	'mw.IFramePlayerApiServer' );			
+			dependencyRequest.push('mw.EmbedPlayerNative');
+			dependencyRequest.push( '$j.postMessage' );
+			dependencyRequest.push( 'mw.IFramePlayerApiServer' );			
 		}
 
 		

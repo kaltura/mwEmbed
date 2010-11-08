@@ -13,7 +13,7 @@
 *    
 *  fallback iframe cross domain hack will target IE6/7
 */
-// Bind ourself to newEmbedPlayers:
+// Bind apiServer to newEmbedPlayers:
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {	
 	embedPlayer['iFrameServer'] = new mw.IFramePlayerApiServer( embedPlayer )
 });
@@ -24,9 +24,13 @@ mw.IFramePlayerApiServer = function( embedPlayer ){
 }
 
 mw.IFramePlayerApiServer.prototype = {	
+	// Exported methods populated by native video/audio tag api. 
+	'exportedBindings': {},
 		
 	'init': function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
+		// Static reference to nativeEmbed bind list ( dependency of IFramePlayerApiServer )
+		this.exportedBindings = mw.EmbedPlayerNative.nativeEvents;
 		this.addIframeListener();
 		this.addIframeSender();
 	},
@@ -36,7 +40,7 @@ mw.IFramePlayerApiServer.prototype = {
 	 */
 	'addIframeListener': function(){
 		var _this = this;		
-		$j.receiveMessage( function( event ) {
+		$j.receiveMessage( function( event ) {			
 			_this.hanldeMsg( event );
 		});	
 	},
@@ -58,6 +62,15 @@ mw.IFramePlayerApiServer.prototype = {
 		$j( this.embedPlayer ).bind( 'playerReady', function(){
 			_this.sendPlayerAttributes();
 		});
+		
+		$j.each( this.exportedBindings, function( inx, bindName ){
+			$j( _this.embedPlayer ).bind( bindName, function( event ){				
+				_this.postMessage({
+					'triggerName' : bindName,
+					'triggerArgs' : event
+				})
+			});
+		});
 	},
 	
 	/**
@@ -69,17 +82,29 @@ mw.IFramePlayerApiServer.prototype = {
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
 		var attrSet = { };
 		for( var i in playerAttributes ){
-			if( typeof this.embedPlayer[ i ] != 'undefined' ){
-				attrSet[i] = this.embedPlayer[ i ];
+			if( i != 'id' ){
+				if( typeof this.embedPlayer[ i ] != 'undefined' ){
+					attrSet[i] = this.embedPlayer[ i ];
+				}
 			}
 		}
 		//mw.log( "IframePlayerApiServer:: sendPlayerAttributes: " + JSON.stringify( attrSet ) );
+		_this.postMessage( {
+			'attributes' : attrSet 
+		} )
+	},
+	
+	'postMessage': function( msgObj ){
+		try {
+			var messageString = JSON.stringify( msgObj );
+		} catch ( e ){
+			mw.log("Error: could not JSON object: " + msgObj + ' ' + e);
+			return ;
+		}
 		// By default postMessage sends the message to the parent frame:		
 		$j.postMessage( 
-			JSON.stringify( {
-				'attributes' : attrSet 
-			} ),
-			_this.parentUrl,
+			messageString,
+			this.parentUrl,
 			window.parent
 		);
 	},
@@ -90,6 +115,7 @@ mw.IFramePlayerApiServer.prototype = {
 	 * @param {string} event
 	 */
 	'hanldeMsg': function( event ){
+		mw.log( 'IframePlayerServer:: hanldeMsg ');
 		// Check if the server should even be enabled 
 		if( !mw.getConfig( 'EmbedPlayer.EnableIFramePlayerServer' )){
 			mw.log( 'Error: EmbedPlayer.EnableIFramePlayerServer is false');

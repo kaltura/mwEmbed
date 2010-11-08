@@ -17,6 +17,8 @@
 	<input id="alertTime" type="button" value="Alert currentTime"></input>
 	<input id="seek10" type="button" value="Set currentTime to 10"></input>
 	<br/>
+	Play / Pause events: 
+	<textarea id="playPauseLog" style="width:50x;height:40px;"> </textarea>
 		<br/>
 			<br/>	<br/>
 	<div id="resizable" style="padding: 2.5em;width:400px;height:300px;border-style:solid;border-width:5px;">					
@@ -84,6 +86,14 @@
 			$j('#seek10').click( function(){
 				$j( '#vid').get(0).currentTime = 10;
 			});
+
+			$j('#seek10').bind('play', function(){
+				$j('#playPauseLog').append( "Play Event\n" );
+			});
+			$j('#seek10').bind('pause', function(){
+				$j('#playPauseLog').append( "Play Event\n" );
+			});			
+			
 		}	
 	});	 
 	</script>
