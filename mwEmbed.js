@@ -1165,8 +1165,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 * NOTE: should be phased out in favor of browser feature detection where possible
 	 * 
 	 */
-	mw.isHTML5FallForwardNative = function(){
-		
+	mw.isHTML5FallForwardNative = function(){		
 		// Check for a mobile html5 user agent:
 		if (  (navigator.userAgent.indexOf('iPhone') != -1) || 
 			(navigator.userAgent.indexOf('iPod') != -1) || 
@@ -1205,7 +1204,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}		
 		// No flash return true if the browser supports html5 video tag with basic support for canPlayType:
 		var dummyvid = document.createElement( "video" );
-		if( dummyvid.canPlayType ) {
+		// temporary hack firefox does not work well with native player:
+		if( dummyvid.canPlayType && !$j.browser.mozilla) {			
 			return true;
 		}
 		// No video tag or flash, return false ( normal "install flash" user flow )
