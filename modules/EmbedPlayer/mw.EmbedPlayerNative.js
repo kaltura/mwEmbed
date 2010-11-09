@@ -27,6 +27,7 @@ mw.EmbedPlayerNative = {
 	// If the media loaded event has been fired  
 	mediaLoadedFlag: null,
 	
+	
 	// All the native events per: 
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -181,12 +182,14 @@ mw.EmbedPlayerNative = {
 		}
 		$j.each( _this.nativeEvents, function( inx, eventName ){
 			$j( vid ).bind( eventName , function(){
-				// Check if there is local handler: 
-				if( _this['on' + eventName ] ){
-					_this['on' + eventName ].apply( _this, arguments );
-				} else {
-					// no local handler directly propagate the event to the abstract object: 
-					$j( _this ).trigger( eventName, arguments )
+				if( _this._propagateEvents ){
+					// Check if there is local handler: 
+					if( _this['on' + eventName ] ){
+						_this['on' + eventName ].apply( _this, arguments );
+					} else {
+						// no local handler directly propagate the event to the abstract object: 
+						$j( _this ).trigger( eventName, arguments )
+					}
 				}
 			})
 		});

@@ -14,9 +14,6 @@
  *  once restoring the source we need to seek to parent offset position
  *  
  * 
- */
-
-/**
  * @param {Object} embedPlayer the embedPlayer target 
  * ( creates a mobileTimeline controller on the embedPlayer target if it does not already exist ) 
  * @param {Object} timeType Stores the target string can be 'start', 'bumper', 'end', or 'overlay'->  
@@ -50,6 +47,10 @@ mw.MobileAdTimeline.prototype = {
 	
 	// Original source of embedPlayer
 	originalSrc: false,
+	
+	// Flag to store if its the first time play is being called:
+	firstPlay: true,
+	
 	/**
 	 * @constructor
 	 * @param {Object} EmbedPlayer
@@ -65,12 +66,23 @@ mw.MobileAdTimeline.prototype = {
 		var _this = this;		
 		// Setup the original source
 		_this.originalSrc = _this.embedPlayer.getSrc();		
-		$j( _this.embedPlayer ).bind( 'play', function(){	
+		$j( _this.embedPlayer ).bind( 'play', function(){
+			
+			// Check if this is the "first play" request:
+			if( !_this.firstPlay ){
+				return 
+			}
+			_this.firstPlay = false;
+			mw.log("MobileAdTimeline:: First Play Start Ad timeline");
+			
 			// Disable overlays for preroll / bumper
 			_this.overlaysEnabled = false;			
-			
+
+			//Stop the native embedPlayer events so we can play the preroll and bumper
+			_this.embedPlayer.stopEventPropagation();
+
 			// Chain display of preroll and then bumper: 
-			_this.display( 'preroll' , function(){		
+			_this.display( 'preroll' , function(){
 				_this.display( 'bumper', function(){
 					var vid = _this.getNativePlayerElement();
 					// Enable overlays ( for monitor overlay events )
@@ -81,7 +93,7 @@ mw.MobileAdTimeline.prototype = {
 					if( _this.originalSrc != vid.src ){
 						_this.switchPlaySrc( _this.originalSrc, function(){
 							// Restore embedPlayer native bindings: 
-							_this.embedPlayer.applyMediaElementBindings();
+							_this.embedPlayer.restoreEventPropagation();
 						})
 					}								
 				});
@@ -112,6 +124,7 @@ mw.MobileAdTimeline.prototype = {
 	display: function( timeTargetType, doneCallback ){		
 		var _this = this;
 		mw.log("MobileAdTimeline::display:" + timeTargetType + ' val:' + this.timelineTargets[ timeTargetType ] );
+
 		// If the displayConf is empty go directly to the callback:
 		if( !this.timelineTargets[ timeTargetType ] ){
 			doneCallback();
@@ -120,13 +133,14 @@ mw.MobileAdTimeline.prototype = {
 		var displayConf = this.timelineTargets[ timeTargetType ];		
 		
 		// Detect the display set type and trigger its display, run the callback once complete
-		if( displayConf.type == 'videoSource' ){
+		if( displayConf.videoFile ){
 			if( displayConf.lockUI ){
+				// this actually does not work so well in iOS world:
 				_this.getNativePlayerElement().controls = false;
 			};
 			// Play the source then run the callback
 			_this.switchPlaySrc( 
-				displayConf.src,
+				displayConf.videoFile,
 				function( videoElement ){ /* switch complete callback */					
 					// Run the bind call for any bindEvents in the displayConf:  
 					$j.each( displayConf.bindEvents, function( inx, bindFunction ){
@@ -158,25 +172,27 @@ mw.MobileAdTimeline.prototype = {
 		mw.log( 'switchPlaySrc:' + src );
 		var vid = this.getNativePlayerElement();
 		if( vid ){
-			try{				
+			try{
 				// Remove all native player bindings
-				$j(vid).unbind();
+				$j( vid ).unbind();				
+				vid.pause();					
 				vid.src = src;
-				setTimeout( function(){	
+				// Give iOS 100ms to figure out the src got updated 
+				setTimeout( function(){
 					vid.load();
 					vid.play();
 					// Wait another 100ms then bind the end event and any custom events for the switchCallback 
 					setTimeout( function(){
-						$j(vid).bind( 'ended', function( event ){
+						$j(vid).bind( 'ended', function( event ){			
 							doneCallback();
 						})
 						if( typeof switchCallback == 'function'){
 							switchCallback( vid );
 						}
-					}, 100)
-				},100 );
+					}, 100 )
+				}, 100 );
 			} catch( e ){
-				mw.log("Error: possible error in swiching source playback");
+				mw.log("Error: Error in swiching source playback");
 			}
 		}
 	},	

@@ -125,20 +125,21 @@ mw.EmbedPlayerKplayer = {
 	postEmbedJS:function() {
 		var _this = this;
 		this.getPlayerElement();		
-								
+		
+		var bindEventMap = {
+			'doPause' : 'onPause',
+			'doPlay' : 'onPlay',
+			'durationChange' : 'onDurationChange',
+			'playerPlayEnd' : 'onClipDone',
+			'playerUpdatePlayhead' : 'onUpdatePlayhead',
+			'bytesTotalChange' : 'onBytesTotalChange',
+			'bytesDownloadedChange' : 'onBytesDownloadedChange'				
+		}
+		
 		if( this.playerElement && this.playerElement.addJsListener ) {			
-			
-			// Add KDP listeners						
-			_this.bindPlayerFunction( 'doPause', 'onPause' );
-			_this.bindPlayerFunction( 'doPlay', 'onPlay' );
-			_this.bindPlayerFunction( 'durationChange', 'onDurationChange');
-			_this.bindPlayerFunction( 'playerPlayEnd', 'onClipDone' );
-			_this.bindPlayerFunction( 'playerUpdatePlayhead', 'onUpdatePlayhead' );
-			
-			// Buffering
-			_this.bindPlayerFunction( 'bytesTotalChange', "onBytesTotalChange" );
-			_this.bindPlayerFunction( 'bytesDownloadedChange', "onBytesDownloadedChange" );
-											
+			$j.each( bindEventMap, function( bindName, localMethod ){
+				_this.bindPlayerFunction( bindName, localMethod );
+			});								
 			// Start the monitor
 			this.monitor();
 		}else{
@@ -158,10 +159,21 @@ mw.EmbedPlayerKplayer = {
 	* @param {String} flash binding name
 	* @param {String} function callback name
 	*/
-	bindPlayerFunction: function( bName, fName ) {
-		var cbid = fName + '_cb_' + this.id.replace(' ', '_');
-		eval( 'window[ \'' + cbid +'\' ] = function( data ) {$j(\'#' + this.id + '\').get(0).'+ fName +'( data );}' );
-		this.playerElement.addJsListener( bName , cbid);
+	bindPlayerFunction: function( bindName, methodName ) {
+		// The kaltura kdp can only call a global function by given name
+		var gKdpCallbackName = methodName + '_cb_' + this.id;
+
+		// Create an anonymous function with local scope player
+		var createGlobalCB = function( cName, embedPlayer ){			
+			window[ cName ] = function( data ){
+				if( embedPlayer._propagateEvents ){
+					embedPlayer[ methodName ]( data );
+				}
+			};
+		}( gKdpCallbackName, this );
+		
+		// Add the listener to the KDP flash player: 
+		this.playerElement.addJsListener( bindName , gKdpCallbackName);
 	},
 	
 	/**

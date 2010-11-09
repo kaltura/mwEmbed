@@ -1236,7 +1236,11 @@ mw.EmbedPlayer.prototype = {
 	'bufferEndFlag' : false,
 	
 	// On done playing
-	'donePlayingCount' : 0,
+	'donePlayingCount' : 0
+	,
+	// if player events should be Propagated
+	'_propagateEvents': true,
+	
 	
 	/**
 	* embedPlayer constructor 
@@ -1369,6 +1373,12 @@ mw.EmbedPlayer.prototype = {
 		}
 	},
 	
+	stopEventPropagation: function(){
+		this._propagateEvents = false;
+	},
+	restoreEventPropagation: function(){
+		this._propagateEvents = true;
+	},
 	/**
 	 * for plugin-players to update supported features 
 	 */

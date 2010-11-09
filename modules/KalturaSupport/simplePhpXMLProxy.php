@@ -176,12 +176,13 @@ if ( !$url ) {
     curl_setopt( $ch, CURLOPT_POSTFIELDS, $_POST );
   }
   
-  if ( $_GET['send_cookies'] || $proxyCookies ) {
+  if ( isset( $_GET['send_cookies'] ) || $proxyCookies ) {
     $cookie = array();
     foreach ( $_COOKIE as $key => $value ) {
       $cookie[] = $key . '=' . $value;
     }
-    if ( $_GET['send_session'] || $proxySession ) {
+    if (  isset( $_GET['send_session'] ) || $proxySession ) {
+      session_start();
       $cookie[] = SID;
     }
     $cookie = implode( '; ', $cookie );
@@ -200,7 +201,7 @@ if ( !$url ) {
   
   
   // Forward the user agent:
-  curl_setopt( $ch, CURLOPT_USERAGENT, $_GET['user_agent'] ? $_GET['user_agent'] : $_SERVER['HTTP_USER_AGENT'] );
+  curl_setopt( $ch, CURLOPT_USERAGENT, isset( $_GET['user_agent'] ) ? $_GET['user_agent'] : $_SERVER['HTTP_USER_AGENT'] );
  
   list( $header, $contents ) = preg_split( '/([\r\n][\r\n])\\1/', curl_exec( $ch ), 2 );
   
@@ -212,7 +213,7 @@ if ( !$url ) {
 // Split header text into an array.
 $header_text = preg_split( '/[\r\n]+/', $header );
 
-if ( $_GET['mode'] == 'native' ) {
+if ( isset( $_GET['mode'] ) == 'native' ) {
   if ( !$enable_native ) {
     $contents = 'ERROR: invalid mode';
     $status = array( 'http_code' => 'ERROR' );
@@ -233,7 +234,7 @@ if ( $_GET['mode'] == 'native' ) {
   $data = array();
   
   // Propagate all HTTP headers into the JSON data object.
-  if ( $_GET['full_headers'] || $enable_fullHeaders ) {
+  if ( isset( $_GET['full_headers'] ) || $enable_fullHeaders ) {
     $data['headers'] = array();
     
     foreach ( $header_text as $header ) {
@@ -269,7 +270,7 @@ if ( $_GET['mode'] == 'native' ) {
   }
   
   // Propagate all cURL request / response info to the JSON data object.
-  if ( $_GET['full_status'] ) {
+  if ( isset( $_GET['full_status'] ) ) {
     $data['status'] = $status;
   } else {
     $data['status'] = array();

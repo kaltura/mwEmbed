@@ -46,9 +46,8 @@ mw.KAds.prototype = {
 					loadQueueCount++;
 					// Load and parse the adXML into displayConf format
 					_this.getAdDisplayConf( $j(node).attr('url'), function( adDisplayConf ){
-						
-						var timeType = node.nodeName.toLowerCase;
-						// make sure we have a valid callback: 
+						var timeType = node.nodeName.toLowerCase();
+						// Make sure we have a valid callback: 
 						if( adDisplayConf ){									
 							// Add to the player timeline bindings ( hopefully before the user hits 'play' )
 							mw.addAdToPlayerTimeline( 
@@ -99,7 +98,6 @@ mw.KAds.prototype = {
 				lowerCaseXml.indexOf('</vast>')	){
 				adFormat = 'vast';
 			}
-			
 			switch( adFormat ){
 				case 'vast':
 					callback( _this.getVastAdDisplayConf( result['contents'] ) );
@@ -125,6 +123,7 @@ mw.KAds.prototype = {
 		// Get the basic set of sequences
 		adConf.sequences = [];
 		$vast.find('creative').each( function(na, node){
+			mw.log('kAds:: getVastAdDisplayConf: ' + node );
 			var seqId = $j( node ).attr('sequence');
 			var $creative = $j( node );
 			// Create the sequence by id ( if not already set )
@@ -152,14 +151,15 @@ mw.KAds.prototype = {
 			$creative.find('MediaFiles MediaFile').each( function( na, mediaFile ){
 				//@@NOTE we could check other attributes like delivery="progressive"
 				//@@NOTE for now we are only interested in support for iOS / android devices
-				// so only h264. ( in the future we could add ogg ) 
+				// so only h264. ( in the future we could add ogg other delivery methods etc. ) 
 				if(  $j( mediaFile ).attr('type') == 'video/h264' ){
-					adConf.VideoFile = $j( mediaFile ).text();
+					adConf.videoFile = _this.getCdataFromNode( mediaFile );
 				}
 			});
+			
 			// Set videoFile to default if not set: 
-			if( !adConf.VideoFile ){
-				adConf.VideoFile = mw.getConfig( 'Kaltura.MissingFlavorVideoUrl' );
+			if( !adConf.videoFile ){
+				adConf.videoFile = mw.getConfig( 'Kaltura.MissingFlavorVideoUrl' );
 			}
 			
 			// Set the CompanionAds if present: 
@@ -185,28 +185,26 @@ mw.KAds.prototype = {
 				}
 				// Check for iframe type
 				if( $j( companionNode ).find('IFrameResource').length ){
-					mw.log("kAds:: Set Companing html via IFrameResource \n" + $j( companionNode ).find('IFrameResource').text() )
+					mw.log("kAds:: Set Companing html via IFrameResource \n" + _this.getCdataFromNode ( $j( companionNode ).find('IFrameResource') ) );
 					companionObj.$html = 
 						$j('<iframe />').attr({
-							'src' : $j( companionNode ).find('IFrameResource').text(),
+							'src' : _this.getCdataFromNode ( $j( companionNode ).find('IFrameResource') ),
 							'width' : companionObj['width'],
 							'height' : companionObj['height']
-						});	
+						});						
 				}
 				// Check for html type
-				if( $j( companionNode ).find('HTMLResource').length ){
-					mw.log("kAds:: Set Companing html via HTMLResource \n" + $j( companionNode ).find('HTMLResource').text() )
+				if( $j( companionNode ).find('HTMLResource').length ){				
+					mw.log("kAds:: Set Companing html via HTMLResource \n" + _this.getCdataFromNode ( $j( companionNode ).find('HTMLResource') ) );
 					// Wrap the HTMLResource in a jQuery call: 
-					companionObj.$html=  $j( 
-							$j( companionNode ).find('HTMLResource').text()
-						)
+					companionObj.$html = $j( _this.getCdataFromNode ( $j( companionNode ).find('HTMLResource') ) );
 				}
 				// Add the companion to the ad config: 
-				adConf.companions.push(companionObj)
+				adConf.companions.push( companionObj )
 			});
 			
 		});
-		
+		return adConf;
 	},
 	/**
 	 * Get html for a static resource 
