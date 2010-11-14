@@ -2363,7 +2363,6 @@ mw.EmbedPlayer.prototype = {
 	getEmbeddingHTML: function() {
 		switch( mw.getConfig( 'EmbedPlayer.ShareEmbedMode' ) ){
 			case 'iframe':
-				return this.getShareEmbedVideoJs();
 				return this.getShareIframeObject();
 			break;
 			case 'videojs':
