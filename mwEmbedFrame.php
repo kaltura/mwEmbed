@@ -157,7 +157,7 @@ class mwEmbedFrame {
 		
 		<script type="text/javascript">
 			//Set some iframe embed config:
-			// We can't support full screen in object context since it requires outter page DOM control
+			// We can't support full screen in object context since it requires outer page DOM control
 			mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
 
 			// Enable the iframe player server:
