@@ -2363,6 +2363,7 @@ mw.EmbedPlayer.prototype = {
 	getEmbeddingHTML: function() {
 		switch( mw.getConfig( 'EmbedPlayer.ShareEmbedMode' ) ){
 			case 'iframe':
+				return this.getShareEmbedVideoJs();
 				return this.getShareIframeObject();
 			break;
 			case 'videojs':
@@ -2492,7 +2493,7 @@ mw.EmbedPlayer.prototype = {
 				if( source.src ) {
 					embedCode +='&lt;source src=&quot;' + 
 						mw.absoluteUrl( source.src ) + 
-						'&quot; &lt;&gt;/source&gt;';
+						'&quot; &gt;&lt;/source&gt;';
 				}
 			}							
 			// Close the video tag
