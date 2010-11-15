@@ -8,9 +8,9 @@
 
 ( function( mw ) {
 
-	// Setup the global mw.Language var: 
+	// Setup the global mw.Language var:
 	mw.Language = { };
-	
+
 	/**
 	* Setup the lang object
 	*/
@@ -27,13 +27,13 @@
 			messageCache[ i ] = msgSet[i];
 		}
 	};
-	// By default set the current class missing messages flag to default. 
+	// By default set the current class missing messages flag to default.
 	mw.currentClassMissingMessages = false;
-	
+
 	/**
 	* mw.addMessagesKey function
 	* Adds a messageKey to be pulled in remotely.
-	* 
+	*
 	* NOTE the script-loader should replace addMessageKeys with localized addMessages calls
 	*
 	* If addMessagesKey is called then we are running in raw file debug mode.
@@ -46,37 +46,37 @@
 		for( i=0; i < msgSet.length; i++ ){
 			msgKey = msgSet[i];
 			if( ! messageCache[ msgKey ] ) {
-				// Set the missing messages flag  
+				// Set the missing messages flag
 				mw.currentClassMissingMessages = true;
 				return false;
 			}
 		}
 		return true;
 	};
-	
-	/** 
-	* Special function to register that all of the module messages need to be loaded.  
+
+	/**
+	* Special function to register that all of the module messages need to be loaded.
 	*/
 	mw.includeAllModuleMessages = function (){
 		mw.currentClassMissingMessages = true;
 	};
-		
+
 	/**
 	* Load messages for a given named javascript class.
-	* This worked in conjunction with the scriptLoader  
+	* This worked in conjunction with the scriptLoader
 	* @param {string} className Name of class file to be loaded
-	* @param {function} callback Function to be called once class messages are loaded. 
-	*/ 
-	mw.loadResourceMessages = function( className, callback ) {		
+	* @param {function} callback Function to be called once class messages are loaded.
+	*/
+	mw.loadResourceMessages = function( className, callback ) {
 		// Check if wgScriptLoaderPath is set ( else guess the path relative to mwEmbed)
 		if ( typeof wgScriptLoaderLocation == 'undefined' || ! wgScriptLoaderLocation ){
 			wgScriptLoaderLocation = mw.getMwEmbedPath() + 'ResourceLoader.php';
 		}
 		// Run the addMessages script-loader call
-		mw.getScript( wgScriptLoaderLocation + '?class=' + className + '&format=messages', callback);		
+		mw.getScript( wgScriptLoaderLocation + '?class=' + className + '&format=messages', callback);
 	};
-	
-	
+
+
 	/**
 	 * Returns a transformed msg string
 	 *
@@ -91,149 +91,149 @@
 	 *
 	 * @return string
 	 */
-	mw.getMsg = function( messageKey , args ) {		
+	mw.getMsg = function( messageKey , args ) {
 
 		// Check for missing message key
 		if ( ! messageCache[ messageKey ] ){
 			return '[' + messageKey + ']';
-		}				
-		// Check if we need to do args replacements: 
+		}
+		// Check if we need to do args replacements:
 		if( typeof args != 'undefined' ) {
-			
+
 			// Make arg into an array if its not already an array
 			if ( typeof args == 'string'
 				|| typeof args == 'number'
-				|| args instanceof jQuery ) 
+				|| args instanceof jQuery )
 			{
 				args = [ args ];
 			}
-			
+
 			// Put any extra arguments into the args array
 			var extraArgs = $j.makeArray( arguments );
-			for(var i=2; i < extraArgs.length; i ++ ) {		
-				args.push(  extraArgs[ i ] );
+			for(var i=2; i < extraArgs.length; i ++ ) {
+				args.push( extraArgs[ i ] );
 			}
 		}
-		// Fast check message text return  ( no arguments and no parsing needed )
-		if( ( !args || args.length == 0 ) 
-			&& messageCache[ messageKey ].indexOf( '{{' ) === -1 
-			&& messageCache[ messageKey ].indexOf( '[' ) === -1 
+		// Fast check message text return ( no arguments and no parsing needed )
+		if( ( !args || args.length == 0 )
+			&& messageCache[ messageKey ].indexOf( '{{' ) === -1
+			&& messageCache[ messageKey ].indexOf( '[' ) === -1
 		) {
 			return messageCache[ messageKey ];
 		}
-		
-		// Else Setup the messageSwap object: 
+
+		// Else Setup the messageSwap object:
 		var messageSwap = new mw.Language.messageSwapObject( messageCache[ messageKey ], args );
-		
-		// Return the jQuery object or message string		
-		return messageSwap.getMsg();					
+
+		// Return the jQuery object or message string
+		return messageSwap.getMsg();
 	};
-	
+
 	/**
-	* A message Swap Object 
-	* Swap object manages message type swapping and returns jQuery or text output   
+	* A message Swap Object
+	* Swap object manages message type swapping and returns jQuery or text output
 	*
 	* @param {String} message The text of the message
 	* @param {array} arguments A set of swap arguments
-	*/ 
-	
+	*/
+
 	mw.Language.messageSwapObject = function( message, arguments ){
 		this.init( message, arguments );
 	};
-	
-	mw.Language.messageSwapObject.prototype= {		
+
+	mw.Language.messageSwapObject.prototype= {
 		/* constructor */
 		init: function( message, arguments ){
 			this.message = message;
-			this.arguments = arguments; 
-			
+			this.arguments = arguments;
+
 			// Set the includesjQueryArgs flag to false
 			includesjQueryArgs: false;
 		},
-		
+
 		// Return the transformed message text or jQuery object
-		getMsg: function(){					
+		getMsg: function(){
 			// Get message with string swap
 			this.replaceStringArgs();
-						
+
 			// Check if we need to parse the string
-			if( this.message.indexOf( '{{' ) === -1 			
+			if( this.message.indexOf( '{{' ) === -1
 				&& this.message.indexOf( '[' ) === -1
-				&& ! this.includesjQueryArgs  )
+				&& ! this.includesjQueryArgs )
 			{
-				// replaceStringArgs is all we need, return the msg 
+				// replaceStringArgs is all we need, return the msg
 				return this.message;
 			}
-						
+
 			// Else Send the messageText through the parser
 			var pObj = new mw.Parser( this.message );
-			
+
 			// Get template and link transformed text:
 			this.message = pObj.getHTML();
-			
+
 			// if jQuery arguments is false return message string
-			if(! this.includesjQueryArgs ){													
-				//Do string link substitution				
+			if(! this.includesjQueryArgs ){
+				//Do string link substitution
 				return this.message;
 			}
-			
+
 			// jQuery arguments exist swap and return jQuery object
 			return this.getJQueryArgsReplace();
-						
+
 		},
-		
+
 		/**
-		* Swap in an array of values for $1, $2, $n for a given msg key 
+		* Swap in an array of values for $1, $2, $n for a given msg key
 		*
 		* @param string messageKey The msg key to lookup
 		* @param {Array} args  An array of string or jQuery objects to be swapped in
 		* @return string
 		*/
 		replaceStringArgs : function() {
-			if( ! this.arguments ) { 
-				return ;			
-			}	
+			if( ! this.arguments ) {
+				return ;
+			}
 			// Replace Values
-			for ( var v = 0; v < this.arguments.length; v++ ) {				
+			for ( var v = 0; v < this.arguments.length; v++ ) {
 				if( typeof this.arguments[v] == 'undefined' ) {
 					continue;
-				}				
-				var replaceValue =  this.arguments[ v ];
-				
+				}
+				var replaceValue = this.arguments[ v ];
+
 				// Convert number if applicable
 				if( parseInt( replaceValue ) == replaceValue ) {
 					replaceValue = mw.Language.convertNumber( replaceValue );
 				}
-				
+
 				// Message test replace arguments start at 1 instead of zero:
 				var argumentRegExp = new RegExp( '\\$' + ( parseInt( v ) + 1 ), 'g' );
-												
-				// Check if we got passed in a jQuery object:			
+
+				// Check if we got passed in a jQuery object:
 				if( replaceValue instanceof jQuery) {
 					// Set the jQuery msg flag
 					this.includesjQueryArgs = true;
-					// Swap in a jQuery span place holder: 		
-					this.message = this.message.replace( argumentRegExp, 
-						'<span id="' + JQUERY_SWAP_STRING + v +'"></span>' );											
+					// Swap in a jQuery span place holder:
+					this.message = this.message.replace( argumentRegExp,
+						'<span id="' + JQUERY_SWAP_STRING + v +'"></span>' );
 				} else {
 					// Assume replaceValue is a string
 					this.message = this.message.replace( argumentRegExp, replaceValue );
 				}
 			}
 		},
-			
+
 		/**
-		* Return a jquery element with resolved swapped arguments. 
-		* return {Element} 
+		* Return a jquery element with resolved swapped arguments.
+		* return {Element}
 		*/
 		getJQueryArgsReplace: function() {
 			var $jQueryMessage = false;
 			mw.log( 'msgReplaceJQueryArgs' );
-			for ( var v = 0; v < this.arguments.length; v++ ) {				
+			for ( var v = 0; v < this.arguments.length; v++ ) {
 				if( typeof this.arguments[v] == 'undefined' ) {
 					continue;
-				}				
-				var $replaceValue =  this.arguments[ v ];
+				}
+				var $replaceValue = this.arguments[ v ];
 				// Only look for jQuery replacements
 				if( $replaceValue instanceof jQuery) {
 					// Setup the jqueryMessage if not set
@@ -244,26 +244,26 @@
 					mw.log(" current jQueryMessage::: " + $jQueryMessage.html() );
 					// Find swap target
 					var $swapTarget = $jQueryMessage.find( '#' + JQUERY_SWAP_STRING + v );
-					// Now we try and find the jQuerySwap points and replace with jQuery object preserving bindings.  
+					// Now we try and find the jQuerySwap points and replace with jQuery object preserving bindings.
 					if( ! $swapTarget.length ){
-						mw.log( "Error could not find jQuery Swap target: " + v + ' by id: '+ JQUERY_SWAP_STRING + v 
-						 + ' In string: ' + this.message  ) ;
+						mw.log( "Error could not find jQuery Swap target: " + v + ' by id: '+ JQUERY_SWAP_STRING + v
+						 + ' In string: ' + this.message ) ;
 						continue;
-					} 
-					
+					}
+
 					if( $swapTarget.html() != '' ) {
 						$replaceValue.html( $swapTarget.html() );
 					}
-										
-					// Swap for $swapTarget for $replaceValue swap target * preserving the jQuery binding ) 
-					$swapTarget.replaceWith( $replaceValue );					
+
+					// Swap for $swapTarget for $replaceValue swap target * preserving the jQuery binding )
+					$swapTarget.replaceWith( $replaceValue );
 				}
 			}
 			// Return the jQuery object ( if no jQuery substitution occurred we return false )
 			return $jQueryMessage;
 		}
 	};
-	
+
 	/**
 	* Get msg content without transformation
 	*
@@ -278,7 +278,7 @@
 	};
 	/**
 	 * Check if a message key is defined
-	 * @return {Boolean} true if msg is defined, false if msg is not set 
+	 * @return {Boolean} true if msg is defined, false if msg is not set
 	 */
 	mw.Language.isMsgKeyDefined = function( msgKey ){
 		if( messageCache[ msgKey ] ){
@@ -286,7 +286,7 @@
 		}
 		return false;
 	};
-	
+
 	/**
 	* Add Supported Magic Words to parser
 	*/
@@ -303,7 +303,7 @@
 		}
 
 	}
-	
+
 	/**
 	 * Plural form transformations, needed for some languages.
 	 * For example, there are 3 form of plural in Russian and Polish,
@@ -318,43 +318,43 @@
 	 * @param count Integer: non-localized number
 	 * @param forms Array: different plural forms
 	 * @return string Correct form of plural for count in this language
-	 */	 
-	
+	 */
+
 	/**
 	* Base gender transform function
 	*/
 	mw.Language.gender = function( gender, forms ) {
-		if ( ! forms.length ) { 
-			return ''; 
+		if ( ! forms.length ) {
+			return '';
 		}
 		forms = mw.Language.preConvertPlural( forms, 2 );
 		if ( gender === 'male' ) return forms[0];
 		if ( gender === 'female' ) return forms[1];
 		return ( forms[2] ) ? forms[2] : forms[0];
 	};
-	
+
 	/**
-	* Process the PLURAL template substitution 
-	* @param {Object} template Template object 
-	* 
+	* Process the PLURAL template substitution
+	* @param {Object} template Template object
+	*
 	* 	{{Template:argument|params}}
-	* 
+	*
 	* 	Template object should include:
-	* 	[arg] The argument sent to the template  
-	* 	[params] The template parameters  
+	* 	[arg] The argument sent to the template
+	* 	[params] The template parameters
 	*/
-	mw.Language.procPLURAL = function( templateObject ) {				
+	mw.Language.procPLURAL = function( templateObject ) {
 		if( templateObject.arg && templateObject.param && mw.Language.convertPlural) {
 			// Check if we have forms to replace
-			if ( templateObject.param.length == 0 ) { 
+			if ( templateObject.param.length == 0 ) {
 				return '';
 			}
 			// Restore the count into a Number ( if it got converted earlier )
 			var count = mw.Language.convertNumber( templateObject.arg, true );
-			
-			// Do convertPlural call 					
+
+			// Do convertPlural call
 			return mw.Language.convertPlural( parseInt( count ), templateObject.param );
-			
+
 		}
 		// Could not process plural return first form or nothing
 		if( templateObject.param[0] ) {
@@ -362,19 +362,19 @@
 		}
 		return '';
 	};
-	
-	// NOTE:: add gender support here 
+
+	// NOTE:: add gender support here
 	mw.Language.procGENDER = function( templateObject ){
 		return 'gender-not-supported-in-js-yet';
 	};
-	
+
 	/*
 	* Base convertPlural function:
 	*/
-	mw.Language.convertPlural = function( count, forms ){	
-		if ( !forms || forms.length == 0 ) { 
-			return ''; 
-		}	
+	mw.Language.convertPlural = function( count, forms ){
+		if ( !forms || forms.length == 0 ) {
+			return '';
+		}
 		return ( parseInt( count ) == 1 ) ? forms[0] : forms[1];
 	};
 	/**
@@ -385,33 +385,33 @@
 	 * @param {Integer} count How many forms should there be at least
 	 * @return {Array} Padded array of forms or an exception if not an array
 	 */
-	mw.Language.preConvertPlural = function( forms, count ) {		
+	mw.Language.preConvertPlural = function( forms, count ) {
 		while ( forms.length < count ) {
 			forms.push( forms[ forms.length-1 ] );
-		}		
+		}
 		return forms;
 	};
-	
+
 	/**
-	 * Init the digitTransformTable ( populated by language classes where applicable ) 
+	 * Init the digitTransformTable ( populated by language classes where applicable )
 	 */
 	mw.Language.digitTransformTable = null;
-	
-	/** 
-	 * Convert a number using the digitTransformTable 
+
+	/**
+	 * Convert a number using the digitTransformTable
 	 * @param Number number to be converted
-	 * @param Bollean typeInt if we should return a number of type int 
+	 * @param Bollean typeInt if we should return a number of type int
 	 */
 	mw.Language.convertNumber = function( number, typeInt ) {
 		if( !mw.Language.digitTransformTable )
 			return number;
-		
-		// Set the target Transform table: 
+
+		// Set the target Transform table:
 		var transformTable = mw.Language.digitTransformTable;
-		
-		// Check if the "restore" to latin number flag is set: 
-		if( typeInt ) {			
-			if( parseInt( number ) == number )	
+
+		// Check if the "restore" to latin number flag is set:
+		if( typeInt ) {
+			if( parseInt( number ) == number )
 				return number;
 			var tmp = [];
 			for( var i in transformTable ) {
@@ -419,8 +419,8 @@
 			}
 			transformTable = tmp;
 		}
-		
-		var numberString =  '' + number;
+
+		var numberString = '' + number;
 		var convertedNumber = '';
 		for( var i =0; i < numberString.length; i++) {
 			if( transformTable[ numberString[i] ] ) {
@@ -439,18 +439,18 @@
 	 */
 	mw.isValidLang = function( langKey ) {
 		return ( mw.Language.names[ langKey ] )? true : false;
-	};		
-	
+	};
+
 	/**
 	* Get a language transform key
 	* returns default "en" fallback if none found
-	* @param String langKey The language key to be checked	
+	* @param String langKey The language key to be checked
 	*/
-	mw.getLangTransformKey = function( langKey ) {		
+	mw.getLangTransformKey = function( langKey ) {
 		if( mw.Language.fallbackTransformMap[ langKey ] ) {
 			langKey = mw.Language.fallbackTransformMap[ langKey ];
 		}
-		// Make sure the langKey has a transformClass: 
+		// Make sure the langKey has a transformClass:
 		for( var i = 0; i < mw.Language.transformClass.length ; i++ ) {
 			if( langKey == mw.Language.transformClass[i] ){
 				return langKey
@@ -459,7 +459,7 @@
 		// By default return the base 'en' class
 		return 'en';
 	};
-	
+
 	/**
 	 * getRemoteMsg loads remote msg strings
 	 *
@@ -470,7 +470,7 @@
 		var ammessages = '';
 		if ( typeof msgSet == 'object' ) {
 			for ( var i in msgSet ) {
-				if( !messageCache[ i ] ) { 
+				if( !messageCache[ i ] ) {
 					ammessages += msgSet[i] + '|';
 				}
 			}
@@ -500,7 +500,7 @@
 			callback();
 		} );
 	}
-	
+
 	/**
 	 * Format a size in bytes for output, using an appropriate
 	 * unit (B, KB, MB or GB) according to the magnitude in question
@@ -535,7 +535,7 @@
 		size = Math.round( size * p ) / p;
 		return gM( msg , size );
 	};
-	
+
 	/**
 	 * Format a number
 	 * @param {Number} num Number to be formated
@@ -544,7 +544,7 @@
 	mw.Language.formatNumber = function( num ) {
 		/*
 		*	addSeparatorsNF
-		* @param Str: The number to be formatted, as a string or number.		
+		* @param Str: The number to be formatted, as a string or number.
 		* @param outD: The decimal character for the output, such as ',' for the number 100,2
 		* @param sep: The separator character for the output, such as ',' for the number 1,000.2
 		*/
@@ -562,11 +562,11 @@
 			}
 			return nStr + nStrEnd;
 		}
-		// @@todo read language code and give periods or comas: 
+		// @@todo read language code and give periods or comas:
 		return addSeparatorsNF( num, '.', ',' );
 	}
-	
-	
+
+
 	/**
 	 * List of all languages mediaWiki supports ( Avoid an api call to get this same info )
 	 * http://commons.wikimedia.org/w/api.php?action=query&meta=siteinfo&siprop=languages&format=jsonfm
@@ -928,176 +928,176 @@
 		"zh-tw" : "\u202a\u4e2d\u6587(\u53f0\u7063)\u202c",
 		"zh-yue" : "\u7cb5\u8a9e",
 		"zu" : "isiZulu"
-	};	
-	
+	};
+
 	// Language classes ( has a file in /languages/classes/Language{code}.js )
-	// ( for languages that override default transforms ) 
+	// ( for languages that override default transforms )
 	mw.Language.transformClass = ['am', 'ar', 'bat_smg', 'be_tarak', 'be', 'bh',
 		'bs', 'cs', 'cu', 'cy', 'dsb', 'fr', 'ga', 'gd', 'gv', 'he', 'hi',
 		'hr', 'hsb', 'hy', 'ksh', 'ln', 'lt', 'lv', 'mg', 'mk', 'mo', 'mt',
 		'nso', 'pl', 'pt_br', 'ro', 'ru', 'se', 'sh', 'sk', 'sl', 'sma',
 		'sr_ec', 'sr_el', 'sr', 'ti', 'tl', 'uk', 'wa'
 	];
-	
+
 	// Language fallbacks listed from language -> fallback language
 	mw.Language.fallbackTransformMap = {
-		'mwl' : 'pt', 
-		'ace' : 'id', 
-		'hsb' : 'de', 
-		'frr' : 'de', 
-		'pms' : 'it', 
-		'dsb' : 'de', 
-		'gan' : 'gan-hant', 
-		'lzz' : 'tr', 
-		'ksh' : 'de', 
-		'kl' : 'da', 
-		'fur' : 'it', 
-		'zh-hk' : 'zh-hant', 
-		'kk' : 'kk-cyrl', 
-		'zh-my' : 'zh-sg', 
-		'nah' : 'es', 
-		'sr' : 'sr-ec', 
-		'ckb-latn' : 'ckb-arab', 
-		'mo' : 'ro', 
-		'ay' : 'es', 
-		'gl' : 'pt', 
-		'gag' : 'tr', 
-		'mzn' : 'fa', 
-		'ruq-cyrl' : 'mk', 
-		'kk-arab' : 'kk-cyrl', 
-		'pfl' : 'de', 
-		'zh-yue' : 'yue', 
-		'ug' : 'ug-latn', 
-		'ltg' : 'lv', 
-		'nds' : 'de', 
-		'sli' : 'de', 
-		'mhr' : 'ru', 
-		'sah' : 'ru', 
-		'ff' : 'fr', 
-		'ab' : 'ru', 
-		'ko-kp' : 'ko', 
-		'sg' : 'fr', 
-		'zh-tw' : 'zh-hant', 
-		'map-bms' : 'jv', 
-		'av' : 'ru', 
-		'nds-nl' : 'nl', 
-		'pt-br' : 'pt', 
-		'ce' : 'ru', 
-		'vep' : 'et', 
-		'wuu' : 'zh-hans', 
-		'pdt' : 'de', 
-		'krc' : 'ru', 
-		'gan-hant' : 'zh-hant', 
-		'bqi' : 'fa', 
-		'as' : 'bn', 
-		'bm' : 'fr', 
-		'gn' : 'es', 
-		'tt' : 'ru', 
-		'zh-hant' : 'zh-hans', 
-		'hif' : 'hif-latn', 
-		'zh' : 'zh-hans', 
-		'kaa' : 'kk-latn', 
-		'lij' : 'it', 
-		'vot' : 'fi', 
-		'ii' : 'zh-cn', 
-		'ku-arab' : 'ckb-arab', 
-		'xmf' : 'ka', 
-		'vmf' : 'de', 
-		'zh-min-nan' : 'nan', 
-		'bcc' : 'fa', 
-		'an' : 'es', 
-		'rgn' : 'it', 
-		'qu' : 'es', 
-		'nb' : 'no', 
-		'bar' : 'de', 
-		'lbe' : 'ru', 
-		'su' : 'id', 
-		'pcd' : 'fr', 
-		'glk' : 'fa', 
-		'lb' : 'de', 
-		'kk-kz' : 'kk-cyrl', 
-		'kk-tr' : 'kk-latn', 
-		'inh' : 'ru', 
-		'mai' : 'hi', 
-		'tp' : 'tokipona', 
-		'kk-latn' : 'kk-cyrl', 
-		'ba' : 'ru', 
-		'nap' : 'it', 
-		'ruq' : 'ruq-latn', 
-		'tt-cyrl' : 'ru', 
-		'lad' : 'es', 
-		'dk' : 'da', 
-		'de-ch' : 'de', 
-		'be-x-old' : 'be-tarask', 
-		'za' : 'zh-hans', 
-		'kk-cn' : 'kk-arab', 
-		'shi' : 'ar', 
-		'crh' : 'crh-latn', 
-		'yi' : 'he', 
-		'pdc' : 'de', 
-		'eml' : 'it', 
-		'uk' : 'ru', 
-		'kv' : 'ru', 
-		'koi' : 'ru', 
-		'cv' : 'ru', 
-		'zh-cn' : 'zh-hans', 
-		'de-at' : 'de', 
-		'jut' : 'da', 
-		'vec' : 'it', 
-		'zh-mo' : 'zh-hk', 
-		'fiu-vro' : 'vro', 
-		'frp' : 'fr', 
-		'mg' : 'fr', 
-		'ruq-latn' : 'ro', 
-		'sa' : 'hi', 
-		'lmo' : 'it', 
-		'kiu' : 'tr', 
-		'tcy' : 'kn', 
-		'srn' : 'nl', 
-		'jv' : 'id', 
-		'vls' : 'nl', 
-		'zea' : 'nl', 
-		'ty' : 'fr', 
-		'szl' : 'pl', 
-		'rmy' : 'ro', 
-		'wo' : 'fr', 
-		'vro' : 'et', 
-		'udm' : 'ru', 
-		'bpy' : 'bn', 
-		'mrj' : 'ru', 
-		'ckb' : 'ckb-arab', 
-		'xal' : 'ru', 
-		'de-formal' : 'de', 
-		'myv' : 'ru', 
-		'ku' : 'ku-latn', 
-		'crh-cyrl' : 'ru', 
-		'gsw' : 'de', 
-		'rue' : 'uk', 
-		'iu' : 'ike-cans', 
-		'stq' : 'de', 
-		'gan-hans' : 'zh-hans', 
-		'scn' : 'it', 
-		'arn' : 'es', 
-		'ht' : 'fr', 
-		'zh-sg' : 'zh-hans', 
-		'bat-smg' : 'lt', 
-		'aln' : 'sq', 
-		'tg' : 'tg-cyrl', 
-		'li' : 'nl', 
-		'simple' : 'en', 
-		'os' : 'ru', 
-		'ln' : 'fr', 
-		'als' : 'gsw', 
-		'zh-classical' : 'lzh', 
-		'arz' : 'ar', 
+		'mwl' : 'pt',
+		'ace' : 'id',
+		'hsb' : 'de',
+		'frr' : 'de',
+		'pms' : 'it',
+		'dsb' : 'de',
+		'gan' : 'gan-hant',
+		'lzz' : 'tr',
+		'ksh' : 'de',
+		'kl' : 'da',
+		'fur' : 'it',
+		'zh-hk' : 'zh-hant',
+		'kk' : 'kk-cyrl',
+		'zh-my' : 'zh-sg',
+		'nah' : 'es',
+		'sr' : 'sr-ec',
+		'ckb-latn' : 'ckb-arab',
+		'mo' : 'ro',
+		'ay' : 'es',
+		'gl' : 'pt',
+		'gag' : 'tr',
+		'mzn' : 'fa',
+		'ruq-cyrl' : 'mk',
+		'kk-arab' : 'kk-cyrl',
+		'pfl' : 'de',
+		'zh-yue' : 'yue',
+		'ug' : 'ug-latn',
+		'ltg' : 'lv',
+		'nds' : 'de',
+		'sli' : 'de',
+		'mhr' : 'ru',
+		'sah' : 'ru',
+		'ff' : 'fr',
+		'ab' : 'ru',
+		'ko-kp' : 'ko',
+		'sg' : 'fr',
+		'zh-tw' : 'zh-hant',
+		'map-bms' : 'jv',
+		'av' : 'ru',
+		'nds-nl' : 'nl',
+		'pt-br' : 'pt',
+		'ce' : 'ru',
+		'vep' : 'et',
+		'wuu' : 'zh-hans',
+		'pdt' : 'de',
+		'krc' : 'ru',
+		'gan-hant' : 'zh-hant',
+		'bqi' : 'fa',
+		'as' : 'bn',
+		'bm' : 'fr',
+		'gn' : 'es',
+		'tt' : 'ru',
+		'zh-hant' : 'zh-hans',
+		'hif' : 'hif-latn',
+		'zh' : 'zh-hans',
+		'kaa' : 'kk-latn',
+		'lij' : 'it',
+		'vot' : 'fi',
+		'ii' : 'zh-cn',
+		'ku-arab' : 'ckb-arab',
+		'xmf' : 'ka',
+		'vmf' : 'de',
+		'zh-min-nan' : 'nan',
+		'bcc' : 'fa',
+		'an' : 'es',
+		'rgn' : 'it',
+		'qu' : 'es',
+		'nb' : 'no',
+		'bar' : 'de',
+		'lbe' : 'ru',
+		'su' : 'id',
+		'pcd' : 'fr',
+		'glk' : 'fa',
+		'lb' : 'de',
+		'kk-kz' : 'kk-cyrl',
+		'kk-tr' : 'kk-latn',
+		'inh' : 'ru',
+		'mai' : 'hi',
+		'tp' : 'tokipona',
+		'kk-latn' : 'kk-cyrl',
+		'ba' : 'ru',
+		'nap' : 'it',
+		'ruq' : 'ruq-latn',
+		'tt-cyrl' : 'ru',
+		'lad' : 'es',
+		'dk' : 'da',
+		'de-ch' : 'de',
+		'be-x-old' : 'be-tarask',
+		'za' : 'zh-hans',
+		'kk-cn' : 'kk-arab',
+		'shi' : 'ar',
+		'crh' : 'crh-latn',
+		'yi' : 'he',
+		'pdc' : 'de',
+		'eml' : 'it',
+		'uk' : 'ru',
+		'kv' : 'ru',
+		'koi' : 'ru',
+		'cv' : 'ru',
+		'zh-cn' : 'zh-hans',
+		'de-at' : 'de',
+		'jut' : 'da',
+		'vec' : 'it',
+		'zh-mo' : 'zh-hk',
+		'fiu-vro' : 'vro',
+		'frp' : 'fr',
+		'mg' : 'fr',
+		'ruq-latn' : 'ro',
+		'sa' : 'hi',
+		'lmo' : 'it',
+		'kiu' : 'tr',
+		'tcy' : 'kn',
+		'srn' : 'nl',
+		'jv' : 'id',
+		'vls' : 'nl',
+		'zea' : 'nl',
+		'ty' : 'fr',
+		'szl' : 'pl',
+		'rmy' : 'ro',
+		'wo' : 'fr',
+		'vro' : 'et',
+		'udm' : 'ru',
+		'bpy' : 'bn',
+		'mrj' : 'ru',
+		'ckb' : 'ckb-arab',
+		'xal' : 'ru',
+		'de-formal' : 'de',
+		'myv' : 'ru',
+		'ku' : 'ku-latn',
+		'crh-cyrl' : 'ru',
+		'gsw' : 'de',
+		'rue' : 'uk',
+		'iu' : 'ike-cans',
+		'stq' : 'de',
+		'gan-hans' : 'zh-hans',
+		'scn' : 'it',
+		'arn' : 'es',
+		'ht' : 'fr',
+		'zh-sg' : 'zh-hans',
+		'bat-smg' : 'lt',
+		'aln' : 'sq',
+		'tg' : 'tg-cyrl',
+		'li' : 'nl',
+		'simple' : 'en',
+		'os' : 'ru',
+		'ln' : 'fr',
+		'als' : 'gsw',
+		'zh-classical' : 'lzh',
+		'arz' : 'ar',
 		'wa' : 'fr'
 	};
-	
-	
+
+
 }) ( window.mw );
 
 
-// Load in js2 stopgap global msgs into proper location: 
+// Load in js2 stopgap global msgs into proper location:
 if ( typeof gMsg != 'undefined' ) {
 	mw.addMessages( gMsg )
 }
@@ -1108,7 +1108,7 @@ window[ 'gM' ] = mw.getMsg;
 
 /**
 * Add the core mvEmbed Messages ( will be localized by script server )
-*/ 
+*/
 mw.addMessages( {
 	"mwe-loading_txt" : "Loading ...",
 	"mwe-size-gigabytes" : "$1 GB",
