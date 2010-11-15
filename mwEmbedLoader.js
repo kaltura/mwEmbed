@@ -98,16 +98,16 @@ function kOverideSwfObject(){
 		mw.ready(function(){
 			// Setup the embedPlayer attributes
 			var embedPlayerAttributes = {
-				'kwidgetid' : kEmbedSettings.widgetId,
-				'kuiconfid' : kEmbedSettings.uiconfId
+				'kwidgetid' : kEmbedSettings.widgetid,
+				'kuiconfid' : kEmbedSettings.uiconfid
 			}
 			var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceTargetId ).width();
 			var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceTargetId ).height();
-			if( kEmbedSettings.entryId ){
-				embedPlayerAttributes.kentryid = kEmbedSettings.entryId;
+			if( kEmbedSettings.entryid ){
+				embedPlayerAttributes.kentryid = kEmbedSettings.entryid;
 				var kCdn = ( preMwEmbedConfig['Kaltura.CdnUrl'] ) ? preMwEmbedConfig['Kaltura.CdnUrl'] : 'http://cdnakmi.kaltura.com';
 				embedPlayerAttributes.poster = kCdn + '/p/' + kEmbedSettings.partnerId + '/sp/' +
-				kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
+				kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryid + '/width/' +
 				height + '/height/' + width;
 			}
 			if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
@@ -147,7 +147,7 @@ function kOverideSwfObject(){
 					}
 				}
 				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, flashVars);
-				if( kIsHTML5FallForward() && kEmbedSettings.uiconfId ){
+				if( kIsHTML5FallForward() && kEmbedSettings.uiconfid ){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else {
 					// use the original flash player embed:  
@@ -166,7 +166,7 @@ function kOverideSwfObject(){
 			kAddReadyHook(function(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
 				// Check if mobile safari:
-				if( kIsHTML5FallForward() && kEmbedSettings.widgetId ){
+				if( kIsHTML5FallForward() && kEmbedSettings.widgetid ){
 					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
 				} else {
 					// Else call the original EmbedSWF with all its arguments 
@@ -441,7 +441,7 @@ kGetKalturaPlayerList = function(){
 	var objectList = document.getElementsByTagName('object');
 	var tryAddKalturaEmbed = function( url ){
 		var settings = kGetKalturaEmbedSettings( url );
-		if( settings && settings.uiconfId && settings.widgetId ){
+		if( settings && settings.uiconfid && settings.widgetid ){
 			kalturaPlayers.push(  settings );
 			return true;
 		}
@@ -479,18 +479,18 @@ kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 		var curUrlPart =  dataUrlParts.pop();
 		switch( curUrlPart ){
 			case 'p':
-				embedSettings.widgetId = '_' + prevUrlPart;
+				embedSettings.widgetid = '_' + prevUrlPart;
 				embedSettings.partnerId = prevUrlPart;
 			break;
 			case 'wid':
-				embedSettings.widgetId = prevUrlPart;
+				embedSettings.widgetid = prevUrlPart;
 				embedSettings.partnerId = prevUrlPart.replace(/_/,'');
 			break;
 			case 'entry_id':
-				embedSettings.entryId = prevUrlPart;
+				embedSettings.entryid = prevUrlPart;
 			break;
 			case 'uiconf_id':
-				embedSettings.uiconfId = prevUrlPart;
+				embedSettings.uiconfid = prevUrlPart;
 			break;
 			case 'cache_st':
 				embedSettings.cacheSt = prevUrlPart;
