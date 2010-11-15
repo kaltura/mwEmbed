@@ -112,8 +112,8 @@ function kOverideSwfObject(){
 			}
 			if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
 				var iframeSrc = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php');
-				for(var attrKey in embedPlayerAttributes ){
-					iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( embedPlayerAttributes[attrKey] );  
+				for(var attrKey in kEmbedSettings ){
+					iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
 				} 
 				$j('#' + replaceTargetId ).replaceWith(
 					$j('<iframe />').attr({
