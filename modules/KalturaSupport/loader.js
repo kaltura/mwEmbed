@@ -105,7 +105,15 @@
 					mw.log("Got kEmbedSettings.entryId: " + kEmbedSettings.entryId + " uiConf: " + kEmbedSettings.uiconfId)
 					var height = $j( element ).attr('height');
 					var width = $j( element ).attr('width');
-					var videoId = 'vid' + inx;
+					
+					// Check that the id is unique per player embed instance ( else give it a vid_{inx} id: 
+					var videoId = $j( element ).attr('id');
+					$j('.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap').each(function( inx, swapElement){
+						if( $j( swapElement ).attr('id') ==  videoId ){
+							videoId = 'vid_' + inx;
+						}
+					});						
+					
 					var $imgThumb = '';
 					var elementCss = {};
 					// Setup the video embed attributes: 

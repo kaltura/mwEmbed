@@ -8,87 +8,87 @@
 (function(mw) {
 
 	mw.setDefaultConfig( {
-				// If the player controls should be overlaid on top of the video
-				// ( if supported by playback method)
-				// can be set to false per embed player via overlayControls
-				// attribute
-				'EmbedPlayer.OverlayControls' : true,
+			// If the player controls should be overlaid on top of the video
+			// ( if supported by playback method)
+			// can be set to false per embed player via overlayControls
+			// attribute
+			'EmbedPlayer.OverlayControls' : true,
 
-				'EmbedPlayer.LibraryPage' : 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
+			'EmbedPlayer.LibraryPage' : 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 
-				// A default apiProvider ( ie where to lookup subtitles, video
-				// properties etc )
-				// NOTE: Each player instance can also specify a specific
-				// provider
-				"EmbedPlayer.ApiProvider" : "local",
+			// A default apiProvider ( ie where to lookup subtitles, video
+			// properties etc )
+			// NOTE: Each player instance can also specify a specific
+			// provider
+			"EmbedPlayer.ApiProvider" : "local",
 
-				// What tags will be re-written to video player by default
-				// Set to empty string or null to avoid automatic video tag
-				// rewrites to embedPlayer
-				"EmbedPlayer.RewriteTags" : "video,audio,playlist",
+			// What tags will be re-written to video player by default
+			// Set to empty string or null to avoid automatic video tag
+			// rewrites to embedPlayer
+			"EmbedPlayer.RewriteTags" : "video,audio,playlist",
 
-				// Default video size ( if no size provided )
-				"EmbedPlayer.DefaultSize" : "400x300",
+			// Default video size ( if no size provided )
+			"EmbedPlayer.DefaultSize" : "400x300",
 
-				// If the video player should attribute kaltura
-				"EmbedPlayer.KalturaAttribution" : true,
+			// If the video player should attribute kaltura
+			"EmbedPlayer.KalturaAttribution" : true,
 
-				// The attribution button
-				'EmbedPlayer.AttributionButton' : {
-					'title' : 'Kaltura html5 video library',
-					'href' : 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
-					// Style icon to be applied
-					'class' : 'kaltura-icon',
-					// An icon image url ( should be a 12x12 image or data url )
-					'iconurl' : false
-				},
+			// The attribution button
+			'EmbedPlayer.AttributionButton' : {
+				'title' : 'Kaltura html5 video library',
+				'href' : 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
+				// Style icon to be applied
+				'class' : 'kaltura-icon',
+				// An icon image url ( should be a 12x12 image or data url )
+				'iconurl' : false
+			},
 
-				// Set the browser player warning flag displays warning for non
-				// optimal playback
-				"EmbedPlayer.ShowNativeWarning" : true,
+			// Set the browser player warning flag displays warning for non
+			// optimal playback
+			"EmbedPlayer.ShowNativeWarning" : true,
 
-				// If fullscreen is global enabled.
-				"EmbedPlayer.EnableFullscreen" : true,
+			// If fullscreen is global enabled.
+			"EmbedPlayer.EnableFullscreen" : true,
 
-				// If mwEmbed should use the Native player controls
-				// this will prevent video tag rewriting and skinning
-				// useful for devices such as iPad / iPod that
-				// don't fully support DOM overlays or don't expose full-screen
-				// functionality to javascript
-				"EmbedPlayer.NativeControls" : false,
+			// If mwEmbed should use the Native player controls
+			// this will prevent video tag rewriting and skinning
+			// useful for devices such as iPad / iPod that
+			// don't fully support DOM overlays or don't expose full-screen
+			// functionality to javascript
+			"EmbedPlayer.NativeControls" : false,
 
-				// If mwEmbed should use native controls on mobile safari
-				"EmbedPlayer.NativeControlsMobileSafari" : true,
+			// If mwEmbed should use native controls on mobile safari
+			"EmbedPlayer.NativeControlsMobileSafari" : true,
 
-				// The z-index given to the player interface during full screen
-				// ( high z-index )
-				"EmbedPlayer.fullScreenZIndex" : 999998,
+			// The z-index given to the player interface during full screen
+			// ( high z-index )
+			"EmbedPlayer.fullScreenZIndex" : 999998,
 
-				// The default share embed mode ( can be "object" or "videojs" )
-				//
-				// "iframe" will provide a <iframe tag pointing to
-				// mwEmbedFrame.php
-				// Object embedding should be much more compatible with sites
-				// that
-				// let users embed flash applets
-				// "videojs" will include the source javascript and video tag to
-				// rewrite the player on the remote page DOM
-				// Video tag embedding is much more mash-up friendly but exposes
-				// the remote site to the mwEmbed javascript and can be a xss
-				// issue.
-				"EmbedPlayer.ShareEmbedMode" : 'iframe',
+			// The default share embed mode ( can be "object" or "videojs" )
+			//
+			// "iframe" will provide a <iframe tag pointing to
+			// mwEmbedFrame.php
+			// Object embedding should be much more compatible with sites
+			// that
+			// let users embed flash applets
+			// "videojs" will include the source javascript and video tag to
+			// rewrite the player on the remote page DOM
+			// Video tag embedding is much more mash-up friendly but exposes
+			// the remote site to the mwEmbed javascript and can be a xss
+			// issue.
+			"EmbedPlayer.ShareEmbedMode" : 'iframe',
 
-				// Default player skin name
-				"EmbedPlayer.SkinName" : "mvpcf",
+			// Default player skin name
+			"EmbedPlayer.SkinName" : "mvpcf",
 
-				// Number of milliseconds between interface updates
-				'EmbedPlayer.MonitorRate' : 250,
+			// Number of milliseconds between interface updates
+			'EmbedPlayer.MonitorRate' : 250,
 
-				// If the embedPlayer should accept arguments from
-				'EmbedPlayer.EnableIFramePlayerServer' : false,
+			// If the embedPlayer should accept arguments from
+			'EmbedPlayer.EnableIFramePlayerServer' : false,
 
-				'EmbedPLayer.IFramePlayer.DomainWhiteList' : '*'
-			});
+			'EmbedPLayer.IFramePlayer.DomainWhiteList' : '*'
+		});
 
 	/*
 	 * The default video attributes supported by embedPlayer
@@ -219,30 +219,30 @@
 
 	// Add class file paths
 	mw.addResourcePaths( {
-				"mw.EmbedPlayer" : "mw.EmbedPlayer.js",
+			"mw.EmbedPlayer" : "mw.EmbedPlayer.js",
 
-				"mw.EmbedPlayerKplayer" : "mw.EmbedPlayerKplayer.js",
-				"mw.EmbedPlayerGeneric" : "mw.EmbedPlayerGeneric.js",
-				"mw.EmbedPlayerHtml" : "mw.EmbedPlayerHtml.js",
-				"mw.EmbedPlayerJava" : "mw.EmbedPlayerJava.js",
-				"mw.EmbedPlayerNative" : "mw.EmbedPlayerNative.js",
+			"mw.EmbedPlayerKplayer" : "mw.EmbedPlayerKplayer.js",
+			"mw.EmbedPlayerGeneric" : "mw.EmbedPlayerGeneric.js",
+			"mw.EmbedPlayerHtml" : "mw.EmbedPlayerHtml.js",
+			"mw.EmbedPlayerJava" : "mw.EmbedPlayerJava.js",
+			"mw.EmbedPlayerNative" : "mw.EmbedPlayerNative.js",
 
-				"mw.EmbedPlayerVlc" : "mw.EmbedPlayerVlc.js",
+			"mw.EmbedPlayerVlc" : "mw.EmbedPlayerVlc.js",
 
-				"mw.PlayerControlBuilder" : "skins/mw.PlayerControlBuilder.js",
+			"mw.PlayerControlBuilder" : "skins/mw.PlayerControlBuilder.js",
 
-				"mw.style.EmbedPlayer" : "skins/mw.style.EmbedPlayer.css",
+			"mw.style.EmbedPlayer" : "skins/mw.style.EmbedPlayer.css",
 
-				"mw.style.PlayerSkinKskin" : "skins/kskin/mw.style.PlayerSkinKskin.css",
+			"mw.style.PlayerSkinKskin" : "skins/kskin/mw.style.PlayerSkinKskin.css",
 
-				"mw.PlayerSkinKskin" : "skins/kskin/mw.PlayerSkinKskin.js",
+			"mw.PlayerSkinKskin" : "skins/kskin/mw.PlayerSkinKskin.js",
 
-				"mw.PlayerSkinMvpcf" : "skins/mvpcf/mw.PlayerSkinMvpcf.js",
-				"mw.style.PlayerSkinMvpcf" : "skins/mvpcf/mw.style.PlayerSkinMvpcf.css",
+			"mw.PlayerSkinMvpcf" : "skins/mvpcf/mw.PlayerSkinMvpcf.js",
+			"mw.style.PlayerSkinMvpcf" : "skins/mvpcf/mw.style.PlayerSkinMvpcf.css",
 
-				"mw.IFramePlayerApiServer" : "mw.IFramePlayerApiServer.js",
-				"mw.IFramePlayerApiClient" : "mw.IFramePlayerApiClient.js"
-			});
+			"mw.IFramePlayerApiServer" : "mw.IFramePlayerApiServer.js",
+			"mw.IFramePlayerApiClient" : "mw.IFramePlayerApiClient.js"
+		});
 
 	/**
 	 * Check the current DOM for any tags in "EmbedPlayer.RewriteTags"

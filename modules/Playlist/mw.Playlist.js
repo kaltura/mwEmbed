@@ -257,7 +257,7 @@ mw.Playlist.prototype = {
 				$videoList.show()
 				// show the video list and apply the swipe binding
 				$j( _this.target ).find('.media-rss-video-list-wrapper').fadeIn();
-				if( mw.isMobileHTML5() ){
+				if( mw.isHTML5FallForwardNative() ){
 					// iScroll is buggy with current version of iPad / iPhone use scroll buttons instead
 					/*
 					document.addEventListener('touchmove', function(e){ e.preventDefault(); });
@@ -444,7 +444,7 @@ mw.Playlist.prototype = {
 		// see: http://developer.apple.com/iphone/search/search.php?simp=1&num=10&Search=html5+autoplay
 		var updateVideoPlayerToDom = true;
 
-		if( mw.isMobileHTML5() ){
+		if( mw.isHTML5FallForwardNative() ){
 			// Check for a current video:
 			var $inDomVideo = $j( _this.target + ' .media-rss-video-player video' );
 			if( $inDomVideo.length == 0 ){
@@ -588,7 +588,7 @@ mw.Playlist.prototype = {
 			.click( function(){
 				mw.log( 'clicked on: ' + $j( this ).data( 'clipIndex') );
 				// Make sure the existing player is "playing " (safari can't play async with javascript )
-				/*if( mw.isMobileHTML5() ){
+				/*if( mw.isHTML5FallForwardNative() ){
 					var embedPlayer = $j('#' + _this.getVideoPlayerId() ).get(0);
 					//embedPlayer.playerElement.play();
 				}*/
@@ -612,7 +612,7 @@ mw.Playlist.prototype = {
 
 	play: function(){
 		var embedPlayer = $j('#' + this.getVideoPlayerId() ).get(0);
-		if( mw.isMobileHTML5() ){
+		if( mw.isHTML5FallForwardNative() ){
 			embedPlayer.playerElement.play();
 		} else{
 			embedPlayer.play();

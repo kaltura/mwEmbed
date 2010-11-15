@@ -93,7 +93,7 @@ if( !mw.setConfig ){
 
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
 function kOverideSwfObject(){
-	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTarget, widthStr, heightStr ){
+	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTargetId, widthStr, heightStr ){
 		// Add a ready event to re-write: 
 		mw.ready(function(){
 			// Setup the embedPlayer attributes
@@ -101,8 +101,8 @@ function kOverideSwfObject(){
 				'kwidgetid' : kEmbedSettings.widgetId,
 				'kuiconfid' : kEmbedSettings.uiconfId
 			}
-			var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceTarget ).width();
-			var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceTarget ).height();
+			var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceTargetId ).width();
+			var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceTargetId ).height();
 			if( kEmbedSettings.entryId ){
 				embedPlayerAttributes.kentryid = kEmbedSettings.entryId;
 				var kCdn = ( preMwEmbedConfig['Kaltura.CdnUrl'] ) ? preMwEmbedConfig['Kaltura.CdnUrl'] : 'http://cdnakmi.kaltura.com';
@@ -110,10 +110,26 @@ function kOverideSwfObject(){
 				kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
 				height + '/height/' + width;
 			}
-			$j('#' + replaceTarget ).css({
-				'width' : width,
-				'height' : height
-			}).embedPlayer( embedPlayerAttributes );
+			if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
+				var iframeSrc = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php');
+				for(var attrKey in embedPlayerAttributes ){
+					iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( embedPlayerAttributes[i] );  
+				} 
+				$j('#' + replaceTargetId ).replaceWith(
+					$j('<iframe />').attr({
+						'src' : iframeSrc,
+						'id' : replaceTargetId,
+						'width' : width,
+						'height' : height
+					})
+				)
+			} else {
+				$j('#' + replaceTargetId ).css({
+					'id' : replaceTargetId,
+					'width' : width,
+					'height' : height
+				}).embedPlayer( embedPlayerAttributes );
+			}
 		});
 	}
 	// SWFObject v 1.5 
