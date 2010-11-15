@@ -27,13 +27,13 @@
 	display:block;
 }
 
-.rsd_control_container{	
+.rsd_control_container{
 	margin: 10px 0;
 	width: 100%;
 }
 
 .rsd_cp_tab img{
-	border:0px;	
+	border:0px;
 }
 .rsd_cp_tab a{
 	height:16px;
@@ -50,7 +50,7 @@
 	position: absolute;
 	bottom: 0px;
 	left: 3px;
-	font-size: x-small;	
+	font-size: x-small;
 }
 .rsd_import_button {
 	mergin-left: 5px;
@@ -66,7 +66,7 @@
 	position: absolute;
 	top: 0px;
 	right: 0px;
-	font-size: x-small;	
+	font-size: x-small;
 }
 .rsd_license {
 	position: absolute;
@@ -113,7 +113,7 @@
 .rsd_result_enumeration {
 	margin: 0 1em;
 }
-.rsd_results_body {	
+.rsd_results_body {
 	width: 100%;
 }
 #rsd_results_header {
@@ -141,7 +141,7 @@
 	margin: 5px;
 }
 .mv_clip_box_result_over{
-	border: thin solid #F99;	
+	border: thin solid #F99;
 }
 .mv_clip_list_result{
 	padding:10px;

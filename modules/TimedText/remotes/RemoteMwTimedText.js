@@ -1,8 +1,8 @@
 /**
-* Stop-gap for mediaWiki php based timed text support 
+* Stop-gap for mediaWiki php based timed text support
 *
 * Does some transformations to normal wiki timed Text pages to make them look
-* like the php output that we will eventually want to have 
+* like the php output that we will eventually want to have
 */
 
 mw.addMessageKeys( [
@@ -12,7 +12,7 @@ mw.addMessageKeys( [
 
 RemoteMwTimedText = function( options ) {
 	return this.init( options );
-} 
+}
 mw_default_remote_text_options = [
 	'action',
 	'title',
@@ -20,7 +20,7 @@ mw_default_remote_text_options = [
 	'orgBody'
 ];
 RemoteMwTimedText.prototype = {
-	
+
 	init: function( options ) {
 		for(var i in mw_default_remote_text_options) {
 			var opt = mw_default_remote_text_options[i]
@@ -30,40 +30,40 @@ RemoteMwTimedText.prototype = {
 		}
 	},
 	updateUI: function() {
-		// Check page type 
-		if( this.action == 'view' ) {	
+		// Check page type
+		if( this.action == 'view' ) {
 			this.showViewUI();
 		}else{
-			//restore 
-		}	
+			//restore
+		}
 	},
 	showViewUI: function() {
 		var _this = this;
 		var fileTitleKey = this.title.split('.');
 		this.extension = fileTitleKey.pop();
 		this.langKey = fileTitleKey.pop();
-		this.fileTitleKey = fileTitleKey.join('.');			
-		
-		this.getTitleResource( this.fileTitleKey,  function( resource ) {
-			_this.embedViewUI( resource );		
+		this.fileTitleKey = fileTitleKey.join('.');
+
+		this.getTitleResource( this.fileTitleKey, function( resource ) {
+			_this.embedViewUI( resource );
 		});
 	},
 	embedViewUI: function( resource ) {
 		var _this = this;
-		// Load the player module: 
+		// Load the player module:
 		mw.load( 'EmbedPlayer', function() {
 			// Add the embed code: ( jquery wrapping of "video" fails )
 			$j( _this.target ).append(
 				$j( '<div class="videoLoading">').html(
-				'<video id="timed-text-player-embed" '+ 		
-				 'style="width:' + resource.width + 'px;height:' + resource.height + 'px;" '+			 
-				 'class="kskin" ' +  //We need to centrally store this config somewhere
+				'<video id="timed-text-player-embed" '+
+				 'style="width:' + resource.width + 'px;height:' + resource.height + 'px;" '+
+				 'class="kskin" ' + //We need to centrally store this config somewhere
 				 'poster="' + resource.poster + '" ' +
-				 'src="' + resource.src + '" ' + 
-				 'apiTitleKey="' + resource.apiTitleKey + '" >' +					 
-				 '</video><br><br><br><br>'					
+				 'src="' + resource.src + '" ' +
+				 'apiTitleKey="' + resource.apiTitleKey + '" >' +
+				 '</video><br><br><br><br>'
 				)
-			);				
+			);
 			$j('.videoLoading').hide();
 			// embed the player with the pre-selected langauge:
 			_this.embedPlayerLang();
@@ -82,57 +82,57 @@ RemoteMwTimedText.prototype = {
 				.text( _this.fileTitleKey.replace('_', ' ') )
 			)
 		}
-	
-		// Rewrite the player (any video tags on the page) 
+
+		// Rewrite the player (any video tags on the page)
 		$j('#timed-text-player-embed').embedPlayer( function() {
-			//Select the timed text for the page: 
-			
+			//Select the timed text for the page:
+
 			//remove the loader
 			$j('.loadingSpinner').remove();
-			
+
 			var player = $j('#timed-text-player-embed').get(0);
-			
-		
+
+
 			if( !player.timedText ) {
 				mw.log("Error: no timedText method on embedPlayer" );
 				return ;
 			}
-			// Set the userLanguage:					
+			// Set the userLanguage:
 			player.timedText.config.userLanugage = this.langKey;
-			
-			// Make sure the timed text sources are loaded: 
+
+			// Make sure the timed text sources are loaded:
 			player.timedText.setupTextSources( function() {
-				
+
 				var source = player.timedText.getSourceByLanguage( _this.langKey );
 				var pageMsgKey = 'mwe-timedtext-language-subtitles-for-clip';
 				if( ! source ) {
 					pageMsgKey = "mwe-timedtext-language-no-subtitles-for-clip"
 				}
-				// Add the page msg to the top 
+				// Add the page msg to the top
 				$j( _this.target ).prepend(
 					$j('<h3>')
-						.html(  
-							gM(pageMsgKey, [ mw.Language.names[ _this.langKey ],  $fileLink.html() ] ) 
+						.html(
+							gM( pageMsgKey, [ mw.Language.names[ _this.langKey ], $fileLink.html() ] )
 						)
-				);							
-				// Select the language if possible: 
-				if( source ) {						
+				);
+				// Select the language if possible:
+				if( source ) {
 					player.timedText.selectTextSource( source );
-				}					
-				// Un-hide the player  
+				}
+				// Un-hide the player
 				$j('.videoLoading').show();
-			} );		
+			} );
 		} );
 	},
-		
+
 	/**
 	* Gets the properties of a given title as a resource
 	* @param {String} fileTitle Title of media asset to embed
 	* @param {Function} callback [Optional] Function to call once asset is embedded
-	*/ 
+	*/
 	getTitleResource: function( fileTitle, callback ) {
 		var _this = this;
-		// Get all the embed details: 
+		// Get all the embed details:
 		var request = {
 			'titles' : 'File:' + fileTitle,
 			'prop' : 'imageinfo|revisions',
@@ -140,11 +140,11 @@ RemoteMwTimedText.prototype = {
 			'iiurlwidth' : mw.getConfig( 'EmbedPlayer.DefaultSize').split('x').pop(),
 			'rvprop' : 'content'
 		}
-		// (only works for commons right now) 
+		// (only works for commons right now)
 		mw.getJSON( request, function( data ) {
-			// Check for "page not found" 
+			// Check for "page not found"
 			if( data.query.pages['-1'] ) {
-				//restore content: 
+				//restore content:
 				$j(_this.target).html( _this.orgBody );
 				return ;
 			}
@@ -166,23 +166,23 @@ RemoteMwTimedText.prototype = {
 				}
 				mw.log( "should process data result" );
 				// Else process the result
-				var resource = _this.getResource( page );			 
+				var resource = _this.getResource( page );
 				callback( resource );
 			}
 		} );
 	},
-	
+
 	/**
 	* Get the embed code from response resource and sends it a callback
 	*/
 	getResource: function( page ) {
-		return {					
+		return {
 				'apiTitleKey' : page.title.replace(/File:/ig, '' ),
-				'link'		 : page.imageinfo[0].descriptionurl,					
+				'link'		 : page.imageinfo[0].descriptionurl,
 				'poster'	 : page.imageinfo[0].thumburl,
-				'src'		 : page.imageinfo[0].url,					
+				'src'		 : page.imageinfo[0].url,
 				'width' : page.imageinfo[0].width,
 				'height': page.imageinfo[0].height
-			};	
+			};
 	}
 };

@@ -1,6 +1,6 @@
 /*
 * K-skin player
-*/ 
+*/
 .k-player {
 	color: #FFF;
 	background-color: #000;
@@ -19,7 +19,13 @@
 	position: absolute;
 	cursor: pointer;
 	border: none;
-}  /*.ui-state-default */
+}
+@print {
+	.k-player .play-btn-large {
+		display: none;
+	}
+}
+/*.ui-state-default */
 .k-player .play-btn-large.ui-state-hover {
 	background: url(images/ksprite.png) no-repeat 28px -377px;
 }
@@ -33,12 +39,13 @@
 
 .k-player .ui-state-default .ui-icon-arrow-4-diag {
 	background-position: 0 -32px;
-}  /* fullscreen */
+}
+/* fullscreen */
 .k-player .ui-state-hover .ui-icon-arrow-4-diag {
 	background-position: -16px -32px;
 }
 
-.k-player .ui-state-hover .ui-icon-volume-on{	
+.k-player .ui-state-hover .ui-icon-volume-on{
 	background-position: -16px -48px;
 }
 
@@ -66,7 +73,7 @@
 	background-position: -16px -17px;
 }
 
-.k-player .control-bar {	
+.k-player .control-bar {
 	border:1px solid #c8c8c8;
 	border-top: 0px;
 	border-right: 0px;
@@ -86,7 +93,7 @@
 	margin-left: 10px;
 	border: 1px solid #EEEEEE;
 	height: 8px;
-	margin: 6px 2px 0 0px;
+	margin: 5px 2px 0 0px;
 	position: relative;
 }
 
@@ -161,7 +168,6 @@
 .k-player .k-options span {
 	position: relative;
 	top: 4px;
-	left: 7px;
 }
 
 .k-player .k-menu-screens {
@@ -185,10 +191,10 @@
 .k-player .k-menu {
 	background: none repeat scroll 0 0 #181818;
 	border: medium none;
-	display: none;	
+	display: none;
 	left: 0;
 	position: absolute;
-	top: 0;	
+	top: 0;
 	z-index: 2;
 }
 
@@ -257,7 +263,7 @@
 }
 
 .k-edit-screen div {
-	
+
 }
 
 .k-edit-screen a {
@@ -295,7 +301,7 @@
 	margin-bottom: 6px;
 }
 
-.k-menu-screens li a {	
+.k-menu-screens li a {
 	padding-left: 22px;
 	background: url(images/ksprite.png) no-repeat -85px -274px;
 	text-decoration: none;
@@ -317,7 +323,6 @@
 	border-width: 2px medium medium 2px;
 	color: #CCCCCC;
 	font: 11px arial, sans-serif;
-	height: 15px;
 	overflow: hidden;
 	padding-left: 2px;
 	width: 95%;
@@ -336,10 +341,10 @@
 
 .k-player .menu-screen {
 	height: 100%;
-	overflow-y: auto;	
-	overflow-x: hide;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
-	
+
 
 .k-player .menu-screen.menu-share div.ui-state-highlight {
 	background: none repeat scroll 0 0 transparent;
@@ -385,7 +390,7 @@
 	width: 8px;
 }
 
-.k-player .credits_box { 
+.k-player .credits_box {
 	background-attachment:scroll;
 	background-color:white;
 	background-image:none;
@@ -394,7 +399,7 @@
 	left:15px;
 	position:absolute;
 	right:30px;
-	top:48px;		
+	top:48px;
 }
 .k-player .credits_box a{
 	color:#666;

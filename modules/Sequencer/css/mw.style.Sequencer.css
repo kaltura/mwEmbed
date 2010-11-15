@@ -1,25 +1,24 @@
-
 .mwe-sequencer .timelineTrackContainer{
 	position: absolute;
 	border: solid thin #999;
-	top: 4px;	
+	top: 4px;
 	left:4px;
 	right: 4px;
 }
 
 .mwe-sequencer .trackNameContainer{
-	overflow:hidden;	
+	overflow:hidden;
 }
-.mwe-sequencer .clipTrackSetContainer{	
-	overflow-x: scroll;	
+.mwe-sequencer .clipTrackSetContainer{
+	overflow-x: scroll;
 	overflow-y: hidden !important;
 }
 
-.mwe-sequencer .clipTrackSet{	
-	background-color: #EEE;	
+.mwe-sequencer .clipTrackSet{
+	background-color: #EEE;
 	border: solid thin #999;
-	list-style-position: inside;  
-	cursor: hand; 
+	list-style-position: inside;
+	cursor: hand;
 	cursor: pointer;
 	margin-top:4px;
 	margin-bottom: 0px;
@@ -27,34 +26,32 @@
 }
 
 .mwe-sequencer .trackNames{
-	background-color: #EEE;	
+	background-color: #EEE;
 	border: solid thin #999;
 	padding:4px;
 	margin-top: 4px;
 }
 
 .mwe-sequencer .timelineClip{
-
 	margin: 5px;
-	background-color: #FFF;		
+	background-color: #FFF;
 	border: 2px solid #555;
 	overflow: hidden;
-	width:120px;	
-	
+	width:120px;
 	display: inline-block;
 	position: relative;
 	list-style-type: none;
 }
 
-.mwe-sequencer .thumbTraget {	
+.mwe-sequencer .thumbTraget {
 	width:120px;
 	height:90px;
 }
 .mwe-sequencer .clipSortTarget {
 	background-color:#6F6;
-	border:2px dashed #000;			
+	border:2px dashed #000;
 }
-.mwe-sequencer .timelineClip:hover{	
+.mwe-sequencer .timelineClip:hover{
 	border: 2px solid #66F;
 }
 .mwe-sequencer .selectedClip{
@@ -82,7 +79,7 @@
 }
 .sequencer-menu .disabled a span{
 	cursor: default;
-	opacity: .5;	
+	opacity: .5;
 }
 
 .mwe-sequencer input.searchMedia{

@@ -1,9 +1,9 @@
-/* 
-* Simple embed object for unknown application/ogg plugin 
+/*
+* Simple embed object for unknown application/ogg plugin
 */
 mw.EmbedPlayerGeneric = {
 	// List of supported features of the generic plugin
-	 supports: {	 	
+	 supports: {
 		'playHead':false,
 		'pause':false,
 		'stop':true,
@@ -11,18 +11,18 @@ mw.EmbedPlayerGeneric = {
 		'timeDisplay':false,
 		'volumeControl':false
 	},
-	
-	// Instance name: 
+
+	// Instance name:
 	instanceOf:'Generic',
-	
+
 	/*
 	* Generic embed html
 	*
 	* @return {String}
-	* 	embed code for generic ogg plugin 
+	* 	embed code for generic ogg plugin
 	*/
 	doEmbedHTML: function() {
-		$j( this ).html( 
+		$j( this ).html(
 			'<object type="application/ogg" ' +
 			'width="' + this.getWidth() + '" height="' + this.getHeight() + '" ' +
 			'data="' + this.getSrc( this.seek_time_sec ) + '"></object>'

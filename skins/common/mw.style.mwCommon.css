@@ -23,37 +23,37 @@
 	margin: auto ;	
 }
 .cssLoadingSpinner {
-  position:relative;
-  width:100px;
-  height:100px;
-  //margin:25px;
-  -moz-border-radius:100px;
-  float:left;
-  -moz-transform:scale(0.3);
-  -webkit-transform:scale(0.3);
-
-  /* not used right now: */
-  -webkit-animation-name: rotateThis;
-  -webkit-animation-duration:2s;
-  -webkit-animation-iteration-count:infinite;
-  -webkit-animation-timing-function:linear;
+	position:relative;
+	width:100px;
+	height:100px;
+	//margin:25px;
+	-moz-border-radius:100px;
+	float:left;
+	-moz-transform:scale(0.3);
+	-webkit-transform:scale(0.3);
+	
+	/* not used right now: */
+	-webkit-animation-name: rotateThis;
+	-webkit-animation-duration:2s;
+	-webkit-animation-iteration-count:infinite;
+	-webkit-animation-timing-function:linear;
 }
 .cssLoadingSpinner div {
-  width:15px;
-  height:30px;
-  position:absolute;
-  top:35px;
-  left:45px;
+	width:15px;
+	height:30px;
+	position:absolute;
+	top:35px;
+	left:45px;
 }
 .cssLoadingSpinner div {
-  -moz-border-radius:30px;
-  -webkit-border-radius:30px;
-  border-radius:30px;
+	-moz-border-radius:30px;
+	-webkit-border-radius:30px;
+	border-radius:30px;
 }
 /* uncomment this to use css animation in webkit browsers */
  @-webkit-keyframes rotateThis {
-  from {-webkit-transform:scale(0.7) rotate(0deg);}
-  to   {-webkit-transform:scale(0.7) rotate(360deg);}
+	from {-webkit-transform:scale(0.7) rotate(0deg);}
+	to   {-webkit-transform:scale(0.7) rotate(360deg);}
 }
 
 /* jquery.ui overides */

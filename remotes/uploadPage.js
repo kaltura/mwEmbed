@@ -12,48 +12,48 @@ var mwUploadHelper = {
 		// If wgEnableFirefogg is not boolean false, set to true
 		if ( typeof wgEnableFirefogg == 'undefined' ){
 			wgEnableFirefogg = true;
-		}		
-		// NOTE: we should unify upload handler call so we don't have to call firefogg and 
-		// UploadHandler separately. 
+		}
+		// NOTE: we should unify upload handler call so we don't have to call firefogg and
+		// UploadHandler separately.
 		if ( wgEnableFirefogg ) {
 			mw.load( 'AddMedia.firefogg', function(){
 				// Set up the upload handler to Firefogg. Should work with the HTTP uploads too.
 				$j( '#wpUploadFile' ).firefogg( {
-					
+
 					// An API URL (default is getLocalApiUrl but set here for clarity )
 					'apiUrl': mw.getLocalApiUrl(),
-					
-					// MediaWiki API supports chunk uploads: 
-					'enableChunks' : false,				
-					
+
+					// MediaWiki API supports chunk uploads:
+					'enableChunks' : false,
+
 					// Set the interface type
 					'interface_type' : 'dialog',
-					
+
 					'form_selector': mwUploadFormSelector,
-					
+
 					// Set the select file callback:
 					'selectFileCb': function( fileName ) {
 						// Check if we are on upload to new version page and don't update target
 						// ( bug 23069 )
-						if( mw.parseUri( document.URL ).queryKey['wpDestFile'] ){				
+						if( mw.parseUri( document.URL ).queryKey['wpDestFile'] ){
 							return false;
 						}
 						$j( '#wpDestFile' ).val( fileName );
 					}
 				} );
 			} )
-		} else {			
+		} else {
 			// Add basic upload profile support ( http status monitoring, progress box for
 			// browsers that support it, etc.)
-			mw.load( 'AddMedia.UploadHandler', function(){						
-				$j( mwUploadFormSelector ).uploadHandler( {					
+			mw.load( 'AddMedia.UploadHandler', function(){
+				$j( mwUploadFormSelector ).uploadHandler( {
 					'selectFileCb': function( fileName ) {
 						$j( '#wpDestFile' ).val( fileName );
 						$j( '#wpDestFile' ).doDestCheck( {
 							'warn_target': '#wpDestFile-warning'
 						} );
 					}
-				});			
+				});
 			});
 		}
 
@@ -75,12 +75,12 @@ var mwUploadHelper = {
 				_this.toggleUpType( this.id == 'wpSourceTypeFile' );
 			} );
 		}
-		
+
 		$j( '#wpUploadFile,#wpUploadFileURL' )
 		.focus( function() {
 			_this.toggleUpType( this.id == 'wpUploadFile' );
 		} )
-		
+
 		// Also setup the onChange event binding:
 		.change( function() {
 			if ( wgUploadAutoFill ) {
@@ -88,7 +88,7 @@ var mwUploadHelper = {
 			}
 		} );
 	},
-	
+
 	/**
 	* Set the upload radio buttons
 	*
@@ -100,9 +100,9 @@ var mwUploadHelper = {
 
 		$j( '#wpSourceTypeURL' ).attr( 'checked', !set );
 		$j( '#wpUploadFileURL' ).attr( 'disabled', set );
-		
+
 	},
-	
+
 	/**
 	* Fill in a destination file-name based on a source asset name.
 	* @param {Element} targetElm Target element to get destination name from
@@ -124,7 +124,7 @@ var mwUploadHelper = {
 		} else {
 			fname = path.substring( backslash + 1, 10000 );
 		}
-		
+
 		// URLs are less likely to have a useful extension. Don't include them in the extension check.
 		if ( wgFileExtensions && $j( targetElm ).attr( 'id' ) != 'wpUploadFileURL' ) {
 			var found = false;

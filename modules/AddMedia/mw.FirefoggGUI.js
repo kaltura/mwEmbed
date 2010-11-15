@@ -4,7 +4,7 @@
 
 mw.addMessages({
 	"fogg-wont-upload-to-server" : "Note: Your video file will be locally encoded and not upload to any server",
-	"fogg-save_local_file" : "Encode to File",	
+	"fogg-save_local_file" : "Encode to File",
 	"fogg-help-sticky" : "Help (click to stick)",
 	"fogg-cg-preset" : "Preset: <strong>$1<\/strong>",
 	"fogg-cg-quality" : "Basic quality and resolution control",
@@ -13,7 +13,7 @@ mw.addMessages({
 	"fogg-cg-advVideo" : "Advanced video encoding controls",
 	"fogg-cg-advAudio" : "Advanced audio encoding controls",
 	"fogg-preset-custom" : "Custom settings",
-	"fogg-webvideo-desc" : "Ogg Web video Theora, Vorbis  600 kbit\/s and 400px maximum width",	
+	"fogg-webvideo-desc" : "Ogg Web video Theora, Vorbis 600 kbit\/s and 400px maximum width",
 	"fogg-savebandwidth-desc" : "Ogg Low bandwidth Theora, Vorbis 164 kbit\/s and 200px maximum width",
 	"fogg-highquality-desc" : "Ogg High quality Theora, Vorbis 1080px maximum width",
 	"fogg-webvideo-webm-desc" : "Webm Web video VP8 600 kbit\/s and 480px maximum width",
@@ -75,21 +75,21 @@ mw.addMessages({
 /**
 * Setup firefoggGUI jquery binding
 */
-( function( $ ) { 
+( function( $ ) {
 	$.fn.firefoggGUI = function( options ) {
 		if ( !options )
-			options = { };			
-	
+			options = { };
+
 		// Add the selector
 		options['selector'] = this.selector;
-				
-		// Setup the firefogg interface: 
+
+		// Setup the firefogg interface:
 		var myFogg = new mw.FirefoggGUI( options );
-				
+
 		if ( myFogg ) {
 			myFogg.setupForm( );
 			var selectorElement = $j( options.selector ).get( 0 );
-			selectorElement['firefogg'] = myFogg;		
+			selectorElement['firefogg'] = myFogg;
 		}
 	}
 } )( jQuery );
@@ -125,10 +125,11 @@ mw.FirefoggGUI.prototype = {
 			'custom': {
 				'descKey': 'fogg-preset-custom',
 				'conf': {}
-			},		
+			},
 			'webvideo': {
 				'desc': gM( 'fogg-webvideo-desc' ),
 				'conf': {
+					'videoCodec' : 'theora',
 					'maxSize'      : 400,
 					'videoBitrate' : 544,
 					'audioBitrate' : 96,
@@ -138,6 +139,7 @@ mw.FirefoggGUI.prototype = {
 			'savebandwidth': {
 				'desc': gM( 'fogg-savebandwidth-desc' ),
 				'conf': {
+					'videoCodec' : 'theora',
 					'maxSize'       : 200,
 					'videoBitrate'  : 164,
 					'audioBitrate'  : 32,
@@ -150,6 +152,7 @@ mw.FirefoggGUI.prototype = {
 			'hqstream': {
 				'desc': gM( 'fogg-highquality-desc' ),
 				'conf': {
+					'videoCodec' : 'theora',
 					'maxSize'      : 1080,
 					'videoQuality' : 6,
 					'audioQuality' : 3,
@@ -243,7 +246,7 @@ mw.FirefoggGUI.prototype = {
 		},
 		'framerate': {
 			'default'   : '24',
-			'selectVal' : [ '12', '16', { '24000:1001' : '23.97' }, '24', '25', 
+			'selectVal' : [ '12', '16', { '24000:1001' : '23.97' }, '24', '25',
 				{ '30000:1001' : '29.97' }, '30' ],
 			'type'      : "select",
 			'group'     : "advVideo"
@@ -325,18 +328,18 @@ mw.FirefoggGUI.prototype = {
 	/**
 	 * Initialize this object
 	 */
-	init: function( options ) {	
-		
+	init: function( options ) {
+
 		// Set up a supported object:
 		for ( var key in options ) {
 			if ( typeof default_mvAdvFirefogg_config[key] != 'undefined' ) {
 				this[key] = options[key];
 			}
-		}		
-		
+		}
+
 		// Inherit the base mvFirefogg class:
 		var baseFirefogg = new mw.Firefogg( options );
-		for ( var key in baseFirefogg ) {						
+		for ( var key in baseFirefogg ) {
 			if ( typeof this[key] != 'undefined' ) {
 				this[ 'basefogg_' + key ] = baseFirefogg[ key ];
 			} else {
@@ -345,15 +348,15 @@ mw.FirefoggGUI.prototype = {
 		}
 		return this;
 	},
-	
+
 	/**
-	* Setup the form 
+	* Setup the form
 	*/
-	setupForm: function() {				
-		//empty out the selector: 
+	setupForm: function() {
+		//empty out the selector:
 		$j( this.selector ).empty();
-		// Check for firefogg: 				
-		if ( ! this.getFirefogg() ) {		
+		// Check for firefogg:
+		if ( ! this.getFirefogg() ) {
 			// Show install firefogg msg
 			this.showInstallFirefog();
 			$j('.target_please_install').css( { 'width': 400, 'margin':'auto' } );
@@ -376,11 +379,11 @@ mw.FirefoggGUI.prototype = {
 		var gdout = '';
 		$j.each( this.config_groups, function( inx, group_key ) {
 			gdout += '<div> ' +
-				'<h3><a href="#" class="gd_' + group_key + '" >' + 
+				'<h3><a href="#" class="gd_' + group_key + '" >' +
 				gM( 'fogg-cg-' + group_key ) + '</a></h3>' +
 				'<div>';
 			// Output this group's control options:
-			gdout += '<table width="' + ( $j( _this.selector ).width() - 60 ) + '" >' + 
+			gdout += '<table width="' + ( $j( _this.selector ).width() - 60 ) + '" >' +
 				'<tr><td width="35%"></td><td width="65%"></td></tr>';
 			// If this is the preset group, output the preset control
 			if ( group_key == 'preset' ) {
@@ -401,7 +404,7 @@ mw.FirefoggGUI.prototype = {
 			$j( this.selector ).append( '<p><div class="control_container"></div>' );
 		}
 		// Hide the container and add the output
-		$j( this.target_control_container ).hide();		
+		$j( this.target_control_container ).hide();
 		$j( this.target_control_container ).html( gdout );
 	},
 
@@ -422,25 +425,25 @@ mw.FirefoggGUI.prototype = {
 							target + '" href="#"><span class="ui-icon ' + icon + '"/>' +
 							linkText +
 						'</a>';
-			case 'target_btn_select_url':				
-				return $j.btnHtml( gM( 'fogg-select_url' ), target,  'link' );
+			case 'target_btn_select_url':
+				return $j.btnHtml( gM( 'fogg-select_url' ), target, 'link' );
 			case 'target_use_latest_firefox':
 			case 'target_please_install':
-			case 'target_passthrough_mode':				
-				var text = gM( target.replace( /^target_/, 'fogg-' ) );				
-				return '<div ' + 
-						'style="margin-top:1em;padding: 0pt 0.7em;" ' + 
+			case 'target_passthrough_mode':
+				var text = gM( target.replace( /^target_/, 'fogg-' ) );
+				return '<div ' +
+						'style="margin-top:1em;padding: 0pt 0.7em;" ' +
 						'class="ui-state-error ui-corner-all ' +
 						target + '">' +
-					'<p>' + 
-					'<span style="float: left; margin-right: 0.3em;" ' + 
+					'<p>' +
+					'<span style="float: left; margin-right: 0.3em;" ' +
 						'class="ui-icon ui-icon-alert"/>' +
-					text + 
+					text +
 					'</p>' +
 					'</div>';
 			case 'target_input_file_name':
 				var text = gM( 'fogg-input_file_name' );
-				return '<br><br><input style="" ' + 
+				return '<br><br><input style="" ' +
 					'class="text ui-widget-content ui-corner-all ' + target + '" ' +
 					'type="text" value="' + text + '" size="60" /> ';
 			default:
@@ -471,8 +474,8 @@ mw.FirefoggGUI.prototype = {
 		out += '<tr><td valign="top">' +
 			'<label for="_' + configKey + '">' +
 			gM( 'fogg-' + configKey + '-title' ) + ':' +
-			'<span title="' + gM( 'fogg-help-sticky' ) + '" ' + 
-				'class="help_' + configKey + ' ui-icon ui-icon-info" style="float:left">' + 
+			'<span title="' + gM( 'fogg-help-sticky' ) + '" ' +
+				'class="help_' + configKey + ' ui-icon ui-icon-info" style="float:left">' +
 			'</span>' +
 			'</label></td><td valign="top">';
 		// Get the default value (or an empty string if there is no default)
@@ -489,27 +492,27 @@ mw.FirefoggGUI.prototype = {
 			case 'int':
 			case 'float':
 				var size = ( type == 'string' || type == 'date' ) ? '14' : '4';
-				out += '<input ' + 
-					'size="' + size + '" ' + 
-					'type="text" ' + 
-					'class="_' + configKey + ' text ui-widget-content ui-corner-all" ' + 
+				out += '<input ' +
+					'size="' + size + '" ' +
+					'type="text" ' +
+					'class="_' + configKey + ' text ui-widget-content ui-corner-all" ' +
 					'value="' + defaultValue + '" >';
 				break;
 			case 'boolean':
 				var checked_attr = ( defaultValue === true ) ? ' checked="true"' : '';
-				out += '<input ' + 
-					'type="checkbox" ' + 
-					'class="_' + configKey + ' ui-widget-content ui-corner-all" ' + 
+				out += '<input ' +
+					'type="checkbox" ' +
+					'class="_' + configKey + ' ui-widget-content ui-corner-all" ' +
 					checked_attr + '>';
 				break;
 			case 'slider':
 				var strMax = this.default_encoder_config[ configKey ].range.max + '';
 				maxDigits = strMax.length + 1;
-				out += '<input ' + 
-					'type="text" ' + 
-					'maxlength="' + maxDigits + '" ' + 
+				out += '<input ' +
+					'type="text" ' +
+					'maxlength="' + maxDigits + '" ' +
 					'size="' + maxDigits + '" ' +
-					'class="_' + configKey + ' text ui-widget-content ui-corner-all" ' + 
+					'class="_' + configKey + ' text ui-widget-content ui-corner-all" ' +
 					'style="display:inline; color:#f6931f; padding: 2px; font-weight:bold;" ' +
 					'value="' + defaultValue + '" >' +
 					'<div class="slider_' + configKey + '"></div>';
@@ -571,13 +574,13 @@ mw.FirefoggGUI.prototype = {
 		$j( this.target_input_file_name ).width( 250 );
 
 		// Special preset action
-		$j( this.selector + ' ._preset_select' ).change( function() {		
+		$j( this.selector + ' ._preset_select' ).change( function() {
 			_this.updatePresetSelection( $j( this ).val() );
 		});
 
 		// Bind control actions
 		for ( var configKey in this.default_encoder_config ) {
-			var confEntry =  this.default_encoder_config[configKey];
+			var confEntry = this.default_encoder_config[configKey];
 
 			// Initial state is hidden
 			$j( this.selector + ' .helpRow_' + configKey ).hide();
@@ -630,7 +633,7 @@ mw.FirefoggGUI.prototype = {
 				case 'boolean':
 					$j( this.selector + ' ._' + configKey)
 						.click( function() {
-							_this.updateLocalValue( _this.getClassId( this ), 
+							_this.updateLocalValue( _this.getClassId( this ),
 							$j( this ).is( ":checked" ) );
 							_this.updatePresetSelection( 'custom' );
 						});
@@ -640,10 +643,10 @@ mw.FirefoggGUI.prototype = {
 				case 'int':
 				case 'float':
 					// Check if we have a validate function on the string
-					$j( this.selector + ' ._' + configKey ).change( function() {						
+					$j( this.selector + ' ._' + configKey ).change( function() {
 						$j( this ).val( _this.updateLocalValue(
 							_this.getClassId( this ),
-							$j( this ).val() ) 
+							$j( this ).val() )
 						);
 						_this.updatePresetSelection( 'custom' );
 					});
@@ -658,11 +661,11 @@ mw.FirefoggGUI.prototype = {
 							}
 					});
 					break;
-				case 'slider':		
-					/** 
+				case 'slider':
+					/**
 					* Return true or false of out of range and update the related value
-					*/	
-					var keepAspectRatio = function( sliderId, value ){ 
+					*/
+					var keepAspectRatio = function( sliderId, value ){
 						// Maintain source video aspect ratio
 						if ( sliderId == 'width' ) {
 							var sourceHeight = _this.sourceFileInfo.video[0]['height'];
@@ -681,7 +684,7 @@ mw.FirefoggGUI.prototype = {
 								return false;
 						}
 					};
-										
+
 					$j( this.selector + ' .slider_' + configKey ).slider({
 						range: "min",
 						animate: true,
@@ -693,7 +696,7 @@ mw.FirefoggGUI.prototype = {
 							var sliderId = _this.getClassId( this, 'slider_' );
 							$j( _this.selector + ' ._' + sliderId ).val( ui.value );
 
-							keepAspectRatio( sliderId,  ui.value );
+							keepAspectRatio( sliderId, ui.value );
 						},
 						change: function( event, ui ) {
 							var sliderId = _this.getClassId( this, 'slider_' );
@@ -704,8 +707,8 @@ mw.FirefoggGUI.prototype = {
 
 					$j( this.selector + ' ._' + configKey ).change( function() {
 						var classId = _this.getClassId( this );
-						var validValue = _this.updateLocalValue( classId, 
-							$j( this ).val() 
+						var validValue = _this.updateLocalValue( classId,
+							$j( this ).val()
 						);
 						_this.updatePresetSelection( 'custom' );
 						// Change it to the validated value
@@ -714,7 +717,7 @@ mw.FirefoggGUI.prototype = {
 						//mw.log( "update: " + _this.selector + ' .slider' + classId );
 						$j( _this.selector + ' .slider_' + classId )
 							.slider('value', validValue );
-						// Keep aspect ratio: 
+						// Keep aspect ratio:
 						keepAspectRatio( classId, validValue );
 					});
 					break;
@@ -735,9 +738,10 @@ mw.FirefoggGUI.prototype = {
 	/**
 	 * Update the UI due to a change in preset
 	 */
-	updatePresetSelection: function( presetKey ) {			
+	updatePresetSelection: function( presetKey ) {
+		var _this = this;
 		// Update the local configuration
-		this.local_settings['default'] = presetKey;		
+		this.local_settings['default'] = presetKey;
 		mw.log( 'update preset desc: ' + presetKey );
 		var presetDesc = '';
 		if ( this.local_settings.presets[presetKey].desc ) {
@@ -747,7 +751,15 @@ mw.FirefoggGUI.prototype = {
 		}
 		if( presetKey != 'custom' ){
 			// Copy the preset into custom settings
-			this.local_settings.presets['custom']['conf'] = $j.extend( {},  this.local_settings.presets[presetKey]['conf'] );
+			this.local_settings.presets['custom']['conf'] = $j.extend( {}, this.local_settings.presets[presetKey]['conf'] );
+
+		    // Set the actual HTML & widgets based on any local settings values:
+		    $j.each( _this.local_settings.presets['custom']['conf'], function( inx, val ) {
+			    if ( $j( _this.selector + ' ._' + inx ).length != 0 ) {
+				    $j( _this.selector + ' ._' + inx ).val( val );
+			    }
+		    } );
+
 		}
 		// Update the preset title
 		$j( this.selector + ' .gd_preset' )
@@ -787,12 +799,12 @@ mw.FirefoggGUI.prototype = {
 	},
 
 	/**
-	 * Validate the new config setting, fixing its type and bounding it within a 
-	 * range if required. Update the configuration with the validated value and 
+	 * Validate the new config setting, fixing its type and bounding it within a
+	 * range if required. Update the configuration with the validated value and
 	 * return it.
 	 */
-	updateLocalValue: function( confKey, value ) {		
-		if ( typeof this.default_encoder_config[ confKey ] == 'undefined' ) {		
+	updateLocalValue: function( confKey, value ) {
+		if ( typeof this.default_encoder_config[ confKey ] == 'undefined' ) {
 			mw.log( "Error: could not update conf key: " + confKey )
 			return value;
 		}
@@ -831,37 +843,37 @@ mw.FirefoggGUI.prototype = {
 	},
 
 	/**
-	 * Given an element or selector, get its primary class, and strip a given 
+	 * Given an element or selector, get its primary class, and strip a given
 	 * prefix from it.
 	 *
 	 * If no prefix is given, "_" is assumed.
 	 */
 	getClassId: function( element, prefix ) {
-		
-		var eltClass = $j( element ).attr( "class" ).split( ' ' ).slice( 0, 1 ).toString();		
+
+		var eltClass = $j( element ).attr( "class" ).split( ' ' ).slice( 0, 1 ).toString();
 		if ( !prefix ) {
 			prefix = '_';
 		}
 		if ( eltClass.substr( 0, prefix.length ) == prefix ) {
 			eltClass = eltClass.substr( prefix.length );
-		}		
+		}
 		return eltClass;
 	},
 
 	/**
-	 * Get the appropriate encoder settings for the current Firefogg object, 
+	 * Get the appropriate encoder settings for the current Firefogg object,
 	 * into which a video has already been selected. Overrides the base method.
 	 */
 	getEncoderSettings: function() {
 		// update the encoder settings (from local settings)
 		var pKey = this.local_settings['default'];
-		// Update the current encoder settings: 
+		// Update the current encoder settings:
 		this.current_encoder_settings = this.local_settings.presets[ pKey ].conf;
 
 		// Call the base function
 		// Note that settings will be a reference and can be modified
 		this.basefogg_getEncoderSettings();
-		
+
 
 		// Allow re-encoding of files that are already ogg (unlike in the base class)
 		if ( this.isOggFormat() ) {
@@ -928,7 +940,7 @@ mw.FirefoggGUI.prototype = {
 			setValues( k, val, maxVal );
 		}
 		if( fileInfo.code && fileInfo.code == 'badfile') {
-			// Can't read file info ( but maybe can still encode it?) 
+			// Can't read file info ( but maybe can still encode it?)
 			this.updateValuesInHtml();
 			return ;
 		}
@@ -946,7 +958,7 @@ mw.FirefoggGUI.prototype = {
 			}
 			setValues( k, val, maxVal );
 		}
-		
+
 		// Audio stream settings, assumes for now there is only one stream
 		for ( var i in fileInfo.audio[0] ) {
 			var val = fileInfo.audio[0][i];
@@ -974,7 +986,7 @@ mw.FirefoggGUI.prototype = {
 					$j( _this.selector + ' .slider_' + inx ).slider( 'option', 'max', new_max );
 
 					// update slider/input value:
-					_this.updateInterfaceValue( inx, 
+					_this.updateInterfaceValue( inx,
 						_this.local_settings.presets['custom']['conf'][inx] );
 				}
 			}
@@ -983,7 +995,7 @@ mw.FirefoggGUI.prototype = {
 		this.updateValuesInHtml();
 	},
 
-	doEncode: function( progressCallback, doneCallback ) {		
+	doEncode: function( progressCallback, doneCallback ) {
 		this.basefogg_doEncode( progressCallback, doneCallback );
 	},
 
@@ -1013,8 +1025,8 @@ mw.FirefoggGUI.prototype = {
 			this.local_settings = JSON.parse( $j.cookie( 'fogg_settings' ) );
 		}
 		// set to default if not loaded yet:
-		if ( this.local_settings && this.local_settings.presets 
-			&& this.local_settings.presets['custom']['conf'] ) 
+		if ( this.local_settings && this.local_settings.presets
+			&& this.local_settings.presets['custom']['conf'] )
 		{
 			mw.log( 'local settings already populated' );
 		} else {
@@ -1027,7 +1039,7 @@ mw.FirefoggGUI.prototype = {
 	 * FIXME: not called, does nothing
 	 */
 	clearSettings: function( force ) {
-	
+
 	},
 
 	/**

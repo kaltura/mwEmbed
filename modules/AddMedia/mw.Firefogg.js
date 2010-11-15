@@ -5,9 +5,9 @@
 
 mw.addMessages({
 	"mwe-upload-transcoded-status" : "Transcoded",
-	"mwe-upload-transcode-in-progress" : "Transcode and upload in progress (do not close this window)",	
-	"fogg-transcoding" : "Encoding video",	
-	"fogg-select_file" : "Select file",	
+	"mwe-upload-transcode-in-progress" : "Transcode and upload in progress (do not close this window)",
+	"fogg-transcoding" : "Encoding video",
+	"fogg-select_file" : "Select file",
 	"fogg-select_new_file" : "Select new file",
 	"fogg-select_url" : "Select URL",
 	"fogg-check_for_firefogg" : "Checking for Firefogg...",
@@ -19,13 +19,13 @@ mw.addMessages({
 	"fogg-please-install-about-linktext" : "about Firefogg",
 	"fogg-use_latest_firefox" : "Please first install $1. <i>Then revisit this page to install the <b>Firefogg<\/b> extension.<\/i>",
 	"fogg-latest-firefox" : "latest Firefox",
-	"fogg-passthrough_mode" : "Your selected file is already ogg or not a video file",	
+	"fogg-passthrough_mode" : "Your selected file is already ogg or not a video file",
 	"fogg-encoding-done" : "Encoding complete",
 	"fogg-badtoken" : "Token is not valid",
 	"fogg-preview" : "Preview video",
 	"fogg-hidepreview" : "Hide preview",
 	"fogg-warning-firebug" : "<b>Firebug</b> can cause conflicts with <i>Firefogg</i>. Please disable <b>Firebug</b> for this page.",
-	"fogg-missing-webm-support" : "Please use a [$1 webm compatible] browsers to preview results of webm videos" 
+	"fogg-missing-webm-support" : "Please use a [$1 webm compatible] browsers to preview results of webm videos"
 });
 
 var firefogg_install_links = {
@@ -36,7 +36,7 @@ var firefogg_install_links = {
 
 var default_firefogg_options = {
 	// Callback for upload completion
-	'doneUploadCb': false,	
+	'doneUploadCb': false,
 
 	// The API URL to upload to
 	'apiUrl': null,
@@ -46,16 +46,16 @@ var default_firefogg_options = {
 
 	// True if we will be showing the encoder interface
 	'encoder_interface': false,
-	
-	// If the install firefogg should be shown or not. 
+
+	// If the install firefogg should be shown or not.
 	'showFoggWarningFlag' : true,
 
 	// jQuery selector identifying the target control container or form (can't be left null)
 	'selector': '',
 
-	// May be "upload" to if we are rewriting an upload form, or "local" if we are encoding a local file	
+	// May be "upload" to if we are rewriting an upload form, or "local" if we are encoding a local file
 	'form_type': 'local',
-	
+
 	// Special Mode that just checks for firefogg install and puts a notice after the target
 	'installCheckMode': false,
 
@@ -91,34 +91,34 @@ var default_firefogg_options = {
 
 	// True if we should show a preview of the encoding progress
 	'show_preview': true,
-	
-	//If we should enable chunk uploads ( mediaWiki api supports chunk uploads) 
+
+	//If we should enable chunk uploads ( mediaWiki api supports chunk uploads)
 	'enableChunks' : false
 };
 
 /**
 * Setup firefogg jquery binding
-* NOTE: we should have the firefogg binding work the same way as 
-* the upload form binding. 
+* NOTE: we should have the firefogg binding work the same way as
+* the upload form binding.
 */
 ( function( $ ) {
 	$.fn.firefogg = function( options ) {
 		if ( !options ){
 			options = { };
 		}
-		
+
 		// Add the selector
 		options[ 'selector' ] = this.selector;
-				
-		// Setup the Firefogg: 
+
+		// Setup the Firefogg:
 		var myFogg = new mw.Firefogg( options );
-		
-		// Kind of silly installCheckMode check 
-		//  need to refactor as described in init :: installCheckMode 
+
+		// Kind of silly installCheckMode check
+		//  need to refactor as described in init :: installCheckMode
 		if ( myFogg && ! myFogg.installCheckMode ) {
 			myFogg.doRewrite( );
 			var selectorElement = $j( this.selector ).get( 0 );
-			selectorElement[ 'uploadHandler' ] = myFogg;		
+			selectorElement[ 'uploadHandler' ] = myFogg;
 		}
 	}
 } )( jQuery );
@@ -130,28 +130,28 @@ mw.Firefogg = function( options ) {
 mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	// Minimum version of firefogg allowed
 	min_firefogg_version: '1.2.06',
-	
-	// The default encoder settings 
-	// NOTE: should be mw.getConfig based 
-	default_encoder_settings: { 
+
+	// The default encoder settings
+	// NOTE: should be mw.getConfig based
+	default_encoder_settings: {
 		'maxSize'        : '400',
-        'videoBitrate'   : '544',
-        'audioBitrate'   : '96',
-        'noUpscaling'    : true
+		'videoBitrate'   : '544',
+		'audioBitrate'   : '96',
+		'noUpscaling'    : true
 	},
-	
+
 	// Lazy initialized, use getFirefogg()
-	have_firefogg: null, 
-	
+	have_firefogg: null,
+
 	// Lazy initialized, use getEncoderSettings()
-	current_encoder_settings: null, 
-	
+	current_encoder_settings: null,
+
 	// Lazy initialized, use getSourceFileInfo()
-	sourceFileInfo: null, 
-	
+	sourceFileInfo: null,
+
 	// Valid ogg extensions
 	ogg_extensions: [ 'ogg', 'ogv', 'oga' ],
-		
+
 	passthrough: false,
 	sourceMode: 'file',
 
@@ -167,7 +167,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		if ( !options.apiUrl ){
 			options.upload_mode = 'post';
 		}
-		
+
 		// Set options
 		for ( var i in default_firefogg_options ) {
 			if ( typeof options[ i ] != 'undefined' ) {
@@ -175,24 +175,24 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			} else {
 				this[ i ] = default_firefogg_options[i];
 			}
-		}				
+		}
 		// Check for special installCheckMode
-		
+
 		// NOTE we should refactor install checks into static functions / entry points
-		//  so that they can be called without initializing the firefogg object with a special flag. 
-		if( this.installCheckMode ){					
-			if ( ! this.getFirefogg() ) {	
-				this.form_type = 'upload';	
+		//  so that they can be called without initializing the firefogg object with a special flag.
+		if( this.installCheckMode ){
+			if ( ! this.getFirefogg() ) {
+				this.form_type = 'upload';
 				// Show install firefogg msg
 				this.showInstallFirefog();
 				return ;
 			}
-			if( typeof console != 'undefined' && console.firebug ) {		
+			if( typeof console != 'undefined' && console.firebug ) {
 				this.appendFirebugWarning();
 			}
 			mw.log( "installCheckMode no firefogg init");
 			return ;
-		}				
+		}
 
 		// Inherit from mw.BaseUploadHandler
 		var myBUI = new mw.UploadHandler( options );
@@ -202,13 +202,13 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			if ( this[ i ] ) {
 				this[ 'parent_'+ i ] = myBUI[i];
 			} else {
-				this[ i ] =  myBUI[i];
+				this[ i ] = myBUI[i];
 			}
-		}		
-		
+		}
+
 		// Setup ui uploadHandler pointer
 		this.ui.uploadHandler = this;
-		
+
 		if ( !this.selector ) {
 			mw.log('firefogg: missing selector ');
 		}
@@ -220,7 +220,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	 */
 	doRewrite: function( callback ) {
 		var _this = this;
-		mw.log( 'sel len: ' + this.selector + '::' + $j( this.selector ).length + 
+		mw.log( 'sel len: ' + this.selector + '::' + $j( this.selector ).length +
 				' tag:' + $j( this.selector ).get( 0 ).tagName );
 		if ( $j( this.selector ).length >= 0 ) {
 			if ( $j( this.selector ).get( 0 ).tagName.toLowerCase() == 'input' ) {
@@ -266,20 +266,20 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		if ( /^target_btn_/.test( target ) ) {
 			// Button
 			var msg = gM( target.replace( /^target_btn_/, 'fogg-' ) );
-			return '<input style="" ' + 
-				'class="' + target + '" ' + 
-				'type="button" ' + 
+			return '<input style="" ' +
+				'class="' + target + '" ' +
+				'type="button" ' +
 				'value="' + msg + '"/> ';
 		} else if ( /^target_input_/.test( target ) ) {
 			// Text input
 			var msg = gM( target.replace( /^target_input_/, 'fogg-' ) );
-			return '<input style="" ' + 
-				'class="' + target + '" ' + 
-				'type="text" ' + 
+			return '<input style="" ' +
+				'class="' + target + '" ' +
+				'type="text" ' +
 				'value="' + msg + '"/> ';
 		} else if ( /^target_/.test( target ) ) {
-			// Message						
-			var msg = gM( target.replace( /^target_/, 'fogg-' ) );		
+			// Message
+			var msg = gM( target.replace( /^target_/, 'fogg-' ) );
 			return '<div style="" class="' + target + '" >' + msg + '</div> ';
 		} else {
 			mw.log( 'Invalid target: ' + target );
@@ -328,8 +328,8 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				.click( function() {
 					_this.selectSourceFile();
 				});
-		}		
-		
+		}
+
 
 		// Set up the click handler for the "save local file" button
 		if( _this.target_btn_save_local_file ) {
@@ -340,32 +340,32 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			} );
 		}
 	},
-	
+
 	/**
 	* Show the install firefogg msg
 	*/
 	showInstallFirefog: function( target ) {
 		var _this = this;
-		
+
 		if( target ){
 			this.target_use_latest_firefox = target;
 			this.target_please_install = target;
 		}
-		
+
 		var upMsg = ( _this.form_type == 'upload' ) ?
 			gM( 'fogg-for_improved_uploads' ) + ' ' : gM( 'fogg-not-installed') + ' ';
-		
+
 		// Show the "use latest Firefox" message if necessary
 		mw.log( 'mw.Firefogg:: browser: ' + mw.versionIsAtLeast( '1.9.1', $j.browser.version ) );
 		if ( !( $j.browser.mozilla && mw.versionIsAtLeast( '1.9.1', $j.browser.version ) ) ) {
 			mw.log( 'mw.Firefogg::show use latest::' + _this.target_use_latest_firefox );
-			
-			// Add the use_latest if not present: 
+
+			// Add the use_latest if not present:
 			if ( !this.target_use_latest_firefox ) {
 				$j( this.selector ).after(
 					$j( '<div />' )
 					.addClass( 'target_use_latest_firefox' )
-					.html( 
+					.html(
 						gM('fogg-use_latest_firefox',
 							$j('<a />')
 							.attr({
@@ -376,55 +376,55 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 								gM( 'fogg-latest-firefox' )
 							)
 						)
-					) 
+					)
 				);
 				this.target_use_latest_firefox = this.selector + ' ~ .target_use_latest_firefox';
 			}
-			
-			// Add the upload msg if we are "uploading" 
+
+			// Add the upload msg if we are "uploading"
 			if ( _this.form_type == 'upload' ) {
 				$j( _this.target_use_latest_firefox )
 				.prepend( upMsg );
 			}
-			
+
 			$j( _this.target_use_latest_firefox ).show();
 			return ;
 		}
 		mw.log( 'mw.Firefogg::should show install link');
-		
+
 		// Otherwise show the "install Firefogg" message
 		var firefoggUrl = _this.getFirefoggInstallUrl();
-		if( firefoggUrl ) {			
-			// Add the target please install in not present: 
+		if( firefoggUrl ) {
+			// Add the target please install in not present:
 			if ( !this.target_please_install ) {
-				$j( this.selector ).after( 
+				$j( this.selector ).after(
 					$j('<div />')
 					.addClass( 'ui-corner-all target_please_install' )
 					.css({
 						'border' : 'thin solid black',
 						'margin' : '4px'
-					})					
+					})
 				);
 				this.target_please_install = this.selector + ' ~ .target_please_install';
-			}				
-			// Add the install msg 
-			$j( _this.target_please_install )			
-				.append( 
+			}
+			// Add the install msg
+			$j( _this.target_please_install )
+				.append(
 					upMsg,
 					gM( 'fogg-please-install',
 						// Install link
 						$j('<a />')
 						.text( gM( "fogg-please-install-install-linktext" ) )
 						.attr('href', firefoggUrl ),
-						
+
 						// About link
 						$j('<a />')
 						.text( gM( "fogg-please-install-about-linktext" ) )
 						.attr({
 							'href' : 'http://commons.wikimedia.org/wiki/Commons:Firefogg',
-							'target' : '_new' 
+							'target' : '_new'
 						} )
-					)					
+					)
 				)
 				.css( 'padding', '10px' )
 				.show();
@@ -452,8 +452,8 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	 */
 	getFirefogg: function() {
 		if ( this.have_firefogg == null ) {
-			if ( typeof( Firefogg ) != 'undefined' 
-				&& mw.versionIsAtLeast(this.min_firefogg_version,  Firefogg().version ) ) 
+			if ( typeof( Firefogg ) != 'undefined'
+				&& mw.versionIsAtLeast(this.min_firefogg_version, Firefogg().version ) )
 			{
 				this.have_firefogg = true;
 				this.fogg = new Firefogg();
@@ -469,13 +469,13 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	 * Set up the upload form
 	 */
 	setupForm: function() {
-		mw.log( 'firefogg::setupForm::' );		
-		var _this = this;		
+		mw.log( 'firefogg::setupForm::' );
+		var _this = this;
 		// Set up the parent if we are in upload mode
 		if ( this.form_type == 'upload' ) {
 			this.parent_setupForm();
 		}
-		
+
 		// If Firefogg is not available, just show a "please install" message
 		if ( ! _this.getFirefogg() ) {
 			// Show install firefogg msg
@@ -484,15 +484,15 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			}
 			return ;
 		}
-		
+
 		// If uploading and firefogg is on show warning
-		if ( this.form_type == 'upload' 
-			&&	typeof console != 'undefined' 
+		if ( this.form_type == 'upload'
+			&&	typeof console != 'undefined'
 			&& console.firebug && _this.showFoggWarningFlag ) {
 			this.appendFirebugWarning();
 		}
 
-		// Change the file browser to type text. We can't simply change the attribute so 
+		// Change the file browser to type text. We can't simply change the attribute so
 		// we have to delete and recreate.
 		var inputTag = '<input ';
 		$j.each( $j( this.selector ).get( 0 ).attributes, function( i, attr ) {
@@ -508,7 +508,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		inputTag += '/><span id="' + id + '"></span>';
 
 		mw.log( 'set input: ' + inputTag );
-		
+
 		$j( this.selector ).replaceWith( inputTag );
 
 		this.target_input_file_name = 'input[name=' + $j( this.selector ).attr( 'name' ) + ']';
@@ -525,28 +525,28 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			$j( '<div />' )
 			.addClass( 'ui-state-error ui-corner-all' )
 			.html( gM( 'fogg-warning-firebug' ) )
-			.css({ 
+			.css({
 				'width' : 'auto',
 				'margin' : '5px',
 				'padding' : '5px'
 			})
-		); 
+		);
 	},
-	
+
 	/**
 	 * Create controls for showing a transcode preview
 	 */
 	createPreviewControls: function() {
 		var _this = this;
-		
-		// Set the initial button html: 
+
+		// Set the initial button html:
 		var buttonHtml = '';
 		if( _this.show_preview == true ) {
 			buttonHtml = $j.btnHtml( gM( 'fogg-hidepreview' ), 'fogg_preview', 'triangle-1-s' );
 		} else {
 			buttonHtml = $j.btnHtml( gM( 'fogg-preview' ), 'fogg_preview', 'triangle-1-e' );
 		}
-		
+
 		// Add the preview button and canvas
 		$j( '#upProgressDialog' ).append(
 			$j('<div />')
@@ -611,7 +611,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		var _this = this;
 		// Set up the hidden video to pull frames from
 		if( $j( '#fogg_preview_vid' ).length == 0 )
-			$j( 'body' ).append( 
+			$j( 'body' ).append(
 				$j('<video />')
 				.attr( 'id', "fogg_preview_vid")
 				.css( "display", 'none' )
@@ -634,14 +634,14 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				var ctx = canvas.getContext( "2d" );
 				ctx.drawImage( v, 0, 0, canvas.width, canvas.height );
 			}
-  		}
+		}
 		function preview() {
 			// Initialize the video if it is not set up already
 			var v = $j( '#fogg_preview_vid' ).get( 0 );
 			if ( v.src != _this.fogg.previewUrl ) {
 				mw.log( 'init preview with url:' + _this.fogg.previewUrl );
 				v.src = _this.fogg.previewUrl;
-				// Once it's loaded, seek to the end ( for ogg ) 
+				// Once it's loaded, seek to the end ( for ogg )
 				v.removeEventListener( "loadedmetadata", seekToEnd, true );
 				v.addEventListener( "loadedmetadata", seekToEnd, true );
 
@@ -653,7 +653,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				var previewTimer = setInterval( function() {
 					if ( _this.fogg.status() != "encoding" ) {
 						clearInterval( previewTimer );
-						_this.show_preview == false; 
+						_this.show_preview == false;
 					}
 					if ( _this.show_preview == true ) {
 						v.load();
@@ -669,7 +669,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	 * Returns false if it can't be found.
 	 * Overrides mw.BaseUploadHandler.getForm().
 	 */
-	getForm: function() {	
+	getForm: function() {
 		if ( this.form_selector ) {
 			return this.parent_getForm();
 		} else {
@@ -680,8 +680,8 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	},
 
 	/**
-	 * Show a dialog box allowing the user to select the source file of the 
-	 * encode/upload operation. The filename is stored by Firefogg until the 
+	 * Show a dialog box allowing the user to select the source file of the
+	 * encode/upload operation. The filename is stored by Firefogg until the
 	 * next encode/upload call.
 	 *
 	 * After a successful select, the UI is updated accordingly.
@@ -717,9 +717,9 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				_this.fogg = new Firefogg();
 				_this.selectSourceFile();
 			} );
-					
+
 		var settings = this.getEncoderSettings();
-		
+
 		// If we're in passthrough mode, update the interface (if not a form)
 		if ( settings['passthrough'] == true && _this.form_type == 'local' ) {
 			$j( _this.target_passthrough_mode ).show();
@@ -732,9 +732,9 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		}
 
 		// Update the input file name box and show it
-		mw.log( " should update: " + _this.target_input_file_name + 
+		mw.log( " should update: " + _this.target_input_file_name +
 				' to: ' + _this.fogg.sourceFilename );
-				
+
 		$j( _this.target_input_file_name )
 			.val( _this.fogg.sourceFilename )
 			.show();
@@ -796,16 +796,16 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		// Setup the interface progress indicator:
 		_this.ui.setup( {
 			'title' : gM( 'fogg-transcoding' ),
-			'statusType' : 'transcode' 
+			'statusType' : 'transcode'
 		} );
-		
-		// Add the preview controls if transcoding:  
+
+		// Add the preview controls if transcoding:
 		if ( !_this.getEncoderSettings()[ 'passthrough' ] && _this.current_encoder_settings['videoCodec'] != 'vp8' ) {
 			_this.createPreviewControls();
 		}
-		
+
 		// Set up the target location
-		// Firefogg shows the "save as" dialog box, and sets the path chosen as 
+		// Firefogg shows the "save as" dialog box, and sets the path chosen as
 		// the destination for a later encode() call.
 		if ( !this.fogg.saveVideoAs() ) {
 			_this.ui.close();
@@ -813,13 +813,13 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			return false;
 		}
 
-		// We have a source file, now do the encode		
+		// We have a source file, now do the encode
 		this.doEncode(
 			function /* onProgress */ ( progress ) {
 				_this.ui.updateProgress( progress );
 			},
 			function /* onDone */ () {
-				mw.log( "done with encoding (no upload) " );				
+				mw.log( "done with encoding (no upload) " );
 				_this.onLocalEncodeDone();
 			}
 		);
@@ -829,14 +829,14 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	 * This is called when a local encode operation has completed. It updates the UI.
 	 */
 	onLocalEncodeDone: function() {
-		var _this = this;		
-		var videoEmbedCode = '<video controls="true" style="margin:auto" id="fogg_final_vid" '+ 
+		var _this = this;
+		var videoEmbedCode = '<video controls="true" style="margin:auto" id="fogg_final_vid" '+
 			'src="' +_this.fogg.previewUrl + '"></video>';
-			
+
 		if( this.current_encoder_settings['videoCodec'] == 'vp8' ) {
 			var dummyvid = document.createElement( "video" );
 			if( !dummyvid.canPlayType('video/webm; codecs="vp8, vorbis"') ) {
-				videoEmbedCode = gM('fogg-missing-webm-support', 
+				videoEmbedCode = gM('fogg-missing-webm-support',
 					$j('<a />')
 					.attr({
 						'href' : 'http://www.webmproject.org/users/',
@@ -844,13 +844,13 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 					})
 				)
 			}
-		}			
+		}
 		_this.ui.setPrompt( gM( 'fogg-encoding-done' ),
-			$j( '<div />' ).append( 
+			$j( '<div />' ).append(
 				gM( 'fogg-encoding-done' ),
 				$j('<br>' ),
 				videoEmbedCode
-			)			
+			)
 		);
 		//Load the video and set a callback:
 		var v = $j( '#fogg_final_vid' ).get( 0 );
@@ -874,7 +874,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 					//also resize the dialog box
 					$j( '#upProgressDialog' ).dialog( 'option', 'width', vW + 20 );
 					$j( '#upProgressDialog' ).dialog( 'option', 'height', vH + 120 );
-	
+
 					//also position the dialog container
 					$j( '#upProgressDialog') .dialog( 'option', 'position', 'center' );
 				}
@@ -886,16 +886,16 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	},
 
 	/**
-	 * Get the appropriate encoder settings for the current Firefogg object, 
+	 * Get the appropriate encoder settings for the current Firefogg object,
 	 * into which a video has already been selected.
 	 */
 	getEncoderSettings: function() {
-		// set the current_encoder_settings form the default_encoder_settings if not yet set 
+		// set the current_encoder_settings form the default_encoder_settings if not yet set
 		if ( this.current_encoder_settings == null ) {
-		
-			// Clone the default settings			
+
+			// Clone the default settings
 			var settings = $j.extend( { }, this.default_encoder_settings) ;
-						
+
 			// Grab the extension
 			var sf = this.fogg.sourceFilename;
 			if ( !sf ) {
@@ -918,15 +918,15 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				settings['passthrough'] = true;
 			}
 
-			mw.log( 'base setupAutoEncoder::' + this.getSourceFileInfo().contentType  +
+			mw.log( 'base setupAutoEncoder::' + this.getSourceFileInfo().contentType +
 				' passthrough:' + settings['passthrough'] );
-				
+
 			this.current_encoder_settings = settings;
-		}	
-		
+		}
+
 		// Remove maxSize if width or height is set:
-		if( ( this.current_encoder_settings['width'] || this.current_encoder_settings['height'] ) 
-		    && this.current_encoder_settings['maxSize'] ){
+		if( ( this.current_encoder_settings['width'] || this.current_encoder_settings['height'] )
+			&& this.current_encoder_settings['maxSize'] ){
 			delete this.current_encoder_settings['maxSize'];
 		}
 
@@ -936,7 +936,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		} else {
 			this.fogg.setFormat('ogg');
 		}
-		
+
 		return this.current_encoder_settings;
 	},
 
@@ -954,7 +954,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 
 	isOggFormat: function() {
 		var contentType = this.getSourceFileInfo().contentType;
-		return ( contentType.indexOf("video/ogg") != -1 
+		return ( contentType.indexOf("video/ogg") != -1
 			|| contentType.indexOf("application/ogg") != -1 );
 	},
 
@@ -962,7 +962,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	 * Get the default title of the progress window
 	 */
 	getProgressTitle: function() {
-		mw.log( "fogg:getProgressTitle f:" +  ( this.getFirefogg() ? 'on' : 'off' ) + 
+		mw.log( "fogg:getProgressTitle f:" + ( this.getFirefogg() ? 'on' : 'off' ) +
 			' mode:' + this.form_type );
 		// Return the parent's title if we don't have Firefogg turned on
 		if ( !this.getFirefogg() || !this.firefogg_form_action ) {
@@ -981,48 +981,48 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	 * NOTE: should probably be dispatched from BaseUploadHandler doUpload instead
 	 */
 	doUpload: function() {
-		var _this = this;		
-	
+		var _this = this;
+
  		_this.uploadBeginTime = (new Date()).getTime();
 		// If Firefogg is disabled or doing an copyByUrl upload, just invoke the parent method
 		if( !this.getFirefogg() || this.isCopyUpload() ) {
 			_this.parent_doUpload();
 			return ;
 		}
-		// We are doing a firefogg upload: 
+		// We are doing a firefogg upload:
 		mw.log( "firefogg: doUpload:: " );
-			
-		// Add the preview controls if transcoding:  
-		if ( !_this.getEncoderSettings()['passthrough'] ) {						
+
+		// Add the preview controls if transcoding:
+		if ( !_this.getEncoderSettings()['passthrough'] ) {
 			// Setup the firefogg transcode dialog (if not passthrough )
-			_this.ui.setup( { 
-				'title' : gM( 'mwe-upload-transcode-in-progress' ),			
-				'statusType' : 'transcode' 		
+			_this.ui.setup( {
+				'title' : gM( 'mwe-upload-transcode-in-progress' ),
+				'statusType' : 'transcode'
 			} );
-			
-			// setup preview controls: 
+
+			// setup preview controls:
 			_this.createPreviewControls();
 		}
-		// Update the formData 'comment' per the upload description 
+		// Update the formData 'comment' per the upload description
 		$j(this.form).find("[name='comment']").val( _this.getUploadDescription() );
-		
+
 		// Get the input form data into an array
 		mw.log( 'get this.formData ::' );
 		var data = $j( this.form ).serializeArray();
 		this.formData = {};
 		for ( var i = 0; i < data.length; i++ ) {
 			if ( data[i]['name'] ) {
-				// Special case of upload.js commons hack:  
+				// Special case of upload.js commons hack:
 				if( data[i]['name'] == 'wpUploadDescription' ) {
-					this.formData[ 'comment' ] =  data[i]['value'];
+					this.formData[ 'comment' ] = data[i]['value'];
 				}else{
 					this.formData[ data[i]['name'] ] = data[i]['value'];
 				}
 			}
 		}
-	
-		
-		
+
+
+
 		// Get the edit token from formData if it's not set already
 		if ( !_this.editToken && _this.formData['token'] ) {
 			_this.editToken = _this.formData['token'];
@@ -1043,16 +1043,16 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			_this.editToken = editToken;
 			_this.doUploadWithFormData();
 		} );
-				
+
 	},
-	
-	/** 
+
+	/**
 	 * Internal function called once the token and form data is avaliable
 	 */
 	doUploadWithFormData: function() {
 		var _this = this;
 		// We can do a chunk upload
-		if(  _this.upload_mode == 'post'  && _this.enableChunks ) {
+		if( _this.upload_mode == 'post' && _this.enableChunks ) {
 			_this.doChunkUpload();
 		} else if ( _this.upload_mode == 'post' ) {
 			// Encode and then do a post upload
@@ -1060,19 +1060,19 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				function /* onProgress */ ( progress ) {
 					_this.ui.updateProgress( progress );
 				},
-				function /* onDone */ () {															
+				function /* onDone */ () {
 					var uploadRequest = _this.getUploadApiRequest();
-					
+
 					// Update the UI for uploading
-					_this.ui.setup( { 
+					_this.ui.setup( {
 						'title' : gM( 'mwe-upload-in-progress' ),
-						'statusType' : 'upload' 
+						'statusType' : 'upload'
 					} );
-					
+
 					mw.log( 'Do POST upload to:' +_this.apiUrl + ' with data:\n' + JSON.stringify( uploadRequest ) );
-					
+
 					_this.fogg.post( _this.apiUrl, 'file', JSON.stringify( uploadRequest ) );
-						
+
 					_this.doUploadStatus();
 				}
 			);
@@ -1082,7 +1082,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	},
 
 	/**
-	 * Do both uploading and encoding at the same time. Uploads 1MB chunks as 
+	 * Do both uploading and encoding at the same time. Uploads 1MB chunks as
 	 * they become ready.
 	 */
 	doChunkUpload : function() {
@@ -1091,7 +1091,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		_this.action_done = false;
 
 		if ( !_this.getEncoderSettings()['passthrough'] ) {
-			// We are transcoding to Ogg. Fix the destination extension, it 
+			// We are transcoding to Ogg. Fix the destination extension, it
 			// must be ogg/ogv/oga.
 			var fileName = _this.formData['filename'];
 			var ext = '';
@@ -1099,18 +1099,18 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 			if ( dotPos != -1 ) {
 				ext = fileName.substring( dotPos ).toLowerCase();
 			}
-			if ( $j.inArray( ext.substr( 1 ), _this.ogg_extensions ) == -1  ) {
+			if ( $j.inArray( ext.substr( 1 ), _this.ogg_extensions ) == -1 ) {
 				var extreg = new RegExp( ext + '$', 'i' );
 				_this.formData['filename'] = fileName.replace( extreg, '.ogg' );
 			}
 		}
 		_this.doChunkUploadWithFormData();
 	},
-	
+
 	/**
 	 * Get the uplaod api request object from _this.formData
-	 * 
-	 * @param {Object} options Options 
+	 *
+	 * @param {Object} options Options
 	 */
 	getUploadApiRequest: function( options ) {
 		var _this = this;
@@ -1135,23 +1135,23 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		if ( _this.formData['ignorewarnings'] ) {
 			request['ignorewarnings'] = _this.formData['ignorewarnings'];
 		}
-		
+
 		return request;
 	},
-	
+
 	/**
 	 * Internal function called from doChunkUpload() when form data is available
 	 */
 	doChunkUploadWithFormData: function() {
 		var _this = this;
-		mw.log( "firefogg::doChunkUploadWithFormData: "  + _this.editToken );
-		// get the upload api request; 
+		mw.log( "firefogg::doChunkUploadWithFormData: " + _this.editToken );
+		// get the upload api request;
 		var uploadRequest = this.getUploadApiRequest( { 'enableChunks' : true } );
 
 		var encoderSettings = this.getEncoderSettings();
 		mw.log( 'do fogg upload/encode call: ' + _this.apiUrl + ' :: ' + JSON.stringify( uploadRequest ) );
 		mw.log( 'foggEncode: ' + JSON.stringify( encoderSettings ) );
-		_this.fogg.upload( JSON.stringify( encoderSettings ), _this.apiUrl, 
+		_this.fogg.upload( JSON.stringify( encoderSettings ), _this.apiUrl,
 			JSON.stringify( uploadRequest ) );
 
 		// Start polling the upload status
@@ -1168,30 +1168,30 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	 */
 	doEncode: function( progressCallback, doneCallback ) {
 		var _this = this;
-		_this.action_done = false;	
-		
+		_this.action_done = false;
+
 		var encoderSettings = this.getEncoderSettings();
-		
-		// Check for special encode settings that remap things. 
-		
-		// Check if encoderSettings passthrough is on ( then skip the encode )				
-		if( encoderSettings['passthrough'] == true) {			
+
+		// Check for special encode settings that remap things.
+
+		// Check if encoderSettings passthrough is on ( then skip the encode )
+		if( encoderSettings['passthrough'] == true) {
 			// Firefogg requires an encode request to setup a the file to be uploaded.
 			_this.fogg.encode( JSON.stringify( { 'passthrough' : true } ) );
 			doneCallback();
-			return ; 
-		}		
-		
-		mw.log( 'doEncode: with: ' +  JSON.stringify( encoderSettings ) );
-		_this.fogg.encode( JSON.stringify( encoderSettings ) );	
-		
+			return ;
+		}
+
+		mw.log( 'doEncode: with: ' + JSON.stringify( encoderSettings ) );
+		_this.fogg.encode( JSON.stringify( encoderSettings ) );
+
 
 		// Setup a local function for timed callback:
 		var encodingStatus = function() {
 			var status = _this.fogg.status();
 
-			if ( _this.show_preview == true 
-				&& _this.fogg.state == 'encoding' 
+			if ( _this.show_preview == true
+				&& _this.fogg.state == 'encoding'
 				// No way to seek in VP8 atm
 				&& _this.current_encoder_settings['videoCodec'] != 'vp8') {
 				_this.renderPreview();
@@ -1216,7 +1216,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	},
 
 	/**
-	 * Poll the upload progress and update the UI regularly until the upload is complete. 
+	 * Poll the upload progress and update the UI regularly until the upload is complete.
 	 *
 	 * Asynchronous, returns immediately.
 	 */
@@ -1237,8 +1237,8 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 					mw.log( "could not parse uploadstatus / could not get responseText: " + e );
 				}
 			}
-			
-			// Check response is not null and old response does not match current 
+
+			// Check response is not null and old response does not match current
 			if ( typeof response_text != 'undefined' && _this.oldResponseText != response_text ) {
 				mw.log( 'Fogg: new result text:' + response_text + ' state:' + _this.fogg.state );
 				_this.oldResponseText = response_text;
@@ -1246,7 +1246,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				try {
 					var apiResult = JSON.parse( response_text );
 				} catch( e ) {
-					mw.log( "could not parse response_text::" + response_text + 
+					mw.log( "could not parse response_text::" + response_text +
 						' ...for now try with eval...' );
 					try {
 						var apiResult = eval( response_text );
@@ -1254,7 +1254,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 						var apiResult = null;
 					}
 				}
-											
+
 				// Process the api result ( if not a chunk )
 				if( ! apiResult.resultUrl ){
 					_this.processApiResult ( apiResult );
@@ -1262,12 +1262,12 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				}
 
 			}
-			// Show the video preview if encoding and show_preview is enabled. 
+			// Show the video preview if encoding and show_preview is enabled.
 			if ( _this.show_preview == true && _this.fogg.state == 'encoding') {
 				_this.renderPreview();
 			}
-			
-			//mw.log( 'Update fogg progress: ' +  _this.fogg.progress() );
+
+			//mw.log( 'Update fogg progress: ' + _this.fogg.progress() );
 			// If not an error, Update the progress bar
 			_this.ui.updateProgress( _this.fogg.progress() );
 
@@ -1291,23 +1291,23 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 					// Close the ui
 					_this.ui.close();
 					return true;
-				}	
+				}
 				// Else pass off the api Success to interface:
-				_this.ui.showApiSuccess( apiResult );	
-				return true;				
+				_this.ui.showApiSuccess( apiResult );
+				return true;
 			} else {
-				// Done state with error? 
+				// Done state with error?
 				// Should not be possible because firefogg would not be "done" without resultURL
 				mw.log( " Upload done in chunks mode, but no resultUrl!" );
 			}
-			
+
 		}
 		uploadStatus();
 	},
 
 	/**
 	 * This is the cancel button handler, referenced by getCancelButton() in the parent.
-	 * @param {Element} dialogElement Dialog element that was "canceled"  
+	 * @param {Element} dialogElement Dialog element that was "canceled"
 	 */
 	onCancel: function( dialogElement ) {
 		if ( !this.getFirefogg() ) {
@@ -1316,7 +1316,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		mw.log( 'firefogg:cancel' )
 		if ( confirm( gM( 'mwe-cancel-confim' ) ) ) {
 			this.action_done = true;
-			this.fogg.cancel();				
+			this.fogg.cancel();
 			$j( dialogElement ).empty().dialog( 'close' );
 		}
 		// Don't follow the # link:

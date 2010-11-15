@@ -9,27 +9,27 @@ mw.includeAllModuleMessages();
 * The default clipEdit values
 */
 var default_clipedit_values = {
-	
+
 	// Resource object for editing
 	'resource':	null,
-			
+
 	// Target clip display container
 	'target_clip_display':null,
-	
+
 	// Target control container
-	'target_control_display':null,	 
-	
+	'target_control_display':null,
+
 	// Media type (if not supplied its autodetected via: mvClipEdit.getMediaType()
 	'media_type': null,
-	
-	// Parent Container 
-	'parent_container': null,	 
+
+	// Parent Container
+	'parent_container': null,
 
 	// Parent remote search driver object pointer
 	'parentRemoteSearchDriver': null,
-	
-	// Parent sequence object pointer (optional) 	
-	'parentSequence': null,	 
+
+	// Parent sequence object pointer (optional)
+	'parentSequence': null,
 
 	/**
 	* Object that configures the clip action callbacks
@@ -37,37 +37,37 @@ var default_clipedit_values = {
 	*
 	* supported callback types are: insert_seq, insert, preview, cancel
 	*/
-	'controlActionsCallback' : null, 
+	'controlActionsCallback' : null,
 
 	/**
 	* The set of tools to enable by default 'all' tools are enabled
-	* Can be any sub array of mvClipEdit.toolset 
+	* Can be any sub array of mvClipEdit.toolset
 	*
 	* crop: tool for cropping the image layout
 	* layout: tool for adjusting the layout of the image
 	*/
 	'enabled_tools' : 'all',
-	
+
 	// Edit profile either "inpage" or "sequence"
-	'profile': 'inpage' 
+	'profile': 'inpage'
 }
 mw.ClipEdit = function( options ) {
 	return this.init( options );
 };
 mw.ClipEdit.prototype = {
 	// Selected tool
-	selectedTool : null, 
-	
-	// Crop values ( populated via the crop tool ) 
-	crop : null, 
-	
+	selectedTool : null,
+
+	// Crop values ( populated via the crop tool )
+	crop : null,
+
 	// All of the available tools ( displayed tools are set via enabled_tools option )
 	toolset : ['crop', 'layout'],
 
 	/**
-	* Initialisation function 
+	* Initialisation function
 	*
-	* initialises a clipEdit object with provided options.  
+	* initialises a clipEdit object with provided options.
 	*/
 	init:function( options ) {
 		mw.log('init: mw.ClipEdit' );
@@ -80,11 +80,11 @@ mw.ClipEdit.prototype = {
 		// Display control based on profile
 		this.showControlEdit();
 	},
-	
+
 	/**
 	* Shows the control edit interface based on the clipEdit profile
-	* 
-	* Clip edit profile is either "sequence" or "clip" 
+	*
+	* Clip edit profile is either "sequence" or "clip"
 	*/
 	showControlEdit: function() {
 		mw.log( 'showControlEdit' );
@@ -97,16 +97,16 @@ mw.ClipEdit.prototype = {
 			// could separate out into media Types objects for now just call method
 			if ( this.getMediaType() == 'image' ) {
 				this.showImageControls();
-			} else if ( 
+			} else if (
 				this.getMediaType() == 'video'
 				||
-				this.getMediaType() == 'audio'  
+				this.getMediaType() == 'audio'
 			) {
 				this.showVideoControls();
 			}
 		}
 	},
-	
+
 	/**
 	* Get the mediatype for the current resource
 	*/
@@ -128,14 +128,14 @@ mw.ClipEdit.prototype = {
 			return this.media_type;
 		return false;
 	},
-	
+
 	/**
 	* Edit types object contains edit types
 	*
 	* Iterate edit_types media types on a given resource to expose relevent tools
-	* 
+	*
 	* NOTE: we could re-factor these into their own classes
-	* which extend a base edit object ( and we would only load the requested toolset ) 
+	* which extend a base edit object ( and we would only load the requested toolset )
 	*/
 	edit_types: {
 		/*
@@ -154,13 +154,13 @@ mw.ClipEdit.prototype = {
 					// update the playlist:
 					_this.parentSequence.do_refresh_timeline( true );
 				}
-							
+
 				$j( target ).empty().html(
-				
+
 					$j('<label />')
 					.attr('for','ce_dur')
 					.text( gM( 'mwe-clipedit-duration' ) ),
-					
+
 					$j('<input />')
 					.attr({
 						'name' : "ce_dur",
@@ -169,7 +169,7 @@ mw.ClipEdit.prototype = {
 						'size' : "10"
 					})
 					.val( mw.seconds2npt( _this.resource.getDuration() ) )
-					
+
 				).children( "input[name='ce_dur']" ).change( function() {
 					 doUpdateDur( this );
 				} );
@@ -177,10 +177,10 @@ mw.ClipEdit.prototype = {
 				$j( target ).find( "input[name='ce_dur']" ).upDownTimeInputBind( doUpdateDur );
 			}
 		},
-		
+
 		/**
 		* Edit the in and out points for a resource
-		* 
+		*
 		* supports resource types:
 		* 	['video']
 		*/
@@ -195,7 +195,7 @@ mw.ClipEdit.prototype = {
 				var start_ntp = ( _this.resource.embed.start_ntp ) ? _this.resource.embed.start_ntp : mw.seconds2npt( 0 );
 				if ( !start_ntp )
 					mw.seconds2npt( 0 );
-				// make sure we have an end time				
+				// make sure we have an end time
 				if ( end_ntp ) {
 					$j( target ).html(
 						_this.getStartEndHtml( {
@@ -207,12 +207,12 @@ mw.ClipEdit.prototype = {
 				}
 			}
 		},
-		
+
 		/**
 		* Edit clip attributes for a given resource.
 		*
 		* Attributes are dynamically driven via asset type
-		* 
+		*
 		* supports resource types:
 		* 	['image', 'video', 'template']
 		*/
@@ -244,7 +244,7 @@ mw.ClipEdit.prototype = {
 						}
 						var parserObj = mw.parser( template_rev );
 						_this.resource.tVars = parserObj.getTemplateVars();
-						// Run the editor now that we have updated the template variables: 													
+						// Run the editor now that we have updated the template variables:
 						_this.showEditOptions( target );
 					} );
 				} else {
@@ -257,7 +257,7 @@ mw.ClipEdit.prototype = {
 		*
 		* supports resource types:
 		* 	['image', 'video']
-		
+
 		'overlays': {
 			'media':['image', 'video'],
 			'doEdit':function( _this, target ) {
@@ -266,7 +266,7 @@ mw.ClipEdit.prototype = {
 			}
 		},
 		*/
-		
+
 		/**
 		* Stub for audio support
 		*
@@ -281,9 +281,9 @@ mw.ClipEdit.prototype = {
 		}
 		*/
 	},
-	
+
 	/*
-	* Outputs the Edit options to a given target 
+	* Outputs the Edit options to a given target
 	* @param {String} target Output target for edit options
 	*/
 	showEditOptions : function( target ) {
@@ -298,16 +298,16 @@ mw.ClipEdit.prototype = {
 				gM( 'mwe-clipedit-custom_title' ) +
 				'</td>' +
 				'<td><input type="text" size="15" maxwidth="255" value="';
-				
-				//Output the resource title if present: 
+
+				//Output the resource title if present:
 				if ( _this.resource.title != null )
 					o += _this.resource.title;
-					
+
 				o += '">' +
 				'</td>' +
 				'</tr>';
-				
-		// Output the resource template var input form  				
+
+		// Output the resource template var input form
 		if ( _this.resource.tVars ) {
 			var existing_p = _this.resource.params;
 			var testing_a = _this.resource.tVars;
@@ -315,7 +315,7 @@ mw.ClipEdit.prototype = {
 			o += '<tr>' +
 					'<td colspan="2"><b>' + gM( 'mwe-clipedit-template_properties' ) + '</b></td>' +
 				'</tr>';
-			for ( var i = 0; i < _this.resource.tVars.length ; i++ ) {
+			for ( var i = 0; i < _this.resource.tVars.length; i++ ) {
 				o += '<tr>' +
 					'<td>' +
 						_this.resource.tVars[i] +
@@ -345,9 +345,9 @@ mw.ClipEdit.prototype = {
 			gM( 'mwe-clipedit-resource_page' ) +
 			'</td>' +
 			'<td>' +
-			'<a href="' + res_src  + '" ' +
+			'<a href="' + res_src + '" ' +
 				'target="new">' +
-			res_title + 
+			res_title +
 			'</a>' +
 			'</td>' +
 			'</tr>' +
@@ -362,9 +362,9 @@ mw.ClipEdit.prototype = {
 			_this.resource.params[ $j( this ).attr( "name" ) ] = $j( this ).val();
 			// Re-parse & update template
 			var template_wiki_text = '{{' + _this.resource.uri;
-			for ( var i = 0; i < _this.resource.tVars.length ; i++ ) {
+			for ( var i = 0; i < _this.resource.tVars.length; i++ ) {
 
-				template_wiki_text += "\n|" + _this.resource.tVars[i] + ' = ' +  _this.resource.params[ _this.resource.tVars[i] ]  ;
+				template_wiki_text += "\n|" + _this.resource.tVars[i] + ' = ' + _this.resource.params[ _this.resource.tVars[i] ];
 			}
 			template_wiki_text += "\n}}";
 			var request = {
@@ -387,13 +387,13 @@ mw.ClipEdit.prototype = {
 		if ( _this.parentSequence )
 			_this.parentSequence.doFocusBindings();
 	},
-	
+
 	/**
-	* Show Edit Types Menu 
+	* Show Edit Types Menu
 	*/
 	showEditTypesMenu:function() {
 		var _this = this;
-		
+
 		// Add in relevant subMenus
 		var o = '';
 		var tabc = '';
@@ -419,10 +419,10 @@ mw.ClipEdit.prototype = {
 		} );
 		o += '</ul>' + tabc;
 		o += '</div>';
-		
+
 		// Add sub menu container with menu html:
-		$j( '#' + this.target_control_display ).html( o ) ;
-		
+		$j( '#' + this.target_control_display ).html( o );
+
 		// Do clip edit bindings:
 		$j( '#mv_submenu_clipedit' ).tabs( {
 			selected: 0,
@@ -430,18 +430,18 @@ mw.ClipEdit.prototype = {
 				_this.showEditUI( $j( ui.tab ).attr( 'id' ).replace( 'mv_smi_', '' ) );
 			}
 		} ).addClass( 'ui-tabs-vertical ui-helper-clearfix' );
-		
+
 		// Close left:
 		$j( "#mv_submenu_clipedit li" ).removeClass( 'ui-corner-top' ).addClass( 'ui-corner-left' );
 		// update the default edit display:
 		_this.showEditUI( first_tab );
 	},
-	
+
 	/**
 	* Show the edit User Interface for edit type
 	*
-	* @param {String} edit_type key for the edit interface 
-	*/	
+	* @param {String} edit_type key for the edit interface
+	*/
 	showEditUI:function( edit_type ) {
 		if ( !edit_type )
 			return false;
@@ -449,7 +449,7 @@ mw.ClipEdit.prototype = {
 		if ( this.edit_types[ edit_type ].doEdit )
 			this.edit_types[ edit_type ].doEdit( this, '#sc_' + edit_type );
 	},
-	
+
 	/**
 	* Show Video Controls for the resource edit
 	*/
@@ -478,22 +478,22 @@ mw.ClipEdit.prototype = {
 		// update control actions
 		this.updateInsertControlActions();
 	},
-	
+
 	/**
 	* Bind the Start End video controls
 	*/
 	bindStartEndControls:function() {
 		var _this = this;
-		// Setup a top level shortcut: 
+		// Setup a top level shortcut:
 		var $target = $j( '#' + this.target_control_display );
 
 		var start_sec = mw.npt2seconds( $target.find( '.startInOut' ).val() );
 		var end_sec   = mw.npt2seconds( $target.find( '.endInOut' ).val() );
 
 		// If we don't have 0 as start then assume we are in a range request and give some buffer area:
-		var min_slider =  ( start_sec - 60 < 0 ) ? 0 : start_sec - 60;
+		var min_slider = ( start_sec - 60 < 0 ) ? 0 : start_sec - 60;
 		if ( min_slider != 0 ) {
-			var max_slider =  end_sec + 60;
+			var max_slider = end_sec + 60;
 		} else {
 			max_slider = end_sec;
 		}
@@ -505,7 +505,7 @@ mw.ClipEdit.prototype = {
 			animate: true,
 			values: [start_sec, end_sec],
 			slide: function( event, ui ) {
-				// mw.log(" vals:"+  mw.seconds2npt( ui.values[0] ) + ' : ' + mw.seconds2npt( ui.values[1]) );
+				// mw.log(" vals:"+ mw.seconds2npt( ui.values[0] ) + ' : ' + mw.seconds2npt( ui.values[1]) );
 				$target.find( '.startInOut' ).val( mw.seconds2npt( ui.values[0] ) );
 				$target.find( '.endInOut' ).val( mw.seconds2npt( ui.values[1] ) );
 			},
@@ -513,64 +513,64 @@ mw.ClipEdit.prototype = {
 				_this.updateVideoTime( mw.seconds2npt( ui.values[0] ), mw.seconds2npt( ui.values[1] ) );
 			}
 		} );
-		
-		// Bind up and down press when focus on start or end 
+
+		// Bind up and down press when focus on start or end
 		$target.find( '.startInOut' ).upDownTimeInputBind( function( inputElm ) {
 			var s_sec = mw.npt2seconds( $j( inputElm ).val() );
 			var e_sec = mw.npt2seconds( $target.find( '.endInOut' ).val() )
 			if ( s_sec > e_sec )
 				$j( inputElm ).val( mw.seconds2npt( e_sec - 1 ) );
-			
-			// Update the slider: 
+
+			// Update the slider:
 			var values = $target.find( '.inOutSlider' ).slider( 'option', 'values' );
 			mw.log( 'in slider len: ' + $target.find( '.inOutSlider' ).length );
-			 
-			$target.find( '.inOutSlider' ).slider( 'value', 10 );			
+
+			$target.find( '.inOutSlider' ).slider( 'value', 10 );
 			$target.find( '.inOutSlider' ).slider( 'option', 'values', [s_sec, e_sec] );
 			var values = $target.find( '.inOutSlider' ).slider( 'option', 'values' );
 			mw.log( 'values (after update):' + values );
 		} );
-		
+
 		$target.find( '.endInOut' ).upDownTimeInputBind( function( inputElm ) {
 			var s_sec = mw.npt2seconds( $target.find( '.startInOut' ).val() );
 			var e_sec = mw.npt2seconds( $j( inputElm ).val() );
 			if ( e_sec < s_sec )
-				$j( inputElm ).val(  mw.seconds2npt( s_sec + 1 ) );
-			// update the slider: 
+				$j( inputElm ).val( mw.seconds2npt( s_sec + 1 ) );
+			// update the slider:
 			$target.find( '.inOutSlider' ).slider( 'option', 'values', [ s_sec, e_sec ] );
 		} );
-		
+
 		// Preview button:
 		$j( '#' + this.target_control_display + ' .inOutPreviewClip' ).buttonHover().click( function() {
 			$j( '#embed_vid' ).get( 0 ).stop();
 			$j( '#embed_vid' ).get( 0 ).play();
 		} );
 	},
-	
+
 	/**
-	* Update the video time 
-	* Target video is hard coded to #embed_vid for now 
+	* Update the video time
+	* Target video is hard coded to #embed_vid for now
 	*
 	* @param {String} start_npt Start time in npt format
 	* @param {String} end_npt End time in npt format
 	*/
-	updateVideoTime : function ( start_npt, end_npt )	{	
-		// Update the video title:		
+	updateVideoTime : function ( start_npt, end_npt )	{
+		// Update the video title:
 		var ebvid = $j( '#embed_vid' ).get( 0 );
-		if ( ebvid ) {			
-			ebvid.stop();							
+		if ( ebvid ) {
+			ebvid.stop();
 			ebvid.updateVideoTime( start_time, end_time );
 			mw.log( 'update thumb: ' + start_time );
 			ebvid.updateThumbTimeNPT( start_time );
 		}
 	},
-	
+
 	/**
 	* Get the start end html
-	* 
+	*
 	* start end html supports setting start and end times for video clips
-	* 
-	* @param {Object} defaultTime Provides start and end time default values 
+	*
+	* @param {Object} defaultTime Provides start and end time default values
 	*/
 	getStartEndHtml: function( defaultTime ) {
 		return '<strong>' + gM( 'mwe-clipedit-set_in_out_points' ) + '</strong>' +
@@ -591,7 +591,7 @@ mw.ClipEdit.prototype = {
 			'</table>' +
 			$j.btnHtml( gM( 'mwe-clipedit-preview_inout' ), 'inOutPreviewClip', 'video' );
 	},
-	
+
 	/**
 	* Get the Insert Html form text area
 	*/
@@ -606,15 +606,15 @@ mw.ClipEdit.prototype = {
 		// mw.log('getInsertHtml: ' + o );
 		return o;
 	},
-	
+
 	/**
 	* Update Insert Control Actions
 	*
-	* Loops over the local controlActionsCallback 
+	* Loops over the local controlActionsCallback
 	*/
 	updateInsertControlActions: function() {
 		var _this = this;
-		var b_target =   _this.parentRemoteSearchDriver.target_container + '~ .ui-dialog-buttonpane';
+		var b_target = _this.parentRemoteSearchDriver.target_container + '~ .ui-dialog-buttonpane';
 		// Empty the ui-dialog-buttonpane bar:
 		$j( b_target ).empty();
 		for ( var callbackType in _this.controlActionsCallback ) {
@@ -625,43 +625,43 @@ mw.ClipEdit.prototype = {
 						.buttonHover()
 						.click( function() {
 							_this.applyEdit();
-							_this.controlActionsCallback[ 'insert_seq' ](  _this.resource );
+							_this.controlActionsCallback[ 'insert_seq' ]( _this.resource );
 						} );
-				break;				
+				break;
 				case 'insert':
-					$j( b_target ).append(  $j.btnHtml( gM( 'mwe-clipedit-insert_image_page' ), 'mv_insert_image_page', 'check' ) + ' ' )
+					$j( b_target ).append( $j.btnHtml( gM( 'mwe-clipedit-insert_image_page' ), 'mv_insert_image_page', 'check' ) + ' ' )
 						.children( '.mv_insert_image_page' )
 						.buttonHover()
 						.click( function() {
 							_this.applyEdit();
-							_this.controlActionsCallback['insert'](  _this.resource );
+							_this.controlActionsCallback['insert']( _this.resource );
 						} ).show( 'slow' );
-				break;			
+				break;
 				case 'preview':
 					$j( b_target ).append( $j.btnHtml( gM( 'mwe-clipedit-preview_insert' ), 'mv_preview_insert', 'refresh' ) + ' ' )
 						.children( '.mv_preview_insert' )
 						.buttonHover()
 						.click( function() {
 							_this.applyEdit();
-							_this.controlActionsCallback[ 'preview' ](  _this.resource );
+							_this.controlActionsCallback[ 'preview' ]( _this.resource );
 						} ).show( 'slow' );
-				break;					
+				break;
 				case 'cancel':
 					$j( b_target ).append( $j.btnHtml( gM( 'mwe-clipedit-cancel_image_insert' ), 'mv_cancel_img_edit', 'close' ) + ' ' )
 						.children( '.mv_cancel_img_edit' )
 						.buttonHover()
 						.click( function() {
 							// no cancel action;
-							_this.controlActionsCallback['cancel'](  _this.resource );
+							_this.controlActionsCallback['cancel']( _this.resource );
 						} ).show( 'slow' );
 				break;
 			}
 		}
 	},
-	
+
 	/**
 	* Applies the current edit to the resource object
-	* supports "crop" and "videoAdjustment" 
+	* supports "crop" and "videoAdjustment"
 	*/
 	applyEdit:function() {
 		var _this = this;
@@ -674,55 +674,55 @@ mw.ClipEdit.prototype = {
 		// copy over the description text to the resource object
 		_this.resource['inlineDesc'] = $j( '#mv_inline_img_desc' ).val();
 	},
-	
+
 	/**
 	* Adds a tool to the supplied target
 	*
 	* @param {Object} $target jQuery object to append the tool to
-	* @param {Object} tool_type Type key for the tool to be added 
+	* @param {Object} tool_type Type key for the tool to be added
 	*/
 	addTool: function( $target, tool_type ) {
 		var _this = this;
 		switch( tool_type ) {
 			case 'layout':
-				
+
 				$target.append(
 					$j( '<span />' )
 					.css({
 						"float" : "left"
 					})
 					.text( gM( 'mwe-clipedit-layout' ) ),
-					
+
 					// Left layout
 					$j('<input />')
 					.attr({
 						"type" : "radio",
 						"name" : "mw_layout",
-						"id" : "mw_layout_left"						
+						"id" : "mw_layout_left"
 					})
 					.css({
 						'float' : 'left'
-					}),					
+					}),
 					$j( '<div /> ')
 					.attr({
 						'id' : 'mw_layout_left_img',
-						'title':  gM( 'mwe-clipedit-layout_left' )
+						'title': gM( 'mwe-clipedit-layout_left' )
 					}),
-					
+
 					// Right Layout
 					$j('<input />')
 					.attr({
 						"type" : "radio",
 						"name" : "mw_layout",
-						"id" : "mw_layout_right"						
+						"id" : "mw_layout_right"
 					})
 					.css({
 						'float' : 'left'
-					}),					
+					}),
 					$j( '<div /> ')
 					.attr({
 						'id' : 'mw_layout_right_img',
-						'title':  gM( 'mwe-clipedit-layout_right' )
+						'title': gM( 'mwe-clipedit-layout_right' )
 					}),
 
 					$j('<hr />')
@@ -730,14 +730,14 @@ mw.ClipEdit.prototype = {
 						"clear" : "both"
 					})
 				);
-				
+
 				// Make sure the default is reflected:
 				if ( ! _this.resource.layout ) {
 					_this.resource.layout = 'right';
 				}
-				
+
 				$j( '#mw_layout_' + _this.resource.layout )[0].checked = true;
-		
+
 				// Left radio click
 				$j( '#mw_layout_left,#mw_layout_left_img' ).click( function() {
 					$j( '#mw_layout_right' )[0].checked = false;
@@ -745,7 +745,7 @@ mw.ClipEdit.prototype = {
 					_this.resource.layout = 'left';
 					return true;
 				} );
-				
+
 				// Right radio click
 				$j( '#mw_layout_right,#mw_layout_right_img' ).click( function() {
 					$j( '#mw_layout_left' )[0].checked = false;
@@ -755,7 +755,7 @@ mw.ClipEdit.prototype = {
 				} );
 			break;
 			case 'crop':
-				$target.append(	
+				$target.append(
 					$j( '<div /> ')
 					.addClass( 'mw_edit_button mw_crop_button_base' )
 					.attr({
@@ -763,19 +763,19 @@ mw.ClipEdit.prototype = {
 						'alt' : 'crop',
 						'title' : gM( 'mwe-clipedit-crop' )
 					}),
-					
+
 					$j( '<a />')
 					.attr({
-						'href': '#'							
+						'href': '#'
 					})
 					.addClass( 'mw_crop_msg' )
-					.text(  gM( 'mwe-clipedit-crop' ) ),
-					
-					$j( '<span />' )					
+					.text( gM( 'mwe-clipedit-crop' ) ),
+
+					$j( '<span />' )
 					.addClass( 'mw_crop_msg_load')
-					.text(  gM( 'mwe-loading_txt' )  )
+					.text( gM( 'mwe-loading_txt' ) )
 					.hide(),
-					
+
 					$j( '<a />' )
 					.attr({
 						'href': '#'
@@ -786,12 +786,12 @@ mw.ClipEdit.prototype = {
 					.addClass( 'mw_apply_crop' )
 					.text( gM( 'mwe-clipedit-apply_crop' ) )
 					.hide(),
-					
+
 					// some space between apply and rest
 					$j('<span />')
 					.css('display','inline')
 					.text(' '),
-					
+
 					$j( '<a />' )
 					.attr( 'href','#' )
 					.css({
@@ -800,19 +800,19 @@ mw.ClipEdit.prototype = {
 					.addClass( 'mw_reset_crop' )
 					.text( gM( 'mwe-clipedit-reset_crop' ) )
 					.hide(),
-					
+
 					$j( '<hr />' )
 					.css('clear', 'both'),
-					
+
 					$j( '<br />' )
-												
+
 				);
-				// Add binding: 
+				// Add binding:
 				$j( '#mw_crop_button,.mw_crop_msg,.mw_apply_crop' ).click( function() {
 					mw.log( 'click:mv_crop_button: base width: ' + _this.resource.width + ' bh: ' + _this.resource.height );
 					if ( $j( '#mw_crop_button' ).hasClass( 'mw_crop_button_selected' ) ) {
 						_this.applyCrop();
-					} else {						
+					} else {
 						_this.doCropInterface();
 					}
 				} );
@@ -826,18 +826,18 @@ mw.ClipEdit.prototype = {
 						.attr({
 							'src' : _this.resource.edit_url,
 							'id' : 'rsd_edit_img'
-						}) 
+						})
 					);
 				} );
 			break;
-			/* TODO support setting the image "scale": 
+			/* TODO support setting the image "scale":
 			case 'scale':
-				
+
 			break;
 			*/
 		}
 	},
-	
+
 	/**
 	* Show Image Controls
 	*/
@@ -847,9 +847,9 @@ mw.ClipEdit.prototype = {
 		mw.log( 'tool target len: ' + $tool_target.length );
 		// By default apply Crop tool
 		if ( _this.enabled_tools == 'all' || _this.enabled_tools.length > 0 ) {
-			$tool_target.html( 
+			$tool_target.html(
 				$j( '<h3 />' )
-				.text( gM( 'mwe-clipedit-edit-tools' ) ) 
+				.text( gM( 'mwe-clipedit-edit-tools' ) )
 			);
 			for ( var i in _this.toolset ) {
 				var toolid = _this.toolset[i];
@@ -857,14 +857,14 @@ mw.ClipEdit.prototype = {
 					_this.addTool( $tool_target, toolid );
 			}
 		}
-		
-		// Add the insert description text field: 
+
+		// Add the insert description text field:
 		$tool_target.append( _this.getInsertHtml() );
-		
+
 		// Add the actions to the 'button bar'
 		_this.updateInsertControlActions();
-	},	
-	
+	},
+
 	/**
 	* Apply Image Crop to the edit resource image
 	*/
@@ -872,13 +872,13 @@ mw.ClipEdit.prototype = {
 		var _this = this;
 		$j( '.mw_apply_crop' ).hide();
 		$j( '.mw_crop_msg' ).show();
-		
-		// Update the crop button: 
+
+		// Update the crop button:
 		$j( '#mw_crop_button' )
 			.removeClass( 'mw_crop_button_selected' )
 			.addClass( 'mw_crop_button_base' )
-			.attr( 'title', gM( 'mwe-clipedit-crop' ) );	
-				
+			.attr( 'title', gM( 'mwe-clipedit-crop' ) );
+
 		if ( _this.resource.crop ) {
 			// Empty out and display cropped:
 			$j( '#' + _this.target_clip_display )
@@ -888,11 +888,11 @@ mw.ClipEdit.prototype = {
 					.css({
 						'overflow' : 'hidden',
 						'position' : 'absolute',
-						'width' :  parseInt( _this.resource.crop.w ) + 'px',
+						'width' : parseInt( _this.resource.crop.w ) + 'px',
 						'height' : parseInt( _this.resource.crop.h ) + 'px'
 					})
 					.append(
-						$j( '<div />' )	
+						$j( '<div />' )
 						.css({
 							'position' : 'absolute',
 							'top' : '-' + parseInt( _this.resource.crop.y ) + 'px',
@@ -907,7 +907,7 @@ mw.ClipEdit.prototype = {
 		}
 		return true;
 	},
-	
+
 	/**
 	* Apply the video Start End Adjustments to the resource
 	*/
@@ -920,21 +920,21 @@ mw.ClipEdit.prototype = {
 
 		// Update video related keys
 		this.resource['start_time'] = $target.find( '.startInOut' ).val();
-		this.resource['end_time']   = $target.find( '.endInOut' ).val() ;
+		this.resource['end_time'] = $target.find( '.endInOut' ).val();
 
 		// Do the local video adjust
 		if ( typeof this.resource.pSobj['applyVideoAdj'] != 'undefined' ) {
 			this.resource.pSobj.applyVideoAdj( this.resource );
 		}
 	},
-	
+
 	/**
 	* Do the crop Interface
 	*/
 	doCropInterface: function() {
 		var _this = this;
 		$j( '.mw_crop_msg' ).hide();
-		$j( '.mw_crop_msg_load' ).show();		
+		$j( '.mw_crop_msg_load' ).show();
 		// load the jcrop library if needed:
 		mw.load( [
 			'$j.Jcrop',
@@ -943,9 +943,9 @@ mw.ClipEdit.prototype = {
 			_this.bindCrop();
 		} );
 	},
-	
+
 	/**
-	* Bind the Crop once the library $j.Jcrop is ready: 
+	* Bind the Crop once the library $j.Jcrop is ready:
 	*/
 	bindCrop: function() {
 		var _this = this;
@@ -978,11 +978,11 @@ mw.ClipEdit.prototype = {
 			$( this ).unbind( 'keydown' ).keydown( function ( e ) {
 				var sec = mw.npt2seconds( $j( this ).val() );
 				var k = e.which;
-				if ( k == 38 ) {// up												
+				if ( k == 38 ) {// up
 					$( this ).val( mw.seconds2npt( sec + 1 ) );
-				} else if ( k == 40 ) { // down			
+				} else if ( k == 40 ) { // down
 					var sval = ( ( sec - 1 ) < 0 ) ? 0 : ( sec - 1 )
-					$( this ).val(  mw.seconds2npt( sval ) );
+					$( this ).val( mw.seconds2npt( sval ) );
 				}
 				// Set the delay updates:
 				if ( k == 38 || k == 40 ) {

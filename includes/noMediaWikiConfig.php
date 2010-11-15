@@ -161,9 +161,9 @@ function wfLoadMsgKeys( $langKey ){
 			throw new MWException( "Missing msgFile: " . htmlspecialchars( $msgFile ) . "\n" );
 		}
 		require( $msgFile );
-		// First include the English fallback, 
+		// First include the English fallback,
 		$wgMessageCache = array_merge( $wgMessageCache, $messages[ 'en' ] );
-		// Then override with the current language: 
+		// Then override with the current language:
 		if( isset( $messages[ $langKey ] ) ) {
 			$wgMessageCache = array_merge( $wgMessageCache, $messages[ $langKey ] );
 		}
@@ -198,8 +198,8 @@ function wfProfileOut( $name ){
 }
 function microtime_float()
 {
-    list($usec, $sec) = explode(" ", microtime());
-    return ((float)$usec + (float)$sec);
+	list($usec, $sec) = explode(" ", microtime());
+	return ((float)$usec + (float)$sec);
 }
 
 /**

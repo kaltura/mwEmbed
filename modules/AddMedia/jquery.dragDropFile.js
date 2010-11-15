@@ -45,7 +45,7 @@ mw.addMessages( {
 
 			$j( '#multiple_file_input' ).remove();
 
-			$j( 'body' ).append( 
+			$j( 'body' ).append(
 				$j('<div />')
 				.attr( {
 					'title' : gM( 'mwe-upload-multi', fileCount ),
@@ -82,19 +82,19 @@ mw.addMessages( {
 				$j( '#multiple_file_input' ).dialogFitWindow();
 			} );
 			// add the inital table / title:
-			$j( '#multiple_file_input' ).empty().html( 
+			$j( '#multiple_file_input' ).empty().html(
 				$j('<h3 />')
 				.text( gM( 'mwe-review-upload' ) ),
-				
+
 				$j( '<table />' )
-				.attr({ 
+				.attr({
 					'width' : "100%",
 					'border' : "1",
 					'border' : 'none'
 				})
 				.addClass( 'table_list' )
 			);
-			
+
 			$j.each( files, function( i, file ) {
 				if ( file.fileSize < 64048576 ) {
 					$j( '#multiple_file_input .table_list' ).append(
@@ -102,19 +102,19 @@ mw.addMessages( {
 							$j('<td />').css({
 								'width': '300px',
 								'padding' : '5px'
-							}).append( 
+							}).append(
 								$j('<img />').attr( {
 									'width' : '250',
-									'src' :  file.getAsDataURL()
+									'src' : file.getAsDataURL()
 								} )
 							),
-							
+
 							$j('<td />')
 							.attr('valign', 'top')
 							.append(
 								'File Name: <input name="file[' + i + '][title]" value="' + file.name + '"><br>' +
-								'File Desc: <textarea style="width:300px;" name="file[' + i + '][desc]"></textarea><br>' 
-							)							
+								'File Desc: <textarea style="width:300px;" name="file[' + i + '][desc]"></textarea><br>'
+							)
 						)
 					)
 					// do the add-media-wizard with the upload tab

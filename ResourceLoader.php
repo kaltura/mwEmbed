@@ -16,9 +16,9 @@ if( is_file ( dirname( __FILE__ ) .'../mwResourceLoader.php' )
 
 // Check if we are an entry point or being used as part of MEDIAWIKI:
 if ( !defined( 'MEDIAWIKI' ) && !defined( 'SCRIPTLOADER_MEDIAWIKI') ) {
-    // Allow an installation an optional PHP customization/overrides file
+	// Allow an installation an optional PHP customization/overrides file
 	if ( is_file ( dirname( __FILE__ ) .'/../localSettings.php' ) ) {
-	  require_once dirname( __FILE__ ) .'/../localSettings.php';
+		require_once dirname( __FILE__ ) .'/../localSettings.php';
 	}
 
 	// Load stand alone Resource Loader config
@@ -122,9 +122,9 @@ class ResourceLoader {
 		// Setup script loader header ( to easy identify file data )
 		if( $this->outputFormat == 'js' ) {
 			$this->output .= 'var mwResourceLoaderDate = "' .
-			xml::escapeJsString( date( 'c' ) ) . '";'  . "\n";
+			xml::escapeJsString( date( 'c' ) ) . '";' . "\n";
 			$this->output .= 'var mwResourceLoaderRequestKey = "' .
-			xml::escapeJsString( $this->requestKey ) . '";'  . "\n";
+			xml::escapeJsString( $this->requestKey ) . '";' . "\n";
 		}
 
 		// Build the output
@@ -142,7 +142,7 @@ class ResourceLoader {
 			// MwEmbed is a core component so it includes loaders and other styles
 			if( $resourceName == 'mwEmbed' && $this->outputFormat != 'messages' ){
 				// Output core components ( parts of core mwEmbed that are in different files )
-				$coreComponentsList  = NamedResourceLoader::getComponentsList();
+				$coreComponentsList = NamedResourceLoader::getComponentsList();
 				foreach( $coreComponentsList as $componentClassName ) {
 					// Output the core component via the script loader:
 					$this->output .= $this->getLocalizedScriptText( $componentClassName );
@@ -156,24 +156,24 @@ class ResourceLoader {
 
 				// Output the current language resource js
 				$this->output .= NamedResourceLoader::getLanguageJs( $this->langCode );
-				
+
 				// Output the localSettings.js
 				$localSettingsJsPath = realpath( dirname( __FILE__ ) ) . '/localSettings.js';
 				if( is_file( $localSettingsJsPath ) ){
 					wfSuppressWarnings();
 					$this->output .= file_get_contents( $localSettingsJsPath );
 					wfRestoreWarnings();
-				}								
-	
-				// Add the required core mwEmbed style sheets 
+				}
+
+				// Add the required core mwEmbed style sheets
 				// removed for now because when creating stand alone packages js package with css
 				// the paths get messed up.
 				/*if( !isset( $this->namedFileList[ 'mw.style.mwCommon' ] ) ) {
 					$this->output .= $this->getResourceText( 'mw.style.mwCommon' );
 				}*/
 
-				// Output "special" IE comment tag to support video tags mwEmbed tags.
-				$this->notMinifiedTopOutput .= '/*@cc_on@if(@_jscript_version<9){\'video audio source track\'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/'."\n";
+				// Output "special" IE comment tag to support "special" mwEmbed tags.
+				$this->notMinifiedTopOutput .='/*@cc_on@if(@_jscript_version<9){\'video audio source itext playlist\'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/'."\n";
 			}
 		}
 
@@ -232,7 +232,7 @@ class ResourceLoader {
 	 *
 	 * @param {String} $js_string Javascript string to be minified
 	 * @param {String} $requestKey Unique key for minification
-	 * @return  minified javascript value
+	 * @return minified javascript value
 	 */
 	static function getMinifiedJs( & $js_string, $requestKey='' ){
 		global $wgJavaPath, $wgClosureCompilerPath, $wgClosureCompilerLevel;
@@ -274,14 +274,14 @@ class ResourceLoader {
 		// Write the grouped javascript to a temporary file:
 		// ( closure compiler does not support reading from standard in pipe )
 		$td = wfTempDir();
-		$jsFileName = $td . '/' . md5( $requestKey )  . '.tmp.js';
-		file_put_contents( $jsFileName,  $js_string );
+		$jsFileName = $td . '/' . md5( $requestKey ) . '.tmp.js';
+		file_put_contents( $jsFileName, $js_string );
 		$retval = '';
 		$cmd = $wgJavaPath . ' -jar ' . $wgClosureCompilerPath;
 		$cmd.= ' --js ' . $jsFileName;
 
 		if( $wgClosureCompilerLevel )
-		$cmd.= ' --compilation_level ' .  wfEscapeShellArg( $wgClosureCompilerLevel );
+		$cmd.= ' --compilation_level ' . wfEscapeShellArg( $wgClosureCompilerLevel );
 
 		// only output js ( no warnings )
 		$cmd.= ' --warning_level QUIET';
@@ -344,7 +344,7 @@ class ResourceLoader {
 						}
 						return $sk->generateUserJs( $titleParams[ 'useskin' ] ) . "\n";
 					}
-				} else if(  isset( $titleParams['gen' ] ) && $titleParams['gen' ] == 'css' ) {
+				} else if( isset( $titleParams['gen' ] ) && $titleParams['gen' ] == 'css' ) {
 					return $sk->generateUserStylesheet();
 				}
 			} else {
@@ -377,7 +377,7 @@ class ResourceLoader {
 		$filePath = self::getPathFromClass( $resourceName );
 
 		if( ! $filePath ) {
-			$this->errorMsg .= "\nError could not get file path: ". xml::escapeJsString( $resourceName )  ."\n";
+			$this->errorMsg .= "\nError could not get file path: ". xml::escapeJsString( $resourceName ) ."\n";
 			return false;
 		}
 
@@ -399,7 +399,7 @@ class ResourceLoader {
 
 				return $output;
 			}else{
-				$this->errorMsg .= "\nError could not read file: ". xml::escapeJsString( $filePath )  ."\n";
+				$this->errorMsg .= "\nError could not read file: ". xml::escapeJsString( $filePath ) ."\n";
 				return false;
 			}
 		}
@@ -424,7 +424,7 @@ class ResourceLoader {
 			// Using the local mediaWiki entry point we should have our $wgScriptPath global
 			global $wgScriptPath;
 			$prePendPath = ( $wgScriptPath == '' ) ? '' : $wgScriptPath . '/';
-			$cssOptions[ 'prependRelativePath' ] =  $prePendPath . dirname( $path ) . '/';
+			$cssOptions[ 'prependRelativePath' ] = $prePendPath . dirname( $path ) . '/';
 		} else {
 			// Get the server URL
 			$serverUri = $this->getResourceLoaderUri();
@@ -630,7 +630,7 @@ class ResourceLoader {
 
 		// Update the outupt format is "css", "messages" or "js"
 		if( isset( $_GET['format'] ) &&
-			(  $_GET['format'] == 'css' || $_GET['format'] == 'messages')
+			( $_GET['format'] == 'css' || $_GET['format'] == 'messages')
 		){
 			$this->outputFormat = $_GET['format'];
 		} else {
@@ -670,10 +670,10 @@ class ResourceLoader {
 		// Check for the requested classes
 		if ( $reqClassList && count( $reqClassList ) > 0 ) {
 			// Clean the resource list and populate namedFileList
-			foreach (  $reqClassList as $reqClass ) {
+			foreach ( $reqClassList as $reqClass ) {
 				//do some simple checks:
 				if ( trim( $reqClass ) != '' ){
-					if( substr( $reqClass, 0, 3 ) == 'WT:'  && strtolower( substr( $reqClass, -3) ) == '.js' ){
+					if( substr( $reqClass, 0, 3 ) == 'WT:' && strtolower( substr( $reqClass, -3) ) == '.js' ){
 						// Wiki page requests (must end with .js):
 						$requestKey .= $reqClass;
 					}else if( substr( $reqClass, 0, 3 ) != 'WT:' ){
@@ -719,7 +719,7 @@ class ResourceLoader {
 				$langKey = str_replace($formName, '', $langKey);
 				//English wikipedia puts "-" after language keys remove that:
 				if( $langKey[ strlen( $langKey ) - 1 ] == '-'){
-					$langKey = substr( $langKey, 0,  strlen( $langKey ) - 1 );
+					$langKey = substr( $langKey, 0, strlen( $langKey ) - 1 );
 				}
 				return $langKey;
 			}
@@ -765,7 +765,7 @@ class ResourceLoader {
 		global $IP;
 
 		$ext = substr($filePath, strrpos($filePath, '.') + 1);
-		if ( self::validFileExtension( $ext)  ) {
+		if ( self::validFileExtension( $ext) ) {
 			$this->errorMsg .= "\nError file name must end with .js or .css " . htmlspecialchars( $filePath ) . " \n ";
 			return false;
 		}
@@ -832,7 +832,7 @@ class ResourceLoader {
 			// try each of these search patterns in the same order as before.
 
 			// Get the mw.addMessage javascript
-			self::$addMessageJs  = $this->getAddMessagesFromScriptText( $scriptText , $moduleName);
+			self::$addMessageJs = $this->getAddMessagesFromScriptText( $scriptText , $moduleName);
 
 			// Check for mw.includeAllModuleMsgs() call to be replaced with all the msgs
 			// Use preg_replace_callback to avoid back-refrence substitution
@@ -881,7 +881,7 @@ class ResourceLoader {
 				break;
 			}
 			if( count( $matches ) > 0 ){
-				$startOfLogIndex =  strlen( $matches[1][0] ) + $matches[1][1];
+				$startOfLogIndex = strlen( $matches[1][0] ) + $matches[1][1];
 				// append everything up to this point:
 				$outputJs .= substr( $jsString, $i, ( $startOfLogIndex - strlen( $matches[1][0] ) )-$i );
 
@@ -913,7 +913,7 @@ class ResourceLoader {
 								}
 							break;
 							case ')':
-								if( ! $inquote  && !$inSingleQuote ){
+								if( ! $inquote && !$inSingleQuote ){
 									$parenthesesDepth--;
 								}
 							break;
@@ -984,7 +984,7 @@ class ResourceLoader {
 			}
 		}
 		// Check for ); at the end
-		preg_match( '/\s*\)\s*\;?/', $str, $matches, PREG_OFFSET_CAPTURE, $returnIndex['e']  );
+		preg_match( '/\s*\)\s*\;?/', $str, $matches, PREG_OFFSET_CAPTURE, $returnIndex['e'] );
 		if( $matches[0][1] ){
 			$returnIndex[ 'efull' ] = $matches[0][1] + strlen( $matches[0][0] );
 		}
@@ -1111,7 +1111,7 @@ class ResourceLoader {
 		$inx = self::getAddMessageKeyIndex( $scriptString );
 		if( $inx ) {
 			// get the javascript array string:
-			$javaScriptArrayString =  substr($scriptString, $inx['s'], ($inx['e']-$inx['s'])) ;
+			$javaScriptArrayString = substr($scriptString, $inx['s'], ($inx['e']-$inx['s'])) ;
 			// Match all the quoted msg keys
 			preg_match_all( "/\"([^\"]*)\"/", $javaScriptArrayString, $matches);
 			$messageSet = array();
@@ -1240,7 +1240,7 @@ class simpleFileCache {
 	 * Loads and outputs the file from the file cache
 	 */
 	public function outputFile() {
-		if ( ResourceLoader::clientAcceptsGzip() && substr( $this->filename, -3 ) == '.gz'  ) {
+		if ( ResourceLoader::clientAcceptsGzip() && substr( $this->filename, -3 ) == '.gz' ) {
 			header( 'Content-Encoding: gzip' );
 			readfile( $this->filename );
 			return true;

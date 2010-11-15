@@ -9,10 +9,10 @@
 $messages = array();
 
 $messages['en'] = array(
-	'mwe-mirosubs-add-universal-subtitles' => 'Universal subtitles editor',	
+	'mwe-mirosubs-add-universal-subtitles' => 'Universal subtitles editor',
 	'mwe-mirosubs-loading-universal-subtitles' => 'Loading universal subtitles editor',
 	'mwe-mirosubs-save-summary' => 'Summary of subtitle edits',
-	'mwe-mirosubs-save-default' => 'Edited subtitles',	
+	'mwe-mirosubs-save-default' => 'Edited subtitles',
 	'mwe-mirosubs-save-subs' => 'Save subtitles',
 	'mwe-mirosubs-saving-subs' => 'Saving subtitles ...',
 	'mwe-mirosubs-subs-saved' => 'Subtitles saved',

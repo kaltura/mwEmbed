@@ -1,29 +1,29 @@
 // Wrap in mw closure to avoid global leakage
 ( function( mw ) {
-	
+
 mw.SequencerMenu = function( sequencer ) {
 	return this.init( sequencer );
 };
 
 // Set up the mvSequencer object
 mw.SequencerMenu.prototype = {
-		
+
 	init: function( sequencer ){
 		this.sequencer = sequencer;
 	},
-	
+
 	// menuConfig system uses auto-defined msg keys
 	// ie "new" mwe-sequencer-menu-file-new
 	menuConfig : {
 		'sequence': {
 			'new': {
 				'icon' : 'document',
-				'shortCut': 'ctrl N',			
+				'shortCut': 'ctrl N',
 				'action' : function( _this ){
 					mw.log("SequencerMenu::new sequence");
 					_this.sequencer.getActionsSequence().newSequence();
 				}
-				
+
 			},
 			'open': {
 				'icon' : 'folder-open',
@@ -46,11 +46,11 @@ mw.SequencerMenu.prototype = {
 			'renderdisk' : {
 				'icon' : 'gear',
 				'action' : function( _this ){
-					_this.sequencer.getActionsSequence().renderToDisk();					
+					_this.sequencer.getActionsSequence().renderToDisk();
 				},
 				'condition': function( _this ){
 					// Only display if no server is defined:
-					return !(  _this.sequencer.getServer().isConfigured() );	
+					return !( _this.sequencer.getServer().isConfigured() );
 				}
 			},
 			'publish': {
@@ -60,7 +60,7 @@ mw.SequencerMenu.prototype = {
 				},
 				'condition': function( _this ){
 					// Only display if publishing server is present
-					return (  _this.sequencer.getServer().isConfigured() );
+					return ( _this.sequencer.getServer().isConfigured() );
 				}
 			},
 			'help_divider': 'divider',
@@ -73,7 +73,7 @@ mw.SequencerMenu.prototype = {
 				'icon' : 'power',
 				'action' : function( _this ){
 					mw.log( 'check for save');
-					_this.sequencer.getActionsSequence().exit();					
+					_this.sequencer.getActionsSequence().exit();
 				}
 			}
 		},
@@ -90,7 +90,7 @@ mw.SequencerMenu.prototype = {
 				'shortCut' : 'ctrl Y',
 				'disabled' : true,
 				'icon' : 'arrowreturnthick-1-e',
-				'action' : function( _this ){						
+				'action' : function( _this ){
 					_this.sequencer.getActionsEdit().redo();
 				}
 			},
@@ -109,12 +109,12 @@ mw.SequencerMenu.prototype = {
 					_this.sequencer.getActionsView().viewXML();
 				}
 			},
-			'history': {	
+			'history': {
 				'icon' : 'clock',
 				'disabled': true,
 				'action':function( _this ){
 					mw.log("SequencerMenu::history");
-				}						
+				}
 			}
 		}
 	},
@@ -131,15 +131,15 @@ mw.SequencerMenu.prototype = {
 		var $menuTarget = this.sequencer.getMenuTarget();
 		// empty and disable select for menu items
 		$menuTarget.empty();
-		
-		for( var menuKey in this.menuConfig ){	
+
+		for( var menuKey in this.menuConfig ){
 			// Create a closure to preserve menuKey binding scope
 			function drawTopMenu( menuKey ){
-				// Add the menu target		
+				// Add the menu target
 				$menuTarget
 				.append(
 					$j('<span />')
-					.html( gM('mwe-sequencer-menu-' + menuKey )  )
+					.html( gM('mwe-sequencer-menu-' + menuKey ) )
 					.css({
 						'padding': '7px',
 						'cursor' : 'default'
@@ -148,34 +148,34 @@ mw.SequencerMenu.prototype = {
 					.addClass( 'ui-state-default' )
 					.buttonHover()
 					.disableSelection()
-			    	// Add menu binding: 
-			    	.menu({
+					// Add menu binding:
+					.menu({
 						content: _this.getMenuSet( menuKey ),
 						showSpeed: 100,
 						createMenuCallback: function(){
-			    			// Sync the disabled enabled state to menu
-			    			_this.syncMenuState( menuKey );
-			    		}
-					})					
+							// Sync the disabled enabled state to menu
+							_this.syncMenuState( menuKey );
+						}
+					})
 				);
 			}
 			drawTopMenu( menuKey );
-		}		
-		
+		}
+
 		// Add any menuWidgets
 		for( var widgetKey in this.menuWidgets ){
-			$menuTarget.append( 
+			$menuTarget.append(
 				this.menuWidgets[widgetKey]( this )
 			);
 		}
-		
-		// Append close button to the upper right 
-		$menuTarget.append( 
+
+		// Append close button to the upper right
+		$menuTarget.append(
 			$j.button({
-				'icon' : 'circle-close'				
+				'icon' : 'circle-close'
 			})
 			.css({
-				'float' : 'right', 
+				'float' : 'right',
 				'right':'-6px',
 				'top':'-9px'
 			})
@@ -184,16 +184,16 @@ mw.SequencerMenu.prototype = {
 				_this.sequencer.getActionsSequence().exit();
 			})
 		);
-			
+
 		// Check if we should include kaltura credits
 		if( mw.getConfig( 'Sequencer.KalturaAttribution' ) ){
 			$menuTarget.append(
 				$j('<span />')
-				.css({ 
+				.css({
 					'float': 'right',
 					'font-size': '10.5px'
 				})
-				.append( 
+				.append(
 					gM('mwe-sequencer-sequencer_credit_line',
 						'http://kaltura.com',
 						'http://wikimedia.org'
@@ -203,13 +203,13 @@ mw.SequencerMenu.prototype = {
 		}
 	},
 	/**
-	 * Sync an in-dom menu with the menuConfig state 
+	 * Sync an in-dom menu with the menuConfig state
 	 */
 	syncMenuState: function( menuKey ){
 		var _this = this;
 		var menuConfig = this.menuConfig;
 		for( var menuItemKey in _this.menuConfig[ menuKey ] ){
-			var $menuItem = $j( '#' + _this.getMenuItemId( menuKey, menuItemKey ) );			
+			var $menuItem = $j( '#' + _this.getMenuItemId( menuKey, menuItemKey ) );
 			var isDisabled = _this.menuConfig[ menuKey ][ menuItemKey ].disabled;
 			mw.log('sync: ' + menuItemKey + ' in-dom:' + $menuItem.length + ' isd:' + isDisabled);
 			if( $menuItem.hasClass( 'disabled') ){
@@ -224,7 +224,7 @@ mw.SequencerMenu.prototype = {
 		}
 	},
 	/**
-	 * Return a top menuItem with all its associated menuItems 
+	 * Return a top menuItem with all its associated menuItems
 	 */
 	getMenuSet: function( menuKey ){
 		var _this = this;
@@ -233,45 +233,45 @@ mw.SequencerMenu.prototype = {
 		var $menu = $j( '<ul />' )
 			.attr({
 				'id' : _this.sequencer.id + '_' + menuKey + '_content',
-				'title' : gM('mwe-sequencer-menu-' + menuKey ) 
+				'title' : gM('mwe-sequencer-menu-' + menuKey )
 			})
 			.addClass('sequencer-menu');
-		
+
 		for( var menuItemKey in menuConfig[ menuKey ] ){
 			var menuItem = this.menuConfig[ menuKey ][ menuItemKey ];
 			// Check for special divider key
-			if( menuItem == 'divider'){				
+			if( menuItem == 'divider'){
 				$menu.append(
 					$j('<li />')
 					.addClass('divider')
 					.append( $j('<hr />').css('width', '80%') )
-				);	
+				);
 				continue;
-			} 
-			
+			}
+
 			// Check if we have a conditional include
-			if( menuItem.condition && 
+			if( menuItem.condition &&
 				typeof menuItem.condition == 'function' &&
-				!menuItem.condition( _this ) 
+				!menuItem.condition( _this )
 			){
 				continue;
 			}
-					
-			// Do a normal menu item include:  		
-			$menu.append(				
+
+			// Do a normal menu item include:
+			$menu.append(
 				_this.getMenuItem( menuKey, menuItemKey )
-			);			
+			);
 		}
 		return $menu;
 	},
-	// Get menu item 
+	// Get menu item
 	getMenuItem: function( menuKey, menuItemKey ){
 		var _this = this;
 		var menuItem = this.menuConfig[ menuKey ][ menuItemKey ];
-		
-		var $li = $j.getLineItem( 
+
+		var $li = $j.getLineItem(
 			gM('mwe-sequencer-menu-' + menuKey + '-' + menuItemKey ),
-			menuItem.icon, 
+			menuItem.icon,
 			function(){
 				if( typeof menuItem.action == 'function'){
 					return menuItem.action( _this );
@@ -279,50 +279,50 @@ mw.SequencerMenu.prototype = {
 				return true;
 			}
 		);
-		
+
 		// Check if the menu item has a direct link:
 		if( menuItem.href ) {
 			$li.find('a').attr({ 'href' : menuItem.href, 'target' : '_new' } );
 		}
-		
+
 		if( menuItem.disabled === true ){
 			$li.addClass( 'disabled' );
-		}		
-		
+		}
+
 		// Set the ID for easy reference
-		$li.attr( 'id',  _this.getMenuItemId( menuKey, menuItemKey ) );
-		
+		$li.attr( 'id', _this.getMenuItemId( menuKey, menuItemKey ) );
+
 		// Set the tooltip / title if provided
 		if( mw.Language.isMsgKeyDefined( 'mwe-sequencer-menu-' + menuKey + '-' + menuItemKey + '-desc' ) ){
 			$li.attr( 'title', gM('mwe-sequencer-menu-' + menuKey + '-' + menuItemKey + '-desc') );
 		}
-		
+
 		return $li;
 	},
-	
-	disableMenuItem: function( menuKey, menuItemKey ){			
-		this.menuConfig[ menuKey ][ menuItemKey ].disabled = true;		
+
+	disableMenuItem: function( menuKey, menuItemKey ){
+		this.menuConfig[ menuKey ][ menuItemKey ].disabled = true;
 		$menuItemTarget = $j('#' + this.getMenuItemId( menuKey, menuItemKey ) );
-		
+
 		mw.log("SequencerMenu::disable:" + ' ' + menuKey + ' ' + menuItemKey + ' in-dom:' + $menuItemTarget.length );
 		if( $menuItemTarget.length && ! $menuItemTarget.hasClass( 'disabled' ) ){
 			$menuItemTarget.addClass( 'disabled' );
 		}
 	},
-	
-	enableMenuItem: function( menuKey, menuItemKey ){		
+
+	enableMenuItem: function( menuKey, menuItemKey ){
 		if( !this.menuConfig[ menuKey ] || !this.menuConfig[ menuKey ][ menuItemKey ] ){
 			mw.log("Error: SequencerMenu: " + menuKey + ' ' + menuItemKey + ' is not defined');
 		}
-		this.menuConfig[ menuKey ][ menuItemKey ].disabled = false;		
+		this.menuConfig[ menuKey ][ menuItemKey ].disabled = false;
 		$menuItemTarget = $j('#' + this.getMenuItemId( menuKey, menuItemKey ) );
-		
+
 		mw.log("SequencerMenu::enable:" + menuKey + ' ' + menuItemKey + ' in-dom:' + $menuItemTarget.length );
 		if( $menuItemTarget.length && $menuItemTarget.hasClass( 'disabled' ) ){
 			$menuItemTarget.removeClass( 'disabled' );
-		}		
+		}
 	},
-	
+
 	getMenuItemId: function( menuKey, menuItemKey ){
 		return 'menuItem_' + this.sequencer.id + '_' + menuKey + '_' + menuItemKey;
 	}

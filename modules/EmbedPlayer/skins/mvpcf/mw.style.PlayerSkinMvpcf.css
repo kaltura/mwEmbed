@@ -1,5 +1,5 @@
 /**
- * reference player skin 
+ * reference player skin
  */
 
 
@@ -18,8 +18,8 @@
 	height: 305px;
 }
 .mv-player .control-bar {
-	height: 29px;	
-	z-index: 2;	
+	height: 29px;
+	z-index: 2;
 }
 .mv-player .controlInnerSmall {
 /*	width: 430px;*/
@@ -55,7 +55,7 @@
 	width: 22px;
 	height: 29px;
 	padding: 0 0 0 0;
-	
+
 }
 
 .mv-player .vol_container{
@@ -72,18 +72,18 @@
 	top:-77px;
 }
 .mv-player .vol_container .volume-slider{
-	margin-top:5px;	
+	margin-top:5px;
 	height:65px;
 	width:10px;
 	margin-left: auto ;
-	margin-right: auto ;	
+	margin-right: auto ;
 }
 .mv-player .vol_container .ui-slider-handle{
 	cursor : pointer;
 	width:10px;
-	height:10px;	
+	height:10px;
 	position:absolute;
-	left:-1px;		
+	left:-1px;
 }
 
 .mv-player .time-disp {
@@ -99,23 +99,23 @@
 
 .mv-player .play_head{
 	float: left;
-	display: inline;	
+	display: inline;
 	height: 10px;
 	margin-left:8px;
 	margin-top:10px;
-	position:relative;	
+	position:relative;
 }
 
 .mv-player .play_head .ui-slider-handle{
 	width:10px;
 	height:15px;
 	margin-left:-5px;
-	margin-top: -0px;	
+	margin-top: -0px;
 	z-index: 2;
 }
 
 .mv-player .inOutSlider .ui-slider-handle{
-	width:8px;	
+	width:8px;
 	cusror: move;
 }
 
@@ -152,7 +152,7 @@
 
 .mv-player .overlay-win{
 	font-family : arial,sans-serif;
-	font-size : 85%;	
+	font-size : 85%;
 }
 .mv-player .overlay-win a{
 	text-decoration: none;

@@ -3,7 +3,7 @@
 */
 
 /**
- * jQuery helper for input focus binding 
+ * jQuery helper for input focus binding
  */
 ( function( $ ) {
 	$.fn.sequencerInput = function( sequencer ) {
@@ -15,7 +15,7 @@
 				sequencer.getKeyBindings().onBlur();
 			})
 		return this;
-	}		
+	}
 } )( jQuery );
 
 mw.SequencerKeyBindings = function( sequencer ) {
@@ -26,19 +26,19 @@ mw.SequencerKeyBindings.prototype = {
 	shiftDown: false,
 	ctrlDown: false,
 	/* events */
-	
+
 	init: function( sequencer ){
 		this.sequencer = sequencer;
-		this.setupKeyBindigs()		
+		this.setupKeyBindigs()
 	},
-	onFocus: function( ){				
-		this.inputFocus = true;		
+	onFocus: function( ){
+		this.inputFocus = true;
 		mw.log("text focus");
 	},
 	onBlur: function(){
 		this.inputFocus = false;
 		mw.log("text blur");
-	},	
+	},
 	setupKeyBindigs: function(){
 		var _this = this;
 		// Set up key bindings
@@ -58,7 +58,7 @@ mw.SequencerKeyBindings.prototype = {
 
 			// Paste cips on v + ctrl while not focused on a text area:
 			if ( ( e.which == 86 && _this.ctrlDown ) && !_this.inputFocus )
-				$j( _this ).trigger( 'paste ');			
+				$j( _this ).trigger( 'paste ');
 		} );
 		$j( window ).keyup( function( e ) {
 			mw.log( 'SequencerKeyBindings::key up on ' + e.which );
@@ -71,13 +71,13 @@ mw.SequencerKeyBindings.prototype = {
 
 			// Escape key ( deselect )
 			if ( e.which == 27 )
-				$j( _this ).trigger( 'escape' );				
+				$j( _this ).trigger( 'escape' );
 
 
 			// Backspace or Delete key while not focused on a text area:
 			if ( ( e.which == 8 || e.which == 46 ) && !_this.inputFocus )
 				$j( _this ).trigger( 'delete' );
-						
+
 		} );
 	}
 };

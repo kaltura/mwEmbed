@@ -14,8 +14,8 @@ mw.EmbedPlayerJava = {
 
 	// Instance name:
 	instanceOf: 'Java',
-	
-	// Supported feature set of the cortado applet: 		
+
+	// Supported feature set of the cortado applet:
 	supports: {
 		'playHead' : true,
 		'pause' : true,
@@ -24,24 +24,24 @@ mw.EmbedPlayerJava = {
 		'timeDisplay' : true,
 		'volumeControl' : false
 	},
-	
+
 	/**
 	* Output the the embed html
 	*/
 	doEmbedHTML: function () {
 		var _this = this;
 		mw.log( "java play url:" + this.getSrc( this.seek_time_sec ) );
-		
-		var applet_loc = this.getAppletLocation();				
-		
+
+		var applet_loc = this.getAppletLocation();
+
 		mw.log('Applet location: ' + applet_loc );
 		mw.log('Play media: ' + this.getSrc() );
-		
+
 		// load directly in the page..
 		// (media must be on the same server or applet must be signed)
 		var appletCode = '' +
 		'<applet id="' + this.pid + '" code="com.fluendo.player.Cortado.class" ' +
-		'archive="' + applet_loc  + '" width="' + parseInt( this.getWidth() ) + '" ' +
+		'archive="' + applet_loc + '" width="' + parseInt( this.getWidth() ) + '" ' +
 		'height="' + parseInt( this.getHeight() ) + '">	' + "\n" +
 			'<param name="url" value="' + this.getSrc() + '" /> ' + "\n" +
 			'<param name="local" value="false"/>' + "\n" +
@@ -50,19 +50,19 @@ mw.EmbedPlayerJava = {
 			'<param name="showStatus" value="hide" />' + "\n" +
 			'<param name="audio" value="true" />' + "\n" +
 			'<param name="seekable" value="true" />' + "\n";
-		
-		// Add the duration attribute if set:	
+
+		// Add the duration attribute if set:
 		if( this.getDuration() ){
-			appletCode += '<param name="duration" value="' + parseFloat( this.getDuration() )  + '" />' + "\n";
+			appletCode += '<param name="duration" value="' + parseFloat( this.getDuration() ) + '" />' + "\n";
 		}
-		
+
 			appletCode += '<param name="bufferSize" value="4096" />' + "\n" +
 		'</applet>';
-		
+
 		$j( this ).html( appletCode );
-				
+
 		// Wrap it in an iframe to avoid hanging the event thread in FF 2/3 and similar
-		// NOTE:  This breaks reference to the applet so disabled for now: 
+		// NOTE:  This breaks reference to the applet so disabled for now:
 		/*if ( $j.browser.mozilla ) {
 			var iframe = document.createElement( 'iframe' );
 			iframe.setAttribute( 'width', this.getWidth() );
@@ -72,103 +72,103 @@ mw.EmbedPlayerJava = {
 			iframe.setAttribute( 'marginWidth', 0 );
 			iframe.setAttribute( 'marginHeight', 0 );
 			iframe.setAttribute( 'id', 'cframe_' + this.id )
-			
-			// Append the iframe to the embed object: 
+
+			// Append the iframe to the embed object:
 			$j( this ).html( iframe );
-			
-			// Write out the iframe content: 
+
+			// Write out the iframe content:
 			var newDoc = iframe.contentDocument;
 			newDoc.open();
 			newDoc.write( '<html><body>' + appletCode + '</body></html>' );
 			// spurious error in some versions of FF, no workaround known
-			newDoc.close(); 
+			newDoc.close();
 		} else {
 			$j( this ).html( appletCode );
-		//}	
-		*/		
-		
-		// Start the monitor: 
+		//}
+		*/
+
+		// Start the monitor:
 		_this.monitor();
 	},
-	
+
 	/**
 	* Get the applet location
 	*/
 	getAppletLocation: function() {
 		var mediaSrc = this.getSrc();
 		var applet_loc = false;
-		if ( 
-			!mw.isLocalDomain( mediaSrc ) 
-			|| 
-			!mw.isLocalDomain( mw.getMwEmbedPath() 
+		if (
+			!mw.isLocalDomain( mediaSrc )
 			||
-			mw.getConfig( 'relativeCortadoAppletPath' ) === false ) 
+			!mw.isLocalDomain( mw.getMwEmbedPath()
+			||
+			mw.getConfig( 'relativeCortadoAppletPath' ) === false )
 		){
 			if ( window.cortadoDomainLocations[ mw.parseUri( mediaSrc ).host ] ) {
-				applet_loc =  window.cortadoDomainLocations[ mw.parseUri( mediaSrc ).host ];
+				applet_loc = window.cortadoDomainLocations[ mw.parseUri( mediaSrc ).host ];
 			} else {
-				applet_loc  = 'http://theora.org/cortado.jar';
+				applet_loc = 'http://theora.org/cortado.jar';
 			}
 		} else {
-			// Get the local relative cortado applet location: 
-			applet_loc = mw.getConfig( 'relativeCortadoAppletPath' );		
+			// Get the local relative cortado applet location:
+			applet_loc = mw.getConfig( 'relativeCortadoAppletPath' );
 		}
 		return applet_loc;
 	},
-	
+
 	/**
 	* Get the embed player time
 	*/
 	getPlayerElementTime: function() {
-		this.getPlayerElement();	
-		var currentTime = 0; 
+		this.getPlayerElement();
+		var currentTime = 0;
 		if ( this.playerElement ) {
 				try {
-				   // java reads ogg media time.. so no need to add the start or seek offset:
-				   //mw.log(' ct: ' + this.playerElement.getPlayPosition() + ' ' +  this.supportsURLTimeEncoding());
-					
-				   currentTime = this.playerElement.currentTime;
-				   if ( this.currentTime < 0 ) {
-				   		mw.log( 'pp:' +  this.currentTime );
-						// Probably reached clip ( should fire ondone event instead )				
+					// java reads ogg media time.. so no need to add the start or seek offset:
+					//mw.log(' ct: ' + this.playerElement.getPlayPosition() + ' ' + this.supportsURLTimeEncoding());
+
+					currentTime = this.playerElement.currentTime;
+					if ( this.currentTime < 0 ) {
+						mw.log( 'pp:' + this.currentTime );
+						// Probably reached clip ( should fire ondone event instead )
 						this.onClipDone();
-				   }
+					}
 				} catch ( e ) {
-				   mw.log( 'could not get time from jPlayer: ' + e );
+					mw.log( 'could not get time from jPlayer: ' + e );
 				}
 		}else{
 			mw.log(" could not find playerElement " );
 		}
 		return currentTime;
 	},
-	
+
 	/**
-	* Seek in the ogg stream 
-	* ( Cortado seek does not seem to work very well )  
+	* Seek in the ogg stream
+	* ( Cortado seek does not seem to work very well )
 	* @param {Float} percentage Percentage to seek into the stream
 	*/
-	doSeek: function( percentage ) {	
-		mw.log( 'java:seek:p: ' + percentage + ' : '  + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seek_time_sec );
+	doSeek: function( percentage ) {
+		mw.log( 'java:seek:p: ' + percentage + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seek_time_sec );
 		this.getPlayerElement();
-		
+
 		if ( this.supportsURLTimeEncoding() ) {
-			this.parent_doSeek( percentage );			
+			this.parent_doSeek( percentage );
 		} else if ( this.playerElement ) {
-		   // do a (generally broken) local seek:   
-		   mw.log( "Cortado seek is not very accurate :: doSeek::" + ( percentage * parseFloat( this.getDuration() ) ) );
-		   this.playerElement.currentTime = ( percentage * parseFloat( this.getDuration() )  );
+			// do a (generally broken) local seek:
+			mw.log( "Cortado seek is not very accurate :: doSeek::" + ( percentage * parseFloat( this.getDuration() ) ) );
+			this.playerElement.currentTime = ( percentage * parseFloat( this.getDuration() ) );
 		} else {
-			this.doPlayThenSeek( percentage );		
+			this.doPlayThenSeek( percentage );
 		}
-		
+
 		// Run the onSeeking interface update
 		this.controlBuilder.onSeek();
 	},
-	
+
 	/**
 	* Issue a play request then seek to a percentage point in the stream
 	* @param {Float} percentage Percentage to seek into the stream
-	*/	
+	*/
 	doPlayThenSeek: function( percentage ) {
 		mw.log( 'doPlayThenSeek' );
 		var _this = this;
@@ -176,11 +176,11 @@ mw.EmbedPlayerJava = {
 		var rfsCount = 0;
 		var readyForSeek = function() {
 			_this.getPlayerElement();
-			// if we have .jre ~in theory~ we can seek (but probably not) 
+			// if we have .jre ~in theory~ we can seek (but probably not)
 			if ( _this.playerElement ) {
 				_this.doSeek( perc );
 			} else {
-				// try to get player for 10 seconds: 
+				// try to get player for 10 seconds:
 				if ( rfsCount < 200 ) {
 					setTimeout( readyForSeek, 50 );
 					rfsCount++;
@@ -191,9 +191,9 @@ mw.EmbedPlayerJava = {
 		}
 		readyForSeek();
 	},
-	
+
 	/**
-	* Update the playerElement instance with a pointer to the embed object 
+	* Update the playerElement instance with a pointer to the embed object
 	*/
 	getPlayerElement: function() {
 		if( !$j( '#' + this.pid ).length ) {
@@ -202,15 +202,15 @@ mw.EmbedPlayerJava = {
 		//mw.log( 'getPlayerElement::' + this.pid );
 		this.playerElement = $j( '#' + this.pid ).get( 0 );
 		//this.playerElement = document.applets[ 0 ];
-		// NOTE we are currently not using the iframe embed method: 		
+		// NOTE we are currently not using the iframe embed method:
 		//if ( $j.browser.mozilla ) {
-		//	this.playerElement  = $j('#cframe_' + this.id).contents().find( '#' +  this.pid );							
+		//	this.playerElement = $j('#cframe_' + this.id).contents().find( '#' + this.pid );
 		//} else {
 		//	this.playerElement = $j( '#' + this.pid ).get( 0 );
 		//}
 		return this.playerElement;
-	},	
-	
+	},
+
 	/**
 	* Issue the doPlay request to the playerElement
 	*	calls parent_play to update interface
@@ -226,16 +226,16 @@ mw.EmbedPlayerJava = {
 			}
 		}
 	},
-	
+
 	/**
 	* Pause playback
 	* 	calls parent_pause to update interface
-	*/	
+	*/
 	pause: function() {
 		this.getPlayerElement();
 		// Update the interface
 		this.parent_pause();
-		// Call the pause function if it exists:		
+		// Call the pause function if it exists:
 		if ( this.playerElement ) {
 			this.playerElement.pause();
 		}

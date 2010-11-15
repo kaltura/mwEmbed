@@ -49,7 +49,7 @@ class NamedResourceLoader {
 		wfProfileIn( $fname );
 
 
-		$mwEmbedAbsolutePath = ( $wgMwEmbedDirectory == '' ) ? $IP :  $IP .'/' .$wgMwEmbedDirectory;
+		$mwEmbedAbsolutePath = ( $wgMwEmbedDirectory == '' ) ? $IP : $IP .'/' .$wgMwEmbedDirectory;
 		// Add the mwEmbed localizations
 		$wgExtensionMessagesFiles[ 'mwEmbed' ] = $mwEmbedAbsolutePath . '/mwEmbed.i18n.php';
 
@@ -90,7 +90,7 @@ class NamedResourceLoader {
 		}
 
 		// Get all the classes from the enabled mwEmbed modules folder
-		foreach( self::$moduleList as  $na => $moduleName ) {
+		foreach( self::$moduleList as $na => $moduleName ) {
 			$relativeSlash = ( $wgMwEmbedDirectory == '' )? '' : '/';
 			$modulePath = $wgMwEmbedDirectory . $relativeSlash . 'modules/' . $moduleName;
 			self::proccessModulePath( $moduleName, $modulePath );
@@ -124,7 +124,7 @@ class NamedResourceLoader {
 		self::$directoryContext = $modulePath;
 
 		// Check for the loader.js
-		if( !is_file(  $modulePath . '/loader.js' ) ){
+		if( !is_file( $modulePath . '/loader.js' ) ){
 			throw new MWException( "Javascript Module $moduleName missing loader.js file\n" );
 			return false;
 		}
@@ -151,7 +151,7 @@ class NamedResourceLoader {
 	 */
 	private static function proccessLoaderContent( & $fileContent , $moduleName){
 		// Add the mwEmbed loader js to its global collector:
-		self::$combinedLoadersJs .=  $fileContent;
+		self::$combinedLoadersJs .= $fileContent;
 
 		// Is there a way to pass arguments in preg_replace_callback ?
 		self::$currentModuleName = $moduleName;
@@ -169,7 +169,7 @@ class NamedResourceLoader {
 	 */
 	public static function getLanguageJs( $langKey = 'en' ){
 		global $wgMwEmbedDirectory;
-		$path =  $wgMwEmbedDirectory . '/languages/classes/Language' . ucfirst( $langKey ) . '.js';
+		$path = $wgMwEmbedDirectory . '/languages/classes/Language' . ucfirst( $langKey ) . '.js';
 		if( is_file( $path ) ){
 			$languageJs = file_get_contents( $path );
 			return $languageJs;
@@ -231,7 +231,7 @@ class NamedResourceLoader {
 		}
 		$moduleSet = explode(',', $jsvar[1] );
 
-		$mwEmbedAbsolutePath = ( $wgMwEmbedDirectory == '' )? $IP:  $IP .'/' .$wgMwEmbedDirectory;
+		$mwEmbedAbsolutePath = ( $wgMwEmbedDirectory == '' )? $IP: $IP .'/' .$wgMwEmbedDirectory;
 
 		foreach( $moduleSet as $na => $moduleName ) {
 			// Skip empty module names
@@ -272,7 +272,7 @@ class NamedResourceLoader {
 		foreach ( $jClassSet as $resourceName => $classPath ) {
 			// Strip $ from resource (as they are stripped on URL request parameter input)
 			$resourceName = str_replace( '$', '', $resourceName );
-			$classPath =  ( self::$directoryContext == '' )? $classPath :  self::$directoryContext . '/' . $classPath;
+			$classPath = ( self::$directoryContext == '' )? $classPath : self::$directoryContext . '/' . $classPath;
 
 			// Throw an error if we already have defined this class:
 			// This prevents a module from registering a shared class

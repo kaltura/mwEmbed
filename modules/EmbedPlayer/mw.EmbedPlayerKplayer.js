@@ -42,7 +42,7 @@ mw.EmbedPlayerKplayer = {
 		// Use a relative url if the protocal is file://		
 		if( mw.parseUri( document.URL).protocol == 'file' ) {
 			playerPath = mw.getRelativeMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';				
-			flashvars.entryId  =  _this.getSrc();			
+			flashvars.entryId = _this.getSrc();			
 		}
 		
 		flashvars.debugMode = "true";
@@ -92,18 +92,17 @@ mw.EmbedPlayerKplayer = {
 		
 		// Direct object embed
 		/*$j( this ).html(
-		 '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="780" height="420">'+
-	        '<param name="movie" value="myContent.swf" />'+
-	        '<!--[if !IE]>-->'+
-	        '<object type="application/x-shockwave-flash" data="myContent.swf" width="780" height="420">'+
-	        '<!--<![endif]-->'+
-	          '<p> error with flash embed</p>'
-	        '<!--[if !IE]>-->'+
-	        '</object>'+
-	        '<!--<![endif]-->'+
-	      '</object>'
-	   )*/
-
+		'<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="780" height="420">'+
+			'<param name="movie" value="myContent.swf" />'+
+			'<!--[if !IE]>-->'+
+			'<object type="application/x-shockwave-flash" data="myContent.swf" width="780" height="420">'+
+			'<!--<![endif]-->'+
+			'<p> error with flash embed</p>'
+			'<!--[if !IE]>-->'+
+			'</object>'+
+			'<!--<![endif]-->'+
+			'</object>'
+		)*/
 		
 		setTimeout( function() {
 			_this.postEmbedJS();							
@@ -125,21 +124,20 @@ mw.EmbedPlayerKplayer = {
 	postEmbedJS:function() {
 		var _this = this;
 		this.getPlayerElement();		
-		
-		var bindEventMap = {
-			'doPause' : 'onPause',
-			'doPlay' : 'onPlay',
-			'durationChange' : 'onDurationChange',
-			'playerPlayEnd' : 'onClipDone',
-			'playerUpdatePlayhead' : 'onUpdatePlayhead',
-			'bytesTotalChange' : 'onBytesTotalChange',
-			'bytesDownloadedChange' : 'onBytesDownloadedChange'				
-		}
-		
+								
 		if( this.playerElement && this.playerElement.addJsListener ) {			
-			$j.each( bindEventMap, function( bindName, localMethod ){
-				_this.bindPlayerFunction( bindName, localMethod );
-			});								
+			
+			// Add KDP listeners						
+			_this.bindPlayerFunction( 'doPause', 'onPause' );
+			_this.bindPlayerFunction( 'doPlay', 'onPlay' );
+			_this.bindPlayerFunction( 'durationChange', 'onDurationChange');
+			_this.bindPlayerFunction( 'playerPlayEnd', 'onClipDone' );
+			_this.bindPlayerFunction( 'playerUpdatePlayhead', 'onUpdatePlayhead' );
+			
+			// Buffering
+			_this.bindPlayerFunction( 'bytesTotalChange', "onBytesTotalChange" );
+			_this.bindPlayerFunction( 'bytesDownloadedChange', "onBytesDownloadedChange" );
+											
 			// Start the monitor
 			this.monitor();
 		}else{
@@ -159,21 +157,10 @@ mw.EmbedPlayerKplayer = {
 	* @param {String} flash binding name
 	* @param {String} function callback name
 	*/
-	bindPlayerFunction: function( bindName, methodName ) {
-		// The kaltura kdp can only call a global function by given name
-		var gKdpCallbackName = methodName + '_cb_' + this.id;
-
-		// Create an anonymous function with local scope player
-		var createGlobalCB = function( cName, embedPlayer ){			
-			window[ cName ] = function( data ){
-				if( embedPlayer._propagateEvents ){
-					embedPlayer[ methodName ]( data );
-				}
-			};
-		}( gKdpCallbackName, this );
-		
-		// Add the listener to the KDP flash player: 
-		this.playerElement.addJsListener( bindName , gKdpCallbackName);
+	bindPlayerFunction: function( bName, fName ) {
+		var cbid = fName + '_cb_' + this.id.replace(' ', '_');
+		eval( 'window[ \'' + cbid +'\' ] = function( data ) {$j(\'#' + this.id + '\').get(0).'+ fName +'( data );}' );
+		this.playerElement.addJsListener( bName , cbid);
 	},
 	
 	/**
@@ -229,7 +216,7 @@ mw.EmbedPlayerKplayer = {
 		if ( this.supportsURLTimeEncoding() ){
 			
 			// 	Make sure we could not do a local seek instead:
-			if ( !( percentage <  this.bufferedPercent &&  this.playerElement.duration &&  !this.didSeekJump )) {
+			if ( !( percentage < this.bufferedPercent && this.playerElement.duration && !this.didSeekJump )) {
 			// We support URLTimeEncoding call parent seek:
 				this.parent_doSeek( percentage );
 				return;
@@ -239,7 +226,7 @@ mw.EmbedPlayerKplayer = {
 		if( this.playerElement ) {
 			var seekTime = percentage * this.getDuration();			
 			// Issue the seek to the flash player:
-			this.playerElement.sendNotification('doSeek',  seekTime);
+			this.playerElement.sendNotification('doSeek', seekTime);
 			
 			// Kdp is missing seek done callback
 			setTimeout(function() {
@@ -274,7 +261,7 @@ mw.EmbedPlayerKplayer = {
 			if ( _this.playerElement && _this.playerElement.sendNotification && _this.getDuration() && _this.bufferedPercent ) {			
 				var seekTime = percentage * _this.getDuration(); 				
 				// Issue the seek to the flash player:
-				_this.playerElement.sendNotification('doSeek',  seekTime);
+				_this.playerElement.sendNotification('doSeek', seekTime);
 			} else {
 				// Try to get player for 20 seconds: 
 				if ( getPlayerCount < 400 ) {
@@ -309,7 +296,7 @@ mw.EmbedPlayerKplayer = {
 	* function called by flash when the total media size changes
 	*/ 
 	onBytesTotalChange: function(data, id) {
-		this.bytesTotal =  data.newValue ;
+		this.bytesTotal = data.newValue ;
 	},
 	
 	/**
@@ -318,11 +305,11 @@ mw.EmbedPlayerKplayer = {
 	onBytesDownloadedChange: function( data, id){
 		mw.log( 'onBytesDownloadedChange');
 		this.bytesLoaded = data.newValue;
-		this.bufferedPercent  = this.bytesLoaded / this.bytesTotal;
+		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
 		
 		// Fire the parent html5 action
 		$j( this ).trigger( 'progress', {
-			'loaded' : this.bytesLoaded,  
+			'loaded' : this.bytesLoaded,
 			'total' : this.bytesTotal
 		} );
 	},

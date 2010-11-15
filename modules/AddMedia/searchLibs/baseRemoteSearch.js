@@ -1,6 +1,6 @@
 /**
-* Base remote search Object. 
-* provides the base class for the other search system to extend. 
+* Base remote search Object.
+* provides the base class for the other search system to extend.
 */
 mw.addMessages( {
 	"mwe-imported_from" : "$1 imported from [$2 $3]. See the original [$4 resource page] for more information.",
@@ -9,16 +9,16 @@ mw.addMessages( {
 
 /**
 * rsd_default_rss_item_mapping
-* 
+*
 *  @key is name of resource variable
 *  @value is where to find the value in the item xml
-* 
+*
 *  *value format:*
-*  . indicates multiple tags 
+*  . indicates multiple tags
 *  @ separates the tag from attribute list
 *  {.}tag_name@{attribute1|attribute2}
 *
-* Also see mapAttributeToResource function bellow 
+* Also see mapAttributeToResource function bellow
 *
 * FIXME should switch this over to something like Xpath if we end up parsing a lot of rss formats
 */
@@ -32,7 +32,7 @@ var rsd_default_rss_item_mapping = {
 	'link'		: 'link',
 	'desc'		: 'description',
 	// multiple items
-	'category'  : '.media:category@label|url'
+	'category'	: '.media:category@label|url'
 };
 
 var baseRemoteSearch = function( options ) {
@@ -42,10 +42,10 @@ baseRemoteSearch.prototype = {
 
 	// Number of completed requests
 	completed_req:0,
-	
+
 	// Number of requests
 	num_req:0,
-	
+
 	// ResultsObj holds the array of results
 	resultsObj: { },
 
@@ -56,46 +56,46 @@ baseRemoteSearch.prototype = {
 	num_results		: 0,
 
 	/**
-	* Initialize the baseRemoteSearch 
+	* Initialize the baseRemoteSearch
 	* @param {Object} options The set of options for the remote search class
 	*/
-	init: function( options ) {	
+	init: function( options ) {
 		mw.log( 'mvBaseRemoteSearch:init' );
 		for ( var i in options ) {
 			this[i] = options[i];
 		}
 		return this;
 	},
-	
+
 	getResourceFromUrl: function( url, callback ){
-		mw.log("Error getResourceFromUrl must be implemented by remoteSearch provider");	
+		mw.log("Error getResourceFromUrl must be implemented by remoteSearch provider");
 	},
-	
+
 	/**
-	* Base search results 
-	* Does some common initialisation for search results  	
-	* @param {String} search_query Text search string 
+	* Base search results
+	* Does some common initialisation for search results
+	* @param {String} search_query Text search string
 	*/
-	getSearchResults: function( search_query , callback ) {		
+	getSearchResults: function( search_query , callback ) {
 		// Empty out the current results before issuing a request
 		this.resultsObj = { };
-		
+
 		// Do global getSearchResults bindings
 		this.last_query = search_query;
 		this.last_offset = this.provider.offset;
-		
-		// Get the provider specifc results 
+
+		// Get the provider specifc results
 		this.getProviderResults( search_query , callback);
 	},
-	
+
 	/**
 	* getProviderResults abstract method
 	*/
 	getProviderResults: function( searchQuery , calback) {
 		mw.log( 'Error: getProviderResults not set by provider' );
-		callback( 'error-provider' );  
+		callback( 'error-provider' );
 	},
-	
+
 	/**
 	* Clears Results
 	*/
@@ -103,7 +103,7 @@ baseRemoteSearch.prototype = {
 		this.resultsObj = { };
 		this.last_query = '';
 	},
-	
+
 	/*
 	* Parses and adds video rss based input format
 	*
@@ -116,15 +116,15 @@ baseRemoteSearch.prototype = {
 		var http_host = '';
 		var http_path = '';
 		if ( provider_url ) {
-			pUrl =  mw.parseUri( provider_url );
+			pUrl = mw.parseUri( provider_url );
 			http_host = pUrl.protocol + '://' + pUrl.authority;
 			http_path = pUrl.directory;
 		}
 		var items = data.getElementsByTagName( 'item' );
 		// mw.log('found ' + items.length );
-		$j.each( items, function( inx, item ) {	
+		$j.each( items, function( inx, item ) {
 			var resource = { };
-			for ( var attr in rsd_default_rss_item_mapping ) {				
+			for ( var attr in rsd_default_rss_item_mapping ) {
 				_this.mapAttributeToResource( resource, item, attr );
 			}
 			// Make relative urls absolute:
@@ -135,7 +135,7 @@ baseRemoteSearch.prototype = {
 					if ( resource[p].substr( 0, 1 ) == '/' ) {
 						resource[p] = http_host + resource[p];
 					}
-					if ( mw.parseUri( resource[ j ] ).host ==  resource[p] ) {
+					if ( mw.parseUri( resource[ j ] ).host == resource[p] ) {
 						resource[p] = http_host + http_path + resource[p];
 					}
 				}
@@ -154,18 +154,18 @@ baseRemoteSearch.prototype = {
 			_this.num_results++;
 		} );
 	},
-	
+
 	/*
-	* Maps a given attribute to a resource object per mapping defined in 
+	* Maps a given attribute to a resource object per mapping defined in
 	* rsd_default_rss_item_mapping
 	*
 	* @param {Object} resource the resource object
 	* @param {XML Node} the xml result node
-	* @param {attr} the name attribute we are maping to the resource object 
+	* @param {attr} the name attribute we are maping to the resource object
 	*/
-	mapAttributeToResource: function( resource, item, attr ) {		
+	mapAttributeToResource: function( resource, item, attr ) {
 		var selector = rsd_default_rss_item_mapping[ attr ].split( '@' );
-		var flag_multiple = (  selector[0].substr( 0, 1 ) == '.' ) ? true : false;
+		var flag_multiple = ( selector[0].substr( 0, 1 ) == '.' ) ? true : false;
 		if ( flag_multiple ) {
 			resource[ attr ] = new Array();
 			var tag_name = selector[0].substr( 1 );
@@ -207,109 +207,109 @@ baseRemoteSearch.prototype = {
 			}
 		} );
 		// Nothing to return we update the "resource" directly
-	}, 
-	
+	},
+
 	/**
 	* Get the html representation of the resource Object parameter
 	*
 	* @param {Object} resource Resource Object to get embed HTML from
-	* @param {Object} options Embed HTML options can include: 
-	* 	'width', 'height' and 'max_height' 
+	* @param {Object} options Embed HTML options can include:
+	* 	'width', 'height' and 'max_height'
 	*/
 	getEmbedHTML: function( resource , options ) {
 		if ( !options )
-			options = { };			
-				
-		// Set up the output var with the default values: 
+			options = { };
+
+		// Set up the output var with the default values:
 		if(! options.width ) {
 			options.width = resource.width;
 		}
-		
+
 		if(! options.height ) {
 			options.height = resource.height;
 		}
-			
-		var outHtml  = '';
+
+		var outHtml = '';
 		if ( ! options['max_width'] ) {
 			options['max_width'] = 500;
 		}
 		options.width = ( options.max_width > resource.width ) ? resource.width : options.max_width;
-		options.height = ( resource.height / resource.width ) * options.width;						
-			
+		options.height = ( resource.height / resource.width ) * options.width;
+
 		options.style = '';
 		if( options.height ) {
 			options.style += 'height:' + parseInt( options.height ) + 'px;';
 		}
 		if( options.width ) {
-			options.style += 'width:' + parseInt( options.width ) + 'px;';							
+			options.style += 'width:' + parseInt( options.width ) + 'px;';
 		}
-		// Check for image	
-		if ( resource.mime.indexOf( 'image/' ) != -1 ) {						
+		// Check for image
+		if ( resource.mime.indexOf( 'image/' ) != -1 ) {
 			return this.getImageEmbedHTML( resource, options );
 		}
-			
-		// Assume audio or video	
-			
-		// Setup the attribute html 
-		// NOTE: Can't use jQuery builder for video element, ( does not work consistently )			
-		var attributes = ( options['id'] ) ? ' id = "' + options['id'] + '" ': '';
-		attributes+=	'src="' +  mw.escapeQuotesHTML( resource.src ) + '" ' +			
-				// Set kskin, NOTE: should be config option
-				'class="kskin" ' +					   				
-				'style="' + options.style + '" ' +
-				'poster="' +   mw.escapeQuotesHTML( resource.poster ) + '" '+
-				'type="' +  mw.escapeQuotesHTML( resource.mime ) + '" ';
 
-		
+		// Assume audio or video
+
+		// Setup the attribute html
+		// NOTE: Can't use jQuery builder for video element, ( does not work consistently )
+		var attributes = ( options['id'] ) ? ' id = "' + options['id'] + '" ': '';
+		attributes+=	'src="' + mw.escapeQuotesHTML( resource.src ) + '" ' +
+				// Set kskin, NOTE: should be config option
+				'class="kskin" ' +
+				'style="' + options.style + '" ' +
+				'poster="' + mw.escapeQuotesHTML( resource.poster ) + '" '+
+				'type="' + mw.escapeQuotesHTML( resource.mime ) + '" ';
+
+
 		// Add the api title key if available:
 		if( resource.titleKey ) {
-			attributes+= 'apiTitleKey="' +  
+			attributes+= 'apiTitleKey="' +
 				mw.escapeQuotesHTML( resource.titleKey.replace('File:', '') ) + '" ';
 		}
-					
-		// Add the commons apiProvider if the resource is from commons	
-		// ( so that subtitles can be displayed / edited )		
+
+		// Add the commons apiProvider if the resource is from commons
+		// ( so that subtitles can be displayed / edited )
 		if( resource.pSobj.provider.id == 'wiki_commons'
 			|| resource.commonsShareRepoFlag
 		){
 			attributes+= 'apiProvider="commons" ';
 		}
-		
+
 		mw.log( 'baseRemoteSearch::getEmbedHTML::audio or video:' + attributes );
-		if (  resource.mime == 'application/ogg' || resource.mime == 'video/ogg'  ) {
+		if ( resource.mime == 'application/ogg' || resource.mime == 'video/ogg' ) {
 			return '<video ' + attributes + '></video>';
 		}
-				
+
 		if ( resource.mime == 'audio/ogg' ) {
 			return '<audio ' + attributes + '></audio>';
 		}
-						 
-		// No output give error: 
-		mw.log( "ERROR:: no embed code for mime type: " + resource.mime );	
-		return 'Error missing embed code for: ' + mw.escapeQuotesHTML( resource.mime );		
+
+		// No output give error:
+		mw.log( "ERROR:: no embed code for mime type: " + resource.mime );
+		return 'Error missing embed code for: ' + mw.escapeQuotesHTML( resource.mime );
 	},
-	
+
 	/*
-	* Wrap embed html with description div	
+	* Wrap embed html with description div
 	*/
-	getEmbedWithDescription: function( resource , options  ){
-		// Return the output. 			
-		return this.wrapHtmlDesc( 
-			resource, 
-			options, 
-			this.getEmbedHTML( resource, options ) 
-		);		
+	getEmbedWithDescription: function( resource , options ){
+		// Return the output.
+		return this.wrapHtmlDesc(
+			resource,
+			options,
+			this.getEmbedHTML( resource, options )
+		);
 	},
-	
+
 	/**
 	 * Wrap output html with resource description links
 	 * @param {Object} resource Resource object
 	 * @param {Object} options Resource description options
-	 * @param {String} outHtml Html to be wrapped. 
+	 * @param {String} outHtml Html to be wrapped.
 	 */
 	wrapHtmlDesc: function( resource, options, outHtml ) {
-		var stripedTitle =  resource.title.replace( /File:|Image:|.jpg|.png|.gif|.ogg|.ogv|.oga|.svg/ig, '');
-		
+		var stripedTitle = resource.title.replace( /File:|Image:|.jpg|.png|.gif|.ogg|.ogv|.oga|.svg/ig, '');
+
 		if( !options ){
 			options = {};
 		}
@@ -317,23 +317,23 @@ baseRemoteSearch.prototype = {
 		if( !options.width ){
 			options.width = ( resource.width > 600 )? 600 : resource.width;
 		}
-		
+
 		var $titleLink = $j( '<a />' )
 		.attr({
 			'title' : stripedTitle,
 			'href' : resource.link
 		})
 		.text( stripedTitle )
-		
+
 		var providerTitle = gM('rsd-' + this.provider.id + '-title');
-		
+
 		$providerLink = $j( '<a />')
-		.attr({			
+		.attr({
 			'href' : this.provider.homepage,
 			'title' : providerTitle
 		})
 		.text( providerTitle )
-		 									
+
 		$importResourceDiv = $j('<div />')
 		.addClass ( "mw-imported-resource" )
 		.css({
@@ -343,7 +343,7 @@ baseRemoteSearch.prototype = {
 			outHtml
 		)
 		.append(
-			gM( 'mwe-import-description',  [$titleLink, $providerLink]) 
+			gM( 'mwe-import-description', [$titleLink, $providerLink])
 		)
 		// return the $importResourceDiv html:
 		return $j('<div />').append( $importResourceDiv ).html();
@@ -352,46 +352,46 @@ baseRemoteSearch.prototype = {
 	* Get the embed html specifically for an image type resource Object.
 	*
 	* @param {Object} resource Resource to get embed html from
-	* @param {Object} options Embeding options 
+	* @param {Object} options Embeding options
 	*/
 	getImageEmbedHTML:function( resource, options ) {
-		// if crop is null do base output: 
+		// if crop is null do base output:
 		var $img = $j('<img />')
 		.attr({
 			'src' : resource.edit_url,
-			'style' : options.style 
-		});		
+			'style' : options.style
+		});
 		if( options['id'] ) {
 			$img.attr( 'id', options['id'] );
 		}
 		if ( resource.crop == null ) {
-			return  $j('<div />').append( $img ).html();
+			return $j('<div />').append( $img ).html();
 		}
 		// Else do crop output:
 		$cropHtml = $j('<div />')
 			.css({
 				'width' : resource.crop.w,
 				'height' : resource.crop.h,
-				'overflow' : 'hidden',				
-				'position' : 'relative'				
+				'overflow' : 'hidden',
+				'position' : 'relative'
 			})
 			.append(
 				$j('<div />')
 				.css({
 					'position' : 'relative',
 					'top' : '-' + resource.crop.y,
-					'left': '-' + resource.crop.x					
+					'left': '-' + resource.crop.x
 				})
 				.append( $img )
 			)
 		return $j('<div />').append( $cropHtml ).html();
 	},
-	
+
 	/**
 	* Get an image object from a requested transformation via callback
-	* ( letting api search implementations query the remote server for a 
-	*  given transformation )  
-	* 
+	* ( letting api search implementations query the remote server for a
+	*  given transformation )
+	*
 	* By default just return the existing image.
 	*
 	* @param {Object} resource Not used in base method
@@ -399,75 +399,75 @@ baseRemoteSearch.prototype = {
 	* @param {Function} callbcak Function called with returned image Object
 	*/
 	getImageObj:function( resource, size, callback ) {
-		callback( { 
-			'url' : resource.poster 
+		callback( {
+			'url' : resource.poster
 		} );
 	},
-	
+
 	/**
 	* Get the inline wikiText description of the resource Object
 	*/
 	getInlineDescWiki:function( resource ) {
-		// return striped html  & trim white space
+		// return striped html & trim white space
 		if ( resource.desc )
 			return $j.trim( resource.desc.replace(/(<([^>]+)>)/ig,"") );
-		// No Description available:  
+		// No Description available:
 		return '';
 	},
 	/**
 	* Get the license wikiText tag for a given resource Object.
 	*
-	* By default license permission wiki text is cc based template mapping 
+	* By default license permission wiki text is cc based template mapping
 	* (does not confirm the templates actually exist)
 	*/
 	getPermissionWikiTag: function( resource ) {
 		if ( !resource.license )
 			return '';// no license info
-			
-		// First check if we have a special license template tag already set: 
+
+		// First check if we have a special license template tag already set:
 		if( resource.license_template_tag )
 			return '{{' + resource.license_template_tag + '}}';
-			
+
 		// Check that its a defined creative commons license key:
-		if (  this.rsd.licenses.cc.licenses[ resource.license.key ] != 'undefined' ) {
+		if ( this.rsd.licenses.cc.licenses[ resource.license.key ] != 'undefined' ) {
 			return '{{Cc-' + resource.license.key + '}}';
 		} else if ( resource.license.lurl ) {
 			return '{{Template:External_License|' + resource.license.lurl + '}}';
 		}
 
 	},
-	
+
 	/**
 	* Get the resource import description text
 	*
 	* @param {Object} resource Resource to get description of
 	*/
 	getImportResourceDescWiki:function( resource ) {
-		return gM( 'mwe-imported_from', [resource.title,  this.provider.homepage, gM('rsd-' + this.provider.id + '-title'), resource.link] );
+		return gM( 'mwe-imported_from', [resource.title, this.provider.homepage, gM('rsd-' + this.provider.id + '-title'), resource.link] );
 	},
-	
+
 	/**
-	* Get any extra wikitext description for the given resource object. 
-	* For content outside of the main template description, 
-	* like categories or additional wikitext notes. 
+	* Get any extra wikitext description for the given resource object.
+	* For content outside of the main template description,
+	* like categories or additional wikitext notes.
 	*
-	* By default its an empty string. 
+	* By default its an empty string.
 	*/
 	getExtraResourceDescWiki:function( resource ) {
 		return '';
 	},
-	
-	/** 
-	* Get an image transformation 
+
+	/**
+	* Get an image transformation
 	* by default it just return the poster
 	*
 	* @param {Object} resource Resource for image transformation
-	* @param {Object} options Transformation options 
+	* @param {Object} options Transformation options
 	*/
 	getImageTransform:function( resource, options ) {
 		return resource.poster;
 	},
-	
+
 	/**
 	* Adds additional resource information from an embedding instance.
 	*
@@ -477,12 +477,12 @@ baseRemoteSearch.prototype = {
 	addEmbedInfo : function( resource, embed_id ) {
 		return resource;
 	},
-	
+
 	/**
-	* Adds resource info with a callback 
+	* Adds resource info with a callback
 	*
-	* Usefull for async grabbing extra info that is not available in the initial 
-	* search results api request. 
+	* Usefull for async grabbing extra info that is not available in the initial
+	* search results api request.
 	*
 	* For example see archive.org extra resource query
 	*
@@ -492,7 +492,7 @@ baseRemoteSearch.prototype = {
 	addResourceInfoCallback:function( resource, callback ) {
 		callback();
 	},
-	
+
 	/**
 	* Get the wiki embed code for a given resource object
 	*
@@ -515,7 +515,7 @@ baseRemoteSearch.prototype = {
 		o += ']]';
 		return o;
 	},
-	
+
 	/**
 	* Updates / normalizes the target_resource_title
 	*
@@ -527,9 +527,9 @@ baseRemoteSearch.prototype = {
 			resource.target_resource_title = this.provider.resource_prefix + resource.target_resource_title;
 		}
 	},
-	
+
 	/**
-	* Utily to convert from mime type to extension 
+	* Utily to convert from mime type to extension
 	*/
 	getMimeExtension: function( mime ) {
 		if( mime == 'video/ogg' || mime == 'application/ogg' )

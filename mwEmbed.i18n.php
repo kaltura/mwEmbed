@@ -2,7 +2,7 @@
 /**
  * Localization file for mwEmbed.js
  */
- 
+
 $messages = array();
 
 $messages['en'] = array(

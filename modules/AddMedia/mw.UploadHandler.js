@@ -1,14 +1,14 @@
 /**
- * The base upload interface. 
- * 
+ * The base upload interface.
+ *
  * Progress bars for http-copy-by-url uploading.
- * Ifame upload target 
+ * Ifame upload target
  *
  * This base upload class is optionally extended by Firefogg
  *
  */
-mw.addMessages( {		
-	"mwe-upload-stats-fileprogress" : "$1 of $2",	
+mw.addMessages( {
+	"mwe-upload-stats-fileprogress" : "$1 of $2",
 	"mwe-upload-unknown-size" : "Unknown size",
 	"mwe-cancel-confim" : "Are you sure you want to cancel?",
 	"mwe-successfulupload" : "Upload successful",
@@ -22,9 +22,9 @@ mw.addMessages( {
 	"mwe-ignorewarning" : "Ignore warning and save file anyway",
 	"mwe-file-thumbnail-no" : "The filename begins with <b><tt>$1<\/tt><\/b>",
 	"mwe-go-to-resource" : "Go to resource page",
-	"mwe-upload-misc-error" : "Unknown upload error",	
-	"mwe-wgfogg_warning_bad_extension" : "You have selected a file with an unsupported extension (<a href=\"http:\/\/commons.wikimedia.org\/wiki\/Commons:Firefogg#Supported_File_Types\">more information<\/a>).",	
-	"mwe-thumbnail-more" : "Enlarge",	
+	"mwe-upload-misc-error" : "Unknown upload error",
+	"mwe-wgfogg_warning_bad_extension" : "You have selected a file with an unsupported extension (<a href=\"http:\/\/commons.wikimedia.org\/wiki\/Commons:Firefogg#Supported_File_Types\">more information<\/a>).",
+	"mwe-thumbnail-more" : "Enlarge",
 	"mwe-license-header" : "{{int:license-header}}",
 	"mwe-filedesc" : "{{int:filedesc}}",
 	"mwe-filesource" : "Source:",
@@ -34,31 +34,31 @@ mw.addMessages( {
 var defaultUploadHandlerOptions = {
 	// Target api to upload to
 	'apiUrl' : null,
-	
+
 	// The selected form
 	'form' : null,
-	
+
 	// Callback for once the upload is done
 	'done_upload_cb' : null,
-	
+
 	// A selector for the form target
 	'form_selector' : null,
 
 	// Default upload mode is 'api'
 	'upload_mode' : 'api',
-	
-	// Callback for modifying form data on submit  
+
+	// Callback for modifying form data on submit
 	'beforeSubmitCb' : null,
-	
+
 	// Equivalent to $wgUseCopyrightUpload in php ( should be set via configuration )
 	'rewriteDescriptionText' : true,
-	
+
 	// Callback which is called when the source name changes
-	'selectFileCb': null, 
-	
+	'selectFileCb': null,
+
 	// Callback called when an upload completes or is canceld and we want to re-activeate the form
 	'returnToFormCb' : null,
-	
+
 	'uploadDescription' : null
 
 };
@@ -66,23 +66,23 @@ var defaultUploadHandlerOptions = {
 /**
 * Setup upload jQuery binding
 */
-( function( $ ) { 
+( function( $ ) {
 	$.fn.uploadHandler = function( options ) {
 		if ( !options ) {
 			options = { };
 		}
-	
+
 		// Add the selector
-		options[ 'form_selector' ] = this.selector;			
-		
+		options[ 'form_selector' ] = this.selector;
+
 		// Setup the upload Handler
 		var myUpload = new mw.UploadHandler( options );
-				
+
 		if ( myUpload ) {
 			myUpload.setupForm( );
 		}
-		
-		// Update the selector to include pointer to upload handler 		
+
+		// Update the selector to include pointer to upload handler
 		var selectorElement = $j( this.selector ).get( 0 );
 		selectorElement[ 'uploadHandler' ] = myUpload;
 	};
@@ -93,33 +93,33 @@ mw.UploadHandler = function( options ) {
 };
 
 mw.UploadHandler.prototype = {
-	
+
 	// The form data to be submitted
-	formData: {}, 
-	
-	// Upload warning session key, for continued uploads 
+	formData: {},
+
+	// Upload warning session key, for continued uploads
 	warnings_sessionkey: false,
-	
+
 	// If chunks uploading is supported
 	chunks_supported: true,
-	
+
 	// If the form should be used to directly upload / submit to the api
 	// Since file selection can't be "moved" we have to use the existing
-	// form and just submit it to a different target  
+	// form and just submit it to a different target
 	formDirectSubmit: false,
-	
+
 	// http copy by url mode flag
 	http_copy_upload : null,
-	
+
 	// If the upload action is done
 	action_done: false,
-	
+
 	// Edit token for upload lazy initialized with getToken() function
 	editToken: false,
-	
+
 	// The DOM node for the upload form
 	form: false,
-	
+
 	/**
 	 * Object initialization
 	 * @param {Object} options BaseUpload options see defaultUploadHandlerOptions
@@ -128,16 +128,16 @@ mw.UploadHandler.prototype = {
 		if ( !options )
 			options = {};
 		$j.extend( this, defaultUploadHandlerOptions, options );
-		
+
 		// Set a apiUrl if unset
 		if( !this.apiUrl ) {
 			this.apiUrl = mw.getLocalApiUrl();
-		}		
-		
+		}
+
 		// Setup the ui pointer
-		if( options.ui  ){
+		if( options.ui ){
 			this.ui = options.ui;
-		} else { 					
+		} else {
 			// Setup the default DialogInterface UI
 			this.ui = new mw.UploadDialogInterface();
 		}
@@ -148,11 +148,11 @@ mw.UploadHandler.prototype = {
 		}
 
 		// Setup ui uploadHandler pointer
-		this.ui.uploadHandler = this;		
-		
+		this.ui.uploadHandler = this;
+
 		mw.log( "init mvUploadHandler:: " + this.apiUrl + ' interface: ' + this.ui );
 	},
-	
+
 	/**
 	 * Set up the upload form, register onsubmit handler.
 	 * May remap it to use the API field names.
@@ -160,41 +160,41 @@ mw.UploadHandler.prototype = {
 	setupForm: function() {
 		mw.log( "Base::setupForm::" );
 		var _this = this;
-		
+
 		// Set up the local pointer to the edit form:
-		this.form = this.getForm();		
-		
+		this.form = this.getForm();
+
 		if ( !this.form ) {
 			mw.log( "Upload form not found!" );
 			return;
-		}		
+		}
 
 		// Set up the orig_onsubmit if not set:
 		if ( typeof( this.orig_onsubmit ) == 'undefined' && this.form.onsubmit ) {
 			this.orig_onsubmit = this.form.onsubmit;
 		}
-		
-		if( this.selectFileCb ) {			
+
+		if( this.selectFileCb ) {
 			this.bindSelectFileCb();
 		}
-		
+
 		// Set up the submit action:
-		$j( this.form ).unbind( 'submit' ).submit( function() {	
-			mw.log( "FORM SUBMIT::" );			
+		$j( this.form ).unbind( 'submit' ).submit( function() {
+			mw.log( "FORM SUBMIT::" );
 			return _this.onSubmit();
 		} );
 	},
-	
+
 	/**
 	 * Binds the onSelect file callback
 	 */
 	bindSelectFileCb: function(){
-		var _this = this;		
-		
-		// Grab the select file input from the form		
+		var _this = this;
+
+		// Grab the select file input from the form
 		var $target = $j( this.form ).find( "input[type='file']" );
 		$target.change( function() {
-		
+
 			var path = $j( this ).val();
 			// Find trailing part
 			var slash = path.lastIndexOf( '/' );
@@ -211,27 +211,27 @@ mw.UploadHandler.prototype = {
 			_this.selectFileCb( fname );
 		} );
 	},
-	
+
 	/**
 	 * onSubmit handler for the upload form
 	 */
 	onSubmit: function() {
 		var _this = this;
-		mw.log( 'Base::onSubmit:  isRawFormUpload:' + this.formDirectSubmit );
-		
+		mw.log( 'Base::onSubmit: isRawFormUpload:' + this.formDirectSubmit );
+
 		// Run the original onsubmit (if not run yet set flag to avoid excessive chaining)
 		if ( typeof( this.orig_onsubmit ) == 'function' ) {
 			if ( ! this.orig_onsubmit() ) {
 				//error in orig submit return false;
 				return false;
 			}
-		}		
+		}
 
 		// Reinstate the ['name'=comment'] filed since
-		// commons hacks removes wgUploadDesction from the form 
+		// commons hacks removes wgUploadDesction from the form
 		var $form = $j( this.form );
 		if( $form.find("[name='comment']").length == 0) {
-			$form.append( 
+			$form.append(
 				$j('<input />')
 				.attr({
 					'name': 'comment',
@@ -239,46 +239,46 @@ mw.UploadHandler.prototype = {
 				})
 			);
 		}
-		
-		var uploadDesc =  _this.getUploadDescription();
+
+		var uploadDesc = _this.getUploadDescription();
 		if( uploadDesc ) {
 			$form.find("[name='comment']").val( uploadDesc );
 		}
-		
-		// Check for post action 
-		// formDirectSubmit is needed to actually do the upload via a form "submit"	
-		if ( this.formDirectSubmit ) {		
+
+		// Check for post action
+		// formDirectSubmit is needed to actually do the upload via a form "submit"
+		if ( this.formDirectSubmit ) {
 			mw.log("direct submit: " );
 			return true;
-		}	
-		
+		}
+
 		// Call the beforeSubmitCb option if set:
 		if( this.beforeSubmitCb && typeof this.beforeSubmitCb == 'function' ) {
 			this.beforeSubmitCb();
-		}				
-		
+		}
+
 		// Remap the upload form to the "api" form:
-		this.remapFormToApi();		
-		
+		this.remapFormToApi();
+
 		mw.log(" about to run onSubmit try / catch: detectUploadMode" );
-		// Put into a try catch so we are sure to return false:		
+		// Put into a try catch so we are sure to return false:
 		try {
 			// Startup interface dispatch dialog
 			_this.ui.setup( { 'title' : gM( 'mwe-upload-in-progress' ) } );
-						
+
 			mw.log('ui.setup done ' );
-			
+
 			// Drop down the #p-search z-index so its not ontop
 			$j( '#p-search' ).css( 'z-index', 1 );
 
 			var _this = this;
-			
+
 			_this.detectUploadMode( function( mode ) {
 				mw.log("detectUploadMode callback" );
 				_this.upload_mode = mode;
 				_this.doUpload();
 			} );
-			
+
 		} catch( e ) {
 			mw.log( '::error in this.ui or doUpload ' + e );
 		}
@@ -293,14 +293,14 @@ mw.UploadHandler.prototype = {
 	 * If this.upload_mode is autodetect, this runs an API call to find out if MW
 	 * supports uploading. It then sets the upload mode when this call returns.
 	 *
-	 * When done detecting, or if detecting is unnecessary, it calls the callback 
+	 * When done detecting, or if detecting is unnecessary, it calls the callback
 	 * with the upload mode as the first parameter.
 	 *
 	 * @param {Function} callback Function called once upload mode is detected
 	 */
 	detectUploadMode: function( callback ) {
 		var _this = this;
-		mw.log( 'detectUploadMode::' +  _this.upload_mode );
+		mw.log( 'detectUploadMode::' + _this.upload_mode );
 		//debugger;
 		// Check the upload mode
 		if ( _this.upload_mode == 'detect_in_progress' ) {
@@ -353,10 +353,10 @@ mw.UploadHandler.prototype = {
 	},
 
 	/**
-	 * Do an upload, with the mode given by this.upload_mode	 
+	 * Do an upload, with the mode given by this.upload_mode
 	 */
-	doUpload: function() {		
-		// Note "api" should be called "http_copy_upload" and /post/ should be "form_upload" 		
+	doUpload: function() {
+		// Note "api" should be called "http_copy_upload" and /post/ should be "form_upload"
 		if ( this.upload_mode == 'api' ) {
 			this.doApiCopyUpload();
 		} else if ( this.upload_mode == 'post' ) {
@@ -370,8 +370,8 @@ mw.UploadHandler.prototype = {
 	 * Change the upload form so that when submitted, it sends a request to
 	 * the MW API.
 	 *
-	 * This is rather ugly, but solutions are constrained by the fact that 
-	 * file inputs can't be moved around or recreated after the user has 
+	 * This is rather ugly, but solutions are constrained by the fact that
+	 * file inputs can't be moved around or recreated after the user has
 	 * selected a file in them, which they may well do before DOM ready.
 	 *
 	 * It is also constrained by upload form hacks on commons.
@@ -379,13 +379,13 @@ mw.UploadHandler.prototype = {
 	remapFormToApi: function() {
 		var _this = this;
 		//
-		mw.log("remapFormToApi:: " + this.apiUrl + ' form: ' +  this.form);
-		
+		mw.log("remapFormToApi:: " + this.apiUrl + ' form: ' + this.form);
+
 		if ( !this.apiUrl ) {
-			mw.log( 'Error: no api url target' ); 
+			mw.log( 'Error: no api url target' );
 			return false;
 		}
-		var $form = $j( this.form );		
+		var $form = $j( this.form );
 
 		// Set the form action
 		try {
@@ -393,22 +393,22 @@ mw.UploadHandler.prototype = {
 		} catch( e ) {
 			mw.log( "IE sometimes errors out when you change the action" );
 		}
-		
+
 		// Add API action
 		if ( $form.find( "[name='action']" ).length == 0 ) {
-			$form.append( 
+			$form.append(
 				$j('<input />')
-				.attr({ 
+				.attr({
 					'type': "hidden",
-					'name' : "action", 
+					'name' : "action",
 					'value' : "upload"
 				})
 			);
-		}		
+		}
 
 		// Add JSON response format (jsonfm so that IE does not prompt save dialog box on iframe result )
 		if ( $form.find( "[name='format']" ).length == 0 ) {
-			$form.append( 
+			$form.append(
 				$j( '<input />' )
 				.attr({
 					'type' : "hidden",
@@ -416,8 +416,8 @@ mw.UploadHandler.prototype = {
 					'value' : "jsonfm"
 				})
 			);
-		}		
-		
+		}
+
 		// Map a new hidden form
 		$form.find( "[name='wpUploadFile']" ).attr( 'name', 'file' );
 		$form.find( "[name='wpDestFile']" ).attr( 'name', 'filename' );
@@ -425,15 +425,15 @@ mw.UploadHandler.prototype = {
 		$form.find( "[name='wpEditToken']" ).attr( 'name', 'token' );
 		$form.find( "[name='wpIgnoreWarning']" ).attr( 'name', 'ignorewarnings' );
 		$form.find( "[name='wpWatchthis']" ).attr( 'name', 'watch' );
-		
+
 		//mw.log( 'comment: ' + $form.find( "[name='comment']" ).val() );
-	},	
+	},
 
 	/**
 	 * Returns true if the current form has copy upload selected, false otherwise.
 	 */
-	isCopyUpload: function() {	
-		if ( $j( '#wpSourceTypeFile' ).length ==  0
+	isCopyUpload: function() {
+		if ( $j( '#wpSourceTypeFile' ).length == 0
 			|| $j( '#wpSourceTypeFile' ).get( 0 ).checked )
 		{
 			this.http_copy_upload = false;
@@ -449,9 +449,9 @@ mw.UploadHandler.prototype = {
 	doPostUpload: function() {
 		var _this = this;
 		var $form = $j( _this.form );
-		mw.log( 'mvBaseUploadHandler.doPostUpload' );		
+		mw.log( 'mvBaseUploadHandler.doPostUpload' );
 
-		// TODO check for sendAsBinary to support Firefox/HTML5 progress on upload		
+		// TODO check for sendAsBinary to support Firefox/HTML5 progress on upload
 		this.ui.setLoading();
 
 		// Add the iframe
@@ -459,40 +459,40 @@ mw.UploadHandler.prototype = {
 		//IE only works if you "create element with the name" ( not jquery style buildout )
 		var iframe;
 		try {
-		  iframe = document.createElement( '<iframe name="' + _this.iframeId + '">' );
+			iframe = document.createElement( '<iframe name="' + _this.iframeId + '">' );
 		} catch (ex) {
-		  iframe = document.createElement('iframe');
-		}		
-		
-		$j( "body" ).append( 
+			iframe = document.createElement('iframe');
+		}
+
+		$j( "body" ).append(
 			$j( iframe )
 			.attr({
 				'src' : 'javascript:false;',
 				'id' : _this.iframeId,
 				'name': _this.iframeId
-			}) 
+			})
 			.css('display', 'none')
 		);
-		
+
 
 		// Set the form target to the iframe
-		$form.attr( 'target', _this.iframeId );		
+		$form.attr( 'target', _this.iframeId );
 
 		// Set up the completion callback
 		$j( '#' + _this.iframeId ).load( function() {
 			_this.processIframeResult( $j( this ).get( 0 ) );
-		});			
-				
+		});
+
 		// Do normal post upload override
 		_this.formDirectSubmit = true;
-		
-				
+
+
 		mw.log('About to submit:' + $form.find("[name='comment']").val() );
 		/*
 		$form.find('input').each( function(){
-			mw.log( $j(this).attr( 'name' ) + ' :: ' + $j(this).val() );	
+			mw.log( $j(this).attr( 'name' ) + ' :: ' + $j(this).val() );
 		})*/
-		
+
 		$form.submit();
 	},
 
@@ -502,70 +502,70 @@ mw.UploadHandler.prototype = {
 	doApiCopyUpload: function() {
 		mw.log( 'mvBaseUploadHandler.doApiCopyUpload' );
 		mw.log( 'doHttpUpload (no form submit) ' );
-		
+
 		var httpUpConf = {
 			'url'       : $j( '#wpUploadFileURL' ).val(),
 			'filename'  : _this.getFilename(),
 			'comment'   : this.getUploadDescription(),
 			'watch'     : ( $j( '#wpWatchthis' ).is( ':checked' ) ) ? 'true' : 'false',
 			'ignorewarnings': ($j('#wpIgnoreWarning' ).is( ':checked' ) ) ? 'true' : 'false'
-		};	
+		};
 		this.doHttpUpload( httpUpConf );
 	},
-	
+
 	/**
 	* Get the upload description, append the license if available
 	*
-	* NOTE: wpUploadDescription should be a configuration option. 
+	* NOTE: wpUploadDescription should be a configuration option.
 	*
-	* @param {Boolean} useCache If the upload description cache can be used. 
-	* @return {String} 
-	* 	value of wpUploadDescription 
+	* @param {Boolean} useCache If the upload description cache can be used.
+	* @return {String}
+	* 	value of wpUploadDescription
 	*/
-	getUploadDescription: function() { 	
-		//Special case of upload.js commons hack: 
+	getUploadDescription: function() {
+		//Special case of upload.js commons hack:
 		var comment_value = $j( '#wpUploadDescription' ).val();
-		if(  comment_value == '' ) {
-			// Else try with the form name: 
+		if( comment_value == '' ) {
+			// Else try with the form name:
 			comment_value = $j( "[name='comment']").val();
 		}
 		if( !comment_value){
 			comment_value = $j( this.form ).find( "[name='comment']" ).val();
-		}		
-		// Set license, copyStatus, source if available ( generally not available SpecialUpload needs some refactoring ) 
+		}
+		// Set license, copyStatus, source if available ( generally not available SpecialUpload needs some refactoring )
 		if ( this.rewriteDescriptionText ) {
-			var license = ( $j("[name='wpLicense']").length ) ? $j("[name='wpLicense']").val() : '';			
+			var license = ( $j("[name='wpLicense']").length ) ? $j("[name='wpLicense']").val() : '';
 			var copyStatus = ( $j("[name='wpUploadCopyStatus']" ).length ) ? $j("[name='wpUploadCopyStatus']" ).val() : '';
-			var source =  ( $j("[name='wpSource']").length ) ? $j("[name='wpSource']").val() : '';
-			
-			// Run the JS equivalent of SpecialUpload.php getInitialPageText	
-			comment_value = this.getCommentText( comment_value, license, copyStatus, source  );
+			var source = ( $j("[name='wpSource']").length ) ? $j("[name='wpSource']").val() : '';
+
+			// Run the JS equivalent of SpecialUpload.php getInitialPageText
+			comment_value = this.getCommentText( comment_value, license, copyStatus, source );
 			//this.rewriteDescriptionText = false;
-		}		
-		mw.log( 'getUploadDescription:: new val:' + comment_value  );		
+		}
+		mw.log( 'getUploadDescription:: new val:' + comment_value );
 		return comment_value;
 	},
-	
+
 	/**
 	* Get the comment text ( port of getInitialPageText from SpecialUpload.php
 	* We only copy part of the check where rewriteDescriptionText is enabled as
-	* to not conflict with other js rewrites. 
-	*   
+	* to not conflict with other js rewrites.
+	*
 	* @param {String} comment Comment string
-	* @param {String} license License key 
+	* @param {String} license License key
 	* @param {String} copyStatus the copyright status field
-	* @param {String} source The source filed			
+	* @param {String} source The source filed
 	*/
-	getCommentText: function( comment, license, copyStatus, source ) {				
+	getCommentText: function( comment, license, copyStatus, source ) {
 		var pageText = '== ' + mw.Language.msgNoTrans( 'mwe-filedesc' ) + " ==\n" + comment + "\n";
 		if( copyStatus ){
-			pageText +=  '== ' + gM( 'mwe-filestatus' ) + " ==\n" + copyStatus + "\n";
+			pageText += '== ' + gM( 'mwe-filestatus' ) + " ==\n" + copyStatus + "\n";
 		}
 		if( source ){
-			pageText += '== ' + gM( 'mwe-filesource' ) + " ==\n" + source  + "\n";
+			pageText += '== ' + gM( 'mwe-filesource' ) + " ==\n" + source + "\n";
 		}
 		if ( license ) {
-			pageText += '== ' + mw.Language.msgNoTrans( 'mwe-license-header' ) + " ==\n" + '{{' + license + '}}' + "\n"; 
+			pageText += '== ' + mw.Language.msgNoTrans( 'mwe-license-header' ) + " ==\n" + '{{' + license + '}}' + "\n";
 		}
 		return pageText;
 	},
@@ -574,10 +574,10 @@ mw.UploadHandler.prototype = {
 	 * Process the result of the form submission, returned to an iframe.
 	 * This is the iframe's onload event.
 	 *
-	 * @param {Element} iframe iframe to extract result from 
+	 * @param {Element} iframe iframe to extract result from
 	 */
 	processIframeResult: function( iframe ) {
-		var _this = this;		
+		var _this = this;
 		var doc = iframe.contentDocument ? iframe.contentDocument : frames[ iframe.id ].document;
 		// Fix for Opera 9.26
 		if ( doc.readyState && doc.readyState != 'complete' ) {
@@ -587,7 +587,7 @@ mw.UploadHandler.prototype = {
 		if ( doc.body && doc.body.innerHTML == "false" ) {
 			return;
 		}
-		
+
 		var response;
 		if ( doc.XMLDocument ) {
 			// The response is a document property in IE
@@ -614,11 +614,11 @@ mw.UploadHandler.prototype = {
 	 */
 	doHttpUpload: function( params ) {
 		var _this = this;
-		// Get a clean setup of the interface dispatch 
-		this.ui.setup( { 'title' : gM('mwe-upload-in-progress') } );					
+		// Get a clean setup of the interface dispatch
+		this.ui.setup( { 'title' : gM('mwe-upload-in-progress') } );
 
 		// Set the interface dispatch to loading ( in case we don't get an update for some time )
-		this.ui.setLoading();		
+		this.ui.setLoading();
 
 		// Set up the request
 		var request = {
@@ -636,7 +636,7 @@ mw.UploadHandler.prototype = {
 
 		// Reset the done with action flag
 		_this.action_done = false;
-		
+
 		// Do the api request:
 		mw.log(" about to run upload request: " + request );
 		mw.getJSON(_this.apiUrl, request, function( data ) {
@@ -651,14 +651,14 @@ mw.UploadHandler.prototype = {
 		var _this = this;
 
 		// Set up interface dispatch to display for status updates:
-		this.ui.setup( {'title': gM('mwe-upload-in-progress') } );					
-		
+		this.ui.setup( {'title': gM('mwe-upload-in-progress') } );
+
 		this.upload_status_request = {
 			'action'     : 'upload',
 			'httpstatus' : 'true',
 			'sessionkey' : _this.upload_session_key,
-			'token' 	 : _this.getToken()			
-		};			
+			'token' 	 : _this.getToken()
+		};
 
 		// Trigger an initial request (subsequent ones will be done by a timer)
 		this.onAjaxUploadStatusTimer();
@@ -707,12 +707,12 @@ mw.UploadHandler.prototype = {
 			// We have content length we can show percentage done:
 			var fraction = data.upload['loaded'] / data.upload['content_length'];
 			// Update the status:
-			_this.ui.updateProgress( fraction,  data.upload['loaded'],  data.upload['content_length'] );				
+			_this.ui.updateProgress( fraction, data.upload['loaded'], data.upload['content_length'] );
 		} else if ( data.upload['loaded'] ) {
 			_this.ui.updateProgress( 1, data.upload['loaded'] );
-			mw.log( 'just have loaded ( no content length: ' + data.upload['loaded'] );			
+			mw.log( 'just have loaded ( no content length: ' + data.upload['loaded'] );
 		}
-		
+
 		// We got a result: set timeout to 100ms + your server update
 		// interval (in our case 2s)
 		var timeout = 2100;
@@ -736,12 +736,12 @@ mw.UploadHandler.prototype = {
 		}
 		return true;
 	},
-	
+
 
 	/**
 	 * Process the result of an action=upload API request. Display the result
 	 * to the user.
-	 * 
+	 *
 	 * @param {Object} apiRes Api result object
 	 * @return {Boolean}
 	 * 	false if api error
@@ -750,20 +750,20 @@ mw.UploadHandler.prototype = {
 	processApiResult: function( apiRes ) {
 		var _this = this;
 		mw.log( 'processApiResult::' + JSON.stringify( apiRes )	);
-				
+
 		if ( !_this.isApiSuccess( apiRes ) ) {
-		
-			// Set the local warnings_sessionkey for warnings			
+
+			// Set the local warnings_sessionkey for warnings
 			if ( apiRes.upload && apiRes.upload.sessionkey ) {
-				_this.warnings_sessionkey = apiRes.upload.sessionkey;				
+				_this.warnings_sessionkey = apiRes.upload.sessionkey;
 			}
-			
+
 			// Error detected, show it to the user
 			_this.ui.showApiError( apiRes );
-			
+
 			return false;
 		}
-		
+
 		// See if we have a session key without warning
 		if ( apiRes.upload && apiRes.upload.upload_session_key ) {
 			// Async upload, do AJAX status polling
@@ -773,7 +773,7 @@ mw.UploadHandler.prototype = {
 			return true;
 		}
 
-		if ( apiRes.upload && apiRes.upload.imageinfo && apiRes.upload.imageinfo.descriptionurl ) {							
+		if ( apiRes.upload && apiRes.upload.imageinfo && apiRes.upload.imageinfo.descriptionurl ) {
 			// Call the completion callback if available.
 			if ( typeof _this.doneUploadCb == 'function' ) {
 					_this.doneUploadCb( apiRes );
@@ -782,18 +782,18 @@ mw.UploadHandler.prototype = {
 					return true;
 			}
 			// Else pass off the api Success to interface:
-			_this.ui.showApiSuccess( apiRes );	
+			_this.ui.showApiSuccess( apiRes );
 			return true;
 		}
 	},
-	
+
 	/**
-	* Receives upload interface "action" requests from the "ui" 
-	* 
-	* For example ignorewarning 
+	* Receives upload interface "action" requests from the "ui"
+	*
+	* For example ignorewarning
 	*/
 	uploadHandlerAction : function( action ){
-		mw.log( "UploadHandler :: action:: " + action  + ' sw: ' + this.warnings_sessionkey );
+		mw.log( "UploadHandler :: action:: " + action + ' sw: ' + this.warnings_sessionkey );
 		switch( action ){
 			case 'ignoreWarnings':
 				this.ignoreWarningsSubmit();
@@ -802,37 +802,37 @@ mw.UploadHandler.prototype = {
 				this.rewriteDescriptionText = false;
 			break;
 			case 'disableDirectSubmit':
-				this.formDirectSubmit = false;				
+				this.formDirectSubmit = false;
 			break;
-			default: 
+			default:
 				mw.log( "Error reciveUploadAction:: unkown action: " + action );
 			break;
 		}
 	},
-	
+
 	/**
 	* Do ignore warnings submit.
-	* 
+	*
 	* Must have set warnings_sessionkey
 	*/
 	ignoreWarningsSubmit: function( ) {
 		var _this = this;
 		// Check if we have a stashed key:
 		if ( _this.warnings_sessionkey !== false ) {
-		
+
 			// Set to "loading"
 			_this.ui.setLoading();
-			
+
 			// Setup request:
 			var request = {
 				'action': 'upload',
 				'sessionkey': _this.warnings_sessionkey,
-				'ignorewarnings': 1,			
+				'ignorewarnings': 1,
 				'token' :  _this.getToken(),
 				'filename' :  _this.getFileName(),
-				'comment' : _this.getUploadDescription( )			
-			};	
-			
+				'comment' : _this.getUploadDescription( )
+			};
+
 			//run the upload from stash request
 			mw.getJSON(_this.apiUrl, request, function( data ) {
 					_this.processApiResult( data );
@@ -844,7 +844,7 @@ mw.UploadHandler.prototype = {
 			$j( _this.form ).submit();
 		}
 	},
-	
+
 	/**
 	 * Get the default title of the progress window
 	 */
@@ -856,7 +856,7 @@ mw.UploadHandler.prototype = {
 	 * Get the DOMNode of the form element we are rewriting.
 	 * Returns false if it can't be found.
 	 */
-	getForm: function() {	
+	getForm: function() {
 		if ( this.form_selector && $j( this.form_selector ).length != 0 ) {
 			return $j( this.form_selector ).get( 0 );
 		} else {
@@ -868,8 +868,8 @@ mw.UploadHandler.prototype = {
 	getFileName: function() {
 		return $j( this.form ).find( "[name='filename']" ).val();
 	},
-	
-	// Get the editToken from the page. 
+
+	// Get the editToken from the page.
 	getToken : function(){
 		if( this.editToken ){
 			return this.editToken;
@@ -896,8 +896,8 @@ mw.UploadHandler.prototype = {
 	/**
 	 * Check the upload destination filename for conflicts and show a conflict
 	 * error message if there is one
-	 * @selector (jquery selector) The target destination form text filed to check for conflits  
-	 * @param {Object} options Options that define: 
+	 * @selector (jquery selector) The target destination form text filed to check for conflits
+	 * @param {Object} options Options that define:
 	 * 		warn_target target for display of warning
 	 * 		apiUrl Api url to check for destination
 	 */
@@ -910,34 +910,34 @@ mw.UploadHandler.prototype = {
 			options.warn_target = '#wpDestFile-warning';
 		}
 		mw.log( 'do doDestCheck and update: ' + options.warn_target );
-		
+
 		// Check for the apiUrl
 		if( ! options.apiUrl ) {
 			options.apiUrl = mw.getLocalApiUrl();
-		}		
+		}
 
 		// Add the wpDestFile-warning row ( if in mediaWiki upload page )
-		if ( $j( options.warn_target  ).length == 0 ) {
+		if ( $j( options.warn_target ).length == 0 ) {
 			$j( '#mw-htmlform-options tr:last' )
-				.after( 
+				.after(
 				$j('<tr />' )
 				.append( '<td />' )
 				.append( '<td />' )
 					.attr('id', 'wpDestFile-warning')
 				);
 		}
-		
+
 		// Remove any existing warning
 		$j( options.warn_target ).empty();
 
 		// Show the AJAX spinner
-		$j( _this.selector ).after( 
-			$j('<div />')			
+		$j( _this.selector ).after(
+			$j('<div />')
 			.attr({
-				'id' : "mw-spinner-wpDestFile"				
+				'id' : "mw-spinner-wpDestFile"
 			})
 			.loadingSpinner()
-		);		
+		);
 		// Setup the request
 		var request = {
 			'titles': 'File:' + $j( _this.selector ).val(),
@@ -945,12 +945,12 @@ mw.UploadHandler.prototype = {
 			'iiprop': 'url|mime|size',
 			'iiurlwidth': 150
 		};
-				
+
 		// Do the destination check ( on the local wiki )
-		mw.getJSON( options.apiUrl, request, function( data ) {			
+		mw.getJSON( options.apiUrl, request, function( data ) {
 			// Remove spinner
 			$j( '#mw-spinner-wpDestFile' ).remove();
-			
+
 			if ( !data || !data.query || !data.query.pages ) {
 				// Ignore a null result
 				mw.log(" No data in DestCheck result");
@@ -974,26 +974,26 @@ mw.UploadHandler.prototype = {
 					var ntitle = data.query.pages[ page_id ].title;
 				}
 				var img = data.query.pages[ page_id ].imageinfo[0];
-				
-				var linkAttr ={ 
+
+				var linkAttr ={
 					'title' : ntitle,
 					'href' : img.descriptionurl,
 					'target' : '_new'
 				};
-				
+
 				var $fileAlreadyExists = $j('<div />')
-				.append(				
-					gM( 'mwe-fileexists', 
+				.append(
+					gM( 'mwe-fileexists',
 						$j('<a />')
 						.attr( linkAttr )
 						.text( ntitle )
 					)
 				);
-				
+
 				var $imageLink = $j('<a />')
 					.addClass( 'image' )
 					.attr( linkAttr )
-					.append( 
+					.append(
 						$j( '<img />')
 						.addClass( 'thumbimage' )
 						.attr( {
@@ -1004,10 +1004,10 @@ mw.UploadHandler.prototype = {
 							'alt' : ntitle
 						} )
 					);
-					
+
 				var $imageCaption = $j( '<div />' )
 					.addClass( 'thumbcaption' )
-					.append( 
+					.append(
 						$j('<div />')
 						.addClass( "magnify" )
 						.append(
@@ -1017,17 +1017,17 @@ mw.UploadHandler.prototype = {
 								'title' : gM('thumbnail-more'),
 								'href' : img.descriptionurl
 							} ),
-							
+
 							$j( '<div />' )
-							.addClass("rsd_magnify_clip"), 
-							
+							.addClass("rsd_magnify_clip"),
+
 							$j('<span />')
 							.html( gM( 'mwe-fileexists-thumb' ) )
-						)													
+						)
 					);
-				$j( options.warn_target  ).append(
+				$j( options.warn_target ).append(
 					$fileAlreadyExists,
-					
+
 					$j( '<div />' )
 					.addClass( 'thumb tright' )
 					.append(
@@ -1036,14 +1036,14 @@ mw.UploadHandler.prototype = {
 						.css({
 							'width' : ( parseInt( img.thumbwidth ) + 2 ) + 'px;'
 						})
-						.append( 
-							$imageLink, 
+						.append(
+							$imageLink,
 							$imageCaption
-						)					
+						)
 					)
-				);				
+				);
 			}
 		} );
 	};
-	
+
 })( jQuery );

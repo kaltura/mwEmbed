@@ -1,7 +1,7 @@
 /**
 * This handles upload interfaces
 *
-* There are several interface types: 
+* There are several interface types:
 *
 * Inline interface
 *     Dispatches updates to an inline html target
@@ -11,14 +11,14 @@
 *
 * Iframe interface
 *     Dispatches updates to an iframe target for upload proxy
-* 
+*
 */
-mw.addMessages( {	
+mw.addMessages( {
 	"mwe-upload-in-progress" : "Upload in progress (do not close this window)",
 	"mwe-uploaded-status" : "Uploaded",
 	"mwe-transcoded-status" : "Transcoded",
-	"mwe-uploaded-time-remaining" : "Time remaining: $1",	
-	"mwe-upload-done" : "Your upload <i>should be<\/i> accessible."	
+	"mwe-uploaded-time-remaining" : "Time remaining: $1",
+	"mwe-upload-done" : "Your upload <i>should be<\/i> accessible."
 } );
 
 /**
@@ -37,40 +37,40 @@ mw.UploadDialogInterface = function( uploadHandler ) {
 	return this;
 }
 mw.UploadDialogInterface.prototype = {
-	
+
 	// The following are really state of the upload, not the interface.
 	// we are currently only managing one, so this is okay... for now.
 	uploadBeginTime: null,
-	
+
 	/**
-	* Setup the dialog display 
+	* Setup the dialog display
 	* @param {Object} options
-	*/	
-	setup: function( options ) {	
+	*/
+	setup: function( options ) {
 		var _this = this;
-		
+
 		if( ! options ){
 			options = { };
 		}
-		
+
 		// Start the "upload" time
 		this.uploadBeginTime = ( new Date() ).getTime();
-		
+
 		// Remove the old instance if present
 		if( $j( '#upProgressDialog' ).length != 0 ) {
 			$j( '#upProgressDialog' ).dialog( 'destroy' ).remove();
 		}
-		
+
 		// Add a new one
 		$j( 'body' ).append(
 			$j( '<div />')
 			.attr( 'id', "upProgressDialog" )
 		);
-		
+
 		if( !options.title ) {
 			options.title = gM('mwe-upload-in-progress');
 		}
-		
+
 		$j( '#upProgressDialog' ).dialog( {
 			title : options.title,
 			bgiframe: true,
@@ -90,16 +90,16 @@ mw.UploadDialogInterface.prototype = {
 			},
 			buttons: _this.getCancelButton()
 		} );
-		
-		mw.log( 'upProgressDialog::dialog done' );		
+
+		mw.log( 'upProgressDialog::dialog done' );
 
 		var $progressContainer = $j('<div />')
 			.attr('id', 'up-pbar-container')
 			.css({
 				'height' : '15px'
 			});
-			
-		// Add the progress bar	
+
+		// Add the progress bar
 		$progressContainer.append(
 			$j('<div />')
 				.attr('id', 'up-progressbar')
@@ -107,7 +107,7 @@ mw.UploadDialogInterface.prototype = {
 					'height' : '15px'
 				})
 		);
-		
+
 		// Add the status container
 		$progressContainer.append( $j('<span />' )
 			.attr( 'id', 'up-status-container')
@@ -116,30 +116,30 @@ mw.UploadDialogInterface.prototype = {
 				$j( '<span />' )
 				.attr( 'id' , 'up-pstatus')
 				.text( '0% -' ),
-				
+
 				$j( '<span />' )
-				.attr( 'id', 'up-status-state' )							
+				.attr( 'id', 'up-status-state' )
 			)
 		);
-		
+
 		var $statusState = $progressContainer.find( '#up-status-state' );
 		if( options.statusType == 'transcode' ){
 			$statusState.text( gM( 'mwe-transcoded-status' ) );
-		} else {			
+		} else {
 			$statusState.text( gM( 'mwe-uploaded-status' ) );
 		}
-		
-		// Add the estimated time remaining 
+
+		// Add the estimated time remaining
 		$progressContainer.append(
 			$j('<span />')
 			.attr( 'id', 'up-etr' )
 			.css( 'float', 'right' )
 			.text( gM( 'mwe-uploaded-time-remaining', '' ) )
 		);
-		
+
 		// Add the status container to dialog div
 		$j( '#upProgressDialog' ).empty().append( $progressContainer	);
-		
+
 		// Open the empty progress window
 		$j( '#upProgressDialog' ).dialog( 'open' );
 
@@ -148,18 +148,18 @@ mw.UploadDialogInterface.prototype = {
 			value: 0
 		});
 	},
-	
+
 	/**
 	 * Update the progress bar to a given completion fraction (between 0 and 1)
 	 * NOTE: This progress bar is used for encoding AND for upload. The dialog title is set elsewhere
-	 * 
+	 *
 	 * @param {Float} progress Progress float
 	 * @param {Number} [loaded] optional Bytes loaded
 	 * @param {Number} [contentLength] optional Length of content
 	 */
 	updateProgress: function( fraction, loaded, contentLength ) {
 		var _this = this;
-		
+
 		$j( '#up-progressbar' ).progressbar( 'value', parseInt( fraction * 100 ) );
 		$j( '#up-pstatus' ).html( parseInt( fraction * 100 ) + '% - ' );
 
@@ -167,11 +167,11 @@ mw.UploadDialogInterface.prototype = {
 			var elapsedMilliseconds = ( new Date() ).getTime() - _this.uploadBeginTime;
 			if (fraction > 0.0 && elapsedMilliseconds > 0) { // or some other minimums for good data
 				var fractionPerMillisecond = fraction / elapsedMilliseconds;
-				var remainingSeconds = parseInt( ( ( 1.0 - fraction ) / fractionPerMillisecond ) / 1000 ); 
+				var remainingSeconds = parseInt( ( ( 1.0 - fraction ) / fractionPerMillisecond ) / 1000 );
 				$j( '#up-etr' ).html( gM( 'mwe-uploaded-time-remaining', mw.seconds2npt( remainingSeconds ) ) );
 			}
 		}
-		if( loaded && contentLength ){ 
+		if( loaded && contentLength ){
 			$j( '#up-status-container' ).text(
 				gM( 'mwe-upload-stats-fileprogress',
 					[
@@ -189,14 +189,14 @@ mw.UploadDialogInterface.prototype = {
 					]
 				)
 			);
-		}		 
-	
+		}
+
 	},
-	
+
 	/**
 	 * UI cancel button handler.
 	 * Show a dialog box asking the user whether they want to cancel an upload.
-	 * @param Element dialogElement Dialog element to be canceled 
+	 * @param Element dialogElement Dialog element to be canceled
 	 */
 	onCancel: function( dialogElement ) {
 		//confirm:
@@ -205,7 +205,7 @@ mw.UploadDialogInterface.prototype = {
 			$j( dialogElement ).dialog( 'close' );
 		}
 	},
-	
+
 	/**
 	 * Set the dialog to loading
 	 */
@@ -228,7 +228,7 @@ mw.UploadDialogInterface.prototype = {
 
 		if ( !title_txt )
 			title_txt = _this.getProgressTitle();
-		
+
 		if ( !buttons ) {
 			// If no buttons are specified, add a close button
 			buttons = {};
@@ -236,7 +236,7 @@ mw.UploadDialogInterface.prototype = {
 				$j( this ).dialog( 'close' ).remove();
 			};
 		}
-		
+
 		$j( '#upProgressDialog' ).dialog( 'option', 'title', title_txt );
 		if ( !msg ) {
 			$j( '#upProgressDialog' ).loadingSpinner();
@@ -245,29 +245,29 @@ mw.UploadDialogInterface.prototype = {
 		}
 		$j( '#upProgressDialog' ).dialog( 'option', 'buttons', buttons );
 	},
-	
-	
+
+
 	/**
 	 * Given the result of an action=upload API request, display the error message
 	 * to the user.
-	 * 
+	 *
 	 * @param {Object} apiRes The result object
 	 */
 	showApiError: function( apiRes ) {
-		var _this = this;		
-		// NOTE: this could be simplified and cleaned up 
-		// by simplified the error output provided by the upload api 		
-		
-		// Generate the error button			
+		var _this = this;
+		// NOTE: this could be simplified and cleaned up
+		// by simplified the error output provided by the upload api
+
+		// Generate the error button
 		var buttons = {};
 		buttons[ gM( 'mwe-return-to-form' ) ] = function() {
 			_this.returnToForm( this );
 		};
-			
-				
-		if ( apiRes && apiRes.error || ( apiRes.upload && apiRes.upload.result == "Failure" ) ) {			
-		
-			// Check a few places for the error code			
+
+
+		if ( apiRes && apiRes.error || ( apiRes.upload && apiRes.upload.result == "Failure" ) ) {
+
+			// Check a few places for the error code
 			var error_code = 0;
 			var errorReplaceArg = '';
 			if ( apiRes.error && apiRes.error.code ) {
@@ -283,7 +283,7 @@ mw.UploadDialogInterface.prototype = {
 					}
 				}
 			}
-			
+
 			var error_msg = '';
 			if ( typeof apiRes.error == 'string' ){
 				error_msg = apiRes.error;
@@ -299,7 +299,7 @@ mw.UploadDialogInterface.prototype = {
 				'4' : 'minlength1',
 				'5' : 'illegalfilename'
 			};
-			
+
 			if ( typeof error_code == 'number'
 				&& typeof error_msg_key[ error_code ] == 'undefined' )
 			{
@@ -316,10 +316,10 @@ mw.UploadDialogInterface.prototype = {
 				}
 				return false;
 			}
-			
+
 			// If no "error_code" was provided or it is an unknown-error
 			// try to use the errorKey in apiRes.upload.details
-			if ( !error_code || error_code == 'unknown-error' ) {							
+			if ( !error_code || error_code == 'unknown-error' ) {
 				if ( apiRes.upload.error == 'internal-error' ) {
 					// Do a remote message load
 					errorKey = apiRes.upload.details[0];
@@ -331,17 +331,17 @@ mw.UploadDialogInterface.prototype = {
 				_this.setPrompt(
 					gM('mwe-uploaderror'),
 					gM('mwe-unknown-error') + '<br>' + error_msg,
-					buttons 
+					buttons
 				);
 				return false;
 			}
-			
-			// This is the ideal error handling, 
+
+			// This is the ideal error handling,
 			// if apiRes consistently provided error.info
 			if ( apiRes.error && apiRes.error.info ) {
 				_this.setPrompt( gM( 'mwe-uploaderror' ), apiRes.error.info, buttons );
 				return false;
-			}						
+			}
 
 			mw.log( 'get remote error key: ' + error_msg_key[ error_code ] )
 			mw.getRemoteMsg( error_msg_key[ error_code ], function() {
@@ -357,7 +357,7 @@ mw.UploadDialogInterface.prototype = {
 		// If nothing above was able to set the error
 		// set simple unknown-error
 		if ( apiRes.upload && apiRes.upload.error ) {
-			mw.log( ' apiRes.upload.error: ' + apiRes.upload.error );						
+			mw.log( ' apiRes.upload.error: ' + apiRes.upload.error );
 			_this.setPrompt(
 				gM( 'mwe-uploaderror' ),
 				gM( 'mwe-unknown-error' ) + '<br>',
@@ -392,17 +392,17 @@ mw.UploadDialogInterface.prototype = {
 				wmsg += '</li>';
 			}
 			wmsg += '</ul>';
-						
+
 
 			// Create the "ignore warning" button
 			var buttons = {};
 			buttons[ gM( 'mwe-ignorewarning' ) ] = function() {
-				// call the upload object ignore warnings: 
-				_this.sendUploadAction( 'ignoreWarnings' );				
+				// call the upload object ignore warnings:
+				_this.sendUploadAction( 'ignoreWarnings' );
 			};
 			// Create the "return to form" button
 			buttons[ gM( 'mwe-return-to-form' ) ] = function() {
-				_this.returnToForm( this );				
+				_this.returnToForm( this );
 			}
 			// Show warning
 			_this.setPrompt(
@@ -411,7 +411,7 @@ mw.UploadDialogInterface.prototype = {
 				.append(
 					$j( '<h3 />' )
 					.text( gM( 'mwe-uploadwarning' ) ),
-					
+
 					$j('<span />')
 					.html( wmsg )
 				),
@@ -428,29 +428,29 @@ mw.UploadDialogInterface.prototype = {
 		$j( dialogElement ).dialog( 'close' );
 		//retun to form actions
 		this.sendUploadAction( 'returnToForm' );
-	
-		// Disable direct submit on the transport ( so send via sendUploadAction ) 	
+
+		// Disable direct submit on the transport ( so send via sendUploadAction )
 		this.sendUploadAction( 'disableDirectSubmit' );
-		
+
 		// returnToFormCb
 		this.sendUploadAction( 'returnToFormCb' );
 	},
-	
+
 	/**
 	* Send an upload action to the upload handler.
 	* @param {Object} action
-	*/ 
+	*/
 	sendUploadAction: function( action ) {
 		this.uploadHandler.uploadHandlerAction( action );
 	},
-	
+
 	/**
 	* Shows api success from a apiResult
 	* @param {Object} apiRes Result object
 	*/
 	showApiSuccess: function( apiRes ){
 		mw.log( " UI:: showApiSuccess: " );
-		// set the target resource url: 
+		// set the target resource url:
 		var url = apiRes.upload.imageinfo.descriptionurl;
 		var _this = this;
 		var buttons = {};
@@ -469,22 +469,22 @@ mw.UploadDialogInterface.prototype = {
 			gM( 'mwe-successfulupload' ),
 			$j('<a />')
 			.attr( 'href', url )
-			.html( 
+			.html(
 				gM( 'mwe-upload-done')
 			),
-			buttons 
+			buttons
 		);
 		mw.log( 'apiRes.upload.imageinfo::' + url );
 	},
-	
+
 	/**
-	 * Set the dialog to "done" 
+	 * Set the dialog to "done"
 	 */
 	close: function() {
 		this.action_done = true;
 		$j( '#upProgressDialog' ).dialog( 'destroy' ).remove();
 	},
-	
+
 	/**
 	* Get a standard cancel button in the jQuery.ui dialog format
 	*/
@@ -496,7 +496,7 @@ mw.UploadDialogInterface.prototype = {
 			$j( this ).dialog( 'close' );
 		};
 		return cancelBtn;
-	}	
+	}
 };
 
 
@@ -506,58 +506,58 @@ mw.UploadDialogInterface.prototype = {
 mw.UploadIframeUI = function( callbackProxy ) {
 	return this.init( callbackProxy );
 };
-mw.UploadIframeUI.prototype = { 
+mw.UploadIframeUI.prototype = {
 	lastProgressTime : 0,
-	
+
 	/**
-	* init 
+	* init
 	* @param {Function} callbackProxy Function that reciveds
-	* 	all the method calls to be pass along as msgs to the 
+	* 	all the method calls to be pass along as msgs to the
 	* 	other domain via iframe proxy or eventually html5 sendMsg
 	*/
 	init: function( callbackProxy ){
 		var _this = this;
-		this.callbackProxy = callbackProxy;		
-	},	
+		this.callbackProxy = callbackProxy;
+	},
 
-	// Don't call update progress more than once every 3 seconds 
-	// Since it involves loading a cached iframe. Once we support html5 
+	// Don't call update progress more than once every 3 seconds
+	// Since it involves loading a cached iframe. Once we support html5
 	// cross domain "sendMsg" then we can pass all updates
 	updateProgress: function( fraction ) {
 		if( ( new Date() ).getTime() - this.lastProgressTime > 3000 ){
-			this.lastProgressTime = ( new Date() ).getTime()			
+			this.lastProgressTime = ( new Date() ).getTime()
 			this.callbackProxy( 'updateProgress', fraction );
 		}
 	},
-	
+
 	// Pass on the setup call
 	setup: function( options ){
-		this.callbackProxy( 'setup', options );	
+		this.callbackProxy( 'setup', options );
 	},
-	
+
 	// pass along the close request
 	close: function(){
 		this.callbackProxy( 'close' );
 	},
-	
+
 	// Pass on the "setLoading" action
 	setLoading: function( ){
 		this.callbackProxy( 'setLoading' );
 	},
-	
+
 	// Pass on the show api errror:
 	showApiError: function ( apiRes ){
 		this.callbackProxy( 'showApiError', apiRes );
 	},
-	
+
 	// Pass on the show api success:
 	showApiSuccess: function ( apiRes ) {
 		this.callbackProxy( 'showApiSuccess', apiRes );
 	},
-	
+
 	// Pass on api action
 	sendUploadAction: function( action ) {
 		this.callbackProxy( 'sendUploadAction', action );
 	}
-	
+
 };

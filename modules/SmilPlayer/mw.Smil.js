@@ -1,20 +1,20 @@
 /**
  * The Smil object
- * 
+ *
  * @copyright kaltura
  * @author: Michael Dale mdale@wikimedia.org
  * @license GPL2
- * 
+ *
  * Sequence player wraps smil into the video tag
- * 
+ *
  * Provides an html5 video tag like api to a smil document.
- * 
+ *
  * Supports frame by frame rendering of "smil" Supports "drop frame" realtime
  * playback of "smil"
- * 
+ *
  * Extends the "embedPlayer" and represents the playlist as a single video
  * stream
- * 
+ *
  */
 
 mw.includeAllModuleMessages();
@@ -45,15 +45,15 @@ mw.Smil.prototype = {
 
 	// The abstract embed player parent
 	embedPlayer : null,
-	
+
 	// The jQuery dom object of the smil xml
 	$dom : null,
 
-	// Cache for the duration of the smil sequence 
+	// Cache for the duration of the smil sequence
 	duration: null,
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param {Object}
 	 *            embedPlayer Reference to the embedPlayer driving the smil
 	 *            object
@@ -65,7 +65,7 @@ mw.Smil.prototype = {
 
 	/**
 	 * Load smil into this object from a url
-	 * 
+	 *
 	 * @parm {string} url Source url of smil XML
 	 * @param {function}
 	 *            callback Function to call once smil is loaded and ready
@@ -79,20 +79,20 @@ mw.Smil.prototype = {
 			_this.loadFromString(
 				decodeURIComponent( url.substr( dataUrlKey.length ) )
 			);
-			// xxx Note we could in theory have a data url with remote 'context' 
-			// ie cross domain smil loading ( for now assume document.URL context for data urls )  
+			// xxx Note we could in theory have a data url with remote 'context'
+			// ie cross domain smil loading ( for now assume document.URL context for data urls )
 			this.smilContextUrl = document.URL;
 			callback();
 			return ;
 		}
-		// Else context url is the remote 
+		// Else context url is the remote
 		this.smilContextUrl = url;
 		mw.log('Smil::loadFromUrl : ' + url);
 
 		// Try for direct load ( api cross domain loading is handled outside of
 		// SmilInterface
 		$j.get(url, function( xmlData) {
-			_this.loadFromXMLData( xmlData );	
+			_this.loadFromXMLData( xmlData );
 			// XXX check success or failure
 			callback();
 		});
@@ -103,7 +103,7 @@ mw.Smil.prototype = {
 	},
 	/**
 	 * Set smil from xml string
-	 * 
+	 *
 	 * @param {string}
 	 *            SmilXmlString Xml string of smil to be loaded
 	 */
@@ -116,23 +116,23 @@ mw.Smil.prototype = {
 	 * Update the smil dom via an xmlString
 	 */
 	updateFromString: function( smilXmlString ){
-		delete this.$dom; 
-		// jQuery strips some html native tags when parsing xml passed into jQuery 
+		delete this.$dom;
+		// jQuery strips some html native tags when parsing xml passed into jQuery
 		// since smil has html tags ( "body" "head" ) we need to first convert it to
-		// an xml object:: 
+		// an xml object::
 		this.$dom = $j( this.getXMLDomObject( smilXmlString ) );
-		
+
 		// Remove any non-smil nodes that are in the page dom
 		this.getBody().syncPageDom();
 	},
-	
+
 	// simple XML DOMParser object parser wrapper
-	// xxx Add error handling 
+	// xxx Add error handling
 	getXMLDomObject: function( smilXmlString ){
 		if (window.DOMParser){
 			parser=new DOMParser();
 			xmlDoc=parser.parseFromString(smilXmlString, "text/xml");
-		} else // Internet Explorer 
+		} else // Internet Explorer
 		{
 			xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
 			xmlDoc.async="false";
@@ -140,7 +140,7 @@ mw.Smil.prototype = {
 		}
 		return xmlDoc;
 	},
-	
+
 	/**
 	 * Internal function to get the jQuery smil dom
 	 */
@@ -151,15 +151,15 @@ mw.Smil.prototype = {
 		mw.log("Error SMIL Dom not available");
 		return;
 	},
-	
+
 	getXMLString: function(){
-		return (new XMLSerializer()).serializeToString(this.$dom.get(0));		
+		return (new XMLSerializer()).serializeToString(this.$dom.get(0));
 	},
 
 	/**
 	 * Render a specific time
 	 */
-	renderTime : function(time, callback) {		
+	renderTime : function(time, callback) {
 		// Setup the layout if not already setup:
 		this.getLayout().setupLayout( this.embedPlayer.getRenderTarget() );
 
@@ -172,28 +172,28 @@ mw.Smil.prototype = {
 
 	/**
 	 * We use animateTime instead of a tight framerate loop so that we can
-	 * optimize with browser css transformations 
+	 * optimize with browser css transformations
 	 */
 	animateTime : function(time, timeDelta) {
 		// mw.log("Smil::animateTime: " + time + ' delta: ' + timeDelta );
 		this.getBody().renderTime( time, timeDelta );
 	},
-	
+
 	/**
-	 * Checks if two times are within the framerate time range 
+	 * Checks if two times are within the framerate time range
 	 * useful for results of a seek request not exactly matching
 	 * the seek time, but within a single frame.
-	 */	
+	 */
 	isSameFrameTime: function( time1, time2 ){
 		var frameRange = 1 / mw.getConfig( 'SmilPlayer.framerate');
-		if ( Math.abs( time1 - time2 ) <  frameRange ) {
-			//mw.log( Math.abs( time1 - time2 ) +  ' IS < ' + frameRange );
+		if ( Math.abs( time1 - time2 ) < frameRange ) {
+			//mw.log( Math.abs( time1 - time2 ) + ' IS < ' + frameRange );
 			return true;
 		} else {
 			return false;
 		}
 	},
-	
+
 	/**
 	 * Pause all animations and playback
 	 */
@@ -203,7 +203,7 @@ mw.Smil.prototype = {
 
 	/**
 	 * Checks if the playback is in sync with the current time
-	 * 
+	 *
 	 * @return {boolean} true if playback is insync, false if not in sync with
 	 *         all animation elements ( video tag for now )
 	 */
@@ -292,33 +292,33 @@ mw.Smil.prototype = {
 	 * Get the duration form the smil body
 	 */
 	getDuration : function( forceRefresh ) {
-		//mw.log("Smil::getDuration: refresh: " + this.duration + ' refresh:' +  forceRefresh);		
+		//mw.log("Smil::getDuration: refresh: " + this.duration + ' refresh:' + forceRefresh);
 		// return 0 while we don't have the $dom loaded
 		if (!this.$dom) {
 			return 0;
-		}		
+		}
 		if ( this.duration == null || forceRefresh === true ) {
 			var orgDuration = this.duration;
 			this.duration = this.getBody().getDuration( forceRefresh );
-			// Trigger the duration change event: 
-			if( orgDuration !=  this.duration ){
-				$j( this.getEmbedPlayer() ).trigger('durationchange');	
+			// Trigger the duration change event:
+			if( orgDuration != this.duration ){
+				$j( this.getEmbedPlayer() ).trigger('durationchange');
 			}
 		}
 		return this.duration;
 	},
-	
+
 	removeById: function ( smilElementId ) {
-		var $smilElement =  this.$dom.find( '#' + smilElementId );
+		var $smilElement = this.$dom.find( '#' + smilElementId );
 
 		// Remove from layout
 		this.getLayout().getRootLayout().find( '#' + this.getSmilElementPlayerID( $smilElement ) )
 			.remove();
-		
+
 		// Remove from dom
 		$smilElement.remove();
-		
-		// Invalidate dom duration cache 
+
+		// Invalidate dom duration cache
 		this.duration = null;
 	},
 	/**
@@ -328,7 +328,7 @@ mw.Smil.prototype = {
 	/**
 	 * maps a smil element id to a html 'safer' id as a decedent subname of the
 	 * embedPlayer parent
-	 * 
+	 *
 	 * @param {Object}
 	 *            smilElement Element to get id for
 	 */
@@ -344,9 +344,9 @@ mw.Smil.prototype = {
 		}
 		return embedPlayer.id + '_' + $j( smilElement ).attr('id');
 	},
-	
+
 	/**
-	 * Get the smil id for an pageNode 
+	 * Get the smil id for an pageNode
 	 */
 	getSmilDomId: function ( pageNode ){
 		if( !$j( pageNode ).length ) {
@@ -355,17 +355,17 @@ mw.Smil.prototype = {
 		}
 		return $j( pageNode ).attr('id').replace( '/' + this.getEmbedPlayer().id + '_/', '');
 	},
-	
+
 	/**
 	 * get the embed player
 	 */
 	getEmbedPlayer: function(){
 		return this.embedPlayer;
 	},
-	
+
 	/**
 	 * Get an absolute path to asset based on the smil URL
-	 * 
+	 *
 	 * @param {string}
 	 *            assetPath Path to asset to be transformed into url
 	 */
@@ -373,7 +373,7 @@ mw.Smil.prototype = {
 		// Context url is the smil document url:
 		var contextUrl = mw.absoluteUrl(this.smilContextUrl);
 		var absoluteUrl = mw.absoluteUrl( assetPath, contextUrl );
-		// Restrict any display url 
+		// Restrict any display url
 		if( mw.getConfig( 'SmilPlayer.AssetDomainWhiteList' ) != '*' ){
 			var approvedDomainList = mw.getConfig( 'SmilPlayer.AssetDomainWhiteList' );
 			var approved = false;
@@ -387,77 +387,77 @@ mw.Smil.prototype = {
 				return mw.getConfig('imagesPath') + 'vid_default_thumb.jpg';
 			}
 		}
-		
+
 		return absoluteUrl;
 	},
 
-	// filter 'raw' user htmlData 
+	// filter 'raw' user htmlData
 	getFilterdHtml: function( htmlData ){
 		var _this = this;
 		// We pass the htmlData via jQuery fragment creation, this runs
 		// jquery.clean() and filters the result html of script tags and the like
-		var $html = $j( '<div />' ).append( 
+		var $html = $j( '<div />' ).append(
 			$j( htmlData )
 		);
 		// Links go to a new window and are disable when smaller than player size
 		$html.find('a').each( function(inx, link ){
 			// Escape link output as to not include scirpt execution
-			$j(link).attr('href', 
+			$j(link).attr('href',
 				mw.escapeQuotesHTML( $j(link).attr('href') )
 			);
-		});		
-		
-		// Make every asset url absolute and restrict domain of assets 
+		});
+
+		// Make every asset url absolute and restrict domain of assets
 		// ( if player is configured to restrict asset domains )
 		$html.find('img,video,audio,track,iframe,object,embed,form').each(function(inx, node){
 			if( $j(node).attr('src') ){
-				$j(node).attr('src', 
+				$j(node).attr('src',
 					_this.getAssetUrl( $j(node).attr('src') )
 				);
 			}
 			if( $j(node).attr('data') ){
-				$j(node).attr('data', 
-					_this.getAssetUrl(  $j(node).attr('src') )
+				$j(node).attr('data',
+					_this.getAssetUrl( $j(node).attr('src') )
 				);
 			}
 			// remove form action
 			if( $j(node).attr('action') ){
 				if( $j(node).attr('action').toLowerCase().indexOf('javascript') != -1 ){
-					 $j(node).attr('action',  '');
+					 $j(node).attr('action', '');
 				} else {
-					$j(node).attr('action', 
+					$j(node).attr('action',
 						_this.getAssetUrl( $j(node).attr('src') )
 					);
 				}
 			}
 		})
-		
-		// Script and html bindings should have been striped with $j.clean 
+
+		// Script and html bindings should have been striped with $j.clean
 		// but just in case remove any suspect elements with 'script' attributes
 		$html.find('script,' +
 				// body and frameset event attributes
 				'[onload],[onunload],' +
-				
+
 				// Form element events:
 				'[onblur],[onchange],[onfocus],[onreset],[onselect],[onsubmit],' +
-				
+
 				// Image events:
-				'[onabort],' + 
-				
+				'[onabort],' +
+
 				// Keyboard events
 				'[onkeydown],[onkeypress],[onkeyup],',
-				
+
 				// Mouse events
 				'[onclick],[onclick],[ondblclick],[onmousedown],' +
 				'[onmousemove],[onmouseout],[onmouseover],[onmouseup]'
 		).remove();
-		
+
 		return $html;
 	},
 	getTitleKey: function( smilElement ){
-		// check directly for the attribute: 
+		// check directly for the attribute:
 		if( $j(smilElement).attr('apititlekey') ){
-			return  $j(smilElement).attr('apititlekey') ;
+			return $j(smilElement).attr('apititlekey') ;
 		}
 		if( $j(smilElement).find("param[name='apiTitleKey']").length ) {
 			return $j(smilElement).find("param[name='apiTitleKey']").attr('value');
@@ -506,9 +506,9 @@ mw.Smil.prototype = {
 	/**
 	 * Parse smil time function
 	 * http://www.w3.org/TR/SMIL3/smil-timing.html#Timing-ClockValueSyntax
-	 * 
+	 *
 	 * Smil time has the following structure:
-	 * 
+	 *
 	 * Clock-value ::= ( Full-clock-value | Partial-clock-value |
 	 * Timecount-value ) Full-clock-value ::= Hours ":" Minutes ":" Seconds ("."
 	 * Fraction)? Partial-clock-value ::= Minutes ":" Seconds ("." Fraction)?
@@ -517,7 +517,7 @@ mw.Smil.prototype = {
 	 * 2DIGIT // range from 00 to 59 Seconds ::= 2DIGIT // range from 00 to 59
 	 * Fraction ::= DIGIT+ Timecount ::= DIGIT+ 2DIGIT ::= DIGIT DIGIT DIGIT ::=
 	 * [0-9]
-	 * 
+	 *
 	 * @param {mixed}
 	 *            timeValue time value of smil structure
 	 * @return {float} Seconds from time value, if timeValue is empty or null

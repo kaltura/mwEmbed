@@ -3,25 +3,22 @@
 */
 
 ( function( mw ) {
-	// Adds a jquery binding / loader for playerThemer 
+	// Adds a jquery binding / loader for playerThemer
 	mw.addResourcePaths({
-		"mw.PlayerThemer" : "mw.PlayerThemer.js" 
+		"mw.PlayerThemer" : "mw.PlayerThemer.js"
 	});
-	
-	// Add the mw.PlayerThemer to the EmbedPlayer loader request if we have special playerThemer class
-	/* $j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
-		if( $j( playerElement ).hasClass('PlayerThemer') ){ 
-			// Set the player useNativeControls attribute
-			$j( playerElement ).attr('usenativecontrols', true);	
 
-			// Add playerThemer to the request:  
+	// Add the mw.PlayerThemer to the embedPlayer loader request if we have special playerThemer class
+	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
+		if( $j( playerElement ).hasClass('PlayerThemer') ){
+			// Set the player useNativeControls attribute
+			$j( playerElement ).attr('usenativecontrols', true);
+
+			// Add playerThemer to the request:
 			if( $j.inArray( 'mw.PlayerThemer', classRequest ) == -1 ){
 				classRequest.push( 'mw.PlayerThemer');
 			}
 		}
-	});*/
-	
-	
-	
+	});
 	
 })( window.mw );
