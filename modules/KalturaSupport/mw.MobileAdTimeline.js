@@ -143,11 +143,12 @@ mw.MobileAdTimeline.prototype = {
 				displayConf.videoFile,
 				function( videoElement ){ /* switch complete callback */					
 					// Run the bind call for any bindEvents in the displayConf:  
-					$j.each( displayConf.bindEvents, function( inx, bindFunction ){
+					/*$j.each( displayConf.bindEvents, function( inx, bindFunction ){
 						if( typeof bindFunction == 'function' ){
 							bindFunction( videoElement );
 						}
 					});
+					*/
 				}, 
 				doneCallback
 			)
@@ -166,31 +167,51 @@ mw.MobileAdTimeline.prototype = {
 			this.timelineTargets[ timeType ] = displayConf;
 		}		
 	},
-
+	/**
+	 * switchPlaySrc switches the player source working around a few bugs in browsers
+	 * 
+	 * @param {string} src
+	 * 		Video url Source to switch to. 
+	 * @param {function} switchCallback
+	 * 		Function to call once the source has been switched
+	 * @param {function} doneCallback
+	 * 		Function to call once the clip has completed playback
+	 */
 	switchPlaySrc: function( src , switchCallback, doneCallback ){
 		var _this = this;
-		mw.log( 'switchPlaySrc:' + src );
+		mw.log( 'MobileAdTimeline:: switchPlaySrc:' + src );
 		var vid = this.getNativePlayerElement();
 		if( vid ){
 			try{
 				// Remove all native player bindings
 				$j( vid ).unbind();				
-				vid.pause();					
-				vid.src = src;
-				// Give iOS 100ms to figure out the src got updated 
-				setTimeout( function(){
-					vid.load();
-					vid.play();
-					// Wait another 100ms then bind the end event and any custom events for the switchCallback 
+				vid.pause();	
+				
+				// Local scope update source and play function to work around google chrome bug
+				var updateSrcAndPlay = function(){
+					vid.src = src;
+					// Give iOS 50ms to figure out the src got updated ( iPad OS 3.0 ) 
 					setTimeout( function(){
-						$j(vid).bind( 'ended', function( event ){			
-							doneCallback();
-						})
-						if( typeof switchCallback == 'function'){
-							switchCallback( vid );
-						}
-					}, 100 )
-				}, 100 );
+						vid.load();
+						vid.play();
+						// Wait another 50ms then bind the end event and any custom events for the switchCallback 
+						setTimeout( function(){
+							$j(vid).bind( 'ended', function( event ){			
+								doneCallback();
+							})
+							if( typeof switchCallback == 'function'){
+								switchCallback( vid );
+							}
+						}, 50 );
+					}, 50 );
+				};			
+				if(  navigator.userAgent.toLowerCase().indexOf('chrome') != -1  ){
+					// Null the src and wait 50ms ( helps unload video without crashing google chrome 7.x )
+					vid.src = '';	
+					setTimeout( updateSrcAndPlay, 100 );
+				} else {
+					updateSrcAndPlay();
+				}				
 			} catch( e ){
 				mw.log("Error: Error in swiching source playback");
 			}

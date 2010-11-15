@@ -908,23 +908,14 @@ mw.includeAllModuleMessages();
 
 				// Scale the text Relative to player size:
 				$track.css(
-					this.embedPlayer.controlBuilder.getInterfaceSizeTextCss()
+					this.embedPlayer.controlBuilder.getInterfaceSizeTextCss({
+						'width' :  this.embedPlayer.getWidth(),
+						'height' : this.embedPlayer.getHeight()
+					})
 				);
 
 				$playerTarget.append( $track );
-				// Resize the interface for layoutMode == 'ontop' ( if not in fullscreen )
-				// NOTE this shoudl be a call to controlBuilder not handled here inline
-				if( ! this.embedPlayer.controlBuilder.fullscreenMode ){
-					if( this.embedPlayer.controlBuilder.checkOverlayControls() ){
-						var playerHeight = this.embedPlayer.getHeight();
-					} else {
-						var playerHeight = this.embedPlayer.getHeight() + this.embedPlayer.controlBuilder.getHeight();
-					}
-					// Restore the player height
-					this.embedPlayer.$interface.animate({
-						'height': playerHeight
-					});
-				}
+				
 			} else if ( layoutMode == 'below') {
 				// Set the belowBar size to 60 pxiles:
 				var belowBarHeight = 60;

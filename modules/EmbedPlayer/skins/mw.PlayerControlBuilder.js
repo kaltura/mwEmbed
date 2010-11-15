@@ -139,7 +139,6 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	addControlComponents: function( ) {
 		var _this = this;
-		mw.log( 'PlayerControlsBuilder:: addControlComponents' );
 
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
@@ -148,10 +147,8 @@ mw.PlayerControlBuilder.prototype = {
 		var $controlBar = embedPlayer.$interface.find( '.control-bar' );
 
 		this.available_width = embedPlayer.getPlayerWidth();
-
-		// Make pointer to the embedPlayer
-		this.embedPlayer = embedPlayer;
-
+		
+		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.available_width );	
 		// Build the supportedComponets list
 		this.supportedComponets = $j.extend( this.supportedComponets, embedPlayer.supports );
 
@@ -254,7 +251,7 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	getInterfaceSizeTextCss: function( size ) {
 		// Some arbitrary scale relative to window size ( 400px wide is text size 105% )
-		var textSize = size.width / 3.8;
+		var textSize = size.width / 5;
 		if( textSize < 95 ) textSize = 95;
 		if( textSize > 200 ) textSize = 200;
 		//mw.log(' win size is: ' + $j( window ).width() + ' ts: ' + textSize );
@@ -796,7 +793,8 @@ mw.PlayerControlBuilder.prototype = {
 							'id' : 'ffwarn_' + embedPlayer.id,
 							'type' : "checkbox",
 							'name' : 'ffwarn_' + embedPlayer.id
-						}).click( function() {
+						})
+						.click( function() {
 							mw.log("WarningBindinng:: set " + preferenceId + ' to hidewarning ' );
 							// Set up a cookie for 30 days:
 							$j.cookie( preferenceId, 'hidewarning', { expires: 30 } );

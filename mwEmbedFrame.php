@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * mwEmbedFrame is a special stand alone page for iframe embed of mwEmbed modules
  *
@@ -34,7 +34,8 @@ class mwEmbedFrame {
 		'skin'
 	);
 	var $playerIframeId = 'iframeVid';
-
+	var $debug = false;
+	
 	// When used in direct source mode the source asset.
 	// NOTE: can be an array of sources in cases of "many" sources set
 	var $sources = array();
@@ -115,7 +116,7 @@ class mwEmbedFrame {
 		// Setup the embed string based on attribute set:
 		$embedResourceList = 'window.jQuery,mwEmbed,mw.style.mwCommon,$j.fn.menu,mw.style.jquerymenu,mw.EmbedPlayer,mw.EmbedPlayerNative,mw.EmbedPlayerJava,mw.PlayerControlBuilder,$j.fn.hoverIntent,mw.style.EmbedPlayer,$j.cookie,$j.ui,mw.style.ui_redmond,$j.widget,$j.ui.mouse,mw.PlayerSkinKskin,mw.style.PlayerSkinKskin,mw.TimedText,mw.style.TimedText,$j.ui.slider';
 		
-		if( $this->kentryid ){
+		if( isset( $this->kentryid ) ){
 			 $embedResourceList.= ',' . implode(',', array(
 			 		'KalturaClientBase',
 					'KalturaClient',
@@ -130,7 +131,8 @@ class mwEmbedFrame {
 					'mw.KAds'
 			) );
 		}
-?><!DOCTYPE HTML>
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />

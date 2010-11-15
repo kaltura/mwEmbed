@@ -32,7 +32,7 @@ mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [
 	'title',
 	
 	// boolean if we support temporal url requests on the source media
-	'URLTimeEncoding', 
+	'URLTimeEncoding',
 	
 	// Media has a startOffset ( used for plugins that
 	// display ogg page time rather than presentation time
@@ -475,8 +475,8 @@ EmbedPlayerManager.prototype = {
 		
 		// Set swapPlayerElement has height / width set and set to loading:
 		$j( swapPlayerElement ).css( {
-			'width' : playerInterface.width,
-			'height' : playerInterface.height
+			'width' : playerInterface.width + 'px',
+			'height' : playerInterface.height + 'px'
 		} );
 		
 		// If we don't already have a loadSpiner add one:
@@ -1464,7 +1464,6 @@ mw.EmbedPlayer.prototype = {
 	 *      element Source element to grab size from
 	 */
 	setPlayerSize: function( element ) {
-	
 		this.height = $j(element).css( 'height' );
 		this.width = $j(element).css( 'width' );
 		
@@ -1495,7 +1494,7 @@ mw.EmbedPlayer.prototype = {
 		// Firefox sets audio height to "0px" while webkit uses 32px .. force
 		// zero:
 		if( element.tagName.toLowerCase() == 'audio' && this.height == '32' ) {
-			this.height = 0;
+			this.height = 0;			
 		}
 		
 		// Use default aspect ration to get height or width ( if rewriting a
@@ -2034,7 +2033,7 @@ mw.EmbedPlayer.prototype = {
 	 * Show the player
 	 */
 	showPlayer : function () {
-		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height);
+		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );
 		var _this = this;
 		// Set-up the local controlBuilder instance:
 		this.controlBuilder = new mw.PlayerControlBuilder( this );
@@ -2043,13 +2042,12 @@ mw.EmbedPlayer.prototype = {
 		// Make sure we have mwplayer_interface
 		if( $j( this ).parent( '.mwplayer_interface' ).length == 0 ) {
 			// Select "player"
-			$j( this )
-			.wrap( 
+			$j( this ).wrap( 
 				$j('<div>')
 				.addClass( 'mwplayer_interface ' + this.controlBuilder.playerClass )
 				.css({
-					'width' : this.width,
-					'height' : this.height,
+					'width' : this.width + 'px',
+					'height' : this.height + 'px',
 					'position' : 'relative',
 					'background' : '#000'
 				})
@@ -2057,9 +2055,7 @@ mw.EmbedPlayer.prototype = {
 			// position the "player" absolute inside the relative interface
 			// parent:
 			.css('position', 'absolute');
-		}
-
-		
+		}		
 				
 		// Set up local jQuery object reference to "mwplayer_interface"
 		this.$interface = $j( this ).parent( '.mwplayer_interface' );
@@ -2477,60 +2473,70 @@ mw.EmbedPlayer.prototype = {
 	},
 	
 	/**
-	 * Get the share embed object code
-	 * 
-	 * NOTE this could probably share a bit more code with getShareEmbedVideoJs
-	 */ 
-	getShareEmbedObject: function(){
-		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
-		var params = {};
+	* Get the share embed object code
+	*
+	* NOTE this could probably share a bit more code with getShareEmbedVideoJs
+	*/
+	getShareIframeObject: function(){
 		
-		if ( this.roe ) {
-			params.roe = this.roe;
-		} else if( this.apiTitleKey ) {
-			params.apiTitleKey = this.apiTitleKey;
-			if ( this.apiProvider ) {
-				// Commons always uses the commons api provider ( special hack
-				// should refactor )
-				if( mw.parseUri( document.URL ).host == 'commons.wikimedia.org'){
-					 this.apiProvider = 'commons';
-				}
-				params.apiProvider = this.apiProvider;
-			}
+		// If using a gadget do the new embed format: 
+		// @@NOTE this should be factored out into mediaWiki gadget helper
+		if( typeof wgServer != 'undefined' && typeof mwCheckForGadget != 'undefined' ){
+			var iframeUrl = wgServer + wgArticlePath.replace( /\$1/, wgPageName ) + 
+							'?' + mw.getConfig( 'Mw.AppendWithJS' ) +
+							'&embedplayer=yes';
 		} else {
-			// Output all the video sources:
-			for( var i=0; i < this.mediaElement.sources.length; i++ ){
-				var source = this.mediaElement.sources[i];
-				if( source.src ) {
-					params['src[]'] = mw.absoluteUrl( source.src );
+			// old style embed:
+			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
+			var params = {};
+	
+			if ( this.roe ) {
+				params.roe = this.roe;
+			} else if( this.apiTitleKey ) {
+				params.apiTitleKey = this.apiTitleKey;
+				if ( this.apiProvider ) {
+					// Commons always uses the commons api provider ( special hack should refactor )
+					if( mw.parseUri( document.URL ).host == 'commons.wikimedia.org'){
+						 this.apiProvider = 'commons';
+					}
+					params.apiProvider = this.apiProvider;
+				}
+			} else {
+				// Output all the video sources:
+				for( var i=0; i < this.mediaElement.sources.length; i++ ){
+					var source = this.mediaElement.sources[i];
+					if( source.src ) {
+						params['src[]'] = mw.absoluteUrl( source.src );
+					}
+				}
+				// Output the poster attr
+				if( this.poster ){
+					params.poster = this.poster;
 				}
 			}
-			// Output the poster attr
-			if( this.poster ){
-				params.poster = this.poster;
+	
+			// Set the skin if set to something other than default
+			if( this.skinName ){
+				params.skin = this.skinName;
 			}
+	
+			if( this.duration ) {
+				params.durationHint = parseFloat( this.duration );
+			}
+			iframeUrl += $j.param( params );
 		}
-		
-		// Set the skin if set to something other than default
-		if( this.skinName ){
-			params.skin = this.skinName;
-		}
-		
-		if( this.duration ) {
-			params.durationHint = parseFloat( this.duration );
-		}
-		iframeUrl += $j.param( params );
-		
+
 		// Set up embedFrame src path
 		var embedCode = '&lt;iframe src=&quot;' + mw.escapeQuotesHTML( iframeUrl ) + '&quot; ';
-		
+
 		// Set width / height of embed object
 		embedCode += 'width=&quot;' + this.getPlayerWidth() +'&quot; ';
 		embedCode += 'height=&quot;' + this.getPlayerHeight() + '&quot; ';
-			
+		embedCode += 'frameborder=&quot;0&quot; ';
+
 		// Close up the embedCode tag:
 		embedCode+='&gt;&lt/iframe&gt;';
-		
+
 		// Return the embed code
 		return embedCode;
 	},
@@ -3074,14 +3080,14 @@ mw.EmbedPlayer.prototype = {
 		
 		// Get the buffer target based for playlist vs clip
 		$buffer = this.$interface.find( '.mw_buffer' );
+		//mw.log(' set bufferd %:' + this.bufferedPercent );
 		// Update the buffer progress bar (if available )
 		if ( this.bufferedPercent != 0 ) {
 			// mw.log('Update buffer css: ' + ( this.bufferedPercent * 100 ) +
 			// '% ' + $buffer.length );
 			if ( this.bufferedPercent > 1 ){
 				this.bufferedPercent = 1;
-			}
-			
+			}			
 			$buffer.css({
 				"width" : ( this.bufferedPercent * 100 ) + '%'
 			});

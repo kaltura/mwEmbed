@@ -62,7 +62,7 @@ mw.KAds.prototype = {
 						}
 					});
 				} else {
-					// need to add support for mw.addToPlayerTimeline for non VAST ads^					
+					//@@TODO need to add support for mw.addToPlayerTimeline for non VAST ads^					
 				}
 			}			
 		})
@@ -73,16 +73,14 @@ mw.KAds.prototype = {
 	},
 	getAdDisplayConf: function( adUrl, callback ){
 		var _this = this;
+		// We use a xml proxy ( passing on the clients ip for geo lookup ) 
+		// since the ad server is almost never on the same domain as the api.
+		// @@todo also we should explore html5 based cross domain request to avoid the proxy
 		var proxyUrl = mw.getConfig( 'Kaltura.XmlProxyUrl' );
 		if( !proxyUrl){
 			mw.log("Error: mw.KAds : missing kaltura proxy url ( can't load ad ) ");
-			return; 
+			return ; 
 		}
-		// In theory if on the same server we don't need to proxy 
-		// ( but ad servers are almost always on a different server )		
-		// @@todo also we should explore html5 based cross domain request 
-		// if the servers set the proper access permissions 
-		// ( because cookies won't work well with the proxy ) 
 		$j.getJSON( proxyUrl + '?url=' + encodeURIComponent( adUrl ) + '&callback=?', function( result ){
 			var adDisplayConf = {};
 			if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
@@ -142,7 +140,7 @@ mw.KAds.prototype = {
 				if( ! currentSeq.bindEvents ){
 					currentSeq.bindEvents = [];
 				}
-				currentSeq.bindEvents.push( function( embedPlayer ){						
+				currentSeq.bindEvents.push( function( embedPlayer ){		
 					_this.bindVastEvent(embedPlayer, $j(tracking).attr('event'),  $j(tracking).text() );
 				});				
 			});

@@ -38,15 +38,15 @@ mw.EmbedPlayerNative = {
 		'error',
 		'emptied',
 		'stalled',
-		'play', 
-		'pause', 
+		'play',
+		'pause',
 		'loadedmetadata',
 		'loadeddata',
 		'waiting',
 		'playing',
 		'canplay',
 		'canplaythough',
-		'seeking', 
+		'seeking',
 		'seeked',
 		'timeupdate',
 		'ended',
@@ -54,7 +54,7 @@ mw.EmbedPlayerNative = {
 		'durationchange',
 		'volumechange'
 	],
-	
+
 	// Native player supported feature set
 	supports: {
 		'playHead' : true,
@@ -64,9 +64,9 @@ mw.EmbedPlayerNative = {
 		'volumeControl' : true,
 		'overlays' : true
 	},
-	
+
 	/** 
-	 * updates the supported features given the "type of player" 
+	 * Updates the supported features given the "type of player" 
 	 */
 	updateFeatureSupport: function(){
 		// iWhatever devices appear to have a broken
@@ -181,14 +181,15 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		$j.each( _this.nativeEvents, function( inx, eventName ){
-			$j( vid ).bind( eventName , function(){
+			$j( vid ).bind( eventName , function(){								
 				if( _this._propagateEvents ){
+					var argArray = $j.makeArray( arguments );					
 					// Check if there is local handler: 
 					if( _this['on' + eventName ] ){
-						_this['on' + eventName ].apply( _this, arguments );
+						_this['on' + eventName ].apply( _this, argArray);
 					} else {
-						// no local handler directly propagate the event to the abstract object: 
-						$j( _this ).trigger( eventName, arguments )
+						// No local handler directly propagate the event to the abstract object: 
+						$j( _this ).trigger( eventName, argArray )
 					}
 				}
 			})
@@ -202,7 +203,7 @@ mw.EmbedPlayerNative = {
 		
 		// Update the bufferedPercent
 		if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
-			this.bufferedPercent = (vid.buffered.end(0) / vid.duration);
+			this.bufferedPercent = ( vid.buffered.end(0) / vid.duration );
 		}
 		_this.parent_monitor();
 	},
@@ -560,7 +561,9 @@ mw.EmbedPlayerNative = {
 	* Note: this way of updating buffer was only supported in firefox 3.x and
 	* not supported in firefox 4.x
 	*/
-	onprogress: function( e ) {
+	onprogress: function( event ) {
+		var e = event.originalEvent;
+		//mw.log("onprogress: e:" + e + ' ' + e.loaded + ' && ' + e.total );
 		if( e.loaded && e.total ) {
 			this.bufferedPercent =  e.loaded / e.total;
 			this.progressEventData = e.loaded;
