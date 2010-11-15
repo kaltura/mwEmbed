@@ -796,8 +796,7 @@ mw.PlayerControlBuilder.prototype = {
 							'id' : 'ffwarn_' + embedPlayer.id,
 							'type' : "checkbox",
 							'name' : 'ffwarn_' + embedPlayer.id
-						})
-						.click( function() {
+						}).click( function() {
 							mw.log("WarningBindinng:: set " + preferenceId + ' to hidewarning ' );
 							// Set up a cookie for 30 days:
 							$j.cookie( preferenceId, 'hidewarning', { expires: 30 } );
