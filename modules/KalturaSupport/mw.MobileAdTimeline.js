@@ -37,8 +37,8 @@ mw.MobileAdTimeline.prototype = {
 	 */
 	timelineTargets : {
 		preroll:false,
-		bumper: false, 
-		overlay: false, 
+		bumper: false,
+		overlay: false,
 		postroll: false
 	},
 	
@@ -100,7 +100,7 @@ mw.MobileAdTimeline.prototype = {
 			});
 		});
 		
-		// Monitor:
+		// Monitor will only be triggered in core media player
 		$j( _this.embedPlayer ).bind( 'monitorEvent', function(){
 			// @@TODO handle ad inserts: 
 			
@@ -143,19 +143,17 @@ mw.MobileAdTimeline.prototype = {
 				_this.getNativePlayerElement().controls = false;
 			};
 			// Play the source then run the callback
-			_this.switchPlaySrc( 
-				displayConf.videoFile,
-				
+			_this.switchPlaySrc(
+				displayConf.videoFile,				
 				function( videoElement ){ /* switchCallback once new src is playing */					
-					// Run the bind call for any bindEvents in the displayConf:  
-					$j.each( displayConf.bindEvents, function( inx, bindFunction ){
-						if( typeof bindFunction == 'function' ){
-							bindFunction( videoElement );
-						}
-					});
+					// Pass off event handling to displayConf bind:
+					if( typeof displayConf.bindPlayerEvents == 'function' ) {
+						displayConf.bindPlayerEvents( videoElement )
+					}
+				
 				},
 				doneCallback
-			)			 
+			);
 		}
 	},
 	
@@ -166,7 +164,7 @@ mw.MobileAdTimeline.prototype = {
 	selectAdSequence: function( displaySet ){
 		var indexList = [];
 		$j.each(displaySet.sequences, function( inx, adConf ) {
-			if( typeof adConf == 'object' && ( adConf.bindEvents || adConf.companions ) ){
+			if( typeof adConf == 'object' && ( adConf.trackingEvents || adConf.companions ) ){
 				indexList.push( inx );
 			}
 		});		

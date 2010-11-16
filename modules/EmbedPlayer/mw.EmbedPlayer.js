@@ -2420,7 +2420,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		// Android only can play with a special play button ( no native controls
 		// in the dom , and no auto-play )
-		// and only with 'native display'
+		// and only with 'native display'		
 		if( mw.isAndroid2() ){
 			$j( '#' + _this.pid ).siblings('.play-btn-large').remove();
 			$j( '#' + _this.pid ).after( 
@@ -2432,9 +2432,10 @@ mw.EmbedPlayer.prototype = {
 				})
 				.attr( {
 					'title'	: gM( 'mwe-embedplayer-play_clip' ),
-					'class'	: "ui-state-default play-btn-large"
+					'class'	: "play-btn-large"
 				} )
 				.click( function() {
+					$j( this ).hide();
 					_this.play();
 					// no need to hide the play button since android plays
 					// fullscreen

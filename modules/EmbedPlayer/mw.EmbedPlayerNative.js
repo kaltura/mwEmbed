@@ -558,8 +558,8 @@ mw.EmbedPlayerNative = {
 	*
 	* Used to update the bufferedPercent 
 	* 
-	* Note: this way of updating buffer was only supported in firefox 3.x and
-	* not supported in firefox 4.x
+	* Note: this way of updating buffer was only supported in Firefox 3.x and
+	* not supported in Firefox 4.x
 	*/
 	onprogress: function( event ) {
 		var e = event.originalEvent;

@@ -202,16 +202,17 @@ function kCheckAddScript(){
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not avaliable 
 function kIsHTML5FallForward(){
-	// Check for a mobile html5 user agent:
+	// Check for a mobile html5 user agent:	
 	if ( (navigator.userAgent.indexOf('iPhone') != -1) || 
 		(navigator.userAgent.indexOf('iPod') != -1) || 
 		(navigator.userAgent.indexOf('iPad') != -1) ||
 		(navigator.userAgent.indexOf('Android 2.') != -1) || 
-		// to debug in chrome / desktop safari
+		// Force html5 for chrome / desktop safari
 		(document.URL.indexOf('forceMobileHTML5') != -1 )
 	){
 		return true;
 	}
+	
 	// Check if the client does not have flash and has the video tag
 	if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
 		for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {

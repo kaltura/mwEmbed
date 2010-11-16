@@ -24,6 +24,7 @@ mw.KAds.prototype = {
 			mw.log("All ads have been loaded");
 		})			
 	},
+	
 	// Load all the ads per the $adConfig
 	loadAds: function( callback ){		
 		var _this = this;			
@@ -120,7 +121,7 @@ mw.KAds.prototype = {
 		var $vast = $j( xmlString );
 		// Get the basic set of sequences
 		adConf.sequences = [];
-		$vast.find('creative').each( function(na, node){
+		$vast.find('creative').each( function( na, node ){
 			mw.log('kAds:: getVastAdDisplayConf: ' + node );
 			var seqId = $j( node ).attr('sequence');
 			var $creative = $j( node );
@@ -136,18 +137,21 @@ mw.KAds.prototype = {
 			}
 			
 			// Set tracking events: 
-			$creative.find('trackingEvents Tracking').each(function(na, trackingNode){
-				if( ! currentSeq.bindEvents ){
-					currentSeq.bindEvents = [];
+			$creative.find('trackingEvents Tracking').each( function( na, trackingNode ){
+				if( ! currentSeq.trackingEvents ){
+					currentSeq.trackingEvents = [];
 				}
-				currentSeq.bindEvents.push( function( embedPlayer ){		
-					_this.bindVastEvent( 
-						embedPlayer, 
-						$j( trackingNode ).attr('event'),  
-						_this.getCdataFromNode( trackingNode ) 
-					); 
-				});				
+				currentSeq.trackingEvents.push( {
+					'eventName' : $j( trackingNode ).attr('event'),  
+					'beaconUrl' : _this.getCdataFromNode( trackingNode )  
+				});
 			});
+			
+			// Setup a bind Player callback which passes the embedPlayer 
+			// into the currentSeq function scope. 			
+			currentSeq.bindPlayerEvents = function( embedPlayer ){
+				_this.bindPlayerEvents( currentSeq.trackingEvents, embedPlayer );
+			};
 			
 			// Set the media file:
 			$creative.find('MediaFiles MediaFile').each( function( na, mediaFile ){
@@ -294,20 +298,38 @@ mw.KAds.prototype = {
 			break;
 		}
 		return $companionHtml;
-	},
+	},	
+
 	/**
-	 * bindVastEvent
+	 * bindVastEvent per the VAST spec the following events are supported:
+	 *   
+	 * start, midpoint, firstQuartile, thirdQuartile, complete
+	 * pause, rewind, resume, 
+	 * 
+	 * VAST events not presently supported ( per iOS player limitations ) 
+	 * 
+	 * mute, creativeView, unmute, fullscreen, expand, collapse, 
+	 * acceptInvitation, close
+	 * 
 	 * @param {object} embedPlayer
 	 * @param {string} eventName
 	 * @param {object} eventBecon 
 	 */
 	bindVastEvent: function( embedPlayer, eventName, eventBecon ) {
 		mw.log('kAds :: bindVastEvent :' + eventName + ' becon:' + eventBecon );
-		debugger;
+		
 		if( eventName == 'start' ){
 			
 		}
+	},	
+	/**
+	 * Binds player events for the given trackingEvents set
+	 */
+	bindPlayerEvents: function ( trackingEvents, embedPlayer ){
+		// Set up a monitor:
+		$j( embedPlayer ).bind( )
 	},
+	
 	/**
 	 * There does no seem to be a clean way to get CDATA node text via jquery or 
 	 * via native browser functions. So here we just strip the CDATA tags and 

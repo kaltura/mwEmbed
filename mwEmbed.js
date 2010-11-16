@@ -1171,7 +1171,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if ( (navigator.userAgent.indexOf('iPhone') != -1) ||
 			(navigator.userAgent.indexOf('iPod') != -1) || 
 			(navigator.userAgent.indexOf('iPad') != -1) ||
-			(navigator.userAgent.indexOf('Android 2.') != -1) ||
+			( mw.isAndroid2() ) ||
 			// to debug in chrome / desktop safari
 			(document.URL.indexOf('forceMobileHTML5') != -1 )
 		) {
@@ -1213,8 +1213,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		return false;
 	}
 	// Android 2 has some restrictions vs other mobile platforms 
-	mw.isAndroid2 = function(){
-		if ( navigator.userAgent.indexOf('Android 2.') != -1) {
+	mw.isAndroid2 = function(){		
+		if ( navigator.userAgent.indexOf( 'Android 2.') != -1) {
 			return true;
 		}
 		return false;
