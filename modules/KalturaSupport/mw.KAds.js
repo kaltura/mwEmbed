@@ -29,8 +29,8 @@ mw.KAds.prototype = {
 		var _this = this;			
 		var loadQueueCount = 0;
 		// Add timeline events: 
-		this.$adConfig.find( 'timeline' ).children().each( function(na, node){
-			var adDisplayConfAttr = ["nads", "frequency", "start"];			
+		this.$adConfig.find( 'timeline' ).children().each( function( na, node ){
+			var adDisplayConfAttr = [ "nads", "frequency", "start" ];			
 			if( $j(node).attr( 'enabled') == 'true' ){
 				// Setup the displayConf with a pointer to this adConfig ( for general ad config )
 				var displayConf = { 
@@ -42,7 +42,7 @@ mw.KAds.prototype = {
 						displayConf[ adDisplayConfAttr[i] ] = $j(node).attr( adDisplayConfAttr[i] );
 					}
 				}
-				if( $j(node).attr('url')  ){
+				if( $j(node).attr('url') ) {
 					loadQueueCount++;
 					// Load and parse the adXML into displayConf format
 					_this.getAdDisplayConf( $j(node).attr('url'), function( adDisplayConf ){
@@ -129,19 +129,23 @@ mw.KAds.prototype = {
 				adConf.sequences[seqId] = {};
 			}
 			// Set a local pointer to the current sequence: 
-			var currentSeq = adConf.sequences[seqId];
+			var currentSeq = adConf.sequences[ seqId ];
 			// Set duration 
 			if( $creative.find('duration') ){
 				currentSeq.duration = mw.npt2seconds(  $creative.find('duration').text() );
 			}
 			
 			// Set tracking events: 
-			$creative.find('trackingEvents Tracking').each(function(na, tracking){
+			$creative.find('trackingEvents Tracking').each(function(na, trackingNode){
 				if( ! currentSeq.bindEvents ){
 					currentSeq.bindEvents = [];
 				}
 				currentSeq.bindEvents.push( function( embedPlayer ){		
-					_this.bindVastEvent(embedPlayer, $j(tracking).attr('event'),  $j(tracking).text() );
+					_this.bindVastEvent( 
+						embedPlayer, 
+						$j( trackingNode ).attr('event'),  
+						_this.getCdataFromNode( trackingNode ) 
+					); 
 				});				
 			});
 			
@@ -151,19 +155,19 @@ mw.KAds.prototype = {
 				//@@NOTE for now we are only interested in support for iOS / android devices
 				// so only h264. ( in the future we could add ogg other delivery methods etc. ) 
 				if(  $j( mediaFile ).attr('type') == 'video/h264' ){
-					adConf.videoFile = _this.getCdataFromNode( mediaFile );
+					currentSeq.videoFile = _this.getCdataFromNode( mediaFile );
 				}
 			});
 			
 			// Set videoFile to default if not set: 
 			if( !adConf.videoFile ){
-				adConf.videoFile = mw.getConfig( 'Kaltura.MissingFlavorVideoUrl' );
+				currentSeq.videoFile = mw.getConfig( 'Kaltura.MissingFlavorVideoUrl' );
 			}
 			
 			// Set the CompanionAds if present: 
 			$creative.find('CompanionAds Companion').each( function( na, companionNode ){
-				if( !adConf.companions ) {
-					adConf.companions = [];
+				if( !currentSeq.companions ) {
+					currentSeq.companions = [];
 				}
 				// Build the curentCompanion
 				var companionObj = {};
@@ -198,7 +202,7 @@ mw.KAds.prototype = {
 					companionObj.$html = $j( _this.getCdataFromNode ( $j( companionNode ).find('HTMLResource') ) );
 				}
 				// Add the companion to the ad config: 
-				adConf.companions.push( companionObj )
+				currentSeq.companions.push( companionObj )
 			});
 			
 		});
@@ -291,8 +295,18 @@ mw.KAds.prototype = {
 		}
 		return $companionHtml;
 	},
-	bindVastEvent: function( embedPlayer, eventName, eventBecon ){
-		mw.log('bindVastEvent::' + eventName + ' becon:' + eventBecon );
+	/**
+	 * bindVastEvent
+	 * @param {object} embedPlayer
+	 * @param {string} eventName
+	 * @param {object} eventBecon 
+	 */
+	bindVastEvent: function( embedPlayer, eventName, eventBecon ) {
+		mw.log('kAds :: bindVastEvent :' + eventName + ' becon:' + eventBecon );
+		debugger;
+		if( eventName == 'start' ){
+			
+		}
 	},
 	/**
 	 * There does no seem to be a clean way to get CDATA node text via jquery or 

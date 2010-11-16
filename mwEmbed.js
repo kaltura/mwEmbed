@@ -98,7 +98,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			if ( value.constructor.toString().indexOf("Array") != -1 &&
 				 mwConfig[ name ].constructor.toString().indexOf("Array") != -1 ){
 				// merge in the array 
-				mwConfig[ name ] = mwConfig[ name ].concat( value );
+				mwConfig[ name ] = $j.merge( mwConfig[ name ], value );
 			} else {
 				for( var i in value ){
 					mwConfig[ name ][ i ] = value[ i ];

@@ -246,7 +246,7 @@
 		}
 
 		var tagCheckObject = { 'hasTags' : false };
-		$j( mw ).trigger( 'LoaderEmbedPlayerDocumentHasPlayerTags',
+		$j( mw ).trigger( 'LoaderEmbedPlayerCheckForPlayerTags',
 				[ tagCheckObject ]);
 
 		return tagCheckObject.hasTags;

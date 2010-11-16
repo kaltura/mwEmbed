@@ -102,6 +102,8 @@ mw.MobileAdTimeline.prototype = {
 		
 		// Monitor:
 		$j( _this.embedPlayer ).bind( 'monitorEvent', function(){
+			// @@TODO handle ad inserts: 
+			
 			if( _this.overlaysEnabled ){
 				// Check time constraints for the overlay add
 				
@@ -130,7 +132,9 @@ mw.MobileAdTimeline.prototype = {
 			doneCallback();
 			return ;
 		} 
-		var displayConf = this.timelineTargets[ timeTargetType ];		
+		var displayConf = this.selectAdSequence( 
+			this.timelineTargets[ timeTargetType ]
+		);
 		
 		// Detect the display set type and trigger its display, run the callback once complete
 		if( displayConf.videoFile ){
@@ -141,20 +145,35 @@ mw.MobileAdTimeline.prototype = {
 			// Play the source then run the callback
 			_this.switchPlaySrc( 
 				displayConf.videoFile,
-				function( videoElement ){ /* switch complete callback */					
+				
+				function( videoElement ){ /* switchCallback once new src is playing */					
 					// Run the bind call for any bindEvents in the displayConf:  
-					/*$j.each( displayConf.bindEvents, function( inx, bindFunction ){
+					$j.each( displayConf.bindEvents, function( inx, bindFunction ){
 						if( typeof bindFunction == 'function' ){
 							bindFunction( videoElement );
 						}
 					});
-					*/
-				}, 
+				},
 				doneCallback
-			)
-			 
-		}		
-	},	
+			)			 
+		}
+	},
+	
+	/**
+	 *  Selects a sequence from available ad sets 
+	 *  @param {object} displaySet
+	 */
+	selectAdSequence: function( displaySet ){
+		var indexList = [];
+		$j.each(displaySet.sequences, function( inx, adConf ) {
+			if( typeof adConf == 'object' && ( adConf.bindEvents || adConf.companions ) ){
+				indexList.push( inx );
+			}
+		});		
+		var seqInx = indexList[ Math.floor( Math.random() * indexList.length ) ];
+		return displaySet.sequences[ seqInx ];
+	},
+	
 	/**
 	 * addToTimeline adds a given display configuration to the timelineTargets
 	 *  @param {string} timeType
@@ -165,7 +184,7 @@ mw.MobileAdTimeline.prototype = {
 		if( typeof this.timelineTargets[ timeType ] != 'undefined' ){
 			// only one displayConf per timeType
 			this.timelineTargets[ timeType ] = displayConf;
-		}		
+		}
 	},
 	/**
 	 * switchPlaySrc switches the player source working around a few bugs in browsers
