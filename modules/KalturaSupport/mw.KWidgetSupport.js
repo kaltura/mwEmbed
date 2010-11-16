@@ -285,7 +285,7 @@ mw.KWidgetSupport.prototype = {
 				}
 			}
 			
-			// If on iPhone or android or iPod use iPhone src
+			// If on iPhone or Android or iPod use iPhone src
 			if( ( mw.isIphone() || mw.isAndroid2() || mw.isIpod() ) && iPhoneSrc ){
 				mw.log( "KwidgetSupport:: Add iPhone source");
 				addSource(  iPhoneSrc, 'video/h264' );
