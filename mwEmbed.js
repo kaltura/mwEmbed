@@ -1168,9 +1168,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 */
 	mw.isHTML5FallForwardNative = function(){
 		// Check for a mobile html5 user agent:
-		if ( (navigator.userAgent.indexOf('iPhone') != -1) ||
-			(navigator.userAgent.indexOf('iPod') != -1) || 
-			(navigator.userAgent.indexOf('iPad') != -1) ||
+		if ( ( mw.isIphone() ) ||
+			( mw.isIpod() ) || 
+			( mw.isIpad() ) ||
 			( mw.isAndroid2() ) ||
 			// to debug in chrome / desktop safari
 			(document.URL.indexOf('forceMobileHTML5') != -1 )
@@ -1191,8 +1191,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					return false;
 				}
 			}
-		}
-		
+		}		
 		// For IE: 
 		var hasObj = true;
 		try {
@@ -1212,12 +1211,18 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		// No video tag or flash, return false ( normal "install flash" user flow )
 		return false;
 	}
+	mw.isIphone = function(){
+		return ( navigator.userAgent.indexOf('iPhone') != -1 );
+	};
+	mw.isIpod = function(){
+		return (  navigator.userAgent.indexOf('iPod') != -1 );
+	};
+	mw.isIpad = function(){
+		return ( navigator.userAgent.indexOf('iPad') != -1 );
+	};
 	// Android 2 has some restrictions vs other mobile platforms 
 	mw.isAndroid2 = function(){		
-		if ( navigator.userAgent.indexOf( 'Android 2.') != -1) {
-			return true;
-		}
-		return false;
+		return ( navigator.userAgent.indexOf( 'Android 2.') != -1 );
 	};
 
 	/**

@@ -245,8 +245,9 @@ mw.KWidgetSupport.prototype = {
 			// Find a compatible stream
 			for( var i = 0 ; i < data.length; i ++ ) {				
 				var asset = data[i];			
+				
 				/*
-				* the template of downloading a direct flavor is
+				* The template of downloading a direct flavor is
 				*/
 				// Set up the current src string:
 				var src = mw.getConfig('Kaltura.CdnUrl') + '/p/' + _this.kPartnerId +
@@ -271,7 +272,7 @@ mw.KWidgetSupport.prototype = {
 			}
 						
 			// If on an iPad use iPad or iPhone src
-			if( navigator.userAgent.indexOf('iPad') != -1 ) {
+			if( mw.isIpad() ) {
 				mw.log( "KwidgetSupport:: Add iPad source");
 				if( iPadSrc ){ 
 					addSource( iPadSrc, 'video/h264' );
@@ -284,17 +285,14 @@ mw.KWidgetSupport.prototype = {
 				}
 			}
 			
-			// If on iPhone just use iPhone src
-			if( navigator.userAgent.indexOf('iPhone') != -1 && iPhoneSrc ){
+			// If on iPhone or android or iPod use iPhone src
+			if( ( mw.isIphone() || mw.isAndroid2() || mw.isIpod() ) && iPhoneSrc ){
 				mw.log( "KwidgetSupport:: Add iPhone source");
 				addSource(  iPhoneSrc, 'video/h264' );
 				callback( sources );
 				return ;
-			}
-			
-			// If not iPhone or iPad add the iPad or iPhone h264 source for flash fallback
-			if( navigator.userAgent.indexOf('iPhone') == -1 && 
-				navigator.userAgent.indexOf('iPad') == -1 ){
+			} else {
+				// iPhone or Android or iPod use h264 source for flash fallback:
 				mw.log( "KwidgetSupport:: Add from flash h264 fallback" );
 				if( iPadSrc ) {
 					addSource( iPadSrc, 'video/h264' );

@@ -2422,27 +2422,31 @@ mw.EmbedPlayer.prototype = {
 		// in the dom , and no auto-play )
 		// and only with 'native display'		
 		if( mw.isAndroid2() ){
-			$j( '#' + _this.pid ).siblings('.play-btn-large').remove();
-			$j( '#' + _this.pid ).after( 
-				$j('<div />')
-				.css({
-					'position' : 'relative',
-					'top' : -1 * ( .5 * _this.getPlayerHeight() ) - 52,
-					'left' : ( .5 * _this.getPlayerWidth() ) - 75
-				})
-				.attr( {
-					'title'	: gM( 'mwe-embedplayer-play_clip' ),
-					'class'	: "play-btn-large"
-				} )
-				.click( function() {
-					$j( this ).hide();
-					_this.play();
-					// no need to hide the play button since android plays
-					// fullscreen
-				} )
-			)
+			this.addPlayBtnLarge();
 		}
 		return ;
+	},
+	addPlayBtnLarge:function(){
+		var _this = this;
+		$j( '#' + _this.pid ).siblings('.play-btn-large').remove();
+		$j( '#' + _this.pid ).after( 
+			$j('<div />')
+			.css({
+				'position' : 'relative',
+				'top' : -1 * ( .5 * _this.getHeight() ) - 52,
+				'left' : ( .5 * _this.getWidth() ) - 75
+			})
+			.attr( {
+				'title'	: gM( 'mwe-embedplayer-play_clip' ),
+				'class'	: "play-btn-large"
+			} )
+			.click( function() {
+				$j( this ).hide();
+				_this.play();
+				// no need to hide the play button since android plays
+				// fullscreen
+			} )
+		)
 	},
 	/**
 	 * Should be set via native embed support
@@ -2776,22 +2780,29 @@ mw.EmbedPlayer.prototype = {
 				this.pause();
 			}
 		}
-		
-		// Rewrite the html to thumbnail disp
-		this.showThumbnail();
-		this.bufferedPercent = 0; // reset buffer state
-		this.controlBuilder.setStatus( this.getTimeRange() );
-		
-		// Reset the playhead
-		mw.log("EmbedPlayer::Stop:: Reset play head")
-		this.updatePlayHead( 0 );
-		
-		// Bind play-btn-large play
-		this.$interface.find( '.play-btn-large' )
-		.unbind( 'click' )
-		.click( function() {
-			_this.play();
-		} );
+		// Native player controls: 
+		if( this.useNativePlayerControls() ){
+			this.getPlayerElement().currentTime = 0;
+			this.getPlayerElement().pause();
+			// add play button on top
+			this.addPlayBtnLarge();
+		} else {
+			// Rewrite the html to thumbnail disp
+			this.showThumbnail();
+			this.bufferedPercent = 0; // reset buffer state
+			this.controlBuilder.setStatus( this.getTimeRange() );
+			
+			// Reset the playhead
+			mw.log("EmbedPlayer::Stop:: Reset play head")
+			this.updatePlayHead( 0 );
+					
+			// Bind play-btn-large play
+			this.$interface.find( '.play-btn-large' )
+			.unbind( 'click' )
+			.click( function() {
+				_this.play();
+			} );
+		}
 	},
 	
 	/**
@@ -3081,6 +3092,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Get the buffer target based for playlist vs clip
 		$buffer = this.$interface.find( '.mw_buffer' );
+		
 		//mw.log(' set bufferd %:' + this.bufferedPercent );
 		// Update the buffer progress bar (if available )
 		if ( this.bufferedPercent != 0 ) {
