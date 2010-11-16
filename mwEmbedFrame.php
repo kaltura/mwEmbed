@@ -67,6 +67,7 @@ class mwEmbedFrame {
 				}
 			}
 		}
+		
 		// Check for attributes
 		foreach( $this->playerAttributes as $attributeKey){
 			if( isset( $_REQUEST[ $attributeKey ] ) ){

@@ -121,6 +121,8 @@ function kOverideSwfObject(){
 						'id' : replaceTargetId,
 						'width' : width,
 						'height' : height
+					}).css({
+						'border' : '0px'
 					})
 				)
 			} else {

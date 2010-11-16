@@ -209,7 +209,6 @@
 							var $iframe = $j('<iframe />').attr({
 								'id' : $j( playerTarget ).attr('id'),
 								'class' : $j( playerTarget ).attr('class' ),
-								'style' : $j( playerTarget ).attr('style' ),
 								'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest
 							}).css('border', '0px');
 							$j( playerTarget ).replaceWith( $iframe );
