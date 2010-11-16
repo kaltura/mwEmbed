@@ -51,8 +51,6 @@
     The following events fire on media elements as part of the processing model described above:
   */
   var vid,
-      event,
-      message,
       mediaEvents = [
     { event: 'loadstart',   logMessage: 'The user agent has begun looking for media data, as part of the resource selection algorithm.' },
     { event: 'progress',    logMessage: 'The user agent is fetching media data.' },
@@ -78,12 +76,14 @@
     { event: 'volumechange',    logMessage: 'Either the volume attribute or the muted attribute has changed.' }
   ];
 
-// log a media event
+// log to textarea
 function logME(event) {
   $('#mediaeventlog').append(event+'\n');
 }
 
-function setLogging(event, isActive) {
+
+// setup logging for an event or tear it down
+function setLogging(event, isActive, message) {
   if ( isActive === true ) {
     $(mediaEvents).each(function (i, e) {
       if ( e.event === event ) {
@@ -92,7 +92,7 @@ function setLogging(event, isActive) {
     });
     vid.bind( event, function() { logME('* ' + event + ' fired: ' + message); });
   } else {
-    vid.bind( event, function() { });
+    vid.unbind( event );
   }
 
 }
@@ -101,15 +101,24 @@ $(document).ready(function() {
 
 	vid =  $('#myVid');
 
+  // setup checkboxes to control logging
   $(mediaEvents).each(function (i, e) {
     var event = e.event;
     var message = e.logMessage;
     $('#eventSelectors').append('<input class="eventSelector" type=checkbox checked name="' + event +'">' + event + '</input><br />');
-    setLogging(event, true);
-    //console.log( event ); // function(e) { logME('* ' + e.event + ' fired: ' + e.logMessage); console.log(e); });
-    //console.log( e.logMessage );
+    setLogging(event, true, message);
   });
 
+  //$('.eventSelector').each(function(i, s) {    //change(console.log('changed'));
+  
+//  
+//    console.log(s);
+//    $(s).change('click');
+//  });
+
+  //disable logging for timeupdate
+  setLogging('timeupdate', false);
+  $('input[name=timeupdate]').attr('checked', false);
 
   logME('* the media player is ready');
  
