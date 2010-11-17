@@ -13,6 +13,7 @@ mw.KAds = function( embedPlayer,   $adConfig) {
 	// Create a Player Manager
 	return this.init( embedPlayer, $adConfig );
 };
+
 mw.KAds.prototype = {
 	
 	init: function( embedPlayer, $adConfig ){
@@ -29,20 +30,34 @@ mw.KAds.prototype = {
 	loadAds: function( callback ){		
 		var _this = this;			
 		var loadQueueCount = 0;
+		
+		// Define "global" companion targets:
+		var companionTargets = []; 
+		this.$adConfig.find( 'companion ad' ).each(function( inx, node ){			
+			companionTargets.push({
+				'elementid' : $j(node).attr('elementid'),
+				'type' :  $j(node).attr('type'),
+				'width' : $j(node).attr('width'),
+				'height' : $j(node).attr('height')
+			})
+		});
+		
 		// Add timeline events: 
 		this.$adConfig.find( 'timeline' ).children().each( function( na, node ){
 			var adDisplayConfAttr = [ "nads", "frequency", "start" ];			
 			if( $j(node).attr( 'enabled') == 'true' ){
 				// Setup the displayConf with a pointer to this adConfig ( for general ad config )
 				var displayConf = { 
-					'adConfig' : _this.$adConfig  
+					'adConfig' : _this.$adConfig,
+					'companionTargets' : companionTargets
 				};
+				
 				// Add the ad displayCon attributes to the displayConf
 				for( var i =0; i < adDisplayConfAttr.length; i++){
 					if( $j(node).attr( adDisplayConfAttr[i] ) ){
 						displayConf[ adDisplayConfAttr[i] ] = $j(node).attr( adDisplayConfAttr[i] );
 					}
-				}
+				}				
 				if( $j(node).attr('url') ) {
 					loadQueueCount++;
 					// Load and parse the adXML into displayConf format
@@ -63,7 +78,7 @@ mw.KAds.prototype = {
 						}
 					});
 				} else {
-					//@@TODO need to add support for mw.addToPlayerTimeline for non VAST ads^					
+					//@@TODO need to add support for mw.addToPlayerTimeline for non VAST ads					
 				}
 			}			
 		})
@@ -122,6 +137,7 @@ mw.KAds.prototype = {
 		// Get the basic set of sequences
 		adConf.sequences = [];
 		$vast.find('creative').each( function( na, node ){
+			
 			mw.log('kAds:: getVastAdDisplayConf: ' + node );
 			var seqId = $j( node ).attr('sequence');
 			var $creative = $j( node );
@@ -149,9 +165,10 @@ mw.KAds.prototype = {
 			
 			// Setup a bind Player callback which passes the embedPlayer 
 			// into the currentSeq function scope. 			
-			currentSeq.bindPlayerEvents = function( embedPlayer ){
-				_this.bindPlayerEvents( currentSeq.trackingEvents, embedPlayer );
+			currentSeq.bindPlayerEvents = function( videoPlayer ){
+				_this.bindVastTrackingEvents( currentSeq.trackingEvents, videoPlayer );	
 			};
+						
 			
 			// Set the media file:
 			$creative.find('MediaFiles MediaFile').each( function( na, mediaFile ){
@@ -303,7 +320,7 @@ mw.KAds.prototype = {
 	/**
 	 * bindVastEvent per the VAST spec the following events are supported:
 	 *   
-	 * start, midpoint, firstQuartile, thirdQuartile, complete
+	 * start, firstQuartile, midpoint, thirdQuartile, complete
 	 * pause, rewind, resume, 
 	 * 
 	 * VAST events not presently supported ( per iOS player limitations ) 
@@ -314,22 +331,79 @@ mw.KAds.prototype = {
 	 * @param {object} embedPlayer
 	 * @param {string} eventName
 	 * @param {object} eventBecon 
-	 */
-	bindVastEvent: function( embedPlayer, eventName, eventBecon ) {
-		mw.log('kAds :: bindVastEvent :' + eventName + ' becon:' + eventBecon );
+	 */	
+	bindVastTrackingEvents: function ( trackingEvents, videoPlayer ){
+		var _this = this;
+		// Only send events once: 
+		var sentEvents = {};
 		
-		if( eventName == 'start' ){
+		// Function to dispatch a beacons:
+		var sendBeacon = function( eventName, force ){
+			if( sentEvents[ eventName ] && !force ){
+				return ;
+			} 
+			sentEvents[ eventName ] = 1;			
+			// See if we have any beacons by that name: 
+			for(var i =0;i < trackingEvents.length; i++){
+				if( eventName == trackingEvents[ i ].eventName ){
+					mw.log("kAds:: Send Becon: " + eventName );
+					$j('body').append( 
+						$j( '<img />' ).attr({				
+							'src' : trackingEvents[ i ].beaconUrl,
+							'width' : 0,
+							'height' : 0
+						})
+					);
+				};
+			};			
+		};
+				
+		// On end stop monitor / clear interval: 
+		$j( videoPlayer ).bind('ended', function(){			
+			sendBeacon( 'complete' );
+			clearInterval( monitorInterval );
+		})
+		
+		// On pause / resume: 
+		$j( videoPlayer ).bind( 'pause', function(){
+			sendBeacon( 'pause' );
+		})
+		
+		// On resume: 
+		$j( videoPlayer ).bind( 'play', function(){
+			sendBeacon( 'resume' );
+		})
+		
+		
+		
+		var time = 0;
+		// On seek backwards 
+		$j( videoPlayer ).bind( 'seek', function(){
+			if( videoPlayer.currentTime < time ){
+				sendBeacon( 'rewind' );
+			}
+		});		
+
+		// Set up a monitor for time events: 
+		var monitorInterval = setInterval( function(){
+			time =  videoPlayer.currentTime;
+			dur = videoPlayer.duration;
 			
-		}
-	},	
-	/**
-	 * Binds player events for the given trackingEvents set
-	 */
-	bindPlayerEvents: function ( trackingEvents, embedPlayer ){
-		// Set up a monitor:
-		$j( embedPlayer ).bind( )
+			if( time > 0 )
+				sendBeacon( 'start' );
+				
+			if( time > dur / 4 )
+				sendBeacon( 'firstQuartile' );
+			
+			if( time > dur / 2 )
+				sendBeacon( 'midpoint' );
+			
+			if( time > dur / 1.5 )
+				sendBeacon( 'complete' );
+
+		}, mw.getConfig('EmbedPlayer.MonitorRate') );		
 	},
-	
+		
 	/**
 	 * There does no seem to be a clean way to get CDATA node text via jquery or 
 	 * via native browser functions. So here we just strip the CDATA tags and 

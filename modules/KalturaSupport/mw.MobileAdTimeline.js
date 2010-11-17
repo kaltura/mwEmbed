@@ -17,21 +17,22 @@
  * @param {Object} embedPlayer the embedPlayer target 
  * ( creates a mobileTimeline controller on the embedPlayer target if it does not already exist ) 
  * @param {Object} timeType Stores the target string can be 'start', 'bumper', 'end', or 'overlay'->  
- * @param {Object} displayConf DisplayConf object see mw.MobilePlayerTimeline.display
+ * @param {Object} sequenceConf sequenceConf object see mw.MobilePlayerTimeline.display
  */
-mw.addAdToPlayerTimeline = function( embedPlayer, timeType, displayConf ){
-	mw.log("MobileAdTimeline::Add " + timeType + ' dispCof: ' + displayConf );
+mw.addAdToPlayerTimeline = function( embedPlayer, timeType, sequenceConf ){
+	mw.log("MobileAdTimeline::Add " + timeType + ' dispCof: ' + sequenceConf );
 	if( !embedPlayer.playerTimeline ){
 		embedPlayer.playerTimeline = new mw.MobileAdTimeline( embedPlayer );
 	}
-	embedPlayer.playerTimeline.addToTimeline( timeType, displayConf )
+	embedPlayer.playerTimeline.addToTimeline( timeType, sequenceConf )
 }
 
 mw.MobileAdTimeline = function( embedPlayer ){
 	return this.init( embedPlayer);
 }
 
-mw.MobileAdTimeline.prototype = {		
+mw.MobileAdTimeline.prototype = {
+
 	/**
 	 * Display timeline targets: ( false by default) 
 	 */
@@ -127,43 +128,63 @@ mw.MobileAdTimeline.prototype = {
 		var _this = this;
 		mw.log("MobileAdTimeline::display:" + timeTargetType + ' val:' + this.timelineTargets[ timeTargetType ] );
 
-		// If the displayConf is empty go directly to the callback:
+		// If the sequenceConf is empty go directly to the callback:
 		if( !this.timelineTargets[ timeTargetType ] ){
 			doneCallback();
 			return ;
 		} 
-		var displayConf = this.selectAdSequence( 
+		var sequenceConf = this.selectAdSequence( 
 			this.timelineTargets[ timeTargetType ]
 		);
 		
 		// Detect the display set type and trigger its display, run the callback once complete
-		if( displayConf.videoFile ){
-			if( displayConf.lockUI ){
+		if( sequenceConf.videoFile ){
+			if( sequenceConf.lockUI ){
 				// this actually does not work so well in iOS world:
 				_this.getNativePlayerElement().controls = false;
 			};
 			// Play the source then run the callback
 			_this.switchPlaySrc(
-				displayConf.videoFile,				
-				function( videoElement ){ /* switchCallback once new src is playing */					
-					// Pass off event handling to displayConf bind:
-					if( typeof displayConf.bindPlayerEvents == 'function' ) {
-						displayConf.bindPlayerEvents( videoElement )
+				sequenceConf.videoFile,				
+				function( videoElement ){ /* switchCallback once new src is playing */		
+					// Pass off event handling to sequenceConf bind:
+					if( typeof sequenceConf.bindPlayerEvents == 'function' ) {
+						sequenceConf.bindPlayerEvents( videoElement )
 					}
-				
 				},
 				doneCallback
 			);
 		}
+		
+		// Check for companion ads:
+		if( sequenceConf.companions && sequenceConf.companions.length ){
+			var companionConf = this.selectCompanion( sequenceConf.companions );
+			
+			// NOTE:: is not clear from the ui conf response which or how or why there are multiple
+			// so this may not be needed: 
+			var ctargets =  this.timelineTargets[ timeTargetType ].companionTargets;			
+			var companionTarget = ctargets[  Math.floor( Math.random() * ctargets.length ) ];
+			
+			var originalCompanionHtml = $j('#' + companionTarget.elementid ).html();
+			// Display the companion: 
+			$j('#' + companionTarget.elementid ).html( companionConf.$html );
+		}
+				
 	},
-	
+	/**
+	 * Selects a companion config from the set of companions
+	 *  @param {array} companionSet
+	 */
+	selectCompanion: function( companionSet ){
+		return companionSet[ Math.floor( Math.random() * companionSet.length ) ];
+	},
 	/**
 	 *  Selects a sequence from available ad sets 
 	 *  @param {object} displaySet
 	 */
 	selectAdSequence: function( displaySet ){
 		var indexList = [];
-		$j.each(displaySet.sequences, function( inx, adConf ) {
+		$j.each( displaySet.sequences, function( inx, adConf ) {
 			if( typeof adConf == 'object' && ( adConf.trackingEvents || adConf.companions ) ){
 				indexList.push( inx );
 			}
@@ -175,15 +196,16 @@ mw.MobileAdTimeline.prototype = {
 	/**
 	 * addToTimeline adds a given display configuration to the timelineTargets
 	 *  @param {string} timeType
-	 *  @param {object} displayConf
+	 *  @param {object} sequenceConf
 	 */
-	addToTimeline: function( timeType, displayConf ){
+	addToTimeline: function( timeType, sequenceConf ){
 		// Validate the timeType
 		if( typeof this.timelineTargets[ timeType ] != 'undefined' ){
-			// only one displayConf per timeType
-			this.timelineTargets[ timeType ] = displayConf;
+			// only one sequenceConf per timeType
+			this.timelineTargets[ timeType ] = sequenceConf;
 		}
 	},
+	
 	/**
 	 * switchPlaySrc switches the player source working around a few bugs in browsers
 	 * 
@@ -202,8 +224,7 @@ mw.MobileAdTimeline.prototype = {
 			try{
 				// Remove all native player bindings
 				$j( vid ).unbind();				
-				vid.pause();	
-				
+				vid.pause();				
 				// Local scope update source and play function to work around google chrome bug
 				var updateSrcAndPlay = function(){
 					vid.src = src;
@@ -224,8 +245,8 @@ mw.MobileAdTimeline.prototype = {
 				};			
 				if(  navigator.userAgent.toLowerCase().indexOf('chrome') != -1  ){
 					// Null the src and wait 50ms ( helps unload video without crashing google chrome 7.x )
-					vid.src = '';	
-					setTimeout( updateSrcAndPlay, 100 );
+					vid.src = '';
+					setTimeout( updateSrcAndPlay, 50 );
 				} else {
 					updateSrcAndPlay();
 				}				
