@@ -25,19 +25,19 @@
 *	// The CDN url that hosts your assets.
 *	'Kaltura.CdnUrl' : 'http://cdn.kaltura.com'
 */
-var kURID = '1.1w';
+var KALTURA_LOADER_REV = '1.1y';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://192.168.38.18/html5.kaltura/mwEmbed/ResourceLoader.php';
-//kURID = new Date().getTime();
+//SCRIPT_FORCE_DEBUG = true;
+//SCRIPT_LOADER_URL = 'http://192.168.38.18/html5.kaltura/mwEmbed/ResourceLoader.php';
+//KALTURA_LOADER_REV = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
-	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
+	console.log( 'Kaltura MwEmbed Loader Version: ' + KALTURA_LOADER_REV );
 }
 
 // Define mw ( if not already set ) 
@@ -333,7 +333,7 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	for( var i = 0; i < jsRequestSet.length ; i++ ){
 		url+= jsRequestSet[i].join(',') + ',';
 	}
-	url+= '&urid=' + kURID;
+	url+= '&urid=' + KALTURA_LOADER_REV;
 	url+= '&uselang=en';
 	if ( SCRIPT_FORCE_DEBUG ){
 		url+= '&debug=true';
@@ -429,7 +429,8 @@ function doScrollCheck() {
 		setTimeout( doScrollCheck, 1 );
 		return;
 	}
-	// and execute any waiting functions
+	
+	// And execute any waiting functions
 	kRunMwDomReady();
 }
 

@@ -2571,23 +2571,16 @@ mw.absoluteUrl = function( src, contextUrl ) {
  * that mwEmbed interfaces can support async built out and the include of
  * jQuery.
  */
-var mwDomIsReady = false;
-function runMwDomReady(){
-	mwDomIsReady = true;
-	if( mw.domReady ){
-		mw.domReady();
-	}
-}
 // Check if already ready:
 if ( document.readyState === "complete" ) {
-	runMwDomReady();
+	mw.domReady();
 }
 
 // Cleanup functions for the document ready method
 if ( document.addEventListener ) {
 	DOMContentLoaded = function() {
 		document.removeEventListener( "DOMContentLoaded", DOMContentLoaded, false );
-		runMwDomReady();
+		mw.domReady();
 	};
 
 } else if ( document.attachEvent ) {
@@ -2596,7 +2589,7 @@ if ( document.addEventListener ) {
 		// (ticket #5443).
 		if ( document.readyState === "complete" ) {
 			document.detachEvent( "onreadystatechange", DOMContentLoaded );
-			runMwDomReady();
+			mw.domReady();
 		}
 	};
 }
@@ -2615,7 +2608,7 @@ if ( document.addEventListener ) {
 	document.attachEvent("onreadystatechange", DOMContentLoaded);
 
 	// A fallback to window.onload, that will always work
-	window.attachEvent( "onload", runMwDomReady );
+	window.attachEvent( "onload", mw.domReady );
 
 	// If IE and not a frame
 	// continually check to see if the document is ready
@@ -2631,10 +2624,6 @@ if ( document.addEventListener ) {
 }
 // The DOM ready check for Internet Explorer
 function doScrollCheck() {
-	if ( mwDomIsReady ) {
-		return;
-	}
-
 	try {
 		// If IE is used, use the trick by Diego Perini
 		// http://javascript.nwbox.com/IEContentLoaded/
@@ -2643,9 +2632,12 @@ function doScrollCheck() {
 		setTimeout( doScrollCheck, 1 );
 		return;
 	}
-
-	// and execute any waiting functions
-	runMwDomReady();
+	mw.domReady();
+}
+// temporary hack to work around dom ready breakage when loading 
+// dynamically with other dom ready scripts
+if( typeof KALTURA_LOADER_REV != 'undefined' ){
+	mw.domReady();
 }
 
 

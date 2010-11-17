@@ -1516,7 +1516,7 @@ mw.EmbedPlayer.prototype = {
 		//
 		// NOTE: browsers that do support height width should set "waitForMeta"
 		// flag in addElement
-		if( ( isNaN( this.height ) && isNaN( this.width ) ) ||
+		if( ( isNaN( this.height )|| isNaN( this.width ) ) ||
 			( this.height == -1 || this.width == -1 ) ||
 				// Check for firefox defaults
 				// Note: ideally firefox would not do random guesses at css
@@ -1524,7 +1524,9 @@ mw.EmbedPlayer.prototype = {
 				( (this.height == 150 || this.height == 64 ) && this.width == 300 )
 			) {
 			var defaultSize = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
-			this.width = defaultSize[0];
+			if( isNaN( this.width ) ){
+				this.width = defaultSize[0];
+			}
 
 			// Special height default for audio tag ( if not set )
 			if( element.tagName.toLowerCase() == 'audio' ) {
@@ -1532,8 +1534,7 @@ mw.EmbedPlayer.prototype = {
 			}else{
 				this.height = defaultSize[1];
 			}
-		}
-
+		}		
 	},
 	/**
 	 * Resize the player to a new size preserving aspect ratio Wraps the
