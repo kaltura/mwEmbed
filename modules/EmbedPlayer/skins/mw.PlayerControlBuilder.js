@@ -1511,7 +1511,7 @@ mw.PlayerControlBuilder.prototype = {
 				return $j( '<div/>' )
 					.attr( {
 						'title'	: gM( 'mwe-embedplayer-play_clip' ),
-						'class'	: "ui-state-default play-btn-large"
+						'class'	: "play-btn-large"
 					} )
 					// Get dynamic position for big play button
 					.css( {
