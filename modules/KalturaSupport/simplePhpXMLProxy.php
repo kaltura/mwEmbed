@@ -149,6 +149,7 @@ $valid_url_regex = '/.*/';
 $enable_fullHeaders = true;
 $contentType_regex = '/(text|application)\/xml/';
 $validateXML = true;
+$encodeCDATASections = true;
 $proxyCookies = true;
 $proxySession = true;
 
@@ -268,6 +269,16 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
 	  	$contents = "XML failed to validate";  	
   	}  
   }
+  //$encodeCDATASections = false;
+  // Check if we should encode CDATA sections: 
+  if( $encodeCDATASections ){
+  	$contents = preg_replace_callback('/\<\!\[CDATA\[(.*?)\]\]>/',
+   		create_function(
+   			'$matches',
+            'return htmlentities( $matches[1] );'
+   		), $contents );
+  }
+  
   
   // Propagate all cURL request / response info to the JSON data object.
   if ( isset( $_GET['full_status'] ) ) {
@@ -281,8 +292,12 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
   $decoded_json = json_decode( $contents );
   $data['contents'] = $decoded_json ? $decoded_json : $contents;
   
-  // Generate appropriate content-type header.
-  $is_xhr = strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+  // Generate appropriate content-type header.  
+  if( isset(  $_SERVER['HTTP_X_REQUESTED_WITH'] ) ){
+  	$is_xhr = ( strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' );
+  } else {
+  	$is_xhr = false;
+  }  			
   header( 'Content-type: application/' . ( $is_xhr ? 'json' : 'x-javascript' ) );
   
   // Get JSONP callback.

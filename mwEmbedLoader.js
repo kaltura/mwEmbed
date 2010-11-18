@@ -28,12 +28,13 @@
 var KALTURA_LOADER_REV = '1.1y';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
+
 var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.38.18/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://192.168.38.18/html5.kaltura/mwEmbed/ResourceLoader.php';
 //KALTURA_LOADER_REV = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -204,9 +205,9 @@ function kCheckAddScript(){
 function kIsHTML5FallForward(){
 	// Check for a mobile html5 user agent:	
 	if ( (navigator.userAgent.indexOf('iPhone') != -1) || 
-		(navigator.userAgent.indexOf('iPod') != -1) || 
+		(navigator.userAgent.indexOf('iPod') != -1) ||
 		(navigator.userAgent.indexOf('iPad') != -1) ||
-		(navigator.userAgent.indexOf('Android 2.') != -1) || 
+		(navigator.userAgent.indexOf('Android 2.') != -1) ||
 		// Force html5 for chrome / desktop safari
 		(document.URL.indexOf('forceMobileHTML5') != -1 )
 	){

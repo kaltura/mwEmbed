@@ -87,6 +87,14 @@ mw.KAds.prototype = {
 			callback();
 		}
 	},
+	/**
+	 * Get ad display configuration object from a url
+	 * 
+	 * @param {string} adUrl
+	 * 		The url which contains the xml ad payload
+	 * @param {function} callback
+	 * 		Function called with ad payload once ad content is loaded. 
+	 */
 	getAdDisplayConf: function( adUrl, callback ){
 		var _this = this;
 		// We use a xml proxy ( passing on the clients ip for geo lookup ) 
@@ -241,7 +249,7 @@ mw.KAds.prototype = {
 		companionObj['contentType'] = $j( companionNode ).find( 'StaticResource' ).attr('creativeType');
 		companionObj['resourceUri'] = _this.getCdataFromNode( 
 				$j( companionNode ).find( 'StaticResource' ) 
-		);
+		);		
 		
 		// Build companionObj html
 		$companionHtml = $j('<div />'); 
@@ -372,9 +380,7 @@ mw.KAds.prototype = {
 		// On resume: 
 		$j( videoPlayer ).bind( 'play', function(){
 			sendBeacon( 'resume' );
-		})
-		
-		
+		})			
 		
 		var time = 0;
 		// On seek backwards 

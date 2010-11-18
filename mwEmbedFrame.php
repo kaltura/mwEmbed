@@ -9,11 +9,23 @@
  * <iframe src="mwEmbedFrame.php?src={SRC URL}&poster={POSTER URL}&width={WIDTH}etc"> </iframe>
  */
 
+
 // Setup the mwEmbedFrame
 $myMwEmbedFrame = new mwEmbedFrame();
 
+// @@TODO temporary HACK to override to kalturaIframe 
+// ( need to refactor embedFrame into a more abstract class )
+// @@TODO Need a php based configuration system for modules 
+if( isset( $myMwEmbedFrame->kwidgetid ) ){
+	require(  dirname( __FILE__ ) . '/modules/KalturaSupport/kalturaIframe.php');
+	exit(1);
+}
+
 // Do mwEmbedFrame video output:
 $myMwEmbedFrame->outputIFrame();
+
+// Direct link list
+
 
 /**
  * mwEmbed iFrame class
@@ -51,17 +63,17 @@ class mwEmbedFrame {
 		// ( uses kaltura standard entry_id/{entryId} request )
 		// normalize to the REQUEST object
 		// @@FIXME: this should be moved over to a kaltura specific iframe implementation 
-		if( $_SERVER['REQUEST_URI'] ){
+		if( $_SERVER['PATH_INFO'] ){
 			$kalturaUrlMap = Array( 
 				'entry_id' => 'kentryid',
 				'uiconf_id' => 'kuiconfid',
 				'wid' => 'kwidgetid',
 				'playlist_id' => 'kplaylistid'
 			);
-			$urlParts = explode( '/', $_SERVER['REQUEST_URI'] );
+			$urlParts = explode( '/', $_SERVER['PATH_INFO'] );
 			foreach( $urlParts as $inx => $urlPart ){
 				foreach( $kalturaUrlMap as $urlKey => $reqeustAttribute ){
-					if( $urlPart == $reqeustAttribute && isset( $urlParts[$inx+1] ) ){
+					if( $urlPart == $urlKey && isset( $urlParts[$inx+1] ) ){
 						$_REQUEST[ $reqeustAttribute ] = $urlParts[$inx+1];
 					}
 				}
@@ -146,7 +158,7 @@ class mwEmbedFrame {
 				left:0px;
 				bottom:0px;
 				right:0px;
-				
+				overflow:hidden;				
 			}
 		</style>
 		<script type="text/javascript" src="<?php echo str_replace( 'mwEmbedFrame.php', '', $_SERVER['SCRIPT_NAME'] ); ?>ResourceLoader.php?class=<?php 

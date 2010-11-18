@@ -1,264 +1,288 @@
 /**
- * mw.MobilePlayerTimeline handles basic timelines of clips in the mobile platform
+ * mw.MobilePlayerTimeline handles basic timelines of clips in the mobile
+ * platform
  * 
- * MobileAdTimeline is targets VAST as the display representation and its 
- * timelineTargets support the VAST display types. Future updates may 
- * handle more ad types and timeline targets. 
+ * MobileAdTimeline is targets VAST as the display representation and its
+ * timelineTargets support the VAST display types. Future updates may handle
+ * more ad types and timeline targets.
  * 
- * in mobile html5 ( iOS ) to switch clips you have to do some trickery 
- * because only one video tag can be active in the page: 
+ * in mobile html5 ( iOS ) to switch clips you have to do some trickery because
+ * only one video tag can be active in the page:
  * 
- * Player src changes work with the following timeline: 
- *  issuing a "src change"
- *  then issue the "load" wait a few seconds then issue the "play"
- *  once restoring the source we need to seek to parent offset position
- *  
+ * Player src changes work with the following timeline: issuing a "src change"
+ * then issue the "load" wait a few seconds then issue the "play" once restoring
+ * the source we need to seek to parent offset position
  * 
- * @param {Object} embedPlayer the embedPlayer target 
- * ( creates a mobileTimeline controller on the embedPlayer target if it does not already exist ) 
- * @param {Object} timeType Stores the target string can be 'start', 'bumper', 'end', or 'overlay'->  
- * @param {Object} sequenceConf sequenceConf object see mw.MobilePlayerTimeline.display
+ * 
+ * @param {Object}
+ *            embedPlayer the embedPlayer target ( creates a mobileTimeline
+ *            controller on the embedPlayer target if it does not already exist )
+ * @param {Object}
+ *            timeType Stores the target string can be 'start', 'bumper', 'end',
+ *            or 'overlay'->
+ * @param {Object}
+ *            sequenceConf sequenceConf object see
+ *            mw.MobilePlayerTimeline.display
  */
-mw.addAdToPlayerTimeline = function( embedPlayer, timeType, sequenceConf ){
-	mw.log("MobileAdTimeline::Add " + timeType + ' dispCof: ' + sequenceConf );
-	if( !embedPlayer.playerTimeline ){
-		embedPlayer.playerTimeline = new mw.MobileAdTimeline( embedPlayer );
+mw.addAdToPlayerTimeline = function(embedPlayer, timeType, sequenceConf) {
+	mw.log("MobileAdTimeline::Add " + timeType + ' dispCof: ' + sequenceConf);
+	if (!embedPlayer.playerTimeline) {
+		embedPlayer.playerTimeline = new mw.MobileAdTimeline(embedPlayer);
 	}
-	embedPlayer.playerTimeline.addToTimeline( timeType, sequenceConf )
+	embedPlayer.playerTimeline.addToTimeline(timeType, sequenceConf)
 }
 
-mw.MobileAdTimeline = function( embedPlayer ){
-	return this.init( embedPlayer);
+mw.MobileAdTimeline = function(embedPlayer) {
+	return this.init(embedPlayer);
 }
 
 mw.MobileAdTimeline.prototype = {
 
 	/**
-	 * Display timeline targets: ( false by default) 
+	 * Display timeline targets: ( false by default)
 	 */
 	timelineTargets : {
-		preroll:false,
-		bumper: false,
-		overlay: false,
-		postroll: false
+		preroll : false,
+		bumper : false,
+		overlay : false,
+		postroll : false
 	},
-	
+
 	// Overlays are disabled during preroll, bumper and postroll
-	overlaysEnabled: false,
-	
+	overlaysEnabled : true,
+
 	// Original source of embedPlayer
-	originalSrc: false,
-	
+	originalSrc : false,
+
 	// Flag to store if its the first time play is being called:
-	firstPlay: true,
-	
+	firstPlay : true,
+
 	/**
 	 * @constructor
-	 * @param {Object} EmbedPlayer
-	 * 		The embedPlayer object
+	 * @param {Object}
+	 *            EmbedPlayer The embedPlayer object
 	 */
-	init: function( embedPlayer ){
+	init : function(embedPlayer) {
 		this.embedPlayer = embedPlayer;
 		// Bind to the "play" and "end"
 		this.bindPlayer();
 	},
-	
-	bindPlayer: function(){		
-		var _this = this;		
+
+	bindPlayer : function() {
+		var _this = this;
 		// Setup the original source
-		_this.originalSrc = _this.embedPlayer.getSrc();		
-		$j( _this.embedPlayer ).bind( 'play', function(){
-			
+		_this.originalSrc = _this.embedPlayer.getSrc();
+		$j(_this.embedPlayer).bind('play', function() {
+
 			// Check if this is the "first play" request:
-			if( !_this.firstPlay ){
-				return 
-			}
-			_this.firstPlay = false;
-			mw.log("MobileAdTimeline:: First Play Start Ad timeline");
-			
-			// Disable overlays for preroll / bumper
-			_this.overlaysEnabled = false;			
+				if (!_this.firstPlay) {
+					return 
 
-			//Stop the native embedPlayer events so we can play the preroll and bumper
-			_this.embedPlayer.stopEventPropagation();
+				}
+				_this.firstPlay = false;
+				mw.log("MobileAdTimeline:: First Play Start Ad timeline");
 
-			// Chain display of preroll and then bumper: 
-			_this.display( 'preroll' , function(){
-				_this.display( 'bumper', function(){
-					var vid = _this.getNativePlayerElement();
-					// Enable overlays ( for monitor overlay events )
-					_this.overlaysEnabled = true;		
-					
-					// Check if the src does not match original src if 
-					// so switch back and restore original bindings
-					if( _this.originalSrc != vid.src ){
-						_this.switchPlaySrc( _this.originalSrc, function(){
-							// Restore embedPlayer native bindings: 
-							_this.embedPlayer.restoreEventPropagation();
-						})
-					}								
+				// Disable overlays for preroll / bumper
+				_this.overlaysEnabled = false;
+
+				// Stop the native embedPlayer events so we can play the preroll
+				// and bumper
+				_this.embedPlayer.stopEventPropagation();
+
+				// Chain display of preroll and then bumper:
+				_this.display('preroll', function() {
+					_this.display('bumper', function() {
+						var vid = _this.getNativePlayerElement();
+						// Enable overlays ( for monitor overlay events )
+							_this.overlaysEnabled = true;
+
+							// Check if the src does not match original src if
+							// so switch back and restore original bindings
+							if (_this.originalSrc != vid.src) {
+								_this.switchPlaySrc(_this.originalSrc,
+									function() {
+											// Restore embedPlayer native
+											// bindings:
+										_this.embedPlayer
+												.restoreEventPropagation();
+									})
+							}
+						});
 				});
 			});
-		});
-		
+
 		// Monitor will only be triggered in core media player
-		$j( _this.embedPlayer ).bind( 'monitorEvent', function(){
-			// @@TODO handle ad inserts: 
-			
-			if( _this.overlaysEnabled ){
+		$j(_this.embedPlayer).bind('monitorEvent', function() {
+			// 
+			if (_this.overlaysEnabled) {
 				// Check time constraints for the overlay add
 				
-				// @@ if the ad is an insert store the current time to seek to. 
+				// @@ if the ad is an insert store the current time to seek to.
 			}
 		});
-		
+
 	},
-	
+
 	/**
-	 * Display a given timeline target, if the timeline target affects the 
-	 * core video playback bindings, it will wait until the subclip completes
-	 * before issuing the "doneCallback" 
+	 * Display a given timeline target, if the timeline target affects the core
+	 * video playback bindings, it will wait until the subclip completes before
+	 * issuing the "doneCallback"
 	 * 
-	 * @param {string} timeTargetType
-	 * 		Identify what timeline type to be displayed. Can be: preroll, bumper, overlay, postroll
-	 * @param {function} doneCallback
-	 * 		The callback function called once the display request has been completed
+	 * @param {string}
+	 *            timeTargetType Identify what timeline type to be displayed.
+	 *            Can be: preroll, bumper, overlay, postroll
+	 * @param {function}
+	 *            doneCallback The callback function called once the display
+	 *            request has been completed
 	 */
-	display: function( timeTargetType, doneCallback ){		
+	display : function(timeTargetType, doneCallback) {
 		var _this = this;
-		mw.log("MobileAdTimeline::display:" + timeTargetType + ' val:' + this.timelineTargets[ timeTargetType ] );
+		mw.log("MobileAdTimeline::display:" + timeTargetType + ' val:'
+				+ this.timelineTargets[timeTargetType]);
 
 		// If the sequenceConf is empty go directly to the callback:
-		if( !this.timelineTargets[ timeTargetType ] ){
+		if (!this.timelineTargets[timeTargetType]) {
 			doneCallback();
-			return ;
-		} 
-		var sequenceConf = this.selectAdSequence( 
-			this.timelineTargets[ timeTargetType ]
-		);
-		
-		// Detect the display set type and trigger its display, run the callback once complete
-		if( sequenceConf.videoFile ){
-			if( sequenceConf.lockUI ){
+			return;
+		}
+		var sequenceConf = this
+				.selectAdSequence(this.timelineTargets[timeTargetType]);
+
+		// Detect the display set type and trigger its display, run the callback
+		// once complete
+		if (sequenceConf.videoFile) {
+			if (sequenceConf.lockUI) {
 				// this actually does not work so well in iOS world:
 				_this.getNativePlayerElement().controls = false;
-			};
+			}
+			;
 			// Play the source then run the callback
-			_this.switchPlaySrc(
-				sequenceConf.videoFile,				
-				function( videoElement ){ /* switchCallback once new src is playing */		
-					// Pass off event handling to sequenceConf bind:
-					if( typeof sequenceConf.bindPlayerEvents == 'function' ) {
-						sequenceConf.bindPlayerEvents( videoElement )
+			_this.switchPlaySrc(sequenceConf.videoFile, function(videoElement) { 
+				// Pass off event handling to sequenceConf bind:
+					if (typeof sequenceConf.bindPlayerEvents == 'function') {
+						sequenceConf.bindPlayerEvents(videoElement)
 					}
-				},
-				doneCallback
-			);
+				}, doneCallback);
 		}
-		
+
 		// Check for companion ads:
-		if( sequenceConf.companions && sequenceConf.companions.length ){
-			var companionConf = this.selectCompanion( sequenceConf.companions );
+		if (sequenceConf.companions && sequenceConf.companions.length) {
+			var companionConf = this.selectCompanion(sequenceConf.companions);
+
+			// NOTE:: is not clear from the ui conf response which or how or why
+			// there are multiple
+			// so this may not be needed:
+			var ctargets = this.timelineTargets[timeTargetType].companionTargets;
+			var companionTarget = ctargets[Math.floor(Math.random()
+					* ctargets.length)];
+
+			var originalCompanionHtml = $j('#' + companionTarget.elementid).html();
 			
-			// NOTE:: is not clear from the ui conf response which or how or why there are multiple
-			// so this may not be needed: 
-			var ctargets =  this.timelineTargets[ timeTargetType ].companionTargets;			
-			var companionTarget = ctargets[  Math.floor( Math.random() * ctargets.length ) ];
-			
-			var originalCompanionHtml = $j('#' + companionTarget.elementid ).html();
-			// Display the companion: 
-			$j('#' + companionTarget.elementid ).html( companionConf.$html );
+			// Display the companion:
+			$j('#' + companionTarget.elementid).html(companionConf.$html);
 		}
-				
+
 	},
 	/**
 	 * Selects a companion config from the set of companions
-	 *  @param {array} companionSet
+	 * 
+	 * @param {array}
+	 *            companionSet
 	 */
-	selectCompanion: function( companionSet ){
-		return companionSet[ Math.floor( Math.random() * companionSet.length ) ];
+	selectCompanion : function(companionSet) {
+		return companionSet[Math.floor(Math.random() * companionSet.length)];
 	},
 	/**
-	 *  Selects a sequence from available ad sets 
-	 *  @param {object} displaySet
+	 * Selects a sequence from available ad sets
+	 * 
+	 * @param {object}
+	 *            displaySet
 	 */
-	selectAdSequence: function( displaySet ){
+	selectAdSequence : function(displaySet) {
 		var indexList = [];
-		$j.each( displaySet.sequences, function( inx, adConf ) {
-			if( typeof adConf == 'object' && ( adConf.trackingEvents || adConf.companions ) ){
-				indexList.push( inx );
+		$j.each(displaySet.sequences, function(inx, adConf) {
+			if (typeof adConf == 'object'
+					&& (adConf.trackingEvents || adConf.companions)) {
+				indexList.push(inx);
 			}
-		});		
-		var seqInx = indexList[ Math.floor( Math.random() * indexList.length ) ];
-		return displaySet.sequences[ seqInx ];
+		});
+		var seqInx = indexList[Math.floor(Math.random() * indexList.length)];
+		return displaySet.sequences[seqInx];
 	},
-	
+
 	/**
 	 * addToTimeline adds a given display configuration to the timelineTargets
-	 *  @param {string} timeType
-	 *  @param {object} sequenceConf
+	 * 
+	 * @param {string}
+	 *            timeType
+	 * @param {object}
+	 *            sequenceConf
 	 */
-	addToTimeline: function( timeType, sequenceConf ){
+	addToTimeline : function(timeType, sequenceConf) {
 		// Validate the timeType
-		if( typeof this.timelineTargets[ timeType ] != 'undefined' ){
+		if (typeof this.timelineTargets[timeType] != 'undefined') {
 			// only one sequenceConf per timeType
-			this.timelineTargets[ timeType ] = sequenceConf;
+			this.timelineTargets[timeType] = sequenceConf;
 		}
 	},
-	
+
 	/**
-	 * switchPlaySrc switches the player source working around a few bugs in browsers
+	 * switchPlaySrc switches the player source working around a few bugs in
+	 * browsers
 	 * 
-	 * @param {string} src
-	 * 		Video url Source to switch to. 
-	 * @param {function} switchCallback
-	 * 		Function to call once the source has been switched
-	 * @param {function} doneCallback
-	 * 		Function to call once the clip has completed playback
+	 * @param {string}
+	 *            src Video url Source to switch to.
+	 * @param {function}
+	 *            switchCallback Function to call once the source has been switched
+	 * @param {function}
+	 *            doneCallback Function to call once the clip has completed playback
 	 */
-	switchPlaySrc: function( src , switchCallback, doneCallback ){
+	switchPlaySrc : function(src, switchCallback, doneCallback) {
 		var _this = this;
-		mw.log( 'MobileAdTimeline:: switchPlaySrc:' + src );
+		mw.log('MobileAdTimeline:: switchPlaySrc:' + src);
 		var vid = this.getNativePlayerElement();
-		if( vid ){
-			try{
+		if (vid) {
+			try {
 				// Remove all native player bindings
-				$j( vid ).unbind();				
-				vid.pause();				
-				// Local scope update source and play function to work around google chrome bug
-				var updateSrcAndPlay = function(){
+				$j(vid).unbind();
+				vid.pause();
+				// Local scope update source and play function to work around google chrome
+				// bug
+				var updateSrcAndPlay = function() {
 					vid.src = src;
-					// Give iOS 50ms to figure out the src got updated ( iPad OS 3.0 ) 
-					setTimeout( function(){
+					// Give iOS 50ms to figure out the src got updated ( iPad OS 3.0 )
+					setTimeout(function() {
 						vid.load();
 						vid.play();
-						// Wait another 50ms then bind the end event and any custom events for the switchCallback 
-						setTimeout( function(){
-							$j(vid).bind( 'ended', function( event ){			
-								doneCallback();
-							})
-							if( typeof switchCallback == 'function'){
-								switchCallback( vid );
-							}
-						}, 50 );
-					}, 50 );
-				};			
-				if(  navigator.userAgent.toLowerCase().indexOf('chrome') != -1  ){
-					// Null the src and wait 50ms ( helps unload video without crashing google chrome 7.x )
+						// Wait another 50ms then bind the end event and any custom events
+						// for the switchCallback
+							setTimeout(function() {
+								$j(vid).bind('ended', function(event) {
+									doneCallback();
+								})
+								if (typeof switchCallback == 'function') {
+									switchCallback(vid);
+								}
+							}, 50);
+						}, 50);
+				};
+				if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
+					// Null the src and wait 50ms ( helps unload video without crashing
+					// google chrome 7.x )
 					vid.src = '';
-					setTimeout( updateSrcAndPlay, 50 );
+					setTimeout(updateSrcAndPlay, 50);
 				} else {
 					updateSrcAndPlay();
-				}				
-			} catch( e ){
+				}
+			} catch (e) {
 				mw.log("Error: Error in swiching source playback");
 			}
 		}
-	},	
+	},
 	/**
 	 * Get a direct ref to the inDom video element
 	 */
-	getNativePlayerElement: function(){
+	getNativePlayerElement : function() {
 		return this.embedPlayer.getPlayerElement();
 	}
 }

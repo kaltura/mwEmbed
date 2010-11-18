@@ -192,11 +192,15 @@
 						$j('.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap').each(function( inx, playerTarget ) {
 							// Output the iframe request in kaltura /{key}/{value} request format: 
 							var iframeRequest = '';
-							var iframeRequestKeys = ['kwidgetid', 'kuiconfid', 'kplaylistid', 'kentryid']
-							for( var i = 0; i < iframeRequestKeys.length ; i++ ){
-								if( $j(playerTarget).attr( iframeRequestKeys[i] ) ){
-									iframeRequest+= '/' + iframeRequestKeys[i] + 
-										'/' + encodeURIComponent( $j(playerTarget).attr( iframeRequestKeys[i] ) );
+							var iframeRequestMap ={
+								'kwidgetid' : 'wid',
+								'kuiconfid' : 'uiconf_id', 
+								'kplaylistid' : 'entry_id'
+							}
+							for( var tagKey in iframeRequestMap ){
+								if( $j(playerTarget).attr( tagKey ) ){
+									iframeRequest+= '/' + iframeRequestMap[tagKey] + 
+										'/' + encodeURIComponent( $j(playerTarget).attr( tagKey ) );
 								}
 							}
 							// Add debug flag if set: 
