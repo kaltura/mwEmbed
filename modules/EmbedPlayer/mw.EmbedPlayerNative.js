@@ -69,10 +69,15 @@ mw.EmbedPlayerNative = {
 	 * Updates the supported features given the "type of player"
 	 */
 	updateFeatureSupport: function(){
-		// iWhatever devices appear to have a broken
-		// dom overlay implementation of video atm. (hopefully iphone OS 4 fixes this )
-		if( mw.isHTML5FallForwardNative() ) {
+		// The native controls function checks for overly support
+		// especially the special case of iPad in-dom or not support
+		if( this.useNativePlayerControls() ) {
 			this.supports.overlays = false;
+			this.supports.volumeControl = false;
+		}
+		// iOS  does not support volume control ( only iPad can have controls ) 
+		if( mw.isIpad() ){
+			this.supports.volumeControl = false;
 		}
 	},
 
@@ -89,8 +94,17 @@ mw.EmbedPlayerNative = {
 		mw.log( "native play url:" + this.getSrc() + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
 
 		// Check if using native controls and already the "pid" is already in the DOM
-		if( this.useNativePlayerControls() && $j( '#' + this.pid ).length &&
-			typeof $j( '#' + this.pid ).get(0).play != 'undefined' ) {
+		if( ( 	this.useNativePlayerControls()
+				||
+				this.isPersistentNativePlayer()
+			)
+			&& $j( '#' + this.pid ).length 
+			&& typeof $j( '#' + this.pid ).get(0).play != 'undefined' ) {
+			
+			// Update the player source: 
+			$j( '#' + this.pid ).attr('src', this.getSrc() );
+			$j( '#' + this.pid ).get(0).load();
+			
 			_this.postEmbedJS();
 			return ;
 		}

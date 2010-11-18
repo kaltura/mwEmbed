@@ -2034,6 +2034,7 @@ mw.EmbedPlayer.prototype = {
 	 * Show the player
 	 */
 	showPlayer : function () {
+		
 		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );
 		var _this = this;
 		// Set-up the local controlBuilder instance:
@@ -2056,14 +2057,26 @@ mw.EmbedPlayer.prototype = {
 			// position the "player" absolute inside the relative interface
 			// parent:
 			.css('position', 'absolute');
-		}
-
+		}				
+		
 		// Set up local jQuery object reference to "mwplayer_interface"
 		this.$interface = $j( this ).parent( '.mwplayer_interface' );
 
+		// if a isPersistentNativePlayer ( overlay the controls )
+		if( this.isPersistentNativePlayer() ){
+			this.$interface.css({
+				'position' : 'absolute',
+				'top' : '0px',
+				'left' : '0px',
+				'background': null
+			})
+			$j(this).show();
+			this.controls = true;
+		}
+		
 		// Update Thumbnail for the "player"
 		this.updatePosterHTML();
-
+		
 		// Add controls if enabled:
 		if ( this.controls ) {
 			this.controlBuilder.addControls();
@@ -2296,33 +2309,36 @@ mw.EmbedPlayer.prototype = {
 		var thumb_html = '';
 		var class_atr = '';
 		var style_atr = '';
-
-
+		
 		if( this.useNativePlayerControls() ){
 			this.showNativePlayer();
 			return ;
 		}
-
+		
 		// Set by default thumb value if not found
 		var posterSrc = ( this.poster ) ? this.poster :
 						mw.getConfig( 'imagesPath' ) + 'vid_default_thumb.jpg';
 
-		// Poster support is not very consistent in browsers
-		// use a jpg poster image:
-		$j( this ).html(
-			$j( '<img />' )
-			.css({
-				'position' : 'relative',
-				'width' : '100%',
-				'height' : '100%'
-			})
-			.attr({
-				'id' : 'img_thumb_' + this.id,
-				'src' : posterSrc
-			})
-			.addClass( 'playerPoster' )
-		);
-
+		// Update PersistentNativePlayer poster:
+		if( this.isPersistentNativePlayer() ){
+			$j( '#' + this.pid ).attr('poster', posterSrc);		
+		} else {		
+			// Poster support is not very consistent in browsers
+			// use a jpg poster image:
+			$j( this ).html(
+				$j( '<img />' )
+				.css({
+					'position' : 'relative',
+					'width' : '100%',
+					'height' : '100%'
+				})
+				.attr({
+					'id' : 'img_thumb_' + this.id,
+					'src' : posterSrc
+				})
+				.addClass( 'playerPoster' )
+			);
+		}
 		if ( this.controls
 			&& this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
 		) {
@@ -2340,20 +2356,33 @@ mw.EmbedPlayer.prototype = {
 	 * @returns boolean true if the mwEmbed player interface should be used
 	 *     false if the mwEmbed player interface should not be used
 	 */
-	useNativePlayerControls: function() {
+	useNativePlayerControls: function() {		
 		if( this.usenativecontrols === true ){
 			return true;
-		}
-
+		}				
 		if( mw.getConfig('EmbedPlayer.NativeControls') === true ) {
 			return true;
 		}
-		if( mw.getConfig('EmbedPlayer.NativeControlsMobileSafari' ) &&
-		 	mw.isHTML5FallForwardNative()
-		){
+		
+		// Do some device detection devices that don't support overlays 
+		// and go into full screen once play is clicked: 
+		if( mw.isAndroid2() || mw.isIpod()  || mw.isIphone() ){
 			return true;
+		} 
+		// ( iPad can use html controls if its a persistantPlayer in the dom before loading )
+		// else it needs to use native controls:
+		if( mw.isIpad() ){
+			if( this.isPersistentNativePlayer() ){
+				return false;
+			} else {
+				return true;
+			}
 		}
 		return false;
+	},
+	
+	isPersistentNativePlayer: function(){
+		return $j('#' + this.pid ).hasClass('persistentNativePlayer');		
 	},
 
 
@@ -2366,62 +2395,46 @@ mw.EmbedPlayer.prototype = {
 	 */
 	showNativePlayer: function(){
 		var _this = this;
-		// Empty the player
-		$j(this).empty();
+		
+		// Empty the player of any child nodes
+		$j(this).empty();		
 
 		// Remove the player loader spinner if it exists
 		$j('#loadingSpinner_' + this.id ).remove();
 
-
-		// Check if we need to refresh mobile safari
-		var mobileSafariNeedsRefresh = false;
-
-		// Unhide the original video element if not part of a playerThemer embed
-		if( !$j( '#' + this.pid ).hasClass('PlayerThemer') ){
-			$j( '#' + this.pid )
-			.css( {
-				'position' : 'absolute'
-			} )
-			.show()
-			.attr('controls', 'true');
-
-			mobileSafariNeedsRefresh = true;
+		// Setup the source
+		var source = this.mediaElement.getSources( 'video/h264' )[0];
+		// Support fake user agent 
+		if( !source || !source.src ){
+			mw.log( 'Warning: Your probably fakeing the iPhone userAgent ( no h.264 source )' );
+			source = this.mediaElement.getSources( 'video/ogg' )[0];
 		}
-
-		// iPad does not handle video tag update for attributes like "controls"
-		// so we have to do a full replace ( if controls are not included
-		// initially )
-		if( mw.isHTML5FallForwardNative() && mobileSafariNeedsRefresh ) {
-			var source = this.mediaElement.getSources( 'video/h264' )[0];
-			// XXX note this should be updated once mobile supports h.264
-			if( !source || !source.src ){
-				mw.log( 'Warning: Your probably fakeing the iPhone userAgent ( no h.264 source )' );
-				source = this.mediaElement.getSources( 'video/ogg' )[0];
-			}
-
-			var videoAttribues = {
-				'id' : _this.pid,
-				'poster': _this.poster,
-				'src' : source.src,
-				'controls' : 'true'
-			}
-
-			if( this.loop ){
-				videoAttribues[ 'loop' ] = 'true';
-			}
-			var cssStyle = {
-				'width' : _this.width,
-				'height' : _this.height
-			};
-			$j( '#' + this.pid ).replaceWith(
-				_this.getNativePlayerHtml( videoAttribues, cssStyle )
-			)
-			// Bind native events:
-			this.applyMediaElementBindings();
+		
+		// Setup videoAttribues	
+		var videoAttribues = {
+			'poster': _this.poster,
+			'src' : source.src,
+			'controls' : 'true'
 		}
+		if( this.loop ){
+			videoAttribues[ 'loop' ] = 'true';
+		}
+		var cssStyle = {
+			'width' : _this.width,
+			'height' : _this.height
+		};
+		
+		// If not a persistentNativePlayer swap the video tag 
+		// completely instead of just updating properties:						
+		$j( '#' + this.pid ).replaceWith(
+			_this.getNativePlayerHtml( videoAttribues, cssStyle )
+		)
+		
+		// Bind native events:
+		this.applyMediaElementBindings();	
+		
 		// Android only can play with a special play button ( no native controls
-		// in the dom , and no auto-play )
-		// and only with 'native display'
+		// persistentNativePlayer has no controls: 
 		if( mw.isAndroid2() ){
 			this.addPlayBtnLarge();
 		}
@@ -2673,6 +2686,8 @@ mw.EmbedPlayer.prototype = {
 				return;
 			} else {
 				this.thumbnail_disp = false;
+				// hide any button if present: 
+				this.$interface.find( '.play-btn-large' ).remove();				
 				this.doEmbedHTML();
 			}
 		} else {

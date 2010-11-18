@@ -9,11 +9,11 @@
  * <iframe src="kalturaIframe.php?src={SRC URL}&poster={POSTER URL}&width={WIDTH}etc"> </iframe>
  */
 
-// Some predefined constants:
-define( 'KALTURA_SERVICE_URL', 'http://www.kaltura.com/' ); 
-
-//define( 'RESOURCE_LOADER_URL', 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php');
-define( 'RESOURCE_LOADER_URL', 'http://192.168.38.18/html5.kaltura/mwEmbed/ResourceLoader.php');
+// Some predefined constants ( need to load these from config.. 
+// and or allow configuration payload to be passed in via iframe message.  
+define( 'KALTURA_SERVICE_URL', 'http://www.kaltura.com/' );
+define( 'KALTURA_CDN_URL', 'http://cdn.kaltura.com' );
+define( 'KALTURA_LOADER_URL', str_replace( 'mwEmbedFrame.php', 'mwEmbedLoader.js', $_SERVER['SCRIPT_NAME'] ) );
 
 // Setup the kalturaIframe
 $mykalturaIframe = new kalturaIframe();
@@ -69,9 +69,15 @@ class kalturaIframe {
 		}
 
 		// Check for debug flag
-		if( isset( $_REQUEST['debugKalturaPlayer'] ) && $_REQUEST['debugKalturaPlayer'] == 'true' ){
+		if( isset( $_REQUEST['debugKalturaPlayer'] ) || isset( $_REQUEST['debug'] ) ){
 			$this->debug = true;
 		}		
+		
+		// @@TODO support native player ( for letting uses do true full screen, no overlays )
+		// the default setting for mobile < iPad 
+		//if( isset( $_REQUEST['nativePlayer'] )){
+		// mw.setConfig('EmbedPlayer.NativeControls', true ) 
+		//}
 		
 		// Check for required config
 		if( $this->playerAttributes['wid'] == null ){
@@ -79,21 +85,21 @@ class kalturaIframe {
 		}
 	}
 	
-	private function getImageFileLinkTag(){
-		// Lookup the asset url ( ideally we could also support 3gp device mapping )
-		 
-	}
-	
 	private function getVideoTag( ){
 		$videoTagMap = array(			
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
 			'wid' => 'kwidgetid'			 
-		);
+		);				
 		
 		// Add default video tag with 100% width / height 
-		// ( parent embed is responsible for setting the iframe size )
-		$o = '<video id="' . htmlspecialchars( $this->playerIframeId ) . '" style="width:100%;height:100%"';
+		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
+		// so that overlays work on the iPad.
+		 
+		$o = '<video class="persistentNativePlayer" ' .
+			'src=""' . 
+			'id="' . htmlspecialchars( $this->playerIframeId ) . '" ' . 
+			'style="width:100%;height:100%"';
 		
 		foreach( $this->playerAttributes as $key => $val ){
 			if( isset( $videoTagMap[ $key ] ) && $val != null ) {			
@@ -129,22 +135,7 @@ class kalturaIframe {
 			'</object>';
 	}
 	
-	function outputIFrame( ){
-		// Setup the embed string based on attribute set:
-		// @@todo this will be factored out once the resource loader has top level named resources
-		$embedResourceList = 'window.jQuery,mwEmbed,mw.style.mwCommon,$j.fn.menu,mw.style.jquerymenu,mw.EmbedPlayer,' .
-			'mw.EmbedPlayerNative,mw.EmbedPlayerJava,mw.PlayerControlBuilder,$j.fn.hoverIntent,mw.style.EmbedPlayer,' . 
-			'$j.cookie,$j.ui,mw.style.ui_redmond,$j.widget,$j.ui.mouse,mw.PlayerSkinKskin,mw.style.PlayerSkinKskin,' .
-			'mw.TimedText,mw.style.TimedText,$j.ui.slider,' . 
-			'KalturaClientBase,KalturaClient,KalturaAccessControlService,KalturaAccessControlOrderBy,KalturaAccessControl,'.
-			'MD5,mw.KWidgetSupport,mw.KAnalytics,mw.KDPMapping,mw.MobileAdTimeline,mw.KAds';
-		
-		$isHardLinkDevice = false;
-		// Setup the mwEmbed url:  
-		$mwEmbedUrl = RESOURCE_LOADER_URL . '?class=' . $embedResourceList;		
-		if( $this->debug ){
-			$mwEmbedUrl.='&debug=true';
-		}
+	function outputIFrame( ){	
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -160,83 +151,42 @@ class kalturaIframe {
 				bottom:0px;
 				right:0px;
 				overflow:hidden;				
-			}
+			}			
 		</style>
 	</head>
-	<body>  
+	<body> 		 	
+		<?php echo $this->getVideoTag() ?>	
 		<?php if( $this->error ) {
 			echo $this->error;			
 		} else { ?>
+		<script type="text/javascript">							
+			// Insert the html5 kalturaLoader script  
+			document.write(unescape("%3Cscript src='<?php echo KALTURA_LOADER_URL ?>' type='text/javascript'%3E%3C/script%3E"));
+		</script>
 		<script type="text/javascript">		
-			// Copied from mwEmbedLoader.js ( should figure out a good way to maintain sync ) 
-			function kIsHTML5FallForward(){
-				// Check for a mobile html5 user agent:	
-				if ( (navigator.userAgent.indexOf('iPhone') != -1) || 
-					(navigator.userAgent.indexOf('iPod') != -1) || 
-					(navigator.userAgent.indexOf('iPad') != -1) ||
-					(navigator.userAgent.indexOf('Android 2.') != -1) ||
-					// Force html5 for chrome / desktop safari
-					(document.URL.indexOf('forceMobileHTML5') != -1 )
-				){
-					return true;
-				}
+			// Don't rewrite the video tag ( its only there so Ipad can do overlays )
+			// if we are using flash it will be removed 
+			mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );					
 	
-				// Check if the client does not have flash and has the video tag
-				if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
-					for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
-						var type = navigator.mimeTypes[i].type;
-						var semicolonPos = type.indexOf( ';' );
-						if ( semicolonPos > -1 ) {
-							type = type.substr( 0, semicolonPos );
-						}
-						if (type == 'application/x-shockwave-flash' ) {
-							// flash is installed don't use html5
-							return false;
-						}
-					}
-				}
-				
-				// for IE: 
-				var hasObj = true;
-				if( typeof ActiveXObject != 'undefined' ){
-					try {
-						var obj = new ActiveXObject( 'ShockwaveFlash.ShockwaveFlash' );
-					} catch ( e ) {
-						hasObj = false;
-					}
-					if( hasObj ){
-						return false;
-					}
-				}
-				// Check for video tag support:
+			// Once this iframe is used for kaltura embed we can remove 
+			// this wraping of kIsHTML5FallForward 
+			// But for now we know that if the iframe is invoked we want video tag: 
+			var iframeKIsHTML5FallForward = function(){
 				var dummyvid = document.createElement( "video" );
 				if( dummyvid.canPlayType ) {
 					return true;
 				}
-							
-				// No video tag or flash, return false ( normal "install flash" user flow )
-				return false;
+				return kIsHTML5FallForward();
 			}
 			
-			// Inline check for flash support ( output video tag
-			if( kIsHTML5FallForward() ){
-				document.write(unescape("%3Cscript src='<?php echo $mwEmbedUrl ?>' type='text/javascript'%3E%3C/script%3E"));
-				document.write('<?php echo $this->getVideoTag() ?>');								
-			} else {
-				// write out the embed object 
-				document.write('<?php echo $this->getFlashEmbedTag()?>'); 
-			}
-		</script>
-		<script type="text/javascript">		
-			// In a seperate script block to give time for the document.write to update javascript state
-			if( kIsHTML5FallForward() ){
+			if( iframeKIsHTML5FallForward() ){
 				//Set some iframe embed config:
 				// We can't support full screen in object context since it requires outer page DOM control
 				mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
 	
 				// Enable the iframe player server:
 				mw.setConfig( 'EmbedPlayer.EnableIFramePlayerServer', true );
-				
+
 				mw.ready(function(){
 					// Bind window resize to reize the player: 
 					$j(window).resize(function(){
@@ -247,6 +197,12 @@ class kalturaIframe {
 							}); 
 					});
 				});
+			} else {
+				// Remove the video tag and output the <object> 
+				var vid = document.getElementById( '<?php echo $this->playerIframeId ?>' );
+				document.getElementById('videoContainer').removeChild(vid); 
+				// write out the embed object 
+				document.write('<?php echo $this->getFlashEmbedTag()?>'); 
 			}
 		</script>
 		<?php } ?>		

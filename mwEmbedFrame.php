@@ -15,7 +15,8 @@ $myMwEmbedFrame = new mwEmbedFrame();
 
 // @@TODO temporary HACK to override to kalturaIframe 
 // ( need to refactor embedFrame into a more abstract class )
-// @@TODO Need a php based configuration system for modules 
+// @@TODO Need a php based configuration system for modules so they 
+// can extend / override entry points
 if( isset( $myMwEmbedFrame->kwidgetid ) ){
 	require(  dirname( __FILE__ ) . '/modules/KalturaSupport/kalturaIframe.php');
 	exit(1);

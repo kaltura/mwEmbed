@@ -195,7 +195,8 @@
 							var iframeRequestMap ={
 								'kwidgetid' : 'wid',
 								'kuiconfid' : 'uiconf_id', 
-								'kplaylistid' : 'entry_id'
+								'kentryid' : 'entry_id',
+								'kplaylistid' : 'playlist_id'
 							}
 							for( var tagKey in iframeRequestMap ){
 								if( $j(playerTarget).attr( tagKey ) ){
@@ -213,7 +214,9 @@
 							var $iframe = $j('<iframe />').attr({
 								'id' : $j( playerTarget ).attr('id'),
 								'class' : $j( playerTarget ).attr('class' ),
-								'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest
+								'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest,
+								'height' : $j( playerTarget ).height(),
+								'width' : $j( playerTarget ).width()
 							}).css('border', '0px');
 							$j( playerTarget ).replaceWith( $iframe );
 							$j( '#' + iframeId ).iFramePlayer({

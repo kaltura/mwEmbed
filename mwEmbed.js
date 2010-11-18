@@ -1161,7 +1161,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		return $j( '#mwTempLoaderDialog' );
 	};
 	mw.isIphone = function(){
-		return ( navigator.userAgent.indexOf('iPhone') != -1 );
+		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
 	};
 	mw.isIpod = function(){
 		return (  navigator.userAgent.indexOf('iPod') != -1 );

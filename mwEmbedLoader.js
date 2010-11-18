@@ -24,21 +24,23 @@
 *
 *	// The CDN url that hosts your assets.
 *	'Kaltura.CdnUrl' : 'http://cdn.kaltura.com'
+*
+*	// If the html5 library should be loaded when there are video tags in the page.  
+*	'Kaltura.LoadScriptForVideoTags' : true
 */
-var KALTURA_LOADER_REV = '1.1y';
+var kURID = '1.1w';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
-
 var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://192.168.38.18/html5.kaltura/mwEmbed/ResourceLoader.php';
-//KALTURA_LOADER_REV = new Date().getTime();
+SCRIPT_LOADER_URL = 'http://192.168.1.102/html5.kaltura/mwEmbed/ResourceLoader.php';
+//kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
-	console.log( 'Kaltura MwEmbed Loader Version: ' + KALTURA_LOADER_REV );
+	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
 }
 
 // Define mw ( if not already set ) 
@@ -189,12 +191,16 @@ function kCheckAddScript(){
 		kAddScript();
 		return ;
 	}
-	// If document includes audio or video tags
-	if( document.getElementsByTagName('video').length != 0
-		|| document.getElementsByTagName('audio').length != 0 ) {
-		kAddScript();
-		return ;
+	
+	if( preMwEmbedConfig['Kaltura.LoadScriptForVideoTags'] !== false ){
+		// If document includes audio or video tags
+		if( document.getElementsByTagName('video').length != 0
+			|| document.getElementsByTagName('audio').length != 0 ) {
+			kAddScript();
+			return ;
+		}
 	}
+	
 	// If document includes kaltura embed tags && isMobile safari: 
 	if ( kIsHTML5FallForward() &&  kGetKalturaPlayerList().length ) {
 		// Check for Kaltura objects in the page
@@ -205,9 +211,9 @@ function kCheckAddScript(){
 function kIsHTML5FallForward(){
 	// Check for a mobile html5 user agent:	
 	if ( (navigator.userAgent.indexOf('iPhone') != -1) || 
-		(navigator.userAgent.indexOf('iPod') != -1) ||
+		(navigator.userAgent.indexOf('iPod') != -1) || 
 		(navigator.userAgent.indexOf('iPad') != -1) ||
-		(navigator.userAgent.indexOf('Android 2.') != -1) ||
+		(navigator.userAgent.indexOf('Android 2.') != -1) || 
 		// Force html5 for chrome / desktop safari
 		(document.URL.indexOf('forceMobileHTML5') != -1 )
 	){
@@ -334,7 +340,7 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	for( var i = 0; i < jsRequestSet.length ; i++ ){
 		url+= jsRequestSet[i].join(',') + ',';
 	}
-	url+= '&urid=' + KALTURA_LOADER_REV;
+	url+= '&urid=' + kURID;
 	url+= '&uselang=en';
 	if ( SCRIPT_FORCE_DEBUG ){
 		url+= '&debug=true';
@@ -430,8 +436,7 @@ function doScrollCheck() {
 		setTimeout( doScrollCheck, 1 );
 		return;
 	}
-	
-	// And execute any waiting functions
+	// and execute any waiting functions
 	kRunMwDomReady();
 }
 
