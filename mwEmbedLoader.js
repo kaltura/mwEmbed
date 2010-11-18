@@ -107,11 +107,13 @@ function kOverideSwfObject(){
 			var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceTargetId ).width();
 			var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceTargetId ).height();
 			if( kEmbedSettings.entryid ){
-				embedPlayerAttributes.kentryid = kEmbedSettings.entryid;
-				var kCdn = ( preMwEmbedConfig['Kaltura.CdnUrl'] ) ? preMwEmbedConfig['Kaltura.CdnUrl'] : 'http://cdnakmi.kaltura.com';
-				embedPlayerAttributes.poster = kCdn + '/p/' + kEmbedSettings.partnerId + '/sp/' +
-				kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryid + '/width/' +
-				height + '/height/' + width;
+				embedPlayerAttributes.kentryid = kEmbedSettings.entryid;				
+				embedPlayerAttributes.poster = kGetEntryThumbUrl( {
+					'width' : width,
+					'height' : height,
+					'entry_id' :  kEmbedSettings.entryid,
+					'partner_id': kEmbedSettings.partnerId 
+				})
 			}
 			if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
 				var iframeSrc = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php');
@@ -219,7 +221,27 @@ function kIsHTML5FallForward(){
 	){
 		return true;
 	}
-	
+	// if the browser supports flash ( don't use html5 )
+	if( kSupportsFlash() ){
+		return false;
+	}
+	// No flash return true if the browser supports html5 video tag with basic support for canPlayType:
+	if( kSupportsHTML5() ){
+		return true;
+	}
+	// No video tag or flash, return false ( normal "install flash" user flow )
+	return false;
+}
+// basic html5 support check ( note Android 2.2 and bellow fail to return anything on canPlayType
+// but they are part of the mobile check above. 
+function kSupportsHTML5(){
+	var dummyvid = document.createElement( "video" );
+	if( dummyvid.canPlayType ) {
+		return true;
+	}
+	return false;
+}
+function kSupportsFlash(){
 	// Check if the client does not have flash and has the video tag
 	if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
 		for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
@@ -229,8 +251,8 @@ function kIsHTML5FallForward(){
 				type = type.substr( 0, semicolonPos );
 			}
 			if (type == 'application/x-shockwave-flash' ) {
-				// flash is installed don't use html5
-				return false;
+				// flash is installed 
+				return true;
 			}
 		}
 	}
@@ -244,15 +266,9 @@ function kIsHTML5FallForward(){
 			hasObj = false;
 		}
 		if( hasObj ){
-			return false;
+			return true;
 		}
 	}
-	// No flash return true if the browser supports html5 video tag with basic support for canPlayType:
-	var dummyvid = document.createElement( "video" );
-	if( dummyvid.canPlayType ) {
-		return true;
-	}
-	// No video tag or flash, return false ( normal "install flash" user flow )
 	return false;
 }
 
@@ -476,6 +492,12 @@ kGetKalturaPlayerList = function(){
 	return kalturaPlayers;
 }
 
+function kGetEntryThumbUrl( entry ){
+	var kCdn = ( preMwEmbedConfig['Kaltura.CdnUrl'] ) ? preMwEmbedConfig['Kaltura.CdnUrl'] : 'http://cdnakmi.kaltura.com';
+	return kCdn + '/p/' + entry.partner_id + '/sp/' +
+		entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
+		entry.height + '/height/' + entry.width;
+}
 // Copied from kalturaSupport loader mw.getKalturaEmbedSettings  
 kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 	if( !flashvars )
