@@ -8,9 +8,6 @@ mw.EmbedPlayerNative = {
 	//Instance Name
 	instanceOf: 'Native',
 
-	// Counts the number of times we tried to access the video element
-	grab_try_count:0,
-
 	// Flag to only load the video ( not play it )
 	onlyLoadFlag:false,
 
@@ -26,7 +23,6 @@ mw.EmbedPlayerNative = {
 
 	// If the media loaded event has been fired
 	mediaLoadedFlag: null,
-
 
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
@@ -136,7 +132,6 @@ mw.EmbedPlayerNative = {
 			playerAttribtues['autoplay'] = 'true';
 		}
 
-
 		if( !cssSet ){
 			cssSet = {};
 		}
@@ -214,7 +209,11 @@ mw.EmbedPlayerNative = {
 	monitor: function(){
 		var _this = this;
 		var vid = _this.getPlayerElement();
-
+		
+		// Update duration
+		if( vid.duration ){
+			this.duration = vid.duration; 
+		}
 		// Update the bufferedPercent
 		if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
 			this.bufferedPercent = ( vid.buffered.end(0) / vid.duration );

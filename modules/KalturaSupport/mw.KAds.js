@@ -9,6 +9,16 @@ mw.addKalturaAds = function( embedPlayer, $adConfig ) {
 	mwKAdManager[ embedPlayer.id ] = new mw.KAds( embedPlayer, $adConfig ) ;
 }
 
+mw.sendBeaconUrl = function( beaconUrl ){
+	$j('body').append( 
+		$j( '<img />' ).attr({				
+			'src' : beaconUrl,
+			'width' : 0,
+			'height' : 0
+		})
+	);
+}
+
 mw.KAds = function( embedPlayer,   $adConfig) {
 	// Create a Player Manager
 	return this.init( embedPlayer, $adConfig );
@@ -64,22 +74,20 @@ mw.KAds.prototype = {
 					_this.getAdDisplayConf( $j(node).attr('url'), function( adDisplayConf ){
 						var timeType = node.nodeName.toLowerCase();
 						// Make sure we have a valid callback: 
-						if( adDisplayConf ){									
+						if( adDisplayConf ){
 							// Add to the player timeline bindings ( hopefully before the user hits 'play' )
 							mw.addAdToPlayerTimeline( 
 								_this.embedPlayer, 
 								timeType,							
 								$j.extend( displayConf, adDisplayConf ) // merge in adDisplayConf
-							)
+							);
 						};
 						loadQueueCount--;
 						if( loadQueueCount == 0 ){
 							callback();
 						}
 					});
-				} else {
-					//@@TODO need to add support for mw.addToPlayerTimeline for non VAST ads					
-				}
+				};
 			}			
 		})
 		// Check if no ads had to be "loaded"
@@ -87,6 +95,7 @@ mw.KAds.prototype = {
 			callback();
 		}
 	},
+	
 	/**
 	 * Get ad display configuration object from a url
 	 * 
@@ -143,64 +152,89 @@ mw.KAds.prototype = {
 		var adConf = {};
 		var $vast = $j( xmlString );
 		// Get the basic set of sequences
-		adConf.sequences = [];
-		$vast.find('creative').each( function( na, node ){
-			
+		adConf.ads = [];
+		$vast.find('ad').each( function( na, node ){	
 			mw.log('kAds:: getVastAdDisplayConf: ' + node );
-			var seqId = $j( node ).attr('sequence');
-			var $creative = $j( node );
+			var adId = $j( node ).attr('id');
+			var $ad = $j( node );
+			
 			// Create the sequence by id ( if not already set )
-			if(!adConf.sequences[seqId] ){
-				adConf.sequences[seqId] = {};
+			if(!adConf.ads[adId] ){
+				adConf.ads[adId] = {};
 			}
+			
 			// Set a local pointer to the current sequence: 
-			var currentSeq = adConf.sequences[ seqId ];
+			var currentAd = adConf.ads[ adId ];
+			
 			// Set duration 
-			if( $creative.find('duration') ){
-				currentSeq.duration = mw.npt2seconds(  $creative.find('duration').text() );
+			if( $ad.find('duration') ){
+				currentAd.duration = mw.npt2seconds( $ad.find('duration').text() );
 			}
+			
+			// Set impression urls
+			currentAd.impressions = [];
+			$ad.find( 'Impression' ).each( function(na, node){
+				// Check if there is lots of impressions or just one: 
+				if( $j(node).find('URL').length ){
+					$ad.find('URL').each( function(na, urlNode){
+						currentAd.impressions.push({
+							'beaconUrl' : _this.getURLFromNode( urlNode ),
+							'idtype' : $j( urlNode ).attr('id')
+						})
+					})
+				} else {
+					currentAd.impressions.push({
+						'beaconUrl' : _this.getURLFromNode( node )
+					})
+				}
+			});
+			
+			// Set Non Linear Ads
+			currentAd.nonLinear = [];
+			$ad.find( 'NonLinearAds NonLinear' ).each( function( na, nonLinearNode ){
+				// find the asset url ( image? ) 
+				
+			});
 			
 			// Set tracking events: 
-			$creative.find('trackingEvents Tracking').each( function( na, trackingNode ){
-				if( ! currentSeq.trackingEvents ){
-					currentSeq.trackingEvents = [];
-				}
-				currentSeq.trackingEvents.push( {
+			currentAd.trackingEvents = [];
+			$ad.find('trackingEvents Tracking').each( function( na, trackingNode ){					
+				currentAd.trackingEvents.push({
 					'eventName' : $j( trackingNode ).attr('event'),  
-					'beaconUrl' : _this.getCdataFromNode( trackingNode )  
+					'beaconUrl' : _this.getURLFromNode( trackingNode )
 				});
 			});
 			
 			// Setup a bind Player callback which passes the embedPlayer 
-			// into the currentSeq function scope. 			
-			currentSeq.bindPlayerEvents = function( videoPlayer ){
-				_this.bindVastTrackingEvents( currentSeq.trackingEvents, videoPlayer );	
+			// into the currentAd function scope. 			
+			currentAd.bindPlayerEvents = function( videoPlayer ){
+				_this.bindVastTrackingEvents( currentAd.trackingEvents, videoPlayer );	
 			};
 						
 			
 			// Set the media file:
-			$creative.find('MediaFiles MediaFile').each( function( na, mediaFile ){
+			$ad.find('MediaFiles MediaFile').each( function( na, mediaFile ){
 				//@@NOTE we could check other attributes like delivery="progressive"
 				//@@NOTE for now we are only interested in support for iOS / android devices
 				// so only h264. ( in the future we could add ogg other delivery methods etc. ) 
 				if(  $j( mediaFile ).attr('type') == 'video/h264' ){
-					currentSeq.videoFile = _this.getCdataFromNode( mediaFile );
+					currentAd.videoFile = _this.getURLFromNode( mediaFile );
 				}
 			});
 			
 			// Set videoFile to default if not set: 
 			if( !adConf.videoFile ){
-				currentSeq.videoFile = mw.getConfig( 'Kaltura.MissingFlavorVideoUrl' );
+				currentAd.videoFile = mw.getConfig( 'Kaltura.MissingFlavorVideoUrl' );
 			}
 			
 			// Set the CompanionAds if present: 
-			$creative.find('CompanionAds Companion').each( function( na, companionNode ){
-				if( !currentSeq.companions ) {
-					currentSeq.companions = [];
+			$ad.find('CompanionAds Companion').each( function( na, companionNode ){
+				if( !currentAd.companions ) {
+					currentAd.companions = [];
 				}
 				// Build the curentCompanion
 				var companionObj = {};
-				var companionAttr = ['width', 'height', 'id', 'expandedWidth', 'expandedHeight'];
+				var companionAttr = [ 'width', 'height', 'id', 'expandedWidth', 'expandedHeight' ];
 				$j.each( companionAttr, function(na, attr){
 					if( $j( companionNode ).attr( attr ) ){
 						companionObj[attr] = $j( companionNode ).attr( attr );
@@ -214,24 +248,26 @@ mw.KAds.prototype = {
 						mw.log("kAds:: Set Companing html via StaticResource \n" + $j('<div />').append( companionObj.$html ).html() );
 					}											
 				}
+				
 				// Check for iframe type
 				if( $j( companionNode ).find('IFrameResource').length ){
-					mw.log("kAds:: Set Companing html via IFrameResource \n" + _this.getCdataFromNode ( $j( companionNode ).find('IFrameResource') ) );
+					mw.log("kAds:: Set Companing html via IFrameResource \n" + _this.getURLFromNode ( $j( companionNode ).find('IFrameResource') ) );
 					companionObj.$html = 
 						$j('<iframe />').attr({
-							'src' : _this.getCdataFromNode ( $j( companionNode ).find('IFrameResource') ),
+							'src' : _this.getURLFromNode ( $j( companionNode ).find('IFrameResource') ),
 							'width' : companionObj['width'],
 							'height' : companionObj['height']
 						});						
 				}
+				
 				// Check for html type
 				if( $j( companionNode ).find('HTMLResource').length ){				
-					mw.log("kAds:: Set Companing html via HTMLResource \n" + _this.getCdataFromNode ( $j( companionNode ).find('HTMLResource') ) );
+					mw.log("kAds:: Set Companing html via HTMLResource \n" + _this.getURLFromNode ( $j( companionNode ).find('HTMLResource') ) );
 					// Wrap the HTMLResource in a jQuery call: 
-					companionObj.$html = $j( _this.getCdataFromNode ( $j( companionNode ).find('HTMLResource') ) );
+					companionObj.$html = $j( _this.getURLFromNode ( $j( companionNode ).find('HTMLResource') ) );
 				}
 				// Add the companion to the ad config: 
-				currentSeq.companions.push( companionObj )
+				currentAd.companions.push( companionObj )
 			});
 			
 		});
@@ -247,8 +283,8 @@ mw.KAds.prototype = {
 	getStaticResourceHtml: function( companionNode, companionObj ){
 		var _this = this;
 		companionObj['contentType'] = $j( companionNode ).find( 'StaticResource' ).attr('creativeType');
-		companionObj['resourceUri'] = _this.getCdataFromNode( 
-				$j( companionNode ).find( 'StaticResource' ) 
+		companionObj['resourceUri'] = _this.getURLFromNode( 
+			$j( companionNode ).find( 'StaticResource' ) 
 		);		
 		
 		// Build companionObj html
@@ -266,7 +302,7 @@ mw.KAds.prototype = {
 				});
 				
 				if( $j( companionNode ).find('AltText').html() != '' ){	
-					$img.attr('alt', _this.getCdataFromNode( 
+					$img.attr('alt', _this.getURLFromNode( 
 							 $j( companionNode ).find('AltText')
 						)
 					);
@@ -275,7 +311,7 @@ mw.KAds.prototype = {
 				if( $j( companionNode ).find('CompanionClickThrough').html() != '' ){
 					$companionHtml = $j('<a />')
 						.attr({
-							'href' : _this.getCdataFromNode(
+							'href' : _this.getURLFromNode(
 											$j( companionNode ).find('CompanionClickThrough') 
 									)
 						}).append( $img );
@@ -350,18 +386,12 @@ mw.KAds.prototype = {
 			if( sentEvents[ eventName ] && !force ){
 				return ;
 			} 
-			sentEvents[ eventName ] = 1;			
+			sentEvents[ eventName ] = 1;
 			// See if we have any beacons by that name: 
 			for(var i =0;i < trackingEvents.length; i++){
 				if( eventName == trackingEvents[ i ].eventName ){
-					mw.log("kAds:: Send Becon: " + eventName );
-					$j('body').append( 
-						$j( '<img />' ).attr({				
-							'src' : trackingEvents[ i ].beaconUrl,
-							'width' : 0,
-							'height' : 0
-						})
-					);
+					mw.log("kAds:: sendBeacon: " + eventName );
+					mw.sendBeaconUrl( trackingEvents[ i ].beaconUrl );
 				};
 			};			
 		};
@@ -415,7 +445,11 @@ mw.KAds.prototype = {
 	 * via native browser functions. So here we just strip the CDATA tags and 
 	 * return the text value
 	 */
-	getCdataFromNode: function ( node ){		
+	getURLFromNode: function ( node ){
+		if( $j( node ).find('URL').length ){
+			// use the first url we find: 
+			node = $j( node ).find( 'URL' ).get(0);
+		}	
 		return $j.trim( decodeURIComponent( $j( node ).html() )  )
 			.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
 			.replace(/\]\]\-?\-?\>/, '');		

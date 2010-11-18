@@ -21,15 +21,15 @@
  *            timeType Stores the target string can be 'start', 'bumper', 'end',
  *            or 'overlay'->
  * @param {Object}
- *            sequenceConf sequenceConf object see
+ *            adConf adConf object see
  *            mw.MobilePlayerTimeline.display
  */
-mw.addAdToPlayerTimeline = function(embedPlayer, timeType, sequenceConf) {
-	mw.log("MobileAdTimeline::Add " + timeType + ' dispCof: ' + sequenceConf);
+mw.addAdToPlayerTimeline = function(embedPlayer, timeType, adConf) {
+	mw.log("MobileAdTimeline::Add " + timeType + ' dispCof: ' + adConf);
 	if (!embedPlayer.playerTimeline) {
 		embedPlayer.playerTimeline = new mw.MobileAdTimeline(embedPlayer);
 	}
-	embedPlayer.playerTimeline.addToTimeline(timeType, sequenceConf)
+	embedPlayer.playerTimeline.addToTimeline(timeType, adConf)
 }
 
 mw.MobileAdTimeline = function(embedPlayer) {
@@ -113,10 +113,12 @@ mw.MobileAdTimeline.prototype = {
 
 		// Monitor will only be triggered in core media player
 		$j(_this.embedPlayer).bind('monitorEvent', function() {
-			// 
-			if (_this.overlaysEnabled) {
+			// Check that mobile ad timeline supports overlays 
+			// and that the embedPlayer supports overlays
+			if ( _this.overlaysEnabled && _this.embedPlayer.supports.overlays ) {
 				// Check time constraints for the overlay add
-				
+				var cat = this.timelineTargets['overlay'];
+				debugger;
 				// @@ if the ad is an insert store the current time to seek to.
 			}
 		});
@@ -140,34 +142,32 @@ mw.MobileAdTimeline.prototype = {
 		mw.log("MobileAdTimeline::display:" + timeTargetType + ' val:'
 				+ this.timelineTargets[timeTargetType]);
 
-		// If the sequenceConf is empty go directly to the callback:
-		if (!this.timelineTargets[timeTargetType]) {
+		// If the adConf is empty go directly to the callback:
+		if ( ! this.timelineTargets[ timeTargetType ] ) {
 			doneCallback();
 			return;
 		}
-		var sequenceConf = this
-				.selectAdSequence(this.timelineTargets[timeTargetType]);
+		var adConf = this.selectAdSequence( this.timelineTargets[timeTargetType] );
 
-		// Detect the display set type and trigger its display, run the callback
-		// once complete
-		if (sequenceConf.videoFile) {
-			if (sequenceConf.lockUI) {
+		// Check for videoFile inserts:
+		if ( adConf.videoFile ) {
+			if ( adConf.lockUI ) {
 				// this actually does not work so well in iOS world:
 				_this.getNativePlayerElement().controls = false;
 			}
 			;
 			// Play the source then run the callback
-			_this.switchPlaySrc(sequenceConf.videoFile, function(videoElement) { 
-				// Pass off event handling to sequenceConf bind:
-					if (typeof sequenceConf.bindPlayerEvents == 'function') {
-						sequenceConf.bindPlayerEvents(videoElement)
+			_this.switchPlaySrc(adConf.videoFile, function(videoElement) { 
+				// Pass off event handling to adConf bind:
+					if (typeof adConf.bindPlayerEvents == 'function') {
+						adConf.bindPlayerEvents(videoElement)
 					}
 				}, doneCallback);
 		}
 
 		// Check for companion ads:
-		if (sequenceConf.companions && sequenceConf.companions.length) {
-			var companionConf = this.selectCompanion(sequenceConf.companions);
+		if ( adConf.companions && adConf.companions.length ) {
+			var companionConf = this.selectCompanion(adConf.companions);
 
 			// NOTE:: is not clear from the ui conf response which or how or why
 			// there are multiple
@@ -179,9 +179,16 @@ mw.MobileAdTimeline.prototype = {
 			var originalCompanionHtml = $j('#' + companionTarget.elementid).html();
 			
 			// Display the companion:
-			$j('#' + companionTarget.elementid).html(companionConf.$html);
+			$j( '#' + companionTarget.elementid ).html( companionConf.$html );
 		}
-
+		
+		// Check if should fire any impression beacon(s) 
+		if( adConf.impressions && adConf.impressions.length ){
+			// Fire all the impressions
+			for( var i =0; i< adConf.impressions; i++ ){
+				mw.sendBeaconUrl( adConf.impressions[i].beaconUrl );
+			}
+		}
 	},
 	/**
 	 * Selects a companion config from the set of companions
@@ -216,13 +223,13 @@ mw.MobileAdTimeline.prototype = {
 	 * @param {string}
 	 *            timeType
 	 * @param {object}
-	 *            sequenceConf
+	 *            adConf
 	 */
-	addToTimeline : function(timeType, sequenceConf) {
+	addToTimeline : function(timeType, adConf) {
 		// Validate the timeType
 		if (typeof this.timelineTargets[timeType] != 'undefined') {
-			// only one sequenceConf per timeType
-			this.timelineTargets[timeType] = sequenceConf;
+			// only one adConf per timeType
+			this.timelineTargets[timeType] = adConf;
 		}
 	},
 
@@ -239,7 +246,7 @@ mw.MobileAdTimeline.prototype = {
 	 */
 	switchPlaySrc : function(src, switchCallback, doneCallback) {
 		var _this = this;
-		mw.log('MobileAdTimeline:: switchPlaySrc:' + src);
+		mw.log( 'MobileAdTimeline:: switchPlaySrc:' + src );
 		var vid = this.getNativePlayerElement();
 		if (vid) {
 			try {
@@ -275,7 +282,7 @@ mw.MobileAdTimeline.prototype = {
 					updateSrcAndPlay();
 				}
 			} catch (e) {
-				mw.log("Error: Error in swiching source playback");
+				alert("Error: Error in swiching source playback");
 			}
 		}
 	},

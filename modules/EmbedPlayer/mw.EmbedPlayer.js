@@ -1738,15 +1738,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Auto select player based on default order
 		if ( !this.mediaElement.selectedSource ) {
-			// check for parent clip:
-			if ( typeof this.pc != 'undefined' ) {
-				mw.log( 'no sources, type:' + this.type + ' check for html' );
-				// do load player if just displaying innerHTML:
-				if ( this.pc.type == 'text/html' ) {
-					this.selectedPlayer = mw.EmbedTypes.players.defaultPlayer( 'text/html' );
-					mw.log( 'set selected player:' + this.selectedPlayer.mimeType );
-				}
-			}
+			mw.log( 'setupSourcePlayer:: no sources, type:' + this.type );
 		} else {
 			this.selectedPlayer = mw.EmbedTypes.players.defaultPlayer( this.mediaElement.selectedSource.mimeType );
 		}
@@ -2103,6 +2095,7 @@ mw.EmbedPlayer.prototype = {
 	 *      [misssingType] missing type mime
 	 */
 	showPluginMissingHTML: function( ) {
+		mw.log("showPluginMissingHTML");
 		// Get mime type for unsuported formats:
 		var missingType = '';
 		var or = '';
@@ -2111,7 +2104,7 @@ mw.EmbedPlayer.prototype = {
 			or = ' or ';
 		}
 		// Remove the loading spinner if present:
-		$j('.playerLoadingSpinner').remove();
+		$j('.playerLoadingSpinner,.loadingSpinner').remove();
 
 		// If the native video is already displayed hide it:
 		if( $j( '#' + this.pid ).length != 0 ){
@@ -2130,9 +2123,6 @@ mw.EmbedPlayer.prototype = {
 		}
 		var source = this.mediaElement.sources[0];
 		// Check if we have user defined missing html msg:
-		if ( this.user_missing_plugin_html ) {
-		 $j( this ).html( this.user_missing_plugin_html );
-		} else {
 		 $j( this ).html(
 		 	$j('<div />').append(
 		 		gM( 'mwe-embedplayer-generic_missing_plugin', missingType ),
@@ -2145,7 +2135,6 @@ mw.EmbedPlayer.prototype = {
 		 		.text( gM( 'mwe-embedplayer-download_clip' ) )
 		 	)
 		 );
-		}
 		// hide
 	},
 
@@ -2667,14 +2656,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	play: function() {
 		var _this = this;
-
-		if( this.paused && this.bubbleEventCheck() ){
-			this.paused = false;
-			mw.log("trigger play event::" + !this.paused);
-			$j( this ).trigger( 'play' );
-		}
-		this.paused = false;
-
 		mw.log( "EmbedPlayer:: play" );
 		// Hide any overlay:
 		this.controlBuilder.closeMenuOverlay();
@@ -2694,7 +2675,13 @@ mw.EmbedPlayer.prototype = {
 			// the plugin is already being displayed
 			this.seeking = false;
 		}
-
+		// trigger the play event
+		if( this.paused && this.bubbleEventCheck() ){
+			this.paused = false;
+			mw.log("trigger play event::" + !this.paused);
+			$j( this ).trigger( 'play' );
+		}
+		this.paused = false;
 
 		this.$interface.find('.play-btn span')
 		.removeClass( 'ui-icon-play' )
