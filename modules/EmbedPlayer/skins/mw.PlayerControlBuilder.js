@@ -1519,7 +1519,7 @@ mw.PlayerControlBuilder.prototype = {
 						'top'	: ( ( ctrlObj.embedPlayer.getPlayerHeight() - this.h ) / 2 )
 					} )
 					// Add play hook:
-					.buttonHover().click( function() {
+					.click( function() {
 						 ctrlObj.embedPlayer.play();
 					} );
 			}
