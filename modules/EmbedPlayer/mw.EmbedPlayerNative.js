@@ -570,7 +570,7 @@ mw.EmbedPlayerNative = {
 	onprogress: function( event ) {
 		var e = event.originalEvent;
 		//mw.log("onprogress: e:" + e + ' ' + e.loaded + ' && ' + e.total );
-		if( e.loaded && e.total ) {
+		if( e && e.loaded && e.total ) {
 			this.bufferedPercent = e.loaded / e.total;
 			this.progressEventData = e.loaded;
 		}
