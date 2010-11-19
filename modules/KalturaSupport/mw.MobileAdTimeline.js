@@ -110,19 +110,33 @@ mw.MobileAdTimeline.prototype = {
 						});
 				});
 			});
-
-		// Monitor will only be triggered in core media player
-		$j(_this.embedPlayer).bind('monitorEvent', function() {
-			// Check that mobile ad timeline supports overlays 
-			// and that the embedPlayer supports overlays
-			if ( _this.overlaysEnabled && _this.embedPlayer.supports.overlays ) {
-				// Check time constraints for the overlay add
-				var cat = this.timelineTargets['overlay'];
-				debugger;
-				// @@ if the ad is an insert store the current time to seek to.
-			}
-		});
-
+		
+		// see if we have overlay ads:
+		if( _this.timelineTargets['overlay'] ){
+			var overlayTiming = _this.timelineTargets['overlay'];
+			var lastPlayEndTime = 99999999999;
+			var playedStart = false;
+			// Monitor will only be triggered in core media player
+			$j( _this.embedPlayer ).bind('monitorEvent', function() {
+				var time = _this.embedPlayer.currentTime;
+				if( ( 	( time >= overlayTiming.start && ! playedStart )
+						||
+						lastPlayEndTime - time > overlayTiming.frequency
+					)
+					&& _this.overlaysEnabled 
+				){
+					if( !playedStart){
+						playedStart = true;
+					}
+					_this.overlaysEnabled = false;					
+					// Display the overlay ad 
+					_this.display( 'overlay' , function(){
+						lastPlayEndTime = _this.embedPlayer.currentTime
+						_this.overlaysEnabled = true;
+					});
+				}				
+			});
+		}
 	},
 
 	/**
@@ -147,8 +161,8 @@ mw.MobileAdTimeline.prototype = {
 			doneCallback();
 			return;
 		}
-		var adConf = this.selectAdSequence( this.timelineTargets[timeTargetType] );
-
+		var adConf = this.selectAd( this.timelineTargets[ timeTargetType ].ads );		
+		
 		// Check for videoFile inserts:
 		if ( adConf.videoFile ) {
 			if ( adConf.lockUI ) {
@@ -182,6 +196,9 @@ mw.MobileAdTimeline.prototype = {
 			$j( '#' + companionTarget.elementid ).html( companionConf.$html );
 		}
 		
+		// Check for overlays
+		if ( adConf.companions && adConf.companions.length ) {
+		
 		// Check if should fire any impression beacon(s) 
 		if( adConf.impressions && adConf.impressions.length ){
 			// Fire all the impressions
@@ -199,22 +216,15 @@ mw.MobileAdTimeline.prototype = {
 	selectCompanion : function(companionSet) {
 		return companionSet[Math.floor(Math.random() * companionSet.length)];
 	},
+	
 	/**
 	 * Selects a sequence from available ad sets
 	 * 
 	 * @param {object}
 	 *            displaySet
 	 */
-	selectAdSequence : function(displaySet) {
-		var indexList = [];
-		$j.each(displaySet.sequences, function(inx, adConf) {
-			if (typeof adConf == 'object'
-					&& (adConf.trackingEvents || adConf.companions)) {
-				indexList.push(inx);
-			}
-		});
-		var seqInx = indexList[Math.floor(Math.random() * indexList.length)];
-		return displaySet.sequences[seqInx];
+	selectAd : function( displaySet ) {
+		return displaySet[ Math.floor( Math.random() * displaySet.length ) ];
 	},
 
 	/**

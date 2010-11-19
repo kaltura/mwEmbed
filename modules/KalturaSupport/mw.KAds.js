@@ -153,18 +153,12 @@ mw.KAds.prototype = {
 		var $vast = $j( xmlString );
 		// Get the basic set of sequences
 		adConf.ads = [];
-		$vast.find('ad').each( function( na, node ){	
+		$vast.find( 'ad' ).each( function( inx, node ){
 			mw.log('kAds:: getVastAdDisplayConf: ' + node );
-			var adId = $j( node ).attr('id');
 			var $ad = $j( node );
 			
-			// Create the sequence by id ( if not already set )
-			if(!adConf.ads[adId] ){
-				adConf.ads[adId] = {};
-			}
-			
 			// Set a local pointer to the current sequence: 
-			var currentAd = adConf.ads[ adId ];
+			var currentAd = {'id' : $j( node ).attr('id') };
 			
 			// Set duration 
 			if( $ad.find('duration') ){
@@ -223,7 +217,7 @@ mw.KAds.prototype = {
 			});
 			
 			// Set videoFile to default if not set: 
-			if( !adConf.videoFile ){
+			if( ! adConf.videoFile ){
 				currentAd.videoFile = mw.getConfig( 'Kaltura.MissingFlavorVideoUrl' );
 			}
 			
@@ -269,6 +263,8 @@ mw.KAds.prototype = {
 				// Add the companion to the ad config: 
 				currentAd.companions.push( companionObj )
 			});
+			
+			adConf.ads.push( currentAd );
 			
 		});
 		return adConf;

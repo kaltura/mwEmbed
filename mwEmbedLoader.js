@@ -131,7 +131,7 @@ function kOverideSwfObject(){
 					})
 				)
 			} else {
-				$j('#' + replaceTargetId ).css({
+				$j('#' + replaceTargetId ).empty().css({
 					'id' : replaceTargetId,
 					'width' : width,
 					'height' : height
