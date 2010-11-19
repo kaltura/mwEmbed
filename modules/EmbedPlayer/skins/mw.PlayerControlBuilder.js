@@ -116,6 +116,7 @@ mw.PlayerControlBuilder.prototype = {
 			'left' : '0px',
 			'right' : '0px'
 		} );
+		
 		// Check for overlay controls:
 		if( ! _this.checkOverlayControls() ) {
 			// Add some space to interface for the control bar ( if not overlaying controls )
@@ -218,6 +219,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Set target width
 		var targetWidth = windowSize.width;
 		var targetHeight = targetWidth * ( embedPlayer.getHeight() / embedPlayer.getWidth() );
+		
 		// Check if it exceeds the height constraint:
 		if( targetHeight > windowSize.height ){
 			targetHeight = windowSize.height;

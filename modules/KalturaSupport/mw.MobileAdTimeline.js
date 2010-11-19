@@ -197,7 +197,7 @@ mw.MobileAdTimeline.prototype = {
 		}
 		
 		// Check for overlays
-		if ( adConf.companions && adConf.companions.length ) {
+		//if ( adConf.companions && adConf.companions.length ) {
 		
 		// Check if should fire any impression beacon(s) 
 		if( adConf.impressions && adConf.impressions.length ){
@@ -207,6 +207,7 @@ mw.MobileAdTimeline.prototype = {
 			}
 		}
 	},
+	
 	/**
 	 * Selects a companion config from the set of companions
 	 * 
