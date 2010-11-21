@@ -133,6 +133,17 @@ mw.includeAllModuleMessages();
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
 			} );
+			
+			$j( embedPlayer ).bind( 'showControlBar', function( layout ){
+				// Move the text track if present
+				embedPlayer.$interface.find( '.track' )
+				.animate( layout, 'slow' );
+			});
+			$j( embedPlayer ).bind( 'hideControlBar', function( layout ){
+				// Move the text track down if present
+				embedPlayer.$interface.find( '.track' )
+				.animate( layout, 'slow' );
+			});
 		},
 
 		/**

@@ -186,9 +186,12 @@ mw.KAds.prototype = {
 			// Set Non Linear Ads
 			currentAd.nonLinear = [];
 			$ad.find( 'NonLinearAds NonLinear' ).each( function( na, nonLinearNode ){
-				// find the asset url ( image? ) 
-				
-			});
+				var staticResource = _this.getResourceObject( nonLinearNode );				
+				if( staticResource ){
+					// Add the staticResource to the ad config: 
+					currentAd.nonLinear.push( staticResource );
+				}
+			});			
 			
 			// Set tracking events: 
 			currentAd.trackingEvents = [];
@@ -222,52 +225,63 @@ mw.KAds.prototype = {
 			}
 			
 			// Set the CompanionAds if present: 
-			$ad.find('CompanionAds Companion').each( function( na, companionNode ){
-				if( !currentAd.companions ) {
-					currentAd.companions = [];
+			currentAd.companions = [];
+			$ad.find('CompanionAds Companion').each( function( na, companionNode ){				
+				var staticResource = _this.getResourceObject( companionNode );				
+				if( staticResource ){
+					// Add the staticResourceto the ad config: 
+					currentAd.companions.push( staticResource )
 				}
-				// Build the curentCompanion
-				var companionObj = {};
-				var companionAttr = [ 'width', 'height', 'id', 'expandedWidth', 'expandedHeight' ];
-				$j.each( companionAttr, function(na, attr){
-					if( $j( companionNode ).attr( attr ) ){
-						companionObj[attr] = $j( companionNode ).attr( attr );
-					}
-				});
-				
-				// Check for companion type: 
-				if( $j( companionNode ).find( 'StaticResource' ).length ) {
-					if( $j( companionNode ).find( 'StaticResource' ).attr('creativeType') ) {						
-						companionObj.$html = _this.getStaticResourceHtml( companionNode, companionObj )
-						mw.log("kAds:: Set Companing html via StaticResource \n" + $j('<div />').append( companionObj.$html ).html() );
-					}											
-				}
-				
-				// Check for iframe type
-				if( $j( companionNode ).find('IFrameResource').length ){
-					mw.log("kAds:: Set Companing html via IFrameResource \n" + _this.getURLFromNode ( $j( companionNode ).find('IFrameResource') ) );
-					companionObj.$html = 
-						$j('<iframe />').attr({
-							'src' : _this.getURLFromNode ( $j( companionNode ).find('IFrameResource') ),
-							'width' : companionObj['width'],
-							'height' : companionObj['height']
-						});						
-				}
-				
-				// Check for html type
-				if( $j( companionNode ).find('HTMLResource').length ){				
-					mw.log("kAds:: Set Companing html via HTMLResource \n" + _this.getURLFromNode ( $j( companionNode ).find('HTMLResource') ) );
-					// Wrap the HTMLResource in a jQuery call: 
-					companionObj.$html = $j( _this.getURLFromNode ( $j( companionNode ).find('HTMLResource') ) );
-				}
-				// Add the companion to the ad config: 
-				currentAd.companions.push( companionObj )
 			});
 			
 			adConf.ads.push( currentAd );
 			
 		});
 		return adConf;
+	},
+	// Return a static resource object
+	getResourceObject: function( resourceNode ){
+		var _this = this;
+		// Build the curentCompanion
+		var resourceObj = {};
+		var companionAttr = [ 'width', 'height', 'id', 'expandedWidth', 'expandedHeight' ];
+		$j.each( companionAttr, function(na, attr){
+			if( $j( resourceNode ).attr( attr ) ){
+				resourceObj[attr] = $j( resourceNode ).attr( attr );
+			}
+		});
+		
+		// Check for companion type: 
+		if( $j( resourceNode ).find( 'StaticResource' ).length ) {
+			if( $j( resourceNode ).find( 'StaticResource' ).attr('creativeType') ) {						
+				resourceObj.$html = _this.getStaticResourceHtml( resourceNode, resourceObj )
+				mw.log("kAds::getResourceObject: StaticResource \n" + $j('<div />').append( resourceObj.$html ).html() );
+			}											
+		}
+		
+		// Check for iframe type
+		if( $j( resourceNode ).find('IFrameResource').length ){
+			mw.log("kAds::getResourceObject: IFrameResource \n" + _this.getURLFromNode ( $j( resourceNode ).find('IFrameResource') ) );
+			resourceObj.$html = 
+				$j('<iframe />').attr({
+					'src' : _this.getURLFromNode ( $j( resourceNode ).find('IFrameResource') ),
+					'width' : resourceObj['width'],
+					'height' : resourceObj['height'],
+					'border' : '0px'
+				});						
+		}
+		
+		// Check for html type
+		if( $j( resourceNode ).find('HTMLResource').length ){				
+			mw.log("kAds::getResourceObject:  HTMLResource \n" + _this.getURLFromNode ( $j( resourceNode ).find('HTMLResource') ) );
+			// Wrap the HTMLResource in a jQuery call: 
+			resourceObj.$html = $j( _this.getURLFromNode ( $j( resourceNode ).find('HTMLResource') ) );
+		}
+		// if no resource html was built out return false
+		if( !resourceObj.$html){
+			return false;
+		}
+		return resourceObj;
 	},
 	/**
 	 * Get html for a static resource 
@@ -308,19 +322,17 @@ mw.KAds.prototype = {
 					$companionHtml = $j('<a />')
 						.attr({
 							'href' : _this.getURLFromNode(
-											$j( companionNode ).find('CompanionClickThrough') 
-									)
+								$j( companionNode ).find('CompanionClickThrough,NonLinearClickThrough').get(0)
+							)
 						}).append( $img );
 				} else {
 					$companionHtml = $img;
 				}
 			break;
 			case 'application/x-shockwave-flash':
-				var flashObjectId = $j( companionNode ).attr('id') + '_flash';
-				
+				var flashObjectId = $j( companionNode ).attr('id') + '_flash';				
 				// @@FIXME we have to A) load this via a proxy 
-				// and B) use smokescreen.js or equivalent to "try" and render on iPad
-				
+				// and B) use smokescreen.js or equivalent to "try" and render on iPad			
 				$companionHtml =  $j('<OBJECT />').attr({
 						'classid' : "clsid:D27CDB6E-AE6D-11cf-96B8-444553540000",
 						'codebase' : "http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0",

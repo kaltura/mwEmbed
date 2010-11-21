@@ -105,10 +105,11 @@ mw.PlayerControlBuilder.prototype = {
 		_this.displayOptionsMenuFlag = false;
 
 
-		// Setup the controlBar container
+		// Setup the controlBar container ( starts hidden ) 
 		var $controlBar = $j('<div />')
 			.addClass( 'ui-state-default ui-widget-header ui-helper-clearfix control-bar' )
-			.css( 'height', this.height );
+			.css( 'height', this.height )
+			.hide();
 
 		$controlBar.css( {
 			'position': 'absolute',
@@ -623,12 +624,8 @@ mw.PlayerControlBuilder.prototype = {
 		this.embedPlayer.$interface.find( '.control-bar')
 			.fadeOut( animateDuration );
 
-		// Move the timed text XXX this should go into timedText module
-		this.embedPlayer.$interface.find( '.track' )
-			.stop()
-			.animate( {
-				'bottom' : 10
-			}, 'slow' );
+		// Allow interface items to update: 
+		$j( this.embedPlayer ).trigger('hideControlBar', {'bottom' : 10} );
 
 	},
 
@@ -643,15 +640,10 @@ mw.PlayerControlBuilder.prototype = {
 			$j( this.embedPlayer.getPlayerElement() ).css( 'z-index', '1' );
 		}
 		mw.log( 'PlayerControlBuilder:: ShowControlBar' );
-		// Move up text track if present
-		this.embedPlayer.$interface.find( '.track' )
-			.animate(
-				{
-					'bottom' : this.getHeight() + 10
-				},
-				animateDuration
-			);
-
+		
+		// Trigger the screen overlay with layout info: 
+		$j( this.embedPlayer ).trigger( 'showControlBar', {'bottom' : this.getHeight() + 10 } );		
+		
 		// Show interface controls
 		this.embedPlayer.$interface.find( '.control-bar' )
 			.fadeIn( animateDuration );

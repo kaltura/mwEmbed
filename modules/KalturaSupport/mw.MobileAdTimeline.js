@@ -54,8 +54,6 @@ mw.MobileAdTimeline.prototype = {
 	// Original source of embedPlayer
 	originalSrc : false,
 
-	// Flag to store if its the first time play is being called:
-	firstPlay : true,
 
 	/**
 	 * @constructor
@@ -72,71 +70,82 @@ mw.MobileAdTimeline.prototype = {
 		var _this = this;
 		// Setup the original source
 		_this.originalSrc = _this.embedPlayer.getSrc();
+		// Flag to store if its the first time play is being called:
+		var firstPlay = true;
 		$j(_this.embedPlayer).bind('play', function() {
-
 			// Check if this is the "first play" request:
-				if (!_this.firstPlay) {
-					return 
+			if (!firstPlay) {
+				return 
+			}
+			firstPlay = false;
+			
+			mw.log("MobileAdTimeline:: First Play Start / bind Ad timeline");
 
-				}
-				_this.firstPlay = false;
-				mw.log("MobileAdTimeline:: First Play Start Ad timeline");
+			// Disable overlays for preroll / bumper
+			_this.overlaysEnabled = false;
 
-				// Disable overlays for preroll / bumper
-				_this.overlaysEnabled = false;
+			// Stop the native embedPlayer events so we can play the preroll
+			// and bumper
+			_this.embedPlayer.stopEventPropagation();
 
-				// Stop the native embedPlayer events so we can play the preroll
-				// and bumper
-				_this.embedPlayer.stopEventPropagation();
-
-				// Chain display of preroll and then bumper:
-				_this.display('preroll', function() {
-					_this.display('bumper', function() {
-						var vid = _this.getNativePlayerElement();
-						// Enable overlays ( for monitor overlay events )
-							_this.overlaysEnabled = true;
-
-							// Check if the src does not match original src if
-							// so switch back and restore original bindings
-							if (_this.originalSrc != vid.src) {
-								_this.switchPlaySrc(_this.originalSrc,
-									function() {
-											// Restore embedPlayer native
-											// bindings:
-										_this.embedPlayer
-												.restoreEventPropagation();
-									})
-							}
-						});
-				});
-			});
-		
-		// see if we have overlay ads:
-		if( _this.timelineTargets['overlay'] ){
-			var overlayTiming = _this.timelineTargets['overlay'];
-			var lastPlayEndTime = 99999999999;
-			var playedStart = false;
-			// Monitor will only be triggered in core media player
-			$j( _this.embedPlayer ).bind('monitorEvent', function() {
-				var time = _this.embedPlayer.currentTime;
-				if( ( 	( time >= overlayTiming.start && ! playedStart )
-						||
-						lastPlayEndTime - time > overlayTiming.frequency
-					)
-					&& _this.overlaysEnabled 
-				){
-					if( !playedStart){
-						playedStart = true;
-					}
-					_this.overlaysEnabled = false;					
-					// Display the overlay ad 
-					_this.display( 'overlay' , function(){
-						lastPlayEndTime = _this.embedPlayer.currentTime
+			// Chain display of preroll and then bumper:
+			_this.display('preroll', function() {
+				_this.display('bumper', function() {
+					var vid = _this.getNativePlayerElement();
+					// Enable overlays ( for monitor overlay events )
 						_this.overlaysEnabled = true;
+
+						// Check if the src does not match original src if
+						// so switch back and restore original bindings
+						if (_this.originalSrc != vid.src) {
+							_this.switchPlaySrc(_this.originalSrc,
+								function() {
+										// Restore embedPlayer native
+										// bindings:
+									_this.embedPlayer
+											.restoreEventPropagation();
+								})
+						}
 					});
-				}				
 			});
-		}
+			
+			// see if we have overlay ads:
+			if( _this.timelineTargets['overlay'] ){
+				var overlayTiming = _this.timelineTargets['overlay'];
+				var lastPlayEndTime = false;
+				var playedStart = false;
+				var adDuration = overlayTiming.nads;
+				// Monitor will only be triggered while we are /NOT/ playback back media
+				$j( _this.embedPlayer ).bind('monitorEvent', function() {					
+					var time = _this.embedPlayer.currentTime;
+					if( !lastPlayEndTime ){
+						lastPlayEndTime = time;
+					}
+					if( ( 	( time >= overlayTiming.start && ! playedStart )
+							||
+							lastPlayEndTime - time > overlayTiming.frequency
+						)
+						&& _this.overlaysEnabled 
+					){
+						mw.log("SHOULD DISPLAY: " + time +' >= ' + overlayTiming.start + ' || ' + 
+								lastPlayEndTime +' - ' + time + ' > ' + overlayTiming.frequency	);
+						if( !playedStart){
+							playedStart = true;
+						}
+						_this.overlaysEnabled = false;					
+						// Display the overlay ad 
+						_this.display( 'overlay' , function(){
+							lastPlayEndTime = _this.embedPlayer.currentTime
+							_this.overlaysEnabled = true;
+						});
+					}
+					
+					mw.log("SHOULD NOT display: " + time +' >= ' + overlayTiming.start + ' || ' + 
+							lastPlayEndTime +' - ' + time + ' > ' + overlayTiming.frequency	);
+				});
+			}
+							
+		});	
 	},
 
 	/**
@@ -145,13 +154,16 @@ mw.MobileAdTimeline.prototype = {
 	 * issuing the "doneCallback"
 	 * 
 	 * @param {string}
-	 *            timeTargetType Identify what timeline type to be displayed.
-	 *            Can be: preroll, bumper, overlay, postroll
+	 *          timeTargetType Identify what timeline type to be displayed.
+	 *          Can be: preroll, bumper, overlay, postroll
 	 * @param {function}
-	 *            doneCallback The callback function called once the display
-	 *            request has been completed
+	 *          doneCallback The callback function called once the display
+	 *          request has been completed
+	 * @param {=number} 
+	 * 			displayDuration optional time to display the insert useful 
+	 * 			ads that don't have an inherent duration. 
 	 */
-	display : function(timeTargetType, doneCallback) {
+	display : function( timeTargetType, doneCallback, displayDuration ) {
 		var _this = this;
 		mw.log("MobileAdTimeline::display:" + timeTargetType + ' val:'
 				+ this.timelineTargets[timeTargetType]);
@@ -161,7 +173,8 @@ mw.MobileAdTimeline.prototype = {
 			doneCallback();
 			return;
 		}
-		var adConf = this.selectAd( this.timelineTargets[ timeTargetType ].ads );		
+		var adConf = this.selectFromArray( this.timelineTargets[ timeTargetType ].ads );		
+		
 		
 		// Check for videoFile inserts:
 		if ( adConf.videoFile ) {
@@ -181,11 +194,10 @@ mw.MobileAdTimeline.prototype = {
 
 		// Check for companion ads:
 		if ( adConf.companions && adConf.companions.length ) {
-			var companionConf = this.selectCompanion(adConf.companions);
+			var companionConf = this.selectFromArray(adConf.companions);
 
-			// NOTE:: is not clear from the ui conf response which or how or why
-			// there are multiple
-			// so this may not be needed:
+			// NOTE:: is not clear from the ui conf response if multiple
+			// targets need to be supported, and how you would do that
 			var ctargets = this.timelineTargets[timeTargetType].companionTargets;
 			var companionTarget = ctargets[Math.floor(Math.random()
 					* ctargets.length)];
@@ -196,8 +208,59 @@ mw.MobileAdTimeline.prototype = {
 			$j( '#' + companionTarget.elementid ).html( companionConf.$html );
 		}
 		
-		// Check for overlays
-		//if ( adConf.companions && adConf.companions.length ) {
+		// Check for nonLinear overlays
+		if ( adConf.nonLinear && adConf.nonLinear.length ) {
+			var overlayId =  _this.embedPlayer.id + '_overlay';
+			var nonLinearConf = _this.selectFromArray( adConf.nonLinear ); 
+			
+			// Add the overlay if not already present: 
+			if( $j('#' +overlayId ).length == 0 ){
+				_this.embedPlayer.$interface.append( 
+					$j('<div />')
+					.css('position', 'absolute')
+					.attr('id', overlayId )
+				)
+			}
+			var layout = {
+				'width' : nonLinearConf.width + 'px',
+				'height' : nonLinearConf.height + 'px',
+				'bottom' : '10px',
+				'left' : ( ( .5 * _this.embedPlayer.getWidth() ) - (nonLinearConf.width/2) )+ 'px'
+			};					
+			// Show the overlay update its position and content
+			$j('#' +overlayId )
+			.css(layout)
+			.html( nonLinearConf.$html )
+			.fadeIn('fast')
+			
+			// Bind control bar display hide / show
+			$j( _this.embedPlayer ).bind( 'showControlBar', function( layout ){
+				mw.log("BINDE EVENT showControlBar ")
+				$j('#' +overlayId ).animate( layout, 'slow');
+				return false;
+			});
+			$j( _this.embedPlayer ).bind( 'hideControlBar', function( layout ){
+				mw.log("BINDE EVENT hideControlBar ")
+				$j('#' +overlayId ).animate( layout, 'slow');
+				return false;
+			});
+			
+			// Monitor time for display duration:
+			var startTime = _this.getNativePlayerElement().currentTime;
+			var monitorForOverlayDuration = function(){
+				var vid = _this.getNativePlayerElement();				
+				if( !vid // stop display of overlay if video playback is no longer active 
+					|| ( _this.getNativePlayerElement().currentTime - startTime) > displayDuration )
+				{
+					$j('#' +overlayId ).fadeOut('fast');
+					doneCallback();
+				} else {
+					setTimeout( monitorForOverlayDuration, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+				}
+			};
+			monitorForOverlayDuration();
+
+		}
 		
 		// Check if should fire any impression beacon(s) 
 		if( adConf.impressions && adConf.impressions.length ){
@@ -209,24 +272,12 @@ mw.MobileAdTimeline.prototype = {
 	},
 	
 	/**
-	 * Selects a companion config from the set of companions
-	 * 
-	 * @param {array}
-	 *            companionSet
+	 * Select a random element from the array and return it 
 	 */
-	selectCompanion : function(companionSet) {
-		return companionSet[Math.floor(Math.random() * companionSet.length)];
+	selectFromArray: function( array ){
+		return array[Math.floor(Math.random() * array.length)];
 	},
 	
-	/**
-	 * Selects a sequence from available ad sets
-	 * 
-	 * @param {object}
-	 *            displaySet
-	 */
-	selectAd : function( displaySet ) {
-		return displaySet[ Math.floor( Math.random() * displaySet.length ) ];
-	},
 
 	/**
 	 * addToTimeline adds a given display configuration to the timelineTargets
