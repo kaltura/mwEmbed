@@ -177,7 +177,7 @@ mw.MobileAdTimeline.prototype = {
 		
 		
 		// Check for videoFile inserts:
-		if ( adConf.videoFile ) {
+		if ( adConf.videoFile && timeTargetType != 'overlay') {
 			if ( adConf.lockUI ) {
 				// this actually does not work so well in iOS world:
 				_this.getNativePlayerElement().controls = false;
