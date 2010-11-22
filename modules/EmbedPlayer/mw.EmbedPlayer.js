@@ -1925,10 +1925,13 @@ mw.EmbedPlayer.prototype = {
 	/**
 	 * On clip done action. Called once a clip is done playing
 	 */
-	onClipDone: function() {
-		mw.log( 'EmbedPlayer::onClipDone:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
+	onClipDone: function() {		
 		var _this = this;
-
+		// don't run onclipdone if _propagateEvents is off
+		if( !_this._propagateEvents ){
+			return ;
+		}
+		mw.log( 'EmbedPlayer::onClipDone:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
 		// Only run stopped once:
 		if( !this.isStopped() ){
 			// Stop the monitor:
@@ -2638,7 +2641,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	play: function() {
 		var _this = this;
-		mw.log( "EmbedPlayer:: play" );
+		mw.log( "EmbedPlayer:: play: " + this._propagateEvents );
 		// Hide any overlay:
 		this.controlBuilder.closeMenuOverlay();
 
@@ -2657,7 +2660,7 @@ mw.EmbedPlayer.prototype = {
 			// the plugin is already being displayed
 			this.seeking = false;
 		}
-		// trigger the play event
+		// Trigger the play event
 		if( this.paused && this.bubbleEventCheck() ){
 			this.paused = false;
 			mw.log("trigger play event::" + !this.paused);
@@ -3022,8 +3025,8 @@ mw.EmbedPlayer.prototype = {
 			// Check if we are "done"
 			var endPresentationTime = ( this.startOffset ) ? ( this.startOffset + this.duration ) : this.duration;
 			if ( this.currentTime >= endPresentationTime ) {
-				mw.log( "should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
-				this.onClipDone();
+				mw.log( "should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );				
+				this.onClipDone();				
 			}
 		} else {
 			// Media lacks duration just show end time

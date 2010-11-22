@@ -535,9 +535,11 @@ mw.EmbedPlayerNative = {
 	* Handle the native play event
 	*/
 	onplay: function(){
-		mw.log("EmbedPlayer:native:: OnPlay");
+		mw.log("EmbedPlayer:native:: OnPlay::" +  this._propagateEvents );
 		// Update the interface ( if paused )
-		this.parent_play();
+		if(  this._propagateEvents ){
+			this.parent_play();
+		}
 	},
 
 	/**
@@ -591,8 +593,9 @@ mw.EmbedPlayerNative = {
 	*/
 	onended: function() {
 		var _this = this;
-		mw.log( 'EmbedPlayer:native: onended:' + this.playerElement.currentTime + ' real dur:' + this.getDuration() );
-
-		this.onClipDone();
+		mw.log( 'EmbedPlayer:native: onended:' + this.playerElement.currentTime + ' real dur:' + this.getDuration() + ' ended ' + this._propagateEvents );
+		if( this._propagateEvents ){
+			this.onClipDone();
+		}
 	}
 };

@@ -114,13 +114,13 @@ mw.MobileAdTimeline.prototype = {
 				$j( _this.embedPlayer ).bind( 'ended', function(event, onDoneActionObject){				
 					if( displayedPostroll){
 						return ;
-					}
-					
+					}					
 					_this.embedPlayer.stopEventPropagation();
-					mw.log('mw.MobileAdTimeline: ended');
+					mw.log('mw.MobileAdTimeline: ended displayedPostroll');
 					onDoneActionObject.runBaseControlDone = false;
 					
 					_this.display( 'postroll' , function(){		
+						var vid = _this.getNativePlayerElement();
 						if ( _this.originalSrc != vid.src) {
 							displayedPostroll = true;	
 							// restore original source: 
@@ -193,10 +193,9 @@ mw.MobileAdTimeline.prototype = {
 	 * 			displayDuration optional time to display the insert useful 
 	 * 			ads that don't have an inherent duration. 
 	 */
-	display : function( timeTargetType, displayDoneCallback, displayDuration ) {
+	display: function( timeTargetType, displayDoneCallback, displayDuration ) {
 		var _this = this;
-		mw.log("MobileAdTimeline::display:" + timeTargetType + ' val:'
-				+ this.timelineTargets[timeTargetType]);			
+		mw.log("MobileAdTimeline::display:" + timeTargetType );			
 		
 		var displayTarget =  this.timelineTargets[ timeTargetType ] 
 		
@@ -243,6 +242,7 @@ mw.MobileAdTimeline.prototype = {
 			if( typeof vid == 'undefined' // stop display of overlay if video playback is no longer active 
 				|| ( _this.getNativePlayerElement().currentTime - startTime) > displayDuration )
 			{
+				mw.log("MobileAdTimeline::display: Playback done because vid does not exist or > displayDuration " + displayDuration );
 				displayTarget.playbackDone();
 			} else {
 				setTimeout( monitorForDisplayDuration, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -261,10 +261,10 @@ mw.MobileAdTimeline.prototype = {
 				_this.getNativePlayerElement().controls = false;
 			};
 			// Play the source then run the callback
-			_this.switchPlaySrc( adConf.videoFile, function(videoElement) { 
+			_this.switchPlaySrc( adConf.videoFile, function() { 
 					// Pass off event handling to adConf bind:
 					if (typeof adConf.bindPlayerEvents == 'function') {
-						adConf.bindPlayerEvents(videoElement)
+						adConf.bindPlayerEvents( _this.getNativePlayerElement() );
 					}
 				}, 
 				displayTarget.playbackDone
@@ -389,60 +389,64 @@ mw.MobileAdTimeline.prototype = {
 	 */
 	switchPlaySrc : function(src, switchCallback, doneCallback) {
 		var _this = this;
-		mw.log( 'MobileAdTimeline:: switchPlaySrc:' + src );
+		mw.log( 'MobileAdTimeline:: switchPlaySrc:' + src + ' native time: ' + this.getNativePlayerElement().currentTime );
 		// update some parent embedPlayer vars: 
 		this.embedPlayer.duration = 0;
 		this.embedPlayer.currentTime = 0;
 		this.embedPlayer.previousTime = 0;
-		var vid = this.getNativePlayerElement();
+		var vid = this.getNativePlayerElement();		
 		if (vid) {
 			try {
-				// Remove all native player bindings
-				$j(vid).unbind();
-				vid.pause();
-				// Local scope update source and play function to work around google chrome
-				// bug
-				var updateSrcAndPlay = function() {
-					if (!vid){
-						mw.log( 'Error: switchPlaySrc no vid');
-						return ;
-					}
-					vid.src = src;
-					// Give iOS 50ms to figure out the src got updated ( iPad OS 3.0 )
-					setTimeout(function() {
+				// issue a play request on the source
+				vid.play();
+				setTimeout(function(){
+					// Remove all native player bindings
+					$j(vid).unbind();
+					vid.pause();
+					// Local scope update source and play function to work around google chrome
+					// bug
+					var updateSrcAndPlay = function() {
+						var vid = _this.getNativePlayerElement();
 						if (!vid){
 							mw.log( 'Error: switchPlaySrc no vid');
 							return ;
 						}
-						vid.load();
-						vid.play();
-						// Wait another 50ms then bind the end event and any custom events
-						// for the switchCallback
-							setTimeout(function() {
-								if (!vid){
-									mw.log( 'Error: switchPlaySrc no vid');
-									return ;
-								}			
-								// add the end binding: 
-								$j(vid).bind('ended', function(event) {
-									if(typeof doneCallback == 'function' ){
-										doneCallback();
+						vid.src = src;
+						// Give iOS 50ms to figure out the src got updated ( iPad OS 3.0 )
+						setTimeout(function() {
+							var vid = _this.getNativePlayerElement();
+							if (!vid){
+								mw.log( 'Error: switchPlaySrc no vid');
+								return ;
+							}						
+							vid.load();
+							vid.play();
+							// Wait another 50ms then bind the end event and any custom events
+							// for the switchCallback
+								setTimeout(function() {
+									var vid = _this.getNativePlayerElement();																
+									// add the end binding: 
+									$j(vid).bind('ended', function( event ) {
+										if(typeof doneCallback == 'function' ){
+											doneCallback();
+										}
+										return false;
+									})
+									if (typeof switchCallback == 'function') {
+										switchCallback(vid);
 									}
-								})
-								if (typeof switchCallback == 'function') {
-									switchCallback(vid);
-								}
+								}, 100);
 							}, 100);
-						}, 100);
-				};
-				if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
-					// Null the src and wait 50ms ( helps unload video without crashing
-					// google chrome 7.x )
-					vid.src = '';
-					setTimeout(updateSrcAndPlay, 100);
-				} else {
-					updateSrcAndPlay();
-				}
+					};
+					if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
+						// Null the src and wait 50ms ( helps unload video without crashing
+						// google chrome 7.x )
+						vid.src = '';
+						setTimeout(updateSrcAndPlay, 100);
+					} else {
+						updateSrcAndPlay();
+					}
+				}, 100 );
 			} catch (e) {
 				alert("Error: Error in swiching source playback");
 			}

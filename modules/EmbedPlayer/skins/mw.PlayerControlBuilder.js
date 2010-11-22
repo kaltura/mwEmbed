@@ -673,6 +673,12 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) === false){
 			return false;
 		}
+		// iPad supports overlays but the touch events mean we want the controls displayed all the 
+		// time for now. 
+		if( mw.isIpad() ){
+			return false;
+		}
+		
 
 		// Don't hide controls when content "height" is 0px ( audio tags )
 		if( this.embedPlayer.getPlayerHeight() === 0 &&
