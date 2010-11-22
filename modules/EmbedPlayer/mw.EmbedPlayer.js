@@ -1423,9 +1423,11 @@ mw.EmbedPlayer.prototype = {
 	},
 
 	stopEventPropagation: function(){
+		this.stopMonitor();
 		this._propagateEvents = false;
 	},
 	restoreEventPropagation: function(){
+		this.startMonitor();
 		this._propagateEvents = true;
 	},
 	/**
@@ -1886,8 +1888,6 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 
 		this.seeking = true;
-		// Run the seeking hook
-		$j( this.embedPlayer ).trigger( 'onSeek' );
 
 		// See if we should do a server side seek ( player independent )
 		if ( this.supportsURLTimeEncoding() ) {
@@ -2933,6 +2933,10 @@ mw.EmbedPlayer.prototype = {
 	stopMonitor: function(){
 		this.thumbnail_disp = true;
 	},
+	// xxx temporary hack we need a better stop monitor system
+	startMonitor: function(){
+		this.thumbnail_disp = false;
+	},
 
 	/**
 	 * Checks if the currentTime was updated outside of the getPlayerElementTime
@@ -2980,7 +2984,9 @@ mw.EmbedPlayer.prototype = {
 		// _this.previousVolume );
 		if( Math.round( _this.volume * 100 ) != Math.round( _this.previousVolume * 100 ) ) {
 			_this.setInterfaceVolume( _this.volume );
-			$j( this ).trigger('volumeChanged', _this.volume );
+			if( _this._propagateEvents ){
+				$j( this ).trigger('volumeChanged', _this.volume );
+			}
 		}
 
 		// Update the previous volume
@@ -3041,7 +3047,9 @@ mw.EmbedPlayer.prototype = {
 		// run the "native" progress event on the virtual html5 object if set
 		if( this.progressEventData ) {
 			// mw.log("trigger:progress event on html5 proxy");
-			$j( this ).trigger( 'progress', this.progressEventData );
+			if( _this._propagateEvents ){
+				$j( this ).trigger( 'progress', this.progressEventData );
+			}
 		}
 
 		// Call monitor at 250ms interval. ( use setInterval to avoid stacking
@@ -3060,7 +3068,9 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		// mw.log('trigger:monitor:: ' + this.currentTime );
-		$j( this ).trigger( 'monitorEvent' );
+		if( _this._propagateEvents ){
+			$j( this ).trigger( 'monitorEvent' );
+		}
 	},
 
 	/**

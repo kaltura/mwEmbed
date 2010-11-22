@@ -114,7 +114,7 @@ mw.EmbedPlayerSmil = {
 		var _this = this;
 		// Run the seeking hook
 
-		$j( this.embedPlayer ).trigger( 'onSeek' );
+		$j( this.embedPlayer ).trigger( 'seeking' );
 		this.setCurrentTime( percentage * this.getDuration(), function(){
 			mw.log("EmbedPlayerSmil:: seek done");
 			_this.seeking = false;

@@ -230,8 +230,6 @@ mw.EmbedPlayerNative = {
 	doSeek: function( percentage ) {
 		mw.log( 'Native::doSeek p: ' + percentage + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seek_time_sec );
 		this.seeking = true;
-		// Run the seeking hook
-		$j( this.embedPlayer ).trigger( 'onSeek' );
 
 		// Run the onSeeking interface update
 		this.controlBuilder.onSeek();
@@ -500,8 +498,6 @@ mw.EmbedPlayerNative = {
 		//( if not already set from interface )
 		if( !this.seeking ) {
 			this.seeking = true;
-			// Run the seeking hook (somewhat redundant )
-			$j( this ).trigger( 'onSeek' );
 
 			// Run the onSeeking interface update
 			this.controlBuilder.onSeek();
@@ -519,7 +515,6 @@ mw.EmbedPlayerNative = {
 	onseeked: function() {
 		mw.log("native:onSeeked");
 
-		mw.log("native:onSeeked:trigger");
 		// Trigger the html5 action on the parent
 		if( this.seeking && this.useNativePlayerControls() ){
 			this.seeking = false;

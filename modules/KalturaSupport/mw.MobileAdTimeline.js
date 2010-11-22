@@ -98,7 +98,7 @@ mw.MobileAdTimeline.prototype = {
 					// so switch back and restore original bindings
 					if ( _this.originalSrc != vid.src) {
 						_this.switchPlaySrc(_this.originalSrc,
-							function() {
+							function() {								
 								// Restore embedPlayer native
 								// bindings
 								_this.embedPlayer.restoreEventPropagation();
@@ -158,8 +158,8 @@ mw.MobileAdTimeline.prototype = {
 						)
 						&& _this.overlaysEnabled 
 					){
-						mw.log("SHOULD DISPLAY: " + time +' >= ' + overlayTiming.start + ' || ' + 
-								lastPlayEndTime +' - ' + time + ' > ' + overlayTiming.frequency	);
+						//mw.log("SHOULD DISPLAY: " + time +' >= ' + overlayTiming.start + ' || ' + 
+						//		lastPlayEndTime +' - ' + time + ' > ' + overlayTiming.frequency	);
 						if( !playedStart){
 							playedStart = true;
 						}
@@ -171,8 +171,8 @@ mw.MobileAdTimeline.prototype = {
 						}, adDuration);
 					}
 					
-					mw.log("SHOULD NOT display: " + time +' >= ' + overlayTiming.start + ' || ' + 
-							lastPlayEndTime +' - ' + time + ' > ' + overlayTiming.frequency	);
+					//mw.log("SHOULD NOT display: " + time +' >= ' + overlayTiming.start + ' || ' + 
+					//		lastPlayEndTime +' - ' + time + ' > ' + overlayTiming.frequency	);
 				});
 			}
 		});	
@@ -393,6 +393,7 @@ mw.MobileAdTimeline.prototype = {
 		// update some parent embedPlayer vars: 
 		this.embedPlayer.duration = 0;
 		this.embedPlayer.currentTime = 0;
+		this.embedPlayer.previousTime = 0;
 		var vid = this.getNativePlayerElement();
 		if (vid) {
 			try {
@@ -434,14 +435,14 @@ mw.MobileAdTimeline.prototype = {
 							}, 50);
 						}, 50);
 				};
-				if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
+				//if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
 					// Null the src and wait 50ms ( helps unload video without crashing
 					// google chrome 7.x )
 					vid.src = '';
 					setTimeout(updateSrcAndPlay, 50);
-				} else {
-					updateSrcAndPlay();
-				}
+				//} else {
+				//	updateSrcAndPlay();
+				//}
 			} catch (e) {
 				alert("Error: Error in swiching source playback");
 			}
