@@ -21,6 +21,8 @@ $mykalturaIframe = new kalturaIframe();
 // Do kalturaIframe video output:
 $mykalturaIframe->outputIFrame();
 
+// Define the KalturaFlavorAsset that the api will blindly set as a class 
+class KalturaFlavorAsset {};
 /**
  * Kaltura iFrame class:
  */
@@ -71,7 +73,7 @@ class kalturaIframe {
 		// Check for debug flag
 		if( isset( $_REQUEST['debugKalturaPlayer'] ) || isset( $_REQUEST['debug'] ) ){
 			$this->debug = true;
-		}		
+		}
 		
 		// @@TODO support native player ( for letting uses do true full screen, no overlays )
 		// the default setting for mobile < iPad 
@@ -88,39 +90,82 @@ class kalturaIframe {
 	}
 	
 	// Load the kaltura library and grab the most compatible flavour
-	private function getFlavourUrl(){
-		include_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
-		// Partner id is widget_id but strip the first character 
-		$kconf = new KalturaConfiguration(  substr( $this->playerAttributes['wid'], 1 ) );
-		$kclient = new KalturaClient( $kconf );
-		$kSessionId = $kclient->session->startWidgetSession( $this->playerAttributes['wid'] );
-		$entry = $kwidget->get( $this->playerAttributes['entryid'] );
+	private function getFlavorSources(){
 		
+		include_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
 		$userId = "username";
-$partnerId = "7463";
-$secret = "dc8a616702359ec844b18143667d130a";
-$adminsecret = "509d0007e53ecc4b05401ec12b15ed2f";
-$entryid = ($_GET['entryId'] != '') ? $_GET['entryId'] : '0_lmyu7pi9';
-$config = new KalturaConfiguration($partnerId);
-$client = new KalturaClient($config);
-$sessionId = $client->session->start($adminsecret, $userId, 2, $partnerId, 86400, 'edit:*');
-$client->setKS($sessionId);
-$flavors = $client->flavorAsset->getFlavorAssetsWithParams($entryid);
+		$secret = "dc8a616702359ec844b18143667d130a";
+		$adminsecret = "509d0007e53ecc4b05401ec12b15ed2f";
+		// Partner id is widget_id but strip the first character 
+		$partnerId =  substr( $this->playerAttributes['wid'], 1 );
+		$conf = new KalturaConfiguration( $partnerId );
+		$client = new KalturaClient( $conf );
+		$session = $client->session->startWidgetSession( $this->playerAttributes['wid'] );
+//		$session = $client->session->start($adminsecret, $userId, 2,  substr( $this->playerAttributes['wid'], 1), 86400, 'edit:*');
+		$client->setKS($session->ks);
+		
+		// @@NOTE this should probably be wrapped in a service class 
+		$kparams = array();
+		$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
+		$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams );
+		$resultObject = $client->doQueue();
+		$client->throwExceptionIfError($resultObject);
+		
+		// add any web sources
 
-		var_dump( $entry );
-		die();
+		$sources = array();
+		foreach($resultObject as $KalturaFlavorAsset ){	
+
+			$assetUrl =  KALTURA_CDN_URL .'/p/' . $partnerId . '/sp/' . 
+					$partnerId . '00/flvclipper/entry_id/' . 
+					$this->playerAttributes['entry_id'] . '/flavor/' . 	$KalturaFlavorAsset->id;
+			if( strpos( $KalturaFlavorAsset->tags, 'iphone' ) !== false ){
+				$sources['iphone'] = array(
+					'src' => $assetUrl . '/a.mp4?novar=0',
+					'type' => 'video/h264',
+					'data-flavorid' => 'iphone' 
+				);
+			};
+			if( strpos( $KalturaFlavorAsset->tags, 'ipad' ) !== false ){
+				$sources['ipad'] = array(
+					'src' => $assetUrl  . '/a.mp4?novar=0',
+					'type' => 'video/h264',
+					'data-flavorid' => 'ipad' 
+				);
+			};
+			if( strpos( $KalturaFlavorAsset->tags, 'ogg' ) !== false ){
+				$sources['ogg'] = array(
+					'src' => $assetUrl . '/a.ogg?novar=0',
+					'type' => 'video/ogg',
+					'data-flavorid' => 'ogg' 
+				);
+			};
+		}
+		return $sources;
 	}
 	
 	// Returns a simple image with a direct link to the asset
 	// ( need to add uiConf configuration to allow or disallow this feature
 	// ( maybe we tie it to the "download" option 
-	private function getFileLInkHTML(){
+	private function getFileLinkHTML(){
+		$sources = $this->getFlavorSources();
+		// for now use the iPhone, iPad, ogg ( in that order )
+		if( isset( $sources['iphone'] )) {
+			$flavorUrl = $sources['iphone']['src'];
+		} else if( isset( $sources['ipad'] ) ){
+			$flavorUrl = $sources['ipad']['src'];			
+		} else if(  isset( $sources['ogg'] ) ){
+			$flavorUrl = $sources['ogg']['src'];
+		} else {
+			// throw an exception ( no web streams ) 
+			$this->error = 'No web streams available, please check your enabled flavors';
+		}
 		// The outer container: 
 		$o='<div id="directFileLinkContainer">';
 			// @@todo once we hook up with the kaltura client output the thumb here:
 			// ( for now we use javascript to append it in there ) 
 			$o.='<div id="directFileLinkThumb" ></div>';
-			$o.='<a href="' . $this->getFlavorUrl() . '" id="directFileLinkButton"></a>';
+			$o.='<a href="' . $flavorUrl . '" id="directFileLinkButton"></a>';
 		$o.='</div>';
 		return $o;
 	}
@@ -130,32 +175,50 @@ $flavors = $client->flavorAsset->getFlavorAssetsWithParams($entryid);
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
 			'wid' => 'kwidgetid'
-		);				
-		
+		);
+		$partnerId =  substr( $this->playerAttributes['wid'], 1 );
+		$posterUrl =  KALTURA_CDN_URL . '/p/' . $partnerId . '/sp/' .
+						$partnerId . '00/thumbnail/' .
+						'entry_id/' .  $this->playerAttributes['entry_id'] .
+						'/height/480';
+		$sources = $this->getFlavorSources();
 		// Add default video tag with 100% width / height 
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
-		 
+		
 		$o = '<video class="persistentNativePlayer" ' .
-			'src="" ' . 
+			'poster="' . htmlspecialchars( $posterUrl ) . '" ' . 
 			'id="' . htmlspecialchars( $this->playerIframeId ) . '" ' . 
 			'style="width:100%;height:100%" ';
 		
+		// Add any additional attributes: 
 		foreach( $this->playerAttributes as $key => $val ){
 			if( isset( $videoTagMap[ $key ] ) && $val != null ) {			
 				$o.= ' ' . $videoTagMap[ $key ] . '="' . htmlspecialchars( $val ) . '"';
 			}
 		}
 		
+		//Close the video tag
+		$o.='>';
+		
+		// Output each source as a child element ( for javascript off browsers to have a chance
+		// to playback the content
+		foreach($sources as $source ){			
+			$o.='<source ' .
+					'type="' . htmlspecialchars( $source['type'] ) . '" ' . 
+					'src="' . htmlspecialchars(  $source['src'] ) . '" '.
+					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" '.
+				'></source>';
+		}
+
 		// To be on the safe side include the flash player and 
 		// direct file link as a child of the video tag
 		// ( if javascript is "off" and they dont have video tag support for example ) 
 		$o.= $this->getFlashEmbedHTML( 
-			$this->getFileLInkHTML()
+			$this->getFileLinkHTML()
 		); 				
 		
-		//Close the video attributes
-		$o.='>';
+		
 		$o.= '</video>';
 		return $o;
 	}
@@ -226,24 +289,27 @@ $flavors = $client->flavorAsset->getFlavorAssetsWithParams($entryid);
 		</style>
 	</head>
 	<body>	
-		<?php if( $this->error ) {
+		<?php 
+		$videoHTML = $this->getVideoHTML();
+		if( $this->error ) {
 			echo $this->error;			
-		} else { ?>
+		} else { 
+			?>
 			<div id="videoContainer" >
-				<?php echo $this->getVideoHTML() ?>
+				<?php echo $videoHTML ?>
 			</div>
 			<script type="text/javascript">							
 				// Insert the html5 kalturaLoader script  
 				document.write(unescape("%3Cscript src='<?php echo KALTURA_MWEMBED_PATH ?>mwEmbedLoader.js' type='text/javascript'%3E%3C/script%3E"));
 			</script>
-			<script type="text/javascript">							
+			<script type="text/javascript">			
 				// Don't rewrite the video tag ( its only there so Ipad can do overlays )
 				// if we are using flash it will be removed 
 				mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );	
 								
-				// For testing limited capacity
-				var kSupportsHTML5 = function(){ return false };
-				var kSupportsFlash = function(){ return false };
+				// For testing limited capacity browsers
+				//var kSupportsHTML5 = function(){ return false };
+				//var kSupportsFlash = function(){ return false };
 				
 				if( kSupportsHTML5() ){
 					//Set some iframe embed config:
@@ -265,10 +331,10 @@ $flavors = $client->flavorAsset->getFlavorAssetsWithParams($entryid);
 					});
 				} else {
 					
-					// Remove the video tag and output a clean "object" 
-					// ( in theory its the child of the video tag so would be played,
+					// Remove the video tag and output a clean "object" or file link
+					// ( if javascript is off the child of the video tag so would be played,
 					//  but rewriting gives us flexiblity in in selection criteria as 
-					// part of the javascript check kIsHTML5FallForward
+					// part of the javascript check kIsHTML5FallForward )
 					var vid = document.getElementById( '<?php echo $this->playerIframeId ?>' );
 					document.getElementById( 'videoContainer' ).removeChild(vid); 
 					

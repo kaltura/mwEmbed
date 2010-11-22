@@ -150,7 +150,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 	getClipSources: function( clipIndex, callback ){
 		var _this = this;
-		mw.getKalturaEntryIdSources( this.getClipList()[ clipIndex ].id, function( sources ){
+		mw.getEntryIdSourcesFromApi( this.getClipList()[ clipIndex ].id, function( sources ){
 			// add the durationHint to the sources: 
 			for( var i in sources){
 				sources[i].durationHint = _this.getClipDuration( clipIndex );

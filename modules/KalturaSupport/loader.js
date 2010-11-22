@@ -27,6 +27,9 @@
 	mw.mergeConfig( 'EmbedPlayer.DataAttributes', {
 		'kuiconf' : null
 	});
+	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
+		'data-flavorid'
+	]);
 	mw.addResourcePaths( {
 		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
 		"mw.KAnalytics" : "mw.KAnalytics.js",

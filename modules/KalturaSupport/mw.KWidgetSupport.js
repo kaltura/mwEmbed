@@ -100,8 +100,7 @@ mw.KWidgetSupport.prototype = {
 				if( !waitForBumper && !waitForAds){
 					callback();
 				}
-			}
-			
+			}			
 			
 			// Check for the bumper plugin ( note we should probably have a separate uiConf js class )
 			var $uiConf = $j( uiConf.confFileFeatures );			
@@ -135,7 +134,7 @@ mw.KWidgetSupport.prototype = {
 				// Get the bumper entryid				
 				if( bumper.bumperEntryID ){
 					mw.log( "KWidget:: addUiConf: get sources for " + bumper.bumperEntryID);
-					_this.getDeviceEntryIdSources( bumper.bumperEntryID, function( sources ){						
+					_this.getEntryIdSourcesFromApi( bumper.bumperEntryID, function( sources ){						
 						// Add to the bumper per entry id:						
 						$j( embedPlayer ).bind('play', function(){							
 							if( bumper.playOnce && embedPlayer.bumperPlayCount >= 1){
@@ -198,13 +197,15 @@ mw.KWidgetSupport.prototype = {
 		var widgetId =  $j( embedPlayer ).attr( 'kwidgetid' );
 		this.kPartnerId = widgetId.replace(/_/g, '');	
 		
-		// Set the poster
-		embedPlayer.poster = mw.getConfig( 'Kaltura.CdnUrl' ) + '/p/' + this.kPartnerId + '/sp/' +
-		this.kPartnerId + '00/thumbnail/entry_id/' + kEntryId + '/width/' +
-			embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight();
-			 
-		this.getDeviceEntryIdSources( kEntryId, function( sources ){
-			mw.log( "kEntryId:: getDeviceEntryIdSources::" + embedPlayer.id + " found " + sources.length + ' for entryid: ' + kEntryId + ' ' + ' partner id: ' + _this.kPartnerId );
+		// Set the poster ( if not already set ) 
+		if( !embedPlayer.poster ){
+			embedPlayer.poster = mw.getConfig( 'Kaltura.CdnUrl' ) + '/p/' + this.kPartnerId + '/sp/' +
+				this.kPartnerId + '00/thumbnail/entry_id/' + kEntryId + '/width/' +
+				embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight();
+		}
+		
+		// local function to add sources and run callback
+		var addSourcesCallback = function( sources ){
 			for( var i=0;i < sources.length ; i++){
 				mw.log( 'kEntryId::addSource::' + embedPlayer.id + ' : ' +  sources[i].src + ' type: ' +  sources[i].type);
 				embedPlayer.mediaElement.tryAddSource(
@@ -217,6 +218,34 @@ mw.KWidgetSupport.prototype = {
 				);
 			}
 			callback();
+		}
+		
+		
+		// Check existing sources have kaltura specific data-flavorid attribute ) 
+		var sources = embedPlayer.mediaElement.getSources();
+		if( sources[0]['data-flavorid'] ){
+			// Not so clean ... will refactor once we add another source
+			var iPadSrc = iPhoneSrc = oggSrc = null;
+			for(var i=0; i< sources.length;i++){
+				switch( sources[i]['data-flavorid'] ){
+					case 'ipad' : iPadSrc = sources[i].src; break;
+					case 'iphone' : iPhoneSrc = sources[i].src; break;
+					case 'ogg' : oggSrc = sources[i].src; break;
+				}				
+			}
+			// Unset existing DOM source children ( so that html5 video hacks work better ) 
+			$j('#' + embedPlayer.pid).find('source').remove();
+			// Empty the embedPlayers sources ( we don't want iPad h.264 being used for iPhone devices ) 
+			embedPlayer.mediaElement.sources = [];
+			// Update the set of sources in the embedPlayer ( might cause issues with other plugins ) 
+			addSourcesCallback( _this.getDeviceSources( iPadSrc, iPhoneSrc, oggSrc ) );
+			return ;
+		}
+		
+		// Get device flavors ( if not already set )
+		this.getEntryIdSourcesFromApi( kEntryId, function( sources ){
+			mw.log( "kEntryId:: getEntryIdSourcesFromApi::" + embedPlayer.id + " found " + sources.length + ' for entryid: ' + kEntryId + ' ' + ' partner id: ' + _this.kPartnerId );
+			addSourcesCallback( sources );
 		});
 		
 	},
@@ -224,17 +253,10 @@ mw.KWidgetSupport.prototype = {
 	/**
 	 * Get client entry id sources: 
 	 */
-	getDeviceEntryIdSources: function( kEntryId, callback ){
+	getEntryIdSourcesFromApi: function( kEntryId, callback ){
 		var _this = this;
-		var sources = [];
+		alert( 'getEntryIdSourcesFromApi')
 		var flavorGrabber = new KalturaFlavorAssetService( this.kClient );
-		
-		var addSource = function ( src, type ){
-			sources.push( {
-				'src': src,
-				'type': type
-			} );
-		}
 		flavorGrabber.getByEntryId ( function( success, data ) {			
 			if( ! success || ! data.length ) {				
 				mw.log( "Error flavorGrabber getByEntryId:" + kEntryId + " no sources found ");				
@@ -273,47 +295,53 @@ mw.KWidgetSupport.prototype = {
 					oggSrc = src + '/a.ogg?novar=0';
 				}				
 			}
-						
-			// If on an iPad use iPad or iPhone src
-			if( mw.isIpad() ) {
-				mw.log( "KwidgetSupport:: Add iPad source");
-				if( iPadSrc ){ 
-					addSource( iPadSrc, 'video/h264' );
-					callback( sources );
-					return ;
-				} else if ( iPhoneSrc ) {
-					addSource( iPhoneSrc, 'video/h264' );
-					callback( sources );
-					return ;
-				}
-			}
-			
-			// If on iPhone or Android or iPod use iPhone src
-			if( ( mw.isIphone() || mw.isAndroid2() || mw.isIpod() ) && iPhoneSrc ){
-				mw.log( "KwidgetSupport:: Add iPhone source");
-				addSource(  iPhoneSrc, 'video/h264' );
-				callback( sources );
-				return ;
-			} else {
-				// iPhone or Android or iPod use h264 source for flash fallback:
-				mw.log( "KwidgetSupport:: Add from flash h264 fallback" );
-				if( iPadSrc ) {
-					addSource( iPadSrc, 'video/h264' );
-				} else if( iPhoneSrc ) {
-					addSource( iPhoneSrc, 'video/h264' );
-				}
-			}
-			
-			// Always add the oggSrc if we got to this point
-			if( oggSrc ) {
-				addSource( oggSrc, 'video/ogg' );
-			}
-			
-			// Done adding sources run callback
-			callback( sources );				
+			callback( _this.getDeviceSources( iPadSrc, iPhoneSrc, oggSrc ) );			
 		},
 		/*getByEntryId @arg kEntryId */
 		kEntryId );
+	},
+	
+	getDeviceSources: function(  iPadSrc, iPhoneSrc, oggSrc ){
+		var sources = [];
+		var addSource = function ( src, type ){
+			sources.push( {
+				'src': src,
+				'type': type
+			} );
+		}
+		
+		// If on an iPad use iPad or iPhone src
+		if( mw.isIpad() ) {
+			mw.log( "KwidgetSupport:: Add iPad source");
+			if( iPadSrc ){ 
+				addSource( iPadSrc, 'video/h264' );
+				return sources;
+			} else if ( iPhoneSrc ) {
+				addSource( iPhoneSrc, 'video/h264' );
+				return sources;
+			}
+		}
+		
+		// If on iPhone or Android or iPod use iPhone src
+		if( ( mw.isIphone() || mw.isAndroid2() || mw.isIpod() ) && iPhoneSrc ){
+			mw.log( "KwidgetSupport:: Add iPhone source");
+			addSource(  iPhoneSrc, 'video/h264' );
+			return sources;
+		} else {
+			// iPhone or Android or iPod use h264 source for flash fallback:
+			mw.log( "KwidgetSupport:: Add from flash h264 fallback" );
+			if( iPadSrc ) {
+				addSource( iPadSrc, 'video/h264' );
+			} else if( iPhoneSrc ) {
+				addSource( iPhoneSrc, 'video/h264' );
+			}
+		}
+		
+		// Always add the oggSrc if we got to this point
+		if( oggSrc ) {
+			addSource( oggSrc, 'video/ogg' );
+		}
+		return sources;
 	},
 	
 	/**
@@ -420,7 +448,7 @@ mw.getKalturaClientSession = function( widgetid, callback ){
 		callback( kWidgetSupport.kClient )
 	});
 }
-mw.getKalturaEntryIdSources = function( entryId, callback ){
-	kWidgetSupport.getDeviceEntryIdSources( entryId, callback);
+mw.getEntryIdSourcesFromApi = function( entryId, callback ){
+	kWidgetSupport.getEntryIdSourcesFromApi( entryId, callback);
 }
 

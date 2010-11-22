@@ -25,9 +25,6 @@ mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [
 	// media url
 	'src',
 
-	// media codecs attribute ( if provided )
-	'codecs',
-
 	// Title string for the source asset
 	'title',
 
@@ -51,17 +48,8 @@ mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [
 	// If the source is the default source
 	'default',
 
-	// Language key used for subtitle tracks
-	'srclang',
-
 	// titleKey ( used for api lookups )
-	'titleKey',
-
-	// The provider type ( for what type of api query to make )
-	'provider_type',
-
-	// The api url for the provider
-	'provider_url'
+	'titleKey'
 ] );
 
 /**
@@ -583,12 +571,6 @@ mediaSource.prototype = {
 
 	// End time in npt format
 	end_npt: null,
-
-	// A provider "id" to identify api request type
-	provider_type : null,
-
-	// The api url for the provider
-	provider_url : null,
 
 	/**
 	 * MediaSource constructor:

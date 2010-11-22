@@ -35,7 +35,7 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 				
 				// Make sure we have a client session established: 
 				mw.getKalturaClientSession( kalturaWidgetId, function( kClient ) {
-					mw.getKalturaEntryIdSources( kalturaEntryId , function( sources ){						
+					mw.getEntryIdSourcesFromApi( kalturaEntryId , function( sources ){						
 						for( var i in sources ){
 							sources[i].durationHint = clipDuration;
 						}
