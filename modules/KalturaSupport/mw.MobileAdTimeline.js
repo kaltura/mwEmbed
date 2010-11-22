@@ -116,7 +116,7 @@ mw.MobileAdTimeline.prototype = {
 				var playedStart = false;
 				var adDuration = overlayTiming.nads;
 				// Monitor will only be triggered while we are /NOT/ playback back media
-				$j( _this.embedPlayer ).bind('monitorEvent', function() {					
+				$j( _this.embedPlayer ).bind( 'monitorEvent', function() {					
 					var time = _this.embedPlayer.currentTime;
 					if( !lastPlayEndTime ){
 						lastPlayEndTime = time;
@@ -166,8 +166,17 @@ mw.MobileAdTimeline.prototype = {
 	display : function( timeTargetType, doneCallback, displayDuration ) {
 		var _this = this;
 		mw.log("MobileAdTimeline::display:" + timeTargetType + ' val:'
-				+ this.timelineTargets[timeTargetType]);
-
+				+ this.timelineTargets[timeTargetType]);			
+		
+		var localDoneFunctionQueue = [];
+		// Local scope done callback 
+		var localDoneCallback = function(){
+			while(localDoneFunctionQueue.length){
+				localDoneFunctionQueue.shift();
+			}
+			doneCallback();
+		}
+		
 		// If the adConf is empty go directly to the callback:
 		if ( ! this.timelineTargets[ timeTargetType ] ) {
 			doneCallback();
@@ -179,17 +188,18 @@ mw.MobileAdTimeline.prototype = {
 		// Check for videoFile inserts:
 		if ( adConf.videoFile && timeTargetType != 'overlay') {
 			if ( adConf.lockUI ) {
-				// this actually does not work so well in iOS world:
+				//@@ todo lock controls
 				_this.getNativePlayerElement().controls = false;
-			}
-			;
+			};
 			// Play the source then run the callback
-			_this.switchPlaySrc(adConf.videoFile, function(videoElement) { 
-				// Pass off event handling to adConf bind:
+			_this.switchPlaySrc( adConf.videoFile, function(videoElement) { 
+					// Pass off event handling to adConf bind:
 					if (typeof adConf.bindPlayerEvents == 'function') {
 						adConf.bindPlayerEvents(videoElement)
 					}
-				}, doneCallback);
+				}, 
+				localDoneCallback
+			);
 		}
 
 		// Check for companion ads:
@@ -206,6 +216,11 @@ mw.MobileAdTimeline.prototype = {
 			
 			// Display the companion:
 			$j( '#' + companionTarget.elementid ).html( companionConf.$html );
+			
+			// Hide the companion once we are done ( companions don't handle timing  )
+			localDoneFunctionQueue.push( function(){
+				$j( '#' + companionTarget.elementid ).html( originalCompanionHtml );
+			})
 		}
 		
 		// Check for nonLinear overlays
@@ -237,12 +252,10 @@ mw.MobileAdTimeline.prototype = {
 			$j( _this.embedPlayer ).bind( 'showControlBar', function( layout ){
 				mw.log("BINDE EVENT showControlBar ")
 				$j('#' +overlayId ).animate( layout, 'slow');
-				return false;
 			});
 			$j( _this.embedPlayer ).bind( 'hideControlBar', function( layout ){
 				mw.log("BINDE EVENT hideControlBar ")
 				$j('#' +overlayId ).animate( layout, 'slow');
-				return false;
 			});
 			
 			// Monitor time for display duration:
@@ -253,7 +266,7 @@ mw.MobileAdTimeline.prototype = {
 					|| ( _this.getNativePlayerElement().currentTime - startTime) > displayDuration )
 				{
 					$j('#' +overlayId ).fadeOut('fast');
-					doneCallback();
+					localDoneCallback();
 				} else {
 					setTimeout( monitorForOverlayDuration, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 				}
