@@ -104,6 +104,8 @@ class kalturaIframe {
 //		$session = $client->session->start($adminsecret, $userId, 2,  substr( $this->playerAttributes['wid'], 1), 86400, 'edit:*');
 		$client->setKS($session->ks);
 		
+		// @@todo lookup duration for "durationHint"
+		
 		// @@NOTE this should probably be wrapped in a service class 
 		$kparams = array();
 		$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
@@ -111,8 +113,7 @@ class kalturaIframe {
 		$resultObject = $client->doQueue();
 		$client->throwExceptionIfError($resultObject);
 		
-		// add any web sources
-
+		// add any web sources		
 		$sources = array();
 		foreach($resultObject as $KalturaFlavorAsset ){	
 
@@ -188,7 +189,7 @@ class kalturaIframe {
 		
 		$o = '<video class="persistentNativePlayer" ' .
 			'poster="' . htmlspecialchars( $posterUrl ) . '" ' . 
-			'id="' . htmlspecialchars( $this->playerIframeId ) . '" ' . 
+			'id="' . htmlspecialchars( $this->playerIframeId ) . '" ' . 			
 			'style="width:100%;height:100%" ';
 		
 		// Add any additional attributes: 

@@ -122,7 +122,7 @@ mw.MobileAdTimeline.prototype = {
 					_this.display( 'postroll' , function(){		
 						var vid = _this.getNativePlayerElement();
 						if ( _this.originalSrc != vid.src) {
-							displayedPostroll = true;	
+							displayedPostroll = true;
 							// restore original source: 
 							_this.switchPlaySrc(_this.originalSrc, 
 								function() {
@@ -130,7 +130,8 @@ mw.MobileAdTimeline.prototype = {
 									// bindings
 									mw.log('done with postroll ad, trigger normal ended');
 									_this.embedPlayer.restoreEventPropagation();
-									_this.embedPlayer.onClipDone();
+									// just run stop for now. 
+									_this.embedPlayer.stop();									
 								}
 							);
 						};				
