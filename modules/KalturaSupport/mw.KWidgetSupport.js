@@ -223,7 +223,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check existing sources have kaltura specific data-flavorid attribute ) 
 		var sources = embedPlayer.mediaElement.getSources();
-		if( sources[0]['data-flavorid'] ){
+		if( sources[0] && sources[0]['data-flavorid'] ){
 			// Not so clean ... will refactor once we add another source
 			var iPadSrc = iPhoneSrc = oggSrc = null;
 			for(var i=0; i< sources.length;i++){
@@ -255,7 +255,6 @@ mw.KWidgetSupport.prototype = {
 	 */
 	getEntryIdSourcesFromApi: function( kEntryId, callback ){
 		var _this = this;
-		alert( 'getEntryIdSourcesFromApi')
 		var flavorGrabber = new KalturaFlavorAssetService( this.kClient );
 		flavorGrabber.getByEntryId ( function( success, data ) {			
 			if( ! success || ! data.length ) {				

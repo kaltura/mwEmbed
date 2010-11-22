@@ -1194,6 +1194,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if( mw.supportsHTML5() ){
 			return true;
 		}
+		
 		return false;
 	}
 	

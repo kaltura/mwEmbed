@@ -448,7 +448,7 @@ EmbedPlayerManager.prototype = {
 
 		// Check if we are using native controls ( should keep the video embed
 		// around )
-		if( playerInterface.useNativePlayerControls() ) {
+		if( playerInterface.useNativePlayerControls() || playerInterface.isPersistentNativePlayer() ) {
 			$j( targetElement )
 			.attr( 'id', playerInterface.pid )
 			.addClass( 'nativeEmbedPlayerPid' )
@@ -2327,7 +2327,7 @@ mw.EmbedPlayer.prototype = {
 	 * @returns boolean true if the mwEmbed player interface should be used
 	 *     false if the mwEmbed player interface should not be used
 	 */
-	useNativePlayerControls: function() {		
+	useNativePlayerControls: function() {
 		if( this.usenativecontrols === true ){
 			return true;
 		}				
@@ -2340,8 +2340,8 @@ mw.EmbedPlayer.prototype = {
 		if( mw.isAndroid2() || mw.isIpod()  || mw.isIphone() ){
 			return true;
 		} 
-		// ( iPad can use html controls if its a persistantPlayer in the dom before loading )
-		// else it needs to use native controls:
+		// iPad can use html controls if its a persistantPlayer in the dom before loading )
+		// else it needs to use native controls: 
 		if( mw.isIpad() ){
 			if( this.isPersistentNativePlayer() ){
 				return false;

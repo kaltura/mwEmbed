@@ -89,7 +89,7 @@ mw.PlayerControlBuilder.prototype = {
 	},
 
 	/**
-	* Add the controls html to palyer interface
+	* Add the controls html to player interface
 	*/
 	addControls: function() {
 		// Set up local pointer to the embedPlayer
@@ -109,7 +109,11 @@ mw.PlayerControlBuilder.prototype = {
 		var $controlBar = $j('<div />')
 			.addClass( 'ui-state-default ui-widget-header ui-helper-clearfix control-bar' )
 			.css( 'height', this.height )
-			.hide();
+
+		// Controls are hidden by default if overlaying controls: 
+		if( _this.checkOverlayControls() ){
+			$controlBar.hide();
+		}
 
 		$controlBar.css( {
 			'position': 'absolute',
@@ -117,12 +121,12 @@ mw.PlayerControlBuilder.prototype = {
 			'left' : '0px',
 			'right' : '0px'
 		} );
-		
+
 		// Check for overlay controls:
-		if( ! _this.checkOverlayControls() ) {
+		if( ! _this.checkOverlayControls() && ! embedPlayer.controls === false) {
 			// Add some space to interface for the control bar ( if not overlaying controls )
-			embedPlayer.$interface.css( {
-				'height' : parseInt( embedPlayer.height ) + parseInt( this.height ) +2
+			$j( embedPlayer ).css( {
+				'height' : parseInt( embedPlayer.height ) - parseInt( this.height )
 			} );
 		}
 
@@ -666,18 +670,19 @@ mw.PlayerControlBuilder.prototype = {
 		}
 
 		// If the config is false
-		if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) == false){
+		if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) === false){
 			return false;
 		}
 
 		// Don't hide controls when content "height" is 0px ( audio tags )
 		if( this.embedPlayer.getPlayerHeight() === 0 &&
-			$j(this.embedPlayer).css('height').indexOf('%') == -1 ){
+			$j(this.embedPlayer).css('height').indexOf('%') === -1 ){
 			return false;
 		}
 		if( this.embedPlayer.controls === false ){
 			return false;
 		}
+		
 		// Past all tests OverlayControls is true:
 		return true;
 	},

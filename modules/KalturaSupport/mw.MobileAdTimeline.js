@@ -432,17 +432,17 @@ mw.MobileAdTimeline.prototype = {
 								if (typeof switchCallback == 'function') {
 									switchCallback(vid);
 								}
-							}, 50);
-						}, 50);
+							}, 100);
+						}, 100);
 				};
-				//if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
+				if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
 					// Null the src and wait 50ms ( helps unload video without crashing
 					// google chrome 7.x )
 					vid.src = '';
-					setTimeout(updateSrcAndPlay, 50);
-				//} else {
-				//	updateSrcAndPlay();
-				//}
+					setTimeout(updateSrcAndPlay, 100);
+				} else {
+					updateSrcAndPlay();
+				}
 			} catch (e) {
 				alert("Error: Error in swiching source playback");
 			}

@@ -143,7 +143,7 @@ mw.Playlist.prototype = {
 							.click( function(){
 								 _this.sourceHandler.setPlaylistIndex( inx );
 								 $j( _this.target + ' .media-rss-video-list').loadingSpinner();
-								 _this.loadPlaylist( function(){
+								 _this.sourceHandler.loadPlaylist( function(){
 									 $j( _this.target + ' .media-rss-video-list').empty();
 									_this.addMediaList();
 								 });
@@ -350,15 +350,16 @@ mw.Playlist.prototype = {
 		this.targetWidth = $j( this.target ).width();
 		this.targetHeight = $j( this.target ).height();
 
-		/* vertical layout */
+		
 		if( _this.layout == 'vertical' ){
+			/* vertical layout */
 			var pa = this.playerAspect.split(':');
 			this.targetPlayerSize = {
 				'width' : this.targetWidth + 'px',
 				'height' : parseInt( ( pa[1] / pa[0] ) * this.targetWidth )
 			};
 		} else {
-		/* horizontal layout */
+			/* horizontal layout */
 			var pa = this.playerAspect.split(':');
 			this.targetPlayerSize = {
 				'height' : ( this.targetHeight - this.titleHeight ) + 'px',
