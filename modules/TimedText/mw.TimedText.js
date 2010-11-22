@@ -132,18 +132,21 @@ mw.includeAllModuleMessages();
 			$j( embedPlayer ).bind( 'play', function() {
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
-			} );
-			
-			$j( embedPlayer ).bind( 'showControlBar', function( layout ){
+			} );						
+
+			// Setup display binding
+			$j( embedPlayer ).bind( 'onShowControlBar', function(event, layout ){
 				// Move the text track if present
 				embedPlayer.$interface.find( '.track' )
 				.animate( layout, 'slow' );
 			});
-			$j( embedPlayer ).bind( 'hideControlBar', function( layout ){
+			
+			$j( embedPlayer ).bind( 'onHideControlBar', function(event, layout ){
 				// Move the text track down if present
 				embedPlayer.$interface.find( '.track' )
 				.animate( layout, 'slow' );
 			});
+			
 		},
 
 		/**
@@ -154,7 +157,7 @@ mw.includeAllModuleMessages();
 		*/
 		setupTextSources: function( callback ) {
 			mw.log( 'mw.TimedText::setupTextSources');
-			var _this = this;
+			var _this = this;			
 			if( this.textSourceSetupFlag ) {
 				if( callback ) {
 					callback();

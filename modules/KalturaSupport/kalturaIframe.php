@@ -93,8 +93,20 @@ class kalturaIframe {
 		// Partner id is widget_id but strip the first character 
 		$kconf = new KalturaConfiguration(  substr( $this->playerAttributes['wid'], 1 ) );
 		$kclient = new KalturaClient( $kconf );
-		$kwidget = $kclient->session->startWidgetSession( $this->playerAttributes['wid'] );
+		$kSessionId = $kclient->session->startWidgetSession( $this->playerAttributes['wid'] );
 		$entry = $kwidget->get( $this->playerAttributes['entryid'] );
+		
+		$userId = "username";
+$partnerId = "7463";
+$secret = "dc8a616702359ec844b18143667d130a";
+$adminsecret = "509d0007e53ecc4b05401ec12b15ed2f";
+$entryid = ($_GET['entryId'] != '') ? $_GET['entryId'] : '0_lmyu7pi9';
+$config = new KalturaConfiguration($partnerId);
+$client = new KalturaClient($config);
+$sessionId = $client->session->start($adminsecret, $userId, 2, $partnerId, 86400, 'edit:*');
+$client->setKS($sessionId);
+$flavors = $client->flavorAsset->getFlavorAssetsWithParams($entryid);
+
 		var_dump( $entry );
 		die();
 	}

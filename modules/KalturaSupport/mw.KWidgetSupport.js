@@ -67,29 +67,18 @@ mw.KWidgetSupport.prototype = {
 			callback();
 			return ;
 		}
-		var gotSources = false;
-		var gotUiConf = false;
 		
-		var instanceCallback = function(){
-			mw.log( 'KWidget::checkPlayerSources: gotSources:' +gotSources + ' gotUiConf:' + gotUiConf );
-			if( gotSources && gotUiConf ){
-				callback();
-			}
-		}
 		// Setup Kaltura session:
 		_this.getKalturaSession ( $j( embedPlayer ).attr( 'kwidgetid' ), function( ) {
 			
 			// Get the main entry id sources
 			_this.addEntryIdSource( embedPlayer, function(){
-				gotSources = true;
-				instanceCallback();			
+				// Load uiConf config request 
+				_this.addUiConf( embedPlayer, function(){
+					callback();
+				} );	
 			});			
-			
-			// Do a parallel uiConf config request 
-			_this.addUiConf( embedPlayer, function(){
-				gotUiConf = true;
-				instanceCallback();
-			} );					
+											
 		} );
 	},
 	/**
@@ -105,18 +94,32 @@ mw.KWidgetSupport.prototype = {
 				return; 
 			}
 			
+			var waitForBumper = false;
+			var waitForAds = false;
+			var instanceCallback = function(){
+				if( !waitForBumper && !waitForAds){
+					callback();
+				}
+			}
+			
+			
 			// Check for the bumper plugin ( note we should probably have a separate uiConf js class )
 			var $uiConf = $j( uiConf.confFileFeatures );			
 			
 			// Check if the ad plugin is enabled:
 			if( $uiConf.find('advertising').length && $uiConf.find('advertising').attr('enabled') == 'true' ){
-				mw.addKalturaAds( embedPlayer, $uiConf.find('advertising') );
+				waitForAds = true;
+				mw.addKalturaAds( embedPlayer, $uiConf.find('advertising'), function(){
+					waitForAds = false;
+					instanceCallback();
+				});
 			}
 			
 			// Check if the bumper plugin is enabled:
 			var $bumbPlug = $uiConf.find("uiVars var[key='bumper.plugin']");
 			
 			if(  $bumbPlug.attr('value') == 'true' ){
+				waitForBumper = true;
 				// Build the bumper object
 				var bumper = {};			
 				$uiConf.find("uiVars var").each(function(inx, node ){
@@ -144,13 +147,13 @@ mw.KWidgetSupport.prototype = {
 							embedPlayer.insertAndPlaySource( sources[0].src, bumper );									
 						})
 						// Bind the bumper into location play
-						callback();
+						waitForBumper = false;
+						instanceCallback();
 					});
 				}
-			} else {
-				mw.log('KWidget:: addUiConf: No bumper plugin ');
-				callback();
 			}
+			// call the instance callback ( in case we are not waiting for ads or a bumper )
+			instanceCallback();
 		})	
 	},
 	

@@ -3208,13 +3208,16 @@ mw.EmbedPlayer.prototype = {
 	 */
 
 	/**
-	 * Get the current selected media source
+	 * Get the current selected media source or first source
 	 *
 	 * @return src url
 	 */
 	getSrc: function() {
 		if( this.mediaElement.selectedSource ){
 			return this.mediaElement.selectedSource.getSrc( this.serverSeekTime );
+		} else if( this.mediaElement ){
+			// get the first source: 
+			return this.mediaElement.getSources()[0].getSrc();
 		}
 		return false;
 	},

@@ -4,9 +4,8 @@
 */
 
 //Global mw.addKAd manager
-var mwKAdManager = {};
-mw.addKalturaAds = function( embedPlayer, $adConfig ) {
-	mwKAdManager[ embedPlayer.id ] = new mw.KAds( embedPlayer, $adConfig ) ;
+mw.addKalturaAds = function( embedPlayer, $adConfig, callback ) {
+	embedPlayer.ads = new mw.KAds( embedPlayer, $adConfig, callback );
 }
 
 mw.sendBeaconUrl = function( beaconUrl ){
@@ -19,20 +18,21 @@ mw.sendBeaconUrl = function( beaconUrl ){
 	);
 }
 
-mw.KAds = function( embedPlayer,   $adConfig) {
+mw.KAds = function( embedPlayer, $adConfig, callback) {
 	// Create a Player Manager
-	return this.init( embedPlayer, $adConfig );
+	return this.init( embedPlayer, $adConfig ,callback );
 };
 
 mw.KAds.prototype = {
 	
-	init: function( embedPlayer, $adConfig ){
+	init: function( embedPlayer, $adConfig, callback ){
 		var _this = this; 
 		this.embedPlayer = embedPlayer;
 		this.$adConfig = $adConfig;		
 		// Load the Ads
 		_this.loadAds( function(){
 			mw.log("All ads have been loaded");
+			callback();
 		})			
 	},
 	
