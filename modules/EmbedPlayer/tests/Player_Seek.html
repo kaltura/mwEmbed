@@ -4,7 +4,7 @@
   </head>
   <body>
     <h2>mwEmbed / archive.org server side seek</h2>
-	Start Playing at <input id="startTime" size="5" value ="20"></input> seconds. <input value="go" type="button" id="doPageSeek"></input></br> 	
+	Start Playing at <input id="startTime" size="5" value ="50"></input> seconds. <input value="go" type="button" id="doPageSeek"></input></br> 	
     <video id="vid1" poster="http://www.archive.org/download/night_of_the_living_dead/format=Thumbnail&x.jpg"
            style="width:400px;height:300px" durationHint="5717.21">
       <source src="http://www.archive.org/download/night_of_the_living_dead/night_of_the_living_dead_512kb.mp4"/>
@@ -17,6 +17,11 @@
         	if( urlParts.anchor ){
 				// run the start offset:
 				var startTime = urlParts.anchor.split('=')[1];
+
+				//update the input box:
+				$j('#startTime').val( startTime );
+
+				// update current time then play: 
 				$j('#vid1').get(0).currentTime = startTime;
 				$j('#vid1').get(0).play();
         	}
