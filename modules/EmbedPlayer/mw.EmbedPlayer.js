@@ -2481,7 +2481,7 @@ mw.EmbedPlayer.prototype = {
 		} else {
 			// old style embed:
 			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
-			var params = {};
+			var params = {'src[]':[]};
 
 			if ( this.roe ) {
 				params.roe = this.roe;
@@ -2499,7 +2499,7 @@ mw.EmbedPlayer.prototype = {
 				for( var i=0; i < this.mediaElement.sources.length; i++ ){
 					var source = this.mediaElement.sources[i];
 					if( source.src ) {
-						params['src[]'] = mw.absoluteUrl( source.src );
+                                          params['src[]'].push(mw.absoluteUrl( source.src ));
 					}
 				}
 				// Output the poster attr
