@@ -1905,7 +1905,7 @@ mw.EmbedPlayer.prototype = {
 		setTimeout( function() {
 			_this.seeking = false;
 			_this.play()
-			_this.monitor();
+			_this.monitor();			
 		}, 100 );
 
 		// Run the onSeeking interface update
@@ -2678,8 +2678,8 @@ mw.EmbedPlayer.prototype = {
 		.click( function( ) {
 		 	_this.pause();
 		 } )
-		.attr( 'title', gM( 'mwe-embedplayer-pause_clip' ) );
-
+		.attr( 'title', gM( 'mwe-embedplayer-pause_clip' ) );		
+		
 		// Start the monitor if not already started
 		this.monitor();
 
@@ -2954,6 +2954,7 @@ mw.EmbedPlayer.prototype = {
 				var seekPercent = _this.currentTime / _this.getDuration();
 				mw.log("monitor::" + _this.previousTime + ' != ' +
 						 _this.currentTime + " javascript based currentTime update to " + seekPercent);
+				_this.previousTime = _this.currentTime;
 				this.doSeek( seekPercent );
 			}
 		}

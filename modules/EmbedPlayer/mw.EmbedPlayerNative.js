@@ -211,7 +211,7 @@ mw.EmbedPlayerNative = {
 		var vid = _this.getPlayerElement();
 		
 		// Update duration
-		if( vid.duration ){
+		if( vid && vid.duration ){
 			this.duration = vid.duration; 
 		}
 		// Update the bufferedPercent
