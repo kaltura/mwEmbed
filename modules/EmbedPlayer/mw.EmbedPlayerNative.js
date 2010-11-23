@@ -561,7 +561,7 @@ mw.EmbedPlayerNative = {
 			this.onLoadedCallback();
 		}
 
-		// Tigger "media loaded"
+		// Trigger "media loaded"
 		if( ! this.mediaLoadedFlag ){
 			$j( this ).trigger( 'mediaLoaded' );
 			this.mediaLoadedFlag = true;
