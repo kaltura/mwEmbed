@@ -711,7 +711,7 @@ mediaSource.prototype = {
 	 *      seeks)
 	 * @return {String} the URI of the source.
 	 */
-	getSrc : function( serverSeekTime ) {
+	getSrc: function( serverSeekTime ) {
 		if ( !serverSeekTime || !this.URLTimeEncoding ) {
 			return this.src;
 		}
@@ -1891,7 +1891,13 @@ mw.EmbedPlayer.prototype = {
 
 		// See if we should do a server side seek ( player independent )
 		if ( this.supportsURLTimeEncoding() ) {
-			mw.log( 'EmbedPlayer::doSeek:: updated serverSeekTime: ' + mw.seconds2npt ( this.serverSeekTime ) );
+			mw.log( 'EmbedPlayer::doSeek:: updated serverSeekTime: ' + mw.seconds2npt ( this.serverSeekTime ) +
+					' currentTime: ' + _this.currentTime );
+			// make sure we need to seek: 
+			if( _this.currentTime == _this.serverSeekTime ){
+				return ;
+			}
+			
 			this.stop();
 			this.didSeekJump = true;
 			// Make sure this.serverSeekTime is up-to-date:
@@ -2952,7 +2958,7 @@ mw.EmbedPlayer.prototype = {
 			// If the time has been updated and is in range issue a seek
 			if( _this.getDuration() && _this.currentTime <= _this.getDuration() ){
 				var seekPercent = _this.currentTime / _this.getDuration();
-				mw.log("monitor::" + _this.previousTime + ' != ' +
+				mw.log("checkForCurrentTimeSeek::" + _this.previousTime + ' != ' +
 						 _this.currentTime + " javascript based currentTime update to " + seekPercent);
 				_this.previousTime = _this.currentTime;
 				this.doSeek( seekPercent );
@@ -2966,17 +2972,18 @@ mw.EmbedPlayer.prototype = {
 	 */
 	monitor: function() {
 		var _this = this;
-
+		
 		// Check for current time update outside of embed player
 		this.checkForCurrentTimeSeek();
-
+		
+		
 		// Update currentTime via embedPlayer
-		_this.currentTime = _this.getPlayerElementTime();
+		_this.currentTime = _this.getPlayerElementTime();		
 
 		// Update any offsets from server seek
-		if( _this.serverSeekTime && _this.supportsURLTimeEncoding ){
-			_this.currentTime = _this.serverSeekTime + _this.getPlayerElementTime()
-		}
+		if( _this.serverSeekTime && _this.supportsURLTimeEncoding() ){
+			_this.currentTime = parseInt( _this.serverSeekTime ) + parseInt( _this.getPlayerElementTime() );
+		}	
 
 		// Update the previousTime ( so we can know if the user-javascript
 		// changed currentTime )
@@ -3007,8 +3014,9 @@ mw.EmbedPlayer.prototype = {
 			_this.muted = _this.getPlayerElementMuted();
 		}
 
-		// mw.log( 'Monitor:: ' + this.currentTime + ' duration: ' + ( parseInt(
+		//mw.log( 'Monitor:: ' + this.currentTime + ' duration: ' + ( parseInt(
 		// this.getDuration() ) + 1 ) + ' is seeking: ' + this.seeking );
+		
 		if ( this.currentTime >= 0 && this.duration ) {
 			if ( !this.userSlide && !this.seeking ) {
 				if ( parseInt( this.startOffset ) != 0 ) {
@@ -3209,11 +3217,14 @@ mw.EmbedPlayer.prototype = {
 	 * @return src url
 	 */
 	getSrc: function() {
+		if( this.currentTime && !this.serverSeekTime){
+			this.serverSeekTime = this.currentTime;
+		}
 		if( this.mediaElement.selectedSource ){
 			return this.mediaElement.selectedSource.getSrc( this.serverSeekTime );
 		} else if( this.mediaElement ){
 			// get the first source: 
-			return this.mediaElement.getSources()[0].getSrc();
+			return this.mediaElement.getSources()[0].getSrc( this.serverSeekTime );
 		}
 		return false;
 	},

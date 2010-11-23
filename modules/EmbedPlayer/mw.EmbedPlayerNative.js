@@ -86,8 +86,8 @@ mw.EmbedPlayerNative = {
 		// Reset some play state flags:
 		_this.bufferStartFlag = false;
 		_this.bufferEndFlag = false;
-
-		mw.log( "native play url:" + this.getSrc() + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
+		
+		mw.log( "native play url:" + this.getSrc( this.currentTime  ) + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
 
 		// Check if using native controls and already the "pid" is already in the DOM
 		if( ( 	this.useNativePlayerControls()
@@ -98,7 +98,7 @@ mw.EmbedPlayerNative = {
 			&& typeof $j( '#' + this.pid ).get(0).play != 'undefined' ) {
 			
 			// Update the player source: 
-			$j( '#' + this.pid ).attr('src', this.getSrc() );
+			$j( '#' + this.pid ).attr('src', this.getSrc( this.currentTime  ) );
 			$j( '#' + this.pid ).get(0).load();
 			
 			_this.postEmbedJS();
@@ -125,7 +125,7 @@ mw.EmbedPlayerNative = {
 		}
 		// Update required attributes
 		if( !playerAttribtues[ 'id'] ) playerAttribtues['id'] = this.pid;
-		if( !playerAttribtues['src'] ) playerAttribtues['src'] = this.getSrc();
+		if( !playerAttribtues['src'] ) playerAttribtues['src'] = this.getSrc( this.currentTime);
 
 		// If autoplay pass along to attribute ( needed for iPad / iPod no js autoplay support
 		if( this.autoplay ) {
