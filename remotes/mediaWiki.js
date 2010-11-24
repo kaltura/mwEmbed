@@ -4,7 +4,7 @@
  */
 var urlparts = getRemoteEmbedPath();
 var mwEmbedHostPath = urlparts[0];
-var mwRemoteVersion = 'r177';
+var mwRemoteVersion = 'r180';
 var mwUseScriptLoader = true;
 
 // Log the mwRemote version makes it easy to debug cache issues
@@ -39,8 +39,8 @@ if( mwReqParam['debug'] ) {
 	mwUseScriptLoader = false;
 }
 
-mwReqParam['debug'] = true;
-mwUseScriptLoader = true;
+//mwReqParam['debug'] = true;
+//mwUseScriptLoader = true;
 //mwRemoteVersion = Math.random();
 
 // Setup up some globals to wrap mwEmbed mw.ready and mw.setConfig functions
@@ -92,7 +92,7 @@ mw.setConfig( 'SmilPlayer.AssetDomainWhiteList', ['upload.wikimedia.org'] );
 // NOTE this is REQUIRED for apiProxy to work across projects where the user has not universally enabled the gadget
 mw.setConfig( 'Mw.AppendWithJS', 'withJS=MediaWiki:MwEmbed.js');
 
-// Allow all wikimedia regEx domains matches to support api-proxy requests
+// Allow all wikimedia RegEx domains matches to support api-proxy requests
 // NOTE remember to put $ at the end of the domain or it would match en.wikipedia.org.evil.com
 mw.setConfig( 'ApiProxy.DomainWhiteList',
 	[ /wikimedia\.org$/ , /wikipedia\.org$/ , /wiktionary.org$/ , /wikinews.org$/ , /wikibooks.org$/ , /wikisource.org$/ , /wikiversity.org$/ , /wikiquote.org$/ ]
@@ -280,9 +280,11 @@ function doPageSpecificRewrite() {
 	
 	// Check for special "embedplayer" yes and set relevent config: 	
 	if( mwReqParam['embedplayer'] == 'yes' ){	
-		mwAddCommonStyleSheet();		
+		mwAddCommonStyleSheet();
+		
 		// Only rewrite the main embed player
-		var playerDiv = document.getElementById( 'file' ).childNodes[0].cloneNode( true );		
+		var playerDiv = document.getElementById( 'file' ).childNodes[0].cloneNode( true );	
+		document.body.style.overflow = 'hidden';
 		document.body.innerHTML = '<div id="loadingPlayer" style="height:100%;width:100%"><div class="loadingSpinner" style="position:absolute;left:50%;top:50%"></div></div>';		
 		document.body.appendChild( playerDiv );		
 	}
@@ -523,7 +525,8 @@ function rewrite_for_OggHandler( vidIdList ) {
 					.css( {
 						'width' : $pimg.attr('width' ),
 						'height' :$pimg.attr( 'height' ),
-						'position' : 'relative'
+						'position' : 'relative',
+						'background-color' : '#FFF'
 					})
 					.addClass( 'k-player' )
 					.append(

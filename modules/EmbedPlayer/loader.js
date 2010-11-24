@@ -31,7 +31,7 @@
 		// The attribution button
 		'EmbedPlayer.AttributionButton' :{
 			'title' : 'Kaltura html5 video library',
-		 	'href' :  'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
+		 	'href' : 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 			// Style icon to be applied
 			'class' : 'kaltura-icon',
 			// An icon image url ( should be a 12x12 image or data url )
@@ -344,7 +344,7 @@
 		if( !!document.createElement('video').canPlayType && !$j.browser.safari ) {
 			dependencyRequest[0].push( 'mw.EmbedPlayerNative' )
 		}
-		
+
 		// Check if the iFrame player server is enabled:
 		if (mw.getConfig('EmbedPlayer.EnableIFramePlayerServer')) {
 			dependencyRequest.push('mw.EmbedPlayerNative');

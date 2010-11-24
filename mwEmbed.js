@@ -482,7 +482,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}
 			return cleanRequest;
 		},
-		
+
 		/**
 		 * Load a set of scripts. Will issue many load requests or package the
 		 * request for the resource loader

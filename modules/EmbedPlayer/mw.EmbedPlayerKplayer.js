@@ -71,7 +71,7 @@ mw.EmbedPlayerKplayer = {
 
 		mw.log(" about to add the pid container");
 		$j(this).html($j('<div />').attr('id', this.pid + '_container'));
-		// call swm dom loaded function:
+		// Call swm dom loaded function:
 		swfobject.callDomLoadFunctions();
 		// Do the flash embedding with embedSWF
 		swfobject.embedSWF(playerPath + "/kdp3.swf", this.pid + '_container',
@@ -120,9 +120,9 @@ mw.EmbedPlayerKplayer = {
 		}
 
 		if (this.playerElement && this.playerElement.addJsListener) {
-			$j.each(bindEventMap, function(bindName, localMethod) {
+			$j.each( bindEventMap, function( bindName, localMethod ) {
 				_this.bindPlayerFunction(bindName, localMethod);
-			});
+			} );
 			// Start the monitor
 			this.monitor();
 		} else {

@@ -385,7 +385,7 @@ mw.PlayerSkinKskin = {
 		var $target = embedPlayer.$interface.find( '.menu-credits' );
 
 		var apiUrl = mw.getApiProviderURL( embedPlayer.apiProvider );
-		var fileTitle = 'File:' + embedPlayer.apiTitleKey.replace(/File:|Image:/, '');
+		var fileTitle = 'File:' + unescape( embedPlayer.apiTitleKey ).replace(/File:|Image:/, '');
 
 		// Get the image info
 		var request = {

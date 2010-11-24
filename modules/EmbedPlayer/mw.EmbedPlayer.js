@@ -571,7 +571,9 @@ mediaSource.prototype = {
 
 	// End time in npt format
 	end_npt: null,
-
+	
+	// Language of the file
+	srclang: null,
 	/**
 	 * MediaSource constructor:
 	 */
@@ -1621,7 +1623,7 @@ mw.EmbedPlayer.prototype = {
 		var request = {
 			'prop': 'imageinfo',
 			// In case the user added File: or Image: to the apiKey:
-			'titles': 'File:' + this.apiTitleKey.replace( /^(File:|Image:)/ , '' ),
+			'titles': 'File:' + unescape( this.apiTitleKey ).replace( /^(File:|Image:)/ , '' ),
 			'iiprop': 'url|size|dimensions|metadata',
 			'iiurlwidth': _this.width,
 			'redirects' : true // automatically resolve redirects
@@ -1911,7 +1913,7 @@ mw.EmbedPlayer.prototype = {
 		setTimeout( function() {
 			_this.seeking = false;
 			_this.play()
-			_this.monitor();			
+			_this.monitor();
 		}, 100 );
 
 		// Run the onSeeking interface update
@@ -2481,9 +2483,11 @@ mw.EmbedPlayer.prototype = {
 		// If using a gadget do the new embed format:
 		// @@NOTE this should be factored out into mediaWiki gadget helper
 		if( typeof wgServer != 'undefined' && typeof mwCheckForGadget != 'undefined' ){
-			var iframeUrl = wgServer + wgArticlePath.replace( /\$1/, wgPageName ) +
-							'?' + mw.getConfig( 'Mw.AppendWithJS' ) +
-							'&embedplayer=yes';
+			var iframeUrl = wgServer + 
+				wgArticlePath.replace( /\$1/, 'File:' + 
+					unescape( this.apiTitleKey ).replace( /^(File:|Image:)/ , '' ) ) +
+				'?' + mw.getConfig( 'Mw.AppendWithJS' ) +
+				'&embedplayer=yes';
 		} else {
 			// old style embed:
 			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';

@@ -13,7 +13,11 @@
 
 		"RemoteMwTimedText" : "remotes/RemoteMwTimedText.js"
 	} );
-
+	
+	mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [ 
+	   'srclang'
+	]);
+	
 	mw.setDefaultConfig( {
 		// If the Timed Text interface should be displayed:
 		// 'always' Displays link and call to contribute always

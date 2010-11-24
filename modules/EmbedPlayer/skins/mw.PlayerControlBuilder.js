@@ -123,10 +123,16 @@ mw.PlayerControlBuilder.prototype = {
 		} );
 
 		// Check for overlay controls:
-		if( ! _this.checkOverlayControls() && ! embedPlayer.controls === false) {
+		if( ! _this.checkOverlayControls() && ! embedPlayer.controls === false ) {
 			// Add some space to interface for the control bar ( if not overlaying controls )
 			$j( embedPlayer ).css( {
 				'height' : parseInt( embedPlayer.height ) - parseInt( this.height )
+			} );
+		}
+		// Make room for audio controls in the interface: 
+		if( embedPlayer.isAudio() && embedPlayer.$interface.height() == 0 ){
+			embedPlayer.$interface.css( {
+				'height' : this.height
 			} );
 		}
 
@@ -509,6 +515,7 @@ mw.PlayerControlBuilder.prototype = {
 			$j('body').css( 'overflow', 'auto' );
 
 			// Resize the timed text font size per window width
+			//@@ todo move to timedText
 			$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss({
 				'width' :  embedPlayer.getWidth(),
 				'height' : interfaceHeight
