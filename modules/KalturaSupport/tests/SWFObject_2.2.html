@@ -1,0 +1,31 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.js"></script>  
+</head>
+<body>
+<h2>Fall forward from Flash to html5</h2>
+<div id="videoPlayerTarget"></div>
+<script type="text/javascript">
+	// Embed video-player
+	var src = "0_gs5uho0i";
+    var flashvars = {
+                entryId: src,
+                sourceType: (src.search(/http:\/\//) == -1) ? "entryId" : "url"
+            };
+            var params = {
+                allowFullScreen: "true",
+                allowNetworking: "all",
+                allowScriptAccess: "always",
+                bgcolor: "#000000"
+            };
+            var attributes = {
+                id: "videoPlayer",
+                name: "videoPlayer"
+            };
+	
+	var flashObj = swfobject.embedSWF("http://www.kaltura.com/index.php/kwidget/cache_st/1287024453/wid/_357521/uiconf_id/2222061", "videoPlayerTarget", "480", "270", "10.0.0.0", "http://www.warnerbros.com/all/html/us/swf/expressinstall.swf", flashvars, params, attributes);
+</script>
+</body>
+</html>

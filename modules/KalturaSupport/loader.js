@@ -192,10 +192,10 @@
 					var iframeServer = mwPathUri.protocol + '://' + mwPathUri.host;
 					// Load the iFrame player client ( if not already loaded )
 					mw.load( ['mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient'], function(){
-						$j('.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap').each(function( inx, playerTarget ) {
+						$j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).each( function( inx, playerTarget ) {
 							// Output the iframe request in kaltura /{key}/{value} request format: 
 							var iframeRequest = '';
-							var iframeRequestMap ={
+							var iframeRequestMap = {
 								'kwidgetid' : 'wid',
 								'kuiconfid' : 'uiconf_id', 
 								'kentryid' : 'entry_id',

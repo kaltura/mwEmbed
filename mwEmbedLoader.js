@@ -36,7 +36,7 @@ var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://192.168.1.102/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_LOADER_URL = 'http://192.168.2.4/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -531,7 +531,7 @@ kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 	}
 	// Add in Flash vars embedSettings ( they take precedence over embed url )
 	for( var i in  flashvars){
-		embedSettings[i] = flashvars[i];
+		embedSettings[ i.toLowerCase() ] = flashvars[i];
 	}
 	return embedSettings;
 };
