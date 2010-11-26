@@ -28,15 +28,15 @@
 *	// If the html5 library should be loaded when there are video tags in the page.  
 *	'Kaltura.LoadScriptForVideoTags' : true
 */
-var kURID = '1.1y';
+var kURID = '1.1z';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -48,7 +48,7 @@ if( !window['mw'] ){
 	window['mw'] = {};
 }
 
-// Magic url parameter to enable debug mode
+// Url parameter to enable debug mode
 if( document.URL.indexOf('debugKalturaPlayer=true') != -1 ){
 	SCRIPT_FORCE_DEBUG = true;
 }
@@ -101,18 +101,18 @@ function kOverideSwfObject(){
 		mw.ready(function(){
 			// Setup the embedPlayer attributes
 			var embedPlayerAttributes = {
-				'kwidgetid' : kEmbedSettings.widgetid,
-				'kuiconfid' : kEmbedSettings.uiconfid
+				'kwidgetid' : kEmbedSettings.wid,
+				'kuiconfid' : kEmbedSettings.uiconf_id
 			}
 			var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceTargetId ).width();
 			var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceTargetId ).height();
-			if( kEmbedSettings.entryid ){
-				embedPlayerAttributes.kentryid = kEmbedSettings.entryid;				
+			if( kEmbedSettings.entry_id ){
+				embedPlayerAttributes.kentryid = kEmbedSettings.entry_id;				
 				embedPlayerAttributes.poster = kGetEntryThumbUrl( {
 					'width' : width,
 					'height' : height,
-					'entry_id' :  kEmbedSettings.entryid,
-					'partner_id': kEmbedSettings.partnerId 
+					'entry_id' :  kEmbedSettings.entry_id,
+					'partner_id': kEmbedSettings.p 
 				})
 			}
 			if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
@@ -154,7 +154,7 @@ function kOverideSwfObject(){
 					}
 				}
 				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, flashVars);
-				if( kIsHTML5FallForward() && kEmbedSettings.uiconfid ){
+				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else {
 					// use the original flash player embed:  
@@ -173,7 +173,7 @@ function kOverideSwfObject(){
 			kAddReadyHook(function(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
 				// Check if mobile safari:
-				if( kIsHTML5FallForward() && kEmbedSettings.widgetid ){
+				if( kIsHTML5FallForward() && kEmbedSettings.wid ){
 					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
 				} else {
 					// Else call the original EmbedSWF with all its arguments 
@@ -466,7 +466,7 @@ kGetKalturaPlayerList = function(){
 	var objectList = document.getElementsByTagName('object');
 	var tryAddKalturaEmbed = function( url ){
 		var settings = kGetKalturaEmbedSettings( url );
-		if( settings && settings.uiconfid && settings.widgetid ){
+		if( settings && settings.uiconf_id && settings.wid ){
 			kalturaPlayers.push(  settings );
 			return true;
 		}
@@ -510,18 +510,18 @@ kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 		var curUrlPart =  dataUrlParts.pop();
 		switch( curUrlPart ){
 			case 'p':
-				embedSettings.widgetid = '_' + prevUrlPart;
-				embedSettings.partnerId = prevUrlPart;
+				embedSettings.wid = '_' + prevUrlPart;
+				embedSettings.p = prevUrlPart;
 			break;
 			case 'wid':
-				embedSettings.widgetid = prevUrlPart;
-				embedSettings.partnerId = prevUrlPart.replace(/_/,'');
+				embedSettings.wid = prevUrlPart;
+				embedSettings.p = prevUrlPart.replace(/_/,'');
 			break;
 			case 'entry_id':
-				embedSettings.entryid = prevUrlPart;
+				embedSettings.entry_id = prevUrlPart;
 			break;
 			case 'uiconf_id':
-				embedSettings.uiconfid = prevUrlPart;
+				embedSettings.uiconf_id = prevUrlPart;
 			break;
 			case 'cache_st':
 				embedSettings.cacheSt = prevUrlPart;

@@ -1,12 +1,7 @@
 <?php
 /**
- * kalturaIframe is a special stand alone page for iframe embed of mwEmbed modules
+ * kalturaIframe supp
  *
- * For now we just support the embedPlayer
- *
- * This enables sharing mwEmbed player without js includes ie:
- *
- * <iframe src="kalturaIframe.php?src={SRC URL}&poster={POSTER URL}&width={WIDTH}etc"> </iframe>
  */
 
 // Some predefined constants ( need to load these from config.. 
