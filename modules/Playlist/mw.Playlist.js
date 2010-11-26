@@ -112,7 +112,12 @@ mw.Playlist.prototype = {
 			// Check if we have multiple playlist and setup the list and bindings
 			if( _this.sourceHandler.hasMultiplePlaylists() ){
 				var playlistSet = _this.sourceHandler.getPlaylistSet();
-
+				if( _this.layout == 'vertical' ){
+					var leftPx = '0px';
+				} else {
+					// just the default left side assignment ( updates once we have player size ) 
+					var leftPx = '444px'
+				}
 				var $plListContainer =$j('<div />')
 				.addClass( 'playlistSet-container ui-state-default ui-widget-header ui-corner-all' )
 				.css({
@@ -120,12 +125,15 @@ mw.Playlist.prototype = {
 					'overflow' : 'hidden',
 					'top' : '3px',
 					'right' : '0px',
-					'height' : '20px'
+					'height' : '20px',
+					'left' : leftPx
 				})
-					.append(
-					$j('<div />')
+				.append(
+					$j('<span />')
 					.addClass( 'playlistSetList' )
-					.css("width", '200px')
+					.css( {
+						'white-space':'pre'
+					})
 				);
 				$j( _this.target ).append( $plListContainer );
 
@@ -138,18 +146,18 @@ mw.Playlist.prototype = {
 					}
 					$plListSet.append(
 						$j('<a />')
-							.attr('href', '#')
-							.text( playlist.name )
-							.click( function(){
-								 _this.sourceHandler.setPlaylistIndex( inx );
-								 $j( _this.target + ' .media-rss-video-list').loadingSpinner();
-								 _this.sourceHandler.loadPlaylist( function(){
-									 $j( _this.target + ' .media-rss-video-list').empty();
-									_this.addMediaList();
-								 });
-								return false;
-							})
-							.buttonHover()
+						.attr('href', '#')
+						.text( playlist.name )
+						.click( function(){
+							 _this.sourceHandler.setPlaylistIndex( inx );
+							 $j( _this.target + ' .media-rss-video-list').loadingSpinner();
+							 _this.sourceHandler.loadPlaylist( function(){
+								 $j( _this.target + ' .media-rss-video-list').empty();
+								_this.addMediaList();
+							 });
+							return false;
+						})
+						.buttonHover()
 					)
 				});
 				// Check playlistSet width and add scroll left / scroll right buttons
@@ -291,7 +299,7 @@ mw.Playlist.prototype = {
 						.append(
 							$j.button({
 								'text' : 'scroll down',
-								'icon_id' : 'circle-arrow-s'
+								'icon' : 'circle-arrow-s'
 							})
 							.css('float', 'right')
 							.click(function(){
@@ -310,7 +318,7 @@ mw.Playlist.prototype = {
 							}),
 							$j.button({
 								'text' : 'scroll up',
-								'icon_id' : 'circle-arrow-n'
+								'icon' : 'circle-arrow-n'
 							})
 							.css('float', 'left')
 							.click(function(){
