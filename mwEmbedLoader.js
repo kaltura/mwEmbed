@@ -28,15 +28,15 @@
 *	// If the html5 library should be loaded when there are video tags in the page.  
 *	'Kaltura.LoadScriptForVideoTags' : true
 */
-var kURID = '1.1w';
+var kURID = '1.1y';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_FORCE_DEBUG = true;
+//SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
