@@ -362,6 +362,7 @@ EmbedPlayerManager.prototype = {
 			return ;
 		// If we don't have a native player don't wait for metadata
 		if( !mw.EmbedTypes.players.isSupportedPlayer( 'oggNative') &&
+			!mw.EmbedTypes.players.isSupportedPlayer( 'webmNative') &&
 			!mw.EmbedTypes.players.isSupportedPlayer( 'h264Native' ) )
 		{
 			return false;
@@ -1539,6 +1540,7 @@ mw.EmbedPlayer.prototype = {
 		} else {
 			this.controlBuilder.resizePlayer( size, animate);
 		}
+		$j( this ).trigger( 'onResizePlayer', size )
 	},
 
 	/**

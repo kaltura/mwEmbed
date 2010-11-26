@@ -28,7 +28,8 @@ mw.SmilAnimate.prototype = {
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'video':
 			case 'audio':
-				$j ( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).get( 0 ).pause();
+				$j ( '#' + this.smil.getSmilElementPlayerID( smilElement ) )
+					.find('audio,video').get( 0 ).pause();
 			break;
 		}
 		// non-video elements just pause by clearing any animation loops
@@ -51,7 +52,8 @@ mw.SmilAnimate.prototype = {
 			switch( _this.smil.getRefType( smilElement ) ){
 				case 'auido':
 				case 'video':
-					var media = $j ( '#' + _this.smil.getSmilElementPlayerID( smilElement ) ).get( 0 );
+					var media = $j ( '#' + _this.smil.getSmilElementPlayerID( smilElement ) )
+						.find('audio,video').get( 0 );
 					var mediaTime = ( !media || !media.currentTime )? 0 : media.currentTime;
 					//mw.log( "getPlaybackSyncDelta:: mediaeo time should be: " + relativeTime + ' video time is: ' + vidTime );
 
@@ -236,7 +238,7 @@ mw.SmilAnimate.prototype = {
 	transformMediaForTime: function( smilElement, animateTime, callback ){
 		// Get the video element
 		var assetId = this.smil.getSmilElementPlayerID( smilElement );
-		var media = $j ( '#' + assetId ).get( 0 );
+		var media = $j( assetId ).find('audio,video').get( 0 );
 		if( !media ){
 			mw.log("Error: transformMediaForTime could not find media asest: " +assetId );
 		}
@@ -268,7 +270,7 @@ mw.SmilAnimate.prototype = {
 		$j( smilElement ).data('activePlayback', true)
 
 		// Make the video is being displayed and get a pointer to the video element:
-		var media = $media.show().get( 0 );
+		var media = $media.show().find('audio,video').get( 0 );
 
 		// Set volume to master volume
 		media.volume = this.smil.embedPlayer.volume;
@@ -419,7 +421,7 @@ mw.SmilAnimate.prototype = {
 		// NOTE this is dependent on the media being "loaded" and having natural width and height
 		this.smil.getLayout().getNaturalSize(smilImgElement, function( naturalSize ){
 			var percentValues = _this.getPercentFromPanZoomValues( targetValue, naturalSize );
-			// Now we have "hard" layout info try and render it.
+			// Now we have naturalSize layout info try and render it.
 			_this.updateElementLayout( smilImgElement, percentValues );
 		});
 	},

@@ -35,7 +35,7 @@ mw.SequencerTools.prototype = {
 		'panzoom' : {
 			'editWidgets' : ['panzoom'],
 			'editableAttributes' : [ 'panZoom' ],
-			'contentTypes': [ 'img'], // xxx todo add video support
+			'contentTypes': [ 'img', 'video' ], 
 			'supportsKeyFrames' : 'true'
 		},
 		'templateedit' : {
@@ -280,6 +280,7 @@ mw.SequencerTools.prototype = {
 						'editType' : 'hidden'
 					}
 				}
+				// crossfade presently not supported
 				/*,
 				'crossfade' : {
 					'extends': 'fade',
@@ -334,7 +335,7 @@ mw.SequencerTools.prototype = {
 			getBindedTranstionEdit: function( _this, smilElement, transitionType ){
 				var _editTransitions = this;
 				var $editTransitionsSet = $j('<div />');
-				// return the empty div on empty transtionType
+				// Return the empty div on empty transtionType
 				if( transitionType == '' ){
 					return $editTransitionsSet
 				}
@@ -490,7 +491,6 @@ mw.SequencerTools.prototype = {
 					}
 				}
 			},
-
 			'onChange': function( _this, smilElement ){
 				// Update the sequence duration :
 				_this.sequencer.getEmbedPlayer().getDuration( true );
@@ -674,16 +674,20 @@ mw.SequencerTools.prototype = {
 				)
 				// Register the change for undo redo
 				_this.sequencer.getActionsEdit().registerEdit();
-			},
+			},			
 			'draw': function( _this, target, smilElement ){
 				var orginalHelperCss = {
 					'position' : 'absolute',
-					'width' : 100,
-					'height' : 75,
-					'top' : 50,
-					'left' : 70,
-					'font-size' : 'x-small'
+					'width' : 120,
+					'height' : 100,				
+					'color' : 'red',
+					'font-size' : 'x-small',
+					'opacity' : .6,
+					'border' : 'dashed',
+					'left' : _this.sequencer.getEmbedPlayer().getPlayerWidth()/2 - 60,
+					'top' : _this.sequencer.getEmbedPlayer().getPlayerHeight()/2 - 50
 				};
+				
 				// Add a input box binding:
 				$j('#' +_this.getEditToolInputId( 'panzoom', 'panZoom'))
 				.change(function(){
@@ -694,45 +698,58 @@ mw.SequencerTools.prototype = {
 					$j('<h3 />').html(
 						gM('mwe-sequencer-tools-panzoomhelper-desc')
 					)
-					,
-					/*xxx Keep aspect button ?*/
-					// Rest layout button ( restores default position )
-					$j.button({
-						'icon' : 'arrow-4',
-						'text' : gM( 'mwe-sequencer-tools-panzoomhelper-resetlayout' )
-					})
-					.attr('id', 'panzoomResetLayout')
-					.css('float', 'left')
-					.hide()
-					.click(function(){
-						// Restore default SMIL setting
-						_this.editableTypes['display'].update(
-							_this,
-							smilElement,
-							'panzoom',
-							_this.editableAttributes['panzoom'].defaultValue
-						)
-					})
-					,
+				);				
+				var $playerUI = _this.sequencer.getEmbedPlayer().$interface;
+				// Remove any old layout helper:
+				$playerUI.find('.panzoomHelper').remove();
+				
+				// Append the resize helper as an overlay on the player:
+				$playerUI.append(
 					$j('<div />')
-					.css({
-						'border' : '1px solid #DDDDDD',
-						'float' : 'left',
-						'position' : 'relative',
-						'width': '240px',
-						'height' : '180px',
-						'overflow' : 'hidden'
-					})
-					.append(
-						$j('<div />')
-						.css( orginalHelperCss )
-						.attr({
-							'id': "panzoomHelper"
-						})
-						.addClass("ui-widget-content")
-						.text( gM('mwe-sequencer-tools-panzoomhelper') )
-					)
+					.css( orginalHelperCss )
+					.addClass("ui-widget-content panzoomHelper")
+					.text( gM('mwe-sequencer-tools-panzoomhelper') )				
 				);
+				
+				// Only show when the panzoom tool is selected
+				if( _this.getCurrentToolId() != 'panzoom'){
+					$playerUI.find('.panzoomHelper').hide()
+				}				
+				$j(_this).bind('toolSelect', function(){
+					if( _this.getCurrentToolId() == 'panzoom'){
+						$playerUI.find('.panzoomHelper').fadeIn('fast')
+					} else {
+						$playerUI.find('.panzoomHelper').fadeOut('fast')
+					}
+				});	
+				// Bind to resize player events to keep the helper centered
+				$j( _this.sequencer.getEmbedPlayer() ).bind('onResizePlayer', function(event, size){
+					$playerUI.find('.panzoomHelper').css( {
+						'left' : size.width/2 - 60,
+						'top' : size.height/2 - 50
+					});
+				});
+				
+				
+				/*xxx Keep aspect button ?*/
+				// Rest layout button ( restores default position )
+				/*$j.button({
+					'icon' : 'arrow-4',
+					'text' : gM( 'mwe-sequencer-tools-panzoomhelper-resetlayout' )
+				})
+				.attr('id', 'panzoomResetLayout')
+				.css('float', 'left')
+				.hide()
+				.click(function(){
+					// Restore default SMIL setting
+					_this.editableTypes['display'].update(
+						_this,
+						smilElement,
+						'panzoom',
+						_this.editableAttributes['panzoom'].defaultValue
+					)
+				})*/
+								
 				var startPanZoomVal = '';
 				var setStartPanZoomVal = function(){
 					 startPanZoomVal = $j( smilElement ).attr( 'panZoom');
@@ -781,7 +798,7 @@ mw.SequencerTools.prototype = {
 					);
 				}
 				// Add bindings
-				$j('#panzoomHelper')
+				$playerUI.find('.panzoomHelper')
 				.draggable({
 					containment: 'parent',
 					start: function( event, ui){
@@ -804,8 +821,8 @@ mw.SequencerTools.prototype = {
 				.css('cursor', 'move')
 				.resizable({
 					handles : 'all',
-					maxWidth : 170,
-					maxHeight: 130,
+					maxWidth : 250,
+					maxHeight: 180,
 					aspectRatio: 4/3,
 					start: function( event, ui){
 						setStartPanZoomVal();
@@ -986,10 +1003,6 @@ mw.SequencerTools.prototype = {
 						})
 					);
 				});
-				// On resize event
-
-				// Fill in timeline images
-
 			}
 		}
 	},
@@ -1134,6 +1147,8 @@ mw.SequencerTools.prototype = {
 		$toolsContainer.tabs({
 			select: function(event, ui) {
 				_this.setCurrentToolId( $j( ui.tab ).attr('href').replace('#tooltab_', '') );
+				// trigger select tool event: 
+				$j( _this ).trigger( 'toolSelect' );
 			},
 			selected : toolTabIndex
 		});

@@ -92,7 +92,7 @@ function Menu(caller, options) {
 	var menu = this;
 	var caller = $(caller);
 	
-	mw.log( 'target container: ' + options.targetMenuContainer );
+	mw.log( 'jQuery.Menu:: target container: ' + options.targetMenuContainer );
 	 
 	var callerClassList = 'fg-menu-container ui-widget ui-widget-content ui-corner-all'; 
 	if( options.targetMenuContainer ) {		

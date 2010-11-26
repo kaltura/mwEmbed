@@ -126,33 +126,34 @@ mw.SmilLayout.prototype = {
 		var _this = this;
 		mw.log('SmilLayout:: drawPlayerSmilElement: ' );
 		var smilType = this.smil.getRefType( smilElement );
+		
+		// Give the static content a getSmilElementPlayerID for player layer control
+		var $target = $j('<div />')
+			.attr('id', _this.smil.getSmilElementPlayerID( smilElement ) )
+			.css({
+				'width':'100%',
+				'height':'100%',
+				'position' : 'absolute',
+				'top' : '0px',
+				'left' : '0px'
+			})
+		$regionTarget.append( $target );
+		
 		switch( smilType ){
 			// Static content can use drawSmilElementToTarget function:
 			case 'mwtemplate':
 			case 'img':
 			case 'cdata_html':
 			case 'smiltext':
-				// Give the static content a getSmilElementPlayerID for player layer control
-				var $target = $j('<div />')
-					.attr('id', _this.smil.getSmilElementPlayerID( smilElement ) )
-					.css({
-						'width':'100%',
-						'height':'100%',
-						'position' : 'absolute',
-						'top' : '0px',
-						'left' : '0px'
-					})
-				$regionTarget.append( $target );
 				this.drawSmilElementToTarget( smilElement, $target );
 				return ;
 			break;
 			case 'video':
-				$regionTarget.append( this.getSmilVideoPlayerHtml( smilElement ) );
+				$target.append( this.getSmilVideoPlayerHtml( smilElement ) );
 				return ;
 			break;
-			break;
 			case 'audio':
-				$regionTarget.append( this.getSmilAudioPlayerHtml( smilElement ) );
+				$target.append( this.getSmilAudioPlayerHtml( smilElement ) );
 				return ;
 			break;
 		}
@@ -356,7 +357,6 @@ mw.SmilLayout.prototype = {
 	getSmilVideoPlayerHtml: function( smilElement ){
 		return $j('<video />')
 			.attr( {
-				'id' : this.smil.getSmilElementPlayerID( smilElement ),
 				'src' : this.smil.getAssetUrl( $j( smilElement ).attr( 'src' ) )
 			} )
 			.addClass( 'smilFillWindow' )
@@ -368,7 +368,6 @@ mw.SmilLayout.prototype = {
 	getSmilAudioPlayerHtml: function ( smilElement ){
 		return $j('<audio />')
 		.attr( {
-			'id' : this.smil.getSmilElementPlayerID( smilElement ),
 			'src' : this.smil.getAssetUrl( $j( smilElement ).attr( 'src' ) )
 		} )
 		.css( {
@@ -616,24 +615,30 @@ mw.SmilLayout.prototype = {
 			_this.doAssetLayout( smilElement , naturalSize);
 		});
 	},
-	// xxx should really use a callback instead of failing if the media is not
-	// loaded
-	getNaturalSize: function( img , callback){
+	
+	/**
+	 * Get the natural size of a media asset
+	 * @param img
+	 * @param callback
+	 * @return
+	 */
+	getNaturalSize: function( media , callback){
 		// note this just works for images atm
-		if( !img ){
+		if( !media ){
 			mw.log("Error getNaturalSize for null image ");
 			callback( false );
+			return ;
 		}
-		if( img.naturalWidth ){
+		if( media.naturalWidth ){
 			callback( {
-				'width' : img.naturalWidth,
-				'height' : img.naturalHeight
+				'width' : media.naturalWidth,
+				'height' : media.naturalHeight
 			} )
 		} else {
-			$j( img ).load(function(){
+			$j( media ).load(function(){
 				callback( {
-					'width' : this.naturalWidth,
-					'height' : this.naturalHeight
+					'width' : media.naturalWidth,
+					'height' : media.naturalHeight
 				} )
 			});
 		}
@@ -728,18 +733,18 @@ mw.SmilLayout.prototype = {
 	/**
 	 * layout function
 	 */
-	panZoomLayout: function( smilElement, $target, img ){
+	panZoomLayout: function( smilElement, $target, layoutElement ){
 		var _this = this;
 		//mw.log( 'panZoomLayout:' + $j( smilElement).attr('id') );
 		var panZoom = $j( smilElement).attr('panZoom').split(',');
-		if( !img ){
-			var img = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).find('img').get(0);
-			if( !img){
-				mw.log('Error getting image for ' + $j( smilElement).attr('id') );
+		if( !layoutElement ){
+			var layoutElement = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).find('img,video').get(0);
+			if( !layoutElement){
+				mw.log('Error getting layoutElement for ' + $j( smilElement).attr('id') );
 			}
 		}
 
-		_this.getNaturalSize( img, function( natrualSize ){
+		_this.getNaturalSize( layoutElement, function( natrualSize ){
 			// Check if the transfrom is needed:
 			if( parseInt( panZoom.left ) == 0
 				&&
@@ -758,7 +763,7 @@ mw.SmilLayout.prototype = {
 			var percentValues = _this.smil.getAnimate().getPercentFromPanZoomValues( panZoom, natrualSize );
 			//mw.log('panZoomLayout::' + 'l:' + percentValues.left + ' t:' + percentValues.top + ' w:' + percentValues.width + ' h:' + percentValues.height );
 			// Update the layout via the animation engine updateElementLayout method
-			_this.smil.getAnimate().updateElementLayout( smilElement, percentValues, $target, img );
+			_this.smil.getAnimate().updateElementLayout( smilElement, percentValues, $target, layoutElement );
 		});
 	},
 	/**

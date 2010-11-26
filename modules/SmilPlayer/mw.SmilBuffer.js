@@ -15,10 +15,10 @@ mw.SmilBuffer.prototype = {
 	assetLoadingCallbacks : [],
 
 	// Stores the percentage loaded of active video elements
-	videoLoadedPercent: {},
+	mediaLoadedPercent: {},
 
 	// Stores seek listeners for active video elements
-	videoSeekListeners: {},
+	mediaSeekListeners: {},
 
 	// Stores the previous percentage buffered ( so we know what elements to check )
 	prevBufferPercent : 0,
@@ -162,7 +162,8 @@ mw.SmilBuffer.prototype = {
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'audio':
 			case 'video':
-				var media = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).get(0);
+				var media = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) )
+								.find('audio,video').get(0);
 				if( !media ){
 					break;
 				}
@@ -209,42 +210,41 @@ mw.SmilBuffer.prototype = {
 	getMediaPercetLoaded: function ( smilElement ){
 		var _this = this;
 		var assetId = this.smil.getSmilElementPlayerID( smilElement );
-		var $vid = $j( '#' + assetId );
+		var $media = $j( '#' + assetId ).find('audio,video');
 
 		// if the asset is not in the DOM return zero:
-		if( $vid.length == 0 ){
+		if( $media.length == 0 ){
 			return 0 ;
 		}
 		// check if 100% has already been loaded:
-		if( _this.videoLoadedPercent[ assetId ] == 1 ){
+		if( _this.mediaLoadedPercent[ assetId ] == 1 ){
 			return 1;
 		}
 
 		// Check if we have a loader registered
-		if( !this.videoLoadedPercent[ assetId ] ){
+		if( !this.mediaLoadedPercent[ assetId ] ){
 			// firefox loading based progress indicator:
-			$vid.unbind('progress').bind('progress', function( e ) {
-				// jQuery does not copy over the eventData .loaded and .total
+			$media.unbind('progress').bind('progress', function( e ) {
 				var eventData = e.originalEvent;
 				//mw.log("Video loaded progress:" + assetId +' ' + (eventData.loaded / eventData.total ) );
 				if( eventData.loaded && eventData.total ) {
-					_this.videoLoadedPercent[assetId] = eventData.loaded / eventData.total;
+					_this.mediaLoadedPercent[assetId] = eventData.loaded / eventData.total;
 				}
 			})
 		}
 
-		// Set up reference to video object:
-		var vid = $vid.get(0);
+		// Set up reference to media object:
+		var media = $media.get(0);
 		// Check for buffered attribute ( not all browsers support the progress event )
-		if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
-			_this.videoLoadedPercent[ assetId ] = ( vid.buffered.end(0) / vid.duration);
+		if( media && media.buffered && media.buffered.end && media.duration ) {
+			_this.mediaLoadedPercent[ assetId ] = ( media.buffered.end(0) / media.duration);
 		}
 
-		if( !_this.videoLoadedPercent[ assetId ] ){
+		if( !_this.mediaLoadedPercent[ assetId ] ){
 			return 0;
 		} else {
-			// Return the updated videoLoadedPercent
-			return _this.videoLoadedPercent[ assetId ];
+			// Return the updated mediaLoadedPercent
+			return _this.mediaLoadedPercent[ assetId ];
 		}
 	},
 
@@ -297,12 +297,12 @@ mw.SmilBuffer.prototype = {
 	 * Clip ready for grabbing a frame such as a canvas thumb
 	 */
 	bufferedSeekRelativeTime: function( smilElement, relativeTime, callback ){
-		mw.log("SmilBuffer::bufferedSeekRelativeTime:" + this.smil.getSmilElementPlayerID( smilElement ) + ' time:' + relativeTime );
-
 		var absoluteTime = relativeTime;
 		if( $j( smilElement ).attr('clipBegin') ){
 			absoluteTime += this.smil.parseTime( $j( smilElement ).attr('clipBegin') );
 		}
+		mw.log("SmilBuffer::bufferedSeekRelativeTime:" + this.smil.getSmilElementPlayerID( smilElement ) + ' relativeTime: ' + relativeTime + ' absoluteTime:' + absoluteTime );
+		
 		$j( smilElement ).data('activeSeek', true);
 		var instanceCallback = function(){
 			$j( smilElement ).data('activeSeek', false);
@@ -340,31 +340,31 @@ mw.SmilBuffer.prototype = {
 		// by default return true
 		return true;
 	},
-
+  
 	/**
 	 * Register a video loading progress indicator and check the time against the requested time
 	 */
 	canPlayMediaTime: function( smilVideoElement, time ){
 		var _this = this;
 		var assetId = this.smil.getSmilElementPlayerID( smilVideoElement );
-		var $vid = $j( '#' + assetId );
+		var $media = $j( '#' + assetId ).find('audio,video');
 		var vid = $j( '#' + assetId ).get( 0 );
 		// if the video element is not in the dom its not ready:
-		if( $vid.length == 0 || !$vid.get(0) ){
+		if( $media.length == 0 || !$media.get(0) ){
 			return false;
 		}
 		/* if we have no metadata return false */
-		if( $vid.attr('readyState') == 0 ){
+		if( $media.attr('readyState') == 0 ){
 			return false;
 		}
 		/* if we are asking about a time close to the current time use ready state */
-		if( Math.abs( $vid.attr('currentTime') - time ) < 1 ){
+		if( Math.abs( $media.attr('currentTime') - time ) < 1 ){
 			// also see: http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html#dom-media-have_metadata
-			if( $vid.attr('readyState') > 2 ){
+			if( $media.attr('readyState') > 2 ){
 				return true;
 			}
 		}
-		// Check if _this.videoLoadedPercent is in range of duration
+		// Check if _this.mediaLoadedPercent is in range of duration
 		// xxx might need to take into consideration startOfsset
 		if( _this.getMediaPercetLoaded( smilVideoElement ) > vid.duration / time ){
 			return true;
@@ -382,8 +382,8 @@ mw.SmilBuffer.prototype = {
 		var vid = $j ( '#' + assetId).get(0);
 		vid.addEventListener( 'seeked', function(){
 			// Run the callback
-			if( _this.videoSeekListeners[ assetId ].callback ) {
-				_this.videoSeekListeners[ assetId ].callback();
+			if( _this.mediaSeekListeners[ assetId ].callback ) {
+				_this.mediaSeekListeners[ assetId ].callback();
 			}
 		}, false);
 	},
@@ -419,27 +419,26 @@ mw.SmilBuffer.prototype = {
 
 		// Make sure the target video is in the dom:
 		this.loadElement( smilElement );
-
-		var $vid = $j ( '#' + assetId);
-		var vid = $vid.get(0);
+		var $media = $j( '#' + assetId ).find('audio,video');
+		var media = $media.get(0);
 		// Add the asset to the loading set (if not there already )
-		_this.addAssetLoading( $vid.attr('id' ) );
+		_this.addAssetLoading( assetId );
 		var seekCallbackDone = false;
 		var runSeekCallback = function(){
 
 			// Register an object for the current asset seek Listener
-			if( ! _this.videoSeekListeners[ assetId ] ){
-				_this.videoSeekListeners[ assetId ]= {};
+			if( ! _this.mediaSeekListeners[ assetId ] ){
+				_this.mediaSeekListeners[ assetId ]= {};
 			};
 
-			if( ! _this.videoSeekListeners[ assetId ].listen ){
-				_this.videoSeekListeners[ assetId ].listen = true;
+			if( ! _this.mediaSeekListeners[ assetId ].listen ){
+				_this.mediaSeekListeners[ assetId ].listen = true;
 				_this.registerVideoSeekListener( assetId );
 			}
 			// Update the current context callback
-			_this.videoSeekListeners[ assetId ].callback = function(){
+			_this.mediaSeekListeners[ assetId ].callback = function(){
 				// Seek has completed open up seek Listeners for future seeks
-				_this.videoSeekListeners[ assetId ].listen = false;
+				_this.mediaSeekListeners[ assetId ].listen = false;
 
 				// Set this asset to ready ( asset ready set )
 				_this.assetReady( assetId );
@@ -454,16 +453,16 @@ mw.SmilBuffer.prototype = {
 
 			// Issue the seek if the vid still exists
 			try{
-				vid.currentTime = seekTime;
+				media.currentTime = seekTime;
 			} catch ( e ){
 				mw.log( 'Error: in SmilBuffer could not set currentTime' );
 			}
 		}
 
 		// Read the video state: http://www.w3.org/TR/html5/video.html#dom-media-have_nothing
-		if( $vid.attr('readyState') == 0 /* HAVE_NOTHING */ ){
+		if( $media.attr('readyState') == 0 /* HAVE_NOTHING */ ){
 			// Check that we have metadata ( so we can issue the seek )
-			$vid.unbind( 'loadedmetadata' ).bind( 'loadedmetadata', function(){
+			$media.unbind( 'loadedmetadata' ).bind( 'loadedmetadata', function(){
 				runSeekCallback();
 			} );
 		}else {

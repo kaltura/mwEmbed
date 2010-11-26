@@ -75,7 +75,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 			// pause event should fire
 			mw.remoteSequencerAddEditOverlay( embedPlayerId );
 
-			// show the credits screen after 3 seconds 1/2 seconds
+			// show the credits screen after 3.5 seconds
 			setTimeout(function(){
 				$j( embedPlayer ).siblings( '.kalturaEditOverlay' ).fadeOut( 'fast' );
 				embedPlayer.$interface.find('.k-menu').fadeIn('fast');

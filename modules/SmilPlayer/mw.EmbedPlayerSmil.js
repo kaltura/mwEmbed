@@ -62,6 +62,9 @@ mw.EmbedPlayerSmil = {
 		this.setCurrentTime( this.smilPlayTime, function(){
 			mw.log("EmbedPlayerSmil::doEmbedHTML:: render callback ready " );
 		});
+		
+		// Be sure the interface does not have black background
+		this.$interface.css('background', 'none');
 	},
 
 	/**

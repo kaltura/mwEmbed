@@ -224,7 +224,6 @@ mw.SequencerTimeline.prototype = {
 				trackRendering = true;
 				thumbRenderStack++;
 				// Update the timeline clip layout
-				mw.log("getTrackClipInterface::bufferedSeekRelativeTime for " + smil.getSmilElementPlayerID( smilElement ));
 				_this.drawClipThumb( smilElement , 0, function(){
 					// Clip is ready decrement the thum render queue
 					thumbRenderStack--;

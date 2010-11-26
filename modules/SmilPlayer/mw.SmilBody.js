@@ -416,7 +416,7 @@ mw.SmilBody.prototype = {
 		this.smil.getBuffer().loadElement( $node );
 		// xxx check if the type is "video or audio" else nothing to return
 
-		var vid = $j( '#' + this.smil.getSmilElementPlayerID( $node ) ).get(0);
+		var vid = $j( '#' + this.smil.getSmilElementPlayerID( $node ) ).find('audio,video').get(0);
 		if( vid.duration ){
 			callback( vid.duration );
 		}

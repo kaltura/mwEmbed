@@ -1,5 +1,4 @@
 /**
- * Main Sequence Editor Driver
  */
 
 mw.includeAllModuleMessages();
@@ -12,7 +11,7 @@ mw.includeAllModuleMessages();
 	$.fn.sequencer = function( options ) {
 		// Debugger
 		if( $j( this.selector ).length == 0 ){
-			mw.log("Sequencer::Error missing target container");
+			mw.log("mw.Sequencer::Error missing target container");
 			return;
 		}
 		var seqContainer = $j( this.selector ).get(0);
@@ -47,7 +46,7 @@ mw.includeAllModuleMessages();
 	};
 } )( jQuery );
 
-//Wrap in mw closure to avoid global leakage
+// Wrap in mw closure to avoid global variables
 ( function( mw ) {
 
 /**
