@@ -35,8 +35,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -118,8 +118,10 @@ function kOverideSwfObject(){
 			if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
 				var iframeSrc = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php');
 				for(var attrKey in kEmbedSettings ){
-					iframeSrc+= '/k' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
-				} 
+					iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
+				}
+				// Package in the source page url for iframe message checks.
+				iframeSrc+= 
 				$j('#' + replaceTargetId ).replaceWith(
 					$j('<iframe />').attr({
 						'src' : iframeSrc,

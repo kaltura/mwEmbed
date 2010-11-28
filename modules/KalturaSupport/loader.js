@@ -268,6 +268,7 @@
 			}
 		}
 	});
+	
 	var kLoadKalturaSupport = false;
 	//Update the player loader request with timedText if the flag has been set 
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {

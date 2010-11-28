@@ -34,7 +34,7 @@
 	<script type="text/javascript">
 	
 	mw.ready(function(){		
-		mw.load( [ 'mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient' ] , function(){						
+		mw.load( [ 'mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'JSON' ] , function(){						
 			// Add resize binding:			
 			$j('#resizable').resizable();		
 			
@@ -51,7 +51,7 @@
 						"src" : '../../../mwEmbedFrame.php/wid/' + $('#kwidgetid').val() 
 							+ '/entry_id/' + $('#kentryid').val() + '/?debug=true'
 							// add the parent domain to the frame location:  
-							+ '#' + encodeURIComponent( document.location.href )
+							+ '#' + JSON.stringify( { 'parentUrl' : document.location.href } )
 					})
 					.css({
 						'width' : '100%',

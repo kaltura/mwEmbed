@@ -9,7 +9,6 @@
 		"mwe-mirosubs-loading-universal-subtitles" : "Loading <i>universal subtitles</i> editor"
 	});
 	// add as loader dependency 'mw.style.mirosubsMenu'
-
 	mw.addResourcePaths( {
 		"mirosubs" : "mirosubs/mirosubs-api.min.js",
 		"mw.MiroSubsConfig" : "mw.MiroSubsConfig.js",

@@ -155,6 +155,7 @@ class kalturaIframe {
 		} else {
 			// throw an exception ( no web streams ) 
 			$this->error = 'No web streams available, please check your enabled flavors';
+			return ;
 		}
 		// The outer container: 
 		$o='<div id="directFileLinkContainer">';
@@ -309,6 +310,7 @@ class kalturaIframe {
 				
 				if( kSupportsHTML5() ){
 					//Set some iframe embed config:
+					
 					// We can't support full screen in object context since it requires outer page DOM control
 					mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
 		

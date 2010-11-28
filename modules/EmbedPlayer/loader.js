@@ -263,8 +263,9 @@
 	});
 
 	mw.rewritePagePlayerTags = function( callback ) {
-		mw.log( 'EmbedPlayer:: Document::' + mw.documentHasPlayerTags() );
-		if( mw.documentHasPlayerTags() ) {
+		var rewriteCount = mw.documentHasPlayerTags()
+		mw.log( 'EmbedPlayer:: Document::' + rewriteCount);
+		if( rewriteCount ) {
 			var rewriteElementCount = 0;
 
 			// Set each player to loading ( as early on as possible )

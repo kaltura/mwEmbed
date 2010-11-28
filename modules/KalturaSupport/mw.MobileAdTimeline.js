@@ -108,7 +108,7 @@ mw.MobileAdTimeline.prototype = {
 				});
 			});
 			
-			// bind the player "ended" event to play the postroll if present
+			// Bind the player "ended" event to play the postroll if present
 			if( _this.timelineTargets['postroll'] ){
 				var displayedPostroll = false;
 				$j( _this.embedPlayer ).bind( 'ended', function(event, onDoneActionObject){				

@@ -26,7 +26,7 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;		
 		// Add the hooks to the player manager
 
-		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {				
+		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 			// Add hook for check player sources to use local kEntry ID source check:
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {				
 				mw.log(" KWidgetSupport::checkPlayerSourcesEvent for " + embedPlayer.id);
@@ -74,7 +74,7 @@ mw.KWidgetSupport.prototype = {
 			// Get the main entry id sources
 			_this.addEntryIdSource( embedPlayer, function(){
 				// Load uiConf config request 
-				_this.addUiConf( embedPlayer, function(){
+				_this.checkUiConf( embedPlayer, function(){
 					callback();
 				} );	
 			});			
@@ -84,7 +84,7 @@ mw.KWidgetSupport.prototype = {
 	/**
 	 * Adds the bindings for the uiConf 
 	 */
-	addUiConf: function( embedPlayer, callback ){
+	checkUiConf: function( embedPlayer, callback ){
 		var _this = this;
 		
 		this.loadUiConfData(embedPlayer, function( uiConf ) {			
@@ -101,7 +101,7 @@ mw.KWidgetSupport.prototype = {
 					callback();
 				}
 			}			
-			
+
 			// Check for the bumper plugin ( note we should probably have a separate uiConf js class )
 			var $uiConf = $j( uiConf.confFileFeatures );			
 			
@@ -133,7 +133,7 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.bumperPlayCount = 0;
 				// Get the bumper entryid				
 				if( bumper.bumperEntryID ){
-					mw.log( "KWidget:: addUiConf: get sources for " + bumper.bumperEntryID);
+					mw.log( "KWidget:: checkUiConf: get sources for " + bumper.bumperEntryID);
 					_this.getEntryIdSourcesFromApi( bumper.bumperEntryID, function( sources ){						
 						// Add to the bumper per entry id:						
 						$j( embedPlayer ).bind('play', function(){							

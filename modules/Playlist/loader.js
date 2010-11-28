@@ -7,14 +7,17 @@
 
 	mw.addResourcePaths( {
 		"mw.Playlist" : "mw.Playlist.js",
-		"mw.PlaylistHandlerMediaRss" : "mw.PlaylistHandlerMediaRss.js"
+		"mw.PlaylistHandlerMediaRss" : "mw.PlaylistHandlerMediaRss.js"		
 	});
 
 	// Set the default config
 	mw.setDefaultConfig( {
 		// Playlist layout 'vertical' or 'horizontal'
 		'Playlist.layout' : 'vertical',
-
+		
+		// Skin, presently 'jqueryui' or 'jquerymobile' supported
+		"Playlist.Skin" : "jqueryui",
+			
 		// Player aspect ratio
 		'Playlist.playerAspect' : '4:3',
 
