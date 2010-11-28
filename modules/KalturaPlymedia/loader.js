@@ -17,11 +17,13 @@
 		"mw.plyMediaConfig" : "mw.plyMediaConfig.js"
 	});
 	
-	// Bind the plyMedia player where the uiconf includes 
+	// Bind the plyMedia player where the uiconf includes the plymedia plugin
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+		
 		$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( $uiConf , callback){
+			
 			// Check for plyMedia in kaltura uiConf
-			var $plyPlug = $uiConf.find("uiVars var[key='pymedia.plugin']");
+			var $plyPlug = $uiConf.find("uiVars var[key='plymedia.plugin']");
 			if( $plyPlug.length ){
 				
 				// Load the plyMeida module ( note in production plyMedia would be
