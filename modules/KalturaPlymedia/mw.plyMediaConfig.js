@@ -11,7 +11,7 @@ mw.PyMediaSubsConfig = {
 		})
 		
 		// add any pause event actions :
-		$j( embedPlayer ).bind( 'play', function(){
+		$j( embedPlayer ).bind( 'pause', function(){
 			
 		})
 		
