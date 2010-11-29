@@ -52,11 +52,14 @@ mw.IFramePlayerApiServer.prototype = {
 		var _this = this;		
 		// Get the parent page URL as it was passed in, for browsers that don't support
 		// window.postMessage (this URL could be hard-coded).
-		this.parentUrl = JSON.parse(
-							decodeURIComponent(
-								document.location.hash.replace( /^#/, '' )
-							)
-						).parentUrl;
+		try{
+			this.parentUrl = JSON.parse( 
+						decodeURIComponent( document.location.hash.replace( /^#/, '' ) )
+					).parentUrl;
+		} catch( e ){
+			mw.log("Error: iFramePlayerApiServer:: could not parse parent url. \n" +
+				"Player events will be dissabled");
+		}
 		// On monitor event package the attributes for cross domain delivery:
 		$j( this.embedPlayer ).bind( 'monitorEvent', function(){			
 			_this.sendPlayerAttributes();

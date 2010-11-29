@@ -238,7 +238,7 @@ function kIsHTML5FallForward(){
 	return false;
 }
 // basic html5 support check ( note Android 2.2 and bellow fail to return anything on canPlayType
-// but they are part of the mobile check above. 
+// but is part of the mobile check above. 
 function kSupportsHTML5(){
 	var dummyvid = document.createElement( "video" );
 	if( dummyvid.canPlayType ) {
