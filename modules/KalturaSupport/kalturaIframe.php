@@ -309,8 +309,8 @@ class kalturaIframe {
 				document.write(unescape("%3Cscript src='<?php echo KALTURA_MWEMBED_PATH ?>mwEmbedLoader.js' type='text/javascript'%3E%3C/script%3E"));
 			</script>
 			<script type="text/javascript">			
-				// Don't rewrite the video tag ( its only there so Ipad can do overlays )
-				// if we are using flash it will be removed 
+				// Don't rewrite the video tag from the loader ( if html5 is supported it will be 
+				// invoked bellow and respect the persistant video tag option for iPad overlays )
 				mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );	
 								
 				// For testing limited capacity browsers
@@ -325,7 +325,8 @@ class kalturaIframe {
 		
 					// Enable the iframe player server:
 					mw.setConfig( 'EmbedPlayer.EnableIFramePlayerServer', true );
-	
+
+					// Load the mwEmbed resource library
 					mw.ready(function(){
 						// Bind window resize to reize the player: 
 						$j(window).resize(function(){
@@ -346,7 +347,7 @@ class kalturaIframe {
 					document.getElementById( 'videoContainer' ).removeChild(vid); 
 					
 					if( kSupportsFlash() ){ 
-						// write out the embed object 
+						// Write out the embed object 
 						document.write('<?php echo $this->getFlashEmbedHTML()?>');
 					} else {
 						// Last resort just provide an image with a link to the file

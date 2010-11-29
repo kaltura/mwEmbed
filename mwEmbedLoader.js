@@ -234,7 +234,13 @@ function kIsHTML5FallForward(){
 	if( kSupportsHTML5() ){
 		return true;
 	}
-	// No video tag or flash, return false ( normal "install flash" user flow )
+	// if we have the iframe enabled return true ( since the iframe will output a fallback link
+	// even if the client does not support html5 or flash )
+	if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
+		return true;
+	}
+	
+	// No video tag or flash, or iframe, normal "install flash" user flow )
 	return false;
 }
 // basic html5 support check ( note Android 2.2 and bellow fail to return anything on canPlayType
