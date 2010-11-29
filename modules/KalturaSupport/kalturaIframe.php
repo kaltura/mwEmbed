@@ -167,7 +167,7 @@ class kalturaIframe {
 			// @@todo once we hook up with the kaltura client output the thumb here:
 			// ( for now we use javascript to append it in there ) 
 			$o.='<div id="directFileLinkThumb" ></div>';
-			$o.='<a href="' . $flavorUrl . '" id="directFileLinkButton"></a>';
+			$o.='<a href="' . $flavorUrl . '" id="directFileLinkButton" target="_new"></a>';
 		$o.='</div>';
 		return $o;
 	}
