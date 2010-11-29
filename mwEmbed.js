@@ -1195,12 +1195,6 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			return true;
 		}
 		
-		// if doing an iframe rewrite then its iframe fall forward. 
-		// @@TODO this is a little hacky will refactor shortly 
-		if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){
-			return true;
-		}
-		
 		return false;
 	}
 	
