@@ -16,6 +16,10 @@ mw.Playlist.prototype = {
 
 	// Stores the cached player size:
 	targetPlayerSize: null,
+	
+	// Interface type can jqueryui or jquerymobile
+	interfaceType : 'jqueryui',
+	
 
 	// constructor
 	init: function( options ) {

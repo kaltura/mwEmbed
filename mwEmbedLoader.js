@@ -241,6 +241,10 @@ function kIsHTML5FallForward(){
 // but is part of the mobile check above. 
 function kSupportsHTML5(){
 	var dummyvid = document.createElement( "video" );
+	// Blackberry is evil in its response to canPlayType calls. 
+	if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
+		return false ;
+	}
 	if( dummyvid.canPlayType ) {
 		return true;
 	}
@@ -255,7 +259,7 @@ function kSupportsFlash(){
 			if ( semicolonPos > -1 ) {
 				type = type.substr( 0, semicolonPos );
 			}
-			if (type == 'application/x-shockwave-flash' ) {
+			if ( type == 'application/x-shockwave-flash' ) {
 				// flash is installed 				
 				return true;
 			}

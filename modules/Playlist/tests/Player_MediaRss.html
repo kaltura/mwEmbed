@@ -30,11 +30,20 @@
 			'type' : 'application/rss+xml',
 			'layout' : 'horizontal'
 		});
+
+		$j('#mediaRssMobile').playlist({
+			'src' : "kalturaInterviewPlaylist.xml",
+			'type' : 'application/rss+xml',
+			'interfaceType' : 'jquerymobile'
+		});
 	});
 </script>
 </head>
 <body>
 <h2> Sample MediaRss Playlist  </h2>
+
+iPad / Android style mobile interface:
+ <div style="width:320px;height:356px" id="mediaRssMobile"> </div>
 <br />
 
 Sample Media Rss ( <a href="kalturaInterviewPlaylist.xml">kalturaInterviewPlay.xml</a> ) Vertical

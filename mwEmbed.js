@@ -1212,7 +1212,15 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		return false;
 	}
 	mw.supportsHTML5 = function(){
+		// Blackberry is evil in its response to canPlayType calls. 
+		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
+			return false ;
+		}
 		var dummyvid = document.createElement( "video" );
+		if( dummyvid.canPlayType ) {
+			return true;
+		}
+		return false;
 		if( dummyvid.canPlayType ) {
 			return true;
 		}
