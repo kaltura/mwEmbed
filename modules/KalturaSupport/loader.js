@@ -76,7 +76,7 @@
 			// FALLFORWARD only for fallforward native players
 			// this is kind of heavy weight for loader.js 
 			// maybe move most of this to kEntryId support
-			if( mw.isHTML5FallForwardNative() || mw.getConfig( 'Kaltura.IframeRewrite' ){
+			if( mw.isHTML5FallForwardNative() || mw.getConfig( 'Kaltura.IframeRewrite' ) ){
 				// setup load flags
 				var loadEmbedPlayerFlag = loadPlaylistFlag = false;
 				$j.each( kalturaObjectPlayerList, function( inx, element ){
