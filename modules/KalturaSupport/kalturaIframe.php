@@ -95,19 +95,22 @@ class kalturaIframe {
 		$partnerId =  substr( $this->playerAttributes['wid'], 1 );
 		$conf = new KalturaConfiguration( $partnerId );
 		$client = new KalturaClient( $conf );
-		$session = $client->session->startWidgetSession( $this->playerAttributes['wid'] );
-//		$session = $client->session->start($adminsecret, $userId, 2,  substr( $this->playerAttributes['wid'], 1), 86400, 'edit:*');
-		$client->setKS($session->ks);
-		
-		// @@todo lookup duration for "durationHint"
-		
-		// @@NOTE this should probably be wrapped in a service class 
-		$kparams = array();
-		$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
-		$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams );
-		$resultObject = $client->doQueue();
-		$client->throwExceptionIfError($resultObject);
-		
+		try{
+			$session = $client->session->startWidgetSession( $this->playerAttributes['wid'] );
+			$client->setKS($session->ks);
+			
+			// @@todo lookup duration for "durationHint"
+			
+			// @@NOTE this should probably be wrapped in a service class 
+			$kparams = array();
+			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
+			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams );
+			$resultObject = $client->doQueue();
+			$client->throwExceptionIfError($resultObject);
+		} catch( Exception $e ){
+			$this->error = $e;
+			return ;
+		}
 		// add any web sources		
 		$sources = array();
 		foreach($resultObject as $KalturaFlavorAsset ){	
@@ -129,7 +132,9 @@ class kalturaIframe {
 					'data-flavorid' => 'ipad' 
 				);
 			};
-			if( strpos( $KalturaFlavorAsset->tags, 'ogg' ) !== false ){
+			if( $KalturaFlavorAsset->fileExt == 'ogg' || $KalturaFlavorAsset->fileExt == 'ogv' 
+				|| $KalturaFlavorAsset->fileExt == 'oga' 
+			){
 				$sources['ogg'] = array(
 					'src' => $assetUrl . '/a.ogg?novar=0',
 					'type' => 'video/ogg',
@@ -145,7 +150,7 @@ class kalturaIframe {
 	// ( maybe we tie it to the "download" option 
 	private function getFileLinkHTML(){
 		$sources = $this->getFlavorSources();
-		// for now use the iPhone, iPad, ogg ( in that order )
+		// For now use the iPhone, iPad, ogg ( in that order )
 		if( isset( $sources['iphone'] )) {
 			$flavorUrl = $sources['iphone']['src'];
 		} else if( isset( $sources['ipad'] ) ){
@@ -179,11 +184,15 @@ class kalturaIframe {
 						'entry_id/' .  $this->playerAttributes['entry_id'] .
 						'/height/480';
 		$sources = $this->getFlavorSources();
+		// if we hvae no sources do not output the video tag: 
+		if( count( $sources ) == 0 ){
+			return ;
+		}
 		// Add default video tag with 100% width / height 
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
 		
-		$o = '<video class="persistentNativePlayer" ' .
+		$o = "\n" .'<video class="persistentNativePlayer" ' .
 			'poster="' . htmlspecialchars( $posterUrl ) . '" ' . 
 			'id="' . htmlspecialchars( $this->playerIframeId ) . '" ' . 			
 			'style="width:100%;height:100%" ';
@@ -201,7 +210,7 @@ class kalturaIframe {
 		// Output each source as a child element ( for javascript off browsers to have a chance
 		// to playback the content
 		foreach($sources as $source ){			
-			$o.='<source ' .
+			$o.="\n" .'<source ' .
 					'type="' . htmlspecialchars( $source['type'] ) . '" ' . 
 					'src="' . htmlspecialchars(  $source['src'] ) . '" '.
 					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" '.
@@ -216,7 +225,7 @@ class kalturaIframe {
 		); 				
 		
 		
-		$o.= '</video>';
+		$o.= "\n" .'</video>';
 		return $o;
 	}
 	 

@@ -51,7 +51,9 @@
 						"src" : '../../../mwEmbedFrame.php/wid/' + $('#kwidgetid').val() 
 							+ '/entry_id/' + $('#kentryid').val() + '/?debug=true'
 							// add the parent domain to the frame location:  
-							+ '#' + JSON.stringify( { 'parentUrl' : document.location.href } )
+							+ '#' + encodeURIComponent( 
+									JSON.stringify( { 'parentUrl' : document.location.href } )
+								)
 					})
 					.css({
 						'width' : '100%',

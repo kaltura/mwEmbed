@@ -348,9 +348,9 @@
 
 		// Check if the iFrame player server is enabled:
 		if (mw.getConfig('EmbedPlayer.EnableIFramePlayerServer')) {
-			dependencyRequest.push('mw.EmbedPlayerNative');
-			dependencyRequest.push('$j.postMessage');
-			dependencyRequest.push('mw.IFramePlayerApiServer');
+			dependencyRequest[0].push('mw.EmbedPlayerNative');
+			dependencyRequest[0].push('$j.postMessage');
+			dependencyRequest[0].push('mw.IFramePlayerApiServer');
 		}
 
 		// Return the set of libs to be loaded

@@ -270,7 +270,7 @@
 	});
 	
 	var kLoadKalturaSupport = false;
-	//Update the player loader request with timedText if the flag has been set 
+	// Update the player loader request with timedText if the flag has been set 
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
 		// Check if any video tag uses the "kEmbedSettings.entryId"  
 		if(  $j( playerElement ).attr( 'kentryid' ) ) {

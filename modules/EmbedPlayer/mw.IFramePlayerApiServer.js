@@ -18,7 +18,6 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 	embedPlayer['iFrameServer'] = new mw.IFramePlayerApiServer( embedPlayer )
 });
 
-
 mw.IFramePlayerApiServer = function( embedPlayer ){
 	this.init( embedPlayer );
 }
@@ -53,8 +52,11 @@ mw.IFramePlayerApiServer.prototype = {
 		var _this = this;		
 		// Get the parent page URL as it was passed in, for browsers that don't support
 		// window.postMessage (this URL could be hard-coded).
-		this.parentUrl = JSON.parse( document.location.hash.replace( /^#/, '' ) ).parentUrl;
-		alert( this.parentUrl );
+		this.parentUrl = JSON.parse(
+							decodeURIComponent(
+								document.location.hash.replace( /^#/, '' )
+							)
+						).parentUrl;
 		// On monitor event package the attributes for cross domain delivery:
 		$j( this.embedPlayer ).bind( 'monitorEvent', function(){			
 			_this.sendPlayerAttributes();

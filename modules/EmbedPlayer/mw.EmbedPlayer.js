@@ -2965,7 +2965,8 @@ mw.EmbedPlayer.prototype = {
 			if( _this.getDuration() && _this.currentTime <= _this.getDuration() ){
 				var seekPercent = _this.currentTime / _this.getDuration();
 				mw.log("checkForCurrentTimeSeek::" + _this.previousTime + ' != ' +
-						 _this.currentTime + " javascript based currentTime update to " + seekPercent);
+						 _this.currentTime + " javascript based currentTime update to " +
+						 seekPercent + ' == ' + _this.currentTime );
 				_this.previousTime = _this.currentTime;
 				this.doSeek( seekPercent );
 			}

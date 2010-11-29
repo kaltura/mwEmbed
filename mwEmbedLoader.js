@@ -121,7 +121,10 @@ function kOverideSwfObject(){
 					iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
 				}
 				// Package in the source page url for iframe message checks.
-				iframeSrc+= 
+				iframeSrc+= '#' + encodeURIComponent( 
+					JSON.stringify( { 'parentUrl' : document.location.href } )
+				);
+				
 				$j('#' + replaceTargetId ).replaceWith(
 					$j('<iframe />').attr({
 						'src' : iframeSrc,

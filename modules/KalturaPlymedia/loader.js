@@ -4,8 +4,7 @@
 * @Description of plymedia module goes here
 * @author plymedia authored by
 */
-( function( mw ) {
-	
+( function( mw ) {	
 	// List named resource paths
 	mw.addResourcePaths({
 		// Your core plyMedia html5 library 
