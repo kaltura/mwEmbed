@@ -25,7 +25,6 @@ mw.KWidgetSupport.prototype = {
 	addPlayerHooks: function( ){
 		var _this = this;		
 		// Add the hooks to the player manager
-
 		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 			// Add hook for check player sources to use local kEntry ID source check:
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {				

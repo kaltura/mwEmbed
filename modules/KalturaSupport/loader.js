@@ -350,9 +350,9 @@
 			}
 			prevUrlPart = curUrlPart;
 		}
-		// Add in Flash vars embedSettings ( they take precedence over embed url ) 
-		for( var i in  flashvars){
-			embedSettings[i] = flashvars[i];
+		// Normalize the entryid to url request equivalents
+		if( embedSettings['entryid'] ){
+			embedSettings['entry_id'] =  embedSettings['entryid'];
 		}
 		return embedSettings;
 	};

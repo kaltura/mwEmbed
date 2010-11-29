@@ -95,6 +95,8 @@ class kalturaIframe {
 		$partnerId =  substr( $this->playerAttributes['wid'], 1 );
 		$conf = new KalturaConfiguration( $partnerId );
 		$client = new KalturaClient( $conf );
+		// start the session and 
+		$client->startMultiRequest();
 		try{
 			$session = $client->session->startWidgetSession( $this->playerAttributes['wid'] );
 			$client->setKS($session->ks);

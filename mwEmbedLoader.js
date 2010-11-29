@@ -35,8 +35,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -93,7 +93,27 @@ if( !mw.setConfig ){
 		}
 	}
 }
-
+function kDoIframeRewrite( replaceTargetId, kEmbedSettings ){
+	var iframeSrc = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php');
+	for(var attrKey in kEmbedSettings ){
+		iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
+	}
+	// Package in the source page url for iframe message checks.
+	iframeSrc+= '#' + encodeURIComponent( 
+		JSON.stringify( { 'parentUrl' : document.location.href } )
+	);
+	
+	$j('#' + replaceTargetId ).replaceWith(
+		$j('<iframe />').attr({
+			'src' : iframeSrc,
+			'id' : replaceTargetId,
+			'width' : width,
+			'height' : height
+		}).css({
+			'border' : '0px'
+		})
+	)
+}
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
 function kOverideSwfObject(){
 	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTargetId, widthStr, heightStr ){
@@ -106,6 +126,7 @@ function kOverideSwfObject(){
 			}
 			var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceTargetId ).width();
 			var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceTargetId ).height();
+			
 			if( kEmbedSettings.entry_id ){
 				embedPlayerAttributes.kentryid = kEmbedSettings.entry_id;				
 				embedPlayerAttributes.poster = kGetEntryThumbUrl( {
@@ -116,25 +137,7 @@ function kOverideSwfObject(){
 				})
 			}
 			if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
-				var iframeSrc = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php');
-				for(var attrKey in kEmbedSettings ){
-					iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
-				}
-				// Package in the source page url for iframe message checks.
-				iframeSrc+= '#' + encodeURIComponent( 
-					JSON.stringify( { 'parentUrl' : document.location.href } )
-				);
-				
-				$j('#' + replaceTargetId ).replaceWith(
-					$j('<iframe />').attr({
-						'src' : iframeSrc,
-						'id' : replaceTargetId,
-						'width' : width,
-						'height' : height
-					}).css({
-						'border' : '0px'
-					})
-				)
+				kDoIframeRewrite( replaceTargetId, kEmbedSettings );
 			} else {
 				$j('#' + replaceTargetId ).empty().css({
 					'id' : replaceTargetId,
@@ -294,13 +297,14 @@ function kAddScript(){
 		return ;
 	}
 	kAddedScript = true;
+
 	var jsRequestSet = [];
 	if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
 		jsRequestSet.push( ['window.jQuery'] )
 	}
 	// Check if we are using an iframe ( load only the iframe api client ) 
 	if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
-		jsRequestSet.push( [ 'mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage', 'mw.IFramePlayerApiClient' ] );
+		jsRequestSet.push( [ 'mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'JSON' ] );
 		kLoadJsRequestSet( jsRequestSet );
 		return ;
 	}
@@ -339,7 +343,7 @@ function kAddScript(){
 	]);
 	var objectPlayerList = kGetKalturaPlayerList();
 	// Check if we are doing object rewrite ( add the kaltura library ) 
-	if ( kIsHTML5FallForward() && objectPlayerList.length ){
+	if ( kIsHTML5FallForward() || objectPlayerList.length ){
 		// Kaltura client libraries:
 		jsRequestSet.push( [
 		  'KalturaClientBase',
@@ -547,6 +551,10 @@ kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 	// Add in Flash vars embedSettings ( they take precedence over embed url )
 	for( var i in  flashvars){
 		embedSettings[ i.toLowerCase() ] = flashvars[i];
+	}
+	// Normalize the entryid to url request equivalents
+	if( embedSettings['entryid'] ){
+		embedSettings['entry_id'] =  embedSettings['entryid'];
 	}
 	return embedSettings;
 };
