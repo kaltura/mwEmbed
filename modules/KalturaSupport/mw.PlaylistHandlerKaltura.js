@@ -28,33 +28,19 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 	loadPlaylist: function ( callback ){
 		var _this = this;
-		mw.log( "mw.Playlist::load playlist handler" );		 	
+	
 		// Get the kaltura client:
 		mw.getKalturaClientSession( this.widgetid, function( kClient ) {
-			
-			// Manage state for parallel loading of ui-conf with playlistid
-			var loadingPlaylistFromId = false;
-			var gotPlaylistFromId = false;
-			var gotUiConfData = false;
-			
-			var instanceCallback = function(){				
-				if( gotPlaylistFromId && gotUiConfData ){
-					callback();
-				}
-			};
-			
-			// See if we have a playlist from the setup: 
-			if( _this.playlistid ) {
-				loadingPlaylistFromId = true;
-				_this.loadPlaylistById( _this.playlistid, kClient, function(){
-					gotPlaylistFromId = true;
-					instanceCallback();
-				});
+			// Check if we have already initialised the playlist session: 
+			if( _this.playlistid !== null ){
+				_this.loadCurrentPlaylist( kClient, callback );
+				return ;
 			}
+			
 			
 			// Get playlist uiConf data
 			var uiconfGrabber = new KalturaUiConfService( kClient );		
-			uiconfGrabber.get( function( status, data ) {	
+			uiconfGrabber.get( function( status, data ) {
 				gotUiConfData = true;
 				_this.uiConfData = data;
 				if( data.confFileFeatures && data.confFileFeatures != 'null') {
@@ -68,41 +54,31 @@ mw.PlaylistHandlerKaltura.prototype = {
 															
 					// Find all the playlists by number  
 					for( var i=0; i < 50 ; i ++ ){
-						var playlistId  = $uiConf.find("uiVars [key='kpl" + i +"EntryId']").attr('value');
+						var playlistid  = $uiConf.find("uiVars [key='kpl" + i +"EntryId']").attr('value');
 						var playlistName = $uiConf.find("uiVars [key='playlistAPI.kpl" + i + "Name']").attr('value');
-						if( playlistId && playlistName ){
+						if( playlistid && playlistName ){
 							_this.playlistSet.push( { 
 								'name' : playlistName,
-								'playlistId' : playlistId
+								'playlistid' : playlistid
 							} )
 						} else {
 							break;
 						}
 					}				
 					if( !_this.playlistSet[0] ){
-						// Check if we where already loading from an playlist id and run callback
-						// xxx this is odd flow, but its because even if a embed object has
-						// a playlist id it does not mean the playlist does not have multiple
-						// playlists associated with via its widget / uiconf id. 
-						if( loadingPlaylistFromId ){
-							instanceCallback();
-							return ;
-						}
-						mw.log( "Error could not playlist entry id:\n" + data.confFileFeatures );
+						mw.log( "Error could not get playlist entry id in the following uiConf data::\n" + data.confFileFeatures );
 						return false;
 					}														
 				} else {
-					_this.playlistSet[0] = {'playlistId' : data.id };
+					// This is just a single playlist:
+					_this.playlistSet[0] = {'playlistid' : data.id };
 				}
-				mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );
-				
+				mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );																
 				// Set the playlist to the first playlist
 				_this.setPlaylistIndex( 0 );
-				// Load playlist by Id and set load flag:
-				_this.loadPlaylistById( _this.playlistid, kClient, function(){
-					gotPlaylistFromId = true;
-					instanceCallback();
-				});
+				
+				// Load playlist by Id 
+				_this.loadCurrentPlaylist( kClient, callback );
 				
 			}, _this.uiconfid );
 		});
@@ -114,24 +90,25 @@ mw.PlaylistHandlerKaltura.prototype = {
 		return this.playlistSet;
 	},
 	setPlaylistIndex: function( playlistIndex ){
-		this.playlistid = this.playlistSet[ playlistIndex ].playlistId;		
+		this.playlistid = this.playlistSet[ playlistIndex ].playlistid;		
 	},
-	
-	loadPlaylistById: function( playlistId, kClient, callback ){
+	loadCurrentPlaylist: function( kClient, callback ){
+		this.loadPlaylistById( this.playlistid, kClient, callback );
+	},
+	loadPlaylistById: function( playlistid, kClient, callback ){
 		var _this = this;
-		mw.log('loadPlaylistById:' + playlistId );
 		var kPlaylistGrabber = new KalturaPlaylistService( kClient );
 		kPlaylistGrabber.execute( function( status, playlistData ) {
 			// empty the clip list
 			_this.clipList = [];
 			if( !  playlistData.length ){						
-				mw.log("Error: kaltura playlist:" + playlistId + " could not load:" + playlistData.code)
+				mw.log("Error: kaltura playlist:" + playlistid + " could not load:" + playlistData.code)
 			} else { 
 				mw.log( 'kPlaylistGrabber::Got playlist of length::' +  playlistData.length );
 				_this.clipList = playlistData;			
-			}			
+			}
 			callback();
-		}, playlistId );
+		}, playlistid );
 	},	
 	
 	/**

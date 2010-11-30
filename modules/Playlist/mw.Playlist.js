@@ -225,7 +225,7 @@ mw.Playlist.prototype = {
 						.buttonHover()
 					)
 				}
-			}
+			};
 
 			// Add the selectable media list
 			_this.addMediaList();
