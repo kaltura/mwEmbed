@@ -119,12 +119,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 	loadPlaylistById: function( playlistId, kClient, callback ){
 		var _this = this;
-		mw.log('loadPlaylistById:' + playlistId );		
+		mw.log('loadPlaylistById:' + playlistId );
 		var kPlaylistGrabber = new KalturaPlaylistService( kClient );
-		kPlaylistGrabber.execute( function( status, playlistData ) {					
+		kPlaylistGrabber.execute( function( status, playlistData ) {
+			// empty the clip list
+			_this.clipList = [];
 			if( !  playlistData.length ){						
 				mw.log("Error: kaltura playlist:" + playlistId + " could not load:" + playlistData.code)
-				_this.clipList = [];
 			} else { 
 				mw.log( 'kPlaylistGrabber::Got playlist of length::' +  playlistData.length );
 				_this.clipList = playlistData;			
