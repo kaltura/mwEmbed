@@ -76,8 +76,11 @@
 		// Number of milliseconds between interface updates
 		'EmbedPlayer.MonitorRate' : 250,
 
-		// If the embedPlayer should accept arguments from
+		// If the embedPlayer should accept arguments passed in from iframe postMessages calls
 		'EmbedPlayer.EnalbeIFramePlayerServer' : false,
+		
+		// If embedPlayer should support server side temporal urls for seeking
+		'EmbedPlayer.EnableURLTimeEncoding' : false,
 
 		'EmbedPLayer.IFramePlayer.DomainWhiteList' : '*'
 	} );

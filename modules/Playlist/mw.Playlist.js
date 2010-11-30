@@ -95,10 +95,11 @@ mw.Playlist.prototype = {
 			.css('position', 'relative' )
 			.append(
 				$j( '<span />' )
-					.addClass( 'media-rss-video-player')
+					.addClass( 'media-rss-video-player-container')
 					.css({
 						'float' : 'left'
 					})
+					.append( $j('<div />').addClass('media-rss-video-player') )
 				,
 				$j( '<div />')
 				.addClass( 'media-rss-video-list' )
@@ -107,7 +108,7 @@ mw.Playlist.prototype = {
 					'position' : 'absolute',
 					'z-index' : '1',
 					'overflow' : 'auto',
-					'bottom': '0px',
+					'bottom': '7px',
 					'right' : '0px'
 				})
 				.hide()
@@ -235,17 +236,17 @@ mw.Playlist.prototype = {
 				// Update the list height ( vertical layout )
 				if( _this.layout == 'vertical' ){
 					$j( _this.target + ' .media-rss-video-list' ).css( {
-						'top' : $j( _this.target + ' .media-rss-video-player' ).height() + 4,
+						'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 4,
 						'width' : '100%'
 					} )
 					// Add space for the multi-playlist selector:
 					if( _this.sourceHandler.hasMultiplePlaylists() ){
 						// also adjust .playlistSet-container if present
 						$j( _this.target + ' .playlistSet-container').css( {
-							'top' : $j( _this.target + ' .media-rss-video-player' ).height() + 4
+							'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 4
 						})
 						$j( _this.target + ' .media-rss-video-list' ).css({
-							'top' : $j( _this.target + ' .media-rss-video-player' ).height() + 26
+							'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 26
 						})
 					}
 
@@ -253,12 +254,12 @@ mw.Playlist.prototype = {
 					// Update horizontal layout
 					$j( _this.target + ' .media-rss-video-list').css( {
 						'top' : '0px',
-						'left' : $j( _this.target + ' .media-rss-video-player' ).width() + 4
+						'left' : $j( _this.target + ' .media-rss-video-player-container' ).width() + 4
 					} )
 					// Add space for the multi-playlist selector:
 					if( _this.sourceHandler.hasMultiplePlaylists() ){
 						$j( _this.target + ' .playlistSet-container').css( {
-							'left' : $j( _this.target + ' .media-rss-video-player' ).width() + 4
+							'left' : $j( _this.target + ' .media-rss-video-player-container' ).width() + 4
 						})
 						$j( _this.target + ' .media-rss-video-list').css( {
 							'top' : '26px'
@@ -288,14 +289,14 @@ mw.Playlist.prototype = {
 					})
 					if( _this.layout == 'vertical' ){
 						$j( _this.target + ' .media-rss-video-list' ).css({
-							'top' : $j( _this.target + ' .media-rss-video-player' ).height() + 8
+							'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 8
 						})
 					}
 					// Add scroll buttons:
 					$j( _this.target ).append(
 						$j( '<div />').css({
 							'position' : 'absolute',
-							'bottom' : '0px',
+							'bottom' : '5px',
 							'right': '0px',
 							'height' : '30px',
 							'width' : $j( _this.target + ' .media-rss-video-list').width()
@@ -404,9 +405,8 @@ mw.Playlist.prototype = {
 			.text(
 				_this.sourceHandler.getClipTitle( clipIndex )
 			)
-
-		$j( _this.target + ' .media-rss-video-player' ).find('.playlist-title').remove( );
-		$j( _this.target + ' .media-rss-video-player' ).prepend( $title );
+		$j( _this.target + ' .media-rss-video-player-container' ).find('.playlist-title').remove();
+		$j( _this.target + ' .media-rss-video-player-container' ).prepend( $title );
 
 		// Update the player list if present:
 		$j( _this.target + ' .clipItemBlock')
@@ -452,22 +452,25 @@ mw.Playlist.prototype = {
 
 	updateVideoPlayer: function( $video , callback){
 		var _this = this;
+		
 		// If on mobile safari just swap the sources ( don't replace the video )
 		// ( mobile safari can't javascript start the video )
 		// see: http://developer.apple.com/iphone/search/search.php?simp=1&num=10&Search=html5+autoplay
-		var updateVideoPlayerToDom = true;
-
-		if( mw.isHTML5FallForwardNative() ){
+	
+		if( !mw.isMobileHTML5() ){
+			// Remove the old video player ( not mobile safari )
+			$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
+		} else {
 			// Check for a current video:
 			var $inDomVideo = $j( _this.target + ' .media-rss-video-player video' );
 			if( $inDomVideo.length == 0 ){
-				updateVideoPlayerToDom = true;
+				// just do a simple swap: 
+				$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
 			} else {
-				updateVideoPlayerToDom = false;
 				// Update the inDomVideo object:
 				// NOTE: this hits a lot of internal stuff
 				// XXX Should refactor to use embedPlayer interfaces!
-				var vidInterface = $j( _this.target + ' .media-rss-video-player' ).find('.mwplayer_interface div').get(0)
+				var vidInterface = $j( _this.target + ' .media-rss-video-player-container' ).find('.mwplayer_interface div').get(0)
 				// Copy over the video attributes to the the videoInterface
 				$j( $video[0].attributes ).each( function(attrName, attrValue){
 					vidInterface[ attrName ] = attrValue;
@@ -494,16 +497,8 @@ mw.Playlist.prototype = {
 				// issue the load request
 				$inDomVideo.get(0).load();
 			}
-		} else {
-			// Remove the old video player ( non-mobile safari )
-			// xxx NOTE: need to check fullscreen support might be better to universally swap the src )
-			$j( _this.target + ' .media-rss-video-player' ).remove( 'video' );
 		}
 
-		if( updateVideoPlayerToDom ) {
-			// replace the video:
-			$j( _this.target + ' .media-rss-video-player' ).append( $video );
-		}
 
 		// Update the video tag with the embedPlayer
 		$j.embedPlayers( function(){
@@ -530,7 +525,7 @@ mw.Playlist.prototype = {
 					}
 				})
 			}
-			mw.log("player should be readY: " + _this.clipIndex + ' ' + $j('#' +_this.getVideoPlayerId() ) );
+			mw.log( "player should be ready: " + _this.clipIndex + ' ' + $j('#' +_this.getVideoPlayerId() ) );
 			// Run the callback if its set
 			if( callback ){
 				callback();
@@ -625,7 +620,7 @@ mw.Playlist.prototype = {
 
 	play: function(){
 		var embedPlayer = $j('#' + this.getVideoPlayerId() ).get(0);
-		if( mw.isHTML5FallForwardNative() ){
+		if( mw.isMobileHTML5() ){
 			embedPlayer.playerElement.play();
 		} else{
 			embedPlayer.play();

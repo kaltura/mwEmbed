@@ -1158,6 +1158,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		} );
 		return $j( '#mwTempLoaderDialog' );
 	};
+	
 	mw.isIphone = function(){
 		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
 	};
@@ -1183,6 +1184,10 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if( mw.isMobileHTML5() ){
 			return true;
 		}
+		// Check for url flag to force html5:
+		if( document.URL.indexOf('forceMobileHTML5') != -1 ){
+			return true;
+		}
 		// Fall forward native: 
 		// if the browser supports flash ( don't use html5 )
 		if( mw.supportsFlash() ){
@@ -1198,12 +1203,10 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	
 	mw.isMobileHTML5 = function(){
 		// Check for a mobile html5 user agent:	
-		if ( (navigator.userAgent.indexOf('iPhone') != -1) || 
-			(navigator.userAgent.indexOf('iPod') != -1) || 
-			(navigator.userAgent.indexOf('iPad') != -1) ||
-			(navigator.userAgent.indexOf('Android 2.') != -1) || 
-			// Force html5 for chrome / desktop safari
-			(document.URL.indexOf('forceMobileHTML5') != -1 )
+		if ( mw.isIphone() || 
+			 mw.isIpod() || 
+			 mw.isIpad() ||
+			 mw.isAndroid2()
 		){
 			return true;
 		}

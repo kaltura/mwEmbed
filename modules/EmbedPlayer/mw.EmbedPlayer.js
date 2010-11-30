@@ -3243,7 +3243,10 @@ mw.EmbedPlayer.prototype = {
 	 *     src does not support url time requests
 	 */
 	supportsURLTimeEncoding: function() {
-		// do head request if on the same domain
+		if( mw.getConfig('EmbedPlayer.EnableURLTimeEncoding') === false ){
+			return false;
+		}
+		// Do head request if on the same domain
 		return this.mediaElement.selectedSource.URLTimeEncoding;
 	}
 }
