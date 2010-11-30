@@ -1544,19 +1544,17 @@ mw.PlayerControlBuilder.prototype = {
 			'w' : 28,
 			'o' : function( ctrlObj ){
 				var buttonConfig = mw.getConfig( 'EmbedPlayer.AttributionButton');
-
-				var $icon = $j('<span />')
-				.addClass( 'ui-icon' );
-				if( buttonConfig['class'] ){
-					$icon.addClass( buttonConfig['class'] );
-				}
 				// Check for source ( by configuration convention this is a 16x16 image
 				if( buttonConfig.iconurl ){
-					$icon.append(
-						$j('<img />')
-						.css({'width': '16px', 'height': '16px'})
+					var $icon =  $j('<img />')
+						.css({'width': '16px', 'height': '16px', 'margin': '-8px 5px 0px 0px'})
 						.attr('src', buttonConfig.iconurl )
-					);
+				} else {
+					var $icon = $j('<span />')
+					.addClass( 'ui-icon' );
+					if( buttonConfig['class'] ){
+						$icon.addClass( buttonConfig['class'] );
+					}
 				}
 
 				return $j('<a />')
@@ -1565,6 +1563,7 @@ mw.PlayerControlBuilder.prototype = {
 						'title' : buttonConfig.title,
 						'target' : '_new'
 					})
+					.addClass( 'attributionButton' )
 					.append(
 						$j( '<div />' )
 						.addClass( 'rButton' )

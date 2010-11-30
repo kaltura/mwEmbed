@@ -83,6 +83,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		mwConfig[ name ] = value;
 	};
 	
+	// Apply any pre-setup config:
+	mw.setConfig( preMwEmbedConfig );
+	
 	/**
 	 * Merge in a configuration value:
 	 */
@@ -127,14 +130,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			return ;
 		}
 		// Only update the controls if undefined
-
 		if( typeof mwConfig[ name ] == 'undefined' ) {
 			mwConfig[ name ] = value;
 			return ;
-		}
-		// Check if we should "merge" the config
-		if( typeof value == 'object' && typeof mwConfig[ name ] == 'object' ) {
-			mw.mergeConfig( name, value);
 		}
 	};
 
@@ -2029,10 +2027,6 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			return ;
 		}
 		mwSetupFlag = true;
-
-		// Apply any pre-setup config:
-		mw.setConfig( preMwEmbedConfig );
-
 
 		mw.log( 'mw:setupMwEmbed SRC:: ' + mw.getMwEmbedSrc() );
 

@@ -199,7 +199,6 @@ mw.addResourcePaths( {
 
 
 } );
-
 // Add a special css dependency for $j.ui
 mw.addStyleResourceDependency( {
 	'$j.ui' : ( 'mw.style.ui_' + mw.getConfig( 'jQueryUISkin' ) )

@@ -28,7 +28,7 @@
 *	// If the html5 library should be loaded when there are video tags in the page.  
 *	'Kaltura.LoadScriptForVideoTags' : true
 */
-var kURID = '1.2a';
+var kURID = '1.2b';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -308,12 +308,12 @@ function kAddScript(){
 		kLoadJsRequestSet( jsRequestSet );
 		return ;
 	}
+	
 	// Add all the classes needed for video 
 	jsRequestSet.push( [	 
 	    'mwEmbed',
 		// core skin: 
 		'mw.style.mwCommon',
-		'mw.style.ui_redmond',
 		// embed player:
 		'mw.EmbedPlayer', 
 		'mw.style.EmbedPlayer',
@@ -341,6 +341,14 @@ function kAddScript(){
 		// Player themer module
 		'mw.PlayerThemer'
 	]);
+	
+	// Add the jquery ui skin: 
+	if( preMwEmbedConfig['jQueryUISkin'] ){
+		jsRequestSet.push( [ 'mw.style.ui_' + preMwEmbedConfig['jQueryUISkin'] ] );
+	} else {
+		jsRequestSet.push( [ 'mw.style.ui_redmond' ] );
+	}
+	
 	var objectPlayerList = kGetKalturaPlayerList();
 	// Check if we are doing object rewrite ( add the kaltura library ) 
 	if ( kIsHTML5FallForward() || objectPlayerList.length ){
