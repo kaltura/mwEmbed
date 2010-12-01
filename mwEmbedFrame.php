@@ -49,6 +49,8 @@ class mwEmbedFrame {
 	);
 	var $playerIframeId = 'iframeVid';
 	var $debug = false;
+        var $theme = 'redmond';
+        
 	
 	// When used in direct source mode the source asset.
 	// NOTE: can be an array of sources in cases of "many" sources set
@@ -58,9 +60,13 @@ class mwEmbedFrame {
 		//parse input:
 		$this->parseRequest();
 	}
-	
+
 	// Parse the embedFrame request and sanitize input
 	private function parseRequest(){
+		if( isset($_REQUEST['iaid'])  &&  include('/petabox/setup.inc') ){
+		  Video::mwEmbedSetup(); // archive.org media
+		}
+          
 		// Check for / attribute type request and update "REQUEST" global 
 		// ( uses kaltura standard entry_id/{entryId} request )
 		// normalize to the REQUEST object
@@ -89,6 +95,14 @@ class mwEmbedFrame {
 			}
 		}
 
+                // Check for non-default theme.  
+		if( isset( $_REQUEST['theme'] )  &&
+                    in_array($_REQUEST['theme'],
+                             array('darkness','le-frog', 'redmond','start',
+                                   'sunny')) ){
+                  $this->theme = $_REQUEST['theme'];
+                }
+                
 		// Check for debug flag
 		if( isset( $_REQUEST['debug'] ) ){
 			$this->debug = true;
@@ -129,7 +143,7 @@ class mwEmbedFrame {
 	
 	function outputIFrame( ){
 		// Setup the embed string based on attribute set:
-		$embedResourceList = 'window.jQuery,mwEmbed,mw.style.mwCommon,$j.fn.menu,mw.style.jquerymenu,mw.EmbedPlayer,mw.EmbedPlayerNative,mw.EmbedPlayerJava,mw.PlayerControlBuilder,$j.fn.hoverIntent,mw.style.EmbedPlayer,$j.cookie,$j.ui,mw.style.ui_redmond,$j.widget,$j.ui.mouse,mw.PlayerSkinKskin,mw.style.PlayerSkinKskin,mw.TimedText,mw.style.TimedText,$j.ui.slider';
+		$embedResourceList = 'window.jQuery,mwEmbed,mw.style.mwCommon,$j.fn.menu,mw.style.jquerymenu,mw.EmbedPlayer,mw.EmbedPlayerNative,mw.EmbedPlayerJava,mw.PlayerControlBuilder,$j.fn.hoverIntent,mw.style.EmbedPlayer,$j.cookie,$j.ui,mw.style.ui_'.$this->theme.',$j.widget,$j.ui.mouse,mw.PlayerSkinKskin,mw.style.PlayerSkinKskin,mw.TimedText,mw.style.TimedText,$j.ui.slider';
 		
 		if( isset( $this->kentryid ) ){
 			 $embedResourceList.= ',' . implode(',', array(
@@ -191,7 +205,6 @@ class mwEmbedFrame {
 				});
 			});
 		</script>
-		
   </head>
   <body>  
   <?
