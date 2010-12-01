@@ -3239,7 +3239,7 @@ mw.EmbedPlayer.prototype = {
 	/**
 	 * If the selected src supports URL time encoding
 	 *
-	 * @return {Boolean} ture if the src supports url time requests false if the
+	 * @return {Boolean} true if the src supports url time requests false if the
 	 *     src does not support url time requests
 	 */
 	supportsURLTimeEncoding: function() {
@@ -3248,12 +3248,15 @@ mw.EmbedPlayer.prototype = {
 			return false;
 		} else if( timeUrls == 'always' ){
 			return this.mediaElement.selectedSource.URLTimeEncoding;
-		} else if( timeUrls == 'flash' && this.mediaElement.selectedSource.URLTimeEncoding){
+		} else if( timeUrls == 'flash' ){
+                  if( this.mediaElement.selectedSource.URLTimeEncoding){
 			// see if the current selected player is flash: 
-			return ( this.instanceOf == 'Kplayer' ); 
+			return ( this.instanceOf == 'Kplayer' );
+                  }
 		} else {
 			mw.log("Error:: invalid config value for EmbedPlayer.EnableURLTimeEncoding:: " + mw.getConfig('EmbedPlayer.EnableURLTimeEncoding') );
 		}
+                return false;
 	}
 }
 
