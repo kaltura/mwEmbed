@@ -3243,11 +3243,17 @@ mw.EmbedPlayer.prototype = {
 	 *     src does not support url time requests
 	 */
 	supportsURLTimeEncoding: function() {
-		if( mw.getConfig('EmbedPlayer.EnableURLTimeEncoding') === false ){
+		var timeUrls = mw.getConfig('EmbedPlayer.EnableURLTimeEncoding') ;
+		if( timeUrls == 'none' ){
 			return false;
+		} else if( timeUrls == 'always' ){
+			return this.mediaElement.selectedSource.URLTimeEncoding;
+		} else if( timeUrls == 'flash' && this.mediaElement.selectedSource.URLTimeEncoding){
+			// see if the current selected player is flash: 
+			return ( this.instanceOf == 'Kplayer' ); 
+		} else {
+			mw.log("Error:: invalid config value for EmbedPlayer.EnableURLTimeEncoding:: " + mw.getConfig('EmbedPlayer.EnableURLTimeEncoding') );
 		}
-		// Do head request if on the same domain
-		return this.mediaElement.selectedSource.URLTimeEncoding;
 	}
 }
 
@@ -3691,7 +3697,7 @@ mw.EmbedTypes = {
 					continue;
 				}
 
-				if ( (type == 'video/mpeg' || type=='video/x-msvideo') &&
+				if ( (type == 'video/mpeg' || type == 'video/x-msvideo') &&
 					pluginName.toLowerCase() == 'vlc multimedia plugin' ) {
 					this.players.addPlayer( vlcMozillaPlayer );
 				}
