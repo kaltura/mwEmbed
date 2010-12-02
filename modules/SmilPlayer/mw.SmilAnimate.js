@@ -238,9 +238,10 @@ mw.SmilAnimate.prototype = {
 	transformMediaForTime: function( smilElement, animateTime, callback ){
 		// Get the video element
 		var assetId = this.smil.getSmilElementPlayerID( smilElement );
-		var media = $j( assetId ).find('audio,video').get( 0 );
+		var media = $j('#' + assetId ).find('audio,video').get( 0 );
+		
 		if( !media ){
-			mw.log("Error: transformMediaForTime could not find media asest: " +assetId );
+			mw.log("Error: transformMediaForTime could not find media asest: " + assetId );
 		}
 
 

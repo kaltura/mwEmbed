@@ -343,7 +343,7 @@
 		// Do short detection, to avoid extra player library request in ~most~ cases.
 		//( If browser is firefox include native, if browser is IE include java )
 		if( $j.browser.msie ) {
-			dependencyRequest[0].push( 'mw.EmbedPlayerJava' )
+			dependencyRequest[0].push( 'mw.EmbedPlayerJava' );
 		}
 
 		// Safari gets slower load since we have to detect ogg support
@@ -352,7 +352,7 @@
 		}
 
 		// Check if the iFrame player server is enabled:
-		if (mw.getConfig('EmbedPlayer.EnableIFramePlayerServer')) {
+		if (mw.getConfig('EmbedPlayer.EnableIframeApi')) {
 			dependencyRequest[0].push('mw.EmbedPlayerNative');
 			dependencyRequest[0].push('$j.postMessage');
 			dependencyRequest[0].push('mw.IFramePlayerApiServer');

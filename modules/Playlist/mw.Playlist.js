@@ -17,8 +17,11 @@ mw.Playlist.prototype = {
 	// Stores the cached player size:
 	targetPlayerSize: null,
 	
-	// Interface type can jqueryui or jquerymobile
-	interfaceType : 'jqueryui',
+	// The source handler
+	sourceHandler: null,
+	
+	// the theme handler:
+	theme : null,
 	
 
 	// constructor
@@ -37,6 +40,14 @@ mw.Playlist.prototype = {
 		// Set the sourceHandler if provided
 		if( options.sourceHandler ) {
 			this.sourceHandler = options.sourceHandler;
+		}
+		// Set the layoutHandler
+		if( !options.layoutHandler || option.layoutHandler == 'jqueryui'  ){
+			this.layoutHandler = new mw.PlaylistThemeUi( this );
+		} else if( option.layoutHandler == 'mobile' ) {
+			this.layoutHandler = new mw.PlaylistThemeMobile( this );
+		} else {
+			mw.log("Error:: unsuported playlist theme: " + option.layoutHandler );
 		}
 
 
@@ -88,7 +99,10 @@ mw.Playlist.prototype = {
 				$j( _this.target ).empty().text( gM('mwe-playlist-empty') )
 				return ;
 			}
-
+			
+			// Setup the layout
+			_this.layoutHandler.drawUi( _this.target )
+			
 			// Empty the target and setup player and playerList divs
 			$j( _this.target )
 			.empty()
@@ -292,6 +306,7 @@ mw.Playlist.prototype = {
 							'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 8
 						})
 					}
+					
 					// Add scroll buttons:
 					$j( _this.target ).append(
 						$j( '<div />').css({

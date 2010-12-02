@@ -186,12 +186,13 @@
 					)
 				});
 				// Check if we are doing iFrame rewrite ( skip local library loading )
-				if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){
-					// Establish the "server" domain via mwEmbed path: 
-					var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
-					var iframeServer = mwPathUri.protocol + '://' + mwPathUri.host;
-					// Load the iFrame player client ( if not already loaded )
-					mw.load( ['mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'JSON'], function(){
+				if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){					
+					// Local function to handle iframe rewrites: 
+					var doRewriteIframe = function( appendToIframeRequest ){
+						// Establish the "server" domain via mwEmbed path: 
+						var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
+						var iframeServer = mwPathUri.protocol + '://' + mwPathUri.host;
+						
 						$j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).each( function( inx, playerTarget ) {
 							// Output the iframe request in kaltura /{key}/{value} request format: 
 							var iframeRequest = '';
@@ -207,28 +208,56 @@
 										'/' + encodeURIComponent( $j(playerTarget).attr( tagKey ) );
 								}
 							}
+							var kArgumentsSeperator ='/?';
+							
+							// @@todo should move these url flags into config
 							// Add debug flag if set: 
 							if( mw.getConfig( 'debug' ) ){
-								iframeRequest+='/?debug=true';
+								iframeRequest+= kArgumentsSeperator + 'debug=true';
+								kArgumentsSeperator ='';
 							}
-							// Add the parent frame location as a hash url:
-							iframeRequest+= '#' + encodeURIComponent( 
-									JSON.stringify( { 'parentUrl' : document.location.href } )
-							);
+							// Pass along forceHTML5 if present: 
+							if( document.URL.indexOf('forceMobileHTML5') != -1 ){
+								iframeRequest+= kArgumentsSeperator + 'forceMobileHTML5=true';
+								kArgumentsSeperator ='';
+							};
+							
+							// Append any requested string to the url
+							if( appendToIframeRequest){
+								iframeRequest+= appendToIframeRequest
+							}
 							var iframeId = $j( playerTarget ).attr('id');
 							var $iframe = $j('<iframe />').attr({
 								'id' : $j( playerTarget ).attr('id'),
-								'class' : $j( playerTarget ).attr('class' ),
+								'class' : $j( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',
 								'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest,
 								'height' : $j( playerTarget ).height(),
 								'width' : $j( playerTarget ).width()
 							}).css('border', '0px');
+							
+							// Replace the player with the iframe: 
 							$j( playerTarget ).replaceWith( $iframe );
-							$j( '#' + iframeId ).iFramePlayer({
+						});
+					}
+					
+					if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
+						// Load the iFrame player client 
+						mw.load( ['mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'JSON'], function(){
+							// Rewrite the iframe encoding the parent url hash to support the iframe api
+							doRewriteIframe('#' + encodeURIComponent( 
+								JSON.stringify( { 
+										'parentUrl' : document.location.href,
+										'mwConfig' : mw.getNonDefaultConfigObject(),
+									} )
+							));							
+							// Invoke the iframe player api system: 
+							$j( '.mwEmbedKalturaIframe').iFramePlayer({
 								'iframeServer' : iframeServer
 							});
 						});
-					});
+					} else {
+						doRewriteIframe();
+					}
 					// Don't do any other rewrites or library loading
 					return true;
 				}

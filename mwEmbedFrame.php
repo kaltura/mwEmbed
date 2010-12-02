@@ -14,7 +14,7 @@
 $myMwEmbedFrame = new mwEmbedFrame();
 
 // @@TODO temporary HACK to override to kalturaIframe 
-// ( need to refactor embedFrame into a more abstract class )
+// ( need to refactor embedFrame into an abstract class )
 // @@TODO Need a php based configuration system for modules so they 
 // can extend / override entry points
 
@@ -192,7 +192,7 @@ class mwEmbedFrame {
 			mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
 
 			// Enable the iframe player server:
-			mw.setConfig( 'EmbedPlayer.EnableIFramePlayerServer', true );
+			mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
 			
 			mw.ready(function(){
 				// Bind window resize to reize the player: 

@@ -58,6 +58,10 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	if( !mwConfig ){
 		var mwConfig = { };
 	}
+	
+	if( !mwNonDefaultConfigList ){
+		var mwNonDefaultConfigList = [];
+	}
 
 	// mw scope mwUserConfig var. Stores user configuration
 	var mwUserConfig = { };
@@ -81,6 +85,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			return ;
 		}
 		mwConfig[ name ] = value;
+		mwNonDefaultConfigList.push( name );
 	};
 	
 	// Apply any pre-setup config:
@@ -111,6 +116,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}
 		// else do a normal setConfig
 		mwConfig[ name ] = value;
+		mwNonDefaultConfigList.push( name );
 	};
 
 	/**
@@ -149,6 +155,18 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			return mwConfig[ name ];
 		return false;
 	};
+	/**
+	 * Get all the non-default configuration 
+	 * ( useful for passing state to iframes in limited hash url length of a few K  ) 
+	 */
+	mw.getNonDefaultConfigObject = function(){
+		var nonDefaultConfig = {};
+		for( var i =0 ; i < mwNonDefaultConfigList.length; i ++){
+			var name = mwNonDefaultConfigList[i];
+			nonDefaultConfig[ name ] = mw.getConfig(name )
+		}
+		return nonDefaultConfig;
+	}
 
 	/**
 	 * Loads the mwUserConfig from a cookie.

@@ -11,7 +11,7 @@
 * Kaltura Configuration options are set via mw.setConfig( option, value ) or
 * mw.setConfig( {json set of option value pairs } );
 * 
-* Some config options and their default values: 
+* Some config options and their default values: ( can be set via mw.setConfig( name, value ); ) 
 * 
 *	// Enable analytics tracking for html5 devices
 *	'Kaltura.EnableAnalytics' : true
@@ -27,8 +27,15 @@
 *
 *	// If the html5 library should be loaded when there are video tags in the page.  
 *	'Kaltura.LoadScriptForVideoTags' : true
+*
+*	// If the iframe should expose a javascript api emulating the video tag bindings and api
+*	// lets you treat the iframe id like a video tag ie: 
+*	// $j('#iframeid').get(0).play() 
+*	//   and 
+*	// $j('#iframeid').bind('ended', function(){ .. end playback event ... }
+*	'EmbedPlayer.EnableIframeApi' : false
 */
-var kURID = '1.2d';
+var kURID = '1.2e';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -36,7 +43,7 @@ var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_LOADER_URL = 'http://192.168.100.71/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -93,14 +100,21 @@ if( !mw.setConfig ){
 		}
 	}
 }
+
 function kDoIframeRewrite( replaceTargetId, kEmbedSettings ){
 	var iframeSrc = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php');
 	for(var attrKey in kEmbedSettings ){
 		iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
 	}
+	
+	// Pass along forceHTML5 if present: 
+	if( document.URL.indexOf('forceMobileHTML5') != -1 ){
+		iframeSrc+='?forceMobileHTML5=true'
+	};
+	
 	// Package in the source page url for iframe message checks.
 	iframeSrc+= '#' + encodeURIComponent( 
-		JSON.stringify( { 'parentUrl' : document.location.href } )
+		JSON.stringify( { 'parentUrl' : document.location.href, 'mwConfig' : preMwEmbedConfig } )
 	);
 	
 	$j('#' + replaceTargetId ).replaceWith(
@@ -303,7 +317,7 @@ function kAddScript(){
 		jsRequestSet.push( ['window.jQuery'] )
 	}
 	// Check if we are using an iframe ( load only the iframe api client ) 
-	if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
+	if( preMwEmbedConfig['Kaltura.IframeRewrite'] && preMwEmbedConfig['EmbedPlayer.EnableIframeApi'] ){		
 		jsRequestSet.push( [ 'mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'JSON' ] );
 		kLoadJsRequestSet( jsRequestSet );
 		return ;

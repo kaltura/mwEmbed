@@ -7,7 +7,9 @@
 
 	mw.addResourcePaths( {
 		"mw.Playlist" : "mw.Playlist.js",
-		"mw.PlaylistHandlerMediaRss" : "mw.PlaylistHandlerMediaRss.js"		
+		"mw.PlaylistHandlerMediaRss" : "mw.PlaylistHandlerMediaRss.js",
+		"mw.PlaylistLayoutJQueryUi" : "mw.PlaylistLayoutJQueryUi.js",	
+		"mw.PlaylistLayoutMobile" : "mw.PlaylistLayoutMobile.js"	
 	});
 
 	// Set the default config
@@ -33,8 +35,9 @@
 
 	// Module loader
 	mw.addModuleLoader( 'Playlist', function(){
-		var resourceList = ["mw.Playlist", "mw.PlaylistHandlerMediaRss" ]
-		return resourceList;
+		//@@todo loader should check playlist configuration and conditionally load the MobileTheme
+		return ["mw.Playlist", "mw.PlaylistHandlerMediaRss", 
+                'mw.PlaylistThemeUi', 'mw.PlaylistLayoutMobile'];
 	});
 
 

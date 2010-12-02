@@ -157,7 +157,7 @@ mw.SmilBuffer.prototype = {
 					' len: ' + $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).length );
 		}
 
-		// Start "loading" the asset (for now just video )
+		// Start "loading" the asset (for now just audio/video )
 		// but in theory we could set something up with large images / templates etc.
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'audio':
@@ -168,9 +168,10 @@ mw.SmilBuffer.prototype = {
 					break;
 				}
 				// The load request does not work very well instead .play() then .pause() and seek when on display
-				// media.load();
+				media.load(); // try to use the load command anyway: 
+				
 				// Since we can't use "load" across html5 implementations do some hacks:
-				if( media.paused && this.getMediaPercetLoaded( smilElement ) == 0 ){
+				/*if( media.paused && this.getMediaPercetLoaded( smilElement ) == 0 ){
 					// Issue the load / play request
 					media.play();
 					media.volume = 0;
@@ -180,7 +181,7 @@ mw.SmilBuffer.prototype = {
 					// else we have some percentage loaded pause playback
 					//( should continue to load the asset )
 					media.pause();
-				}
+				}*/
 			break;
 		}
 	},
@@ -409,8 +410,54 @@ mw.SmilBuffer.prototype = {
 			$j( '#' + assetId ).find('img').load( callback );
 		}
 	},
-
 	mediaBufferSeek: function ( smilElement, seekTime, callback ){
+		var _this = this;
+		var assetId = this.smil.getSmilElementPlayerID( smilElement );
+
+		// Make sure the target video is in the dom:
+		this.loadElement( smilElement );
+		var $media = $j( '#' + assetId ).find('audio,video');
+		var media = $media.get(0);
+		
+		mw.log("SmilBuffer::mediaBufferSeek: " + assetId + ' ctime:' + media.currentTime + ' seekTime:' + seekTime );
+		
+		var mediaMetaLoaded = function(){
+			mw.log("SmilBuffer::mediaBufferSeek: Bind against: "  + $media.parent().attr('id') );
+			// check if we need to issue a seek
+			if( media.currentTime == seekTime ){
+				mw.log("SmilBuffer::mediaBufferSeek: Already at target time:" + assetId + ' time:' + seekTime );
+				callback();
+				return ;
+			}
+			
+			// Register the seeked callback ( throw away any timed out seek request ) 
+			$media.unbind('seeked').bind('seeked', function(){
+				mw.log("SmilBuffer::mediaBufferSeek: DONE for:" + assetId + ' time:' + seekTime );
+				callback();
+			});
+			$media.unbind('seeking').bind( 'seeking', function(){
+				mw.log("SmilBuffer::mediaBufferSeek: SEEKING " + assetId ); 
+			})
+			// Issue the seek
+			try{
+				media.currentTime = seekTime;
+			} catch ( e ){
+				mw.log( 'Error: in SmilBuffer could not set currentTime' );
+			}
+		}
+		mw.log("SmilBuffer::mediaBufferSeek: READY State: " + $media.attr('readyState') );
+		// Read the video state: http://www.w3.org/TR/html5/video.html#dom-media-have_nothing
+		if( media.readyState === 0 ){ // HAVE_NOTHING 
+			// Check that we have metadata ( so we can issue the seek )
+			$media.unbind( 'loadedmetadata' ).bind( 'loadedmetadata', function(){
+				mediaMetaLoaded();
+			} );
+		}else {
+			// Already have metadata directly issue the seek with callback
+			mediaMetaLoaded();
+		}
+	}
+	/*mediaBufferSeek: function ( smilElement, seekTime, callback ){
 		var _this = this;
 		//mw.log("SmilBuffer::mediaBufferSeek: " + this.smil.getSmilElementPlayerID( smilElement ) +' time:' + seekTime );
 
@@ -421,8 +468,11 @@ mw.SmilBuffer.prototype = {
 		this.loadElement( smilElement );
 		var $media = $j( '#' + assetId ).find('audio,video');
 		var media = $media.get(0);
+		
 		// Add the asset to the loading set (if not there already )
-		_this.addAssetLoading( assetId );
+		if( !_this.mediaSeekListeners[ assetId ] ){			
+			_this.addAssetLoading( assetId );
+		}
 		var seekCallbackDone = false;
 		var runSeekCallback = function(){
 
@@ -451,7 +501,7 @@ mw.SmilBuffer.prototype = {
 				}
 			}
 
-			// Issue the seek if the vid still exists
+			// Issue the seek
 			try{
 				media.currentTime = seekTime;
 			} catch ( e ){
@@ -460,7 +510,7 @@ mw.SmilBuffer.prototype = {
 		}
 
 		// Read the video state: http://www.w3.org/TR/html5/video.html#dom-media-have_nothing
-		if( $media.attr('readyState') == 0 /* HAVE_NOTHING */ ){
+		if( $media.attr('readyState') == 0 ){ // HAVE_NOTHING 
 			// Check that we have metadata ( so we can issue the seek )
 			$media.unbind( 'loadedmetadata' ).bind( 'loadedmetadata', function(){
 				runSeekCallback();
@@ -469,5 +519,5 @@ mw.SmilBuffer.prototype = {
 			// Already have metadata directly issue the seek with callback
 			runSeekCallback();
 		}
-	}
+	}*/
 }

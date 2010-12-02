@@ -260,7 +260,7 @@ mw.SmilLayout.prototype = {
 	getVideoCanvasThumb: function( smilElement, $target, relativeTime, callback ){
 		var _this = this;
 		var naturaSize = {};
-		var drawElement = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).get(0);
+		var drawElement = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).find('video').get(0);
 
 		var drawFrame = function( drawElement ){
 			if( !drawElement ){
@@ -269,7 +269,9 @@ mw.SmilLayout.prototype = {
 			}
 			naturaSize.height = drawElement.videoHeight;
 			naturaSize.width = drawElement.videoWidth;
-
+			
+			// @@todo we should call the panzoom transform
+			
 			// Draw the thumb via canvas grab
 			// NOTE canvas scale issue prevents redraw at thumb resolution
 			// xxx should revisit thumb size issue:

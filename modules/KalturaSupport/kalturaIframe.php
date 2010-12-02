@@ -1,6 +1,6 @@
 <?php
 /**
- * kalturaIframe supp
+ * kalturaIframe support
  *
  */
 
@@ -110,12 +110,12 @@ class kalturaIframe {
 			$resultObject = $client->doQueue();
 			$client->throwExceptionIfError($resultObject);
 		} catch( Exception $e ){
-			$this->error = $e;
-			return ;
+			$this->error = "Error getting sources from server, something maybe broken or server is under high load. Please try again.";
+			return array();
 		}
 		// add any web sources		
 		$sources = array();
-		foreach($resultObject as $KalturaFlavorAsset ){	
+		foreach( $resultObject as $KalturaFlavorAsset ){	
 
 			$assetUrl =  KALTURA_CDN_URL .'/p/' . $partnerId . '/sp/' . 
 					$partnerId . '00/flvclipper/entry_id/' . 
@@ -211,7 +211,7 @@ class kalturaIframe {
 		
 		// Output each source as a child element ( for javascript off browsers to have a chance
 		// to playback the content
-		foreach($sources as $source ){			
+		foreach( $sources as $source ){
 			$o.="\n" .'<source ' .
 					'type="' . htmlspecialchars( $source['type'] ) . '" ' . 
 					'src="' . htmlspecialchars(  $source['src'] ) . '" '.
@@ -311,6 +311,17 @@ class kalturaIframe {
 				document.write(unescape("%3Cscript src='<?php echo KALTURA_MWEMBED_PATH ?>mwEmbedLoader.js' type='text/javascript'%3E%3C/script%3E"));
 			</script>
 			<script type="text/javascript">			
+				// Parse any configuration options passed in via hash url:
+				var hashString = document.location.hash; 
+				if( hashString ){
+					var hashObj = JSON.parse( 
+							decodeURIComponent( hashString.replace( /^#/, '' ) )
+						);
+					if( hashObj.mwConfig ){
+						mw.setConfig( hashConfig );
+					}
+				}
+				
 				// Don't rewrite the video tag from the loader ( if html5 is supported it will be 
 				// invoked bellow and respect the persistant video tag option for iPad overlays )
 				mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );	
@@ -325,8 +336,8 @@ class kalturaIframe {
 					// We can't support full screen in object context since it requires outer page DOM control
 					mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
 		
-					// Enable the iframe player server:
-					mw.setConfig( 'EmbedPlayer.EnableIFramePlayerServer', true );
+					// By default the iFrame api is dissabled ( its enabled via iframe url hash config )
+					mw.setConfig( 'EmbedPlayer.EnableIframeApi', false );
 
 					// Load the mwEmbed resource library
 					mw.ready(function(){
