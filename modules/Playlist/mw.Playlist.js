@@ -41,14 +41,14 @@ mw.Playlist.prototype = {
 		if( options.sourceHandler ) {
 			this.sourceHandler = options.sourceHandler;
 		}
-		// Set the layoutHandler
-		if( !options.layoutHandler || option.layoutHandler == 'jqueryui'  ){
+		// Set the layoutHandler ( not yet active ) 
+		/*if( !options.layoutHandler || option.layoutHandler == 'jqueryui'  ){
 			this.layoutHandler = new mw.PlaylistThemeUi( this );
 		} else if( option.layoutHandler == 'mobile' ) {
 			this.layoutHandler = new mw.PlaylistThemeMobile( this );
 		} else {
 			mw.log("Error:: unsuported playlist theme: " + option.layoutHandler );
-		}
+		}*/
 
 
 		// Set binding to disable "waitForMeta" for playlist items ( we know the size and length )
@@ -101,7 +101,7 @@ mw.Playlist.prototype = {
 			}
 			
 			// Setup the layout
-			_this.layoutHandler.drawUi( _this.target )
+			//_this.layoutHandler.drawUi( _this.target )
 			
 			// Empty the target and setup player and playerList divs
 			$j( _this.target )
