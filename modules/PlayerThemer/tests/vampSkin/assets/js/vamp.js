@@ -19,7 +19,7 @@ var VAMP = {
 			// myKdp.addJsListener('playerProgress', VAMP.onPlayerProgress);
 			// myKdp.addJsListener('playerPlayEnd', VAMP.onPlayerPlayEnd);
 			// myKdp.addJsListener('hasOpenedFullScreen', VAMP.onFullScreen);
-			// myKdp.addJsListener('hasCloseFullScreen', VAMP.closeFullScreen);
+			// myKdp.addJsListener('hasCloseFullScreen', VAMP.onCloseFullScreen);
 			// myKdp.addJsListener('captureThumbnailSuccess', VAMP.onCaptureThumbnailSuccess);
 			// myKdp.addJsListener('captureThumbnailFailed', VAMP.onCaptureThumbnailFailed);
 			// myKdp.addJsListener('endEntrySession', VAMP.onEndSession);
@@ -87,7 +87,7 @@ var VAMP = {
 	},
 	
 	//player exit full-screen mode
-	closeFullScreen:function(e) {
+	onCloseFullScreen:function(e) {
 	},
 
 	//thumbnail was successfully saved

@@ -96,7 +96,7 @@ mw.EmbedPlayerKplayer = {
 		$j(_this).bind('openFullScreen', function() {
 			_this.postEmbedJS();
 		});
-		$j(_this).bind('closeFullScreen', function() {
+		$j(_this).bind('onCloseFullScreen', function() {
 			_this.postEmbedJS();
 		})
 

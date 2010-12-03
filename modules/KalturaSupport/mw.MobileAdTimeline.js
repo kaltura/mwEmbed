@@ -419,25 +419,25 @@ mw.MobileAdTimeline.prototype = {
 							if (!vid){
 								mw.log( 'Error: switchPlaySrc no vid');
 								return ;
-							}						
+							}	
 							vid.load();
 							vid.play();
-							// Wait another 50ms then bind the end event and any custom events
+							// Wait another 100ms then bind the end event and any custom events
 							// for the switchCallback
-								setTimeout(function() {
-									var vid = _this.getNativePlayerElement();																
-									// add the end binding: 
-									$j(vid).bind('ended', function( event ) {
-										if(typeof doneCallback == 'function' ){
-											doneCallback();
-										}
-										return false;
-									})
-									if (typeof switchCallback == 'function') {
-										switchCallback(vid);
+							setTimeout(function() {
+								var vid = _this.getNativePlayerElement();																
+								// add the end binding: 
+								$j(vid).bind('ended', function( event ) {
+									if(typeof doneCallback == 'function' ){
+										doneCallback();
 									}
-								}, 100);
+									return false;
+								})
+								if (typeof switchCallback == 'function') {
+									switchCallback(vid);
+								}
 							}, 100);
+						}, 100);
 					};
 					if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
 						// Null the src and wait 50ms ( helps unload video without crashing

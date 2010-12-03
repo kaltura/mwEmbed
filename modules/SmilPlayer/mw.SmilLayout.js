@@ -530,7 +530,7 @@ mw.SmilLayout.prototype = {
 					} else if( $j(node).css('font-size').indexOf('px') != -1 ) {
 						// Translate absolute pixel size to relative
 						$j(node).css('font-size',
-							( ( fontScalePercent * .5 ) * parseFloat( $j(node).css('font-size') ) ) + 'px'
+							( ( fontScalePercent  ) * parseFloat( $j(node).css('font-size') ) ) + 'px'
 						);
 					}
 				}
