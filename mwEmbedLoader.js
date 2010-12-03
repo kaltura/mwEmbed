@@ -101,10 +101,13 @@ if( !mw.setConfig ){
 	}
 }
 
-function kDoIframeRewrite( replaceTargetId, kEmbedSettings ){
+function kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height){
 	var iframeSrc = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php');
+	var kalturaAttributeList = {'uiconf_id':1, 'entry_id':1, 'wid':1, 'p':1};
 	for(var attrKey in kEmbedSettings ){
-		iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
+		if( attrKey in kalturaAttributeList ){
+			iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
+		}
 	}
 	
 	// Pass along forceHTML5 if present: 
@@ -151,7 +154,7 @@ function kOverideSwfObject(){
 				})
 			}
 			if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
-				kDoIframeRewrite( replaceTargetId, kEmbedSettings );
+				kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height);
 			} else {
 				$j('#' + replaceTargetId ).empty().css({
 					'id' : replaceTargetId,

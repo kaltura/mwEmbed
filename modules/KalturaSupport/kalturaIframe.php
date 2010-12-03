@@ -318,7 +318,7 @@ class kalturaIframe {
 							decodeURIComponent( hashString.replace( /^#/, '' ) )
 						);
 					if( hashObj.mwConfig ){
-						mw.setConfig( hashConfig );
+						mw.setConfig( hashObj.mwConfig );
 					}
 				}
 				
