@@ -40,7 +40,7 @@ if( mwReqParam['debug'] ) {
 }
 
 //mwReqParam['debug'] = true;
-//mwUseScriptLoader = true;
+mwUseScriptLoader = true;
 //mwRemoteVersion = Math.random();
 
 // Setup up some globals to wrap mwEmbed mw.ready and mw.setConfig functions

@@ -515,7 +515,7 @@ mw.PlayerControlBuilder.prototype = {
 			$j('body').css( 'overflow', 'auto' );
 
 			// Resize the timed text font size per window width
-			//@@ todo move to timedText
+			// TODO move to timedText
 			$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss({
 				'width' :  embedPlayer.getWidth(),
 				'height' : interfaceHeight
@@ -1391,7 +1391,7 @@ mw.PlayerControlBuilder.prototype = {
 			} );
 
 		// Load additional text sources via apiTitleKey:
-		// @@ todo we should move this to timedText bindings
+		// TODO we should move this to timedText bindings
 		} else if( embedPlayer.apiTitleKey ) {
 			// Load text interface ( if not already loaded )
 			mw.load( 'TimedText', function() {

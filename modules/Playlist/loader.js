@@ -35,7 +35,7 @@
 
 	// Module loader
 	mw.addModuleLoader( 'Playlist', function(){
-		//@@todo loader should check playlist configuration and conditionally load the MobileTheme
+		// TODO loader should check playlist configuration and conditionally load the MobileTheme
 		//, 'mw.PlaylistThemeUi', 'mw.PlaylistLayoutMobile'
 		return ["mw.Playlist", "mw.PlaylistHandlerMediaRss"];
 	});

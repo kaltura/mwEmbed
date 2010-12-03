@@ -828,7 +828,7 @@ class ResourceLoader {
 
 		// Do language swap by index:
 		if ( $wgEnableScriptLocalization ){
-			//@@NOTE getResourceMessageJS could identify which mode we are in and we would not need to
+			// NOTE getResourceMessageJS could identify which mode we are in and we would not need to
 			// try each of these search patterns in the same order as before.
 
 			// Get the mw.addMessage javascript

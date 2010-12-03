@@ -258,7 +258,7 @@ mw.MobileAdTimeline.prototype = {
 		// Check for videoFile inserts:
 		if ( adConf.videoFile && timeTargetType != 'overlay') {
 			if ( adConf.lockUI ) {
-				//@@ todo lock controls
+				// TODO lock controls
 				_this.getNativePlayerElement().controls = false;
 			};
 			// Play the source then run the callback

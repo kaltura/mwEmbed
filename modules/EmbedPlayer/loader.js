@@ -12,6 +12,10 @@
 		// can be set to false per embed player via overlayControls attribute
 		'EmbedPlayer.OverlayControls' : true,
 
+		// If the iPad should use html controls ( can't use fullscreen or control volume, 
+		// but lets you support overlays ie html controls ads etc. )
+		'EmbedPlayer.EnableIpadHTMLControls': false, 
+		
 		'EmbedPlayer.LibraryPage': 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 
 		// A default apiProvider ( ie where to lookup subtitles, video properties etc )

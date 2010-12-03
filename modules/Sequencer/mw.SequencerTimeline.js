@@ -30,7 +30,7 @@ mw.SequencerTimeline.prototype = {
 	getTimelineContainer: function(){
 		return this.sequencer.getContainer().find('.mwseq-timeline');
 	},
-
+	
 	/**
 	 * Get the timelineTracksContainer
 	 */
@@ -48,24 +48,41 @@ mw.SequencerTimeline.prototype = {
 					.addClass( 'ui-layout-center clipTrackSetContainer')
 				)
 				.css( 'height', this.getTimelineContainerHeight() )
-			)
+			);
 			// Apply layout control to track name / clipTrackSet division
 			this.trackLayout = this.getTimelineContainer().find( '.timelineTrackContainer')
 				.layout( {
 					'applyDefaultStyles': true,
 					'west__size' : 150,
 					'west__minSize' : 100,
-					'west__maxSize' : 300
+					'west__maxSize' : 325
 				} );
 		}
 		return this.getTimelineContainer().find( '.timelineTrackContainer');
 	},
+	
+	/**
+	 * Gets a clickable timeline 
+	 */
+	getClickableTimeline: function(){
+		if( this.getTimelineContainer().find('.clickableTimeline').length == 0 ){
+			this.getTimelineContainer().append(
+				$j('<div />')
+				.addClass('clickableTimeline')
+			);
+		}
+		return this.getTimelineContainer().find('.clickableTimeline');
+	},
+	bindClickableTimeline: function(){
+		
+	},
+	
 	resizeTimeline: function(){
 		this.trackLayout.resizeAll();
 	},
 	getTimelineContainerHeight: function(){
 		var _this = this;
-		// Start with vertical space for one more track
+		// Start with vertical space for one more track + timeline 
 		var timelineHeight = 60;
 		var smilSequenceTracks = this.sequencer.getSmil().getBody().getSeqElements();
 		$j.each(smilSequenceTracks, function( trackIndex, smilSequenceTrack ){
@@ -107,7 +124,10 @@ mw.SequencerTimeline.prototype = {
 	// Draw the timeline
 	drawTimeline: function( callback ){
 		var _this = this;
-		// xxx TODO support multiple tracks :::
+		
+		// draw timeline
+		
+		// xxx TODO better support multiple tracks :::
 		var smilSequenceTracks = this.sequencer.getSmil().getBody().getSeqElements();
 
 		var trackStack =0;
@@ -120,7 +140,7 @@ mw.SequencerTimeline.prototype = {
 					callback();
 				}
 			});
-		})
+		})		
 	},
 
 	drawSequenceTrack: function( trackIndex, smilSequenceTrack, callback){
@@ -153,8 +173,6 @@ mw.SequencerTimeline.prototype = {
 		// Bind the update event to every time the duration is re-calculated
 		$j( this.sequencer.getEmbedPlayer() ).bind( 'durationchange', updateTrackDuration )
 		updateTrackDuration();
-
-
 
 		// Add Sequence track container if not present
 		var $clipTrackSet = $j( '#' + this.getTrackSetId( trackIndex ))

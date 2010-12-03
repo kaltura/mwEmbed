@@ -247,8 +247,9 @@ mw.MiroSubsConfig = {
 			// We need to add support for language selection in the config object save callback
 
 			// Get the current text source captions
-			playerTimedText.getCurrentSubSource( function( source ){
+			playerTimedText.loadCurrentSubSrouce( function( source ){
 				var captions = source.captions;
+				mw.log('getSubsInMiroFormat:: source sub length:' + captions.length );
 				_this.config.languageKey = source.srclang;
 				for( var i = 0; i < captions.length ; i ++ ){
 					var caption = captions[i];

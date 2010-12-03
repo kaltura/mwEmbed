@@ -377,6 +377,7 @@
 		}
 		return ( parseInt( count ) == 1 ) ? forms[0] : forms[1];
 	};
+	
 	/**
 	 * Checks that convertPlural was given an array and pads it to requested
 	 * amount of forms by copying the last one.

@@ -68,7 +68,7 @@
 					
 					break;
 				case 'durationChange': 
-					//@@todo add in duration change support
+					// TODO add in duration change support
 					break;
 				case 'playerUpdatePlayhead':
 					$j( embedPlayer).bind('monitorEvent', function(){

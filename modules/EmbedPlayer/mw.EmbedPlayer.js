@@ -2355,7 +2355,7 @@ mw.EmbedPlayer.prototype = {
 		} 
 		// iPad can use html controls if its a persistantPlayer in the dom before loading )
 		// else it needs to use native controls: 
-		if( mw.isIpad() ){
+		if( mw.isIpad() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') ){
 			if( this.isPersistentNativePlayer() ){
 				return false;
 			} else {
@@ -2483,7 +2483,7 @@ mw.EmbedPlayer.prototype = {
 	getShareIframeObject: function(){
 
 		// If using a gadget do the new embed format:
-		// @@NOTE this should be factored out into mediaWiki gadget helper
+		// NOTE this should be factored out into mediaWiki gadget helper
 		if( typeof wgServer != 'undefined' && typeof mwCheckForGadget != 'undefined' ){
 			var iframeUrl = wgServer + 
 				wgArticlePath.replace( /\$1/, 'File:' + 

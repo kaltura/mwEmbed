@@ -101,9 +101,9 @@ class kalturaIframe {
 			$session = $client->session->startWidgetSession( $this->playerAttributes['wid'] );
 			$client->setKS($session->ks);
 			
-			// @@todo lookup duration for "durationHint"
+			// TODO lookup duration for "durationHint"
 			
-			// @@NOTE this should probably be wrapped in a service class 
+			// NOTE this should probably be wrapped in a service class 
 			$kparams = array();
 			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
 			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams );

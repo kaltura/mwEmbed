@@ -150,6 +150,7 @@ mw.SequencerMenu.prototype = {
 					.disableSelection()
 					// Add menu binding:
 					.menu({
+						zindex : 1002,
 						content: _this.getMenuSet( menuKey ),
 						showSpeed: 100,
 						createMenuCallback: function(){

@@ -35,7 +35,7 @@
 *	// $j('#iframeid').bind('ended', function(){ .. end playback event ... }
 *	'EmbedPlayer.EnableIframeApi' : false
 */
-var kURID = '1.2e';
+var kURID = '1.2g';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -43,7 +43,7 @@ var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.100.71/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_LOADER_URL = 'http://172.19.2.232/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {

@@ -211,8 +211,8 @@ mw.KAds.prototype = {
 			
 			// Set the media file:
 			$ad.find('MediaFiles MediaFile').each( function( na, mediaFile ){
-				//@@NOTE we could check other attributes like delivery="progressive"
-				//@@NOTE for now we are only interested in support for iOS / android devices
+				// NOTE we could check other attributes like delivery="progressive"
+				// NOTE for now we are only interested in support for iOS / android devices
 				// so only h264. ( in the future we could add ogg other delivery methods etc. ) 
 				if(  $j( mediaFile ).attr('type') == 'video/h264' ){
 					currentAd.videoFile = _this.getURLFromNode( mediaFile );

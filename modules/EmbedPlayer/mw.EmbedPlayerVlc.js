@@ -232,7 +232,7 @@ mw.EmbedPlayerVlc = {
 
 	/**
 	* Events:
-	*  @@note: should be localized:
+	*  NOTE : should be localized:
 	*/
 	onOpen: function() {
 		this.controlBuilder.setStatus( "Opening..." );

@@ -368,8 +368,8 @@ mw.includeAllModuleMessages();
 		},
 
 		// Get the current source sub captions
-		getCurrentSubSource: function( callback ){
-			mw.log("getCurrentSubSource:: enabled source:" + this.enabledSources.length);
+		loadCurrentSubSrouce: function( callback ){
+			mw.log("loadCurrentSubSrouce:: enabled source:" + this.enabledSources.length);
 			for( var i =0; i < this.enabledSources.length; i++ ){
 				var source = this.enabledSources[i];
 				if( source.category == 'SUB' ){
@@ -1045,7 +1045,7 @@ mw.includeAllModuleMessages();
 					if( data ) {
 						_this.captions = handler( data );
 					}
-					mw.log("mw.TimedText:: parsed " + _this.captions.length + ' captions');
+					mw.log("mw.TimedText:: loaded from titleKey: " + _this.captions.length + ' captions');
 					// Update the loaded state:
 					_this.loaded = true;
 					if( callback ) {
@@ -1065,6 +1065,7 @@ mw.includeAllModuleMessages();
 				$j.get( this.getSrc(), function( data ) {
 					// Parse and load captions:
 					_this.captions = handler( data );
+					mw.log("mw.TimedText:: loaded from srt file: " + _this.captions.length + ' captions');
 					// Update the loaded state:
 					_this.loaded = true;
 					if( callback ) {

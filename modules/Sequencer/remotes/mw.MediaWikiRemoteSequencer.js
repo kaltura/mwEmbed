@@ -470,7 +470,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 
 		$j('body').append(
 			$j('<div />')
-			.attr('id',"edit_sequence_container")
+			.attr('id', "edit_sequence_container")
 			.css({
 				'position' : 'absolute',
 				'font-size' : '.8em',
@@ -478,7 +478,8 @@ mw.MediaWikiRemoteSequencer.prototype = {
 				'bottom' : '5px',
 				'left' : '5px',
 				'right' : '6px',
-				'background': '#FFF'
+				'background': '#FFF',
+				'z-index' : '1001'
 			})
 			.append(
 				$j('<div />').append(

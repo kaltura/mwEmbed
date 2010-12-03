@@ -428,7 +428,7 @@ if( !window.kWidgetSupport ){
 
 
 // Add player Manager binding ( if playerManager not ready bind to when its ready )
-// @@NOTE we may want to move this into the loader since its more "action/loader" code
+// NOTE we may want to move this into the loader since its more "action/loader" code
 if( mw.playerManager ){	
 	kWidgetSupport.addPlayerHooks();
 } else {

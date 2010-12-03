@@ -247,7 +247,7 @@
 							doRewriteIframe('#' + encodeURIComponent( 
 								JSON.stringify( { 
 										'parentUrl' : document.location.href,
-										'mwConfig' : mw.getNonDefaultConfigObject(),
+										'mwConfig' : mw.getNonDefaultConfigObject()
 									} )
 							));							
 							// Invoke the iframe player api system: 
