@@ -281,10 +281,10 @@ mw.PlayerControlBuilder.prototype = {
 	toggleFullscreen: function() {
 		if( this.fullscreenMode ){
 			this.restoreWindowPlayer();
-			$j( this.embedPlayer ).trigger( 'closeFullScreenEvent' );
+			$j( this.embedPlayer ).trigger( 'closeFullScreen' );
 		}else{
 			this.doFullScreenPlayer();
-			$j( this.embedPlayer ).trigger( 'openFullScreenEvent' );
+			$j( this.embedPlayer ).trigger( 'openFullScreen' );
 		}
 	},
 
