@@ -98,6 +98,13 @@ mw.setConfig( 'ApiProxy.DomainWhiteList',
 	[ /wikimedia\.org$/ , /wikipedia\.org$/ , /wiktionary.org$/ , /wikinews.org$/ , /wikibooks.org$/ , /wikisource.org$/ , /wikiversity.org$/ , /wikiquote.org$/ ]
 );
 
+// Legacy Add media wizard config: 
+if( typeof mwAddMediaConfig == 'undefined'){
+   mwAddMediaConfig = {};
+}
+mwAddMediaConfig['enabled_providers'] = [ 'wiki_commons', 'upload' ];
+
+
 // Special embedplayer handler ( iframe )
 if( mwReqParam['embedplayer'] == 'yes' ){	
 	// No fullscreen in iframe for now:
