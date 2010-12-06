@@ -343,7 +343,7 @@
 		// No need to pass the IframeRewrite option to the iframe:
 		delete iframeMwConfig['Kaltura.IframeRewrite'];	
 		return '#' + encodeURIComponent( 
-				JSON.stringify( { 
+				JSON.stringify( {
 					'parentUrl' : document.location.href,
 					'mwConfig' :iframeMwConfig
 				} )

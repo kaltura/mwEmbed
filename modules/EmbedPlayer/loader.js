@@ -336,8 +336,7 @@
 		];
 
 		// Pass every tag being rewritten through the update request function
-		$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).each( function() {
-			var playerElement = this;
+		$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).each( function(inx, playerElement) {
 			mw.embedPlayerUpdateLibraryRequest( playerElement, dependencyRequest[ 1 ] )
 		} );
 
@@ -396,8 +395,8 @@
 			dependencyRequest.push( 'mw.style.PlayerSkin' + skinCaseName );
 		}
 
-		// Check if the iFrame player server is enabled:
-		if( mw.getConfig('EmbedPlayer.EnalbeIFramePlayerServer') ){
+		// Check if the iFrame api server should be loaded ( iframe api is on ):
+		if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 			dependencyRequest.push(	'mw.IFramePlayerApiServer' );
 		}
 

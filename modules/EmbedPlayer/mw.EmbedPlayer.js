@@ -232,9 +232,12 @@ EmbedPlayerManager.prototype = {
 	 * Once a player interface is established the following chain of functions
 	 * are called;
 	 *
-	 * _this.checkPlayerSources() _this.checkForTimedText()
-	 * _this.setupSourcePlayer() _this.inheritEmbedPlayer()
-	 * _this.selectedPlayer.load() _this.showPlayer()
+	 * _this.checkPlayerSources() 
+	 * _this.checkForTimedText() // Should be moved to TimedText module!!!
+	 * _this.setupSourcePlayer() 
+	 * _this.inheritEmbedPlayer()
+	 * _this.selectedPlayer.load() 
+	 * _this.showPlayer()
 	 *
 	 * @param {Element}
 	 *      playerElement DOM element to be swapped

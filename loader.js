@@ -58,7 +58,8 @@ var mwEnabledModuleList = [
 	'SyntaxHighlighter',
 	'MiroSubs',
 	'PlayerThemer',
-	'KalturaSupport'
+	'KalturaSupport',
+	'KalturaWatermark'
 ];
 
 /**

@@ -89,23 +89,32 @@ mw.KWidgetSupport.prototype = {
 	checkUiConf: function( embedPlayer, callback ){
 		var _this = this;
 		
-		this.loadUiConfData(embedPlayer, function( uiConf ) {			
+		this.loadUiConfData( embedPlayer, function( uiConf ) {			
 			if( !uiConf ){
 				mw.log("Could not get uiConf for emmbed:" + embedPlayer.kwidgetid );
 				callback();
 				return; 
 			}
+		
+			//mw.log( uiConf.confFile );
+			//mw.log( uiConf.confFileFeatures );
+			//debugger;
+
+			// Check for the bumper plugin ( note we should probably have a separate uiConf js class )
+			var $uiConf = $j( uiConf.confFileFeatures );
+			var $uiConfFile = $j( uiConf.confFile );
 			
 			var waitForBumper = false;
 			var waitForAds = false;
 			var instanceCallback = function(){
 				if( !waitForBumper && !waitForAds){
+					
+					$( embedPlayer ).trigger('KalturaSupport.checkUiConf', [$uiConf, $uiConfFile] );
 					callback();
+					
 				}
 			}			
 
-			// Check for the bumper plugin ( note we should probably have a separate uiConf js class )
-			var $uiConf = $j( uiConf.confFileFeatures );			
 			
 			// Check if the ad plugin is enabled:
 			if( $uiConf.find('advertising').length && $uiConf.find('advertising').attr('enabled') == 'true' ){
@@ -153,6 +162,7 @@ mw.KWidgetSupport.prototype = {
 					});
 				}
 			}
+		
 			// call the instance callback ( in case we are not waiting for ads or a bumper )
 			instanceCallback();
 		})	
