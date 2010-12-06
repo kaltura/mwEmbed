@@ -73,20 +73,21 @@ mw.SmilAnimate.prototype = {
 	* @param {Element} smilElement Smil element to be animated
 	* @param {float} animateTime Float time target for element transform
 	* @param {float} deltaTime Extra time interval to be animated between animateTransform calls
+	* @param {function} callback Optional function to call once the transform is complete
 	*/
-	animateTransform: function( smilElement, animateTime, deltaTime ){
+	animateTransform: function( smilElement, animateTime, deltaTime, callback ){
 		var _this = this;
 		//mw.log("SmilAnimate::animateTransform:" + $j( smilElement).attr('id') + ' AnimateTime: ' + animateTime + ' delta:' + deltaTime);
 
 		// Check for deltaTime to animate over, if zero
 		if( !deltaTime || deltaTime === 0 ){
 			// transformElement directly ( no playback or animation loop )
-			_this.transformElement( smilElement, animateTime );
+			_this.transformElement( smilElement, animateTime, callback);
 
 			// Also update the smil Element transition directly
 			this.smil.getTransitions().transformTransitionOverlay( smilElement, animateTime );
 
-			// We are not playing return directly:
+			// We are not playing return:
 			return ;
 		}
 
@@ -96,14 +97,17 @@ mw.SmilAnimate.prototype = {
 			||
 			this.smil.getRefType( smilElement ) == 'audio' )
 		{
-			this.transformMediaForPlayback( smilElement, animateTime );
+			this.transformMediaForPlayback( smilElement, animateTime, callback );
+		} else {
+			if( callback ){
+				callback();
+			}
 		}
-
 		// Check if the current smilElement has any transforms to be done
 		if( ! this.checkForTransformUpdate( smilElement, animateTime, deltaTime ) ){
 			// xxx no animate loop needed for element: smilElement
 			return ;
-		}
+		}		
 
 		// We have a delta spawn an short animateInterval
 
@@ -214,19 +218,24 @@ mw.SmilAnimate.prototype = {
 	* @param {Element} smilElement Element to be transformed
 	* @param {float} animateTime The relative time to be transformed.
 	*/
-	transformElement: function( smilElement, animateTime ) {
+	transformElement: function( smilElement, animateTime , callback) {
 		//mw.log("SmilAnimate::transformForTime:" + animateTime );
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'smiltext':
 				this.transformTextForTime( smilElement, animateTime );
 			break;
 			case 'img':
-				this.transformImageForTime( smilElement, animateTime );
+				this.transformImageForTime( smilElement, animateTime );		
 			break;
 			case 'video':
 			case 'audio':
-				this.transformMediaForTime( smilElement, animateTime );
+				// media transforms can take more time so pass the callback
+				this.transformMediaForTime( smilElement, animateTime , callback);
+				return ;
 			break;
+		}
+		if( callback ){
+			callback();
 		}
 	},
 
@@ -255,7 +264,7 @@ mw.SmilAnimate.prototype = {
 
 		// Register a buffer ready callback
 		this.smil.getBuffer().mediaBufferSeek( smilElement, mediaSeekTime, function() {
-			//mw.log( "transformMediaForTime:: seek complete ")
+			mw.log( "SmilAnimate::transformMediaForTime: seek complete:" + $j( smilElement ).attr('id') );
 			if( callback )
 				callback();
 		});
@@ -264,7 +273,7 @@ mw.SmilAnimate.prototype = {
 	/**
 	 * Used to support video playback
 	 */
-	transformMediaForPlayback: function( smilElement, animateTime ){
+	transformMediaForPlayback: function( smilElement, animateTime, callback){
 		var $media = $j ( '#' + this.smil.getSmilElementPlayerID( smilElement ) );
 
 		// Set activePlayback flag ( informs edit and buffer actions )
@@ -276,18 +285,16 @@ mw.SmilAnimate.prototype = {
 		// Set volume to master volume
 		media.volume = this.smil.embedPlayer.volume;
 
-		// Seek to correct time if off by more than 1 second
+		// @@TODO check sync Seek to correct time if off by more than 1 second
 		// ( buffer delays management things insync below this range )
 
-		// Check the buffer if we can play this time and the video is "paused" ( if so start playback )
-		if( this.smil.getBuffer().canPlayTime( smilElement, animateTime )
-			&& media.paused
-		) {
-			//mw.log( "transformMediaForPlayback:: should play:" + animateTime );
-			media.play();
-			return ;
-		}
-		// Else issue the initial "play" request
+		// Bind to play event and issue the initial "play" request
+		$j( media ).bind('play', function(){
+			if( callback ){
+				callback();
+				callback = null;
+			}
+		});		
 		media.play();
 	},
 

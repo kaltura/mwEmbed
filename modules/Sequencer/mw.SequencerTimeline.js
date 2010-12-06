@@ -65,15 +65,29 @@ mw.SequencerTimeline.prototype = {
 	 * Gets a clickable timeline 
 	 */
 	getClickableTimeline: function(){
-		if( this.getTimelineContainer().find('.clickableTimeline').length == 0 ){
+		if( this.getTimelineContainer().find('.clickableTimeline').length == 0 ){			
 			this.getTimelineContainer().append(
 				$j('<div />')
 				.addClass('clickableTimeline')
+				.css({
+					'width' : this.getTrackWidth( trackIndex )
+				})
 			);
 		}
 		return this.getTimelineContainer().find('.clickableTimeline');
 	},
-	bindClickableTimeline: function(){
+	drawClickableTimeline: function(){
+		// Append the timeline to the clickable timeline:
+		this.getClickableTimeline().append( 
+			// get the duration				
+		);
+		
+		var updateClickableTimeline = function(){
+			// update the clickable timeline
+		}
+		// Bind the update event to every time the duration is re-calculated
+		$j( this.sequencer.getEmbedPlayer() ).bind( 'durationchange', updateClickableTimeline )
+		updateClickableTimeline();
 		
 	},
 	
@@ -125,7 +139,8 @@ mw.SequencerTimeline.prototype = {
 	drawTimeline: function( callback ){
 		var _this = this;
 		
-		// draw timeline
+		// draw clickable timeline
+		
 		
 		// xxx TODO better support multiple tracks :::
 		var smilSequenceTracks = this.sequencer.getSmil().getBody().getSeqElements();
@@ -275,9 +290,7 @@ mw.SequencerTimeline.prototype = {
 		}
 
 		// Give the track set a width relative to the number of clips
-		$clipTrackSet.css('width', ($clipTrackSet.find( '.timelineClip' ).length + 1) *
-			( this.timelineThumbSize.width + 12 )
-		);
+		$clipTrackSet.css('width', this.getTrackWidth( $clipTrackSet.data( 'trackIndex' ) ) );
 
 		// Add TrackClipInterface bindings:
 		var keyBindings = this.sequencer.getKeyBindings();
@@ -355,11 +368,25 @@ mw.SequencerTimeline.prototype = {
 	},
 	// expand the track size by clip length + 1
 	expandTrackSetSize: function ( trackIndex ){
-		var trackClipCount = this.getTimelineContainer().find( '.clipTrackSet' ).children().length;
 		//mw.log("SequencerTimeline::expandTrackSetSize: " + this.timelineThumbSize.width + ' tcc: ' + trackClipCount + ' ::' + ( ( this.timelineThumbSize.width + 16) * (trackClipCount + 2) ) );
 		this.getTracksContainer().find('.clipTrackSet').css({
-			'width' : ( (this.timelineThumbSize.width + 16) * (trackClipCount + 2 ) ) + 'px'
+			'width' : this.getTrackWidth( trackIndex, 2 ) + 'px'
 		});
+	},
+	/**
+	 * Get the width of a given sequence track 
+	 * @param {Number} trackIndex
+	 * 		the track to get the width for
+	 * @param {Number=} extraClips
+	 * 		Optional how many extra clips to 
+	 */
+	getTrackWidth: function( trackIndex, extraClips ){
+		if( !extraClips ){
+			extraClips = 1;
+		}
+		// TOOD make this use the trackIndex		
+		var trackClipCount = this.getTimelineContainer().find( '.clipTrackSet' ).children().length;
+		return ( (this.timelineThumbSize.width + 16) * (trackClipCount + extraClips ) )
 	},
 	restoreTrackSetSize: function ( trackIndex ){
 		var trackClipCount = this.getTimelineContainer().find( '.clipTrackSet' ).children().length;
@@ -571,7 +598,7 @@ mw.SequencerTimeline.prototype = {
 		}
 
 		// If not in multi select mode remove all existing selections except for clickClip
-		mw.log( ' HandleMultiSelect::' + keyBindings.shiftDown + ' ctrl_down:' + keyBindings.ctrlDown );
+		mw.log( 'SequencerTimeline::handleMultiSelect::' + keyBindings.shiftDown + ' ctrl_down:' + keyBindings.ctrlDown );
 
 		if ( ! keyBindings.shiftDown && ! keyBindings.ctrlDown ) {
 			$target.find( '.selectedClip' ).each( function( inx, selectedClip ) {
@@ -646,7 +673,7 @@ mw.SequencerTimeline.prototype = {
 			.data( 'startOffset' );
 
 		this.sequencer.getEmbedPlayer().setCurrentTime( seekTime, function(){
-			mw.log("handleMultiSelect::seek done")
+			mw.log("SequencerTimeline::handleMultiSelect: seek done ( setCurrentTime callback )");
 		});
 	},
 
@@ -658,7 +685,7 @@ mw.SequencerTimeline.prototype = {
 	drawClipThumb: function ( smilElement , relativeTime, callback ){
 		var _this = this;
 		var smil = this.sequencer.getSmil();
-
+		mw.log("SequencerTimeline::drawClipThumb " + relativeTime);
 		var clipButtonCss = {
 			'position' : 'absolute',
 			'bottom' : '2px',
@@ -764,6 +791,7 @@ mw.SequencerTimeline.prototype = {
 		smil.getBuffer().bufferedSeekRelativeTime( smilElement, relativeTime, function(){
 			// Add the seek, Add to canvas and draw thumb request
 			smil.getLayout().drawSmilElementToTarget( smilElement, $thumbTarget, relativeTime, function(){
+				mw.log("SequencerTimeline:: Done drawSmilElementToTarget " + $j( smilElement ).attr('id')  + ' cb:' + callback);
 				// Run the callback and un-set it for the current closure
 				if( callback ){
 					callback();

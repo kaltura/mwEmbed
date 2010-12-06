@@ -121,7 +121,6 @@ mw.SmilLayout.prototype = {
 	 *
 	 * @param
 	 */
-	// should be merged with addTHumb!
 	drawPlayerSmilElement: function( smilElement, $regionTarget ) {
 		var _this = this;
 		mw.log('SmilLayout:: drawPlayerSmilElement: ' );
@@ -168,19 +167,19 @@ mw.SmilLayout.prototype = {
 
 	drawSmilElementToTarget: function( smilElement, $target, relativeTime, callback ){
 		var _this = this;
-		mw.log('SmilLayout::drawSmilElementToTarget: ' + $j(smilElement).attr('id') + ' relative time:' + relativeTime );
 		if( $target.length == 0 ){
 			mw.log("Error drawSmilElementToTarget to empty target");
 			return ;
 		}
-		// parse the time in case it came in as human input
+		// Parse the time in case it came in as human input
 		relativeTime = this.smil.parseTime( relativeTime );
-
+		
+		mw.log('SmilLayout::drawSmilElementToTarget: ' + $j(smilElement).attr('id') + ' relative time:' + relativeTime );
 
 		switch ( this.smil.getRefType( smilElement ) ){
 			case 'video':
 				this.getVideoCanvasThumb( smilElement, $target, relativeTime, callback );
-				return ;
+				return false;
 			break;
 			case 'img':
 				// xxx We should use canvas here but for now just hack it up:
@@ -261,12 +260,13 @@ mw.SmilLayout.prototype = {
 		var _this = this;
 		var naturaSize = {};
 		var drawElement = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).find('video').get(0);
-
-		var drawFrame = function( drawElement ){
+		mw.log( "SmilLayout:: getVideoCanvasThumb ");
+		var drawFrame = function( drawElement ){			
 			if( !drawElement ){
 				mw.log( 'Error: SmilLayout::getVideoCanvasThumb:Draw element not loaded or defined')
 				return ;
 			}
+			mw.log( "SmilLayout::getVideoCanvasThumb: drawFrame " );
 			naturaSize.height = drawElement.videoHeight;
 			naturaSize.width = drawElement.videoWidth;
 			
@@ -293,19 +293,20 @@ mw.SmilLayout.prototype = {
 			} catch (e){
 				mw.log("Error:: getVideoCanvasThumb : could not draw canvas image");
 			}
-			if( callback )
+			if( callback ){
 				callback();
+			}
 		}
 
-		// check if relativeTime transform matches current absolute time then
+		// Check if relativeTime transform matches current absolute time then
 		// render directly:
 		var drawTime = ( relativeTime + this.smil.parseTime( $j( smilElement ).attr('clipBegin') ) );
 		if( this.smil.isSameFrameTime( drawElement.currentTime, drawTime ) ) {
-			mw.log("getVideoCanvasThumb: Draw time:" + drawTime + " matches video time drawFrame:" +drawElement.currentTime );
+			mw.log("SmilLayout::getVideoCanvasThumb: Draw time:" + drawTime + " matches video time drawFrame NOW:" +drawElement.currentTime );
 			drawFrame( drawElement );
 		} else {
 			// check if we need to spawn a video copy for the draw request
-			mw.log( 'getVideoCanvasThumb: Clone object' );
+			mw.log( 'SmilLayout::getVideoCanvasThumb: Clone object' );
 			// span new draw element
 			var $tmpFrameNode = $j( smilElement ).clone();
 			$tmpFrameNode.attr('id', $j( smilElement).attr('id') + '_tmpFrameNode' );

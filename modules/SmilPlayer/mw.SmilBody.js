@@ -79,12 +79,18 @@ mw.SmilBody.prototype = {
 
 	/**
 	* Render the body elements for a given time, use layout engine to draw elements
+	* if a callback is supplied
 	* @param time
-	*/
-	renderTime: function( time, deltaTime ){
+	* 	number time in seconds to seek to
+	* @param deltaTime
+	* 	optional duration of time to render ( 250ms or so ) 
+	* @param {function=} callback
+	* 	optional function to call once time has been rendered
+	*/	
+	renderTime: function( time, deltaTime, callback ){
 		var _this = this;
 		//mw.log( "SmilBody::renderTime:: " + time + ' delta: '+ deltaTime);
-
+		var elementForTimeStack = 0;
 		// Get all the draw elements from the body this time:
 		this.getElementsForTime( time ,
 			/* SMIL Element in Range */
@@ -97,7 +103,14 @@ mw.SmilBody.prototype = {
 				_this.smil.getLayout().drawElement( smilElement );
 
 				// Transform the elements via animate engine
-				_this.smil.getAnimate().animateTransform( smilElement, relativeTime, deltaTime );
+				elementForTimeStack++
+				_this.smil.getAnimate().animateTransform( smilElement, relativeTime, deltaTime, function(){					
+					elementForTimeStack--;
+					if( elementForTimeStack == 0 && callback){
+						mw.log('SmilBody::renderTime: all active elements animateTransform callback');
+						callback()
+					}
+				});
 			},
 			/* SMIL Element out of range */
 			function( smilElement ){

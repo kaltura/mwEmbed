@@ -164,10 +164,7 @@ mw.Smil.prototype = {
 		this.getLayout().setupLayout( this.embedPlayer.getRenderTarget() );
 
 		// Update the render target with bodyElements for the requested time
-		this.getBody().renderTime( time );
-
-		// Wait until buffer is ready and run the callback
-		this.getBuffer().addAssetsReadyCallback(callback);
+		this.getBody().renderTime( time , null, callback);
 	},
 
 	/**
@@ -292,7 +289,7 @@ mw.Smil.prototype = {
 	 * Get the duration form the smil body
 	 */
 	getDuration : function( forceRefresh ) {
-		//mw.log("Smil::getDuration: refresh: " + this.duration + ' refresh:' + forceRefresh);
+		//
 		// return 0 while we don't have the $dom loaded
 		if (!this.$dom) {
 			return 0;
@@ -302,6 +299,7 @@ mw.Smil.prototype = {
 			this.duration = this.getBody().getDuration( forceRefresh );
 			// Trigger the duration change event:
 			if( orgDuration != this.duration ){
+				mw.log("Smil::getDuration: forceRefresh:" + this.duration + ' != ' + ' old duraiton: ' + orgDuration );	
 				$j( this.getEmbedPlayer() ).trigger('durationchange');
 			}
 		}

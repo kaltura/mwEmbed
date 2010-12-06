@@ -306,13 +306,14 @@ mw.SmilBuffer.prototype = {
 		
 		$j( smilElement ).data('activeSeek', true);
 		var instanceCallback = function(){
+			mw.log("SmilBuffer::bufferedSeekRelativeTime: DONE ");
 			$j( smilElement ).data('activeSeek', false);
 			callback();
 		}
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'video':
 			case 'audio':
-				this.mediaBufferSeek( smilElement, absoluteTime, instanceCallback )
+				this.mediaBufferSeek( smilElement, absoluteTime, instanceCallback );
 			break;
 			case 'img':
 				this.loadImageCallback( smilElement, instanceCallback );
@@ -410,48 +411,71 @@ mw.SmilBuffer.prototype = {
 			$j( '#' + assetId ).find('img').load( callback );
 		}
 	},
+	/**
+	 * once browsers work better with seeks we can use this code: 
+	 */
 	mediaBufferSeek: function ( smilElement, seekTime, callback ){
 		var _this = this;
 		var assetId = this.smil.getSmilElementPlayerID( smilElement );
-
+		
 		// Make sure the target video is in the dom:
 		this.loadElement( smilElement );
 		var $media = $j( '#' + assetId ).find('audio,video');
 		var media = $media.get(0);
 		
 		mw.log("SmilBuffer::mediaBufferSeek: " + assetId + ' ctime:' + media.currentTime + ' seekTime:' + seekTime );
-		
-		var mediaMetaLoaded = function(){
+		var mediaLoadedFlag = false;
+		var mediaMetaLoaded = function(){		
 			mw.log("SmilBuffer::mediaBufferSeek: Bind against: "  + $media.parent().attr('id') );
 			// check if we need to issue a seek
 			if( media.currentTime == seekTime ){
 				mw.log("SmilBuffer::mediaBufferSeek: Already at target time:" + assetId + ' time:' + seekTime );
 				callback();
+				callback = null;
 				return ;
 			}
 			
 			// Register the seeked callback ( throw away any timed out seek request ) 
 			$media.unbind('seeked').bind('seeked', function(){
-				mw.log("SmilBuffer::mediaBufferSeek: DONE for:" + assetId + ' time:' + seekTime );
+				mw.log("SmilBuffer::mediaBufferSeek: DONE for:" + assetId + ' time:' + media.currentTime );
 				callback();
+				callback = null;
 			});
 			$media.unbind('seeking').bind( 'seeking', function(){
-				mw.log("SmilBuffer::mediaBufferSeek: SEEKING " + assetId ); 
+				mw.log("SmilBuffer::mediaBufferSeek: SEEKING:" + assetId ); 
+				// add a timeout re-try
+				setTimeout(function(){
+					// if the callback has not been called retry: 
+					if( callback ){
+						mw.log("SmilBuffer::mediaBufferSeek: SEEK TimeOut ( retry ) " + assetId );
+						mediaMetaLoaded();
+					} else{
+						mw.log( "SmilBuffer::mediaBufferSeek: ct: " + media.currentTime + ' st:' + seekTime);
+					}
+				}, 1000 );
 			})
-			// Issue the seek
-			try{
-				media.currentTime = seekTime;
-			} catch ( e ){
-				mw.log( 'Error: in SmilBuffer could not set currentTime' );
-			}
+			// issue a play ( makes seeks work more consistently ) 
+			media.play();
+			setTimeout(function(){
+				mw.log("SmilBuffer::mediaBufferSeek: set: " + assetId + ' to: ' + seekTime);
+				// Issue the seek
+				try{
+					media.pause();
+					media.currentTime = seekTime;
+				} catch ( e ){
+					mw.log( 'Error: in SmilBuffer could not set currentTime' );
+				}
+			}, 10 ); // give the browser 10ms to make sure the video tag is " really ready " 
 		}
 		mw.log("SmilBuffer::mediaBufferSeek: READY State: " + $media.attr('readyState') );
 		// Read the video state: http://www.w3.org/TR/html5/video.html#dom-media-have_nothing
-		if( media.readyState === 0 ){ // HAVE_NOTHING 
-			// Check that we have metadata ( so we can issue the seek )
-			$media.unbind( 'loadedmetadata' ).bind( 'loadedmetadata', function(){
+		if( $media.attr('readyState') === 0 ){ // HAVE_NOTHING 
+			// Check that we have metadata ( so we can issue the seek )			
+			$media.bind( 'loadedmetadata', function(){
+				$media.unbind( 'loadedmetadata' );
 				mediaMetaLoaded();
 			} );
+			media.load();
 		}else {
 			// Already have metadata directly issue the seek with callback
 			mediaMetaLoaded();
