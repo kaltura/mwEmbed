@@ -271,7 +271,6 @@ mw.MobileAdTimeline.prototype = {
 				displayTarget.playbackDone
 			);
 		}
-
 		// Check for companion ads:
 		if ( adConf.companions && adConf.companions.length ) {
 			var companionConf = this.selectFromArray(adConf.companions);
@@ -281,7 +280,7 @@ mw.MobileAdTimeline.prototype = {
 			var ctargets = this.timelineTargets[timeTargetType].companionTargets;
 			var companionTarget = ctargets[Math.floor(Math.random()
 					* ctargets.length)];
-
+			
 			var originalCompanionHtml = $j('#' + companionTarget.elementid).html();
 			
 			// Display the companion:

@@ -57,7 +57,8 @@ var mwEnabledModuleList = [
 	'SwarmTransport',
 	'SyntaxHighlighter',
 	'MiroSubs',
-	'PlayerThemer'
+	'PlayerThemer',
+	'KalturaSupport'
 ];
 
 /**

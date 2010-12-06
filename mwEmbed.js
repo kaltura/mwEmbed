@@ -162,8 +162,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	mw.getNonDefaultConfigObject = function(){
 		var nonDefaultConfig = {};
 		for( var i =0 ; i < mwNonDefaultConfigList.length; i ++){
-			var name = mwNonDefaultConfigList[i];
-			nonDefaultConfig[ name ] = mw.getConfig(name )
+			var configKey = mwNonDefaultConfigList[i];
+			nonDefaultConfig[ configKey ] = mw.getConfig( configKey );
 		}
 		return nonDefaultConfig;
 	}

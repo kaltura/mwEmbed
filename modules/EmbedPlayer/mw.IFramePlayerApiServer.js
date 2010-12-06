@@ -15,7 +15,7 @@
 */
 // Bind apiServer to newEmbedPlayers:
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {	
-	embedPlayer['iFrameServer'] = new mw.IFramePlayerApiServer( embedPlayer )
+	embedPlayer['iFrameServer'] = new mw.IFramePlayerApiServer( embedPlayer );
 });
 
 mw.IFramePlayerApiServer = function( embedPlayer ){
@@ -72,7 +72,7 @@ mw.IFramePlayerApiServer.prototype = {
 		$j.each( this.exportedBindings, function( inx, bindName ){
 			$j( _this.embedPlayer ).bind( bindName, function( event ){
 				var argSet = {};
-				mw.log("IFramePlayerApiServer::PostBind:: " + bindName );
+				//mw.log("IFramePlayerApiServer::PostBind:: " + bindName );
 				// @@FIXME Per event 'useful data' extraction
 				// update argSet from 'event'
 				_this.postMessage({

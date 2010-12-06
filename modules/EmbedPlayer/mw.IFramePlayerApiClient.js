@@ -83,7 +83,7 @@ mw.IFramePlayerApiClient.prototype = {
 		}
 		// Trigger any binding events 
 		if( typeof msgObject.triggerName != 'undefined' && msgObject.triggerArgs != 'undefined') {
-			mw.log('IFramePlayerApiClient:: trigger: ' + msgObject.triggerName );
+			//mw.log('IFramePlayerApiClient:: trigger: ' + msgObject.triggerName );
 			$j( _this.playerProxy ).trigger( msgObject.triggerName, msgObject.triggerArgs );
 		}
 		// @@TODO:: Allow extending modules to wrap these api events ( kaltura kdp javascript emulation ? )
@@ -106,7 +106,7 @@ mw.IFramePlayerApiClient.prototype = {
 		}
 		// Append '_ifp' ( iframe player ) to id of real iframe so that 'id', and 'src' attributes don't conflict
 		var originalIframeId = ( $( this.selector ).attr( 'id' ) )? $( this.selector ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
-		var iframePlayerId = originalIframeId + '_ifp' ; // here we use random to generate a unique id
+		var iframePlayerId = originalIframeId + '_ifp' ; // use random to generate a unique id
 		// Append the div element proxy after the iframe 
 		$j( this.selector )
 			.attr('id', iframePlayerId)

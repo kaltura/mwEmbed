@@ -32,9 +32,10 @@
 	<script type="text/javascript" src="../../../mwEmbed.js?debug=true"></script>
 	
 	<script type="text/javascript">
+	mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
 	
 	mw.ready(function(){		
-		mw.load( [ 'mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'JSON' ] , function(){						
+		mw.load(  ['mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'JSON' ] , function(){						
 			// Add resize binding:			
 			$j('#resizable').resizable();		
 			
@@ -44,16 +45,15 @@
 				bindIframePlayer();							
 			});
 			
-			function appendIframe(){				
+			function appendIframe(){			
+				//alert('append::' + mw.getConfig('EmbedPlayer.EnableIframeApi'));
+					
 				$('#iframeHolder').empty().append(
 					$j('<iframe />').attr({
 						"id" : "vid",
 						"src" : '../../../mwEmbedFrame.php/wid/' + $('#kwidgetid').val() 
-							+ '/entry_id/' + $('#kentryid').val() + '/?debug=true'
-							// add the parent domain to the frame location:  
-							+ '#' + encodeURIComponent( 
-									JSON.stringify( { 'parentUrl' : document.location.href } )
-								)
+							+ '/entry_id/' + $('#kentryid').val() + '/?debug=true' +
+							mw.getKalturaIframeHash() // add the parent domain to the frame location:  
 					})
 					.css({
 						'width' : '100%',

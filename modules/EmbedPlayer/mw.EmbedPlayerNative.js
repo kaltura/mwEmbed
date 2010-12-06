@@ -87,7 +87,7 @@ mw.EmbedPlayerNative = {
 		_this.bufferStartFlag = false;
 		_this.bufferEndFlag = false;
 		
-		mw.log( "native play url:" + this.getSrc( this.currentTime  ) + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
+		mw.log( "EmbedPlayerNative:: play url:" + this.getSrc( this.currentTime  ) + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
 
 		// Check if using native controls and already the "pid" is already in the DOM
 		if( ( 	this.useNativePlayerControls()

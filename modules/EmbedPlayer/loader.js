@@ -1,7 +1,6 @@
 /**
 * EmbedPlayer loader
 */
-
 /**
 * Default player module configuration
 */
@@ -88,7 +87,10 @@
 		'EmbedPlayer.EnableURLTimeEncoding' : 'flash',
 		
 		// The domains which can read and send events to the video player
-		'EmbedPLayer.IFramePlayer.DomainWhiteList' : '*'
+		'EmbedPLayer.IFramePlayer.DomainWhiteList' : '*',
+		
+		// If the iframe should send and receive javascript events across domains via postMessage 
+		'EmbedPlayer.EnableIframeApi' : false
 	} );
 
 	/*
@@ -300,8 +302,8 @@
 		} else {
 			callback();
 		}
-	}
-
+	};
+	
 	/**
 	* Add the module loader function:
 	*/
@@ -354,9 +356,9 @@
 		if( !!document.createElement('video').canPlayType && !$j.browser.safari ) {
 			dependencyRequest[0].push( 'mw.EmbedPlayerNative' )
 		}
-
 		// Check if the iFrame player server is enabled:
-		if (mw.getConfig('EmbedPlayer.EnableIframeApi')) {
+		//alert('ifmra' + mw.getConfig('EmbedPlayer.EnableIframeApi'));
+		if ( mw.getConfig('EmbedPlayer.EnableIframeApi') ) {
 			dependencyRequest[0].push('mw.EmbedPlayerNative');
 			dependencyRequest[0].push('$j.postMessage');
 			dependencyRequest[0].push('mw.IFramePlayerApiServer');

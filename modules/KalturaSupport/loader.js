@@ -18,6 +18,7 @@
 		// A video file for 
 		'Kaltura.MissingFlavorVideoUrl' : 'http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_uypqlsor/flavor/1_lljfzesm/a.mp4?novar=0'
 	} );
+	
 	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
 	mw.mergeConfig( 'EmbedPlayer.Attributes', {
 		'kentryid' : null,
@@ -30,6 +31,7 @@
 	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 		'data-flavorid'
 	]);
+	
 	mw.addResourcePaths( {
 		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
 		"mw.KAnalytics" : "mw.KAnalytics.js",
@@ -45,6 +47,7 @@
 		"KalturaAccessControl" : "kalturaJsClient/KalturaVO.js",
 		"MD5" : "kalturaJsClient/webtoolkit.md5.js"
 	} );
+	
 	// Set a local variable with the request set so we can append it to embedPlayer
 	var kalturaSupportRequestSet = [
 	  'KalturaClientBase',
@@ -59,6 +62,7 @@
 	  'mw.MobileAdTimeline',
 	  'mw.KAds' 
 	];
+	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
 		return $j.merge( kalturaSupportRequestSet, 
 			[ 
@@ -187,77 +191,21 @@
 				});
 				// Check if we are doing iFrame rewrite ( skip local library loading )
 				if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){					
-					// Local function to handle iframe rewrites: 
-					var doRewriteIframe = function( appendToIframeRequest ){
-						// Establish the "server" domain via mwEmbed path: 
-						var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
-						var iframeServer = mwPathUri.protocol + '://' + mwPathUri.host;
-						
-						$j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).each( function( inx, playerTarget ) {
-							// Output the iframe request in kaltura /{key}/{value} request format: 
-							var iframeRequest = '';
-							var iframeRequestMap = {
+					$j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).each( function(inx, playerTarget ) {
+						var kParams = {};
+						var iframeRequestMap = {
 								'kwidgetid' : 'wid',
 								'kuiconfid' : 'uiconf_id', 
 								'kentryid' : 'entry_id',
 								'kplaylistid' : 'playlist_id'
+						}
+						for( var tagKey in iframeRequestMap ){
+							if( $j(playerTarget).attr( tagKey ) ){
+								kParams[ iframeRequestMap[tagKey] ] = $j(playerTarget).attr( tagKey );
 							}
-							for( var tagKey in iframeRequestMap ){
-								if( $j(playerTarget).attr( tagKey ) ){
-									iframeRequest+= '/' + iframeRequestMap[tagKey] + 
-										'/' + encodeURIComponent( $j(playerTarget).attr( tagKey ) );
-								}
-							}
-							var kArgumentsSeperator ='/?';
-							
-							// @@todo should move these url flags into config
-							// Add debug flag if set: 
-							if( mw.getConfig( 'debug' ) ){
-								iframeRequest+= kArgumentsSeperator + 'debug=true';
-								kArgumentsSeperator ='';
-							}
-							// Pass along forceHTML5 if present: 
-							if( document.URL.indexOf('forceMobileHTML5') != -1 ){
-								iframeRequest+= kArgumentsSeperator + 'forceMobileHTML5=true';
-								kArgumentsSeperator ='';
-							};
-							
-							// Append any requested string to the url
-							if( appendToIframeRequest){
-								iframeRequest+= appendToIframeRequest
-							}
-							var iframeId = $j( playerTarget ).attr('id');
-							var $iframe = $j('<iframe />').attr({
-								'id' : $j( playerTarget ).attr('id'),
-								'class' : $j( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',
-								'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest,
-								'height' : $j( playerTarget ).height(),
-								'width' : $j( playerTarget ).width()
-							}).css('border', '0px');
-							
-							// Replace the player with the iframe: 
-							$j( playerTarget ).replaceWith( $iframe );
-						});
-					}
-					
-					if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
-						// Load the iFrame player client 
-						mw.load( ['mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'JSON'], function(){
-							// Rewrite the iframe encoding the parent url hash to support the iframe api
-							doRewriteIframe('#' + encodeURIComponent( 
-								JSON.stringify( { 
-										'parentUrl' : document.location.href,
-										'mwConfig' : mw.getNonDefaultConfigObject()
-									} )
-							));							
-							// Invoke the iframe player api system: 
-							$j( '.mwEmbedKalturaIframe').iFramePlayer({
-								'iframeServer' : iframeServer
-							});
-						});
-					} else {
-						doRewriteIframe();
-					}
+						}
+						$j( playerTarget ).kalturaIframePlayer( kParams );
+					});
 					// Don't do any other rewrites or library loading
 					return true;
 				}
@@ -294,7 +242,7 @@
 					mw.load('EmbedPlayer', function(){
 						// Remove the general loading spinner ( embedPlayer takes over )
 						$j('.mwEmbedKalturaVideoSwap').embedPlayer();
-					})
+					});
 				}
 			}
 		}
@@ -316,6 +264,91 @@
 			}
 		}
 	} );
+	
+	/**
+	 * Get a kaltura iframe f
+	 * @param {object} iframeParams
+	 * 	the kaltura iframe parameters 
+	 * @param {function} callback
+	 * 	optional function called once iframe player has been loaded
+	 */
+	jQuery.fn.kalturaIframePlayer = function( iframeParams, callback ) {
+		mw.log( '$j.kalturaIframePlayer()::' );
+		var playerTarget = this;
+		
+		// Establish the "server" domain via mwEmbed path: 
+		var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
+		
+		// Local function to handle iframe rewrites: 
+		var doRewriteIframe = function( enableIframeApi ){
+			
+			// Build the iframe request from supplied iframeParams: 
+			var iframeRequest = '';
+			for( var key in iframeParams ){
+				iframeRequest+= '/' + key + 
+					'/' + encodeURIComponent(  iframeParams [ key ] );
+			};
+			
+			var argSeperator ='/?';
+			
+			// @@todo should move these url flags into config options
+			
+			// Add debug flag if set: 
+			if( mw.getConfig( 'debug' ) ){
+				iframeRequest+= argSeperator + 'debug=true';
+				argSeperator ='&';
+			}
+			// Pass along forceHTML5 if present: 
+			if( document.URL.indexOf('forceMobileHTML5') != -1 ){
+				iframeRequest+= argSeperator + 'forceMobileHTML5=true';
+				argSeperator ='&';
+			};
+			
+			
+			iframeRequest+= mw.getKalturaIframeHash();
+			
+			var $iframe = $j('<iframe />').attr({
+				'id' : $j( playerTarget ).attr('id'),
+				'class' : $j( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',
+				'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest,
+				'height' : $j( playerTarget ).height(),
+				'width' : $j( playerTarget ).width()
+			}).css('border', '0px');
+			
+			// Replace the player with the iframe: 
+			$j( playerTarget ).replaceWith( $iframe );
+			
+			// if the server is enabled 
+			if( enableIframeApi ){
+				var iframeServer = mwPathUri.protocol + '://' + mwPathUri.host;
+				// Invoke the iframe player api system: 
+				$j( '.mwEmbedKalturaIframe').iFramePlayer({
+					'iframeServer' : iframeServer
+				});
+			}
+		};
+		
+		if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
+			// Load the iFrame player client
+			mw.load( ['mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'JSON' ], function(){
+				doRewriteIframe( true );											
+			});
+		} else {
+			doRewriteIframe();			
+		}
+	};
+	mw.getKalturaIframeHash = function(){
+		// Append the configuration and request domain to the iframe hash: 
+		var iframeMwConfig =  mw.getNonDefaultConfigObject();
+		// No need to pass the IframeRewrite option to the iframe:
+		delete iframeMwConfig['Kaltura.IframeRewrite'];	
+		return '#' + encodeURIComponent( 
+				JSON.stringify( { 
+					'parentUrl' : document.location.href,
+					'mwConfig' :iframeMwConfig
+				} )
+		);
+	}
 	/**
 	 * Get the list of embed objects on the page that are 'kaltura players' 
 	 */
@@ -348,7 +381,16 @@
 			}
 		}
 		return kalturaPlayers;
-	}
+	};
+	
+	/**
+	 * Get kaltura embed settings from a swf url and flashvars object
+	 * 
+	 * @param {string} swfUrl
+	 * 	url to kaltura platform hosted swf
+	 * @param {object} flashvars
+	 * 	object mapping kaltura variables, ( overrides url based variables ) 
+	 */
 	mw.getKalturaEmbedSettings = function( swfUrl, flashvars ){
 		if( !flashvars )
 			flashvars= {};
@@ -379,7 +421,7 @@
 			}
 			prevUrlPart = curUrlPart;
 		}
-		// Normalize the entryid to url request equivalents
+		// Normalize the entryid to url request equivalent:
 		if( embedSettings['entryid'] ){
 			embedSettings['entry_id'] =  embedSettings['entryid'];
 		}

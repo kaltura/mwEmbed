@@ -310,7 +310,7 @@ class kalturaIframe {
 				// Insert the html5 kalturaLoader script  
 				document.write(unescape("%3Cscript src='<?php echo KALTURA_MWEMBED_PATH ?>mwEmbedLoader.js' type='text/javascript'%3E%3C/script%3E"));
 			</script>
-			<script type="text/javascript">			
+			<script type="text/javascript">				
 				// Parse any configuration options passed in via hash url:
 				var hashString = document.location.hash; 
 				if( hashString ){
@@ -321,7 +321,6 @@ class kalturaIframe {
 						mw.setConfig( hashObj.mwConfig );
 					}
 				}
-				
 				// Don't rewrite the video tag from the loader ( if html5 is supported it will be 
 				// invoked bellow and respect the persistant video tag option for iPad overlays )
 				mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );	
@@ -336,9 +335,6 @@ class kalturaIframe {
 					// We can't support full screen in object context since it requires outer page DOM control
 					mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
 		
-					// By default the iFrame api is dissabled ( its enabled via iframe url hash config )
-					mw.setConfig( 'EmbedPlayer.EnableIframeApi', false );
-
 					// Load the mwEmbed resource library
 					mw.ready(function(){
 						// Bind window resize to reize the player: 

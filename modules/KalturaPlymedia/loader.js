@@ -9,12 +9,16 @@
 	mw.addResourcePaths({
 		// Your core plyMedia html5 library 
 		"plyMeida" : "plyMeida/plyMeida.js",
+		
 		// Any other plyMedia resources ( css multiple js classes? ) 
 		"plyMeida.style" :  "plyMeida/plyMeida.css",
 		
 		// The configuration file bridges the mwEmbed api with plyMedia interface api
 		"mw.plyMediaConfig" : "mw.plyMediaConfig.js"
 	});
+	mw.addModuleLoader( 'plyMeida', function(){
+		return ['plyMeida', 'plyMeida.style', 'mw.plyMediaConfig'];
+	})
 	
 	// Bind the plyMedia player where the uiconf includes the plymedia plugin
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){

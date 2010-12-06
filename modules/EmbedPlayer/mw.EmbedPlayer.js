@@ -2675,7 +2675,7 @@ mw.EmbedPlayer.prototype = {
 		// Trigger the play event
 		if( this.paused && this.bubbleEventCheck() ){
 			this.paused = false;
-			mw.log("trigger play event::" + !this.paused);
+			mw.log("EmbedPlayer:: trigger play even::" + !this.paused);
 			$j( this ).trigger( 'play' );
 		}
 		this.paused = false;
