@@ -251,7 +251,7 @@ mw.includeAllModuleMessages();
 			var inlineSources = this.embedPlayer.mediaElement.getSources( 'text' );
 			// Add all the sources to textSources
 			for( var i = 0 ; i < inlineSources.length ; i++ ) {
-				// make a new textSource:
+				// Make a new textSource:
 				var source = new TextSource( inlineSources[i] );
 				this.textSources.push( source );
 			}
@@ -262,12 +262,11 @@ mw.includeAllModuleMessages();
 				callback();
 				return ;
 			}
-
 			// Try to get sources from text provider:
 			var provider_id = ( this.embedPlayer.apiProvider ) ? this.embedPlayer.apiProvider : 'local';
 			var apiUrl = mw.getApiProviderURL( provider_id );
-			var assetKey = 	this.embedPlayer.apiTitleKey;
-			if( !apiUrl || !assetKey ) {
+			var apiTitleKey = 	this.embedPlayer.apiTitleKey;
+			if( !apiUrl || !apiTitleKey ) {
 				mw.log("Error: loading source without apiProvider or apiTitleKey");
 				return ;
 			}
@@ -279,7 +278,7 @@ mw.includeAllModuleMessages();
 			} );
 
 			// Load the textProvider sources
-			this.textProvider.loadSources( assetKey, function( textSources ) {
+			this.textProvider.loadSources( apiTitleKey, function( textSources ) {
 				for( var i=0; i < textSources.length; i++ ) {
 					var textSource = textSources[ i ];
 					// Try to insert the track source:
@@ -1038,7 +1037,6 @@ mw.includeAllModuleMessages();
 				mw.log("Error: no handler for type: " + this.getMIMEType() );
 				return ;
 			}
-
 			// Try to load src via textProvider:
 			if( this.textProvider && this.titleKey ) {
 				this.textProvider.loadTitleKey( this.titleKey, function( data ) {
@@ -1342,14 +1340,14 @@ mw.includeAllModuleMessages();
 		},
 
 		/**
-		 * Loads all available source for a given assetKey
+		 * Loads all available source for a given apiTitleKey
 		 *
-		 * @param {String} assetKey For mediaWiki the assetKey is the "wiki title"
+		 * @param {String} apiTitleKey For mediaWiki the apiTitleKey is the "wiki title"
 		 */
-		loadSources: function( assetKey, callback ) {
+		loadSources: function( apiTitleKey, callback ) {
 			var request = {};
 			var _this = this;
-			this.getSourcePages( assetKey, function( sourcePages ) {
+			this.getSourcePages( apiTitleKey, function( sourcePages ) {
 				if( ! sourcePages.query.allpages ) {
 					//Check if a shared asset
 					mw.log( 'no subtitle pages found');

@@ -15,7 +15,9 @@
 	} );
 	
 	mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [ 
-	   'srclang'
+	   'srclang',
+	   'titleKey',
+	   'category'
 	]);
 	
 	mw.setDefaultConfig( {
