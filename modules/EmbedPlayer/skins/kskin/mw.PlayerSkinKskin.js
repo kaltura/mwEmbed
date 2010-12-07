@@ -49,7 +49,6 @@ mw.PlayerSkinKskin = {
 		'timeDisplay': {
 			'w':45
 		},
-
 		'optionsMenu': {
 			'w' : 0,
 			'o' : function( ctrlObj ) {

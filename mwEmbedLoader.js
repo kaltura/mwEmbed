@@ -42,8 +42,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.192.32/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://192.168.192.32/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -375,7 +375,6 @@ function kAddScript(){
 		  'KalturaClient',
 		  'KalturaAccessControlService',
 		  'KalturaAccessControlOrderBy',
-		  'KalturaAccessControl',
 		  'MD5',
 		  'mw.KWidgetSupport',
 		  'mw.KAnalytics', 
@@ -383,7 +382,7 @@ function kAddScript(){
 		  'mw.MobileAdTimeline',
 		  'mw.KAds'
 		]);
-		// kaltura playlist support ( so small relative to client libraries that we always include it )
+		// kaltura playlist support ( so small relative to client libraries that we always include it )	
 		jsRequestSet.push([
 		   'mw.Playlist',
 		   'mw.PlaylistHandlerMediaRss',

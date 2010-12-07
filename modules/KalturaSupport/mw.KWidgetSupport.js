@@ -96,34 +96,19 @@ mw.KWidgetSupport.prototype = {
 				return; 
 			}
 		
-			//mw.log( uiConf.confFile );
-			//mw.log( uiConf.confFileFeatures );
-			//debugger;
+			mw.log( uiConf.confFile );
+			mw.log( uiConf.confFileFeatures );
 
 			// Check for the bumper plugin ( note we should probably have a separate uiConf js class )
-			var $uiConf = $j( uiConf.confFileFeatures );
-			var $uiConfFile = $j( uiConf.confFile );
+			var $uiConf = $j( uiConf.confFile );
 			
 			var waitForBumper = false;
-			var waitForAds = false;
 			var instanceCallback = function(){
-				if( !waitForBumper && !waitForAds){
-					
-					$( embedPlayer ).trigger('KalturaSupport.checkUiConf', [$uiConf, $uiConfFile] );
-					callback();
-					
+				if( !waitForBumper ){					
+					//mw.runTriggersCallback('KalturaSupport.checkUiConf', [$uiConf, $uiConfFile] );
+					$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', $uiConf, callback);		
 				}
-			}			
-
-			
-			// Check if the ad plugin is enabled:
-			if( $uiConf.find('advertising').length && $uiConf.find('advertising').attr('enabled') == 'true' ){
-				waitForAds = true;
-				mw.addKalturaAds( embedPlayer, $uiConf.find('advertising'), function(){
-					waitForAds = false;
-					instanceCallback();
-				});
-			}
+			}						
 			
 			// Check if the bumper plugin is enabled:
 			var $bumbPlug = $uiConf.find("uiVars var[key='bumper.plugin']");

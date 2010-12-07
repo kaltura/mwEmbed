@@ -59,7 +59,8 @@ var mwEnabledModuleList = [
 	'MiroSubs',
 	'PlayerThemer',
 	'KalturaSupport',
-	'KalturaWatermark'
+	'KalturaWatermark',
+	'KalturaAdSupport'
 ];
 
 /**

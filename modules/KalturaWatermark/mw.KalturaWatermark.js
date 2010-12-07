@@ -3,7 +3,6 @@
 mw.KalturaWatermark = {
 	'draw' : function( $watermarkConf, embedPlayer ){
 		var watermarkCss = this.getCss( $watermarkConf );
-		alert( 'add to html');
 		embedPlayer.$interface.append( 
 			$j('<span />')
 			.css( watermarkCss )

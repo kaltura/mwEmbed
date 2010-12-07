@@ -40,7 +40,7 @@ mw.KAds.prototype = {
 	loadAds: function( callback ){		
 		var _this = this;			
 		var loadQueueCount = 0;
-		
+		alert( 'loadAds');
 		// Define "global" companion targets:
 		var companionTargets = []; 
 		this.$adConfig.find( 'companion ad' ).each(function( inx, node ){			
@@ -69,6 +69,7 @@ mw.KAds.prototype = {
 					}
 				}				
 				if( $j(node).attr('url') ) {
+					alert( 'found url: ' +  $j(node).attr('url'));
 					loadQueueCount++;
 					// Load and parse the adXML into displayConf format
 					_this.getAdDisplayConf( $j(node).attr('url'), function( adDisplayConf ){

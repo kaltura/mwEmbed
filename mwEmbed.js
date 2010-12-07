@@ -2398,66 +2398,77 @@ mw.absoluteUrl = function( src, contextUrl ) {
 	};
 
 	/**
-	 * Runs all the triggers on a given object with a single "callback"
-	 *
-	 * Normal tirgger calls will run the callback directly multiple times for
-	 * every binded function.
-	 *
-	 * With runTriggersCallback() callback is not called until all the binded
-	 * events have been run.
-	 *
-	 * @param {object}
-	 *            targetObject Target object to run triggers on
-	 * @param {string}
-	 *            triggerName Name of trigger to be run
-	 * @param {function}
-	 *            callback Function called once all triggers have been run
-	 *
-	 */
-	mw.runTriggersCallback = function( targetObject, triggerName, callback ){
-		mw.log( 'mw.runTriggersCallback:: ' + triggerName );
-		// If events are not present directly run callback
-		if( ! $j( targetObject ).data( 'events' ) ||
-				! $j( targetObject ).data( 'events' )[ triggerName ] ) {
-			mw.log( ' trigger name not found: ' + triggerName );
-			callback();
-			return ;
-		}
-		var callbackSet = $j( targetObject ).data( 'events' )[ triggerName ];
-		if( !callbackSet || callbackSet.length === 0 ){
-			mw.log( ' No events run the callback directly: ' + triggerName );
-			// No events run the callback directly
-			callback();
-			return ;
-		}
-		// Set the callbackCount
-		var callbackCount = ( callbackSet.length )? callbackSet.length : 1;
-
-		mw.log(" runTriggersCallback:: " + callbackCount );
-		var callInx = 0;
-		$j( targetObject ).trigger( triggerName, function() {
-			callInx++;
-			if( callInx == callbackCount ){
-				//mw.log(" callbackCountReached run:: " + callback);
-				// Run callback
-				callback();
-			}
-		} );
-	};
-	/**
 	 * Utility jQuery bindings Setup after jQuery is available ).
 	 */
 	mw.dojQueryBindings = function() {
 		mw.log( 'mw.dojQueryBindings' );
 		( function( $ ) {
+			
+			/**
+			 * Runs all the triggers on all the named bindings of an object with a single callback
+			 *
+			 * Normal jQuery tirgger calls will run the callback directly multiple times for
+			 * every binded function.
+			 *
+			 * With triggerQueueCallback() callback is not called until all the binded
+			 * events have been run.
+			 *
+			 * @param {string}
+			 *            triggerName Name of trigger to be run
+			 * @param {object=}
+			 *            arguments Optional arguments object to be passed to the callback
+			 * @param {function}
+			 *            callback Function called once all triggers have been run
+			 *
+			 */
+			$.fn.triggerQueueCallback = function( triggerName, triggerParam, callback ){
+				var targetObject = this;
+				
+				// Support optional triggerParam data
+				if( !callback && typeof triggerParam == 'function' ){
+					callback = triggerParam;
+					triggerParam = null;
+				}
+				// Support namespaced event segmentation ( jQuery 
+				var triggerBaseName =triggerName.split(".", 1)[0]; 
+				// Make there is a set of binded callback events: 
+				var callbackSet = $j( targetObject ).data( 'events' )[ triggerBaseName ];
+				
 
+				if( !callbackSet || callbackSet.length === 0 ){
+					mw.log( '"mwEmbed::jQuery.triggerQueueCallback: No events run the callback directly: ' + triggerName );
+					// No events run the callback directly
+					callback();
+					return ;
+				}
+				
+				// Set the callbackCount
+				var callbackCount = ( callbackSet.length )? callbackSet.length : 1;
+				mw.log("mwEmbed::jQuery.triggerQueueCallback: " + callbackCount );
+				var callInx = 0;
+				var doCallbackCheck = function() {
+					callInx++;
+					if( callInx == callbackCount ){
+						callback();
+					}
+				};
+				// Could also use the local arguments array
+				// arguments[1] = doCallbackCheck;
+				// $( this ).trigger(triggerName, $j.makeArray(  arguments ) );
+				if( triggerParam ){
+					$( this ).trigger( triggerName, [ triggerParam, doCallbackCheck ]);
+				} else {
+					$( this ).trigger( triggerName, [ doCallbackCheck ] );
+				}
+			};
+			
 			/**
 			 * Set a given selector html to the loading spinner:
 			 */
 			$.fn.loadingSpinner = function( ) {
 				if ( this ) {
-					$j( this ).html(
-						$j( '<div />' )
+					$( this ).html(
+						$( '<div />' )
 							.addClass( "loadingSpinner" )
 					);
 				}

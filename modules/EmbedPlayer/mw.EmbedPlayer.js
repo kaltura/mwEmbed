@@ -73,8 +73,8 @@ mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [
 	 *
 	 * Rewrites all tags via a given selector
 	 *
-	 * @param {object=}
-	 *      attributes Optional embedPlayer attributes for the given video
+	 * @param {object=} attributes 
+	 * 		Optional embedPlayer attributes for the given video
 	 *      interface. Attributes Object can include any key value pair
 	 *      that would otherwise be an attribute in the html element.
 	 *
@@ -1573,10 +1573,10 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 
 		// Scope the end of check for player sources so it can be called in a
-		// callback
 		var finishCheckPlayerSources = function(){
+			// callback
 			// Run embedPlayer sources hook
-			mw.runTriggersCallback( _this, 'checkPlayerSourcesEvent', function(){
+			$j( _this ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
 				_this.checkForTimedText();
 			});
 		};

@@ -38,8 +38,6 @@
 		"mw.PlaylistHandlerKaltura"	: "mw.PlaylistHandlerKaltura.js", 
 		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
 		"mw.KDPMapping" : "mw.KDPMapping.js",
-		"mw.MobileAdTimeline" : "mw.MobileAdTimeline.js",
-		"mw.KAds" : "mw.KAds.js",
 		"KalturaClientBase"	: "kalturaJsClient/KalturaClientBase.js",
 		"KalturaClient" : "kalturaJsClient/KalturaClient.js",
 		"KalturaAccessControlService" : "kalturaJsClient/KalturaServices.js",
