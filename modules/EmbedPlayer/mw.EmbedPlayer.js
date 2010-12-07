@@ -450,8 +450,7 @@ EmbedPlayerManager.prototype = {
 			}
 		}
 
-		// Check if we are using native controls ( should keep the video embed
-		// around )
+		// Check if we are using native controls or Persistent player ( should keep the video embed around )
 		if( playerInterface.useNativePlayerControls() || playerInterface.isPersistentNativePlayer() ) {
 			$j( targetElement )
 			.attr( 'id', playerInterface.pid )
@@ -460,6 +459,7 @@ EmbedPlayerManager.prototype = {
 			.after(
 				$j( swapPlayerElement ).css( 'display', 'none' )
 			);
+
 		} else {
 			$j( targetElement ).replaceWith( swapPlayerElement );
 		}
@@ -473,7 +473,7 @@ EmbedPlayerManager.prototype = {
 
 		// If we don't already have a loadSpiner add one:
 		if( $j('#loadingSpinner_' + playerInterface.id ).length == 0 ){
-			if( playerInterface.useNativePlayerControls() ) {
+			if( playerInterface.useNativePlayerControls() || playerInterface.isPersistentNativePlayer() ) {
 				$j( targetElement )
 					.getAbsoluteOverlaySpinner()
 					.attr('id', 'loadingSpinner_' + playerInterface.id );
@@ -1460,8 +1460,8 @@ mw.EmbedPlayer.prototype = {
 		// Set to parent size ( resize events will cause player size updates)
 		if( this.height.indexOf('100%') != -1 || this.width.indexOf('100%') != -1 ){
 			$relativeParent = $j(element).parents().filter(function() {
-			 // reduce to only relative position or "body" elements
-			 return $j(this).is('body') || $j(this).css('position') == 'relative';
+				 // reduce to only relative position or "body" elements
+				 return $j(this).is('body') || $j(this).css('position') == 'relative';
 			}).slice(0,1); // grab only the "first"
 			this.width = $relativeParent.width();
 			this.height = $relativeParent.height();
@@ -2024,7 +2024,7 @@ mw.EmbedPlayer.prototype = {
 	 * Show the player
 	 */
 	showPlayer : function () {
-		
+		//alert( 'show player? :' + this.controls + ' is persist:' + this.isPersistentNativePlayer() );
 		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );
 		var _this = this;
 		// Set-up the local controlBuilder instance:
@@ -2053,14 +2053,14 @@ mw.EmbedPlayer.prototype = {
 		this.$interface = $j( this ).parent( '.mwplayer_interface' );
 
 		// if a isPersistentNativePlayer ( overlay the controls )
-		if( this.isPersistentNativePlayer() ){
+		if( !this.useNativePlayerControls && this.isPersistentNativePlayer() ){
 			this.$interface.css({
 				'position' : 'absolute',
 				'top' : '0px',
 				'left' : '0px',
 				'background': null
-			})
-			$j(this).show();
+			});
+			$j( this ).show();
 			this.controls = true;
 		}
 		
