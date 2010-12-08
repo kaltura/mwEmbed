@@ -25,15 +25,21 @@
  		'SwarmTransport.Recommend' : false,
 
  		/**
- 		* Lookup service url
+ 		* Swarm Lookup service url
  		*/
- 		'SwarmTransport.TorrentLookupUrl' : 'http://url2torrent.net/get/'
+ 		'SwarmTransport.TorrentLookupUrl' : 'http://url2torrent.net/get/',
+ 		
+ 		/**
+ 		* TSwift Swarm Lookup service url
+ 		*/
+ 		'TswiftTransport.TorrentLookupUrl' : 'http://url2torrent.net/get/'
 	});
 
 	// Add the mw.SwarmTransport to the embedPlayer loader:
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
 		// If the swarm transport is enabled add mw.SwarmTransport to the request.
 		if( mw.getConfig( 'SwarmTransport.Enable' ) ) {
+			
 			if( $j.inArray( 'mw.SwarmTransport', classRequest ) == -1 ) {
 				classRequest.push( [ 'mw.SwarmTransport' ]);
 				// if IE / ActiveX

@@ -9,8 +9,6 @@
 	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark 
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf, callback ){
-			var cat = $uiConf.find('advertising');
-			//debugger;
 			// Check if the ad plugin is enabled:
 			if( $uiConf.find('advertising').length && $uiConf.find('advertising').attr('enabled') == 'true' ){
 				waitForAds = true;

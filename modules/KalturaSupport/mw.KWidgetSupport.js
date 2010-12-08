@@ -1,5 +1,5 @@
 mw.KWidgetSupport = function( options ) {
-	// Create a Player Manage
+	// Create KWidgetSupport instance
 	return this.init( options );
 };
 mw.KWidgetSupport.prototype = {
@@ -71,8 +71,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		// Setup Kaltura session:
-		_this.getKalturaSession ( $j( embedPlayer ).attr( 'kwidgetid' ), function( ) {
-			
+		_this.getKalturaSession ( $j( embedPlayer ).attr( 'kwidgetid' ), function( ) {			
 			// Get the main entry id sources
 			_this.addEntryIdSource( embedPlayer, function(){
 				// Load uiConf config request 
@@ -95,61 +94,13 @@ mw.KWidgetSupport.prototype = {
 				callback();
 				return; 
 			}
-		
-			mw.log( uiConf.confFile );
-			mw.log( uiConf.confFileFeatures );
-
+			
 			// Check for the bumper plugin ( note we should probably have a separate uiConf js class )
 			var $uiConf = $j( uiConf.confFile );
 			
-			var waitForBumper = false;
-			var instanceCallback = function(){
-				if( !waitForBumper ){					
-					//mw.runTriggersCallback('KalturaSupport.checkUiConf', [$uiConf, $uiConfFile] );
-					$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', $uiConf, callback);		
-				}
-			}						
-			
-			// Check if the bumper plugin is enabled:
-			var $bumbPlug = $uiConf.find("uiVars var[key='bumper.plugin']");
-			
-			if(  $bumbPlug.attr('value') == 'true' ){
-				waitForBumper = true;
-				// Build the bumper object
-				var bumper = {};			
-				$uiConf.find("uiVars var").each(function(inx, node ){
-					var bumpIndex = $j(node).attr('key').indexOf('bumper.');
-					if(  bumpIndex !== -1 ){					
-						// string to boolean
-						var bumperValue = ( $j(node).attr('value') == "true" )? true : $j(node).attr('value');
-						bumperValue = ( bumperValue == "false" )? false: bumperValue;
-						bumper[  $j(node).attr('key').replace('bumper.', '') ] =  bumperValue;						
-					}
-				})			
-				embedPlayer.bumperPlayCount = 0;
-				// Get the bumper entryid				
-				if( bumper.bumperEntryID ){
-					mw.log( "KWidget:: checkUiConf: get sources for " + bumper.bumperEntryID);
-					_this.getEntryIdSourcesFromApi( bumper.bumperEntryID, function( sources ){						
-						// Add to the bumper per entry id:						
-						$j( embedPlayer ).bind('play', function(){							
-							if( bumper.playOnce && embedPlayer.bumperPlayCount >= 1){
-								return true;
-							}	
-							embedPlayer.bumperPlayCount++;
-							// Call the special insertAndPlaySource function 
-							// ( used for ads / video inserts ) 
-							embedPlayer.insertAndPlaySource( sources[0].src, bumper );									
-						})
-						// Bind the bumper into location play
-						waitForBumper = false;
-						instanceCallback();
-					});
-				}
-			}
+			// Trigger the check kaltura uiConf event
+			$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', $uiConf, callback);					
 		
-			// call the instance callback ( in case we are not waiting for ads or a bumper )
-			instanceCallback();
 		})	
 	},
 	

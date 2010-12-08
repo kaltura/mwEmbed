@@ -359,6 +359,84 @@ mw.EmbedPlayerNative = {
 		return this.playerElement.currentTime;
 	},
 
+	
+	/**
+	 * switchPlaySrc switches the player source working around a few bugs in
+	 * browsers
+	 * 
+	 * @param {string}
+	 *            src Video url Source to switch to.
+	 * @param {function}
+	 *            switchCallback Function to call once the source has been switched
+	 * @param {function}
+	 *            doneCallback Function to call once the clip has completed playback
+	 */
+	switchPlaySrc: function( src, switchCallback, doneCallback ){
+		var _this = this;
+		mw.log( 'EmbedPlayerNative:: switchPlaySrc:' + src + ' native time: ' + this.getPlayerElement().currentTime );
+		// Update some parent embedPlayer vars: 
+		this.duration = 0;
+		this.currentTime = 0;
+		this.previousTime = 0;
+		var vid = this.getPlayerElement();		
+		if (vid) {
+			try {
+				// issue a play request on the source
+				vid.play();
+				setTimeout(function(){
+					// Remove all native player bindings
+					$j(vid).unbind();
+					vid.pause();
+					// Local scope update source and play function to work around google chrome
+					// bug
+					var updateSrcAndPlay = function() {
+						var vid = _this.getPlayerElement();
+						if (!vid){
+							mw.log( 'Error: switchPlaySrc no vid');
+							return ;
+						}
+						vid.src = src;
+						// Give iOS 50ms to figure out the src got updated ( iPad OS 3.0 )
+						setTimeout(function() {
+							var vid = _this.getPlayerElement();
+							if (!vid){
+								mw.log( 'Error: switchPlaySrc no vid');
+								return ;
+							}	
+							vid.load();
+							vid.play();
+							// Wait another 100ms then bind the end event and any custom events
+							// for the switchCallback
+							setTimeout(function() {
+								var vid = _this.getPlayerElement();																
+								// add the end binding: 
+								$j(vid).bind('ended', function( event ) {
+									if(typeof doneCallback == 'function' ){
+										doneCallback();
+									}
+									return false;
+								})
+								if (typeof switchCallback == 'function') {
+									switchCallback(vid);
+								}
+							}, 100);
+						}, 100);
+					};
+					if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
+						// Null the src and wait 50ms ( helps unload video without crashing
+						// google chrome 7.x )
+						vid.src = '';
+						setTimeout(updateSrcAndPlay, 100);
+					} else {
+						updateSrcAndPlay();
+					}
+				}, 100 );
+			} catch (e) {
+				mw.log("Error: Error in swiching source playback");
+			}
+		}
+	},
+	
 	/**
 	* Pause the video playback
 	* calls parent_pause to update the interface
