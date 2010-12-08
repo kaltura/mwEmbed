@@ -43,22 +43,24 @@
 		"KalturaAccessControlService" : "kalturaJsClient/KalturaServices.js",
 		"KalturaAccessControlOrderBy" : "kalturaJsClient/KalturaTypes.js",
 		"KalturaAccessControl" : "kalturaJsClient/KalturaVO.js",
-		"MD5" : "kalturaJsClient/webtoolkit.md5.js"
+		"MD5" : "kalturaJsClient/webtoolkit.md5.js",
+		"faderPlugin" : "uiConfComponents/faderPlugin.js"
 	} );
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
 	var kalturaSupportRequestSet = [
-	  'KalturaClientBase',
-	  'KalturaClient',
-	  'KalturaAccessControlService',
-	  'KalturaAccessControlOrderBy',
-	  'KalturaAccessControl',
-	  'MD5',
-	  'mw.KWidgetSupport',	  
-	  'mw.KAnalytics',
-	  'mw.KDPMapping',
-	  'mw.MobileAdTimeline',
-	  'mw.KAds' 
+		'KalturaClientBase',
+		'KalturaClient',
+		'KalturaAccessControlService',
+		'KalturaAccessControlOrderBy',
+		'KalturaAccessControl',
+		'MD5',
+		'mw.KWidgetSupport',	  
+		'mw.KAnalytics',
+		'mw.KDPMapping',
+		'mw.MobileAdTimeline',
+		'mw.KAds',
+		'faderPlugin'
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {

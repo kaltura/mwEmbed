@@ -94,7 +94,10 @@ mw.KWidgetSupport.prototype = {
 				callback();
 				return; 
 			}
-			
+		
+			//mw.log( uiConf.confFile );
+			//mw.log( uiConf.confFileFeatures );
+
 			// Check for the bumper plugin ( note we should probably have a separate uiConf js class )
 			var $uiConf = $j( uiConf.confFile );
 			
