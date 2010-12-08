@@ -27,12 +27,12 @@
  		/**
  		* Swarm Lookup service url
  		*/
- 		'SwarmTransport.TorrentLookupUrl' : 'http://url2torrent.net/get/',
+ 		'SwarmTransport.TorrentLookupUrl': 'http://url2torrent.net/get/',
  		
  		/**
  		* TSwift Swarm Lookup service url
  		*/
- 		'TswiftTransport.TorrentLookupUrl' : 'http://url2torrent.net/get/'
+ 		'TSwiftTransport.TorrentLookupUrl': 'http://url2torrent.p2p-next.org/get/'
 	});
 
 	// Add the mw.SwarmTransport to the embedPlayer loader:
