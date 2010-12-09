@@ -97,7 +97,7 @@ mw.MobileAdTimeline.prototype = {
 					// Check if the src does not match original src if
 					// so switch back and restore original bindings
 					if ( _this.originalSrc != vid.src) {
-						_this.switchPlaySrc(_this.originalSrc,
+						_this.embedPlayer.switchPlaySrc(_this.originalSrc,
 							function() {								
 								// Restore embedPlayer native
 								// bindings
@@ -123,15 +123,15 @@ mw.MobileAdTimeline.prototype = {
 						var vid = _this.getNativePlayerElement();
 						if ( _this.originalSrc != vid.src) {
 							displayedPostroll = true;
-							// restore original source: 
-							_this.switchPlaySrc(_this.originalSrc, 
+							// Restore original source: 
+							_this.embedPlayer.switchPlaySrc(_this.originalSrc, 
 								function() {
 									// Restore embedPlayer native
 									// bindings
 									mw.log('done with postroll ad, trigger normal ended');
 									_this.embedPlayer.restoreEventPropagation();
 									// just run stop for now. 
-									_this.embedPlayer.stop();									
+									_this.embedPlayer.stop();			
 								}
 							);
 						};				
@@ -262,7 +262,7 @@ mw.MobileAdTimeline.prototype = {
 				_this.getNativePlayerElement().controls = false;
 			};
 			// Play the source then run the callback
-			_this.switchPlaySrc( adConf.videoFile, function() { 
+			_this.embedPlayer.switchPlaySrc( adConf.videoFile, function() { 
 					// Pass off event handling to adConf bind:
 					if (typeof adConf.bindPlayerEvents == 'function') {
 						adConf.bindPlayerEvents( _this.getNativePlayerElement() );
@@ -273,7 +273,7 @@ mw.MobileAdTimeline.prototype = {
 		}
 		// Check for companion ads:
 		if ( adConf.companions && adConf.companions.length ) {
-			var companionConf = this.selectFromArray(adConf.companions);
+			var companionConf = this.selectFromArray( adConf.companions );
 
 			// NOTE:: is not clear from the ui conf response if multiple
 			// targets need to be supported, and how you would do that
@@ -308,7 +308,7 @@ mw.MobileAdTimeline.prototype = {
 			var layout = {
 				'width' : nonLinearConf.width + 'px',
 				'height' : nonLinearConf.height + 'px',
-				'left' : ( ( .5 * _this.embedPlayer.getWidth() ) - (nonLinearConf.width/2) )+ 'px'
+				'left' : ( ( .5 * _this.embedPlayer.getWidth() ) - (nonLinearConf.width/2) ) + 'px'
 			};			
 			
 			// check if the controls are visible ( @@todo need to replace this with 

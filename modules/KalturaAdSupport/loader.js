@@ -10,15 +10,18 @@
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf, callback ){
 			// Check if the ad plugin is enabled:
-			if( $uiConf.find('advertising').length && $uiConf.find('advertising').attr('enabled') == 'true' ){
-				waitForAds = true;
-				mw.addKalturaAds( embedPlayer, $uiConf.find('advertising'), function(){
-					waitForAds = false;
-					instanceCallback();
+			if( $uiConf.find('Plugin#vast').length ){
+				mw.load( ["mw.KAds", "mw.MobileAdTimeline"], function(){
+					mw.addKalturaAds( embedPlayer,  $uiConf.find('Plugin#vast'), function(){
+						// Wait until ads are loaded before running callback
+						// ( ie we don't want to display the player until ads are ready ) 
+						callback();
+					});
 				});
+			} else {
+				// Continue trigger event regardless of if ui-conf is found or not
+				callback();
 			}
-			// Continue trigger event regardless of if ui-conf is found or not
-			callback();
 		});
 	});
 	

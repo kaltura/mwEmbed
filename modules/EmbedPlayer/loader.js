@@ -40,8 +40,11 @@
 			// An icon image url ( should be a 12x12 image or data url )
 			'iconurl' : false
 		},
-
-
+		
+		// If the player should wait for metadata like video size and duration, before trying to draw
+		// the player interface. 
+		'EmbedPlayer.WaitForMeta' : true,
+		
 		// Set the browser player warning flag displays warning for non optimal playback
 		"EmbedPlayer.ShowNativeWarning" : true,
 

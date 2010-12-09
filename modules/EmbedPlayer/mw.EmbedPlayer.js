@@ -331,7 +331,7 @@ EmbedPlayerManager.prototype = {
 				$j( '#' + playerInterface.id ).get(0).checkPlayerSources();
 			}
 
-			if( waitForMeta ) {
+			if( waitForMeta && mw.getConfig('EmbedPlayer.WaitForMeta' ) ) {
 				mw.log('EmbedPlayer::WaitForMeta ( video missing height (' +
 						$j( playerElement ).attr('height') + '), width (' +
 						$j( playerElement ).attr('width') + ') or duration: ' +

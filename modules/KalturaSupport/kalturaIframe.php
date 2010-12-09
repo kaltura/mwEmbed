@@ -69,15 +69,7 @@ class kalturaIframe {
 		if( isset( $_REQUEST['debugKalturaPlayer'] ) || isset( $_REQUEST['debug'] ) ){
 			$this->debug = true;
 		}
-		
-		// @@TODO support native player ( for letting uses do true full screen, no overlays )
-		// the default setting for mobile < iPad 
-		//if( isset( $_REQUEST['nativePlayer'] )){
-		// mw.setConfig('EmbedPlayer.NativeControls', true ) 
-		//}
-		
-		// check the userAgent for directFileLink 
-		
+				
 		// Check for required config
 		if( $this->playerAttributes['wid'] == null ){
 			$this->error = 'Can not display player, missing widget id';
@@ -124,14 +116,14 @@ class kalturaIframe {
 				$sources['iphone'] = array(
 					'src' => $assetUrl . '/a.mp4?novar=0',
 					'type' => 'video/h264',
-					'data-flavorid' => 'iphone' 
+					'data-flavorid' => 'iPhone' 
 				);
 			};
 			if( strpos( $KalturaFlavorAsset->tags, 'ipad' ) !== false ){
 				$sources['ipad'] = array(
 					'src' => $assetUrl  . '/a.mp4?novar=0',
 					'type' => 'video/h264',
-					'data-flavorid' => 'ipad' 
+					'data-flavorid' => 'iPad' 
 				);
 			};
 			if( $KalturaFlavorAsset->fileExt == 'ogg' || $KalturaFlavorAsset->fileExt == 'ogv' 
@@ -143,6 +135,13 @@ class kalturaIframe {
 					'data-flavorid' => 'ogg' 
 				);
 			};
+			if( $KalturaFlavorAsset->fileExt == '3gp' ){
+				$sources['3gp'] = array(
+					'src' => $assetUrl . '/a.3gp?novar=0',
+					'type' => 'video/3gp',
+					'data-flavorid' => '3gp' 
+				);
+			};
 		}
 		return $sources;
 	}
@@ -152,21 +151,23 @@ class kalturaIframe {
 	// ( maybe we tie it to the "download" option 
 	private function getFileLinkHTML(){
 		$sources = $this->getFlavorSources();
-		// For now use the iPhone, iPad, ogg ( in that order )
-		if( isset( $sources['iphone'] )) {
+		// For now use the 3gp, iPhone, iPad, ogg ( in that order most device compatible to least)
+		if( isset( $sources['3gp'] ) ){
+			$flavorUrl = $sources['3gp']['src'];
+		} else if( isset( $sources['iphone'] )) {
 			$flavorUrl = $sources['iphone']['src'];
 		} else if( isset( $sources['ipad'] ) ){
 			$flavorUrl = $sources['ipad']['src'];			
 		} else if(  isset( $sources['ogg'] ) ){
 			$flavorUrl = $sources['ogg']['src'];
 		} else {
-			// throw an exception ( no web streams ) 
+			// Throw an exception ( no web streams ) 
 			$this->error = 'No web streams available, please check your enabled flavors';
 			return ;
 		}
 		// The outer container: 
 		$o='<div id="directFileLinkContainer">';
-			// @@todo once we hook up with the kaltura client output the thumb here:
+			// TODO once we hook up with the kaltura client output the thumb here:
 			// ( for now we use javascript to append it in there ) 
 			$o.='<div id="directFileLinkThumb" ></div>';
 			$o.='<a href="' . $flavorUrl . '" id="directFileLinkButton" target="_new"></a>';
@@ -186,6 +187,7 @@ class kalturaIframe {
 						'entry_id/' .  $this->playerAttributes['entry_id'] .
 						'/height/480';
 		$sources = $this->getFlavorSources();
+		
 		// if we hvae no sources do not output the video tag: 
 		if( count( $sources ) == 0 ){
 			return ;
@@ -205,7 +207,6 @@ class kalturaIframe {
 				$o.= ' ' . $videoTagMap[ $key ] . '="' . htmlspecialchars( $val ) . '"';
 			}
 		}
-		
 		//Close the video tag
 		$o.='>';
 		
@@ -327,10 +328,14 @@ class kalturaIframe {
 				// Don't rewrite the video tag from the loader ( if html5 is supported it will be 
 				// invoked bellow and respect the persistant video tag option for iPad overlays )
 				mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );	
-								
+
+				// Don't wait for player metada for size layout and duration ( won't be needed once
+				// we add durationHint and size attributes to the video tag
+				mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
+				
 				// For testing limited capacity browsers
-				//var kSupportsHTML5 = function(){ return false };
-				//var kSupportsFlash = function(){ return false };
+				// var kSupportsHTML5 = function(){ return false };
+				// var kSupportsFlash = function(){ return false };
 				
 				if( kSupportsHTML5() ){
 					//Set some iframe embed config:

@@ -1180,6 +1180,11 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	mw.isIphone = function(){
 		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
 	};
+	// Uses hack described at: 
+	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
+	mw.isIphone4 = function(){
+		return ( mw.isIphone() && ( window.devicePixelRatio && window.devicePixelRatio >= 2 ) );		
+	};
 	mw.isIpod = function(){
 		return (  navigator.userAgent.indexOf('iPod') != -1 );
 	};

@@ -95,8 +95,9 @@ mw.KWidgetSupport.prototype = {
 				return; 
 			}
 		
-			//mw.log( uiConf.confFile );
-			//mw.log( uiConf.confFileFeatures );
+			mw.log( uiConf.confFile );
+			mw.log("\n\n" );
+			mw.log( uiConf.confFileFeatures );
 
 			// Check for the bumper plugin ( note we should probably have a separate uiConf js class )
 			var $uiConf = $j( uiConf.confFile );
@@ -176,20 +177,16 @@ mw.KWidgetSupport.prototype = {
 		var sources = embedPlayer.mediaElement.getSources();
 		if( sources[0] && sources[0]['data-flavorid'] ){
 			// Not so clean ... will refactor once we add another source
-			var iPadSrc = iPhoneSrc = oggSrc = null;
+			var deviceSources = [];
 			for(var i=0; i< sources.length;i++){
-				switch( sources[i]['data-flavorid'] ){
-					case 'ipad' : iPadSrc = sources[i].src; break;
-					case 'iphone' : iPhoneSrc = sources[i].src; break;
-					case 'ogg' : oggSrc = sources[i].src; break;
-				}				
+				deviceSources[ sources[i]['data-flavorid'] ] = sources[i].src;
 			}
 			// Unset existing DOM source children ( so that html5 video hacks work better ) 
 			$j('#' + embedPlayer.pid).find('source').remove();
 			// Empty the embedPlayers sources ( we don't want iPad h.264 being used for iPhone devices ) 
 			embedPlayer.mediaElement.sources = [];
 			// Update the set of sources in the embedPlayer ( might cause issues with other plugins ) 
-			addSourcesCallback( _this.getDeviceSources( iPadSrc, iPhoneSrc, oggSrc ) );
+			addSourcesCallback( _this.getSourcesForDevice( deviceSources ) );
 			return ;
 		}
 		
@@ -215,7 +212,7 @@ mw.KWidgetSupport.prototype = {
 			}			
 			
 			// Setup the src defines
-			var iPadSrc = iPhoneSrc = oggSrc = null;		
+			var deviceSources = {};		
 			
 			// Find a compatible stream
 			for( var i = 0 ; i < data.length; i ++ ) {				
@@ -232,26 +229,31 @@ mw.KWidgetSupport.prototype = {
 				
 				// Check the tags to read what type of mp4 source
 				if( data[i].fileExt == 'mp4' && data[i].tags.indexOf('ipad') != -1 ){					
-					iPadSrc = src + '/a.mp4?novar=0';
+					deviceSources['iPad'] = src + '/a.mp4?novar=0';
 				}
 				
 				// Check for iPhone src
 				if( data[i].fileExt == 'mp4' && data[i].tags.indexOf('iphone') != -1 ){
-					iPhoneSrc = src + '/a.mp4?novar=0';
+					deviceSources['iPhone'] = src + '/a.mp4?novar=0';
 				}
 				
 				// Check for ogg source
 				if( data[i].fileExt == 'ogg' || data[i].fileExt == 'ogv'){
-					oggSrc = src + '/a.ogg?novar=0';
+					deviceSources['ogg'] = src + '/a.ogg?novar=0';
 				}				
+				
+				// Check for 3gp source
+				if( data[i].fileExt == '3gp' ){
+					deviceSources['3gp'] = src + '/a.ogg?novar=0';
+				}
 			}
-			callback( _this.getDeviceSources( iPadSrc, iPhoneSrc, oggSrc ) );			
+			callback( _this.getSourcesForDevice( deviceSources ) );
 		},
 		/*getByEntryId @arg kEntryId */
 		kEntryId );
 	},
 	
-	getDeviceSources: function(  iPadSrc, iPhoneSrc, oggSrc ){
+	getSourcesForDevice: function(  deviceSources ){
 		var sources = [];
 		var addSource = function ( src, type ){
 			sources.push( {
@@ -260,36 +262,46 @@ mw.KWidgetSupport.prototype = {
 			} );
 		}
 		
-		// If on an iPad use iPad or iPhone src
-		if( mw.isIpad() ) {
-			mw.log( "KwidgetSupport:: Add iPad source");
-			if( iPadSrc ){ 
-				addSource( iPadSrc, 'video/h264' );
+		
+		// If on an iPad or iPhone4 use iPad Source
+		if( mw.isIpad() || mw.isIphone4() ) {
+			mw.log( "KwidgetSupport:: Add iPad / iPhone4 source");
+			// Note it would be nice to detect if the iPhone was on wifi or 3g
+			if( deviceSources['iPad'] ){ 
+				addSource( deviceSources['iPad'] , 'video/h264' );
 				return sources;
-			} else if ( iPhoneSrc ) {
-				addSource( iPhoneSrc, 'video/h264' );
+			} else if ( deviceSources['iPhone']) {
+				addSource( deviceSources['iPhone'], 'video/h264' );
 				return sources;
 			}
 		}
 		
 		// If on iPhone or Android or iPod use iPhone src
-		if( ( mw.isIphone() || mw.isAndroid2() || mw.isIpod() ) && iPhoneSrc ){
-			mw.log( "KwidgetSupport:: Add iPhone source");
-			addSource(  iPhoneSrc, 'video/h264' );
+		if( ( mw.isIphone() || mw.isAndroid2() || mw.isIpod() ) ){			
+			if( deviceSources['iPhone'] ) {
+				addSource( deviceSources['iPhone'], 'video/h264' );	
+			} else if( deviceSources['3gp'] ){
+				addSource( deviceSources['3gp'], 'video/3gp' );	
+			}
 			return sources;
 		} else {
-			// iPhone or Android or iPod use h264 source for flash fallback:
+			// use h264 source for flash fallback:
 			mw.log( "KwidgetSupport:: Add from flash h264 fallback" );
-			if( iPadSrc ) {
-				addSource( iPadSrc, 'video/h264' );
-			} else if( iPhoneSrc ) {
-				addSource( iPhoneSrc, 'video/h264' );
+			if( deviceSources['iPad'] ) {
+				addSource( deviceSources['iPad'], 'video/h264' );
+			} else if( deviceSources['iPhone'] ) {
+				addSource( deviceSources['iPhone'], 'video/h264' );
 			}
 		}
 		
+		// Add the 3gp source if available
+		if( deviceSources['3gp'] ){
+			addSource( deviceSources['3gp'] );
+		}
+		
 		// Always add the oggSrc if we got to this point
-		if( oggSrc ) {
-			addSource( oggSrc, 'video/ogg' );
+		if( deviceSources['ogg'] ) {
+			addSource( deviceSources['ogg'], 'video/ogg' );
 		}
 		return sources;
 	},
