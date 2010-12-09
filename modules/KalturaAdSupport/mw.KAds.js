@@ -41,18 +41,24 @@ mw.KAds.prototype = {
 		var _this = this;
 		// Get companion targets:
 		var companionTargets = this._getCompanionTargets();
-		
+				
 		// Get ad Configuration
 		this._getAdConfigSet( function( adConfigSet){
 			var baseDisplayConf = {
 				'adConfig' : _this.$adConfig,
 				'companionTargets' : companionTargets
 			};
+			
+			// Get global timeout ( should be per adType ) 
+			if( _this.$adConfig.attr('timeout') ){
+				baseDisplayConf[ 'timeout' ] = _this.$adConfig.attr( 'timeout' ); 
+			}
+			
 			// Merge in the companion targets and add to player timeline: 
 			for( var adType in adConfigSet ){
 				mw.addAdToPlayerTimeline(
 					_this.embedPlayer, 
-					adType,							
+					adType,
 					$j.extend( baseDisplayConf, adConfigSet[ adType ] ) // merge in baseDisplayConf
 				);
 			};
@@ -65,11 +71,11 @@ mw.KAds.prototype = {
 	 */
 	_getAdConfigSet: function( callback ){
 		var _this = this;
-		var namedAdTimelineTypes = ['preroll', 'postroll', 'postroll', 'overlay'];
+		var namedAdTimelineTypes = [ 'preroll', 'postroll', 'postroll', 'overlay' ];
 		// Maps ui-conf ads to named types
 		var adAttributeMap = {
 				"Interval": 'frequency',
-				"StartWith": 'start'
+				"StartAt": 'start'
 		};
 		var adConfigSet = {};
 		var loadQueueCount = 0;
@@ -81,13 +87,15 @@ mw.KAds.prototype = {
 			}
 		};
 		// Add timeline events: 	
-		$j(namedAdTimelineTypes).each( function( na, adTypePrefix ){				
+		$j(namedAdTimelineTypes).each( function( na, adTypePrefix ){		
 			var adConf = {};
-			$j( adAttributeMap ).each( function( adAttributeName,  displayConfName ){
+
+			$j.each(adAttributeMap, function( adAttributeName,  displayConfName ){
 				if( _this.$adConfig.attr( adTypePrefix + adAttributeName ) ){
 					adConf[ displayConfName ] = _this.$adConfig.attr( adTypePrefix + adAttributeName );
 				}
 			});
+			
 			if( _this.$adConfig.attr( adTypePrefix + 'Url' ) ){
 				loadQueueCount++;
 				// Load and parse the adXML into displayConf format
@@ -288,7 +296,7 @@ mw.KAds.prototype = {
 		var companionAttr = [ 'width', 'height', 'id', 'expandedWidth', 'expandedHeight' ];
 		$j.each( companionAttr, function(na, attr){
 			if( $j( resourceNode ).attr( attr ) ){
-				resourceObj[attr] = $j( resourceNode ).attr( attr );
+				resourceObj[ attr ] = $j( resourceNode ).attr( attr );
 			}
 		});
 		

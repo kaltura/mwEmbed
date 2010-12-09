@@ -25,7 +25,7 @@
  *            mw.MobilePlayerTimeline.display
  */
 mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
-	mw.log("MobileAdTimeline::Add " + timeType + ' dispCof: ' + adConf);
+	mw.log("MobileAdTimeline::Add " + timeType + ' dispCof: ' +  adConf );
 	if (!embedPlayer.playerTimeline) {
 		embedPlayer.playerTimeline = new mw.MobileAdTimeline(embedPlayer);
 	}
@@ -145,7 +145,9 @@ mw.MobileAdTimeline.prototype = {
 				var overlayTiming = _this.timelineTargets['overlay'];
 				var lastPlayEndTime = false;
 				var playedStart = false;
-				var adDuration = overlayTiming.nads;
+				// Note there may be a better measurement of timeout
+				var adDuration = overlayTiming.timeout;
+
 				// Monitor will only be triggered while we are /NOT/ playback back media
 				$j( _this.embedPlayer ).bind( 'monitorEvent', function() {					
 					var time = _this.embedPlayer.currentTime;
@@ -368,11 +370,11 @@ mw.MobileAdTimeline.prototype = {
 	 * @param {object}
 	 *            adConf
 	 */
-	addToTimeline : function(timeType, adConf) {
+	addToTimeline : function( timeType, adConf ) {
 		// Validate the timeType
-		if (typeof this.timelineTargets[timeType] != 'undefined') {
+		if (typeof this.timelineTargets[ timeType ] != 'undefined') {
 			// only one adConf per timeType
-			this.timelineTargets[timeType] = adConf;
+			this.timelineTargets[ timeType ] = adConf;
 		}
 	},
 	
