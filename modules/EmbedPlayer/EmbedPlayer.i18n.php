@@ -35,7 +35,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-share' => 'Share',
 	'mwe-embedplayer-credits' => 'Credits',
 	'mwe-embedplayer-about-library'=> 'About Kaltura player',
-	'mwe-embedplayer-about-library-desc' => "Kaltura's HTML5 media library enables you to take advantage of the HTML5 <code><nowiki><video></nowiki></code> and <code><nowiki><audio></nowiki></code> tags today with a consistent player interface across all major browsers.
+	'mwe-embedplayer-about-library-desc' => "Kaltura's HTML5 media library enables you to take advantage of the HTML5 &lt;video&gt and &lt;audio&gt; tags today with a consistent player interface across all major browsers.
 
 [$1 More about the Kaltura player library].",
 	'mwe-embedplayer-clip_linkback' => 'Clip source page',
