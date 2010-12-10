@@ -850,7 +850,7 @@ mw.PlayerControlBuilder.prototype = {
 		if ( this.volume_layout == 'vertical' ) {
 			// Default volume binding:
 			var hoverOverDelay = false;
-			var $targetvol = embedPlayer.$interface.find( '.vol_container' );
+			var $targetvol = embedPlayer.$interface.find( '.vol_container' ).hide();
 			embedPlayer.$interface.find( '.volume_control' ).hover(
 				function() {
 					$targetvol.addClass( 'vol_container_top' );

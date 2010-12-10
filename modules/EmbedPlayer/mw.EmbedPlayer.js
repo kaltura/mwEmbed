@@ -87,7 +87,11 @@ mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [
 	 */
 	$.fn.embedPlayer = function( attributes, callback ) {
 		mw.log( 'EmbedPlayer:: fn.embedPlayer' );
-		var playerSelect = this.selector;
+		if( this.selector ){
+			var playerSelect = this.selector;
+		} else {
+			var playerSelect = this;
+		}
 
 		// Define attributes if unset
 		if( !attributes ) {
@@ -102,7 +106,7 @@ mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [
 
 		$j( playerSelect ).each( function( index, playerElement) {
 			// make sure the playerElement has an id:
-			if( $j( playerElement ).attr('id') =='' ){
+			if( !$j( playerElement ).attr('id') ){
 				$j( playerElement ).attr( "id", 'mwe_v' + ( index ) );
 			}
 
@@ -247,7 +251,6 @@ EmbedPlayerManager.prototype = {
 	 */
 	addElement: function( playerElement, attributes ) {
 		var _this = this;
-
 		if ( !playerElement.id || playerElement.id == '' ) {
 			// give the playerElement an id:
 			playerElement.id = 'vid' + ( this.playerList.length + 1 );
@@ -273,8 +276,7 @@ EmbedPlayerManager.prototype = {
 			var waitForMeta = true;
 
 			// Be sure to "stop" the target ( sometimes firefox keeps playing
-			// the video even
-			// though its been removed from the DOM )
+			// the video even though its been removed from the DOM )
 			if( playerElement.pause ){
 				playerElement.pause();
 			}
@@ -361,8 +363,14 @@ EmbedPlayerManager.prototype = {
 	 */
 	waitForMetaCheck: function( playerElement ){
 		var waitForMeta = false;
-		if( !playerElement )
-			return ;
+			
+		// Don't wait for metadata for non html5 media elements
+		if( !playerElement ){
+			return false;
+		}
+		if( !playerElement.tagName || ( playerElement.tagName.toLowerCase() != 'audio'  && playerElement.tagName.toLowerCase() != 'video' ) ){
+			return false;
+		}
 		// If we don't have a native player don't wait for metadata
 		if( !mw.EmbedTypes.players.isSupportedPlayer( 'oggNative') &&
 			!mw.EmbedTypes.players.isSupportedPlayer( 'webmNative') &&
@@ -1292,14 +1300,14 @@ mw.EmbedPlayer.prototype = {
 
 
 	/**
-	 * embedPlayer constructor
+	 * embedPlayer 
+	 * 
+	 * @constructor
 	 *
 	 * @param {Element}
-	 *      element DOM element that we are building the player interface
-	 *      for.
+	 *      element DOM element that we are building the player interface for.
 	 * @param {Object}
-	 *      customAttributes Attributes supplied via argument (rather than
-	 *      applied to the element)
+	 *      customAttributes Attributes supplied via argument (rather than applied to the element)
 	 */
 	init: function( element, customAttributes ) {
 		var _this = this;
@@ -1307,8 +1315,8 @@ mw.EmbedPlayer.prototype = {
 		if ( !customAttributes ) {
 			customAttributes = { };
 		}
-
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
+		
 		// Setup the player Interface from supported attributes:
 		for ( var attr in playerAttributes ) {
 			if ( customAttributes[ attr ] || customAttributes[ attr ] === false ) {
