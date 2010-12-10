@@ -2061,7 +2061,7 @@ mw.EmbedPlayer.prototype = {
 		this.$interface = $j( this ).parent( '.mwplayer_interface' );
 
 		// if a isPersistentNativePlayer ( overlay the controls )
-		if( !this.useNativePlayerControls && this.isPersistentNativePlayer() ){
+		if( !this.useNativePlayerControls() && this.isPersistentNativePlayer() ){
 			this.$interface.css({
 				'position' : 'absolute',
 				'top' : '0px',
@@ -2352,6 +2352,7 @@ mw.EmbedPlayer.prototype = {
 	 *     false if the mwEmbed player interface should not be used
 	 */
 	useNativePlayerControls: function() {
+
 		if( this.usenativecontrols === true ){
 			return true;
 		}				

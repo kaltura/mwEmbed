@@ -49,7 +49,7 @@ mw.MobileAdTimeline.prototype = {
 	},
 
 	// Overlays are disabled during preroll, bumper and postroll
-	overlaysEnabled: true,
+	adOverlaysEnabled: true,
 
 	// Original source of embedPlayer
 	originalSrc: false,
@@ -82,7 +82,7 @@ mw.MobileAdTimeline.prototype = {
 			mw.log("MobileAdTimeline:: First Play Start / bind Ad timeline");
 
 			// Disable overlays for preroll / bumper
-			_this.overlaysEnabled = false;
+			_this.adOverlaysEnabled = false;
 
 			// Stop the native embedPlayer events so we can play the preroll
 			// and bumper
@@ -93,7 +93,7 @@ mw.MobileAdTimeline.prototype = {
 				_this.display('bumper', function() {
 					var vid = _this.getNativePlayerElement();
 					// Enable overlays ( for monitor overlay events )
-					_this.overlaysEnabled = true;
+					_this.adOverlaysEnabled = true;
 					// Check if the src does not match original src if
 					// so switch back and restore original bindings
 					if ( _this.originalSrc != vid.src) {
@@ -147,9 +147,8 @@ mw.MobileAdTimeline.prototype = {
 				var playedStart = false;
 				// Note there may be a better measurement of timeout
 				var adDuration = overlayTiming.timeout;
-
 				// Monitor will only be triggered while we are /NOT/ playback back media
-				$j( _this.embedPlayer ).bind( 'monitorEvent', function() {					
+				$j( _this.embedPlayer ).bind( 'monitorEvent', function() {		
 					var time = _this.embedPlayer.currentTime;
 					if( !lastPlayEndTime ){
 						lastPlayEndTime = time;
@@ -159,18 +158,18 @@ mw.MobileAdTimeline.prototype = {
 							||
 							( time - lastPlayEndTime > overlayTiming.frequency && playedStart )
 						)
-						&& _this.overlaysEnabled 
+						&& _this.adOverlaysEnabled
 					){
 						//mw.log("SHOULD DISPLAY: " + time +' >= ' + overlayTiming.start + ' || ' + 
 						//		lastPlayEndTime +' - ' + time + ' > ' + overlayTiming.frequency	);
 						if( !playedStart){
 							playedStart = true;
 						}
-						_this.overlaysEnabled = false;					
+						_this.adOverlaysEnabled = false;					
 						// Display the overlay ad 
 						_this.display( 'overlay' , function(){
 							lastPlayEndTime = _this.embedPlayer.currentTime
-							_this.overlaysEnabled = true;
+							_this.adOverlaysEnabled = true;
 						}, adDuration);
 					}
 					
@@ -222,10 +221,11 @@ mw.MobileAdTimeline.prototype = {
 		}
 		
 		var adConf = this.selectFromArray( displayTarget.ads );		
-		// setup the currentlyDisplayed flag: 
+		// Setup the currentlyDisplayed flag: 
 		if( !displayTarget.currentlyDisplayed ){
 			displayTarget.currentlyDisplayed = true;
 		}
+		
 		// Setup some configuration for done state:
 		displayTarget.doneFunctions = [];
 		displayTarget.playbackDone = function(){
@@ -235,7 +235,7 @@ mw.MobileAdTimeline.prototype = {
 			displayTarget.currentlyDisplayed = false;
 			displayTarget.doneCallback();
 		}
-		// setup local pointer to displayDoneCallback
+		// Setup local pointer to displayDoneCallback
 		displayTarget.doneCallback = displayDoneCallback;
 
 		// Monitor time for display duration display utility function
@@ -251,6 +251,7 @@ mw.MobileAdTimeline.prototype = {
 				setTimeout( monitorForDisplayDuration, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 			}
 		};
+		
 		// Start monitoring for display duration end ( if not supplied we depend on videoFile end )
 		if( displayDuration ){
 			monitorForDisplayDuration();
@@ -260,6 +261,7 @@ mw.MobileAdTimeline.prototype = {
 		// Check for videoFile inserts:
 		if ( adConf.videoFile && timeTargetType != 'overlay') {
 			if ( adConf.lockUI ) {
+				mw.log("MobileAdTimeline::@@TODO lock timeline");
 				// TODO lock controls
 				_this.getNativePlayerElement().controls = false;
 			};
@@ -273,6 +275,7 @@ mw.MobileAdTimeline.prototype = {
 				displayTarget.playbackDone
 			);
 		}
+		
 		// Check for companion ads:
 		if ( adConf.companions && adConf.companions.length ) {
 			var companionConf = this.selectFromArray( adConf.companions );
@@ -283,19 +286,22 @@ mw.MobileAdTimeline.prototype = {
 			var companionTarget = ctargets[Math.floor(Math.random()
 					* ctargets.length)];
 			
-			var originalCompanionHtml = $j('#' + companionTarget.elementid).html();
-			
-			// Display the companion:
-			$j( '#' + companionTarget.elementid ).html( companionConf.$html );
-			
-			// Once display is over restore the original companion html
-			displayTarget.doneFunctions.push(function(){
-				$j( '#' + companionTarget.elementid ).html( originalCompanionHtml );
-			});
+			if( companionTarget.elementid ){
+				var originalCompanionHtml = $j('#' + companionTarget.elementid ).html();
+
+				// Display the companion:
+				$j( '#' + companionTarget.elementid ).html( companionConf.$html );
+				
+				// Once display is over restore the original companion html
+				displayTarget.doneFunctions.push(function(){
+					$j( '#' + companionTarget.elementid ).html( originalCompanionHtml );
+				});
+			} else {
+				mw.log( "MobileAdTimeline: possible error no elementid in companionTarget");
+			}	
 		}
-		
 		// Check for nonLinear overlays
-		if ( adConf.nonLinear && adConf.nonLinear.length ) {
+		if ( adConf.nonLinear && adConf.nonLinear.length && timeTargetType == 'overlay') {
 			var overlayId =  _this.embedPlayer.id + '_overlay';
 			var nonLinearConf = _this.selectFromArray( adConf.nonLinear ); 
 			
