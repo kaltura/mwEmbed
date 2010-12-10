@@ -283,14 +283,21 @@ mw.MobileAdTimeline.prototype = {
 			// NOTE:: is not clear from the ui conf response if multiple
 			// targets need to be supported, and how you would do that
 			var ctargets = this.timelineTargets[timeTargetType].companionTargets;
-			var companionTarget = ctargets[Math.floor(Math.random()
-					* ctargets.length)];
+			var companionTarget = ctargets[ Math.floor(Math.random() * ctargets.length) ];
+			
 			
 			if( companionTarget.elementid ){
 				var originalCompanionHtml = $j('#' + companionTarget.elementid ).html();
 
 				// Display the companion:
 				$j( '#' + companionTarget.elementid ).html( companionConf.$html );
+				
+				// Display the companion across the iframe client ( if setup );
+				var companionObject = {
+					'elementid' : companionTarget.elementid,
+					'html' : companionConf.$html.html()
+				};
+				$j( _this.embedPlayer ).trigger( 'updateCompanionTarget', [ companionObject ] );
 				
 				// Once display is over restore the original companion html
 				displayTarget.doneFunctions.push(function(){

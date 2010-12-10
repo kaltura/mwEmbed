@@ -24,12 +24,16 @@ mw.IFramePlayerApiServer = function( embedPlayer ){
 
 mw.IFramePlayerApiServer.prototype = {	
 	// Exported methods populated by native video/audio tag api. 
-	'exportedBindings': {},
+	'exportedBindings': [],
 		
 	'init': function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
-		// Static reference to nativeEmbed bind list ( dependency of IFramePlayerApiServer )
-		this.exportedBindings = mw.EmbedPlayerNative.nativeEvents;
+		
+		// Add the list of native events to the exportedBindings
+		this.exportedBindings = $j.extend( this.exportedBindings,  mw.EmbedPlayerNative.nativeEvents );
+		// Allow modules to extend the list of iframeExported bindings
+		$j( mw ).trigger( 'AddIframeExportedBindings', [ this.exportedBindings ]);
+		
 		this._addIframeListener();
 		this._addIframeSender();
 	},
@@ -70,8 +74,13 @@ mw.IFramePlayerApiServer.prototype = {
 		});
 
 		$j.each( this.exportedBindings, function( inx, bindName ){
-			$j( _this.embedPlayer ).bind( bindName, function( event ){
-				var argSet = {};
+			mw.log('addIframeServerBinding: ' +bindName );
+			$j( _this.embedPlayer ).bind( bindName, function( event ){		
+				
+				var argSet = $j.makeArray( arguments );
+				// remove the event from the arg set
+				argSet.shift();
+				
 				//mw.log("IFramePlayerApiServer::PostBind:: " + bindName );
 				// @@FIXME Per event 'useful data' extraction
 				// update argSet from 'event'
@@ -108,7 +117,6 @@ mw.IFramePlayerApiServer.prototype = {
 		try {
 			var messageString = JSON.stringify( msgObj );
 		} catch ( e ){
-			debugger;
 			mw.log("Error: could not JSON object: " + msgObj + ' ' + e);
 			return ;
 		}

@@ -2055,7 +2055,7 @@ mw.EmbedPlayer.prototype = {
 			// position the "player" absolute inside the relative interface
 			// parent:
 			.css('position', 'absolute');
-		}				
+		}
 		
 		// Set up local jQuery object reference to "mwplayer_interface"
 		this.$interface = $j( this ).parent( '.mwplayer_interface' );

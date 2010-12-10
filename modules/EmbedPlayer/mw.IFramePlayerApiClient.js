@@ -123,6 +123,10 @@ mw.IFramePlayerApiClient.prototype = {
 		if( !iframe['playerApi'] ){
 			iframe['playerApi'] = new mw.IFramePlayerApiClient( iframe, playerProxy, options );
 		}
+		
+		// Allow modules to extend the 'iframe' based player
+		$j( mw ).trigger( 'newIframeEmbedPlayerEvent', playerProxy);
+		
 		// Return the player proxy for chaining player events / attributes
 		return $j( playerProxy );
 	};

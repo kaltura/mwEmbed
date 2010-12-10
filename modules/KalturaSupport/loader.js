@@ -323,7 +323,7 @@
 			if( enableIframeApi ){
 				var iframeServer = mwPathUri.protocol + '://' + mwPathUri.host;
 				// Invoke the iframe player api system: 
-				$j( '.mwEmbedKalturaIframe').iFramePlayer({
+				var iframeEmbedPlayer = $j( '.mwEmbedKalturaIframe').iFramePlayer({
 					'iframeServer' : iframeServer
 				});
 			}
