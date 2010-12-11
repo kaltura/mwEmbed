@@ -30,58 +30,69 @@ mw.PlaylistHandlerKaltura.prototype = {
 		var _this = this;
 	
 		// Get the kaltura client:
-		mw.getKalturaClientSession( this.widgetid, function( kClient ) {
-			// Check if we have already initialised the playlist session: 
-			if( _this.playlistid !== null ){
-				_this.loadCurrentPlaylist( kClient, callback );
-				return ;
-			}
+		var kClient = mw.kApiGetPartnerClient( this.widgetid );
+		
+		// Check if we have already initialised the playlist session: 
+		if( _this.playlistid !== null ){
+			_this.loadCurrentPlaylist( kClient, callback );
+			return ;
+		}
+		
+		mw.KApiPlayerLoader({
+			'uiconf_id' : this.uiconfid
+		}, function( playerData ){
+			debugger;
+			// move options below to uiConfFile!!!!!!
+		})
+		
+		
+		
+		
+		// Get playlist uiConf data
+		var uiconfGrabber = new KalturaUiConfService( kClient );		
+		uiconfGrabber.get( function( status, data ) {
 			
-			
-			// Get playlist uiConf data
-			var uiconfGrabber = new KalturaUiConfService( kClient );		
-			uiconfGrabber.get( function( status, data ) {
-				gotUiConfData = true;
-				_this.uiConfData = data;
-				if( data.confFileFeatures && data.confFileFeatures != 'null') {
-						
-					// Add all playlists to playlistSet
-					var $uiConf = $j(  data.confFileFeatures );				
+			gotUiConfData = true;
+			_this.uiConfData = data;
+			if( data.confFileFeatures && data.confFileFeatures != 'null') {
 					
-					// Check for autoContinue ( we check false state so that by default we autoContinue ) 
-					_this.autoContinue = 
-						( $uiConf.find("uiVars [key='playlistAPI.autoContinue']").attr('value') == 'false' )? false: true
-															
-					// Find all the playlists by number  
-					for( var i=0; i < 50 ; i ++ ){
-						var playlistid  = $uiConf.find("uiVars [key='kpl" + i +"EntryId']").attr('value');
-						var playlistName = $uiConf.find("uiVars [key='playlistAPI.kpl" + i + "Name']").attr('value');
-						if( playlistid && playlistName ){
-							_this.playlistSet.push( { 
-								'name' : playlistName,
-								'playlistid' : playlistid
-							} )
-						} else {
-							break;
-						}
-					}				
-					if( !_this.playlistSet[0] ){
-						mw.log( "Error could not get playlist entry id in the following uiConf data::\n" + data.confFileFeatures );
-						return false;
-					}														
-				} else {
-					// This is just a single playlist:
-					_this.playlistSet[0] = {'playlistid' : data.id };
-				}
-				mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );																
-				// Set the playlist to the first playlist
-				_this.setPlaylistIndex( 0 );
+				// Add all playlists to playlistSet
+				var $uiConf = $j(  data.confFileFeatures );				
 				
-				// Load playlist by Id 
-				_this.loadCurrentPlaylist( kClient, callback );
-				
-			}, _this.uiconfid );
-		});
+				// Check for autoContinue ( we check false state so that by default we autoContinue ) 
+				_this.autoContinue = 
+					( $uiConf.find("uiVars [key='playlistAPI.autoContinue']").attr('value') == 'false' )? false: true
+														
+				// Find all the playlists by number  
+				for( var i=0; i < 50 ; i ++ ){
+					var playlistid  = $uiConf.find("uiVars [key='kpl" + i +"EntryId']").attr('value');
+					var playlistName = $uiConf.find("uiVars [key='playlistAPI.kpl" + i + "Name']").attr('value');
+					if( playlistid && playlistName ){
+						_this.playlistSet.push( { 
+							'name' : playlistName,
+							'playlistid' : playlistid
+						} )
+					} else {
+						break;
+					}
+				}				
+				if( !_this.playlistSet[0] ){
+					mw.log( "Error could not get playlist entry id in the following uiConf data::\n" + data.confFileFeatures );
+					return false;
+				}														
+			} else {
+				// This is just a single playlist:
+				_this.playlistSet[0] = {'playlistid' : data.id };
+			}
+			mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );																
+			// Set the playlist to the first playlist
+			_this.setPlaylistIndex( 0 );
+			
+			// Load playlist by Id 
+			_this.loadCurrentPlaylist( kClient, callback );
+			
+		}, _this.uiconfid );
+		
 	},
 	hasMultiplePlaylists: function(){
 		return ( this.playlistSet.length > 1 )

@@ -376,12 +376,8 @@ function kAddScript(){
 	if ( kIsHTML5FallForward() || objectPlayerList.length ){
 		// Kaltura client libraries:
 		jsRequestSet.push( [
-		  'KalturaClientBase',
-		  'KalturaClient',
-		  'KalturaAccessControlService',
-		  'KalturaAccessControlOrderBy',
-		  'KalturaAccessControl',
 		  'MD5',
+		  "mw.KApi",
 		  'mw.KWidgetSupport',
 		  'mw.KAnalytics', 
 		  'mw.KDPMapping',

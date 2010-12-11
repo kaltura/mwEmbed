@@ -27,60 +27,142 @@ mw.KWidgetSupport.prototype = {
 		// Add the hooks to the player manager
 		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 			// Add hook for check player sources to use local kEntry ID source check:
-			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {				
-				mw.log(" KWidgetSupport::checkPlayerSourcesEvent for " + embedPlayer.id);
-				_this.checkPlayerSources( embedPlayer, function(){					
-					// We can only enable kaltura analytics if we have a session if we have a client										
-					if( mw.getConfig( 'Kaltura.EnableAnalytics' ) == true && _this.kClient ) {
+			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
+
+				// Load all the player configuration from kaltura: 
+				_this.loadPlayerData( embedPlayer, function( playerData ){
+					
+					// Check access controls ( this is kind of silly and needs to be done on the server ) 
+					if( playerData.accessControl ){
+						var acStatus = _this.getAccessControlStatus( playerData.accessControl );
+						if( acStatus !== true ){
+							$j(embedPlayer).replaceWith( acStatus );
+							return ;
+						}
+					}
+					
+					
+					// Apply player Sources
+					if( playerData.flavors ){
+						_this.addFlavorSources( embedPlayer, playerData.flavors );
+					}
+					
+					//Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
+					if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
 						mw.addKAnalytics( embedPlayer, _this.kClient );
 					}
-					callback();
-				} );	
-			} );						
-		} );		
+					
+					
+					// Check for uiConf
+					if( playerData.uiConf ){						
+						var $uiConf = $j( playerData.uiConf );
+						// Trigger the check kaltura uiConf event
+						$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', $uiConf, function(){
+							// Ui-conf file checks done
+							callback();
+						});
+					} else {
+						callback();
+					}
+					
+				});				
+			});						
+		});		
+	},
+	/**
+	 * Sets up variables and issues the mw.KApiPlayerLoader call
+	 */
+	loadPlayerData: function( embedPlayer, callback ){
+		var playerRequest = {};
+		
+		// Check for widget id	 
+		if( ! $j( embedPlayer ).attr( 'kwidgetid' ) ){
+			callback();
+			return false;
+		} else {
+			playerRequest.widget_id = $j( embedPlayer ).attr( 'kwidgetid' );
+		}
+		
+		// Check if the entryId is of type url: 
+		if( !this.checkForUrlEntryId( embedPlayer ) && $j( embedPlayer ).attr( 'kentryid' ) ){
+			// Add entry_id playerLoader call			
+			playerRequest.entry_id =  $j( embedPlayer ).attr( 'kentryid' );
+		}
+		
+		// Add the uiconf_id 
+		playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
+		
+		// Run the request: 
+		this.kClient = mw.KApiPlayerLoader( {
+			'widget_id' : '_243342', 
+			'entry_id' : '0_swup5zao',
+			'uiconf_id' : '2877502'
+		}, function( playerData ){
+			callback( playerData );
+		});
 	},
 	
-	/** 
-	* kEntry Check player sources function
-	* @param {Object} embedPlayer The player object
-	* @param {Function} callback Function called once player sources have been checked
-	*/ 
-	checkPlayerSources: function( embedPlayer, callback ){
-		var _this = this;	
-		mw.log(' kWidgetSupport::check for sources: ' + $j( embedPlayer ).attr( 'kentryid' ) );
-		// Check if entry id is a url ( add the source directly ) 
+	/**
+	 * Check if the access control is oky and set a given error message
+	 * 
+	 * NOTE should match the iframe messages
+	 * NOTE need to i8ln message with gM( 'msg-key' );
+	 * 
+	 * @return 
+	 * @type boolean 
+	 * 		true if the media can be played
+	 * 		false if the media should not be played. 
+	 */
+	getAccessControlStatus: function( ac ){
+		if( ac.isAdmin){
+			return true;
+		}
+		if( ac.isCountryRestricted ){
+			return 'country is restricted';
+		}
+		if( !ac.isScheduledNow ){
+			return 'is not scheduled now';
+		}
+		if( ac.isSessionRestricted ){
+			return 'session restricted';
+		}
+		if( ac.isSiteRestricted ){
+			return 'site restricted';
+		}
+		if( ac.previewLength != -1 ){
+			return 'preview not handled in library yet';
+		}
+		return true;
+	},
+	
+	/**
+	 * Get the uiconf id, if unset its the kwidget id / partner id default
+	 */
+	getUiConfId: function( embedPlayer ){
+		var uiConfId = ( embedPlayer.kuiconfid ) ? embedPlayer.kuiconfid : false; 
+		if( !uiConfId && embedPlayer.kwidgetid ) {
+			uiConfId = embedPlayer.kwidgetid.replace( '_', '' );
+		}
+		return uiConfId;
+	},
+	/**
+	 * Check if the entryId is a url ( add source and do not include in request ) 
+	 */
+	checkForUrlEntryId:function( embedPlayer ){
 		if( $j( embedPlayer ).attr( 'kentryid' ) 
 				&& 
 			$j( embedPlayer ).attr( 'kentryid' ).indexOf('://') != -1 )
 		{
 			embedPlayer.mediaElement.tryAddSource(
-				$j('<source />')
-				.attr( {
-					'src' : $j( embedPlayer ).attr( 'kentryid' )
-				} )
-				.get( 0 )
-			)
-			callback();
-			return ;
-		};
-		
-		// Make sure we have a widget id: 		 
-		if( !$j( embedPlayer ).attr( 'kwidgetid' ) ){
-			callback();
-			return ;
+					$j('<source />')
+					.attr( {
+						'src' : $j( embedPlayer ).attr( 'kentryid' )
+					} )
+					.get( 0 )
+				)
+			return true;
 		}
-		
-		// Setup Kaltura session:
-		_this.getKalturaSession ( $j( embedPlayer ).attr( 'kwidgetid' ), function( ) {			
-			// Get the main entry id sources
-			_this.addEntryIdSource( embedPlayer, function(){
-				// Load uiConf config request 
-				_this.checkUiConf( embedPlayer, function(){
-					callback();
-				} );	
-			});			
-											
-		} );
+		return false;
 	},
 	/**
 	 * Adds the bindings for the uiConf 
@@ -107,73 +189,26 @@ mw.KWidgetSupport.prototype = {
 		
 		})	
 	},
-	
 	/**
-	 * Load the ui Conf data
-	 */
-	loadUiConfData: function( embedPlayer, callback ){		
-		// Check for uiconf data is already loaded
-		if( $j( embedPlayer ).data( 'kuiconf' ) ){
-			callback( $j( embedPlayer ).data( 'kuiconf' ) );
-			return ; 
-		}
-		var uiConfId = ( embedPlayer.kuiconfid ) ? embedPlayer.kuiconfid : false; 
-		if( !uiConfId && embedPlayer.kwidgetid ) {
-			uiConfId = embedPlayer.kwidgetid.replace( '_', '' );
-		}
-		// Add the kuiconf data as an attribute: 
-		var uiconfGrabber = new KalturaUiConfService(  this.kClient );		
-		uiconfGrabber.get( function( status, data ) {	
-			if( status ){
-				$j( embedPlayer ).data( 'kuiconf', data );
-				callback( $j( embedPlayer ).data( 'kuiconf' ) );
-			} else{
-				mw.log( "Error: loadUiConfData: failed to load uiConf data");	
-				callback( )
-			}
-		}, uiConfId);
-		return false;		
-	},	
-	/**
-	* Get the entry ID sources and apply them to the embedPlayer
+	* Convert flavorData to embedPlayer sources
+	* 
 	* @param {Object} embedPlayer Player object to apply sources to
-	* @param {Function} callback Function to be called once sources are ready 
+	* @param {Object} flavorData Function to be called once sources are ready 
 	*/ 
-	addEntryIdSource: function( embedPlayer, callback ) {
+	addFlavorSources: function( embedPlayer, flavorData ) {
 		var _this = this;
-		var kEntryId = $j( embedPlayer ).attr( 'kentryid' );
-		// Assign the partnerId from the widgetId
-		mw.log( 'KWidgetSupport::addEntryIdSource:' + kEntryId);
-		
-		// Assign the partnerId from the widgetId ( for thumbnail )
-		var widgetId =  $j( embedPlayer ).attr( 'kwidgetid' );
-		this.kPartnerId = widgetId.replace(/_/g, '');	
-		
+		mw.log( 'KWidgetSupport::addEntryIdSources:');
+
 		// Set the poster ( if not already set ) 
-		if( !embedPlayer.poster ){
-			embedPlayer.poster = mw.getConfig( 'Kaltura.CdnUrl' ) + '/p/' + this.kPartnerId + '/sp/' +
-				this.kPartnerId + '00/thumbnail/entry_id/' + kEntryId + '/width/' +
+		if( !embedPlayer.poster && $j( embedPlayer ).attr( 'kentryid' ) ){
+			embedPlayer.poster = mw.getConfig( 'Kaltura.CdnUrl' ) + '/p/' + this.kClient.getPartnerId() + '/sp/' +
+				this.kClient.getPartnerId() + '00/thumbnail/entry_id/' + $j( embedPlayer ).attr( 'kentryid' ) + '/width/' +
 				embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight();
-		}
-		
-		// local function to add sources and run callback
-		var addSourcesCallback = function( sources ){
-			for( var i=0;i < sources.length ; i++){
-				mw.log( 'kEntryId::addSource::' + embedPlayer.id + ' : ' +  sources[i].src + ' type: ' +  sources[i].type);
-				embedPlayer.mediaElement.tryAddSource(
-					$j('<source />')
-					.attr( {
-						'src' : sources[i].src,
-						'type' : sources[i].type
-					} )
-					.get( 0 )
-				);
-			}
-			callback();
 		}
 		
 		
 		// Check existing sources have kaltura specific data-flavorid attribute ) 
+		// NOTE we may refactor how we package in the kaltura pay-load from the iframe 
 		var sources = embedPlayer.mediaElement.getSources();
 		if( sources[0] && sources[0]['data-flavorid'] ){
 			// Not so clean ... will refactor once we add another source
@@ -186,71 +221,66 @@ mw.KWidgetSupport.prototype = {
 			// Empty the embedPlayers sources ( we don't want iPad h.264 being used for iPhone devices ) 
 			embedPlayer.mediaElement.sources = [];
 			// Update the set of sources in the embedPlayer ( might cause issues with other plugins ) 
-			addSourcesCallback( _this.getSourcesForDevice( deviceSources ) );
-			return ;
+		} else {		
+			// Get device flavors ( if not already set )
+			var deviceSources = _this.getEntryIdSourcesFromFlavorData( this.kClient.getPartnerId(), flavorData );	
 		}
+		// Update the source list per the current user-agent device: 
+		var sources = _this.getSourcesForDevice( deviceSources );
 		
-		// Get device flavors ( if not already set )
-		this.getEntryIdSourcesFromApi( kEntryId, function( sources ){
-			mw.log( "kEntryId:: getEntryIdSourcesFromApi::" + embedPlayer.id + " found " + sources.length + ' for entryid: ' + kEntryId + ' ' + ' partner id: ' + _this.kPartnerId );
-			addSourcesCallback( sources );
-		});
-		
+		for( var i=0;i < sources.length ; i++) {
+			mw.log( 'kEntryId::addSource::' + embedPlayer.id + ' : ' +  sources[i].src + ' type: ' +  sources[i].type);
+			embedPlayer.mediaElement.tryAddSource(
+				$j('<source />')
+				.attr( {
+					'src' : sources[i].src,
+					'type' : sources[i].type
+				} )
+				.get( 0 )
+			);
+		}
 	},
 	
 	/**
 	 * Get client entry id sources: 
 	 */
-	getEntryIdSourcesFromApi: function( kEntryId, callback ){
+	getEntryIdSourcesFromFlavorData: function( partner_id, flavorData ){
 		var _this = this;
-		var flavorGrabber = new KalturaFlavorAssetService( this.kClient );
-		flavorGrabber.getByEntryId ( function( success, data ) {			
-			if( ! success || ! data.length ) {				
-				mw.log( "Error flavorGrabber getByEntryId:" + kEntryId + " no sources found ");				
-				callback([]);
-				return false;
-			}			
+
+		// Setup the src defines
+		var deviceSources = {};		
+		
+		// Find a compatible stream
+		for( var i = 0 ; i < flavorData.length; i ++ ) {			
+			var asset = flavorData[i];			
+			/*
+			* The template of downloading a direct flavor is
+			*/							
+			var src  = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
+			'/sp/' +  partner_id + '00/flvclipper/entry_id/' +
+			asset.entryId + '/flavor/' + asset.id ;
 			
-			// Setup the src defines
-			var deviceSources = {};		
-			
-			// Find a compatible stream
-			for( var i = 0 ; i < data.length; i ++ ) {				
-				var asset = data[i];			
-				
-				/*
-				* The template of downloading a direct flavor is
-				*/
-				// Set up the current src string:
-				var src = mw.getConfig('Kaltura.CdnUrl') + '/p/' + _this.kPartnerId +
-						'/sp/' +  _this.kPartnerId + '00/flvclipper/entry_id/' +
-						kEntryId + '/flavor/' + asset.id ;
-								
-				
-				// Check the tags to read what type of mp4 source
-				if( data[i].fileExt == 'mp4' && data[i].tags.indexOf('ipad') != -1 ){					
-					deviceSources['iPad'] = src + '/a.mp4?novar=0';
-				}
-				
-				// Check for iPhone src
-				if( data[i].fileExt == 'mp4' && data[i].tags.indexOf('iphone') != -1 ){
-					deviceSources['iPhone'] = src + '/a.mp4?novar=0';
-				}
-				
-				// Check for ogg source
-				if( data[i].fileExt == 'ogg' || data[i].fileExt == 'ogv'){
-					deviceSources['ogg'] = src + '/a.ogg?novar=0';
-				}				
-				
-				// Check for 3gp source
-				if( data[i].fileExt == '3gp' ){
-					deviceSources['3gp'] = src + '/a.ogg?novar=0';
-				}
+			// Check the tags to read what type of mp4 source
+			if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipad') != -1 ){					
+				deviceSources['iPad'] = src + '/a.mp4?novar=0';
 			}
-			callback( _this.getSourcesForDevice( deviceSources ) );
-		},
-		/*getByEntryId @arg kEntryId */
-		kEntryId );
+			
+			// Check for iPhone src
+			if( asset.fileExt == 'mp4' && asset.tags.indexOf('iphone') != -1 ){
+				deviceSources['iPhone'] = src + '/a.mp4?novar=0';
+			}
+			
+			// Check for ogg source
+			if( asset.fileExt == 'ogg' || asset.fileExt == 'ogv'){
+				deviceSources['ogg'] = src + '/a.ogg?novar=0';
+			}				
+			
+			// Check for 3gp source
+			if( asset.fileExt == '3gp' ){
+				deviceSources['3gp'] = src + '/a.ogg?novar=0';
+			}
+		}
+		return deviceSources;
 	},
 	
 	getSourcesForDevice: function(  deviceSources ){
@@ -304,81 +334,6 @@ mw.KWidgetSupport.prototype = {
 			addSource( deviceSources['ogg'], 'video/ogg' );
 		}
 		return sources;
-	},
-	
-	/**
-	*  Setup The kaltura session
-	* @param {Function} callback Function called once the function is setup
-	*/ 
-	getKalturaSession: function(widgetId,  callback ) {				 		
-		var _this = this;		
-		mw.log( 'KWidgetSupport::getKalturaSession: widgetId:' + widgetId );
-		
-		// if Kaltura session is ready jump directly to callback
-		if( _this.kalturaSessionState == 'ready' ){
-			// Check for entry id directly
-			callback();
-			return ;
-		}		
-		// Add the player and callback to the callback Queue
-		_this.sessionReadyCallbackQueue.push( callback );
-		// if setup is in progress return 
-		if( _this.kalturaSessionState == 'inprogress' ){
-			mw.log( 'kaltura session setup in progress' );
-			return;
-		}
-		// else setup the session: 
-		if( ! _this.kalturaSessionState ) {
-			_this.kalturaSessionState = 'inprogress'; 
-		}
-		
-		// Assign the partnerId from the wdigetid
-		this.kPartnerId = widgetId.replace(/_/, '');
-		
-		// Setup the kConfig		
-		var kConfig = new KalturaConfiguration( parseInt( this.kPartnerId ) );
-		
-		// Assign the local kClient
-		this.kClient = new KalturaClient( kConfig );
-		
-		// Client session start
-		this.kClient.session.startWidgetSession(
-			// Callback function once session is ready 
-			function ( success, data ) {				
-				if( !success ){
-					mw.log( "KWidgetSupport:: Error in request ");
-					_this.sessionSetupDone( false );
-					return ;
-				}
-				if( data.code ){
-					mw.log( "KWidgetSupport:: startWidgetSession:: Error:: " +data.code + ' ' + data.message );
-					_this.sessionSetupDone( false );
-					return ;
-				}				
-				// update the kalturaKS var
-				mw.log('New session created::' + data.ks );
-				_this.kClient.setKs( data.ks );
-				
-				// Run the callback 
-				_this.sessionSetupDone( true );
-			}, 
-			// @arg "widgetId" 
-			widgetId
-		);					
-	},
-	sessionSetupDone : function( status ){		
-		var _this = this;
-		mw.log( "KWidgetSupport::sessionSetupDone" );
-		
-		this.kalturaSessionState = 'ready';
-		// check if the session setup failed. 
-		if( !status ){
-			return false;
-		}
-		// Once the session has been setup run the sessionReadyCallbackQueue
-		while( _this.sessionReadyCallbackQueue.length ) {
-			 _this.sessionReadyCallbackQueue.shift()();
-		}
 	}
 }
 
@@ -410,7 +365,9 @@ mw.getKalturaClientSession = function( widgetid, callback ){
 		callback( kWidgetSupport.kClient )
 	});
 }
+/*
 mw.getEntryIdSourcesFromApi = function( entryId, callback ){
 	kWidgetSupport.getEntryIdSourcesFromApi( entryId, callback);
 }
+*/
 

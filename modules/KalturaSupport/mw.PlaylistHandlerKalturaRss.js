@@ -29,18 +29,23 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 				clipSources.length == 1 && 
 				mw.getKalturaEmbedSettings( clipSources[0].src )['entryId'] 
 			){	
-				var kalturaEntryId = mw.getKalturaEmbedSettings( clipSources[0].src )['entryId'];
-				var kalturaWidgetId = mw.getKalturaEmbedSettings( clipSources[0].src )['widgetId'];				
+				var kEmbedSettings = mw.getKalturaEmbedSettings( clipSources[0].src );
+				var playerRequest = {
+					'entry_id' : kEmbedSettings.entryId,
+					'widget_id' : kEmbedSettings.widgetId
+				}	
 				var clipDuration = clipSources[0].duration;		
 				
 				// Make sure we have a client session established: 
-				mw.getKalturaClientSession( kalturaWidgetId, function( kClient ) {
+				mw.KApiPlayerLoader( playerRequest, function( playerData ) {
+					
 					mw.getEntryIdSourcesFromApi( kalturaEntryId , function( sources ){						
 						for( var i in sources ){
 							sources[i].durationHint = clipDuration;
 						}
 						callback( sources );
 					});
+					
 				});
 			} else {
 				mw.log("Error: kalturaPlaylist MediaRss used with multiple sources or non-kaltura flash applet url");

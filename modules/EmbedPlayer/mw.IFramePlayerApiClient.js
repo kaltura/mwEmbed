@@ -3,6 +3,9 @@
 * 
 * Client side ( binds a given iFrames to expose the player api ) 
 */
+
+( function( mw ) {
+	
 mw.IFramePlayerApiClient = function( iframe, playerProxy, options ){
 	return this.init( iframe , playerProxy, options);
 }
@@ -89,7 +92,7 @@ mw.IFramePlayerApiClient.prototype = {
 		// @@TODO:: Allow extending modules to wrap these api events ( kaltura kdp javascript emulation ? )
 	},
 	'postMessage': function( msgObj ){
-		mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObj ) );
+		//mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObj ) );
 		$j.postMessage(
 			JSON.stringify( msgObj ), 
 			mw.absoluteUrl( $j( this.iframe ).attr('src') ), 
@@ -131,3 +134,5 @@ mw.IFramePlayerApiClient.prototype = {
 		return $j( playerProxy );
 	};
 } )( jQuery );
+
+} )( window.mw );

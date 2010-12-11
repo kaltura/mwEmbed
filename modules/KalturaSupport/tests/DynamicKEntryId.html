@@ -13,6 +13,10 @@
 mw.ready( function(){
 	$j('#showVideo').attr('disabled', null);
 	mw.setConfig( 'EmbedPlayer.OverlayControls', false );	
+
+	mw.load(["MD5", 'mw.KApi'], function(){
+	});
+	
 	$j('#showVideo').click( function(){		
 		$j( '#videoContainer' ).loadingSpinner();				
 		mw.load( 'EmbedPlayer', function(){

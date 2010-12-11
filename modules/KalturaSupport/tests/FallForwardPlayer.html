@@ -13,15 +13,11 @@
 <script type="text/javascript">
 	if( document.URL.indexOf('forceMobileHTML5') != -1 ){		
 		mw.setConfig( 'forceMobileHTML5' , true );
-	}			
-	$j( mw ).bind( 'Kaltura.SendAnalyticEvent', function(event,  analyticName ){
-		$j('#analyticsLog').append( analyticName + "\n");
-	});
-
+	}
 </script>
 </head>
 <body>
-<h2> Fall forward: ( Kaltura embed code on iPad / iPhone / Android ) + analytics </h2>	
+<h2> Basic Fall forward: ( Kaltura embed code on iPad / iPhone / Android ) </h2>	
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers
 <br />
  <!--				

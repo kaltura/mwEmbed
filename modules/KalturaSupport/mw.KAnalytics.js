@@ -35,6 +35,35 @@ mw.KAnalytics.prototype = {
 	// Start Time
 	startReportTime: 0, 
 	
+	kEventTypes : {
+		'WIDGET_LOADED' : 1,
+		'MEDIA_LOADED' : 2,
+		'PLAY' : 3,
+		'PLAY_REACHED_25' : 4,
+		'PLAY_REACHED_50' : 5,
+		'PLAY_REACHED_75' : 6,
+		'PLAY_REACHED_100' : 7,
+		'OPEN_EDIT' : 8,
+		'OPEN_VIRAL' : 9,
+		'OPEN_DOWNLOAD' : 10,
+		'OPEN_REPORT' : 11,
+		'BUFFER_START' : 12,
+		'BUFFER_END' : 13,
+		'OPEN_FULL_SCREEN' : 14,
+		'CLOSE_FULL_SCREEN' : 15,
+		'REPLAY' : 16,
+		'SEEK' : 17,
+		'OPEN_UPLOAD' : 18,
+		'SAVE_PUBLISH' : 19,
+		'CLOSE_EDITOR' : 20,
+		'PRE_BUMPER_PLAYED' : 21,
+		'POST_BUMPER_PLAYED' : 22,
+		'BUMPER_CLICKED' : 23,
+		'FUTURE_USE_1' : 24,
+		'FUTURE_USE_2' : 25,
+		'FUTURE_USE_3' : 26
+	},
+	
 	/**
 	 * Constructor for kAnalytics
 	 * 
@@ -43,10 +72,11 @@ mw.KAnalytics.prototype = {
 	 * @parma {Object} 
 	 * 			kalturaClient Kaltura client object for the api session.  
 	 */
-	init: function( embedPlayer, kalturaClient ) {
+	init: function( embedPlayer, kClient ) {
 	
 		// Setup the local reference to the embed player
 		this.embedPlayer = embedPlayer;
+		this.kClient = kClient;
 		
 		// Setup the initial state of some flags
 		this._p25Once = false;
@@ -57,7 +87,7 @@ mw.KAnalytics.prototype = {
 		this.lastSeek = 0;
 		
 		// Setup the stats service
-		this.kalturaCollector = new KalturaStatsService( kalturaClient );
+		//this.kalturaCollector = new KalturaStatsService( kalturaClient );
 		
 		// Add relevant hooks for reporting beacons
 		this.bindPlayerEvents();		
@@ -74,12 +104,11 @@ mw.KAnalytics.prototype = {
 		var _this = this;
 		
 		// get the id for the given event: 	
-		var eventKeyId = KalturaStatsEventType[ KalturaStatsEventKey ];
+		var eventKeyId = this.kEventTypes[ KalturaStatsEventKey ];
 		
 		// Generate the status event 
 		var eventSet = {
-			'eventType' :	eventKeyId,
-			
+			'eventType' :	eventKeyId,			
 			'clientVer' : this.version,
 			'currentPoint' : 	parseInt( this.embedPlayer.currentTime * 1000 ),
 			'duration' :	this.embedPlayer.getDuration(),
@@ -105,13 +134,21 @@ mw.KAnalytics.prototype = {
 			// if kentryid is not set, use the selected source url
 			eventSet[ 'entryId' ] = this.embedPlayer.getSrc();
 		}					
-		//alert( 'Send Kaltura Event: ' + ' dur:' + eventSet.duration );
+
 		// Check if Kaltura.AnalyticsCallback is enabled:
 		$j( mw ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey ] );
 		
-		this.kalturaCollector.collect( function(){			 
-			// kalturaCollector has a callback but not used here. 
-		}, eventSet);		
+		var eventRequest = {};
+		for( var i in eventSet){
+			eventRequest['event:' + i] = eventSet[i];
+		}
+		// Add in base service and action calls: 
+		$j.extend( eventRequest, {
+			'action' : 'collect',
+			'service' : 'stats'
+		} );
+		// Do the api request: 
+		this.kClient.doRequest( eventRequest );
 	},
 	
 	/**
@@ -191,19 +228,19 @@ mw.KAnalytics.prototype = {
 		 * Other kaltura event types that are presently not usable in the 
 		 * html5 player at this point in time:
 		 * 
-		 * KalturaStatsEventType.OPEN_EDIT = 8;
-		 * KalturaStatsEventType.OPEN_REPORT = 11;
-		 * KalturaStatsEventType.OPEN_UPLOAD = 18;
-		 * KalturaStatsEventType.SAVE_PUBLISH = 19;
-		 * KalturaStatsEventType.CLOSE_EDITOR = 20;
+		 * OPEN_EDIT = 8;
+		 * OPEN_REPORT = 11;
+		 * OPEN_UPLOAD = 18;
+		 * SAVE_PUBLISH = 19;
+		 * CLOSE_EDITOR = 20;
 		 * 
-		 * KalturaStatsEventType.PRE_BUMPER_PLAYED = 21;
-		 * KalturaStatsEventType.POST_BUMPER_PLAYED = 22;
-		 * KalturaStatsEventType.BUMPER_CLICKED = 23;
+		 * PRE_BUMPER_PLAYED = 21;
+		 * POST_BUMPER_PLAYED = 22;
+		 * BUMPER_CLICKED = 23;
 		 * 
-		 * KalturaStatsEventType.FUTURE_USE_1 = 24;
-		 * KalturaStatsEventType.FUTURE_USE_2 = 25;
-		 * KalturaStatsEventType.FUTURE_USE_3 = 26;
+		 * FUTURE_USE_1 = 24;
+		 * FUTURE_USE_2 = 25;
+		 * FUTURE_USE_3 = 26;
 		 */
 	},
 	

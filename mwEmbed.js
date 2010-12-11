@@ -882,8 +882,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				// Send warning if resourceName is not defined
 				if(! mw.isset( resourceName )
 					&& mwLoadDoneCB[ resourceName ] != 'done' ) {
-					mw.log( 'Possible Error: ' + resourceName +' not set in time, or not defined in:' + "\n"
-						+ _this.getResourcePath( resourceName ) );
+					// mw.log( 'Possible Error: ' + resourceName +' not set in time, or not defined in:' + "\n"
+					// + _this.getResourcePath( resourceName ) );
 				}
 
 				// If ( debug mode ) and the script include is missing resource

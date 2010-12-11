@@ -39,28 +39,19 @@
 		"mw.PlaylistHandlerKaltura"	: "mw.PlaylistHandlerKaltura.js", 
 		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
 		"mw.KDPMapping" : "mw.KDPMapping.js",
-		"KalturaClientBase"	: "kalturaJsClient/KalturaClientBase.js",
-		"KalturaClient" : "kalturaJsClient/KalturaClient.js",
-		"KalturaAccessControlService" : "kalturaJsClient/KalturaServices.js",
-		"KalturaAccessControlOrderBy" : "kalturaJsClient/KalturaTypes.js",
-		"KalturaAccessControl" : "kalturaJsClient/KalturaVO.js",
-		"MD5" : "kalturaJsClient/webtoolkit.md5.js",
-		"faderPlugin" : "uiConfComponents/faderPlugin.js"
+		"faderPlugin" : "uiConfComponents/faderPlugin.js",
+		"mw.KApi" : "mw.KApi.js"
 	} );
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
 	var kalturaSupportRequestSet = [
-		'KalturaClientBase',
-		'KalturaClient',
-		'KalturaAccessControlService',
-		'KalturaAccessControlOrderBy',
-		'KalturaAccessControl',
 		'MD5',
+		"mw.KApi",
 		'mw.KWidgetSupport',	  
 		'mw.KAnalytics',
 		'mw.KDPMapping',
 		'mw.MobileAdTimeline',
-		'mw.KAds',
+		'mw.KAds',				
 		'faderPlugin'
 	];
 	
@@ -126,7 +117,7 @@
 					var elementCss = {};
 					// Setup the video embed attributes: 
 					var videoEmbedAttributes = {
-						'id': videoId,
+						'id' : videoId,
 						'kwidgetid' : kEmbedSettings.widgetId,
 						'kuiconfid' : kEmbedSettings.uiconfId
 					}
@@ -335,6 +326,10 @@
 			doRewriteIframe();			
 		}
 	};
+	
+	/**
+	 * Utility loader function to grab kaltura iframe hash url
+	 */
 	mw.getKalturaIframeHash = function(){
 		// Append the configuration and request domain to the iframe hash: 
 		var iframeMwConfig =  mw.getNonDefaultConfigObject();
@@ -345,9 +340,9 @@
 		iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
 
 		return '#' + encodeURIComponent( 
-				JSON.stringify( {					
+				JSON.stringify({
 					'mwConfig' :iframeMwConfig
-				} )
+				})
 		);
 	}
 	/**
