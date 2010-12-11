@@ -107,9 +107,8 @@ mw.KAnalytics.prototype = {
 		}					
 		//alert( 'Send Kaltura Event: ' + ' dur:' + eventSet.duration );
 		// Check if Kaltura.AnalyticsCallback is enabled:
-		if( typeof mw.getConfig( 'Kaltura.AnalyticsCallback' ) == 'function' ) {
-			mw.getConfig( 'Kaltura.AnalyticsCallback' )( KalturaStatsEventKey + ' sent ');
-		}		
+		$j( mw ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey ] );
+		
 		this.kalturaCollector.collect( function(){			 
 			// kalturaCollector has a callback but not used here. 
 		}, eventSet);		

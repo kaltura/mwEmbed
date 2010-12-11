@@ -31,6 +31,15 @@ mw.IFramePlayerApiServer.prototype = {
 		
 		// Add the list of native events to the exportedBindings
 		this.exportedBindings = $j.extend( this.exportedBindings,  mw.EmbedPlayerNative.nativeEvents );
+		
+		// The progress event fires too often for the iframe proxy ( instead use mwEmbed monitorEvent )
+		for( var i =0 ; i < this.exportedBindings.length; i++ ){
+			if( this.exportedBindings[i] == 'progress' ) {				
+				delete this.exportedBindings[i];
+			}
+		}
+		this.exportedBindings.push( 'monitorEvent' );
+		
 		// Allow modules to extend the list of iframeExported bindings
 		$j( mw ).trigger( 'AddIframeExportedBindings', [ this.exportedBindings ]);
 		
@@ -56,11 +65,8 @@ mw.IFramePlayerApiServer.prototype = {
 		var _this = this;		
 		// Get the parent page URL as it was passed in, for browsers that don't support
 		// window.postMessage (this URL could be hard-coded).
-		try{
-			this.parentUrl = JSON.parse( 
-						decodeURIComponent( document.location.hash.replace( /^#/, '' ) )
-					).parentUrl;
-		} catch( e ){
+		this.parentUrl = mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
+		if(!this.parentUrl){
 			mw.log("Error: iFramePlayerApiServer:: could not parse parent url. \n" +
 				"Player events will be dissabled");
 		}
@@ -74,16 +80,12 @@ mw.IFramePlayerApiServer.prototype = {
 		});
 
 		$j.each( this.exportedBindings, function( inx, bindName ){
-			mw.log('addIframeServerBinding: ' +bindName );
-			$j( _this.embedPlayer ).bind( bindName, function( event ){		
-				
+			$j( _this.embedPlayer ).bind( bindName, function( event ){				
 				var argSet = $j.makeArray( arguments );
 				// remove the event from the arg set
 				argSet.shift();
 				
-				//mw.log("IFramePlayerApiServer::PostBind:: " + bindName );
-				// @@FIXME Per event 'useful data' extraction
-				// update argSet from 'event'
+				mw.log("IFramePlayerApiServer::postMessage: bindName: " + bindName + ' arg:' + argSet );
 				_this.postMessage({
 					'triggerName' : bindName,
 					'triggerArgs' : argSet
@@ -114,6 +116,9 @@ mw.IFramePlayerApiServer.prototype = {
 	},
 	
 	'postMessage': function( msgObj ){
+		//alert('post msg:' + JSON.stringify( msgObj) );
+		//debugger;
+		
 		try {
 			var messageString = JSON.stringify( msgObj );
 		} catch ( e ){

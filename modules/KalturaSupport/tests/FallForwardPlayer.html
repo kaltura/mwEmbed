@@ -14,8 +14,8 @@
 	if( document.URL.indexOf('forceMobileHTML5') != -1 ){		
 		mw.setConfig( 'forceMobileHTML5' , true );
 	}			
-	mw.setConfig( 'Kaltura.AnalyticsCallback', function( monitorEvent ){
-		$j('#analyticsLog').append( monitorEvent + "\n");
+	$j( mw ).bind( 'Kaltura.SendAnalyticEvent', function(event,  analyticName ){
+		$j('#analyticsLog').append( analyticName + "\n");
 	});
 
 </script>

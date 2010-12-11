@@ -29,7 +29,7 @@
 	// ( we have to add them for all players since checkUiConf is done on the other side of the
 	// iframe proxy )
 	$j( mw ).bind( 'AddIframeExportedBindings', function( event, exportedBindings){
-		// add the updateCompanionTarget binding to bridge iframe
+		// Add the updateCompanionTarget binding to bridge iframe
 		exportedBindings.push( 'updateCompanionTarget' );
 	});
 	

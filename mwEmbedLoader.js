@@ -116,8 +116,13 @@ function kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height){
 	};
 	
 	// Package in the source page url for iframe message checks.
+	
+	// Add the parentUrl to the iframe config: 
+	preMwEmbedConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
+	
+	// Encode the configuration into the iframe hash url: 
 	iframeSrc+= '#' + encodeURIComponent( 
-		JSON.stringify( { 'parentUrl' : document.location.href, 'mwConfig' : preMwEmbedConfig } )
+		JSON.stringify( { 'mwConfig' : preMwEmbedConfig } )
 	);
 	
 	$j('#' + replaceTargetId ).replaceWith(

@@ -15,7 +15,7 @@
 		'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
 		'Kaltura.CdnUrl' : 'http://cdn.kaltura.com',
 		'Kaltura.XmlProxyUrl' : mw.getMwEmbedPath() + 'modules/KalturaAdSupport/simplePhpXMLProxy.php',
-		// A video file for 
+		// A video file for when no suitable flavor can be found
 		'Kaltura.MissingFlavorVideoUrl' : 'http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_uypqlsor/flavor/1_lljfzesm/a.mp4?novar=0'
 	} );
 	
@@ -321,11 +321,8 @@
 			
 			// if the server is enabled 
 			if( enableIframeApi ){
-				var iframeServer = mwPathUri.protocol + '://' + mwPathUri.host;
 				// Invoke the iframe player api system: 
-				var iframeEmbedPlayer = $j( '.mwEmbedKalturaIframe').iFramePlayer({
-					'iframeServer' : iframeServer
-				});
+				var iframeEmbedPlayer = $j( '.mwEmbedKalturaIframe').iFramePlayer();
 			}
 		};
 		
@@ -343,9 +340,12 @@
 		var iframeMwConfig =  mw.getNonDefaultConfigObject();
 		// No need to pass the IframeRewrite option to the iframe:
 		delete iframeMwConfig['Kaltura.IframeRewrite'];	
+		
+		// Add the parentUrl to the iframe config: 
+		iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
+
 		return '#' + encodeURIComponent( 
-				JSON.stringify( {
-					'parentUrl' : document.location.href,
+				JSON.stringify( {					
 					'mwConfig' :iframeMwConfig
 				} )
 		);
