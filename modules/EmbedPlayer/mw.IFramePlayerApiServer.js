@@ -29,13 +29,12 @@ mw.IFramePlayerApiServer.prototype = {
 	'init': function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
 		
-		// Add the list of native events to the exportedBindings
-		this.exportedBindings = $j.extend( this.exportedBindings,  mw.EmbedPlayerNative.nativeEvents );
-		
-		// The progress event fires too often for the iframe proxy ( instead use mwEmbed monitorEvent )
-		for( var i =0 ; i < this.exportedBindings.length; i++ ){
-			if( this.exportedBindings[i] == 'progress' ) {				
-				delete this.exportedBindings[i];
+		// Add the list of native events to the exportedBindings	
+		for( var i =0 ; i < mw.EmbedPlayerNative.nativeEvents.length; i++ ){
+			var bindName = mw.EmbedPlayerNative.nativeEvents[i];
+			// The progress event fires too often for the iframe proxy ( instead use mwEmbed monitorEvent )
+			if( bindName != 'progress' ) {				
+				this.exportedBindings.push( bindName );
 			}
 		}
 		this.exportedBindings.push( 'monitorEvent' );

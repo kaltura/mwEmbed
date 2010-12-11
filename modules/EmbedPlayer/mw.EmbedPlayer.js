@@ -303,10 +303,12 @@ EmbedPlayerManager.prototype = {
 
 			// Local callback to runPlayer swap once playerElement has metadata
 			function runPlayerSwap() {
+				// Don't run player swap twice
 				if( ranPlayerSwapFlag ){
 					return ;
 				}
 				ranPlayerSwapFlag = true;
+				
 				mw.log("EmbedPlayer::runPlayerSwap::" + $j( playerElement ).attr('id') );
 
 				var playerInterface = new mw.EmbedPlayer( playerElement , attributes);
@@ -339,9 +341,7 @@ EmbedPlayerManager.prototype = {
 						$j( playerElement ).attr('width') + ') or duration: ' +
 						$j( playerElement ).attr('duration')
 				);
-
-				playerElement.removeEventListener( "loadedmetadata", runPlayerSwap, true );
-				playerElement.addEventListener( "loadedmetadata", runPlayerSwap, true );
+				$j( playerElement ).bind("loadedmetadata", runPlayerSwap );
 
 				// Time-out of 5 seconds ( maybe still playable but no timely
 				// metadata )
