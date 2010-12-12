@@ -577,9 +577,10 @@ mw.PlayerControlBuilder.prototype = {
 				// ( once the user touched the video "don't hide" )
 			} );
 			// Add a special absolute overlay for hover ( to keep menu displayed
+			
 			$interface.hoverIntent({
-				'sensitivity': 4,
-				'timeout' : 2000,
+				'sensitivity': 100,
+				'timeout' : 1000,
 				'over' : function(){
 					// Show controls with a set timeout ( avoid fade in fade out on short mouse over )
 					_this.showControlBar();
@@ -588,6 +589,7 @@ mw.PlayerControlBuilder.prototype = {
 					_this.hideControlBar();
 				}
 			});
+			
 		}
 
 		// Add recommend firefox if we have non-native playback:
@@ -618,7 +620,7 @@ mw.PlayerControlBuilder.prototype = {
 	* Hide the control bar.
 	*/
 	hideControlBar : function(){
-		var animateDuration = 'slow';
+		var animateDuration = 'fast';
 		var _this = this;
 
 		// Do not hide control bar if overlay menu item is being displayed:
@@ -644,7 +646,7 @@ mw.PlayerControlBuilder.prototype = {
 	* Show the control bar
 	*/
 	showControlBar: function(){
-		var animateDuration = 'slow';
+		var animateDuration = 'fast';
 		if(! this.embedPlayer )
 			return ;
 		if( this.embedPlayer.getPlayerElement ){
