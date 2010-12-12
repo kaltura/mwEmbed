@@ -383,7 +383,8 @@ function kAddScript(){
 		  'mw.KDPMapping',
 		  'mw.MobileAdTimeline',
 		  'mw.KAds',
-		  'faderPlugin'
+		  'faderPlugin',
+		  'watermarkPlugin'
 		]);
 		// kaltura playlist support ( so small relative to client libraries that we always include it )	
 		jsRequestSet.push([

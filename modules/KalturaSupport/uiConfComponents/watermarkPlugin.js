@@ -1,5 +1,5 @@
 	
-( function( mw ) {
+
 	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark 
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf, callback ){
@@ -46,5 +46,5 @@
 				)
 			)
 		)
-	}
-} )( window.mw );
+	};
+	

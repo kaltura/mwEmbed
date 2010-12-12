@@ -100,8 +100,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 				'action' : 'execute', 
 				'id': playlist_id 
 		};
-		this.kClient.doRequest( playlistRequest, function( playlistData ) {
-			// empty the clip list
+		this.getKClient().doRequest( playlistRequest, function( playlistData ) {
+			// Empty the clip list
 			_this.clipList = [];
 			if( !  playlistData.length ){						
 				mw.log("Error: kaltura playlist:" + playlist_id + " could not load:" + playlistData.code)
@@ -112,6 +112,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 			callback();
 		})
 	},	
+	
+	getKClient: function(){
+		if( !this.kClient ){
+			this.kClient = mw.kApiGetPartnerClient( this.widget_id );
+		}
+		return this.kClient;			
+	},
 	
 	/**
 	 * Get clip count
@@ -130,7 +137,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 	getClipSources: function( clipIndex, callback ){
 		var _this = this;
-		mw.getEntryIdSourcesFromApi( this.kClient.getPartnerId(),  this.getClipList()[ clipIndex ].id, function( sources ){
+		mw.getEntryIdSourcesFromApi( this.getKClient().getPartnerId(),  this.getClipList()[ clipIndex ].id, function( sources ){
 			// Add the durationHint to the sources: 
 			for( var i in sources){
 				sources[i].durationHint = _this.getClipDuration( clipIndex );

@@ -3,6 +3,7 @@
 */
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf, callback ){
+		debugger;
 		var $bumbPlug = $uiConf.find("uiVars var[key='bumper.plugin']");
 		
 		if(  $bumbPlug.attr('value') == 'true' ){
@@ -14,14 +15,14 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 					// string to boolean
 					var bumperValue = ( $j(node).attr('value') == "true" )? true : $j(node).attr('value');
 					bumperValue = ( bumperValue == "false" )? false: bumperValue;
-					bumper[  $j(node).attr('key').replace('bumper.', '') ] =  bumperValue;						
+					bumper[  $j(node).attr('key').replace('bumper.', '') ] =  bumperValue;
 				}
 			})			
 			embedPlayer.bumperPlayCount = 0;
 			// Get the bumper entryid				
 			if( bumper.bumperEntryID ){
 				mw.log( "KWidget:: checkUiConf: get sources for " + bumper.bumperEntryID);
-				_this.getEntryIdSourcesFromApi( bumper.bumperEntryID, function( sources ){						
+				mw.getEntryIdSourcesFromApi( bumper.bumperEntryID, function( sources ){						
 					// Add to the bumper per entry id:						
 					$j( embedPlayer ).bind('play', function(){							
 						if( bumper.playOnce && embedPlayer.bumperPlayCount >= 1){

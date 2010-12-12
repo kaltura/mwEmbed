@@ -254,7 +254,7 @@ EmbedPlayerManager.prototype = {
 		if ( !playerElement.id || playerElement.id == '' ) {
 			// give the playerElement an id:
 			playerElement.id = 'vid' + ( this.playerList.length + 1 );
-		}
+		}		
 		mw.log('EmbedPlayerManager: addElement:: ' + playerElement.id );
 
 		// Add the element id to playerList
@@ -270,9 +270,9 @@ EmbedPlayerManager.prototype = {
 		// Update the list of dependent libraries for the player
 		// ( allows extensions to add to the dependency list )
 		mw.embedPlayerUpdateLibraryRequest( playerElement, playerDependencyRequest );
-
 		// Load any skins we need then swap in the interface
 		mw.load( playerDependencyRequest, function() {
+			
 			var waitForMeta = true;
 
 			// Be sure to "stop" the target ( sometimes firefox keeps playing

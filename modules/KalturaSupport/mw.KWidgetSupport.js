@@ -283,12 +283,12 @@ mw.KWidgetSupport.prototype = {
 		// Find a compatible stream
 		for( var i = 0 ; i < flavorData.length; i ++ ) {			
 			var asset = flavorData[i];			
-			/*
+			/**
 			* The template of downloading a direct flavor is
 			*/							
 			var src  = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
-			'/sp/' +  partner_id + '00/flvclipper/entry_id/' +
-			asset.entryId + '/flavor/' + asset.id ;
+				'/sp/' +  partner_id + '00/flvclipper/entry_id/' +
+				asset.entryId + '/flavor/' + asset.id ;
 			
 			// Check the tags to read what type of mp4 source
 			if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipad') != -1 ){					
