@@ -18,6 +18,7 @@ $mykalturaIframe->outputIFrame();
 
 // Define the KalturaFlavorAsset that the api will blindly set as a class 
 class KalturaFlavorAsset {};
+class KalturaEntryContextDataResult {};
 /**
  * Kaltura iFrame class:
  */
@@ -33,7 +34,8 @@ class kalturaIframe {
 	);
 	var $playerIframeId = 'iframeVid';
 	var $debug = false;
-	var $error = false;		
+	var $error = false;
+	var $resultObj = null;
 	
 	// When used in direct source mode the source asset.
 	// NOTE: can be an array of sources in cases of "many" sources set
@@ -87,27 +89,55 @@ class kalturaIframe {
 		$partnerId =  substr( $this->playerAttributes['wid'], 1 );
 		$conf = new KalturaConfiguration( $partnerId );
 		$client = new KalturaClient( $conf );
+		
+		$session = $client->session->startWidgetSession( $this->playerAttributes['wid'] );
+		$client->setKS($session->ks);		
+		
 		// @@todo support MultiRequest
-		//$client->startMultiRequest();
+		$client->startMultiRequest();
 		try{
-			$session = $client->session->startWidgetSession( $this->playerAttributes['wid'] );
-			$client->setKS($session->ks);
+
 			
 			// TODO lookup duration for "durationHint"
+			if( !isset($_SERVER['HTTP_REFERER']) ) { $_SERVER['HTTP_REFERER'] = 'http://www.kaltura.org/'; }
 			
 			// NOTE this should probably be wrapped in a service class 
 			$kparams = array();
 			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
-			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams );
+			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams ); // sources
+			
+			$client->addParam( $kparams, "contextDataParams",  array( 'referer' => $_SERVER['HTTP_REFERER'] ) );
+			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams ); // access control
+			
+			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
+			$client->queueServiceActionCall( "baseEntry", "get", $kparams ); // Entry Meta
+
+			if($this->playerAttributes['uiconf_id']) {
+				$client->addParam( $kparams, "id",  $this->playerAttributes['uiconf_id'] );
+				$client->queueServiceActionCall( "uiconf", "get", $kparams ); 
+			}
+			
+			
 			$resultObject = $client->doQueue();
+			$this->resultObj = $resultObject;
 			$client->throwExceptionIfError($resultObject);
 		} catch( Exception $e ){
 			$this->error = "Error getting sources from server, something maybe broken or server is under high load. Please try again.";
 			return array();
 		}
+		// debugging
+		
+		/*
+		echo "<style>body { overflow:scroll; position: static; }</style><pre>";
+		print_r($resultObject);
+		exit();	
+		*/
+		
+		$this->checkAccessControl($resultObject[1]);
+
 		// add any web sources		
 		$sources = array();
-		foreach( $resultObject as $KalturaFlavorAsset ){	
+		foreach( $resultObject[0] as $KalturaFlavorAsset ){	
 
 			$assetUrl =  KALTURA_CDN_URL .'/p/' . $partnerId . '/sp/' . 
 					$partnerId . '00/flvclipper/entry_id/' . 
@@ -143,7 +173,62 @@ class kalturaIframe {
 				);
 			};
 		}
+		
 		return $sources;
+	}
+
+	/**
+	*  Set the player data array
+	*/	
+	function getPlayerData() {
+
+		$arr = array(
+			'accessControl' 	=> 	$this->resultObj[1],
+			'flavors' 			=> 	$this->resultObj[0],
+			'meta'				=>	$this->resultObj[2],
+			'uiConf'			=>	$this->resultObj[3],
+			'entry_id'			=>	$this->playerAttributes['entry_id'],
+			'partner_id'		=>	$this->playerAttributes['wid'],
+			'uiconf_id'			=>	$this->playerAttributes['uiconf_id'],
+		);
+		
+		return json_encode($arr);
+	}
+	
+	/**
+	*  Access Control Handling
+	*/	
+	function checkAccessControl($accessResult) {
+		
+		// Checks if admin
+		if($accessResult->isAdmin) {
+			return true;
+		}
+		
+		/* Domain Name Restricted */
+		if($accessResult->isSiteRestricted) {
+			$this->error = "<h2>Un authorized domain</h2>We're sorry, this content is only available on certain domains.";
+			return false;
+		}
+		
+		/* Country Restricted */
+		if($accessResult->isCountryRestricted) {
+			$this->error = "<h2>Un authorized country</h2>We're sorry, this content is only available on certain countries.";
+			return false;
+		}
+		
+		/* Session Restricted */
+		if($accessResult->isSessionRestricted) {
+			$this->error = "<h2>No KS where KS is required</h2>We're sorry, access to this content is restricted.";
+			return false;
+		}
+		
+		if($accessResult->isScheduledNow == null) {
+			$this->error = "<h2>Out of scheduling</h2>We're sorry, this content is currently unavailable.";
+			return false;
+		}
+		
+		return true;
 	}
 	
 	// Returns a simple image with a direct link to the asset
@@ -270,7 +355,9 @@ class kalturaIframe {
 				left:0px;
 				bottom:0px;
 				right:0px;
-				overflow:hidden;				
+				overflow:hidden;
+				background: #000;	
+				color: #fff;	
 			}
 			#directFileLinkContainer{
 				position:abolute;
@@ -295,13 +382,31 @@ class kalturaIframe {
 				width: 100%;
 				height: 100%;
 			}
+			#error {
+				position:absolute;
+				top: 37%;
+				left: 50%;
+				margin: 0 0 0 -140px;
+				width: 280px;
+				border: 1px solid #eee;
+				-webkit-border-radius: 4px;
+				-moz-border-radius: 4px;
+				border-radius: 4px;
+				text-align: center;
+				background: #fff;
+				padding-bottom: 10px;
+				color: #000;
+			}
+			#error h2 {
+				font-size: 14px;
+			}
 		</style>
 	</head>
 	<body>	
 		<?php 		
 		$videoHTML = $this->getVideoHTML();
 		if( $this->error ) {
-			echo $this->error;			
+			echo '<div id="error">'. $this->error .'</div>';			
 		} else { 
 			?>
 			<div id="videoContainer" >
@@ -312,6 +417,9 @@ class kalturaIframe {
 				document.write(unescape("%3Cscript src='<?php echo KALTURA_MWEMBED_PATH ?>mwEmbedLoader.js' type='text/javascript'%3E%3C/script%3E"));
 			</script>
 			<script type="text/javascript">		
+				// Add Packaging Kaltura Player Data (Json Encoded)
+				mw.setConfig('KalturaSupport.BootstrapPlayerData', <?php echo $this->getPlayerData(); ?>);
+			
 				// TODO:: Add the refer url to analytics. 
 				
 				// Parse any configuration options passed in via hash url:

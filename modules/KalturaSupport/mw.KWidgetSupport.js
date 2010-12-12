@@ -103,6 +103,7 @@ mw.KWidgetSupport.prototype = {
 	 * Sets up variables and issues the mw.KApiPlayerLoader call
 	 */
 	loadPlayerData: function( embedPlayer, callback ){
+		
 		var playerRequest = {};
 		
 		// Check for widget id	 
@@ -123,9 +124,14 @@ mw.KWidgetSupport.prototype = {
 		playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
 		
 		// Run the request: 
-		this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
-			callback( playerData );
-		});
+		var bootstrapData = mw.getConfig("KalturaSupport.BootstrapPlayerData");
+		if( bootstrapData && bootstrapData.entry_id ==  $j( embedPlayer ).attr( 'kentryid' ) ) {
+			callback( bootstrapData );
+		} else {
+			this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+				callback( playerData );
+			});
+		}
 	},
 	
 	/**
