@@ -3,7 +3,7 @@
 */
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf, callback ){
-		debugger;
+		
 		var $bumbPlug = $uiConf.find("uiVars var[key='bumper.plugin']");
 		
 		if(  $bumbPlug.attr('value') == 'true' ){

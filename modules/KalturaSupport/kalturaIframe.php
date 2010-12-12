@@ -189,7 +189,7 @@ class kalturaIframe {
 			'accessControl' 	=> 	$this->resultObj[1],
 			'flavors' 			=> 	$this->resultObj[0],
 			'meta'				=>	$this->resultObj[2],
-			'uiConf'			=>	$this->resultObj[3],
+			'uiConf'			=>	$this->resultObj[3]->confFile,
 			'entry_id'			=>	$this->playerAttributes['entry_id'],
 			'partner_id'		=>	$this->playerAttributes['wid'],
 			'uiconf_id'			=>	$this->playerAttributes['uiconf_id'],
