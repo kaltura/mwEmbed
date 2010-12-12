@@ -54,7 +54,8 @@ mw.KApi.prototype = {
 			/*
 			 * ideally we could do a single request to get the KS and the payload.
 			 * unfortunately that does not appear to be the case atm. 
-			 * 
+			 */
+			/*
 			 if( ! this.ks ){				
 				// Add the kaltura session ( if not already set ) 
 				var multiRequest = {
@@ -199,7 +200,7 @@ mw.KApiPlayerLoader = function( kProperties, callback ){
 	
 	var requestObject = [];
 	if( kProperties.entry_id ){ 
-		// The refering url ( can be from the iframe if in iframe mode ) 
+		// The referring  url ( can be from the iframe if in iframe mode ) 
 		var refer = ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ? 
 						mw.getConfig( 'EmbedPlayer.IframeParentUrl') : 
 						document.URL;
@@ -253,7 +254,7 @@ mw.KApiPlayerLoader = function( kProperties, callback ){
 		} else if( kProperties.uiconf_id ){
 			// If only loading the confFile set here: 
 			namedData['uiConf'] = data[0]['confFile'];
-		}		
+		}	
 		callback( namedData );
 	});
 	

@@ -7,13 +7,6 @@ mw.KWidgetSupport.prototype = {
 	// The Kaltura client local reference
 	kClient : null,
 	
-	// The Kaltura session state flag ( Kaltura client ready to take requests )  
-	// can be 'null', 'inprogress', 'ready' ( error results in null state ) 
-	kalturaSessionState: null,	
-	
-	// The session Ready Callback Queue
-	sessionReadyCallbackQueue : [], 
-	
 	// Constructor check settings etc
 	init: function( options ){
 	
@@ -44,6 +37,11 @@ mw.KWidgetSupport.prototype = {
 					// Apply player Sources
 					if( playerData.flavors ){
 						_this.addFlavorSources( embedPlayer, playerData.flavors );
+					}
+					
+					// Apply player metadata ( just durationHint for now )
+					if( playerData.meta.duration ){
+						embedPlayer.duration = playerData.meta.duration;
 					}
 					
 					// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									

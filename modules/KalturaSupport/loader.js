@@ -40,6 +40,7 @@
 		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
 		"mw.KDPMapping" : "mw.KDPMapping.js",
 		"faderPlugin" : "uiConfComponents/faderPlugin.js",
+		"watermarkPlugin" :  "uiConfComponents/watermarkPlugin.js",
 		"mw.KApi" : "mw.KApi.js"
 	} );
 	
@@ -52,7 +53,8 @@
 		'mw.KDPMapping',
 		'mw.MobileAdTimeline',
 		'mw.KAds',				
-		'faderPlugin'
+		'faderPlugin',
+		'watermarkPlugin'
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
