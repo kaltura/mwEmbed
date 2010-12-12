@@ -578,10 +578,8 @@ mw.PlayerControlBuilder.prototype = {
 			} );
 
 			// Play & Pause on Click
-			$('#'+embedPlayer.id).click( function() {
-		
+			$j('#'+embedPlayer.id).click( function() {
 				if(embedPlayer.paused) {
-					
 					embedPlayer.play();
 				} else {
 					

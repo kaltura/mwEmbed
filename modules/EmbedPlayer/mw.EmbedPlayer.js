@@ -2691,15 +2691,19 @@ mw.EmbedPlayer.prototype = {
 			$j( this ).trigger( 'replayEvent' );
 		}
 		
-		// Trigger the play event
-		if( this.paused && this.bubbleEventCheck() ){
+	
+		if( this.paused === true ){
 			this.paused = false;
-			mw.log("EmbedPlayer:: trigger play even::" + !this.paused);
-			if(  this._propagateEvents ){
-				$j( this ).trigger( 'play' );
+			
+			// Check if we should Trigger the play event
+			if( this.bubbleEventCheck() ) {
+				mw.log("EmbedPlayer:: trigger play even::" + !this.paused);
+				if(  this._propagateEvents ){
+					$j( this ).trigger( 'play' );
+					_this.tempDisableEvents();
+				}
 			}
 		}
-		this.paused = false;
 
 		this.$interface.find('.play-btn span')
 		.removeClass( 'ui-icon-play' )
@@ -2728,16 +2732,6 @@ mw.EmbedPlayer.prototype = {
 		}
 		return false;
 	},
-
-	/**
-	 * Maps the html5 load request. There is no general way to "load" clips so
-	 * underling plugin-player libs should override.
-	 */
-	load: function() {
-		// should be done by child (no base way to pre-buffer video)
-		mw.log( 'baseEmbed:load call' );
-	},
-
 	/**
 	 * Base embed pause Updates the play/pause button state.
 	 *
@@ -2748,12 +2742,17 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		// Trigger the pause event if not already paused and using native
 		// controls:
-		if( this.paused === false && this.bubbleEventCheck() ){
+		if( this.paused === false ){
 			this.paused = true;
-			mw.log('EmbedPlayer:trigger pause:' + this.paused);
-			$j( this ).trigger('pause' );
+			
+			if( this.bubbleEventCheck() ){
+				mw.log('EmbedPlayer:trigger pause:' + this.paused);
+				if(  this._propagateEvents ){
+					$j( this ).trigger('pause' );
+					_this.tempDisableEvents();
+				}
+			}
 		}
-		this.paused = true;
 
 		// update the ctrl "paused state"
 		this.$interface.find('.play-btn span' )
@@ -2768,7 +2767,26 @@ mw.EmbedPlayer.prototype = {
 		} )
 		.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );
 	},
+	
+	tempDisableEvents: function(){
+		var _this = this;
+		// Disable event _propagateEvents for 10ms ( avoid pause play trigger stacking )
+		this._propagateEvents = false;
+		setTimeout(function(){
+			_this._propagateEvents = true;
+		},10);
+	},
 
+	/**
+	 * Maps the html5 load request. There is no general way to "load" clips so
+	 * underling plugin-player libs should override.
+	 */
+	load: function() {
+		// should be done by child (no base way to pre-buffer video)
+		mw.log( 'baseEmbed:load call' );
+	},
+
+	
 	/**
 	 * Base embed stop
 	 *
