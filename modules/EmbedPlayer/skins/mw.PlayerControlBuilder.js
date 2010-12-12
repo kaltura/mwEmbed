@@ -576,6 +576,18 @@ mw.PlayerControlBuilder.prototype = {
 				_this.showControlBar();
 				// ( once the user touched the video "don't hide" )
 			} );
+
+			// Play & Pause on Click
+			$('#'+embedPlayer.id).click( function() {
+		
+				if(embedPlayer.paused) {
+					
+					embedPlayer.play();
+				} else {
+					
+					embedPlayer.pause();
+				}
+			});
 			// Add a special absolute overlay for hover ( to keep menu displayed
 			
 			$interface.hoverIntent({
