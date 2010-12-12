@@ -193,8 +193,8 @@ class kalturaIframe {
 			'partner_id'		=>	$this->playerAttributes['wid'],		
 		);
 		if( isset( $this->resultObj[3] ) && $this->resultObj[3]->confFile ){
-			$playerData[ 'entry_id' ] = $this->playerAttributes['entry_id'];
 			$playerData[ 'uiconf_id' ] = $this->playerAttributes['uiconf_id'];
+			$playerData[ 'uiConf'] = $this->resultObj[3]->confFile;
 		}
 		
 		return json_encode($playerData);
