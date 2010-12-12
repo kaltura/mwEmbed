@@ -636,7 +636,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Hide the control bar
 		this.embedPlayer.$interface.find( '.control-bar')
 			.fadeOut( animateDuration );
-		mw.log('about to trigger hide control bar')
+		//mw.log('about to trigger hide control bar')
 		// Allow interface items to update: 
 		$j( this.embedPlayer ).trigger('onHideControlBar', {'bottom' : 10} );
 

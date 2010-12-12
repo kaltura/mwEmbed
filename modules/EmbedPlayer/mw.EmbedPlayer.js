@@ -2684,6 +2684,13 @@ mw.EmbedPlayer.prototype = {
 			// the plugin is already being displayed
 			this.seeking = false;
 		}
+		
+		// If we previously finished playing this clip run the "replay hook"
+		if( this.donePlayingCount > 0 && !this.paused) {
+			mw.log("replayEvent");
+			$j( this ).trigger( 'replayEvent' );
+		}
+		
 		// Trigger the play event
 		if( this.paused && this.bubbleEventCheck() ){
 			this.paused = false;
@@ -2707,13 +2714,7 @@ mw.EmbedPlayer.prototype = {
 		.attr( 'title', gM( 'mwe-embedplayer-pause_clip' ) );		
 		
 		// Start the monitor if not already started
-		this.monitor();
-
-		// If we previously finished playing this clip run the "replay hook"
-		if( this.donePlayingCount > 0 ) {
-			mw.log("replayEvent");
-			$j( this ).trigger( 'replayEvent' );
-		}
+		this.monitor();		
 	},
 	/**
 	 * Returns true if the event should be triggered or false if not
