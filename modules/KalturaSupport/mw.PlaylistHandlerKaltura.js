@@ -6,9 +6,10 @@ mw.PlaylistHandlerKaltura = function( options ){
 mw.PlaylistHandlerKaltura.prototype = {
 	clipList:null,
 	
-	uiconfid: null,
-	widgetid: null,
-	playlistid: null,
+	uiconf_id: null,
+	widget_id: null,
+	playlist_id: null,
+	
 	playlistSet : [],
 	
 	// ui conf data
@@ -18,10 +19,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 	autoContinue: true,
 	
 	init: function ( options ){
-		this.uiconfid =  options.uiconfid;
-		this.widgetid = options.widgetid;			
-		if( options.playlistid ){
-			this.playlistid = options.playlistid;
+		this.uiconf_id =  options.uiconf_id;
+		this.widget_id = options.widget_id;			
+		if( options.playlist_id ){
+			this.playlist_id = options.playlist_id;
 		}
 		
 	},	
@@ -30,69 +31,55 @@ mw.PlaylistHandlerKaltura.prototype = {
 		var _this = this;
 	
 		// Get the kaltura client:
-		var kClient = mw.kApiGetPartnerClient( this.widgetid );
 		
 		// Check if we have already initialised the playlist session: 
-		if( _this.playlistid !== null ){
-			_this.loadCurrentPlaylist( kClient, callback );
+		if( _this.playlist_id !== null ){
+			_this.loadCurrentPlaylist( callback );
 			return ;
 		}
 		
-		mw.KApiPlayerLoader({
-			'uiconf_id' : this.uiconfid
+		this.kClient = mw.KApiPlayerLoader({
+			'widget_id' : this.widget_id,
+			'uiconf_id' : this.uiconf_id
 		}, function( playerData ){
-			debugger;
-			// move options below to uiConfFile!!!!!!
-		})
-		
-		
-		
-		
-		// Get playlist uiConf data
-		var uiconfGrabber = new KalturaUiConfService( kClient );		
-		uiconfGrabber.get( function( status, data ) {
-			
-			gotUiConfData = true;
-			_this.uiConfData = data;
-			if( data.confFileFeatures && data.confFileFeatures != 'null') {
+			// Get playlist uiConf data
 					
-				// Add all playlists to playlistSet
-				var $uiConf = $j(  data.confFileFeatures );				
-				
-				// Check for autoContinue ( we check false state so that by default we autoContinue ) 
-				_this.autoContinue = 
-					( $uiConf.find("uiVars [key='playlistAPI.autoContinue']").attr('value') == 'false' )? false: true
-														
-				// Find all the playlists by number  
-				for( var i=0; i < 50 ; i ++ ){
-					var playlistid  = $uiConf.find("uiVars [key='kpl" + i +"EntryId']").attr('value');
-					var playlistName = $uiConf.find("uiVars [key='playlistAPI.kpl" + i + "Name']").attr('value');
-					if( playlistid && playlistName ){
-						_this.playlistSet.push( { 
-							'name' : playlistName,
-							'playlistid' : playlistid
-						} )
-					} else {
-						break;
-					}
-				}				
-				if( !_this.playlistSet[0] ){
-					mw.log( "Error could not get playlist entry id in the following uiConf data::\n" + data.confFileFeatures );
-					return false;
-				}														
-			} else {
-				// This is just a single playlist:
-				_this.playlistSet[0] = {'playlistid' : data.id };
-			}
+			// TODO check if single playlist:
+			//	_this.playlistSet[0] = {'playlist_id' : data.id };
+			
+			
+			// Add all playlists to playlistSet
+			var $uiConf = $j(  playerData.uiConf );				
+			
+			// Check for autoContinue ( we check false state so that by default we autoContinue ) 
+			_this.autoContinue = 
+				( $uiConf.find("uiVars [key='playlistAPI.autoContinue']").attr('value') == 'false' )? false: true
+													
+			// Find all the playlists by number  
+			for( var i=0; i < 50 ; i ++ ){
+				var playlist_id  = $uiConf.find("uiVars [key='kpl" + i +"EntryId']").attr('value');
+				var playlistName = $uiConf.find("uiVars [key='playlistAPI.kpl" + i + "Name']").attr('value');
+				if( playlist_id && playlistName ){
+					_this.playlistSet.push( { 
+						'name' : playlistName,
+						'playlist_id' : playlist_id
+					} )
+				} else {
+					break;
+				}
+			}				
+			if( !_this.playlistSet[0] ){
+				mw.log( "Error could not get playlist entry id in the following uiConf data::\n" + data.confFileFeatures );
+				return false;
+			}														
+			
 			mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );																
 			// Set the playlist to the first playlist
 			_this.setPlaylistIndex( 0 );
 			
 			// Load playlist by Id 
-			_this.loadCurrentPlaylist( kClient, callback );
-			
-		}, _this.uiconfid );
-		
+			_this.loadCurrentPlaylist( callback );
+		});
 	},
 	hasMultiplePlaylists: function(){
 		return ( this.playlistSet.length > 1 )
@@ -101,25 +88,29 @@ mw.PlaylistHandlerKaltura.prototype = {
 		return this.playlistSet;
 	},
 	setPlaylistIndex: function( playlistIndex ){
-		this.playlistid = this.playlistSet[ playlistIndex ].playlistid;		
+		this.playlist_id = this.playlistSet[ playlistIndex ].playlist_id;		
 	},
-	loadCurrentPlaylist: function( kClient, callback ){
-		this.loadPlaylistById( this.playlistid, kClient, callback );
+	loadCurrentPlaylist: function( callback ){
+		this.loadPlaylistById( this.playlist_id, callback );
 	},
-	loadPlaylistById: function( playlistid, kClient, callback ){
+	loadPlaylistById: function( playlist_id, callback ){
 		var _this = this;
-		var kPlaylistGrabber = new KalturaPlaylistService( kClient );
-		kPlaylistGrabber.execute( function( status, playlistData ) {
+		var playlistRequest = { 
+				'service' : 'playlist', 
+				'action' : 'execute', 
+				'id': playlist_id 
+		};
+		this.kClient.doRequest( playlistRequest, function( playlistData ) {
 			// empty the clip list
 			_this.clipList = [];
 			if( !  playlistData.length ){						
-				mw.log("Error: kaltura playlist:" + playlistid + " could not load:" + playlistData.code)
+				mw.log("Error: kaltura playlist:" + playlist_id + " could not load:" + playlistData.code)
 			} else { 
 				mw.log( 'kPlaylistGrabber::Got playlist of length::' +  playlistData.length );
 				_this.clipList = playlistData;			
 			}
 			callback();
-		}, playlistid );
+		})
 	},	
 	
 	/**
@@ -139,8 +130,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 	getClipSources: function( clipIndex, callback ){
 		var _this = this;
-		mw.getEntryIdSourcesFromApi( this.getClipList()[ clipIndex ].id, function( sources ){
-			// add the durationHint to the sources: 
+		mw.getEntryIdSourcesFromApi( this.kClient.getPartnerId(),  this.getClipList()[ clipIndex ].id, function( sources ){
+			// Add the durationHint to the sources: 
 			for( var i in sources){
 				sources[i].durationHint = _this.getClipDuration( clipIndex );
 			}
@@ -151,7 +142,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	applyCustomClipData:function( embedPlayer, clipIndex ){
 		$j( embedPlayer ).attr({
 			'kentryid' : this.getClip( clipIndex ).id,
-			'kwidgetid' : this.widgetid
+			'kwidgetid' : this.widget_id
 		});		
 		$j( embedPlayer ).data( 'kuiconf', this.uiConfData );
 	},

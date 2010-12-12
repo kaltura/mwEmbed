@@ -197,7 +197,7 @@ mw.KApiPlayerLoader = function( kProperties, callback ){
 	var partner_id = kProperties.widget_id.replace(/_/g, '');
 	
 	
-	var requestObject = [];	
+	var requestObject = [];
 	if( kProperties.entry_id ){ 
 		// The refering url ( can be from the iframe if in iframe mode ) 
 		var refer = ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ? 
@@ -219,7 +219,7 @@ mw.KApiPlayerLoader = function( kProperties, callback ){
 		requestObject.push({
 	        	 'entryId' : kProperties.entry_id ,
 	        	 'service' : 'flavorasset',
-	        	 'action' : 'getWebPlayableByEntryId'
+	        	 'action' : 'getByEntryId'
 	    });
 		
 	    // Get baseEntry
@@ -247,9 +247,12 @@ mw.KApiPlayerLoader = function( kProperties, callback ){
 			namedData['accessControl'] = data[0];
 			namedData['flavors'] = data[1];
 			namedData['meta'] = data[2];
-			namedData['uiConf'] = data[3]['confFile'];
+			if( data[3] ){
+				namedData['uiConf'] = data[3]['confFile'];
+			}
 		} else if( kProperties.uiconf_id ){
-			namedData['uiConf'] = data[3]['confFile'];
+			// If only loading the confFile set here: 
+			namedData['uiConf'] = data[0]['confFile'];
 		}		
 		callback( namedData );
 	});

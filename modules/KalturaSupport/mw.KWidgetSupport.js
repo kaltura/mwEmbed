@@ -39,15 +39,14 @@ mw.KWidgetSupport.prototype = {
 							$j(embedPlayer).replaceWith( acStatus );
 							return ;
 						}
-					}
-					
+					}					
 					
 					// Apply player Sources
 					if( playerData.flavors ){
 						_this.addFlavorSources( embedPlayer, playerData.flavors );
 					}
 					
-					//Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
+					// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
 					if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
 						mw.addKAnalytics( embedPlayer, _this.kClient );
 					}
@@ -69,6 +68,37 @@ mw.KWidgetSupport.prototype = {
 			});						
 		});		
 	},
+	
+	/**
+	 * Alternate source grabbing script ( for cases where we need to hot-swap the source ) 
+	 * playlists on iPhone for example we can't re-load the player we have to just switch the src. 
+	 * 
+	 * accessible via static reference mw.getEntryIdSourcesFromApi
+	 * 
+	 */
+	getEntryIdSourcesFromApi:  function( widgetId, entryId, callback ){
+		var _this = this;
+		var kClient = mw.KApiPlayerLoader( {
+			'widget_id' : widgetId, 
+			'entry_id' : entryId,
+		}, function( playerData ){
+			
+			// Check access control 
+			if( playerData.accessControl ){
+				var acStatus = _this.getAccessControlStatus( playerData.accessControl );
+				if( acStatus !== true ){
+					callback( acStatus );
+					return ;
+				}
+			}					
+			// Get device sources 
+			var deviceSources = _this.getEntryIdSourcesFromFlavorData( kClient.getPartnerId(), playerData.flavors );
+			var sources = _this.getSourcesForDevice( deviceSources );
+			
+			callback( sources );
+		});
+	},
+	
 	/**
 	 * Sets up variables and issues the mw.KApiPlayerLoader call
 	 */
@@ -93,11 +123,7 @@ mw.KWidgetSupport.prototype = {
 		playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
 		
 		// Run the request: 
-		this.kClient = mw.KApiPlayerLoader( {
-			'widget_id' : '_243342', 
-			'entry_id' : '0_swup5zao',
-			'uiconf_id' : '2877502'
-		}, function( playerData ){
+		this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
 			callback( playerData );
 		});
 	},
@@ -291,8 +317,7 @@ mw.KWidgetSupport.prototype = {
 				'type': type
 			} );
 		}
-		
-		
+
 		// If on an iPad or iPhone4 use iPad Source
 		if( mw.isIpad() || mw.isIphone4() ) {
 			mw.log( "KwidgetSupport:: Add iPad / iPhone4 source");
@@ -315,7 +340,7 @@ mw.KWidgetSupport.prototype = {
 			}
 			return sources;
 		} else {
-			// use h264 source for flash fallback:
+			// use h264 source for flash fallback ( desktop browsers ) 
 			mw.log( "KwidgetSupport:: Add from flash h264 fallback" );
 			if( deviceSources['iPad'] ) {
 				addSource( deviceSources['iPad'], 'video/h264' );
@@ -345,29 +370,21 @@ if( !window.kWidgetSupport ){
 
 // Add player Manager binding ( if playerManager not ready bind to when its ready )
 // NOTE we may want to move this into the loader since its more "action/loader" code
-if( mw.playerManager ){	
+if( mw.playerManager ){
 	kWidgetSupport.addPlayerHooks();
 } else {
 	mw.log( 'KWidgetSupport::bind:EmbedPlayerManagerReady');
-	$j( mw ).bind( 'EmbedPlayerManagerReady', function(){	
-		mw.log( "KWidgetSupport::EmbedPlayerManagerReady" );	
+	$j( mw ).bind( 'EmbedPlayerManagerReady', function(){
+		mw.log( "KWidgetSupport::EmbedPlayerManagerReady" );
 		kWidgetSupport.addPlayerHooks();
-	});	
+	});
 }
 
 /**
- * Register a global shortcuts for the kaltura client session creation 
+ * Register a global shortcuts for the kaltura sources query
  */
-mw.getKalturaClientSession = function( widgetid, callback ){
-	
-	kWidgetSupport.getKalturaSession( widgetid, function(){
-		// return the kClient: 
-		callback( kWidgetSupport.kClient )
-	});
+mw.getEntryIdSourcesFromApi = function( widgetId, entryId, callback ){
+	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, entryId, callback);
 }
-/*
-mw.getEntryIdSourcesFromApi = function( entryId, callback ){
-	kWidgetSupport.getEntryIdSourcesFromApi( entryId, callback);
-}
-*/
+
 

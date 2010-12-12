@@ -209,9 +209,9 @@
 						// kalturaPlaylistObject has player loader built in: 
 						$j('.mwEmbedKalturaPlaylistSwap').each( function( inx, playlistTarget ) {
 							var playlistConfig = {
-								'uiconfid' : $j( playlistTarget ).attr( 'kuiconfid' ),
-								'widgetid' : $j( playlistTarget ).attr( 'kwidgetid' ),
-								'playlistid':  $j( playlistTarget ).attr( 'kplaylistid' )
+								'uiconf_id' : $j( playlistTarget ).attr( 'kuiconfid' ),
+								'widget_id' : $j( playlistTarget ).attr( 'kwidgetid' ),
+								'playlist_id':  $j( playlistTarget ).attr( 'kplaylistid' )
 							};
 							// Check if we have a mediaRss url as the playlistId
 							if( mw.isUrl( playlistConfig.playlistid ) ) {
