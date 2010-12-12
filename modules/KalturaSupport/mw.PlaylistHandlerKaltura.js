@@ -100,15 +100,22 @@ mw.PlaylistHandlerKaltura.prototype = {
 				'action' : 'execute', 
 				'id': playlist_id 
 		};
-		this.getKClient().doRequest( playlistRequest, function( playlistData ) {
+		this.getKClient().doRequest( playlistRequest, function( playlistDataResult ) {
 			// Empty the clip list
 			_this.clipList = [];
-			if( !  playlistData.length ){						
+			
+			// The api does strange things with multi-playlist vs single playlist
+			if( playlistDataResult[0].id ){
+				playlistData = playlistDataResult
+			} else if( playlistDataResult[0][0].id ){
+				playlistData = playlistDataResult[0];
+			} else {
 				mw.log("Error: kaltura playlist:" + playlist_id + " could not load:" + playlistData.code)
-			} else { 
-				mw.log( 'kPlaylistGrabber::Got playlist of length::' +  playlistData.length );
-				_this.clipList = playlistData;			
 			}
+			
+			
+			mw.log( 'kPlaylistGrabber::Got playlist of length::' +   playlistData.length );
+			_this.clipList =  playlistData;			
 			callback();
 		})
 	},	

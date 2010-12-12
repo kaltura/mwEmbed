@@ -276,7 +276,11 @@ mw.KWidgetSupport.prototype = {
 	 */
 	getEntryIdSourcesFromFlavorData: function( partner_id, flavorData ){
 		var _this = this;
-
+		
+		if( !flavorData ){
+			mw.log("Error: KWidgetSupport: flavorData is not defined ");
+		}
+		
 		// Setup the src defines
 		var deviceSources = {};		
 		
