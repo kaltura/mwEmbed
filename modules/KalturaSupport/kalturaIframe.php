@@ -133,48 +133,51 @@ class kalturaIframe {
 		exit();	
 		*/
 		
-		$this->checkAccessControl($resultObject[1]);
-
-		// add any web sources		
-		$sources = array();
-		foreach( $resultObject[0] as $KalturaFlavorAsset ){	
-
-			$assetUrl =  KALTURA_CDN_URL .'/p/' . $partnerId . '/sp/' . 
-					$partnerId . '00/flvclipper/entry_id/' . 
-					$this->playerAttributes['entry_id'] . '/flavor/' . 	$KalturaFlavorAsset->id;
-			if( strpos( $KalturaFlavorAsset->tags, 'iphone' ) !== false ){
-				$sources['iphone'] = array(
-					'src' => $assetUrl . '/a.mp4?novar=0',
-					'type' => 'video/h264',
-					'data-flavorid' => 'iPhone' 
-				);
-			};
-			if( strpos( $KalturaFlavorAsset->tags, 'ipad' ) !== false ){
-				$sources['ipad'] = array(
-					'src' => $assetUrl  . '/a.mp4?novar=0',
-					'type' => 'video/h264',
-					'data-flavorid' => 'iPad' 
-				);
-			};
-			if( $KalturaFlavorAsset->fileExt == 'ogg' || $KalturaFlavorAsset->fileExt == 'ogv' 
-				|| $KalturaFlavorAsset->fileExt == 'oga' 
-			){
-				$sources['ogg'] = array(
-					'src' => $assetUrl . '/a.ogg?novar=0',
-					'type' => 'video/ogg',
-					'data-flavorid' => 'ogg' 
-				);
-			};
-			if( $KalturaFlavorAsset->fileExt == '3gp' ){
-				$sources['3gp'] = array(
-					'src' => $assetUrl . '/a.3gp?novar=0',
-					'type' => 'video/3gp',
-					'data-flavorid' => '3gp' 
-				);
-			};
+		if( $this->checkAccessControl($resultObject[1]) ) {
+	
+			// add any web sources		
+			$sources = array();
+			foreach( $resultObject[0] as $KalturaFlavorAsset ){	
+	
+				$assetUrl =  KALTURA_CDN_URL .'/p/' . $partnerId . '/sp/' . 
+						$partnerId . '00/flvclipper/entry_id/' . 
+						$this->playerAttributes['entry_id'] . '/flavor/' . 	$KalturaFlavorAsset->id;
+				if( strpos( $KalturaFlavorAsset->tags, 'iphone' ) !== false ){
+					$sources['iphone'] = array(
+						'src' => $assetUrl . '/a.mp4?novar=0',
+						'type' => 'video/h264',
+						'data-flavorid' => 'iPhone' 
+					);
+				};
+				if( strpos( $KalturaFlavorAsset->tags, 'ipad' ) !== false ){
+					$sources['ipad'] = array(
+						'src' => $assetUrl  . '/a.mp4?novar=0',
+						'type' => 'video/h264',
+						'data-flavorid' => 'iPad' 
+					);
+				};
+				if( $KalturaFlavorAsset->fileExt == 'ogg' || $KalturaFlavorAsset->fileExt == 'ogv' 
+					|| $KalturaFlavorAsset->fileExt == 'oga' 
+				){
+					$sources['ogg'] = array(
+						'src' => $assetUrl . '/a.ogg?novar=0',
+						'type' => 'video/ogg',
+						'data-flavorid' => 'ogg' 
+					);
+				};
+				if( $KalturaFlavorAsset->fileExt == '3gp' ){
+					$sources['3gp'] = array(
+						'src' => $assetUrl . '/a.3gp?novar=0',
+						'type' => 'video/3gp',
+						'data-flavorid' => '3gp' 
+					);
+				};
+			}
+			
+			return $sources;
+		} else {
+			return array();
 		}
-		
-		return $sources;
 	}
 
 	/**
