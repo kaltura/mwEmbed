@@ -185,17 +185,19 @@ class kalturaIframe {
 	*/	
 	function getPlayerData() {
 
-		$arr = array(
+		$playerData = array(
 			'accessControl' 	=> 	$this->resultObj[1],
 			'flavors' 			=> 	$this->resultObj[0],
-			'meta'				=>	$this->resultObj[2],
-			'uiConf'			=>	$this->resultObj[3]->confFile,
+			'meta'				=>	$this->resultObj[2],			
 			'entry_id'			=>	$this->playerAttributes['entry_id'],
-			'partner_id'		=>	$this->playerAttributes['wid'],
-			'uiconf_id'			=>	$this->playerAttributes['uiconf_id'],
+			'partner_id'		=>	$this->playerAttributes['wid'],		
 		);
+		if( isset( $this->resultObj[3] ) && $this->resultObj[3]->confFile ){
+			$playerData[ 'entry_id' ] = $this->playerAttributes['entry_id'];
+			$playerData[ 'uiconf_id' ] = $this->playerAttributes['uiconf_id'];
+		}
 		
-		return json_encode($arr);
+		return json_encode($playerData);
 	}
 	
 	/**
@@ -420,7 +422,7 @@ class kalturaIframe {
 				document.write(unescape("%3Cscript src='<?php echo KALTURA_MWEMBED_PATH ?>mwEmbedLoader.js' type='text/javascript'%3E%3C/script%3E"));
 			</script>
 			<script type="text/javascript">		
-				// Add Packaging Kaltura Player Data (Json Encoded)
+				// Add Packaging Kaltura Player Data ( JSON Encoded )
 				mw.setConfig('KalturaSupport.BootstrapPlayerData', <?php echo $this->getPlayerData(); ?>);
 			
 				// TODO:: Add the refer url to analytics. 
