@@ -48,7 +48,7 @@
 	var kalturaSupportRequestSet = [
 		'MD5',
 		"mw.KApi",
-		'mw.KWidgetSupport',	  
+		'mw.KWidgetSupport',
 		'mw.KAnalytics',
 		'mw.KDPMapping',
 		'mw.MobileAdTimeline',

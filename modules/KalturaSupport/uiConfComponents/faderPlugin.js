@@ -16,5 +16,5 @@ var faderPlugin = function(embedPlayer, $uiConf){
 		embedPlayer.overlaycontrols = true;
 	} else {
 		embedPlayer.overlaycontrols = false;
-	}	
+	}
 }
