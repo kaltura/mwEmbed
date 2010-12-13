@@ -1,5 +1,5 @@
 /**
-* PyMediaSubsConfig hooks into the pyMedia html5 libray
+* PyMediaSubsConfig hooks into the pyMedia html5 library
 */
 mw.plyMediaConfig = {
 	bindPlayer: function( embedPlayer ){
