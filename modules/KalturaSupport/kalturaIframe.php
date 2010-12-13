@@ -96,9 +96,7 @@ class kalturaIframe {
 		// @@todo support MultiRequest
 		$client->startMultiRequest();
 		try{
-
 			
-			// TODO lookup duration for "durationHint"
 			if( !isset($_SERVER['HTTP_REFERER']) ) { $_SERVER['HTTP_REFERER'] = 'http://www.kaltura.org/'; }
 			
 			// NOTE this should probably be wrapped in a service class 
