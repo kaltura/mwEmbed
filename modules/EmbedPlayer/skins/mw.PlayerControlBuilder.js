@@ -566,13 +566,20 @@ mw.PlayerControlBuilder.prototype = {
 		// Remove any old interface bindings
 		$interface.unbind();
 		
-		// Play & Pause on Click
-		$(embedPlayer).click( function() {
-			if(embedPlayer.paused) {
-				embedPlayer.play();
-			} else {
-				embedPlayer.pause();
+		// Play & Pause on Click 
+		var bindFirstPlay = false;
+		$(embedPlayer).bind('play', function() { //Only bind once played
+			if(bindFirstPlay) {
+				return ;
 			}
+			bindFirstPlay = true;
+			$(embedPlayer).click( function() {
+				if(embedPlayer.paused) {
+					embedPlayer.play();
+				} else {
+					embedPlayer.pause();
+				}
+			});		
 		});
 		
 		var bindSpaceUp = function(){
@@ -1564,6 +1571,7 @@ mw.PlayerControlBuilder.prototype = {
 					// Add play hook:
 					.click( function() {
 						 ctrlObj.embedPlayer.play();
+						 return false; // Event Stop Propagation
 					} );
 			}
 		},
