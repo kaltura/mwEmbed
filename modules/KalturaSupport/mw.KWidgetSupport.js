@@ -23,8 +23,11 @@ mw.KWidgetSupport.prototype = {
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
 
 				// Load all the player configuration from kaltura: 
-				_this.loadPlayerData( embedPlayer, function( playerData ){
-					
+				var status = _this.loadPlayerData( embedPlayer, function( playerData ){
+					if( !playerData ){
+						callback();
+						return ;
+					}
 					// Check access controls ( this is kind of silly and needs to be done on the server ) 
 					if( playerData.accessControl ){
 						var acStatus = _this.getAccessControlStatus( playerData.accessControl );
@@ -60,8 +63,7 @@ mw.KWidgetSupport.prototype = {
 						});
 					} else {
 						callback();
-					}
-					
+					}			
 				});				
 			});						
 		});		
@@ -106,7 +108,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for widget id	 
 		if( ! $j( embedPlayer ).attr( 'kwidgetid' ) ){
-			callback();
+			callback( false );
 			return false;
 		} else {
 			playerRequest.widget_id = $j( embedPlayer ).attr( 'kwidgetid' );
