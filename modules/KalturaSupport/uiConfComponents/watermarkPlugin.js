@@ -37,7 +37,8 @@
 			.css( watermarkCss )
 			.append( 
 				$j('<a />').attr({
-					'href' : $watermarkConf.attr('watermarkClickPath')
+					'href' : $watermarkConf.attr('watermarkClickPath'),
+					'target' : '_blank'
 				}).append( 
 					$j('<img />').attr({
 						'src': $watermarkConf.attr('watermarkPath'),
