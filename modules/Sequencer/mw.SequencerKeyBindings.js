@@ -56,7 +56,7 @@ mw.SequencerKeyBindings.prototype = {
 			if ( ( e.which == 88 && _this.ctrlDown ) && !_this.inputFocus )
 				$j( _this ).trigger( 'cut ');
 
-			// Paste cips on v + ctrl while not focused on a text area:
+			// Paste clip on v + ctrl while not focused on a text area:
 			if ( ( e.which == 86 && _this.ctrlDown ) && !_this.inputFocus )
 				$j( _this ).trigger( 'paste ');
 		} );

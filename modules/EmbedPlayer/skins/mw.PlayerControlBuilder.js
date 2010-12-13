@@ -575,26 +575,26 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		});
 		
-		$(embedPlayer).hover(
-				function() {
-					$(window).bind('keyup.player', function(e) {
-						if(e.keyCode == 32) {
-							if(embedPlayer.paused) {
-								embedPlayer.play();
-							} else {
-								embedPlayer.pause();
-							}
-						}
-					})
-				},
-				function() {
-					$(window).unbind('keyup.player');
+		var bindSpaceUp = function(){
+			$(window).bind('keyup.mwPlayer', function(e) {
+				if(e.keyCode == 32) {
+					if(embedPlayer.paused) {
+						embedPlayer.play();
+					} else {
+						embedPlayer.pause();
+					}
 				}
-		);
-		
+			})
+		}
+		var bindSpaceDown = function() {
+			$(window).unbind('keyup.mwPlayer');
+		}
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.checkOverlayControls() ) {
-			$interface.show();
+			$interface
+				.show()
+				.hover( bindSpaceUp, bindSpaceDown );
+			
 		} else { // hide show controls:
 			//$interface.css({'background-color': 'red'});
 			// Bind a startTouch to show controls
@@ -611,9 +611,11 @@ mw.PlayerControlBuilder.prototype = {
 				'over' : function(){
 					// Show controls with a set timeout ( avoid fade in fade out on short mouse over )
 					_this.showControlBar();
+					bindSpaceUp();
 				},
 				'out' : function(){
 					_this.hideControlBar();
+					bindSpaceDown();
 				}
 			});
 			
