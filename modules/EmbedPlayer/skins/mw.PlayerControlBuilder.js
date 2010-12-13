@@ -565,7 +565,33 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Remove any old interface bindings
 		$interface.unbind();
-
+		
+		// Play & Pause on Click
+		$(embedPlayer).click( function() {
+			if(embedPlayer.paused) {
+				embedPlayer.play();
+			} else {
+				embedPlayer.pause();
+			}
+		});
+		
+		$(embedPlayer).hover(
+				function() {
+					$(window).bind('keyup.player', function(e) {
+						if(e.keyCode == 32) {
+							if(embedPlayer.paused) {
+								embedPlayer.play();
+							} else {
+								embedPlayer.pause();
+							}
+						}
+					})
+				},
+				function() {
+					$(window).unbind('keyup.player');
+				}
+		);
+		
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.checkOverlayControls() ) {
 			$interface.show();
@@ -577,15 +603,6 @@ mw.PlayerControlBuilder.prototype = {
 				// ( once the user touched the video "don't hide" )
 			} );
 
-			// Play & Pause on Click
-			$j('#'+embedPlayer.id).click( function() {
-				if(embedPlayer.paused) {
-					embedPlayer.play();
-				} else {
-					
-					embedPlayer.pause();
-				}
-			});
 			// Add a special absolute overlay for hover ( to keep menu displayed
 			
 			$interface.hoverIntent({
