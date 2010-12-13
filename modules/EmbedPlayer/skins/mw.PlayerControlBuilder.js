@@ -568,12 +568,12 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Play & Pause on Click 
 		var bindFirstPlay = false;
-		$(embedPlayer).bind('play', function() { //Only bind once played
+		$j(embedPlayer).bind('play', function() { //Only bind once played
 			if(bindFirstPlay) {
 				return ;
 			}
 			bindFirstPlay = true;
-			$(embedPlayer).click( function() {
+			$j(embedPlayer).click( function() {
 				if(embedPlayer.paused) {
 					embedPlayer.play();
 				} else {
@@ -583,7 +583,7 @@ mw.PlayerControlBuilder.prototype = {
 		});
 		
 		var bindSpaceUp = function(){
-			$(window).bind('keyup.mwPlayer', function(e) {
+			$j(window).bind('keyup.mwPlayer', function(e) {
 				if(e.keyCode == 32) {
 					if(embedPlayer.paused) {
 						embedPlayer.play();
@@ -593,8 +593,9 @@ mw.PlayerControlBuilder.prototype = {
 				}
 			})
 		}
+		
 		var bindSpaceDown = function() {
-			$(window).unbind('keyup.mwPlayer');
+			$j(window).unbind('keyup.mwPlayer');
 		}
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.checkOverlayControls() ) {
