@@ -249,13 +249,7 @@ mw.KAds.prototype = {
 					'eventName' : $j( trackingNode ).attr('event'),  
 					'beaconUrl' : _this.getURLFromNode( trackingNode )
 				});
-			});
-			
-			// Setup a bind Player callback which passes the embedPlayer 
-			// into the currentAd function scope. 			
-			currentAd.bindPlayerEvents = function( videoPlayer ){
-				_this.bindVastTrackingEvents( currentAd.trackingEvents, videoPlayer );	
-			};
+			});					
 						
 			
 			// Set the media file:
@@ -330,6 +324,9 @@ mw.KAds.prototype = {
 		if( !resourceObj.$html){
 			return false;
 		}
+		// Export the html to static representation: 
+		resourceObj.html = $j('<div />').html( resourceObj.$html ).html();
+		
 		return resourceObj;
 	},
 	/**
@@ -416,87 +413,7 @@ mw.KAds.prototype = {
 			break;
 		}
 		return $companionHtml;
-	},	
-
-	/**
-	 * bindVastEvent per the VAST spec the following events are supported:
-	 *   
-	 * start, firstQuartile, midpoint, thirdQuartile, complete
-	 * pause, rewind, resume, 
-	 * 
-	 * VAST events not presently supported ( per iOS player limitations ) 
-	 * 
-	 * mute, creativeView, unmute, fullscreen, expand, collapse, 
-	 * acceptInvitation, close
-	 * 
-	 * @param {object} embedPlayer
-	 * @param {string} eventName
-	 * @param {object} eventBecon 
-	 */	
-	bindVastTrackingEvents: function ( trackingEvents, videoPlayer ){
-		var _this = this;
-		// Only send events once: 
-		var sentEvents = {};
-		
-		// Function to dispatch a beacons:
-		var sendBeacon = function( eventName, force ){
-			if( sentEvents[ eventName ] && !force ){
-				return ;
-			} 
-			sentEvents[ eventName ] = 1;
-			// See if we have any beacons by that name: 
-			for(var i =0;i < trackingEvents.length; i++){
-				if( eventName == trackingEvents[ i ].eventName ){
-					mw.log("kAds:: sendBeacon: " + eventName );
-					mw.sendBeaconUrl( trackingEvents[ i ].beaconUrl );
-				};
-			};			
-		};
-				
-		// On end stop monitor / clear interval: 
-		$j( videoPlayer ).bind('ended', function(){			
-			sendBeacon( 'complete' );
-			clearInterval( monitorInterval );
-		})
-		
-		// On pause / resume: 
-		$j( videoPlayer ).bind( 'pause', function(){
-			sendBeacon( 'pause' );
-		})
-		
-		// On resume: 
-		$j( videoPlayer ).bind( 'play', function(){
-			sendBeacon( 'resume' );
-		})			
-		
-		var time = 0;
-		// On seek backwards 
-		$j( videoPlayer ).bind( 'seek', function(){
-			if( videoPlayer.currentTime < time ){
-				sendBeacon( 'rewind' );
-			}
-		});		
-
-		// Set up a monitor for time events: 
-		var monitorInterval = setInterval( function(){
-			time =  videoPlayer.currentTime;
-			dur = videoPlayer.duration;
-			
-			if( time > 0 )
-				sendBeacon( 'start' );
-				
-			if( time > dur / 4 )
-				sendBeacon( 'firstQuartile' );
-			
-			if( time > dur / 2 )
-				sendBeacon( 'midpoint' );
-			
-			if( time > dur / 1.5 )
-				sendBeacon( 'complete' );
-
-		}, mw.getConfig('EmbedPlayer.MonitorRate') );		
-	},
-		
+	},		
 	/**
 	 * There does no seem to be a clean way to get CDATA node text via jquery or 
 	 * via native browser functions. So here we just strip the CDATA tags and 

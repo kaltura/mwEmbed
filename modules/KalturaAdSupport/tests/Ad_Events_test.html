@@ -1,7 +1,6 @@
 <html>
   <head>
-    <meta name="generator" content=
-    "HTML Tidy for Windows (vers 14 February 2006), see www.w3.org">
+    <meta name="generator" content="HTML Tidy for Windows (vers 14 February 2006), see www.w3.org">
 	
     <title></title>
   </head>
@@ -9,14 +8,22 @@
     <h1>
       HTML5 ad events test
     </h1>
-	<video persistentNativePlayer="true" id="vid1" width="480" height="267"
-	 poster="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb480.jpg"
-	 durationHint="33"
-	 controls>
-	 	<source src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_iphone.m4v" />
-		<source src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb400p.ogv" />
-</video>
-   	<br>Prerool video: <input id="prerool" type="text" size="40" value="http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_v1z55w0b/flavor/1_jeqsr39h/a.mp4?novar=0"></input>
+    <div style="width:680">
+    <div class="playerContainer" style="float:left;width:480px">
+		<video persistentNativePlayer="true" id="vid1" width="480" height="267"
+		 poster="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb480.jpg"
+		 durationHint="33"
+		 controls>
+		 	<source src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_iphone.m4v" />
+			<source src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb400p.ogv" />
+		</video>
+	</div>
+		<div id="companionTarget" style="float:right;width:180px;height:267px;border:solid thin black">
+			Companion target
+		</div>
+	</div>
+	<div style="clear:both"></div>
+   	<br>Prerool video (fish) <input id="prerool" type="text" size="40" value="http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_v1z55w0b/flavor/1_jeqsr39h/a.mp4?novar=0"></input>
    	<a id="addPrerool" href="#">Add prerool</a>
    	</br>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
@@ -31,8 +38,8 @@
  	 		
  	 		$j( embedPlayer ).bind( 'openFullScreen', function(){
  	 			embedPlayer.$interface.append( 
- 	 	 	 			'<span class="fullscreenOverlay" style="position:absolute;top:10px;' + 
- 	 	 	 				'left:10px;color:red">fullscreen overlay</span>'
+ 	 	 			'<span class="fullscreenOverlay" style="position:absolute;top:10px;' + 
+ 	 	 				'left:10px;color:red">fullscreen overlay</span>'
  	 	 	 	);
  	 		});
  	 		$j( embedPlayer ).bind( 'closeFullScreen', function(){
@@ -42,23 +49,74 @@
  	 		$j( embedPlayer ).bind( 'monitorEvent', function(){
  	 	 		if( embedPlayer.$interface.find('.timeOverlay').length == 0 ){
  	 	 			embedPlayer.$interface.append(
- 	 	 	 	 		'<span class="timeOverlay"  style="position:absolute;top:200px;' + 
- 	 	 	 				'left:10px;color:red"></span>' );
+ 	 	 	 	 		'<span class="timeOverlay" style="position:absolute;top:200px;' + 
+ 	 	 	 				'left:10px;color:red"></span>' 
+	 	 	 		);
  	 	 		}
  	 			
- 	 		}); 	 		
+ 	 		});	
+			
 
-
-			// Alternativly to the monitorEvent you can use the mobileAdTimeline helper
-			$j('#addPrerool').click(function(){
-				$j(this).loadingSpinner();
-				var preRollUrl = $j('#prerool').val();
- 	 			mw.load( "mw.MobileAdTimeline", function(){
- 	 	 			// insert the prerool
- 	 			});
- 	 		});
-
- 	 		
+			// Alternativly to the monitorEvent you can use the mobileAdTimeline helper 
+			// See structure of ad JSON in mw.MobileAdTimeline 
+			mw.load( "mw.MobileAdTimeline", function(){
+		
+				var updatePreRool = function( preRollUrl ){
+					mw.addAdToPlayerTimeline( embedPlayer, 'prerool', 
+		 	 	 		{ 
+		 	 	 	 		'ads': {
+		 	 					'videoFile' : preRollUrl,
+		 	 					'companions:': [
+		 	 		 	 	 		{
+				 						'id' : 1, // tragicly someone set this up to start at 1 instead of 0 :(
+				 						'html' : '<div style="background-color:blue">Fish companion Ad</div>'
+			 						}
+			 					]
+		 					},
+							'companionTargets': [
+								{
+		 						'elementid':'companionTarget'
+		 						}
+		 					]	 					
+		 	 	 		}							
+					)
+	 			};
+	 			// update the prerool
+	 			updatePreRool( $j('#prerool').val() );
+				// let the user update the prerool:
+				$j('#addPrerool').click(function(){
+					var _this = this;
+					$j( this ).loadingSpinner();
+					updatePreRool(  $j('#prerool').val() );
+				});
+				
+				
+	 			// Insert the overlay video
+				mw.addAdToPlayerTimeline( embedPlayer, 'overlay', 
+ 	 	 	 		{ 
+ 	 	 	 	 		'ads': {
+ 	 	 					'companions:': [
+	 	 	 	 					{
+		 							'id' : 1, // tragicly someone set this up to start at 1 instead of 0 :(
+		 							'html' : '<div style="background-color:red">Overlay Companion</div>'
+								}
+ 		 					],
+ 	 	 	 	 			'nonLinear': [
+ 	 			            	{
+ 	 	 			            	'width' : 320,
+ 	 	 			            	'height' : 30,
+ 	 	 			            	'html' : '<div style="width:100%;height:100%;background-color:gray"> overlay ad </div>'
+ 	 			            	}
+							]
+ 	 					},
+	 					'companionTargets': [
+	 					 		{
+ 	 								'elementid':'companionTarget'
+		 	 					}			
+ 	 	 	 			]
+ 	 	 	 		}
+				);
+			});
  		});
  	</script>
   </body>

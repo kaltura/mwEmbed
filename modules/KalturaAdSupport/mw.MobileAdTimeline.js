@@ -23,6 +23,53 @@
  * @param {Object}
  *            adConf adConf object see
  *            mw.MobilePlayerTimeline.display
+ *            
+ *            
+ *            
+ * AdConf object structure: 
+ * {
+ * 		// Set of ads to chose from
+ * 		'ads' : [
+ * 			{
+ * 				'id' : { Add id} 
+ * 				'companions' : [
+ * 					{
+ * 						'id' : {Number} index of companion target 
+ * 						'html' : {String} html text to set innerHTML of companion target
+ * 					}
+ * 				],
+ * 				'duration' : {Number} duration of ad in seconds
+ *
+ * 				// Impression fired at start of ad display
+ * 				'impressions': [
+ * 					'beaconUrl' : {URL}
+ * 				]
+ * 
+ *				// Tracking events sent for video playback
+ * 				'trackingEvents' : [
+ * 					beaconUrl : {URL}
+ * 					eventName : {String} Event name per VAST definition of video ad playback ( start, midpoint, etc. )
+ * 				]
+ *				// NonLinear list of overlays
+ * 				'nonLinear' : [
+ * 					{
+ * 						'width': {Number} width
+ * 						'height': {Number} height
+ * 						'html': {String} html
+ * 					}
+ * 				]
+ * 				'videoFile' : {URL} video file to play for the ad ( should pre-target the device ) 
+ * 			}
+ * 		]
+ * 		// List of companion targets
+ * 		'companionTargets' : [
+ * 			{
+ *	  			'elementid' : {String} id of element
+ *	  			'height' : {Number} height of companion target
+ *	  			'type' : {String} Companion target type ( html in mobile ) 
+ *	  		}
+ * 		]
+ * }
  */
 mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
 	mw.log("MobileAdTimeline::Add " + timeType + ' dispCof: ' +  adConf );
@@ -134,12 +181,11 @@ mw.MobileAdTimeline.prototype = {
 									_this.embedPlayer.stop();			
 								}
 							);
-						};				
+						};
 					});
 				});
 			}
-			
-			
+						
 			// See if we have overlay ads:
 			if( _this.timelineTargets['overlay'] ){
 				var overlayTiming = _this.timelineTargets['overlay'];
@@ -261,17 +307,15 @@ mw.MobileAdTimeline.prototype = {
 		// Check for videoFile inserts:
 		if ( adConf.videoFile && timeTargetType != 'overlay') {
 			if ( adConf.lockUI ) {
-				mw.log("MobileAdTimeline::@@TODO lock timeline");
+				mw.log("MobileAdTimeline::@@TODO lock scrubber");
 				// TODO lock controls
 				_this.getNativePlayerElement().controls = false;
 			};
 			// Play the source then run the callback
 			_this.embedPlayer.switchPlaySrc( adConf.videoFile, function() { 
-					// Pass off event handling to adConf bind:
-					if (typeof adConf.bindPlayerEvents == 'function') {
-						adConf.bindPlayerEvents( _this.getNativePlayerElement() );
-					}
-				}, 
+					// Bind all the tracking events ( currently vast based but will abstract if needed ) 
+					_this.bindVastTrackingEvents( adConf.trackingEvents );
+				},
 				displayTarget.playbackDone
 			);
 		}
@@ -290,12 +334,12 @@ mw.MobileAdTimeline.prototype = {
 				var originalCompanionHtml = $j('#' + companionTarget.elementid ).html();
 
 				// Display the companion:
-				$j( '#' + companionTarget.elementid ).html( companionConf.$html );
+				$j( '#' + companionTarget.elementid ).html( companionConf.html );
 				
 				// Display the companion across the iframe client ( if setup );
 				var companionObject = {
 					'elementid' : companionTarget.elementid,
-					'html' : companionConf.$html.html()
+					'html' : companionConf.html
 				};
 				$j( _this.embedPlayer ).trigger( 'updateCompanionTarget', [ companionObject ] );
 				
@@ -306,7 +350,8 @@ mw.MobileAdTimeline.prototype = {
 			} else {
 				mw.log( "MobileAdTimeline: possible error no elementid in companionTarget");
 			}	
-		}
+		};
+		
 		// Check for nonLinear overlays
 		if ( adConf.nonLinear && adConf.nonLinear.length && timeTargetType == 'overlay') {
 			var overlayId =  _this.embedPlayer.id + '_overlay';
@@ -337,18 +382,18 @@ mw.MobileAdTimeline.prototype = {
 			// Show the overlay update its position and content
 			$j('#' +overlayId )
 			.css( layout )
-			.html( nonLinearConf.$html )
+			.html( nonLinearConf.html )
 			.fadeIn('fast')
 			
 			
 			// Bind control bar display hide / show
 			$j( _this.embedPlayer ).bind( 'onShowControlBar', function(event,  layout ){
 				if( $j('#' +overlayId ).length )
-					$j('#' +overlayId ).animate( layout, 'slow');
+					$j('#' +overlayId ).animate( layout, 'fast');
 			});
 			$j( _this.embedPlayer ).bind( 'onHideControlBar', function(event, layout ){
 				if( $j('#' +overlayId ).length )
-					$j('#' +overlayId ).animate( layout, 'slow');
+					$j('#' +overlayId ).animate( layout, 'fast');
 			});
 			
 			// Only display the the overlay for allocated time:
@@ -367,6 +412,83 @@ mw.MobileAdTimeline.prototype = {
 
 	},
 	
+	/**
+	 * bindVastEvent per the VAST spec the following events are supported:
+	 *   
+	 * start, firstQuartile, midpoint, thirdQuartile, complete
+	 * pause, rewind, resume, 
+	 * 
+	 * VAST events not presently supported ( per iOS player limitations ) 
+	 * 
+	 * mute, creativeView, unmute, fullscreen, expand, collapse, 
+	 * acceptInvitation, close
+	 * 
+	 * @param {object} trackingEvents
+	 */	
+	bindVastTrackingEvents: function ( trackingEvents ){
+		var _this = this;
+		var videoPlayer = _this.getNativePlayerElement();
+		// Only send events once: 
+		var sentEvents = {};
+		
+		// Function to dispatch a beacons:
+		var sendBeacon = function( eventName, force ){
+			if( sentEvents[ eventName ] && !force ){
+				return ;
+			} 
+			sentEvents[ eventName ] = 1;
+			// See if we have any beacons by that name: 
+			for(var i =0;i < trackingEvents.length; i++){
+				if( eventName == trackingEvents[ i ].eventName ){
+					mw.log("kAds:: sendBeacon: " + eventName );
+					mw.sendBeaconUrl( trackingEvents[ i ].beaconUrl );
+				};
+			};			
+		};
+				
+		// On end stop monitor / clear interval: 
+		$j( videoPlayer ).bind('ended', function(){			
+			sendBeacon( 'complete' );
+			clearInterval( monitorInterval );
+		})
+		
+		// On pause / resume: 
+		$j( videoPlayer ).bind( 'pause', function(){
+			sendBeacon( 'pause' );
+		})
+		
+		// On resume: 
+		$j( videoPlayer ).bind( 'play', function(){
+			sendBeacon( 'resume' );
+		})			
+		
+		var time = 0;
+		// On seek backwards 
+		$j( videoPlayer ).bind( 'seek', function(){
+			if( videoPlayer.currentTime < time ){
+				sendBeacon( 'rewind' );
+			}
+		});		
+
+		// Set up a monitor for time events: 
+		var monitorInterval = setInterval( function(){
+			time =  videoPlayer.currentTime;
+			dur = videoPlayer.duration;
+			
+			if( time > 0 )
+				sendBeacon( 'start' );
+				
+			if( time > dur / 4 )
+				sendBeacon( 'firstQuartile' );
+			
+			if( time > dur / 2 )
+				sendBeacon( 'midpoint' );
+			
+			if( time > dur / 1.5 )
+				sendBeacon( 'complete' );
+
+		}, mw.getConfig('EmbedPlayer.MonitorRate') );		
+	},
 	/**
 	 * Select a random element from the array and return it 
 	 */
