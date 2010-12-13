@@ -281,7 +281,7 @@ mw.PlayerControlBuilder.prototype = {
 	toggleFullscreen: function() {
 		if( this.fullscreenMode ){
 			this.restoreWindowPlayer();
-			$j( this.embedPlayer ).trigger( 'onCloseFullScreen' );
+			$j( this.embedPlayer ).trigger( 'closeFullScreen' );
 		}else{
 			this.doFullScreenPlayer();
 			$j( this.embedPlayer ).trigger( 'openFullScreen' );
@@ -501,8 +501,8 @@ mw.PlayerControlBuilder.prototype = {
 				'position' : _this.windowPositionStyle,
 				'z-index' : _this.windowZindex,
 				'overlow' : 'visible',
-				'top' : null,
-				'left' : null
+				'top' : 0,
+				'left' : 0
 			} );
 
 			// Restore absolute layout of parents:
@@ -1571,7 +1571,7 @@ mw.PlayerControlBuilder.prototype = {
 					} )
 					// Add play hook:
 					.click( function() {
-						 ctrlObj.embedPlayer.play();
+						 ctrlObj.embedPlayer.play();						
 						 return false; // Event Stop Propagation
 					} );
 			}

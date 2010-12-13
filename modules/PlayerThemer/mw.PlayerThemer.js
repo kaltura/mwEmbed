@@ -32,7 +32,7 @@ mw.PlayerThemer.prototype = {
 					// Fade away the button
 					$j(this).fadeOut( 'fast' );
 					_this.getEmbedPlayer().play();
-				})
+				})				
 			},
 			'customShow' : function( _this ){
 				_this.$getCompoent('centerPlayButton').fadeIn('slow');

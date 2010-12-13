@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Windows (vers 14 February 2006), see www.w3.org">
+	
+    <title></title>
+  </head>
+  <body>
+    <h1>
+      HTML5 ad events test
+    </h1>
+	<video persistentNativePlayer="true" id="vid1" width="480" height="267"
+	 poster="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb480.jpg"
+	 durationHint="33"
+	 controls>
+	 	<source src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_iphone.m4v" />
+		<source src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb400p.ogv" />
+</video>
+   	<br>Prerool: <input id="prerool" type="text" size="40" value="http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_v1z55w0b/flavor/1_jeqsr39h/a.mp4?novar=0"></input></br>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+ 	<script src="../../../mwEmbedLoader.js?debug=true" type="text/javascript"></script>
+ 	<script type="text/javascript">
+ 		mw.setConfig( 'Kaltura.IframeRewrite', true );
+ 		mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
+ 		mw.setConfig( 'EmbedPlayer.OverlayControls', false);
+ 		//mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
+ 		mw.ready(function(){
+ 	 		var embedPlayer = $j('#vid1').get(0);
+
+			//$j( embedPlayer ).bind(
+ 	 		
+ 	 		$j( embedPlayer ).bind( 'openFullScreen', function(){
+ 	 			embedPlayer.$interface.append( 
+ 	 	 	 			'<span class="fullscreenOverlay" style="position:absolute;top:10px;' + 
+ 	 	 	 				'left:10px;color:red">fullscreen overlay</span>'
+ 	 	 	 	);
+ 	 		});
+ 	 		$j( embedPlayer ).bind( 'closeFullScreen', function(){
+ 	 			embedPlayer.$interface.find('.fullscreenOverlay').fadeOut('fast');
+ 	 		});
+ 	 		
+ 	 		$j( embedPlayer ).bind( 'monitorEvent', function(){
+ 	 	 		if( embedPlayer.$interface.find('.timeOverlay').length == 0 ){
+ 	 	 			embedPlayer.$interface.append(
+ 	 	 	 	 		'<span class="timeOverlay"  style="position:absolute;top:200px;' + 
+ 	 	 	 				'left:10px;color:red"></span>' );
+ 	 	 		}
+ 	 			
+ 	 		}); 	 		
+ 		});
+ 	</script>
+  </body>
+</html>

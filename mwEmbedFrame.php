@@ -13,6 +13,8 @@
 // Setup the mwEmbedFrame
 $myMwEmbedFrame = new mwEmbedFrame();
 
+$mwEmbedRoot = dirname( __FILE__ );
+
 // @@TODO temporary HACK to override to kalturaIframe 
 // ( need to refactor embedFrame into an abstract class )
 // @@TODO Need a php based configuration system for modules so they 

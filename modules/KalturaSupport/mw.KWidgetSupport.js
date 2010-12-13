@@ -52,9 +52,9 @@ mw.KWidgetSupport.prototype = {
 						mw.addKAnalytics( embedPlayer, _this.kClient );
 					}
 					
-					
 					// Check for uiConf
-					if( playerData.uiConf ){						
+					if( playerData.uiConf ){					
+						
 						var $uiConf = $j( playerData.uiConf );
 						// Trigger the check kaltura uiConf event
 						$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', $uiConf, function(){
@@ -195,31 +195,6 @@ mw.KWidgetSupport.prototype = {
 			return true;
 		}
 		return false;
-	},
-	/**
-	 * Adds the bindings for the uiConf 
-	 */
-	checkUiConf: function( embedPlayer, callback ){
-		var _this = this;
-		
-		this.loadUiConfData( embedPlayer, function( uiConf ) {			
-			if( !uiConf ){
-				mw.log("Could not get uiConf for emmbed:" + embedPlayer.kwidgetid );
-				callback();
-				return; 
-			}
-		
-			//mw.log( uiConf.confFile );
-			//mw.log("\n\n" );
-			//mw.log( uiConf.confFileFeatures );
-
-			// Check for the bumper plugin ( note we should probably have a separate uiConf js class )
-			var $uiConf = $j( uiConf.confFile );
-			
-			// Trigger the check kaltura uiConf event
-			$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', $uiConf, callback);					
-		
-		})	
 	},
 	/**
 	* Convert flavorData to embedPlayer sources

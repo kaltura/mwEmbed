@@ -78,20 +78,11 @@ class kalturaIframe {
 		}
 	}
 	
-	// Load the kaltura library and grab the most compatible flavour
+	// Load the kaltura library and grab the most compatible flavor 
 	private function getFlavorSources(){
 	
 		include_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
-		$userId = "username";
-		$secret = "dc8a616702359ec844b18143667d130a";
-		$adminsecret = "509d0007e53ecc4b05401ec12b15ed2f";
-		// Partner id is widget_id but strip the first character 
-		$partnerId =  substr( $this->playerAttributes['wid'], 1 );
-		$conf = new KalturaConfiguration( $partnerId );
-		$client = new KalturaClient( $conf );
-		
-		$session = $client->session->startWidgetSession( $this->playerAttributes['wid'] );
-		$client->setKS($session->ks);		
+		$client = $this->getClient();
 		
 		// @@todo support MultiRequest
 		$client->startMultiRequest();
@@ -104,8 +95,9 @@ class kalturaIframe {
 			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
 			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams ); // sources
 			
+			
 			$client->addParam( $kparams, "contextDataParams",  array( 'referer' => $_SERVER['HTTP_REFERER'] ) );
-			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams ); // access control
+			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams ); // access control			
 			
 			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
 			$client->queueServiceActionCall( "baseEntry", "get", $kparams ); // Entry Meta
@@ -114,31 +106,29 @@ class kalturaIframe {
 				$client->addParam( $kparams, "id",  $this->playerAttributes['uiconf_id'] );
 				$client->queueServiceActionCall( "uiconf", "get", $kparams ); 
 			}
-			
-			
-			$resultObject = $client->doQueue();
-			$this->resultObj = $resultObject;
-			$client->throwExceptionIfError($resultObject);
+			$this->resultObj = $client->doQueue();
+			$client->throwExceptionIfError($this->resultObj);
 		} catch( Exception $e ){
 			$this->error = "Error getting sources from server, something maybe broken or server is under high load. Please try again.";
 			return array();
 		}
 		// debugging
 		
-		/*
-		echo "<style>body { overflow:scroll; position: static; }</style><pre>";
-		print_r($resultObject);
+		
+		/*echo "<style>body { overflow:scroll; position: static; }</style><pre>";
+		print_r($this->resultObj);
 		exit();	
 		*/
 		
-		if( $this->checkAccessControl($resultObject[1]) ) {
+		
+		if( $this->checkAccessControl($this->resultObj[1]) ) {
 	
 			// add any web sources		
 			$sources = array();
-			foreach( $resultObject[0] as $KalturaFlavorAsset ){	
+			foreach( $this->resultObj[0] as $KalturaFlavorAsset ){	
 	
-				$assetUrl =  KALTURA_CDN_URL .'/p/' . $partnerId . '/sp/' . 
-						$partnerId . '00/flvclipper/entry_id/' . 
+				$assetUrl =  KALTURA_CDN_URL .'/p/' . $this->getPartnerId() . '/sp/' . 
+						$this->getPartnerId() . '00/flvclipper/entry_id/' . 
 						$this->playerAttributes['entry_id'] . '/flavor/' . 	$KalturaFlavorAsset->id;
 				if( strpos( $KalturaFlavorAsset->tags, 'iphone' ) !== false ){
 					$sources['iphone'] = array(
@@ -177,12 +167,41 @@ class kalturaIframe {
 			return array();
 		}
 	}
+	
+	function getClient(){
+		global $mwEmbedRoot;
 
+		$cacheDir = $mwEmbedRoot . '/includes/cache';
+
+		$cacheFile = $cacheDir . '/' . $this->getPartnerId() . ".txt";
+		$cacheLife = 900; //cache for 15 min		  
+		
+		
+		$conf = new KalturaConfiguration( $this->getPartnerId() );
+		$client = new KalturaClient( $conf );
+		
+		// Check modify time on cached php file
+		$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
+		if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ){
+		    $session = $client->session->startWidgetSession( $this->playerAttributes['wid'] );
+		    $sessionKS = $session->ks;
+		    file_put_contents( $cacheFile, $sessionKS );
+		}else{
+		  	$sessionKS = file_get_contents( $cacheFile );
+		}
+		// set the kaltura ks and return the client
+		$client->setKS($sessionKS );	
+		
+		return $client;
+	}
+	function getPartnerId(){
+		// Partner id is widget_id but strip the first character 
+		return substr( $this->playerAttributes['wid'], 1 );
+	}
 	/**
 	*  Set the player data array
 	*/	
 	function getPlayerData() {
-
 		$playerData = array(
 			'accessControl' 	=> 	$this->resultObj[1],
 			'flavors' 			=> 	$this->resultObj[0],
@@ -269,9 +288,8 @@ class kalturaIframe {
 			'uiconf_id' => 'kuiconfid',
 			'wid' => 'kwidgetid'
 		);
-		$partnerId =  substr( $this->playerAttributes['wid'], 1 );
-		$posterUrl =  KALTURA_CDN_URL . '/p/' . $partnerId . '/sp/' .
-						$partnerId . '00/thumbnail/' .
+		$posterUrl =  KALTURA_CDN_URL . '/p/' . $this->getPartnerId() . '/sp/' .
+						$this->getPartnerId() . '00/thumbnail/' .
 						'entry_id/' .  $this->playerAttributes['entry_id'] .
 						'/height/480';
 		$sources = $this->getFlavorSources();

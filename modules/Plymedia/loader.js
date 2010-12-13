@@ -7,33 +7,28 @@
 ( function( mw ) {	
 	// List named resource paths
 	mw.addResourcePaths({
-		// Your core plyMedia html5 library 
-		"plyMeida" : "plyMeida/plyMeida.js",
-		
-		// Any other plyMedia resources ( css multiple js classes? ) 
-		"plyMeida.style" :  "plyMeida/plyMeida.css",
-		
-		// The configuration file bridges the mwEmbed api with plyMedia interface api
+		"plyMeidaPlayer" : "plyMeida/plyMeidaPlayer.js",		
+		"plyMeida.style" :  "plyMeida/plyMeida.css",		
 		"mw.plyMediaConfig" : "mw.plyMediaConfig.js"
 	});
+	
 	mw.addModuleLoader( 'plyMeida', function(){
-		return ['plyMeida', 'plyMeida.style', 'mw.plyMediaConfig'];
-	})
+		// load any files needed for plyMedia player:
+		return ['mw.plyMediaConfig'];
+	});
 	
 	// Bind the plyMedia player where the uiconf includes the plymedia plugin
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		
-		$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( $uiConf , callback){
-			
+		$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf , callback){
 			// Check for plyMedia in kaltura uiConf
-			var $plyPlug = $uiConf.find("uiVars var[key='plymedia.plugin']");
-			if( $plyPlug.length ){
+			if( $uiConf.find("plugin#plymedia").length ){
 				
-				// Load the plyMeida module ( note in production plyMedia would be
-				// pre-loaded by the iframe uiconf ) 
+				// Load the plyMeida module 
+				// NOTE in production plyMedia would be pre-loaded by the iframe uiconf
+				
 			    mw.load( 'plyMeida', function(){
-			    	mw.plyMediaConfig.bindPlayer( embedPlayer );
-			    	
+			    	mw.plyMediaConfig.bindPlayer( embedPlayer );			    	
 			    	// Issue the ui conf callback once pyMedia has been setup. 
 			    	// ( note any asynchronous calls will delay player display ) 
 			    	callback();

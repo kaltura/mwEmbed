@@ -8,7 +8,7 @@
 	
 	// Check for new Embed Player events: 
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-		
+
 		// Check for KalturaSupport uiConf
 		$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf, callback ){
 			

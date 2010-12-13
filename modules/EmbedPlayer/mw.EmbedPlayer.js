@@ -2439,23 +2439,8 @@ mw.EmbedPlayer.prototype = {
 	addPlayBtnLarge:function(){
 		var _this = this;
 		$j( '#' + _this.pid ).siblings('.play-btn-large').remove();
-		$j( '#' + _this.pid ).after(
-			$j('<div />')
-			.css({
-				'position' : 'relative',
-				'top' : -1 * ( .5 * _this.getHeight() ) - 52,
-				'left' : ( .5 * _this.getWidth() ) - 75
-			})
-			.attr( {
-				'title'	: gM( 'mwe-embedplayer-play_clip' ),
-				'class'	: "play-btn-large"
-			} )
-			.click( function() {
-				$j( this ).hide();
-				_this.play();
-				// no need to hide the play button since android plays
-				// fullscreen
-			} )
+		this.$interface.append( 
+			this.controlBuilder.getComponent('playButtonLarge')
 		)
 	},
 	/**
@@ -2740,6 +2725,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	pause: function( event ) {
 		var _this = this;
+		mw.log( "EmbedPlayer:: pause: " + this._propagateEvents );
 		// Trigger the pause event if not already paused and using native
 		// controls:
 		if( this.paused === false ){
@@ -2830,11 +2816,7 @@ mw.EmbedPlayer.prototype = {
 			this.updatePlayHead( 0 );
 					
 			// Bind play-btn-large play
-			this.$interface.find( '.play-btn-large' )
-			.unbind( 'click' )
-			.click( function() {
-				_this.play();
-			} );
+			this.addPlayBtnLarge();
 		}
 	},
 
