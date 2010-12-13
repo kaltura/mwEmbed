@@ -310,7 +310,7 @@ mw.PlayerControlBuilder.prototype = {
 		this.fullscreenMode = true;
 
 		//Remove any old mw-fullscreen-overlay
-		$interface.find( '.mw-fullscreen-overlay' ).remove();
+		$j( '.mw-fullscreen-overlay' ).remove();
 
 		// Special hack for mediawiki monobook skin search box
 		if( $j( '#p-search,#p-logo' ).length ) {
