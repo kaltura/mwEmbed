@@ -482,12 +482,12 @@ EmbedPlayerManager.prototype = {
 		// If we don't already have a loadSpiner add one:
 		if( $j('#loadingSpinner_' + playerInterface.id ).length == 0 ){
 			if( playerInterface.useNativePlayerControls() || playerInterface.isPersistentNativePlayer() ) {
-				$j( targetElement )
-					.getAbsoluteOverlaySpinner()
-					.attr('id', 'loadingSpinner_' + playerInterface.id );
+				var $spinner = $j( targetElement )
+					.getAbsoluteOverlaySpinner();
 			}else{
-				$j( swapPlayerElement ).css('position', 'relative').loadingSpinner();
+				var $spinner = $j( swapPlayerElement ).getAbsoluteOverlaySpinner();
 			}
+			$spinner.attr('id', 'loadingSpinner_' + playerInterface.id );
 		}
 		return swapPlayerElement;
 	},
