@@ -486,10 +486,7 @@ EmbedPlayerManager.prototype = {
 					.getAbsoluteOverlaySpinner()
 					.attr('id', 'loadingSpinner_' + playerInterface.id );
 			}else{
-				$j( swapPlayerElement ).append(
-					$j('<div />')
-					.loadingSpinner()
-				);
+				$j( swapPlayerElement ).css('position', 'relative').loadingSpinner();
 			}
 		}
 		return swapPlayerElement;

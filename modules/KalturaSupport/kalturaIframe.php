@@ -376,9 +376,26 @@ class kalturaIframe {
 				left:0px;
 				bottom:0px;
 				right:0px;
+				width: 100%;
+				height: 100%;
 				overflow:hidden;
 				background: #000;	
 				color: #fff;	
+			}
+			.loadingSpinner {
+				background: url( '<?php echo KALTURA_MWEMBED_PATH ?>skins/common/images/loading_ani.gif');
+				position: absolute;
+				top: 50%; left: 50%;
+				width:32px;
+				height:32px;
+				display:block;
+				padding:0px;
+				margin: -16px -16px;
+			}
+			#videoContainer {
+				position: absolute;
+				width: 100%;
+				height: 100%;
 			}
 			#directFileLinkContainer{
 				position:abolute;
@@ -431,6 +448,7 @@ class kalturaIframe {
 		} else { 
 			?>
 			<div id="videoContainer" >
+				<div class="loadingSpinner"></div>
 				<?php echo $videoHTML ?>
 			</div>
 			<script type="text/javascript">							
