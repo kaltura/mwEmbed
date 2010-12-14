@@ -14,7 +14,6 @@
 		'Kaltura.ServiceUrl' : 'http://www.kaltura.com',
 		'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
 		'Kaltura.CdnUrl' : 'http://cdn.kaltura.com',
-		'Kaltura.XmlProxyUrl' : mw.getMwEmbedPath() + 'modules/KalturaAdSupport/simplePhpXMLProxy.php',
 		// A video file for when no suitable flavor can be found
 		'Kaltura.MissingFlavorVideoUrl' : 'http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_uypqlsor/flavor/1_lljfzesm/a.mp4?novar=0'
 	} );

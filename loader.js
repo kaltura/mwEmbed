@@ -60,7 +60,7 @@ var mwEnabledModuleList = [
 	'PlayerThemer',
 	'KalturaSupport',
 	'Plymedia',
-	'KalturaAdSupport'
+	'AdSupport'
 ];
 
 /**

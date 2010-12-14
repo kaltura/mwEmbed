@@ -421,7 +421,7 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	 * Resize the player to a target size keeping aspect ratio
 	 */
-	resizePlayer: function( size, animate ){
+	resizePlayer: function( size, animate, callback ){
 		var _this = this;
 		// Update interface container:
 		var interfaceCss = {
@@ -436,7 +436,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( animate ){
 			$interface.animate( interfaceCss );
 			// Update player size
-			$j( embedPlayer ).animate( _this.getAspectPlayerWindowCss( size ) );
+			$j( embedPlayer ).animate( _this.getAspectPlayerWindowCss( size ), callback );
 			// Update play button pos
 			$interface.find('.play-btn-large').animate( _this.getFullscreenPlayButtonCss( size ) );
 		} else {
@@ -445,6 +445,9 @@ mw.PlayerControlBuilder.prototype = {
 			$j( embedPlayer ).css( _this.getAspectPlayerWindowCss( size ) );
 			// Update play button pos
 			$interface.find('.play-btn-large').css( _this.getFullscreenPlayButtonCss( size ) );
+			if( callback ){
+				callback();
+			}
 		}
 	},
 
@@ -470,21 +473,21 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
 		$j('.mw-fullscreen-overlay').fadeOut( 'slow' );
 
-		// Restore interface:
-		$interface.animate( {
-			'top' : this.windowOffset.top,
-			'left' : this.windowOffset.left,
-			// height is embedPlayer height + controlBuilder height:
-			'height' : interfaceHeight,
-			'width' : embedPlayer.getWidth()
-		},function(){
+		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
+		// Restore the player:
+		embedPlayer.resizePlayer( {
+			'top' : this.windowOffset.top + 'px',
+			'left' : this.windowOffset.left + 'px',
+			'width' : embedPlayer.getWidth(),
+			'height' : embedPlayer.getHeight()
+		}, true, function(){
 			// Restore non-absolute layout:
 			$interface.css( {
 				'position' : _this.windowPositionStyle,
 				'z-index' : _this.windowZindex,
 				'overlow' : 'visible',
-				'top' : 0,
-				'left' : 0
+				'top' : '0px',
+				'left' : '0px'
 			} );
 
 			// Restore absolute layout of parents:
@@ -495,22 +498,13 @@ mw.PlayerControlBuilder.prototype = {
 
 			// Restore the body scroll bar
 			$j('body').css( 'overflow', 'auto' );
-
-		} );
-		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
-		// Restore the player:
-		embedPlayer.resizePlayer( {
-			'top' : '0px',
-			'left' : '0px',
-			'width' : embedPlayer.getWidth(),
-			'height' : embedPlayer.getHeight()
-		}, true);
+		});
 
 		// Restore the play button
-		$interface.find('.play-btn-large').animate( {
+		$interface.find('.play-btn-large').animate({
 			'left' 	: ( ( embedPlayer.getWidth() - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
 			'top'	: ( ( embedPlayer.getHeight() -this.getComponentHeight( 'playButtonLarge' ) ) / 2 )
-		} );
+		});
 
 	},
 
@@ -619,7 +613,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Do png fix for ie6
 		if ( $j.browser.msie && $j.browser.version <= 6 ) {
-			$j('#' + embedPlayer.id + ' .play-btn-large' ).pngFix();
+			$j( '#' + embedPlayer.id + ' .play-btn-large' ).pngFix();
 		}
 
 		this.doVolumeBinding();

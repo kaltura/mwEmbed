@@ -1,7 +1,33 @@
 /**
-* Supports the parsing and layout of ads format see:
-* tests/VAST_Kaltura_Ad_Support.html
+* Supports the parsing of ads
 */
+
+// Check for new Embed Player events: 
+$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+
+	// Check for KalturaSupport uiConf
+	$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf, callback ){
+		
+		// Check if the kaltura ad plugin is enabled:
+		if( $uiConf.find('Plugin#vast').length ){
+			
+			// Load the ad plugin components
+			mw.load( ["mw.KAds", "mw.MobileAdTimeline"], function(){
+				
+				// Add the ads to the player: 
+				mw.addKalturaAds( embedPlayer,  $uiConf.find('Plugin#vast'), function(){
+					
+					// Wait until ads are loaded before running callback
+					// ( ie we don't want to display the player until ads are ready )
+					callback();
+				});
+			});
+		} else {
+			// Continue player build out for players without ads
+			callback();
+		}
+	});
+});
 
 //Global mw.addKAd manager
 mw.addKalturaAds = function( embedPlayer, $adConfig, callback ) {
@@ -145,6 +171,7 @@ mw.KAds.prototype = {
 			'height' :  companionParts[2]
 		};
 	},
+	
 	/**
 	 * Get ad display configuration object from a url
 	 * 
@@ -191,11 +218,8 @@ mw.KAds.prototype = {
 	
 	/**
 	 * VAST support
-	 * 
-	 * @@FIXME we should move vast support into its own class / support module
-	 */
-	
-	// Convert the vast ad display format into a display conf:
+	 * Convert the vast ad display format into a display conf:
+	 */	
 	getVastAdDisplayConf: function( xmlString ){
 		var _this = this;
 		var adConf = {};
@@ -282,6 +306,7 @@ mw.KAds.prototype = {
 		});
 		return adConf;
 	},
+	
 	// Return a static resource object
 	getResourceObject: function( resourceNode ){
 		var _this = this;

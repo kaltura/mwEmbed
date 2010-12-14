@@ -1397,7 +1397,7 @@ mw.EmbedPlayer.prototype = {
 		mw.log( 'EmbedPlayer::mediaElement:' + this.id + " duration is: " + this.duration );
 
 		// Set the player size attributes based loaded video element:
-		this.setPlayerSize( element );
+		this.loadPlayerSize( element );
 
 		// Set the plugin id
 		this.pid = 'pid_' + this.id;
@@ -1458,7 +1458,7 @@ mw.EmbedPlayer.prototype = {
 	 * @param {Element}
 	 *      element Source element to grab size from
 	 */
-	setPlayerSize: function( element ) {
+	loadPlayerSize: function( element ) {
 		this.height = $j(element).css( 'height' );
 		this.width = $j(element).css( 'width' );
 
@@ -1535,18 +1535,21 @@ mw.EmbedPlayer.prototype = {
 	 * Resize the player to a new size preserving aspect ratio Wraps the
 	 * controlBuilder.resizePlayer function
 	 */
-	resizePlayer: function( size , animate){
+	resizePlayer: function( size , animate, callback){
 		mw.log("EmbedPlayer::resizePlayer:" + size.width + ' x ' + size.height );
 
 		// Check if we are native display then resize the playerElement directly
 		if( this.useNativePlayerControls() ){
 			if( animate ){
-				$j( this.getPlayerElement() ).animate( size );
+				$j( this.getPlayerElement() ).animate( size , callback);
 			} else {
 				$j( this.getPlayerElement() ).css( size );
+				if( callback ) {
+					callback();
+				}
 			}
 		} else {
-			this.controlBuilder.resizePlayer( size, animate);
+			this.controlBuilder.resizePlayer( size, animate, callback);
 		}
 		$j( this ).trigger( 'onResizePlayer', [size, animate] )
 	},
