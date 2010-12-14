@@ -28,14 +28,11 @@
 				// NOTE in production plyMedia would be pre-loaded by the iframe uiconf
 				
 			    mw.load( 'plyMeida', function(){
-			    	mw.plyMediaConfig.bindPlayer( embedPlayer );			    	
-			    	// Issue the ui conf callback once pyMedia has been setup. 
-			    	// ( note any asynchronous calls will delay player display ) 
-			    	callback();
+			    	mw.plyMediaConfig.bindPlayer( embedPlayer );
 			    });
-			} else {
-				callback();
 			}
+			// Don't block player display on plyMedia plugin loading 
+			callback();
 		})
 	})
 
