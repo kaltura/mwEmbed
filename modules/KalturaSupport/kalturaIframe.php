@@ -206,8 +206,8 @@ class kalturaIframe {
 			'partner_id'		=>	$this->getPartnerId(),		
 		);
 		if( isset( $rawResultObject[3] ) && $rawResultObject[3]->confFile ){
-			$playerData[ 'uiconf_id' ] = $this->playerAttributes['uiconf_id'];
-			$playerData[ 'uiConf'] = $rawResultObject[3]->confFile;
+			$resultObject[ 'uiconf_id' ] = $this->playerAttributes['uiconf_id'];
+			$resultObject[ 'uiConf'] = $rawResultObject[3]->confFile;
 		}
 		return $resultObject;
 	}
