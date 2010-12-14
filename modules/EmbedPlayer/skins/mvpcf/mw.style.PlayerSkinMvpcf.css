@@ -161,3 +161,12 @@
 .mv-player .overlay-win ul{
 	padding-left: 15px;
 }
+
+.mv-player a:hover {}
+
+.mv-player .overlay-win ul li span { font-weight:bold; color:#fff;}
+
+.mv-player .overlay-win h2 { font-size:16px;}
+.mv-player .overlay-win h3 { font-size:14px;}
+
+.active { font-size: 12px; }

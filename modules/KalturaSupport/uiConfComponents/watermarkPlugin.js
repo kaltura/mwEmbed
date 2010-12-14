@@ -3,9 +3,8 @@
 	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark 
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf, callback ){
-		
 			// Check if the ui conf includes watermark
-			if( $j( $uiConf ).find( 'watermark' ).length ){
+			if( $uiConf.find( 'watermark' ).length ){
 				// Wait for the player to be ready 
 				$j( embedPlayer ).bind( 'playerReady', function(){
 					// Run the watermark plugin code

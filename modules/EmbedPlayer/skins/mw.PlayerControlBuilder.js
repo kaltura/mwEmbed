@@ -574,6 +574,10 @@ mw.PlayerControlBuilder.prototype = {
 			}
 			bindFirstPlay = true;
 			$j(embedPlayer).click( function() {
+				if(embedPlayer.getPlayerElement().controls) {
+					return ;
+				}
+				
 				if(embedPlayer.paused) {
 					embedPlayer.play();
 				} else {
@@ -590,6 +594,7 @@ mw.PlayerControlBuilder.prototype = {
 					} else {
 						embedPlayer.pause();
 					}
+					return false;
 				}
 			})
 		}

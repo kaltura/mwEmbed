@@ -87,7 +87,7 @@ class kalturaIframe {
 			return array();
 		}
 		
-		$resultObject =  & $this->getResultObject();
+		$resultObject =  $this->getResultObject();
 		// add any web sources		
 		$sources = array();
 		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){	
@@ -257,7 +257,7 @@ class kalturaIframe {
 	*  Access Control Handling
 	*/	
 	function isAccessControlAllowed() {
-		$resultObject =  & $this->getResultObject();
+		$resultObject =  $this->getResultObject();
 		$accessControl = $resultObject['accessControl'];
 		// Checks if admin
 		if($accessControl->isAdmin) {
