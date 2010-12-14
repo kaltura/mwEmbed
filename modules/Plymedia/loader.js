@@ -7,8 +7,8 @@
 ( function( mw ) {	
 	// List named resource paths
 	mw.addResourcePaths({
-		"plyMeidaPlayer" : "plyMeida/plyMeidaPlayer.js",		
-		"plyMeida.style" :  "plyMeida/plyMeida.css",		
+		"plyMeidaPlayer" : "plyMeida/plyMeidaPlayer.js",
+		"plyMeida.style" :  "plyMeida/plyMeida.css",
 		"mw.plyMediaConfig" : "mw.plyMediaConfig.js"
 	});
 	

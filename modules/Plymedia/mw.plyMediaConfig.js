@@ -12,7 +12,7 @@ mw.plyMediaConfig = {
 		
 		// add any play event actions :
 		$j( embedPlayer ).bind( 'play', function(){
-			
+
 		})
 		
 		// add any pause event actions :

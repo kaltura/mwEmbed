@@ -592,7 +592,6 @@ mw.EmbedPlayerNative = {
 	*/
 	onseeked: function() {
 		mw.log("native:onSeeked");
-
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
 			this.seeking = false;

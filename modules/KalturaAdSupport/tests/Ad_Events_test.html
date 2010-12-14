@@ -23,8 +23,8 @@
 		</div>
 	</div>
 	<div style="clear:both"></div>
-   	<br>Prerool video (fish) <input id="prerool" type="text" size="40" value="http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_v1z55w0b/flavor/1_jeqsr39h/a.mp4?novar=0"></input>
-   	<a id="addPrerool" href="#">Add prerool</a>
+   	<br>Prerool video (fish) <input id="preroll" type="text" size="40" value="http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_v1z55w0b/flavor/1_jeqsr39h/a.mp4?novar=0"></input>
+   	<a id="addPrerool" href="#">Add preroll</a>
    	</br>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
  	<script src="../../../mwEmbedLoader.js?debug=true" type="text/javascript"></script>
@@ -62,32 +62,34 @@
 			mw.load( "mw.MobileAdTimeline", function(){
 		
 				var updatePreRool = function( preRollUrl ){
-					mw.addAdToPlayerTimeline( embedPlayer, 'prerool', 
+					mw.addAdToPlayerTimeline( embedPlayer, 'preroll', 
 		 	 	 		{ 
-		 	 	 	 		'ads': {
-		 	 					'videoFile' : preRollUrl,
-		 	 					'companions:': [
-		 	 		 	 	 		{
-				 						'id' : 1, // tragicly someone set this up to start at 1 instead of 0 :(
-				 						'html' : '<div style="background-color:blue">Fish companion Ad</div>'
-			 						}
-			 					]
-		 					},
+		 	 	 	 		'ads': [
+				 	 	 	 	{
+			 	 					'videoFile' : preRollUrl,
+			 	 					'companions:': [
+			 	 		 	 	 		{
+					 						'id' : 1, // tragicly someone set this up to start at 1 instead of 0 :(
+					 						'html' : '<div style="background-color:blue">Fish companion Ad</div>'
+				 						}
+				 					]
+		 						}
+		 					],
 							'companionTargets': [
 								{
-		 						'elementid':'companionTarget'
+		 							'elementid':'companionTarget'
 		 						}
 		 					]	 					
 		 	 	 		}							
 					)
 	 			};
-	 			// update the prerool
-	 			updatePreRool( $j('#prerool').val() );
-				// let the user update the prerool:
+	 			// update the preroll
+	 			updatePreRool( $j('#preroll').val() );
+				// let the user update the preroll:
 				$j('#addPrerool').click(function(){
 					var _this = this;
 					$j( this ).loadingSpinner();
-					updatePreRool(  $j('#prerool').val() );
+					updatePreRool(  $j('#preroll').val() );
 				});
 				
 				

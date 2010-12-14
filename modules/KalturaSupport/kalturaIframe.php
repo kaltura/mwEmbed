@@ -9,6 +9,7 @@
 define( 'KALTURA_SERVICE_URL', 'http://www.kaltura.com/' );
 define( 'KALTURA_CDN_URL', 'http://cdn.kaltura.com' );
 define( 'KALTURA_MWEMBED_PATH', str_replace( 'mwEmbedFrame.php', '', $_SERVER['SCRIPT_NAME'] ) );
+define( 'KALTURA_UICONF_CACHE_TIME', 600 );
 
 // Setup the kalturaIframe
 $mykalturaIframe = new kalturaIframe();
@@ -80,23 +81,107 @@ class kalturaIframe {
 	
 	// Load the kaltura library and grab the most compatible flavor 
 	private function getFlavorSources(){
+			
+		// Check the access control before returning any source urls
+		if( !$this->isAccessControlAllowed() ) {
+			return array();
+		}
+		
+		$resultObject =  & $this->getResultObject();
+		// add any web sources		
+		$sources = array();
+		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){	
+
+			$assetUrl =  KALTURA_CDN_URL .'/p/' . $this->getPartnerId() . '/sp/' . 
+					$this->getPartnerId() . '00/flvclipper/entry_id/' . 
+					$this->playerAttributes['entry_id'] . '/flavor/' . 	$KalturaFlavorAsset->id;
+			if( strpos( $KalturaFlavorAsset->tags, 'iphone' ) !== false ){
+				$sources['iphone'] = array(
+					'src' => $assetUrl . '/a.mp4?novar=0',
+					'type' => 'video/h264',
+					'data-flavorid' => 'iPhone' 
+				);
+			};
+			if( strpos( $KalturaFlavorAsset->tags, 'ipad' ) !== false ){
+				$sources['ipad'] = array(
+					'src' => $assetUrl  . '/a.mp4?novar=0',
+					'type' => 'video/h264',
+					'data-flavorid' => 'iPad' 
+				);
+			};
+			if( $KalturaFlavorAsset->fileExt == 'ogg' || $KalturaFlavorAsset->fileExt == 'ogv' 
+				|| $KalturaFlavorAsset->fileExt == 'oga' 
+			){
+				$sources['ogg'] = array(
+					'src' => $assetUrl . '/a.ogg?novar=0',
+					'type' => 'video/ogg',
+					'data-flavorid' => 'ogg' 
+				);
+			};
+			if( $KalturaFlavorAsset->fileExt == '3gp' ){
+				$sources['3gp'] = array(
+					'src' => $assetUrl . '/a.3gp?novar=0',
+					'type' => 'video/3gp',
+					'data-flavorid' => '3gp' 
+				);
+			};
+		}			
+		return $sources;
+	}
+	private function getCacheDir(){
+		global $mwEmbedRoot;
+		$cacheDir = $mwEmbedRoot . '/includes/cache/iframecache';
+		// make sure the dir exists: 
+		if( ! is_dir( $cacheDir) ){
+			@mkdir( $cacheDir, 0777, true );
+		}
+		return $cacheDir;
+	}
+	private function getResultObject(){
+		// Check if we have a cached result object: 		
+		if( $this->resultObj ){
+			return $this->resultObj;
+		}
+		
+		$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".entry.txt";		
+		$cacheLife = KALTURA_UICONF_CACHE_TIME;
+			
+		// Check modify time on cached php file
+		$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
+		if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ){
+			$this->resultObj = $this->getResultObjectFromApi();
+		} else {
+			$this->resultObj = unserialize( file_get_contents( $cacheFile ) );
+		}
+		// Test if the resultObject can be cached ( no access control restrictions ) 
+		if( $this->isAccessControlAllowed() ){
+			file_put_contents($cacheFile, serialize($this->resultObj  ) );
+		}
+		return $this->resultObj;
+	}
+	/**
+	 * Returns a cache key for the result object based on Referer and partner id
+	 */
+	private function getResultObjectCacheKey(){		
+		// Get a key based on partner id and refer url: 
+		return $this->getPartnerId() . '_' . substr( md5( $this->getReferer() ), 0, 10 );
+	}
 	
+	function getResultObjectFromApi(){
+		// Include the kaltura client
 		include_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
 		$client = $this->getClient();
 		
 		// @@todo support MultiRequest
 		$client->startMultiRequest();
-		try{
-			
-			if( !isset($_SERVER['HTTP_REFERER']) ) { $_SERVER['HTTP_REFERER'] = 'http://www.kaltura.org/'; }
-			
+		try{			
 			// NOTE this should probably be wrapped in a service class 
 			$kparams = array();
 			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
 			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams ); // sources
 			
 			
-			$client->addParam( $kparams, "contextDataParams",  array( 'referer' => $_SERVER['HTTP_REFERER'] ) );
+			$client->addParam( $kparams, "contextDataParams",  array( 'referer' => $this->getReferer() ) );
 			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams ); // access control			
 			
 			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
@@ -106,75 +191,37 @@ class kalturaIframe {
 				$client->addParam( $kparams, "id",  $this->playerAttributes['uiconf_id'] );
 				$client->queueServiceActionCall( "uiconf", "get", $kparams ); 
 			}
-			$this->resultObj = $client->doQueue();
+			$rawResultObject = $client->doQueue();
 			$client->throwExceptionIfError($this->resultObj);
 		} catch( Exception $e ){
 			$this->error = "Error getting sources from server, something maybe broken or server is under high load. Please try again.";
 			return array();
 		}
-		// debugging
-		
-		
-		/*echo "<style>body { overflow:scroll; position: static; }</style><pre>";
-		print_r($this->resultObj);
-		exit();	
-		*/
-		
-		
-		if( $this->checkAccessControl($this->resultObj[1]) ) {
-	
-			// add any web sources		
-			$sources = array();
-			foreach( $this->resultObj[0] as $KalturaFlavorAsset ){	
-	
-				$assetUrl =  KALTURA_CDN_URL .'/p/' . $this->getPartnerId() . '/sp/' . 
-						$this->getPartnerId() . '00/flvclipper/entry_id/' . 
-						$this->playerAttributes['entry_id'] . '/flavor/' . 	$KalturaFlavorAsset->id;
-				if( strpos( $KalturaFlavorAsset->tags, 'iphone' ) !== false ){
-					$sources['iphone'] = array(
-						'src' => $assetUrl . '/a.mp4?novar=0',
-						'type' => 'video/h264',
-						'data-flavorid' => 'iPhone' 
-					);
-				};
-				if( strpos( $KalturaFlavorAsset->tags, 'ipad' ) !== false ){
-					$sources['ipad'] = array(
-						'src' => $assetUrl  . '/a.mp4?novar=0',
-						'type' => 'video/h264',
-						'data-flavorid' => 'iPad' 
-					);
-				};
-				if( $KalturaFlavorAsset->fileExt == 'ogg' || $KalturaFlavorAsset->fileExt == 'ogv' 
-					|| $KalturaFlavorAsset->fileExt == 'oga' 
-				){
-					$sources['ogg'] = array(
-						'src' => $assetUrl . '/a.ogg?novar=0',
-						'type' => 'video/ogg',
-						'data-flavorid' => 'ogg' 
-					);
-				};
-				if( $KalturaFlavorAsset->fileExt == '3gp' ){
-					$sources['3gp'] = array(
-						'src' => $assetUrl . '/a.3gp?novar=0',
-						'type' => 'video/3gp',
-						'data-flavorid' => '3gp' 
-					);
-				};
-			}
-			
-			return $sources;
-		} else {
-			return array();
+				
+		$resultObject = array(
+			'flavors' 			=> 	$rawResultObject[0],
+			'accessControl' 	=> 	$rawResultObject[1],
+			'meta'				=>	$rawResultObject[2],			
+			'entry_id'			=>	$this->playerAttributes['entry_id'],
+			'partner_id'		=>	$this->getPartnerId(),		
+		);
+		if( isset( $rawResultObject[3] ) && $rawResultObject[3]->confFile ){
+			$playerData[ 'uiconf_id' ] = $this->playerAttributes['uiconf_id'];
+			$playerData[ 'uiConf'] = $rawResultObject[3]->confFile;
 		}
+		return $resultObject;
 	}
 	
+	function getReferer(){
+		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.org/';
+	}
 	function getClient(){
 		global $mwEmbedRoot;
 
 		$cacheDir = $mwEmbedRoot . '/includes/cache';
 
-		$cacheFile = $cacheDir . '/' . $this->getPartnerId() . ".txt";
-		$cacheLife = 900; //cache for 15 min		  
+		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . ".ks.txt";
+		$cacheLife = KALTURA_UICONF_CACHE_TIME; 
 		
 		
 		$conf = new KalturaConfiguration( $this->getPartnerId() );
@@ -198,54 +245,44 @@ class kalturaIframe {
 		// Partner id is widget_id but strip the first character 
 		return substr( $this->playerAttributes['wid'], 1 );
 	}
+	
 	/**
 	*  Set the player data array
 	*/	
 	function getPlayerData() {
-		$playerData = array(
-			'accessControl' 	=> 	$this->resultObj[1],
-			'flavors' 			=> 	$this->resultObj[0],
-			'meta'				=>	$this->resultObj[2],			
-			'entry_id'			=>	$this->playerAttributes['entry_id'],
-			'partner_id'		=>	$this->playerAttributes['wid'],		
-		);
-		if( isset( $this->resultObj[3] ) && $this->resultObj[3]->confFile ){
-			$playerData[ 'uiconf_id' ] = $this->playerAttributes['uiconf_id'];
-			$playerData[ 'uiConf'] = $this->resultObj[3]->confFile;
-		}
-		
 		return json_encode($playerData);
 	}
 	
 	/**
 	*  Access Control Handling
 	*/	
-	function checkAccessControl($accessResult) {
-		
+	function isAccessControlAllowed() {
+		$resultObject =  & $this->getResultObject();
+		$accessControl = $resultObject['accessControl'];
 		// Checks if admin
-		if($accessResult->isAdmin) {
+		if($accessControl->isAdmin) {
 			return true;
 		}
 		
 		/* Domain Name Restricted */
-		if($accessResult->isSiteRestricted) {
+		if($accessControl->isSiteRestricted) {
 			$this->error = "<h2>Un authorized domain</h2>We're sorry, this content is only available on certain domains.";
 			return false;
 		}
 		
 		/* Country Restricted */
-		if($accessResult->isCountryRestricted) {
+		if($accessControl->isCountryRestricted) {
 			$this->error = "<h2>Un authorized country</h2>We're sorry, this content is only available on certain countries.";
 			return false;
 		}
 		
 		/* Session Restricted */
-		if($accessResult->isSessionRestricted) {
+		if($accessControl->isSessionRestricted) {
 			$this->error = "<h2>No KS where KS is required</h2>We're sorry, access to this content is restricted.";
 			return false;
 		}
 		
-		if($accessResult->isScheduledNow == null) {
+		if($accessControl->isScheduledNow == null) {
 			$this->error = "<h2>Out of scheduling</h2>We're sorry, this content is currently unavailable.";
 			return false;
 		}
@@ -457,7 +494,7 @@ class kalturaIframe {
 			</script>
 			<script type="text/javascript">		
 				// Add Packaging Kaltura Player Data ( JSON Encoded )
-				mw.setConfig('KalturaSupport.BootstrapPlayerData', <?php echo $this->getPlayerData(); ?>);
+				mw.setConfig('KalturaSupport.BootstrapPlayerData', <?php echo json_encode( $this->getResultObject() ) ?>);
 			
 				// TODO:: Add the refer url to analytics. 
 				
@@ -522,7 +559,7 @@ class kalturaIframe {
 						
 						var thumbSrc = kGetEntryThumbUrl({
 							'entry_id' : '<?php echo $this->playerAttributes['entry_id']?>',
-							'partner_id' : '<?php echo substr( $this->playerAttributes['wid'], 1 ) ?>',
+							'partner_id' : '<?php echo $this->getPartnerId() ?>',
 							'height' : window.innerHeight,
 							'width' : window.innerWidth
 						});			
