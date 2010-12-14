@@ -1548,7 +1548,7 @@ mw.EmbedPlayer.prototype = {
 		} else {
 			this.controlBuilder.resizePlayer( size, animate);
 		}
-		$j( this ).trigger( 'onResizePlayer', [ size, animate ] );
+		$j( this ).trigger( 'onResizePlayer', [size, animate] )
 	},
 
 	/**

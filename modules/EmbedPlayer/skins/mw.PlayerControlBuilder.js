@@ -260,20 +260,6 @@ mw.PlayerControlBuilder.prototype = {
 	},
 
 	/**
-	* Get the fullscreen text css
-	*/
-	getInterfaceSizeTextCss: function( size ) {
-		// Some arbitrary scale relative to window size ( 400px wide is text size 105% )
-		var textSize = size.width / 5;
-		if( textSize < 95 ) textSize = 95;
-		if( textSize > 200 ) textSize = 200;
-		//mw.log(' win size is: ' + $j( window ).width() + ' ts: ' + textSize );
-		return {
-			'font-size' : textSize + '%'
-		};
-	},
-
-	/**
 	 * Toggles full screen by calling
 	 *  doFullScreenPlayer to enable fullscreen mode
 	 *  restoreWindowPlayer to restore window mode
@@ -370,7 +356,7 @@ mw.PlayerControlBuilder.prototype = {
 		$interface.css('overlow', 'hidden');
 
 		// Resize the player keeping aspect and with the widow scroll offset:
-		_this.resizePlayer({
+		embedPlayer.resizePlayer({
 			'top' : topOffset,
 			'left' : leftOffset,
 			'width' : $j( window ).width(),
@@ -416,7 +402,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Bind resize resize window to resize window
 		$j( window ).resize( function() {
 			if( _this.fullscreenMode ){
-				_this.resizePlayer({
+				embedPlayer.resizePlayer({
 					'width' : $j( window ).width(),
 					'height' : $j( window ).height()
 				})
@@ -453,16 +439,12 @@ mw.PlayerControlBuilder.prototype = {
 			$j( embedPlayer ).animate( _this.getAspectPlayerWindowCss( size ) );
 			// Update play button pos
 			$interface.find('.play-btn-large').animate( _this.getFullscreenPlayButtonCss( size ) );
-			// Update the timed text size
-			$interface.find( '.track' ).animate( _this.getInterfaceSizeTextCss( size ) );
 		} else {
 			$interface.css( interfaceCss );
 			// Update player size
 			$j( embedPlayer ).css( _this.getAspectPlayerWindowCss( size ) );
 			// Update play button pos
 			$interface.find('.play-btn-large').css( _this.getFullscreenPlayButtonCss( size ) );
-			// Update the timed text size
-			$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss( size ) );
 		}
 	},
 
@@ -514,22 +496,15 @@ mw.PlayerControlBuilder.prototype = {
 			// Restore the body scroll bar
 			$j('body').css( 'overflow', 'auto' );
 
-			// Resize the timed text font size per window width
-			// TODO move to timedText
-			$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss({
-				'width' :  embedPlayer.getWidth(),
-				'height' : interfaceHeight
-			}) );
-
 		} );
 		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
 		// Restore the player:
-		$j( embedPlayer ).animate( {
+		embedPlayer.resizePlayer( {
 			'top' : '0px',
 			'left' : '0px',
 			'width' : embedPlayer.getWidth(),
 			'height' : embedPlayer.getHeight()
-		});
+		}, true);
 
 		// Restore the play button
 		$interface.find('.play-btn-large').animate( {

@@ -132,7 +132,24 @@ mw.includeAllModuleMessages();
 			$j( embedPlayer ).bind( 'play', function() {
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
-			} );						
+			} );	
+			
+			// Resize the timed text font size per window width
+			$j( embedPlayer ).bind( 'closeFullscreen', function() {
+				embedPlayer.$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss({
+					'width' :  embedPlayer.getWidth(),
+					'height' : embedPlayer.$interface.height()
+				}) );	
+			});
+			
+			// Update the timed text size
+			$j( embedPlayer ).bind( 'onResizePlayer', function(e, size, animate) {
+				if (animate) {
+					embedPlayer.$interface.find( '.track' ).animate( _this.getInterfaceSizeTextCss( size ) );
+				} else {
+					embedPlayer.$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss( size ) );
+				}
+			});
 
 			// Setup display binding
 			$j( embedPlayer ).bind( 'onShowControlBar', function(event, layout ){
@@ -148,6 +165,20 @@ mw.includeAllModuleMessages();
 			});
 			
 		},
+		
+		/**
+		* Get the fullscreen text css
+		*/
+		getInterfaceSizeTextCss: function( size ) {
+			// Some arbitrary scale relative to window size ( 400px wide is text size 105% )
+			var textSize = size.width / 5;
+			if( textSize < 95 ) textSize = 95;
+			if( textSize > 200 ) textSize = 200;
+			//mw.log(' win size is: ' + $j( window ).width() + ' ts: ' + textSize );
+			return {
+				'font-size' : textSize + '%'
+			};
+		},		
 
 		/**
 		* Setups available text sources
@@ -919,7 +950,7 @@ mw.includeAllModuleMessages();
 
 				// Scale the text Relative to player size:
 				$track.css(
-					this.embedPlayer.controlBuilder.getInterfaceSizeTextCss({
+					this.getInterfaceSizeTextCss({
 						'width' :  this.embedPlayer.getWidth(),
 						'height' : this.embedPlayer.getHeight()
 					})
