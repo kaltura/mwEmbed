@@ -33,6 +33,8 @@
 			    	// ( note any asynchronous calls will delay player display ) 
 			    	callback();
 			    });
+			} else {
+				callback();
 			}
 		})
 	})
