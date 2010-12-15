@@ -47,7 +47,8 @@
 		/**
 		 * Master event list
 		 */
-		bindListenEvent: function( embedPlayer, eventName, callback ){
+		bindListenEvent: function( embedPlayer, eventName, callbackFuncName ){
+			var callback = window[ callbackFuncName ];
 			switch( eventName ){
 				case 'volumeChanged': 
 					$j( embedPlayer ).bind('volumeChanged', function(percent){
