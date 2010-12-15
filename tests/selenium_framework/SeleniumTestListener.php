@@ -1,8 +1,4 @@
 <?php
-if ( !defined( 'MEDIAWIKI' ) || !defined( 'SELENIUMTEST' ) ) {
-	echo "This script cannot be run standalone";
-	exit( 1 );
-}
 
 class SeleniumTestListener implements PHPUnit_Framework_TestListener {
 	private $logger;
@@ -39,13 +35,13 @@ class SeleniumTestListener implements PHPUnit_Framework_TestListener {
 	public function startTest( PHPUnit_Framework_Test $test ) {
 		$this->logger->write(
 			'Testing ' . $test->getName() . ' ... ',
-			MW_TESTLOGGER_CONTINUE_LINE
+			SeleniumTestSuite::CONTINUE_LINE
 		);
 	}
 
 	public function endTest( PHPUnit_Framework_Test $test, $time ) {
 		if ( !$test->hasFailed() ) {
-			$this->logger->write( 'OK', MW_TESTLOGGER_RESULT_OK );
+			$this->logger->write( 'OK', SeleniumTestSuite::RESULT_OK );
 			$this->tests_ok++;
 		}
 	}
@@ -53,13 +49,16 @@ class SeleniumTestListener implements PHPUnit_Framework_TestListener {
 	public function startTestSuite( PHPUnit_Framework_TestSuite $suite ) {
 		$this->logger->write( 'Testsuite ' . $suite->getName() . ' started.' );
 		$this->tests_ok = 0;
+		$this->tests_failed = 0;
 	}
 
 	public function endTestSuite( PHPUnit_Framework_TestSuite $suite ) {
-		$this->logger->write(
-			'Testsuite ' . $suite->getName() . ' ended. OK: ' .
-			$this->tests_ok . ' Failed: ' . $this->tests_failed
-		);
+		$this->logger->write('Testsuite ' . $suite->getName() . ' ended.' );
+		if ( $this->tests_ok > 0 || $this->tests_failed > 0 ) {
+			$this->logger->write( ' OK: ' . $this->tests_ok . ' Failed: ' . $this->tests_failed );
+		}
+		$this->tests_ok = 0;
+		$this->tests_failed = 0;
 	}
 
 	public function statusMessage( $message ) {
