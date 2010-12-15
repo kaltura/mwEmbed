@@ -2411,6 +2411,8 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			
 			/**
 			 * Runs all the triggers on all the named bindings of an object with a single callback
+			 * 
+			 * NOTE THIS REQUIRES JQUERY 1.4.2 and above
 			 *
 			 * Normal jQuery tirgger calls will run the callback directly multiple times for
 			 * every binded function.
@@ -2449,7 +2451,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				
 				// Set the callbackCount
 				var callbackCount = ( callbackSet.length )? callbackSet.length : 1;
-				mw.log("mwEmbed::jQuery.triggerQueueCallback: " + callbackCount );
+				mw.log("mwEmbed::jQuery.triggerQueueCallback: " + triggerName + ' number of queued functions:' + callbackCount );
 				var callInx = 0;
 				var doCallbackCheck = function() {
 					callInx++;
@@ -2722,7 +2724,7 @@ if( mw.isStaticPackge() && !window.jQuery ){
  */
 
 if( window.jQuery ){
-	if( ! mw.versionIsAtLeast( '1.4.0', jQuery.fn.jquery ) ){
+	if( ! mw.versionIsAtLeast( '1.4.2', jQuery.fn.jquery ) ){
 		if( window.console && window.console.log ) {
 			console.log( 'Error mwEmbed requires jQuery 1.4 or above' );
 		}

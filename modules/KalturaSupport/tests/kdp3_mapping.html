@@ -5,8 +5,7 @@
 
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>KDP3 | Kaltura Dynamic Player version 3 JavaScript Playground ( HTML5 backend player ) </title>
-	
-	<script type="text/javascript" src="kdp3_mapping_files/jquery.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 	<script type="text/javascript" src="kdp3_mapping_files/swfobject.js"></script>
 	<script type="text/javascript" src="kdp3_mapping_files/prettify.js"></script>
 	
@@ -122,12 +121,17 @@
 			$('#kdp3').get(0).addJsListener("playerUpdatePlayhead", "playerUpdatePlayheadHandler");
 			$('#kdp3').get(0).addJsListener("bytesTotalChange", "bytesTotalChangeHandler");
 			$('#kdp3').get(0).addJsListener("bytesDownloadedChange", "bytesDownloadedChangeHandler");
-			
+
 			for (var i=0; i < notificationslist.length; ++i) {
 				if (notificationslist[i] != 'playerUpdatePlayhead') {
-					$('#kdp3').get(0).addJsListener(notificationslist[i], notificationslist[i]+"Handler2");
-					codeBlock = 'function '+notificationslist[i]+'Handler2(data, id) {if ($("#stopListeners").attr("checked") == false){$("#notifications").text($("#notifications").text() + "'+notificationslist[i]+': ");printobj(data);}}';
-					appendScript (codeBlock);
+					mw.log( 'Add listener: ' + notificationslist[i] );
+					window[ notificationslist[i] + "Handler2" ] = function(data, id){
+						if ($("#stopListeners").attr("checked") == false){
+							$("#notifications").text( $("#notifications").text() + "'+notificationslist[i]+': ");
+							printobj(data);
+						}
+					}
+					$('#kdp3').get(0).addJsListener( notificationslist[i], notificationslist[i]+"Handler2" );
 				}
 			}
 		}
@@ -147,11 +151,6 @@
 				$("#notifications").scrollTop($("#notifications").get(0).scrollHeight); 
 			else
 				$("#notifications").scrollTop(oldscroll);
-		}
-		
-		function appendScript (code) {
-			x = '<' + 'script type="text/javascript" >' + code +'</' + 'script>';
-			$('body').append(x);
 		}
 		
 		function statisticsHandler (data, id) {

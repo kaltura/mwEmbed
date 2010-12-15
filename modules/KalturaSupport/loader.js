@@ -342,7 +342,7 @@
 	 * To support kaltura kdp mapping override
 	 */
 	var checkForKDPCallback = function(){
-		if( typeof window.jsCallbackReady != 'undefined'){	
+		if( typeof window.jsCallbackReady != 'undefined' && !window.KalturaKDPCallbackReady ){	
 			window.KalturaKDPCallbackReady = window.jsCallbackReady;
 			window.jsCallbackReady = function(){ };
 		}
@@ -351,7 +351,12 @@
 	checkForKDPCallback()
 	// Check again once the document is ready:
 	$j(document).ready( checkForKDPCallback );
-	
+
+	mw.ready( function(){
+		if( window.KalturaKDPCallbackReady ){
+			window.KalturaKDPCallbackReady();
+		}
+	})
 	
 	/**
 	 * Utility loader function to grab kaltura iframe hash url

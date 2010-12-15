@@ -124,14 +124,14 @@ mw.EmbedPlayerNative = {
 			playerAttribtues = {};
 		}
 		// Update required attributes
-		if( !playerAttribtues[ 'id'] ) playerAttribtues['id'] = this.pid;
+		if( !playerAttribtues['id'] ) playerAttribtues['id'] = this.pid;
 		if( !playerAttribtues['src'] ) playerAttribtues['src'] = this.getSrc( this.currentTime);
 
 		// If autoplay pass along to attribute ( needed for iPad / iPod no js autoplay support
 		if( this.autoplay ) {
 			playerAttribtues['autoplay'] = 'true';
 		}
-
+		
 		if( !cssSet ){
 			cssSet = {};
 		}
@@ -150,7 +150,7 @@ mw.EmbedPlayerNative = {
 			// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag.
 			.addClass( 'nativeEmbedPlayerPid' )
 			.attr( playerAttribtues )
-			.css( cssSet );
+			.css( cssSet )
 	},
 
 	/**

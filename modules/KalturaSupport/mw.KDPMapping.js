@@ -70,6 +70,7 @@
 		 * emulates kalatura addJsListener function
 		 */
 		addJsListener: function( embedPlayer, eventName, callbackFuncName ){
+			mw.log("KDPMapping:: addJsListener: " + eventName + ' cb:' + callbackFuncName );
 			var callback = window[ callbackFuncName ];
 			switch( eventName ){
 				case 'volumeChanged': 
@@ -77,8 +78,7 @@
 						callback( {'newVolume' : percent }, embedPlayer.id );
 					});
 					break;
-				case 'playerStateChange':
-					
+				case 'playerStateChange':					
 					// Kind of tricky should do a few bindings to 'pause', 'play', 'ended', 'buffering/loading'
 					$j( embedPlayer ).bind('pause', function(){						
 						callback( 'pause', embedPlayer.id );

@@ -239,7 +239,7 @@ EmbedPlayerManager.prototype = {
 	 * are called;
 	 *
 	 * _this.checkPlayerSources() 
-	 * _this.checkForTimedText() // Should be moved to TimedText module!!!
+	 * _this.checkForTimedText() // TODO Should be moved to TimedText module!!!
 	 * _this.setupSourcePlayer() 
 	 * _this.inheritEmbedPlayer()
 	 * _this.selectedPlayer.load() 

@@ -101,9 +101,14 @@ if( !mw.setConfig ){
 	}
 }
 
+// Set url based config:
+if( document.URL.indexOf('forceMobileHTML5') != -1 ){
+	mw.setConfig( 'forceMobileHTML5', true );
+}
+
 function kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height){
 	var iframeSrc = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php');
-	var kalturaAttributeList = {'uiconf_id':1, 'entry_id':1, 'wid':1, 'p':1};
+	var kalturaAttributeList = { 'uiconf_id':1, 'entry_id':1, 'wid':1, 'p':1};
 	for(var attrKey in kEmbedSettings ){
 		if( attrKey in kalturaAttributeList ){
 			iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
@@ -111,13 +116,13 @@ function kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height){
 	}
 	
 	// Pass along forceHTML5 if present: 
-	if( document.URL.indexOf('forceMobileHTML5') != -1 ){
+	if( preMwEmbedConfig['forceMobileHTML5'] != -1 ){
 		iframeSrc+='?forceMobileHTML5=true'
 	};
 	
 	// Package in the source page url for iframe message checks.
 	
-	// Add the parentUrl to the iframe config: 
+	// Add the parentUrl to the iframe config:
 	preMwEmbedConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
 	
 	// Encode the configuration into the iframe hash url: 
@@ -241,6 +246,9 @@ function kCheckAddScript(){
 		// Restore the jsCallbackReady ( we are not rewriting )
 		if( window.KalturaKDPCallbackReady ){
 			window.jsCallbackReady = window.KalturaKDPCallbackReady;
+			if( window.KalturaKDPCallbackAlreadyCalled ){
+				window.jsCallbackReady();
+			}
 		}
 	}
 }
@@ -252,7 +260,7 @@ function kIsHTML5FallForward(){
 		(navigator.userAgent.indexOf('iPad') != -1) ||
 		(navigator.userAgent.indexOf('Android 2.') != -1) || 
 		// Force html5 for chrome / desktop safari
-		(document.URL.indexOf('forceMobileHTML5') != -1 )
+		( preMwEmbedConfig['forceMobileHTML5'] != -1 )
 	){
 		return true;
 	}
@@ -598,7 +606,9 @@ kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 var checkForKDPCallback = function(){
 	if( typeof window.jsCallbackReady != 'undefined'){	
 		window.KalturaKDPCallbackReady = window.jsCallbackReady;
-		window.jsCallbackReady = function(){ };
+		window.jsCallbackReady = function(){
+			window.KalturaKDPCallbackAlreadyCalled = true;
+		};
 	}
 }
 // Check inline and when the dom is ready:
