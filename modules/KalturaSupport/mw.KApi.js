@@ -37,7 +37,7 @@ mw.KApi.prototype = {
 	},
 	doRequest : function( requestObject, callback ){
 		var _this = this;
-		var param = [];		
+		var param = {};		
 		// Convert into a multi-request if no session is set ( ks will be added bellow ) 
 		if( !requestObject.length && !this.ks ){
 			requestObject = [ requestObject ];
@@ -98,7 +98,7 @@ mw.KApi.prototype = {
 		
 		// add in the base parameters:
 		for( var i in this.baseParam ){
-			if( typeof param[i] != 'undefined' ){
+			if( typeof param[i] == 'undefined' ){
 				param[i] = this.baseParam[i];
 			}
 		};
@@ -114,6 +114,7 @@ mw.KApi.prototype = {
 			
 			param['ks'] = ks;
 			param['kalsig'] = _this.getSignature( param );
+			//debugger;
 			var requestUrl = _this.getApiUrl() + serviceType + '&' + $j.param( param );
 			// Do the getJSON jQuery call with special callback=? parameter: 
 			$j.getJSON( requestUrl +  '&callback=?', function( data ){
