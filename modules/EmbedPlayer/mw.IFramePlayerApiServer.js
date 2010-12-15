@@ -118,8 +118,7 @@ mw.IFramePlayerApiServer.prototype = {
 		} )
 	},
 	
-	'postMessage': function( msgObj ){
-		
+	'postMessage': function( msgObj ){		
 		try {
 			var messageString = JSON.stringify( msgObj );
 		} catch ( e ){

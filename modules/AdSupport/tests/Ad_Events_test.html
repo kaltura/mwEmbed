@@ -23,16 +23,14 @@
 		</div>
 	</div>
 	<div style="clear:both"></div>
-   	<br>Prerool video (fish) <input id="preroll" type="text" size="40" value="http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_v1z55w0b/flavor/1_jeqsr39h/a.mp4?novar=0"></input>
+   	<br>Prerool video (coffee) <input id="preroll" type="text" size="40" value="http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/0_uka1msg4/flavor/0_zc8zwscb/a.mp4?novar=0"></input>
    	<a id="addPrerool" href="#">Update preroll video</a>
    	</br>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
  	<script src="../../../mwEmbedLoader.js?debug=true" type="text/javascript"></script>
  	<script type="text/javascript">
- 		mw.setConfig( 'Kaltura.IframeRewrite', true );
  		mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
  		mw.setConfig( 'EmbedPlayer.OverlayControls', false);
- 		mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
  		
  		mw.ready(function(){
  	 		var embedPlayer = $j('#vid1').get(0);
@@ -85,6 +83,7 @@
 	 			};
 	 			// update the preroll
 	 			updatePreRool( $j('#preroll').val() );
+	 			
 				// let the user update the preroll:
 				$j('#addPrerool').click(function(){
 					var _this = this;
@@ -96,6 +95,8 @@
 				mw.addAdToPlayerTimeline( embedPlayer, 'overlay', 
  	 	 	 		{ 
  	 	 	 	 		'ads': {
+	 	 	 	 			'frequency' : 10,
+	 	 	 	 			'timeout' : 5,
  	 	 					'companions:': [
 	 	 	 	 					{
 		 							'id' : 1, // tragicly someone set this up to start at 1 instead of 0 :(

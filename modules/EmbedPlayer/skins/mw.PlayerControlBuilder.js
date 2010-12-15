@@ -1532,7 +1532,6 @@ mw.PlayerControlBuilder.prototype = {
 			'w' : 130,
 			'h' : 96,
 			'o' : function( ctrlObj ) {
-
 				return $j( '<div/>' )
 					.attr( {
 						'title'	: gM( 'mwe-embedplayer-play_clip' ),

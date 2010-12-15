@@ -70,7 +70,7 @@
 		 * emulates kalatura addJsListener function
 		 */
 		addJsListener: function( embedPlayer, eventName, callbackFuncName ){
-			mw.log("KDPMapping:: addJsListener: " + eventName + ' cb:' + callbackFuncName );
+			//mw.log("KDPMapping:: addJsListener: " + eventName + ' cb:' + callbackFuncName );
 			var callback = window[ callbackFuncName ];
 			switch( eventName ){
 				case 'volumeChanged': 
@@ -85,7 +85,6 @@
 					});
 					
 					$j( embedPlayer ).bind('play', function(){
-						mw.log('PLAYBIND:: mw.KDPMapping ');
 						callback( 'play', embedPlayer.id );
 					});
 					

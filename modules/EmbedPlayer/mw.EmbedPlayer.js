@@ -1444,8 +1444,18 @@ mw.EmbedPlayer.prototype = {
 		this.startMonitor();
 		this._propagateEvents = true;
 	},
+	
+	enableSeekBar: function(){
+		this.controlBuilder.enableSeekBar();
+		$j( this ).trigger( 'onEnableSeekBar');
+	},
+	dissableSeekBar: function(){
+		this.controlBuilder.dissableSeekBar();
+		$j( this ).trigger( 'onDissableSeekBar');
+	},
+	
 	/**
-	 * for plugin-players to update supported features
+	 * For plugin-players to update supported features
 	 */
 	updateFeatureSupport: function(){
 		return ;
@@ -2444,7 +2454,7 @@ mw.EmbedPlayer.prototype = {
 		$j( '#' + _this.pid ).siblings('.play-btn-large').remove();
 		this.$interface.append( 
 			this.controlBuilder.getComponent('playButtonLarge')
-		)
+		);
 	},
 	/**
 	 * Should be set via native embed support
@@ -2654,6 +2664,9 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents );
+		if( ! this._propagateEvents){
+			return ;
+		}
 		// Hide any overlay:
 		this.controlBuilder.closeMenuOverlay();
 
@@ -2761,9 +2774,9 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		// Disable event _propagateEvents for 10ms ( avoid pause play trigger stacking )
 		this._propagateEvents = false;
-		setTimeout(function(){
+		setTimeout( function(){
 			_this._propagateEvents = true;
-		},10);
+		}, 10);
 	},
 
 	/**
@@ -2819,7 +2832,7 @@ mw.EmbedPlayer.prototype = {
 			this.updatePlayHead( 0 );
 					
 			// Bind play-btn-large play
-			this.addPlayBtnLarge();
+			//this.addPlayBtnLarge();
 		}
 	},
 

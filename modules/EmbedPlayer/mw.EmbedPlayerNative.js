@@ -604,8 +604,10 @@ mw.EmbedPlayerNative = {
 	* Handle the native paused event
 	*/
 	onpause: function(){
-		mw.log( "EmbedPlayer:native: OnPaused" );
-		this.parent_pause();
+		mw.log( "EmbedPlayer:native: OnPaused:: " +  this._propagateEvents );
+		if(  this._propagateEvents ){
+			this.parent_pause();
+		}
 	},
 
 	/**

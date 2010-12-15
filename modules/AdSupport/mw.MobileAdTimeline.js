@@ -134,6 +134,14 @@ mw.MobileAdTimeline.prototype = {
 			// Stop the native embedPlayer events so we can play the preroll
 			// and bumper
 			_this.embedPlayer.stopEventPropagation();
+			// TODO read the add dissable control bar to ad config and check that here. 
+			_this.embedPlayer.dissableSeekBar();
+			
+			var restorePlayer = function(){
+				_this.embedPlayer.restoreEventPropagation();
+				_this.embedPlayer.enableSeekBar();
+			};
+			
 
 			// Chain display of preroll and then bumper:
 			_this.display('preroll', function() {
@@ -148,9 +156,11 @@ mw.MobileAdTimeline.prototype = {
 							function() {								
 								// Restore embedPlayer native
 								// bindings
-								_this.embedPlayer.restoreEventPropagation();
+								restorePlayer();
 							}
 						)
+					} else {
+						restorePlayer();
 					}
 				});
 			});
@@ -243,7 +253,7 @@ mw.MobileAdTimeline.prototype = {
 	 */
 	display: function( timeTargetType, displayDoneCallback, displayDuration ) {
 		var _this = this;
-		mw.log("MobileAdTimeline::display:" + timeTargetType );			
+		mw.log("MobileAdTimeline::display:" + timeTargetType );
 		
 		var displayTarget =  this.timelineTargets[ timeTargetType ] 
 		
@@ -266,7 +276,8 @@ mw.MobileAdTimeline.prototype = {
 			}
 		}
 		
-		var adConf = this.selectFromArray( displayTarget.ads );		
+		var adConf = this.selectFromArray( displayTarget.ads );
+		
 		// Setup the currentlyDisplayed flag: 
 		if( !displayTarget.currentlyDisplayed ){
 			displayTarget.currentlyDisplayed = true;
@@ -314,7 +325,9 @@ mw.MobileAdTimeline.prototype = {
 			// Play the source then run the callback
 			_this.embedPlayer.switchPlaySrc( adConf.videoFile, function() { 
 					// Bind all the tracking events ( currently vast based but will abstract if needed ) 
-					_this.bindVastTrackingEvents( adConf.trackingEvents );
+					if( adConf.trackingEvents ){
+						_this.bindTrackingEvents( adConf.trackingEvents );
+					}
 				},
 				displayTarget.playbackDone
 			);
@@ -425,7 +438,7 @@ mw.MobileAdTimeline.prototype = {
 	 * 
 	 * @param {object} trackingEvents
 	 */	
-	bindVastTrackingEvents: function ( trackingEvents ){
+	bindTrackingEvents: function ( trackingEvents ){
 		var _this = this;
 		var videoPlayer = _this.getNativePlayerElement();
 		// Only send events once: 
