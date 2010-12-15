@@ -7,12 +7,12 @@
 ( function( mw ) {	
 	// List named resource paths
 	mw.addResourcePaths({
-		"plyMeidaPlayer" : "plyMeida/plyMeidaPlayer.js",
-		"plyMeida.style" :  "plyMeida/plyMeida.css",
+		"plyMediaPlayer" : "plyMedia/plyMediaPlayer.js",
+		"plyMedia.style" :  "plyMedia/plyMedia.css",
 		"mw.plyMediaConfig" : "mw.plyMediaConfig.js"
 	});
 	
-	mw.addModuleLoader( 'plyMeida', function(){
+	mw.addModuleLoader( 'plyMedia', function(){
 		// load any files needed for plyMedia player:
 		return ['mw.plyMediaConfig'];
 	});
@@ -27,7 +27,7 @@
 				// Load the plyMeida module 
 				// NOTE in production plyMedia would be pre-loaded by the iframe uiconf
 				
-			    mw.load( 'plyMeida', function(){
+			    mw.load( 'plyMedia', function(){
 			    	mw.plyMediaConfig.bindPlayer( embedPlayer );
 			    });
 			}
