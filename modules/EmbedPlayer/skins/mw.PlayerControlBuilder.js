@@ -893,7 +893,7 @@ mw.PlayerControlBuilder.prototype = {
 			max: 100,
 			slide: function( event, ui ) {
 				var percent = ui.value / 100;
-				mw.log('slide::update volume:' + percent);
+				mw.log('PlayerControlBuilder::slide:update volume:' + percent);
 				embedPlayer.setVolume( percent );
 			},
 			change: function( event, ui ) {
@@ -903,7 +903,7 @@ mw.PlayerControlBuilder.prototype = {
 				} else {
 					embedPlayer.$interface.find( '.volume_control span' ).removeClass( 'ui-icon-volume-off' ).addClass( 'ui-icon-volume-on' );
 				}
-				mw.log('change::update volume:' + percent);
+				mw.log('PlayerControlBuilder::change:update volume:' + percent);
 				embedPlayer.setVolume( percent );
 			}
 		};

@@ -35,19 +35,41 @@
 			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {						
 				// Add the addJsListener and sendNotification maps
 				embedPlayer.addJsListener = function(listenerString, callback){
-					_this.bindListenEvent( embedPlayer, listenerString, callback )
+					_this.addJsListener( embedPlayer, listenerString, callback )
 				}
 				
 				embedPlayer.sendNotification = function( notificationName, notificationData ){
 					_this.sendNotification( embedPlayer, notificationName, notificationData)
 				}
+				
+				embedPlayer.evaluate = function( objectString ){
+					_this.evaluate( embedPlayer, objectString);
+				}
 			});
 		},
 		
 		/**
-		 * Master event list
+		 * emulates kaltura evaluate function
 		 */
-		bindListenEvent: function( embedPlayer, eventName, callbackFuncName ){
+		evaluate: function( embedPlayer, objectString ){
+			// Strip the { } from the objectString
+			objectString = objectString.replace( /\{\}/, '' );
+			objectPath = objectString.split('.');
+			switch( objectPath[0] ){
+				case 'video':
+					switch( objectPath[1] ){
+						case 'volume': 
+							embedPlayer.volume;
+						break;
+					}
+				break;
+			}
+		},
+		
+		/**
+		 * emulates kalatura addJsListener function
+		 */
+		addJsListener: function( embedPlayer, eventName, callbackFuncName ){
 			var callback = window[ callbackFuncName ];
 			switch( eventName ){
 				case 'volumeChanged': 
@@ -101,7 +123,9 @@
 					break;
 				case 'changeVolume':
 					embedPlayer.setVolume( parseFloat( notificationData ) );
-					break;
+					// TODO the setVolume should update the interface
+					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
+				break;
 				
 			}
 		}

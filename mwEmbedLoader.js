@@ -63,7 +63,7 @@ if( document.URL.indexOf('debugKalturaForceJquery=true') != -1 ){
 	FORCE_LOAD_JQUERY = true
 }
 
-// Define the dom ready flag
+// Define the DOM ready flag
 var kAlreadyRunDomReadyFlag = false;
 
 // Try and override the swfObject at runtime
@@ -237,6 +237,11 @@ function kCheckAddScript(){
 	if ( kIsHTML5FallForward() &&  kGetKalturaPlayerList().length ) {
 		// Check for Kaltura objects in the page
 		kAddScript();
+	} else {
+		// Restore the jsCallbackReady ( we are not rewriting )
+		if( window.KalturaKDPCallbackReady ){
+			window.jsCallbackReady = window.KalturaKDPCallbackReady;
+		}
 	}
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not avaliable 
@@ -417,6 +422,7 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
  
 }
 
+
 /**
 * DOM-ready setup ( similar to jQuery.ready )  
 */
@@ -584,3 +590,17 @@ kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 	}
 	return embedSettings;
 };
+
+
+/**
+ * To support kaltura kdp mapping override
+ */
+var checkForKDPCallback = function(){
+	if( typeof window.jsCallbackReady != 'undefined'){	
+		window.KalturaKDPCallbackReady = window.jsCallbackReady;
+		window.jsCallbackReady = function(){ };
+	}
+}
+// Check inline and when the dom is ready:
+checkForKDPCallback()
+kAddReadyHook( checkForKDPCallback );

@@ -2,6 +2,9 @@
  * kSupport module
  *  
  * Add support for kaltura api calls
+ * 
+ * TODO this loader is a little too large portions should be refactored into separate files
+ *  this refactor can happen post resource loader
  */
 // Scope everything in "mw" ( keeps the global namespace clean ) 
 
@@ -76,6 +79,7 @@
 			if( mw.isHTML5FallForwardNative() || mw.getConfig( 'Kaltura.IframeRewrite' ) ){
 				// setup load flags
 				var loadEmbedPlayerFlag = loadPlaylistFlag = false;
+				
 				$j.each( kalturaObjectPlayerList, function( inx, element ){
 					// Clear the kalturaSwapObjectClass
 					var kalturaSwapObjectClass = '';
@@ -242,10 +246,12 @@
 	});
 	
 	var kLoadKalturaSupport = false;
+	
+	
 	// Update the player loader request with timedText if the flag has been set 
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
 		// Check if any video tag uses the "kEmbedSettings.entryId"  
-		if(  $j( playerElement ).attr( 'kentryid' ) ) {
+		if(  $j( playerElement ).attr( 'kwidgetid' ) ) {
 			kLoadKalturaSupport = true;
 		}
 		// Add kaltura support hook
@@ -258,8 +264,9 @@
 		}
 	} );
 	
+	
 	/**
-	 * Get a kaltura iframe f
+	 * Get a kaltura iframe
 	 * @param {object} iframeParams
 	 * 	the kaltura iframe parameters 
 	 * @param {function} callback
@@ -300,13 +307,15 @@
 			
 			iframeRequest+= mw.getKalturaIframeHash();
 			
-			var $iframe = $j('<iframe />').attr({
+			var $iframe = $j('<iframe />')
+			.attr({
 				'id' : $j( playerTarget ).attr('id'),
 				'class' : $j( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',
 				'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest,
 				'height' : $j( playerTarget ).height(),
 				'width' : $j( playerTarget ).width()
-			}).css('border', '0px');
+			})
+			.css( 'border', '0px' );
 			
 			// Replace the player with the iframe: 
 			$j( playerTarget ).replaceWith( $iframe );
@@ -318,6 +327,7 @@
 			}
 		};
 		
+		// Check if the iframe API is enabled: 
 		if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 			// Load the iFrame player client
 			mw.load( ['mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'JSON' ], function(){
@@ -327,6 +337,21 @@
 			doRewriteIframe();			
 		}
 	};
+	
+	/**
+	 * To support kaltura kdp mapping override
+	 */
+	var checkForKDPCallback = function(){
+		if( typeof window.jsCallbackReady != 'undefined'){	
+			window.KalturaKDPCallbackReady = window.jsCallbackReady;
+			window.jsCallbackReady = function(){ };
+		}
+	}
+	// Check inline and when the dom is ready:
+	checkForKDPCallback()
+	// Check again once the document is ready:
+	$j(document).ready( checkForKDPCallback );
+	
 	
 	/**
 	 * Utility loader function to grab kaltura iframe hash url
@@ -346,6 +371,7 @@
 				})
 		);
 	}
+	
 	/**
 	 * Get the list of embed objects on the page that are 'kaltura players' 
 	 */

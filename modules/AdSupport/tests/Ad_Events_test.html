@@ -6,7 +6,7 @@
   </head>
   <body>
     <h1>
-      HTML5 ad events test
+      HTML5 ad timeline test
     </h1>
     <div style="width:680">
     <div class="playerContainer" style="float:left;width:480px">
@@ -24,7 +24,7 @@
 	</div>
 	<div style="clear:both"></div>
    	<br>Prerool video (fish) <input id="preroll" type="text" size="40" value="http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_v1z55w0b/flavor/1_jeqsr39h/a.mp4?novar=0"></input>
-   	<a id="addPrerool" href="#">Add preroll</a>
+   	<a id="addPrerool" href="#">Update preroll video</a>
    	</br>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
  	<script src="../../../mwEmbedLoader.js?debug=true" type="text/javascript"></script>
@@ -32,7 +32,8 @@
  		mw.setConfig( 'Kaltura.IframeRewrite', true );
  		mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
  		mw.setConfig( 'EmbedPlayer.OverlayControls', false);
- 		//mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
+ 		mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
+ 		
  		mw.ready(function(){
  	 		var embedPlayer = $j('#vid1').get(0);
  	 		
@@ -52,8 +53,7 @@
  	 	 	 	 		'<span class="timeOverlay" style="position:absolute;top:200px;' + 
  	 	 	 				'left:10px;color:red"></span>' 
 	 	 	 		);
- 	 	 		}
- 	 			
+ 	 	 		} 	 			
  	 		});	
 			
 
@@ -88,7 +88,6 @@
 				// let the user update the preroll:
 				$j('#addPrerool').click(function(){
 					var _this = this;
-					$j( this ).loadingSpinner();
 					updatePreRool(  $j('#preroll').val() );
 				});
 				

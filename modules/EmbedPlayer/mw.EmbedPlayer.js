@@ -2727,12 +2727,12 @@ mw.EmbedPlayer.prototype = {
 	 * object to support this functionality.
 	 */
 	pause: function( event ) {
-		var _this = this;
-		mw.log( "EmbedPlayer:: pause: " + this._propagateEvents );
+		var _this = this;		
 		// Trigger the pause event if not already paused and using native
 		// controls:
 		if( this.paused === false ){
 			this.paused = true;
+			mw.log( "EmbedPlayer:: pause: " + this._propagateEvents );
 			
 			if( this.bubbleEventCheck() ){
 				mw.log('EmbedPlayer:trigger pause:' + this.paused);
@@ -2872,7 +2872,9 @@ mw.EmbedPlayer.prototype = {
 	},
 
 	/**
-	 * Updates the interface volume TODO should move to controlBuilder
+	 * Updates the interface volume 
+	 * 
+	 * TODO should move to controlBuilder
 	 *
 	 * @param {float}
 	 *      percent Percentage volume to update interface

@@ -130,7 +130,7 @@ mw.KApi.prototype = {
 			return true;
 		}
 		var _this = this;
-		// Add the kaltura session ( if not already set ) 
+		// Add the Kaltura session ( if not already set ) 
 		var ksParam = {
         	'action' : 'startwidgetsession',
         	'widgetId': '_' + this.partner_id // don't ask me, I did not design the API! 

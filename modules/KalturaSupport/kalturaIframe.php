@@ -177,15 +177,18 @@ class kalturaIframe {
 		try{			
 			// NOTE this should probably be wrapped in a service class 
 			$kparams = array();
+			
+			// sources
 			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
-			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams ); // sources
+			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams ); 
 			
-			
+			// access control	
 			$client->addParam( $kparams, "contextDataParams",  array( 'referer' => $this->getReferer() ) );
-			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams ); // access control			
+			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams ); 		
 			
+			// Entry Meta
 			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
-			$client->queueServiceActionCall( "baseEntry", "get", $kparams ); // Entry Meta
+			$client->queueServiceActionCall( "baseEntry", "get", $kparams ); 
 
 			if($this->playerAttributes['uiconf_id']) {
 				$client->addParam( $kparams, "id",  $this->playerAttributes['uiconf_id'] );

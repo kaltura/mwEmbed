@@ -1,0 +1,4 @@
+
+mw.vastAdLoader = {
+		
+}
