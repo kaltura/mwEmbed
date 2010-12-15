@@ -213,6 +213,8 @@ EmbedPlayerManager.prototype = {
 	 *
 	 * @param {Function}
 	 *      callback Function to be called once players are ready
+	 *     
+	 * TODO: move all EmbedPlayerManager.addCallback calls to $j( mw ).bind( 'playersReady' );
 	 */
 	addCallback: function( callback ) {
 		if( typeof callback == 'function' ){
@@ -532,6 +534,7 @@ EmbedPlayerManager.prototype = {
 					_this.callbackFunctions.shift()();
 				}
 			}
+			$j(mw).trigger( 'playersReady' );
 		}
 	}
 };
