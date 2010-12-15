@@ -123,11 +123,12 @@ mw.KWidgetSupport.prototype = {
 		// Add the uiconf_id 
 		playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
 		
-		// Run the request: 
+		// Check if we have the player data bootstrap from the iframe
 		var bootstrapData = mw.getConfig("KalturaSupport.BootstrapPlayerData");
 		if( bootstrapData && bootstrapData.entry_id ==  $j( embedPlayer ).attr( 'kentryid' ) ) {
 			callback( bootstrapData );
 		} else {
+			// Run the request: 
 			this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
 				callback( playerData );
 			});

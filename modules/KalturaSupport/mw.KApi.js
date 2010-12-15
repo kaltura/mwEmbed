@@ -97,7 +97,11 @@ mw.KApi.prototype = {
 		}				
 		
 		// add in the base parameters:
-		param = $.extend({}, this.baseParam, param );	
+		for( var i in this.baseParam ){
+			if( typeof param[i] != 'undefined' ){
+				param[i] = this.baseParam[i];
+			}
+		};
 		
 		// Make sure we have the kaltura session
 		// ideally this could be part of the multi-request but could not get it to work 
@@ -109,7 +113,6 @@ mw.KApi.prototype = {
 			delete param['service'];				
 			
 			param['ks'] = ks;
-			
 			param['kalsig'] = _this.getSignature( param );
 			var requestUrl = _this.getApiUrl() + serviceType + '&' + $j.param( param );
 			// Do the getJSON jQuery call with special callback=? parameter: 

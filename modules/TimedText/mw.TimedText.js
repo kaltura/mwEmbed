@@ -155,13 +155,13 @@ mw.includeAllModuleMessages();
 			$j( embedPlayer ).bind( 'onShowControlBar', function(event, layout ){
 				// Move the text track if present
 				embedPlayer.$interface.find( '.track' )
-				.animate( layout, 'slow' );
+				.animate( layout, 'fast' );
 			});
 			
 			$j( embedPlayer ).bind( 'onHideControlBar', function(event, layout ){
 				// Move the text track down if present
 				embedPlayer.$interface.find( '.track' )
-				.animate( layout, 'slow' );
+				.animate( layout, 'fast' );
 			});
 			
 		},
@@ -559,7 +559,7 @@ mw.includeAllModuleMessages();
 				$dialog.dialog( 'option', 'buttons', null );
 
 				// Check if the category does not already exist:
-				mw.getJSON( apiUrl, {'titles': videoTitle, 'prop': 'categories'}, function(data){
+				mw.getJSON( apiUrl, {'titles': videoTitle, 'prop': 'categories'}, function( data ){
 					if( data && data.query && data.query.pages ){
 						for( var i in data.query.pages ){
 							// we only request a single page:

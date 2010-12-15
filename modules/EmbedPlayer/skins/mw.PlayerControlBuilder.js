@@ -476,19 +476,19 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
 		// Restore the player:
 		embedPlayer.resizePlayer( {
-			'top' : this.windowOffset.top + 'px',
-			'left' : this.windowOffset.left + 'px',
+			'top' : _this.windowOffset.top + 'px',
+			'left' : _this.windowOffset.left + 'px',
 			'width' : embedPlayer.getWidth(),
 			'height' : embedPlayer.getHeight()
 		}, true, function(){
 			// Restore non-absolute layout:
-			$interface.css( {
+			$interface.css({
 				'position' : _this.windowPositionStyle,
 				'z-index' : _this.windowZindex,
 				'overlow' : 'visible',
 				'top' : '0px',
 				'left' : '0px'
-			} );
+			});
 
 			// Restore absolute layout of parents:
 			$j.each( _this.parentsAbsolute, function( na, element ){
