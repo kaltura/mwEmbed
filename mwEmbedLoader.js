@@ -42,8 +42,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://192.168.192.32/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_FORCE_DEBUG = true;
+//SCRIPT_LOADER_URL = 'http://192.168.192.32/html5.kaltura/mwEmbed/ResourceLoader.php';
 //kURID = new Date().getTime();
 
 if( typeof console != 'undefined' && console.log ) {
@@ -105,8 +105,13 @@ if( !mw.setConfig ){
 if( document.URL.indexOf('forceMobileHTML5') != -1 ){
 	mw.setConfig( 'forceMobileHTML5', true );
 }
-
+function kDoIframeRewriteList( rewriteObjects ){
+	for(var i=0;i < rewriteObjects.length; i++){
+		kDoIframeRewrite( rewriteObjects[i].id, rewriteObjects[i].kSettings, rewriteObjects[i].width, rewriteObjects[i].height );
+	}
+}
 function kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height){
+	
 	var iframeSrc = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php');
 	var kalturaAttributeList = { 'uiconf_id':1, 'entry_id':1, 'wid':1, 'p':1};
 	for(var attrKey in kEmbedSettings ){
@@ -129,7 +134,17 @@ function kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height){
 	iframeSrc+= '#' + encodeURIComponent( 
 		JSON.stringify( { 'mwConfig' : preMwEmbedConfig } )
 	);
-	
+	var targetNode = document.getElementById( replaceTargetId );
+	var parentNode = targetNode.parentNode;
+	var iframe = document.createElement('iframe');
+	iframe.src = iframeSrc;
+	iframe.id = replaceTargetId;
+	iframe.width = width;
+	iframe.height = height;
+	iframe.style.border = '0px';
+		
+	parentNode.replaceChild(iframe, targetNode );
+	/*
 	$j('#' + replaceTargetId ).replaceWith(
 		$j('<iframe />').attr({
 			'src' : iframeSrc,
@@ -140,6 +155,7 @@ function kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height){
 			'border' : '0px'
 		})
 	)
+	*/
 }
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
 function kOverideSwfObject(){
@@ -338,9 +354,13 @@ function kAddScript(){
 		jsRequestSet.push( ['window.jQuery'] )
 	}
 	// Check if we are using an iframe ( load only the iframe api client ) 
-	if( preMwEmbedConfig['Kaltura.IframeRewrite'] && preMwEmbedConfig['EmbedPlayer.EnableIframeApi'] ){		
-		jsRequestSet.push( [ 'mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'JSON' ] );
-		kLoadJsRequestSet( jsRequestSet );
+	if( preMwEmbedConfig['Kaltura.IframeRewrite'] ) {
+		if( preMwEmbedConfig['EmbedPlayer.EnableIframeApi'] ){
+			jsRequestSet.push( [ 'mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'JSON' ] );
+			kLoadJsRequestSet( jsRequestSet );
+		} else {
+			kDoIframeRewriteList( kGetKalturaPlayerList() )	;
+		}
 		return ;
 	}
 	
@@ -397,8 +417,10 @@ function kAddScript(){
 		  'mw.MobileAdTimeline', 
 		  'mw.AdLoader', 
 		  'mw.VastAdParser',
+		  'controlbarLayout',
 		  'faderPlugin',
-		  'watermarkPlugin'
+		  'watermarkPlugin',
+		  'adPlugin'
 		]);
 		// kaltura playlist support ( so small relative to client libraries that we always include it )	
 		jsRequestSet.push([
@@ -524,21 +546,21 @@ function doScrollCheck() {
  */
 kGetKalturaPlayerList = function(){
 	var kalturaPlayers = [];
-	// Check all objects for kaltura compatible urls 
+	// check all objects for kaltura compatible urls 
 	var objectList = document.getElementsByTagName('object');
 	var tryAddKalturaEmbed = function( url ){
 		var settings = kGetKalturaEmbedSettings( url );
 		if( settings && settings.uiconf_id && settings.wid ){
-			kalturaPlayers.push(  settings );
-			return true;
+			objectList[i].kSettings = settings;
+			kalturaPlayers.push(  objectList[i] );
+			return true
 		}
 		return false;
 	}
-	for( var i =0; i < objectList.length; i++ ){
+	for( var i =0; i < objectList.length; i++){
 		if( objectList[i].getAttribute('data') ){
-			if( tryAddKalturaEmbed( objectList[i].getAttribute('data') ) ){
+			if( tryAddKalturaEmbed( objectList[i].getAttribute('data') ) )
 				continue;
-			}
 		}
 		var paramTags = objectList[i].getElementsByTagName('param');
 		for( var j = 0; j < paramTags.length; j++){
@@ -551,6 +573,7 @@ kGetKalturaPlayerList = function(){
 			}
 		}
 	}
+	
 	return kalturaPlayers;
 }
 
