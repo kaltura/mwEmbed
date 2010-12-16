@@ -1754,6 +1754,17 @@ mw.PlayerControlBuilder.prototype = {
 		'playHead': {
 			'w':0, // special case (takes up remaining space)
 			'o':function( ctrlObj ) {
+			
+				// Set up the dissable playhead function: 
+				// TODO this will move into the disableSeekBar binding in the new thmemeing framework
+				ctrlObj.disableSeekBar = function(){
+					ctrlObj.embedPlayer.$interface.find( ".play_head" ).slider( "option", "disabled", true );
+				}
+				ctrlObj.enableSeekBar = function(){
+					ctrlObj.embedPlayer.$interface.find( ".play_head" ).slider( "option", "disabled", false );
+				}
+			
+			
 				var embedPlayer = ctrlObj.embedPlayer;
 				var _this = this;
 				var $playHead = $j( '<div />' )

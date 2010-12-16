@@ -3,14 +3,15 @@
 	
 	mw.addResourcePaths({
 		"mw.MobileAdTimeline" : "mw.MobileAdTimeline.js",
-		"mw.vastAddLoader" : "mw.vastAddLoader.js"
+		"mw.AdLoader" : "mw.AdLoader.js",
+		"mw.VastAdParser" : "mw.VastAdParser.js"
 	});
 	
 	mw.addModuleLoader('AdSupport', function(){
-		return [ 'mw.MobileAdTimeline', 'mw.vastAddLoader' ];
+		return [ 'mw.MobileAdTimeline', 'mw.AdLoader', 'mw.VastAdParser' ];
 	});
 	
-	mw.setDefaultConfig( {
+	mw.setDefaultConfig({
 		'AdSupport.XmlProxyUrl' : mw.getMwEmbedPath() + 'modules/AdSupport/simplePhpXMLProxy.php'
 	});
 	

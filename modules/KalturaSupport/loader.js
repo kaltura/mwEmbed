@@ -42,10 +42,11 @@
 		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
 		"mw.KDPMapping" : "mw.KDPMapping.js",
 		"mw.KApi" : "mw.KApi.js",		
+		"mw.KAds" : "mw.KAds.js",
 		"faderPlugin" : "uiConfComponents/faderPlugin.js",
 		"watermarkPlugin" :  "uiConfComponents/watermarkPlugin.js",
 		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",
-		"adsPlugin"	: 	"uiConfComponents/adsPlugin.js",
+		"adPlugin"	: 	"uiConfComponents/adPlugin.js",
 		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js"
 	} );
 	
@@ -60,8 +61,8 @@
 		'mw.KAds',	
 		'controlbarLayout',
 		'faderPlugin',
-		'watermarkPlugin'
-		//'adsPlugin',
+		'watermarkPlugin',
+		'adPlugin'
 		//'bumperPlugin'
 	];
 	

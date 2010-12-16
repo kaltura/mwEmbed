@@ -458,7 +458,7 @@ mw.ClipEdit.prototype = {
 		var _this = this;
 		var eb = $j( '#embed_vid' ).get( 0 );
 		// turn on preview to avoid onDone actions
-		eb.preview_mode = true;
+		eb.previewMode = true;
 		$j( '#' + this.target_control_display ).html( '<h3>' + gM( 'mwe-clipedit-edit-video-tools' ) + '</h3>' );
 		if ( eb.supportsURLTimeEncoding() ) {
 			if ( eb.end_ntp ) {

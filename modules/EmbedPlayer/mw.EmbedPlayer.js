@@ -1250,13 +1250,13 @@ mw.EmbedPlayer.prototype = {
 	'mediaElement' : null,
 
 	// Object that describes the supported feature set of the underling plugin /
-	// player
+	// Support list is described in PlayerControlBuilder components
 	'supports': { },
 
 	// Preview mode flag,
 	// some plugins don't seek accurately but in preview mode we need
 	// accurate seeks so we do tricks like hide the image until its ready
-	'preview_mode' : false,
+	'previewMode' : false,
 
 	// Ready to play
 	// NOTE: we should switch over to setting the html5 video ready state
@@ -1449,9 +1449,9 @@ mw.EmbedPlayer.prototype = {
 		this.controlBuilder.enableSeekBar();
 		$j( this ).trigger( 'onEnableSeekBar');
 	},
-	dissableSeekBar: function(){
-		this.controlBuilder.dissableSeekBar();
-		$j( this ).trigger( 'onDissableSeekBar');
+	disableSeekBar: function(){
+		this.controlBuilder.disableSeekBar();
+		$j( this ).trigger( 'ondisableSeekBar');
 	},
 	
 	/**
@@ -2004,7 +2004,7 @@ mw.EmbedPlayer.prototype = {
 
 				// Make sure we are not in preview mode( no end clip actions in
 				// preview mode)
-				if ( this.preview_mode ) {
+				if ( this.previewMode ) {
 					return ;
 				}
 

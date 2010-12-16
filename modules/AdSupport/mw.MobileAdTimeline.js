@@ -135,7 +135,7 @@ mw.MobileAdTimeline.prototype = {
 			// and bumper
 			_this.embedPlayer.stopEventPropagation();
 			// TODO read the add dissable control bar to ad config and check that here. 
-			_this.embedPlayer.dissableSeekBar();
+			_this.embedPlayer.disableSeekBar();
 			
 			var restorePlayer = function(){
 				_this.embedPlayer.restoreEventPropagation();

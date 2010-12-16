@@ -5,16 +5,13 @@
 */
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf, callback ){	
-		faderPlugin( embedPlayer, $uiConf );		
+		var $fader = $uiConf.find("Plugin#fader");
+		if( $fader.attr('target') === "{controllersVbox}" ){
+			embedPlayer.overlaycontrols = true;
+		} else {
+			embedPlayer.overlaycontrols = false;
+		}		
 		callback();
 		
 	})
 });
-var faderPlugin = function(embedPlayer, $uiConf){
-	var $fader = $uiConf.find("Plugin#fader");
-	if( $fader.attr('target') === "{controllersVbox}" ){
-		embedPlayer.overlaycontrols = true;
-	} else {
-		embedPlayer.overlaycontrols = false;
-	}
-}
