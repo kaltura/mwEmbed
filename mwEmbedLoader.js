@@ -260,7 +260,7 @@ function kIsHTML5FallForward(){
 		(navigator.userAgent.indexOf('iPad') != -1) ||
 		(navigator.userAgent.indexOf('Android 2.') != -1) || 
 		// Force html5 for chrome / desktop safari
-		( preMwEmbedConfig['forceMobileHTML5'] != -1 )
+		( preMwEmbedConfig['forceMobileHTML5'] === true )
 	){
 		return true;
 	}
