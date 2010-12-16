@@ -75,6 +75,7 @@ mw.EmbedPlayerNative = {
 		if( mw.isIpad() ){
 			this.supports.volumeControl = false;
 		}
+		this.parent_updateFeatureSupport();
 	},
 
 	/**

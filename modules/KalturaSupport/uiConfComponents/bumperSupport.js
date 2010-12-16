@@ -17,7 +17,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 					bumperValue = ( bumperValue == "false" )? false: bumperValue;
 					bumper[  $j(node).attr('key').replace('bumper.', '') ] =  bumperValue;
 				}
-			})			
+			})
 			embedPlayer.bumperPlayCount = 0;
 			// Get the bumper entryid				
 			if( bumper.bumperEntryID ){

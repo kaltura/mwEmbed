@@ -58,7 +58,7 @@ mw.SwarmTransport = {
 		});
 
 	},
-	// check if the swam player exists and return its associated player library
+	// Check if the swam player exists and return its associated player library
 	getPluginLibrary: function(){
 		// Check for swarmTransport global in javascript ( firefox )
 		if( typeof window['swarmTransport'] != 'undefined' ){
