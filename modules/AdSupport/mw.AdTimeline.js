@@ -2,7 +2,7 @@
  * mw.MobilePlayerTimeline handles basic timelines of clips in the mobile
  * platform
  * 
- * MobileAdTimeline is targets VAST as the display representation and its
+ * AdTimeline is targets VAST as the display representation and its
  * timelineTargets support the VAST display types. Future updates may handle
  * more ad types and timeline targets.
  * 
@@ -72,18 +72,18 @@
  * }
  */
 mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
-	mw.log("MobileAdTimeline::Add " + timeType + ' dispCof: ' +  adConf );
+	mw.log("AdTimeline::Add " + timeType + ' dispCof: ' +  adConf );
 	if (!embedPlayer.playerTimeline) {
-		embedPlayer.playerTimeline = new mw.MobileAdTimeline(embedPlayer);
+		embedPlayer.playerTimeline = new mw.AdTimeline(embedPlayer);
 	}
 	embedPlayer.playerTimeline.addToTimeline(timeType, adConf)
 }
 
-mw.MobileAdTimeline = function(embedPlayer) {
+mw.AdTimeline = function(embedPlayer) {
 	return this.init(embedPlayer);
 }
 
-mw.MobileAdTimeline.prototype = {
+mw.AdTimeline.prototype = {
 
 	/**
 	 * Display timeline targets: ( false by default)
@@ -126,7 +126,7 @@ mw.MobileAdTimeline.prototype = {
 			}
 			firstPlay = false;
 			
-			mw.log("MobileAdTimeline:: First Play Start / bind Ad timeline");
+			mw.log("AdTimeline:: First Play Start / bind Ad timeline");
 
 			// Disable overlays for preroll / bumper
 			_this.adOverlaysEnabled = false;
@@ -173,7 +173,7 @@ mw.MobileAdTimeline.prototype = {
 						return ;
 					}					
 					_this.embedPlayer.stopEventPropagation();
-					mw.log('mw.MobileAdTimeline: ended displayedPostroll');
+					mw.log('mw.AdTimeline: ended displayedPostroll');
 					onDoneActionObject.runBaseControlDone = false;
 					
 					_this.display( 'postroll' , function(){		
@@ -253,7 +253,7 @@ mw.MobileAdTimeline.prototype = {
 	 */
 	display: function( timeTargetType, displayDoneCallback, displayDuration ) {
 		var _this = this;
-		mw.log("MobileAdTimeline::display:" + timeTargetType );
+		mw.log("AdTimeline::display:" + timeTargetType );
 		
 		var displayTarget =  this.timelineTargets[ timeTargetType ] 
 		
@@ -302,7 +302,7 @@ mw.MobileAdTimeline.prototype = {
 			if( typeof vid == 'undefined' // stop display of overlay if video playback is no longer active 
 				|| ( _this.getNativePlayerElement().currentTime - startTime) > displayDuration )
 			{
-				mw.log("MobileAdTimeline::display: Playback done because vid does not exist or > displayDuration " + displayDuration );
+				mw.log("AdTimeline::display: Playback done because vid does not exist or > displayDuration " + displayDuration );
 				displayTarget.playbackDone();
 			} else {
 				setTimeout( monitorForDisplayDuration, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -318,7 +318,7 @@ mw.MobileAdTimeline.prototype = {
 		// Check for videoFile inserts:
 		if ( adConf.videoFile && timeTargetType != 'overlay') {
 			if ( adConf.lockUI ) {
-				mw.log("MobileAdTimeline::@@TODO lock scrubber");
+				mw.log("AdTimeline::@@TODO lock scrubber");
 				// TODO lock controls
 				_this.getNativePlayerElement().controls = false;
 			};
@@ -361,7 +361,7 @@ mw.MobileAdTimeline.prototype = {
 					$j( '#' + companionTarget.elementid ).html( originalCompanionHtml );
 				});
 			} else {
-				mw.log( "MobileAdTimeline: possible error no elementid in companionTarget");
+				mw.log( "AdTimeline: possible error no elementid in companionTarget");
 			}	
 		};
 		
@@ -372,7 +372,7 @@ mw.MobileAdTimeline.prototype = {
 			
 			// Add the overlay if not already present: 
 			if( $j('#' +overlayId ).length == 0 ){
-				_this.embedPlayer.$interface.append( 
+				_this.embedPlayer.$interface.append(
 					$j('<div />')
 					.css('position', 'absolute')
 					.attr('id', overlayId )

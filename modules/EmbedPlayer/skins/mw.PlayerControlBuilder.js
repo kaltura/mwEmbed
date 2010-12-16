@@ -1755,27 +1755,7 @@ mw.PlayerControlBuilder.prototype = {
 			'w':0, // special case (takes up remaining space)
 			'o':function( ctrlObj ) {
 			
-				// Set up the dissable playhead function: 
-				// TODO this will move into the disableSeekBar binding in the new thmemeing framework
-				ctrlObj.disableSeekBar = function(){
-					ctrlObj.embedPlayer.$interface.find( ".play_head" ).slider( "option", "disabled", true );
-				}
-				ctrlObj.enableSeekBar = function(){
-					ctrlObj.embedPlayer.$interface.find( ".play_head" ).slider( "option", "disabled", false );
-				}
-			
-			
-				var embedPlayer = ctrlObj.embedPlayer;
-				var _this = this;
-				var $playHead = $j( '<div />' )
-					.addClass ( "play_head" )
-					.css({
-						"position" : 'absolute',
-						"left" : '33px',
-						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.available_width ) - 33) + 'px'
-					})
-					// Playhead binding
-					.slider( {
+				var sliderConfig = {
 						range: "min",
 						value: 0,
 						min: 0,
@@ -1817,7 +1797,29 @@ mw.PlayerControlBuilder.prototype = {
 								embedPlayer.doSeek( perc );
 							}
 						}
-					} );
+					};
+			
+				// Set up the disable playhead function: 
+				// TODO this will move into the disableSeekBar binding in the new theme framework
+				ctrlObj.disableSeekBar = function(){
+					ctrlObj.embedPlayer.$interface.find( ".play_head" ).slider( "option", "disabled", true );
+				}
+				ctrlObj.enableSeekBar = function(){
+					ctrlObj.embedPlayer.$interface.find( ".play_head" ).slider( "option", "disabled", false);
+				}
+			
+			
+				var embedPlayer = ctrlObj.embedPlayer;
+				var _this = this;
+				var $playHead = $j( '<div />' )
+					.addClass ( "play_head" )
+					.css({
+						"position" : 'absolute',
+						"left" : '33px',
+						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.available_width ) - 33) + 'px'
+					})
+					// Playhead binding
+					.slider( sliderConfig );
 
 				// Up the z-index of the default status indicator:
 				$playHead.find( '.ui-slider-handle' ).css( 'z-index', 4 );

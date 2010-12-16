@@ -1441,8 +1441,8 @@ mw.EmbedPlayer.prototype = {
 		this._propagateEvents = false;
 	},
 	restoreEventPropagation: function(){
-		this.startMonitor();
 		this._propagateEvents = true;
+		this.startMonitor();
 	},
 	
 	enableSeekBar: function(){
@@ -2978,13 +2978,14 @@ mw.EmbedPlayer.prototype = {
 		return this.thumbnail_disp;
 	},
 
-	// xxx temporary hack we need a better stop monitor system
+	// TODO temporary hack we need a better stop monitor system
 	stopMonitor: function(){
 		this.thumbnail_disp = true;
 	},
-	// xxx temporary hack we need a better stop monitor system
+	// TODO temporary hack we need a better stop monitor system
 	startMonitor: function(){
 		this.thumbnail_disp = false;
+		this.monitor();
 	},
 
 	/**
@@ -3056,7 +3057,7 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		//mw.log( 'Monitor:: ' + this.currentTime + ' duration: ' + ( parseInt(
-		// this.getDuration() ) + 1 ) + ' is seeking: ' + this.seeking );
+		//		this.getDuration() ) + 1 ) + ' is seeking: ' + this.seeking );
 		
 		if ( this.currentTime >= 0 && this.duration ) {
 			if ( !this.userSlide && !this.seeking ) {
@@ -3178,12 +3179,12 @@ mw.EmbedPlayer.prototype = {
 	 *      perc Value between 0 and 1 for position of playhead
 	 */
 	updatePlayHead: function( perc ) {
+		//mw.log( 'EmbedPlayer: updatePlayHead:  '+ perc);
 		$playHead = this.$interface.find( '.play_head' );
 		if ( this.controls && $playHead.length != 0 ) {
 			var val = parseInt( perc * 1000 );
 			$playHead.slider( 'value', val );
 		}
-		// @@todo should have 'progress' trigger the same as html5
 		$j( this ).trigger('updatePlayHeadPercent', perc);
 	},
 

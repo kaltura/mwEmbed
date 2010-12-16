@@ -124,6 +124,9 @@ mw.KApi.prototype = {
 			});
 		});
 	},
+	setKS: function( ks ){
+		this.ks = ks;
+	},
 	getKS: function( callback ){
 		if( this.ks ){
 			callback(this.ks);

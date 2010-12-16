@@ -106,6 +106,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for widget id	 
 		if( ! $j( embedPlayer ).attr( 'kwidgetid' ) ){
+			mw.log( "Error: missing required widget paramater")
 			callback( false );
 			return false;
 		} else {
@@ -123,7 +124,13 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check if we have the player data bootstrap from the iframe
 		var bootstrapData = mw.getConfig("KalturaSupport.BootstrapPlayerData");
-		if( bootstrapData && bootstrapData.entry_id ==  $j( embedPlayer ).attr( 'kentryid' ) ) {
+		// Insure the bootStrap data has all the required info: 
+		if( bootstrapData 
+			&& bootstrapData.partner_id ==  $j( embedPlayer ).attr( 'kwidgetid' ).replace('_', '')
+			&&  bootstrapData.ks 
+		){
+			this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
+			this.kClient.setKS( bootstrapData.ks );
 			callback( bootstrapData );
 		} else {
 			// Run the request: 

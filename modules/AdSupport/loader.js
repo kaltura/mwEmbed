@@ -2,7 +2,7 @@
 ( function( mw ) {
 	
 	mw.addResourcePaths({
-		"mw.MobileAdTimeline" : "mw.MobileAdTimeline.js",
+		"mw.AdTimeline" : "mw.AdTimeline.js",
 		"mw.AdLoader" : "mw.AdLoader.js",
 		"mw.VastAdParser" : "mw.VastAdParser.js"
 	});

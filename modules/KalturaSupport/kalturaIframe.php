@@ -207,6 +207,7 @@ class kalturaIframe {
 			'meta'				=>	$rawResultObject[2],			
 			'entry_id'			=>	$this->playerAttributes['entry_id'],
 			'partner_id'		=>	$this->getPartnerId(),		
+			'ks' 				=> 	$this->getKS()
 		);
 		if( isset( $rawResultObject[3] ) && $rawResultObject[3]->confFile ){
 			$resultObject[ 'uiconf_id' ] = $this->playerAttributes['uiconf_id'];
@@ -234,16 +235,23 @@ class kalturaIframe {
 		$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
 		if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ){
 		    $session = $client->session->startWidgetSession( $this->playerAttributes['wid'] );
-		    $sessionKS = $session->ks;
-		    file_put_contents( $cacheFile, $sessionKS );
-		}else{
-		  	$sessionKS = file_get_contents( $cacheFile );
+		    $this->ks = $session->ks;
+		    file_put_contents( $cacheFile,  $this->ks );
+		} else {
+		  	$this->ks = file_get_contents( $cacheFile );
 		}
-		// set the kaltura ks and return the client
-		$client->setKS($sessionKS );	
+		// Set the kaltura ks and return the client
+		$client->setKS( $this->ks );	
 		
 		return $client;
 	}
+	function getKS(){
+		if(!$this->ks){
+			$this->getClient();
+		}
+		return $this->ks;
+	}
+	
 	function getPartnerId(){
 		// Partner id is widget_id but strip the first character 
 		return substr( $this->playerAttributes['wid'], 1 );
