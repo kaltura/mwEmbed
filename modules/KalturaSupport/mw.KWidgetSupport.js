@@ -54,7 +54,6 @@ mw.KWidgetSupport.prototype = {
 					
 					// Check for uiConf
 					if( playerData.uiConf ){					
-						
 						var $uiConf = $j( playerData.uiConf );
 						// Trigger the check kaltura uiConf event
 						$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', $uiConf, function(){

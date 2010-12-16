@@ -41,9 +41,12 @@
 		"mw.PlaylistHandlerKaltura"	: "mw.PlaylistHandlerKaltura.js", 
 		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
 		"mw.KDPMapping" : "mw.KDPMapping.js",
+		"mw.KApi" : "mw.KApi.js",		
 		"faderPlugin" : "uiConfComponents/faderPlugin.js",
 		"watermarkPlugin" :  "uiConfComponents/watermarkPlugin.js",
-		"mw.KApi" : "mw.KApi.js"
+		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",
+		"adsPlugin"	: 	"uiConfComponents/adsPlugin.js",
+		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js"
 	} );
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
@@ -54,9 +57,12 @@
 		'mw.KAnalytics',
 		'mw.KDPMapping',
 		'mw.MobileAdTimeline',
-		'mw.KAds',				
+		'mw.KAds',	
+		'controlbarLayout',
 		'faderPlugin',
 		'watermarkPlugin'
+		//'adsPlugin',
+		//'bumperPlugin'
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
