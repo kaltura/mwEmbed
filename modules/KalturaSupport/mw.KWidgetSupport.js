@@ -77,7 +77,7 @@ mw.KWidgetSupport.prototype = {
 	 */
 	getEntryIdSourcesFromApi:  function( widgetId, entryId, callback ){
 		var _this = this;
-		var kClient = mw.KApiPlayerLoader( {
+		this.kClient = mw.KApiPlayerLoader( {
 			'widget_id' : widgetId, 
 			'entry_id' : entryId,
 		}, function( playerData ){

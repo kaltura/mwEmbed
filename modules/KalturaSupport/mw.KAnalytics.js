@@ -100,8 +100,15 @@ mw.KAnalytics.prototype = {
 	 * @param {Number}
 	 *            KalturaStatsEventType The eventType number.
 	 */
-	sendAnalyticsEvent: function( KalturaStatsEventKey ){					
+	sendAnalyticsEvent: function( KalturaStatsEventKey ){
 		var _this = this;
+		// make sure we have a KS
+		this.kClient.getKS( function( ks ){
+			_this.doSendAnalyticsEvent( ks, KalturaStatsEventKey );
+		})
+	},
+	doSendAnalyticsEvent: function( ks, KalturaStatsEventKey ){
+		var _this = this;				
 		
 		// get the id for the given event: 	
 		var eventKeyId = this.kEventTypes[ KalturaStatsEventKey ];
@@ -115,8 +122,8 @@ mw.KAnalytics.prototype = {
 			'eventTimestamp' : new Date().getTime(),			
 			'isFirstInSession' : 'false',
 			'objectType' : 'KalturaStatsEvent',
-			'partnerId' :	mw.getConfig( 'kPartnerId' ),			
-			'sessionId' : mw.getConfig( 'kSessionId' ),
+			'partnerId' :	this.kClient.getPartnerId(),		
+			'sessionId' :	ks, 
 			'uiconfId' : 0
 		};				
 		
