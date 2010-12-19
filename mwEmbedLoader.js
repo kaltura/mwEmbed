@@ -42,8 +42,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_FORCE_DEBUG = true;
+//SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
@@ -431,6 +431,17 @@ function kAddScript(){
 	kLoadJsRequestSet( jsRequestSet );
 };
 
+function kAppendScriptUrl(url, callback) {
+	var script = document.createElement( 'script' );
+	script.type = 'text/javascript';
+	script.src = url;
+	// xxx fixme integrate with new callback system ( resource loader rewrite )
+	if( callback ){
+		script.onload = callback;
+	}
+	document.getElementsByTagName('head')[0].appendChild( script );	
+}
+
 function kLoadJsRequestSet( jsRequestSet, callback ){
 	var url = SCRIPT_LOADER_URL + '?class=';
 	// Request each jsRequestSet
@@ -442,15 +453,8 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	if ( SCRIPT_FORCE_DEBUG ){
 		url+= '&debug=true';
 	}
-	var script = document.createElement( 'script' );
-	script.type = 'text/javascript';
-	script.src = url;
-	// xxx fixme integrate with new callback system ( resource loader rewrite )
-	if( callback ){
-		script.onload = callback;
-	}
-	document.getElementsByTagName('head')[0].appendChild( script );
- 
+	
+	kAppendScriptUrl(url, callback);
 }
 
 
@@ -622,7 +626,6 @@ kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 	}
 	return embedSettings;
 };
-
 
 /**
  * To support kaltura kdp mapping override

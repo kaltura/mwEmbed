@@ -245,7 +245,8 @@ class kalturaIframe {
 		return $client;
 	}
 	function getKS(){
-		if(!$this->ks){
+		if(!isset($this->ks)){
+			include_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
 			$this->getClient();
 		}
 		return $this->ks;
@@ -298,6 +299,49 @@ class kalturaIframe {
 		}
 		
 		return true;
+	}
+	
+	function getPlayEventUrl() {
+		
+		$defaultSet = array(
+			'service' => 'stats',				
+			'action' => 'collect',				
+			'apiVersion' => '3.0',
+			'clientTag' => 'html5',
+			'expiry' => '86400',
+			'format' => 9, // 9 = JSONP format
+			'ignoreNull' => 1,			
+		);
+		
+		$eventSet = array(		
+			'eventType' =>	3, // PLAY Event	
+			'clientVer' => 0.1,
+			'currentPoint' => 	0,
+			'duration' =>	0,
+			'eventTimestamp' => time(),			
+			'isFirstInSession' => 'false',
+			'objectType' => 'KalturaStatsEvent',
+			'partnerId' =>	$this->getPartnerId(),		
+			'sessionId' =>	$this->getKS(),
+			'uiconfId' => 0,	
+			'seek'	 =>  'false',
+			'entryId'   =>   $this->playerAttributes['entry_id'],				
+		);
+		
+		$eventRequestUrl = "http://www.kaltura.com/api_v3/index.php?";
+		foreach( $defaultSet as $key => $value ){
+			$eventRequestUrl .= $key . "=" . $value . "&";
+		}
+		
+		foreach( $eventSet as $key => $value ){
+			$eventRequestUrl .= "event%3A" . $key . "=" . $value . "&";
+		}
+		
+		$eventRequestUrl .= "ks=" . $this->getKS() . "&";
+		$eventRequestUrl .= "kalsig=" . md5(implode($eventSet, "&"));
+		
+		return ($eventRequestUrl);
+	
 	}
 	
 	// Returns a simple image with a direct link to the asset
@@ -457,8 +501,9 @@ class kalturaIframe {
 				width: 130px;
 				height: 96px;
 				position: absolute;
-				top:40%;
-				left:40%;
+				top:50%;
+				left:50%;
+				margin: -49px 0 0 -65px;
 			}		
 			#directFileLinkThumb{				
 				position: absolute;
@@ -528,8 +573,8 @@ class kalturaIframe {
 				mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
 				
 				// For testing limited capacity browsers
-				// var kSupportsHTML5 = function(){ return false };
-				// var kSupportsFlash = function(){ return false };
+				//var kSupportsHTML5 = function(){ return false };
+				//var kSupportsFlash = function(){ return false };
 				
 				if( kSupportsHTML5() ){
 					//Set some iframe embed config:
@@ -575,6 +620,13 @@ class kalturaIframe {
 						});			
 						document.getElementById( 'directFileLinkThumb' ).innerHTML = 
 							'<img style="width:100%;height:100%" src="' + thumbSrc + '" >';
+							document.getElementById('directFileLinkButton').onclick = function() {
+
+								//var url = 'http://www.kaltura.com/api_v3/index.php?service=stats&event%3AeventType=3&event%3AclientVer=0.1&event%3AcurrentPoint=0&event%3Aduration=60&event%3AeventTimestamp=1292747447987&event%3AisFirstInSession=false&event%3AobjectType=KalturaStatsEvent&event%3ApartnerId=243342&event%3AsessionId=NGE1NzM5MDZlN2NhNzgwOGI0YmI1Yzg0N2M3ZjZmZWY0YzVlNjUzZnwyNDMzNDI7MjQzMzQyOzEyOTI4MzI3NTk7MDsxMjkyNzQ2MzU5Ljk1NDI7MDt2aWV3Oio7&event%3AuiconfId=0&event%3Aseek=false&event%3AentryId=0_uka1msg4&action=collect&apiVersion=3.0&clientTag=html5&expiry=86400&format=9&ignoreNull=1&ks=NGE1NzM5MDZlN2NhNzgwOGI0YmI1Yzg0N2M3ZjZmZWY0YzVlNjUzZnwyNDMzNDI7MjQzMzQyOzEyOTI4MzI3NTk7MDsxMjkyNzQ2MzU5Ljk1NDI7MDt2aWV3Oio7&kalsig=5606644a7a21a4309db53ab5e9c6c775&callback=jsonp1292747438133';
+								url = '<?php echo $this->getPlayEventUrl(); ?>';
+								kAppendScriptUrl(url);
+								return true;
+							}
 						// here we need to add the URL to the asset ( look up via kaltura api ) 
 					}
 				}
