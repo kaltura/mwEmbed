@@ -1381,7 +1381,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if ( mw.getConfig( 'Mw.LogPrepend' ) ){
 			string = mw.getConfig( 'Mw.LogPrepend' ) + string;
 		}
-
+		// To debug stack size ( useful for iPad / safari that have a 100 call stack limit
+		//string = mw.getCallStack().length -1 + ' : ' + string;
+		
 		if ( window.console ) {
 			window.console.log( string );
 		} else {
@@ -1404,7 +1406,49 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}*/
 		}
 	};
-
+	mw.getCallStack = function(){
+		var stringifyArguments = function(args) {
+	        for (var i = 0; i < args.length; ++i) {
+	            var arg = args[i];
+	            if (arg === undefined) {
+	                args[i] = 'undefined';
+	            } else if (arg === null) {
+	                args[i] = 'null';
+	            } else if (arg.constructor) {
+	                if (arg.constructor === Array) {
+	                    if (arg.length < 3) {
+	                        args[i] = '[' + stringifyArguments(arg) + ']';
+	                    } else {
+	                        args[i] = '[' + stringifyArguments(Array.prototype.slice.call(arg, 0, 1)) + '...' + stringifyArguments(Array.prototype.slice.call(arg, -1)) + ']';
+	                    }
+	                } else if (arg.constructor === Object) {
+	                    args[i] = '#object';
+	                } else if (arg.constructor === Function) {
+	                    args[i] = '#function';
+	                } else if (arg.constructor === String) {
+	                    args[i] = '"' + arg + '"';
+	                }
+	            }
+	        }
+	        return args.join(',');
+	    };
+		var getStack = function(curr){
+			var ANON = '{anonymous}', fnRE = /function\s*([\w\-$]+)?\s*\(/i,
+            stack = [], fn, args, maxStackSize = 100;
+        
+	        while (curr && stack.length < maxStackSize) {
+	            fn = fnRE.test(curr.toString()) ? RegExp.$1 || ANON : ANON;
+	            args = Array.prototype.slice.call(curr['arguments']);
+	            stack[stack.length] = fn + '(' + stringifyArguments(args) + ')';
+	            curr = curr.caller;
+	        }
+	        return stack;
+		}
+		// Add stack size ( iPad has 100 stack size limit )
+		var stack = getStack( arguments.callee );
+		return stack;
+	}
+	
 	// Setup the local mwOnLoadFunctions array:
 	var mwOnLoadFunctions = [];
 
@@ -1446,14 +1490,14 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		while( mwOnLoadFunctions.length ) {
 			mwOnLoadFunctions.shift()();
 		}
-
 		// Sets mwReadyFlag to true so that future mw.ready run the
 		// callback directly
 		mwReadyFlag = true;
 
 		// Once we have run all the queued functions
-		mw.loader.runModuleLoadQueue();
-
+		setTimeout(function(){
+			mw.loader.runModuleLoadQueue();
+		},1);
 	};
 
 
@@ -2243,6 +2287,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				return ;
 			}
 			var componentName = enabledComponents.shift();
+			componentName = componentName.replace(/"/g,'');
 			mw.load( componentName, function(){
 				loadEnabledComponents( enabledComponents );
 			} );
@@ -2258,6 +2303,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				return ;
 			}
 			var moduleName = enabledModules.shift();
+			moduleName = moduleName.replace(/"/g,'');
 			mw.setConfig( 'loaderContext', 'modules/' + moduleName + '/' );
 			mw.load( 'modules/' + moduleName + '/loader.js', function(){
 				loadEnabledModules( enabledModules );

@@ -524,7 +524,7 @@ EmbedPlayerManager.prototype = {
 		}
 		if ( is_ready ) {
 			// Be sure to remove any player loader spinners
-			$j('.playerLoadingSpinner').remove();
+			$j('.loadingSpinner').remove();
 
 			mw.log( "EmbedPlayer::All on-page players ready run playerManager callbacks" );
 			// Run queued functions
@@ -1778,17 +1778,20 @@ mw.EmbedPlayer.prototype = {
 			_this.updateFeatureSupport();
 
 			_this.getDuration();
-
-			_this.showPlayer();
-
-			// Call the global player manager to inform this video interface is
-			// ready:
-			mw.playerManager.playerReady( _this );
-
-			// Run the callback if provided
-			if ( typeof callback == 'function' ){
-				callback();
-			}
+			
+			// Run player display with timeout to avoid function stacking 
+			setTimeout(function(){
+				_this.showPlayer();
+				// Call the global player manager to inform this video interface is
+				// ready:
+				mw.playerManager.playerReady( _this );
+	
+				// Run the callback if provided
+				if ( typeof callback == 'function' ){
+					callback();
+				}
+			},1);
+			
 		} );
 	},
 
@@ -2018,14 +2021,14 @@ mw.EmbedPlayer.prototype = {
 	/**
 	 * Show the player
 	 */
-	showPlayer : function () {
-		//alert( 'show player? :' + this.controls + ' is persist:' + this.isPersistentNativePlayer() );
+	showPlayer: function () {
 		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );
 		var _this = this;
 		// Set-up the local controlBuilder instance:
 		this.controlBuilder = new mw.PlayerControlBuilder( this );
 		var _this = this;
-
+		
+		
 		// Make sure we have mwplayer_interface
 		if( $j( this ).parent( '.mwplayer_interface' ).length == 0 ) {
 			// Select "player"
@@ -2052,8 +2055,14 @@ mw.EmbedPlayer.prototype = {
 				'position' : 'absolute',
 				'top' : '0px',
 				'left' : '0px',
-				'background': null
+				'background': null				
 			});
+			// if controls are not overlay add controlBuilder height to interface
+			if( !this.controlBuilder.checkOverlayControls() ){
+				this.$interface.css('height', this.height + this.controlBuilder.getHeight() );
+			}
+			
+			
 			$j( this ).show();
 			this.controls = true;
 		}
@@ -2075,7 +2084,7 @@ mw.EmbedPlayer.prototype = {
 			// Issue a non-blocking play request
 			setTimeout(function(){
 				_this.play();
-			},0)
+			},1)
 		}
 
 	},

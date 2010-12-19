@@ -43,7 +43,7 @@ var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://localhost/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_LOADER_URL = 'http://192.168.1.67/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
@@ -85,7 +85,7 @@ if( !mw.ready){
 }
 // Setup a preMwEmbedConfig var
 if( ! preMwEmbedConfig ) {
-	var preMwEmbedConfig = [];
+	var preMwEmbedConfig = {};
 }
 if( !mw.setConfig ){
 	mw.setConfig = function( set, value ){
@@ -243,7 +243,6 @@ function kCheckAddScript(){
 		kAddScript();
 		return ;
 	}
-	
 	if( preMwEmbedConfig['Kaltura.LoadScriptForVideoTags'] !== false ){
 		// If document includes audio or video tags
 		if( document.getElementsByTagName('video').length != 0
@@ -470,12 +469,16 @@ function kAddReadyHook( callback ){
 	}
 }
 function kRunMwDomReady(){
-	kAlreadyRunDomReadyFlag  = true;
-	while( kReadyHookSet.length ){
-		kReadyHookSet.shift()();
-	}
-	kOverideSwfObject();
-	kCheckAddScript();
+	// run dom ready with a 1ms timeout to prevent sync execution in browsers like chrome
+	// Async call give a chance for configuration variables to be set
+	setTimeout(function(){
+		kAlreadyRunDomReadyFlag  = true;
+		while( kReadyHookSet.length ){
+			kReadyHookSet.shift()();
+		}
+		kOverideSwfObject();
+		kCheckAddScript();
+	},1 );
 }
 // Check if already ready: 
 if ( document.readyState === "complete" ) {

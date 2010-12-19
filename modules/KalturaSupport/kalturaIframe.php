@@ -8,6 +8,7 @@
 // and or allow configuration payload to be passed in via iframe message.  
 define( 'KALTURA_SERVICE_URL', 'http://www.kaltura.com/' );
 define( 'KALTURA_CDN_URL', 'http://cdn.kaltura.com' );
+define( 'KALTURA_SERVICE_BASE', '/api_v3/index.php?');
 define( 'KALTURA_MWEMBED_PATH', str_replace( 'mwEmbedFrame.php', '', $_SERVER['SCRIPT_NAME'] ) );
 define( 'KALTURA_UICONF_CACHE_TIME', 600 );
 
@@ -125,9 +126,10 @@ class kalturaIframe {
 					'data-flavorid' => '3gp' 
 				);
 			};
-		}			
+		}
 		return $sources;
 	}
+	
 	private function getCacheDir(){
 		global $mwEmbedRoot;
 		$cacheDir = $mwEmbedRoot . '/includes/cache/iframecache';
@@ -137,6 +139,7 @@ class kalturaIframe {
 		}
 		return $cacheDir;
 	}
+	
 	private function getResultObject(){
 		// Check if we have a cached result object: 		
 		if( $this->resultObj ){
@@ -303,7 +306,7 @@ class kalturaIframe {
 	
 	function getPlayEventUrl() {
 		
-		$defaultSet = array(
+		$param = array(
 			'service' => 'stats',				
 			'action' => 'collect',				
 			'apiVersion' => '3.0',
@@ -311,6 +314,7 @@ class kalturaIframe {
 			'expiry' => '86400',
 			'format' => 9, // 9 = JSONP format
 			'ignoreNull' => 1,			
+			'ks' => $this->getKS() 
 		);
 		
 		$eventSet = array(		
@@ -327,22 +331,19 @@ class kalturaIframe {
 			'seek'	 =>  'false',
 			'entryId'   =>   $this->playerAttributes['entry_id'],				
 		);
-		
-		$eventRequestUrl = "http://www.kaltura.com/api_v3/index.php?";
-		foreach( $defaultSet as $key => $value ){
-			$eventRequestUrl .= $key . "=" . $value . "&";
+		foreach( $eventSet as $key=> $val){
+			$param['event:' . $key ] = $val;
 		}
-		
-		foreach( $eventSet as $key => $value ){
-			$eventRequestUrl .= "event%3A" . $key . "=" . $value . "&";
+		ksort( $param );
+		// Get the signature: 
+		$sigString = '';
+		foreach( $param as $key => $val ){
+			$sigString.= $key . $val;
 		}
-		
-		$eventRequestUrl .= "ks=" . $this->getKS() . "&";
-		$eventRequestUrl .= "kalsig=" . md5(implode($eventSet, "&"));
-		$eventRequestUrl .= "&callback=kCollectCallback";
-		
-		return ($eventRequestUrl);
+		$param['kalsig'] = md5( $sigString );
+		$requestString =  http_build_query( $param );
 	
+		return KALTURA_SERVICE_URL . KALTURA_SERVICE_BASE . $requestString;	
 	}
 	
 	// Returns a simple image with a direct link to the asset
@@ -544,16 +545,20 @@ class kalturaIframe {
 				<div class="loadingSpinner"></div>
 				<?php echo $videoHTML ?>
 			</div>
-			<script type="text/javascript">							
+			<script type="text/javascript">					
 				// Insert the html5 kalturaLoader script  
 				document.write(unescape("%3Cscript src='<?php echo KALTURA_MWEMBED_PATH ?>mwEmbedLoader.js' type='text/javascript'%3E%3C/script%3E"));
 			</script>
-			<script type="text/javascript">		
+			<script type="text/javascript">	
+				// Don't rewrite the video tag from the loader ( if html5 is supported it will be 
+				// invoked bellow and respect the persistant video tag option for iPad overlays )
+				mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );	
+				// Don't wait for player metada for size layout and duration ( won't be needed once
+				// we add durationHint and size attributes to the video tag
+				mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
+
 				// Add Packaging Kaltura Player Data ( JSON Encoded )
 				mw.setConfig('KalturaSupport.BootstrapPlayerData', <?php echo json_encode( $this->getResultObject() ) ?>);
-			
-				// TODO:: Add the refer url to analytics. 
-				
 				// Parse any configuration options passed in via hash url:
 				var hashString = document.location.hash; 
 				if( hashString ){
@@ -564,19 +569,11 @@ class kalturaIframe {
 						mw.setConfig( hashObj.mwConfig );
 					}
 				}
-				
-				// Don't rewrite the video tag from the loader ( if html5 is supported it will be 
-				// invoked bellow and respect the persistant video tag option for iPad overlays )
-				mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );	
 
-				// Don't wait for player metada for size layout and duration ( won't be needed once
-				// we add durationHint and size attributes to the video tag
-				mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
-				
 				// For testing limited capacity browsers
 				var kSupportsHTML5 = function(){ return false };
 				var kSupportsFlash = function(){ return false };
-				
+
 				if( kSupportsHTML5() ){
 					//Set some iframe embed config:
 					
@@ -611,7 +608,7 @@ class kalturaIframe {
 						// NOTE we need to do some platform checks to see if the device can 
 						// "actually" play back the file and or switch to 3gp version if nessesary. 
 						// also we need to see if the entryId supports direct download links 
-						document.write('<?php echo $this->getFileLInkHTML()?>');
+						document.write('<?php echo $this->getFileLinkHTML()?>');
 						
 						var thumbSrc = kGetEntryThumbUrl({
 							'entry_id' : '<?php echo $this->playerAttributes['entry_id']?>',
@@ -621,20 +618,15 @@ class kalturaIframe {
 						});			
 						document.getElementById( 'directFileLinkThumb' ).innerHTML = 
 							'<img style="width:100%;height:100%" src="' + thumbSrc + '" >';
+
+						window.kCollectCallback = function(){ return ; }; // callback for jsonp
 							
 						document.getElementById('directFileLinkButton').onclick = function() {
-
-							var url = 'http://www.kaltura.com/api_v3/index.php?service=stats&event%3AeventType=3&event%3AclientVer=0.1&event%3AcurrentPoint=0&event%3Aduration=60&event%3AeventTimestamp=1292747447987&event%3AisFirstInSession=false&event%3AobjectType=KalturaStatsEvent&event%3ApartnerId=243342&event%3AsessionId=NGE1NzM5MDZlN2NhNzgwOGI0YmI1Yzg0N2M3ZjZmZWY0YzVlNjUzZnwyNDMzNDI7MjQzMzQyOzEyOTI4MzI3NTk7MDsxMjkyNzQ2MzU5Ljk1NDI7MDt2aWV3Oio7&event%3AuiconfId=0&event%3Aseek=false&event%3AentryId=0_uka1msg4&action=collect&apiVersion=3.0&clientTag=html5&expiry=86400&format=9&ignoreNull=1&ks=NGE1NzM5MDZlN2NhNzgwOGI0YmI1Yzg0N2M3ZjZmZWY0YzVlNjUzZnwyNDMzNDI7MjQzMzQyOzEyOTI4MzI3NTk7MDsxMjkyNzQ2MzU5Ljk1NDI7MDt2aWV3Oio7&kalsig=5606644a7a21a4309db53ab5e9c6c775&callback=jsonp1292747438133';
-							console.log(url);
-							url = '<?php echo $this->getPlayEventUrl(); ?>';
-							console.log(url);
-							kAppendScriptUrl(url);
-							alert('Sent');
-							return false;
-						}
-						// here we need to add the URL to the asset ( look up via kaltura api ) 
-					}
-					var kCollectCallback = function(){ return ; }; // callback for jsonp
+							kAppendScriptUrl( '<?php echo $this->getPlayEventUrl() ?>' + '&callback=kCollectCallback' );
+							return true;
+						};
+					}					
+					
 				}
 			</script><?php 
 		} ?>		

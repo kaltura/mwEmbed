@@ -320,7 +320,8 @@ mw.PlayerControlBuilder.prototype = {
 			.hide()
 			.fadeIn("slow")
 		);
-
+		
+		
 		// Change the interface to absolute positioned:
 		this.windowPositionStyle = $interface.css( 'position' );
 		this.windowZindex = $interface.css( 'z-index' );
@@ -337,6 +338,14 @@ mw.PlayerControlBuilder.prototype = {
 			'top' : this.windowOffset.top,
 			'left' : this.windowOffset.left
 		} );
+		
+		// If native persistent native player update z-index:
+		if( embedPlayer.isPersistentNativePlayer() ){
+			$j( embedPlayer.getPlayerElement() ).css( {
+				'z-index': mw.getConfig( 'EmbedPlayer.fullScreenZIndex' ) + 1,
+				'position': 'absolute'
+			});
+		}
 
 		// Empty out the parent absolute index
 		_this.parentsAbsolute = [];
@@ -388,6 +397,7 @@ mw.PlayerControlBuilder.prototype = {
 		$interface.mousemove( function(e){
 			_this.mouseMovedFlag = true;
 		});
+		
 		// Check every 2 seconds reset flag status:
 		function checkMovedMouse(){
 			if( _this.fullscreenMode ){
@@ -417,7 +427,7 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		});
 
-		// Bind escape to restore clip resolution
+		// Bind escape to restore in page clip
 		$j( window ).keyup( function(event) {
 			// Escape check
 			if( event.keyCode == 27 ){
@@ -447,12 +457,21 @@ mw.PlayerControlBuilder.prototype = {
 			$j( embedPlayer ).animate( _this.getAspectPlayerWindowCss( size ), callback );
 			// Update play button pos
 			$interface.find('.play-btn-large').animate( _this.getFullscreenPlayButtonCss( size ) );
+			
+			if( embedPlayer.isPersistentNativePlayer() ){
+				$j( embedPlayer.getPlayerElement() ).animate( _this.getAspectPlayerWindowCss( size ) );
+			}
 		} else {
 			$interface.css( interfaceCss );
 			// Update player size
 			$j( embedPlayer ).css( _this.getAspectPlayerWindowCss( size ) );
 			// Update play button pos
 			$interface.find('.play-btn-large').css( _this.getFullscreenPlayButtonCss( size ) );
+			
+			if( embedPlayer.isPersistentNativePlayer() ){
+				$j( embedPlayer.getPlayerElement() ).css( _this.getAspectPlayerWindowCss( size ) );
+			}
+			
 			if( callback ){
 				callback();
 			}
@@ -506,6 +525,13 @@ mw.PlayerControlBuilder.prototype = {
 
 			// Restore the body scroll bar
 			$j('body').css( 'overflow', 'auto' );
+			
+			// If native player restore z-index:
+			if( embedPlayer.isPersistentNativePlayer() ){
+				$j( embedPlayer.getPlayerElement() ).css( {
+					'z-index': 'auto'
+				});
+			}
 		});
 
 		// Restore the play button
@@ -668,7 +694,7 @@ mw.PlayerControlBuilder.prototype = {
 		var animateDuration = 'fast';
 		if(! this.embedPlayer )
 			return ;
-		if( this.embedPlayer.getPlayerElement ){
+		if( this.embedPlayer.getPlayerElement && ! this.embedPlayer.isPersistentNativePlayer() ){
 			$j( this.embedPlayer.getPlayerElement() ).css( 'z-index', '1' );
 		}
 		mw.log( 'PlayerControlBuilder:: ShowControlBar' );

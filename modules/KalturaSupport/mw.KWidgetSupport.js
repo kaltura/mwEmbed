@@ -21,48 +21,50 @@ mw.KWidgetSupport.prototype = {
 		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 			// Add hook for check player sources to use local kEntry ID source check:
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
-				// Load all the player configuration from kaltura: 
-				var status = _this.loadPlayerData( embedPlayer, function( playerData ){
-					if( !playerData ){
-						callback();
-						return ;
-					}
-					// Check access controls ( this is kind of silly and needs to be done on the server ) 
-					if( playerData.accessControl ){
-						var acStatus = _this.getAccessControlStatus( playerData.accessControl );
-						if( acStatus !== true ){
-							$j(embedPlayer).replaceWith( acStatus );
+				setTimeout(function(){
+					// Load all the player configuration from kaltura: 
+					var status = _this.loadPlayerData( embedPlayer, function( playerData ){
+						if( !playerData ){
+							callback();
 							return ;
 						}
-					}					
-					
-					// Apply player Sources
-					if( playerData.flavors ){
-						_this.addFlavorSources( embedPlayer, playerData.flavors );
-					}
-					
-					// Apply player metadata ( just durationHint for now )
-					if( playerData.meta.duration ){
-						embedPlayer.duration = playerData.meta.duration;
-					}
-					
-					// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
-					if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
-						mw.addKAnalytics( embedPlayer, _this.kClient );
-					}
-					
-					// Check for uiConf	
-					if( playerData.uiConf ){					
-						var $uiConf = $j( playerData.uiConf );
-						// Trigger the check kaltura uiConf event
-						$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', $uiConf, function(){
-							// Ui-conf file checks done
+						// Check access controls ( this is kind of silly and needs to be done on the server ) 
+						if( playerData.accessControl ){
+							var acStatus = _this.getAccessControlStatus( playerData.accessControl );
+							if( acStatus !== true ){
+								$j(embedPlayer).replaceWith( acStatus );
+								return ;
+							}
+						}					
+						
+						// Apply player Sources
+						if( playerData.flavors ){
+							_this.addFlavorSources( embedPlayer, playerData.flavors );
+						}
+						
+						// Apply player metadata ( just durationHint for now )
+						if( playerData.meta.duration ){
+							embedPlayer.duration = playerData.meta.duration;
+						}
+						
+						// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
+						if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
+							mw.addKAnalytics( embedPlayer, _this.kClient );
+						}
+						
+						// Check for uiConf	
+						if( playerData.uiConf ){					
+							var $uiConf = $j( playerData.uiConf );
+							// Trigger the check kaltura uiConf event
+							$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', $uiConf, function(){
+								// Ui-conf file checks done
+								callback();
+							});
+						} else {
 							callback();
-						});
-					} else {
-						callback();
-					}			
-				});				
+						}			
+					});
+				},1);
 			});						
 		});		
 	},
@@ -101,7 +103,7 @@ mw.KWidgetSupport.prototype = {
 	 * Sets up variables and issues the mw.KApiPlayerLoader call
 	 */
 	loadPlayerData: function( embedPlayer, callback ){
-		
+		var _this = this;
 		var playerRequest = {};
 		
 		// Check for widget id	 
@@ -133,9 +135,11 @@ mw.KWidgetSupport.prototype = {
 			this.kClient.setKS( bootstrapData.ks );
 			callback( bootstrapData );
 		} else {
-			// Run the request: 
-			this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
-				callback( playerData );
+			// Run the request: ( run async to avoid stack )
+			setTimeout(function(){
+				_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+					callback( playerData );
+				});
 			});
 		}
 	},
