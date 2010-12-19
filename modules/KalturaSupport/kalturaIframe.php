@@ -226,8 +226,7 @@ class kalturaIframe {
 
 		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . ".ks.txt";
 		$cacheLife = KALTURA_UICONF_CACHE_TIME; 
-		
-		
+			
 		$conf = new KalturaConfiguration( $this->getPartnerId() );
 		$client = new KalturaClient( $conf );
 		
@@ -261,7 +260,7 @@ class kalturaIframe {
 	*  Set the player data array
 	*/	
 	function getPlayerData() {
-		return json_encode($playerData);
+		return json_encode( $playerData );
 	}
 	
 	/**

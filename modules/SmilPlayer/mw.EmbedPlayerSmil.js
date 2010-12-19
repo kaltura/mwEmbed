@@ -186,8 +186,8 @@ mw.EmbedPlayerSmil = {
 			// Zero out the pause time:
 			_this.smilPauseTime = 0;
 
-			// Set thumbnail_disp to false
-			this.thumbnail_disp = false;
+			// Set posterDisplayed to false
+			this.posterDisplayed = false;
 
 			// Start up monitor:
 			_this.monitor();

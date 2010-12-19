@@ -411,7 +411,7 @@ mw.EmbedPlayerNative = {
 							setTimeout(function() {
 								var vid = _this.getPlayerElement();																
 								// add the end binding: 
-								$j(vid).bind('ended', function( event ) {
+								$j(vid).bind('ended', function() {
 									if(typeof doneCallback == 'function' ){
 										doneCallback();
 									}

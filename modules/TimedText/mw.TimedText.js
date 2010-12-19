@@ -122,8 +122,18 @@ mw.includeAllModuleMessages();
 			if( typeof preferenceConfig == 'object' ) {
 				this.config = preferenceConfig;
 			}
+			
+			// Set up embedPlayer hooks:			
+			
+			// Check for timed text support:
+			$j( embedPlayer ).bind( 'addControlBarComponent', function(event, controlBar ){
+				if( mw.isTimedTextSupported( embedPlayer ) ){
+					controlBar.supportedComponets['timedText'] = true;
+					controlBar.components['timedText'] = _this.getTimedTextButton();					
+				}
+			});
 
-			// Set up embedPlayer hooks:
+			
 			$j( embedPlayer ).bind( 'monitorEvent', function() {
 				_this.monitor();
 				return false;
@@ -134,12 +144,32 @@ mw.includeAllModuleMessages();
 				_this.setupTextSources();
 			} );	
 			
+			var forcedOntopFlag = false;
+			// TODO clean up resize conditions: 
 			// Resize the timed text font size per window width
-			$j( embedPlayer ).bind( 'closeFullscreen', function() {
+			$j( embedPlayer ).bind( 'closeFullScreen', function(){
 				embedPlayer.$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss({
 					'width' :  embedPlayer.getWidth(),
 					'height' : embedPlayer.$interface.height()
 				}) );	
+				if( forcedOntopFlag ){
+					forcedOntopFlag = false;
+					_this.config.layout = 'below';
+				}
+				_this.updateLayout();
+				embedPlayer.controlBuilder.showControlBar();
+			});
+			$j( embedPlayer ).bind( 'openFullScreen', function(){
+				if( _this.config.layout!= 'ontop'){
+					_this.config.layout = 'ontop';
+					forcedOntopFlag = true;
+				}
+				_this.updateLayout();
+				embedPlayer.$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss( {
+					'width' :  embedPlayer.$interface.width(),
+					'height' : embedPlayer.$interface.height()
+				}) );
+				embedPlayer.controlBuilder.showControlBar();
 			});
 			
 			// Update the timed text size
@@ -148,7 +178,7 @@ mw.includeAllModuleMessages();
 					embedPlayer.$interface.find( '.track' ).animate( _this.getInterfaceSizeTextCss( size ) );
 				} else {
 					embedPlayer.$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss( size ) );
-				}
+				}				
 			});
 
 			// Setup display binding
@@ -165,6 +195,72 @@ mw.includeAllModuleMessages();
 			});
 			
 		},
+		/**
+		 * The timed text button to be added to the interface
+		 */
+		getTimedTextButton: function(){
+			var _this = this;
+			/**
+			* The closed captions button
+			*/
+			return {
+				'w': 28,
+				'o': function( ctrlObj ) {
+					return $j( '<div />' )
+						.attr( 'title', gM( 'mwe-embedplayer-timed_text' ) )
+						.addClass( "ui-state-default ui-corner-all ui-icon_link rButton timed-text" )
+						.append(
+							$j( '<span />' )
+							.addClass( "ui-icon ui-icon-comment" )
+						)
+						// Captions binding:
+						.buttonHover()
+						.click( function() {
+							_this.showTextMenu();
+						} );
+				}
+			}
+		},
+		
+		/**
+		* Show the text interface library and show the text interface near the player.
+		*/
+		showTextMenu: function() {
+			var embedPlayer = this.embedPlayer;
+			var loc = embedPlayer.$interface.find( '.rButton.timed-text' ).offset();
+			mw.log('showTextInterface::' + embedPlayer.id + ' t' + loc.top + ' r' + loc.right);
+
+			var $menu = $j( '#timedTextMenu_' + embedPlayer.id );
+			//This may be unnecessary .. we just need to show a spinner somewhere
+			if ( $menu.length != 0 ) {
+				// Hide show the menu:
+				if( $menu.is( ':visible' ) ) {
+					$menu.hide( "fast" );
+				}else{
+					// move the menu to proper location
+					$menu.show("fast");
+				}
+			}else{
+				//Setup the menu:
+				$j('body').append(
+					$j('<div>')
+						.addClass('ui-widget ui-widget-content ui-corner-all')
+						.attr( 'id', 'timedTextMenu_' + embedPlayer.id )
+						.css( {
+							'position' 	: 'absolute',
+							'z-index' 	: 10,
+							'height'	: '180px',
+							'width' 	: '180px',
+							'font-size'	: '12px',
+							'display' : 'none'
+						} )
+
+				);
+				// Load text interface ( if not already loaded )
+				$j( '#' + embedPlayer.id ).timedText( 'showMenu', '#timedTextMenu_' + embedPlayer.id );
+			}
+		},
+
 		
 		/**
 		* Get the fullscreen text css
@@ -934,6 +1030,7 @@ mw.includeAllModuleMessages();
 			// Setup the display text div:
 			var layoutMode = this.getLayoutMode();
 			if( layoutMode == 'ontop' ) {
+				this.embedPlayer.controlBuilder.displayOptionsMenuFlag = false;
 				var $track = $j('<div>')
 					.addClass( 'track' + ' ' + 'track_' + category )
 					.css( {
@@ -957,14 +1054,16 @@ mw.includeAllModuleMessages();
 				);
 
 				$playerTarget.append( $track );
-				
 			} else if ( layoutMode == 'below') {
-				// Set the belowBar size to 60 pxiles:
+				this.embedPlayer.controlBuilder.displayOptionsMenuFlag = true;
+				// Set the belowBar size to 60 pixels:
 				var belowBarHeight = 60;
 				// Append before controls:
 				$playerTarget.find( '.control-bar' ).before(
 					$j('<div>').addClass( 'track' + ' ' + 'track_' + category )
 						.css({
+							'position' : 'absolute',
+							'top' : this.embedPlayer.getHeight(),
 							'display' : 'block',
 							'width' : '100%',
 							'height' : belowBarHeight + 'px',

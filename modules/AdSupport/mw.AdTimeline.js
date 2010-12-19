@@ -31,7 +31,7 @@
  * 		// Set of ads to chose from
  * 		'ads' : [
  * 			{
- * 				'id' : { Add id} 
+ * 				'id' : { Add id}
  * 				'companions' : [
  * 					{
  * 						'id' : {Number} index of companion target 
@@ -58,7 +58,7 @@
  * 						'html': {String} html
  * 					}
  * 				]
- * 				'videoFile' : {URL} video file to play for the ad ( should pre-target the device ) 
+ * 				'videoFile' : {URL} video file to play for the ad
  * 			}
  * 		]
  * 		// List of companion targets
@@ -73,10 +73,10 @@
  */
 mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
 	mw.log("AdTimeline::Add " + timeType + ' dispCof: ' +  adConf );
-	if (!embedPlayer.playerTimeline) {
-		embedPlayer.playerTimeline = new mw.AdTimeline(embedPlayer);
+	if (!embedPlayer.adTimeline) {
+		embedPlayer.adTimeline = new mw.AdTimeline(embedPlayer);
 	}
-	embedPlayer.playerTimeline.addToTimeline(timeType, adConf)
+	embedPlayer.adTimeline.addToTimeline( timeType, adConf );
 }
 
 mw.AdTimeline = function(embedPlayer) {
@@ -203,7 +203,7 @@ mw.AdTimeline.prototype = {
 				var playedStart = false;
 				// Note there may be a better measurement of timeout
 				var adDuration = overlayTiming.timeout;
-				// Monitor will only be triggered while we are /NOT/ playback back media
+				// Monitor:
 				$j( _this.embedPlayer ).bind( 'monitorEvent', function() {		
 					var time = _this.embedPlayer.currentTime;
 					if( !lastPlayEndTime ){
@@ -216,12 +216,15 @@ mw.AdTimeline.prototype = {
 						)
 						&& _this.adOverlaysEnabled
 					){
-						//mw.log("SHOULD DISPLAY: " + time +' >= ' + overlayTiming.start + ' || ' + 
-						//		lastPlayEndTime +' - ' + time + ' > ' + overlayTiming.frequency	);
+						/*mw.log("SHOULD DISPLAY: " + time +' >= ' + overlayTiming.start + ' || ' + 
+								lastPlayEndTime +' - ' + time + ' > ' + overlayTiming.frequency	);
+						*/
+						
 						if( !playedStart){
 							playedStart = true;
 						}
 						_this.adOverlaysEnabled = false;					
+						
 						// Display the overlay ad 
 						_this.display( 'overlay' , function(){
 							lastPlayEndTime = _this.embedPlayer.currentTime
@@ -229,7 +232,7 @@ mw.AdTimeline.prototype = {
 						}, adDuration);
 					}
 					
-					//mw.log("SHOULD NOT display: " + time +' >= ' + overlayTiming.start + ' || ' + 
+					//mw.log("SHOULD NOT display: adOver:" + _this.adOverlaysEnabled + ' time:' + time +' >= ' + overlayTiming.start + ' || ' + 
 					//		lastPlayEndTime +' - ' + time + ' > ' + overlayTiming.frequency	);
 				});
 			}
@@ -332,9 +335,10 @@ mw.AdTimeline.prototype = {
 				displayTarget.playbackDone
 			);
 		}
-		
+
 		// Check for companion ads:
 		if ( adConf.companions && adConf.companions.length ) {
+
 			var companionConf = this.selectFromArray( adConf.companions );
 
 			// NOTE:: is not clear from the ui conf response if multiple

@@ -57,7 +57,6 @@
 		'mw.KWidgetSupport',
 		'mw.KAnalytics',
 		'mw.KDPMapping',
-		'mw.MobileAdTimeline',
 		'mw.KAds',	
 		'controlbarLayout',
 		'faderPlugin',

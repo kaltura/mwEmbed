@@ -163,11 +163,9 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.available_width );
 		// Build the supportedComponets list
 		this.supportedComponets = $j.extend( this.supportedComponets, embedPlayer.supports );
-
-		// Check for timed text support:
-		if( embedPlayer.isTimedTextSupported() ){
-			this.supportedComponets['timedText'] = true;
-		}
+		
+		$j(embedPlayer).trigger( 'addControlBarComponent', this);
+			
 		// Check for Attribution button
 		if( mw.getConfig( 'EmbedPlayer.AttributionButton' ) && embedPlayer.attributionbutton ){
 			this.supportedComponets[ 'attributionButton' ] = true;
@@ -177,7 +175,21 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.getConfig( 'EmbedPlayer.EnableFullscreen' ) === false ){
 			this.supportedComponets[ 'fullscreen'] = false;
 		}
-
+		
+		var addComponent = function( component_id ){
+			if ( _this.supportedComponets[ component_id ] ) {
+				if ( _this.available_width > _this.components[ component_id ].w ) {
+					// Append the component
+					$controlBar.append(
+						_this.getComponent( component_id )
+					);
+					_this.available_width -= _this.components[ component_id ].w;
+				} else {
+					mw.log( 'Not enough space for control component:' + component_id );
+				}
+			}
+		}
+		
 		// Output components
 		for ( var component_id in this.components ) {
 			// Check for (component === false ) and skip
@@ -185,8 +197,8 @@ mw.PlayerControlBuilder.prototype = {
 				continue;
 			}
 
-			// Special case with playhead skip if we have > 30px of space for it
-			if ( component_id == 'playHead' && this.available_width < 30 ){
+			// Special case with playhead and time ( to make sure they are to the left of everything else )
+			if ( component_id == 'playHead' || component_id == 'timeDisplay'){
 				continue;
 			}
 
@@ -194,20 +206,14 @@ mw.PlayerControlBuilder.prototype = {
 			if( component_id == 'fullscreen' && this.embedPlayer.height == 0 ){
 				continue;
 			}
-
-			// Make sure the given components is supported:
-			if ( this.supportedComponets[ component_id ] ) {
-				if ( this.available_width > this.components[ component_id ].w ) {
-					// Append the component
-					$controlBar.append(
-						_this.getComponent( component_id )
-					);
-					this.available_width -= this.components[ component_id ].w;
-				} else {
-					mw.log( 'Not enough space for control component:' + component_id );
-				}
-			}
+			addComponent( component_id )
 		}
+		// Add special case remaining components: 
+		addComponent( 'timeDisplay' );
+		if( this.available_width > 30 ){
+			addComponent( 'playHead' );	
+		}
+			
 	},
 
 	/**
@@ -265,19 +271,21 @@ mw.PlayerControlBuilder.prototype = {
 	 *  restoreWindowPlayer to restore window mode
 	 */
 	toggleFullscreen: function() {
+		var _this = this;
 		if( this.fullscreenMode ){
 			this.restoreWindowPlayer();
 			$j( this.embedPlayer ).trigger( 'closeFullScreen' );
 		}else{
-			this.doFullScreenPlayer();
-			$j( this.embedPlayer ).trigger( 'openFullScreen' );
+			this.doFullScreenPlayer( function(){
+				$j( _this.embedPlayer ).trigger( 'openFullScreen' );
+			});		
 		}
 	},
 
 	/**
 	* Do full-screen mode
 	*/
-	doFullScreenPlayer: function() {
+	doFullScreenPlayer: function( callback) {
 		mw.log(" controlBuilder :: toggle full-screen ");
 		// Setup pointer to control builder :
 		var _this = this;
@@ -361,7 +369,7 @@ mw.PlayerControlBuilder.prototype = {
 			'left' : leftOffset,
 			'width' : $j( window ).width(),
 			'height' : $j( window ).height()
-		}, true);
+		}, true, callback);
 
 		// Remove absolute css of the interface parents
 		$interface.parents().each( function() {
@@ -1342,50 +1350,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Return the player select elements
 		return $playerSelect;
 	},
-
-	/**
-	* Show the text interface library and show the text interface near the player.
-	*/
-	showTextInterface: function() {
-		var _this = this;
-		var embedPlayer = this.embedPlayer;
-		var loc = embedPlayer.$interface.find( '.rButton.timed-text' ).offset();
-		mw.log('showTextInterface::' + embedPlayer.id + ' t' + loc.top + ' r' + loc.right);
-
-
-		var $menu = $j( '#timedTextMenu_' + embedPlayer.id );
-		//This may be unnecessary .. we just need to show a spinner somewhere
-		if ( $menu.length != 0 ) {
-			// Hide show the menu:
-			if( $menu.is( ':visible' ) ) {
-				$menu.hide( "fast" );
-			}else{
-				// move the menu to proper location
-				$menu.show("fast");
-			}
-		}else{
-			//Setup the menu:
-			$j('body').append(
-				$j('<div>')
-					.addClass('ui-widget ui-widget-content ui-corner-all')
-					.attr( 'id', 'timedTextMenu_' + embedPlayer.id )
-					.css( {
-						'position' 	: 'absolute',
-						'z-index' 	: 10,
-						'height'	: '180px',
-						'width' 	: '180px',
-						'font-size'	: '12px',
-						'display' : 'none'
-					} )
-
-			);
-			// Load text interface ( if not already loaded )
-			mw.load( 'TimedText', function() {
-				$j( '#' + embedPlayer.id ).timedText( 'showMenu', '#timedTextMenu_' + embedPlayer.id );
-			});
-		}
-	},
-
+	
 	/**
 	* Loads sources and calls showDownloadWithSources
 	* @param {Object} $target jQuery target to output to
@@ -1496,7 +1461,7 @@ mw.PlayerControlBuilder.prototype = {
 		{
 			return this.components[ component_id ].h;
 		}
-		return false;
+		return 0;
 	},
 
 	/**
@@ -1510,7 +1475,7 @@ mw.PlayerControlBuilder.prototype = {
 		{
 			return this.components[ component_id ].w;
 		}
-		return false;
+		return 0;
 	},
 
 	/**
@@ -1641,7 +1606,6 @@ mw.PlayerControlBuilder.prototype = {
 						// Fullscreen binding:
 						.buttonHover().click( function() {
 							ctrlObj.embedPlayer.fullscreen();
-							$j( ctrlObj.embedPlayer ).trigger( 'openFullScreenEvent' );
 						} );
 			}
 		},
@@ -1668,26 +1632,6 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		},
 
-		/**
-		* The closed captions button
-		*/
-		'timedText': {
-			'w': 28,
-			'o': function( ctrlObj ) {
-				return $j( '<div />' )
-						.attr( 'title', gM( 'mwe-embedplayer-timed_text' ) )
-						.addClass( "ui-state-default ui-corner-all ui-icon_link rButton timed-text" )
-						.append(
-							$j( '<span />' )
-							.addClass( "ui-icon ui-icon-comment" )
-						)
-						// Captions binding:
-						.buttonHover()
-						.click( function() {
-							ctrlObj.showTextInterface();
-						} );
-			}
-		},
 
 		/**
 		* The volume control interface html

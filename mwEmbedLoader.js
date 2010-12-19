@@ -42,8 +42,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.192.32/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://192.168.1.70/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
@@ -384,7 +384,7 @@ function kAddScript(){
 		'$j.widget',
 		'$j.ui.mouse',
 		'$j.fn.hoverIntent',
-		'$j.cookie', 
+		'$j.cookie',
 		'JSON',
 		'$j.ui.slider',
 		'$j.fn.menu',
@@ -411,9 +411,8 @@ function kAddScript(){
 		  'mw.KWidgetSupport',
 		  'mw.KAnalytics', 
 		  'mw.KDPMapping',
-		  'mw.MobileAdTimeline',
 		  'mw.KAds',
-		  'mw.MobileAdTimeline', 
+		  'mw.AdTimeline', 
 		  'mw.AdLoader', 
 		  'mw.VastAdParser',
 		  'controlbarLayout',

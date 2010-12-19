@@ -521,11 +521,11 @@ mw.Playlist.prototype = {
 
 			// Setup ondone playing binding to play next clip (if autoContinue is true )
 			if( _this.sourceHandler.autoContinue == true ){
-				$j( embedPlayer ).unbind('ended').bind( 'ended', function(event, onDoneActionObject ){
+				$j( embedPlayer ).unbind('ended').bind( 'ended', function(event ){
 					// Play next clip
 					if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
 						// Update the onDone action object to not run the base control done:
-						onDoneActionObject.runBaseControlDone = false;
+						embedPlayer.onDoneInterfaceFlag = false;
 						_this.clipIndex++;
 
 						// update the player and play the next clip
@@ -536,7 +536,7 @@ mw.Playlist.prototype = {
 					} else {
 						mw.log("Reached end of playlist run normal end action" );
 						// Update the onDone action object to not run the base control done:
-						onDoneActionObject.runBaseControlDone = true;
+						embedPlayer.onDoneInterfaceFlag = true;
 					}
 				})
 			}

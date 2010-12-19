@@ -57,35 +57,43 @@
 	// Update the player loader request with timedText library if the embedPlayer
 	// includes timedText tracks.
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
-
-		var mwLoadTimedTextFlag = false;
-		// Check for the TimedText.showInterface config flag
-		if( mw.getConfig( 'TimedText.showInterface' ) == 'always' ) {
-			mwLoadTimedTextFlag = true;
-		}
-
-		// If add timed text flag not already set check for track, and sources
-		if( ! mwLoadTimedTextFlag ) {
-			if( $j( playerElement ).find( 'track' ).length != 0 ) {
-				// Has an track child include timed text request
-				mwLoadTimedTextFlag = true;
-			}
-			// Check for ROE pointer or apiTitleKey
-			if ( $j( playerElement ).attr('roe')
-				|| $j( playerElement ).attr( 'apiTitleKey' ) )
-			{
-				mwLoadTimedTextFlag = true;
-			}
-		}
-
-		// Add timed text items if flag set.
-		// its oky if we merge in multiple times the loader can handle it
-		if( mwLoadTimedTextFlag ) {
+		if( mw.isTimedTextSupported( playerElement ) ) {
 			$j.merge( classRequest, mwTimedTextRequestSet );
 		}
 	} );
-
-
+	
+	// On new embed player check if we need to add timedText
+	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+		if( mw.isTimedTextSupported( embedPlayer) ){
+			if( ! embedPlayer.timedText ) {
+				embedPlayer.timedText = new mw.TimedText( embedPlayer );
+			}
+		}
+	});
+	
+	/**
+	 * Check if we should load the timedText interface or not.
+	 *
+	 * Note we check for text sources outside of
+	 */
+	mw.isTimedTextSupported = function( embedPlayer ) {
+		if( mw.getConfig( 'TimedText.showInterface' ) == 'always' ) {
+			return true;
+		}
+		// Check for timed text sources or api/ roe url
+		if ( 
+			( embedPlayer.roe || embedPlayer.apiTitleKey ) 
+			|| 
+			( embedPlayer.mediaElement && embedPlayer.mediaElement.textSourceExists() )	
+			||
+			$j( embedPlayer ).find( 'track' ).length != 0
+		) {
+			return true;
+		} else {
+			return false;
+		}
+	};
+	
 	// TimedText editor:
 	mw.addModuleLoader( 'TimedText.Edit', [
 		[
