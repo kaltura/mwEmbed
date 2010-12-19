@@ -862,7 +862,7 @@ mw.PlayerControlBuilder.prototype = {
 	doVolumeBinding: function( ) {
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
-		embedPlayer.$interface.find( '.volume_control span' ).unbind().buttonHover().click( function() {
+		embedPlayer.$interface.find( '.volume_control' ).unbind().buttonHover().click( function() {
 			mw.log( 'Volume control toggle' );
 			embedPlayer.toggleMute();
 		} );
