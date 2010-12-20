@@ -1131,7 +1131,7 @@ mw.PlayerControlBuilder.prototype = {
 			'top' : '2px',
 			'right' : '2px'
 		})
-		.buttonHover()
+		//.buttonHover()
 		.click( function() {
 			_this.closeMenuOverlay();
 		} );
