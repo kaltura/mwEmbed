@@ -569,17 +569,18 @@ class kalturaIframe {
 						mw.setConfig( hashObj.mwConfig );
 					}
 				}
-
 				// For testing limited capacity browsers
 				//var kSupportsHTML5 = function(){ return false };
 				//var kSupportsFlash = function(){ return false };
-
 				if( kSupportsHTML5() ){
 					//Set some iframe embed config:
 					
 					// We can't support full screen in object context since it requires outer page DOM control
 					mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
-		
+
+					// Don't do an iframe rewrite inside an iframe!
+					mw.setConfig( 'Kaltura.IframeRewrite', false );
+					
 					// Load the mwEmbed resource library
 					mw.ready(function(){
 						// Bind window resize to reize the player: 
