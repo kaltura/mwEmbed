@@ -352,12 +352,12 @@ class kalturaIframe {
 	private function getFileLinkHTML(){
 		$sources = $this->getFlavorSources();
 		// For now use the 3gp, iPhone, iPad, ogg ( in that order most device compatible to least)
-		if( isset( $sources['3gp'] ) ){
-			$flavorUrl = $sources['3gp']['src'];
-		} else if( isset( $sources['iphone'] )) {
+		if( isset( $sources['iphone'] )) {
 			$flavorUrl = $sources['iphone']['src'];
 		} else if( isset( $sources['ipad'] ) ){
-			$flavorUrl = $sources['ipad']['src'];			
+			$flavorUrl = $sources['ipad']['src'];
+		} else if( isset( $sources['3gp'] ) ){
+			$flavorUrl = $sources['3gp']['src'];
 		} else if(  isset( $sources['ogg'] ) ){
 			$flavorUrl = $sources['ogg']['src'];
 		} else {
@@ -571,8 +571,8 @@ class kalturaIframe {
 				}
 
 				// For testing limited capacity browsers
-				var kSupportsHTML5 = function(){ return false };
-				var kSupportsFlash = function(){ return false };
+				//var kSupportsHTML5 = function(){ return false };
+				//var kSupportsFlash = function(){ return false };
 
 				if( kSupportsHTML5() ){
 					//Set some iframe embed config:
