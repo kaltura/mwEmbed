@@ -59,8 +59,8 @@ var mwEnabledModuleList = [
 	'MiroSubs',
 	'PlayerThemer',
 	'KalturaSupport',
-	'Plymedia',
-	'AdSupport'
+	'AdSupport',
+	'Plymedia'
 ];
 
 /**

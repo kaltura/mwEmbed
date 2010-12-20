@@ -163,7 +163,6 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.available_width );
 		// Build the supportedComponets list
 		this.supportedComponets = $j.extend( this.supportedComponets, embedPlayer.supports );
-		
 		$j(embedPlayer).trigger( 'addControlBarComponent', this);
 			
 		// Check for Attribution button
