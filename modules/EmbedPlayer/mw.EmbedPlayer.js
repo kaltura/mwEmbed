@@ -1835,7 +1835,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	getTimeRange: function() {
 		var end_time = (this.controlBuilder.longTimeDisp)? '/' + mw.seconds2npt( this.getDuration() ) : '';
-		var default_time_range = '0:00:00' + end_time;
+		var default_time_range = '0:00' + end_time;
 		if ( !this.mediaElement )
 			return default_time_range;
 		if ( !this.mediaElement.selectedSource )
