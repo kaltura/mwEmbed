@@ -45,7 +45,10 @@ mw.KWidgetSupport.prototype = {
 						// Apply player metadata
 						if( playerData.meta ) {
 							embedPlayer.duration = playerData.meta.duration;
-							embedPlayer.meta = player.meta; // ran: added all metadata to the embedPlayer
+							$j( embedPlayer ).trigger( 'KalturaSupport.checkMeta', playerData.meta, function() {
+								embedPlayer.meta = playerData.meta;								
+							});
+							callback();
 						}
 						
 						// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									

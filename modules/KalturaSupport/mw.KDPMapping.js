@@ -73,8 +73,10 @@
 		evaluate: function( embedPlayer, objectString ){
 			// Strip the { } from the objectString
 			objectString = objectString.replace( /\{\}/, '' );
+			objectString = objectString.replace( /{/, '');
+			objectString = objectString.replace( /}/, '');
 			objectPath = objectString.split('.');
-
+			console.log(objectPath);
 			switch( objectPath[0] ){
 				case 'video':
 					switch( objectPath[1] ){
@@ -86,16 +88,15 @@
 				
 				case 'mediaProxy':
 					switch( objectPath[1] ){
-						case 'entry': 
-							if( objectPath[2] ) {
-								switch( objectPath[2] ) {
-									case 'id':
-										// get entry id
-									break;
-								}
-							} else {
-								//get entry
-							}
+						case 'entry':
+							$j( embedPlayer ).bind( 'KalturaSupport.checkMeta', function( event, meta ) {
+								// NOT GETTING HERE! HELP PLEASE
+								if( objectPath[2] ) {
+									meta[objectPath[2]];
+								} else {
+									meta;
+								}							
+							});							
 						break;
 					}
 				break;
@@ -119,7 +120,7 @@
 				case 'playerStatusProxy':
 					switch( objectPath[1] ){
 						case 'kdpStatus': 
-							embedPlayer.volume;
+							//TODO
 						break;
 					}
 				break;					
@@ -153,13 +154,14 @@
 					// TODO add in duration change support
 					break;
 				case 'playerUpdatePlayhead':
-					$j( embedPlayer).bind('monitorEvent', function(){
+					$j( embedPlayer ).bind('monitorEvent', function(){
 						callback( embedPlayer.currentTime,  embedPlayer.id );
 					})
 					break;	
 				case 'entryReady': 
-					var entry = ; // get entry data [ran: how can we get the meta data?]
-					callback( entry );
+					$j( embedPlayer ).bind( 'KalturaSupport.checkMeta', function( event, meta ) {				
+						callback( meta );
+					});
 					break;
 			}
 				
