@@ -21,54 +21,51 @@ mw.KWidgetSupport.prototype = {
 		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 			// Add hook for check player sources to use local kEntry ID source check:
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
-				setTimeout(function(){
-					// Load all the player configuration from kaltura: 
-					var status = _this.loadPlayerData( embedPlayer, function( playerData ){
-						if( !playerData ){
-							callback();
+				// Load all the player configuration from kaltura: 
+				var status = _this.loadPlayerData( embedPlayer, function( playerData ){
+					if( !playerData ){
+						callback();
+						return ;
+					}
+					// Check access controls ( this is kind of silly and needs to be done on the server ) 
+					if( playerData.accessControl ){
+						var acStatus = _this.getAccessControlStatus( playerData.accessControl );
+						if( acStatus !== true ){
+							$j(embedPlayer).replaceWith( acStatus );
 							return ;
 						}
-						// Check access controls ( this is kind of silly and needs to be done on the server ) 
-						if( playerData.accessControl ){
-							var acStatus = _this.getAccessControlStatus( playerData.accessControl );
-							if( acStatus !== true ){
-								$j(embedPlayer).replaceWith( acStatus );
-								return ;
-							}
-						}					
-						
-						// Apply player Sources
-						if( playerData.flavors ){
-							_this.addFlavorSources( embedPlayer, playerData.flavors );
-						}
-						
-						// Apply player metadata
-						if( playerData.meta ) {
-							embedPlayer.duration = playerData.meta.duration;
-							$j( embedPlayer ).trigger( 'KalturaSupport.checkMeta', playerData.meta, function() {
-								embedPlayer.meta = playerData.meta;								
-							});
+					}					
+					
+					// Apply player Sources
+					if( playerData.flavors ){
+						_this.addFlavorSources( embedPlayer, playerData.flavors );
+					}
+					
+					// Apply player metadata
+					if( playerData.meta ) {
+						embedPlayer.duration = playerData.meta.duration;
+						$j( embedPlayer ).data( 'kaltura.meta', playerData.meta );
+						$j( embedPlayer ).trigger( 'KalturaSupport.metaDataReady', $j( embedPlayer ).data( 'kaltura.meta') );
+					}
+					
+					// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
+					if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
+						mw.addKAnalytics( embedPlayer, _this.kClient );
+					}
+					
+					// Check for uiConf	
+					if( playerData.uiConf ){
+						// Store the parsed uiConf in the embedPlayer object:
+						embedPlayer.$uiConf = $j( playerData.uiConf );
+						// Trigger the check kaltura uiConf event					
+						$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', embedPlayer.$uiConf, function(){
+							// Ui-conf file checks done
 							callback();
-						}
-						
-						// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
-						if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
-							mw.addKAnalytics( embedPlayer, _this.kClient );
-						}
-						
-						// Check for uiConf	
-						if( playerData.uiConf ){					
-							var $uiConf = $j( playerData.uiConf );
-							// Trigger the check kaltura uiConf event
-							$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', $uiConf, function(){
-								// Ui-conf file checks done
-								callback();
-							});
-						} else {
-							callback();
-						}			
-					});
-				},1);
+						});
+					} else {
+						callback();
+					}			
+				});
 			});						
 		});		
 	},

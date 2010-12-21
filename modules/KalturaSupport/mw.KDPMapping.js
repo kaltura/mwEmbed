@@ -99,7 +99,7 @@
 									case 'autoPlay':
 										// get autoplay
 										embedPlayer.autoplay;
-									break;
+										break;
 								}
 							} else {
 								// get flashvars
@@ -121,9 +121,9 @@
 		/**
 		 * emulates kalatura addJsListener function
 		 */
-		addJsListener: function( embedPlayer, eventName, callbackFuncName ){
+		addJsListener: function( embedPlayer, eventName, globalFuncName ){
 			//mw.log("KDPMapping:: addJsListener: " + eventName + ' cb:' + callbackFuncName );
-			var callback = window[ callbackFuncName ];
+			var callback = window[ globalFuncName ];
 			switch( eventName ){
 				case 'volumeChanged': 
 					$j( embedPlayer ).bind('volumeChanged', function(percent){
@@ -150,12 +150,11 @@
 					})
 					break;	
 				case 'entryReady': 
-					$j( embedPlayer ).bind( 'KalturaSupport.checkMeta', function( event, meta ) {				
+					$j( embedPlayer ).bind( 'KalturaSupport.metaDataReady', function( event, meta ) {				
 						callback( meta );
 					});
 					break;
-			}
-				
+			}				
 		},
 		
 		/**

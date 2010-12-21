@@ -2476,17 +2476,25 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			 */
 			$.fn.triggerQueueCallback = function( triggerName, triggerParam, callback ){
 				var targetObject = this;
-				
 				// Support optional triggerParam data
 				if( !callback && typeof triggerParam == 'function' ){
 					callback = triggerParam;
 					triggerParam = null;
 				}
 				// Support namespaced event segmentation ( jQuery 
-				var triggerBaseName =triggerName.split(".", 1)[0]; 
-				// Make there is a set of binded callback events: 
-				var callbackSet = $j( targetObject ).data( 'events' )[ triggerBaseName ];
-				
+				var triggerBaseName = triggerName.split(".")[0]; 
+				var triggerNamespace = triggerName.split(".")[1];
+				// Get the callback set 
+				var callbackSet = [];
+				if( ! triggerNamespace ){
+					callbackSet = $j( targetObject ).data( 'events' )[ triggerBaseName ];
+				} else{		
+					$j.each( $j( targetObject ).data( 'events' )[ triggerBaseName ], function( inx, bindObject ){
+						if( bindObject.namespace ==  triggerNamespace ){
+							callbackSet.push( bindObject );
+						}
+					});
+				}
 
 				if( !callbackSet || callbackSet.length === 0 ){
 					mw.log( '"mwEmbed::jQuery.triggerQueueCallback: No events run the callback directly: ' + triggerName );
@@ -2500,14 +2508,12 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				mw.log("mwEmbed::jQuery.triggerQueueCallback: " + triggerName + ' number of queued functions:' + callbackCount );
 				var callInx = 0;
 				var doCallbackCheck = function() {
+					mw.log( 'callback for: ' + mw.getCallStack()[0] + callInx);
 					callInx++;
 					if( callInx == callbackCount ){
 						callback();
 					}
 				};
-				// Could also use the local arguments array
-				// arguments[1] = doCallbackCheck;
-				// $( this ).trigger(triggerName, $j.makeArray(  arguments ) );
 				if( triggerParam ){
 					$( this ).trigger( triggerName, [ triggerParam, doCallbackCheck ]);
 				} else {
