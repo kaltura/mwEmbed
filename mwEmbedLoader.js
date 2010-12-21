@@ -397,7 +397,7 @@ function kAddScript(){
 	if( preMwEmbedConfig['jQueryUISkin'] ){
 		jsRequestSet.push( [ 'mw.style.ui_' + preMwEmbedConfig['jQueryUISkin'] ] );
 	} else {
-		jsRequestSet.push( [ 'mw.style.ui_redmond' ] );
+		jsRequestSet.push( [ 'mw.style.ui_kdark' ] );
 	}
 	
 	var objectPlayerList = kGetKalturaPlayerList();

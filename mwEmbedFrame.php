@@ -51,7 +51,7 @@ class mwEmbedFrame {
 	);
 	var $playerIframeId = 'iframeVid';
 	var $debug = false;
-        var $theme = 'redmond';
+        var $theme = 'kdark';
         
 	
 	// When used in direct source mode the source asset.
@@ -101,7 +101,7 @@ class mwEmbedFrame {
 		if( isset( $_REQUEST['theme'] )  &&
                     in_array($_REQUEST['theme'],
                              array('darkness','le-frog', 'redmond','start',
-                                   'sunny')) ){
+                                   'sunny', 'kdark')) ){
                   $this->theme = $_REQUEST['theme'];
                 }
                 

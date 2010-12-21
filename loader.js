@@ -74,7 +74,7 @@ mw.setDefaultConfig ( {
 	'enabledModules' : mwEnabledModuleList,
 
 	// Default jquery ui skin name
-	'jQueryUISkin' : 'redmond',
+	'jQueryUISkin' : 'kdark',
 
 	// The mediaWiki path of mwEmbed
 	'mediaWikiEmbedPath' : 'js/mwEmbed/',
@@ -154,6 +154,7 @@ mw.addResourcePaths( {
 	"mw.style.ui_le-frog" : "skins/jquery.ui.themes/le-frog/jquery-ui-1.7.2.css",
 	"mw.style.ui_start" : "skins/jquery.ui.themes/start/jquery-ui-1.7.2.css",
 	"mw.style.ui_sunny" : "skins/jquery.ui.themes/sunny/jquery-ui-1.7.2.css",
+	"mw.style.ui_kdark" : "skins/jquery.ui.themes/kaltura-dark/jquery-ui-1.7.2.css",
 
 	"mw.style.mwCommon"		: "skins/common/mw.style.mwCommon.css",
 
