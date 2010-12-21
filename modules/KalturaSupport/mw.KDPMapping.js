@@ -72,31 +72,21 @@
 		 */
 		evaluate: function( embedPlayer, objectString ){
 			// Strip the { } from the objectString
-			objectString = objectString.replace( /\{\}/, '' );
-			objectString = objectString.replace( /{/, '');
-			objectString = objectString.replace( /}/, '');
+			objectString = objectString.replace( /\{|\}/g, '' );
 			objectPath = objectString.split('.');
 			console.log(objectPath);
 			switch( objectPath[0] ){
 				case 'video':
 					switch( objectPath[1] ){
 						case 'volume': 
-							embedPlayer.volume;
+							return embedPlayer.volume;
 						break;
 					}
-				break;
-				
+				break;				
 				case 'mediaProxy':
 					switch( objectPath[1] ){
 						case 'entry':
-							$j( embedPlayer ).bind( 'KalturaSupport.checkMeta', function( event, meta ) {
-								// NOT GETTING HERE! HELP PLEASE
-								if( objectPath[2] ) {
-									meta[objectPath[2]];
-								} else {
-									meta;
-								}							
-							});							
+							return embedPlayer.kentryid;
 						break;
 					}
 				break;
@@ -108,6 +98,7 @@
 								switch( objectPath[2] ) {
 									case 'autoPlay':
 										// get autoplay
+										embedPlayer.autoplay;
 									break;
 								}
 							} else {
