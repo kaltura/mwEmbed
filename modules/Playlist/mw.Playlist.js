@@ -106,6 +106,7 @@ mw.Playlist.prototype = {
 			// Empty the target and setup player and playerList divs
 			$j( _this.target )
 			.empty()
+			.addClass( 'ui-widget-content' )
 			.css('position', 'relative' )
 			.append(
 				$j( '<span />' )
@@ -575,11 +576,12 @@ mw.Playlist.prototype = {
 					'border': '0px',
 					'width' : '100%'
 				})
+				.addClass('ui-state-active')
 				.append(
 					$j('<tr />')
 					.append(
 						$j( '<td />')
-						.css('width', _this.itemThumbWidth + 'px' )
+						.css('width', _this.itemThumbWidth + 'px' )					
 						.append(
 							$j('<img />')
 							.attr({
