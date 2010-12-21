@@ -38,6 +38,10 @@
 					_this.addJsListener( embedPlayer, listenerString, callback )
 				}
 				
+				embedPlayer.removeJsListener = function(listenerString, callback){
+					_this.removeJsListener( embedPlayer, listenerString, callback )
+				}				
+				
 				embedPlayer.sendNotification = function( notificationName, notificationData ){
 					_this.sendNotification( embedPlayer, notificationName, notificationData)
 				}
@@ -45,7 +49,22 @@
 				embedPlayer.evaluate = function( objectString ){
 					_this.evaluate( embedPlayer, objectString);
 				}
+				
+				embedPlayer.setAttribute = function( componentName, property, value ) {
+					_this.setAttribute( embedPlayer, componentName, property, value );
+				}
 			});
+		},
+		
+		/*
+		 * emulates kaltura setAttribute function
+		 */
+		setAttribute: function( embedPlayer, componentName, property, value ) {
+			switch( property ) {
+				case 'autoPlay':
+					embedPlayer.autoplay = value;
+					break;
+			}
 		},
 		
 		/**
@@ -55,6 +74,7 @@
 			// Strip the { } from the objectString
 			objectString = objectString.replace( /\{\}/, '' );
 			objectPath = objectString.split('.');
+
 			switch( objectPath[0] ){
 				case 'video':
 					switch( objectPath[1] ){
@@ -63,6 +83,46 @@
 						break;
 					}
 				break;
+				
+				case 'mediaProxy':
+					switch( objectPath[1] ){
+						case 'entry': 
+							if( objectPath[2] ) {
+								switch( objectPath[2] ) {
+									case 'id':
+										// get entry id
+									break;
+								}
+							} else {
+								//get entry
+							}
+						break;
+					}
+				break;
+				
+				case 'configProxy':
+					switch( objectPath[1] ){
+						case 'flashvars': 
+							if( objectPath[2] ) {
+								switch( objectPath[2] ) {
+									case 'autoPlay':
+										// get autoplay
+									break;
+								}
+							} else {
+								// get flashvars
+							}
+						break;
+					}
+				break;	
+				
+				case 'playerStatusProxy':
+					switch( objectPath[1] ){
+						case 'kdpStatus': 
+							embedPlayer.volume;
+						break;
+					}
+				break;					
 			}
 		},
 		
@@ -96,10 +156,40 @@
 					$j( embedPlayer).bind('monitorEvent', function(){
 						callback( embedPlayer.currentTime,  embedPlayer.id );
 					})
-					break;				
+					break;	
+				case 'entryReady': 
+					var entry = ; // get entry data [ran: how can we get the meta data?]
+					callback( entry );
+					break;
 			}
 				
 		},
+		
+		/**
+		 * emulates kalatura removeJsListener function
+		 */
+		removeJsListener: function( embedPlayer, eventName, callbackFuncName ){
+			//mw.log("KDPMapping:: removeJsListener: " + eventName + ' cb:' + callbackFuncName );
+			var callback = window[ callbackFuncName ];
+			switch( eventName ){
+				case 'volumeChanged': 
+					$j( embedPlayer ).unbind('volumeChanged');
+					break;
+				case 'playerStateChange':					
+					$j( embedPlayer ).unbind('pause');
+					$j( embedPlayer ).unbind('play');
+					break;
+				case 'durationChange': 
+					// TODO add in duration change support
+					break;
+				case 'playerUpdatePlayhead':
+					$j( embedPlayer).unbind('monitorEvent');
+					break;				
+			}
+			
+			callback();
+				
+		},		
 		
 		/**
 		 * Master send action list: 
@@ -124,8 +214,11 @@
 					embedPlayer.setVolume( parseFloat( notificationData ) );
 					// TODO the setVolume should update the interface
 					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
-				break;
-				
+					break;
+				case 'changeMedia':
+					//embedPlayer.getSrcFromApi( notificationData )
+					//embedPlayer.switchPlaySrc( parseFloat( notificationData ) );
+					break;					
 			}
 		}
 	};	
