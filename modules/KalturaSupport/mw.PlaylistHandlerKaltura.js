@@ -38,8 +38,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			return ;
 		}
 		
-		this.kClient = mw.KApiPlayerLoader({
-			'widget_id' : this.widget_id,
+		this.getKClient().playerLoader({
 			'uiconf_id' : this.uiconf_id
 		}, function( playerData ){
 			// Get playlist uiConf data

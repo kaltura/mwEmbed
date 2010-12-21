@@ -51,8 +51,8 @@ mw.KApi.prototype = {
 			// Kaltura api starts with index 1 for some strange reason. 
 			var mulitRequestIndex = 1;
 			
-			/*
-			 * ideally we could do a single request to get the KS and the payload.
+			/**
+			 * Ideally we could do a single request to get the KS and the payload.
 			 * unfortunately that does not appear to be the case atm. 
 			 */
 			/*
@@ -176,18 +176,82 @@ mw.KApi.prototype = {
 			sArr[x[0]] = x[1];
 		}
 		return sArr;
-	}	
+	},
+	/**
+	 * PlayerLoader
+	 * 
+	 * Does a single request to the api to 
+	 * a) Get context data
+	 * c) Get flavorasset 
+	 * b) Get baseEntry
+	 */
+	playerLoader: function( kProperties, callback ){
+		var requestObject = [];
+		if( kProperties.entry_id ){ 
+			// The referring  url ( can be from the iframe if in iframe mode ) 
+			var refer = ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ? 
+							mw.getConfig( 'EmbedPlayer.IframeParentUrl') : 
+							document.URL;
+			
+			// Add Context Data request 			
+			requestObject.push({
+		        	 'contextDataParams' : {
+			        	 	'referrer' : refer,
+			        	 	'objectType' : 'KalturaEntryContextDataParams'
+			         },
+		        	 'service' : 'baseentry',
+		        	 'entryId' : kProperties.entry_id ,
+		        	 'action' : 'getContextData'
+			});
+			
+			 // Get flavorasset
+			requestObject.push({
+		        	 'entryId' : kProperties.entry_id ,
+		        	 'service' : 'flavorasset',
+		        	 'action' : 'getByEntryId'
+		    });
+			
+		    // Get baseEntry
+			requestObject.push({
+		        	 'service' : 'baseentry',
+		        	 'action' : 'get',
+		        	 'version' : '-1',
+		        	 'entryId' : kProperties.entry_id
+		    });
+		}		
+		if( kProperties.uiconf_id ){
+			// Get Ui Conf if property is present
+			requestObject.push({
+		        	'service' : 'uiconf',
+		        	'id' : kProperties.uiconf_id,
+		        	'action' : 'get'
+		    });
+		}
+		// Do the request and pass along the callback
+		this.doRequest( requestObject, function( data ){
+			var namedData = {};
+			// Name each result data type for easy access
+			if( kProperties.entry_id ){ 
+				namedData['accessControl'] = data[0];
+				namedData['flavors'] = data[1];
+				namedData['meta'] = data[2];
+				if( data[3] ){
+					namedData['uiConf'] = data[3]['confFile'];
+				}
+			} else if( kProperties.uiconf_id ){
+				// If only loading the confFile set here: 
+				namedData['uiConf'] = data[0]['confFile'];
+			}	
+			callback( namedData );
+		});
+	}
 };
 
 /**
- * KApiPlayerLoader
+ * KApi public entry points: 
  * 
- * Does a single request to the api to 
- * a) Get context data
- * c) Get flavorasset 
- * b) Get baseEntry
- * 
-*/
+ * TODO maybe move these over to "static" members of the kApi object ( ie not part of the .prototype methods ) 
+ */
 // Cache api object per partner
 // ( so that multiple partner types don't conflict if used on a single page )
 mw.KApiPartnerCache = [];
@@ -207,78 +271,9 @@ mw.KApiPlayerLoader = function( kProperties, callback ){
 	// Convert widget_id to partner id
 	var partner_id = kProperties.widget_id.replace(/_/g, '');
 	
-	
-	var requestObject = [];
-	if( kProperties.entry_id ){ 
-		// The referring  url ( can be from the iframe if in iframe mode ) 
-		var refer = ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ? 
-						mw.getConfig( 'EmbedPlayer.IframeParentUrl') : 
-						document.URL;
-		
-		// Add Context Data request 			
-		requestObject.push({
-	        	 'contextDataParams' : {
-		        	 	'referrer' : refer,
-		        	 	'objectType' : 'KalturaEntryContextDataParams'
-		         },
-	        	 'service' : 'baseentry',
-	        	 'entryId' : kProperties.entry_id ,
-	        	 'action' : 'getContextData'
-		});
-		
-		 // Get flavorasset
-		requestObject.push({
-	        	 'entryId' : kProperties.entry_id ,
-	        	 'service' : 'flavorasset',
-	        	 'action' : 'getByEntryId'
-	    });
-		
-	    // Get baseEntry
-		requestObject.push({
-	        	 'service' : 'baseentry',
-	        	 'action' : 'get',
-	        	 'version' : '-1',
-	        	 'entryId' : kProperties.entry_id
-	    });
-	}		
-	if( kProperties.uiconf_id ){
-		// Get Ui Conf if property is present
-		requestObject.push({
-	        	'service' : 'uiconf',
-	        	'id' : kProperties.uiconf_id,
-	        	'action' : 'get'
-	    });
-	}
 	var kClient = mw.kApiGetPartnerClient( partner_id );
-	// Do the request and pass along the callback
-	kClient.doRequest( requestObject, function( data ){
-		var namedData = {};
-		// Name each result data type for easy access
-		if( kProperties.entry_id ){ 
-			namedData['accessControl'] = data[0];
-			namedData['flavors'] = data[1];
-			namedData['meta'] = data[2];
-			if( data[3] ){
-				namedData['uiConf'] = data[3]['confFile'];
-			}
-		} else if( kProperties.uiconf_id ){
-			// If only loading the confFile set here: 
-			namedData['uiConf'] = data[0]['confFile'];
-		}	
-		callback( namedData );
-	});
+	kClient.playerLoader( kProperties, callback );
 	
-	// Return the kApi object for future requests
-	return mw.KApiPartnerCache[ partner_id ];
+	// Return the kClient api object for future requests
+	return kClient;
 }
-
-// test player loader
-/*mw.KApiPlayerLoader( {
-		'widget_id' : '_243342', 
-		'entry_id' : '0_swup5zao', 
-		'uiconf_id' : '2877502'
-	}, 
-	function( playerData ){
-		debugger;
-	}
-);*/

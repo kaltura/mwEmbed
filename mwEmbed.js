@@ -2505,7 +2505,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				
 				// Set the callbackCount
 				var callbackCount = ( callbackSet.length )? callbackSet.length : 1;
-				mw.log("mwEmbed::jQuery.triggerQueueCallback: " + triggerName + ' number of queued functions:' + callbackCount );
+				//mw.log("mwEmbed::jQuery.triggerQueueCallback: " + triggerName + ' number of queued functions:' + callbackCount );
 				var callInx = 0;
 				var doCallbackCheck = function() {
 					mw.log( 'callback for: ' + mw.getCallStack()[0] + callInx);

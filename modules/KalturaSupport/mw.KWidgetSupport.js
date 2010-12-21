@@ -247,7 +247,7 @@ mw.KWidgetSupport.prototype = {
 		var sources = _this.getSourcesForDevice( deviceSources );
 		
 		for( var i=0;i < sources.length ; i++) {
-			mw.log( 'kEntryId::addSource::' + embedPlayer.id + ' : ' +  sources[i].src + ' type: ' +  sources[i].type);
+			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  sources[i].src + ' type: ' +  sources[i].type);
 			embedPlayer.mediaElement.tryAddSource(
 				$j('<source />')
 				.attr( {
