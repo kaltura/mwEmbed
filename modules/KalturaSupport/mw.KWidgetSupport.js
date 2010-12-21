@@ -42,9 +42,10 @@ mw.KWidgetSupport.prototype = {
 							_this.addFlavorSources( embedPlayer, playerData.flavors );
 						}
 						
-						// Apply player metadata ( just durationHint for now )
-						if( playerData.meta.duration ){
+						// Apply player metadata
+						if( playerData.meta ) {
 							embedPlayer.duration = playerData.meta.duration;
+							embedPlayer.meta = player.meta; // ran: added all metadata to the embedPlayer
 						}
 						
 						// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
