@@ -26,7 +26,7 @@ for ( var i = 0; i < reqParts.length; i++ ) {
 		mwReqParam[ p[0] ] = p[1];
 	}
 }
-
+debugger;
 // Allow the document.URL to trigger the debug flag with "debug=true" in its url
 if( document.URL.indexOf( 'debug=true' ) !== -1 ){
 	mwReqParam['debug'] = true;
