@@ -186,11 +186,14 @@ ul.ui-provider-selection li a {
 * ( without additional assets in the embedPlayer skins folder )
 */
 .play-btn-large {
-	width : 130px; 
-	height : 96px; 
+	width : 70px; 
+	height : 53px; 
 	background : url(images/player_big_play_button.png); 
 	position : absolute; 
 	cursor : pointer; 
 	border : none !important;
 	z-index : 1; 
+}
+.play-btn-large:hover {
+	background : url(images/player_big_play_button_hover.png); 
 }

@@ -119,18 +119,16 @@
 	cusror: move;
 }
 
-
+/* Changes by Ran Yefet */
 .mv-player .overlay-win textarea {
 	background:none repeat scroll 0 0 transparent;
-	border-color:#333 -moz-use-text-color -moz-use-text-color #333;
-	border-style:solid none none solid;
-	border-width:2px medium medium 2px;
-	color:#222;
-	font:11px arial,sans-serif;
+	border: 2px solid #333;
+	color: #fff;
+	font: 11px arial,sans-serif;
 	height:15px;
 	overflow:hidden;
 	padding-left:2px;
-	width:100%;
+	width:97%;
 }
 
 .mv-player .overlay-win div.ui-state-highlight {

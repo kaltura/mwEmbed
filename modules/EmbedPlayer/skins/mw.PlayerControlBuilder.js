@@ -1288,7 +1288,7 @@ mw.PlayerControlBuilder.prototype = {
 			var is_selected = ( source.getSrc() == embedPlayer.mediaElement.selectedSource.getSrc() );
 
 			$playerSelect.append(
-				$j( '<h2 />' )
+				$j( '<h3 />' )
 				.text( source.getTitle() )
 			);
 
@@ -1306,8 +1306,8 @@ mw.PlayerControlBuilder.prototype = {
 						$playerLine = $j( '<span />' )
 						.text(
 						 	supportingPlayers[i].getName()
-						)
-						.addClass( 'ui-state-highlight ui-corner-all' );
+						);
+						//.addClass( 'ui-state-highlight ui-corner-all' ); removed by ran
 					} else {
 						// Non active player add link to select:
 						$playerLine = $j( '<a />')
@@ -1519,8 +1519,8 @@ mw.PlayerControlBuilder.prototype = {
 		* The large play button in center of the player
 		*/
 		'playButtonLarge': {
-			'w' : 130,
-			'h' : 96,
+			'w' : 70,
+			'h' : 53,
 			'o' : function( ctrlObj ) {
 				return $j( '<div/>' )
 					.attr( {
