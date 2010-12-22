@@ -95,7 +95,6 @@ mw.KWidgetSupport.prototype = {
 			// Get device sources 
 			var deviceSources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), playerData.flavors );
 			var sources = _this.getSourcesForDevice( deviceSources );
-			
 			callback( sources );
 		});
 	},

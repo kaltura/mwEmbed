@@ -50,8 +50,8 @@
 					_this.evaluate( embedPlayer, objectString);
 				}
 				
-				embedPlayer.setAttribute = function( componentName, property, value ) {
-					_this.setAttribute( embedPlayer, componentName, property, value );
+				embedPlayer.setKDPAttribute = function( componentName, property, value ) {
+					_this.setKDPAttribute( embedPlayer, componentName, property, value );
 				}
 			});
 		},
@@ -59,7 +59,7 @@
 		/*
 		 * emulates kaltura setAttribute function
 		 */
-		setAttribute: function( embedPlayer, componentName, property, value ) {
+		setKDPAttribute: function( embedPlayer, componentName, property, value ) {
 			switch( property ) {
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
@@ -82,11 +82,16 @@
 							return embedPlayer.volume;
 						break;
 					}
-				break;				
+				break;			
+				
 				case 'mediaProxy':
 					switch( objectPath[1] ){
 						case 'entry':
-							return embedPlayer.kentryid;
+							if( objectPath[2] ) {
+								return $j( embedPlayer ).data( 'kaltura.meta' )[ objectPath[2] ];
+							} else {
+								return $j( embedPlayer ).data( 'kaltura.meta' );
+							}
 						break;
 					}
 				break;
@@ -98,8 +103,8 @@
 								switch( objectPath[2] ) {
 									case 'autoPlay':
 										// get autoplay
-										embedPlayer.autoplay;
-										break;
+										return embedPlayer.autoplay;
+									break;
 								}
 							} else {
 								// get flashvars
@@ -208,8 +213,20 @@
 					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
 					break;
 				case 'changeMedia':
-					//embedPlayer.getSrcFromApi( notificationData )
-					//embedPlayer.switchPlaySrc( parseFloat( notificationData ) );
+					var newSource;
+					var entryId = notificationData.entryId;
+					var widgetId = '_423851'; // for testing only
+					//var widgetId = '_' + $j( embedPlayer ).data( 'kaltura.meta' ).partnerId;
+					console.log('Partner: ' + widgetId + ' | Entry: ' + entryId);
+					
+					mw.getEntryIdSourcesFromApi( widgetId, entryId, function( sources ) {
+						console.log(sources);
+						newSource = sources[0].src;
+						embedPlayer.play();
+						embedPlayer.switchPlaySrc( newSource, function( embedPlayer ) { 
+							embedPlayer.stop(); // NOT WORKING!!!
+						} );
+					});
 					break;					
 			}
 		}
