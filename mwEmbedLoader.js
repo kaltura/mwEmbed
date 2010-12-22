@@ -76,6 +76,12 @@ if( !preMwEmbedReady ){
 // Wrap mw.ready to preMwEmbedReady values
 if( !mw.ready){
 	mw.ready = function( fn ){
+		// if running an iframe rewrite without code update we should just run the ready function directly: 
+		if( preMwEmbedConfig['Kaltura.IframeRewrite'] && !preMwEmbedConfig['EmbedPlayer.EnableIframeApi'] ){
+			fn();
+			return ;
+		}
+		
 		preMwEmbedReady.push( fn );
 		// Check if mw.ready was called after the dom is ready:
 		if( kAlreadyRunDomReadyFlag ){
