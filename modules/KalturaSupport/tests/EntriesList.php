@@ -8,19 +8,25 @@ class EntriesList {
 	var $perPage = 25;
 	var $totalEntries = 0;
 	
+	// Create a new KS
+	// Required parameters are: $partnerId & $secret -OR- $email & $password
 	function createKs( $partnerId, $secret, $email, $password ) {
 		
+		// Some default vars for session start
 		$userId = 0;
 		$type = 2;
 		$expiry = 43200;
 		$privileges = null;
 		
+		// Start client
 		$conf = new KalturaConfiguration( $partnerId );
 		$client = new KalturaClient( $conf );
 		
 		if( $partnerId && $secret ) {
+			// Get KS using client & secret
 			$session = $client->session->start($secret, $userId, $type, $partnerId, $expiry, $privileges);
 		} elseif( !( empty($email) && empty($password) ) ) {
+			// Get KS using email & password
 			$session = $client->adminUser->login($email, $password);
 		} else {
 			die('Some fields are missing');
@@ -28,6 +34,7 @@ class EntriesList {
 		return $session;		
 	}
 	
+	// Return a Client with KS
 	function getClient( $partnerId, $ks ) {
 		
 		$conf = new KalturaConfiguration( $partnerId );
@@ -44,7 +51,6 @@ class EntriesList {
 		
 		// Set Filter		
 		$filter = new KalturaMediaEntryFilter();
-		//$filter->partnerIdEqual = $partnerId;
 		$filter->mediaTypeEqual = '1';
 		
 		// Set Pager
@@ -61,6 +67,7 @@ class EntriesList {
 	
 }
 
+// Do the login
 if( (isset($_POST['partnerId']) && isset($_POST['adminSecret'])) ||
  (isset($_POST['email']) && isset($_POST['password']))
  ) {
@@ -76,10 +83,12 @@ if( (isset($_POST['partnerId']) && isset($_POST['adminSecret'])) ||
 	
 }
 
+// If we have KS show the entries list
 if( isset($_GET['ks']) ) {
 	
 	$url = 'http://' . $_SERVER['SERVER_NAME'] . '/' . $_SERVER['SCRIPT_NAME'] . '?ks=' . $_GET['ks'];
 	
+	// Getting the Partner Id from the KS
 	$splitKs = explode(";", base64_decode($_GET['ks']));
 	$partnerId = $splitKs[1];
 
