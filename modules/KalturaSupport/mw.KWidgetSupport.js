@@ -31,6 +31,7 @@ mw.KWidgetSupport.prototype = {
 					if( playerData.accessControl ){
 						var acStatus = _this.getAccessControlStatus( playerData.accessControl );
 						if( acStatus !== true ){
+							$j('.loadingSpinner').remove();
 							$j(embedPlayer).replaceWith( acStatus );
 							return ;
 						}
