@@ -91,7 +91,19 @@ class kalturaIframe {
 		$resultObject =  $this->getResultObject();
 		// add any web sources		
 		$sources = array();
+
+		// Check for error in getting flavor
+		if( isset( $resultObject['flavors']['code'] ) ){
+			switch(  $resultObject['flavors']['code'] ){
+				case  'ENTRY_ID_NOT_FOUND':
+					$this->error = "<h2>Entry Id not found</h2>" . htmlspecialchars( $resultObject['flavors']['message'] );
+					break;
+			}
+			// @@TODO should probably refactor to use throw catch error system. 
+			return array();
+		}
 		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){	
+
 
 			$assetUrl =  KALTURA_CDN_URL .'/p/' . $this->getPartnerId() . '/sp/' . 
 					$this->getPartnerId() . '00/flvclipper/entry_id/' . 
@@ -166,8 +178,10 @@ class kalturaIframe {
 	 * Returns a cache key for the result object based on Referer and partner id
 	 */
 	private function getResultObjectCacheKey(){		
-		// Get a key based on partner id and refer url: 
-		return $this->getPartnerId() . '_' . substr( md5( $this->getReferer() ), 0, 10 );
+		// Get a key based on partner id,  entry_id and ui_confand refer url: 
+		$playerUnique = ( $this->playerAttributes['entry_id'] )?  $this->playerAttributes['entry_id'] : '';
+		$playerUnique .= ( $this->playerAttributes['uiconf_id'] )?  $this->playerAttributes['uiconf_id'] : '';
+		return $this->getPartnerId() . '_' $playerUnique . '_' . substr( md5( $this->getReferer() ), 0, 10 );
 	}
 	
 	function getResultObjectFromApi(){
