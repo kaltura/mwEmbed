@@ -1618,6 +1618,14 @@ mw.EmbedPlayer.prototype = {
 			finishCheckPlayerSources();
 		}
 	},
+	/**
+	 * Empty the player sources
+	 */
+	emptySources: function(){
+		if( this.mediaElement ){
+			this.mediaElement.sources = [];
+		}
+	},
 
 	/**
 	 * Insert and play a video source ( useful for ads or bumper videos )

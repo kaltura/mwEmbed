@@ -214,7 +214,7 @@
 					break;
 				case 'changeMedia':
 					// Update the entry id
-					embedPlayer.kentryid =  notificationData.entryId;
+					embedPlayer.kentryid = notificationData.entryId;
 					// TODO Should support updating any widget, ui_conf whatever else change media supports
 					
 					// Empty out sources
