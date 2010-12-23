@@ -213,8 +213,20 @@
 					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
 					break;
 				case 'changeMedia':
-					var newSource;
-					var entryId = notificationData.entryId;
+					// Update the entry id
+					embedPlayer.kentryid =  notificationData.entryId;
+					// TODO Should support updating any widget, ui_conf whatever else change media supports
+					
+					// Empty out sources
+					embedPlayer.emptySources();
+					
+					// Stop the player 
+					embedPlayer.stop();
+					
+					// Load new sources per the entry id
+					embedPlayer.checkPlayerSources();
+					
+					/*
 					var widgetId = '_423851'; // for testing only
 					//var widgetId = '_' + $j( embedPlayer ).data( 'kaltura.meta' ).partnerId;
 					console.log('Partner: ' + widgetId + ' | Entry: ' + entryId);
@@ -224,9 +236,11 @@
 						newSource = sources[0].src;
 						embedPlayer.play();
 						embedPlayer.switchPlaySrc( newSource, function( embedPlayer ) { 
+							
 							embedPlayer.stop(); // NOT WORKING!!!
 						} );
 					});
+					*/
 					break;					
 			}
 		}
