@@ -35,7 +35,7 @@
 *	// $j('#iframeid').bind('ended', function(){ .. end playback event ... }
 *	'EmbedPlayer.EnableIframeApi' : false
 */
-var kURID = '1.2h';
+var kURID = '1.2i';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;

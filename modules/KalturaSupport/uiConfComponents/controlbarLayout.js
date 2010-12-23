@@ -50,7 +50,7 @@
 		});
 	});
 	var controlbarLayout = function( embedPlayer, disabled ){
-		$j( embedPlayer ).bind( 'updateFeatureSupport', function( e, supports ){
+		$j( embedPlayer ).bind( 'updateFeatureSupportEvent', function( e, supports ){
 			for( var i = 0; i < disabled.length ; i++ ){
 				var comm = disabled[i];
 				supports[comm] = false;

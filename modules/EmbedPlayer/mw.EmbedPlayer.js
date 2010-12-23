@@ -1460,7 +1460,7 @@ mw.EmbedPlayer.prototype = {
 	 * For plugin-players to update supported features
 	 */
 	updateFeatureSupport: function(){
-		$j( this ).trigger('updateFeatureSupport', this.supports );
+		$j( this ).trigger('updateFeatureSupportEvent', this.supports );
 		return ;
 	},
 
