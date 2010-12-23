@@ -34,6 +34,8 @@ class kalturaIframe {
 		'uiconf_id' => null,
 		'entry_id' => null
 	);
+	// Local flag to store whether output was came from cache or was a fresh request
+	private $outputFromCache = false;
 	var $playerIframeId = 'iframeVid';
 	var $debug = false;
 	var $error = false;
@@ -166,6 +168,7 @@ class kalturaIframe {
 		if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ){
 			$this->resultObj = $this->getResultObjectFromApi();
 		} else {
+			$this->outputFromCache = true;
 			$this->resultObj = unserialize( file_get_contents( $cacheFile ) );
 		}
 		// Test if the resultObject can be cached ( no access control restrictions ) 
@@ -173,6 +176,9 @@ class kalturaIframe {
 			file_put_contents($cacheFile, serialize($this->resultObj  ) );
 		}
 		return $this->resultObj;
+	}
+	private function isCachedOutput(){
+		return $this->outputFromCache;
 	}
 	/**
 	 * Returns a cache key for the result object based on Referer and partner id
@@ -468,8 +474,25 @@ class kalturaIframe {
 				$childHTML . 
 			'</object>';
 	}
+	/**
+	 * void function to set iframe content headers
+	 */
+	private function setIFrameHeaders(){	
+		header( 'Pragma: public' );
+		
+		// Set relevent expire headers:
+		if( $this->isCachedOutput() ){
+			// Cache for KALTURA_UICONF_CACHE_TIME
+			header( "Expires: " . gmdate( "D, d M Y H:i:s", time() + KALTURA_UICONF_CACHE_TIME ) . " GM" );		
+		} else {
+			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+		}
+	}
 	
 	function outputIFrame( ){	
+		$this->setIFrameHeaders();
+		
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
