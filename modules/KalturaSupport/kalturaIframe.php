@@ -179,9 +179,10 @@ class kalturaIframe {
 	 */
 	private function getResultObjectCacheKey(){		
 		// Get a key based on partner id,  entry_id and ui_confand refer url: 
-		$playerUnique = ( $this->playerAttributes['entry_id'] )?  $this->playerAttributes['entry_id'] : '';
-		$playerUnique .= ( $this->playerAttributes['uiconf_id'] )?  $this->playerAttributes['uiconf_id'] : '';
-		return $this->getPartnerId() . '_' $playerUnique . '_' . substr( md5( $this->getReferer() ), 0, 10 );
+		$playerUnique = ( isset( $this->playerAttributes['entry_id'] ) ) ?  $this->playerAttributes['entry_id'] : '';
+		$playerUnique .= ( isset( $this->playerAttributes['uiconf_id'] ) ) ?  $this->playerAttributes['uiconf_id'] : '';
+		
+		return $this->getPartnerId() . '_' . $playerUnique . '_' . substr( md5( $this->getReferer() ), 0, 10 );
 	}
 	
 	function getResultObjectFromApi(){
