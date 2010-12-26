@@ -29,16 +29,18 @@ mw.AdLoader = {
 			switch( _this.getAdFormat( result['contents'] ) ){
 				case 'vast':
 					// If we have lots of ad formats we could conditionally load them here: 
-					// mw.load( 'mw.VastAdParser.js', function(){})
-					callback( 
-						mw.VastAdParser.parse( result['contents'] ) 
-					);
+					// ( normally we load VastAdParser before we get here but just in-case ) 
+					mw.load( 'mw.VastAdParser', function(){
+						callback(
+							mw.VastAdParser.parse( result['contents'] ) 
+						);
+					});
 					return ;
 				break;
 			}					
 			mw.log("Error: could not parse adFormat from add content: \n" + result['contents']);
 			callback( {} );
-		})
+		});
 	},
 	/**
 	 * Get ad Format

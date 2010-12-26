@@ -43,9 +43,8 @@ mw.KAds.prototype = {
 		var companionTargets = this._getCompanionTargets();
 				
 		// Get ad Configuration
-		this._getAdConfigSet( function( adConfigSet){
-			var baseDisplayConf = {
-				'adConfig' : _this.$adConfig,
+		this._getAdConfigSet( function( adConfigSet){			
+			var baseDisplayConf = {	
 				'companionTargets' : companionTargets
 			};
 			

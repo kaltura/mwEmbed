@@ -6,7 +6,9 @@
 // *Update by michael.dale@kaltura.com*
 // * added validate xml and content type
 // * added X-Forwarded-For header for geoLookup services
-// @@todo add cache and 304 support
+//
+// @@todo add cache and 304 support ( not very high priority since ad servers are generally 
+//		dynamic content. 
 // @@todo add crossdomain.xml lookup ( to better emulate flash ) 
 //	( Adding crossdomain.xml lookup is important because we pass X-Forward-For header ) 
 // 
@@ -263,8 +265,10 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
   
   // Check if we should validate the xml ( by parsing it with simple xml )
   if( $validateXML && $status['http_code'] != 'ERROR' ){
-  	libxml_use_internal_errors(true);
-  	if( false === simplexml_load_string( $contents ) ){
+  	// OpenX ad Server hack / work around :: Should be utf-8 not UTF_8 !
+	$xmlReadyData = str_replace( 'encoding="UTF_8"' , 'encoding="utf-8"' , $contents);
+  	//libxml_use_internal_errors(true);
+  	if( false === simplexml_load_string( $xmlReadyData ) ){
   		$status = array( 'http_code' => 'ERROR');
 	  	$contents = "XML failed to validate";  	
   	}  

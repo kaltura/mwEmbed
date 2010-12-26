@@ -72,7 +72,9 @@
  * }
  */
 mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
-	mw.log("AdTimeline::Add " + timeType + ' dispCof: ' +  adConf );
+	var adCount = ( adConf.ads )? 'ads: ' + adConf.ads.length : ' no ads ' ;
+	mw.log("AdTimeline::Add " + timeType + ' dispCof:' + adCount );
+	
 	if (!embedPlayer.adTimeline) {
 		embedPlayer.adTimeline = new mw.AdTimeline(embedPlayer);
 	}
@@ -84,7 +86,6 @@ mw.AdTimeline = function(embedPlayer) {
 }
 
 mw.AdTimeline.prototype = {
-
 	/**
 	 * Display timeline targets: ( false by default)
 	 */

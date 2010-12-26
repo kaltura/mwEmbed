@@ -18,9 +18,9 @@ mw.VastAdParser = {
 			var $ad = $j( node );
 			
 			// Set a local pointer to the current sequence: 
-			var currentAd = {'id' : $j( node ).attr('id') };
+			var currentAd = { 'id' : $j( node ).attr('id') };
 			
-			// Set duration 
+			// Set duration
 			if( $ad.find('duration') ){
 				currentAd.duration = mw.npt2seconds( $ad.find('duration').text() );
 			}
@@ -67,14 +67,19 @@ mw.VastAdParser = {
 			$ad.find('MediaFiles MediaFile').each( function( na, mediaFile ){
 				// NOTE we could check other attributes like delivery="progressive"
 				// NOTE for now we are only interested in support for iOS / android devices
-				// so only h264. ( in the future we could add ogg other delivery methods etc. ) 
-				if(  $j( mediaFile ).attr('type') == 'video/h264' ){
+				// so only h264.
+				// TODO we should switch videoFile into an array of type sources so we can do
+				// mediaFile selection at point of playback. 
+				if(  $j( mediaFile ).attr('type') == 'video/h264' 
+					|| 
+					$j( mediaFile ).attr('type')  == 'video/x-mp4')
+				{
 					currentAd.videoFile = _this.getURLFromNode( mediaFile );
 				}
 			});
 			
 			// Set videoFile to default if not set: 
-			if( ! adConf.videoFile ){
+			if( ! currentAd.videoFile ){
 				currentAd.videoFile = mw.getConfig( 'Kaltura.MissingFlavorVideoUrl' );
 			}
 			
