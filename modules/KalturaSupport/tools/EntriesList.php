@@ -1,7 +1,7 @@
 <?php 
  
 // Load Kaltura API v3
-include_once(  dirname( __FILE__ ) . '/../modules/KalturaSupport/kaltura_client_v3/KalturaClient.php' );
+include_once(  dirname( __FILE__ ) . '/../kaltura_client_v3/KalturaClient.php' );
 
 $Entries = new EntriesList;
 
