@@ -26,7 +26,7 @@ mw.AdLoader = {
 				return ;
 			}
 			
-			switch( _this.getAdFormat( result['contents'] ){
+			switch( _this.getAdFormat( result['contents'] ) ){
 				case 'vast':
 					// If we have lots of ad formats we could conditionally load them here: 
 					// mw.load( 'mw.VastAdParser.js', function(){})
@@ -42,6 +42,11 @@ mw.AdLoader = {
 	},
 	/**
 	 * Get ad Format
+	 * @param {string} 
+	 * 		The xml string of the ad contents
+	 * @return 
+	 * @type {string}
+	 * 		The type of string
 	 */
 	getAdFormat: function( xmlString ){
 		var lowerCaseXml = xmlString.toLowerCase();
