@@ -72,8 +72,7 @@
  * }
  */
 mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
-	var adCount = ( adConf.ads )? 'ads: ' + adConf.ads.length : ' no ads ' ;
-	mw.log("AdTimeline::Add " + timeType + ' dispCof:' + adCount );
+	mw.log("AdTimeline::Add " + timeType + ' dispCof:' + adConf );
 	
 	if (!embedPlayer.adTimeline) {
 		embedPlayer.adTimeline = new mw.AdTimeline(embedPlayer);
