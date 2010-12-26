@@ -267,7 +267,7 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
   if( $validateXML && $status['http_code'] != 'ERROR' ){
   	// OpenX ad Server hack / work around :: Should be utf-8 not UTF_8 !
 	$xmlReadyData = str_replace( 'encoding="UTF_8"' , 'encoding="utf-8"' , $contents);
-  	//libxml_use_internal_errors(true);
+  	libxml_use_internal_errors(true);
   	if( false === simplexml_load_string( $xmlReadyData ) ){
   		$status = array( 'http_code' => 'ERROR');
 	  	$contents = "XML failed to validate";  	
