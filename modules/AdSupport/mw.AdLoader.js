@@ -33,6 +33,10 @@ mw.AdLoader = {
 				lowerCaseXml.indexOf('</vast>')	){
 				adFormat = 'vast';
 			}
+			if( lowerCaseXml.indexOf('<videoadservingtemplate') != -1 &&
+				lowerCaseXml.indexOf('</videoadservingtemplate>')	){
+				adFormat = 'vast';
+			}			
 			switch( adFormat ){
 				case 'vast':
 					// If we have lots of ad formats we could conditionally load them here: 
