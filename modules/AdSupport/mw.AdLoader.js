@@ -25,19 +25,8 @@ mw.AdLoader = {
 				callback(false);
 				return ;
 			}
-			var adFormat = 'unknown';
-				
-			// Check result['contents']  for "<vast> </vast> tag
-			var lowerCaseXml = result['contents'].toLowerCase();
-			if( lowerCaseXml.indexOf('<vast') != -1 &&
-				lowerCaseXml.indexOf('</vast>')	){
-				adFormat = 'vast';
-			}
-			if( lowerCaseXml.indexOf('<videoadservingtemplate') != -1 &&
-				lowerCaseXml.indexOf('</videoadservingtemplate>')	){
-				adFormat = 'vast';
-			}			
-			switch( adFormat ){
+			
+			switch( _this.getAdFormat( result['contents'] ){
 				case 'vast':
 					// If we have lots of ad formats we could conditionally load them here: 
 					// mw.load( 'mw.VastAdParser.js', function(){})
@@ -51,4 +40,24 @@ mw.AdLoader = {
 			callback( {} );
 		})
 	},
+	/**
+	 * Get ad Format
+	 */
+	getAdFormat: function( xmlString ){
+		var lowerCaseXml = xmlString.toLowerCase();
+		
+		// Check xml  for "<vast> </vast> tag
+		if( lowerCaseXml.indexOf('<vast') != -1 &&
+			lowerCaseXml.indexOf('</vast>')	)
+		{
+			return 'vast';
+		}
+		// OpenX vast ads have a root element of videoAdServingTemplate
+		if( lowerCaseXml.indexOf('<videoadservingtemplate') != -1 &&
+			lowerCaseXml.indexOf('</videoadservingtemplate>')	)
+		{
+			return 'vast';
+		}	
+		return 'unknown';
+	}
 }
