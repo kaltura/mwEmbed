@@ -90,7 +90,35 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	
 	// Apply any pre-setup config:
 	mw.setConfig( preMwEmbedConfig );
-
+	
+	/**
+	 * Merge in a configuration value:
+	 */
+	mw.mergeConfig = function( name, value ){
+		if( typeof name == 'object' ) {
+			$j.each( name, function( inx, val) {
+				mw.setConfig( inx, val );
+			});
+			return ;
+		}
+		// Check if we should "merge" the config
+		if( typeof value == 'object' && typeof mwConfig[ name ] == 'object' ) {
+			if ( value.constructor.toString().indexOf("Array") != -1 &&
+				 mwConfig[ name ].constructor.toString().indexOf("Array") != -1 ){
+				// merge in the array
+				mwConfig[ name ] = $j.merge( mwConfig[ name ], value );
+			} else {
+				for( var i in value ){
+					mwConfig[ name ][ i ] = value[ i ];
+				}
+			}
+			return ;
+		}
+		// else do a normal setConfig
+		mwConfig[ name ] = value;
+		mwNonDefaultConfigList.push( name );
+	};
+	
 	/**
 	 * Set a default config value Will only update configuration if no value is
 	 * present

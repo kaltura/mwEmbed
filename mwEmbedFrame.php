@@ -73,7 +73,7 @@ class mwEmbedFrame {
 		// ( uses kaltura standard entry_id/{entryId} request )
 		// normalize to the REQUEST object
 		// @@FIXME: this should be moved over to a kaltura specific iframe implementation 
-		if( $_SERVER['PATH_INFO'] ){
+		if( isset( $_SERVER['PATH_INFO'] ) ){
 			$kalturaUrlMap = Array( 
 				'entry_id' => 'kentryid',
 				'uiconf_id' => 'kuiconfid',
