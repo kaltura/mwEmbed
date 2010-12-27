@@ -174,7 +174,8 @@ class EntriesList {
 	var nextUrl = '<?php echo $url . '&page=' . ($this->page + 1); ?>';
 	
 	mw.ready( function(){
-		
+
+		mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
 		mw.setConfig( 'EmbedPlayer.OverlayControls', false );	
 	
 		mw.load(["MD5", 'mw.KApi'], function(){});
@@ -193,7 +194,9 @@ class EntriesList {
 						'height' : 300
 					})
 					.attr({
+						'autoplay' : true,
 						'kentryid' : entryId,
+						'kuiconfid' : 2910531, // set default uiConfId because we don't have one
 						'kwidgetid' : '_' + partnerId
 					})			
 				);
