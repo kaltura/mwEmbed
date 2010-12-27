@@ -19,10 +19,14 @@ mw.SwarmTransport = {
 				// Confirm SwarmTransport add-on is available ( defines swarmTransport var )
 				if( _this.getPluginLibrary() ){
 					// Add the swarm source
-					_this.addSwarmSource( embedPlayer, function(){
-						// Update the source if paused
-						if( embedPlayer.paused ) {
-							embedPlayer.setupSourcePlayer();
+					_this.addSwarmSource( embedPlayer, function( status ){
+						// Check if the status returned true 
+						if( status ){
+							// Update the source if paused
+							if( embedPlayer.paused ) {
+								// Resetup sources
+								embedPlayer.setupSourcePlayer();
+							}
 						}
 					});
 				}
@@ -116,7 +120,7 @@ mw.SwarmTransport = {
 				// Check if the torrent is ready:
 				if( !data.torrent ){
 					mw.log( "SwarmTransport: Torrent not ready status: " + data.status.text );
-					callback();
+					callback( false );
 					return ;
 				}
 				mw.log( 'SwarmTransport: addSwarmSource for: ' + source.getSrc() + "\n\nGot:" + data.torrent );
@@ -131,7 +135,7 @@ mw.SwarmTransport = {
 					} )
 					.get( 0 )
 				);
-				callback();
+				callback( true );
 			}
 		);
 	},

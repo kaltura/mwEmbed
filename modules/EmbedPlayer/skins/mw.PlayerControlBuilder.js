@@ -567,24 +567,41 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Remove any old interface bindings
 		$interface.unbind();
-		
-		// Play & Pause on Click 
-		var bindFirstPlay = false;
-		$j(embedPlayer).bind('play', function() { //Only bind once played
+
+		var bindFirstPlay = false;		
+		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
+		$j(embedPlayer).unbind('play.ctrl').bind('play.ctrl', function() { //Only bind once played
 			if(bindFirstPlay) {
 				return ;
 			}
 			bindFirstPlay = true;
-			$j(embedPlayer).click( function() {
-				if(embedPlayer.getPlayerElement().controls) {
+			var dblClickTime = 300;
+			var lastClickTime = 0;
+			var didDblClick = false;
+			// Remove parent dbl click ( so we can handle play clicks )
+			$j( embedPlayer ).unbind("dblclick").click( function() {
+				// Don't bind anything if native controls displayed:
+				if( embedPlayer.getPlayerElement().controls ) {
 					return ;
+				}		
+				var clickTime = new Date().getTime();
+				if( clickTime -lastClickTime < dblClickTime ) {
+					embedPlayer.fullscreen();
+					didDblClick = true;
+					setTimeout( function(){ didDblClick = false; },  dblClickTime + 10 );
 				}
+				lastClickTime = clickTime;
+				setTimeout( function(){
+					// check if no click has since the time we called the setTimeout
+					if( !didDblClick ){
+						if( embedPlayer.paused ) {
+							embedPlayer.play();
+						} else {
+							embedPlayer.pause();
+						}
+					}
+				}, dblClickTime );
 				
-				if(embedPlayer.paused) {
-					embedPlayer.play();
-				} else {
-					embedPlayer.pause();
-				}
 			});		
 		});
 		
