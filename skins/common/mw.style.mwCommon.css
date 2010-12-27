@@ -15,12 +15,12 @@
 }
 
 .loadingSpinner {
-	position: absolute;
 	width:32px;
 	height:32px;
 	display:block;
 	padding:0px;
 	background-image: url('images/loading_ani.gif');
+	margin: auto;
 }
 .cssLoadingSpinner {
 	position:relative;

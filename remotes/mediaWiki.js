@@ -4,7 +4,7 @@
  */
 var urlparts = getRemoteEmbedPath();
 var mwEmbedHostPath = urlparts[0];
-var mwRemoteVersion = 'r181';
+var mwRemoteVersion = 'r182';
 var mwUseScriptLoader = true;
 
 // Log the mwRemote version makes it easy to debug cache issues
@@ -26,7 +26,6 @@ for ( var i = 0; i < reqParts.length; i++ ) {
 		mwReqParam[ p[0] ] = p[1];
 	}
 }
-debugger;
 // Allow the document.URL to trigger the debug flag with "debug=true" in its url
 if( document.URL.indexOf( 'debug=true' ) !== -1 ){
 	mwReqParam['debug'] = true;
@@ -42,7 +41,6 @@ if( mwReqParam['debug'] ) {
 
 //mwReqParam['debug'] = true;
 mwUseScriptLoader = true;
-//mwRemoteVersion = Math.random();
 
 // Setup up some globals to wrap mwEmbed mw.ready and mw.setConfig functions
 
@@ -80,7 +78,7 @@ if( !mw.setConfig ){
 // The player should attribute kaltura
 mw.setConfig( 'EmbedPlayer.KalturaAttribution', true );
 
-//The sequencer clips should include attribution 'edit sequence' link on pause
+// The sequencer clips should include attribution 'edit sequence' link on pause
 mw.setConfig( 'Sequencer.KalturaPlayerEditOverlay', true );
 
 // If the swarm p2p transport stream should be used for clients that have it installed
@@ -303,33 +301,31 @@ function doPageSpecificRewrite() {
 			vidIdList.push( divs[i].getAttribute( "id" ) );
 		}
 	}
-
 	if ( vidIdList.length > 0 ) {
+
 		// Reverse order the array so videos at the "top" get swapped first:
 		vidIdList = vidIdList.reverse();
-		// Add a timeout to give a chance for ui core to build out ( bug with replace jquery ui )
-		setTimeout(function(){
-			mwLoadPlayer( function(){
+		mwLoadPlayer( function(){
+			// Check for flat file page:
+			var flatFilePretext = "File:Sequence-";
+			if( wgPageName.indexOf(flatFilePretext ) === 0
+					&&
+				wgPageName.indexOf('.ogv') !== -1 )
+			{
+				var sequenceTitle = 'Sequence:' + wgPageName.substring( flatFilePretext.length, wgPageName.length - 4 );
+				window.mwSequencerRemote = new mw.MediaWikiRemoteSequencer({
+					'action': wgAction,
+					'titleKey' : sequenceTitle,
+					'target' : '#bodyContent'
+				});
+				window.mwSequencerRemote.showViewFlattenedFile();
+			}
 
-				// Check for flat file page:
-				var flatFilePretext = "File:Sequence-";
-				if( wgPageName.indexOf(flatFilePretext ) === 0
-						&&
-					wgPageName.indexOf('.ogv') !== -1 )
-				{
-					var sequenceTitle = 'Sequence:' + wgPageName.substring( flatFilePretext.length, wgPageName.length - 4 );
-					window.mwSequencerRemote = new mw.MediaWikiRemoteSequencer({
-						'action': wgAction,
-						'titleKey' : sequenceTitle,
-						'target' : '#bodyContent'
-					});
-					window.mwSequencerRemote.showViewFlattenedFile();
-				}
-
-				// Do utility rewrite of OggHandler content:
+			// Do utility rewrite of OggHandler content:
+			mw.ready(function(){
 				rewrite_for_OggHandler( vidIdList );
-			} );
-		}, 100);
+			});
+		} );
 		return ;
 	}
 
@@ -364,7 +360,6 @@ function mwAddCommonStyleSheet(){
 * ( front-loaded to avoid extra requests )
 */
 function mwLoadPlayer( callback ){
-
 	// The jsPlayerRequest includes both javascript and style sheets for the embedPlayer
 	var jsPlayerRequest = [
 		'$j.ui',
@@ -417,7 +412,7 @@ function mwLoadPlayer( callback ){
 	loadMwEmbed( jsPlayerRequest, function() {
 		// hide the novideojs if present
 		$j( '.videonojs' ).hide();
-		callback();
+		mw.ready( callback );
 	});
 }
 
@@ -426,6 +421,7 @@ function mwLoadPlayer( callback ){
 * @param {Object} vidIdList List of video ids to process
 */
 function rewrite_for_OggHandler( vidIdList ) {
+	
 	function procVidId( vidId ) {
 		// Don't process empty vids
 		if ( !vidId ){
@@ -511,7 +507,6 @@ function rewrite_for_OggHandler( vidIdList ) {
 				if( mwReqParam['embedplayer'] == 'yes' ){
 					$j('#loadingPlayer').remove();
 					$j('body').css('overflow', 'hidden');	
-					// Add a small timeout chrome runs things out of order sometimes
 					$j( '#mwe_' + vidId ).get(0).resizePlayer({
 						'width' : $j(window).width(),
 						'height' : $j(window).height()
@@ -530,7 +525,7 @@ function rewrite_for_OggHandler( vidIdList ) {
 			if( $j( '#' + vidId ).parents( '.gallerybox,.filehistory' ).length ){
 				$j( '#' + vidId ).after(
 					 $j( '<div />')
-					.css( {
+					.css({
 						'width' : $pimg.attr('width' ),
 						'height' :$pimg.attr( 'height' ),
 						'position' : 'relative',
@@ -581,7 +576,7 @@ function rewrite_for_OggHandler( vidIdList ) {
 								}
 							});
 
-							// Update the embed code to use the mwEmbed player:
+							// Update the embed code to use the mwEmbed player:							
 							$j( '#mwe_' + vidId ).embedPlayer( { 'autoplay' : true }, function(){
 								var embedPlayer = $j( '#mwe_' + vidId ).get(0);
 								// Show the control bar for two seconds (auto play is confusing without it )
@@ -600,7 +595,7 @@ function rewrite_for_OggHandler( vidIdList ) {
 
 			} else {
 				// Set the video tag inner html remove extra player
-				$j( '#' + vidId ).after( html_out ).remove();
+				$j( '#' + vidId ).html( html_out );
 				$j( '#mwe_' + vidId ).embedPlayer( checkForIframePlayerParam );
 			}							
 			
@@ -703,69 +698,27 @@ function loadMwEmbed( classSet, callback ) {
 			var cName = classSet[i];
 			// always include our version of the library ( too many crazy conflicts with old library versions )
 			rurl += ',' + cName;
-			/*
-			if( !mwCheckObjectPath( cName ) ){
-
-			} else {
-				// Check for old version of jquery ui components
-				if( $j.ui.version == '1.7.1' ){
-					if(cName.indexOf('$j.ui') != -1 ){
-						rurl += ',' + cName;
-					}
-				}
-			}*/
 		}
 
 		// Add the remaining arguments
 		rurl += '&' + mwGetReqArgs();
-		importScriptURI( rurl );
-		waitMwEmbedReady( callback );
+		$j.getScript( rurl,  callback);
 	} else {
 
 		// Force load jQuery for debug mode
 		var jQueryRequested = false;
-		waitForJQueryUpgrade = function(){
-			if( jQuery && jQuery.fn.jquery== '1.3.2' ){
-				if( ! jQueryRequested ){
-					jQueryRequested = true;
-					importScriptURI( mwEmbedHostPath + '/libraries/jquery/jquery-1.4.2.js?' + mwGetReqArgs() );
-				}
-				setTimeout( waitForJQueryUpgrade, 5);
-			} else {
-				// load mwEmbed js
-				importScriptURI( mwEmbedHostPath + '/mwEmbed.js?' + mwGetReqArgs() );
-				waitMwEmbedReady( function(){
-					// Load the class set as part of mwReady callback
-					mw.load( classSet, function(){
-						callback();
-					});
+		$j.getScript(mwEmbedHostPath + '/libraries/jquery/jquery-1.4.2.js?' + mwGetReqArgs(), function(){
+			// load mwEmbed js
+			$j.getScript(  mwEmbedHostPath + '/mwEmbed.js?' + mwGetReqArgs(), function(){
+				// Load the class set as part of mwReady callback
+				mw.load( classSet, function(){
+					callback();
 				});
-			}
-		};
-		waitForJQueryUpgrade();
-	}
-}
-
-/**
-* Waits for mwEmbed to be ready
-* @param callback
-*/
-function waitMwEmbedReady( callback ) {
-	if( ! mwCheckObjectPath( 'mw.version' ) ){
-		setTimeout( function() {
-			waitMwEmbedReady( callback );
-		}, 10 );
-	} else {
-		// Make sure mwEmbed is "setup" by using the addOnLoadHook:
-		mw.ready( function(){
-			callback();
-
-			// All enabled pages should check if we have the gadget already installed
-			// if not offer a convenient button
-			mwCheckForGadget();
+			});
 		});
 	}
 }
+
 /**
  * Check if the gadget is installed
  * run after mwEmbed setup so $j and mw interface is available:
@@ -779,7 +732,7 @@ function mwCheckForGadget(){
 
 	var scripts = document.getElementsByTagName( 'script' );
 
-	// Check for document paramater withJS and ignore found gadget
+	// Check for document parameter withJS and ignore found gadget
 	if( typeof getParamValue == 'undefined' && typeof getURLParamValue == 'undefined'){
 		return false;
 	}
@@ -898,24 +851,3 @@ function mwCheckFormDatagadget( formData, gadget_id ){
 	}
 	return false;
 }
-
-/**
-* Checks an object path to see if its defined
-* @param {String} libVar The objectPath to be checked
-*/
-function mwCheckObjectPath ( libVar ) {
-	if ( !libVar )
-		return false;
-	var objPath = libVar.split( '.' );
-	var cur_path = '';
-	for ( var p = 0; p < objPath.length; p++ ) {
-		cur_path = ( cur_path == '' ) ? cur_path + objPath[p] : cur_path + '.' + objPath[p];
-		eval( 'var ptest = typeof ( ' + cur_path + ' ); ' );
-		if ( ptest == 'undefined' ) {
-			this.missing_path = cur_path;
-			return false;
-		}
-	}
-	this.cur_path = cur_path;
-	return true;
-};

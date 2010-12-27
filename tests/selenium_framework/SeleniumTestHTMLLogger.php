@@ -1,10 +1,22 @@
 <?php
+if ( !defined( 'MEDIAWIKI' ) || !defined( 'SELENIUMTEST' ) ) {
+	echo "This script cannot be run standalone";
+	exit( 1 );
+}
 
 class SeleniumTestHTMLLogger {
-	public function setHeaders() {
-		global $wgOut;
-		$wgOut->addHeadItem( 'selenium', '<style type="text/css">
-		.selenium pre {
+	public function __construct() {
+		// Prepare testsuite for immediate output
+		@ini_set( 'zlib.output_compression', 0 );
+		@ini_set( 'implicit_flush', 1 );
+		for ( $i = 0; $i < ob_get_level(); $i++ ) {
+			ob_end_flush();
+		}
+		ob_implicit_flush( 1 );
+
+		// Output some style information
+		echo '<style>
+		pre {
 			overflow-x: auto; /* Use horizontal scroller if needed; for Firefox 2, not needed in Firefox 3 */
 			white-space: pre-wrap; /* css-3 */
 			white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
@@ -13,24 +25,22 @@ class SeleniumTestHTMLLogger {
 			/* width: 99%; */
 			word-wrap: break-word; /* Internet Explorer 5.5+ */
 		}
-		.selenium-success { color: green }
-		</style>' );
+		</style>';
 	}
 
 	public function write( $message, $mode = false ) {
-		global $wgOut;
 		$out = '';
-		if ( $mode == SeleniumTestSuite::RESULT_OK ) {
-			$out .= '<span class="selenium-success">';
+		if ( $mode == MW_TESTLOGGER_RESULT_OK ) {
+			$out .= '<font color="green">';
 		}
-		$out .= htmlspecialchars( $message );
-		if ( $mode == SeleniumTestSuite::RESULT_OK ) {
-			$out .= '</span>';
+		$out .= htmlentities( $message );
+		if ( $mode == MW_TESTLOGGER_RESULT_OK ) {
+			$out .= '</font>';
 		}
-		if ( $mode != SeleniumTestSuite::CONTINUE_LINE ) {
+		if ( $mode != MW_TESTLOGGER_CONTINUE_LINE ) {
 			$out .= '<br />';
 		}
 
-		$wgOut->addHTML( $out );
+		echo $out;
 	}
 }

@@ -865,7 +865,7 @@ mw.RemoteSearchDriver.prototype = {
 		$j( _this.target_container ).dialog( {
 			bgiframe: true,
 			autoOpen: true,
-			modal: true,
+			//modal: true,
 			width: $j(window).width()-50,
 			height: $j(window).height()-50,
 			position : 'center',
@@ -878,7 +878,7 @@ mw.RemoteSearchDriver.prototype = {
 				_this.onCancelResourceEdit();
 				$j( this ).parents( '.ui-dialog' ).fadeOut( 'slow' );
 			}
-		} );
+		} )
 		//$j( _this.target_container ).dialogFitWindow();
 
 		// Add the window resize hook to keep dialog layout
@@ -2116,38 +2116,31 @@ mw.RemoteSearchDriver.prototype = {
 
 		mw.log( 'did append to: ' + _this.target_container );
 
-		// issue a loadResourceImage request if needed ( image is > than target display resolution )
-		if ( mediaType == 'image' && resource.width > targetWidth ) {
-			_this.loadResourceImage(
-				resource,
-				{
-					'width': targetWidth,
-					'height' : targetHeight
-				},
-				function( img_src ) {
-					$j('#clip_edit_disp').empty().append(
-						$j( '<img />' )
-						.attr( {
-							'id' : 'rsd_edit_img',
-							'src' : img_src,
-							'width': targetWidth,
-							'height' : targetHeight
-						} )
-					);
-				}
-			);
-		} else if ( mediaType == 'image' ) {
-			//Just use the asset url directly
-			$j('#clip_edit_disp').empty().append(
-				$j( '<img />' )
-				.attr( {
-					'id' : 'rsd_edit_img',
-					'src' : resource.src,
-					'width' : resource.width,
-					'height' : resource.height
-				} )
-			)
-		}
+		// check if the size is small
+		if( resource.width < targetWidth ){
+			targetWidth = resource.width;
+			targetHeight = resource.height;
+		}		
+		
+		// issue a loadResourceImage request:
+		_this.loadResourceImage(
+			resource,	
+			{
+				'width': targetWidth,
+				'height' : targetHeight
+			},
+			function( img_src ) {
+				$j('#clip_edit_disp').empty().append(
+					$j( '<img />' )
+					.attr( {
+						'id' : 'rsd_edit_img',
+						'src' : img_src,
+						'width': targetWidth,
+						'height' : targetHeight
+					} )
+				);
+			}
+		);
 
 		// Also fade in the container:
 		$j( '#rsd_resource_edit' ).animate( {
@@ -2882,11 +2875,9 @@ mw.RemoteSearchDriver.prototype = {
 					'background-color' : '#FFF',
 					'padding' : '1em'
 				}).loadingSpinner()
-			)
+			);
 
 			var buttonPaneSelector = _this.target_container + '~ .ui-dialog-buttonpane';
-			var origTitle = $j( _this.target_container ).dialog( 'option', 'title' );
-
 			// Update title:
 			$j( _this.target_container ).dialog( 'option', 'title',
 				gM( 'mwe-preview_insert_resource', resource.title ) );
@@ -2903,22 +2894,21 @@ mw.RemoteSearchDriver.prototype = {
 
 			// Update cancel button
 			$j( buttonPaneSelector ).append(
-				$j('<a />')
-				.attr('href', "#")
-				.addClass( "preview_close" )
-				.text( gM('mwe-do-more-modification' ) )
-				.click( function() {
-					$j( '#rsd_preview_display' ).remove();
-
-					// Restore title:
-					$j( _this.target_container ).dialog( 'option', 'title', origTitle );
-
-					// Restore buttons (from the clipEdit object::)
-					_this.clipEdit.updateInsertControlActions();
-					return false;
-				})
+				$j.btnHtml( gM('mwe-do-more-modification' ), 'preview_close', 'pencil' )				
 			);
+			$j( buttonPaneSelector ).find('.preview_close')
+			.click( function() {
+				$j( '#rsd_preview_display' ).remove();
+				var restoreTitle = gM( 'mwe-add_media_wizard' ) + ': ' +
+					gM( 'rsd_resource_edit', resource.title );
 
+				// Restore title:
+				$j( _this.target_container ).dialog( 'option', 'title', restoreTitle );
+
+				// Restore buttons (from the clipEdit object::)
+				_this.clipEdit.updateInsertControlActions();
+				return false;
+			})
 			// Get the preview wikitext
 			var embed_code = _this.getEmbedCode( resource );
 			var pos = $j( _this.target_textbox ).textSelection( 'getCaretPosition' );

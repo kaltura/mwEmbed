@@ -122,8 +122,8 @@ mw.includeAllModuleMessages();
 			if( typeof preferenceConfig == 'object' ) {
 				this.config = preferenceConfig;
 			}
-			
-			// Set up embedPlayer hooks:			
+
+			// Set up embedPlayer hooks:
 			
 			// Check for timed text support:
 			$j( embedPlayer ).bind( 'addControlBarComponent', function(event, controlBar ){
@@ -132,11 +132,10 @@ mw.includeAllModuleMessages();
 					controlBar.components['timedText'] = _this.getTimedTextButton();					
 				}
 			});
-
+			
 			
 			$j( embedPlayer ).bind( 'monitorEvent', function() {
 				_this.monitor();
-				return false;
 			} );
 
 			$j( embedPlayer ).bind( 'play', function() {
@@ -144,53 +143,47 @@ mw.includeAllModuleMessages();
 				_this.setupTextSources();
 			} );	
 			
-			var forcedOntopFlag = false;
-			// TODO clean up resize conditions: 
 			// Resize the timed text font size per window width
-			$j( embedPlayer ).bind( 'closeFullScreen', function(){
-				embedPlayer.$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss({
-					'width' :  embedPlayer.getWidth(),
-					'height' : embedPlayer.$interface.height()
-				}) );	
-				if( forcedOntopFlag ){
-					forcedOntopFlag = false;
-					_this.config.layout = 'below';
-				}
-				_this.updateLayout();
-				embedPlayer.controlBuilder.showControlBar();
-			});
-			$j( embedPlayer ).bind( 'openFullScreen', function(){
-				if( _this.config.layout!= 'ontop'){
-					_this.config.layout = 'ontop';
-					forcedOntopFlag = true;
-				}
-				_this.updateLayout();
-				embedPlayer.$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss( {
+			$j( embedPlayer ).bind( 'onCloseFullScreen onOpenFullScreen', function() {
+				var textOffset = _this.embedPlayer.controlBuilder.fullscreenMode ? 30 : 10;
+				
+				mw.log( 'TimedText::set text size for: : ' + embedPlayer.$interface.width() + ' = ' + _this.getInterfaceSizeTextCss({
 					'width' :  embedPlayer.$interface.width(),
 					'height' : embedPlayer.$interface.height()
-				}) );
-				embedPlayer.controlBuilder.showControlBar();
+				})['font-size'] );
+				
+				embedPlayer.$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss({
+					'width' :  embedPlayer.$interface.width(),
+					'height' : embedPlayer.$interface.height()
+				}) ).css({
+					// Get the text size scale then set it to control bar height + 10 px; 
+					'bottom': ( _this.embedPlayer.controlBuilder.getHeight() + textOffset ) + 'px'
+				})
+				
 			});
 			
 			// Update the timed text size
 			$j( embedPlayer ).bind( 'onResizePlayer', function(e, size, animate) {
+				mw.log( 'TimedText::onResizePlayer: ' + _this.getInterfaceSizeTextCss(size)['font-size'] );
 				if (animate) {
 					embedPlayer.$interface.find( '.track' ).animate( _this.getInterfaceSizeTextCss( size ) );
 				} else {
 					embedPlayer.$interface.find( '.track' ).css( _this.getInterfaceSizeTextCss( size ) );
-				}				
+				}
 			});
 
 			// Setup display binding
 			$j( embedPlayer ).bind( 'onShowControlBar', function(event, layout ){
 				// Move the text track if present
 				embedPlayer.$interface.find( '.track' )
+				.stop()
 				.animate( layout, 'fast' );
 			});
 			
 			$j( embedPlayer ).bind( 'onHideControlBar', function(event, layout ){
 				// Move the text track down if present
 				embedPlayer.$interface.find( '.track' )
+				.stop()
 				.animate( layout, 'fast' );
 			});
 			
@@ -222,6 +215,15 @@ mw.includeAllModuleMessages();
 			}
 		},
 		
+		/**
+		* Get the fullscreen text css
+		*/
+		getInterfaceSizeTextCss: function( size ) {			
+			//mw.log(' win size is: ' + $j( window ).width() + ' ts: ' + textSize );
+			return {
+				'font-size' : this.getInterfaceSizePercent( size ) + '%'
+			};
+		},
 		/**
 		* Show the text interface library and show the text interface near the player.
 		*/
@@ -260,21 +262,13 @@ mw.includeAllModuleMessages();
 				$j( '#' + embedPlayer.id ).timedText( 'showMenu', '#timedTextMenu_' + embedPlayer.id );
 			}
 		},
-
-		
-		/**
-		* Get the fullscreen text css
-		*/
-		getInterfaceSizeTextCss: function( size ) {
+		getInterfaceSizePercent: function( size ) {
 			// Some arbitrary scale relative to window size ( 400px wide is text size 105% )
 			var textSize = size.width / 5;
 			if( textSize < 95 ) textSize = 95;
 			if( textSize > 200 ) textSize = 200;
-			//mw.log(' win size is: ' + $j( window ).width() + ' ts: ' + textSize );
-			return {
-				'font-size' : textSize + '%'
-			};
-		},		
+			return textSize;
+		},
 
 		/**
 		* Setups available text sources
@@ -431,6 +425,7 @@ mw.includeAllModuleMessages();
 					// Add the sources to the parent embedPlayer
 					// ( in case other interfaces want to access them )
 					var embedSource = _this.embedPlayer.mediaElement.tryAddSource( textElm );
+				
 					// Get a "textSource" object:
 					var source = new TextSource( embedSource, _this.textProvider );
 					_this.textSources.push( source );
@@ -981,8 +976,10 @@ mw.includeAllModuleMessages();
 			var text = source.getTimedText( time );
 
 			// We do a type comparison so that "undefined" != "false"
-			if( text === this.prevText[ source.category ] )
+			// ( check if we are updating the text )
+			if( text === this.prevText[ source.category ] ){
 				return ;
+			}
 
 			//mw.log( 'mw.TimedText:: updateTextDisplay: ' + text );
 
@@ -995,7 +992,6 @@ mw.includeAllModuleMessages();
 				$textTarget = $playerTarget.find( '.track_' + source.category + ' span' );
 			}
 
-
 			// If text is "false" fade out the subtitle:
 			if( text === false ) {
 				$textTarget.fadeOut('fast');
@@ -1004,11 +1000,13 @@ mw.includeAllModuleMessages();
 				if( ! $textTarget.is(':visible') ) {
 					$textTarget.fadeIn('fast');
 				}
-				// Update text ( use "html" instead of "text" so that parsers can swap in html for formating
+				// Update text ( use "html" instead of "text" so that subtitle format can
+				// include html formating 
+				// TOOD we should scrub this for non-formating html
 				$textTarget.html( text );
 				
-				// Update any links to point to 
-				$textTarget.find( 'a' ).attr( 'target', '_new' );
+				// Update any links to point to a new window
+				$textTarget.find( 'a' ).attr( 'target', '_blank' );
 			}
 			// mw.log( ' len: ' + $textTarget.length + ' ' + $textTarget.html() );
 			// Update the prev text:
@@ -1054,6 +1052,7 @@ mw.includeAllModuleMessages();
 				);
 
 				$playerTarget.append( $track );
+				
 			} else if ( layoutMode == 'below') {
 				this.embedPlayer.controlBuilder.displayOptionsMenuFlag = true;
 				// Set the belowBar size to 60 pixels:

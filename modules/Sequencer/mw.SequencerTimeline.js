@@ -791,7 +791,7 @@ mw.SequencerTimeline.prototype = {
 		smil.getBuffer().bufferedSeekRelativeTime( smilElement, relativeTime, function(){
 			// Add the seek, Add to canvas and draw thumb request
 			smil.getLayout().drawSmilElementToTarget( smilElement, $thumbTarget, relativeTime, function(){
-				mw.log("SequencerTimeline:: Done drawSmilElementToTarget " + $j( smilElement ).attr('id')  + ' cb:' + callback);
+				//mw.log("SequencerTimeline:: Done drawSmilElementToTarget " + $j( smilElement ).attr('id')  + ' cb:' + callback);
 				// Run the callback and un-set it for the current closure
 				if( callback ){
 					callback();

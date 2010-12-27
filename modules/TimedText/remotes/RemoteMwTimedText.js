@@ -52,25 +52,37 @@ RemoteMwTimedText.prototype = {
 		var _this = this;
 		// Load the player module:
 		mw.load( 'EmbedPlayer', function() {
+			var width = ( resource.width > 500 )? 500 : resource.width;
+			var height = width * ( resource.height / resource.width );
 			// Add the embed code: ( jquery wrapping of "video" fails )
-			$j( _this.target ).append(
-				$j( '<div class="videoLoading">').html(
-				'<video id="timed-text-player-embed" '+
-				 'style="width:' + resource.width + 'px;height:' + resource.height + 'px;" '+
-				 'class="kskin" ' + //We need to centrally store this config somewhere
-				 'poster="' + resource.poster + '" ' +
-				 'src="' + resource.src + '" ' +
-				 'apiTitleKey="' + resource.apiTitleKey + '" >' +
-				 '</video><br><br><br><br>'
-				)
+			$j( _this.target ).empty().append(
+				$j('<video />').attr({
+					'id': "timed-text-player-embed",
+					'poster': resource.poster,
+					'src':  resource.src,
+					'durationHint' : resource.duration,
+					'apiTitleKey' : resource.apiTitleKey
+				})
+				.css({
+					'width' : width + 'px',
+					'height' : height + 'px'
+				})
+				.addClass( 'kskin' )
+				 ,
+				 $j('<div />').css({
+					'position' : 'relative',
+					'left' : '510px',
+					'top' : -height + 'px'
+				 })
+				 .append( _this.orgBody )
 			);
-			$j('.videoLoading').hide();
-			// embed the player with the pre-selected langauge:
+			
+			// embed the player with the pre-selected language:
 			_this.embedPlayerLang();
 		});
 	},
-	/*
-	* embeds a player with the current language key pre selected
+	/**
+	* Embeds a player with the current language key pre selected
 	*/
 	embedPlayerLang: function() {
 		var _this = this;
@@ -111,16 +123,14 @@ RemoteMwTimedText.prototype = {
 				// Add the page msg to the top
 				$j( _this.target ).prepend(
 					$j('<h3>')
-						.html(
-							gM( pageMsgKey, [ mw.Language.names[ _this.langKey ], $fileLink.html() ] )
-						)
+					.html(
+						gM( pageMsgKey, [ mw.Language.names[ _this.langKey ], $fileLink.html() ] )
+					)
 				);
 				// Select the language if possible:
 				if( source ) {
 					player.timedText.selectTextSource( source );
 				}
-				// Un-hide the player
-				$j('.videoLoading').show();
 			} );
 		} );
 	},
@@ -135,35 +145,21 @@ RemoteMwTimedText.prototype = {
 		// Get all the embed details:
 		var request = {
 			'titles' : 'File:' + fileTitle,
-			'prop' : 'imageinfo|revisions',
-			'iiprop' : 'url|mime|size',
+			'prop' : 'imageinfo|revisions|redirects',
+			'iiprop' : 'url|mime|size|metadata',
 			'iiurlwidth' : mw.getConfig( 'EmbedPlayer.DefaultSize').split('x').pop(),
 			'rvprop' : 'content'
 		}
 		// (only works for commons right now)
-		mw.getJSON( request, function( data ) {
+		mw.getJSON( request, function( data ) {			
 			// Check for "page not found"
 			if( data.query.pages['-1'] ) {
 				//restore content:
 				$j(_this.target).html( _this.orgBody );
 				return ;
 			}
-			// Check for redirect
 			for ( var i in data.query.pages ) {
-				var page = data.query.pages[i];
-				if ( page.revisions[0]['*'] && page.revisions[0]['*'].indexOf( '#REDIRECT' ) === 0 ) {
-					var re = new RegExp( /[^\[]*\[\[([^\]]*)/ );
-					var pt = page.revisions[0]['*'].match( re );
-					if ( pt[1] ) {
-						mw.log( 'found redirect tyring: ' + pt[1] )
-						_this.embedByTitle( pt[1], callback);
-						return ;
-					} else {
-						mw.log( 'Error: getTitleResource could not process redirect' );
-						callback( false );
-						return false;
-					}
-				}
+				var page = data.query.pages[i];				
 				mw.log( "should process data result" );
 				// Else process the result
 				var resource = _this.getResource( page );
@@ -176,7 +172,7 @@ RemoteMwTimedText.prototype = {
 	* Get the embed code from response resource and sends it a callback
 	*/
 	getResource: function( page ) {
-		return {
+		var resource = {
 				'apiTitleKey' : page.title.replace(/File:/ig, '' ),
 				'link'		 : page.imageinfo[0].descriptionurl,
 				'poster'	 : page.imageinfo[0].thumburl,
@@ -184,5 +180,13 @@ RemoteMwTimedText.prototype = {
 				'width' : page.imageinfo[0].width,
 				'height': page.imageinfo[0].height
 			};
+		// check metadata for length:
+		for( var i=0; page.imageinfo[0].metadata.length < i ; i++ ){
+			var meta = page.imageinfo[0].metadata[i];
+			if( meta.name == 'length' ){
+				resource.duration = meta.value;
+			}
+		}
+		return resource;
 	}
 };

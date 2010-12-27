@@ -13,9 +13,9 @@
 }
 /* large play button */
 .k-player .play-btn-large {
-	width: 120px;
+	width: 70px;
 	height: 55px;
-	background: url(images/ksprite.png) no-repeat 28px -433px;
+	background: url(images/ksprite.png) no-repeat 0px -433px;
 	position: absolute;
 	cursor: pointer;
 	border: none;
@@ -26,15 +26,13 @@
 	}
 }
 /*.ui-state-default */
-.k-player .play-btn-large.ui-state-hover {
-	background: url(images/ksprite.png) no-repeat 28px -377px;
+.k-player .play-btn-large:hover {
+	background: url(images/ksprite.png) no-repeat 0px -377px;
 }
 
 /* control icons: */
-.k-player .ui-state-default .ui-icon,.k-player .ui-state-hover .ui-icon
-	{
-	background: transparent url(images/ksprite.png) no-repeat scroll 0 -48px
-		;
+.k-player .ui-state-default .ui-icon,.k-player .ui-state-hover .ui-icon{
+	background: transparent url(images/ksprite.png) no-repeat scroll 0 -48px;
 }
 
 .k-player .ui-state-default .ui-icon-arrow-4-diag {
@@ -275,7 +273,7 @@
 }
 
 
-.k-menu-screens h2 {
+.k-menu-screens h2, .k-menu-screens h3 {
 	padding: 0 0 5px 1px;
 	clear: both;
 	font-size: 12px;

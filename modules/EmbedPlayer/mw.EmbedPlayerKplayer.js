@@ -93,13 +93,12 @@ mw.EmbedPlayerKplayer = {
 		}, 100);
 
 		// Flash player loses its bindings once it changes sizes::
-		$j(_this).bind('openFullScreen', function() {
+		$j(_this).bind('onOpenFullScreen', function() {
 			_this.postEmbedJS();
 		});
-		$j(_this).bind('closeFullScreen', function() {
+		$j(_this).bind('onCloseFullScreen', function() {
 			_this.postEmbedJS();
-		})
-
+		});
 	},
 
 	/**

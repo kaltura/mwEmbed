@@ -371,6 +371,7 @@ mw.TimedTextEdit.prototype = {
 			});
 		})
 	},
+	
 	/**
 	 * Gets the language set.
 	 *
@@ -400,10 +401,11 @@ mw.TimedTextEdit.prototype = {
 			// call out to "anonymous" function to variable scope the langKey
 			$langMenu.append(
 				_this.getLangMenuItem( langKey , source_icon)
-			)
+			);
 		}
 		return $langMenu;
 	},
+	
 	getLangMenuItem: function( langKey , source_icon) {
 		return $j.getLineItem(
 			langKey + ' - ' + mw.Language.names[ langKey ],

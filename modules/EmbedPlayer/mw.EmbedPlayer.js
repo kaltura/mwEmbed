@@ -2063,7 +2063,7 @@ mw.EmbedPlayer.prototype = {
 				'position' : 'absolute',
 				'top' : '0px',
 				'left' : '0px',
-				'background': null				
+				'background': null
 			});
 			// if controls are not overlay add controlBuilder height to interface
 			if( !this.controlBuilder.checkOverlayControls() ){
@@ -3105,7 +3105,7 @@ mw.EmbedPlayer.prototype = {
 			}
 		} else {
 			// If stopped "stop" monitor:
-			this.stopMonitor();			
+			this.stopMonitor();
 		}
 
 		// mw.log('trigger:monitor:: ' + this.currentTime );

@@ -273,10 +273,10 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		if( this.fullscreenMode ){
 			this.restoreWindowPlayer();
-			$j( this.embedPlayer ).trigger( 'closeFullScreen' );
+			$j( this.embedPlayer ).trigger( 'onCloseFullScreen' );
 		}else{
 			this.doFullScreenPlayer( function(){
-				$j( _this.embedPlayer ).trigger( 'openFullScreen' );
+				$j( _this.embedPlayer ).trigger( 'onOpenFullScreen' );
 			});		
 		}
 	},
@@ -1130,7 +1130,6 @@ mw.PlayerControlBuilder.prototype = {
 			'top' : '2px',
 			'right' : '2px'
 		})
-		//.buttonHover()
 		.click( function() {
 			_this.closeMenuOverlay();
 		} );
@@ -1304,8 +1303,15 @@ mw.PlayerControlBuilder.prototype = {
 					if( embedPlayer.selectedPlayer.id == supportingPlayers[i].id && is_selected ) {
 						// Active player ( no link )
 						$playerLine = $j( '<span />' )
-						.text(
-						 	supportingPlayers[i].getName()
+						.append(
+							$j('<a />')
+							.attr({
+								'href' : '#'					
+							})
+							.addClass( 'active')
+							.text( 
+									supportingPlayers[i].getName()
+						 	)
 						);
 						//.addClass( 'ui-state-highlight ui-corner-all' ); removed by ran
 					} else {
@@ -1347,10 +1353,10 @@ mw.PlayerControlBuilder.prototype = {
 							} )
 							.hover(
 								function(){
-									$j( this ).addClass('ui-state-active');
+									$j( this ).addClass('active');
 								},
 								function(){
-									$j( this ).removeClass('ui-state-active');
+									$j( this ).removeClass('active');
 								}
 							);
 					}

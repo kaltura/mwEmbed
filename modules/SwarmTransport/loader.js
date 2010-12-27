@@ -44,7 +44,7 @@
 				classRequest.push( [ 'mw.SwarmTransport' ]);
 				// if IE / ActiveX
 				// Look for swarm player:
-				if( mw.EmbedTypes.testActiveX( 'P2PNext.SwarmPlayer' ) ){
+				if( mw.EmbedTypes && mw.EmbedTypes.testActiveX( 'P2PNext.SwarmPlayer' ) ){
 					// Add vlc and swarmVlc to request
 					classRequest.push( 'mw.EmbedPlayerVlc' );
 					classRequest.push( 'mw.EmbedPlayerSwarmVlc' );

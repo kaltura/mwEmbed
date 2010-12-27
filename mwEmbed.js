@@ -41,7 +41,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 ( function( mw ) {
 	// The version of mwEmbed
 	mw.version = MW_EMBED_VERSION;
-
+	
 	// List valid skins here:
 	mw.validSkins = [ 'mvpcf', 'kskin' ];
 
@@ -90,41 +90,13 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	
 	// Apply any pre-setup config:
 	mw.setConfig( preMwEmbedConfig );
-	
-	/**
-	 * Merge in a configuration value:
-	 */
-	mw.mergeConfig = function( name, value ){
-		if( typeof name == 'object' ) {
-			$j.each( name, function( inx, val) {
-				mw.setConfig( inx, val );
-			});
-			return ;
-		}
-		// Check if we should "merge" the config
-		if( typeof value == 'object' && typeof mwConfig[ name ] == 'object' ) {
-			if ( value.constructor.toString().indexOf("Array") != -1 &&
-				 mwConfig[ name ].constructor.toString().indexOf("Array") != -1 ){
-				// merge in the array
-				mwConfig[ name ] = $j.merge( mwConfig[ name ], value );
-			} else {
-				for( var i in value ){
-					mwConfig[ name ][ i ] = value[ i ];
-				}
-			}
-			return ;
-		}
-		// else do a normal setConfig
-		mwConfig[ name ] = value;
-		mwNonDefaultConfigList.push( name );
-	};
 
 	/**
 	 * Set a default config value Will only update configuration if no value is
 	 * present
 	 *
 	 * @param [Mixed]
-	 *            value Set configuration name to value {Object} Will iderate
+	 *            value Set configuration name to value {Object} Will idorate
 	 *            through each key and call setDefaultConfig {String} Will set
 	 *            configuration by string name to value
 	 */
@@ -135,8 +107,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}
 			return ;
 		}
-		// Only update the controls if undefined
-		if( typeof mwConfig[ name ] == 'undefined' ) {
+		if( typeof mwConfig[ name ] == 'undefined'  ) {
 			mwConfig[ name ] = value;
 			return ;
 		}
@@ -2104,7 +2075,10 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		mw.checkCoreLoaderFile( function(){
 			// Make sure we have jQuery
 			mw.load( 'window.jQuery', function() {
-
+				
+				// Set up mvEmbed utility jQuery bindings
+				mw.dojQueryBindings();
+				
 				// Add jQuery to $j var.
 				if ( ! window[ '$j' ] ) {
 					window[ '$j' ] = jQuery.noConflict();
@@ -2135,10 +2109,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 						} );
 
 						// Update the magic keywords
-						mw.Language.magicSetup();
-
-						// Set up mvEmbed utility jQuery bindings
-						mw.dojQueryBindings();
+						mw.Language.magicSetup();						
 
 
 						// Special Hack for conditional jquery ui inclusion ( once
@@ -2508,7 +2479,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				//mw.log("mwEmbed::jQuery.triggerQueueCallback: " + triggerName + ' number of queued functions:' + callbackCount );
 				var callInx = 0;
 				var doCallbackCheck = function() {
-					//mw.log( 'callback for: ' + mw.getCallStack()[0] + callInx);
+					mw.log( 'callback for: ' + mw.getCallStack()[0] + callInx);
 					callInx++;
 					if( callInx == callbackCount ){
 						callback();

@@ -19,5 +19,6 @@ $messages['en'] = array(
 	'mwe-mirosubs-thankyou-contribution' => 'Thank you for your subtitle contribution',
 	'mwe-mirosubs-subs-saved-error' => 'Error in saving subtitles',
 	'mwe-mirosubs-subs-please-login' => 'Please login',
-	'mwe-mirosubs-subs-please-login-desc' => 'Please login, to use the universal subtitles editor'
+	'mwe-mirosubs-subs-please-login-desc' => 'Please login, to use the universal subtitles editor',
+	'mwe-mirosubs-content-language' => 'Set content language',
 );

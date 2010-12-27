@@ -43,12 +43,13 @@
 						mw.addLoaderDialog( gM('mwe-mirosubs-loading-universal-subtitles') );
 						// Load miro subs:
 						mw.load( 'MiroSubs', function(){
+							// Close loader dialog
+							mw.closeLoaderDialog();
+							
 							// Open the mirosubs dialog:
-							mw.MiroSubsConfig.openDialog( embedPlayer, function(){
-								// dialog Ready close loader
-								mw.closeLoaderDialog();
-							});
+							mw.MiroSubsConfig.openDialog( embedPlayer );
 						});
+						// don't follow the line item # link 
 						return false;
 					})
 				);

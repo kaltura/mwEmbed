@@ -82,7 +82,7 @@ mw.SwarmTransport = {
 		}
 		if( typeof window['tswiftTransport'] != 'undefined' ){
 			return {
-				'url' : mw.getConfig( 'TSwiftTransport.TorrentLookupUrl' )
+				'url' : mw.getConfig( 'TSwiftTransport.TorrentLookupUrl' ),
 				'protocol' : 'tswift://'
 			}
 		}

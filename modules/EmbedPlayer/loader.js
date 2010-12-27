@@ -95,7 +95,48 @@
 		// If the iframe should send and receive javascript events across domains via postMessage 
 		'EmbedPlayer.EnableIframeApi' : false
 	} );
+	
+	/**
+	 * The base source attribute checks also see:
+	 * http://dev.w3.org/html5/spec/Overview.html#the-source-element
+	 */
+	mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [
+		// source id
+		'id',
 
+		// media url
+		'src',
+
+		// Title string for the source asset
+		'title',
+
+		// boolean if we support temporal url requests on the source media
+		'URLTimeEncoding',
+
+		// Media has a startOffset ( used for plugins that
+		// display ogg page time rather than presentation time
+		'startOffset',
+
+		// A hint to the duration of the media file so that duration
+		// can be displayed in the player without loading the media file
+		'durationHint',
+
+		// Media start time
+		'start',
+
+		// Media end time
+		'end',
+
+		// If the source is the default source
+		'default',
+		
+		// Title of the source
+		'title',
+		
+		// titleKey ( used for api lookups TODO move into mediaWiki specific support
+		'titleKey'
+	] );
+	
 	/*
 	 * The default video attributes supported by embedPlayer
 	 */
@@ -298,11 +339,9 @@
 			});
 			// Load the embedPlayer module ( then run queued hooks )
 			mw.load( 'EmbedPlayer', function ( ) {
-				setTimeout( function(){
-					mw.log("EmbedPlayer:: do rewrite players:" + $j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).length );
-					// Rewrite the EmbedPlayer.RewriteTags with the
-					$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer( callback );
-				},1);
+				mw.log("EmbedPlayer:: do rewrite players:" + $j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).length );
+				// Rewrite the EmbedPlayer.RewriteTags with the
+				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer( callback );
 			})
 		} else {
 			callback();

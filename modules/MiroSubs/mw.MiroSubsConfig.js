@@ -6,18 +6,14 @@ mw.includeAllModuleMessages();
  * http://dev.universalsubtitles.org/widget/api_demo.html
  */
 mw.MiroSubsConfig = {
-	openDialog: function( embedPlayer, dialogReadyCallback ){
+	config : null,
+	openDialog: function( embedPlayer ){
 		var _this = this;
 		this.getConfig( embedPlayer , function( config ){
 			if( !config ){
 				return ;
-			}
-			// xxx NOTE there are some weird async display issues
-			// that only seem to be resolvable with timeouts for DOM actions
-			setTimeout(function(){
-				dialogReadyCallback();
-			}, 100);
-			// Show the dialog
+			}			
+			// Show the dialog ( wait 500ms because of weird async DOM issues with mirosub wiget
 			setTimeout(function(){
 				_this.mirosubs = mirosubs.api.openDialog( config );
 			}, 800);
@@ -29,7 +25,8 @@ mw.MiroSubsConfig = {
 	getConfig : function( embedPlayer, callback ){
 		var _this = this;
 
-		if( _this.isConfigReady( callback ) ){
+		if( this.config ){
+			callback( this.config );			
 			// if config is ready stop chain
 			return true;
 		}
@@ -39,7 +36,25 @@ mw.MiroSubsConfig = {
 
 		// Set initial config
 		this.config = this.getDefaultConfig();
-
+		
+		// Check both the user name and subtitles have been set:
+		var isConfigReady = function(){
+			if( _this.config.username 
+					&& 
+				_this.config.subtitles 
+					&&
+				_this.config.languageKey
+			){
+				callback( _this.config );
+			}
+		};
+		
+		// Get the language selection from user input ( dialog )
+		_this.getContentLanguage( function( langKey ){
+			_this.config.languageKey = langKey;
+			isConfigReady();
+		});
+		
 		// Make sure we are logged in::
 		mw.getUserName( function( userName ){
 			mw.log( "MiroSubsConfig::getUserName: " + userName );
@@ -49,12 +64,9 @@ mw.MiroSubsConfig = {
 					'content' : gM('mwe-mirosubs-subs-please-login-desc')
 				});
 				callback( false );
-				return false;
 			} else {
 				_this.config.username = userName;
-				if( _this.isConfigReady( callback ) ){
-					return true;
-				}
+				isConfigReady();
 			}
 		});
 		// Get the subtitles
@@ -62,35 +74,37 @@ mw.MiroSubsConfig = {
 			mw.log("MiroSubsConfig::getSubsInMiroFormat: got" + miroSubs.length + ' subs');
 			// no failure for miro subs ( just an empty object )
 			_this.config.subtitles = miroSubs;
-
-			// Once everything is setup issue the callback with the miro config:
-			if( _this.isConfigReady( callback ) ){
-				return true;
-			}
+			isConfigReady();
 		});
 	},
-	// Check all async values for config ready run the callback if its ready
-	isConfigReady: function( callback ){
-		if( !this.config ){
-			return false;
-		}
-		if( this.config.subtitles
-			&&
-			this.config.username
-		){
-			callback( this.config )
-			return true;
-		}
-		return false;
+	
+	getContentLanguage: function(){
+		var $dialog = mw.addDialog( {
+			'title' : gM("mwe-mirosubs-content-language"),
+			'width' : 450,
+			'content' : $j('<div />').append(
+					$j('<h3 />').text( gM("mwe-mirosubs-content-language") ),
+					$j('<input/>').attr({
+						'id' : 'mwe-mirosubs-save-summary',
+						'size': '35'
+					}).val( gM('mwe-mirosubs-save-default') )
+				),
+			'buttons' : buttons
+		});
 	},
+	
+	/**
+	 * Present a dialog to get the target language
+	 */
+	getTargetLanguageDialog: function( callback ){
+		
+	},
+	
 	getDefaultConfig: function(){
 		var _this = this;
 		return {
 			// By default the config status is 'ok'
 			'status' : 'ok',
-
-			// Default language key 'en':
-			'languageKey' : 'en',
 
 			'closeListener': function(){
 				// close event refresh page?
