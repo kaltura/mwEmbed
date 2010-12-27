@@ -2374,6 +2374,10 @@ mw.EmbedPlayer.prototype = {
 			if( this.isPersistentNativePlayer() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') ){
 				return false;
 			} else {
+				// Set warning that your trying to do iPad controls without persistent native player: 
+				if( mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') ){
+					mw.log("Error:: Trying to set EnableIpadHTMLControls without Persistent Native Player");
+				}
 				return true;
 			}
 		}
