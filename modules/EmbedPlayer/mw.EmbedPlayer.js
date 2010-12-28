@@ -1959,11 +1959,6 @@ mw.EmbedPlayer.prototype = {
 			// Update the clip done playing count:
 			this.donePlayingCount ++;
 
-			// Fire the html5 ended binding
-			var onDoneActionObject = {
-				'runBaseControlDone' : true
-			}
-
 			// Run the ended trigger ( allow the ended object to prevent default
 			// actions )
 			mw.log("EmbedPlayer::onClipDone:Trigger ended");
@@ -2056,7 +2051,6 @@ mw.EmbedPlayer.prototype = {
 		
 		// Set up local jQuery object reference to "mwplayer_interface"
 		this.$interface = $j( this ).parent( '.mwplayer_interface' );
-
 		// if a isPersistentNativePlayer ( overlay the controls )
 		if( !this.useNativePlayerControls() && this.isPersistentNativePlayer() ){
 			this.$interface.css({
@@ -2065,10 +2059,11 @@ mw.EmbedPlayer.prototype = {
 				'left' : '0px',
 				'background': null
 			});
-			// if controls are not overlay subtract controlBuilder height to interface
-			$j('#' + this.pid ).css('height', this.height );
-			
-			
+		
+			if( this.isPersistentNativePlayer() && !_this.controlBuilder.checkOverlayControls() ){
+				// if Persistent native player always give it the player height
+				$j('#' + this.pid ).css('height', this.height - _this.controlBuilder.height );
+			}
 			$j( this ).show();
 			this.controls = true;
 		}

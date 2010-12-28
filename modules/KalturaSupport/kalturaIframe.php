@@ -431,7 +431,7 @@ class kalturaIframe {
 		
 		// Add any additional attributes: 
 		foreach( $this->playerAttributes as $key => $val ){
-			if( isset( $videoTagMap[ $key ] ) && $val != null ) {		
+			if( isset( $videoTagMap[ $key ] ) && $val != null ) {
 				if( $videoTagMap[ $key ] == $val ) {
 					$o.= ' ' . $videoTagMap[ $key ];
 				} else {

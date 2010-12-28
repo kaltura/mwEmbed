@@ -174,7 +174,7 @@ mw.AdTimeline.prototype = {
 					}					
 					_this.embedPlayer.stopEventPropagation();
 					mw.log('mw.AdTimeline: ended displayedPostroll');
-					onDoneActionObject.runBaseControlDone = false;
+					_this.embedPlayer.onDoneInterfaceFlag = false;
 					
 					_this.display( 'postroll' , function(){		
 						var vid = _this.getNativePlayerElement();
