@@ -33,7 +33,7 @@ class kalturaIframe {
 		'wid' => null,
 		'uiconf_id' => null,
 		'entry_id' => null,
-		'autoplay' => true,
+		'autoplay' => null,
 	);
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
