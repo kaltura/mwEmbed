@@ -544,12 +544,12 @@ class kalturaIframe {
 			/* Should allow this to be overided */			
 			#directFileLinkButton {
 				background: url( '<?php echo KALTURA_MWEMBED_PATH ?>skins/common/images/player_big_play_button.png');
-				width: 130px;
-				height: 96px;
+				width: 70px;
+				height: 53px;
 				position: absolute;
 				top:50%;
 				left:50%;
-				margin: -49px 0 0 -65px;
+				margin: -26px 0 0 -35px;
 			}		
 			#directFileLinkThumb{				
 				position: absolute;
