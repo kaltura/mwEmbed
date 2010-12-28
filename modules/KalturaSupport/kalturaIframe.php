@@ -32,7 +32,8 @@ class kalturaIframe {
 		'cache_st' => null,				
 		'wid' => null,
 		'uiconf_id' => null,
-		'entry_id' => null
+		'entry_id' => null,
+		'autoplay' => true,
 	);
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
@@ -400,7 +401,8 @@ class kalturaIframe {
 		$videoTagMap = array(			
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
-			'wid' => 'kwidgetid'
+			'wid' => 'kwidgetid',
+			'autoplay' => 'autoplay',
 		);
 		$posterUrl =  KALTURA_CDN_URL . '/p/' . $this->getPartnerId() . '/sp/' .
 						$this->getPartnerId() . '00/thumbnail/' .
@@ -423,8 +425,12 @@ class kalturaIframe {
 		
 		// Add any additional attributes: 
 		foreach( $this->playerAttributes as $key => $val ){
-			if( isset( $videoTagMap[ $key ] ) && $val != null ) {			
-				$o.= ' ' . $videoTagMap[ $key ] . '="' . htmlspecialchars( $val ) . '"';
+			if( isset( $videoTagMap[ $key ] ) && $val != null ) {		
+				if( $videoTagMap[ $key ] == $val ) {
+					$o.= ' ' . $videoTagMap[ $key ];
+				} else {
+					$o.= ' ' . $videoTagMap[ $key ] . '="' . htmlspecialchars( $val ) . '"';
+				}
 			}
 		}
 		//Close the video tag
