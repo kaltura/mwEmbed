@@ -33,7 +33,13 @@ class kalturaIframe {
 		'wid' => null,
 		'uiconf_id' => null,
 		'entry_id' => null,
-		'autoplay' => null,
+		/*
+		* NOTE: we should set per embed options set via mw.setConfig or via api player Proxy bridge
+		* i.e via the hash url rather than the unique server url
+		* this way the iframe can be cached per uiconf / widget without embed options
+		* poluting the cache. 
+		*/
+		'autoplay' => null,		
 	);
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;

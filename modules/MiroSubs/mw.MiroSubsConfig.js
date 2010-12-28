@@ -15,6 +15,7 @@ mw.MiroSubsConfig = {
 			}			
 			// Show the dialog ( wait 500ms because of weird async DOM issues with mirosub wiget
 			setTimeout(function(){
+				alert( 'do opne dialog');
 				_this.mirosubs = mirosubs.api.openDialog( config );
 			}, 800);
 		});
@@ -41,10 +42,9 @@ mw.MiroSubsConfig = {
 		var isConfigReady = function(){
 			if( _this.config.username 
 					&& 
-				_this.config.subtitles 
-					&&
-				_this.config.languageKey
+				_this.config.subtitles
 			){
+				alert( 'config ready: ' + _this.config.languageKey);
 				callback( _this.config );
 			}
 		};
@@ -52,42 +52,55 @@ mw.MiroSubsConfig = {
 		// Get the language selection from user input ( dialog )
 		_this.getContentLanguage( function( langKey ){
 			_this.config.languageKey = langKey;
-			isConfigReady();
-		});
-		
-		// Make sure we are logged in::
-		mw.getUserName( function( userName ){
-			mw.log( "MiroSubsConfig::getUserName: " + userName );
-			if( !userName ){
-				mw.addDialog({
-					'title' : gM('mwe-mirosubs-subs-please-login'),
-					'content' : gM('mwe-mirosubs-subs-please-login-desc')
-				});
-				callback( false );
-			} else {
-				_this.config.username = userName;
+
+			// Make sure we are logged in::
+			mw.getUserName( function( userName ){
+				mw.log( "MiroSubsConfig::getUserName: " + userName );
+				if( !userName ){
+					mw.addDialog({
+						'title' : gM('mwe-mirosubs-subs-please-login'),
+						'content' : gM('mwe-mirosubs-subs-please-login-desc')
+					});
+					callback( false );
+				} else {
+					_this.config.username = userName;
+					isConfigReady();
+				}
+			});
+			// Get the subtitles
+			_this.getSubsInMiroFormat( function( miroSubs ){
+				mw.log("MiroSubsConfig::getSubsInMiroFormat: got" + miroSubs.length + ' subs');
+				// no failure for miro subs ( just an empty object )
+				_this.config.subtitles = miroSubs;
 				isConfigReady();
-			}
-		});
-		// Get the subtitles
-		_this.getSubsInMiroFormat( function( miroSubs ){
-			mw.log("MiroSubsConfig::getSubsInMiroFormat: got" + miroSubs.length + ' subs');
-			// no failure for miro subs ( just an empty object )
-			_this.config.subtitles = miroSubs;
-			isConfigReady();
+			});
+			
 		});
 	},
-	
-	getContentLanguage: function(){
+	/* 
+	 * present a language selection dialog 
+	 * 
+	 * issue the callback with the selected language code. 
+	 * @param {function} callback
+	 */
+	getContentLanguage: function( callback ){
+		var buttons = { };
+		buttons[ gM( 'mwe-ok' ) ] = function() {
+			// read the 
+			alert( $j('#mwe-mirosubs-lang-select').val() );
+		};
+		buttons[ gM( 'mwe-cancel' ) ] = function() {
+			$j( this ).close();
+		};
+		
 		var $dialog = mw.addDialog( {
 			'title' : gM("mwe-mirosubs-content-language"),
 			'width' : 450,
 			'content' : $j('<div />').append(
-					$j('<h3 />').text( gM("mwe-mirosubs-content-language") ),
-					$j('<input/>').attr({
-						'id' : 'mwe-mirosubs-save-summary',
-						'size': '35'
-					}).val( gM('mwe-mirosubs-save-default') )
+					$j('<h3 />').text( 
+						gM("mwe-mirosubs-content-language") 
+					),
+					mw.ui.languageSelectBox( {'id' : 'mwe-mirosubs-lang-select' } )
 				),
 			'buttons' : buttons
 		});
