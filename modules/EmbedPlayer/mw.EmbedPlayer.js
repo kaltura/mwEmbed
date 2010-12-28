@@ -2065,10 +2065,8 @@ mw.EmbedPlayer.prototype = {
 				'left' : '0px',
 				'background': null
 			});
-			// if controls are not overlay add controlBuilder height to interface
-			if( !this.controlBuilder.checkOverlayControls() ){
-				this.$interface.css('height', this.height + this.controlBuilder.getHeight() );
-			}
+			// if controls are not overlay subtract controlBuilder height to interface
+			$j('#' + this.pid ).css('height', this.height );
 			
 			
 			$j( this ).show();

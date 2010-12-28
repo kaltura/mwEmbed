@@ -60,7 +60,7 @@
 	// includes timedText tracks.
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
 		if( mw.isTimedTextSupported( playerElement ) ) {
-			$j.merge( classRequest, mwTimedTextRequestSet );
+			classRequest = $j.merge( classRequest, mwTimedTextRequestSet );
 		}
 	} );
 	
@@ -84,7 +84,7 @@
 		}
 		// Check for timed text sources or api/ roe url
 		if ( 
-			( embedPlayer.roe || embedPlayer.apiTitleKey ) 
+			( embedPlayer.roe || embedPlayer.apititlekey ) 
 			|| 
 			( embedPlayer.mediaElement && embedPlayer.mediaElement.textSourceExists() )	
 			||

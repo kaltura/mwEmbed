@@ -2104,13 +2104,14 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			// Make sure we have jQuery
 			mw.load( 'window.jQuery', function() {
 				
-				// Set up mvEmbed utility jQuery bindings
-				mw.dojQueryBindings();
-				
 				// Add jQuery to $j var.
 				if ( ! window[ '$j' ] ) {
 					window[ '$j' ] = jQuery.noConflict();
 				}
+				
+				// Set up mvEmbed utility jQuery bindings
+				mw.dojQueryBindings();
+				
 				// Setup user config:
 				mw.setupUserConfig( function(){
 					// Get module loader.js, and language files
@@ -2671,7 +2672,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				} );
 			};
 
-		} )( $j );
+		} )( jQuery );
 	};
 
 } )( window.mw );

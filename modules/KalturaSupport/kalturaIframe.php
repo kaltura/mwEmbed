@@ -592,7 +592,7 @@ class kalturaIframe {
 		} else { 
 			?>
 			<div id="videoContainer" >
-				<div class="loadingSpinner"></div>
+				<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
 				<?php echo $videoHTML ?>
 			</div>
 			<script type="text/javascript">					
@@ -623,7 +623,9 @@ class kalturaIframe {
 				//var kSupportsHTML5 = function(){ return false };
 				//var kSupportsFlash = function(){ return false };
 				if( kSupportsHTML5() ){
-					//Set some iframe embed config:
+					// Remove the loader ( mwEmbed will supply the loader ) 
+					var el = document.getElementById('iframeLoadingSpinner');
+					el.parentNode.removeChild(el);
 					
 					// We can't support full screen in object context since it requires outer page DOM control
 					mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );
