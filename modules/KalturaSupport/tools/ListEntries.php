@@ -172,38 +172,22 @@ class EntriesList {
 	var maxPages = <?php echo $this->maxPages; ?>;
 	var prevUrl = '<?php echo $url . '&page=' . ($this->page - 1); ?>';
 	var nextUrl = '<?php echo $url . '&page=' . ($this->page + 1); ?>';
-	
+
+		
 	mw.ready( function(){
 
+		mw.setConfig( 'Kaltura.IframeRewrite', true );
 		mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
-		mw.setConfig( 'EmbedPlayer.OverlayControls', false );	
-	
-		mw.load(["MD5", 'mw.KApi'], function(){});
+		mw.setConfig( 'EmbedPlayer.OverlayControls', true );		
 		
 		$j('.entry').click( function(){
 			$j(window).scrollTop(0);
 			var entryId = this.hash.slice(1);
-			$j( '#videoContainer' ).loadingSpinner();
-			
-			mw.load( 'EmbedPlayer', function(){
-				
-				$j( '#videoContainer' ).html(
-					$j('<video />')
-					.css({
-						'width' : 400,
-						'height' : 300
-					})
-					.attr({
-						'autoplay' : true,
-						'kentryid' : entryId,
-						'kuiconfid' : 2910531, // set default uiConfId because we don't have one
-						'kwidgetid' : '_' + partnerId
-					})			
-				);
-				
-				// Rewrite all the players on the page
-				$j.embedPlayers();
-			});
+			var url = '../../../mwEmbedFrame.php/entry_id/' + entryId + '/wid/_' + partnerId + '/autoplay/autoplay';
+
+			$j( '#videoContainer iframe' ).css('display', 'block');
+			$j( '#videoContainer iframe' ).attr('src', url);
+
 		});
 
 		if( page <= 1) {
@@ -230,6 +214,7 @@ class EntriesList {
 	.right { float: right; }
 	#wrapper { width: 400px; }
 	#videoContainer { width:400px; text-align: center; }
+	#videoContainer iframe { display: none; }
 	.navigation { clear: both; }
 	ul { list-style-type: none; margin: 0; padding: 0; }
 	li { clear: both; padding: 0 0 20px 0; }
@@ -260,7 +245,9 @@ class EntriesList {
 			echo 'No videos were found.';
 		 } else { 
 	?>
-	<div id="videoContainer">Please Choose Video</div>
+	<div id="videoContainer">
+		<iframe width="400" height="299" frameborder="0" ></iframe>
+	</div>
 	<div class="clear"></div>
 	<div class="navigation">
 		<a class="left" href="#prev">Prev</a>
