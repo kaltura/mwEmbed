@@ -23,8 +23,14 @@
 	    <h1>
       HTML5 ad timeline test
     </h1>
-   	<br>Preroll video (30 seconds fish) <input id="preroll" type="text" size="40" value="http://cdn.kaltura.com/p/423851/sp/42385100/flvclipper/entry_id/1_8c3s1pvx/flavor/1_5slf6gab/a.mp4?novar=0"></input>
-   	<a id="addPrerool" href="#">Update preroll video</a>
+   	<br>Preroll video (5 seconds kaltura) <input id="preroll" type="text" size="40" value="http://cdnbakmi.kaltura.com/p/423851/sp/42385100/serveFlavor/flavorId/1_3ulztti8/name/1_3ulztti8.mp4"></input>
+   	<a id="addPreroll" href="#">Update preroll video</a>
+    </br>
+    <br>Postroll video (5 seconds kaltura) <input id="postroll" type="text" size="40" value="http://cdnbakmi.kaltura.com/p/423851/sp/42385100/serveFlavor/flavorId/1_3ulztti8/name/1_3ulztti8.mp4"></input>
+   	<a id="addPostroll" href="#">Update Postroll video</a>
+    </br>
+    <br>Overlay text:<input id="overlay" type="text" size="40" value="my overlay ad"></input>
+   	<a id="addOverlay" href="#">Update Overlay text</a>
     </br>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
  	<script src="../../../mwEmbedLoader.js?debug=true" type="text/javascript"></script>
@@ -59,16 +65,16 @@
 			// See structure of ad JSON in mw.MobileAdTimeline 
 			mw.load( "mw.AdTimeline", function(){
 		
-				var updatePreRool = function( preRollUrl ){
-					mw.addAdToPlayerTimeline( embedPlayer, 'preroll', 
+				var updateRoll = function( type, url ){
+					mw.addAdToPlayerTimeline( embedPlayer, type, 
 		 	 	 		{ 
 		 	 	 	 		'ads': [
 				 	 	 	 	{
-			 	 					'videoFile' : preRollUrl,
+			 	 					'videoFile' : url,
 			 	 					'companions': [
 			 	 		 	 	 		{
 					 						'id' : 0,
-					 						'html' : '<div style="background-color:#99F">Fish companion Ad</div>'
+					 						'html' : '<div style="background-color:#99F">' + type + ' companion Ad</div>'
 				 						}
 				 					]
 		 						}
@@ -81,46 +87,56 @@
 		 	 	 		}							
 					)
 	 			};
-	 			// update the preroll
-	 			updatePreRool( $j('#preroll').val() );
+				var updateOverlayAd = function( overalyText ){
+					// Insert the overlay video
+					mw.addAdToPlayerTimeline( embedPlayer, 'overlay', 
+	 	 	 	 		{ 
+	 	 	 	 	 		'ads': [
+			 	 	 	 		{			 	 
+		 	 	 					'companions': [
+			 	 	 	 					{
+				 							'id' : 1, 
+				 							'html' : '<div style="background-color:#F99">' + overalyText +'</div>'
+										}
+		 		 					],
+		 	 	 	 	 			'nonLinear': [
+		 	 			            	{
+		 	 	 			            	'width' : 320,
+		 	 	 			            	'height' : 30,
+		 	 	 			            	'html' : '<div style="width:100%;height:100%;background-color:gray;font-size:large">' + overalyText + '</div>'
+		 	 			            	}
+									]
+			 	 	 	 		}
+	 	 					],
+	 	 			 		'start' : 5,
+	 	 	 	 			'frequency' : 10,
+	 	 	 	 			'timeout' : 10,
+		 					'companionTargets': [
+		 					 		{
+	 	 								'elementid':'companionTarget'
+			 	 					}			
+	 	 	 	 			]
+	 	 	 	 		}
+					);
+				}
+	 			
+	 			// update the preroll / postroll
+	 			updateRoll( 'preroll', $j('#preroll').val() );
+	 			updateRoll( 'postroll', $j('#postroll').val() ); 
+	 			updateOverlayAd( $j('#overlay').val() );
 	 			
 				// let the user update the preroll:
-				$j('#addPrerool').click(function(){
-					var _this = this;
-					updatePreRool(  $j('#preroll').val() );
+				$j('#addPreroll').click(function(){
+					updateRoll( 'preroll', $j('#preroll').val() );
 				});
-				
-				
-	 			// Insert the overlay video
-				mw.addAdToPlayerTimeline( embedPlayer, 'overlay', 
- 	 	 	 		{ 
- 	 	 	 	 		'ads': [
-		 	 	 	 		{			 	 
-	 	 	 					'companions': [
-		 	 	 	 					{
-			 							'id' : 1, 
-			 							'html' : '<div style="background-color:#F99">Overlay Companion</div>'
-									}
-	 		 					],
-	 	 	 	 	 			'nonLinear': [
-	 	 			            	{
-	 	 	 			            	'width' : 320,
-	 	 	 			            	'height' : 30,
-	 	 	 			            	'html' : '<div style="width:100%;height:100%;background-color:gray;font-size:large"> overlay Ad </div>'
-	 	 			            	}
-								]
-		 	 	 	 		}
- 	 					],
- 	 			 		'start' : 5,
- 	 	 	 			'frequency' : 10,
- 	 	 	 			'timeout' : 5,
-	 					'companionTargets': [
-	 					 		{
- 	 								'elementid':'companionTarget'
-		 	 					}			
- 	 	 	 			]
- 	 	 	 		}
-				);
+	 			// let the user update the preroll:
+				$j('#addPostroll').click(function(){
+					updateRoll(  'postroll', $j('#postroll').val() );
+				});
+				$j('#addOverlay').click(function(){
+					updateOverlayAd( $j('#overlay').val() );
+				});
+	 			
 			});
  		});
  	</script>
