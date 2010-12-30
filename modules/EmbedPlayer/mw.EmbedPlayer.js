@@ -2487,6 +2487,8 @@ mw.EmbedPlayer.prototype = {
 					unescape( this.apiTitleKey ).replace( /^(File:|Image:)/ , '' ) ) +
 				'?' + mw.getConfig( 'Mw.AppendWithJS' ) +
 				'&embedplayer=yes';
+		} else if ( typeof(mw.IA) != 'undefined') {
+                  var iframeUrl = mw.IA.embedUrl();
 		} else {
 			// old style embed:
 			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
