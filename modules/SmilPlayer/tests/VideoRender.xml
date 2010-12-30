@@ -29,7 +29,7 @@
     	dur="10s"
     />
     
- 	<video src="http://ia331219.us.archive.org/3/items/buckys_poignant_guide_to_why/media-sources%252FBuckminster_Fuller-01.ogv" 		
+ 	<video src="http://www.archive.org/download/buckys_poignant_guide_to_why/media-sources%252FBuckminster_Fuller-01.ogv" 		
 		transIn="fromBlack"	
 		type="video/ogg" 	
 		fill="transition"

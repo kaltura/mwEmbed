@@ -73,8 +73,8 @@ Putting it all together your embed page should look something like this:
         poster="http://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Elephants_Dream.ogg/seek%3D13-Elephants_Dream.ogg.jpg"
         duration="10:53" 
         linkback="http://www.elephantsdream.org/" >
-        <source type="video/ogg" src="http://ia311040.us.archive.org/3/items/ElephantsDream/ed_1024.ogv" >
-        <source type="video/h264" src="http://ia311040.us.archive.org/3/items/ElephantsDream/ed_hd_512kb.mp4" >
+        <source type="video/ogg" src="http://www.archive.org/download/ElephantsDream/ed_1024.ogv" >
+        <source type="video/h264" src="http://www.archive.org/download/ElephantsDream/ed_hd_512kb.mp4" >
         <track kind="subtitles" id="video_af" srclang="af" 
              src="media/elephants_dream/elephant.afrikaans.srt"></track>
         <track kind="subtitles" id="video_en" srclang="en"  
