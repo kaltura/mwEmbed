@@ -197,8 +197,34 @@ div.control-bar { -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-bord
 
     //alert(mw.getConfig('enabledModules'));
     //mw.load('mw.InternetArchiveSupport', function() { alert('loada'); });
+
+
+    
+
+
+    // NOTE: keep this outside "mw.ready()" so that "click-to-play" does indeed
+    // cause the newEmbedPlayerMW() call
+    $( mw ).bind('newEmbedPlayerEvent', mw.IA.newEmbedPlayerMW);
+    
+    mw.ready(function(){
+        mw.log("IAPlayer says mw.ready()");
+        
+        
+        var star = (IAPlay.arg('start') ? parseFloat(IAPlay.arg('start')) : 0);
+        if (star)
+        {
+          mw.IA.resizeMW();
+          var jplay = $('#mwplayer').get(0);
+          var dura = jplay.duration;
+          IAD.log(star+'s of '+dura+'s');
+          
+          jplay.currentTime = star;
+          jplay.play();
+        }
+      });
   }
-}
+};
+
   
 
 mw.IA.setup();
