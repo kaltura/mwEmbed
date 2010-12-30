@@ -32,6 +32,106 @@ mw.IA =
   },
 
 
+
+playingClipNumMW:0,
+
+
+
+// Set up so that:
+//   - when "click to play" clicked, resize video window and playlist
+//   - we advance to the next clip (when 2+ present)
+newEmbedPlayerMW:function(arg)
+{
+  var player = $('#mwplayer');
+  if (!player)
+    return;
+
+  mw.log('newEmbedPlayerMW()');
+  player.bind('ended', mw.IA.onDoneMW);
+  player.unbind('play').bind('play', mw.IA.firstplayMW);
+},
+
+resizeMW:function()
+{
+  var player = $('#mwplayer');
+  
+  $('#flowplayerdiv')[0].style.width  = IAPlay.FLASH_WIDTH;
+  $('#flowplayerdiv')[0].style.height = IAPlay.VIDEO_HEIGHT;
+  
+  $('#flowplayerplaylist')[0].style.width  = IAPlay.FLASH_WIDTH;
+  
+  var jplay = player[0];
+  IAD.log('IA ' + jplay.getWidth() + 'x' + jplay.getHeight());
+  
+  jplay.resizePlayer({'width':  IAPlay.FLASH_WIDTH,
+        'height': IAPlay.VIDEO_HEIGHT},true);
+},
+
+firstplayMW:function()
+{
+  if (typeof(mw.IA.MWsetup)!='undefined')
+    return;
+  mw.IA.MWsetup = true;
+
+  mw.log('firstplayMW()');
+  mw.IA.resizeMW();
+},
+
+
+playClipMW:function(idx, id, mp4, ogv)
+{
+  mw.IA.playingClipNumMW = idx;
+  mw.log('IAplay: '+mp4+'('+idx+')');
+
+  // set things up so we can update the "playing triangle"
+  IAPlay.flowplayerplaylist = $('#flowplayerplaylist')[0];
+  IAPlay.indicateIsPlaying(idx);
+
+  mw.ready(function(){
+
+      var player = $('#mwplayer'); // <div id="mwplayer"><video ...></div>
+      if (!player)
+        return;
+      
+      player.embedPlayer(
+        { 'autoplay' : true, 'autoPlay' : true,
+            'sources' : [
+              { 'src' : '/download/'+id+'/'+mp4 },
+              { 'src' : '/download/'+id+'/'+ogv }
+              ]
+            }
+        );
+    });
+
+  return false;
+},
+
+
+onDoneMW:function(event, onDoneActionObject )
+{
+  mw.IA.playingClipNumMW++;
+  
+  var plist = $('#flowplayerplaylist')[0].getElementsByTagName('tr');
+  mw.log(plist);
+  var row=plist[mw.IA.playingClipNumMW];
+  if (typeof(row)=='undefined')
+    return;
+  
+  var js=row.getAttribute('onClick');
+  //alert('HIYA xxxx tracey '+mw.IA.playingClipNumMW + ' ==> ' + js);
+  
+  var parts=js.split("'");
+  var id=parts[1];
+  var mp4=parts[3];
+  var ogv=parts[5];
+  
+  mw.IA.playClipMW(mw.IA.playingClipNumMW, id, mp4, ogv);
+},
+
+
+  
+  
+
   setup:function()
   {
     mw.IA.css(".archive-icon {\n\
