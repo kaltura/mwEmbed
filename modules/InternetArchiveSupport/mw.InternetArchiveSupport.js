@@ -43,11 +43,21 @@ mw.IA =
   // then go to the item's /details/ page
   detailsLink:function()
   {
-    return (typeof(location.pathname)!='undefined'  &&
-            location.pathname.length>0  &&
-            location.pathname.match(/^\/details\//) ?
-            '/details/'+location.pathname.replace(/^\/details\/([^\/]+).*$/, '$1')
-            : '');
+    if (typeof(location.pathname)!='undefined'  &&
+        location.pathname.length>0  &&
+        location.pathname.match(/^\/details\//))
+    {
+      return
+      '/details/'+location.pathname.replace(/^\/details\/([^\/]+).*$/, '$1');
+    }
+    if (typeof(location.pathname)!='undefined'  &&
+        location.pathname.length>0  &&
+        location.pathname.match(/^\/embed\//))
+    {
+      return
+      '/details/'+location.pathname.replace(/^\/embed\/([^\/]+).*$/, '$1');
+    }
+    return '';
   },
 
 
