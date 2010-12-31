@@ -47,15 +47,15 @@ mw.IA =
         location.pathname.length>0  &&
         location.pathname.match(/^\/details\//))
     {
-      return
-      '/details/'+location.pathname.replace(/^\/details\/([^\/]+).*$/, '$1');
+      return '/details/'+location.pathname.replace(/^\/details\/([^\/]+).*$/,
+                                                   '$1');
     }
     if (typeof(location.pathname)!='undefined'  &&
         location.pathname.length>0  &&
         location.pathname.match(/^\/embed\//))
     {
-      return
-      '/details/'+location.pathname.replace(/^\/embed\/([^\/]+).*$/, '$1');
+      return '/details/'+location.pathname.replace(/^\/embed\/([^\/]+).*$/,
+                                                   '$1');
     }
     return '';
   },
