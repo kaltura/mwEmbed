@@ -93,7 +93,10 @@ newEmbedPlayerMW:function(arg)
   mw.log('newEmbedPlayerMW()');
   player.bind('ended', mw.IA.onDoneMW);
   player.unbind('play').bind('play', mw.IA.firstplayMW);
+
+  player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resizeMW(); }, 500); }); //xxxx timeout lameness
 },
+  
 
 resizeMW:function()
 {
@@ -110,6 +113,7 @@ resizeMW:function()
   jplay.resizePlayer({'width':  this.VIDEO_WIDTH,
         'height': this.VIDEO_HEIGHT},true);
 },
+  
 
 firstplayMW:function()
 {
@@ -249,7 +253,7 @@ div.control-bar { -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-bord
     // NOTE: keep this outside "mw.ready()" so that "click-to-play" does indeed
     // cause the newEmbedPlayerMW() call
     $( mw ).bind('newEmbedPlayerEvent', mw.IA.newEmbedPlayerMW);
-    
+
     mw.ready(function(){
         mw.log("IA Player says mw.ready()");
         
