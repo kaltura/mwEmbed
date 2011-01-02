@@ -42,8 +42,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://192.168.1.68/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_FORCE_DEBUG = true;
+//SCRIPT_LOADER_URL = 'http://192.168.192.81/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
@@ -635,6 +635,36 @@ kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 	}
 	return embedSettings;
 };
+
+/*
+ * Create Kaltura Iframe
+ * @ targetId = div that will contain the iframe
+ * @ options = json object that will contain the iframe options
+ *   { entry_id, partner_id, width, height }
+ * Returns iframe element
+ */
+var kalturaIframeEmbed = function(targetId, options) {
+	
+	var container = document.getElementById(targetId);  // Get container
+	var width = (options.width) ? options.width : 400; // Set width or use default
+	var height = (options.height) ? options.height : 300;	 // Set height or use default
+	var url = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php') + 
+		'/entry_id/' + options.entry_id + '/wid/_' + options.partner_id; // Set url
+	var iframe = document.createElement('iframe'); // Create new Iframe
+	
+	// Set the iframe attributes
+	iframe.setAttribute('class', 'kaltura_player'); // Set class so we can identify the iframe
+	iframe.setAttribute('src', url); // Set the source
+	iframe.setAttribute('frameborder', 0); // No border
+	iframe.setAttribute('width', width);
+	iframe.setAttribute('height', height);
+	
+	// empty the container
+	container.innerHTML = '';
+	// append the iframe to the container
+	container.appendChild(iframe);
+	return iframe;
+}
 
 /**
  * To support kaltura kdp mapping override
