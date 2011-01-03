@@ -650,6 +650,7 @@ var kalturaIframeEmbed = function(targetId, options) {
 	var height = (options.height) ? options.height : 300;	 // Set height or use default
 	var url = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php') + 
 		'/entry_id/' + options.entry_id + '/wid/_' + options.partner_id; // Set url
+		url = (options.hash) ? url + '/' + options.hash : url; // Add hash
 	var iframe = document.createElement('iframe'); // Create new Iframe
 	
 	// Set the iframe attributes
