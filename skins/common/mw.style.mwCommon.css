@@ -187,12 +187,12 @@ ul.ui-provider-selection li a {
 .play-btn-large {
 	width: 70px;
 	height: 53px;
-	background : url(images/player_big_play_button.png?1); 
+	background : url('images/player_big_play_button.png?1'); 
 	position : absolute; 
 	cursor : pointer; 
 	border : none !important;
 	z-index : 1; 
 }
 .play-btn-large:hover {
-	background : url(images/player_big_play_button_hover.png?1); 
+	background : url('images/player_big_play_button_hover.png?1'); 
 }

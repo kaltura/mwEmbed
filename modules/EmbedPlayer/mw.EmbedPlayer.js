@@ -2068,8 +2068,7 @@ mw.EmbedPlayer.prototype = {
 			this.controls = true;
 		}
 		if(  !this.useNativePlayerControls() && !this.isPersistentNativePlayer() && !_this.controlBuilder.checkOverlayControls() ){
-			// give the interface more space for the controls: 
-			//this.$interface.css('height', this.height + _this.controlBuilder.height )
+			// Update the video size per available control space.
 			$j(this).css('height', this.height - _this.controlBuilder.height );
 		}
 		

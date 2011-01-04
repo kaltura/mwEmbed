@@ -5,8 +5,6 @@
  */
 
 //Setup the script local script cache directory
-// ( has to be hard coded rather than config based for fast non-mediawiki config hits )
-$wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/includes/cache';
 
 // Check if being used in mediaWiki ( ResourceLoader.php is NOT an entry point )
 if( is_file ( dirname( __FILE__ ) .'../mwResourceLoader.php' )
@@ -16,10 +14,8 @@ if( is_file ( dirname( __FILE__ ) .'../mwResourceLoader.php' )
 
 // Check if we are an entry point or being used as part of MEDIAWIKI:
 if ( !defined( 'MEDIAWIKI' ) && !defined( 'SCRIPTLOADER_MEDIAWIKI') ) {
-	// Allow an installation an optional PHP customization/overrides file
-	if ( is_file ( dirname( __FILE__ ) .'/../localSettings.php' ) ) {
-		require_once dirname( __FILE__ ) .'/../localSettings.php';
-	}
+	// Include settings ( will include LocalSettings.php in the root mwEmbed folder
+	require_once(  dirname( __FILE__ )  . '/includes/DefaultSettings.php' );
 
 	// Load stand alone Resource Loader config
 	// ( if running as a remote, mediaWiki variables / functions are already included as part of mediaWiki )
@@ -1215,8 +1211,9 @@ class simpleFileCache {
 		$this->filename = "{$wgScriptCacheDirectory}/{$hash1}/{$hash2}/{$hash}.js";
 
 		// Check for defined files::
-		if( is_file( $this->filename ) )
-		return $this->filename;
+		if( is_file( $this->filename ) ){
+			return $this->filename;
+		}
 
 		// Check for non-config based gzip version already there?
 		if( is_file( $this->filename . '.gz') ){

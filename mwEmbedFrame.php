@@ -9,6 +9,8 @@
  * <iframe src="mwEmbedFrame.php?src={SRC URL}&poster={POSTER URL}&width={WIDTH}etc"> </iframe>
  */
 
+// Include configuration: ( will include LocalSettings.php ) 
+require(  dirname( __FILE__ ) . '/includes/DefaultSettings.php' );
 
 // Setup the mwEmbedFrame
 $myMwEmbedFrame = new mwEmbedFrame();
