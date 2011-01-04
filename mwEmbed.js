@@ -1686,6 +1686,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 		// Check for direct include of the mwEmbed.js
 		if ( src.indexOf( 'mwEmbed.js' ) !== -1 ) {
+			alert( 'Direct Refrece to mwEmbed is no longer suported, please update to ResourceLoader.php?class=window.jQuery,mwEmbed& instead');
 			mwpath = src.substr( 0, src.indexOf( 'mwEmbed.js' ) );
 		}
 

@@ -9,8 +9,35 @@
 // The default cache directory
 $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 
-// The absolute or relative path to mwEmbed install folder.  
-$wgMwEmbedPathUrl = false;
+// The absolute or relative path to mwEmbed install folder.
+// by default its the entry point minus the entry point name:
+$wgMwEmbedPathUrl = str_replace( 
+	// List entry points: 
+	array( 'mwEmbedFrame.php', 'ResourceLoader.php' ),
+	'', 
+	$_SERVER['SCRIPT_NAME']
+);
+
+// The list of enabled modules all modules listed here will have their loaders included and 
+// have their javascript functions available.
+// By default we enable every folder the "modules" folder
+$wgMwEmbedEnabledModules = array(
+	'AddMedia',
+	'ClipEdit',
+	'EmbedPlayer',
+	'ApiProxy',
+	'Sequencer',
+	'TimedText',
+	'SmilPlayer',
+	'Playlist',
+	'SwarmTransport',
+	'SyntaxHighlighter',
+	'MiroSubs',
+	'PlayerThemer',
+	'KalturaSupport',
+	'AdSupport',
+	'Plymedia'
+);
 
 /*********************************************************
  * Default Kaltura Configuration: 
@@ -40,13 +67,5 @@ if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
 
-/*********************************************************
- * Set any autoconfigure variables if not set in LocalSettings 
- * 
- * These variables should be set to false at the top of DefaultSettings.php
- ********************************************************/
-if( $wgMwEmbedPathUrl === false ){
-	$wgMwEmbedPathUrl  = str_replace( 'mwEmbedFrame.php', '', $_SERVER['SCRIPT_NAME'] );
-}
 
 ?>

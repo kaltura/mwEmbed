@@ -35,7 +35,7 @@ class NamedResourceLoader {
 	 * Get the javascript resource paths from javascript files
 	 */
 	public static function loadResourcePaths(){
-		global $wgMwEmbedDirectory, $wgExtensionJavascriptModules, $wgUseMwEmbedLoaderModuleList,
+		global $wgMwEmbedDirectory, $wgExtensionJavascriptModules, $wgMwEmbedEnabledModules,
 		$wgResourceLoaderNamedPaths, $wgExtensionMessagesFiles, $IP;
 
 		// Only run once
@@ -73,13 +73,9 @@ class NamedResourceLoader {
 		);
 
 		// Check if we should load module list from mwEmbed loader.js
-		if( $wgUseMwEmbedLoaderModuleList ) {
+		if( $wgMwEmbedEnabledModules ) {
 			// Get the list of enabled modules into $moduleList
-			preg_replace_callback(
-				'/mwEnabledModuleList\s*\=\s*\[(.*)\]/siU',
-				'NamedResourceLoader::preg_buildModuleList',
-				$fileContent
-			);
+			self::validateModuleList( $wgMwEmbedEnabledModules );
 		}
 
 		// Change to the root mediawiki directory ( loader.js paths are relative to root mediawiki directory )
@@ -222,14 +218,10 @@ class NamedResourceLoader {
 
 	/**
 	 * Build the list of modules from the mwEnabledModuleList replace callback
-	 * @param String $jsvar Coma delimited list of modules
+	 * @param String $moduleSet array of modules to be validated
 	 */
-	private static function preg_buildModuleList( $jsvar ){
+	private static function validateModuleList( $moduleSet ){
 		global $IP, $wgMwEmbedDirectory;
-		if(! isset( $jsvar[1] )){
-			return false;
-		}
-		$moduleSet = explode(',', $jsvar[1] );
 
 		$mwEmbedAbsolutePath = ( $wgMwEmbedDirectory == '' )? $IP: $IP .'/' .$wgMwEmbedDirectory;
 
@@ -244,10 +236,9 @@ class NamedResourceLoader {
 				array_push( self::$moduleList, $moduleName );
 			} else {
 				// Not valid module ( missing loader.js )
-				throw new MWException( "Missing module: $moduleName \n" );
+				throw new MWException( "Module: $moduleName missing loader.js \n" );
 			}
 		}
-
 	}
 
 	/**

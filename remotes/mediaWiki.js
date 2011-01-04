@@ -705,7 +705,7 @@ function loadMwEmbed( classSet, callback ) {
 			var jQueryRequested = false;
 			$j.getScript(mwEmbedHostPath + '/libraries/jquery/jquery-1.4.2.js?' + mwGetReqArgs(), function(){
 				// load mwEmbed js
-				$j.getScript(  mwEmbedHostPath + '/mwEmbed.js?' + mwGetReqArgs(), function(){
+				$j.getScript(  mwEmbedHostPath + '/ResourceLoader.php?class=window.jQuery,mwEmbed&&' + mwGetReqArgs(), function(){
 					// Load the class set as part of mwReady callback
 					mw.load( classSet, function(){
 						callback();

@@ -84,7 +84,12 @@
 		}
 		// Check for timed text sources or api/ roe url
 		if ( 
-			( embedPlayer.roe || embedPlayer.apititlekey || embedPlayer.apiTitleKey ) 
+			(	 $j( embedPlayer ).attr( embedPlayer.roe ) 
+				|| 
+				$j( embedPlayer ).attr('apititlekey')
+				||  
+				$j( embedPlayer ).attr('apiTitleKey' )
+			)
 			|| 
 			( embedPlayer.mediaElement && embedPlayer.mediaElement.textSourceExists() )	
 			||
