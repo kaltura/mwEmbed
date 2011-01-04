@@ -2069,7 +2069,8 @@ mw.EmbedPlayer.prototype = {
 		}
 		if(  !this.useNativePlayerControls() && !this.isPersistentNativePlayer() && !_this.controlBuilder.checkOverlayControls() ){
 			// give the interface more space for the controls: 
-			this.$interface.css('height', this.height + _this.controlBuilder.height )
+			//this.$interface.css('height', this.height + _this.controlBuilder.height )
+			$j(this).css('height', this.height - _this.controlBuilder.height );
 		}
 		
 		// Update Thumbnail for the "player"
