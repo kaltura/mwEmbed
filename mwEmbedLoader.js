@@ -150,8 +150,8 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options){
 	var iframe = document.createElement('iframe');
 	iframe.src = iframeSrc;
 	iframe.id = replaceTargetId;
-	iframe.width = options.width;
-	iframe.height = options.height;
+	iframe.width = (options.width) ? options.width : '100%';
+	iframe.height = (options.height) ? options.height : '100%';
 	iframe.style.border = '0px';
 		
 	parentNode.replaceChild(iframe, targetNode );
