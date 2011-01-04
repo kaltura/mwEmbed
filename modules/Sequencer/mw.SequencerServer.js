@@ -76,6 +76,7 @@
 				mw.log("Error: Sequencer server needs a full serverConfig to be initialized");
 				return false;
 			}
+			return this;
 		},
 		getUserName: function(){
 			return this.userName;

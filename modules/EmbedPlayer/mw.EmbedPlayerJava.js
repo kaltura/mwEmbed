@@ -2,7 +2,7 @@
 * List of domains and hosted location of cortado. Lets clients avoid the security warning for cross domain cortado
 */
 window.cortadoDomainLocations = {
-	'upload.wikimedia.org' : 'http://upload.wikimedia.org/jars/cortado.jar'
+		'upload.wikimedia.org' : 'http://upload.wikimedia.org/jars/cortado.jar'		
 };
 
 // Set the default location for CortadoApplet
@@ -32,16 +32,14 @@ mw.EmbedPlayerJava = {
 		var _this = this;
 		mw.log( "java play url:" + this.getSrc( this.seek_time_sec ) );
 
-		var applet_loc = this.getAppletLocation();
-
-		mw.log('Applet location: ' + applet_loc );
+		mw.log('Applet location: ' +  this.getAppletLocation() );
 		mw.log('Play media: ' + this.getSrc() );
 
 		// load directly in the page..
-		// (media must be on the same server or applet must be signed)
+		// ( media must be on the same server or applet must be signed )
 		var appletCode = '' +
 		'<applet id="' + this.pid + '" code="com.fluendo.player.Cortado.class" ' +
-		'archive="' + applet_loc + '" width="' + parseInt( this.getWidth() ) + '" ' +
+		'archive="' + this.getAppletLocation() + '" width="' + parseInt( this.getWidth() ) + '" ' +
 		'height="' + parseInt( this.getHeight() ) + '">	' + "\n" +
 			'<param name="url" value="' + this.getSrc() + '" /> ' + "\n" +
 			'<param name="local" value="false"/>' + "\n" +
@@ -56,8 +54,10 @@ mw.EmbedPlayerJava = {
 			appletCode += '<param name="duration" value="' + parseFloat( this.getDuration() ) + '" />' + "\n";
 		}
 
-			appletCode += '<param name="bufferSize" value="4096" />' + "\n" +
-		'</applet>';
+			appletCode += '<param name="BufferSize" value="4096" />' +
+				'<param name="BufferHigh" value="25">' +
+				'<param name="BufferLow" value="5">' +
+			'</applet>';
 
 		$j( this ).html( appletCode );
 
@@ -96,7 +96,7 @@ mw.EmbedPlayerJava = {
 	*/
 	getAppletLocation: function() {
 		var mediaSrc = this.getSrc();
-		var applet_loc = false;
+		var appletLoc = false;
 		if (
 			!mw.isLocalDomain( mediaSrc )
 			||
@@ -105,15 +105,15 @@ mw.EmbedPlayerJava = {
 			mw.getConfig( 'relativeCortadoAppletPath' ) === false )
 		){
 			if ( window.cortadoDomainLocations[ mw.parseUri( mediaSrc ).host ] ) {
-				applet_loc = window.cortadoDomainLocations[ mw.parseUri( mediaSrc ).host ];
+				appletLoc = window.cortadoDomainLocations[ mw.parseUri( mediaSrc ).host ];
 			} else {
-				applet_loc = 'http://theora.org/cortado.jar';
+				appletLoc = 'http://theora.org/cortado.jar';
 			}
 		} else {
 			// Get the local relative cortado applet location:
-			applet_loc = mw.getConfig( 'relativeCortadoAppletPath' );
+			appletLoc = mw.getConfig( 'relativeCortadoAppletPath' );
 		}
-		return applet_loc;
+		return appletLoc;
 	},
 
 	/**
@@ -128,11 +128,12 @@ mw.EmbedPlayerJava = {
 					//mw.log(' ct: ' + this.playerElement.getPlayPosition() + ' ' + this.supportsURLTimeEncoding());
 
 					currentTime = this.playerElement.currentTime;
-					if ( this.currentTime < 0 ) {
+					// ( java cortado has -1 time ~sometimes~ ) 
+					/*if ( this.currentTime < 0 ) {
 						mw.log( 'pp:' + this.currentTime );
 						// Probably reached clip ( should fire ondone event instead )
 						this.onClipDone();
-					}
+					}*/
 				} catch ( e ) {
 					mw.log( 'could not get time from jPlayer: ' + e );
 				}
@@ -188,7 +189,7 @@ mw.EmbedPlayerJava = {
 					mw.log( 'error:doPlayThenSeek failed' );
 				}
 			}
-		}
+		};
 		readyForSeek();
 	},
 

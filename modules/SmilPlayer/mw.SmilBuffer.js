@@ -4,7 +4,7 @@
 
 mw.SmilBuffer = function( smilObject ){
 	return this.init( smilObject );
-}
+};
 
 mw.SmilBuffer.prototype = {
 
@@ -42,7 +42,7 @@ mw.SmilBuffer.prototype = {
 		}
 
 		// Search for elements from the prevBufferPercent
-		var bufferedStartTime = this.prevBufferPercent * _this.smil.getDuration()
+		var bufferedStartTime = this.prevBufferPercent * _this.smil.getDuration();
 
 		//mw.log("getBufferedPercent:: bufferedStartTime: " + bufferedStartTime );
 
@@ -125,7 +125,7 @@ mw.SmilBuffer.prototype = {
 				// Start loading active assets
 				_this.loadElement( smilElement );
 			}
-		})
+		});
 		// Loop on loading until all elements are loaded
 		setTimeout( function(){
 			if( _this.getBufferedPercent() == 1 ){
@@ -231,7 +231,7 @@ mw.SmilBuffer.prototype = {
 				if( eventData.loaded && eventData.total ) {
 					_this.mediaLoadedPercent[assetId] = eventData.loaded / eventData.total;
 				}
-			})
+			});
 		}
 
 		// Set up reference to media object:
@@ -305,15 +305,17 @@ mw.SmilBuffer.prototype = {
 		mw.log("SmilBuffer::bufferedSeekRelativeTime:" + this.smil.getSmilElementPlayerID( smilElement ) + ' relativeTime: ' + relativeTime + ' absoluteTime:' + absoluteTime );
 		
 		$j( smilElement ).data('activeSeek', true);
-		var instanceCallback = function(){
-			mw.log("SmilBuffer::bufferedSeekRelativeTime: DONE ");
+		var instanceCallback = function(){			
 			$j( smilElement ).data('activeSeek', false);
 			callback();
-		}
+		};
 		switch( this.smil.getRefType( smilElement ) ){
 			case 'video':
-			case 'audio':
-				this.mediaBufferSeek( smilElement, absoluteTime, instanceCallback );
+			case 'audio':			
+				this.mediaBufferSeek( smilElement, absoluteTime, function(){
+					mw.log("SmilBuffer::bufferedSeekRelativeTime: callback time: " + absoluteTime + ' ready ');
+					instanceCallback();
+				});
 			break;
 			case 'img':
 				this.loadImageCallback( smilElement, instanceCallback );
@@ -425,57 +427,67 @@ mw.SmilBuffer.prototype = {
 		
 		mw.log("SmilBuffer::mediaBufferSeek: " + assetId + ' ctime:' + media.currentTime + ' seekTime:' + seekTime );
 		var mediaLoadedFlag = false;
-		var mediaMetaLoaded = function(){		
+		var mediaMetaLoaded = function(){
 			mw.log("SmilBuffer::mediaBufferSeek: Bind against: "  + $media.parent().attr('id') );
 			// check if we need to issue a seek
 			if( media.currentTime == seekTime ){
 				mw.log("SmilBuffer::mediaBufferSeek: Already at target time:" + assetId + ' time:' + seekTime );
-				callback();
+				if( callback )
+					callback();
 				callback = null;
 				return ;
 			}
 			
 			// Register the seeked callback ( throw away any timed out seek request ) 
-			$media.unbind('seeked').bind('seeked', function(){
+			$media.unbind('seeked.smilBuffer').bind('seeked.smilBuffer', function(){
 				mw.log("SmilBuffer::mediaBufferSeek: DONE for:" + assetId + ' time:' + media.currentTime );
-				callback();
+				
+				// TODO Would be great if browsers supported a mode to "stop" loading once we reach a given time
+				
+				if( callback )
+					callback();
 				callback = null;
 			});
-			$media.unbind('seeking').bind( 'seeking', function(){
+			
+			$media.unbind('seeking.smilBuffer').bind( 'seeking.smilBuffer', function(){
 				mw.log("SmilBuffer::mediaBufferSeek: SEEKING:" + assetId ); 
-				// add a timeout re-try
+				media.pause();
+				// Add a timeout to seek request to try again
 				setTimeout(function(){
 					// if the callback has not been called retry: 
 					if( callback ){
-						mw.log("SmilBuffer::mediaBufferSeek: SEEK TimeOut ( retry ) " + assetId );
+						mw.log("SmilBuffer::mediaBufferSeek:seeking TimeOut ( retry ) " + assetId );
 						mediaMetaLoaded();
 					} else{
-						mw.log( "SmilBuffer::mediaBufferSeek: ct: " + media.currentTime + ' st:' + seekTime);
+						mw.log( "SmilBuffer::mediaBufferSeek:seeking OK currentTime: " + media.currentTime + ' seekTime:' + seekTime);
 					}
-				}, 1000 );
-			})
-			// issue a play ( makes seeks work more consistently ) 
+				}, 2000 );
+			});
+			// issue a play ( makes seeks work more consistently than just load ) 
 			media.play();
 			setTimeout(function(){
-				mw.log("SmilBuffer::mediaBufferSeek: set: " + assetId + ' to: ' + seekTime);
+				mw.log("SmilBuffer::mediaBufferSeek: SET: " + assetId + ' to: ' + seekTime);
 				// Issue the seek
 				try{
 					media.pause();
 					media.currentTime = seekTime;
+					media.play();
 				} catch ( e ){
-					mw.log( 'Error: in SmilBuffer could not set currentTime' );
+					mw.log( 'Error: in SmilBuffer could not set currentTime for ' + assetId );
 				}
 			}, 10 ); // give the browser 10ms to make sure the video tag is " really ready " 
-		}
-		mw.log("SmilBuffer::mediaBufferSeek: READY State: " + $media.attr('readyState') );
+		};
+		mw.log("SmilBuffer::mediaBufferSeek: " + assetId + " READY State: " + $media.attr('readyState') );
 		// Read the video state: http://www.w3.org/TR/html5/video.html#dom-media-have_nothing
 		if( $media.attr('readyState') === 0 ){ // HAVE_NOTHING 
 			// Check that we have metadata ( so we can issue the seek )			
-			$media.bind( 'loadedmetadata', function(){
-				$media.unbind( 'loadedmetadata' );
+			$media.bind( 'loadedmetadata.smilBuffer', function(){
+				media.pause();
+				$media.unbind( 'loadedmetadata.smilBuffer' );
 				mediaMetaLoaded();
 			} );
 			media.load();
+			media.play();
 		}else {
 			// Already have metadata directly issue the seek with callback
 			mediaMetaLoaded();
@@ -544,4 +556,4 @@ mw.SmilBuffer.prototype = {
 			runSeekCallback();
 		}
 	}*/
-}
+};

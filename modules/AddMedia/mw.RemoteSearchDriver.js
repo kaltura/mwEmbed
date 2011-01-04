@@ -2398,7 +2398,7 @@ mw.RemoteSearchDriver.prototype = {
 			if ( typeof callback == 'function' ) {
 				callback( status );
 			}
-		}
+		};
 
 		// NOTE: get the localized File/Image namespace name or do a general {NS}:Title
 		var provider = resource.pSobj.provider;

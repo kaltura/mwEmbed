@@ -9,9 +9,23 @@
 .mwe-sequencer .trackNameContainer{
 	overflow:hidden;
 }
+.mwe-sequencer .trackNamesTools {
+	margin: 3px;
+	background-color: #CCC;
+}
+.mwe-sequencer .clickableTimeline{
+ 	background-color: #CCC;
+ 	position: relative;
+	cursor : crosshair;
+}
+
 .mwe-sequencer .clipTrackSetContainer{
 	overflow-x: scroll;
 	overflow-y: hidden !important;
+}
+
+.mwe-sequencer .clipTrackSetContainer, .mwe-sequencer .trackNamesContainer{
+	padding-top:2px !important;;
 }
 
 .mwe-sequencer .clipTrackSet{

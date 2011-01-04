@@ -13,10 +13,10 @@
 *     Dispatches updates to an iframe target for upload proxy
 *
 */
-mw.addMessages( {
+mw.addMessages({
 	"mwe-upload-in-progress" : "Upload in progress (do not close this window)",
-	"mwe-uploaded-status" : "Uploaded",
-	"mwe-transcoded-status" : "Transcoded",
+	"mwe-uploaded-status" : "$1% Uploaded",
+	"mwe-transcoded-status" : "$1% Transcoded",
 	"mwe-uploaded-time-remaining" : "Time remaining: $1",
 	"mwe-upload-done" : "Your upload <i>should be<\/i> accessible."
 } );
@@ -114,20 +114,15 @@ mw.UploadDialogInterface.prototype = {
 			.css( 'float', 'left' )
 			.append(
 				$j( '<span />' )
-				.attr( 'id' , 'up-pstatus')
-				.text( '0% -' ),
-
-				$j( '<span />' )
 				.attr( 'id', 'up-status-state' )
 			)
 		);
 
-		var $statusState = $progressContainer.find( '#up-status-state' );
-		if( options.statusType == 'transcode' ){
-			$statusState.text( gM( 'mwe-transcoded-status' ) );
-		} else {
-			$statusState.text( gM( 'mwe-uploaded-status' ) );
-		}
+		this.statusType = options.statusType;
+		
+		var statusType = ( this.statusType == 'transcode' ) ? 'mwe-transcoded-status' : 'mwe-uploaded-status';
+		$progressContainer.find( '#up-status-state' ).text( gM( statusType, 0 ) );
+		
 
 		// Add the estimated time remaining
 		$progressContainer.append(
@@ -161,7 +156,9 @@ mw.UploadDialogInterface.prototype = {
 		var _this = this;
 
 		$j( '#up-progressbar' ).progressbar( 'value', parseInt( fraction * 100 ) );
-		$j( '#up-pstatus' ).html( parseInt( fraction * 100 ) + '% - ' );
+		
+		var statusType = ( this.statusType == 'transcode' ) ? 'mwe-transcoded-status' : 'mwe-uploaded-status';
+		$j( '#up-status-state' ).html( gM( statusType, parseInt( fraction * 100 ) ) );
 
 		if ( _this.uploadBeginTime) {
 			var elapsedMilliseconds = ( new Date() ).getTime() - _this.uploadBeginTime;

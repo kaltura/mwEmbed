@@ -470,23 +470,9 @@ mw.SmilAnimate.prototype = {
 		if( !htmlElement){
 			htmlElement = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).get(0);
 		}
-
-		// Wrap the target with its natural size ( if not already )
-		if( $target.parent( '.refTransformWrap' ).length == 0 ){
-			$target
-			.wrap(
-				$j( '<div />' )
-				.css( {
-					'top' : '0px',
-					'left' : '0px',
-					'position' : 'absolute',
-					'overflow' : 'hidden',
-					'width'	: '100%',
-					'height' : '100%'
-				} )
-				.addClass( 'refTransformWrap' )
-			)
-		}
+		
+		_this.checkForRefTransformWrap( $target );
+		
 
 		_this.smil.getLayout().getNaturalSize( htmlElement, function( natrualSize ){
 			// XXX note we have locked aspect so we can use 'width' here:
@@ -503,7 +489,41 @@ mw.SmilAnimate.prototype = {
 			//mw.log(' target width: ' + $target.css('width') );
 		});
 	},
-
+	updateElementRotation:  function( smilElement, $target ){
+		var _this = this;
+		// Check if we even need to do a rotate operation:
+		var rotateDeg = $j( smilElement ).attr('rotate');
+		if( ! rotateDeg ){
+			return ;
+		}
+		if( !$target ) {
+			$target = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ));
+		}
+		_this.checkForRefTransformWrap( $target );
+		
+		$target.css( {
+			'-webkit-transform': 'rotate(' + rotateDeg + 'deg) ',
+			'-moz-transform': 'rotate(' + rotateDeg + 'deg)'
+		});
+	},
+	checkForRefTransformWrap: function( $target ){
+		// Wrap the target with its natural size ( if not already )
+		if( $target.parent( '.refTransformWrap' ).length == 0 ){			
+			$target
+			.wrap(
+				$j( '<div />' )
+				.css( {
+					'top' : '0px',
+					'left' : '0px',
+					'position' : 'absolute',
+					'overflow' : 'hidden',
+					'width'	: '100%',
+					'height' : '100%'
+				} )
+				.addClass( 'refTransformWrap' )
+			);
+		}
+	},
 	/**
 	* getInterpolatePointsValue
 	*

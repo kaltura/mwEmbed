@@ -8,7 +8,7 @@ if (!defined('MEDIAWIKI') || !defined('SELENIUMTEST')) {
 // create test suite
 $wgSeleniumTestSuites['EmbedPlayerLoadingTests'] = new SeleniumTestSuite('Embed Player Loading Test Suite');
 $wgSeleniumTestSuites['EmbedPlayerLoadingTests']->addTest(new EmbedPlayerLoads());
-
+	
 class EmbedPlayerLoads extends SeleniumTestCase
 {
 	public $name = "Embed Player Loading Test";

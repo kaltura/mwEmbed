@@ -45,8 +45,12 @@ mw.includeAllModuleMessages();
 		 * The list of enabled sources
 		 */
 		enabledSources: null,
-
-
+		
+		/**
+		 * The current langauge key
+		 */
+		currentLangKey : null,
+		
 		/**
 		 * Stores the last text string per category to avoid dom checks
 		 * for updated text
@@ -189,6 +193,15 @@ mw.includeAllModuleMessages();
 			
 		},
 		/**
+		 * Get the current language key
+		 * 
+		 * @return 
+		 * @type {string}
+		 */
+		getCurrentLangKey: function(){
+			return this.currentLangKey;
+		},
+		/**
 		 * The timed text button to be added to the interface
 		 */
 		getTimedTextButton: function(){
@@ -199,7 +212,7 @@ mw.includeAllModuleMessages();
 			return {
 				'w': 28,
 				'o': function( ctrlObj ) {
-					return $j( '<div />' )
+					$textButton = $j( '<div />' )
 						.attr( 'title', gM( 'mwe-embedplayer-timed_text' ) )
 						.addClass( "ui-state-default ui-corner-all ui-icon_link rButton timed-text" )
 						.append(
@@ -207,12 +220,19 @@ mw.includeAllModuleMessages();
 							.addClass( "ui-icon ui-icon-comment" )
 						)
 						// Captions binding:
-						.buttonHover()
-						.click( function() {
-							_this.showTextMenu();
-						} );
+						.buttonHover();
+					_this.bindTextButton( $textButton );
+					return $textButton;
+						
 				}
 			}
+		},
+		
+		bindTextButton: function($textButton){
+			var _this = this;
+			$textButton.unbind('click.textMenu').bind('click.textMenu', function() {
+				_this.showTextMenu();
+			} );
 		},
 		
 		/**
@@ -464,7 +484,7 @@ mw.includeAllModuleMessages();
 				if( this.config.userLanugage &&
 					this.config.userLanugage == source.srclang.toLowerCase() ) {
 					// Check for category if available
-					this.enabledSources.push( source );
+					this.enableSource( source );
 					return ;
 				}
 			}
@@ -473,7 +493,7 @@ mw.includeAllModuleMessages();
 				for( var i=0; i < this.textSources.length; i++ ) {
 					var source = this.textSources[ i ];
 					if( source.srclang.toLowerCase() == 'en' ) {
-						this.enabledSources.push( source );
+						this.enableSource( source );
 						return ;
 					}
 				}
@@ -482,10 +502,19 @@ mw.includeAllModuleMessages();
 			if( this.enabledSources.length == 0 ) {
 				for( var i=0; i < this.textSources.length; i++ ) {
 					var source = this.textSources[ i ];
-					this.enabledSources.push( source );
+					this.enableSource( source );
 					return ;
 				}
 			}
+		},
+		/**
+		 * Enalbe a source and update the currentLangKey 
+		 * @param source
+		 * @return
+		 */
+		enableSource: function( source ){
+			this.enabledSources.push( source );
+			this.currentLangKey = source.srclang;
 		},
 
 		// Get the current source sub captions
@@ -853,7 +882,12 @@ mw.includeAllModuleMessages();
 		selectTextSource: function( source ) {
 			var _this = this;
 			mw.log("mw.TimedText:: selectTextSource: select lang: " + source.srclang );
-
+			// For some reason we lose binding for the menu ~sometimes~ re-bind
+			this.bindTextButton( this.embedPlayer.$interface.find('timed-text') );
+			
+			
+			this.currentLangKey =  source.srclang;
+			
 			// Update the config language if the source includes language
 			if( source.srclang )
 				this.config.userLanugage = source.srclang;
@@ -867,6 +901,7 @@ mw.includeAllModuleMessages();
 			this.enabledSources = [];
 
 			this.enabledSources.push( source );
+			
 			// Set any existing text target to "loading"
 			if( !source.loaded ) {
 				var $playerTarget = this.embedPlayer.$interface;
@@ -1532,6 +1567,9 @@ mw.includeAllModuleMessages();
 			for ( var i=0; i < sourcePages.query.allpages.length; i++ ) {
 
 				var subPage = sourcePages.query.allpages[i];
+				if( !subPage || !subPage.title ){
+					continue;
+				}
 				var langKey = subPage.title.split( '.' );
 				var extension = langKey.pop();
 				langKey = langKey.pop();

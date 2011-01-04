@@ -21,4 +21,5 @@ $messages['en'] = array(
 	'mwe-mirosubs-subs-please-login' => 'Please login',
 	'mwe-mirosubs-subs-please-login-desc' => 'Please login, to use the universal subtitles editor',
 	'mwe-mirosubs-content-language' => 'Set content language',
+	'mwe-mirosubs-select-language' => 'Select a language to edit with the universal subtitles editor',
 );

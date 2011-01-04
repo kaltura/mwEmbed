@@ -484,6 +484,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 */
 		cleanLoadRequest: function( loadRequest ){
 			var cleanRequest = [];
+			if( ! loadRequest ){
+				return [];
+			}
 			if( typeof loadRequest == 'string' )
 				return loadRequest;
 			for( var i =0;i < loadRequest.length; i++ ){
@@ -2620,16 +2623,17 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				if( options['class'] ) {
 					$button.addClass( options['class'] );
 				}
-
-
+			
 				// return the button:
 				$button.append(
 						$j('<span />').addClass( 'ui-icon ui-icon-' + options.icon ),
 						$j('<span />').addClass( 'btnText' )
-						.text( options.text )
 				)
 				.buttonHover(); // add buttonHover binding;
-				if( !options.text ){
+	
+				if( options.text ){
+					$button.find('.btnText').text( options.text );
+				} else {
 					$button.css('padding', '1em');
 				}
 				return $button;

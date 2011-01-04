@@ -75,9 +75,9 @@ mw.SequencerKeyBindings.prototype = {
 
 
 			// Backspace or Delete key while not focused on a text area:
-			if ( ( e.which == 8 || e.which == 46 ) && !_this.inputFocus )
+			if ( ( e.which == 8 || e.which == 46 ) && !_this.inputFocus ){
 				$j( _this ).trigger( 'delete' );
-
+			}
 		} );
 	}
 };

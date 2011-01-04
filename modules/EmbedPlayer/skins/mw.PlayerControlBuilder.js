@@ -123,12 +123,12 @@ mw.PlayerControlBuilder.prototype = {
 		} );
 
 		// Check for overlay controls:
-		if( ! _this.checkOverlayControls() && ! embedPlayer.controls === false ) {
+		/*if( ! _this.checkOverlayControls() && ! embedPlayer.controls === false ) {
 			// Add some space to interface for the control bar ( if not overlaying controls )
 			$j( embedPlayer ).css( {
 				'height' : parseInt( embedPlayer.height ) - parseInt( this.height )
 			} );
-		}
+		}*/
 		// Make room for audio controls in the interface: 
 		if( embedPlayer.isAudio() && embedPlayer.$interface.height() == 0 ){
 			embedPlayer.$interface.css( {
@@ -569,12 +569,14 @@ mw.PlayerControlBuilder.prototype = {
 		$interface.unbind();
 
 		var bindFirstPlay = false;		
+		
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
 		$j(embedPlayer).unbind('play.ctrl').bind('play.ctrl', function() { //Only bind once played
 			if(bindFirstPlay) {
 				return ;
 			}
 			bindFirstPlay = true;
+			
 			var dblClickTime = 300;
 			var lastClickTime = 0;
 			var didDblClick = false;
@@ -628,6 +630,12 @@ mw.PlayerControlBuilder.prototype = {
 				.hover( bindSpaceUp, bindSpaceDown );
 			
 		} else { // hide show controls:
+			
+			// Show controls on click: 
+			$j(embedPlayer).unbind('click.showCtrlBar').bind('click.showCtrlBar', function(){
+				_this.showControlBar();
+			});
+			
 			//$interface.css({'background-color': 'red'});
 			// Bind a startTouch to show controls
 			$interface.bind( 'touchstart', function() {
@@ -1253,7 +1261,7 @@ mw.PlayerControlBuilder.prototype = {
 		$shareInterface.append(
 
 			$j( '<textarea />' )
-			.attr( 'rows', 1 )
+			.attr( 'rows', 4 )
 			.html( embed_code )
 			.click( function() {
 				$j( this ).select();

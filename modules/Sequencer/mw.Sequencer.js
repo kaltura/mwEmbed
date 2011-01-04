@@ -317,7 +317,7 @@ mw.Sequencer.prototype = {
 
 			/* timeline container */
 			'south__minSize' : 160,
-			'south__size' : 200,
+			'south__size' : 220,
 			'south__onresize' : function(){
 				_this.getTimeline().resizeTimeline();
 			}

@@ -200,14 +200,16 @@ mw.SmilLayout.prototype = {
 							'width' : $target.width(),
 							'height' : $target.height()
 						}
-					)
+					);
+					
 					// Check for panZoom attribute
-					//( if animation is set it will override this value )
 					if( $j( smilElement ).attr('panZoom') ){
 						_this.panZoomLayout( smilElement, $target, img );
 					}
-					if( callback )
+					
+					if( callback ){
 						callback();
+					}
 				});
 				return
 			break;
@@ -670,9 +672,13 @@ mw.SmilLayout.prototype = {
 			mw.log("Layout mode: " + fitMode + ' not yet supported');
 		}
 
-		// Check for panZoom attribute ( if animation is set it will override this value )
+		// Check for panZoom attribute
 		if( $j( smilElement).attr('panZoom') ){
 			_this.panZoomLayout( smilElement );
+		}
+		// Check for rotate property: 
+		if( $j( smilElement).attr('rotate') ){
+			_this.rotateLayout( smilElement );
 		}
 	},
 
@@ -732,7 +738,13 @@ mw.SmilLayout.prototype = {
 		}
 		return transformCss;
 	},
-
+	/**
+	 * Rotate layout update ( just wraps the animate update element call ) 
+	 */
+	rotateLayout: function( smilElement, $target ){
+		this.smil.getAnimate().updateElementRotation( smilElement, $target );
+	},
+	
 	/**
 	 * layout function
 	 */
@@ -769,6 +781,7 @@ mw.SmilLayout.prototype = {
 			_this.smil.getAnimate().updateElementLayout( smilElement, percentValues, $target, layoutElement );
 		});
 	},
+	
 	/**
 	 * Parse pan zoom attribute string
 	 *

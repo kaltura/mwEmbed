@@ -72,8 +72,12 @@ mw.SwarmTransport = {
 			return 'Native';
 		}
 		// Look for swarm player:
-		if( mw.EmbedTypes.testActiveX( 'P2PNext.SwarmPlayer' ) ){
-			return 'SwarmVlc';
+		try{
+			if( mw.EmbedTypes.testActiveX( 'P2PNext.SwarmPlayer' ) ){
+				return 'SwarmVlc';
+			}
+		} catch (e ){
+			mw.log(" Error:: SwarmTransport:testActiveX( 'P2PNext.SwarmPlayer' failed ");
 		}
 		return false;
 	},

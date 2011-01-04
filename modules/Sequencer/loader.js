@@ -23,7 +23,14 @@
 		"mw.SequencerPlayer" : "mw.SequencerPlayer.js",
 		"mw.SequencerTimeline" : "mw.SequencerTimeline.js",
 		"mw.SequencerKeyBindings" : "mw.SequencerKeyBindings.js",
+		
 		"mw.SequencerTools" : "tools/mw.SequencerTools.js",
+		"mw.SequencerToolDuration" : "tools/mw.SequencerToolDuration.js",
+		"mw.SequencerToolEditTemplate" : "tools/mw.SequencerToolEditTemplate.js",
+		"mw.SequencerToolLayout" : "tools/mw.SequencerToolLayout.js",
+		"mw.SequencerToolTransitions" : "tools/mw.SequencerToolTransitions.js",
+		"mw.SequencerToolTrim" : "tools/mw.SequencerToolTrim.js",
+		
 		"mw.SequencerMenu" : "mw.SequencerMenu.js",
 
 		"mw.SequencerActionsSequence" : "actions/mw.SequencerActionsSequence.js",
@@ -72,7 +79,14 @@
 
 				'mw.SequencerTimeline',
 				'mw.SequencerKeyBindings',
-				'mw.SequencerTools',
+				
+				"mw.SequencerTools",
+				"mw.SequencerToolDuration",
+				"mw.SequencerToolEditTemplate",
+				"mw.SequencerToolLayout",
+				"mw.SequencerToolTransitions" ,
+				"mw.SequencerToolTrim",
+				
 				"$j.fn.jPicker",
 				"mw.style.jPicker",
 

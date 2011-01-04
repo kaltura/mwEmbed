@@ -86,7 +86,7 @@ mw.EmbedPlayerSmil = {
 		if( !hideLoader ){
 			if( $j('#loadingSpinner_' + this.id ).length == 0 ){
 				$j( this ).getAbsoluteOverlaySpinner()
-					.attr('id', 'loadingSpinner_' + this.id )
+					.attr('id', 'loadingSpinner_' + this.id );
 			}
 		}
 		// Start seek
@@ -122,7 +122,7 @@ mw.EmbedPlayerSmil = {
 			mw.log("EmbedPlayerSmil:: seek done");
 			_this.seeking = false;
 			_this.monitor();
-		})
+		});
 	},
 
 	/**
@@ -155,8 +155,8 @@ mw.EmbedPlayerSmil = {
 		var _this = this;
 		mw.log(" EmbedPlayerSmil::play " + _this.smilPlayTime + ' to ' + playSegmentEndTime + ' pause time: ' + this.smilPauseTime );
 
-		// Update clock start time
-		_this.clockStartTime = new Date().getTime()
+		// Update clock start time;
+		_this.clockStartTime = new Date().getTime();
 
 		// Update the interface
 		this.parent_play();
@@ -203,7 +203,7 @@ mw.EmbedPlayerSmil = {
 			_this.smil.startBuffer();
 			// Start up monitor:
 			_this.monitor();
-		})
+		});
 	},
 
 	stop: function(){

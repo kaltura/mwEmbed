@@ -38,12 +38,15 @@ $messages['en'] = array(
 
 	'mwe-sequencer-tools-duration-desc' => 'Set clip duration',
 
-	'mwe-sequencer-tools-panzoom' => 'Layout',
-	'mwe-sequencer-clip-panzoom' => 'Panzoom',
-	'mwe-sequencer-tools-panzoom-desc' => 'Set layout position and zoom',
+	'mwe-sequencer-tools-layout' => 'Layout',
+	'mwe-sequencer-tools-layout-desc' => 'Set layout position, rotate and zoom',
+
 	'mwe-sequencer-tools-panzoomhelper' => 'Layout helper',
 	'mwe-sequencer-tools-panzoomhelper-desc' => 'Resize and move the <i>layout helper</i> to update layout',
 	'mwe-sequencer-tools-panzoomhelper-resetlayout' => 'Reset layout',
+	'mwe-sequencer-clip-panzoom' => 'Panzoom',
+	'mwe-sequencer-clip-rotate' => 'Rotate',
+	'mwe-sequencer-clip-rotate-desc' => 'Drag rotate helper to rotate clip',
 
 	'mwe-sequencer-tools-templateedit' => 'Edit template',
 	'mwe-sequencer-template-name' => 'Template page name',

@@ -99,7 +99,6 @@ mw.SequencerActionsSequence.prototype = {
 				.sequencerInput( _this.sequencer )
 			);
 		// XXX todo we should have an autocomplete on sequence name!
-
 		var buttons = {};
 		buttons[ gM('mwe-cancel') ] = function(){ $j( this ).dialog( 'cancel' ); };
 

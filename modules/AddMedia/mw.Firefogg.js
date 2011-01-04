@@ -4,7 +4,7 @@
  */
 
 mw.addMessages({
-	"mwe-upload-transcoded-status" : "Transcoded",
+	"mwe-upload-transcoded-status" : "%1 Transcoded",
 	"mwe-upload-transcode-in-progress" : "Transcode and upload in progress (do not close this window)",
 	"fogg-transcoding" : "Encoding video",
 	"fogg-select_file" : "Select file",
@@ -1047,7 +1047,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	},
 
 	/**
-	 * Internal function called once the token and form data is avaliable
+	 * Internal function called once the token and form data is available
 	 */
 	doUploadWithFormData: function() {
 		var _this = this;
@@ -1057,7 +1057,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 		} else if ( _this.upload_mode == 'post' ) {
 			// Encode and then do a post upload
 			_this.doEncode(
-				function /* onProgress */ ( progress ) {
+				function /* onProgress */ ( progress ) {				
 					_this.ui.updateProgress( progress );
 				},
 				function /* onDone */ () {
@@ -1211,7 +1211,7 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 				// TODO error handling:
 				mw.log( 'encoding failed' );
 			}
-		}
+		};
 		encodingStatus();
 	},
 
@@ -1222,7 +1222,9 @@ mw.Firefogg.prototype = { // extends mw.BaseUploadHandler
 	 */
 	doUploadStatus: function() {
 		var _this = this;
-		$j( '#up-status-state' ).html( gM( 'mwe-uploaded-status' ) );
+		$j( '#up-status-state' ).html( 
+				gM( 'mwe-uploaded-status', 0 ) 
+		);
 
 		_this.oldResponseText = '';
 
