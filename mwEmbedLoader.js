@@ -43,7 +43,7 @@ var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.192.91/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_LOADER_URL = 'http://192.168.1.145/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
@@ -125,15 +125,6 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options){
 		if( attrKey in kalturaAttributeList ){
 			iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
 		}
-	}
-	
-	// Pass along forceHTML5 if present: 
-	if( preMwEmbedConfig['forceMobileHTML5'] != -1 ){
-		iframeSrc+='?forceMobileHTML5=true'
-	};
-	// Pass along hash if present
-	if( options.hash ) {
-		//iframeSrc += options.hash; // Causeing some problems
 	}
 	
 	// Package in the source page url for iframe message checks.

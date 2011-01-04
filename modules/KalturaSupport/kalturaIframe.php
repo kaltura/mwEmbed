@@ -12,6 +12,8 @@ define( 'KALTURA_SERVICE_BASE', '/api_v3/index.php?');
 define( 'KALTURA_MWEMBED_PATH', str_replace( 'mwEmbedFrame.php', '', $_SERVER['SCRIPT_NAME'] ) );
 define( 'KALTURA_UICONF_CACHE_TIME', 600 );
 
+define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server, something maybe broken or server is under high loa.d Please try again.");
+
 // Setup the kalturaIframe
 $mykalturaIframe = new kalturaIframe();
 
@@ -202,6 +204,9 @@ class kalturaIframe {
 		// Include the kaltura client
 		include_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
 		$client = $this->getClient();
+		if( ! $client ){
+			return array();
+		}
 		
 		// @@todo support MultiRequest
 		$client->startMultiRequest();
@@ -228,7 +233,7 @@ class kalturaIframe {
 			$rawResultObject = $client->doQueue();
 			$client->throwExceptionIfError($this->resultObj);
 		} catch( Exception $e ){
-			$this->error = "Error getting sources from server, something maybe broken or server is under high load. Please try again.";
+			$this->error = KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage();
 			return array();
 		}
 				
@@ -264,9 +269,14 @@ class kalturaIframe {
 		// Check modify time on cached php file
 		$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
 		if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ){
-		    $session = $client->session->startWidgetSession( $this->playerAttributes['wid'] );
-		    $this->ks = $session->ks;
-		    file_put_contents( $cacheFile,  $this->ks );
+			try{
+		    	$session = $client->session->startWidgetSession( $this->playerAttributes['wid'] );
+		    	$this->ks = $session->ks;
+		    	file_put_contents( $cacheFile,  $this->ks );
+			} catch ( Exception $e ){
+				$this->error = $this->error = KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage();
+				return false;
+			}
 		} else {
 		  	$this->ks = file_get_contents( $cacheFile );
 		}
@@ -500,11 +510,13 @@ class kalturaIframe {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		}
+		// Gzip the output
 	}
 	
 	function outputIFrame( ){	
 		$this->setIFrameHeaders();
-		
+		// ob_gzhandler automatically checks for browser gzip support in the request
+		ob_start("ob_gzhandler");
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -619,6 +631,9 @@ class kalturaIframe {
 						mw.setConfig( hashObj.mwConfig );
 					}
 				}
+
+				
+				
 				// For testing limited capacity browsers
 				//var kSupportsHTML5 = function(){ return false };
 				//var kSupportsFlash = function(){ return false };
