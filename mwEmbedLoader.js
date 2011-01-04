@@ -43,7 +43,7 @@ var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.192.81/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_LOADER_URL = 'http://192.168.192.91/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
@@ -111,11 +111,13 @@ if( document.URL.indexOf('forceMobileHTML5') != -1 ){
 	mw.setConfig( 'forceMobileHTML5', true );
 }
 function kDoIframeRewriteList( rewriteObjects ){
+	var options;
 	for(var i=0;i < rewriteObjects.length; i++){
-		kDoIframeRewrite( rewriteObjects[i].id, rewriteObjects[i].kSettings, rewriteObjects[i].width, rewriteObjects[i].height );
+		options = { width: rewriteObjects[i].width, height: rewriteObjects[i].height }
+		kalturaIframeEmbed( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
 	}
 }
-function kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height){
+function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options){
 	
 	var iframeSrc = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php');
 	var kalturaAttributeList = { 'uiconf_id':1, 'entry_id':1, 'wid':1, 'p':1};
@@ -129,6 +131,10 @@ function kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height){
 	if( preMwEmbedConfig['forceMobileHTML5'] != -1 ){
 		iframeSrc+='?forceMobileHTML5=true'
 	};
+	// Pass along hash if present
+	if( options.hash ) {
+		//iframeSrc += options.hash; // Causeing some problems
+	}
 	
 	// Package in the source page url for iframe message checks.
 	
@@ -144,8 +150,8 @@ function kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height){
 	var iframe = document.createElement('iframe');
 	iframe.src = iframeSrc;
 	iframe.id = replaceTargetId;
-	iframe.width = width;
-	iframe.height = height;
+	iframe.width = options.width;
+	iframe.height = options.height;
 	iframe.style.border = '0px';
 		
 	parentNode.replaceChild(iframe, targetNode );
@@ -154,8 +160,8 @@ function kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height){
 		$j('<iframe />').attr({
 			'src' : iframeSrc,
 			'id' : replaceTargetId,
-			'width' : width,
-			'height' : height
+			'width' : options.width,
+			'height' : options.height
 		}).css({
 			'border' : '0px'
 		})
@@ -185,7 +191,7 @@ function kOverideSwfObject(){
 				})
 			}
 			if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
-				kDoIframeRewrite( replaceTargetId, kEmbedSettings , width, height);
+				kalturaIframeEmbed( replaceTargetId, kEmbedSettings , { width: width, height: height } );
 			} else {
 				$j('#' + replaceTargetId ).empty()
 				.css({
@@ -635,37 +641,6 @@ kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 	}
 	return embedSettings;
 };
-
-/*
- * Create Kaltura Iframe
- * @ targetId = div that will contain the iframe
- * @ options = json object that will contain the iframe options
- *   { entry_id, partner_id, width, height }
- * Returns iframe element
- */
-var kalturaIframeEmbed = function(targetId, options) {
-	
-	var container = document.getElementById(targetId);  // Get container
-	var width = (options.width) ? options.width : 400; // Set width or use default
-	var height = (options.height) ? options.height : 300;	 // Set height or use default
-	var url = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php') + 
-		'/entry_id/' + options.entry_id + '/wid/_' + options.partner_id; // Set url
-		url = (options.hash) ? url + '/' + options.hash : url; // Add hash
-	var iframe = document.createElement('iframe'); // Create new Iframe
-	
-	// Set the iframe attributes
-	iframe.setAttribute('class', 'kaltura_player'); // Set class so we can identify the iframe
-	iframe.setAttribute('src', url); // Set the source
-	iframe.setAttribute('frameborder', 0); // No border
-	iframe.setAttribute('width', width);
-	iframe.setAttribute('height', height);
-	
-	// empty the container
-	container.innerHTML = '';
-	// append the iframe to the container
-	container.appendChild(iframe);
-	return iframe;
-}
 
 /**
  * To support kaltura kdp mapping override
