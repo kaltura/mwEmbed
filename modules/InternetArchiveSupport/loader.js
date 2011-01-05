@@ -13,4 +13,4 @@
       "mw.InternetArchiveSupport"	: "mw.InternetArchiveSupport.js",
   } );
   
-} ( window.mw );
+}) ( window.mw );
