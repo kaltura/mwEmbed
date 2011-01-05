@@ -62,7 +62,8 @@ $wgKalturaUiConfCacheTime = 600;
 /*********************************************************
  * Include local settings override:
  ********************************************************/
-$wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '../LocalSettings.php'; 
+$wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php';
+
 if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
