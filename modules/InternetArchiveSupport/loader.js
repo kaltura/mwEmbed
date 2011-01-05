@@ -10,7 +10,7 @@
   // mw.setDefaultConfig( { } );
 
   mw.addResourcePaths( {
-      "mw.InternetArchiveSupport"	: "mw.InternetArchiveSupport.js",
+      "mw.InternetArchiveSupport"	: "mw.InternetArchiveSupport.js"
   } );
   
 }) ( window.mw );
