@@ -18,6 +18,9 @@ $wgMwEmbedPathUrl = str_replace(
 	$_SERVER['SCRIPT_NAME']
 );
 
+// Url to the resource loader php script: 
+$wgResourceLoaderUrl = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
+
 // The list of enabled modules all modules listed here will have their loaders included and 
 // have their javascript functions available.
 // By default we enable every folder the "modules" folder
@@ -45,7 +48,7 @@ $wgMwEmbedEnabledModules = array(
  ********************************************************/
 
 // The default Kaltura service url:
-$wgKalturaServiceUrl = 'http://www.kaltura.com/';
+$wgKalturaServiceUrl = 'http://www.kaltura.com';
 
 // Default Kaltura CDN url: 
 $wgKalturaCDNUrl = 'http://cdn.kaltura.com';
