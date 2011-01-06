@@ -13,7 +13,7 @@ $wgScriptCacheDirectory = realpath( dirname( __FILE__ ) ) . '/cache';
 // by default its the entry point minus the entry point name:
 $wgMwEmbedPathUrl = str_replace( 
 	// List entry points: 
-	array( 'mwEmbedFrame.php', 'ResourceLoader.php' ),
+	array( 'mwEmbedFrame.php', 'ResourceLoader.php',  'mwEmbedLoader.php'),
 	'', 
 	$_SERVER['SCRIPT_NAME']
 );
