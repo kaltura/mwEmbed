@@ -338,7 +338,7 @@ mw.SmilBody.prototype = {
 			// Add the parent startOffset
 			$node.data( 'startOffset', startOffset );
 
-			callback( $node )
+			callback( $node );
 		}
 		// Return the node Duration for tracking startOffset
 		return this.getClipDuration( $node );

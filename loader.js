@@ -32,7 +32,7 @@ mw.setDefaultConfig ( {
 	'coreComponents' : mwCoreComponentList,
 
 	// Default jquery ui skin name
-	'jQueryUISkin' : 'kdark',
+	'jQueryUISkin' : 'redmond',
 
 	// The mediaWiki path of mwEmbed
 	'mediaWikiEmbedPath' : 'js/mwEmbed/',

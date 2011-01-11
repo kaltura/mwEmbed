@@ -75,7 +75,6 @@ mw.ready( function() {
 		} else {
 			// Make sure the wikieditor got binded:
 			if ( !didWikiEditorBind ) {
-				mw.log( 'Failed to bind via build section bind via target:' );
 				var $targetFileButton = $j( ".toolbar [rel='file']" );
 
 				$targetFileButton

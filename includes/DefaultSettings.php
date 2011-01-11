@@ -21,26 +21,16 @@ $wgMwEmbedPathUrl = str_replace(
 // Url to the resource loader php script: 
 $wgResourceLoaderUrl = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 
-// The list of enabled modules all modules listed here will have their loaders included and 
-// have their javascript functions available.
-// By default we enable every folder the "modules" folder
-$wgMwEmbedEnabledModules = array(
-	'AddMedia',
-	'ClipEdit',
-	'EmbedPlayer',
-	'ApiProxy',
-	'Sequencer',
-	'TimedText',
-	'SmilPlayer',
-	'Playlist',
-	'SwarmTransport',
-	'SyntaxHighlighter',
-	'MiroSubs',
-	'PlayerThemer',
-	'KalturaSupport',
-	'AdSupport',
-	'Plymedia'
-);
+// The list of enabled modules 
+$wgMwEmbedEnabledModules = array();
+
+// By default we enable every module in the "modules" folder
+$d = dir( realpath( dirname( __FILE__ ) )  . '/../modules' );	
+while (false !== ($entry = $d->read())) {
+	if( substr( $entry, 0, 1 ) != '.' ){
+		$wgMwEmbedEnabledModules[] = $entry;
+	}
+}
 
 /*********************************************************
  * Default Kaltura Configuration: 

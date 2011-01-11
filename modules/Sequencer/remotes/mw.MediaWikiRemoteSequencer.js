@@ -79,12 +79,12 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 			setTimeout(function(){
 				$j( embedPlayer ).siblings( '.kalturaEditOverlay' ).fadeOut( 'fast' );
 				embedPlayer.$interface.find('.k-menu').fadeIn('fast');
-			}, 3500)
+			}, 3500);
 
 			// On end runs before interface bindings (give the dom 10ms to build out the menu )
 			setTimeout(function(){
 				$j( embedPlayer ).siblings( '.k-menu' ).hide();
-			},10)
+			}, 10);
 		});
 		$j( embedPlayer ).bind( 'play', function(){
 			$j( embedPlayer ).siblings( '.kalturaEditOverlay' ).fadeOut( 'fast' );
@@ -111,7 +111,7 @@ mw.remoteSequencerAddEditOverlay = function( embedPlayerId ){
 	if(! $j( '#' + embedPlayerId ).siblings( '.kalturaEditOverlay' ).length ){
 
 		var seqTitle = embedPlayer.apiTitleKey
-			.replace( 'Sequence-', 'Sequence:')
+			.replace( 'Sequence-', 'Sequence:');
 		// strip the extension
 		seqTitle = seqTitle.substr(0, seqTitle.length -4 );
 		// not ideal details page builder but 'should work' ::
@@ -199,7 +199,7 @@ mw.remoteSequencerAddEditOverlay = function( embedPlayerId ){
 
 	$j( '#' + embedPlayerId ).siblings( '.kalturaEditOverlay' )
 	.fadeIn('fast');
-}
+};
 mw.MediaWikiRemoteSequencer = function( options ) {
 	return this.init( options );
 };
@@ -240,7 +240,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 				.click(function(){
 					_this.showEditor();
 					return false;
-				})
+				});
 
 			$j( this.target ).html(
 				gM("mwe-sequencer-no-sequence-create",
@@ -257,7 +257,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 				.click(function(){
 					_this.showEditor();
 					return false;
-				})
+				});
 
 			_this.displayPlayerEmbed();
 		}
@@ -271,7 +271,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 		.click(function(){
 			_this.showEditor();
 			return false;
-		})
+		});
 	},
 
 	showEditUI: function(){
@@ -310,7 +310,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 	displayPlayerEmbed: function(){
 		var _this = this;
 		// load the embedPlayer module:
-		mw.load('EmbedPlayer', function(){
+		mw.load( 'EmbedPlayer', function(){
 			// Check if the sequence has been flattened and is up to date:
 			var request = {
 				'action': 'query',
@@ -334,7 +334,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 							)
 						)
 						.addClass( 'ui-state-highlight' )
-					)
+					);
 				} else {
 					for( var pageId in data.query.pages) {
 						var page = data.query.pages[ pageId ];
@@ -353,7 +353,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 											}).css('cursor', 'pointer')
 										)
 									).addClass( 'ui-state-highlight' )
-								)
+								);
 							}
 						}
 						if( page.imageinfo && page.imageinfo[0] ){
@@ -401,7 +401,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 				$j( _this.target ).empty().append(
 					$j('<div />')
 					.addClass( 'sequencer-player')
-					.css( {
+					.css({
 						'float' : 'left',
 						'width' : width
 					})
@@ -441,7 +441,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 					// Add a clear both to give content body height
 					$j('<div />').css( { 'clear': 'both' } )
 
-				)
+				);
 				// add cat links if set;
 				if( _this.catLinks ){
 					$j( _this.target ).append(

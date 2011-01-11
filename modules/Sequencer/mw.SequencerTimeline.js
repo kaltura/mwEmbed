@@ -18,12 +18,20 @@ mw.SequencerTimeline.prototype = {
 	timelineThumbLayout: {
 		'height': 90,
 		'width' : 120,
-		'spacing': 14
+		// The width of the thumbnail + spacing 
+		'totalWidth': 134 
 	},
 	
 	// The timeline layout mode 
 	// Can be "clip" ( like iMovie ) or "time" ( like finalCut )
 	timelineMode: 'clip',
+	
+	// The smil track to use as the timeline when in clip mode 
+	// ( when in "time" mode we have a uniform pixel to time mapping ) 
+	clipModeTrackIndex: 0,
+	
+	// The base left side offset for the clickable timeline
+	clickableTimelineBaseOffset :10,
 	
 	// Store the max track length
 	maxTrackLength: 0,
@@ -55,6 +63,7 @@ mw.SequencerTimeline.prototype = {
 				)
 				.css( 'height', this.getTimelineContainerHeight() )
 			);
+			
 			// Apply layout control to track name / clipTrackSet division
 			this.trackLayout = this.getTimelineContainer().find( '.timelineTrackContainer')
 				.layout( {
@@ -104,7 +113,7 @@ mw.SequencerTimeline.prototype = {
 		};		
 		// Bind the update event to every time the duration is re-calculated
 		$j( this.sequencer.getEmbedPlayer() ).bind( 'durationchange', updateClickableTimeline );
-		updateClickableTimeline();		
+		updateClickableTimeline();
 	},
 	
 	/**
@@ -123,7 +132,8 @@ mw.SequencerTimeline.prototype = {
 		var _this = this;
 		// For now just a save button:
 		var $trackTools = $j('<div />')
-			.addClass('trackNamesTools');
+			.addClass('trackNamesTools')
+			.css( 'height', '18px');
 		
 		$j.each(this.trackNamesTools, function(toolId, tool){
 			$trackTools.append(
@@ -135,7 +145,7 @@ mw.SequencerTimeline.prototype = {
 				.css({
 					'padding-top': 0,
 					'padding-bottom': 0,
-					'height' : 16
+					'height' : '16px'
 				})
 				.click(function(){
 					tool.action( _this )
@@ -146,12 +156,46 @@ mw.SequencerTimeline.prototype = {
 		return $trackTools;
 	},
 	
-	updateTimelinePlayMarker: function( playTime ){
-		var $timelinePlayMarker = _this.getClickableTimeline().find( '.timelinePlayMarker' );
+	time2TimelineOffset: function( playTime ){
+		var _this = this;
+		if( this.timelineMode == 'clip' ){
+			var smil = this.sequencer.getSmil();
+			var smilSequenceTracks = this.sequencer.getSmil().getBody().getSeqElements();
+			var clipInx = 0;
+			var pixleOffset = 0;
+			smil.getBody().getRefElementsRecurse( smilSequenceTracks[ _this.clipModeTrackIndex ], 0, function( smilElement ){
+				var smilClipDur =  smil.getBody().getClipDuration( smilElement );
+				var startOffset = $j( smilElement ).data('startOffset');
+				if( playTime > startOffset && playTime < (startOffset + smilClipDur) ){
+					// get the base pixel offset: 
+					pixleOffset = _this.clickableTimelineBaseOffset + ( _this.timelineThumbLayout.totalWidth * clipInx ) ;
+					// add relative time offset: 
+					pixleOffset += ( ( playTime - startOffset ) / smilClipDur ) *   _this.timelineThumbLayout.totalWidth;
+				}
+				clipInx++;			
+			});
+			return pixleOffset;
+		}
 	},
 	
 	timelineOffset2Time: function( pixleOffset ){
-		pixleOffset - 10 / ( _this.timelineThumbLayout.width + 14 )
+		var _this = this;
+		if( this.timelineMode == 'clip' ){
+			var smil = this.sequencer.getSmil();
+			// find which clip we are in: 
+			var clipInx = Math.floor( pixleOffset /  _this.timelineThumbLayout.totalWidth );
+			var clipTimePercent = ( pixleOffset % _this.timelineThumbLayout.totalWidth ) / _this.timelineThumbLayout.totalWidth;
+			// Find the relative clip time: 
+
+			// Get at the smil element: 
+			var smilId = $j( '#' + this.getTrackSetId( _this.clipModeTrackIndex ))
+						.find('li').eq(clipInx)
+						.data( 'smilId' );
+			var smilElement = smil.$dom.find( '#' + smilId );
+
+			return $j(smilElement).data('startOffset') + 
+					( smil.getBody().getClipDuration( smilElement ) * clipTimePercent );
+		}
 	},
 	
 	setupClickableTimeline: function( timelineWidth ){
@@ -167,9 +211,29 @@ mw.SequencerTimeline.prototype = {
 			var timelineOffset = event.pageX - $clickTimeline.offset().left;
 			// Get the mouse offset get which clip we are associated with
 			mw.log("clicked: " + timelineOffset );
-			_this.updateTimelinePlayMarker(
-				timelineOffset2Time( timelineOffset )
-			)
+			var clickedTime =_this.timelineOffset2Time( timelineOffset );
+			
+			// Seek to the click time for the embed player:
+			_this.sequencer.getEmbedPlayer().setCurrentTime( clickedTime, function(){
+				mw.log( 'SequencerTimeline::clickableTimeline:: seek done:' + clickedTime );
+			});
+			
+			// Update the play marker
+			_this.getClickableTimeline().find( '.timelinePlayMarker' )
+				.css('left', timelineOffset );
+		});
+		
+		var embedPlayer = _this.sequencer.getEmbedPlayer();
+		var cTime = 0;
+		// Setup play binding ( to update timelinePlayMarker )
+		$j( embedPlayer ).bind( 'monitorEvent', function(){
+			// Check if we have to do an update: 
+			if( cTime !=  embedPlayer.currentTime ){
+				// Update the play marker
+				_this.getClickableTimeline().find( '.timelinePlayMarker' )
+					.css('left', _this.time2TimelineOffset( embedPlayer.currentTime ) );
+			}
+			cTime = embedPlayer.currentTime;
 		});
 		
 		// Add TimelinePlayMarker
@@ -178,7 +242,7 @@ mw.SequencerTimeline.prototype = {
 			.addClass('timelinePlayMarker')
 			.css({
 				'height': this.getTimelineContainerHeight(),
-				'left' : 10,
+				'left' : this.clickableTimelineBaseOffset,
 				'position' : 'absolute',
 				'width' : 2,
 				'z-index' : 2
@@ -196,7 +260,7 @@ mw.SequencerTimeline.prototype = {
 				$j('<div />')
 				.css({
 					'position' : 'absolute',
-					'top' : '10px',
+					'top' : '0px',
 					'height' : '100%',
 					'width' : 2,
 					'background-color' : '#AAF'
@@ -212,13 +276,13 @@ mw.SequencerTimeline.prototype = {
 			// Output a time for each clip ( right now just assume first track ( 0 ) 
 			var clipInx = 0;
 			var startOffset = 0;
-			smil.getBody().getRefElementsRecurse( smilSequenceTracks[0], startOffset, function( smilElement ){
+			smil.getBody().getRefElementsRecurse( smilSequenceTracks[ _this.clipModeTrackIndex ], startOffset, function( smilElement ){
 				mw.log(" offset:" + startOffset + ' clipDur: ' + smil.getBody().getClipDuration( smilElement ) + ' so:' + $j( smilElement ).data( 'startOffset' )	);
 				$j('<span />')
 				.css({
 					'position': 'absolute',
 					'border-left' : 'solid thin #999',
-					'left' : 10 + ( _this.timelineThumbLayout.width + 14 ) * clipInx
+					'left' : 10 + ( _this.timelineThumbLayout.totalWidth ) * clipInx
 				})
 				.text(
 					mw.seconds2npt(
@@ -238,7 +302,7 @@ mw.SequencerTimeline.prototype = {
 	getTimelineContainerHeight: function(){
 		var _this = this;
 		// Start with vertical space for one more track + timeline 
-		var timelineHeight = 80;
+		var timelineHeight = 75;
 		var smilSequenceTracks = this.sequencer.getSmil().getBody().getSeqElements();
 		$j.each(smilSequenceTracks, function( trackIndex, smilSequenceTrack ){
 			timelineHeight+= _this.getSequenceTrackHeight( smilSequenceTrack );
@@ -529,7 +593,7 @@ mw.SequencerTimeline.prototype = {
 		}
 		// TOOD make this use the trackIndex		
 		var trackClipCount = this.getTimelineContainer().find( '.clipTrackSet' ).children().length;
-		return ( (this.timelineThumbLayout.width + 16) * (trackClipCount + extraClips ) );
+		return ( (this.timelineThumbLayout.totalWidth ) * (trackClipCount + extraClips ) );
 	},
 	
 	/**
@@ -942,7 +1006,7 @@ mw.SequencerTimeline.prototype = {
 				'opacity' : '.9',
 				'left': '0px',
 				'height': _this.timelineThumbLayout.height
-			})
+			} )
 			.attr( 'src', smil.getAssetUrl( smilElement.attr('poster') ) )
 			.load( function(){
 				if( $thumbTarget.children().length == 0 ){
@@ -953,7 +1017,7 @@ mw.SequencerTimeline.prototype = {
 			// Sometimes the load event does not fire. Force the fallback image after 5 seconds
 			setTimeout( function(){
 				if( $thumbTarget.children().length == 0 ){
-					mw.log( "SequencerTimeline::drawClipThumb: force image fallabck:: " + img.src);
+					mw.log( "SequencerTimeline::drawClipThumb: timeout, force image fallabck:: " + img.src);
 					$thumbTarget.html( img );
 					if( callback ){
 						callback();
@@ -967,7 +1031,7 @@ mw.SequencerTimeline.prototype = {
 		smil.getBuffer().bufferedSeekRelativeTime( smilElement, relativeTime, function(){
 			// Add the seek, Add to canvas and draw thumb request
 			smil.getLayout().drawSmilElementToTarget( smilElement, $thumbTarget, relativeTime, function(){
-				//mw.log("SequencerTimeline:: Done drawSmilElementToTarget " + $j( smilElement ).attr('id')  + ' cb:' + callback);
+				// mw.log("SequencerTimeline:: Done drawSmilElementToTarget " + $j( smilElement ).attr('id')  + ' cb:' + callback);
 				// Run the callback and un-set it for the current closure
 				if( callback ){
 					callback();
@@ -995,7 +1059,7 @@ mw.SequencerTimeline.prototype = {
 
 		if( $j( smilSequenceTrack).attr('tracktype') == 'audio' ){
 			$trackNameTitle.append(
-					$j('<span />').addClass( 'ui-icon ui-icon-volume-on'),
+					$j('<span />').addClass( 'ui-icon ui-icon-volume-on' ),
 					$j('<span />').text( gM( 'mwe-sequencer-audio-track' ) )
 				);
 		} else {
@@ -1005,6 +1069,7 @@ mw.SequencerTimeline.prototype = {
 					$j('<span />').text( gM( 'mwe-sequencer-video-track' ) )
 				);
 		}
+		
 		// Set track name height
 		$trackNameContainer.css({
 			'height' : this.getSequenceTrackHeight( smilSequenceTrack )

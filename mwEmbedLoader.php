@@ -26,7 +26,7 @@ foreach( $exportedJsConfig as $key => $val ){
 
 // TODO Minify via php_min
 
-// ob_gzhandler automatically checks for browser gzip support in and gzips
+// ob_gzhandler automatically checks for browser gzip support and gzips
 ob_start("ob_gzhandler");
 
 header("Content-type: text/javascript");

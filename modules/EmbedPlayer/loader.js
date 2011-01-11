@@ -93,7 +93,7 @@
 		'EmbedPLayer.IFramePlayer.DomainWhiteList' : '*',
 		
 		// If the iframe should send and receive javascript events across domains via postMessage 
-		'EmbedPlayer.EnableIframeApi' : false
+		'EmbedPlayer.EnableIframeApi' : true
 	} );
 	
 	/**

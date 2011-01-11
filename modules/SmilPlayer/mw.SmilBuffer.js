@@ -414,7 +414,7 @@ mw.SmilBuffer.prototype = {
 		}
 	},
 	/**
-	 * once browsers work better with seeks we can use this code: 
+	 * Do a seek and issue the callback once loaded
 	 */
 	mediaBufferSeek: function ( smilElement, seekTime, callback ){
 		var _this = this;
@@ -443,7 +443,9 @@ mw.SmilBuffer.prototype = {
 				mw.log("SmilBuffer::mediaBufferSeek: DONE for:" + assetId + ' time:' + media.currentTime );
 				
 				// TODO Would be great if browsers supported a mode to "stop" loading once we reach a given time
-				
+				// probably have to adapt something like: 
+				// http://blog.pearce.org.nz/2010/11/how-to-stop-video-or-audio-element.html
+		
 				if( callback )
 					callback();
 				callback = null;

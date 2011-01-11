@@ -4,8 +4,7 @@
  */
 var urlparts = getRemoteEmbedPath();
 var mwEmbedHostPath = urlparts[0];
-var mwRemoteVersion = 'r182';
-var mwUseScriptLoader = true;
+var mwRemoteVersion = 'r183';
 
 // Log the mwRemote version makes it easy to debug cache issues
 if( window.console ){
@@ -34,13 +33,8 @@ if( document.URL.indexOf( 'debug=true' ) !== -1 ){
 if( document.URL.indexOf( 'embedplayer=yes' ) !== -1 ){
 	mwReqParam['embedplayer'] = 'yes';
 }
-// Check if debug mode and disable script grouping
-if( mwReqParam['debug'] ) {
-	mwUseScriptLoader = false;
-}
 
-mwReqParam['debug'] = true;
-mwUseScriptLoader = true;
+//mwReqParam['debug'] = true;
 
 // Setup up some globals to wrap mwEmbed mw.ready and mw.setConfig functions
 
@@ -135,7 +129,7 @@ function doPageSpecificRewrite() {
 	}
 	window.ranMwRewrites = true;
 
-	// Add media wizard ( only if not on a sequence page
+	// Add media wizard 
 	if ( wgAction == 'edit' || wgAction == 'submit' ) {
 		if( wgPageName.indexOf( "Sequence:" ) != 0 ){
 			// Add a timeout to give a chance for wikieditor to build out.
@@ -668,63 +662,51 @@ function loadMwEmbed( classSet, callback ) {
 	}
 	var doLoadMwEmbed = function(){
 		// Inject mwEmbed
-		if ( mwUseScriptLoader ) {
-			var rurl = mwEmbedHostPath + '/ResourceLoader.php?class=';
-	
-			var coma = '';
-	
-	
-			// Add jQuery too if we need it:
-			if ( typeof window.jQuery == 'undefined'
-				||
-				// force load jquery if version 1.3.2 ( issues with '1.3.2' .data handling )
-				jQuery.fn.jquery == '1.3.2')
-			{
-				rurl += 'window.jQuery';
-				coma = ',';
-			}
-			// Add Core mwEmbed lib ( if not already defined )
-			if( typeof MW_EMBED_VERSION == 'undefined' ){
-				rurl += coma + 'mwEmbed,mw.style.mwCommon';
-				coma = ',';
-			}
-	
-			// Add requested classSet to scriptLoader request
-			for( var i=0; i < classSet.length; i++ ){
-				var cName = classSet[i];
-				// always include our version of the library ( too many crazy conflicts with old library versions )
-				rurl += ',' + cName;
-			}
-	
-			// Add the remaining arguments
-			rurl += '&' + mwGetReqArgs();
-			$j.getScript( rurl,  callback);
-		} else {
-	
-			// Force load jQuery for debug mode
-			var jQueryRequested = false;
-			$j.getScript(mwEmbedHostPath + '/libraries/jquery/jquery-1.4.2.js?' + mwGetReqArgs(), function(){
-				// load mwEmbed js
-				$j.getScript(  mwEmbedHostPath + '/ResourceLoader.php?class=window.jQuery,mwEmbed&&' + mwGetReqArgs(), function(){
-					// Load the class set as part of mwReady callback
-					mw.load( classSet, function(){
-						callback();
-					});
-				});
-			});
+		var rurl = mwEmbedHostPath + '/ResourceLoader.php?class=';
+
+		var coma = '';
+		// Add jQuery too if we need it:
+		if ( typeof window.jQuery == 'undefined'
+			||
+			// force load jquery if version 1.3.2 ( issues with '1.3.2' .data handling )
+			jQuery.fn.jquery == '1.3.2')
+		{
+			rurl += 'window.jQuery';
+			coma = ',';
 		}
+		// Add Core mwEmbed lib ( if not already defined )
+		if( typeof MW_EMBED_VERSION == 'undefined' ){
+			rurl += coma + 'mwEmbed,mw.style.mwCommon';
+			coma = ',';
+		}
+
+		// Add requested classSet to scriptLoader request
+		for( var i=0; i < classSet.length; i++ ){
+			var cName = classSet[i];
+			// always include our version of the library ( too many crazy conflicts with old library versions )
+			rurl += ',' + cName;
+		}
+
+		// Add the remaining arguments
+		rurl += '&' + mwGetReqArgs();
+		$j.getScript( rurl,  callback);
 	};
 	
 	// Wait for jQuery ui to be loaded ( so that we can override it ) 
 	// Usability loads jqueryUI asynchronously. We need a to wait until its defined
 	// so that we can override it. )
 	// if not defined after 1 second assume it is not going to be loaded 
+	var waitjQueryUiCount = 0;
 	var waitForJqueryUi = function(){
+		if( waitjQueryUiCount == 200 ){ // 2 seconds
+			doLoadMwEmbed();
+		}
 		if( !window.jQuery.ui ){
 			setTimeout( waitForJqueryUi, 10);
 		} else {
 			doLoadMwEmbed();
 		}
+		waitjQueryUiCount++;
 	};
 	waitForJqueryUi();
 }

@@ -33,7 +33,7 @@
 *	// $j('#iframeid').get(0).play() 
 *	//   and 
 *	// $j('#iframeid').bind('ended', function(){ .. end playback event ... }
-*	'EmbedPlayer.EnableIframeApi' : false
+*	'EmbedPlayer.EnableIframeApi' : true
 */
 var kURID = '1.2h';
 // Static script loader url: 
@@ -43,7 +43,7 @@ var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 //SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.1.145/html5.kaltura/mwEmbed/ResourceLoader.php';
+//SCRIPT_LOADER_URL = 'http://192.168.1.69/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
@@ -105,6 +105,14 @@ if( !mw.setConfig ){
 		}
 	}
 }
+
+/*************************************
+ * Default Kaltura settings
+ *************************************/
+// Set iframe api to true by default:   
+mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
+
+
 
 // Set url based config:
 if( document.URL.indexOf('forceMobileHTML5') != -1 ){
