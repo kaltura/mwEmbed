@@ -1,27 +1,249 @@
 <html>
 <title>
 </title>
-<body>
-<script type="text/javascript" src="../../mwEmbedLoader.js"></script>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+<script type="text/javascript" src="../../../../mwEmbedLoader.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+
+<body>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <script>
-		var currentEntryId = '0_kmfvaphq';
-		var currentEventId = '3125';
-		var previousEventId = '';
-		var playList = {"3125":{"teamInfo":"USA","eventInfo":"made, 2pt","playerInfo":"5 J KIDD","periodInfo":"Q1","kalturaEntryId":"0_kmfvaphq","timeInfo":"0","details":{"gameId":"290","eventNumber":"1","parentVideoId":"209","kalturaEntryId":"0_kmfvaphq","thumbnailUrl":"http:\/\/abcd.com","size":"1000","title":"Testing hard coded title","duration":"2","startTime":"0","endTime":"2","positionOnCourtX":"81","positionOnCourtY":"72","distanceFromRim":"16","myTeamScore":"0","oppTeamScore":"0","gamePeriodId":"1","eventDetailId":"3125","playSets":[],"gamePeriod":"Q1","assist":"no assist","centralPlayerId":"2576","centralPlayerJerseyNumber":"5","centralPlayerImageExt":null,"centralPlayerTeamId":"579","centralPlayerTeamName":"USA","centralPlayerJerseyColor":"#0099CC","centralPlayer":"5 J KIDD","shootingFoul":"no foul","outcome":"made","shotType":"2pt","shotDetail":"layup","setup":"half court","centralPlayerTeamJerseyColor":"#0099CC","opponentTeamId":"580","opponentTeamName":"Spain","opponentTeamJerseyColor":"#330000","teamPossession":"team1"}},"3126":{"teamInfo":"Spain","eventInfo":"made, 3pt","playerInfo":"4 P Gasol","periodInfo":"Q1","kalturaEntryId":"0_hqly2neo","timeInfo":"4","details":{"gameId":"290","eventNumber":"2","parentVideoId":"209","kalturaEntryId":"0_hqly2neo","thumbnailUrl":"http:\/\/abcd.com","size":"1000","title":"Testing hard coded title","duration":"2","startTime":"4","endTime":"6","positionOnCourtX":"117","positionOnCourtY":"87","distanceFromRim":"23","myTeamScore":"0","oppTeamScore":"0","gamePeriodId":"1","eventDetailId":"3126","playSets":[],"gamePeriod":"Q1","shotType":"3pt","shotDetail":"jumpshot","setup":"half court","opponentTeamId":"579","opponentTeamName":"USA","opponentTeamJerseyColor":"#0099CC","centralPlayerTeamId":"580","centralPlayerTeamName":"Spain","centralPlayerTeamJerseyColor":"#330000","teamPossession":"team2","assist":"no assist","centralPlayerId":"2580","centralPlayerJerseyNumber":"4","centralPlayerImageExt":null,"centralPlayerJerseyColor":"#330000","centralPlayer":"4 P Gasol","shootingFoul":"no foul","outcome":"made"}},"3127":{"teamInfo":"USA","eventInfo":"miss, 2pt","playerInfo":"unknown","periodInfo":"Q1","kalturaEntryId":"0_7sfm1hcy","timeInfo":"8","details":{"gameId":"290","eventNumber":"3","parentVideoId":"209","kalturaEntryId":"0_7sfm1hcy","thumbnailUrl":"http:\/\/abcd.com","size":"1000","title":"Testing hard coded title","duration":"2","startTime":"8","endTime":"10","positionOnCourtX":"56","positionOnCourtY":"57","distanceFromRim":"13","myTeamScore":"0","oppTeamScore":"0","gamePeriodId":"1","eventDetailId":"3127","playSets":[],"gamePeriod":"Q1","block":"no block","centralPlayerId":0,"centralPlayer":"unknown","shootingFoul":"no foul","outcome":"miss","reboundType":"defensive","shotType":"2pt","rebounderId":"2584","rebounderJerseyNumber":"8","rebounderImageExt":null,"rebounderTeamId":"580","rebounderTeamName":"Spain","rebounderJerseyColor":"#330000","rebounder":"8 J Calderon","shotDetail":"layup","setup":"half court","centralPlayerTeamId":"579","centralPlayerTeamName":"USA","centralPlayerTeamJerseyColor":"#0099CC","opponentTeamId":"580","opponentTeamName":"Spain","opponentTeamJerseyColor":"#330000","teamPossession":"team1"}},"3128":{"teamInfo":"Spain","eventInfo":"miss, 2pt","playerInfo":"8 J Calderon","periodInfo":"Q1","kalturaEntryId":"0_ljdejvqp","timeInfo":"12","details":{"gameId":"290","eventNumber":"4","parentVideoId":"209","kalturaEntryId":"0_ljdejvqp","thumbnailUrl":"http:\/\/abcd.com","size":"1000","title":"Testing hard coded title","duration":"2","startTime":"12","endTime":"14","positionOnCourtX":"77","positionOnCourtY":"63","distanceFromRim":"16","myTeamScore":"0","oppTeamScore":"0","gamePeriodId":"1","eventDetailId":"3128","playSets":[],"gamePeriod":"Q1","centralPlayerId":"2584","centralPlayerJerseyNumber":"8","centralPlayerImageExt":null,"centralPlayerTeamId":"580","centralPlayerTeamName":"Spain","centralPlayerJerseyColor":"#330000","centralPlayer":"8 J Calderon","shootingFoul":"no foul","outcome":"miss","reboundType":"defensive","shotType":"2pt","shotDetail":"layup","rebounderId":"2577","rebounderJerseyNumber":"6","rebounderImageExt":null,"rebounderTeamId":"579","rebounderTeamName":"USA","rebounderJerseyColor":"#0099CC","rebounder":"6 L Jarves","setup":"half court","opponentTeamId":"579","opponentTeamName":"USA","opponentTeamJerseyColor":"#0099CC","centralPlayerTeamJerseyColor":"#330000","teamPossession":"team2","block":"no block"}}};
-		var flashVars = {"autoPlay":"false","entryId":"0_kmfvaphq","sourceType":"entryId","widgetId":"_291182","partnerId":291182,"streamerType":"http"};
-				
-		var params = {};
-		params.quality = "best";
-		params.wmode = "opaque";
-		params.allowfullscreen = "true";
-		params.allowscriptaccess = "always";
+// relevent parts of searchtool.js ( from krossover ) 
+function jsCallbackReady() {
+	var cat= $('#myKdp').get(0);
+	$('#myKdp').get(0).addJsListener("changeMedia", "changeMediaHandler");
+	$('#myKdp').get(0).addJsListener("playerPlayEnd", "playerPlayEndHandler");
+	$('#myKdp').get(0).addJsListener("mediaReady", "mediaReadyHandler");
+}
+function changeMediaHandler(){
+    
+}
+/**
+*function to sequentially play the video.
+*/
+function playerPlayEndHandler(data, id){
+	// hard code next video for api integration ( works diffrently on krossover site ) 
+	playVideo("3126")
+}
+/**
+*function to play the video.
+*/
+function playVideo(eventId){
+	$('#myKdp').get(0).sendNotification('changeMedia', { entryId:playList[eventId].kalturaEntryId } );
+}
+
+var currentEntryId = '0_kmfvaphq';
+var currentEventId = '3125';
+var previousEventId = '';
+var playList = {
+	"3125":{
+		"teamInfo":"USA",
+		"eventInfo":"made, 2pt",
+		"playerInfo":"5 J KIDD",
+		"periodInfo":"Q1",
+		"kalturaEntryId":"0_kmfvaphq",
+		"timeInfo":"0",
+		"details": {
+			"gameId":"290",
+			"eventNumber":"1",
+			"parentVideoId":"209",
+			"kalturaEntryId":"0_kmfvaphq",
+			"thumbnailUrl":"http:\/\/abcd.com",
+			"size":"1000",
+			"title":"Testing hard coded title",
+			"duration":"2",
+			"startTime":"0",
+			"endTime":"2",
+			"positionOnCourtX":"81",
+			"positionOnCourtY":"72",
+			"distanceFromRim":"16",
+			"myTeamScore":"0",
+			"oppTeamScore":"0",
+			"gamePeriodId":"1",
+			"eventDetailId":"3125",
+			"playSets":[],
+			"gamePeriod":"Q1",
+			"assist":"no assist",
+			"centralPlayerId":"2576",
+			"centralPlayerJerseyNumber":"5",
+			"centralPlayerImageExt":null,
+			"centralPlayerTeamId":"579",
+			"centralPlayerTeamName":"USA",
+			"centralPlayerJerseyColor":"#0099CC",
+			"centralPlayer":"5 J KIDD",
+			"shootingFoul":"no foul",
+			"outcome":"made",
+			"shotType":"2pt",
+			"shotDetail":"layup",
+			"setup":"half court",
+			"centralPlayerTeamJerseyColor":"#0099CC",
+			"opponentTeamId":"580",
+			"opponentTeamName":"Spain",
+			"opponentTeamJerseyColor":"#330000",
+			"teamPossession":"team1"}
+			},
+	"3126":{
+		"teamInfo":"Spain",
+		"eventInfo":"made, 3pt",
+		"playerInfo":"4 P Gasol",
+		"periodInfo":"Q1",
+		"kalturaEntryId":"0_hqly2neo",
+		"timeInfo":"4",
+		"details":{
+			"gameId":"290",
+			"eventNumber":"2",
+			"parentVideoId":"209",
+			"kalturaEntryId":"0_hqly2neo",
+			"thumbnailUrl":"http:\/\/abcd.com",
+			"size":"1000",
+			"title":"Testing hard coded title",
+			"duration":"2",
+			"startTime":"4",
+			"endTime":"6",
+			"positionOnCourtX":"117",
+			"positionOnCourtY":"87",
+			"distanceFromRim":"23",
+			"myTeamScore":"0",
+			"oppTeamScore":"0",
+			"gamePeriodId":"1",
+			"eventDetailId":"3126",
+			"playSets":[],
+			"gamePeriod":"Q1",
+			"shotType":"3pt",
+			"shotDetail":"jumpshot",
+			"setup":"half court",
+			"opponentTeamId":"579",
+			"opponentTeamName":"USA",
+			"opponentTeamJerseyColor":"#0099CC",
+			"centralPlayerTeamId":"580",
+			"centralPlayerTeamName":"Spain",
+			"centralPlayerTeamJerseyColor":"#330000",
+			"teamPossession":"team2",
+			"assist":"no assist",
+			"centralPlayerId":"2580",
+			"centralPlayerJerseyNumber":"4",
+			"centralPlayerImageExt":null,
+			"centralPlayerJerseyColor":"#330000",
+			"centralPlayer":"4 P Gasol",
+			"shootingFoul":"no foul",
+			"outcome":"made"
+				}
+			},
+		"3127":{
+			"teamInfo":"USA",
+			"eventInfo":"miss, 2pt",
+			"playerInfo":"unknown",
+			"periodInfo":"Q1",
+			"kalturaEntryId":"0_7sfm1hcy",
+			"timeInfo":"8",
+			"details":{
+				"gameId":"290",
+				"eventNumber":"3",
+				"parentVideoId":"209",
+				"kalturaEntryId":"0_7sfm1hcy",
+				"thumbnailUrl":"http:\/\/abcd.com",
+				"size":"1000",
+				"title":"Testing hard coded title",
+				"duration":"2",
+				"startTime":"8",
+				"endTime":"10",
+				"positionOnCourtX":"56",
+				"positionOnCourtY":"57",
+				"distanceFromRim":"13",
+				"myTeamScore":"0",
+				"oppTeamScore":"0",
+				"gamePeriodId":"1",
+				"eventDetailId":"3127",
+				"playSets":[],"gamePeriod":"Q1",
+				"block":"no block",
+				"centralPlayerId":0,"centralPlayer":"unknown",
+				"shootingFoul":"no foul",
+				"outcome":"miss",
+				"reboundType":"defensive",
+				"shotType":"2pt",
+				"rebounderId":"2584",
+				"rebounderJerseyNumber":"8",
+				"rebounderImageExt":null,
+				"rebounderTeamId":"580",
+				"rebounderTeamName":"Spain",
+				"rebounderJerseyColor":"#330000",
+				"rebounder":"8 J Calderon",
+				"shotDetail":"layup",
+				"setup":"half court",
+				"centralPlayerTeamId":"579",
+				"centralPlayerTeamName":"USA",
+				"centralPlayerTeamJerseyColor":"#0099CC",
+				"opponentTeamId":"580",
+				"opponentTeamName":"Spain",
+				"opponentTeamJerseyColor":"#330000",
+				"teamPossession":"team1"}
+			},
+		"3128":{
+			"teamInfo":"Spain",
+			"eventInfo":"miss, 2pt",
+			"playerInfo":"8 J Calderon",
+			"periodInfo":"Q1",
+			"kalturaEntryId":"0_ljdejvqp",
+			"timeInfo":"12",
+			"details":{
+				"gameId":"290",
+				"eventNumber":"4",
+				"parentVideoId":"209",
+				"kalturaEntryId":"0_ljdejvqp",
+				"thumbnailUrl":"http:\/\/abcd.com",
+				"size":"1000",
+				"title":"Testing hard coded title",
+				"duration":"2",
+				"startTime":"12","endTime":"14",
+				"positionOnCourtX":"77",
+				"positionOnCourtY":"63",
+				"distanceFromRim":"16",
+				"myTeamScore":"0",
+				"oppTeamScore":"0","gamePeriodId":"1",
+				"eventDetailId":"3128",
+				"playSets":[],"gamePeriod":"Q1",
+				"centralPlayerId":"2584",
+				"centralPlayerJerseyNumber":"8",
+				"centralPlayerImageExt":null,
+				"centralPlayerTeamId":"580",
+				"centralPlayerTeamName":"Spain",
+				"centralPlayerJerseyColor":"#330000",
+				"centralPlayer":"8 J Calderon",
+				"shootingFoul":"no foul",
+				"outcome":"miss",
+				"reboundType":"defensive",
+				"shotType":"2pt",
+				"shotDetail":"layup",
+				"rebounderId":"2577",
+				"rebounderJerseyNumber":"6",
+				"rebounderImageExt":null,
+				"rebounderTeamId":"579",
+				"rebounderTeamName":"USA",
+				"rebounderJerseyColor":"#0099CC",
+				"rebounder":"6 L Jarves",
+				"setup":"half court",
+				"opponentTeamId":"579",
+				"opponentTeamName":"USA",
+				"opponentTeamJerseyColor":"#0099CC",
+				"centralPlayerTeamJerseyColor":"#330000",
+				"teamPossession":"team2",
+				"block":"no block"}
+			}
+		};
+var flashVars = {"autoPlay":"false","entryId":"0_kmfvaphq","sourceType":"entryId","widgetId":"_291182","partnerId":291182,"streamerType":"http"};
 		
-		var attributes = {};
-		attributes.id = "myKdp";
-		attributes.name = "myKdp";
-		attributes.styleclass = "player";
-		swfobject.embedSWF("http://www.kaltura.com/index.php/kwidget/cache_st/1276039174/wid/_291182/uiconf_id/1735272", "myKdp", "640", "360", "9.0.0", "expressInstall.swf", flashVars, params, attributes);
+var params = {};
+params.quality = "best";
+params.wmode = "opaque";
+params.allowfullscreen = "true";
+params.allowscriptaccess = "always";
+
+var attributes = {};
+attributes.id = "myKdp";
+attributes.name = "myKdp";
+attributes.styleclass = "player";
+swfobject.embedSWF("http://www.kaltura.com/index.php/kwidget/cache_st/1276039174/wid/_291182/uiconf_id/1735272", "myKdp", "640", "360", "9.0.0", "expressInstall.swf", flashVars, params, attributes);
 
 </script>
 <div id="video-player">
