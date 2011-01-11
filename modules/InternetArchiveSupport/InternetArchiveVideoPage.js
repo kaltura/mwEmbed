@@ -5,14 +5,6 @@
 * Default player module configuration
 */
 
-/*
-( function( mw ) {
- 
-  mw.addResourcePaths( {
-      "mw.InternetArchiveSupport"	: "mw.InternetArchiveSupport.js"
-  } );
-*/
-
 mw.IA = 
 {
   playingClipNumMW:0,
@@ -235,16 +227,12 @@ div.control-bar { -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-bord
     }
     
     
-    //var mods = mw.getConfig('enabledModules');
-    //mods.push('InternetArchiveSupport');
-
 
     mw.setConfig( {		
         // We want our video player to attribute something...
         "EmbedPlayer.AttributionButton" : true,
         
-        // 'enabledModules' : mods,
-        
+        //'jQueryUISkin' : 'kdark',
         //"EmbedPlayer.NativeControlsMobileSafari" : true, //xxx
         
         // Our attribution button
