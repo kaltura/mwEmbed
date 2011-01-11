@@ -2375,7 +2375,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	showNativePlayer: function(){
 		var _this = this;
-		
 		// Empty the player of any child nodes
 		$j(this).empty();		
 
@@ -2414,7 +2413,7 @@ mw.EmbedPlayer.prototype = {
 		this.applyMediaElementBindings();	
 		
 		// Android only can play with a special play button ( no native controls
-		// persistentNativePlayer has no controls: 
+		// persistentNativePlayer has no controls: 		
 		if( mw.isAndroid2() ){
 			this.addPlayBtnLarge();
 		}
@@ -2422,9 +2421,15 @@ mw.EmbedPlayer.prototype = {
 	},
 	addPlayBtnLarge:function(){
 		var _this = this;
-		$j( '#' + _this.pid ).siblings('.play-btn-large').remove();
-		this.$interface.append( 
-			this.controlBuilder.getComponent('playButtonLarge')
+		var $pid = $j( '#' + _this.pid );
+		$pid.siblings('.play-btn-large').remove();	 
+		$playButton = this.controlBuilder.getComponent('playButtonLarge'); 
+		$pid.after(
+			$playButton
+			.css({
+				'left' : parseInt( $pid.position().left ) + parseInt( $playButton.css('left') ),
+				'top' : parseInt( $pid.position().top ) +  parseInt( $playButton.css('top') )
+			})
 		);
 	},
 	/**

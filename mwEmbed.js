@@ -2512,7 +2512,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				//mw.log("mwEmbed::jQuery.triggerQueueCallback: " + triggerName + ' number of queued functions:' + callbackCount );
 				var callInx = 0;
 				var doCallbackCheck = function() {
-					mw.log( 'callback for: ' + mw.getCallStack()[0] + callInx);
+					//mw.log( 'callback for: ' + mw.getCallStack()[0] + callInx);
 					callInx++;
 					if( callInx == callbackCount ){
 						callback();
@@ -2537,6 +2537,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				}
 				return this;
 			};
+			
 			/**
 			 * Add an absolute overlay spinner useful for cases where the
 			 * element does not display child elements, ( images, video )
@@ -2752,12 +2753,6 @@ function doScrollCheck() {
 	}
 	mw.domReady();
 }
-// temporary hack to work around dom ready breakage when loading 
-// dynamically with other dom ready scripts
-if( typeof KALTURA_LOADER_REV != 'undefined' ){
-	mw.domReady();
-}
-
 
 // If using the resource loader and jQuery has not been set give a warning to
 // the user:
