@@ -4,20 +4,20 @@
 
 // Wrap in mw to not pollute global namespace
 ( function( mw ) {
-	mw.addMessages( {
+	mw.addMessages({
 		"mwe-mirosubs-add-universal-subtitles" : "Universal subtitles editor",
 		"mwe-mirosubs-loading-universal-subtitles" : "Loading <i>universal subtitles</i> editor"
 	});
 	
 	// Add as loader dependency 'mw.style.mirosubsMenu'
-	mw.addResourcePaths( {
+	mw.addResourcePaths({
 		"mirosubs" : "mirosubs/mirosubs-api.min.js",
 		"mw.MiroSubsConfig" : "mw.MiroSubsConfig.js",
 		"mw.style.mirosubsMenu" : "css/mw.style.mirosubsMenu.css",
 		"mw.style.mirosubswidget" : "mirosubs/media/css/mirosubs-widget.css"
 	});
 
-	mw.setDefaultConfig( {
+	mw.setDefaultConfig({
 		'MiroSubs.EnableUniversalSubsEditor': true
 	});
 

@@ -615,6 +615,7 @@ class kalturaIframe {
 
 			// Add Packaging Kaltura Player Data ( JSON Encoded )
 			mw.setConfig('KalturaSupport.BootstrapPlayerData', <?php echo json_encode( $this->getResultObject() ) ?>);
+			
 			// Parse any configuration options passed in via hash url:
 			var hashString = document.location.hash; 
 			if( hashString ){
@@ -644,7 +645,7 @@ class kalturaIframe {
 				// Load the mwEmbed resource library
 				mw.ready(function(){
 					// Bind window resize to reize the player: 
-					$j(window).resize(function(){
+					$j( window ).resize( function(){
 						$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
 							.get(0).resizePlayer({
 								'width' : $j(window).width(),

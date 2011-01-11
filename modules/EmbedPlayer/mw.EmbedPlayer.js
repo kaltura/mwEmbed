@@ -265,37 +265,32 @@ EmbedPlayerManager.prototype = {
 		// that add to the request set
 		var playerDependencyRequest = [];
 
-		// merge in any custom attributes
+		// Merge in any custom attributes
 		$j.extend( playerElement, attributes );
 
 		// Update the list of dependent libraries for the player
-		// ( allows extensions to add to the dependency list )
+		// ( allows modules to add to the player dependency list )
 		mw.embedPlayerUpdateLibraryRequest( playerElement, playerDependencyRequest );
+		
 		// Load any skins we need then swap in the interface
 		mw.load( playerDependencyRequest, function() {
 			
 			var waitForMeta = true;
 
-			// Be sure to "stop" the target ( sometimes firefox keeps playing
+			// Be sure to "stop" the target ( Firefox 3x keeps playing
 			// the video even though its been removed from the DOM )
 			if( playerElement.pause ){
 				playerElement.pause();
 			}
+			
+			// Allow modules to override the wait for metadata flag:
+			$j( mw ).trigger( 'checkPlayerWaitForMetaData', playerElement );
+
+			// Update the waitForMeta object if set to boolean false: 
+			waitForMeta = ( playerElement.waitForMeta === false )? false : true;
 
 
-			// Let extensions determine if its worthwhile to wait for metadata:
-			// We pass an object to the trigger to preserve reference values
-			var eventObject = {
-				'playerElement' : playerElement,
-				'waitForMeta' : waitForMeta
-			};
-			$j( mw ).trigger( 'addElementWaitForMetaEvent', eventObject );
-
-			// update the waitForMeta
-			waitForMeta = eventObject[ 'waitForMeta' ];
-
-
-			// Set the wait for meta flag if unset by extension
+			// Confirm we want to wait for meta data ( if not already set to false by module )
 			if( waitForMeta ){
 				waitForMeta = _this.waitForMetaCheck( playerElement );
 			}
@@ -309,30 +304,18 @@ EmbedPlayerManager.prototype = {
 					return ;
 				}
 				ranPlayerSwapFlag = true;
-				
 				mw.log("EmbedPlayer::runPlayerSwap::" + $j( playerElement ).attr('id') );
 
 				var playerInterface = new mw.EmbedPlayer( playerElement , attributes);
 				var swapPlayer = _this.swapEmbedPlayerElement( playerElement, playerInterface );
+				
 
-				// Copy over any data attributes from the playerElement
-				if( mw.getConfig( 'EmbedPlayer.DataAttributes' ) ) {
-					var dataAttr = mw.getConfig( 'EmbedPlayer.DataAttributes' );
-					for( var i in dataAttr ){
-						if( $j( playerElement ).data( i ) ){
-							$j( '#' + playerInterface.id ).data( i, $j( playerElement ).data( i ) );
-						}
-					}
-				}
-
-				// Pass the id to any hook that needs to interface prior to
-				// checkPlayerSources
+				// Trigger the newEmbedPlayerEvent for embedPlayer interface
 				mw.log("EmbedPlayer::addElement :trigger " + playerInterface.id );
 				$j( mw ).trigger ( 'newEmbedPlayerEvent', $j( '#' + playerInterface.id ).get(0) );
 
 				// Issue the checkPlayerSources call to the new player
-				// interface:
-				// make sure to use the element that is in the DOM:
+				// interface: make sure to use the element that is in the DOM:
 				$j( '#' + playerInterface.id ).get(0).checkPlayerSources();
 			}
 
@@ -451,14 +434,12 @@ EmbedPlayerManager.prototype = {
 		// Create a new element to swap the player interface into
 		var swapPlayerElement = document.createElement('div');
 
-		// Get properties / methods from playerInterface
+		// Get properties / methods from playerInterface:
 		for ( var method in playerInterface ) {
-			if ( method != 'readyState' ) { // readyState crashes IE ( don't
-											// include )
+			if ( method != 'readyState' ) { // readyState crashes IE ( don't include )
 				swapPlayerElement[ method ] = playerInterface[ method ];
 			}
 		}
-
 		// Check if we are using native controls or Persistent player ( should keep the video embed around )
 		if( playerInterface.useNativePlayerControls() || playerInterface.isPersistentNativePlayer() ) {
 			$j( targetElement )
@@ -1403,7 +1384,6 @@ mw.EmbedPlayer.prototype = {
 
 		// Set the player size attributes based loaded video element:
 		this.loadPlayerSize( element );
-
 		// Set the plugin id
 		this.pid = 'pid_' + this.id;
 

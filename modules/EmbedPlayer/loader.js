@@ -137,10 +137,10 @@
 		'titleKey'
 	] );
 	
-	/*
-	 * The default video attributes supported by embedPlayer
+	/** 
+	 * Merge in the default video attributes supported by embedPlayer:
 	 */
-	mw.setDefaultConfig('EmbedPlayer.Attributes', {
+	mw.mergeConfig('EmbedPlayer.Attributes', {
 		/*
 		 * Base html element attributes:
 		 */

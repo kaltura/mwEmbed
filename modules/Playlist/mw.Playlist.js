@@ -52,9 +52,9 @@ mw.Playlist.prototype = {
 
 
 		// Set binding to disable "waitForMeta" for playlist items ( we know the size and length )
-		$j( mw ).bind( 'addElementWaitForMetaEvent', function(even, waitForMetaObject ){
-			if( $j( waitForMetaObject[ 'playerElement' ] ).hasClass( 'mwPlaylist') ){
-				waitForMetaObject[ 'waitForMeta' ] = false;
+		$j( mw ).bind( 'checkPlayerWaitForMetaData', function(even, playerElement ){
+			if( $j( playerElement ).hasClass( 'mwPlaylist') ){
+				playerElement.waitForMeta = false;
 			}
 		});
 

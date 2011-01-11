@@ -8,5 +8,4 @@
 * <video data-internetArchiveId ="{detailsId}"></video>
 * 
 * This module also hosts an Internet Archive specific embedFrame 
-*  
 */

@@ -23,10 +23,9 @@ $j( mw ).bind( 'EmbedPlayerManagerReady', function( event ) {
 } );
 
 // Tell embedPlayer not to wait for height / width metadata in cases of smil documents
-$j( mw ).bind( 'addElementWaitForMetaEvent', function( event, waitForMetaObject ) {
-	if( mw.CheckElementForSMIL( waitForMetaObject[ 'playerElement' ] ) ){
-		waitForMetaObject[ 'waitForMeta' ] = false;
-		return false;
+$j( mw ).bind( 'checkPlayerWaitForMetaData', function( event, playerElement ) {
+	if( mw.CheckElementForSMIL( playerElement ) ){
+		playerElement.waitForMeta = false;
 	}
 });
 

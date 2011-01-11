@@ -28,9 +28,6 @@
 		'kuiconfid' : null
 	});
 	
-	mw.mergeConfig( 'EmbedPlayer.DataAttributes', {
-		'kuiconf' : null
-	});
 	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 		'data-flavorid'
 	]);
