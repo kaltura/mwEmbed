@@ -399,9 +399,11 @@
 		if( !!document.createElement('video').canPlayType && !$j.browser.safari ) {
 			dependencyRequest[0].push( 'mw.EmbedPlayerNative' )
 		}
-		// Check if the iFrame player server is enabled:
-		//alert('ifmra' + mw.getConfig('EmbedPlayer.EnableIframeApi'));
-		if ( mw.getConfig('EmbedPlayer.EnableIframeApi') ) {
+		// Check if the iFrame player api is enabled and we have a parent iframe url: 
+		if ( mw.getConfig('EmbedPlayer.EnableIframeApi') 
+				&& 
+			mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) 
+		){
 			dependencyRequest[0].push('mw.EmbedPlayerNative');
 			dependencyRequest[0].push('$j.postMessage');
 			dependencyRequest[0].push('mw.IFramePlayerApiServer');

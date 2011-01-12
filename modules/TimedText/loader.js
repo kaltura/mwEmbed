@@ -84,8 +84,7 @@
 		}
 		// Check for timed text sources or api/ roe url
 		if ( 
-			(	 $j( embedPlayer ).attr( embedPlayer.roe ) 
-				|| 
+			(
 				$j( embedPlayer ).attr('apititlekey')
 				||  
 				$j( embedPlayer ).attr('apiTitleKey' )

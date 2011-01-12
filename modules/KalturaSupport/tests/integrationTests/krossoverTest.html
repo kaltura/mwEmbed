@@ -3,33 +3,43 @@
 </title>
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
-<script type="text/javascript" src="../../../../mwEmbedLoader.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+<script type="text/javascript" src="../../../../mwEmbedLoader.js"></script>
 
 <body>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <script>
+//mw.setConfig( 'Kaltura.IframeRewrite', true );
+
 // relevent parts of searchtool.js ( from krossover ) 
-function jsCallbackReady() {
-	var cat= $('#myKdp').get(0);
-	$('#myKdp').get(0).addJsListener("changeMedia", "changeMediaHandler");
+function jsCallbackReady() {	
+	$('#kdpLog').append( 'jsCallbackReady'+ "\n" );
 	$('#myKdp').get(0).addJsListener("playerPlayEnd", "playerPlayEndHandler");
+	$('#myKdp').get(0).addJsListener("changeMedia", "changeMediaHandler");
 	$('#myKdp').get(0).addJsListener("mediaReady", "mediaReadyHandler");
 }
 function changeMediaHandler(){
-    
+	$('#kdpLog').append( 'changeMediaHandler' + "\n");
 }
+
 /**
 *function to sequentially play the video.
 */
+var swichedPlayerFlag = false; 
 function playerPlayEndHandler(data, id){
+	$('#kdpLog').append( 'playerPlayEndHandler'+ "\n" );
 	// hard code next video for api integration ( works diffrently on krossover site ) 
-	playVideo("3126")
+	// only switch once: 
+	if( !swichedPlayerFlag ){
+		swichedPlayerFlag = true;
+		playVideo("3126");
+	}
 }
 /**
 *function to play the video.
 */
 function playVideo(eventId){
+	$('#kdpLog').append( 'playVideo:: changeMedia: eventId:' + eventId+ " kEntryId: " + playList[eventId].kalturaEntryId + "\n" );
 	$('#myKdp').get(0).sendNotification('changeMedia', { entryId:playList[eventId].kalturaEntryId } );
 }
 
@@ -248,6 +258,10 @@ swfobject.embedSWF("http://www.kaltura.com/index.php/kwidget/cache_st/1276039174
 </script>
 <div id="video-player">
 	<div id="myKdp" ></div>     		
+</div>
+<div style="position:absolute;top:20px;left:660px;width:300px;height:300px;" >
+<i>KDP Events:</i><br />
+<textarea id="kdpLog" cols='40' rows='24' ></textarea>
 </div>
 </body>
 </html>

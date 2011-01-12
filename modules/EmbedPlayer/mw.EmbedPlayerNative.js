@@ -99,7 +99,7 @@ mw.EmbedPlayerNative = {
 			&& typeof $j( '#' + this.pid ).get(0).play != 'undefined' ) {
 			
 			// Update the player source: 
-			$j( '#' + this.pid ).attr('src', this.getSrc( this.currentTime  ) );
+			$j( '#' + this.pid ).attr( 'src', this.getSrc( this.currentTime ) );
 			$j( '#' + this.pid ).get(0).load();
 			
 			_this.postEmbedJS();
@@ -362,8 +362,7 @@ mw.EmbedPlayerNative = {
 
 	
 	/**
-	 * switchPlaySrc switches the player source working around a few bugs in
-	 * browsers
+	 * switchPlaySrc switches the player source working around a few bugs in browsers
 	 * 
 	 * @param {string}
 	 *            src Video url Source to switch to.

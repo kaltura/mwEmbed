@@ -3,15 +3,13 @@
 'video audio source track'.replace(/\w+/g, function(n){ document.createElement(n); });
 
 /**
- * @license
- * mwEmbed
- * Dual licensed under the MIT or GPL Version 2 licenses.
- *
+ * @license mwEmbed Dual licensed under the MIT or GPL Version 2 licenses.
+ * 
  * @copyright (C) 2010 Kaltura
  * @author Michael Dale ( michael.dale at kaltura.com )
- *
+ * 
  * @url http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
- *
+ * 
  * Libraries used include code license in headers
  */
 
@@ -68,7 +66,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Setter for configuration values
-	 *
+	 * 
 	 * @param [Mixed]
 	 *            name Name of configuration value {Object} Will iderate through
 	 *            each key and call setConfig {String} Will set configuration by
@@ -122,7 +120,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	/**
 	 * Set a default config value Will only update configuration if no value is
 	 * present
-	 *
+	 * 
 	 * @param [Mixed]
 	 *            value Set configuration name to value {Object} Will idorate
 	 *            through each key and call setDefaultConfig {String} Will set
@@ -143,7 +141,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Getter for configuration values
-	 *
+	 * 
 	 * @param {String}
 	 *            name of configuration value to get
 	 * @return {Mixed} value of configuration key returns "false" if key not
@@ -155,8 +153,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		return false;
 	};
 	/**
-	 * Get all the non-default configuration 
-	 * ( useful for passing state to iframes in limited hash url length of a few K  ) 
+	 * Get all the non-default configuration ( useful for passing state to
+	 * iframes in limited hash url length of a few K )
 	 */
 	mw.getNonDefaultConfigObject = function(){
 		var nonDefaultConfig = {};
@@ -169,16 +167,16 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Loads the mwUserConfig from a cookie.
-	 *
+	 * 
 	 * Modules that want to use "User Config" should call this setup function in
 	 * their moduleLoader code.
-	 *
+	 * 
 	 * For performance interfaces using "user config" should load '$j.cookie' &
 	 * 'JSON' in their module loader
-	 *
+	 * 
 	 * By abstracting user preference we could eventually integrate a persistent
 	 * per-account preference system on the server.
-	 *
+	 * 
 	 * @parma {Function} callback Function to be called once userPrefrences are
 	 *        loaded
 	 */
@@ -205,7 +203,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	/**
 	 * Save a user configuration var to a cookie & local global variable Loads
 	 * the cookie plugin if not already loaded
-	 *
+	 * 
 	 * @param {String}
 	 *            name Name of user configuration value
 	 * @param {String}
@@ -225,7 +223,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Save a user configuration var to a cookie & local global variable
-	 *
+	 * 
 	 * @param {String}
 	 *            name Name of user configuration value
 	 * @return value of the configuration name false if the configuration name
@@ -239,9 +237,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Add a hook system for a target object / interface
-	 *
+	 * 
 	 * depricated you should instead use jQuery's bind and trigger
-	 *
+	 * 
 	 * @param {Object}
 	 *            targetObj Interface Object to add hook system to.
 	 */
@@ -252,9 +250,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 		/**
 		 * Adds a hook to the target object
-		 *
+		 * 
 		 * Should be called by clients to setup named hooks
-		 *
+		 * 
 		 * @param {String}
 		 *            hookName Name of hook to be added
 		 * @param {Function}
@@ -269,9 +267,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 		/**
 		 * Runs all the hooks by a given name with reference to the host object
-		 *
+		 * 
 		 * Should be called by the host object at named execution points
-		 *
+		 * 
 		 * @param {String}
 		 *            hookName Name of hook to be called
 		 * @return Value of hook result true interface should continue function
@@ -301,7 +299,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	mw.loader = {
 		/**
 		 * Javascript Module Loader functions
-		 *
+		 * 
 		 * @key Name of Module
 		 * @value function code to load module
 		 */
@@ -309,7 +307,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 		/**
 		 * Module resource list queue.
-		 *
+		 * 
 		 * @key Name of Module
 		 * @value .resourceList list of resources to be loaded .functionQueue
 		 *        list of functions to be run once module is ready
@@ -318,21 +316,21 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 		/**
 		 * Javascript Class Paths
-		 *
+		 * 
 		 * @key Name of resource
 		 * @value Class file path
 		 */
 		resourcePaths : { },
 
 		/**
-		 * Stores resources that have been requested ( to avoid re-requesting the same resources )
-		 * in concurrent requests )
+		 * Stores resources that have been requested ( to avoid re-requesting
+		 * the same resources ) in concurrent requests )
 		 */
 		requestedResourceQueue: { },
 
 		/**
 		 * javascript Resource Paths
-		 *
+		 * 
 		 * @key Name of resource
 		 * @value Name of depenent style sheet
 		 */
@@ -340,34 +338,34 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 		/**
 		 * Core load function:
-		 *
+		 * 
 		 * @param {Mixed}
 		 *            loadRequest:
-		 *
+		 * 
 		 * {String} Name of a module to be loaded Modules are added via
 		 * addModuleLoader and can define custom code needed to check config and
 		 * return a list of resources to be loaded
-		 *
+		 * 
 		 * {String} Name of a resource to loaded. Resources are added via
 		 * addResourcePaths function Using defined resource names avoids loading
 		 * the same resource twice by first checking if the named resource is
 		 * defined in the global javascript scope variable
-		 *
+		 * 
 		 * {String} Absolute or relative to url path The same file won't be
 		 * loaded twice
-		 *
+		 * 
 		 * {Array} can be an array of any combination of the above strings. Will
 		 * be loaded in-order or in a single resource loader request if
 		 * scriptLoader is available.
-		 *
+		 * 
 		 * {Array} {Array} Can be a set of Arrays for loading. Some browsers
 		 * execute included scripts out of order. This lets you chain sets of
 		 * request for those browsers. If using the server side resource loader
 		 * order is preserved in output and a single request will be used.
-		 *
+		 * 
 		 * @param {Function}
 		 *            callback Function called once loading is complete
-		 *
+		 * 
 		 */
 		load: function( loadRequest, instanceCallback ) {
 			// mw.log("mw.load:: " + loadRequest );
@@ -418,17 +416,17 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 				// xxx should use refactor "ready" stuff into a "domReady" class
 				// So we would not have local scope globals like this:
-				//if ( mwReadyFlag ) {
+				// if ( mwReadyFlag ) {
 					// Load the module directly if load request is after
 					// mw.ready has run
 				this.load( resourceSet, callback );
-				//} else {
-				//	this.addToModuleLoaderQueue(
-				//		loadRequest,
-				//		resourceSet,
-				//		callback
-				//	);
-				//}
+				// } else {
+				// this.addToModuleLoaderQueue(
+				// loadRequest,
+				// resourceSet,
+				// callback
+				// );
+				// }
 				return ;
 			}
 
@@ -504,7 +502,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		/**
 		 * Load a set of scripts. Will issue many load requests or package the
 		 * request for the resource loader
-		 *
+		 * 
 		 * @param {Object}
 		 *            loadSet Set of scripts to be loaded
 		 * @param {Function}
@@ -543,12 +541,12 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			}
 
 			// We are infact loading many:
-			//mw.log("mw.load: LoadMany:: " + loadSet );
+			// mw.log("mw.load: LoadMany:: " + loadSet );
 
 			// Issue the load request check check loadStates to see if we are
 			// "done"
 			for( var loadName in loadStates ) {
-				//mw.log("loadMany: load: " + loadName );
+				// mw.log("loadMany: load: " + loadName );
 				this.load( loadName, function ( loadName ) {
 					loadStates[ loadName ] = 1;
 
@@ -573,11 +571,11 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 		/**
 		 * Get grouped load state for script loader
-		 *
+		 * 
 		 * Groups the scriptRequest where possible: Modules include "loader
 		 * code" so they are separated into pre-condition code to be run for
 		 * subsequent requests
-		 *
+		 * 
 		 * @param {Object}
 		 *            loadSet Loadset to return grouped
 		 * @return {Object} grouped loadSet
@@ -605,7 +603,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			for( var i=0; i < groupedLoadSet.length; i++ ) {
 				var loadName = groupedLoadSet[ i ];
 				if( this.getResourcePath( loadName ) ) {
-					// Check if not already in request queue and not defined in global namespace
+					// Check if not already in request queue and not defined in
+					// global namespace
 					if( !mw.isset( loadName ) && ! uniqueResourceName[ loadName] ){
 						groupClassKey += coma + loadName;
 						coma = ',';
@@ -645,7 +644,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		/**
 		 * Load a sets of scripts satisfy dependency order for browsers that
 		 * execute dynamically included scripts out of order
-		 *
+		 * 
 		 * @param {Object}
 		 *            loadChain A set of javascript arrays to be loaded. Sets
 		 *            are requested in array order.
@@ -815,7 +814,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		
 		/**
 		 * Loads javascript or css associated with a resourceName
-		 *
+		 * 
 		 * @param {String}
 		 *            resourceName Name of resource to load
 		 * @param {Function}
@@ -884,7 +883,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 				// Send warning if resourceName is not defined
 				if(! mw.isset( resourceName )
 					&& mwLoadDoneCB[ resourceName ] != 'done' ) {
-					// mw.log( 'Possible Error: ' + resourceName +' not set in time, or not defined in:' + "\n"
+					// mw.log( 'Possible Error: ' + resourceName +' not set in
+					// time, or not defined in:' + "\n"
 					// + _this.getResourcePath( resourceName ) );
 				}
 
@@ -920,7 +920,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 		/**
 		 * Adds a module to the mwLoader object
-		 *
+		 * 
 		 * @param {String}
 		 *            name Name of module
 		 * @param {Function}
@@ -932,11 +932,11 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 		/**
 		 * Adds resource file path key value pairs
-		 *
+		 * 
 		 * @param {Object}
 		 *            resourceSet JSON formated list of resource name file path
 		 *            pairs.
-		 *
+		 * 
 		 * resourceSet must be strict JSON to allow the php scriptLoader to
 		 * parse the file paths.
 		 */
@@ -951,7 +951,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	 	/*
 		 * Adds a named style sheet dependency to a named resource
-		 *
+		 * 
 		 * @parma {Object} resourceSet JSON formated list of resource names and
 		 * associated style sheet names
 		 */
@@ -974,7 +974,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Load done callback for script loader
-	 *
+	 * 
 	 * @param {String}
 	 *            requestName Name of the load request
 	 */
@@ -1004,7 +1004,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Set a load done callback
-	 *
+	 * 
 	 * @param {String}
 	 *            requestName Name of resource or request set
 	 * @param {Function}
@@ -1025,7 +1025,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	/**
 	 * Shortcut entry points / convenience functions: Lets you write mw.load()
 	 * instead of mw.loader.load() only these entry points should be used.
-	 *
+	 * 
 	 * future closure optimizations could minify internal function names
 	 */
 
@@ -1068,7 +1068,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * addLoaderDialog small helper for displaying a loading dialog
-	 *
+	 * 
 	 * @param {String}
 	 *            dialogHtml text Html of the loader msg
 	 */
@@ -1104,13 +1104,12 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Add a (temporary) dialog window:
-	 *
-	 * @param {Object} with following keys:
-	 *            title: {String} Title string for the dialog
-	 *            content: {String} to be inserted in msg box
-	 *            buttons: {Object} A button object for the dialog Can be a string
-	 *            				for the close button
-	 * 			  any jquery.ui.dialog option
+	 * 
+	 * @param {Object}
+	 *            with following keys: title: {String} Title string for the
+	 *            dialog content: {String} to be inserted in msg box buttons:
+	 *            {Object} A button object for the dialog Can be a string for
+	 *            the close button any jquery.ui.dialog option
 	 */
 	mw.addDialog = function ( options ) {
 		// Remove any other dialog
@@ -1182,7 +1181,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	mw.isIphone = function(){
 		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
 	};
-	// Uses hack described at: 
+	// Uses hack described at:
 	// http://www.bdoran.co.uk/2010/07/19/detecting-the-iphone4-and-resolution-with-javascript-or-php/
 	mw.isIphone4 = function(){
 		return ( mw.isIphone() && ( window.devicePixelRatio && window.devicePixelRatio >= 2 ) );		
@@ -1193,17 +1192,18 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	mw.isIpad = function(){
 		return ( navigator.userAgent.indexOf('iPad') != -1 );
 	};
-	// Android 2 has some restrictions vs other mobile platforms 
+	// Android 2 has some restrictions vs other mobile platforms
 	mw.isAndroid2 = function(){		
 		return ( navigator.userAgent.indexOf( 'Android 2.') != -1 );
 	};
 	
 	/**
 	 * Fallforward system by default prefers flash.
-	 *
-	 * This is separate from the EmbedPlayer library detection to provide package loading control
-	 * NOTE: should be phased out in favor of browser feature detection where possible
-	 *
+	 * 
+	 * This is separate from the EmbedPlayer library detection to provide
+	 * package loading control NOTE: should be phased out in favor of browser
+	 * feature detection where possible
+	 * 
 	 */
 	mw.isHTML5FallForwardNative = function(){
 		if( mw.isMobileHTML5() ){
@@ -1213,12 +1213,13 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if( document.URL.indexOf('forceMobileHTML5') != -1 ){
 			return true;
 		}
-		// Fall forward native: 
+		// Fall forward native:
 		// if the browser supports flash ( don't use html5 )
 		if( mw.supportsFlash() ){
 			return false;
 		}
-		// No flash return true if the browser supports html5 video tag with basic support for canPlayType:
+		// No flash return true if the browser supports html5 video tag with
+		// basic support for canPlayType:
 		if( mw.supportsHTML5() ){
 			return true;
 		}
@@ -1227,7 +1228,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	}
 	
 	mw.isMobileHTML5 = function(){
-		// Check for a mobile html5 user agent:	
+		// Check for a mobile html5 user agent:
 		if ( mw.isIphone() || 
 			 mw.isIpod() || 
 			 mw.isIpad() ||
@@ -1238,7 +1239,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		return false;
 	}
 	mw.supportsHTML5 = function(){
-		// Blackberry is evil in its response to canPlayType calls. 
+		// Blackberry is evil in its response to canPlayType calls.
 		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
 			return false ;
 		}
@@ -1259,13 +1260,13 @@ if( typeof preMwEmbedConfig == 'undefined') {
 					type = type.substr( 0, semicolonPos );
 				}
 				if (type == 'application/x-shockwave-flash' ) {
-					// flash is installed 				
+					// flash is installed
 					return true;
 				}
 			}
 		}
 
-		// for IE: 
+		// for IE:
 		var hasObj = true;
 		if( typeof ActiveXObject != 'undefined' ){
 			try {
@@ -1282,7 +1283,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	/**
 	 * Similar to php isset function checks if the variable exists. Does a safe
 	 * check of a descendant method or variable
-	 *
+	 * 
 	 * @param {String}
 	 *            objectPath
 	 * @return {Boolean} true if objectPath exists false if objectPath is
@@ -1307,7 +1308,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Wait for a object to be defined and the call the callback
-	 *
+	 * 
 	 * @param {Object}
 	 *            objectName Name of object to be defined
 	 * @param {Function}
@@ -1345,7 +1346,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Check if an object is empty or if its an empty string.
-	 *
+	 * 
 	 * @param {Object}
 	 *            object Object to be checked
 	 */
@@ -1371,10 +1372,10 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Log a string msg to the console
-	 *
+	 * 
 	 * all mw.log statements will be removed on minification so lots of mw.log
 	 * calls will not impact performance in non debug mode
-	 *
+	 * 
 	 * @param {String}
 	 *            string String to output to console
 	 */
@@ -1383,8 +1384,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		if ( mw.getConfig( 'Mw.LogPrepend' ) ){
 			string = mw.getConfig( 'Mw.LogPrepend' ) + string;
 		}
-		// To debug stack size ( useful for iPad / safari that have a 100 call stack limit
-		//string = mw.getCallStack().length -1 + ' : ' + string;
+		// To debug stack size ( useful for iPad / safari that have a 100 call
+		// stack limit
+		// string = mw.getCallStack().length -1 + ' : ' + string;
 		
 		if ( window.console ) {
 			window.console.log( string );
@@ -1393,19 +1395,15 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			 * Old IE and non-Firebug debug: ( commented out for now )
 			 */
 
-			/*var log_elm = document.getElementById('mv_js_log');
-			if(!log_elm) {
-				document.getElementsByTagName("body")[0].innerHTML += '<div ' +
-					'style="position:absolute;z-index:500;bottom:0px;left:0px;right:0px;height:200px;">' +
-					'<textarea id="mv_js_log" cols="120" rows="12"></textarea>' +
-				'</div>';
-			}
-			var log_elm = document.getElementById('mv_js_log');
-			if(log_elm) {
-				log_elm.value+=string+"\n";
-				// scroll to bottom:
-				log_elm.scrollTop = log_elm.scrollHeight;
-			}*/
+			/*
+			 * var log_elm = document.getElementById('mv_js_log'); if(!log_elm) {
+			 * document.getElementsByTagName("body")[0].innerHTML += '<div ' +
+			 * 'style="position:absolute;z-index:500;bottom:0px;left:0px;right:0px;height:200px;">' + '<textarea
+			 * id="mv_js_log" cols="120" rows="12"></textarea>' + '</div>'; }
+			 * var log_elm = document.getElementById('mv_js_log'); if(log_elm) {
+			 * log_elm.value+=string+"\n"; // scroll to bottom:
+			 * log_elm.scrollTop = log_elm.scrollHeight; }
+			 */
 		}
 	};
 	mw.getCallStack = function(){
@@ -1461,11 +1459,11 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 * Enables load hooks to run once mwEmbeed is "ready" Will ensure jQuery is
 	 * available, is in the $j namespace and mw interfaces and configuration has
 	 * been loaded and applied
-	 *
+	 * 
 	 * This is different from jQuery(document).ready() ( jQuery ready is not
 	 * friendly with dynamic includes and not friendly with core interface
 	 * asynchronous build out. )
-	 *
+	 * 
 	 * @param {Function}
 	 *            callback Function to run once DOM and jQuery are ready
 	 */
@@ -1505,8 +1503,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Wrapper for jQuery getScript, Uses the scriptLoader if enabled
-	 *
-	 *
+	 * 
+	 * 
 	 * @param {String}
 	 *            scriptRequest The requested path or resourceNames for the
 	 *            scriptLoader
@@ -1563,8 +1561,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		}
 
 		/**
-		 * No jQuery OR In debug mode OR Is css file
-		 *  :: inject the script instead of doing an XHR eval
+		 * No jQuery OR In debug mode OR Is css file :: inject the script
+		 * instead of doing an XHR eval
 		 */
 
 		// load style sheet directly if requested loading css
@@ -1592,7 +1590,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Add a style sheet string to the document head
-	 *
+	 * 
 	 * @param {String}
 	 *            cssResourceName Name of style sheet that has been defined
 	 * @param {String}
@@ -1623,7 +1621,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Get a style sheet and append the style sheet to the DOM
-	 *
+	 * 
 	 * @param {Mixed}
 	 *            {String} url Url of the style sheet to be loaded {Function}
 	 *            callback Function called once sheet is ready
@@ -1722,7 +1720,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Get Script loader path
-	 *
+	 * 
 	 * @returns {String}|{Boolean} Url of the scriptLodaer false if the
 	 *          scriptLoader is not used
 	 */
@@ -1739,7 +1737,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	/**
 	 * Given a float number of seconds, returns npt format response. ( ignore
 	 * days for now )
-	 *
+	 * 
 	 * @param {Float}
 	 *            sec Seconds
 	 * @param {Boolean}
@@ -1781,7 +1779,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	};
 	/**
 	 * Given seconds return array with 'days', 'hours', 'min', 'seconds'
-	 *
+	 * 
 	 * @param {float}
 	 *            sec Seconds to be converted into time measurements
 	 */
@@ -1797,7 +1795,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	/**
 	 * Given a float number of seconds, returns npt format response. ( ignore
 	 * days for now )
-	 *
+	 * 
 	 * @param {Float}
 	 *            sec Seconds
 	 * @param {Boolean}
@@ -1914,7 +1912,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Replace url parameters via newParams key value pairs
-	 *
+	 * 
 	 * @param {String}
 	 *            url Source url to be updated
 	 * @param {Object}
@@ -1966,7 +1964,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 	/**
 	 * Parse URI function
-	 *
+	 * 
 	 * For documentation on its usage see:
 	 * http://stevenlevithan.com/demo/parseuri/js/
 	 */
@@ -1987,10 +1985,12 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	/**
 	 * getAbsoluteUrl takes a src and returns the absolute location given the
 	 * document.URL or a contextUrl param
-	 *
-	 * @param {String} src path or url
-	 * @param {String} contextUrl The domain / context for creating an absolute url
-	 * 	from a relative path
+	 * 
+	 * @param {String}
+	 *            src path or url
+	 * @param {String}
+	 *            contextUrl The domain / context for creating an absolute url
+	 *            from a relative path
 	 * @return {String} absolute url
 	 */
 mw.absoluteUrl = function( src, contextUrl ) {
@@ -2025,10 +2025,8 @@ mw.absoluteUrl = function( src, contextUrl ) {
 	};
 	/**
 	 * Check if a given source string is likely a url
-	 *
-	 * @return {boolean}
-	 * 	true if a url
-	 * 	false if a string
+	 * 
+	 * @return {boolean} true if a url false if a string
 	 */
 	mw.isUrl = function( src ){
 		var parsedSrc = mw.parseUri( src );
@@ -2038,7 +2036,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 
 	/**
 	 * Escape quotes in a text string
-	 *
+	 * 
 	 * @param {String}
 	 *            text String to be escaped
 	 * @return {string} escaped text string
@@ -2053,7 +2051,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 
 	/**
 	 * Escape an HTML text string
-	 *
+	 * 
 	 * @param {String}
 	 *            text String to be escaped
 	 * @return {string} escaped text html string
@@ -2079,7 +2077,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 	 * Add a function to be run during setup ( prior to mw.ready) this is useful
 	 * for building out interfaces that should be ready before mw.ready is
 	 * called.
-	 *
+	 * 
 	 * @param {callback}
 	 *            Function Callback function must accept a ready function
 	 *            callback to be called once setup is done
@@ -2136,7 +2134,8 @@ mw.absoluteUrl = function( src, contextUrl ) {
 						// Update the image path
 						mw.setConfig( 'imagesPath', mw.getMwEmbedPath() + 'skins/common/images/' );
 
-						// Set up AJAX to not send dynamic URLs for loading scripts
+						// Set up AJAX to not send dynamic URLs for loading
+						// scripts
 						$j.ajaxSetup( {
 							cache: true
 						} );
@@ -2145,7 +2144,8 @@ mw.absoluteUrl = function( src, contextUrl ) {
 						mw.Language.magicSetup();						
 
 
-						// Special Hack for conditional jquery ui inclusion ( once
+						// Special Hack for conditional jquery ui inclusion (
+						// once
 						// Usability extension
 						// registers the jquery.ui skin in mw.style
 						if( mw.hasJQueryUiCss() ){
@@ -2160,7 +2160,8 @@ mw.absoluteUrl = function( src, contextUrl ) {
 							// calls
 							// and must include a callback.
 							//
-							// Once complete we can run .ready() queued functions
+							// Once complete we can run .ready() queued
+							// functions
 							function runSetupFunctions() {
 								if( mwSetupFunctions.length ) {
 									mwSetupFunctions.shift()( function() {
@@ -2183,7 +2184,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 	 * Checks for jquery ui css by name jquery-ui-1.7.2.css NOTE: this is a hack
 	 * for usability jquery-ui in the future usability should register a
 	 * resource in mw.skin
-	 *
+	 * 
 	 * @return true if found, return false if not found
 	 */
 	mw.hasJQueryUiCss = function(){
@@ -2216,10 +2217,10 @@ mw.absoluteUrl = function( src, contextUrl ) {
 
 	/**
 	 * Loads the core mwEmbed "loader.js" file config
-	 *
+	 * 
 	 * NOTE: if using the ScriptLoader all the loaders and localization
 	 * converters are included automatically
-	 *
+	 * 
 	 * @param {Function}
 	 *            callback Function called once core loader file is loaded
 	 */
@@ -2245,7 +2246,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 
 	/**
 	 * Checks if the javascript is a static package ( not using resource loader )
-	 *
+	 * 
 	 * @return {boolean} true the included script is static false the included
 	 *         script
 	 */
@@ -2259,7 +2260,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 
 	/**
 	 * Check for resource loader module loaders, and localization files
-	 *
+	 * 
 	 * NOTE: if using the ScriptLoader all the loaders and localization
 	 * converters are included automatically.
 	 */
@@ -2362,12 +2363,12 @@ mw.absoluteUrl = function( src, contextUrl ) {
 
 	/**
 	 * Checks if a css style rule exists
-	 *
+	 * 
 	 * On a page with lots of rules it can take some time so avoid calling this
 	 * function where possible and cache its result
-	 *
+	 * 
 	 * NOTE: this only works for style sheets on the same domain :(
-	 *
+	 * 
 	 * @param {String}
 	 *            styleRule Style rule name to check
 	 * @return {Boolean} true if the rule exists false if the rule does not
@@ -2426,14 +2427,14 @@ mw.absoluteUrl = function( src, contextUrl ) {
 	/**
 	 * A version comparison utility function Handles version of types
 	 * {Major}.{MinorN}.{Patch}
-	 *
+	 * 
 	 * Note this just handles version numbers not patch letters.
-	 *
+	 * 
 	 * @param {String}
 	 *            minVersion Minnium version needed
 	 * @param {String}
 	 *            clientVersion Client version to be checked
-	 *
+	 * 
 	 * @return true if the version is at least of minVersion false if the
 	 *         version is less than minVersion
 	 */
@@ -2460,23 +2461,26 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		( function( $ ) {
 			
 			/**
-			 * Runs all the triggers on all the named bindings of an object with a single callback
+			 * Runs all the triggers on all the named bindings of an object with
+			 * a single callback
 			 * 
 			 * NOTE THIS REQUIRES JQUERY 1.4.2 and above
-			 *
-			 * Normal jQuery tirgger calls will run the callback directly multiple times for
-			 * every binded function.
-			 *
-			 * With triggerQueueCallback() callback is not called until all the binded
-			 * events have been run.
-			 *
+			 * 
+			 * Normal jQuery tirgger calls will run the callback directly
+			 * multiple times for every binded function.
+			 * 
+			 * With triggerQueueCallback() callback is not called until all the
+			 * binded events have been run.
+			 * 
 			 * @param {string}
 			 *            triggerName Name of trigger to be run
 			 * @param {object=}
-			 *            arguments Optional arguments object to be passed to the callback
+			 *            arguments Optional arguments object to be passed to
+			 *            the callback
 			 * @param {function}
-			 *            callback Function called once all triggers have been run
-			 *
+			 *            callback Function called once all triggers have been
+			 *            run
+			 * 
 			 */
 			$.fn.triggerQueueCallback = function( triggerName, triggerParam, callback ){
 				var targetObject = this;
@@ -2485,10 +2489,10 @@ mw.absoluteUrl = function( src, contextUrl ) {
 					callback = triggerParam;
 					triggerParam = null;
 				}
-				// Support namespaced event segmentation ( jQuery 
+				// Support namespaced event segmentation ( jQuery
 				var triggerBaseName = triggerName.split(".")[0]; 
 				var triggerNamespace = triggerName.split(".")[1];
-				// Get the callback set 
+				// Get the callback set
 				var callbackSet = [];
 				if( ! triggerNamespace ){
 					callbackSet = $j( targetObject ).data( 'events' )[ triggerBaseName ];
@@ -2509,10 +2513,12 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				
 				// Set the callbackCount
 				var callbackCount = ( callbackSet.length )? callbackSet.length : 1;
-				//mw.log("mwEmbed::jQuery.triggerQueueCallback: " + triggerName + ' number of queued functions:' + callbackCount );
+				// mw.log("mwEmbed::jQuery.triggerQueueCallback: " + triggerName
+				// + ' number of queued functions:' + callbackCount );
 				var callInx = 0;
 				var doCallbackCheck = function() {
-					//mw.log( 'callback for: ' + mw.getCallStack()[0] + callInx);
+					// mw.log( 'callback for: ' + mw.getCallStack()[0] +
+					// callInx);
 					callInx++;
 					if( callInx == callbackCount ){
 						callback();
@@ -2656,7 +2662,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 
 			/**
 			 * Resize a dialog to fit the window
-			 *
+			 * 
 			 * @param {Object}
 			 *            options horizontal and vertical space ( default 50 )
 			 */
@@ -2768,10 +2774,10 @@ if( mw.isStaticPackge() && !window.jQuery ){
 /**
  * Hack to keep jQuery in $ when its already there, but also use noConflict to
  * get $j = jQuery
- *
+ * 
  * This way sites that use $ for jQuery continue to work after including mwEmbed
  * javascript.
- *
+ * 
  * Also if jQuery is included prior to mwEmbed we ensure $j is set
  */
 

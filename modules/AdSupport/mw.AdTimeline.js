@@ -151,14 +151,13 @@ mw.AdTimeline.prototype = {
 					_this.adOverlaysEnabled = true;
 					// Check if the src does not match original src if
 					// so switch back and restore original bindings
-					if ( _this.originalSrc != vid.src) {
+					if ( _this.originalSrc != vid.src ) {
 						_this.embedPlayer.switchPlaySrc(_this.originalSrc,
 							function() {								
-								// Restore embedPlayer native
-								// bindings
+								// Restore embedPlayer native bindings
 								restorePlayer();
 							}
-						)
+						);
 					} else {
 						restorePlayer();
 					}

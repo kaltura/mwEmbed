@@ -58,6 +58,7 @@ mw.IFramePlayerApiClient.prototype = {
 		// Decode the message 
 		var msgObject = JSON.parse( event.data );
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
+		
 		// Before we update local attributes check that the object has not been updated by user js
 		for( var attrName in playerAttributes ){
 			if( attrName != 'id' ){
@@ -103,13 +104,15 @@ mw.IFramePlayerApiClient.prototype = {
 
 //Add the jQuery binding
 ( function( $ ) {
-	$.fn.iFramePlayer = function( options ){
+	$.fn.iFramePlayer = function( readyCallback ){
 		if( ! this.selector ){
 			this.selector = $j( this ).get(0);
 		}
 		// Append '_ifp' ( iframe player ) to id of real iframe so that 'id', and 'src' attributes don't conflict
 		var originalIframeId = ( $( this.selector ).attr( 'id' ) )? $( this.selector ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
-		var iframePlayerId = originalIframeId + '_ifp' ; // use random to generate a unique id
+		
+		var iframePlayerId = originalIframeId + '_ifp' ; 
+		
 		// Append the div element proxy after the iframe 
 		$j( this.selector )
 			.attr('id', iframePlayerId)
@@ -117,7 +120,8 @@ mw.IFramePlayerApiClient.prototype = {
 				$('<div />')
 				.attr( 'id', originalIframeId )
 			);
-		var playerProxy = $j( '#' + originalIframeId ).get(0);
+		
+		var playerProxy = $j( '#' + originalIframeId ).get(0);		
 		var iframe = $j('#' + iframePlayerId).get(0);
 		if(!iframe){
 			mw.log("Error invalide iFramePlayer request");
@@ -129,6 +133,11 @@ mw.IFramePlayerApiClient.prototype = {
 		
 		// Allow modules to extend the 'iframe' based player
 		$j( mw ).trigger( 'newIframeEmbedPlayerEvent', playerProxy);
+		
+		// Bind the iFrame player ready callback
+		if( readyCallback ){
+			$j( playerProxy ).bind( 'playerReady', readyCallback )
+		};
 		
 		// Return the player proxy for chaining player events / attributes
 		return $j( playerProxy );

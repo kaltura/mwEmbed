@@ -42,7 +42,6 @@
 			// Setup iframe rewrite for new source selection:  
 			$j('#displayIframe').click(function(){ 				
 				appendIframe();		
-				bindIframePlayer();							
 			});
 			
 			function appendIframe(){			
@@ -62,16 +61,17 @@
 					})			
 				);
 				// run append iframe directly
+				
+				// Setup the iFrame player for the given target:
+				$j( '#vid' ).iFramePlayer(function(){
+					bindIframePlayer();
+				});
 			};
-			appendIframe();
-			bindIframePlayer();	
+			appendIframe();			
 				
 					
 		});
 		function bindIframePlayer(){
-			// Bind the iFrame player:				
-			$j( '#vid' ).iFramePlayer();
-			
 			// Now we can use all the normal player calls bindings and attributes: 
 			$j( '#triggerPlay' ).click(function(){								
 				$('#vid').get(0).play();

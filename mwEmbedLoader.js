@@ -126,8 +126,14 @@ function kDoIframeRewriteList( rewriteObjects ){
 	}
 }
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options){
+	// Check if the iframe API is enabled in which case we have to load client code and use that 
+	// to rewrite the frame
+	//if( ){
+	//	return ;
+	//}
 	
-	var iframeSrc = SCRIPT_LOADER_URL.replace('ResourceLoader.php', 'mwEmbedFrame.php');
+	// Else we can avoid loading mwEmbed all together and just rewrite the iframe: 
+	var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
 	var kalturaAttributeList = { 'uiconf_id':1, 'entry_id':1, 'wid':1, 'p':1};
 	for(var attrKey in kEmbedSettings ){
 		if( attrKey in kalturaAttributeList ){
@@ -135,15 +141,6 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options){
 		}
 	}
 	
-	// Package in the source page url for iframe message checks.
-	
-	// Add the parentUrl to the iframe config:
-	preMwEmbedConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
-	
-	// Encode the configuration into the iframe hash url: 
-	iframeSrc+= '#' + encodeURIComponent( 
-		JSON.stringify( { 'mwConfig' : preMwEmbedConfig } )
-	);
 	var targetNode = document.getElementById( replaceTargetId );
 	var parentNode = targetNode.parentNode;
 	var iframe = document.createElement('iframe');
@@ -154,22 +151,13 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options){
 	iframe.style.border = '0px';
 		
 	parentNode.replaceChild(iframe, targetNode );
-	/*
-	$j('#' + replaceTargetId ).replaceWith(
-		$j('<iframe />').attr({
-			'src' : iframeSrc,
-			'id' : replaceTargetId,
-			'width' : options.width,
-			'height' : options.height
-		}).css({
-			'border' : '0px'
-		})
-	)
-	*/
+
+
 }
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
 function kOverideSwfObject(){
 	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTargetId, widthStr, heightStr ){
+		
 		// Add a ready event to re-write: 
 		mw.ready(function(){
 			// Setup the embedPlayer attributes
@@ -196,7 +184,9 @@ function kOverideSwfObject(){
 				.css({
 					'width' : width,
 					'height' : height
-				}).embedPlayer( embedPlayerAttributes );
+				})
+				// Issue the embedPlayer call with embed attributes and the KDP ready callback
+				.embedPlayer( embedPlayerAttributes, window.KalturaKDPCallbackReady );
 			}
 		});
 	}
@@ -232,7 +222,7 @@ function kOverideSwfObject(){
 				heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn)
 		{
 			kAddReadyHook(function(){
-				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
+				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);	
 				// Check if mobile safari:
 				if( kIsHTML5FallForward() && kEmbedSettings.wid ){
 					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
@@ -269,12 +259,7 @@ function kCheckAddScript(){
 		kAddScript();
 	} else {
 		// Restore the jsCallbackReady ( we are not rewriting )
-		if( window.KalturaKDPCallbackReady ){
-			window.jsCallbackReady = window.KalturaKDPCallbackReady;
-			if( window.KalturaKDPCallbackAlreadyCalled ){
-				window.jsCallbackReady();
-			}
-		}
+		restoreKalturaKDPCallback();	
 	}
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not avaliable 
@@ -650,6 +635,15 @@ var checkForKDPCallback = function(){
 		window.jsCallbackReady = function(){
 			window.KalturaKDPCallbackAlreadyCalled = true;
 		};
+	}
+}
+var restoreKalturaKDPCallback = function(){
+	// To restore when we are not rewriting: 
+	if( window.KalturaKDPCallbackReady ){
+		window.jsCallbackReady = window.KalturaKDPCallbackReady;
+		if( window.KalturaKDPCallbackAlreadyCalled ){
+			window.jsCallbackReady();
+		}
 	}
 }
 // Check inline and when the dom is ready:

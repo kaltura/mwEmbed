@@ -19,7 +19,13 @@
 
 // Bind apiServer to newEmbedPlayers:
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {	
-	embedPlayer['iFrameServer'] = new mw.IFramePlayerApiServer( embedPlayer );
+	// Check if the iFrame player api is enabled and we have a parent iframe url: 
+	if ( mw.getConfig('EmbedPlayer.EnableIframeApi') 
+			&& 
+		mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) 
+	){
+		embedPlayer['iFrameServer'] = new mw.IFramePlayerApiServer( embedPlayer );
+	}
 });
 
 mw.IFramePlayerApiServer = function( embedPlayer ){
@@ -27,8 +33,11 @@ mw.IFramePlayerApiServer = function( embedPlayer ){
 }
 
 mw.IFramePlayerApiServer.prototype = {	
-	// Exported methods populated by native video/audio tag api. 
-	'exportedBindings': [],
+	// Exported bindings / events. ( all the native html5 events are added in 'init' )		
+	'exportedBindings': [
+	     'playerReady',
+	     'monitorEvent'
+	],
 		
 	'init': function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
@@ -40,8 +49,7 @@ mw.IFramePlayerApiServer.prototype = {
 			if( bindName != 'progress' ) {				
 				this.exportedBindings.push( bindName );
 			}
-		}
-		this.exportedBindings.push( 'monitorEvent' );
+		}		
 		
 		// Allow modules to extend the list of iframeExported bindings
 		$j( mw ).trigger( 'AddIframeExportedBindings', [ this.exportedBindings ]);

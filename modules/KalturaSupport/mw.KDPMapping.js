@@ -1,36 +1,30 @@
 /*
- * Add full kaltura mapping support to html5 based players
  * Based on the 'kdp3 javascript api'
+ * Add full kaltura mapping support to html5 based players
  * http://www.kaltura.org/demos/kdp3/docs.html#jsapi
  */
 
 // scope in mw
 ( function( mw ) {
  
-	mw.KDPMapping = function( options ) {
+	mw.KDPMapping = function( ) {
 		// Create a Player Manage
-		return this.init( options );
+		return this.init();
 	};
 	mw.KDPMapping.prototype = {
 		/**
 		* Add Player hooks for supporting Kaltura api stuff
 		*/ 
 		init: function( ){
-			this.addGlobalReadyHook();
 			this.addPlayerHooks();		 	
 		},
-		
-		addGlobalReadyHook: function(){
-			mw.playerManager.addCallback(function(){
-				// Fire the global ready
-				if( window.jsCallbackReady ){
-					window.jsCallbackReady();
-				}			
-			})
-		},
-		
+				
 		addPlayerHooks: function(){
 			var _this = this;
+			// Add KDP iframe support to client
+			
+			// Add KDP iframe support to server
+			
 			// Add the hooks to the player manager			
 			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {						
 				// Add the addJsListener and sendNotification maps
@@ -124,7 +118,7 @@
 		},
 		
 		/**
-		 * emulates kalatura addJsListener function
+		 * Emulates kalatura addJsListener function
 		 */
 		addJsListener: function( embedPlayer, eventName, globalFuncName ){
 			//mw.log("KDPMapping:: addJsListener: " + eventName + ' cb:' + callbackFuncName );
@@ -134,7 +128,7 @@
 					$j( embedPlayer ).bind('volumeChanged', function(percent){
 						callback( {'newVolume' : percent }, embedPlayer.id );
 					});
-					break;
+				break;
 				case 'playerStateChange':					
 					// Kind of tricky should do a few bindings to 'pause', 'play', 'ended', 'buffering/loading'
 					$j( embedPlayer ).bind('pause', function(){						
@@ -145,6 +139,12 @@
 						callback( 'play', embedPlayer.id );
 					});
 					
+					break;
+				case 'playerPlayEnd': 
+					$j( embedPlayer ).bind("ended", function(){
+						// TODO document what data ended should include
+						callback( {}, embedPlayer.id );
+					});
 					break;
 				case 'durationChange': 
 					// TODO add in duration change support
@@ -213,34 +213,35 @@
 					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
 					break;
 				case 'changeMedia':
+					// Add a loader to the embed player: 
+					$j( '#' + embedPlayer.pid )
+					.getAbsoluteOverlaySpinner()
+					.attr('id', embedPlayer.id + '_mappingSpinner' )
+					
 					// Update the entry id
 					embedPlayer.kentryid = notificationData.entryId;
-					// TODO Should support updating any widget, ui_conf whatever else change media supports
-					
-					// Empty out sources
+									
+					// Empty out embedPlayer object sources
 					embedPlayer.emptySources();
 					
-					// Stop the player 
-					embedPlayer.stop();
+					// Set the onDone interface flag to false ( for sync changeMedia onended events ) 
+					embedPlayer.onDoneInterfaceFlag = false;
 					
-					// Load new sources per the entry id
-					embedPlayer.checkPlayerSources();
-					
-					/*
-					var widgetId = '_423851'; // for testing only
-					//var widgetId = '_' + $j( embedPlayer ).data( 'kaltura.meta' ).partnerId;
-					console.log('Partner: ' + widgetId + ' | Entry: ' + entryId);
-					
-					mw.getEntryIdSourcesFromApi( widgetId, entryId, function( sources ) {
-						console.log(sources);
-						newSource = sources[0].src;
-						embedPlayer.play();
-						embedPlayer.switchPlaySrc( newSource, function( embedPlayer ) { 
-							
-							embedPlayer.stop(); // NOT WORKING!!!
-						} );
-					});
-					*/
+					// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
+					$j( embedPlayer ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
+						$j( '#' + embedPlayer.id + '_mappingSpinner' ).remove();
+
+						// Check if native player controls ( then switch directly ) type: 
+						if( embedPlayer.useNativePlayerControls() || embedPlayer.isPersistentNativePlayer() ){
+							embedPlayer.switchPlaySrc( embedPlayer.getSrc() );
+						} else{ 
+							embedPlayer.stop();
+							// do normal stop then play: 
+							embedPlayer.play();	
+							// restore onDone event: 
+							embedPlayer.onDoneInterfaceFlag = true;
+						}
+					});					
 					break;					
 			}
 		}
@@ -252,12 +253,11 @@
 	} else {
 		mw.log( 'KDPMapping::bind:EmbedPlayerManagerReady');		
 		$j( mw ).bind( 'EmbedPlayerManagerReady', function(){									
-			if(!window.KDPMapping ){
+			if( !window.KDPMapping ){
 				mw.log( "KDPMapping::EmbedPlayerManagerReady" );	
-				window.KDPMapping = new mw.KDPMapping();	
+				window.KDPMapping = new mw.KDPMapping();
 			}
 		});	
 	}
-
 	
 } )( window.mw );

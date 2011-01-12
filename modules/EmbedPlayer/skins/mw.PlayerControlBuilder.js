@@ -1414,19 +1414,10 @@ mw.PlayerControlBuilder.prototype = {
 	showDownload: function( $target ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-
-		// Load the roe if available (to populate out download options:
-		// mw.log('f:showDownload '+ this.roe + ' ' + this.mediaElement.addedROEData);
-		if ( embedPlayer.roe && embedPlayer.mediaElement.addedROEData == false ) {
-			$target.html( gM( 'mwe-loading_txt' ) );
-			embedPlayer.getMvJsonUrl( this.roe, function( data ) {
-				embedPlayer.mediaElement.addROE( data );
-				_this.showDownloadWithSources( $target );
-			} );
-
+		
 		// Load additional text sources via apiTitleKey:
 		// TODO we should move this to timedText bindings
-		} else if( embedPlayer.apiTitleKey ) {
+		if( embedPlayer.apiTitleKey ) {
 			// Load text interface ( if not already loaded )
 			mw.load( 'TimedText', function() {
 				embedPlayer.timedText.setupTextSources(function(){

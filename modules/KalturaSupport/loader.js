@@ -76,6 +76,11 @@
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
 		if( kalturaObjectPlayerList.length ) {
 			tagCheckObject.hasTags = true;
+			
+			// Check if we are NOT rewriting tags: 
+			if( !mw.isHTML5FallForwardNative() ){
+				mw.restoreKalturaKDPCallback();
+			}
 			// FALLFORWARD only for fallforward native players
 			// this is kind of heavy weight for loader.js 
 			// maybe move most of this to kEntryId support
@@ -209,6 +214,7 @@
 					// Don't do any other rewrites or library loading
 					return true;
 				}
+				
 				// Do loading then rewrite each tag:
 				if( loadPlaylistFlag ){
 					kLoadKalturaSupport = true;
@@ -241,7 +247,7 @@
 					mw.log("KalturaLoader:: load EmbedPlayer");
 					mw.load('EmbedPlayer', function(){
 						// Remove the general loading spinner ( embedPlayer takes over )
-						$j('.mwEmbedKalturaVideoSwap').embedPlayer();
+						$j('.mwEmbedKalturaVideoSwap').embedPlayer( window.KalturaKDPCallbackReady );
 					});
 				}
 			}
@@ -283,7 +289,7 @@
 		var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
 		
 		// Local function to handle iframe rewrites: 
-		var doRewriteIframe = function( enableIframeApi ){
+		var doRewriteIframe = function(){
 			
 			// Build the iframe request from supplied iframeParams: 
 			var iframeRequest = '';
@@ -301,12 +307,6 @@
 				iframeRequest+= argSeperator + 'debug=true';
 				argSeperator ='&';
 			}
-			// Pass along forceHTML5 if present: 
-			if( document.URL.indexOf('forceMobileHTML5') != -1 ){
-				iframeRequest+= argSeperator + 'forceMobileHTML5=true';
-				argSeperator ='&';
-			};
-			
 			
 			iframeRequest+= mw.getKalturaIframeHash();
 			
@@ -324,17 +324,17 @@
 			$j( playerTarget ).replaceWith( $iframe );
 			
 			// if the server is enabled 
-			if( enableIframeApi ){
-				// Invoke the iframe player api system: 
-				var iframeEmbedPlayer = $j( '.mwEmbedKalturaIframe').iFramePlayer();
-			}
+			if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
+				// Invoke the iframe player api system: 				
+				var iframeEmbedPlayer = $j( '.mwEmbedKalturaIframe').iFramePlayer( window.KalturaKDPCallbackReady );
+			}			
 		};
 		
 		// Check if the iframe API is enabled: 
 		if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 			// Load the iFrame player client
 			mw.load( ['mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'JSON' ], function(){
-				doRewriteIframe( true );											
+				doRewriteIframe();											
 			});
 		} else {
 			doRewriteIframe();			
@@ -350,16 +350,22 @@
 			window.jsCallbackReady = function(){ };
 		}
 	}
+	
 	// Check inline and when the dom is ready:
 	checkForKDPCallback()
 	// Check again once the document is ready:
 	$j(document).ready( checkForKDPCallback );
-
-	mw.ready( function(){
+	
+	// Restore the jsCallbackReady global ( call it if it got called in the mean time )
+	mw.restoreKalturaKDPCallback = function(){
+		// To restore when we are not rewriting: 
 		if( window.KalturaKDPCallbackReady ){
-			window.KalturaKDPCallbackReady();
+			window.jsCallbackReady = window.KalturaKDPCallbackReady;
+			if( window.KalturaKDPCallbackAlreadyCalled ){
+				window.jsCallbackReady();
+			}
 		}
-	})
+	};
 	
 	/**
 	 * Utility loader function to grab kaltura iframe hash url
