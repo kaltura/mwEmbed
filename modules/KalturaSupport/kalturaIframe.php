@@ -146,8 +146,8 @@ class kalturaIframe {
 	}
 	
 	private function getCacheDir(){
-		global $mwEmbedRoot;
-		$cacheDir = $mwEmbedRoot . '/includes/cache/iframecache';
+		global $mwEmbedRoot, $wgScriptCacheDirectory;
+		$cacheDir = $wgScriptCacheDirectory . '/iframe';
 		// make sure the dir exists: 
 		if( ! is_dir( $cacheDir) ){
 			@mkdir( $cacheDir, 0777, true );
@@ -248,15 +248,17 @@ class kalturaIframe {
 	function getReferer(){
 		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.org/';
 	}
+	
 	function getClient(){
-		global $mwEmbedRoot, $wgKalturaUiConfCacheTime;
+		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgKalturaServiceUrl, $wgScriptCacheDirectory;
 
-		$cacheDir = $mwEmbedRoot . '/includes/cache';
+		$cacheDir = $wgScriptCacheDirectory;		
 
 		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . ".ks.txt";
 		$cacheLife = $wgKalturaUiConfCacheTime; 
 			
 		$conf = new KalturaConfiguration( $this->getPartnerId() );
+		$conf->serviceUrl = $wgKalturaServiceUrl;
 		$client = new KalturaClient( $conf );
 		
 		// Check modify time on cached php file
