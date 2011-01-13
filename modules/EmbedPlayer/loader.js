@@ -299,12 +299,7 @@
 		if( $j( rewriteTags ).length != 0 ) {
 			return true;
 		}
-
-		var tagCheckObject = { 'hasTags' : false };
-		$j( mw ).trigger( 'LoaderEmbedPlayerCheckForPlayerTags',
-				[ tagCheckObject ]);
-
-		return tagCheckObject.hasTags;
+		return false;
 	};
 
 	/**
@@ -318,9 +313,14 @@
 	});
 
 	mw.rewritePagePlayerTags = function( callback ) {
-		var rewriteCount = mw.documentHasPlayerTags()
-		mw.log( 'EmbedPlayer:: Document::' + rewriteCount);
-		if( rewriteCount ) {
+		mw.log( 'Loader::EmbedPlayer:rewritePagePlayerTags:' + mw.documentHasPlayerTags() );
+		
+		// Allow modules to do tag rewrites as well: 
+		var doModuleTagRewrites = function(){			
+			$j(mw).triggerQueueCallback( 'LoadeRewritePlayerTags', callback );
+		}	
+		
+		if( mw.documentHasPlayerTags() ) {
 			var rewriteElementCount = 0;
 
 			// Set each player to loading ( as early on as possible )
@@ -339,12 +339,11 @@
 			});
 			// Load the embedPlayer module ( then run queued hooks )
 			mw.load( 'EmbedPlayer', function ( ) {
-				mw.log("EmbedPlayer:: do rewrite players:" + $j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).length );
 				// Rewrite the EmbedPlayer.RewriteTags with the
-				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer( callback );
+				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer( doModuleTagRewrites );
 			})
 		} else {
-			callback();
+			doModuleTagRewrites();
 		}
 	};
 	

@@ -25,7 +25,8 @@
 	mw.mergeConfig( 'EmbedPlayer.Attributes', {
 		'kentryid' : null,
 		'kwidgetid' : null,
-		'kuiconfid' : null
+		'kuiconfid' : null,
+		'kalturaPlayerMetaData' : null
 	});
 	
 	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
@@ -71,11 +72,23 @@
 	});
 
 	// Check if the document has kaltura objects ( for fall forward support ) 
-	$j( mw ).bind( 'LoaderEmbedPlayerCheckForPlayerTags', function( event, tagCheckObject ){
+	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
+		// Local callback function runs KalturaKDPCallbackReady and rewriteDoneCallback
+		var callback = function(){
+			// TODO move KalturaKDPCallbackReady into kdp mapping 
+			if( window.KalturaKDPCallbackReady )
+				window.KalturaKDPCallbackReady();
+			
+			if( rewriteDoneCallback )
+				rewriteDoneCallback();
+		}
+		
 		var kalturaObjectPlayerList = mw.getKalturaPlayerList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
-		if( kalturaObjectPlayerList.length ) {
-			tagCheckObject.hasTags = true;
+		if( !kalturaObjectPlayerList.length ) {
+			// no players to rewrite (don't run  window.KalturaKDPCallbackReady )
+			rewriteDoneCallback();
+		}else {
 			
 			// Check if we are NOT rewriting tags: 
 			if( !mw.isHTML5FallForwardNative() ){
@@ -139,9 +152,12 @@
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
 						videoEmbedAttributes.kentryid = kEmbedSettings.entryId;
 						if( kEmbedSettings.partnerId ){
-							var thumb_url = mw.getConfig( 'Kaltura.CdnUrl') + '/p/' + kEmbedSettings.partnerId + '/sp/' +
-											kEmbedSettings.partnerId + '00/thumbnail/entry_id/' + kEmbedSettings.entryId + '/width/' +
-											height + '/height/' + width;
+							var thumb_url =  mw.getKalturaThumbUrl({
+								'partner_id': kEmbedSettings.partnerId,
+								'entry_id' :  kEmbedSettings.entryId,
+								'width' : width,
+								'height' : height
+							});
 							$imgThumb = $j('<img />').attr({
 								'src' : thumb_url
 							})
@@ -195,7 +211,15 @@
 					)
 				});
 				// Check if we are doing iFrame rewrite ( skip local library loading )
-				if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){					
+				if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){
+					// Issue the callback once all the in page iframes have been rewritten: 
+					var iframeRewriteCount = 0;
+					var doneWithIframePlayer = function(){
+						iframeRewriteCount--
+						if( iframeRewriteCount == 0){
+							callback();
+						}
+					}
 					$j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).each( function(inx, playerTarget ) {
 						var kParams = {};
 						var iframeRequestMap = {
@@ -209,7 +233,8 @@
 								kParams[ iframeRequestMap[tagKey] ] = $j(playerTarget).attr( tagKey );
 							}
 						}
-						$j( playerTarget ).kalturaIframePlayer( kParams );
+						iframeRewriteCount++;
+						$j( playerTarget ).kalturaIframePlayer( kParams, doneWithIframePlayer);
 					});
 					// Don't do any other rewrites or library loading
 					return true;
@@ -247,11 +272,11 @@
 					mw.log("KalturaLoader:: load EmbedPlayer");
 					mw.load('EmbedPlayer', function(){
 						// Remove the general loading spinner ( embedPlayer takes over )
-						$j('.mwEmbedKalturaVideoSwap').embedPlayer( window.KalturaKDPCallbackReady );
+						$j('.mwEmbedKalturaVideoSwap').embedPlayer( callback );
 					});
 				}
 			}
-		}
+		}		
 	});
 	
 	var kLoadKalturaSupport = false;
@@ -282,7 +307,7 @@
 	 * 	optional function called once iframe player has been loaded
 	 */
 	jQuery.fn.kalturaIframePlayer = function( iframeParams, callback ) {
-		mw.log( '$j.kalturaIframePlayer()::' );
+		mw.log( '$j.kalturaIframePlayer::' );
 		var playerTarget = this;
 		
 		// Establish the "server" domain via mwEmbed path: 
@@ -326,14 +351,14 @@
 			// if the server is enabled 
 			if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 				// Invoke the iframe player api system: 				
-				var iframeEmbedPlayer = $j( '.mwEmbedKalturaIframe').iFramePlayer( window.KalturaKDPCallbackReady );
+				var iframeEmbedPlayer = $j( '.mwEmbedKalturaIframe').iFramePlayer( callback );
 			}			
 		};
 		
 		// Check if the iframe API is enabled: 
 		if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
-			// Load the iFrame player client
-			mw.load( ['mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'JSON' ], function(){
+			// Make sure the iFrame player client is loaded: 
+			mw.load( ['mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' ], function(){
 				doRewriteIframe();											
 			});
 		} else {
@@ -418,6 +443,16 @@
 			}
 		}
 		return kalturaPlayers;
+	};
+	
+	/**
+	 * Get kaltura thumb url from entry object
+	 */
+	mw.getKalturaThumbUrl = function ( entry ){
+		var kCdn = ( mw.getConfig('Kaltura.CdnUrl') ) ? mw.getConfig('Kaltura.CdnUrl') : 'http://cdnakmi.kaltura.com';
+		return kCdn + '/p/' + entry.partner_id + '/sp/' +
+			entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
+			entry.height + '/height/' + entry.width;
 	};
 	
 	/**

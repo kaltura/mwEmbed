@@ -35,7 +35,7 @@
 *	// $j('#iframeid').bind('ended', function(){ .. end playback event ... }
 *	'EmbedPlayer.EnableIframeApi' : true
 */
-var kURID = '1.2h';
+var kURID = '1.2j';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -126,11 +126,18 @@ function kDoIframeRewriteList( rewriteObjects ){
 	}
 }
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options){
+	
 	// Check if the iframe API is enabled in which case we have to load client code and use that 
 	// to rewrite the frame
-	//if( ){
-	//	return ;
-	//}
+	if( preMwEmbedConfig['EmbedPlayer.EnableIframeApi'] ){
+		kAddScript(function(){
+			// Options include 'width' and 'height'
+			$j('#' + replaceTargetId ).css(options);
+			// Do kaltura iframe player
+			$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
+		});
+		return ;
+	}	
 	
 	// Else we can avoid loading mwEmbed all together and just rewrite the iframe: 
 	var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
@@ -178,7 +185,7 @@ function kOverideSwfObject(){
 				})
 			}
 			if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
-				kalturaIframeEmbed( replaceTargetId, kEmbedSettings , { width: width, height: height } );
+				kalturaIframeEmbed( replaceTargetId, kEmbedSettings , { 'width': width, 'height': height } );
 			} else {
 				$j('#' + replaceTargetId ).empty()
 				.css({
@@ -337,8 +344,10 @@ function kSupportsFlash(){
 
 // Add the kaltura html5 mwEmbed script
 var kAddedScript = false;
-function kAddScript(){
+function kAddScript( callback ){
 	if( kAddedScript ){
+		if( callback )
+			callback();
 		return ;
 	}
 	kAddedScript = true;
@@ -350,8 +359,8 @@ function kAddScript(){
 	// Check if we are using an iframe ( load only the iframe api client ) 
 	if( preMwEmbedConfig['Kaltura.IframeRewrite'] ) {
 		if( preMwEmbedConfig['EmbedPlayer.EnableIframeApi'] ){
-			jsRequestSet.push( [ 'mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'JSON' ] );
-			kLoadJsRequestSet( jsRequestSet );
+			jsRequestSet.push( [ 'mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' ] );
+			kLoadJsRequestSet( jsRequestSet, callback );
 		} else {
 			kDoIframeRewriteList( kGetKalturaPlayerList() )	;
 		}
@@ -423,7 +432,7 @@ function kAddScript(){
 		   'mw.PlaylistHandlerKalturaRss'
 		]);
 	}
-	kLoadJsRequestSet( jsRequestSet );
+	kLoadJsRequestSet( jsRequestSet, callback );
 };
 
 function kAppendScriptUrl(url, callback) {

@@ -637,6 +637,9 @@ class kalturaIframe {
 				// Remove the loader ( mwEmbed will supply the loader ) 
 				var el = document.getElementById('iframeLoadingSpinner');
 				el.parentNode.removeChild(el);
+
+				// Set a prepend flag so its easy to see whats happening on what side of the iframe: 
+				mw.setConfig('Mw.LogPrepend', 'iframe:' );
 				
 				// We can't support full screen in object context since it requires outer page DOM control
 				mw.setConfig( 'EmbedPlayer.EnableFullscreen', false );

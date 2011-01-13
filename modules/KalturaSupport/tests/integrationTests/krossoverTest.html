@@ -9,9 +9,9 @@
 <body>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <script>
-//mw.setConfig( 'Kaltura.IframeRewrite', true );
+mw.setConfig( 'Kaltura.IframeRewrite', true );
 
-// relevent parts of searchtool.js ( from krossover ) 
+// Relevent parts of searchtool.js ( from krossover ) 
 function jsCallbackReady() {	
 	$('#kdpLog').append( 'jsCallbackReady'+ "\n" );
 	$('#myKdp').get(0).addJsListener("playerPlayEnd", "playerPlayEndHandler");
@@ -36,7 +36,7 @@ function playerPlayEndHandler(data, id){
 	}
 }
 /**
-*function to play the video.
+* Function to play the video.
 */
 function playVideo(eventId){
 	$('#kdpLog').append( 'playVideo:: changeMedia: eventId:' + eventId+ " kEntryId: " + playList[eventId].kalturaEntryId + "\n" );

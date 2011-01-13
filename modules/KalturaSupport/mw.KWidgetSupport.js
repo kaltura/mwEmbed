@@ -46,8 +46,9 @@ mw.KWidgetSupport.prototype = {
 					// Apply player metadata
 					if( playerData.meta ) {
 						embedPlayer.duration = playerData.meta.duration;
-						$j( embedPlayer ).data( 'kaltura.meta', playerData.meta );
-						$j( embedPlayer ).trigger( 'KalturaSupport.metaDataReady', $j( embedPlayer ).data( 'kaltura.meta') );
+						// We have to assign embedPlayer metadata as an attribute to bridge the iframe
+						embedPlayer.kalturaPlayerMetaData = playerData.meta;
+						$j( embedPlayer ).trigger( 'KalturaSupport.metaDataReady', embedPlayer.kalturaPlayerMetaData );
 					}
 					
 					// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
@@ -220,9 +221,12 @@ mw.KWidgetSupport.prototype = {
 
 		// Set the poster ( if not already set ) 
 		if( !embedPlayer.poster && $j( embedPlayer ).attr( 'kentryid' ) ){
-			embedPlayer.poster = mw.getConfig( 'Kaltura.CdnUrl' ) + '/p/' + this.kClient.getPartnerId() + '/sp/' +
-				this.kClient.getPartnerId() + '00/thumbnail/entry_id/' + $j( embedPlayer ).attr( 'kentryid' ) + '/width/' +
-				embedPlayer.getWidth() + '/height/' + embedPlayer.getHeight();
+			embedPlayer.poster = mw.getKalturaThumbUrl({
+					'partner_id' : this.kClient.getPartnerId(),
+					'entry_id' : $j( embedPlayer ).attr( 'kentryid' ),
+					'width' : embedPlayer.getWidth(),
+					'height' :  embedPlayer.getHeight()
+				});			
 		}
 		
 		

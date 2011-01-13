@@ -2259,7 +2259,10 @@ mw.EmbedPlayer.prototype = {
 			}
 		}
 	},
-
+	// update the video poster: 
+	updatePosterSrc: function( posterSrc ){
+		this.poster = posterSrc;
+	},
 	/**
 	 * Returns the HTML code for the video when it is in thumbnail mode.
 	 * playing, configuring the player, inline cmml display, HTML linkback,
@@ -2758,8 +2761,10 @@ mw.EmbedPlayer.prototype = {
 		if( this.useNativePlayerControls() ){
 			this.getPlayerElement().currentTime = 0;
 			this.getPlayerElement().pause();
-			// add play button on top
-			this.addPlayBtnLarge();
+			// If on android when we "stop" we re add the large play button
+			if( mw.isAndroid2() ){
+				this.addPlayBtnLarge();
+			}
 		} else {
 			// Rewrite the html to thumbnail disp
 			this.showThumbnail();

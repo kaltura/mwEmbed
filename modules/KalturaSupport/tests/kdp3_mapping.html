@@ -45,7 +45,10 @@
 		#controls_menu {  }
 	</style>
 	<script type="text/javascript">
-		
+		if( document.URL.indexOf('forceMobileHTML5AndIframe' ) !== -1 ){
+			mw.setConfig( 'Kaltura.IframeRewrite', true );
+			mw.setConfig( 'forceMobileHTML5', true );
+		}
 		var notificationslist = ['startUp',
 								'durationChange',
 								'initiatApp',
@@ -114,6 +117,7 @@
 								'freePreviewEnd'];
 		
 		function jsCallbackReady () {
+			$("#notifications").append( 'jsCallbackReady' + "\n");
 			$('#kdp3').get(0).addJsListener("volumeChanged", "volumeChangedHandler");
 			$('#kdp3').get(0).addJsListener("playerStateChange", "playerStateChangeHandler");
 			$('#kdp3').get(0).addJsListener("durationChange", "durationChangeHandler");
@@ -124,7 +128,6 @@
 
 			for (var i=0; i < notificationslist.length; ++i) {
 				if (notificationslist[i] != 'playerUpdatePlayhead') {
-					mw.log( 'Add listener: ' + notificationslist[i] );
 					window[ notificationslist[i] + "Handler2" ] = function(data, id){
 						if ($("#stopListeners").attr("checked") == false){
 							$("#notifications").text( $("#notifications").text() + "'+notificationslist[i]+': ");
@@ -252,7 +255,7 @@
         <dfn title="Click the play, pause or stop buttons to control the player playback. Set a time in seconds to the seek field and click the 'seek to' button to jump to that seconds in the playing media">Playback control:</dfn>&nbsp;<a href="http://www.kaltura.org/demos/kdp3/docs.html#sendnotification">[docs]</a>
         <div class="controls">
 			<a href="#" onclick="$('#kdp3').get(0).sendNotification('doPlay');return false;">Play</a> | <a href="#" onclick="$('#kdp3').get(0).sendNotification('doPause');return false;">Pause</a> | <a href="#" onclick="$('#kdp3').get(0).sendNotification('doStop');return false;">Stop</a> 
-			| <a href="#" onclick="$('#kdp3').get(0).evaluate('{mediaProxy.entry.id}');">Get entry id</a> | 
+			| <a href="#" onclick="alert( $('#kdp3').get(0).evaluate('{mediaProxy.entry.id}') );">Get entry id</a> | 
 			<a href="#" id="cMedia">Change Media</a>
         </div>
         <div class="controls">
@@ -278,8 +281,7 @@
 		<br>
 		<div>
 			<dfn title="The box below lists all the events that are handled by KDP, for readability, we do not list the playerUpdatePlayhead notification by default, since it is being called too often, tick the playerUpdatePlayhead checkbox below to list this notification as well">Notifications:</dfn>&nbsp;<a href="http://www.kaltura.org/demos/kdp3/docs.html#addlistener">[docs]</a><input id="autoscroll" checked="checked" type="checkbox"><label for="autoscroll">AutoScroll?</label>
-			<textarea id="notifications" style="height: 80px; width: 285px;">
-			</textarea><br>
+			<textarea id="notifications" style="height: 80px; width: 285px;"></textarea><br>
 			<input id="listenToUpdate" type="checkbox"><label for="listenToUpdate">Listen to playerUpdatePlayhead</label>&nbsp;<a href="http://www.kaltura.org/demos/kdp3/docs.html#notifications">[docs]</a><br>
 			<input id="stopListeners" type="checkbox"><label for="stopListeners">Stop listening?</label>&nbsp;<a href="http://www.kaltura.org/demos/kdp3/docs.html#removelistener">[docs]</a>
 		</div>
@@ -287,7 +289,8 @@
 </div>
 <div id="container">
 	<h1 class="title">Kaltura Dynamic Player version 3 ( HTML5lib backend test ) </h1>
-	<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.	
+	<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.	<br/>
+	<a href="?forceMobileHTML5AndIframe"> Force Iframe HTML5</a> for testing iframe html5	<br/>	<br/>
 	<p>Hover over the parameters or APIs from the list for description, click to test &amp; learn more.</p>
 	<object id="kdp3" name="kdp3" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1291647430/wid/_243342/uiconf_id/2890431/entry_id/0_uka1msg4" data="http://www.kaltura.com/index.php/kwidget/cache_st/1291647430/wid/_243342/uiconf_id/2890431/entry_id/0_uka1msg4"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1291647430/wid/_243342/uiconf_id/2890431/entry_id/0_uka1msg4" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_uka1msg4/width/120/height/90/bgcolor/000000/type/2" /> <span property="dc:description" content="" /><span property="media:title" content="FolgersCoffe.mpeg" /> <span property="media:width" content="400" /><span property="media:height" content="330" /> <span property="media:type" content="application/x-shockwave-flash" /> </object>
 </div>	

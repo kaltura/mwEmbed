@@ -6,16 +6,17 @@
 
 ( function( mw ) {
 	
-mw.IFramePlayerApiClient = function( iframe, playerProxy, options ){
-	return this.init( iframe , playerProxy, options);
+mw.IFramePlayerApiClient = function( iframe, playerProxy ){
+	return this.init( iframe , playerProxy );
 }
 mw.IFramePlayerApiClient.prototype = {
 	'exportedMethods': [
 		'play',
 		'pause'
 	],
-	// Local store of the post message ( not updated by user js )
+	// Local store of the previous sate of player proxy
 	'_prevPlayerProxy': {},
+	
 	// Stores the current playerProxy ( can be updated by user js )
 	'init': function( iframe , playerProxy, options ){
 		this.iframe = iframe;
@@ -27,12 +28,16 @@ mw.IFramePlayerApiClient.prototype = {
 		this.addPlayerReciveApi();
 	},
 	'addPlayerSendApi': function(){
-		var _this = this;
+		var _this = this;		
+		
+		// Allow modules to extend the list of iframeExported bindings
+		$j( mw ).trigger( 'AddIframePlayerMethods', [ this.exportedMethods ]);
+		
 		$j.each( this.exportedMethods, function(na, method){
 			_this.playerProxy[ method ] = function(){
 				_this.postMessage( {
 					'method' : method,
-					'args' : arguments
+					'args' : $j.makeArray( arguments )
 				} );
 			};
 		});
@@ -47,8 +52,7 @@ mw.IFramePlayerApiClient.prototype = {
 	 * Handle received events
 	 */
 	'hanldeReciveMsg': function( event ){
-		var _this = this;
-		//mw.log("IframePlayerApiClient:: hanldeReciveMsg ");
+		var _this = this;		
 		// Confirm the event is coming for the target host:
 		if( event.origin != this.iframeServer){
 			mw.log("Skip msg from host does not match iFrame player: " + event.origin + 
@@ -57,6 +61,9 @@ mw.IFramePlayerApiClient.prototype = {
 		};
 		// Decode the message 
 		var msgObject = JSON.parse( event.data );
+		//mw.log("IframePlayerApiClient:: hanldeReciveMsg: " + msgObject.triggerName );
+		
+		
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
 		
 		// Before we update local attributes check that the object has not been updated by user js
@@ -90,12 +97,11 @@ mw.IFramePlayerApiClient.prototype = {
 			//mw.log('IFramePlayerApiClient:: trigger: ' + msgObject.triggerName );
 			$j( _this.playerProxy ).trigger( msgObject.triggerName, msgObject.triggerArgs );
 		}
-		// @@TODO:: Allow extending modules to wrap these api events ( kaltura kdp javascript emulation ? )
 	},
-	'postMessage': function( msgObj ){
+	'postMessage': function( msgObject ){
 		//mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObj ) );
 		$j.postMessage(
-			JSON.stringify( msgObj ), 
+			JSON.stringify( msgObject ), 
 			mw.absoluteUrl( $j( this.iframe ).attr('src') ), 
 			this.iframe.contentWindow 
 		);
@@ -128,11 +134,11 @@ mw.IFramePlayerApiClient.prototype = {
 			return false;
 		}
 		if( !iframe['playerApi'] ){
-			iframe['playerApi'] = new mw.IFramePlayerApiClient( iframe, playerProxy, options );
+			iframe['playerApi'] = new mw.IFramePlayerApiClient( iframe, playerProxy );
 		}
 		
 		// Allow modules to extend the 'iframe' based player
-		$j( mw ).trigger( 'newIframeEmbedPlayerEvent', playerProxy);
+		$j( mw ).trigger( 'newIframePlayerClientSide', [ playerProxy ]);
 		
 		// Bind the iFrame player ready callback
 		if( readyCallback ){

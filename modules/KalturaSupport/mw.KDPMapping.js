@@ -16,20 +16,29 @@
 		* Add Player hooks for supporting Kaltura api stuff
 		*/ 
 		init: function( ){
-			this.addPlayerHooks();		 	
+			// Check if in iFrame mode:
+			if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) ){
+				// Check if we are client( IframeRewrite ) or server ( IframeParentUrl )
+				if( mw.getConfig('Kaltura.IframeRewrite') ){
+					this.addIframePlayerHooksClient();
+				}
+				if(	mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) ){
+					this.addIframePlayerHooksServer();
+				}
+			} else {
+				// No iframe just do normal KDP maping hooks: 
+				this.addPlayerHooks();
+			}
 		},
 				
 		addPlayerHooks: function(){
 			var _this = this;
-			// Add KDP iframe support to client
-			
-			// Add KDP iframe support to server
-			
+
 			// Add the hooks to the player manager			
 			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {						
 				// Add the addJsListener and sendNotification maps
-				embedPlayer.addJsListener = function(listenerString, callback){
-					_this.addJsListener( embedPlayer, listenerString, callback )
+				embedPlayer.addJsListener = function(listenerString, globalFuncName){
+					_this.addJsListener( embedPlayer, listenerString, window[ globalFuncName ] )
 				}
 				
 				embedPlayer.removeJsListener = function(listenerString, callback){
@@ -41,12 +50,67 @@
 				}
 				
 				embedPlayer.evaluate = function( objectString ){
-					_this.evaluate( embedPlayer, objectString);
+					return _this.evaluate( embedPlayer, objectString);
 				}
 				
+				// TODO per KDP docs this should be "setAttribute" but thats a protected native method. 
+				// the emulation has to do something more tricky like listen to componentName changes 
+				// in the attribute space!
 				embedPlayer.setKDPAttribute = function( componentName, property, value ) {
 					_this.setKDPAttribute( embedPlayer, componentName, property, value );
 				}
+			});
+		},
+		
+		/***************************************
+		 * Client side kdp mapping iframe player setup: 
+		 **************************************/	
+		addIframePlayerHooksClient: function(){
+			var _this = this;
+			mw.log( "KDPMapping::addIframePlayerHooksClient" );
+		
+			$j( mw ).bind( 'AddIframePlayerMethods', function( event, playerMethods ){
+				playerMethods.push( 'addJsListener',  'sendNotification' );
+				// NOTE we don't export evaluate since we need to run it synchronously
+			});
+			
+			$j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {		
+				$j( playerProxy ).bind('jsListenerEvent', function(event, globalFuncName, listenerArgs){
+					window[ globalFuncName ].apply( this, listenerArgs );
+				})
+				// Directly build out the evaluate call on the playerProxy
+				playerProxy.evaluate = function( objectString ){
+					return _this.evaluate( playerProxy, objectString);					
+				}
+			});
+			
+		},
+		
+		/***************************************
+		 * Server side kdp mapping iframe player setup: 
+		 **************************************/
+		addIframePlayerHooksServer: function(){
+			var _this = this;
+			mw.log("KDPMapping::addIframePlayerHooksServer");
+			
+			$j( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
+				exportedBindings.push( 'jsListenerEvent' );
+			});
+			
+			$j( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){
+				
+				embedPlayer.addJsListener = function(listenerString, globalFuncName){
+					_this.addJsListener(embedPlayer, listenerString, function(){
+						var args = [ globalFuncName, $j.makeArray( arguments ) ];
+						$j( embedPlayer ).trigger( 'jsListenerEvent', args )
+					});
+				};
+				
+				// Identical to non-iframe sendNotification
+				embedPlayer.sendNotification = function( notificationName, notificationData ){
+					_this.sendNotification( embedPlayer, notificationName, notificationData)
+				}
+				
 			});
 		},
 		
@@ -68,7 +132,6 @@
 			// Strip the { } from the objectString
 			objectString = objectString.replace( /\{|\}/g, '' );
 			objectPath = objectString.split('.');
-			console.log(objectPath);
 			switch( objectPath[0] ){
 				case 'video':
 					switch( objectPath[1] ){
@@ -82,9 +145,9 @@
 					switch( objectPath[1] ){
 						case 'entry':
 							if( objectPath[2] ) {
-								return $j( embedPlayer ).data( 'kaltura.meta' )[ objectPath[2] ];
+								return embedPlayer.kalturaPlayerMetaData[ objectPath[2] ];
 							} else {
-								return $j( embedPlayer ).data( 'kaltura.meta' );
+								return embedPlayer.kalturaPlayerMetaData;
 							}
 						break;
 					}
@@ -120,9 +183,8 @@
 		/**
 		 * Emulates kalatura addJsListener function
 		 */
-		addJsListener: function( embedPlayer, eventName, globalFuncName ){
-			//mw.log("KDPMapping:: addJsListener: " + eventName + ' cb:' + callbackFuncName );
-			var callback = window[ globalFuncName ];
+		addJsListener: function( embedPlayer, eventName, callback ){
+			//mw.log("KDPMapping:: addJsListener: " + eventName + ' cb:' + callbackFuncName );			
 			switch( eventName ){
 				case 'volumeChanged': 
 					$j( embedPlayer ).bind('volumeChanged', function(percent){
@@ -163,7 +225,7 @@
 		},
 		
 		/**
-		 * emulates kalatura removeJsListener function
+		 * Emulates kalatura removeJsListener function
 		 */
 		removeJsListener: function( embedPlayer, eventName, callbackFuncName ){
 			//mw.log("KDPMapping:: removeJsListener: " + eventName + ' cb:' + callbackFuncName );
@@ -182,10 +244,8 @@
 				case 'playerUpdatePlayhead':
 					$j( embedPlayer).unbind('monitorEvent');
 					break;				
-			}
-			
-			callback();
-				
+			}			
+			callback();				
 		},		
 		
 		/**
@@ -220,6 +280,16 @@
 					
 					// Update the entry id
 					embedPlayer.kentryid = notificationData.entryId;
+					
+					// Update the poster
+					embedPlayer.updatePosterSrc( 
+						mw.getKalturaThumbUrl({
+							'partner_id': $j( embedPlayer ).attr( 'kwidgetid' ).replace('_', ''),
+							'entry_id' : embedPlayer.kentryid,
+							'width' : embedPlayer.getWidth(),
+							'height' :  embedPlayer.getHeight()
+						})
+					);
 									
 					// Empty out embedPlayer object sources
 					embedPlayer.emptySources();
@@ -233,7 +303,10 @@
 
 						// Check if native player controls ( then switch directly ) type: 
 						if( embedPlayer.useNativePlayerControls() || embedPlayer.isPersistentNativePlayer() ){
-							embedPlayer.switchPlaySrc( embedPlayer.getSrc() );
+							embedPlayer.switchPlaySrc( embedPlayer.getSrc(), function(){
+								// Once switch is complete restore onDone event
+								embedPlayer.onDoneInterfaceFlag = true;
+							});
 						} else{ 
 							embedPlayer.stop();
 							// do normal stop then play: 
@@ -248,16 +321,10 @@
 	};	
 		
 	// Setup the KDPMapping
-	if( mw.playerManager ){	
-		window.KDPMapping = new mw.KDPMapping();	
-	} else {
-		mw.log( 'KDPMapping::bind:EmbedPlayerManagerReady');		
-		$j( mw ).bind( 'EmbedPlayerManagerReady', function(){									
-			if( !window.KDPMapping ){
-				mw.log( "KDPMapping::EmbedPlayerManagerReady" );	
-				window.KDPMapping = new mw.KDPMapping();
-			}
-		});	
+	// TODO just a normal anonymous function initialization				
+	if( !window.KDPMapping ){
+		mw.log( "KDPMapping::setup" );	
+		window.KDPMapping = new mw.KDPMapping();
 	}
 	
 } )( window.mw );

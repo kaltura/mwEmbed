@@ -359,7 +359,15 @@ mw.EmbedPlayerNative = {
 		// Return the playerElement currentTime
 		return this.playerElement.currentTime;
 	},
-
+	
+	// Update the poster src ( updates the native object if in dom ) 
+	updatePosterSrc: function( src ){
+		if( this.getPlayerElement() ){
+			this.getPlayerElement().poster = src;
+		}
+		// Also update the embedPlayer poster 
+		this.parent_updatePosterSrc( src );
+	},
 	
 	/**
 	 * switchPlaySrc switches the player source working around a few bugs in browsers
@@ -387,8 +395,11 @@ mw.EmbedPlayerNative = {
 					// Remove all native player bindings
 					$j(vid).unbind();
 					vid.pause();
-					// Local scope update source and play function to work around google chrome
-					// bug
+					var orginalControlsState = vid.controls;
+					// Hide controls ( to not display native play button while switching sources ) 
+					vid.removeAttribute('controls');
+					
+					// Local scope update source and play function to work around google chrome bug
 					var updateSrcAndPlay = function() {
 						var vid = _this.getPlayerElement();
 						if (!vid){
@@ -396,7 +407,7 @@ mw.EmbedPlayerNative = {
 							return ;
 						}
 						vid.src = src;
-						// Give iOS 50ms to figure out the src got updated ( iPad OS 3.0 )
+						// Give iOS 50ms to figure out the src got updated ( iPad OS 4.0 )
 						setTimeout(function() {
 							var vid = _this.getPlayerElement();
 							if (!vid){
@@ -408,14 +419,16 @@ mw.EmbedPlayerNative = {
 							// Wait another 100ms then bind the end event and any custom events
 							// for the switchCallback
 							setTimeout(function() {
-								var vid = _this.getPlayerElement();																
+								var vid = _this.getPlayerElement();			
+								// restore controls 
+								vid.controls = orginalControlsState;
 								// add the end binding: 
 								$j(vid).bind('ended', function( event ) {
 									if(typeof doneCallback == 'function' ){
 										doneCallback();
 									}
 									return false;
-								})
+								});
 								if (typeof switchCallback == 'function') {
 									switchCallback(vid);
 								}
