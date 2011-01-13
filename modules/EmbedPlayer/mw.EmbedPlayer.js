@@ -13,7 +13,6 @@
 
 mw.includeAllModuleMessages();
 
-
 /**
  * The base source attribute checks also see:
  * http://dev.w3.org/html5/spec/Overview.html#the-source-element
@@ -2446,8 +2445,8 @@ mw.EmbedPlayer.prototype = {
 			break;
 			case 'videojs':
 				return this.getShareEmbedVideoJs();
+			break;
 		}
-		break;
 	},
 
 	/**
