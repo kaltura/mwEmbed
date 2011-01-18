@@ -17,7 +17,9 @@ $loaderJs .= "\n" . "SCRIPT_LOADER_URL = '". addslashes( $wgResourceLoaderUrl ) 
 $exportedJsConfig= array(
 	'Kaltura.ServiceUrl' => $wgKalturaServiceUrl,
 	'Kaltura.ServiceBase' => $wgKalturaServiceBase,
-	'Kaltura.CdnUrl' => $wgKalturaCDNUrl
+	'Kaltura.CdnUrl' => $wgKalturaCDNUrl,
+	'EmbedPlayer.EnableIframeApi'  => $wgEnableIframeApi,
+	'EmbedPlayer.EnableIpadHTMLControls' => $wgEnableIpadHTMLControls
 );
 // Append Custom config: 
 foreach( $exportedJsConfig as $key => $val ){
