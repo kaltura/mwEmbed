@@ -339,6 +339,7 @@
 			});
 			// Load the embedPlayer module ( then run queued hooks )
 			mw.load( 'EmbedPlayer', function ( ) {
+				
 				// Rewrite the EmbedPlayer.RewriteTags with the
 				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer( doModuleTagRewrites );
 			})
@@ -439,12 +440,6 @@
 		if( $j.inArray( 'mw.style.PlayerSkin' + skinCaseName, dependencyRequest ) == -1 ){
 			dependencyRequest.push( 'mw.style.PlayerSkin' + skinCaseName );
 		}
-
-		// Check if the iFrame api server should be loaded ( iframe api is on ):
-		if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
-			dependencyRequest.push(	'mw.IFramePlayerApiServer' );
-		}
-
 
 		// Allow extension to extend the request.
 		$j( mw ).trigger( 'LoaderEmbedPlayerUpdateRequest',

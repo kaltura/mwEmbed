@@ -707,7 +707,7 @@ mw.PlayerControlBuilder.prototype = {
 			.fadeOut( animateDuration );
 		//mw.log('about to trigger hide control bar')
 		// Allow interface items to update: 
-		$j( this.embedPlayer ).trigger('onHideControlBar', {'bottom' : 10} );
+		$j( this.embedPlayer ).trigger('onHideControlBar', {'bottom' : 15} );
 
 	},
 
@@ -728,7 +728,7 @@ mw.PlayerControlBuilder.prototype = {
 			.fadeIn( animateDuration );
 		
 		// Trigger the screen overlay with layout info: 
-		$j( this.embedPlayer ).trigger( 'onShowControlBar', {'bottom' : this.getHeight() + 10 } );		
+		$j( this.embedPlayer ).trigger( 'onShowControlBar', {'bottom' : this.getHeight() + 15 } );		
 	},
 
 	/**
@@ -786,7 +786,7 @@ mw.PlayerControlBuilder.prototype = {
 			return false;
 		}
 		// See if we have we have ogg support
-		var supportingPlayers = mw.EmbedTypes.players.getMIMETypePlayers( 'video/ogg' );
+		var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/ogg' );
 		for ( var i = 0; i < supportingPlayers.length; i++ ) {
 
 			if ( supportingPlayers[i].id == 'oggNative'
@@ -801,17 +801,17 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Chrome's webM support is oky though:
 		if( /chrome/.test(navigator.userAgent.toLowerCase() ) &&
-			mw.EmbedTypes.players.getMIMETypePlayers( 'video/webm' ).length ){
+			mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/webm' ).length ){
 			return false;
 		}
 
 
 		// Check for h264 and or flash/flv source and playback support and don't show warning
 		if(
-			( mw.EmbedTypes.players.getMIMETypePlayers( 'video/h264' ).length
+			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/h264' ).length
 			&& this.embedPlayer.mediaElement.getSources( 'video/h264' ).length )
 			||
-			( mw.EmbedTypes.players.getMIMETypePlayers( 'video/x-flv' ).length
+			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/x-flv' ).length
 			&& this.embedPlayer.mediaElement.getSources( 'video/x-flv' ).length )
 		){
 			// No firefox link if a h.264 or flash/flv stream is present
@@ -1308,7 +1308,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		$j.each( embedPlayer.mediaElement.getPlayableSources(), function( sourceId, source ) {
 
-			var isPlayable = (typeof mw.EmbedTypes.players.defaultPlayer( source.getMIMEType() ) == 'object' );
+			var isPlayable = (typeof mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.getMIMEType() ) == 'object' );
 			var is_selected = ( source.getSrc() == embedPlayer.mediaElement.selectedSource.getSrc() );
 
 			$playerSelect.append(
@@ -1320,7 +1320,7 @@ mw.PlayerControlBuilder.prototype = {
 				$playerList = $j('<ul />');
 				// output the player select code:
 
-				var supportingPlayers = mw.EmbedTypes.players.getMIMETypePlayers( source.getMIMEType() );
+				var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( source.getMIMEType() );
 
 				for ( var i = 0; i < supportingPlayers.length ; i++ ) {
 
@@ -1365,7 +1365,7 @@ mw.PlayerControlBuilder.prototype = {
 								embedPlayer.mediaElement.selectSource( sourceId );
 								var playableSources = embedPlayer.mediaElement.getPlayableSources();
 
-								mw.EmbedTypes.players.setPlayerPreference(
+								mw.EmbedTypes.getMediaPlayers().setPlayerPreference(
 									player_id,
 									playableSources[ sourceId ].getMIMEType()
 								);

@@ -47,7 +47,7 @@ mw.includeAllModuleMessages();
 		enabledSources: null,
 		
 		/**
-		 * The current langauge key
+		 * The current language key
 		 */
 		currentLangKey : null,
 		
@@ -106,7 +106,6 @@ mw.includeAllModuleMessages();
 		 */
 		init: function( embedPlayer, options ) {
 			var _this = this;
-			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;
 			this.options = options;
 
@@ -149,7 +148,7 @@ mw.includeAllModuleMessages();
 			
 			// Resize the timed text font size per window width
 			$j( embedPlayer ).bind( 'onCloseFullScreen onOpenFullScreen', function() {
-				var textOffset = _this.embedPlayer.controlBuilder.fullscreenMode ? 30 : 10;
+				var textOffset = _this.embedPlayer.controlBuilder.fullscreenMode ? 35 : 15;
 				
 				mw.log( 'TimedText::set text size for: : ' + embedPlayer.$interface.width() + ' = ' + _this.getInterfaceSizeTextCss({
 					'width' :  embedPlayer.$interface.width(),
@@ -189,7 +188,7 @@ mw.includeAllModuleMessages();
 				embedPlayer.$interface.find( '.track' )
 				.stop()
 				.animate( layout, 'fast' );
-			});
+			});			
 			
 		},
 		/**
@@ -285,8 +284,8 @@ mw.includeAllModuleMessages();
 		getInterfaceSizePercent: function( size ) {
 			// Some arbitrary scale relative to window size ( 400px wide is text size 105% )
 			var textSize = size.width / 5;
-			if( textSize < 95 ) textSize = 95;
-			if( textSize > 200 ) textSize = 200;
+			if( textSize < 110 ) textSize = 110;
+			if( textSize > 220 ) textSize = 220;
 			return textSize;
 		},
 
@@ -297,7 +296,6 @@ mw.includeAllModuleMessages();
 		* @param {Function} callback Function to be called once text sources are setup.
 		*/
 		setupTextSources: function( callback ) {
-			mw.log( 'mw.TimedText::setupTextSources');
 			var _this = this;
 			if( this.textSourceSetupFlag ) {
 				if( callback ) {
@@ -1084,7 +1082,9 @@ mw.includeAllModuleMessages();
 						'width' :  this.embedPlayer.getWidth(),
 						'height' : this.embedPlayer.getHeight()
 					})
-				);
+				).css({
+					'line-height' : '1.6em'
+				});
 
 				$playerTarget.append( $track );
 				
@@ -1285,12 +1285,12 @@ mw.includeAllModuleMessages();
 		// Optimize: we could use javascript strings functions instead of jQuery XML parsing:
 		$j( '<div>' + data + '</div>' ).find('p').each( function() {
 			currentPtext = $j(this).html();
-			//mw.log( 'pText: ' + currentPtext );
+			mw.log( 'pText: ' + currentPtext );
 
 			//Check if the p matches the "all in one line" match:
 			var m = currentPtext
 			.replace('--&gt;', '-->')
-			.match(/\d+\s([\d\-]+):([\d\-]+):([\d\-]+)(?:,([\d\-]+))?\s*--?>\s*([\d\-]+):([\d\-]+):([\d\-]+)(?:,([\d\-]+))?\n?(.*)/);
+			.match(/\d+\s([\d\-]+):([\d\-]+):([\d\-]+)(?:,([\d\-]+))?\s*--?>\s*([\d\-]+):([\d\-]+):([\d\-]+)(?:,([\d\-]+))?\n?(.*\n?.*)/);
 
 			if (m) {
 				var startMs = (m[4])? (parseInt(m[4], 10) / 1000):0;
@@ -1307,9 +1307,11 @@ mw.includeAllModuleMessages();
 					(parseInt(m[7], 10)) +
 					endMs,
 				'content': $j.trim( m[9] )
-				});
+				});			
+				mw.log( $j.trim( m[9] )  );
 				return true;
-			}
+			}			
+			
 			// Else check for multi-line match:
 			if( parseInt( currentPtext ) == currentPtext ) {
 				if( curentCap.length != 0) {

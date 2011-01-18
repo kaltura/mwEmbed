@@ -199,7 +199,7 @@ mw.EmbedPlayerNative = {
 						_this['on' + eventName ].apply( _this, argArray);
 					} else {
 						// No local handler directly propagate the event to the abstract object:
-						$j( _this ).trigger( eventName, argArray )
+						$j( _this ).trigger( eventName, argArray );
 					}
 				}
 			})

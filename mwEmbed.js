@@ -368,7 +368,6 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 * 
 		 */
 		load: function( loadRequest, instanceCallback ) {
-			// mw.log("mw.load:: " + loadRequest );
 			var _this = this;
 
 			// Throw out any loadRequests that are not strings
@@ -1804,8 +1803,8 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 */
 	mw.npt2seconds = function ( npt_str ) {
 		if ( !npt_str ) {
-			// mw.log('npt2seconds:not valid ntp:'+ntp);
-			return false;
+			mw.log('npt2seconds:not valid ntp:'+ntp);
+			return 0;
 		}
 		// Strip {npt:}01:02:20 or 32{s} from time if present
 		npt_str = npt_str.replace( /npt:|s/g, '' );
@@ -2494,6 +2493,11 @@ mw.absoluteUrl = function( src, contextUrl ) {
 				var triggerNamespace = triggerName.split(".")[1];
 				// Get the callback set
 				var callbackSet = [];
+				if( !$j( targetObject ).data( 'events' ) ){
+					// No events run the callback directly
+					callback();
+					return ;
+				}
 				if( ! triggerNamespace ){
 					callbackSet = $j( targetObject ).data( 'events' )[ triggerBaseName ];
 				} else{		

@@ -3,17 +3,17 @@
 mw.SmilHooks = {
 	addSmilPlayer: function(){
 		// Check if the smil player has already been added:
-		if( mw.EmbedTypes.players.defaultPlayers[ 'application/smil' ] )
+		if( mw.EmbedTypes.getMediaPlayers().defaultPlayers[ 'application/smil' ] )
 			return ;
 
-		// Add the swarmTransport playerType
-		mw.EmbedTypes.players.defaultPlayers[ 'application/smil' ] = [ 'Smil' ];
+		// Add the smil playerType
+		mw.EmbedTypes.getMediaPlayers().defaultPlayers[ 'application/smil' ] = [ 'Smil' ];
 
 		// Build the swarm Transport "player"
 		var smilMediaPlayer = new mediaPlayer( 'smilPlayer', [ 'application/smil' ], 'Smil' );
 
-		// Add the swarmTransport "player"
-		mw.EmbedTypes.players.addPlayer( smilMediaPlayer );
+		// Add the smil "player"
+		mw.EmbedTypes.getMediaPlayers().addPlayer( smilMediaPlayer );
 	}
 };
 
