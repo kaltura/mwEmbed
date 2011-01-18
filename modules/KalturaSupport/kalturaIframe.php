@@ -611,6 +611,7 @@ class kalturaIframe {
 			// Don't rewrite the video tag from the loader ( if html5 is supported it will be 
 			// invoked bellow and respect the persistant video tag option for iPad overlays )
 			mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );	
+			
 			// Don't wait for player metada for size layout and duration ( won't be needed once
 			// we add durationHint and size attributes to the video tag
 			mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
@@ -636,6 +637,10 @@ class kalturaIframe {
 			if( kIsHTML5FallForward() ){
 				// Remove the loader ( mwEmbed will supply the loader ) 
 				var el = document.getElementById('iframeLoadingSpinner');
+				el.parentNode.removeChild(el);
+				
+				// Don't confuse the rewrite engine ( remove the kaltura swf as well )
+				var el = document.getElementById('kaltura_player');
 				el.parentNode.removeChild(el);
 
 				// Set a prepend flag so its easy to see whats happening on what side of the iframe: 
