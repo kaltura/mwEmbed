@@ -49,7 +49,8 @@ $wgKalturaServiceBase = '/api_v3/index.php?';
 // Default expire time for ui conf api queries in seconds 
 $wgKalturaUiConfCacheTime = 600;
 
-
+$wgEnableIframeApi = false;
+$wgEnableIpadHTMLControls = false;
 
 
 /*********************************************************
