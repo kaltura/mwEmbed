@@ -284,7 +284,7 @@ function kCheckAddScript(){
 		restoreKalturaKDPCallback();	
 	}
 }
-// Fallforward by default prefers flash, uses html5 only if flash is not installed or not avaliable 
+// Fallforward by default prefers flash, uses html5 only if flash is not installed or not available 
 function kIsHTML5FallForward(){	
 	// Check for a mobile html5 user agent:	
 	if ( (navigator.userAgent.indexOf('iPhone') != -1) || 
@@ -296,11 +296,11 @@ function kIsHTML5FallForward(){
 		return true;
 	}
 	
-	// Special check for android: 
+	// Special check for Android:
 	if( navigator.userAgent.indexOf('Android 2.') != -1 ){
 		if( preMwEmbedConfig[ 'EmbedPlayer.UseFlashOnAndroid' ] 
 		    &&
-		    kSupportsFlash() 
+		    kSupportsFlash()
 		){
 			// Use flash on Android if available
 			return false;

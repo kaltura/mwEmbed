@@ -25,15 +25,14 @@
 			if( $uiConf.find("plugin#plymedia").length ){
 				
 				// Load the plyMeida module 
-				// NOTE in production plyMedia would be pre-loaded by the iframe uiconf
-				
+				// NOTE in production plyMedia would be pre-loaded by the iframe uiconf				
 			    mw.load( 'plyMedia', function(){
 			    	mw.plyMediaConfig.bindPlayer( embedPlayer );
 			    });
 			}
-			// Don't block player display on plyMedia plugin loading 
+			// Don't block player display on plyMedia plugin loading ( directly issue the callback )
 			callback();
-		})
-	})
+		});
+	});
 
 } )( window.mw );

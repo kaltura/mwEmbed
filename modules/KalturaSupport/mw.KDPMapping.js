@@ -6,7 +6,6 @@
 
 // scope in mw
 ( function( mw ) {
- 
 	mw.KDPMapping = function( ) {
 		// Create a Player Manage
 		return this.init();
@@ -17,7 +16,7 @@
 		*/ 
 		init: function( ){
 			// Check if in iFrame mode:
-			if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) ){
+			if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig( 'EmbedPlayer.IsIframePlayer' ) ){
 				// Check if we are client( IframeRewrite ) or server ( IframeParentUrl )
 				if( mw.getConfig('Kaltura.IframeRewrite') ){
 					this.addIframePlayerHooksClient();

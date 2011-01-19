@@ -6,7 +6,7 @@ kdpClientIframe = function( replaceTargetId, kEmbedSettings , options ){
 };
 
 kdpClientIframe.prototype = {
-	// similar to jQuery.fn.kalturaIframePlayer in KalturaSupport/loader.js
+	// Similar to jQuery.fn.kalturaIframePlayer in KalturaSupport/loader.js
 	init: function( replaceTargetId, kEmbedSettings , options ){
 	
 		var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
@@ -16,14 +16,13 @@ kdpClientIframe.prototype = {
 				iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
 			}
 		}
+		
 		// Add configuration to the hash tag:
 		iframeSrc+= mw.getKalturaIframeHash();
 		
 		// Update options via target size if not set
 		options.width = (options.width) ? options.width : $j( '#' + replaceTargetId ).width();
 		options.height = (options.height) ? options.height : $j( '#' + replaceTargetId ).height();
-
-		
 		
 		$j( '#' + replaceTargetId ).replaceWith( this.getIframe() );
 		
@@ -46,5 +45,6 @@ kdpClientIframe.prototype = {
 		
 	},
 	addIframeMethods: function(){
+		
 	}
 }

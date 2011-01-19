@@ -2656,7 +2656,7 @@ mw.EmbedPlayer.prototype = {
 			} else {
 				this.posterDisplayed = false;
 				// Hide any button if present: 
-				this.$interface.find( '.play-btn-large' ).remove();				
+				this.$interface.find( '.play-btn-large' ).remove();			
 				this.doEmbedHTML();
 			}
 		}
