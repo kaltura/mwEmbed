@@ -147,7 +147,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			jsRequestSet.push('mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'kdpClientIframe', 'JSON' )
 			// Load just the files needed for flash iframe bindings
 			kLoadJsRequestSet( jsRequestSet, function(){
-				kdpClientIframe.rewriteIframe(replaceTargetId, kEmbedSettings, options)
+				var iframeRewrite = new kdpClientIframe(replaceTargetId, kEmbedSettings, options);
 			});
 		}			
 		return ;
@@ -295,7 +295,6 @@ function kIsHTML5FallForward(){
 	){
 		return true;
 	}
-	
 	// Special check for Android:
 	if( navigator.userAgent.indexOf('Android 2.') != -1 ){
 		if( preMwEmbedConfig[ 'EmbedPlayer.UseFlashOnAndroid' ] 

@@ -41,6 +41,9 @@
 			'iconurl' : false
 		},
 		
+		// If the options control bar menu item should be enabled: 
+		'EmbedPlayer.EnableOptionsMenu' : true,
+
 		// If the player should wait for metadata like video size and duration, before trying to draw
 		// the player interface. 
 		'EmbedPlayer.WaitForMeta' : true,

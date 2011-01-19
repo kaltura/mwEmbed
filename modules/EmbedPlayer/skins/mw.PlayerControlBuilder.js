@@ -163,6 +163,7 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.available_width );
 		// Build the supportedComponets list
 		this.supportedComponets = $j.extend( this.supportedComponets, embedPlayer.supports );
+		
 		$j(embedPlayer).trigger( 'addControlBarComponent', this);
 			
 		// Check for Attribution button
@@ -174,6 +175,11 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.getConfig( 'EmbedPlayer.EnableFullscreen' ) === false ){
 			this.supportedComponets[ 'fullscreen'] = false;
 		}
+		// Check if the options item is available  
+		if( mw.getConfig( 'EmbedPlayer.EnableOptionsMenu' ) === false ){
+			this.supportedComponets[ 'options'] = false;
+		}
+		
 		
 		var addComponent = function( component_id ){
 			if ( _this.supportedComponets[ component_id ] ) {
