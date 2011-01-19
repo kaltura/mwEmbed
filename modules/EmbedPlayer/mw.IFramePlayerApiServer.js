@@ -36,7 +36,9 @@ mw.IFramePlayerApiServer.prototype = {
 	// Exported bindings / events. ( all the native html5 events are added in 'init' )		
 	'exportedBindings': [
 	     'playerReady',
-	     'monitorEvent'
+	     'monitorEvent',
+	     'onOpenFullScreen',
+	     'onCloseFullScreen'
 	],
 		
 	'init': function( embedPlayer ){

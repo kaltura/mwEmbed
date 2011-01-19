@@ -2890,7 +2890,7 @@ mw.EmbedPlayer.prototype = {
 	/**
 	 * Passes a fullscreen request to the controlBuilder interface
 	 */
-	fullscreen: function() {
+	fullscreen: function() {		
 		this.controlBuilder.toggleFullscreen();
 	},
 

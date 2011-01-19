@@ -33,11 +33,12 @@
 	
 	<script type="text/javascript">
 	mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
+	mw.setConfig('EmbedPlayer.EnableIpadHTMLControls', true);
 	
 	mw.ready(function(){		
 		mw.load(  ['mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'JSON' ] , function(){						
 			// Add resize binding:			
-			$j('#resizable').resizable();		
+			$j('#resizable').resizable();
 			
 			// Setup iframe rewrite for new source selection:  
 			$j('#displayIframe').click(function(){ 				

@@ -26,6 +26,8 @@ mw.IFramePlayerApiClient.prototype = {
 		this.iframeServer = srcParts.protocol + '://' + srcParts.authority;
 		this.addPlayerSendApi();
 		this.addPlayerReciveApi();
+		
+		this.addIframeFullscreenBinding();
 	},
 	'addPlayerSendApi': function(){
 		var _this = this;		
@@ -47,6 +49,48 @@ mw.IFramePlayerApiClient.prototype = {
 		$j.receiveMessage( function( event ){
 			_this.hanldeReciveMsg( event )
 		});
+	},
+	addIframeFullscreenBinding: function(){
+		var _this = this;
+		parentsAbsoluteList = [];
+		var fullscreenMode = false;
+		var orgSize  = {
+			'width' : $j( _this.iframe ).width(),
+			'height' : $j( _this.iframe ).height(),
+			'position' : null
+		}
+			
+		var doFullscreen = function(){	
+			// Make the iframe fullscreen
+			$j( _this.iframe ).css({
+				'z-index': mw.getConfig( 'EmbedPlayer.fullScreenZIndex' ) + 1,
+				'position': 'absolute',
+				'top' : 0,
+				'left' : 0,
+				'width' : $j(window).width(),
+				'height' : $j(window).height()
+			})
+			
+			// Remove absolute css of the interface parents
+			$j( _this.iframe ).parents().each( function() {
+				//mw.log(' parent : ' + $j( this ).attr('id' ) + ' class: ' + $j( this ).attr('class') + ' pos: ' + $j( this ).css( 'position' ) );
+				if( $j( this ).css( 'position' ) == 'absolute' ) {
+					parentsAbsoluteList.push( $j( this ) );
+					$j( this ).css( 'position', null );
+				}
+			} );
+		}
+		var restoreWindowMode = function(){
+			$j( _this.iframe ).css( orgSize );
+			// restore any parent absolute pos: 
+			$j(parentsAbsoluteList).each( function() {	
+				$j( this ).css( 'position', 'absolute' );
+			} );
+		};
+		
+		$j( this.playerProxy ).bind( 'onOpenFullScreen', doFullscreen);
+		$j( this.playerProxy ).bind( 'onCloseFullScreen', restoreWindowMode);
+		
 	},
 	/**
 	 * Handle received events
