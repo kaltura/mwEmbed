@@ -150,8 +150,8 @@ mw.EmbedPlayerKplayer = {
 
 		// Create an anonymous function with local player scope
 		var createGlobalCB = function(cName, embedPlayer) {
-			window[cName] = function(data) {
-				if (embedPlayer._propagateEvents) {
+			window[ cName ] = function(data) {
+				if ( embedPlayer._propagateEvents ) {
 					embedPlayer[methodName](data);
 				}
 			};

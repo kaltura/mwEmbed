@@ -475,7 +475,7 @@ class kalturaIframe {
 		}		
 		return '<object id="kaltura_player" name="kaltura_player" ' .
 				'type="application/x-shockwave-flash" allowFullScreen="true" '. 
-				'allowNetworking="all" allowScriptAccess="always" style="height:100%;width:100%" '.
+				'allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" style="height:100%;width:100%" '.
 				'xmlns:dc="http://purl.org/dc/terms/" '. 
 				'xmlns:media="http://search.yahoo.com/searchmonkey/media/" '. 
 				'rel="media:video" '. 
@@ -678,8 +678,7 @@ class kalturaIframe {
 				if( kSupportsFlash() ){ 
 					// Write out the embed object 
 					document.write('<?php echo $this->getFlashEmbedHTML()?>');
-					
-					// TODO add flash iframe bindings bridge
+					// Load server side bindings
 					
 				} else {
 					// Last resort just provide an image with a link to the file

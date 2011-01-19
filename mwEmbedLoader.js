@@ -35,7 +35,7 @@
 *	// $j('#iframeid').bind('ended', function(){ .. end playback event ... }
 *	'EmbedPlayer.EnableIframeApi' : true
 */
-var kURID = '1.2j';
+var kURID = '1.2k';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -125,21 +125,36 @@ function kDoIframeRewriteList( rewriteObjects ){
 		kalturaIframeEmbed( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
 	}
 }
-function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options){
-	
+function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
+	if( !options )
+		options = {};
 	// Check if the iframe API is enabled in which case we have to load client code and use that 
 	// to rewrite the frame
 	if( preMwEmbedConfig['EmbedPlayer.EnableIframeApi'] ){
-		kAddScript(function(){
-			// Options include 'width' and 'height'
-			$j('#' + replaceTargetId ).css(options);
-			// Do kaltura iframe player
-			$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
-		});
+		if( kIsHTML5FallForward() ){
+			kAddScript(function(){
+				// Options include 'width' and 'height'
+				$j('#' + replaceTargetId ).css(options);
+				// Do kaltura iframe player
+				$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
+			});
+		} else {
+		
+			var jsRequestSet = [];
+			if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
+				jsRequestSet.push( ['window.jQuery'] )
+			}
+			jsRequestSet.push('mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'kdpClientIframe', 'JSON' )
+			// Load just the files needed for flash iframe bindings
+			kLoadJsRequestSet( jsRequestSet, function(){
+				kdpClientIframe.rewriteIframe(replaceTargetId, kEmbedSettings, options)
+			});
+		}			
 		return ;
 	}	
 	
-	// Else we can avoid loading mwEmbed all together and just rewrite the iframe: 
+	// Else we can avoid loading mwEmbed all together and just rewrite the iframe 
+	// ( no javascript api needed )
 	var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
 	var kalturaAttributeList = { 'uiconf_id':1, 'entry_id':1, 'wid':1, 'p':1};
 	for(var attrKey in kEmbedSettings ){
@@ -159,8 +174,8 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options){
 		
 	parentNode.replaceChild(iframe, targetNode );
 
-
 }
+
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
 function kOverideSwfObject(){
 	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTargetId, widthStr, heightStr ){
@@ -270,17 +285,31 @@ function kCheckAddScript(){
 	}
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not avaliable 
-function kIsHTML5FallForward(){
+function kIsHTML5FallForward(){	
 	// Check for a mobile html5 user agent:	
 	if ( (navigator.userAgent.indexOf('iPhone') != -1) || 
 		(navigator.userAgent.indexOf('iPod') != -1) || 
 		(navigator.userAgent.indexOf('iPad') != -1) ||
-		(navigator.userAgent.indexOf('Android 2.') != -1) || 
 		// Force html5 for chrome / desktop safari
 		( preMwEmbedConfig['forceMobileHTML5'] === true )
 	){
 		return true;
 	}
+	
+	// Special check for android: 
+	if( navigator.userAgent.indexOf('Android 2.') != -1 ){
+		if( preMwEmbedConfig[ 'EmbedPlayer.UseFlashOnAndroid' ] 
+		    &&
+		    kSupportsFlash() 
+		){
+			// Use flash on Android if available
+			return false;
+		} else {
+			// Android 2.x supports the video tag
+			return true;
+		}
+	}
+
 	// if the browser supports flash ( don't use html5 )
 	if( kSupportsFlash() ){
 		return false;
@@ -354,12 +383,12 @@ function kAddScript( callback ){
 
 	var jsRequestSet = [];
 	if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
-		jsRequestSet.push( ['window.jQuery'] )
+		jsRequestSet.push( 'window.jQuery' )
 	}
 	// Check if we are using an iframe ( load only the iframe api client ) 
 	if( preMwEmbedConfig['Kaltura.IframeRewrite'] ) {
 		if( preMwEmbedConfig['EmbedPlayer.EnableIframeApi'] ){
-			jsRequestSet.push( [ 'mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' ] );
+			jsRequestSet.push( 'mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );
 			kLoadJsRequestSet( jsRequestSet, callback );
 		} else {
 			kDoIframeRewriteList( kGetKalturaPlayerList() )	;
@@ -368,7 +397,7 @@ function kAddScript( callback ){
 	}
 	
 	// Add all the classes needed for video 
-	jsRequestSet.push( [	 
+	jsRequestSet.push(
 	    'mwEmbed',
 		// core skin: 
 		'mw.style.mwCommon',
@@ -396,20 +425,20 @@ function kAddScript( callback ){
 		// Timed Text module
 		'mw.TimedText',
 		'mw.style.TimedText'
-	]);
+	);
 	
 	// Add the jquery ui skin: 
 	if( preMwEmbedConfig['jQueryUISkin'] ){
-		jsRequestSet.push( [ 'mw.style.ui_' + preMwEmbedConfig['jQueryUISkin'] ] );
+		jsRequestSet.push( 'mw.style.ui_' + preMwEmbedConfig['jQueryUISkin']  );
 	} else {
-		jsRequestSet.push( [ 'mw.style.ui_kdark' ] );
+		jsRequestSet.push( 'mw.style.ui_kdark'  );
 	}
 	
 	var objectPlayerList = kGetKalturaPlayerList();
 	// Check if we are doing object rewrite ( add the kaltura library ) 
 	if ( kIsHTML5FallForward() || objectPlayerList.length ){
 		// Kaltura client libraries:
-		jsRequestSet.push( [
+		jsRequestSet.push(
 		  'MD5',
 		  "mw.KApi",
 		  'mw.KWidgetSupport',
@@ -423,14 +452,14 @@ function kAddScript( callback ){
 		  'faderPlugin',
 		  'watermarkPlugin',
 		  'adPlugin'
-		]);
+		);
 		// kaltura playlist support ( so small relative to client libraries that we always include it )	
-		jsRequestSet.push([
+		jsRequestSet.push(
 		   'mw.Playlist',
 		   'mw.PlaylistHandlerMediaRss',
 		   'mw.PlaylistHandlerKaltura', 
 		   'mw.PlaylistHandlerKalturaRss'
-		]);
+		);
 	}
 	kLoadJsRequestSet( jsRequestSet, callback );
 };
@@ -448,10 +477,8 @@ function kAppendScriptUrl(url, callback) {
 
 function kLoadJsRequestSet( jsRequestSet, callback ){
 	var url = SCRIPT_LOADER_URL + '?class=';
-	// Request each jsRequestSet
-	for( var i = 0; i < jsRequestSet.length ; i++ ){
-		url+= jsRequestSet[i].join(',') + ',';
-	}
+	// Add all the requested classes
+	url+= jsRequestSet.join(',') + ',';
 	url+= '&urid=' + kURID;
 	url+= '&uselang=en';
 	if ( SCRIPT_FORCE_DEBUG ){
