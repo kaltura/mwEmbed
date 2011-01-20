@@ -44,7 +44,7 @@ $wgKalturaServiceUrl = 'http://www.kaltura.com';
 $wgKalturaCDNUrl = 'http://cdn.kaltura.com';
 
 // Default Kaltura service url:
-$wgKalturaServiceBase = '/api_v3/index.php?';
+$wgKalturaServiceBase = '/api_v3/index.php?service=';
 
 // Default expire time for ui conf api queries in seconds 
 $wgKalturaUiConfCacheTime = 600;
