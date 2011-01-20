@@ -336,7 +336,6 @@ class kalturaIframe {
 	function getPlayEventUrl() {
 		global $wgKalturaServiceUrl, $wgKalturaServiceBase;
 		$param = array(
-			'service' => 'stats',				
 			'action' => 'collect',				
 			'apiVersion' => '3.0',
 			'clientTag' => 'html5',
@@ -372,7 +371,7 @@ class kalturaIframe {
 		$param['kalsig'] = md5( $sigString );
 		$requestString =  http_build_query( $param );
 	
-		return $wgKalturaServiceUrl . $wgKalturaServiceBase . $requestString;	
+		return $wgKalturaServiceUrl . $wgKalturaServiceBase . 'stats&' . $requestString;	
 	}
 	
 	// Returns a simple image with a direct link to the asset
