@@ -16,12 +16,12 @@
 		*/ 
 		init: function( ){
 			// Check if in iFrame mode:
-			if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig( 'EmbedPlayer.IsIframePlayer' ) ){
-				// Check if we are client( IframeRewrite ) or server ( IframeParentUrl )
+			if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) ){
+				// Check if we are client( IframeRewrite ) or server ( IsIframePlayer )
 				if( mw.getConfig('Kaltura.IframeRewrite') ){
 					this.addIframePlayerHooksClient();
 				}
-				if(	mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) ){
+				if(	mw.getConfig( 'EmbedPlayer.IsIframePlayer' ) ){
 					this.addIframePlayerHooksServer();
 				}
 			} else {
@@ -67,7 +67,7 @@
 		addIframePlayerHooksClient: function(){
 			var _this = this;
 			mw.log( "KDPMapping::addIframePlayerHooksClient" );
-		
+
 			$j( mw ).bind( 'AddIframePlayerMethods', function( event, playerMethods ){
 				playerMethods.push( 'addJsListener',  'sendNotification' );
 				// NOTE we don't export evaluate since we need to run it synchronously

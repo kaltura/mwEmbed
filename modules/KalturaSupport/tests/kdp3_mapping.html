@@ -10,7 +10,7 @@
 	<script type="text/javascript" src="kdp3_mapping_files/prettify.js"></script>
 	
 	
-	 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script> 
+	 <script type="text/javascript" src="../../../mwEmbedLoader.js"></script> 
 	<!-- <script type="text/javascript" src="http://html5.kaltura.org/js"></script> -->
 	<!--<script type="text/javascript" src="../../../mwEmbed.js"></script>-->
 	
@@ -46,6 +46,7 @@
 	</style>
 	<script type="text/javascript">
 		if( document.URL.indexOf('forceMobileHTML5AndIframe' ) !== -1 ){
+			mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
 			mw.setConfig( 'Kaltura.IframeRewrite', true );
 			mw.setConfig( 'forceMobileHTML5', true );
 		}

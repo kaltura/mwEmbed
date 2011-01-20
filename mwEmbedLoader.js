@@ -106,13 +106,6 @@ if( !mw.setConfig ){
 	}
 }
 
-/*************************************
- * Default Kaltura settings
- *************************************/
-// Set iframe api to true by default:   
-mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
-
-
 
 // Set url based config:
 if( document.URL.indexOf('forceMobileHTML5') != -1 ){
