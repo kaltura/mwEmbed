@@ -134,7 +134,7 @@ mw.AdTimeline.prototype = {
 			// Stop the native embedPlayer events so we can play the preroll
 			// and bumper
 			_this.embedPlayer.stopEventPropagation();
-			// TODO read the add dissable control bar to ad config and check that here. 
+			// TODO read the add disable control bar to ad config and check that here. 
 			_this.embedPlayer.disableSeekBar();
 			
 			var restorePlayer = function(){
@@ -175,6 +175,8 @@ mw.AdTimeline.prototype = {
 					mw.log('mw.AdTimeline: ended displayedPostroll');
 					_this.embedPlayer.onDoneInterfaceFlag = false;
 					
+					// TODO read the add disable control bar to ad config and check that here. 
+					_this.embedPlayer.disableSeekBar();
 					_this.display( 'postroll' , function(){		
 						var vid = _this.getNativePlayerElement();
 						if ( _this.originalSrc != vid.src) {
@@ -185,9 +187,13 @@ mw.AdTimeline.prototype = {
 									// Restore embedPlayer native
 									// bindings
 									mw.log('done with postroll ad, trigger normal ended');
+									_this.embedPlayer.enableSeekBar();
+									
 									_this.embedPlayer.restoreEventPropagation();
 									// just run stop for now. 
-									_this.embedPlayer.stop();			
+									_this.embedPlayer.stop();
+									// pause playback state
+									vid.pause();
 								}
 							);
 						};
