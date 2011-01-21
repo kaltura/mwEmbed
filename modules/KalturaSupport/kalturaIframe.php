@@ -657,7 +657,7 @@ class kalturaIframe {
 				mw.setConfig( "EmbedPlayer.IsIframePlayer", true );
 				
 				// Load the mwEmbed resource library and add resize binding
-				mw.ready(function(){
+				mw.ready(function(){					
 					// Bind window resize to reize the player: 
 					$j( window ).resize( function(){
 						$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )

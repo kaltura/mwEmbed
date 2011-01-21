@@ -453,9 +453,14 @@
 	 */
 	mw.getKalturaThumbUrl = function ( entry ){
 		var kCdn = ( mw.getConfig('Kaltura.CdnUrl') ) ? mw.getConfig('Kaltura.CdnUrl') : 'http://cdnakmi.kaltura.com';
+		if( entry.width == '100%')
+			entry.width = 400;
+		if( entry.height == '100%')
+			entry.height = 300;
+		
 		return kCdn + '/p/' + entry.partner_id + '/sp/' +
 			entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
-			entry.height + '/height/' + entry.width;
+			entry.width + '/height/' + entry.height;
 	};
 	
 	/**
