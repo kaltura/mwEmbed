@@ -69,9 +69,9 @@ mw.IFramePlayerApiServer.prototype = {
 		mw.log('IFramePlayerApiServer::_addIframeListener');
 		$j.receiveMessage( function( event ) {			
 			_this.hanldeMsg( event );
-		}, this.getParnetUrl() );	
+		}, this.getParentUrl() );	
 	},
-	getParnetUrl: function(){
+	getParentUrl: function(){
 		var purl = mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
 		if(!purl){
 			mw.log("Error: iFramePlayerApiServer:: could not parse parent url. \n" +
@@ -145,7 +145,7 @@ mw.IFramePlayerApiServer.prototype = {
 		// By default postMessage sends the message to the parent frame:		
 		$j.postMessage( 
 			messageString,
-			this.getParnetUrl(),
+			this.getParentUrl(),
 			window.parent
 		);
 	},
