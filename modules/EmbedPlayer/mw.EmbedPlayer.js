@@ -1931,9 +1931,8 @@ mw.EmbedPlayer.prototype = {
 			// actions )
 			mw.log("EmbedPlayer::onClipDone:Trigger ended");
 			
-			this.tempDisableEvents();
 			// TOOD we should improve the end event flow
-			$j( this ).trigger( 'ended' );			
+			$j( this ).trigger( 'ended' );
 			
 			if( this.onDoneInterfaceFlag ){
 
@@ -2642,7 +2641,7 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents );
-		if( ! this._propagateEvents){
+		if( ! this._propagateEvents ){
 			return ;
 		}
 		// Hide any overlay:
@@ -2660,15 +2659,13 @@ mw.EmbedPlayer.prototype = {
 				this.doEmbedHTML();
 			}
 		}
-		
 	
 		if( this.paused === true ){
 			this.paused = false;			
 			// Check if we should Trigger the play event
 			mw.log("EmbedPlayer:: trigger play even::" + !this.paused);
-			if(  this._propagateEvents ){	
+			if( ! this.doMethodsAutoTrigger() ) {
 				$j( this ).trigger( 'play' );
-				_this.tempDisableEvents();
 			}
 		}
 		
@@ -2706,9 +2703,8 @@ mw.EmbedPlayer.prototype = {
 		if( this.paused === false ){
 			this.paused = true;
 			mw.log('EmbedPlayer:trigger pause:' + this.paused);
-			if(  this._propagateEvents ){
+			if(  ! this.doMethodsAutoTrigger() ){
 				$j( this ).trigger( 'pause' );
-				_this.tempDisableEvents();
 			}
 		}
 
@@ -2718,23 +2714,20 @@ mw.EmbedPlayer.prototype = {
 		.addClass( 'ui-icon-play' );
 
 		this.$interface.find('.play-btn' )
-		.unbind()
+		.unbind('click')
 		.buttonHover()
 		.click( function() {
 			_this.play();
 		} )
 		.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );
 	},
-	
-	/**
-	 * Disable event _propagateEvents for 10ms ( helps avoid event stacking )
-	 */
-	tempDisableEvents: function(){
-		var _this = this;
-		this._propagateEvents = false;
-		setTimeout( function(){
-			_this._propagateEvents = true;
-		}, 10);
+	// special per browser check for autoTrigger events
+	// ideally jQuery would not have this inconsistency. 
+	doMethodsAutoTrigger: function(){
+		if( $j.browser.mozilla && ! mw.versionIsAtLeast('2.0', $j.browser.version ) ){
+			return true;
+		}
+		return false;
 	},
 
 	/**

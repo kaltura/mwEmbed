@@ -135,13 +135,13 @@ mw.IFramePlayerApiServer.prototype = {
 		} )
 	},
 	
-	'postMessage': function( msgObj ){		
+	'postMessage': function( msgObject ){		
 		try {
-			var messageString = JSON.stringify( msgObj );
+			var messageString = JSON.stringify( msgObject );
 		} catch ( e ){
-			mw.log("Error: could not JSON object: " + msgObj + ' ' + e);
+			mw.log("Error: could not JSON object: " + msgObject + ' ' + e);
 			return ;
-		}
+		}	
 		// By default postMessage sends the message to the parent frame:		
 		$j.postMessage( 
 			messageString,
@@ -156,7 +156,7 @@ mw.IFramePlayerApiServer.prototype = {
 	 * @param {string} event
 	 */
 	'hanldeMsg': function( event ){
-		//mw.log( 'IFramePlayerApiServer:: hanldeMsg ');
+		mw.log( 'IFramePlayerApiServer:: hanldeMsg: ' +  event.data );
 		// Check if the server should even be enabled 
 		if( !mw.getConfig( 'EmbedPlayer.EnableIframeApi' )){
 			mw.log( 'Error: Loading iFrame playerApi but config EmbedPlayer.EnableIframeApi is false');

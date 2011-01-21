@@ -469,7 +469,6 @@ mw.EmbedPlayerNative = {
 	* calls parent_play to update the interface
 	*/
 	play: function( ) {
-
 		this.getPlayerElement();
 		this.parent_play(); // update interface
 		if ( this.playerElement && this.playerElement.play ) {

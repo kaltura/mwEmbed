@@ -49,7 +49,7 @@ mw.IFramePlayerApiClient.prototype = {
 		var _this = this;
 		$j.receiveMessage( function( event ){
 			_this.hanldeReciveMsg( event )
-		});
+		}, this.iframeServer);
 	},
 	'addIframeFullscreenBinding': function(){
 		var _this = this;
@@ -97,25 +97,17 @@ mw.IFramePlayerApiClient.prototype = {
 	 * Handle received events
 	 */
 	'hanldeReciveMsg': function( event ){
-		var _this = this;		
-		// Confirm the event is coming for the target host:
-		if( event.origin != this.iframeServer){
-			mw.log("Skip msg from host does not match iFrame player: " + event.origin + 
-					' != iframe Server: ' + this.iframeServer )
-			return ;
-		};
+		var _this = this;
+		
 		// Decode the message 
 		var msgObject = JSON.parse( event.data );
-		//mw.log("IframePlayerApiClient:: hanldeReciveMsg: " + msgObject.triggerName );
-		
-		
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
-		
+
 		// Before we update local attributes check that the object has not been updated by user js
 		for( var attrName in playerAttributes ){
 			if( attrName != 'id' ){
 				if( _this._prevPlayerProxy[ attrName ] != _this.playerProxy[ attrName ] ){
-					mw.log( "IFramePlayerApiClient:: User js update:" + attrName + ' set to: ' + this.playerProxy[ attrName ] + ' != old: ' + _this._prevPlayerProxy[ attrName ] );
+					//mw.log( "IFramePlayerApiClient:: User js update:" + attrName + ' set to: ' + this.playerProxy[ attrName ] + ' != old: ' + _this._prevPlayerProxy[ attrName ] );
 					// Send the updated attribute back to the iframe: 
 					_this.postMessage({
 						'attrName' : attrName,
@@ -144,7 +136,9 @@ mw.IFramePlayerApiClient.prototype = {
 		}
 	},
 	'postMessage': function( msgObject ){
-		//mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObj ) );
+		/*mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObject ) + 
+				' iframe: ' +  this.iframe + ' cw:' + this.iframe.contentWindow + 
+				' src: ' + mw.absoluteUrl( $j( this.iframe ).attr('src')  ) );*/
 		$j.postMessage(
 			JSON.stringify( msgObject ), 
 			mw.absoluteUrl( $j( this.iframe ).attr('src') ), 

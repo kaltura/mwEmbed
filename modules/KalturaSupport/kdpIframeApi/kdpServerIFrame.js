@@ -61,7 +61,6 @@ kdpServerIframe.prototype = {
 	 */
 	'hanldeMsg': function( event ){		
 		var _this = this;
-		alert('server hanldeMsg');
 		if( !this.eventDomainCheck( event.origin ) ){
 			mw.log( 'Error: ' + event.origin + ' domain origin not allowed to send player events');
 			return false;

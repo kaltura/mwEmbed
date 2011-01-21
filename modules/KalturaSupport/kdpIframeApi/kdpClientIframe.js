@@ -39,7 +39,7 @@ kdpClientIframe.prototype = {
 		// Add hanldeReciveMsg binding: 
 		$j.receiveMessage( function( event ){
 			_this.hanldeReciveMsg( event )
-		});
+		}, this.iframeServer);
 				
 	},
 	'kdpExportedMethods': [ 'addJsListener', 'removeJsListener', 'sendNotification', 'setKDPAttribute' ],

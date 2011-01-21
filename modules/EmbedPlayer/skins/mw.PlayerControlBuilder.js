@@ -1592,8 +1592,8 @@ mw.PlayerControlBuilder.prototype = {
 					} )
 					// Add play hook:
 					.click( function() {
-						 ctrlObj.embedPlayer.play();						
-						 return false; // Event Stop Propagation
+						ctrlObj.embedPlayer.play();						
+						return false; // Event Stop Propagation
 					} );
 			}
 		},

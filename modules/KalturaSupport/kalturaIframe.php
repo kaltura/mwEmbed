@@ -645,8 +645,10 @@ class kalturaIframe {
 				// Set a prepend flag so its easy to see whats happening on what side of the iframe: 
 				mw.setConfig('Mw.LogPrepend', 'iframe:' );
 				
-				// Add full screen support if the iFrame api is enabled: 
-				mw.setConfig( 'EmbedPlayer.EnableFullscreen', preMwEmbedConfig[ 'EmbedPlayer.EnableIframeApi' ] );
+				// Add full screen support if the iFrame api is enabled and not already set
+				if( typeof preMwEmbedConfig[ 'EmbedPlayer.EnableFullscreen' ] == 'undefined' ){
+					mw.setConfig( 'EmbedPlayer.EnableFullscreen', preMwEmbedConfig[ 'EmbedPlayer.EnableIframeApi' ] );
+				}
 
 				// Don't do an iframe rewrite inside an iframe!
 				mw.setConfig( 'Kaltura.IframeRewrite', false );

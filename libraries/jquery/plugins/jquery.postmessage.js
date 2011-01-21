@@ -63,6 +63,8 @@
     
     p_receiveMessage,
     
+    getDomainFromUrl = function(url){ return url.replace( /([^:]+:\/\/[^\/]+).*/, '$1' ); },
+    
     // I couldn't get window.postMessage to actually work in Opera 9.64!
     has_postMessage = window[postMessage] && !$.browser.opera;
   
@@ -96,7 +98,7 @@
   //  Nothing.
   
   $[postMessage] = function( message, target_url, target ) {	  
-	if ( !target_url ) { return; }
+	  if ( !target_url ) { return; }
     
     // Serialize the message if not a string. Note that this is the only real
     // jQuery dependency for this script. If removed, this script could be
@@ -109,7 +111,7 @@
     if ( has_postMessage ) {
       // The browser supports window.postMessage, so call it with a targetOrigin
       // set appropriately, based on the target_url parameter.
-      target[postMessage]( message, target_url.replace( /([^:]+:\/\/[^\/]+).*/, '$1' ) );
+      target[postMessage]( message, getDomainFromUrl( target_url ) );
       
     } else if ( target_url ) {
       // The browser does not support window.postMessage, so set the location
@@ -168,6 +170,8 @@
   //  Nothing!
   
   $.receiveMessage = p_receiveMessage = function( callback, source_origin, delay ) {
+	// update source_origin to just be the url
+	source_origin = getDomainFromUrl ( source_origin );
     if ( has_postMessage ) {
       // Since the browser supports window.postMessage, the callback will be
       // bound to the actual event associated with window.postMessage.
@@ -181,6 +185,7 @@
         rm_callback = function(e) {
           if ( ( typeof source_origin === 'string' && e.origin !== source_origin )
             || ( $.isFunction( source_origin ) && source_origin( e.origin ) === FALSE ) ) {
+        	  throw "ERROR: " +source_origin + ' does not match event orgin: ' + e.origin;
             return FALSE;
           }
           callback( e );
