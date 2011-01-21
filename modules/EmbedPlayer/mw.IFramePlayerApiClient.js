@@ -24,6 +24,7 @@ mw.IFramePlayerApiClient.prototype = {
 		// Set the iframe server
 		var srcParts = mw.parseUri( mw.absoluteUrl( $j(this.iframe).attr('src') ) );
 		this.iframeServer = srcParts.protocol + '://' + srcParts.authority;
+		
 		this.addPlayerSendApi();
 		this.addPlayerReciveApi();
 		
@@ -50,7 +51,7 @@ mw.IFramePlayerApiClient.prototype = {
 			_this.hanldeReciveMsg( event )
 		});
 	},
-	addIframeFullscreenBinding: function(){
+	'addIframeFullscreenBinding': function(){
 		var _this = this;
 		parentsAbsoluteList = [];
 		var fullscreenMode = false;

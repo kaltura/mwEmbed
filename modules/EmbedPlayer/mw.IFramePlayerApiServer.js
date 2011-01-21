@@ -56,34 +56,37 @@ mw.IFramePlayerApiServer.prototype = {
 		// Allow modules to extend the list of iframeExported bindings
 		$j( mw ).trigger( 'AddIframePlayerBindings', [ this.exportedBindings ]);
 		
-		this._addIframeListener();
-		this._addIframeSender();
+		this.addIframeListener();
+		this.addIframeSender();
 		$j( mw ).trigger( 'newIframePlayerServerSide', [embedPlayer]);
 	},
 	
 	/**
 	 * Listens to requested methods and triggers their action
 	 */
-	'_addIframeListener': function(){
+	'addIframeListener': function(){
 		var _this = this;		
 		mw.log('IFramePlayerApiServer::_addIframeListener');
 		$j.receiveMessage( function( event ) {			
 			_this.hanldeMsg( event );
-		}, this.parentUrl );	
+		}, this.getParnetUrl() );	
 	},
-	
-	/**
-	 * Add iframe sender bindings:
-	 */
-	'_addIframeSender': function(){		
-		var _this = this;		
-		// Get the parent page URL as it was passed in, for browsers that don't support
-		// window.postMessage (this URL could be hard-coded).
-		this.parentUrl = mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
-		if(!this.parentUrl){
+	getParnetUrl: function(){
+		var purl = mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
+		if(!purl){
 			mw.log("Error: iFramePlayerApiServer:: could not parse parent url. \n" +
 				"Player events will be dissabled");
 		}
+		return purl;
+	},
+	/**
+	 * Add iframe sender bindings:
+	 */
+	'addIframeSender': function(){		
+		var _this = this;		
+		// Get the parent page URL as it was passed in, for browsers that don't support
+		// window.postMessage (this URL could be hard-coded).
+		
 		// Set the initial attributes once player is "ready"
 		$j( this.embedPlayer ).bind( 'playerReady', function(){
 			_this.sendPlayerAttributes();
@@ -142,7 +145,7 @@ mw.IFramePlayerApiServer.prototype = {
 		// By default postMessage sends the message to the parent frame:		
 		$j.postMessage( 
 			messageString,
-			this.parentUrl,
+			this.getParnetUrl(),
 			window.parent
 		);
 	},

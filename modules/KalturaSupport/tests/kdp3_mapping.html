@@ -294,19 +294,21 @@
 	<a href="?forceMobileHTML5AndIframe"> Force Iframe HTML5</a> for testing iframe html5	<br/>	
 	<a href="?forceIframe"> Force Universal Iframe </a> for testing  Universal Iframe ( will be flash gui for flash and html5 for browsers with html5<br/><br/>
 	<p>Hover over the parameters or APIs from the list for description, click to test &amp; learn more.</p>
-	<div id="playerTarget" style="width:400px;height:330px;"></div>
+	<div id="playerContainer"> 
+		<div id="kdp3" style="width:400px;height:330px;"></div>
+	</div>
 	<script type="text/javascript">
 		if( document.URL.indexOf( '?forceIframe' ) !== -1 ){
 			// Enable the iframe api for the kdp mapping test
 			mw.setConfig('EmbedPlayer.EnableIframeApi', true );
 			// Embed The kaltura player: 
-			kalturaIframeEmbed( 'playerTarget', {
+			kalturaIframeEmbed( 'kdp3', {
 				'entry_id': '0_uka1msg4', 
 				'wid' : '_243342',
 				'uiconf_id' :'2890431'
 			});
 		} else {
-			$( '#playerTarget' ).html('<object id="kdp3" name="kdp3" type="application/x-shockwave-flash" ' +
+			$( '#playerContainer' ).html('<object id="kdp3" name="kdp3" type="application/x-shockwave-flash" ' +
 					'allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" ' + 
 					'height="330" width="400" xmlns:dc="http://purl.org/dc/terms/" ' + 
 					'xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" ' + 

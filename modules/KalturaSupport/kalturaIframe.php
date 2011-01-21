@@ -654,7 +654,7 @@ class kalturaIframe {
 				// Identify the player as an iframe player
 				mw.setConfig( "EmbedPlayer.IsIframePlayer", true );
 				
-				// Load the mwEmbed resource library
+				// Load the mwEmbed resource library and add resize binding
 				mw.ready(function(){
 					// Bind window resize to reize the player: 
 					$j( window ).resize( function(){
@@ -677,8 +677,8 @@ class kalturaIframe {
 				if( kSupportsFlash() ){ 
 					// Write out the embed object 
 					document.write('<?php echo $this->getFlashEmbedHTML()?>');
-					// Load server side bindings
-					
+					// Load server side bindings for kdpServer
+					kLoadJsRequestSet( ['window.jQuery', 'mwEmbed', 'mw.style.mwCommon', '$j.postMessage', 'kdpServerIFrame', 'JSON' ] );							
 				} else {
 					// Last resort just provide an image with a link to the file
 					// NOTE we need to do some platform checks to see if the device can 

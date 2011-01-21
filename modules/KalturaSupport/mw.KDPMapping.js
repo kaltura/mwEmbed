@@ -15,26 +15,24 @@
 		* Add Player hooks for supporting Kaltura api stuff
 		*/ 
 		init: function( ){
-			// Check if in iFrame mode:
-			if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) ){
-				// Check if we are client( IframeRewrite ) or server ( IsIframePlayer )
-				if( mw.getConfig('Kaltura.IframeRewrite') ){
-					this.addIframePlayerHooksClient();
-				}
-				if(	mw.getConfig( 'EmbedPlayer.IsIframePlayer' ) ){
-					this.addIframePlayerHooksServer();
-				}
-			} else {
-				// No iframe just do normal KDP maping hooks: 
-				this.addPlayerHooks();
+			// Check What types of bindings we should add:
+			if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig('Kaltura.IframeRewrite') ){
+				this.addIframePlayerHooksClient();
+				return ;
 			}
+			if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig( 'EmbedPlayer.IsIframePlayer' ) ){
+				this.addIframePlayerHooksServer();
+				return ;
+			}
+			// No iframe just do normal KDP mapping hooks: 
+			this.addPlayerHooks();
 		},
 				
 		addPlayerHooks: function(){
 			var _this = this;
 
 			// Add the hooks to the player manager			
-			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {						
+			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {		
 				// Add the addJsListener and sendNotification maps
 				embedPlayer.addJsListener = function(listenerString, globalFuncName){
 					_this.addJsListener( embedPlayer, listenerString, window[ globalFuncName ] )

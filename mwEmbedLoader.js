@@ -148,6 +148,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	
 	// Else we can avoid loading mwEmbed all together and just rewrite the iframe 
 	// ( no javascript api needed )
+	
 	var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
 	var kalturaAttributeList = { 'uiconf_id':1, 'entry_id':1, 'wid':1, 'p':1};
 	for(var attrKey in kEmbedSettings ){
