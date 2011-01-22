@@ -11,6 +11,9 @@
 		// can be set to false per embed player via overlayControls attribute
 		'EmbedPlayer.OverlayControls' : true,
 
+		// The preferred media format order 
+		'EmbedPlayer.CodecPreference': [ 'webm', 'h264', 'ogg' ],
+		
 		// If the iPad should use html controls ( can't use fullscreen or control volume, 
 		// but lets you support overlays ie html controls ads etc. )
 		'EmbedPlayer.EnableIpadHTMLControls': false, 

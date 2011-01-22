@@ -1013,18 +1013,36 @@ mediaElement.prototype = {
 				setSelectedSource( playableSources[source] );
 				return true;
 			}
-		}
-
-		// Prefer native playback
+		}		
+		
+		// Prefer native playback ( and prefer WebM over ogg and h.264 )
+		var namedSources = [];
 		for ( var source = 0; source < playableSources.length; source++ ) {
 			var mimeType = playableSources[source].mimeType;
-			var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( mimeType );
+			var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( mimeType );			
 			if ( player && player.library == 'Native'	) {
-				mw.log('EmbedPlayer::autoSelectSource: Set via native playback');
-				setSelectedSource( playableSources[ source ] );
-				return true;
+				switch( player.id	){
+					case 'oggNative': 
+						namedSources['ogg'] = playableSources[ source ]; 
+						break;
+					case 'webmNative':
+						namedSources['webm'] = playableSources[ source ]; 
+						break;
+					case 'h264Native':
+						namedSources['h264'] = playableSources[ source ]; 
+						break;
+				}
 			}
 		}
+		var codecPref =mw.getConfig( 'EmbedPlayer.CodecPreference');
+		for(var i =0; i < codecPref.length; i++){
+			var codec = codecPref[ i ];
+			if( namedSources[ codec ]){
+				setSelectedSource( namedSources[ codec ] );
+				return true;
+			}
+		};
+		
 
 		// Set h264 via native or flash fallback
 		for ( var source = 0; source < playableSources.length; source++ ) {
