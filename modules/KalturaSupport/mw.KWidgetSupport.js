@@ -302,6 +302,11 @@ mw.KWidgetSupport.prototype = {
 				deviceSources['ogg'] = src + '/a.ogg?novar=0';
 			}				
 			
+			// Check for webm source
+			if( asset.fileExt == 'webm' ){
+				deviceSources['webm'] = src + '/a.webm?novar=0';
+			}
+			
 			// Check for 3gp source
 			if( asset.fileExt == '3gp' ){
 				deviceSources['3gp'] = src + '/a.ogg?novar=0';
@@ -348,6 +353,10 @@ mw.KWidgetSupport.prototype = {
 			} else if( deviceSources['iPhone'] ) {
 				addSource( deviceSources['iPhone'], 'video/h264' );
 			}
+		}
+		// Add the webm
+		if( deviceSources['webm'] ){
+			addSource( deviceSources['webm'], 'video/webm' );
 		}
 		
 		// Add the 3gp source if available
