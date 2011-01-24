@@ -222,11 +222,11 @@ mw.KWidgetSupport.prototype = {
 		// Set the poster ( if not already set ) 
 		if( !embedPlayer.poster && $j( embedPlayer ).attr( 'kentryid' ) ){
 			embedPlayer.poster = mw.getKalturaThumbUrl({
-					'partner_id' : this.kClient.getPartnerId(),
-					'entry_id' : $j( embedPlayer ).attr( 'kentryid' ),
-					'width' : embedPlayer.getWidth(),
-					'height' :  embedPlayer.getHeight()
-				});			
+				'partner_id' : this.kClient.getPartnerId(),
+				'entry_id' : $j( embedPlayer ).attr( 'kentryid' ),
+				'width' : embedPlayer.getWidth(),
+				'height' :  embedPlayer.getHeight()
+			});			
 		}
 		
 		

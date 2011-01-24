@@ -91,7 +91,6 @@ mw.KAnalytics.prototype = {
 		
 		// Add relevant hooks for reporting beacons
 		this.bindPlayerEvents();		
-				
 	},
 	
 	/**
@@ -142,12 +141,13 @@ mw.KAnalytics.prototype = {
 			eventSet[ 'entryId' ] = this.embedPlayer.getSrc();
 		}					
 
-		// Check if Kaltura.AnalyticsCallback is enabled:
-		$j( mw ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey ] );
+		// Trigger a special global event ( has to be on document since some analytic 
+		//events happen before the mw is ready
+		$j( document ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey ] );
 		
 		var eventRequest = {};
 		for( var i in eventSet){
-			eventRequest['event:' + i] = eventSet[i];
+			eventRequest[ 'event:' + i] = eventSet[i];
 		}
 		// Add in base service and action calls: 
 		$j.extend( eventRequest, {
@@ -200,8 +200,7 @@ mw.KAnalytics.prototype = {
 		b( 'openFullScreen', 'OPEN_FULL_SCREEN' );
 		
 		// When the close fullscreen button is pressed.
-		// ( presently does not register iphone / ipad until it has js bindings
-		// )
+		// ( presently does not register iphone / ipad until it has js bindings )
 		b( 'closeFullScreen', 'CLOSE_FULL_SCREEN' );
 		
 		// When the user plays (after the ondone event was fired )

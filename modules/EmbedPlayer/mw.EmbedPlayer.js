@@ -716,6 +716,9 @@ mediaSource.prototype = {
 			case 'video/x-flv' :
 				return gM( 'mwe-embedplayer-video-flv' );
 			break;
+			case 'video/webm' :
+				return gM( 'mwe-embedplayer-video-webm');
+			break;
 			case 'video/ogg' :
 				return gM( 'mwe-embedplayer-video-ogg' );
 			break;
@@ -1946,7 +1949,7 @@ mw.EmbedPlayer.prototype = {
 		// Only run stopped once:
 		if( !this.isStopped() ){
 			// Stop the monitor:
-			this.stopMonitor();
+			this.stop();
 
 			// Show the control bar:
 			this.controlBuilder.showControlBar();
@@ -1954,8 +1957,7 @@ mw.EmbedPlayer.prototype = {
 			// Update the clip done playing count:
 			this.donePlayingCount ++;
 
-			// Run the ended trigger ( allow the ended object to prevent default
-			// actions )
+			// Run the ended trigger ( allow the ended object to prevent default actions )
 			mw.log("EmbedPlayer::onClipDone:Trigger ended");
 			
 			// TOOD we should improve the end event flow
@@ -1965,13 +1967,11 @@ mw.EmbedPlayer.prototype = {
 
 				// Check if we have the "loop" property set
 				if( this.loop ) {
-					this.stop();
 					this.play();
 					return;
 				}
 
 				// Stop the clip (load the thumbnail etc)
-				this.stop();
 				this.serverSeekTime = 0;
 				this.updatePlayHead( 0 );
 
@@ -3060,7 +3060,7 @@ mw.EmbedPlayer.prototype = {
 			// Check if we are "done"
 			var endPresentationTime = ( this.startOffset ) ? ( this.startOffset + this.duration ) : this.duration;
 			if ( this.currentTime >= endPresentationTime ) {
-				mw.log( "should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );				
+				mw.log( "mWEmbedPlayer::should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );				
 				this.onClipDone();				
 			}
 		} else {

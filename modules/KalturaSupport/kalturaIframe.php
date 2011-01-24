@@ -106,8 +106,6 @@ class kalturaIframe {
 			return array();
 		}
 		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){	
-
-
 			$assetUrl =  $wgKalturaCDNUrl .'/p/' . $this->getPartnerId() . '/sp/' . 
 					$this->getPartnerId() . '00/flvclipper/entry_id/' . 
 					$this->playerAttributes['entry_id'] . '/flavor/' . 	$KalturaFlavorAsset->id;
@@ -125,6 +123,15 @@ class kalturaIframe {
 					'data-flavorid' => 'iPad' 
 				);
 			};
+			
+			if( $KalturaFlavorAsset->fileExt == 'webm' ){
+				$sources['webm'] = array(
+					'src' => $assetUrl . 'a.webm?novar=0',
+					'type' => 'video/webm',
+					'data-flavorid' => 'webm'
+				);			
+			}
+			
 			if( $KalturaFlavorAsset->fileExt == 'ogg' || $KalturaFlavorAsset->fileExt == 'ogv' 
 				|| $KalturaFlavorAsset->fileExt == 'oga' 
 			){
@@ -381,6 +388,8 @@ class kalturaIframe {
 			$flavorUrl = $sources['3gp']['src'];
 		} else if(  isset( $sources['ogg'] ) ){
 			$flavorUrl = $sources['ogg']['src'];
+		} else if ( isset( $sources['webm'] ) ){
+			$flavorUrl = $sources['webm']['src'];
 		} else {
 			// Throw an exception ( no web streams ) 
 			$this->fatalIframeError( 'No web streams available, please check your enabled flavors' );
@@ -625,7 +634,6 @@ class kalturaIframe {
 			// For testing limited capacity browsers
 			//var kIsHTML5FallForward = function(){ return false };
 			//var kSupportsFlash = function(){ return false };
-			
 			if( kIsHTML5FallForward() ){
 				// Remove the loader ( mwEmbed will supply the loader ) 
 				var el = document.getElementById('iframeLoadingSpinner');

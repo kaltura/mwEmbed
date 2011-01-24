@@ -3,6 +3,7 @@
 <head>
 <title>Fall forward html5</title>
 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.js"></script>
 
 <script type="text/javascript">
@@ -10,10 +11,8 @@
 		mw.setConfig( 'forceMobileHTML5' , true );
 	}			
 	mw.setConfig( 'EmbedPlayer.OverlayControls', false );
-	mw.ready(function(){
-		$j(mw).bind( 'Kaltura.SendAnalyticEvent', function(event,  analyticName ){
-			$j('#analyticsLog').append( analyticName + "\n");
-		});
+	$( document ).bind( 'Kaltura.SendAnalyticEvent', function(event,  analyticName ){
+		$('#analyticsLog').append( analyticName + "\n");
 	});
 </script>
 </head>

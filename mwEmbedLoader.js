@@ -43,7 +43,7 @@ var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://192.168.0.102/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_LOADER_URL = 'http://192.168.1.69/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
@@ -155,13 +155,13 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	var kalturaAttributeList = { 'uiconf_id':1, 'entry_id':1, 'wid':1, 'p':1};
 	for(var attrKey in kEmbedSettings ){
 		if( attrKey in kalturaAttributeList ){
-			iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
+			iframeSrc += '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
 		}
 	}
 	
 	// add the forceMobileHTML5 to the iframe if present on the client: 
 	if( preMwEmbedConfig['forceMobileHTML5'] === true ){
-		iframeSrc+='?forceMobileHTML5=true';
+		iframeSrc += '?forceMobileHTML5=true';
 	}
 	
 	var targetNode = document.getElementById( replaceTargetId );
