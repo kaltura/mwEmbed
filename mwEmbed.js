@@ -1803,7 +1803,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 */
 	mw.npt2seconds = function ( npt_str ) {
 		if ( !npt_str ) {
-			mw.log('npt2seconds:not valid ntp:'+ntp);
+			mw.log('npt2seconds:not valid ntp:'+npt_str);
 			return 0;
 		}
 		// Strip {npt:}01:02:20 or 32{s} from time if present
