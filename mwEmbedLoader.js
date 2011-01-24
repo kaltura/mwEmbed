@@ -35,15 +35,15 @@
 *	// $j('#iframeid').bind('ended', function(){ .. end playback event ... }
 *	'EmbedPlayer.EnableIframeApi' : true
 */
-var kURID = '1.2l';
+var kURID = '1.2m';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.1.69/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_FORCE_DEBUG = true;
+SCRIPT_LOADER_URL = 'http://192.168.0.102/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
@@ -106,6 +106,8 @@ if( !mw.setConfig ){
 	}
 }
 
+// Set kaltura api to true by default: 
+mw.setConfig( 'EmbedPlayer.EnableIframeApi', true ) ; 
 
 // Set url based config:
 if( document.URL.indexOf('forceMobileHTML5') != -1 ){
@@ -155,6 +157,11 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 		if( attrKey in kalturaAttributeList ){
 			iframeSrc+= '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
 		}
+	}
+	
+	// add the forceMobileHTML5 to the iframe if present on the client: 
+	if( preMwEmbedConfig['forceMobileHTML5'] === true ){
+		iframeSrc+='?forceMobileHTML5=true';
 	}
 	
 	var targetNode = document.getElementById( replaceTargetId );
