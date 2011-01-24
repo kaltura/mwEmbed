@@ -293,13 +293,6 @@ class kalturaIframe {
 	}
 	
 	/**
-	*  Set the player data array
-	*/	
-	function getPlayerData() {
-		return json_encode( $playerData );
-	}
-	
-	/**
 	*  Access Control Handling
 	*/	
 	function isAccessControlAllowed() {
