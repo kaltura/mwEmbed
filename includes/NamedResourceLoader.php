@@ -71,13 +71,12 @@ class NamedResourceLoader {
 			'NamedResourceLoader::preg_buildComponentList',
 			$fileContent
 		);
-
 		// Check if we should load module list from mwEmbed loader.js
 		if( $wgMwEmbedEnabledModules ) {
 			// Get the list of enabled modules into $moduleList
 			self::validateModuleList( $wgMwEmbedEnabledModules );
 		}
-
+		
 		// Change to the root mediawiki directory ( loader.js paths are relative to root mediawiki directory )
 		// ( helpful for when running maintenance scripts )
 		if( defined( 'DO_MAINTENANCE' ) ) {
@@ -91,7 +90,9 @@ class NamedResourceLoader {
 			$modulePath = $wgMwEmbedDirectory . $relativeSlash . 'modules/' . $moduleName;
 			self::proccessModulePath( $moduleName, $modulePath );
 		}
-
+		if( ! isset( $wgExtensionJavascriptModules )) {
+			$wgExtensionJavascriptModules = array();
+		}
 		// Get all the extension loader paths registered mwEmbed modules
 		foreach( $wgExtensionJavascriptModules as $moduleName => $modulePath ){
 			self::proccessModulePath( $moduleName, $modulePath );
