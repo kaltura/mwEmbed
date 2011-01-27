@@ -18,16 +18,26 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				var originalSrc = embedPlayer.getSrc();
 				mw.getEntryIdSourcesFromApi( $j( embedPlayer ).attr( 'kwidgetid' ), bumperEntryId, function( sources ){
 					// Add to the bumper per entry id:						
-					$j( embedPlayer ).bind('play', function(){	
+					$j( embedPlayer ).unbind('play.bumper').bind('play.bumper', function(){	
 						// don't play the bumper 
-						if( embedPlayer.bumperPlayCount >= 1){
+						if( $bumbPlug.attr('playonce') == "true" && embedPlayer.bumperPlayCount >= 1){
 							return true;
-						}	
+						}
+						if( $bumbPlug.attr('playonce') == "false" && embedPlayer.bumperPlayCount > embedPlayer.donePlayingCount ){
+							// don't play the bumper again we are done playing once
+							return true;
+						}
+						
 						embedPlayer.bumperPlayCount++;
+						
+						if( $bumbPlug.attr('lockui') == "true" ){
+							embedPlayer.disableSeekBar();
+						}
 						// Call the special insertAndPlaySource function ( used for ads / video inserts ) 
 						embedPlayer.switchPlaySrc( sources[0].src, null, function(){
 							// restore the orginal source:
 							embedPlayer.switchPlaySrc( originalSrc );
+							embedPlayer.enableSeekBar();
 						});
 					});
 					if( bumperClickUrl ){
