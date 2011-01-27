@@ -18,7 +18,8 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				var originalSrc = embedPlayer.getSrc();
 				mw.getEntryIdSourcesFromApi( $j( embedPlayer ).attr( 'kwidgetid' ), bumperEntryId, function( sources ){
 					// Add to the bumper per entry id:						
-					$j( embedPlayer ).bind('play', function(){					
+					$j( embedPlayer ).bind('play', function(){	
+						// don't play the bumper 
 						if( embedPlayer.bumperPlayCount >= 1){
 							return true;
 						}	
@@ -28,11 +29,15 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 							// restore the orginal source:
 							embedPlayer.switchPlaySrc( originalSrc );
 						});
-					})
+					});
+					// run callback once bumper has been looked up
+					callback();
 				});
+				/* TODO better error handle for failed bumper lookup */
 			}
+		} else {
+			// Don't block player display if no bumper found 
+			callback();
 		}
-		// Don't block player display on bumper lookup 
-		callback();
 	})
 })
