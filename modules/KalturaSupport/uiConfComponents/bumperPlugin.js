@@ -1,6 +1,8 @@
 /**
 * Adds bumper support
 */
+// ( can be removed once we move to the new resource loader )
+var bumperPlugin = true;
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf, callback ){
 		
@@ -19,14 +21,14 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				mw.getEntryIdSourcesFromApi( $j( embedPlayer ).attr( 'kwidgetid' ), bumperEntryId, function( sources ){
 					// Add to the bumper per entry id:						
 					$j( embedPlayer ).unbind('play.bumper').bind('play.bumper', function(){	
-						// don't play the bumper 
+						// Don't play the bumper 
 						// we don't use the "playonce" attribute (check of the kdp is function)
 						//if( $bumbPlug.attr('playonce') == "true" && embedPlayer.bumperPlayCount >= 1){
 						if( embedPlayer.bumperPlayCount >= 1){						
 							return true;
 						}
 						if( $bumbPlug.attr('playonce') == "false" && embedPlayer.bumperPlayCount > embedPlayer.donePlayingCount ){
-							// don't play the bumper again we are done playing once
+							// Don't play the bumper again we are done playing once
 							return true;
 						}
 						
