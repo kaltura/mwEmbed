@@ -20,7 +20,9 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 					// Add to the bumper per entry id:						
 					$j( embedPlayer ).unbind('play.bumper').bind('play.bumper', function(){	
 						// don't play the bumper 
-						if( $bumbPlug.attr('playonce') == "true" && embedPlayer.bumperPlayCount >= 1){
+						// we don't use the "playonce" attribute (check of the kdp is function)
+						//if( $bumbPlug.attr('playonce') == "true" && embedPlayer.bumperPlayCount >= 1){
+						if( embedPlayer.bumperPlayCount >= 1){						
 							return true;
 						}
 						if( $bumbPlug.attr('playonce') == "false" && embedPlayer.bumperPlayCount > embedPlayer.donePlayingCount ){
@@ -38,10 +40,11 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 							// restore the orginal source:
 							embedPlayer.switchPlaySrc( originalSrc );
 							embedPlayer.enableSeekBar();
+							$j( embedPlayer ).unbind('click.bumper');
 						});
 					});
 					if( bumperClickUrl ){
-						$j( embedPlayer ).click( function(){
+						$j( embedPlayer ).bind( 'click.bumper', function(){
 							// try to do a popup:
 							if(!clickedBumper){
 								clickedBumper = true;
