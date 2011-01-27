@@ -10,7 +10,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		if(  $bumbPlug.length ){
 			var bumperEntryId = $bumbPlug.attr('bumperentryid');
 			var bumperClickUrl = $bumbPlug.attr('clickurl');
-					
+			var clickedBumper = false;
 			embedPlayer.bumperPlayCount = 0;
 			// Get the bumper entryid			
 			if( bumperEntryId ){
@@ -30,6 +30,17 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 							embedPlayer.switchPlaySrc( originalSrc );
 						});
 					});
+					if( bumperClickUrl ){
+						$j( embedPlayer ).click( function(){
+							// try to do a popup:
+							if(!clickedBumper){
+								clickedBumper = true;
+								window.open( bumperClickUrl );								
+								return false;
+							}
+							return true;							
+						})
+					}
 					// run callback once bumper has been looked up
 					callback();
 				});

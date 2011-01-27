@@ -1946,8 +1946,7 @@ mw.EmbedPlayer.prototype = {
 		mw.log( 'EmbedPlayer::onClipDone:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
 		// Only run stopped once:
 		if( !this.isStopped() ){
-			// Stop the monitor:
-			this.stopMonitor();
+			// Stop the monitor and event propagation
 			this.stopEventPropagation();
 
 			// Show the control bar:
@@ -1965,6 +1964,8 @@ mw.EmbedPlayer.prototype = {
 			// if the ended event did not trigger more timeline actions run the actual stop:
 			if( this.onDoneInterfaceFlag ){
 				this.stop();
+				// restore event propagation 
+				this.restoreEventPropagation();
 				// Check if we have the "loop" property set
 				if( this.loop ) {
 					this.play();
