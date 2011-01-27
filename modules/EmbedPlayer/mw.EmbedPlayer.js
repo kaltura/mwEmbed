@@ -1962,8 +1962,9 @@ mw.EmbedPlayer.prototype = {
 			// TOOD we should improve the end event flow
 			$j( this ).trigger( 'ended' );
 			
+			// if the ended event did not trigger more timeline actions run the actual stop:
 			if( this.onDoneInterfaceFlag ){
-
+				this.stop();
 				// Check if we have the "loop" property set
 				if( this.loop ) {
 					this.play();
@@ -1984,9 +1985,6 @@ mw.EmbedPlayer.prototype = {
 				this.controlBuilder.onClipDone();
 			}
 		}
-		// restore events
-		this.restoreEventPropagation();
-
 	},
 
 

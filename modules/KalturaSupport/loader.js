@@ -45,7 +45,7 @@
 		"watermarkPlugin" :  "uiConfComponents/watermarkPlugin.js",
 		"adPlugin"	: 	"uiConfComponents/adPlugin.js",
 		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
-		"bumperPlugin2"	: 	"uiConfComponents/bumperPlugin2.js",		
+		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",		
 		
 		"kdpClientIframe" : "kdpIframeApi/kdpClientIframe.js",
 		"kdpServerIFrame" : "kdpIframeApi/kdpServerIFrame.js"		
@@ -63,7 +63,7 @@
 		'faderPlugin',
 		'watermarkPlugin',
 		'adPlugin',
-		'bumperPlugin2'
+		'bumperPlugin'
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
