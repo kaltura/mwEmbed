@@ -632,8 +632,9 @@ class kalturaIframe {
 			}
 						
 			// For testing limited capacity browsers
-			//var kIsHTML5FallForward = function(){ return false };
-			//var kSupportsFlash = function(){ return false };
+			// var kIsHTML5FallForward = function(){ return false };
+			// var kSupportsFlash = function(){ return false };
+			
 			if( kIsHTML5FallForward() ){
 				// Remove the loader ( mwEmbed will supply the loader ) 
 				var el = document.getElementById('iframeLoadingSpinner');
@@ -692,8 +693,8 @@ class kalturaIframe {
 					var thumbSrc = kGetEntryThumbUrl({
 						'entry_id' : '<?php echo $this->playerAttributes['entry_id']?>',
 						'partner_id' : '<?php echo $this->getPartnerId() ?>',
-						'height' : window.innerHeight,
-						'width' : window.innerWidth
+						'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
+						'width' : ( document.body.clientHeight )? document.body.clientHeight : '400'
 					});			
 					document.getElementById( 'directFileLinkThumb' ).innerHTML = 
 						'<img style="width:100%;height:100%" src="' + thumbSrc + '" >';

@@ -590,10 +590,12 @@ kGetKalturaPlayerList = function(){
 		if( settings && settings.uiconf_id && settings.wid ){
 			objectList[i].kSettings = settings;
 			kalturaPlayers.push(  objectList[i] );
-			return true
+			return kalturaPlayers;
 		}
-		return false;
+		return [];
 	}
+	
+	// alert('object list: ' + objectList.length );
 	for( var i =0; i < objectList.length; i++){
 		if( objectList[i].getAttribute('data') ){
 			if( tryAddKalturaEmbed( objectList[i].getAttribute('data') ) )
