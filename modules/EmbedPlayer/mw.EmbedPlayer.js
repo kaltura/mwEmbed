@@ -1468,7 +1468,6 @@ mw.EmbedPlayer.prototype = {
 		// Special check for chrome 100% with re-mapping to 32px 
 		// ( hopefully no one embeds video at 32x32 )
 		if( this.height == '32px' || this.height =='32px' ){
-			var defaultSize = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
 			this.width = '100%';
 			this.height = '100%';
 		}
@@ -1914,8 +1913,7 @@ mw.EmbedPlayer.prototype = {
 			this.updatePlayHead( percent );
 		}
 
-		// Do play request in 100ms ( give the dom time to swap out the embed
-		// player )
+		// Do play request in 100ms ( give the dom time to swap out the embed player )
 		setTimeout( function() {
 			_this.seeking = false;
 			_this.play()
@@ -1949,7 +1947,8 @@ mw.EmbedPlayer.prototype = {
 		// Only run stopped once:
 		if( !this.isStopped() ){
 			// Stop the monitor:
-			this.stop();
+			this.stopMonitor();
+			this.stopEventPropagation();
 
 			// Show the control bar:
 			this.controlBuilder.showControlBar();
@@ -1985,6 +1984,8 @@ mw.EmbedPlayer.prototype = {
 				this.controlBuilder.onClipDone();
 			}
 		}
+		// restore events
+		this.restoreEventPropagation();
 
 	},
 
