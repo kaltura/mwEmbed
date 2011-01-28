@@ -632,8 +632,8 @@ class kalturaIframe {
 			}
 						
 			// For testing limited capacity browsers
-			// var kIsHTML5FallForward = function(){ return false };
-			// var kSupportsFlash = function(){ return false };
+			//var kIsHTML5FallForward = function(){ return false };
+			//var kSupportsFlash = function(){ return false };
 			
 			if( kIsHTML5FallForward() ){
 				// Remove the loader ( mwEmbed will supply the loader ) 

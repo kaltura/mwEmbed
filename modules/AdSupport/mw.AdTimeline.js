@@ -57,7 +57,9 @@
  * 						'height': {Number} height
  * 						'html': {String} html
  * 					}
- * 				]
+ * 				],
+ * 				'clickThrough' : {URL} url to open when video is "clicked" 
+ * 
  * 				'videoFile' : {URL} video file to play for the ad
  * 			}
  * 		]
@@ -85,6 +87,7 @@ mw.AdTimeline = function(embedPlayer) {
 }
 
 mw.AdTimeline.prototype = {
+
 	/**
 	 * Display timeline targets: ( false by default)
 	 */
@@ -119,6 +122,7 @@ mw.AdTimeline.prototype = {
 		_this.originalSrc = _this.embedPlayer.getSrc();
 		// Flag to store if its the first time play is being called:
 		var firstPlay = true;
+		
 		$j(_this.embedPlayer).bind('play', function() {
 			// Check if this is the "first play" request:
 			if (!firstPlay) {
@@ -326,10 +330,25 @@ mw.AdTimeline.prototype = {
 		// Check for videoFile inserts:
 		if ( adConf.videoFile && timeTargetType != 'overlay') {
 			if ( adConf.lockUI ) {
-				mw.log("AdTimeline::@@TODO lock scrubber");
 				// TODO lock controls
 				_this.getNativePlayerElement().controls = false;
 			};
+			
+			
+			// Check for click binding 
+			if( adConf.clickThrough ){		
+				var clickedBumper = false;
+				$j( _this.embedPlayer ).bind( 'click.ad', function(){
+					// try to do a popup:
+					if(!clickedBumper){
+						clickedBumper = true;
+						window.open( adConf.clickThrough );								
+						return false;
+					}
+					return true;							
+				})
+			}
+			
 			// Play the source then run the callback
 			_this.embedPlayer.switchPlaySrc( adConf.videoFile, function() { 
 					// Bind all the tracking events ( currently vast based but will abstract if needed ) 
@@ -337,7 +356,11 @@ mw.AdTimeline.prototype = {
 						_this.bindTrackingEvents( adConf.trackingEvents );
 					}
 				},
-				displayTarget.playbackDone
+				function(){
+					// unbind any click ad bindings:
+					$j( _this.embedPlayer ).unbind( 'click.ad' );					
+					displayTarget.playbackDone();
+				}
 			);
 		}
 

@@ -29,6 +29,7 @@ mw.KAds.prototype = {
 		var _this = this; 
 		this.embedPlayer = embedPlayer;
 		this.$adConfig = $adConfig;		
+		
 		// Load the Ads
 		_this.loadAds( function(){
 			mw.log("All ads have been loaded");
@@ -52,6 +53,7 @@ mw.KAds.prototype = {
 			if( _this.$adConfig.attr('timeout') ){
 				baseDisplayConf[ 'timeout' ] = _this.$adConfig.attr( 'timeout' ); 
 			}
+			
 			
 			// Merge in the companion targets and add to player timeline: 
 			for( var adType in adConfigSet ){

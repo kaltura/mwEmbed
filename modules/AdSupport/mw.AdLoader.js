@@ -32,7 +32,7 @@ mw.AdLoader = {
 					// ( normally we load VastAdParser before we get here but just in-case ) 
 					mw.load( 'mw.VastAdParser', function(){
 						callback(
-							mw.VastAdParser.parse( result['contents'] ) 
+							mw.VastAdParser.parse( result['contents'] )
 						);
 					});
 					return ;

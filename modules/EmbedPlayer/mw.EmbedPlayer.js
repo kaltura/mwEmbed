@@ -1440,7 +1440,8 @@ mw.EmbedPlayer.prototype = {
 		$j( this ).trigger( 'onEnableSeekBar');
 	},
 	disableSeekBar: function(){
-		this.controlBuilder.disableSeekBar();
+		
+		//this.controlBuilder.disableSeekBar();
 		$j( this ).trigger( 'ondisableSeekBar');
 	},
 	
@@ -3034,7 +3035,7 @@ mw.EmbedPlayer.prototype = {
 			// Check if we are "done"
 			var endPresentationTime = ( this.startOffset ) ? ( this.startOffset + this.duration ) : this.duration;
 			if ( this.currentTime >= endPresentationTime ) {
-				mw.log( "mWEmbedPlayer::should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );				
+				//mw.log( "mWEmbedPlayer::should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );				
 				this.onClipDone();				
 			}
 		} else {

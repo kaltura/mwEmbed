@@ -19,6 +19,23 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				mw.log( "KWidget:: checkUiConf: get sources for " + bumperEntryId);
 				var originalSrc = embedPlayer.getSrc();
 				mw.getEntryIdSourcesFromApi( $j( embedPlayer ).attr( 'kwidgetid' ), bumperEntryId, function( sources ){
+					var bumperSource =  sources[0].src;
+					
+					// Check if we are doing ads ( should always come before bumper ) and add bumper to 
+					// ad timeline instead of binding to play: 
+					if( embedPlayer.ads ){
+						mw.addAdToPlayerTimeline( embedPlayer, 'bumper', {
+							'ads': [
+								{
+									'videoFile' : bumperSource,
+									'clickThrough' : bumperClickUrl
+								}
+							]
+						}); 
+						callback();
+						return ;
+					}
+					
 					// Add to the bumper per entry id:						
 					$j( embedPlayer ).unbind('play.bumper').bind('play.bumper', function(){	
 						// Don't play the bumper 
@@ -38,8 +55,8 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 							embedPlayer.disableSeekBar();
 						}
 						// Call the special insertAndPlaySource function ( used for ads / video inserts ) 
-						embedPlayer.switchPlaySrc( sources[0].src, null, function(){
-							// restore the orginal source:
+						embedPlayer.switchPlaySrc( bumperSource, null, function(){
+							// restore the original source:
 							embedPlayer.switchPlaySrc( originalSrc );
 							embedPlayer.enableSeekBar();
 							$j( embedPlayer ).unbind('click.bumper');
@@ -51,7 +68,6 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 							if(!clickedBumper){
 								clickedBumper = true;
 								window.open( bumperClickUrl );								
-								return false;
 							}
 							return true;							
 						})

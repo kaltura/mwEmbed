@@ -7,7 +7,7 @@ mw.VastAdParser = {
 	 * VAST support
 	 * Convert the vast ad display format into a display conf:
 	 */	
-	parse: function( xmlString){
+	parse: function( xmlString ){
 		var _this = this;
 		var adConf = {};
 		var $vast = $j( xmlString );
@@ -76,6 +76,11 @@ mw.VastAdParser = {
 				{
 					currentAd.videoFile = _this.getURLFromNode( mediaFile );
 				}
+			});
+			
+			// Look for video click through:
+			$ad.find('VideoClicks ClickThrough').each( function(na, clickThrough){
+				currentAd.clickThrough = _this.getURLFromNode( clickThrough );
 			});
 			
 			// Set videoFile to default if not set: 
