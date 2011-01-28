@@ -1482,12 +1482,11 @@ mw.EmbedPlayer.prototype = {
 			this.width = $relativeParent.width();
 			this.height = $relativeParent.height();
 		}
-		// make sure height and width are a number
+		// Make sure height and width are a number
 		this.height = parseInt( this.height );
 		this.width = parseInt( this.width );
 
-		// Set via attribute if CSS is zero or NaN and we have an attribute
-		// value:
+		// Set via attribute if CSS is zero or NaN and we have an attribute value:
 		this.height = ( this.height==0 || isNaN( this.height )
 				&& $j(element).attr( 'height' ) ) ?
 						parseInt( $j(element).attr( 'height' ) ): this.height;
@@ -1516,12 +1515,10 @@ mw.EmbedPlayer.prototype = {
 			}
 		}
 
-		// On load sometimes attr is temporally -1 as we don't have video
-		// metadata yet.
+		// On load sometimes attr is temporally -1 as we don't have video metadata yet.
 		// or in IE we get NaN for width height
 		//
-		// NOTE: browsers that do support height width should set "waitForMeta"
-		// flag in addElement
+		// NOTE: browsers that do support height width should set "waitForMeta" flag in addElement
 		if( ( isNaN( this.height )|| isNaN( this.width ) ) ||
 			( this.height == -1 || this.width == -1 ) ||
 				// Check for firefox defaults
@@ -1593,7 +1590,6 @@ mw.EmbedPlayer.prototype = {
 
 		// Scope the end of check for player sources so it can be called in a
 		var finishCheckPlayerSources = function(){
-			// callback
 			// Run embedPlayer sources hook
 			$j( _this ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
 				_this.setupSourcePlayer();
@@ -2129,47 +2125,25 @@ mw.EmbedPlayer.prototype = {
 	 *      [misssingType] missing type mime
 	 */
 	showPluginMissingHTML: function( ) {
-		mw.log("showPluginMissingHTML");
-		// Get mime type for unsuported formats:
-		var missingType = '';
-		var or = '';
-		for ( var i = 0; i < this.mediaElement.sources.length; i++ ) {
-			missingType += or + this.mediaElement.sources[i].mimeType;
-			or = ' or ';
-		}
-		// Remove the loading spinner if present:
-		$j('.playerLoadingSpinner,.loadingSpinner').remove();
-
-		// If the native video is already displayed hide it:
-		if( $j( '#' + this.pid ).length != 0 ){
-			$j('#loadingSpinner_' + this.id ).remove();
-			$j( '#' + this.pid ).hide()
-		}
-		if( this.mediaElement.sources.length == 0 ){
-			// hide the pid if present:
-			$j( '#pid_' + this.id ).hide();
-			$j( this ).show().html(
-				$j('<span />').text(
-					gM('mwe-embedplayer-missing-source')
-				)
-			);
-			return ;
-		}
-		var source = this.mediaElement.sources[0];
-		// Check if we have user defined missing html msg:
-		 $j( this ).html(
-		 	$j('<div />').append(
-		 		gM( 'mwe-embedplayer-generic_missing_plugin', missingType ),
-		 		$j( '<br />' ),
-		 		$j( '<a />' )
-		 		.attr( {
-		 			'title' : gM( 'mwe-embedplayer-download_clip' ),
-		 			'href' : source.src
-		 		})
-		 		.text( gM( 'mwe-embedplayer-download_clip' ) )
-		 	)
-		 );
-		// hide
+		mw.log("EmbedPlayer::showPluginMissingHTML");
+		// Control builder ( for play button )
+		this.controlBuilder = new mw.PlayerControlBuilder( this );
+		
+		// Remove loader
+		$j('#loadingSpinner_' + this.id ).remove();
+		
+		// Get mime type for un-supported formats:
+		this.updatePosterHTML();
+		
+		// Set the play button to the first available source: 
+		$j(this).find('.play-btn-large')
+		.unbind('click')
+		.wrap(
+			$j('<a />').attr( {
+				'href': this.mediaElement.sources[0].getSrc(),
+				'title' : gM('mwe-embedplayer-play_clip')
+			} )
+		)
 	},
 
 	/**
@@ -2365,7 +2339,7 @@ mw.EmbedPlayer.prototype = {
 				.addClass( 'playerPoster' )
 			);
 		}
-		if ( this.controls
+		if ( this.controls && this.controlBuilder
 			&& this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
 		) {
 			$j( this ).append(
