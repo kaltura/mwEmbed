@@ -8,7 +8,9 @@ userPassword	= "wikipass"
 testBrowser		= "Safari on OS X Snow Leopard"
 jUnitLogFile	=
 runAgainstGrid	= true
+startserver = false
+stopserver = false
 
-[testSuite]
+[SeleniumTests]
 
-SimpleSeleniumTestSuite	= "tests/selenium/suites/SimpleSeleniumTestSuite.php"
+testSuite[SimpleSeleniumTestSuite]	= "tests/selenium/suites/SimpleSeleniumTestSuite.php"
