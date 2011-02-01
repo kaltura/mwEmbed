@@ -1359,7 +1359,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Set the default skin if unset:
 		if ( !this.skinName ) {
-			this.skinName = mw.getConfig( 'EmbedPlayer.SkinName' );
+			this.skinName = mw.getConfig( 'EmbedPlayer.DefaultSkin' );
 		}
 
 		if( !this.monitorRate ){
@@ -1783,15 +1783,11 @@ mw.EmbedPlayer.prototype = {
 			// Run player display with timeout to avoid function stacking 
 			setTimeout(function(){
 				_this.showPlayer();
-				// Call the global player manager to inform this video interface is
-				// ready:
-				mw.playerManager.playerReady( _this );
-	
 				// Run the callback if provided
 				if ( typeof callback == 'function' ){
 					callback();
 				}
-			},1);
+			}, 0);
 			
 		} );
 	},
@@ -2017,6 +2013,8 @@ mw.EmbedPlayer.prototype = {
 	showPlayer: function () {
 		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );
 		var _this = this;
+		// Remove the player loader spinner if it exists
+		$j('#loadingSpinner_' + this.id ).remove();
 		// Set-up the local controlBuilder instance:
 		this.controlBuilder = new mw.PlayerControlBuilder( this );
 		var _this = this;
