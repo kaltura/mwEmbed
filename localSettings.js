@@ -5,5 +5,5 @@
 * 
 * You can put any mw.setConfig('ModuleName.Option', value ) calls in here.  
 * 
-* In a fresh svn checkout this file will always be empty. 
+* In a fresh svn checkout this file will always be empty.
 */
