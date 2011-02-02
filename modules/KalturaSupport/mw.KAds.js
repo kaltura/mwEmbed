@@ -98,9 +98,10 @@ mw.KAds.prototype = {
 			});
 			
 			if( _this.$adConfig.attr( adTypePrefix + 'Url' ) ){
-				loadQueueCount++;
+				loadQueueCount++;				
 				// Load and parse the adXML into displayConf format
 				mw.AdLoader.load( _this.$adConfig.attr( adTypePrefix + 'Url' ) , function( adDisplayConf ){
+					mw.log("KalturaAds loaded: " + adTypePrefix );
 					// Make sure we have a valid callback: 
 					if( !adDisplayConf ){
 						adDisplayConf = {};

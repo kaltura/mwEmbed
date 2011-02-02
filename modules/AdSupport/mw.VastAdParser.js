@@ -109,12 +109,29 @@ mw.VastAdParser = {
 		var _this = this;
 		// Build the curentCompanion
 		var resourceObj = {};
-		var companionAttr = [ 'width', 'height', 'id', 'expandedWidth', 'expandedHeight' ];
+		var companionAttr = [ 'width', 'height', 'id', 'expandedWidth', 'expandedHeight' ];	
 		$j.each( companionAttr, function(na, attr){
 			if( $j( resourceNode ).attr( attr ) ){
 				resourceObj[ attr ] = $j( resourceNode ).attr( attr );
 			}
 		});
+				
+		// Check for attribute based static resource:
+		if( $j( resourceNode ).attr('creativeType')  && $j( resourceNode ).attr('resourceType') == 'static' ){
+			var link = _this.getURLFromNode ( $j( resourceNode ).find('NonLinearClickThrough') );
+			resourceObj.$html = $j('<a />')
+			.attr({
+				'href' : link
+			}).append(
+				$j( '<img/>').attr({
+					'src': _this.getURLFromNode ( resourceNode ),
+					'width' : resourceObj['width'],
+					'height' : resourceObj['height']					
+				})
+			)
+		};
+		
+		
 		
 		// Check for companion type: 
 		if( $j( resourceNode ).find( 'StaticResource' ).length ) {
@@ -137,12 +154,12 @@ mw.VastAdParser = {
 		}
 		
 		// Check for html type
-		if( $j( resourceNode ).find('HTMLResource').length ){				
+		if( $j( resourceNode ).find('HTMLResource').length ){		
 			mw.log("kAds::getResourceObject:  HTMLResource \n" + _this.getURLFromNode ( $j( resourceNode ).find('HTMLResource') ) );
 			// Wrap the HTMLResource in a jQuery call: 
 			resourceObj.$html = $j( _this.getURLFromNode ( $j( resourceNode ).find('HTMLResource') ) );
 		}
-		// if no resource html was built out return false
+		// If no resource html was built out return false
 		if( !resourceObj.$html){
 			return false;
 		}

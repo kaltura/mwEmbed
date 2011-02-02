@@ -43,7 +43,7 @@ var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://192.168.38.18/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_LOADER_URL = 'http://192.168.38.14/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
@@ -75,7 +75,7 @@ if( !preMwEmbedReady ){
 }
 // Wrap mw.ready to preMwEmbedReady values
 if( !mw.ready){
-	mw.ready = function( fn ){
+	mw.ready = function( fn ){		
 		// if running an iframe rewrite without code update we should just run the ready function directly: 
 		if( preMwEmbedConfig['Kaltura.IframeRewrite'] && !preMwEmbedConfig['EmbedPlayer.EnableIframeApi'] ){
 			fn();

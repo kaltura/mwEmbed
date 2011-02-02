@@ -75,12 +75,12 @@
 	});
 
 	// Check if the document has kaltura objects ( for fall forward support ) 
-	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
+	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){		
 		// Local callback function runs KalturaKDPCallbackReady and rewriteDoneCallback
 		var callback = function(){
 			// TODO move KalturaKDPCallbackReady into kdp mapping 
 			if( window.KalturaKDPCallbackReady )
-				window.KalturaKDPCallbackReady();
+				window.KalturaKDPCallbackReady();		
 			
 			if( rewriteDoneCallback )
 				rewriteDoneCallback();
@@ -240,6 +240,7 @@
 						$j( playerTarget ).kalturaIframePlayer( kParams, doneWithIframePlayer);
 					});
 					// Don't do any other rewrites or library loading
+					callback();
 					return true;
 				}
 				

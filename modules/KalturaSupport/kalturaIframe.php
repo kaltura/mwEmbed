@@ -604,7 +604,7 @@ class kalturaIframe {
 			<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
 			<?php echo $this->getVideoHTML() ?>
 		</div>
-		<script type="text/javascript">					
+		<script type="text/javascript">
 			// Insert the html5 kalturaLoader script  
 			document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>mwEmbedLoader.js' type='text/javascript'%3E%3C/script%3E"));
 		</script>
@@ -659,7 +659,7 @@ class kalturaIframe {
 				mw.setConfig( "EmbedPlayer.IsIframePlayer", true );
 				
 				// Load the mwEmbed resource library and add resize binding
-				mw.ready(function(){					
+				mw.ready(function(){		
 					// Bind window resize to reize the player: 
 					$j( window ).resize( function(){
 						$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )

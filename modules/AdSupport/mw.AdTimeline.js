@@ -74,7 +74,7 @@
  * }
  */
 mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
-	mw.log("AdTimeline::Add " + timeType + ' dispCof:' + adConf );
+	mw.log("AdTimeline::Add \n\n" + timeType + ' \n\n dispCof:' + adConf + "\n\n\n");
 	
 	if (!embedPlayer.adTimeline) {
 		embedPlayer.adTimeline = new mw.AdTimeline(embedPlayer);
@@ -407,7 +407,7 @@ mw.AdTimeline.prototype = {
 				_this.embedPlayer.$interface.append(
 					$j('<div />')
 					.css('position', 'absolute')
-					.attr('id', overlayId )
+					.attr('id', overlayId )				
 				)
 			}
 			var layout = {
@@ -429,6 +429,20 @@ mw.AdTimeline.prototype = {
 			.css( layout )
 			.html( nonLinearConf.html )
 			.fadeIn('fast')
+			.append(
+				// Add a absolute positioned close button: 
+				$j('<span />')
+				.css({
+					'top' : 0,
+					'right' : 0,
+					'position': 'absolute',
+					'cursor' : 'pointer'
+				})
+				.addClass("ui-icon ui-icon-closethick")				
+				.click(function(){
+					$(this).parent().fadeOut('fast')
+				})
+			);
 			
 			
 			// Bind control bar display hide / show

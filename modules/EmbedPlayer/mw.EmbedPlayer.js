@@ -165,7 +165,7 @@ mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [
 					mw.playerManager.addPlayerElement( playerElement, attributes);
 				}
 			} );
-			if( addedToPlayerManager ){
+			if( addedToPlayerManager ){				
 				if( callback ){
 					$j( mw ).bind( "playersReadyEvent", callback );
 				}
@@ -2073,8 +2073,9 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		// Update temporal url if present
-		this.updateTemporalUrl();
+		this.updateTemporalUrl();			
 		
+		mw.playerManager.playerReady( this );
 		
 		if ( this.autoplay ) {
 			mw.log( 'EmbedPlayer::showPlayer::activating autoplay' );

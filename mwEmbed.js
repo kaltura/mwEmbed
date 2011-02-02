@@ -1683,7 +1683,6 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 		// Check for direct include of the mwEmbed.js
 		if ( src.indexOf( 'mwEmbed.js' ) !== -1 ) {
-			alert( 'Direct Refrece to mwEmbed is no longer suported, please update to ResourceLoader.php?class=window.jQuery,mwEmbed& instead');
 			mwpath = src.substr( 0, src.indexOf( 'mwEmbed.js' ) );
 		}
 
@@ -2155,12 +2154,10 @@ mw.absoluteUrl = function( src, contextUrl ) {
 						// Make sure style sheets are loaded:
 						mw.load( ['mw.style.mwCommon'] , function(){
 							// Run all the setup function hooks
-							// NOTE: setup functions are added via addSetupHook
-							// calls
+							// NOTE: setup functions are added via addSetupHook calls
 							// and must include a callback.
 							//
-							// Once complete we can run .ready() queued
-							// functions
+							// Once complete we can run .ready() queued functions
 							function runSetupFunctions() {
 								if( mwSetupFunctions.length ) {
 									mwSetupFunctions.shift()( function() {

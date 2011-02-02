@@ -326,7 +326,7 @@
 		
 		// Allow modules to do tag rewrites as well: 
 		var doModuleTagRewrites = function(){			
-			$j(mw).triggerQueueCallback( 'LoadeRewritePlayerTags', callback );
+			$j(mw).triggerQueueCallback( 'LoadeRewritePlayerTags', callback);
 		}	
 		
 		if( mw.documentHasPlayerTags() ) {
@@ -348,7 +348,6 @@
 			});
 			// Load the embedPlayer module ( then run queued hooks )
 			mw.load( 'EmbedPlayer', function ( ) {
-				
 				// Rewrite the EmbedPlayer.RewriteTags with the
 				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer( doModuleTagRewrites );
 			})
