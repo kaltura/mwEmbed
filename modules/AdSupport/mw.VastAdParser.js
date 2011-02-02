@@ -118,10 +118,11 @@ mw.VastAdParser = {
 				
 		// Check for attribute based static resource:
 		if( $j( resourceNode ).attr('creativeType')  && $j( resourceNode ).attr('resourceType') == 'static' ){
-			var link = _this.getURLFromNode ( $j( resourceNode ).find('NonLinearClickThrough') );
+			var link = _this.getURLFromNode ( $j( resourceNode ).find('NonLinearClickThrough') );			
 			resourceObj.$html = $j('<a />')
 			.attr({
-				'href' : link
+				'href' : link,
+				'target' : '_new'
 			}).append(
 				$j( '<img/>').attr({
 					'src': _this.getURLFromNode ( resourceNode ),
@@ -130,8 +131,6 @@ mw.VastAdParser = {
 				})
 			)
 		};
-		
-		
 		
 		// Check for companion type: 
 		if( $j( resourceNode ).find( 'StaticResource' ).length ) {
