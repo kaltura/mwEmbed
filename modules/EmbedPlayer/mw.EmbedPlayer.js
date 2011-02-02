@@ -1359,7 +1359,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Set the default skin if unset:
 		if ( !this.skinName ) {
-			this.skinName = mw.getConfig( 'EmbedPlayer.DefaultSkin' );
+			this.skinName = mw.getConfig( 'EmbedPlayer.SkinName' );
 		}
 
 		if( !this.monitorRate ){
