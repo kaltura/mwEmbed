@@ -12,7 +12,8 @@ mw.IFramePlayerApiClient = function( iframe, playerProxy ){
 mw.IFramePlayerApiClient.prototype = {
 	'exportedMethods': [
 		'play',
-		'pause'
+		'pause',
+		'resizePlayer'
 	],
 	// Local store of the previous sate of player proxy
 	'_prevPlayerProxy': {},
@@ -60,17 +61,35 @@ mw.IFramePlayerApiClient.prototype = {
 			'height' : $j( _this.iframe ).height(),
 			'position' : null
 		}
-			
+		
+		// Add a local scope variable to register 
+		// local scope fullscreen calls on orientation change
+		// ( without this variable we would call fullscreen on all iframes on 
+		// orientation change ) 
+		var localIframeInFullscreen = false;
+		
+		// Bind orientation change to resize player ( if fullscreen )
+		$j(window).bind( 'orientationchange', function(e){
+			if( localIframeInFullscreen ){
+				doFullscreen();
+			}
+		});
+		
 		var doFullscreen = function(){	
+			localIframeInFullscreen = true;
 			// Make the iframe fullscreen
-			$j( _this.iframe ).css({
-				'z-index': mw.getConfig( 'EmbedPlayer.fullScreenZIndex' ) + 1,
-				'position': 'absolute',
-				'top' : 0,
-				'left' : 0,
-				'width' : $j(window).width(),
-				'height' : $j(window).height()
-			})
+			$j( _this.iframe )
+				.css({
+					'z-index': mw.getConfig( 'EmbedPlayer.fullScreenZIndex' ) + 1,
+					'position': 'absolute',
+					'top' : 0,
+					'left' : 0,
+					'width' : $j(window).width(),
+					'height' : $j(window).height()
+				})
+				.data(
+					'isFullscreen', true
+				)
 			
 			// Remove absolute css of the interface parents
 			$j( _this.iframe ).parents().each( function() {
@@ -82,7 +101,11 @@ mw.IFramePlayerApiClient.prototype = {
 			} );
 		}
 		var restoreWindowMode = function(){
-			$j( _this.iframe ).css( orgSize );
+			$j( _this.iframe )
+				.css( orgSize )
+				.data(
+					'isFullscreen', false
+				)
 			// restore any parent absolute pos: 
 			$j(parentsAbsoluteList).each( function() {	
 				$j( this ).css( 'position', 'absolute' );
@@ -182,8 +205,7 @@ mw.IFramePlayerApiClient.prototype = {
 		// Bind the iFrame player ready callback
 		if( readyCallback ){
 			$j( playerProxy ).bind( 'playerReady', readyCallback )
-		};
-		
+		};		
 		// Return the player proxy for chaining player events / attributes
 		return $j( playerProxy );
 	};

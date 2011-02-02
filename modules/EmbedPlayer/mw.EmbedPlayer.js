@@ -1545,7 +1545,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	resizePlayer: function( size , animate, callback){
 		mw.log("EmbedPlayer::resizePlayer:" + size.width + ' x ' + size.height );
-
 		// Check if we are native display then resize the playerElement directly
 		if( this.useNativePlayerControls() ){
 			if( animate ){

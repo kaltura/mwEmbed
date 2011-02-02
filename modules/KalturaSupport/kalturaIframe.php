@@ -668,6 +668,9 @@ class kalturaIframe {
 								'height' : $j(window).height()
 							}); 
 					});
+				    $j(window).bind('orientationchange', function(){
+					    alert('window orientation');
+				    });		
 				});
 			} else {
 				

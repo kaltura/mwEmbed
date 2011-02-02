@@ -405,8 +405,11 @@ mw.AdTimeline.prototype = {
 			// Add the overlay if not already present: 
 			if( $j('#' +overlayId ).length == 0 ){
 				_this.embedPlayer.$interface.append(
-					$j('<div />')
-					.css('position', 'absolute')
+					$j('<div />')					
+					.css({
+						'position':'absolute',
+						'z-index' : 1
+					})
 					.attr('id', overlayId )				
 				)
 			}
