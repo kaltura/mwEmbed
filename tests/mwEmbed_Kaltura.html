@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>mwEmbed Testing Kit</title>
+
+  <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+  
+  <script type="text/javascript" src="../ResourceLoader.php?class=window.jQuery,mwEmbed&&debug=true"></script> 
+  
+  <!-- 
+  <script type="text/javascript" src="http://html5.kaltura.org/js" > </script>
+  -->
+
+  <script type="text/javascript"> 
+    //mw.setConfig('EmbedPlayer.OverlayControls', false );
+    //mw.setConfig('EmbedPlayer.KalturaAttribution', false );          
+    //mw.setConfig('EmbedPlayer.LibraryPage', "http://blarg.com" );          
+    //mw.setConfig('EmbedPlayer.EnableFullScreen', false);
+  </script>
+
+</head>
+<body>
+
+<div id="container">
+
+  <div id="content">
+
+    <div id="demo_player">
+      
+      <div id="vid1">&nbsp</div> 
+      <script type="text/javascript"> 
+        mw.ready( function(){
+            $j( '#vid1' ).loadingSpinner();
+            mw.load( 'EmbedPlayer', function(){
+              $j( '#vid1' ).html(
+                $j('<video />')
+                .css({
+                  'width' : 480,
+                  'height' : 270
+                  })
+                .attr({
+                  'kentryid' : "1_4ctagbm9", //galleryClips[videoId].entryId,
+                  'kwidgetid' : "_322481", //kWidgetId,
+                  'kpartnerid' : "32248" //kPartnerId
+                  })
+                );
+              // Rewrite all the players on the page
+              $j.embedPlayers();
+              });
+            });
+      </script> 
+ 
+    </div><!-- END demo_player -->
+  </div><!-- END content -->
+</div><!-- END container -->
+
+</body>
+</html>
