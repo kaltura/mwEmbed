@@ -284,19 +284,18 @@ mw.KWidgetSupport.prototype = {
 			* The template of downloading a direct flavor is
 			*/
 
-                       // New asset url using playManifest
-                       mw.setConfig('Kaltura.ServiceUrl', 'http://lbd.kaltura.com'); // Remove this when production get the update for the playManifest
-                        var src  = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id +
+			// New asset url using playManifest
+			mw.setConfig('Kaltura.ServiceUrl', 'http://lbd.kaltura.com'); // Remove this when production get the update for the playManifest
+			var src  = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id +
 				'/sp/' +  partner_id + '00/playManifest/entryId/' + asset.entryId;
 
-                        // Check for Apple http streaming
+            // Check for Apple http streaming
 			if( asset.tags.indexOf('applembr') != -1 ) {
-                                src += '/format/applehttp/protocol/http';
-
-                                deviceSources['AppleBMR'] = src + '/a.m3u8';
-                        } else {
-                                src += '/flavor/' + asset.id + '/format/url/protocol/http';
-                        }
+				src += '/format/applehttp/protocol/http';
+				deviceSources['AppleBMR'] = src + '/a.m3u8';
+            } else {
+            	src += '/flavor/' + asset.id + '/format/url/protocol/http';
+            }
 
 			// Check the tags to read what type of mp4 source
 			if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipad') != -1 ){					
