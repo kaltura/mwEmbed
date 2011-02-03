@@ -282,34 +282,43 @@ mw.KWidgetSupport.prototype = {
 			var asset = flavorData[i];			
 			/**
 			* The template of downloading a direct flavor is
-			*/							
-			var src  = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
-				'/sp/' +  partner_id + '00/flvclipper/entry_id/' +
-				asset.entryId + '/flavor/' + asset.id ;
-			
+			*/
+                       // New asset url using playManifest
+			var src  = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id +
+				'/sp/' +  partner_id + '00/playManifest/entryId/' + asset.entryId;
+
+                        // Check for Apple http streaming
+			if( asset.tags.indexOf('applembr') != -1 ) {
+                                src += '/format/applehttp/protocol/http';
+
+                                deviceSources['AppleBMR'] = src + '/a.m3u8';
+                        } else {
+                                src += '/flavor/' + asset.id + '/format/url/protocol/http';
+                        }
+
 			// Check the tags to read what type of mp4 source
 			if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipad') != -1 ){					
-				deviceSources['iPad'] = src + '/a.mp4?novar=0';
+				deviceSources['iPad'] = src + '/a.mp4';
 			}
 			
 			// Check for iPhone src
 			if( asset.fileExt == 'mp4' && asset.tags.indexOf('iphone') != -1 ){
-				deviceSources['iPhone'] = src + '/a.mp4?novar=0';
+				deviceSources['iPhone'] = src + '/a.mp4';
 			}
 			
 			// Check for ogg source
 			if( asset.fileExt == 'ogg' || asset.fileExt == 'ogv'){
-				deviceSources['ogg'] = src + '/a.ogg?novar=0';
+				deviceSources['ogg'] = src + '/a.ogg';
 			}				
 			
 			// Check for webm source
 			if( asset.fileExt == 'webm' ){
-				deviceSources['webm'] = src + '/a.webm?novar=0';
+				deviceSources['webm'] = src + '/a.webm';
 			}
 			
 			// Check for 3gp source
 			if( asset.fileExt == '3gp' ){
-				deviceSources['3gp'] = src + '/a.ogg?novar=0';
+				deviceSources['3gp'] = src + '/a.3gp';
 			}
 		}
 		return deviceSources;
@@ -328,6 +337,13 @@ mw.KWidgetSupport.prototype = {
 		if( mw.isIpad() || mw.isIphone4() ) {
 			mw.log( "KwidgetSupport:: Add iPad / iPhone4 source");
 			// Note it would be nice to detect if the iPhone was on wifi or 3g
+                        
+                        // Prefer Apple HTTP streaming
+                        if( devoceSources['AppleBMR'] ) {
+                            addSource( devoceSources['AppleBMR'] , 'application/x-mpegURL' );
+                            return sources;
+                        }
+
 			if( deviceSources['iPad'] ){ 
 				addSource( deviceSources['iPad'] , 'video/h264' );
 				return sources;

@@ -12,7 +12,7 @@ $mykalturaIframe = new kalturaIframe();
 // Do kalturaIframe video output:
 $mykalturaIframe->outputIFrame();
 
-// Define the KalturaFlavorAsset that the api will blindly set as a class 
+// Define the KalturaFlavorAsset that the api will blindly set as a class
 class KalturaFlavorAsset {};
 class KalturaEntryContextDataResult {};
 /**
@@ -23,7 +23,7 @@ class kalturaIframe {
 	 * Variables set by the Frame request:
 	 */
 	private $playerAttributes = array(
-		'cache_st' => null,				
+		'cache_st' => null,
 		'wid' => null,
 		'uiconf_id' => null,
 		'entry_id' => null,
@@ -31,9 +31,9 @@ class kalturaIframe {
 		* NOTE: we should set per embed options set via mw.setConfig or via api player Proxy bridge
 		* i.e via the hash url rather than the unique server url
 		* this way the iframe can be cached per uiconf / widget without embed options
-		* poluting the cache. 
+		* poluting the cache.
 		*/
-		'autoplay' => null,		
+		'autoplay' => null,
 	);
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
@@ -41,7 +41,7 @@ class kalturaIframe {
 	var $debug = false;
 	var $error = false;
 	var $resultObj = null;
-	
+
 	// When used in direct source mode the source asset.
 	// NOTE: can be an array of sources in cases of "many" sources set
 	var $sources = array();
@@ -50,12 +50,12 @@ class kalturaIframe {
 		//parse input:
 		$this->parseRequest();
 	}
-	
+
 	// Parse the embedFrame request and sanitize input
-	private function parseRequest(){		
+	private function parseRequest(){
 		// Support /key/value request type:
-		  
-		if( isset( $_SERVER['PATH_INFO'] ) ){		
+
+		if( isset( $_SERVER['PATH_INFO'] ) ){
 			$urlParts = explode( '/', $_SERVER['PATH_INFO'] );
 			foreach( $urlParts as $inx => $urlPart ){
 				foreach( $this->playerAttributes as $attributeKey => $na){
@@ -64,7 +64,7 @@ class kalturaIframe {
 					}
 				}
 			}
-		}		
+		}
 		// Check for player attributes:
 		foreach( $this->playerAttributes as $attributeKey => $na){
 			if( isset( $_REQUEST[ $attributeKey ] ) ){
@@ -76,23 +76,23 @@ class kalturaIframe {
 		if( isset( $_REQUEST['debugKalturaPlayer'] ) || isset( $_REQUEST['debug'] ) ){
 			$this->debug = true;
 		}
-				
+
 		// Check for required config
 		if( $this->playerAttributes['wid'] == null ){
 			$this->outputIframeError( 'Can not display player, missing widget id' );
 		}
 	}
-	
-	// Load the kaltura library and grab the most compatible flavor 
+
+	// Load the kaltura library and grab the most compatible flavor
 	private function getFlavorSources(){
-		global $wgKalturaCDNUrl;
+		global $wgKalturaServiceUrl;
 		// Check the access control before returning any source urls
 		if( !$this->isAccessControlAllowed() ) {
 			return array();
 		}
-		
+
 		$resultObject =  $this->getResultObject();
-		// add any web sources		
+		// add any web sources
 		$sources = array();
 
 		// Check for error in getting flavor
@@ -102,76 +102,94 @@ class kalturaIframe {
 					$this->fatalIframeError( "Entry Id not found",  htmlspecialchars( $resultObject['flavors']['message'] ) );
 					break;
 			}
-			// @@TODO should probably refactor to use throw catch error system. 
+			// @@TODO should probably refactor to use throw catch error system.
 			return array();
 		}
-		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){	
-			$assetUrl =  $wgKalturaCDNUrl .'/p/' . $this->getPartnerId() . '/sp/' . 
-					$this->getPartnerId() . '00/flvclipper/entry_id/' . 
-					$this->playerAttributes['entry_id'] . '/flavor/' . 	$KalturaFlavorAsset->id;
+		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
+
+                        // New asset url using playManifest
+			$assetUrl =  $wgKalturaServiceUrl .'/p/' . $this->getPartnerId() . '/sp/' .
+					$this->getPartnerId() . '00/playManifest/entryId/' .
+					$this->playerAttributes['entry_id'];
+
+                        // If we have apple http steaming then use it for ipad & iphone instead of regular flavors
+                        if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
+                            $assetUrl .= '/format/applehttp/protocol/http';
+
+                            $sources['applembr'] = array(
+                                    'src' => $assetUrl . '/a.m3u8',
+                                    'type' => 'application/x-mpegURL',
+                                    'data-flavorid' => 'AppleMBR'
+                            );
+
+                        } else {
+                            $assetUrl .= '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/http';
+                        }
+
 			if( strpos( $KalturaFlavorAsset->tags, 'iphone' ) !== false ){
 				$sources['iphone'] = array(
-					'src' => $assetUrl . '/a.mp4?novar=0',
+					'src' => $assetUrl . '/a.mp4',
 					'type' => 'video/h264',
-					'data-flavorid' => 'iPhone' 
+					'data-flavorid' => 'iPhone'
 				);
 			};
 			if( strpos( $KalturaFlavorAsset->tags, 'ipad' ) !== false ){
 				$sources['ipad'] = array(
-					'src' => $assetUrl  . '/a.mp4?novar=0',
+					'src' => $assetUrl  . '/a.mp4',
 					'type' => 'video/h264',
-					'data-flavorid' => 'iPad' 
+					'data-flavorid' => 'iPad'
 				);
 			};
-			
+
 			if( $KalturaFlavorAsset->fileExt == 'webm' ){
 				$sources['webm'] = array(
-					'src' => $assetUrl . 'a.webm?novar=0',
+					'src' => $assetUrl . 'a.webm',
 					'type' => 'video/webm',
 					'data-flavorid' => 'webm'
-				);			
+				);
 			}
-			
-			if( $KalturaFlavorAsset->fileExt == 'ogg' || $KalturaFlavorAsset->fileExt == 'ogv' 
-				|| $KalturaFlavorAsset->fileExt == 'oga' 
+
+			if( $KalturaFlavorAsset->fileExt == 'ogg' || $KalturaFlavorAsset->fileExt == 'ogv'
+				|| $KalturaFlavorAsset->fileExt == 'oga'
 			){
 				$sources['ogg'] = array(
-					'src' => $assetUrl . '/a.ogg?novar=0',
+					'src' => $assetUrl . '/a.ogg',
 					'type' => 'video/ogg',
-					'data-flavorid' => 'ogg' 
+					'data-flavorid' => 'ogg'
 				);
 			};
 			if( $KalturaFlavorAsset->fileExt == '3gp' ){
 				$sources['3gp'] = array(
-					'src' => $assetUrl . '/a.3gp?novar=0',
+                                            'src' => $assetUrl . '/a.3gp',
 					'type' => 'video/3gp',
-					'data-flavorid' => '3gp' 
+					'data-flavorid' => '3gp'
 				);
 			};
 		}
+                //echo '<pre>'; print_r($sources); exit();
 		return $sources;
 	}
-	
+
 	private function getCacheDir(){
 		global $mwEmbedRoot, $wgScriptCacheDirectory;
 		$cacheDir = $wgScriptCacheDirectory . '/iframe';
-		// make sure the dir exists: 
+		// make sure the dir exists:
 		if( ! is_dir( $cacheDir) ){
 			@mkdir( $cacheDir, 0777, true );
 		}
 		return $cacheDir;
 	}
-	
+
 	private function getResultObject(){
-		global $wgKalturaUiConfCacheTime; 
-		// Check if we have a cached result object: 		
+		global $wgKalturaUiConfCacheTime;
+		// Check if we have a cached result object:
 		if( $this->resultObj ){
 			return $this->resultObj;
 		}
-		
-		$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".entry.txt";		
+
+		$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".entry.txt";
 		$cacheLife = $wgKalturaUiConfCacheTime;
-			
+
 		// Check modify time on cached php file
 		$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
 		if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ){
@@ -180,7 +198,7 @@ class kalturaIframe {
 			$this->outputFromCache = true;
 			$this->resultObj = unserialize( file_get_contents( $cacheFile ) );
 		}
-		// Test if the resultObject can be cached ( no access control restrictions ) 
+		// Test if the resultObject can be cached ( no access control restrictions )
 		if( $this->isAccessControlAllowed() ){
 			file_put_contents($cacheFile, serialize($this->resultObj  ) );
 		}
@@ -192,14 +210,14 @@ class kalturaIframe {
 	/**
 	 * Returns a cache key for the result object based on Referer and partner id
 	 */
-	private function getResultObjectCacheKey(){		
-		// Get a key based on partner id,  entry_id and ui_confand refer url: 
+	private function getResultObjectCacheKey(){
+		// Get a key based on partner id,  entry_id and ui_confand refer url:
 		$playerUnique = ( isset( $this->playerAttributes['entry_id'] ) ) ?  $this->playerAttributes['entry_id'] : '';
 		$playerUnique .= ( isset( $this->playerAttributes['uiconf_id'] ) ) ?  $this->playerAttributes['uiconf_id'] : '';
-		
+
 		return $this->getPartnerId() . '_' . $playerUnique . '_' . substr( md5( $this->getReferer() ), 0, 10 );
 	}
-	
+
 	function getResultObjectFromApi(){
 		// Include the kaltura client
 		include_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
@@ -207,28 +225,28 @@ class kalturaIframe {
 		if( ! $client ){
 			return array();
 		}
-		
+
 		// @@todo support MultiRequest
 		$client->startMultiRequest();
-		try{			
-			// NOTE this should probably be wrapped in a service class 
+		try{
+			// NOTE this should probably be wrapped in a service class
 			$kparams = array();
-			
+
 			// sources
 			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
-			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams ); 
-			
-			// access control	
+			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams );
+
+			// access control
 			$client->addParam( $kparams, "contextDataParams",  array( 'referer' => $this->getReferer() ) );
-			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams ); 		
-			
+			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams );
+
 			// Entry Meta
 			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
-			$client->queueServiceActionCall( "baseEntry", "get", $kparams ); 
+			$client->queueServiceActionCall( "baseEntry", "get", $kparams );
 
 			if($this->playerAttributes['uiconf_id']) {
 				$client->addParam( $kparams, "id",  $this->playerAttributes['uiconf_id'] );
-				$client->queueServiceActionCall( "uiconf", "get", $kparams ); 
+				$client->queueServiceActionCall( "uiconf", "get", $kparams );
 			}
 			$rawResultObject = $client->doQueue();
 			$client->throwExceptionIfError($this->resultObj);
@@ -236,13 +254,13 @@ class kalturaIframe {
 			$this->fatalIframeError( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 			return array();
 		}
-				
+
 		$resultObject = array(
 			'flavors' 			=> 	$rawResultObject[0],
 			'accessControl' 	=> 	$rawResultObject[1],
-			'meta'				=>	$rawResultObject[2],			
+			'meta'				=>	$rawResultObject[2],
 			'entry_id'			=>	$this->playerAttributes['entry_id'],
-			'partner_id'		=>	$this->getPartnerId(),		
+			'partner_id'		=>	$this->getPartnerId(),
 			'ks' 				=> 	$this->getKS()
 		);
 		if( isset( $rawResultObject[3] ) && $rawResultObject[3]->confFile ){
@@ -251,23 +269,23 @@ class kalturaIframe {
 		}
 		return $resultObject;
 	}
-	
+
 	function getReferer(){
 		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.org/';
 	}
-	
+
 	function getClient(){
 		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgKalturaServiceUrl, $wgScriptCacheDirectory;
 
-		$cacheDir = $wgScriptCacheDirectory;		
+		$cacheDir = $wgScriptCacheDirectory;
 
 		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . ".ks.txt";
-		$cacheLife = $wgKalturaUiConfCacheTime; 
-			
+		$cacheLife = $wgKalturaUiConfCacheTime;
+
 		$conf = new KalturaConfiguration( $this->getPartnerId() );
 		$conf->serviceUrl = $wgKalturaServiceUrl;
 		$client = new KalturaClient( $conf );
-		
+
 		// Check modify time on cached php file
 		$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
 		if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ){
@@ -282,8 +300,8 @@ class kalturaIframe {
 		  	$this->ks = file_get_contents( $cacheFile );
 		}
 		// Set the kaltura ks and return the client
-		$client->setKS( $this->ks );	
-		
+		$client->setKS( $this->ks );
+
 		return $client;
 	}
 	function getKS(){
@@ -293,90 +311,90 @@ class kalturaIframe {
 		}
 		return $this->ks;
 	}
-	
+
 	function getPartnerId(){
-		// Partner id is widget_id but strip the first character 
+		// Partner id is widget_id but strip the first character
 		return substr( $this->playerAttributes['wid'], 1 );
 	}
-	
+
 	/**
 	*  Access Control Handling
-	*/	
+	*/
 	function isAccessControlAllowed() {
 		$resultObject =  $this->getResultObject();
 		$accessControl = $resultObject['accessControl'];
-		
+
 		// Checks if admin
 		if( $accessControl->isAdmin ) {
 			return true;
 		}
-		
+
 		/* Domain Name Restricted */
 		if($accessControl->isSiteRestricted) {
 			$this->fatalIframeError( "Un authorized domain", "We're sorry, this content is only available on certain domains." );
 		}
-		
+
 		/* Country Restricted */
 		if($accessControl->isCountryRestricted) {
 			$this->fatalIframeError( "Un authorized country", "We're sorry, this content is only available on certain countries.");
 		}
-		
+
 		/* Session Restricted */
 		if($accessControl->isSessionRestricted) {
 			$this->fatalIframeError( "No KS where KS is required", "We're sorry, access to this content is restricted.");
 		}
-		
+
 		if($accessControl->isScheduledNow == null) {
 			$this->fatalIframeError( "Out of scheduling", "We're sorry, this content is currently unavailable.");
 		}
-		
+
 		return true;
 	}
-	
+
 	function getPlayEventUrl() {
 		global $wgKalturaServiceUrl, $wgKalturaServiceBase;
 		$param = array(
-			'action' => 'collect',				
+			'action' => 'collect',
 			'apiVersion' => '3.0',
 			'clientTag' => 'html5',
 			'expiry' => '86400',
 			'format' => 9, // 9 = JSONP format
-			'ignoreNull' => 1,			
-			'ks' => $this->getKS() 
+			'ignoreNull' => 1,
+			'ks' => $this->getKS()
 		);
-		
-		$eventSet = array(		
-			'eventType' =>	3, // PLAY Event	
+
+		$eventSet = array(
+			'eventType' =>	3, // PLAY Event
 			'clientVer' => 0.1,
 			'currentPoint' => 	0,
 			'duration' =>	0,
-			'eventTimestamp' => time(),			
+			'eventTimestamp' => time(),
 			'isFirstInSession' => 'false',
 			'objectType' => 'KalturaStatsEvent',
-			'partnerId' =>	$this->getPartnerId(),		
+			'partnerId' =>	$this->getPartnerId(),
 			'sessionId' =>	$this->getKS(),
-			'uiconfId' => 0,	
+			'uiconfId' => 0,
 			'seek'	 =>  'false',
-			'entryId'   =>   $this->playerAttributes['entry_id'],				
+			'entryId'   =>   $this->playerAttributes['entry_id'],
 		);
 		foreach( $eventSet as $key=> $val){
 			$param['event:' . $key ] = $val;
 		}
 		ksort( $param );
-		// Get the signature: 
+		// Get the signature:
 		$sigString = '';
 		foreach( $param as $key => $val ){
 			$sigString.= $key . $val;
 		}
 		$param['kalsig'] = md5( $sigString );
 		$requestString =  http_build_query( $param );
-	
-		return $wgKalturaServiceUrl . $wgKalturaServiceBase . 'stats&' . $requestString;	
+
+		return $wgKalturaServiceUrl . $wgKalturaServiceBase . 'stats&' . $requestString;
 	}
-	
+
 	// Returns a simple image with a direct link to the asset
 	// ( need to add uiConf configuration to allow or disallow this feature
-	// ( maybe we tie it to the "download" option 
+	// ( maybe we tie it to the "download" option
 	private function getFileLinkHTML(){
 		$sources = $this->getFlavorSources();
 		// For now use the 3gp, iPhone, iPad, ogg ( in that order most device compatible to least)
@@ -391,22 +409,22 @@ class kalturaIframe {
 		} else if ( isset( $sources['webm'] ) ){
 			$flavorUrl = $sources['webm']['src'];
 		} else {
-			// Throw an exception ( no web streams ) 
+			// Throw an exception ( no web streams )
 			$this->fatalIframeError( 'No web streams available, please check your enabled flavors' );
 		}
-		// The outer container: 
+		// The outer container:
 		$o='<div id="directFileLinkContainer">';
 			// TODO once we hook up with the kaltura client output the thumb here:
-			// ( for now we use javascript to append it in there ) 
+			// ( for now we use javascript to append it in there )
 			$o.='<div id="directFileLinkThumb" ></div>';
 			$o.='<a href="' . $flavorUrl . '" id="directFileLinkButton" target="_new"></a>';
 		$o.='</div>';
 		return $o;
 	}
-	
+
 	private function getVideoHTML( ){
 		global $wgKalturaCDNUrl;
-		$videoTagMap = array(			
+		$videoTagMap = array(
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
 			'wid' => 'kwidgetid',
@@ -417,21 +435,21 @@ class kalturaIframe {
 						'entry_id/' .  $this->playerAttributes['entry_id'] .
 						'/height/480';
 		$sources = $this->getFlavorSources();
-		
-		// if we hvae no sources do not output the video tag: 
+
+		// if we hvae no sources do not output the video tag:
 		if( count( $sources ) == 0 ){
 			return ;
 		}
-		// Add default video tag with 100% width / height 
+		// Add default video tag with 100% width / height
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
-		
+
 		$o = "\n" .'<video class="persistentNativePlayer" ' .
-			'poster="' . htmlspecialchars( $posterUrl ) . '" ' . 
-			'id="' . htmlspecialchars( $this->playerIframeId ) . '" ' . 			
+			'poster="' . htmlspecialchars( $posterUrl ) . '" ' .
+			'id="' . htmlspecialchars( $this->playerIframeId ) . '" ' .
 			'style="width:100%;height:100%" ';
-		
-		// Add any additional attributes: 
+
+		// Add any additional attributes:
 		foreach( $this->playerAttributes as $key => $val ){
 			if( isset( $videoTagMap[ $key ] ) && $val != null ) {
 				if( $videoTagMap[ $key ] == $val ) {
@@ -443,64 +461,64 @@ class kalturaIframe {
 		}
 		//Close the video tag
 		$o.='>';
-		
+
 		// Output each source as a child element ( for javascript off browsers to have a chance
 		// to playback the content
 		foreach( $sources as $source ){
 			$o.="\n" .'<source ' .
-					'type="' . htmlspecialchars( $source['type'] ) . '" ' . 
+					'type="' . htmlspecialchars( $source['type'] ) . '" ' .
 					'src="' . htmlspecialchars(  $source['src'] ) . '" '.
 					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" '.
 				'></source>';
 		}
 
-		// To be on the safe side include the flash player and 
+		// To be on the safe side include the flash player and
 		// direct file link as a child of the video tag
-		// ( if javascript is "off" and they dont have video tag support for example ) 
-		$o.= $this->getFlashEmbedHTML( 
+		// ( if javascript is "off" and they dont have video tag support for example )
+		$o.= $this->getFlashEmbedHTML(
 			$this->getFileLinkHTML()
-		); 				
-		
-		
+		);
+
+
 		$o.= "\n" .'</video>';
 		return $o;
 	}
-	 
+
 	private function getFlashEmbedHTML( $childHTML = '' ){
 		global $wgKalturaServiceUrl;
-		$swfUrl = $wgKalturaServiceUrl . '/index.php/kwidget';		
+		$swfUrl = $wgKalturaServiceUrl . '/index.php/kwidget';
 		foreach($this->playerAttributes as $key => $val ){
 			if( $val != null ){
 				$swfUrl.='/' . $key . '/' . $val;
 			}
-		}		
+		}
 		return '<object id="kaltura_player" name="kaltura_player" ' .
-				'type="application/x-shockwave-flash" allowFullScreen="true" '. 
+				'type="application/x-shockwave-flash" allowFullScreen="true" '.
 				'allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" style="height:100%;width:100%" '.
-				'xmlns:dc="http://purl.org/dc/terms/" '. 
-				'xmlns:media="http://search.yahoo.com/searchmonkey/media/" '. 
-				'rel="media:video" '. 
-				'resource="' . htmlspecialchars( $swfUrl ) . '" '. 
-				'data="' . htmlspecialchars( $swfUrl ) . '"> '.				
+				'xmlns:dc="http://purl.org/dc/terms/" '.
+				'xmlns:media="http://search.yahoo.com/searchmonkey/media/" '.
+				'rel="media:video" '.
+				'resource="' . htmlspecialchars( $swfUrl ) . '" '.
+				'data="' . htmlspecialchars( $swfUrl ) . '"> '.
 				'<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />' .
 				'<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />'.
 				'<param name="flashVars" value="streamerType=rtmp&streamerUrl=rtmp://rtmpakmi.kaltura.com/ondemand&rtmpFlavors=1&&" />'.
 				'<param name="movie" value="' . htmlspecialchars( $swfUrl ) . '" />'.
-				$childHTML . 
+				$childHTML .
 			'</object>';
 	}
-		
+
 	/**
 	 * void function to set iframe content headers
 	 */
-	private function setIFrameHeaders(){	
+	private function setIFrameHeaders(){
 		global $wgKalturaUiConfCacheTime;
 		header( 'Pragma: public' );
-		
+
 		// Set relevent expire headers:
 		if( $this->isCachedOutput() ){
 			// Cache for $wgKalturaUiConfCacheTime
-			header( "Expires: " . gmdate( "D, d M Y H:i:s", time() + $wgKalturaUiConfCacheTime ) . " GM" );		
+			header( "Expires: " . gmdate( "D, d M Y H:i:s", time() + $wgKalturaUiConfCacheTime ) . " GM" );
 		} else {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
@@ -524,8 +542,8 @@ class kalturaIframe {
 					width: 100%;
 					height: 100%;
 					overflow:hidden;
-					background: #000;	
-					color: #fff;	
+					background: #000;
+					color: #fff;
 				}
 				#error {
 					position:absolute;
@@ -567,7 +585,7 @@ class kalturaIframe {
 					height:100%;
 					width:100%
 				}
-				/* Should allow this to be overided */			
+				/* Should allow this to be overided */
 				#directFileLinkButton {
 					background: url( '<?php echo $wgMwEmbedPathUrl ?>skins/common/images/player_big_play_button.png');
 					width: 70px;
@@ -576,8 +594,8 @@ class kalturaIframe {
 					top:50%;
 					left:50%;
 					margin: -26px 0 0 -35px;
-				}		
-				#directFileLinkThumb{				
+				}
+				#directFileLinkThumb{
 					position: absolute;
 					top:0px;
 					left:0px;
@@ -586,13 +604,13 @@ class kalturaIframe {
 				}
 			</style>
 		</head>
-		<?php 
+		<?php
 	}
 	function outputIFrame( ){
 		global $wgMwEmbedPathUrl;
-		
+
 		$this->setIFrameHeaders();
-		
+
 		// ob_gzhandler automatically checks for browser gzip support in and gzips
 		ob_start("ob_gzhandler");
 ?>
@@ -605,48 +623,48 @@ class kalturaIframe {
 			<?php echo $this->getVideoHTML() ?>
 		</div>
 		<script type="text/javascript">
-			// Insert the html5 kalturaLoader script  
+			// Insert the html5 kalturaLoader script
 			document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>mwEmbedLoader.js' type='text/javascript'%3E%3C/script%3E"));
 		</script>
-		<script type="text/javascript">	
-			// Don't rewrite the video tag from the loader ( if html5 is supported it will be 
+		<script type="text/javascript">
+			// Don't rewrite the video tag from the loader ( if html5 is supported it will be
 			// invoked bellow and respect the persistant video tag option for iPad overlays )
-			mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );	
-			
+			mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );
+
 			// Don't wait for player metada for size layout and duration ( won't be needed once
 			// we add durationHint and size attributes to the video tag
 			mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
 
 			// Add Packaging Kaltura Player Data ( JSON Encoded )
 			mw.setConfig('KalturaSupport.BootstrapPlayerData', <?php echo json_encode( $this->getResultObject() ) ?>);
-			
+
 			// Parse any configuration options passed in via hash url:
-			var hashString = document.location.hash; 
+			var hashString = document.location.hash;
 			if( hashString ){
-				var hashObj = JSON.parse( 
+				var hashObj = JSON.parse(
 						decodeURIComponent( hashString.replace( /^#/, '' ) )
 					);
 				if( hashObj.mwConfig ){
 					mw.setConfig( hashObj.mwConfig );
 				}
 			}
-						
+
 			// For testing limited capacity browsers
 			//var kIsHTML5FallForward = function(){ return false };
 			//var kSupportsFlash = function(){ return false };
-			
+
 			if( kIsHTML5FallForward() ){
-				// Remove the loader ( mwEmbed will supply the loader ) 
+				// Remove the loader ( mwEmbed will supply the loader )
 				var el = document.getElementById('iframeLoadingSpinner');
 				el.parentNode.removeChild(el);
-				
+
 				// Don't confuse the rewrite engine ( remove the kaltura swf as well )
 				var el = document.getElementById('kaltura_player');
 				el.parentNode.removeChild(el);
 
-				// Set a prepend flag so its easy to see whats happening on what side of the iframe: 
+				// Set a prepend flag so its easy to see whats happening on what side of the iframe:
 				mw.setConfig('Mw.LogPrepend', 'iframe:' );
-				
+
 				// Add full screen support if the iFrame api is enabled and not already set
 				if( typeof preMwEmbedConfig[ 'EmbedPlayer.EnableFullscreen' ] == 'undefined' ){
 					mw.setConfig( 'EmbedPlayer.EnableFullscreen', preMwEmbedConfig[ 'EmbedPlayer.EnableIframeApi' ] );
@@ -657,59 +675,59 @@ class kalturaIframe {
 
 				// Identify the player as an iframe player
 				mw.setConfig( "EmbedPlayer.IsIframePlayer", true );
-				
+
 				// Load the mwEmbed resource library and add resize binding
-				mw.ready(function(){		
-					// Bind window resize to reize the player: 
+				mw.ready(function(){
+					// Bind window resize to reize the player:
 					$j( window ).resize( function(){
 						$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
 							.get(0).resizePlayer({
 								'width' : $j(window).width(),
 								'height' : $j(window).height()
-							}); 
+							});
 					});
 				    $j(window).bind('orientationchange', function(){
 					    alert('window orientation');
-				    });		
+				    });
 				});
 			} else {
-				
+
 				// Remove the video tag and output a clean "object" or file link
 				// ( if javascript is off the child of the video tag so would be played,
-				//  but rewriting gives us flexiblity in in selection criteria as 
+				//  but rewriting gives us flexiblity in in selection criteria as
 				// part of the javascript check kIsHTML5FallForward )
 				var vid = document.getElementById( '<?php echo $this->playerIframeId ?>' );
-				document.getElementById( 'videoContainer' ).removeChild(vid); 
-				
-				if( kSupportsFlash() ){ 
-					// Write out the embed object 
+				document.getElementById( 'videoContainer' ).removeChild(vid);
+
+				if( kSupportsFlash() ){
+					// Write out the embed object
 					document.write('<?php echo $this->getFlashEmbedHTML()?>');
 					// Load server side bindings for kdpServer
-					kLoadJsRequestSet( ['window.jQuery', 'mwEmbed', 'mw.style.mwCommon', '$j.postMessage', 'kdpServerIFrame', 'JSON' ] );							
+					kLoadJsRequestSet( ['window.jQuery', 'mwEmbed', 'mw.style.mwCommon', '$j.postMessage', 'kdpServerIFrame', 'JSON' ] );
 				} else {
 					// Last resort just provide an image with a link to the file
-					// NOTE we need to do some platform checks to see if the device can 
-					// "actually" play back the file and or switch to 3gp version if nessesary. 
-					// also we need to see if the entryId supports direct download links 
+					// NOTE we need to do some platform checks to see if the device can
+					// "actually" play back the file and or switch to 3gp version if nessesary.
+					// also we need to see if the entryId supports direct download links
 					document.write('<?php echo $this->getFileLinkHTML()?>');
-					
+
 					var thumbSrc = kGetEntryThumbUrl({
 						'entry_id' : '<?php echo $this->playerAttributes['entry_id']?>',
 						'partner_id' : '<?php echo $this->getPartnerId() ?>',
 						'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
 						'width' : ( document.body.clientHeight )? document.body.clientHeight : '400'
-					});			
-					document.getElementById( 'directFileLinkThumb' ).innerHTML = 
+					});
+					document.getElementById( 'directFileLinkThumb' ).innerHTML =
 						'<img style="width:100%;height:100%" src="' + thumbSrc + '" >';
 
 					window.kCollectCallback = function(){ return ; }; // callback for jsonp
-						
+
 					document.getElementById('directFileLinkButton').onclick = function() {
 						kAppendScriptUrl( '<?php echo $this->getPlayEventUrl() ?>' + '&callback=kCollectCallback' );
 						return true;
 					};
-				}					
-				
+				}
+
 			}
 		</script>
   </body>
@@ -717,7 +735,7 @@ class kalturaIframe {
 <?php
 	}
 	private function fatalIframeError( $errorTitle, $errorMsg = false ){
-		// Optional errorTitle: 
+		// Optional errorTitle:
 		if( $errorMsg === false )
 			$errorMsg = $errorTitle;
 			$errorTitle = false;
@@ -729,15 +747,15 @@ class kalturaIframe {
 		<div id="error"><?php
 			if( $errorTitle ){
 				echo '<h2>' . htmlspecialchars( $errorTitle ) . '</h2>';
-			}			
-			// Presently errors can have html foramting ( not ideal ) 
-			// TODO refactor to have error title and error message arguments 
-			echo htmlspecialchars( $errorMsg ); 
-		?></div>	
+			}
+			// Presently errors can have html foramting ( not ideal )
+			// TODO refactor to have error title and error message arguments
+			echo htmlspecialchars( $errorMsg );
+		?></div>
 	</body>
 </html><?php
-		// Iframe error exit 
-		exit( 1 ); 
+		// Iframe error exit
+		exit( 1 );
 	}
 }
 ?>
