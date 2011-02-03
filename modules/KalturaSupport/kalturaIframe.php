@@ -105,6 +105,7 @@ class kalturaIframe {
 			// @@TODO should probably refactor to use throw catch error system.
 			return array();
 		}
+                $wgKalturaServiceUrl = "http://lbd.kaltura.com"; // Remove this when production get the update for the playManifest
 		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
 
                         // New asset url using playManifest
@@ -143,7 +144,7 @@ class kalturaIframe {
 
 			if( $KalturaFlavorAsset->fileExt == 'webm' ){
 				$sources['webm'] = array(
-					'src' => $assetUrl . 'a.webm',
+					'src' => $assetUrl . '/a.webm',
 					'type' => 'video/webm',
 					'data-flavorid' => 'webm'
 				);

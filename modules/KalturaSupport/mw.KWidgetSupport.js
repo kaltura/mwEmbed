@@ -283,8 +283,10 @@ mw.KWidgetSupport.prototype = {
 			/**
 			* The template of downloading a direct flavor is
 			*/
+
                        // New asset url using playManifest
-			var src  = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id +
+                       mw.setConfig('Kaltura.ServiceUrl', 'http://lbd.kaltura.com'); // Remove this when production get the update for the playManifest
+                        var src  = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id +
 				'/sp/' +  partner_id + '00/playManifest/entryId/' + asset.entryId;
 
                         // Check for Apple http streaming
@@ -339,8 +341,8 @@ mw.KWidgetSupport.prototype = {
 			// Note it would be nice to detect if the iPhone was on wifi or 3g
                         
                         // Prefer Apple HTTP streaming
-                        if( devoceSources['AppleBMR'] ) {
-                            addSource( devoceSources['AppleBMR'] , 'application/x-mpegURL' );
+                        if( deviceSources['AppleBMR'] ) {
+                            addSource( deviceSources['AppleBMR'] , 'application/x-mpegURL' );
                             return sources;
                         }
 
