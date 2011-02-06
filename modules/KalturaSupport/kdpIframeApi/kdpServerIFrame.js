@@ -5,7 +5,7 @@
 ( function( mw ) {
 	
 // Also include a document ready event to check for kdp player readyness 
-//( in case jsCallbackReady was fired before this scirpt is executed )
+//( in case jsCallbackReady was fired before this script is executed )
 jQuery(document).ready(function(){	
 	var timeoutCount = 0;
 	var waitForKalturaPlayer = function(){

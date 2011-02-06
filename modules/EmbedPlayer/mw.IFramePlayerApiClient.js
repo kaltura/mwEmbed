@@ -101,6 +101,7 @@ mw.IFramePlayerApiClient.prototype = {
 			} );
 		}
 		var restoreWindowMode = function(){
+			localIframeInFullscreen = false;
 			$j( _this.iframe )
 				.css( orgSize )
 				.data(

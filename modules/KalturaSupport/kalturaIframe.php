@@ -85,7 +85,7 @@ class kalturaIframe {
 
 	// Load the kaltura library and grab the most compatible flavor
 	private function getFlavorSources(){
-		global $wgKalturaServiceUrl;
+		global $wgKalturaServiceUrl, $wgKalturaCDNUrl, $wgKalturaUseManifestUrls;
 		// Check the access control before returning any source urls
 		if( !$this->isAccessControlAllowed() ) {
 			return array();
@@ -105,27 +105,34 @@ class kalturaIframe {
 			// @@TODO should probably refactor to use throw catch error system.
 			return array();
 		}
-                $wgKalturaServiceUrl = "http://lbd.kaltura.com"; // Remove this when production get the update for the playManifest
-		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
+		
+		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){			
+			if( $wgKalturaUseManifestUrls ){
+				// New asset url using playManifest
+				$assetUrl =  $wgKalturaServiceUrl .'/p/' . $this->getPartnerId() . '/sp/' .
+				$this->getPartnerId() . '00/playManifest/entryId/' .
+				$this->playerAttributes['entry_id'];	
 
-                        // New asset url using playManifest
-			$assetUrl =  $wgKalturaServiceUrl .'/p/' . $this->getPartnerId() . '/sp/' .
-					$this->getPartnerId() . '00/playManifest/entryId/' .
-					$this->playerAttributes['entry_id'];
-
-                        // If we have apple http steaming then use it for ipad & iphone instead of regular flavors
-                        if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
-                            $assetUrl .= '/format/applehttp/protocol/http';
-
-                            $sources['applembr'] = array(
-                                    'src' => $assetUrl . '/a.m3u8',
-                                    'type' => 'application/x-mpegURL',
-                                    'data-flavorid' => 'AppleMBR'
-                            );
-
-                        } else {
-                            $assetUrl .= '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/http';
-                        }
+				// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
+				if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
+					$assetUrl .= '/format/applehttp/protocol/http';
+	
+					$sources['applembr'] = array(
+						'src' => $assetUrl . '/a.m3u8',
+						'type' => 'application/x-mpegURL',
+						'data-flavorid' => 'AppleMBR'
+					);
+	
+				} else {
+					$assetUrl .= '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/http';
+				}
+				
+			} else {
+				$assetUrl =  $wgKalturaCDNUrl .'/p/' . $this->getPartnerId() . '/sp/' . 
+					$this->getPartnerId() . '00/flvclipper/entry_id/' . 
+					$this->playerAttributes['entry_id'] . '/flavor/' . 	$KalturaFlavorAsset->id;				
+			}
+			
 
 			if( strpos( $KalturaFlavorAsset->tags, 'iphone' ) !== false ){
 				$sources['iphone'] = array(

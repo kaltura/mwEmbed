@@ -1496,8 +1496,7 @@ mw.EmbedPlayer.prototype = {
 
 
 		// Special case for audio
-		// Firefox sets audio height to "0px" while webkit uses 32px .. force
-		// zero:
+		// Firefox sets audio height to "0px" while webkit uses 32px .. force zero:
 		if( element.tagName.toLowerCase() == 'audio' && this.height == '32' ) {
 			this.height = 0;
 		}
@@ -1558,7 +1557,7 @@ mw.EmbedPlayer.prototype = {
 		} else {
 			this.controlBuilder.resizePlayer( size, animate, callback);
 		}
-		$j( this ).trigger( 'onResizePlayer', [size, animate] )
+		$j( this ).trigger( 'onResizePlayer', [size, animate] );
 	},
 
 	/**
