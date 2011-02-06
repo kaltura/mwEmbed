@@ -76,18 +76,29 @@ kdpClientIframe.prototype = {
 	'evaluate': function( objectString  ){		
 		objectString = objectString.replace( /\{|\}/g, '' );
 		var objectPath = objectString.split('.');
-		// kaltura properties have up 3 levels deep
+		var errorOut = function(){
+			mw.log("Error: kdpClientFrame could not get property: " + objectString );
+			return false;
+		}
+		
+		// kaltura properties have up 3 levels deep		                       
 		if( this.evaluateData[ objectPath[0] ] && ! objectPath[1] ){
 			return this.evaluateData[ objectPath[0] ]
 		}
+		if( !this.evaluateData[ objectPath[0] ] )
+			return errorOut;
+		
+		
 		if( this.evaluateData[ objectPath[0] ][ objectPath[1] ] && !objectPath[2] ){
 			return this.evaluateData[ objectPath[0] ][ objectPath[1] ];
 		}
+		if( !this.evaluateData[ objectPath[0] ][ objectPath[1] ]  )
+			return errorOut;
+		
 		if( this.evaluateData[ objectPath[0] ][ objectPath[1] ][ objectPath[2] ] ){
 			return this.evaluateData[ objectPath[0] ][ objectPath[1] ][ objectPath[2] ];
 		}
-		mw.log("Error: kdpClientFrame could not get property: " + objectString );
-		return false;
+		return errorOut;
 	},
 	/**
 	 * Handle received events

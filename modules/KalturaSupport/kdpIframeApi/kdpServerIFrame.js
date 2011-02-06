@@ -40,6 +40,7 @@ kdpServerIframe.prototype = {
 		var _this = this;
 		this.kdpPlayer = kdpPlayer;
 		this.parentUrl = mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
+		
 		// Add receive msg handler: 
 		$j.receiveMessage( function( event ) {			
 			_this.hanldeMsg( event );
@@ -47,13 +48,21 @@ kdpServerIframe.prototype = {
 		
 		// Set up the default attributes: 
 		this.sendPlayerAttributes();
+
+		this.monitorAttributeChanges()
 		
 		// Fire the "ready"
 		_this.postMessage({
 			'callbackName' : 'jsCallbackReady'
 		});
 	},
-	
+	monitorAttributeChanges: function(){
+		var _this = this;
+		// sends attributes across the iframe at a set interval ( for now 250ms / monitor rate )
+		setTimeout(function(){	
+			_this.sendPlayerAttributes();
+		},250);
+	},
 	/**
 	 * Handle a message 
 	 * 
@@ -104,7 +113,7 @@ kdpServerIframe.prototype = {
 		$j.each( attrSet, function(inx, attrName){
 			evaluateData[ attrName ] = _this.kdpPlayer.evaluate('{' + attrName + '}');
 		});
-		//mw.log( "IframePlayerApiServer:: sendPlayerAttributes: " + JSON.stringify( attrSet ) );
+		mw.log( "IframePlayerApiServer:: sendPlayerAttributes: " + JSON.stringify( attrSet ) );
 		_this.postMessage( {
 			'evaluateData' : evaluateData 
 		} );
