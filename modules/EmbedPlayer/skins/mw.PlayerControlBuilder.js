@@ -566,12 +566,6 @@ mw.PlayerControlBuilder.prototype = {
 				});
 			}
 		});
-
-		// Restore the play button
-		$interface.find('.play-btn-large').animate({
-			'left' 	: ( ( embedPlayer.getWidth() - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
-			'top'	: ( ( embedPlayer.getHeight() -this.getComponentHeight( 'playButtonLarge' ) ) / 2 )
-		});
 		
 		// Trigger the onCloseFullscreen event: 
 		$j( this.embedPlayer ).trigger( 'onCloseFullScreen' );
