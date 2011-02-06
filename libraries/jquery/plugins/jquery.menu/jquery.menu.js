@@ -184,10 +184,8 @@ function Menu(caller, options) {
 	this.showMenu = function() {
 		mw.log('$j.menu:: show menu' );					
 		killAllMenus();
-		mw.log('jquery.menu:: killAllMenus' );		
-		if ( ! menu.menuExists) { 
-			menu.create() 
-		};		
+		// always create the menu to ensure it has correct pos
+		menu.create() 
 		mw.log('jquery.menu:: menu.create' );		
 		caller
 			.addClass('fg-menu-open')
