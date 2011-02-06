@@ -280,21 +280,25 @@ mw.KWidgetSupport.prototype = {
 		// Find a compatible stream
 		for( var i = 0 ; i < flavorData.length; i ++ ) {			
 			var asset = flavorData[i];			
-			/**
-			* The template of downloading a direct flavor is
-			*/
-
+					
 			// New asset url using playManifest
-			mw.setConfig('Kaltura.ServiceUrl', 'http://lbd.kaltura.com'); // Remove this when production get the update for the playManifest
+			/*mw.setConfig('Kaltura.ServiceUrl', 'http://lbd.kaltura.com'); // Remove this when production get the update for the playManifest
 			var src  = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id +
 				'/sp/' +  partner_id + '00/playManifest/entryId/' + asset.entryId;
-
+			*/
+			
+			// will use above playManifest once supported. 
+			var src  = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
+				'/sp/' +  partner_id + '00/flvclipper/entry_id/' +
+				asset.entryId + '/flavor/' + asset.id ;
+			
+			
             // Check for Apple http streaming
 			if( asset.tags.indexOf('applembr') != -1 ) {
 				src += '/format/applehttp/protocol/http';
 				deviceSources['AppleBMR'] = src + '/a.m3u8';
             } else {
-            	src += '/flavor/' + asset.id + '/format/url/protocol/http';
+            	// src += '/flavor/' + asset.id + '/format/url/protocol/http';
             }
 
 			// Check the tags to read what type of mp4 source
@@ -339,11 +343,11 @@ mw.KWidgetSupport.prototype = {
 			mw.log( "KwidgetSupport:: Add iPad / iPhone4 source");
 			// Note it would be nice to detect if the iPhone was on wifi or 3g
                         
-                        // Prefer Apple HTTP streaming
-                        if( deviceSources['AppleBMR'] ) {
-                            addSource( deviceSources['AppleBMR'] , 'application/x-mpegURL' );
-                            return sources;
-                        }
+			// Prefer Apple HTTP streaming
+			if( deviceSources['AppleBMR'] ) {
+				addSource( deviceSources['AppleBMR'] , 'application/x-mpegURL' );
+				return sources;
+			}
 
 			if( deviceSources['iPad'] ){ 
 				addSource( deviceSources['iPad'] , 'video/h264' );
