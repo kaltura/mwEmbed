@@ -61,6 +61,7 @@ kdpServerIframe.prototype = {
 		// sends attributes across the iframe at a set interval ( for now 250ms / monitor rate )
 		setTimeout(function(){	
 			_this.sendPlayerAttributes();
+			_this.monitorAttributeChanges();
 		},250);
 	},
 	/**
@@ -110,10 +111,14 @@ kdpServerIframe.prototype = {
 		// top level "evaluate" components: 
 		var attrSet = ['video','mediaProxy','configProxy','playerStatusProxy'];
 		var evaluateData =  {};
-		$j.each( attrSet, function(inx, attrName){
-			evaluateData[ attrName ] = _this.kdpPlayer.evaluate('{' + attrName + '}');
-		});
-		mw.log( "IframePlayerApiServer:: sendPlayerAttributes: " + JSON.stringify( attrSet ) );
+		try{
+			$j.each( attrSet, function(inx, attrName){
+				evaluateData[ attrName ] = _this.kdpPlayer.evaluate('{' + attrName + '}');
+			});
+		} catch(e){
+			mw.log( 'KdpServerIframe:: caught exception: " + e + ", could not send all player attributes');
+		}
+		//mw.log( "IframePlayerApiServer:: sendPlayerAttributes: " + JSON.stringify( attrSet ) );
 		_this.postMessage( {
 			'evaluateData' : evaluateData 
 		} );
