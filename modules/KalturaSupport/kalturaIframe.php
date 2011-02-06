@@ -122,7 +122,6 @@ class kalturaIframe {
 						'type' => 'application/x-mpegURL',
 						'data-flavorid' => 'AppleMBR'
 					);
-	
 				} else {
 					$assetUrl .= '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/http';
 				}
@@ -168,7 +167,7 @@ class kalturaIframe {
 			};
 			if( $KalturaFlavorAsset->fileExt == '3gp' ){
 				$sources['3gp'] = array(
-                                            'src' => $assetUrl . '/a.3gp',
+					'src' => $assetUrl . '/a.3gp',
 					'type' => 'video/3gp',
 					'data-flavorid' => '3gp'
 				);

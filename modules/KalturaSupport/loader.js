@@ -312,62 +312,64 @@
 	 */
 	jQuery.fn.kalturaIframePlayer = function( iframeParams, callback ) {
 		mw.log( '$j.kalturaIframePlayer::' );
-		var playerTarget = this;
-		
-		// Establish the "server" domain via mwEmbed path: 
-		var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
-		
-		// Local function to handle iframe rewrites: 
-		var doRewriteIframe = function(){
+		$j( this ).each( function(inx, playerTarget){
+	
+			// Establish the "server" domain via mwEmbed path: 
+			var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
 			
-			// Build the iframe request from supplied iframeParams: 
-			var iframeRequest = '';
-			for( var key in iframeParams ){
-				iframeRequest+= '/' + key + 
-					'/' + encodeURIComponent(  iframeParams [ key ] );
+			// Local function to handle iframe rewrites: 
+			var doRewriteIframe = function(){
+				
+				// Build the iframe request from supplied iframeParams: 
+				var iframeRequest = '';
+				for( var key in iframeParams ){
+					iframeRequest+= '/' + key + 
+						'/' + encodeURIComponent(  iframeParams [ key ] );
+				};
+				
+				var argSeperator ='/?';
+				
+				// @@todo should move these url flags into config options
+				
+				// Add debug flag if set: 
+				if( mw.getConfig( 'debug' ) ){
+					iframeRequest+= argSeperator + 'debug=true';
+					argSeperator ='&';
+				}
+				
+				iframeRequest+= mw.getKalturaIframeHash();				
+				
+				var $iframe = $j('<iframe />')
+				.attr({
+					'id' : $j( playerTarget ).attr('id'),
+					'class' : $j( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',
+					'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest,
+					'height' : $j( playerTarget ).height(),
+					'width' : $j( playerTarget ).width()
+				})
+				.css( 'border', '0px' );
+				
+				// Replace the player with the iframe: 
+				$j( playerTarget ).replaceWith( $iframe );
+				
+				
+				// if the server is enabled 
+				if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
+					// Invoke the iframe player api system: 				
+					var iframeEmbedPlayer = $j( playerTarget ).iFramePlayer( callback );
+				}			
 			};
 			
-			var argSeperator ='/?';
-			
-			// @@todo should move these url flags into config options
-			
-			// Add debug flag if set: 
-			if( mw.getConfig( 'debug' ) ){
-				iframeRequest+= argSeperator + 'debug=true';
-				argSeperator ='&';
+			// Check if the iframe API is enabled: 
+			if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
+				// Make sure the iFrame player client is loaded: 
+				mw.load( ['mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' ], function(){
+					doRewriteIframe();											
+				});
+			} else {
+				doRewriteIframe();			
 			}
-			
-			iframeRequest+= mw.getKalturaIframeHash();
-			
-			var $iframe = $j('<iframe />')
-			.attr({
-				'id' : $j( playerTarget ).attr('id'),
-				'class' : $j( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',
-				'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest,
-				'height' : $j( playerTarget ).height(),
-				'width' : $j( playerTarget ).width()
-			})
-			.css( 'border', '0px' );
-			
-			// Replace the player with the iframe: 
-			$j( playerTarget ).replaceWith( $iframe );
-			
-			// if the server is enabled 
-			if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
-				// Invoke the iframe player api system: 				
-				var iframeEmbedPlayer = $j( '.mwEmbedKalturaIframe').iFramePlayer( callback );
-			}			
-		};
-		
-		// Check if the iframe API is enabled: 
-		if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
-			// Make sure the iFrame player client is loaded: 
-			mw.load( ['mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' ], function(){
-				doRewriteIframe();											
-			});
-		} else {
-			doRewriteIframe();			
-		}
+		});
 	};
 	
 	/**

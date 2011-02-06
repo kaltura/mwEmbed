@@ -276,14 +276,13 @@ mw.KWidgetSupport.prototype = {
 		
 		// Setup the src defines
 		var deviceSources = {};		
-		
+alert('wtf');		
 		// Find a compatible stream
 		for( var i = 0 ; i < flavorData.length; i ++ ) {			
 			var asset = flavorData[i];			
-					
 			// Check playManifest conditional
 			if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
-				
+
 				mw.setConfig('Kaltura.ServiceUrl', 'http://lbd.kaltura.com'); // Remove this when production get the update for the playManifest
 				var src  = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id +
 					'/sp/' +  partner_id + '00/playManifest/entryId/' + asset.entryId;
@@ -295,7 +294,7 @@ mw.KWidgetSupport.prototype = {
 	            } else {
 	            	src += '/flavor/' + asset.id + '/format/url/protocol/http';
 	            }
-				
+				alert( 'src:' + src);				
 			} else {			
 				var src  = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
 				'/sp/' +  partner_id + '00/flvclipper/entry_id/' +

@@ -177,38 +177,41 @@ mw.IFramePlayerApiClient.prototype = {
 		if( ! this.selector ){
 			this.selector = $j( this ).get(0);
 		}
-		// Append '_ifp' ( iframe player ) to id of real iframe so that 'id', and 'src' attributes don't conflict
-		var originalIframeId = ( $( this.selector ).attr( 'id' ) )? $( this.selector ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
-		
-		var iframePlayerId = originalIframeId + '_ifp' ; 
-		
-		// Append the div element proxy after the iframe 
-		$j( this.selector )
-			.attr('id', iframePlayerId)
-			.after(
-				$('<div />')
-				.attr( 'id', originalIframeId )
-			);
-		
-		var playerProxy = $j( '#' + originalIframeId ).get(0);		
-		var iframe = $j('#' + iframePlayerId).get(0);
-		if(!iframe){
-			mw.log("Error invalide iFramePlayer request");
-			return false;
-		}
-		if( !iframe['playerApi'] ){
-			iframe['playerApi'] = new mw.IFramePlayerApiClient( iframe, playerProxy );
-		}
-		
-		// Allow modules to extend the 'iframe' based player
-		$j( mw ).trigger( 'newIframePlayerClientSide', [ playerProxy ]);
-		
-		// Bind the iFrame player ready callback
-		if( readyCallback ){
-			$j( playerProxy ).bind( 'playerReady', readyCallback )
-		};		
-		// Return the player proxy for chaining player events / attributes
-		return $j( playerProxy );
+		// Handle each embed frame 
+		$j( this.selector ).each( function(inx, targetPlayer){				
+			// Append '_ifp' ( iframe player ) to id of real iframe so that 'id', and 'src' attributes don't conflict
+			var originalIframeId = ( $( targetPlayer ).attr( 'id' ) )? $( targetPlayer ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
+			
+			var iframePlayerId = originalIframeId + '_ifp' ; 
+
+			// Append the div element proxy after the iframe 
+			$j( targetPlayer)
+				.attr('id', iframePlayerId)
+				.after(
+					$('<div />')
+					.attr( 'id', originalIframeId )
+				);
+			
+			var playerProxy = $j( '#' + originalIframeId ).get(0);		
+			var iframe = $j('#' + iframePlayerId).get(0);
+			if(!iframe){
+				mw.log("Error invalide iFramePlayer request");
+				return false;
+			}
+			if( !iframe['playerApi'] ){
+				iframe['playerApi'] = new mw.IFramePlayerApiClient( iframe, playerProxy );
+			}
+			
+			// Allow modules to extend the 'iframe' based player
+			$j( mw ).trigger( 'newIframePlayerClientSide', [ playerProxy ]);
+			
+			// Bind the iFrame player ready callback
+			if( readyCallback ){
+				$j( playerProxy ).bind( 'playerReady', readyCallback )
+			};
+		});
+		// Return this ( jQuery style )
+		return this;
 	};
 } )( jQuery );
 
