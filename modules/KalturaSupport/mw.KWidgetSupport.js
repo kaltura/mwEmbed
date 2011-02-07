@@ -342,8 +342,8 @@ mw.KWidgetSupport.prototype = {
 			// Note it would be nice to detect if the iPhone was on wifi or 3g
                         
 			// Prefer Apple HTTP streaming
-			if( deviceSources['AppleBMR'] ) {
-				addSource( deviceSources['AppleBMR'] , 'application/x-mpegURL' );
+			if( deviceSources['AppleMBR'] ) {
+				addSource( deviceSources['AppleMBR'] , 'application/vnd.apple.mpegurl' );
 				return sources;
 			}
 

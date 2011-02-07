@@ -119,7 +119,7 @@ class kalturaIframe {
 	
 					$sources['applembr'] = array(
 						'src' => $assetUrl . '/a.m3u8',
-						'type' => 'application/x-mpegURL',
+						'type' => 'application/vnd.apple.mpegurl',
 						'data-flavorid' => 'AppleMBR'
 					);
 				} else {
