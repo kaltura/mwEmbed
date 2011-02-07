@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <title></title>
+    <script type="text/javascript" src="../ResourceLoader.php?class=window.jQuery,mwEmbed&&debug=true"></script> 
+    <!--  
+    <script type="text/javascript" src="http://html5.kaltura.org/js" > </script>
+    <script type="text/javascript" src="http://html5.kaltura.org/js?class=window.jQuery,mwEmbed&&debug=true" > </script>
+    -->
+  </head>
+  <body>
+      <div id="playerContainer">
+        <video id="video"
+          width=480
+          height=206
+          kentryid="0_un4gy128"
+          kwidgetid="_322481"
+          kpartnerid="32248"
+          ></video>
+      </div>
+    <script type="text/javascript">
+      mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
+      mw.setConfig( 'EmbedPlayer.OverlayControls', false);
+      mw.ready( function(){
+          var getVideoAd = function( kalturaEntryId, type ) {
+            mw.getEntryIdSourcesFromApi( "_322481", "1_owuf253b", function ( sources ) {
+              $j(sources).each(function(i,v){
+                console.log( 'can play ' + v.type + ': ' + mw.EmbedTypes.supportedMimeType(v.type) );
+                if ( mw.EmbedTypes.supportedMimeType(v.type) ) {
+                  var prerollAd = v.src;
+                  console.log(prerollAd);
+                  mw.load( "mw.AdTimeline", function(){
+                    mw.addAdToPlayerTimeline( $j('#video').get(0), "preroll", { 
+                      'ads': [{
+                        'videoFile' : prerollAd
+                      }]
+                    });
+                  });
+                }
+              });
+            });
+          };
+          getVideoAd( "1_owuf253b", "preroll");
+          mw.load( "mw.AdTimeline", function(){
+            /*
+          mw.addAdToPlayerTimeline( $j('#video').get(0), 'bumper', { 
+            'ads': [{
+              'bumperentryid' : '1_owuf253b'
+            }]
+          });
+            */
+          mw.addAdToPlayerTimeline( $j('#video').get(0), 'overlay', { 
+            'ads': [{
+              'nonLinear' : [{
+                'width' : 420,
+                'height' : 60,
+                'html' : '<div style="width:100%;height:100%;opacity:0.5;border-radius:20px;background-color:black;color:white;font-size:small;"><img src="http://durian.blender.org/wp-content/uploads/2010/09/blenderlogo.png" style="float:left;position:relative;top:10px"><p align="center"><a href="http://www.sintel.org/">Sintel - project Durian</a> - is Blender Foundations third Open Movie.<br /><a href="http://www.blender3d.org/e-shop/product_info_n.php?products_id=120">buy Sintel on DVD</a></p></div>'
+              }]
+            }],
+            'start' : 2,
+            'frequency' : 120,
+            'timeout' : 25
+            }
+          );
+        });
+      });
+console.log(escape('div style="width:100%;height:100%;opacity:0.5;border-radius:20px;background-color:black;color:white;font-size:small;"><img src="http://durian.blender.org/wp-content/uploads/2010/09/blenderlogo.png" style="float:left;position:relative;top:10px"><p align="center"><a href="http://www.sintel.org/">Sintel - project Durian</a> - is Blender Foundations third Open Movie.<br /><a href="http://www.blender3d.org/e-shop/product_info_n.php?products_id=120">buy Sintel on DVD</a></p></div>'));
+    </script>
+  </body>
+</html>
