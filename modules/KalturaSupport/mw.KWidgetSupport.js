@@ -281,23 +281,22 @@ mw.KWidgetSupport.prototype = {
 			// Check playManifest conditional
 			if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
 
-				mw.setConfig('Kaltura.ServiceUrl', 'http://lbd.kaltura.com'); // Remove this when production get the update for the playManifest
 				var src  = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id +
 					'/sp/' +  partner_id + '00/playManifest/entryId/' + asset.entryId;
 				
 				// Check for Apple http streaming
 				if( asset.tags.indexOf('applembr') != -1 ) {
 					src += '/format/applehttp/protocol/http';
-					deviceSources['AppleBMR'] = src + '/a.m3u8';
-	            } else {
-	            	src += '/flavor/' + asset.id + '/format/url/protocol/http';
-	            }
-				alert( 'src:' + src);				
-			} else {			
-				var src  = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
-				'/sp/' +  partner_id + '00/flvclipper/entry_id/' +
-				asset.entryId + '/flavor/' + asset.id ;
-			}
+					deviceSources['AppleMBR'] = src + '/a.m3u8';
+                                } else {
+                                    src += '/flavor/' + asset.id + '/format/url/protocol/http';
+                                }
+			
+                        } else {
+                                var src  = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
+                                '/sp/' +  partner_id + '00/flvclipper/entry_id/' +
+                                asset.entryId + '/flavor/' + asset.id ;
+                        }
 			            
 
 			// Check the tags to read what type of mp4 source
