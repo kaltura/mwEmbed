@@ -1442,12 +1442,16 @@ mw.EmbedPlayer.prototype = {
 	},
 	
 	enableSeekBar: function(){
+		if( this.useNativePlayerControls() )
+			return ;
 		this.controlBuilder.enableSeekBar();
 		$j( this ).trigger( 'onEnableSeekBar');
 	},
 	disableSeekBar: function(){
+		if( this.useNativePlayerControls() )
+			return ;
 		this.controlBuilder.disableSeekBar();
-		$j( this ).trigger( 'ondisableSeekBar');
+		$j( this ).trigger( 'onDisableSeekBar');
 	},
 	
 	/**

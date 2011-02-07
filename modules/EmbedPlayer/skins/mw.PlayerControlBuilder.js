@@ -1825,10 +1825,16 @@ mw.PlayerControlBuilder.prototype = {
 				// Set up the disable playhead function: 
 				// TODO this will move into the disableSeekBar binding in the new theme framework
 				ctrlObj.disableSeekBar = function(){
-					ctrlObj.embedPlayer.$interface.find( ".play_head" ).slider( "option", "disabled", true );
+					var $playHead = ctrlObj.embedPlayer.$interface.find( ".play_head" );
+					if( $playHead.length ){
+						$playHead.slider( "option", "disabled", true );
+					}
 				}
 				ctrlObj.enableSeekBar = function(){
-					ctrlObj.embedPlayer.$interface.find( ".play_head" ).slider( "option", "disabled", false);
+					var $playHead = ctrlObj.embedPlayer.$interface.find( ".play_head" );
+					if( $playHead.length ){
+						$playHead.slider( "option", "disabled", false);
+					}
 				}
 			
 			
