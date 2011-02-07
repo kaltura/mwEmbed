@@ -509,7 +509,7 @@ class kalturaIframe {
 				'data="' . htmlspecialchars( $swfUrl ) . '"> '.
 				'<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />' .
 				'<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />'.
-				'<param name="flashVars" value="streamerType=rtmp&streamerUrl=rtmp://rtmpakmi.kaltura.com/ondemand&rtmpFlavors=1&&" />'.
+				'<param name="flashVars" value="streamerType=rtmp&externalInterfaceDisabled=false" />'.
 				'<param name="movie" value="' . htmlspecialchars( $swfUrl ) . '" />'.
 				$childHTML .
 			'</object>';

@@ -116,7 +116,7 @@
 								'cancelAlerts',
 								'enableAlerts',
 								'freePreviewEnd'];
-		
+
 		function jsCallbackReady () {			
 			$("#notifications").append( 'jsCallbackReady' + "\n");
 			$('#kdp3').get(0).addJsListener("volumeChanged", "volumeChangedHandler");
@@ -125,13 +125,21 @@
 			$('#kdp3').get(0).addJsListener("playerUpdatePlayhead", "playerUpdatePlayheadHandler");
 			$('#kdp3').get(0).addJsListener("bytesTotalChange", "bytesTotalChangeHandler");
 			$('#kdp3').get(0).addJsListener("bytesDownloadedChange", "bytesDownloadedChangeHandler");
-			$('#kdp3').get(0).addJsListener("entryReady", "entryHandler"); // Used by MediaSpace
+			
+                        // New Listeners used by MediaSpace
+                        $('#kdp3').get(0).addJsListener("kdpEmpty", "function() { console.log('kdpEmpty Event'); }");
+                        $('#kdp3').get(0).addJsListener("kdpReady", "function() { console.log('kdpReady Event'); }");
+                        $('#kdp3').get(0).addJsListener("entryReady", "entryHandler");
+                        $('#kdp3').get(0).addJsListener("mediaReady", "function() { console.log('mediaReady Event'); }");
+                        $('#kdp3').get(0).addJsListener("playerPlayed", "function() { console.log('playerPlayed Event'); }");
+                        $('#kdp3').get(0).addJsListener("playerPlayEnd", "function() { console.log('playerPlayEnd Event'); }");
 
-			for (var i=0; i < notificationslist.length; ++i) {
+			for ( i=0; i < notificationslist.length; ++i) {
 				if (notificationslist[i] != 'playerUpdatePlayhead') {
+                                    var fName = notificationslist[i];
 					window[ notificationslist[i] + "Handler2" ] = function(data, id){
-						if ($("#stopListeners").attr("checked") == false){
-							$("#notifications").text( $("#notifications").text() + "'+notificationslist[i]+': ");
+						if ($("#stopListeners").attr("checked") == false) {
+							$("#notifications").text( $("#notifications").text() + fName + ':');
 							printobj(data);
 						}
 					}
@@ -184,69 +192,25 @@
 		}
 		
 		function playerUpdatePlayheadHandler(data, id) {
-			if ($('#listenToUpdate').attr('checked') == true) {
-				$("#notifications").text($("#notifications").text() + "playerUpdatePlayhead: ");
-				printobj(data);
-			}
-			$('#videotime').text(data);
+                    if ($('#listenToUpdate').attr('checked') == true) {
+                    $("#notifications").text($("#notifications").text() + "playerUpdatePlayhead: ");
+                        printobj(data);
+                    }
+                    $('#videotime').text(data);
 		}
 		
 		function entryHandler(entry) {
-			console.log(entry);
+                    console.log('entryReady Event');
+                    console.log(entry);
 		}
 		
 		$(function() {
-			$('#cMedia').click( function() {
-				$('#kdp3').get(0).sendNotification("changeMedia",{entryId:"1_8c3s1pvx"});
-			});
+                    $('#cMedia').click( function() {
+                        $('#kdp3').get(0).sendNotification("changeMedia",{entryId:"1_8c3s1pvx"});
+                    });
 		});
 	</script>
-	
-	<script type="text/javascript">/*
-		var flashvars = {};
-		flashvars.autoPlay = "false";
-		//flashvars.entryId = "http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb.flv";
-		//flashvars.sourceType = "url";
-		flashvars.entryId = "0_swup5zao";
-		flashvars.sourceType = "entryId";
-		flashvars.debugMode = "true";
-		flashvars.fileSystemMode = "true";
-		flashvars.widgetId = "_243342";
-		flashvars.partnerId = "243342";
-		flashvars.pluginDomain = "plugins/";
-		flashvars.kml = "local";
-		flashvars.kmlPath = "http://www.kaltura.org/demos/kdp3/config.xml";
-		flashvars.host = "www.kaltura.com";
-		flashvars.cdnHost = "cdn.kaltura.com";
-		flashvars.externalInterfaceDisabled = "false";
-		flashvars.skinPath = "http://www.kaltura.org/demos/kdp3/assets/skin.swf";
-		flashvars["full.skinPath"] = "http://www.kaltura.org/demos/kdp3/assets/skin.swf";
-		//DEFINE CUSTOM SKIN URL -		
-		/*
-		//DEFINE OPENX BANNER USING WATERMARK PLUGIN - 
-		flashvars['bannerad.watermarkClickPath']='http://d1.openx.org/ck.php?n=a45b33cc';
-		flashvars['bannerad.watermarkPath']='http://d1.openx.org/avw.php?zoneid=110118&cb=22&n=a45b33cc';
-		flashvars['bannerad.width']=468;
-		flashvars['bannerad.height']=60;
-		flashvars['bannerad.plugin']=true;
-		flashvars['bannerad.position']='firstChild';
-		flashvars['bannerad.relativeTo']='player';
-		flashvars['bannerad.className']='Watermark';
-		
-		var params = {};
-		params.quality = "best";
-		params.wmode = "opaque";
-		params.allowfullscreen = "true";
-		params.allowscriptaccess = "always";
-		
-		var attributes = {};
-		attributes.id = "kdp3";
-		attributes.name = "kdp3";
-		attributes.styleclass = "player";
-		
-		swfobject.embedSWF("http://www.kaltura.org/demos/kdp3/kdp3.swf", "kdp3", "570", "380", "10.0.0", "jslib/expressInstall.swf", flashvars, params, attributes);
-		*/
-	</script>	
+
 </head>
 <body>
 	<div id="controls_menu" class="sideBox">
