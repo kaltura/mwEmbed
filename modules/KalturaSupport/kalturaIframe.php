@@ -631,7 +631,7 @@ class kalturaIframe {
 		</div>
 		<script type="text/javascript">
 			// Insert the html5 kalturaLoader script
-			document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>mwEmbedLoader.js' type='text/javascript'%3E%3C/script%3E"));
+			document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>mwEmbedLoader.php' type='text/javascript'%3E%3C/script%3E"));
 		</script>
 		<script type="text/javascript">
 			// Don't rewrite the video tag from the loader ( if html5 is supported it will be
