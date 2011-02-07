@@ -234,7 +234,7 @@ mw.KWidgetSupport.prototype = {
 		var sources = embedPlayer.mediaElement.getSources();
 		if( sources[0] && sources[0]['data-flavorid'] ){
 			// Not so clean ... will refactor once we add another source
-			var deviceSources = [];
+			var deviceSources = {};
 			for(var i=0; i< sources.length;i++){
 				deviceSources[ sources[i]['data-flavorid'] ] = sources[i].src;
 			}
@@ -250,7 +250,7 @@ mw.KWidgetSupport.prototype = {
 		// Update the source list per the current user-agent device: 
 		var sources = _this.getSourcesForDevice( deviceSources );
 		
-		for( var i=0;i < sources.length ; i++) {
+		for( var i=0; i < sources.length; i++) {
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  sources[i].src + ' type: ' +  sources[i].type);
 			embedPlayer.mediaElement.tryAddSource(
 				$j('<source />')
