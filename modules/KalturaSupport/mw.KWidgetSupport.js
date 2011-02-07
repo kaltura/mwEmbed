@@ -276,7 +276,6 @@ mw.KWidgetSupport.prototype = {
 		
 		// Setup the src defines
 		var deviceSources = {};		
-alert('wtf');		
 		// Find a compatible stream
 		for( var i = 0 ; i < flavorData.length; i ++ ) {			
 			var asset = flavorData[i];			

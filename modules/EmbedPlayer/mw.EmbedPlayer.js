@@ -725,6 +725,9 @@ mediaSource.prototype = {
 			case 'audio/ogg' :
 				return gM( 'mwe-embedplayer-video-audio' );
 			break;
+			case 'video/3gp' :
+				return '3gp video'; // FIXME: i18n
+			break;
 			case 'video/mpeg' :
 				return 'MPEG video'; // FIXME: i18n
 			break;
@@ -797,6 +800,9 @@ mediaSource.prototype = {
 			break;
 			case 'webm':
 				return 'video/webm';
+			break;
+			case '3gp':
+				return 'video/3gp';
 			break;
 			case 'srt':
 				return 'text/x-srt';
@@ -3302,7 +3308,7 @@ var h264NativePlayer = new mediaPlayer( 'h264Native', ['video/h264'], 'Native' )
 var webmNativePlayer = new mediaPlayer( 'webmNative', ['video/webm'], 'Native' );
 
 // VLC player
-var vlcMineList = ['video/ogg', 'audio/ogg', 'application/ogg', 'video/x-flv', 'video/mp4', 'video/h264', 'video/x-msvideo', 'video/mpeg'];
+var vlcMineList = ['video/ogg', 'audio/ogg', 'application/ogg', 'video/x-flv', 'video/mp4', 'video/h264', 'video/x-msvideo', 'video/mpeg', 'video/3gp' ];
 var vlcPlayer = new mediaPlayer( 'vlc-player', vlcMineList, 'Vlc' );
 
 // Generic plugin

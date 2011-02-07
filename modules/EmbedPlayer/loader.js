@@ -367,6 +367,14 @@
 		// Set up the embed video player class request: (include the skin js as well)
 		var dependencyRequest = [
 			[
+				'$j.ui',
+				'$j.widget',
+				'$j.ui.mouse',
+				'$j.fn.menu',
+				'mw.style.jquerymenu',
+				'$j.ui.slider'
+			],
+			[
 				'mw.EmbedPlayer'
 			],
 			[
@@ -376,20 +384,12 @@
 				'$j.cookie',
 				// Add JSON lib if browsers does not define "JSON" natively
 				'JSON',
-				'$j.ui',
-				'$j.widget'
-			],
-			[
-				'$j.ui.mouse',
-				'$j.fn.menu',
-				'mw.style.jquerymenu',
-				'$j.ui.slider'
-			]
+			]			
 		];
 
 		// Pass every tag being rewritten through the update request function
 		$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).each( function(inx, playerElement) {
-			mw.embedPlayerUpdateLibraryRequest( playerElement, dependencyRequest[ 1 ] )
+			mw.embedPlayerUpdateLibraryRequest( playerElement, dependencyRequest[ 2 ] )
 		} );
 
 		// Add PNG fix code needed:
