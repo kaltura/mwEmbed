@@ -75,7 +75,8 @@ mw.IFramePlayerApiClient.prototype = {
 			}
 		});
 		
-		var doFullscreen = function(){	
+		var doFullscreen = function(){
+			mw.log("iframeClient:: doFullscreen()");
 			localIframeInFullscreen = true;
 			// Make the iframe fullscreen
 			$j( _this.iframe )
@@ -153,6 +154,8 @@ mw.IFramePlayerApiClient.prototype = {
 				}
 			}
 		}
+		//mw.log("handle event: " + msgObject.triggerName);
+		
 		// Trigger any binding events 
 		if( typeof msgObject.triggerName != 'undefined' && msgObject.triggerArgs != 'undefined') {
 			//mw.log('IFramePlayerApiClient:: trigger: ' + msgObject.triggerName );
@@ -175,13 +178,12 @@ mw.IFramePlayerApiClient.prototype = {
 ( function( $ ) {
 	$.fn.iFramePlayer = function( readyCallback ){
 		if( ! this.selector ){
-			this.selector = $j( this ).get(0);
+			this.selector = this;
 		}
 		// Handle each embed frame 
-		$j( this.selector ).each( function(inx, targetPlayer){				
+		$j( this.selector ).each( function(inx, targetPlayer){
 			// Append '_ifp' ( iframe player ) to id of real iframe so that 'id', and 'src' attributes don't conflict
 			var originalIframeId = ( $( targetPlayer ).attr( 'id' ) )? $( targetPlayer ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
-			
 			var iframePlayerId = originalIframeId + '_ifp' ; 
 
 			// Append the div element proxy after the iframe 
@@ -195,7 +197,7 @@ mw.IFramePlayerApiClient.prototype = {
 			var playerProxy = $j( '#' + originalIframeId ).get(0);		
 			var iframe = $j('#' + iframePlayerId).get(0);
 			if(!iframe){
-				mw.log("Error invalide iFramePlayer request");
+				mw.log("Error invalid iFramePlayer request");
 				return false;
 			}
 			if( !iframe['playerApi'] ){

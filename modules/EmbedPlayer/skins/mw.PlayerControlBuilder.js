@@ -291,11 +291,13 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 
 		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
-		if(  mw.getConfig('EmbedPlayer.IsIframePlayer' ) ){
+		if( mw.getConfig('EmbedPlayer.IsIframePlayer' ) ){
 			if( this.fullscreenMode ){
+				mw.log("iframeServer:: trigger onCloseFullScreen()");
 				$j( _this.embedPlayer ).trigger( 'onCloseFullScreen' );
 				this.fullscreenMode = false;
 			} else {
+				mw.log("iframeServer:: trigger onOpenFullScreen()");
 				$j( _this.embedPlayer ).trigger( 'onOpenFullScreen' );
 				this.fullscreenMode = true;
 			}

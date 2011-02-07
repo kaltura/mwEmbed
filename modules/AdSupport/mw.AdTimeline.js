@@ -443,7 +443,7 @@ mw.AdTimeline.prototype = {
 				})
 				.addClass("ui-icon ui-icon-closethick")				
 				.click(function(){
-					$(this).parent().fadeOut('fast')
+					$j(this).parent().fadeOut('fast')
 				})
 			);
 			

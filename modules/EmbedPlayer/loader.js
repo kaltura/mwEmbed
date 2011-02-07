@@ -109,7 +109,7 @@
 	 * The base source attribute checks also see:
 	 * http://dev.w3.org/html5/spec/Overview.html#the-source-element
 	 */
-	mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [
+	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 		// source id
 		'id',
 

@@ -136,6 +136,9 @@ mw.IFramePlayerApiServer.prototype = {
 	},
 	
 	'postMessage': function( msgObject ){		
+		if( msgObject.triggerName == 'onOpenFullScreen' ){
+			mw.log('postMessage::onOpenFullScreen');
+		}
 		try {
 			var messageString = JSON.stringify( msgObject );
 		} catch ( e ){
@@ -156,7 +159,7 @@ mw.IFramePlayerApiServer.prototype = {
 	 * @param {string} event
 	 */
 	'hanldeMsg': function( event ){
-		mw.log( 'IFramePlayerApiServer:: hanldeMsg: ' +  event.data );
+		//mw.log( 'IFramePlayerApiServer:: hanldeMsg: ' +  event.data );
 		// Check if the server should even be enabled 
 		if( !mw.getConfig( 'EmbedPlayer.EnableIframeApi' )){
 			mw.log( 'Error: Loading iFrame playerApi but config EmbedPlayer.EnableIframeApi is false');

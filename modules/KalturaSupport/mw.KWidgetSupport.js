@@ -228,8 +228,7 @@ mw.KWidgetSupport.prototype = {
 				'height' :  embedPlayer.getHeight()
 			});			
 		}
-		
-		
+				
 		// Check existing sources have kaltura specific data-flavorid attribute ) 
 		// NOTE we may refactor how we package in the kaltura pay-load from the iframe 
 		var sources = embedPlayer.mediaElement.getSources();

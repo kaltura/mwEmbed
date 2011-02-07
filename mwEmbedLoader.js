@@ -209,7 +209,7 @@ function kOverideSwfObject(){
 					'height' : height
 				})
 				// Issue the embedPlayer call with embed attributes and the KDP ready callback
-				.embedPlayer( embedPlayerAttributes, window.KalturaKDPCallbackReady );
+				.embedPlayer( embedPlayerAttributes );
 			}
 		});
 	}

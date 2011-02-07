@@ -91,11 +91,13 @@
 		if( !kalturaObjectPlayerList.length ) {
 			// no players to rewrite (don't run  window.KalturaKDPCallbackReady )
 			rewriteDoneCallback();
+			return ;
 		}else {
 			
 			// Check if we are NOT rewriting tags: 
 			if( !mw.isHTML5FallForwardNative() ){
 				mw.restoreKalturaKDPCallback();
+				return ;
 			}
 			// FALLFORWARD only for fallforward native players
 			// this is kind of heavy weight for loader.js 
@@ -240,7 +242,9 @@
 						$j( playerTarget ).kalturaIframePlayer( kParams, doneWithIframePlayer);
 					});
 					// Don't do any other rewrites or library loading
-					callback();
+					if( $j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
+						callback();
+					}
 					return true;
 				}
 				
@@ -338,10 +342,10 @@
 				}
 				
 				iframeRequest+= mw.getKalturaIframeHash();				
-				
+				var iframeId = $j( playerTarget ).attr('id');
 				var $iframe = $j('<iframe />')
 				.attr({
-					'id' : $j( playerTarget ).attr('id'),
+					'id' : iframeId,
 					'class' : $j( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',
 					'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest,
 					'height' : $j( playerTarget ).height(),
@@ -356,7 +360,7 @@
 				// if the server is enabled 
 				if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 					// Invoke the iframe player api system: 				
-					var iframeEmbedPlayer = $j( playerTarget ).iFramePlayer( callback );
+					var iframeEmbedPlayer = $j( '#' + iframeId ).iFramePlayer( callback );
 				}			
 			};
 			
