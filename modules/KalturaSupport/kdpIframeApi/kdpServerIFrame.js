@@ -30,7 +30,7 @@ kdpServerIframe = function(){
 	if( !mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) ){
 		mw.log("kdpServerIframe:: Error missing EmbedPlayer.IframeParentUrl");
 		return ;
-	}
+	}	
 	return this.init( $j('#kaltura_player').get(0) );
 }
 
@@ -106,18 +106,24 @@ kdpServerIframe.prototype = {
 	 */
 	'sendPlayerAttributes': function(){
 		var _this = this;
-		
+		_this.kdpPlayer = $j('#kaltura_player').get(0);
 		// top level "evaluate" components: 
-		var attrSet = ['video','mediaProxy','configProxy','playerStatusProxy'];
+		var attrSet = ['video', ['mediaProxy','entry'],'configProxy','playerStatusProxy'];
 		var evaluateData =  {};
-		try{
-			$j.each( attrSet, function(inx, attrName){
-				evaluateData[ attrName ] = _this.kdpPlayer.evaluate('{' + attrName + '}');
-			});
-		} catch(e){
-			//mw.log( 'KdpServerIframe:: caught exception: ' + e + ', could not send all player attributes');
-			return ;
-		}
+		$j.each( attrSet, function(inx, attrName){
+			try{
+				if( typeof attrName == 'object' ){
+					if( !evaluateData[ attrName[0] ] ){
+						evaluateData[ attrName[0] ] = {};
+					}
+					evaluateData[ attrName[0] ] [ attrName[1] ] =  _this.kdpPlayer.evaluate('{' + attrName[0] + '.' + attrName[1] + '}');
+				} else {
+					evaluateData[ attrName ] = _this.kdpPlayer.evaluate('{' + attrName + '}');
+				}
+			} catch(e){
+				//mw.log( 'KdpServerIframe:: caught exception: ' + e + ', could not send all player attributes');		
+			}
+		});
 		//mw.log( "IframePlayerApiServer:: sendPlayerAttributes: " + JSON.stringify( attrSet ) );
 		_this.postMessage( {
 			'evaluateData' : evaluateData 

@@ -80,25 +80,24 @@ kdpClientIframe.prototype = {
 			mw.log("Error: kdpClientFrame could not get property: " + objectString );
 			return false;
 		}
-		
 		// kaltura properties have up 3 levels deep		                       
 		if( this.evaluateData[ objectPath[0] ] && ! objectPath[1] ){
 			return this.evaluateData[ objectPath[0] ]
 		}
 		if( !this.evaluateData[ objectPath[0] ] )
-			return errorOut;
+			return errorOut();
 		
 		
 		if( this.evaluateData[ objectPath[0] ][ objectPath[1] ] && !objectPath[2] ){
 			return this.evaluateData[ objectPath[0] ][ objectPath[1] ];
 		}
 		if( !this.evaluateData[ objectPath[0] ][ objectPath[1] ]  )
-			return errorOut;
+			return errorOut();
 		
 		if( this.evaluateData[ objectPath[0] ][ objectPath[1] ][ objectPath[2] ] ){
 			return this.evaluateData[ objectPath[0] ][ objectPath[1] ][ objectPath[2] ];
 		}
-		return errorOut;
+		return errorOut();
 	},
 	/**
 	 * Handle received events
