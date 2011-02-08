@@ -19,7 +19,7 @@ $wgMwEmbedPathUrl = str_replace(
 );
 
 // Url to the resource loader php script: 
-$wgResourceLoaderUrl = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
+$wgResourceLoaderUrl = $wgMwEmbedPathUrl . 'ResourceLoader.php';
 
 // The list of enabled modules 
 $wgMwEmbedEnabledModules = array();

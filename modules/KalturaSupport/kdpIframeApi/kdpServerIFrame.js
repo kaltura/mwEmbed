@@ -34,8 +34,7 @@ kdpServerIframe = function(){
 	return this.init( $j('#kaltura_player').get(0) );
 }
 
-kdpServerIframe.prototype = {	
-		
+kdpServerIframe.prototype = {		
 	'init': function( kdpPlayer ){
 		var _this = this;
 		this.kdpPlayer = kdpPlayer;
@@ -116,7 +115,8 @@ kdpServerIframe.prototype = {
 				evaluateData[ attrName ] = _this.kdpPlayer.evaluate('{' + attrName + '}');
 			});
 		} catch(e){
-			mw.log( 'KdpServerIframe:: caught exception: " + e + ", could not send all player attributes');
+			//mw.log( 'KdpServerIframe:: caught exception: ' + e + ', could not send all player attributes');
+			return ;
 		}
 		//mw.log( "IframePlayerApiServer:: sendPlayerAttributes: " + JSON.stringify( attrSet ) );
 		_this.postMessage( {

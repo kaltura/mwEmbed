@@ -113,7 +113,7 @@ kdpClientIframe.prototype = {
 		};
 		// Decode the message 
 		var msgObject = JSON.parse( event.data );
-		mw.log("KdpApiClient:: hanldeReciveMsg: " + msgObject.callbackName );
+		//mw.log("KdpApiClient:: hanldeReciveMsg: " + msgObject.callbackName );
 				
 		// Update evaluateData
 		if( msgObject.evaluateData ){

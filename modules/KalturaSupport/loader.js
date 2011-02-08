@@ -46,9 +46,8 @@
 		"adPlugin"	: 	"uiConfComponents/adPlugin.js",
 		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
 		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",		
-		
 		"kdpClientIframe" : "kdpIframeApi/kdpClientIframe.js",
-		"kdpServerIFrame" : "kdpIframeApi/kdpServerIFrame.js"		
+		"kdpServerIFrame" : "kdpIframeApi/kdpServerIFrame.js"
 	} );
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
