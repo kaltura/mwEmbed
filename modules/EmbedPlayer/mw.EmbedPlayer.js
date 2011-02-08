@@ -798,6 +798,9 @@ mediaSource.prototype = {
 			case 'mp4':
 				return 'video/h264';
 			break;
+			case 'm3u8':
+				return 'application/vnd.apple.mpegurl';
+			break;
 			case 'webm':
 				return 'video/webm';
 			break;
@@ -2412,14 +2415,9 @@ mw.EmbedPlayer.prototype = {
 
 		// Remove the player loader spinner if it exists
 		$j('#loadingSpinner_' + this.id ).remove();
-
-		// Setup the source
-		var source = this.mediaElement.getSources( 'video/h264' )[0];
-		// Support fake user agent 
-		if( !source || !source.src ){
-			mw.log( 'Warning: Your probably fakeing the iPhone userAgent ( no h.264 source )' );
-			source = this.mediaElement.getSources( 'video/ogg' )[0];
-		}
+		
+		// Get the selected source: 
+		var source = this.mediaElement.selectedSource;
 		
 		// Setup videoAttribues	
 		var videoAttribues = {
@@ -3622,6 +3620,12 @@ mw.EmbedTypes = {
 					if ( dummyvid.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
 						this.mediaPlayers.addPlayer( h264NativePlayer );
 					}
+					
+					// Ipad and Iphone support apple adaptive: 
+					if( mw.isIpad() || mw.isIphone() ){
+						this.mediaPlayers.addPlayer( appleVdnPlayer );
+					}
+					
 					// For now if Android assume we support h264Native (FIXME
 					// test on real devices )
 					if ( mw.isAndroid2() ){
