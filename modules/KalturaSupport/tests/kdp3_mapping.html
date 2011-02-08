@@ -128,7 +128,7 @@
 			
                         // New Listeners used by MediaSpace
                         $('#kdp3').get(0).addJsListener("kdpEmpty", "function() { console.log('kdpEmpty Event'); }");
-                        $('#kdp3').get(0).addJsListener("kdpReady", "function() { console.log('kdpReady Event'); }");
+                        $('#kdp3').get(0).addJsListener("kdpReady", "function() { alert('kdpReady Event'); }");
                         $('#kdp3').get(0).addJsListener("entryReady", "entryHandler");
                         $('#kdp3').get(0).addJsListener("mediaReady", "function() { console.log('mediaReady Event'); }");
                         $('#kdp3').get(0).addJsListener("playerPlayed", "function() { console.log('playerPlayed Event'); }");
@@ -221,7 +221,7 @@
         <div class="controls">
 			<a href="#" onclick="$('#kdp3').get(0).sendNotification('doPlay');return false;">Play</a> | <a href="#" onclick="$('#kdp3').get(0).sendNotification('doPause');return false;">Pause</a> | <a href="#" onclick="$('#kdp3').get(0).sendNotification('doStop');return false;">Stop</a> 
 			| <a href="#" onclick="alert( $('#kdp3').get(0).evaluate('{mediaProxy.entry.id}') );">Get entry id</a> | 
-			<a href="#" id="cMedia">Change Media</a>
+			<a href="#" id="cMedia">Change Media</a> | <a href="#" onclick="alert( $('#kdp3').get(0).evaluate('{configProxy.flashvars.autoPlay}') );">Get autoplay status</a> | <a href="#" onclick="alert( $('#kdp3').get(0).evaluate('{playerStatusProxy.kdpStatus}') );">Get KDP status</a>
         </div>
         <div class="controls">
 			Seek to: <input size="4" id="seekto" value="25" type="text"><button onclick="$('#kdp3').get(0).sendNotification('doSeek', parseFloat($('#seekto').val()));return false;">Seek</button>
