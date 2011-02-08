@@ -3309,6 +3309,8 @@ var cortadoPlayer = new mediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'appl
 // Native html5 players
 var oggNativePlayer = new mediaPlayer( 'oggNative', ['video/ogg', 'audio/ogg', 'application/ogg' ], 'Native' );
 var h264NativePlayer = new mediaPlayer( 'h264Native', ['video/h264'], 'Native' );
+var appleVdnPlayer = new mediaPlayer( 'appleVdn', ['application/vnd.apple.mpegurl'], 'Native'); 
+
 var webmNativePlayer = new mediaPlayer( 'webmNative', ['video/webm'], 'Native' );
 
 // VLC player
@@ -3354,7 +3356,8 @@ mediaPlayers.prototype =
 		// set up default players order for each library type
 		this.defaultPlayers['video/x-flv'] = ['Kplayer', 'Vlc'];
 		this.defaultPlayers['video/h264'] = ['Native', 'Kplayer', 'Vlc'];
-                this.defaultPlayers['application/vnd.apple.mpegurl'] = ['Native'];
+		
+		this.defaultPlayers['application/vnd.apple.mpegurl'] = ['Native'];
 
 		this.defaultPlayers['video/ogg'] = ['Native', 'Vlc', 'Java', 'Generic'];
 		this.defaultPlayers['video/webm'] = ['Native', 'Vlc'];
