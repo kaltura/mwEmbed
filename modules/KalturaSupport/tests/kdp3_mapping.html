@@ -134,18 +134,17 @@
 			$('#kdp3').get(0).addJsListener("playerPlayed", "function() { console.log('playerPlayed Event'); }");
 			$('#kdp3').get(0).addJsListener("playerPlayEnd", "function() { console.log('playerPlayEnd Event'); }");
 
-			for ( i=0; i < notificationslist.length; ++i) {
-				if (notificationslist[i] != 'playerUpdatePlayhead') {
-					var fName = notificationslist[i];
-					window[ notificationslist[i] + "Handler2" ] = function(data, id){
+			$.each( notificationslist, function(inx, fName){
+				if (fName != 'playerUpdatePlayhead') {
+					window[ fName + "Handler2" ] = function(data, id){
 						if ($("#stopListeners").attr("checked") == false) {
-							$("#notifications").text( $("#notifications").text() + fName + ':');
+							$("#notifications").text( $("#notifications").text() + fName + ': ');
 							printobj(data);
 						}
 					}
-					$('#kdp3').get(0).addJsListener( notificationslist[i], notificationslist[i]+"Handler2" );
+					$('#kdp3').get(0).addJsListener(fName, fName+"Handler2" );
 				}
-			}
+			});
 		}
 		
 		function printobj (obj) {
