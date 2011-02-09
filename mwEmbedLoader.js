@@ -599,9 +599,9 @@ kGetKalturaPlayerList = function(){
 		if( settings && settings.uiconf_id && settings.wid ){
 			objectList[i].kSettings = settings;
 			kalturaPlayers.push(  objectList[i] );
-			return kalturaPlayers;
+			return true;
 		}
-		return [];
+		return false;
 	}
 	
 	
@@ -621,7 +621,7 @@ kGetKalturaPlayerList = function(){
 				flashvars =	paramTags[j].getAttribute('value');		
 			}
 		}
-		if( tryAddKalturaEmbed( url, flashvars) ){
+		if( swfUrl != '' && tryAddKalturaEmbed( swfUrl, flashvars) ){
 			continue;
 		}
 		

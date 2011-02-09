@@ -74,7 +74,7 @@
 	});
 
 	// Check if the document has kaltura objects ( for fall forward support ) 
-	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){		
+	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){	
 		// Local callback function runs KalturaKDPCallbackReady and rewriteDoneCallback
 		var callback = function(){
 			// TODO move KalturaKDPCallbackReady into kdp mapping 
@@ -129,9 +129,8 @@
 						swfSource = $j( element ).find( "param[name=data]").attr( 'value' );						                                      
 					}
 					var kEmbedSettings = mw.getKalturaEmbedSettings( swfSource, flashvars );
-
 					// check if its a playlist or a entryId
-					mw.log("Got kEmbedSettings.entryId: " + kEmbedSettings.entryId + " uiConf: " + kEmbedSettings.uiconfId)
+					mw.log("Got kEmbedSettings.entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id)
 					var height = $j( element ).attr('height');
 					var width = $j( element ).attr('width');
 					
@@ -148,17 +147,17 @@
 					// Setup the video embed attributes: 
 					var videoEmbedAttributes = {
 						'id' : videoId,
-						'kwidgetid' : kEmbedSettings.widgetId,
-						'kuiconfid' : kEmbedSettings.uiconfId
+						'kwidgetid' : kEmbedSettings.wid,
+						'kuiconfid' : kEmbedSettings.uiconf_id
 					}
-					if( kEmbedSettings.entryId ) {
+					if( kEmbedSettings.entry_id ) {
 						loadEmbedPlayerFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
-						videoEmbedAttributes.kentryid = kEmbedSettings.entryId;
-						if( kEmbedSettings.partnerId ){
+						videoEmbedAttributes.kentryid = kEmbedSettings.entry_id;
+						if( kEmbedSettings.p ){
 							var thumb_url =  mw.getKalturaThumbUrl({
-								'partner_id': kEmbedSettings.partnerId,
-								'entry_id' :  kEmbedSettings.entryId,
+								'partner_id': kEmbedSettings.p,
+								'entry_id' :  kEmbedSettings.entry_id,
 								'width' : width,
 								'height' : height
 							});
@@ -227,11 +226,12 @@
 					$j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).each( function(inx, playerTarget ) {
 						var kParams = {};
 						var iframeRequestMap = {
-								'kwidgetid' : 'wid',
-								'kuiconfid' : 'uiconf_id', 
-								'kentryid' : 'entry_id',
+								'kwidgetid': 'wid',
+								'kuiconfid': 'uiconf_id', 
+								'kentryid': 'entry_id',
 								'kplaylistid' : 'playlist_id'
 						}
+						// Set default to playerTraget.kEmbedSettings						
 						for( var tagKey in iframeRequestMap ){
 							if( $j(playerTarget).attr( tagKey ) ){
 								kParams[ iframeRequestMap[tagKey] ] = $j(playerTarget).attr( tagKey );
@@ -316,13 +316,12 @@
 	jQuery.fn.kalturaIframePlayer = function( iframeParams, callback ) {
 		mw.log( '$j.kalturaIframePlayer::' );
 		$j( this ).each( function(inx, playerTarget){
-	
+		
 			// Establish the "server" domain via mwEmbed path: 
 			var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
 			
 			// Local function to handle iframe rewrites: 
-			var doRewriteIframe = function(){
-				
+			var doRewriteIframe = function(){				
 				// Build the iframe request from supplied iframeParams: 
 				var iframeRequest = '';
 				for( var key in iframeParams ){
@@ -427,28 +426,41 @@
 		var kalturaPlayers = [];
 		// check all objects for kaltura compatible urls 
 		var objectList = document.getElementsByTagName('object');
-		var tryAddKalturaEmbed = function( url ){
-			var settings = mw.getKalturaEmbedSettings( url );
-			if( settings && settings.uiconfId && settings.widgetId ){
+		var tryAddKalturaEmbed = function( url , flashvars){
+			var settings = kGetKalturaEmbedSettings( url, flashvars );
+			if( settings && settings.uiconf_id && settings.wid ){
+				objectList[i].kSettings = settings;
 				kalturaPlayers.push(  objectList[i] );
-				return true
+				return true;
 			}
 			return false;
 		}
+		
+		
+		// alert('object list: ' + objectList.length );
 		for( var i =0; i < objectList.length; i++){
-			if( objectList[i].getAttribute('data') ){
-				if( tryAddKalturaEmbed( objectList[i].getAttribute('data') ) )
-					continue;
-			}
+			var swfUrl = '';
+			var flashvars = '';
 			var paramTags = objectList[i].getElementsByTagName('param');
 			for( var j = 0; j < paramTags.length; j++){
 				if( paramTags[j].getAttribute('name') == 'data'
 					||
 					paramTags[j].getAttribute('name') == 'src' )
 				{
-					if( tryAddKalturaEmbed( paramTags[j].getAttribute('value') ) )
-						break;
+					swfUrl =  paramTags[j].getAttribute('value');
 				}
+				if( paramTags[j].getAttribute('name') == 'flashvars' ){
+					flashvars =	paramTags[j].getAttribute('value');		
+				}
+			}
+			if( swfUrl != '' && tryAddKalturaEmbed( swfUrl, flashvars) ){
+				continue;
+			}
+			
+			// Check for object data style url: 
+			if( objectList[i].getAttribute('data') ){
+				if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) )
+					continue;
 			}
 		}
 		return kalturaPlayers;

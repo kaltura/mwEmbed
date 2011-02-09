@@ -31,8 +31,8 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 			){	
 				var kEmbedSettings = mw.getKalturaEmbedSettings( clipSources[0].src );
 				var playerRequest = {
-					'entry_id' : kEmbedSettings.entryId,
-					'widget_id' : kEmbedSettings.widgetId
+					'entry_id' : kEmbedSettings.entry_id,
+					'widget_id' : kEmbedSettings.widget_id
 				}	
 				var clipDuration = clipSources[0].duration;		
 				
