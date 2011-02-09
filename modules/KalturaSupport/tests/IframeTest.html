@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>Kaltura Iframe Test</title>
+    </head>
+    <body>
+		<div class="content">
+			<div class="title">
+				<h2>Kaltura Player</h2>
+			</div>
+			<div class="contwrap">
+
+			<div style="width:300px;">
+				<span style="font-size: 16px;">Entry id:</span> <input style="width: 100px;" id="kentryid" value="0_uka1msg4" />
+				<input style="width: 100px; font-size: 12px;" id="showVideo" type="button" value="Change entry" disabled="true">
+			</div><br />
+
+			<div id="videoContainer" style="width:400px">
+
+			</div>
+
+			</div><!-- end contwrap -->
+		</div><!-- end content -->
+
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript">
+var partnerId = 243342;
+var uiConf = 2877502;
+
+mw.ready( function(){
+
+	//mw.setConfig( 'EmbedPlayer.OverlayControls', false );
+
+	$j('#showVideo').attr('disabled', null);
+
+	$j('#showVideo').click( function(){
+		var entryId =  $j( '#kentryid' ).val();
+		kalturaIframeEmbed('videoContainer', {
+			entry_id: entryId,
+			wid: '_' + partnerId,
+			uiconf_id: uiConf,
+			p: partnerId
+		}, {
+			//hash: mw.getKalturaIframeHash(),
+			width: 400,
+			height: 300
+		} );
+	});
+
+	$j('#showVideo').trigger('click');
+
+} );
+</script>
+
+    </body>
+</html>
