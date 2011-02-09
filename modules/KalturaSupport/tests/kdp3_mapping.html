@@ -4,13 +4,12 @@
 <head>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>KDP3 | Kaltura Dynamic Player version 3 JavaScript Playground ( HTML5 backend player ) </title>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 	<script type="text/javascript" src="kdp3_mapping_files/swfobject.js"></script>
 	<script type="text/javascript" src="kdp3_mapping_files/prettify.js"></script>
 	
 	
-	 <script type="text/javascript" src="../../../mwEmbedLoader.js?debug=true"></script>
+	 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 	<!-- <script type="text/javascript" src="http://html5.kaltura.org/js"></script> -->
 	<!--<script type="text/javascript" src="../../../mwEmbed.js"></script>-->
 	
@@ -191,21 +190,21 @@
 		}
 		
 		function playerUpdatePlayheadHandler(data, id) {
-                    if ($('#listenToUpdate').attr('checked') == true) {
-                    $("#notifications").text($("#notifications").text() + "playerUpdatePlayhead: ");
-                        printobj(data);
-                    }
-                    $('#videotime').text(data);
+			if ($('#listenToUpdate').attr('checked') == true) {
+				$("#notifications").text($("#notifications").text() + "playerUpdatePlayhead: ");
+					printobj(data);
+			}
+			$('#videotime').text(data);
 		}
 		
 		function entryHandler(entry) {
-                    alert('entryReady Event\n' + entry);
+			alert('entryReady Event\n' + entry);
 		}
 		
 		$(function() {
-                    $('#cMedia').click( function() {
-                        $('#kdp3').get(0).sendNotification("changeMedia",{entryId:"1_8c3s1pvx"});
-                    });
+			$('#cMedia').click( function() {
+				$('#kdp3').get(0).sendNotification("changeMedia",{entryId:"1_8c3s1pvx"});
+			});
 		});
 	</script>
 

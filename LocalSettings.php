@@ -4,6 +4,8 @@
  * 
  * See includes/DefaultSettings.php for a configuration options
  */
+$wgEnableIframeApi = 'true';
+$wgEnableIpadHTMLControls = 'true';
 
 
 ?>

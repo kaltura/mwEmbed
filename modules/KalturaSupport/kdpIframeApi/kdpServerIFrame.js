@@ -3,24 +3,9 @@
 */
 
 ( function( mw ) {
-	
-// Also include a document ready event to check for kdp player readyness 
-//( in case jsCallbackReady was fired before this script is executed )
-jQuery(document).ready(function(){	
-	var timeoutCount = 0;
-	var waitForKalturaPlayer = function(){
-		if( !$j('#kaltura_player').length || !$j('#kaltura_player').get(0).addJsListener ){
-			timeoutCount++;
-			if( timeoutCount == 1000 ){ // 10 seconds timeout 
-				mw.log("Error kaltura player never ready");
-			}
-			setTimeout( waitForKalturaPlayer,10);
-		} else{
-			serverIframe = new kdpServerIframe();
-		}
-	}
-	waitForKalturaPlayer();
-})
+window.jsCallbackReady = function(){	
+	serverIframe = new kdpServerIframe();
+};
 var addedKdpServerIframe =false;
 kdpServerIframe = function(){
 	// Check if we have already created the kdpServerIframe: 
@@ -78,13 +63,15 @@ kdpServerIframe.prototype = {
 		var msgObject = JSON.parse( event.data );
 		
 		// Call a method:
-		mw.log("kdpIframeServer hanldeMsg::" + msgObject.method );
+		var lname = ( msgObject.method == 'addJsListener' )? ': ' + msgObject.args[0]:'' ;
+		mw.log("kdpIframeServer hanldeMsg::" + msgObject.method + lname  );
 		if( msgObject.method && this.kdpPlayer[ msgObject.method ] ){
 			// Check for special case of adding listener
-			if( msgObject.method == 'addJsListener' ){
+			if( msgObject.method == 'addJsListener' ){				
 				var listenName = msgObject.args[0];
-				var localCallbackName = listenName + '_kdpcb';
-				var callbackName = msgObject.args[1]
+				var localCallbackName = listenName + '_' + Math.round( Math.random()*100000000 );
+				var callbackName = msgObject.args[1];
+				                                                            
 				// Create a global callback in this function scope: 
 				window[ localCallbackName ] = function(){
 					_this.postMessage( {

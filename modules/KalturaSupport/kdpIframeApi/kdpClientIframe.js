@@ -131,6 +131,9 @@ kdpClientIframe.prototype = {
 				mw.log("Error unregistered global callback from iframe");
 				return ;
 			}
+			if( ! window[ msgObject.callbackName ] ){
+				mw.log("Errror callback name does not exist: " + msgObject.callbackName);
+			}
 			window[ msgObject.callbackName ].apply(this, msgObject.callbackArgs );
 		}
 	},

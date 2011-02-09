@@ -529,7 +529,7 @@ class kalturaIframe {
 			return '" />'.
 				'<param name="movie" value="' . htmlspecialchars( $this->getSwfUrl() ) . '" />'.
 				$childHTML .
-			'</object>';	
+			'</object>';
 	}
 	/**
 	 * void function to set iframe content headers
