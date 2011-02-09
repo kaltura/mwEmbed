@@ -126,7 +126,7 @@
 					var swfSource =  $j( element ).attr( 'data' );
 					// try to get the source from a param if not defined in the top level embed. 
 					if( !swfSource ) {
-						swfSource = $j( element ).find( "param[name=data]").attr( 'value' );						                                      
+						swfSource = $j( element ).find( "param[name=data]" ).attr( 'value' );						                                      
 					}
 					var kEmbedSettings = mw.getKalturaEmbedSettings( swfSource, flashvars );
 					// check if its a playlist or a entryId
