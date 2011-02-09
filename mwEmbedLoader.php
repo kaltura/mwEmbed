@@ -21,7 +21,7 @@ $exportedJsConfig= array(
 	'Kaltura.CdnUrl' => $wgKalturaCDNUrl,
 	'EmbedPlayer.EnableIframeApi'  => $wgEnableIframeApi,
 	'EmbedPlayer.EnableIpadHTMLControls' => $wgEnableIpadHTMLControls,
-	'EmbedPlayer.UseFlashOnAndroid' => true
+	'EmbedPlayer.UseFlashOnAndroid' => 'true'
 );
 // Append Custom config: 
 foreach( $exportedJsConfig as $key => $val ){

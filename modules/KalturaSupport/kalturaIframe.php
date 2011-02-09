@@ -500,7 +500,7 @@ class kalturaIframe {
 				$this->getPostFlashVars( $childHTML );
 	}
 	private function getDefaultFlashVars(){
-		return  'streamerType=rtmp&externalInterfaceDisabled=false';
+		return  'externalInterfaceDisabled=false';
 	}
 	private function getSwfUrl(){
 		global $wgKalturaServiceUrl;
