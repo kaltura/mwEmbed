@@ -644,6 +644,7 @@ function kGetEntryThumbUrl( entry ){
 // Copied from kalturaSupport loader mw.getKalturaEmbedSettings  
 function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 	var embedSettings = {};
+	
 	// Convert flashvars if in string format: 
 	if( typeof flashvars == 'string' ){
 		var flashVarsSet = ( flashvars )? flashvars.split('&'): [];
@@ -651,12 +652,13 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 		for( var i =0 ;i < flashVarsSet.length; i ++){
 			var currentVar = flashVarsSet[i].split('=');
 			if( currentVar[0] && currentVar[1] ){
-				flashvars[ flashVar[0] ] = flashVar[1];
+				flashvars[ currentVar[0] ] = currentVar[1];
 			}
 		}
 	}
 	if( !flashvars )
-		flashvars= {};	
+		flashvars= {};
+	
 	// Include flashvars
 	embedSettings.flashvars = flashvars
 		
