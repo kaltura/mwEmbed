@@ -478,28 +478,43 @@
 	 * 	object mapping kaltura variables, ( overrides url based variables ) 
 	 */
 	mw.getKalturaEmbedSettings = function( swfUrl, flashvars ){
-		if( !flashvars )
-			flashvars= {};
-		var dataUrlParts = swfUrl.split('/');
 		var embedSettings = {};
+		// Convert flashvars if in string format: 
+		if( typeof flashvars == 'string' ){
+			var flashVarsSet = ( flashvars )? flashvars.split('&'): [];
+			flashvars = {};
+			for( var i =0 ;i < flashVarsSet.length; i ++){
+				var currentVar = flashVarsSet[i].split('=');
+				if( currentVar[0] && currentVar[1] ){
+					flashvars[ flashVar[0] ] = flashVar[1];
+				}
+			}
+		}
+		if( !flashvars )
+			flashvars= {};	
+		// Include flashvars
+		embedSettings.flashvars = flashvars
+			
+		var dataUrlParts = swfUrl.split('/');
+		
 		// Search backward for key value pairs
 		var prevUrlPart = null;
 		while( dataUrlParts.length ){
 			var curUrlPart =  dataUrlParts.pop();
 			switch( curUrlPart ){
 				case 'p':
-					embedSettings.widgetId = '_' + prevUrlPart;
-					embedSettings.partnerId = prevUrlPart;
+					embedSettings.wid = '_' + prevUrlPart;
+					embedSettings.p = prevUrlPart;
 				break;
 				case 'wid':
-					embedSettings.widgetId = prevUrlPart;
-					embedSettings.partnerId = prevUrlPart.replace(/_/,'');
+					embedSettings.wid = prevUrlPart;
+					embedSettings.p = prevUrlPart.replace(/_/,'');
 				break;
 				case 'entry_id':
-					embedSettings.entryId = prevUrlPart;
+					embedSettings.entry_id = prevUrlPart;
 				break;
 				case 'uiconf_id':
-					embedSettings.uiconfId = prevUrlPart;
+					embedSettings.uiconf_id = prevUrlPart;
 				break;
 				case 'cache_st':
 					embedSettings.cacheSt = prevUrlPart;
@@ -507,8 +522,12 @@
 			}
 			prevUrlPart = curUrlPart;
 		}
-		// Normalize the entryid to url request equivalent:
-		if( embedSettings['entryid'] ){
+		// Add in Flash vars embedSettings ( they take precedence over embed url )
+		for( var i in  flashvars){
+			embedSettings[ i.toLowerCase() ] = flashvars[i];
+		}
+		// Normalize the entryid to url request equivalents
+		if( embedSettings[ 'entryid' ] ){
 			embedSettings['entry_id'] =  embedSettings['entryid'];
 		}
 		return embedSettings;

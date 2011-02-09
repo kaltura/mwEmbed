@@ -43,7 +43,7 @@ var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 SCRIPT_FORCE_DEBUG = true;
-SCRIPT_LOADER_URL = 'http://192.168.0.102/html5.kaltura/mwEmbed/ResourceLoader.php';
+SCRIPT_LOADER_URL = 'http://192.168.38.18/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
@@ -73,22 +73,6 @@ kOverideSwfObject();
 if( !preMwEmbedReady ){
 	var preMwEmbedReady = [];
 }
-// Wrap mw.ready to preMwEmbedReady values
-if( !mw.ready){
-	mw.ready = function( fn ){		
-		// if running an iframe rewrite without code update we should just run the ready function directly: 
-		if( preMwEmbedConfig['Kaltura.IframeRewrite'] && !preMwEmbedConfig['EmbedPlayer.EnableIframeApi'] ){
-			fn();
-			return ;
-		}
-		
-		preMwEmbedReady.push( fn );
-		// Check if mw.ready was called after the dom is ready:
-		if( kAlreadyRunDomReadyFlag ){
-			kCheckAddScript();
-		}
-	}
-}
 // Setup a preMwEmbedConfig var
 if( ! preMwEmbedConfig ) {
 	var preMwEmbedConfig = {};
@@ -106,8 +90,41 @@ if( !mw.setConfig ){
 	}
 }
 
+if( ! mw.getConfig ){
+	mw.getConfig = function ( name, defaultValue ){
+		if( !preMwEmbedConfig[ name ] ){
+			if( typeof defaultValue != 'undefined' ){
+				return defaultValue;
+			}
+			return false;
+		} else {
+			return preMwEmbedConfig[ name ];
+		}
+	};
+};
+
+// Wrap mw.ready to preMwEmbedReady values
+if( !mw.ready){
+	mw.ready = function( fn ){		
+		// if running an iframe rewrite without code update we should just run the ready function directly: 
+		if( mw.getConfig('Kaltura.IframeRewrite') && ! mw.getConfig('EmbedPlayer.EnableIframeApi') ){
+			fn();
+			return ;
+		}
+		
+		preMwEmbedReady.push( fn );
+		// Check if mw.ready was called after the dom is ready:
+		if( kAlreadyRunDomReadyFlag ){
+			kCheckAddScript();
+		}
+	}
+}
+
+
 // Set kaltura api to true by default: 
-mw.setConfig( 'EmbedPlayer.EnableIframeApi', true ) ; 
+if( !mw.getConfig('EmbedPlayer.EnableIframeApi') ){
+	mw.setConfig( 'EmbedPlayer.EnableIframeApi', true ) ; 
+}
 
 // Set url based config:
 if( document.URL.indexOf('forceMobileHTML5') != -1 ){
@@ -115,17 +132,18 @@ if( document.URL.indexOf('forceMobileHTML5') != -1 ){
 }
 function kDoIframeRewriteList( rewriteObjects ){
 	var options;
-	for(var i=0;i < rewriteObjects.length; i++){
-		options = { width: rewriteObjects[i].width, height: rewriteObjects[i].height }
+	for( var i=0; i < rewriteObjects.length; i++ ){
+		options = { width: rewriteObjects[i].width, height: rewriteObjects[i].height }		
 		kalturaIframeEmbed( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
 	}
 }
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( !options )
 		options = {};
+	
 	// Check if the iframe API is enabled in which case we have to load client code and use that 
 	// to rewrite the frame
-	if( preMwEmbedConfig['EmbedPlayer.EnableIframeApi'] ){
+	if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) ){
 		if( kIsHTML5FallForward() ){
 			kAddScript(function(){
 				// Options include 'width' and 'height'
@@ -134,7 +152,6 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 				$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
 			});
 		} else {
-		
 			var jsRequestSet = [];
 			if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
 				jsRequestSet.push( ['window.jQuery'] )
@@ -160,7 +177,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	}
 	
 	// add the forceMobileHTML5 to the iframe if present on the client: 
-	if( preMwEmbedConfig['forceMobileHTML5'] === true ){
+	if( mw.getConfig( 'forceMobileHTML5' ) ){
 		iframeSrc += '?forceMobileHTML5=true';
 	}
 	
@@ -200,7 +217,7 @@ function kOverideSwfObject(){
 					'partner_id': kEmbedSettings.p 
 				})
 			}
-			if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
+			if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){
 				kalturaIframeEmbed( replaceTargetId, kEmbedSettings , { 'width': width, 'height': height } );
 			} else {
 				$j('#' + replaceTargetId ).empty()
@@ -218,16 +235,8 @@ function kOverideSwfObject(){
 		window['SWFObject'].prototype['originalWrite'] = window['SWFObject'].prototype.write;
 		window['SWFObject'].prototype['write'] = function( targetId ){
 			var _this = this;
-			mw.ready(function(){
-				var flashVarsSet = ( _this.params.flashVars )? _this.params.flashVars.split('&'): [];
-				flashVars = {};
-				for( var i =0 ;i < flashVarsSet.length; i ++){
-					var flashVar = flashVarsSet[i].split('=');
-					if( flashVar[0] &&   flashVar[1]){
-						flashVars[ flashVar[0] ] = flashVar[1];
-					}
-				}
-				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, flashVars);
+			mw.ready(function(){				
+				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, _this.params.flashVars);
 				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else {
@@ -267,7 +276,7 @@ function kCheckAddScript(){
 		kAddScript();
 		return ;
 	}
-	if( preMwEmbedConfig['Kaltura.LoadScriptForVideoTags'] !== false ){
+	if( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) ){
 		// If document includes audio or video tags
 		if( document.getElementsByTagName('video').length != 0
 			|| document.getElementsByTagName('audio').length != 0 ) {
@@ -292,13 +301,13 @@ function kIsHTML5FallForward(){
 		(navigator.userAgent.indexOf('iPod') != -1) || 
 		(navigator.userAgent.indexOf('iPad') != -1) ||
 		// Force html5 for chrome / desktop safari
-		( preMwEmbedConfig['forceMobileHTML5'] === true )
+		( mw.getConfig( 'forceMobileHTML5' ) )
 	){
 		return true;
 	}
 	// Special check for Android:
 	if( navigator.userAgent.indexOf('Android 2.') != -1 ){
-		if( preMwEmbedConfig[ 'EmbedPlayer.UseFlashOnAndroid' ] 
+		if( mw.getConfig( 'EmbedPlayer.UseFlashOnAndroid' ) 
 		    &&
 		    kSupportsFlash()
 		){
@@ -320,7 +329,7 @@ function kIsHTML5FallForward(){
 	}
 	// if we have the iframe enabled return true ( since the iframe will output a fallback link
 	// even if the client does not support html5 or flash )
-	if( preMwEmbedConfig['Kaltura.IframeRewrite'] ){
+	if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){
 		return true;
 	}
 	
@@ -386,8 +395,8 @@ function kAddScript( callback ){
 		jsRequestSet.push( 'window.jQuery' )
 	}
 	// Check if we are using an iframe ( load only the iframe api client ) 
-	if( preMwEmbedConfig['Kaltura.IframeRewrite'] ) {
-		if( preMwEmbedConfig['EmbedPlayer.EnableIframeApi'] ){
+	if( mw.getConfig( 'Kaltura.IframeRewrite' ) ) {
+		if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') ){
 			jsRequestSet.push( 'mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );
 			kLoadJsRequestSet( jsRequestSet, callback );
 		} else {
@@ -428,8 +437,8 @@ function kAddScript( callback ){
 	);
 	
 	// Add the jquery ui skin: 
-	if( preMwEmbedConfig['jQueryUISkin'] ){
-		jsRequestSet.push( 'mw.style.ui_' + preMwEmbedConfig['jQueryUISkin']  );
+	if( mw.getConfig( 'jQueryUISkin' ) ){
+		jsRequestSet.push( 'mw.style.ui_' + mw.getConfig( 'jQueryUISkin' )  );
 	} else {
 		jsRequestSet.push( 'mw.style.ui_kdark'  );
 	}
@@ -585,8 +594,8 @@ kGetKalturaPlayerList = function(){
 	var kalturaPlayers = [];
 	// check all objects for kaltura compatible urls 
 	var objectList = document.getElementsByTagName('object');
-	var tryAddKalturaEmbed = function( url ){
-		var settings = kGetKalturaEmbedSettings( url );
+	var tryAddKalturaEmbed = function( url , flashvars){
+		var settings = kGetKalturaEmbedSettings( url, flashvars );
 		if( settings && settings.uiconf_id && settings.wid ){
 			objectList[i].kSettings = settings;
 			kalturaPlayers.push(  objectList[i] );
@@ -595,21 +604,31 @@ kGetKalturaPlayerList = function(){
 		return [];
 	}
 	
+	
 	// alert('object list: ' + objectList.length );
 	for( var i =0; i < objectList.length; i++){
-		if( objectList[i].getAttribute('data') ){
-			if( tryAddKalturaEmbed( objectList[i].getAttribute('data') ) )
-				continue;
-		}
+		var swfUrl = '';
+		var flashvars = '';
 		var paramTags = objectList[i].getElementsByTagName('param');
 		for( var j = 0; j < paramTags.length; j++){
 			if( paramTags[j].getAttribute('name') == 'data'
 				||
 				paramTags[j].getAttribute('name') == 'src' )
 			{
-				if( tryAddKalturaEmbed( paramTags[j].getAttribute('value') ) )
-					break;
+				swfUrl =  paramTags[j].getAttribute('value');
 			}
+			if( paramTags[j].getAttribute('name') == 'flashvars' ){
+				flashvars =	paramTags[j].getAttribute('value');		
+			}
+		}
+		if( tryAddKalturaEmbed( url, flashvars) ){
+			continue;
+		}
+		
+		// Check for object data style url: 
+		if( objectList[i].getAttribute('data') ){
+			if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) )
+				continue;
 		}
 	}
 	
@@ -617,17 +636,32 @@ kGetKalturaPlayerList = function(){
 }
 
 function kGetEntryThumbUrl( entry ){
-	var kCdn = ( preMwEmbedConfig['Kaltura.CdnUrl'] ) ? preMwEmbedConfig['Kaltura.CdnUrl'] : 'http://cdnakmi.kaltura.com';
+	var kCdn = mw.getConfig( 'Kaltura.CdnUrl', 'http://cdnakmi.kaltura.com' ); 
 	return kCdn + '/p/' + entry.partner_id + '/sp/' +
 		entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
 		entry.height + '/height/' + entry.width;
 }
 // Copied from kalturaSupport loader mw.getKalturaEmbedSettings  
-kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
-	if( !flashvars )
-		flashvars= {};
-	var dataUrlParts = swfUrl.split('/');
+function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 	var embedSettings = {};
+	// Convert flashvars if in string format: 
+	if( typeof flashvars == 'string' ){
+		var flashVarsSet = ( flashvars )? flashvars.split('&'): [];
+		flashvars = {};
+		for( var i =0 ;i < flashVarsSet.length; i ++){
+			var currentVar = flashVarsSet[i].split('=');
+			if( currentVar[0] && currentVar[1] ){
+				flashvars[ flashVar[0] ] = flashVar[1];
+			}
+		}
+	}
+	if( !flashvars )
+		flashvars= {};	
+	// Include flashvars
+	embedSettings.flashvars = flashvars
+		
+	var dataUrlParts = swfUrl.split('/');
+	
 	// Search backward for key value pairs
 	var prevUrlPart = null;
 	while( dataUrlParts.length ){
@@ -658,7 +692,7 @@ kGetKalturaEmbedSettings = function( swfUrl, flashvars ){
 		embedSettings[ i.toLowerCase() ] = flashvars[i];
 	}
 	// Normalize the entryid to url request equivalents
-	if( embedSettings['entryid'] ){
+	if( embedSettings[ 'entryid' ] ){
 		embedSettings['entry_id'] =  embedSettings['entryid'];
 	}
 	return embedSettings;

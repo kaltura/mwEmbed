@@ -13,13 +13,18 @@ kdpClientIframe.prototype = {
 	// Similar to jQuery.fn.kalturaIframePlayer in KalturaSupport/loader.js
 	'init': function( replaceTargetId, kEmbedSettings , options ){
 		var _this = this;
+		
 		// Update options via target size if not set
-		this.width = (options.width) ? options.width : $j( '#' + replaceTargetId ).width();
-		this.height = (options.height) ? options.height : $j( '#' + replaceTargetId ).height();
-		this.kEmbedSettings = kEmbedSettings;	
+		this.width = ( options.width ) ? options.width : $j( '#' + replaceTargetId ).width();
+		this.height = ( options.height ) ? options.height : $j( '#' + replaceTargetId ).height();
+		this.kEmbedSettings = kEmbedSettings;
 		this.targetId = replaceTargetId;
-
 				
+		// Check if kEmbedSettings includes flashvars update the config:
+		if( kEmbedSettings.flashvars ){
+			mw.setConfig('Kaltura.Flashvars' ,kEmbedSettings.flashvars  );
+		}
+		
 		// Replace the target with an iframe player:
 		$j( '#' + replaceTargetId ).replaceWith( this.getIframe() );
 		

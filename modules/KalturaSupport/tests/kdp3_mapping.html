@@ -126,17 +126,17 @@
 			$('#kdp3').get(0).addJsListener("bytesTotalChange", "bytesTotalChangeHandler");
 			$('#kdp3').get(0).addJsListener("bytesDownloadedChange", "bytesDownloadedChangeHandler");
 			
-                        // New Listeners used by MediaSpace
-                        $('#kdp3').get(0).addJsListener("kdpEmpty", "function() { console.log('kdpEmpty Event'); }");
-                        $('#kdp3').get(0).addJsListener("kdpReady", "function() { alert('kdpReady Event'); }");
-                        $('#kdp3').get(0).addJsListener("entryReady", "entryHandler");
-                        $('#kdp3').get(0).addJsListener("mediaReady", "function() { console.log('mediaReady Event'); }");
-                        $('#kdp3').get(0).addJsListener("playerPlayed", "function() { console.log('playerPlayed Event'); }");
-                        $('#kdp3').get(0).addJsListener("playerPlayEnd", "function() { console.log('playerPlayEnd Event'); }");
+			// New Listeners used by MediaSpace
+			$('#kdp3').get(0).addJsListener("kdpEmpty", "function() { console.log('kdpEmpty Event'); }");
+			$('#kdp3').get(0).addJsListener("kdpReady", "function() { $('#notifications').append( 'kdpReady' ) }");
+			$('#kdp3').get(0).addJsListener("entryReady", "entryHandler");
+			$('#kdp3').get(0).addJsListener("mediaReady", "function() { console.log('mediaReady Event'); }");
+			$('#kdp3').get(0).addJsListener("playerPlayed", "function() { console.log('playerPlayed Event'); }");
+			$('#kdp3').get(0).addJsListener("playerPlayEnd", "function() { console.log('playerPlayEnd Event'); }");
 
 			for ( i=0; i < notificationslist.length; ++i) {
 				if (notificationslist[i] != 'playerUpdatePlayhead') {
-                                    var fName = notificationslist[i];
+					var fName = notificationslist[i];
 					window[ notificationslist[i] + "Handler2" ] = function(data, id){
 						if ($("#stopListeners").attr("checked") == false) {
 							$("#notifications").text( $("#notifications").text() + fName + ':');
@@ -282,7 +282,7 @@
 					'<param name="allowNetworking" value="all" /> ' + 
 					'<param name="allowScriptAccess" value="always" />' + 
 					'<param name="bgcolor" value="#000000" />' + 
-					'<param name="flashVars" value="&" />' + 
+					'<param name="flashVars" value="streamerType=rtmp&externalInterfaceDisabled=false" />' + 
 					'<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1291647430/wid/_243342/uiconf_id/2890431/entry_id/0_uka1msg4" />' + 
 					'<a href="http://corp.kaltura.com">video platform</a> ' + 
 					'<a href="http://corp.kaltura.com/video_platform/video_management">video management</a> ' + 

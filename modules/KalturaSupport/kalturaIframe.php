@@ -490,8 +490,19 @@ class kalturaIframe {
 		$o.= "\n" .'</video>';
 		return $o;
 	}
-
-	private function getFlashEmbedHTML( $childHTML = '' ){
+	/**
+	 * Get Flash embed code with default flashvars:
+	 * @param childHtml Html string to set as child of object embed
+	 */	
+	private function getFlashEmbedHTML( $childHTML = '' ){		
+		return 	$this->getPreFlashVars() . 
+				$this->getDefaultFlashVars() . 
+				$this->getPostFlashVars( $childHTML );
+	}
+	private function getDefaultFlashVars(){
+		return  'streamerType=rtmp&externalInterfaceDisabled=false';
+	}
+	private function getSwfUrl(){
 		global $wgKalturaServiceUrl;
 		$swfUrl = $wgKalturaServiceUrl . '/index.php/kwidget';
 		foreach($this->playerAttributes as $key => $val ){
@@ -499,22 +510,27 @@ class kalturaIframe {
 				$swfUrl.='/' . $key . '/' . $val;
 			}
 		}
+		return $swfUrl;
+	}
+	private function getPreFlashVars(){
 		return '<object id="kaltura_player" name="kaltura_player" ' .
 				'type="application/x-shockwave-flash" allowFullScreen="true" '.
 				'allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" style="height:100%;width:100%" '.
 				'xmlns:dc="http://purl.org/dc/terms/" '.
 				'xmlns:media="http://search.yahoo.com/searchmonkey/media/" '.
 				'rel="media:video" '.
-				'resource="' . htmlspecialchars( $swfUrl ) . '" '.
-				'data="' . htmlspecialchars( $swfUrl ) . '"> '.
+				'resource="' . htmlspecialchars( $this->getSwfUrl() ) . '" '.
+				'data="' . htmlspecialchars( $this->getSwfUrl() ) . '"> '.
 				'<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />' .
 				'<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />'.
-				'<param name="flashVars" value="streamerType=rtmp&externalInterfaceDisabled=false" />'.
-				'<param name="movie" value="' . htmlspecialchars( $swfUrl ) . '" />'.
-				$childHTML .
-			'</object>';
+				'<param name="flashVars" value="';
 	}
-
+	private function getPostFlashVars( $childHTML = '' ){
+			return '" />'.
+				'<param name="movie" value="' . htmlspecialchars( $this->getSwfUrl() ) . '" />'.
+				$childHTML .
+			'</object>';	
+	}
 	/**
 	 * void function to set iframe content headers
 	 */
@@ -707,8 +723,21 @@ class kalturaIframe {
 				document.getElementById( 'videoContainer' ).removeChild(vid);
 
 				if( kSupportsFlash() ){
+					// Build the flash vars string
+					var flashVarsString = '<?php echo $this->getDefaultFlashVars() ?>';
+					var flashVars = mw.getConfig('Kaltura.Flashvars');
+					if( flashVars ){
+						var and = '';
+						for( var key in flashVars ){
+							flashVarsString += and + key + '=' + flashVars[key];
+							and ='&'; 
+						}
+					}
 					// Write out the embed object
-					document.write('<?php echo $this->getFlashEmbedHTML()?>');
+					document.write('<?php echo $this->getPreFlashVars() ?>' + 
+							flashVarsString + 
+							'<?php echo $this->getPostFlashVars() ?>' );
+					
 					// Load server side bindings for kdpServer
 					kLoadJsRequestSet( ['window.jQuery', 'mwEmbed', 'mw.style.mwCommon', '$j.postMessage', 'kdpServerIFrame', 'JSON' ] );
 				} else {
