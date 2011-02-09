@@ -130,7 +130,7 @@
 			$('#kdp3').get(0).addJsListener("kdpEmpty", "function() { console.log('kdpEmpty Event'); }");
 			$('#kdp3').get(0).addJsListener("kdpReady", "function() { $('#notifications').append( 'kdpReady' ) }");
 			$('#kdp3').get(0).addJsListener("entryReady", "entryHandler");
-			$('#kdp3').get(0).addJsListener("mediaReady", "function() { console.log('mediaReady Event'); }");
+			$('#kdp3').get(0).addJsListener("mediaReady", "function() { alert('mediaReady Event'); }");
 			$('#kdp3').get(0).addJsListener("playerPlayed", "function() { console.log('playerPlayed Event'); }");
 			$('#kdp3').get(0).addJsListener("playerPlayEnd", "function() { console.log('playerPlayEnd Event'); }");
 
@@ -199,8 +199,7 @@
 		}
 		
 		function entryHandler(entry) {
-                    console.log('entryReady Event');
-                    console.log(entry);
+                    alert('entryReady Event\n' + entry);
 		}
 		
 		$(function() {
