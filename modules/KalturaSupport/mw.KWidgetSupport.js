@@ -289,7 +289,7 @@ mw.KWidgetSupport.prototype = {
 					src += '/format/applehttp/protocol/http';
 					deviceSources['AppleMBR'] = src + '/a.m3u8';
                                 } else {
-                                    src += '/flavor/' + asset.id + '/format/url/protocol/http';
+                                    src += '/flavorId/' + asset.id + '/format/url/protocol/http';
                                 }
 			
                         } else {
