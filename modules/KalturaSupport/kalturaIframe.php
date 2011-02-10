@@ -91,7 +91,7 @@ class kalturaIframe {
 			return array();
 		}
 
-		$resultObject =  $this->getResultObject();
+		$resultObject =  $this->getResultObject(); 
 		// add any web sources
 		$sources = array();
 
@@ -106,7 +106,7 @@ class kalturaIframe {
 			return array();
 		}
 		
-		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){			
+		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){	 
 			if( $wgKalturaUseManifestUrls ){
 				// New asset url using playManifest
 				$assetUrl =  $wgKalturaServiceUrl .'/p/' . $this->getPartnerId() . '/sp/' .

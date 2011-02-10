@@ -6,6 +6,7 @@
  */
 $wgEnableIframeApi = 'true';
 $wgEnableIpadHTMLControls = 'true';
+$wgKalturaUseManifestUrls = 'true';
 
 
 ?>

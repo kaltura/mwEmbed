@@ -52,7 +52,7 @@ $wgKalturaUiConfCacheTime = 600;
 $wgEnableIframeApi = false;
 $wgEnableIpadHTMLControls = false;
 
-$wgKalturaUseManifestUrls = false;
+$wgKalturaUseManifestUrls = 'true';
 
 /*********************************************************
  * Include local settings override:
