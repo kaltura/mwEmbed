@@ -19,7 +19,12 @@ kdpServerIframe = function(){
 	return this.init( $j('#kaltura_player').get(0) );
 }
 
-kdpServerIframe.prototype = {		
+kdpServerIframe.prototype = {
+	// flag to work around strange kdp error: 
+	sentConfigProxyFlag : false,
+	
+	// Stores the local instance names of callback functions maped to the listen name
+	listenerCallbackLookup: [],
 	'init': function( kdpPlayer ){
 		var _this = this;
 		this.kdpPlayer = kdpPlayer;
@@ -66,8 +71,9 @@ kdpServerIframe.prototype = {
 		var lname = ( msgObject.method == 'addJsListener' )? ': ' + msgObject.args[0]:'' ;
 		mw.log("kdpIframeServer hanldeMsg::" + msgObject.method + lname  );
 		if( msgObject.method && this.kdpPlayer[ msgObject.method ] ){
+			
 			// Check for special case of adding listener
-			if( msgObject.method == 'addJsListener' ){				
+			if( msgObject.method == 'addJsListener' ){	
 				var listenName = msgObject.args[0];
 				var localCallbackName = listenName + '_' + Math.round( Math.random()*100000000 );
 				var callbackName = msgObject.args[1];
@@ -79,10 +85,32 @@ kdpServerIframe.prototype = {
 						'callbackArgs': $j.makeArray( arguments )
 					});
 				};
+				this.listenerCallbackLookup[ callbackName ] = localCallbackName;
+				
 				this.kdpPlayer.addJsListener( listenName, localCallbackName);
 				return ;
-			}			
-			this.kdpPlayer[ msgObject.method ].apply( this.kdpPlayer, $j.makeArray( msgObject.args ) );			
+			}
+			
+			// Special case for removeJsListener
+			if( msgObject.method == 'removeJsListener'){
+				var listenName = msgObject.args[0];
+				var callbackName = msgObject.args[1];
+				this.kdpPlayer.removeJsListener(msgObject.args[0], this.listenerCallbackLookup[ callbackName ]  );
+				return ;
+			}					
+
+			// Tragically we can't use .apply :(
+			if( msgObject.method == 'setKDPAttribute' ){
+				if( msgObject.args.length == 3 ){
+					this.kdpPlayer.setKDPAttribute( msgObject.args[0], msgObject.args[1], msgObject.args[2] );
+				} else if (  msgObject.args.length == 2 ){
+					this.kdpPlayer.setKDPAttribute( msgObject.args[0], msgObject.args[1]);
+				}
+				return ;
+			}
+			// Any other methods send directly to kdpPlayer: 
+			this.kdpPlayer[ msgObject.method ].apply( this, $j.makeArray( msgObject.args ) );
+			
 		} else{
 			mw.log("Error: kdpIframeServer recived invalid method: " + msgObject.method  );
 		}
@@ -95,9 +123,10 @@ kdpServerIframe.prototype = {
 		var _this = this;
 		_this.kdpPlayer = $j('#kaltura_player').get(0);
 		// top level "evaluate" components: 
-		var attrSet = ['video', ['mediaProxy','entry'],'configProxy','playerStatusProxy'];
+		var attrSet = ['video', ['mediaProxy', 'entry'], 'configProxy', 'playerStatusProxy'];
 		var evaluateData =  {};
-		$j.each( attrSet, function(inx, attrName){
+		for(var i in attrSet){
+			var attrName = attrSet[i];
 			try{
 				if( typeof attrName == 'object' ){
 					if( !evaluateData[ attrName[0] ] ){
@@ -105,12 +134,18 @@ kdpServerIframe.prototype = {
 					}
 					evaluateData[ attrName[0] ] [ attrName[1] ] =  _this.kdpPlayer.evaluate('{' + attrName[0] + '.' + attrName[1] + '}');
 				} else {
-					evaluateData[ attrName ] = _this.kdpPlayer.evaluate('{' + attrName + '}');
+					// XXX Very strange error being sent from flash kdp "undefined missing { on evaluate configProxy the second time!
+					if( attrName != 'configProxy' || !this.sentConfigProxyFlag ){
+						evaluateData[ attrName ] = _this.kdpPlayer.evaluate( "{" + attrName + "}" );
+						if( attrName == 'configProxy' ){
+							this.sentConfigProxyFlag = true;						
+						}
+					}
 				}
 			} catch(e){
 				//mw.log( 'KdpServerIframe:: caught exception: ' + e + ', could not send all player attributes');		
 			}
-		});
+		};
 		//mw.log( "IframePlayerApiServer:: sendPlayerAttributes: " + JSON.stringify( attrSet ) );
 		_this.postMessage( {
 			'evaluateData' : evaluateData 

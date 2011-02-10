@@ -650,6 +650,12 @@ class kalturaIframe {
 			document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>mwEmbedLoader.php' type='text/javascript'%3E%3C/script%3E"));
 		</script>
 		<script type="text/javascript">
+			// Insert JSON support if in missing ( IE 7, 8 )
+			if( typeof JSON == 'undefined' ){ 
+				document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>/libraries/json/json2.js' type='text/javascript'%3E%3C/script%3E"));
+			}
+		</script>
+		<script type="text/javascript">
 			// Don't rewrite the video tag from the loader ( if html5 is supported it will be
 			// invoked bellow and respect the persistant video tag option for iPad overlays )
 			mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );

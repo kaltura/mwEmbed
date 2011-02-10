@@ -50,7 +50,7 @@
 					return _this.evaluate( embedPlayer, objectString);
 				}
 				
-				// TODO per KDP docs this should be "setAttribute" but thats a protected native method. 
+				// TODO per KDP docs this should be "	ttribute" but thats a protected native method. 
 				// the emulation has to do something more tricky like listen to componentName changes 
 				// in the attribute space!
 				embedPlayer.setKDPAttribute = function( componentName, property, value ) {
@@ -67,7 +67,7 @@
 			mw.log( "KDPMapping::addIframePlayerHooksClient" );
 
 			$j( mw ).bind( 'AddIframePlayerMethods', function( event, playerMethods ){
-				playerMethods.push( 'addJsListener',  'sendNotification' );
+				playerMethods.push( 'addJsListener',  'sendNotification', 'setKDPAttribute' );
 				// NOTE we don't export evaluate since we need to run it synchronously
 			});
 			
@@ -118,7 +118,7 @@
 			switch( property ) {
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
-					break;
+				break;
 			}
 		},
 		

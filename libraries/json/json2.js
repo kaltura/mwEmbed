@@ -160,7 +160,6 @@
 if (!this.JSON) {
     this.JSON = {};
 }
-
 (function () {
 
     function f(n) {

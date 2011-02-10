@@ -262,7 +262,7 @@ EmbedPlayerManager.prototype = {
 
 			// Be sure to "stop" the target ( Firefox 3x keeps playing
 			// the video even though its been removed from the DOM )
-			if( playerElement.pause ){
+			if( playerElement.pause && typeof playerElement.pause == 'function' ){
 				playerElement.pause();
 			}
 			

@@ -22,35 +22,32 @@
 
 			</div><!-- end contwrap -->
 		</div><!-- end content -->
-
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript">
-var partnerId = 243342;
-var uiConf = 2877502;
+	var partnerId = 243342;
+	var uiConf = 2877502;
+	var entryId = '0_uka1msg4';
 
-mw.ready( function(){
-
-	//mw.setConfig( 'EmbedPlayer.OverlayControls', false );
-
-	$j('#showVideo').attr('disabled', null);
-
-	$j('#showVideo').click( function(){
-		var entryId =  $j( '#kentryid' ).val();
+	function updateIframe(){
 		kalturaIframeEmbed('videoContainer', {
 			entry_id: entryId,
 			wid: '_' + partnerId,
 			uiconf_id: uiConf,
 			p: partnerId
 		}, {
-			//hash: mw.getKalturaIframeHash(),
 			width: 400,
 			height: 300
 		} );
+	}
+	$('#showVideo').attr('disabled', null);
+
+	$('#showVideo').click( function(){		
+		entryId =  $j( '#kentryid' ).val();		
+		updateIframe();
 	});
+	updateIframe();
 
-	$j('#showVideo').trigger('click');
-
-} );
 </script>
 
     </body>

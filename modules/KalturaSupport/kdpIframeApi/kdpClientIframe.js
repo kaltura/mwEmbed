@@ -1,4 +1,4 @@
-// Simple kdpClientIframe
+// Simple kdpClientIframe	
 var kdpClientIframe = function( replaceTargetId, kEmbedSettings , options ){
 	// Create a Player Manager
 	return this.init(replaceTargetId, kEmbedSettings , options);
@@ -9,7 +9,6 @@ kdpClientIframe.prototype = {
 	globalCallbackRegister:{
 		'jsCallbackReady': true
 	},
-	
 	// Similar to jQuery.fn.kalturaIframePlayer in KalturaSupport/loader.js
 	'init': function( replaceTargetId, kEmbedSettings , options ){
 		var _this = this;
@@ -19,7 +18,6 @@ kdpClientIframe.prototype = {
 		this.height = ( options.height ) ? options.height : $j( '#' + replaceTargetId ).height();
 		this.kEmbedSettings = kEmbedSettings;
 		this.targetId = replaceTargetId;
-				
 		// Check if kEmbedSettings includes flashvars update the config:
 		if( kEmbedSettings.flashvars ){
 			mw.setConfig('Kaltura.Flashvars' ,kEmbedSettings.flashvars  );
@@ -27,7 +25,7 @@ kdpClientIframe.prototype = {
 		
 		// Replace the target with an iframe player:
 		$j( '#' + replaceTargetId ).replaceWith( this.getIframe() );
-		
+
 		// Now add the player proxy		
 		$j( this.getIframe() ).after( 
 			$j('<div />').attr( 'id', this.targetId )
@@ -124,17 +122,22 @@ kdpClientIframe.prototype = {
 			this.evaluateData =  msgObject.evaluateData;
 		};
 		
-		// We hash global functions to avoid the iframe calling arbitrary code. 
+		// We hash global functions to avoid the iframe calling arbitrary code.
 		if( msgObject.callbackName ) {
 			var callbackArgs = ( msgObject.callbackArgs )? msgObject.callbackArgs : [];
 			if( ! _this.globalCallbackRegister[ msgObject.callbackName ] ){
 				mw.log("Error unregistered global callback from iframe");
 				return ;
 			}
-			if( ! window[ msgObject.callbackName ] ){
-				mw.log("Errror callback name does not exist: " + msgObject.callbackName);
+			if( ! window[ msgObject.callbackName ] || typeof window[ msgObject.callbackName ] != 'function' ){
+				mw.log("callback name does not exist: " + msgObject.callbackName);
+				return ;
 			}
-			window[ msgObject.callbackName ].apply(this, msgObject.callbackArgs );
+			try{
+				window[ msgObject.callbackName ].apply(this, msgObject.callbackArgs );
+			} catch( e ){
+				mw.log('Error with hanldeReciveMsg::' +  msgObject.callbackName );
+			}
 		}
 	},
 	'getIframeSrc': function(){
@@ -150,7 +153,7 @@ kdpClientIframe.prototype = {
 		return iframeSrc;
 	},
 	'getIframe': function(){
-		if(!this.iframe ){
+		if( !this.iframe ){
 			this.iframe = $j('<iframe />').attr({
 				'src' : this.getIframeSrc(),
 				'id' :  this.targetId + '_iframe',
@@ -162,4 +165,4 @@ kdpClientIframe.prototype = {
 		}
 		return this.iframe;
 	}
-}
+};

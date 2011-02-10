@@ -141,6 +141,14 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( !options )
 		options = {};
 	
+	// Empty the replace target:
+	var elm = document.getElementById(replaceTargetId);
+	if( ! elm ){
+		if( console.log )
+			console.log("Error could not find iframe target: " + replaceTargetId);
+	}
+	replaceTargetId.innerHTML = '';
+	
 	// Check if the iframe API is enabled in which case we have to load client code and use that 
 	// to rewrite the frame
 	if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) ){
@@ -156,8 +164,8 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
 				jsRequestSet.push( ['window.jQuery'] )
 			}
-			jsRequestSet.push('mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'kdpClientIframe', 'JSON' )
-			// Load just the files needed for flash iframe bindings
+			jsRequestSet.push('mwEmbed',  'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'kdpClientIframe', 'JSON' )
+			// Load just the files needed for flash iframe bindings			
 			kLoadJsRequestSet( jsRequestSet, function(){
 				var iframeRewrite = new kdpClientIframe(replaceTargetId, kEmbedSettings, options);
 			});
@@ -372,42 +380,11 @@ function kSupportsHTML5(){
 	return false;
 }
 function kSupportsFlash(){
-    /*
-	// Check if the client does not have flash and has the video tag
-	if ( navigator.mimeTypes && navigator.mimeTypes.length > 0 ) {
-		for ( var i = 0; i < navigator.mimeTypes.length; i++ ) {
-			var type = navigator.mimeTypes[i].type;
-			var semicolonPos = type.indexOf( ';' );
-			if ( semicolonPos > -1 ) {
-				type = type.substr( 0, semicolonPos );
-			}
-			if ( type == 'application/x-shockwave-flash' ) {
-				// flash is installed 				
-				return true;
-			}
-		}
-	}
-
-	// for IE: 
-	var hasObj = true;
-	if( typeof ActiveXObject != 'undefined' ){
-		try {
-			var obj = new ActiveXObject( 'ShockwaveFlash.ShockwaveFlash' );
-		} catch ( e ) {
-			hasObj = false;
-		}
-		if( hasObj ){
-			return true;
-		}
-	}
-	return false;
-    */
-
     var version = getFlashVersion().split(',').shift();
     if( version < 10 ){
-	return false;
+    	return false;
     } else {
-	return true;
+    	return true;
     }
 }
 
@@ -428,7 +405,7 @@ function kAddScript( callback ){
 	// Check if we are using an iframe ( load only the iframe api client ) 
 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) ) {
 		if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') ){
-			jsRequestSet.push( 'mwEmbed', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );
+			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );
 			kLoadJsRequestSet( jsRequestSet, callback );
 		} else {
 			kDoIframeRewriteList( kGetKalturaPlayerList() )	;
@@ -504,13 +481,17 @@ function kAddScript( callback ){
 	kLoadJsRequestSet( jsRequestSet, callback );
 };
 
-function kAppendScriptUrl(url, callback) {
+function kAppendScriptUrl( url, callback ) {
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
 	script.src = url;
 	// xxx fixme integrate with new callback system ( resource loader rewrite )
 	if( callback ){
-		script.onload = callback;
+		script.onload = new function(){ 
+			setTimeout(function(){
+				callback() 
+			},100);
+		};
 	}
 	document.getElementsByTagName('head')[0].appendChild( script );	
 }

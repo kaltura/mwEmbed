@@ -123,15 +123,7 @@
 			$('#kdp3').get(0).addJsListener("durationChange", "durationChangeHandler");
 			$('#kdp3').get(0).addJsListener("playerUpdatePlayhead", "playerUpdatePlayheadHandler");
 			$('#kdp3').get(0).addJsListener("bytesTotalChange", "bytesTotalChangeHandler");
-			$('#kdp3').get(0).addJsListener("bytesDownloadedChange", "bytesDownloadedChangeHandler");
-			
-			// New Listeners used by MediaSpace
-			$('#kdp3').get(0).addJsListener("kdpEmpty", "function() { console.log('kdpEmpty Event'); }");
-			$('#kdp3').get(0).addJsListener("kdpReady", "function() { $('#notifications').append( 'kdpReady' ) }");
-			$('#kdp3').get(0).addJsListener("entryReady", "entryHandler");
-			$('#kdp3').get(0).addJsListener("mediaReady", "function() { alert('mediaReady Event'); }");
-			$('#kdp3').get(0).addJsListener("playerPlayed", "function() { console.log('playerPlayed Event'); }");
-			$('#kdp3').get(0).addJsListener("playerPlayEnd", "function() { console.log('playerPlayEnd Event'); }");
+			$('#kdp3').get(0).addJsListener("bytesDownloadedChange", "bytesDownloadedChangeHandler");	
 
 			$.each( notificationslist, function(inx, fName){
 				if (fName != 'playerUpdatePlayhead') {
@@ -141,9 +133,11 @@
 							printobj(data);
 						}
 					}
-					$('#kdp3').get(0).addJsListener(fName, fName+"Handler2" );
+					$('#kdp3').get(0).addJsListener( fName, fName+"Handler2" );
 				}
 			});
+			// test setKDPAttribute:
+			$('#kdp3').get(0).setKDPAttribute( "configProxy.flashvars", "autoPlay", "true" );
 		}
 		
 		function printobj (obj) {
