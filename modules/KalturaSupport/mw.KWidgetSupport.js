@@ -288,15 +288,15 @@ mw.KWidgetSupport.prototype = {
 				if( asset.tags.indexOf('applembr') != -1 ) {
 					src += '/format/applehttp/protocol/http';
 					deviceSources['AppleMBR'] = src + '/a.m3u8';
-                                } else {
-                                    src += '/flavorId/' + asset.id + '/format/url/protocol/http';
-                                }
-			
-                        } else {
-                                var src  = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
-                                '/sp/' +  partner_id + '00/flvclipper/entry_id/' +
-                                asset.entryId + '/flavor/' + asset.id ;
-                        }
+				} else {
+                	src += '/flavorId/' + asset.id + '/format/url/protocol/http';
+                }
+
+            } else {
+            	var src  = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
+                   '/sp/' +  partner_id + '00/flvclipper/entry_id/' +
+                    asset.entryId + '/flavor/' + asset.id ;
+            }
 			            
 
 			// Check the tags to read what type of mp4 source
