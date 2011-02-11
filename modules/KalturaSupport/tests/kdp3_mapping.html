@@ -264,7 +264,7 @@
 				'uiconf_id' :'2890431'
 			});
 		} else {
-			$( '#playerContainer' ).html('<object id="kdp3" name="kdp3" type="application/x-shockwave-flash" ' +
+			/*$( '#playerContainer' ).html('<object id="kdp3" name="kdp3" type="application/x-shockwave-flash" ' +
 					'allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" ' + 
 					'height="330" width="400" xmlns:dc="http://purl.org/dc/terms/" ' + 
 					'xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" ' + 
@@ -287,6 +287,14 @@
 					'<span property="media:height" content="330" /> ' +
 					'<span property="media:type" content="application/x-shockwave-flash" /> ' + 
 				'</object>');
+			*/
+			// test universal object tag: 
+			$( '#playerContainer' ).html('<object id="UniquePlayerIdGoesHere" class="kalturaDynamicPlayer" width="400" height="330"> ' +
+			'<param name="entry_id" value="0_uka1msg4"></param>' +
+			'<param name="widget_id" value="_243342"></param>' +
+			'<param name="uiconf_id" value="2877502"></param>' +
+			'</object>' );
+					
 		}
 	</script>
 	

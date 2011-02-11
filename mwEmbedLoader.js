@@ -35,18 +35,20 @@
 *	// $j('#iframeid').bind('ended', function(){ .. end playback event ... }
 *	'EmbedPlayer.EnableIframeApi' : true
 */
-var kURID = '1.2m';
+// The version of this script
+KALTURA_LOADER_VERSION = '1.3a';
+
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.193.133/html5.kaltura/mwEmbed/ResourceLoader.php';
+// SCRIPT_FORCE_DEBUG = true;
+// SCRIPT_LOADER_URL = 'http://192.168.193.133/html5.kaltura/mwEmbed/ResourceLoader.php'
 
 if( typeof console != 'undefined' && console.log ) {
-	console.log( 'Kaltura MwEmbed Loader Version: ' + kURID );
+	console.log( 'Kaltura MwEmbed Loader Version: ' + KALTURA_LOADER_VERSION );
 }
 
 // Define mw ( if not already set ) 
@@ -103,10 +105,6 @@ if( ! mw.getConfig ){
 	};
 };
 
-// Check for script based iframe embed
-var scripts = document.getElementsByTagName('script');
-
-
 
 // Wrap mw.ready to preMwEmbedReady values
 if( !mw.ready){
@@ -115,13 +113,8 @@ if( !mw.ready){
 		if( mw.getConfig('Kaltura.IframeRewrite') && ! mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 			fn();
 			return ;
-		}
-		
-		preMwEmbedReady.push( fn );
-		// Check if mw.ready was called after the dom is ready:
-		if( kAlreadyRunDomReadyFlag ){
-			kCheckAddScript();
-		}
+		}		
+		preMwEmbedReady.push( fn );		
 	}
 }
 
@@ -136,9 +129,8 @@ if( document.URL.indexOf('forceMobileHTML5') != -1 ){
 	mw.setConfig( 'forceMobileHTML5', true );
 }
 function kDoIframeRewriteList( rewriteObjects ){
-	var options;
 	for( var i=0; i < rewriteObjects.length; i++ ){
-		options = { width: rewriteObjects[i].width, height: rewriteObjects[i].height }		
+		var options = { width: rewriteObjects[i].width, height: rewriteObjects[i].height }		
 		kalturaIframeEmbed( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
 	}
 }
@@ -169,7 +161,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
 				jsRequestSet.push( ['window.jQuery'] )
 			}
-			jsRequestSet.push('mwEmbed',  'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'kdpClientIframe', 'JSON' )
+			jsRequestSet.push('mwEmbed',  'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'kdpClientIframe', 'JSON' );
 			// Load just the files needed for flash iframe bindings			
 			kLoadJsRequestSet( jsRequestSet, function(){
 				var iframeRewrite = new kdpClientIframe(replaceTargetId, kEmbedSettings, options);
@@ -305,7 +297,11 @@ function getFlashVersion(){
 
 // Check DOM for Kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
+var ranKCheckAddScript = false;
 function kCheckAddScript(){
+	if( ranKCheckAddScript )
+		return ;
+	ranKCheckAddScript = true;
 	// If user javascript is using mw.ready add script
 	if( preMwEmbedReady.length ) {
 		kAddScript();
@@ -319,7 +315,13 @@ function kCheckAddScript(){
 			return ;
 		}
 	}
-	
+	var dPlayers = getKalturaDynamicPlayers();
+	if( dPlayers.length ){
+		for(var i=0;i< dPlayers.length;i++){
+			var options = { width: dPlayers[i].width, height: dPlayers[i].height }		
+			kalturaIframeEmbed( dPlayers[i].id, dPlayers[i].kSettings, options );
+		}
+	}
 	// If document includes kaltura embed tags && isMobile safari: 
 	if ( kIsHTML5FallForward() &&  kGetKalturaPlayerList().length ) {
 		// Check for Kaltura objects in the page
@@ -513,7 +515,7 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	var url = SCRIPT_LOADER_URL + '?class=';
 	// Add all the requested classes
 	url+= jsRequestSet.join(',') + ',';
-	url+= '&urid=' + kURID;
+	url+= '&urid=' + KALTURA_LOADER_VERSION;
 	url+= '&uselang=en';
 	if ( SCRIPT_FORCE_DEBUG ){
 		url+= '&debug=true';
@@ -610,6 +612,31 @@ function doScrollCheck() {
 	kRunMwDomReady();
 }
 
+getKalturaDynamicPlayers = function(){
+	var objectList = document.getElementsByTagName('object');
+	var dPlayers = [];
+	// Look for param based attributes ( if class == KalturaDynamicPlayer ) override flashvars )
+	for( var i =0; i < objectList.length; i++){
+		if( objectList[i].className && objectList[i].className.indexOf( 'KalturaDynamicPlayer' ) ){
+			var flashvars = {};
+			var paramTags = objectList[i].getElementsByTagName('param');
+			for( var j = 0; j < paramTags.length; j++){
+				var pName = paramTags[j].getAttribute('name');
+				var pVal = paramTags[j].getAttribute('value');
+				if( pName == 'entry_id' || pName == 'widget_id' || pName == 'uiconf_id'){
+					flashvars[ pName ] = pVal;
+				}
+			}
+			var settings = kGetKalturaEmbedSettings( '', flashvars );
+			if( settings && settings.uiconf_id && settings.wid ){
+				objectList[i].kSettings = settings;
+				dPlayers.push( objectList[i] );
+			}
+		}
+	}
+	return dPlayers;
+}
+
 /**
  * Get the list of embed objects on the page that are 'kaltura players'
  * Copied from kalturaSupport loader mw.getKalturaPlayerList  
@@ -618,6 +645,8 @@ kGetKalturaPlayerList = function(){
 	var kalturaPlayers = [];
 	// check all objects for kaltura compatible urls 
 	var objectList = document.getElementsByTagName('object');
+	
+	// local function to attempt to add the kalturaEmbed
 	var tryAddKalturaEmbed = function( url , flashvars){
 		var settings = kGetKalturaEmbedSettings( url, flashvars );
 		if( settings && settings.uiconf_id && settings.wid ){
@@ -628,37 +657,46 @@ kGetKalturaPlayerList = function(){
 		return false;
 	}
 	
-	
 	// alert('object list: ' + objectList.length );
 	for( var i =0; i < objectList.length; i++){
 		var swfUrl = '';
-		var flashvars = '';
+		var flashvars = {};
 		var paramTags = objectList[i].getElementsByTagName('param');
 		for( var j = 0; j < paramTags.length; j++){
-			if( paramTags[j].getAttribute('name') == 'data'
-				||
-				paramTags[j].getAttribute('name') == 'src' )
-			{
-				swfUrl =  paramTags[j].getAttribute('value');
+			var pName = paramTags[j].getAttribute('name');
+			var pVal = paramTags[j].getAttribute('value');
+			if( pName == 'data' ||	pName == 'src' ) {
+				swfUrl =  pVal
 			}
-			if( paramTags[j].getAttribute('name') == 'flashvars' ){
-				flashvars =	paramTags[j].getAttribute('value');		
+			if( pName == 'flashvars' ){
+				flashvars =	kFlashVarsToObject( pVal );
 			}
 		}
-		if( swfUrl != '' && tryAddKalturaEmbed( swfUrl, flashvars) ){
+
+		if( tryAddKalturaEmbed( swfUrl, flashvars) ){
 			continue;
 		}
-		
+
 		// Check for object data style url: 
 		if( objectList[i].getAttribute('data') ){
 			if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) )
 				continue;
 		}
 	}
-	
 	return kalturaPlayers;
 }
 
+function kFlashVarsToObject( flashvarsString ){
+	var flashVarsSet = ( flashvarsString )? flashvarsString.split('&'): [];
+	var flashvars = {};
+	for( var i =0 ;i < flashVarsSet.length; i ++){
+		var currentVar = flashVarsSet[i].split('=');
+		if( currentVar[0] && currentVar[1] ){
+			flashvars[ currentVar[0] ] = currentVar[1];
+		}
+	}
+	return flashvars;
+}
 function kGetEntryThumbUrl( entry ){
 	var kCdn = mw.getConfig( 'Kaltura.CdnUrl', 'http://cdnakmi.kaltura.com' ); 
 	return kCdn + '/p/' + entry.partner_id + '/sp/' +
@@ -667,18 +705,10 @@ function kGetEntryThumbUrl( entry ){
 }
 // Copied from kalturaSupport loader mw.getKalturaEmbedSettings  
 function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
-	var embedSettings = {};
-	
-	// Convert flashvars if in string format: 
+	var embedSettings = {};	
+	// Convert flashvars if in string format:
 	if( typeof flashvars == 'string' ){
-		var flashVarsSet = ( flashvars )? flashvars.split('&'): [];
-		flashvars = {};
-		for( var i =0 ;i < flashVarsSet.length; i ++){
-			var currentVar = flashVarsSet[i].split('=');
-			if( currentVar[0] && currentVar[1] ){
-				flashvars[ currentVar[0] ] = currentVar[1];
-			}
-		}
+		flashvars = kFlashVarsToObject( flashvars );
 	}
 	if( !flashvars )
 		flashvars= {};
@@ -717,9 +747,17 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 	for( var i in  flashvars){
 		embedSettings[ i.toLowerCase() ] = flashvars[i];
 	}
-	// Normalize the entryid to url request equivalents
+	// Normalize to the url based settings: 
 	if( embedSettings[ 'entryid' ] ){
-		embedSettings['entry_id'] =  embedSettings['entryid'];
+		embedSettings.entry_id =  embedSettings.entryid;
+	}
+	if( embedSettings['widget_id'] ){
+		embedSettings.wid = embedSettings.widget_id;
+		embedSettings.p = embedSettings.wid.replace(/_/,'');
+	}
+	if( embedSettings['parent_id'] ){
+		embedSettings.wid = '_' + embedSettings.parent_id;
+		embedSettings.p = embedSettings.parent_id;
 	}
 	return embedSettings;
 };

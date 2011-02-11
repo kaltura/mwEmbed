@@ -6,9 +6,10 @@
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 
 // TODO Check cache to see if its expired ( file modified time of mwEmbedLoader.js vs cache modified time ) 
+$loaderJs = 'KALTURA_SCRIPT_NAME =  "' . addslashes( $_SERVER['REQUEST_URI'] ) . '";' . "\n";
 
 // Get resource (  mwEmbedLoader.js )
-$loaderJs = file_get_contents( 'mwEmbedLoader.js' );
+$loaderJs .= file_get_contents( 'mwEmbedLoader.js' );
 
 // Append ResourceLoder path to loader.js
 $loaderJs .= "\n" . "SCRIPT_LOADER_URL = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
