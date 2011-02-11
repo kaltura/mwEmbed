@@ -4,6 +4,8 @@
  * 
  * See includes/DefaultSettings.php for a configuration options
  */
+
+$wgEnableScriptDebug = true;
 $wgEnableIframeApi = 'true';
 $wgEnableIpadHTMLControls = 'true';
 $wgKalturaUseManifestUrls = 'true';

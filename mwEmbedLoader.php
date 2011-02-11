@@ -30,6 +30,10 @@ foreach( $exportedJsConfig as $key => $val ){
 	$loaderJs .= "mw.setConfig('". addslashes( $key )."', '" . addslashes( $val ) . "');\n";
 }
 
+if($wgEnableScriptDebug) {
+    $loaderJs .= 'SCRIPT_FORCE_DEBUG = true;';
+}
+
 // TODO Minify via php_min
 
 // ob_gzhandler automatically checks for browser gzip support and gzips

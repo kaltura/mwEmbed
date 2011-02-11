@@ -37,6 +37,9 @@ while (false !== ($entry = $d->read())) {
  * TODO move kaltura configuration to KalturaSupport module ( part of ResourceLoader update ) 
  ********************************************************/
 
+// Default debug mode
+$wgEnableScriptDebug = false;
+
 // The default Kaltura service url:
 $wgKalturaServiceUrl = 'http://www.kaltura.com';
 
