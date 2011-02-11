@@ -108,10 +108,10 @@ resizeMW:function()
 {
   var player = $('#mwplayer');
   
-  $('#flowplayerdiv')[0].style.width  = this.VIDEO_WIDTH;
-  $('#flowplayerdiv')[0].style.height = this.VIDEO_HEIGHT;
+  $('#flowplayerdiv').css('width',  this.VIDEO_WIDTH)
+  $('#flowplayerdiv').css('height', this.VIDEO_HEIGHT);
   
-  $('#flowplayerplaylist')[0].style.width  = this.VIDEO_WIDTH;
+  $('#flowplayerplaylist').css('width', this.VIDEO_WIDTH);
   
   var jplay = player[0];
   IAD.log('IA ' + jplay.getWidth() + 'x' + jplay.getHeight());
