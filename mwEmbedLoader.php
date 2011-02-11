@@ -20,6 +20,7 @@ $exportedJsConfig= array(
 	'Kaltura.ServiceUrl' => $wgKalturaServiceUrl,
 	'Kaltura.ServiceBase' => $wgKalturaServiceBase,
 	'Kaltura.CdnUrl' => $wgKalturaCDNUrl,
+	'Kaltura.IframeRewrite' => $wgKalturaIframeRewrite,
 	'EmbedPlayer.EnableIframeApi'  => $wgEnableIframeApi,
 	'EmbedPlayer.EnableIpadHTMLControls' => $wgEnableIpadHTMLControls,
 	'EmbedPlayer.UseFlashOnAndroid' => 'true'

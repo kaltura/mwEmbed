@@ -6,6 +6,7 @@
  */
 
 $wgEnableScriptDebug = true;
+$wgKalturaIframeRewrite = 'true';
 $wgEnableIframeApi = 'true';
 $wgEnableIpadHTMLControls = 'true';
 $wgKalturaUseManifestUrls = 'true';
