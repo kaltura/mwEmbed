@@ -84,7 +84,7 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		this.kClient = mw.KApiPlayerLoader( {
 			'widget_id' : widgetId, 
-			'entry_id' : entryId,
+			'entry_id' : entryId
 		}, function( playerData ){
 			
 			// Check access control 
