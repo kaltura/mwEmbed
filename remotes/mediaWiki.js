@@ -113,7 +113,7 @@ if( mwReqParam['embedplayer'] == 'yes' ){
 if( window.jQuery ){
 	jQuery( document ).ready( doPageSpecificRewrite );
 } else {
-	addOnloadHook( function() {
+	addOnloadHook( function(){
 		doPageSpecificRewrite();
 	} );
 }

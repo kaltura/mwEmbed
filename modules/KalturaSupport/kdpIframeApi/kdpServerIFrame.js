@@ -3,6 +3,7 @@
 */
 
 ( function( mw ) {
+	
 window.jsCallbackReady = function(){	
 	serverIframe = new kdpServerIframe();
 };
@@ -46,12 +47,12 @@ kdpServerIframe.prototype = {
 		});
 	},
 	monitorAttributeChanges: function(){
-		var _this = this;
-		// sends attributes across the iframe at a set interval ( for now 250ms / monitor rate )
+		var _this = this;	
+		// Sends attributes across the iframe at a set interval ( for now 250ms / monitor rate )
 		setTimeout(function(){	
 			_this.sendPlayerAttributes();
 			_this.monitorAttributeChanges();
-		},250);
+		}, 250);
 	},
 	/**
 	 * Handle a message 
@@ -69,7 +70,9 @@ kdpServerIframe.prototype = {
 		
 		// Call a method:
 		var lname = ( msgObject.method == 'addJsListener' )? ': ' + msgObject.args[0]:'' ;
+		
 		mw.log("kdpIframeServer hanldeMsg::" + msgObject.method + lname  );
+		
 		if( msgObject.method && this.kdpPlayer[ msgObject.method ] ){
 			
 			// Check for special case of adding listener

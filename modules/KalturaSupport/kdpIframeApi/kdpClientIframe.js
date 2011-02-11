@@ -1,4 +1,4 @@
-// Simple kdpClientIframe	
+// Simple kdpClientIframe
 var kdpClientIframe = function( replaceTargetId, kEmbedSettings , options ){
 	// Create a Player Manager
 	return this.init(replaceTargetId, kEmbedSettings , options);
@@ -26,7 +26,7 @@ kdpClientIframe.prototype = {
 		// Replace the target with an iframe player:
 		$j( '#' + replaceTargetId ).replaceWith( this.getIframe() );
 
-		// Now add the player proxy		
+		// Now add the player proxy
 		$j( this.getIframe() ).after( 
 			$j('<div />').attr( 'id', this.targetId )
 		);
@@ -87,9 +87,9 @@ kdpClientIframe.prototype = {
 		if( this.evaluateData[ objectPath[0] ] && ! objectPath[1] ){
 			return this.evaluateData[ objectPath[0] ]
 		}
-		if( !this.evaluateData[ objectPath[0] ] )
+		if( !this.evaluateData[ objectPath[0] ] ){
 			return errorOut();
-		
+		}
 		
 		if( this.evaluateData[ objectPath[0] ][ objectPath[1] ] && !objectPath[2] ){
 			return this.evaluateData[ objectPath[0] ][ objectPath[1] ];
@@ -134,7 +134,20 @@ kdpClientIframe.prototype = {
 				return ;
 			}
 			try{
-				window[ msgObject.callbackName ].apply(this, msgObject.callbackArgs );
+				var args = msgObject.callbackArgs;
+				// IE8 I HATE you! the following does not work! 
+				// window[ msgObject.callbackName ].apply( this, msgObject.callbackArgs );				
+				if( !args || args.length == 0 ){
+					window[ msgObject.callbackName ]();
+				} else if( args.length == 1 ){
+					window[ msgObject.callbackName ]( args[0] );
+				} else if( args.length == 2 ){
+					window[ msgObject.callbackName ]( args[0], args[1] );
+				} else if( args.length == 3 ){
+					window[ msgObject.callbackName ]( args[0], args[1], args[2]  );
+				} else if( args.length == 4 ){
+					window[ msgObject.callbackName ]( args[0], args[1], args[2], args[3] );
+				}							
 			} catch( e ){
 				mw.log('Error with hanldeReciveMsg::' +  msgObject.callbackName );
 			}

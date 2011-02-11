@@ -656,6 +656,9 @@ class kalturaIframe {
 			}
 		</script>
 		<script type="text/javascript">
+			// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
+			mw.setConfig('Mw.LogPrepend', 'iframe:' );
+
 			// Don't rewrite the video tag from the loader ( if html5 is supported it will be
 			// invoked bellow and respect the persistant video tag option for iPad overlays )
 			mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );
@@ -690,10 +693,7 @@ class kalturaIframe {
 				// Don't confuse the rewrite engine ( remove the kaltura swf as well )
 				var el = document.getElementById('kaltura_player');
 				el.parentNode.removeChild(el);
-
-				// Set a prepend flag so its easy to see whats happening on what side of the iframe:
-				mw.setConfig('Mw.LogPrepend', 'iframe:' );
-
+				
 				// Add full screen support if the iFrame api is enabled and not already set
 				if( typeof preMwEmbedConfig[ 'EmbedPlayer.EnableFullscreen' ] == 'undefined' ){
 					mw.setConfig( 'EmbedPlayer.EnableFullscreen', preMwEmbedConfig[ 'EmbedPlayer.EnableIframeApi' ] );
@@ -714,10 +714,7 @@ class kalturaIframe {
 								'width' : $j(window).width(),
 								'height' : $j(window).height()
 							});
-					});
-				    $j(window).bind('orientationchange', function(){
-					    alert('window orientation');
-				    });
+					});				    
 				});
 			} else {
 

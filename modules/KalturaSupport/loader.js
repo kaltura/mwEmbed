@@ -87,15 +87,15 @@
 		
 		var kalturaObjectPlayerList = mw.getKalturaPlayerList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
-		if( !kalturaObjectPlayerList.length ) {
-			// no players to rewrite (don't run  window.KalturaKDPCallbackReady )
+		if( ! kalturaObjectPlayerList.length ) {
+			// no players to rewrite ( and don't run  window.KalturaKDPCallbackReady )
 			rewriteDoneCallback();
 			return ;
 		}else {
 			
 			// Check if we are NOT rewriting tags: 
 			if( !mw.isHTML5FallForwardNative() ){
-				mw.restoreKalturaKDPCallback();
+				restoreKalturaKDPCallback();
 				return ;
 			}
 			// FALLFORWARD only for fallforward native players
@@ -373,33 +373,7 @@
 			}
 		});
 	};
-	
-	/**
-	 * To support kaltura kdp mapping override
-	 */
-	var checkForKDPCallback = function(){
-		if( typeof window.jsCallbackReady != 'undefined' && !window.KalturaKDPCallbackReady ){	
-			window.KalturaKDPCallbackReady = window.jsCallbackReady;
-			window.jsCallbackReady = function(){ };
-		}
-	}
-	
-	// Check inline and when the dom is ready:
-	checkForKDPCallback()
-	// Check again once the document is ready:
-	$j(document).ready( checkForKDPCallback );
-	
-	// Restore the jsCallbackReady global ( call it if it got called in the mean time )
-	mw.restoreKalturaKDPCallback = function(){
-		// To restore when we are not rewriting: 
-		if( window.KalturaKDPCallbackReady ){
-			window.jsCallbackReady = window.KalturaKDPCallbackReady;
-			if( window.KalturaKDPCallbackAlreadyCalled ){
-				window.jsCallbackReady();
-			}
-		}
-	};
-	
+		
 	/**
 	 * Utility loader function to grab kaltura iframe hash url
 	 */

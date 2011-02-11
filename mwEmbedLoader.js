@@ -103,6 +103,11 @@ if( ! mw.getConfig ){
 	};
 };
 
+// Check for script based iframe embed
+var scripts = document.getElementsByTagName('script');
+
+
+
 // Wrap mw.ready to preMwEmbedReady values
 if( !mw.ready){
 	mw.ready = function( fn ){		
@@ -480,18 +485,26 @@ function kAddScript( callback ){
 	}
 	kLoadJsRequestSet( jsRequestSet, callback );
 };
-
+function isIE(){
+	return /msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);
+}
 function kAppendScriptUrl( url, callback ) {
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
 	script.src = url;
 	// xxx fixme integrate with new callback system ( resource loader rewrite )
 	if( callback ){
-		script.onload = new function(){ 
-			setTimeout(function(){
-				callback() 
-			},100);
-		};
+		// IE sucks .. issues onload callback before ready 
+		// xxx could conditional the callback delay on user 
+		if( isIE() ){
+			script.onload = new function(){
+				setTimeout(function(){
+					callback();
+				}, 100 );
+			};
+		} else {
+			script.onload = callback;
+		}
 	}
 	document.getElementsByTagName('head')[0].appendChild( script );	
 }
@@ -505,7 +518,6 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	if ( SCRIPT_FORCE_DEBUG ){
 		url+= '&debug=true';
 	}
-	
 	kAppendScriptUrl(url, callback);
 }
 
@@ -716,17 +728,18 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
  * To support kaltura kdp mapping override
  */
 var checkForKDPCallback = function(){
-	if( typeof window.jsCallbackReady != 'undefined'){	
+	if( typeof window.jsCallbackReady != 'undefined'){
 		window.KalturaKDPCallbackReady = window.jsCallbackReady;
-		window.jsCallbackReady = function(){
+		window.jsCallbackReady = function(){			
 			window.KalturaKDPCallbackAlreadyCalled = true;
-		};
+		};		
 	}
 }
 var restoreKalturaKDPCallback = function(){
 	// To restore when we are not rewriting: 
 	if( window.KalturaKDPCallbackReady ){
 		window.jsCallbackReady = window.KalturaKDPCallbackReady;
+		window.KalturaKDPCallbackReady = null;
 		if( window.KalturaKDPCallbackAlreadyCalled ){
 			window.jsCallbackReady();
 		}
