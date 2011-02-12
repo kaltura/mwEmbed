@@ -8,7 +8,8 @@
     -->
   </head>
   <body>
-      <div id="playerContainer">
+    <h1>Preroll and Overlay Advertisements With Companion Ad</h1>
+      <div id"playerContainer">
         <video id="video"
           width=480
           height=206
@@ -17,15 +18,44 @@
           kpartnerid="32248"
           ></video>
       </div>
+      <div id="companionTarget" style="width:480px;height:100px"><p>Companion Ad Target Div</p></div>
     <script type="text/javascript">
+    var preferredType;
+    var videoTypes = [
+      { testString: 'video/webm; codecs="vp8, vorbis"', kalturaSourceType: 'video/webm' },
+      { testString: 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"', kalturaSourceType: 'video/h264' },
+      { testString: 'video/ogg; codecs="theora, vorbis"', kalturaSourceType: 'video/ogg' }
+    ];
+    function supports_video() {
+      return !!document.createElement('video').canPlayType;
+      }
+      function supportsType( testString ) {
+        if (!supports_video()) { return false; }
+        var v = document.createElement("video");
+        if ( v.canPlayType( testString ) === ( "probably" || "maybe" ) ) {
+          return true;
+        }
+        else {
+          return false;
+        }
+      }
+      $(document).ready(function() {
+          $( videoTypes ).each( function( i, v ) {
+          if ( supportsType( v.testString ) ) {
+            // unfortunately this only works if the test string order is correct
+            preferredType = v.kalturaSourceType;
+          }
+        });
+      });
+
       mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
       mw.setConfig( 'EmbedPlayer.OverlayControls', false);
+      
       mw.ready( function(){
           var getVideoAd = function( kalturaEntryId, type ) {
             mw.getEntryIdSourcesFromApi( "_322481", "1_owuf253b", function ( sources ) {
               $j(sources).each(function(i,v){
-                console.log( 'can play ' + v.type + ': ' + mw.EmbedTypes.supportedMimeType(v.type) );
-                if ( mw.EmbedTypes.supportedMimeType(v.type) ) {
+                if ( v.type === preferredType ) {
                   var prerollAd = v.src;
                   console.log(prerollAd);
                   mw.load( "mw.AdTimeline", function(){
@@ -50,15 +80,26 @@
             */
           mw.addAdToPlayerTimeline( $j('#video').get(0), 'overlay', { 
             'ads': [{
+              'companions' : [
+                {
+                  'id' : 0,
+                  'html' : '<p style="color:red">Companion Ad Substition is Active</p>'
+                }
+              ],
               'nonLinear' : [{
                 'width' : 420,
                 'height' : 60,
                 'html' : '<div style="width:100%;height:100%;opacity:0.5;border-radius:20px;background-color:black;color:white;font-size:small;"><img src="http://durian.blender.org/wp-content/uploads/2010/09/blenderlogo.png" style="float:left;position:relative;top:10px"><p align="center"><a href="http://www.sintel.org/">Sintel - project Durian</a> - is Blender Foundations third Open Movie.<br /><a href="http://www.blender3d.org/e-shop/product_info_n.php?products_id=120">buy Sintel on DVD</a></p></div>'
               }]
             }],
-            'start' : 2,
+            'start' : 10,
             'frequency' : 120,
-            'timeout' : 25
+            'timeout' : 15,
+            'companionTargets' : [
+              {
+                'elementid' : 'companionTarget'
+              }
+            ]
             }
           );
         });
