@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>video.canPlayType testing page</title>
+
+    <script type="text/javascript" src="../ResourceLoader.php?class=window.jQuery,mwEmbed&&debug=true"></script> 
+    <!--  
+    <script type="text/javascript" src="http://html5.kaltura.org/js" > </script>
+    <script type="text/javascript" src="http://html5.kaltura.org/js?class=window.jQuery,mwEmbed&&debug=true" > </script>
+    -->
+
+    <script type="text/javascript">
+
+function supports_video() {
+  return !!document.createElement('video').canPlayType;
+}
+
+var typeStringArray = [
+  'video/webm; codecs="vp8, vorbis"',
+  'video/mp4; codecs="avc1.42E01E, mp4a.40.2"',
+  'video/ogg; codecs="theora, vorbis"' /*,
+  'video/webm',
+  'video/mp4',
+  'video/h264',
+  'video/ogg' */
+  ];
+
+var mimeTypeArray = [
+  'video/webm',
+  'video/mp4',
+  'video/h264',
+  'video/ogg'
+  ];
+        
+function supportsType( typeString ) {
+  if (!supports_video()) { return false; }
+    var v = document.createElement("video");
+    return v.canPlayType( typeString );
+}
+
+$(document).ready(function() {
+    $('#test-results').append( '<p>' + navigator.userAgent + '</p>' );
+    $('#test-results').append('<ul></ul>');
+    $(typeStringArray).each( function( i, v ) {
+      var result = supportsType( v );
+      $('#test-results ul').append('<li>' + "canPlayType " + v + ": " + result + '</li>');
+    });
+    $(mimeTypeArray).each( function( i, v ){
+      var result;
+      mw.ready( function() {
+        result = mw.EmbedTypes.supportedMimeType( v );
+        $('#test-results ul').append('<li>' + "mw.EmbedTypes.supportedMimeType: " + v + ": " + result + '</li>');
+      });
+    });
+});
+    </script>
+
+  </head>
+  <body>
+    <header>
+      <h1>video.canPlayType testing page</h1>
+      <p>Since mwEmbed relies on canPlayType, this page exists to verify that the selenium testing host browser correctly responds to canPlayType.</p>
+    </header>
+    <content>
+      <div id"playerContainer">
+        <video id="video"
+          width=480
+          height=206
+          kentryid="0_un4gy128"
+          kwidgetid="_322481"
+          kpartnerid="32248"
+          ></video>
+        </div>
+      <div id="test-results">&nbsp;</div>
+    </content>
+    <footer>
+      <!-- <p>Part of the Kaltura HTML5 Video and Media Javascript Library</p> -->
+    </footer>
+  </body>
+</html>
