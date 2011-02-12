@@ -57,7 +57,6 @@
               $j(sources).each(function(i,v){
                 if ( v.type === preferredType ) {
                   var prerollAd = v.src;
-                  console.log(prerollAd);
                   mw.load( "mw.AdTimeline", function(){
                     mw.addAdToPlayerTimeline( $j('#video').get(0), "preroll", { 
                       'ads': [{
@@ -104,7 +103,6 @@
           );
         });
       });
-console.log(escape('div style="width:100%;height:100%;opacity:0.5;border-radius:20px;background-color:black;color:white;font-size:small;"><img src="http://durian.blender.org/wp-content/uploads/2010/09/blenderlogo.png" style="float:left;position:relative;top:10px"><p align="center"><a href="http://www.sintel.org/">Sintel - project Durian</a> - is Blender Foundations third Open Movie.<br /><a href="http://www.blender3d.org/e-shop/product_info_n.php?products_id=120">buy Sintel on DVD</a></p></div>'));
     </script>
   </body>
 </html>
