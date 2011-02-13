@@ -18,7 +18,7 @@
 		'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
 		'Kaltura.CdnUrl' : 'http://cdn.kaltura.com',
 		// A video file for when no suitable flavor can be found
-		'Kaltura.MissingFlavorVideoUrl' : 'http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_uypqlsor/flavor/1_lljfzesm/a.mp4?novar=0'
+		'Kaltura.MissingFlavorVideoUrl' : 'http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_g18we0u3/flavor/1_ktavj42z/a.mp4?novar=0'
 	} );
 	
 	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
