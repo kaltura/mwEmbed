@@ -198,6 +198,10 @@ mw.AdTimeline.prototype = {
 									_this.embedPlayer.stop();
 									// pause playback state
 									vid.pause();
+									// iPhone does not catch synchronous pause
+									setTimeout(function(){
+										vid.pause();
+									},100)
 								}
 							);
 						};

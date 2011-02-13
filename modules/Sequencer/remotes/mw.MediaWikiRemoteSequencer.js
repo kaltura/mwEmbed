@@ -374,7 +374,7 @@ mw.MediaWikiRemoteSequencer.prototype = {
 									'id' : 'embedSequencePlayer',
 									'poster' : imageinfo.thumburl,
 									'durationHint' : duration,
-									'apiTitleKey' : page.title.replace('File:',''),
+									'apiTitleKey' : page.title.replace('File:','')
 								})
 								.addClass('kskin')
 								.css({
