@@ -149,7 +149,7 @@ mw.AdTimeline.prototype = {
 
 			// Chain display of preroll and then bumper:
 			_this.display('preroll', function() {
-				_this.display('bumper', function() {
+				_this.display('bumper', function() {					
 					var vid = _this.getNativePlayerElement();
 					// Enable overlays ( for monitor overlay events )
 					_this.adOverlaysEnabled = true;
@@ -158,8 +158,11 @@ mw.AdTimeline.prototype = {
 					if ( _this.originalSrc != vid.src ) {
 						_this.embedPlayer.switchPlaySrc(_this.originalSrc,
 							function() {								
-								// Restore embedPlayer native bindings
-								restorePlayer();
+								// Restore embedPlayer native bindings 
+								// async for iPhone issues
+								setTimeout(function(){
+									restorePlayer();
+								},10);
 							}
 						);
 					} else {
@@ -171,8 +174,8 @@ mw.AdTimeline.prototype = {
 			// Bind the player "ended" event to play the postroll if present
 			if( _this.timelineTargets['postroll'] ){
 				var displayedPostroll = false;
-				$j( _this.embedPlayer ).bind( 'ended', function(event, onDoneActionObject){				
-					if( displayedPostroll){
+				$j( _this.embedPlayer ).bind( 'ended', function(event){				
+					if( displayedPostroll ){
 						return ;
 					}					
 					_this.embedPlayer.stopEventPropagation();
@@ -181,7 +184,7 @@ mw.AdTimeline.prototype = {
 					
 					// TODO read the add disable control bar to ad config and check that here. 
 					_this.embedPlayer.disableSeekBar();
-					_this.display( 'postroll' , function(){		
+					_this.display( 'postroll' , function(){
 						var vid = _this.getNativePlayerElement();
 						if ( _this.originalSrc != vid.src) {
 							displayedPostroll = true;
@@ -190,18 +193,19 @@ mw.AdTimeline.prototype = {
 								function() {
 									// Restore embedPlayer native
 									// bindings
-									mw.log('done with postroll ad, trigger normal ended');
+									mw.log('Done with postroll ad, trigger normal ended');
 									_this.embedPlayer.enableSeekBar();
 									
 									_this.embedPlayer.restoreEventPropagation();
-									// just run stop for now. 
+									// Run stop for now. 
 									_this.embedPlayer.stop();
-									// pause playback state
+									
+									// Pause playback state
 									vid.pause();
 									// iPhone does not catch synchronous pause
 									setTimeout(function(){
 										vid.pause();
-									}, 10)
+									}, 100)							
 								}
 							);
 						};
@@ -217,7 +221,7 @@ mw.AdTimeline.prototype = {
 				// Note there may be a better measurement of timeout
 				var adDuration = overlayTiming.timeout;
 				// Monitor:
-				$j( _this.embedPlayer ).bind( 'monitorEvent', function() {		
+				$j( _this.embedPlayer ).bind( 'monitorEvent', function() {	
 					var time = _this.embedPlayer.currentTime;
 					if( !lastPlayEndTime ){
 						lastPlayEndTime = time;
@@ -308,7 +312,7 @@ mw.AdTimeline.prototype = {
 			displayTarget.currentlyDisplayed = false;
 			setTimeout(function(){
 				displayTarget.doneCallback();
-			}, 10);
+			}, 50);
 		}
 		// Setup local pointer to displayDoneCallback
 		displayTarget.doneCallback = displayDoneCallback;
