@@ -201,7 +201,7 @@ mw.AdTimeline.prototype = {
 									// iPhone does not catch synchronous pause
 									setTimeout(function(){
 										vid.pause();
-									},100)
+									}, 10)
 								}
 							);
 						};
@@ -306,7 +306,9 @@ mw.AdTimeline.prototype = {
 				displayTarget.doneFunctions.shift()();
 			}
 			displayTarget.currentlyDisplayed = false;
-			displayTarget.doneCallback();
+			setTimeout(function(){
+				displayTarget.doneCallback();
+			}, 10);
 		}
 		// Setup local pointer to displayDoneCallback
 		displayTarget.doneCallback = displayDoneCallback;
