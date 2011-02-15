@@ -1061,6 +1061,7 @@ mw.PlayerControlBuilder.prototype = {
 	optionMenuItems: {
 		// Player select menu item
 		'playerSelect': function( ctrlObj ){
+			if( mw.isIpad() ) return false;
 			return $j.getLineItem(
 				gM( 'mwe-embedplayer-choose_player' ),
 				'gear',
@@ -1074,6 +1075,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Download the file menu
 		'download': function( ctrlObj ) {
+			if( mw.isIpad() ) return false;
 			return $j.getLineItem(
 				 gM( 'mwe-embedplayer-download' ),
 				'disk',
@@ -1182,8 +1184,8 @@ mw.PlayerControlBuilder.prototype = {
 		);
 
 		// Setup the close button
-		$closeButton = $j('<span />')
-		.addClass( 'ui-icon ui-icon-closethick' )
+		$closeButton = $j('<div />')
+		.addClass( 'ui-state-default ui-corner-all ui-icon_link rButton')
 		.css({
 			'position': 'absolute',
 			'cursor' : 'pointer',
@@ -1192,14 +1194,24 @@ mw.PlayerControlBuilder.prototype = {
 		})
 		.click( function() {
 			_this.closeMenuOverlay();
-		} );
+		} )
+		.append(
+		    	$j('<span />')
+			.addClass( 'ui-icon ui-icon-closethick' )
+		);
 
+		var overlay_width = 370;
+		var overlay_height = 260;
+		var overlay_top = ((embedPlayer.$interface.height() - overlay_height) / 2);
+		var overlay_left = ((embedPlayer.$interface.width() - overlay_width) / 2);
+		
 		var overlayMenuCss = {
-			'height' : 200,
-			'width' : 250,
+			'height' : overlay_height + 'px',
+			'width' : overlay_width + 'px',
 			'position' : 'absolute',
-			'left' : '10px',
-			'top': '15px',
+			'top' : overlay_top + 'px',
+			'left': overlay_left + 'px',
+			'margin': '0 10px 10px 0',
 			'overflow' : 'auto',
 			'padding' : '4px',
 			'z-index' : 3
@@ -1225,8 +1237,8 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Append the overlay menu to the player interface
 		embedPlayer.$interface.prepend(
-			$overlayMenu,
-			$overlayShadow
+			$overlayMenu
+			//,$overlayShadow
 		)
 		.find( '.overlay-win' )
 		.fadeIn( "slow" );
@@ -1239,7 +1251,7 @@ mw.PlayerControlBuilder.prototype = {
 	aboutPlayerLibrary: function(){
 		return $j( '<div />' )
 			.append(
-				$j( '<h3 />' )
+				$j( '<h2 />' )
 					.text(
 						gM('mwe-embedplayer-about-library')
 					)
@@ -1274,7 +1286,10 @@ mw.PlayerControlBuilder.prototype = {
 
 		$shareList
 		.append(
-			$j('<li />')
+			$j('<li />').text(
+					gM( 'mwe-embedplayer-embed_site_or_blog' )
+				)
+			/*
 			.append(
 				$j('<a />')
 				.attr('href', '#')
@@ -1283,15 +1298,17 @@ mw.PlayerControlBuilder.prototype = {
 					gM( 'mwe-embedplayer-embed_site_or_blog' )
 				)
 			)
+			*/
 		);
 
 		$shareInterface.append(
 			$j( '<h2 />' )
 			.text( gM( 'mwe-embedplayer-share_this_video' ) )
-			.append(
-				$shareList
-			)
 		);
+
+		$shareInterface.append(
+			$shareList
+		);		    
 
 		$shareInterface.append(
 
