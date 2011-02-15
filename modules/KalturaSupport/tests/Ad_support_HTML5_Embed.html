@@ -20,11 +20,13 @@
       </div>
       <div id="companionTarget" style="width:480px;height:100px"><p>Companion Ad Target Div</p></div>
     <script type="text/javascript">
+
+        // edit the videoTypes to match the flavors you are provided by your kaltura server account.  Order matters: the last listed mime-type that returns valid will be used.
     var preferredType;
     var videoTypes = [
-      { testString: 'video/webm; codecs="vp8, vorbis"', kalturaSourceType: 'video/webm' },
+      { testString: 'video/ogg; codecs="theora, vorbis"', kalturaSourceType: 'video/ogg' },
       { testString: 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"', kalturaSourceType: 'video/h264' },
-      { testString: 'video/ogg; codecs="theora, vorbis"', kalturaSourceType: 'video/ogg' }
+      { testString: 'video/webm; codecs="vp8, vorbis"', kalturaSourceType: 'video/webm' }
     ];
     function supports_video() {
       return !!document.createElement('video').canPlayType;
