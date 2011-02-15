@@ -44,7 +44,7 @@ mw.KAds.prototype = {
 		var companionTargets = this._getCompanionTargets();
 		
 		// Get ad Configuration
-		this._getAdConfigSet( function( adConfigSet){			
+		this.getAdConfigSet( function( adConfigSet){			
 			var baseDisplayConf = {	
 				'companionTargets' : companionTargets
 			};
@@ -54,13 +54,12 @@ mw.KAds.prototype = {
 				baseDisplayConf[ 'timeout' ] = _this.$adConfig.attr( 'timeout' ); 
 			}
 			
-			
 			// Merge in the companion targets and add to player timeline: 
 			for( var adType in adConfigSet ){
 				mw.addAdToPlayerTimeline(
 					_this.embedPlayer, 
 					adType,
-					$j.extend( baseDisplayConf, adConfigSet[ adType ] ) // merge in baseDisplayConf
+					$j.extend({}, baseDisplayConf, adConfigSet[ adType ] ) // merge in baseDisplayConf
 				);
 			};
 			// Run the callabck once all the ads have been loaded. 
@@ -70,7 +69,7 @@ mw.KAds.prototype = {
 	/**
 	 * Add ad configuration to timeline targets
 	 */
-	_getAdConfigSet: function( callback ){
+	getAdConfigSet: function( callback ){
 		var _this = this;
 		var namedAdTimelineTypes = [ 'preroll', 'postroll', 'postroll', 'overlay' ];
 		// Maps ui-conf ads to named types
@@ -102,12 +101,8 @@ mw.KAds.prototype = {
 				// Load and parse the adXML into displayConf format
 				mw.AdLoader.load( _this.$adConfig.attr( adTypePrefix + 'Url' ) , function( adDisplayConf ){
 					mw.log("KalturaAds loaded: " + adTypePrefix );
-					// Make sure we have a valid callback: 
-					if( !adDisplayConf ){
-						adDisplayConf = {};
-					};
 					loadQueueCount--;
-					addAdCheckLoadDone( adTypePrefix,  $j.extend( adConf, adDisplayConf ) );
+					addAdCheckLoadDone( adTypePrefix,  $j.extend({}, adConf, adDisplayConf ) );
 				});
 			} else {
 				// No async request

@@ -276,7 +276,6 @@ mw.AdTimeline.prototype = {
 		mw.log("AdTimeline::display:" + timeTargetType );
 		
 		var displayTarget =  this.timelineTargets[ timeTargetType ] 
-		
 		// If the adConf is empty go directly to the callback:
 		if ( ! displayTarget ) {
 			displayDoneCallback();
@@ -324,7 +323,7 @@ mw.AdTimeline.prototype = {
 			if( typeof vid == 'undefined' // stop display of overlay if video playback is no longer active 
 				|| ( _this.getNativePlayerElement().currentTime - startTime) > displayDuration )
 			{
-				mw.log("AdTimeline::display: Playback done because vid does not exist or > displayDuration " + displayDuration );
+				mw.log("AdTimeline::display:" + timeTargetType + " Playback done because vid does not exist or > displayDuration " + displayDuration );
 				displayTarget.playbackDone();
 			} else {
 				setTimeout( monitorForDisplayDuration, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -378,7 +377,7 @@ mw.AdTimeline.prototype = {
 		if ( adConf.companions && adConf.companions.length ) {
 
 			var companionConf = this.selectFromArray( adConf.companions );
-
+			mw.log("AdTimeline::selectCompanion: " + companionConf.html );
 			// NOTE:: is not clear from the ui conf response if multiple
 			// targets need to be supported, and how you would do that
 			var ctargets = this.timelineTargets[timeTargetType].companionTargets;

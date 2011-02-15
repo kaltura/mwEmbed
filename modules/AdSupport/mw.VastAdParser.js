@@ -73,8 +73,9 @@ mw.VastAdParser = {
 				if(  $j( mediaFile ).attr('type') == 'video/h264' 
 					|| 
 					$j( mediaFile ).attr('type')  == 'video/x-mp4')
-				{
+				{					
 					currentAd.videoFile = _this.getURLFromNode( mediaFile );
+					mw.log( "VastAdParser::add MediaFile:" + currentAd.videoFile );
 				}
 			});
 			
@@ -85,6 +86,7 @@ mw.VastAdParser = {
 			
 			// Set videoFile to default if not set: 
 			if( ! currentAd.videoFile ){
+				mw.log( 'VastAdParser::MISSING videoFile');
 				currentAd.videoFile = mw.getConfig( 'Kaltura.MissingFlavorVideoUrl' );
 			}
 			
