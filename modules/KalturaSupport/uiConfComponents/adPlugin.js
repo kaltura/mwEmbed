@@ -19,15 +19,12 @@ var adPlugin = function( embedPlayer,  $uiConf, callback){
 	// Load the Kaltura Ads and AdSupport Module:
 	mw.load( [ "AdSupport", "mw.KAds" ], function(){
 		var kalturaAdConf = {
-			'kads' : $uiConf.find('Plugin#vast'),
-			'layout' : {
-				'noticeMessage': $uiConf.find('label#noticeMessage'),
-				'skipBtn' : $uiConf.find('button#skipBtn')
-			}
+			'config' : $uiConf.find('Plugin#vast'),
+			'notice': $uiConf.find('label#noticeMessage'),
+			'skipBtn' : $uiConf.find('button#skipBtn')
 		}
 		// Add the ads to the player: 
 		mw.addKalturaAds( embedPlayer, kalturaAdConf , function(){
-			
 			// Wait until ads are loaded before running callback
 			// ( ie we don't want to display the player until ads are ready )
 			callback();

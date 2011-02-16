@@ -1958,7 +1958,7 @@ mw.EmbedPlayer.prototype = {
 			// Update the clip done playing count:
 			this.donePlayingCount ++;
 
-			// Run the ended trigger ( allow the ended object to prevent default actions )
+			// Run the ended trigger 
 			mw.log("EmbedPlayer::onClipDone:Trigger ended");
 			
 			// TOOD we should improve the end event flow
@@ -1966,6 +1966,7 @@ mw.EmbedPlayer.prototype = {
 			
 			// if the ended event did not trigger more timeline actions run the actual stop:
 			if( this.onDoneInterfaceFlag ){
+				mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
 				this.stop();
 				// restore event propagation 
 				this.restoreEventPropagation();

@@ -62,7 +62,16 @@
  * 
  * 				'videoFile' : {URL} video file to play for the ad
  * 			}
- * 		]
+ * 		],
+ *		// on screen helpers to display ad duration and skip add
+ * 		'notice' : {
+ * 			'text' : {String} "Ad countdown time, $1 is replaced with countdown time",
+ * 			'css' : {Object} json object for css layout
+ * 		}
+ * 		'skipBtn' : {
+ * 			'text' : {String} "Text of skip add link",
+ * 			'css' : {Object} json object for css layout
+ * 		}
  * 		// List of companion targets
  * 		'companionTargets' : [
  * 			{
@@ -177,7 +186,8 @@ mw.AdTimeline.prototype = {
 				$j( _this.embedPlayer ).bind( 'ended', function(event){				
 					if( displayedPostroll ){
 						return ;
-					}					
+					}
+					displayedPostroll = true;
 					_this.embedPlayer.stopEventPropagation();
 					mw.log('mw.AdTimeline: ended displayedPostroll');
 					_this.embedPlayer.onDoneInterfaceFlag = false;
@@ -186,8 +196,7 @@ mw.AdTimeline.prototype = {
 					_this.embedPlayer.disableSeekBar();
 					_this.display( 'postroll' , function(){
 						var vid = _this.getNativePlayerElement();
-						if ( _this.originalSrc != vid.src) {
-							displayedPostroll = true;
+						if ( _this.originalSrc != vid.src) {							
 							// Restore original source: 
 							_this.embedPlayer.switchPlaySrc(_this.originalSrc, 
 								function() {
@@ -305,6 +314,11 @@ mw.AdTimeline.prototype = {
 		// Setup some configuration for done state:
 		displayTarget.doneFunctions = [];
 		displayTarget.playbackDone = function(){
+			// remove notice if present: 
+			$j('#' + _this.embedPlayer.id + '_ad_notice' ).remove();
+			// remove skip button if present: 
+			$j('#' + _this.embedPlayer.id + '_ad_skipBtn' ).remove();
+			
 			while( displayTarget.doneFunctions.length ){
 				displayTarget.doneFunctions.shift()();
 			}
@@ -341,8 +355,7 @@ mw.AdTimeline.prototype = {
 			if ( adConf.lockUI ) {
 				// TODO lock controls
 				_this.getNativePlayerElement().controls = false;
-			};
-			
+			};						
 			
 			// Check for click binding 
 			if( adConf.clickThrough ){		
@@ -359,13 +372,70 @@ mw.AdTimeline.prototype = {
 			}
 			
 			// Play the source then run the callback
-			_this.embedPlayer.switchPlaySrc( adConf.videoFile, function() { 
+			_this.embedPlayer.switchPlaySrc( adConf.videoFile, 
+				function(vid) {
+					mw.log("AdTimeline:: source updated, add tracking");
 					// Bind all the tracking events ( currently vast based but will abstract if needed ) 
 					if( adConf.trackingEvents ){
 						_this.bindTrackingEvents( adConf.trackingEvents );
 					}
+					var helperCss = {
+						'position': 'absolute',
+						'color' : '#FFF',
+						'font-weight':'bold',
+						'text-shadow': '1px 1px 1px #000'
+					}
+					// Check runtimeHelper ( notices
+					if( displayTarget.notice ){
+						var noticeId =_this.embedPlayer.id + '_ad_notice';
+						// Add the notice target:
+						_this.embedPlayer.$interface.append( 
+							$j('<span />')
+								.attr('id', noticeId)
+								.css( helperCss )
+								.css('font-size', '90%')
+								.css( displayTarget.notice.css )
+						);
+						var localNoticeCB = function(){
+							if( vid && $j('#' + noticeId).length ){
+								var timeLeft = Math.round( vid.duration - vid.currentTime );
+								if( isNaN( timeLeft ) ){
+									timeLeft = '...';
+								}
+								$j('#' + noticeId).text(
+									displayTarget.notice.text.replace('$1', timeLeft)
+								)
+								setTimeout( localNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+							}							
+						}
+						localNoticeCB();
+					}
+					
+					// Check for skip add button
+					if( displayTarget.skipBtn ){
+						var skipId = _this.embedPlayer.id + '_ad_skipBtn'
+						_this.embedPlayer.$interface.append(
+							$j('<span />')
+								.attr('id', skipId)
+								.text( displayTarget.skipBtn.text )
+								.css( helperCss )
+								.css('cursor', 'pointer')
+								.css( displayTarget.skipBtn.css )				
+								.click(function(){
+									$j( _this.embedPlayer ).unbind( 'click.ad' );	
+									displayTarget.playbackDone();
+								})
+						);
+						// TODO move up via layout engine ( for now just the control bar ) 
+						var bottomPos = parseInt( $j('#' +skipId ).css('bottom') );
+						if( !isNaN( bottomPos ) ){
+							$j('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() )
+						}
+						
+					}
+					
 				},
-				function(){
+				function(){					
 					// unbind any click ad bindings:
 					$j( _this.embedPlayer ).unbind( 'click.ad' );					
 					displayTarget.playbackDone();
@@ -375,7 +445,7 @@ mw.AdTimeline.prototype = {
 
 		// Check for companion ads:
 		if ( adConf.companions && adConf.companions.length ) {
-
+			
 			var companionConf = this.selectFromArray( adConf.companions );
 			mw.log("AdTimeline::selectCompanion: " + companionConf.html );
 			// NOTE:: is not clear from the ui conf response if multiple

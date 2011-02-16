@@ -432,18 +432,18 @@ mw.EmbedPlayerNative = {
 								if (typeof switchCallback == 'function') {
 									switchCallback(vid);
 								}
-							}, 100);
-						}, 100);
+							}, 50);
+						}, 50);
 					};
 					if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
 						// Null the src and wait 50ms ( helps unload video without crashing
 						// google chrome 7.x )
 						vid.src = '';
-						setTimeout(updateSrcAndPlay, 100);
+						setTimeout(updateSrcAndPlay, 500);
 					} else {
 						updateSrcAndPlay();
 					}
-				}, 100 );
+				}, 50 );
 			} catch (e) {
 				mw.log("Error: Error in swiching source playback");
 			}

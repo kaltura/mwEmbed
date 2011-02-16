@@ -27,8 +27,9 @@ mw.KAds.prototype = {
 	init: function( embedPlayer, $adConfig, callback ){
 		var _this = this; 
 		this.embedPlayer = embedPlayer;
-		this.$adConfig = $adConfig['kads'];	
-		this.adLayout = $adConfig['layout'];
+		this.$adConfig = $adConfig['config'];	
+		this.$notice = $adConfig['notice'];
+		this.$skipBtn = $adConfig['skipBtn'];
 		
 		// Load the Ads
 		_this.loadAds( function(){
@@ -41,11 +42,7 @@ mw.KAds.prototype = {
 	loadAds: function( callback ){		
 		var _this = this;
 		// Get companion targets:
-		var layoutHelpers = this
-		var baseDisplayConf = {	
-			'companionTargets' : this.getCompanionTargets(),
-			'layoutHelpers': this.getLayoutHelpers()
-		};
+		var baseDisplayConf = this.getBaseDisplayConf();
 		// Get ad Configuration
 		this.getAdConfigSet( function( adConfigSet){			
 			
@@ -66,17 +63,35 @@ mw.KAds.prototype = {
 			callback();
 		});
 	},
-	getLayoutHelpers: function(){
-		var $notice = $j( this.adLayout['noticeMessage'] );
-		return {};
-		/*return {
-			'notice' : {
-				'text' : $notice.attr('text').replace('{sequenceProxy.timeRemaining}', '$1'),
-				'height' : $notice.attr('height'),
-				'width' : $notice.attr('width')				
+	
+	/** 
+	 * Get base display configuration:
+	 */
+	getBaseDisplayConf: function(){
+		var config = {	
+			'companionTargets' : this.getCompanionTargets()
+		};
+		// Add notice if present
+		if( this.$notice.length ){
+			config.notice = {
+				'text' : this.$notice.attr('text').replace('{sequenceProxy.timeRemaining}', '$1'),
+				'css' : {
+					'top': '5px',
+					'left' : '5px'
+				}
 			}
 		}
-		*/
+		
+		if( this.$skipBtn.length ){
+			config.skipBtn = {
+				'text' : this.$skipBtn.attr('label'),
+				'css' : {
+					'right': '5px',
+					'bottom' : '5px'
+				}
+			}
+		}
+		return config;
 	},
 	/**
 	 * Add ad configuration to timeline targets

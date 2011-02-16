@@ -14,7 +14,7 @@ mw.AdLoader = {
 		// since the ad server is almost never on the same domain as the api.
 		// @@todo also we should explore html5 based cross domain request to avoid the proxy
 		var proxyUrl = mw.getConfig( 'AdSupport.XmlProxyUrl' );
-		if( !proxyUrl){
+		if( !proxyUrl ){
 			mw.log("Error: mw.KAds : missing kaltura proxy url ( can't load ad ) ");
 			return ; 
 		}
