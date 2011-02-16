@@ -214,7 +214,7 @@ mw.AdTimeline.prototype = {
 									// iPhone does not catch synchronous pause
 									setTimeout(function(){
 										vid.pause();
-									}, 100)							
+									}, 250)							
 								}
 							);
 						};
@@ -400,7 +400,7 @@ mw.AdTimeline.prototype = {
 							if( vid && $j('#' + noticeId).length ){
 								var timeLeft = Math.round( vid.duration - vid.currentTime );
 								if( isNaN( timeLeft ) ){
-									timeLeft = '...';
+									timeLeft = '...';y 
 								}
 								$j('#' + noticeId).text(
 									displayTarget.notice.text.replace('$1', timeLeft)
