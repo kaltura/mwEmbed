@@ -520,6 +520,7 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	if ( SCRIPT_FORCE_DEBUG ){
 		url+= '&debug=true';
 	}
+	// Check for special global callback for script load
 	kAppendScriptUrl(url, callback);
 }
 

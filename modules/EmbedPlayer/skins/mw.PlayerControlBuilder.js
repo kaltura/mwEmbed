@@ -476,6 +476,7 @@ mw.PlayerControlBuilder.prototype = {
 	 */
 	resizePlayer: function( size, animate, callback ){
 		var _this = this;
+		
 		// Update interface container:
 		var interfaceCss = {
 			'top' : ( size.top ) ? size.top : '0px',
@@ -483,6 +484,7 @@ mw.PlayerControlBuilder.prototype = {
 			'width' : size.width,
 			'height' : size.height
 		};
+		
 		// Set up local pointer to interface:
 		var embedPlayer = this.embedPlayer;
 		var $interface = embedPlayer.$interface;

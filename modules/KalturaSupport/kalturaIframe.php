@@ -686,10 +686,6 @@ class kalturaIframe {
 			//var kSupportsFlash = function(){ return false };
 
 			if( kIsHTML5FallForward() ){
-				// Remove the loader ( mwEmbed will supply the loader )
-				var el = document.getElementById('iframeLoadingSpinner');
-				el.parentNode.removeChild(el);
-
 				// Don't confuse the rewrite engine ( remove the kaltura swf as well )
 				var el = document.getElementById('kaltura_player');
 				el.parentNode.removeChild(el);
@@ -704,9 +700,9 @@ class kalturaIframe {
 
 				// Identify the player as an iframe player
 				mw.setConfig( "EmbedPlayer.IsIframePlayer", true );
-
+				
 				// Load the mwEmbed resource library and add resize binding
-				mw.ready(function(){
+				mw.ready(function(){										
 					// Bind window resize to reize the player:
 					$j( window ).resize( function(){
 						$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
