@@ -400,7 +400,7 @@ mw.AdTimeline.prototype = {
 							if( vid && $j('#' + noticeId).length ){
 								var timeLeft = Math.round( vid.duration - vid.currentTime );
 								if( isNaN( timeLeft ) ){
-									timeLeft = '...';y 
+									timeLeft = '...';
 								}
 								$j('#' + noticeId).text(
 									displayTarget.notice.text.replace('$1', timeLeft)
