@@ -1,35 +1,45 @@
 <html>
   <head>
     <title></title>
-    <script type="text/javascript" src="../ResourceLoader.php?class=window.jQuery,mwEmbed&&debug=true"></script> 
+    <script type="text/javascript" src="../../../ResourceLoader.php?class=window.jQuery,mwEmbed&&debug=true"></script> 
     <!--  
     <script type="text/javascript" src="http://html5.kaltura.org/js" > </script>
     <script type="text/javascript" src="http://html5.kaltura.org/js?class=window.jQuery,mwEmbed&&debug=true" > </script>
     -->
+
+    <style>
+      #companionTarget {
+        float:right;
+        width:180px;
+        height:267px;
+        border:solid thin black;
+        background:white;
+      }
+    </style>
   </head>
   <body>
     <h1>Preroll and Overlay Advertisements With Companion Ad</h1>
+      <div id="companionTarget"><p>Companion Ad Target Div</p></div>
       <div id"playerContainer">
         <video id="video"
-          width=480
-          height=206
+          width=720
+          height=307
           kentryid="0_un4gy128"
           kwidgetid="_322481"
           kpartnerid="32248"
           ></video>
       </div>
-      <div id="companionTarget" style="width:480px;height:100px"><p>Companion Ad Target Div</p></div>
     <script type="text/javascript">
 
-        // edit the videoTypes to match the flavors you are provided by your kaltura server account.  Order matters: the last listed mime-type that returns valid will be used.
-    var preferredType;
-    var videoTypes = [
-      { testString: 'video/ogg; codecs="theora, vorbis"', kalturaSourceType: 'video/ogg' },
-      { testString: 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"', kalturaSourceType: 'video/h264' },
-      { testString: 'video/webm; codecs="vp8, vorbis"', kalturaSourceType: 'video/webm' }
-    ];
-    function supports_video() {
-      return !!document.createElement('video').canPlayType;
+      // edit videoTypes to match the flavors you are provided by your kaltura server account.  Order matters: the last listed mime-type that returns valid will be used.
+      var preferredType;
+      var videoTypes = [
+        { testString: 'video/ogg; codecs="theora, vorbis"', kalturaSourceType: 'video/ogg' },
+        { testString: 'video/mp4; codecs="avc1.42E01E, mp4a.40.2"', kalturaSourceType: 'video/h264' },
+        { testString: 'video/webm; codecs="vp8, vorbis"', kalturaSourceType: 'video/webm' }
+      ];
+      function supports_video() {
+        return !!document.createElement('video').canPlayType;
       }
       function supportsType( testString ) {
         if (!supports_video()) { return false; }
@@ -42,7 +52,7 @@
         }
       }
       $(document).ready(function() {
-          $( videoTypes ).each( function( i, v ) {
+        $( videoTypes ).each( function( i, v ) {
           if ( supportsType( v.testString ) ) {
             // unfortunately this only works if the test string order is correct
             preferredType = v.kalturaSourceType;
