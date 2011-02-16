@@ -1199,10 +1199,11 @@ mw.PlayerControlBuilder.prototype = {
 		    	$j('<span />')
 			.addClass( 'ui-icon ui-icon-closethick' )
 		);
-
-		var overlay_width = 370;
-		var overlay_height = 260;
-		var overlay_top = ((embedPlayer.$interface.height() - overlay_height) / 2);
+		    
+		var controlBar_height = embedPlayer.$interface.find( '.control-bar' ).height();
+		var overlay_width = (embedPlayer.getWidth() - 30);
+		var overlay_height = (embedPlayer.getHeight() - (controlBar_height + 30));
+		var overlay_top = (( (embedPlayer.$interface.height() - controlBar_height) - overlay_height) / 2);
 		var overlay_left = ((embedPlayer.$interface.width() - overlay_width) / 2);
 		
 		var overlayMenuCss = {
@@ -1491,6 +1492,8 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		// Empty the target:
 		$target.empty();
+		$target.append( $j('<div />') );
+		$target = $target.find('div');
 
 		var $mediaList = $j( '<ul />' );
 		var $textList =  $j( '<ul />' );
