@@ -205,9 +205,12 @@ if ( !$url ) {
   
   // Forward the user agent:
   curl_setopt( $ch, CURLOPT_USERAGENT, isset( $_GET['user_agent'] ) ? $_GET['user_agent'] : $_SERVER['HTTP_USER_AGENT'] );
- 
-  list( $header, $contents ) = preg_split( '/([\r\n][\r\n])\\1/', curl_exec( $ch ), 2 );
-  
+  $parts = preg_split( '/([\r\n][\r\n])\\1/', curl_exec( $ch ), 2 );
+  if( count($parts) != 2 ){
+	$status = array( 'http_code' => 'ERROR' );
+  } else {
+  	list( $header, $contents ) = $parts;
+  }
   $status = curl_getinfo( $ch );
   
   curl_close( $ch );
