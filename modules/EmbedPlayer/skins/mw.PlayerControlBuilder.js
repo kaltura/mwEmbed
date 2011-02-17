@@ -1700,7 +1700,7 @@ mw.PlayerControlBuilder.prototype = {
 					ctrlObj.embedPlayer.fullscreen();
 				});
 
-				return $j( '<div />' )
+				$btn = $j( '<div />' )
 						.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
 						.addClass( "ui-state-default ui-corner-all ui-icon_link rButton fullscreen-btn" )
 						.append(
@@ -1708,9 +1708,31 @@ mw.PlayerControlBuilder.prototype = {
 							.addClass( "ui-icon ui-icon-arrow-4-diag" )
 						)
 						// Fullscreen binding:
-						.buttonHover().click( function() {
-							ctrlObj.embedPlayer.fullscreen();
-						} );
+						.buttonHover();
+				
+				// iPad fullscreen in an iframe is very broken 
+				if( mw.getConfig('EmbedPlayer.IsIframePlayer') && mw.isIpad() ){
+					// TODO we should pass time offset or if the user has already viewed the ad	
+					// remove the fullscreen button in the "fullscreen" iframe 
+					var url = document.URL.split('#')[0];
+					mw.setConfig('EmbedPlayer.EnableFullscreen', false);
+					url += mw.getIframeHash();
+					mw.setConfig('EmbedPlayer.EnableFullscreen', true);
+					// Change button into new window ( of the same url as the iframe ) : 
+					return	$j('<a />').attr({
+							'href': url,
+							'target' : '_new'
+						})
+						.click(function(){
+							 ctrlObj.embedPlayer.pause();
+							 return true;
+						})
+						.append($btn);
+				} else {
+					return $btn.click( function() {
+						ctrlObj.embedPlayer.fullscreen();
+					} );
+				}
 			}
 		},
 

@@ -183,7 +183,7 @@ class EntriesList {
 		$j('.entry').click( function(){
 			$j(window).scrollTop(0);
 			var entryId = this.hash.slice(1);
-			var url = '../../../mwEmbedFrame.php/entry_id/' + entryId + '/wid/_' + partnerId + '/autoplay/autoplay/' + mw.getKalturaIframeHash();
+			var url = '../../../mwEmbedFrame.php/entry_id/' + entryId + '/wid/_' + partnerId + '/autoplay/autoplay/' + mw.getIframeHash();
 
 			$j( '#videoContainer iframe' ).css('display', 'block');
 			$j( '#videoContainer iframe' ).attr('src', url);

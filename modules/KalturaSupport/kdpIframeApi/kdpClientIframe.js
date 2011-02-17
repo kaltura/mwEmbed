@@ -162,7 +162,7 @@ kdpClientIframe.prototype = {
 			}
 		}			
 		// Add configuration to the hash tag:
-		iframeSrc+= mw.getKalturaIframeHash();
+		iframeSrc+= mw.getIframeHash();
 		return iframeSrc;
 	},
 	'getIframe': function(){

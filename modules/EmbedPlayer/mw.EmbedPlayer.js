@@ -2648,9 +2648,6 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents );
-		if( ! this._propagateEvents ){
-			return ;
-		}
 		// Hide any overlay:
 		this.controlBuilder.closeMenuOverlay();
 
@@ -2668,16 +2665,16 @@ mw.EmbedPlayer.prototype = {
 		}
 	
 		if( this.paused === true ){
-			this.paused = false;			
+			this.paused = false;
 			// Check if we should Trigger the play event
 			mw.log("EmbedPlayer:: trigger play even::" + !this.paused);
-			if( ! this.doMethodsAutoTrigger() ) {
+			if( ! this.doMethodsAutoTrigger() && this._propagateEvents ) {
 				$j( this ).trigger( 'play' );
 			}
 		}
 		
 		// If we previously finished playing this clip run the "replay hook"
-		if( this.donePlayingCount > 0 && !this.paused) {
+		if( this.donePlayingCount > 0 && !this.paused && this._propagateEvents ) {
 			mw.log("replayEvent");
 			$j( this ).trigger( 'replayEvent' );
 		}
@@ -2687,7 +2684,7 @@ mw.EmbedPlayer.prototype = {
 		.addClass( 'ui-icon-pause' );
 
 		this.$interface.find( '.play-btn' )
-		.unbind()
+		.unbind('click')
 		.buttonHover()
 		.click( function( ) {
 		 	_this.pause();
@@ -2720,7 +2717,7 @@ mw.EmbedPlayer.prototype = {
 		.removeClass( 'ui-icon-pause' )
 		.addClass( 'ui-icon-play' );
 
-		this.$interface.find('.play-btn' )
+		this.$interface.find( '.play-btn' )
 		.unbind('click')
 		.buttonHover()
 		.click( function() {

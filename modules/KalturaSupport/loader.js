@@ -339,7 +339,7 @@
 					argSeperator ='&';
 				}
 				
-				iframeRequest+= mw.getKalturaIframeHash();				
+				iframeRequest+= mw.getIframeHash();				
 				var iframeId = $j( playerTarget ).attr('id');
 				var $iframe = $j('<iframe />')
 				.attr({
@@ -373,32 +373,13 @@
 			}
 		});
 	};
-		
-	/**
-	 * Utility loader function to grab kaltura iframe hash url
-	 */
-	mw.getKalturaIframeHash = function(){
-		// Append the configuration and request domain to the iframe hash: 
-		var iframeMwConfig =  mw.getNonDefaultConfigObject();
-		// No need to pass the IframeRewrite option to the iframe:
-		delete iframeMwConfig['Kaltura.IframeRewrite'];	
-		
-		// Add the parentUrl to the iframe config: 
-		iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
-
-		return '#' + encodeURIComponent( 
-				JSON.stringify({
-					'mwConfig' :iframeMwConfig
-				})
-		);
-	}
 	
 	/**
 	 * Get the list of embed objects on the page that are 'kaltura players' 
 	 */
 	mw.getKalturaPlayerList = function(){
 		var kalturaPlayers = [];
-		// check all objects for kaltura compatible urls 
+		// Check all objects for kaltura compatible urls 
 		var objectList = document.getElementsByTagName('object');
 		var tryAddKalturaEmbed = function( url , flashvars){
 			var settings = kGetKalturaEmbedSettings( url, flashvars );

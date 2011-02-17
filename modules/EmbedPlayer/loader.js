@@ -453,5 +453,23 @@
 		$j( mw ).trigger( 'LoaderEmbedPlayerUpdateRequest',
 				[ playerElement, dependencyRequest ] );
 	}
+	
+	/**
+	 * Utility loader function to grab configuration for passing into an iframe as a hash target
+	 */
+	mw.getIframeHash = function(){
+		// Append the configuration and request domain to the iframe hash: 
+		var iframeMwConfig =  mw.getNonDefaultConfigObject();
+		
+		// Add the parentUrl to the iframe config: 
+		iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
+
+		return '#' + encodeURIComponent( 
+				JSON.stringify({
+					'mwConfig' :iframeMwConfig
+				})
+		);
+	}
+	
 
 } )( window.mw );

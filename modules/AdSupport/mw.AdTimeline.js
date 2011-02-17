@@ -153,6 +153,7 @@ mw.AdTimeline.prototype = {
 			var restorePlayer = function(){
 				_this.embedPlayer.restoreEventPropagation();
 				_this.embedPlayer.enableSeekBar();
+				_this.embedPlayer.play();
 			};
 			
 
@@ -167,11 +168,12 @@ mw.AdTimeline.prototype = {
 					if ( _this.originalSrc != vid.src ) {
 						_this.embedPlayer.switchPlaySrc(_this.originalSrc,
 							function() {								
+								mw.log( "AdTimeline:: restored original src:" + vid.src);
 								// Restore embedPlayer native bindings 
 								// async for iPhone issues
 								setTimeout(function(){
 									restorePlayer();
-								},10);
+								},100);
 							}
 						);
 					} else {
@@ -194,6 +196,7 @@ mw.AdTimeline.prototype = {
 					
 					// TODO read the add disable control bar to ad config and check that here. 
 					_this.embedPlayer.disableSeekBar();
+					_this.embedPlayer.monitor();
 					_this.display( 'postroll' , function(){
 						var vid = _this.getNativePlayerElement();
 						if ( _this.originalSrc != vid.src) {							
@@ -210,11 +213,10 @@ mw.AdTimeline.prototype = {
 									_this.embedPlayer.stop();
 									
 									// Pause playback state
-									vid.pause();
+									vid.pause();							
 									// iPhone does not catch synchronous pause
-									setTimeout(function(){
-										vid.pause();
-									}, 250)							
+									setTimeout( vid.pause, 50 );
+									setTimeout( vid.pause, 250 );		
 								}
 							);
 						};

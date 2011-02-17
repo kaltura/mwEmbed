@@ -387,73 +387,28 @@ mw.EmbedPlayerNative = {
 		this.currentTime = 0;
 		this.previousTime = 0;
 		// Setup the initial delay based on fullscreen or not
-		var initialSrcPlayDelay = ( this.controlBuilder.fullscreenMode ) ? 1000 : 100; 
-		
-		var vid = this.getPlayerElement();		
-		if ( vid ) {
-			try {
-				// issue a play request on the source
-				vid.play();
-				mw.log( 'EmbedPlayerNative:: switchPlaySrc: initial play');
+		try {
+			var vid = this.getPlayerElement();
+			vid.pause();
+			vid.src = src;
+			setTimeout(function(){
+				vid.load();
 				setTimeout(function(){
-					// Remove all native player bindings
-					$j(vid).unbind();
-					vid.pause();
-					mw.log( 'EmbedPlayerNative:: switchPlaySrc: pause');
-					var orginalControlsState = vid.controls;
-					// Hide controls ( to not display native play button while switching sources ) 
-					vid.removeAttribute('controls');
-					// Local scope update source and play function to work around google chrome bug
-					var updateSrcAndPlay = function() {
-						var vid = _this.getPlayerElement();
-						if (!vid){
-							mw.log( 'Error: switchPlaySrc no vid');
-							return ;
+					vid.play();					
+					$j(vid).unbind('ended.switchSrc').bind('ended.switchSrc', function( event ) {
+						if(typeof doneCallback == 'function' ){
+							doneCallback();
 						}
-						vid.src = src;
-						mw.log( 'EmbedPlayerNative:: switchPlaySrc: updateSrcAndPlay update src');
-						// Give iOS 150ms to figure out the src got updated ( iPad OS 4.0 )
-						setTimeout(function() {
-							var vid = _this.getPlayerElement();
-							if (!vid){
-								mw.log( 'Error: switchPlaySrc no vid');
-								return ;
-							}	
-							vid.load();
-							mw.log( 'EmbedPlayerNative:: switchPlaySrc: load and play');							
-							// Wait another 150ms then bind the end event and any custom events
-							// for the switchCallback
-							setTimeout(function() {
-								mw.log( 'EmbedPlayerNative:: switchPlaySrc: Add bindings');
-								var vid = _this.getPlayerElement();
-								vid.play();
-								// restore controls 
-								vid.controls = orginalControlsState;
-								// add the end binding: 
-								$j(vid).bind('ended', function( event ) {
-									if(typeof doneCallback == 'function' ){
-										doneCallback();
-									}
-									return false;
-								});
-								if (typeof switchCallback == 'function') {
-									switchCallback(vid);
-								}
-							}, 150);
-						}, 150);
-					};
-					if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
-						// Null the src and wait 500ms ( helps unload video without crashing
-						// google chrome 7.x - 9.x)
-						vid.src = '';
-						setTimeout(updateSrcAndPlay, 500);
-					} else {
-						updateSrcAndPlay();
+						return false;
+					});
+					if (typeof switchCallback == 'function') {
+						switchCallback(vid);
+						return ;
 					}
-				}, 150 );
-			} catch (e) {
-				mw.log("Error: Error in swiching source playback");
-			}
+				}, 150);
+			}, 150 );
+		} catch (e) {
+			mw.log("Error: Error in swiching source playback");
 		}
 	},
 	
@@ -624,7 +579,7 @@ mw.EmbedPlayerNative = {
 	*/
 	onpause: function(){
 		mw.log( "EmbedPlayer:native: OnPaused:: " +  this._propagateEvents );
-		if(  this._propagateEvents ){
+		if(  this._propagateEvents && ! this.paused){
 			this.parent_pause();
 		}
 	},
@@ -633,9 +588,9 @@ mw.EmbedPlayerNative = {
 	* Handle the native play event
 	*/
 	onplay: function(){
-		mw.log("EmbedPlayer:native:: OnPlay::" +  this._propagateEvents );
+		mw.log("EmbedPlayer:native:: OnPlay:: propogate" +  this._propagateEvents + ' paused: ' + this.paused);
 		// Update the interface ( if paused )
-		if(  this._propagateEvents ){
+		if(  this._propagateEvents && this.paused ){
 			this.parent_play();
 		}
 	},
