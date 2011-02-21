@@ -329,8 +329,13 @@ class kalturaIframe {
 	*/
 	function isAccessControlAllowed() {
 		$resultObject =  $this->getResultObject();
+		// Don't handle result object
+		if( count( $resultObject) == 0 ){
+			return true;
+		}
+		
 		$accessControl = $resultObject['accessControl'];
-
+		
 		// Checks if admin
 		if( $accessControl->isAdmin ) {
 			return true;

@@ -165,7 +165,7 @@ class EntriesList {
 <html>
 <head>
 	<title>Entries List</title>    
-	<script type="text/javascript" src="../../../mwEmbedLoader.js"></script> 
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script> 
 	<script type="text/javascript">
 	var partnerId = <?php echo $this->partnerId; ?>;
 	var page = <?php echo $this->page; ?>;

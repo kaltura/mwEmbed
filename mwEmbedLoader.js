@@ -146,6 +146,14 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	}
 	replaceTargetId.innerHTML = '';
 	
+	// Empty the replace target:
+	var elm = document.getElementById(replaceTargetId);
+	if( ! elm ){
+		if( console.log )
+			console.log("Error could not find iframe target: " + replaceTargetId);
+	}
+	replaceTargetId.innerHTML = '';
+	
 	// Check if the iframe API is enabled in which case we have to load client code and use that 
 	// to rewrite the frame
 	if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && ( kSupportsFlash() || kSupportsHTML5() ) ){
@@ -315,13 +323,6 @@ function kCheckAddScript(){
 			return ;
 		}
 	}
-	var dPlayers = getKalturaDynamicPlayers();
-	if( dPlayers.length ){
-		for(var i=0;i< dPlayers.length;i++){
-			var options = { width: dPlayers[i].width, height: dPlayers[i].height }		
-			kalturaIframeEmbed( dPlayers[i].id, dPlayers[i].kSettings, options );
-		}
-	}
 	// If document includes kaltura embed tags && isMobile safari: 
 	if ( kIsHTML5FallForward() &&  kGetKalturaPlayerList().length ) {
 		// Check for Kaltura objects in the page
@@ -415,9 +416,8 @@ function kAddScript( callback ){
 			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );
 			kLoadJsRequestSet( jsRequestSet, callback );
 		} else {
-			kDoIframeRewriteList( kGetKalturaPlayerList() )	;
+			kDoIframeRewriteList( kGetKalturaPlayerList() );
 		}
-		return ;
 	}
 	
 	// Add all the classes needed for video 
@@ -611,31 +611,6 @@ function doScrollCheck() {
 	}
 	// and execute any waiting functions
 	kRunMwDomReady();
-}
-
-getKalturaDynamicPlayers = function(){
-	var objectList = document.getElementsByTagName('object');
-	var dPlayers = [];
-	// Look for param based attributes ( if class == KalturaDynamicPlayer ) override flashvars )
-	for( var i =0; i < objectList.length; i++){
-		if( objectList[i].className && objectList[i].className.indexOf( 'KalturaDynamicPlayer' ) ){
-			var flashvars = {};
-			var paramTags = objectList[i].getElementsByTagName('param');
-			for( var j = 0; j < paramTags.length; j++){
-				var pName = paramTags[j].getAttribute('name');
-				var pVal = paramTags[j].getAttribute('value');
-				if( pName == 'entry_id' || pName == 'widget_id' || pName == 'uiconf_id'){
-					flashvars[ pName ] = pVal;
-				}
-			}
-			var settings = kGetKalturaEmbedSettings( '', flashvars );
-			if( settings && settings.uiconf_id && settings.wid ){
-				objectList[i].kSettings = settings;
-				dPlayers.push( objectList[i] );
-			}
-		}
-	}
-	return dPlayers;
 }
 
 /**

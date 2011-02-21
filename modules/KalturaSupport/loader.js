@@ -237,14 +237,17 @@
 								kParams[ iframeRequestMap[tagKey] ] = $j(playerTarget).attr( tagKey );
 							}
 						}
-						iframeRewriteCount++;
-						$j( playerTarget ).kalturaIframePlayer( kParams, doneWithIframePlayer);
+						// XXX UGLY TEMPORARY HACK ( don't use iframe for playlist ) 
+						if( ! iframeRequestMap['kplaylistid'] ){
+							iframeRewriteCount++;
+							$j( playerTarget ).kalturaIframePlayer( kParams, doneWithIframePlayer);
+						}
 					});
 					// Don't do any other rewrites or library loading
 					if( $j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
 						callback();
-					}
-					return true;
+						return true;
+					}					
 				}
 				
 				// Do loading then rewrite each tag:
