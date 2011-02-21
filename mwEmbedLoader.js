@@ -148,7 +148,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	
 	// Check if the iframe API is enabled in which case we have to load client code and use that 
 	// to rewrite the frame
-	if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) ){
+	if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && ( kSupportsFlash() || kSupportsHTML5() ) ){
 		if( kIsHTML5FallForward() ){
 			kAddScript(function(){
 				// Options include 'width' and 'height'
@@ -411,7 +411,7 @@ function kAddScript( callback ){
 	}
 	// Check if we are using an iframe ( load only the iframe api client ) 
 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) ) {
-		if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') ){
+		if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') && ( kSupportsFlash() || kSupportsHTML5() ) ){
 			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );
 			kLoadJsRequestSet( jsRequestSet, callback );
 		} else {
