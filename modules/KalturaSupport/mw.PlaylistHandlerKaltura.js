@@ -162,7 +162,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	/**
 	* Get an items poster image ( return missing thumb src if not found )
 	*/ 
-	getClipPoster: function ( clipIndex, size ){		
+	getClipPoster: function ( clipIndex, size ){
 		var clip = this.getClip( clipIndex );
 		if(!size){
 			return clip.thumbnailUrl;

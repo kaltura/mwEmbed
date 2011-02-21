@@ -2498,56 +2498,17 @@ mw.EmbedPlayer.prototype = {
 	* NOTE this could probably share a bit more code with getShareEmbedVideoJs
 	*/
 	getShareIframeObject: function(){
-
-		// If using a gadget do the new embed format:
-		// NOTE this should be factored out into mediaWiki gadget helper
-		if( typeof wgServer != 'undefined' && typeof mwCheckForGadget != 'undefined' ){
-			var iframeUrl = wgServer + 
-				wgArticlePath.replace( /\$1/, 'File:' + 
-					unescape( this.apiTitleKey ).replace( /^(File:|Image:)/ , '' ) ) +
-				'?' + mw.getConfig( 'Mw.AppendWithJS' ) +
-				'&embedplayer=yes';
-		} else if ( typeof(mw.IA) != 'undefined') {
-                  var iframeUrl = mw.IA.embedUrl();
-		} else {
-			// old style embed:
-			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
-			var params = {'src[]':[]};
-
-			// TODO move to mediaWiki Support module
-			if( this.apiTitleKey ) {
-				params.apiTitleKey = this.apiTitleKey;
-				if ( this.apiProvider ) {
-					// Commons always uses the commons api provider ( special hack should refactor )
-					if( mw.parseUri( document.URL ).host == 'commons.wikimedia.org'){
-						 this.apiProvider = 'commons';
-					}
-					params.apiProvider = this.apiProvider;
-				}
-			} else {
-				// Output all the video sources:
-				for( var i=0; i < this.mediaElement.sources.length; i++ ){
-					var source = this.mediaElement.sources[i];
-					if( source.src ) {
-                                          params['src[]'].push(mw.absoluteUrl( source.src ));
-					}
-				}
-				// Output the poster attr
-				if( this.poster ){
-					params.poster = this.poster;
-				}
-			}
-
-			// Set the skin if set to something other than default
-			if( this.skinName ){
-				params.skin = this.skinName;
-			}
-
-			if( this.duration ) {
-				params.durationHint = parseFloat( this.duration );
-			}
-			iframeUrl += $j.param( params );
-		}
+		
+		var iframeUrl = false
+		$( this ).trigger( 'GetShareIframeSrc', function( localIframeSrc ){
+			if( iframeUrl){
+				mw.log("Error multiple modules binding GetShareIframeSrc" );
+			}			
+			iframeUrl = localIframeSrc;
+		});
+		if( !iframeUrl ){	
+			iframeUrl = this.getIframeSourceUrl()
+		}				
 
 		// Set up embedFrame src path
 		var embedCode = '&lt;iframe src=&quot;' + mw.escapeQuotesHTML( iframeUrl ) + '&quot; ';
@@ -2563,7 +2524,48 @@ mw.EmbedPlayer.prototype = {
 		// Return the embed code
 		return embedCode;
 	},
+	getIframeSourceUrl: function(){
+		var iframeUrl = '';
+		
+		// old style embed:
+		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
+		var params = {'src[]':[]};
 
+		// TODO move to mediaWiki Support module
+		if( this.apiTitleKey ) {
+			params.apiTitleKey = this.apiTitleKey;
+			if ( this.apiProvider ) {
+				// Commons always uses the commons api provider ( special hack should refactor )
+				if( mw.parseUri( document.URL ).host == 'commons.wikimedia.org'){
+					 this.apiProvider = 'commons';
+				}
+				params.apiProvider = this.apiProvider;
+			}
+		} else {
+			// Output all the video sources:
+			for( var i=0; i < this.mediaElement.sources.length; i++ ){
+				var source = this.mediaElement.sources[i];
+				if( source.src ) {
+                                      params['src[]'].push(mw.absoluteUrl( source.src ));
+				}
+			}
+			// Output the poster attr
+			if( this.poster ){
+				params.poster = this.poster;
+			}
+		}
+
+		// Set the skin if set to something other than default
+		if( this.skinName ){
+			params.skin = this.skinName;
+		}
+
+		if( this.duration ) {
+			params.durationHint = parseFloat( this.duration );
+		}
+		iframeUrl += $j.param( params );
+		return iframeUrl;
+	},
 	/**
 	 * Get the share embed Video tag code
 	 */
