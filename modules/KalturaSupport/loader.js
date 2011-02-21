@@ -102,6 +102,7 @@
 			// this is kind of heavy weight for loader.js 
 			// maybe move most of this to kEntryId support
 			if( mw.isHTML5FallForwardNative() || mw.getConfig( 'Kaltura.IframeRewrite' ) ){
+				
 				// setup load flags
 				var loadEmbedPlayerFlag = loadPlaylistFlag = false;
 				
@@ -238,8 +239,9 @@
 							}
 						}
 						// XXX UGLY TEMPORARY HACK ( don't use iframe for playlist ) 
-						if( ! iframeRequestMap['kplaylistid'] ){
+						if( ! kParams['kplaylistid'] ){
 							iframeRewriteCount++;
+							$j( playerTarget ).removeClass( 'mwEmbedKalturaVideoSwap' );
 							$j( playerTarget ).kalturaIframePlayer( kParams, doneWithIframePlayer);
 						}
 					});

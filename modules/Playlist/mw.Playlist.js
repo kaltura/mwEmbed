@@ -435,7 +435,7 @@ mw.Playlist.prototype = {
 		var $video = $j( '<video />' )
 		.attr({
 			'id' : _this.getVideoPlayerId( clipIndex ),
-			'poster' : _this.sourceHandler.getClipPoster( clipIndex )
+			'poster' : _this.sourceHandler.getClipPoster( clipIndex, playerSize)
 		})
 		.addClass( 'mwPlaylist' )
 		.css(
