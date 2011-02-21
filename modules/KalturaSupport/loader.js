@@ -349,21 +349,21 @@
 				var $iframe = $j('<iframe />')
 				.attr({
 					'id' : iframeId,
-					'class' : $j( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',
 					'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest,
 					'height' : $j( playerTarget ).height(),
 					'width' : $j( playerTarget ).width()
 				})
+				.addClass('mwEmbedKalturaIframe')
 				.css( 'border', '0px' );
 				
 				// Replace the player with the iframe: 
 				$j( playerTarget ).replaceWith( $iframe );
 				
-				mw.log('$j.kalturaIframePlayer::iframe in page: ' + $j( 'iframe#' + iframeId ) );
+				mw.log('$j.kalturaIframePlayer::iframe in page: ' + $j( 'iframe#' + iframeId ).length );
 				
 				// if the server is enabled 
 				if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
-					// Invoke the iframe player api system: 				
+					// Invoke the iframe player api system: 			
 					var iframeEmbedPlayer = $j( '#' + iframeId ).iFramePlayer( callback );
 				}
 			};

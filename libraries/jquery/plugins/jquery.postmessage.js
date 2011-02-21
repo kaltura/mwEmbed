@@ -169,6 +169,9 @@
   //  Nothing!
   
   $.receiveMessage = p_receiveMessage = function( callback, source_origin, delay ) {
+	  if( !source_origin){
+		  return FALSE;
+	  }
 	// update source_origin to just be the url
 	source_origin = getDomainFromUrl ( source_origin );
     if ( has_postMessage ) {
