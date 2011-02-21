@@ -319,14 +319,13 @@
 	 * 	optional function called once iframe player has been loaded
 	 */
 	jQuery.fn.kalturaIframePlayer = function( iframeParams, callback ) {
-		mw.log( '$j.kalturaIframePlayer::' );
+		mw.log( '$j.kalturaIframePlayer::' + $j(this).attr('id') );
 		$j( this ).each( function(inx, playerTarget){
-		
 			// Establish the "server" domain via mwEmbed path: 
 			var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
 			
 			// Local function to handle iframe rewrites: 
-			var doRewriteIframe = function(){				
+			var doRewriteIframe = function(){
 				// Build the iframe request from supplied iframeParams: 
 				var iframeRequest = '';
 				for( var key in iframeParams ){
@@ -344,8 +343,9 @@
 					argSeperator ='&';
 				}
 				
-				iframeRequest+= mw.getIframeHash();				
+				iframeRequest+= mw.getIframeHash();			
 				var iframeId = $j( playerTarget ).attr('id');
+				
 				var $iframe = $j('<iframe />')
 				.attr({
 					'id' : iframeId,
@@ -359,12 +359,13 @@
 				// Replace the player with the iframe: 
 				$j( playerTarget ).replaceWith( $iframe );
 				
+				mw.log('$j.kalturaIframePlayer::iframe in page: ' + $j( 'iframe#' + iframeId ) );
 				
 				// if the server is enabled 
 				if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 					// Invoke the iframe player api system: 				
 					var iframeEmbedPlayer = $j( '#' + iframeId ).iFramePlayer( callback );
-				}			
+				}
 			};
 			
 			// Check if the iframe API is enabled: 
