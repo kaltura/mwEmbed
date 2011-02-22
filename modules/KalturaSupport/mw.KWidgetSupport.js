@@ -71,10 +71,11 @@ mw.KWidgetSupport.prototype = {
 				});
 			});									
 			
-			// Add kaltura iframe path support: 
+			// Add kaltura iframe path support:
 			$( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
-				callback( mw.getConfig('Kaltura.ServiceUrl') + '/html5/p' + _this.kClient.getPartnerId() + 
-							'/embedFrame/entryId/' + $j( embedPlayer ).attr( 'kentryid' ) );
+				callback( mw.getConfig('Kaltura.ServiceUrl') + '/p/' + _this.kClient.getPartnerId() +
+							'/embedIframe/entry_id/' + $j( embedPlayer ).attr( 'kentryid' ) +
+							'/uiconf_id/' + embedPlayer.kuiconfid );
 			});
 		});
 		
