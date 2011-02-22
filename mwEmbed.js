@@ -2109,9 +2109,6 @@ mw.absoluteUrl = function( src, contextUrl ) {
 					window[ '$j' ] = jQuery.noConflict();
 				}
 				
-				// Set up mvEmbed utility jQuery bindings
-				mw.dojQueryBindings();
-				
 				// Setup user config:
 				mw.setupUserConfig( function(){
 					// Get module loader.js, and language files
@@ -2406,18 +2403,16 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		if( mwDomReadyFlag ) {
 			return ;
 		}
-		mw.log( 'run:domReady:: ' + document.getElementsByTagName('video').length );
+		mwDomReadyFlag = true;		
 		// Set the onDomReady Flag
-		mwDomReadyFlag = true;
 
-		// Give us a chance to get to the bottom of the script.
-		// When loading mwEmbed asynchronously the dom ready gets called
-		// directly and in some browsers beets the $j = jQuery.noConflict();
-		// call
-		// and causes symbol undefined errors.
-		setTimeout(function(){
-			mw.setupMwEmbed();
-		},1);
+		// Append the script to ensure it executes after all the rest of the scripts have loaded
+		var script   = document.createElement("script");
+		script.type  = "text/javascript";
+		script.text  = "mw.setupMwEmbed();";
+		document.body.appendChild(script);
+
+		
 	};
 
 	/**
@@ -2452,239 +2447,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 	/**
 	 * Utility jQuery bindings Setup after jQuery is available ).
 	 */
-	mw.dojQueryBindings = function() {
-		mw.log( 'mw.dojQueryBindings' );
-		( function( $ ) {
-			
-			/**
-			 * Runs all the triggers on all the named bindings of an object with
-			 * a single callback
-			 * 
-			 * NOTE THIS REQUIRES JQUERY 1.4.2 and above
-			 * 
-			 * Normal jQuery tirgger calls will run the callback directly
-			 * multiple times for every binded function.
-			 * 
-			 * With triggerQueueCallback() callback is not called until all the
-			 * binded events have been run.
-			 * 
-			 * @param {string}
-			 *            triggerName Name of trigger to be run
-			 * @param {object=}
-			 *            arguments Optional arguments object to be passed to
-			 *            the callback
-			 * @param {function}
-			 *            callback Function called once all triggers have been
-			 *            run
-			 * 
-			 */
-			$.fn.triggerQueueCallback = function( triggerName, triggerParam, callback ){
-				var targetObject = this;
-				// Support optional triggerParam data
-				if( !callback && typeof triggerParam == 'function' ){
-					callback = triggerParam;
-					triggerParam = null;
-				}
-				// Support namespaced event segmentation ( jQuery
-				var triggerBaseName = triggerName.split(".")[0]; 
-				var triggerNamespace = triggerName.split(".")[1];
-				// Get the callback set
-				var callbackSet = [];
-				if( !$j( targetObject ).data( 'events' ) ){
-					// No events run the callback directly
-					callback();
-					return ;
-				}
-				if( ! triggerNamespace ){
-					callbackSet = $j( targetObject ).data( 'events' )[ triggerBaseName ];
-				} else{		
-					$j.each( $j( targetObject ).data( 'events' )[ triggerBaseName ], function( inx, bindObject ){
-						if( bindObject.namespace ==  triggerNamespace ){
-							callbackSet.push( bindObject );
-						}
-					});
-				}
-
-				if( !callbackSet || callbackSet.length === 0 ){
-					mw.log( '"mwEmbed::jQuery.triggerQueueCallback: No events run the callback directly: ' + triggerName );
-					// No events run the callback directly
-					callback();
-					return ;
-				}
-				
-				// Set the callbackCount
-				var callbackCount = ( callbackSet.length )? callbackSet.length : 1;
-				// mw.log("mwEmbed::jQuery.triggerQueueCallback: " + triggerName
-				// + ' number of queued functions:' + callbackCount );
-				var callInx = 0;
-				var doCallbackCheck = function() {
-					callInx++;
-					if( callInx == callbackCount ){
-						callback();
-					}
-				};
-				if( triggerParam ){
-					$( this ).trigger( triggerName, [ triggerParam, doCallbackCheck ]);
-				} else {
-					$( this ).trigger( triggerName, [ doCallbackCheck ] );
-				}
-			};
-			
-			/**
-			 * Set a given selector html to the loading spinner:
-			 */
-			$.fn.loadingSpinner = function( ) {
-				if ( this ) {
-					$( this ).html(
-						$( '<div />' )
-							.addClass( "loadingSpinner" )
-					);
-				}
-				return this;
-			};
-			
-			/**
-			 * Add an absolute overlay spinner useful for cases where the
-			 * element does not display child elements, ( images, video )
-			 */
-			$.fn.getAbsoluteOverlaySpinner = function(){
-				var pos = $j( this ).offset();
-				var posLeft = ( $j( this ).width() ) ?
-					parseInt( pos.left + ( .5 * $j( this ).width() ) -16 ) :
-					pos.left + 30;
-
-				var posTop = ( $j( this ).height() ) ?
-					parseInt( pos.top + ( .5 * $j( this ).height() ) -16 ) :
-					pos.top + 30;
-
-				var $spinner = $j('<div />')
-					.loadingSpinner()
-					.css({
-						'width' : 32,
-						'height' : 32,
-						'position': 'absolute',
-						'top' : posTop + 'px',
-						'left' : posLeft + 'px'
-					});
-				$j('body').append( $spinner	);
-				return $spinner;
-			};
-
-			/**
-			 * dragDrop file loader
-			 */
-			$.fn.dragFileUpload = function ( conf ) {
-				if ( this.selector ) {
-					var _this = this;
-					// load the dragger and "setup"
-					mw.load( ['$j.fn.dragDropFile'], function() {
-						$j( _this.selector ).dragDropFile();
-					} );
-				}
-			};
-
-			/**
-			 * Shortcut to a themed button Should be depreciated for $.button
-			 * bellow
-			 */
-			$.btnHtml = function( msg, styleClass, iconId, opt ) {
-				if ( !opt )
-					opt = { };
-				var href = ( opt.href ) ? opt.href : '#';
-				var target_attr = ( opt.target ) ? ' target="' + opt.target + '" ' : '';
-				var style_attr = ( opt.style ) ? ' style="' + opt.style + '" ' : '';
-				return '<a href="' + href + '" ' + target_attr + style_attr +
-					' class="ui-state-default ui-corner-all ui-icon_link ' +
-					styleClass + '"><span class="ui-icon ui-icon-' + iconId + '" ></span>' +
-					'<span class="btnText">' + msg + '</span></a>';
-			};
-
-			// Shortcut to jQuery button ( should replace all btnHtml with
-			// button )
-			var mw_default_button_options = {
-				// The class name for the button link
-				'class' : '',
-
-				// The style properties for the button link
-				'style' : { },
-
-				// The text of the button link
-				'text' : '',
-
-				// The icon id that precedes the button link:
-				'icon' : 'carat-1-n'
-			};
-
-			$.button = function( options ) {
-				var options = $j.extend( {}, mw_default_button_options, options);
-
-				// Button:
-				var $button = $j('<a />')
-					.attr('href', '#')
-					.addClass( 'ui-state-default ui-corner-all ui-icon_link' );
-				// Add css if set:
-				if( options.css ) {
-					$button.css( options.css );
-				}
-
-				if( options['class'] ) {
-					$button.addClass( options['class'] );
-				}
-			
-				// return the button:
-				$button.append(
-						$j('<span />').addClass( 'ui-icon ui-icon-' + options.icon ),
-						$j('<span />').addClass( 'btnText' )
-				)
-				.buttonHover(); // add buttonHover binding;
 	
-				if( options.text ){
-					$button.find('.btnText').text( options.text );
-				} else {
-					$button.css('padding', '1em');
-				}
-				return $button;
-			};
-
-			// Shortcut to bind hover state
-			$.fn.buttonHover = function() {
-				$j( this ).hover(
-					function() {
-						$j( this ).addClass( 'ui-state-hover' );
-					},
-					function() {
-						$j( this ).removeClass( 'ui-state-hover' );
-					}
-				);
-				return this;
-			};
-
-			/**
-			 * Resize a dialog to fit the window
-			 * 
-			 * @param {Object}
-			 *            options horizontal and vertical space ( default 50 )
-			 */
-			$.fn.dialogFitWindow = function( options ) {
-				var opt_default = { 'hspace':50, 'vspace':50 };
-				if ( !options )
-					var options = { };
-				options = $j.extend( opt_default, options );
-				$j( this.selector ).dialog( 'option', 'width', $j( window ).width() - options.hspace );
-				$j( this.selector ).dialog( 'option', 'height', $j( window ).height() - options.vspace );
-				$j( this.selector ).dialog( 'option', 'position', 'center' );
-					// update the child position: (some of this should be pushed
-					// up-stream via dialog config options
-				$j( this.selector + '~ .ui-dialog-buttonpane' ).css( {
-					'position':'absolute',
-					'left':'0px',
-					'right':'0px',
-					'bottom':'0px'
-				} );
-			};
-
-		} )( jQuery );
-	};
 
 } )( window.mw );
 
@@ -2759,8 +2522,7 @@ function doScrollCheck() {
 	mw.domReady();
 }
 
-// If using the resource loader and jQuery has not been set give a warning to
-// the user:
+// If using the resource loader and jQuery has not been set give a warning to the user:
 // (this is needed because packaged loader.js files could refrence jQuery )
 if( mw.getResourceLoaderPath() && !window.jQuery ) {
 	mw.log( 'Error: jQuery is required for mwEmbed, please update your resource loader request' );
@@ -2796,4 +2558,237 @@ if( window.jQuery ){
 	if( dollarFlag ) {
 		window[ '$' ] = jQuery.noConflict();
 	}
+} else {
+	alert( 'mwEmbed requires jQuery');
 }
+
+( function( $ ) {
+	
+	/**
+	 * Runs all the triggers on all the named bindings of an object with
+	 * a single callback
+	 * 
+	 * NOTE THIS REQUIRES JQUERY 1.4.2 and above
+	 * 
+	 * Normal jQuery tirgger calls will run the callback directly
+	 * multiple times for every binded function.
+	 * 
+	 * With triggerQueueCallback() callback is not called until all the
+	 * binded events have been run.
+	 * 
+	 * @param {string}
+	 *            triggerName Name of trigger to be run
+	 * @param {object=}
+	 *            arguments Optional arguments object to be passed to
+	 *            the callback
+	 * @param {function}
+	 *            callback Function called once all triggers have been
+	 *            run
+	 * 
+	 */
+	$.fn.triggerQueueCallback = function( triggerName, triggerParam, callback ){
+		var targetObject = this;
+		// Support optional triggerParam data
+		if( !callback && typeof triggerParam == 'function' ){
+			callback = triggerParam;
+			triggerParam = null;
+		}
+		// Support namespaced event segmentation ( jQuery
+		var triggerBaseName = triggerName.split(".")[0]; 
+		var triggerNamespace = triggerName.split(".")[1];
+		// Get the callback set
+		var callbackSet = [];
+		if( !$j( targetObject ).data( 'events' ) ){
+			// No events run the callback directly
+			callback();
+			return ;
+		}
+		if( ! triggerNamespace ){
+			callbackSet = $j( targetObject ).data( 'events' )[ triggerBaseName ];
+		} else{		
+			$j.each( $j( targetObject ).data( 'events' )[ triggerBaseName ], function( inx, bindObject ){
+				if( bindObject.namespace ==  triggerNamespace ){
+					callbackSet.push( bindObject );
+				}
+			});
+		}
+
+		if( !callbackSet || callbackSet.length === 0 ){
+			mw.log( '"mwEmbed::jQuery.triggerQueueCallback: No events run the callback directly: ' + triggerName );
+			// No events run the callback directly
+			callback();
+			return ;
+		}
+		
+		// Set the callbackCount
+		var callbackCount = ( callbackSet.length )? callbackSet.length : 1;
+		// mw.log("mwEmbed::jQuery.triggerQueueCallback: " + triggerName
+		// + ' number of queued functions:' + callbackCount );
+		var callInx = 0;
+		var doCallbackCheck = function() {
+			callInx++;
+			if( callInx == callbackCount ){
+				callback();
+			}
+		};
+		if( triggerParam ){
+			$( this ).trigger( triggerName, [ triggerParam, doCallbackCheck ]);
+		} else {
+			$( this ).trigger( triggerName, [ doCallbackCheck ] );
+		}
+	};
+	
+	/**
+	 * Set a given selector html to the loading spinner:
+	 */
+	$.fn.loadingSpinner = function( ) {
+		if ( this ) {
+			$( this ).html(
+				$( '<div />' )
+					.addClass( "loadingSpinner" )
+			);
+		}
+		return this;
+	};
+	
+	/**
+	 * Add an absolute overlay spinner useful for cases where the
+	 * element does not display child elements, ( images, video )
+	 */
+	$.fn.getAbsoluteOverlaySpinner = function(){
+		var pos = $j( this ).offset();
+		var posLeft = ( $j( this ).width() ) ?
+			parseInt( pos.left + ( .5 * $j( this ).width() ) -16 ) :
+			pos.left + 30;
+
+		var posTop = ( $j( this ).height() ) ?
+			parseInt( pos.top + ( .5 * $j( this ).height() ) -16 ) :
+			pos.top + 30;
+
+		var $spinner = $j('<div />')
+			.loadingSpinner()
+			.css({
+				'width' : 32,
+				'height' : 32,
+				'position': 'absolute',
+				'top' : posTop + 'px',
+				'left' : posLeft + 'px'
+			});
+		$j('body').append( $spinner	);
+		return $spinner;
+	};
+
+	/**
+	 * dragDrop file loader
+	 */
+	$.fn.dragFileUpload = function ( conf ) {
+		if ( this.selector ) {
+			var _this = this;
+			// load the dragger and "setup"
+			mw.load( ['$j.fn.dragDropFile'], function() {
+				$j( _this.selector ).dragDropFile();
+			} );
+		}
+	};
+
+	/**
+	 * Shortcut to a themed button Should be depreciated for $.button
+	 * bellow
+	 */
+	$.btnHtml = function( msg, styleClass, iconId, opt ) {
+		if ( !opt )
+			opt = { };
+		var href = ( opt.href ) ? opt.href : '#';
+		var target_attr = ( opt.target ) ? ' target="' + opt.target + '" ' : '';
+		var style_attr = ( opt.style ) ? ' style="' + opt.style + '" ' : '';
+		return '<a href="' + href + '" ' + target_attr + style_attr +
+			' class="ui-state-default ui-corner-all ui-icon_link ' +
+			styleClass + '"><span class="ui-icon ui-icon-' + iconId + '" ></span>' +
+			'<span class="btnText">' + msg + '</span></a>';
+	};
+
+	// Shortcut to jQuery button ( should replace all btnHtml with
+	// button )
+	var mw_default_button_options = {
+		// The class name for the button link
+		'class' : '',
+
+		// The style properties for the button link
+		'style' : { },
+
+		// The text of the button link
+		'text' : '',
+
+		// The icon id that precedes the button link:
+		'icon' : 'carat-1-n'
+	};
+
+	$.button = function( options ) {
+		var options = $j.extend( {}, mw_default_button_options, options);
+
+		// Button:
+		var $button = $j('<a />')
+			.attr('href', '#')
+			.addClass( 'ui-state-default ui-corner-all ui-icon_link' );
+		// Add css if set:
+		if( options.css ) {
+			$button.css( options.css );
+		}
+
+		if( options['class'] ) {
+			$button.addClass( options['class'] );
+		}
+	
+		// return the button:
+		$button.append(
+				$j('<span />').addClass( 'ui-icon ui-icon-' + options.icon ),
+				$j('<span />').addClass( 'btnText' )
+		)
+		.buttonHover(); // add buttonHover binding;
+
+		if( options.text ){
+			$button.find('.btnText').text( options.text );
+		} else {
+			$button.css('padding', '1em');
+		}
+		return $button;
+	};
+
+	// Shortcut to bind hover state
+	$.fn.buttonHover = function() {
+		$j( this ).hover(
+			function() {
+				$j( this ).addClass( 'ui-state-hover' );
+			},
+			function() {
+				$j( this ).removeClass( 'ui-state-hover' );
+			}
+		);
+		return this;
+	};
+
+	/**
+	 * Resize a dialog to fit the window
+	 * 
+	 * @param {Object}
+	 *            options horizontal and vertical space ( default 50 )
+	 */
+	$.fn.dialogFitWindow = function( options ) {
+		var opt_default = { 'hspace':50, 'vspace':50 };
+		if ( !options )
+			var options = { };
+		options = $j.extend( opt_default, options );
+		$j( this.selector ).dialog( 'option', 'width', $j( window ).width() - options.hspace );
+		$j( this.selector ).dialog( 'option', 'height', $j( window ).height() - options.vspace );
+		$j( this.selector ).dialog( 'option', 'position', 'center' );
+			// update the child position: (some of this should be pushed
+			// up-stream via dialog config options
+		$j( this.selector + '~ .ui-dialog-buttonpane' ).css( {
+			'position':'absolute',
+			'left':'0px',
+			'right':'0px',
+			'bottom':'0px'
+		} );
+	};
+
+} )( jQuery );

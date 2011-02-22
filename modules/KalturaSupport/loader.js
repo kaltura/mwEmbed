@@ -224,6 +224,11 @@
 							callback();
 						}
 					}
+					// if there were no targets to rewrite just issue the callback directly
+					if( $j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
+						callback();
+						return ;
+					}
 					$j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).each( function(inx, playerTarget ) {
 						var kParams = {};
 						var iframeRequestMap = {
@@ -241,11 +246,10 @@
 						// XXX UGLY TEMPORARY HACK ( don't use iframe for playlist ) 
 						if( kParams['entry_id'] ){
 							iframeRewriteCount++;
-							$j( playerTarget ).removeClass( 'mwEmbedKalturaVideoSwap' );
 							$j( playerTarget ).kalturaIframePlayer( kParams, doneWithIframePlayer);
 						}
-					});
-					// Don't do any other rewrites or library loading
+					});					
+					// if there are no playlists left to proccess return: 
 					if( $j( '.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
 						return true;
 					}
@@ -342,17 +346,17 @@
 					argSeperator ='&';
 				}
 				
-				iframeRequest+= mw.getIframeHash();			
+				iframeRequest+= mw.getIframeHash();
 				var iframeId = $j( playerTarget ).attr('id');
 				
 				var $iframe = $j('<iframe />')
 				.attr({
 					'id' : iframeId,
+					'class' : $j( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',					
 					'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest,
 					'height' : $j( playerTarget ).height(),
 					'width' : $j( playerTarget ).width()
 				})
-				.addClass('mwEmbedKalturaIframe')
 				.css( 'border', '0px' );
 				
 				// Replace the player with the iframe: 
@@ -362,7 +366,7 @@
 				
 				// if the server is enabled 
 				if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
-					// Invoke the iframe player api system: 			
+					// Invoke the iframe player api system:
 					var iframeEmbedPlayer = $j( '#' + iframeId ).iFramePlayer( callback );
 				}
 			};

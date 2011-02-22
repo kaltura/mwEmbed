@@ -707,7 +707,7 @@ class kalturaIframe {
 				mw.setConfig( "EmbedPlayer.IsIframePlayer", true );
 				
 				// Load the mwEmbed resource library and add resize binding
-				mw.ready(function(){										
+				mw.ready(function(){
 					// Bind window resize to reize the player:
 					$j( window ).resize( function(){
 						$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
@@ -767,8 +767,7 @@ class kalturaIframe {
 						return true;
 					};
 				}
-
-			}
+			}			
 		</script>
   </body>
 </html>
@@ -783,6 +782,11 @@ class kalturaIframe {
 <!DOCTYPE html>
 <html>
 	<?php echo $this->outputIframeHeadElement() ?>
+	<script type="text/javascript">
+		var spiner = document.getElementById('iframeLoadingSpinner');
+		if( spiner )
+			spiner.style.display = 'none';
+	</script>
 	<body>
 		<div id="error"><?php
 			if( $errorTitle ){

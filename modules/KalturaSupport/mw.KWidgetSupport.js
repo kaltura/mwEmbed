@@ -69,7 +69,9 @@ mw.KWidgetSupport.prototype = {
 						callback();
 					}			
 				});
-			});									
+			});
+			// Add kaltura api mappings: 
+			
 			
 			// Add kaltura iframe path support:
 			$( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){

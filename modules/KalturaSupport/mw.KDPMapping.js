@@ -318,9 +318,8 @@
 	};	
 		
 	// Setup the KDPMapping
-	// TODO just a normal anonymous function initialization				
+	// TODO just a normal anonymous function initialization		
 	if( !window.KDPMapping ){
-		mw.log( "KDPMapping::setup" );	
 		window.KDPMapping = new mw.KDPMapping();
 	}
 	
