@@ -239,17 +239,16 @@
 							}
 						}
 						// XXX UGLY TEMPORARY HACK ( don't use iframe for playlist ) 
-						if( ! kParams['kplaylistid'] ){
+						if( kParams['entry_id'] ){
 							iframeRewriteCount++;
 							$j( playerTarget ).removeClass( 'mwEmbedKalturaVideoSwap' );
 							$j( playerTarget ).kalturaIframePlayer( kParams, doneWithIframePlayer);
 						}
 					});
 					// Don't do any other rewrites or library loading
-					if( $j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
-						callback();
+					if( $j( '.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
 						return true;
-					}					
+					}
 				}
 				
 				// Do loading then rewrite each tag:
