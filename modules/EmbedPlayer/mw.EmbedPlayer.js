@@ -2498,14 +2498,18 @@ mw.EmbedPlayer.prototype = {
 	* NOTE this could probably share a bit more code with getShareEmbedVideoJs
 	*/
 	getShareIframeObject: function(){
-		
+
 		var iframeUrl = false
-		$( this ).trigger( 'GetShareIframeSrc', function( localIframeSrc ){
+                if (typeof(mw.IA) != 'undefined'){
+                  iframeUrl = mw.IA.embedUrl();
+                } else {
+                  $( this ).trigger( 'GetShareIframeSrc', function( localIframeSrc ){
 			if( iframeUrl){
 				mw.log("Error multiple modules binding GetShareIframeSrc" );
 			}			
 			iframeUrl = localIframeSrc;
-		});
+                    });
+                }
 		if( !iframeUrl ){	
 			iframeUrl = this.getIframeSourceUrl()
 		}				
