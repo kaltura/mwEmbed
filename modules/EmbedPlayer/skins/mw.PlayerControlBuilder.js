@@ -615,7 +615,7 @@ mw.PlayerControlBuilder.prototype = {
 			var lastClickTime = 0;
 			var didDblClick = false;
 			// Remove parent dbl click ( so we can handle play clicks )
-			$j( embedPlayer ).unbind("dblclick").click( function() {
+			$j( embedPlayer ).unbind("click.onplayer").bind('click.onplayer', function() {
 				// Don't bind anything if native controls displayed:
 				if( embedPlayer.getPlayerElement().controls ) {
 					return ;

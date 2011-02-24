@@ -1830,7 +1830,7 @@ mw.EmbedPlayer.prototype = {
 						'out' : function(){
 							_this.controlBuilder.hideControlBar();
 						}
-					})
+					});
 				}
 			});
 		}
@@ -1919,7 +1919,7 @@ mw.EmbedPlayer.prototype = {
 		// Do play request in 100ms ( give the dom time to swap out the embed player )
 		setTimeout( function() {
 			_this.seeking = false;
-			_this.play()
+			_this.play();
 			_this.monitor();
 		}, 100 );
 
@@ -2154,7 +2154,7 @@ mw.EmbedPlayer.prototype = {
 				'href': this.mediaElement.sources[0].getSrc(),
 				'title' : gM('mwe-embedplayer-play_clip')
 			} )
-		)
+		);
 	},
 
 	/**
@@ -2425,7 +2425,7 @@ mw.EmbedPlayer.prototype = {
 			'poster': _this.poster,
 			'src' : source.src,
 			'controls' : 'true'
-		}
+		};
 		if( this.loop ){
 			videoAttribues[ 'loop' ] = 'true';
 		}
@@ -2438,7 +2438,7 @@ mw.EmbedPlayer.prototype = {
 		// completely instead of just updating properties:						
 		$j( '#' + this.pid ).replaceWith(
 			_this.getNativePlayerHtml( videoAttribues, cssStyle )
-		)
+		);
 		
 		// Bind native events:
 		this.applyMediaElementBindings();	

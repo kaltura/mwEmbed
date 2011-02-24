@@ -198,28 +198,29 @@ mw.AdTimeline.prototype = {
 					_this.embedPlayer.disableSeekBar();
 					_this.embedPlayer.monitor();
 					_this.display( 'postroll' , function(){
+						var postRollDone = function(){
+							// Restore embedPlayer native bindings
+							mw.log('Done with postroll ad, trigger normal ended');
+							_this.embedPlayer.enableSeekBar();
+							
+							_this.embedPlayer.restoreEventPropagation();
+							// Run stop for now. 
+							_this.embedPlayer.stop();
+							mw.log( " run video pause ");
+							if( vid && vid.pause ){
+								// Pause playback state
+								vid.pause();							
+								// iPhone does not catch synchronous pause
+								setTimeout( function(){ if( vid && vid.pause ){ vid.pause(); } }, 100 );
+							}
+						}
 						var vid = _this.getNativePlayerElement();
 						if ( _this.originalSrc != vid.src) {							
 							// Restore original source: 
-							_this.embedPlayer.switchPlaySrc(_this.originalSrc, 
-								function() {
-									// Restore embedPlayer native
-									// bindings
-									mw.log('Done with postroll ad, trigger normal ended');
-									_this.embedPlayer.enableSeekBar();
-									
-									_this.embedPlayer.restoreEventPropagation();
-									// Run stop for now. 
-									_this.embedPlayer.stop();
-									
-									// Pause playback state
-									vid.pause();							
-									// iPhone does not catch synchronous pause
-									setTimeout( vid.pause, 50 );
-									setTimeout( vid.pause, 250 );		
-								}
-							);
-						};
+							_this.embedPlayer.switchPlaySrc(_this.originalSrc, postRollDone	);
+						} else {
+							postRollDone();
+						}
 					});
 				});
 			}
@@ -305,7 +306,11 @@ mw.AdTimeline.prototype = {
 				this.timelineTargets[ i ].playbackDone();
 			}
 		}
-		
+		// Check that there are ads to display:
+		if(!displayTarget.ads || displayTarget.ads.length == 0 ){
+			displayDoneCallback();
+			return;
+		}
 		var adConf = this.selectFromArray( displayTarget.ads );
 		
 		// Setup the currentlyDisplayed flag: 
