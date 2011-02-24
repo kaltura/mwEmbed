@@ -74,7 +74,7 @@ mw.KWidgetSupport.prototype = {
 			
 			
 			// Add kaltura iframe path support:
-			$( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
+			$j( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
 				callback( mw.getConfig('Kaltura.ServiceUrl') + '/p/' + _this.kClient.getPartnerId() +
 							'/embedIframe/entry_id/' + $j( embedPlayer ).attr( 'kentryid' ) +
 							'/uiconf_id/' + embedPlayer.kuiconfid );

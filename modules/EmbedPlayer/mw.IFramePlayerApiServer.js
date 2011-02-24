@@ -55,7 +55,7 @@ mw.IFramePlayerApiServer.prototype = {
 		
 		// Allow modules to extend the list of iframeExported bindings
 		$j( mw ).trigger( 'AddIframePlayerBindings', [ this.exportedBindings ]);
-		
+
 		this.addIframeListener();
 		this.addIframeSender();
 		$j( mw ).trigger( 'newIframePlayerServerSide', [embedPlayer]);
@@ -66,12 +66,12 @@ mw.IFramePlayerApiServer.prototype = {
 	 */
 	'addIframeListener': function(){
 		var _this = this;	
-		mw.log('IFramePlayerApiServer::_addIframeListener' + jQuery.receiveMessage );
+		//mw.log('IFramePlayerApiServer::_addIframeListener' + jQuery.receiveMessage );
 		$j.receiveMessage( function( event ) {
 			_this.hanldeMsg( event );
 		}, this.getParentUrl() );
 	},
-	getParentUrl: function(){
+	'getParentUrl': function(){
 		var purl = mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
 		if(!purl){
 			mw.log("Error: iFramePlayerApiServer:: could not parse parent url. \n" +
@@ -94,8 +94,7 @@ mw.IFramePlayerApiServer.prototype = {
 		// On monitor event package the attributes for cross domain delivery:
 		$j( this.embedPlayer ).bind( 'monitorEvent', function(){			
 			_this.sendPlayerAttributes();
-		})
-
+		});
 		$j.each( this.exportedBindings, function( inx, bindName ){
 			$j( _this.embedPlayer ).bind( bindName, function( event ){				
 				var argSet = $j.makeArray( arguments );
@@ -109,7 +108,7 @@ mw.IFramePlayerApiServer.prototype = {
 				_this.postMessage({
 					'triggerName' : bindName,
 					'triggerArgs' : argSet
-				})
+				});
 			});
 		});
 	},
@@ -130,14 +129,15 @@ mw.IFramePlayerApiServer.prototype = {
 			}
 		}
 		//mw.log( "IframePlayerApiServer:: sendPlayerAttributes: " + JSON.stringify( attrSet ) );
-		_this.postMessage( {
+		_this.postMessage( {			
 			'attributes' : attrSet 
-		} )
+		} );
 	},
 	
-	'postMessage': function( msgObject ){		
-		if( msgObject.triggerName == 'onOpenFullScreen' ){
-			mw.log('postMessage::onOpenFullScreen');
+	'postMessage': function( msgObject ){
+		// check if we have a target player id:
+		if( mw.getConfig('EmbedPlayer.IframeParentPlayerId') ){
+			msgObject.playerId = mw.getConfig('EmbedPlayer.IframeParentPlayerId');
 		}
 		try {
 			var messageString = JSON.stringify( msgObject );
@@ -180,7 +180,7 @@ mw.IFramePlayerApiServer.prototype = {
 		// Update a attribute
 		if( typeof msgObject.attrName != 'undefined' && typeof msgObject.attrValue != 'undefined' ){
 			try{
-				$j( this.embedPlayer ).attr( msgObject.attrName, msgObject.attrValue)
+				$j( this.embedPlayer ).attr( msgObject.attrName, msgObject.attrValue);
 			} catch(e){
 				// possible error cant set attribute msgObject.attrName
 			}

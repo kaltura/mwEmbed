@@ -457,7 +457,7 @@
 	/**
 	 * Utility loader function to grab configuration for passing into an iframe as a hash target
 	 */
-	mw.getIframeHash = function(){
+	mw.getIframeHash = function( playerId ){
 		// Append the configuration and request domain to the iframe hash: 
 		var iframeMwConfig =  mw.getNonDefaultConfigObject();
 		
@@ -466,7 +466,8 @@
 
 		return '#' + encodeURIComponent( 
 				JSON.stringify({
-					'mwConfig' :iframeMwConfig
+					'mwConfig' :iframeMwConfig,
+					'playerId' : playerId
 				})
 		);
 	}

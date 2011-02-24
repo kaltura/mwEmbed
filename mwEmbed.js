@@ -2410,9 +2410,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		var script   = document.createElement("script");
 		script.type  = "text/javascript";
 		script.text  = "mw.setupMwEmbed();";
-		document.body.appendChild(script);
-
-		
+		document.body.appendChild( script );
 	};
 
 	/**

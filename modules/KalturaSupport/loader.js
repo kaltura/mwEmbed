@@ -346,8 +346,9 @@
 					argSeperator ='&';
 				}
 				
-				iframeRequest+= mw.getIframeHash();
 				var iframeId = $j( playerTarget ).attr('id');
+				
+				iframeRequest+= mw.getIframeHash( iframeId);
 				
 				var $iframe = $j('<iframe />')
 				.attr({

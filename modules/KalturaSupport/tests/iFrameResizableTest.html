@@ -55,7 +55,7 @@
 						"id" : "vid",
 						"src" : '../../../mwEmbedFrame.php/wid/' + $('#kwidgetid').val() 
 							+ '/entry_id/' + $('#kentryid').val() + '/?debug=true' +
-							mw.getIframeHash() // add the parent domain to the frame location:  
+							mw.getIframeHash( 'iframeHolder' ) // add the parent domain to the frame location:  
 					})
 					.css({
 						'width' : '100%',

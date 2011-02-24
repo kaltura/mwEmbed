@@ -684,6 +684,9 @@ class kalturaIframe {
 				if( hashObj.mwConfig ){
 					mw.setConfig( hashObj.mwConfig );
 				}
+				if( hashObj.playerId ){
+					mw.setConfig('EmbedPlayer.IframeParentPlayerId', hashObj.playerId );
+				}
 			}
 
 			// For testing limited capacity browsers
@@ -691,7 +694,7 @@ class kalturaIframe {
 			//var kSupportsFlash = function(){ return false };
 
 			if( kIsHTML5FallForward() ){
-				// Don't confuse the rewrite engine ( remove the kaltura swf as well )
+				// Don't confuse the rewrite engine ( remove the kaltura swf )
 				var el = document.getElementById('kaltura_player');
 				el.parentNode.removeChild(el);
 				

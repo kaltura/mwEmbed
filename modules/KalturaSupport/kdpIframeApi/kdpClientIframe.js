@@ -162,7 +162,7 @@ kdpClientIframe.prototype = {
 			}
 		}			
 		// Add configuration to the hash tag:
-		iframeSrc+= mw.getIframeHash();
+		iframeSrc+= mw.getIframeHash( this.targetId );
 		return iframeSrc;
 	},
 	'getIframe': function(){
