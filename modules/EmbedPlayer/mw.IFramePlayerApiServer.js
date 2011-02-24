@@ -105,7 +105,7 @@ mw.IFramePlayerApiServer.prototype = {
 				if( argSet[0] && argSet[0].originalEvent ){
 					argSet.shift();
 				}
-				//mw.log("IFramePlayerApiServer::postMessage:: " + bindName + ' arg count:' + argSet.length );
+				mw.log("IFramePlayerApiServer::postMessage:: " + bindName + ' arg count:' + argSet.length );
 				_this.postMessage({
 					'triggerName' : bindName,
 					'triggerArgs' : argSet

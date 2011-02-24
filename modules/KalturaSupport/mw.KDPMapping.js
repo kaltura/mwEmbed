@@ -91,7 +91,7 @@
 			mw.log("KDPMapping::addIframePlayerHooksServer");
 			
 			$j( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
-				exportedBindings.push( 'jsListenerEvent' );
+				exportedBindings.push( 'jsListenerEvent', 'Kaltura.SendAnalyticEvent' );
 			});
 			
 			$j( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){

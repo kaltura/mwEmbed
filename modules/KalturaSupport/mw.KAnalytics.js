@@ -141,9 +141,8 @@ mw.KAnalytics.prototype = {
 			eventSet[ 'entryId' ] = this.embedPlayer.getSrc();
 		}					
 
-		// Trigger a special global event ( has to be on document since some analytic 
-		//events happen before the mw is ready
-		$j( document ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey ] );
+		// Send events for this player:
+		$j( this.embedPlayer ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey ] );
 		
 		var eventRequest = {};
 		for( var i in eventSet){
