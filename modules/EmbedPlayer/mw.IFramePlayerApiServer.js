@@ -65,11 +65,11 @@ mw.IFramePlayerApiServer.prototype = {
 	 * Listens to requested methods and triggers their action
 	 */
 	'addIframeListener': function(){
-		var _this = this;		
-		mw.log('IFramePlayerApiServer::_addIframeListener');
-		$j.receiveMessage( function( event ) {			
+		var _this = this;	
+		mw.log('IFramePlayerApiServer::_addIframeListener' + jQuery.receiveMessage );
+		$j.receiveMessage( function( event ) {
 			_this.hanldeMsg( event );
-		}, this.getParentUrl() );	
+		}, this.getParentUrl() );
 	},
 	getParentUrl: function(){
 		var purl = mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
