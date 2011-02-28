@@ -182,7 +182,7 @@ mw.IFramePlayerApiServer.prototype = {
 			try{
 				$j( this.embedPlayer ).attr( msgObject.attrName, msgObject.attrValue);
 			} catch(e){
-				// possible error cant set attribute msgObject.attrName
+				// possible error can't set attribute msgObject.attrName
 			}
 		}
 	},

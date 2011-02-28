@@ -573,7 +573,7 @@ class kalturaIframe {
 					background: #000;
 					color: #fff;
 				}
-				#error {
+				.error {
 					position:absolute;
 					top: 37%;
 					left: 50%;
@@ -588,7 +588,7 @@ class kalturaIframe {
 					padding-bottom: 10px;
 					color: #000;
 				}
-				#error h2 {
+				.error h2 {
 					font-size: 14px;
 				}
 				.loadingSpinner {
@@ -791,7 +791,7 @@ class kalturaIframe {
 			spiner.style.display = 'none';
 	</script>
 	<body>
-		<div id="error"><?php
+		<div class="error"><?php
 			if( $errorTitle ){
 				echo '<h2>' . htmlspecialchars( $errorTitle ) . '</h2>';
 			}

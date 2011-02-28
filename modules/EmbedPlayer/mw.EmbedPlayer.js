@@ -1628,6 +1628,7 @@ mw.EmbedPlayer.prototype = {
 			this.mediaElement.sources = [];
 			this.mediaElement.selectedSource = null;
 		}
+		this.selectedPlayer =null;
 
 	},
 
@@ -1727,10 +1728,9 @@ mw.EmbedPlayer.prototype = {
 	 * Sets load error if no source is playable
 	 */
 	setupSourcePlayer: function() {
-		mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );
+		mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );			
 		// Autoseletct the media source
 		this.mediaElement.autoSelectSource();
-
 		// Auto select player based on default order
 		if ( !this.mediaElement.selectedSource ) {
 			mw.log( 'setupSourcePlayer:: no sources, type:' + this.type );
@@ -2137,6 +2137,14 @@ mw.EmbedPlayer.prototype = {
 	 */
 	showPluginMissingHTML: function( ) {
 		mw.log("EmbedPlayer::showPluginMissingHTML");
+		if( this.mediaElement.sources.length == 0 ){
+			this.$interface.empty().append( 
+				$j('<div />').addClass('error').text(
+					gM('mwe-embedplayer-missing-source')
+				)
+			);
+			return ;
+		}
 		// Control builder ( for play button )
 		this.controlBuilder = new mw.PlayerControlBuilder( this );
 		

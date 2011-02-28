@@ -35,7 +35,7 @@
 			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {		
 				// Add the addJsListener and sendNotification maps
 				embedPlayer.addJsListener = function(listenerString, globalFuncName){
-					_this.addJsListener( embedPlayer, listenerString, window[ globalFuncName ] )
+					_this.addJsListener( embedPlayer, listenerString, window[ globalFuncName ] );
 				}
 				
 				embedPlayer.removeJsListener = function(listenerString, callback){
@@ -43,7 +43,7 @@
 				}				
 				
 				embedPlayer.sendNotification = function( notificationName, notificationData ){
-					_this.sendNotification( embedPlayer, notificationName, notificationData)
+					_this.sendNotification( embedPlayer, notificationName, notificationData);
 				}
 				
 				embedPlayer.evaluate = function( objectString ){
@@ -78,7 +78,7 @@
 				// Directly build out the evaluate call on the playerProxy
 				playerProxy.evaluate = function( objectString ){
 					return _this.evaluate( playerProxy, objectString);					
-				}
+				};
 			});
 			
 		},
@@ -270,10 +270,16 @@
 					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
 					break;
 				case 'changeMedia':
+					var chnagePlayingMedia = embedPlayer.isPlaying();
+					// Pause player during media switch
+					embedPlayer.pause();
 					// Add a loader to the embed player: 
-					$j( '#' + embedPlayer.pid )
+					$j( embedPlayer )
 					.getAbsoluteOverlaySpinner()
 					.attr('id', embedPlayer.id + '_mappingSpinner' )
+					
+					// Clear out any bootstrap data from the iframe 
+					mw.setConfig('KalturaSupport.BootstrapPlayerData', false);
 					
 					// Update the entry id
 					embedPlayer.kentryid = notificationData.entryId;
@@ -291,28 +297,27 @@
 					// Empty out embedPlayer object sources
 					embedPlayer.emptySources();
 					
-					// Set the onDone interface flag to false ( for sync changeMedia onended events ) 
-					embedPlayer.onDoneInterfaceFlag = false;
-					
+					// Bind the ready state: 
+					$j( embedPlayer ).bind('playerReady', function(){					
+						embedPlayer.stop();
+						// do normal stop then play: 
+						if( chnagePlayingMedia ){
+							embedPlayer.play();	
+						}
+					});
+										
 					// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
 					$j( embedPlayer ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
 						$j( '#' + embedPlayer.id + '_mappingSpinner' ).remove();
-
+						embedPlayer.setupSourcePlayer();
+						//
 						// Check if native player controls ( then switch directly ) type: 
-						if( embedPlayer.useNativePlayerControls() || embedPlayer.isPersistentNativePlayer() ){
-							embedPlayer.switchPlaySrc( embedPlayer.getSrc(), function(){
-								// Once switch is complete restore onDone event
-								embedPlayer.onDoneInterfaceFlag = true;
-							});
-						} else{ 
-							embedPlayer.stop();
-							// do normal stop then play: 
-							embedPlayer.play();	
-							// restore onDone event: 
-							embedPlayer.onDoneInterfaceFlag = true;
+						if( embedPlayer.useNativePlayerControls() || embedPlayer.isPersistentNativePlayer() 
+								&& chnagePlayingMedia ){
+							embedPlayer.switchPlaySrc( embedPlayer.getSrc() );
 						}
+						
 					});					
-					break;					
 			}
 		}
 	};	

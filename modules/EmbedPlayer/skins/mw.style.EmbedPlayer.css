@@ -33,3 +33,22 @@
 	z-index: 3;
 	cursor: pointer;
 }
+
+.error {
+	position:absolute;
+	top: 37%;
+	left: 50%;
+	margin: 0 0 0 -140px;
+	width: 280px;
+	border: 1px solid #eee;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	text-align: center;
+	background: #fff;
+	padding-bottom: 10px;
+	color: #000;
+}
+.error h2 {
+	font-size: 14px;
+}
