@@ -269,14 +269,26 @@
 					// TODO the setVolume should update the interface
 					embedPlayer.setInterfaceVolume(  parseFloat( notificationData ) );
 					break;
+				case 'cleanMedia':
+					embedPlayer.emptySources();
+					break;
 				case 'changeMedia':
+				    
+					// Check if we don't have entryId or it's -1. than we just empty the source and the metadata
+					if(notificationData.entryId == "" || notificationData.entryId == -1) {
+					    // Empty sources
+					    embedPlayer.emptySources();
+					    embedPlayer.kalturaPlayerMetaData = null;
+					    break;
+					}
+
 					var chnagePlayingMedia = embedPlayer.isPlaying();
 					// Pause player during media switch
 					embedPlayer.pause();
 					// Add a loader to the embed player: 
 					$j( embedPlayer )
 					.getAbsoluteOverlaySpinner()
-					.attr('id', embedPlayer.id + '_mappingSpinner' )
+					.attr('id', embedPlayer.id + '_mappingSpinner' );
 					
 					// Clear out any bootstrap data from the iframe 
 					mw.setConfig('KalturaSupport.BootstrapPlayerData', false);
@@ -317,7 +329,8 @@
 							embedPlayer.switchPlaySrc( embedPlayer.getSrc() );
 						}
 						
-					});					
+					});
+				break;
 			}
 		}
 	};	
