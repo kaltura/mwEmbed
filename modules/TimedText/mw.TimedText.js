@@ -480,6 +480,9 @@ mw.includeAllModuleMessages();
 			// Check if any source matches our "local"
 			for( var i=0; i < this.textSources.length; i++ ) {
 				var source = this.textSources[ i ];
+                                if (!source.srclang)
+                                  continue;
+                                
 				if( this.config.userLanugage &&
 					this.config.userLanugage == source.srclang.toLowerCase() ) {
 					// Check for category if available
@@ -491,7 +494,7 @@ mw.includeAllModuleMessages();
 			if( this.enabledSources.length == 0 ) {
 				for( var i=0; i < this.textSources.length; i++ ) {
 					var source = this.textSources[ i ];
-					if( source.srclang.toLowerCase() == 'en' ) {
+					if( source.srclang  &&  source.srclang.toLowerCase() == 'en' ) {
 						this.enableSource( source );
 						return ;
 					}
