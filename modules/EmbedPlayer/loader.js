@@ -87,9 +87,6 @@
 
 		// Number of milliseconds between interface updates
 		'EmbedPlayer.MonitorRate' : 250,
-
-		// If the embedPlayer should accept arguments passed in from iframe postMessages calls
-		'EmbedPlayer.EnalbeIFramePlayerServer' : false,
 		
 		// If on Android should use html5 ( even if flash is installed on the machine )
 		'EmbedPlayer.UseFlashOnAndroid' : false,
