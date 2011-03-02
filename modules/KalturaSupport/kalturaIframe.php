@@ -12,9 +12,6 @@ $mykalturaIframe = new kalturaIframe();
 // Do kalturaIframe video output:
 $mykalturaIframe->outputIFrame();
 
-// Define the KalturaFlavorAsset that the api will blindly set as a class
-class KalturaFlavorAsset {};
-class KalturaEntryContextDataResult {};
 /**
  * Kaltura iFrame class:
  */
@@ -356,7 +353,7 @@ class kalturaIframe {
 			$this->fatalIframeError( "No KS where KS is required", "We're sorry, access to this content is restricted.");
 		}
 
-		if($accessControl->isScheduledNow == null) {
+		if($accessControl->isScheduledNow == 0) {
 			$this->fatalIframeError( "Out of scheduling", "We're sorry, this content is currently unavailable.");
 		}
 

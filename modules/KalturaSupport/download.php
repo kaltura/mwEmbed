@@ -212,13 +212,15 @@ class downloadEntry {
 			$flavorUrl = $sources['iphone']['src'];
 		} else if( strpos( $userAgent, 'Android' ) !== false ){
 			$flavorUrl = $sources['iphone']['src'];
+		} else if( strpos( $userAgent, 'Nokia' ) !== false ){
+			$flavorUrl = $sources['iphone']['src'];
 		} else {
 			$flavorUrl = $sources['3gp']['src'];
 		}
 
-		//die( $flavorUrl );
+		//die( '<a href="' . $flavorUrl . '">' . $flavorUrl .'</a>');
 		// Redirect to flavor
-		header("location: ". $flavorUrl);
+		header("location: " . $flavorUrl);
 	}
 
 }
