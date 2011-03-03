@@ -755,7 +755,7 @@ class kalturaIframe {
 						'entry_id' : '<?php echo $this->playerAttributes['entry_id']?>',
 						'partner_id' : '<?php echo $this->getPartnerId() ?>',
 						'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
-						'width' : ( document.body.clientHeight )? document.body.clientHeight : '400',
+						'width' : ( document.body.clientHeight )? document.body.clientHeight : '400'
 					});
 					document.getElementById( 'directFileLinkThumb' ).innerHTML =
 						'<img style="width:100%;height:100%" src="' + thumbSrc + '" >';

@@ -214,8 +214,10 @@ class downloadEntry {
 			$flavorUrl = $sources['iphone']['src'];
 		} else if( strpos( $userAgent, 'Nokia' ) !== false ){
 			$flavorUrl = $sources['iphone']['src'];
-		} else {
+		} else if ( isset( $sources['3gp'] ) ){
 			$flavorUrl = $sources['3gp']['src'];
+		} else {
+			$flavorUrl = $sources['iphone']['src'];
 		}
 
 		//die( '<a href="' . $flavorUrl . '">' . $flavorUrl .'</a>');

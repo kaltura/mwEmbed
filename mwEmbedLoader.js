@@ -103,7 +103,7 @@ if( ! mw.getConfig ){
 			return preMwEmbedConfig[ name ];
 		}
 	};
-};
+}
 
 
 // Wrap mw.ready to preMwEmbedReady values
@@ -130,21 +130,18 @@ if( document.URL.indexOf('forceMobileHTML5') != -1 ){
 }
 function kDoIframeRewriteList( rewriteObjects ){
 	for( var i=0; i < rewriteObjects.length; i++ ){
-		var options = { width: rewriteObjects[i].width, height: rewriteObjects[i].height }		
-		kalturaIframeEmbed( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
+		var options = { width: rewriteObjects[i].width, height: rewriteObjects[i].height }
+		// If we have no flash &  no html5 fallback to direct download
+		if( !kSupportsFlash() && ! kSupportsHTML5() ) {
+			kDirectDownloadFallback( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
+		} else {
+			kalturaIframeEmbed( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
+		}
 	}
 }
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( !options )
 		options = {};
-	
-	// Empty the replace target:
-	var elm = document.getElementById(replaceTargetId);
-	if( ! elm ){
-		if( console.log )
-			console.log("Error could not find iframe target: " + replaceTargetId);
-	}
-	replaceTargetId.innerHTML = '';
 	
 	// Empty the replace target:
 	var elm = document.getElementById(replaceTargetId);
@@ -205,6 +202,44 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 		
 	parentNode.replaceChild(iframe, targetNode );
 
+}
+
+// Fallback handling for older devices
+function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
+	// Empty the replace target:
+	var elm = document.getElementById(replaceTargetId);
+	if( ! elm ){
+		if( console.log )
+			console.log("Error could not find object target: " + replaceTargetId);
+	}
+	replaceTargetId.innerHTML = '';
+
+	// TODO: Add playEventUrl for stats
+	var downloadUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'modules/KalturaSupport/download.php' ) +
+			'/wid/' + kEmbedSettings.wid + '/entry_id/'+ kEmbedSettings.entry_id;
+
+	var thumbSrc = kGetEntryThumbUrl({
+		'entry_id' : kEmbedSettings.entry_id,
+		'partner_id' : kEmbedSettings.p,
+		'width' : options.width,
+		'height' : options.height
+	});
+
+	var playButtonUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'skins/common/images/player_big_play_button.png' );
+	var playButtonCss = 'background: url(' + playButtonUrl + ');width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
+
+	var ddHTML =	'<div style="width: ' + options.width + '; height: ' + options.height + '; position: relative">' +
+			'<img style="width:100%;height:100%" src="' + thumbSrc + '" >' +
+			'<a href="' + downloadUrl + '" target="_blank" style="' + playButtonCss + '"></a></div>';
+
+	var targetNode = document.getElementById( replaceTargetId );
+	var parentNode = targetNode.parentNode;
+	var div = document.createElement('div');
+	div.width = options.width;
+	div.height = options.height;
+	div.innerHTML = ddHTML;
+
+	parentNode.replaceChild( div, targetNode );
 }
 
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
@@ -486,10 +521,12 @@ function kAddScript( callback ){
 		);
 	}
 	kLoadJsRequestSet( jsRequestSet, callback );
-};
+}
+
 function isIE(){
 	return /msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);
 }
+
 function kAppendScriptUrl( url, callback ) {
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
@@ -677,7 +714,7 @@ function kGetEntryThumbUrl( entry ){
 	var kCdn = mw.getConfig( 'Kaltura.CdnUrl', 'http://cdnakmi.kaltura.com' ); 
 	return kCdn + '/p/' + entry.partner_id + '/sp/' +
 		entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
-		entry.height + '/height/' + entry.width;
+		entry.width + '/height/' + entry.height;
 }
 // Copied from kalturaSupport loader mw.getKalturaEmbedSettings  
 function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
@@ -736,7 +773,7 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 		embedSettings.p = embedSettings.parent_id;
 	}
 	return embedSettings;
-};
+}
 
 /**
  * To support kaltura kdp mapping override
