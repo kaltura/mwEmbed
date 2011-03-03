@@ -449,10 +449,11 @@ function kAddScript( callback ){
 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) ) {
 		if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') && ( kSupportsFlash() || kSupportsHTML5() ) ){
 			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );		
-			kLoadJsRequestSet( jsRequestSet, callback );
+			kLoadJsRequestSet( jsRequestSet, callback );			
 		} else {
 			kDoIframeRewriteList( kGetKalturaPlayerList() );
 		}
+		return ;
 	}
 	
 	// Add all the classes needed for video 
@@ -485,6 +486,13 @@ function kAddScript( callback ){
 		'mw.TimedText',
 		'mw.style.TimedText'
 	);
+	// If an iframe server include iframe server stuff: 
+	if( mw.getConfig('EmbedPlayer.IsIframePlayer') ){
+		jsRequestSet.push(
+			'$j.postMessage',
+			'mw.IFramePlayerApiServer'
+		);
+	}
 	
 	// Add the jquery ui skin: 
 	if( mw.getConfig( 'jQueryUISkin' ) ){
@@ -510,7 +518,8 @@ function kAddScript( callback ){
 		  'controlbarLayout',
 		  'faderPlugin',
 		  'watermarkPlugin',
-		  'adPlugin'
+		  'adPlugin',
+		  'bumperPlugin'
 		);
 		// kaltura playlist support ( so small relative to client libraries that we always include it )	
 		jsRequestSet.push(
@@ -549,6 +558,7 @@ function kAppendScriptUrl( url, callback ) {
 }
 
 function kLoadJsRequestSet( jsRequestSet, callback ){
+	
 	var url = SCRIPT_LOADER_URL + '?class=';
 	// Add all the requested classes
 	url+= jsRequestSet.join(',') + ',';
@@ -557,6 +567,7 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	if ( SCRIPT_FORCE_DEBUG ){
 		url+= '&debug=true';
 	}
+
 	// Check for special global callback for script load
 	kAppendScriptUrl(url, callback);
 }

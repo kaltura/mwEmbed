@@ -2415,14 +2415,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		// Set the onDomReady Flag
 		if( mwFirstLoadDoneCB === true ){
 			mwFirstLoadDoneCB = function(){
-				if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') ){
-					// Give a timeout for script parsing ( weird out-of-order timing issues for iframe bindings) 
-					setTimeout(function(){
-						mw.setupMwEmbed();
-					},400);
-				} else {
-					mw.setupMwEmbed();
-				}
+				mw.setupMwEmbed();
 			};
 		} else {
 			mw.setupMwEmbed();
