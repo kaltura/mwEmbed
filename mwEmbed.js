@@ -970,7 +970,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 		return false;
 	 	}
 	};
-
+	// Flag to register the "firstLoad" callback ( works around domready out of order binding issues ) 
+	var mwFirstLoadDoneCB = true;
+	
 	/**
 	 * Load done callback for script loader
 	 * 
@@ -978,6 +980,12 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 *            requestName Name of the load request
 	 */
 	mw.loadDone = function( requestName ) {
+		// hack to work around domready out of order binding issues: 
+		if( typeof mwFirstLoadDoneCB == 'function'){
+			mwFirstLoadDoneCB();			
+		}
+		mwFirstLoadDoneCB = null;
+		
 		if( !mwLoadDoneCB[ requestName ] ) {
 			return true;
 		}
@@ -2394,7 +2402,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 
 	// Flag to register if the domreadyHooks have been called
 	var mwModuleLoaderCheckFlag = false;
-
+	
 	/**
 	 * This will get called when the DOM is ready Will check configuration and
 	 * issue a mw.setupMwEmbed call if needed
@@ -2405,12 +2413,20 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		}
 		mwDomReadyFlag = true;		
 		// Set the onDomReady Flag
-
-		// Append the script to ensure it executes after all the rest of the scripts have loaded
-		var script   = document.createElement("script");
-		script.type  = "text/javascript";
-		script.text  = "mw.setupMwEmbed();";
-		document.body.appendChild( script );
+		if( mwFirstLoadDoneCB === true ){
+			mwFirstLoadDoneCB = function(){
+				if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') ){
+					// Give a timeout for script parsing ( weird out-of-order timing issues for iframe bindings) 
+					setTimeout(function(){
+						mw.setupMwEmbed();
+					},400);
+				} else {
+					mw.setupMwEmbed();
+				}
+			};
+		} else {
+			mw.setupMwEmbed();
+		}
 	};
 
 	/**

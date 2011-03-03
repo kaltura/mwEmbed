@@ -18,7 +18,7 @@
 	
 
 // Bind apiServer to newEmbedPlayers:
-$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {	
+$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 	// Check if the iFrame player api is enabled and we have a parent iframe url: 
 	if ( mw.getConfig('EmbedPlayer.EnableIframeApi') 
 			&& 
@@ -30,7 +30,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 
 mw.IFramePlayerApiServer = function( embedPlayer ){
 	this.init( embedPlayer );
-}
+};
 
 mw.IFramePlayerApiServer.prototype = {	
 	// Exported bindings / events. ( all the native html5 events are added in 'init' )		

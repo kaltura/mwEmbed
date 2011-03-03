@@ -67,18 +67,16 @@ mw.VastAdParser = {
 			$ad.find('MediaFiles MediaFile').each( function( na, mediaFile ){
 				// Add the video source ( if an html5 compatible type ) 
 				var type  = $j( mediaFile ).attr('type');
-				// noramlize mp4 into h264 format: 
+				// Normalize mp4 into h264 format: 
 				if( type  == 'video/x-mp4' ){
 					type = 'video/h264';
 				}
 				
-				if(  type == 'video/h264' || 
-					type == 'video/ogg' || type == 'video/webm' )
-				{			
+				if(  type == 'video/h264' || type == 'video/ogg' || type == 'video/webm' ){			
 					currentAd.videoFiles.push({ 
 						'src' :_this.getURLFromNode( mediaFile ),
 						'type' : type
-					})
+					});
 					mw.log( "VastAdParser::add MediaFile:" + currentAd.videoFile );
 				}
 			});

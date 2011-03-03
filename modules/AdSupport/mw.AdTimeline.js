@@ -437,7 +437,7 @@ mw.AdTimeline.prototype = {
 						// TODO move up via layout engine ( for now just the control bar ) 
 						var bottomPos = parseInt( $j('#' +skipId ).css('bottom') );
 						if( !isNaN( bottomPos ) ){
-							$j('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() )
+							$j('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() );
 						}
 						
 					}
@@ -498,12 +498,13 @@ mw.AdTimeline.prototype = {
 						'z-index' : 1
 					})
 					.attr('id', overlayId )				
-				)
+				);
 			}
 			var layout = {
 				'width' : nonLinearConf.width + 'px',
 				'height' : nonLinearConf.height + 'px',
-				'left' : ( ( .5 * _this.embedPlayer.getWidth() ) - (nonLinearConf.width/2) ) + 'px'
+				'left' : '50%',
+				'margin-left': -nonLinearConf.width + 'px'
 			};			
 			
 			// check if the controls are visible ( @@todo need to replace this with 
@@ -530,7 +531,7 @@ mw.AdTimeline.prototype = {
 				})
 				.addClass("ui-icon ui-icon-closethick")				
 				.click(function(){
-					$j(this).parent().fadeOut('fast')
+					$j(this).parent().fadeOut('fast');
 				})
 			);
 			
@@ -575,7 +576,7 @@ mw.AdTimeline.prototype = {
 				'src' : source.src,
 				'type' : source.type
 			}))
-		})
+		});
 		var myMediaElement =  new mediaElement( $media.get(0) );
 		var source = myMediaElement.autoSelectSource();
 		if( source ){
