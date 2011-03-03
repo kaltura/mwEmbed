@@ -6,12 +6,17 @@
 
 define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server, something maybe broken or server is under high load. Please try again.");
 
+// Include the kaltura client
+include_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
+
 // Setup the kalturaIframe
 $mykalturaIframe = new kalturaIframe();
 
 // Do kalturaIframe video output:
 $mykalturaIframe->outputIFrame();
 
+
+		
 /**
  * Kaltura iFrame class:
  */
@@ -223,8 +228,6 @@ class kalturaIframe {
 	}
 
 	function getResultObjectFromApi(){
-		// Include the kaltura client
-		include_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
 		$client = $this->getClient();
 		if( ! $client ){
 			return array();
@@ -310,7 +313,6 @@ class kalturaIframe {
 	}
 	function getKS(){
 		if(!isset($this->ks)){
-			include_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
 			$this->getClient();
 		}
 		return $this->ks;
