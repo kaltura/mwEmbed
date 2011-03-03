@@ -344,7 +344,7 @@ mw.KWidgetSupport.prototype = {
 				'src': src,
 				'type': type
 			} );
-		}
+		};
 
 		// If on an iPad or iPhone4 use iPad Source
 		if( mw.isIpad() || mw.isIphone4() ) {
@@ -399,12 +399,12 @@ mw.KWidgetSupport.prototype = {
 		}
 		return sources;
 	}
-}
+};
 
 //Setup the kWidgetSupport global if not already set
 if( !window.kWidgetSupport ){
 	window.kWidgetSupport = new mw.KWidgetSupport();
-}
+};
 
 
 // Add player Manager binding ( if playerManager not ready bind to when its ready )

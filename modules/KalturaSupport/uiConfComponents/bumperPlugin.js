@@ -81,5 +81,5 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			// Don't block player display if no bumper found 
 			callback();
 		}
-	})
-})
+	});
+});

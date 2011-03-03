@@ -31,5 +31,5 @@ var adPlugin = function( embedPlayer,  $uiConf, callback){
 		});
 		
 	});
-}
+};
 

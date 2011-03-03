@@ -668,4 +668,5 @@ mw.Playlist.prototype = {
 	setSourceHandler: function ( sourceHandler ){
 		this.sourceHandler = sourceHandler;
 	}
-}
+};
+

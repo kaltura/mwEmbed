@@ -569,7 +569,7 @@ mw.AdTimeline.prototype = {
 	 */
 	getCompatibleSource: function( videoFiles ){
 		// Convert videoFiles json into HTML element: 
-		// TODO mediaElement should probablly accept JSON
+		// TODO mediaElement should probably accept JSON
 		$media = $j('<video />');
 		$.each(videoFiles, function( inx, source){
 			$media.append( $j('<source />').attr({
@@ -630,12 +630,12 @@ mw.AdTimeline.prototype = {
 		// On pause / resume: 
 		$j( videoPlayer ).bind( 'pause', function(){
 			sendBeacon( 'pause' );
-		})
+		});
 		
 		// On resume: 
 		$j( videoPlayer ).bind( 'play', function(){
 			sendBeacon( 'resume' );
-		})			
+		});
 		
 		var time = 0;
 		// On seek backwards 
@@ -694,4 +694,4 @@ mw.AdTimeline.prototype = {
 	getNativePlayerElement : function() {
 		return this.embedPlayer.getPlayerElement();
 	}
-}
+};

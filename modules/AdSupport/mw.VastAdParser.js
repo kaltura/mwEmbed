@@ -270,4 +270,4 @@ mw.VastAdParser = {
 			.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
 			.replace(/\]\]\-?\-?\>/, '');		
 	}
-}
+};

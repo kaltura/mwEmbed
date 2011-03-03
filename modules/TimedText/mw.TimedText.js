@@ -1667,5 +1667,6 @@ mw.includeAllModuleMessages();
 				embedPlayer.timedText.bindMenu( target, true );
 			}
 		} );
-	}
+	};
+	
 } )( jQuery );

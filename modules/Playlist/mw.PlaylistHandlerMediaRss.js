@@ -118,4 +118,4 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		});
 		return mw.seconds2npt( itemDuration )
 	}
-}
+};

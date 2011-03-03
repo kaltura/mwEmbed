@@ -380,7 +380,7 @@
 				'mw.style.EmbedPlayer',
 				'$j.cookie',
 				// Add JSON lib if browsers does not define "JSON" natively
-				'JSON',
+				'JSON'
 			]			
 		];
 

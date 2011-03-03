@@ -5,7 +5,7 @@
 //Global mw.addKAd manager
 mw.addKalturaAds = function( embedPlayer, $adConfig, callback ) {
 	embedPlayer.ads = new mw.KAds( embedPlayer, $adConfig, callback );
-}
+};
 
 mw.sendBeaconUrl = function( beaconUrl ){
 	$j('body').append( 
@@ -15,7 +15,7 @@ mw.sendBeaconUrl = function( beaconUrl ){
 			'height' : 0
 		})
 	);
-}
+};
 
 mw.KAds = function( embedPlayer, $adConfig, callback) {
 	// Create a Player Manager
@@ -79,7 +79,7 @@ mw.KAds.prototype = {
 					'top': '5px',
 					'left' : '5px'
 				}
-			}
+			};
 		}
 		
 		if( this.$skipBtn.length ){
@@ -89,7 +89,7 @@ mw.KAds.prototype = {
 					'right': '5px',
 					'bottom' : '5px'
 				}
-			}
+			};
 		}
 		return config;
 	},
@@ -135,7 +135,7 @@ mw.KAds.prototype = {
 				});
 			} else {
 				// No async request
-				addAdCheckLoadDone( adTypePrefix, adConf )
+				addAdCheckLoadDone( adTypePrefix, adConf );
 			}
 		});										
 		// Check if no ads had to be loaded ( no ads in _this.$adConfig )
@@ -154,11 +154,11 @@ mw.KAds.prototype = {
 					_this.getCompanionObject( companionType, companions[i]  )
 				);
 			}
-		}
+		};
 		if( this.$adConfig.attr( 'htmlCompanions' ) ) {
 			addCompanions( 'html',  this.$adConfig.attr( 'htmlCompanions' ) );			
 		} else if( this.$adConfig.attr( 'flashCompanions' ) ){
-			addCompanions( 'flash', this.$adConfig.attr( 'flashCompanions' ) )
+			addCompanions( 'flash', this.$adConfig.attr( 'flashCompanions' ) );
 		}
 		return companionTargets;
 	},

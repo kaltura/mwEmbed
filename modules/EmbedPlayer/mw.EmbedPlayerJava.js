@@ -6,9 +6,7 @@ window.cortadoDomainLocations = {
 };
 
 // Set the default location for CortadoApplet
-mw.setDefaultConfig( 'relativeCortadoAppletPath',
-	mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/cortado/cortado-ovtk-stripped-0.6.0.jar'
-);
+mw.setDefaultConfig( 'relativeCortadoAppletPath',mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/cortado/cortado-ovtk-stripped-0.6.0.jar' );
 
 mw.EmbedPlayerJava = {
 
@@ -199,16 +197,8 @@ mw.EmbedPlayerJava = {
 	getPlayerElement: function() {
 		if( !$j( '#' + this.pid ).length ) {
 			return false;
-		}
-		//mw.log( 'getPlayerElement::' + this.pid );
+		};
 		this.playerElement = $j( '#' + this.pid ).get( 0 );
-		//this.playerElement = document.applets[ 0 ];
-		// NOTE we are currently not using the iframe embed method:
-		//if ( $j.browser.mozilla ) {
-		//	this.playerElement = $j('#cframe_' + this.id).contents().find( '#' + this.pid );
-		//} else {
-		//	this.playerElement = $j( '#' + this.pid ).get( 0 );
-		//}
 		return this.playerElement;
 	},
 

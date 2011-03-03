@@ -137,15 +137,15 @@
 	* @param {array} arguments A set of swap arguments
 	*/
 
-	mw.Language.messageSwapObject = function( message, arguments ){
-		this.init( message, arguments );
+	mw.Language.messageSwapObject = function( message, args ){
+		this.init( message, args );
 	};
 
 	mw.Language.messageSwapObject.prototype= {
 		/* constructor */
-		init: function( message, arguments ){
+		init: function( message, args ){
 			this.message = message;
-			this.arguments = arguments;
+			this.arguments = args;
 
 			// Set the includesjQueryArgs flag to false
 			includesjQueryArgs: false;

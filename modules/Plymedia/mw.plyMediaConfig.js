@@ -33,4 +33,4 @@ mw.plyMediaConfig = {
 		});
 	
 	}		
-}
+};

@@ -56,4 +56,5 @@
 				supports[comm] = false;
 			}
 		});
-	}
+	};
+	

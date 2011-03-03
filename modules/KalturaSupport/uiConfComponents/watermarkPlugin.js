@@ -41,7 +41,8 @@
 			}
 			watermarkCss.padding = $watermarkConf.attr('padding') + 'px';
 			return watermarkCss;
-		}
+		};
+		
 		var watermarkCss = getCss( $watermarkConf );
 		embedPlayer.$interface.append( 
 			$j('<span />')
@@ -57,6 +58,6 @@
 					})
 				)
 			)
-		)
+		);
 	};
 	

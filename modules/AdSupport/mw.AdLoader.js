@@ -67,4 +67,4 @@ mw.AdLoader = {
 		}	
 		return 'unknown';
 	}
-}
+};

@@ -16,4 +16,4 @@ var faderPlugin = function( embedPlayer, $fader ){
 	} else {
 		embedPlayer.overlaycontrols = false;
 	}
-}
+};
