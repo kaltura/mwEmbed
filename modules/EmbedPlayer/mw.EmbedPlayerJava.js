@@ -1,6 +1,6 @@
-/**
-* List of domains and hosted location of cortado. Lets clients avoid the security warning for cross domain cortado
-*/
+
+// List of domains and hosted location of cortado. Lets clients avoid the security warning for cross domain cortado
+
 window.cortadoDomainLocations = {
 		'upload.wikimedia.org' : 'http://upload.wikimedia.org/jars/cortado.jar'		
 };
