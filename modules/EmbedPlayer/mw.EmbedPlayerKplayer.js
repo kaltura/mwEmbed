@@ -124,13 +124,13 @@ mw.EmbedPlayerKplayer = {
 			$j.each( bindEventMap, function( bindName, localMethod ) {
 				_this.bindPlayerFunction(bindName, localMethod);
 			});
-			bindTryCount = 0;
+			this.bindTryCount = 0;
 			// Start the monitor
 			this.monitor();
 		} else {
-			bindTryCount++;
+			this.bindTryCount++;
 			// Keep trying to get the player element
-			if( bindTryCount > 500 ){ // 5 seconds
+			if( this.bindTryCount > 500 ){ // 5 seconds
 				mw.log('Error:: KDP player never ready for bindings!');
 				return ;
 			}
