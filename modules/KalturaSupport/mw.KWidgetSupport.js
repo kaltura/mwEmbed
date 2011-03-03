@@ -417,7 +417,7 @@ if( mw.playerManager ){
 		mw.log( "KWidgetSupport::EmbedPlayerManagerReady" );
 		kWidgetSupport.addPlayerHooks();
 	});
-}
+};
 
 /**
  * Register a global shortcuts for the kaltura sources query

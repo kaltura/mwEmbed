@@ -171,4 +171,5 @@ mw.KAds.prototype = {
 			'height' :  companionParts[2]
 		};
 	}
-}
+};
+
