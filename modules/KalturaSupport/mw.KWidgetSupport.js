@@ -424,6 +424,6 @@ if( mw.playerManager ){
  */
 mw.getEntryIdSourcesFromApi = function( widgetId, entryId, callback ){
 	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, entryId, callback);
-}
+};
 
 
