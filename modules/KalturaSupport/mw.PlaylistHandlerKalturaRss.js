@@ -52,5 +52,6 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 			}			
 		})
 	}
-}
+};
+
 	
