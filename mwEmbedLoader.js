@@ -123,6 +123,8 @@ if( !mw.ready){
 if( !mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 	mw.setConfig( 'EmbedPlayer.EnableIframeApi', true ) ; 
 }
+// Set default LoadScriptForVideoTags option: 
+mw.setConfig( 'Kaltura.LoadScriptForVideoTags', true );
 
 // Set url based config:
 if( document.URL.indexOf('forceMobileHTML5') != -1 ){
