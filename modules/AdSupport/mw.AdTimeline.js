@@ -60,7 +60,7 @@
  * 				],
  * 				'clickThrough' : {URL} url to open when video is "clicked" 
  * 
- * 				'videoFile' : {URL} video file to play for the ad
+ * 				'videoFiles' : {Object} of type {'src':{url to asset}, 'type': {content type of asset} } 
  * 			}
  * 		],
  *		// on screen helpers to display ad duration and skip add
@@ -89,11 +89,11 @@ mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
 		embedPlayer.adTimeline = new mw.AdTimeline(embedPlayer);
 	}
 	embedPlayer.adTimeline.addToTimeline( timeType, adConf );
-}
+};
 
 mw.AdTimeline = function(embedPlayer) {
 	return this.init(embedPlayer);
-}
+};
 
 mw.AdTimeline.prototype = {
 
@@ -213,7 +213,7 @@ mw.AdTimeline.prototype = {
 								// iPhone does not catch synchronous pause
 								setTimeout( function(){ if( vid && vid.pause ){ vid.pause(); } }, 100 );
 							}
-						}
+						};
 						var vid = _this.getNativePlayerElement();
 						if ( _this.originalSrc != vid.src) {							
 							// Restore original source: 
@@ -256,7 +256,7 @@ mw.AdTimeline.prototype = {
 						
 						// Display the overlay ad 
 						_this.display( 'overlay' , function(){
-							lastPlayEndTime = _this.embedPlayer.currentTime
+							lastPlayEndTime = _this.embedPlayer.currentTime;
 							_this.adOverlaysEnabled = true;
 						}, adDuration);
 					}
@@ -287,7 +287,7 @@ mw.AdTimeline.prototype = {
 		var _this = this;
 		mw.log("AdTimeline::display:" + timeTargetType );
 		
-		var displayTarget =  this.timelineTargets[ timeTargetType ] 
+		var displayTarget =  this.timelineTargets[ timeTargetType ];
 		// If the adConf is empty go directly to the callback:
 		if ( ! displayTarget ) {
 			displayDoneCallback();
@@ -333,7 +333,8 @@ mw.AdTimeline.prototype = {
 			setTimeout(function(){
 				displayTarget.doneCallback();
 			}, 50);
-		}
+		};
+		
 		// Setup local pointer to displayDoneCallback
 		displayTarget.doneCallback = displayDoneCallback;
 
@@ -357,8 +358,8 @@ mw.AdTimeline.prototype = {
 		}
 		
 		
-		// Check for videoFile inserts:
-		if ( adConf.videoFile && timeTargetType != 'overlay') {
+		// Check for videoFiles inserts:
+		if ( adConf.videoFiles && adConf.videoFiles.length && timeTargetType != 'overlay') {
 			if ( adConf.lockUI ) {
 				// TODO lock controls
 				_this.getNativePlayerElement().controls = false;
@@ -375,11 +376,11 @@ mw.AdTimeline.prototype = {
 						return false;
 					}
 					return true;							
-				})
+				});
 			}
-			
+
 			// Play the source then run the callback
-			_this.embedPlayer.switchPlaySrc( adConf.videoFile, 
+			_this.embedPlayer.switchPlaySrc( _this.getCompatibleSource( adConf.videoFiles ), 
 				function(vid) {
 					mw.log("AdTimeline:: source updated, add tracking");
 					// Bind all the tracking events ( currently vast based but will abstract if needed ) 
@@ -391,7 +392,7 @@ mw.AdTimeline.prototype = {
 						'color' : '#FFF',
 						'font-weight':'bold',
 						'text-shadow': '1px 1px 1px #000'
-					}
+					};
 					// Check runtimeHelper ( notices
 					if( displayTarget.notice ){
 						var noticeId =_this.embedPlayer.id + '_ad_notice';
@@ -411,16 +412,16 @@ mw.AdTimeline.prototype = {
 								}
 								$j('#' + noticeId).text(
 									displayTarget.notice.text.replace('$1', timeLeft)
-								)
+								);
 								setTimeout( localNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 							}							
-						}
+						};
 						localNoticeCB();
 					}
 					
 					// Check for skip add button
 					if( displayTarget.skipBtn ){
-						var skipId = _this.embedPlayer.id + '_ad_skipBtn'
+						var skipId = _this.embedPlayer.id + '_ad_skipBtn';
 						_this.embedPlayer.$interface.append(
 							$j('<span />')
 								.attr('id', skipId)
@@ -558,6 +559,31 @@ mw.AdTimeline.prototype = {
 			}
 		}
 
+	},
+	
+	/**
+	 * Uses mediaElement select logic to chose a video file among a set of sources
+	 * @param videoFiles
+	 * @return
+	 */
+	getCompatibleSource: function( videoFiles ){
+		// Convert videoFiles json into HTML element: 
+		// TODO mediaElement should probablly accept JSON
+		$media = $j('<video />');
+		$.each(videoFiles, function( inx, source){
+			$media.append( $j('<source />').attr({
+				'src' : source.src,
+				'type' : source.type
+			}))
+		})
+		var myMediaElement =  new mediaElement( $media.get(0) );
+		var source = myMediaElement.autoSelectSource();
+		if( source ){
+			mw.log("AdTimeline::getCompatibleSource: " + source.getSrc());
+			return source.getSrc();
+		}
+		mw.log("Error:: could not find compatible source");
+		return false;
 	},
 	
 	/**

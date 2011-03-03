@@ -15,7 +15,6 @@ $mykalturaIframe = new kalturaIframe();
 // Do kalturaIframe video output:
 $mykalturaIframe->outputIFrame();
 
-
 		
 /**
  * Kaltura iFrame class:

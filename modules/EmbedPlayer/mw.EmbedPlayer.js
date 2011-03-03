@@ -854,7 +854,6 @@ mediaSource.prototype = {
 function mediaElement( element ) {
 	this.init( element );
 }
-
 mediaElement.prototype = {
 
 	// The array of mediaSource elements.
@@ -886,16 +885,18 @@ mediaElement.prototype = {
 		var _this = this;
 		mw.log( "EmbedPlayer::mediaElement:init:" + videoElement.id );
 		this.sources = new Array();
-
-		// Process the videoElement as a source element:
-		if ( $j( videoElement ).attr( "src" ) ) {
-			_this.tryAddSource( videoElement );
+		
+		if( videoElement ){
+			// Process the videoElement as a source element:
+			if ( $j( videoElement ).attr( "src" ) ) {
+				_this.tryAddSource( videoElement );
+			}
+	
+			// Process elements source children
+			$j( videoElement ).find( 'source,track' ).each( function( ) {
+				_this.tryAddSource( this );
+			} );
 		}
-
-		// Process elements source children
-		$j( videoElement ).find( 'source,track' ).each( function( ) {
-			_this.tryAddSource( this );
-		} );
 	},
 
 	/**
@@ -1006,6 +1007,7 @@ mediaElement.prototype = {
 		}
 		var setSelectedSource = function( source ){
 			_this.selectedSource = source;
+			return source;
 		};
 
 		// Set via user-preference
@@ -1013,8 +1015,7 @@ mediaElement.prototype = {
 			var mimeType = playableSources[source].mimeType;
 			if ( mw.EmbedTypes.getMediaPlayers().preference[ 'format_preference' ] == mimeType ) {
 				 mw.log( 'EmbedPlayer::autoSelectSource: Set via preference: ' + playableSources[source].mimeType );
-				 setSelectedSource( playableSources[source] );
-				 return true;
+				 return setSelectedSource( playableSources[source] );
 			}
 		}
 
@@ -1022,8 +1023,7 @@ mediaElement.prototype = {
 		for ( var source = 0; source < playableSources.length; source++ ) {
 			if ( playableSources[ source ].markedDefault ) {
 				mw.log( 'EmbedPlayer::autoSelectSource: Set via marked default: ' + playableSources[source].markedDefault );
-				setSelectedSource( playableSources[source] );
-				return true;
+				return setSelectedSource( playableSources[source] );
 			}
 		}		
 		
@@ -1050,8 +1050,7 @@ mediaElement.prototype = {
 		for(var i =0; i < codecPref.length; i++){
 			var codec = codecPref[ i ];
 			if( namedSources[ codec ]){
-				setSelectedSource( namedSources[ codec ] );
-				return true;
+				return setSelectedSource( namedSources[ codec ] );
 			}
 		};
 		
@@ -1069,16 +1068,14 @@ mediaElement.prototype = {
 				)
 			) {
 				mw.log('EmbedPlayer::autoSelectSource: Set h264 via native or flash fallback');
-				 setSelectedSource( playableSources[ source ] );
-				return true;
+				return setSelectedSource( playableSources[ source ] );
 			}
 		};
 
 		// Else just select first source
-		if ( !this.selectedSource ) {
+		if ( !this.selectedSource &&  playableSources[0] ) {
 			mw.log( 'EmbedPlayer::autoSelectSource: Set via first source:' + playableSources[0] );
-			 setSelectedSource( playableSources[0] );
-			return true;
+			return setSelectedSource( playableSources[0] );
 		}
 		// No Source found so no source selected
 		return false;

@@ -18,7 +18,20 @@
 		'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
 		'Kaltura.CdnUrl' : 'http://cdn.kaltura.com',
 		// A video file for when no suitable flavor can be found
-		'Kaltura.MissingFlavorVideoUrl' : 'http://cdn.kaltura.com/p/243342/sp/24334200/flvclipper/entry_id/1_g18we0u3/flavor/1_ktavj42z/a.mp4?novar=0'
+		'Kaltura.MissingFlavorVideoUrls' : [
+		    { 
+		    	'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_ktavj42z/format/url/protocol/http/a.mp4',
+		    	'type' : 'video/h264'
+		    },
+		    { 
+		    	'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_gtm9gzz2/format/url/protocol/http/a.ogg',
+		    	'type' : 'video/h264'
+		    },
+		    {
+		    	'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_bqsosjph/format/url/protocol/http/a.webm',
+		    	'type' : 'video/webm'
+		    }
+		 ]
 	} );
 	
 	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
@@ -77,13 +90,15 @@
 	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){	
 		// Local callback function runs KalturaKDPCallbackReady and rewriteDoneCallback
 		var callback = function(){
-			// TODO move KalturaKDPCallbackReady into kdp mapping 
-			if( window.KalturaKDPCallbackReady )
-				window.KalturaKDPCallbackReady();		
+			// TODO move KalturaKDPCallbackReady into KDP mapping 
+			if( window.KalturaKDPCallbackReady ){
+				window.KalturaKDPCallbackReady();
+			}
 			
-			if( rewriteDoneCallback )
+			if( rewriteDoneCallback ){
 				rewriteDoneCallback();
-		}
+			}
+		};
 		
 		var kalturaObjectPlayerList = mw.getKalturaPlayerList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
@@ -131,7 +146,7 @@
 					}
 					var kEmbedSettings = mw.getKalturaEmbedSettings( swfSource, flashvars );
 					// check if its a playlist or a entryId
-					mw.log("Got kEmbedSettings.entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id)
+					mw.log("Got kEmbedSettings.entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
 					var height = $j( element ).attr('height');
 					var width = $j( element ).attr('width');
 					
@@ -150,7 +165,7 @@
 						'id' : videoId,
 						'kwidgetid' : kEmbedSettings.wid,
 						'kuiconfid' : kEmbedSettings.uiconf_id
-					}
+					};
 					if( kEmbedSettings.entry_id ) {
 						loadEmbedPlayerFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
@@ -212,18 +227,19 @@
 							})
 							.loadingSpinner()
 						)
-					)
+					);
 				});
+				
 				// Check if we are doing iFrame rewrite ( skip local library loading )
 				if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){
 					// Issue the callback once all the in page iframes have been rewritten: 
 					var iframeRewriteCount = 0;
 					var doneWithIframePlayer = function(){
-						iframeRewriteCount--
+						iframeRewriteCount--;
 						if( iframeRewriteCount == 0){
 							callback();
 						}
-					}
+					};
 					// if there were no targets to rewrite just issue the callback directly
 					if( $j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
 						callback();
@@ -236,7 +252,7 @@
 								'kuiconfid': 'uiconf_id', 
 								'kentryid': 'entry_id',
 								'kplaylistid' : 'playlist_id'
-						}
+						};
 						// Set default to playerTraget.kEmbedSettings						
 						for( var tagKey in iframeRequestMap ){
 							if( $j(playerTarget).attr( tagKey ) ){
@@ -249,7 +265,7 @@
 							$j( playerTarget ).kalturaIframePlayer( kParams, doneWithIframePlayer);
 						}
 					});					
-					// if there are no playlists left to proccess return: 
+					// if there are no playlists left to process return: 
 					if( $j( '.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
 						return true;
 					}
@@ -399,7 +415,7 @@
 				return true;
 			}
 			return false;
-		}
+		};
 		
 		
 		// alert('object list: ' + objectList.length );
@@ -467,10 +483,11 @@
 				}
 			}
 		}
-		if( !flashvars )
-			flashvars= {};	
+		if( !flashvars ){
+			flashvars= {};
+		}
 		// Include flashvars
-		embedSettings.flashvars = flashvars
+		embedSettings.flashvars = flashvars;
 			
 		var dataUrlParts = swfUrl.split('/');
 		

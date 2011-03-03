@@ -12,6 +12,7 @@
 		 durationHint="33"
 		 >
 		 	<source src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_iphone.m4v" />
+		 	<source src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb400p.ogv" />
 		</video>
 	</div>
 		<div id="companionTarget" style="float:right;width:180px;height:267px;border:solid thin black">
@@ -22,22 +23,31 @@
 	    <h1>
       HTML5 ad timeline test
     </h1>
-   	<br>Preroll video (5 seconds kaltura) <input id="preroll" type="text" size="40" value="http://cdnbakmi.kaltura.com/p/423851/sp/42385100/serveFlavor/flavorId/1_3ulztti8/name/1_3ulztti8.mp4"></input>
+   	<br>Preroll video (5 seconds kaltura) <input class="roll" id="preroll" data-type="video/h264" type="text" size="40" value="http://cdnbakmi.kaltura.com/p/423851/sp/42385100/serveFlavor/flavorId/1_3ulztti8/name/1_3ulztti8.mp4"></input>
    	<a id="addPreroll" href="#">Update preroll video</a>
     </br>
-    <br>Postroll video (5 seconds kaltura) <input id="postroll" type="text" size="40" value="http://cdnbakmi.kaltura.com/p/423851/sp/42385100/serveFlavor/flavorId/1_3ulztti8/name/1_3ulztti8.mp4"></input>
+    <br>Postroll video (5 seconds kaltura) <input class="roll" id="postroll" data-type="video/h264" type="text" size="40" value="http://cdnbakmi.kaltura.com/p/423851/sp/42385100/serveFlavor/flavorId/1_3ulztti8/name/1_3ulztti8.mp4"></input>
    	<a id="addPostroll" href="#">Update Postroll video</a>
     </br>
     <br>Overlay text:<input id="overlay" type="text" size="40" value="my overlay ad"></input>
    	<a id="addOverlay" href="#">Update Overlay text</a>
     </br>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+	<script type="text/javascript">
+		// Switch sources to ogg if opera or firefox 
+		if( $.browser.mozilla || $.browser.opera ){
+			$('.roll').attr({
+				'data-type': 'video/ogg',
+				'value' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/0_5diu7kzg/flavorId/1_lwfdnd5a/format/url/protocol/http/a.ogg'
+			})
+		}
+	</script>
   <script type="text/javascript" src="../../../ResourceLoader.php?class=window.jQuery,mwEmbed&&debug=true"></script> 
  	<script type="text/javascript">
  		mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
  		mw.setConfig( 'EmbedPlayer.OverlayControls', false);
  		
- 		mw.ready(function(){
+ 		mw.ready(function(){ 	 		
  	 		var embedPlayer = $j('#vid1').get(0);
  	 		
  	 		$j( embedPlayer ).bind( 'openFullScreen', function(){
@@ -64,12 +74,15 @@
 			// See structure of ad JSON in mw.MobileAdTimeline 
 			mw.load( "mw.AdTimeline", function(){
 		
-				var updateRoll = function( type, url ){
+				var updateRoll = function( type, $input ){
 					mw.addAdToPlayerTimeline( embedPlayer, type, 
 		 	 	 		{ 
 		 	 	 	 		'ads': [
 				 	 	 	 	{
-			 	 					'videoFile' : url,
+			 	 					'videoFiles' : [{
+			 	 						'src': $input.val(),
+			 	 						'type' : $input.attr('data-type')
+				 	 	 	 		}],
 			 	 					'companions': [
 			 	 		 	 	 		{
 					 						'id' : 0,
@@ -120,17 +133,17 @@
 				}
 	 			
 	 			// update the preroll / postroll
-	 			updateRoll( 'preroll', $j('#preroll').val() );
-	 			updateRoll( 'postroll', $j('#postroll').val() ); 
+	 			updateRoll( 'preroll', $j('#preroll') );
+	 			updateRoll( 'postroll', $j('#postroll') ); 
 	 			updateOverlayAd( $j('#overlay').val() );
 	 			
 				// let the user update the preroll:
 				$j('#addPreroll').click(function(){
-					updateRoll( 'preroll', $j('#preroll').val() );
+					updateRoll( 'preroll', $j('#preroll') );
 				});
 	 			// let the user update the preroll:
 				$j('#addPostroll').click(function(){
-					updateRoll(  'postroll', $j('#postroll').val() );
+					updateRoll(  'postroll', $j('#postroll') );
 				});
 				$j('#addOverlay').click(function(){
 					updateOverlayAd( $j('#overlay').val() );

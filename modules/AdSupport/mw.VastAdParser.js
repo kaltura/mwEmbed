@@ -62,19 +62,23 @@ mw.VastAdParser = {
 				});
 			});					
 						
-			
+			currentAd.videoFiles = [];
 			// Set the media file:
 			$ad.find('MediaFiles MediaFile').each( function( na, mediaFile ){
-				// NOTE we could check other attributes like delivery="progressive"
-				// NOTE for now we are only interested in support for iOS / android devices
-				// so only h264.
-				// TODO we should switch videoFile into an array of type sources so we can do
-				// mediaFile selection at point of playback. 
-				if(  $j( mediaFile ).attr('type') == 'video/h264' 
-					|| 
-					$j( mediaFile ).attr('type')  == 'video/x-mp4')
-				{					
-					currentAd.videoFile = _this.getURLFromNode( mediaFile );
+				// Add the video source ( if an html5 compatible type ) 
+				var type  = $j( mediaFile ).attr('type');
+				// noramlize mp4 into h264 format: 
+				if( type  == 'video/x-mp4' ){
+					type = 'video/h264';
+				}
+				
+				if(  type == 'video/h264' || 
+					type == 'video/ogg' || type == 'video/webm' )
+				{			
+					currentAd.videoFiles.push({ 
+						'src' :_this.getURLFromNode( mediaFile ),
+						'type' : type
+					})
 					mw.log( "VastAdParser::add MediaFile:" + currentAd.videoFile );
 				}
 			});
@@ -85,9 +89,9 @@ mw.VastAdParser = {
 			});
 			
 			// Set videoFile to default if not set: 
-			if( ! currentAd.videoFile ){
-				mw.log( 'VastAdParser::MISSING videoFile');
-				currentAd.videoFile = mw.getConfig( 'Kaltura.MissingFlavorVideoUrl' );
+			if( currentAd.videoFiles.length == 0 ){
+				mw.log( 'VastAdParser::MISSING videoFile set to missing html5 video urls: ');
+				currentAd.videoFiles = mw.getConfig( 'Kaltura.MissingFlavorVideoUrls');
 			}
 			
 			// Set the CompanionAds if present: 

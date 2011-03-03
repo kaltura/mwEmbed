@@ -386,6 +386,10 @@ mw.EmbedPlayerNative = {
 		this.duration = 0;
 		this.currentTime = 0;
 		this.previousTime = 0;
+		if( ! this.getPlayerElement() ){
+			mw.log('Error: switchPlaySrc can\'t switchPlaySrc if no source is playing' );
+			return ;
+		}
 		// Setup the initial delay based on fullscreen or not
 		try {
 			var vid = this.getPlayerElement();

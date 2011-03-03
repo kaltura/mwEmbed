@@ -36,26 +36,26 @@
 				// Add the addJsListener and sendNotification maps
 				embedPlayer.addJsListener = function(listenerString, globalFuncName){
 					_this.addJsListener( embedPlayer, listenerString, window[ globalFuncName ] );
-				}
+				};
 				
 				embedPlayer.removeJsListener = function(listenerString, callback){
-					_this.removeJsListener( embedPlayer, listenerString, callback )
-				}				
+					_this.removeJsListener( embedPlayer, listenerString, callback );
+				};
 				
 				embedPlayer.sendNotification = function( notificationName, notificationData ){
 					_this.sendNotification( embedPlayer, notificationName, notificationData);
-				}
+				};
 				
 				embedPlayer.evaluate = function( objectString ){
 					return _this.evaluate( embedPlayer, objectString);
-				}
+				};
 				
-				// TODO per KDP docs this should be "	ttribute" but thats a protected native method. 
+				// TODO per KDP docs this should be "attribute" but thats a protected native method. 
 				// the emulation has to do something more tricky like listen to componentName changes 
 				// in the attribute space!
 				embedPlayer.setKDPAttribute = function( componentName, property, value ) {
 					_this.setKDPAttribute( embedPlayer, componentName, property, value );
-				}
+				};
 			});
 		},
 		
@@ -74,7 +74,7 @@
 			$j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {		
 				$j( playerProxy ).bind('jsListenerEvent', function(event, globalFuncName, listenerArgs){
 					window[ globalFuncName ].apply( this, listenerArgs );
-				})
+				});
 				// Directly build out the evaluate call on the playerProxy
 				playerProxy.evaluate = function( objectString ){
 					return _this.evaluate( playerProxy, objectString);					
@@ -99,14 +99,14 @@
 				embedPlayer.addJsListener = function(listenerString, globalFuncName){
 					_this.addJsListener(embedPlayer, listenerString, function(){
 						var args = [ globalFuncName, $j.makeArray( arguments ) ];
-						$j( embedPlayer ).trigger( 'jsListenerEvent', args )
+						$j( embedPlayer ).trigger( 'jsListenerEvent', args );
 					});
 				};
 				
 				// Identical to non-iframe sendNotification
 				embedPlayer.sendNotification = function( notificationName, notificationData ){
-					_this.sendNotification( embedPlayer, notificationName, notificationData)
-				}
+					_this.sendNotification( embedPlayer, notificationName, notificationData);
+				};
 				
 			});
 		},
@@ -275,7 +275,7 @@
 				case 'changeMedia':
 				    
 					// Check if we don't have entryId or it's -1. than we just empty the source and the metadata
-					if(notificationData.entryId == "" || notificationData.entryId == -1) {
+					if( notificationData.entryId == "" || notificationData.entryId == -1 ) {
 					    // Empty sources
 					    embedPlayer.emptySources();
 					    embedPlayer.kalturaPlayerMetaData = null;
@@ -309,10 +309,10 @@
 					// Empty out embedPlayer object sources
 					embedPlayer.emptySources();
 					
-					// Bind the ready state: 
+					// Bind the ready state:
 					$j( embedPlayer ).bind('playerReady', function(){					
 						embedPlayer.stop();
-						// do normal stop then play: 
+						// do normal stop then play:
 						if( chnagePlayingMedia ){
 							embedPlayer.play();	
 						}
