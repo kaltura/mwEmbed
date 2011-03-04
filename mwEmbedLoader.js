@@ -61,7 +61,7 @@ if( document.URL.indexOf('debugKalturaPlayer=true') != -1 ){
 	SCRIPT_FORCE_DEBUG = true;
 }
 if( document.URL.indexOf('debugKalturaForceJquery=true') != -1 ){
-	FORCE_LOAD_JQUERY = true
+	FORCE_LOAD_JQUERY = true;
 }
 
 // Define the DOM ready flag
@@ -89,7 +89,7 @@ if( !mw.setConfig ){
 				preMwEmbedConfig[ i ] = set[i];
 			}
 		}
-	}
+	};
 }
 
 if( ! mw.getConfig ){
@@ -132,7 +132,7 @@ if( document.URL.indexOf('forceMobileHTML5') != -1 ){
 }
 function kDoIframeRewriteList( rewriteObjects ){
 	for( var i=0; i < rewriteObjects.length; i++ ){
-		var options = { width: rewriteObjects[i].width, height: rewriteObjects[i].height }
+		var options = { width: rewriteObjects[i].width, height: rewriteObjects[i].height };
 		// If we have no flash &  no html5 fallback to direct download
 		if( !kSupportsFlash() && ! kSupportsHTML5() ) {
 			kDirectDownloadFallback( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
@@ -166,7 +166,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 		} else {
 			var jsRequestSet = [];
 			if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
-				jsRequestSet.push( ['window.jQuery'] )
+				jsRequestSet.push( ['window.jQuery'] );
 			}
 			jsRequestSet.push('mwEmbed',  'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'kdpClientIframe', 'JSON' );
 			// Load just the files needed for flash iframe bindings			
@@ -230,7 +230,7 @@ function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 	var playButtonUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'skins/common/images/player_big_play_button.png' );
 	var playButtonCss = 'background: url(' + playButtonUrl + ');width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
 
-	var ddHTML =	'<div style="width: ' + options.width + '; height: ' + options.height + '; position: relative">' +
+	var ddHTML = '<div style="width: ' + options.width + '; height: ' + options.height + '; position: relative">' +
 			'<img style="width:100%;height:100%" src="' + thumbSrc + '" >' +
 			'<a href="' + downloadUrl + '" target="_blank" style="' + playButtonCss + '"></a></div>';
 
@@ -265,7 +265,7 @@ function kOverideSwfObject(){
 					'height' : height,
 					'entry_id' :  kEmbedSettings.entry_id,
 					'partner_id': kEmbedSettings.p 
-				})
+				});
 			}
 			if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){
 				kalturaIframeEmbed( replaceTargetId, kEmbedSettings , { 'width': width, 'height': height } );
@@ -319,25 +319,31 @@ function kOverideSwfObject(){
 }
 
 function getFlashVersion(){
-  // ie
-  try {
-    try {
-      // avoid fp6 minor version lookup issues
-      // see: http://blog.deconcept.com/2006/01/11/getvariable-setvariable-crash-internet-explorer-flash-6/
-      var axo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash.6');
-      try { axo.AllowScriptAccess = 'always'; }
-      catch(e) { return '6,0,0'; }
-    } catch(e) {}
-    return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version').replace(/\D+/g, ',').match(/^,?(.+),?$/)[1];
-  // other browsers
-  } catch(e) {
-    try {
-      if(navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin){
-        return (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]).description.replace(/\D+/g, ",").match(/^,?(.+),?$/)[1];
-      }
-    } catch(e) {}
-  }
-  return '0,0,0';
+	// navigator browsers:
+	if (navigator.plugins && navigator.plugins.length) {
+		try {
+			if(navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin){
+				return (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]).description.replace(/\D+/g, ",").match(/^,?(.+),?$/)[1];
+			}
+		} catch(e) {}
+	}
+	// IE
+	try {
+		try {
+			if( typeof ActiveXObject != 'undefined' ){
+				// avoid fp6 minor version lookup issues
+				// see: http://blog.deconcept.com/2006/01/11/getvariable-setvariable-crash-internet-explorer-flash-6/
+				var axo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash.6');
+				try { 
+					axo.AllowScriptAccess = 'always'; 
+				} catch(e) { 
+					return '6,0,0'; 
+				}
+			}
+		} catch(e) {}
+    	return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version').replace(/\D+/g, ',').match(/^,?(.+),?$/)[1];
+	} catch(e) {};
+	return '0,0,0';
 }
 
 // Check DOM for Kaltura embeds ( fall forward ) 
@@ -808,7 +814,7 @@ var restoreKalturaKDPCallback = function(){
 			window.jsCallbackReady();
 		}
 	}
-}
+};
 // Check inline and when the dom is ready:
-checkForKDPCallback()
+checkForKDPCallback();
 kAddReadyHook( checkForKDPCallback );
