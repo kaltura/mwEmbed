@@ -504,7 +504,7 @@ mw.AdTimeline.prototype = {
 				'width' : nonLinearConf.width + 'px',
 				'height' : nonLinearConf.height + 'px',
 				'left' : '50%',
-				'margin-left': -nonLinearConf.width + 'px'
+				'margin-left': -(nonLinearConf.width /2 )+ 'px'
 			};			
 			
 			// check if the controls are visible ( @@todo need to replace this with 
