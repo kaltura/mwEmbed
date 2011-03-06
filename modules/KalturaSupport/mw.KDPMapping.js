@@ -339,6 +339,6 @@
 	// TODO just a normal anonymous function initialization		
 	if( !window.KDPMapping ){
 		window.KDPMapping = new mw.KDPMapping();
-	};
+	}
 	
 } )( window.mw );
