@@ -342,7 +342,7 @@ function getFlashVersion(){
 			}
 		} catch(e) {}
     	return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version').replace(/\D+/g, ',').match(/^,?(.+),?$/)[1];
-	} catch(e) {};
+	} catch(e) {}
 	return '0,0,0';
 }
 

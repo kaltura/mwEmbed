@@ -11,5 +11,6 @@ $wgEnableIframeApi = 'true';
 $wgEnableIpadHTMLControls = 'true';
 $wgKalturaUseManifestUrls = 'true';
 
+$wgMwEmbedEnabledModules = array( 'EmbedPlayer', 'KalturaSupport', 'AdSupport', 'Playlist', 'TimedText' );
 
 ?>

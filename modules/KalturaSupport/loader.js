@@ -350,7 +350,7 @@
 				for( var key in iframeParams ){
 					iframeRequest+= '/' + key + 
 						'/' + encodeURIComponent(  iframeParams [ key ] );
-				};
+				}
 				
 				var argSeperator ='/?';
 				
