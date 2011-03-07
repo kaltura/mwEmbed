@@ -19,15 +19,13 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				mw.log( "KWidget:: checkUiConf: get sources for " + bumperEntryId);
 				var originalSrc = embedPlayer.getSrc();
 				mw.getEntryIdSourcesFromApi( $j( embedPlayer ).attr( 'kwidgetid' ), bumperEntryId, function( sources ){
-					var bumperSource =  sources[0].src;
-					
 					// Check if we are doing ads ( should always come before bumper ) and add bumper to 
 					// ad timeline instead of binding to play: 
 					if( embedPlayer.ads ){
 						mw.addAdToPlayerTimeline( embedPlayer, 'bumper', {
 							'ads': [
 								{
-									'videoFile' : bumperSource,
+									'videoFiles' :sources,
 									'clickThrough' : bumperClickUrl
 								}
 							]
