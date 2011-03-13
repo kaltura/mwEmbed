@@ -151,6 +151,11 @@ mw.KWidgetSupport.prototype = {
 			// Run the request: ( run async to avoid stack )
 			setTimeout(function(){
 				_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+					if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
+						$j('.loadingSpinner').remove();
+						$j(embedPlayer).replaceWith( "Error invalid KS" );
+						return ;
+					}
 					callback( playerData );
 				});
 			});
@@ -184,7 +189,7 @@ mw.KWidgetSupport.prototype = {
 		if( ac.isSiteRestricted ){
 			return 'site restricted';
 		}
-		if( ac.previewLength != -1 ){
+		if( ac.previewLength !== -1 ){
 			return 'preview not handled in library yet';
 		}
 		return true;

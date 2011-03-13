@@ -2134,8 +2134,16 @@ mw.EmbedPlayer.prototype = {
 	 */
 	showPluginMissingHTML: function( ) {
 		mw.log("EmbedPlayer::showPluginMissingHTML");
+		$j('.loadingSpinner').hide();
 		if( this.mediaElement.sources.length == 0 ){
-			this.$interface.empty().append( 
+			if( this.$interface ){ 
+				this.$interface.empty();
+				$target = this.$interface; 
+			} else{
+				$target = $j(this);
+			}
+			
+			$target.html(
 				$j('<div />').addClass('error').text(
 					gM('mwe-embedplayer-missing-source')
 				)

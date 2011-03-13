@@ -21,7 +21,7 @@ mw.KApi = function( partner_id ){
 
 mw.KApi.prototype = {
 	baseParam: {
-		'apiVersion' : '3.0',
+		'apiVersion' : '3.1',
 		'clientTag' : 'html5',
 		'expiry' : '86400',
 		'format' : 9, // 9 = JSONP format
@@ -50,30 +50,6 @@ mw.KApi.prototype = {
 
 			// Kaltura api starts with index 1 for some strange reason. 
 			var mulitRequestIndex = 1;
-			
-			/**
-			 * Ideally we could do a single request to get the KS and the payload.
-			 * unfortunately that does not appear to be the case atm. 
-			 */
-			/*
-			 if( ! this.ks ){				
-				// Add the kaltura session ( if not already set ) 
-				var multiRequest = {
-					'service' : 'session',
-		        	'action' : 'startwidgetsession',
-		        	'widgetId': '_' + this.partner_id // don't ask me, I did not design the API! 
-		        }
-				for ( var  paramKey in multiRequest ){
-					param[ mulitRequestIndex + ':' + paramKey ] = multiRequest[ paramKey ];
-				}
-				mulitRequestIndex++;
-				
-				if( ! this.ks ){		
-					// For each search item append ks: 
-					param[ 'ks' ] = '{1:result:objects:0:ks}';
-				}
-			}
-			*/
 			
 			for( var i = 0 ; i < requestObject.length; i++ ){
 				var requestInx = mulitRequestIndex + i;
@@ -136,7 +112,8 @@ mw.KApi.prototype = {
 		// Add the Kaltura session ( if not already set ) 
 		var ksParam = {
         	'action' : 'startwidgetsession',
-        	'widgetId': '_' + this.partner_id // don't ask me, I did not design the API! 
+        	'widgetId': '_' + this.partner_id, 
+        	'partnerId' : + this.partner_id // don't ask me, I did not design the API!
         }
 		// add in the base parameters:
 		var param = $j.extend( {}, this.baseParam, ksParam );
