@@ -175,7 +175,7 @@ mw.KWidgetSupport.prototype = {
 		if( ac.isCountryRestricted ){
 			return 'country is restricted';
 		}
-		if( !ac.isScheduledNow ){
+		if( ac.isScheduledNow == 0 ){
 			return 'is not scheduled now';
 		}
 		if( ac.isSessionRestricted ){
