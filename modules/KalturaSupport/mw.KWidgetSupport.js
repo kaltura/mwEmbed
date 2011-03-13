@@ -184,9 +184,9 @@ mw.KWidgetSupport.prototype = {
 		if( ac.isSiteRestricted ){
 			return 'site restricted';
 		}
-		if( ac.previewLength != -1 ){
+		/*if( ac.previewLength != -1 ){
 			return 'preview not handled in library yet';
-		}
+		}*/
 		return true;
 	},
 	
