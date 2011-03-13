@@ -354,7 +354,7 @@ class kalturaIframe {
 			$this->fatalIframeError( "No KS where KS is required", "We're sorry, access to this content is restricted.");
 		}
 
-		if($accessControl->isScheduledNow == 0) {
+		if($accessControl->isScheduledNow === 0) {
 			$this->fatalIframeError( "Out of scheduling", "We're sorry, this content is currently unavailable.");
 		}
 
