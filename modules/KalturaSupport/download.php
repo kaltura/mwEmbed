@@ -8,7 +8,7 @@
 define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server, something maybe broken or server is under high load. Please try again.");
 
 // Include configuration: ( will include LocalSettings.php )
-require( realpath( '../../' ) . '\includes\DefaultSettings.php' );
+require( realpath( '../../' ) . '/includes/DefaultSettings.php' );
 
 $download = new downloadEntry();
 $download->redirectDownload();
