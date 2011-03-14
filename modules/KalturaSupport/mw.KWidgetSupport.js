@@ -47,7 +47,7 @@ mw.KWidgetSupport.prototype = {
 						embedPlayer.duration = playerData.meta.duration;
 						// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 						embedPlayer.kalturaPlayerMetaData = playerData.meta;
-						$j( embedPlayer ).trigger( 'KalturaSupport.metaDataReady', embedPlayer.kalturaPlayerMetaData );
+						$j( embedPlayer ).trigger( 'KalturaSupport.MetaDataReady', embedPlayer.kalturaPlayerMetaData );
 					}
 					
 					// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									

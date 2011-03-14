@@ -11,6 +11,8 @@
 		return this.init();
 	};
 	mw.KDPMapping.prototype = {
+		// global list of kdp listneing callbacks
+		listenerList: {},
 		/**
 		* Add Player hooks for supporting Kaltura api stuff
 		*/ 
@@ -35,11 +37,11 @@
 			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {		
 				// Add the addJsListener and sendNotification maps
 				embedPlayer.addJsListener = function(listenerString, globalFuncName){
-					_this.addJsListener( embedPlayer, listenerString, window[ globalFuncName ] );
+					_this.addJsListener( embedPlayer, listenerString, globalFuncName );
 				};
 				
-				embedPlayer.removeJsListener = function(listenerString, callback){
-					_this.removeJsListener( embedPlayer, listenerString, callback );
+				embedPlayer.removeJsListener = function(listenerString, callbackName){
+					_this.removeJsListener( embedPlayer, listenerString, callbackName );
 				};
 				
 				embedPlayer.sendNotification = function( notificationName, notificationData ){
@@ -96,11 +98,13 @@
 			
 			$j( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){
 				
-				embedPlayer.addJsListener = function(listenerString, globalFuncName){
-					_this.addJsListener(embedPlayer, listenerString, function(){
-						var args = [ globalFuncName, $j.makeArray( arguments ) ];
+				embedPlayer.addJsListener = function( listenerString, globalFuncName){
+					var args = [ globalFuncName, $j.makeArray( arguments ) ];
+					var listenEventName = 'gcb_' + listenerString + '_'+ globalFuncName; 
+					window[ listenEventName ] = function(){						
 						$j( embedPlayer ).trigger( 'jsListenerEvent', args );
-					});
+					};					
+					_this.addJsListener( embedPlayer, listenerString, listenEventName);
 				};
 				
 				// Identical to non-iframe sendNotification
@@ -180,8 +184,17 @@
 		/**
 		 * Emulates kalatura addJsListener function
 		 */
-		addJsListener: function( embedPlayer, eventName, callback ){
-			//mw.log("KDPMapping:: addJsListener: " + eventName + ' cb:' + callbackFuncName );			
+		addJsListener: function( embedPlayer, eventName, callbackName ){
+			var _this = this;
+			mw.log("KDPMapping:: addJsListener: " + eventName + ' cb:' + callbackName );
+			this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName)  ] = window[ callbackName ];
+			var callback = function(){
+				var listnerId = _this.getListenerId( embedPlayer, eventName, callbackName) ;
+				// Check that the listener is still valid and run the callback with supplied arguments
+				if( _this.listenerList [ listnerId ] ){
+					_this.listenerList [ listnerId ].apply( _this, $j.makeArray( arguments ) );
+				}
+			};
 			switch( eventName ){
 				case 'volumeChanged': 
 					$j( embedPlayer ).bind('volumeChanged', function(percent){
@@ -214,36 +227,25 @@
 					})
 					break;	
 				case 'entryReady': 
-					$j( embedPlayer ).bind( 'KalturaSupport.metaDataReady', function( event, meta ) {				
+					$j( embedPlayer ).bind( 'KalturaSupport.MetaDataReady', function( event, meta ) {				
 						callback( meta );
 					});
 					break;
+				default:
+					mw.log("Error unkown JsListener: " + eventName );
 			}				
 		},
-		
+		getListenerId: function(  embedPlayer, eventName, callbackName ){
+			return embedPlayer.id + '_' + eventName + '_' + callbackName;
+		},
 		/**
 		 * Emulates kalatura removeJsListener function
 		 */
-		removeJsListener: function( embedPlayer, eventName, callbackFuncName ){
-			//mw.log("KDPMapping:: removeJsListener: " + eventName + ' cb:' + callbackFuncName );
-			var callback = window[ callbackFuncName ];
-			switch( eventName ){
-				case 'volumeChanged': 
-					$j( embedPlayer ).unbind('volumeChanged');
-					break;
-				case 'playerStateChange':					
-					$j( embedPlayer ).unbind('pause');
-					$j( embedPlayer ).unbind('play');
-					break;
-				case 'durationChange': 
-					// TODO add in duration change support
-					break;
-				case 'playerUpdatePlayhead':
-					$j( embedPlayer).unbind('monitorEvent');
-					break;				
-			}			
-			callback();				
-		},		
+		removeJsListener: function( embedPlayer, eventName, callbackName ){
+			mw.log("KDPMapping:: removeJsListener: " + eventName + ' cb:' + callbackFuncName );
+			_this.listenerList [ this.getListenerId( embedPlayer, eventName, callbackName) ] = null;				
+		},	
+			
 		
 		/**
 		 * Master send action list: 

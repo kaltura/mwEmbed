@@ -175,6 +175,10 @@ mw.Playlist.prototype = {
 			var $plListSet = $j( _this.target ).find( '.playlistSetList' );
 
 			$j.each( playlistSet, function( inx, playlist){
+				// check for playlist name: 
+				if( !playlist.name ){
+					return true;
+				}
 				// Add a divider
 				if( inx != 0 ){
 					$plListSet.append( $j('<span />').text( ' | ') )
