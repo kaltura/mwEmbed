@@ -354,6 +354,7 @@ mw.EmbedPlayerNative = {
 
 		if ( !this.playerElement ) {
 			mw.log( 'mwEmbedPlayer::getPlayerElementTime: ' + this.id + ' not in dom ( stop monitor)' );
+			this.stop();
 			return false;
 		}
 		// Return the playerElement currentTime

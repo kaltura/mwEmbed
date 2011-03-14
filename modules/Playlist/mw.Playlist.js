@@ -422,7 +422,7 @@ mw.Playlist.prototype = {
 		var playerSize = _this.getTargetPlayerSize() ;
 		// If we have a ui .. update it: 
 		if( _this.sourceHandler.hasPlaylistUi() ){
-			this.updatePlayerUi();
+			this.updatePlayerUi( clipIndex );
 		}
 		
 		// Build the video tag object:
@@ -452,7 +452,7 @@ mw.Playlist.prototype = {
 			_this.updateVideoPlayer( $video , callback);
 		});
 	},
-	updatePlayerUi:function(){
+	updatePlayerUi:function( clipIndex ){
 		var _this = this;
 		var playerSize = _this.getTargetPlayerSize() ;
 		// Build and output the title
