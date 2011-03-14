@@ -191,6 +191,7 @@ jQuery.fn.iFramePlayer = function( readyCallback ){
 	}
 	// Handle each embed frame 
 	$j( this.selector ).each( function(inx, targetPlayer){
+		mw.log( "$.iFramePlayer::" + targetPlayer.id );
 		// Append '_ifp' ( iframe player ) to id of real iframe so that 'id', and 'src' attributes don't conflict
 		var playerProxyId = ( $j( targetPlayer ).attr( 'id' ) )? $j( targetPlayer ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
 		var iframePlayerId = playerProxyId + '_ifp' ; 

@@ -262,7 +262,7 @@
 						// XXX UGLY TEMPORARY HACK ( don't use iframe for playlist ) 
 						if( kParams['entry_id'] ){
 							iframeRewriteCount++;
-							$j( playerTarget ).kalturaIframePlayer( kParams, doneWithIframePlayer);
+							$j( playerTarget ).removeClass('mwEmbedKalturaVideoSwap').kalturaIframePlayer( kParams, doneWithIframePlayer);
 						}
 					});					
 					// if there are no playlists left to process return: 
@@ -284,7 +284,7 @@
 								'playlist_id':  $j( playlistTarget ).attr( 'kplaylistid' )
 							};
 							// Check if we have a mediaRss url as the playlistId
-							if( mw.isUrl( playlistConfig.playlistid ) ) {
+							if( mw.isUrl( playlistConfig.playlist_id ) ) {
 								var kalturaPlaylistHanlder = new mw.PlaylistHandlerKalturaRss( playlistConfig );
 							} else {
 								var kalturaPlaylistHanlder = new mw.PlaylistHandlerKaltura( playlistConfig );

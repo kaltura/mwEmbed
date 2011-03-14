@@ -20,7 +20,7 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 	},
 	getSrc: function(){	
 		// In kaltura player embeds the playlistid url is the source: 
-		return this.playlist.playlistid;
+		return this.playlist.playlist_id;
 	},
 	getClipSources: function( clipIndex, callback ){
 		this.parent_getClipSources( clipIndex, function( clipSources ){
@@ -33,7 +33,7 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 				var playerRequest = {
 					'entry_id' : kEmbedSettings.entry_id,
 					'widget_id' : kEmbedSettings.widget_id
-				}	
+				};
 				var clipDuration = clipSources[0].duration;		
 				
 				// Make sure we have a client session established: 
