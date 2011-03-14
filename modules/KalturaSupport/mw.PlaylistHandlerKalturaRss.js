@@ -8,7 +8,7 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 			
 	init: function ( Playlist ){
 		this.playlist = Playlist;		
-		// inherit PlaylistHandlerMediaRss
+		// Inherit PlaylistHandlerMediaRss
 		var tmp = new mw.PlaylistHandlerMediaRss( Playlist );
 		for( var i in tmp ){
 			if( this[i] ){
@@ -38,14 +38,12 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 				
 				// Make sure we have a client session established: 
 				mw.KApiPlayerLoader( playerRequest, function( playerData ) {
-					
 					mw.getEntryIdSourcesFromApi( kalturaEntryId , function( sources ){						
 						for( var i in sources ){
 							sources[i].durationHint = clipDuration;
 						}
 						callback( sources );
 					});
-					
 				});
 			} else {
 				mw.log("Error: kalturaPlaylist MediaRss used with multiple sources or non-kaltura flash applet url");

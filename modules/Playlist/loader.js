@@ -61,7 +61,7 @@
 		mw.load ( ['EmbedPlayer', 'Playlist'], function(){
 			// load and display the media Rss
 			var myPlaylist = new mw.Playlist( options );
-			myPlaylist.drawUI();
+			myPlaylist.drawPlaylist();
 		});
 	}
 } )( jQuery );

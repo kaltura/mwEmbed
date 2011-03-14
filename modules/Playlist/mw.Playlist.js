@@ -83,286 +83,297 @@ mw.Playlist.prototype = {
 			mw.getConfig( 'Playlist.titleHeight' );
 
 	},
-
-	/**
-	* Draw the media rss playlist ui
-	*/
-	drawUI: function(){
+	
+	drawPlaylist: function(){
 		var _this = this;
 		// Set the target to loadingSpinner:
 		$j( this.target ).empty().loadingSpinner();
 
 		this.loadPlaylistHandler( function( sourceHandler ){
-			mw.log("mw.Playlist::loaded playlist set");
+			mw.log("Playlist::drawPlaylist: sourceHandler loaded");
+			_this.sourceHandler = sourceHandler;
 			// Check if load failed or empty playlist
-			if( sourceHandler.getClipList().length == 0 ){
+			if( _this.sourceHandler.getClipList().length == 0 ){
 				$j( _this.target ).empty().text( gM('mwe-playlist-empty') )
 				return ;
 			}
-			
-			// Setup the layout
-			//_this.layoutHandler.drawUi( _this.target )
-			
-			// Empty the target and setup player and playerList divs
-			$j( _this.target )
-			.empty()
-			.addClass( 'ui-widget-content' )
-			.css('position', 'relative' )
-			.append(
-				$j( '<span />' )
-					.addClass( 'media-rss-video-player-container')
-					.css({
-						'float' : 'left'
-					})
-					.append( $j('<div />').addClass('media-rss-video-player') )
-				,
-				$j( '<div />')
-				.addClass( 'media-rss-video-list' )
-				.attr('id', _this.id + '_videolist')
-				.css({
-					'position' : 'absolute',
-					'z-index' : '1',
-					'overflow' : 'auto',
-					'bottom': '7px',
-					'right' : '0px'
-				})
-				.hide()
-			);
-
-			// Check if we have multiple playlist and setup the list and bindings
-			if( _this.sourceHandler.hasMultiplePlaylists() ){
-				var playlistSet = _this.sourceHandler.getPlaylistSet();
-				if( _this.layout == 'vertical' ){
-					var leftPx = '0px';
-				} else {
-					// just the default left side assignment ( updates once we have player size ) 
-					var leftPx = '444px'
-				}
-				var $plListContainer =$j('<div />')
-				.addClass( 'playlistSet-container ui-state-default ui-widget-header ui-corner-all' )
-				.css({
-					'position' : 'absolute',
-					'overflow' : 'hidden',
-					'top' : '3px',
-					'right' : '0px',
-					'height' : '20px',
-					'left' : leftPx
-				})
+			//check if we should include the ui 
+			if( _this.sourceHandler.hasPlaylistUi() ){
+				_this.drawUI();
+			} else {
+				$j( _this.target )
+				.empty()
 				.append(
-					$j('<span />')
-					.addClass( 'playlistSetList' )
-					.css( {
-						'white-space':'pre'
+					_this.getPlayerContainer()
+				)
+				_this.updatePlayer( _this.clipIndex );
+			}
+		});
+	},
+	getPlayerContainer:function(){
+		return $j( '<span />' )
+		.addClass( 'media-rss-video-player-container')
+		.css({
+			'float' : 'left'
+		})
+		.append( $j('<div />').addClass('media-rss-video-player') );
+	},
+	/**
+	* Draw the media rss playlist ui
+	*/
+	drawUI: function(){
+		var _this = this;
+		// Empty the target and setup player and playerList divs
+		$j( _this.target )
+		.empty()
+		.addClass( 'ui-widget-content' )
+		.css('position', 'relative' )
+		.append(
+			_this.getPlayerContainer()
+			,
+			$j( '<div />')
+			.addClass( 'media-rss-video-list' )
+			.attr('id', _this.id + '_videolist')
+			.css({
+				'position' : 'absolute',
+				'z-index' : '1',
+				'overflow' : 'auto',
+				'bottom': '7px',
+				'right' : '0px'
+			})
+			.hide()
+		);
+
+		// Check if we have multiple playlist and setup the list and bindings
+		if( _this.sourceHandler.hasMultiplePlaylists() ){
+			var playlistSet = _this.sourceHandler.getPlaylistSet();
+			if( _this.layout == 'vertical' ){
+				var leftPx = '0px';
+			} else {
+				// just the default left side assignment ( updates once we have player size ) 
+				var leftPx = '444px'
+			}
+			var $plListContainer =$j('<div />')
+			.addClass( 'playlistSet-container ui-state-default ui-widget-header ui-corner-all' )
+			.css({
+				'position' : 'absolute',
+				'overflow' : 'hidden',
+				'top' : '3px',
+				'right' : '0px',
+				'height' : '20px',
+				'left' : leftPx
+			})
+			.append(
+				$j('<span />')
+				.addClass( 'playlistSetList' )
+				.css( {
+					'white-space':'pre'
+				})
+			);
+			$j( _this.target ).append( $plListContainer );
+
+			var $plListSet = $j( _this.target ).find( '.playlistSetList' );
+
+			$j.each( playlistSet, function( inx, playlist){
+				// Add a divider
+				if( inx != 0 ){
+					$plListSet.append( $j('<span />').text( ' | ') )
+				}
+				$plListSet.append(
+					$j('<a />')
+					.attr('href', '#')
+					.text( playlist.name )
+					.click( function(){
+						 _this.sourceHandler.setPlaylistIndex( inx );
+						 $j( _this.target + ' .media-rss-video-list').loadingSpinner();
+						 _this.sourceHandler.loadPlaylist( function(){
+							 $j( _this.target + ' .media-rss-video-list').empty();
+							_this.addMediaList();
+						 });
+						return false;
 					})
-				);
-				$j( _this.target ).append( $plListContainer );
+					.buttonHover()
+				)
+			});
+			// Check playlistSet width and add scroll left / scroll right buttons
+			if( $plListSet.width() > $plListContainer.width() ){
+				var baseButtonWidth = 24;
+				$plListSet.css( {
+					'position': 'absolute',
+					'left' : baseButtonWidth + 'px'
+				});
+				var $scrollButton =	$j('<div />')
+				.addClass( 'ui-corner-all ui-state-default' )
+				.css({
+					'position' : 'absolute',
+					'top' : '-1px',
+					'cursor' : 'pointer',
+					'margin' :'0px',
+					'padding' : '2px',
+					'width'	: '16px',
+					'height' : '16px'
+				})
 
-				var $plListSet = $j( _this.target ).find( '.playlistSetList' );
+				var $buttonSpan = $j('<span />')
+					.addClass( 'ui-icon' )
+					.css('margin', '2px' );
 
-				$j.each( playlistSet, function( inx, playlist){
-					// Add a divider
-					if( inx != 0 ){
-						$plListSet.append( $j('<span />').text( ' | ') )
-					}
-					$plListSet.append(
-						$j('<a />')
-						.attr('href', '#')
-						.text( playlist.name )
-						.click( function(){
-							 _this.sourceHandler.setPlaylistIndex( inx );
-							 $j( _this.target + ' .media-rss-video-list').loadingSpinner();
-							 _this.sourceHandler.loadPlaylist( function(){
-								 $j( _this.target + ' .media-rss-video-list').empty();
-								_this.addMediaList();
-							 });
+				var plScrollPos = 0;
+				var scrollToListPos = function( pos ){
+
+					listSetLeft = $plListSet.find('a').eq( pos ).offset().left -
+						$plListSet.offset().left ;
+
+					mw.log("scroll to: " + pos + ' left: ' + listSetLeft);
+					$plListSet.animate({'left': -( listSetLeft - baseButtonWidth) + 'px'} );
+				}
+
+				$plListContainer
+				.append(
+					$scrollButton.clone()
+					.css('left', '0px')
+					.append( $buttonSpan.clone().addClass('ui-icon-circle-arrow-w') )
+					.click( function(){
+						//slide right
+						if( plScrollPos >= 0){
+							mw.log("scroll right");
+							plScrollPos--
+							scrollToListPos( plScrollPos );
+						}
+					})
+					.buttonHover(),
+
+					$scrollButton.clone()
+					.css('right', '0px')
+					.append( $buttonSpan.clone().addClass('ui-icon-circle-arrow-e') )
+					.click( function(){
+						//slide left
+						if( plScrollPos < $plListSet.find('a').length-1 ){
+							plScrollPos++;
+							scrollToListPos( plScrollPos );
+						}
+					})
+					.buttonHover()
+				)
+			}
+		};
+
+		// Add the selectable media list
+		_this.addMediaList();
+
+		// Add the player
+		_this.updatePlayer( _this.clipIndex, function(){
+			// Update the list height ( vertical layout )
+			if( _this.layout == 'vertical' ){
+				$j( _this.target + ' .media-rss-video-list' ).css( {
+					'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 4,
+					'width' : '100%'
+				} )
+				// Add space for the multi-playlist selector:
+				if( _this.sourceHandler.hasMultiplePlaylists() ){
+					// also adjust .playlistSet-container if present
+					$j( _this.target + ' .playlistSet-container').css( {
+						'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 4
+					})
+					$j( _this.target + ' .media-rss-video-list' ).css({
+						'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 26
+					})
+				}
+
+			} else {
+				// Update horizontal layout
+				$j( _this.target + ' .media-rss-video-list').css( {
+					'top' : '0px',
+					'left' : $j( _this.target + ' .media-rss-video-player-container' ).width() + 4
+				} )
+				// Add space for the multi-playlist selector:
+				if( _this.sourceHandler.hasMultiplePlaylists() ){
+					$j( _this.target + ' .playlistSet-container').css( {
+						'left' : $j( _this.target + ' .media-rss-video-player-container' ).width() + 4
+					})
+					$j( _this.target + ' .media-rss-video-list').css( {
+						'top' : '26px'
+					})
+				}
+			}
+			var $videoList = $j( _this.target + ' .media-rss-video-list' );
+			$videoList.show()
+			// show the video list and apply the swipe binding
+			$j( _this.target ).find('.media-rss-video-list-wrapper').fadeIn();
+			if( mw.isHTML5FallForwardNative() ){
+				// iScroll is buggy with current version of iPad / iPhone use scroll buttons instead
+				/*
+				document.addEventListener('touchmove', function(e){ e.preventDefault(); });
+				var myScroll = iScroll( _this.id + '_videolist' );
+				setTimeout(function () { myScroll.refresh(); }, 0);
+				*/
+				// Add space for scroll buttons:
+				var curTop = $j( _this.target + ' .media-rss-video-list' ).css('top');
+				if(!curTop) curTop = '0px';
+				$j( _this.target + ' .media-rss-video-list' ).css( {
+					'position' : 'absolute',
+					'height' : null,
+					'top' : curTop,
+					'bottom' : '30px',
+					'right': '0px'
+				})
+				if( _this.layout == 'vertical' ){
+					$j( _this.target + ' .media-rss-video-list' ).css({
+						'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 8
+					})
+				}
+				
+				// Add scroll buttons:
+				$j( _this.target ).append(
+					$j( '<div />').css({
+						'position' : 'absolute',
+						'bottom' : '5px',
+						'right': '0px',
+						'height' : '30px',
+						'width' : $j( _this.target + ' .media-rss-video-list').width()
+					})
+					.append(
+						$j.button({
+							'text' : 'scroll down',
+							'icon' : 'circle-arrow-s'
+						})
+						.css('float', 'right')
+						.click(function(){
+							var clipListCount = $videoList.children().length;
+							var clipSize = $videoList.children(':first').height();
+							var curTop = $videoList.attr('scrollTop');
+
+							var targetPos = curTop + (clipSize * 3);
+							if( targetPos > clipListCount * clipSize ){
+								targetPos = ( clipListCount * ( clipSize -1 ) );
+							}
+							//mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
+							$videoList.animate({'scrollTop': targetPos }, 500 );
+
+							return false;
+						}),
+						$j.button({
+							'text' : 'scroll up',
+							'icon' : 'circle-arrow-n'
+						})
+						.css('float', 'left')
+						.click(function(){
+							var clipListCount = $videoList.children().length;
+							var clipSize = $videoList.children(':first').height();
+							var curTop = $videoList.attr('scrollTop');
+
+							var targetPos = curTop - (clipSize * 3);
+							if( targetPos < 0 ){
+								targetPos = 0
+							}
+							mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
+							$videoList.animate({'scrollTop': targetPos }, 500 );
+
 							return false;
 						})
-						.buttonHover()
 					)
-				});
-				// Check playlistSet width and add scroll left / scroll right buttons
-				if( $plListSet.width() > $plListContainer.width() ){
-					var baseButtonWidth = 24;
-					$plListSet.css( {
-						'position': 'absolute',
-						'left' : baseButtonWidth + 'px'
-					});
-					var $scrollButton =	$j('<div />')
-					.addClass( 'ui-corner-all ui-state-default' )
-					.css({
-						'position' : 'absolute',
-						'top' : '-1px',
-						'cursor' : 'pointer',
-						'margin' :'0px',
-						'padding' : '2px',
-						'width'	: '16px',
-						'height' : '16px'
-					})
-
-					var $buttonSpan = $j('<span />')
-						.addClass( 'ui-icon' )
-						.css('margin', '2px' );
-
-					var plScrollPos = 0;
-					var scrollToListPos = function( pos ){
-
-						listSetLeft = $plListSet.find('a').eq( pos ).offset().left -
-							$plListSet.offset().left ;
-
-						mw.log("scroll to: " + pos + ' left: ' + listSetLeft);
-						$plListSet.animate({'left': -( listSetLeft - baseButtonWidth) + 'px'} );
-					}
-
-					$plListContainer
-					.append(
-						$scrollButton.clone()
-						.css('left', '0px')
-						.append( $buttonSpan.clone().addClass('ui-icon-circle-arrow-w') )
-						.click( function(){
-							//slide right
-							if( plScrollPos >= 0){
-								mw.log("scroll right");
-								plScrollPos--
-								scrollToListPos( plScrollPos );
-							}
-						})
-						.buttonHover(),
-
-						$scrollButton.clone()
-						.css('right', '0px')
-						.append( $buttonSpan.clone().addClass('ui-icon-circle-arrow-e') )
-						.click( function(){
-							//slide left
-							if( plScrollPos < $plListSet.find('a').length-1 ){
-								plScrollPos++;
-								scrollToListPos( plScrollPos );
-							}
-						})
-						.buttonHover()
-					)
-				}
-			};
-
-			// Add the selectable media list
-			_this.addMediaList();
-
-			// Add the player
-			_this.updatePlayer( _this.clipIndex, function(){
-				// Update the list height ( vertical layout )
-				if( _this.layout == 'vertical' ){
-					$j( _this.target + ' .media-rss-video-list' ).css( {
-						'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 4,
-						'width' : '100%'
-					} )
-					// Add space for the multi-playlist selector:
-					if( _this.sourceHandler.hasMultiplePlaylists() ){
-						// also adjust .playlistSet-container if present
-						$j( _this.target + ' .playlistSet-container').css( {
-							'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 4
-						})
-						$j( _this.target + ' .media-rss-video-list' ).css({
-							'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 26
-						})
-					}
-
-				} else {
-					// Update horizontal layout
-					$j( _this.target + ' .media-rss-video-list').css( {
-						'top' : '0px',
-						'left' : $j( _this.target + ' .media-rss-video-player-container' ).width() + 4
-					} )
-					// Add space for the multi-playlist selector:
-					if( _this.sourceHandler.hasMultiplePlaylists() ){
-						$j( _this.target + ' .playlistSet-container').css( {
-							'left' : $j( _this.target + ' .media-rss-video-player-container' ).width() + 4
-						})
-						$j( _this.target + ' .media-rss-video-list').css( {
-							'top' : '26px'
-						})
-					}
-				}
-				var $videoList = $j( _this.target + ' .media-rss-video-list' );
-				$videoList.show()
-				// show the video list and apply the swipe binding
-				$j( _this.target ).find('.media-rss-video-list-wrapper').fadeIn();
-				if( mw.isHTML5FallForwardNative() ){
-					// iScroll is buggy with current version of iPad / iPhone use scroll buttons instead
-					/*
-					document.addEventListener('touchmove', function(e){ e.preventDefault(); });
-					var myScroll = iScroll( _this.id + '_videolist' );
-					setTimeout(function () { myScroll.refresh(); }, 0);
-					*/
-					// Add space for scroll buttons:
-					var curTop = $j( _this.target + ' .media-rss-video-list' ).css('top');
-					if(!curTop) curTop = '0px';
-					$j( _this.target + ' .media-rss-video-list' ).css( {
-						'position' : 'absolute',
-						'height' : null,
-						'top' : curTop,
-						'bottom' : '30px',
-						'right': '0px'
-					})
-					if( _this.layout == 'vertical' ){
-						$j( _this.target + ' .media-rss-video-list' ).css({
-							'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 8
-						})
-					}
-					
-					// Add scroll buttons:
-					$j( _this.target ).append(
-						$j( '<div />').css({
-							'position' : 'absolute',
-							'bottom' : '5px',
-							'right': '0px',
-							'height' : '30px',
-							'width' : $j( _this.target + ' .media-rss-video-list').width()
-						})
-						.append(
-							$j.button({
-								'text' : 'scroll down',
-								'icon' : 'circle-arrow-s'
-							})
-							.css('float', 'right')
-							.click(function(){
-								var clipListCount = $videoList.children().length;
-								var clipSize = $videoList.children(':first').height();
-								var curTop = $videoList.attr('scrollTop');
-
-								var targetPos = curTop + (clipSize * 3);
-								if( targetPos > clipListCount * clipSize ){
-									targetPos = ( clipListCount * ( clipSize -1 ) );
-								}
-								//mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
-								$videoList.animate({'scrollTop': targetPos }, 500 );
-
-								return false;
-							}),
-							$j.button({
-								'text' : 'scroll up',
-								'icon' : 'circle-arrow-n'
-							})
-							.css('float', 'left')
-							.click(function(){
-								var clipListCount = $videoList.children().length;
-								var clipSize = $videoList.children(':first').height();
-								var curTop = $videoList.attr('scrollTop');
-
-								var targetPos = curTop - (clipSize * 3);
-								if( targetPos < 0 ){
-									targetPos = 0
-								}
-								mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
-								$videoList.animate({'scrollTop': targetPos }, 500 );
-
-								return false;
-							})
-						)
-					)
-				}
-
-			});
-
-
+				)
+			}
 		});
 	},
 
@@ -409,28 +420,11 @@ mw.Playlist.prototype = {
 	updatePlayer: function( clipIndex , callback ){
 		var _this = this;
 		var playerSize = _this.getTargetPlayerSize() ;
-
-		// Build and output the title
-		var $title = $j('<div />' )
-			.addClass( 'playlist-title ui-state-default ui-widget-header ui-corner-all')
-			.css( {
-				'top' : '0px',
-				'height' : _this.titleHeight,
-				'width' : playerSize.width
-			} )
-			.text(
-				_this.sourceHandler.getClipTitle( clipIndex )
-			)
-		$j( _this.target + ' .media-rss-video-player-container' ).find('.playlist-title').remove();
-		$j( _this.target + ' .media-rss-video-player-container' ).prepend( $title );
-
-		// Update the player list if present:
-		$j( _this.target + ' .clipItemBlock')
-			.removeClass( 'ui-state-active' )
-			.addClass( 'ui-state-default' )
-			.eq( clipIndex )
-			.addClass( 'ui-state-active' )
-
+		// If we have a ui .. update it: 
+		if( _this.sourceHandler.hasPlaylistUi() ){
+			this.updatePlayerUi();
+		}
+		
 		// Build the video tag object:
 		var $video = $j( '<video />' )
 		.attr({
@@ -458,6 +452,31 @@ mw.Playlist.prototype = {
 			_this.updateVideoPlayer( $video , callback);
 		});
 	},
+	updatePlayerUi:function(){
+		var _this = this;
+		var playerSize = _this.getTargetPlayerSize() ;
+		// Build and output the title
+		var $title = $j('<div />' )
+			.addClass( 'playlist-title ui-state-default ui-widget-header ui-corner-all')
+			.css( {
+				'top' : '0px',
+				'height' : _this.titleHeight,
+				'width' : playerSize.width
+			} )
+			.text(
+				_this.sourceHandler.getClipTitle( clipIndex )
+			)
+		$j( _this.target + ' .media-rss-video-player-container' ).find('.playlist-title').remove();
+		$j( _this.target + ' .media-rss-video-player-container' ).prepend( $title );
+
+		// Update the player list if present:
+		$j( _this.target + ' .clipItemBlock')
+			.removeClass( 'ui-state-active' )
+			.addClass( 'ui-state-default' )
+			.eq( clipIndex )
+			.addClass( 'ui-state-active' )
+
+	},
 
 	getVideoPlayerId: function( clipIndex ){
 		if( ! clipIndex ) {
@@ -472,6 +491,8 @@ mw.Playlist.prototype = {
 		// If on mobile safari just swap the sources ( don't replace the video )
 		// ( mobile safari can't javascript start the video )
 		// see: http://developer.apple.com/iphone/search/search.php?simp=1&num=10&Search=html5+autoplay
+		
+		// TODO we should switch to our adTimeline player switching code
 	
 		if( !mw.isMobileHTML5() ){
 			// Remove the old video player ( not mobile safari )
@@ -519,10 +540,10 @@ mw.Playlist.prototype = {
 		// Update the video tag with the embedPlayer
 		$j.embedPlayers( function(){
 			var embedPlayer = $j('#' +_this.getVideoPlayerId( _this.clipIndex ) ).get(0);
-
 			// Setup ondone playing binding to play next clip (if autoContinue is true )
 			if( _this.sourceHandler.autoContinue == true ){
-				$j( embedPlayer ).unbind('ended').bind( 'ended', function(event ){
+				$j( embedPlayer ).unbind('ended.playlist').bind( 'ended.playlist', function(event ){
+					mw.log("Playlist:: updateVideoPlayer -> finished clip" + _this.clipIndex );
 					// Play next clip
 					if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
 						// Update the onDone action object to not run the base control done:
@@ -541,6 +562,7 @@ mw.Playlist.prototype = {
 					}
 				})
 			}
+			_this.addPlaylistSeekButtons( embedPlayer );
 			mw.log( "player should be ready: " + _this.clipIndex + ' ' + $j('#' +_this.getVideoPlayerId() ) );
 			// Run the callback if its set
 			if( callback ){
@@ -548,7 +570,63 @@ mw.Playlist.prototype = {
 			}
 		} );
 	},
-
+	// Checks if the player has next prev playlist buttons if not adds them.
+	addPlaylistSeekButtons: function( embedPlayer ){
+		var _this = this;
+		// add previous / next buttons if not present: 
+		// TODO (HACK) we should do real controlBar support for custom buttons
+		
+		if( embedPlayer.controlBuilder ){
+			$controlBar = embedPlayer.$interface.find('.control-bar');
+			
+			if( $controlBar.find('.ui-icon-seek-next').length != 0 ){
+				// already have seek buttons
+				return false;
+			}
+			
+			// make space ( reduce playhead lenght ) 
+			var pleft =  parseInt( $controlBar.find('.play_head').css('left') ) + 56;
+			$controlBar.find('.play_head').css('left', pleft);
+			$plButton = $j('<div />')
+				.addClass("ui-state-default ui-corner-all ui-icon_link lButton")
+				.buttonHover()
+				.append(
+					$j('<span />')
+					.addClass( "ui-icon")
+				)
+			$controlBar.find( '.play-btn').after(
+				$plButton.clone().attr({
+						'title' : 'Previous clip'
+					})
+					.click(function(){					
+						if( _this.clipIndex - 1 >= 0 ){
+							_this.clipIndex--;
+							_this.updatePlayer( _this.clipIndex, function(){
+								_this.play();
+							})
+							return ;
+						}
+						mw.log("Cant prev: cur:" + _this.clipIndex );
+					})
+					.find('span').addClass('ui-icon-seek-prev').parent()			
+				,					
+				$plButton.clone().attr({
+						'title' : 'Next clip'
+					})
+					.click(function(){
+						if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
+							_this.clipIndex++;
+							_this.updatePlayer( _this.clipIndex, function(){
+								_this.play();
+							})
+							return ;
+						}
+						mw.log("Cant next: cur:" + _this.clipIndex );
+					})
+					.find('span').addClass('ui-icon-seek-next').parent()
+			)
+		}
+	},
 	/**
 	* Add the media list with the selected clip highlighted
 	*/

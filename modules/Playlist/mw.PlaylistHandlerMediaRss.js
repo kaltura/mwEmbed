@@ -8,6 +8,12 @@ mw.PlaylistHandlerMediaRss.prototype = {
 
 	// If playback should continue to the next clip on clip complete
 	autoContinue: true,
+	
+	// if the playlist should automatically start:
+	autoPlay: false, 
+	
+	// If the playlist ui should be displayed
+	includeInLayout: true,
 
 	init: function ( Playlist ){
 		this.playlist = Playlist;
@@ -37,6 +43,9 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	},
 	hasMultiplePlaylists: function(){
 		return false;
+	},
+	hasPlaylistUi: function(){
+		return this.includeInLayout;
 	},
 	getSrc: function(){
 		return this.playlist.src;
@@ -74,7 +83,10 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	applyCustomClipData: function( embedPlayer, clipIndex ){
 		return {};
 	},
-
+	// check if we should draw playlist ui:
+	hasPlaylistUi: function(){
+		return this.hasPlaylistUi;
+	},
 	getClipList: function(){
 		return this.$rss.find('item');
 	},
