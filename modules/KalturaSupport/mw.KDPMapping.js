@@ -196,11 +196,17 @@
 				}
 			};
 			switch( eventName ){
+				case 'kdpEmpty':
+					// TODO: When we have video tag without an entry
+					break;
+				case 'kdpReady':
+					// TODO: When player is ready with entry
+					break;
 				case 'volumeChanged': 
 					$j( embedPlayer ).bind('volumeChanged', function(percent){
 						callback( {'newVolume' : percent }, embedPlayer.id );
 					});
-				break;
+					break;
 				case 'playerStateChange':					
 					// Kind of tricky should do a few bindings to 'pause', 'play', 'ended', 'buffering/loading'
 					$j( embedPlayer ).bind('pause', function(){						
@@ -211,6 +217,12 @@
 						callback( 'play', embedPlayer.id );
 					});
 					
+					break;
+				case 'playerPlayed':
+					$j( embedPlayer ).bind("play", function(){
+						// TODO document what data played should include
+						callback( {}, embedPlayer.id );
+					});
 					break;
 				case 'playerPlayEnd': 
 					$j( embedPlayer ).bind("ended", function(){
@@ -231,6 +243,9 @@
 						callback( meta );
 					});
 					break;
+				case 'mediaReady':
+					// TODO: When the media is ready to be played
+					break;
 				default:
 					mw.log("Error unkown JsListener: " + eventName );
 			}				
@@ -244,9 +259,9 @@
 		removeJsListener: function( embedPlayer, eventName, callbackName ){
 			mw.log("KDPMapping:: removeJsListener: " + eventName + ' cb:' + callbackFuncName );
 			_this.listenerList [ this.getListenerId( embedPlayer, eventName, callbackName) ] = null;				
-		},	
-			
+		},
 		
+
 		/**
 		 * Master send action list: 
 		 */

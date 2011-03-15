@@ -459,7 +459,7 @@
 		
 		return kCdn + '/p/' + entry.partner_id + '/sp/' +
 			entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
-			entry.width + '/height/' + entry.height;
+			parseInt(entry.width) + '/height/' + parseInt(entry.height);
 	};
 	
 	/**
