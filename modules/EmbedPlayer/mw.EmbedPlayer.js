@@ -2521,17 +2521,17 @@ mw.EmbedPlayer.prototype = {
 	*/
 	getShareIframeObject: function(){
 
-		var iframeUrl = false
-                if (typeof(mw.IA) != 'undefined'){
-                  iframeUrl = mw.IA.embedUrl();
-                } else {
-                  $( this ).trigger( 'GetShareIframeSrc', function( localIframeSrc ){
-			if( iframeUrl){
-				mw.log("Error multiple modules binding GetShareIframeSrc" );
-			}			
-			iframeUrl = localIframeSrc;
-                    });
-                }
+		var iframeUrl = false;
+        if (typeof(mw.IA) != 'undefined'){
+        	iframeUrl = mw.IA.embedUrl();
+        } else {
+        	$( this ).trigger( 'GetShareIframeSrc', function( localIframeSrc ){
+				if( iframeUrl){
+					mw.log("Error multiple modules binding GetShareIframeSrc" );
+				}			
+				iframeUrl = localIframeSrc;
+        	});
+        }
 		if( !iframeUrl ){	
 			iframeUrl = this.getIframeSourceUrl()
 		}				
