@@ -35,13 +35,14 @@ mw.IFramePlayerApiServer = function( embedPlayer ){
 mw.IFramePlayerApiServer.prototype = {	
 	// Exported bindings / events. ( all the native html5 events are added in 'init' )		
 	'exportedBindings': [
+	     'proxyReady',
 	     'playerReady',
 	     'monitorEvent',
 	     'onOpenFullScreen',
 	     'onCloseFullScreen'
 	],
 		
-	'init': function( embedPlayer ){
+	'init': function( embedPlayer ){	
 		this.embedPlayer = embedPlayer;
 		
 		// Add the list of native events to the exportedBindings	
@@ -58,7 +59,18 @@ mw.IFramePlayerApiServer.prototype = {
 
 		this.addIframeListener();
 		this.addIframeSender();
-		$j( mw ).trigger( 'newIframePlayerServerSide', [embedPlayer]);
+		$j( mw ).trigger( 'newIframePlayerServerSide', [ embedPlayer ] );
+				
+		// Block until we receive prePlayerProxyListnersDone event
+		$j( embedPlayer ).bind( 'startPlayerBuildOut', function(event, callback ){
+			// Once the iframe client is done adding its pre-player listeners the client calls:
+			// proxyAcknowledgment
+			embedPlayer.proxyAcknowledgment = function(){
+				callback();
+			};
+			// Trigger the proxyReady event ( will add all the prePlayerProxy listeners 
+			$j( embedPlayer ).trigger( 'proxyReady' );
+		});
 	},
 	
 	/**

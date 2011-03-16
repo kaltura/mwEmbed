@@ -34,7 +34,7 @@
 			var _this = this;
 
 			// Add the hooks to the player manager			
-			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {		
+			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {										
 				// Add the addJsListener and sendNotification maps
 				embedPlayer.addJsListener = function(listenerString, globalFuncName){
 					_this.addJsListener( embedPlayer, listenerString, globalFuncName );
@@ -58,6 +58,11 @@
 				embedPlayer.setKDPAttribute = function( componentName, property, value ) {
 					_this.setKDPAttribute( embedPlayer, componentName, property, value );
 				};
+				
+				// Fire the KalturaKDPCallbackReady event with the player id: 
+				if( window.KalturaKDPCallbackReady ){
+					window.KalturaKDPCallbackReady( embedPlayer.id );
+				}
 			});
 		},
 		
@@ -81,8 +86,14 @@
 				playerProxy.evaluate = function( objectString ){
 					return _this.evaluate( playerProxy, objectString);					
 				};
-			});
-			
+				
+				// Listen for the proxyReady event from the server: 
+				$j( playerProxy ).bind('proxyReady', function(){
+					if( window.KalturaKDPCallbackReady ){
+						window.KalturaKDPCallbackReady( playerProxy.id );
+					}
+				});
+			});			
 		},
 		
 		/***************************************
@@ -97,21 +108,20 @@
 			});
 			
 			$j( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){
-				
-				embedPlayer.addJsListener = function( listenerString, globalFuncName){
+
+				embedPlayer.addJsListener = function( listenerString, globalFuncName){					
 					var args = [ globalFuncName, $j.makeArray( arguments ) ];
-					var listenEventName = 'gcb_' + listenerString + '_'+ globalFuncName; 
+					var listenEventName = 'gcb_' + listenerString + '_'+ globalFuncName; 					
 					window[ listenEventName ] = function(){						
 						$j( embedPlayer ).trigger( 'jsListenerEvent', args );
 					};					
 					_this.addJsListener( embedPlayer, listenerString, listenEventName);
 				};
 				
-				// Identical to non-iframe sendNotification
+				// sendNotification method export: 
 				embedPlayer.sendNotification = function( notificationName, notificationData ){
 					_this.sendNotification( embedPlayer, notificationName, notificationData);
-				};
-				
+				};				
 			});
 		},
 		

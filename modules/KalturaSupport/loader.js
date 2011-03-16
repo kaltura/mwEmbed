@@ -79,22 +79,17 @@
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
-		return $j.merge( kalturaSupportRequestSet, 
-			[ 
+		return $j.merge( kalturaSupportRequestSet,
+			[
 			  'mw.PlaylistHandlerKaltura', 
 			  'mw.PlaylistHandlerKalturaRss'
-			]);
+			] );
 	});
 
 	// Check if the document has kaltura objects ( for fall forward support ) 
 	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){	
 		// Local callback function runs KalturaKDPCallbackReady and rewriteDoneCallback
 		var callback = function(){
-			// TODO move KalturaKDPCallbackReady into KDP mapping 
-			if( window.KalturaKDPCallbackReady ){
-				window.KalturaKDPCallbackReady();
-			}
-			
 			if( rewriteDoneCallback ){
 				rewriteDoneCallback();
 			}
@@ -103,13 +98,13 @@
 		var kalturaObjectPlayerList = mw.getKalturaPlayerList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
 		if( ! kalturaObjectPlayerList.length ) {
-			// no players to rewrite ( and don't run  window.KalturaKDPCallbackReady )
+			// No players to rewrite ( and don't run  window.KalturaKDPCallbackReady )
 			rewriteDoneCallback();
 			return ;
 		}else {
 			
 			// Check if we are NOT rewriting tags: 
-			if( !mw.isHTML5FallForwardNative() ){
+			if( !mw.isHTML5FallForwardNative() ) {
 				restoreKalturaKDPCallback();
 				return ;
 			}

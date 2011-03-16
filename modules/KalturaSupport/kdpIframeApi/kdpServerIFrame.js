@@ -42,9 +42,9 @@ kdpServerIframe.prototype = {
 		this.monitorAttributeChanges()
 		
 		// Fire the "ready"
-		_this.postMessage({
+		_this.postMessage( {
 			'callbackName' : 'jsCallbackReady'
-		});
+		} );
 	},
 	monitorAttributeChanges: function(){
 		var _this = this;	

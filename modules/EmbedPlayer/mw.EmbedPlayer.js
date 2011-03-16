@@ -296,10 +296,19 @@ EmbedPlayerManager.prototype = {
 				// Trigger the newEmbedPlayerEvent for embedPlayer interface
 				mw.log("EmbedPlayer::addPlayerElement :trigger " + playerInterface.id );
 				$j( mw ).trigger ( 'newEmbedPlayerEvent', $j( '#' + playerInterface.id ).get(0) );
-
-				// Issue the checkPlayerSources call to the new player
-				// interface: make sure to use the element that is in the DOM:
-				$j( '#' + playerInterface.id ).get(0).checkPlayerSources();
+				
+				
+				//
+				// Allow modules to block player build out
+				//
+				// this is needed in cases where you need to do an asyncronus player interface
+				// setup. like iframes asyncronus announcing its ready for bindings that can 
+				// affect player setup. 
+				$j( '#' + playerInterface.id ).triggerQueueCallback( 'startPlayerBuildOut', function(){
+					// Issue the checkPlayerSources call to the new player
+					// interface: make sure to use the element that is in the DOM:
+					$j( '#' + playerInterface.id ).get(0).checkPlayerSources();
+				});
 			}
 
 			if( waitForMeta && mw.getConfig('EmbedPlayer.WaitForMeta' ) ) {
