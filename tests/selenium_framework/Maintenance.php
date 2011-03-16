@@ -849,7 +849,7 @@ abstract class Maintenance {
 		} else if ( defined("MW_CONFIG_FILE") ) {
 			$settingsFile = MW_CONFIG_FILE;
 		} else {
-			$settingsFile = "$IP/LocalSettings.php";
+			$settingsFile = "$IP/selenium_framework/LocalSettings.php";
 		}
 		if ( isset( $this->mOptions['wiki'] ) ) {
 			$bits = explode( '-', $this->mOptions['wiki'] );
