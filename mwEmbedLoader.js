@@ -98,7 +98,7 @@ if( ! mw.getConfig ){
 			if( typeof defaultValue != 'undefined' ){
 				return defaultValue;
 			}
-			return false;
+			return null;
 		} else {
 			return preMwEmbedConfig[ name ];
 		}
@@ -295,7 +295,7 @@ function kOverideSwfObject(){
 					_this.originalWrite( targetId );
 				}
 			});
-		}
+		};
 	}
 	// SWFObject v 2.0
 	if( window['swfobject'] && !window['swfobject']['originalEmbedSWF'] ){
@@ -362,9 +362,10 @@ function kCheckAddScript(){
 	if( mw.getConfig('Kaltura.ServiceUrl') == 'http://www.kaltura.com' ){
 		mw.setConfig( 'Kaltura.UseManifestUrls', true);
 		mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
-		mw.setConfig( 'Kaltura.IframeRewrite', true );
+		if( mw.getConfig( 'Kaltura.IframeRewrite' !== false ) ) {
+			mw.setConfig( 'Kaltura.IframeRewrite', true );
+		}
 	}	
-	
 	
 	// If user javascript is using mw.ready add script
 	if( preMwEmbedReady.length ) {
