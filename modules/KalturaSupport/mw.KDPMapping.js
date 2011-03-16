@@ -74,7 +74,7 @@
 			mw.log( "KDPMapping::addIframePlayerHooksClient" );
 
 			$j( mw ).bind( 'AddIframePlayerMethods', function( event, playerMethods ){
-				playerMethods.push( 'addJsListener',  'sendNotification', 'setKDPAttribute' );
+				playerMethods.push( 'addJsListener', 'removeJsListener', 'sendNotification', 'setKDPAttribute' );
 				// NOTE we don't export evaluate since we need to run it synchronously
 			});
 			
