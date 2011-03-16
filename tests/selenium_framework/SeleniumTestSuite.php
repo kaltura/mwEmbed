@@ -3,8 +3,8 @@
 abstract class SeleniumTestSuite extends PHPUnit_Framework_TestSuite {
 	private $selenium;
 	private $isSetUp = false;
-	private $loginBeforeTests = true;
-	private $triggerClientTestResources = true;
+	private $loginBeforeTests = false;
+	private $triggerClientTestResources = false;
 
 	// Do not add line break after test output
 	const CONTINUE_LINE = 1;
