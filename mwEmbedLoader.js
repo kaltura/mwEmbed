@@ -115,9 +115,8 @@ if( !mw.ready){
 			return ;
 		}		
 		preMwEmbedReady.push( fn );		
-	}
+	};
 }
-
 
 // Set kaltura api to true by default: 
 if( !mw.getConfig('EmbedPlayer.EnableIframeApi') ){
@@ -125,6 +124,8 @@ if( !mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 }
 // Set default LoadScriptForVideoTags option: 
 mw.setConfig( 'Kaltura.LoadScriptForVideoTags', true );
+// Set "use flash on android" default option: 
+mw.setConfig('EmbedPlayer.UseFlashOnAndroid', true);
 
 // Set url based config:
 if( document.URL.indexOf('forceMobileHTML5') != -1 ){
@@ -254,7 +255,7 @@ function kOverideSwfObject(){
 			var embedPlayerAttributes = {
 				'kwidgetid' : kEmbedSettings.wid,
 				'kuiconfid' : kEmbedSettings.uiconf_id
-			}
+			};
 			var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceTargetId ).width();
 			var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceTargetId ).height();
 			
@@ -279,7 +280,7 @@ function kOverideSwfObject(){
 				.embedPlayer( embedPlayerAttributes );
 			}
 		});
-	}
+	};
 	// SWFObject v 1.5 
 	if( window['SWFObject']  && !window['SWFObject'].prototype['originalWrite']){
 		window['SWFObject'].prototype['originalWrite'] = window['SWFObject'].prototype.write;
@@ -311,7 +312,7 @@ function kOverideSwfObject(){
 				} else {
 					// Else call the original EmbedSWF with all its arguments 
 					window['swfobject']['originalEmbedSWF']( swfUrlStr, replaceElemIdStr, widthStr,
-							heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn )
+							heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn );
 				}
 			});
 		}
@@ -353,6 +354,18 @@ function kCheckAddScript(){
 	if( ranKCheckAddScript )
 		return ;
 	ranKCheckAddScript = true;
+	
+	
+	/**
+	 * Hard code some default if using the kaltura SAS
+	 */
+	if( mw.getConfig('Kaltura.ServiceUrl') == 'http://www.kaltura.com' ){
+		mw.setConfig( 'Kaltura.UseManifestUrls', true);
+		mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
+		mw.setConfig( 'Kaltura.IframeRewrite', true );
+	}	
+	
+	
 	// If user javascript is using mw.ready add script
 	if( preMwEmbedReady.length ) {
 		kAddScript();
