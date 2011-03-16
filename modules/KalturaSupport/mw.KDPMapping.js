@@ -238,13 +238,15 @@
 						callback( embedPlayer.currentTime,  embedPlayer.id );
 					})
 					break;	
-				case 'entryReady': 
-					$j( embedPlayer ).bind( 'KalturaSupport.MetaDataReady', function( event, meta ) {				
-						callback( meta );
+				case 'entryReady':
+					$j( embedPlayer ).bind( 'KalturaSupport.MetaDataReady', function( event, meta ) {
+						callback( meta , embedPlayer.id );
 					});
 					break;
 				case 'mediaReady':
-					// TODO: When the media is ready to be played
+					$( embedPlayer ).bind( 'playerReady', function() {
+						callback( {}, embedPlayer.id );
+					});
 					break;
 				default:
 					mw.log("Error unkown JsListener: " + eventName );
