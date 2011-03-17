@@ -39,7 +39,7 @@ kdpServerIframe.prototype = {
 		// Set up the default attributes: 
 		this.sendPlayerAttributes();
 
-		this.monitorAttributeChanges()
+		this.monitorAttributeChanges();
 		
 		// Fire the "ready"
 		_this.postMessage( {
@@ -49,10 +49,10 @@ kdpServerIframe.prototype = {
 	monitorAttributeChanges: function(){
 		var _this = this;	
 		// Sends attributes across the iframe at a set interval ( for now 250ms / monitor rate )
-		setTimeout(function(){	
+		setTimeout( function(){	
 			_this.sendPlayerAttributes();
 			_this.monitorAttributeChanges();
-		}, 250);
+		}, 250 );
 	},
 	/**
 	 * Handle a message 

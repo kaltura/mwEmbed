@@ -35,7 +35,7 @@ mw.KAds.prototype = {
 		_this.loadAds( function(){
 			mw.log("All ads have been loaded");
 			callback();
-		})			
+		});
 	},
 	
 	// Load all the ads per the $adConfig
@@ -172,4 +172,3 @@ mw.KAds.prototype = {
 		};
 	}
 };
-

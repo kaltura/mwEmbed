@@ -80,9 +80,10 @@
 				$j( playerProxy ).bind('jsListenerEvent', function(event, globalFuncName, listenerArgs){
 					window[ globalFuncName ].apply( this, listenerArgs );
 				});
+				
 				// Directly build out the evaluate call on the playerProxy
 				playerProxy.evaluate = function( objectString ){
-					return _this.evaluate( playerProxy, objectString);					
+					return _this.evaluate( playerProxy, objectString);			
 				};
 				
 				// Listen for the proxyReady event from the server: 
@@ -108,9 +109,11 @@
 			$j( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){
 
 				embedPlayer.addJsListener = function( eventName, globalFuncName){					
-					var args = [ globalFuncName, $j.makeArray( arguments ) ];
+					
+					
 					var listenEventName = 'gcb_' + _this.getListenerId( embedPlayer, eventName, globalFuncName); 					
 					window[ listenEventName ] = function(){						
+						var args = [ globalFuncName, $j.makeArray( arguments ) ];
 						$j( embedPlayer ).trigger( 'jsListenerEvent', args );
 					};					
 					_this.addJsListener( embedPlayer, eventName, listenEventName);
@@ -124,7 +127,8 @@
 				// sendNotification method export: 
 				embedPlayer.sendNotification = function( notificationName, notificationData ){
 					_this.sendNotification( embedPlayer, notificationName, notificationData);
-				};				
+				};
+				
 			});
 		},
 		
