@@ -11,7 +11,7 @@
 		return this.init();
 	};
 	mw.KDPMapping.prototype = {
-		// global list of kdp listneing callbacks
+		// global list of kdp listening callbacks
 		listenerList: {},
 		/**
 		* Add Player hooks for supporting Kaltura api stuff
@@ -272,8 +272,9 @@
 		 * Emulates kalatura removeJsListener function
 		 */
 		removeJsListener: function( embedPlayer, eventName, callbackName ){
-			mw.log("KDPMapping:: removeJsListener: " + eventName + ' cb:' + callbackFuncName );
-			_this.listenerList [ this.getListenerId( embedPlayer, eventName, callbackName) ] = null;				
+			var _this = this;
+			var listenerId = this.getListenerId( embedPlayer, eventName, callbackName) ;
+			_this.listenerList [  listenerId ] = null;
 		},
 		
 

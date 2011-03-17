@@ -53,8 +53,8 @@ mw.IFramePlayerApiClient.prototype = {
 	'addPlayerReciveApi': function(){
 		var _this = this;		
 
-		$j.receiveMessage( function( event ){			
-			_this.hanldeReciveMsg( event )
+		$j.receiveMessage( function( event ){
+			_this.hanldeReciveMsg( event );
 		}, this.iframeServer);
 	},
 	'addIframeFullscreenBinding': function(){
@@ -65,7 +65,7 @@ mw.IFramePlayerApiClient.prototype = {
 			'width' : $j( _this.iframe ).width(),
 			'height' : $j( _this.iframe ).height(),
 			'position' : null
-		}
+		};
 		
 		// Add a local scope variable to register 
 		// local scope fullscreen calls on orientation change
@@ -128,7 +128,7 @@ mw.IFramePlayerApiClient.prototype = {
 	 */
 	'hanldeReciveMsg': function( event ){
 		var _this = this;
-		mw.log('IFramePlayerApiClient::hanldeReciveMsg:' + event.data );
+		//mw.log('IFramePlayerApiClient::hanldeReciveMsg:' + event.data );
 		
 		// Decode the message 
 		var msgObject = JSON.parse( event.data );
@@ -136,7 +136,7 @@ mw.IFramePlayerApiClient.prototype = {
 		
 		// check if the message object is for "this" player
 		if( msgObject.playerId !=  _this.playerProxy.id ){
-			//mw.log(' hanldeReciveMsg (skiped ) ' + msgObject.playerId + ' != ' + _this.playerProxy.id );
+			// mw.log(' hanldeReciveMsg (skiped ) ' + msgObject.playerId + ' != ' + _this.playerProxy.id );
 			return ;
 		}
 		
@@ -176,9 +176,9 @@ mw.IFramePlayerApiClient.prototype = {
 		}
 	},
 	'postMessage': function( msgObject ){
-		mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObject ) + 
+		/*mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObject ) + 
 				' iframe: ' +  this.iframe + ' cw:' + this.iframe.contentWindow + 
-				' src: ' + mw.absoluteUrl( $j( this.iframe ).attr('src')  ) );
+				' src: ' + mw.absoluteUrl( $j( this.iframe ).attr('src')  ) );*/
 		$j.postMessage(
 			JSON.stringify( msgObject ), 
 			mw.absoluteUrl( $j( this.iframe ).attr('src') ), 
