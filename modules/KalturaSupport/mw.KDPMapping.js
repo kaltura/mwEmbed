@@ -39,7 +39,6 @@
 				embedPlayer.addJsListener = function(listenerString, globalFuncName){
 					_this.addJsListener( embedPlayer, listenerString, globalFuncName );
 				};
-				
 				embedPlayer.removeJsListener = function(listenerString, callbackName){
 					_this.removeJsListener( embedPlayer, listenerString, callbackName );
 				};
@@ -75,7 +74,6 @@
 
 			$j( mw ).bind( 'AddIframePlayerMethods', function( event, playerMethods ){
 				playerMethods.push( 'addJsListener', 'removeJsListener', 'sendNotification', 'setKDPAttribute' );
-				// NOTE we don't export evaluate since we need to run it synchronously
 			});
 			
 			$j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {		
@@ -109,13 +107,18 @@
 			
 			$j( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){
 
-				embedPlayer.addJsListener = function( listenerString, globalFuncName){					
+				embedPlayer.addJsListener = function( eventName, globalFuncName){					
 					var args = [ globalFuncName, $j.makeArray( arguments ) ];
-					var listenEventName = 'gcb_' + listenerString + '_'+ globalFuncName; 					
+					var listenEventName = 'gcb_' + _this.getListenerId( embedPlayer, eventName, globalFuncName); 					
 					window[ listenEventName ] = function(){						
 						$j( embedPlayer ).trigger( 'jsListenerEvent', args );
 					};					
-					_this.addJsListener( embedPlayer, listenerString, listenEventName);
+					_this.addJsListener( embedPlayer, eventName, listenEventName);
+				};
+				
+				embedPlayer.removeJsListener = function( eventName, globalFuncName){
+					var listenEventName = 'gcb_' + _this.getListenerId( embedPlayer, eventName, globalFuncName);
+					_this.removeJsListener( embedPlayer, eventName, listenEventName );
 				};
 				
 				// sendNotification method export: 
@@ -196,7 +199,7 @@
 		 */
 		addJsListener: function( embedPlayer, eventName, callbackName ){
 			var _this = this;
-			mw.log("KDPMapping:: addJsListener: " + eventName + ' cb:' + callbackName );
+			mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
 			this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName)  ] = window[ callbackName ];
 			var callback = function(){
 				var listnerId = _this.getListenerId( embedPlayer, eventName, callbackName) ;
@@ -265,18 +268,19 @@
 					mw.log("Error unkown JsListener: " + eventName );
 			}				
 		},
-		getListenerId: function(  embedPlayer, eventName, callbackName ){
-			return embedPlayer.id + '_' + eventName + '_' + callbackName;
-		},
 		/**
 		 * Emulates kalatura removeJsListener function
 		 */
 		removeJsListener: function( embedPlayer, eventName, callbackName ){
-			var _this = this;
 			var listenerId = this.getListenerId( embedPlayer, eventName, callbackName) ;
-			_this.listenerList [  listenerId ] = null;
+			mw.log("KDPMapping:: removeJsListener " + listenerId );
+			this.listenerList [  listenerId ] = null;
 		},
 		
+		// Generate an id for a listener based on embedPlayer, eventName and callbackName
+		getListenerId: function(  embedPlayer, eventName, callbackName ){
+			return embedPlayer.id + '_' + eventName + '_' + callbackName;
+		},
 
 		/**
 		 * Master send action list: 
