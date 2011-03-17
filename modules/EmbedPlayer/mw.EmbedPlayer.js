@@ -1317,7 +1317,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	init: function( element, customAttributes ) {
 		var _this = this;
-		mw.log('EmbedPlayer: initEmbedPlayer: ' + $j(element).width() );
+		mw.log('EmbedPlayer: initEmbedPlayer: width:' + $j(element).width() );
 		// Set customAttributes if unset:
 		if ( !customAttributes ) {
 			customAttributes = { };
@@ -1342,7 +1342,8 @@ mw.EmbedPlayer.prototype = {
 			if( this[ attr ] == "false" ) this[attr] = false;
 			if( this[ attr ] == "true" ) this[attr] = true;
 		}
-		//
+		// Set the plugin id
+		this.pid = 'pid_' + this.id;
 
 
 		if( this.apiTitleKey ){
@@ -1408,8 +1409,6 @@ mw.EmbedPlayer.prototype = {
 
 		// Set the player size attributes based loaded video element:
 		this.loadPlayerSize( element );
-		// Set the plugin id
-		this.pid = 'pid_' + this.id;
 
 		// Grab any innerHTML and set it to missing_plugin_html
 		// NOTE: we should strip "source" tags instead of checking and skipping
@@ -2421,6 +2420,10 @@ mw.EmbedPlayer.prototype = {
 	},
 	
 	isPersistentNativePlayer: function(){
+		// Since we check this early on sometimes the pid has not yet been updated: 
+		if( $j('#' + this.pid ).length == 0 ){
+			return $j('#' + this.id ).hasClass('persistentNativePlayer');		
+		}
 		return $j('#' + this.pid ).hasClass('persistentNativePlayer');		
 	},
 

@@ -23,7 +23,7 @@ $exportedJsConfig= array(
 	'Kaltura.IframeRewrite' => $wgKalturaIframeRewrite,
 	'EmbedPlayer.EnableIframeApi'  => $wgEnableIframeApi,
 	'EmbedPlayer.EnableIpadHTMLControls' => $wgEnableIpadHTMLControls,
-	'EmbedPlayer.UseFlashOnAndroid' => 'true'
+	'EmbedPlayer.UseFlashOnAndroid' => true
 );
 // Append Custom config: 
 foreach( $exportedJsConfig as $key => $val ){
@@ -31,7 +31,7 @@ foreach( $exportedJsConfig as $key => $val ){
 	$loaderJs .= "mw.setConfig('". addslashes( $key )."', '" . addslashes( $val ) . "');\n";
 }
 
-if($wgEnableScriptDebug) {
+if($wgEnableScriptDebug === true) {
     $loaderJs .= 'SCRIPT_FORCE_DEBUG = true;';
 }
 

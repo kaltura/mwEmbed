@@ -6,10 +6,10 @@
  */
 
 $wgEnableScriptDebug = true;
-$wgKalturaIframeRewrite = 'true';
-$wgEnableIframeApi = 'true';
-$wgEnableIpadHTMLControls = 'true';
-$wgKalturaUseManifestUrls = 'true';
+$wgKalturaIframeRewrite = true;
+$wgEnableIframeApi = true;
+$wgEnableIpadHTMLControls = true;
+$wgKalturaUseManifestUrls = true;
 
 $wgMwEmbedEnabledModules = array( 'EmbedPlayer', 'KalturaSupport', 'AdSupport', 'Playlist', 'TimedText' );
 

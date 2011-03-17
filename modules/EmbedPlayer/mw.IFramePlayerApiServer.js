@@ -61,16 +61,19 @@ mw.IFramePlayerApiServer.prototype = {
 		this.addIframeSender();
 		$j( mw ).trigger( 'newIframePlayerServerSide', [ embedPlayer ] );
 				
-		// Block until we receive prePlayerProxyListnersDone event
-		$j( embedPlayer ).bind( 'startPlayerBuildOut', function(event, callback ){
-			// Once the iframe client is done adding its pre-player listeners the client calls:
-			// proxyAcknowledgment
-			embedPlayer.proxyAcknowledgment = function(){
-				callback();
-			};
-			// Trigger the proxyReady event ( will add all the prePlayerProxy listeners 
-			$j( embedPlayer ).trigger( 'proxyReady' );
-		});
+		// Block until we receive prePlayerProxyListnersDone event ( when we have a parent url 
+		// and we are not in fullscreen iframe ( no parent ) 
+		if( this.getParentUrl() && mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
+			$j( embedPlayer ).bind( 'startPlayerBuildOut', function(event, callback ){
+				// Once the iframe client is done adding its pre-player listeners the client calls:
+				// proxyAcknowledgment
+				embedPlayer.proxyAcknowledgment = function(){
+					callback();
+				};
+				// Trigger the proxyReady event ( will add all the prePlayerProxy listeners 
+				$j( embedPlayer ).trigger( 'proxyReady' );
+			});
+		}
 	},
 	
 	/**

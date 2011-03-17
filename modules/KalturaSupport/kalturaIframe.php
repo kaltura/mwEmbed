@@ -687,6 +687,10 @@ class kalturaIframe {
 				}
 			}
 
+			// Remove the fullscreen option if we are in an iframe: 
+			if( mw.getConfig('EmbedPlayer.IsFullscreenIframe')){
+				mw.setConfig('EmbedPlayer.EnableFullscreen', false );
+			}
 			// For testing limited capacity browsers
 			//var kIsHTML5FallForward = function(){ return false };
 			//var kSupportsFlash = function(){ return false };

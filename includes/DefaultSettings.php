@@ -52,12 +52,12 @@ $wgKalturaServiceBase = '/api_v3/index.php?service=';
 // Default expire time for ui conf api queries in seconds 
 $wgKalturaUiConfCacheTime = 600;
 
-$wgKalturaIframeRewrite = 'false';
+$wgKalturaIframeRewrite = false;
 
 $wgEnableIframeApi = false;
 $wgEnableIpadHTMLControls = false;
 
-$wgKalturaUseManifestUrls = 'true';
+$wgKalturaUseManifestUrls = true;
 
 /*********************************************************
  * Include local settings override:

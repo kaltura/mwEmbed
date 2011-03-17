@@ -2594,7 +2594,7 @@ if( window.jQuery ){
 	 * 
 	 */
 	$.fn.triggerQueueCallback = function( triggerName, triggerParam, callback ){
-		var targetObject = this;
+		var targetObject = this;		
 		// Support optional triggerParam data
 		if( !callback && typeof triggerParam == 'function' ){
 			callback = triggerParam;
