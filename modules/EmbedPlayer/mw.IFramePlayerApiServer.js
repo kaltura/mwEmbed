@@ -65,11 +65,18 @@ mw.IFramePlayerApiServer.prototype = {
 		// and we are not in fullscreen iframe ( no parent ) 
 		if( this.getParentUrl() && !mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
 			$j( embedPlayer ).bind( 'startPlayerBuildOut', function(event, callback ){
+				var proxyHandShakeComplete = false;
 				// Once the iframe client is done adding its pre-player listeners the client calls:
 				// proxyAcknowledgment
 				embedPlayer.proxyAcknowledgment = function(){
+					proxyHandShakeComplete = true;
 					callback();
 				};
+				// only wait 250ms for the handshake to come through otherwise continue: 
+				setTimeout(function(){
+					if( !proxyHandShakeComplete)
+						callback();
+				},250);
 				// Trigger the proxyReady event ( will add all the prePlayerProxy listeners 
 				$j( embedPlayer ).trigger( 'proxyReady' );
 			});
