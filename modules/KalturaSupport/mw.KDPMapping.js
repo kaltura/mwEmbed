@@ -210,7 +210,10 @@
 					// TODO: When we have video tag without an entry
 					break;
 				case 'kdpReady':
-					// TODO: When player is ready with entry
+					// TODO: When player is ready with entry, only happens once
+					$( embedPlayer ).bind( 'playerReady.kdpReady', function() {
+						callback( {}, embedPlayer.id );
+					});
 					break;
 				case 'volumeChanged': 
 					$j( embedPlayer ).bind('volumeChanged', function(percent){
