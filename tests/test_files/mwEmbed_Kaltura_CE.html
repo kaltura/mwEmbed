@@ -5,13 +5,15 @@
 
   <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
   
-  <script type="text/javascript" src="../ResourceLoader.php?class=window.jQuery,mwEmbed&&debug=true"></script> 
+  <script type="text/javascript" src="../../ResourceLoader.php?class=window.jQuery,mwEmbed&&debug=true"></script> 
   
   <!-- 
   <script type="text/javascript" src="http://html5.kaltura.org/js" > </script>
   -->
 
-  <script type="text/javascript"> 
+  <script type="text/javascript">
+    mw.setConfig( 'Kaltura.ServiceUrl' , 'http://test-kaltura-ce.html5video.org' );
+    mw.setConfig( 'Kaltura.CdnUrl' , 'http://test-kaltura-ce.html5video.org' ); 
     //mw.setConfig('EmbedPlayer.OverlayControls', false );
     //mw.setConfig('EmbedPlayer.KalturaAttribution', false );          
     //mw.setConfig('EmbedPlayer.LibraryPage', "http://blarg.com" );          
@@ -39,9 +41,9 @@
                   'height' : 270
                   })
                 .attr({
-                  'kentryid' : "1_4ctagbm9", //galleryClips[videoId].entryId,
-                  'kwidgetid' : "_322481", //kWidgetId,
-                  'kpartnerid' : "32248" //kPartnerId
+                  'kentryid' : "0_qv4psei4", //galleryClips[videoId].entryId,
+                  'kwidgetid' : "_100", //kWidgetId,
+                  'kpartnerid' : "100" //kPartnerId
                   })
                 );
               // Rewrite all the players on the page
