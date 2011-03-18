@@ -236,7 +236,7 @@ mw.EmbedPlayerKplayer = {
 			
 			window[ gDoneName ] = doneCallback;
 			_this.getPlayerElement().addJsListener( 'playerPlayEnd', gDoneName);
-		},500);	
+		}, 500);
 		// This is very fragile..it sucks we can't use 
 		this.getPlayerElement().addJsListener( 'playerReady', gPlayerReady );
 	},

@@ -109,8 +109,6 @@
 			$j( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){
 
 				embedPlayer.addJsListener = function( eventName, globalFuncName){					
-					
-					
 					var listenEventName = 'gcb_' + _this.getListenerId( embedPlayer, eventName, globalFuncName); 					
 					window[ listenEventName ] = function(){						
 						var args = [ globalFuncName, $j.makeArray( arguments ) ];

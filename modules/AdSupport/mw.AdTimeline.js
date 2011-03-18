@@ -321,9 +321,9 @@ mw.AdTimeline.prototype = {
 		// Setup some configuration for done state:
 		displayTarget.doneFunctions = [];
 		displayTarget.playbackDone = function(){
-			// remove notice if present: 
+			// Remove notice if present: 
 			$j('#' + _this.embedPlayer.id + '_ad_notice' ).remove();
-			// remove skip button if present: 
+			// Remove skip button if present: 
 			$j('#' + _this.embedPlayer.id + '_ad_skipBtn' ).remove();
 			
 			while( displayTarget.doneFunctions.length ){
