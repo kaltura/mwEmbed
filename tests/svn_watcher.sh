@@ -33,13 +33,13 @@ else
   lastRevision=$(echo "$currentRevision - 10" | bc)  
 fi  
   
-# Mail the SVN changes  
-svn log "$svnUrl" -r "HEAD:${lastRevision}" | mail -s "SVN changes for $svnUrl" $mailto  
   
 # Store the current revision + 1 as the last revision  
 revision=$(echo "$currentRevision + 1" | bc)  
 echo "$revision" > "$lastRevisionFile"
 
+# Mail the SVN changes  V
 cd ../
 svn up
-php tests/RunSeleniumTests.php
+#svn log "$svnUrl" -r "HEAD:${lastRevision}" | mail -s "Test run for $svnUrl" $mailto  
+php tests/RunSeleniumTests.php | mail -s "Test run for $svnUrl" $mailto
