@@ -32,4 +32,5 @@ echo "$currentRevision" > "$lastRevisionFile"
 # Mail the SVN changes
 cd ../
 svn up
-php tests/RunSeleniumTests.php | mail -s "Tested r$currentRevision for $svnUrl" $mailto
+php tests/RunSeleniumTests.php > tests/.test-results
+cat tests/.test-results | mail -s "Tested r$currentRevision for $svnUrl" $mailto
