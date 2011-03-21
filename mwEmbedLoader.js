@@ -812,7 +812,7 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
  * To support kaltura kdp mapping override
  */
 var checkForKDPCallback = function(){
-	if( typeof window.jsCallbackReady != 'undefined'){
+	if( typeof window.jsCallbackReady != 'undefined' && !window.KalturaKDPCallbackReady ){
 		window.KalturaKDPCallbackReady = window.jsCallbackReady;
 		window.jsCallbackReady = function(){			
 			window.KalturaKDPCallbackAlreadyCalled = true;

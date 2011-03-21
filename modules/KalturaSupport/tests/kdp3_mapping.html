@@ -7,9 +7,9 @@
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 	<script type="text/javascript" src="kdp3_mapping_files/swfobject.js"></script>
 	<script type="text/javascript" src="kdp3_mapping_files/prettify.js"></script>
+
 	
-	
-	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+
 	<!--<script type="text/javascript" src="http://html5.kaltura.org/js"></script>-->
 	<!--<script type="text/javascript" src="../../../mwEmbed.js"></script>-->
 	
@@ -117,6 +117,7 @@
 								'freePreviewEnd'];
 
 		function jsCallbackReady () {			
+			console.log("CALLED jsCallbackReady");
 			$("#notifications").append( 'jsCallbackReady' + "\n");
 			$('#kdp3').get(0).addJsListener("volumeChanged", "volumeChangedHandler");
 			$('#kdp3').get(0).addJsListener("playerStateChange", "playerStateChangeHandler");
@@ -305,4 +306,5 @@
 	
 </div>	
 <div id="cleardiv" style="clear: both; margin-top: 10px;"></div>
+		<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 </body></html>
