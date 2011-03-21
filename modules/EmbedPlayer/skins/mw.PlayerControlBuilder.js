@@ -108,7 +108,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Setup the controlBar container ( starts hidden ) 
 		var $controlBar = $j('<div />')
 			.addClass( 'ui-state-default ui-widget-header ui-helper-clearfix control-bar' )
-			.css( 'height', this.height )
+			.css( 'height', this.height );
 
 		// Controls are hidden by default if overlaying controls: 
 		if( _this.checkOverlayControls() ){
@@ -193,7 +193,7 @@ mw.PlayerControlBuilder.prototype = {
 					mw.log( 'Not enough space for control component:' + component_id );
 				}
 			}
-		}
+		};
 		
 		// Output components
 		for ( var component_id in this.components ) {
@@ -1150,7 +1150,7 @@ mw.PlayerControlBuilder.prototype = {
 	*
 	* @param {String} overlayContent content to be displayed
 	*/
-	displayMenuOverlay: function( overlayContent ) {
+	displayMenuOverlay: function( overlayContent, closeCallback ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		mw.log( 'displayMenuOverlay::' );
@@ -1197,6 +1197,9 @@ mw.PlayerControlBuilder.prototype = {
 		})
 		.click( function() {
 			_this.closeMenuOverlay();
+			if( closeCallback ){
+				closeCallback();
+			}
 		} )
 		.append(
 		    	$j('<span />')

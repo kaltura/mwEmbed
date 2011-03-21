@@ -32,8 +32,37 @@ mw.KWidgetSupport.prototype = {
 						var acStatus = _this.getAccessControlStatus( playerData.accessControl );
 						if( acStatus !== true ){
 							$j('.loadingSpinner').remove();
-							$j(embedPlayer).replaceWith( acStatus );
+							embedPlayer.showErrorMsg( acStatus );
 							return ;
+						}
+						// Check for preview access control and add special onEnd binding: 
+						if( playerData.accessControl.previewLength != -1 ){
+							$j( embedPlayer ).bind('ended.acpreview', function(){
+								mw.log( 'KWidgetSupport:: ended.acpreview>' );
+								// Don't run normal onend action: 
+								embedPlayer.onDoneInterfaceFlag = false;
+								var closeAcMessage = function(){
+									$j( embedPlayer ).unbind('ended.acpreview');
+									embedPlayer.stop();
+									embedPlayer.onClipDone();
+								};
+								// Display player dialog 
+								// TODO i8ln!!
+								embedPlayer.controlBuilder.displayMenuOverlay(
+									$j('<div />').append( 
+										$j('<h3 />').append( 'Free preview completed, need to purchase'),
+										$j('<span />').text( 'Access to the rest of the content is restricted' ),
+										$j('<br />'),$j('<br />'),
+										$j('<button />').attr({'type' : "button" })
+										.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
+										.append( 
+											$j('<span />').addClass( "ui-button-text" )
+											.text( 'Ok' )
+											.css('margin', '10')
+										).click( closeAcMessage )
+									), closeAcMessage
+								);
+							});
 						}
 					}					
 					
@@ -183,14 +212,11 @@ mw.KWidgetSupport.prototype = {
 		if( ac.isScheduledNow === 0 ){
 			return 'is not scheduled now';
 		}
-		if( ac.isSessionRestricted ){
+		if( ac.isSessionRestricted && ac.previewLength === -1 ){
 			return 'session restricted';
 		}
 		if( ac.isSiteRestricted ){
 			return 'site restricted';
-		}
-		if( ac.previewLength !== -1 ){
-			return 'preview not handled in library yet';
 		}
 		return true;
 	},

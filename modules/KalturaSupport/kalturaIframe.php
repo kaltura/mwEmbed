@@ -333,7 +333,6 @@ class kalturaIframe {
 		}
 		
 		$accessControl = $resultObject['accessControl'];
-		
 		// Checks if admin
 		if( $accessControl->isAdmin ) {
 			return true;
@@ -350,7 +349,7 @@ class kalturaIframe {
 		}
 
 		/* Session Restricted */
-		if($accessControl->isSessionRestricted) {
+		if( $accessControl->isSessionRestricted && $accessControl->previewLength == -1 ) {
 			$this->fatalIframeError( "No KS where KS is required", "We're sorry, access to this content is restricted.");
 		}
 

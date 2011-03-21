@@ -2131,6 +2131,7 @@ mw.EmbedPlayer.prototype = {
 			}
 			// Update the play head
 			this.updatePlayHead( this.currentTime / this.duration );
+			
 			// Update status: 
 			this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) );
 		}
@@ -2157,7 +2158,6 @@ mw.EmbedPlayer.prototype = {
 		}
 		return ;
 	},
-	
 	/**
 	 * Get missing plugin html (check for user included code)
 	 *
