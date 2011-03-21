@@ -2135,6 +2135,29 @@ mw.EmbedPlayer.prototype = {
 			this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) );
 		}
 	},
+	
+	/**
+	 * Show an error msg
+	 * @param {string} errorMsg
+	 */
+	showErrorMsg: function( errorMsg ){
+		if( this.$interface ){ 
+			this.$interface.empty();
+			$target = this.$interface; 
+		} else{
+			$target = $j(this);
+		}
+		$target.html(
+			$j('<div />').addClass('error').text(
+				errorMsg
+			)
+		);
+		if( this.isPersistentNativePlayer() ){
+			$target.show().parent().find('video').hide();
+		}
+		return ;
+	},
+	
 	/**
 	 * Get missing plugin html (check for user included code)
 	 *
@@ -2145,19 +2168,7 @@ mw.EmbedPlayer.prototype = {
 		mw.log("EmbedPlayer::showPluginMissingHTML");
 		$j('.loadingSpinner').hide();
 		if( this.mediaElement.sources.length == 0 ){
-			if( this.$interface ){ 
-				this.$interface.empty();
-				$target = this.$interface; 
-			} else{
-				$target = $j(this);
-			}
-			
-			$target.html(
-				$j('<div />').addClass('error').text(
-					gM('mwe-embedplayer-missing-source')
-				)
-			);
-			return ;
+			this.showErrorMsg( gM('mwe-embedplayer-missing-source') )
 		}
 		// Control builder ( for play button )
 		this.controlBuilder = new mw.PlayerControlBuilder( this );
