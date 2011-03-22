@@ -329,9 +329,13 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Find a compatible stream
-		for( var i = 0 ; i < flavorData.length; i ++ ) {			
+		for( var i = 0 ; i < flavorData.length; i ++ ) {	
 			var asset = flavorData[i];
 			var entryId = asset.entryId;
+
+			// if flavor status is not ready - continute to the next flavor
+			if( asset.status != 2 ) { continue; }
+
 			// Check playManifest conditional
 			if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
 

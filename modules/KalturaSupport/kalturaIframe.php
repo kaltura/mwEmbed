@@ -122,7 +122,11 @@ class kalturaIframe {
 			$this->playerAttributes['entry_id'];
 		}
 
-		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){	 
+		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
+
+			// if flavor status is not ready - continute to the next flavor
+			if( $KalturaFlavorAsset->status != 2 ) { continue; }
+			
 			if( $wgKalturaUseManifestUrls ){
 				// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
 				if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
