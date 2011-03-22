@@ -106,17 +106,27 @@ class kalturaIframe {
 			// @@TODO should probably refactor to use throw catch error system.
 			return array();
 		}
-		
+
+		// Store flavorIds for Akamai HTTP
+		$ipadFlavors = '';
+		$iphoneFlavors = '';
+
+		// Decide if to use playManifest or flvClipper URL
+		if( $wgKalturaUseManifestUrls ){
+			$flavorUrl =  $wgKalturaServiceUrl .'/p/' . $this->getPartnerId() . '/sp/' .
+			$this->getPartnerId() . '00/playManifest/entryId/' .
+			$this->playerAttributes['entry_id'];
+		} else {
+			$flavorUrl = $wgKalturaCDNUrl .'/p/' . $this->getPartnerId() . '/sp/' .
+			$this->getPartnerId() . '00/flvclipper/entry_id/' .
+			$this->playerAttributes['entry_id'];
+		}
+
 		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){	 
 			if( $wgKalturaUseManifestUrls ){
-				// New asset url using playManifest
-				$assetUrl =  $wgKalturaServiceUrl .'/p/' . $this->getPartnerId() . '/sp/' .
-				$this->getPartnerId() . '00/playManifest/entryId/' .
-				$this->playerAttributes['entry_id'];	
-
 				// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
 				if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
-					$assetUrl .= '/format/applehttp/protocol/http';
+					$assetUrl = $flavorUrl . '/format/applehttp/protocol/http';
 	
 					$sources['applembr'] = array(
 						'src' => $assetUrl . '/a.m3u8',
@@ -124,15 +134,24 @@ class kalturaIframe {
 						'data-flavorid' => 'AppleMBR'
 					);
 				} else {
-					$assetUrl .= '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/http';
+					$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/http';
 				}
 				
 			} else {
-				$assetUrl =  $wgKalturaCDNUrl .'/p/' . $this->getPartnerId() . '/sp/' . 
-					$this->getPartnerId() . '00/flvclipper/entry_id/' . 
-					$this->playerAttributes['entry_id'] . '/flavor/' . 	$KalturaFlavorAsset->id;				
+				$assetUrl =  $flavorUrl . '/flavor/' . 	$KalturaFlavorAsset->id;
 			}
-			
+
+			// Add iPad Akamai flavor to iPad flavor Ids list
+			if( strpos( $KalturaFlavorAsset->tags, 'ipadnew' ) !== false ) {
+				$ipadFlavors .= $KalturaFlavorAsset->id . ",";
+			}
+
+			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
+			if( strpos( $KalturaFlavorAsset->tags, 'iphonenew' ) !== false )
+			{
+				$ipadFlavors .= $KalturaFlavorAsset->id . ",";
+				$iphoneFlavors .= $KalturaFlavorAsset->id . ",";
+			}
 
 			if( strpos( $KalturaFlavorAsset->tags, 'iphone' ) !== false ){
 				$sources['iphone'] = array(
@@ -174,7 +193,34 @@ class kalturaIframe {
 				);
 			};
 		}
-                //echo '<pre>'; print_r($sources); exit();
+
+		$ipadFlavors = trim($ipadFlavors, ",");
+		$iphoneFlavors = trim($iphoneFlavors, ",");
+
+		// Create iPad flavor for Akamai HTTP
+		if ($ipadFlavors)
+		{
+			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/http';
+
+			$sources['ipadnew'] = array(
+				'src' => $assetUrl . '/a.m3u8',
+				'type' => 'application/vnd.apple.mpegurl',
+				'data-flavorid' => 'iPadNew'
+			);
+		}
+
+		// Create iPhone flavor for Akamai HTTP
+		if ($iphoneFlavors)
+		{
+			$assetUrl = $flavorUrl . '/flavorIds/' . $iphoneFlavors . '/format/applehttp/protocol/http';
+
+			$sources['iphonenew'] = array(
+				'src' => $assetUrl . '/a.m3u8',
+				'type' => 'application/vnd.apple.mpegurl',
+				'data-flavorid' => 'iPhoneNew'
+			);
+		}
+        //echo '<pre>'; print_r($sources); exit();
 		return $sources;
 	}
 
