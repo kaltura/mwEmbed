@@ -1450,13 +1450,8 @@ mw.EmbedPlayer.prototype = {
 	loadPlayerSize: function( element ) {
 		this.height = $j(element).css( 'height' );
 		this.width = $j(element).css( 'width' );
-		// Special check for chrome 100% with re-mapping to 32px 
-		// ( hopefully no one embeds video at 32x32 )
-		if( this.height == '32px' || this.height =='32px' ){
-			this.width = '100%';
-			this.height = '100%';
-		}
 		mw.log('EmbedPlayer::loadPlayerSize: css size:' + this.width + ' h: '  + this.height);
+	
 		
 		// Set to parent size ( resize events will cause player size updates)
 		if( this.height.indexOf('100%') != -1 || this.width.indexOf('100%') != -1 ){

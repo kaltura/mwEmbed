@@ -472,7 +472,7 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		} );
 	},
-	// display a fullscreen tip if configured to do and the browser supports it. 
+	// Display a fullscreen tip if configured to do and the browser supports it. 
 	displayFullscreenTip: function(){
 		var _this = this;
 		// Mobile devices don't have f11 key 
