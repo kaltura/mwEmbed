@@ -521,6 +521,7 @@ mediaSource.prototype = {
 	 * MediaSource constructor:
 	 */
 	init : function( element ) {
+		var _this = this;
 		// mw.log('EmbedPlayer::adding mediaSource: ' + element);
 		this.src = $j( element ).attr( 'src' );
 
