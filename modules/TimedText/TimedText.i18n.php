@@ -41,6 +41,7 @@ $messages['en'] = array(
 	'mwe-timedtext-layout-off' => 'Hide subtitles',
 	'mwe-timedtext-loading-text' => 'Loading text ...',
 	'mwe-timedtext-key-language' => '$1, $2',
+	'mwe-timedtext-untitled' => 'Untitled track',
 	'mwe-timedtext-textcat-cc' => 'Captions',
 	'mwe-timedtext-textcat-sub' => 'Subtitles',
 	'mwe-timedtext-textcat-tad' => 'Audio description',

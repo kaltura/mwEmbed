@@ -13,43 +13,6 @@
 
 mw.includeAllModuleMessages();
 
-/**
- * The base source attribute checks also see:
- * http://dev.w3.org/html5/spec/Overview.html#the-source-element
- */
-mw.setDefaultConfig( 'EmbedPlayer.SourceAttributes', [
-	// source id
-	'id',
-
-	// media url
-	'src',
-
-	// Title string for the source asset
-	'title',
-
-	// boolean if we support temporal url requests on the source media
-	'URLTimeEncoding',
-
-	// Media has a startOffset ( used for plugins that
-	// display ogg page time rather than presentation time
-	'startOffset',
-
-	// A hint to the duration of the media file so that duration
-	// can be displayed in the player without loading the media file
-	'durationHint',
-
-	// Media start time
-	'start',
-
-	// Media end time
-	'end',
-
-	// If the source is the default source
-	'default',
-
-	// titleKey ( used for api lookups )
-	'titleKey'
-] );
 
 /**
  * Adds jQuery binding for embedPlayer
@@ -578,7 +541,10 @@ mediaSource.prototype = {
 				this[ attr ] = attr_value;
 			}
 		}
-
+		// Normalize "label" to "title" ( label is the actual spec so use that over title ) 
+		if( this.label ){
+			this.title = this.label;
+		}
 
 		// Set the content type:
 		if ( $j( element ).attr( 'type' ) ) {

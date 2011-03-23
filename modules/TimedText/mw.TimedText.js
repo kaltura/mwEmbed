@@ -480,16 +480,15 @@ mw.includeAllModuleMessages();
 			// Check if any source matches our "local"
 			for( var i=0; i < this.textSources.length; i++ ) {
 				var source = this.textSources[ i ];
-                                if (!source.srclang)
-                                  continue;
-                                
-				if( this.config.userLanugage &&
+				                
+				if( this.config.userLanugage && source.srclang &&
 					this.config.userLanugage == source.srclang.toLowerCase() ) {
 					// Check for category if available
 					this.enableSource( source );
 					return ;
 				}
 			}
+			
 			// If no userLang, source try enabling English:
 			if( this.enabledSources.length == 0 ) {
 				for( var i=0; i < this.textSources.length; i++ ) {
@@ -500,6 +499,7 @@ mw.includeAllModuleMessages();
 					}
 				}
 			}
+			
 			// If still no source try the first source we get;
 			if( this.enabledSources.length == 0 ) {
 				for( var i=0; i < this.textSources.length; i++ ) {
@@ -509,6 +509,7 @@ mw.includeAllModuleMessages();
 				}
 			}
 		},
+		
 		/**
 		 * Enalbe a source and update the currentLangKey 
 		 * @param source
@@ -629,7 +630,7 @@ mw.includeAllModuleMessages();
 			if( _this.textSources.length != 0 ) {
 				$menu.append(
 					$j.getLineItem( gM( 'mwe-timedtext-choose-text'), 'comment' ).append(
-						_this.getLanguageMenu()
+						_this.getTrackListMenu()
 					),
 						// Layout Menu option
 					$j.getLineItem( gM( 'mwe-timedtext-layout' ), 'image' ).append(
@@ -804,6 +805,14 @@ mw.includeAllModuleMessages();
 					}
 				);
 			}
+			// If no srclang or title show as untitled source
+			return $j.getLineItem(
+					gM('mwe-timedtext-untitled'),
+					source_icon,
+					function() {
+						_this.selectTextSource( source );
+					}
+				);
 		},
 
 		/**
@@ -937,7 +946,7 @@ mw.includeAllModuleMessages();
 		* Builds the language source list menu
 		* checks all text sources for category and language key attribute
 		*/
-		getLanguageMenu: function() {
+		getTrackListMenu: function() {
 			var _this = this;
 
 			// See if we have categories to worry about
@@ -996,10 +1005,12 @@ mw.includeAllModuleMessages();
 				$langMenu.append( sourcesWithoutCategory[i] );
 			}
 
-			//Add in the "add text" to the end of the interface:
-			$langMenu.append(
-				_this.getLiAddText()
-			);
+			// Add in the "add text" to the end of the interface: (only works for mediaWiki case )
+			if( this.embedPlayer.apiTitleKey ) {
+				$langMenu.append(
+					_this.getLiAddText()
+				);
+			}
 
 			return $langMenu;
 		},

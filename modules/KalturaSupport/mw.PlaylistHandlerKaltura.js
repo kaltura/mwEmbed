@@ -60,7 +60,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			_this.includeInLayout = ( $uiConf.find("uivars [key='playlist.includeInLayout']").attr('value') == 'false' )? false : true;
 			
-			// force autoContoinue if there is no interface 
+			// Force autoContoinue if there is no interface 
 			if( !_this.includeInLayout ){
 				_this.autoContinue = true;
 			}

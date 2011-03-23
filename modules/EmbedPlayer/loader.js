@@ -115,6 +115,9 @@
 
 		// Title string for the source asset
 		'title',
+		
+		// The html5 spec uses label instead of 'title' for naming sources
+		'label',
 
 		// boolean if we support temporal url requests on the source media
 		'URLTimeEncoding',
