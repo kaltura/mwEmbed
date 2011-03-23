@@ -185,9 +185,11 @@ mw.EmbedPlayerKplayer = {
 
 	onDurationChange : function(data, id) {
 		mw.log("KPlayer::onDurationChange: " + data.newValue);
-		// update the duration:
-		this.duration = data.newValue;
-		$j(this).trigger('durationchange');
+		// update the duration ( only if not in url time encoding mode:
+		if( !this.supportsURLTimeEncoding() ){
+			this.duration = data.newValue;
+			$j(this).trigger('durationchange');
+		}
 	},
 
 	/**
