@@ -485,7 +485,7 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		
 		// OSX has a different short cut than windows and liux
-		var toolTipMsg = ( navigator.userAgent.toLowerCase().indexOf('Mac OS X') != -1 )?
+		var toolTipMsg = ( navigator.userAgent.indexOf('Mac OS X') != -1 )?
 				gM( 'mwe-embedplayer-fullscreen-tip-osx') : 
 				gM( 'mwe-embedplayer-fullscreen-tip');
 		
