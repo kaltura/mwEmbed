@@ -61,8 +61,9 @@ mw.setDefaultConfig ( {
 	'loader.groupStrategy' : 'module',
 
 	// Default appendJS string ( not used outside of wikimedia gadget system )
-	'Mw.AppendWithJS' : false
-
+	'Mw.AppendWithJS' : false,
+	
+	'Mw.UserPrefrenceExpireDays' : 7
 } );
 
 /**
