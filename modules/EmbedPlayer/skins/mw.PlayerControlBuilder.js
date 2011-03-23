@@ -480,7 +480,7 @@ mw.PlayerControlBuilder.prototype = {
 			return ;
 		}
 		// Safari does not have a DOM fullscreen ( no subtitles, no controls )
-		if( $.browser.safari && /chrome/.test(navigator.userAgent.toLowerCase()) ){
+		if( $j.browser.safari && ! /chrome/.test( navigator.userAgent.toLowerCase() ) ){
 			return ;
 		}
 		
