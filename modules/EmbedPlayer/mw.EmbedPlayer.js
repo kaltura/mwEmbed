@@ -534,13 +534,12 @@ mediaSource.prototype = {
 
 		var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes' );
 
-		for ( var i = 0; i < sourceAttr.length; i++ ) { // array loop:
-			var attr = sourceAttr[ i ];
-			var attr_value = element.getAttribute( attr );
-			if ( attr_value ) {
-				this[ attr ] = attr_value;
+		$j.each(sourceAttr, function(inx, attr){ // array loop:
+			if ( $j( element ).attr( attr ) ) {
+				_this[ attr ] = $j( element ).attr( attr );
 			}
-		}
+		});
+
 		// Normalize "label" to "title" ( label is the actual spec so use that over title ) 
 		if( this.label ){
 			this.title = this.label;
