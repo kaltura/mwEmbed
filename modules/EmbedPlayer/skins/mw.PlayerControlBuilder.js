@@ -410,6 +410,7 @@ mw.PlayerControlBuilder.prototype = {
 			'width' : $j( window ).width(),
 			'height' : $j( window ).height()
 		}, true, function(){
+			_this.displayFullscreenTip();
 			// Trigger the enter fullscreen event 
 			$j( _this.embedPlayer ).trigger( 'onOpenFullScreen' );
 		});
@@ -470,6 +471,50 @@ mw.PlayerControlBuilder.prototype = {
 				_this.restoreWindowPlayer();
 			}
 		} );
+	},
+	// display a fullscreen tip if configured to do and the browser supports it. 
+	displayFullscreenTip: function(){
+		var _this = this;
+		// Mobile devices don't have f11 key 
+		if( mw.isMobileDevice() ){
+			return ;
+		}
+		// Safari does not have a DOM fullscreen ( no subtitles, no controls )
+		if( $.browser.safari && /chrome/.test(navigator.userAgent.toLowerCase()) ){
+			return ;
+		}
+		
+		// OSX has a different short cut than windows and liux
+		var toolTipMsg = ( navigator.userAgent.toLowerCase().indexOf('Mac OS X') != -1 )?
+				gM( 'mwe-embedplayer-fullscreen-tip-osx') : 
+				gM( 'mwe-embedplayer-fullscreen-tip');
+		
+		var $targetTip = this.doWarningBindinng( 'EmbedPlayer.FullscreenTip', 
+			$('<h3/>').html( 
+				toolTipMsg
+			)
+		);
+		
+		// Display the target warning: 
+		$targetTip.show(); 
+		
+		var hideTip = function(){ 
+			mw.setConfig('EmbedPlayer.FullscreenTip', false );
+			$targetWarning.fadeOut('fast'); 
+		};
+		
+		// Hide fullscreen tip if:
+		// We leave fullscreen, 
+		$( this.embedPlayer ).bind( 'onCloseFullScreen', hideTip );
+		// After 5 seconds,
+		setTimeout( hideTip, 5000 );
+		// or if we catch an f11 button press
+		$(document).keyup( function( event ){
+			if( event.keyCode == 122 ){
+				hideTip();
+			}
+			return true;
+		})
 	},
 
 	/**
@@ -871,9 +916,61 @@ mw.PlayerControlBuilder.prototype = {
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
-
-		// make sure the
-
+		// make sure the player is large enough 
+		if( embedPlayer.getWidth() < 200 ){
+			return false;
+		}
+		// Add the targetWarning: 
+		$targetWarning = $('<div />')
+		.attr( {
+			'id': "warningOverlay_" + embedPlayer.id
+		} )
+		.addClass( 'ui-state-highlight ui-corner-all' )
+		.css({
+			'position' : 'absolute',
+			'display' : 'none',
+			'background' : '#FFF',
+			'color' : '#111',
+			'top' : '10px',
+			'left' : '10px',
+			'right' : '10px',
+			'padding' : '4px'
+		})
+		.html( warningMsg )
+	
+		$j( embedPlayer ).append(
+			$targetWarning 
+		);
+	
+		$targetWarning.append(
+			$('<br />')
+		);
+	
+		$targetWarning.append(
+			$( '<input />' )
+			.attr({
+				'id' : 'ffwarn_' + embedPlayer.id,
+				'type' : "checkbox",
+				'name' : 'ffwarn_' + embedPlayer.id
+			})
+			.click( function() {
+				mw.log("WarningBindinng:: set " + preferenceId + ' to hidewarning ' );
+				// Set up a cookie for 30 days:
+				$j.cookie( preferenceId, 'hidewarning', { expires: 30 } );
+				// Set the current instance
+				mw.setConfig( preferenceId, false );
+				$( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
+				// set the local prefrence to false
+				_this.addWarningFlag = false;
+			} )
+		);
+		$targetWarning.append(
+			$('<label />')
+			.text( gM( 'mwe-embedplayer-do_not_warn_again' ) )
+			.attr( 'for', 'ffwarn_' + embedPlayer.id )
+		);
+		$targetWarning.hide();
+		
 		$j( embedPlayer ).hoverIntent({
 			'timeout': 2000,
 			'over': function() {
@@ -881,69 +978,20 @@ mw.PlayerControlBuilder.prototype = {
 				if( embedPlayer.isPlaying() ){
 					return ;
 				}
-				if ( $j( '#warningOverlay_' + embedPlayer.id ).length == 0 ) {
-
-					$j( this ).append(
-						$j('<div />')
-						.attr( {
-							'id': "warningOverlay_" + embedPlayer.id
-						} )
-						.addClass( 'ui-state-highlight ui-corner-all' )
-						.css({
-							'position' : 'absolute',
-							'display' : 'none',
-							'background' : '#FFF',
-							'color' : '#111',
-							'top' : '10px',
-							'left' : '10px',
-							'right' : '10px',
-							'padding' : '4px'
-						})
-						.html( warningMsg )
-					);
-
-					$targetWarning = $j( '#warningOverlay_' + embedPlayer.id );
-
-					$targetWarning.append(
-						$j('<br />')
-					);
-
-					$targetWarning.append(
-						$j( '<input />' )
-						.attr({
-							'id' : 'ffwarn_' + embedPlayer.id,
-							'type' : "checkbox",
-							'name' : 'ffwarn_' + embedPlayer.id
-						})
-						.click( function() {
-							mw.log("WarningBindinng:: set " + preferenceId + ' to hidewarning ' );
-							// Set up a cookie for 30 days:
-							$j.cookie( preferenceId, 'hidewarning', { expires: 30 } );
-							// Set the current instance
-							mw.setConfig( preferenceId, false );
-							$j( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
-							// set the local prefrence to false
-							_this.addWarningFlag = false;
-						} )
-					);
-					$targetWarning.append(
-						$j('<label />')
-						.text( gM( 'mwe-embedplayer-do_not_warn_again' ) )
-						.attr( 'for', 'ffwarn_' + embedPlayer.id )
-					);
-				}
+				
 				// Check the global config before showing the warning
 				if ( mw.getConfig( preferenceId ) === true && $j.cookie( preferenceId ) != 'hidewarning' ){
 					mw.log("WarningBindinng:: show warning " + mw.getConfig( preferenceId ) + ' cookie: '+ $j.cookie( preferenceId ) + 'typeof:' + typeof $j.cookie( preferenceId ));
-					$j( '#warningOverlay_' + embedPlayer.id ).fadeIn( 'slow' );
+					$targetWarning.fadeIn( 'slow' );
 				};
 			},
 			'out': function() {
-				$j( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
+				$targetWarning.fadeOut( 'slow' );
 			}
 		});
+		return $targetWarning;
 	},
-
+	
 	/**
 	* Binds the volume controls
 	*/

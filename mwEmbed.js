@@ -1184,7 +1184,9 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		} );
 		return $j( '#mwTempLoaderDialog' );
 	};
-	
+	mw.isMobileDevice = function(){
+		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid2() );
+	},
 	mw.isIphone = function(){
 		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
 	};

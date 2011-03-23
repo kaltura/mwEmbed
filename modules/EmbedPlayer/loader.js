@@ -54,6 +54,9 @@
 		// Set the browser player warning flag displays warning for non optimal playback
 		"EmbedPlayer.ShowNativeWarning" : true,
 
+		// If a fullscreen tip to press f11 should be displayed when entering fullscreen 
+		"EmbedPlayer.FullscreenTip" : true,
+		
 		// If fullscreen is global enabled.
 		"EmbedPlayer.EnableFullscreen" : true,
 
