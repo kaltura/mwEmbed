@@ -805,7 +805,6 @@ mw.includeAllModuleMessages();
 					}
 				);
 			}
-			this.un
 			// If no srclang or title show as untitled source
 			return $j.getLineItem(
 					gM('mwe-timedtext-untitled'),
