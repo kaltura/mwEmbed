@@ -218,7 +218,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		mwUserConfig[ name ] = value;
 
 		// Update the cookie ( '$j.cookie' & 'JSON' should already be loaded )
-		$j.cookie( 'mwUserConfig', JSON.stringify( mwUserConfig ), {'expires' : mw.getConfig("Mw.UserPrefrenceExpireDays") } );
+		$j.cookie( 'mwUserConfig', JSON.stringify( mwUserConfig ), {'expires' : mw.getConfig("Mw.UserPreferenceExpireDays") } );
 	};
 
 	/**

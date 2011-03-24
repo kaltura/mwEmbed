@@ -63,7 +63,8 @@ mw.setDefaultConfig ( {
 	// Default appendJS string ( not used outside of wikimedia gadget system )
 	'Mw.AppendWithJS' : false,
 	
-	'Mw.UserPrefrenceExpireDays' : 7
+	// The amount of days that user preferences stick around. 
+	'Mw.UserPreferenceExpireDays' : 7
 } );
 
 /**
