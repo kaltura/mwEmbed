@@ -88,6 +88,7 @@
 
 	// Check if the document has kaltura objects ( for fall forward support ) 
 	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){	
+	
 		// Local callback function runs KalturaKDPCallbackReady and rewriteDoneCallback
 		var callback = function(){
 			if( rewriteDoneCallback ){
@@ -102,7 +103,7 @@
 			rewriteDoneCallback();
 			return ;
 		}else {
-			
+		
 			// Check if we are NOT rewriting tags: 
 			if( !mw.isHTML5FallForwardNative() ) {
 				restoreKalturaKDPCallback();
@@ -140,6 +141,7 @@
 						swfSource = $j( element ).find( "param[name=data]" ).attr( 'value' );						                                      
 					}
 					var kEmbedSettings = mw.getKalturaEmbedSettings( swfSource, flashvars );
+			
 					// check if its a playlist or a entryId
 					mw.log("Got kEmbedSettings.entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
 					var height = $j( element ).attr('height');

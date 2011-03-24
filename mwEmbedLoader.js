@@ -315,7 +315,7 @@ function kOverideSwfObject(){
 							heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn );
 				}
 			});
-		}
+		};
 	}
 }
 
@@ -465,7 +465,7 @@ function kAddScript( callback ){
 
 	var jsRequestSet = [];
 	if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
-		jsRequestSet.push( 'window.jQuery' )
+		jsRequestSet.push( 'window.jQuery' );
 	}
 	// Check if we are using an iframe ( load only the iframe api client ) 
 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) ) {
@@ -701,7 +701,7 @@ kGetKalturaPlayerList = function(){
 			return true;
 		}
 		return false;
-	}
+	};
 	
 	// alert('object list: ' + objectList.length );
 	for( var i =0; i < objectList.length; i++){
@@ -712,7 +712,7 @@ kGetKalturaPlayerList = function(){
 			var pName = paramTags[j].getAttribute('name');
 			var pVal = paramTags[j].getAttribute('value');
 			if( pName == 'data' ||	pName == 'src' ) {
-				swfUrl =  pVal
+				swfUrl =  pVal;
 			}
 			if( pName == 'flashvars' ){
 				flashvars =	kFlashVarsToObject( pVal );
@@ -730,7 +730,7 @@ kGetKalturaPlayerList = function(){
 		}
 	}
 	return kalturaPlayers;
-}
+};
 
 function kFlashVarsToObject( flashvarsString ){
 	var flashVarsSet = ( flashvarsString )? flashvarsString.split('&'): [];
@@ -752,6 +752,7 @@ function kGetEntryThumbUrl( entry ){
 // Copied from kalturaSupport loader mw.getKalturaEmbedSettings  
 function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 	var embedSettings = {};	
+
 	// Convert flashvars if in string format:
 	if( typeof flashvars == 'string' ){
 		flashvars = kFlashVarsToObject( flashvars );
@@ -760,7 +761,7 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 		flashvars= {};
 	
 	// Include flashvars
-	embedSettings.flashvars = flashvars
+	embedSettings.flashvars = flashvars;
 		
 	var dataUrlParts = swfUrl.split('/');
 	
@@ -818,7 +819,7 @@ var checkForKDPCallback = function(){
 			window.KalturaKDPCallbackAlreadyCalled = true;
 		};		
 	}
-}
+};
 var restoreKalturaKDPCallback = function(){
 	// To restore when we are not rewriting: 
 	if( window.KalturaKDPCallbackReady ){
