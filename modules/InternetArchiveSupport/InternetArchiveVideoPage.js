@@ -5,15 +5,15 @@
 * Default player module configuration
 */
 
-mw.IA = 
+mw.IA =
 {
   playingClipNumMW:0,
   flowplayerplaylist:null,
   VIDEO_WIDTH:640,
   VIDEO_HEIGHT:480,
-  
-  
-  
+
+
+
   css:function(str)
   {
     var obj = document.createElement('style');
@@ -22,12 +22,12 @@ mw.IA =
       obj.styleSheet.cssText = str; //MSIE
     else
       obj.appendChild(document.createTextNode(str)); // other browsers
-    
+
     var headobj = document.getElementsByTagName("head")[0];
     headobj.appendChild(obj);
   },
 
-  
+
   // parse a CGI arg
   arg:function(theArgName)
   {
@@ -44,7 +44,7 @@ mw.IA =
     return (r.length > 0 ? unescape(r).split(',') : '')
   },
 
-  
+
   // try to parse the identifier from the video and make the lower right icon
   // then go to the item's /details/ page
   detailsLink:function()
@@ -102,24 +102,24 @@ newEmbedPlayerMW:function(arg)
 
   player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resizeMW(); }, 500); }); //xxxx timeout lameness
 },
-  
+
 
 resizeMW:function()
 {
   var player = $('#mwplayer');
-  
+
   $('#flowplayerdiv').css('width',  this.VIDEO_WIDTH)
   $('#flowplayerdiv').css('height', this.VIDEO_HEIGHT);
-  
+
   $('#flowplayerplaylist').css('width', this.VIDEO_WIDTH);
-  
+
   var jplay = player[0];
   IAD.log('IA ' + jplay.getWidth() + 'x' + jplay.getHeight());
-  
+
   jplay.resizePlayer({'width':  this.VIDEO_WIDTH,
         'height': this.VIDEO_HEIGHT},true);
 },
-  
+
 
 firstplayMW:function()
 {
@@ -146,7 +146,7 @@ playClipMW:function(idx, id, mp4, ogv)
       var player = $('#mwplayer'); // <div id="mwplayer"><video ...></div>
       if (!player)
         return;
-      
+
       player.embedPlayer(
         { 'autoplay' : true, 'autoPlay' : true,
             'sources' : [
@@ -164,27 +164,27 @@ playClipMW:function(idx, id, mp4, ogv)
 onDoneMW:function(event, onDoneActionObject )
 {
   mw.IA.playingClipNumMW++;
-  
+
   var plist = $('#flowplayerplaylist')[0].getElementsByTagName('tr');
   mw.log(plist);
   var row=plist[mw.IA.playingClipNumMW];
   if (typeof(row)=='undefined')
     return;
-  
+
   var js=row.getAttribute('onClick');
   //alert('HIYA xxxx tracey '+mw.IA.playingClipNumMW + ' ==> ' + js);
-  
+
   var parts=js.split("'");
   var id=parts[1];
   var mp4=parts[3];
   var ogv=parts[5];
-  
+
   mw.IA.playClipMW(mw.IA.playingClipNumMW, id, mp4, ogv);
 },
 
 
-  
-  
+
+
 
   setup: function() {
     mw.IA.css(".archive-icon {\n\
@@ -203,7 +203,7 @@ div.control-bar { -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-bord
 
 
     var det = mw.IA.detailsLink();
-    
+
     if (det == ''  &&  typeof(document.getElementsByTagName)!='undefined')
     {
       var els = document.getElementsByTagName('object');
@@ -225,16 +225,18 @@ div.control-bar { -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-bord
         }
       }
     }
-    
-    
 
-    mw.setConfig( {		
+
+
+    mw.setConfig( {
         // We want our video player to attribute something...
         "EmbedPlayer.AttributionButton" : true,
-        
+
         //'jQueryUISkin' : 'kdark',
         //"EmbedPlayer.NativeControlsMobileSafari" : true, //xxx
-        
+
+        'Mw.UserPreferenceExpireDays' : 90,
+
         // Our attribution button
         'EmbedPlayer.AttributionButton' : {
           'title' : 'Internet Archive',
@@ -242,13 +244,13 @@ div.control-bar { -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-bord
           'class' : 'archive-icon'
         }
       });
-    
+
 
     //alert(mw.getConfig('enabledModules'));
     //mw.load('mw.InternetArchiveSupport', function() { alert('loada'); });
 
 
-    
+
 
 
     // NOTE: keep this outside "mw.ready()" so that "click-to-play" does indeed
@@ -257,8 +259,8 @@ div.control-bar { -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-bord
 
     mw.ready(function(){
         mw.log("IA Player says mw.ready()");
-        
-        
+
+
         var star = (mw.IA.arg('start') ? parseFloat(mw.IA.arg('start')) : 0);
         if (star)
         {
@@ -266,7 +268,7 @@ div.control-bar { -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-bord
           var jplay = $('#mwplayer').get(0);
           var dura = jplay.duration;
           IAD.log(star+'s of '+dura+'s');
-          
+
           jplay.currentTime = star;
           jplay.play();
         }
