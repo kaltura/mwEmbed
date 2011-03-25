@@ -201,12 +201,14 @@ div.control-bar { -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-bord
 \n\
 div.overlay-content div h2 { background-color:transparent; }\n\
 div.overlay-content        {\n\
+  padding-top:0px !important; \n\
   border: 1px solid #666; \n\
   -moz-border-radius: 10px;\n\
   -webkit-border-radius:10px;\n\
   -khtml-border-radius:10px;\n\
   border-radius: 10px;\n\
 }\n\
+.mv-player .overlay-win textarea { height:60px !important; }\n\
 ");
 
 
