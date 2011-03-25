@@ -49,6 +49,10 @@ $wgKalturaCDNUrl = 'http://cdn.kaltura.com';
 // Default Kaltura service url:
 $wgKalturaServiceBase = '/api_v3/index.php?service=';
 
+// If the iframe will accept 3rd party domain remote service requests 
+// should be left "off" in production. 
+$wgAllowRemoteKalturaService = false;
+
 // Default expire time for ui conf api queries in seconds 
 $wgKalturaUiConfCacheTime = 600;
 

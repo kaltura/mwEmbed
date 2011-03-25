@@ -54,6 +54,7 @@ class kalturaIframe {
 
 	// Parse the embedFrame request and sanitize input
 	private function parseRequest(){
+		global $wgAllowRemoteKalturaService;
 		// Support /key/value request type:
 
 		if( isset( $_SERVER['PATH_INFO'] ) ){
@@ -81,6 +82,19 @@ class kalturaIframe {
 		// Check for required config
 		if( $this->playerAttributes['wid'] == null ){
 			$this->outputIframeError( 'Can not display player, missing widget id' );
+		}
+		
+		// If remote service is allowed enable the $wgKalturaServiceUrl $wgKalturaCDNUrl and $wgKalturaServiceBase to be set via iframe request
+		if( $wgAllowRemoteKalturaService ){
+			global $wgKalturaServiceUrl, $wgKalturaCDNUrl,  $wgKalturaServiceBase;
+			if( isset( $_REQUEST['host'] ) ){
+				$wgKalturaServiceUrl = 'http://' . $_REQUEST['host'];
+			}
+			if( isset( $_REQUEST['cdnHost'] ) ){
+				$wgKalturaCDNUrl = 'http://' .  $_REQUEST['cdnHost'];
+			}
+			// $wgKalturaServiceBase ? set via flashvars? . 
+			// $wgKalturaServiceBase 
 		}
 	}
 
@@ -269,11 +283,14 @@ class kalturaIframe {
 	 * Returns a cache key for the result object based on Referer and partner id
 	 */
 	private function getResultObjectCacheKey(){
+		global $wgKalturaServiceUrl;		
 		// Get a key based on partner id,  entry_id and ui_confand refer url:
 		$playerUnique = ( isset( $this->playerAttributes['entry_id'] ) ) ?  $this->playerAttributes['entry_id'] : '';
 		$playerUnique .= ( isset( $this->playerAttributes['uiconf_id'] ) ) ?  $this->playerAttributes['uiconf_id'] : '';
-
-		return $this->getPartnerId() . '_' . $playerUnique . '_' . substr( md5( $this->getReferer() ), 0, 10 );
+		
+		// hash the service url, the partner_id, the player_id and the refering url: 
+		return  substr( md5( $wgKalturaServiceUrl ), 0, 5 ) .
+				$this->getPartnerId() . '_' . $playerUnique . '_' . substr( md5( $this->getReferer() ), 0, 10 );
 	}
 
 	function getResultObjectFromApi(){
@@ -455,7 +472,7 @@ class kalturaIframe {
 	// ( need to add uiConf configuration to allow or disallow this feature
 	// ( maybe we tie it to the "download" option
 	private function getFileLinkHTML(){
-		$sources = $this->getFlavorSources();
+		$sources = $this->getFlavorSources();		
 		// For now use the 3gp, iPhone, iPad, ogg ( in that order most device compatible to least)
 		if( isset( $sources['iphone'] )) {
 			$flavorUrl = $sources['iphone']['src'];

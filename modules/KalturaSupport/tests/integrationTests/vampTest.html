@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>VAMP Player 021711 - FreeWheel version</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+		<script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
+		<script type="text/javascript">
+			mw.setConfig( 'forceMobileHTML5', true );
+			mw.setConfig('TEMP.ForceFreeWheelXML', '<Plugin id="FreeWheel" width="0%" height="0%" preSequence="1" postSequence="1" asyncInit="true" ' +
+					'path="freewheelPlugin/v1.0/KDPPlugin.swf" ' +
+					'adManagerUrl="http://adm.fwmrm.net/p/fox_live/AdManager.swf" ' +
+					'serverUrl="http://1c6e2.v.fwmrm.net" ' + 
+					'networkId="116450" ' +
+					'playerProfile="116450:FDM_Live" ' +
+					'videoAssetNetworkId="116450" ' +
+					'overrideParameters="templateText=The Video Will Resume in %lnt%&amp;fallbackText=The Video Will Resume Soon&amp;textFont=Verdana&amp;textSize=11" ' +
+					'extensions="SingleAdExtension=http://adm.fwmrm.net/p/fox_live/SingleAdExtension.swf&amp;CountdownTimerExtension=http://adm.fwmrm.net/p/fox_live/CountdownTimerExtension.swf"' +
+					'/> ' );
+		</script>
+		<style type="text/css">
+			body { background:#666666; }
+			#main { background:#666666 url(assets/img/vamp-logo.gif) center center no-repeat; width:875px; height:600px; padding:124px 0 0 275px; margin:20px auto; }
+		</style>
+	</head>
+
+	<body>
+		<div id="main">			
+			<h3 style="color:#FFF;font-family:sans-serif">HTML5 freewheel / VAMP player </h3>
+			<div style="width:600px; height:400px; border:1px solid #000;">
+				<div id="VAMP_player">
+					<p>The VAMP Player requires Adobe Flash. <a href="http://www.adobe.com/go/getflashplayer">Get Flash</a>.</p>
+				</div>
+			</div>
+
+		</div>
+		<script type="text/javascript">
+		function fw_config() {
+			return{
+				siteSectionId: 'FOX_other',
+				siteSectionNetworkId: '116450',
+				siteSectionIdType: '0'
+			};
+		}
+		</script>
+		<script type="text/javascript">
+			var flashvars = {
+				sourceType:	"entryId",
+				host:			"fe-stage.alldigital.com",
+				cdnHost:		"fe-stage.alldigital.com",
+				streamerType:	"http",
+				streamerUrl:	"rtmp://rtmp.kaltura.com/ondemand/",
+				autoPlay:		"false",
+				entryId:		"0_vu0nxue7",
+				clientTag:		"cache_st:20000000",
+				baseURL:		"http://www.fox.com/${id}/${name}/${start}/${end}",
+				debug:			"true",
+				debugMode:		"true",
+				fileSystemMode:	"true",
+				uiConfId:		"1727873",
+				widgetId:		"_119",
+				partnerId:		"119",
+				subpId:			"11900",
+				pluginDomain:	"http://vampdev.foxfdm.com/player_freewheel/plugins/",
+				kml:			"remote",
+				disableAlerts:	"false",
+				requiredMetadataFields:	"true",
+				externalInterfaceDisabled:	"false",
+				referer:		"http://www.kaltura.com/dev/"
+			};
+			var params = {};
+			var attributes = {
+				id:		"kdp3",
+				name:	"kdp3",
+				align:	"middle",
+				scale:	"noscale",
+				menu:	"false",
+				type: 	"application/x-shockwave-flash",
+				quality:	"high",
+				bgcolor:	"#424445",
+				allowFullScreen:	"true",
+				allowScriptAccess: 	"always"
+			};
+			swfobject.embedSWF("http://vampdev.foxfdm.com/player_freewheel/kdp3.swf", "VAMP_player", "600", "400", "9.0.0", "http://vampdev.foxfdm.com/player_freewheel/playerProductInstall.swf", flashvars, params, attributes);
+		</script>
+	</body>
+</html>
+

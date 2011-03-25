@@ -524,6 +524,7 @@ function kAddScript( callback ){
 	}
 	
 	var objectPlayerList = kGetKalturaPlayerList();
+
 	// Check if we are doing object rewrite ( add the kaltura library ) 
 	if ( kIsHTML5FallForward() || objectPlayerList.length ){
 		// Kaltura client libraries:
@@ -729,6 +730,7 @@ kGetKalturaPlayerList = function(){
 				continue;
 		}
 	}
+	
 	return kalturaPlayers;
 };
 
@@ -791,20 +793,24 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 		prevUrlPart = curUrlPart;
 	}
 	// Add in Flash vars embedSettings ( they take precedence over embed url )
-	for( var i in  flashvars){
-		embedSettings[ i.toLowerCase() ] = flashvars[i];
-	}
-	// Normalize to the url based settings: 
-	if( embedSettings[ 'entryid' ] ){
-		embedSettings.entry_id =  embedSettings.entryid;
-	}
-	if( embedSettings['widget_id'] ){
-		embedSettings.wid = embedSettings.widget_id;
-		embedSettings.p = embedSettings.wid.replace(/_/,'');
-	}
-	if( embedSettings['parent_id'] ){
-		embedSettings.wid = '_' + embedSettings.parent_id;
-		embedSettings.p = embedSettings.parent_id;
+	for( var key in  flashvars){	
+		var val = flashvars[key];
+		var key = key.toLowerCase();
+		// Normalize to the url based settings: 
+		if( key == 'entryid' ){
+			embedSettings.entry_id = val;
+		}
+		if(  key == 'uiconfid' ){
+			embedSettings.uiconf_id = val;
+		}
+		if( key == 'widgetid' || key == 'widget_id' ){
+			embedSettings.wid = val;
+			embedSettings.p = val.replace(/_/,'');
+		}	
+		if( key == 'parentid' ||  key == 'parent_id'){
+			embedSettings.wid = '_' + val;
+			embedSettings.p = val;
+		}
 	}
 	return embedSettings;
 }

@@ -9,7 +9,9 @@ mw.KWidgetSupport.prototype = {
 	
 	// Constructor check settings etc
 	init: function( options ){
-	
+		if( options ){
+			$j.extend( this, options);
+		}
 	},
 	
 	/**
@@ -83,24 +85,22 @@ mw.KWidgetSupport.prototype = {
 					if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
 						mw.addKAnalytics( embedPlayer, _this.kClient );
 					}
-					
 					// Check for uiConf	
 					if( playerData.uiConf ){
 						// Store the parsed uiConf in the embedPlayer object:
 						embedPlayer.$uiConf = $j( playerData.uiConf );
 						// Trigger the check kaltura uiConf event					
-						$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', embedPlayer.$uiConf, function(){
+						$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', embedPlayer.$uiConf, function(){	
+							mw.log("KWidgetSupport::KalturaSupport.checkUiConf callback");
 							// Ui-conf file checks done
 							callback();
 						});
 					} else {
 						callback();
-					}			
+					}
 				});
 			});
-			// Add kaltura api mappings: 
-			
-			
+
 			// Add kaltura iframe path support:
 			$j( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
 				callback( mw.getConfig('Kaltura.ServiceUrl') + '/p/' + _this.kClient.getPartnerId() +
