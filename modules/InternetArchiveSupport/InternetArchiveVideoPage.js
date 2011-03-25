@@ -202,10 +202,10 @@ div.control-bar { -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-bord
 div.overlay-content div h2 { background-color:transparent; }\n\
 div.overlay-content        {\n\
   border: 1px solid #666; \n\
-  -moz-border-radius: 10px;  /* firefox */\n\
-  -webkit-border-radius:10px;/* safari */\n\
-  -khtml-border-radius:10px; /* safari? */\n\
-  border-radius: 10px;       /* opera, CSS3 */\n\
+  -moz-border-radius: 10px;\n\
+  -webkit-border-radius:10px;\n\
+  -khtml-border-radius:10px;\n\
+  border-radius: 10px;\n\
 }\n\
 ");
 
