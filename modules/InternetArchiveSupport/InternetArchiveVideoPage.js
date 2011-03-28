@@ -74,6 +74,17 @@ mw.IA =
   },
 
 
+  embedCode:function()
+  {
+    return ('&lt;iframe src=&quot;' +
+            mw.escapeQuotesHTML( mw.IA.embedUrl() ) + '&quot; ' +
+            'width=&quot;' + mw.IA.VIDEO_WIDTH +'&quot; ' +
+            'height=&quot;' + mw.IA.VIDEO_HEIGHT + '&quot; ' +
+            'frameborder=&quot;0&quot; ' +
+            '&gt;&lt/iframe&gt;');
+  },
+
+
   // marks the playlist row for the video that is playing w/ orange triangle
   indicateIsPlaying:function(clipnum)
   {
