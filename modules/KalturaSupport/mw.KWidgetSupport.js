@@ -72,7 +72,7 @@ mw.KWidgetSupport.prototype = {
 					if( playerData.flavors ){
 						_this.addFlavorSources( embedPlayer, playerData.flavors );
 					}
-					
+					mw.log("KWidgetSupport:: check for meta:");
 					// Apply player metadata
 					if( playerData.meta ) {
 						embedPlayer.duration = playerData.meta.duration;

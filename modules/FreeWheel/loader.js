@@ -13,6 +13,8 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			mw.load( [ "AdSupport", "mw.freeWheelController", "freeWheelAdMannager" ], function(){
 				mw.addFreeWheelControler(embedPlayer, $j( mw.getConfig('TEMP.ForceFreeWheelXML') ), callback );
 			});
+		} else {
+			callback();
 		}
 		// Check if the kaltura ad plugin is enabled:
 		/*if( $uiConf.find('Plugin#freewheel').length ){
