@@ -195,8 +195,8 @@ mw.EmbedPlayerKplayer = {
 	/**
 	 * play method calls parent_play to update the interface
 	 */
-	play : function() {
-		if (this.playerElement && this.playerElement.sendNotification) {
+	play: function() {
+		if ( this.playerElement && this.playerElement.sendNotification ) {
 			this.playerElement.sendNotification('doPlay');
 		}
 		this.parent_play();
@@ -205,7 +205,7 @@ mw.EmbedPlayerKplayer = {
 	/**
 	 * pause method calls parent_pause to update the interface
 	 */
-	pause : function() {
+	pause: function() {
 		if (this.playerElement && this.playerElement.sendNotification) {
 			this.playerElement.sendNotification('doPause');
 		}

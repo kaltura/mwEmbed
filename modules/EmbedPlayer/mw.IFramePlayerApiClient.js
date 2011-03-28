@@ -42,7 +42,7 @@ mw.IFramePlayerApiClient.prototype = {
 		$j( mw ).trigger( 'AddIframePlayerMethods', [ this.exportedMethods ]);
 		
 		$j.each( this.exportedMethods, function(na, method){
-			_this.playerProxy[ method ] = function(){				
+			_this.playerProxy[ method ] = function(){	
 				_this.postMessage( {
 					'method' : method,
 					'args' : $j.makeArray( arguments )

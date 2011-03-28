@@ -2604,7 +2604,7 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		if( this.width || this.height ){
-			embedCode +='style=&quot;';
+			embedCode += 'style=&quot;';
 			embedCode += ( this.width )? 'width:' + this.width +'px;': '';
 			embedCode += ( this.height )? 'height:' + this.height +'px;': '';
 			embedCode += '&quot; ';
@@ -2698,6 +2698,7 @@ mw.EmbedPlayer.prototype = {
 		// Start the monitor if not already started
 		this.monitor();		
 	},
+	
 	/**
 	 * Base embed pause Updates the play/pause button state.
 	 *
@@ -2729,9 +2730,15 @@ mw.EmbedPlayer.prototype = {
 		} )
 		.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );
 	},
+	
 	// special per browser check for autoTrigger events
 	// ideally jQuery would not have this inconsistency. 
 	doMethodsAutoTrigger: function(){
+		// auto propagate events only affect "native" embed player instances:
+		if ( this.instanceOf != 'Native' ){
+			return false;
+		}
+		// Firefox browsers auto trigger events: 
 		if( $j.browser.mozilla && ! mw.versionIsAtLeast('2.0', $j.browser.version ) ){
 			return true;
 		}
