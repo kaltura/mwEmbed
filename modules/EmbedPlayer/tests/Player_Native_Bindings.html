@@ -41,8 +41,9 @@
 
 
 
-<!-- <script type="text/javascript" src="../../../ResourceLoader.php?class=window.jQuery,mwEmbed&&debug=true"></script> -->
+
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.3.min.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript">
   /* 
     Media Event Bindings
@@ -90,16 +91,16 @@ function setLogging(event, isActive, message) {
         message = e.logMessage;
       }
     });
-    vid.bind( event, function() { logME('* ' + event + ' fired: ' + message); });
+    $j('#myVid').bind( event, function() { logME('* ' + event + ' fired: ' + message); });
   } else {
-    vid.unbind( event );
+	 $j('#myVid').unbind( event );
   }
 
 }
 
-$(document).ready(function() {
+mw.ready(function() {
 
-  var vid =  $('#myVid');
+  var vid =  $j('#myVid');
 
   // setup checkboxes to control logging
   $(mediaEvents).each(function (i, e) {
@@ -124,77 +125,6 @@ $(document).ready(function() {
  
 });
 
-
-/*
-// when mw is ready we can begin programming it
-mw.ready( function(){
-	vid =  $j('#myVid');
-
-    vid.bind( "play", function(e) { logME('* playback started'); });
-
-  
-  vidcon = $j('#vid1');
-  console.log(vidcon);
-
-    vid.addEventListener( "ended", function(e) { logME('* playback ended'); });
-    vid.addEventListener( "seeking", function(e) { logME('* seeking'); });
-
-    vid.ended( function() { logME('* playback ended'); });
-    vid.play( function() { logME('* playback started'); });
-    
-    vidcon.bind( "play", function(e) { logME('* playback started'); });
-    vidcon.bind( "ended", function(e) { logME('* playback ended'); });
-    vidcon.bind( "seeking", function(e) { logME('* seeking'); });
-    //vid.bind( 'seeking', function(e) { logME('* seeking fired') });
-
-  
-  //$j(mediaEvents).each(function (i, e) {
-    //var event = e.event;
-    //console.log( event ); // function(e) { logME('* ' + e.event + ' fired: ' + e.logMessage); console.log(e); });
-    //console.log( e.logMessage );
-  //});
-
-
-  logME('* the media player is ready');
- 
- //console.log(vid);
-
-
-	//update the player and selected src
-	function updateTypeLoop(){
-		vid =  $j('#vid1').get(0);
-		if( vid.mediaElement && vid.mediaElement.selectedSource ){
-			$j('#format').text( vid.mediaElement.selectedSource.getTitle() );
-		}
-		if( vid.selectedPlayer ) {
-			$j('#playertitle').text( vid.selectedPlayer.getName() );
-		  // setTimeout(updateTypeLoop, 1000);
-	  }
-  }
-	setTimeout(updateTypeLoop, 1000);
-	// Chose Player
-	$j('#chooseplayer').click(function(){
-		var vid =  $j('#vid1').get(0);
-		if( vid ){
-			vid.controlBuilder.displayOverlay(  
-				vid.controlBuilder.getPlayerSelect()
-			);						
-		}
-	});
-	// Options boxes 
-	
-  // note we should do a complete event maping: 
-	//	var playerEvents = ['play', 'pause', 'seeking', 'seeked' ];
-	//	$j.each(playerEvents, function( na, eventName ){
-	//		$j('#myVid').bind(eventName, function(){
-	//			$j('#playerLog').append( eventName + "\n");
-			}); 
-		});		
-	});	
-
-	
-});
-*/
 
 </script>
 
