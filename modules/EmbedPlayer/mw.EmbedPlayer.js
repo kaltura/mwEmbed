@@ -2671,7 +2671,7 @@ mw.EmbedPlayer.prototype = {
 		if( this.paused === true ){
 			this.paused = false;
 			// Check if we should Trigger the play event
-			mw.log("EmbedPlayer:: trigger play even::" + !this.paused);
+			mw.log("EmbedPlayer:: trigger play even::" + !this.paused + ' events:' + this.doMethodsAutoTrigger() );
 			if( ! this.doMethodsAutoTrigger() && this._propagateEvents ) {
 				$j( this ).trigger( 'play' );
 			}
@@ -2734,8 +2734,8 @@ mw.EmbedPlayer.prototype = {
 	// special per browser check for autoTrigger events
 	// ideally jQuery would not have this inconsistency.
 	doMethodsAutoTrigger: function(){
-		// auto propagate events only affect "native" embed player instances:
-		if ( this.instanceOf != 'Native' ){
+		// events don't "auto trigger" when a native player or when PersistentNativePlayer
+		if ( this.instanceOf != 'Native' || this.isPersistentNativePlayer() ){
 			return false;
 		}
 		// Firefox browsers auto trigger events: 
