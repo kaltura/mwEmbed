@@ -9,13 +9,20 @@ mailto="andrew.davis@kaltura.com"
 
 function getCurrentRevision {
   # Get the current SVN revision, eg. "r4670"
-  currentRevision=$(svn log "$svnUrl" -r HEAD 2>/dev/null | head -n2 | grep -v -- "-------" | awk '{ print $1 }')
+  currentRevision=$(svn log "$svnUrl" -r HEAD 2>./.svn_error | head -n2 | grep -v -- "-------" | awk '{ print $1 }')
   # Strip off the 'r'
   currentRevision="${currentRevision:1}"
   echo "$currentRevision"
 }
 
 currentRevision=$(getCurrentRevision)
+
+# check that the a revision number was retrieved from the repo, exit if remote error
+if [ -z $currentRevision ]
+  then
+    echo "error retrieveing last svn revision from remote"
+    exit
+fi
 
 lastRevision=$(cat "$lastRevisionFile")
 #  Check what the current revision is, and exit if there
