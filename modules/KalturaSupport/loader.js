@@ -85,10 +85,8 @@
 			  'mw.PlaylistHandlerKalturaRss'
 			] );
 	});
-
 	// Check if the document has kaltura objects ( for fall forward support ) 
 	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){	
-	
 		// Local callback function runs KalturaKDPCallbackReady and rewriteDoneCallback
 		var callback = function(){
 			if( rewriteDoneCallback ){

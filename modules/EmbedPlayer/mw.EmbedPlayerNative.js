@@ -239,7 +239,7 @@ mw.EmbedPlayerNative = {
 		if ( this.supportsURLTimeEncoding() ) {
 			// Make sure we could not do a local seek instead:
 			if ( percentage < this.bufferedPercent && this.playerElement.duration && !this.didSeekJump ) {
-				mw.log( "do local seek " + percentage + ' is already buffered < ' + this.bufferedPercent );
+				mw.log( "EmbedPlayer::doSeek local seek " + percentage + ' is already buffered < ' + this.bufferedPercent );
 				this.doNativeSeek( percentage );
 			} else {
 				// We support URLTimeEncoding call parent seek:
@@ -250,7 +250,7 @@ mw.EmbedPlayerNative = {
 			this.doNativeSeek( percentage );
 		} else {
 			// try to do a play then seek:
-			this.doPlayThenSeek( percentage )
+			this.doPlayThenSeek( percentage );
 		}
 	},
 
@@ -261,7 +261,7 @@ mw.EmbedPlayerNative = {
 	*/
 	doNativeSeek: function( percentage ) {
 		var _this = this;
-		mw.log( 'native::doNativeSeek::' + percentage );
+		mw.log( 'EmbedPlayerNative::doNativeSeek::' + percentage );
 		this.seeking = true;
 		this.seek_time_sec = 0;
 		this.setCurrentTime( ( percentage * this.duration ) , function(){
@@ -277,7 +277,7 @@ mw.EmbedPlayerNative = {
 	* 		Percentage of the stream to seek to between 0 and 1
 	*/
 	doPlayThenSeek: function( percentage ) {
-		mw.log( 'native::doPlayThenSeek::' );
+		mw.log( 'native::doPlayThenSeek::' + percentage );
 		var _this = this;
 		this.play();
 		var retryCount = 0;
@@ -287,16 +287,16 @@ mw.EmbedPlayerNative = {
 			if ( _this.playerElement && _this.playerElement.duration ) {
 				_this.doNativeSeek( percentage );
 			} else {
-				// Try to get player for 40 seconds:
+				// Try to get player for  30 seconds:
 				// (it would be nice if the onmetadata type callbacks where fired consistently)
 				if ( retryCount < 800 ) {
 					setTimeout( readyForSeek, 50 );
 					retryCount++;
 				} else {
-					mw.log( 'error:doPlayThenSeek failed' );
+					mw.log( 'error:doPlayThenSeek failed :' + _this.playerElement.duration);
 				}
 			}
-		}
+		};
 		readyForSeek();
 	},
 

@@ -660,7 +660,7 @@ mediaSource.prototype = {
 	 * @return {String} the URI of the source.
 	 */
 	getSrc: function( serverSeekTime ) {
-		if ( !serverSeekTime || !this.URLTimeEncoding ) {
+		if ( !serverSeekTime ) {
 			return this.src;
 		}
 		var endvar = '';
@@ -1863,7 +1863,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	doSeek: function( percent ) {
 		var _this = this;
-
 		this.seeking = true;
 
 		// See if we should do a server side seek ( player independent )
@@ -3191,8 +3190,13 @@ mw.EmbedPlayer.prototype = {
 
 		// Return selected source:
 		if( this.mediaElement.selectedSource ){
-			// get the first source:
-			return this.mediaElement.selectedSource.getSrc( this.serverSeekTime );
+			// See if we should pass the requested time to the source generator: 
+			if( this.supportsURLTimeEncoding() ){
+				// get the first source:
+				return this.mediaElement.selectedSource.getSrc( this.serverSeekTime );
+			} else {
+				return this.mediaElement.selectedSource.getSrc();
+			}
 		}
 		// No selected source return false:
 		return false;

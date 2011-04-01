@@ -267,20 +267,12 @@ div.overlay-content        {\n\
       });
 
 
-    //alert(mw.getConfig('enabledModules'));
-    //mw.load('mw.InternetArchiveSupport', function() { alert('loada'); });
-
-
-
-
-
     // NOTE: keep this outside "mw.ready()" so that "click-to-play" does indeed
     // cause the newEmbedPlayerMW() call
     $( mw ).bind('newEmbedPlayerEvent', mw.IA.newEmbedPlayerMW);
 
     mw.ready(function(){
         mw.log("IA Player says mw.ready()");
-
 
         var star = (mw.IA.arg('start') ? parseFloat(mw.IA.arg('start')) : 0);
         if (star)
