@@ -196,6 +196,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 		return this.getClip( clipIndex ).name;
 	},
 	
+	getClipDesc: function( clipIndex ){
+		return this.getClip( clipIndex ).description
+	},
+	
 	getClipDuration: function ( clipIndex ) {	
 		return this.getClip( clipIndex ).duration;
 	}

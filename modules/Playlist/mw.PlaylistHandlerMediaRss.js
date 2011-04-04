@@ -116,6 +116,14 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		mw.log("Error could not find title for clip: " + clipIndex );
 		return gM('mwe-mediarss-untitled');
 	},
+	
+	/**
+	 *  Get a clip description 
+	 */
+	getClipDesc: function( clipIndex ){
+		// TODO lookup clip description
+		return '';
+	},
 
 	getClipDuration: function ( clipIndex ) {
 		// return the first found media duration

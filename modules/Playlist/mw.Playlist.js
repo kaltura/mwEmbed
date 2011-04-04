@@ -656,7 +656,8 @@ mw.Playlist.prototype = {
 				$j( '<table />')
 				.css( {
 					'border': '0px',
-					'width' : '100%'
+					'width' : '100%',
+					'font-size': '.9em'
 				})
 				.addClass('ui-state-active')
 				.append(
@@ -673,7 +674,10 @@ mw.Playlist.prototype = {
 							.css( 'width', _this.itemThumbWidth + 'px')
 						),
 						$j( '<td />')
-						.text( _this.sourceHandler.getClipTitle( inx ) ),
+						.append(
+							$j('<p />').addClass('clipTitle').text( _this.sourceHandler.getClipTitle( inx ) ), 
+							$j('<span />').addClass('clipDescription').text( _this.sourceHandler.getClipDesc( inx ) )
+						),
 
 						$j( '<td />')
 						.css( 'width', '50px')
