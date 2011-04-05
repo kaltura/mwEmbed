@@ -22,7 +22,6 @@ mw.Playlist.prototype = {
 	
 	// the theme handler:
 	theme : null,
-	
 
 	// constructor
 	init: function( options ) {
@@ -278,10 +277,10 @@ mw.Playlist.prototype = {
 					// also adjust .playlistSet-container if present
 					$j( _this.target + ' .playlistSet-container').css( {
 						'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 4
-					})
+					});
 					$j( _this.target + ' .media-rss-video-list' ).css({
 						'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 26
-					})
+					});
 				}
 
 			} else {
@@ -448,7 +447,6 @@ mw.Playlist.prototype = {
 
 		// Add custom attributes:
 		_this.sourceHandler.applyCustomClipData( $video, clipIndex );
-
 
 		// lookup the sources from the playlist provider:
 		this.sourceHandler.getClipSources( clipIndex, function( clipSources ){
@@ -663,7 +661,7 @@ mw.Playlist.prototype = {
 				.css( {
 					'border': '0px',
 					'width' : '100%',
-					'font-size': '.9em'
+					'font-size': '.8em'
 				})
 				.addClass('ui-state-active')
 				.append(
@@ -761,4 +759,3 @@ mw.Playlist.prototype = {
 		this.sourceHandler = sourceHandler;
 	}
 };
-
