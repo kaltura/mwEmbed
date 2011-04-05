@@ -25,6 +25,8 @@
 
 		// Width of item thubmnails
 		'Playlist.itemThumbWidth' : '60',
+		
+		'Playlist.ShowScrollButtons' : true,
 
 		// Height of the mediaRss title
 		'Playlist.titleHeight' : '20',

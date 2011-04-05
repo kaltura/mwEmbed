@@ -301,7 +301,7 @@ mw.Playlist.prototype = {
 				}
 			}
 			var $videoList = $j( _this.target + ' .media-rss-video-list' );
-			$videoList.show()
+			$videoList.show();
 			// show the video list and apply the swipe binding
 			$j( _this.target ).find('.media-rss-video-list-wrapper').fadeIn();
 			if( mw.isHTML5FallForwardNative() ){
@@ -327,60 +327,66 @@ mw.Playlist.prototype = {
 					})
 				}
 				
-				// Add scroll buttons:
-				$j( _this.target ).append(
-					$j( '<div />').css({
-						'position' : 'absolute',
-						'bottom' : '5px',
-						'right': '0px',
-						'height' : '30px',
-						'width' : $j( _this.target + ' .media-rss-video-list').width()
-					})
-					.append(
-						$j.button({
-							'text' : 'scroll down',
-							'icon' : 'circle-arrow-s'
-						})
-						.css('float', 'right')
-						.click(function(){
-							var clipListCount = $videoList.children().length;
-							var clipSize = $videoList.children(':first').height();
-							var curTop = $videoList.attr('scrollTop');
-
-							var targetPos = curTop + (clipSize * 3);
-							if( targetPos > clipListCount * clipSize ){
-								targetPos = ( clipListCount * ( clipSize -1 ) );
-							}
-							//mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
-							$videoList.animate({'scrollTop': targetPos }, 500 );
-
-							return false;
-						}),
-						$j.button({
-							'text' : 'scroll up',
-							'icon' : 'circle-arrow-n'
-						})
-						.css('float', 'left')
-						.click(function(){
-							var clipListCount = $videoList.children().length;
-							var clipSize = $videoList.children(':first').height();
-							var curTop = $videoList.attr('scrollTop');
-
-							var targetPos = curTop - (clipSize * 3);
-							if( targetPos < 0 ){
-								targetPos = 0
-							}
-							mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
-							$videoList.animate({'scrollTop': targetPos }, 500 );
-
-							return false;
-						})
-					)
-				)
+				// Add scroll buttons if configured to do so:
+				if( mw.getConfig( 'Playlist.ShowScrollButtons' ) ){
+					_this.addScrollButtons( $videoList );
+				}				
 			}
 		});
 	},
+	
+	addScrollButtons: function( $videoList){
+		var _this = this;
+		$j( _this.target ).append(
+			$j( '<div />').css({
+				'position' : 'absolute',
+				'bottom' : '5px',
+				'right': '0px',
+				'height' : '30px',
+				'width' : $j( _this.target + ' .media-rss-video-list').width()
+			})
+			.append(
+				$j.button({
+					'text' : 'scroll down',
+					'icon' : 'circle-arrow-s'
+				})
+				.css('float', 'right')
+				.click(function(){
+					var clipListCount = $videoList.children().length;
+					var clipSize = $videoList.children(':first').height();
+					var curTop = $videoList.attr('scrollTop');
 
+					var targetPos = curTop + (clipSize * 3);
+					if( targetPos > clipListCount * clipSize ){
+						targetPos = ( clipListCount * ( clipSize -1 ) );
+					}
+					//mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
+					$videoList.animate({'scrollTop': targetPos }, 500 );
+
+					return false;
+				}),
+				$j.button({
+					'text' : 'scroll up',
+					'icon' : 'circle-arrow-n'
+				})
+				.css('float', 'left')
+				.click(function(){
+					var clipListCount = $videoList.children().length;
+					var clipSize = $videoList.children(':first').height();
+					var curTop = $videoList.attr('scrollTop');
+
+					var targetPos = curTop - (clipSize * 3);
+					if( targetPos < 0 ){
+						targetPos = 0
+					}
+					mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
+					$videoList.animate({'scrollTop': targetPos }, 500 );
+
+					return false;
+				})
+			)
+		)
+	},
 	/**
 	* Update the target size of the player
 	*/
