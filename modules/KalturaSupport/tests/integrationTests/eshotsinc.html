@@ -1,0 +1,3692 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-gb" lang="en-gb" >
+<head>
+	<meta http-equiv="Content-Script-Type" content="text/javascript; charset=utf-8"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<!-- !!! no-cache mode--> <!--<meta http-equiv="pragma" content="no-cache"/>-->
+	<title>(staging) eshots Microsite Template</title>
+	<script src="http://dev.eshotsinc.com/cadillac/js/jquery-1.5.1.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="http://dev.eshotsinc.com/cadillac/js/jquery.easing.1.3.js"></script>
+
+	<script src="http://dev.eshotsinc.com/cadillac/js/jquery.bbq.hashchanged.js" type="text/javascript"></script>
+	<script src="http://dev.eshotsinc.com/cadillac/js/econtrol_plugin.js" type="text/javascript"></script>
+	<script src="http://dev.eshotsinc.com/cadillac/js/econtrol.init.js" type="text/javascript"></script>
+
+	<script src="http://dev.eshotsinc.com/cadillac/js/swfobject.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
+
+	<link rel="stylesheet" type="text/css" href="http://dev.eshotsinc.com/cadillac/css/style.css" />
+	<link rel="stylesheet" href="skins/style.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="http://dev.eshotsinc.com/cadillac/css/jquery.ad-gallery.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="http://dev.eshotsinc.com/cadillac/css/viewimports.css" type="text/css" media="screen" />
+
+	<!-- Fancy Box 1.3.4-->
+	<script src="http://dev.eshotsinc.com/cadillac/js/fancybox/jquery.fancybox-1.3.4.js" type="text/javascript"></script>
+	<script src="http://dev.eshotsinc.com/cadillac/js/fancybox.init.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="http://dev.eshotsinc.com/cadillac/js/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+
+</head>
+
+
+	
+
+<body class="pass">
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-20846635-7']);
+  //_gaq.push(['_trackPageview']); // This is commented to avoid double pageviews.
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+	<div id="wrapper">
+
+		<div id="state-control" class="hidden"><div></div></div>
+
+	    <div id="hdr" class="well state_1" title="1,2">
+	        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<div id="view_1" class="view_wrapper">
+
+<script>
+	$(document).ready(function() {
+		$("#fancy_login").fancybox({
+			'width'				: 280,
+			'scrolling'			: 'no',
+			'margin'			: 0,
+			'height'			: 200,
+			'autoScale'			: false,
+			'padding'			: 0,
+			'centerOnScroll'	: false,
+			'titleShow'			: false,
+			'hideOnOverlayClick': true,
+			'showCloseButton'	: true,
+			'enableEscapeButton': true,
+			'showNavArrows'		: false,
+			'overlayShow'		: true,
+			'opacity'			: true,
+			'overlayOpacity'	: '0.2',
+			'overlayColor'		: '#000',
+			'speedIn'			: 300,
+			'transitionIn'		: 'fade',
+			'transitionOut'		: 'none',
+			'type'				: 'iframe',
+			'onClosed'			: function(returnVar){
+				//$('body').econtrol.triggerhash('myid|header=2');
+				$.fn.econtrol.callproc('hdr','1'); // well id, state
+				$.fn.econtrol.refreshwells('sw3=11&sw4=13&ref=1'); // refresh sw3 to remove invite a friend button
+			}
+		});
+	});
+</script>
+
+<a href="wells/fb_control.cfm?state=32" id="fancy_login">LOG IN TO YOUR EVENT</a>
+
+
+</div><!-- closes view -->
+
+	
+
+
+	    </div>
+
+		<div id="breadcrumbs"><a href="index.cfm">Home</a> | Slider: <a class="xtrig" href="#" rel="1">Panel 1</a>, <a class="xtrig" href="#" rel="2">Panel 2</a></div>
+
+		<div class="coda-slider-wrapper">
+			<div class="coda-slider" id="slider">
+				<div class="panel-container">
+					<div class="panel" id="panel1">
+						<div class="panel-wrapper">
+							<div id="sw1" class="well state_3" title="3,4,33">
+								
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<div id="view_4" class="view_wrapper">
+
+<div id="kplayer3"></div>
+
+<script type="text/javascript">
+        var params = {
+                allowscriptaccess: "always",
+                allownetworking: "all",
+                allowfullscreen: "true",
+                wmode: "opaque"
+        };
+        var flashVars = {
+        
+        	
+        
+            	entryId: "0_3bpt3567" // vlab
+	
+      		
+                                 
+                
+        };
+        swfobject.embedSWF("http://www.kaltura.com/kwidget/cache_st/1301845825/wid/_523101/ui_conf_id/4108272", "kplayer3", "640", "390", "9.0.0", false, flashVars, params);
+</script>
+
+
+</div>
+	
+
+
+							</div>
+							<div id="sw2" class="well state_5" title="5,6,7,8">
+								
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<div id="view_5" class="view_wrapper">
+
+	<script type="text/javascript">
+		$(function(){
+			$("#inviteForm").submit(function(){
+				var pattern = new RegExp("^[a-zA-Z0-9]{14}$");
+
+				//alert(pattern.test(this.inviteCode.value));
+				if (pattern.test(this.inviteCode.value)) {
+					$.post("/cadillac/services/inviteHandler.cfm?action=inviteCode", $("#inviteForm").serialize(),
+					function(data){
+						if(data.status == 1){
+							//$("#message").html("GOOD invite code");
+
+							var eventPage = data.event_id + "_0";
+
+							//this is where you would refresh the wells and slide
+							window.parent.$.fn.econtrol.callproc('hdr','2'); // well id, state
+							window.parent.$.fn.econtrol.callproc('sw3','11'); // well id, state
+							window.parent.$.fn.econtrol.callproc('sw4','13'); // well id, state
+							window.parent.$.fn.econtrol.callproc('fw2','18'); // well id, state
+							window.parent.$.fn.econtrol.callproc('fw3','21'); // well id, state
+							window.parent.$('body').econtrol.triggerhash('mynewpageid|-2*'+eventPage);
+
+						} else {
+							$("#message").html("Unknown invitation code. Please try again.");
+						}
+					}, "json");
+				} else {
+					$("#message").html("Must be a combination of 14 letters and numbers.");
+				}
+
+				return false;
+			});
+		});
+	</script>
+
+	<div id="content_view_5">
+		<h1><span>YOU ARE INVITED</span></h1>
+
+		<p>Performance is everything on the road or on the golf course, and this is your unique opportunity to experience both.  Please join us at the Cadillac Innovation Golf Clinic where you can experience the latest innovation from both Cadillac and Callaway.</p>  <p>Test drive the entire Cadillac line-up, from the sleek CTS to the dramatically reengineered SRX Crossover to the untouchable Escalade.  Then put your own performance to the test with exclusive instruction by David Leadbetter, the &rdquo;Father of the modern golf swing.&ldquo; Presented by Cadillac&rsquo;s partners the David Leadbetter Golf Academy and Callaway.</p> <p>This exclusive event is by invitation only.  Attendance is limited, and registration is required for you and your guest.  Please register as soon as possible to reserve your place.</p>
+
+	</div>
+
+	<div id="invitation_control">
+		<h2>ENTER YOUR INVITATION CODE</h2>
+
+		<div id="invitation_wrapper">
+			<form id="inviteForm">
+		    	<input id="inviteCode" type="text" name="inviteCode" value="" />
+				<input type="image" src="views/5/assets/images/invitation_submit.gif" height="22" width="37" alt="go" id="view_21_submit"  />
+			</form>
+		</div>
+		<div id="message" style="color:#fff; font-size: 10px;"></div>
+	</div>
+</div> <!-- closes view -->
+
+
+<!-- example triggers for page calls
+
+<h2>Links to pages</h2>
+<ul>
+<li><a href="#" class="state_trigger" id="myid|*51">Unknown page</a></li>
+<li><a href="#" class="state_trigger" id="myid|*22">Event 2 / directions</a></li>
+</ul>
+<h2>Lightbox pages</h2>
+<script type="text/javascript">
+	$(document).ready(function () {
+	$("#page_contactus").fancybox({
+		'width'				: '50%',
+		'height'			: '33%',
+		'autoScale'			: false,
+		'padding'			: '10',
+		'centerOnScroll'	: true,
+		'titleShow'			: false,
+		'hideOnOverlayClick': true,
+		'showCloseButton'	: true,
+		'enableEscapeButton': true,
+		'showNavArrows'		: false,
+		'overlayShow'		: true,
+		'opacity'			: true,
+		'overlayOpacity'	: '0.2',
+		'overlayColor'		: '#000',
+		'speedIn'			: 300,
+		'transitionIn'		: 'fade',
+		'transitionOut'		: 'none',
+		'type'				: 'iframe',
+		'onStart'			: function(){
+			$.fn.econtrol.analytics('a');
+		}
+
+	});
+	});
+</script>
+
+
+
+<li><a id="page_contactus" href="wells/fb_control.cfm?state=32">Contact us</a></li>
+
+-->
+	
+
+
+							</div>
+						</div>
+					</div>
+					<div class="panel" id="panel2">
+						<div class="panel-wrapper">
+							<div id="sw3" class="well state_9" title="9,10,11">
+								
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+	No selected event in session.
+
+	
+
+
+							</div>
+							<div id="sw4" class="well state_12" title="12,13,14,15,34">
+								
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<div id="view_12" class="view_wrapper">
+	
+		No selected event in session.
+	
+</div>
+	
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="fw1" class="well state_16" title="16,17">
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<div id="view_16" class="view_wrapper" style="padding-top: 70px;"> 
+ 
+<img src="http://dev.eshotsinc.com/cadillac/http://dev.eshotsinc.com/cadillac/views/16/assets/images/facebook_badge.jpg" alt="facebook_badge" width="40" height="40" style="padding: 10px 0 0 50px;" /> 
+ 
+<div style="width:140px; overflow:hidden; height:62px; float:right; margin-right: 30px"> 
+ 
+<iframe src="http://www.facebook.com/plugins/likebox.php?href=http%3A%2F%2Fwww.facebook.com%2Fcadillac&amp;width=200&amp;colorscheme=dark&amp;show_faces=false&amp;stream=false&amp;header=false&amp;height=62" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:200px; height:62px; margin:-5px 0 0 -54px;" allowTransparency="true"></iframe> 
+ 
+</div> 
+ 
+</div> <!-- closes view -->
+	
+
+
+		</div>
+		<div id="fw2" class="well state_18" title="18,19,20">
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<div id="view_18" class="view_wrapper">
+
+	<script src="/cadillac/views/18/assets/jquery.simpleslider.js" type="text/javascript"></script>
+	<div class="simpleslider">
+		<div class="arrleft state_trigger arrow"></div>
+		<div class="spanel-wrapper">
+			<div class="spanel-container">
+				<div class="spanel">
+					<img src="http://dev.eshotsinc.com/cadillac/views/18/assets/images/golf0.gif" alt="" width="301" height="131" />
+				</div>	
+				<div class="spanel">
+					<img src="http://dev.eshotsinc.com/cadillac/views/18/assets/images/golf1.gif" alt="" width="301" height="131" />
+				</div>
+				<div class="spanel">
+					<img src="http://dev.eshotsinc.com/cadillac/views/18/assets/images/golf2.gif" alt="" width="301" height="131" />
+				</div>
+				<div class="spanel">
+					<img src="http://dev.eshotsinc.com/cadillac/views/18/assets/images/golf3.gif" alt="" width="301" height="131" />
+				</div>
+				<div class="spanel">
+					<img src="http://dev.eshotsinc.com/cadillac/views/18/assets/images/golf4.gif" alt="" width="301" height="131" />
+				</div>						
+			</div>
+		</div>
+		<div class="arrright state_trigger arrow"></div>
+		<div class="clear"></div>
+	</div> <!--close slider-->
+	
+</div> <!--close view-->
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#view_18 .simpleslider').simpleslider('init',{
+			slideEaseDuration: 	1000,
+			slideEaseFunction: 	"easeInOutExpo",
+			playspeed: 8000
+
+		});
+	});
+</script>
+
+
+
+	
+
+
+		</div>
+		<div id="fw3" class="well state_21" title="21,22,23">
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<div id="view_23" class="view_wrapper"> 
+ 
+<a href="http://www.cadillac.com" target="_blank" class="event_trigger" rel="visit cadillac.com" onclick="$(this).econtrol('trackevent')"><img src="http://dev.eshotsinc.com/cadillac/views/23/assets/images/cadillac_bg.jpg" alt="cadillac.com" width="277" height="131" /></a> 
+ 
+</div> <!-- closes view -->
+	
+
+
+		</div>
+
+		<div id="ftr" class="well state_24" title="24,25">
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<div id="view_24" class="view_wrapper">
+
+<script>
+	/*
+    jQuery("form#add_cv").submit ( function(){
+
+	    if( typeof( accept ) != 'undefined' ){
+	        if(accept){ return true }
+	    }
+
+        jQuery("#show_rules").fancybox({
+            'padding'       : 0,
+            'autoScale'     : false,
+            'autoDimensions': false,
+            'transitionIn'  : 'none',
+            'transitionOut' : 'none',
+            'width'     	: 600,
+            'height'        : 450,
+            'titlePosition' : 'inside',
+            'scrolling' 	: 'no'
+        }).trigger('click');
+
+        jQuery('div#sb_buttons button#cancel_sb').click(function() {
+            $.fancybox.close();
+            return false;
+        });
+
+        jQuery('div#sb_buttons button#sb_form').click(function() {
+            accept=true;
+            $.fancybox.close();
+            return  true;
+        });
+    	return false;
+	});
+
+	*/
+
+
+	
+</script>
+
+<p id="chat"></p><!-- don't delete -->
+
+<p>
+	<ul id="logos">
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+	</ul>
+
+	<ul id="footer_menu">
+		<li><a href="/cadillac/#-1*0" >HOME</a>|</li>
+		<li><a id="ftr_contact|*28" class="state_trigger" href="#">CONTACT US</a>|</li>
+		<li><a id="ftr_faqs|*31" class="state_trigger" href="#">FAQs</a>|</li>
+		<li><a href="http://www.gm.com/privacy/" target="_blank" class="event_trigger" rel="privacy policy" onclick="$(this).econtrol('trackevent')">PRIVACY POLICY</a></li>
+	</ul>
+</p>
+
+
+</div><!-- closes view -->
+	
+
+
+		</div>
+
+	</div> <!-- closes wrapper -->
+
+	
+	
+
+	<ul id="sitemap">
+		<li><a id="page0" rel="sw2=7-1" href="home">HOME</a>
+			<ul>
+				
+					
+					<li><a id="page17973_0" href="17973/details" rel="sw3=0&sw4=0-2">FORT WORTH, TX MAY 23</a>
+						<ul>
+							<li><a id="page17973_2" href="17973/video" rel="sw4=34-2">VIDEO</a></li>
+							<li><a id="page17973_3" href="17973/user_video" rel="sw4=14-2">VIDEO</a></li>
+							<li><a id="page17973_4" href="17973/photos" rel="sw4=15-2">PHOTO GALLERY</a></li>
+							<li><a class="trigger_lightbox" id="page17973_26" href="17973/registration">REGISTRATION</a></li>
+							<li><a class="trigger_lightbox" id="page17973_27" href="17973/post_event_survey">POST EVENT SURVEY</a></li>
+							<li><a class="trigger_lightbox" id="page17973_29" href="17973/invite_friend">INVITE A FRIEND</a></li>
+							<li><a class="trigger_lightbox" id="page17973_35" href="17973/more_details">MORE INFORMATION</a></li>
+							<li><a class="trigger_lightbox" id="page17973_37" href="17973/directions">DIRECTIONS</a></li>
+						</ul>
+					</li>
+				
+					
+					<li><a id="page17974_0" href="17974/details" rel="sw3=0&sw4=0-2">HOUSTON, TX JUN 6</a>
+						<ul>
+							<li><a id="page17974_2" href="17974/video" rel="sw4=34-2">VIDEO</a></li>
+							<li><a id="page17974_3" href="17974/user_video" rel="sw4=14-2">VIDEO</a></li>
+							<li><a id="page17974_4" href="17974/photos" rel="sw4=15-2">PHOTO GALLERY</a></li>
+							<li><a class="trigger_lightbox" id="page17974_26" href="17974/registration">REGISTRATION</a></li>
+							<li><a class="trigger_lightbox" id="page17974_27" href="17974/post_event_survey">POST EVENT SURVEY</a></li>
+							<li><a class="trigger_lightbox" id="page17974_29" href="17974/invite_friend">INVITE A FRIEND</a></li>
+							<li><a class="trigger_lightbox" id="page17974_35" href="17974/more_details">MORE INFORMATION</a></li>
+							<li><a class="trigger_lightbox" id="page17974_37" href="17974/directions">DIRECTIONS</a></li>
+						</ul>
+					</li>
+				
+				<li><a class="trigger_lightbox" id="page28" href="home/contact">CONTACT</a>
+				<li><a class="trigger_lightbox" id="page31" href="home/faqs">FAQs</a>
+				<li><a class="trigger_lightbox" id="page32" href="home/login">LOGIN</a>
+				<li><a id="page8" href="/video_message" rel="sw1=4&sw2=8-1">VIDEO</a><li>
+			</ul>
+		</li>
+	</ul>
+
+	
+	<div style="width:940px; margin: 0 auto;">
+		<input type="button" value="+" onclick="document.getElementById('cfdebug').style.display = 'block'">
+		<input type="button" value="-" onclick="document.getElementById('cfdebug').style.display = 'none'">
+
+		<div id="cfdebug" class="well state_cfdebug" title="cfdebug" style="display:none;">
+			
+
+
+<div style="background-color:#FAFAD7;">
+    <br/>
+	SESSION: 
+<style>
+table.cfdump_wddx,
+table.cfdump_xml,
+table.cfdump_struct,
+table.cfdump_array,
+table.cfdump_query,
+table.cfdump_cfc,
+table.cfdump_object,
+table.cfdump_binary,
+table.cfdump_udf,
+table.cfdump_udfbody,
+table.cfdump_udfarguments {
+	font-size: xx-small;
+	font-family: verdana, arial, helvetica, sans-serif;
+	cell-spacing: 2px;
+}
+
+table.cfdump_wddx th,
+table.cfdump_xml th,
+table.cfdump_struct th,
+table.cfdump_array th,
+table.cfdump_query th,
+table.cfdump_cfc th,
+table.cfdump_object th,
+table.cfdump_binary th,
+table.cfdump_udf th,
+table.cfdump_udfbody th,
+table.cfdump_udfarguments th {
+	text-align: left;
+	color: white;
+	padding: 5px;
+}
+
+table.cfdump_wddx td,
+table.cfdump_xml td,
+table.cfdump_struct td,
+table.cfdump_array td,
+table.cfdump_query td,
+table.cfdump_cfc td,
+table.cfdump_object td,
+table.cfdump_binary td,
+table.cfdump_udf td,
+table.cfdump_udfbody td,
+table.cfdump_udfarguments td {
+	padding: 3px;
+	background-color: #ffffff;
+	vertical-align : top;
+}
+
+table.cfdump_wddx {
+	background-color: #000000;
+}
+table.cfdump_wddx th.wddx {
+	background-color: #444444;
+}
+
+
+table.cfdump_xml {
+	background-color: #888888;
+}
+table.cfdump_xml th.xml {
+	background-color: #aaaaaa;
+}
+table.cfdump_xml td.xml {
+	background-color: #dddddd;
+}
+
+table.cfdump_struct {
+	background-color: #0000cc ;
+}
+table.cfdump_struct th.struct {
+	background-color: #4444cc ;
+}
+table.cfdump_struct td.struct {
+	background-color: #ccddff;
+}
+
+table.cfdump_array {
+	background-color: #006600 ;
+}
+table.cfdump_array th.array {
+	background-color: #009900 ;
+}
+table.cfdump_array td.array {
+	background-color: #ccffcc ;
+}
+
+table.cfdump_query {
+	background-color: #884488 ;
+}
+table.cfdump_query th.query {
+	background-color: #aa66aa ;
+}
+table.cfdump_query td.query {
+	background-color: #ffddff ;
+}
+
+
+table.cfdump_cfc {
+	background-color: #ff0000;
+}
+table.cfdump_cfc th.cfc{
+	background-color: #ff4444;
+}
+table.cfdump_cfc td.cfc {
+	background-color: #ffcccc;
+}
+
+
+table.cfdump_object {
+	background-color : #ff0000;
+}
+table.cfdump_object th.object{
+	background-color: #ff4444;
+}
+
+table.cfdump_binary {
+	background-color : #eebb00;
+}
+table.cfdump_binary th.binary {
+	background-color: #ffcc44;
+}
+table.cfdump_binary td {
+	font-size: x-small;
+}
+table.cfdump_udf {
+	background-color: #aa4400;
+}
+table.cfdump_udf th.udf {
+	background-color: #cc6600;
+}
+table.cfdump_udfarguments {
+	background-color: #dddddd;
+	cell-spacing: 3;
+}
+table.cfdump_udfarguments th {
+	background-color: #eeeeee;
+	color: #000000;
+}
+
+</style>
+	
+<script language="JavaScript">
+	function dump ( obj ) {
+		var out = '' ;
+		if ( typeof obj == "object" ) {
+			for ( key in obj ) {
+				if ( typeof obj[key] != "function" ) out += key + ': ' + obj[key] + '<br>' ;
+			}
+		}
+	}
+
+
+	function cfdump_toggleRow(source) {
+		//target is the right cell
+		if(document.all) target = source.parentElement.cells[1];
+		else target = source.parentNode.lastChild ;
+
+		cfdump_toggleTarget( target, cfdump_toggleSource( source ) ) ;
+	}
+
+	function cfdump_toggleXmlDoc(source) {
+
+		var caption = source.innerHTML.split( ' [' ) ;
+
+		// toggle source (header)
+		if ( source.style.fontStyle == 'italic' ) {
+			// closed -> short
+			source.style.fontStyle = 'normal' ;
+			source.innerHTML = caption[0] + ' [short version]' ;
+			source.title = 'click to maximize' ;
+			switchLongToState = 'closed' ;
+			switchShortToState = 'open' ;
+		} else if ( source.innerHTML.indexOf('[short version]') != -1 ) {
+			// short -> full
+			source.innerHTML = caption[0] + ' [long version]' ;
+			source.title = 'click to collapse' ;
+			switchLongToState = 'open' ;
+			switchShortToState = 'closed' ;
+		} else {
+			// full -> closed
+			source.style.fontStyle = 'italic' ;
+			source.title = 'click to expand' ;
+			source.innerHTML = caption[0] ;
+			switchLongToState = 'closed' ;
+			switchShortToState = 'closed' ;
+		}
+
+		// Toggle the target (everething below the header row).
+		// First two rows are XMLComment and XMLRoot - they are part
+		// of the long dump, the rest are direct children - part of the
+		// short dump
+		if(document.all) {
+			var table = source.parentElement.parentElement ;
+			for ( var i = 1; i < table.rows.length; i++ ) {
+				target = table.rows[i] ;
+				if ( i < 3 ) cfdump_toggleTarget( target, switchLongToState ) ;
+				else cfdump_toggleTarget( target, switchShortToState ) ;
+			}
+		}
+		else {
+			var table = source.parentNode.parentNode ;
+			var row = 1;
+			for ( var i = 1; i < table.childNodes.length; i++ ) {
+				target = table.childNodes[i] ;
+				if( target.style ) {
+					if ( row < 3 ) {
+						cfdump_toggleTarget( target, switchLongToState ) ;
+					} else {
+						cfdump_toggleTarget( target, switchShortToState ) ;
+					}
+					row++;
+				}
+			}
+		}
+	}
+
+	function cfdump_toggleTable(source) {
+
+		var switchToState = cfdump_toggleSource( source ) ;
+		if(document.all) {
+			var table = source.parentElement.parentElement ;
+			for ( var i = 1; i < table.rows.length; i++ ) {
+				target = table.rows[i] ;
+				cfdump_toggleTarget( target, switchToState ) ;
+			}
+		}
+		else {
+			var table = source.parentNode.parentNode ;
+			for ( var i = 1; i < table.childNodes.length; i++ ) {
+				target = table.childNodes[i] ;
+				if(target.style) {
+					cfdump_toggleTarget( target, switchToState ) ;
+				}
+			}
+		}
+	}
+
+	function cfdump_toggleSource ( source ) {
+	    if ( source.style.fontStyle == 'italic' || source.style.fontStyle == null) {
+			source.style.fontStyle = 'normal' ;
+			source.title = 'click to collapse' ;
+			return 'open' ;
+		} else {
+			source.style.fontStyle = 'italic' ;
+			source.title = 'click to expand' ;
+			return 'closed' ;
+		}
+	}
+
+	function cfdump_toggleTarget ( target, switchToState ) {
+		if ( switchToState == 'open' )	target.style.display = '' ;
+		else target.style.display = 'none' ;
+	}
+</script>
+		
+		
+		<table class="cfdump_struct">
+		<tr><th class="struct" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">struct</th></tr>
+		
+	
+		
+		
+		
+	
+		
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">cfid</td>
+			<td>
+	
+	        
+				
+					
+	
+		2088
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">cftoken</td>
+			<td>
+	
+	        
+				
+					
+	
+		41126329
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">events</td>
+			<td>
+	
+	        
+				
+					
+	
+		<table class="cfdump_array">
+		<tr><th class="array" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">array
+		</th></tr>
+		
+	
+		
+		
+		
+			
+			<tr><td class="array" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">1</td>
+			<td>
+	
+			
+				
+		
+		<table class="cfdump_struct">
+		<tr><th class="struct" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">struct</th></tr>
+		
+	
+		
+		
+		
+	
+		
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">address1</td>
+			<td>
+	
+	        
+				
+					
+	
+		6600 Mira Vista Boulevard
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">address2</td>
+			<td>
+	
+	        
+				
+					
+	
+		[empty string]
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">capacity</td>
+			<td>
+	
+	        
+				
+					
+	
+		1000
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">city</td>
+			<td>
+	
+	        
+				
+					
+	
+		Fort Worth
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">description</td>
+			<td>
+	
+	        
+				
+					
+	
+		[empty string]
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">directions</td>
+			<td>
+	
+	        
+				
+					
+	
+		http://www.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=6600+Mira+Vista+Boulevard,+Fort+Worth,+TX&amp;aq=0&amp;sll=37.0625,-95.677068&amp;sspn=52.815565,84.287109&amp;ie=UTF8&amp;hq=&amp;hnear=6600+Mira+Vista+Blvd,+Fort+Worth,+Texas+76132&amp;z=17
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">eventdays</td>
+			<td>
+	
+	        
+				
+					
+	
+		<table class="cfdump_array">
+		<tr><th class="array" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">array
+		</th></tr>
+		
+	
+		
+		
+		
+			
+			<tr><td class="array" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">1</td>
+			<td>
+	
+			
+				
+		
+		<table class="cfdump_struct">
+		<tr><th class="struct" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">struct</th></tr>
+		
+	
+		
+		
+		
+	
+		
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">date</td>
+			<td>
+	
+	        
+				
+					
+	
+		{ts '2011-05-23 00:00:00'}
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">id</td>
+			<td>
+	
+	        
+				
+					
+	
+		64690
+		
+	
+				
+				
+	
+			</td></tr>
+		
+	
+		
+		</table>
+		
+	
+			
+	
+			</td></tr>
+		
+	
+		
+		</table>
+	
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">eventurl</td>
+			<td>
+	
+	        
+				
+					
+	
+		http://www.regonline.com/Register/Checkin.aspx?EventID=953183
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">id</td>
+			<td>
+	
+	        
+				
+					
+	
+		17973
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">image</td>
+			<td>
+	
+	        
+				
+					
+	
+		[empty string]
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">location</td>
+			<td>
+	
+	        
+				
+					
+	
+		Fort Worth, TX
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">registrants</td>
+			<td>
+	
+	        
+				
+					
+	
+		12
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">state</td>
+			<td>
+	
+	        
+				
+					
+	
+		TX
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">venue</td>
+			<td>
+	
+	        
+				
+					
+	
+		Mira Vista Golf Club
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">zipcode</td>
+			<td>
+	
+	        
+				
+					
+	
+		76132
+		
+	
+				
+				
+	
+			</td></tr>
+		
+	
+		
+		</table>
+		
+	
+			
+	
+			</td></tr>
+		
+			
+			<tr><td class="array" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">2</td>
+			<td>
+	
+			
+				
+		
+		<table class="cfdump_struct">
+		<tr><th class="struct" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">struct</th></tr>
+		
+	
+		
+		
+		
+	
+		
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">address1</td>
+			<td>
+	
+	        
+				
+					
+	
+		2910 Royal Oaks Club Drive
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">address2</td>
+			<td>
+	
+	        
+				
+					
+	
+		[empty string]
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">capacity</td>
+			<td>
+	
+	        
+				
+					
+	
+		1000
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">city</td>
+			<td>
+	
+	        
+				
+					
+	
+		Houston
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">description</td>
+			<td>
+	
+	        
+				
+					
+	
+		[empty string]
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">directions</td>
+			<td>
+	
+	        
+				
+					
+	
+		http://www.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=2910+Royal+Oaks+Club+Drive,+Houston,+TX&amp;aq=0&amp;sll=34.004371,-84.110737&amp;sspn=0.006822,0.010289&amp;ie=UTF8&amp;hq=&amp;hnear=2910+Royal+Oaks+Club+Dr,+Houston,+Texas+77082&amp;z=17
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">eventdays</td>
+			<td>
+	
+	        
+				
+					
+	
+		<table class="cfdump_array">
+		<tr><th class="array" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">array
+		</th></tr>
+		
+	
+		
+		
+		
+			
+			<tr><td class="array" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">1</td>
+			<td>
+	
+			
+				
+		
+		<table class="cfdump_struct">
+		<tr><th class="struct" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">struct</th></tr>
+		
+	
+		
+		
+		
+	
+		
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">date</td>
+			<td>
+	
+	        
+				
+					
+	
+		{ts '2011-06-06 00:00:00'}
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">id</td>
+			<td>
+	
+	        
+				
+					
+	
+		64691
+		
+	
+				
+				
+	
+			</td></tr>
+		
+	
+		
+		</table>
+		
+	
+			
+	
+			</td></tr>
+		
+	
+		
+		</table>
+	
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">eventurl</td>
+			<td>
+	
+	        
+				
+					
+	
+		http://www.regonline.com/Register/Checkin.aspx?EventID=961068
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">id</td>
+			<td>
+	
+	        
+				
+					
+	
+		17974
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">image</td>
+			<td>
+	
+	        
+				
+					
+	
+		0_z14x4bz5
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">location</td>
+			<td>
+	
+	        
+				
+					
+	
+		Houston, TX
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">registrants</td>
+			<td>
+	
+	        
+				
+					
+	
+		10
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">state</td>
+			<td>
+	
+	        
+				
+					
+	
+		TX
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">venue</td>
+			<td>
+	
+	        
+				
+					
+	
+		Royal Oaks Country Club
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">zipcode</td>
+			<td>
+	
+	        
+				
+					
+	
+		77082
+		
+	
+				
+				
+	
+			</td></tr>
+		
+	
+		
+		</table>
+		
+	
+			
+	
+			</td></tr>
+		
+	
+		
+		</table>
+	
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">isfromemail</td>
+			<td>
+	
+	        
+				
+					
+	
+		true
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">isviral</td>
+			<td>
+	
+	        
+				
+					
+	
+		false
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">relocate</td>
+			<td>
+	
+	        
+				
+					
+	
+		false
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">sessionid</td>
+			<td>
+	
+	        
+				
+					
+	
+		TEST SITE 61_2088_41126329
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">urltoken</td>
+			<td>
+	
+	        
+				
+					
+	
+		CFID=2088&amp;CFTOKEN=41126329
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">videocode</td>
+			<td>
+	
+	        
+				
+					
+	
+		0_3bpt3567
+		
+	
+				
+				
+	
+			</td></tr>
+		
+	
+		
+		</table>
+		
+	
+
+<br/>
+    COOKIE: 
+<style>
+table.cfdump_wddx,
+table.cfdump_xml,
+table.cfdump_struct,
+table.cfdump_array,
+table.cfdump_query,
+table.cfdump_cfc,
+table.cfdump_object,
+table.cfdump_binary,
+table.cfdump_udf,
+table.cfdump_udfbody,
+table.cfdump_udfarguments {
+	font-size: xx-small;
+	font-family: verdana, arial, helvetica, sans-serif;
+	cell-spacing: 2px;
+}
+
+table.cfdump_wddx th,
+table.cfdump_xml th,
+table.cfdump_struct th,
+table.cfdump_array th,
+table.cfdump_query th,
+table.cfdump_cfc th,
+table.cfdump_object th,
+table.cfdump_binary th,
+table.cfdump_udf th,
+table.cfdump_udfbody th,
+table.cfdump_udfarguments th {
+	text-align: left;
+	color: white;
+	padding: 5px;
+}
+
+table.cfdump_wddx td,
+table.cfdump_xml td,
+table.cfdump_struct td,
+table.cfdump_array td,
+table.cfdump_query td,
+table.cfdump_cfc td,
+table.cfdump_object td,
+table.cfdump_binary td,
+table.cfdump_udf td,
+table.cfdump_udfbody td,
+table.cfdump_udfarguments td {
+	padding: 3px;
+	background-color: #ffffff;
+	vertical-align : top;
+}
+
+table.cfdump_wddx {
+	background-color: #000000;
+}
+table.cfdump_wddx th.wddx {
+	background-color: #444444;
+}
+
+
+table.cfdump_xml {
+	background-color: #888888;
+}
+table.cfdump_xml th.xml {
+	background-color: #aaaaaa;
+}
+table.cfdump_xml td.xml {
+	background-color: #dddddd;
+}
+
+table.cfdump_struct {
+	background-color: #0000cc ;
+}
+table.cfdump_struct th.struct {
+	background-color: #4444cc ;
+}
+table.cfdump_struct td.struct {
+	background-color: #ccddff;
+}
+
+table.cfdump_array {
+	background-color: #006600 ;
+}
+table.cfdump_array th.array {
+	background-color: #009900 ;
+}
+table.cfdump_array td.array {
+	background-color: #ccffcc ;
+}
+
+table.cfdump_query {
+	background-color: #884488 ;
+}
+table.cfdump_query th.query {
+	background-color: #aa66aa ;
+}
+table.cfdump_query td.query {
+	background-color: #ffddff ;
+}
+
+
+table.cfdump_cfc {
+	background-color: #ff0000;
+}
+table.cfdump_cfc th.cfc{
+	background-color: #ff4444;
+}
+table.cfdump_cfc td.cfc {
+	background-color: #ffcccc;
+}
+
+
+table.cfdump_object {
+	background-color : #ff0000;
+}
+table.cfdump_object th.object{
+	background-color: #ff4444;
+}
+
+table.cfdump_binary {
+	background-color : #eebb00;
+}
+table.cfdump_binary th.binary {
+	background-color: #ffcc44;
+}
+table.cfdump_binary td {
+	font-size: x-small;
+}
+table.cfdump_udf {
+	background-color: #aa4400;
+}
+table.cfdump_udf th.udf {
+	background-color: #cc6600;
+}
+table.cfdump_udfarguments {
+	background-color: #dddddd;
+	cell-spacing: 3;
+}
+table.cfdump_udfarguments th {
+	background-color: #eeeeee;
+	color: #000000;
+}
+
+</style>
+	
+<script language="JavaScript">
+	function dump ( obj ) {
+		var out = '' ;
+		if ( typeof obj == "object" ) {
+			for ( key in obj ) {
+				if ( typeof obj[key] != "function" ) out += key + ': ' + obj[key] + '<br>' ;
+			}
+		}
+	}
+
+
+	function cfdump_toggleRow(source) {
+		//target is the right cell
+		if(document.all) target = source.parentElement.cells[1];
+		else target = source.parentNode.lastChild ;
+
+		cfdump_toggleTarget( target, cfdump_toggleSource( source ) ) ;
+	}
+
+	function cfdump_toggleXmlDoc(source) {
+
+		var caption = source.innerHTML.split( ' [' ) ;
+
+		// toggle source (header)
+		if ( source.style.fontStyle == 'italic' ) {
+			// closed -> short
+			source.style.fontStyle = 'normal' ;
+			source.innerHTML = caption[0] + ' [short version]' ;
+			source.title = 'click to maximize' ;
+			switchLongToState = 'closed' ;
+			switchShortToState = 'open' ;
+		} else if ( source.innerHTML.indexOf('[short version]') != -1 ) {
+			// short -> full
+			source.innerHTML = caption[0] + ' [long version]' ;
+			source.title = 'click to collapse' ;
+			switchLongToState = 'open' ;
+			switchShortToState = 'closed' ;
+		} else {
+			// full -> closed
+			source.style.fontStyle = 'italic' ;
+			source.title = 'click to expand' ;
+			source.innerHTML = caption[0] ;
+			switchLongToState = 'closed' ;
+			switchShortToState = 'closed' ;
+		}
+
+		// Toggle the target (everething below the header row).
+		// First two rows are XMLComment and XMLRoot - they are part
+		// of the long dump, the rest are direct children - part of the
+		// short dump
+		if(document.all) {
+			var table = source.parentElement.parentElement ;
+			for ( var i = 1; i < table.rows.length; i++ ) {
+				target = table.rows[i] ;
+				if ( i < 3 ) cfdump_toggleTarget( target, switchLongToState ) ;
+				else cfdump_toggleTarget( target, switchShortToState ) ;
+			}
+		}
+		else {
+			var table = source.parentNode.parentNode ;
+			var row = 1;
+			for ( var i = 1; i < table.childNodes.length; i++ ) {
+				target = table.childNodes[i] ;
+				if( target.style ) {
+					if ( row < 3 ) {
+						cfdump_toggleTarget( target, switchLongToState ) ;
+					} else {
+						cfdump_toggleTarget( target, switchShortToState ) ;
+					}
+					row++;
+				}
+			}
+		}
+	}
+
+	function cfdump_toggleTable(source) {
+
+		var switchToState = cfdump_toggleSource( source ) ;
+		if(document.all) {
+			var table = source.parentElement.parentElement ;
+			for ( var i = 1; i < table.rows.length; i++ ) {
+				target = table.rows[i] ;
+				cfdump_toggleTarget( target, switchToState ) ;
+			}
+		}
+		else {
+			var table = source.parentNode.parentNode ;
+			for ( var i = 1; i < table.childNodes.length; i++ ) {
+				target = table.childNodes[i] ;
+				if(target.style) {
+					cfdump_toggleTarget( target, switchToState ) ;
+				}
+			}
+		}
+	}
+
+	function cfdump_toggleSource ( source ) {
+	    if ( source.style.fontStyle == 'italic' || source.style.fontStyle == null) {
+			source.style.fontStyle = 'normal' ;
+			source.title = 'click to collapse' ;
+			return 'open' ;
+		} else {
+			source.style.fontStyle = 'italic' ;
+			source.title = 'click to expand' ;
+			return 'closed' ;
+		}
+	}
+
+	function cfdump_toggleTarget ( target, switchToState ) {
+		if ( switchToState == 'open' )	target.style.display = '' ;
+		else target.style.display = 'none' ;
+	}
+</script>
+		
+		
+		<table class="cfdump_struct">
+		<tr><th class="struct" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">struct</th></tr>
+		
+	
+		
+		
+		
+	
+		
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">CFID</td>
+			<td>
+	
+	        
+				
+					
+	
+		2088
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">CFTOKEN</td>
+			<td>
+	
+	        
+				
+					
+	
+		41126329
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">__utma</td>
+			<td>
+	
+	        
+				
+					
+	
+		99103243.2061589586.1302024771.1302024771.1302179829.2
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">__utmb</td>
+			<td>
+	
+	        
+				
+					
+	
+		99103243.3.10.1302179829
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">__utmc</td>
+			<td>
+	
+	        
+				
+					
+	
+		99103243
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">__utmz</td>
+			<td>
+	
+	        
+				
+					
+	
+		99103243.1302024771.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)
+		
+	
+				
+				
+	
+			</td></tr>
+		
+	
+		
+		</table>
+		
+	
+
+<br/>
+	APPLICATION: 
+<style>
+table.cfdump_wddx,
+table.cfdump_xml,
+table.cfdump_struct,
+table.cfdump_array,
+table.cfdump_query,
+table.cfdump_cfc,
+table.cfdump_object,
+table.cfdump_binary,
+table.cfdump_udf,
+table.cfdump_udfbody,
+table.cfdump_udfarguments {
+	font-size: xx-small;
+	font-family: verdana, arial, helvetica, sans-serif;
+	cell-spacing: 2px;
+}
+
+table.cfdump_wddx th,
+table.cfdump_xml th,
+table.cfdump_struct th,
+table.cfdump_array th,
+table.cfdump_query th,
+table.cfdump_cfc th,
+table.cfdump_object th,
+table.cfdump_binary th,
+table.cfdump_udf th,
+table.cfdump_udfbody th,
+table.cfdump_udfarguments th {
+	text-align: left;
+	color: white;
+	padding: 5px;
+}
+
+table.cfdump_wddx td,
+table.cfdump_xml td,
+table.cfdump_struct td,
+table.cfdump_array td,
+table.cfdump_query td,
+table.cfdump_cfc td,
+table.cfdump_object td,
+table.cfdump_binary td,
+table.cfdump_udf td,
+table.cfdump_udfbody td,
+table.cfdump_udfarguments td {
+	padding: 3px;
+	background-color: #ffffff;
+	vertical-align : top;
+}
+
+table.cfdump_wddx {
+	background-color: #000000;
+}
+table.cfdump_wddx th.wddx {
+	background-color: #444444;
+}
+
+
+table.cfdump_xml {
+	background-color: #888888;
+}
+table.cfdump_xml th.xml {
+	background-color: #aaaaaa;
+}
+table.cfdump_xml td.xml {
+	background-color: #dddddd;
+}
+
+table.cfdump_struct {
+	background-color: #0000cc ;
+}
+table.cfdump_struct th.struct {
+	background-color: #4444cc ;
+}
+table.cfdump_struct td.struct {
+	background-color: #ccddff;
+}
+
+table.cfdump_array {
+	background-color: #006600 ;
+}
+table.cfdump_array th.array {
+	background-color: #009900 ;
+}
+table.cfdump_array td.array {
+ 
+	background-color: #ccffcc ;
+}
+
+table.cfdump_query {
+	background-color: #884488 ;
+}
+table.cfdump_query th.query {
+	background-color: #aa66aa ;
+}
+table.cfdump_query td.query {
+	background-color: #ffddff ;
+}
+
+
+table.cfdump_cfc {
+	background-color: #ff0000;
+}
+table.cfdump_cfc th.cfc{
+	background-color: #ff4444;
+}
+table.cfdump_cfc td.cfc {
+	background-color: #ffcccc;
+}
+
+
+table.cfdump_object {
+	background-color : #ff0000;
+}
+table.cfdump_object th.object{
+	background-color: #ff4444;
+}
+
+table.cfdump_binary {
+	background-color : #eebb00;
+}
+table.cfdump_binary th.binary {
+	background-color: #ffcc44;
+}
+table.cfdump_binary td {
+	font-size: x-small;
+}
+table.cfdump_udf {
+	background-color: #aa4400;
+}
+table.cfdump_udf th.udf {
+	background-color: #cc6600;
+}
+table.cfdump_udfarguments {
+	background-color: #dddddd;
+	cell-spacing: 3;
+}
+table.cfdump_udfarguments th {
+	background-color: #eeeeee;
+	color: #000000;
+}
+
+</style>
+	
+<script language="JavaScript">
+	function dump ( obj ) {
+		var out = '' ;
+		if ( typeof obj == "object" ) {
+			for ( key in obj ) {
+				if ( typeof obj[key] != "function" ) out += key + ': ' + obj[key] + '<br>' ;
+			}
+		}
+	}
+
+
+	function cfdump_toggleRow(source) {
+		//target is the right cell
+		if(document.all) target = source.parentElement.cells[1];
+		else target = source.parentNode.lastChild ;
+
+		cfdump_toggleTarget( target, cfdump_toggleSource( source ) ) ;
+	}
+
+	function cfdump_toggleXmlDoc(source) {
+
+		var caption = source.innerHTML.split( ' [' ) ;
+
+		// toggle source (header)
+		if ( source.style.fontStyle == 'italic' ) {
+			// closed -> short
+			source.style.fontStyle = 'normal' ;
+			source.innerHTML = caption[0] + ' [short version]' ;
+			source.title = 'click to maximize' ;
+			switchLongToState = 'closed' ;
+			switchShortToState = 'open' ;
+		} else if ( source.innerHTML.indexOf('[short version]') != -1 ) {
+			// short -> full
+			source.innerHTML = caption[0] + ' [long version]' ;
+			source.title = 'click to collapse' ;
+			switchLongToState = 'open' ;
+			switchShortToState = 'closed' ;
+		} else {
+			// full -> closed
+			source.style.fontStyle = 'italic' ;
+			source.title = 'click to expand' ;
+			source.innerHTML = caption[0] ;
+			switchLongToState = 'closed' ;
+			switchShortToState = 'closed' ;
+		}
+
+		// Toggle the target (everething below the header row).
+		// First two rows are XMLComment and XMLRoot - they are part
+		// of the long dump, the rest are direct children - part of the
+		// short dump
+		if(document.all) {
+			var table = source.parentElement.parentElement ;
+			for ( var i = 1; i < table.rows.length; i++ ) {
+				target = table.rows[i] ;
+				if ( i < 3 ) cfdump_toggleTarget( target, switchLongToState ) ;
+				else cfdump_toggleTarget( target, switchShortToState ) ;
+			}
+		}
+		else {
+			var table = source.parentNode.parentNode ;
+			var row = 1;
+			for ( var i = 1; i < table.childNodes.length; i++ ) {
+				target = table.childNodes[i] ;
+				if( target.style ) {
+					if ( row < 3 ) {
+						cfdump_toggleTarget( target, switchLongToState ) ;
+					} else {
+						cfdump_toggleTarget( target, switchShortToState ) ;
+					}
+					row++;
+				}
+			}
+		}
+	}
+
+	function cfdump_toggleTable(source) {
+
+		var switchToState = cfdump_toggleSource( source ) ;
+		if(document.all) {
+			var table = source.parentElement.parentElement ;
+			for ( var i = 1; i < table.rows.length; i++ ) {
+				target = table.rows[i] ;
+				cfdump_toggleTarget( target, switchToState ) ;
+			}
+		}
+		else {
+			var table = source.parentNode.parentNode ;
+			for ( var i = 1; i < table.childNodes.length; i++ ) {
+				target = table.childNodes[i] ;
+				if(target.style) {
+					cfdump_toggleTarget( target, switchToState ) ;
+				}
+			}
+		}
+	}
+
+	function cfdump_toggleSource ( source ) {
+	    if ( source.style.fontStyle == 'italic' || source.style.fontStyle == null) {
+			source.style.fontStyle = 'normal' ;
+			source.title = 'click to collapse' ;
+			return 'open' ;
+		} else {
+			source.style.fontStyle = 'italic' ;
+			source.title = 'click to expand' ;
+			return 'closed' ;
+		}
+	}
+
+	function cfdump_toggleTarget ( target, switchToState ) {
+		if ( switchToState == 'open' )	target.style.display = '' ;
+		else target.style.display = 'none' ;
+	}
+</script>
+		
+		
+		<table class="cfdump_struct">
+		<tr><th class="struct" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">struct</th></tr>
+		
+	
+		
+		
+		
+	
+		
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_applicationdir</td>
+			<td>
+	
+	        
+				
+					
+	
+		/cadillac/
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_applicationname</td>
+			<td>
+	
+	        
+				
+					
+	
+		Test Site 61
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_applicationversion</td>
+			<td>
+	
+	        
+				
+					
+	
+		1.0.1
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_campaignid</td>
+			<td>
+	
+	        
+				
+					
+	
+		11434
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_contactus</td>
+			<td>
+	
+	        
+				
+					
+	
+		nchugh@eshots.com
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_contactusfrom</td>
+			<td>
+	
+	        
+				
+					
+	
+		CadillacEventsTeam@URL.com
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_contactussubject</td>
+			<td>
+	
+	        
+				
+					
+	
+		Cadillac Message from Microsite
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_cssdir</td>
+			<td>
+	
+	        
+				
+					
+	
+		/cadillac/css/
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_datasource</td>
+			<td>
+	
+	        
+				
+					
+	
+		[empty string]
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_eventcom</td>
+			<td>
+	
+	        
+				
+					
+		
+			
+			<table class="cfdump_cfc">
+			<tr><th class="cfc" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">component
+				<a style="color: white;" href="/CFIDE/componentutils/CFCExplorer.cfc?method=getcfcinhtml&name=event">event</a></th>
+			</tr>
+			
+				
+				
+				
+				
+				
+	
+				
+				
+					
+					<tr valign="top">
+					<td class="cfc" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">GETEVENTS</td>
+					<td>
+						
+	
+	<table class="cfdump_udf" width="100%">
+	<tr><th class="udf" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">function getEvents</b></th></tr>
+	<tr>
+		<td>
+		<table class="cfdump_udfbody">
+		<tr>
+			
+			<td colspan="2">
+			<i>Arguments:</i>
+			<br>
+			<table class="cfdump_udfarguments">
+				<tr>
+					<th><b>Name</b></td>
+					<th><b>Required</b></td>
+					<th><b>Type</b></td>
+					<th><b>Default</b></td>
+				</tr>
+				
+				<tr>
+					<td>clientLicenseID</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+			</table>
+			
+		</tr>
+		<tr><td width="30%"><i>Return Type:</i></td>
+			<td>array<br></td>
+		</tr>
+		<tr><td><i>Roles:</i></td>
+			<td>&nbsp;<br></td>
+		</tr>
+		<tr><td><i>Access:</i></td>
+			<td>remote</br></td>
+		</tr>
+		<tr><td><i>Output:</i></td>
+			<td>false</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+	
+	
+					</td>
+					</tr>
+					
+				
+				
+				
+					
+					<tr valign="top">
+					<td class="cfc" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">SYNCEVENTS</td>
+					<td>
+						
+	
+	<table class="cfdump_udf" width="100%">
+	<tr><th class="udf" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">function syncEvents</b></th></tr>
+	<tr>
+		<td>
+		<table class="cfdump_udfbody">
+		<tr>
+			
+			<td colspan="2">
+			<i>Arguments:</i>
+			<br>
+			<table class="cfdump_udfarguments">
+				<tr>
+					<th><b>Name</b></td>
+					<th><b>Required</b></td>
+					<th><b>Type</b></td>
+					<th><b>Default</b></td>
+				</tr>
+				
+				<tr>
+					<td>clientLicenseID</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+			</table>
+			
+		</tr>
+		<tr><td width="30%"><i>Return Type:</i></td>
+			<td>numeric<br></td>
+		</tr>
+		<tr><td><i>Roles:</i></td>
+			<td>&nbsp;<br></td>
+		</tr>
+		<tr><td><i>Access:</i></td>
+			<td>remote</br></td>
+		</tr>
+		<tr><td><i>Output:</i></td>
+			<td>false</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+	
+	
+					</td>
+					</tr>
+					
+				
+				
+	
+			
+			</table>
+			
+	
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_facebookkey</td>
+			<td>
+	
+	        
+				
+					
+	
+		156963261031034
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_handlerdir</td>
+			<td>
+	
+	        
+				
+					
+	
+		/cadillac/handlers/
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_imgdir</td>
+			<td>
+	
+	        
+				
+					
+	
+		/cadillac/images/
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_invitefriend</td>
+			<td>
+	
+	        
+				
+					
+		
+			
+			<table class="cfdump_cfc">
+			<tr><th class="cfc" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">component
+				<a style="color: white;" href="/CFIDE/componentutils/CFCExplorer.cfc?method=getcfcinhtml&name=invitefriend">invitefriend</a></th>
+			</tr>
+			
+				
+				
+				
+				
+				
+				
+				
+	
+				
+				
+					
+					<tr valign="top">
+					<td class="cfc" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">CREATEEVENTTOKEN</td>
+					<td>
+						
+	
+	<table class="cfdump_udf" width="100%">
+	<tr><th class="udf" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">function CreateEventToken</b></th></tr>
+	<tr>
+		<td>
+		<table class="cfdump_udfbody">
+		<tr>
+			
+			<td colspan="2">
+			<i>Arguments:</i>
+			<br>
+			<table class="cfdump_udfarguments">
+				<tr>
+					<th><b>Name</b></td>
+					<th><b>Required</b></td>
+					<th><b>Type</b></td>
+					<th><b>Default</b></td>
+				</tr>
+				
+				<tr>
+					<td>num</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>prefix</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>
+	
+		M
+		
+	</td>
+				</tr>
+				
+			</table>
+			
+		</tr>
+		<tr><td width="30%"><i>Return Type:</i></td>
+			<td>string<br></td>
+		</tr>
+		<tr><td><i>Roles:</i></td>
+			<td>&nbsp;<br></td>
+		</tr>
+		<tr><td><i>Access:</i></td>
+			<td>public</br></td>
+		</tr>
+		<tr><td><i>Output:</i></td>
+			<td>false</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+	
+	
+					</td>
+					</tr>
+					
+				
+				
+				
+					
+					<tr valign="top">
+					<td class="cfc" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">CREATE_GUEST</td>
+					<td>
+						
+	
+	<table class="cfdump_udf" width="100%">
+	<tr><th class="udf" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">function create_guest</b></th></tr>
+	<tr>
+		<td>
+		<table class="cfdump_udfbody">
+		<tr>
+			
+			<td colspan="2">
+			<i>Arguments:</i>
+			<br>
+			<table class="cfdump_udfarguments">
+				<tr>
+					<th><b>Name</b></td>
+					<th><b>Required</b></td>
+					<th><b>Type</b></td>
+					<th><b>Default</b></td>
+				</tr>
+				
+				<tr>
+					<td>email</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>first_name</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>last_name</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>referring_consumer_id</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>r_elat_id</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>event_day_id</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>client_license_id</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+			</table>
+			
+		</tr>
+		<tr><td width="30%"><i>Return Type:</i></td>
+			<td>struct<br></td>
+		</tr>
+		<tr><td><i>Roles:</i></td>
+			<td>&nbsp;<br></td>
+		</tr>
+		<tr><td><i>Access:</i></td>
+			<td>remote</br></td>
+		</tr>
+		<tr><td><i>Output:</i></td>
+			<td>false</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+	
+	
+					</td>
+					</tr>
+					
+				
+				
+				
+					
+					<tr valign="top">
+					<td class="cfc" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">INVITEFRIEND</td>
+					<td>
+						
+	
+	<table class="cfdump_udf" width="100%">
+	<tr><th class="udf" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">function inviteFriend</b></th></tr>
+	<tr>
+		<td>
+		<table class="cfdump_udfbody">
+		<tr>
+			
+			<td colspan="2">
+			<i>Arguments:</i>
+			<br>
+			<table class="cfdump_udfarguments">
+				<tr>
+					<th><b>Name</b></td>
+					<th><b>Required</b></td>
+					<th><b>Type</b></td>
+					<th><b>Default</b></td>
+				</tr>
+				
+				<tr>
+					<td>mode</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>relat</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>ed</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>list_description</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>consumer_id</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>footprint_id</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>event_token_id</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>email</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>first_name</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+ 
+				<tr>
+					<td>generated_code</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+			</table>
+			
+		</tr>
+		<tr><td width="30%"><i>Return Type:</i></td>
+			<td>boolean<br></td>
+		</tr>
+		<tr><td><i>Roles:</i></td>
+			<td>&nbsp;<br></td>
+		</tr>
+		<tr><td><i>Access:</i></td>
+			<td>remote</br></td>
+		</tr>
+		<tr><td><i>Output:</i></td>
+			<td>false</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+	
+	
+					</td>
+					</tr>
+					
+				
+				
+	
+			
+			</table>
+			
+	
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_invitefriendrelatid</td>
+			<td>
+	
+	        
+				
+					
+	
+		18657
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_jsdir</td>
+			<td>
+	
+	        
+				
+					
+	
+		/cadillac/js/
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_prefixurl</td>
+			<td>
+	
+	        
+				
+					
+	
+		cadillac/
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_protocol</td>
+			<td>
+	
+	        
+				
+					
+	
+		http://
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_root</td>
+			<td>
+	
+	        
+				
+					
+	
+		/
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_scriptname</td>
+			<td>
+	
+	        
+				
+					
+	
+		/cadillac/index.cfm
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_servername</td>
+			<td>
+	
+	        
+				
+					
+	
+		dev1
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_servicedir</td>
+			<td>
+	
+	        
+				
+					
+	
+		/cadillac/services/
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_url</td>
+			<td>
+	
+	        
+				
+					
+	
+		http://dev1
+		
+	
+				
+				
+	
+			</td></tr>
+		
+			
+			
+			<tr><td class="struct" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">_usercom</td>
+			<td>
+	
+	        
+				
+					
+		
+			
+			<table class="cfdump_cfc">
+			<tr><th class="cfc" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">component
+				<a style="color: white;" href="/CFIDE/componentutils/CFCExplorer.cfc?method=getcfcinhtml&name=user">user</a></th>
+			</tr>
+			
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+	
+				
+				
+					
+					<tr valign="top">
+					<td class="cfc" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">GETUSERSBYEVENT</td>
+					<td>
+						
+	
+	<table class="cfdump_udf" width="100%">
+	<tr><th class="udf" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">function getUsersByEvent</b></th></tr>
+	<tr>
+		<td>
+		<table class="cfdump_udfbody">
+		<tr>
+			
+			<td colspan="2">
+			<i>Arguments:</i>
+			<br>
+			<table class="cfdump_udfarguments">
+				<tr>
+					<th><b>Name</b></td>
+					<th><b>Required</b></td>
+					<th><b>Type</b></td>
+					<th><b>Default</b></td>
+				</tr>
+				
+				<tr>
+					<td>eventID</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>dtStart</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+			</table>
+			
+		</tr>
+		<tr><td width="30%"><i>Return Type:</i></td>
+			<td>boolean<br></td>
+		</tr>
+		<tr><td><i>Roles:</i></td>
+			<td>&nbsp;<br></td>
+		</tr>
+		<tr><td><i>Access:</i></td>
+			<td>remote</br></td>
+		</tr>
+		<tr><td><i>Output:</i></td>
+			<td>false</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+	
+	
+					</td>
+					</tr>
+					
+				
+				
+				
+					
+					<tr valign="top">
+					<td class="cfc" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">GETUSER</td>
+					<td>
+						
+	
+	<table class="cfdump_udf" width="100%">
+	<tr><th class="udf" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">function getUser</b></th></tr>
+	<tr>
+		<td>
+		<table class="cfdump_udfbody">
+		<tr>
+			
+			<td colspan="2">
+			<i>Arguments:</i>
+			<br>
+			<table class="cfdump_udfarguments">
+				<tr>
+					<th><b>Name</b></td>
+					<th><b>Required</b></td>
+					<th><b>Type</b></td>
+					<th><b>Default</b></td>
+				</tr>
+				
+				<tr>
+					<td>user</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>eventID</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+			</table>
+			
+		</tr>
+		<tr><td width="30%"><i>Return Type:</i></td>
+			<td>struct<br></td>
+		</tr>
+		<tr><td><i>Roles:</i></td>
+			<td>&nbsp;<br></td>
+		</tr>
+		<tr><td><i>Access:</i></td>
+			<td>remote</br></td>
+		</tr>
+		<tr><td><i>Output:</i></td>
+			<td>false</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+	
+	
+					</td>
+					</tr>
+					
+				
+				
+				
+					
+					<tr valign="top">
+					<td class="cfc" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">GETCONSUMER</td>
+					<td>
+						
+	
+	<table class="cfdump_udf" width="100%">
+	<tr><th class="udf" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">function getConsumer</b></th></tr>
+	<tr>
+		<td>
+		<table class="cfdump_udfbody">
+		<tr>
+			
+			<td colspan="2">
+			<i>Arguments:</i>
+			<br>
+			<table class="cfdump_udfarguments">
+				<tr>
+					<th><b>Name</b></td>
+					<th><b>Required</b></td>
+					<th><b>Type</b></td>
+					<th><b>Default</b></td>
+				</tr>
+				
+				<tr>
+					<td>sConsumer</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>clientLicenseID</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+			</table>
+			
+		</tr>
+		<tr><td width="30%"><i>Return Type:</i></td>
+			<td>numeric<br></td>
+		</tr>
+		<tr><td><i>Roles:</i></td>
+			<td>&nbsp;<br></td>
+		</tr>
+		<tr><td><i>Access:</i></td>
+			<td>public</br></td>
+		</tr>
+		<tr><td><i>Output:</i></td>
+			<td>false</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+	
+	
+					</td>
+					</tr>
+					
+				
+				
+				
+					
+					<tr valign="top">
+					<td class="cfc" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">GETUSERSBYCLIENTLICENSE</td>
+					<td>
+						
+	
+	<table class="cfdump_udf" width="100%">
+	<tr><th class="udf" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">function getUsersByClientLicense</b></th></tr>
+	<tr>
+		<td>
+		<table class="cfdump_udfbody">
+		<tr>
+			
+			<td colspan="2">
+			<i>Arguments:</i>
+			<br>
+			<table class="cfdump_udfarguments">
+				<tr>
+					<th><b>Name</b></td>
+					<th><b>Required</b></td>
+					<th><b>Type</b></td>
+					<th><b>Default</b></td>
+				</tr>
+				
+				<tr>
+					<td>clientLicenseID</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>dtStart</td>
+					<td>Required</td>
+					<td>date</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+			</table>
+			
+		</tr>
+		<tr><td width="30%"><i>Return Type:</i></td>
+			<td>numeric<br></td>
+		</tr>
+		<tr><td><i>Roles:</i></td>
+			<td>&nbsp;<br></td>
+		</tr>
+		<tr><td><i>Access:</i></td>
+			<td>remote</br></td>
+		</tr>
+		<tr><td><i>Output:</i></td>
+			<td>false</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+	
+	
+					</td>
+					</tr>
+					
+				
+				
+				
+					
+					<tr valign="top">
+					<td class="cfc" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">LOGOUT</td>
+					<td>
+						
+	
+	<table class="cfdump_udf" width="100%">
+	<tr><th class="udf" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">function logout</b></th></tr>
+	<tr>
+		<td>
+		<table class="cfdump_udfbody">
+		<tr>
+			
+			<td><i>Arguments:</i></td><td>none</td>
+			
+		</tr>
+		<tr><td width="30%"><i>Return Type:</i></td>
+			<td>boolean<br></td>
+		</tr>
+		<tr><td><i>Roles:</i></td>
+			<td>&nbsp;<br></td>
+		</tr>
+		<tr><td><i>Access:</i></td>
+			<td>remote</br></td>
+		</tr>
+		<tr><td><i>Output:</i></td>
+			<td>false</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+	
+	
+					</td>
+					</tr>
+					
+				
+				
+				
+					
+					<tr valign="top">
+					<td class="cfc" onClick="cfdump_toggleRow(this);" style="cursor:hand;" title="click to collapse">LOGIN</td>
+					<td>
+						
+	
+	<table class="cfdump_udf" width="100%">
+	<tr><th class="udf" colspan="2" onClick="cfdump_toggleTable(this);" style="cursor:hand;" title="click to collapse">function login</b></th></tr>
+	<tr>
+		<td>
+		<table class="cfdump_udfbody">
+		<tr>
+			
+			<td colspan="2">
+			<i>Arguments:</i>
+			<br>
+			<table class="cfdump_udfarguments">
+				<tr>
+					<th><b>Name</b></td>
+					<th><b>Required</b></td>
+					<th><b>Type</b></td>
+					<th><b>Default</b></td>
+				</tr>
+				
+				<tr>
+					<td>user</td>
+					<td>Required</td>
+					<td>string</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td>clientLicenseID</td>
+					<td>Required</td>
+					<td>numeric</td>
+					<td>&nbsp;</td>
+				</tr>
+				
+			</table>
+			
+		</tr>
+		<tr><td width="30%"><i>Return Type:</i></td>
+			<td>struct<br></td>
+		</tr>
+		<tr><td><i>Roles:</i></td>
+			<td>&nbsp;<br></td>
+		</tr>
+		<tr><td><i>Access:</i></td>
+			<td>remote</br></td>
+		</tr>
+		<tr><td><i>Output:</i></td>
+			<td>false</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+	
+	
+					</td>
+					</tr>
+					
+				
+				
+	
+			
+			</table>
+			
+	
+		
+	
+				
+				
+	
+			</td></tr>
+		
+	
+		
+		</table>
+		
+	
+
+<br/>
+</div>
+
+		</div>
+	</div>
+
+</body>
+</html>
+
+		
+
+		
