@@ -355,14 +355,13 @@ function kCheckAddScript(){
 		return ;
 	ranKCheckAddScript = true;
 	
-	
 	/**
 	 * Hard code some default if using the kaltura SAS
 	 */
 	if( mw.getConfig('Kaltura.ServiceUrl') == 'http://www.kaltura.com' ){
 		mw.setConfig( 'Kaltura.UseManifestUrls', true);
 		mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
-		if( mw.getConfig( 'Kaltura.IframeRewrite' !== false ) ) {
+		if( mw.getConfig( 'Kaltura.IframeRewrite' ) !== false ) {
 			mw.setConfig( 'Kaltura.IframeRewrite', true );
 		}
 	}	
