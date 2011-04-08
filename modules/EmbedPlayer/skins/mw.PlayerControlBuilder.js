@@ -1763,7 +1763,9 @@ mw.PlayerControlBuilder.prototype = {
 						.buttonHover();
 				
 				// iPad fullscreen in an iframe is very broken 
-				if( mw.getConfig('EmbedPlayer.IsIframePlayer') && mw.isIpad() ){
+				if( ( mw.getConfig('EmbedPlayer.IsIframePlayer') && mw.isIpad() ) 
+						|| mw.getConfig( "EmbedPlayer.NewWindowFullscreen" ) 
+					){
 					// TODO we should pass time offset or if the user has already viewed the ad	
 					// remove the fullscreen button in the "fullscreen" iframe 				
 					var url = document.URL.split('#')[0];

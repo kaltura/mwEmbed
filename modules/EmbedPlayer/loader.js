@@ -59,6 +59,10 @@
 		
 		// If fullscreen is global enabled.
 		"EmbedPlayer.EnableFullscreen" : true,
+		
+		// If fullscreen should pop-open a new window 
+		//( instead of trying to expand the video player to browser fullscreen ) 
+		"EmbedPlayer.NewWindowFullscreen" : false,
 
 		// If mwEmbed should use the Native player controls
 		// this will prevent video tag rewriting and skinning
