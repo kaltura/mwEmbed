@@ -358,7 +358,8 @@ function kCheckAddScript(){
 	/**
 	 * Hard code some default if using the kaltura SAS
 	 */
-	if( mw.getConfig('Kaltura.ServiceUrl') == 'http://www.kaltura.com' ){
+	var serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
+	if( ! serviceUrl || serviceUrl == 'http://www.kaltura.com' ){
 		mw.setConfig( 'Kaltura.UseManifestUrls', true);
 		mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
 		if( mw.getConfig( 'Kaltura.IframeRewrite' ) !== false ) {
