@@ -216,7 +216,7 @@ class kalturaIframe {
 		$iphoneFlavors = trim($iphoneFlavors, ",");
 
 		// Create iPad flavor for Akamai HTTP
-		if ($ipadFlavors)
+		if ( $ipadFlavors )
 		{
 			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/http';
 
@@ -309,8 +309,8 @@ class kalturaIframe {
 			$client->addParam( $kparams, "entryId",  $this->playerAttributes['entry_id'] );
 			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams );
 
-			// access control
-			$client->addParam( $kparams, "contextDataParams",  array( 'referer' => $this->getReferer() ) );
+			// access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
+			$client->addParam( $kparams, "contextDataParams",  array( 'referrer' => $this->getReferer() ) );
 			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams );
 
 			// Entry Meta
@@ -394,6 +394,7 @@ class kalturaIframe {
 	*/
 	function isAccessControlAllowed() {
 		$resultObject =  $this->getResultObject();
+
 		// Don't handle result object
 		if( count( $resultObject) == 0 ){
 			return true;
@@ -406,7 +407,7 @@ class kalturaIframe {
 		}
 
 		/* Domain Name Restricted */
-		if($accessControl->isSiteRestricted) {
+		if( $accessControl->isSiteRestricted ) {
 			$this->fatalIframeError( "Un authorized domain", "We're sorry, this content is only available on certain domains." );
 		}
 
