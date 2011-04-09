@@ -17,7 +17,7 @@
 	
 mw.KApi = function( partner_id ){
 	return this.init( partner_id );	
-}
+};
 
 mw.KApi.prototype = {
 	baseParam: {

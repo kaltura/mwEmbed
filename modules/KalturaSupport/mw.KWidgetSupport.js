@@ -26,9 +26,11 @@ mw.KWidgetSupport.prototype = {
 				// Load all the player configuration from kaltura: 
 				_this.loadPlayerData( embedPlayer, function( playerData ){
 					if( !playerData ){
+						mw.log("KWidgetSupport::addPlayerHooks> error no player data!");
 						callback();
 						return ;
 					}
+					
 					// Check access controls ( this is kind of silly and needs to be done on the server ) 
 					if( playerData.accessControl ){
 						var acStatus = _this.getAccessControlStatus( playerData.accessControl );
@@ -73,6 +75,7 @@ mw.KWidgetSupport.prototype = {
 						_this.addFlavorSources( embedPlayer, playerData.flavors );
 					}
 					mw.log("KWidgetSupport:: check for meta:");
+					
 					// Apply player metadata
 					if( playerData.meta ) {
 						embedPlayer.duration = playerData.meta.duration;
@@ -150,7 +153,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for widget id	 
 		if( ! $j( embedPlayer ).attr( 'kwidgetid' ) ){
-			mw.log( "Error: missing required widget paramater")
+			mw.log( "Error: missing required widget paramater");
 			callback( false );
 			return false;
 		} else {
@@ -245,7 +248,7 @@ mw.KWidgetSupport.prototype = {
 						'src' : $j( embedPlayer ).attr( 'kentryid' )
 					} )
 					.get( 0 )
-				)
+				);
 			return true;
 		}
 		return false;
@@ -259,7 +262,6 @@ mw.KWidgetSupport.prototype = {
 	addFlavorSources: function( embedPlayer, flavorData ) {
 		var _this = this;
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
-
 		// Set the poster ( if not already set ) 
 		if( !embedPlayer.poster && $j( embedPlayer ).attr( 'kentryid' ) ){
 			embedPlayer.poster = mw.getKalturaThumbUrl({
@@ -312,6 +314,7 @@ mw.KWidgetSupport.prototype = {
 		
 		if( !flavorData ){
 			mw.log("Error: KWidgetSupport: flavorData is not defined ");
+			return ;
 		}
 		
 		// Setup the src defines
@@ -333,8 +336,10 @@ mw.KWidgetSupport.prototype = {
 			var asset = flavorData[i];
 			var entryId = asset.entryId;
 
-			// if flavor status is not ready - continute to the next flavor
-			if( asset.status != 2 ) { continue; }
+			// if flavor status is not ready - continue to the next flavor
+			if( asset.status != 2 ) { 
+				continue; 
+			}
 
 			// Check playManifest conditional
 			if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
@@ -397,11 +402,12 @@ mw.KWidgetSupport.prototype = {
 		if(ipadFlavors.length != 0) {
 			deviceSources['iPadNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadFlavors + '/format/applehttp/protocol/http/a.m3u8';
 		}
+		
 		// Create iPhone flavor for Akamai HTTP
 		if(iphoneFlavors.length != 0) {
 			deviceSources['iPhoneNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneFlavors + '/format/applehttp/protocol/http/a.m3u8';
 		}
-
+	
 		return deviceSources;
 	},
 	

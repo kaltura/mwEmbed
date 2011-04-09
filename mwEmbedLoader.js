@@ -608,6 +608,7 @@ function kAddReadyHook( callback ){
 	}
 }
 function kRunMwDomReady(){
+	console.log('kRunMwDomReady');
 	// run dom ready with a 1ms timeout to prevent sync execution in browsers like chrome
 	// Async call give a chance for configuration variables to be set
 	setTimeout(function(){
@@ -640,21 +641,18 @@ if ( document.addEventListener ) {
 		}
 	};
 }
+// A fallback to window.onload, that will always work
+window.addEventListener( "load", kRunMwDomReady, false );
+
 // Mozilla, Opera and webkit nightlies currently support this event
 if ( document.addEventListener ) {
 	// Use the handy event callback
 	document.addEventListener( "DOMContentLoaded", DOMContentLoaded, false );
-	// A fallback to window.onload, that will always work
-	window.addEventListener( "load", kRunMwDomReady, false );
-
 // If IE event model is used
 } else if ( document.attachEvent ) {
 	// ensure firing before onload,
 	// maybe late but safe also for iframes
 	document.attachEvent("onreadystatechange", DOMContentLoaded);
-	// A fallback to window.onload, that will always work
-	window.attachEvent( "onload", kRunMwDomReady );
-
 	// If IE and not a frame
 	// continually check to see if the document is ready
 	var toplevel = false;

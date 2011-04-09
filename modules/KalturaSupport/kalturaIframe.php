@@ -85,6 +85,7 @@ class kalturaIframe {
 		}
 		
 		// If remote service is allowed enable the $wgKalturaServiceUrl $wgKalturaCDNUrl and $wgKalturaServiceBase to be set via iframe request
+		// NOTE this is kind of dangerous XSS wise and should only be used in testing
 		if( $wgAllowRemoteKalturaService ){
 			global $wgKalturaServiceUrl, $wgKalturaCDNUrl,  $wgKalturaServiceBase;
 			if( isset( $_REQUEST['host'] ) ){
@@ -310,7 +311,7 @@ class kalturaIframe {
 			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams );
 
 			// access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
-			$client->addParam( $kparams, "contextDataParams",  array( 'referrer' => $this->getReferer() ) );
+			$client->addParam( $kparams, "contextDataParams",  array( 'referrer' => 'http://robmaurizi.com/extra/video_test.html' ) );
 			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams );
 
 			// Entry Meta
@@ -348,7 +349,8 @@ class kalturaIframe {
 	}
 
 	function getClient(){
-		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgKalturaServiceUrl, $wgScriptCacheDirectory;
+		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgKalturaServiceUrl, $wgScriptCacheDirectory, 
+			$wgMwEmbedVersion;
 
 		$cacheDir = $wgScriptCacheDirectory;
 
@@ -357,6 +359,7 @@ class kalturaIframe {
 
 		$conf = new KalturaConfiguration( $this->getPartnerId() );
 		$conf->serviceUrl = $wgKalturaServiceUrl;
+		$conf->clientTag = 'html5iframe:' . $wgMwEmbedVersion;
 		$client = new KalturaClient( $conf );
 
 		// Check modify time on cached php file

@@ -379,5 +379,5 @@
 	if( !window.KDPMapping ){
 		window.KDPMapping = new mw.KDPMapping();
 	}
-	
+	mw.log("KDPMapping::done " + window.KDPMapping );
 } )( window.mw );

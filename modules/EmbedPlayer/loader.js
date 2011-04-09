@@ -477,7 +477,6 @@
 					'playerId' : playerId
 				})
 		);
-	}
+	};
 	
-
 } )( window.mw );

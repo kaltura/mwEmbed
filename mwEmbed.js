@@ -2410,6 +2410,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 	 * issue a mw.setupMwEmbed call if needed
 	 */
 	mw.domReady = function ( ) {
+		mw.log('mw.domReady: ' + mwDomReadyFlag );
 		if( mwDomReadyFlag ) {
 			return ;
 		}
@@ -2467,11 +2468,11 @@ mw.absoluteUrl = function( src, contextUrl ) {
  * that mwEmbed interfaces can support async built out and the include of
  * jQuery.
  */
+
 // Check if already ready:
 if ( document.readyState === "complete" ) {
 	mw.domReady();
 }
-
 // Cleanup functions for the document ready method
 if ( document.addEventListener ) {
 	DOMContentLoaded = function() {
@@ -2489,22 +2490,36 @@ if ( document.addEventListener ) {
 		}
 	};
 }
+
+// A fallback to window.onload, is set so that we are sure to fire mw.domReady
+window.addEventListener( "load", mw.domReady, false );
+
+// chrome sometimes never gets into a 'complete' state instead just gets to interactive
+// here we poll for interactive state:
+if( document.readyState ){
+	function checkDomState(){
+		mw.log( document.readyState );
+		if( document.readyState == 'complete' ||  document.readyState == 'interactive'){
+			mw.domReady();
+		} else {
+			setTimeout(checkDomState, 100 );
+		}
+	}
+	setTimeout(function(){
+		checkDomState();
+	},100);
+}
+
 // Mozilla, Opera and webkit nightlies currently support this event
 if ( document.addEventListener ) {
 	// Use the handy event callback
 	document.addEventListener( "DOMContentLoaded", DOMContentLoaded, false );
-
-	// A fallback to window.onload, that will always work
-	window.addEventListener( "load", mw.domReady, false );
-
+	
 // If IE event model is used
 } else if ( document.attachEvent ) {
 	// ensure firing before onload,
 	// maybe late but safe also for iframes
 	document.attachEvent("onreadystatechange", DOMContentLoaded);
-
-	// A fallback to window.onload, that will always work
-	window.attachEvent( "onload", mw.domReady );
 
 	// If IE and not a frame
 	// continually check to see if the document is ready
