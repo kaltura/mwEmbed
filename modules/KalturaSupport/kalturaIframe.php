@@ -13,8 +13,11 @@ include_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
 $mykalturaIframe = new kalturaIframe();
 
 // Do kalturaIframe video output:
-$mykalturaIframe->outputIFrame();
 
+// Start output buffering to catch allow errors to override output
+if(!ob_start("ob_gzhandler")) ob_start();
+$mykalturaIframe->outputIFrame();
+ob_end_flush();
 		
 /**
  * Kaltura iFrame class:
@@ -619,7 +622,6 @@ class kalturaIframe {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		}
-		// Gzip the output
 	}
 	private function outputIframeHeadElement(){
 		global $wgMwEmbedPathUrl;
@@ -641,6 +643,9 @@ class kalturaIframe {
 					background: #000;
 					color: #fff;
 				}
+		<?php 
+		if( $this->isError() ){
+			?>
 				.error {
 					position:absolute;
 					top: 37%;
@@ -659,7 +664,10 @@ class kalturaIframe {
 				.error h2 {
 					font-size: 14px;
 				}
-				.loadingSpinner {
+			<?php 
+		} else {
+			?>
+			.loadingSpinner {
 					background: url( '<?php echo $wgMwEmbedPathUrl ?>skins/common/images/loading_ani.gif');
 					position: absolute;
 					top: 50%; left: 50%;
@@ -698,17 +706,18 @@ class kalturaIframe {
 					width: 100%;
 					height: 100%;
 				}
+			<?php 
+		}
+		?>
 			</style>
 		</head>
 		<?php
 	}
+
 	function outputIFrame( ){
 		global $wgMwEmbedPathUrl;
 
 		$this->setIFrameHeaders();
-
-		// ob_gzhandler automatically checks for browser gzip support in and gzips
-		ob_start("ob_gzhandler");
 ?>
 <!DOCTYPE html>
 <html>
@@ -848,7 +857,23 @@ class kalturaIframe {
 </html>
 <?php
 	}
+	/**
+	 * Very simple error handling for now: 
+	 */
+	private function setError( $errorTitle ){
+		$this->error = true;
+	}
+	private function isError( ){
+		return $this->error;
+	}
+	
 	private function fatalIframeError( $errorTitle, $errorMsg = false ){
+		$this->setError( $errorTitle );
+		// clear the buffer
+		$pageInProgress = ob_end_clean();
+		
+		// Re-start the output buffer: 
+		if(!ob_start("ob_gzhandler")) ob_start();
 		// Optional errorTitle:
 		if( $errorMsg === false )
 			$errorMsg = $errorTitle;
@@ -857,11 +882,6 @@ class kalturaIframe {
 <!DOCTYPE html>
 <html>
 	<?php echo $this->outputIframeHeadElement() ?>
-	<script type="text/javascript">
-		var spiner = document.getElementById('iframeLoadingSpinner');
-		if( spiner )
-			spiner.style.display = 'none';
-	</script>
 	<body>
 		<div class="error"><?php
 			if( $errorTitle ){
@@ -873,6 +893,7 @@ class kalturaIframe {
 		?></div>
 	</body>
 </html><?php
+		ob_end_flush();
 		// Iframe error exit
 		exit( 1 );
 	}

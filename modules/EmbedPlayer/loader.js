@@ -40,7 +40,7 @@
 		 	'href' : 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 			// Style icon to be applied
 			'class' : 'kaltura-icon',
-			// An icon image url ( should be a 12x12 image or data url )
+			// An icon image url 12x12 image url or data url )
 			'iconurl' : false
 		},
 		
