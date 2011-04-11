@@ -238,8 +238,8 @@ function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 	var targetNode = document.getElementById( replaceTargetId );
 	var parentNode = targetNode.parentNode;
 	var div = document.createElement('div');
-	div.width = options.width;
-	div.height = options.height;
+	div.style.width = options.width + 'px';
+	div.style.height = options.height + 'px';
 	div.innerHTML = ddHTML;
 
 	parentNode.replaceChild( div, targetNode );
@@ -445,6 +445,7 @@ function kSupportsHTML5(){
 	return false;
 }
 function kSupportsFlash(){
+	return false;
     var version = getFlashVersion().split(',').shift();
     if( version < 10 ){
     	return false;
