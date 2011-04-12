@@ -262,7 +262,7 @@
 					});
 					break;
 				case 'mediaReady':
-					$( embedPlayer ).bind( 'playerReady', function() {
+					$( embedPlayer ).bind( 'playerReady.mediaReady', function() {
 						callback( {}, embedPlayer.id );
 					});
 					break;
