@@ -447,7 +447,6 @@ function kSupportsHTML5(){
 	return false;
 }
 function kSupportsFlash(){
-	return false;
     var version = getFlashVersion().split(',').shift();
     if( version < 10 ){
     	return false;
