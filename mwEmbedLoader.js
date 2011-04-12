@@ -79,7 +79,7 @@ if( !preMwEmbedReady ){
 if( ! preMwEmbedConfig ) {
 	var preMwEmbedConfig = {};
 }
-if( !mw.setConfig ){
+if( ! mw.setConfig ){
 	mw.setConfig = function( set, value ){
 		var valueQueue = {};
 		if( typeof value != 'undefined'  ) {
@@ -94,7 +94,7 @@ if( !mw.setConfig ){
 
 if( ! mw.getConfig ){
 	mw.getConfig = function ( name, defaultValue ){
-		if( !preMwEmbedConfig[ name ] ){
+		if( typeof preMwEmbedConfig[ name ] == 'undefined' ){
 			if( typeof defaultValue != 'undefined' ){
 				return defaultValue;
 			}
@@ -118,12 +118,9 @@ if( !mw.ready){
 	};
 }
 
-// Set kaltura api to true by default: 
-if( !mw.getConfig('EmbedPlayer.EnableIframeApi') ){
-	mw.setConfig( 'EmbedPlayer.EnableIframeApi', true ) ; 
-}
 // Set default LoadScriptForVideoTags option: 
 mw.setConfig( 'Kaltura.LoadScriptForVideoTags', true );
+
 // Set "use flash on android" default option: 
 mw.setConfig('EmbedPlayer.UseFlashOnAndroid', true);
 
@@ -358,6 +355,11 @@ function kCheckAddScript(){
 	/**
 	 * Hard code some default if using the kaltura SAS
 	 */
+	// Set kaltura api to true by default (if not already set )
+	if( mw.getConfig('EmbedPlayer.EnableIframeApi') == null ){
+		mw.setConfig( 'EmbedPlayer.EnableIframeApi', true ) ; 
+	}
+
 	var serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
 	if( ! serviceUrl || serviceUrl == 'http://www.kaltura.com' ){
 		mw.setConfig( 'Kaltura.UseManifestUrls', true);
@@ -609,7 +611,7 @@ function kAddReadyHook( callback ){
 	}
 }
 function kRunMwDomReady(){
-	console.log('kRunMwDomReady');
+	console.log('kRunMwDomReady' + document.readyState );
 	// run dom ready with a 1ms timeout to prevent sync execution in browsers like chrome
 	// Async call give a chance for configuration variables to be set
 	setTimeout(function(){
@@ -621,6 +623,7 @@ function kRunMwDomReady(){
 		kCheckAddScript();
 	},1 );
 }
+
 // Check if already ready: 
 if ( document.readyState === "complete" ) {
 	kRunMwDomReady();
@@ -642,8 +645,6 @@ if ( document.addEventListener ) {
 		}
 	};
 }
-// A fallback to window.onload, that will always work
-window.addEventListener( "load", kRunMwDomReady, false );
 
 // Mozilla, Opera and webkit nightlies currently support this event
 if ( document.addEventListener ) {
@@ -657,7 +658,6 @@ if ( document.addEventListener ) {
 	// If IE and not a frame
 	// continually check to see if the document is ready
 	var toplevel = false;
-
 	try {
 		toplevel = window.frameElement == null;
 	} catch(e) {
@@ -666,6 +666,9 @@ if ( document.addEventListener ) {
 		doScrollCheck();
 	}
 }
+//A fallback to window.onload, that will always work
+window.addEventListener( "load", function(){ console.log("eventload "); kRunMwDomReady() }, false );
+
 // The DOM ready check for Internet Explorer
 function doScrollCheck() {
 	if ( kAlreadyRunDomReadyFlag ) {

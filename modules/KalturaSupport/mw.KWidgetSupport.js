@@ -81,7 +81,7 @@ mw.KWidgetSupport.prototype = {
 						embedPlayer.duration = playerData.meta.duration;
 						// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 						embedPlayer.kalturaPlayerMetaData = playerData.meta;
-						$j( embedPlayer ).trigger( 'KalturaSupport.MetaDataReady', embedPlayer.kalturaPlayerMetaData );
+						$j( embedPlayer ).trigger( 'KalturaSupport_MetaDataReady', embedPlayer.kalturaPlayerMetaData );
 					}
 					
 					// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
@@ -93,8 +93,8 @@ mw.KWidgetSupport.prototype = {
 						// Store the parsed uiConf in the embedPlayer object:
 						embedPlayer.$uiConf = $j( playerData.uiConf );
 						// Trigger the check kaltura uiConf event					
-						$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport.checkUiConf', embedPlayer.$uiConf, function(){	
-							mw.log("KWidgetSupport::KalturaSupport.checkUiConf callback");
+						$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport_CheckUiConf', embedPlayer.$uiConf, function(){	
+							mw.log("KWidgetSupport::KalturaSupport_CheckUiConf callback");
 							// Ui-conf file checks done
 							callback();
 						});

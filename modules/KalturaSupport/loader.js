@@ -25,7 +25,7 @@
 		    },
 		    { 
 		    	'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_gtm9gzz2/format/url/protocol/http/a.ogg',
-		    	'type' : 'video/h264'
+		    	'type' : 'video/ogg'
 		    },
 		    {
 		    	'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_bqsosjph/format/url/protocol/http/a.webm',

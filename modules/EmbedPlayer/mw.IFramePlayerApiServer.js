@@ -61,7 +61,7 @@ mw.IFramePlayerApiServer.prototype = {
 		this.addIframeSender();
 		$j( mw ).trigger( 'newIframePlayerServerSide', [ embedPlayer ] );
 				
-		// Block until we receive prePlayerProxyListnersDone event ( when we have a parent url 
+		// Block until we receive prePlayerProxyListnersDone event. When we have a parent url 
 		// and we are not in fullscreen iframe ( no parent ) 
 		if( this.getParentUrl() && !mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
 			$j( embedPlayer ).bind( 'startPlayerBuildOut', function(event, callback ){

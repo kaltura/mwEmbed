@@ -20,7 +20,7 @@
 	// Bind the plyMedia player where the uiconf includes the plymedia plugin
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		
-		$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf , callback){
+		$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf , callback){
 			// Check for plyMedia in kaltura uiConf
 			if( $uiConf.find("plugin#plymedia").length ){
 				

@@ -4,7 +4,7 @@
 // ( can be removed once we move to the new resource loader )
 var bumperPlugin = true;
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-	$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf, callback ){
+	$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		
 		//<plugin id="bumper" bumperentryid="1_187nvs4c" clickurl="http://www.nokia.com" lockui="true" playonce="false" presequence="1" width="100%" height="100%"></plugin>
 		

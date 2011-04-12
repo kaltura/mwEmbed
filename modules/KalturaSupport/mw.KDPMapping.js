@@ -77,7 +77,7 @@
 			});
 			
 			$j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {		
-				$j( playerProxy ).bind('jsListenerEvent', function(event, globalFuncName, listenerArgs){
+				$j( playerProxy ).bind( 'jsListenerEvent', function(event, globalFuncName, listenerArgs){
 					window[ globalFuncName ].apply( this, listenerArgs );
 				});
 				
@@ -257,7 +257,7 @@
 					})
 					break;	
 				case 'entryReady':
-					$j( embedPlayer ).bind( 'KalturaSupport.MetaDataReady', function( event, meta ) {
+					$j( embedPlayer ).bind( 'KalturaSupport_MetaDataReady', function( event, meta ) {
 						callback( meta , embedPlayer.id );
 					});
 					break;

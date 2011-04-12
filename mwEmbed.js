@@ -2507,7 +2507,7 @@ if( document.readyState ){
 	}
 	setTimeout(function(){
 		checkDomState();
-	},100);
+	}, 500);
 }
 
 // Mozilla, Opera and webkit nightlies currently support this event

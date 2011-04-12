@@ -12,42 +12,17 @@
 
 	<!--<script type="text/javascript" src="http://html5.kaltura.org/js"></script>-->
 	<!--<script type="text/javascript" src="../../../mwEmbed.js"></script>-->
+
+	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 	
-	<link type="text/css" rel="stylesheet" href="kdp3_mapping_files/prettify.css">
-	<style type="text/css">
-		html, body { margin:0; padding:0; }
-		body, td, th, pre, code, select, option, input, textarea { font-family:"Trebuchet MS", Arial, Sans-serif; font-size:10pt; }
-		#container { width:800px; margin:10px auto; overflow:hidden; }
-		.demo { height:200px; width:790px; margin:0; border:1px solid gray; font-family:Verdana; font-size:10px; background:white; overflow:auto; }
-		.describe { height:200px; width:790px; margin:0; border:1px solid gray; font-family:Verdana; font-size:10px; background:white; overflow:auto; border-top:none; }
-		div.code { }
-		pre { display:block; }
-		.syntaxhighlighter { margin:0 0 0 0 !important; padding:0 !important; }
-		input { font-size:14px; }
-		h3 { color:#aabbaa; font-size:1.4em; } 
-		h4 { font-size:1.2em; margin:8px 0 0; padding:0; padding-bottom:2px; }
-		p { margin:0; padding:0; }
-		ul, ol { margin:0; padding:0; margin-left:20px; }
-		ul li, ol li { margin:2px; list-style-position:outside; }
-		.describetext { color:#666666; }
-		pre, code {margin:0;}
-		img { margin:0;padding:0;border:none; }
-		a img { margin:5px; }
-		.footer { background:none; border-top:5px solid #eee; width:100%; }
-		.footer-conts { width:480px; margin: auto auto;  }
-		.sideBox { background-color:#FFFFFF; border:1px solid #eee; float:left; margin:10px 0 20px 40px; padding:1px; width:310px; }
-		.sideBox .content { background:#eee; padding:10px 12px; }
-		.sideBox ul.menu { margin-top:12px; margin:0 0 0 20px; border:medium none; list-style:none outside none; text-align:left; }
-		.sideBox ul li { background:none repeat scroll 0 0 transparent; margin:6px 0; padding:0; }
-		dfn { border-bottom:1px dotted green; color:green; cursor:default; font-style:normal; }
-		.controls { padding: 5px; }
-		#controls_menu {  }
-	</style>
+	
 	<script type="text/javascript">
 		if( document.URL.indexOf('forceMobileHTML5AndIframe' ) !== -1 ){
 			mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
 			mw.setConfig( 'Kaltura.IframeRewrite', true );
 			mw.setConfig( 'forceMobileHTML5', true );
+		} else {
+			mw.setConfig( 'Kaltura.IframeRewrite', false);
 		}
 		var notificationslist = ['startUp',
 								'durationChange',
@@ -207,7 +182,36 @@
 			});
 		});
 	</script>
-
+	<link type="text/css" rel="stylesheet" href="kdp3_mapping_files/prettify.css">
+		<style type="text/css">
+			html, body { margin:0; padding:0; }
+			body, td, th, pre, code, select, option, input, textarea { font-family:"Trebuchet MS", Arial, Sans-serif; font-size:10pt; }
+			#container { width:800px; margin:10px auto; overflow:hidden; }
+			.demo { height:200px; width:790px; margin:0; border:1px solid gray; font-family:Verdana; font-size:10px; background:white; overflow:auto; }
+			.describe { height:200px; width:790px; margin:0; border:1px solid gray; font-family:Verdana; font-size:10px; background:white; overflow:auto; border-top:none; }
+			div.code { }
+			pre { display:block; }
+			.syntaxhighlighter { margin:0 0 0 0 !important; padding:0 !important; }
+			input { font-size:14px; }
+			h3 { color:#aabbaa; font-size:1.4em; } 
+			h4 { font-size:1.2em; margin:8px 0 0; padding:0; padding-bottom:2px; }
+			p { margin:0; padding:0; }
+			ul, ol { margin:0; padding:0; margin-left:20px; }
+			ul li, ol li { margin:2px; list-style-position:outside; }
+			.describetext { color:#666666; }
+			pre, code {margin:0;}
+			img { margin:0;padding:0;border:none; }
+			a img { margin:5px; }
+			.footer { background:none; border-top:5px solid #eee; width:100%; }
+			.footer-conts { width:480px; margin: auto auto;  }
+			.sideBox { background-color:#FFFFFF; border:1px solid #eee; float:left; margin:10px 0 20px 40px; padding:1px; width:310px; }
+			.sideBox .content { background:#eee; padding:10px 12px; }
+			.sideBox ul.menu { margin-top:12px; margin:0 0 0 20px; border:medium none; list-style:none outside none; text-align:left; }
+			.sideBox ul li { background:none repeat scroll 0 0 transparent; margin:6px 0; padding:0; }
+			dfn { border-bottom:1px dotted green; color:green; cursor:default; font-style:normal; }
+			.controls { padding: 5px; }
+			#controls_menu {  }
+		</style>
 </head>
 <body>
 	<div id="controls_menu" class="sideBox">
@@ -306,5 +310,5 @@
 	
 </div>	
 <div id="cleardiv" style="clear: both; margin-top: 10px;"></div>
-		<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-</body></html>
+</body>
+</html>

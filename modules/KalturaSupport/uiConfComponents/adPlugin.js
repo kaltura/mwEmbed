@@ -3,7 +3,7 @@
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 
 	// Check for KalturaSupport uiConf
-	$j( embedPlayer ).bind( 'KalturaSupport.checkUiConf', function( event, $uiConf, callback ){
+	$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		
 		// Check if the kaltura ad plugin is enabled:
 		if( $uiConf.find('Plugin#vast').length ){

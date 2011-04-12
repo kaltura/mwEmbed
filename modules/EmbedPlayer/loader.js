@@ -14,9 +14,10 @@
 		// The preferred media format order 
 		'EmbedPlayer.CodecPreference': [ 'webm', 'h264', 'ogg' ],
 		
-		// If the iPad should use html controls ( can't use fullscreen or control volume, 
-		// but lets you support overlays ie html controls ads etc. )
-		'EmbedPlayer.EnableIpadHTMLControls': false, 
+		// If the iPad should use html controls 
+		// With html controls you can't access native fullscreen 
+		// With html controls you can support html themed controls, overlays, ads etc. )
+		'EmbedPlayer.EnableIpadHTMLControls': false,
 		
 		'EmbedPlayer.LibraryPage': 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 
