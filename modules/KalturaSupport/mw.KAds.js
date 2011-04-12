@@ -33,7 +33,7 @@ mw.KAds.prototype = {
 		
 		// Load the Ads
 		_this.loadAds( function(){
-			mw.log("All ads have been loaded");
+			mw.log("KAds::All ads have been loaded");
 			callback();
 		});
 	},

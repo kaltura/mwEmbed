@@ -2620,6 +2620,7 @@ if( window.jQuery ){
 		// Support namespaced event segmentation ( jQuery
 		var triggerBaseName = triggerName.split(".")[0]; 
 		var triggerNamespace = triggerName.split(".")[1];
+		
 		// Get the callback set
 		var callbackSet = [];
 		if( !$j( targetObject ).data( 'events' ) ){
@@ -2646,11 +2647,11 @@ if( window.jQuery ){
 		
 		// Set the callbackCount
 		var callbackCount = ( callbackSet.length )? callbackSet.length : 1;
-		// mw.log("mwEmbed::jQuery.triggerQueueCallback: " + triggerName
-		// + ' number of queued functions:' + callbackCount );
+		mw.log("jQuery.triggerQueueCallback: " + triggerName + ' number of queued functions:' + callbackCount );
 		var callInx = 0;
 		var doCallbackCheck = function() {
 			callInx++;
+			mw.log("jQuery.triggerQueueCallback: for( " + triggerName + " ) callInx " + callInx + ' callbackCount::' + callbackCount );
 			if( callInx == callbackCount ){
 				callback();
 			}

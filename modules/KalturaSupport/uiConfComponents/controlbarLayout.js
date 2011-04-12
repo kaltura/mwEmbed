@@ -1,7 +1,7 @@
 
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			
+
 			var disabled = [];
 			
 			// Check if the ui conf layout supports play/pause button
@@ -20,7 +20,8 @@
 			// Check if the ui conf layout supports scrubber
 			// <vbox id="scrubberContainer" width="100%" height="30" verticalalign="middle" verticalgap="-3" notvisible="{mediaProxy.isLive}">
 			if( !$uiConf.find( 'vbox #scrubberContainer' ).length ){
-				disabled.push( 'playHead' );
+				// (This really means "custom" playhead disable for now )s
+				// disabled.push( 'playHead' );
 			}
 
 			// Check if the ui conf layout supports volume control
