@@ -116,7 +116,10 @@ class KalturaGetResultObject {
 			if( strpos( $userAgent, 'Chrome' ) !== false ){
 				$flavorUrl = $sources['webm']['src'];
 			}
-			if( strpos( $userAgent, 'Firefox' ) !== false ){
+			if( strpos( $userAgent, 'Firefox/4' ) !== false
+				||
+				strpos( $userAgent, 'Firefox/5' ) !== false 
+			){
 				$flavorUrl = $sources['webm']['src'];
 			}
 		}
@@ -144,21 +147,21 @@ class KalturaGetResultObject {
 
 		/* Domain Name Restricted */
 		if( $accessControl->isSiteRestricted ) {
-			return array( "Un authorized domain", "We're sorry, this content is only available on certain domains.");
+			return "Un authorized domain\nWe're sorry, this content is only available on certain domains.";
 		}
 
 		/* Country Restricted */
 		if($accessControl->isCountryRestricted) {
-			return array("Un authorized country", "We're sorry, this content is only available on certain countries.");
+			return "Un authorized country\nWe're sorry, this content is only available on certain countries.";
 		}
 
 		/* Session Restricted */
 		if( $accessControl->isSessionRestricted && $accessControl->previewLength == -1 ) {
-			return array("No KS where KS is required", "We're sorry, access to this content is restricted.");
+			return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
 		}
 
 		if($accessControl->isScheduledNow === 0) {
-			return array("Out of scheduling", "We're sorry, this content is currently unavailable.");
+			return "Out of scheduling\nWe're sorry, this content is currently unavailable.";
 		}
 
 		return true;
@@ -179,8 +182,8 @@ class KalturaGetResultObject {
 		if( isset( $resultObject['flavors']['code'] ) ){
 			switch(  $resultObject['flavors']['code'] ){
 				case  'ENTRY_ID_NOT_FOUND':
-					$this->fatalIframeError( "Entry Id not found",  htmlspecialchars( $resultObject['flavors']['message'] ) );
-					break;
+					throw new Exception( array( "Entry Id not found",  htmlspecialchars( $resultObject['flavors']['message'] ) ) );
+				break;
 			}
 			// @@TODO should probably refactor to use throw catch error system.
 			return array();
@@ -406,9 +409,10 @@ class KalturaGetResultObject {
 				$client->queueServiceActionCall( "uiconf", "get", $kparams );
 			}
 			$rawResultObject = $client->doQueue();
-			$client->throwExceptionIfError($this->resultObj);
+			$client->throwExceptionIfError( $this->resultObj );
 		} catch( Exception $e ){
-			$this->fatalIframeError( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+			// update the Exception and pass it upward
+			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 			return array();
 		}
 
@@ -424,6 +428,13 @@ class KalturaGetResultObject {
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf'] = $rawResultObject[3]->confFile;
 		}
+		
+		// Check access control and throw an exception if not allowed: 
+		$acStatus = $this->isAccessControlAllowed( $resultObject );
+		if( $acStatus !== true ){
+			throw new Exception( $acStatus );
+		}
+		
 		return $resultObject;
 	}
 

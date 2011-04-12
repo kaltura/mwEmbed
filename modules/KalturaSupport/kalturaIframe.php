@@ -382,10 +382,11 @@ class kalturaIframe {
 			// For testing limited capacity browsers
 			//var kIsHTML5FallForward = function(){ return false };
 			//var kSupportsFlash = function(){ return false };
+			
 			if( kIsHTML5FallForward() ){
 				// Don't confuse the rewrite engine ( remove the kaltura swf )
 				var el = document.getElementById('kaltura_player');
-				el.parentNode.removeChild(el);
+				el.parentNode.removeChild( el );
 				
 				// Add full screen support if the iFrame api is enabled and not already set
 				if( typeof preMwEmbedConfig[ 'EmbedPlayer.EnableFullscreen' ] == 'undefined' ){
@@ -478,7 +479,13 @@ class kalturaIframe {
 	 * Output a fatal error and exit with error code 1
 	 */
 	private function fatalError( $errorTitle, $errorMsg = false ){
+		// check for multi line errorTitle array: 
+		if( strpos( $errorTitle, "\n" ) !== false ){
+			list( $errorTitle, $errorMsg) = explode( "\n", $errorTitle);
+		};
+		
 		$this->setError( $errorTitle );
+		
 		// clear the buffer
 		$pageInProgress = ob_end_clean();
 		
