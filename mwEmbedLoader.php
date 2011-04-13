@@ -30,8 +30,8 @@ foreach( $exportedJsConfig as $key => $val ){
 	// @@TODO use a library Boolean conversion routine: 
 	$val = ( $val === true )? $val = 'true' : $val;
 	$val = ( $val === false )? $val = 'false' : $val;
-	$val = ( $val!= 'true' && != 'false' )? "'" . addslashes( $val ) . "'": $val;
-	$loaderJs .= "mw.setConfig('". addslashes( $key ). ", $val );\n";
+	$val = ( $val != 'true' && $val != 'false' )? "'" . addslashes( $val ) . "'": $val;
+	$loaderJs .= "mw.setConfig('". addslashes( $key ). "', $val );\n";
 }
 
 if($wgEnableScriptDebug === true) {
