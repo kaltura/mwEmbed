@@ -375,7 +375,7 @@
 					'height' : $j( playerTarget ).height(),
 					'width' : $j( playerTarget ).width()
 				})
-				.css( {
+				.css({
 					'border': '0px',
 					'width' : $j( playerTarget ).width() + 'px',
 					'height' : $j( playerTarget ).height() + 'px'
