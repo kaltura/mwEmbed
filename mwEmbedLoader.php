@@ -27,8 +27,11 @@ $exportedJsConfig= array(
 );
 // Append Custom config: 
 foreach( $exportedJsConfig as $key => $val ){
-	$val = 
-	$loaderJs .= "mw.setConfig('". addslashes( $key )."', '" . addslashes( $val ) . "');\n";
+	// @@TODO use a library Boolean conversion routine: 
+	$val = ( $val === true )? $val = 'true' : $val;
+	$val = ( $val === false )? $val = 'false' : $val;
+	$val = ( $val!= 'true' && != 'false' )? "'" . addslashes( $val ) . "'": $val;
+	$loaderJs .= "mw.setConfig('". addslashes( $key ). ", $val );\n";
 }
 
 if($wgEnableScriptDebug === true) {
