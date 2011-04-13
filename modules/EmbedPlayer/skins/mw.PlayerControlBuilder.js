@@ -1765,9 +1765,7 @@ mw.PlayerControlBuilder.prototype = {
 				// iPad fullscreen in an iframe is very broken 
 				if( ( mw.getConfig('EmbedPlayer.IsIframePlayer') && mw.isIpad() ) 
 						|| mw.getConfig( "EmbedPlayer.NewWindowFullscreen" ) 
-					){
-					// TODO we should pass time offset or if the user has already viewed the ad	
-					// remove the fullscreen button in the "fullscreen" iframe 				
+					){	
 					var url = document.URL.split('#')[0];
 					mw.setConfig('EmbedPlayer.IsFullscreenIframe', true);
 					url += mw.getIframeHash();
@@ -1777,8 +1775,37 @@ mw.PlayerControlBuilder.prototype = {
 							'target' : '_new'
 						})
 						.click(function(){
-							 ctrlObj.embedPlayer.pause();
-							 return true;
+							
+							// Update the url: 			
+							var url = document.URL.split('#')[0];
+							mw.setConfig('EmbedPlayer.IsFullscreenIframe', true);
+							// add a seek offset:
+							mw.setConfig('EmbedPlayer.IframeCurrentTime',  ctrlObj.embedPlayer.currentTime );
+							// add play state:
+							mw.setConfig('EmbedPlayer.IframeIsPlaying',  ctrlObj.embedPlayer.isPlaying() );
+							
+							url += mw.getIframeHash();
+							
+							ctrlObj.embedPlayer.pause();
+							// try and do a browser popup:
+							var newwin = window.open(
+								 url, 
+								 ctrlObj.embedPlayer.id, 
+								 // Fullscreen window params: 
+								'width=' + screen.width + 
+								', height=' + (screen.height-90) +
+								', top=0, left=0' + 
+								', fullscreen=yes'
+							);						
+							// if for some reason we could not open the window run the href link:
+							if( newwin === null){
+								return true;
+							}
+							if ( window.focus ) {
+								newwin.focus();
+							}
+							// Else do not follow the href link
+							return false;
 						})
 						.append($btn);
 				} else {

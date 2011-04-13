@@ -176,13 +176,12 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			});
 		}			
 		return ;
-	}	
-	
+	}		
 	// Else we can avoid loading mwEmbed all together and just rewrite the iframe 
 	// ( no javascript api needed )
 	
 	var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
-	var kalturaAttributeList = { 'uiconf_id':1, 'entry_id':1, 'wid':1, 'p':1};
+	var kalturaAttributeList = { 'uiconf_id': 1, 'entry_id' : 1, 'wid':1, 'p':1};
 	for(var attrKey in kEmbedSettings ){
 		if( attrKey in kalturaAttributeList ){
 			iframeSrc += '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
@@ -288,6 +287,7 @@ function kOverideSwfObject(){
 			var _this = this;
 			mw.ready(function(){				
 				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, _this.params.flashVars);
+				
 				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else {
@@ -297,6 +297,7 @@ function kOverideSwfObject(){
 			});
 		};
 	}
+
 	// SWFObject v 2.0
 	if( window['swfobject'] && !window['swfobject']['originalEmbedSWF'] ){
 		window['swfobject']['originalEmbedSWF'] = window['swfobject']['embedSWF'];
@@ -305,7 +306,7 @@ function kOverideSwfObject(){
 				heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn)
 		{
 			kAddReadyHook(function(){
-				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);	
+				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
 				// Check if mobile safari:
 				if( kIsHTML5FallForward() && kEmbedSettings.wid ){
 					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
@@ -483,6 +484,10 @@ function kAddScript( callback ){
 			kLoadJsRequestSet( jsRequestSet, callback );			
 		} else {
 			kDoIframeRewriteList( kGetKalturaPlayerList() );
+			// Also run preMwEmbedReady functions ( since we won't be loading the library ) 
+			while( preMwEmbedReady.length ){
+				preMwEmbedReady.pop()();
+			}
 		}
 		return ;
 	}

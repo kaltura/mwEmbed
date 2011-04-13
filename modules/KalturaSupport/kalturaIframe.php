@@ -354,7 +354,7 @@ class kalturaIframe {
 			// invoked bellow and respect the persistant video tag option for iPad overlays )
 			mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );
 
-			// Don't wait for player metada for size layout and duration ( won't be needed once
+			// Don't wait for player metada for size layout and duration Won't be needed since
 			// we add durationHint and size attributes to the video tag
 			mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
 			
@@ -374,10 +374,15 @@ class kalturaIframe {
 					mw.setConfig('EmbedPlayer.IframeParentPlayerId', hashObj.playerId );
 				}
 			}
-
 			// Remove the fullscreen option if we are in an iframe: 
-			if( mw.getConfig('EmbedPlayer.IsFullscreenIframe')){
+			if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
 				mw.setConfig('EmbedPlayer.EnableFullscreen', false );
+			} else {
+				// If we don't get a 'EmbedPlayer.IframeParentUrl' update fullscreen to pop-up new 
+				// window. ( we won't have the iframe api to resize the iframe ) 
+				if( mw.getConfig('EmbedPlayer.IframeParentUrl') === null ){
+					mw.setConfig( "EmbedPlayer.NewWindowFullscreen", true ); 
+				}
 			}
 			// For testing limited capacity browsers
 			//var kIsHTML5FallForward = function(){ return false };
@@ -388,11 +393,6 @@ class kalturaIframe {
 				var el = document.getElementById('kaltura_player');
 				el.parentNode.removeChild( el );
 				
-				// Add full screen support if the iFrame api is enabled and not already set
-				if( typeof preMwEmbedConfig[ 'EmbedPlayer.EnableFullscreen' ] == 'undefined' ){
-					mw.setConfig( 'EmbedPlayer.EnableFullscreen', preMwEmbedConfig[ 'EmbedPlayer.EnableIframeApi' ] );
-				}
-
 				// Don't do an iframe rewrite inside an iframe!
 				mw.setConfig( 'Kaltura.IframeRewrite', false );
 
@@ -401,6 +401,15 @@ class kalturaIframe {
 				
 				// Load the mwEmbed resource library and add resize binding
 				mw.ready(function(){
+					var embedPlayer = $j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' ).get(0);
+					// Try to seek to the IframeSeekOffset time:
+					if( mw.getConfig( 'EmbedPlayer.IframeCurrentTime' ) ){
+						embedPlayer.currentTime = mw.getConfig( 'EmbedPlayer.IframeCurrentTime' );					
+					}
+					// this unfortunatly won't work on iOS but will support play state for html5 browsers
+					if( mw.getConfig('EmbedPlayer.IframeIsPlaying') ){
+						embedPlayer.play();
+					}
 					// Bind window resize to reize the player:
 					$j( window ).resize( function(){
 						$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )

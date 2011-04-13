@@ -2647,7 +2647,7 @@ if( window.jQuery ){
 		
 		// Set the callbackCount
 		var callbackCount = ( callbackSet.length )? callbackSet.length : 1;
-		mw.log("jQuery.triggerQueueCallback: " + triggerName + ' number of queued functions:' + callbackCount );
+		// mw.log("jQuery.triggerQueueCallback: " + triggerName + ' number of queued functions:' + callbackCount );
 		var callInx = 0;
 		var doCallbackCheck = function() {
 			callInx++;

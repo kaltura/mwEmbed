@@ -174,13 +174,16 @@ mw.KWidgetSupport.prototype = {
 		// Insure the bootStrap data has all the required info: 
 		if( bootstrapData 
 			&& bootstrapData.partner_id ==  $j( embedPlayer ).attr( 'kwidgetid' ).replace('_', '')
-			&&  bootstrapData.ks 
+			&&  bootstrapData.ks
 		){
+			mw.log( 'KWidgetSupport::loaded player data from KalturaSupport.BootstrapPlayerData config' );
+			// Clear bootstrap data from configuration: 
+			mw.setConfig("KalturaSupport.BootstrapPlayerData" , null);
 			this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
 			this.kClient.setKS( bootstrapData.ks );
 			callback( bootstrapData );
 		} else {
-			// Run the request: ( run async to avoid stack )
+			// Run the request: ( run async to avoid function call stack overflow )
 			setTimeout(function(){
 				_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
 					if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
@@ -190,7 +193,7 @@ mw.KWidgetSupport.prototype = {
 					}
 					callback( playerData );
 				});
-			});
+			}, 1);
 		}
 	},
 	
