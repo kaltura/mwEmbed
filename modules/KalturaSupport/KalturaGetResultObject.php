@@ -460,7 +460,7 @@ class KalturaGetResultObject {
 
 		// Check modify time on cached php file
 		$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
-		if ( !$wgEnableScriptDebug && ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ) {
+		if ( !$wgEnableScriptDebug && ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ) ) {
 			try{
 		    	$session = $client->session->startWidgetSession( $this->urlParameters['wid'] );
 		    	$this->ks = $session->ks;
