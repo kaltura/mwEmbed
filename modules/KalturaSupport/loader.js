@@ -364,7 +364,6 @@
 					iframeRequest += '?' + $j.param( iframeParams['flashvars'] );
 				}
 
-				
 				var iframeId = $j( playerTarget ).attr('id');				
 				iframeRequest+= mw.getIframeHash( iframeId);
 				
@@ -376,7 +375,11 @@
 					'height' : $j( playerTarget ).height(),
 					'width' : $j( playerTarget ).width()
 				})
-				.css( 'border', '0px' );
+				.css( {
+					'border': '0px',
+					'width' : $j( playerTarget ).width() + 'px',
+					'height' : $j( playerTarget ).height() + 'px'
+				});
 				
 				// Replace the player with the iframe: 
 				$j( playerTarget ).replaceWith( $iframe );

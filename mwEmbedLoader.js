@@ -36,7 +36,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.3r';
+KALTURA_LOADER_VERSION = '1.3q';
 
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
@@ -155,9 +155,12 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// to rewrite the frame
 	if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && ( kSupportsFlash() || kSupportsHTML5() ) ){
 		if( kIsHTML5FallForward() ){
-			kAddScript(function(){
+			kAddScript( function(){
 				// Options include 'width' and 'height'
-				$j('#' + replaceTargetId ).css(options);
+				$j('#' + replaceTargetId ).css({
+					'width': options.width + 'px',
+					'height' : options.height + 'px'
+				});
 				// Do kaltura iframe player
 				$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
 			});
