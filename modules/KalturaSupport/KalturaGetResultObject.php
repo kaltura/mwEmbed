@@ -444,7 +444,7 @@ class KalturaGetResultObject {
 
 	private function getClient(){
 		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgKalturaServiceUrl, $wgScriptCacheDirectory, 
-			$wgMwEmbedVersion;
+			$wgMwEmbedVersion, $wgEnableScriptDebug;
 
 		$cacheDir = $wgScriptCacheDirectory;
 
@@ -460,11 +460,11 @@ class KalturaGetResultObject {
 
 		// Check modify time on cached php file
 		$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
-		if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ){
+		if ( !$wgEnableScriptDebug && ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ) {
 			try{
 		    	$session = $client->session->startWidgetSession( $this->urlParameters['wid'] );
 		    	$this->ks = $session->ks;
-		    	file_put_contents( $cacheFile,  $this->ks );
+		    	$this->putCacheFile( $cacheFile,  $this->ks );
 			} catch ( Exception $e ){
 				$this->fatalIframeError( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 			}
@@ -496,14 +496,14 @@ class KalturaGetResultObject {
 		return json_encode( $this->getResultObject() );
 	}
 	private function getResultObject(){
-		global $wgKalturaUiConfCacheTime;
+		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug;
 		// Check if we have a cached result object:
 		if( !$this->resultObj ){
 			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".entry.txt";
 	
 			// Check modify time on cached php file
 			$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
-			if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
+			if ( !$wgEnableScriptDebug && ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ) ){
 				$this->resultObj = $this->getResultObjectFromApi();
 			} else {
 				$this->outputFromCache = true;
@@ -512,9 +512,17 @@ class KalturaGetResultObject {
 			
 			// Test if the resultObject can be cached ( no access control restrictions )
 			if( $this->isAccessControlAllowed( $this->resultObj ) === true ){
-				file_put_contents( $cacheFile, serialize( $this->resultObj  ) );
+				$this->putCacheFile( $cacheFile, serialize( $this->resultObj  ) );
 			}
 		}
 		return $this->resultObj;
+	}
+	private function putCacheFile( $cacheFile, $data ){
+		global $wgEnableScriptDebug;
+		// Don't cache things when in "debug" mode:
+		if( $wgEnableScriptDebug ){
+			return ;
+		}
+		file_put_contents( $cacheFile, $data );
 	}
 }

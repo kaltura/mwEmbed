@@ -146,7 +146,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// Empty the replace target:
 	var elm = document.getElementById(replaceTargetId);
 	if( ! elm ){
-		if( console.log )
+		if( console && console.log )
 			console.log("Error could not find iframe target: " + replaceTargetId);
 	}
 	replaceTargetId.innerHTML = '';
@@ -209,7 +209,7 @@ function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 	// Empty the replace target:
 	var elm = document.getElementById(replaceTargetId);
 	if( ! elm ){
-		if( console.log )
+		if( console && console.log )
 			console.log("Error could not find object target: " + replaceTargetId);
 	}
 	replaceTargetId.innerHTML = '';
@@ -355,19 +355,23 @@ function kCheckAddScript(){
 	/**
 	 * Hard code some default if using the kaltura SAS
 	 */
-	// Set kaltura api to true by default (if not already set )
-	if( mw.getConfig('EmbedPlayer.EnableIframeApi') == null ){
-		mw.setConfig( 'EmbedPlayer.EnableIframeApi', true ) ; 
+	// Set kaltura api to false by default ( if not already set )
+	if( mw.getConfig('EmbedPlayer.EnableIframeApi') === null ){
+		mw.setConfig( 'EmbedPlayer.EnableIframeApi', false) ; 
 	}
 
 	var serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
 	if( ! serviceUrl || serviceUrl == 'http://www.kaltura.com' ){
-		mw.setConfig( 'Kaltura.UseManifestUrls', true);
-		mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
-		if( mw.getConfig( 'Kaltura.IframeRewrite' ) !== false ) {
+		if( mw.getConfig('Kaltura.UseManifestUrls') === null ){
+			mw.setConfig( 'Kaltura.UseManifestUrls', true);
+		}
+		if( mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === null){
+			mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
+		}
+		if( mw.getConfig( 'Kaltura.IframeRewrite' ) === null) {
 			mw.setConfig( 'Kaltura.IframeRewrite', true );
 		}
-	}	
+	}
 	
 	// If user javascript is using mw.ready add script
 	if( preMwEmbedReady.length ) {
@@ -437,7 +441,7 @@ function kIsHTML5FallForward(){
 // but is part of the mobile check above. 
 function kSupportsHTML5(){
 	var dummyvid = document.createElement( "video" );
-	// Blackberry is evil in its response to canPlayType calls. 
+	// Blackberry does not really support html5 ( 
 	if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
 		return false ;
 	}
@@ -610,7 +614,6 @@ function kAddReadyHook( callback ){
 	}
 }
 function kRunMwDomReady(){
-	console.log('kRunMwDomReady' + document.readyState );
 	// run dom ready with a 1ms timeout to prevent sync execution in browsers like chrome
 	// Async call give a chance for configuration variables to be set
 	setTimeout(function(){
@@ -666,7 +669,7 @@ if ( document.addEventListener ) {
 	}
 }
 //A fallback to window.onload, that will always work
-window.addEventListener( "load", function(){ console.log("eventload "); kRunMwDomReady() }, false );
+window.addEventListener( "load", kRunMwDomReady, false );
 
 // The DOM ready check for Internet Explorer
 function doScrollCheck() {

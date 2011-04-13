@@ -388,7 +388,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 
 			// Check for empty loadRequest ( directly return the callback )
 			if( mw.isEmpty( loadRequest ) ) {
-				mw.log( 'Empty load request: ( ' + loadRequest + ' ) ' );
+				mw.log( 'mwEmbed::Empty load request: ( ' + loadRequest + ' ) ' );
 				callback( loadRequest );
 				return ;
 			}
@@ -2611,7 +2611,7 @@ if( window.jQuery ){
 	 * 
 	 */
 	$.fn.triggerQueueCallback = function( triggerName, triggerParam, callback ){
-		var targetObject = this;		
+		var targetObject = this;
 		// Support optional triggerParam data
 		if( !callback && typeof triggerParam == 'function' ){
 			callback = triggerParam;

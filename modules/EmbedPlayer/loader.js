@@ -334,7 +334,7 @@
 		
 		// Allow modules to do tag rewrites as well: 
 		var doModuleTagRewrites = function(){	
-			$j(mw).triggerQueueCallback( 'LoadeRewritePlayerTags', callback);
+			$j( mw ).triggerQueueCallback( 'LoadeRewritePlayerTags', callback);
 		};
 		
 		if( mw.documentHasPlayerTags() ) {
@@ -468,7 +468,6 @@
 	mw.getIframeHash = function( playerId ){
 		// Append the configuration and request domain to the iframe hash: 
 		var iframeMwConfig =  mw.getNonDefaultConfigObject();
-		
 		// Add the parentUrl to the iframe config: 
 		iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
 

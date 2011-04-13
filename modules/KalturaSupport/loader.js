@@ -446,6 +446,7 @@
 					continue;
 			}
 		}
+		mw.log( 'mw.getKalturaPlayerList found ' + kalturaPlayers.length + 'kalturaPlayers' );
 		return kalturaPlayers;
 	};
 	

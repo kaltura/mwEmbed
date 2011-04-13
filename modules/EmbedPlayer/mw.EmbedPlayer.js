@@ -2377,7 +2377,7 @@ mw.EmbedPlayer.prototype = {
 		// iPad can use html controls if its a persistantPlayer in the dom before loading )
 		// else it needs to use native controls:
 		if( mw.isIpad() ){
-			if( this.isPersistentNativePlayer() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') ){
+			if( this.isPersistentNativePlayer() && mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === true){
 				return false;
 			} else {
 				// Set warning that your trying to do iPad controls without persistent native player:
