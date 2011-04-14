@@ -14,6 +14,8 @@ $download = new downloadEntry();
 $download->redirectDownload();
 
 class downloadEntry {
+	var $resultObject = null; // lazy init
+	
 	/**
 	 * The result object grabber, caches a local result object for easy access
 	 * to result object properties. 
@@ -24,7 +26,8 @@ class downloadEntry {
 			require_once( dirname( __FILE__ ) .  '/KalturaGetResultObject.php' );
 			$this->resultObject = new KalturaGetResultObject( 'html5download:' . $wgMwEmbedVersion );
 			try{
-				$this->resultObject->get();
+				// Init a new result object with the client tag: 
+				$this->resultObject = new KalturaGetResultObject( 'html5download:' . $wgMwEmbedVersion );;
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
