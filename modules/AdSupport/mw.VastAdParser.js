@@ -88,8 +88,8 @@ mw.VastAdParser = {
 			
 			// Set videoFile to default if not set: 
 			if( currentAd.videoFiles.length == 0 ){
-				mw.log( 'VastAdParser::MISSING videoFile set to missing html5 video urls: ');
-				currentAd.videoFiles = mw.getConfig( 'Kaltura.MissingFlavorVideoUrls');
+				mw.log( 'VastAdParser::MISSING videoFile no video url: ');
+				//currentAd.videoFiles = mw.getConfig( 'Kaltura.MissingFlavorVideoUrls');
 			}
 			
 			// Set the CompanionAds if present: 
