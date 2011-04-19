@@ -199,10 +199,10 @@ jQuery.fn.iFramePlayer = function( readyCallback ){
 		var playerProxyId = ( $j( targetPlayer ).attr( 'id' ) )? $j( targetPlayer ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
 		var iframePlayerId = playerProxyId + '_ifp' ; 
 
-		// Update the id and append the div element proxy after the iframe 
+		// Update the id and wrap with the proxy 
 		$j( targetPlayer)
 			.attr('id', iframePlayerId)
-			.after(
+			.wrap(
 				$j('<div />')
 				.attr( 'id', playerProxyId )
 			);
