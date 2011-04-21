@@ -332,7 +332,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		 * javascript Resource Paths
 		 * 
 		 * @key Name of resource
-		 * @value Name of depenent style sheet
+		 * @value Name of dependent style sheet
 		 */
 		resourceStyleDependency: { },
 
@@ -2206,7 +2206,8 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		// xxx Note: we could do this a bit cleaner with regEx
 		$j( 'style' ).each( function( na, styleNode ){
 			$j.each( cssStyleSheetNames, function(inx, sheetName ){
-				if( $j( styleNode ).text().indexOf( '@import' ) != -1
+				if( $j( styleNode ).text() && 
+					$j( styleNode ).text().indexOf( '@import' ) != -1
 					&&
 					$j( styleNode ).text().indexOf( sheetName ) != -1 )
 				{
@@ -2617,21 +2618,27 @@ if( window.jQuery ){
 			callback = triggerParam;
 			triggerParam = null;
 		}
-		// Support namespaced event segmentation ( jQuery
+		
+		// Support namespaced event segmentation
 		var triggerBaseName = triggerName.split(".")[0]; 
 		var triggerNamespace = triggerName.split(".")[1];
-		
 		// Get the callback set
 		var callbackSet = [];
-		if( !$j( targetObject ).data( 'events' ) ){
+
+		// Check for both jQuery 1.4.4 events location and other jQuery data location: 
+		if( !$( targetObject ).data( 'events' ) && ! $( targetObject).get(0)['__events__'] ){
 			// No events run the callback directly
 			callback();
 			return ;
 		}
+		
+		var triggerEventSet = $( targetObject ).data( 'events' ) ?
+					$( targetObject ).data( 'events' )[ triggerBaseName ] :
+					$( targetObject).get(0)['__events__'][ 'events' ][ triggerBaseName ];
 		if( ! triggerNamespace ){
-			callbackSet = $j( targetObject ).data( 'events' )[ triggerBaseName ];
+			callbackSet = triggerEventSet;
 		} else{		
-			$j.each( $j( targetObject ).data( 'events' )[ triggerBaseName ], function( inx, bindObject ){
+			$.each( triggerEventSet, function( inx, bindObject ){
 				if( bindObject.namespace ==  triggerNamespace ){
 					callbackSet.push( bindObject );
 				}
@@ -2639,7 +2646,7 @@ if( window.jQuery ){
 		}
 
 		if( !callbackSet || callbackSet.length === 0 ){
-			mw.log( '"mwEmbed::jQuery.triggerQueueCallback: No events run the callback directly: ' + triggerName );
+			//mw.log( '"mwEmbed::jQuery.triggerQueueCallback: No events run the callback directly: ' + triggerName );
 			// No events run the callback directly
 			callback();
 			return ;
@@ -2647,13 +2654,23 @@ if( window.jQuery ){
 		
 		// Set the callbackCount
 		var callbackCount = ( callbackSet.length )? callbackSet.length : 1;
-		// mw.log("jQuery.triggerQueueCallback: " + triggerName + ' number of queued functions:' + callbackCount );
+		// mw.log("mwEmbed::jQuery.triggerQueueCallback: " + triggerName
+		// + ' number of queued functions:' + callbackCount );
 		var callInx = 0;
+		var callbackData = [];
 		var doCallbackCheck = function() {
+			var args = $.makeArray( arguments );
+			// If only one argument don't use an array: 
+			if( args.length == 1 ){
+				args = args[0];
+			}
+			// Add the callback data for the current trigger:
+			callbackData.push( args );
 			callInx++;
-			mw.log("jQuery.triggerQueueCallback: for( " + triggerName + " ) callInx " + callInx + ' callbackCount::' + callbackCount );
+			
+			// If done with loading run master callback with callbackData
 			if( callInx == callbackCount ){
-				callback();
+				callback( callbackData );
 			}
 		};
 		if( triggerParam ){
