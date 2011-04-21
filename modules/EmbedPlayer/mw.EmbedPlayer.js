@@ -565,7 +565,11 @@ mediaSource.prototype = {
 		if( this.mimeType == 'audio/vorbis') {
 			this.mimeType = 'audio/ogg';
 		}
-
+		
+		// Conform long form "video/ogg; codecs=theora" based attributes
+		// @@TODO we should support both audio and video type arguments
+		this.mimeType = this.mimeType.split(';')[0];
+			
 		// Check for parent elements ( supplies categories in "track" )
 		if( $j( element ).parent().attr('category') ) {
 			this.category = $j( element ).parent().attr('category');
