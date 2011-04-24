@@ -211,7 +211,7 @@ mw.PlayerControlBuilder.prototype = {
 			if( component_id == 'fullscreen' && this.embedPlayer.height == 0 ){
 				continue;
 			}
-			addComponent( component_id )
+			addComponent( component_id );
 		}
 		// Add special case remaining components: 
 		addComponent( 'timeDisplay' );
@@ -460,7 +460,7 @@ mw.PlayerControlBuilder.prototype = {
 				embedPlayer.resizePlayer({
 					'width' : $j( window ).width(),
 					'height' : $j( window ).height()
-				})
+				});
 			}
 		});
 
@@ -514,7 +514,7 @@ mw.PlayerControlBuilder.prototype = {
 				hideTip();
 			}
 			return true;
-		})
+		});
 	},
 
 	/**
@@ -698,11 +698,11 @@ mw.PlayerControlBuilder.prototype = {
 					return false;
 				}
 			})
-		}
+		};
 		
 		var bindSpaceDown = function() {
 			$j(window).unbind('keyup.mwPlayer');
-		}
+		};
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.checkOverlayControls() ) {
 			$interface
@@ -906,7 +906,8 @@ mw.PlayerControlBuilder.prototype = {
 	},
 
 	/**
-	* Does a native warning check binding to the player on mouse over.
+	* Display a warning message on the player
+	* checks a preference Id to enable or disable it.
 	* @param {string} preferenceId The preference Id
 	* @param {object} warningMsg The jQuery object warning message to be displayed.
 	*
@@ -936,7 +937,7 @@ mw.PlayerControlBuilder.prototype = {
 			'right' : '10px',
 			'padding' : '4px'
 		})
-		.html( warningMsg )
+		.html( warningMsg );
 	
 		$j( embedPlayer ).append(
 			$targetWarning 
@@ -960,7 +961,7 @@ mw.PlayerControlBuilder.prototype = {
 				// Set the current instance
 				mw.setConfig( preferenceId, false );
 				$( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
-				// set the local prefrence to false
+				// set the local preference to false
 				_this.addWarningFlag = false;
 			} )
 		);
@@ -1682,7 +1683,7 @@ mw.PlayerControlBuilder.prototype = {
 				if( buttonConfig.iconurl ){
 					var $icon =  $j('<img />')
 						.css({'width': '16px', 'height': '16px', 'margin': '-8px 5px 0px 0px'})
-						.attr('src', buttonConfig.iconurl )
+						.attr('src', buttonConfig.iconurl );
 				} else {
 					var $icon = $j('<span />')
 					.addClass( 'ui-icon' );

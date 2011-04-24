@@ -436,7 +436,6 @@ mw.KWidgetSupport.prototype = {
 				addSource( deviceSources['AppleMBR'] , 'application/vnd.apple.mpegurl' );
 				return sources;
 			}
-
 			if( deviceSources['iPadNew'] && useIpadFlavor ){
 				mw.log( "KwidgetSupport:: Add iPad Source using Akamai HTTP" );
 				addSource( deviceSources['iPadNew'] , 'application/vnd.apple.mpegurl' );

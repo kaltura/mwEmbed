@@ -59,7 +59,8 @@ $wgAllowRemoteKalturaService = false;
 // Default expire time for ui conf api queries in seconds 
 $wgKalturaUiConfCacheTime = 600;
 
-$wgKalturaIframeRewrite = false;
+// By default enable the iframe rewrite
+$wgKalturaIframeRewrite = true;
 
 $wgEnableIframeApi = false;
 $wgEnableIpadHTMLControls = false;

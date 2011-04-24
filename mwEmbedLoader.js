@@ -36,7 +36,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.3r';
+KALTURA_LOADER_VERSION = '1.3q';
 
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
@@ -118,21 +118,15 @@ if( !mw.ready){
 	};
 }
 
-// Set default LoadScriptForVideoTags option: 
-mw.setConfig( 'Kaltura.LoadScriptForVideoTags', true );
-
-// Set "use flash on android" default option: 
-mw.setConfig('EmbedPlayer.UseFlashOnAndroid', true);
-
 // Set url based config:
 if( document.URL.indexOf('forceMobileHTML5') != -1 ){
 	mw.setConfig( 'forceMobileHTML5', true );
 }
 function kDoIframeRewriteList( rewriteObjects ){
 	for( var i=0; i < rewriteObjects.length; i++ ){
-		var options = { width: rewriteObjects[i].width, height: rewriteObjects[i].height };
+		var options = { 'width': rewriteObjects[i].width, 'height': rewriteObjects[i].height };
 		// If we have no flash &  no html5 fallback to direct download
-		if( !kSupportsFlash() && ! kSupportsHTML5() ) {
+		if( ! kSupportsFlash() && ! kSupportsHTML5() ) {
 			kDirectDownloadFallback( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
 		} else {
 			kalturaIframeEmbed( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
@@ -187,10 +181,12 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			iframeSrc += '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
 		}
 	}
+	// add the flashvars:
+	iframeSrc += '?' + kFlashVarsToUrl( kEmbedSettings.flashvars );
 	
 	// add the forceMobileHTML5 to the iframe if present on the client: 
 	if( mw.getConfig( 'forceMobileHTML5' ) ){
-		iframeSrc += '?forceMobileHTML5=true';
+		iframeSrc += '&forceMobileHTML5=true';
 	}
 	
 	var targetNode = document.getElementById( replaceTargetId );
@@ -352,29 +348,19 @@ function getFlashVersion(){
 // && html5 video tag ( for fallback & html5 player interface )
 var ranKCheckAddScript = false;
 function kCheckAddScript(){
-	if( ranKCheckAddScript )
+	if( ranKCheckAddScript ){
 		return ;
-	ranKCheckAddScript = true;
-	
-	/**
-	 * Hard code some default if using the kaltura SAS
-	 */
-	// Set kaltura api to false by default ( if not already set )
-	if( mw.getConfig('EmbedPlayer.EnableIframeApi') === null ){
-		mw.setConfig( 'EmbedPlayer.EnableIframeApi', false) ; 
 	}
+	ranKCheckAddScript = true;
 
+	/**
+	 * Hard code some defaults for users not using the kaltura SAS
+	 * It kind of sucks to hard code this, But we can't deliver iframes for non SAS users atm. 
+	 */
 	var serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
-	if( ! serviceUrl || serviceUrl == 'http://www.kaltura.com' ){
-		if( mw.getConfig('Kaltura.UseManifestUrls') === null ){
-			mw.setConfig( 'Kaltura.UseManifestUrls', true);
-		}
-		if( mw.getConfig('EmbedPlayer.EnableIpadHTMLControls') === null){
-			mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
-		}
-		if( mw.getConfig( 'Kaltura.IframeRewrite' ) === null) {
-			mw.setConfig( 'Kaltura.IframeRewrite', true );
-		}
+	if( ! serviceUrl || serviceUrl != 'http://www.kaltura.com' ){
+		// if not hosted on kaltura for now we can't use the iframe to load the player
+		mw.setConfig( 'Kaltura.IframeRewrite', false );
 	}
 	
 	// If user javascript is using mw.ready add script
@@ -400,7 +386,8 @@ function kCheckAddScript(){
 	}
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not available 
-function kIsHTML5FallForward(){	
+function kIsHTML5FallForward(){
+	
 	// Check for a mobile html5 user agent:	
 	if ( (navigator.userAgent.indexOf('iPhone') != -1) || 
 		(navigator.userAgent.indexOf('iPod') != -1) || 
@@ -677,8 +664,9 @@ if ( document.addEventListener ) {
 	}
 }
 //A fallback to window.onload, that will always work
-window.addEventListener( "load", kRunMwDomReady, false );
-
+if ( document.addEventListener ) {
+	window.addEventListener( "load", kRunMwDomReady, false );
+}
 // The DOM ready check for Internet Explorer
 function doScrollCheck() {
 	if ( kAlreadyRunDomReadyFlag ) {
@@ -757,6 +745,15 @@ function kFlashVarsToObject( flashvarsString ){
 	}
 	return flashvars;
 }
+
+function kFlashVarsToUrl( flashVarsObject ){
+	var params = '';
+	for( var i in flashVarsObject ){
+		params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' + encodeURIComponent( flashVarsObject[i] );
+	}
+	return params;
+}
+
 function kGetEntryThumbUrl( entry ){
 	var kCdn = mw.getConfig( 'Kaltura.CdnUrl', 'http://cdnakmi.kaltura.com' ); 
 	return kCdn + '/p/' + entry.partner_id + '/sp/' +
@@ -771,12 +768,13 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 	if( typeof flashvars == 'string' ){
 		flashvars = kFlashVarsToObject( flashvars );
 	}
-	if( !flashvars )
+	
+	if( !flashvars ){
 		flashvars= {};
+	}
 	
 	// Include flashvars
-	embedSettings.flashvars = flashvars;
-		
+	embedSettings.flashvars = flashvars;	
 	var dataUrlParts = swfUrl.split('/');
 	
 	// Search backward for key value pairs

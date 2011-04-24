@@ -2493,7 +2493,9 @@ if ( document.addEventListener ) {
 }
 
 // A fallback to window.onload, is set so that we are sure to fire mw.domReady
-window.addEventListener( "load", mw.domReady, false );
+if ( window.addEventListener ) {
+	window.addEventListener( "load", mw.domReady, false );
+}
 
 // chrome sometimes never gets into a 'complete' state instead just gets to interactive
 // here we poll for interactive state:

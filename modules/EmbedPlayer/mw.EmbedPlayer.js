@@ -567,7 +567,7 @@ mediaSource.prototype = {
 		}
 		
 		// Conform long form "video/ogg; codecs=theora" based attributes
-		// @@TODO we should support both audio and video type arguments
+		// @@TODO we should support codec in the type arguments
 		this.mimeType = this.mimeType.split(';')[0];
 			
 		// Check for parent elements ( supplies categories in "track" )

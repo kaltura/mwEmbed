@@ -6,7 +6,6 @@
 
 define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server, something maybe broken or server is under high load. Please try again.");
 
-
 // Setup the kalturaIframe
 $mykalturaIframe = new kalturaIframe();
 
@@ -86,8 +85,6 @@ class kalturaIframe {
 	}
 
 	// Returns a simple image with a direct link to the asset
-	// ( need to add uiConf configuration to allow or disallow this feature
-	// ( maybe we tie it to the "download" option
 	private function getFileLinkHTML(){
 		try {
 			$flavorUrl = $this->getResultObject()->getSourceForUserAgent();

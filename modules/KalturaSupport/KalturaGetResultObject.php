@@ -12,6 +12,8 @@ class KalturaGetResultObject {
 	var $resultObj = null; // lazy init with getResultObject
 	var $clientTag = null;
 	
+	var $isPlaylist = null; // if the current request object is a playlist
+	
 	
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
@@ -23,7 +25,8 @@ class KalturaGetResultObject {
 		'cache_st' => null,
 		'wid' => null,
 		'uiconf_id' => null,
-		'entry_id' => null
+		'entry_id' => null,
+		'flashvars' => null,
 	);
 
 	function __construct( $clientTag = 'php'){
@@ -89,7 +92,7 @@ class KalturaGetResultObject {
 		
 		// 3gp check 
 		if( isset( $sources['3gp'] ) ) {
-			// Blackberry ( newer blackberry's can play the iphone src but better safe than broken )
+			// Blackberry ( newer blackberry's can play the iPhone src but better safe than broken )
 			if( strpos( $userAgent, 'BlackBerry' ) !== false ){
 				$flavorUrl = $sources['3gp']['src'];
 			}
@@ -310,11 +313,9 @@ class KalturaGetResultObject {
 		return $sources;
 	}
 	
-	
-	
 	// Parse the embedFrame request and sanitize input
 	private function parseRequest(){
-		global $wgAllowRemoteKalturaService;
+		global $wgAllowRemoteKalturaService, $wgEnableScriptDebug;
 		// Support /key/value path request:
 		if( isset( $_SERVER['PATH_INFO'] ) ){
 			$urlParts = explode( '/', $_SERVER['PATH_INFO'] );
@@ -327,17 +328,19 @@ class KalturaGetResultObject {
 			}
 		}
 		
-		// Check for player attributes:
+		// Check for urlParameters in the request:
 		foreach( $this->urlParameters as $attributeKey => $na){
 			if( isset( $_REQUEST[ $attributeKey ] ) ){
 				// set the url parameter and don't let any html in:
 				$this->urlParameters[ $attributeKey ] = htmlspecialchars( $_REQUEST[$attributeKey] );
 			}
 		}
-
+		//die('flashvars:'. $this->urlParameters[ 'flashvars' ] );
+			
 		// Check for debug flag
 		if( isset( $_REQUEST['debugKalturaPlayer'] ) || isset( $_REQUEST['debug'] ) ){
 			$this->debug = true;
+			$wgEnableScriptDebug = true;
 		}
 
 		// Check for required config
@@ -444,7 +447,7 @@ class KalturaGetResultObject {
 
 	private function getClient(){
 		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgKalturaServiceUrl, $wgScriptCacheDirectory, 
-			$wgMwEmbedVersion, $wgEnableScriptDebug;
+			$wgMwEmbedVersion;
 
 		$cacheDir = $wgScriptCacheDirectory;
 
@@ -460,7 +463,7 @@ class KalturaGetResultObject {
 
 		// Check modify time on cached php file
 		$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
-		if ( !$wgEnableScriptDebug && ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ) ) {
+		if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ) {
 			try{
 		    	$session = $client->session->startWidgetSession( $this->urlParameters['wid'] );
 		    	$this->ks = $session->ks;
@@ -492,18 +495,18 @@ class KalturaGetResultObject {
 	public function getUrlParameters(){
 		return $this->urlParameters;
 	}
-	public function  getJSON(){
+	public function getJSON(){
 		return json_encode( $this->getResultObject() );
 	}
 	private function getResultObject(){
-		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug;
+		global $wgKalturaUiConfCacheTime;
 		// Check if we have a cached result object:
 		if( !$this->resultObj ){
 			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".entry.txt";
 	
 			// Check modify time on cached php file
 			$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
-			if ( !$wgEnableScriptDebug && ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ) ){
+			if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
 				$this->resultObj = $this->getResultObjectFromApi();
 			} else {
 				$this->outputFromCache = true;
