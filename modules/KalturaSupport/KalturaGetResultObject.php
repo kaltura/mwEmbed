@@ -23,6 +23,7 @@ class KalturaGetResultObject {
 	 */
 	private $urlParameters = array(
 		'cache_st' => null,
+		'p' => null,
 		'wid' => null,
 		'uiconf_id' => null,
 		'entry_id' => null,
@@ -335,6 +336,11 @@ class KalturaGetResultObject {
 				$this->urlParameters[ $attributeKey ] = htmlspecialchars( $_REQUEST[$attributeKey] );
 			}
 		}
+		
+		// add p == _widget
+		if( isset( $this->urlParameters['p'] ) && !isset( $this->urlParameters['wid'] ) ){
+			$this->urlParameters['wid'] = '_' . $this->urlParameters['p'];  
+		}
 		//die('flashvars:'. $this->urlParameters[ 'flashvars' ] );
 			
 		// Check for debug flag
@@ -345,7 +351,7 @@ class KalturaGetResultObject {
 
 		// Check for required config
 		if( $this->urlParameters['wid'] == null ){
-			$this->outputIframeError( 'Can not display player, missing widget id' );
+			throw new Exception( 'Can not display player, missing widget id' );
 		}
 		
 		// If remote service is allowed enable the $wgKalturaServiceUrl $wgKalturaCDNUrl and $wgKalturaServiceBase to be set via iframe request
@@ -469,7 +475,7 @@ class KalturaGetResultObject {
 		    	$this->ks = $session->ks;
 		    	$this->putCacheFile( $cacheFile,  $this->ks );
 			} catch ( Exception $e ){
-				$this->fatalIframeError( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 			}
 		} else {
 		  	$this->ks = file_get_contents( $cacheFile );
