@@ -2768,6 +2768,9 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		mw.log( 'EmbedPlayer::stop:' + this.id );
 
+		// trigger the stop event: 
+		$j( this ).trigger( 'doStop' );
+			
 		// no longer seeking:
 		this.didSeekJump = false;
 
@@ -2834,13 +2837,16 @@ mw.EmbedPlayer.prototype = {
 	 * @param {float}
 	 *      percent Percent of full volume
 	 */
-	setVolume: function( percent ) {
+	setVolume: function( percent, triggerChange ) {
+		var _this = this;
 		// ignore NaN percent:
 		if( isNaN( percent ) ){
 			return ;
 		}
 		// Set the local volume attribute
-		this.previousVolume = this.volume = percent;
+		this.previousVolume = this.volume;
+		
+		this.volume = percent;
 
 		// Un-mute if setting positive volume
 		if( percent != 0 ){
@@ -2852,7 +2858,9 @@ mw.EmbedPlayer.prototype = {
 
 		// mw.log(" setVolume:: " + percent + ' this.volume is: ' +
 		// this.volume);
-		$j( this ).trigger('volumeChanged', percent );
+		if( triggerChange ){
+			$j( _this ).trigger('volumeChanged', percent );
+		}
 	},
 
 	/**

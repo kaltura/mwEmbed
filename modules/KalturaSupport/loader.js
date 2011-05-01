@@ -10,8 +10,6 @@
 
 ( function( mw ) {
 
-	// For now just store the keys in the javascript  
-	// ( need to get clarity on why this is even needed )
 	mw.setDefaultConfig( {
 		'Kaltura.EnableAnalytics' : true,
 		'Kaltura.ServiceUrl' : 'http://www.kaltura.com',

@@ -221,7 +221,7 @@
 					});
 					break;
 				case 'volumeChanged': 
-					$j( embedPlayer ).bind('volumeChanged', function(percent){
+					$j( embedPlayer ).bind('volumeChanged', function(event, percent){
 						callback( {'newVolume' : percent }, embedPlayer.id );
 					});
 					break;
@@ -236,20 +236,59 @@
 					});
 					
 					break;
-				case 'playerPlayed':
-					$j( embedPlayer ).bind("play", function(){
-						// TODO document what data played should include
-						callback( {}, embedPlayer.id );
+				case 'doStop':
+				case 'stop':
+					$j( embedPlayer ).bind("doStop", function(){
+						callback( embedPlayer.id );
 					});
 					break;
-				case 'playerPlayEnd': 
+				case 'playerPaused':
+				case 'pause':
+				case 'doPause':
+					$j( embedPlayer ).bind("pause", function(){
+						callback( embedPlayer.id );
+					});
+					break;
+				case 'playerPlayed':
+				case 'play':
+				case 'doPlay':
+					$j( embedPlayer ).bind("play", function(){
+						callback( embedPlayer.id );
+					});
+					break;
+				case 'doSeek':
+				case 'playerSeekStart':
+				case 'doIntelligentSeek':		
+					$j( embedPlayer ).bind("seeking", function(){
+						callback( embedPlayer.currentTime, embedPlayer.id );
+					});
+					break;
+				case 'playerSeekEnd':
+					$j( embedPlayer ).bind("seeked", function(){
+						callback( embedPlayer.id );
+					});
+					break;
+				case 'playerPlayEnd':
 					$j( embedPlayer ).bind("ended", function(){
-						// TODO document what data ended should include
-						callback( {}, embedPlayer.id );
+						callback( embedPlayer.id );
 					});
 					break;
 				case 'durationChange': 
-					// TODO add in duration change support
+					$j( embedPlayer ).bind( "durationchange", function(){
+						callback( { 'newValue' : embedPlayer.duration }, embedPlayer.id );
+					});
+				break;
+				case 'openFullScreen': 
+				case 'hasOpenedFullScreen':
+					$j( embedPlayer ).bind( "onOpenFullScreen", function(){
+						callback( embedPlayer.id );
+					});
+					break;
+				case 'hasCloseFullScreen':
+				case 'closeFullScreen':
+					$j( embedPlayer ).bind( "onCloseFullScreen", function(){
+						callback( embedPlayer.id );
+					});
 					break;
 				case 'playerUpdatePlayhead':
 					$j( embedPlayer ).bind('monitorEvent', function(){
@@ -263,7 +302,7 @@
 					break;
 				case 'mediaReady':
 					$( embedPlayer ).bind( 'playerReady.mediaReady', function() {
-						callback( {}, embedPlayer.id );
+						callback( embedPlayer.id );
 					});
 					break;
 				default:

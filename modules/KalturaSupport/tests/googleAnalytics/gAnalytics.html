@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Fall forward html5</title>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+<script type="text/javascript" src="../../../../mwEmbedLoader.php"></script>
+<script type="text/javascript">
+	mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
+</script>
+<script type="text/javascript" src="kGoogleAnalytics.js"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-22997990-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<script type="text/javascript">
+	// once the player can accept events: 
+	function jsCallbackReady(){
+		new kGoogleAnalytics({
+			// List of kaltura events to track 
+			// Full list of notifications avaliable here: 
+			// http://www.kaltura.org/demos/kdp3/docs.html#notifications
+			// For default list of events do not set this property 
+			'eventTrackList' : null,
+
+			// The player object to add bindings too:
+			'playerElement' : $('#kaltura_player').get(0), 
+			
+			// pageTracker object ( if set to null async tracking is used via window._gaq.push calls )
+			'googlePageTracker': null,
+			
+			// An optional event callback to be used to monitor what events are being sent to google via _trackEvent calls
+			'trackEventMonitor' : function( category, action, opt_label, opt_value ){
+				$('#eventRowDesc').after(
+					$('<tr />' ).append(
+						$('<td />').text( category ),
+						$('<td />').text( action ),
+						$('<td />').text( '' + opt_label ),
+						$('<td />').text( '' + opt_value )
+					)
+				)
+			}
+		});
+	};
+</script>
+</head>
+<body>
+<h2> Google analytics for kdp flash player and html5 player </h2>
+<a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
+<br />
+<div style="position:absolute;top:90px;left:450px;width:500px;height:300px;" >
+<i>Google Analytics events: </i><br />
+<table border="1" width="500">
+<tr id="eventRowDesc">
+	<td>Category</td>
+	<td>action</td>
+	<td>opt_label</td>
+	<td>opt_value</td>
+</tr>
+</table>
+</div>
+
+<object id="kaltura_player" name="kaltura_player" 
+type="application/x-shockwave-flash" 
+allowFullScreen="true" allowNetworking="all" 
+allowScriptAccess="always" height="330" width="400" 
+data="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao">
+<param name="allowFullScreen" value="true" />
+<param name="allowNetworking" value="all" />
+<param name="allowScriptAccess" value="always" />
+<param name="bgcolor" value="#000000" />
+
+<param name="flashVars" value="&" />
+<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao" />
+<a href="http://corp.kaltura.com">video platform</a> 
+<a href="http://corp.kaltura.com/technology/video_management">video management</a> 
+<a href="http://corp.kaltura.com/solutions/overview">video solutions</a> 
+<a href="http://corp.kaltura.com/technology/video_player">video player</a>
+</object>
+
+
+
+
+</body>
+</html>
+

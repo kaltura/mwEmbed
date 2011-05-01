@@ -70,7 +70,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Check for skin overrides for controlBuilder
 		var skinClass = embedPlayer.skinName.substr(0,1).toUpperCase() + embedPlayer.skinName.substr( 1 );
-		if ( mw['PlayerSkin' + skinClass ]) {
+		if ( mw['PlayerSkin' + skinClass ] ) {
 
 			// Clone as to not override prototype with the skin config
 			var _this = $j.extend( true, { }, this, mw['PlayerSkin' + skinClass ] );
@@ -697,7 +697,7 @@ mw.PlayerControlBuilder.prototype = {
 					}
 					return false;
 				}
-			})
+			});
 		};
 		
 		var bindSpaceDown = function() {
@@ -1049,7 +1049,7 @@ mw.PlayerControlBuilder.prototype = {
 					embedPlayer.$interface.find( '.volume_control span' ).removeClass( 'ui-icon-volume-off' ).addClass( 'ui-icon-volume-on' );
 				}
 				mw.log('PlayerControlBuilder::change:update volume:' + percent);
-				embedPlayer.setVolume( percent );
+				embedPlayer.setVolume( percent, true );
 			}
 		};
 
@@ -1343,8 +1343,8 @@ mw.PlayerControlBuilder.prototype = {
 		$shareList
 		.append(
 			$j('<li />').text(
-					gM( 'mwe-embedplayer-embed_site_or_blog' )
-				)
+				gM( 'mwe-embedplayer-embed_site_or_blog' )
+			)
 			/*
 			.append(
 				$j('<a />')
@@ -1417,7 +1417,7 @@ mw.PlayerControlBuilder.prototype = {
 		$j.each( embedPlayer.mediaElement.getPlayableSources(), function( sourceId, source ) {
 
 			var isPlayable = (typeof mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.getMIMEType() ) == 'object' );
-			var is_selected = ( source.getSrc() == embedPlayer.mediaElement.selectedSource.getSrc() );
+			var isSelected = ( source.getSrc() == embedPlayer.mediaElement.selectedSource.getSrc() );
 
 			$playerSelect.append(
 				$j( '<h3 />' )
@@ -1431,9 +1431,8 @@ mw.PlayerControlBuilder.prototype = {
 				var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( source.getMIMEType() );
 
 				for ( var i = 0; i < supportingPlayers.length ; i++ ) {
-
 					// Add link to select the player if not already selected )
-					if( embedPlayer.selectedPlayer.id == supportingPlayers[i].id && is_selected ) {
+					if( embedPlayer.selectedPlayer.id == supportingPlayers[i].id && isSelected ) {
 						// Active player ( no link )
 						$playerLine = $j( '<span />' )
 						.append(
@@ -1443,16 +1442,17 @@ mw.PlayerControlBuilder.prototype = {
 							})
 							.addClass( 'active')
 							.text( 
-									supportingPlayers[i].getName()
+								supportingPlayers[i].getName()
 						 	)
-						);
+						).click( function(){
+							embedPlayer.controlBuilder.closeMenuOverlay();
+						});
 						//.addClass( 'ui-state-highlight ui-corner-all' ); removed by ran
 					} else {
 						// Non active player add link to select:
 						$playerLine = $j( '<a />')
 							.attr({
 								'href' : '#',
-								'rel' : 'sel_source',
 								'id' : 'sc_' + sourceId + '_' + supportingPlayers[i].id
 							})
 							.addClass( 'ui-corner-all')

@@ -8,7 +8,7 @@ window['Kaltura'] = true;
 // KAnalytics Constructor
 mw.KAnalytics = function( embedPlayer, kalturaClient ){
 	this.init( 	embedPlayer, kalturaClient );
-}
+};
 
 // Add analytics to the embed player: 
 mw.addKAnalytics = function( embedPlayer, kalturaClient ) {
@@ -104,7 +104,7 @@ mw.KAnalytics.prototype = {
 		// make sure we have a KS
 		this.kClient.getKS( function( ks ){
 			_this.doSendAnalyticsEvent( ks, KalturaStatsEventKey );
-		})
+		});
 	},
 	doSendAnalyticsEvent: function( ks, KalturaStatsEventKey ){
 		var _this = this;				
@@ -169,7 +169,7 @@ mw.KAnalytics.prototype = {
 		// Setup shortcut anonymous function for player bindings
 		var b = function( hookName, eventType ){
 			$j( _this.embedPlayer ).bind( hookName, function(){
-				_this.sendAnalyticsEvent( eventType )
+				_this.sendAnalyticsEvent( eventType );
 			});
 		};
 		

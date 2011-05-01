@@ -104,6 +104,9 @@
 			$.each( notificationslist, function(inx, fName){
 				if (fName != 'playerUpdatePlayhead') {
 					window[ fName + "Handler2" ] = function(data, id){
+						if( fName == 'playerSeekEnd' ){
+							debugger;
+						}
 						if ($("#stopListeners").attr("checked") == false) {
 							$("#notifications").text( $("#notifications").text() + fName + ': ');
 							printobj(data);

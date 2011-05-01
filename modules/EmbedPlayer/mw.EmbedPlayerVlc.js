@@ -323,10 +323,10 @@ mw.EmbedPlayerVlc = {
 
 	/**
 	* Update the player volume
-	* @pram {Float} percent Percent of total volume
+	* @parm {Float} percent Percent of total volume
 	*/
 	setPlayerElementVolume: function ( percent ) {
-		if ( this.getPlayerElement() ) {
+		if ( this.getPlayerElement() && this.playerElement.audio ) {
 			this.playerElement.audio.volume = percent * 100;
 		}
 	},

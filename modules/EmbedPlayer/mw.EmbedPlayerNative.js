@@ -231,7 +231,12 @@ mw.EmbedPlayerNative = {
 	doSeek: function( percentage ) {
 		mw.log( 'Native::doSeek p: ' + percentage + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seek_time_sec );
 		this.seeking = true;
-
+		// Update the current time
+		this.currentTime = ( percentage * this.duration ) ;
+		// trigger the seeking event: 
+		mw.log('Native::doSeek:trigger');
+		$j( this ).trigger( 'seeking' );
+		
 		// Run the onSeeking interface update
 		this.controlBuilder.onSeek();
 
@@ -263,9 +268,12 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		mw.log( 'EmbedPlayerNative::doNativeSeek::' + percentage );
 		this.seeking = true;
+		
 		this.seek_time_sec = 0;
 		this.setCurrentTime( ( percentage * this.duration ) , function(){
 			_this.seeking = false;
+			// done seeking: 
+			$j( this ).trigger( 'seeked' );
 			_this.monitor();
 		})
 	},
@@ -584,7 +592,7 @@ mw.EmbedPlayerNative = {
 	* fired when "seeking"
 	*/
 	onseeking: function() {
-		mw.log( "native:onSeeking");
+		mw.log( "native:onSeeking " + this.seeking);
 		// Trigger the html5 seeking event
 		//( if not already set from interface )
 		if( !this.seeking ) {
@@ -604,7 +612,9 @@ mw.EmbedPlayerNative = {
 	* fired when done seeking
 	*/
 	onseeked: function() {
-		mw.log("native:onSeeked");
+		mw.log("native:onSeeked " + this.seeking + ' ct:' + this.playerElement.currentTime );
+		// sync the seek checks so that we don't re-issue the seek request
+		this.previousTime = this.currentTime = this.playerElement.currentTime;
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
 			this.seeking = false;

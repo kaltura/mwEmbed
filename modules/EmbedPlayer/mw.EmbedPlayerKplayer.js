@@ -152,7 +152,7 @@ mw.EmbedPlayerKplayer = {
 	 */
 	bindPlayerFunction : function(bindName, methodName) {
 		// The kaltura kdp can only call a global function by given name
-		var gKdpCallbackName = methodName + '_cb_' + this.id;
+		var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id;
 
 		// Create an anonymous function with local player scope
 		var createGlobalCB = function(cName, embedPlayer) {
@@ -228,8 +228,8 @@ mw.EmbedPlayerKplayer = {
 			mw.log('Error: switchPlaySrc can not switchPlaySrc if no source is playing' );
 			return ;
 		}
-		var gPlayerReady =  this.id + '_switchSrcReady';
-		var gDoneName = this.id + '_switchSrcEnd';
+		var gPlayerReady = 'kdp_' + this.id + '_switchSrcReady';
+		var gDoneName = 'kdp_' + this.id + '_switchSrcEnd';
 		setTimeout(function(){
 			mw.log("Kplayer switchPlaySrc: " + src);
 			_this.getPlayerElement().sendNotification("changeMedia", {entryId:src} );
@@ -263,19 +263,26 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
-
+		// add a seeked callback event: 
+		var seekedCallback = 'kdp_seek_' +this.id;
+		window[ seekedCallback ] = function(){
+			_this.seeking = false;
+			$j( this ).trigger( 'seeked' );
+		};
+		this.playerElement.addJsListener('playerSeekEnd', seekedCallback );
+		
 		if (this.playerElement) {		
+			// trigger the html5 event: 
+			$j( this ).trigger( 'seeking' );
+			
 			// Issue the seek to the flash player:
 			this.playerElement.sendNotification('doSeek', seekTime);
-
-			// Kdp is missing seek done callback
-			setTimeout(function() {
-				_this.seeking = false;
-			}, 500);
+			
 		} else {
 			// try to do a play then seek:
 			this.doPlayThenSeek(percentage);
 		}
+		
 		// Run the onSeeking interface update
 		this.controlBuilder.onSeek();
 	},
@@ -294,6 +301,7 @@ mw.EmbedPlayerKplayer = {
 	
 		// let the player know we are seeking
 		_this.seeking = true;
+		$j( this ).trigger( 'seeking' );
 	
 		var getPlayerCount = 0;
 		var readyForSeek = function() {
