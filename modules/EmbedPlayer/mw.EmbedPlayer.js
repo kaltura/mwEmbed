@@ -3021,7 +3021,7 @@ mw.EmbedPlayer.prototype = {
 		if( Math.round( _this.volume * 100 ) != Math.round( _this.previousVolume * 100 ) ) {
 			_this.setInterfaceVolume( _this.volume );
 			if( _this._propagateEvents ){
-				$j( this ).trigger('volumeChanged', _this.volume );
+				//$j( this ).trigger('volumeChanged', _this.volume );
 			}
 		}
 
