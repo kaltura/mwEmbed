@@ -195,8 +195,8 @@ kGoogleAnalytics.prototype = {
 			this.googlePageTracker._trackEvent.apply( this, trackingArgs );
 		} else {
 			var gaqAry = trackingArgs.slice(0);
-			gaqAry.unshift("_trackEvent");
-			window._gaq.push( gaqAry  );
+			gaqAry.unshift( "_trackEvent" );
+			window._gaq.push( gaqAry );
 		}
 		// Send the event to the monitor ( if set in the initial options ) 
 		if( typeof this.trackEventMonitor == 'function'){
@@ -245,12 +245,17 @@ kGoogleAnalytics.prototype = {
 			// Else set the option value to quartile value: 
 			optionValue = qStat;
 		}	
-		return  [ 
+		var trackEvent = [ 
               this.trackingCategory, 
-              methodName, 
-              optionLabel,
-              optionValue,
-              ];
+              methodName
+        ];
+		if( optionLabel )
+			trackEvent.push( optionLabel );
+		
+		if( optionValue )
+			trackEvent.push( optionValue );
+		
+		return trackEvent;
 	},
 	/**
 	 * Get an optional label for the methodName and data
