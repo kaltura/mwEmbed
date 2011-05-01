@@ -35,7 +35,7 @@ kGoogleAnalytics.prototype = {
 			'closeFullScreen',
 			'volumeChanged',
 			// special case meta events:
-			'quartiles'
+			'quartiles' // quartiles an event for every 1/4 the of the video played
 	],
 	// The full set of notifications for kdp3 ( validates event names ) 
 	validEventList :[  
@@ -215,8 +215,6 @@ kGoogleAnalytics.prototype = {
 		// Set the seek and time percent:
 		var percent = embedPlayer.currentTime / embedPlayer.duration;
 		var seekPercent = this._lastSeek/ embedPlayer.duration;
-		
-		mw.log("getQuartilesStatus::p" + percent + 'sk:' + seekPercent );
 		
 		// Send updates based on logic present in StatisticsMediator.as
 		if( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {					
