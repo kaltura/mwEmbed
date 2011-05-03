@@ -116,7 +116,8 @@ class kalturaIframe {
 						'/height/480';
 		$sources = $this->getResultObject()->getSources();
 
-		// if we hvae no sources do not output the video tag:
+
+		// if we have no sources do not output the video tag:
 		if( count( $sources ) == 0 ){
 			return ;
 		}
@@ -140,7 +141,7 @@ class kalturaIframe {
 				}
 			}
 		}
-		//Close the video tag
+		//Close the open video tag
 		$o.='>';
 
 		// Output each source as a child element ( for javascript off browsers to have a chance
@@ -330,7 +331,7 @@ class kalturaIframe {
 	<body>
 		<div id="videoContainer" >
 			<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
-			<?php echo $this->getVideoHTML() ?>
+			<?php echo $this->getVideoHTML(); ?>
 		</div>
 		<script type="text/javascript">
 		

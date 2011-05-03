@@ -110,7 +110,7 @@ class KalturaGetResultObject {
 				$flavorUrl = $sources['ogg']['src'];
 			}
 			// firefox 3.5 and greater supported ogg:
-			if( strpos( $userAgent, 'Firefox/3' ) !== false ){
+			if( strpos( $userAgent, 'Firefox' ) !== false ){
 				$flavorUrl = $sources['ogg']['src'];
 			}
 		}
@@ -344,7 +344,7 @@ class KalturaGetResultObject {
 				}
 			}
 		}
-		
+
 		// add p == _widget
 		if( isset( $this->urlParameters['p'] ) && !isset( $this->urlParameters['wid'] ) ){
 			$this->urlParameters['wid'] = '_' . $this->urlParameters['p'];  
@@ -388,12 +388,12 @@ class KalturaGetResultObject {
 	 */
 	private function getResultObjectCacheKey(){
 		global $wgKalturaServiceUrl;		
-		// Get a key based on partner id,  entry_id and ui_confand refer url:
+		// Get a key based on partner id,  entry_id and ui_confand and refer url:
 		$playerUnique = ( isset( $this->urlParameters['entry_id'] ) ) ?  $this->urlParameters['entry_id'] : '';
 		$playerUnique .= ( isset( $this->urlParameters['uiconf_id'] ) ) ?  $this->urlParameters['uiconf_id'] : '';
 		
 		// hash the service url, the partner_id, the player_id and the Referer url: 
-		return  substr( md5( $wgKalturaServiceUrl ), 0, 5 ) .
+		return substr( md5( $wgKalturaServiceUrl ), 0, 5 ) .
 				$this->getPartnerId() . '_' . $playerUnique . '_' . substr( md5( $this->getReferer() ), 0, 10 );
 	}
 
