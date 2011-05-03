@@ -192,7 +192,7 @@ kGoogleAnalytics.prototype = {
 		
 		// Send the google event:
 		if( this.googlePageTracker ){
-			this.googlePageTracker._trackEvent( trackingArgs[0],trackingArgs[1],trackingArgs[2], trackingArgs[3]);
+			this.googlePageTracker._trackEvent.apply( trackingArgs );
 		} else {
 			var gaqAry = trackingArgs.slice(0);
 			gaqAry.unshift( "_trackEvent" );
