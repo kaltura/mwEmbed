@@ -197,6 +197,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	iframe.width = (options.width) ? options.width : '100%';
 	iframe.height = (options.height) ? options.height : '100%';
 	iframe.style.border = '0px';
+	iframe.style.overflow = 'hidden';
 		
 	parentNode.replaceChild(iframe, targetNode );
 

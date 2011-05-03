@@ -385,16 +385,17 @@ class kalturaIframe {
 			//var kIsHTML5FallForward = function(){ return false };
 			//var kSupportsFlash = function(){ return false };
 			
+			// Don't do an iframe rewrite inside an iframe!
+			mw.setConfig( 'Kaltura.IframeRewrite', false );
+
+			// Identify the player as an iframe player
+			mw.setConfig( "EmbedPlayer.IsIframePlayer", true );
+			
 			if( kIsHTML5FallForward() ){
 				// Don't confuse the rewrite engine ( remove the kaltura swf )
 				var el = document.getElementById('kaltura_player');
-				el.parentNode.removeChild( el );
-				
-				// Don't do an iframe rewrite inside an iframe!
-				mw.setConfig( 'Kaltura.IframeRewrite', false );
-
-				// Identify the player as an iframe player
-				mw.setConfig( "EmbedPlayer.IsIframePlayer", true );
+				if( el ) 
+					el.parentNode.removeChild( el );
 				
 				// Load the mwEmbed resource library and add resize binding
 				mw.ready(function(){
@@ -444,6 +445,7 @@ class kalturaIframe {
 					// Load server side bindings for kdpServer
 					kLoadJsRequestSet( ['window.jQuery', 'mwEmbed', 'mw.style.mwCommon', '$j.postMessage', 'kdpServerIFrame', 'JSON' ] );
 				} else {
+					
 					// Last resort just provide an image with a link to the file
 					// NOTE we need to do some platform checks to see if the device can
 					// "actually" play back the file and or switch to 3gp version if nessesary.
