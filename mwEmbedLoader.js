@@ -69,7 +69,7 @@ var kAlreadyRunDomReadyFlag = false;
 
 // Try and override the swfObject at runtime
 // In case it was included before mwEmbedLoader and the embedSWF call is inline 
-kOverideSwfObject();
+kOverideJsFlashEmbed();
 
 // Setup preMwEmbedReady queue
 if( !preMwEmbedReady ){
@@ -241,7 +241,7 @@ function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 }
 
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
-function kOverideSwfObject(){
+function kOverideJsFlashEmbed(){
 	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTargetId, widthStr, heightStr ){
 		
 		// Add a ready event to re-write: 
@@ -276,12 +276,29 @@ function kOverideSwfObject(){
 			}
 		});
 	};
+	// flashobject
+	if( window['flashembed'] && !window['originalFlashembed'] ){
+		window['originalFlashembed'] = window['flashembed'];
+		window['flashembed'] = function( targetId, attributes, flashvars ){
+			kAddReadyHook(function(){
+				var kEmbedSettings = kGetKalturaEmbedSettings( attributes.src, flashvars);
+				
+				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
+					doEmbedSettingsWrite( kEmbedSettings, targetId, attributes.width, attributes.height);
+				} else {
+					// Use the original flash player embed:  
+					originalFlashembed( targetId, attributes, flashvars );
+				}
+			});
+		};
+	}
+	
 	// SWFObject v 1.5 
 	if( window['SWFObject']  && !window['SWFObject'].prototype['originalWrite']){
 		window['SWFObject'].prototype['originalWrite'] = window['SWFObject'].prototype.write;
 		window['SWFObject'].prototype['write'] = function( targetId ){
 			var _this = this;
-			mw.ready(function(){				
+			kAddReadyHook(function(){			
 				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, _this.params.flashVars);
 				
 				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
@@ -616,7 +633,7 @@ function kRunMwDomReady(){
 		while( kReadyHookSet.length ){
 			kReadyHookSet.shift()();
 		}
-		kOverideSwfObject();
+		kOverideJsFlashEmbed();
 		kCheckAddScript();
 	},1 );
 }
@@ -831,8 +848,8 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 var checkForKDPCallback = function(){
 	if( typeof window.jsCallbackReady != 'undefined' && !window.KalturaKDPCallbackReady ){
 		window.KalturaKDPCallbackReady = window.jsCallbackReady;
-		window.jsCallbackReady = function(){			
-			window.KalturaKDPCallbackAlreadyCalled = true;
+		window.jsCallbackReady = function( player_id ){			
+			window.KalturaKDPCallbackAlreadyCalled = player_id;
 		};		
 	}
 };
@@ -842,7 +859,7 @@ var restoreKalturaKDPCallback = function(){
 		window.jsCallbackReady = window.KalturaKDPCallbackReady;
 		window.KalturaKDPCallbackReady = null;
 		if( window.KalturaKDPCallbackAlreadyCalled ){
-			window.jsCallbackReady();
+			window.jsCallbackReady( window.KalturaKDPCallbackAlreadyCalled );
 		}
 	}
 };

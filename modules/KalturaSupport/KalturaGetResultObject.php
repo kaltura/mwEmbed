@@ -328,12 +328,20 @@ class KalturaGetResultObject {
 				}
 			}
 		}
-		
+
 		// Check for urlParameters in the request:
 		foreach( $this->urlParameters as $attributeKey => $na){
 			if( isset( $_REQUEST[ $attributeKey ] ) ){
 				// set the url parameter and don't let any html in:
-				$this->urlParameters[ $attributeKey ] = htmlspecialchars( $_REQUEST[$attributeKey] );
+				if( is_array( $_REQUEST[$attributeKey] ) ){
+					$payLoad = array();
+					foreach( $_REQUEST[$attributeKey] as $key => $val ){
+						$payLoad[$key] = htmlspecialchars( $val );
+					}
+					$this->urlParameters[ $attributeKey ] = $payLoad;
+				} else {
+					$this->urlParameters[ $attributeKey ] = htmlspecialchars( $_REQUEST[$attributeKey] );
+				}
 			}
 		}
 		

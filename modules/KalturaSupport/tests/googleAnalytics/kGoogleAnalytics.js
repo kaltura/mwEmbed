@@ -192,7 +192,7 @@ kGoogleAnalytics.prototype = {
 		
 		// Send the google event:
 		if( this.googlePageTracker ){
-			this.googlePageTracker._trackEvent.apply( this, trackingArgs );
+			this.googlePageTracker._trackEvent( trackingArgs[0],trackingArgs[1],trackingArgs[2], trackingArgs[3]);
 		} else {
 			var gaqAry = trackingArgs.slice(0);
 			gaqAry.unshift( "_trackEvent" );
@@ -249,10 +249,10 @@ kGoogleAnalytics.prototype = {
               this.trackingCategory, 
               methodName
         ];
-		if( optionLabel )
+		if( optionLabel !== null )
 			trackEvent.push( optionLabel );
 		
-		if( optionValue )
+		if( optionValue !== null )
 			trackEvent.push( optionValue );
 		
 		return trackEvent;
