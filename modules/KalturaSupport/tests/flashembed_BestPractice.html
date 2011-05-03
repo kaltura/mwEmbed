@@ -19,7 +19,7 @@
 				NOTE: flashembed must come before mwEmbedLoader.php
 		-->
 		<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-		<script>
+		<script type="text/javascript">
 			// placed in head to make sure jsCallbackReady is available as soon as KDP is
 			// (if page is "heavy", KDP may call jsCallbackReady before DOM is ready)
 
@@ -42,9 +42,9 @@
 		<!-- other parts of the page -->
 
 		<ul id="sample_playlist">
-			<li id="0_qhmv0e34"><a href="?entryId=0_qhmv0e34"><img alt="entry name inserted via kaltuta php client, etc." src="http://www.kaltura.com/p/346/sp/34600/thumbnail/entry_id/0_qhmv0e34/height/81/width/144/quality/66/type/2/bgcolor/000000" /></a></li>
-			<li id="0_8vcl5v51"><a href="?entryId=0_8vcl5v51"><img alt="entry name inserted via kaltuta php client, etc." src="http://www.kaltura.com/p/346/sp/34600/thumbnail/entry_id/0_8vcl5v51/height/81/width/144/quality/66/type/2/bgcolor/000000" /></a></li>
-			<li id="1_sax2p56d"><a href="?entryId=1_sax2p56d"><img alt="entry name inserted via kaltuta php client, etc." src="http://www.kaltura.com/p/346/sp/34600/thumbnail/entry_id/1_sax2p56d/height/81/width/144/quality/66/type/2/bgcolor/000000" /></a></li>
+			<li id="1_v1z55w0b"><a href="?entryId=1_v1z55w0b"><img alt="entry name inserted via kaltuta php client, etc." src="http://www.kaltura.com/p/243342/thumbnail/entry_id/1_v1z55w0b/height/81/width/144/quality/66/type/2/bgcolor/000000" /></a></li>
+			<li id="0_uka1msg4"><a href="?entryId=0_uka1msg4"><img alt="entry name inserted via kaltuta php client, etc." src="http://www.kaltura.com/p/243342/thumbnail/entry_id/0_uka1msg4/height/81/width/144/quality/66/type/2/bgcolor/000000" /></a></li>
+			<li id="0_7dmu2xhz"><a href="?entryId=0_7dmu2xhz"><img alt="entry name inserted via kaltuta php client, etc." src="http://www.kaltura.com/p/243342/thumbnail/entry_id/0_7dmu2xhz/height/81/width/144/quality/66/type/2/bgcolor/000000" /></a></li>
 		</ul>
 
 		<!-- KDP will be inserted into this div by the embedding script.  Style this div to be the size of
@@ -125,15 +125,15 @@
 				url_param_name : 	"entryId",
 				placeholder_id :	"kdp_shim",
 				// the entry to play when first loading the page if no entry id was passed on the url:
-				fallback_entry : 	"1_16zm84uh",
+				fallback_entry : 	"1_v1z55w0b",
 				// must be replaced with your partner id
-				partner_id : 		346,
+				partner_id : 		243342,
 				// must be replaced with your player id:
-				uiconf_id : 		1913582,
+				uiconf_id : 		4289612,
 				auto_play :			true,
 				auto_continue :		true,
-				height :			"100%",
-				width : 			"100%"
+				height :			"300",
+				width : 			"400"
 			}
 			// embed the player:
 			kdp_embed.doKdpEmbed();
@@ -149,7 +149,7 @@
 						if(kdp_embed.auto_continue) {
 							kdp.addJsListener("playerPlayEnd", "playNextVid");
 						}
-						var entry_id = $(e.target).parents("li").attr("id");
+						var entry_id = $(e.target).parents("li").attr("id");						
 						kdp.sendNotification("changeMedia",{entryId: entry_id});
 						location.hash = kdp_embed.url_param_name + "=" + entry_id;
 					}
