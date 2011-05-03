@@ -2142,9 +2142,11 @@ mw.EmbedPlayer.prototype = {
 
 		// Get mime type for un-supported formats:
 		this.updatePosterHTML();
-
+		
+		
 		// Set the play button to the first available source:
-		$j(this).find('.play-btn-large')
+		$j(this).show()
+		.find('.play-btn-large')
 		.unbind('click')
 		.wrap(
 			$j('<a />').attr( {
@@ -2152,6 +2154,7 @@ mw.EmbedPlayer.prototype = {
 				'title' : gM('mwe-embedplayer-play_clip')
 			} )
 		);
+		
 	},
 
 	/**
