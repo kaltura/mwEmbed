@@ -114,8 +114,11 @@ class kalturaIframe {
 						$this->getResultObject()->getPartnerId() . '00/thumbnail/' .
 						'entry_id/' .  $this->getResultObject()->getEntryId() .
 						'/height/480';
-		$sources = $this->getResultObject()->getSources();
-
+		try{
+			$sources = $this->getResultObject()->getSources();
+		} catch ( Exception $e ){
+			$this->fatalError( $e->getMessage() );
+		}
 
 		// if we have no sources do not output the video tag:
 		if( count( $sources ) == 0 ){

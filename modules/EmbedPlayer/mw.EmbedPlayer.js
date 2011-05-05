@@ -2112,7 +2112,7 @@ mw.EmbedPlayer.prototype = {
 		} else{
 			$target = $j(this);
 		}
-		$target.html(
+		$target.css('position', 'relative').html(
 			$j('<div />').addClass('error').text(
 				errorMsg
 			)
@@ -2130,19 +2130,20 @@ mw.EmbedPlayer.prototype = {
 	 */
 	showPluginMissingHTML: function( ) {
 		mw.log("EmbedPlayer::showPluginMissingHTML");
-		$j('.loadingSpinner').hide();
-		if( this.mediaElement.sources.length == 0 ){
-			this.showErrorMsg( gM('mwe-embedplayer-missing-source') )
+		// Remove loader
+		$j('.loadingSpinner,#loadingSpinner_' + this.id).remove();
+		
+		// update the poster html: 
+		this.updatePosterHTML();
+		
+		if( this.mediaElement.sources.length == 0 || ! this.mediaElement.sources[0].getSrc() ){
+			this.showErrorMsg( gM('mwe-embedplayer-missing-source') );
+			return ;
 		}
 		// Control builder ( for play button )
 		this.controlBuilder = new mw.PlayerControlBuilder( this );
 
-		// Remove loader
-		$j('#loadingSpinner_' + this.id ).remove();
 
-		// Get mime type for un-supported formats:
-		this.updatePosterHTML();
-		
 		
 		// Set the play button to the first available source:
 		$j(this).show()

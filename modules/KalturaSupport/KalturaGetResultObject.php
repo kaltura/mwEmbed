@@ -186,7 +186,7 @@ class KalturaGetResultObject {
 		if( isset( $resultObject['flavors']['code'] ) ){
 			switch(  $resultObject['flavors']['code'] ){
 				case  'ENTRY_ID_NOT_FOUND':
-					throw new Exception( array( "Entry Id not found",  htmlspecialchars( $resultObject['flavors']['message'] ) ) );
+					throw new Exception( "Entry Id not found\n" . $resultObject['flavors']['message'] );
 				break;
 			}
 			// @@TODO should probably refactor to use throw catch error system.

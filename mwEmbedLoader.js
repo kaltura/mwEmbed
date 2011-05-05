@@ -283,7 +283,6 @@ function kOverideJsFlashEmbed(){
 		window['flashembed'] = function( targetId, attributes, flashvars ){
 			kAddReadyHook(function(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( attributes.src, flashvars);
-				
 				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, attributes.width, attributes.height);
 				} else {
