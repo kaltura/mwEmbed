@@ -176,7 +176,7 @@ class SeleniumTester extends Maintenance {
 				$seleniumTestSuites,
 				$configFile );
 		} else if ( !isset( $wgHooks['SeleniumSettings'] ) ) {
-			$this->output("No command line, configuration file or configuration hook found.\n");
+			//$this->output("No command line, configuration file or configuration hook found.\n");
 			SeleniumConfig::getSeleniumSettings( $seleniumSettings,
 				$seleniumBrowsers,
 				$seleniumTestSuites

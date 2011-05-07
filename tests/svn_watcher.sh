@@ -6,6 +6,7 @@
 svnUrl="http://www.kaltura.org/kalorg/html5video/trunk"
 lastRevisionFile="./.last-revision"
 mailto="andrew.davis@kaltura.com"
+echo "0" > .failure
 
 function getCurrentRevision {
   # Get the current SVN revision, eg. "r4670"
@@ -36,8 +37,42 @@ fi
 # Store the current revision as the last revision
 echo "$currentRevision" > "$lastRevisionFile"
 
-# Mail the SVN changes
+# Update from the repository
 cd ../
-svn up
-php tests/RunSeleniumTests.php > tests/.test-results
-cat tests/.test-results | mail -s "Tested r$currentRevision for $svnUrl" $mailto
+
+svn up > tests/.test-results
+
+# list configured browsers and loop through tests suite for each
+php tests/RunSeleniumTests.php --list-browsers > tests/.browsers
+awk '/=>/ { print $3, $4, $5, $6, $7, $8 }' tests/.browsers > tests/.browser-list
+
+echo -e "Beginning Tests of r$currentRevision for $svnUrl" >> tests/.test-results
+
+cat "tests/.browser-list" | while read line;
+do
+  echo -e "\n\nrunning tests for: $line\n" >> tests/.test-results
+  php tests/RunSeleniumTests.php --testBrowser "$line" > tests/.temp-result
+  awk '/OK\:/ { print $2 }' tests/.temp-result > tests/.temp-passed
+  awk '/OK\:/ { print $4 }' tests/.temp-result > tests/.temp-failed
+  passedCount=$(cat tests/.temp-passed | awk '{ sum+=$1} END {print sum}')
+  failedCount=$(cat tests/.temp-failed | awk '{ sum+=$1} END {print sum}')
+  echo "passed: $passedCount | failed: $failedCount" >> tests/.test-results
+  if [ $failedCount -gt 0 ]
+    then
+      echo -e "\nFAILURE:\n" >> tests/.test-results
+      cat tests/.temp-result >> tests/.test-results
+      echo "1" > tests/.failure
+  fi
+done
+
+FAILURE=$(cat tests/.failure)
+
+if [ "$FAILURE" -eq 1 ]
+  then
+    cat tests/.test-results | mail -s "Test FAILURE for r$currentRevision of $svnUrl" $mailto
+  else
+    cat tests/.test-results | mail -s "Tests passed for r$currentRevision of $svnUrl" $mailto
+fi
+
+
+cat tests/.test-results
