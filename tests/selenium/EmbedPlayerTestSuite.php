@@ -16,7 +16,8 @@ class EmbedPlayerTestSuite extends SeleniumTestSuite
 	} 
 	public function addTests() {
 		$testFiles = array(
-			'tests/selenium/EmbedPlayerLoadsTestCase.php'
+			'tests/selenium/EmbedPlayerLoadsTestCase.php',
+			'tests/selenium/EmbedPlayerPlaysTestCase.php'
 		);
 		parent::addTestFiles( $testFiles );
 	}

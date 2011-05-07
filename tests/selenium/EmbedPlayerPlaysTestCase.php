@@ -3,18 +3,18 @@
  * This test case is part of the SimpleSeleniumTestSuite.
  * Configuration for these tests are documented as part of SimpleSeleniumTestSuite.php
  */
-class EmbedPlayerLoadsTestCase extends SeleniumTestCase {
-	public $name = "Embed Player Loading Test";
+class EmbedPlayerPlaysTestCase extends SeleniumTestCase {
+	public $name = "Embed Player Playback Test";
 
 	public function testBasic()
 	{
     global $wgSeleniumTestsWikiUrl;
     $this->open($wgSeleniumTestsWikiUrl.'/modules/EmbedPlayer/tests/Player_Themable.html');
+    //$this->open($wgSeleniumTestsWikiUrl.'/modules/EmbedPlayer/tests/Player_IncludeJQuery.html');
     
     $this->waitForPageToLoad(10000);
-    
+     
     $elementsPresent = array(
-        //"//div[@class='mwplayer_interface k-player']",
         "//div[@class='mwplayer_interface mv-player']",
         "//div[@class='play-btn-large']");
     $elementsResult = array();
@@ -23,6 +23,8 @@ class EmbedPlayerLoadsTestCase extends SeleniumTestCase {
       $this->assertEquals( $elementsResult[$i], true );
     }
 
-    //$this->isElementPresent("non-existent-div", 10000);
+
 	}
+
+
 }
