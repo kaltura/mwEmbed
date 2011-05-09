@@ -62,7 +62,9 @@ $wgKalturaUiConfCacheTime = 600;
 // By default enable the iframe rewrite
 $wgKalturaIframeRewrite = true;
 
-$wgEnableIframeApi = false;
+// If the iframe embed should include the kaltura javascript api: 
+$wgEnableIframeApi = true;
+
 $wgEnableIpadHTMLControls = false;
 
 $wgKalturaUseManifestUrls = true;
