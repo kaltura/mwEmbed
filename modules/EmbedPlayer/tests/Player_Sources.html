@@ -3,19 +3,18 @@
 <head>
 <title>Player sources</title>
 
-<script type="text/javascript" src="../../../ResourceLoader.php?class=window.jQuery,mwEmbed&&debug=true"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 </head>
 <body>
-
 
 <video id="vid1" width="480" height="267"
 	 poster="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb480.jpg"
 	 durationHint="33"
 	 controls>
-		<source src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_iphone.m4v">
+		<source "video/h264" src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_iphone.m4v">
 		<source type="video/ogg" src="http://www.linkto.tv/test/big_buck_bunny.ogv" >
-
 </video>
+
 <script type="text/javascript">
 	mw.setConfig('EmbedPlayer.EnableIpadHTMLControls', true);
 	mw.setConfig('EmbedPlayer.OverlayControls', false);
@@ -25,11 +24,11 @@
 		var embedPlayer = $j('#vid1').get(0);
 		
 		$j( embedPlayer ).bind( 'play', function(){
-			//alert('play');
+			alert('play');
  		});
 
  		$j( embedPlayer ).bind( 'pause', function(){
- 			//alert('pause');
+ 			alert('pause');
  		});
  		
 	});
