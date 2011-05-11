@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  
+<head>
+
+  <link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" />
+
+  <script src="../../mwEmbedLoader.php"></script>
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
+  <script type="text/javascript" src="http://staging.html5video.org/testswarm/js/inject.js"></script>
+
+</head>
+
+<body>
+
+  <video id="vid1" width="480" height="267"
+     poster="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb480.jpg"
+     durationHint="33"
+     controls>
+      <source "video/h264" src="http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_iphone.m4v">
+      <source type="video/ogg" src="http://www.linkto.tv/test/big_buck_bunny.ogv" >
+  </video>
+
+  <h1 id="qunit-header">QUnit example</h1>
+  <h2 id="qunit-banner"></h2>
+  <div id="qunit-testrunner-toolbar"></div>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests"></ol>
+  <div id="qunit-fixture">test markup, will be hidden</div>
+
+  <script>
+  
+  var playbackStarted = false;
+
+  function runTests() {
+    module("Embed Player Loads Copy");
+
+      test("embed player is embedded", function() {
+        ok( $('.mv-player', '.mwplayer_interface' ) );
+      });
+
+      test("embed player is skinned", function() {
+        ok( $('.play-btn-large') );
+      });
+    
+    module("Embed Player Plays");
+
+      function hasPlaybackStarted() { 
+        test("embed player plays", function() {
+          ok( playbackStarted == true ); 
+        });
+      }
+
+      var player = $('#vid1').get(0);
+      $( player ).bind( 'play', function(){ playbackStarted = true });
+      $('.play-btn-large').click();
+      
+      setTimeout( hasPlaybackStarted, 5000 );
+  }
+
+  $(document).ready(function(){
+    // wait 10 seconds
+    setTimeout( runTests, 10000 );
+  });
+
+  </script>
+</body>
+</html>
