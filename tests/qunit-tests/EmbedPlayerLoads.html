@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
+
+  <script>
+  
+  var $$ = jQuery.noConflict(true);
+  var $ = jQuery = null; //we will be using the normal jquery vars soon 
+    
+  var testLocation = "../test_files/mwEmbed_HTML5.html";
+
+  var playbackStarted = false;
+
+  function runTests() {
+    module("Embed Player Loads");
+
+      test("embed player is embedded", function() {
+        ok( $('.mv-player', '.mwplayer_interface' ) );
+      });
+
+      test("embed player is skinned", function() {
+        ok( $('.play-btn-large') );
+      });
+    
+    module("Embed Player Plays");
+
+      function hasPlaybackStarted() { 
+        test("embed player plays", function() {
+          ok( playbackStarted == true ); 
+        });
+      }
+
+      $('#video').bind( 'play', function(){ playbackStarted = true });
+      $('.play-btn-large').click();
+      
+      setTimeout( hasPlaybackStarted, 5000 );
+  }
+
+  $$(document).ready(function(){
+
+    $$('#testFrame').load(function () {
+      //grab jQuery from inside the document - I don't 
+      $ = jQuery = window.frames[0].$j;
+    });
+
+
+    $$('#testFrame').attr('src', testLocation)
+
+    // wait 10 seconds
+    setTimeout( runTests, 10000 );
+  });
+
+  </script>
+  
+</head>
+<body>
+  <h1 id="qunit-header">QUnit example</h1>
+ <h2 id="qunit-banner"></h2>
+ <div id="qunit-testrunner-toolbar"></div>
+ <h2 id="qunit-userAgent"></h2>
+ <ol id="qunit-tests"></ol>
+ <div id="qunit-fixture">test markup, will be hidden</div>
+<div style="float: left"> 
+        <iframe height="700" width="1000" id="testFrame"></iframe> 
+</div> 
+</body>
+</html>
