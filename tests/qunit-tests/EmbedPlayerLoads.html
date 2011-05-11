@@ -11,7 +11,7 @@
   var $$ = jQuery.noConflict(true);
   var $ = jQuery = null; //we will be using the normal jquery vars soon 
     
-  var testLocation = "../test_files/mwEmbed_HTML5.html";
+  var testLocation = "../../modules/EmbedPlayer/tests/Player_Sources.html";
 
   var playbackStarted = false;
 
@@ -34,7 +34,8 @@
         });
       }
 
-      $('#video').bind( 'play', function(){ playbackStarted = true });
+      var player = $('#vid1').get(0);
+      $( player ).bind( 'play', function(){ playbackStarted = true });
       $('.play-btn-large').click();
       
       setTimeout( hasPlaybackStarted, 5000 );
