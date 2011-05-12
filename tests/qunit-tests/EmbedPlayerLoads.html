@@ -23,7 +23,7 @@
       <source type="video/ogg" src="http://www.linkto.tv/test/big_buck_bunny.ogv" >
   </video>
 
-  <h1 id="qunit-header">QUnit example</h1>
+  <h1 id="qunit-header">Embed Player Plays Test Case</h1>
   <h2 id="qunit-banner"></h2>
   <div id="qunit-testrunner-toolbar"></div>
   <h2 id="qunit-userAgent"></h2>
@@ -31,6 +31,7 @@
   <div id="qunit-fixture">test markup, will be hidden</div>
 
   <script>
+  QUnit.config.autostart = false;
   
   var playbackStarted = false;
 
@@ -47,22 +48,31 @@
     
     module("Embed Player Plays");
 
-      function hasPlaybackStarted() { 
-        test("embed player plays", function() {
-          ok( playbackStarted == true ); 
-        });
-      }
+      test("play button clicked", function() {
+        stop();
+        setTimeout( function()
+          { 
+            var player = $('#vid1').get(0);
+            $( player ).bind( 'play', function(){ playbackStarted = true });
+            ok( $('.play-btn-large').click() );
+            start();
+          }, 5000);
+      });
 
-      var player = $('#vid1').get(0);
-      $( player ).bind( 'play', function(){ playbackStarted = true });
-      $('.play-btn-large').click();
-      
-      setTimeout( hasPlaybackStarted, 5000 );
+      asyncTest("playback began", function() {
+        //stop();
+        setTimeout( function()
+          { 
+            ok( playbackStarted == true );
+            start();
+          }, 10000);
+      });
+
   }
 
-  $(document).ready(function(){
-    // wait 10 seconds
-    setTimeout( runTests, 10000 );
+  mw.ready(function(){
+    QUnit.start();
+    runTests();
   });
 
   </script>
