@@ -126,7 +126,7 @@ kdpServerIframe.prototype = {
 		var _this = this;
 		_this.kdpPlayer = $j('#kaltura_player').get(0);
 		// top level "evaluate" components: 
-		var attrSet = ['video', ['mediaProxy', 'entry'], 'configProxy', 'playerStatusProxy'];
+		var attrSet = ['video', 'duration', ['mediaProxy', 'entry'], 'configProxy', 'playerStatusProxy'];
 		var evaluateData =  {};
 		for(var i in attrSet){
 			var attrName = attrSet[i];

@@ -44,8 +44,8 @@ var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
-//SCRIPT_FORCE_DEBUG = true;
-//SCRIPT_LOADER_URL = 'http://192.168.1.69/html5.kaltura/mwEmbed/ResourceLoader.php';
+// SCRIPT_FORCE_DEBUG = true;
+// SCRIPT_LOADER_URL = 'http://192.168.1.69/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura MwEmbed Loader Version: ' + KALTURA_LOADER_VERSION );
@@ -175,10 +175,13 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// ( no javascript api needed )
 	
 	var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
-	var kalturaAttributeList = { 'uiconf_id': 1, 'entry_id' : 1, 'wid':1, 'p':1};
+	var kalturaAttributeList = ['uiconf_id', 'entry_id', 'wid', 'p', 'cache_st'];
 	for(var attrKey in kEmbedSettings ){
-		if( attrKey in kalturaAttributeList ){
-			iframeSrc += '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
+		// Check if the attrKey is in the kalturaAttributeList:
+		for( var i =0 ; i < kalturaAttributeList.length; i++){
+			if( kalturaAttributeList[i] == attrKey ){
+				iframeSrc += '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
+			}
 		}
 	}
 	// add the flashvars:

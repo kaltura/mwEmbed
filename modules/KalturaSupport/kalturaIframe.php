@@ -1,6 +1,6 @@
 <?php
 /**
- * kalturaIframe support
+ * KalturaIframe support
  *
  */
 

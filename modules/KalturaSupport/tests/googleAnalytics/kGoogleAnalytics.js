@@ -147,22 +147,24 @@ kGoogleAnalytics.prototype = {
 	
 	// Add the player bindings 
 	addPlayerBindings: function(){
-		var _this = this;
+		var _this = this;		
 		for(var i = 0 ; i < this.eventTrackList.length; i++){
 			var eventName = this.eventTrackList[i];
 			var globalCBName = 'kga_' + eventName + _this.playerElement.id;
 			
 			// Add a global callback: ( add a closer context so the for loop context does not override. 
-			(function( eventName,  globalCBName ) {
-				window[ globalCBName ] = function( data ) {
-					_this.playerEvent( eventName, data);
-				};
-				// add the event to the player ( assuming the jsListener is ready:
-				_this.waitForAddJsListener( function(){
-					_this.playerElement.addJsListener(  _this.getEventNameBinding( eventName ), globalCBName);
-				});
-			})(eventName, globalCBName );
+			this.addNamedGloablBinding( eventName,  globalCBName );
 		};
+	},
+	addNamedGloablBinding: function( eventName, globalCBName  ){
+		var _this = this;
+		window[ globalCBName ] = function( data ) {
+			_this.playerEvent( eventName, data);
+		};
+		// add the event to the player ( assuming the jsListener is ready:
+		_this.waitForAddJsListener( function(){
+			_this.playerElement.addJsListener(  _this.getEventNameBinding( eventName ), globalCBName);
+		});
 	},
 	waitForAddJsListener: function(callback){
 		var _this = this;
@@ -174,7 +176,7 @@ kGoogleAnalytics.prototype = {
 	},
 	/**
 	 * Handles the mapping for special case eventNames that 
-	 * don't match their corresponding kaltura listener binding name 
+	 * do n't match their corresponding kaltura listener binding name 
 	 */
 	getEventNameBinding: function( eventName ){
 		switch( eventName ){
@@ -184,7 +186,7 @@ kGoogleAnalytics.prototype = {
 		}
 		return eventName;
 	},
-	playerEvent: function( methodName, data ){
+	playerEvent: function( methodName, data ){		
 		var trackingArgs = this.getTrackingEvent( methodName, data );
 		// Don't track false events:
 		if( !trackingArgs )
@@ -207,14 +209,15 @@ kGoogleAnalytics.prototype = {
 	/**
 	 * Send updates for time stats
 	 */  
-	getQuartilesStatus: function() {
+	getQuartilesStatus: function( currentTime ) {
 		// Setup local references:
 		var embedPlayer = this.playerElement;
 		var _this = this;
+		var entryDuration = this.playerElement.evaluate('{mediaProxy.entry.duration}');
 		
 		// Set the seek and time percent:
-		var percent = embedPlayer.currentTime / embedPlayer.duration;
-		var seekPercent = this._lastSeek/ embedPlayer.duration;
+		var percent = currentTime / entryDuration ;
+		var seekPercent = this._lastSeek/ entryDuration;
 		
 		// Send updates based on logic present in StatisticsMediator.as
 		if( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {					
@@ -238,7 +241,7 @@ kGoogleAnalytics.prototype = {
 		var optionValue = this.getOptionalValue(methodName, data);
 		// check for special case of 'quartiles'
 		if( methodName == 'quartiles' ){
-			var qStat = this.getQuartilesStatus();
+			var qStat = this.getQuartilesStatus( data );
 			// Don't process the tracking event
 			if( !qStat)
 				return false;

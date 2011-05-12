@@ -391,10 +391,12 @@ class KalturaGetResultObject {
 		// Get a key based on partner id,  entry_id and ui_confand and refer url:
 		$playerUnique = ( isset( $this->urlParameters['entry_id'] ) ) ?  $this->urlParameters['entry_id'] : '';
 		$playerUnique .= ( isset( $this->urlParameters['uiconf_id'] ) ) ?  $this->urlParameters['uiconf_id'] : '';
-		
+		$playerUnique .= ( isset( $this->urlParameters['cache_st'] ) ) ? $this->urlParameters['cache_st'] : ''; 
+		$playerUnique .= $this->getReferer();
+
 		// hash the service url, the partner_id, the player_id and the Referer url: 
-		return substr( md5( $wgKalturaServiceUrl ), 0, 5 ) .
-				$this->getPartnerId() . '_' . $playerUnique . '_' . substr( md5( $this->getReferer() ), 0, 10 );
+		return substr( md5( $wgKalturaServiceUrl ), 0, 5 ) . '_' . $this->getPartnerId() . '_' . 
+			   substr( md5( $playerUnique ), 0, 16 );
 	}
 
 	private function getResultObjectFromApi(){

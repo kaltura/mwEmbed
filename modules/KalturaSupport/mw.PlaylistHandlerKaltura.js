@@ -1,4 +1,3 @@
-
 mw.PlaylistHandlerKaltura = function( options ){
 	return this.init( options );
 };
@@ -29,14 +28,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		var _this = this;
 		
 		// Get the kaltura client:
-		
-		// Check if we have already initialised the playlist session: 
-		// note we need to get the uiconf so we can't directly load the playlist: 
-		/*if( _this.playlist_id !== null ){
-			_this.loadCurrentPlaylist( callback );
-			return ;
-		}*/
-		
 		this.getKClient().playerLoader({
 			'uiconf_id' : this.uiconf_id
 		}, function( playerData ){

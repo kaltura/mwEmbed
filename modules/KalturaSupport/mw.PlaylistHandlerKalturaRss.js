@@ -1,6 +1,6 @@
 mw.PlaylistHandlerKalturaRss = function( Playlist ){
 	return this.init( Playlist );
-}
+};
 
 mw.PlaylistHandlerKalturaRss.prototype = {
 	// Set the media rss namespace
@@ -51,5 +51,3 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 		})
 	}
 };
-
-	

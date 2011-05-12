@@ -156,7 +156,9 @@
 						break;
 					}
 				break;			
-				
+				case 'duration':
+					return embedPlayer.duration;
+					break;
 				case 'mediaProxy':
 					switch( objectPath[1] ){
 						case 'entry':
