@@ -248,6 +248,11 @@ kGoogleAnalytics.prototype = {
 			// Else set the option value to quartile value: 
 			optionValue = qStat;
 		}	
+		
+		// Special case don't track initial html5 volumeChange event ( always the same .75 right after playback ) 
+		if( methodName == 'volumeChanged' && optionValue == .75) {
+			return false;
+		}
 		var trackEvent = [ 
               this.trackingCategory, 
               methodName

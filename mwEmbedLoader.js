@@ -138,10 +138,10 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 		options = {};
 	
 	// Empty the replace target:
-	var elm = document.getElementById(replaceTargetId);
+	var elm = document.getElementById( replaceTargetId );
 	if( ! elm ){
-		if( console && console.log )
-			console.log("Error could not find iframe target: " + replaceTargetId);
+		// No target found ( probably already done ) 
+		return false;
 	}
 	replaceTargetId.innerHTML = '';
 	

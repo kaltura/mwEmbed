@@ -512,7 +512,8 @@ class kalturaIframe {
 		?>
 <!DOCTYPE html>
 <html>
-	<?php echo $this->outputIframeHeadElement() ?>
+	<?php echo $this->outputIframeHeadElement(); ?>
+	
 	<body>
 		<div class="error"><?php
 			if( $errorTitle ){

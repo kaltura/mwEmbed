@@ -463,7 +463,7 @@ class KalturaGetResultObject {
 
 	private function getClient(){
 		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgKalturaServiceUrl, $wgScriptCacheDirectory, 
-			$wgMwEmbedVersion;
+			$wgMwEmbedVersion, $wgKalturaServiceTimeout;
 
 		$cacheDir = $wgScriptCacheDirectory;
 
@@ -474,6 +474,7 @@ class KalturaGetResultObject {
 		
 		$conf->serviceUrl = $wgKalturaServiceUrl;
 		$conf->clientTag = $this->clientTag;
+		$conf->curlTimeout = $wgKalturaServiceTimeout;
 		
 		$client = new KalturaClient( $conf );
 
