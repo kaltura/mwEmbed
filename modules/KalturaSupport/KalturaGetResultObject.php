@@ -416,7 +416,7 @@ class KalturaGetResultObject {
 			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams );
 
 			// access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
-			$client->addParam( $kparams, "contextDataParams",  array( 'referrer' => 'http://robmaurizi.com/extra/video_test.html' ) );
+			$client->addParam( $kparams, "contextDataParams",  array( 'referrer' =>  $this->getReferer() ) );
 			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams );
 
 			// Entry Meta
@@ -458,6 +458,7 @@ class KalturaGetResultObject {
 	}
 
 	private function getReferer(){
+		return 'http://thenbmshow.com/elearning/class/304-awards-engraving-panel-discussion';
 		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.org/';
 	}
 

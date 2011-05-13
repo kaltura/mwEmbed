@@ -15,7 +15,11 @@
 			callback();
 		});
 	});
-	var watermarkPlugin = function( embedPlayer ,$watermarkConf ){
+	var watermarkPlugin = function( embedPlayer, $watermarkConf ){
+		// Make sure we have a watermark url: 
+		if( !$watermarkConf.attr('watermarkPath') ){
+			return false;
+		}
 		// Draw the watermark to the player 
 		var getCss = function( $watermarkConf ){
 			var watermarkCss = {
