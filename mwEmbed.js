@@ -2493,8 +2493,12 @@ if ( document.addEventListener ) {
 }
 
 // A fallback to window.onload, is set so that we are sure to fire mw.domReady
-if ( window.addEventListener ) {
-	window.addEventListener( "load", mw.domReady, false );
+try{
+	if ( window.addEventListener ) {
+		window.addEventListener( "load", mw.domReady, false );
+	}
+} catch ( e ){
+	// catch the addEventListener missing issue in IE
 }
 
 // chrome sometimes never gets into a 'complete' state instead just gets to interactive
