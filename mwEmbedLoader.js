@@ -108,12 +108,7 @@ if( ! mw.getConfig ){
 
 // Wrap mw.ready to preMwEmbedReady values
 if( !mw.ready){
-	mw.ready = function( fn ){		
-		// if running an iframe rewrite without code update we should just run the ready function directly: 
-		if( mw.getConfig('Kaltura.IframeRewrite') && ! mw.getConfig('EmbedPlayer.EnableIframeApi') ){
-			fn();
-			return ;
-		}		
+	mw.ready = function( fn ){	
 		preMwEmbedReady.push( fn );		
 	};
 }
@@ -372,7 +367,6 @@ function kCheckAddScript(){
 		return ;
 	}
 	ranKCheckAddScript = true;
-
 	/**
 	 * Hard code some defaults for users not using the kaltura SAS
 	 * It kind of sucks to hard code this, But we can't deliver iframes for non SAS users atm. 
@@ -388,6 +382,7 @@ function kCheckAddScript(){
 		kAddScript();
 		return ;
 	}
+	
 	if( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) ){
 		// If document includes audio or video tags
 		if( document.getElementsByTagName('video').length != 0
@@ -488,15 +483,16 @@ function kAddScript( callback ){
 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) ) {
 		if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') && ( kSupportsFlash() || kSupportsHTML5() ) ){
 			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );		
-			kLoadJsRequestSet( jsRequestSet, callback );			
+			// Load a minimal set of modules for iframe api
+			kLoadJsRequestSet( jsRequestSet, callback );
+			return ;
 		} else {
 			kDoIframeRewriteList( kGetKalturaPlayerList() );
-			// Also run preMwEmbedReady functions ( since we won't be loading the library ) 
-			while( preMwEmbedReady.length ){
-				preMwEmbedReady.pop()();
+			// if we don't have a mw.ready function we don't need to load the script library
+			if( !preMwEmbedReady.length ){
+				return ;
 			}
 		}
-		return ;
 	}
 	
 	// Add all the classes needed for video 
@@ -602,7 +598,7 @@ function kAppendScriptUrl( url, callback ) {
 }
 
 function kLoadJsRequestSet( jsRequestSet, callback ){
-	
+
 	var url = SCRIPT_LOADER_URL + '?class=';
 	// Add all the requested classes
 	url+= jsRequestSet.join(',') + ',';
