@@ -849,7 +849,7 @@ var checkForKDPCallback = function(){
 		window.KalturaKDPCallbackReady = window.jsCallbackReady;
 		window.jsCallbackReady = function( player_id ){			
 			window.KalturaKDPCallbackAlreadyCalled = player_id;
-		};		
+		};
 	}
 };
 var restoreKalturaKDPCallback = function(){

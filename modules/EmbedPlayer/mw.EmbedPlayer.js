@@ -220,7 +220,7 @@ EmbedPlayerManager.prototype = {
 
 		// Load any skins we need then swap in the interface
 		mw.load( playerDependencyRequest, function() {
-
+			//debugger;
 			var waitForMeta = true;
 
 			// Be sure to "stop" the target ( Firefox 3x keeps playing
