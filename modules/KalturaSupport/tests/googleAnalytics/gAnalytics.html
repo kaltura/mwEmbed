@@ -54,7 +54,7 @@
 	};
 </script>
 <script type="text/javascript">
-		flashembed(this.placeholder_id,
+		flashembed("kaltura_player",
 				{	// attributes and params:
 					id :				"kaltura_player",
 					src : 				"http://www.kaltura.com/index.php/kwidget/wid/_243342/uiconf_id/" +
@@ -64,7 +64,6 @@
 					bgcolor :			"#000000",
 					allowNetworking : 	"all",
 					version :			[10,0],
-//					onFail :			do something,
 					expressInstall :	"http://cdn.kaltura.org/apis/seo/expressinstall.swf"
 				},
 				{	// flashvars:
@@ -73,7 +72,7 @@
 					externalInterfaceDisabled : "false"
 					// "false" must be double-quoted, all other values don't have to be
 				}
-		)
+		);
 </script>
 </head>
 <body>
@@ -92,26 +91,7 @@
 </table>
 </div>
 
-<object id="kaltura_player" name="kaltura_player" 
-type="application/x-shockwave-flash" 
-allowFullScreen="true" allowNetworking="all" 
-allowScriptAccess="always" height="330" width="400" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao">
-<param name="allowFullScreen" value="true" />
-<param name="allowNetworking" value="all" />
-<param name="allowScriptAccess" value="always" />
-<param name="bgcolor" value="#000000" />
-
-<param name="flashVars" value="&" />
-<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao" />
-<a href="http://corp.kaltura.com">video platform</a> 
-<a href="http://corp.kaltura.com/technology/video_management">video management</a> 
-<a href="http://corp.kaltura.com/solutions/overview">video solutions</a> 
-<a href="http://corp.kaltura.com/technology/video_player">video player</a>
-</object>
-
-
-
+<div id="kaltura_player" style="width:330px;height400px" ></div>
 
 </body>
 </html>
