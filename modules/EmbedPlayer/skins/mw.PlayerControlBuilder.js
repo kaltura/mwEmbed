@@ -389,7 +389,10 @@ mw.PlayerControlBuilder.prototype = {
 		var leftOffset = '0px';
 
 		// Check if we have an offsetParent
-		if( $interface.offsetParent().get(0).tagName.toLowerCase() != 'body' ) {
+		if( $interface.offsetParent().get(0).tagName 
+				&& 
+			$interface.offsetParent().get(0).tagName.toLowerCase() != 'body' ) 
+		{
 			topOffset = -this.windowOffset.top + 'px';
 			leftOffset = -this.windowOffset.left + 'px';
 		}
