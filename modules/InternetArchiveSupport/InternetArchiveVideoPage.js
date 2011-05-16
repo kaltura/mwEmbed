@@ -28,20 +28,26 @@ mw.IA =
   },
 
 
-  // parse a CGI arg
-  arg:function(theArgName)
+  argin:function(theArgName, ary)
   {
-    sArgs = location.search.slice(1).split('&');
     r = '';
-    for (var i=0; i < sArgs.length; i++)
+    for (var i=0; i < ary.length; i++)
     {
-      if (sArgs[i].slice(0,sArgs[i].indexOf('=')) == theArgName)
+      if (ary[i].slice(0,ary[i].indexOf('=')) == theArgName)
       {
-        r = sArgs[i].slice(sArgs[i].indexOf('=')+1);
+        r = ary[i].slice(ary[i].indexOf('=')+1);
         break;
       }
     }
-    return (r.length > 0 ? unescape(r).split(',') : '')
+    return (r.length > 0 ? unescape(r).split(',') : '');
+  },
+
+  // parse a CGI arg
+  arg:function(theArgName)
+  {
+    var ary = location.search.slice(1).split('&');
+    mw.log(ary);
+    return this.argin(theArgName, ary);
   },
 
 
@@ -110,8 +116,19 @@ newEmbedPlayerMW:function(arg)
   mw.log('newEmbedPlayerMW()');
   player.bind('ended', mw.IA.onDoneMW);
   player.unbind('play').bind('play', mw.IA.firstplayMW);
+  player.bind('pause', mw.IA.pause);
 
-  player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resizeMW(); }, 500); }); //xxxx timeout lameness
+  player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resizeMW(); }, 500); }); //xxx timeout lameness
+},
+
+
+pause:function()
+{
+  mw.log('paused');
+  return; //xxxx not quite ready for hash yet
+
+  location.hash = '#' + IAD.playlist[mw.IA.playingClipNumMW]['ORIG'] +
+    '/start=' + Math.round($('#mwplayer').get(0).currentTime * 10) / 10;
 },
 
 
@@ -119,7 +136,7 @@ resizeMW:function()
 {
   var player = $('#mwplayer');
 
-  $('#flowplayerdiv').css('width',  this.VIDEO_WIDTH)
+  $('#flowplayerdiv').css('width',  this.VIDEO_WIDTH);
   $('#flowplayerdiv').css('height', this.VIDEO_HEIGHT);
 
   $('#flowplayerplaylist').css('width', this.VIDEO_WIDTH);
@@ -143,14 +160,21 @@ firstplayMW:function()
 },
 
 
-playClipMW:function(idx, id, mp4, ogv)
+playClipMW:function(idx)
 {
   mw.IA.playingClipNumMW = idx;
-  mw.log('IA play: '+mp4+'('+idx+')');
+  mw.log('IA play: ('+idx+')');
+  if (typeof(IAD)=='undefined'  ||  typeof(IAD.playlist[idx])=='undefined')
+    return;
+
+  var group = IAD.playlist[idx];
+  mw.log(group);
 
   // set things up so we can update the "playing triangle"
   this.flowplayerplaylist = $('#flowplayerplaylist')[0];
   this.indicateIsPlaying(idx);
+
+  // location.hash = '#' + group['ORIG']; //xxxx not quite ready yet
 
   mw.ready(function(){
 
@@ -158,14 +182,15 @@ playClipMW:function(idx, id, mp4, ogv)
       if (!player)
         return;
 
+      var prefix = '/download/'+IAD.identifier+'/';
+      var sources = [];
+      for (var i=0, source; source=group['SRC'][i]; i++)
+        sources.push({'src':prefix + source});
+      mw.log(sources);
       player.embedPlayer(
-        { 'autoplay' : true, 'autoPlay' : true,
-            'sources' : [
-              { 'src' : '/download/'+id+'/'+mp4 },
-              { 'src' : '/download/'+id+'/'+ogv }
-              ]
-            }
-        );
+        { 'autoplay':true, 'autoPlay':true, 'sources':sources
+        // ,'poster': (group['POSTER'] ? prefix + group['POSTER'] : '/images/glogo.png')
+        });
     });
 
   return false;
@@ -175,22 +200,7 @@ playClipMW:function(idx, id, mp4, ogv)
 onDoneMW:function(event, onDoneActionObject )
 {
   mw.IA.playingClipNumMW++;
-
-  var plist = $('#flowplayerplaylist')[0].getElementsByTagName('tr');
-  mw.log(plist);
-  var row=plist[mw.IA.playingClipNumMW];
-  if (typeof(row)=='undefined')
-    return;
-
-  var js=row.getAttribute('onClick');
-  //alert('HIYA xxxx tracey '+mw.IA.playingClipNumMW + ' ==> ' + js);
-
-  var parts=js.split("'");
-  var id=parts[1];
-  var mp4=parts[3];
-  var ogv=parts[5];
-
-  mw.IA.playClipMW(mw.IA.playingClipNumMW, id, mp4, ogv);
+  mw.IA.playClipMW(mw.IA.playingClipNumMW);
 },
 
 
@@ -272,9 +282,24 @@ div.overlay-content        {\n\
     $( mw ).bind('newEmbedPlayerEvent', mw.IA.newEmbedPlayerMW);
 
     mw.ready(function(){
-        mw.log("IA Player says mw.ready()");
+        var hash = unescape(location.hash);
+        mw.log("IA Player says mw.ready()" + hash)
+
+
 
         var star = (mw.IA.arg('start') ? parseFloat(mw.IA.arg('start')) : 0);
+        if (!star)
+        {
+          // look for: /details/drake_saga1_shots/MVI_3986.AVI/start=13
+          var a = location.pathname.split('/');
+          star=(mw.IA.argin('start',a) ? parseFloat(mw.IA.argin('start',a)) : 0);
+        }
+        if (!star)
+        {
+          // look for: /details/drake_saga1_shots/MVI_3986.AVI#start=13
+          var a = location.hash.slice(1).split('/');
+          star=(mw.IA.argin('start',a) ? parseFloat(mw.IA.argin('start',a)) : 0);
+        }
         if (star)
         {
           mw.IA.resizeMW();
