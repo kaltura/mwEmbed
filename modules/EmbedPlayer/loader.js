@@ -48,6 +48,22 @@
 		// If the options control bar menu item should be enabled: 
 		'EmbedPlayer.EnableOptionsMenu' : true,
 
+
+		// Default supported menu items is merged with skin menu items
+		'EmbedPlayer.EnabledOptionsMenuItems' : [
+			// Player Select
+			'playerSelect',
+
+			// Download the file menu
+			'download',
+
+			// Share the video menu
+			'share',
+
+			// Player library link
+			'aboutPlayerLibrary'
+		],
+		
 		// If the player should wait for metadata like video size and duration, before trying to draw
 		// the player interface. 
 		'EmbedPlayer.WaitForMeta' : true,

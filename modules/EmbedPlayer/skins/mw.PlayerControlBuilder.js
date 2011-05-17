@@ -35,21 +35,6 @@ mw.PlayerControlBuilder.prototype = {
 		'options': true
 	},
 
-	// Default supported menu items is merged with skin menu items
-	supportedMenuItems: {
-		// Player Select
-		'playerSelect' : true,
-
-		// Download the file menu
-		'download' : true,
-
-		// Share the video menu
-		'share' : true,
-
-		// Player library link
-		'aboutPlayerLibrary': true
-	},
-
 	// Flag to store the current fullscreen mode
 	fullscreenMode: false,
 
@@ -1068,15 +1053,15 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	getOptionsMenu: function( ) {
 		$optionsMenu = $j( '<ul />' );
-		for( var i in this.optionMenuItems ){
+		for( var menuItemKey in this.optionMenuItems ){
 
 			// Make sure its supported in the current controlBuilder config:
-			if( ! this.supportedMenuItems[ i ] 	) {
+			if( ! menuItemKey in mw.getConfig( 'EmbedPlayer.EnabledOptionsMenuItems' ) ) {
 			 	continue;
 			}
 
 			$optionsMenu.append(
-				this.optionMenuItems[i]( this )
+				this.optionMenuItems[ menuItemKey ]( this )
 			);
 		}
 		return $optionsMenu;

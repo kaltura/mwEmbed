@@ -1522,10 +1522,11 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 */
 	mw.getScript = function( scriptRequest, callback ) {
 		// mw.log( "mw.getScript::" + scriptRequest );
-		// Setup the local scope callback instace
+		// Setup the local scope callback instance
 		var myCallback = function(){
 			if( callback ) {
 				callback( scriptRequest );
+				callback = null;
 			}
 		};
 		// Set the base url based scriptLoader availability & type of
@@ -1585,8 +1586,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 		var script = document.createElement("script");
 		script.setAttribute( 'src', url );
 
-		// Attach handlers ( if using script loader it issues onDone callback as
-		// well )
+		// Attach handlers ( if using script loader it issues onDone callback as well )
 		script.onload = script.onreadystatechange = function() {
 			if (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") {
 				myCallback();

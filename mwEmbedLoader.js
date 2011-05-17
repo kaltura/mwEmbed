@@ -382,14 +382,9 @@ function kCheckAddScript(){
 		kAddScript();
 		return ;
 	}
-	
-	if( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) ){
-		// If document includes audio or video tags
-		if( document.getElementsByTagName('video').length != 0
-			|| document.getElementsByTagName('audio').length != 0 ) {
-			kAddScript();
-			return ;
-		}
+	if( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) || kPageHasAudioOrVideoTags() ){
+		kAddScript();
+		return ;
 	}
 	// If document includes kaltura embed tags && isMobile safari: 
 	if ( kIsHTML5FallForward() &&  kGetKalturaPlayerList().length ) {
@@ -480,7 +475,7 @@ function kAddScript( callback ){
 		jsRequestSet.push( 'window.jQuery' );
 	}
 	// Check if we are using an iframe ( load only the iframe api client ) 
-	if( mw.getConfig( 'Kaltura.IframeRewrite' ) ) {
+	if( mw.getConfig( 'Kaltura.IframeRewrite' ) && ! kPageHasAudioOrVideoTags() ) {
 		if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') && ( kSupportsFlash() || kSupportsHTML5() ) ){
 			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );		
 			// Load a minimal set of modules for iframe api
@@ -611,7 +606,14 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	// Check for special global callback for script load
 	kAppendScriptUrl(url, callback);
 }
-
+function kPageHasAudioOrVideoTags(){
+	// If document includes audio or video tags
+	if( document.getElementsByTagName('video').length != 0
+		|| document.getElementsByTagName('audio').length != 0 ) {
+		return true;
+	}
+	return false;
+}
 
 /**
 * DOM-ready setup ( similar to jQuery.ready )  
