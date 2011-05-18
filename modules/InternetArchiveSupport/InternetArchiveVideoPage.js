@@ -104,79 +104,90 @@ mw.IA =
 
 
 
-// Set up so that:
-//   - when "click to play" clicked, resize video window and playlist
-//   - we advance to the next clip (when 2+ present)
-newEmbedPlayerMW:function(arg)
-{
-  var player = $('#mwplayer');
-  if (!player)
-    return;
-
-  mw.log('newEmbedPlayerMW()');
-  player.bind('ended', mw.IA.onDoneMW);
-  player.unbind('play').bind('play', mw.IA.firstplayMW);
-  player.bind('pause', mw.IA.pause);
-
-  player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resizeMW(); }, 500); }); //xxx timeout lameness
-},
+  // Set up so that:
+  //   - when "click to play" clicked, resize video window and playlist
+  //   - we advance to the next clip (when 2+ present)
+  newEmbedPlayerMW:function(arg)
+  {
+    if (typeof($('#iframeVidso').get(0)) != 'undefined')
+    {
+      // this means we are in a context like /embed/
+      mw.setConfig( {
+        'EmbedPlayer.EnabledOptionsMenuItems':
+        ['playerSelect','share','aboutPlayerLibrary']
+      });
+    }
 
 
-pause:function()
-{
-  mw.log('paused');
-  return; //xxxx not quite ready for hash yet
-
-  location.hash = '#' + IAD.playlist[mw.IA.playingClipNumMW]['ORIG'] +
-    '/start=' + Math.round($('#mwplayer').get(0).currentTime * 10) / 10;
-},
+    var player = $('#mwplayer');
+    if (!player)
+      return;
 
 
-resizeMW:function()
-{
-  var player = $('#mwplayer');
+    mw.log('newEmbedPlayerMW()');
+    player.bind('ended', mw.IA.onDoneMW);
+    player.unbind('play').bind('play', mw.IA.firstplayMW);
+    player.bind('pause', mw.IA.pause);
 
-  $('#flowplayerdiv').css('width',  this.VIDEO_WIDTH);
-  $('#flowplayerdiv').css('height', this.VIDEO_HEIGHT);
-
-  $('#flowplayerplaylist').css('width', this.VIDEO_WIDTH);
-
-  var jplay = player[0];
-  IAD.log('IA ' + jplay.getWidth() + 'x' + jplay.getHeight());
-
-  jplay.resizePlayer({'width':  this.VIDEO_WIDTH,
-        'height': this.VIDEO_HEIGHT},true);
-},
+    player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resizeMW(); }, 500); }); //xxx timeout lameness
+  },
 
 
-firstplayMW:function()
-{
-  if (typeof(mw.IA.MWsetup)!='undefined')
-    return;
-  mw.IA.MWsetup = true;
+  pause:function()
+  {
+    mw.log('paused');
+    return; //xxxx not quite ready for hash yet
 
-  mw.log('firstplayMW()');
-  mw.IA.resizeMW();
-},
+    location.hash = '#' + IAD.playlist[mw.IA.playingClipNumMW]['ORIG'] +
+      '/start=' + Math.round($('#mwplayer').get(0).currentTime * 10) / 10;
+  },
 
 
-playClipMW:function(idx)
-{
-  mw.IA.playingClipNumMW = idx;
-  mw.log('IA play: ('+idx+')');
-  if (typeof(IAD)=='undefined'  ||  typeof(IAD.playlist[idx])=='undefined')
-    return;
+  resizeMW:function()
+  {
+    var player = $('#mwplayer');
 
-  var group = IAD.playlist[idx];
-  mw.log(group);
+    $('#flowplayerdiv').css('width',  this.VIDEO_WIDTH);
+    $('#flowplayerdiv').css('height', this.VIDEO_HEIGHT);
 
-  // set things up so we can update the "playing triangle"
-  this.flowplayerplaylist = $('#flowplayerplaylist')[0];
-  this.indicateIsPlaying(idx);
+    $('#flowplayerplaylist').css('width', this.VIDEO_WIDTH);
 
-  // location.hash = '#' + group['ORIG']; //xxxx not quite ready yet
+    var jplay = player[0];
+    IAD.log('IA ' + jplay.getWidth() + 'x' + jplay.getHeight());
 
-  mw.ready(function(){
+    jplay.resizePlayer({'width':  this.VIDEO_WIDTH,
+      'height': this.VIDEO_HEIGHT},true);
+  },
+
+
+  firstplayMW:function()
+  {
+    if (typeof(mw.IA.MWsetup)!='undefined')
+      return;
+    mw.IA.MWsetup = true;
+
+    mw.log('firstplayMW()');
+    mw.IA.resizeMW();
+  },
+
+
+  playClipMW:function(idx)
+  {
+    mw.IA.playingClipNumMW = idx;
+    mw.log('IA play: ('+idx+')');
+    if (typeof(IAD)=='undefined'  ||  typeof(IAD.playlist[idx])=='undefined')
+      return;
+
+    var group = IAD.playlist[idx];
+    mw.log(group);
+
+    // set things up so we can update the "playing triangle"
+    this.flowplayerplaylist = $('#flowplayerplaylist')[0];
+    this.indicateIsPlaying(idx);
+
+    // location.hash = '#' + group['ORIG']; //xxxx not quite ready yet
+
+    mw.ready(function(){
 
       var player = $('#mwplayer'); // <div id="mwplayer"><video ...></div>
       if (!player)
@@ -193,15 +204,15 @@ playClipMW:function(idx)
         });
     });
 
-  return false;
-},
+    return false;
+  },
 
 
-onDoneMW:function(event, onDoneActionObject )
-{
-  mw.IA.playingClipNumMW++;
-  mw.IA.playClipMW(mw.IA.playingClipNumMW);
-},
+  onDoneMW:function(event, onDoneActionObject )
+  {
+    mw.IA.playingClipNumMW++;
+    mw.IA.playClipMW(mw.IA.playingClipNumMW);
+  },
 
 
 
@@ -258,13 +269,9 @@ div.overlay-content        {\n\
     }
 
 
-
     mw.setConfig( {
         // We want our video player to attribute something...
         "EmbedPlayer.AttributionButton" : true,
-
-        //'jQueryUISkin' : 'kdark',
-        //"EmbedPlayer.NativeControlsMobileSafari" : true, //xxx
 
         'Mw.UserPreferenceExpireDays' : 90,
 
@@ -277,14 +284,15 @@ div.overlay-content        {\n\
       });
 
 
+
+
     // NOTE: keep this outside "mw.ready()" so that "click-to-play" does indeed
     // cause the newEmbedPlayerMW() call
     $( mw ).bind('newEmbedPlayerEvent', mw.IA.newEmbedPlayerMW);
 
     mw.ready(function(){
         var hash = unescape(location.hash);
-        mw.log("IA Player says mw.ready()" + hash)
-
+        mw.log("IA Player says mw.ready()" + hash);
 
 
         var star = (mw.IA.arg('start') ? parseFloat(mw.IA.arg('start')) : 0);

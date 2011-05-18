@@ -68,7 +68,7 @@ class mwEmbedFrame {
 	// Parse the embedFrame request and sanitize input
 	private function parseRequest(){
 		if( isset($_REQUEST['iaid'])  &&  include('/petabox/setup.inc') ){
-		  Video::mwEmbedSetup(); // archive.org media
+		  $this->playerIframeId .= Video::mwEmbedSetup(); // archive.org media
 		}
           
 		// Check for / attribute type request and update "REQUEST" global 
