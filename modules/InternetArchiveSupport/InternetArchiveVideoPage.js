@@ -111,7 +111,6 @@ mw.IA =
   {
     if (typeof($('#iframeVidso').get(0)) != 'undefined')
     {
-      // this means we are in a context like /embed/
       mw.setConfig( {
         'EmbedPlayer.EnabledOptionsMenuItems':
         ['playerSelect','share','aboutPlayerLibrary']
