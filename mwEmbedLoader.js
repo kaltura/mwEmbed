@@ -36,7 +36,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.3r1';
+KALTURA_LOADER_VERSION = '1.3r2';
 
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
@@ -120,7 +120,7 @@ if( document.URL.indexOf('forceMobileHTML5') != -1 ){
 function kDoIframeRewriteList( rewriteObjects ){
 	for( var i=0; i < rewriteObjects.length; i++ ){
 		var options = { 'width': rewriteObjects[i].width, 'height': rewriteObjects[i].height };
-		// If we have no flash &  no html5 fallback to direct download
+		// If we have no flash &  no html5 fallback and don't care about about player rewrite 
 		if( ! kSupportsFlash() && ! kSupportsHTML5() ) {
 			kDirectDownloadFallback( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
 		} else {
@@ -382,12 +382,18 @@ function kCheckAddScript(){
 		kAddScript();
 		return ;
 	}
-	if( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) || kPageHasAudioOrVideoTags() ){
+	if( ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )  
+			&& 
+		( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) || kPageHasAudioOrVideoTags()  )
+	){
 		kAddScript();
 		return ;
 	}
 	// If document includes kaltura embed tags && isMobile safari: 
-	if ( kIsHTML5FallForward() &&  kGetKalturaPlayerList().length ) {
+	if ( kIsHTML5FallForward()
+			&&  
+		kGetKalturaPlayerList().length 
+	) {
 		// Check for Kaltura objects in the page
 		kAddScript();
 	} else {
@@ -397,7 +403,6 @@ function kCheckAddScript(){
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not available 
 function kIsHTML5FallForward(){
-	
 	// Check for a mobile html5 user agent:	
 	if ( (navigator.userAgent.indexOf('iPhone') != -1) || 
 		(navigator.userAgent.indexOf('iPod') != -1) || 
@@ -425,6 +430,12 @@ function kIsHTML5FallForward(){
 	if( kSupportsFlash() ){
 		return false;
 	}
+	
+	// Check if the UseFlashOnDesktop flag is set and ( don't check for html5 ) 
+	if( mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+		return false;
+	}
+	
 	// No flash return true if the browser supports html5 video tag with basic support for canPlayType:
 	if( kSupportsHTML5() ){
 		return true;

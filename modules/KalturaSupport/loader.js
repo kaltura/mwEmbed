@@ -101,7 +101,7 @@
 		}else {
 		
 			// Check if we are NOT rewriting tags: 
-			if( !mw.isHTML5FallForwardNative() ) {
+			if( !mw.isHTML5FallForwardNative() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ) {
 				restoreKalturaKDPCallback();
 				return ;
 			}
@@ -306,7 +306,6 @@
 	var kLoadKalturaSupport = false;
 	
 	
-	// Update the player loader request with timedText if the flag has been set 
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
 		// Check if any video tag uses the "kEmbedSettings.entryId"  
 		if(  $j( playerElement ).attr( 'kwidgetid' ) ) {
