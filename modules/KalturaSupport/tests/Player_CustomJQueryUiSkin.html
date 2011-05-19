@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>Custom player skin</title>
+
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script  type="text/javascript" >
+function getParam( name )
+{
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return null;
+  else
+    return results[1];
+}
+	var jQueryUiskin = getParam( 'uiskin' ) ? getParam( 'uiskin' ): 'kdark';
+	
+	/* 
+	Normally just set the follow varible to any of the following: 
+	'kdark' // the default dark theme
+	'le-fogg' // a green dark theme
+	'redmond' // a light blue theme
+	'start' // a dark blue theme
+	'sunny' // a light yellow theme
+	'darkness' // a dark black and gray theme ( basis for kdark )
+	*/
+	mw.setConfig('jQueryUISkin', jQueryUiskin );
+</script>
+</head>
+<body>
+<h2> Custom player jQuery ui skin</h2>
+Html5 skins: 
+<a href="?forceMobileHTML5&uiskin=kdark">kdark</a> | 
+<a href="?forceMobileHTML5&uiskin=le-fogg">le-fogg</a> | 
+ <a href="?forceMobileHTML5&uiskin=redmond">redmond</a> | 
+ <a href="?forceMobileHTML5&uiskin=start">start</a> | 
+ <a href="?forceMobileHTML5&uiskin=sunny">sunny</a> | 
+ <a href="?forceMobileHTML5&uiskin=darkness">darkness</a>
+
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+
+<br />
+<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_uka1msg4/width/120/height/90/bgcolor/000000/type/2" /> <span property="dc:description" content="" /><span property="media:title" content="FolgersCoffe.mpeg" /> <span property="media:width" content="400" /><span property="media:height" content="333" /> <span property="media:type" content="application/x-shockwave-flash" /> </object>
+</body>
+</html>
