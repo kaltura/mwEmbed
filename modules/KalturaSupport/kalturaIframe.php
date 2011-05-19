@@ -180,6 +180,29 @@ class kalturaIframe {
 	private function getDefaultFlashVars(){
 		return  'externalInterfaceDisabled=false';
 	}
+	/** 
+	 * Gets a series of mw.setConfig calls set via the uiConf of the kaltura player 
+	 * */
+	private function getCustomPlayerConfig(){
+		if( ! $this->getResultObject()->getUiConf() ){
+			return '';
+		}
+		$o = '';
+		$xml = new SimpleXMLElement( $this->getResultObject()->getUiConf() );
+		foreach ($xml->uiVars->var as $var ){
+			if( isset( $var['key'] ) && isset( $var['value'] ) ){
+				$o.="mw.setConfg('" . htmlspecialchars($var['key'] ) . "', ";
+				// check for boolean attributes: 
+				if( $var['value'] == 'false' || $var['value'] == 'true' ){
+					$o.=  $var['value'];
+				}else {
+					$o.= "'" . htmlspecialchars( $var['value']  ) . "'";
+				}
+				$o.= ");\n";
+			}
+		}
+		return $o;
+	}
 	
 	private function getSwfUrl(){
 		global $wgKalturaServiceUrl;
@@ -348,6 +371,9 @@ class kalturaIframe {
 			}
 		</script>
 		<script type="text/javascript">
+			// try to set custom global vars for this player: 
+			<?php echo $this->getCustomPlayerConfig() ?>
+			
 			// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
 			mw.setConfig('Mw.LogPrepend', 'iframe:' );
 
@@ -361,7 +387,7 @@ class kalturaIframe {
 			
 			// Add Packaging Kaltura Player Data ( JSON Encoded )
 			mw.setConfig('KalturaSupport.BootstrapPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
-			
+
 			// Parse any configuration options passed in via hash url:
 			var hashString = document.location.hash;
 			if( hashString ){

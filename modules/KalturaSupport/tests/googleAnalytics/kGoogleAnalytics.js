@@ -186,7 +186,8 @@ kGoogleAnalytics.prototype = {
 		}
 		return eventName;
 	},
-	playerEvent: function( methodName, data ){		
+	playerEvent: function( methodName, data ){	
+		mw.log('m' + methodName);
 		var trackingArgs = this.getTrackingEvent( methodName, data );
 		// Don't track false events:
 		if( !trackingArgs )

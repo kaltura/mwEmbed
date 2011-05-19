@@ -516,6 +516,14 @@ class KalturaGetResultObject {
 	public function getJSON(){
 		return json_encode( $this->getResultObject() );
 	}
+	public function getUiConf(){
+		$result = $this->getResultObject();
+		if( isset( $result['uiConf'] ) ){
+			return $result['uiConf'];
+		} else {
+			return false;
+		}
+	}
 	private function getResultObject(){
 		global $wgKalturaUiConfCacheTime;
 		// Check if we have a cached result object:

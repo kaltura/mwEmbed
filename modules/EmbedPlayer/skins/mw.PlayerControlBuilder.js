@@ -165,7 +165,6 @@ mw.PlayerControlBuilder.prototype = {
 			this.supportedComponets[ 'options'] = false;
 		}
 		
-		
 		var addComponent = function( component_id ){
 			if ( _this.supportedComponets[ component_id ] ) {
 				if ( _this.available_width > _this.components[ component_id ].w ) {

@@ -30,6 +30,24 @@ mw.KWidgetSupport.prototype = {
 						callback();
 						return ;
 					}
+					// Check for uiConf	and attach it to the embedPlayer object:
+					if( playerData.uiConf ){
+						// Store the parsed uiConf in the embedPlayer object:
+						embedPlayer.$uiConf = $j( playerData.uiConf );
+						
+						// Set any global configuration present in custom variables of the playerData
+						embedPlayer.$uiConf.find( 'uiVars var' ).each( function( inx, customVar ){
+							if( $j( customVar ).attr('key') &&  $j( customVar ).attr('value') ){
+								var cVar = $j( customVar ).attr('value');
+								// String to boolean: 
+								cVar = ( cVar === "false" ) ? false : cVar;
+								cVar = ( cVar === "true" ) ? true : cVar;
+								
+								mw.log("KWidgetSupport::addPlayerHooks> Set Global Config:  " + $j( customVar ).attr('key') + ' ' + cVar );
+								mw.setConfig(  $j( customVar ).attr('key'), cVar);
+							}
+						});
+					}
 					
 					// Check access controls ( this is kind of silly and needs to be done on the server ) 
 					if( playerData.accessControl ){
@@ -88,10 +106,8 @@ mw.KWidgetSupport.prototype = {
 					if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
 						mw.addKAnalytics( embedPlayer, _this.kClient );
 					}
-					// Check for uiConf	
-					if( playerData.uiConf ){
-						// Store the parsed uiConf in the embedPlayer object:
-						embedPlayer.$uiConf = $j( playerData.uiConf );
+					
+					if( embedPlayer.$uiConf ){
 						// Trigger the check kaltura uiConf event					
 						$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport_CheckUiConf', embedPlayer.$uiConf, function(){	
 							mw.log("KWidgetSupport::KalturaSupport_CheckUiConf callback");

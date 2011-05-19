@@ -7,9 +7,6 @@
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 
 <script type="text/javascript">
-	if( document.URL.indexOf('forceMobileHTML5') != -1 ){		
-		mw.setConfig( 'forceMobileHTML5' , true );
-	}	
 	mw.setConfig( 'EmbedPlayer.OverlayControls', false );
 	$( document ).bind( 'Kaltura.SendAnalyticEvent', function(event,  analyticName ){
 		$('#analyticsLog').append( analyticName + "\n");
