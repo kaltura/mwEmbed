@@ -101,7 +101,7 @@
 		}else {
 		
 			// Check if we are NOT rewriting tags: 
-			if( !mw.isHTML5FallForwardNative() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ) {
+			if( !mw.isHTML5FallForwardNative() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) {
 				restoreKalturaKDPCallback();
 				return ;
 			}
@@ -114,6 +114,10 @@
 				var loadEmbedPlayerFlag = loadPlaylistFlag = false;
 				
 				$j.each( kalturaObjectPlayerList, function( inx, element ){
+					// don't rewrite special id
+					if( $(element).attr('id') == 'kaltura_player_iframe_no_rewrite' ){
+						return true;;
+					}
 					// Clear the kalturaSwapObjectClass
 					var kalturaSwapObjectClass = '';
 					// Setup the flashvars variable
