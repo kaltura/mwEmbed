@@ -213,7 +213,7 @@ class kalturaIframe {
 				$var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
 			){
 				
-				$o.="mw.setConfg('" . htmlspecialchars($var['key'] ) . "', ";
+				$o.="mw.setConfig('" . htmlspecialchars($var['key'] ) . "', ";
 				// check for boolean attributes: 
 				if( $var['value'] == 'false' || $var['value'] == 'true' ){
 					$o.=  $var['value'];
