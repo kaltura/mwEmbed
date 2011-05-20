@@ -425,7 +425,7 @@ class kalturaIframe {
 			
 			if( kIsHTML5FallForward() ){
 				// Don't confuse the rewrite engine ( remove the kaltura swf )
-				var el = document.getElementById('kaltura_player');
+				var el = document.getElementById('kaltura_player_iframe_no_rewrite');
 				if( el ) 
 					el.parentNode.removeChild( el );
 				
