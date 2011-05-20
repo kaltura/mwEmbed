@@ -183,21 +183,27 @@ class kalturaIframe {
 	/**
 	 * Get custom player includes for css and javascript
 	 */
-	private function getCustomPlayerIncludes(){
+	private function getCustomPlayerIncludesJSON(){
 		if( ! $this->getResultObject()->getUiConf() ){
 			return '';
 		}
-		$o='';
 		$xml = new SimpleXMLElement( $this->getResultObject()->getUiConf() );
+		$resourceIncludes = array();
 		foreach ($xml->uiVars->var as $var ){
+			if( $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'){
+				continue;
+			}
+			
+			$resource = array( 'src'=> htmlspecialchars(  $var['value'] ) );
 			if( $var['key'] == 'HTML5PluginUrl' ){
-				$o.= '<script type="text/javascript" src="' . htmlspecialchars(  $var['value'] ) . '"></script>'."\n";
+				$resource['type'] = 'js';
 			}
 			if( $var['key'] == 'HTML5PlayerCssUrl'){
-					$o.= '<link href="' . htmlspecialchars(  $var['value'] ) . '"></link>'."\n";
+				$resource['type'] = 'css';
 			}
+			$resourceIncludes[] = $resource;
 		}
-		return $o;
+		return json_encode( $resourceIncludes );
 	}
 	/** 
 	 * Gets a series of mw.setConfig calls set via the uiConf of the kaltura player 
@@ -277,7 +283,10 @@ class kalturaIframe {
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		}
 	}
-	private function outputIframeHeadElement(){
+	/**
+	 * Get the iframe css
+	 */
+	private function outputIframeHeadCss(){
 		global $wgMwEmbedPathUrl;
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
@@ -385,8 +394,10 @@ class kalturaIframe {
 				document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>/libraries/json/json2.js' type='text/javascript'%3E%3C/script%3E"));
 			}
 		</script>
-		<?php echo $this->getCustomPlayerIncludes() ?>
+		
 		<script type="text/javascript">
+			mw.setConfig( 'Mw.CustomResourceIncludes', <?php echo $this->getCustomPlayerIncludesJSON() ?>);
+		
 			// try to set custom global vars for this player: 
 			<?php echo $this->getCustomPlayerConfig() ?>
 

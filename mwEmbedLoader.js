@@ -72,8 +72,8 @@ var kAlreadyRunDomReadyFlag = false;
 kOverideJsFlashEmbed();
 
 // Setup preMwEmbedReady queue
-if( !preMwEmbedReady ){
-	var preMwEmbedReady = [];
+if( !window.preMwEmbedReady ){
+	window.preMwEmbedReady = [];
 }
 // Setup a preMwEmbedConfig var
 if( ! preMwEmbedConfig ) {
@@ -109,7 +109,7 @@ if( ! mw.getConfig ){
 // Wrap mw.ready to preMwEmbedReady values
 if( !mw.ready){
 	mw.ready = function( fn ){	
-		preMwEmbedReady.push( fn );		
+		window.preMwEmbedReady.push( fn );		
 	};
 }
 
@@ -383,7 +383,7 @@ function kCheckAddScript(){
 	}
 	
 	// If user javascript is using mw.ready add script
-	if( preMwEmbedReady.length ) {
+	if( window.preMwEmbedReady.length ) {
 		kAddScript();
 		return ;
 	}
@@ -500,7 +500,7 @@ function kAddScript( callback ){
 		} else {
 			kDoIframeRewriteList( kGetKalturaPlayerList() );
 			// if we don't have a mw.ready function we don't need to load the script library
-			if( !preMwEmbedReady.length ){
+			if( !window.preMwEmbedReady.length ){
 				return ;
 			}
 		}

@@ -22,7 +22,7 @@ if ( typeof window.mw == 'undefined' ) {
 /**
  * Set the mwEmbedVersion
  */
-var MW_EMBED_VERSION = '1.1h';
+var MW_EMBED_VERSION = '1.3';
 
 // Globals to pre-set ready functions in dynamic loading of mwEmbed
 if( typeof preMwEmbedReady == 'undefined'){
@@ -152,6 +152,7 @@ if( typeof preMwEmbedConfig == 'undefined') {
 			return mwConfig[ name ];
 		return false;
 	};
+	
 	/**
 	 * Get all the non-default configuration ( useful for passing state to
 	 * iframes in limited hash url length of a few K )
@@ -1490,10 +1491,10 @@ if( typeof preMwEmbedConfig == 'undefined') {
 	 * Runs all the queued functions called by mwEmbedSetup
 	 */
 	mw.runReadyFunctions = function ( ) {
-		mw.log('mw.runReadyFunctions: ' + mwOnLoadFunctions.length );
+		mw.log('mw.runReadyFunctions: ' + mwOnLoadFunctions.length + ' preMwEmbedReady:' + window.preMwEmbedReady.length);
 		// Run any pre-setup ready functions
-		while( preMwEmbedReady.length ){
-			preMwEmbedReady.shift()();
+		while( window.preMwEmbedReady.length ){
+			window.preMwEmbedReady.shift()();
 		}
 		// Run all the queued functions:
 		while( mwOnLoadFunctions.length ) {
@@ -2100,7 +2101,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 	 */
 	// Flag to ensure setup is only run once:
 	var mwSetupFlag = false;
-	mw.setupMwEmbed = function ( ) {
+	mw.setupMwEmbed = function ( ) {		
 		// Only run the setup once:
 		if( mwSetupFlag ) {
 			return ;
@@ -2156,33 +2157,44 @@ mw.absoluteUrl = function( src, contextUrl ) {
 						if( mw.hasJQueryUiCss() ){
 							mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;
 						}
-
-
-						// Make sure style sheets are loaded:
-						mw.load( ['mw.style.mwCommon'] , function(){
-							// Run all the setup function hooks
-							// NOTE: setup functions are added via addSetupHook calls
-							// and must include a callback.
-							//
-							// Once complete we can run .ready() queued functions
-							function runSetupFunctions() {
-								if( mwSetupFunctions.length ) {
-									mwSetupFunctions.shift()( function() {
-										runSetupFunctions();
-									} );
-								}else{
-									mw.runReadyFunctions();
+						
+						// load any  Mw.CustomResourceIncludes
+						mw.loadCustomResourceIncludes( mw.getConfig('Mw.CustomResourceIncludes'), function(){
+							// Make sure style sheets are loaded:
+							mw.load( ['mw.style.mwCommon'] , function(){
+								// Run all the setup function hooks
+								// NOTE: setup functions are added via addSetupHook calls
+								// and must include a callback.
+								//
+								// Once complete we can run .ready() queued functions
+								function runSetupFunctions() {
+									if( mwSetupFunctions.length ) {
+										mwSetupFunctions.shift()( function() {
+											runSetupFunctions();
+										} );
+									}else{
+										mw.runReadyFunctions();
+									}
 								}
-							}
-							runSetupFunctions();
-						} );
-
+								runSetupFunctions();
+							});
+						});
 					} );
 				});
 			});
 		});
 	};
-
+	mw.loadCustomResourceIncludes = function( loadSet, callback ){
+		if(!loadSet || loadSet.length == 0 ){
+			callback();
+			return ;
+		}
+		// pop up a loadSet item and re call loadCustomResourceIncludes
+		var resource = loadSet.shift();
+		mw.getScript(  resource['src'], function(){
+			mw.loadCustomResourceIncludes( loadSet, callback );
+		});
+	};
 	/**
 	 * Checks for jquery ui css by name jquery-ui-1.7.2.css NOTE: this is a hack
 	 * for usability jquery-ui in the future usability should register a
