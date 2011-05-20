@@ -2191,7 +2191,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		}
 		// pop up a loadSet item and re call loadCustomResourceIncludes
 		var resource = loadSet.shift();
-		mw.getScript(  resource['src'], function(){
+		mw.getScript( resource['src'], function(){
 			mw.loadCustomResourceIncludes( loadSet, callback );
 		});
 	};

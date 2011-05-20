@@ -78,7 +78,9 @@
 			
 			$j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {		
 				$j( playerProxy ).bind( 'jsListenerEvent', function(event, globalFuncName, listenerArgs){
-					window[ globalFuncName ].apply( this, listenerArgs );
+					if( typeof window[ globalFuncName ] == 'function' ){
+						window[ globalFuncName ].apply( this, listenerArgs );
+					}
 				});
 				
 				// Directly build out the evaluate call on the playerProxy
@@ -110,7 +112,11 @@
 
 				embedPlayer.addJsListener = function( eventName, globalFuncName){					
 					var listenEventName = 'gcb_' + _this.getListenerId( embedPlayer, eventName, globalFuncName); 					
-					window[ listenEventName ] = function(){						
+					window[ listenEventName ] = function(){				
+						// Check if the globalFuncName is defined on this side of the iframe and call it
+						if( window[ globalFuncName ] && typeof window[ globalFuncName ] == 'function' ){
+							window[ globalFuncName ].apply( this, $j.makeArray( arguments ) );
+						}
 						var args = [ globalFuncName, $j.makeArray( arguments ) ];
 						$j( embedPlayer ).trigger( 'jsListenerEvent', args );
 					};					

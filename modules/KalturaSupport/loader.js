@@ -84,14 +84,7 @@
 			] );
 	});
 	// Check if the document has kaltura objects ( for fall forward support ) 
-	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){	
-		// Local callback function runs KalturaKDPCallbackReady and rewriteDoneCallback
-		var callback = function(){
-			if( rewriteDoneCallback ){
-				rewriteDoneCallback();
-			}
-		};
-		
+	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
 		var kalturaObjectPlayerList = mw.getKalturaPlayerList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
 		if( ! kalturaObjectPlayerList.length ) {
@@ -103,6 +96,7 @@
 			// Check if we are NOT rewriting tags: 
 			if( !mw.isHTML5FallForwardNative() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) {
 				restoreKalturaKDPCallback();
+				rewriteDoneCallback();
 				return ;
 			}
 			// FALLFORWARD only for fallforward native players
@@ -234,12 +228,12 @@
 					var doneWithIframePlayer = function(){
 						iframeRewriteCount--;
 						if( iframeRewriteCount == 0){
-							callback();
+							rewriteDoneCallback();
 						}
 					};
 					// if there were no targets to rewrite just issue the callback directly
 					if( $j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
-						callback();
+						rewriteDoneCallback();
 						return ;
 					}
 					$j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).each( function(inx, playerTarget ) {
@@ -264,6 +258,7 @@
 					});					
 					// if there are no playlists left to process return: 
 					if( $j( '.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
+						rewriteDoneCallback();
 						return true;
 					}
 				}
@@ -294,14 +289,21 @@
 								'sourceHandler' : kalturaPlaylistHanlder
 							});
 						});
+						// XXX todo playlist is not really ready for api calls at this point :(
+						// we need to setup a binding and ready event
+						rewriteDoneCallback();
 					});
 				}
 				if( loadEmbedPlayerFlag ){
 					mw.log("KalturaLoader:: load EmbedPlayer");
 					mw.load('EmbedPlayer', function(){
 						// Remove the general loading spinner ( embedPlayer takes over )
-						$j('.mwEmbedKalturaVideoSwap').embedPlayer( callback );
+						$j('.mwEmbedKalturaVideoSwap').embedPlayer( rewriteDoneCallback );
 					});
+				}
+				// no loader, run the callback directly: 
+				if( !loadPlaylistFlag && !loadEmbedPlayerFlag ){
+					rewriteDoneCallback();
 				}
 			}
 		}		

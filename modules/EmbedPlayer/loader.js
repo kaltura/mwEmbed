@@ -349,7 +349,7 @@
 		mw.log( 'Loader::EmbedPlayer:rewritePagePlayerTags:' + mw.documentHasPlayerTags() );
 		
 		// Allow modules to do tag rewrites as well: 
-		var doModuleTagRewrites = function(){	
+		var doModuleTagRewrites = function(){
 			$j( mw ).triggerQueueCallback( 'LoadeRewritePlayerTags', callback);
 		};
 		
