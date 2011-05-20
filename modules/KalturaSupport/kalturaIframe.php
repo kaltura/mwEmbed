@@ -360,6 +360,7 @@ class kalturaIframe {
 			<?php echo $this->getVideoHTML(); ?>
 		</div>
 		<script type="text/javascript">
+			window['preMwEmbedReady'] = {};
 			// Make sure we don't rewrite the object tag in a quick dom ready situation 
 			preMwEmbedReady['Kaltura.IframeRewrite'] = false;
 			
