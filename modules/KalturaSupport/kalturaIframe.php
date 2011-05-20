@@ -355,10 +355,6 @@ class kalturaIframe {
 <html>
 	<?php echo $this->outputIframeHeadElement(); ?>
 	<body>
-		<div id="videoContainer" >
-			<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
-			<?php echo $this->getVideoHTML(); ?>
-		</div>
 		<script type="text/javascript">
 			window['preMwEmbedReady'] = [];
 			// Make sure we don't rewrite the object tag in a quick dom ready situation 
@@ -506,6 +502,10 @@ class kalturaIframe {
 				}
 			}			
 		</script>
+		<div id="videoContainer" >
+			<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
+			<?php echo $this->getVideoHTML(); ?>
+		</div>
   </body>
 </html>
 <?php
