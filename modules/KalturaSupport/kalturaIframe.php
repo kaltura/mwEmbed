@@ -373,6 +373,9 @@ class kalturaIframe {
 		<script type="text/javascript">
 			// try to set custom global vars for this player: 
 			<?php echo $this->getCustomPlayerConfig() ?>
+
+			// Don't do an iframe rewrite inside an iframe!
+			mw.setConfig( 'Kaltura.IframeRewrite', false );
 			
 			// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
 			mw.setConfig('Mw.LogPrepend', 'iframe:' );
