@@ -280,23 +280,22 @@ class kalturaIframe {
 	private function outputIframeHeadElement(){
 		global $wgMwEmbedPathUrl;
 		?>
-		<head>
-			<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-			<title>Kaltura Embed Player iFrame</title>
-			<style type="text/css">
-				body {
-					margin:0;
-					position:fixed;
-					top:0px;
-					left:0px;
-					bottom:0px;
-					right:0px;
-					width: 100%;
-					height: 100%;
-					overflow:hidden;
-					background: #000;
-					color: #fff;
-				}
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<title>Kaltura Embed Player iFrame</title>
+		<style type="text/css">
+			body {
+				margin:0;
+				position:fixed;
+				top:0px;
+				left:0px;
+				bottom:0px;
+				right:0px;
+				width: 100%;
+				height: 100%;
+				overflow:hidden;
+				background: #000;
+				color: #fff;
+			}
 		<?php 
 		if( $this->isError() ){
 			?>
@@ -364,7 +363,6 @@ class kalturaIframe {
 		}
 		?>
 			</style>
-		</head>
 		<?php
 	}
 
@@ -375,8 +373,8 @@ class kalturaIframe {
 ?>
 <!DOCTYPE html>
 <html>
-	<?php echo $this->outputIframeHeadElement(); ?>
-	<body>
+	<head>
+		<?php echo $this->outputIframeHeadCss(); ?>
 		<script type="text/javascript">
 			// Insert the html5 kalturaLoader script
 			document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>mwEmbedLoader.php' type='text/javascript'%3E%3C/script%3E"));
@@ -519,13 +517,15 @@ class kalturaIframe {
 						return true;
 					};
 				}
-			}			
+			}	
 		</script>
+	</head>
+	<body>	
 		<div id="videoContainer" >
 			<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
 			<?php echo $this->getVideoHTML(); ?>
 		</div>
-  </body>
+	</body>
 </html>
 <?php
 	}
@@ -563,8 +563,9 @@ class kalturaIframe {
 		?>
 <!DOCTYPE html>
 <html>
-	<?php echo $this->outputIframeHeadElement(); ?>
-	
+	<head>
+		<?php echo $this->outputIframeHeadCss(); ?>
+	</head>
 	<body>
 		<div class="error"><?php
 			if( $errorTitle ){
