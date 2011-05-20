@@ -360,7 +360,9 @@ class kalturaIframe {
 			<?php echo $this->getVideoHTML(); ?>
 		</div>
 		<script type="text/javascript">
-		
+			// Make sure we don't rewrite the object tag in a quick dom ready situation 
+			preMwEmbedReady['Kaltura.IframeRewrite'] = false;
+			
 			// Insert the html5 kalturaLoader script
 			document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>mwEmbedLoader.php' type='text/javascript'%3E%3C/script%3E"));
 		</script>
