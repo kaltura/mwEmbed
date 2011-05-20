@@ -135,7 +135,7 @@ function kDoIframeRewriteList( rewriteObjects ){
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( !options )
 		options = {};
-	
+
 	// Empty the replace target:
 	var elm = document.getElementById( replaceTargetId );
 	if( ! elm ){
@@ -143,6 +143,11 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 		return false;
 	}
 	replaceTargetId.innerHTML = '';
+	
+	// Don't rewrite special key kaltura_player_iframe_no_rewrite
+	if( replaceTargetId == 'kaltura_player_iframe_no_rewrite' ){
+		return ;
+	}
 	
 	// Check if the iframe API is enabled in which case we have to load client code and use that 
 	// to rewrite the frame
