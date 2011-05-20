@@ -218,7 +218,7 @@ class kalturaIframe {
 	}
 	
 	private function getPreFlashVars(){
-		return '<object id="kaltura_player" name="kaltura_player" ' .
+		return '<object id="kaltura_player_iframe_no_rewrite" name="kaltura_player" ' .
 				'type="application/x-shockwave-flash" allowFullScreen="true" '.
 				'allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" style="height:100%;width:100%" '.
 				'xmlns:dc="http://purl.org/dc/terms/" '.
