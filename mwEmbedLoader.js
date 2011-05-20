@@ -382,8 +382,8 @@ function kCheckAddScript(){
 		kAddScript();
 		return ;
 	}
-	if( ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )  
-			&& 
+	if( /*! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )  
+			&& */
 		( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) || kPageHasAudioOrVideoTags()  )
 	){
 		kAddScript();
@@ -432,9 +432,9 @@ function kIsHTML5FallForward(){
 	}
 	
 	// Check if the UseFlashOnDesktop flag is set and ( don't check for html5 ) 
-	if( mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+	/*if( mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 		return false;
-	}
+	}*/
 	
 	// No flash return true if the browser supports html5 video tag with basic support for canPlayType:
 	if( kSupportsHTML5() ){
