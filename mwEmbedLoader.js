@@ -120,6 +120,10 @@ if( document.URL.indexOf('forceMobileHTML5') != -1 ){
 function kDoIframeRewriteList( rewriteObjects ){
 	for( var i=0; i < rewriteObjects.length; i++ ){
 		var options = { 'width': rewriteObjects[i].width, 'height': rewriteObjects[i].height };
+		// don't iframe rewrite special object id: "kaltura_player_iframe_no_rewrite"
+		if( rewriteObjects[i].id == 'kaltura_player_iframe_no_rewrite' ){
+			return ;
+		}
 		// If we have no flash &  no html5 fallback and don't care about about player rewrite 
 		if( ! kSupportsFlash() && ! kSupportsHTML5() ) {
 			kDirectDownloadFallback( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
