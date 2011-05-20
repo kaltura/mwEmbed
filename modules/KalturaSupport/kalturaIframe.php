@@ -180,6 +180,25 @@ class kalturaIframe {
 	private function getDefaultFlashVars(){
 		return  'externalInterfaceDisabled=false';
 	}
+	/**
+	 * Get custom player includes for css and javascript
+	 */
+	private function getCustomPlayerIncludes(){
+		if( ! $this->getResultObject()->getUiConf() ){
+			return '';
+		}
+		$o='';
+		$xml = new SimpleXMLElement( $this->getResultObject()->getUiConf() );
+		foreach ($xml->uiVars->var as $var ){
+			if( $var['key'] == 'HTML5PluginUrl' ){
+				$o.= '<script type="text/javascript" src="' . htmlspecialchars(  $var['value'] ) . '"></script>'."\n";
+			}
+			if( $var['key'] == 'HTML5PlayerCssUrl'){
+					$o.= '<link href="' . htmlspecialchars(  $var['value'] ) . '"></link>'."\n";
+			}
+		}
+		return $o;
+	}
 	/** 
 	 * Gets a series of mw.setConfig calls set via the uiConf of the kaltura player 
 	 * */
@@ -190,7 +209,10 @@ class kalturaIframe {
 		$o = '';
 		$xml = new SimpleXMLElement( $this->getResultObject()->getUiConf() );
 		foreach ($xml->uiVars->var as $var ){
-			if( isset( $var['key'] ) && isset( $var['value'] ) ){
+			if( isset( $var['key'] ) && isset( $var['value'] ) &&
+				$var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
+			){
+				
 				$o.="mw.setConfg('" . htmlspecialchars($var['key'] ) . "', ";
 				// check for boolean attributes: 
 				if( $var['value'] == 'false' || $var['value'] == 'true' ){
@@ -365,6 +387,7 @@ class kalturaIframe {
 				document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>/libraries/json/json2.js' type='text/javascript'%3E%3C/script%3E"));
 			}
 		</script>
+		<?php echo $this->getCustomPlayerIncludes() ?>
 		<script type="text/javascript">
 			// try to set custom global vars for this player: 
 			<?php echo $this->getCustomPlayerConfig() ?>
