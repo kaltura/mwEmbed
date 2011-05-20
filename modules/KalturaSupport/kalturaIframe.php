@@ -356,10 +356,6 @@ class kalturaIframe {
 	<?php echo $this->outputIframeHeadElement(); ?>
 	<body>
 		<script type="text/javascript">
-			window['preMwEmbedReady'] = [];
-			// Make sure we don't rewrite the object tag in a quick dom ready situation 
-			preMwEmbedReady['Kaltura.IframeRewrite'] = false;
-			
 			// Insert the html5 kalturaLoader script
 			document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>mwEmbedLoader.php' type='text/javascript'%3E%3C/script%3E"));
 		</script>
@@ -458,7 +454,7 @@ class kalturaIframe {
 				var vid = document.getElementById( '<?php echo $this->playerIframeId ?>' );
 				document.getElementById( 'videoContainer' ).innerHTML = "";
 
-				if( kSupportsFlash()  ){
+				if( kSupportsFlash() ||  mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 					// Build the flash vars string
 					var flashVarsString = '<?php echo $this->getDefaultFlashVars() ?>';
 					var flashVars = mw.getConfig('Kaltura.Flashvars');
