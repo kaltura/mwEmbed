@@ -483,9 +483,10 @@ class kalturaIframe {
 				// ( if javascript is off the child of the video tag so would be played,
 				//  but rewriting gives us flexiblity in in selection criteria as
 				// part of the javascript check kIsHTML5FallForward )
-				var vid = document.getElementById( '<?php echo $this->playerIframeId ?>' );
-				document.getElementById( 'videoContainer' ).innerHTML = "";
-
+				if( document.getElementById( 'videoContainer' ) ){
+					document.getElementById( 'videoContainer' ).innerHTML = "";
+				}
+				
 				if( kSupportsFlash() ||  mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 					// Build the flash vars string
 					var flashVarsString = '<?php echo $this->getDefaultFlashVars() ?>';
