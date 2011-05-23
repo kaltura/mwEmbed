@@ -90,8 +90,10 @@
 
 		// If mwEmbed should use native controls on mobile safari
 		"EmbedPlayer.NativeControlsMobileSafari" : true,
-
-
+		
+		// A link to download the latest firefox:
+		"EmbedPlayer.FirefoxLink" : 'http://www.mozilla.com/en-US/firefox/upgrade.html?from=mwEmbed',
+		
 		// The z-index given to the player interface during full screen ( high z-index )
 		"EmbedPlayer.fullScreenZIndex" : 999998,
 

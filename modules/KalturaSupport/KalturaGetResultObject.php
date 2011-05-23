@@ -202,6 +202,8 @@ class KalturaGetResultObject {
 			$flavorUrl =  $wgKalturaServiceUrl .'/p/' . $this->getPartnerId() . '/sp/' .
 			$this->getPartnerId() . '00/playManifest/entryId/' .
 			$this->urlParameters['entry_id'];
+			// Play manifest also support referrer passing 
+			$flavorUrl .= '/referrer/' . base64_encode( $this->getReferer() );
 		} else {
 			$flavorUrl = $wgKalturaCDNUrl .'/p/' . $this->getPartnerId() . '/sp/' .
 			$this->getPartnerId() . '00/flvclipper/entry_id/' .
@@ -458,7 +460,6 @@ class KalturaGetResultObject {
 	}
 
 	private function getReferer(){
-		return 'http://thenbmshow.com/elearning/class/304-awards-engraving-panel-discussion';
 		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.org/';
 	}
 

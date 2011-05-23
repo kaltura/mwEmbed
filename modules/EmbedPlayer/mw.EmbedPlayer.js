@@ -2134,32 +2134,35 @@ mw.EmbedPlayer.prototype = {
 	 */
 	showPluginMissingHTML: function( ) {
 		mw.log("EmbedPlayer::showPluginMissingHTML");
-		// Remove loader
-		$j('.loadingSpinner,#loadingSpinner_' + this.id).remove();
+		// Hide loader
+		$('#loadingSpinner_' + this.id ).remove();
 		
-		// update the poster html: 
-		this.updatePosterHTML();
+		// Set the top level container to relative position: 
+		$(this).css('position', 'relative');
 		
-		if( this.mediaElement.sources.length == 0 || ! this.mediaElement.sources[0].getSrc() ){
-			this.showErrorMsg( gM('mwe-embedplayer-missing-source') );
-			return ;
-		}
 		// Control builder ( for play button )
-		this.controlBuilder = new mw.PlayerControlBuilder( this );
-
-
+		this.controlBuilder = new mw.PlayerControlBuilder( this );		
+		// Update the poster and html:
+		this.updatePosterHTML();
+		// Add the warning
+		this.controlBuilder.doWarningBindinng( 'EmbedPlayer.DirectFileLinkWarning',
+			gM( 'mwe-embedplayer-download-warn', mw.getConfig('EmbedPlayer.FirefoxLink') )
+		);
 		
-		// Set the play button to the first available source:
-		$j(this).show()
-		.find('.play-btn-large')
+		// Set the play button to the first available source: 
+		$( this ).find('.play-btn-large')
 		.unbind('click')
 		.wrap(
-			$j('<a />').attr( {
+			$('<a />').attr( {
 				'href': this.mediaElement.sources[0].getSrc(),
 				'title' : gM('mwe-embedplayer-play_clip')
 			} )
 		);
-		
+
+		// TODO we should have a smart done Loading system that registers player states
+		// http://www.whatwg.org/specs/web-apps/current-work/#media-element
+		this.doneLoading = true;
+		$(this).trigger('playerReady');
 	},
 
 	/**
