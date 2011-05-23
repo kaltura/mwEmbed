@@ -41,6 +41,8 @@
 		 	'href' : 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 			// Style icon to be applied
 			'class' : 'kaltura-icon',
+			// Style to be applied to the outer attribution button container div
+			'style' : {},
 			// An icon image url 16x16 image url or data url )
 			'iconurl' : false
 		},

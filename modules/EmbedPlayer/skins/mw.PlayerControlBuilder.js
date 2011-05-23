@@ -1674,14 +1674,15 @@ mw.PlayerControlBuilder.prototype = {
 						$icon.addClass( buttonConfig['class'] );
 					}
 				}
-
+				if( typeof buttonConfig.style != 'object'){
+					buttonConfig.style = {};
+				}
 				return $j('<a />')
 					.attr({
 						'href': buttonConfig.href,
 						'title' : buttonConfig.title,
 						'target' : '_new'
 					})
-					.addClass( 'attributionButton' )
 					.append(
 						$j( '<div />' )
 						.addClass( 'rButton' )
@@ -1689,6 +1690,8 @@ mw.PlayerControlBuilder.prototype = {
 							'top' : '1px',
 							'left' : '2px'
 						})
+						// Allow button config style to override
+						.css( buttonConfig.style )
 						.append(
 							$icon
 						)
