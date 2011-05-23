@@ -1686,7 +1686,7 @@ mw.PlayerControlBuilder.prototype = {
 						$j( '<div />' )
 						.addClass( 'rButton' )
 						.css({
-							'top' : '9px',
+							'top' : '1px',
 							'left' : '2px'
 						})
 						.append(
