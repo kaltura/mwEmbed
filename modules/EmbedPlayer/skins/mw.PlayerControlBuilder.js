@@ -898,8 +898,15 @@ mw.PlayerControlBuilder.prototype = {
 	* @param {object} warningMsg The jQuery object warning message to be displayed.
 	*
 	*/
+	/**
+	* Display a warning message on the player
+	* checks a preference Id to enable or disable it.
+	* @param {string} preferenceId The preference Id
+	* @param {object} warningMsg The jQuery object warning message to be displayed.
+	*
+	*/
 	doWarningBindinng: function( preferenceId, warningMsg ) {
-		mw.log( 'mw.PlayerControlBuilder:: doWarningBindinng: ' + preferenceId + ' wm: ' + warningMsg);
+		mw.log( 'controlBuilder: doWarningBindinng: ' + preferenceId + ' wm: ' + warningMsg);
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
@@ -908,13 +915,14 @@ mw.PlayerControlBuilder.prototype = {
 			return false;
 		}
 		// Add the targetWarning: 
-		var $targetWarning = $j('<div />')
+		var $targetWarning = $('<div />')
 		.attr( {
 			'id': "warningOverlay_" + embedPlayer.id
 		} )
-		.addClass( 'warningOverlay ui-state-highlight ui-corner-all' )
+		.addClass( 'ui-state-highlight ui-corner-all' )
 		.css({
 			'position' : 'absolute',
+			'display' : 'none',
 			'background' : '#FFF',
 			'color' : '#111',
 			'top' : '10px',
@@ -922,14 +930,18 @@ mw.PlayerControlBuilder.prototype = {
 			'right' : '10px',
 			'padding' : '4px'
 		})
-		.html( warningMsg )
+		.html( warningMsg );
 	
-		$targetWarning.append(
-			$j('<br />')
+		$j( embedPlayer ).append(
+			$targetWarning 
 		);
 	
 		$targetWarning.append(
-			$j( '<input />' )
+			$('<br />')
+		);
+	
+		$targetWarning.append(
+			$( '<input />' )
 			.attr({
 				'id' : 'ffwarn_' + embedPlayer.id,
 				'type' : "checkbox",
@@ -938,38 +950,36 @@ mw.PlayerControlBuilder.prototype = {
 			.click( function() {
 				mw.log("WarningBindinng:: set " + preferenceId + ' to hidewarning ' );
 				// Set up a cookie for 30 days:
-				$.cookie( preferenceId, 'hidewarning', { expires: 30 } );
+				$j.cookie( preferenceId, 'hidewarning', { expires: 30 } );
 				// Set the current instance
 				mw.setConfig( preferenceId, false );
-				$j( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
-				// set the local prefrence to false
+				$( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
+				// set the local preference to false
 				_this.addWarningFlag = false;
 			} )
 		);
 		$targetWarning.append(
-			$j('<label />')
+			$('<label />')
 			.text( gM( 'mwe-embedplayer-do_not_warn_again' ) )
 			.attr( 'for', 'ffwarn_' + embedPlayer.id )
 		);
-		
-		$targetWarning.appendTo( embedPlayer ).hide();
+		$targetWarning.hide();
 		
 		$j( embedPlayer ).hoverIntent({
 			'timeout': 2000,
 			'over': function() {
-				// don't do the overlay if already playing and we have a player selected
-				if( embedPlayer.isPlaying() && embedPlayer.selectedPlayer ){
+				// don't do the overlay if already playing
+				if( embedPlayer.isPlaying() ){
 					return ;
 				}
 				
 				// Check the global config before showing the warning
-				if ( mw.getConfig( preferenceId ) === true && $.cookie( preferenceId ) != 'hidewarning' ){
-					mw.log("WarningBindinng:: show warning " + mw.getConfig( preferenceId ) + ' cookie: '+ $.cookie( preferenceId ) + 'typeof: ' + typeof $.cookie( preferenceId ) + ' tw:' + $targetWarning.length );
+				if ( mw.getConfig( preferenceId ) === true && $j.cookie( preferenceId ) != 'hidewarning' ){
+					mw.log("WarningBindinng:: show warning " + mw.getConfig( preferenceId ) + ' cookie: '+ $j.cookie( preferenceId ) + 'typeof:' + typeof $j.cookie( preferenceId ));
 					$targetWarning.fadeIn( 'slow' );
 				};
 			},
 			'out': function() {
-				mw.log( 'mw.PlayerControlBuilder:: hide ' );
 				$targetWarning.fadeOut( 'slow' );
 			}
 		});
