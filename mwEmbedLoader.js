@@ -1,4 +1,4 @@
-/*@cc_on@ 'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)}) @end@*/
+/*@cc_on@'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})@end@*/
 
 /**
 * Kaltura html5 library loader 
