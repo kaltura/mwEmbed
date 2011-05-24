@@ -477,7 +477,7 @@ mw.PlayerControlBuilder.prototype = {
 				gM( 'mwe-embedplayer-fullscreen-tip');
 		
 		var $targetTip = this.doWarningBindinng( 'EmbedPlayer.FullscreenTip', 
-			$('<h3/>').html( 
+			$j('<h3/>').html( 
 				toolTipMsg
 			)
 		);
@@ -492,11 +492,11 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Hide fullscreen tip if:
 		// We leave fullscreen, 
-		$( this.embedPlayer ).bind( 'onCloseFullScreen', hideTip );
+		$j( this.embedPlayer ).bind( 'onCloseFullScreen', hideTip );
 		// After 5 seconds,
 		setTimeout( hideTip, 5000 );
 		// or if we catch an f11 button press
-		$(document).keyup( function( event ){
+		$j(document).keyup( function( event ){
 			if( event.keyCode == 122 ){
 				hideTip();
 			}
@@ -908,7 +908,7 @@ mw.PlayerControlBuilder.prototype = {
 			return false;
 		}
 		// Add the targetWarning: 
-		var $targetWarning = $('<div />')
+		var $targetWarning = $j('<div />')
 		.attr( {
 			'id': "warningOverlay_" + embedPlayer.id
 		} )
@@ -925,11 +925,11 @@ mw.PlayerControlBuilder.prototype = {
 		.html( warningMsg )
 	
 		$targetWarning.append(
-			$('<br />')
+			$j('<br />')
 		);
 	
 		$targetWarning.append(
-			$( '<input />' )
+			$j( '<input />' )
 			.attr({
 				'id' : 'ffwarn_' + embedPlayer.id,
 				'type' : "checkbox",
@@ -941,20 +941,20 @@ mw.PlayerControlBuilder.prototype = {
 				$.cookie( preferenceId, 'hidewarning', { expires: 30 } );
 				// Set the current instance
 				mw.setConfig( preferenceId, false );
-				$( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
+				$j( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
 				// set the local prefrence to false
 				_this.addWarningFlag = false;
 			} )
 		);
 		$targetWarning.append(
-			$('<label />')
+			$j('<label />')
 			.text( gM( 'mwe-embedplayer-do_not_warn_again' ) )
 			.attr( 'for', 'ffwarn_' + embedPlayer.id )
 		);
 		
 		$targetWarning.appendTo( embedPlayer ).hide();
 		
-		$( embedPlayer ).hoverIntent({
+		$j( embedPlayer ).hoverIntent({
 			'timeout': 2000,
 			'over': function() {
 				// don't do the overlay if already playing and we have a player selected
