@@ -224,7 +224,6 @@ background-repeat:no-repeat;\n\
 display: block;\n\
 height: 12px;\n\
 width: 12px;\n\
-margin-top: -6px !important;\n\
 margin-left: 3px !important;\n\
 }\n\
 \n\
