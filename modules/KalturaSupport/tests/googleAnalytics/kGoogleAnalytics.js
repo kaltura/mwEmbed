@@ -20,6 +20,7 @@ kGoogleAnalytics.prototype = {
 	googlePageTracker : null,
 	
 	// Local variables: 
+	_lastPlayHeadTime: 0,
 	
 	// last seek:
 	_lastSeek: 0,
@@ -147,28 +148,27 @@ kGoogleAnalytics.prototype = {
 	
 	// Add the player bindings 
 	addPlayerBindings: function(){
-		var _this = this;		
-		for(var i = 0 ; i < this.eventTrackList.length; i++){
-			var eventName = this.eventTrackList[i];
-			var globalCBName = 'kga_' + eventName + _this.playerElement.id;
-			
-			// Add a global callback: ( add a closer context so the for loop context does not override. 
-			this.addNamedGloablBinding( eventName,  globalCBName );
-		};
+		var _this = this;
+		// add the event to the player ( assuming the jsListener is ready:
+		_this.waitForAddJsListener( function(){
+			for( var i = 0 ; i < _this.eventTrackList.length; i++ ){
+				var eventName = _this.eventTrackList[i];
+				var globalCBName = 'kga_' + eventName + '_' + _this.playerElement.id;
+				// Add a global callback: ( add a closer context so the for loop context does not override. 
+				_this.addNamedGloablBinding( eventName,  globalCBName );
+			};
+		});
 	},
 	addNamedGloablBinding: function( eventName, globalCBName  ){
 		var _this = this;
 		window[ globalCBName ] = function( data ) {
 			_this.playerEvent( eventName, data);
 		};
-		// add the event to the player ( assuming the jsListener is ready:
-		_this.waitForAddJsListener( function(){
-			_this.playerElement.addJsListener(  _this.getEventNameBinding( eventName ), globalCBName);
-		});
+		_this.playerElement.addJsListener(  _this.getEventNameBinding( eventName ), globalCBName);
 	},
-	waitForAddJsListener: function(callback){
+	waitForAddJsListener: function( callback ){
 		var _this = this;
-		if( this.playerElement.addJsListener ){
+		if( typeof this.playerElement.addJsListener != 'undefined' ){
 			callback();
 		} else {
 			setTimeout( function(){ _this.waitForAddJsListener( callback ); }, 1 );
@@ -187,7 +187,6 @@ kGoogleAnalytics.prototype = {
 		return eventName;
 	},
 	playerEvent: function( methodName, data ){	
-		mw.log('m' + methodName);
 		var trackingArgs = this.getTrackingEvent( methodName, data );
 		// Don't track false events:
 		if( !trackingArgs )
@@ -211,6 +210,7 @@ kGoogleAnalytics.prototype = {
 	 * Send updates for time stats
 	 */  
 	getQuartilesStatus: function( currentTime ) {
+		this._lastPlayHeadTime = currentTime;
 		// Setup local references:
 		var embedPlayer = this.playerElement;
 		var _this = this;
@@ -250,10 +250,11 @@ kGoogleAnalytics.prototype = {
 			optionValue = qStat;
 		}	
 		
-		// Special case don't track initial html5 volumeChange event ( always the same .75 right after playback ) 
-		if( methodName == 'volumeChanged' && optionValue == .75) {
+		// Special case don't track initial html5 volumeChange event ( triggered right after playback ) 
+		if( methodName == 'volumeChanged' && this._lastPlayHeadTime < .25 ) {
 			return false;
 		}
+		
 		var trackEvent = [ 
               this.trackingCategory, 
               methodName

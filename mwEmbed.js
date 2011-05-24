@@ -2517,7 +2517,6 @@ try{
 // here we poll for interactive state:
 if( document.readyState ){
 	function checkDomState(){
-		mw.log( document.readyState );
 		if( document.readyState == 'complete' ||  document.readyState == 'interactive'){
 			mw.domReady();
 		} else {

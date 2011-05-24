@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Fall forward html5</title>
+<title>Google analytics example html5 / kdp</title>
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 <script src="http://cdn.kaltura.org/apis/seo/flashembed.js"></script>
@@ -9,7 +9,7 @@
 <script type="text/javascript">
 	mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
 </script>
-<script type="text/javascript" src="kGoogleAnalytics.js?5"></script>
+<script type="text/javascript" src="kGoogleAnalytics.js?7"></script>
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -25,7 +25,7 @@
 </script>
 <script type="text/javascript">
 	// once the player can accept events: 
-	function jsCallbackReady(){
+	function jsCallbackReady( playerId ){
 		new kGoogleAnalytics({
 			// List of kaltura events to track 
 			// Full list of notifications available here: 
@@ -34,7 +34,7 @@
 			'eventTrackList' : null,
 
 			// The player object to add bindings too:
-			'playerElement' : $('#kaltura_player').get(0), 
+			'playerElement' : $('#' + playerId ).get(0), 
 			
 			// pageTracker object ( if set to null async tracking is used via _gaq.push calls )
 			'googlePageTracker': null,
@@ -54,7 +54,7 @@
 	};
 </script>
 <script type="text/javascript">
-		flashembed("kaltura_player",
+		flashembed("player_container",
 				{	// attributes and params:
 					id :				"kaltura_player",
 					src : 				"http://www.kaltura.com/index.php/kwidget/wid/_243342/uiconf_id/" +
@@ -91,7 +91,7 @@
 </table>
 </div>
 
-<div id="kaltura_player" style="width:330px;height400px" ></div>
+<div id="player_container" style="width:330px;height400px" ></div>
 
 </body>
 </html>

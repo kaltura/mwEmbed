@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+  </head>
+<body>
+
+  <div style="width:640px; height:480px;" id="mwplayer"></div>
+
+  <script>
+	mw.ready(function(){
+
+	alert('mw.ready!');
+	mw.load('EmbedPlayer', function(){
+      // seems to trip a bug in IE8/win7
+      $j('#mwplayer').embedPlayer({
+    	 'poster' : "http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb480.jpg",
+          'sources':[{
+              	'src':'http://cdn.kaltura.org/apis/html5lib/kplayer-examples/media/bbb_trailer_iphone.m4v',
+                'type':'video/h264'}]
+            });
+      });
+	});
+  </script>
+  
+</body>

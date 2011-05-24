@@ -389,7 +389,7 @@ function kCheckAddScript(){
 	}
 	if( ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )  
 			&& 
-		( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) || kPageHasAudioOrVideoTags()  )
+		( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) && kPageHasAudioOrVideoTags()  )
 	){
 		kAddScript();
 		return ;
