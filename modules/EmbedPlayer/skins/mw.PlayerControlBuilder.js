@@ -487,7 +487,7 @@ mw.PlayerControlBuilder.prototype = {
 		
 		var hideTip = function(){ 
 			mw.setConfig('EmbedPlayer.FullscreenTip', false );
-			$targetWarning.fadeOut('fast'); 
+			$targetTip.fadeOut('fast'); 
 		};
 		
 		// Hide fullscreen tip if:
@@ -915,7 +915,7 @@ mw.PlayerControlBuilder.prototype = {
 			return false;
 		}
 		// Add the targetWarning: 
-		var $targetWarning = $('<div />')
+		var $targetWarning = $j('<div />')
 		.attr( {
 			'id': "warningOverlay_" + embedPlayer.id
 		} )
@@ -937,11 +937,11 @@ mw.PlayerControlBuilder.prototype = {
 		);
 	
 		$targetWarning.append(
-			$('<br />')
+			$j('<br />')
 		);
 	
 		$targetWarning.append(
-			$( '<input />' )
+			$j( '<input />' )
 			.attr({
 				'id' : 'ffwarn_' + embedPlayer.id,
 				'type' : "checkbox",
@@ -953,13 +953,13 @@ mw.PlayerControlBuilder.prototype = {
 				$j.cookie( preferenceId, 'hidewarning', { expires: 30 } );
 				// Set the current instance
 				mw.setConfig( preferenceId, false );
-				$( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
+				$j( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
 				// set the local preference to false
 				_this.addWarningFlag = false;
 			} )
 		);
 		$targetWarning.append(
-			$('<label />')
+			$j('<label />')
 			.text( gM( 'mwe-embedplayer-do_not_warn_again' ) )
 			.attr( 'for', 'ffwarn_' + embedPlayer.id )
 		);
