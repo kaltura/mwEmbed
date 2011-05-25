@@ -36,7 +36,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.3r12';
+KALTURA_LOADER_VERSION = '1.3r13';
 
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
@@ -324,7 +324,7 @@ function kOverideJsFlashEmbed(){
 			kAddReadyHook(function(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
 				// Check if kIsHTML5FallForward
-				if( kIsHTML5FallForward() && kEmbedSettings.wid ){
+				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
 				} else {
 					// Else call the original EmbedSWF with all its arguments 
@@ -380,6 +380,7 @@ function kCheckAddScript(){
 	if( ! serviceUrl || serviceUrl != 'http://www.kaltura.com' ){
 		// if not hosted on kaltura for now we can't use the iframe to load the player
 		mw.setConfig( 'Kaltura.IframeRewrite', false );
+		mw.setConfig( 'Kaltura.UseManifestUrls', false);
 	}
 	
 	// If user javascript is using mw.ready add script
