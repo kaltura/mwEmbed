@@ -14,7 +14,8 @@ var $$ = jQuery.noConflict(true);
 var $ = jQuery = null; // will always run the tested page's jquery from $
 var mw = null; // we will be grabbing the mw from the iframe
 
-var testLocation = "../../modules/EmbedPlayer/tests/Player_Sources.html";
+var testLocation = "../test_files/mwEmbed_Kaltura.html";
+var videoDiv = "#vid1";
 
 var playbackStarted = false;
 
@@ -37,11 +38,11 @@ function runTests() {
 		asyncTest("play button clicked", function() {
 			setTimeout( function()
 			{ 
-				var player = $('#vid1').get(0);
-				$( player ).bind( 'play', function(){ playbackStarted = true });
+				var player = $(videoDiv).get(0);
+				$( player ).bind( 'play', function(){ playbackStarted = true; });
 				ok( $('.play-btn-large').click() );
 				start();
-			}, 5000);
+			}, 4000);
 		});
 
 		asyncTest("playback began", function() {
@@ -49,14 +50,13 @@ function runTests() {
 			{ 
 				ok( playbackStarted == true );
 				start();
-			}, 10000);
+			}, 6000);
 		});
 }
 
 
 $$(document).ready(function(){
 	$$(document.body).prepend('<iframe name="testFrame" id="testFrame" src="'+testLocation+'" width="100%" height="300px" border="none">');
-	//autoResize('testFrame');
 	
 	$$('#testFrame').load(function () {
 		setTimeout( function(){
@@ -67,7 +67,7 @@ $$(document).ready(function(){
 				QUnit.start();
 				runTests();
 			});
-		}, 5000);
+		}, 4000);
 	});
 });
 
