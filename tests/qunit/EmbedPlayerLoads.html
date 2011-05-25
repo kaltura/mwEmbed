@@ -53,18 +53,21 @@ function runTests() {
 		});
 }
 
-$$(window).load(function(){
 
-	$$('#testFrame').attr('src', testLocation)
+$$(document).ready(function(){
+	$$(document.body).prepend('<iframe name="testFrame" id="testFrame" src="'+testLocation+'" width="100%" height="300px" border="none">');
+	//autoResize('testFrame');
 	
 	$$('#testFrame').load(function () {
-		mw = window.frames[0].mw;
-		mw.ready(function(){
-			//grab jQuery from inside the document
-			$ = jQuery = window.frames[0].$j;
-			QUnit.start();
-			runTests();
-		});
+		setTimeout( function(){
+			mw = window.frames["testFrame"].mw;
+			mw.ready(function(){
+				//grab jQuery from inside the document
+				$ = jQuery = window.frames["testFrame"].$j;
+				QUnit.start();
+				runTests();
+			});
+		}, 5000);
 	});
 });
 
@@ -77,8 +80,5 @@ $$(window).load(function(){
 	<h2 id="qunit-userAgent"></h2>
 	<ol id="qunit-tests"></ol>
 	<div id="qunit-fixture">test markup, will be hidden</div>
-	<div style="float: left"> 
-		<iframe height="700" width="1000" id="testFrame"></iframe> 
-	</div> 
 </body>
 </html>
