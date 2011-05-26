@@ -63,7 +63,7 @@ class KalturaGetResultObject {
 	}
 	// check if the requested url is a playlist
 	public function isPlaylist(){
-		return ( $this->urlParameters['playlist_id'] !== null );
+		return ( $this->urlParameters['playlist_id'] !== null || $this->urlParameters['entry_id'] === null);
 	}
 	public function isCachedOutput(){
 		return $this->outputFromCache;
