@@ -163,6 +163,9 @@ mw.EmbedPlayerNative = {
 
 		// Setup local pointer:
 		var vid = this.getPlayerElement();
+		if(!vid){
+			return ;
+		}
 		// Apply media element bindings:
 		this.applyMediaElementBindings();
 

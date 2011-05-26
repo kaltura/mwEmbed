@@ -114,7 +114,7 @@ class kalturaIframe {
 						$this->getResultObject()->getPartnerId() . '00/thumbnail/' .
 						'entry_id/' .  $this->getResultObject()->getEntryId() .
 						'/height/480';
-		try{
+		try {
 			$sources = $this->getResultObject()->getSources();
 		} catch ( Exception $e ){
 			$this->fatalError( $e->getMessage() );
@@ -174,18 +174,23 @@ class kalturaIframe {
 	 */	
 	private function getFlashEmbedHTML( $childHTML = '' ){		
 		return 	$this->getPreFlashVars() . 
-				$this->getDefaultFlashVars() . 
+				$this->getFlashVarsString() . 
 				$this->getPostFlashVars( $childHTML );
 	}
-	private function getDefaultFlashVars(){
-		return  'externalInterfaceDisabled=false';
+	private function getFlashVarsString(){
+		// output the escaped flash vars from get arguments
+		$s = 'externalInterfaceDisabled=false';
+		foreach( $_REQUEST['flashvars'] as $key=>$val ){
+			$s.= '&' . htmlspecialchars( $key ) . '=' . urlencode( $val );
+		}
+		return $s;
 	}
 	/**
 	 * Get custom player includes for css and javascript
 	 */
 	private function getCustomPlayerIncludesJSON(){
 		if( ! $this->getResultObject()->getUiConf() ){
-			return '';
+			return false;
 		}
 		$xml = new SimpleXMLElement( $this->getResultObject()->getUiConf() );
 		$resourceIncludes = array();
@@ -217,6 +222,7 @@ class kalturaIframe {
 		foreach ($xml->uiVars->var as $var ){
 			if( isset( $var['key'] ) && isset( $var['value'] ) &&
 				$var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
+				&& $var['key'] != 'Mw.CustomResourceIncludes' 
 			){
 				
 				$o.="mw.setConfig('" . htmlspecialchars($var['key'] ) . "', ";
@@ -246,7 +252,10 @@ class kalturaIframe {
 	}
 	
 	private function getPreFlashVars(){
-		return '<object id="kaltura_player_iframe_no_rewrite" name="kaltura_player" ' .
+		// Check if a playlist
+		$playerId = ( $this->getResultObject()->isPlaylist() ) ? 'kaltura_player' : 'kaltura_player_iframe_no_rewrite';
+		
+		return '<object id="' . $playerId . '" name="kaltura_player" ' .
 				'type="application/x-shockwave-flash" allowFullScreen="true" '.
 				'allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" style="height:100%;width:100%" '.
 				'xmlns:dc="http://purl.org/dc/terms/" '.
@@ -374,7 +383,6 @@ class kalturaIframe {
 			</style>
 		<?php
 	}
-
 	function outputIFrame( ){
 		global $wgMwEmbedPathUrl;
 
@@ -396,10 +404,15 @@ class kalturaIframe {
 		</script>
 		
 		<script type="text/javascript">
-			mw.setConfig( 'Mw.CustomResourceIncludes', <?php echo $this->getCustomPlayerIncludesJSON() ?>);
-		
-			// try to set custom global vars for this player: 
-			<?php echo $this->getCustomPlayerConfig() ?>
+			<?php 
+				global $wgAllowCustomResourceIncludes;
+				if( $wgAllowCustomResourceIncludes && $this->getCustomPlayerIncludesJSON() ){
+					echo 'mw.setConfig( \'Mw.CustomResourceIncludes\', '. $this->getCustomPlayerIncludesJSON() .' );';
+				}
+				// Set custom global vars for this player: 
+				echo $this->getCustomPlayerConfig();
+			?>
+			
 
 			// Don't do an iframe rewrite inside an iframe!
 			mw.setConfig( 'Kaltura.IframeRewrite', false );
@@ -416,7 +429,7 @@ class kalturaIframe {
 			mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
 			
 			// Add Packaging Kaltura Player Data ( JSON Encoded )
-			mw.setConfig('KalturaSupport.BootstrapPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
+			mw.setConfig( 'KalturaSupport.BootstrapPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
 
 			// Parse any configuration options passed in via hash url:
 			var hashString = document.location.hash;
@@ -450,13 +463,36 @@ class kalturaIframe {
 
 			// Identify the player as an iframe player
 			mw.setConfig( "EmbedPlayer.IsIframePlayer", true );
-			
-			if( kIsHTML5FallForward() ){
-				// Don't confuse the rewrite engine ( remove the kaltura swf )
-				var el = document.getElementById('kaltura_player_iframe_no_rewrite');
-				if( el ) 
-					el.parentNode.removeChild( el );
-				
+
+			<?php 
+				if( !$this->getResultObject()->isPlaylist() ){
+					echo $this->javascriptPlayerLogic();
+				}
+			?>
+		</script>
+	</head>
+	<body>	
+		<?php 
+		if( $this->getResultObject()->isPlaylist() ){
+			echo "<!-- Playlist is rewriteen from flash object ( no standard html5 representation atm ) -->\n";
+			// if playlist just output the playlist object and let javascript rewrite it:
+			echo $this->getFlashEmbedHTML() . "\n";
+		}else {
+			?>
+			<div id="videoContainer" >
+				<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
+				<?php echo $this->getVideoHTML(); ?>
+			</div>
+			<?php 
+		}
+		?>
+	</body>
+</html>
+<?php
+	}
+	private function javaScriptPlayerLogic(){
+		?>
+		if( kIsHTML5FallForward() ){
 				// Load the mwEmbed resource library and add resize binding
 				mw.ready(function(){
 					var embedPlayer = $j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' ).get(0);
@@ -478,7 +514,6 @@ class kalturaIframe {
 					});				    
 				});
 			} else {
-
 				// Remove the video tag and output a clean "object" or file link
 				// ( if javascript is off the child of the video tag so would be played,
 				//  but rewriting gives us flexiblity in in selection criteria as
@@ -489,7 +524,7 @@ class kalturaIframe {
 				
 				if( kSupportsFlash() ||  mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 					// Build the flash vars string
-					var flashVarsString = '<?php echo $this->getDefaultFlashVars() ?>';
+					var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';
 					var flashVars = mw.getConfig('Kaltura.Flashvars');
 					if( flashVars ){
 						var and = '';
@@ -529,17 +564,8 @@ class kalturaIframe {
 						return true;
 					};
 				}
-			}	
-		</script>
-	</head>
-	<body>	
-		<div id="videoContainer" >
-			<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
-			<?php echo $this->getVideoHTML(); ?>
-		</div>
-	</body>
-</html>
-<?php
+			}
+			<?php 
 	}
 	/**
 	 * Very simple error handling for now: 

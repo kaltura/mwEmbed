@@ -12,9 +12,6 @@ class KalturaGetResultObject {
 	var $resultObj = null; // lazy init with getResultObject
 	var $clientTag = null;
 	
-	var $isPlaylist = null; // if the current request object is a playlist
-	
-	
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
 	
@@ -28,6 +25,7 @@ class KalturaGetResultObject {
 		'uiconf_id' => null,
 		'entry_id' => null,
 		'flashvars' => null,
+		'playlist_id' => null,
 	);
 
 	function __construct( $clientTag = 'php'){
@@ -63,7 +61,10 @@ class KalturaGetResultObject {
 		    )
 		 );
 	}
-	
+	// check if the requested url is a playlist
+	public function isPlaylist(){
+		return ( $this->urlParameters['playlist_id'] !== null );
+	}
 	public function isCachedOutput(){
 		return $this->outputFromCache;
 	}
@@ -143,6 +144,11 @@ class KalturaGetResultObject {
 		}
 		
 		$accessControl = $resultObject['accessControl'];
+		
+		// Check if we had no access control due to playlist
+		if( is_array( $accessControl ) && isset( $accessControl['code'] ) && $accessControl['code'] == 'MISSING_MANDATORY_PARAMETER' ){
+			return true;
+		}
 		
 		// Checks if admin
 		if( $accessControl->isAdmin ) {

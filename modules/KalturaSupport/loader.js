@@ -136,11 +136,10 @@
 					}
 					var kEmbedSettings = mw.getKalturaEmbedSettings( swfSource, flashvars );
 			
-					// check if its a playlist or a entryId
-					mw.log("Got kEmbedSettings.entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
+					// Check if its a playlist or a entryId
+					mw.log( "Got kEmbedSettings.entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
 					var height = $j( element ).attr('height');
 					var width = $j( element ).attr('width');
-					
 					// Check that the id is unique per player embed instance ( else give it a vid_{inx} id: 
 					var videoId = $j( element ).attr('id');
 					$j('.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap').each(function( inx, swapElement){
@@ -172,8 +171,8 @@
 								'src' : thumb_url
 							})
 							.css({
-								'width' : width + 'px',
-								'height' : height + 'px',
+								'width' : width,
+								'height' : height,
 								'position' : 'absolute',
 								'top' : '0px',
 								'left' : '0px'
@@ -183,7 +182,8 @@
 						// Assume playlist 
 						loadPlaylistFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaPlaylistSwap';
-						// check if we can get the playlist id from a url in the embed code 
+						
+						// Check if we can get the playlist id from a url in the embed code 
 						// ( some version of kaltura embed code work this way)
 						if( flashvars['playlistAPI.kpl0Url'] ){
 							videoEmbedAttributes['kplaylistid'] = mw.parseUri( flashvars['playlistAPI.kpl0Url'] ).queryKey['playlist_id'];
@@ -192,18 +192,20 @@
 							}
 						}
 					}
+					
 					// Replace with a mwEmbedKalturaVideoSwap
 					$j( element ).replaceWith( 
 						$j('<div />')
 						.attr( videoEmbedAttributes )
 						.css( {
-							'width' : width + 'px',
-							'height' : height + 'px',
+							'width' : width,
+							'height' : height,
 							'position': 'relative',
 							'display' : 'block',
 							'float' : 'left',
 							'padding' : '3px'
 						} )
+						.data( 'flashvars', flashvars )
 						.addClass( kalturaSwapObjectClass )
 						.append(
 							$imgThumb, 
@@ -250,11 +252,16 @@
 								kParams[ iframeRequestMap[tagKey] ] = $j(playerTarget).attr( tagKey );
 							}
 						}
-						// XXX UGLY TEMPORARY HACK ( don't use iframe for playlist ) 
-						if( kParams['entry_id'] ){
-							iframeRewriteCount++;
-							$j( playerTarget ).removeClass('mwEmbedKalturaVideoSwap').kalturaIframePlayer( kParams, doneWithIframePlayer);
+						if( $j( playerTarget).data('flashvars') ){
+							kParams['flashvars'] = $j( playerTarget).data('flashvars');
 						}
+						
+						// XXX UGLY TEMPORARY HACK ( don't use iframe for playlist ) 
+						iframeRewriteCount++;
+						$j( playerTarget )
+							.removeClass('mwEmbedKalturaPlaylistSwap')
+							.removeClass('mwEmbedKalturaVideoSwap')
+							.kalturaIframePlayer( kParams, doneWithIframePlayer);
 					});					
 					// if there are no playlists left to process return: 
 					if( $j( '.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
@@ -281,7 +288,7 @@
 							} else {
 								var kalturaPlaylistHanlder = new mw.PlaylistHandlerKaltura( playlistConfig );
 							}
-							// quick non-ui conf check for layout mode
+							// Quick non-ui conf check for layout mode
 							var layout = ( $j( playlistTarget ).width() > $j( playlistTarget ).height() ) 
 											? 'horizontal' : 'vertical';
 							var playlistPlayer = $j( '#' + playlistTarget.id ).playlist({
@@ -364,7 +371,7 @@
 				}
 				// Add the flashvars to the request:
 				if( iframeParams['flashvars'] ){
-					iframeRequest += '?' + $j.param( iframeParams['flashvars'] );
+					iframeRequest += argSeperator + $j.param( {'flashvars': iframeParams['flashvars'] } );
 				}
 
 				var iframeId = $j( playerTarget ).attr('id');				
@@ -452,7 +459,7 @@
 					continue;
 			}
 		}
-		mw.log( 'mw.getKalturaPlayerList found ' + kalturaPlayers.length + 'kalturaPlayers' );
+		mw.log( 'mw.getKalturaPlayerList found ' + kalturaPlayers.length + ' kalturaPlayers' );
 		return kalturaPlayers;
 	};
 	

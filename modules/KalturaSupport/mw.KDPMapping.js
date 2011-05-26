@@ -89,7 +89,7 @@
 				};
 				
 				// Listen for the proxyReady event from the server: 
-				$j( playerProxy ).bind('proxyReady', function(){
+				$j( playerProxy ).bind( 'proxyReady', function(){
 					if( window.KalturaKDPCallbackReady ){
 						window.KalturaKDPCallbackReady( playerProxy.id );
 					}

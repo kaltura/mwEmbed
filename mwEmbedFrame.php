@@ -24,7 +24,7 @@ $mwEmbedRoot = dirname( __FILE__ );
 
 if( isset( $myMwEmbedFrame->kwidgetid ) ){	
 	require(  dirname( __FILE__ ) . '/modules/KalturaSupport/kalturaIframe.php');
-	exit(1);
+	exit();
 }
 
 // Do mwEmbedFrame video output:

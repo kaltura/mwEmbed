@@ -104,7 +104,7 @@ mw.Playlist.prototype = {
 				.empty()
 				.append(
 					_this.getPlayerContainer()
-				)
+				);
 				_this.updatePlayer( _this.clipIndex );
 			}
 		});
@@ -150,7 +150,7 @@ mw.Playlist.prototype = {
 				var leftPx = '0px';
 			} else {
 				// just the default left side assignment ( updates once we have player size ) 
-				var leftPx = '444px'
+				var leftPx = '444px';
 			}
 			var $plListContainer =$j('<div />')
 			.addClass( 'playlistSet-container ui-state-default ui-widget-header ui-corner-all' )
@@ -339,7 +339,7 @@ mw.Playlist.prototype = {
 		$j( _this.target ).append(
 			$j( '<div />').css({
 				'position' : 'absolute',
-				'bottom' : '5px',
+				'bottom' : '15px',
 				'right': '0px',
 				'height' : '30px',
 				'width' : $j( _this.target + ' .media-rss-video-list').width()
@@ -411,7 +411,7 @@ mw.Playlist.prototype = {
 			/* horizontal layout */
 			var pa = this.playerAspect.split(':');
 			this.targetPlayerSize = {
-				'height' : ( this.targetHeight - this.titleHeight ) + 'px',
+				'height' : ( this.targetHeight - this.titleHeight - 10 ) + 'px',
 				'width' : parseInt( ( pa[0] / pa[1] ) * this.targetHeight )
 			};
 		}
@@ -443,7 +443,7 @@ mw.Playlist.prototype = {
 		.addClass( 'mwPlaylist' )
 		.css(
 			playerSize
-		)
+		);
 
 		// Add custom attributes:
 		_this.sourceHandler.applyCustomClipData( $video, clipIndex );

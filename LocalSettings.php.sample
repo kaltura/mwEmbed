@@ -14,7 +14,15 @@ $wgEnableIframeApi = true;
 
 $wgEnableIpadHTMLControls = true;
 $wgKalturaUseManifestUrls = true;
-$wgAllowRemoteKalturaService = true;
+
+// Allows remote kaltura service queries from php ( usefull for onPrem or CE editions using the iframe )
+$wgAllowRemoteKalturaService = false;
+
+// Allows custom resources to be loaded from the ui-conf, useful for custom plugins, 
+// DO NOT enable this if you have other services on the same domain as the iframe as it essentially
+// allows any ui-conf user to include javascript on the iframe player page
+$wgAllowCustomResourceIncludes = false;
+
 
 $wgMwEmbedEnabledModules = array( 'EmbedPlayer', 'KalturaSupport', 'AdSupport', 'Playlist', 'TimedText', 'FreeWheel' );
 ?>

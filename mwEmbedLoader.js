@@ -751,7 +751,7 @@ kGetKalturaPlayerList = function(){
 				swfUrl =  pVal;
 			}
 			if( pName == 'flashvars' ){
-				flashvars =	kFlashVarsToObject( pVal );
+				flashvars =	kFlashVars2Object( pVal );
 			}
 		}
 
@@ -769,7 +769,7 @@ kGetKalturaPlayerList = function(){
 	return kalturaPlayers;
 };
 
-function kFlashVarsToObject( flashvarsString ){
+function kFlashVars2Object( flashvarsString ){
 	var flashVarsSet = ( flashvarsString )? flashvarsString.split('&'): [];
 	var flashvars = {};
 	for( var i =0 ;i < flashVarsSet.length; i ++){
@@ -801,7 +801,7 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 
 	// Convert flashvars if in string format:
 	if( typeof flashvars == 'string' ){
-		flashvars = kFlashVarsToObject( flashvars );
+		flashvars = kFlashVars2Object( flashvars );
 	}
 	
 	if( !flashvars ){

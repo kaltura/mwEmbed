@@ -72,6 +72,9 @@ $wgEnableIpadHTMLControls = false;
 
 $wgKalturaUseManifestUrls = true;
 
+// By default do not allow custom resource includes. 
+$wgAllowCustomResourceIncludes = false;
+
 /*********************************************************
  * Include local settings override:
  ********************************************************/
