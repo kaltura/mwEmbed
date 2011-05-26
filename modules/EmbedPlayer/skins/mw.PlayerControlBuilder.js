@@ -1675,7 +1675,6 @@ mw.PlayerControlBuilder.prototype = {
 				// Check for source ( by configuration convention this is a 16x16 image
 				if( buttonConfig.iconurl ){
 					var $icon =  $j('<img />')
-						.css({'width': '16px', 'height': '16px', 'margin': '-8px 5px 0px 0px'})
 						.attr('src', buttonConfig.iconurl );
 				} else {
 					var $icon = $j('<span />')
