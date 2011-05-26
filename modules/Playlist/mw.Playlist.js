@@ -188,15 +188,16 @@ mw.Playlist.prototype = {
 					.text( playlist.name )
 					.click( function(){
 						 _this.sourceHandler.setPlaylistIndex( inx );
+						 mw.log( 'mw.Playlist:: selectPlaylist:' + inx );
 						 $j( _this.target + ' .media-rss-video-list').loadingSpinner();
-						 _this.sourceHandler.loadPlaylist( function(){
+						 _this.sourceHandler.loadCurrentPlaylist( function(){
 							 $j( _this.target + ' .media-rss-video-list').empty();
 							_this.addMediaList();
 						 });
 						return false;
 					})
 					.buttonHover()
-				)
+				);
 			});
 			// Check playlistSet width and add scroll left / scroll right buttons
 			if( $plListSet.width() > $plListContainer.width() ){

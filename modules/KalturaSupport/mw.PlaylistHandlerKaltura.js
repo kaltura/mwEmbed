@@ -31,7 +31,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		this.getKClient().playerLoader({
 			'uiconf_id' : this.uiconf_id
 		}, function( playerData ){
-			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" + playerData );
+			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );
 
 			// Add in flashvars playlist id if present:
 			if( _this.playlist_id !== null ){
@@ -92,7 +92,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 		return this.playlistSet;
 	},
 	setPlaylistIndex: function( playlistIndex ){
-		this.playlist_id = this.playlistSet[ playlistIndex ].playlist_id;		
+		this.playlist_id = this.playlistSet[ playlistIndex ].playlist_id;
+		mw.log( "PlaylistHandlerKalutra::setPlaylistIndex: playlist id: " + this.playlist_id);
 	},
 	loadCurrentPlaylist: function( callback ){
 		this.loadPlaylistById( this.playlist_id, callback );
