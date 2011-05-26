@@ -140,6 +140,7 @@
 					mw.log( "Got kEmbedSettings.entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
 					var height = $j( element ).attr('height');
 					var width = $j( element ).attr('width');
+
 					// Check that the id is unique per player embed instance ( else give it a vid_{inx} id: 
 					var videoId = $j( element ).attr('id');
 					$j('.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap').each(function( inx, swapElement){
@@ -164,8 +165,8 @@
 							var thumb_url =  mw.getKalturaThumbUrl({
 								'partner_id': kEmbedSettings.p,
 								'entry_id' :  kEmbedSettings.entry_id,
-								'width' : width,
-								'height' : height
+								'width' : parseInt( width ),
+								'height' : parseInt( height )
 							});
 							$imgThumb = $j('<img />').attr({
 								'src' : thumb_url
@@ -192,14 +193,15 @@
 							}
 						}
 					}
-					
+					var widthType = ( width.indexOf('%') == -1 )? 'px' : '';
+					var heightType = ( height.indexOf('%') == -1 )? 'px' : '';
 					// Replace with a mwEmbedKalturaVideoSwap
 					$j( element ).replaceWith( 
 						$j('<div />')
 						.attr( videoEmbedAttributes )
 						.css( {
-							'width' : width,
-							'height' : height,
+							'width' : width + widthType,
+							'height' : height + heightType,
 							'position': 'relative',
 							'display' : 'block',
 							'float' : 'left',
@@ -376,7 +378,7 @@
 
 				var iframeId = $j( playerTarget ).attr('id');				
 				iframeRequest+= mw.getIframeHash( iframeId);
-				
+
 				var $iframe = $j('<iframe />')
 				.attr({
 					'id' : iframeId,
