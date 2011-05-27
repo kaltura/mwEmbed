@@ -90,7 +90,6 @@ mw.KApi.prototype = {
 			
 			param['ks'] = ks;
 			param['kalsig'] = _this.getSignature( param );
-			//debugger;
 			var requestUrl = _this.getApiUrl() + serviceType + '&' + $j.param( param );
 			// Do the getJSON jQuery call with special callback=? parameter: 
 			$j.getJSON( requestUrl +  '&callback=?', function( data ){
@@ -163,6 +162,7 @@ mw.KApi.prototype = {
 	 * b) Get baseEntry
 	 */
 	playerLoader: function( kProperties, callback ){
+		var _this = this;
 		var requestObject = [];
 		if( kProperties.entry_id ){ 
 			// The referring  url ( can be from the iframe if in iframe mode ) 
@@ -195,6 +195,19 @@ mw.KApi.prototype = {
 		        	 'version' : '-1',
 		        	 'entryId' : kProperties.entry_id
 		    });
+						
+		    // Get custom Metadata	
+			requestObject.push({
+	        	 'service' : 'metadata_metadata',
+	        	 'action' : 'list',
+	        	 'version' : '-1',
+	        	 // metaDataFilter
+	        	 'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
+	        	 'filter:orderBy' : '+createdAt',
+	        	 'filter:objectIdEqual' : kProperties.entry_id,
+	        	 'pager:pageSize' : 1
+		    });
+			
 		}		
 		if( kProperties.uiconf_id ){
 			// Get Ui Conf if property is present
@@ -212,8 +225,10 @@ mw.KApi.prototype = {
 				namedData['accessControl'] = data[0];
 				namedData['flavors'] = data[1];
 				namedData['meta'] = data[2];
-				if( data[3] ){
-					namedData['uiConf'] = data[3]['confFile'];
+				namedData['entryMeta'] = _this.convertCustomDataXML( data[3] );
+				
+				if( data[4] ){
+					namedData['uiConf'] = data[4]['confFile'];
 				}
 			} else if( kProperties.uiconf_id ){
 				// If only loading the confFile set here: 
@@ -221,6 +236,17 @@ mw.KApi.prototype = {
 			}	
 			callback( namedData );
 		});
+	},
+	convertCustomDataXML: function( data ){
+		var result = {};
+		if( data && data.objects && data.objects[0] ){			
+			var xml = $.parseXML( data.objects[0].xml );		
+			var $xml = $( xml ).find('metadata').children();			
+			$.each( $xml, function(inx, node){
+				result[ node.nodeName ] = node.textContent;
+			});		
+		}
+		return result;
 	}
 };
 

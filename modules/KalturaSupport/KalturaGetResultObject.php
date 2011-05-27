@@ -146,7 +146,11 @@ class KalturaGetResultObject {
 		$accessControl = $resultObject['accessControl'];
 		
 		// Check if we had no access control due to playlist
-		if( is_array( $accessControl ) && isset( $accessControl['code'] ) && $accessControl['code'] == 'MISSING_MANDATORY_PARAMETER' ){
+		if( is_array( $accessControl ) && isset( $accessControl['code'] )){
+			// Error ? .. should do better error checking.
+			// errors we have seen so far: 
+				//$accessControl['code'] == 'MISSING_MANDATORY_PARAMETER'
+				//$accessControl['code'] == 'INTERNAL_SERVERL_ERROR'  
 			return true;
 		}
 		
@@ -413,7 +417,6 @@ class KalturaGetResultObject {
 			return array();
 		}
 
-		// @@todo support MultiRequest
 		$client->startMultiRequest();
 		try{
 			// NOTE this should probably be wrapped in a service class
@@ -429,12 +432,27 @@ class KalturaGetResultObject {
 
 			// Entry Meta
 			$client->addParam( $kparams, "entryId",  $this->urlParameters['entry_id'] );
-			$client->queueServiceActionCall( "baseEntry", "get", $kparams );
+			$client->queueServiceActionCall( "baseEntry", "get", $kparams );						
+			
+			
+			// Entry Custom Metadata			
+			$metaDataFilter = new KalturaMetadataFilter();
+			$metaDataFilter->metadataObjectTypeEqual = KalturaMetadataObjectType::ENTRY;
+			$metaDataFilter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
+			$metaDataFilter->objectIdEqual = $this->urlParameters['entry_id'];
+			$metadataPager =  new KalturaFilterPager();
+			$metadataPager->pageSize = 1;
 
+			$client->addParam( $kparams, "metaDataFilter",  $metaDataFilter );
+			$client->addParam( $kparams, "metadataPager",  $metadataPager );
+			$client->queueServiceActionCall( "metadata_metadata", "list", $kparams );
+			
+			
 			if($this->urlParameters['uiconf_id']) {
 				$client->addParam( $kparams, "id",  $this->urlParameters['uiconf_id'] );
 				$client->queueServiceActionCall( "uiconf", "get", $kparams );
 			}
+			
 			$rawResultObject = $client->doQueue();
 			$client->throwExceptionIfError( $this->resultObj );
 		} catch( Exception $e ){
@@ -443,28 +461,46 @@ class KalturaGetResultObject {
 			return array();
 		}
 
+		
 		$resultObject = array(
 			'flavors' 			=> 	$rawResultObject[0],
 			'accessControl' 	=> 	$rawResultObject[1],
-			'meta'				=>	$rawResultObject[2],
+			'meta'				=>	$rawResultObject[2],			
 			'entry_id'			=>	$this->urlParameters['entry_id'],
 			'partner_id'		=>	$this->getPartnerId(),
 			'ks' 				=> 	$this->getKS()
 		);
-		if( isset( $rawResultObject[3] ) && $rawResultObject[3]->confFile ){
-			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
-			$resultObject[ 'uiConf'] = $rawResultObject[3]->confFile;
+		
+		if( isset( $rawResultObject[3]->objects ) && 
+			isset( $rawResultObject[3]->objects[0] ) && 
+			isset( $rawResultObject[3]->objects[0]->xml )
+		){
+			
+			$resultObject['entryMeta'] = $this->xmlToArray( new SimpleXMLElement( $rawResultObject[3]->objects[0]->xml ) );
 		}
 		
+		if( isset( $rawResultObject[4] ) && $rawResultObject[4]->confFile ){
+			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
+			$resultObject[ 'uiConf'] = $rawResultObject[4]->confFile;
+		}
+
 		// Check access control and throw an exception if not allowed: 
 		$acStatus = $this->isAccessControlAllowed( $resultObject );
 		if( $acStatus !== true ){
 			throw new Exception( $acStatus );
-		}
+		}	
 		
 		return $resultObject;
 	}
-
+	
+	/**
+	 * convert smimple xml to array
+	 */
+	function xmlToArray ( $data ){
+		if (is_object($data)) $data = get_object_vars($data);
+		return (is_array($data)) ? array_map( array( $this, __FUNCTION__) ,$data) : $data;
+	}
+	
 	private function getReferer(){
 		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.org/';
 	}

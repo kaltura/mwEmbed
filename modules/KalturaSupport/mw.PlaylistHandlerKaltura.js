@@ -119,7 +119,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				mw.log("Error: kaltura playlist:" + playlist_id + " could not load:" + playlistData.code);
 			}			
 			mw.log( 'kPlaylistGrabber::Got playlist of length::' +   playlistData.length );
-			_this.clipList =  playlistData;			
+			_this.clipList = playlistData;
 			callback();
 		});
 	},	

@@ -167,6 +167,13 @@
 					break;
 				case 'mediaProxy':
 					switch( objectPath[1] ){
+						case 'entryMetadata':
+							if( objectPath[2] ) {
+								return embedPlayer.kalturaEntryMetaData[ objectPath[2] ];
+							} else {
+								return embedPlayer.kalturaEntryMetaData;
+							}
+						break;
 						case 'entry':
 							if( objectPath[2] ) {
 								return embedPlayer.kalturaPlayerMetaData[ objectPath[2] ];
@@ -304,12 +311,13 @@
 					})
 					break;	
 				case 'entryReady':
-					$j( embedPlayer ).bind( 'KalturaSupport_MetaDataReady', function( event, meta ) {
-						callback( meta , embedPlayer.id );
+					$j( embedPlayer ).bind( 'KalturaSupport_MetaDataReady', function( event, embedPlayer ) {
+						callback( embedPlayer , embedPlayer.id );
 					});
 					break;
 				case 'mediaReady':
-					$( embedPlayer ).bind( 'playerReady.mediaReady', function() {
+					// check for "media ready" ( namespace to kdpMapping )
+					$( embedPlayer ).bind( 'playerReady.kdpMapping', function() {
 						callback( embedPlayer.id );
 					});
 					break;
@@ -364,13 +372,13 @@
 					if( notificationData.entryId == "" || notificationData.entryId == -1 ) {
 					    // Empty sources
 					    embedPlayer.emptySources();
-					    embedPlayer.kalturaPlayerMetaData = null;
 					    break;
 					}
 
 					var chnagePlayingMedia = embedPlayer.isPlaying();
 					// Pause player during media switch
 					embedPlayer.pause();
+					
 					// Add a loader to the embed player: 
 					$j( embedPlayer )
 					.getAbsoluteOverlaySpinner()
@@ -381,11 +389,14 @@
 					
 					// Update the entry id
 					embedPlayer.kentryid = notificationData.entryId;
+					// clear player & entry meta 
+				    embedPlayer.kalturaPlayerMetaData = null;
+				    embedPlayer.kalturaEntryMetaData = null;
 					
 					// Update the poster
 					embedPlayer.updatePosterSrc( 
 						mw.getKalturaThumbUrl({
-							'partner_id': $j( embedPlayer ).attr( 'kwidgetid' ).replace('_', ''),
+							'partner_id': embedPlayer.kwidgetid.replace('_', ''),
 							'entry_id' : embedPlayer.kentryid,
 							'width' : embedPlayer.getWidth(),
 							'height' :  embedPlayer.getHeight()
@@ -414,7 +425,6 @@
 								&& chnagePlayingMedia ){
 							embedPlayer.switchPlaySrc( embedPlayer.getSrc() );
 						}
-						
 					});
 				break;
 			}

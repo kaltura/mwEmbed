@@ -24,7 +24,7 @@ mw.KWidgetSupport.prototype = {
 			// Add hook for check player sources to use local kEntry ID source check:
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
 				// Load all the player configuration from kaltura: 
-				_this.loadPlayerData( embedPlayer, function( playerData ){
+				_this.loadPlayerData( embedPlayer, function( playerData ){					
 					if( !playerData ){
 						mw.log("KWidgetSupport::addPlayerHooks> error no player data!");
 						callback();
@@ -93,6 +93,10 @@ mw.KWidgetSupport.prototype = {
 						_this.addFlavorSources( embedPlayer, playerData.flavors );
 					}
 					mw.log("KWidgetSupport:: check for meta:");
+					// Add any custom metadata:
+					if( playerData.entryMeta ){
+						embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
+					}
 					
 					// Apply player metadata
 					if( playerData.meta ) {
@@ -100,7 +104,7 @@ mw.KWidgetSupport.prototype = {
 						// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 						embedPlayer.kalturaPlayerMetaData = playerData.meta;
 						$j( embedPlayer ).trigger( 'KalturaSupport_MetaDataReady', embedPlayer.kalturaPlayerMetaData );
-					}
+					}										
 					
 					// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
 					if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
@@ -166,20 +170,20 @@ mw.KWidgetSupport.prototype = {
 	loadPlayerData: function( embedPlayer, callback ){
 		var _this = this;
 		var playerRequest = {};
-		
+
 		// Check for widget id	 
-		if( ! $j( embedPlayer ).attr( 'kwidgetid' ) ){
+		if( ! embedPlayer.kwidgetid ){
 			mw.log( "Error: missing required widget paramater");
 			callback( false );
 			return false;
 		} else {
-			playerRequest.widget_id = $j( embedPlayer ).attr( 'kwidgetid' );
+			playerRequest.widget_id = embedPlayer.kwidgetid;
 		}
 		
 		// Check if the entryId is of type url: 
-		if( !this.checkForUrlEntryId( embedPlayer ) && $j( embedPlayer ).attr( 'kentryid' ) ){
+		if( !this.checkForUrlEntryId( embedPlayer ) && embedPlayer.kentryid ){
 			// Add entry_id playerLoader call			
-			playerRequest.entry_id =  $j( embedPlayer ).attr( 'kentryid' );
+			playerRequest.entry_id =  embedPlayer.kentryid;
 		}
 		
 		// Add the uiconf_id 
@@ -187,9 +191,10 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check if we have the player data bootstrap from the iframe
 		var bootstrapData = mw.getConfig("KalturaSupport.BootstrapPlayerData");
+
 		// Insure the bootStrap data has all the required info: 
 		if( bootstrapData 
-			&& bootstrapData.partner_id ==  $j( embedPlayer ).attr( 'kwidgetid' ).replace('_', '')
+			&& bootstrapData.partner_id == embedPlayer.kwidgetid.replace('_', '')
 			&&  bootstrapData.ks
 		){
 			mw.log( 'KWidgetSupport::loaded player data from KalturaSupport.BootstrapPlayerData config' );

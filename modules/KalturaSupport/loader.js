@@ -37,7 +37,8 @@
 		'kentryid' : null,
 		'kwidgetid' : null,
 		'kuiconfid' : null,
-		'kalturaPlayerMetaData' : null
+		'kalturaPlayerMetaData' : null,
+		'kalturaEntryMetaData' : null
 	});
 	
 	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
