@@ -1688,9 +1688,9 @@ mw.PlayerControlBuilder.prototype = {
 				}
 				// update the configured size of the attribution button if we have a specific width configured
 				if( buttonConfig.style.width ){
-					this.w = buttonConfig.style.width;
+					this.w = parseInt( buttonConfig.style.width );
 				} else {
-					 buttonConfig.style.width = this.w;
+					 buttonConfig.style.width =parseInt( this.w ) + 'px';
 				}
 				
 				return $j('<a />')
