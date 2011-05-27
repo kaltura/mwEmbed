@@ -40,7 +40,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 				});
 			}
 			
-			
 			// Add all playlists to playlistSet
 			var $uiConf = $j(  playerData.uiConf );				
 			
@@ -58,8 +57,14 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			// Find all the playlists by number  
 			for( var i=0; i < 50 ; i ++ ){
-				var playlist_id  = $uiConf.find("uivars [key='kpl" + i +"EntryId']").attr('value');
-				var playlistName = $uiConf.find("uiVars [key='playlistAPI.kpl" + i + "Name']").attr('value');
+				var idElm = $uiConf.find("uivars var[key='kpl" + i +"EntryId']").get(0);
+				if( idElm ){
+					var playlist_id  = idElm.getAttribute('value');
+				}
+				var nameElm = $uiConf.find("uiVars var[key='playlistAPI.kpl" + i + "Name']").get(0);
+				if( nameElm ){
+					var playlistName = nameElm.getAttribute('value');
+				}
 				if( playlist_id && playlistName ){
 					_this.playlistSet.push( { 
 						'name' : playlistName,

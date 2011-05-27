@@ -127,7 +127,7 @@ mw.KWidgetSupport.prototype = {
 			// Add kaltura iframe path support:
 			$j( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
 				callback( mw.getConfig('Kaltura.ServiceUrl') + '/p/' + _this.kClient.getPartnerId() +
-							'/embedIframe/entry_id/' + $j( embedPlayer ).attr( 'kentryid' ) +
+							'/embedIframe/entry_id/' + embedPlayer.kentryid +
 							'/uiconf_id/' + embedPlayer.kuiconfid );
 			});
 		});
@@ -262,14 +262,14 @@ mw.KWidgetSupport.prototype = {
 	 * Check if the entryId is a url ( add source and do not include in request ) 
 	 */
 	checkForUrlEntryId:function( embedPlayer ){
-		if( $j( embedPlayer ).attr( 'kentryid' ) 
+		if( embedPlayer.kentryid 
 				&& 
-			$j( embedPlayer ).attr( 'kentryid' ).indexOf('://') != -1 )
+			embedPlayer.kentryid.indexOf('://') != -1 )
 		{
 			embedPlayer.mediaElement.tryAddSource(
 					$j('<source />')
 					.attr( {
-						'src' : $j( embedPlayer ).attr( 'kentryid' )
+						'src' : embedPlayer.kentryid
 					} )
 					.get( 0 )
 				);
@@ -287,10 +287,10 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
 		// Set the poster ( if not already set ) 
-		if( !embedPlayer.poster && $j( embedPlayer ).attr( 'kentryid' ) ){
+		if( !embedPlayer.poster && embedPlayer.kentryid ){
 			embedPlayer.poster = mw.getKalturaThumbUrl({
 				'partner_id' : this.kClient.getPartnerId(),
-				'entry_id' : $j( embedPlayer ).attr( 'kentryid' ),
+				'entry_id' : embedPlayer.kentryid,
 				'width' : embedPlayer.getWidth(),
 				'height' :  embedPlayer.getHeight()
 			});			

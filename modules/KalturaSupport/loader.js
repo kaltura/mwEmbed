@@ -280,10 +280,11 @@
 					mw.load( playlistRequest, function(){
 						// kalturaPlaylistObject has player loader built in: 
 						$j('.mwEmbedKalturaPlaylistSwap').each( function( inx, playlistTarget ) {
+							
 							var playlistConfig = {
-								'uiconf_id' : $j( playlistTarget ).attr( 'kuiconfid' ),
-								'widget_id' : $j( playlistTarget ).attr( 'kwidgetid' ),
-								'playlist_id':  $j( playlistTarget ).attr( 'kplaylistid' )
+								'uiconf_id' : $j( playlistTarget).attr('kuiconfid'),
+								'widget_id' : $j( playlistTarget).attr('kwidgetid'),
+								'playlist_id': $j( playlistTarget).attr('kplaylistid')										
 							};
 							// Check if we have a mediaRss url as the playlistId
 							if( mw.isUrl( playlistConfig.playlist_id ) ) {
@@ -324,7 +325,7 @@
 	
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
 		// Check if any video tag uses the "kEmbedSettings.entryId"  
-		if(  $j( playerElement ).attr( 'kwidgetid' ) ) {
+		if(  playerElement.kwidgetid ) {
 			kLoadKalturaSupport = true;
 		}
 		// Add kaltura support hook
