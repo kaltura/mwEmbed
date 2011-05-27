@@ -1686,6 +1686,13 @@ mw.PlayerControlBuilder.prototype = {
 				if( typeof buttonConfig.style != 'object'){
 					buttonConfig.style = {};
 				}
+				// update the configured size of the attribution button if we have a specific width configured
+				if( buttonConfig.style.width ){
+					this.w = buttonConfig.style.width;
+				} else {
+					 buttonConfig.style.width = this.w;
+				}
+				
 				return $j('<a />')
 					.attr({
 						'href': buttonConfig.href,
