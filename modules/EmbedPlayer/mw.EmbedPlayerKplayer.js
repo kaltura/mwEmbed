@@ -112,8 +112,8 @@ mw.EmbedPlayerKplayer = {
 
 		if (this.playerElement && this.playerElement.addJsListener) {
 			var bindEventMap = {
-				'doPause' : 'onPause',
-				'doPlay' : 'onPlay',
+				'playerPaused' : 'onPause',
+				'playerPlayed' : 'onPlay',
 				'durationChange' : 'onDurationChange',
 				'playerPlayEnd' : 'onClipDone',
 				'playerUpdatePlayhead' : 'onUpdatePlayhead',
