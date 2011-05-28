@@ -18,6 +18,7 @@ var $ = jQuery = null; // will always run the tested page's jquery from $
 var mw = null; // we will be grabbing the mw from the iframe
 
 var testLocation = "../../modules/EmbedPlayer/tests/Player_Sources.html";
+var videoSelector = "#vid1"
 
 QUnit.config.autostart = false;
 
@@ -37,7 +38,7 @@ function runTests() {
 	{
 		setup: function() 
 		{
-			this.player = $('#vid1').get(0);
+			this.player = $( videoSelector ).get(0);
 			this.player.play();
 			this.passed = false;
 		},
@@ -67,7 +68,6 @@ function runTests() {
 		setTimeout( function()
 		{
 			if ( player.currentTime > 0 ) { passed = true; };
-			console.log("current time: " + player.currentTime + " is greater than 0: " + passed)
 			ok( passed );
 			start();
 		}, 3000);
@@ -129,7 +129,6 @@ function runTests() {
 
 $$(document).ready(function(){
 	$$(document.body).prepend('<iframe name="testFrame" id="testFrame" src="'+testLocation+'" width="100%" height="300px" border="none">');
-	//autoResize('testFrame');
 	
 	$$('#testFrame').load(function () {
 		setTimeout( function(){
@@ -141,6 +140,7 @@ $$(document).ready(function(){
 				runTests();
 			});
 		}, 5000);
+
 	});
 });
 
