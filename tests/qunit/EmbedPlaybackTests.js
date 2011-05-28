@@ -92,11 +92,15 @@ function runEmbedPlaybackTests(videoSelector) {
 		var player = this.player;
 		var passed = this.passed;
 		$(player).bind('ended', function() { passed = true } );
-		player.doSeek( (player.duration - 2) / player.duration );
+		var performTestSeek = function(player)
+		{
+			player.doSeek( (player.duration - 2) / player.duration );
+		};
+		setTimeout( performTestSeek(player), 6000);
 		setTimeout( function()
 		{
 			equal( passed, true );
 			start();
-		}, 6000);
+		}, 12000);
 	});
 };
