@@ -8,20 +8,34 @@
 	<script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
 	<script type="text/javascript" src="http://staging.html5video.org/testswarm/js/inject.js"></script>
 	
-	<script src="../../mwEmbedLoader.php"></script>
 	<script src="EmbedPlaybackTests.js"></script>
 
 <script>
 
+var $$ = jQuery.noConflict(true);
+var $ = jQuery = null; // will always run the tested page's jquery from $
+var mw = null; // we will be grabbing the mw from the iframe
+
+var testLocation = "../test_files/mwEmbed_HTML5.html";
+var videoSelector = "#video"
+
 QUnit.config.autostart = false;
 
-$(document).ready(function(){
-	setTimeout( function(){
-		mw.ready(function(){
-			QUnit.start();
-			runEmbedPlaybackTests("#video");
-		});
-	}, 5000);
+$$(document).ready(function(){
+	$$(document.body).append('<iframe name="testFrame" id="testFrame" src="'+testLocation+'" width="100%" height="500px" border="none">');
+	
+	$$('#testFrame').load(function () {
+		setTimeout( function(){
+			mw = window.frames["testFrame"].mw;
+			mw.ready(function(){
+				//grab jQuery from inside the document
+				$ = jQuery = window.frames["testFrame"].$j;
+				QUnit.start();
+				runEmbedPlaybackTests(videoSelector);
+			});
+		}, 5000);
+
+	});
 });
 
 </script>
@@ -33,14 +47,5 @@ $(document).ready(function(){
 	<h2 id="qunit-userAgent"></h2>
 	<ol id="qunit-tests"></ol>
 	<div id="qunit-fixture">test markup, will be hidden</div>
-
-	<video id="video" style="width:544px;height:304px;" 
-		poster="http://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Elephants_Dream.ogg/seek%3D13-Elephants_Dream.ogg.jpg"
-		duration="653.791" 
-		linkback="http://www.elephantsdream.org/" > 		
-		<source type="video/h264" src="http://www.archive.org/download/ElephantsDream/ed_1024_512kb.mp4" >
-		<source type="video/ogg" src="http://www.archive.org/download/ElephantsDream/ed_hd.ogv" >
-	</video>
-
 </body>
 </html>
