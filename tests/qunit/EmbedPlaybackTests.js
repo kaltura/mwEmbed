@@ -35,7 +35,7 @@ function runEmbedPlaybackTests(videoSelector) {
 		{
 			equal( player.isPlaying(), true );
 			start();
-		}, 2000);
+		}, 5000);
 	});
 		
 	asyncTest("playhead progresses", function() {
@@ -46,7 +46,7 @@ function runEmbedPlaybackTests(videoSelector) {
 			if ( player.currentTime > 0 ) { passed = true; };
 			ok( passed );
 			start();
-		}, 3000);
+		}, 5000);
 	});
 
 	asyncTest("pause playback", function() {
@@ -56,7 +56,7 @@ function runEmbedPlaybackTests(videoSelector) {
 			player.pause();
 			equal( player.isPlaying(), false );
 			start();
-		}, 2000);
+		}, 5000);
 	});
 
 	asyncTest("resume playback", function() {
@@ -67,18 +67,17 @@ function runEmbedPlaybackTests(videoSelector) {
 			player.play();
 			equal( player.isPlaying(), true );
 			start();
-		}, 1000);
+		}, 5000);
 
 	});
 
 	asyncTest("seek to video beginning + 5 sec", function() {
 		var player = this.player;
 		var passed = this.passed;
+		player.doSeek( 5 / player.duration );
 		setTimeout( function()
 		{ 
-			player.doSeek( 5 / player.duration );
-			var time = player.currentTime;
-			if ( player.currentTime <= 7 & player.currentTime >= 5) 
+			if ( player.currentTime <= 11 & player.currentTime >= 5) 
 			{ 
 				passed = true;
 			} else {
@@ -86,7 +85,7 @@ function runEmbedPlaybackTests(videoSelector) {
 			}
 			equal( passed, true );
 			start();
-		}, 2000);
+		}, 6000);
 	});
 
 	asyncTest("playback ends", function() {
@@ -98,6 +97,6 @@ function runEmbedPlaybackTests(videoSelector) {
 		{
 			equal( passed, true );
 			start();
-		}, 5000);
+		}, 6000);
 	});
 };
