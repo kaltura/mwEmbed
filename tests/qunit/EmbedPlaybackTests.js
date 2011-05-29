@@ -103,5 +103,4 @@ function runEmbedPlaybackTests(videoSelector) {
 			start();
 		}, 20000);
 	});
-	*/
 };
