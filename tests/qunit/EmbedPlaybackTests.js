@@ -81,7 +81,7 @@ function runEmbedPlaybackTests(videoSelector) {
 		setTimeout( performTestSeek, 10000);
 		setTimeout( function()
 		{ 
-			if ( player.currentTime <= 11 & player.currentTime >= 5) 
+			if ( player.currentTime <= 16 & player.currentTime >= 5) 
 			{ 
 				passed = true;
 			} else {
