@@ -74,7 +74,11 @@ function runEmbedPlaybackTests(videoSelector) {
 	asyncTest("seek to video beginning + 5 sec", function() {
 		var player = this.player;
 		var passed = this.passed;
-		player.doSeek( 5 / player.duration );
+		var performTestSeek = function()
+		{
+			player.doSeek( 5 / player.duration );
+		};
+		setTimeout( performTestSeek, 10000);
 		setTimeout( function()
 		{ 
 			if ( player.currentTime <= 11 & player.currentTime >= 5) 
@@ -85,7 +89,7 @@ function runEmbedPlaybackTests(videoSelector) {
 			}
 			equal( passed, true );
 			start();
-		}, 12000);
+		}, 20000);
 	});
 
 	asyncTest("playback ends", function() {
