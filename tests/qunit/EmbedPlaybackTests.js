@@ -70,7 +70,7 @@ function runEmbedPlaybackTests(videoSelector) {
 		}, 5000);
 
 	});
-
+	
 	asyncTest("seek to video beginning + 5 sec", function() {
 		var player = this.player;
 		var passed = this.passed;
@@ -92,11 +92,11 @@ function runEmbedPlaybackTests(videoSelector) {
 		var player = this.player;
 		var passed = this.passed;
 		$(player).bind('ended', function() { passed = true } );
-		var performTestSeek = function(player)
+		var performTestSeek = function()
 		{
 			player.doSeek( (player.duration - 2) / player.duration );
 		};
-		setTimeout( performTestSeek(player), 6000);
+		setTimeout( performTestSeek, 6000);
 		setTimeout( function()
 		{
 			equal( passed, true );
