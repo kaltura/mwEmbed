@@ -212,8 +212,6 @@ class KalturaGetResultObject {
 			$flavorUrl =  $wgKalturaServiceUrl .'/p/' . $this->getPartnerId() . '/sp/' .
 			$this->getPartnerId() . '00/playManifest/entryId/' .
 			$this->urlParameters['entry_id'];
-			// Play manifest also support referrer passing 
-			$flavorUrl .= '/referrer/' . base64_encode( $this->getReferer() );
 		} else {
 			$flavorUrl = $wgKalturaCDNUrl .'/p/' . $this->getPartnerId() . '/sp/' .
 			$this->getPartnerId() . '00/flvclipper/entry_id/' .
@@ -321,6 +319,13 @@ class KalturaGetResultObject {
 				'type' => 'application/vnd.apple.mpegurl',
 				'data-flavorid' => 'iPhoneNew'
 			);
+		}
+		
+		foreach($sources as &$source ){
+			// Play manifest also support referrer passing ( always output = ) 
+			if(isset( $source['src'] )){
+				$source['src'] .= '?referrer=' . base64_encode( $this->getReferer() );
+			}
 		}
         //echo '<pre>'; print_r($sources); exit();
 		return $sources;
