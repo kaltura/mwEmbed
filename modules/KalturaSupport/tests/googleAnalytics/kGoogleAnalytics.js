@@ -251,7 +251,9 @@ kGoogleAnalytics.prototype = {
 		}	
 		
 		// Special case don't track initial html5 volumeChange event ( triggered right after playback ) 
-		if( methodName == 'volumeChanged' && this._lastPlayHeadTime < .25 ) {
+		// xxx this is kind of broken we need to subscribe to the interface volume updates
+		// not the volumeChange event ( since html fires this at start and end of video ) 
+		if( methodName == 'volumeChanged' && ( this._lastPlayHeadTime < .25 || this._p100Once ) ){
 			return false;
 		}
 		
