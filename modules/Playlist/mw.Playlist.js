@@ -158,7 +158,7 @@ mw.Playlist.prototype = {
 				'position' : 'absolute',
 				'overflow' : 'hidden',
 				'top' : '3px',
-				'right' : '0px',
+				'right' : '8px',
 				'height' : '20px',
 				'left' : leftPx
 			})

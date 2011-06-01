@@ -32,7 +32,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			'uiconf_id' : this.uiconf_id
 		}, function( playerData ){
 			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );
-
+			_this.playlistSet = [];
 			// Add in flashvars playlist id if present:
 			if( _this.playlist_id !== null ){
 				_this.playlistSet.push({
@@ -57,13 +57,14 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			// Find all the playlists by number  
 			for( var i=0; i < 50 ; i ++ ){
+				var playlist_id = playlistName = null;
 				var idElm = $uiConf.find("uivars var[key='kpl" + i +"EntryId']").get(0);
 				if( idElm ){
-					var playlist_id  = idElm.getAttribute('value');
+					playlist_id  = idElm.getAttribute('value');
 				}
 				var nameElm = $uiConf.find("uiVars var[key='playlistAPI.kpl" + i + "Name']").get(0);
 				if( nameElm ){
-					var playlistName = nameElm.getAttribute('value');
+					playlistName = nameElm.getAttribute('value');
 				}
 				if( playlist_id && playlistName ){
 					_this.playlistSet.push( { 
