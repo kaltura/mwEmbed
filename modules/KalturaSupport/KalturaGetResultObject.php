@@ -323,7 +323,7 @@ class KalturaGetResultObject {
 		
 		foreach($sources as &$source ){
 			// Play manifest also support referrer passing ( always output = ) 
-			if(isset( $source['src'] )){
+			if( isset( $source['src'] )){
 				$source['src'] .= '?referrer=' . base64_encode( $this->getReferer() );
 			}
 		}

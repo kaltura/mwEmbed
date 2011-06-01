@@ -318,8 +318,8 @@ mw.Playlist.prototype = {
 					'position' : 'absolute',
 					'height' : null,
 					'top' : curTop,
-					'bottom' : '30px',
-					'right': '0px'
+					'bottom' : '48px',
+					'right': '8px'
 				})
 				if( _this.layout == 'vertical' ){
 					$j( _this.target + ' .media-rss-video-list' ).css({
@@ -341,7 +341,7 @@ mw.Playlist.prototype = {
 			$j( '<div />').css({
 				'position' : 'absolute',
 				'bottom' : '15px',
-				'right': '0px',
+				'right': '8px',
 				'height' : '30px',
 				'width' : $j( _this.target + ' .media-rss-video-list').width()
 			})

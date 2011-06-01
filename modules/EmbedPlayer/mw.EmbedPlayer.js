@@ -2005,26 +2005,8 @@ mw.EmbedPlayer.prototype = {
 		this.controlBuilder = new mw.PlayerControlBuilder( this );
 		var _this = this;
 
-
-		// Make sure we have mwplayer_interface
-		if( $j( this ).parent( '.mwplayer_interface' ).length == 0 ) {
-			// Select "player"
-			$j( this ).wrap(
-				$j('<div>')
-				.addClass( 'mwplayer_interface ' + this.controlBuilder.playerClass )
-				.css({
-					'width' : this.width + 'px',
-					'height' : this.height + 'px',
-					'position' : 'relative'
-				})
-			)
-			// position the "player" absolute inside the relative interface
-			// parent:
-			.css('position', 'absolute');
-		}
-
 		// Set up local jQuery object reference to "mwplayer_interface"
-		this.$interface = $j( this ).parent( '.mwplayer_interface' );
+		this.getPlayerInterface();
 		// if a isPersistentNativePlayer ( overlay the controls )
 		if( !this.useNativePlayerControls() && this.isPersistentNativePlayer() ){
 			this.$interface.css({
@@ -2070,7 +2052,25 @@ mw.EmbedPlayer.prototype = {
 				_this.play();
 			},1);
 		}
-
+	},
+	getPlayerInterface: function(){
+		if( !this.$interface ){
+			// Make sure we have mwplayer_interface
+			$j( this ).wrap(
+				$j('<div>')
+				.addClass( 'mwplayer_interface ' + this.controlBuilder.playerClass )
+				.css({
+					'width' : this.width + 'px',
+					'height' : this.height + 'px',
+					'position' : 'relative'
+				})
+			)
+			// position the "player" absolute inside the relative interface
+			// parent:
+			.css('position', 'absolute');
+		}
+		this.$interface = $j( this ).parent( '.mwplayer_interface' );
+		return this.$interface;
 	},
 	/**
 	 * Media framgments handler based on:
@@ -2135,34 +2135,50 @@ mw.EmbedPlayer.prototype = {
 	showPluginMissingHTML: function( ) {
 		mw.log("EmbedPlayer::showPluginMissingHTML");
 		// Hide loader
-		$('#loadingSpinner_' + this.id ).remove();
+		$j('#loadingSpinner_' + this.id ).remove();
 		
 		// Set the top level container to relative position: 
-		$(this).css('position', 'relative');
+		$j(this).css('position', 'relative');
 		
 		// Control builder ( for play button )
-		this.controlBuilder = new mw.PlayerControlBuilder( this );		
+		this.controlBuilder = new mw.PlayerControlBuilder( this );					
+		
+		// Make sure interface is available
+		this.getPlayerInterface();
+		
 		// Update the poster and html:
 		this.updatePosterHTML();
-		// Add the warning
-		this.controlBuilder.doWarningBindinng( 'EmbedPlayer.DirectFileLinkWarning',
-			gM( 'mwe-embedplayer-download-warn', mw.getConfig('EmbedPlayer.FirefoxLink') )
-		);
-		
-		// Set the play button to the first available source: 
-		$( this ).find('.play-btn-large')
-		.unbind('click')
-		.wrap(
-			$('<a />').attr( {
-				'href': this.mediaElement.sources[0].getSrc(),
-				'title' : gM('mwe-embedplayer-play_clip')
-			} )
-		);
 
+		if( !this.mediaElement.sources.length ){
+			// add the no sources error: 
+			$j(this).append( 
+						$j('<div />')
+						.addClass('error')
+						.text ( 
+							gM('mwe-embedplayer-missing-source') 
+						)
+					);
+			$j( this ).find('.play-btn-large').remove();
+		} else {
+			// Add the warning
+			this.controlBuilder.doWarningBindinng( 'EmbedPlayer.DirectFileLinkWarning',
+				gM( 'mwe-embedplayer-download-warn', mw.getConfig('EmbedPlayer.FirefoxLink') )
+			);
+			
+			// Set the play button to the first available source: 
+			$j( this ).find('.play-btn-large')
+			.unbind('click')
+			.wrap(
+				$j('<a />').attr( {
+					'href': this.mediaElement.sources[0].getSrc(),
+					'title' : gM('mwe-embedplayer-play_clip')
+				} )
+			);
+		}
 		// TODO we should have a smart done Loading system that registers player states
 		// http://www.whatwg.org/specs/web-apps/current-work/#media-element
 		this.doneLoading = true;
-		$(this).trigger('playerReady');
+		mw.playerManager.playerReady( this );
 	},
 
 	/**
@@ -2988,7 +3004,7 @@ mw.EmbedPlayer.prototype = {
 			// If the time has been updated and is in range issue a seek
 			if( _this.getDuration() && _this.currentTime <= _this.getDuration() ){
 				var seekPercent = _this.currentTime / _this.getDuration();
-				mw.log("checkForCurrentTimeSeek::" + _this.previousTime + ' != ' +
+				mw.log("MwEmbed::checkForCurrentTimeSeek::" + _this.previousTime + ' != ' +
 						 _this.currentTime + " javascript based currentTime update to " +
 						 seekPercent + ' == ' + _this.currentTime );
 				_this.previousTime = _this.currentTime;
