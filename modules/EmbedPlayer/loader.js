@@ -50,7 +50,6 @@
 		// If the options control bar menu item should be enabled: 
 		'EmbedPlayer.EnableOptionsMenu' : true,
 
-
 		// Default supported menu items is merged with skin menu items
 		'EmbedPlayer.EnabledOptionsMenuItems' : [
 			// Player Select
@@ -480,7 +479,7 @@
 		// Allow extension to extend the request.
 		$j( mw ).trigger( 'LoaderEmbedPlayerUpdateRequest',
 				[ playerElement, dependencyRequest ] );
-	}
+	};
 	
 	/**
 	 * Utility loader function to grab configuration for passing into an iframe as a hash target

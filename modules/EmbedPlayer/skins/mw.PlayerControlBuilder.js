@@ -241,13 +241,13 @@ mw.PlayerControlBuilder.prototype = {
 			offsetTop = offsetTop - this.height;
 			if( offsetTop < 0 ) offsetTop = 0;
 		}
-		//mw.log("left: " + offsetLeft + " targetWidth: " + targetWidth + ' windowSize.width: ' + windowSize.width + ' :: ' + ( windowSize.width- targetWidth ) / 2 );
+		//mw.log( 'PlayerControlBuilder::getAspectPlayerWindowCss: ' + ' h:' + targetHeight + ' w:' + targetWidth + ' t:' + offsetTop + ' l:' + offsetLeft );
 		return {
 			'position' : 'absolute',
-			'height': targetHeight,
-			'width' : targetWidth,
-			'top' : offsetTop,
-			'left': offsetLeft
+			'height': parseInt( targetHeight ),
+			'width' : parseInt( targetWidth ),
+			'top' : parseInt( offsetTop ),
+			'left': parseInt( offsetLeft) 
 		};
 	},
 
@@ -525,6 +525,7 @@ mw.PlayerControlBuilder.prototype = {
 			$interface.animate( interfaceCss );
 			// Update player size
 			$j( embedPlayer ).animate( _this.getAspectPlayerWindowCss( size ), callback );
+			
 			// Update play button pos
 			$interface.find('.play-btn-large').animate( _this.getFullscreenPlayButtonCss( size ) );
 			

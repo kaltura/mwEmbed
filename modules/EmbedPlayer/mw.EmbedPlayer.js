@@ -2345,7 +2345,7 @@ mw.EmbedPlayer.prototype = {
 		var class_atr = '';
 		var style_atr = '';
 
-		if( this.useNativePlayerControls() ){
+		if( this.useNativePlayerControls() && this.mediaElement.sources.length ){
 			this.showNativePlayer();
 			return ;
 		}
