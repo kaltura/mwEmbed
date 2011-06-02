@@ -25,12 +25,12 @@ if ( typeof window.mw == 'undefined' ) {
 var MW_EMBED_VERSION = '1.3';
 
 // Globals to pre-set ready functions in dynamic loading of mwEmbed
-if( typeof preMwEmbedReady == 'undefined'){
-	var preMwEmbedReady = [];
+if( typeof window.preMwEmbedReady == 'undefined'){
+	window.preMwEmbedReady = [];
 }
 // Globals to pre-set config values in dynamic loading of mwEmbed
-if( typeof preMwEmbedConfig == 'undefined') {
-	var preMwEmbedConfig = [];
+if( typeof window.preMwEmbedConfig == 'undefined') {
+	window.preMwEmbedConfig = [];
 }
 
 /**

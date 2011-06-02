@@ -36,7 +36,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.3r19';
+KALTURA_LOADER_VERSION = '1.3r20';
 
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
@@ -109,7 +109,7 @@ if( ! mw.getConfig ){
 // Wrap mw.ready to preMwEmbedReady values
 if( !mw.ready){
 	mw.ready = function( fn ){	
-		window.preMwEmbedReady.push( fn );		
+		window.preMwEmbedReady.push( fn );
 	};
 }
 
