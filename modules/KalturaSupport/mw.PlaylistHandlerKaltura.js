@@ -44,11 +44,11 @@ mw.PlaylistHandlerKaltura.prototype = {
 			var $uiConf = $j(  playerData.uiConf );				
 			
 			// Check for autoContinue ( we check false state so that by default we autoContinue ) 
-			_this.autoContinue = ( $uiConf.find("uivars [key='playlistAPI.autoContinue']").attr('value') == 'false' )? false: true;
+			_this.autoContinue = ( $uiConf.find("uivars [key='playlistAPI.autoContinue']").get(0).getAttribute('value') == 'false' )? false: true;
 			
-			_this.autoPlay = ( $uiConf.find("uivars [key='playlistAPI.autoPlay']").attr('value') == 'false' )? false: true;
+			_this.autoPlay = ( $uiConf.find("uivars [key='playlistAPI.autoPlay']").get(0).getAttribute('value') == 'false' )? false: true;
 			
-			_this.includeInLayout = ( $uiConf.find("uivars [key='playlist.includeInLayout']").attr('value') == 'false' )? false : true;
+			_this.includeInLayout = ( $uiConf.find("uivars [key='playlist.includeInLayout']").get(0).getAttribute('value') == 'false' )? false : true;
 			
 			// Force autoContoinue if there is no interface 
 			if( !_this.includeInLayout ){
