@@ -399,7 +399,14 @@ mw.Playlist.prototype = {
 		// Get the target width and height: ( should be based on layout or
 		this.targetWidth = $j( this.target ).width();
 		this.targetHeight = $j( this.target ).height();
-
+		
+		// if there is no player interface take all the allowed space:
+		if( !_this.sourceHandler.hasPlaylistUi() ){
+			return {
+				'width' : this.targetWidth  + 'px',
+				'height' : this.targetHeight + 'px'
+			};
+		}
 		
 		if( _this.layout == 'vertical' ){
 			/* vertical layout */
@@ -421,6 +428,7 @@ mw.Playlist.prototype = {
 			this.targetPlayerSize.width = this.targetWidth;
 			this.targetPlayerSize.height = parseInt( ( pa[1] / pa[0] ) * this.targetWidth );
 		}
+		
 		return this.targetPlayerSize;
 	},
 

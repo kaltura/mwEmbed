@@ -110,7 +110,7 @@
 				
 				$j.each( kalturaObjectPlayerList, function( inx, element ){
 					// don't rewrite special id
-					if( $(element).attr('id') == 'kaltura_player_iframe_no_rewrite' ){
+					if( $j(element).attr('id') == 'kaltura_player_iframe_no_rewrite' ){
 						return true;;
 					}
 					// Clear the kalturaSwapObjectClass

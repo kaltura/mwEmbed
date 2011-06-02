@@ -1507,7 +1507,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		// Once we have run all the queued functions
 		setTimeout(function(){
 			mw.loader.runModuleLoadQueue();
-		},1);
+		}, 1);
 	};
 
 
