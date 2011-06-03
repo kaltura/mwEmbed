@@ -244,7 +244,6 @@ function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 		'width' : parseInt( options.width),
 		'height' : parseInt( options.height)
 	});
-alert( 'thumb src: ' + thumbSrc );
 	var playButtonUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'skins/common/images/player_big_play_button.png' );
 	var playButtonCss = 'background: url(\'' + playButtonUrl + '\'); width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
 	var ddId = 'dd_' + Math.random();
