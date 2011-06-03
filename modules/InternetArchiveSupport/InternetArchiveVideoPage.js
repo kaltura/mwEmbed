@@ -188,19 +188,24 @@ mw.IA =
 
     mw.ready(function(){
 
-      var player = $('#mwplayer'); // <div id="mwplayer"><video ...></div>
+      var player = $('#mwplayer').get(0); // <div id="mwplayer"><video ...></div>
       if (!player)
         return;
 
       var prefix = '/download/'+IAD.identifier+'/';
-      var sources = [];
-      for (var i=0, source; source=group['SRC'][i]; i++)
-        sources.push({'src':prefix + source});
-      mw.log(sources);
-      player.embedPlayer(
-        { 'autoplay':true, 'autoPlay':true, 'sources':sources
-        // ,'poster': (group['POSTER'] ? prefix + group['POSTER'] : '/images/glogo.png')
-        });
+      player.stop();
+      player.emptySources();
+      
+      for (var i=0, source; source=group['SRC'][i]; i++){
+    	  player.mediaElement.tryAddSource(
+				$('<source />')
+				.attr( {
+					'src' : source
+				} )
+				.get( 0 )
+			);
+      }
+      player.play();
     });
 
     return false;
