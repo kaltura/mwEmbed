@@ -152,7 +152,7 @@ mw.IA =
     $('#flowplayerplaylist').css('width', this.VIDEO_WIDTH);
 
     var jplay = player[0];
-    IAD.log('IA ' + jplay.getWidth() + 'x' + jplay.getHeight());
+    mw.log('IA ' + jplay.getWidth() + 'x' + jplay.getHeight());
 
     jplay.resizePlayer({'width':  this.VIDEO_WIDTH,
       'height': this.VIDEO_HEIGHT},true);
