@@ -175,7 +175,7 @@ mw.IA =
     mw.IA.playingClipNumMW = idx;
     mw.log('IA play: ('+idx+')');
     if (typeof(IAD)=='undefined'  ||  typeof(IAD.playlist[idx])=='undefined')
-      return;
+      return false;
 
     var group = IAD.playlist[idx];
     mw.log(group);
@@ -189,30 +189,33 @@ mw.IA =
     mw.ready(function(){
       var player = $('#mwplayer').get(0); // <div id="mwplayer"><video ...></div>
       if (!player)
-        return;
+        return false;
 
       var prefix = '/download/'+IAD.identifier+'/';
       player.stop();
       player.emptySources();
       player.updatePosterSrc( group['POSTER'] ? prefix + group['POSTER'] :
                            '/images/glogo.png' );
-      for (var i=0, source; source=group['SRC'][i]; i++){
-    	  if( source ){   
-	    	  player.mediaElement.tryAddSource(
-					$('<source />')
-					.attr( {
-						'URLTimeEncoding': "true", 
-						'src' : prefix + source
-					} )
-					.get( 0 )
-				);
-    	  }
+      for (var i=0, source; source=group['SRC'][i]; i++)
+      {
+    	if( source )
+        {
+          var attrs = {'src' : prefix + source};
+          var ending = source.substr(0, source.length-4).toLowerCase();
+          if (ending=='.mp4'  ||  ending=='.ogv')
+            attrs['URLTimeEncoding'] = true;
+	  player.mediaElement.tryAddSource(
+	    $('<source />')
+	      .attr( attrs )
+	      .get( 0 )
+	  );
+    	}
       }
       player.stop();
       player.setupSourcePlayer( function(){
-    	  setTimeout(function(){
-    		  player.play();
-    	  },100)    	  
+    	setTimeout(function(){
+    	  player.play();
+    	},100);
       });
     });
 
