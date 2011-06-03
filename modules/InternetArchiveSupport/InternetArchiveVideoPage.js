@@ -201,6 +201,7 @@ mw.IA =
 	    	  player.mediaElement.tryAddSource(
 					$('<source />')
 					.attr( {
+						'URLTimeEncoding': "true", 
 						'src' : prefix + source
 					} )
 					.get( 0 )
