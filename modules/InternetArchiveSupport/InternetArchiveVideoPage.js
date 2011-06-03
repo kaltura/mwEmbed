@@ -195,7 +195,7 @@ mw.IA =
       var prefix = '/download/'+IAD.identifier+'/';
       player.stop();
       player.emptySources();
-      player.updatePoster( group['POSTER'] );
+      player.updatePoster( prefix + group['POSTER'] );
       for (var i=0, source; source=group['SRC'][i]; i++){
     	  player.mediaElement.tryAddSource(
 				$('<source />')
