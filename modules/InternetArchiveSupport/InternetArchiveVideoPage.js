@@ -191,7 +191,7 @@ mw.IA =
       if (!player)
         return;
 
-      var prefix = 'http://www-tracey.archive.org/download/'+IAD.identifier+'/';
+      var prefix = '/download/'+IAD.identifier+'/';
       player.stop();
       player.emptySources();
       player.updatePosterSrc( group['POSTER'] ? prefix + group['POSTER'] :
