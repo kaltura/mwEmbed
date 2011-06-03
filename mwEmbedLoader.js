@@ -36,8 +36,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.3r23';
-
+KALTURA_LOADER_VERSION = '1.3r24';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -68,7 +67,7 @@ if( document.URL.indexOf('debugKalturaForceJquery=true') != -1 ){
 var kAlreadyRunDomReadyFlag = false;
 
 // Try and override the swfObject at runtime
-// In case it was included before mwEmbedLoader and the embedSWF call is inline 
+// In case it was included before mwEmbedLoader and the embedSWF call is inline ( so we can't wait for dom ready )
 kOverideJsFlashEmbed();
 
 // Setup preMwEmbedReady queue
@@ -207,46 +206,71 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 
 // Fallback handling for older devices
 function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
+
 	// Empty the replace target:
-	var elm = document.getElementById(replaceTargetId);
-	if( ! elm ){
+	var targetNode = document.getElementById( replaceTargetId );
+	if( ! targetNode ){
 		if( console && console.log )
-			console.log("Error could not find object target: " + replaceTargetId);
+			console.log( "Error could not find object target: " + replaceTargetId );
 	}
-	replaceTargetId.innerHTML = '';
+	// remove all object children
+	targetNode.innerHTML = '';
+	//while ( targetNode.hasChildNodes() ) {
+	//   targetNode.removeChild( targetNode.lastChild );
+	//}
+	if(!options)
+		options = {};
+
+	// look some other places for sizes:
+	if( !options.width && kEmbedSettings.width )
+		options.width = kEmbedSettings.width;
+	if( !options.height && kEmbedSettings.height )
+		options.height = kEmbedSettings.height;
+	if( !options.width && targetNode.style.width )
+		options.width = targetNode.style.width;
+	if( !options.height && targetNode.style.height )
+		options.height = targetNode.style.height;
+	if( !options.height )
+		options.height = 300;
+	if( !options.width )
+		options.width = 400;	
 
 	// TODO: Add playEventUrl for stats
 	var downloadUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'modules/KalturaSupport/download.php' ) +
 			'/wid/' + kEmbedSettings.wid + '/entry_id/'+ kEmbedSettings.entry_id;
-
 	var thumbSrc = kGetEntryThumbUrl({
 		'entry_id' : kEmbedSettings.entry_id,
 		'partner_id' : kEmbedSettings.p,
-		'width' : options.width,
-		'height' : options.height
+		'width' : parseInt( options.width),
+		'height' : parseInt( options.height)
 	});
-
+alert( 'thumb src: ' + thumbSrc );
 	var playButtonUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'skins/common/images/player_big_play_button.png' );
-	var playButtonCss = 'background: url(' + playButtonUrl + ');width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
+	var playButtonCss = 'background: url(\'' + playButtonUrl + '\'); width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
+	var ddId = 'dd_' + Math.random();
 
-	var ddHTML = '<div style="width: ' + options.width + '; height: ' + options.height + '; position: relative">' +
+	var ddHTML = '<div id="' + ddId + '" style="width: ' + options.width + ';height:' + options.height + ';position:relative">' +
 			'<img style="width:100%;height:100%" src="' + thumbSrc + '" >' +
-			'<a href="' + downloadUrl + '" target="_blank" style="' + playButtonCss + '"></a></div>';
+			'<a href="' + downloadUrl + '" target="_blank" style="' + playButtonCss + '"></a>' +
+		     '</div>';
 
-	var targetNode = document.getElementById( replaceTargetId );
 	var parentNode = targetNode.parentNode;
 	var div = document.createElement('div');
 	div.style.width = options.width + 'px';
 	div.style.height = options.height + 'px';
-	div.innerHTML = ddHTML;
 
+	div.innerHTML = ddHTML;
 	parentNode.replaceChild( div, targetNode );
+
+	// if failed, try appending after the node:
+	if( ! document.getElementById( ddId ) ){
+		parentNode.insertBefore( div, targetNode );
+	}
 }
 
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
 function kOverideJsFlashEmbed(){
-	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTargetId, widthStr, heightStr ){
-		
+	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTargetId, widthStr, heightStr ){	
 		// Add a ready event to re-write: 
 		mw.ready(function(){
 			// Setup the embedPlayer attributes
@@ -285,7 +309,11 @@ function kOverideJsFlashEmbed(){
 		window['flashembed'] = function( targetId, attributes, flashvars ){
 			kAddReadyHook(function(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( attributes.src, flashvars);
-				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
+				if( ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+					kDirectDownloadFallback( targetId, kEmbedSettings, {'width':attributes.width, 'height':attributes.height}   );
+					return ;
+				}
+				if( kEmbedSettings.uiconf_id && kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, attributes.width, attributes.height);
 				} else {
 					// Use the original flash player embed:  
@@ -302,7 +330,12 @@ function kOverideJsFlashEmbed(){
 			var _this = this;
 			kAddReadyHook(function(){			
 				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, _this.params.flashVars);
-				
+		
+				if( kEmbedSettings.uiconf_id && ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+					kDirectDownloadFallback( targetId, kEmbedSettings );
+					return ;
+				}
+
 				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else {
@@ -322,6 +355,13 @@ function kOverideJsFlashEmbed(){
 		{
 			kAddReadyHook(function(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
+
+
+				if( kEmbedSettings.uiconf_id && ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+					kDirectDownloadFallback( targetId, kEmbedSettings, {'width' : widthStr, 'height' :  heightStr} );
+					return ;
+				}
+
 				// Check if kIsHTML5FallForward
 				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
@@ -367,6 +407,7 @@ function getFlashVersion(){
 // && html5 video tag ( for fallback & html5 player interface )
 var ranKCheckAddScript = false;
 function kCheckAddScript(){
+
 	if( ranKCheckAddScript ){
 		return ;
 	}
@@ -381,7 +422,7 @@ function kCheckAddScript(){
 		mw.setConfig( 'Kaltura.IframeRewrite', false );
 		mw.setConfig( 'Kaltura.UseManifestUrls', false);
 	}
-	
+
 	// If user javascript is using mw.ready add script
 	if( window.preMwEmbedReady.length ) {
 		kAddScript();
@@ -401,14 +442,21 @@ function kCheckAddScript(){
 	) {
 		// Check for Kaltura objects in the page
 		kAddScript();
-	} else {
-		// Restore the jsCallbackReady ( we are not rewriting )
-		restoreKalturaKDPCallback();	
+		return ;
 	}
+
+	// Check if no flash and no html5 and no forceFlash ( direct download link ) 
+	if( ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+		kAddScript();
+		return ;		
+	}
+
+	// Restore the jsCallbackReady ( we are not rewriting )
+	restoreKalturaKDPCallback();	
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not available 
 function kIsHTML5FallForward(){
-	// Check for a mobile html5 user agent:	
+	// Check for a mobile html5 user agent:
 	if ( (navigator.userAgent.indexOf('iPhone') != -1) || 
 		(navigator.userAgent.indexOf('iPod') != -1) || 
 		(navigator.userAgent.indexOf('iPad') != -1) ||
@@ -431,7 +479,7 @@ function kIsHTML5FallForward(){
 		}
 	}
 
-	// if the browser supports flash ( don't use html5 )
+	// If the browser supports flash ( don't use html5 )
 	if( kSupportsFlash() ){
 		return false;
 	}
@@ -440,6 +488,7 @@ function kIsHTML5FallForward(){
 	if( mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 		return false;
 	}
+	
 	// No flash return true if the browser supports html5 video tag with basic support for canPlayType:
 	if( kSupportsHTML5() ){
 		return true;
@@ -622,6 +671,9 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	kAppendScriptUrl(url, callback);
 }
 function kPageHasAudioOrVideoTags(){
+	if( !kSupportsHTML5() ){
+		return false;
+	}
 	// If document includes audio or video tags
 	if( document.getElementsByTagName('video').length != 0
 		|| document.getElementsByTagName('audio').length != 0 ) {
@@ -644,21 +696,25 @@ function kAddReadyHook( callback ){
 function kRunMwDomReady(){
 	// run dom ready with a 1ms timeout to prevent sync execution in browsers like chrome
 	// Async call give a chance for configuration variables to be set
-	setTimeout(function(){
+	//window.setTimeout(function(){
+		//alert('setTimeout::kRunMwDomReady');
 		kAlreadyRunDomReadyFlag  = true;
 		while( kReadyHookSet.length ){
 			kReadyHookSet.shift()();
 		}
 		kOverideJsFlashEmbed();
 		kCheckAddScript();
-	},1 );
+	//},100 );
 }
 
 // Check if already ready: 
 if ( document.readyState === "complete" ) {
 	kRunMwDomReady();
 }
-
+// fallback function that should fire for all browsers 
+window.onload = function(){
+	kRunMwDomReady();
+}
 // Cleanup functions for the document ready method
 if ( document.addEventListener ) {
 	DOMContentLoaded = function() {
@@ -696,7 +752,7 @@ if ( document.addEventListener ) {
 		doScrollCheck();
 	}
 }
-//A fallback to window.onload, that will always work
+// A document addEventListener
 if ( document.addEventListener ) {
 	window.addEventListener( "load", kRunMwDomReady, false );
 }
@@ -725,7 +781,9 @@ kGetKalturaPlayerList = function(){
 	var kalturaPlayers = [];
 	// check all objects for kaltura compatible urls 
 	var objectList = document.getElementsByTagName('object');
-	
+	if( !objectList.length ){
+		objectList = [ document.getElementById('kaltura_player') ];
+	}
 	// local function to attempt to add the kalturaEmbed
 	var tryAddKalturaEmbed = function( url , flashvars){
 		var settings = kGetKalturaEmbedSettings( url, flashvars );
@@ -736,8 +794,6 @@ kGetKalturaPlayerList = function(){
 		}
 		return false;
 	};
-	
-	// alert('object list: ' + objectList.length );
 	for( var i =0; i < objectList.length; i++){
 		var swfUrl = '';
 		var flashvars = {};
@@ -763,7 +819,6 @@ kGetKalturaPlayerList = function(){
 				continue;
 		}
 	}
-	
 	return kalturaPlayers;
 };
 
