@@ -8493,8 +8493,8 @@ jQuery.extend( jQuery.fx, {
 			jQuery.style( fx.elem, "opacity", fx.now );
 		},
 
-		_default: function( fx ) {
-			if ( fx.elem.style && fx.elem.style[ fx.prop ] != null &&  fx.elem.style[ fx.prop ] != 'relative') {
+		_default: function( fx ) {			
+			if ( fx.elem.style && fx.elem.style[ fx.prop ] != null && fx.elem.style[ fx.prop ] != 'relative'  && fx.prop != 'position' ) {
 				fx.elem.style[ fx.prop ] = (fx.prop === "width" || fx.prop === "height" ? Math.max(0, fx.now) : fx.now) + fx.unit;
 			} else {
 				fx.elem[ fx.prop ] = fx.now;
