@@ -333,7 +333,7 @@ mw.EmbedPlayerKplayer = {
 	 *            percentage Percentage to update volume to
 	 */
 	setPlayerElementVolume : function(percentage) {
-		if (this.playerElement && this.playerElement.sendNotification) {
+		if ( this.getPlayerElement() && this.playerElement.sendNotification ) {
 			this.playerElement.sendNotification('changeVolume', percentage);
 		}
 	},

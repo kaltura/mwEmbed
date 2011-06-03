@@ -209,7 +209,9 @@ mw.IA =
       }
       player.stop();
       player.setupSourcePlayer( function(){
-    	  player.play();
+    	  setTimeout(function(){
+    		  player.play();
+    	  },100)    	  
       });
     });
 
