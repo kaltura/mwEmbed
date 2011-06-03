@@ -180,8 +180,10 @@ class kalturaIframe {
 	private function getFlashVarsString(){
 		// output the escaped flash vars from get arguments
 		$s = 'externalInterfaceDisabled=false';
-		foreach( $_REQUEST['flashvars'] as $key=>$val ){
-			$s.= '&' . htmlspecialchars( $key ) . '=' . urlencode( $val );
+		if( isset( $_REQUEST['flashvars']) ){
+			foreach( $_REQUEST['flashvars'] as $key=>$val ){
+				$s.= '&' . htmlspecialchars( $key ) . '=' . urlencode( $val );
+			}
 		}
 		return $s;
 	}
@@ -457,7 +459,7 @@ class kalturaIframe {
 			// For testing limited capacity browsers
 			//var kIsHTML5FallForward = function(){ return false };
 			//var kSupportsFlash = function(){ return false };
-			
+
 			// Don't do an iframe rewrite inside an iframe!
 			mw.setConfig( 'Kaltura.IframeRewrite', false );
 
@@ -513,59 +515,59 @@ class kalturaIframe {
 							});
 					});				    
 				});
-			} else {
-				// Remove the video tag and output a clean "object" or file link
-				// ( if javascript is off the child of the video tag so would be played,
-				//  but rewriting gives us flexiblity in in selection criteria as
-				// part of the javascript check kIsHTML5FallForward )
-				if( document.getElementById( 'videoContainer' ) ){
-					document.getElementById( 'videoContainer' ).innerHTML = "";
-				}
-				
-				if( kSupportsFlash() ||  mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
-					// Build the flash vars string
-					var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';
-					var flashVars = mw.getConfig('Kaltura.Flashvars');
-					if( flashVars ){
-						var and = '';
-						for( var key in flashVars ){
-							flashVarsString += and + key + '=' + flashVars[key];
-							and ='&'; 
-						}
-					}
-					// Write out the embed object
-					document.write('<?php echo $this->getPreFlashVars() ?>' + 
-							flashVarsString + 
-							'<?php echo $this->getPostFlashVars() ?>' );
-					
-					// Load server side bindings for kdpServer
-					kLoadJsRequestSet( ['window.jQuery', 'mwEmbed', 'mw.style.mwCommon', '$j.postMessage', 'kdpServerIFrame', 'JSON' ] );
-				} else {
-					
-					// Last resort just provide an image with a link to the file
-					// NOTE we need to do some platform checks to see if the device can
-					// "actually" play back the file and or switch to 3gp version if nessesary.
-					// also we need to see if the entryId supports direct download links
-					document.write('<?php echo $this->getFileLinkHTML()?>');
-
-					var thumbSrc = kGetEntryThumbUrl({
-						'entry_id' : '<?php echo $this->getResultObject()->getEntryId() ?>',
-						'partner_id' : '<?php echo $this->getResultObject()->getPartnerId() ?>',
-						'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
-						'width' : ( document.body.clientHeight )? document.body.clientHeight : '400'
-					});
-					document.getElementById( 'directFileLinkThumb' ).innerHTML =
-						'<img style="width:100%;height:100%" src="' + thumbSrc + '" >';
-
-					window.kCollectCallback = function(){ return ; }; // callback for jsonp
-
-					document.getElementById('directFileLinkButton').onclick = function() {
-						kAppendScriptUrl( '<?php echo $this->getPlayEventUrl() ?>' + '&callback=kCollectCallback' );
-						return true;
-					};
-				}
+		} else {
+			// Remove the video tag and output a clean "object" or file link
+			// ( if javascript is off the child of the video tag so would be played,
+			//  but rewriting gives us flexiblity in in selection criteria as
+			// part of the javascript check kIsHTML5FallForward )
+			if( document.getElementById( 'videoContainer' ) ){
+				document.getElementById( 'videoContainer' ).innerHTML = "";
 			}
-			<?php 
+			
+			if( kSupportsFlash() ||  mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+				// Build the flash vars string
+				var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';
+				var flashVars = mw.getConfig('Kaltura.Flashvars');
+				if( flashVars ){
+					var and = '';
+					for( var key in flashVars ){
+						flashVarsString += and + key + '=' + flashVars[key];
+						and ='&'; 
+					}
+				}
+				// Write out the embed object
+				document.write('<?php echo $this->getPreFlashVars() ?>' + 
+						flashVarsString + 
+						'<?php echo $this->getPostFlashVars() ?>' );
+				
+				// Load server side bindings for kdpServer
+				kLoadJsRequestSet( ['window.jQuery', 'mwEmbed', 'mw.style.mwCommon', '$j.postMessage', 'kdpServerIFrame', 'JSON' ] );
+			} else {
+				
+				// Last resort just provide an image with a link to the file
+				// NOTE we need to do some platform checks to see if the device can
+				// "actually" play back the file and or switch to 3gp version if nessesary.
+				// also we need to see if the entryId supports direct download links
+				document.write('<?php echo $this->getFileLinkHTML()?>');
+
+				var thumbSrc = kGetEntryThumbUrl({
+					'entry_id' : '<?php echo $this->getResultObject()->getEntryId() ?>',
+					'partner_id' : '<?php echo $this->getResultObject()->getPartnerId() ?>',
+					'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
+					'width' : ( document.body.clientHeight )? document.body.clientHeight : '400'
+				});
+				document.getElementById( 'directFileLinkThumb' ).innerHTML =
+					'<img style="width:100%;height:100%" src="' + thumbSrc + '" >';
+
+				window.kCollectCallback = function(){ return ; }; // callback for jsonp
+
+				document.getElementById('directFileLinkButton').onclick = function() {
+					kAppendScriptUrl( '<?php echo $this->getPlayEventUrl() ?>' + '&callback=kCollectCallback' );
+					return true;
+				};
+			}
+		}
+		<?php 
 	}
 	/**
 	 * Very simple error handling for now: 

@@ -440,7 +440,6 @@ function kIsHTML5FallForward(){
 	if( mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 		return false;
 	}
-	
 	// No flash return true if the browser supports html5 video tag with basic support for canPlayType:
 	if( kSupportsHTML5() ){
 		return true;

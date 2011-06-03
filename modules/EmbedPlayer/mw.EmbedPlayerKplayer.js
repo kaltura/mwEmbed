@@ -271,7 +271,7 @@ mw.EmbedPlayerKplayer = {
 		};
 		this.playerElement.addJsListener('playerSeekEnd', seekedCallback );
 		
-		if (this.playerElement) {		
+		if ( this.getPlayerElement() ) {		
 			// trigger the html5 event: 
 			$j( this ).trigger( 'seeking' );
 			

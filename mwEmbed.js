@@ -1491,7 +1491,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 * Runs all the queued functions called by mwEmbedSetup
 	 */
 	mw.runReadyFunctions = function ( ) {
-		mw.log('mw.runReadyFunctions: ' + mwOnLoadFunctions.length + ' preMwEmbedReady:' + window.preMwEmbedReady.length);
+		mw.log('mw.runReadyFunctions: ' + mwOnLoadFunctions.length + ' preMwEmbedReady:' );
 		// Run any pre-setup ready functions
 		while( window.preMwEmbedReady.length ){
 			window.preMwEmbedReady.shift()();

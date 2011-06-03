@@ -1702,7 +1702,7 @@ mw.EmbedPlayer.prototype = {
 	 *
 	 * Sets load error if no source is playable
 	 */
-	setupSourcePlayer: function() {
+	setupSourcePlayer: function( callback ) {
 		mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );
 		// Autoseletct the media source
 		this.mediaElement.autoSelectSource();
@@ -1712,12 +1712,14 @@ mw.EmbedPlayer.prototype = {
 		} else {
 			this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
 		}
-
 		if ( this.selectedPlayer ) {
 			// Inherit the playback system of the selected player:
-			this.inheritEmbedPlayer();
+			this.inheritEmbedPlayer( callback );
 		} else {
 			this.showPluginMissingHTML();
+			if( callback ){
+				callback();
+			}
 		}
 	},
 

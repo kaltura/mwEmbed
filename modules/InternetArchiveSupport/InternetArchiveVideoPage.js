@@ -187,26 +187,30 @@ mw.IA =
     // location.hash = '#' + group['ORIG']; //xxxx not quite ready yet
 
     mw.ready(function(){
-
       var player = $('#mwplayer').get(0); // <div id="mwplayer"><video ...></div>
       if (!player)
         return;
 
-      var prefix = '/download/'+IAD.identifier+'/';
+      var prefix = 'http://www-tracey.archive.org/download/'+IAD.identifier+'/';
       player.stop();
       player.emptySources();
       player.updatePosterSrc( group['POSTER'] ? prefix + group['POSTER'] :
                            '/images/glogo.png' );
       for (var i=0, source; source=group['SRC'][i]; i++){
-    	  player.mediaElement.tryAddSource(
-				$('<source />')
-				.attr( {
-					'src' : source
-				} )
-				.get( 0 )
-			);
+    	  if( source ){   
+	    	  player.mediaElement.tryAddSource(
+					$('<source />')
+					.attr( {
+						'src' : prefix + source
+					} )
+					.get( 0 )
+				);
+    	  }
       }
-      player.play();
+      player.stop();
+      player.setupSourcePlayer( function(){
+    	  player.play();
+      });
     });
 
     return false;
@@ -325,6 +329,5 @@ div.overlay-content        {\n\
       });
   }
 };
-
 
 mw.IA.setup();
