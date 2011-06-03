@@ -195,7 +195,7 @@ mw.IA =
       var prefix = '/download/'+IAD.identifier+'/';
       player.stop();
       player.emptySources();
-      player.updatePoster( group['POSTER'] ? prefix + group['POSTER'] :
+      player.updatePosterSrc( group['POSTER'] ? prefix + group['POSTER'] :
                            '/images/glogo.png' );
       for (var i=0, source; source=group['SRC'][i]; i++){
     	  player.mediaElement.tryAddSource(
