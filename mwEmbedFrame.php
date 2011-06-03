@@ -138,7 +138,11 @@ class mwEmbedFrame {
 		// Output each source
 		if( count( $this->sources ) ){
 			foreach($this->sources as $src ){
-				$o.= '<source src="' . htmlspecialchars( $src ) . '"></source>';
+                          $ute = (isset($_REQUEST['iaid'])  && //Internet Archive
+                                  ($suffix = strrchr($src,'.'))  &&
+                                  ($suffix=='.ogv' || $suffix=='.mp4') ?
+                                  ' URLTimeEncoding="true"' : '');
+				$o.= '<source src="' . htmlspecialchars( $src ) . '"'.$ute.'></source>';
 			}
 		}
 		$o.= '</video>';
