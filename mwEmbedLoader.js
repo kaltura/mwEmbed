@@ -794,6 +794,8 @@ kGetKalturaPlayerList = function(){
 		return false;
 	};
 	for( var i =0; i < objectList.length; i++){
+		if( ! objectList[i] )
+			continue;
 		var swfUrl = '';
 		var flashvars = {};
 		var paramTags = objectList[i].getElementsByTagName('param');
