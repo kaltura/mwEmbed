@@ -325,7 +325,7 @@
 	
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
 		// Check if any video tag uses the "kEmbedSettings.entryId"  
-		if(  playerElement.kwidgetid ) {
+		if(  playerElement.kwidgetid || $j(playerElement).attr( 'kwidgetid' ) ){
 			kLoadKalturaSupport = true;
 		}
 		// Add kaltura support hook
