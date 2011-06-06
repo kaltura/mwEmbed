@@ -43,6 +43,7 @@ class mwEmbedFrame {
 	var $playerAttributes = array(
 		'apiTitleKey',
 		'apiProvider',
+		'autoplay',
 		'durationHint',
 		'poster',
 		'kentryid',
@@ -200,7 +201,7 @@ class mwEmbedFrame {
 
 			// Enable the iframe player server:
 			mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
-			
+
 			mw.ready(function(){
 				// Bind window resize to reize the player: 
 				$j(window).resize(function(){
