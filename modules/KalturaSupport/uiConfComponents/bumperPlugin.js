@@ -20,7 +20,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			// Get the bumper entryid			
 			mw.log( "KWidget:: checkUiConf: get sources for " + bumperEntryId);
 			var originalSrc = embedPlayer.getSrc();
-			mw.getEntryIdSourcesFromApi( $j( embedPlayer ).attr( 'kwidgetid' ), bumperEntryId, function( sources ){
+			mw.getEntryIdSourcesFromApi( embedPlayer.kwidgetid, bumperEntryId, function( sources ){
 				// Check if we are doing ads ( should always come before bumper ) and add bumper to 
 				// ad timeline instead of binding to play: 
 				if( embedPlayer.ads ){

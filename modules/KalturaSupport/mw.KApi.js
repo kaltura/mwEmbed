@@ -271,7 +271,7 @@ mw.kApiGetPartnerClient = function( partner_or_widget_id ){
 
 mw.KApiPlayerLoader = function( kProperties, callback ){
 	if( !kProperties.widget_id ) {
-		mw.log( "Error:: mw.KApiPlayerLoader:: cant run player loader with widget_id " );
+		mw.log( "Error:: mw.KApiPlayerLoader:: cant run player loader with widget_id "  + kProperties.widget_id );
 	}
 	// Convert widget_id to partner id
 	var partner_id = kProperties.widget_id.replace(/_/g, '');
