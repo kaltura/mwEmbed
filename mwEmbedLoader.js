@@ -36,7 +36,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.3r24';
+KALTURA_LOADER_VERSION = '1.3r25';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -780,7 +780,7 @@ kGetKalturaPlayerList = function(){
 	var kalturaPlayers = [];
 	// check all objects for kaltura compatible urls 
 	var objectList = document.getElementsByTagName('object');
-	if( !objectList.length ){
+	if( !objectList.length && document.getElementById('kaltura_player') ){
 		objectList = [ document.getElementById('kaltura_player') ];
 	}
 	// local function to attempt to add the kalturaEmbed
