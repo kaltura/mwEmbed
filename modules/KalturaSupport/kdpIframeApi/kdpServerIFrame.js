@@ -17,8 +17,9 @@ kdpServerIframe = function(){
 		mw.log("kdpServerIframe:: Error missing EmbedPlayer.IframeParentUrl");
 		return ;
 	}	
-	return this.init( $j('#kaltura_player').get(0) );
-}
+	// get player ( can be called norewrite or kaltura_playlist )
+	return this.init( $j('#kaltura_player_iframe_no_rewrite').get(0) );
+};
 
 kdpServerIframe.prototype = {
 	// flag to work around strange kdp error: 
@@ -28,11 +29,13 @@ kdpServerIframe.prototype = {
 	listenerCallbackLookup: [],
 	'init': function( kdpPlayer ){
 		var _this = this;
-		this.kdpPlayer = kdpPlayer;
+		_this.kdpPlayer = kdpPlayer;
 		this.parentUrl = mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
 		
 		// Add receive msg handler: 
-		$j.receiveMessage( function( event ) {			
+		$j.receiveMessage( function( event ) {		
+			// re assign kdpPlayer inside reciveMessage scope: 
+			_this.kdpPlayer = kdpPlayer;
 			_this.hanldeMsg( event );
 		}, this.parentUrl );
 		
@@ -59,7 +62,7 @@ kdpServerIframe.prototype = {
 	 * 
 	 * @param {string} event
 	 */
-	'hanldeMsg': function( event ){		
+	'hanldeMsg': function( event ){
 		var _this = this;
 		if( !this.eventDomainCheck( event.origin ) ){
 			mw.log( 'Error: ' + event.origin + ' domain origin not allowed to send player events');
@@ -70,8 +73,7 @@ kdpServerIframe.prototype = {
 		
 		// Call a method:
 		var lname = ( msgObject.method == 'addJsListener' )? ': ' + msgObject.args[0]:'' ;
-		
-		mw.log("kdpIframeServer hanldeMsg::" + msgObject.method + lname  );
+		mw.log("kdpIframeServer hanldeMsg::" + msgObject.method + lname + ' kdp:' + this.kdpPlayer );
 		
 		if( msgObject.method && this.kdpPlayer[ msgObject.method ] ){
 			

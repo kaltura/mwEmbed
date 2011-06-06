@@ -255,7 +255,7 @@ class kalturaIframe {
 	
 	private function getPreFlashVars(){
 		// Check if a playlist
-		$playerId = ( $this->getResultObject()->isPlaylist() ) ? 'kaltura_player' : 'kaltura_player_iframe_no_rewrite';
+		$playerId = ( $this->getResultObject()->isPlaylist() ) ? 'kaltura_playlist' : 'kaltura_player_iframe_no_rewrite';
 		
 		return '<object id="' . $playerId . '" name="kaltura_player" ' .
 				'type="application/x-shockwave-flash" allowFullScreen="true" '.
