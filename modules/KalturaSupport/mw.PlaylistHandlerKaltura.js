@@ -45,10 +45,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			// Check for autoContinue ( we check false state so that by default we autoContinue ) 
 			var $ac = $uiConf.find("uivars [key='playlistAPI.autoContinue']");
-			_this.autoContinue = ( $ac.length && ac.get(0).getAttribute('value') == 'false' )? false: true;
+			_this.autoContinue = ( $ac.length && $ac.get(0).getAttribute('value') == 'false' )? false: true;
 			
 			var $ap = $uiConf.find("uivars [key='playlistAPI.autoPlay']");
-			_this.autoPlay = ( $ap.length && ap.get(0).getAttribute('value') == 'false' )? false: true;
+			_this.autoPlay = ( $ap.length && $ap.get(0).getAttribute('value') == 'false' )? false: true;
 			
 			var $il = $uiConf.find("uivars [key='playlist.includeInLayout']");
 			_this.includeInLayout = ( $il.length && $li.get(0).getAttribute('value') == 'false' )? false : true;

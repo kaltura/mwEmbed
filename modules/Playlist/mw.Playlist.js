@@ -93,7 +93,7 @@ mw.Playlist.prototype = {
 			_this.sourceHandler = sourceHandler;
 			// Check if load failed or empty playlist
 			if( _this.sourceHandler.getClipList().length == 0 ){
-				$j( _this.target ).empty().text( gM('mwe-playlist-empty') )
+				$j( _this.target ).empty().text( gM('mwe-playlist-empty') );
 				return ;
 			}
 			//check if we should include the ui 
@@ -180,7 +180,7 @@ mw.Playlist.prototype = {
 				}
 				// Add a divider
 				if( inx != 0 ){
-					$plListSet.append( $j('<span />').text( ' | ') )
+					$plListSet.append( $j('<span />').text( ' | ') );
 				}
 				$plListSet.append(
 					$j('<a />')
@@ -216,7 +216,7 @@ mw.Playlist.prototype = {
 					'padding' : '2px',
 					'width'	: '16px',
 					'height' : '16px'
-				})
+				});
 
 				var $buttonSpan = $j('<span />')
 					.addClass( 'ui-icon' )
@@ -230,8 +230,8 @@ mw.Playlist.prototype = {
 
 					mw.log("scroll to: " + pos + ' left: ' + listSetLeft);
 					$plListSet.animate({'left': -( listSetLeft - baseButtonWidth) + 'px'} );
-				}
-
+				};
+				
 				$plListContainer
 				.append(
 					$scrollButton.clone()
@@ -241,7 +241,7 @@ mw.Playlist.prototype = {
 						//slide right
 						if( plScrollPos >= 0){
 							mw.log("scroll right");
-							plScrollPos--
+							plScrollPos--;
 							scrollToListPos( plScrollPos );
 						}
 					})
@@ -258,7 +258,7 @@ mw.Playlist.prototype = {
 						}
 					})
 					.buttonHover()
-				)
+				);
 			}
 		};
 
@@ -272,7 +272,7 @@ mw.Playlist.prototype = {
 				$j( _this.target + ' .media-rss-video-list' ).css( {
 					'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 4,
 					'width' : '100%'
-				} )
+				} );
 				// Add space for the multi-playlist selector:
 				if( _this.sourceHandler.hasMultiplePlaylists() ){
 					// also adjust .playlistSet-container if present
@@ -289,15 +289,15 @@ mw.Playlist.prototype = {
 				$j( _this.target + ' .media-rss-video-list').css( {
 					'top' : '0px',
 					'left' : $j( _this.target + ' .media-rss-video-player-container' ).width() + 4
-				} )
+				} );
 				// Add space for the multi-playlist selector:
 				if( _this.sourceHandler.hasMultiplePlaylists() ){
 					$j( _this.target + ' .playlistSet-container').css( {
 						'left' : $j( _this.target + ' .media-rss-video-player-container' ).width() + 4
-					})
+					});
 					$j( _this.target + ' .media-rss-video-list').css( {
 						'top' : '26px'
-					})
+					});
 				}
 			}
 			var $videoList = $j( _this.target + ' .media-rss-video-list' );
@@ -320,11 +320,11 @@ mw.Playlist.prototype = {
 					'top' : curTop,
 					'bottom' : '48px',
 					'right': '8px'
-				})
+				});
 				if( _this.layout == 'vertical' ){
 					$j( _this.target + ' .media-rss-video-list' ).css({
 						'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 8
-					})
+					});
 				}
 				
 				// Add scroll buttons if configured to do so:
@@ -377,7 +377,7 @@ mw.Playlist.prototype = {
 
 					var targetPos = curTop - (clipSize * 3);
 					if( targetPos < 0 ){
-						targetPos = 0
+						targetPos = 0;
 					}
 					mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
 					$videoList.animate({'scrollTop': targetPos }, 500 );
@@ -385,7 +385,7 @@ mw.Playlist.prototype = {
 					return false;
 				})
 			)
-		)
+		);
 	},
 	/**
 	* Update the target size of the player
@@ -482,7 +482,7 @@ mw.Playlist.prototype = {
 			} )
 			.text(
 				_this.sourceHandler.getClipTitle( clipIndex )
-			)
+			);
 		$j( _this.target + ' .media-rss-video-player-container' ).find('.playlist-title').remove();
 		$j( _this.target + ' .media-rss-video-player-container' ).prepend( $title );
 
@@ -491,7 +491,7 @@ mw.Playlist.prototype = {
 			.removeClass( 'ui-state-active' )
 			.addClass( 'ui-state-default' )
 			.eq( clipIndex )
-			.addClass( 'ui-state-active' )
+			.addClass( 'ui-state-active' );
 
 	},
 
@@ -524,11 +524,12 @@ mw.Playlist.prototype = {
 				// Update the inDomVideo object:
 				// NOTE: this hits a lot of internal stuff
 				// XXX Should refactor to use embedPlayer interfaces!
-				var vidInterface = $j( _this.target + ' .media-rss-video-player-container' ).find('.mwplayer_interface div').get(0)
+				var vidInterface = $j( _this.target + ' .media-rss-video-player-container' )
+					.find('.mwplayer_interface div').get(0);
 				// Copy over the video attributes to the the videoInterface
 				$j( $video[0].attributes ).each( function(attrName, attrValue){
 					vidInterface[ attrName ] = attrValue;
-				})
+				});
 				vidInterface.pid = 'pid_' + $video.attr('id');
 				// Update the interface restore source ( xxx this is a pretty ugly hack )
 				vidInterface.mediaElement.sources = [];
@@ -540,7 +541,7 @@ mw.Playlist.prototype = {
 				$j( vidInterface ).attr('id', $video.attr('id'));
 
 				if( $video.data('kuiconf') ){
-					$j( vidInterface ).data( 'kuiconf', $video.data('kuiconf') )
+					$j( vidInterface ).data( 'kuiconf', $video.data('kuiconf') );
 				}
 
 				// Update the current video target source
@@ -570,14 +571,14 @@ mw.Playlist.prototype = {
 						// update the player and play the next clip
 						_this.updatePlayer( _this.clipIndex, function(){
 							_this.play();
-						})
+						});
 
 					} else {
 						mw.log("Reached end of playlist run normal end action" );
 						// Update the onDone action object to not run the base control done:
 						embedPlayer.onDoneInterfaceFlag = true;
 					}
-				})
+				});
 			}
 			_this.addPlaylistSeekButtons( embedPlayer );
 			mw.log( "player should be ready: " + _this.clipIndex + ' ' + $j('#' +_this.getVideoPlayerId() ) );
@@ -610,7 +611,7 @@ mw.Playlist.prototype = {
 				.append(
 					$j('<span />')
 					.addClass( "ui-icon")
-				)
+				);
 			$controlBar.find( '.play-btn').after(
 				$plButton.clone().attr({
 						'title' : 'Previous clip'
@@ -620,7 +621,7 @@ mw.Playlist.prototype = {
 							_this.clipIndex--;
 							_this.updatePlayer( _this.clipIndex, function(){
 								_this.play();
-							})
+							});
 							return ;
 						}
 						mw.log("Cant prev: cur:" + _this.clipIndex );
@@ -635,13 +636,13 @@ mw.Playlist.prototype = {
 							_this.clipIndex++;
 							_this.updatePlayer( _this.clipIndex, function(){
 								_this.play();
-							})
+							});
 							return ;
 						}
 						mw.log("Cant next: cur:" + _this.clipIndex );
 					})
 					.find('span').addClass('ui-icon-seek-next').parent()
-			)
+			);
 		}
 	},
 	/**
@@ -656,7 +657,7 @@ mw.Playlist.prototype = {
 
 			// Output each item with the current selected index:
 			$itemBlock = $j('<div />')
-				.addClass( 'ui-widget-content ui-corner-all' )
+				.addClass( 'ui-widget-content ui-corner-all' );
 
 			if( _this.clipIndex == inx ){
 				$itemBlock.addClass( 'ui-state-active');
@@ -724,12 +725,12 @@ mw.Playlist.prototype = {
 					_this.play();
 				} );
 
-			}) //close $itemBlock
+			}); //close $itemBlock
 
 			// Add the itemBlock to the targetItem list
 			$targetItemList.append(
 				$itemBlock
-			)
+			);
 			mw.log("added item block : " + $targetItemList.children().length );
 		});
 	},
