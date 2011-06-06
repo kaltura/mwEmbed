@@ -354,13 +354,13 @@ mw.Playlist.prototype = {
 				.click(function(){
 					var clipListCount = $videoList.children().length;
 					var clipSize = $videoList.children(':first').height();
-					var curTop = $videoList.attr('scrollTop');
+					var curTop = $videoList.get(0).scrollTop;
 
 					var targetPos = curTop + (clipSize * 3);
 					if( targetPos > clipListCount * clipSize ){
 						targetPos = ( clipListCount * ( clipSize -1 ) );
 					}
-					//mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
+					mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
 					$videoList.animate({'scrollTop': targetPos }, 500 );
 
 					return false;
@@ -373,7 +373,7 @@ mw.Playlist.prototype = {
 				.click(function(){
 					var clipListCount = $videoList.children().length;
 					var clipSize = $videoList.children(':first').height();
-					var curTop = $videoList.attr('scrollTop');
+					var curTop = $videoList.get(0).scrollTop;
 
 					var targetPos = curTop - (clipSize * 3);
 					if( targetPos < 0 ){
