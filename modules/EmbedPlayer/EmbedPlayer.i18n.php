@@ -48,6 +48,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-close_btn' => 'Close',
 	'mwe-embedplayer-ogg-player-vlc-player' => 'VLC player',
 	'mwe-embedplayer-ogg-player-oggNative' => 'HTML5 Ogg player',
+        'mwe-embedplayer-ogg-player-mp3Native' => 'HTML5 MP3 player',
 	'mwe-embedplayer-ogg-player-h264Native' => 'HTML5 H.264 player',
 	'mwe-embedplayer-ogg-player-appleVdn' => 'Apple adaptive streaming player',
 	'mwe-embedplayer-ogg-player-webmNative' => 'HTML5 WebM player',
