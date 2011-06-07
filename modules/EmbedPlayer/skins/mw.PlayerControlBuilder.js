@@ -884,6 +884,9 @@ mw.PlayerControlBuilder.prototype = {
 			||
 			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length
 			&& this.embedPlayer.mediaElement.getSources( 'application/vnd.apple.mpegurl' ).length )
+			||
+			( mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'audio/mpeg' ).length
+			&& this.embedPlayer.mediaElement.getSources( 'audio/mpeg' ).length )
 		){
 			// No firefox link if a h.264 or flash/flv stream is present
 			return false;
