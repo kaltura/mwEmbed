@@ -316,6 +316,7 @@ EmbedPlayerManager.prototype = {
 		}
 		// If we don't have a native player don't wait for metadata
 		if( !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'oggNative') &&
+                        !mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'mp3Native') &&
 			!mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'webmNative') &&
 			!mw.EmbedTypes.getMediaPlayers().isSupportedPlayer( 'h264Native' ) )
 		{
@@ -556,7 +557,7 @@ mediaSource.prototype = {
 			this.mimeType = $j( element ).attr( 'content-type' );
 		}else if( $j( element ).get(0).tagName.toLowerCase() == 'audio' ){
 			// If the element is an "audio" tag set audio format
-			this.mimeType = 'audio/ogg';
+			this.mimeType = this.detectType( this.src );
 		} else {
 			this.mimeType = this.detectType( this.src );
 		}
@@ -708,6 +709,9 @@ mediaSource.prototype = {
 			case 'audio/ogg' :
 				return gM( 'mwe-embedplayer-video-audio' );
 			break;
+			case 'audio/mpeg' :
+				return 'MPEG audio'; // FIXME: i18n
+			break;
 			case 'video/3gp' :
 				return '3gp video'; // FIXME: i18n
 			break;
@@ -802,6 +806,9 @@ mediaSource.prototype = {
 			break;
 			case 'oga':
 				return 'audio/ogg';
+			break;
+			case 'mp3':
+				return 'audio/mpeg';
 			break;
 			case 'anx':
 				return 'video/ogg';
@@ -1017,6 +1024,9 @@ mediaElement.prototype = {
 			var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( mimeType );
 			if ( player && player.library == 'Native'	) {
 				switch( player.id	){
+					case 'mp3Native':
+						namedSources['mp3'] = playableSources[ source ];
+						break;
 					case 'oggNative':
 						namedSources['ogg'] = playableSources[ source ];
 						break;
@@ -3362,6 +3372,7 @@ var cortadoPlayer = new mediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'appl
 var oggNativePlayer = new mediaPlayer( 'oggNative', ['video/ogg', 'audio/ogg', 'application/ogg' ], 'Native' );
 var h264NativePlayer = new mediaPlayer( 'h264Native', ['video/h264'], 'Native' );
 var appleVdnPlayer = new mediaPlayer( 'appleVdn', ['application/vnd.apple.mpegurl'], 'Native');
+var mp3NativePlayer = new mediaPlayer( 'mp3Native', ['audio/mpeg'], 'Native' );
 
 var webmNativePlayer = new mediaPlayer( 'webmNative', ['video/webm'], 'Native' );
 
@@ -3415,6 +3426,7 @@ mediaPlayers.prototype =
 		this.defaultPlayers['video/webm'] = ['Native', 'Vlc'];
 		this.defaultPlayers['application/ogg'] = ['Native', 'Vlc', 'Java', 'Generic'];
 		this.defaultPlayers['audio/ogg'] = ['Native', 'Vlc', 'Java' ];
+		this.defaultPlayers['audio/mpeg']= ['Native'];
 		this.defaultPlayers['video/mp4'] = ['Vlc'];
 		this.defaultPlayers['video/mpeg'] = ['Vlc'];
 		this.defaultPlayers['video/x-msvideo'] = ['Vlc'];
@@ -3662,6 +3674,8 @@ mw.EmbedTypes = {
 				|| typeof HTMLVideoElement == 'function' ) // Opera
 		{
 			// Test what codecs the native player supports:
+                  var mp3 = false;
+
 			try {
 				var dummyvid = document.createElement( "video" );
 				if( dummyvid.canPlayType ) {
@@ -3673,11 +3687,15 @@ mw.EmbedTypes = {
 					// Test for h264:
 					if ( dummyvid.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
 						this.mediaPlayers.addPlayer( h264NativePlayer );
+                                                this.mediaPlayers.addPlayer( mp3NativePlayer );
+                                                mp3 = true;
 					}
 
-					// Ipad and Iphone support apple adaptive:
+					// Ipad and Iphone support apple adaptive and MP3:
 					if( mw.isIpad() || mw.isIphone() ){
 						this.mediaPlayers.addPlayer( appleVdnPlayer );
+                                          if (!mp3)
+                                            this.mediaPlayers.addPlayer( mp3NativePlayer );
 					}
 
 					// For now if Android assume we support h264Native (FIXME
