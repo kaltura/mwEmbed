@@ -31,7 +31,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		this.getKClient().playerLoader({
 			'uiconf_id' : this.uiconf_id
 		}, function( playerData ){
-			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );
+			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );		
 			_this.playlistSet = [];
 			// Add in flashvars playlist id if present:
 			if( _this.playlist_id !== null ){
@@ -42,6 +42,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			// Add all playlists to playlistSet
 			var $uiConf = $j(  playerData.uiConf );				
+
 			// Check for autoContinue ( we check false state so that by default we autoContinue ) 
 			var $ac = $uiConf.find("uivars [key='playlistAPI.autoContinue']");
 			_this.autoContinue = ( $ac.length && $ac.get(0).getAttribute('value') == 'false' )? false: true;
@@ -207,13 +208,11 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	getPlaylistItem: function( clipIndex ){
 		var _this = this;
-		mw.log( this.$playlistItemRenderer.html() );
-		
+
 		var $item = $j('<div />');
 		$item.append( 
 			this.getBoxLayout(clipIndex, this.$playlistItemRenderer) 
 		);
-		
 		return $item;
 	},
 	getBoxLayout: function(  clipIndex, $currentBox ){
@@ -292,6 +291,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 					break;
 				case 'stylename': 
 					styleName = attr.nodeValue;
+					$target.addClass(styleName);
 					break;
 				case 'url':
 					$target.attr('src',  _this.uiConfValueLookup(clipIndex, attr.nodeValue ) );

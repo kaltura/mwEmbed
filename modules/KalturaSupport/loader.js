@@ -284,7 +284,7 @@
 							var playlistConfig = {
 								'uiconf_id' : $j( playlistTarget).attr('kuiconfid'),
 								'widget_id' : $j( playlistTarget).attr('kwidgetid'),
-								'playlist_id': $j( playlistTarget).attr('kplaylistid')										
+								'playlist_id': $j( playlistTarget).attr('kplaylistid')							
 							};
 							// Check if we have a mediaRss url as the playlistId
 							if( mw.isUrl( playlistConfig.playlist_id ) ) {
@@ -297,7 +297,8 @@
 											? 'horizontal' : 'vertical';
 							var playlistPlayer = $j( '#' + playlistTarget.id ).playlist({
 								'layout': layout,
-								'sourceHandler' : kalturaPlaylistHanlder
+								'sourceHandler' : kalturaPlaylistHanlder,
+								'titleHeight' : 0 // kaltura playlist don't include the title ontop of the vidoe
 							});						
 						});
 						// XXX todo playlist is not really ready for api calls at this point :(

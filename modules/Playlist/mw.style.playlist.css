@@ -5,6 +5,7 @@
 }
 .playlistItem {
 	font-size: 12px;
+	margin: 5px;
 }
 .playlistItem .clipText {
 	float: left;
@@ -15,4 +16,21 @@
 	float: right;
 	height:20px;
 	padding-top:10px;
+}
+.playlistSet-container{
+	font-size:12px;
+	margin:5px;
+}
+.media-rss-video-list{
+	margin:5px;
+}
+
+.playlistSetList{
+	padding-left:15px;	
+}
+.playlistSetList a{
+	color: #999;
+}
+.playlistSetList a.active{
+	color: #fff;
 }

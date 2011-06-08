@@ -77,7 +77,7 @@ mw.Playlist.prototype = {
 			mw.getConfig('Playlist.itemThumbWidth');
 
 		// Default title height:
-		this.titleHeight = ( options.titleHeight ) ?
+		this.titleHeight = ( typeof options.titleHeight != 'undefined') ?
 			options.titleHeight :
 			mw.getConfig( 'Playlist.titleHeight' );
 
@@ -486,20 +486,21 @@ mw.Playlist.prototype = {
 	updatePlayerUi:function( clipIndex ){
 		var _this = this;
 		var playerSize = _this.getTargetPlayerSize() ;
-		// Build and output the title
-		var $title = $j('<div />' )
-			.addClass( 'playlist-title ui-state-default ui-widget-header ui-corner-all')
-			.css( {
-				'top' : '0px',
-				'height' : _this.titleHeight,
-				'width' : playerSize.width
-			} )
-			.text(
-				_this.sourceHandler.getClipTitle( clipIndex )
-			);
-		$j( _this.target + ' .media-rss-video-player-container' ).find('.playlist-title').remove();
-		$j( _this.target + ' .media-rss-video-player-container' ).prepend( $title );
-
+		if( this.titleHeight != 0){
+			// Build and output the title
+			var $title = $j('<div />' )
+				.addClass( 'playlist-title ui-state-default ui-widget-header ui-corner-all')
+				.css( {
+					'top' : '0px',
+					'height' : _this.titleHeight,
+					'width' : playerSize.width
+				} )
+				.text(
+					_this.sourceHandler.getClipTitle( clipIndex )
+				);
+			$j( _this.target + ' .media-rss-video-player-container' ).find('.playlist-title').remove();
+			$j( _this.target + ' .media-rss-video-player-container' ).prepend( $title );
+		}
 		// Update the player list if present:
 		$j( _this.target + ' .clipItemBlock')
 			.removeClass( 'ui-state-active' )
