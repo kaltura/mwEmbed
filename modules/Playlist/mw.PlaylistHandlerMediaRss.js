@@ -45,6 +45,9 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		return false;
 	},
 	hasPlaylistUi: function(){
+		if( this.playlist.layout == 'noClipList' ){
+			return false;
+		} 
 		return this.includeInLayout;
 	},
 	getSrc: function(){
@@ -82,10 +85,6 @@ mw.PlaylistHandlerMediaRss.prototype = {
 
 	applyCustomClipData: function( embedPlayer, clipIndex ){
 		return {};
-	},
-	// check if we should draw playlist ui:
-	hasPlaylistUi: function(){
-		return this.hasPlaylistUi;
 	},
 	getClipList: function(){
 		return this.$rss.find('item');
@@ -169,7 +168,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 						_this.getClipDuration( clipIndex )
 					)
 				)
-			)
+			);
 		}
 		return $item;
 	}

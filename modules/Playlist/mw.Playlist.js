@@ -65,7 +65,7 @@ mw.Playlist.prototype = {
 		this.layout = ( options.layout ) ?
 			options.layout :
 			mw.getConfig( 'Playlist.layout' );
-
+		
 		// Player aspect ratio
 		this.playerAspect = ( options.playerAspect ) ?
 			options.playerAspect :
@@ -83,7 +83,7 @@ mw.Playlist.prototype = {
 
 	},
 	
-	drawPlaylist: function(){
+	drawPlaylist: function( callback ){
 		var _this = this;
 		// Set the target to loadingSpinner:
 		$j( this.target ).empty().loadingSpinner();
@@ -96,7 +96,7 @@ mw.Playlist.prototype = {
 				$j( _this.target ).empty().text( gM('mwe-playlist-empty') );
 				return ;
 			}
-			//check if we should include the ui 
+			// Check if we should include the ui 
 			if( _this.sourceHandler.hasPlaylistUi() ){
 				_this.drawUI();
 			} else {
@@ -105,9 +105,12 @@ mw.Playlist.prototype = {
 				.append(
 					_this.getPlayerContainer()
 				);
-				_this.updatePlayer( _this.clipIndex );
+				_this.updatePlayer( _this.clipIndex, callback );
 			}
 		});
+	},
+	getClipList:function(){
+		return  this.sourceHandler.getClipList();
 	},
 	getPlayerContainer:function(){
 		return $j( '<span />' )
@@ -431,13 +434,23 @@ mw.Playlist.prototype = {
 		
 		return this.targetPlayerSize;
 	},
-
+	// update clip and play it ( wraps the updatePlayer function ) 
+	playClip: function( clipIndex , callback ){
+		var _this = this;
+		this.updatePlayer( clipIndex, function(){
+			// XXX not sure why timeout is needed here ... need to clean up updatePlayer callback
+			setTimeout(function(){
+				$j('#' +_this.getVideoPlayerId( clipIndex) ).get(0).play();
+			},100);
+		});
+	},
 	/**
 	* update the player
 	*/
 	updatePlayer: function( clipIndex , callback ){
 		var _this = this;
 		var playerSize = _this.getTargetPlayerSize() ;
+		this.clipIndex = clipIndex;
 		// If we have a ui .. update it: 
 		if( _this.sourceHandler.hasPlaylistUi() ){
 			this.updatePlayerUi( clipIndex );
@@ -553,11 +566,13 @@ mw.Playlist.prototype = {
 				$inDomVideo.get(0).load();
 			}
 		}
-
-
 		// Update the video tag with the embedPlayer
-		$j.embedPlayers( function(){
+		$j('#' +_this.getVideoPlayerId( _this.clipIndex ) ).embedPlayer( function(){
 			var embedPlayer = $j('#' +_this.getVideoPlayerId( _this.clipIndex ) ).get(0);
+			if(!embedPlayer){
+				mw.log("mw.Playlist::updateVideoPlayer > Error, embedPlayer not defined at embedPlayer ready time");
+				return;
+			}
 			// Setup ondone playing binding to play next clip (if autoContinue is true )
 			if( _this.sourceHandler.autoContinue == true ){
 				$j( embedPlayer ).unbind('ended.playlist').bind( 'ended.playlist', function(event ){
@@ -593,7 +608,6 @@ mw.Playlist.prototype = {
 		var _this = this;
 		// add previous / next buttons if not present: 
 		// TODO (HACK) we should do real controlBar support for custom buttons
-		
 		if( embedPlayer.controlBuilder ){
 			$controlBar = embedPlayer.$interface.find('.control-bar');
 			

@@ -27,6 +27,27 @@
 			'type' : 'application/rss+xml',
 			'theme' : 'mobile'
 		});
+
+		$j('#mediaRssMobileExternal').playlist({
+			'src' : "kalturaInterviewPlaylist.xml",
+			'type' : 'application/rss+xml',
+			'layout' : 'noClipList'
+		}, function( playlist ){
+			var $cl = $j('#externalClipList');
+			var clipList = playlist.getClipList();
+			$j.each( clipList, function ( inx, clip ) {
+				$cl.append( 
+					$j('<a />').text( 'clip ' + inx )
+					.attr('href', '#')
+					.click(function(){
+						playlist.playClip( inx );
+						return false;
+					}),
+					$j('<span />').text(' ')
+				);
+			});
+		});
+		
 	});
 </script>
 </head>
@@ -36,6 +57,11 @@
 iPad / Android style mobile interface:
  <div style="width:320px;height:356px" id="mediaRssMobile"> </div>
 <br />
+
+External interface play: <span id="externalClipList"></span>
+ <div style="width:320px;height:240px" id="mediaRssMobileExternal"> </div>
+<br />
+
 
 Sample Media Rss ( <a href="kalturaInterviewPlaylist.xml">kalturaInterviewPlay.xml</a> ) Vertical
 

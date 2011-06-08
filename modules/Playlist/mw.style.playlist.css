@@ -1,6 +1,6 @@
 .playlistItem img{
 	float: left;
-	padding-right: 2px;
+	padding: 4px;
 	vertical-align:middle;
 }
 .playlistItem {
