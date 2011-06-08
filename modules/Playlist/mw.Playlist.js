@@ -30,7 +30,9 @@ mw.Playlist.prototype = {
 			this.src = options.src;
 		
 		if( options.srcPayLoad )
-			this.srcPayLoad = unescape( options.srcPayLoad );
+                  {
+                    this.srcPayLoad = unescape(options.srcPayLoad).replace(/\+/g,' ');
+                  }
 		
 		// XXX We probably want to support empty playlist with js adding.
 		if( !this.src && !this.srcPayLoad ){
