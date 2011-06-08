@@ -230,33 +230,51 @@ mw.PlaylistHandlerKaltura.prototype = {
 				case 'vbox':
 				case 'hbox':
 					var $node = $j('<div />'); 
-					$node.css('margin-left', offsetLeft );					
+					if( offsetLeft )
+						$node.css('margin-left', offsetLeft );					
 					$node.append( 
 						_this.getBoxLayout( clipIndex, $j( boxItem) ) 
 					);
 					break;
 				case 'label':
 				case 'text':
-					var $node = $j('<span />'); 
+					var $node = $j('<span />').css('display','block');
 					break;
 			}
 			if( $node && $node.length ){
 				_this.applyUiConfAttributes(clipIndex, $node, boxItem);
-				offsetLeft+= $node.width();
-				// Box model! if we have margin left don't have width
-				if( $node.css('margin-left') ){
+				// add offset if not a percentage:
+				if( $node.css('width').indexOf('%') === -1 ){
+					offsetLeft+= $node.width();
+				}
+				// Box model! containers should not have width:
+				if( $node.get(0).nodeName.toLowerCase() == 'div' ){
 					$node.css('width', '');
 				}
-				
-				$boxContainer.append( $node );	
-				// check for box model ("100%" single line float right, left );
-				if( $boxContainer.find('span').length == 2 ){
-					 $boxContainer.find('span').slice(0).css('float', 'left');
-					 $boxContainer.find('span').slice(1).css('float', 'right');
-				}
-				
+				$boxContainer.append( $node );
 			}
 		});
+		// check for box model ("100%" single line float right, left );
+		if( $boxContainer.find('span').length == 2 && $boxContainer.find('span').slice(0).css('width') == '100%'){
+			 $boxContainer.find('span').slice(0).css({'width':'', 'float':'left'});
+			 $boxContainer.find('span').slice(1).css('float', 'right');
+		} else if ( $boxContainer.find('span').length > 1 ){ // check for multiple spans
+			$boxContainer.find('span').each(function(inx, node){
+				if( $(node).css('float') != 'right')
+					$(node).css('float', 'left');
+			})
+		}
+		// and adjust 100% width to 95% ( handles edge cases of child padding )
+		$boxContainer.find('div,span').each(function( inx, node){
+			if( $j(node).css('width') == '100%')
+				$j(node).css('width', '95%'); 
+			
+			// and box layout does crazy things with virtual margins :( remove width for irDescriptionIrScreen
+			if( $j(node).data('id') == 'irDescriptionIrScreen' ){
+				$j(node).css('width', '');
+			}
+		});
+			
 		return $boxContainer;
 	},
 	applyUiConfAttributes:function(clipIndex, $target, confTag ){
@@ -270,6 +288,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			switch(  attr.nodeName.toLowerCase() ){
 				case 'id':
 					idName = attr.nodeValue;
+					$target.data('id', idName);
 					break;
 				case 'stylename': 
 					styleName = attr.nodeValue;
@@ -313,10 +332,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 	},
 	uiConfValueLookup: function(clipIndex, objectString ){
-		objectString = objectString.replace( /\{|\}/g, '' );
-		objectPath = objectString.split('.');
+		var parsedString = objectString.replace( /\{|\}/g, '' );
+		var objectPath = parsedString.split('.');
 		switch( objectPath[0] ){
-			// XXX todo a more complete parser and ui-conf emulator
+			// XXX todo a more complete parser and ui-conf evaluate property / text emulator
 			case 'formatDate(this':
 				// xxx should use suggested formating
 				return mw.seconds2npt( this.getClip( clipIndex ).duration );
@@ -324,6 +343,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 			case 'this':
 				return this.getClip( clipIndex )[ objectPath[1] ];
 			break;
+			default:
+				return objectString;
 		}
 	}
 };
