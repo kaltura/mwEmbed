@@ -42,9 +42,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			// Add all playlists to playlistSet
 			var $uiConf = $j(  playerData.uiConf );				
-			
-			mw.log( $uiConf.html() );
-			
 			// Check for autoContinue ( we check false state so that by default we autoContinue ) 
 			var $ac = $uiConf.find("uivars [key='playlistAPI.autoContinue']");
 			_this.autoContinue = ( $ac.length && $ac.get(0).getAttribute('value') == 'false' )? false: true;
@@ -55,6 +52,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			var $il = $uiConf.find("uivars [key='playlist.includeInLayout']");
 			_this.includeInLayout = ( $il.length && $li.get(0).getAttribute('value') == 'false' )? false : true;
 			
+			// Store all the playlist item render information:
 			_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
 			
 			// Force autoContoinue if there is no interface 
@@ -209,37 +207,123 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	getPlaylistItem: function( clipIndex ){
 		var _this = this;
-		var $item = $j('<div />')
-			.css('width', '100%')
-			.append(
-				$j('<img />')
-				.attr({
-					'alt' : _this.getClipTitle( clipIndex ),
-					'src' : _this.getClipPoster( clipIndex )
-				})
-				.css({
-					'width': _this.playlist.itemThumbWidth + 'px'
-				})
-				,
-				$j('<div />')
-				.addClass('clipText')
-				.append(
-					$j('<span />').addClass('clipTitle').text( _this.getClipTitle( clipIndex ) ), 
-					$j('<br />'),
-					$j('<span />').addClass('clipDescription').text( _this.getClipDesc( clipIndex ) )
-				)
-			);
-		if( _this.getClipDuration( clipIndex ) ){
-			$item.append(
-				$j('<div />')
-				.addClass('clipDuration')
-				.text(
-					mw.seconds2npt(
-						_this.getClipDuration( clipIndex )
-					)
-				)
-			);
-		}
+		mw.log( this.$playlistItemRenderer.html() );
+		
+		var $item = $j('<div />');
+		$item.append( 
+			this.getBoxLayout(clipIndex, this.$playlistItemRenderer) 
+		);
+		
 		return $item;
+	},
+	getBoxLayout: function(  clipIndex, $currentBox ){
+		var _this = this;
+		var offsetLeft = 0;
+		var $boxContainer = $j('<div />');
+		$j.each( $currentBox.children(), function( inx, boxItem ){
+			switch( boxItem.nodeName.toLowerCase() ){
+				case 'img':
+					var $node = $j('<img />');
+					// Custom html based alt tag ( not described in uiConf
+					$node.attr('alt', _this.getClipTitle( clipIndex ) );
+					break;
+				case 'vbox':
+				case 'hbox':
+					var $node = $j('<div />'); 
+					$node.css('margin-left', offsetLeft );					
+					$node.append( 
+						_this.getBoxLayout( clipIndex, $j( boxItem) ) 
+					);
+					break;
+				case 'label':
+				case 'text':
+					var $node = $j('<span />'); 
+					break;
+			}
+			if( $node && $node.length ){
+				_this.applyUiConfAttributes(clipIndex, $node, boxItem);
+				offsetLeft+= $node.width();
+				// Box model! if we have margin left don't have width
+				if( $node.css('margin-left') ){
+					$node.css('width', '');
+				}
+				
+				$boxContainer.append( $node );	
+				// check for box model ("100%" single line float right, left );
+				if( $boxContainer.find('span').length == 2 ){
+					 $boxContainer.find('span').slice(0).css('float', 'left');
+					 $boxContainer.find('span').slice(1).css('float', 'right');
+				}
+				
+			}
+		});
+		return $boxContainer;
+	},
+	applyUiConfAttributes:function(clipIndex, $target, confTag ){
+		var _this = this;
+		if( ! confTag ){
+			return ;
+		}
+		var styleName = null;
+		var idName = null;
+		$j.each( confTag.attributes, function( inx , attr){
+			switch(  attr.nodeName.toLowerCase() ){
+				case 'id':
+					idName = attr.nodeValue;
+					break;
+				case 'stylename': 
+					styleName = attr.nodeValue;
+					break;
+				case 'url':
+					$target.attr('src',  _this.uiConfValueLookup(clipIndex, attr.nodeValue ) );
+					break;
+				case 'width':
+				case 'height':
+					$target.css(attr.nodeName, attr.nodeValue);
+					break
+				case 'text':
+					$target.text( _this.uiConfValueLookup(clipIndex, attr.nodeValue ) );
+					break;
+				case 'font':
+					$target.css('font-family', attr.nodeValue);
+					break;
+					case 'x':
+					$target.css({
+						'left' :  attr.nodeValue
+					});
+					break;
+				case 'y':
+					$target.css({
+						'top' :  attr.nodeValue
+					});
+					break;
+			}
+		});
+		// Styles enforce some additional constraints
+		switch( styleName ){
+			case 'itemRendererLabel':
+				// hack to read common description id ( no other way to tell layout size )
+				var tLength = ( idName =='irDescriptionIrScreen' )? 40 : 28;
+				// max length of 28-3 char
+				var text = $target.text();
+				if( text.length > tLength ){
+					$target.text( text.substr(0, tLength-3) + '...' );
+				}
+				break;
+		}
+	},
+	uiConfValueLookup: function(clipIndex, objectString ){
+		objectString = objectString.replace( /\{|\}/g, '' );
+		objectPath = objectString.split('.');
+		switch( objectPath[0] ){
+			// XXX todo a more complete parser and ui-conf emulator
+			case 'formatDate(this':
+				// xxx should use suggested formating
+				return mw.seconds2npt( this.getClip( clipIndex ).duration );
+			break;
+			case 'this':
+				return this.getClip( clipIndex )[ objectPath[1] ];
+			break;
+		}
 	}
 };

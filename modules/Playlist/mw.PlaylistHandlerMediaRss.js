@@ -137,7 +137,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		});
 		return itemDuration;
 	},
-	getPlaylistItem: function( clipIndex ){
+	getPlaylistItem: function( $itemBlock, clipIndex ){
 		var _this = this;
 		var $item = $j('<div />')
 			.css('width', '100%')

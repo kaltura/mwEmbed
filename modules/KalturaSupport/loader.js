@@ -298,7 +298,7 @@
 							var playlistPlayer = $j( '#' + playlistTarget.id ).playlist({
 								'layout': layout,
 								'sourceHandler' : kalturaPlaylistHanlder
-							});
+							});						
 						});
 						// XXX todo playlist is not really ready for api calls at this point :(
 						// we need to setup a binding and ready event

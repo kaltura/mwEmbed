@@ -139,7 +139,8 @@ mw.Playlist.prototype = {
 			.css({
 				'position' : 'absolute',
 				'z-index' : '1',
-				'overflow' : 'auto',
+				'overflow-x' : 'hidden',
+				'overflow-y' : 'auto',
 				'bottom': '7px',
 				'right' : '0px'
 			})
