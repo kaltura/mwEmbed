@@ -151,6 +151,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	},
 	getPlaylistItem: function( clipIndex ){
 		var _this = this;
+		var width = ( _this.playlist.itemThumbWidth )? _this.playlist.itemThumbWidth  : 70;
 		var $item = $j('<div />')
 			.css('width', '100%')
 			.append(
@@ -160,7 +161,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 					'src' : _this.getClipPoster( clipIndex )
 				})
 				.css({
-					'width': _this.playlist.itemThumbWidth + 'px'
+					'width': width + 'px'
 				})
 				,
 				$j('<div />')
