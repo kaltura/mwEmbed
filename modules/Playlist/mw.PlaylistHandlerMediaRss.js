@@ -31,7 +31,8 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		}
 		// Check if we have the source pre-loaded:
 		if( this.getSrcPayLoad() ) {
-			this.$rss = $j( this.getSrcPayLoad() );
+			var xmlDoc =  $j.parseXML( this.getSrcPayLoad() );
+			this.$rss = $j( xmlDoc );
 			callback( _this.$rss );
 			return ;
 		}
