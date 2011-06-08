@@ -136,6 +136,41 @@ mw.PlaylistHandlerMediaRss.prototype = {
 				return false;
 			}
 		});
-		return mw.seconds2npt( itemDuration )
+		return itemDuration;
+	},
+	getPlaylistItem: function( clipIndex ){
+		var _this = this;
+		var $item = $j('<div />')
+			.css('width', '100%')
+			.append(
+				$j('<img />')
+				.attr({
+					'alt' : _this.getClipTitle( clipIndex ),
+					'src' : _this.getClipPoster( clipIndex )
+				})
+				.css({
+					'width': _this.playlist.itemThumbWidth + 'px'
+				})
+				,
+				$j('<div />')
+				.addClass('clipText')
+				.append(
+					$j('<span />').addClass('clipTitle').text( _this.getClipTitle( clipIndex ) ), 
+					$j('<br />'),
+					$j('<span />').addClass('clipDescription').text( _this.getClipDesc( clipIndex ) )
+				)
+			);
+		if( _this.getClipDuration( clipIndex ) ){
+			$item.append(
+				$j('<div />')
+				.addClass('clipDuration')
+				.text(
+					mw.seconds2npt(
+						_this.getClipDuration( clipIndex )
+					)
+				)
+			)
+		}
+		return $item;
 	}
 };

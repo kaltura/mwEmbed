@@ -2185,6 +2185,11 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		});
 	};
 	mw.loadCustomResourceIncludes = function( loadSet, callback ){
+		// XXX this needs to be cleaned up ( for now dont include custom resources if not an iframe player )
+		if( !mw.getConfig('EmbedPlayer.IsIframePlayer' ) ){
+			callback();
+			return ;
+		}
 		if(!loadSet || loadSet.length == 0 ){
 			callback();
 			return ;

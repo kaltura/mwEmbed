@@ -43,6 +43,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 			// Add all playlists to playlistSet
 			var $uiConf = $j(  playerData.uiConf );				
 			
+			mw.log( $uiConf.html() );
+			
 			// Check for autoContinue ( we check false state so that by default we autoContinue ) 
 			var $ac = $uiConf.find("uivars [key='playlistAPI.autoContinue']");
 			_this.autoContinue = ( $ac.length && $ac.get(0).getAttribute('value') == 'false' )? false: true;
@@ -52,6 +54,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			var $il = $uiConf.find("uivars [key='playlist.includeInLayout']");
 			_this.includeInLayout = ( $il.length && $li.get(0).getAttribute('value') == 'false' )? false : true;
+			
+			_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
 			
 			// Force autoContoinue if there is no interface 
 			if( !_this.includeInLayout ){
@@ -189,7 +193,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			'partner_id' : this.getKClient().getPartnerId()
 		});
 	},
-	
 	/** 
 	* Get an item title from the $rss source
 	*/
@@ -203,5 +206,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 	getClipDuration: function ( clipIndex ) {	
 		return this.getClip( clipIndex ).duration;
+	},
+	getPlaylistItem: function ( clipIndex ){
+		
 	}
 };

@@ -199,6 +199,7 @@ mw.Playlist.prototype = {
 					.buttonHover()
 				);
 			});
+			
 			// Check playlistSet width and add scroll left / scroll right buttons
 			if( $plListSet.width() > $plListContainer.width() ){
 				var baseButtonWidth = 24;
@@ -334,7 +335,6 @@ mw.Playlist.prototype = {
 			}
 		});
 	},
-	
 	addScrollButtons: function( $videoList){
 		var _this = this;
 		$j( _this.target ).append(
@@ -651,59 +651,25 @@ mw.Playlist.prototype = {
 	addMediaList: function() {
 		var _this = this;
 		$targetItemList = $j( this.target + ' .media-rss-video-list');
-
+		// update the playlistItme total available width
+		this.playlistItemWidth = $targetItemList.width();
 		$j.each( this.sourceHandler.getClipList(), function( inx, clip ){
 			mw.log( 'mw.Playlist::addMediaList: On clip: ' + inx);
 
 			// Output each item with the current selected index:
 			$itemBlock = $j('<div />')
-				.addClass( 'ui-widget-content ui-corner-all' );
+				.addClass( 'ui-widget-content ui-corner-all playlistItem ui-helper-clearfix' );
+				
 
 			if( _this.clipIndex == inx ){
 				$itemBlock.addClass( 'ui-state-active');
 			} else {
 				$itemBlock.addClass( 'ui-state-default' );
 			}
-
 			// Add a single row table with image, title then duration
 			$itemBlock.append(
-				$j( '<table />')
-				.css( {
-					'border': '0px',
-					'width' : '100%',
-					'font-size': '.8em'
-				})
-				.addClass('ui-state-active')
-				.append(
-					$j('<tr />')
-					.append(
-						$j( '<td />')
-						.css('width', _this.itemThumbWidth + 'px' )					
-						.append(
-							$j('<img />')
-							.attr({
-								'alt' : _this.sourceHandler.getClipTitle( inx ),
-								'src' : _this.sourceHandler.getClipPoster( inx )
-							})
-							.css( 'width', _this.itemThumbWidth + 'px')
-						),
-						$j( '<td />')
-						.append(
-							$j('<p />').addClass('clipTitle').text( _this.sourceHandler.getClipTitle( inx ) ), 
-							$j('<span />').addClass('clipDescription').text( _this.sourceHandler.getClipDesc( inx ) )
-						),
-
-						$j( '<td />')
-						.css( 'width', '50px')
-						.text(
-							mw.seconds2npt(
-								_this.sourceHandler.getClipDuration( inx )
-							)
-						)
-
-					)
-				) // table row
-			) // table block
+				_this.sourceHandler.getPlaylistItem( inx )
+			)				
 			.data( 'clipIndex', inx )
 			.buttonHover()
 			.addClass( 'clipItemBlock' 	)

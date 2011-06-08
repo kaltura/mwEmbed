@@ -406,11 +406,6 @@ function getFlashVersion(){
 // && html5 video tag ( for fallback & html5 player interface )
 var ranKCheckAddScript = false;
 function kCheckAddScript(){
-
-	if( ranKCheckAddScript ){
-		return ;
-	}
-	ranKCheckAddScript = true;
 	/**
 	 * Hard code some defaults for users not using the kaltura SAS
 	 * It kind of sucks to hard code this, But we can't deliver iframes for non SAS users atm. 
@@ -421,7 +416,6 @@ function kCheckAddScript(){
 		mw.setConfig( 'Kaltura.IframeRewrite', false );
 		mw.setConfig( 'Kaltura.UseManifestUrls', false);
 	}
-
 	// If user javascript is using mw.ready add script
 	if( window.preMwEmbedReady.length ) {
 		kAddScript();

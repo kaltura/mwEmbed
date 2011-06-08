@@ -9,7 +9,8 @@
 		"mw.Playlist" : "mw.Playlist.js",
 		"mw.PlaylistHandlerMediaRss" : "mw.PlaylistHandlerMediaRss.js",
 		"mw.PlaylistLayoutJQueryUi" : "mw.PlaylistLayoutJQueryUi.js",	
-		"mw.PlaylistLayoutMobile" : "mw.PlaylistLayoutMobile.js"	
+		"mw.PlaylistLayoutMobile" : "mw.PlaylistLayoutMobile.js",
+		"mw.style.playlist" : "mw.style.playlist.css"
 	});
 
 	// Set the default config
@@ -39,7 +40,7 @@
 	mw.addModuleLoader( 'Playlist', function(){
 		// TODO loader should check playlist configuration and conditionally load the MobileTheme
 		//, 'mw.PlaylistThemeUi', 'mw.PlaylistLayoutMobile'
-		return ["mw.Playlist", "mw.PlaylistHandlerMediaRss"];
+		return [ "mw.Playlist", "mw.style.playlist", "mw.PlaylistHandlerMediaRss" ];
 	});
 
 
