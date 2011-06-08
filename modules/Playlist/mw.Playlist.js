@@ -26,8 +26,17 @@ mw.Playlist.prototype = {
 	// constructor
 	init: function( options ) {
 
-		this.src = options.src;
-
+		if( options.src )
+			this.src = options.src;
+		
+		if( options.srcPayLoad )
+			this.srcPayLoad = unescape( options.srcPayLoad );
+		
+		// XXX We probably want to support empty playlist with js adding.
+		if( !this.src && !this.srcPayLoad ){
+			mw.log("Error no playlist source provided");
+		}
+		
 		this.target = options.target;
 
 		this.id = ( options.id )? options.id : $j( this.target ).attr( 'id' );

@@ -29,12 +29,20 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			callback( this.$rss );
 			return ;
 		}
-
+		// Check if we have the source pre-loaded:
+		if( this.getSrcPayLoad() ) {
+			this.$rss = $j( this.getSrcPayLoad() );
+			callback( _this.$rss );
+			return ;
+		}
+		
+		
 		// Show an error if a cross domain request:
 		if( ! mw.isLocalDomain( this.getSrc() ) ) {
 			mw.log("Error: trying to get cross domain playlist source: " + this.getSrc() );
 		}
-
+		
+		
 		// Note this only works with local sources
 		$j.get( mw.absoluteUrl( this.getSrc() ), function( data ){
 			_this.$rss = $j( data );
@@ -49,6 +57,9 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			return false;
 		} 
 		return this.includeInLayout;
+	},
+	getSrcPayLoad: function(){
+		return this.playlist.srcPayLoad;
 	},
 	getSrc: function(){
 		return this.playlist.src;
