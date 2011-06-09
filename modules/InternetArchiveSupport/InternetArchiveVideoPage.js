@@ -297,6 +297,7 @@ div.playlistItem img { display:none; }\n\
 div.playlistItem span.clipTitle     { padding-left:15px; }\n\
 div.playlistItem span.tn            { display:inline-block; width:25px; text-align:right; padding-right:5px; border-right:1px solid gray; }\n\
 div.playlistItem div.clipDuration  { padding-right:20px; padding-top:1px; }\n\
+div.movies div.playlistItem div.clipDuration  { display:none; }\n\
 div.ui-state-active {\n\
   background-image:url(/images/orange_arrow.gif) !important;\n\
   background-position:10px 2px !important;\n\
