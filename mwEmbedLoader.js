@@ -36,7 +36,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.4a1';
+KALTURA_LOADER_VERSION = '1.4a2';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -109,6 +109,9 @@ if( ! mw.getConfig ){
 if( !mw.ready){
 	mw.ready = function( fn ){	
 		window.preMwEmbedReady.push( fn );
+		kAddReadyHook(function(){
+			kAddScript();
+		});
 	};
 }
 
@@ -271,27 +274,27 @@ function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 function kOverideJsFlashEmbed(){
 	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTargetId, widthStr, heightStr ){	
 		// Add a ready event to re-write: 
-		mw.ready(function(){
-			// Setup the embedPlayer attributes
-			var embedPlayerAttributes = {
-				'kwidgetid' : kEmbedSettings.wid,
-				'kuiconfid' : kEmbedSettings.uiconf_id
-			};
-			var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceTargetId ).width();
-			var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceTargetId ).height();
-			
-			if( kEmbedSettings.entry_id ){
-				embedPlayerAttributes.kentryid = kEmbedSettings.entry_id;				
-				embedPlayerAttributes.poster = kGetEntryThumbUrl( {
-					'width' : width,
-					'height' : height,
-					'entry_id' :  kEmbedSettings.entry_id,
-					'partner_id': kEmbedSettings.p 
-				});
-			}
-			if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){
-				kalturaIframeEmbed( replaceTargetId, kEmbedSettings , { 'width': width, 'height': height } );
-			} else {
+		// Setup the embedPlayer attributes
+		var embedPlayerAttributes = {
+			'kwidgetid' : kEmbedSettings.wid,
+			'kuiconfid' : kEmbedSettings.uiconf_id
+		};
+		var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceTargetId ).width();
+		var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceTargetId ).height();
+		
+		if( kEmbedSettings.entry_id ){
+			embedPlayerAttributes.kentryid = kEmbedSettings.entry_id;				
+			embedPlayerAttributes.poster = kGetEntryThumbUrl( {
+				'width' : width,
+				'height' : height,
+				'entry_id' :  kEmbedSettings.entry_id,
+				'partner_id': kEmbedSettings.p 
+			});
+		}
+		if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){
+			kalturaIframeEmbed( replaceTargetId, kEmbedSettings , { 'width': width, 'height': height } );
+		} else {
+			mw.ready(function(){
 				$j('#' + replaceTargetId ).empty()
 				.css({
 					'width' : width,
@@ -299,8 +302,8 @@ function kOverideJsFlashEmbed(){
 				})
 				// Issue the embedPlayer call with embed attributes and the KDP ready callback
 				.embedPlayer( embedPlayerAttributes );
-			}
-		});
+			});
+		}
 	};
 	// flashobject
 	if( window['flashembed'] && !window['originalFlashembed'] ){
