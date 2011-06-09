@@ -48,10 +48,6 @@ mw.Playlist.prototype = {
 			this.id = 'playlist_' + Math.random();
 		}
 
-		// Set the sourceHandler if provided ( should remove in favor of events )
-		if( options.sourceHandler ) {
-			this.sourceHandler = options.sourceHandler;
-		}
 		// Set the layoutHandler ( not yet active ) 
 		/*if( !options.layoutHandler || option.layoutHandler == 'jqueryui'  ){
 			this.layoutHandler = new mw.PlaylistThemeUi( this );
@@ -165,7 +161,7 @@ mw.Playlist.prototype = {
 				var leftPx = '444px';
 			}
 			var $plListContainer =$j('<div />')
-			.addClass( 'playlistSet-container ui-state-default ui-widget-header ui-corner-all' )
+			.addClass( 'playlistSet-container' )
 			.css({
 				'position' : 'absolute',
 				'overflow' : 'hidden',
@@ -739,6 +735,9 @@ mw.Playlist.prototype = {
 	 */
 	loadPlaylistHandler: function( callback ){
 		var _this = this;
+		// Allow plugins to setup the source handler: 
+		$j(mw).trigger('Playlist_GetSourceHandler', [this] );
+		
 		if( !_this.sourceHandler ){
 			switch( this.type ){
 				case 'application/rss+xml':

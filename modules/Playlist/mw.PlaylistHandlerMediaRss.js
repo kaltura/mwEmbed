@@ -1,5 +1,5 @@
-mw.PlaylistHandlerMediaRss = function( Playlist ){
-	return this.init( Playlist );
+mw.PlaylistHandlerMediaRss = function( playlist ){
+	return this.init( playlist );
 }
 
 mw.PlaylistHandlerMediaRss.prototype = {
@@ -15,8 +15,8 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	// If the playlist ui should be displayed
 	includeInLayout: true,
 
-	init: function ( Playlist ){
-		this.playlist = Playlist;
+	init: function ( playlist ){
+		this.playlist = playlist;
 	},
 
 	/**

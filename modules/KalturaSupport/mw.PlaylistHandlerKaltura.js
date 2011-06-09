@@ -1,5 +1,5 @@
-mw.PlaylistHandlerKaltura = function( options ){
-	return this.init( options );
+mw.PlaylistHandlerKaltura = function( playlist, options ){
+	return this.init( playlist, options );
 };
 
 mw.PlaylistHandlerKaltura.prototype = {
@@ -15,7 +15,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 	uiConfData : null,
 	includeInLayout: false,
 	
-	init: function ( options ){
+	init: function ( playlist, options ){
+		this.playlist = playlist;
 		this.uiconf_id =  options.uiconf_id;
 		this.widget_id = options.widget_id;
 		if( options.playlist_id ){

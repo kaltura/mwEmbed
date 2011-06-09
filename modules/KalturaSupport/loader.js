@@ -280,24 +280,11 @@
 					mw.load( playlistRequest, function(){
 						// kalturaPlaylistObject has player loader built in: 
 						$j('.mwEmbedKalturaPlaylistSwap').each( function( inx, playlistTarget ) {
-							
-							var playlistConfig = {
-								'uiconf_id' : $j( playlistTarget).attr('kuiconfid'),
-								'widget_id' : $j( playlistTarget).attr('kwidgetid'),
-								'playlist_id': $j( playlistTarget).attr('kplaylistid')							
-							};
-							// Check if we have a mediaRss url as the playlistId
-							if( mw.isUrl( playlistConfig.playlist_id ) ) {
-								var kalturaPlaylistHanlder = new mw.PlaylistHandlerKalturaRss( playlistConfig );
-							} else {
-								var kalturaPlaylistHanlder = new mw.PlaylistHandlerKaltura( playlistConfig );
-							}
 							// Quick non-ui conf check for layout mode
 							var layout = ( $j( playlistTarget ).width() > $j( playlistTarget ).height() ) 
 											? 'horizontal' : 'vertical';
 							var playlistPlayer = $j( '#' + playlistTarget.id ).playlist({
 								'layout': layout,
-								'sourceHandler' : kalturaPlaylistHanlder,
 								'titleHeight' : 0 // kaltura playlist don't include the title ontop of the video
 							});
 						});
@@ -339,6 +326,26 @@
 		}
 	} );
 	
+	$j( mw ).bind("Playlist_GetSourceHandler", function( event, playlist){
+		var $playlistTarget = $j( playlist.target );
+		// Check if we are dealing with a kaltura player: 
+		// XXX should move these properties over to data- or .data attributes 
+		if( !$playlistTarget.attr('kwidgetid') ){
+			return ;
+		}
+		
+		var playlistConfig = {
+			'uiconf_id' : $playlistTarget.attr('kuiconfid'),
+			'widget_id' : $playlistTarget.attr('kwidgetid'),
+			'playlist_id': $playlistTarget.attr('kplaylistid')							
+		};		
+		// Check if we have a mediaRss url as the playlistId
+		if( mw.isUrl( playlistConfig.playlist_id ) ) {
+			playlist.sourceHandler = new mw.PlaylistHandlerKalturaRss( playlist, playlistConfig );
+		} else {
+			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
+		}
+	});
 	
 	/**
 	 * Get a kaltura iframe
