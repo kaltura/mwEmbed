@@ -38,7 +38,7 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 				
 				// Make sure we have a client session established: 
 				mw.KApiPlayerLoader( playerRequest, function( playerData ) {
-					mw.getEntryIdSourcesFromApi( kEmbedSettings.entry_id , function( sources ){						
+					mw.getEntryIdSourcesFromApi(kEmbedSettings.wid, kEmbedSettings.entry_id , function( sources ){						
 						for( var i in sources ){
 							sources[i].durationHint = clipDuration;
 						}

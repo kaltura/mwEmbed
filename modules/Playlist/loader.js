@@ -16,24 +16,28 @@
 	// Set the default config
 	mw.setDefaultConfig( {
 		// Playlist layout 'vertical' or 'horizontal'
-		'Playlist.layout' : 'vertical',
+		'Playlist.Layout' : 'vertical',
 		
 		// Skin, presently 'jqueryui' or 'jquerymobile' supported
 		"Playlist.Skin" : "jqueryui",
 			
 		// Player aspect ratio
-		'Playlist.playerAspect' : '4:3',
+		'Playlist.PlayerAspect' : '4:3',
 
 		// Width of item thubmnails
-		'Playlist.itemThumbWidth' : '60',
+		'Playlist.ItemThumbWidth' : '60',
 		
 		'Playlist.ShowScrollButtons' : true,
 
 		// Height of the mediaRss title
-		'Playlist.titleHeight' : '20',
+		'Playlist.TitleHeight' : '20',
 
 		// Default playlist type:
-		'Playlist.defaultType' : 'application/rss+xml'
+		'Playlist.DefaultType' : 'application/rss+xml',
+			
+		'Playlist.TitleLength' : 28,
+		
+		'Playlist.DescriptionLength' : 40
 	} );
 
 	// Module loader

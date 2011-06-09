@@ -298,8 +298,8 @@
 							var playlistPlayer = $j( '#' + playlistTarget.id ).playlist({
 								'layout': layout,
 								'sourceHandler' : kalturaPlaylistHanlder,
-								'titleHeight' : 0 // kaltura playlist don't include the title ontop of the vidoe
-							});						
+								'titleHeight' : 0 // kaltura playlist don't include the title ontop of the video
+							});
 						});
 						// XXX todo playlist is not really ready for api calls at this point :(
 						// we need to setup a binding and ready event

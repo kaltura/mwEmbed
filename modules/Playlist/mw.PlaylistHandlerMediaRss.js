@@ -132,8 +132,13 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	 *  Get a clip description 
 	 */
 	getClipDesc: function( clipIndex ){
-		// TODO lookup clip description
-		return '';
+		var $item = this.$rss.find('item').eq( clipIndex ) ;
+		var mediaDesc = $item.get(0).getElementsByTagNameNS( this.mediaNS, 'description' );
+		if( mediaDesc ){
+			return $j( mediaDesc ).text();
+		}
+		mw.log("Error could not find description for clip: " + clipIndex );
+		return gM('mwe-mediarss-untitled');
 	},
 
 	getClipDuration: function ( clipIndex ) {
@@ -167,22 +172,33 @@ mw.PlaylistHandlerMediaRss.prototype = {
 				$j('<div />')
 				.addClass('clipText')
 				.append(
-					$j('<span />').addClass('clipTitle').text( _this.getClipTitle( clipIndex ) ), 
-					$j('<br />'),
-					$j('<span />').addClass('clipDescription').text( _this.getClipDesc( clipIndex ) )
-				)
-			);
-		if( _this.getClipDuration( clipIndex ) ){
-			$item.append(
-				$j('<div />')
-				.addClass('clipDuration')
-				.text(
-					mw.seconds2npt(
-						_this.getClipDuration( clipIndex )
+					$j('<span />')
+					.addClass('clipTitle')
+					.text( 
+						_this.playlist.formatTitle( 
+								_this.getClipTitle( clipIndex ) 
+						)
+					)
+					,
+					$j('<div />')
+					.addClass('clipDuration')
+					.text(
+						mw.seconds2npt(
+							_this.getClipDuration( clipIndex )
+						)
 					)
 				)
-			);
-		}
+				,
+				$j('<div />').css('clear', 'right')
+				,
+				$j('<span />').addClass('clipDescription').text( 
+					_this.playlist.formatDescription(
+						_this.getClipDesc( clipIndex )
+					)
+				)
+			)
+			// poor mans tool tip: 
+			.attr('title',_this.getClipDesc( clipIndex ) );
 		return $item;
 	}
 };

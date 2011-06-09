@@ -321,6 +321,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Styles enforce some additional constraints
 		switch( styleName ){
 			case 'itemRendererLabel':
+				// XXX should use .playlist.formatTitle and formatDescription ( once we fix .playlist ref )
 				// hack to read common description id ( no other way to tell layout size )
 				var tLength = ( idName =='irDescriptionIrScreen' )? 40 : 28;
 				// max length of 28-3 char

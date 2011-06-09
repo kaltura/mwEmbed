@@ -22,23 +22,24 @@ mw.Playlist.prototype = {
 	
 	// the theme handler:
 	theme : null,
-
+	
 	// constructor
 	init: function( options ) {
-
+		var _this = this;
+		
+		// Check for required options: 
 		if( options.src )
 			this.src = options.src;
 		
-		if( options.srcPayLoad )
-                  {
-                    this.srcPayLoad = unescape(options.srcPayLoad).replace(/\+/g,' ');
-                  }
+		if( options.srcPayLoad ){
+			this.srcPayLoad = unescape(options.srcPayLoad).replace(/\+/g,' ');
+		}
 		
-		// XXX We probably want to support empty playlist with js adding.
+		// XXX We probably want to support empty playlist with adding clips via JS.
 		if( !this.src && !this.srcPayLoad ){
 			mw.log("Error no playlist source provided");
 		}
-		
+
 		this.target = options.target;
 
 		this.id = ( options.id )? options.id : $j( this.target ).attr( 'id' );
@@ -47,7 +48,7 @@ mw.Playlist.prototype = {
 			this.id = 'playlist_' + Math.random();
 		}
 
-		// Set the sourceHandler if provided
+		// Set the sourceHandler if provided ( should remove in favor of events )
 		if( options.sourceHandler ) {
 			this.sourceHandler = options.sourceHandler;
 		}
@@ -67,33 +68,29 @@ mw.Playlist.prototype = {
 				playerElement.waitForMeta = false;
 			}
 		});
-
+			
 		this.type = ( options.type ) ?
 			options.type:
-			mw.getConfig('Playlist.defaultType' );
+			mw.getConfig('Playlist.DefaultType' );
 
-		// Set default options or use layout
-		this.layout = ( options.layout ) ?
-			options.layout :
-			mw.getConfig( 'Playlist.layout' );
-		
-		// Player aspect ratio
-		this.playerAspect = ( options.playerAspect ) ?
-			options.playerAspect :
-			mw.getConfig( 'Playlist.playerAspect' );
-
-		// Item thumb width
-		this.itemThumbWidth = ( options.itemThumbWidth ) ?
-			options.itemThumbWidth :
-			mw.getConfig('Playlist.itemThumbWidth');
-
-		// Default title height:
-		this.titleHeight = ( typeof options.titleHeight != 'undefined') ?
-			options.titleHeight :
-			mw.getConfig( 'Playlist.titleHeight' );
-
+		var namedOptions = ['layout', 'playerAspect', 'itemThumbWidth', 'titleHeight', 'titleLength', 'descriptionLength'];
+		$j.each( namedOptions, function(inx, optionName ){
+			var confName = 'Playlist.' + optionName.charAt(0).toUpperCase() + optionName.substr(1);
+			_this[ optionName ] = ( options[ optionName ] )?
+					options[ optionName ] :
+					mw.getConfig( confName );
+		});
 	},
-	
+	formatTitle: function( text ){
+		if( text.length > this.titleLength )
+			return text.substr(0, this.titleLength-3) + '...';
+		return text;
+	},
+	formatDescription: function( text ){
+		if( text.length > this.descriptionLength )
+			return text.substr(0, this.descriptionLength-3) + '...';
+		return text;
+	},
 	drawPlaylist: function( callback ){
 		var _this = this;
 		// Set the target to loadingSpinner:
