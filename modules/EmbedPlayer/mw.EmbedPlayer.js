@@ -2058,7 +2058,7 @@ mw.EmbedPlayer.prototype = {
 		mw.playerManager.playerReady( this );
 
 		if ( this.autoplay ) {
-			mw.log( 'EmbedPlayer::showPlayer::activating autoplay' );
+			mw.log( 'EmbedPlayer::showPlayer::activating autoplay' );			
 			// Issue a non-blocking play request
 			setTimeout(function(){
 				_this.play();

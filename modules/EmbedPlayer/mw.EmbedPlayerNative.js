@@ -96,7 +96,8 @@ mw.EmbedPlayerNative = {
 				this.isPersistentNativePlayer()
 			)
 			&& $j( '#' + this.pid ).length 
-			&& typeof $j( '#' + this.pid ).get(0).play != 'undefined' ) {
+			&& typeof $j( '#' + this.pid ).get(0).play != 'undefined' ) 
+		{
 			
 			// Update the player source: 
 			$j( '#' + this.pid ).attr( 'src', this.getSrc( this.currentTime ) );
@@ -128,7 +129,7 @@ mw.EmbedPlayerNative = {
 		if( !playerAttribtues['id'] ) playerAttribtues['id'] = this.pid;
 		if( !playerAttribtues['src'] ) playerAttribtues['src'] = this.getSrc( this.currentTime);
 
-		// If autoplay pass along to attribute ( needed for iPad / iPod no js autoplay support
+		// If autoplay pass along to attribute
 		if( this.autoplay ) {
 			playerAttribtues['autoplay'] = 'true';
 		}

@@ -7,14 +7,16 @@
 define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server, something maybe broken or server is under high load. Please try again.");
 
 // Setup the kalturaIframe
-$mykalturaIframe = new kalturaIframe();
+global $wgKalturaIframe;
+$wgKalturaIframe = new kalturaIframe();
 
 // Do kalturaIframe video output:
 
 // Start output buffering to 'catch errors' and override output
 if( ! ob_start("ob_gzhandler") ) ob_start();
-$mykalturaIframe->outputIFrame();
+$wgKalturaIframe->outputIFrame();
 ob_end_flush();
+
 
 /**
  * Kaltura iFrame class:
@@ -24,7 +26,12 @@ class kalturaIframe {
 	var $playerIframeId = 'iframeVid';
 	var $debug = false;
 	var $error = false;
-	
+	// A list of kaltura plugins and associated includes	
+	public static $iframePluginMap = array(
+		'ageGate' => 'iframePlugins/AgeGate.php'
+	);
+	// Plugins used in $this context
+	var $plugins = array();
 	/**
 	 * The result object grabber, caches a local result object for easy access
 	 * to result object properties. 
@@ -239,12 +246,36 @@ class kalturaIframe {
 		}
 		return $o;
 	}
-	
+	public function addPlugin( $name, $object ){
+		if( !self::$iframePluginMap[$name] ){
+			throw new Exception( "Error trying to add plugin without maping $name\n" );
+			return false;
+		}
+		$this->plugins[$name] = $object;
+	}
+	private function checkIframePlugins(){
+		global $wgKalturaIframe;
+		if( ! $this->getResultObject()->getUiConf() ){
+			return ;
+		}
+		$xml = new SimpleXMLElement( $this->getResultObject()->getUiConf() );
+		if( isset( $xml->HBox ) && isset( $xml->HBox->Canvas ) && isset( $xml->HBox->Canvas->Plugin ) ){
+			foreach ($xml->HBox->Canvas->Plugin as $plugin ){
+				$attributes = $plugin->attributes();
+				$pluginId = (string) $attributes['id'];
+				if( in_array( $pluginId, array_keys ( self::$iframePluginMap ) ) ){
+				
+					require_once( self::$iframePluginMap[ $pluginId] );
+					$this->plugins[$pluginId ]->run();
+				}
+			}
+		}
+	}
 	private function getSwfUrl(){
 		global $wgKalturaServiceUrl;
 		$swfUrl = $wgKalturaServiceUrl . '/index.php/kwidget';
 		// pass along player attributes to the swf:
-		$urlParams = $this->getResultObject()->getUrlParameters();
+		$urlParams = $this->getResultObject()->getUrlParameters();	
 		foreach($urlParams as $key => $val ){
 			if( $val != null ){
 				$swfUrl.='/' . $key . '/' . $val;
@@ -387,7 +418,10 @@ class kalturaIframe {
 	}
 	function outputIFrame( ){
 		global $wgMwEmbedPathUrl;
-
+		
+		// Check for plugins ( can overide output) 
+		$this->checkIframePlugins();
+		
 		$this->setIFrameHeaders();
 ?>
 <!DOCTYPE html>
@@ -429,7 +463,7 @@ class kalturaIframe {
 			// Don't wait for player metada for size layout and duration Won't be needed since
 			// we add durationHint and size attributes to the video tag
 			mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
-			
+
 			// Add Packaging Kaltura Player Data ( JSON Encoded )
 			mw.setConfig( 'KalturaSupport.BootstrapPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
 
