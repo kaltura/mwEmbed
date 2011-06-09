@@ -7,11 +7,16 @@
 
 mw.IA =
 {
-  playingClipNumMW:0,
-  flowplayerplaylist:null,
   VIDEO_WIDTH:640,
   VIDEO_HEIGHT:480,
+  VIDEO_PLAYLIST_HEIGHT:80,
+  
+  playingClipNumMW:0,
+  video:true, //false means we are audio
 
+  ios:(navigator.userAgent.indexOf('iPhone') >= 0  ||
+       navigator.userAgent.indexOf('iPad'  ) >= 0  ||
+       navigator.userAgent.indexOf('iPod'  ) >= 0),
 
 
   css:function(str)
@@ -46,7 +51,7 @@ mw.IA =
   arg:function(theArgName)
   {
     var ary = location.search.slice(1).split('&');
-    mw.log(ary);
+    mw.IA.log(ary);
     return this.argin(theArgName, ary);
   },
 
@@ -94,14 +99,11 @@ mw.IA =
   // marks the playlist row for the video that is playing w/ orange triangle
   indicateIsPlaying:function(clipnum)
   {
-    var els = this.flowplayerplaylist.getElementsByTagName("img");
+    var flowplayerplaylist = $('#flowplayerplaylist')[0];
+    var els = flowplayerplaylist.getElementsByTagName("img");
     for (var i=0; i < els.length; i++)
       els[i].style.visibility = (i==clipnum ? 'visible' : 'hidden');
   },
-
-
-
-
 
 
   // Set up so that:
@@ -118,70 +120,101 @@ mw.IA =
     }
 
 
+    // Now put a nice looking "track number" in front of each playlist entry title
+    $('div.playlistItem span.clipTitle').html(function(i,html) {
+      return html.replace(/^(\d+)(.*)/, '<span class="tn">$1</span>$2');
+    });    
+    
+    
     var player = $('#mwplayer');
     if (!player)
       return;
 
+    mw.IA.log('newEmbedPlayerMW()');
 
-    mw.log('newEmbedPlayerMW()');
-    player.bind('ended', mw.IA.onDoneMW);
-    player.unbind('play').bind('play', mw.IA.firstplayMW);
-    player.bind('pause', mw.IA.pause);
 
-    player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resizeMW(); }, 500); }); //xxx timeout lameness
+    if (typeof(IAD)!='undefined'  &&
+        typeof(IAD.playlist)!='undefined'  &&
+        IAD.playlist.length > 0)
+    {
+      var check = IAD.playlist[0].SRC[0];
+      var suffix = check.substr(check.length-4).toLowerCase();
+      if (suffix=='.mp3'  ||  suffix=='.ogg')
+      {
+        mw.IA.log('this is audio!');
+        mw.IA.video = false;
+      }
+      else
+      {
+        mw.IA.log('this is video!');
+        mw.IA.video = true;
+
+        player.unbind('play').bind('play', mw.IA.play);
+        player.bind('ended', mw.IA.ended);
+        
+        player.bind('pause', mw.IA.pause);
+        if (!mw.IA.ios)
+player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resize(); }, 500); }); //xxx timeout lameness
+      }
+    }
   },
 
 
   pause:function()
   {
-    mw.log('paused');
+    mw.IA.log('paused');
     return; //xxxx not quite ready for hash yet
 
-    location.hash = '#' + IAD.playlist[mw.IA.playingClipNumMW]['ORIG'] +
+    location.hash = '#' + // [get ORIG video file from playlist item and then matched back thru IAD.playlist, etc.?]  +
       '/start=' + Math.round($('#mwplayer').get(0).currentTime * 10) / 10;
   },
 
 
-  resizeMW:function()
+  resize:function()
   {
-    var player = $('#mwplayer');
+    if (this.ios)
+      return;
+    
+    mw.IA.log('resize');
 
-    $('#flowplayerdiv').css('width',  this.VIDEO_WIDTH);
-    $('#flowplayerdiv').css('height', this.VIDEO_HEIGHT);
+    $('#avplaydiv').css('width',  this.VIDEO_WIDTH);
 
-    $('#flowplayerplaylist').css('width', this.VIDEO_WIDTH);
+    $('#mwplayer').css('width',  this.VIDEO_WIDTH);
+    $('#mwplayer').css('height', this.VIDEO_HEIGHT + this.VIDEO_PLAYLIST_HEIGHT);
 
-    var jplay = player[0];
-    mw.log('IA ' + jplay.getWidth() + 'x' + jplay.getHeight());
-
-    jplay.resizePlayer({'width':  this.VIDEO_WIDTH,
-      'height': this.VIDEO_HEIGHT},true);
+    $('#mwplayer_videolist').css('top',this.VIDEO_HEIGHT);
+    
+    var tmp=$('div.mv-player video').parent().get(0);
+    if (typeof(tmp)!='undefined')
+    {
+      tmp.resizePlayer({'width': this.VIDEO_WIDTH,
+                        'height':this.VIDEO_HEIGHT},true);
+    }
   },
 
 
-  firstplayMW:function()
+  play:function()
   {
-    if (typeof(mw.IA.MWsetup)!='undefined')
-      return;
-    mw.IA.MWsetup = true;
+    mw.IA.log('play()');
 
-    mw.log('firstplayMW()');
-    mw.IA.resizeMW();
+    if (!mw.IA.video)
+      return;
+
+    mw.IA.resize();
   },
 
 
   playClipMW:function(idx)
   {
     mw.IA.playingClipNumMW = idx;
-    mw.log('IA play: ('+idx+')');
+    mw.IA.log('IA play: ('+idx+')');
     if (typeof(IAD)=='undefined'  ||  typeof(IAD.playlist[idx])=='undefined')
       return false;
 
     var group = IAD.playlist[idx];
-    mw.log(group);
+    mw.IA.log(group);
 
     // set things up so we can update the "playing triangle"
-    this.flowplayerplaylist = $('#flowplayerplaylist')[0];
     this.indicateIsPlaying(idx);
 
     // location.hash = '#' + group['ORIG']; //xxxx not quite ready yet
@@ -194,14 +227,19 @@ mw.IA =
       var prefix = '/download/'+IAD.identifier+'/';
       player.stop();
       player.emptySources();
-      player.updatePosterSrc( group['POSTER'] ? prefix + group['POSTER'] :
-                           '/images/glogo.png' );
+      if (mw.IA.video)
+      {
+        player.updatePosterSrc( typeof(group['POSTER'])!='undefined' ?
+                                prefix + group['POSTER'] :
+                                '/images/glogo.png' );
+      }
+
       for (var i=0, source; source=group['SRC'][i]; i++)
       {
     	if( source )
         {
           var attrs = {'src' : prefix + source};
-          var ending = source.substr(0, source.length-4).toLowerCase();
+          var ending = source.substr(source.length-4).toLowerCase();
           if (ending=='.mp4'  ||  ending=='.ogv')
             attrs['URLTimeEncoding'] = true;
 	  player.mediaElement.tryAddSource(
@@ -212,6 +250,15 @@ mw.IA =
     	}
       }
       player.stop();
+               
+mw.IA.log(group['LENGTH']);
+player.duration = group['LENGTH'];
+player.buffered = 0;
+player.bufferStartFlag = false;
+player.bufferEndFlag = false;
+player.attributes['duration']=group['LENGTH'];
+player.mediaElement.updateSourceTimes(group['LENGTH']);
+               
       player.setupSourcePlayer( function(){
     	setTimeout(function(){
     	  player.play();
@@ -223,18 +270,40 @@ mw.IA =
   },
 
 
-  onDoneMW:function(event, onDoneActionObject )
+  ended:function(event, onDoneActionObject )
   {
-    mw.IA.playingClipNumMW++;
-    mw.IA.playClipMW(mw.IA.playingClipNumMW);
+    mw.IA.log('ended');
+    //mw.IA.playingClipNumMW++;
+    //mw.IA.playClipMW(mw.IA.playingClipNumMW);
+  },
+
+
+  log:function(str){
+    mw.log('      ---IA------------------------------>   '+str);
+    //alert(str);
   },
 
 
 
-
-
   setup: function() {
-    mw.IA.css(".archive-icon {\n\
+
+    mw.IA.css("\n\
+div.playlistItem {\n\
+  font-family:Lucida Grande;\n\
+  margin:0px 5px 0px 5px !important;\n\
+}\n\
+div.playlist-title { display:none; }\n\
+div.playlistItem img { display:none; }\n\
+div.playlistItem span.clipTitle     { padding-left:15px; }\n\
+div.playlistItem span.tn            { display:inline-block; width:25px; text-align:right; padding-right:5px; border-right:1px solid gray; }\n\
+div.playlistItem div.clipDuration  { padding-right:20px; padding-top:1px; }\n\
+div.ui-state-active {\n\
+  background-image:url(/images/orange_arrow.gif) !important;\n\
+  background-position:10px 2px !important;\n\
+  background-repeat:no-repeat !important;\n\
+}\n\
+\n\
+.archive-icon {\n\
 background-image:url('http://www.archive.org/images/logo-mw.png') !important;\n\
 background-repeat:no-repeat;\n\
 display: block;\n\
@@ -245,6 +314,22 @@ margin-left: 3px !important;\n\
 \n\
 div.control-bar { -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-border-radius:6px; border-radius:6px; }\n\
 \n\
+\n\
+\n\
+div.movies div.media-rss-video-list { background-image:url(/logos/hires/ia-tight-60x60-one-third-opacity.png); background-position:bottom; background-repeat:no-repeat; }\n\
+div.maudio div.media-rss-video-list { background-image:url(/logos/hires/ia-tight-240x240-one-third-opacity.png); background-position:bottom; background-repeat:no-repeat; }\n\
+div.maudio div.fullscreen-btn { display:none !important; }\n\
+div.maudio img.playerPoster   { display:none; } \n\
+div.maudio div.play-btn-large { display:none; } \n\
+div.maudio div.media-rss-video-player { height:26px !important; } \n\
+div.maudio div.mrss_mwplayer_0 { height:26px !important; } \n\
+div.maudio div.mv-player  { height:26px !important; } \n\
+div.maudio div.control-bar { display:block !important; } \n\
+\n\
+\n\
+\n\
+\n\
+div.overlay-content { background-color:#666 !important; } \n\
 div.overlay-content div h2 { background-color:transparent; }\n\
 div.overlay-content        {\n\
   padding-top:0px !important; \n\
@@ -257,7 +342,7 @@ div.overlay-content        {\n\
 .mv-player .overlay-win textarea { height:60px !important; }\n\
 ");
 
-
+    
     var det = mw.IA.detailsLink();
 
     if (det == ''  &&  typeof(document.getElementsByTagName)!='undefined')
@@ -306,7 +391,7 @@ div.overlay-content        {\n\
 
     mw.ready(function(){
         var hash = unescape(location.hash);
-        mw.log("IA Player says mw.ready()" + hash);
+        mw.IA.log("IA Player says mw.ready()" + hash);
 
 
         var star = (mw.IA.arg('start') ? parseFloat(mw.IA.arg('start')) : 0);
@@ -324,7 +409,7 @@ div.overlay-content        {\n\
         }
         if (star)
         {
-          mw.IA.resizeMW();
+          mw.IA.resize();
           var jplay = $('#mwplayer').get(0);
           var dura = jplay.duration;
           IAD.log(star+'s of '+dura+'s');
