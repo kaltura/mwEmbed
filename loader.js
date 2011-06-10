@@ -64,7 +64,10 @@ mw.setDefaultConfig ( {
 	'Mw.AppendWithJS' : false,
 	
 	// The amount of days that user preferences stick around. 
-	'Mw.UserPreferenceExpireDays' : 7
+	'Mw.UserPreferenceExpireDays' : 7,
+	
+	// The xml proxy entry point for loading remote xml
+	'Mw.XmlProxyUrl' : mw.getMwEmbedPath() + 'simplePhpXMLProxy.php'
 } );
 
 /**

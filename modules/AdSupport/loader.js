@@ -11,10 +11,6 @@
 		return [ 'mw.MobileAdTimeline', 'mw.AdLoader', 'mw.VastAdParser' ];
 	});
 	
-	mw.setDefaultConfig({
-		'AdSupport.XmlProxyUrl' : mw.getMwEmbedPath() + 'modules/AdSupport/simplePhpXMLProxy.php'
-	});
-	
 	// Ads have to communicate with parent iframe to support companion ads.
 	// ( we have to add them for all players since checkUiConf is done on the other side of the
 	// iframe proxy )

@@ -72,7 +72,7 @@ mw.Playlist.prototype = {
 		var namedOptions = ['layout', 'playerAspect', 'itemThumbWidth', 'titleHeight', 'titleLength', 'descriptionLength'];
 		$j.each( namedOptions, function(inx, optionName ){
 			var confName = 'Playlist.' + optionName.charAt(0).toUpperCase() + optionName.substr(1);
-			_this[ optionName ] = ( options[ optionName ] )?
+			_this[ optionName ] = ( typeof options[ optionName ] != 'undefined' )?
 					options[ optionName ] :
 					mw.getConfig( confName );
 		});

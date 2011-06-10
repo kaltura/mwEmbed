@@ -39,16 +39,32 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		
 		
 		// Show an error if a cross domain request:
-		if( ! mw.isLocalDomain( this.getSrc() ) ) {
-			mw.log("Error: trying to get cross domain playlist source: " + this.getSrc() );
+		if( mw.isLocalDomain( this.getSrc() ) ) {
+			// Note this only works with local sources
+			$j.get( mw.absoluteUrl( this.getSrc() ), function( data ){
+				// jQuery already converts data into xmlDoc so the following is not needed:
+				// var xmlDoc =  $j.parseXML( data );
+				_this.$rss = $j( data );
+				callback( _this.$rss );
+			});
+		} else {
+			var proxyUrl = mw.getConfig( 'Mw.XmlProxyUrl' );
+			if( !proxyUrl ){
+				mw.log("Error: mw.KAds : missing kaltura proxy url ( can't load ad ) ");
+				return ; 
+			}
+			$j.getJSON( proxyUrl + '?url=' + encodeURIComponent( this.getSrc() ) + '&callback=?', function( result ){
+				if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
+					mw.log("Error: loading " + _this.getSrc() );
+					callback(false);
+					return ;
+				}
+				// parse the MRSS:
+				var xmlDoc =  $j.parseXML( result['contents'] );
+				_this.$rss = $j( xmlDoc );
+				callback( _this.$rss );
+			});
 		}
-		
-		
-		// Note this only works with local sources
-		$j.get( mw.absoluteUrl( this.getSrc() ), function( data ){
-			_this.$rss = $j( data );
-			callback( _this.$rss );
-		});
 	},
 	hasMultiplePlaylists: function(){
 		return false;

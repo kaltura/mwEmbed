@@ -32,8 +32,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 		this.getKClient().playerLoader({
 			'uiconf_id' : this.uiconf_id
 		}, function( playerData ){
-			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );		
+			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );
+			
 			_this.playlistSet = [];
+			
 			// Add in flashvars playlist id if present:
 			if( _this.playlist_id !== null ){
 				_this.playlistSet.push({
@@ -79,13 +81,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 						'playlist_id' : playlist_id
 					});
 				} else {
+					// stop looking for playlists
 					break;
 				}
-			}				
+			}		
 			
-			// Allow plugin to add extra playlists to the playlist set:
-			$j( mw ).trigger('KalturaPlaylist_AddToPlaylistSet', _this.playlistSet);
-			
+			// Allow plugins to add extra playlists to the playlist set:
+			$j( mw ).trigger( 'KalturaPlaylist_AddToPlaylistSet', [ _this.playlistSet ] );
 			
 			if( !_this.playlistSet[0] ){
 				mw.log( "Error could not get playlist entry id in the following player data::" + $uiConf.html() );
