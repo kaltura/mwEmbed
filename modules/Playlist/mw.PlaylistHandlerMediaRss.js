@@ -106,7 +106,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	*/
 	getClipPoster: function ( clipIndex ){
 		var $item = this.$rss.find('item').eq( clipIndex );
-		var mediaThumb = $item.find( '(content|media)\\:thumbnail' );
+		var mediaThumb = $item.find( 'media\\:thumbnail, content\\:thumbnail, thumbnail' );
 		mw.log( 'mw.PlaylistMediaRss::getClipPoster: ' + $j( mediaThumb ).attr('url' ) );
 		if( mediaThumb && $j( mediaThumb ).attr('url' ) ){
 			return $j( mediaThumb ).attr('url' );
@@ -120,7 +120,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	*/
 	getClipTitle: function( clipIndex ){
 		var $item = this.$rss.find('item').eq( clipIndex ) ;
-		var mediaTitle = $item.find( '(content|media)\\:title' );
+		var mediaTitle = $item.find( 'media\\:title, content\\:title, title' );
 		if( mediaTitle ){
 			return $j( mediaTitle ).text();
 		}
@@ -133,7 +133,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	 */
 	getClipDesc: function( clipIndex ){
 		var $item = this.$rss.find('item').eq( clipIndex ) ;
-		var mediaDesc = $item.find( 'content\\:description' );
+		var mediaDesc = $item.find( 'media\\:description, content\\:description, description' );
 		if( mediaDesc ){
 			return $j( mediaDesc ).text();
 		}
