@@ -77,7 +77,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		var _this = this;
 		var $item = $j( this.$rss.find('item')[ clipIndex ] );
 		var clipSources = [];
-		$j.each( $item.get(0).getElementsByTagNameNS( _this.mediaNS, 'content' ), function( inx, mediaContent){
+		$j.each( $item.find( '*' ), function( inx, mediaContent){
 			if( $j( mediaContent ).get(0).nodeName == 'media:content' ){
 				clipSource = {}
 				if( $j( mediaContent ).attr('url' ) ){
@@ -106,7 +106,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	*/
 	getClipPoster: function ( clipIndex ){
 		var $item = this.$rss.find('item').eq( clipIndex );
-		var mediaThumb = $item.get(0).getElementsByTagNameNS( this.mediaNS, 'thumbnail' );
+		var mediaThumb = $item.find( '(content|media)\\:thumbnail' );
 		mw.log( 'mw.PlaylistMediaRss::getClipPoster: ' + $j( mediaThumb ).attr('url' ) );
 		if( mediaThumb && $j( mediaThumb ).attr('url' ) ){
 			return $j( mediaThumb ).attr('url' );
@@ -120,7 +120,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	*/
 	getClipTitle: function( clipIndex ){
 		var $item = this.$rss.find('item').eq( clipIndex ) ;
-		var mediaTitle = $item.get(0).getElementsByTagNameNS( this.mediaNS, 'title' );
+		var mediaTitle = $item.find( '(content|media)\\:title' );
 		if( mediaTitle ){
 			return $j( mediaTitle ).text();
 		}
@@ -133,7 +133,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	 */
 	getClipDesc: function( clipIndex ){
 		var $item = this.$rss.find('item').eq( clipIndex ) ;
-		var mediaDesc = $item.get(0).getElementsByTagNameNS( this.mediaNS, 'description' );
+		var mediaDesc = $item.find( 'content\\:description' );
 		if( mediaDesc ){
 			return $j( mediaDesc ).text();
 		}
@@ -145,7 +145,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		// return the first found media duration
 		var $item = this.$rss.find('item').eq( clipIndex ) ;
 		var itemDuration = 0;
-		$j( $item.get(0).getElementsByTagNameNS( this.mediaNS, 'content' ) ).each( function( inx, mediaContent ){
+		$j( $item.find('*')).each( function( inx, mediaContent ){
 			if( $j( mediaContent ).attr( 'duration' ) ) {
 				itemDuration = $j( mediaContent ).attr( 'duration' );
 				// end for loop
