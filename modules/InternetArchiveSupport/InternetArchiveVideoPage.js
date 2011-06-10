@@ -376,7 +376,9 @@ div.overlay-content        {\n\
         'EmbedPlayer.AttributionButton' : {
           'title' : 'Internet Archive',
           'href' : 'http://www.archive.org'+det,
-          'class' : 'archive-icon'
+          'class' : 'archive-icon',
+          
+        'Playlist.TitleLength': 38
         }
       });
 
