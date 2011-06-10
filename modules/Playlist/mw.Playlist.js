@@ -468,7 +468,15 @@ mw.Playlist.prototype = {
 			})
 			return ;
 		} 
-		
+	
+		if (typeof _this.nextPlayIndex !='undefined')
+		{
+			if (clipIndex < _this.nextPlayIndex) {
+				return;
+			}
+			_this.nextPlayIndex = clipIndex + 1;
+		}  
+          
 		// Add a loader to the embed player: 
 		$j( embedPlayer )
 		.getAbsoluteOverlaySpinner()
@@ -478,7 +486,7 @@ mw.Playlist.prototype = {
 		embedPlayer.updatePosterSrc( _this.sourceHandler.getClipPoster( clipIndex, _this.getTargetPlayerSize() ) );
 		// empty existing sources
 	    embedPlayer.emptySources();
-		
+
 		// Update the interface sources
 	    this.sourceHandler.getClipSources( clipIndex, function( clipSources ){
 			if( !clipSources ){
@@ -509,10 +517,15 @@ mw.Playlist.prototype = {
 				return ;
 			}
 			// Run switchPlaying source 
-			embedPlayer.switchPlaySrc( embedPlayer.mediaElement.selectedSource.getSrc(), function(){
-				$j('.loadingSpinner').remove();
-			});
-	    })
+                        if (typeof _this.nextPlayIndex == 'undefined')
+                          _this.nextPlayIndex = _this.clipIndex + 1;
+                        mw.log('nextPlay: ' + _this.nextPlayIndex);
+                                                 
+			embedPlayer.switchPlaySrc( embedPlayer.mediaElement.selectedSource.getSrc(), 
+                                                   function() { $j('.loadingSpinner').remove(); },
+                                                   ( _this.nextPlayIndex < _this.sourceHandler.getClipCount() ?
+                                                     function() { _this.playClip( _this.nextPlayIndex ); } : null ) );
+                        });
 	},
 	/**
 	* update the player
@@ -608,7 +621,6 @@ mw.Playlist.prototype = {
 	
 						// update the player and play the next clip
 						_this.playClip( _this.clipIndex );
-	
 					} else {
 						mw.log("Reached end of playlist run normal end action" );
 						// Update the onDone action object to not run the base control done:
