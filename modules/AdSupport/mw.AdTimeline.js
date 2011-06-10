@@ -610,7 +610,7 @@ mw.AdTimeline.prototype = {
 			$media.append( $j('<source />').attr({
 				'src' : source.src,
 				'type' : source.type
-			}))
+			}));
 		});
 		var myMediaElement =  new mediaElement( $media.get(0) );
 		var source = myMediaElement.autoSelectSource();

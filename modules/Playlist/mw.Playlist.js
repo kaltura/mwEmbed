@@ -146,7 +146,7 @@ mw.Playlist.prototype = {
 				'overflow-x' : 'hidden',
 				'overflow-y' : 'auto',
 				'bottom': '7px',
-				'right' : '0px'
+				'right' : '0px',
 			})
 			.hide()
 		);
@@ -404,7 +404,7 @@ mw.Playlist.prototype = {
 			return this.targetPlayerSize;
 		}
 
-		// Get the target width and height: ( should be based on layout or
+		// Get the target width and height:
 		this.targetWidth = $j( this.target ).width();
 		this.targetHeight = $j( this.target ).height();
 		
@@ -425,10 +425,16 @@ mw.Playlist.prototype = {
 			};
 		} else {
 			/* horizontal layout */
-			var pa = this.playerAspect.split(':');
+			if( _this.sourceHandler.getVideoListWidth() != 'auto' ){
+				var playerWidth = this.targetWidth - _this.sourceHandler.getVideoListWidth();
+			} else {
+				var pa = this.playerAspect.split(':');
+				var playerWidth = parseInt( ( pa[0] / pa[1] ) * this.targetHeight );
+			}
+			
 			this.targetPlayerSize = {
 				'height' : ( this.targetHeight - this.titleHeight - 10 ) + 'px',
-				'width' : parseInt( ( pa[0] / pa[1] ) * this.targetHeight )
+				'width' : playerWidth
 			};
 		}
 		if( this.targetPlayerSize.width > this.targetWidth ){
@@ -439,22 +445,73 @@ mw.Playlist.prototype = {
 		
 		return this.targetPlayerSize;
 	},
-	// update clip and play it ( wraps the updatePlayer function ) 
-	playClip: function( clipIndex , callback ){
+	// Play a clipIndex, if the player is already in the page swap the player src to the new target
+	playClip: function( clipIndex ){
 		var _this = this;
-		this.updatePlayer( clipIndex, function(){
-			// XXX not sure why timeout is needed here ... need to clean up updatePlayer callback
-			setTimeout(function(){
-				$j('#' +_this.getVideoPlayerId( clipIndex) ).get(0).play();
-			},100);
-		});
+		
+		// Check for a video already in the page:
+		var $inDomVideo = $j( _this.target + ' .media-rss-video-player video' );
+		var embedPlayer = $j( _this.target + ' .media-rss-video-player-container' )
+			.find('.mwplayer_interface div').get(0);
+		
+		if( $inDomVideo.length == 0 || embedPlayer.instanceOf != 'Native' ){
+			_this.updatePlayer( clipIndex, function(){
+				_this.play();
+			})
+			return ;
+		} 
+		
+		// Add a loader to the embed player: 
+		$j( embedPlayer )
+		.getAbsoluteOverlaySpinner()
+		.attr('id', _this.getVideoPlayerId( clipIndex ) + '_mappingSpinner' );
+	    
+		// Update the poster
+		embedPlayer.updatePosterSrc( _this.sourceHandler.getClipPoster( clipIndex, _this.getTargetPlayerSize() ) );
+		// empty existing sources
+	    embedPlayer.emptySources();
+		
+		// Update the interface sources
+	    this.sourceHandler.getClipSources( clipIndex, function( clipSources ){
+			if( !clipSources ){
+				mw.log("Error: mw.Playlist no sources found for clipIndex:" + clipIndex);
+			}
+			for( var i =0; i < clipSources.length; i++ ){
+				var $source = $j('<source />')
+				.attr( clipSources[i] );
+				embedPlayer.mediaElement.tryAddSource( $source.get(0) ) ;
+			}
+			
+			// Auto select the source
+			embedPlayer.mediaElement.autoSelectSource();
+			// Auto select player based on default order
+			if ( !embedPlayer.mediaElement.selectedSource ) {
+				mw.log( 'Error no source for playlist swich' );
+				callback();
+			} else {
+				embedPlayer.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( embedPlayer.mediaElement.selectedSource.mimeType );
+			}
+			// If we switched to a source that is non-native playback jump out to normal swap 
+			if( embedPlayer.selectedPlayer.library != 'Native' ){
+				$j('.loadingSpinner').remove();
+				$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
+				_this.addEmbedPlayerInterface( function(){
+					embedPlayer.play();
+				});
+				return ;
+			}
+			// Run switchPlaying source 
+			embedPlayer.switchPlaySrc( embedPlayer.mediaElement.selectedSource.getSrc(), function(){
+				$j('.loadingSpinner').remove();
+			});
+	    })
 	},
 	/**
 	* update the player
 	*/
 	updatePlayer: function( clipIndex , callback ){
 		var _this = this;
-		var playerSize = _this.getTargetPlayerSize() ;
+		var playerSize = _this.getTargetPlayerSize();
 		this.clipIndex = clipIndex;
 		// If we have a ui .. update it: 
 		if( _this.sourceHandler.hasPlaylistUi() ){
@@ -484,7 +541,9 @@ mw.Playlist.prototype = {
 					$video.append( $source );
 				}
 			}
-			_this.updateVideoPlayer( $video , callback);
+			// Put the video player into the page and create the embedPlayer interface
+			$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
+			_this.addEmbedPlayerInterface( callback );
 		});
 	},
 	updatePlayerUi:function( clipIndex ){
@@ -520,58 +579,8 @@ mw.Playlist.prototype = {
 		}
 		return 'mrss_' + this.id + '_' + clipIndex;
 	},
-
-	updateVideoPlayer: function( $video , callback){
+	addEmbedPlayerInterface: function( callback ){
 		var _this = this;
-		
-		// If on mobile safari just swap the sources ( don't replace the video )
-		// ( mobile safari can't javascript start the video )
-		// see: http://developer.apple.com/iphone/search/search.php?simp=1&num=10&Search=html5+autoplay
-		
-		// TODO we should switch to our adTimeline player switching code
-	
-		if( !mw.isMobileHTML5() ){
-			// Remove the old video player ( not mobile safari )
-			$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
-		} else {
-			// Check for a current video:
-			var $inDomVideo = $j( _this.target + ' .media-rss-video-player video' );
-			if( $inDomVideo.length == 0 ){
-				// just do a simple swap: 
-				$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
-			} else {
-				// Update the inDomVideo object:
-				// NOTE: this hits a lot of internal stuff
-				// XXX Should refactor to use embedPlayer interfaces!
-				var vidInterface = $j( _this.target + ' .media-rss-video-player-container' )
-					.find('.mwplayer_interface div').get(0);
-				// Copy over the video attributes to the the videoInterface
-				$j( $video[0].attributes ).each( function(attrName, attrValue){
-					vidInterface[ attrName ] = attrValue;
-				});
-				vidInterface.pid = 'pid_' + $video.attr('id');
-				// Update the interface restore source ( xxx this is a pretty ugly hack )
-				vidInterface.mediaElement.sources = [];
-				$video.find('source').each(function(inx, source){
-					vidInterface.mediaElement.tryAddSource( source ) ;
-				});
-
-				// Update the video interface id:
-				$j( vidInterface ).attr('id', $video.attr('id'));
-
-				if( $video.data('kuiconf') ){
-					$j( vidInterface ).data( 'kuiconf', $video.data('kuiconf') );
-				}
-
-				// Update the current video target source
-				$inDomVideo.attr({
-					'id' : 'pid_' + $video.attr('id'),
-					'src': $video.find( 'source').attr('src')
-				});
-				// issue the load request
-				$inDomVideo.get(0).load();
-			}
-		}
 		// Update the video tag with the embedPlayer
 		$j('#' +_this.getVideoPlayerId( _this.clipIndex ) ).embedPlayer( function(){
 			var embedPlayer = $j('#' +_this.getVideoPlayerId( _this.clipIndex ) ).get(0);
@@ -588,12 +597,10 @@ mw.Playlist.prototype = {
 						// Update the onDone action object to not run the base control done:
 						embedPlayer.onDoneInterfaceFlag = false;
 						_this.clipIndex++;
-
+	
 						// update the player and play the next clip
-						_this.updatePlayer( _this.clipIndex, function(){
-							_this.play();
-						});
-
+						_this.playClip( _this.clipIndex );
+	
 					} else {
 						mw.log("Reached end of playlist run normal end action" );
 						// Update the onDone action object to not run the base control done:
@@ -639,9 +646,7 @@ mw.Playlist.prototype = {
 					.click(function(){					
 						if( _this.clipIndex - 1 >= 0 ){
 							_this.clipIndex--;
-							_this.updatePlayer( _this.clipIndex, function(){
-								_this.play();
-							});
+							_this.playClip( _this.clipIndex );
 							return ;
 						}
 						mw.log("Cant prev: cur:" + _this.clipIndex );
@@ -654,9 +659,7 @@ mw.Playlist.prototype = {
 					.click(function(){
 						if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
 							_this.clipIndex++;
-							_this.updatePlayer( _this.clipIndex, function(){
-								_this.play();
-							});
+							_this.playClip( _this.clipIndex );
 							return ;
 						}
 						mw.log("Cant next: cur:" + _this.clipIndex );
@@ -707,9 +710,7 @@ mw.Playlist.prototype = {
 				// Update _this.clipIndex
 				_this.clipIndex = $j( this ).data( 'clipIndex' );
 
-				_this.updatePlayer( _this.clipIndex, function(){
-					_this.play();
-				} );
+				_this.playClip( _this.clipIndex );
 
 			}); //close $itemBlock
 
@@ -717,17 +718,13 @@ mw.Playlist.prototype = {
 			$targetItemList.append(
 				$itemBlock
 			);
-			mw.log("added item block : " + $targetItemList.children().length );
+			mw.log("Added item block : " + $targetItemList.children().length );
 		});
 	},
 
 	play: function(){
 		var embedPlayer = $j('#' + this.getVideoPlayerId() ).get(0);
-		if( mw.isMobileHTML5() ){
-			embedPlayer.playerElement.play();
-		} else{
 			embedPlayer.play();
-		}
 	},
 
 	/**

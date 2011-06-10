@@ -56,6 +56,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 			var $il = $uiConf.find("uivars [key='playlist.includeInLayout']");
 			_this.includeInLayout = ( $il.length && $il.get(0).getAttribute('value') == 'false' )? false : true;
 			
+			// check for videolist width
+			_this.videolistWidth = $uiConf.find('#playlist').get(0).getAttribute('width');
+			
 			// Store all the playlist item render information:
 			_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
 			
@@ -110,6 +113,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	getPlaylistSet: function(){
 		return this.playlistSet;
+	},
+	getVideoListWidth: function(){
+		return this.videolistWidth;
 	},
 	setPlaylistIndex: function( playlistIndex ){
 		this.playlist_id = this.playlistSet[ playlistIndex ].playlist_id;
@@ -331,11 +337,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 			case 'itemRendererLabel':
 				// XXX should use .playlist.formatTitle and formatDescription ( once we fix .playlist ref )
 				// hack to read common description id ( no other way to tell layout size )
-				var tLength = ( idName =='irDescriptionIrScreen' )? 40 : 28;
-				// max length of 28-3 char
-				var text = $target.text();
-				if( text.length > tLength ){
-					$target.text( text.substr(0, tLength-3) + '...' );
+				if( idName =='irDescriptionIrScreen' ){
+					$target.text( _this.playlist.formatDescription( $target.text() ) );
+				} else{
+					$target.text( _this.playlist.formatTitle( $target.text() ) );
 				}
 				break;
 		}

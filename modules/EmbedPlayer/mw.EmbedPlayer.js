@@ -467,9 +467,11 @@ EmbedPlayerManager.prototype = {
 			// Be sure to remove any player loader spinners
 			$j('.loadingSpinner,.playerLoadingSpinner').remove();
 
-			mw.log( "EmbedPlayer::All on-page players ready run playerManager callbacks" );
-
+			mw.log( "EmbedPlayer::All on-page players ready run playerManager callbacks" );			
 			$j(mw).trigger( 'playersReadyEvent' );
+			// remove all existing bindings 
+			// XXX abusing the trigger bind system here should move event )
+			$j(mw).unbind( 'playersReadyEvent' );
 		}
 	}
 };

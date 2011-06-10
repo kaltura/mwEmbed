@@ -68,12 +68,15 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	},
 	hasMultiplePlaylists: function(){
 		return false;
-	},
+	},	
 	hasPlaylistUi: function(){
 		if( this.playlist.layout == 'noClipList' ){
 			return false;
 		} 
 		return this.includeInLayout;
+	},
+	getVideoListWidth: function(){
+		return 'auto';
 	},
 	getSrcPayLoad: function(){
 		return this.playlist.srcPayLoad;
