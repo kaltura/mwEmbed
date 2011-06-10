@@ -246,8 +246,7 @@
 						var iframeRequestMap = {
 								'kwidgetid': 'wid',
 								'kuiconfid': 'uiconf_id', 
-								'kentryid': 'entry_id',
-								'kplaylistid' : 'playlist_id'
+								'kentryid': 'entry_id'
 						};
 						// Set default to playerTraget.kEmbedSettings						
 						for( var tagKey in iframeRequestMap ){
@@ -370,7 +369,7 @@
 						continue;
 					
 					iframeRequest+= '/' + key + 
-						'/' + encodeURIComponent(  iframeParams [ key ] );
+						'/' + encodeURIComponent( iframeParams [ key ] );
 				}
 				var argSeperator ='/?';
 				
