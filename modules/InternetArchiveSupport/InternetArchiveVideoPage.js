@@ -184,7 +184,7 @@ player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resiz
 
     $('#mwplayer_videolist').css('top',this.VIDEO_HEIGHT);
     
-    var tmp=$('div.mv-player video').parent().get(0);
+    var tmp=$('div.mv-player video, div.mv-player object, div.mv-player embed').parent().get(0);
     if (typeof(tmp)!='undefined')
     {
       tmp.resizePlayer({'width': this.VIDEO_WIDTH,
