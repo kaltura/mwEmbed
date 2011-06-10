@@ -115,7 +115,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 		return this.playlistSet;
 	},
 	getVideoListWidth: function(){
-		return this.videolistWidth;
+		// we have to add a bit for spacing ( should fix css files )
+		return parseInt( this.videolistWidth ) + 10;
 	},
 	setPlaylistIndex: function( playlistIndex ){
 		this.playlist_id = this.playlistSet[ playlistIndex ].playlist_id;

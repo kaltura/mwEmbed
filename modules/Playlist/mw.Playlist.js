@@ -190,11 +190,15 @@ mw.Playlist.prototype = {
 				if( inx != 0 ){
 					$plListSet.append( $j('<span />').text( ' | ') );
 				}
-				$plListSet.append(
-					$j('<a />')
+				$plLink = $j('<a />')
 					.attr('href', '#')
 					.text( playlist.name )
 					.click( function(){
+						
+						$j(this)
+						.addClass( 'ui-state-active' )
+						.siblings().removeClass('ui-state-active');
+						
 						 _this.sourceHandler.setPlaylistIndex( inx );
 						 mw.log( 'mw.Playlist:: selectPlaylist:' + inx );
 						 $j( _this.target + ' .media-rss-video-list').loadingSpinner();
@@ -205,7 +209,11 @@ mw.Playlist.prototype = {
 						return false;
 					})
 					.buttonHover()
-				);
+				// highlight the default
+				if( inx == 0 ){
+					$plLink.addClass( 'ui-state-active' );
+				}
+				$plListSet.append( $plLink );	
 			});
 			
 			// Check playlistSet width and add scroll left / scroll right buttons
