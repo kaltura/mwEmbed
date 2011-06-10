@@ -130,7 +130,7 @@ mw.includeAllModuleMessages();
 			} );
 			if( addedToPlayerManager ){
 				if( callback ){
-					$j( mw ).bind( "playersReadyEvent", callback );
+					mw.playerManager.addCallback( callback );
 				}
 			} else {
 				// Run the callback directly if no players were added to the
@@ -156,7 +156,7 @@ var EmbedPlayerManager = function( ) {
 EmbedPlayerManager.prototype = {
 
 	// Functions to run after the video interface is ready
-	callbackFunctions : null,
+	callbackFunctions : [],
 
 	playerElementQueue: [],
 
@@ -433,7 +433,9 @@ EmbedPlayerManager.prototype = {
 		}
 		return swapPlayerElement;
 	},
-
+	addCallback:function( callback ){
+		this.callbackFunctions.push( callback )
+	},
 
 	/**
 	 * Player ready will run the global callbacks once players are "ready"
@@ -467,11 +469,10 @@ EmbedPlayerManager.prototype = {
 			// Be sure to remove any player loader spinners
 			$j('.loadingSpinner,.playerLoadingSpinner').remove();
 
-			mw.log( "EmbedPlayer::All on-page players ready run playerManager callbacks" );			
-			$j(mw).trigger( 'playersReadyEvent' );
-			// remove all existing bindings 
-			// XXX abusing the trigger bind system here should move event )
-			$j(mw).unbind( 'playersReadyEvent' );
+			mw.log( "EmbedPlayer::All on-page players ready run playerManager callbacks:" +  this.callbackFunctions.length );			
+			while( this.callbackFunctions.length ){
+				 this.callbackFunctions.shift()();
+			}
 		}
 	}
 };
