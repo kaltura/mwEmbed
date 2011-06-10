@@ -6,9 +6,16 @@ class AgeGate {
 	function run( ){
 		// Check if the validAge cookie is set: 
 		if( isset( $_COOKIE['validUserAge'] ) ){
-			if( $_COOKIE['validUserAge'] == 'yes' )
+			if( $_COOKIE['validUserAge'] == 'yes' ){
 				return true;
+			}			
+		} else {
+			// Cookie is not set, check for validAge url param
+			if( isset( $_GET['validUserAge'] ) && $_GET['validUserAge'] == 'yes'){
+				return true;
+			}
 		}
+		
 		// Else print out the age form with some simple js help to set cookie, and say not old enough
 		$this->outputAgeForm();
 		ob_end_flush();
@@ -34,6 +41,7 @@ class AgeGate {
 		$('#inputAgeForm').hide();
 		$('#weAreSorry').show();
 	};
+	// We use "mw.ready" here so that $.cookie is avaliable and we reuse the same cached js 
 	mw.ready(function(){
 		$('#loadingSpinner').hide();
 		if( $.cookie('validUserAge' ) == 'no' ){
@@ -41,7 +49,7 @@ class AgeGate {
 			return;
 		}
 		$('#inputAgeForm').show();
-		$('#enterbtn').click(function(){
+		$('#enterbtn').click(function(){			
 			// Check Age
 			var ageDate = new Date();
 			ageDate.setFullYear( $('#year').val(), $('#month').val(), $('#day').val() );
@@ -50,9 +58,19 @@ class AgeGate {
 			var thirteenYearsOld = 3600*24*365*13;
 			
 			if( age > thirteenYearsOld ){
+				$('#loadingSpinner').show();
+				$('#inputAgeForm').hide();
 				$.cookie('validUserAge', 'yes');
-				// refresh the page
-				window.location.reload();
+				// Refresh the page append validUserAge=yes
+				setTimeout(function(){
+					var baseUrl = window.location.href;
+					urlParts = baseUrl.split( '#' );
+					var urlString = urlParts[0];
+					urlString+= ( urlParts[0].indexOf('?') === -1 )? '?' : '&';
+					urlString+= 'validUserAge=yes';
+					urlString+= ( urlParts[1] )? '#' + urlParts[1] : '';
+					window.location.href = urlString;
+				}, 100);
 			} else {
 				$.cookie('validUserAge', 'no');
 				showSorry();
@@ -124,7 +142,7 @@ class AgeGate {
 </td><td align=left >
 <select name="day" id="day" >
 <?php 
-for($i=1; $i < 31; $i++){
+for($i=1; $i <= 31; $i++){
 	echo "<option value='$i'>$i</option>";
 }
 ?>
@@ -132,7 +150,7 @@ for($i=1; $i < 31; $i++){
 </td><td align=left >
 <select name="year" id="year" >
 <?php 
-for($i=2011; $i > 1911; $i--){
+for($i=2011; $i > 1910; $i--){
 	echo "<option value='$i'>$i</option>";
 }
 ?>

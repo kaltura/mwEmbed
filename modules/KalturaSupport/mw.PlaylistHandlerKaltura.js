@@ -82,6 +82,11 @@ mw.PlaylistHandlerKaltura.prototype = {
 					break;
 				}
 			}				
+			
+			// Allow plugin to add extra playlists to the playlist set:
+			$j( mw ).trigger('KalturaPlaylist_AddToPlaylistSet', _this.playlistSet);
+			
+			
 			if( !_this.playlistSet[0] ){
 				mw.log( "Error could not get playlist entry id in the following player data::" + $uiConf.html() );
 				return false;
