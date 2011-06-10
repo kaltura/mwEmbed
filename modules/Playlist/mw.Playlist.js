@@ -462,7 +462,7 @@ mw.Playlist.prototype = {
 		var embedPlayer = $j( _this.target + ' .media-rss-video-player-container' )
 			.find('.mwplayer_interface div').get(0);
 		
-		if( $inDomVideo.length == 0 || embedPlayer.instanceOf != 'Native' ){
+		if( $inDomVideo.length == 0 || embedPlayer.instanceOf != 'Native' || !mw.isMobileDevice() ){
 			_this.updatePlayer( clipIndex, function(){
 				_this.play();
 			})
