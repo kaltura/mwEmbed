@@ -14,10 +14,6 @@ mw.IA =
   playingClipNumMW:0,
   video:true, //false means we are audio
 
-  ios:(navigator.userAgent.indexOf('iPhone') >= 0  ||
-       navigator.userAgent.indexOf('iPad'  ) >= 0  ||
-       navigator.userAgent.indexOf('iPod'  ) >= 0),
-
 
   css:function(str)
   {
@@ -153,7 +149,7 @@ mw.IA =
         player.bind('ended', mw.IA.ended);
         
         player.bind('pause', mw.IA.pause);
-        if (!mw.IA.ios)
+        if (!mw.isMobileDevice())
 player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resize(); }, 500); }); //xxx timeout lameness
       }
     }
@@ -172,7 +168,7 @@ player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resiz
 
   resize:function()
   {
-    if (this.ios)
+    if (mw.isMobileDevice())
       return;
     
     mw.IA.log('resize');
@@ -286,8 +282,9 @@ player.mediaElement.updateSourceTimes(group['LENGTH']);
 
 
   setup: function() {
-
+    
     mw.IA.css("\n\
+div#mwplayer_videolist { bottom:0px !important; right:0px !important; }\n\
 div.playlistItem {\n\
   font-family:Lucida Grande;\n\
   margin:0px 5px 0px 5px !important;\n\
@@ -383,6 +380,8 @@ div.overlay-content        {\n\
         }
       });
 
+    if (!mw.isMobileDevice())
+      mw.setConfig({'Playlist.ShowScrollButtons':false});
 
 
 
