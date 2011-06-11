@@ -70,7 +70,7 @@ mw.IA =
                                                    '$1');
     }
     
-    if (det == ''  &&  typeof(document.getElementsByTagName)!='undefined')
+    if (typeof(document.getElementsByTagName)!='undefined')
     {
       var els = document.getElementsByTagName('object');
       if (els  &&  els.length)
