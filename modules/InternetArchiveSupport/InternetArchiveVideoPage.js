@@ -69,6 +69,28 @@ mw.IA =
       return '/details/'+location.pathname.replace(/^\/embed\/([^\/]+).*$/,
                                                    '$1');
     }
+    
+    if (det == ''  &&  typeof(document.getElementsByTagName)!='undefined')
+    {
+      var els = document.getElementsByTagName('object');
+      if (els  &&  els.length)
+      {
+        var i=0;
+        for (i=0; i < els.length; i++)
+        {
+          var el = els[i];
+          if (typeof(el.data)!='undefined')
+          {
+            var mat = el.data.match(/\.archive.org\/download\/([^\/]+)/);
+            if (typeof(mat)!='undefined'  &&  mat  &&  mat.length>1)
+            {
+              return '/details/' + mat[1]; //xxx not working yet for embed codes!!
+            }
+          }
+        }
+      }
+    }
+    
     return '';
   },
 
@@ -145,9 +167,12 @@ mw.IA =
 
         player.unbind('play').bind('play', mw.IA.play);
         
-        player.bind('pause', mw.IA.pause);
+        // player.bind('pause', mw.IA.pause); //xxx hash not quite ready yet 
         if (!mw.isMobileDevice())
-player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resize(); }, 500); }); //xxx timeout lameness
+        {
+          player.bind('onCloseFullScreen', function(){ setTimeout(function() { 
+            mw.IA.resize(); }, 500); });
+        }
       }
     }
   },
@@ -167,7 +192,6 @@ player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resiz
   pause:function()
   {
     mw.IA.log('paused');
-    return; //xxxx not quite ready for hash yet
 
     // for hitting play:
     // location.hash = '#' + group['ORIG']; //xxxx not quite ready yet
@@ -184,19 +208,30 @@ player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resiz
       return;
     
     mw.IA.log('resize');
-
-    $('#avplaydiv').css('width',  this.VIDEO_WIDTH);
-
-    $('#mwplayer').css('width',  this.VIDEO_WIDTH);
-    $('#mwplayer').css('height', this.VIDEO_HEIGHT + this.VIDEO_PLAYLIST_HEIGHT);
-
-    $('#mwplayer_videolist').css('top',this.VIDEO_HEIGHT);
     
-    var tmp=$('div.mv-player video, div.mv-player object, div.mv-player embed').parent().get(0);
-    if (typeof(tmp)!='undefined')
+    var av=$('div.mv-player video, div.mv-player object, div.mv-player embed').parent().get(0);
+    
+    if (typeof(av)=='undefined'  &&  $('img.playerPoster').length > 0)
     {
-      tmp.resizePlayer({'width': this.VIDEO_WIDTH,
-                        'height':this.VIDEO_HEIGHT},true);
+      $('#avplaydiv').css('width', 320);
+      
+      $('#mwplayer').css('width',  320);
+      $('#mwplayer').css('height', 320);
+      
+      $('#mwplayer_videolist').css('top',240);
+      return;
+    }
+    else
+    {
+      $('#avplaydiv').css('width',  this.VIDEO_WIDTH);
+      
+      $('#mwplayer').css('width',  this.VIDEO_WIDTH);
+      $('#mwplayer').css('height', this.VIDEO_HEIGHT +this.VIDEO_PLAYLIST_HEIGHT);
+
+      $('#mwplayer_videolist').css('top',this.VIDEO_HEIGHT);
+      
+      av.resizePlayer({'width': this.VIDEO_WIDTH,
+                       'height':this.VIDEO_HEIGHT},true);
     }
   },
 
@@ -273,31 +308,6 @@ div.overlay-content        {\n\
 ");
 
     
-    var det = mw.IA.detailsLink();
-
-    if (det == ''  &&  typeof(document.getElementsByTagName)!='undefined')
-    {
-      var els = document.getElementsByTagName('object');
-      if (els  &&  els.length)
-      {
-        var i=0;
-        for (i=0; i < els.length; i++)
-        {
-          var el = els[i];
-          if (typeof(el.data)!='undefined')
-          {
-            var mat = el.data.match(/\.archive.org\/download\/([^\/]+)/);
-            if (typeof(mat)!='undefined'  &&  mat  &&  mat.length>1)
-            {
-              det = '/details/' + mat[1]; //xxx not working yet for embed codes!!
-              break;
-            }
-          }
-        }
-      }
-    }
-
-
     mw.setConfig( {
         // We want our video player to attribute something...
         "EmbedPlayer.AttributionButton" : true,
@@ -307,7 +317,7 @@ div.overlay-content        {\n\
         // Our attribution button
         'EmbedPlayer.AttributionButton' : {
           'title' : 'Internet Archive',
-          'href' : 'http://www.archive.org'+det,
+          'href' : 'http://www.archive.org' + mw.IA.detailsLink(),
           'class' : 'archive-icon',
           
         'Playlist.TitleLength': 38
