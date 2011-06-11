@@ -155,7 +155,7 @@ mw.IA =
         mw.IA.log('this is video!');
         mw.IA.video = true;
 
-        player.unbind('play').bind('play', mw.IA.play);
+        player.unbind('play').bind('play', mw.IA.resize);
         
         // player.bind('pause', mw.IA.pause); //xxx hash not quite ready yet 
         if (!mw.isMobileDevice())
@@ -168,17 +168,6 @@ mw.IA =
   },
     
     
-  play:function()
-  {
-    mw.IA.log('play');
-
-    if (!mw.IA.video)
-      return;
-
-    mw.IA.resize();
-  },
-
-
   pause:function()
   {
     mw.IA.log('paused');
@@ -197,32 +186,33 @@ mw.IA =
     if (mw.isMobileDevice())
       return;
     
+    if (!mw.IA.video)
+      return;
+    
     mw.IA.log('resize');
     
     var av=$('div.mv-player video, div.mv-player object, div.mv-player embed').parent().get(0);
     
     if (typeof(av)=='undefined'  &&  $('img.playerPoster').length > 0)
     {
-      $('#avplaydiv').css('width', 320);
-      
-      $('#mwplayer').css('width',  320);
-      $('#mwplayer').css('height', 320);
-      
-      $('#mwplayer_videolist').css('top',240);
-      return;
+      var wd = mw.IA.VIDEO_WIDTH / 2;
+      var ht = mw.IA.VIDEO_HEIGHT / 2;
     }
     else
     {
-      $('#avplaydiv').css('width',  this.VIDEO_WIDTH);
+      var wd = mw.IA.VIDEO_WIDTH;
+      var ht = mw.IA.VIDEO_HEIGHT;
       
-      $('#mwplayer').css('width',  this.VIDEO_WIDTH);
-      $('#mwplayer').css('height', this.VIDEO_HEIGHT +this.VIDEO_PLAYLIST_HEIGHT);
-
-      $('#mwplayer_videolist').css('top',this.VIDEO_HEIGHT);
-      
-      av.resizePlayer({'width': this.VIDEO_WIDTH,
-                       'height':this.VIDEO_HEIGHT},true);
+      if (typeof(av)!='undefined')
+        av.resizePlayer({'width': wd, 'height':ht}, true);
     }
+
+    $('#mwplayer_videolist').css('top', ht);
+      
+    $('#avplaydiv').css('width', wd);
+      
+    $('#mwplayer').css('width',  wd);
+    $('#mwplayer').css('height', ht + mw.IA.VIDEO_PLAYLIST_HEIGHT);
   },
 
 
