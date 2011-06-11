@@ -84,7 +84,7 @@ mw.IA =
             var mat = el.data.match(/\.archive.org\/download\/([^\/]+)/);
             if (typeof(mat)!='undefined'  &&  mat  &&  mat.length>1)
             {
-              return '/details/' + mat[1]; //xxx not working yet for embed codes!!
+              return '/details/' + mat[1];
             }
           }
         }
@@ -110,16 +110,6 @@ mw.IA =
             'height=&quot;' + mw.IA.VIDEO_HEIGHT + '&quot; ' +
             'frameborder=&quot;0&quot; ' +
             '&gt;&lt/iframe&gt;');
-  },
-
-
-  // marks the playlist row for the video that is playing w/ orange triangle
-  indicateIsPlaying:function(clipnum)
-  {
-    var flowplayerplaylist = $('#flowplayerplaylist')[0];
-    var els = flowplayerplaylist.getElementsByTagName("img");
-    for (var i=0; i < els.length; i++)
-      els[i].style.visibility = (i==clipnum ? 'visible' : 'hidden');
   },
 
 
@@ -194,7 +184,7 @@ mw.IA =
     mw.IA.log('paused');
 
     // for hitting play:
-    // location.hash = '#' + group['ORIG']; //xxxx not quite ready yet
+    // location.hash = '#' + group['ORIG']; //xxxx hash not quite ready yet
 
     
     location.hash = '#' + // [get ORIG video file from playlist item and then matched back thru IAD.playlist, etc.?]  +
