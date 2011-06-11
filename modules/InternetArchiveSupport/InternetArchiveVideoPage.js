@@ -11,7 +11,6 @@ mw.IA =
   VIDEO_HEIGHT:480,
   VIDEO_PLAYLIST_HEIGHT:80,
   
-  playingClipNumMW:0,
   video:true, //false means we are audio
 
 
@@ -146,7 +145,6 @@ mw.IA =
         mw.IA.video = true;
 
         player.unbind('play').bind('play', mw.IA.play);
-        player.bind('ended', mw.IA.ended);
         
         player.bind('pause', mw.IA.pause);
         if (!mw.isMobileDevice())
@@ -154,13 +152,28 @@ player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resiz
       }
     }
   },
+    
+    
+  play:function()
+  {
+    mw.IA.log('play()');
+
+    if (!mw.IA.video)
+      return;
+
+    mw.IA.resize();
+  },
 
 
-  pause:function()
+pause:function()
   {
     mw.IA.log('paused');
     return; //xxxx not quite ready for hash yet
 
+    // for hitting play:
+    // location.hash = '#' + group['ORIG']; //xxxx not quite ready yet
+
+    
     location.hash = '#' + // [get ORIG video file from playlist item and then matched back thru IAD.playlist, etc.?]  +
       '/start=' + Math.round($('#mwplayer').get(0).currentTime * 10) / 10;
   },
@@ -186,91 +199,6 @@ player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resiz
       tmp.resizePlayer({'width': this.VIDEO_WIDTH,
                         'height':this.VIDEO_HEIGHT},true);
     }
-  },
-
-
-  play:function()
-  {
-    mw.IA.log('play()');
-
-    if (!mw.IA.video)
-      return;
-
-    mw.IA.resize();
-  },
-
-
-  playClipMW:function(idx)
-  {
-    mw.IA.playingClipNumMW = idx;
-    mw.IA.log('IA play: ('+idx+')');
-    if (typeof(IAD)=='undefined'  ||  typeof(IAD.playlist[idx])=='undefined')
-      return false;
-
-    var group = IAD.playlist[idx];
-    mw.IA.log(group);
-
-    // set things up so we can update the "playing triangle"
-    this.indicateIsPlaying(idx);
-
-    // location.hash = '#' + group['ORIG']; //xxxx not quite ready yet
-
-    mw.ready(function(){
-      var player = $('#mwplayer').get(0); // <div id="mwplayer"><video ...></div>
-      if (!player)
-        return false;
-
-      var prefix = '/download/'+IAD.identifier+'/';
-      player.stop();
-      player.emptySources();
-      if (mw.IA.video)
-      {
-        player.updatePosterSrc( typeof(group['POSTER'])!='undefined' ?
-                                prefix + group['POSTER'] :
-                                '/images/glogo.png' );
-      }
-
-      for (var i=0, source; source=group['SRC'][i]; i++)
-      {
-    	if( source )
-        {
-          var attrs = {'src' : prefix + source};
-          var ending = source.substr(source.length-4).toLowerCase();
-          if (ending=='.mp4'  ||  ending=='.ogv')
-            attrs['URLTimeEncoding'] = true;
-	  player.mediaElement.tryAddSource(
-	    $('<source />')
-	      .attr( attrs )
-	      .get( 0 )
-	  );
-    	}
-      }
-      player.stop();
-               
-mw.IA.log(group['LENGTH']);
-player.duration = group['LENGTH'];
-player.buffered = 0;
-player.bufferStartFlag = false;
-player.bufferEndFlag = false;
-player.attributes['duration']=group['LENGTH'];
-player.mediaElement.updateSourceTimes(group['LENGTH']);
-               
-      player.setupSourcePlayer( function(){
-    	setTimeout(function(){
-    	  player.play();
-    	},100);
-      });
-    });
-
-    return false;
-  },
-
-
-  ended:function(event, onDoneActionObject )
-  {
-    mw.IA.log('ended');
-    //mw.IA.playingClipNumMW++;
-    //mw.IA.playClipMW(mw.IA.playingClipNumMW);
   },
 
 
