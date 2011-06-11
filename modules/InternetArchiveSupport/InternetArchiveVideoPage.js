@@ -274,9 +274,10 @@ player.mediaElement.updateSourceTimes(group['LENGTH']);
   },
 
 
-  log:function(str){
-    mw.log('      ---IA------------------------------>   '+str);
-    //alert(str);
+  log:function(str)
+  {
+    if ( typeof(console) !='undefined' )
+      mw.log('      ---IA------------------------------>   '+str);
   },
 
 
@@ -284,6 +285,10 @@ player.mediaElement.updateSourceTimes(group['LENGTH']);
   setup: function() {
     
     mw.IA.css("\n\
+audio { z-index:666 !important; position:absolute !important; bottom:0px !important; } \n\
+\n\
+\n\
+\n\
 div#mwplayer_videolist { bottom:0px !important; right:0px !important; }\n\
 div.playlistItem {\n\
   font-family:Lucida Grande;\n\
