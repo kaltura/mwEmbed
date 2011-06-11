@@ -104,8 +104,10 @@ mw.IA =
   // Set up so that:
   //   - when "click to play" clicked, resize video window and playlist
   //   - we advance to the next clip (when 2+ present)
-  newEmbedPlayerMW:function(arg)
+  newEmbedPlayerEvent:function(arg)
   {
+    mw.IA.log('newEmbedPlayerEvent');
+
     if (typeof($('#iframeVidso').get(0)) != 'undefined')
     {
       mw.setConfig( {
@@ -124,9 +126,6 @@ mw.IA =
     var player = $('#mwplayer');
     if (!player)
       return;
-
-    mw.IA.log('newEmbedPlayerMW()');
-
 
     if (typeof(IAD)!='undefined'  &&
         typeof(IAD.playlist)!='undefined'  &&
@@ -156,7 +155,7 @@ player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resiz
     
   play:function()
   {
-    mw.IA.log('play()');
+    mw.IA.log('play');
 
     if (!mw.IA.video)
       return;
@@ -165,7 +164,7 @@ player.bind('onCloseFullScreen', function(){ setTimeout(function() { mw.IA.resiz
   },
 
 
-pause:function()
+  pause:function()
   {
     mw.IA.log('paused');
     return; //xxxx not quite ready for hash yet
@@ -321,8 +320,8 @@ div.overlay-content        {\n\
 
 
     // NOTE: keep this outside "mw.ready()" so that "click-to-play" does indeed
-    // cause the newEmbedPlayerMW() call
-    $( mw ).bind('newEmbedPlayerEvent', mw.IA.newEmbedPlayerMW);
+    // cause the newEmbedPlayerEvent() call
+    $( mw ).bind('newEmbedPlayerEvent', mw.IA.newEmbedPlayerEvent);
 
     mw.ready(function(){
         var hash = unescape(location.hash);
