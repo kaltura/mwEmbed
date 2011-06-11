@@ -457,18 +457,18 @@ mw.Playlist.prototype = {
 	playClip: function( clipIndex ){
 		var _this = this;
 		
-		// Check for a video already in the page:
-		var $inDomVideo = $j( _this.target + ' .media-rss-video-player video' );
+		// Check for a video/audio tag already in the page:
+		var $inDomAV = $j( _this.target + ' .media-rss-video-player video, '+ _this.target + ' .media-rss-video-player audio' );
 		var embedPlayer = $j( _this.target + ' .media-rss-video-player-container' )
 			.find('.mwplayer_interface div').get(0);
-		
-		if( $inDomVideo.length == 0 || embedPlayer.instanceOf != 'Native' || !mw.isMobileDevice() ){
+	
+		if( $inDomAV.length == 0 || embedPlayer.instanceOf != 'Native' || !mw.isMobileDevice() ){
 			_this.updatePlayer( clipIndex, function(){
 				_this.play();
 			})
 			return ;
 		} 
-	
+
 		if (typeof _this.nextPlayIndex !='undefined')
 		{
 			if (clipIndex < _this.nextPlayIndex) {
@@ -729,6 +729,8 @@ mw.Playlist.prototype = {
 
 				// Update _this.clipIndex
 				_this.clipIndex = $j( this ).data( 'clipIndex' );
+
+				_this.nextPlayIndex = _this.clipIndex;
 
 				_this.playClip( _this.clipIndex );
 
