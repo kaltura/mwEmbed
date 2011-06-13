@@ -139,18 +139,9 @@ mw.IA =
     if (!player)
       return;
 
-    if (typeof(IAD)!='undefined'  &&
-        typeof(IAD.playlist)!='undefined'  &&
-        IAD.playlist.length > 0)
+    if (typeof(mw.IA.mrss)!='undefined')
     {
-      var check = IAD.playlist[0].SRC[0];
-      var suffix = check.substr(check.length-4).toLowerCase();
-      if (suffix=='.mp3'  ||  suffix=='.ogg')
-      {
-        mw.IA.log('this is audio!');
-        mw.IA.video = false;
-      }
-      else
+      if (mw.IA.video)
       {
         mw.IA.log('this is video!');
         mw.IA.video = true;
@@ -164,6 +155,10 @@ mw.IA =
             mw.IA.resize(); }, 500); });
         }
       }
+      else
+      {
+        mw.IA.log('this is audio!');
+      }
     }
   },
     
@@ -176,7 +171,7 @@ mw.IA =
     // location.hash = '#' + group['ORIG']; //xxxx hash not quite ready yet
 
     
-    location.hash = '#' + // [get ORIG video file from playlist item and then matched back thru IAD.playlist, etc.?]  +
+    location.hash = '#' + // [get ORIG video file from playlist item and then matched back thru mrss variable etc.?]  +
       '/start=' + Math.round($('#mwplayer').get(0).currentTime * 10) / 10;
   },
 
@@ -298,15 +293,16 @@ div.overlay-content        {\n\
         'EmbedPlayer.AttributionButton' : {
           'title' : 'Internet Archive',
           'href' : 'http://www.archive.org' + mw.IA.detailsLink(),
-          'class' : 'archive-icon',
-          
+          'class' : 'archive-icon'
+        },
+                    
+        'imagesPath' : 'http://www/archive.org/images/', //xxxxxxx not working yet
+                    
         'Playlist.TitleLength': 38
-        }
       });
 
     if (!mw.isMobileDevice())
       mw.setConfig({'Playlist.ShowScrollButtons':false});
-
 
 
     // NOTE: keep this outside "mw.ready()" so that "click-to-play" does indeed
@@ -336,7 +332,7 @@ div.overlay-content        {\n\
           mw.IA.resize();
           var jplay = $('#mwplayer').get(0);
           var dura = jplay.duration;
-          IAD.log(star+'s of '+dura+'s');
+          mw.IA.log(star+'s of '+dura+'s');
 
           jplay.currentTime = star;
           jplay.play();
