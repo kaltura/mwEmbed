@@ -143,7 +143,7 @@ mw.IA =
     {
       if (mw.IA.video)
       {
-        mw.IA.log('this is video!');
+        mw.IA.log('this is /details/ video!');
         mw.IA.video = true;
 
         player.unbind('play').bind('play', mw.IA.resize);
@@ -157,7 +157,7 @@ mw.IA =
       }
       else
       {
-        mw.IA.log('this is audio!');
+        mw.IA.log('this is /details/ audio!');
       }
     }
   },
