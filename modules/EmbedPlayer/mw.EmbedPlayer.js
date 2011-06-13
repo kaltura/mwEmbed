@@ -1,4 +1,4 @@
-/**
+        /**
 * embedPlayer is the base class for html5 video tag javascript abstraction library
 * embedPlayer include a few subclasses:
 *
@@ -538,7 +538,13 @@ mediaSource.prototype = {
 		var pUrl = mw.parseUri ( this.src );
 		if ( typeof pUrl[ 'queryKey' ][ 't' ] != 'undefined' ) {
 			this.URLTimeEncoding = true;
-		}
+		}else if ( typeof mw.IA != 'undefined' ){
+                  // Internet Archive
+                  var suffix = this.src.substr(this.src.length-4,4).toLowerCase();
+                  if ( suffix=='.ogv'  ||  suffix=='.mp4' ) {
+                    this.URLTimeEncoding = true;
+                  }
+                }
 
 		var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes' );
 
