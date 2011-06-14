@@ -1853,6 +1853,11 @@ mw.EmbedPlayer.prototype = {
 	 * Get the duration of the embed player
 	 */
 	getDuration: function() {
+		if ( isNaN(this.duration)  &&  
+		     typeof this.mediaElement.selectedSource.durationHint != 'undefined' ){
+			this.duration = this.mediaElement.selectedSource.durationHint;
+		}
+  
 		return this.duration;
 	},
 
