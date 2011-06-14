@@ -213,8 +213,15 @@ mw.IA =
 
   log:function(str)
   {
-    if ( typeof(console) !='undefined' )
-      mw.log('      ---IA------------------------------>   '+str);
+    if ( typeof console == 'undefined' )
+      return;
+    
+    if (str==mw.IA.mrss)
+    {
+      console.dirxml($j.parseXML(unescape(mw.IA.mrss).replace(/\+/g,' ')));
+      return;
+    }
+    mw.log('      ---IA------------------------------>   '+str);
   },
 
 
