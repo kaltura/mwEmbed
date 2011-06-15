@@ -2,8 +2,9 @@
 <html>
 <head>
         <title>Player with native controls</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
         
-     <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+    <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
         <!--
     <script type="text/javascript" src="../../../ResourceLoader.php?class=window.jQuery,mwEmbed&debug=true"></script> 
         <script type="text/javascript" src="http://html5.kaltura.org/js"></script>
@@ -39,6 +40,35 @@ mw.ready( function(){
 	});
 } );
 </script>
+<script type="text/javascript"> //qunit
+function runEmbedPlaybackTests(videoSelector) {
+	
+	module("Embed Player Loads");
+
+	test("embed player is embedded", function() {
+		notEqual( $('.mv-player').width(), null );
+		notEqual( $('.mwplayer_interface').width(), null );
+	});
+
+	test("embed player is skinned", function() {
+		notEqual( $('.play-btn-large').width(), null );
+	});
+	
+};
+
+function queueTests() {
+	setTimeout( function() {
+		mw.ready( function() {
+			$('#showVideo').click();		
+			setTimeout( function(){
+				QUnit.start();	
+				runEmbedPlaybackTests();
+			}, 5000);
+		});
+	}, 5000);
+};
+	
+</script>
 </head>
 <body>
 	<h3> Kaltura Player </h3>
@@ -49,6 +79,7 @@ mw.ready( function(){
 	
 	<div style="clear:both" ></div>
 	<input id="showVideo" type="button" value="Show Video" disabled="true">
+	<a href="?runQunitTests">Run QUnit Tests</a><br /><br />
 	<div id="videoContainer" style="width:400px"> </div>
 </body>
 </html>
