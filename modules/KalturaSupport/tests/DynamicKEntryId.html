@@ -5,12 +5,7 @@
 	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
         
     <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-        <!--
-    <script type="text/javascript" src="../../../ResourceLoader.php?class=window.jQuery,mwEmbed&debug=true"></script> 
-        <script type="text/javascript" src="http://html5.kaltura.org/js"></script>
-         --> 
 <script type="text/javascript">
-
 mw.ready( function(){
 	$j('#showVideo').attr('disabled', false);
 	mw.setConfig( 'EmbedPlayer.OverlayControls', false );	
@@ -40,12 +35,13 @@ mw.ready( function(){
 	});
 } );
 </script>
+<!--  The following qUnit tests are only run when ?runQunitTests=true url flag is set -->
 <script type="text/javascript"> //qunit
-function runEmbedPlaybackTests(videoSelector) {
+function dynamicKEntryTests() {
 	
-	module("Embed Player Loads");
+	module("Dynamic KEntry Player Loads");
 
-	test("embed player is embedded", function() {
+	test("KEntry player is embedded", function() {
 		notEqual( $('.mv-player').width(), null );
 		notEqual( $('.mwplayer_interface').width(), null );
 	});
@@ -56,17 +52,15 @@ function runEmbedPlaybackTests(videoSelector) {
 	
 };
 
-function queueTests() {
-	setTimeout( function() {
-		mw.ready( function() {
-			$('#showVideo').click();		
-			setTimeout( function(){
-				QUnit.start();	
-				runEmbedPlaybackTests();
-			}, 5000);
-		});
-	}, 5000);
-};
+queueTest( function(){
+	mw.ready( function() {
+		$('#showVideo').click();		
+		setTimeout( function(){
+			QUnit.start();	
+			dynamicKEntryTests();
+		}, 5000);
+	});
+});
 	
 </script>
 </head>
@@ -79,7 +73,6 @@ function queueTests() {
 	
 	<div style="clear:both" ></div>
 	<input id="showVideo" type="button" value="Show Video" disabled="true">
-	<a href="?runQunitTests">Run QUnit Tests</a><br /><br />
 	<div id="videoContainer" style="width:400px"> </div>
 </body>
 </html>

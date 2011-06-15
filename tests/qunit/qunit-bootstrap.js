@@ -1,37 +1,75 @@
-if( document.URL.indexOf('runQunitTests') != -1 ){		
-	document.write('<link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" /><script src="http://code.jquery.com/jquery-latest.js"></script><script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script><script type="text/javascript" src="http://staging.html5video.org/testswarm/js/inject.js"></script>');
-	document.write('<h1 id="qunit-header">QUnit Test Runner</h1><h2 id="qunit-banner"></h2><div id="qunit-testrunner-toolbar"></div><h2 id="qunit-userAgent"></h2><ol id="qunit-tests"></ol><div id="qunit-fixture">test markup, will be hidden</div>');
-}
-
-var qunitSetup = function() {
-	if( document.URL.indexOf('runQunitTests') != -1 ){		
-		QUnit.config.autostart = false;
-		$(document).ready(function(){
-			queueTests();
-		});
-	}
-}
-
-
-// jqueryless domready from http://www.javascriptkit.com/dhtmltutors/domready.shtml
-
-if( document.URL.indexOf('runQunitTests') != -1 ){		
-	var alreadyrunflag=0 //flag to indicate whether target function has already been run
-
-	if (document.addEventListener)
-		document.addEventListener("DOMContentLoaded", function(){alreadyrunflag=1; qunitSetup()}, false)
-	else if (document.all && !window.opera){
-		document.write('<script type="text/javascript" id="contentloadtag" defer="defer" src="javascript:void(0)"><\/script>');
-		var contentloadtag=document.getElementById("contentloadtag");
-		contentloadtag.onreadystatechange=function(){
-			if (this.readyState=="complete"){
-				alreadyrunflag=1;
-				qunitSetup();
-			}
+(function(){
+// Get the current url path for "self"
+var getQunitPath = function(){
+	var scripts = document.getElementsByTagName('script');
+	for(var i=0;i< scripts.length; i++){
+		var src = scripts[i].getAttribute('src');
+		if( src && src.indexOf('qunit-bootstrap.js') !== -1 ){
+			return src.replace('qunit-bootstrap.js', '');
 		}
 	}
+};
 
-	window.onload=function(){
-		setTimeout("if (!alreadyrunflag) qunitSetup()", 0)
-	}
+//Always include jQuery ( unless already included )
+if( !window.jQuery ){
+	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../ResourceLoader.php?class=window.jQuery' + '"></script>');
 }
+window.quededTestsSet = [];
+window.queueTest = function( testFunction ){
+	window.quededTestsSet.push( testFunction );
+};
+// Check for the url for runQunitTests argument
+if( document.URL.indexOf('runQunitTests') != -1 ){
+	document.write('' +
+			'<link rel="stylesheet" href="' + getQunitPath() + 'lib/qunit.css" type="text/css" media="screen" />' +
+			'<script type="text/javascript" src="' + getQunitPath() + 'lib/qunit.js"></script>' + 
+			'<script type="text/javascript" src="' + getQunitPath() + 'lib/inject.js"></script>'
+	);
+	window.qunitSetup = function(){
+		$('#runQunitLink').remove();
+		$('body').prepend( '<h1 id="qunit-header">QUnit Test Runner</h1>' +
+				'<h2 id="qunit-banner"></h2>'+
+				'<div id="qunit-testrunner-toolbar"></div>' +
+				'<h2 id="qunit-userAgent"></h2>' +
+				'<ol id="qunit-tests"></ol>' +
+				'<div id="qunit-fixture">test markup, will be hidden</div>' );
+		QUnit.config.autostart = false;
+		$(document).ready(function(){
+			while( window.quededTestsSet.length ){
+				window.quededTestsSet.shift()();
+			}
+		});
+	};
+	document.write( '<script type="text/javascript">' + 
+		'$(document).ready(qunitSetup);' +
+	'</script>');
+} else {
+	window.addRunTestLink = function(){
+		var url = document.URL;
+		url += ( url.indexOf('?') === -1 )? '?' : '&';
+		url += 'runQunitTests=1';
+		$('body').append( 
+			$('<a />')
+			.attr({
+				'id':'runQunitLink',
+				'href' : url
+			})
+			.text( 'run qunit tests')
+			.css({ 
+				'position': 'absolute', 
+				'display': 'block',
+				'top': '0px',  
+				'right': '0px', 
+				'background':'#eee',
+				'padding': '5px'
+			})
+		);
+	};
+	// if not running unit tests provide a link:
+	document.write('<script type="text/javascript">' + 
+			'$(document).ready( addRunTestLink );' +
+			'</script>'
+	);
+}
+
+})();
