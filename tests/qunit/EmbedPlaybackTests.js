@@ -4,12 +4,9 @@ function runEmbedPlaybackTests(videoSelector) {
 	
 	module("Embed Player Loads");
 
-	test("embed player is embedded", function() {
+	test("embed player is embedded and skinned", function() {
 		notEqual( $('.mv-player').width(), null );
 		notEqual( $('.mwplayer_interface').width(), null );
-	});
-
-	test("embed player is skinned", function() {
 		notEqual( $('.play-btn-large').width(), null );
 	});
 	
