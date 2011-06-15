@@ -1,22 +1,25 @@
+var player = undefined;
+var passed = undefined;
 function runEmbedPlaybackTests(videoSelector) {
 	
 	module("Embed Player Loads");
 
 	test("embed player is embedded", function() {
-		ok( $('.mv-player', '.mwplayer_interface' ) );
+		notEqual( $('.mv-player').width(), null );
+		notEqual( $('.mwplayer_interface').width(), null );
 	});
 
 	test("embed player is skinned", function() {
-		ok( $('.play-btn-large') );
+		notEqual( $('.play-btn-large').width(), null );
 	});
 	
 	module("Embed Player Plays",
 	{
 		setup: function() 
 		{
-			this.player = $( videoSelector ).get(0);
-			this.player.play();
-			this.passed = false;
+				this.player = $( videoSelector ).get(0);
+				this.player.play();
+				this.passed = false;
 		},
 		teardown: function()
 		{
@@ -30,7 +33,7 @@ function runEmbedPlaybackTests(videoSelector) {
 	});
 
 	asyncTest("playback begins", function() {
-		var player = this.player;
+		player = this.player;
 		setTimeout( function()
 		{
 			equal( player.isPlaying(), true );
@@ -39,8 +42,8 @@ function runEmbedPlaybackTests(videoSelector) {
 	});
 		
 	asyncTest("playhead progresses", function() {
-		var player = this.player;
-		var passed = this.passed;
+		player = this.player;
+		passed = this.passed;
 		setTimeout( function()
 		{
 			if ( player.currentTime > 0 ) { passed = true; };
@@ -50,7 +53,7 @@ function runEmbedPlaybackTests(videoSelector) {
 	});
 
 	asyncTest("pause playback", function() {
-		var player = this.player;
+		player = this.player;
 		setTimeout( function() 
 		{
 			player.pause();
@@ -60,7 +63,7 @@ function runEmbedPlaybackTests(videoSelector) {
 	});
 
 	asyncTest("resume playback", function() {
-		var player = this.player;
+		player = this.player;
 		player.pause();
 		setTimeout( function()
 		{ 
@@ -72,8 +75,8 @@ function runEmbedPlaybackTests(videoSelector) {
 	});
 	
 	asyncTest("seek to video beginning + 5 sec", function() {
-		var player = this.player;
-		var passed = this.passed;
+		player = this.player;
+		passed = this.passed;
 		var performTestSeek = function()
 		{
 			player.doSeek( 5 / player.duration );
@@ -93,8 +96,8 @@ function runEmbedPlaybackTests(videoSelector) {
 	});
 
 	asyncTest("playback ends", function() {
-		var player = this.player;
-		var passed = this.passed;
+		player = this.player;
+		passed = this.passed;
 		$(player).bind('ended', function() { passed = true } );
 		var performTestSeek = function()
 		{
