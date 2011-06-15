@@ -16,12 +16,14 @@
 				<input style="width: 100px; font-size: 12px;" id="showVideo" type="button" value="Change entry" disabled="true">
 			</div><br />
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers <br /><br />
+<a href="?runQunitTests">Run QUnit Tests</a><br /><br />
 			<div id="videoContainer" style="width:400px">
 
 			</div>
 
 			</div><!-- end contwrap -->
 		</div><!-- end content -->
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript">
@@ -48,6 +50,32 @@
 	});
 	updateIframe();
 
+</script>
+<script type="text/javascript"> //qunit
+function runEmbedPlaybackTests(videoSelector) {
+	
+	module("Embed Player Loads");
+
+	test("embed player is embedded", function() {
+		notEqual( $('.mv-player').width(), null );
+		notEqual( $('.mwplayer_interface').width(), null );
+	});
+
+	test("embed player is skinned", function() {
+		notEqual( $('.play-btn-large').width(), null );
+	});
+	
+};
+
+function queueTests() {
+	setTimeout( function() {
+		mw.ready( function() {
+			QUnit.start();	
+			runEmbedPlaybackTests();
+		});
+	}, 5000);
+};
+	
 </script>
 
     </body>
