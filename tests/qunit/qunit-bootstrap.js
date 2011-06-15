@@ -9,6 +9,11 @@ var getQunitPath = function(){
 		}
 	}
 };
+var getModuleName = function(){
+	var url = document.URL;
+	m = url.match(/.modules\/([^\/]*)/);
+	return ( m[1] ) ? m[1] + '::' : '';
+};
 //Always include jQuery ( unless already included )
 if( !window.jQuery ){
 	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../ResourceLoader.php?class=window.jQuery' + '"></script>');
@@ -21,6 +26,11 @@ if( document.URL.indexOf('runQunitTests') != -1 ){
 			'<script type="text/javascript" src="' + getQunitPath() + 'lib/inject.js"></script>'
 	);
 	window.qunitSetup = function(){
+		// get the module name we are testing
+		var orgModule = window.module;
+		window.module = function( name, testEnvironment ){
+			orgModule( getModuleName() + name, testEnvironment);
+		};
 		$('#runQunitLink').remove();
 		$('body').prepend( '<h1 id="qunit-header">QUnit Test Runner</h1>' +
 				'<h2 id="qunit-banner"></h2>'+

@@ -8,18 +8,20 @@
 	mw.setConfig('EmbedPlayer.EnableIpadHTMLControls', true);
 	mw.setConfig( 'Kaltura.IframeRewrite', true );
 </script>
-<script type="text/javascript">		
-QUnit.start();	
-module("Dynamic Kaltura Entry Player");
-
-test("is embedded", function() {
-	notEqual( $('.mv-player').width(), null );
-	notEqual( $('.mwplayer_interface').width(), null );
-});
-
-test("is skinned", function() {
-	notEqual( $('.play-btn-large').width(), null );
-});
+<script type="text/javascript">	
+if( window.QUnit ){
+	QUnit.start();	
+	module("Kaltura Iframe");
+	
+	test("is embedded", function() {
+		notEqual( $('.mv-player').width(), null );
+		notEqual( $('.mwplayer_interface').width(), null );
+	});
+	
+	test("is skinned", function() {
+		notEqual( $('.play-btn-large').width(), null );
+	});
+}
 </script>
 </head>
 <body>
