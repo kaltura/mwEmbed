@@ -8,10 +8,7 @@
 <script type="text/javascript">
 mw.ready( function(){
 	$j('#showVideo').attr('disabled', false);
-	mw.setConfig( 'EmbedPlayer.OverlayControls', false );	
-
-	mw.load(["MD5", 'mw.KApi'], function(){
-	});
+	mw.setConfig( 'EmbedPlayer.OverlayControls', false );
 	
 	$j('#showVideo').click( function(){		
 		$j( '#videoContainer' ).loadingSpinner();				
@@ -30,35 +27,33 @@ mw.ready( function(){
 			);			
 			
 			// Rewrite all the players on the page
-			$j.embedPlayers();
+			$j.embedPlayers(function(){
+				if( window.testingPlayerReadyCB )
+					window.testingPlayerReadyCB();
+			});
 		});
 	});
 } );
 </script>
 <!--  The following qUnit tests are only run when ?runQunitTests=true url flag is set -->
 <script type="text/javascript"> //qunit
-function dynamicKEntryTests() {
-	
-	module("Dynamic KEntry Player Loads");
-
-	test("KEntry player is embedded", function() {
-		notEqual( $('.mv-player').width(), null );
-		notEqual( $('.mwplayer_interface').width(), null );
-	});
-
-	test("embed player is skinned", function() {
-		notEqual( $('.play-btn-large').width(), null );
-	});
-	
-};
-
 queueQunitTest( function(){
-	mw.ready( function() {
-		$('#showVideo').click();		
-		setTimeout( function(){
-			QUnit.start();	
-			dynamicKEntryTests();
-		}, 5000);
+	window.testingPlayerReadyCB = function(){
+		QUnit.start();	
+		
+		module("Dynamic Kaltura Entry Player");
+
+		test("is embedded", function() {
+			notEqual( $('.mv-player').width(), null );
+			notEqual( $('.mwplayer_interface').width(), null );
+		});
+
+		test("is skinned", function() {
+			notEqual( $('.play-btn-large').width(), null );
+		});
+	}
+	mw.ready( function(){
+		$('#showVideo').click();
 	});
 });
 	
