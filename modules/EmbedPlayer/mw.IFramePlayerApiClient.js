@@ -201,7 +201,10 @@ jQuery.fn.iFramePlayer = function( readyCallback ){
 
 		// Update the id and wrap with the proxy 
 		$j( targetPlayer)
-			.attr('id', iframePlayerId)
+			.attr({
+				'id': iframePlayerId,
+				'name' : iframePlayerId
+			})
 			.wrap(
 				$j('<div />')
 				.attr( 'id', playerProxyId )

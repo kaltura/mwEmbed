@@ -1,4 +1,4 @@
-<?php 
+<?php
 // Special mwEmbedLoader.js entry point with php based configuration
 // ( will be deprecated  once we move to new resource loader ) 
 

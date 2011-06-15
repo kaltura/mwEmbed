@@ -40,14 +40,14 @@ mw.ready( function(){
 if( window.QUnit ){
 	window.testingPlayerReadyCB = function(){		
 		QUnit.start();	
-		module("Dynamic K-Entry Player");
+		module("K-Entry Player");
 	
 		test("is embedded", function() {
 			notEqual( $('.mv-player').width(), null );
 			notEqual( $('.mwplayer_interface').width(), null );
 		});
 	
-		test("is skinned", function() {
+		test("has play button", function() {
 			notEqual( $('.play-btn-large').width(), null );
 		});
 	}

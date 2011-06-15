@@ -130,6 +130,7 @@ function kDoIframeRewriteList( rewriteObjects ){
 		}
 	}
 }
+
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( !options )
 		options = {};
@@ -154,7 +155,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 				// Options include 'width' and 'height'
 				$j('#' + replaceTargetId ).css({
 					'width': options.width + 'px',
-					'height' : options.height + 'px'
+					'height': options.height + 'px'
 				});
 				// Do kaltura iframe player
 				$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
@@ -165,7 +166,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 				jsRequestSet.push( ['window.jQuery'] );
 			}
 			jsRequestSet.push('mwEmbed',  'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'kdpClientIframe', 'JSON' );
-			// Load just the files needed for flash iframe bindings			
+			// Load just the files needed for flash iframe bindings	
 			kLoadJsRequestSet( jsRequestSet, function(){
 				var iframeRewrite = new kdpClientIframe(replaceTargetId, kEmbedSettings, options);
 			});

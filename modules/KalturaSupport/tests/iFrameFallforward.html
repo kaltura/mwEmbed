@@ -11,15 +11,54 @@
 <script type="text/javascript">	
 if( window.QUnit ){
 	QUnit.start();	
-	module("Kaltura Iframe");
+	module( "IframeFallForward" );
 	
-	test("is embedded", function() {
-		notEqual( $('.mv-player').width(), null );
-		notEqual( $('.mwplayer_interface').width(), null );
-	});
+	var jsCallbackCalled = false;
+	function jsCallbackReady ( videoId ) {
+		jsCallbackCalled = true;
+
+		var $iframe = $('#' + videoId + '_ifp').contents();
+		var iframeContext = window.frames['kaltura_player_ifp'];
+		
+		test( "Iframe in DOM", function() {
+			ok( $('#' + videoId + '_ifp').length , 'iframe found' );
+			equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+		});
+
+		asyncTest("Iframe layout elements", function(){
+			// Add an mw.ready here to make sure the interface is ready before we check for interface components
+			mw.ready(function(){
+				ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
+				ok( $iframe.find('.play-btn').length, ".play-btn found" );
+				start();
+			});
+		});
+		
+		asyncTest("Iframe config", function(){
+			equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
+			equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
+			start();
+		});
+		
+	}
 	
-	test("is skinned", function() {
-		notEqual( $('.play-btn-large').width(), null );
+	// We may make this part of the framework.. but kind of tricky given diffrent loading types
+	// this really only applies to all kaltura tests... maybe we include it as qunit-kalturasupport.js
+	asyncTest( "loading player", function(){
+		var waitCount = 0;
+		var interval = setInterval(function(){
+			// timeout in 20 seconds:
+			if( waitCount == 200 && !jsCallbackCalled ){
+				ok(false, "Player timed out");
+				clearInterval( interval );
+			}
+			if( jsCallbackCalled ){
+				ok(true, "Player loaded");
+				clearInterval( interval );
+				start();
+			}
+			waitCount++;
+		}, 100);
 	});
 }
 </script>
