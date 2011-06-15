@@ -37,9 +37,11 @@ if( window.QUnit ){
 		asyncTest("Iframe config", function(){
 			equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
 			equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
+			// Test page context config: 
+			equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
 			start();
 		});
-		
+
 	}
 	
 	// We may make this part of the framework.. but kind of tricky given diffrent loading types
