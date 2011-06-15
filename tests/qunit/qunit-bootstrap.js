@@ -9,15 +9,10 @@ var getQunitPath = function(){
 		}
 	}
 };
-
 //Always include jQuery ( unless already included )
 if( !window.jQuery ){
 	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../ResourceLoader.php?class=window.jQuery' + '"></script>');
 }
-window.quededTestsSet = [];
-window.queueTest = function( testFunction ){
-	window.quededTestsSet.push( testFunction );
-};
 // Check for the url for runQunitTests argument
 if( document.URL.indexOf('runQunitTests') != -1 ){
 	document.write('' +
@@ -34,11 +29,6 @@ if( document.URL.indexOf('runQunitTests') != -1 ){
 				'<ol id="qunit-tests"></ol>' +
 				'<div id="qunit-fixture">test markup, will be hidden</div>' );
 		QUnit.config.autostart = false;
-		$(document).ready(function(){
-			while( window.quededTestsSet.length ){
-				window.quededTestsSet.shift()();
-			}
-		});
 	};
 	document.write( '<script type="text/javascript">' + 
 		'$(document).ready(qunitSetup);' +

@@ -37,17 +37,16 @@ mw.ready( function(){
 </script>
 <!--  The following qUnit tests are only run when ?runQunitTests=true url flag is set -->
 <script type="text/javascript"> //qunit
-queueQunitTest( function(){
-	window.testingPlayerReadyCB = function(){
+if( window.QUnit ){
+	window.testingPlayerReadyCB = function(){		
 		QUnit.start();	
-		
 		module("Dynamic Kaltura Entry Player");
-
+	
 		test("is embedded", function() {
 			notEqual( $('.mv-player').width(), null );
 			notEqual( $('.mwplayer_interface').width(), null );
 		});
-
+	
 		test("is skinned", function() {
 			notEqual( $('.play-btn-large').width(), null );
 		});
@@ -55,8 +54,7 @@ queueQunitTest( function(){
 	mw.ready( function(){
 		$('#showVideo').click();
 	});
-});
-	
+}
 </script>
 </head>
 <body>
