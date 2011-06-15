@@ -5,13 +5,12 @@
   <script type="text/javascript" src="/mwEmbed/libraries/jquery/jquery-1.6.1.js"></script>
 <script type="text/javascript" src="http://www.archive.org/includes/analytics.js?v=2"></script>
 <script type="text/javascript" src="http://www.archive.org/includes/edit.js?v=36124"></script>
-<script type="text/javascript" src="/includes/details.js?v=36130"></script>
-<script type="text/javascript" src="/mwEmbed/ResourceLoader.php?class=mwEmbed&urid=2160"></script>
+<script type="text/javascript" src="/mwEmbed/ResourceLoader.php?class=mwEmbed&urid=2178"></script>
 <meta name="description" content="Raw footage for our digital short.">
   <link rel="stylesheet" href="/stylesheets/archive.css?v=36315" type="text/css"/>
   <link rel="SHORTCUT ICON" href="/images/glogo.jpg"/>
 </head>
-<body class="Movies" onload="IAD.bodyLoaded()">
+<body class="Movies" >
    
 <!--BEGIN HEADER 1-->
 <table style="background-color:white " cellspacing="0" width="100%" border="0" cellpadding="0">
@@ -205,9 +204,8 @@
   <div class="box">
     <h1>View movie</h1>
     <div style="text-align:center;">
-      <a onclick="return IAD.filmstrip();" href="/movies/thumbnails.php?identifier=drake_saga1_shots"><img title="[item image]" alt="[item image]" style="max-height:152px; max-width:165px; margin-bottom:0.5em; border:0px; width:160px;" id="thumbnail" src="http://ia600307.us.archive.org/22/items/drake_saga1_shots/drake_saga1_shots.gif?cnt=0"/></a>      <br/>
-            <a onclick="return IAD.filmstrip();"
-         href="/movies/thumbnails.php?identifier=drake_saga1_shots"
+      <a href="/movies/thumbnails.php?identifier=drake_saga1_shots"><img title="[item image]" alt="[item image]" style="max-height:152px; max-width:165px; margin-bottom:0.5em; border:0px; width:160px;" id="thumbnail" src="http://ia600307.us.archive.org/22/items/drake_saga1_shots/drake_saga1_shots.gif?cnt=0"/></a>      <br/>
+            <a href="/movies/thumbnails.php?identifier=drake_saga1_shots"
          >View thumbnails</a><br/>
                 </div>
     <h2>Play / Download (<a href="/about/faqs.php#Movies">help<img title="[help]" alt="[help]" style="vertical-align:middle" id="help2" src="/images/question.gif"/></a>)</h2>      <p id="dl" class="content">
@@ -503,6 +501,19 @@
     </tr>
       </table>
   </div>
+<script>
+    // IE is lame when it comes to tables being 100% wide...
+    if (navigator.userAgent.indexOf('IE')>=0)
+    {
+      for (var i=0; i<10; i++)
+      {
+        // pick a "known safe" max width (search for "min-width" further above)
+        var obj = document.getElementById('ff'+i);
+        if (obj)
+          obj.style.width = '640px';
+      }
+    }
+</script>
   
 <h2 style="font-size:125%;">
   <span class="rightmost" style="font-weight:bold;">
@@ -510,7 +521,7 @@
        >Write a review</a>
         <br/>
     <span style="font-size:80%">
-      Downloaded 682 times
+      Downloaded 691 times
     </span>
         </span>
   Reviews<br/>
@@ -532,12 +543,11 @@
 </div>
     
 <script type="text/javascript">
-IAD.identifier  ="drake_saga1_shots";
 
 
-IAD.playlist = [{"POSTER":"drake_saga1_shots.thumbs\/MVI_3983_000005.jpg","TITLE":"MVI_3983","ORIG":"MVI_3983.AVI","SRC":["MVI_3983_512kb.mp4","MVI_3983.ogv"]},{"POSTER":"drake_saga1_shots.thumbs\/MVI_3984_000005.jpg","TITLE":"MVI_3984","ORIG":"MVI_3984.AVI","SRC":["MVI_3984_512kb.mp4","MVI_3984.ogv"]},{"POSTER":"drake_saga1_shots.thumbs\/MVI_3985_000005.jpg","TITLE":"MVI_3985","ORIG":"MVI_3985.AVI","SRC":["MVI_3985_512kb.mp4","MVI_3985.ogv"]},{"POSTER":"drake_saga1_shots.thumbs\/MVI_3986_000005.jpg","TITLE":"MVI_3986","ORIG":"MVI_3986.AVI","SRC":["MVI_3986_512kb.mp4","MVI_3986.ogv"]}];
+mw.IA.mrss = '%3C%3Fxml+version%3D%221.0%22+encoding%3D%22UTF-8%22%3F%3E%3Crss+version%3D%222.0%22+xmlns%3Amedia%3D%22http%3A%2F%2Fsearch.yahoo.com%2Fmrss%2F%22%3E%3Cchannel%3E%3Citem%3E%3Cmedia%3Atitle%3E1+MVI_3983%3C%2Fmedia%3Atitle%3E%3Cmedia%3Athumbnail+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2Fdrake_saga1_shots.thumbs%2FMVI_3983_000005.jpg%22%2F%3E%3Cmedia%3Agroup%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3983_512kb.mp4%22+type%3D%22video%2Fh264%22+%2F%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3983.ogv%22+type%3D%22video%2Fogg%22+%2F%3E%3C%2Fmedia%3Agroup%3E%3C%2Fitem%3E%3Citem%3E%3Cmedia%3Atitle%3E2+MVI_3984%3C%2Fmedia%3Atitle%3E%3Cmedia%3Athumbnail+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2Fdrake_saga1_shots.thumbs%2FMVI_3984_000005.jpg%22%2F%3E%3Cmedia%3Agroup%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3984_512kb.mp4%22+type%3D%22video%2Fh264%22+%2F%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3984.ogv%22+type%3D%22video%2Fogg%22+%2F%3E%3C%2Fmedia%3Agroup%3E%3C%2Fitem%3E%3Citem%3E%3Cmedia%3Atitle%3E3+MVI_3985%3C%2Fmedia%3Atitle%3E%3Cmedia%3Athumbnail+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2Fdrake_saga1_shots.thumbs%2FMVI_3985_000005.jpg%22%2F%3E%3Cmedia%3Agroup%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3985_512kb.mp4%22+type%3D%22video%2Fh264%22+%2F%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3985.ogv%22+type%3D%22video%2Fogg%22+%2F%3E%3C%2Fmedia%3Agroup%3E%3C%2Fitem%3E%3Citem%3E%3Cmedia%3Atitle%3E4+MVI_3986%3C%2Fmedia%3Atitle%3E%3Cmedia%3Athumbnail+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2Fdrake_saga1_shots.thumbs%2FMVI_3986_000005.jpg%22%2F%3E%3Cmedia%3Agroup%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3986_512kb.mp4%22+type%3D%22video%2Fh264%22+%2F%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3986.ogv%22+type%3D%22video%2Fogg%22+%2F%3E%3C%2Fmedia%3Agroup%3E%3C%2Fitem%3E%3C%2Fchannel%3E%3C%2Frss%3E';
 mw.ready( function(){
-    $j('#mwplayer').playlist({'srcPayLoad' : '%3C%3Fxml+version%3D%221.0%22+encoding%3D%22UTF-8%22%3F%3E%3Crss+version%3D%222.0%22+xmlns%3Amedia%3D%22http%3A%2F%2Fsearch.yahoo.com%2Fmrss%2F%22%3E%3Cchannel%3E%3Citem%3E%3Cmedia%3Atitle%3E1+MVI_3983%3C%2Fmedia%3Atitle%3E%3Cmedia%3Athumbnail+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2Fdrake_saga1_shots.thumbs%2FMVI_3983_000005.jpg%22%2F%3E%3Cmedia%3Agroup%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3983_512kb.mp4%22+type%3D%22video%2Fh264%22+%2F%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3983.ogv%22+type%3D%22video%2Fogg%22+%2F%3E%3C%2Fmedia%3Agroup%3E%3C%2Fitem%3E%3Citem%3E%3Cmedia%3Atitle%3E2+MVI_3984%3C%2Fmedia%3Atitle%3E%3Cmedia%3Athumbnail+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2Fdrake_saga1_shots.thumbs%2FMVI_3984_000005.jpg%22%2F%3E%3Cmedia%3Agroup%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3984_512kb.mp4%22+type%3D%22video%2Fh264%22+%2F%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3984.ogv%22+type%3D%22video%2Fogg%22+%2F%3E%3C%2Fmedia%3Agroup%3E%3C%2Fitem%3E%3Citem%3E%3Cmedia%3Atitle%3E3+MVI_3985%3C%2Fmedia%3Atitle%3E%3Cmedia%3Athumbnail+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2Fdrake_saga1_shots.thumbs%2FMVI_3985_000005.jpg%22%2F%3E%3Cmedia%3Agroup%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3985_512kb.mp4%22+type%3D%22video%2Fh264%22+%2F%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3985.ogv%22+type%3D%22video%2Fogg%22+%2F%3E%3C%2Fmedia%3Agroup%3E%3C%2Fitem%3E%3Citem%3E%3Cmedia%3Atitle%3E4+MVI_3986%3C%2Fmedia%3Atitle%3E%3Cmedia%3Athumbnail+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2Fdrake_saga1_shots.thumbs%2FMVI_3986_000005.jpg%22%2F%3E%3Cmedia%3Agroup%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3986_512kb.mp4%22+type%3D%22video%2Fh264%22+%2F%3E%3Cmedia%3Acontent+url%3D%22%2Fdownload%2Fdrake_saga1_shots%2FMVI_3986.ogv%22+type%3D%22video%2Fogg%22+%2F%3E%3C%2Fmedia%3Agroup%3E%3C%2Fitem%3E%3C%2Fchannel%3E%3C%2Frss%3E',
+    $j('#mwplayer').playlist({'srcPayLoad' : mw.IA.mrss,
                               'type' : 'application/rss+xml'});
 });
 
@@ -551,24 +561,28 @@ mw.ready( function(){
   <a href="/about/terms.php">Terms of Use (10 Mar 2001)</a>
 </p>
 <!-- Timing ... 
- seconds diff sec         message   file name:line number
+ seconds diff sec                                                                            message   file name:line number
 ---------------------------------------------------------
-  0.0000   0.0000   petabox start   /usr/local/petabox/www/common/setup.php:308
-  0.1130   0.1130     new details   /usr/local/petabox/www/sf/details.php:126
-  0.1369   0.0239          render   /usr/local/petabox/www/sf/details.php:128
-  0.2080   0.0711        bug dump   /usr/local/petabox/www/common/Bug.inc:72
+  0.0000   0.0000                                                                      petabox start   /usr/local/petabox/www/common/setup.php:308
+  0.0490   0.0490   xml fetch [http://www.archive.org/services/find_file.php?file=drake_saga1_shots]   /usr/local/petabox/www/common/Item.inc:85
+  0.1896   0.1406                                                                     done xml fetch   /usr/local/petabox/www/common/Item.inc:87
+  0.2494   0.0598                                                                        new details   /usr/local/petabox/www/sf/details.php:121
+  0.2717   0.0223                                                                             render   /usr/local/petabox/www/sf/details.php:123
+  0.2765   0.0048                                                                           bug dump   /usr/local/petabox/www/common/Bug.inc:72
 
 -->
-<script type="text/javascript"> if(window.archive_analytics) { window.archive_analytics.values['server_ms'] = 208}; </script>
+<script type="text/javascript"> if(window.archive_analytics) { window.archive_analytics.values['server_ms'] = 276}; </script>
 
 </body></html>
 <!-- Bug ... 
- seconds diff sec         message   file name:line number
+ seconds diff sec                                                                            message   file name:line number
 ---------------------------------------------------------
-  0.0000   0.0000   petabox start   /usr/local/petabox/www/common/setup.php:308
-  0.1130   0.1130     new details   /usr/local/petabox/www/sf/details.php:126
-  0.1369   0.0239          render   /usr/local/petabox/www/sf/details.php:128
-  0.2080   0.0711        bug dump   /usr/local/petabox/www/common/Bug.inc:72
-  0.2081   0.0001        bug dump   /usr/local/petabox/www/common/Bug.inc:72
+  0.0000   0.0000                                                                      petabox start   /usr/local/petabox/www/common/setup.php:308
+  0.0490   0.0490   xml fetch [http://www.archive.org/services/find_file.php?file=drake_saga1_shots]   /usr/local/petabox/www/common/Item.inc:85
+  0.1896   0.1406                                                                     done xml fetch   /usr/local/petabox/www/common/Item.inc:87
+  0.2494   0.0598                                                                        new details   /usr/local/petabox/www/sf/details.php:121
+  0.2717   0.0223                                                                             render   /usr/local/petabox/www/sf/details.php:123
+  0.2765   0.0048                                                                           bug dump   /usr/local/petabox/www/common/Bug.inc:72
+  0.2766   0.0001                                                                           bug dump   /usr/local/petabox/www/common/Bug.inc:72
 
 -->
