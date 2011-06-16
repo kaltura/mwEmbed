@@ -1,3 +1,13 @@
+
+.media-rss-video-list .ui-state-default {
+	background-color: #222;
+	/* a single transparent pixel to override the jquery ui background */
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9sGEBApKAahcBIAAAANSURBVAjXY2BgYGAAAAAFAAFe8yo6AAAAAElFTkSuQmCC);
+}
+.media-rss-video-list .ui-state-active {
+	background-color: #444;
+}
+
 .playlistItem img{
 	float: left;
 	padding: 4px;
@@ -6,6 +16,7 @@
 .playlistItem {
 	font-size: 12px;
 	margin: 5px;
+	padding:5px;	
 }
 .playlistItem .clipText {
 	width: 100%;

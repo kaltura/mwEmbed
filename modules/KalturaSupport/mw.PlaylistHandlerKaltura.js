@@ -44,7 +44,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 			
 			// Add all playlists to playlistSet
-			var $uiConf = $j(  playerData.uiConf );				
+			var $uiConf = $j(  playerData.uiConf );	
 
 			// Check for autoContinue ( we check false state so that by default we autoContinue ) 
 			var $ac = $uiConf.find("uivars [key='playlistAPI.autoContinue']");
@@ -61,6 +61,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			// Store all the playlist item render information:
 			_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
+			
+			mw.log( _this.$playlistItemRenderer.html() )
 			
 			// Force autoContoinue if there is no interface 
 			if( !_this.includeInLayout ){
@@ -249,6 +251,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 					$node.append( 
 						_this.getBoxLayout( clipIndex, $j( boxItem) ) 
 					);
+					$node.addClass(  boxItem.nodeName.toLowerCase() );
 					break;
 				case 'label':
 				case 'text':
@@ -274,9 +277,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 			 $boxContainer.find('span').slice(1).css('float', 'right');
 		} else if ( $boxContainer.find('span').length > 1 ){ // check for multiple spans
 			$boxContainer.find('span').each(function(inx, node){
-				if( $(node).css('float') != 'right')
+				if( $(node).css('float') != 'right'){
 					$(node).css('float', 'left');
-			})
+				}
+			});
 		}
 		// and adjust 100% width to 95% ( handles edge cases of child padding )
 		$boxContainer.find('div,span').each(function( inx, node){
@@ -287,8 +291,17 @@ mw.PlaylistHandlerKaltura.prototype = {
 			if( $j(node).data('id') == 'irDescriptionIrScreen' ){
 				$j(node).css('width', '');
 			}
+			if( $j(node).hasClass('hbox') ){
+				$j(node).css('height', '');
+			}
+			if( $j(node).hasClass('itemRendererLabel') && $j(node).css('float') == 'left' ){
+				$j(node).css({
+					'float': '',
+					'display': 'inline'
+				})
+			}
 		});
-			
+	
 		return $boxContainer;
 	},
 	applyUiConfAttributes:function(clipIndex, $target, confTag ){

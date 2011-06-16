@@ -145,8 +145,7 @@ mw.Playlist.prototype = {
 				'z-index' : '1',
 				'overflow-x' : 'hidden',
 				'overflow-y' : 'auto',
-				'bottom': '7px',
-				'right' : '0px'
+				'bottom': '7px'
 			})
 			.hide()
 		);
@@ -166,8 +165,8 @@ mw.Playlist.prototype = {
 				'position' : 'absolute',
 				'overflow' : 'hidden',
 				'top' : '3px',
-				'right' : '8px',
 				'height' : '20px',
+				'padding' : '4px',
 				'left' : leftPx
 			})
 			.append(
@@ -288,7 +287,7 @@ mw.Playlist.prototype = {
 			if( _this.layout == 'vertical' ){
 				$j( _this.target + ' .media-rss-video-list' ).css( {
 					'top' : $j( _this.target + ' .media-rss-video-player-container' ).height() + 4,
-					'width' : '100%'
+					'width' : '95%'
 				} );
 				// Add space for the multi-playlist selector:
 				if( _this.sourceHandler.hasMultiplePlaylists() ){
@@ -305,7 +304,8 @@ mw.Playlist.prototype = {
 				// Update horizontal layout
 				$j( _this.target + ' .media-rss-video-list').css( {
 					'top' : '0px',
-					'left' : $j( _this.target + ' .media-rss-video-player-container' ).width() + 4
+					'left' : $j( _this.target + ' .media-rss-video-player-container' ).width() + 4,
+					'right' : '4px'
 				} );
 				// Add space for the multi-playlist selector:
 				if( _this.sourceHandler.hasMultiplePlaylists() ){
@@ -335,8 +335,7 @@ mw.Playlist.prototype = {
 					'position' : 'absolute',
 					'height' : null,
 					'top' : curTop,
-					'bottom' : '48px',
-					'right': '8px'
+					'bottom' : '48px'
 				});
 				if( _this.layout == 'vertical' ){
 					$j( _this.target + ' .media-rss-video-list' ).css({
@@ -644,13 +643,13 @@ mw.Playlist.prototype = {
 		if( embedPlayer.controlBuilder ){
 			$controlBar = embedPlayer.$interface.find('.control-bar');
 			
-			if( $controlBar.find('.ui-icon-seek-next').length != 0 ){
+			if( $controlBar.find( '.ui-icon-seek-next' ).length != 0 ){
 				// already have seek buttons
 				return false;
 			}
 			
 			// make space ( reduce playhead lenght ) 
-			var pleft =  parseInt( $controlBar.find('.play_head').css('left') ) + 56;
+			var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 56;
 			$controlBar.find('.play_head').css('left', pleft);
 			$plButton = $j('<div />')
 				.addClass("ui-state-default ui-corner-all ui-icon_link lButton")

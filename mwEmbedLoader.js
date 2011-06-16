@@ -620,6 +620,7 @@ function kAddScript( callback ){
 		// kaltura playlist support ( so small relative to client libraries that we always include it )	
 		jsRequestSet.push(
 		   'mw.Playlist',
+		   'mw.style.playlist',
 		   'mw.PlaylistHandlerMediaRss',
 		   'mw.PlaylistHandlerKaltura', 
 		   'mw.PlaylistHandlerKalturaRss'

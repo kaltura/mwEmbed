@@ -91,10 +91,10 @@
 	height: 29px;
 	overflow: visible;
 	font-size: 10.2px;
-	width: 85px;
 	float: right;
 	display: inline;
 	border:none;
+	padding-right:4px;
 }
 
 .mv-player .play_head{
