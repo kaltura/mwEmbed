@@ -237,7 +237,9 @@ div#mwplayer_videolist { bottom:0px !important; right:0px !important; }\n\
 div.playlistItem {\n\
   font-family:Lucida Grande;\n\
   margin:0px 5px 0px 5px !important;\n\
+  padding:2px !important;\n\
 }\n\
+div.maudio div.playlistItem { padding:0px !important; }\n\
 div.playlist-title { display:none; }\n\
 div.playlistItem img { display:none; }\n\
 div.playlistItem span.clipTitle     { padding-left:15px; }\n\
@@ -305,7 +307,7 @@ div.overlay-content        {\n\
                     
         'imagesPath' : 'http://www/archive.org/images/', //xxxxxxx not working yet
                     
-        'Playlist.TitleLength': 38
+        'Playlist.TitleLength': 35
       });
 
     if (!mw.isMobileDevice())
