@@ -146,7 +146,7 @@ mw.Playlist.prototype = {
 				'overflow-x' : 'hidden',
 				'overflow-y' : 'auto',
 				'bottom': '7px',
-				'right' : '0px',
+				'right' : '0px'
 			})
 			.hide()
 		);
