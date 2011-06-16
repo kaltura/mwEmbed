@@ -37,7 +37,7 @@
 			
 		'Playlist.TitleLength' : 28,
 		
-		'Playlist.DescriptionLength' : 40
+		'Playlist.DescriptionLength' : 60
 	} );
 
 	// Module loader

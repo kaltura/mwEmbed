@@ -79,12 +79,12 @@ mw.Playlist.prototype = {
 	},
 	formatTitle: function( text ){
 		if( text.length > this.titleLength )
-			return text.substr(0, this.titleLength-3) + '...';
+			return text.substr(0, this.titleLength-3) + ' ...';
 		return text;
 	},
 	formatDescription: function( text ){
 		if( text.length > this.descriptionLength )
-			return text.substr(0, this.descriptionLength-3) + '...';
+			return text.substr(0, this.descriptionLength-3) + ' ...';
 		return text;
 	},
 	drawPlaylist: function( callback ){
