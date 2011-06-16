@@ -320,11 +320,11 @@ class KalturaGetResultObject {
 				'data-flavorid' => 'iPhoneNew'
 			);
 		}
-		
-		foreach($sources as &$source ){
-			// Play manifest also support referrer passing ( always output = ) 
-			if( isset( $source['src'] )){
-				$source['src'] .= '?referrer=' . base64_encode( $this->getReferer() );
+		if( $wgKalturaUseManifestUrls ){
+			foreach($sources as &$source ){
+				if( isset( $source['src'] )){
+					$source['src'] .= '?referrer=' . base64_encode( $this->getReferer() );
+				}
 			}
 		}
         //echo '<pre>'; print_r($sources); exit();
