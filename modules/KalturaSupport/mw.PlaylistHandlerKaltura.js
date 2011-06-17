@@ -81,16 +81,18 @@ mw.PlaylistHandlerKaltura.prototype = {
 				// Check if flashvars override or set value:
 				if( _this.flashvars['playlistAPI.kpl' +i + 'Url' ] ){
 					var kplUrl = _this.flashvars['playlistAPI.kpl' +i + 'Url' ];
-					var plId =  mw.parseUri( kplUrl ).queryKey['playlist_id'];
-					// make sure we are loading from kaltura.com
-					if( plId && mw.parseUri( kplUrl ).host.replace('www.', '') == 'kaltura.com'){
-						playlist_id = plId;
-						// check for name
-						if( _this.flashvars['playlistAPI.kpl' + i + 'Name'] ){
-							playlistName = _this.flashvars['playlistAPI.kpl' + i + 'Name'].replace(/\+/gi, ' ');
+					if( kplUrl ){
+						var plId =  mw.parseUri( kplUrl ).queryKey['playlist_id'];
+						// make sure we are loading from kaltura.com
+						if( plId && mw.parseUri( kplUrl ).host.replace('www.', '') == 'kaltura.com'){
+							playlist_id = plId;
+							// check for name
+							if( _this.flashvars['playlistAPI.kpl' + i + 'Name'] ){
+								playlistName = _this.flashvars['playlistAPI.kpl' + i + 'Name'].replace(/\+/gi, ' ');
+							}
+						} else {
+							mw.log("Error kaltura playlist does not support mixing mrss and kaltura_id urls: " + kplUrl0 );
 						}
-					} else {
-						mw.log("Error kaltura playlist does not support mixing mrss and kaltura_id urls: " + kplUrl0 );
 					}
 				}
 				

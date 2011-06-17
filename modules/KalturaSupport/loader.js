@@ -331,21 +331,24 @@
 			'flashvars' : $playlistTarget.data('flashvars')
 		};		
 		var kplUrl0 = playlistConfig.flashvars['playlistAPI.kpl0Url'];
-		if( !kplUrl0){
-			mw.log("Error: playlist mode without kpl0Url! ");
+
+		// if loading from ui-conf ( no kplUrl ) or kplUrl is from kaltura.com and a playlist_id
+		if( !kplUrl0 ){
+			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
+			return ;
+		} 
+		var plId =  mw.parseUri( kplUrl0 ).queryKey['playlist_id'];
+		if( plId && mw.parseUri( kplUrl0 ).host.replace('www.', '') == 'kaltura.com'  ){
+			playlistConfig.playlist_id = plId;
+			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
 			return ;
 		}
-		var plId =  mw.parseUri( kplUrl0 ).queryKey['playlist_id'];
-		// make sure we are loading from kaltura.com
-		if( plId && mw.parseUri( kplUrl0 ).host.replace('www.', '') == 'kaltura.com'){
-			playlistConfig.playlist_id = plId;
-		}
-		// Check if the first playlist is a rss url or kaltura playlist url ( with playlist id )
-		if( playlistConfig.playlist_id ) {
-			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
-		} else {
+		// must be a media rss url:
+		if( mw.isUrl( kplUrl0 ) ){
 			playlist.sourceHandler = new mw.PlaylistHandlerKalturaRss( playlist, playlistConfig );
+			return ;
 		}
+		mw.log("Error playlist source not found");
 	});
 	
 	/**

@@ -35,11 +35,6 @@ mw.Playlist.prototype = {
 			this.srcPayLoad = unescape(options.srcPayLoad).replace(/\+/g,' ');
 		}
 		
-		// XXX We probably want to support empty playlist with adding clips via JS.
-		if( !this.src && !this.srcPayLoad ){
-			mw.log("Error no playlist source provided");
-		}
-
 		this.target = options.target;
 
 		this.id = ( options.id )? options.id : $j( this.target ).attr( 'id' );
