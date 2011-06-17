@@ -6,7 +6,7 @@ if( window.QUnit ){
 		jsCallbackCalled = true;
 		jsKalturaPlayerTest( videoId );
 	}
-	asyncTest( "KalturaSupport::LoadPlayer", function(){
+	asyncTest( "KalturaSupport::PlayerLoaded", function(){
 		var waitCount = 0;
 		var interval = setInterval(function(){
 			// timeout in 20 seconds:
