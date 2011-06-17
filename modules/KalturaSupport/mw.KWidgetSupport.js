@@ -190,16 +190,16 @@ mw.KWidgetSupport.prototype = {
 		playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
 		
 		// Check if we have the player data bootstrap from the iframe
-		var bootstrapData = mw.getConfig("KalturaSupport.BootstrapPlayerData");
+		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
 
 		// Insure the bootStrap data has all the required info: 
 		if( bootstrapData 
 			&& bootstrapData.partner_id == embedPlayer.kwidgetid.replace('_', '')
 			&&  bootstrapData.ks
 		){
-			mw.log( 'KWidgetSupport::loaded player data from KalturaSupport.BootstrapPlayerData config' );
+			mw.log( 'KWidgetSupport::loaded player data from KalturaSupport.IFramePresetPlayerData config' );
 			// Clear bootstrap data from configuration: 
-			mw.setConfig("KalturaSupport.BootstrapPlayerData" , null);
+			mw.setConfig("KalturaSupport.IFramePresetPlayerData" , null);
 			this.kClient = mw.kApiGetPartnerClient( playerRequest.widget_id );
 			this.kClient.setKS( bootstrapData.ks );
 			callback( bootstrapData );

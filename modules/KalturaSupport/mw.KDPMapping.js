@@ -385,7 +385,7 @@
 					.attr('id', embedPlayer.id + '_mappingSpinner' );
 					
 					// Clear out any bootstrap data from the iframe 
-					mw.setConfig('KalturaSupport.BootstrapPlayerData', false);
+					mw.setConfig('KalturaSupport.IFramePresetPlayerData', false);
 					
 					// Update the entry id
 					embedPlayer.kentryid = notificationData.entryId;

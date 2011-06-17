@@ -449,10 +449,9 @@ class kalturaIframe {
 				echo $this->getCustomPlayerConfig();
 			?>
 			
-
 			// Don't do an iframe rewrite inside an iframe!
 			mw.setConfig( 'Kaltura.IframeRewrite', false );
-			
+
 			// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
 			mw.setConfig('Mw.LogPrepend', 'iframe:' );
 
@@ -465,7 +464,19 @@ class kalturaIframe {
 			mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
 
 			// Add Packaging Kaltura Player Data ( JSON Encoded )
-			mw.setConfig( 'KalturaSupport.BootstrapPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
+			mw.setConfig('KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
+
+			// Get the flashvars object:
+			var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';
+			var fvparts = flashVarsString.split('&');
+			var flashvarsObject = {};
+			for(var i=0;i<fvparts.length;i++){
+				var kv = fvparts[i].split('=');
+				if( kv[0] && kv[1] ){
+					flashvarsObject[ unescape( kv[0] ) ] = unescape( kv[1] );
+				}
+			}
+			mw.setConfig( 'KalturaSupport.IFramePresetFlashvars', flashvarsObject );
 
 			// Parse any configuration options passed in via hash url:
 			var hashString = document.location.hash;
@@ -558,21 +569,9 @@ class kalturaIframe {
 				document.getElementById( 'videoContainer' ).innerHTML = "";
 			}
 			
-			if( kSupportsFlash() ||  mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
-				// Build the flash vars string
-				var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';
-				var flashVars = mw.getConfig('Kaltura.Flashvars');
-				if( flashVars ){
-					var and = '';
-					for( var key in flashVars ){
-						flashVarsString += and + key + '=' + flashVars[key];
-						and ='&'; 
-					}
-				}
+			if( kSupportsFlash() ||  mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){				
 				// Write out the embed object
-				document.write('<?php echo $this->getPreFlashVars() ?>' + 
-						flashVarsString + 
-						'<?php echo $this->getPostFlashVars() ?>' );
+				document.write('<?php echo $this->getFlashEmbedHTML() ?>' );
 				
 				// Load server side bindings for kdpServer
 				kLoadJsRequestSet( ['window.jQuery', 'mwEmbed', 'mw.style.mwCommon', '$j.postMessage', 'kdpServerIFrame', 'JSON' ] );

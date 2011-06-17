@@ -57,7 +57,6 @@ mw.Playlist.prototype = {
 			mw.log("Error:: unsuported playlist theme: " + option.layoutHandler );
 		}*/
 
-
 		// Set binding to disable "waitForMeta" for playlist items ( we know the size and length )
 		$j( mw ).bind( 'checkPlayerWaitForMetaData', function(even, playerElement ){
 			if( $j( playerElement ).hasClass( 'mwPlaylist') ){

@@ -17,12 +17,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 	init: function ( playlist, options ){
 		this.playlist = playlist;
-		this.uiconf_id =  options.uiconf_id;
-		this.widget_id = options.widget_id;
-		if( options.playlist_id ){
-			this.playlist_id = options.playlist_id;
+		// set all the options: 
+		for( var i in options){
+			this[i] = options[i];
 		}
-		
 	},	
 	
 	loadPlaylist: function ( callback ){
@@ -62,7 +60,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			// Store all the playlist item render information:
 			_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
 			
-			mw.log( _this.$playlistItemRenderer.html() )
+			mw.log( _this.$playlistItemRenderer.html() );
 			
 			// Force autoContoinue if there is no interface 
 			if( !_this.includeInLayout ){
@@ -75,16 +73,32 @@ mw.PlaylistHandlerKaltura.prototype = {
 				var idElm = $uiConf.find("uivars var[key='kpl" + i +"EntryId']").get(0);
 				if( idElm ){
 					playlist_id  = idElm.getAttribute('value');
+					var nameElm = $uiConf.find("uiVars var[key='playlistAPI.kpl" + i + "Name']").get(0);
+					if( nameElm ){
+						playlistName = nameElm.getAttribute('value');
+					}
 				}
-				var nameElm = $uiConf.find("uiVars var[key='playlistAPI.kpl" + i + "Name']").get(0);
-				if( nameElm ){
-					playlistName = nameElm.getAttribute('value');
+				// Check if flashvars override or set value:
+				if( _this.flashvars['playlistAPI.kpl' +i + 'Url' ] ){
+					var kplUrl = _this.flashvars['playlistAPI.kpl' +i + 'Url' ];
+					var plId =  mw.parseUri( kplUrl ).queryKey['playlist_id'];
+					// make sure we are loading from kaltura.com
+					if( plId && mw.parseUri( kplUrl ).host.replace('www.', '') == 'kaltura.com'){
+						playlist_id = plId;
+						// check for name
+						if( _this.flashvars['playlistAPI.kpl' + i + 'Name'] ){
+							playlistName = _this.flashvars['playlistAPI.kpl' + i + 'Name'].replace(/\+/gi, ' ');
+						}
+					} else {
+						mw.log("Error kaltura playlist does not support mixing mrss and kaltura_id urls: " + kplUrl0 );
+					}
 				}
+				
 				if( playlist_id && playlistName ){
-					_this.playlistSet.push( { 
+					_this.playlistSet[i] = { 
 						'name' : playlistName,
 						'playlist_id' : playlist_id
-					});
+					};
 				} else {
 					// stop looking for playlists
 					break;
@@ -294,7 +308,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			if( $j(node).hasClass('hbox') ){
 				$j(node).css('height', '');
 			}
-			if( $j(node).hasClass('itemRendererLabel') && $j(node).css('float') == 'left' ){
+			if( $j(node).prev().hasClass('hbox') && $j(node).hasClass('itemRendererLabel') && $j(node).css('float') == 'left' ){
 				$j(node).css({
 					'float': '',
 					'display': 'inline'

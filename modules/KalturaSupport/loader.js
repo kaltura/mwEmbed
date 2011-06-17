@@ -184,16 +184,8 @@
 						// Assume playlist 
 						loadPlaylistFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaPlaylistSwap';
-						
-						// Check if we can get the playlist id from a url in the embed code 
-						// ( some version of kaltura embed code work this way)
-						if( flashvars['playlistAPI.kpl0Url'] ){
-							videoEmbedAttributes['kplaylistid'] = mw.parseUri( flashvars['playlistAPI.kpl0Url'] ).queryKey['playlist_id'];
-							if( ! videoEmbedAttributes['kplaylistid'] ){
-								videoEmbedAttributes['kplaylistid'] = flashvars['playlistAPI.kpl0Url'];
-							}
-						}
 					}
+					
 					var widthType = ( width.indexOf('%') == -1 )? 'px' : '';
 					var heightType = ( height.indexOf('%') == -1 )? 'px' : '';
 					// Replace with a mwEmbedKalturaVideoSwap
@@ -336,13 +328,23 @@
 		var playlistConfig = {
 			'uiconf_id' : $playlistTarget.attr('kuiconfid'),
 			'widget_id' : $playlistTarget.attr('kwidgetid'),
-			'playlist_id': $playlistTarget.attr('kplaylistid')							
+			'flashvars' : $playlistTarget.data('flashvars')
 		};		
-		// Check if we have a mediaRss url as the playlistId
-		if( mw.isUrl( playlistConfig.playlist_id ) ) {
-			playlist.sourceHandler = new mw.PlaylistHandlerKalturaRss( playlist, playlistConfig );
-		} else {
+		var kplUrl0 = playlistConfig.flashvars['playlistAPI.kpl0Url'];
+		if( !kplUrl0){
+			mw.log("Error: playlist mode without kpl0Url! ");
+			return ;
+		}
+		var plId =  mw.parseUri( kplUrl0 ).queryKey['playlist_id'];
+		// make sure we are loading from kaltura.com
+		if( plId && mw.parseUri( kplUrl0 ).host.replace('www.', '') == 'kaltura.com'){
+			playlistConfig.playlist_id = plId;
+		}
+		// Check if the first playlist is a rss url or kaltura playlist url ( with playlist id )
+		if( playlistConfig.playlist_id ) {
 			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
+		} else {
+			playlist.sourceHandler = new mw.PlaylistHandlerKalturaRss( playlist, playlistConfig );
 		}
 	});
 	

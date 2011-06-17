@@ -18,10 +18,6 @@ kdpClientIframe.prototype = {
 		this.height = ( options.height ) ? options.height : $j( '#' + replaceTargetId ).height();
 		this.kEmbedSettings = kEmbedSettings;
 		this.targetId = replaceTargetId;
-		// Check if kEmbedSettings includes flashvars update the config:
-		if( kEmbedSettings.flashvars ){
-			mw.setConfig('Kaltura.Flashvars' ,kEmbedSettings.flashvars  );
-		}
 		
 		// Replace the target with an iframe player:
 		$j( '#' + replaceTargetId ).replaceWith( this.getIframe() );
