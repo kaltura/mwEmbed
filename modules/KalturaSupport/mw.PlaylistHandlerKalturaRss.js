@@ -20,10 +20,6 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 			this[i] = options[i];
 		}
 	},
-	getSrc: function(){	
-		// In kaltura mrss player embeds the playlistid url is the source: 
-		return this.playlist_id;
-	},
 	getClipSources: function( clipIndex, callback ){
 		this.parent_getClipSources( clipIndex, function( clipSources ){
 			// Kaltura mediaRss feeds define a single "content" tag with flash swf as the url

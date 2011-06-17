@@ -345,6 +345,7 @@
 		}
 		// must be a media rss url:
 		if( mw.isUrl( kplUrl0 ) ){
+			playlist.src = kplUrl0;
 			playlist.sourceHandler = new mw.PlaylistHandlerKalturaRss( playlist, playlistConfig );
 			return ;
 		}
