@@ -1895,7 +1895,7 @@ mw.PlayerControlBuilder.prototype = {
 		* The time display area
 		*/
 		'timeDisplay': {
-			'w' : 80,
+			'w' : 85,
 			'o' : function( ctrlObj ) {
 				return $j( '<div />' )
 				.addClass( "ui-widget time-disp" )
