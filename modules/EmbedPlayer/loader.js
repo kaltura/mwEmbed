@@ -27,7 +27,7 @@
 
 		// What tags will be re-written to video player by default
 		// Set to empty string or null to avoid automatic video tag rewrites to embedPlayer
-		"EmbedPlayer.RewriteTags" : "video,audio,playlist",
+		"EmbedPlayer.RewriteSelector" : "video,audio,playlist",
 
 		// Default video size ( if no size provided )
 		"EmbedPlayer.DefaultSize" : "400x300",
@@ -328,11 +328,11 @@
 	} );
 
 	/**
-	* Check the current DOM for any tags in "EmbedPlayer.RewriteTags"
+	* Check the current DOM for any tags in "EmbedPlayer.RewriteSelector"
 	*/
 	mw.documentHasPlayerTags = function() {
-		var rewriteTags = mw.getConfig( 'EmbedPlayer.RewriteTags' );
-		if( $j( rewriteTags ).length != 0 ) {
+		var rewriteSelect = mw.getConfig( 'EmbedPlayer.RewriteSelector' );
+		if( rewriteSelect && $j( rewriteSelect ).length != 0 ) {
 			return true;
 		}
 		return false;
@@ -360,7 +360,7 @@
 			var rewriteElementCount = 0;
 
 			// Set each player to loading ( as early on as possible )
-			$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).each( function( index, element ){
+			$j( mw.getConfig( 'EmbedPlayer.RewriteSelector' ) ).each( function( index, element ){
 
 				// Assign an the element an ID ( if its missing one )
 				if ( $j( element ).attr( "id" ) == '' ) {
@@ -375,8 +375,8 @@
 			});
 			// Load the embedPlayer module ( then run queued hooks )
 			mw.load( 'EmbedPlayer', function ( ) {
-				// Rewrite the EmbedPlayer.RewriteTags with the
-				$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer( doModuleTagRewrites );
+				// Rewrite the EmbedPlayer.RewriteSelector with the
+				$j( mw.getConfig( 'EmbedPlayer.RewriteSelector' ) ).embedPlayer( doModuleTagRewrites );
 			})
 		} else {
 			doModuleTagRewrites();
@@ -415,7 +415,7 @@
 		];
 
 		// Pass every tag being rewritten through the update request function
-		$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).each( function(inx, playerElement) {
+		$j( mw.getConfig( 'EmbedPlayer.RewriteSelector' ) ).each( function(inx, playerElement) {
 			mw.embedPlayerUpdateLibraryRequest( playerElement, dependencyRequest[ 2 ] )
 		} );
 

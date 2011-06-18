@@ -27,7 +27,7 @@ mw.includeAllModuleMessages();
 	 * {Function} callback Function to call once embedding is done
 	 */
 	$.embedPlayers = function( attributes, callback) {
-		$j( mw.getConfig( 'EmbedPlayer.RewriteTags' ) ).embedPlayer( attributes, callback );
+		$j( mw.getConfig( 'EmbedPlayer.RewriteSelector' ) ).embedPlayer( attributes, callback );
 	};
 
 	/**

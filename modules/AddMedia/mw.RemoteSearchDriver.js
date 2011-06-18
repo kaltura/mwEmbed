@@ -3008,7 +3008,7 @@ mw.RemoteSearchDriver.prototype = {
 				resource.mime.indexOf( 'video' ) != -1 ||
 				resource.mime.indexOf( '/ogg' ) != -1 )
 			{
-				// Re-load the player module ( will scan page for mw.getConfig( 'EmbedPlayer.RewriteTags' ) )
+				// Re-load the player module ( will scan page for mw.getConfig( 'EmbedPlayer.RewriteSelector' ) )
 				$j.embedPlayers();
 			}
 		}
