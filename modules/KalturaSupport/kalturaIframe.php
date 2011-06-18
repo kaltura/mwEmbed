@@ -234,12 +234,12 @@ class kalturaIframe {
 				&& $var['key'] != 'Mw.CustomResourceIncludes' 
 			){
 				
-				$o.="mw.setConfig('" . htmlspecialchars($var['key'] ) . "', ";
+				$o.="mw.setConfig('" . htmlspecialchars( addslashes( $var['key'] ) ) . "', ";
 				// check for boolean attributes: 
 				if( $var['value'] == 'false' || $var['value'] == 'true' ){
 					$o.=  $var['value'];
 				}else {
-					$o.= "'" . htmlspecialchars( $var['value']  ) . "'";
+					$o.= "'" . htmlspecialchars( addslashes( $var['value'] ) ) . "'";
 				}
 				$o.= ");\n";
 			}
