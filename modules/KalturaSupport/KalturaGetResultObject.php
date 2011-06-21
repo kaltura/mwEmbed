@@ -139,6 +139,12 @@ class KalturaGetResultObject {
 	*  Access Control Handling
 	*/
 	public function isAccessControlAllowed( &$resultObject = null ) {
+		// Kaltura only has entry level access control not playlist level access control atm: 
+		// don't check playlist
+		if( $this->isPlaylist() ){
+			return true;
+		}
+		
 		if( !$resultObject ){
 			$resultObject =  $this->getResultObject();
 		}
@@ -421,8 +427,39 @@ class KalturaGetResultObject {
 		if( ! $client ){
 			return array();
 		}
-
 		$client->startMultiRequest();
+		if( $this->isPlaylist() ){
+			return $this->getPlaylistResult( $client );
+		} else {
+			return $this->getEntryResult( $client );
+		}
+	}
+	function getPlaylistResult( &$client ){
+
+		// if no uiconf_id .. now way to return playlist data
+		if( !$this->urlParameters['uiconf_id']) {
+			return array();
+		}
+		try{
+			$client->addParam( $kparams, "id",  $this->urlParameters['uiconf_id'] );
+			$client->queueServiceActionCall( "uiconf", "get", $kparams );
+			$kparams = array();
+			
+			$rawResultObject = $client->doQueue();
+		} catch( Exception $e ){
+			// update the Exception and pass it upward
+			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+			return array();
+		}
+		
+		$resultObject = $this->getBaseResultObject();
+		if( isset( $rawResultObject[0] ) && $rawResultObject[0]->confFile ){
+			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
+			$resultObject[ 'uiConf'] = $rawResultObject[0]->confFile;
+		}
+		return $resultObject;
+	}
+	function getEntryResult( &$client ){
 		try{
 			// NOTE this should probably be wrapped in a service class
 			$kparams = array();
@@ -430,17 +467,19 @@ class KalturaGetResultObject {
 			// sources
 			$client->addParam( $kparams, "entryId",  $this->urlParameters['entry_id'] );
 			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams );
-
+			$kparams = array();
+			
 			// access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
 			$client->addParam( $kparams, "contextDataParams",  array( 'referrer' =>  $this->getReferer() ) );
 			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams );
+			$kparams = array();
 
 			// Entry Meta
 			$client->addParam( $kparams, "entryId",  $this->urlParameters['entry_id'] );
 			$client->queueServiceActionCall( "baseEntry", "get", $kparams );						
+			$kparams = array();
 			
-			
-			// Entry Custom Metadata			
+			// Entry Custom Metadata
 			$metaDataFilter = new KalturaMetadataFilter();
 			$metaDataFilter->metadataObjectTypeEqual = KalturaMetadataObjectType::ENTRY;
 			$metaDataFilter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
@@ -451,11 +490,13 @@ class KalturaGetResultObject {
 			$client->addParam( $kparams, "metaDataFilter",  $metaDataFilter );
 			$client->addParam( $kparams, "metadataPager",  $metadataPager );
 			$client->queueServiceActionCall( "metadata_metadata", "list", $kparams );
+			$kparams = array();
 			
 			
-			if($this->urlParameters['uiconf_id']) {
+			if( $this->urlParameters['uiconf_id']) {
 				$client->addParam( $kparams, "id",  $this->urlParameters['uiconf_id'] );
 				$client->queueServiceActionCall( "uiconf", "get", $kparams );
+				$kparams = array();
 			}
 			
 			$rawResultObject = $client->doQueue();
@@ -467,14 +508,11 @@ class KalturaGetResultObject {
 		}
 
 		
-		$resultObject = array(
+		$resultObject = array_merge( $this->getBaseResultObject(), array(
 			'flavors' 			=> 	$rawResultObject[0],
 			'accessControl' 	=> 	$rawResultObject[1],
-			'meta'				=>	$rawResultObject[2],			
-			'entry_id'			=>	$this->urlParameters['entry_id'],
-			'partner_id'		=>	$this->getPartnerId(),
-			'ks' 				=> 	$this->getKS()
-		);
+			'meta'				=>	$rawResultObject[2]			
+		) );
 		
 		if( isset( $rawResultObject[3]->objects ) && 
 			isset( $rawResultObject[3]->objects[0] ) && 
@@ -494,8 +532,17 @@ class KalturaGetResultObject {
 		if( $acStatus !== true ){
 			throw new Exception( $acStatus );
 		}	
-		
 		return $resultObject;
+	}
+	function getBaseResultObject(){
+		$baseResultObject = array(
+			'partner_id'		=>	$this->getPartnerId(),
+			'ks' 				=> 	$this->getKS()
+		);
+		if( $this->urlParameters['entry_id'] ) {
+			$baseResultObject[ 'entry_id' ] = $this->urlParameters['entry_id'];
+		}
+		return $baseResultObject;
 	}
 	
 	/**

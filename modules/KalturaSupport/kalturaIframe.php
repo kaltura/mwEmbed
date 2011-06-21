@@ -229,8 +229,8 @@ class kalturaIframe {
 		$o = '';
 		$xml = new SimpleXMLElement( $this->getResultObject()->getUiConf() );
 		foreach ($xml->uiVars->var as $var ){
-			if( isset( $var['key'] ) && isset( $var['value'] ) &&
-				$var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
+			if( isset( $var['key'] ) && isset( $var['value'] ) 
+				&& $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
 				&& $var['key'] != 'Mw.CustomResourceIncludes' 
 			){
 				

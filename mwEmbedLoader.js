@@ -672,6 +672,11 @@ function kPageHasAudioOrVideoTags(){
 	if( !kSupportsHTML5() ){
 		return false;
 	}
+	// if selector is set to false or is empty return false
+	if( mw.getConfig( 'EmbedPlayer.RewriteSelector' ) === false || 
+		mw.getConfig( 'EmbedPlayer.RewriteSelector' ) == '' ){
+		return false;
+	}
 	// If document includes audio or video tags
 	if( document.getElementsByTagName('video').length != 0
 		|| document.getElementsByTagName('audio').length != 0 ) {
