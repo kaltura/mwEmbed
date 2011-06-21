@@ -224,6 +224,91 @@ mw.IA =
     mw.log('      ---IA------------------------------>   '+str);
   },
 
+  
+  // This gets called once our MRSS playlist has been parsed and mw is ready/setup
+  // ( see petabox/www/common/Details.inc )
+  start:function(playlist)
+  {
+    mw.IA.log('start');
+    if (mw.IA.startcalled)
+      return;
+    mw.IA.startcalled = true;
+    
+    var star = (mw.IA.arg('start') ? parseFloat(mw.IA.arg('start')) : 0);
+    if (!star)
+    {
+      // look for: /details/drake_saga1_shots/MVI_3986.AVI/start=13
+      var a = location.pathname.split('/');
+      star=(mw.IA.argin('start',a) ? parseFloat(mw.IA.argin('start',a)) : 0);
+    }
+    if (!star)
+    {
+      // look for: /details/drake_saga1_shots/MVI_3986.AVI#start=13
+      var a = location.hash.slice(1).split('/');
+      star=(mw.IA.argin('start',a) ? parseFloat(mw.IA.argin('start',a)) : 0);
+    }
+    
+    if (star)
+    {
+      mw.ready(function(){
+
+        var player = $('#'+mw.playerManager.getPlayerList()[0]).get(0);
+        if (!player)
+          return;
+                 
+      //debugger;
+      playlist.loadPlaylistHandler(function() { mw.IA.log('pl loaded'); });
+      player.showPlayer();
+      player.stop();
+      player.setupSourcePlayer( function(){
+    	setTimeout(function(){
+          player.currentTime = star;           
+    	  player.play();
+    	},100);
+        });
+      });
+    }
+  },
+      
+  
+  oldswapper:function()
+  {
+    mw.ready(function(){
+
+      var player = $('#'+mw.playerManager.getPlayerList()[0]).get(0);
+      var IAD = {'identifier':'night_of_the_living_dead'};
+      var group = {'SRC':['night_of_the_living_dead.ogv',
+                          'night_of_the_living_dead_512kb.mp4']};
+                 
+      player.stop();
+      player.emptySources();
+      var prefix = '/download/'+IAD.identifier+'/';
+      player.updatePosterSrc( group['POSTER'] ? prefix + group['POSTER'] :
+                           '/images/glogo.png' );
+      for (var i=0, source; source=group['SRC'][i]; i++)
+      {
+    	if( source )
+        {
+          var attrs = {'src' : prefix + source};
+          var ending = source.substr(0, source.length-4).toLowerCase();
+          if (ending=='.mp4'  ||  ending=='.ogv')
+            attrs['URLTimeEncoding'] = true;
+	  player.mediaElement.tryAddSource(
+	    $('<source />')
+	      .attr( attrs )
+	      .get( 0 )
+	  );
+    	}
+      }
+      player.stop();
+      player.setupSourcePlayer( function(){
+    	setTimeout(function(){
+    	  player.play();
+          player.currentTime = star;           
+    	},100);
+      });
+    });
+  },
 
 
   setup: function() {
@@ -320,31 +405,6 @@ div.overlay-content        {\n\
     mw.ready(function(){
         var hash = unescape(location.hash);
         mw.IA.log("IA Player says mw.ready()" + hash);
-
-
-        var star = (mw.IA.arg('start') ? parseFloat(mw.IA.arg('start')) : 0);
-        if (!star)
-        {
-          // look for: /details/drake_saga1_shots/MVI_3986.AVI/start=13
-          var a = location.pathname.split('/');
-          star=(mw.IA.argin('start',a) ? parseFloat(mw.IA.argin('start',a)) : 0);
-        }
-        if (!star)
-        {
-          // look for: /details/drake_saga1_shots/MVI_3986.AVI#start=13
-          var a = location.hash.slice(1).split('/');
-          star=(mw.IA.argin('start',a) ? parseFloat(mw.IA.argin('start',a)) : 0);
-        }
-        if (star)
-        {
-          mw.IA.resize();
-          var jplay = $('#mwplayer').get(0);
-          var dura = jplay.duration;
-          mw.IA.log(star+'s of '+dura+'s');
-
-          jplay.currentTime = star;
-          jplay.play();
-        }
       });
   }
 };
