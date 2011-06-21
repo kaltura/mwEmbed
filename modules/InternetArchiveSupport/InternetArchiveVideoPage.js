@@ -258,8 +258,8 @@ mw.IA =
                  
       //debugger;
       playlist.loadPlaylistHandler(function() { 
-        mw.IA.log('pl loaded, seek to '+star); });
-                 
+        mw.IA.log('playlist loaded, seek to '+star); });
+
       player.showPlayer();
       player.stop();
       player.setupSourcePlayer( function(){
