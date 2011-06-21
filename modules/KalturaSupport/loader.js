@@ -197,8 +197,7 @@
 							'height' : height + heightType,
 							'position': 'relative',
 							'display' : 'block',
-							'float' : 'left',
-							'padding' : '3px'
+							'float' : 'left'
 						} )
 						.data( 'flashvars', flashvars )
 						.addClass( kalturaSwapObjectClass )
