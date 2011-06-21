@@ -1,5 +1,6 @@
-//must come after qunit-bootstrap.j
+//must come after qunit-bootstrap.js and after mwEmbedLoader.php
 if( window.QUnit ){
+	mw.setConfig( 'forceMobileHTML5', true );
 	QUnit.start();	
 	jsCallbackCalled = false;
 	function jsCallbackReady ( videoId ) {
