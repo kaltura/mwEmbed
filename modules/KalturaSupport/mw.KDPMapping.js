@@ -140,6 +140,7 @@
 		 * emulates kaltura setAttribute function
 		 */
 		setKDPAttribute: function( embedPlayer, componentName, property, value ) {
+			mw.log(" cn: " + componentName + " p:" + property + " v:" + value);
 			switch( property ) {
 				case 'autoPlay':
 					embedPlayer.autoplay = value;

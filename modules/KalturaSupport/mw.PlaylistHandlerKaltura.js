@@ -261,6 +261,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 					break;
 				case 'vbox':
 				case 'hbox':
+				case 'canvas':
 					var $node = $j('<div />'); 
 					if( offsetLeft )
 						$node.css('margin-left', offsetLeft );					
@@ -268,6 +269,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 						_this.getBoxLayout( clipIndex, $j( boxItem) ) 
 					);
 					$node.addClass(  boxItem.nodeName.toLowerCase() );
+					break;
+				case 'spacer':
+					$node = $j('<div />').css('display', 'block');
 					break;
 				case 'label':
 				case 'text':
@@ -344,6 +348,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 				case 'height':
 					$target.css(attr.nodeName, attr.nodeValue);
 					break
+				case 'paddingright':
+					$target.css( 'padding-right', attr.nodeValue);
+					break;
 				case 'text':
 					$target.text( _this.uiConfValueLookup(clipIndex, attr.nodeValue ) );
 					break;
