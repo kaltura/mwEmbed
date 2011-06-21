@@ -598,7 +598,7 @@ class KalturaGetResultObject {
 		}
 		return $this->ks;
 	}	
-	public getCacheSt(){
+	public function getCacheSt(){
 		return ( isset( $this->urlParameters['cache_st'] ) ) ? $this->urlParameters['cache_st'] : '';
 	}
 	public function getPartnerId(){

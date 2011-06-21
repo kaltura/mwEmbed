@@ -361,9 +361,15 @@ mw.PlaylistHandlerKaltura.prototype = {
 					$target.text( _this.uiConfValueLookup(clipIndex, attr.nodeValue ) );
 					break;
 				case 'font':
-					$target.css('font-family', attr.nodeValue);
+					var str = attr.nodeValue;
+					if( str.indexOf('bold') !== -1 ){
+						$target.css('font-weight', 'bold');
+						str = str.replace('bold', '');
+					}
+					var f = str.charAt(0).toUpperCase();
+					$target.css('font-family', f + str.substr(1) );
 					break;
-					case 'x':
+				case 'x':
 					$target.css({
 						'left' :  attr.nodeValue
 					});
