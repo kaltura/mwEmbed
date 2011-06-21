@@ -257,11 +257,14 @@ mw.IA =
           return;
                  
       //debugger;
-      playlist.loadPlaylistHandler(function() { mw.IA.log('pl loaded'); });
+      playlist.loadPlaylistHandler(function() { 
+        mw.IA.log('pl loaded, seek to '+star); });
+                 
       player.showPlayer();
       player.stop();
       player.setupSourcePlayer( function(){
     	setTimeout(function(){
+          player.stop();
           player.currentTime = star;           
     	  player.play();
     	},100);
