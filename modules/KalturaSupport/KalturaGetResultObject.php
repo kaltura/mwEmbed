@@ -563,7 +563,7 @@ class KalturaGetResultObject {
 
 		$cacheDir = $wgScriptCacheDirectory;
 
-		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . ".ks.txt";
+		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . '.' . $this->getCacheSt() . ".ks.txt";
 		$cacheLife = $wgKalturaUiConfCacheTime;
 
 		$conf = new KalturaConfiguration( $this->getPartnerId() );
@@ -598,6 +598,9 @@ class KalturaGetResultObject {
 		}
 		return $this->ks;
 	}	
+	public getCacheSt(){
+		return ( isset( $this->urlParameters['cache_st'] ) ) ? $this->urlParameters['cache_st'] : '';
+	}
 	public function getPartnerId(){
 		// Partner id is widget_id but strip the first character
 		return substr( $this->urlParameters['wid'], 1 );
