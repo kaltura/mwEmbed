@@ -96,7 +96,7 @@ mw.Playlist.prototype = {
 			}
 			// Check if we should include the ui 
 			if( _this.sourceHandler.hasPlaylistUi() ){
-				_this.drawUI();
+				_this.drawUI( callback );
 			} else {
 				$j( _this.target )
 				.empty()
@@ -121,7 +121,7 @@ mw.Playlist.prototype = {
 	/**
 	* Draw the media rss playlist ui
 	*/
-	drawUI: function(){
+	drawUI: function( callback ){
 		var _this = this;
 		// Empty the target and setup player and playerList divs
 		$j( _this.target )
@@ -342,6 +342,8 @@ mw.Playlist.prototype = {
 					_this.addScrollButtons( $videoList );
 				}				
 			}
+			if( callback ) 
+				callback();
 		});
 	},
 	addScrollButtons: function( $videoList){
