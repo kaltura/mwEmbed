@@ -480,18 +480,17 @@ class KalturaGetResultObject {
 			$kparams = array();
 			
 			// Entry Custom Metadata
-			$metaDataFilter = new KalturaMetadataFilter();
-			$metaDataFilter->metadataObjectTypeEqual = KalturaMetadataObjectType::ENTRY;
-			$metaDataFilter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
-			$metaDataFilter->objectIdEqual = $this->urlParameters['entry_id'];
+			$filter = new KalturaMetadataFilter();
+			$filter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
+			$filter->objectIdEqual = $this->urlParameters['entry_id'];
+			$filter->metadataObjectTypeEqual = KalturaMetadataObjectType::ENTRY;
 			$metadataPager =  new KalturaFilterPager();
 			$metadataPager->pageSize = 1;
 
-			$client->addParam( $kparams, "metaDataFilter",  $metaDataFilter );
+			$client->addParam( $kparams, "filter",  $filter );
 			$client->addParam( $kparams, "metadataPager",  $metadataPager );
 			$client->queueServiceActionCall( "metadata_metadata", "list", $kparams );
 			$kparams = array();
-			
 			
 			if( $this->urlParameters['uiconf_id']) {
 				$client->addParam( $kparams, "id",  $this->urlParameters['uiconf_id'] );
