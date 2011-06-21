@@ -1,0 +1,94 @@
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/themes/flick/jquery-ui.css" />
+		<style>
+			#slider-range { width: 400px; }
+		</style>
+	</head>
+	<body>
+		<h1>ClipApp</h1>
+		<a href="?forceMobileHTML5">Force Mobile HTML5 Player</a><br /><br />
+		<object id="kdp3" name="kdp3" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3" data="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&steamerType=rtmp" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/423851/sp/42385100/thumbnail/entry_id/1_sfrj36g3/width/120/height/90/bgcolor/000000/type/2"></a> <span property="dc:description" content=""></span><span property="media:title" content="LMFAO - Party Rock Anthem ft. Lauren Bennett, GoonRock.mp4"></span> <span property="media:width" content="400"></span><span property="media:height" content="333"></span> <span property="media:type" content="application/x-shockwave-flash"></span> </object>
+		<br /><br />
+		<div id="slider-range"></div>
+		<br /><br />
+		Start Time: <input id="startTime" value="00:00:10" /><br />
+		End Time: <input id="endTime" value="00:00:30" /><br />
+		<input id="preview" type="button" value=" Preview " />
+		<script>
+		var kdp;
+		function jsCallbackReady() {
+			kdp = $("#kdp3")[0];
+
+			kdp.addJsListener("entryReady", "createSlider");
+		}
+
+		function createSlider(entry) {
+			
+			// var entryLength = kdp.evaluate("{mediaProxy.entry.duration}"); // Not working
+			var entryLength = entry.duration;
+
+			$( "#slider-range" ).slider({
+				animate: true,
+				range: true,
+				min: 0,
+				max: entryLength,
+				values: [ 15, 60 ],
+				slide: function( event, ui ) {
+					$("#startTime").val( toHHMMSS( ui.values[ 0 ] ) );
+					$("#endTime").val( toHHMMSS( ui.values[ 1 ]) );
+					
+					kdp.sendNotification("doPause");
+					kdp.sendNotification("doSeek", ui.value);
+					kdp.sendNotification("doPlay");
+				}
+			});
+		}
+
+		$(function() {
+
+			$("#preview").click( function() {
+
+				var startTime = $("#startTime").val(),
+					endTime = $("#endTime").val();
+					
+				console.log('Start Time: ' + startTime + ', End Time: ' + endTime );
+
+				startTime = toSeconds(startTime);
+				endTime = toSeconds(endTime);
+
+				kdp.sendNotification("doStop");
+
+				kdp.setKDPAttribute("mediaProxy", "mediaPlayFrom", startTime );
+				kdp.setKDPAttribute("mediaProxy", "mediaPlayTo", endTime );
+				
+				kdp.sendNotification("doPlay");
+			});
+		});
+
+		var toSeconds = function(time) {
+			var arr = time.split(":");
+			var seconds = (arr[0] * 60) * 60;
+			seconds += arr[1] * 60;
+			seconds += arr[2];
+			return seconds;
+		}
+
+		var toHHMMSS = function (sec) {
+			var sec_numb    = parseInt(sec);
+			var hours   = Math.floor(sec_numb / 3600);
+			var minutes = Math.floor((sec_numb - (hours * 3600)) / 60);
+			var seconds = sec_numb - (hours * 3600) - (minutes * 60);
+
+			if (hours   < 10) {hours   = "0"+hours;}
+			if (minutes < 10) {minutes = "0"+minutes;}
+			if (seconds < 10) {seconds = "0"+seconds;}
+			var time    = hours+':'+minutes+':'+seconds;
+			return time;
+		}
+		</script>
+	</body>
+</html>
