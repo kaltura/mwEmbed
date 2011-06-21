@@ -43,7 +43,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			// Add all playlists to playlistSet
 			var $uiConf = $j(  playerData.uiConf );	
-
+			
 			// Check for autoContinue ( we check false state so that by default we autoContinue ) 
 			var $ac = $uiConf.find("uivars [key='playlistAPI.autoContinue']");
 			_this.autoContinue = ( $ac.length && $ac.get(0).getAttribute('value') == 'false' )? false: true;
@@ -264,20 +264,22 @@ mw.PlaylistHandlerKaltura.prototype = {
 				case 'canvas':
 					var $node = $j('<div />'); 
 					if( offsetLeft )
-						$node.css('margin-left', offsetLeft );					
+						$node.css('margin-left', offsetLeft );
+					
 					$node.append( 
-						_this.getBoxLayout( clipIndex, $j( boxItem) ) 
+						_this.getBoxLayout( clipIndex, $j(boxItem) ) 
 					);
-					$node.addClass(  boxItem.nodeName.toLowerCase() );
 					break;
 				case 'spacer':
-					$node = $j('<div />').css('display', 'block');
+					// spacers do nothing for now.
+					$node = $j('<div />').css('display','inline');
 					break;
 				case 'label':
 				case 'text':
 					var $node = $j('<span />').css('display','block');
 					break;
 			}
+			$node.addClass( boxItem.nodeName.toLowerCase() );
 			if( $node && $node.length ){
 				_this.applyUiConfAttributes(clipIndex, $node, boxItem);
 				// add offset if not a percentage:
@@ -308,17 +310,21 @@ mw.PlaylistHandlerKaltura.prototype = {
 				$j(node).css('width', '95%'); 
 			
 			// and box layout does crazy things with virtual margins :( remove width for irDescriptionIrScreen
-			if( $j(node).data('id') == 'irDescriptionIrScreen' ){
+			if( $j(node).data('id') == 'irDescriptionIrScreen' || $j(node).data('id') == 'irDescriptionIrText'  ){
 				$j(node).css('width', '');
 			}
-			if( $j(node).hasClass('hbox') ){
+			if( $j(node).hasClass('hbox') || $j(node).hasClass('vbox') || $j(node).hasClass('canvas') ){
 				$j(node).css('height', '');
 			}
-			if( $j(node).prev().hasClass('hbox') && $j(node).hasClass('itemRendererLabel') && $j(node).css('float') == 'left' ){
+
+			if( $j(node).hasClass('itemRendererLabel') 
+				&& $j(node).css('float') == 'left'
+				&& ( $j(node).siblings().hasClass('hbox') || $j(node).siblings().hasClass('vbox')  )
+			){
 				$j(node).css({
 					'float': '',
 					'display': 'inline'
-				})
+				});
 			}
 		});
 	
@@ -374,7 +380,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			case 'itemRendererLabel':
 				// XXX should use .playlist.formatTitle and formatDescription ( once we fix .playlist ref )
 				// hack to read common description id ( no other way to tell layout size )
-				if( idName =='irDescriptionIrScreen' ){
+				if( idName =='irDescriptionIrScreen' || idName == 'irDescriptionIrText' ){
 					$target.text( _this.playlist.formatDescription( $target.text() ) );
 				} else{
 					$target.text( _this.playlist.formatTitle( $target.text() ) );
