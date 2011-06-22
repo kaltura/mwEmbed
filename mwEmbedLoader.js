@@ -119,6 +119,7 @@ if( !mw.ready){
 if( document.URL.indexOf('forceMobileHTML5') != -1 ){
 	mw.setConfig( 'forceMobileHTML5', true );
 }
+
 function kDoIframeRewriteList( rewriteObjects ){
 	for( var i=0; i < rewriteObjects.length; i++ ){
 		var options = { 'width': rewriteObjects[i].width, 'height': rewriteObjects[i].height };
@@ -669,9 +670,6 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	kAppendScriptUrl(url, callback);
 }
 function kPageHasAudioOrVideoTags(){
-	if( !kSupportsHTML5() ){
-		return false;
-	}
 	// if selector is set to false or is empty return false
 	if( mw.getConfig( 'EmbedPlayer.RewriteSelector' ) === false || 
 		mw.getConfig( 'EmbedPlayer.RewriteSelector' ) == '' ){
