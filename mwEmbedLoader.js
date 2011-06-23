@@ -166,7 +166,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
 				jsRequestSet.push( ['window.jQuery'] );
 			}
-			jsRequestSet.push('mwEmbed',  'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'kdpClientIframe', 'JSON' );
+			jsRequestSet.push('mwEmbed', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'kdpClientIframe', 'JSON' );
 			// Load just the files needed for flash iframe bindings	
 			kLoadJsRequestSet( jsRequestSet, function(){
 				var iframeRewrite = new kdpClientIframe(replaceTargetId, kEmbedSettings, options);
@@ -539,7 +539,7 @@ function kAddScript( callback ){
 	// Check if we are using an iframe ( load only the iframe api client ) 
 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) && ! kPageHasAudioOrVideoTags() ) {
 		if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') && ( kSupportsFlash() || kSupportsHTML5() ) ){
-			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );		
+			jsRequestSet.push( 'mwEmbed', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );		
 			// Load a minimal set of modules for iframe api
 			kLoadJsRequestSet( jsRequestSet, callback );
 			return ;

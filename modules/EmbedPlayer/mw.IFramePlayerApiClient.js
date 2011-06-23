@@ -61,10 +61,10 @@ mw.IFramePlayerApiClient.prototype = {
 		var _this = this;
 		parentsAbsoluteList = [];
 		var fullscreenMode = false;
-		var orgSize  = {
+		var orgSize = {
 			'width' : $j( _this.iframe ).width(),
 			'height' : $j( _this.iframe ).height(),
-			'position' : null
+			'position' : $j( _this.iframe ).css( 'position' )
 		};
 		
 		// Add a local scope variable to register 
@@ -114,7 +114,7 @@ mw.IFramePlayerApiClient.prototype = {
 					'isFullscreen', false
 				)
 			// restore any parent absolute pos: 
-			$j(parentsAbsoluteList).each( function() {	
+			$j( parentsAbsoluteList ).each( function() {	
 				$j( this ).css( 'position', 'absolute' );
 			} );
 		};
