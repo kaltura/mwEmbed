@@ -3377,7 +3377,7 @@ mediaPlayer.prototype = {
 
 // Flash based players:
 
-var kplayer = new mediaPlayer('kplayer', ['video/x-flv', 'video/h264'], 'Kplayer');
+var kplayer = new mediaPlayer('kplayer', ['video/x-flv', 'video/h264', 'audio/mpeg'], 'Kplayer');
 
 // Java based player
 var cortadoPlayer = new mediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'application/ogg'], 'Java' );
