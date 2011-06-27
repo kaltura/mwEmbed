@@ -294,7 +294,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				// For hboxes add another div with the given height to block out any space represented by inline text types
 				if(  boxItem.nodeName.toLowerCase() == 'hbox' ){
 					$boxContainer.append( 
-						$j("<div />").css( 'height', $node.css('height') )
+						$j("<div />").css( 'height', $node.css('height') ) 
 					)
 				}
 			}
