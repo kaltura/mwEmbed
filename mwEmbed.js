@@ -1220,7 +1220,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			return true;
 		}
 		// Check for url flag to force html5:
-		if( document.URL.indexOf('forceMobileHTML5') != -1 ){
+		if( mw.getConfig( 'forceMobileHTML5' ) ){
 			return true;
 		}
 		// Fall forward native:

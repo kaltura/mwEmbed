@@ -44,6 +44,9 @@ mw.setDefaultConfig ( {
 
 	//If we are in debug mode ( results in fresh debug javascript includes )
 	'debug' : false,
+	
+	// If mobile html5 should be forced
+	'forceMobileHTML5' : false,
 
 	// Default request timeout ( for cases where we include js and normal browser timeout can't be used )
 	// stored in seconds
