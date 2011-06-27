@@ -291,6 +291,12 @@ mw.PlaylistHandlerKaltura.prototype = {
 					$node.css('width', '');
 				}
 				$boxContainer.append( $node );
+				// For hboxes add another div with the given height to block out any space represented by inline text types
+				if(  boxItem.nodeName.toLowerCase() == 'hbox' ){
+					$boxContainer.append( 
+						$j("<div />").css( 'height', $node.css('height') )
+					)
+				}
 			}
 		});
 		// check for box model ("100%" single line float right, left );
