@@ -31,8 +31,8 @@ if( document.URL.indexOf('runQunitTests') != -1 ){
 		window.module = function( name, testEnvironment ){
 			orgModule( getModuleName() + name, testEnvironment);
 		};
-		$('#runQunitLink').remove();
-		$('body').prepend( '<h1 id="qunit-header">QUnit Test Runner</h1>' +
+		jQuery('#runQunitLink').remove();
+		jQuery('body').prepend( '<h1 id="qunit-header">QUnit Test Runner</h1>' +
 				'<h2 id="qunit-banner"></h2>'+
 				'<div id="qunit-testrunner-toolbar"></div>' +
 				'<h2 id="qunit-userAgent"></h2>' +
@@ -41,15 +41,15 @@ if( document.URL.indexOf('runQunitTests') != -1 ){
 		QUnit.config.autostart = false;
 	};
 	document.write( '<script type="text/javascript">' + 
-		'$(document).ready(qunitSetup);' +
+		'jQuery(document).ready(qunitSetup);' +
 	'</script>');
 } else {
 	window.addRunTestLink = function(){
 		var url = document.URL;
 		url += ( url.indexOf('?') === -1 )? '?' : '&';
 		url += 'runQunitTests=1';
-		$('body').append( 
-			$('<a />')
+		jQuery('body').append( 
+			jQuery('<a />')
 			.attr({
 				'id':'runQunitLink',
 				'href' : url
@@ -67,7 +67,7 @@ if( document.URL.indexOf('runQunitTests') != -1 ){
 	};
 	// if not running unit tests provide a link:
 	document.write('<script type="text/javascript">' + 
-			'$(document).ready( addRunTestLink );' +
+			'jQuery(document).ready( addRunTestLink );' +
 			'</script>'
 	);
 }
