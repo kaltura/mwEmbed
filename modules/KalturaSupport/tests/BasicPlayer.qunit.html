@@ -9,7 +9,7 @@
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
-	module( "IframeFallForward" );
+	module( "Basic Player" );
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var iframeContext = window.frames['kaltura_player_ifp'];
@@ -22,7 +22,7 @@ function jsKalturaPlayerTest( videoId ){
 	asyncTest("Iframe layout elements", function(){
 		// Add an mw.ready here to make sure the interface is ready before we check for interface components
 		// alternativly we could bind against the kdp media ready event
-		mw.ready(function(){
+		kalturaQunitWaitForPlayer(function(){
 			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
 			ok( $iframe.find('.play-btn').length, ".play-btn found" );
 			start();
