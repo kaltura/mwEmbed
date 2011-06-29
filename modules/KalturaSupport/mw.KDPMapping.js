@@ -18,18 +18,23 @@
 		*/ 
 		init: function( ){
 			// Check What types of bindings we should add:
-			if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig('Kaltura.IframeRewrite') ){
+			if( this.isIframeClient() ){
 				this.addIframePlayerHooksClient();
 				return ;
 			}
-			if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig( 'EmbedPlayer.IsIframePlayer' ) ){
+			if( this.isIframeServer () ){
 				this.addIframePlayerHooksServer();
 				return ;
 			}
 			// No iframe just do normal KDP mapping hooks: 
 			this.addPlayerHooks();
 		},
-				
+		isIframeClient: function(){
+			return ( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig('Kaltura.IframeRewrite') );
+		},
+		isIframeServer: function(){
+			return ( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig( 'EmbedPlayer.IsIframePlayer' ) );
+		},
 		addPlayerHooks: function(){
 			var _this = this;
 			mw.log("KDPMapping::addPlayerHooks>");
@@ -76,7 +81,8 @@
 				playerMethods.push( 'addJsListener', 'removeJsListener', 'sendNotification', 'setKDPAttribute' );
 			});
 			
-			$j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {		
+			$j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {
+				
 				$j( playerProxy ).bind( 'jsListenerEvent', function(event, globalFuncName, listenerArgs){
 					if( typeof window[ globalFuncName ] == 'function' ){
 						window[ globalFuncName ].apply( this, listenerArgs );
@@ -112,7 +118,7 @@
 
 				embedPlayer.addJsListener = function( eventName, globalFuncName){					
 					var listenEventName = 'gcb_' + _this.getListenerId( embedPlayer, eventName, globalFuncName); 					
-					window[ listenEventName ] = function(){				
+					window[ listenEventName ] = function(){
 						// Check if the globalFuncName is defined on this side of the iframe and call it
 						if( window[ globalFuncName ] && typeof window[ globalFuncName ] == 'function' ){
 							window[ globalFuncName ].apply( this, $j.makeArray( arguments ) );

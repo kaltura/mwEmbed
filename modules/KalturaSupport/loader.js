@@ -359,8 +359,8 @@
 	 * 	optional function called once iframe player has been loaded
 	 */
 	jQuery.fn.kalturaIframePlayer = function( iframeParams, callback ) {
-		mw.log( '$j.kalturaIframePlayer::' + $j(this).attr('id') );
 		$j( this ).each( function( inx, playerTarget ){
+			mw.log( '$j.kalturaIframePlayer::' + $j( playerTarget ).attr('id') );
 			// Establish the "server" domain via mwEmbed path: 
 			var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
 			
@@ -376,18 +376,16 @@
 					iframeRequest+= '/' + key + 
 						'/' + encodeURIComponent( iframeParams [ key ] );
 				}
-				var argSeperator ='/?';
-				
-				// @@todo should move these url flags into config options
+				// Add the player id: 
+				iframeRequest+= '/?playerId=' + $j( playerTarget ).attr('id');
 				
 				// Add debug flag if set: 
 				if( mw.getConfig( 'debug' ) ){
-					iframeRequest+= argSeperator + 'debug=true';
-					argSeperator ='&';
+					iframeRequest+= '&debug=true';
 				}
 				// Add the flashvars to the request:
 				if( iframeParams['flashvars'] ){
-					iframeRequest += argSeperator + $j.param( {'flashvars': iframeParams['flashvars'] } );
+					iframeRequest += '&' + $j.param( {'flashvars': iframeParams['flashvars'] } );
 				}
 
 				var iframeId = $j( playerTarget ).attr('id');				

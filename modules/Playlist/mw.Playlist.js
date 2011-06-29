@@ -498,7 +498,10 @@ mw.Playlist.prototype = {
 			// Auto select player based on default order
 			if ( !embedPlayer.mediaElement.selectedSource ) {
 				mw.log( 'Error no source for playlist swich' );
-				callback();
+				if( typeof callback != 'undefined' ) {
+					callback();
+				}
+				return ;
 			} else {
 				embedPlayer.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( embedPlayer.mediaElement.selectedSource.mimeType );
 			}
@@ -512,15 +515,21 @@ mw.Playlist.prototype = {
 				return ;
 			}
 			// Run switchPlaying source 
-                        if (typeof _this.nextPlayIndex == 'undefined')
-                          _this.nextPlayIndex = _this.clipIndex + 1;
-                        mw.log('nextPlay: ' + _this.nextPlayIndex);
-                                                 
+			if ( typeof _this.nextPlayIndex == 'undefined' ){
+				_this.nextPlayIndex = _this.clipIndex + 1;
+			}
+			mw.log('mw.Playlist:: Play next: ' + _this.nextPlayIndex);
 			embedPlayer.switchPlaySrc( embedPlayer.mediaElement.selectedSource.getSrc(), 
-                                                   function() { $j('.loadingSpinner').remove(); },
-                                                   ( _this.nextPlayIndex < _this.sourceHandler.getClipCount() ?
-                                                     function() { _this.playClip( _this.nextPlayIndex ); } : null ) );
-                        });
+					function() { 
+						$j('.loadingSpinner').remove(); 
+					},
+					function() { 
+						if( _this.nextPlayIndex < _this.sourceHandler.getClipCount() ){
+							_this.playClip( _this.nextPlayIndex ); 
+						}
+	    			}
+			);
+	    });
 	},
 	/**
 	* update the player

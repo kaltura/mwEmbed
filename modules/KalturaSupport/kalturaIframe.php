@@ -23,7 +23,6 @@ ob_end_flush();
  */
 class kalturaIframe {
 	var $resultObject = null; // lazy init 
-	var $playerIframeId = 'iframeVid';
 	var $debug = false;
 	var $error = false;
 	// A list of kaltura plugins and associated includes	
@@ -32,6 +31,13 @@ class kalturaIframe {
 	);
 	// Plugins used in $this context
 	var $plugins = array();
+	
+	function getIframeId(){
+		if( isset( $_GET['playerId'] ) ){
+			return htmlspecialchars( $_GET[ 'playerId' ] );
+		}
+		return 'iframeVid';
+	}
 	/**
 	 * The result object grabber, caches a local result object for easy access
 	 * to result object properties. 
@@ -137,10 +143,11 @@ class kalturaIframe {
 		// so that overlays work on the iPad.
 		$o = "\n" .'<video class="persistentNativePlayer" ' .
 			'poster="' . htmlspecialchars( $posterUrl ) . '" ' .
-			'id="' . htmlspecialchars( $this->playerIframeId ) . '" ' .
+			'id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
 			'style="width:100%;height:100%" ';
 
 		$urlParams = $this->getResultObject()->getUrlParameters();
+		
 		// Add any additional attributes:
 		foreach( $urlParams as $key => $val ){
 			if( isset( $videoTagMap[ $key ] ) && $val != null ) {
@@ -151,6 +158,7 @@ class kalturaIframe {
 				}
 			}
 		}
+		
 		//Close the open video tag
 		$o.='>';
 
@@ -542,7 +550,7 @@ class kalturaIframe {
 		if( kIsHTML5FallForward() ){
 				// Load the mwEmbed resource library and add resize binding
 				mw.ready(function(){
-					var embedPlayer = $j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' ).get(0);
+					var embedPlayer = $j( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' ).get(0);
 					// Try to seek to the IframeSeekOffset time:
 					if( mw.getConfig( 'EmbedPlayer.IframeCurrentTime' ) ){
 						embedPlayer.currentTime = mw.getConfig( 'EmbedPlayer.IframeCurrentTime' );					
@@ -553,7 +561,7 @@ class kalturaIframe {
 					}
 					// Bind window resize to reize the player:
 					$j( window ).resize( function(){
-						$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
+						$j( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )
 							.get(0).resizePlayer({
 								'width' : $j(window).width(),
 								'height' : $j(window).height()
