@@ -36,7 +36,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.4a12';
+KALTURA_LOADER_VERSION = '1.4a13';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -116,7 +116,7 @@ if( !mw.ready){
 }
 
 // Set url based config:
-if( document.URL.indexOf('forceMobileHTML5') != -1 ){
+if( document.URL.indexOf('forceMobileHTML5') !== -1 ){
 	mw.setConfig( 'forceMobileHTML5', true );
 }
 

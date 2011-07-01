@@ -81,11 +81,20 @@ mw.Playlist.prototype = {
 			return text.substr(0, this.descriptionLength-3) + ' ...';
 		return text;
 	},
-	drawPlaylist: function( callback ){
+	drawPlaylist: function( drawDoneCallback ){
 		var _this = this;
 		// Set the target to loadingSpinner:
 		$j( this.target ).empty().loadingSpinner();
-
+		var callback = function(){
+			if( _this.sourceHandler.autoPlay || _this.autoPlay ){
+				_this.playClip( _this.clipIndex );
+			}
+			// do non-blocking call to drawDoneCallback
+			setTimeout(function(){ 
+				if( drawDoneCallback )
+					drawDoneCallback();
+			},1);
+		};
 		this.loadPlaylistHandler( function( sourceHandler ){
 			mw.log("Playlist::drawPlaylist: sourceHandler loaded");
 			_this.sourceHandler = sourceHandler;
