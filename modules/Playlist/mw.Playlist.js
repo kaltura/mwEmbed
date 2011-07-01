@@ -768,7 +768,7 @@ mw.Playlist.prototype = {
 				break;
 			}
 		};
-		// load the playlist
+		// Load the playlist
 		_this.sourceHandler.loadPlaylist( function(){
 			callback( _this.sourceHandler );
 		});

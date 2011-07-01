@@ -1,14 +1,40 @@
 <html>
 <head>
 <title>Fall forward html5</title>
-
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>    
-<!--
-<script type="text/javascript" src="../../../ResourceLoader.php?class=window.jQuery,mwEmbed&&debug=true"></script>
-<script type="text/javascript" src="http://html5.kaltura.org/js"></script>
-<script type="text/javascript" src="../../../ResourceLoader.php?class=window.jQuery,mwEmbed&debug=true"></script>
--->
-  
+
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	// Name this module
+	module( "Playlist KalturaApi" );
+
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	var iframeContext = window.frames['kaltura_player_ifp'];
+	
+	test( "Iframe in DOM", function() {
+		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
+		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+	});
+
+	asyncTest("Iframe layout elements", function(){
+		kalturaQunitWaitForPlayer(function(){
+			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
+			ok( $iframe.find('.play-btn').length, ".play-btn found" );
+			start();
+		});
+	});
+	
+	asyncTest("Iframe config", function(){
+		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
+		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
+		// Test page context config: 
+		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
+		start();
+	});
+
+}
+</script>
 </head>
 <body>
 <h2> Fall forward playlist </h2>

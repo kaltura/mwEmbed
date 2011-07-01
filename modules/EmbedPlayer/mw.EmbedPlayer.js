@@ -582,7 +582,9 @@ mediaSource.prototype = {
 		
 		// Conform long form "video/ogg; codecs=theora" based attributes
 		// @@TODO we should support codec in the type arguments
-		this.mimeType = this.mimeType.split(';')[0];
+		if( this.mimeType ){
+			this.mimeType = this.mimeType.split(';')[0];
+		}
 			
 		// Check for parent elements ( supplies categories in "track" )
 		if( $j( element ).parent().attr('category') ) {

@@ -345,7 +345,8 @@
 		// must be a media rss url:
 		if( mw.isUrl( kplUrl0 ) ){
 			playlist.src = kplUrl0;
-			playlist.sourceHandler = new mw.PlaylistHandlerKalturaRss( playlist, playlistConfig );
+			//playlist.sourceHandler = new mw.PlaylistHandlerKalturaRss( playlist, playlistConfig );
+			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
 			return ;
 		}
 		mw.log("Error playlist source not found");

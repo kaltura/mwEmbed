@@ -15,7 +15,7 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 				this[i] = tmp[i];
 			}
 		}
-		//set all the options:
+		// Set all the options:
 		for( var i in options ){
 			this[i] = options[i];
 		}
