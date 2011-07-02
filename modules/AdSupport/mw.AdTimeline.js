@@ -417,7 +417,7 @@ mw.AdTimeline.prototype = {
 		}
 
 		// Play the source then run the callback
-		_this.embedPlayer.switchPlaySrc( _this.getCompatibleSource( adConf.videoFiles ), 
+		_this.embedPlayer.switchPlaySrc( _this.embedPlayer.getCompatibleSource( adConf.videoFiles ), 
 			function(vid) {
 				mw.log("AdTimeline:: source updated, add tracking");
 				// Bind all the tracking events ( currently vast based but will abstract if needed ) 
@@ -596,30 +596,6 @@ mw.AdTimeline.prototype = {
 			$j('#' +overlayId ).fadeOut('fast');
 		});
 		
-	},
-	/**
-	 * Uses mediaElement select logic to chose a video file among a set of sources
-	 * @param videoFiles
-	 * @return
-	 */
-	getCompatibleSource: function( videoFiles ){
-		// Convert videoFiles json into HTML element: 
-		// TODO mediaElement should probably accept JSON
-		$media = $j('<video />');
-		$.each(videoFiles, function( inx, source){
-			$media.append( $j('<source />').attr({
-				'src' : source.src,
-				'type' : source.type
-			}));
-		});
-		var myMediaElement =  new mediaElement( $media.get(0) );
-		var source = myMediaElement.autoSelectSource();
-		if( source ){
-			mw.log("AdTimeline::getCompatibleSource: " + source.getSrc());
-			return source.getSrc();
-		}
-		mw.log("Error:: could not find compatible source");
-		return false;
 	},
 	
 	/**

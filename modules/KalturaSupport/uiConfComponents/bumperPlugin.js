@@ -55,23 +55,26 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 						embedPlayer.disableSeekBar();
 					}
 					// Call the special insertAndPlaySource function ( used for ads / video inserts ) 
-					embedPlayer.switchPlaySrc( bumperSource, null, function(){
-						// restore the original source:
-						embedPlayer.switchPlaySrc( originalSrc );
-						embedPlayer.enableSeekBar();
-						$j( embedPlayer ).unbind('click.bumper');
+					embedPlayer.switchPlaySrc( embedPlayer.getCompatibleSource( sources ), 
+						function(){
+							if( bumperClickUrl ){
+								$j( embedPlayer ).bind( 'click.bumper', function(){
+									// try to do a popup:
+									if(!clickedBumper){
+										clickedBumper = true;
+										window.open( bumperClickUrl );								
+									}
+									return true;							
+								})
+							}
+						}, function(){
+							// restore the original source:
+							embedPlayer.switchPlaySrc( originalSrc );
+							embedPlayer.enableSeekBar();
+							$j( embedPlayer ).unbind('click.bumper');
 					});
 				});
-				if( bumperClickUrl ){
-					$j( embedPlayer ).bind( 'click.bumper', function(){
-						// try to do a popup:
-						if(!clickedBumper){
-							clickedBumper = true;
-							window.open( bumperClickUrl );								
-						}
-						return true;							
-					})
-				}
+				
 				// run callback once bumper has been looked up
 				callback();
 			});

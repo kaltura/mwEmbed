@@ -3281,7 +3281,33 @@ mw.EmbedPlayer.prototype = {
 		// No selected source return false:
 		return false;
 	},
-
+	
+	/**
+	 * STATIC ( can move elsewhere ) 
+	 * Uses mediaElement select logic to chose a video file among a set of sources
+	 * 
+	 * @param videoFiles
+	 * @return
+	 */
+	getCompatibleSource: function( videoFiles ){
+		// Convert videoFiles json into HTML element: 
+		// TODO mediaElement should probably accept JSON
+		$media = $j('<video />');
+		$.each(videoFiles, function( inx, source){
+			$media.append( $j('<source />').attr({
+				'src' : source.src,
+				'type' : source.type
+			}));
+		});
+		var myMediaElement =  new mediaElement( $media.get(0) );
+		var source = myMediaElement.autoSelectSource();
+		if( source ){
+			mw.log("AdTimeline::getCompatibleSource: " + source.getSrc());
+			return source.getSrc();
+		}
+		mw.log("Error:: could not find compatible source");
+		return false;
+	},
 	/**
 	 * If the selected src supports URL time encoding
 	 *
@@ -3621,11 +3647,12 @@ mw.EmbedTypes = {
 		 *
 		 * @constructor
 		 */
-	 init: function() {
+	init: function() {
 		// detect supported types
 		this.detect();
 		this.detect_done = true;
 	},
+	
 
 	getMediaPlayers: function(){
 		if( this.mediaPlayers  ){
