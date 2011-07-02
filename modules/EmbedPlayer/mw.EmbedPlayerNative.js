@@ -83,7 +83,9 @@ mw.EmbedPlayerNative = {
 	*/
 	doEmbedHTML : function () {
 		var _this = this;
-
+		if( this.getPlayerElement() && $j( this.getPlayerElement() ).attr('src') == this.getSrc( this.currentTime ) ){
+			return ;
+		}
 		// Reset some play state flags:
 		_this.bufferStartFlag = false;
 		_this.bufferEndFlag = false;
@@ -98,11 +100,6 @@ mw.EmbedPlayerNative = {
 			&& $j( '#' + this.pid ).length 
 			&& typeof $j( '#' + this.pid ).get(0).play != 'undefined' ) 
 		{
-			
-			// Update the player source: 
-			$j( '#' + this.pid ).attr( 'src', this.getSrc( this.currentTime ) );
-			$j( '#' + this.pid ).get(0).load();
-			
 			_this.postEmbedJS();
 			return ;
 		}
@@ -152,7 +149,7 @@ mw.EmbedPlayerNative = {
 			// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag.
 			.addClass( 'nativeEmbedPlayerPid' )
 			.attr( playerAttribtues )
-			.css( cssSet )
+			.css( cssSet );
 	},
 
 	/**
@@ -160,13 +157,17 @@ mw.EmbedPlayerNative = {
 	*/
 	postEmbedJS: function() {
 		var _this = this;
-		mw.log( "f:native:postEmbedJS:" );
 
 		// Setup local pointer:
 		var vid = this.getPlayerElement();
 		if(!vid){
 			return ;
 		}
+		// Update the player source ( if needed ) 
+		if( $j( '#' + this.pid ).attr( 'src') !=  this.getSrc( this.currentTime )  ){
+			$j( '#' + this.pid ).attr( 'src', this.getSrc( this.currentTime ) );
+		}
+
 		// Apply media element bindings:
 		this.applyMediaElementBindings();
 
@@ -176,6 +177,7 @@ mw.EmbedPlayerNative = {
 			vid.load();
 		} else {
 			// Issue play request
+			vid.load();
 			vid.play();
 		}
 
@@ -195,7 +197,7 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		$j.each( _this.nativeEvents, function( inx, eventName ){
-			$j( vid ).bind( eventName , function(){
+			$j( vid ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function(){
 				if( _this._propagateEvents ){
 					var argArray = $j.makeArray( arguments );
 					// Check if there is local handler:
@@ -206,7 +208,7 @@ mw.EmbedPlayerNative = {
 						$j( _this ).trigger( eventName, argArray );
 					}
 				}
-			})
+			});
 		});
 	},
 
@@ -237,6 +239,7 @@ mw.EmbedPlayerNative = {
 		this.seeking = true;
 		// Update the current time
 		this.currentTime = ( percentage * this.duration ) ;
+		
 		// trigger the seeking event: 
 		mw.log('Native::doSeek:trigger');
 		$j( this ).trigger( 'seeking' );
@@ -279,7 +282,7 @@ mw.EmbedPlayerNative = {
 			// done seeking: 
 			$j( this ).trigger( 'seeked' );
 			_this.monitor();
-		})
+		});
 	},
 
 	/**

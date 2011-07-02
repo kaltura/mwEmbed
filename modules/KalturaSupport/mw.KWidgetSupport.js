@@ -18,123 +18,135 @@ mw.KWidgetSupport.prototype = {
 	* Add Player hooks for supporting Kaltura api stuff
 	*/ 
 	addPlayerHooks: function( ){
-		var _this = this;		
+		var _this = this;	
 		// Add the hooks to the player manager
 		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
+			
 			// Add hook for check player sources to use local kEntry ID source check:
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
-				// Load all the player configuration from kaltura: 
-				_this.loadPlayerData( embedPlayer, function( playerData ){
-					if( !playerData ){
-						mw.log("KWidgetSupport::addPlayerHooks> error no player data!");
-						callback();
-						return ;
-					}
-					// Check for uiConf	and attach it to the embedPlayer object:
-					if( playerData.uiConf ){
-						// Store the parsed uiConf in the embedPlayer object:
-						embedPlayer.$uiConf = $j( playerData.uiConf );
-						
-						// Set any global configuration present in custom variables of the playerData
-						embedPlayer.$uiConf.find( 'uiVars var' ).each( function( inx, customVar ){
-							if( $j( customVar ).attr('key') &&  $j( customVar ).attr('value') ){
-								var cVar = $j( customVar ).attr('value');
-								// String to boolean: 
-								cVar = ( cVar === "false" ) ? false : cVar;
-								cVar = ( cVar === "true" ) ? true : cVar;
-								
-								mw.log("KWidgetSupport::addPlayerHooks> Set Global Config:  " + $j( customVar ).attr('key') + ' ' + cVar );
-								mw.setConfig(  $j( customVar ).attr('key'), cVar);
-							}
-						});
-					}
-					
-					// Check access controls ( this is kind of silly and needs to be done on the server ) 
-					if( playerData.accessControl ){
-						var acStatus = _this.getAccessControlStatus( playerData.accessControl );
-						if( acStatus !== true ){
-							$j('.loadingSpinner').remove();
-							embedPlayer.showErrorMsg( acStatus );
-							return ;
-						}
-						// Check for preview access control and add special onEnd binding: 
-						if( playerData.accessControl.previewLength != -1 ){
-							$j( embedPlayer ).bind('ended.acpreview', function(){
-								mw.log( 'KWidgetSupport:: ended.acpreview>' );
-								// Don't run normal onend action: 
-								embedPlayer.onDoneInterfaceFlag = false;
-								var closeAcMessage = function(){
-									$j( embedPlayer ).unbind('ended.acpreview');
-									embedPlayer.stop();
-									embedPlayer.onClipDone();
-								};
-								// Display player dialog 
-								// TODO i8ln!!
-								embedPlayer.controlBuilder.displayMenuOverlay(
-									$j('<div />').append( 
-										$j('<h3 />').append( 'Free preview completed, need to purchase'),
-										$j('<span />').text( 'Access to the rest of the content is restricted' ),
-										$j('<br />'),$j('<br />'),
-										$j('<button />').attr({'type' : "button" })
-										.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
-										.append( 
-											$j('<span />').addClass( "ui-button-text" )
-											.text( 'Ok' )
-											.css('margin', '10')
-										).click( closeAcMessage )
-									), closeAcMessage
-								);
-							});
-						}
-					}					
-					
-					// Apply player Sources
-					if( playerData.flavors ){
-						_this.addFlavorSources( embedPlayer, playerData.flavors );
-					}
-					mw.log("KWidgetSupport:: check for meta:");
-					// Add any custom metadata:
-					if( playerData.entryMeta ){
-						embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
-					}
-					
-					// Apply player metadata
-					if( playerData.meta ) {
-						embedPlayer.duration = playerData.meta.duration;
-						// We have to assign embedPlayer metadata as an attribute to bridge the iframe
-						embedPlayer.kalturaPlayerMetaData = playerData.meta;
-						$j( embedPlayer ).trigger( 'KalturaSupport_MetaDataReady', embedPlayer.kalturaPlayerMetaData );
-					}										
-					
-					// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
-					if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
-						mw.addKAnalytics( embedPlayer, _this.kClient );
-					}
-					
-					if( embedPlayer.$uiConf ){
-						// Trigger the check kaltura uiConf event					
-						$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport_CheckUiConf', embedPlayer.$uiConf, function(){	
-							mw.log("KWidgetSupport::KalturaSupport_CheckUiConf callback");
-							// Ui-conf file checks done
-							callback();
-						});
-					} else {
-						callback();
-					}
-				});
+				_this.loadAndBindPlayerData( embedPlayer, callback );
 			});
 
-			// Add kaltura iframe path support:
+			// Add kaltura iframe share support:
 			$j( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
 				callback( mw.getConfig('Kaltura.ServiceUrl') + '/p/' + _this.kClient.getPartnerId() +
 							'/embedIframe/entry_id/' + embedPlayer.kentryid +
 							'/uiconf_id/' + embedPlayer.kuiconfid );
 			});
 		});
-		
-	
+	},
+	/**
+	 * Load and bind embedPlayer from kaltura api entry request
+	 * @param embedPlayer
+	 * @param callback
+	 * @return
+	 */
+	loadAndBindPlayerData: function( embedPlayer, callback ){
+		var _this = this;
+		// Load all the player configuration from kaltura: 
+		_this.loadPlayerData( embedPlayer, function( playerData ){
+			if( !playerData ){
+				mw.log("KWidgetSupport::addPlayerHooks> error no player data!");
+				callback();
+				return ;
+			}
+			_this.bindPlayerData( embedPlayer, playerData, callback );
+		});
 	},
 	
+	bindPlayerData:function( embedPlayer,  playerData, callback ){
+		var _this = this;
+		// Check for uiConf	and attach it to the embedPlayer object:
+		if( playerData.uiConf ){
+			// Store the parsed uiConf in the embedPlayer object:
+			embedPlayer.$uiConf = $j( playerData.uiConf );
+			
+			// Set any global configuration present in custom variables of the playerData
+			embedPlayer.$uiConf.find( 'uiVars var' ).each( function( inx, customVar ){
+				if( $j( customVar ).attr('key') &&  $j( customVar ).attr('value') ){
+					var cVar = $j( customVar ).attr('value');
+					// String to boolean: 
+					cVar = ( cVar === "false" ) ? false : cVar;
+					cVar = ( cVar === "true" ) ? true : cVar;
+					
+					mw.log("KWidgetSupport::addPlayerHooks> Set Global Config:  " + $j( customVar ).attr('key') + ' ' + cVar );
+					mw.setConfig(  $j( customVar ).attr('key'), cVar);
+				}
+			});
+		}
+		
+		// Check access controls ( this is kind of silly and needs to be done on the server ) 
+		if( playerData.accessControl ){
+			var acStatus = _this.getAccessControlStatus( playerData.accessControl );
+			if( acStatus !== true ){
+				$j('.loadingSpinner').remove();
+				embedPlayer.showErrorMsg( acStatus );
+				return ;
+			}
+			// Check for preview access control and add special onEnd binding: 
+			if( playerData.accessControl.previewLength != -1 ){
+				$j( embedPlayer ).bind('ended.acpreview', function(){
+					mw.log( 'KWidgetSupport:: ended.acpreview>' );
+					// Don't run normal onend action: 
+					embedPlayer.onDoneInterfaceFlag = false;
+					var closeAcMessage = function(){
+						$j( embedPlayer ).unbind('ended.acpreview');
+						embedPlayer.stop();
+						embedPlayer.onClipDone();
+					};
+					// Display player dialog 
+					// TODO i8ln!!
+					embedPlayer.controlBuilder.displayMenuOverlay(
+						$j('<div />').append( 
+							$j('<h3 />').append( 'Free preview completed, need to purchase'),
+							$j('<span />').text( 'Access to the rest of the content is restricted' ),
+							$j('<br />'),$j('<br />'),
+							$j('<button />').attr({'type' : "button" })
+							.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
+							.append( 
+								$j('<span />').addClass( "ui-button-text" )
+								.text( 'Ok' )
+								.css('margin', '10')
+							).click( closeAcMessage )
+						), closeAcMessage
+					);
+				});
+			}
+		}					
+		
+		// Apply player Sources
+		if( playerData.flavors ){
+			_this.addFlavorSources( embedPlayer, playerData.flavors );
+		}
+		mw.log("KWidgetSupport:: check for meta:");
+		// Add any custom metadata:
+		if( playerData.entryMeta ){
+			embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
+		}
+		// Apply player metadata
+		if( playerData.meta ) {
+			embedPlayer.duration = playerData.meta.duration;
+			// We have to assign embedPlayer metadata as an attribute to bridge the iframe
+			embedPlayer.kalturaPlayerMetaData = playerData.meta;
+			$j( embedPlayer ).trigger( 'KalturaSupport_MetaDataReady', embedPlayer.kalturaPlayerMetaData );
+		}										
+
+		// Add kaltura analytics if we have a session if we have a client ( set in loadPlayerData ) 									
+		if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
+			mw.addKAnalytics( embedPlayer, _this.kClient );
+		}
+		
+		if( embedPlayer.$uiConf ){
+			// Trigger the check kaltura uiConf event					
+			$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport_CheckUiConf', embedPlayer.$uiConf, function(){	
+				mw.log("KWidgetSupport::KalturaSupport_CheckUiConf callback");
+				// Ui-conf file checks done
+				callback();
+			});
+		} else {
+			callback();
+		}
+	},
 	/**
 	 * Alternate source grabbing script ( for cases where we need to hot-swap the source ) 
 	 * playlists on iPhone for example we can't re-load the player we have to just switch the src. 
@@ -144,11 +156,11 @@ mw.KWidgetSupport.prototype = {
 	 */
 	getEntryIdSourcesFromApi:  function( widgetId, entryId, callback ){
 		var _this = this;
+		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + widgetId + ' entry:' + entryId );
 		this.kClient = mw.KApiPlayerLoader( {
 			'widget_id' : widgetId, 
 			'entry_id' : entryId
 		}, function( playerData ){
-			
 			// Check access control 
 			if( playerData.accessControl ){
 				var acStatus = _this.getAccessControlStatus( playerData.accessControl );

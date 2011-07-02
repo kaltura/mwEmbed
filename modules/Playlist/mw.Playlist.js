@@ -1,5 +1,5 @@
 /**
-* Playlist Embed. Enables the embedding of a playlist playlist using the mwEmbed player
+* Playlist Embed. Enables the embedding of a playlist using the mwEmbed player
 */
 
 //Get all our message text
@@ -44,13 +44,6 @@ mw.Playlist.prototype = {
 		}
 
 		// Set the layoutHandler ( not yet active ) 
-		/*if( !options.layoutHandler || option.layoutHandler == 'jqueryui'  ){
-			this.layoutHandler = new mw.PlaylistThemeUi( this );
-		} else if( option.layoutHandler == 'mobile' ) {
-			this.layoutHandler = new mw.PlaylistThemeMobile( this );
-		} else {
-			mw.log("Error:: unsuported playlist theme: " + option.layoutHandler );
-		}*/
 
 		// Set binding to disable "waitForMeta" for playlist items ( we know the size and length )
 		$j( mw ).bind( 'checkPlayerWaitForMetaData', function(even, playerElement ){
@@ -89,11 +82,7 @@ mw.Playlist.prototype = {
 			if( _this.sourceHandler.autoPlay || _this.autoPlay ){
 				_this.playClip( _this.clipIndex );
 			}
-			// do non-blocking call to drawDoneCallback
-			setTimeout(function(){ 
-				if( drawDoneCallback )
-					drawDoneCallback();
-			},1);
+			drawDoneCallback();
 		};
 		this.loadPlaylistHandler( function( sourceHandler ){
 			mw.log("Playlist::drawPlaylist: sourceHandler loaded");
@@ -210,7 +199,7 @@ mw.Playlist.prototype = {
 						 });
 						return false;
 					})
-					.buttonHover()
+					.buttonHover();
 				// highlight the default
 				if( inx == 0 ){
 					$plLink.addClass( 'ui-state-active' );
@@ -429,7 +418,7 @@ mw.Playlist.prototype = {
 		}
 		
 		if( _this.layout == 'vertical' ){
-			/* vertical layout */
+			/* Vertical layout */
 			var pa = this.playerAspect.split(':');
 			this.targetPlayerSize = {
 				'width' : this.targetWidth + 'px',
@@ -460,7 +449,6 @@ mw.Playlist.prototype = {
 	// Play a clipIndex, if the player is already in the page swap the player src to the new target
 	playClip: function( clipIndex ){
 		var _this = this;
-		
 		// Check for a video/audio tag already in the page:
 		var $inDomAV = $j( _this.target + ' .media-rss-video-player video, '+ _this.target + ' .media-rss-video-player audio' );
 		var embedPlayer = $j( _this.target + ' .media-rss-video-player-container' )
@@ -468,13 +456,13 @@ mw.Playlist.prototype = {
 	
 		if( $inDomAV.length == 0 || embedPlayer.instanceOf != 'Native' || !mw.isMobileDevice() ){
 			_this.updatePlayer( clipIndex, function(){
+				mw.log("mw.Playlist:: PlayClip: callback" );
 				_this.play();
-			})
+			});
 			return ;
 		} 
 
-		if (typeof _this.nextPlayIndex !='undefined')
-		{
+		if (typeof _this.nextPlayIndex !='undefined'){
 			if (clipIndex < _this.nextPlayIndex) {
 				return;
 			}
@@ -541,10 +529,11 @@ mw.Playlist.prototype = {
 	    });
 	},
 	/**
-	* update the player
+	* Update the player
 	*/
 	updatePlayer: function( clipIndex , callback ){
 		var _this = this;
+		mw.log( "mw.Playlist:: updatePlayer " + clipIndex );
 		var playerSize = _this.getTargetPlayerSize();
 		this.clipIndex = clipIndex;
 		// If we have a ui .. update it: 
@@ -566,8 +555,9 @@ mw.Playlist.prototype = {
 		// Add custom attributes:
 		_this.sourceHandler.applyCustomClipData( $video, clipIndex );
 
-		// lookup the sources from the playlist provider:
-		this.sourceHandler.getClipSources( clipIndex, function( clipSources ){
+		// Lookup the sources from the playlist provider:
+		_this.sourceHandler.getClipSources( clipIndex, function( clipSources ){
+			mw.log("getClipSources cb");
 			if( clipSources ){
 				for( var i =0; i < clipSources.length; i++ ){
 					var $source = $j('<source />')
@@ -579,6 +569,7 @@ mw.Playlist.prototype = {
 			$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
 			_this.addEmbedPlayerInterface( callback );
 		});
+		
 	},
 	updatePlayerUi:function( clipIndex ){
 		var _this = this;
@@ -615,8 +606,9 @@ mw.Playlist.prototype = {
 	},
 	addEmbedPlayerInterface: function( callback ){
 		var _this = this;
+		mw.log("mw.Playlist:: addEmbedPlayerInterface " );
 		// Update the video tag with the embedPlayer
-		$j('#' +_this.getVideoPlayerId( _this.clipIndex ) ).embedPlayer( function(){
+		$j('#' +_this.getVideoPlayerId( _this.clipIndex ) ).unbind().embedPlayer( function(){
 			var embedPlayer = $j('#' +_this.getVideoPlayerId( _this.clipIndex ) ).get(0);
 			if(!embedPlayer){
 				mw.log("mw.Playlist::updateVideoPlayer > Error, embedPlayer not defined at embedPlayer ready time");
@@ -733,7 +725,6 @@ mw.Playlist.prototype = {
 				'cursor': 'pointer'
 			} )
 			.click( function(){
-				mw.log( 'clicked on: ' + $j( this ).data( 'clipIndex') );
 				// Make sure the existing player is "playing " (safari can't play async with javascript )
 				/*if( mw.isHTML5FallForwardNative() ){
 					var embedPlayer = $j('#' + _this.getVideoPlayerId() ).get(0);
@@ -758,8 +749,9 @@ mw.Playlist.prototype = {
 	},
 
 	play: function(){
+		mw.log( 'mw.Playlist::play ');
 		var embedPlayer = $j('#' + this.getVideoPlayerId() ).get(0);
-			embedPlayer.play();
+		embedPlayer.play();
 	},
 
 	/**

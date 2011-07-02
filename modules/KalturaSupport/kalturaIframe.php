@@ -516,8 +516,8 @@ class kalturaIframe {
 			// Don't do an iframe rewrite inside an iframe!
 			mw.setConfig( 'Kaltura.IframeRewrite', false );
 
-			// Identify the player as an iframe player
-			mw.setConfig( "EmbedPlayer.IsIframePlayer", true );
+			// Identify the player as an iframe server
+			mw.setConfig( "EmbedPlayer.IsIframeServer", true );
 
 			<?php 
 				if( !$this->getResultObject()->isPlaylist() ){

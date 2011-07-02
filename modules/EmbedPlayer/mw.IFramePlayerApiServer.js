@@ -76,7 +76,7 @@ mw.IFramePlayerApiServer.prototype = {
 				setTimeout(function(){
 					if( !proxyHandShakeComplete)
 						callback();
-				},250);
+				}, 250);
 				// Trigger the proxyReady event ( will add all the prePlayerProxy listeners 
 				$j( embedPlayer ).trigger( 'proxyReady' );
 			});
@@ -142,6 +142,7 @@ mw.IFramePlayerApiServer.prototype = {
 		var _this = this;
 		
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
+
 		var attrSet = { };
 		for( var i in playerAttributes ){
 			if( i != 'id' ){

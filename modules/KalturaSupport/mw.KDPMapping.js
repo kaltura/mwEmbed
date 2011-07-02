@@ -17,29 +17,26 @@
 		* Add Player hooks for supporting Kaltura api stuff
 		*/ 
 		init: function( ){
-			// Check What types of bindings we should add:
-			if( this.isIframeClient() ){
-				this.addIframePlayerHooksClient();
-				return ;
-			}
 			if( this.isIframeServer () ){
 				this.addIframePlayerHooksServer();
 				return ;
 			}
-			// No iframe just do normal KDP mapping hooks: 
+			// For client side of the iframe add iframe hooks and player hooks ( will bind to 
+			// different build player build outs and lets us support pages with iframe and no iframes
+			this.addIframePlayerHooksClient();
 			this.addPlayerHooks();
 		},
 		isIframeClient: function(){
-			return ( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig('Kaltura.IframeRewrite') );
+			return ( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig('EmbedPlayer.IsIframeClient') );
 		},
 		isIframeServer: function(){
-			return ( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig( 'EmbedPlayer.IsIframePlayer' ) );
+			return ( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig( 'EmbedPlayer.IsIframeServer' ) );
 		},
 		addPlayerHooks: function(){
 			var _this = this;
 			mw.log("KDPMapping::addPlayerHooks>");
 			// Add the hooks to the player manager			
-			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {										
+			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {	
 				// Add the addJsListener and sendNotification maps
 				embedPlayer.addJsListener = function(listenerString, globalFuncName){
 					_this.addJsListener( embedPlayer, listenerString, globalFuncName );
@@ -82,7 +79,7 @@
 			});
 			
 			$j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {
-				
+
 				$j( playerProxy ).bind( 'jsListenerEvent', function(event, globalFuncName, listenerArgs){
 					if( typeof window[ globalFuncName ] == 'function' ){
 						window[ globalFuncName ].apply( this, listenerArgs );

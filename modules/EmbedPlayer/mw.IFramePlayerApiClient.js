@@ -220,6 +220,7 @@ jQuery.fn.iFramePlayer = function( readyCallback ){
 		$j( playerProxy ).bind('proxyReady', function(){
 			playerProxy.proxyAcknowledgment();
 		});
+		
 		// Bind the iFrame player ready callback
 		if( readyCallback ){
 			$j( playerProxy ).bind( 'playerReady', readyCallback );		

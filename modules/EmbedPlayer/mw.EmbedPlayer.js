@@ -1951,6 +1951,7 @@ mw.EmbedPlayer.prototype = {
 		mw.log( 'EmbedPlayer::onClipDone:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
 		// Only run stopped once:
 		if( !this.isStopped() ){
+			
 			// Stop the monitor and event propagation
 			this.stopEventPropagation();
 
@@ -2707,12 +2708,23 @@ mw.EmbedPlayer.prototype = {
 	 * Handles play requests, updates relevant states: seeking =false paused =
 	 * false Updates pause button Starts the "monitor"
 	 */
+	codeTriggeredPlay : false, // helps prevent event stacking
 	play: function() {
 		var _this = this;
-		mw.log( "EmbedPlayer:: play: " + this._propagateEvents );
+		
+		// Don't run play if the code tirggered the play event: 
+		if( this.codeTriggeredPlay ){
+			setTimeout(function(){
+				_this.codeTriggeredPlay = false;
+			}, this.monitorRate )
+			return ;
+		}
+		
+		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster:' +  this.posterDisplayed );
+	
 		// Hide any overlay:
 		this.controlBuilder.closeMenuOverlay();
-
+		
 		// Check if thumbnail is being displayed and embed html
 		if ( this.posterDisplayed ) {
 			if ( !this.selectedPlayer ) {
@@ -2731,10 +2743,11 @@ mw.EmbedPlayer.prototype = {
 			// Check if we should Trigger the play event
 			mw.log("EmbedPlayer:: trigger play even::" + !this.paused + ' events:' + this.doMethodsAutoTrigger() );
 			if( ! this.doMethodsAutoTrigger() && this._propagateEvents ) {
+				this.codeTriggeredPlay = true;
 				$j( this ).trigger( 'play' );
 			}
 		}
-
+		
 		// If we previously finished playing this clip run the "replay hook"
 		if( this.donePlayingCount > 0 && !this.paused && this._propagateEvents ) {
 			mw.log("replayEvent");

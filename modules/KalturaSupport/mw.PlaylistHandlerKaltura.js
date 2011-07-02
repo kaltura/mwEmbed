@@ -211,6 +211,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	
 	getClipSources: function( clipIndex, callback ){
+		mw.log("PlaylistHandlerKaltura:: getClipSources: " + clipIndex);
 		var _this = this;
 		if( this.mrssHandler ){
 			this.mrssHandler.getClipSources(clipIndex, callback);
@@ -225,14 +226,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 		});
 	},
 	
-	applyCustomClipData:function( embedPlayer, clipIndex ){
+	applyCustomClipData:function( embedPlayer, clipIndex , callback){
 		$j( embedPlayer ).attr({
 			'kentryid' : this.getClip( clipIndex ).id,
 			'kwidgetid' : this.widget_id
 		});		
 		$j( embedPlayer ).data( 'kuiconf', this.uiConfData );
 	},
-	
 	/**
 	* Get an items poster image ( return missing thumb src if not found )
 	*/ 

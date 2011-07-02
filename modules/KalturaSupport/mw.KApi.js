@@ -27,6 +27,8 @@ mw.KApi.prototype = {
 		'format' : 9, // 9 = JSONP format
 		'ignoreNull' : 1
 	},
+	playerLoaderCache: [],
+	
 	// The local kaltura session key ( so it does not have to be re-grabbed with every request
 	ks : null,
 	init: function( partner_id ){
@@ -37,7 +39,7 @@ mw.KApi.prototype = {
 	},
 	doRequest : function( requestObject, callback ){
 		var _this = this;
-		var param = {};		
+		var param = {};
 		// Convert into a multi-request if no session is set ( ks will be added bellow ) 
 		if( !requestObject.length && !this.ks ){
 			requestObject = [ requestObject ];
@@ -164,7 +166,12 @@ mw.KApi.prototype = {
 	playerLoader: function( kProperties, callback ){
 		var _this = this;
 		var requestObject = [];
-		if( kProperties.entry_id ){ 
+		mw.log( "KApi:: playerLoader " );
+		if( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ){
+			callback( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] );
+			return ;
+		}
+		if( kProperties.entry_id ){
 			// The referring  url ( can be from the iframe if in iframe mode ) 
 			var refer = ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ? 
 							mw.getConfig( 'EmbedPlayer.IframeParentUrl') : 
@@ -219,6 +226,7 @@ mw.KApi.prototype = {
 		}
 		// Do the request and pass along the callback
 		this.doRequest( requestObject, function( data ){
+			mw.log( "KApi:: playerLoader got data response" );
 			var namedData = {};
 			// Name each result data type for easy access
 			if( kProperties.entry_id ){ 
@@ -234,6 +242,7 @@ mw.KApi.prototype = {
 				// If only loading the confFile set here: 
 				namedData['uiConf'] = data[0]['confFile'];
 			}	
+			_this.playerLoaderCache[ _this.getCacheKey( kProperties ) ] = namedData;
 			callback( namedData );
 		});
 	},
@@ -247,6 +256,19 @@ mw.KApi.prototype = {
 			});		
 		}
 		return result;
+	},
+	/**
+	 * Get a string representation of the query string
+	 * @param kProperties
+	 * @return
+	 */
+	getCacheKey: function( kProperties ){
+		var rKey = '';
+		//TODO if a framework provides a sorting system we could use that
+		$j.each(kProperties, function(inx, value){
+			rKey+=inx + '_' + value;
+		});
+		return rKey;
 	}
 };
 
