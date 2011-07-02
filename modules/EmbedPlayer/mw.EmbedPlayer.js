@@ -2716,7 +2716,7 @@ mw.EmbedPlayer.prototype = {
 		if( this.codeTriggeredPlay ){
 			setTimeout(function(){
 				_this.codeTriggeredPlay = false;
-			}, this.monitorRate )
+			}, this.monitorRate );
 			return ;
 		}
 		

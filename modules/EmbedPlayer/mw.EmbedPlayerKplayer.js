@@ -264,10 +264,13 @@ mw.EmbedPlayerKplayer = {
 			}
 		}
 		// add a seeked callback event: 
-		var seekedCallback = 'kdp_seek_' +this.id;
+		var seekedCallback = 'kdp_seek_' + this.id + '_' + new Date().getTime();
 		window[ seekedCallback ] = function(){
 			_this.seeking = false;
 			$j( this ).trigger( 'seeked' );
+			if( seekInterval  ) {
+				clearInterval( seekInterval );
+			}
 		};
 		this.playerElement.addJsListener('playerSeekEnd', seekedCallback );
 		
@@ -277,6 +280,16 @@ mw.EmbedPlayerKplayer = {
 			
 			// Issue the seek to the flash player:
 			this.playerElement.sendNotification('doSeek', seekTime);
+			
+			// Include a fallback seek timer: in case the kdp does not fire 'playerSeekEnd'
+			var orgTime = this.flashCurrentTime;
+			var seekInterval = setInterval( function(){
+				if( _this.flashCurrentTime != orgTime ){
+					_this.seeking = false;
+					clearInterval( seekInterval );
+					$j( this ).trigger( 'seeked' );
+				}
+			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 			
 		} else {
 			// try to do a play then seek:
