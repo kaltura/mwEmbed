@@ -135,6 +135,23 @@ mw.KWidgetSupport.prototype = {
 		if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
 			mw.addKAnalytics( embedPlayer, _this.kClient );
 		}
+
+		// Dummy Data for now
+		playerData.entryCuePoints = [ 
+			{ startTime: 0, type: 2, name: 'cuePoint0' }, 
+			{ startTime: 3000, type: 1, name: 'cuePoint1' }, 
+			{ startTime: 6000, type: 2, name: 'cuePoint2' }, 
+			{ startTime: 9000, type: 1, name: 'cuePoint3' }, 
+			{ startTime: 60000, type: 1, name: 'cuePoint4' } 
+		];
+		
+		// Add Entry Cue Points data
+		if( mw.getConfig( 'Kaltura.EnableCuePoints' ) === true ) {
+			if( playerData.entryCuePoints ) {
+				embedPlayer.entryCuePoints = playerData.entryCuePoints;
+				$j( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
+			}
+		}
 		
 		if( embedPlayer.$uiConf ){
 			// Trigger the check kaltura uiConf event					

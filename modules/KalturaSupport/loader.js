@@ -47,6 +47,7 @@
 	
 	mw.addResourcePaths( {
 		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
+		"mw.KCuePoints" : "mw.KCuePoints.js",
 		"mw.KAnalytics" : "mw.KAnalytics.js",
 		"mw.PlaylistHandlerKaltura"	: "mw.PlaylistHandlerKaltura.js", 
 		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
@@ -67,6 +68,7 @@
 		'MD5',
 		"mw.KApi",
 		'mw.KWidgetSupport',
+		'mw.KCuePoints',
 		'mw.KAnalytics',
 		'mw.KDPMapping',
 		'mw.KAds',	

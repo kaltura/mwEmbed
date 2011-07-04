@@ -72,6 +72,9 @@ $wgEnableIpadHTMLControls = false;
 
 $wgKalturaUseManifestUrls = true;
 
+// This will tell the library to enable Kaltura Cue Points
+$wgKalturaCuePoints = 'false';
+
 // By default do not allow custom resource includes. 
 $wgAllowCustomResourceIncludes = false;
 

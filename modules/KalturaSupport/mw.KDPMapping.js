@@ -135,7 +135,12 @@
 				embedPlayer.sendNotification = function( notificationName, notificationData ){
 					_this.sendNotification( embedPlayer, notificationName, notificationData);
 				};
-				
+
+				// setKDPAttribute method export:
+				embedPlayer.setKDPAttribute = function( componentName, property, value ) {
+					_this.setKDPAttribute( embedPlayer, componentName, property, value );
+				};
+
 			});
 		},
 		
@@ -147,6 +152,12 @@
 			switch( property ) {
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
+				break;
+				case 'mediaPlayFrom':
+					embedPlayer.startTime = parseFloat(value);
+				break;
+				case 'mediaPlayTo':
+					embedPlayer.endTime = parseFloat(value);
 				break;
 			}
 		},
