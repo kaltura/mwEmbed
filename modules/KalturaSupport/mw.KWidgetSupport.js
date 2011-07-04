@@ -146,11 +146,9 @@ mw.KWidgetSupport.prototype = {
 		];
 		
 		// Add Entry Cue Points data
-		if( mw.getConfig( 'Kaltura.EnableCuePoints' ) === true ) {
-			if( playerData.entryCuePoints ) {
-				embedPlayer.entryCuePoints = playerData.entryCuePoints;
-				$j( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
-			}
+		if( mw.getConfig( 'Kaltura.EnableCuePoints' ) === true && playerData.entryCuePoints ) {
+			embedPlayer.entryCuePoints = playerData.entryCuePoints;
+			$j( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
 		}
 		
 		if( embedPlayer.$uiConf ){

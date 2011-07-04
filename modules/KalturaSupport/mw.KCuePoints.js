@@ -51,6 +51,18 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			nextCuePoint.startTime = 1;
 		}
 
+		// Bind to monitorEvent to trigger the cue points events
+		$j( embedPlayer ).bind( 'monitorEvent', function() {
+			var currentTime = embedPlayer.currentTime * 1000;
+			if( currentTime >= nextCuePoint.startTime ) {
+				// Trigger the cue point
+				triggerCuePoint(nextCuePoint);
+
+				// Get next cue point
+				nextCuePoint = getCuePoint(currentTime);
+			}
+		});
+
 		// Handle last cue point (postRoll)
 		$j( embedPlayer ).bind("ended", function(){
 			var lastCuePoint = cuePoints[ cuePoints.length - 1];
@@ -65,18 +77,6 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$j( embedPlayer ).bind("seeked", function(){
 			var currentTime = embedPlayer.currentTime * 1000;
 			nextCuePoint = getCuePoint(currentTime);
-		});
-
-		// Bind to monitorEvent to trigger the cue points events
-		$j( embedPlayer ).bind( 'monitorEvent', function() {
-			var currentTime = embedPlayer.currentTime * 1000;
-			if( currentTime >= nextCuePoint.startTime ) {
-				// Trigger the cue point
-				triggerCuePoint(nextCuePoint);
-
-				// Get next cue point
-				nextCuePoint = getCuePoint(currentTime);
-			}
 		});
 		
 	});
