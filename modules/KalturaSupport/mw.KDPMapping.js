@@ -336,6 +336,16 @@
 						callback( embedPlayer.id );
 					});
 					break;
+				case 'cuePointReached':
+					$j( embedPlayer ).bind( 'KalturaSupport_cuePointReached', function( event, cuePoint ) {
+						callback( cuePoint, embedPlayer.id );
+					});
+					break;
+				case 'adOpportunity':
+					$j( embedPlayer ).bind( 'KalturaSupport_adOpportunity', function( event, cuePoint ) {
+						callback( cuePoint, embedPlayer.id );
+					});
+					break;
 				default:
 					mw.log("Error unkown JsListener: " + eventName );
 			}				

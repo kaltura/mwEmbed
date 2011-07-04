@@ -6,6 +6,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 
 		mw.log( "KCuePoints:: Cue Points ready");
 		var cuePoints = embedPlayer.entryCuePoints;
+		var endTime = embedPlayer.duration * 1000;
 
 		/**
 		* Returns the next cuePoint object for requested time
@@ -28,19 +29,36 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		 * @param (Object) Cue Point object
 		 **/
 		var triggerCuePoint = function( cuePoint ) {
-			console.log('Triggered Cue Point: ' + cuePoint.name + ' | Current Time:' + (embedPlayer.currentTime * 1000) + ' | cuePoint Time:' + cuePoint.startTime );
 			/*
 			 *  We need different events for each cue point type
 			 *  TODO: will be changed according to the real type from the server
 			 */
+			var eventName,
+				obj = {
+					cuePoint: cuePoint
+				};
+
 			if( cuePoint.type == 1 ) {
-				// Ad type cue point
-				var eventName = 'adOpportunity';
-			} else if( cuePoint.type == 2 ) {
 				// Code type cue point
-				var eventName = 'cuePointReached';
+				eventName = 'cuePointReached';
+			} else if( cuePoint.type == 2 ) {
+				// Ad type cue point
+				eventName = 'adOpportunity';
+				obj.content = getAdType(cuePoint);
 			}
-			$j( embedPlayer ).trigger( 'KalturaSupport_' + eventName, cuePoint );
+			$j( embedPlayer ).trigger( 'KalturaSupport_' + eventName, obj );
+			console.log('Triggered Cue Point: ' + cuePoint.name + ' | Current Time:' + (embedPlayer.currentTime * 1000) + ' | cuePoint Time:' + cuePoint.startTime, obj );
+		};
+
+		// Detemine our cue point Ad type
+		var getAdType = function( cuePoint ) {
+			if( cuePoint.startTime == 1 ) {
+				return 'pre';
+			} else if( cuePoint.startTime == endTime) {
+				return 'post';
+			} else {
+				return 'mid';
+			}
 		};
 
 		// Get first cue point
@@ -66,8 +84,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		// Handle last cue point (postRoll)
 		$j( embedPlayer ).bind("ended", function(){
 			var lastCuePoint = cuePoints[ cuePoints.length - 1];
-			var endTime = ( embedPlayer.duration * 1000 ) - 500; // The acceptible time for postRoll
-			if( lastCuePoint.startTime > endTime ) {
+			if( lastCuePoint.startTime >= endTime ) {
 				// Found postRoll, trigger cuePoint
 				triggerCuePoint(lastCuePoint);
 			}
