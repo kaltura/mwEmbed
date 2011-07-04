@@ -26,12 +26,17 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 
 		// Get first cue point
 		var nextCuePoint = getCuePoint(0);
-
+		
+		// Fix weird bug when startTime is zero.
+		if( nextCuePoint.startTime == 0 ) {
+			nextCuePoint.startTime = 1;
+		}
+		
 		// Bind to monitorEvent to trigger cuePointReach event
 		$j( embedPlayer ).bind( 'monitorEvent', function() {
 			var currentTime = embedPlayer.currentTime * 1000;
 			if( currentTime >= nextCuePoint.startTime ) {
-				console.log('Found Cue Point: ' + nextCuePoint.name);
+				console.log('Found Cue Point: ' + nextCuePoint.name + ' | Current Time:' + currentTime + ' | cuePoint Time:' + nextCuePoint.startTime);
 				/*
 				 *  We need different events for each cue point type
 				 *  TODO: will be changed according to the real type from the server

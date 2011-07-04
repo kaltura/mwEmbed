@@ -138,7 +138,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Dummy Data for now
 		playerData.entryCuePoints = [ 
-			{ startTime: 0, type: 2, name: 'cuePoint0' }, 
+			{ startTime: 0, type: 2, name: 'cuePoint0' },
 			{ startTime: 3000, type: 1, name: 'cuePoint1' }, 
 			{ startTime: 6000, type: 2, name: 'cuePoint2' }, 
 			{ startTime: 9000, type: 1, name: 'cuePoint3' }, 
