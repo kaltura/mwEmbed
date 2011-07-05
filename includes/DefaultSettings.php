@@ -68,7 +68,7 @@ $wgKalturaIframeRewrite = true;
 // If the iframe embed should include the kaltura javascript api: 
 $wgEnableIframeApi = true;
 
-$wgEnableIpadHTMLControls = false;
+$wgEnableIpadHTMLControls = true;
 
 $wgKalturaUseManifestUrls = true;
 
