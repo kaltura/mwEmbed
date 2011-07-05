@@ -182,7 +182,8 @@ mw.IFramePlayerApiServer.prototype = {
 	 * @param {string} event
 	 */
 	'hanldeMsg': function( event ){
-		//mw.log( 'IFramePlayerApiServer:: hanldeMsg: ' +  event.data );
+		
+		mw.log( 'IFramePlayerApiServer:: hanldeMsg: ' +  event.data );
 		// Check if the server should even be enabled 
 		if( !mw.getConfig( 'EmbedPlayer.EnableIframeApi' )){
 			mw.log( 'Error: Loading iFrame playerApi but config EmbedPlayer.EnableIframeApi is false');
@@ -195,7 +196,7 @@ mw.IFramePlayerApiServer.prototype = {
 		}		
 		// Decode the message 
 		var msgObject = JSON.parse( event.data );
-
+		mw.log( 'm: ' + msgObject.method + 'argType:' + typeof msgObject.args + ' attrName:' + msgObject.args );
 		// Call a method:
 		if( msgObject.method && this.embedPlayer[ msgObject.method ] ){
 			this.embedPlayer[ msgObject.method ].apply( this.embedPlayer, $j.makeArray( msgObject.args ) );			

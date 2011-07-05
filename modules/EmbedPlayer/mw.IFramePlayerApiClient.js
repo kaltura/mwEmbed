@@ -141,8 +141,8 @@ mw.IFramePlayerApiClient.prototype = {
 		}
 		
 		// Before we update local attributes check that the object has not been updated by user js
-		for( var attrName in playerAttributes ){
-			if( attrName != 'id' ){
+		$j.each(playerAttributes, function( inx, attrName ) {
+ 			if( attrName != 'id' ){
 				if( _this._prevPlayerProxy[ attrName ] != _this.playerProxy[ attrName ] ){
 					//mw.log( "IFramePlayerApiClient:: User js update:" + attrName + ' set to: ' + this.playerProxy[ attrName ] + ' != old: ' + _this._prevPlayerProxy[ attrName ] );
 					// Send the updated attribute back to the iframe: 
@@ -152,20 +152,20 @@ mw.IFramePlayerApiClient.prototype = {
 	 				});
 				}
 			}
-		}
+		});
 		
 		// Update any attributes
 		if( msgObject.attributes ){
-			for( var i in msgObject.attributes ){
+			$j.each(msgObject.attributes, function( i, notUsed){
 				if( i != 'id' && i != 'class' && i != 'style' ){
 					try{
-						this.playerProxy[ i ] = msgObject.attributes[i];
-						this._prevPlayerProxy[i] = msgObject.attributes[i];
+						_this.playerProxy[ i ] = msgObject.attributes[i];
+						_this._prevPlayerProxy[i] = msgObject.attributes[i];
 					} catch( e ){
 						mw.log("Error could not set:" + i );
 					}
 				}
-			}
+			});
 		}
 		//mw.log("handle event method name: " + msgObject.triggerName );
 		
@@ -180,10 +180,33 @@ mw.IFramePlayerApiClient.prototype = {
 				' iframe: ' +  this.iframe + ' cw:' + this.iframe.contentWindow + 
 				' src: ' + mw.absoluteUrl( $j( this.iframe ).attr('src')  ) );*/
 		$j.postMessage(
-			JSON.stringify( msgObject ), 
+			this.stringify( msgObject ), 
 			mw.absoluteUrl( $j( this.iframe ).attr('src') ), 
 			this.iframe.contentWindow 
 		);
+	},
+	// local stringify function to prevent prototype override 
+	'stringify' : function stringify( obj ) {
+		var t = typeof (obj);
+		var _this = this;
+		if (t != "object" || obj === null) {
+		    // simple data type
+		    if (t == "string") obj = '"' + obj + '"';
+		    return String(obj);
+		} else {
+		    // recurse array or object
+		    var n, v, json = [], arr = (obj && obj.constructor == Array);
+		
+		    $j.each(obj, function(n, na) {
+		        v = obj[n];
+		        t = typeof(v);
+		        if (obj.hasOwnProperty(n)) {
+		            if (t == "string") v = '"' + v + '"'; else if (t == "object" && v !== null) v = _this.stringify(v);
+		            json.push((arr ? "" : '"' + n + '":') + String(v));
+		        }
+		    });
+		    return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+		}
 	}
 };
 

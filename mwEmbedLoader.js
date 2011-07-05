@@ -666,8 +666,18 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 		url+= '&debug=true';
 	}
 
+	// check for $ library
+	if( typeof $ != 'undefined' && ! $.jquery ){
+		window['pre$Lib'] = $;
+	}
+	
 	// Check for special global callback for script load
-	kAppendScriptUrl(url, callback);
+	kAppendScriptUrl(url, function(){
+		jQuery.noConflict();
+		window['$'] = window['pre$Lib'];
+		if( callback )
+			callback();
+	});
 }
 function kPageHasAudioOrVideoTags(){
 	// if selector is set to false or is empty return false

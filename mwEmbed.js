@@ -2114,7 +2114,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 		mw.checkCoreLoaderFile( function(){
 			// Make sure we have jQuery
 			mw.load( 'window.jQuery', function() {
-				
+			
 				// Add jQuery to $j var.
 				if ( ! window[ '$j' ] ) {
 					window[ '$j' ] = jQuery.noConflict();
