@@ -393,7 +393,7 @@
 
 				var iframeId = $j( playerTarget ).attr('id');				
 				iframeRequest+= mw.getIframeHash( iframeId);
-
+				
 				var $iframe = $j('<iframe />')
 				.attr({
 					'id' : iframeId,
@@ -402,12 +402,10 @@
 					'height' : $j( playerTarget ).height(),
 					'width' : $j( playerTarget ).width()
 				})
+				.attr( 'style', $j( playerTarget ).attr('style') ) 
 				.css({
-					'border': '0px',
-					'width' : $j( playerTarget ).width() + 'px',
-					'height' : $j( playerTarget ).height() + 'px'
+					'border': '0px'
 				});
-				
 				// Replace the player with the iframe: 
 				$j( playerTarget ).replaceWith( $iframe );
 				

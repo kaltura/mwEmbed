@@ -194,7 +194,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( mw.getConfig( 'forceMobileHTML5' ) ){
 		iframeSrc += '&forceMobileHTML5=true';
 	}
-	
+
 	var targetNode = document.getElementById( replaceTargetId );
 	var parentNode = targetNode.parentNode;
 	var iframe = document.createElement('iframe');

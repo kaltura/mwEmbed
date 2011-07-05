@@ -2568,7 +2568,7 @@ mw.EmbedPlayer.prototype = {
         	});
         }
 		if( !iframeUrl ){
-			iframeUrl = this.getIframeSourceUrl()
+			iframeUrl = this.getIframeSourceUrl();
 		}
 
 		// Set up embedFrame src path
