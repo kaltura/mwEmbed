@@ -136,15 +136,12 @@ mw.KWidgetSupport.prototype = {
 			mw.addKAnalytics( embedPlayer, _this.kClient );
 		}
 
-		// Dummy Data for now
-		playerData.entryCuePoints = [ 
-			{ startTime: 0, type: 2, name: 'Preroll' },
-			{ startTime: 3000, type: 1, name: 'cuePoint 1' },
-			{ startTime: 6000, type: 2, name: 'Midroll' },
-			{ startTime: 9000, type: 1, name: 'cuePoint 2' },
-			{ startTime: 60000, type: 2, name: 'Postroll' }
-		];
-		
+		// Get Dummy Data from our test file
+		// TODO: Should be removed when we have a working service
+		if( mw.getConfig( 'Kaltura.TempCuePoints' ) ) {
+			playerData.entryCuePoints = mw.getConfig( 'Kaltura.TempCuePoints' );
+		}
+
 		// Add Entry Cue Points data
 		if( mw.getConfig( 'Kaltura.EnableCuePoints' ) === true && playerData.entryCuePoints ) {
 			embedPlayer.entryCuePoints = playerData.entryCuePoints;

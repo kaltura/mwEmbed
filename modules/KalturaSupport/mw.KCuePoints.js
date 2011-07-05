@@ -44,10 +44,10 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			} else if( cuePoint.type == 2 ) {
 				// Ad type cue point
 				eventName = 'adOpportunity';
-				obj.content = getAdType(cuePoint);
+				obj.context = getAdType(cuePoint);
 			}
 			$j( embedPlayer ).trigger( 'KalturaSupport_' + eventName, obj );
-			console.log('Triggered Cue Point: ' + cuePoint.name + ' | Current Time:' + (embedPlayer.currentTime * 1000) + ' | cuePoint Time:' + cuePoint.startTime, obj );
+			mw.log('Cue Points :: Triggered event: ' + eventName + ' - ' + cuePoint.name + ' at: ' + cuePoint.startTime );
 		};
 
 		// Detemine our cue point Ad type
