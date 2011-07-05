@@ -1725,6 +1725,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	setupSourcePlayer: function( callback ) {
 		mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );
+		var prevPlayer = this.selectedPlayer;
 		// Autoseletct the media source
 		this.mediaElement.autoSelectSource();
 		// Auto select player based on default order
@@ -1733,10 +1734,11 @@ mw.EmbedPlayer.prototype = {
 		} else {
 			this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
 		}
-		if ( this.selectedPlayer ) {
+		if ( prevPlayer != this.selectedPlayer ) {
 			// Inherit the playback system of the selected player:
 			this.inheritEmbedPlayer( callback );
-		} else {
+		} 
+		if( !this.selectedPlayer ){
 			this.showPluginMissingHTML();
 			if( callback ){
 				callback();
@@ -2373,7 +2375,7 @@ mw.EmbedPlayer.prototype = {
 		var thumb_html = '';
 		var class_atr = '';
 		var style_atr = '';
-
+		
 		if( this.useNativePlayerControls() && this.mediaElement.sources.length ){
 			this.showNativePlayer();
 			return ;
@@ -2491,8 +2493,6 @@ mw.EmbedPlayer.prototype = {
 			'height' : _this.height
 		};
 
-		// If not a persistentNativePlayer swap the video tag
-		// completely instead of just updating properties:
 		$j( '#' + this.pid ).replaceWith(
 			_this.getNativePlayerHtml( videoAttribues, cssStyle )
 		);

@@ -85,7 +85,6 @@ mw.KApi.prototype = {
 		// ideally this could be part of the multi-request but could not get it to work 
 		// see commented out code above. 
 		this.getKS( function( ks ){
-			
 			// remove service tag ( hard coded into the api url ) 
 			var serviceType = param['service'];
 			delete param['service'];				
@@ -166,7 +165,7 @@ mw.KApi.prototype = {
 	playerLoader: function( kProperties, callback ){
 		var _this = this;
 		var requestObject = [];
-		mw.log( "KApi:: playerLoader " );
+		mw.log( "KApi:: playerLoader, in cache: " + !!( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ) );
 		if( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ){
 			callback( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] );
 			return ;

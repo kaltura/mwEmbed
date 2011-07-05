@@ -351,7 +351,7 @@
 			}				
 		},
 		/**
-		 * Emulates kalatura removeJsListener function
+		 * Emulates kaltura removeJsListener function
 		 */
 		removeJsListener: function( embedPlayer, eventName, callbackName ){
 			var listenerId = this.getListenerId( embedPlayer, eventName, callbackName) ;
@@ -409,6 +409,9 @@
 					.getAbsoluteOverlaySpinner()
 					.attr('id', embedPlayer.id + '_mappingSpinner' );
 					
+					embedPlayer.$interface.find('.play-btn-large').hide(); // hide the play btn
+
+					
 					// Clear out any bootstrap data from the iframe 
 					mw.setConfig('KalturaSupport.IFramePresetPlayerData', false);
 					
@@ -432,24 +435,26 @@
 					embedPlayer.emptySources();
 					
 					// Bind the ready state:
-					$j( embedPlayer ).bind('playerReady', function(){					
-						embedPlayer.stop();
+					$j( embedPlayer ).bind('playerReady', function(){	
+						
 						// do normal stop then play:
 						if( chnagePlayingMedia ){
-							embedPlayer.play();	
+							if( embedPlayer.isPersistentNativePlayer() ){
+								embedPlayer.switchPlaySrc( embedPlayer.getSrc() );
+							} else {
+								embedPlayer.stop();
+								embedPlayer.play();	
+							}
 						}
 					});
 										
 					// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
 					$j( embedPlayer ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
 						$j( '#' + embedPlayer.id + '_mappingSpinner' ).remove();
+						embedPlayer.$interface.find('.play-btn-large').show(); // show the play btn
+			
 						embedPlayer.setupSourcePlayer();
-						//
-						// Check if native player controls ( then switch directly ) type: 
-						if( embedPlayer.useNativePlayerControls() || embedPlayer.isPersistentNativePlayer() 
-								&& chnagePlayingMedia ){
-							embedPlayer.switchPlaySrc( embedPlayer.getSrc() );
-						}
+
 					});
 				break;
 			}
