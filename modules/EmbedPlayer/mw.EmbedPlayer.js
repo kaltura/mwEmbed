@@ -2723,7 +2723,9 @@ mw.EmbedPlayer.prototype = {
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster:' +  this.posterDisplayed );
 	
 		// Hide any overlay:
-		this.controlBuilder.closeMenuOverlay();
+		if( this.controlBuilder ){
+			this.controlBuilder.closeMenuOverlay();
+		}
 		
 		// Check if thumbnail is being displayed and embed html
 		if ( this.posterDisplayed ) {
