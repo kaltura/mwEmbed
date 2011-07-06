@@ -246,7 +246,7 @@
 					break;
 				case 'kdpReady':
 					// TODO: When player is ready with entry, only happens once
-					$( embedPlayer ).bind( 'playerReady.kdpReady', function() {
+					$j( embedPlayer ).bind( 'playerReady.kdpReady', function() {
 						callback( {}, embedPlayer.id );
 					});
 					break;
@@ -332,7 +332,7 @@
 					break;
 				case 'mediaReady':
 					// check for "media ready" ( namespace to kdpMapping )
-					$( embedPlayer ).bind( 'playerReady.kdpMapping', function() {
+					$j( embedPlayer ).bind( 'playerReady.kdpMapping', function() {
 						callback( embedPlayer.id );
 					});
 					break;
