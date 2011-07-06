@@ -84,7 +84,7 @@ mw.KWidgetSupport.prototype = {
 				return ;
 			}
 			// Check for preview access control and add special onEnd binding: 
-			if( playerData.accessControl.previewLength != -1 ){
+			if( playerData.accessControl.preview && playerData.accessControl.previewLength != -1 ){
 				$j( embedPlayer ).bind('ended.acpreview', function(){
 					mw.log( 'KWidgetSupport:: ended.acpreview>' );
 					// Don't run normal onend action: 

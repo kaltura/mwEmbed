@@ -615,19 +615,20 @@ function kAddScript( callback ){
 		  'MD5',
 		  "mw.KApi",
 		  'mw.KWidgetSupport',
-		  'mw.KAnalytics', 
+		  'mw.KAnalytics',
 		  'mw.KDPMapping',
 		  'mw.KAds',
 		  'mw.AdTimeline', 
-		  'mw.AdLoader', 
+		  'mw.AdLoader',
 		  'mw.VastAdParser',
+		  'mw.KCuePoints',
 		  'controlbarLayout',
 		  'faderPlugin',
 		  'watermarkPlugin',
 		  'adPlugin',
 		  'bumperPlugin'
 		);
-		// kaltura playlist support ( so small relative to client libraries that we always include it )	
+		// Kaltura playlist support ( so small relative to client libraries that we always include it )	
 		jsRequestSet.push(
 		   'mw.Playlist',
 		   'mw.style.playlist',
