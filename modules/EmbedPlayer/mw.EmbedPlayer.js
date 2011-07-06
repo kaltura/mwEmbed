@@ -2560,7 +2560,7 @@ mw.EmbedPlayer.prototype = {
         if (typeof(mw.IA) != 'undefined'){
         	return mw.IA.embedCode();
         } else {
-        	$( this ).trigger( 'GetShareIframeSrc', function( localIframeSrc ){
+        	$j( this ).trigger( 'GetShareIframeSrc', function( localIframeSrc ){
 				if( iframeUrl){
 					mw.log("Error multiple modules binding GetShareIframeSrc" );
 				}

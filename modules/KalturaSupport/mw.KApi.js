@@ -249,7 +249,7 @@ mw.KApi.prototype = {
 		var result = {};
 		if( data && data.objects && data.objects[0] ){			
 			var xml = $.parseXML( data.objects[0].xml );		
-			var $xml = $( xml ).find('metadata').children();			
+			var $xml = $j( xml ).find('metadata').children();			
 			$.each( $xml, function(inx, node){
 				result[ node.nodeName ] = node.textContent;
 			});		

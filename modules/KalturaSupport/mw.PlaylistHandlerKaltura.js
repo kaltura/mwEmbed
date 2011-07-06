@@ -339,8 +339,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 			 $boxContainer.find('span').slice(1).css('float', 'right');
 		} else if ( $boxContainer.find('span').length > 1 ){ // check for multiple spans
 			$boxContainer.find('span').each(function(inx, node){
-				if( $(node).css('float') != 'right'){
-					$(node).css('float', 'left');
+				if( $j(node).css('float') != 'right'){
+					$j(node).css('float', 'left');
 				}
 			} );
 		}
