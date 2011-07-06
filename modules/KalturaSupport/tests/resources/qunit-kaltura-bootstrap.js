@@ -1,13 +1,18 @@
 //must come after qunit-bootstrap.js and after mwEmbedLoader.php
 if( window.QUnit ){
 	mw.setConfig( 'forceMobileHTML5', true );
-	QUnit.start();	
+	QUnit.start();
+	if( window['jsCallbackReady'] ){
+		var orgjsCallbackReady = window['jsCallbackReady'];
+	}
 	jsCallbackCalled = false;
 	function jsCallbackReady ( videoId ) {
 		jsCallbackCalled = true;
 		jsKalturaPlayerTest( videoId );
-
 		document.getElementById( videoId ).addJsListener("entryReady", "kalturaQunitEntryReady");
+		
+		if( orgjsCallbackReady )
+			orgjsCallbackReady( videoId );
 	}
 	asyncTest( "KalturaSupport::PlayerLoaded", function(){
 		var waitCount = 0;
