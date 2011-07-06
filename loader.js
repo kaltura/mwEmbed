@@ -42,7 +42,7 @@ mw.setDefaultConfig ( {
 		'protect', 'block', 'unblock', 'move', 'edit', 'upload', 'emailuser',
 		'import', 'userrights' ],
 
-	//If we are in debug mode ( results in fresh debug javascript includes )
+	// If we are in debug mode ( results in fresh debug javascript includes )
 	'debug' : false,
 	
 	// If mobile html5 should be forced

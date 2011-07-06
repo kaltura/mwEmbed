@@ -171,7 +171,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			kLoadJsRequestSet( jsRequestSet, function(){
 				var iframeRewrite = new kdpClientIframe(replaceTargetId, kEmbedSettings, options);
 			});
-		}			
+		}
 		return ;
 	}		
 	// Else we can avoid loading mwEmbed all together and just rewrite the iframe 
@@ -271,7 +271,7 @@ function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 		parentNode.insertBefore( div, targetNode );
 	}
 }
-
+kalturaDynamicEmbed = false;
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
 function kOverideJsFlashEmbed(){
 	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTargetId, widthStr, heightStr ){	
@@ -311,6 +311,7 @@ function kOverideJsFlashEmbed(){
 	if( window['flashembed'] && !window['originalFlashembed'] ){
 		window['originalFlashembed'] = window['flashembed'];
 		window['flashembed'] = function( targetId, attributes, flashvars ){
+			kalturaDynamicEmbed = true;
 			kAddReadyHook(function(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( attributes.src, flashvars);
 				if( ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
@@ -318,8 +319,11 @@ function kOverideJsFlashEmbed(){
 					return ;
 				}
 				if( kEmbedSettings.uiconf_id && kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
-					doEmbedSettingsWrite( kEmbedSettings, targetId, attributes.width, attributes.height);
+					document.getElementById( targetId ).innerHTML = '<div id="' + attributes.id + '"></div>';
+					
+					doEmbedSettingsWrite( kEmbedSettings, attributes.id, attributes.width, attributes.height);
 				} else {
+					restoreKalturaKDPCallback();
 					// Use the original flash player embed:  
 					originalFlashembed( targetId, attributes, flashvars );
 				}
@@ -331,6 +335,7 @@ function kOverideJsFlashEmbed(){
 	if( window['SWFObject']  && !window['SWFObject'].prototype['originalWrite']){
 		window['SWFObject'].prototype['originalWrite'] = window['SWFObject'].prototype.write;
 		window['SWFObject'].prototype['write'] = function( targetId ){
+			kalturaDynamicEmbed = true;
 			var _this = this;
 			kAddReadyHook(function(){			
 				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, _this.params.flashVars);
@@ -343,6 +348,7 @@ function kOverideJsFlashEmbed(){
 				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else {
+					restoreKalturaKDPCallback();
 					// use the original flash player embed:  
 					_this.originalWrite( targetId );
 				}
@@ -357,6 +363,7 @@ function kOverideJsFlashEmbed(){
 		window['swfobject']['embedSWF'] = function( swfUrlStr, replaceElemIdStr, widthStr,
 				heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn)
 		{
+			kalturaDynamicEmbed = true;
 			kAddReadyHook(function(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
 
@@ -370,6 +377,7 @@ function kOverideJsFlashEmbed(){
 				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
 				} else {
+					restoreKalturaKDPCallback();
 					// Else call the original EmbedSWF with all its arguments 
 					window['swfobject']['originalEmbedSWF']( swfUrlStr, replaceElemIdStr, widthStr,
 							heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn );
@@ -448,9 +456,10 @@ function kCheckAddScript(){
 		kAddScript();
 		return ;		
 	}
-
 	// Restore the jsCallbackReady ( we are not rewriting )
-	restoreKalturaKDPCallback();	
+	if( !kalturaDynamicEmbed ){
+		restoreKalturaKDPCallback();
+	}
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not available 
 function kIsHTML5FallForward(){
@@ -656,7 +665,6 @@ function kAppendScriptUrl( url, callback ) {
 }
 
 function kLoadJsRequestSet( jsRequestSet, callback ){
-
 	var url = SCRIPT_LOADER_URL + '?class=';
 	// Add all the requested classes
 	url+= jsRequestSet.join(',') + ',';
@@ -707,15 +715,12 @@ function kAddReadyHook( callback ){
 function kRunMwDomReady(){
 	// run dom ready with a 1ms timeout to prevent sync execution in browsers like chrome
 	// Async call give a chance for configuration variables to be set
-	//window.setTimeout(function(){
-		//alert('setTimeout::kRunMwDomReady');
-		kAlreadyRunDomReadyFlag  = true;
-		while( kReadyHookSet.length ){
-			kReadyHookSet.shift()();
-		}
-		kOverideJsFlashEmbed();
-		kCheckAddScript();
-	//},100 );
+	kAlreadyRunDomReadyFlag  = true;
+	while( kReadyHookSet.length ){
+		kReadyHookSet.shift()();
+	}
+	kOverideJsFlashEmbed();
+	kCheckAddScript();
 }
 
 // Check if already ready: 
@@ -932,7 +937,7 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 var checkForKDPCallback = function(){
 	if( typeof window.jsCallbackReady != 'undefined' && !window.KalturaKDPCallbackReady ){
 		window.KalturaKDPCallbackReady = window.jsCallbackReady;
-		window.jsCallbackReady = function( player_id ){			
+		window.jsCallbackReady = function( player_id ){
 			window.KalturaKDPCallbackAlreadyCalled = player_id;
 		};
 	}

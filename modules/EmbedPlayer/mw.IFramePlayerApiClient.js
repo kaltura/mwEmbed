@@ -99,13 +99,13 @@ mw.IFramePlayerApiClient.prototype = {
 			
 			// Remove absolute css of the interface parents
 			$j( _this.iframe ).parents().each( function() {
-				//mw.log(' parent : ' + $j( this ).attr('id' ) + ' class: ' + $j( this ).attr('class') + ' pos: ' + $j( this ).css( 'position' ) );
 				if( $j( this ).css( 'position' ) == 'absolute' ) {
 					parentsAbsoluteList.push( $j( this ) );
 					$j( this ).css( 'position', null );
 				}
-			} );
-		}
+			});
+		};
+		
 		var restoreWindowMode = function(){
 			localIframeInFullscreen = false;
 			$j( _this.iframe )
@@ -171,7 +171,7 @@ mw.IFramePlayerApiClient.prototype = {
 		
 		// Trigger any binding events 
 		if( typeof msgObject.triggerName != 'undefined' && msgObject.triggerArgs != 'undefined') {
-			// mw.log('IFramePlayerApiClient::hanldeReciveMsgt: trigger: ' + msgObject.triggerName );
+			//mw.log('IFramePlayerApiClient::hanldeReciveMsg: trigger: ' + msgObject.triggerName );
 			$j( _this.playerProxy ).trigger( msgObject.triggerName, msgObject.triggerArgs );
 		}
 	},
@@ -220,7 +220,7 @@ jQuery.fn.iFramePlayer = function( readyCallback ){
 		mw.log( "$.iFramePlayer::" + targetPlayer.id );
 		// Append '_ifp' ( iframe player ) to id of real iframe so that 'id', and 'src' attributes don't conflict
 		var playerProxyId = ( $j( targetPlayer ).attr( 'id' ) )? $j( targetPlayer ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
-		var iframePlayerId = playerProxyId + '_ifp' ; 
+		var iframePlayerId = playerProxyId + '_ifp';
 
 		// Update the id and wrap with the proxy 
 		$j( targetPlayer)

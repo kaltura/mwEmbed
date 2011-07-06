@@ -1,4 +1,3 @@
-
 function kGoogleAnalytics ( options ){
 	this.init( options );
 	return this;

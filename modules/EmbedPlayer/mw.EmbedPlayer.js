@@ -455,7 +455,7 @@ EmbedPlayerManager.prototype = {
 		$j('#loadingSpinner_' + player.id ).remove();
 
 		// Run the player ready trigger
-		$j( player ).trigger( 'playerReady' );		
+		$j( player ).trigger( 'playerReady' );
 
 		var is_ready = true;
 		for ( var i = 0; i < this.playerList.length; i++ ) {

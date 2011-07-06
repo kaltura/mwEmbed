@@ -22,7 +22,8 @@
 				return ;
 			}
 			// For client side of the iframe add iframe hooks and player hooks ( will bind to 
-			// different build player build outs and lets us support pages with iframe and no iframes
+			// different build player build outs and lets us support pages with both
+			// iframe and no iframes players
 			this.addIframePlayerHooksClient();
 			this.addPlayerHooks();
 		},
@@ -36,7 +37,7 @@
 			var _this = this;
 			mw.log("KDPMapping::addPlayerHooks>");
 			// Add the hooks to the player manager			
-			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {	
+			$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 				// Add the addJsListener and sendNotification maps
 				embedPlayer.addJsListener = function(listenerString, globalFuncName){
 					_this.addJsListener( embedPlayer, listenerString, globalFuncName );
@@ -77,7 +78,7 @@
 			$j( mw ).bind( 'AddIframePlayerMethods', function( event, playerMethods ){
 				playerMethods.push( 'addJsListener', 'removeJsListener', 'sendNotification', 'setKDPAttribute' );
 			});
-			
+
 			$j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {
 
 				$j( playerProxy ).bind( 'jsListenerEvent', function(event, globalFuncName, listenerArgs){
@@ -113,7 +114,7 @@
 			
 			$j( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){
 
-				embedPlayer.addJsListener = function( eventName, globalFuncName){					
+				embedPlayer.addJsListener = function( eventName, globalFuncName){		
 					var listenEventName = 'gcb_' + _this.getListenerId( embedPlayer, eventName, globalFuncName); 					
 					window[ listenEventName ] = function(){
 						// Check if the globalFuncName is defined on this side of the iframe and call it
@@ -240,109 +241,118 @@
 					_this.listenerList [ listnerId ].apply( _this, $j.makeArray( arguments ) );
 				}
 			};
+			// Shortcut for embedPlayer bindings with postfix string ( so they don't get removed by other plugins ) 
+			var b = function( bindName, bindCallback ){
+				// add a postfix string
+				bindName += '.kdpMapping';
+				// remove any other kdpMapping binding:
+				$j( embedPlayer ).bind( bindName, function(){
+					bindCallback.apply( _this, $j.makeArray( arguments ) );
+				});
+			};
 			switch( eventName ){
 				case 'kdpEmpty':
 					// TODO: When we have video tag without an entry
 					break;
 				case 'kdpReady':
 					// TODO: When player is ready with entry, only happens once
-					$j( embedPlayer ).bind( 'playerReady.kdpReady', function() {
+					b( 'playerReady', function() {
 						callback( {}, embedPlayer.id );
 					});
 					break;
 				case 'volumeChanged': 
-					$j( embedPlayer ).bind('volumeChanged', function(event, percent){
+					b( 'volumeChanged', function(event, percent){
 						callback( {'newVolume' : percent }, embedPlayer.id );
 					});
 					break;
 				case 'playerStateChange':					
-					// Kind of tricky should do a few bindings to 'pause', 'play', 'ended', 'buffering/loading'
-					$j( embedPlayer ).bind('pause', function(){						
+					// TODO add in other state changes
+					b( 'pause', function(){						
 						callback( 'pause', embedPlayer.id );
 					});
 					
-					$j( embedPlayer ).bind('play', function(){
+					b( 'play', function(){
 						callback( 'play', embedPlayer.id );
 					});
 					
 					break;
 				case 'doStop':
 				case 'stop':
-					$j( embedPlayer ).bind("doStop", function(){
+					b( "doStop", function(){
 						callback( embedPlayer.id );
 					});
 					break;
 				case 'playerPaused':
 				case 'pause':
 				case 'doPause':
-					$j( embedPlayer ).bind("pause", function(){
+					b( "pause", function(){
 						callback( embedPlayer.id );
 					});
 					break;
 				case 'playerPlayed':
 				case 'play':
 				case 'doPlay':
-					$j( embedPlayer ).bind("play", function(){
+					b( "play", function(){
 						callback( embedPlayer.id );
 					});
 					break;
 				case 'doSeek':
 				case 'playerSeekStart':
 				case 'doIntelligentSeek':		
-					$j( embedPlayer ).bind("seeking", function(){
+					b( "seeking", function(){
 						callback( embedPlayer.currentTime, embedPlayer.id );
 					});
 					break;
 				case 'playerSeekEnd':
-					$j( embedPlayer ).bind("seeked", function(){
+					b( "seeked", function(){
 						callback( embedPlayer.id );
 					});
 					break;
 				case 'playerPlayEnd':
-					$j( embedPlayer ).bind("ended", function(){
+					b("ended", function(){
 						callback( embedPlayer.id );
 					});
 					break;
 				case 'durationChange': 
-					$j( embedPlayer ).bind( "durationchange", function(){
+					b( "durationchange", function(){
 						callback( { 'newValue' : embedPlayer.duration }, embedPlayer.id );
 					});
 				break;
 				case 'openFullScreen': 
 				case 'hasOpenedFullScreen':
-					$j( embedPlayer ).bind( "onOpenFullScreen", function(){
+					b( "onOpenFullScreen", function(){
 						callback( embedPlayer.id );
 					});
 					break;
 				case 'hasCloseFullScreen':
 				case 'closeFullScreen':
-					$j( embedPlayer ).bind( "onCloseFullScreen", function(){
+					b( "onCloseFullScreen", function(){
 						callback( embedPlayer.id );
 					});
 					break;
 				case 'playerUpdatePlayhead':
-					$j( embedPlayer ).bind('monitorEvent', function(){
+					b('monitorEvent', function(){
 						callback( embedPlayer.currentTime,  embedPlayer.id );
-					})
+					});
 					break;	
 				case 'entryReady':
-					$j( embedPlayer ).bind( 'KalturaSupport_MetaDataReady', function( event, embedPlayer ) {
+					b( 'KalturaSupport_MetaDataReady', function( event, embedPlayer ) {
 						callback( embedPlayer , embedPlayer.id );
 					});
 					break;
 				case 'mediaReady':
 					// check for "media ready" ( namespace to kdpMapping )
-					$j( embedPlayer ).bind( 'playerReady.kdpMapping', function() {
+					b( 'playerReady', function() {
 						callback( embedPlayer.id );
 					});
 					break;
 				case 'cuePointReached':
-					$j( embedPlayer ).bind( 'KalturaSupport_cuePointReached', function( event, cuePoint ) {
+					b( 'KalturaSupport_cuePointReached', function( event, cuePoint ) {
 						callback( cuePoint, embedPlayer.id );
 					});
 					break;
 				case 'adOpportunity':
-					$j( embedPlayer ).bind( 'KalturaSupport_adOpportunity', function( event, cuePoint ) {
+					b( 'KalturaSupport_adOpportunity', function( event, cuePoint ) {
 						callback( cuePoint, embedPlayer.id );
 					});
 					break;
@@ -437,7 +447,7 @@
 					// Bind the ready state:
 					$j( embedPlayer ).bind('playerReady', function(){	
 						
-						// do normal stop then play:
+						// Do normal stop then play:
 						if( chnagePlayingMedia ){
 							if( embedPlayer.isPersistentNativePlayer() ){
 								embedPlayer.switchPlaySrc( embedPlayer.getSrc() );
@@ -451,10 +461,8 @@
 					// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
 					$j( embedPlayer ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
 						$j( '#' + embedPlayer.id + '_mappingSpinner' ).remove();
-						embedPlayer.$interface.find('.play-btn-large').show(); // show the play btn
-			
+						embedPlayer.$interface.find( '.play-btn-large' ).show(); // show the play btn
 						embedPlayer.setupSourcePlayer();
-
 					});
 				break;
 			}
@@ -462,9 +470,8 @@
 	};	
 		
 	// Setup the KDPMapping
-	// TODO just a normal anonymous function initialization		
 	if( !window.KDPMapping ){
 		window.KDPMapping = new mw.KDPMapping();
 	}
-	mw.log("KDPMapping::done " + window.KDPMapping );
+	mw.log("KDPMapping::done ");
 } )( window.mw );

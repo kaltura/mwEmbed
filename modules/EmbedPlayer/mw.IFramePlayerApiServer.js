@@ -72,7 +72,7 @@ mw.IFramePlayerApiServer.prototype = {
 					proxyHandShakeComplete = true;
 					callback();
 				};
-				// only wait 250ms for the handshake to come through otherwise continue: 
+				// Only wait 250ms for the handshake to come through otherwise continue: 
 				setTimeout(function(){
 					if( !proxyHandShakeComplete)
 						callback();
@@ -196,7 +196,6 @@ mw.IFramePlayerApiServer.prototype = {
 		}		
 		// Decode the message 
 		var msgObject = JSON.parse( event.data );
-		mw.log( 'm: ' + msgObject.method + 'argType:' + typeof msgObject.args + ' attrName:' + msgObject.args );
 		// Call a method:
 		if( msgObject.method && this.embedPlayer[ msgObject.method ] ){
 			this.embedPlayer[ msgObject.method ].apply( this.embedPlayer, $j.makeArray( msgObject.args ) );			
