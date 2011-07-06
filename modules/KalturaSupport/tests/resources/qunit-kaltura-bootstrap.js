@@ -7,12 +7,10 @@ if( window.QUnit ){
 	}
 	jsCallbackCalled = false;
 	function jsCallbackReady ( videoId ) {
+		document.getElementById( videoId ).addJsListener("entryReady", "kalturaQunitEntryReady");
+
 		jsCallbackCalled = true;
 		jsKalturaPlayerTest( videoId );
-		document.getElementById( videoId ).addJsListener("entryReady", "kalturaQunitEntryReady");
-		
-		if( orgjsCallbackReady )
-			orgjsCallbackReady( videoId );
 	}
 	asyncTest( "KalturaSupport::PlayerLoaded", function(){
 		var waitCount = 0;
