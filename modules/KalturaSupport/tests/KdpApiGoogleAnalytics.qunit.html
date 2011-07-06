@@ -90,7 +90,7 @@ function jsKalturaPlayerTest( videoId ){
 	var kdp = $j( '#kaltura_player' ).get(0);
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var iframeContext = window.frames['kaltura_player_ifp'];
-
+	start();
 	asyncTest("mediaReady event sent", function(){
 		$j( testEventObject ).bind('mediaReady', function(event, testEvent ){
 			equal( testEvent.action, "mediaReady", "action mediaReady sent" );

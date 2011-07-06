@@ -11,6 +11,8 @@ if( window.QUnit ){
 
 		jsCallbackCalled = true;
 		jsKalturaPlayerTest( videoId );
+		if( orgjsCallbackReady )
+			orgjsCallbackReady( videoId );
 	}
 	asyncTest( "KalturaSupport::PlayerLoaded", function(){
 		var waitCount = 0;
