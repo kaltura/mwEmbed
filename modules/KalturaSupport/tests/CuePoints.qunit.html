@@ -15,7 +15,33 @@
 			{ startTime: 9000, type: 1, name: 'cuePoint 2' },
 			{ startTime: 56000, type: 2, name: 'Postroll' }
 		] );
-
+	
+	/* Basic example from server
+	mw.setConfig( 'Kaltura.TempCuePoints', [
+		{
+			"providerType":0,
+			"sourceUrl":"http://kaldev.kaltura.com/myopenx/www/delivery/fc.php?script=bannerTypeHtml:vastInlineBannerTypeHtml:vastInlineHtml&source=&format=vast&charset=UTF_8&nz=1&zones=z1=19",
+			"adType":null,
+			"title":"Overlay",
+			"endTime":5000,
+			"id":"0_0ks12n00",
+			"type":"adCuePoint.Ad",
+			"status":1,
+			"entryId":"0_qbtp2ceb",
+			"partnerId":495794,
+			"createdAt":1310048326,
+			"updatedAt":1310048326,
+			"tags":"vast",
+			"startTime":5000,
+			"userId":"ran@mailinator.com",
+			"partnerData":null,
+			"partnerSortValue":null,
+			"forceStop":false,
+			"thumbOffset":null,
+			"systemName":null
+		}
+	]);
+	*/
 	// Bind to cuePointReached event
 	var jsCallbackReady = function( playerId ) {
 		myPlayer = $j('#' + playerId ).get(0);
