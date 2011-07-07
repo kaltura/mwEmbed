@@ -21,7 +21,6 @@ $exportedJsConfig= array(
 	'Kaltura.ServiceBase' => $wgKalturaServiceBase,
 	'Kaltura.CdnUrl' => $wgKalturaCDNUrl,
 	'Kaltura.IframeRewrite' => $wgKalturaIframeRewrite,
-	'Kaltura.EnableCuePoints' => $wgKalturaCuePoints,
 	'EmbedPlayer.EnableIframeApi'  => $wgEnableIframeApi,
 	'EmbedPlayer.EnableIpadHTMLControls' => $wgEnableIpadHTMLControls,
 	'EmbedPlayer.UseFlashOnAndroid' => true,

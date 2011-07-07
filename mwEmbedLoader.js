@@ -682,8 +682,10 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	
 	// Check for special global callback for script load
 	kAppendScriptUrl(url, function(){
-		jQuery.noConflict();
-		window['$'] = window['pre$Lib'];
+		if( window['pre$Lib'] ){
+			jQuery.noConflict();
+			window['$'] = window['pre$Lib'];
+		}
 		if( callback )
 			callback();
 	});

@@ -135,18 +135,6 @@ mw.KWidgetSupport.prototype = {
 		if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
 			mw.addKAnalytics( embedPlayer, _this.kClient );
 		}
-
-		// Get Dummy Data from our test file
-		// TODO: Should be removed when we have a working service
-		if( mw.getConfig( 'Kaltura.TempCuePoints' ) ) {
-			playerData.entryCuePoints = mw.getConfig( 'Kaltura.TempCuePoints' );
-		}
-
-		// Add Entry Cue Points data
-		if( mw.getConfig( 'Kaltura.EnableCuePoints' ) === true && playerData.entryCuePoints ) {
-			embedPlayer.entryCuePoints = playerData.entryCuePoints;
-			$j( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
-		}
 		
 		if( embedPlayer.$uiConf ){
 			// Trigger the check kaltura uiConf event					
