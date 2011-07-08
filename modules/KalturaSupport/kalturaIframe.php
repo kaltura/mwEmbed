@@ -294,9 +294,9 @@ class kalturaIframe {
 	
 	private function getPreFlashVars(){
 		// Check if a playlist
-		$playerId = ( $this->getResultObject()->isPlaylist() ) ? 'kaltura_playlist' : 'kaltura_player_iframe_no_rewrite';
+		$playerName = ( $this->getResultObject()->isPlaylist() ) ? 'kaltura_playlist' : 'kaltura_player_iframe_no_rewrite';
 		
-		return '<object id="' . $playerId . '" name="kaltura_player" ' .
+		return '<object id="' . htmlspecialchars( $this->getIframeId() ) . '" name="' . $playerName . '" ' .
 				'type="application/x-shockwave-flash" allowFullScreen="true" '.
 				'allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" style="height:100%;width:100%" '.
 				'xmlns:dc="http://purl.org/dc/terms/" '.
@@ -312,8 +312,8 @@ class kalturaIframe {
 	private function getPostFlashVars( $childHTML = '' ){
 			return '" />'.
 				'<param name="movie" value="' . htmlspecialchars( $this->getSwfUrl() ) . '" />'.
-				$childHTML .
-			'</object>';
+					$childHTML .
+				'</object>';
 	}
 	
 	/**

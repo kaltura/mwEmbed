@@ -144,7 +144,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	replaceTargetId.innerHTML = '';
 	
 	// Don't rewrite special key kaltura_player_iframe_no_rewrite
-	if( replaceTargetId == 'kaltura_player_iframe_no_rewrite' ){
+	if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
 		return ;
 	}
 	

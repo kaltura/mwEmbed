@@ -231,24 +231,8 @@
 			return true;
 		}
 		return false;
-	}
+	};
 
-	/**
-	* Check if the url is a request for the local domain
-	*  relative paths are "local" domain
-	* @param {String} url Url for local domain
-	* @return {Boolean}
-	*	true if url domain is local or relative
-	* 	false if the domain is
-	*/
-	mw.isLocalDomain = function( url ) {
-		if( mw.parseUri( document.URL ).host == mw.parseUri( url ).host
-			|| url.indexOf( '://' ) == -1 )
-		{
-			return true;
-		}
-		return false;
-	}
 
 	/**
 	 * Api helper to grab an edit token

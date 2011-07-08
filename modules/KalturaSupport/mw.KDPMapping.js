@@ -418,8 +418,9 @@
 					$j( embedPlayer )
 					.getAbsoluteOverlaySpinner()
 					.attr('id', embedPlayer.id + '_mappingSpinner' );
-					
-					embedPlayer.$interface.find('.play-btn-large').hide(); // hide the play btn
+					if( embedPlayer.$interface ){
+						embedPlayer.$interface.find('.play-btn-large').hide(); // hide the play btn
+					}
 
 					
 					// Clear out any bootstrap data from the iframe 
@@ -461,7 +462,9 @@
 					// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
 					$j( embedPlayer ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
 						$j( '#' + embedPlayer.id + '_mappingSpinner' ).remove();
-						embedPlayer.$interface.find( '.play-btn-large' ).show(); // show the play btn
+						if( embedPlayer.$interface ){
+							embedPlayer.$interface.find( '.play-btn-large' ).show(); // show the play btn
+						}
 						embedPlayer.setupSourcePlayer();
 					});
 				break;

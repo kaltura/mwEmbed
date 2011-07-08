@@ -1,7 +1,6 @@
 //must come after qunit-bootstrap.js and after mwEmbedLoader.php
 if( window.QUnit ){
-	mw.setConfig( 'forceMobileHTML5', true );
-	QUnit.start();
+	mw.setConfig( 'forceMobileHTML5', true );	
 	if( window['jsCallbackReady'] ){
 		var orgjsCallbackReady = window['jsCallbackReady'];
 	}
@@ -11,9 +10,12 @@ if( window.QUnit ){
 
 		jsCallbackCalled = true;
 		jsKalturaPlayerTest( videoId );
-		if( orgjsCallbackReady )
+		
+		if( orgjsCallbackReady ){
 			orgjsCallbackReady( videoId );
+		}
 	}
+	QUnit.start();
 	asyncTest( "KalturaSupport::PlayerLoaded", function(){
 		var waitCount = 0;
 		var interval = setInterval(function(){
@@ -21,6 +23,7 @@ if( window.QUnit ){
 			if( waitCount == 2000 && !jsCallbackCalled ){
 				ok(false, "Player timed out");
 				clearInterval( interval );
+				stop();
 			}
 			if( jsCallbackCalled ){
 				ok(true, "Player loaded");
@@ -28,7 +31,7 @@ if( window.QUnit ){
 				start();
 			}
 			waitCount++;
-		}, 10);
+		}, 5);
 	});
 	var entryReadyCallbacks = [];
 	var entryReadyAlreadyCalled = false;
@@ -42,7 +45,7 @@ if( window.QUnit ){
 			entryReadyAlreadyCalled = true;
 		}, 10 );
 	};
-	window['kalturaQunitWaitForPlayer'] = function( callback ){
+	window['kalturaQunitWaitForPlayer'] = function( callback ){		
 		if( entryReadyAlreadyCalled ){
 			callback();
 			return ;

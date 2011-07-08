@@ -303,4 +303,3 @@ mw.KApiPlayerLoader = function( kProperties, callback ){
 	// Return the kClient api object for future requests
 	return kClient;
 };
-

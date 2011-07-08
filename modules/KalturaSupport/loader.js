@@ -112,7 +112,7 @@
 				
 				$j.each( kalturaObjectPlayerList, function( inx, element ){
 					// don't rewrite special id
-					if( $j(element).attr('id') == 'kaltura_player_iframe_no_rewrite' ){
+					if( $j(element).attr('name') == 'kaltura_player_iframe_no_rewrite' ){
 						return true;;
 					}
 					// Clear the kalturaSwapObjectClass
@@ -143,14 +143,14 @@
 					mw.log( "Got kEmbedSettings.entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
 					var height = $j( element ).attr('height');
 					var width = $j( element ).attr('width');
-
+					
 					// Check that the id is unique per player embed instance ( else give it a vid_{inx} id: 
 					var videoId = $j( element ).attr('id');
 					$j('.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap').each(function( inx, swapElement){
 						if( $j( swapElement ).attr('id') ==  videoId ){
 							videoId = 'vid_' + inx;
 						}
-					});						
+					});
 					
 					var $imgThumb = '';
 					var elementCss = {};
@@ -190,17 +190,18 @@
 					
 					var widthType = ( width.indexOf('%') == -1 )? 'px' : '';
 					var heightType = ( height.indexOf('%') == -1 )? 'px' : '';
+					
 					// Replace with a mwEmbedKalturaVideoSwap
 					$j( element ).replaceWith( 
 						$j('<div />')
 						.attr( videoEmbedAttributes )
-						.css( {
+						.css({
 							'width' : width + widthType,
 							'height' : height + heightType,
 							'position': 'relative',
 							'display' : 'block',
 							'float' : 'left'
-						} )
+						})
 						.data( 'flashvars', flashvars )
 						.addClass( kalturaSwapObjectClass )
 						.append(
@@ -319,7 +320,7 @@
 	} );
 	
 	$j( mw ).bind("Playlist_GetSourceHandler", function( event, playlist){
-		var $playlistTarget = $j( playlist.target );
+		var $playlistTarget = $j( '#' + playlist.id );
 		// Check if we are dealing with a kaltura player: 
 		// XXX should move these properties over to data- or .data attributes 
 		if( !$playlistTarget.attr('kwidgetid') ){

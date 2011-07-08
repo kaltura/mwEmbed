@@ -18,7 +18,7 @@ kdpServerIframe = function(){
 		return ;
 	}	
 	// get player ( can be called norewrite or kaltura_playlist )
-	return this.init( $j('#kaltura_player_iframe_no_rewrite').get(0) );
+	return this.init( $j('object[name="kaltura_player_iframe_no_rewrite"]').get(0) );
 };
 
 kdpServerIframe.prototype = {

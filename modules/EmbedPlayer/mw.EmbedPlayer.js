@@ -2793,17 +2793,19 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		// update the ctrl "paused state"
-		this.$interface.find('.play-btn span' )
-		.removeClass( 'ui-icon-pause' )
-		.addClass( 'ui-icon-play' );
-
-		this.$interface.find( '.play-btn' )
-		.unbind('click')
-		.buttonHover()
-		.click( function() {
-			_this.play();
-		} )
-		.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );
+		if( this.$interface ){
+			this.$interface.find('.play-btn span' )
+			.removeClass( 'ui-icon-pause' )
+			.addClass( 'ui-icon-play' );
+	
+			this.$interface.find( '.play-btn' )
+			.unbind('click')
+			.buttonHover()
+			.click( function() {
+				_this.play();
+			} )
+			.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );
+		}
 	},
 	
 	// special per browser check for autoTrigger events

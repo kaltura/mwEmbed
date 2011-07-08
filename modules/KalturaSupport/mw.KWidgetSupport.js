@@ -21,10 +21,9 @@ mw.KWidgetSupport.prototype = {
 		var _this = this;	
 		// Add the hooks to the player manager
 		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
-			
 			// Add hook for check player sources to use local kEntry ID source check:
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
-				_this.loadAndBindPlayerData( embedPlayer, callback );
+				_this.loadAndUpdatePlayerData( embedPlayer, callback );
 			});
 
 			// Add kaltura iframe share support:
@@ -35,26 +34,26 @@ mw.KWidgetSupport.prototype = {
 			});
 		});
 	},
+	
 	/**
 	 * Load and bind embedPlayer from kaltura api entry request
 	 * @param embedPlayer
 	 * @param callback
-	 * @return
 	 */
-	loadAndBindPlayerData: function( embedPlayer, callback ){
+	loadAndUpdatePlayerData: function( embedPlayer, callback ){
 		var _this = this;
 		// Load all the player configuration from kaltura: 
-		_this.loadPlayerData( embedPlayer, function( playerData ){
+		_this.loadPlayerData( embedPlayer, function( playerData ){			
 			if( !playerData ){
 				mw.log("KWidgetSupport::addPlayerHooks> error no player data!");
 				callback();
 				return ;
 			}
-			_this.bindPlayerData( embedPlayer, playerData, callback );
+			_this.updatePlayerData( embedPlayer, playerData, callback );
 		});
 	},
 	
-	bindPlayerData:function( embedPlayer,  playerData, callback ){
+	updatePlayerData:function( embedPlayer,  playerData, callback ){
 		var _this = this;
 		// Check for uiConf	and attach it to the embedPlayer object:
 		if( playerData.uiConf ){
@@ -112,17 +111,19 @@ mw.KWidgetSupport.prototype = {
 					);
 				});
 			}
-		}					
+		}
 		
 		// Apply player Sources
 		if( playerData.flavors ){
 			_this.addFlavorSources( embedPlayer, playerData.flavors );
 		}
 		mw.log("KWidgetSupport:: check for meta:");
+		
 		// Add any custom metadata:
 		if( playerData.entryMeta ){
 			embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
 		}
+
 		// Apply player metadata
 		if( playerData.meta ) {
 			embedPlayer.duration = playerData.meta.duration;
@@ -182,7 +183,6 @@ mw.KWidgetSupport.prototype = {
 	loadPlayerData: function( embedPlayer, callback ){
 		var _this = this;
 		var playerRequest = {};
-
 		// Check for widget id	 
 		if( ! embedPlayer.kwidgetid ){
 			mw.log( "Error: missing required widget paramater");

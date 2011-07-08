@@ -23,6 +23,9 @@ mw.Playlist.prototype = {
 	// the theme handler:
 	theme : null,
 	
+	// player Id
+	playerId: null,	
+	
 	// constructor
 	init: function( options ) {
 		var _this = this;
@@ -36,15 +39,16 @@ mw.Playlist.prototype = {
 		}
 		
 		this.target = options.target;
-
-		this.id = ( options.id )? options.id : $j( this.target ).attr( 'id' );
-		if( !this.id ){
-			// Give it a random id if unset:
-			this.id = 'playlist_' + Math.random();
-		}
-
-		// Set the layoutHandler ( not yet active ) 
-
+		
+		// We assign the base player the id of the playlist ( since we want the player api to be 
+		// exposed for the playlist id ) 
+		this.playerId = ( options.id )? options.id : $j( this.target ).attr( 'id' );
+		// Setup the id for the playlist container: 		
+		this.id = 'plholder_' + this.playerId;
+		// Update the target id 
+		$j( this.target ).attr( 'id', this.id );
+		this.target = '#' + this.id;
+		
 		// Set binding to disable "waitForMeta" for playlist items ( we know the size and length )
 		$j( mw ).bind( 'checkPlayerWaitForMetaData', function(even, playerElement ){
 			if( $j( playerElement ).hasClass( 'mwPlaylist') ){
@@ -446,13 +450,15 @@ mw.Playlist.prototype = {
 		
 		return this.targetPlayerSize;
 	},
+	getEmbedPlayer: function(){
+		return $j('#' + this.getVideoPlayerId() ).get(0);
+	},
 	// Play a clipIndex, if the player is already in the page swap the player src to the new target
 	playClip: function( clipIndex ){
 		var _this = this;
 		// Check for a video/audio tag already in the page:
 		var $inDomAV = $j( _this.target + ' .media-rss-video-player video, '+ _this.target + ' .media-rss-video-player audio' );
-		var embedPlayer = $j( _this.target + ' .media-rss-video-player-container' )
-			.find('.mwplayer_interface div').get(0);
+		var embedPlayer = this.getEmbedPlayer();
 	
 		if( $inDomAV.length == 0 || embedPlayer.instanceOf != 'Native' || !mw.isMobileDevice() ){
 			_this.updatePlayer( clipIndex, function(){
@@ -460,7 +466,7 @@ mw.Playlist.prototype = {
 				_this.play();
 			});
 			return ;
-		} 
+		}
 
 		if (typeof _this.nextPlayIndex !='undefined'){
 			if (clipIndex < _this.nextPlayIndex) {
@@ -472,11 +478,11 @@ mw.Playlist.prototype = {
 		// Add a loader to the embed player: 
 		$j( embedPlayer )
 		.getAbsoluteOverlaySpinner()
-		.attr('id', _this.getVideoPlayerId( clipIndex ) + '_mappingSpinner' );
+		.attr('id', _this.getVideoPlayerId() + '_mappingSpinner' );
 	    
 		// Update the poster
 		embedPlayer.updatePosterSrc( _this.sourceHandler.getClipPoster( clipIndex, _this.getTargetPlayerSize() ) );
-		// empty existing sources
+		// Empty existing sources
 	    embedPlayer.emptySources();
 
 		// Update the interface sources
@@ -506,6 +512,7 @@ mw.Playlist.prototype = {
 			if( embedPlayer.selectedPlayer.library != 'Native' ){
 				$j('.loadingSpinner').remove();
 				$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
+				
 				_this.addEmbedPlayerInterface( function(){
 					embedPlayer.play();
 				});
@@ -544,17 +551,14 @@ mw.Playlist.prototype = {
 		// Build the video tag object:
 		var $video = $j( '<video />' )
 		.attr({
-			'id' : _this.getVideoPlayerId( clipIndex ),
+			'id' : _this.getVideoPlayerId(),
 			'poster' : _this.sourceHandler.getClipPoster( clipIndex, playerSize)
 		})
 		.addClass( 'mwPlaylist' )
 		.css(
 			playerSize
 		);
-
-		// Add custom attributes:
-		_this.sourceHandler.applyCustomClipData( $video, clipIndex );
-
+		
 		// Lookup the sources from the playlist provider:
 		_this.sourceHandler.getClipSources( clipIndex, function( clipSources ){
 			mw.log("getClipSources cb");
@@ -567,9 +571,10 @@ mw.Playlist.prototype = {
 			}
 			// Put the video player into the page and create the embedPlayer interface
 			$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
-			_this.addEmbedPlayerInterface( callback );
+			_this.addEmbedPlayerInterface( function(){
+				callback();
+			});
 		});
-		
 	},
 	updatePlayerUi:function( clipIndex ){
 		var _this = this;
@@ -598,18 +603,20 @@ mw.Playlist.prototype = {
 
 	},
 
-	getVideoPlayerId: function( clipIndex ){
-		if( ! clipIndex ) {
-			clipIndex = this.clipIndex;
-		}
-		return 'mrss_' + this.id + '_' + clipIndex;
+	getVideoPlayerId: function( ){
+		return this.playerId;
 	},
 	addEmbedPlayerInterface: function( callback ){
 		var _this = this;
-		mw.log("mw.Playlist:: addEmbedPlayerInterface " );
+		mw.log( "mw.Playlist:: addEmbedPlayerInterface " );
+		var $video = $j( '#' +_this.getVideoPlayerId() );
+		
+		// Add any custom attributes that may be needed for embedPlayer bindings
+		var attributes = _this.sourceHandler.getCustomAttributes( _this.clipIndex );
+		
 		// Update the video tag with the embedPlayer
-		$j('#' +_this.getVideoPlayerId( _this.clipIndex ) ).unbind().embedPlayer( function(){
-			var embedPlayer = $j('#' +_this.getVideoPlayerId( _this.clipIndex ) ).get(0);
+		$video.unbind().embedPlayer( attributes, function(){
+			var embedPlayer = _this.getEmbedPlayer();
 			if(!embedPlayer){
 				mw.log("mw.Playlist::updateVideoPlayer > Error, embedPlayer not defined at embedPlayer ready time");
 				return;
@@ -725,12 +732,6 @@ mw.Playlist.prototype = {
 				'cursor': 'pointer'
 			} )
 			.click( function(){
-				// Make sure the existing player is "playing " (safari can't play async with javascript )
-				/*if( mw.isHTML5FallForwardNative() ){
-					var embedPlayer = $j('#' + _this.getVideoPlayerId() ).get(0);
-					//embedPlayer.playerElement.play();
-				}*/
-
 				// Update _this.clipIndex
 				_this.clipIndex = $j( this ).data( 'clipIndex' );
 

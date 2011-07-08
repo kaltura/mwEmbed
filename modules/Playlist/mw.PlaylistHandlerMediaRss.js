@@ -114,9 +114,11 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		callback( clipSources );
 	},
 
-	applyCustomClipData: function( embedPlayer, clipIndex ){
+	getCustomAttributes: function( clipIndex){
+		// no custom metadata present in mrss playlist handler:
 		return {};
 	},
+	
 	getClipList: function(){
 		return this.$rss.find('item');
 	},

@@ -2442,7 +2442,24 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			mw.setupMwEmbed();
 		}
 	};
-
+	/**
+	* Check if the url is a request for the local domain
+	*  relative paths are "local" domain
+	* @param {String} url Url for local domain
+	* @return {Boolean}
+	*	true if url domain is local or relative
+	* 	false if the domain is
+	*/
+	mw.isLocalDomain = function( url ) {
+		if( ! url )
+			return false;
+		if( mw.parseUri( document.URL ).host == mw.parseUri( url ).host
+			|| url.indexOf( '://' ) == -1 )
+		{
+			return true;
+		}
+		return false;
+	}
 	/**
 	 * A version comparison utility function Handles version of types
 	 * {Major}.{MinorN}.{Patch}

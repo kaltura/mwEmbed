@@ -225,14 +225,16 @@ mw.PlaylistHandlerKaltura.prototype = {
 			callback( sources );
 		});
 	},
-	
-	applyCustomClipData:function( embedPlayer, clipIndex , callback){
-		$j( embedPlayer ).attr({
+
+	getCustomAttributes: function( clipIndex ){
+		// Clear out custom data ( as to not pre-set custom attributes )
+		mw.setConfig("KalturaSupport.IFramePresetPlayerData", false);
+		return { 
 			'kentryid' : this.getClip( clipIndex ).id,
 			'kwidgetid' : this.widget_id
-		});		
-		$j( embedPlayer ).data( 'kuiconf', this.uiConfData );
+		};
 	},
+	
 	/**
 	* Get an items poster image ( return missing thumb src if not found )
 	*/ 
