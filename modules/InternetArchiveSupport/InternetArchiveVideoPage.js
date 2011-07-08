@@ -202,13 +202,15 @@ mw.IA =
         av.resizePlayer({'width': wd, 'height':ht}, true);
     }
 
-    $('#mwplayer_videolist').css('top', ht);
+    $('         #mwplayer_videolist').css('top', ht);
     $('#plholder_mwplayer_videolist').css('top', ht);
       
     $('#avplaydiv').css('width', wd);
       
-    $('#mwplayer').css('width',  wd);
-    $('#mwplayer').css('height', ht + mw.IA.VIDEO_PLAYLIST_HEIGHT);
+    $(         '#mwplayer').css('width',  wd);
+    $('#plholder_mwplayer').css('width',  wd);
+    $(         '#mwplayer').css('height', ht + mw.IA.VIDEO_PLAYLIST_HEIGHT);
+    $('#plholder_mwplayer').css('height', ht + mw.IA.VIDEO_PLAYLIST_HEIGHT);
   },
 
 
@@ -322,7 +324,6 @@ audio { z-index:666 !important; position:absolute !important; bottom:0px !import
 \n\
 \n\
 \n\
-div#mwplayer_videolist { bottom:0px !important; right:0px !important; }\n\
 div.playlistItem {\n\
   font-family:Lucida Grande;\n\
   margin:0px 5px 0px 5px !important;\n\
