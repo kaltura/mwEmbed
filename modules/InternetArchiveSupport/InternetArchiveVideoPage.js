@@ -394,7 +394,7 @@ div.overlay-content        {\n\
                     
         'imagesPath' : 'http://www/archive.org/images/', //xxxxxxx not working yet
                     
-        'Playlist.TitleLength': 35
+        'Playlist.TitleLength': 30
       });
 
     if (!mw.isMobileDevice())
