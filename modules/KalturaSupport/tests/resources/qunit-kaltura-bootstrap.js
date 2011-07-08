@@ -2,17 +2,19 @@
 if( window.QUnit ){
 	mw.setConfig( 'forceMobileHTML5', true );	
 	if( window['jsCallbackReady'] ){
-		var orgjsCallbackReady = window['jsCallbackReady'];
+		window['orgJsCallbackReady'] = window['jsCallbackReady'];
 	}
 	jsCallbackCalled = false;
-	function jsCallbackReady ( videoId ) {
+	window['jsCallbackReady'] = function( videoId ) {
 		document.getElementById( videoId ).addJsListener("entryReady", "kalturaQunitEntryReady");
 
 		jsCallbackCalled = true;
-		jsKalturaPlayerTest( videoId );
+		if( jsKalturaPlayerTest ){
+			jsKalturaPlayerTest( videoId );
+		}
 		
-		if( orgjsCallbackReady ){
-			orgjsCallbackReady( videoId );
+		if( window['orgJsCallbackReady'] ){
+			window['orgJsCallbackReady']( videoId );
 		}
 	}
 	QUnit.start();

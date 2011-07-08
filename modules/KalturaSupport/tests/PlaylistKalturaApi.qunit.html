@@ -7,7 +7,6 @@
 //function jsCallbackReady ( videoId ){
 //}
 </script>
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 <script type="text/javascript">
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
@@ -24,7 +23,6 @@ function jsKalturaPlayerTest( videoId ){
 			start();
 		});
 	});
-
 	asyncTest("Playlist switchEntry", function(){
 		window['kTestEntrySwitchReady'] = function(){
 			equal( kdp.evaluate( '{mediaProxy.entry.id}' ), "0_5diu7kzg", 'Switched entry to 0_5diu7kzg');			
@@ -33,10 +31,10 @@ function jsKalturaPlayerTest( videoId ){
 		kdp.addJsListener( "entryReady", "kTestEntrySwitchReady" );
 		kdp.sendNotification( "changeMedia", { entryId : "0_5diu7kzg" } );				
 	});
-
 	
 }
 </script>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 
 </head>
 <body>

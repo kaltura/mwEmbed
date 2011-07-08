@@ -62,7 +62,7 @@
 				};
 				
 				// Fire the KalturaKDPCallbackReady event with the player id: 
-				if( window.KalturaKDPCallbackReady ){
+				if( window.deepLinkId ){
 					window.KalturaKDPCallbackReady( embedPlayer.id );
 				}
 			});
