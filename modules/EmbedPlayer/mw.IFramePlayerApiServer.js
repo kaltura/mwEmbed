@@ -128,19 +128,15 @@ mw.IFramePlayerApiServer.prototype = {
 				}
 				//mw.log("IFramePlayerApiServer::postMessage:: " + bindName + ' arg count:' + argSet.length );
 				_this.postMessage({
+					// always send the player attributes with any trigger to sync up player state for events. 
+					'attributes' : _this.getPlayerAttributes(),
 					'triggerName' : bindName,
 					'triggerArgs' : argSet
 				});
 			});
 		});
 	},
-	
-	/**
-	 * Send all the player attributes to the host
-	 */
-	'sendPlayerAttributes': function(){
-		var _this = this;
-		
+	'getPlayerAttributes' : function(){
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
 
 		var attrSet = { };
@@ -151,9 +147,15 @@ mw.IFramePlayerApiServer.prototype = {
 				}
 			}
 		}
+		return attrSet;
+	},
+	/**
+	 * Send all the player attributes to the host
+	 */
+	'sendPlayerAttributes': function(){
 		//mw.log( "IframePlayerApiServer:: sendPlayerAttributes: " + JSON.stringify( attrSet ) );
-		_this.postMessage( {			
-			'attributes' : attrSet 
+		this.postMessage( {			
+			'attributes' : this.getPlayerAttributes() 
 		} );
 	},
 	

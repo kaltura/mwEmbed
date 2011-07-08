@@ -184,6 +184,9 @@
 				case 'mediaProxy':
 					switch( objectPath[1] ){
 						case 'entryMetadata':
+							if( ! embedPlayer.kalturaEntryMetaData ){
+								return null;
+							}
 							if( objectPath[2] ) {
 								return embedPlayer.kalturaEntryMetaData[ objectPath[2] ];
 							} else {
@@ -191,6 +194,9 @@
 							}
 						break;
 						case 'entry':
+							if( ! embedPlayer.kalturaPlayerMetaData ){
+								return null;
+							}
 							if( objectPath[2] ) {
 								return embedPlayer.kalturaPlayerMetaData[ objectPath[2] ];
 							} else {
@@ -428,7 +434,7 @@
 					
 					// Update the entry id
 					embedPlayer.kentryid = notificationData.entryId;
-					// clear player & entry meta 
+					// Clear player & entry meta 
 				    embedPlayer.kalturaPlayerMetaData = null;
 				    embedPlayer.kalturaEntryMetaData = null;
 					
