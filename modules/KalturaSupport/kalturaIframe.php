@@ -176,7 +176,8 @@ class kalturaIframe {
 		// direct file link as a child of the video tag
 		// ( if javascript is "off" and they dont have video tag support for example )
 		$o.= $this->getFlashEmbedHTML(
-			$this->getFileLinkHTML()
+			$this->getFileLinkHTML(), 
+			'kaltura_player_iframe_no_rewrite'
 		);
 
 
@@ -187,8 +188,8 @@ class kalturaIframe {
 	 * Get Flash embed code with default flashvars:
 	 * @param childHtml Html string to set as child of object embed
 	 */	
-	private function getFlashEmbedHTML( $childHTML = '' ){		
-		return 	$this->getPreFlashVars() . 
+	private function getFlashEmbedHTML( $childHTML = '', $idOverride = false ){		
+		return 	$this->getPreFlashVars( $idOverride) . 
 				$this->getFlashVarsString() . 
 				$this->getPostFlashVars( $childHTML );
 	}
@@ -292,11 +293,13 @@ class kalturaIframe {
 		return $swfUrl;
 	}
 	
-	private function getPreFlashVars(){
+	private function getPreFlashVars( $idOverride = false ){
 		// Check if a playlist
 		$playerName = ( $this->getResultObject()->isPlaylist() ) ? 'kaltura_playlist' : 'kaltura_player_iframe_no_rewrite';
 		
-		return '<object id="' . htmlspecialchars( $this->getIframeId() ) . '" name="' . $playerName . '" ' .
+		$playerId = ( $idOverride )? $idOverride :  $this->getIframeId();
+		
+		return '<object id="' . htmlspecialchars( $playerId ) . '" name="' . $playerName . '" ' .
 				'type="application/x-shockwave-flash" allowFullScreen="true" '.
 				'allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" style="height:100%;width:100%" '.
 				'xmlns:dc="http://purl.org/dc/terms/" '.

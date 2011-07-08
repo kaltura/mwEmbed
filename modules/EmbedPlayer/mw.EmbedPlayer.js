@@ -268,8 +268,8 @@ EmbedPlayerManager.prototype = {
 				//
 				// Allow modules to block player build out
 				//
-				// this is needed in cases where you need to do an asyncronus player interface
-				// setup. like iframes asyncronus announcing its ready for bindings that can
+				// this is needed in cases where you need to do an asynchronous player interface
+				// setup. like iframes asynchronous announcing its ready for bindings that can
 				// affect player setup.
 				$j( '#' + playerInterface.id ).triggerQueueCallback( 'startPlayerBuildOut', function(){
 					// Issue the checkPlayerSources call to the new player
