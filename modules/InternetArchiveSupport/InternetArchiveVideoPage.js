@@ -203,6 +203,7 @@ mw.IA =
     }
 
     $('#mwplayer_videolist').css('top', ht);
+    $('#plholder_mwplayer_videolist').css('top', ht);
       
     $('#avplaydiv').css('width', wd);
       
