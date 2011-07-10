@@ -169,6 +169,13 @@
 						case 'volume': 
 							return embedPlayer.volume;
 						break;
+						case 'player':
+							switch( objectPath[2] ){
+								case 'currentTime':
+									return embedPlayer.currentTime;
+								break;
+							}
+						break;
 					}
 				break;			
 				case 'duration':
