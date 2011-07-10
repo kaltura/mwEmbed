@@ -3,7 +3,7 @@
  * Add full kaltura mapping support to html5 based players
  * http://www.kaltura.org/demos/kdp3/docs.html#jsapi
  */
-
+				
 // scope in mw
 ( function( mw ) {
 	mw.KDPMapping = function( ) {
@@ -85,7 +85,6 @@
 				playerProxy.evaluate = function( objectString ){
 					return _this.evaluate( playerProxy, objectString);			
 				};
-				
 				// Listen for the proxyReady event from the server: 
 				$j( playerProxy ).bind( 'proxyReady', function(){
 					if( window.KalturaKDPCallbackReady ){

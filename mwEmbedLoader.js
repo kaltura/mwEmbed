@@ -322,12 +322,14 @@ function kOverideJsFlashEmbed(){
 					kDirectDownloadFallback( targetId, kEmbedSettings, {'width':attributes.width, 'height':attributes.height}   );
 					return ;
 				}
-				if( kEmbedSettings.uiconf_id && kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
+				if( kEmbedSettings.uiconf_id && kIsHTML5FallForward()  ){
 					document.getElementById( targetId ).innerHTML = '<div id="' + attributes.id + '"></div>';
 					
 					doEmbedSettingsWrite( kEmbedSettings, attributes.id, attributes.width, attributes.height);
 				} else {
-					restoreKalturaKDPCallback();
+					// if its a kaltura player embed restore kdp callback:
+					if( kEmbedSettings.uiconf_id )
+						restoreKalturaKDPCallback();
 					// Use the original flash player embed:  
 					originalFlashembed( targetId, attributes, flashvars );
 				}
@@ -352,7 +354,9 @@ function kOverideJsFlashEmbed(){
 				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else {
-					restoreKalturaKDPCallback();
+					// if its a kaltura player embed restore kdp callback:
+					if( kEmbedSettings.uiconf_id )
+						restoreKalturaKDPCallback();
 					// use the original flash player embed:  
 					_this.originalWrite( targetId );
 				}
@@ -381,7 +385,9 @@ function kOverideJsFlashEmbed(){
 				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
 				} else {
-					restoreKalturaKDPCallback();
+					// if its a kaltura player embed restore kdp callback:
+					if( kEmbedSettings.uiconf_id )
+						restoreKalturaKDPCallback();
 					// Else call the original EmbedSWF with all its arguments 
 					window['swfobject']['originalEmbedSWF']( swfUrlStr, replaceElemIdStr, widthStr,
 							heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn );
@@ -949,7 +955,9 @@ var checkForKDPCallback = function(){
 		};
 	}
 };
+
 var restoreKalturaKDPCallback = function(){
+	alert('restoreKalturaKDPCallback');
 	// To restore when we are not rewriting: 
 	if( window.KalturaKDPCallbackReady ){
 		window.jsCallbackReady = window.KalturaKDPCallbackReady;
