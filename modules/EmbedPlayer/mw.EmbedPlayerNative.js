@@ -83,27 +83,23 @@ mw.EmbedPlayerNative = {
 	*/
 	doEmbedHTML : function () {
 		var _this = this;
-		if( this.getPlayerElement() && $j( this.getPlayerElement() ).attr('src') == this.getSrc( this.currentTime ) ){
+		var vid = _this.getPlayerElement();
+		if( vid && $j( vid ).attr('src') == this.getSrc( this.currentTime ) ){
+			_this.postEmbedJS();
 			return ;
 		}
+		mw.log( "EmbedPlayerNative::doEmbedHTML > play url:" + this.getSrc( this.currentTime  ) + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
+		
+		// Check if using native controls and already the "pid" is already in the DOM
+		if( this.isPersistentNativePlayer() && vid ) {
+			_this.postEmbedJS();
+			return ;
+		}
+		
 		// Reset some play state flags:
 		_this.bufferStartFlag = false;
 		_this.bufferEndFlag = false;
 		
-		mw.log( "EmbedPlayerNative:: play url:" + this.getSrc( this.currentTime  ) + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
-
-		// Check if using native controls and already the "pid" is already in the DOM
-		if( ( 	this.useNativePlayerControls()
-				||
-				this.isPersistentNativePlayer()
-			)
-			&& $j( '#' + this.pid ).length 
-			&& typeof $j( '#' + this.pid ).get(0).play != 'undefined' ) 
-		{
-			_this.postEmbedJS();
-			return ;
-		}
-
 		$j( this ).html(
 			_this.getNativePlayerHtml()
 		);
@@ -171,6 +167,12 @@ mw.EmbedPlayerNative = {
 		// Apply media element bindings:
 		this.applyMediaElementBindings();
 
+		// Make sure we start playing in the correct place:
+		if( this.currentTime != vid.currentTime ){
+			vid.currentTime = this.currentTime;
+		}
+		
+		
 		// Check for load flag
 		if ( this.onlyLoadFlag ) {
 			vid.pause();
@@ -181,6 +183,8 @@ mw.EmbedPlayerNative = {
 			vid.play();
 		}
 
+
+		
 		setTimeout( function() {
 			_this.monitor();
 		}, 100 );
@@ -232,13 +236,20 @@ mw.EmbedPlayerNative = {
 	/**
 	* Issue a seeking request.
 	*
-	* @param {Float} percentage
+	* @param {Float} percent
 	*/
-	doSeek: function( percentage ) {
-		mw.log( 'Native::doSeek p: ' + percentage + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seek_time_sec );
+	doSeek: function( percent ) {
+		// bounds check
+		if( percent < 0 )
+			percent = 0;
+		
+		if( percent > 1 )
+			percent = 1;
+		
+		mw.log( 'Native::doSeek p: ' + percent + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seek_time_sec );
 		this.seeking = true;
 		// Update the current time
-		this.currentTime = ( percentage * this.duration ) ;
+		this.currentTime = ( percent * this.duration ) ;
 		
 		// trigger the seeking event: 
 		mw.log('Native::doSeek:trigger');
@@ -250,34 +261,34 @@ mw.EmbedPlayerNative = {
 		// @@todo check if the clip is loaded here (if so we can do a local seek)
 		if ( this.supportsURLTimeEncoding() ) {
 			// Make sure we could not do a local seek instead:
-			if ( percentage < this.bufferedPercent && this.playerElement.duration && !this.didSeekJump ) {
-				mw.log( "EmbedPlayer::doSeek local seek " + percentage + ' is already buffered < ' + this.bufferedPercent );
-				this.doNativeSeek( percentage );
+			if ( percent < this.bufferedPercent && this.playerElement.duration && !this.didSeekJump ) {
+				mw.log( "EmbedPlayer::doSeek local seek " + percent + ' is already buffered < ' + this.bufferedPercent );
+				this.doNativeSeek( percent );
 			} else {
 				// We support URLTimeEncoding call parent seek:
-				this.parent_doSeek( percentage );
+				this.parent_doSeek( percent );
 			}
 		} else if ( this.playerElement && this.playerElement.duration ) {
-			// (could also check bufferedPercent > percentage seek (and issue oggz_chop request or not)
-			this.doNativeSeek( percentage );
+			// (could also check bufferedPercent > percent seek (and issue oggz_chop request or not)
+			this.doNativeSeek( percent );
 		} else {
 			// try to do a play then seek:
-			this.doPlayThenSeek( percentage );
+			this.doPlayThenSeek( percent );
 		}
 	},
 
 	/**
 	* Do a native seek by updating the currentTime
-	* @param {float} percentage
+	* @param {float} percent
 	* 		Percent to seek to of full time
 	*/
-	doNativeSeek: function( percentage ) {
+	doNativeSeek: function( percent ) {
 		var _this = this;
-		mw.log( 'EmbedPlayerNative::doNativeSeek::' + percentage );
+		mw.log( 'EmbedPlayerNative::doNativeSeek::' + percent );
 		this.seeking = true;
 		
 		this.seek_time_sec = 0;
-		this.setCurrentTime( ( percentage * this.duration ) , function(){
+		this.setCurrentTime( ( percent * this.duration ) , function(){
 			_this.seeking = false;
 			// done seeking: 
 			$j( this ).trigger( 'seeked' );
@@ -288,11 +299,11 @@ mw.EmbedPlayerNative = {
 	/**
 	* Seek in a existing stream
 	*
-	* @param {Float} percentage
-	* 		Percentage of the stream to seek to between 0 and 1
+	* @param {Float} percent
+	* 		percent of the stream to seek to between 0 and 1
 	*/
-	doPlayThenSeek: function( percentage ) {
-		mw.log( 'native::doPlayThenSeek::' + percentage );
+	doPlayThenSeek: function( percent ) {
+		mw.log( 'native::doPlayThenSeek::' + percent );
 		var _this = this;
 		this.play();
 		var retryCount = 0;
@@ -300,7 +311,7 @@ mw.EmbedPlayerNative = {
 			_this.getPlayerElement();
 			// If we have duration then we are ready to do the seek
 			if ( _this.playerElement && _this.playerElement.duration ) {
-				_this.doNativeSeek( percentage );
+				_this.doNativeSeek( percent );
 			} else {
 				// Try to get player for  30 seconds:
 				// (it would be nice if the onmetadata type callbacks where fired consistently)
@@ -520,15 +531,15 @@ mw.EmbedPlayerNative = {
 	/**
 	* Update Volume
 	*
-	* @param {Float} percentage Value between 0 and 1 to set audio volume
+	* @param {Float} percent Value between 0 and 1 to set audio volume
 	*/
-	setPlayerElementVolume : function( percentage ) {
+	setPlayerElementVolume : function( percent ) {
 		if ( this.getPlayerElement() ) {
 			// Disable mute if positive volume
-			if( percentage != 0 ) {
+			if( percent != 0 ) {
 				this.playerElement.muted = false;
 			}
-			this.playerElement.volume = percentage;
+			this.playerElement.volume = percent;
 		}
 	},
 

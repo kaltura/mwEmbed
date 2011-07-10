@@ -966,6 +966,7 @@ var restoreKalturaKDPCallback = function(){
 		}
 	}
 };
+
 // Check inline and when the dom is ready:
 checkForKDPCallback();
 kAddReadyHook( checkForKDPCallback );

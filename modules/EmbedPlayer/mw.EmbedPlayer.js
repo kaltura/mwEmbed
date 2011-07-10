@@ -1921,6 +1921,13 @@ mw.EmbedPlayer.prototype = {
 	doSeek: function( percent ) {
 		var _this = this;
 		this.seeking = true;
+		
+		// Do some bounds checking: 
+		if( percent < 0 )
+			percent = 0;
+		
+		if( percent > 1 )
+			percent = 1;
 
 		// See if we should do a server side seek ( player independent )
 		if ( this.supportsURLTimeEncoding() ) {
