@@ -345,6 +345,11 @@
 						callback( embedPlayer.id );
 					});
 					break;
+				case 'cuePointsReceived':
+					b( 'KalturaSupport_CuePointsReady', function( event, cuePoints ) {
+						callback( embedPlayer.entryCuePoints, embedPlayer.id );
+					});
+					break;
 				case 'cuePointReached':
 					b( 'KalturaSupport_cuePointReached', function( event, cuePoint ) {
 						callback( cuePoint, embedPlayer.id );

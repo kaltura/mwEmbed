@@ -1,8 +1,6 @@
 /**
 * Adds cue points support
 */
-
-// Add kdp mapping variable ... won't be needed once we move to new resource loader
 mw.KCuePoints = function( embedPlayer ){
 	this.init( embedPlayer );
 };
