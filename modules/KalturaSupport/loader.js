@@ -158,7 +158,8 @@
 					var videoEmbedAttributes = {
 						'id' : videoId,
 						'kwidgetid' : kEmbedSettings.wid,
-						'kuiconfid' : kEmbedSettings.uiconf_id
+						'kuiconfid' : kEmbedSettings.uiconf_id,
+						'style' : $j( element ).attr('style')
 					};
 					if( kEmbedSettings.entry_id ) {
 						loadEmbedPlayerFlag = true;
@@ -198,9 +199,7 @@
 						.css({
 							'width' : width + widthType,
 							'height' : height + heightType,
-							'position': 'relative',
-							'display' : 'block',
-							'float' : 'left'
+							'display' : 'block'
 						})
 						.data( 'flashvars', flashvars )
 						.addClass( kalturaSwapObjectClass )
