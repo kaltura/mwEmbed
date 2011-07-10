@@ -162,11 +162,15 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 				$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
 			});	
 		} else {
+			// Set iframeClient to true:
+			mw.setConfig('EmbedPlayer.IsIframeClient', true)
+
 			var jsRequestSet = [];
 			if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
 				jsRequestSet.push( ['window.jQuery'] );
 			}
 			jsRequestSet.push('mwEmbed', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'kdpClientIframe', 'JSON' );
+			
 			// Load just the files needed for flash iframe bindings	
 			kLoadJsRequestSet( jsRequestSet, function(){
 				var iframeRewrite = new kdpClientIframe(replaceTargetId, kEmbedSettings, options);

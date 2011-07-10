@@ -17,7 +17,7 @@
 		* Add Player hooks for supporting Kaltura api stuff
 		*/ 
 		init: function( ){
-			if( this.isIframeServer () ){
+			if( mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
 				this.addIframePlayerHooksServer();
 				return ;
 			}
@@ -26,12 +26,6 @@
 			// iframe and no iframes players
 			this.addIframePlayerHooksClient();
 			this.addPlayerHooks();
-		},
-		isIframeClient: function(){
-			return ( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig('EmbedPlayer.IsIframeClient') );
-		},
-		isIframeServer: function(){
-			return ( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && mw.getConfig( 'EmbedPlayer.IsIframeServer' ) );
 		},
 		addPlayerHooks: function(){
 			var _this = this;
@@ -424,10 +418,10 @@
 					$j( embedPlayer )
 					.getAbsoluteOverlaySpinner()
 					.attr('id', embedPlayer.id + '_mappingSpinner' );
+					
 					if( embedPlayer.$interface ){
 						embedPlayer.$interface.find('.play-btn-large').hide(); // hide the play btn
 					}
-
 					
 					// Clear out any bootstrap data from the iframe 
 					mw.setConfig('KalturaSupport.IFramePresetPlayerData', false);

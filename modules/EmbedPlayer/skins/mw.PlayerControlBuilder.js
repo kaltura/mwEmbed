@@ -390,13 +390,16 @@ mw.PlayerControlBuilder.prototype = {
 		// Overflow hidden in fullscreen:
 		$interface.css( 'overlow', 'hidden' );
 		
+		// only animate if we are not inside an iframe
+		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
+		
 		// Resize the player keeping aspect and with the widow scroll offset:
 		embedPlayer.resizePlayer({
 			'top' : topOffset,
 			'left' : leftOffset,
 			'width' : $j( window ).width(),
 			'height' : $j( window ).height()
-		}, true, function(){
+		}, aninmate, function(){
 			_this.displayFullscreenTip();
 			// Trigger the enter fullscreen event 
 			$j( _this.embedPlayer ).trigger( 'onOpenFullScreen' );
@@ -568,6 +571,9 @@ mw.PlayerControlBuilder.prototype = {
 			? embedPlayer.getHeight()
 			: embedPlayer.getHeight() + _this.getHeight();
 
+		// only animate if we are not inside an iframe
+		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
+			
 		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
 		$j('.mw-fullscreen-overlay').fadeOut( 'slow' );
 
@@ -578,7 +584,7 @@ mw.PlayerControlBuilder.prototype = {
 			'left' : _this.windowOffset.left + 'px',
 			'width' : embedPlayer.getWidth(),
 			'height' : embedPlayer.getHeight()
-		}, true, function(){
+		}, aninmate, function(){
 			// Restore non-absolute layout:
 			$interface.css({
 				'position' : _this.windowPositionStyle,

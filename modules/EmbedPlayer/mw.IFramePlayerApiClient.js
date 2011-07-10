@@ -230,7 +230,10 @@ jQuery.fn.iFramePlayer = function( readyCallback ){
 			})
 			.wrap(
 				$j('<div />')
-				.attr( 'id', playerProxyId )
+				.attr( {
+					'id': playerProxyId,
+					'style' : $j( targetPlayer).attr('style')
+				})
 			);
 		
 		var playerProxy = $j( '#' + playerProxyId ).get(0);

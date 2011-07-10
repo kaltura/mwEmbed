@@ -433,8 +433,9 @@ EmbedPlayerManager.prototype = {
 		}
 		return swapPlayerElement;
 	},
+	
 	addCallback:function( callback ){
-		this.callbackFunctions.push( callback )
+		this.callbackFunctions.push( callback );
 	},
 
 	/**
@@ -1465,7 +1466,19 @@ mw.EmbedPlayer.prototype = {
 		$j( this ).trigger('updateFeatureSupportEvent', this.supports );
 		return ;
 	},
-
+	applyIntrinsicAspect:function(){
+		var pHeight = $j('#' + this.pid ).height();
+		var vid = $j('#' + this.pid ).get(0);
+		// Check for intrinsic width and maintain aspect ratio
+		if( vid.videoWidth && vid.videoHeight ){
+			var pWidth = parseInt(  vid.videoWidth / vid.videoHeight * pHeight);
+			$j('#' + this.pid ).css({
+				'width':  pWidth + 'px',
+				'left': ( ( $j( this ).width() - pWidth ) * .5 ) + 'px',
+				'position' : 'absolute'
+			});
+		}
+	},
 	/**
 	 * Set the width & height from css style attribute, element attribute, or by
 	 * default value if no css or attribute is provided set a callback to
@@ -1551,8 +1564,14 @@ mw.EmbedPlayer.prototype = {
 	 * Resize the player to a new size preserving aspect ratio Wraps the
 	 * controlBuilder.resizePlayer function
 	 */
-	resizePlayer: function( size , animate, callback){
+	resizePlayer: function( size , animate, resizePlayerCallback){
 		mw.log("EmbedPlayer::resizePlayer:" + size.width + ' x ' + size.height );
+		var _this = this;
+		var callback = function(){
+			_this.applyIntrinsicAspect();
+			if( resizePlayerCallback )
+				resizePlayerCallback();
+		}
 		// Check if we are native display then resize the playerElement directly
 		if( this.useNativePlayerControls() ){
 			if( animate ){
@@ -2050,6 +2069,10 @@ mw.EmbedPlayer.prototype = {
 			if( this.isPersistentNativePlayer() && !_this.controlBuilder.checkOverlayControls() ){
 				// if Persistent native player always give it the player height
 				$j('#' + this.pid ).css('height', this.height - _this.controlBuilder.height );
+				
+				// Check for intrinsic width and maintain aspect ratio
+				this.applyIntrinsicAspect();
+				
 			}
 			$j( this ).show();
 			this.controls = true;

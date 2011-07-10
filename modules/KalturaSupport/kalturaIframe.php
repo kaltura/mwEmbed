@@ -553,6 +553,9 @@ class kalturaIframe {
 		if( kIsHTML5FallForward() ){
 				// Load the mwEmbed resource library and add resize binding
 				mw.ready(function(){
+					// remove the no_rewrite flash object:
+					$j('#kaltura_player_iframe_no_rewrite').remove();
+				
 					var embedPlayer = $j( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' ).get(0);
 					// Try to seek to the IframeSeekOffset time:
 					if( mw.getConfig( 'EmbedPlayer.IframeCurrentTime' ) ){

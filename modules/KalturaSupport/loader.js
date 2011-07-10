@@ -199,7 +199,7 @@
 						.css({
 							'width' : width + widthType,
 							'height' : height + heightType,
-							'display' : 'block'
+							'display' : 'inline-block' // more or less the <object> tag default display
 						})
 						.data( 'flashvars', flashvars )
 						.addClass( kalturaSwapObjectClass )

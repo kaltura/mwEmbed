@@ -120,7 +120,7 @@ mw.IFramePlayerApiServer.prototype = {
 		$j.each( this.exportedBindings, function( inx, bindName ){
 			$j( _this.embedPlayer ).bind( bindName, function( event ){				
 				var argSet = $j.makeArray( arguments );
-				// remove the event from the arg set
+				// Remove the event from the arg set
 				argSet.shift();
 				// protect against a jQuery event getting past as an arguments:
 				if( argSet[0] && argSet[0].originalEvent ){
