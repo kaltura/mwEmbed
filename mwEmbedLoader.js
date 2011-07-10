@@ -957,7 +957,6 @@ var checkForKDPCallback = function(){
 };
 
 var restoreKalturaKDPCallback = function(){
-	alert('restoreKalturaKDPCallback');
 	// To restore when we are not rewriting: 
 	if( window.KalturaKDPCallbackReady ){
 		window.jsCallbackReady = window.KalturaKDPCallbackReady;
