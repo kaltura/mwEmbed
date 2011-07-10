@@ -31,13 +31,24 @@ mw.KAds.prototype = {
 		this.$notice = $adConfig['notice'];
 		this.$skipBtn = $adConfig['skipBtn'];
 		
-		// Load the Ads
+		// Load the Ads from uiConf
 		_this.loadAds( function(){
 			mw.log("KAds::All ads have been loaded");
 			callback();
 		});
+
+		// We can add this binding here, because we will always have vast in the uiConf when having cue points
+		// Catch Ads from adOpportunity event
+		$j( this.embedPlayer ).bind('KalturaSupport_adOpportunity', function( event, cuePoint ) {
+			_this.loadAd( cuePoint );
+		});
 	},
-	
+
+	// Load the ad from cue point
+	loadAd: function( cuePoint ) {
+		//console.log('reached ad opportunity', cuePoint);
+	},
+
 	// Load all the ads per the $adConfig
 	loadAds: function( callback ){		
 		var _this = this;
