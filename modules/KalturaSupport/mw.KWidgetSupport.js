@@ -307,15 +307,15 @@ mw.KWidgetSupport.prototype = {
 				'height' :  embedPlayer.getHeight()
 			});			
 		}
-				
-		// Check existing sources have kaltura specific data-flavorid attribute ) 
+		
+		var deviceSources = {};
+		// Check existing sources have kaltura specific flavorid attribute ) 
 		// NOTE we may refactor how we package in the kaltura pay-load from the iframe 
 		var sources = embedPlayer.mediaElement.getSources();
-		if( sources[0] && sources[0]['data-flavorid'] ){
+		if( sources[0] && sources[0]['flavorid'] ){
 			// Not so clean ... will refactor once we add another source
-			var deviceSources = {};
 			for(var i=0; i< sources.length;i++){
-				deviceSources[ sources[i]['data-flavorid'] ] = sources[i].src;
+				deviceSources[ sources[i]['flavorid'] ] = sources[i].src;
 			}
 			// Unset existing DOM source children ( so that html5 video hacks work better ) 
 			$j('#' + embedPlayer.pid).find('source').remove();
@@ -324,7 +324,7 @@ mw.KWidgetSupport.prototype = {
 			// Update the set of sources in the embedPlayer ( might cause issues with other plugins ) 
 		} else {		
 			// Get device flavors ( if not already set )
-			var deviceSources = _this.getEntryIdSourcesFromFlavorData( this.kClient.getPartnerId(), flavorData );	
+			deviceSources = _this.getEntryIdSourcesFromFlavorData( this.kClient.getPartnerId(), flavorData );	
 		}
 		// Update the source list per the current user-agent device: 
 		var sources = _this.getSourcesForDevice( deviceSources );

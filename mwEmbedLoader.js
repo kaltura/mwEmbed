@@ -574,10 +574,20 @@ function kAddScript( callback ){
 	// Add all the classes needed for video 
 	jsRequestSet.push(
 	    'mwEmbed',
+	    // mwEmbed utilities: 
+		'mw.Uri',
+		
 		// core skin: 
 		'mw.style.mwCommon',
 		// embed player:
-		'mw.EmbedPlayer', 
+		'mw.EmbedPlayer',
+
+		'mw.MediaElement',
+		'mw.MediaPlayer',
+		'mw.MediaPlayers',
+		'mw.MediaSource',
+		'mw.EmbedTypes',
+		
 		'mw.style.EmbedPlayer',
 		'mw.PlayerControlBuilder',
 		// default skin: 

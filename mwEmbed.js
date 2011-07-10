@@ -19,6 +19,9 @@
 if ( typeof window.mw == 'undefined' ) {
 	window.mw = { };
 }
+// set up mediaWiki pointer ( to help transition to new resource loader ) 
+window.mediaWiki =  window.mw;
+
 /**
  * Set the mwEmbedVersion
  */
@@ -164,7 +167,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			nonDefaultConfig[ configKey ] = mw.getConfig( configKey );
 		}
 		return nonDefaultConfig;
-	}
+	};
 
 	/**
 	 * Loads the mwUserConfig from a cookie.
@@ -1235,7 +1238,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		}
 		
 		return false;
-	}
+	};
 	
 	mw.isMobileHTML5 = function(){
 		// Check for a mobile html5 user agent:
@@ -1247,7 +1250,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			return true;
 		}
 		return false;
-	}
+	};
 	mw.supportsHTML5 = function(){
 		// Blackberry is evil in its response to canPlayType calls.
 		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
@@ -1258,7 +1261,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			return true;
 		}
 		return false;	
-	}
+	};
 	
 	mw.supportsFlash = function(){
 		// Check if the client does not have flash and has the video tag
@@ -1355,31 +1358,61 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	};
 
 	/**
-	 * Check if an object is empty or if its an empty string.
-	 * 
-	 * @param {Object}
-	 *            object Object to be checked
-	 */
-	mw.isEmpty = function( object ) {
-		if( typeof object == 'string' ) {
-			if( object == '' ) return true;
-			// Non empty string:
+	* Check if an object is empty or if its an empty string. 
+	*
+	* @param {Object} object Object to be checked
+	* @return {Boolean}
+	*/
+	mw.isEmpty = function( obj ) {
+		if( typeof obj === 'string' ) {
+			if( obj === '' ) return true;
+			// Non empty string: 
 			return false;
 		}
 
 		// If an array check length:
-		if( Object.prototype.toString.call( object ) === "[object Array]"
-			&& object.length == 0 ) {
+		if( Object.prototype.toString.call( obj ) === "[object Array]"
+			&& obj.length === 0 ) {
 			return true;
 		}
 
-		// Else check as an object:
-		for( var i in object ) { return false; }
+		// Else check as an obj: 
+		for( var i in obj ) { return false; }
 
-		// Else object is empty:
+		// Else obj is empty:
 		return true;
 	};
 
+	/**
+	* Opposite of mw.isEmpty
+	*
+	* @param {Object} object Object to be checked
+	* @return {Boolean}
+	*/
+	mw.isFull = function( obj ) {
+		return ! mw.isEmpty( obj );
+	};
+
+	/**
+	 * Check if something is defined
+	 * (inlineable?)
+	 * @param {Object}
+	 * @return boolean
+	 */
+	mw.isDefined = function( obj ) {
+		return typeof obj !== 'undefined'; 
+	};
+
+
+	/**
+	 * Upper-case the first letter of a string.
+	 * @param string
+	 * @return string with first letter uppercased.
+	 */
+	mw.ucfirst = function( s ) {
+		return s.substring(0,1).toUpperCase() + s.substr(1);
+	};
+	
 	/**
 	 * Log a string msg to the console
 	 * 
@@ -1453,11 +1486,11 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	            curr = curr.caller;
 	        }
 	        return stack;
-		}
+		};
 		// Add stack size ( iPad has 100 stack size limit )
 		var stack = getStack( arguments.callee );
 		return stack;
-	}
+	};
 	
 	// Setup the local mwOnLoadFunctions array:
 	var mwOnLoadFunctions = [];
@@ -2459,7 +2492,8 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			return true;
 		}
 		return false;
-	}
+	};
+	
 	/**
 	 * A version comparison utility function Handles version of types
 	 * {Major}.{MinorN}.{Patch}

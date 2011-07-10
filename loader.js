@@ -123,6 +123,8 @@ mw.addResourcePaths( {
 	"mw.style.ui_kdark" : "skins/jquery.ui.themes/kaltura-dark/jquery-ui-1.7.2.css",
 
 	"mw.style.mwCommon"		: "skins/common/mw.style.mwCommon.css",
+	
+	"mw.Uri" 				: "libraries/mediawiki/mediawiki.Uri.js",
 
 	"$j.cookie"				: "libraries/jquery/plugins/jquery.cookie.js",
 

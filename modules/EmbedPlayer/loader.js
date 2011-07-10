@@ -303,7 +303,13 @@
 	// Add class file paths
 	mw.addResourcePaths( {
 		"mw.EmbedPlayer"	: "mw.EmbedPlayer.js",
-
+		
+		"mw.MediaElement" : "mw.MediaElement.js",
+		"mw.MediaPlayer" : "mw.MediaPlayer.js",
+		"mw.MediaPlayers" : "mw.MediaPlayers.js",
+		"mw.MediaSource" : "mw.MediaSource.js",
+		"mw.EmbedTypes"	: "mw.EmbedTypes.js",
+		
 		"mw.EmbedPlayerKplayer"	: "mw.EmbedPlayerKplayer.js",
 		"mw.EmbedPlayerGeneric"	: "mw.EmbedPlayerGeneric.js",
 		"mw.EmbedPlayerHtml" : "mw.EmbedPlayerHtml.js",
@@ -399,10 +405,16 @@
 				'$j.ui.mouse',
 				'$j.fn.menu',
 				'mw.style.jquerymenu',
-				'$j.ui.slider'
+				'$j.ui.slider',
+				'mw.Uri'
 			],
 			[
-				'mw.EmbedPlayer'
+				'mw.EmbedPlayer',
+				'mw.MediaElement',
+				'mw.MediaPlayer',
+				'mw.MediaPlayers',
+				'mw.MediaSource',
+				'mw.EmbedTypes'
 			],
 			[
 			 	'mw.PlayerControlBuilder',
