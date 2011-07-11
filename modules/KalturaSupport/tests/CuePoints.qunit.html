@@ -11,7 +11,15 @@
 	mw.setConfig( 'Kaltura.TempCuePoints', [
 			{ startTime: 0, type: 2, name: 'Preroll' },
 			{ startTime: 3000, type: 1, name: 'cuePoint 1' },
-			{ startTime: 6000, type: 2, name: 'Midroll' },
+			{
+				startTime: 6000,
+				type: 2, // 1: CodeCuePoint, 2: AdCuePoint
+				providerType: 1, // 1: VAST, 2: FREEWHEEL
+				adType: 2, // 1: MIDROLL, 2: OVERLAY
+				name: 'Overlay',
+				sourceUrl: 'http://kaldev.kaltura.com/myopenx/www/delivery/fc.php?script=bannerTypeHtml:vastInlineBannerTypeHtml:vastInlineHtml&source=&format=vast&charset=UTF_8&nz=1&zones=z1=19',
+				endTime: 10000
+			},
 			{ startTime: 9000, type: 1, name: 'cuePoint 2' },
 			{ startTime: 56000, type: 2, name: 'Postroll' }
 		] );

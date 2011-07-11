@@ -7,6 +7,8 @@ mw.KCuePoints = function( embedPlayer ){
 mw.KCuePoints.prototype = {
 	init: function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
+		//In order to get the entry duration we need to get it before we start playing
+		this.entryDuration = embedPlayer.duration;
 		this.addPlayerBindings();
 	},
 	/**
@@ -52,7 +54,7 @@ mw.KCuePoints.prototype = {
 		});
 	},
 	getEndTime: function(){
-		return this.embedPlayer.getDuration() * 1000;
+		return this.entryDuration * 1000;
 	},
 	getCuePoints: function(){
 		if( ! this.embedPlayer.entryCuePoints || ! this.embedPlayer.entryCuePoints.length ){

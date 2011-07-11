@@ -46,7 +46,28 @@ mw.KAds.prototype = {
 
 	// Load the ad from cue point
 	loadAd: function( cuePoint ) {
-		//console.log('reached ad opportunity', cuePoint);
+		var _this = this;
+		if( cuePoint.cuePoint.sourceUrl ) {
+			mw.AdLoader.load( cuePoint.cuePoint.sourceUrl, function( adConf ){
+
+				var adCuePointConf = {
+					duration: ( (cuePoint.cuePoint.endTime - cuePoint.cuePoint.startTime) / 1000 ),
+					start: ( ( cuePoint.cuePoint.startTime / 1000 ) + 5 )
+				};
+
+				var adsCuePointConf = {
+					ads: [
+						$j.extend( adConf.ads[0], adCuePointConf )
+					]
+				};
+
+				mw.addAdToPlayerTimeline( 
+					_this.embedPlayer,
+					_this.getAdTypeFromCuePoint(cuePoint),
+					adsCuePointConf
+				);
+			});
+		}
 	},
 
 	// Load all the ads per the $adConfig
@@ -109,7 +130,7 @@ mw.KAds.prototype = {
 	 */
 	getAdConfigSet: function( callback ){
 		var _this = this;
-		var namedAdTimelineTypes = [ 'preroll', 'postroll', 'postroll', 'overlay' ];
+		var namedAdTimelineTypes = [ 'preroll', 'postroll', 'midroll', 'overlay' ];
 		// Maps ui-conf ads to named types
 		var adAttributeMap = {
 				"Interval": 'frequency',
@@ -181,5 +202,29 @@ mw.KAds.prototype = {
 			'width' :  companionParts[1],
 			'height' :  companionParts[2]
 		};
+	},
+	// Get Ad Type from Cue Point
+	getAdTypeFromCuePoint: function( cuePoint ) {
+		//['preroll', 'bumper','overlay', 'midroll', 'postroll']
+		var type = null;
+		switch (cuePoint.context) {
+			case 'pre':
+				type = 'preroll';
+				break;
+			case 'post':
+				type = 'postroll';
+				break;
+			case 'mid':
+				// Midroll
+				if( cuePoint.cuePoint.adType == 1 ) {
+					type = 'midroll';
+				}
+				// Overlay
+				else if ( cuePoint.cuePoint.adType == 2 ) {
+					type = 'overlay';
+				}
+				break;
+		}
+		return type;
 	}
 };
