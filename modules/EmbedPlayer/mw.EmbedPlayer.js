@@ -2588,7 +2588,7 @@ mw.EmbedPlayer.prototype = {
 				'type' : source.type
 			}));
 		});
-		var myMediaElement =  new mediaElement( $media.get(0) );
+		var myMediaElement =  new mw.MediaElement( $media.get(0) );
 		var source = myMediaElement.autoSelectSource();
 		if( source ){
 			mw.log("AdTimeline::getCompatibleSource: " + source.getSrc());
