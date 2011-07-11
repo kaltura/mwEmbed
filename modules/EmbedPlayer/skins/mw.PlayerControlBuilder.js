@@ -767,8 +767,7 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 
 		// Do not hide control bar if overlay menu item is being displayed:
-		if( _this.displayOptionsMenuFlag ||
-			$( '#timedTextMenu_' + this.embedPlayer.id ).is( ':visible' ) ) {
+		if( _this.displayOptionsMenuFlag || _this.keepControlBarOnScreen ) {
 			setTimeout( function(){
 				_this.hideControlBar();
 			}, 200 );
@@ -788,10 +787,11 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	* Show the control bar
 	*/
-	showControlBar: function(){
+	showControlBar: function( keepOnScreen ){
 		var animateDuration = 'fast';
 		if(! this.embedPlayer )
 			return ;
+		
 		if( this.embedPlayer.getPlayerElement && ! this.embedPlayer.isPersistentNativePlayer() ){
 			$( this.embedPlayer.getPlayerElement() ).css( 'z-index', '1' );
 		}
@@ -800,6 +800,10 @@ mw.PlayerControlBuilder.prototype = {
 		// Show interface controls
 		this.embedPlayer.$interface.find( '.control-bar' )
 			.fadeIn( animateDuration );
+		
+		if( keepOnScreen ){
+			this.keepControlBarOnScreen = true;
+		}
 		
 		// Trigger the screen overlay with layout info: 
 		$( this.embedPlayer ).trigger( 'onShowControlBar', {'bottom' : this.getHeight() + 15 } );		

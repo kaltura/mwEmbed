@@ -47,7 +47,6 @@ mw.MediaElement.prototype = {
 			if ( $( videoElement ).attr( "src" ) ) {
 				_this.tryAddSource( videoElement );
 			}
-
 			// Process elements source children
 			$( videoElement ).find( 'source,track' ).each( function( ) {
 				_this.tryAddSource( this );
@@ -72,22 +71,17 @@ mw.MediaElement.prototype = {
 	},
 
 	/**
-	 * Check for Timed Text tracks
-	 *
-	 * @return {Boolean} True if text tracks exist, false if no text tracks are
-	 *     found
+	 * Get Text tracks
 	 */
-	textSourceExists: function() {
-		for ( var i = 0; i < this.sources.length; i++ ) {
-			if ( this.sources[i].mimeType == 'text/cmml' ||
-				 this.sources[i].mimeType == 'text/x-srt' )
-			{
-					return true;
+	getTextTracks: function(){
+		var textTracks = [];
+		$.each( this.sources, function(inx, source ){
+			if (  source.nodeName == 'track' || source.mimeType.indexOf('text/') !== -1 ){
+				textTracks.push( source );
 			}
-		};
-		return false;
+		});
+		return textTracks;
 	},
-
 	/**
 	 * Returns the array of mediaSources of this element.
 	 *

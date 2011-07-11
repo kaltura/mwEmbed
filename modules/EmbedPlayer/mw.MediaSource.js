@@ -25,9 +25,12 @@ mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 
 	// boolean if we support temporal url requests on the source media
 	'URLTimeEncoding',
+	
+	// Store the node name for type identification
+	'nodeName',
 
-	/* data- attributes ( not yet standards ) 
-	* NOTE data- is striped from the attribute once added to the MediaSrouce object
+	/**
+	 * data- attributes ( not yet standards ) 
 	*/
 	
 	// Media has a startOffset ( used for plugins that

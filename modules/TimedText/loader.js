@@ -6,6 +6,8 @@
 
 	mw.addResourcePaths( {
 		"mw.TimedText" : "mw.TimedText.js",
+		"mw.TextTrack" : "mw.TextTrack.js",
+		
 		"mw.style.TimedText" : "css/mw.style.TimedText.css",
 
 		"mw.TimedTextEdit" : "mw.TimedTextEdit.js",
@@ -41,6 +43,7 @@
 	var mwTimedTextRequestSet = [
 		'$j.fn.menu',
 		'mw.TimedText',
+		'mw.TextTrack',
 		'mw.style.TimedText',
 		'mw.style.jquerymenu'
 	];
@@ -59,17 +62,15 @@
 	// Update the player loader request with timedText library if the embedPlayer
 	// includes timedText tracks.
 	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
-		if( mw.isTimedTextSupported( playerElement ) ) {
+		if( mw.checkForTimedText( playerElement ) ) {
 			classRequest = $j.merge( classRequest, mwTimedTextRequestSet );
 		}
 	} );
 	
 	// On new embed player check if we need to add timedText
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-		if( mw.isTimedTextSupported( embedPlayer) ){
-			if( ! embedPlayer.timedText && mw.TimedText ) {
-				embedPlayer.timedText = new mw.TimedText( embedPlayer );
-			}
+		if( mw.checkForTimedText( embedPlayer ) ){
+			new mw.TimedText( embedPlayer );
 		}
 	});
 	
@@ -78,22 +79,23 @@
 	 *
 	 * Note we check for text sources outside of
 	 */
-	mw.isTimedTextSupported = function( embedPlayer ) {
+	mw.checkForTimedText = function( playerElement ) {
 		if( mw.getConfig( 'TimedText.showInterface' ) == 'always' ) {
 			return true;
 		}
+		// check if we are handling an embedPlayer with hasTextTracks method
+		if( playerElement.hasTextTracks ){
+			return playerElement.hasTextTracks();
+		}
+		
+		var modulesIsTextSupported = false;
+		$( mw ).trigger( 'TimedText_IsSupported', playerElement, function( isSupported ) {
+			if( isSupported ){
+				modulesIsTextSupported = true;
+			}
+		});
 		// Check for timed text sources or api/ roe url
-		if ( 
-			(
-				$j( embedPlayer ).attr('apititlekey')
-				||  
-				$j( embedPlayer ).attr('apiTitleKey' )
-			)
-			|| 
-			( embedPlayer.mediaElement && embedPlayer.mediaElement.textSourceExists() )	
-			||
-			$j( embedPlayer ).find( 'track' ).length != 0
-		) {
+		if ( modulesIsTextSupported || $( playerElement ).find('track').length ) {
 			return true;
 		} else {
 			return false;

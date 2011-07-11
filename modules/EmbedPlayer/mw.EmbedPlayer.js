@@ -723,7 +723,7 @@ mw.EmbedPlayer.prototype = {
 		var pHeight = $j('#' + this.pid ).height();
 		var vid = $j('#' + this.pid ).get(0);
 		// Check for intrinsic width and maintain aspect ratio
-		if( vid.videoWidth && vid.videoHeight ){
+		if( vid && vid.videoWidth && vid.videoHeight ){
 			var pWidth = parseInt(  vid.videoWidth / vid.videoHeight * pHeight);
 			$j('#' + this.pid ).css({
 				'width':  pWidth + 'px',
@@ -887,6 +887,25 @@ mw.EmbedPlayer.prototype = {
 		} else {
 			finishCheckPlayerSources();
 		}
+	},
+	/**
+	 * Check if the embedPlayer has text tracks
+	 * @return
+	 */
+	hasTextTracks: function(){
+		if( !this.mediaElement ){
+			return false;
+		}
+		return this.mediaElement.getTextTracks().length;
+	},
+	/**
+	 * Get text tracks from the mediaElement
+	 */
+	getTextTracks: function(){
+		if( !this.mediaElement ){
+			return [];
+		}
+		return this.mediaElement.getTextTracks();
 	},
 	/**
 	 * Empty the player sources
