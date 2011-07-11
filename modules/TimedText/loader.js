@@ -15,7 +15,7 @@
 	} );
 	
 	// Merge in timed text related attributes: TODO add merge config support with some way to 
-	// clasify configuration as "default" vs custom. 
+	// classify configuration as "default" vs custom. 
 	var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes');
 	mw.setConfig( 'EmbedPlayer.SourceAttributes', $j.extend( sourceAttr, [
 	   'srclang',
@@ -36,7 +36,7 @@
 
 		// The category for listing videos that need transcription:
 		'TimedText.NeedsTranscriptCategory' : 'Videos needing subtitles'
-	});
+	} );
 
 	var mwTimedTextRequestSet = [
 		'$j.fn.menu',

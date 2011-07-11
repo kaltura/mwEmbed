@@ -96,7 +96,7 @@
 		"EmbedPlayer.FirefoxLink" : 'http://www.mozilla.com/en-US/firefox/upgrade.html?from=mwEmbed',
 		
 		// The z-index given to the player interface during full screen ( high z-index )
-		"EmbedPlayer.fullScreenZIndex" : 999998,
+		"EmbedPlayer.FullScreenZIndex" : 999998,
 
 		// The default share embed mode ( can be "object" or "videojs" )
 		//
