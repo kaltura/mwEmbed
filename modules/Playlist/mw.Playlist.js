@@ -513,7 +513,7 @@ mw.Playlist.prototype = {
 				$j('.loadingSpinner').remove();
 				$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
 				
-				_this.addEmbedPlayerInterface( function(){
+				_this.addEmbedPlayerInterface( clipIndex, function(){
 					embedPlayer.play();
 				});
 				return ;
@@ -526,6 +526,7 @@ mw.Playlist.prototype = {
 			embedPlayer.switchPlaySrc( embedPlayer.mediaElement.selectedSource.getSrc(), 
 					function() { 
 						$j('.loadingSpinner').remove(); 
+						$( embedPlayer ).data('clipIndex', clipIndex); 
 					},
 					function() { 
 						if( _this.nextPlayIndex < _this.sourceHandler.getClipCount() ){
@@ -546,6 +547,12 @@ mw.Playlist.prototype = {
 		// If we have a ui .. update it: 
 		if( _this.sourceHandler.hasPlaylistUi() ){
 			this.updatePlayerUi( clipIndex );
+		}
+		// Check if we really have to update: 
+		var embedPlayer = _this.getEmbedPlayer();
+		if( $( embedPlayer ).data('clipIndex') == clipIndex ){
+			callback();
+			return ;
 		}
 		
 		// Build the video tag object:
@@ -571,7 +578,7 @@ mw.Playlist.prototype = {
 			}
 			// Put the video player into the page and create the embedPlayer interface
 			$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
-			_this.addEmbedPlayerInterface( function(){
+			_this.addEmbedPlayerInterface( clipIndex, function(){
 				callback();
 			});
 		});
@@ -606,11 +613,10 @@ mw.Playlist.prototype = {
 	getVideoPlayerId: function( ){
 		return this.playerId;
 	},
-	addEmbedPlayerInterface: function( callback ){
+	addEmbedPlayerInterface: function( clipIndex, callback ){
 		var _this = this;
 		mw.log( "mw.Playlist:: addEmbedPlayerInterface " );
 		var $video = $j( '#' +_this.getVideoPlayerId() );
-		
 		// Add any custom attributes that may be needed for embedPlayer bindings
 		var attributes = _this.sourceHandler.getCustomAttributes( _this.clipIndex );
 		// Update the video tag with the embedPlayer
@@ -620,6 +626,9 @@ mw.Playlist.prototype = {
 				mw.log("mw.Playlist::updateVideoPlayer > Error, embedPlayer not defined at embedPlayer ready time");
 				return;
 			}
+			// update the player clip index
+			$( embedPlayer ).data('clipIndex', clipIndex); 
+			
 			// Setup ondone playing binding to play next clip (if autoContinue is true )
 			if( _this.sourceHandler.autoContinue == true ){
 				$j( embedPlayer ).unbind('ended.playlist').bind( 'ended.playlist', function(event ){
