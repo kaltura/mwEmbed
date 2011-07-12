@@ -83,6 +83,9 @@
 		if( mw.getConfig( 'TimedText.showInterface' ) == 'always' ) {
 			return true;
 		}
+		if ( !playerElement ){
+			return false;
+		}
 		// check if we are handling an embedPlayer with hasTextTracks method
 		if( playerElement.hasTextTracks ){
 			return playerElement.hasTextTracks();
