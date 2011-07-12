@@ -13,7 +13,7 @@
 
 mw.MediaElement = function( element ) {
 	this.init( element );
-}
+};
 
 mw.MediaElement.prototype = {
 

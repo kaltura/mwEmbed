@@ -19,6 +19,9 @@
 		// Container for the captions
 		// captions include "start", "end" and "content" fields
 		captions: [],
+		
+		// The css style for captions ( some file formats specify display types )
+		styleCss: {},
 	
 		// The previous index of the timed text served
 		// Avoids searching the entire array on time updates.
@@ -36,14 +39,13 @@
 			}
 			
 			// Set default category to subtitle if unset:
-			if( ! this.category ) {
-				this.category = 'SUB';
+			if( ! this.kind ) {
+				this.kind = 'subtitle';
 			}
 			//Set the textProvider if provided
 			if( textProvider ) {
 				this.textProvider = textProvider;
 			}
-			
 			return this;
 		},
 	
@@ -76,7 +78,7 @@
 					if( callback ) {
 						callback();
 					}
-				});
+				}, 'text');
 				return ;
 			}
 			
@@ -86,7 +88,7 @@
 				return ;
 			}
 			
-			// Load via proxy:
+			// @@TODO  Load via proxy:
 			
 		},
 	
@@ -95,7 +97,7 @@
 		*
 		* @param {String} time Time in seconds
 		*/
-		getTimedText: function ( time ) {
+		getCaptionObj: function ( time ) {
 			var prevCaption = this.captions[ this.prevIndex ];
 	
 			// Setup the startIndex:
@@ -115,23 +117,124 @@
 				if( time >= caption.start &&
 					time <= caption.end ) {
 					this.prevIndex = i;
-					mw.log("Start cap time: " + caption.start + ' End time: ' + caption.end );
-					return caption.content;
+					//mw.log("Start cap time: " + caption.start + ' End time: ' + caption.end );
+					return caption;
 				}
 			}
 			//No text found in range return false:
 			return false;
 		},
 		
-		getCaptions: function( data, mineType ){
+		getCaptions: function( data ){
 			// detect caption data type: 
 			switch( this.mimeType ){
 				case 'text/x-srt':
 					return this.getCaptionsFromSrt( data);
 					break;
+				case 'text/xml':
+					return this.getCaptionsFromTMML( data );
+					break;
 			}
 		},
-
+		
+		getStyleCssById: function( styleId ){
+			if( this.styleCss[ styleId ] ){
+				return this.styleCss[ styleId ];
+			} 
+			return {};
+		},
+		/**
+		 * Grab timed text from TMML format
+		 * 
+		 * @param data
+		 * @return
+		 */
+		getCaptionsFromTMML: function( data ){
+			var _this = this;
+			// set up display information:
+			var captions = [];
+			var xml = $.parseXML( data );
+			
+			// Set the body Style
+			var bodyStyleId = $( xml ).find('body').attr('style');
+			
+			// Set style translate ttml to css
+			$( xml ).find( 'style').each( function( inx, style){
+				var cssObject = {};
+				// Map CamelCase css properties:
+				$( style.attributes ).each(function(inx, attr){
+					var attrName = attr.name;
+					if( attrName.substr(0, 4) !== 'tts:' ){
+						// skip
+						return true;
+					}
+					var cssName = '';
+					for( var c = 4; c < attrName.length; c++){
+						if( attrName[c].toLowerCase() != attrName[c] ){
+							cssName += '-' +  attrName[c].toLowerCase();
+						} else {
+							cssName+= attrName[c]
+						}
+					}
+					cssObject[ cssName ] = attr.nodeValue;
+				});
+				//for(var i =0; i< style.length )
+				_this.styleCss[ $( style).attr('id') ] = cssObject;
+			});
+			
+			$( xml ).find('p').each(function(inx, p ){
+				
+				// Get the end time:
+				var end = null;
+				if( $( p ).attr( 'end' ) ){
+					end = mw.npt2seconds( $( p ).attr( 'end' ) );
+				}
+				// Look for dur
+				if( !end && $( p ).attr( 'dur' )){
+					end = mw.npt2seconds( $( p ).attr( 'begin' ) ) + 
+						mw.npt2seconds( $( p ).attr( 'dur' ) );
+				}
+				
+				// Get text content ( just a quick hack, we need more detailed spec or TTML parser )
+				var content = '';
+				$( p.childNodes ).each(function(inx,node){
+				   if( node.nodeName != '#text' && node.nodeName != 'metadata' ){
+					   content+='<' + node.nodeName + '/>';
+				    } else {
+				    	content+= node.textContent;
+				    }
+				});
+				
+				// Create the caption object :
+				var captionObj ={
+					'start': mw.npt2seconds( $( p ).attr( 'begin' ) ),
+					'end': end,
+					'content':  content
+				};
+				
+				// See if we have custom metadata for position of this caption object 
+				// ( not really part of the spec but used by at least a few major content producers )
+				var $meta = $(p).find( 'metadata' );
+				if( $meta.length ){
+					captionObj['css'] = {};
+					if( $meta.attr('ccrow') ){
+						captionObj['css']['left'] = ( $meta.attr('ccrow') / 21 ) * 100 +'%';
+					}
+					if( $meta.attr('cccol') ){
+						captionObj['css']['top'] = ( $meta.attr('cccol') / 21 ) * 100 +'%';
+					}
+				}
+				
+				// check if this p has any style else use the body parent
+				if( $(p).attr('style') ){
+					captionObj['styleId'] = $(p).attr('style') ;
+				} else {
+					captionObj['styleId'] = bodyStyleId;
+				}
+				captions.push( captionObj);
+			});
+			return captions;
+		},
 		/**
 		 * srt timed text parse handle:
 		 * @param {String} data Srt string to be parsed

@@ -226,7 +226,7 @@ mw.AdTimeline.prototype = {
 					});
 				});
 			}
-						
+			
 			// See if we have overlay ads:
 			if( _this.timelineTargets['overlay'] ){
 				var overlayTiming = _this.timelineTargets['overlay'];

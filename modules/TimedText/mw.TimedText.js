@@ -852,15 +852,15 @@ mw.includeAllModuleMessages();
 		 */
 		updateSourceDisplay: function ( source, time ) {
 			// Get the source text for the requested time:
-			var text = source.getTimedText( time );
+			var caption = source.getCaptionObj( time );
 
 			// We do a type comparison so that "undefined" != "false"
 			// ( check if we are updating the text )
-			if( text === this.prevText[ source.kind ] ){
+			if( caption === this.prevText[ source.kind ] ){
 				return ;
 			}
 
-			mw.log( 'mw.TimedText:: updateTextDisplay: srcid: ' +  source.id + ' time: ' + time + " text\n" + text );
+			//mw.log( 'mw.TimedText:: updateTextDisplay: srcid: ' +  source.id + ' time: ' + time + " caption\n" + caption.content );
 
 			var $playerTarget = this.embedPlayer.$interface;
 			var $textTarget = $playerTarget.find( '.track_' + source.kind + ' span' );
@@ -873,9 +873,16 @@ mw.includeAllModuleMessages();
 			}
 
 			// If text is "false" fade out the subtitle:
-			if( text === false ) {
+			if( caption === false ) {
 				$textTarget.fadeOut('fast');
 			}else{
+				// update the style of the text object if set
+				if( caption.styleId ){
+					$textTarget.css( 
+						source.getStyleCssById( caption.styleId )
+					);
+				}
+				
 				// Fade in the target if not visible
 				if( ! $textTarget.is(':visible') ) {
 					$textTarget.fadeIn('fast');
@@ -883,7 +890,7 @@ mw.includeAllModuleMessages();
 				// Update text ( use "html" instead of "text" so that subtitle format can
 				// include html formating 
 				// TOOD we should scrub this for non-formating html
-				$textTarget.html( text );
+				$textTarget.html( caption.content );
 
 				// Add/update the lang option
 				$textTarget.attr( 'lang', source.srclang.toLowerCase() );
@@ -891,9 +898,9 @@ mw.includeAllModuleMessages();
 				// Update any links to point to a new window
 				$textTarget.find( 'a' ).attr( 'target', '_blank' );
 			}
-			mw.log( ' Added content to: ' + $textTarget.length + ' ' + $textTarget.html() );
+			//mw.log( ' Added content to: ' + $textTarget.length + ' ' + $textTarget.html() );
 			// Update the prev text:
-			this.prevText[ source.kind ] = text;
+			this.prevText[ source.kind ] = caption.content;
 		},
 
 
