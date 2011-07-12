@@ -290,9 +290,6 @@ class kalturaIframe {
 				$swfUrl.='/' . $key . '/' . $val;
 			}
 		}
-		// add a referrer to the flash object as well: 
-		$swfUrl .= '?referrer=' . base64_encode( $this->getResultObject()->getReferer() );
-		
 		return $swfUrl;
 	}
 	
