@@ -163,7 +163,7 @@ mw.KWidgetSupport.prototype = {
 			if( $plugin.attr( attrName.toLowerCase() ) ){
 				config[attrName] = $plugin.attr( attrName.toLowerCase() );
 			}
-			// check flashvars overides
+			// check flashvars overrides
 			if( fv[ pluginName + '.' + attrName ] ){
 				config[ attrName ] = fv[ pluginName + '.' + attrName ];
 			}
