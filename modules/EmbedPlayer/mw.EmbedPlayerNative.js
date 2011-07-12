@@ -107,7 +107,7 @@ mw.EmbedPlayerNative = {
 		// Directly run postEmbedJS ( if playerElement is not available it will retry )
 		_this.postEmbedJS();
 	},
-
+	
 	/**
 	 * Get the native player embed code.
 	 *
@@ -178,7 +178,7 @@ mw.EmbedPlayerNative = {
 			vid.pause();
 			vid.load();
 		} else {
-			// Issue play request
+			// Some mobile devices ( iOS need a load call before play will work )
 			vid.load();
 			vid.play();
 		}

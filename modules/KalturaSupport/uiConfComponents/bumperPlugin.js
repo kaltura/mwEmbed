@@ -67,7 +67,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 									window.open( bc.clickUrl );								
 								}
 								return true;							
-							})
+							});
 						}
 					}, function(){
 						// restore the original source:

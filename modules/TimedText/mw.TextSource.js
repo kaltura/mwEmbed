@@ -53,7 +53,6 @@
 		 */
 		load: function( callback ) {
 			var _this = this;
-			//debugger;
 			// check if the captions have already been loaded:
 			if( _this.loaded ){
 				callback(  _this.captions );
@@ -68,7 +67,6 @@
 			
 			// Check if we can directly request the content: 
 			if( mw.isLocalDomain( this.getSrc() ) ){
-				
 				$.get( this.getSrc(), function( data ) {
 					// Parse and load captions:
 					_this.captions = _this.getCaptions( data );
@@ -117,17 +115,21 @@
 				if( time >= caption.start &&
 					time <= caption.end ) {
 					this.prevIndex = i;
-					//mw.log("Start cap time: " + caption.start + ' End time: ' + caption.end );
+					mw.log("Start cap time: " + caption.start + ' End time: ' + caption.end );
 					return caption.content;
 				}
 			}
 			//No text found in range return false:
 			return false;
 		},
-		getCaptions: function( data ){
+		
+		getCaptions: function( data, mineType ){
 			// detect caption data type: 
-			//debugger;
-			
+			switch( this.mimeType ){
+				case 'text/x-srt':
+					return this.getCaptionsFromSrt( data);
+					break;
+			}
 		},
 
 		/**

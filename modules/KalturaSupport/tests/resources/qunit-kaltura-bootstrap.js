@@ -16,7 +16,7 @@ if( window.QUnit ){
 		if( window['orgJsCallbackReady'] ){
 			window['orgJsCallbackReady']( videoId );
 		}
-	}
+	};
 	QUnit.start();
 	asyncTest( "KalturaSupport::PlayerLoaded", function(){
 		var waitCount = 0;

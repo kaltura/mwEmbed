@@ -17,7 +17,7 @@ mw.includeAllModuleMessages();
 	// Merge in timed text related attributes:
 	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
   	   'srclang',
-	   'category',
+  	   'kind',
 	   'label',
 	   'data-mwtitle'
 	]);
@@ -44,8 +44,8 @@ mw.includeAllModuleMessages();
 			//Set the default local ( should be grabbed from the browser )
 			'userLanugage' : 'en',
 
-			//Set the default category of timedText to display ( un-categorized timed-text is by default "SUB" )
-			'userCategory' : 'SUB'
+			//Set the default kind of timedText to display ( un-categorized timed-text is by default "subtitles" )
+			'userKind' : 'subtitles'
 		},
 
 		/**
@@ -59,7 +59,7 @@ mw.includeAllModuleMessages();
 		currentLangKey : null,
 
 		/**
-		 * Stores the last text string per category to avoid dom checks
+		 * Stores the last text string per kind to avoid dom checks
 		 * for updated text
 		 */
 		prevText: [],
@@ -99,7 +99,7 @@ mw.includeAllModuleMessages();
 			
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
-			if( preferenceConfig !== null ) {
+			if( preferenceConfig !== "false" && preferenceConfig != null ) {
 				this.config = JSON.parse(  preferenceConfig );
 			}
 			
@@ -275,7 +275,7 @@ mw.includeAllModuleMessages();
 		},
 		getInterfaceSizePercent: function( size ) {
 			// Some arbitrary scale relative to window size ( 400px wide is text size 105% )
-			var textSize = size.width / 3.8;
+			var textSize = size.width / 5.2;
 			if( textSize < 95 ) textSize = 95;
 			if( textSize > 200 ) textSize = 200;
 			return textSize;
@@ -358,7 +358,7 @@ mw.includeAllModuleMessages();
 			// Setup local reference to currentTime:
 			var currentTime = embedPlayer.currentTime;
 
-			// Get the text per category
+			// Get the text per kind
 			var textCategories = [ ];
 
 			for( var i = 0; i < this.enabledSources.length ; i++ ) {
@@ -415,9 +415,11 @@ mw.includeAllModuleMessages();
 			this.enabledSources = [];
 			// Check if any source matches our "local"
 			$.each( this.textSources, function(inx, source){
-				if( _this.config.userLanugage &&
-					_this.config.userLanugage == source.srclang.toLowerCase() ) {
-					// Check for category if available
+				if(	_this.config.userLanugage == source.srclang.toLowerCase() 
+					&& 
+					_this.config.userKind == source.kind
+				) {
+					// Check for kind if available
 					_this.enableSource( source );
 					return ;
 				}
@@ -456,7 +458,7 @@ mw.includeAllModuleMessages();
 			mw.log("loadCurrentSubSrouce:: enabled source:" + this.enabledSources.length);
 			for( var i =0; i < this.enabledSources.length; i++ ){
 				var source = this.enabledSources[i];
-				if( source.category == 'SUB' ){
+				if( source.kind == 'SUB' ){
 					source.load( function(){
 						callback( source);
 						return ;
@@ -724,12 +726,12 @@ mw.includeAllModuleMessages();
 			if( source.srclang )
 				this.config.userLanugage = source.srclang;
 
-			if( source.category )
-				this.config.userCategory = source.category;
+			if( source.kind )
+				this.config.userKind = source.kind;
 
-			// (@@todo update category & setup category language buckets? )
+			// (@@todo update kind & setup kind language buckets? )
 
-			// Remove any other sources selected in sources category
+			// Remove any other sources selected in sources kind
 			this.enabledSources = [];
 
 			this.enabledSources.push( source );
@@ -773,65 +775,65 @@ mw.includeAllModuleMessages();
 
 		/**
 		* Builds the language source list menu
-		* checks all text sources for category and language key attribute
+		* checks all text sources for kind and language key attribute
 		*/
 		getLanguageMenu: function() {
 			var _this = this;
 
 			// See if we have categories to worry about
-			// associative array of SUB etc categories. Each category contains an array of textSources.
+			// associative array of SUB etc categories. Each kind contains an array of textSources.
 			var catSourceList = {};
 			var catSourceCount = 0;
 
-			// ( All sources should have a category (depreciate )
-			var sourcesWithoutCategory = [ ];
+			// ( All sources should have a kind (depreciate )
+			var sourcesWithoutKind = [ ];
 			for( var i=0; i < this.textSources.length; i++ ) {
 				var source = this.textSources[ i ];
-				if( source.category ) {
-					var catKey = source.category ;
+				if( source.kind ) {
+					var kindKey = source.kind ;
 					// Init Category menu item if it does not already exist:
-					if( !catSourceList[ catKey ] ) {
+					if( !catSourceList[ kindKey ] ) {
 						// Set up catList pointer:
-						catSourceList[ catKey ] = [ ];
+						catSourceList[ kindKey ] = [ ];
 						catSourceCount++;
 					}
-					// Append to the source category key menu item:
-					catSourceList[ catKey ].push(
+					// Append to the source kind key menu item:
+					catSourceList[ kindKey ].push(
 						_this.getLiSource( source )
 					);
 				}else{
-					sourcesWithoutCategory.push( _this.getLiSource( source ) );
+					sourcesWithoutKind.push( _this.getLiSource( source ) );
 				}
 			}
 			var $langMenu = $('<ul>');
 			// Check if we have multiple categories ( if not just list them under the parent menu item)
 			if( catSourceCount > 1 ) {
-				for(var catKey in catSourceList) {
+				for(var kindKey in catSourceList) {
 					var $catChildren = $('<ul>');
-					for(var i=0; i < catSourceList[ catKey ].length; i++) {
+					for(var i=0; i < catSourceList[ kindKey ].length; i++) {
 						$catChildren.append(
-							catSourceList[ catKey ][i]
+							catSourceList[ kindKey ][i]
 						);
 					}
-					// Append a cat menu item for each category list
+					// Append a cat menu item for each kind list
 					$langMenu.append(
-						$.getLineItem( gM( 'mwe-timedtext-textcat-' + catKey.toLowerCase() ) ).append(
+						$.getLineItem( gM( 'mwe-timedtext-textcat-' + kindKey.toLowerCase() ) ).append(
 							$catChildren
 						)
 					);
 				}
 			} else {
-				for(var catKey in catSourceList) {
-					for(var i=0; i < catSourceList[ catKey ].length; i++) {
+				for(var kindKey in catSourceList) {
+					for(var i=0; i < catSourceList[ kindKey ].length; i++) {
 						$langMenu.append(
-							catSourceList[ catKey ][i]
+							catSourceList[ kindKey ][i]
 						);
 					}
 				}
 			}
 
-			for(var i=0; i < sourcesWithoutCategory.length; i++) {
-				$langMenu.append( sourcesWithoutCategory[i] );
+			for(var i=0; i < sourcesWithoutKind.length; i++) {
+				$langMenu.append( sourcesWithoutKind[i] );
 			}
 
 			//Add in the "add text" to the end of the interface:
@@ -854,19 +856,20 @@ mw.includeAllModuleMessages();
 
 			// We do a type comparison so that "undefined" != "false"
 			// ( check if we are updating the text )
-			if( text === this.prevText[ source.category ] ){
+			if( text === this.prevText[ source.kind ] ){
 				return ;
 			}
 
-			//mw.log( 'mw.TimedText:: updateTextDisplay: ' + text );
+			mw.log( 'mw.TimedText:: updateTextDisplay: srcid: ' +  source.id + ' time: ' + time + " text\n" + text );
 
 			var $playerTarget = this.embedPlayer.$interface;
-			var $textTarget = $playerTarget.find( '.track_' + source.category + ' span' );
+			var $textTarget = $playerTarget.find( '.track_' + source.kind + ' span' );
+			
 			// If we are missing the target add it:
 			if( $textTarget.length == 0 ) {
-				this.addItextDiv( source.category );
+				this.addItextDiv( source.kind );
 				// Re-grab the textTarget:
-				$textTarget = $playerTarget.find( '.track_' + source.category + ' span' );
+				$textTarget = $playerTarget.find( '.track_' + source.kind + ' span' );
 			}
 
 			// If text is "false" fade out the subtitle:
@@ -888,28 +891,28 @@ mw.includeAllModuleMessages();
 				// Update any links to point to a new window
 				$textTarget.find( 'a' ).attr( 'target', '_blank' );
 			}
-			// mw.log( ' len: ' + $textTarget.length + ' ' + $textTarget.html() );
+			mw.log( ' Added content to: ' + $textTarget.length + ' ' + $textTarget.html() );
 			// Update the prev text:
-			this.prevText[ source.category ] = text;
+			this.prevText[ source.kind ] = text;
 		},
 
 
 		/**
 		 * Add an track div to the embedPlayer
 		 */
-		addItextDiv: function( category ) {
-			mw.log(" addItextDiv: " + category );
+		addItextDiv: function( kind ) {
+			
+			mw.log(" addItextDiv: " + kind );
 			// Get the relative positioned player class from the controlBuilder:
 			var $playerTarget = this.embedPlayer.$interface;
 			//Remove any existing track divs for this player;
-			$playerTarget.find('.track_' + category ).remove();
+			$playerTarget.find('.track_' + kind ).remove();
 
 			// Setup the display text div:
-			var layoutMode = this.getLayoutMode();
-			if( layoutMode == 'ontop' ) {
+			if( this.getLayoutMode() == 'ontop' ) {
 				this.embedPlayer.controlBuilder.keepControlBarOnScreen = false;
 				var $track = $('<div>')
-					.addClass( 'track' + ' ' + 'track_' + category )
+					.addClass( 'track' + ' ' + 'track_' + kind )
 					.css( {
 						'position':'absolute',
 						'bottom': ( this.embedPlayer.controlBuilder.getHeight() + 10 ),
@@ -937,13 +940,13 @@ mw.includeAllModuleMessages();
 				}
 				$playerTarget.append( $track );
 				
-			} else if ( layoutMode == 'below') {
+			} else {
 				this.embedPlayer.controlBuilder.keepControlBarOnScreen = true;
 				// Set the belowBar size to 60 pixels:
 				var belowBarHeight = 60;
 				// Append before controls:
 				$playerTarget.find( '.control-bar' ).before(
-					$('<div>').addClass( 'track' + ' ' + 'track_' + category )
+					$('<div>').addClass( 'track' + ' ' + 'track_' + kind )
 						.css({
 							'position' : 'absolute',
 							'top' : this.embedPlayer.getHeight(),
@@ -967,9 +970,9 @@ mw.includeAllModuleMessages();
 						'height': height
 					});
 				}
-				mw.log( ' height of ' + this.embedPlayer.id + ' is now: ' + $( '#' + this.embedPlayer.id ).height() );
+				mw.log( 'TimedText:: height of ' + this.embedPlayer.id + ' is now: ' + $( '#' + this.embedPlayer.id ).height() );
 			}
-			mw.log( 'should have been appended: ' + $playerTarget.find('.track').length );
+			mw.log( 'TimedText:: should have been appended: ' + $playerTarget.find('.track').length );
 		}
 	};
 
