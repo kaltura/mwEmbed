@@ -71,14 +71,13 @@ mw.KCuePoints.prototype = {
 		if( ! this.getCuePoints() ){
 			return false;
 		}
-		var cuePoints = this.getCuePoints(), cuePoint;
+		var cuePoints = this.getCuePoints();
 		// Start looking for the cue point via time, return first match:
-		for( var i = 0; i < cuePoints.length; i++ ) {
-			cuePoint = cuePoints[ i ];
+		$.each( cuePoints, function ( inx, cuePoint) {
 			if( cuePoint.startTime >= time ) {
 				return cuePoint;
 			}
-		}
+		});
 		// No cue point found in range return false:
 		return false;
 	},
