@@ -160,8 +160,8 @@ mw.KWidgetSupport.prototype = {
 				config[attrName] = $plugin.attr( attrName );
 			}
 			// XML sometimes comes in all lower case
-			if( $plugin.attr( attrName ) ){
-				config[attrName] = $plugin.attr( attrName );
+			if( $plugin.attr( attrName.toLowerCase() ) ){
+				config[attrName] = $plugin.attr( attrName.toLowerCase() );
 			}
 			// check flashvars overides
 			if( fv[ pluginName + '.' + attrName ] ){
