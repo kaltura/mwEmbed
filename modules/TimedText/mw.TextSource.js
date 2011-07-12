@@ -1,5 +1,5 @@
 /**
- * Base mw.TextTrack object
+ * Base mw.TextSource object
  *
  * @param {Object} source Source object to extend
  * @param {Object} textProvider [Optional] The text provider interface ( to load source from api )
@@ -8,10 +8,10 @@
 
 ( function( mw, $ ) {
 
-	mw.TextTrack = function( source ) {
+	mw.TextSource = function( source ) {
 		return this.init( source );
 	};
-	mw.TextTrack.prototype = {
+	mw.TextSource.prototype = {
 	
 		//The load state:
 		loaded: false,
@@ -53,6 +53,7 @@
 		 */
 		load: function( callback ) {
 			var _this = this;
+			//debugger;
 			// check if the captions have already been loaded:
 			if( _this.loaded ){
 				callback(  _this.captions );
@@ -66,7 +67,8 @@
 			}
 			
 			// Check if we can directly request the content: 
-			if( mw.isLocalDomain() ){
+			if( mw.isLocalDomain( this.getSrc() ) ){
+				
 				$.get( this.getSrc(), function( data ) {
 					// Parse and load captions:
 					_this.captions = _this.getCaptions( data );
@@ -77,15 +79,17 @@
 						callback();
 					}
 				});
+				return ;
 			}
 			
 			// Check if we can load by proxy ::
 			if ( !mw.isLocalDomain( this.getSrc() ) && !mw.getConfig('Mw.XmlProxyUrl') ) {
-				mw.log("Error: no text proxy and requesting cross domain srt location: " + this.getSrc() )
+				mw.log("Error: no text proxy and requesting cross domain srt location: " + this.getSrc() );
+				return ;
 			}
-		
 			
-			return ;
+			// Load via proxy:
+			
 		},
 	
 		/**
@@ -122,7 +126,7 @@
 		},
 		getCaptions: function( data ){
 			// detect caption data type: 
-			debugger;
+			//debugger;
 			
 		},
 

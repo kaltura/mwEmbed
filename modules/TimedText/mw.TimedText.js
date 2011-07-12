@@ -62,7 +62,7 @@ mw.includeAllModuleMessages();
 		 * Stores the last text string per category to avoid dom checks
 		 * for updated text
 		 */
-		prevText: null,
+		prevText: [],
 
 		/**
 		* Text sources ( a set of textSource objects )
@@ -381,13 +381,12 @@ mw.includeAllModuleMessages();
 			}
 			this.textSources = [];
 			// load inline text sources:
-			$.each( this.embedPlayer.getTextTracks(), function( inx, textTrack ){
-				_this.textSources.push( new mw.TextTrack( textTrack ) );
+			$.each( this.embedPlayer.getTextTracks(), function( inx, textSource ){
+				_this.textSources.push( new mw.TextSource( textSource ) );
 			});
 
 			// load any module based text sources ( via API calls, run callback after done )
 			$( this.embedPlayer ).triggerQueueCallback( 'LoadTextSources', this.textSources, callback );
-			
 		},
 
 		/**
@@ -597,113 +596,6 @@ mw.includeAllModuleMessages();
 			return $menu;
 		},
 
-		// Simple interface to add a transcription request
-		// TODO this should probably be moved to a gadget
-		getAddSubRequest: function(){
-			var _this = this;
-			var buttons = {};
-			buttons[ gM('mwe-timedtext-request-subs') ] = function(){
-				var apiUrl = _this.textProvider.apiUrl;
-				var videoTitle = 'File:' + _this.embedPlayer.apiTitleKey.replace('File:|Image:', '');
-				var catName = mw.getConfig( 'TimedText.NeedsTranscriptCategory' );
-				var $dialog = $(this);
-
-				var subRequestCategoryUrl = apiUrl.replace('api.php', 'index.php') +
-					'?title=Category:' + catName.replace(/ /g, '_');
-
-				var buttonOk= {};
-				buttonOk[gM('mwe-ok')] =function(){
-					$(this).dialog('close');
-				};
-				// Set the loadingSpinner:
-				$( this ).loadingSpinner();
-				// Turn off buttons while loading
-				$dialog.dialog( 'option', 'buttons', null );
-
-				// Check if the category does not already exist:
-				mw.getJSON( apiUrl, { 'titles': videoTitle, 'prop': 'categories' }, function( data ){
-					if( data && data.query && data.query.pages ){
-						for( var i in data.query.pages ){							
-							// we only request a single page:
-							if( data.query.pages[i].categories ){
-								var categories = data.query.pages[i].categories;
-								for(var j =0; j < categories.length; j++){
-									if( categories[j].title.indexOf( catName ) != -1 ){
-										$dialog.html( gM('mwe-timedtext-request-already-done', subRequestCategoryUrl ) );
-										$dialog.dialog( 'option', 'buttons', buttonOk);
-										return ;
-									}
-								}
-							}
-						}
-					}
-
-					// Else category not found add to category:
-					// check if the user is logged in:
-					mw.getUserName( apiUrl, function( userName ){
-						if( !userName ){
-							$dialog.html( gM('mwe-timedtext-request-subs-fail') );
-							return ;
-						}
-						// Get an edit token:
-						mw.getToken( apiUrl, videoTitle, function( token ) {
-							if( !token ){
-								$dialog.html( gM('mwe-timedtext-request-subs-fail') );
-								return ;
-							}
-							var request = {
-								'action' : 'edit',
-								'summary' : 'Added request for subtitles using [[Commons:MwEmbed|MwEmbed]]',
-								'title' : videoTitle,
-								'appendtext' : "\n[[Category:" + catName + "]]",
-								'token': token
-							};
-							// Do the edit request:
-							mw.getJSON( apiUrl, request, function(data){
-								if( data.edit && data.edit.newrevid){
-
-									$dialog.html( gM('mwe-timedtext-request-subs-done', subRequestCategoryUrl )
-									);
-								} else {
-									$dialog.html( gM('mwe-timedtext-request-subs-fail') );
-								}
-								$dialog.dialog( 'option', 'buttons', buttonOk );
-							});
-						});
-					});
-				});
-			};
-			buttons[ gM('mwe-cancel') ] = function(){
-				$(this).dialog('close');
-			};
-			mw.addDialog({
-				'title' : gM( 'mwe-timedtext-request-subs'),
-				'width' : 450,
-				'content' : gM('mwe-timedtext-request-subs-desc'),
-				'buttons' : buttons
-			});
-		},
-		/**
-		 * Shows the timed text edit ui
-		 *
-		 * @param {String} mode Mode or page to display ( to differentiate between edit vs new transcript)
-		 */
-		showTimedTextEditUI: function( mode ) {
-			var _this = this;
-			// Show a loader:
-			mw.addLoaderDialog( gM( 'mwe-timedtext-loading-text-edit' ) );
-			// Load the timedText edit interface
-			mw.load( 'mw.TimedTextEdit', function() {
-				if( ! _this.editText ) {
-					_this.editText = new mw.TimedTextEdit( _this );
-				}
-				// Close the loader:
-				mw.closeLoaderDialog();
-				// Show the upload text ui: 
-				_this.editText.showUI();
-			});
-		},
-
 		/**
 		* Utility function to assist in menu build out:
 		* Get menu line item (li) html: <li><a> msgKey </a></li>
@@ -717,8 +609,8 @@ mw.includeAllModuleMessages();
 		getLiAddText: function() {
 			var _this = this;
 			return $.getLineItem( gM( 'mwe-timedtext-upload-timed-text'), 'script', function() {
-						_this.showTimedTextEditUI( 'add' );
-					} );
+					_this.showTimedTextEditUI( 'add' );
+			} );
 		},
 
 		/**
@@ -734,10 +626,9 @@ mw.includeAllModuleMessages();
 				return $.getLineItem( source.title, source_icon, function() {
 					_this.selectTextSource( source );
 				});
-			}						
+			}	
 			if( source.srclang ) {
 				var langKey = source.srclang.toLowerCase();
-				var cat = gM('mwe-timedtext-key-language', langKey, _this.getLanguageName ( langKey ) );
 				return $.getLineItem(
 					gM('mwe-timedtext-key-language', langKey, _this.getLanguageName ( langKey ) ),
 					source_icon,
@@ -823,9 +714,9 @@ mw.includeAllModuleMessages();
 		selectTextSource: function( source ) {
 			var _this = this;
 			mw.log("mw.TimedText:: selectTextSource: select lang: " + source.srclang );
+
 			// For some reason we lose binding for the menu ~sometimes~ re-bind
 			this.bindTextButton( this.embedPlayer.$interface.find('timed-text') );
-			
 			
 			this.currentLangKey =  source.srclang;
 			

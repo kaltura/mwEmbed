@@ -171,7 +171,7 @@ mw.MediaElement.prototype = {
 		}
 		var setSelectedSource = function( source ){
 			_this.selectedSource = source;
-			return true;
+			return _this.selectedSource;
 		};
 
 		// Set via user-preference
@@ -188,15 +188,14 @@ mw.MediaElement.prototype = {
 		
 		if( _this.selectedSource ){
 			mw.log('MediaElement::autoSelectSource: Set via trigger::' + _this.selectedSource.getTitle() );
-			return true;
+			return _this.selectedSource;
 		}
 
 		// Set via marked default:
 		$.each( playableSources, function( inx, source ){
 			if ( source.markedDefault ) {
 				mw.log( 'MediaElement::autoSelectSource: Set via marked default: ' + source.markedDefault );
-				setSelectedSource( source );
-				return true;
+				return setSelectedSource( source );;
 			}
 		});
 
@@ -212,7 +211,7 @@ mw.MediaElement.prototype = {
 		}
 		if ( this.selectedSource ) {
 			mw.log('MediaElement::autoSelectSource: Set via bandwidth prefrence: source ' + source.bandwidth + ' user: ' + $.cookie('EmbedPlayer.UserBandwidth') );
-			return true;
+			return this.selectedSource;
 		}
 		
 		// Set via embed resolution closest to relative to display size 
@@ -232,7 +231,7 @@ mw.MediaElement.prototype = {
 		// If we found a source via display resolution return true
 		if ( this.selectedSource ) {
 			mw.log('MediaElement::autoSelectSource: Set via embed resolution:' + this.selectedSource.width + ' close to: ' + displayWidth );
-			return true;
+			return this.selectedSource;
 		}
 		
 		

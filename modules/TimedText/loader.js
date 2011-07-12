@@ -6,7 +6,7 @@
 
 	mw.addResourcePaths( {
 		"mw.TimedText" : "mw.TimedText.js",
-		"mw.TextTrack" : "mw.TextTrack.js",
+		"mw.TextSource" : "mw.TextSource.js",
 		
 		"mw.style.TimedText" : "css/mw.style.TimedText.css",
 
@@ -43,7 +43,7 @@
 	var mwTimedTextRequestSet = [
 		'$j.fn.menu',
 		'mw.TimedText',
-		'mw.TextTrack',
+		'mw.TextSource',
 		'mw.style.TimedText',
 		'mw.style.jquerymenu'
 	];

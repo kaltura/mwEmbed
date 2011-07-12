@@ -3,6 +3,114 @@
  */
 
 
+// Simple interface to add a transcription request
+		// TODO this should probably be moved to a gadget
+		getAddSubRequest: function(){
+			var _this = this;
+			var buttons = {};
+			buttons[ gM('mwe-timedtext-request-subs') ] = function(){
+				var apiUrl = _this.textProvider.apiUrl;
+				var videoTitle = 'File:' + _this.embedPlayer.apiTitleKey.replace('File:|Image:', '');
+				var catName = mw.getConfig( 'TimedText.NeedsTranscriptCategory' );
+				var $dialog = $(this);
+
+				var subRequestCategoryUrl = apiUrl.replace('api.php', 'index.php') +
+					'?title=Category:' + catName.replace(/ /g, '_');
+
+				var buttonOk= {};
+				buttonOk[gM('mwe-ok')] =function(){
+					$(this).dialog('close');
+				};
+				// Set the loadingSpinner:
+				$( this ).loadingSpinner();
+				// Turn off buttons while loading
+				$dialog.dialog( 'option', 'buttons', null );
+
+				// Check if the category does not already exist:
+				mw.getJSON( apiUrl, { 'titles': videoTitle, 'prop': 'categories' }, function( data ){
+					if( data && data.query && data.query.pages ){
+						for( var i in data.query.pages ){							
+							// we only request a single page:
+							if( data.query.pages[i].categories ){
+								var categories = data.query.pages[i].categories;
+								for(var j =0; j < categories.length; j++){
+									if( categories[j].title.indexOf( catName ) != -1 ){
+										$dialog.html( gM('mwe-timedtext-request-already-done', subRequestCategoryUrl ) );
+										$dialog.dialog( 'option', 'buttons', buttonOk);
+										return ;
+									}
+								}
+							}
+						}
+					}
+
+					// Else category not found add to category:
+					// check if the user is logged in:
+					mw.getUserName( apiUrl, function( userName ){
+						if( !userName ){
+							$dialog.html( gM('mwe-timedtext-request-subs-fail') );
+							return ;
+						}
+						// Get an edit token:
+						mw.getToken( apiUrl, videoTitle, function( token ) {
+							if( !token ){
+								$dialog.html( gM('mwe-timedtext-request-subs-fail') );
+								return ;
+							}
+							var request = {
+								'action' : 'edit',
+								'summary' : 'Added request for subtitles using [[Commons:MwEmbed|MwEmbed]]',
+								'title' : videoTitle,
+								'appendtext' : "\n[[Category:" + catName + "]]",
+								'token': token
+							};
+							// Do the edit request:
+							mw.getJSON( apiUrl, request, function(data){
+								if( data.edit && data.edit.newrevid){
+
+									$dialog.html( gM('mwe-timedtext-request-subs-done', subRequestCategoryUrl )
+									);
+								} else {
+									$dialog.html( gM('mwe-timedtext-request-subs-fail') );
+								}
+								$dialog.dialog( 'option', 'buttons', buttonOk );
+							});
+						});
+					});
+				});
+			};
+			buttons[ gM('mwe-cancel') ] = function(){
+				$(this).dialog('close');
+			};
+			mw.addDialog({
+				'title' : gM( 'mwe-timedtext-request-subs'),
+				'width' : 450,
+				'content' : gM('mwe-timedtext-request-subs-desc'),
+				'buttons' : buttons
+			});
+		},
+		/**
+		 * Shows the timed text edit ui
+		 *
+		 * @param {String} mode Mode or page to display ( to differentiate between edit vs new transcript)
+		 */
+		showTimedTextEditUI: function( mode ) {
+			var _this = this;
+			// Show a loader:
+			mw.addLoaderDialog( gM( 'mwe-timedtext-loading-text-edit' ) );
+			// Load the timedText edit interface
+			mw.load( 'mw.TimedTextEdit', function() {
+				if( ! _this.editText ) {
+					_this.editText = new mw.TimedTextEdit( _this );
+				}
+				// Close the loader:
+				mw.closeLoaderDialog();
+				// Show the upload text ui: 
+				_this.editText.showUI();
+			});
+		},
+
+
 var providerId = $( this.embedPlayer ).attr('data-mwprovider') ? 
 		$(  this.embedPlayer  ).attr('data-mwprovider') : 
 		'local';

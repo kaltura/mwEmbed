@@ -149,6 +149,34 @@ mw.KWidgetSupport.prototype = {
 		}
 	},
 	/**
+	 * Check for xml config, let flashvars override  
+	 */
+	getPluginConfig: function( $uiConf, pluginName, attr ){
+		var config = {};
+		$plugin = $uiConf.find( 'plugin#' + pluginName );
+		var fv = mw.getConfig( 'KalturaSupport.IFramePresetFlashvars' ); 
+		$.each( attr, function(inx, attrName ){
+			if( $plugin.attr( attrName ) ){
+				config[attrName] = $plugin.attr( attrName );
+			}
+			// XML sometimes comes in all lower case
+			if( $plugin.attr( attrName ) ){
+				config[attrName] = $plugin.attr( attrName );
+			}
+			// check flashvars overides
+			if( fv[ pluginName + '.' + attrName ] ){
+				config[ attrName ] = fv[ pluginName + '.' + attrName ];
+			}
+			
+			// Convert string to boolean 
+			if( config[ attrName ] === "true" )
+				config[ attrName ] = true;
+			if( config[ attrName ] === "false" )
+				config[ attrName ] = false; 
+		});
+		return config;
+	},
+	/**
 	 * Alternate source grabbing script ( for cases where we need to hot-swap the source ) 
 	 * playlists on iPhone for example we can't re-load the player we have to just switch the src. 
 	 * 
@@ -549,5 +577,4 @@ if( mw.playerManager ){
 mw.getEntryIdSourcesFromApi = function( widgetId, entryId, callback ){
 	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, entryId, callback);
 };
-
 

@@ -88,6 +88,7 @@
 	});
 	// Check if the document has kaltura objects ( for fall forward support ) 
 	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
+
 		var kalturaObjectPlayerList = mw.getKalturaPlayerList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
 		if( ! kalturaObjectPlayerList.length ) {
@@ -161,6 +162,7 @@
 						'kuiconfid' : kEmbedSettings.uiconf_id,
 						'style' : $j( element ).attr('style')
 					};
+					
 					if( kEmbedSettings.entry_id ) {
 						loadEmbedPlayerFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
