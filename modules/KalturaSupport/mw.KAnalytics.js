@@ -19,8 +19,8 @@ mw.addKAnalytics = function( embedPlayer, kalturaClient ) {
 
 mw.KAnalytics.prototype = {
 
-	// The version of kAnalytics
-	version : '0.1',
+	// The version of html5 player
+	version : window['KALTURA_LOADER_VERSION'],
 	
 	// Local reference to embedPlayer
 	embedPlayer: null,
@@ -139,20 +139,26 @@ mw.KAnalytics.prototype = {
 		} else { 
 			// if kentryid is not set, use the selected source url
 			eventSet[ 'entryId' ] = this.embedPlayer.getSrc();
-		}					
+		}
+
+		// Set the 'event:uiconfId'
+		if( this.embedPlayer.kuiconfid ) {
+			eventSet[ 'uiconfId' ] = this.embedPlayer.kuiconfid;
+		}
+		// Set the 'event:widgetId'
+		if( this.embedPlayer.kwidgetid ) {
+			eventSet[ 'widgetId' ] = this.embedPlayer.kwidgetid;
+		}
 
 		// Send events for this player:
 		$j( this.embedPlayer ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey ] );
-		
-		var eventRequest = {};
+
+		// Add in base service and action calls:
+		var eventRequest = {'service' : 'stats', 'action' : 'collect'};
+		// Add event parameters
 		for( var i in eventSet){
 			eventRequest[ 'event:' + i] = eventSet[i];
 		}
-		// Add in base service and action calls: 
-		$j.extend( eventRequest, {
-			'action' : 'collect',
-			'service' : 'stats'
-		} );
 		// Do the api request: 
 		this.kClient.doRequest( eventRequest );
 	},

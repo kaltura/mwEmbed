@@ -2072,6 +2072,12 @@ mw.EmbedPlayer.prototype = {
 		 } )
 		.attr( 'title', gM( 'mwe-embedplayer-pause_clip' ) );
 
+		// if we have start time defined, start playing from that point
+		if( this.currentTime < this.startTime ) {
+			var percent = parseFloat( this.startTime ) / this.getDuration();
+			this.doSeek( percent );
+		}
+
 		// Start the monitor if not already started
 		this.monitor();
 	},
@@ -2438,6 +2444,13 @@ mw.EmbedPlayer.prototype = {
 				//mw.log( "mWEmbedPlayer::should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 				this.onClipDone();
 			}
+
+			// End video if we have endTime attribute
+			if( this.endTime && (this.currentTime > this.endTime) ) {
+				this.pause();
+				this.onClipDone();
+			}
+
 		} else {
 			// Media lacks duration just show end time
 			if ( this.isStopped() ) {
