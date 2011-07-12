@@ -323,8 +323,8 @@ mw.PlayerThemer.prototype = {
 	bindPlayerDisplayState: function(){
 		var _this = this;
 
-		$j( this.embedPlayer ).bind('play', function(){
-			_this.setDisplayState('playing')
+		$j( this.embedPlayer ).bind('onplay', function(){
+			_this.setDisplayState('playing');
 		});
 
 		$j( this.embedPlayer ).bind('paused', function(){

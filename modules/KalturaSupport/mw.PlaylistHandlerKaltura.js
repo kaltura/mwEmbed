@@ -123,7 +123,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				return false;
 			}
 			
-			mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );								
+			mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );	
 			// Set the playlist to the first playlist
 			_this.setPlaylistIndex( 0 );
 			

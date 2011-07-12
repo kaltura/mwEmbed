@@ -132,7 +132,7 @@ mw.SequencerTools.prototype = {
 			}
 		},
 		'preview' : {
-			'icon' : 'play',
+			'icon' : 'onplay',
 			'title' : gM('mwe-sequencer-preview'),
 			'action': function( clickButton, _this, smilElement ){
 				_this.sequencer.getPlayer().previewClip( smilElement, function(){

@@ -10,7 +10,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		callback();
 	});
 	// add a player binding for all "new embedPlayers" 
-	$j( embedPlayer ).bind('play', function(){
+	$j( embedPlayer ).bind('onplay', function(){
 		// Html5 bindings are nice for inline closure context preservation: 
 		setTimeout(function(){
 			console.log( 'test.js:: after 3 seconds play time is ' + embedPlayer.currentTime );

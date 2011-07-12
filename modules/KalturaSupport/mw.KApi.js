@@ -114,7 +114,7 @@ mw.KApi.prototype = {
         	'action' : 'startwidgetsession',
         	'widgetId': '_' + this.partner_id, 
         	'partnerId' : + this.partner_id // don't ask me, I did not design the API!
-        }
+        };
 		// add in the base parameters:
 		var param = $j.extend( {}, this.baseParam, ksParam );
 		var requestURL = this.getApiUrl() + 'session&' + $j.param( param );

@@ -35,7 +35,7 @@ mw.freeWheelControler.prototype = {
 		// takes control of things )
 		
 		// read the ad repsonse from teh
-		$j(this.embedPlayer).bind('play', function(){
+		$j(this.embedPlayer).bind('onplay', function(){
 			_this.embedPlayer.stopEventPropagation();
 			_this.freewheel.playSlots( tv.freewheel.SDK.TIME_POSITION_CLASS_PREROLL, this.prerollComplete );
 		});

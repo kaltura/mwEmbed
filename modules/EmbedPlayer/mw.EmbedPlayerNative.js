@@ -190,6 +190,24 @@ mw.EmbedPlayerNative = {
 		}, 100 );
 	},
 
+	applyIntrinsicAspect: function(){
+		var vid = this.getPlayerElement();
+		// check if a video tag is present 
+		if( !vid ){
+			return this.parent_applyIntrinsicAspect();
+		}
+		var pHeight = $j( vid ).height();
+		// Check for intrinsic width and maintain aspect ratio
+		if( vid && vid.videoWidth && vid.videoHeight ){
+			var pWidth = parseInt(  vid.videoWidth / vid.videoHeight * pHeight);
+			$j('#' + this.pid ).css({
+				'width':  pWidth + 'px',
+				'left': ( ( $j( this ).width() - pWidth ) * .5 ) + 'px',
+				'position' : 'absolute'
+			});
+		}
+	},
+	
 	/**
 	 * Apply media element bindings
 	 */

@@ -86,7 +86,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 				$j( embedPlayer ).siblings( '.k-menu' ).hide();
 			}, 10);
 		});
-		$j( embedPlayer ).bind( 'play', function(){
+		$j( embedPlayer ).bind( 'onplay', function(){
 			$j( embedPlayer ).siblings( '.kalturaEditOverlay' ).fadeOut( 'fast' );
 			embedPlayer.controlBuilder.displayOptionsMenuFlag = false;
 			return true ;

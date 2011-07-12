@@ -200,6 +200,9 @@ mw.IFramePlayerApiServer.prototype = {
 		var msgObject = JSON.parse( event.data );
 		// Call a method:
 		if( msgObject.method && this.embedPlayer[ msgObject.method ] ){
+			if( msgObject.method == "play" )
+				alert( ' got play request! ');
+			
 			this.embedPlayer[ msgObject.method ].apply( this.embedPlayer, $j.makeArray( msgObject.args ) );			
 		}
 		// Update a attribute

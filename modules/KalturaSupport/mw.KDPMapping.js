@@ -277,8 +277,8 @@
 						callback( 'pause', embedPlayer.id );
 					});
 					
-					b( 'play', function(){
-						callback( 'play', embedPlayer.id );
+					b( 'onplay', function(){
+						callback( 'onplay', embedPlayer.id );
 					});
 					
 					break;
@@ -298,7 +298,7 @@
 				case 'playerPlayed':
 				case 'play':
 				case 'doPlay':
-					b( "play", function(){
+					b( "onplay", function(){
 						callback( embedPlayer.id );
 					});
 					break;

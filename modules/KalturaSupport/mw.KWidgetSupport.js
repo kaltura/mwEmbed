@@ -29,8 +29,8 @@ mw.KWidgetSupport.prototype = {
 			// Add kaltura iframe share support:
 			$j( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
 				callback( mw.getConfig('Kaltura.ServiceUrl') + '/p/' + _this.kClient.getPartnerId() +
-							'/embedIframe/entry_id/' + embedPlayer.kentryid +
-							'/uiconf_id/' + embedPlayer.kuiconfid );
+						'/embedIframe/entry_id/' + embedPlayer.kentryid +
+						'/uiconf_id/' + embedPlayer.kuiconfid );
 			});
 		});
 	},

@@ -942,7 +942,8 @@ mw.PlayerControlBuilder.prototype = {
 			'top' : '10px',
 			'left' : '10px',
 			'right' : '10px',
-			'padding' : '4px'
+			'padding' : '4px',
+			'z-index' : 2
 		})
 		.html( warningMsg );
 	

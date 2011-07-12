@@ -11,7 +11,7 @@ mw.plyMediaConfig = {
 		});
 		
 		// add any play event actions :
-		$j( embedPlayer ).bind( 'play', function(){
+		$j( embedPlayer ).bind( 'onplay', function(){
 
 		})
 		

@@ -92,7 +92,7 @@
 				$j( '#vid').get(0).currentTime = 10;
 			});
 
-			$j('#vid').bind('play', function(){
+			$j('#vid').bind('onplay', function(){
 				$j('#playPauseLog').append( "Play Event\n" );
 			});
 			

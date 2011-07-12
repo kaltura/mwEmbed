@@ -289,7 +289,7 @@ mw.SmilAnimate.prototype = {
 		// ( buffer delays management things insync below this range )
 
 		// Bind to play event and issue the initial "play" request
-		$j( media ).bind('play', function(){
+		$j( media ).bind('onplay', function(){
 			if( callback ){
 				callback();
 				callback = null;

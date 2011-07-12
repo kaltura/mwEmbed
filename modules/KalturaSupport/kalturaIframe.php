@@ -286,7 +286,7 @@ class kalturaIframe {
 		// pass along player attributes to the swf:
 		$urlParams = $this->getResultObject()->getUrlParameters();	
 		foreach($urlParams as $key => $val ){
-			if( $val != null ){
+			if( $val != null && $key != 'flashvars' ){
 				$swfUrl.='/' . $key . '/' . $val;
 			}
 		}

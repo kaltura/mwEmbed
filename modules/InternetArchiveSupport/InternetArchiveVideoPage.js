@@ -146,7 +146,7 @@ mw.IA =
         mw.IA.log('this is /details/ video!');
         mw.IA.video = true;
 
-        player.unbind('play').bind('play', mw.IA.resize);
+        player.unbind('onplay').bind('onplay', mw.IA.resize);
         
         // player.bind('pause', mw.IA.pause); //xxx hash not quite ready yet 
         if (!mw.isMobileDevice())

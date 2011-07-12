@@ -186,7 +186,7 @@ mw.KAnalytics.prototype = {
 		b( 'mediaLoaded', 'MEDIA_LOADED' );
 		
 		// When the play button is pressed or called from javascript
-		b( 'play', 'PLAY' );
+		b( 'onplay', 'PLAY' );
 	
 		// When the show Share menu is displayed
 		b( 'showShareEvent', 'OPEN_VIRAL' );

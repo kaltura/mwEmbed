@@ -133,7 +133,7 @@ mw.AdTimeline.prototype = {
 		// Flag to store if its the first time play is being called:
 		var firstPlay = true;
 		
-		$j(_this.embedPlayer).bind('play', function() {
+		$j(_this.embedPlayer).bind('onplay', function() {
 			// Check if this is the "first play" request:
 			if (!firstPlay) {
 				return 
@@ -645,7 +645,7 @@ mw.AdTimeline.prototype = {
 		});
 		
 		// On resume: 
-		$j( videoPlayer ).bind( 'play', function(){
+		$j( videoPlayer ).bind( 'onplay', function(){
 			sendBeacon( 'resume' );
 		});
 		

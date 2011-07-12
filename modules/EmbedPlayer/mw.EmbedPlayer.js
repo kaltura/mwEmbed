@@ -719,17 +719,21 @@ mw.EmbedPlayer.prototype = {
 		$j( this ).trigger('updateFeatureSupportEvent', this.supports );
 		return ;
 	},
-	applyIntrinsicAspect:function(){
-		var pHeight = $j('#' + this.pid ).height();
-		var vid = $j('#' + this.pid ).get(0);
-		// Check for intrinsic width and maintain aspect ratio
-		if( vid && vid.videoWidth && vid.videoHeight ){
-			var pWidth = parseInt(  vid.videoWidth / vid.videoHeight * pHeight);
-			$j('#' + this.pid ).css({
-				'width':  pWidth + 'px',
-				'left': ( ( $j( this ).width() - pWidth ) * .5 ) + 'px',
-				'position' : 'absolute'
-			});
+	
+	applyIntrinsicAspect: function(){
+		// check if a image thumbnail is present: 
+		if( this.$interface.find('.playerPoster').length ){
+			var img = this.$interface.find('.playerPoster').get(0);
+			var pHeight = $j( img ).height();
+			// Check for intrinsic width and maintain aspect ratio
+			if( img.naturalWidth && img.naturalHeight ){
+				var pWidth = parseInt(  img.naturalWidth / img.naturalHeight * pHeight);
+				$j( img ).css({
+					'width':  pWidth + 'px',
+					'left': ( ( $j( this ).width() - pWidth ) * .5 ) + 'px',
+					'position' : 'absolute'
+				});
+			}
 		}
 	},
 	/**
@@ -1348,10 +1352,6 @@ mw.EmbedPlayer.prototype = {
 			if( this.isPersistentNativePlayer() && !_this.controlBuilder.checkOverlayControls() ){
 				// if Persistent native player always give it the player height
 				$j('#' + this.pid ).css('height', this.height - _this.controlBuilder.height );
-				
-				// Check for intrinsic width and maintain aspect ratio
-				this.applyIntrinsicAspect();
-				
 			}
 			$j( this ).show();
 			this.controls = true;
@@ -1375,6 +1375,9 @@ mw.EmbedPlayer.prototype = {
 
 		// Update temporal url if present
 		this.updateTemporalUrl();
+		
+		// Check for intrinsic width and maintain aspect ratio
+		this.applyIntrinsicAspect();
 
 		mw.playerManager.playerReady( this );
 
@@ -2013,7 +2016,6 @@ mw.EmbedPlayer.prototype = {
 	codeTriggeredPlay : false, // helps prevent event stacking
 	play: function() {
 		var _this = this;
-		
 		// Don't run play if the code tirggered the play event: 
 		if( this.codeTriggeredPlay ){
 			setTimeout(function(){
@@ -2050,7 +2052,7 @@ mw.EmbedPlayer.prototype = {
 			mw.log("EmbedPlayer:: trigger play even::" + !this.paused + ' events:' + this.doMethodsAutoTrigger() );
 			if( ! this.doMethodsAutoTrigger() && this._propagateEvents ) {
 				this.codeTriggeredPlay = true;
-				$j( this ).trigger( 'play' );
+				$j( this ).trigger( 'onplay' );
 			}
 		}
 		

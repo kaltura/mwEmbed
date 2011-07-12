@@ -561,7 +561,7 @@ mw.Playlist.prototype = {
 		
 		// Lookup the sources from the playlist provider:
 		_this.sourceHandler.getClipSources( clipIndex, function( clipSources ){
-			mw.log("getClipSources cb");
+			mw.log("mw.Playlist:: getClipSources cb for " + clipIndex );
 			if( clipSources ){
 				for( var i =0; i < clipSources.length; i++ ){
 					var $source = $j('<source />')
@@ -613,7 +613,6 @@ mw.Playlist.prototype = {
 		
 		// Add any custom attributes that may be needed for embedPlayer bindings
 		var attributes = _this.sourceHandler.getCustomAttributes( _this.clipIndex );
-		
 		// Update the video tag with the embedPlayer
 		$video.unbind().embedPlayer( attributes, function(){
 			var embedPlayer = _this.getEmbedPlayer();
