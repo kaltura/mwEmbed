@@ -101,10 +101,11 @@ mw.AdTimeline.prototype = {
 	 * Display timeline targets: ( false by default)
 	 */
 	timelineTargets: {
-		preroll : false,
-		bumper : false,
-		overlay : false,
-		postroll : false
+		'preroll' : false,
+		'bumper' : false,
+		'overlay' : false,
+		'midroll' : false,
+		'postroll' : false
 	},
 
 	// Overlays are disabled during preroll, bumper and postroll
