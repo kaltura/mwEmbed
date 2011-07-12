@@ -71,7 +71,7 @@ mw.KCuePoints.prototype = {
 		if( ! this.getCuePoints() ){
 			return false;
 		}
-		var cuePoints = this.getCuePoints();
+		var cuePoints = this.getCuePoints(), cuePoint;
 		// Start looking for the cue point via time, return first match:
 		for( var i = 0; i < cuePoints.length; i++ ) {
 			cuePoint = cuePoints[ i ];
@@ -95,16 +95,16 @@ mw.KCuePoints.prototype = {
 		var obj = {
 			cuePoint: cuePoint
 		};
-		if( cuePoint.type == 1 ) {
+		if( cuePoint.cuePointType == 'codeCuePoint.Code' ) {
 			// Code type cue point
 			eventName = 'cuePointReached';
-		} else if( cuePoint.type == 2 ) {
+		} else if( cuePoint.cuePointType == 'adCuePoint.Ad' ) {
 			// Ad type cue point
 			eventName = 'adOpportunity';
 			obj.context = this.getAdType(cuePoint);
 		}
 		$j( this.embedPlayer ).trigger( 'KalturaSupport_' + eventName, obj );
-		mw.log('Cue Points :: Triggered event: ' + eventName + ' - ' + cuePoint.name + ' at: ' + cuePoint.startTime );
+		mw.log('Cue Points :: Triggered event: ' + eventName + ' - ' + cuePoint.title + ' at: ' + cuePoint.startTime );
 	},
 	
 	// Determine our cue point Ad type
@@ -134,7 +134,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		// Add Entry Cue Points data
 		if( entryCuePoints ) {
 			mw.log( "KCuePoints:: Add CuePoints to embedPlayer");
-			embedPlayer.entryCuePoints = entryCuePoints;
+			embedPlayer.entryCuePoints = entryCuePoints.objects;
 			new mw.KCuePoints( embedPlayer );
 			
 			// Allow other plugins to subscribe to cuePoint ready event: 
