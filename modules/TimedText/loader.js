@@ -2,7 +2,7 @@
 * TimedText loader.
 */
 // Scope everything in "mw" ( keeps the global namespace clean )
-( function( mw ) {
+( function( mw, $ ) {
 
 	mw.addResourcePaths( {
 		"mw.TimedText" : "mw.TimedText.js",
@@ -19,7 +19,7 @@
 	// Merge in timed text related attributes: TODO add merge config support with some way to 
 	// classify configuration as "default" vs custom. 
 	var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes');
-	mw.setConfig( 'EmbedPlayer.SourceAttributes', $j.extend( sourceAttr, [
+	mw.setConfig( 'EmbedPlayer.SourceAttributes', $.extend( sourceAttr, [
 	   'srclang',
 	   'category'
 	]) );
@@ -61,14 +61,14 @@
 
 	// Update the player loader request with timedText library if the embedPlayer
 	// includes timedText tracks.
-	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
+	$( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
 		if( mw.checkForTimedText( playerElement ) ) {
 			classRequest = $j.merge( classRequest, mwTimedTextRequestSet );
 		}
 	} );
 	
 	// On new embed player check if we need to add timedText
-	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		if( mw.checkForTimedText( embedPlayer ) ){
 			new mw.TimedText( embedPlayer );
 		}
@@ -127,4 +127,4 @@
 		]
 	]);
 
-} )( window.mw );
+} )( window.mw, window.jQuery );
