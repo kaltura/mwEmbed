@@ -75,11 +75,11 @@ mw.KCuePoints.prototype = {
 		}
 		var cuePoints = this.getCuePoints();
 		// Start looking for the cue point via time, return first match:
-		$.each( cuePoints, function ( inx, cuePoint) {
-			if( cuePoint.startTime >= time ) {
-				return cuePoint;
+		for( var i = 0; i<cuePoints.length; i++) {
+			if( cuePoints[i].startTime >= time ) {
+				return cuePoints[i];
 			}
-		});
+		}
 		// No cue point found in range return false:
 		return false;
 	},
