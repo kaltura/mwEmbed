@@ -183,10 +183,10 @@ mw.KAnalytics.prototype = {
 		b( 'playerReady', 'WIDGET_LOADED' );
 		
 		// When the poster or video ( when autoplay ) media is loaded
-		b( 'mediaLoaded', 'MEDIA_LOADED' );
+		b( 'KalturaSupport_MetaDataReady', 'MEDIA_LOADED' );
 		
 		// When the play button is pressed or called from javascript
-		b( 'onplay', 'PLAY' );
+		b( 'firstPlay', 'PLAY' );
 	
 		// When the show Share menu is displayed
 		b( 'showShareEvent', 'OPEN_VIRAL' );

@@ -2041,6 +2041,7 @@ mw.EmbedPlayer.prototype = {
 	 * Handles play requests, updates relevant states: seeking =false paused =
 	 * false Updates pause button Starts the "monitor"
 	 */
+	firstPlay : true,
 	play: function() {
 		var _this = this;
 		
@@ -2072,6 +2073,11 @@ mw.EmbedPlayer.prototype = {
 			mw.log("EmbedPlayer:: trigger play even::" + !this.paused + ' events:' + this.doMethodsAutoTrigger() );
 			if( ! this.doMethodsAutoTrigger() && this._propagateEvents ) {
 				$j( this ).trigger( 'onplay' );
+			}
+			// We need first play event for analytics purpose
+			if( this.firstPlay ) {
+				this.firstPlay = false;
+				$j( this ).trigger( 'firstPlay' );
 			}
 		}
 		
