@@ -645,7 +645,7 @@ mw.PlayerControlBuilder.prototype = {
 		var bindFirstPlay = false;		
 		
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
-		$(embedPlayer).unbind('play.ctrl').bind('play.ctrl', function() { //Only bind once played
+		$(embedPlayer).unbind('onplay.ctrl').bind('onplay.ctrl', function() { //Only bind once played
 			if(bindFirstPlay) {
 				return ;
 			}

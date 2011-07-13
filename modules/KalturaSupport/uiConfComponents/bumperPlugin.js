@@ -38,7 +38,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			embedPlayer.bumperPlayCount = 0;
 			
 			// Add to the bumper per entry id:						
-			$j( embedPlayer ).unbind( 'play.bumper' ).bind( 'play.bumper', function(){
+			$j( embedPlayer ).unbind( 'onplay.bumper' ).bind( 'onplay.bumper', function(){
 				// Don't play the bumper 
 				// we don't use the "playonce" attribute (check of the kdp is function)
 				//if( playOnce == "true" && embedPlayer.bumperPlayCount >= 1){
