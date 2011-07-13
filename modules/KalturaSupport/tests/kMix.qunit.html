@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>MIX test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script>
+function jsCallbackReady( playerId ) {
+	window.kdp = document.getElementById(playerId);
+}
+function changeEntry( entryId ) {
+	window.kdp.sendNotification("changeMedia",{entryId:entryId});
+}
+
+// Test
+var testEventObject = {};
+
+mw.ready( function() {
+	$j( testEventObject ).trigger( 'runTest' );
+});
+
+function jsKalturaPlayerTest( videoId ){
+	// Name this module
+	module( "Mix" );
+
+	asyncTest("Change Media", function(){
+		$j( testEventObject ).bind('runTest', function( event ){
+			notEqual( window.kdp, "undefined", "JS API working");
+			start();
+		});
+	});
+
+}
+</script>
+</head>
+<body>
+<h2> Mix Test </h2>
+<h3> Load Kaltura Mix entry and use changeMedia API to load different entry </h3>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers
+<br />
+<object id="kdp3" name="kdp3" class="player" width="600" height="400" type="application/x-shockwave-flash" allowfullscreen="true" allownetworking="all" allowscriptaccess="always" rel="media:video" data="http://www.kaltura.com/kwidget/wid/_552701/uiconf_id/1426242">
+	<param name="movie" value="http://www.kaltura.com/kwidget/wid/_552701/uiconf_id/1426242">
+	<param name="quality" value="best">
+	<param name="wmode" value="opaque">
+	<param name="allowfullscreen" value="yes">
+	<param name="allowscriptaccess" value="always">
+	<param name="allownetworking" value="all">
+	<param name="flashVars" value="entryId=1_2qy6yq5j&amp;sourceType=entryId">
+</object>
+<br /><br />
+<input type="button" onclick="changeEntry('1_oz8y7d5a');" value="Change Media" />
+</body>
+</html>
