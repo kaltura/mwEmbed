@@ -471,15 +471,15 @@ function kCheckAddScript(){
 		restoreKalturaKDPCallback();
 	}
 }
+function kIsIOS(){
+	return ( (navigator.userAgent.indexOf('iPhone') != -1) || 
+	(navigator.userAgent.indexOf('iPod') != -1) || 
+	(navigator.userAgent.indexOf('iPad') != -1) )
+}
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not available 
 function kIsHTML5FallForward(){
 	// Check for a mobile html5 user agent:
-	if ( (navigator.userAgent.indexOf('iPhone') != -1) || 
-		(navigator.userAgent.indexOf('iPod') != -1) || 
-		(navigator.userAgent.indexOf('iPad') != -1) ||
-		// Force html5 for chrome / desktop safari
-		( mw.getConfig( 'forceMobileHTML5' ) )
-	){
+	if ( kIsIOS() || mw.getConfig( 'forceMobileHTML5' ) ){
 		return true;
 	}
 	// Special check for Android:

@@ -1391,15 +1391,18 @@ mw.EmbedPlayer.prototype = {
 	},
 	getPlayerInterface: function(){
 		if( !this.$interface ){
+			var posObj = {
+					'width' : this.width + 'px',
+					'height' : this.height + 'px'
+			};
+			if( !mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
+				posObj['position'] = 'relative';
+			}
 			// Make sure we have mwplayer_interface
 			$j( this ).wrap(
 				$j('<div>')
 				.addClass( 'mwplayer_interface ' + this.controlBuilder.playerClass )
-				.css({
-					'width' : this.width + 'px',
-					'height' : this.height + 'px',
-					'position' : 'relative'
-				})
+				.css( posObj )
 			)
 			// position the "player" absolute inside the relative interface
 			// parent:
@@ -1472,7 +1475,6 @@ mw.EmbedPlayer.prototype = {
 		mw.log("EmbedPlayer::showPluginMissingHTML");
 		// Hide loader
 		$j('#loadingSpinner_' + this.id ).remove();
-		
 		// Set the top level container to relative position: 
 		$j(this).css('position', 'relative');
 		
@@ -1500,9 +1502,15 @@ mw.EmbedPlayer.prototype = {
 			this.controlBuilder.doWarningBindinng( 'EmbedPlayer.DirectFileLinkWarning',
 				gM( 'mwe-embedplayer-download-warn', mw.getConfig('EmbedPlayer.FirefoxLink') )
 			);
+			// Make sure we have a play btn:
+			if( ! $j( this ).find('.play-btn-large').length ) {
+				this.$interface.append(
+						this.controlBuilder.getComponent( 'playButtonLarge' )
+				);
+			}
 			
 			// Set the play button to the first available source: 
-			$j( this ).find('.play-btn-large')
+			this.$interface.find('.play-btn-large')
 			.unbind('click')
 			.wrap(
 				$j('<a />').attr( {
@@ -1681,7 +1689,7 @@ mw.EmbedPlayer.prototype = {
 		var class_atr = '';
 		var style_atr = '';
 		
-		if( this.useNativePlayerControls() && this.mediaElement.sources.length ){
+		if( this.useNativePlayerControls() && this.mediaElement.selectedSource ){
 			this.showNativePlayer();
 			return ;
 		}
@@ -1732,6 +1740,7 @@ mw.EmbedPlayer.prototype = {
 		if( this.usenativecontrols === true ){
 			return true;
 		}
+		
 		if( mw.getConfig('EmbedPlayer.NativeControls') === true ) {
 			return true;
 		}
@@ -1783,11 +1792,10 @@ mw.EmbedPlayer.prototype = {
 
 		// Get the selected source:
 		var source = this.mediaElement.selectedSource;
-
 		// Setup videoAttribues
 		var videoAttribues = {
 			'poster': _this.poster,
-			'src' : source.src,
+			'src' : source.getSrc(),
 			'controls' : 'true'
 		};
 		if( this.loop ){

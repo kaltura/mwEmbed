@@ -7,34 +7,6 @@
 	<script type="text/javascript" src="jquery.cookie.js"></script>
 	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 	<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
- 	<script type="text/javascript">
- 	if( window['QUnit'] ){
- 		// Clear the cookie for the test
- 		$.cookie( 'TimedText.Preferences', false );
- 		
- 		QUnit.start();
- 		// Name this module
- 		module( "TimedText SRT" );
- 		
- 		asyncTest( "Subtitles displayed", function(){
-
- 			mw.ready(function(){
- 				var vid = $('#subtitlePlayer').get(0);
- 				QUnit.ok(true, "Player Loaded");
-
- 				$( vid ).bind("seeked", function(){
- 					equal( $('.track span').text(), "At the left we can see...", "Subtitle displayed at seek time 16" );
- 					start();
- 				});
- 				vid.play();
- 				setTimeout(function(){
- 					vid.pause();
- 					vid.currentTime = 16;
- 				}, 1000);
-	 		});
- 		});
- 	}
- 	</script>
 </head>
 <body>
 <h3> Inline SRT Sources </h3>
@@ -161,7 +133,45 @@
              src="media/elephants_dream/chapters.srt"></track>
 
 	</video>
+<script type="text/javascript">
+	// TMML is not friendly to dynamic playhead positions ( assumes static play control bar ) 
+	mw.setConfig( 'EmbedPlayer.OverlayControls', false );
+	// Show controls for timed text on ipad
+	mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
 
+	
+ 	if( window['QUnit'] ){
+ 		// Clear the cookie for the test
+ 		$.cookie( 'TimedText.Preferences', false );
+
+ 		// if running a test give iOS persistant native player
+		if( kIsIOS() ){
+			$('#subtitlePlayer').addClass( "persistentNativePlayer" );
+		}
+ 		
+ 		QUnit.start();
+ 		// Name this module
+ 		module( "TimedText SRT" );
+ 		
+ 		asyncTest( "Subtitles displayed", function(){
+
+ 			mw.ready(function(){
+ 				var vid = $('#subtitlePlayer').get(0);
+ 				QUnit.ok(true, "Player Loaded");
+
+ 				$( vid ).bind("seeked", function(){
+ 					equal( $('.track span').text(), "At the left we can see...", "Subtitle displayed at seek time 16" );
+ 					start();
+ 				});
+ 				vid.play();
+ 				setTimeout(function(){
+ 					vid.pause();
+ 					vid.currentTime = 16;
+ 				}, 2000);
+	 		});
+ 		});
+ 	}
+ 	</script>
 	
 </body>
 </html>

@@ -138,6 +138,11 @@ mw.EmbedTypes = {
 					// Test for h264:
 					if ( dummyvid.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
 						this.mediaPlayers.addPlayer( h264NativePlayer );
+						// check for iOS for vdn player support ( apple adaptive ):
+						if( mw.isIOS() ){
+							this.mediaPlayers.addPlayer( appleVdnPlayer );
+						}
+						
 					}
 					// For now if Android assume we support h264Native (FIXME
 					// test on real devices )

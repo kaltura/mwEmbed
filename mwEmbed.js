@@ -1189,7 +1189,10 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		return $j( '#mwTempLoaderDialog' );
 	};
 	mw.isMobileDevice = function(){
-		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() || mw.isAndroid2() );
+		return ( mw.isIOS()|| mw.isAndroid2() );
+	},
+	mw.isIOS = function(){
+		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
 	},
 	mw.isIphone = function(){
 		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
