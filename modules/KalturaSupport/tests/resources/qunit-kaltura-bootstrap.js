@@ -1,5 +1,15 @@
 //must come after qunit-bootstrap.js and after mwEmbedLoader.php
 if( window.QUnit ){
+	// check if the test can access the iframe
+	var domainRegEx = new RegExp(/^((http[s]?):\/)?\/?([^:\/\s]+)(:([^\/]*))?((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(\?([^#]*))?(#(.*))?$/);
+	var match = document.URL.match( domainRegEx );
+	var pageDomain = match[3];
+	var scriptMatch = SCRIPT_LOADER_URL.match(domainRegEx );
+	if( match && scriptMatch[3] != pageDomain ){
+		ok(false, "Error: trying to test across domains, no iframe inspection is possible");
+		stop();
+	}
+	
 	mw.setConfig( 'forceMobileHTML5', true );	
 	if( window['jsCallbackReady'] ){
 		window['orgJsCallbackReady'] = window['jsCallbackReady'];

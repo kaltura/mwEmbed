@@ -14,15 +14,13 @@ function jsKalturaPlayerTest( videoId ){
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var kdp = $('#' + videoId ).get(0);
-		
+	
 	asyncTest("Playlist layout elements present", function(){
 		kalturaQunitWaitForPlayer(function(){	
-			setTimeout(function(){	
-				ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-				ok( $iframe.find('.play-btn').length, ".play-btn found" );
-				equal( $iframe.find('.playlistSetList').find('a').length, 2, 'found two playlists');
-				start();
-			},251);
+			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
+			ok( $iframe.find('.play-btn').length, ".play-btn found" );
+			equal( $iframe.find('.playlistSetList').find('a').length, 2, 'found two playlists');
+			start();
 		});
 	});
 	asyncTest("Playlist switchEntry", function(){
