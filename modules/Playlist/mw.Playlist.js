@@ -118,7 +118,7 @@ mw.Playlist.prototype = {
 		.css({
 			'float' : 'left'
 		})
-		.append( $j('<div />').addClass('media-rss-video-player') );
+		.append( $j('<div />').addClass( 'media-rss-video-player' ).css( 'position', 'relative' ) );
 	},
 	/**
 	* Draw the media rss playlist ui

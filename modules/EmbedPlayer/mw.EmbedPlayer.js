@@ -403,8 +403,7 @@ EmbedPlayerManager.prototype = {
 				swapPlayerElement[ method ] = playerInterface[ method ];
 			}
 		}
-		// Check if we are using native controls or Persistent player ( should
-		// keep the video embed around )
+		// Check if we are using native controls or Persistent player ( should keep the video embed around )
 		if( playerInterface.useNativePlayerControls() || playerInterface.isPersistentNativePlayer() ) {
 			$j( targetElement )
 			.attr( 'id', playerInterface.pid )
@@ -413,17 +412,18 @@ EmbedPlayerManager.prototype = {
 			.after(
 				$j( swapPlayerElement ).css( 'display', 'none' )
 			);
-
 		} else {
 			$j( targetElement ).replaceWith( swapPlayerElement );
 		}
 
-
 		// Set swapPlayerElement has height / width set and set to loading:
 		$j( swapPlayerElement ).css( {
 			'width' : playerInterface.width + 'px',
-			'height' : playerInterface.height + 'px'
+			'height' : playerInterface.height + 'px',
+			'overflow': 'hidden'
 		} );
+		
+		
 
 		// If we don't already have a loadSpiner add one:
 		if( $j('#loadingSpinner_' + playerInterface.id ).length == 0 ){
@@ -730,13 +730,19 @@ mw.EmbedPlayer.prototype = {
 		// check if a image thumbnail is present:
 		if( this.$interface.find('.playerPoster').length ){
 			var img = this.$interface.find('.playerPoster').get(0);
-			var pHeight = $j( img ).height();
+			var pHeight = $j( this ).height();
 			// Check for intrinsic width and maintain aspect ratio
 			if( img.naturalWidth && img.naturalHeight ){
 				var pWidth = parseInt(  img.naturalWidth / img.naturalHeight * pHeight);
+				if( pWidth > $j( this ).width() ){
+					pWidth = $j( this ).width();
+					pHeight =  parseInt( img.naturalHeight / img.naturalWidth * pWidth );
+				}
 				$j( img ).css({
+					'height' : pHeight + 'px',
 					'width':  pWidth + 'px',
 					'left': ( ( $j( this ).width() - pWidth ) * .5 ) + 'px',
+					'top': ( ( $j( this ).height() - pHeight ) * .5 ) + 'px',
 					'position' : 'absolute'
 				});
 			}

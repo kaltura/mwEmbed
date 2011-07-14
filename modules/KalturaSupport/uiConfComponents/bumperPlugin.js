@@ -12,7 +12,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				'bumper', 
 				['bumperEntryID', 'clickUrl', 'lockUi', 'playOnce', 'preSequence', 'width', 'height']
 		);
-		if( ! bc.bumperEntryID ){
+		if( ! bc.bumperEntryID || bc.preSequence == "0" ){
 			callback();
 			return ;
 		}

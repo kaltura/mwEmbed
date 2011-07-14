@@ -1961,7 +1961,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 * @param {String}
 	 *            url Source url to be updated
 	 * @param {Object}
-	 *            newParams key, value paris to swap in
+	 *            newParams key, value pairs to swap in
 	 * @return {String} the updated url
 	 */
 	mw.replaceUrlParams = function( url, newParams ) {
