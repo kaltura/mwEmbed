@@ -16,11 +16,13 @@ function jsKalturaPlayerTest( videoId ){
 	var kdp = $('#' + videoId ).get(0);
 		
 	asyncTest("Playlist layout elements present", function(){
-		kalturaQunitWaitForPlayer(function(){					
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
-			equal( $iframe.find('.playlistSetList').find('a').length, 2, 'found two playlists');
-			start();
+		kalturaQunitWaitForPlayer(function(){	
+			setTimeout(function(){	
+				ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
+				ok( $iframe.find('.play-btn').length, ".play-btn found" );
+				equal( $iframe.find('.playlistSetList').find('a').length, 2, 'found two playlists');
+				start();
+			},251);
 		});
 	});
 	asyncTest("Playlist switchEntry", function(){
@@ -57,4 +59,5 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/130645357/wid/_243342/ui
  <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> 
  </object>
 </body>
+
 </html>
