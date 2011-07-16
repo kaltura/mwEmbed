@@ -470,6 +470,7 @@ class KalturaGetResultObject {
 			$kparams = array();
 			
 			// access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
+			$client->addParam( $kparams, "entryId",  $this->urlParameters['entry_id'] );
 			$client->addParam( $kparams, "contextDataParams",  array( 'referrer' =>  $this->getReferer() ) );
 			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams );
 			$kparams = array();
@@ -617,6 +618,14 @@ class KalturaGetResultObject {
 		$result = $this->getResultObject();
 		if( isset( $result['uiConf'] ) ){
 			return $result['uiConf'];
+		} else {
+			return false;
+		}
+	}
+	public function getMeta(){
+		$result = $this->getResultObject();
+		if( isset( $result['meta']  ) ){
+			return $result['meta'];
 		} else {
 			return false;
 		}

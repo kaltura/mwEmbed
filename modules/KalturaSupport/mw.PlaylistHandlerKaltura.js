@@ -22,7 +22,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 		for( var i in options){
 			this[i] = options[i];
 		}
-	},	
+	},
+	
 	loadPlaylist: function ( callback ){
 		var _this = this;
 		
@@ -375,6 +376,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 		return $boxContainer;
 	},
+	
 	applyUiConfAttributes:function(clipIndex, $target, confTag ){
 		var _this = this;
 		if( ! confTag ){

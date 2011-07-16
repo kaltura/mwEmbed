@@ -3,7 +3,16 @@
  * Simple html version of age gate plugin. 
  */
 class AgeGate {
+	function __construct( & $iframe ){
+		$this->resultObj = $iframe->getResultObject();
+	}
 	function run( ){
+		$meta = $this->resultObj->getMeta();
+		// Check if the plugin is enabled ( agegate tag ) 
+		if( $meta && strpos( $meta->tags, 'agegate' ) === false ){
+			return true;
+		}
+		
 		// Check if the validAge cookie is set: 
 		if( isset( $_COOKIE['validUserAge'] ) ){
 			if( $_COOKIE['validUserAge'] == 'yes' ){
@@ -178,5 +187,3 @@ for($i=2011; $i > 1910; $i--){
 		<?php 
 	}
 }
-// Add the plugin to the kaltura iframe
-$wgKalturaIframe->addPlugin('ageGate', new AgeGate() );

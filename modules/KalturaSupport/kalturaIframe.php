@@ -255,13 +255,6 @@ class kalturaIframe {
 		}
 		return $o;
 	}
-	public function addPlugin( $name, $object ){
-		if( !self::$iframePluginMap[$name] ){
-			throw new Exception( "Error trying to add plugin without maping $name\n" );
-			return false;
-		}
-		$this->plugins[$name] = $object;
-	}
 	private function checkIframePlugins(){
 		global $wgKalturaIframe;
 		if( ! $this->getResultObject()->getUiConf() ){
@@ -275,6 +268,7 @@ class kalturaIframe {
 				if( in_array( $pluginId, array_keys ( self::$iframePluginMap ) ) ){
 				
 					require_once( self::$iframePluginMap[ $pluginId] );
+					$this->plugins[$pluginId] = new $pluginId( $this );
 					$this->plugins[$pluginId ]->run();
 				}
 			}
