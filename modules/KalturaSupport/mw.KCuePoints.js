@@ -105,7 +105,7 @@ mw.KCuePoints.prototype = {
 			obj.context = this.getAdType(cuePoint);
 		}
 		$( this.embedPlayer ).trigger( 'KalturaSupport_' + eventName, obj );
-		mw.log('Cue Points :: Triggered event: ' + eventName + ' - ' + cuePoint.title + ' at: ' + cuePoint.startTime );
+		mw.log('Cue Points :: Triggered event: ' + eventName + ' - ' + cuePoint.cuePointType + ' at: ' + cuePoint.startTime );
 	},
 	
 	// Determine our cue point Ad type

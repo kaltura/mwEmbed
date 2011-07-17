@@ -101,11 +101,19 @@ mw.AdTimeline.prototype = {
 	 * Display timeline targets: ( false by default)
 	 */
 	timelineTargets: {
-		'preroll' : false,
-		'bumper' : false,
-		'overlay' : false,
-		'midroll' : false,
-		'postroll' : false
+		'preroll' : [],
+		'bumper' : [],
+		'overlay' : [],
+		'midroll' : [],
+		'postroll' : []
+	},
+
+	timelineTargetsIndex: {
+		'preroll' : 0,
+		'bumper' : 0,
+		'overlay' : 0,
+		'midroll' : 0,
+		'postroll' : 0
 	},
 
 	// Overlays are disabled during preroll, bumper and postroll
@@ -118,7 +126,7 @@ mw.AdTimeline.prototype = {
 	/**
 	 * @constructor
 	 * @param {Object}
-	 *            EmbedPlayer The embedPlayer object
+	 *            embedPlayer The embedPlayer object
 	 */
 	init: function(embedPlayer) {
 		this.embedPlayer = embedPlayer;
@@ -158,10 +166,8 @@ mw.AdTimeline.prototype = {
 				_this.embedPlayer.play();
 			};
 			
-
-			// Chain display of preroll and then bumper:
-			_this.display('preroll', function() {
-				_this.display('bumper', function() {					
+			var showBumper = function() {
+				_this.display('bumper', function() {
 					var vid = _this.getNativePlayerElement();
 					// Enable overlays ( for monitor overlay events )
 					_this.adOverlaysEnabled = true;
@@ -169,9 +175,9 @@ mw.AdTimeline.prototype = {
 					// so switch back and restore original bindings
 					if ( _this.originalSrc != vid.src ) {
 						_this.embedPlayer.switchPlaySrc(_this.originalSrc,
-							function() {								
+							function() {
 								mw.log( "AdTimeline:: restored original src:" + vid.src);
-								// Restore embedPlayer native bindings 
+								// Restore embedPlayer native bindings
 								// async for iPhone issues
 								setTimeout(function(){
 									restorePlayer();
@@ -182,10 +188,22 @@ mw.AdTimeline.prototype = {
 						restorePlayer();
 					}
 				});
-			});
-			
+			};
+
+			// Chain display of preroll and then bumper:
+			var prerollsLength = _this.getTimelineTargets('preroll').length;
+			for( var i=0; i<prerollsLength; i++) {
+				if( i == (prerollsLength - 1) ) {
+					_this.display('preroll', showBumper);
+				} else {
+					_this.display('preroll', function() {
+						++_this.timelineTargetsIndex['preroll'];
+					});
+				}
+			}
+
 			// Bind the player "ended" event to play the postroll if present
-			if( _this.timelineTargets['postroll'] ){
+			if( _this.getTimelineTargets('postroll').length > 0 ){
 				var displayedPostroll = false;
 				$j( _this.embedPlayer ).bind( 'ended', function(event){				
 					if( displayedPostroll ){
@@ -228,8 +246,8 @@ mw.AdTimeline.prototype = {
 			}
 			
 			// See if we have overlay ads:
-			if( _this.timelineTargets['overlay'] ){
-				var overlayTiming = _this.timelineTargets['overlay'];
+			if( _this.getTimelineTargets('overlay').length > 0 ){
+				var overlayTiming = _this.getTimelineTargets('overlay')[ _this.timelineTargetsIndex[ 'overlay' ] ];
 				var lastPlayEndTime = false;
 				var playedStart = false;
 				// Note there may be a better measurement of timeout
@@ -279,7 +297,7 @@ mw.AdTimeline.prototype = {
 	 *          timeTargetType Identify what timeline type to be displayed.
 	 *          Can be: preroll, bumper, overlay, postroll
 	 * @param {function}
-	 *          doneCallback The callback function called once the display
+	 *          displayDoneCallback The callback function called once the display
 	 *          request has been completed
 	 * @param {=number} 
 	 * 			displayDuration optional time to display the insert useful 
@@ -289,12 +307,13 @@ mw.AdTimeline.prototype = {
 		var _this = this;
 		mw.log("AdTimeline::display:" + timeTargetType );
 		
-		var displayTarget =  this.timelineTargets[ timeTargetType ];
 		// If the adConf is empty go directly to the callback:
-		if ( ! displayTarget ) {
+		if ( this.getTimelineTargets( timeTargetType ).length == 0 ) {
 			displayDoneCallback();
 			return;
 		}
+		
+		var displayTarget =  this.getTimelineTargets( timeTargetType )[ _this.timelineTargetsIndex[ timeTargetType ] ];
 
 		// If the current ad type is already being displayed don't do anything
 		if( displayTarget.currentlyDisplayed === true ){
@@ -303,9 +322,12 @@ mw.AdTimeline.prototype = {
 		
 		// If some other ad is currently displayed kill it
 		for( var i in this.timelineTargets){
-			if( i != timeTargetType 
-				&&  this.timelineTargets[ i ].currentlyDisplayed == true ){
-				this.timelineTargets[ i ].playbackDone();
+			var ads = this.getTimelineTargets( i );
+			for( var x=0; x< ads.length; x++) {
+				if( i != timeTargetType
+					&&  ads[ x ].currentlyDisplayed == true ){
+					ads[ x ].playbackDone();
+				}
 			}
 		}
 		// Check that there are ads to display:
@@ -350,7 +372,8 @@ mw.AdTimeline.prototype = {
 		// Monitor time for display duration display utility function
 		var startTime = _this.getNativePlayerElement().currentTime;		
 		var monitorForDisplayDuration = function(){
-			var vid = _this.getNativePlayerElement();				
+			var vid = _this.getNativePlayerElement();
+			console.log(typeof vid, ( _this.getNativePlayerElement().currentTime - startTime), displayDuration);
 			if( typeof vid == 'undefined' // stop display of overlay if video playback is no longer active 
 				|| ( _this.getNativePlayerElement().currentTime - startTime) > displayDuration )
 			{
@@ -499,7 +522,7 @@ mw.AdTimeline.prototype = {
 		mw.log("AdTimeline::selectCompanion: " + companionConf.html );
 		// NOTE:: is not clear from the ui conf response if multiple
 		// targets need to be supported, and how you would do that
-		var ctargets = this.timelineTargets[timeTargetType].companionTargets;
+		var ctargets = this.getTimelineTargets( timeTargetType ).companionTargets;
 		var companionTarget = ctargets[ Math.floor(Math.random() * ctargets.length) ];
 		
 		
@@ -685,8 +708,23 @@ mw.AdTimeline.prototype = {
 	
 
 	/**
+	 * getTimelineTargets get list of timeline targets by type
+	 *
+	 * @param {string}
+	 *            timeType
+	 */
+	getTimelineTargets: function( timeType ) {
+		// Validate the timeType
+		if (typeof this.timelineTargets[ timeType ] != 'undefined') {
+			return this.timelineTargets[ timeType ];
+		} else {
+			return [];
+		}
+	},
+
+	/**
 	 * addToTimeline adds a given display configuration to the timelineTargets
-	 * 
+	 *
 	 * @param {string}
 	 *            timeType
 	 * @param {object}
@@ -696,7 +734,7 @@ mw.AdTimeline.prototype = {
 		// Validate the timeType
 		if (typeof this.timelineTargets[ timeType ] != 'undefined') {
 			// only one adConf per timeType
-			this.timelineTargets[ timeType ] = adConf;
+			this.timelineTargets[ timeType ].push( adConf );
 		}
 	},
 	

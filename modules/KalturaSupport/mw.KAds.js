@@ -58,14 +58,72 @@ mw.KAds.prototype = {
 				var adsCuePointConf = {
 					ads: [
 						$j.extend( adConf.ads[0], adCuePointConf )
-					]
+					],
+					skipBtn: {
+						'text' : "Skip ad",
+						'css' : {
+							'right': '5px',
+							'bottom' : '5px'
+						}
+					}
 				};
+
+				var adType = _this.getAdTypeFromCuePoint(cuePoint);
 
 				mw.addAdToPlayerTimeline( 
 					_this.embedPlayer,
-					_this.getAdTypeFromCuePoint(cuePoint),
+					adType,
 					adsCuePointConf
 				);
+
+				var originalSrc = _this.embedPlayer.getSrc();
+				var seekTime = ( parseFloat( cuePoint.cuePoint.startTime / 1000 ) / parseFloat( _this.embedPlayer.duration ) );
+				console.log('SEEK', cuePoint.cuePoint.startTime,  _this.embedPlayer.duration, seekTime);
+
+				var disablePlayer = function() {
+					_this.embedPlayer.stopEventPropagation();
+					_this.embedPlayer.disableSeekBar();
+				};
+					
+				var restorePlayer = function() {
+					_this.embedPlayer.restoreEventPropagation();
+					_this.embedPlayer.enableSeekBar();
+					_this.embedPlayer.play();
+					
+					// Seek to where we did the switch
+					setTimeout(function() {
+						_this.embedPlayer.doSeek( seekTime );
+					}, 100);
+				};
+
+				var switchSrcCallback = function() {
+					var vid = _this.embedPlayer.getPlayerElement();
+					// Check if the src does not match original src if
+					// so switch back and restore original bindings
+					if ( originalSrc != vid.src ) {
+						_this.embedPlayer.switchPlaySrc(originalSrc, function() {
+								mw.log( "AdTimeline:: restored original src:" + vid.src);
+								// Restore embedPlayer native bindings
+								// async for iPhone issues
+								setTimeout(function(){
+									restorePlayer();
+								},100);
+						});
+					} else {
+						restorePlayer();
+					}
+				};
+
+				if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
+					disablePlayer();
+					var doneCallback = switchSrcCallback;
+				} else {
+					var doneCallback = function() { console.log('Done Overlay'); };
+				}
+
+				_this.embedPlayer.adTimeline.display(adType, function() {
+					doneCallback();
+				}, (cuePoint.cuePoint.duration / 1000) );
 			});
 		}
 	},
@@ -85,11 +143,14 @@ mw.KAds.prototype = {
 			
 			// Merge in the companion targets and add to player timeline: 
 			for( var adType in adConfigSet ){
-				mw.addAdToPlayerTimeline(
-					_this.embedPlayer, 
-					adType,
-					$j.extend({}, baseDisplayConf, adConfigSet[ adType ] ) // merge in baseDisplayConf
-				);
+				// Add to timeline only if we have ads
+				if( adConfigSet[ adType ].ads ) {
+					mw.addAdToPlayerTimeline(
+						_this.embedPlayer,
+						adType,
+						$j.extend({}, baseDisplayConf, adConfigSet[ adType ] ) // merge in baseDisplayConf
+					);
+				}
 			};
 			// Run the callabck once all the ads have been loaded. 
 			callback();
