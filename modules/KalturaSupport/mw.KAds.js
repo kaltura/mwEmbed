@@ -70,6 +70,7 @@ mw.KAds.prototype = {
 
 				var adType = _this.getAdTypeFromCuePoint(cuePoint);
 
+				// Add the cue point to Ad Timeline
 				mw.addAdToPlayerTimeline( 
 					_this.embedPlayer,
 					adType,
@@ -80,11 +81,7 @@ mw.KAds.prototype = {
 				var seekTime = ( parseFloat( cuePoint.cuePoint.startTime / 1000 ) / parseFloat( _this.embedPlayer.duration ) );
 				console.log('SEEK', cuePoint.cuePoint.startTime,  _this.embedPlayer.duration, seekTime);
 
-				var disablePlayer = function() {
-					_this.embedPlayer.stopEventPropagation();
-					_this.embedPlayer.disableSeekBar();
-				};
-					
+				// Set restore function
 				var restorePlayer = function() {
 					_this.embedPlayer.restoreEventPropagation();
 					_this.embedPlayer.enableSeekBar();
@@ -96,7 +93,8 @@ mw.KAds.prototype = {
 					}, 100);
 				};
 
-				var switchSrcCallback = function() {
+				// Set switch back function
+				var doneCallback = function() {
 					var vid = _this.embedPlayer.getPlayerElement();
 					// Check if the src does not match original src if
 					// so switch back and restore original bindings
@@ -114,16 +112,18 @@ mw.KAds.prototype = {
 					}
 				};
 
+				// If out ad is preroll/midroll/postroll, disable the player 
 				if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
-					disablePlayer();
-					var doneCallback = switchSrcCallback;
+					// Disable player
+					_this.embedPlayer.stopEventPropagation();
+					_this.embedPlayer.disableSeekBar();
 				} else {
-					var doneCallback = function() { console.log('Done Overlay'); };
+					// in case of overlay do nothing
+					doneCallback = function() {};
 				}
 
-				_this.embedPlayer.adTimeline.display(adType, function() {
-					doneCallback();
-				}, (cuePoint.cuePoint.duration / 1000) );
+				// Tell the player to show the Ad
+				_this.embedPlayer.adTimeline.display( adType, doneCallback, (cuePoint.cuePoint.duration / 1000) );
 			});
 		}
 	},
