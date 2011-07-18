@@ -189,20 +189,33 @@ mw.EmbedPlayerNative = {
 			_this.monitor();
 		}, 100 );
 	},
-
 	applyIntrinsicAspect: function(){
 		var vid = this.getPlayerElement();
 		// check if a video tag is present 
 		if( !vid ){
 			return this.parent_applyIntrinsicAspect();
 		}
+
 		var pHeight = $j( vid ).height();
 		// Check for intrinsic width and maintain aspect ratio
-		if( vid && vid.videoWidth && vid.videoHeight ){
+		if( vid.videoWidth && vid.videoHeight ){
 			var pWidth = parseInt(  vid.videoWidth / vid.videoHeight * pHeight);
-			$j('#' + this.pid ).css({
+			if( pWidth > this.$interface.width() ){
+				pWidth = this.$interface.width();
+				pHeight =  parseInt( vid.videoHeight / vid.videoWidth * pWidth );
+			}
+			mw.log( 'left:' + ( ( $j( this ).width() - pWidth ) * .5 ) + ' this width:' +  $j( this ).width() );
+			// see if we need to leave room for controls: 
+			var controlBarOffset = 0;
+			if( ! this.controlBuilder.checkOverlayControls() ){
+				controlBarOffset = this.controlBuilder.height;
+			}
+			
+			$j( vid ).css({
+				'height' : pHeight + 'px',
 				'width':  pWidth + 'px',
-				'left': ( ( $j( this ).width() - pWidth ) * .5 ) + 'px',
+				'left': ( ( this.$interface.width() - pWidth ) * .5 ) + 'px',
+				'top': ( ( this.$interface.height() - controlBarOffset - pHeight ) * .5 ) + 'px',
 				'position' : 'absolute'
 			});
 		}
