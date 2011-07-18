@@ -373,7 +373,6 @@ mw.AdTimeline.prototype = {
 		var startTime = _this.getNativePlayerElement().currentTime;		
 		var monitorForDisplayDuration = function(){
 			var vid = _this.getNativePlayerElement();
-			console.log(typeof vid, ( _this.getNativePlayerElement().currentTime - startTime), displayDuration);
 			if( typeof vid == 'undefined' // stop display of overlay if video playback is no longer active 
 				|| ( _this.getNativePlayerElement().currentTime - startTime) > displayDuration )
 			{
