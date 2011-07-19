@@ -208,7 +208,7 @@
 				
 				case 'configProxy':
 					switch( objectPath[1] ){
-						case 'flashvars': 
+						case 'flashvars':
 							if( objectPath[2] ) {
 								switch( objectPath[2] ) {
 									case 'autoPlay':
@@ -427,15 +427,6 @@
 					// Reset first play to true, to count that play event
 					embedPlayer.firstPlay = true;
 					
-					// Add a loader to the embed player: 
-					$j( embedPlayer )
-					.getAbsoluteOverlaySpinner()
-					.attr('id', embedPlayer.id + '_mappingSpinner' );
-					
-					if( embedPlayer.$interface ){
-						embedPlayer.$interface.find('.play-btn-large').hide(); // hide the play btn
-					}
-					
 					// Clear out any bootstrap data from the iframe 
 					mw.setConfig('KalturaSupport.IFramePresetPlayerData', false);
 					// Clear out any player error:
@@ -461,6 +452,15 @@
 						})
 					);
 					embedPlayer.updatePosterHTML();
+					
+					// Add a loader to the embed player: 
+					$j( embedPlayer )
+					.getAbsoluteOverlaySpinner()
+					.attr('id', embedPlayer.id + '_mappingSpinner' );
+					
+					if( embedPlayer.$interface ){
+						embedPlayer.$interface.find('.play-btn-large').hide(); // hide the play btn
+					}
 									
 					// Empty out embedPlayer object sources
 					embedPlayer.emptySources();
