@@ -15,12 +15,21 @@ mw.Omniture.prototype = {
  		// Check for required config: 
  		this.confg = config;
  	},
- 	dispatchEvent: function( eventId, eVars, props ){
+ 	/**
+ 	 * 
+ 	 * @param {String} eventId The omniture event id
+ 	 * @param {Object} eVars The set of eVar name value pairs
+ 	 * @param {Object} props The set of omniture props
+ 	 * @param {=String} eventName Optional eventName for logging ( not used in the omniture beacon )
+ 	 * @return
+ 	 */
+ 	dispatchEvent: function( eventId, eVars, props, eventName ){
  		// dispatch the event to the log: 
  		if( mw.getConfig( 'Omniture.DispatchLog' ) ){
- 			mw.getConfig( 'Omniture.DispatchLog' )( eventId, eVars, props );
+ 			mw.getConfig( 'Omniture.DispatchLog' )( eventId, eVars, props, eventName );
  		}
  		// Send an Omniture beacon
+ 		
  		
  	}
 };

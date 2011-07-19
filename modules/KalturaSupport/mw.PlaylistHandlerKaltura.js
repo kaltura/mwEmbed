@@ -3,6 +3,7 @@ mw.PlaylistHandlerKaltura = function( playlist, options ){
 };
 
 mw.PlaylistHandlerKaltura.prototype = {
+		
 	clipList:null,
 	
 	uiconf_id: null,

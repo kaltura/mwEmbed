@@ -117,6 +117,10 @@ class KalturaResultObject {
 		if( isset( $sources['iphone'] ) ) {
 			$flavorUrl = $sources['iphone']['src'];
 		}
+		// rtsp3gp for BlackBerry
+		if( strpos( $userAgent, 'BlackBerry' ) !== false && $sources['rtsp3gp'] ){
+			return 	$sources['rtsp3gp']['src'];
+		}
 		
 		// 3gp check 
 		if( isset( $sources['3gp'] ) ) {
@@ -252,22 +256,34 @@ class KalturaResultObject {
 			// if flavor status is not ready - continute to the next flavor
 			if( $KalturaFlavorAsset->status != 2 ) { continue; }
 			
-			if( $wgKalturaUseManifestUrls ){
+			if( !$wgKalturaUseManifestUrls ){
+				$assetUrl =  $flavorUrl . '/flavor/' . 	$KalturaFlavorAsset->id;
+			} else {
+				
 				// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
 				if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
-					$assetUrl = $flavorUrl . '/format/applehttp/protocol/http';
+					$assetUrl = $flavorUrl . '/format/applehttp/protocol/http/a.m3u8';
 	
 					$sources['applembr'] = array(
-						'src' => $assetUrl . '/a.m3u8',
+						'src' => $assetUrl,
 						'type' => 'application/vnd.apple.mpegurl',
 						'data-flavorid' => 'AppleMBR'
 					);
-				} else {
-					$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/http';
+					continue;
 				}
 				
-			} else {
-				$assetUrl =  $flavorUrl . '/flavor/' . 	$KalturaFlavorAsset->id;
+				// Check for rtsp as well:
+				if( strpos( $KalturaFlavorAsset->tags, 'hinted' ) !== false ){
+					$assetUrl = $flavorUrl . 'format/rtsp/name/a.3gp';
+					$sources['rtsp3gp'] = array(
+						'src' => $assetUrl,
+						'type' => 'application/rtsl',
+						'data-flavorid' => 'rtsp3gp'
+					);
+					continue;
+				}
+				// Else use normal 
+				$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/http';
 			}
 
 			// Add iPad Akamai flavor to iPad flavor Ids list
@@ -322,13 +338,11 @@ class KalturaResultObject {
 				);
 			};
 		}
-
 		$ipadFlavors = trim($ipadFlavors, ",");
 		$iphoneFlavors = trim($iphoneFlavors, ",");
 
 		// Create iPad flavor for Akamai HTTP
-		if ( $ipadFlavors )
-		{
+		if ( $ipadFlavors ){
 			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/http';
 
 			$sources['ipadnew'] = array(
