@@ -235,18 +235,32 @@
 		
 		/**
 		 * Emulates kalatura addJsListener function
+		 * @param {Object} EmbedPlayer the player to bind against
+		 * @param {String} eventName the name of the event. 
+		 * @param {Mixed} String of callback name, or function ref
 		 */
 		addJsListener: function( embedPlayer, eventName, callbackName ){
 			var _this = this;
 			mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
-			this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName)  ] = window[ callbackName ];
-			var callback = function(){
-				var listnerId = _this.getListenerId( embedPlayer, eventName, callbackName) ;
-				// Check that the listener is still valid and run the callback with supplied arguments
-				if( _this.listenerList [ listnerId ] ){
-					_this.listenerList [ listnerId ].apply( _this, $j.makeArray( arguments ) );
-				}
-			};
+
+			if( typeof callbackName == 'string' ){
+				this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName)  ] = window[ callbackName ];
+				var callback = function(){
+					var listnerId = _this.getListenerId( embedPlayer, eventName, callbackName) ;
+					// Check that the listener is still valid and run the callback with supplied arguments
+					if( _this.listenerList [ listnerId ] ){
+						_this.listenerList [ listnerId ].apply( _this, $j.makeArray( arguments ) );
+					}
+				};
+			} else if( typeof callbackName == 'function' ){
+				// Make life easier for internal usage of the listener mapping by supporting
+				// passing a callback by function ref
+				var callback = callbackName;
+			} else {
+				mw.log( "Error: KDPMapping : bad callback type" );
+				return ;
+			}
+			
 			// Shortcut for embedPlayer bindings with postfix string ( so they don't get removed by other plugins ) 
 			var b = function( bindName, bindCallback ){
 				// add a postfix string
@@ -273,7 +287,7 @@
 					break;
 				case 'playerStateChange':					
 					// TODO add in other state changes
-					b( 'pause', function(){						
+					b( 'pause', function(){
 						callback( 'pause', embedPlayer.id );
 					});
 					
@@ -369,7 +383,10 @@
 					break;
 				default:
 					mw.log("Error unkown JsListener: " + eventName );
-			}				
+					return false;
+			}	
+			// if the event was successfully binded: 
+			return true;
 		},
 		/**
 		 * Emulates kaltura removeJsListener function

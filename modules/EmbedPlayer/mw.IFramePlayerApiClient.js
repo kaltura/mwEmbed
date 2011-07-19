@@ -153,7 +153,6 @@ mw.IFramePlayerApiClient.prototype = {
 				}
 			}
 		});
-		
 		// Update any attributes
 		if( msgObject.attributes ){
 			$j.each(msgObject.attributes, function( i, notUsed){

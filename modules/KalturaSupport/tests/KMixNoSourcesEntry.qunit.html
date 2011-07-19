@@ -20,7 +20,6 @@ function jsKalturaPlayerTest( videoId ){
 	asyncTest("Change Media", function(){
 		window['kalturaQunitEntryReady'] = function( entry ){
 			equal(entry.id, "1_oz8y7d5a", "Entry change success" );
-			
 			equal(entry.name, "kaltura test.avi", "name of entry updated");
 			start();
 		}
