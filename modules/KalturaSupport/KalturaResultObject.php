@@ -254,37 +254,35 @@ class KalturaResultObject {
 		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
 
 			// if flavor status is not ready - continute to the next flavor
-			if( $KalturaFlavorAsset->status != 2 ) { continue; }
-			
-			if( !$wgKalturaUseManifestUrls ){
-				$assetUrl =  $flavorUrl . '/flavor/' . 	$KalturaFlavorAsset->id;
-			} else {
-				
-				// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
-				if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
-					$assetUrl = $flavorUrl . '/format/applehttp/protocol/http/a.m3u8';
-	
-					$sources['applembr'] = array(
-						'src' => $assetUrl,
-						'type' => 'application/vnd.apple.mpegurl',
-						'data-flavorid' => 'AppleMBR'
-					);
-					continue;
-				}
-				
-				// Check for rtsp as well:
-				if( strpos( $KalturaFlavorAsset->tags, 'hinted' ) !== false ){
-					$assetUrl = $flavorUrl . '/format/rtsp/name/a.3gp';
-					$sources['rtsp3gp'] = array(
-						'src' => $assetUrl,
-						'type' => 'application/rtsl',
-						'data-flavorid' => 'rtsp3gp'
-					);
-					continue;
-				}
-				// Else use normal 
-				$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/http';
+			if( $KalturaFlavorAsset->status != 2 ) { 
+				continue; 
 			}
+
+			// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
+			if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
+				$assetUrl = $flavorUrl . '/format/applehttp/protocol/http/a.m3u8';
+
+				$sources['applembr'] = array(
+					'src' => $assetUrl,
+					'type' => 'application/vnd.apple.mpegurl',
+					'data-flavorid' => 'AppleMBR'
+				);
+				continue;
+			}
+			
+			// Check for rtsp as well:
+			if( strpos( $KalturaFlavorAsset->tags, 'hinted' ) !== false ){
+				$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id .  '/format/rtsp/name/a.3gp';
+				$sources['rtsp3gp'] = array(
+					'src' => $assetUrl,
+					'type' => 'application/rtsl',
+					'data-flavorid' => 'rtsp3gp'
+				);
+				continue;
+			}
+			
+			// Else use normal 
+			$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/http';
 
 			// Add iPad Akamai flavor to iPad flavor Ids list
 			if( strpos( $KalturaFlavorAsset->tags, 'ipadnew' ) !== false ) {
