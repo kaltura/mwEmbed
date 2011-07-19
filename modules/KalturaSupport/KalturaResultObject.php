@@ -274,7 +274,7 @@ class KalturaResultObject {
 				
 				// Check for rtsp as well:
 				if( strpos( $KalturaFlavorAsset->tags, 'hinted' ) !== false ){
-					$assetUrl = $flavorUrl . 'format/rtsp/name/a.3gp';
+					$assetUrl = $flavorUrl . '/format/rtsp/name/a.3gp';
 					$sources['rtsp3gp'] = array(
 						'src' => $assetUrl,
 						'type' => 'application/rtsl',
