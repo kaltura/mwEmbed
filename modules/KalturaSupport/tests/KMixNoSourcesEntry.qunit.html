@@ -8,8 +8,8 @@
 window['jsCallbackReady'] = function( videoId ){
 	// add a local ref to the kdp: 
 	var kdp = document.getElementById( videoId );
-	$('#cm').click(function(){
-		kdp.sendNotification( "changeMedia", { 'entryId' : '1_oz8y7d5a' });
+	$('.changeMedia').click(function(e){
+		kdp.sendNotification( "changeMedia", { 'entryId' : e.currentTarget.dataset.entryid });
 	});
 }
 function jsKalturaPlayerTest( videoId ){
@@ -45,6 +45,9 @@ function jsKalturaPlayerTest( videoId ){
 	<param name="flashVars" value="entryId=1_2qy6yq5j&amp;sourceType=entryId">
 </object>
 <br /><br />
-<input id="cm" type="button" value="Change Media" />
+<input class="changeMedia" type="button" data-entryId="1_2qy6yq5j" value="Mix Entry" />
+<input class="changeMedia" type="button" data-entryId="1_oz8y7d5a" value="Entry 1" />
+<input class="changeMedia" type="button" data-entryId="1_ur8f1q6u" value="Entry 2" />
+<input class="changeMedia" type="button" data-entryId="1_6rugti8h" value="Entry 3" />
 </body>
 </html>
