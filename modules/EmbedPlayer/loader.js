@@ -275,6 +275,10 @@
 
 		// If the player should include an attribution button:
 		'attributionbutton' : true,
+		
+		// A player error state ( lets you propagate an error instead of a play button ) 
+		// ( while keeping the full player api available )
+		'data-playerError': null,
 
 		// ROE url ( for xml based metadata )
 		// also see: http://wiki.xiph.org/ROE

@@ -15,7 +15,7 @@ mw.KWidgetSupport.prototype = {
 	},
 	
 	/**
-	* Add Player hooks for supporting Kaltura api stuff
+	* Add Player hooks for supporting Kaltura api
 	*/ 
 	addPlayerHooks: function( ){
 		var _this = this;	
@@ -25,7 +25,6 @@ mw.KWidgetSupport.prototype = {
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
 				_this.loadAndUpdatePlayerData( embedPlayer, callback );
 			});
-
 			// Add kaltura iframe share support:
 			$j( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
 				callback( mw.getConfig('Kaltura.ServiceUrl') + '/p/' + _this.kClient.getPartnerId() +
@@ -43,7 +42,7 @@ mw.KWidgetSupport.prototype = {
 	loadAndUpdatePlayerData: function( embedPlayer, callback ){
 		var _this = this;
 		// Load all the player configuration from kaltura: 
-		_this.loadPlayerData( embedPlayer, function( playerData ){			
+		_this.loadPlayerData( embedPlayer, function( playerData ){
 			if( !playerData ){
 				mw.log("KWidgetSupport::addPlayerHooks> error no player data!");
 				callback();
@@ -128,7 +127,7 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.entryMeta ){
 			embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
 		}
-
+		
 		// Apply player metadata
 		if( playerData.meta ) {
 			embedPlayer.duration = playerData.meta.duration;

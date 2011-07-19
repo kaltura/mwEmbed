@@ -25,6 +25,7 @@ class kalturaIframe {
 	var $resultObject = null; // lazy init 
 	var $debug = false;
 	var $error = false;
+	var $playerError = false;
 	// A list of kaltura plugins and associated includes	
 	public static $iframePluginMap = array(
 		'ageGate' => 'iframePlugins/AgeGate.php'
@@ -45,10 +46,10 @@ class kalturaIframe {
 	function getResultObject(){
 		global $wgMwEmbedVersion;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/KalturaGetResultObject.php' );
+			require_once( dirname( __FILE__ ) .  '/KalturaResultObject.php' );
 			try{
 				// Init a new result object with the client tag: 
-				$this->resultObject = new KalturaGetResultObject( 'html5iframe:' . $wgMwEmbedVersion );;
+				$this->resultObject = new KalturaResultObject( 'html5iframe:' . $wgMwEmbedVersion );;
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
@@ -100,7 +101,12 @@ class kalturaIframe {
 	// Returns a simple image with a direct link to the asset
 	private function getFileLinkHTML(){
 		try {
-			$flavorUrl = $this->getResultObject()->getSourceForUserAgent();
+			$sources =  $this->getResultObject()->getSources();
+			// If no sources are found use the error video source: 
+			if( count( $sources ) == 0 ){
+				$sources = $this->getResultObject()->getErrorVideoSources();
+			}
+			$flavorUrl = $this->getResultObject()->getSourceForUserAgent( $sources );
 		} catch ( Exception $e ){
 			$this->fatalError( $e->getMessage() );
 		}
@@ -129,15 +135,16 @@ class kalturaIframe {
 						'/height/480';
 		try {
 			$sources = $this->getResultObject()->getSources();
+			// If no sources get the black sources:
+			if( count( $sources ) == 0 ) {
+				$this->playerError = "No mobile sources found";
+				$sources = $this->getResultObject()->getBlackVideoSources();
+			}
 		} catch ( Exception $e ){
+			// xxx log an empty entry id lookup!
 			$this->fatalError( $e->getMessage() );
 		}
 
-		// if we have no sources do not output the video tag:
-		if( count( $sources ) == 0 ){
-			return ;
-		}
-		
 		// Add default video tag with 100% width / height
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
@@ -154,10 +161,15 @@ class kalturaIframe {
 				if( $videoTagMap[ $key ] == $val ) {
 					$o.= ' ' . $videoTagMap[ $key ];
 				} else {
-					$o.= ' ' . $videoTagMap[ $key ] . '="' . htmlspecialchars( $val ) . '"';
+					$o.= ' ' . $videoTagMap[ $key ] . '="' . htmlentities( $val ) . '"';
 				}
 			}
 		}
+		if( $this->playerError  !== false ){
+			// TODO should move this to i8ln keys instead of raw msgs
+			$o.= ' data-playerError="' . htmlentities( $this->playerError ) . '" ';
+		}
+		
 		
 		//Close the open video tag
 		$o.='>';
@@ -469,7 +481,7 @@ class kalturaIframe {
 			mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
 
 			// Add Packaging Kaltura Player Data ( JSON Encoded )
-			mw.setConfig('KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
+			mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
 
 			// Get the flashvars object:
 			var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';

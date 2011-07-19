@@ -172,7 +172,6 @@ mw.EmbedPlayerNative = {
 			vid.currentTime = this.currentTime;
 		}
 		
-		
 		// Check for load flag
 		if ( this.onlyLoadFlag ) {
 			vid.pause();
@@ -182,8 +181,6 @@ mw.EmbedPlayerNative = {
 			vid.load();
 			vid.play();
 		}
-
-
 		
 		setTimeout( function() {
 			_this.monitor();
@@ -421,7 +418,7 @@ mw.EmbedPlayerNative = {
 	// Update the poster src ( updates the native object if in dom ) 
 	updatePosterSrc: function( src ){
 		if( this.getPlayerElement() ){
-			this.getPlayerElement().poster = src;
+			$j( this.getPlayerElement() ).attr('poster', src );
 		}
 		// Also update the embedPlayer poster 
 		this.parent_updatePosterSrc( src );

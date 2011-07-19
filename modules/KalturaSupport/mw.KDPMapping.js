@@ -388,7 +388,7 @@
 		/**
 		 * Master send action list: 
 		 */
-		sendNotification: function( embedPlayer, notificationName, notificationData ){			
+		sendNotification: function( embedPlayer, notificationName, notificationData ){
 			switch( notificationName ){
 				case 'doPlay':
 					embedPlayer.play();
@@ -413,7 +413,6 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
-				    
 					// Check if we don't have entryId or it's -1. than we just empty the source and the metadata
 					if( notificationData.entryId == "" || notificationData.entryId == -1 ) {
 					    // Empty sources
@@ -439,6 +438,12 @@
 					
 					// Clear out any bootstrap data from the iframe 
 					mw.setConfig('KalturaSupport.IFramePresetPlayerData', false);
+					// Clear out any player error:
+					embedPlayer['data-playerError'] = null;
+					// Clear out the player error div:
+					embedPlayer.$interface.find('.error').remove();
+					// restore the control bar:
+					embedPlayer.$interface.find('.control-bar').show();
 					
 					// Update the entry id
 					embedPlayer.kentryid = notificationData.entryId;
@@ -455,13 +460,13 @@
 							'height' :  embedPlayer.getHeight()
 						})
 					);
+					embedPlayer.updatePosterHTML();
 									
 					// Empty out embedPlayer object sources
 					embedPlayer.emptySources();
 					
 					// Bind the ready state:
-					$j( embedPlayer ).bind('playerReady', function(){	
-						
+					$j( embedPlayer ).bind('playerReady.kdpMapping', function(){	
 						// Do normal stop then play:
 						if( chnagePlayingMedia ){
 							if( embedPlayer.isPersistentNativePlayer() ){
@@ -472,7 +477,7 @@
 							}
 						}
 					});
-										
+					
 					// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
 					$j( embedPlayer ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
 						$j( '#' + embedPlayer.id + '_mappingSpinner' ).remove();

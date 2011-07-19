@@ -1,14 +1,5 @@
 //must come after qunit-bootstrap.js and after mwEmbedLoader.php
 if( window.QUnit ){
-	// check if the test can access the iframe
-	var domainRegEx = new RegExp(/^((http[s]?):\/)?\/?([^:\/\s]+)(:([^\/]*))?((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(\?([^#]*))?(#(.*))?$/);
-	var match = document.URL.match( domainRegEx );
-	var pageDomain = match[3];
-	var scriptMatch = SCRIPT_LOADER_URL.match(domainRegEx );
-	if( match && scriptMatch[3] != pageDomain ){
-		ok(false, "Error: trying to test across domains, no iframe inspection is possible");
-		stop();
-	}
 	
 	mw.setConfig( 'forceMobileHTML5', true );	
 	if( window['jsCallbackReady'] ){
@@ -16,6 +7,18 @@ if( window.QUnit ){
 	}
 	jsCallbackCalled = false;
 	window['jsCallbackReady'] = function( videoId ) {
+		// check if the test can access the iframe
+		var domainRegEx = new RegExp(/^((http[s]?):\/)?\/?([^:\/\s]+)(:([^\/]*))?((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(\?([^#]*))?(#(.*))?$/);
+		var match = document.URL.match( domainRegEx );
+		var pageDomain = match[3];
+		var scriptMatch = SCRIPT_LOADER_URL.match(domainRegEx );
+		if( match && SCRIPT_LOADER_URL[2] == 'http' || SCRIPT_LOADER_URL[2] == 'https'
+				&& scriptMatch[3] != pageDomain )
+		{
+			ok(false, "Error: trying to test across domains, no iframe inspection is possible" + match + ' != ' + pageDomain);
+			stop();
+		}
+		// Add entry ready listener
 		document.getElementById( videoId ).addJsListener("entryReady", "kalturaQunitEntryReady");
 
 		jsCallbackCalled = true;
@@ -27,15 +30,15 @@ if( window.QUnit ){
 			window['orgJsCallbackReady']( videoId );
 		}
 	};
-	QUnit.start();
+	window.QUnit.start();
 	asyncTest( "KalturaSupport::PlayerLoaded", function(){
 		var waitCount = 0;
 		var interval = setInterval(function(){
-			// timeout in 20 seconds:
-			if( waitCount == 2000 && !jsCallbackCalled ){
+			// Timeout in 20 seconds:
+			if( waitCount == 2000 ){
 				ok(false, "Player timed out");
 				clearInterval( interval );
-				stop();
+				start();
 			}
 			if( jsCallbackCalled ){
 				ok(true, "Player loaded");
@@ -43,7 +46,7 @@ if( window.QUnit ){
 				start();
 			}
 			waitCount++;
-		}, 5);
+		}, 10);
 	});
 	var entryReadyCallbacks = [];
 	var entryReadyAlreadyCalled = false;

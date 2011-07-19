@@ -7,7 +7,7 @@ require_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
 /**
  * Generates a kaltura result object based on url Parameters 
  */
-class KalturaGetResultObject {
+class KalturaResultObject {
 	 
 	var $resultObj = null; // lazy init with getResultObject
 	var $clientTag = null;
@@ -42,7 +42,7 @@ class KalturaGetResultObject {
 	 * video. 
 	 */
 	public static function getErrorVideoSources(){
-		// @@TODO pull this from config: 'Kaltura.MissingFlavorVideoUrls' 
+		// @@TODO pull this from config: 'Kaltura.BlackVideoSources' 
 		return array(
 		    'iphone' => array( 
 		    	'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_ktavj42z/format/url/protocol/http/a.mp4',
@@ -58,9 +58,35 @@ class KalturaGetResultObject {
 		    	'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_bqsosjph/format/url/protocol/http/a.webm',
 		    	'type' => 'video/webm',
 		    	'data-flavorid' => 'webm'
+		    ),
+		    '3gp' => array( 
+		    	'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_mfqemmyg/format/url/protocol/http/a.mp4',
+		    	'type' => 'video/3gp',
+		    	'data-flavorid' => '3gp'
 		    )
 		 );
 	}
+	public static function getBlackVideoSources(){
+		// @@TODO merge with Kaltura.BlackVideoSources config!!
+		return array(
+		    'webm' => array(
+		        'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_oiyfyphl/format/url/protocol/http/a.webm',
+		        'type' => 'video/webm',
+				'data-flavorid' => 'webm'
+			),
+			'ogg' => array(
+				'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6yqa4nmd/format/url/protocol/http/a.ogg',
+				'type' => 'video/ogg',
+				'data-flavorid' => 'ogg'
+			),
+			'iphone' => array(
+				'src' =>'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/http/a.mp4',
+				'type' => 'video/h264',
+				'data-flavorid' => 'iPhone'
+			),
+		);
+	}
+	
 	// check if the requested url is a playlist
 	public function isPlaylist(){
 		return ( $this->urlParameters['playlist_id'] !== null || $this->urlParameters['entry_id'] === null);
@@ -127,9 +153,6 @@ class KalturaGetResultObject {
 			){
 				$flavorUrl = $sources['webm']['src'];
 			}
-		}
-		if( !$flavorUrl ){
-			throw new Exception( "No mobile flavor can be found" );
 		}
 		
 		return $flavorUrl;

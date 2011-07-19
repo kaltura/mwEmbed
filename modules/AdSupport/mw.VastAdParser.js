@@ -14,7 +14,7 @@ mw.VastAdParser = {
 		// Get the basic set of sequences
 		adConf.ads = [];
 		$vast.find( 'ad' ).each( function( inx, node ){
-			mw.log('kAds:: getVastAdDisplayConf: ' + node );
+			mw.log( 'VastAdParser:: getVastAdDisplayConf: ' + node );
 			var $ad = $j( node );
 			
 			// Set a local pointer to the current sequence: 
@@ -34,12 +34,12 @@ mw.VastAdParser = {
 						currentAd.impressions.push({
 							'beaconUrl' : _this.getURLFromNode( urlNode ),
 							'idtype' : $j( urlNode ).attr('id')
-						})
-					})
+						});
+					});
 				} else {
 					currentAd.impressions.push({
 						'beaconUrl' : _this.getURLFromNode( node )
-					})
+					});
 				}
 			});
 			
@@ -89,7 +89,7 @@ mw.VastAdParser = {
 			// Set videoFile to default if not set: 
 			if( currentAd.videoFiles.length == 0 ){
 				mw.log( 'VastAdParser::MISSING videoFile no video url: ');
-				//currentAd.videoFiles = mw.getConfig( 'Kaltura.MissingFlavorVideoUrls');
+				//currentAd.videoFiles = mw.getConfig( 'Kaltura.MissingFlavorSources');
 			}
 			
 			// Set the CompanionAds if present: 
@@ -98,12 +98,10 @@ mw.VastAdParser = {
 				var staticResource = _this.getResourceObject( companionNode );				
 				if( staticResource ){
 					// Add the staticResourceto the ad config: 
-					currentAd.companions.push( staticResource )
+					currentAd.companions.push( staticResource );
 				}
 			});
-			
 			adConf.ads.push( currentAd );
-			
 		});
 		return adConf;
 	},
@@ -133,20 +131,20 @@ mw.VastAdParser = {
 					'width' : resourceObj['width'],
 					'height' : resourceObj['height']					
 				})
-			)
+			);
 		};
 		
 		// Check for companion type: 
 		if( $j( resourceNode ).find( 'StaticResource' ).length ) {
 			if( $j( resourceNode ).find( 'StaticResource' ).attr('creativeType') ) {						
-				resourceObj.$html = _this.getStaticResourceHtml( resourceNode, resourceObj )
-				mw.log("kAds::getResourceObject: StaticResource \n" + $j('<div />').append( resourceObj.$html ).html() );
+				resourceObj.$html = _this.getStaticResourceHtml( resourceNode, resourceObj );
+				mw.log("VastAdParser::getResourceObject: StaticResource \n" + $j('<div />').append( resourceObj.$html ).html() );
 			}											
 		}
 		
 		// Check for iframe type
 		if( $j( resourceNode ).find('IFrameResource').length ){
-			mw.log("kAds::getResourceObject: IFrameResource \n" + _this.getURLFromNode ( $j( resourceNode ).find('IFrameResource') ) );
+			mw.log("VastAdParser::getResourceObject: IFrameResource \n" + _this.getURLFromNode ( $j( resourceNode ).find('IFrameResource') ) );
 			resourceObj.$html = 
 				$j('<iframe />').attr({
 					'src' : _this.getURLFromNode ( $j( resourceNode ).find('IFrameResource') ),
@@ -158,7 +156,7 @@ mw.VastAdParser = {
 		
 		// Check for html type
 		if( $j( resourceNode ).find('HTMLResource').length ){		
-			mw.log("kAds::getResourceObject:  HTMLResource \n" + _this.getURLFromNode ( $j( resourceNode ).find('HTMLResource') ) );
+			mw.log("VastAdParser::getResourceObject:  HTMLResource \n" + _this.getURLFromNode ( $j( resourceNode ).find('HTMLResource') ) );
 			// Wrap the HTMLResource in a jQuery call: 
 			resourceObj.$html = $j( _this.getURLFromNode ( $j( resourceNode ).find('HTMLResource') ) );
 		}

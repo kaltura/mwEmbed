@@ -16,7 +16,7 @@
 		'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
 		'Kaltura.CdnUrl' : 'http://cdn.kaltura.com',
 		// A video file for when no suitable flavor can be found
-		'Kaltura.MissingFlavorVideoUrls' : [
+		'Kaltura.MissingFlavorSources' : [
 		    { 
 		    	'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_ktavj42z/format/url/protocol/http/a.mp4',
 		    	'type' : 'video/h264'
@@ -29,7 +29,22 @@
 		    	'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_g18we0u3/flavorId/1_bqsosjph/format/url/protocol/http/a.webm',
 		    	'type' : 'video/webm'
 		    }
-		 ]
+		 ],
+		 
+		 'Kaltura.BlackVideoSources' : [
+		    {
+		        'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_oiyfyphl/format/url/protocol/http/a.webm',
+		        'type' : 'video/webm'
+			},
+			{
+				'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6yqa4nmd/format/url/protocol/http/a.ogg',
+				'type' : 'video/ogg'
+			},
+			{
+				'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/http/a.mp4',
+				'type' : 'video/h264'
+			}
+		]
 	} );
 	
 	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
@@ -449,8 +464,6 @@
 			return false;
 		};
 		
-		
-		// alert('object list: ' + objectList.length );
 		for( var i =0; i < objectList.length; i++){
 			var swfUrl = '';
 			var flashvars = '';

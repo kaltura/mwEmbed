@@ -23,11 +23,11 @@ class downloadEntry {
 	function getResultObject(){
 		global $wgMwEmbedVersion;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/KalturaGetResultObject.php' );
-			$this->resultObject = new KalturaGetResultObject( 'html5download:' . $wgMwEmbedVersion );
+			require_once( dirname( __FILE__ ) .  '/KalturaResultObject.php' );
+			$this->resultObject = new KalturaResultObject( 'html5download:' . $wgMwEmbedVersion );
 			try{
 				// Init a new result object with the client tag: 
-				$this->resultObject = new KalturaGetResultObject( 'html5download:' . $wgMwEmbedVersion );;
+				$this->resultObject = new KalturaResultObject( 'html5download:' . $wgMwEmbedVersion );;
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
@@ -49,13 +49,17 @@ class downloadEntry {
 		if( !$sources ){
 			$sources =  $this->getResultObject()->getSources();
 		}
-		try{
+		// if no sources are found use the error video source: 
+		if( count( $sources ) == 0 ){
+			$sources = $this->getResultObject()->getErrorVideoSources();
+		}
+		try {
 			$flavorUrl = $this->getResultObject()->getSourceForUserAgent( $sources );
 		} catch ( Error $e ){
 			$this->fatalError( $e->getMessage() );
 		}
 		// Redirect to flavor
-		header("location: " . $flavorUrl);
+		header( "location: " . $flavorUrl );
 	}
 
 }

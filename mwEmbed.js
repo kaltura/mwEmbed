@@ -2711,6 +2711,7 @@ if( window.jQuery ){
 		var triggerEventSet = $( targetObject ).data( 'events' ) ?
 					$( targetObject ).data( 'events' )[ triggerBaseName ] :
 					$( targetObject).get(0)['__events__'][ 'events' ][ triggerBaseName ];
+					
 		if( ! triggerNamespace ){
 			callbackSet = triggerEventSet;
 		} else{		

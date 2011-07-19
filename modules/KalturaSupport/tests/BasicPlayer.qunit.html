@@ -3,8 +3,6 @@
 <title>Basic Player test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php -->
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	
@@ -37,6 +35,8 @@ function jsKalturaPlayerTest( videoId ){
 
 }
 </script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
 <h2> Basic Player test </h2>

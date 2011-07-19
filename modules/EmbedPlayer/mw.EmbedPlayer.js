@@ -184,8 +184,11 @@ EmbedPlayerManager.prototype = {
 	 * Once a player interface is established the following chain of functions
 	 * are called;
 	 * 
-	 * _this.checkPlayerSources() _this.setupSourcePlayer()
-	 * _this.inheritEmbedPlayer() _this.selectedPlayer.load() _this.showPlayer()
+	 * _this.checkPlayerSources() 
+	 * _this.setupSourcePlayer()
+	 * _this.inheritEmbedPlayer() 
+	 * _this.selectedPlayer.load() 
+	 * _this.showPlayer()
 	 * 
 	 * @param {Element}
 	 *            playerElement DOM element to be swapped
@@ -841,7 +844,9 @@ mw.EmbedPlayer.prototype = {
 		mw.log("EmbedPlayer::resizePlayer:" + size.width + ' x ' + size.height );
 		var _this = this;
 		var callback = function(){
-			_this.applyIntrinsicAspect();
+			setTimeout(function(){
+				_this.applyIntrinsicAspect();
+			},10);
 			if( resizePlayerCallback )
 				resizePlayerCallback();
 		}
@@ -1040,22 +1045,29 @@ mw.EmbedPlayer.prototype = {
 		var prevPlayer = this.selectedPlayer;
 		// Autoseletct the media source
 		this.mediaElement.autoSelectSource();
+		
 		// Auto select player based on default order
 		if ( !this.mediaElement.selectedSource ) {
 			mw.log( 'setupSourcePlayer:: no sources, type:' + this.type );
 		} else {
 			this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
 		}
-		if ( prevPlayer != this.selectedPlayer ) {
-			// Inherit the playback system of the selected player:
-			this.inheritEmbedPlayer( callback );
-		} 
 		if( !this.selectedPlayer ){
 			this.showPluginMissingHTML();
 			if( callback ){
 				callback();
 			}
+			return ;
 		}
+		if ( prevPlayer != this.selectedPlayer ) {
+			// Inherit the playback system of the selected player:
+			this.inheritEmbedPlayer( callback );
+		} else {
+
+			// Show the interface: 
+			this.$interface.find( '.control-bar,.play-btn-large').show();
+		}
+		
 	},
 
 	/**
@@ -1396,9 +1408,17 @@ mw.EmbedPlayer.prototype = {
 		this.updateTemporalUrl();
 		
 		// Check for intrinsic width and maintain aspect ratio
-		this.applyIntrinsicAspect();
-
+		setTimeout(function(){
+			_this.applyIntrinsicAspect();
+		}, 10);
+		
 		mw.playerManager.playerReady( this );
+		
+		// Right before player autoplay ... check if there are any errors that prevent playback or player:
+		if( this['data-playerError'] ){
+			this.showErrorMsg( this['data-playerError'] );
+			return ;
+		}
 
 		if ( this.autoplay ) {
 			mw.log( 'EmbedPlayer::showPlayer::activating autoplay' );			
@@ -1471,16 +1491,18 @@ mw.EmbedPlayer.prototype = {
 	 */
 	showErrorMsg: function( errorMsg ){
 		if( this.$interface ){
-			this.$interface.empty();
 			$target = this.$interface;
 		} else{
 			$target = $j(this);
 		}
-		$target.css('position', 'relative').html(
+		$target.append(
 			$j('<div />').addClass('error').text(
 				errorMsg
 			)
-		);
+		)
+		// Hide the interface components
+		.find( '.control-bar,.play-btn-large').hide();
+		
 		if( this.isPersistentNativePlayer() ){
 			$target.show().parent().find('video').hide();
 		}
@@ -1629,77 +1651,12 @@ mw.EmbedPlayer.prototype = {
 	updateThumbPerc:function( percent ) {
 		return this.updateThumbTime( ( this.getDuration() * percent ) );
 	},
-
-	/**
-	 * Updates the thumbnail if the thumbnail is being displayed
-	 * 
-	 * @param {String}
-	 *            src New src of thumbnail
-	 * @param {Boolean}
-	 *            quick_switch true switch happens instantly false / undefined
-	 *            animated cross fade
-	 */
-	updatePosterSrc: function( src, quick_switch ) {
-		// make sure we don't go to the same url if we are not already updating:
-		if ( !this.thumbnail_updating && $j( '#img_thumb_' + this.id ).attr( 'src' ) == src )
-			return false;
-		// if we are already updating don't issue a new update:
-		if ( this.thumbnail_updating && $j( '#new_img_thumb_' + this.id ).attr( 'src' ) == src )
-			return false;
-
-		mw.log( 'update thumb: ' + src );
-
-		if ( quick_switch ) {
-			$j( '#img_thumb_' + this.id ).attr( 'src', src );
-		} else {
-			var _this = this;
-			// if still animating remove new_img_thumb_
-			if ( this.thumbnail_updating == true )
-				$j( '#new_img_thumb_' + this.id ).stop().remove();
-
-			if ( this.posterDisplayed ) {
-				mw.log( 'set to thumb:' + src );
-				this.thumbnail_updating = true;
-				$j( this ).append(
-					$j('<img />')
-					.attr({
-						'src' : src,
-						'id' : 'new_img_thumb_' + this.id,
-						'width' : this.width,
-						'height': this.height
-					})
-					.css( {
-						'display' : 'none',
-						'position' : 'absolute',
-						'z-index' : 2,
-						'top' : '0px',
-						'left' : '0px'
-					})
-				);
-				// mw.log('appended: new_img_thumb_');
-				$j( '#new_img_thumb_' + this.id ).fadeIn( "slow", function() {
-						// once faded in remove org and rename new:
-						$j( '#img_thumb_' + _this.id ).remove();
-						$j( '#new_img_thumb_' + _this.id ).attr( 'id', 'img_thumb_' + _this.id );
-						$j( '#img_thumb_' + _this.id ).css( 'z-index', '1' );
-						_this.thumbnail_updating = false;
-						// mw.log("done fadding in "+
-						// $j('#img_thumb_'+_this.id).attr("src"));
-
-						// if we have a thumb queued update to that
-						if ( _this.last_thumb_url ) {
-							var src_url = _this.last_thumb_url;
-							_this.last_thumb_url = null;
-							_this.updatePosterSrc( src_url );
-						}
-				} );
-			}
-		}
-	},
 	// update the video poster:
 	updatePosterSrc: function( posterSrc ){
 		this.poster = posterSrc;
+		this.updatePosterHTML();
 	},
+	
 	/**
 	 * Returns the HTML code for the video when it is in thumbnail mode.
 	 * playing, configuring the player, inline cmml display, HTML linkback,
@@ -1722,7 +1679,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Update PersistentNativePlayer poster:
 		if( this.isPersistentNativePlayer() ){
-			$j( '#' + this.pid ).attr('poster', posterSrc);
+			$j( '#' + this.pid ).attr('poster', posterSrc).show();
 		} else {
 			// Poster support is not very consistent in browsers
 			// use a jpg poster image:
@@ -2076,8 +2033,8 @@ mw.EmbedPlayer.prototype = {
 		if( this.paused === true ){
 			this.paused = false;
 			// Check if we should Trigger the play event
-			mw.log("EmbedPlayer:: trigger play even::" + !this.paused + ' events:' + this.doMethodsAutoTrigger() );
-			if( ! this.doMethodsAutoTrigger() && this._propagateEvents ) {
+			mw.log("EmbedPlayer:: trigger play even::" + !this.paused + ' events:' + this._propagateEvents );
+			if(  this._propagateEvents  ) {
 				$j( this ).trigger( 'onplay' );
 			}
 			// We need first play event for analytics purpose
@@ -2128,7 +2085,7 @@ mw.EmbedPlayer.prototype = {
 		if( this.paused === false ){
 			this.paused = true;
 			mw.log('EmbedPlayer:trigger pause:' + this.paused);
-			if(  ! this.doMethodsAutoTrigger() ){
+			if(  this._propagateEvents ){
 				$j( this ).trigger( 'pause' );
 			}
 		}
@@ -2147,21 +2104,6 @@ mw.EmbedPlayer.prototype = {
 			} )
 			.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );
 		}
-	},
-	
-	// special per browser check for autoTrigger events
-	// ideally jQuery would not have this inconsistency.
-	doMethodsAutoTrigger: function(){
-		// events don't "auto trigger" when a native player or when
-		// PersistentNativePlayer
-		if ( this.instanceOf != 'Native' || this.isPersistentNativePlayer() ){
-			return false;
-		}
-		// Firefox browsers auto trigger events:
-		if( $j.browser.mozilla && ! mw.versionIsAtLeast('2.0', $j.browser.version ) ){
-			return true;
-		}
-		return false;
 	},
 
 	/**

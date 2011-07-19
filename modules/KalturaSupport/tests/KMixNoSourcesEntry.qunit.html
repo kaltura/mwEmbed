@@ -4,35 +4,32 @@
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 <script>
-function jsCallbackReady( playerId ) {
-	window.kdp = document.getElementById(playerId);
-}
-function changeEntry( entryId ) {
-	window.kdp.sendNotification("changeMedia",{entryId:entryId});
-}
-
-// Test
-var testEventObject = {};
-
-mw.ready( function() {
-	$j( testEventObject ).trigger( 'runTest' );
-});
-
-function jsKalturaPlayerTest( videoId ){
-	// Name this module
-	module( "Mix" );
-
-	asyncTest("Change Media", function(){
-		$j( testEventObject ).bind('runTest', function( event ){
-			notEqual( window.kdp, "undefined", "JS API working");
-			start();
-		});
+window['jsCallbackReady'] = function( videoId ){
+	// add a local ref to the kdp: 
+	var kdp = document.getElementById( videoId );
+	$('#cm').click(function(){
+		kdp.sendNotification( "changeMedia", { 'entryId' : '1_oz8y7d5a' });
 	});
-
+}
+function jsKalturaPlayerTest( videoId ){
+	var kdp = document.getElementById( videoId );
+	// Name this module
+	module( "KMix No Sources Entry" );
+		
+	asyncTest("Change Media", function(){
+		window['kalturaQunitEntryReady'] = function( entry ){
+			equal(entry.id, "1_oz8y7d5a", "Entry change success" );
+			
+			equal(entry.name, "kaltura test.avi", "name of entry updated");
+			start();
+		}
+		kdp.addJsListener("entryReady", "kalturaQunitEntryReady");
+		$('#cm').click();
+	});
 }
 </script>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
 <h2> Mix Test </h2>
@@ -49,6 +46,6 @@ function jsKalturaPlayerTest( videoId ){
 	<param name="flashVars" value="entryId=1_2qy6yq5j&amp;sourceType=entryId">
 </object>
 <br /><br />
-<input type="button" onclick="changeEntry('1_oz8y7d5a');" value="Change Media" />
+<input id="cm" type="button" value="Change Media" />
 </body>
 </html>
