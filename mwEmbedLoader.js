@@ -434,10 +434,12 @@ function kCheckAddScript(){
 	 * It kind of sucks to hard code this, But we can't deliver iframes for non SAS users atm. 
 	 */
 	var serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
-	if( ! serviceUrl || serviceUrl != 'http://www.kaltura.com' ){
-		// if not hosted on kaltura for now we can't use the iframe to load the player
-		mw.setConfig( 'Kaltura.IframeRewrite', false );
-		mw.setConfig( 'Kaltura.UseManifestUrls', false);
+	if( ! mw.getConfig( 'Kaltura.AllowRemoteService' ) ) {
+		if( ! serviceUrl || serviceUrl != 'http://www.kaltura.com' ){
+			// if not hosted on kaltura for now we can't use the iframe to load the player
+			mw.setConfig( 'Kaltura.IframeRewrite', false );
+			mw.setConfig( 'Kaltura.UseManifestUrls', false);
+		}
 	}
 	// If user javascript is using mw.ready add script
 	if( window.preMwEmbedReady.length ) {

@@ -9,7 +9,7 @@
 	var myPlayer;
 	/* Load Temp Cue Points
 	** Basic example from server */
-	mw.setConfig( 'Kaltura.TempCuePoints', { "objects" : [
+	mw.setConfig( 'Kaltura.TempCuePoints', [
 		{ "code" : "SOME CODE",
         "createdAt" : 1310457621,
         "cuePointType" : "codeCuePoint.Code",
@@ -90,9 +90,7 @@
         "updatedAt" : 1310457850,
         "userId" : "ran@mailinator.com"
 		}
-    ],
-	"totalCount" : 4
-	});
+    ]);
 	
 	// Bind to cuePointReached event
 	var jsCallbackReady = function( playerId ) {

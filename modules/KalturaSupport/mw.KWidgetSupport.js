@@ -134,7 +134,22 @@ mw.KWidgetSupport.prototype = {
 			// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 			embedPlayer.kalturaPlayerMetaData = playerData.meta;
 			$j( embedPlayer ).trigger( 'KalturaSupport_MetaDataReady', embedPlayer.kalturaPlayerMetaData );
-		}										
+		}
+
+		// TODO: Remove this when Eagle is out
+		if( mw.getConfig( 'Kaltura.TempCuePoints' ) ) {
+			playerData.entryCuePoints = mw.getConfig( 'Kaltura.TempCuePoints' );
+		}
+		// End Remove
+
+		if( playerData.entryCuePoints ) {
+			mw.log( "KCuePoints:: Add CuePoints to embedPlayer");
+			embedPlayer.entryCuePoints = playerData.entryCuePoints;
+			new mw.KCuePoints( embedPlayer );
+
+			// Allow other plugins to subscribe to cuePoint ready event:
+			$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
+		}
 		
 		if( embedPlayer.$uiConf ){
 			// Trigger the check kaltura uiConf event					
@@ -227,7 +242,10 @@ mw.KWidgetSupport.prototype = {
 		
 		// Add the uiconf_id 
 		playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
-		
+
+		// Add the flashvars
+		playerRequest.flashvars = embedPlayer.flashvars;
+
 		// Check if we have the player data bootstrap from the iframe
 		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
 

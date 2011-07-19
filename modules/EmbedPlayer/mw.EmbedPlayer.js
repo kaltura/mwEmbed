@@ -261,7 +261,6 @@ EmbedPlayerManager.prototype = {
 				var playerInterface = new mw.EmbedPlayer( playerElement , attributes);
 				var swapPlayer = _this.swapEmbedPlayerElement( playerElement, playerInterface );
 
-
 				// Trigger the newEmbedPlayerEvent for embedPlayer interface
 				mw.log("EmbedPlayer::addPlayerElement :trigger " + playerInterface.id );
 				$j( mw ).trigger ( 'newEmbedPlayerEvent', $j( '#' + playerInterface.id ).get(0) );
@@ -580,6 +579,9 @@ mw.EmbedPlayer.prototype = {
 			customAttributes = { };
 		}
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
+
+		// Save flashvars to embedPlayer
+		this.flashvars = $j(element).data('flashvars');
 
 		// Setup the player Interface from supported attributes:
 		for ( var attr in playerAttributes ) {

@@ -121,29 +121,4 @@ mw.KCuePoints.prototype = {
 	
 };
 
-/**
- * Add Embed Player binding for CuePoints
- */
-$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-		// Get Dummy Data from our test file
-		// TODO: Should be removed when we have a working service
-		if( mw.getConfig( 'Kaltura.TempCuePoints' ) ) {
-			var entryCuePoints = mw.getConfig( 'Kaltura.TempCuePoints' );
-		}
-
-		// Add Entry Cue Points data
-		if( entryCuePoints ) {
-			mw.log( "KCuePoints:: Add CuePoints to embedPlayer");
-			embedPlayer.entryCuePoints = entryCuePoints.objects;
-			new mw.KCuePoints( embedPlayer );
-			
-			// Allow other plugins to subscribe to cuePoint ready event: 
-			$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
-		}
-		// Done adding Cue points return :
-		callback();
-	});
-});
-
 } )( window.mw, jQuery );

@@ -30,7 +30,7 @@ mw.KAds.prototype = {
 		this.$adConfig = $adConfig['config'];	
 		this.$notice = $adConfig['notice'];
 		this.$skipBtn = $adConfig['skipBtn'];
-		
+
 		// Load the Ads from uiConf
 		_this.loadAds( function(){
 			mw.log("KAds::All ads have been loaded");

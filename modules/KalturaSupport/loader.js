@@ -267,7 +267,7 @@
 						if( $j( playerTarget).data('flashvars') ){
 							kParams['flashvars'] = $j( playerTarget).data('flashvars');
 						}
-						
+
 						// XXX UGLY TEMPORARY HACK ( don't use iframe for playlist ) 
 						iframeRewriteCount++;
 						$j( playerTarget )

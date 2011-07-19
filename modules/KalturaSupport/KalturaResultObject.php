@@ -407,7 +407,7 @@ class KalturaResultObject {
 		if( isset( $this->urlParameters['p'] ) && !isset( $this->urlParameters['wid'] ) ){
 			$this->urlParameters['wid'] = '_' . $this->urlParameters['p'];  
 		}
-		//die('flashvars:'. $this->urlParameters[ 'flashvars' ] );
+		//echo '<pre>'; print_r( $this->urlParameters[ 'flashvars' ] ); exit();
 			
 		// Check for debug flag
 		if( isset( $_REQUEST['debugKalturaPlayer'] ) || isset( $_REQUEST['debug'] ) ){
@@ -533,6 +533,18 @@ class KalturaResultObject {
 				$client->queueServiceActionCall( "uiconf", "get", $kparams );
 				$kparams = array();
 			}
+
+			// Entry Cue Points
+			if( isset( $this->urlParameters[ 'flashvars' ][ 'getCuePointsData' ] ) &&
+					$this->urlParameters[ 'flashvars' ][ 'getCuePointsData' ] != "false" ) {
+				$filter = new KalturaCuePointFilter();
+				$filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
+				$filter->entryIdEqual = $this->urlParameters['entry_id'];
+
+				$client->addParam( $kparams, "filter",  $filter );
+				$client->queueServiceActionCall( "cuepoint_cuepoint", "list", $kparams );
+				$kparams = array();
+			}
 			
 			$rawResultObject = $client->doQueue();
 			$client->throwExceptionIfError( $this->resultObj );
@@ -541,6 +553,7 @@ class KalturaResultObject {
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 			return array();
 		}
+		//echo '<pre>'; print_r( $rawResultObject[5] ); exit();
 
 		
 		$resultObject = array_merge( $this->getBaseResultObject(), array(
@@ -560,6 +573,11 @@ class KalturaResultObject {
 		if( isset( $rawResultObject[4] ) && $rawResultObject[4]->confFile ){
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf'] = $rawResultObject[4]->confFile;
+		}
+
+		// Add Cue Point data
+		if( isset( $rawResultObject[5] ) && $rawResultObject[5]->totalCount > 0 ){
+			$resultObject[ 'entryCuePoints' ] = $rawResultObject[5]->objects;
 		}
 
 		// Check access control and throw an exception if not allowed: 
@@ -602,7 +620,7 @@ class KalturaResultObject {
 		$cacheLife = $wgKalturaUiConfCacheTime;
 
 		$conf = new KalturaConfiguration( $this->getPartnerId() );
-		
+
 		$conf->serviceUrl = $wgKalturaServiceUrl;
 		$conf->clientTag = $this->clientTag;
 		$conf->curlTimeout = $wgKalturaServiceTimeout;

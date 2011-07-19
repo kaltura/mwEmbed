@@ -223,6 +223,19 @@ mw.KApi.prototype = {
 		        	'action' : 'get'
 		    });
 		}
+
+		// Get Cue Points if not disable
+		if( kProperties.flashvars && kProperties.flashvars.getCuePointsData && kProperties.flashvars.getCuePointsData != "false" ){
+			requestObject.push({
+	        	 'service' : 'cuepoint_cuepoint',
+	        	 'action' : 'list',
+	        	 'filter:objectType' : 'KalturaCuePointFilter',
+	        	 'filter:orderBy' : '+startTime',
+	        	 'filter:statusEqual' : 1,
+	        	 'filter:entryIdEqual' : kProperties.entry_id
+		    });
+		}
+
 		// Do the request and pass along the callback
 		this.doRequest( requestObject, function( data ){
 			mw.log( "KApi:: playerLoader got data response" );
@@ -236,6 +249,9 @@ mw.KApi.prototype = {
 				
 				if( data[4] ){
 					namedData['uiConf'] = data[4]['confFile'];
+				}
+				if( data[5] && data[5].totalCount > 0 ) {
+					namedData['entryCuePoints'] = data[5].objects;
 				}
 			} else if( kProperties.uiconf_id ){
 				// If only loading the confFile set here: 
