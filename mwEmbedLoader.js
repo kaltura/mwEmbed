@@ -36,7 +36,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.4b6';
+KALTURA_LOADER_VERSION = '1.4b7';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -163,7 +163,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			});	
 		} else {
 			// Set iframeClient to true:
-			mw.setConfig('EmbedPlayer.IsIframeClient', true)
+			mw.setConfig('EmbedPlayer.IsIframeClient', true);
 
 			var jsRequestSet = [];
 			if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
@@ -476,7 +476,7 @@ function kCheckAddScript(){
 function kIsIOS(){
 	return ( (navigator.userAgent.indexOf('iPhone') != -1) || 
 	(navigator.userAgent.indexOf('iPod') != -1) || 
-	(navigator.userAgent.indexOf('iPad') != -1) )
+	(navigator.userAgent.indexOf('iPad') != -1) );
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not available 
 function kIsHTML5FallForward(){
@@ -755,7 +755,7 @@ if ( document.readyState === "complete" ) {
 // fallback function that should fire for all browsers 
 window.onload = function(){
 	kRunMwDomReady();
-}
+};
 // Cleanup functions for the document ready method
 if ( document.addEventListener ) {
 	DOMContentLoaded = function() {
