@@ -39,7 +39,10 @@ while (false !== ($entry = $d->read())) {
  * Default Kaltura Configuration: 
  * TODO move kaltura configuration to KalturaSupport module ( part of ResourceLoader update ) 
  ********************************************************/
-$wgKalturaRemoteAddressSalt = 'yourSaltGoesHere';
+
+// To include signed headers with user IPs for IP restriction lookups, input a salt string for 
+// $wgKalturaRemoteAddressSalt configuration option. 
+$wgKalturaRemoteAddressSalt = false;
 
 // Default debug mode
 $wgEnableScriptDebug = false;

@@ -194,6 +194,7 @@ class KalturaClientBase
 		
 		list($postResult, $error) = $this->doHttpRequest($url, $params, $files);
 		
+		
 		if ($error)
 		{
 			throw new KalturaClientException($error, KalturaClientException::ERROR_GENERIC);
@@ -267,8 +268,11 @@ class KalturaClientBase
 	 */
 	private function getRemoteAddrHeader(){
 		global $wgKalturaRemoteAddressSalt;
+		if( $wgKalturaRemoteAddressSalt === false ){
+			return '';
+		}
 		$s = $_SERVER['REMOTE_ADDR'] . "," . time() . "," . microtime( true );
-		return "X_KALTURA_REMOTE_ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt ) );
+		return "X_KALTURA_REMOTE_ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
 	}
 	
 	/**
@@ -342,7 +346,7 @@ class KalturaClientBase
 		$params = array('http' => array(
 					"method" => "POST",
 					"Accept-language: en\r\n".
-					$this->getRemoteAddrHeader() "\r\n".
+					( $this->getRemoteAddrHeader() != '' )? $this->getRemoteAddrHeader() . "\r\n": '' .
 					"Content-type: application/x-www-form-urlencoded\r\n",
 					"content" => $formattedData
 		          ));
