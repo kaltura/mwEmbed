@@ -11,9 +11,15 @@ mw.Omniture.prototype = {
 	
  	init: function( config ){
 		var _this = this;
- 		this.embedPlayer = embedPlayer;
  		// Check for required config: 
- 		this.confg = config;
+ 		this.config = config;
+ 		
+ 		if( !this.config.trackingServer ){
+ 			mw.log( "Error:: mw.Omniture missing tracking server" );
+ 		}
+ 		if( !this.config.account ){
+ 			mw.log( "Error: mw.Omniture missing account name" );
+ 		}
  	},
  	/**
  	 * 
@@ -29,7 +35,6 @@ mw.Omniture.prototype = {
  			mw.getConfig( 'Omniture.DispatchLog' )( eventId, eVars, props, eventName );
  		}
  		// Send an Omniture beacon
- 		
  		
  	}
 };

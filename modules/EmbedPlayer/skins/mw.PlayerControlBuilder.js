@@ -956,10 +956,9 @@ mw.PlayerControlBuilder.prototype = {
 		);
 	
 		$targetWarning.append(
-			$( '<input />' )
+			$( '<input type="checkbox" />' )
 			.attr({
 				'id' : 'ffwarn_' + embedPlayer.id,
-				'type' : "checkbox",
 				'name' : 'ffwarn_' + embedPlayer.id
 			})
 			.click( function() {
