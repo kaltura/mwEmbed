@@ -554,8 +554,6 @@ class KalturaResultObject {
 			return array();
 		}
 		//echo '<pre>'; print_r( $rawResultObject[5] ); exit();
-
-		
 		$resultObject = array_merge( $this->getBaseResultObject(), array(
 			'flavors' 			=> 	$rawResultObject[0],
 			'accessControl' 	=> 	$rawResultObject[1],
@@ -574,9 +572,9 @@ class KalturaResultObject {
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf'] = $rawResultObject[4]->confFile;
 		}
-
-		// Add Cue Point data
-		if( isset( $rawResultObject[5] ) && $rawResultObject[5]->totalCount > 0 ){
+		
+		// Add Cue Point data. Also check for 'code' error
+		if( isset( $rawResultObject[5] ) && ! isset( $rawResultObject['code'] ) && $rawResultObject[5]->totalCount > 0 ){
 			$resultObject[ 'entryCuePoints' ] = $rawResultObject[5]->objects;
 		}
 
