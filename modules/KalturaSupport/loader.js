@@ -267,7 +267,7 @@
 								kParams[ iframeRequestMap[tagKey] ] = $j(playerTarget).attr( tagKey );
 							}
 						}
-						if( $j( playerTarget).data('flashvars') ){
+						if( $j( playerTarget).data( 'flashvars' ) ){
 							kParams['flashvars'] = $j( playerTarget).data('flashvars');
 						}
 

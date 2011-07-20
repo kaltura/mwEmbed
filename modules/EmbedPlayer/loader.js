@@ -304,6 +304,7 @@
 		"type" : null
 	} );
 
+	
 	// Add class file paths
 	mw.addResourcePaths( {
 		"mw.EmbedPlayer"	: "mw.EmbedPlayer.js",

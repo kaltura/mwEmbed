@@ -244,8 +244,9 @@ mw.KWidgetSupport.prototype = {
 		playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
 
 		// Add the flashvars
-		playerRequest.flashvars = embedPlayer.flashvars;
-
+		playerRequest.flashvars = $j( embedPlayer ).data( 'flashvars' ); 
+		debugger;
+		
 		// Check if we have the player data bootstrap from the iframe
 		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
 

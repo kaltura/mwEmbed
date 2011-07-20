@@ -400,11 +400,15 @@ EmbedPlayerManager.prototype = {
 
 		// Get properties / methods from playerInterface:
 		for ( var method in playerInterface ) {
-			if ( method != 'readyState' ) { // readyState crashes IE ( don't
-											// include )
+			if ( method != 'readyState' ) { // readyState crashes IE ( don't include )
 				swapPlayerElement[ method ] = playerInterface[ method ];
 			}
 		}
+
+		// Copy over any data attributes applied to the targetElement to the swapTarget
+		$j( swapPlayerElement ).data( $j( targetElement ).data() );
+		
+		
 		// Check if we are using native controls or Persistent player ( should keep the video embed around )
 		if( playerInterface.useNativePlayerControls() || playerInterface.isPersistentNativePlayer() ) {
 			$j( targetElement )
@@ -579,9 +583,6 @@ mw.EmbedPlayer.prototype = {
 			customAttributes = { };
 		}
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
-
-		// Save flashvars to embedPlayer
-		this.flashvars = $j(element).data('flashvars');
 
 		// Setup the player Interface from supported attributes:
 		for ( var attr in playerAttributes ) {
