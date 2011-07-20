@@ -246,13 +246,20 @@ mw.KApi.prototype = {
 				namedData['flavors'] = data[1];
 				namedData['meta'] = data[2];
 				namedData['entryMeta'] = _this.convertCustomDataXML( data[3] );
-				
-				if( data[4] ){
-					namedData['uiConf'] = data[4]['confFile'];
+
+				if( kProperties.uiconf_id ){
+					if( data[4] ){
+						namedData['uiConf'] = data[4]['confFile'];
+					}
+					if( data[5] && data[5].totalCount > 0 ) {
+						namedData['entryCuePoints'] = data[5].objects;
+					}
+				} else {
+					if( data[4] && data[4].totalCount > 0 ) {
+						namedData['entryCuePoints'] = data[4].objects;
+					}
 				}
-				if( data[5] && data[5].totalCount > 0 ) {
-					namedData['entryCuePoints'] = data[5].objects;
-				}
+					
 			} else if( kProperties.uiconf_id ){
 				// If only loading the confFile set here: 
 				namedData['uiConf'] = data[0]['confFile'];
