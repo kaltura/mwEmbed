@@ -275,7 +275,7 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		
 		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
-		if( mw.getConfig('EmbedPlayer.IsIframePlayer' ) ){
+		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			mw.log("PlayerControl::toggleFullscreen: iframe server");
 			if( this.fullscreenMode ){
 				mw.log("iframeServer:: trigger onCloseFullScreen()");
@@ -1780,7 +1780,7 @@ mw.PlayerControlBuilder.prototype = {
 						.buttonHover();
 				
 				// iPad fullscreen in an iframe is very broken 
-				if( ( mw.getConfig('EmbedPlayer.IsIframePlayer') && mw.isIpad() ) 
+				if( ( mw.getConfig('EmbedPlayer.IsIframeServer') && mw.isIpad() ) 
 						|| mw.getConfig( "EmbedPlayer.NewWindowFullscreen" ) 
 					){	
 					var url = document.URL.split('#')[0];

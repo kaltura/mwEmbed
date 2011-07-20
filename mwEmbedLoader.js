@@ -614,7 +614,7 @@ function kAddScript( callback ){
 		'mw.style.TimedText'
 	);
 	// If an iframe server include iframe server stuff: 
-	if( mw.getConfig('EmbedPlayer.IsIframePlayer') ){
+	if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
 		jsRequestSet.push(
 			'$j.postMessage',
 			'mw.IFramePlayerApiServer'

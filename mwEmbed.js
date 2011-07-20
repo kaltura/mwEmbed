@@ -2137,7 +2137,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 	 */
 	// Flag to ensure setup is only run once:
 	var mwSetupFlag = false;
-	mw.setupMwEmbed = function ( ) {		
+	mw.setupMwEmbed = function ( ) {	
 		// Only run the setup once:
 		if( mwSetupFlag ) {
 			return ;
@@ -2193,7 +2193,6 @@ mw.absoluteUrl = function( src, contextUrl ) {
 						if( mw.hasJQueryUiCss() ){
 							mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;
 						}
-						
 						// load any  Mw.CustomResourceIncludes
 						mw.loadCustomResourceIncludes( mw.getConfig('Mw.CustomResourceIncludes'), function(){
 							// Make sure style sheets are loaded:
@@ -2222,7 +2221,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 	};
 	mw.loadCustomResourceIncludes = function( loadSet, callback ){
 		// XXX this needs to be cleaned up ( for now dont include custom resources if not an iframe player )
-		if( !mw.getConfig('EmbedPlayer.IsIframePlayer' ) ){
+		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			callback();
 			return ;
 		}
@@ -2230,6 +2229,7 @@ mw.absoluteUrl = function( src, contextUrl ) {
 			callback();
 			return ;
 		}
+
 		// pop up a loadSet item and re call loadCustomResourceIncludes
 		var resource = loadSet.shift();
 		mw.getScript( resource['src'], function(){
