@@ -574,7 +574,7 @@ class KalturaResultObject {
 		}
 		
 		// Add Cue Point data. Also check for 'code' error
-		if( isset( $rawResultObject[5] ) && ! isset( $rawResultObject['code'] ) && $rawResultObject[5]->totalCount > 0 ){
+		if( isset( $rawResultObject[5] ) && !isset( $rawResultObject[5]['code'] ) && $rawResultObject[5]->totalCount > 0 ){
 			$resultObject[ 'entryCuePoints' ] = $rawResultObject[5]->objects;
 		}
 
