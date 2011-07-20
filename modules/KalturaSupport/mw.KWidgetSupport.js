@@ -164,12 +164,26 @@ mw.KWidgetSupport.prototype = {
 	},
 	/**
 	 * Check for xml config, let flashvars override  
+	 * @param {Object} $uiConf jQuery object xml to look for plugin attributes
+	 * @param {Object} $uiConf jQuery object xml to look for plugin attributes
 	 */
-	getPluginConfig: function( $uiConf, pluginName, attr ){
+	getPluginConfig: function( embedPlayer, $uiConf, pluginName, attr ){
+		var singleAttrName = false;
+		if( typeof attr == 'string' ){
+			singleAttrName = attr;
+			attr = $j.makeArray( attr );
+		}
+
 		var config = {};
-		$plugin = $uiConf.find( 'plugin#' + pluginName );
-		var fv = mw.getConfig( 'KalturaSupport.IFramePresetFlashvars' ); 
-		$.each( attr, function(inx, attrName ){
+		var $plugin = $uiConf.find( 'plugin#' + pluginName );
+		var $uiPluginVars = $uiConf.find( 'var[key^="' + pluginName + '"]' );
+		// @@TODO the iframe really should apply the "data" instead of this hacky merge here:
+		var fv = mw.getConfig( 'KalturaSupport.IFramePresetFlashvars' );
+		// Check for embedPlayer flashvars ( will overwrite iframe values if present )
+		if( $j( embedPlayer ).data('flashvars' ) ){
+			fv = $j( embedPlayer ).data('flashvars' );
+		}
+		$j.each( attr, function(inx, attrName ){
 			if( $plugin.attr( attrName ) ){
 				config[attrName] = $plugin.attr( attrName );
 			}
@@ -177,18 +191,33 @@ mw.KWidgetSupport.prototype = {
 			if( $plugin.attr( attrName.toLowerCase() ) ){
 				config[attrName] = $plugin.attr( attrName.toLowerCase() );
 			}
-			// check flashvars overrides
+			
+			// Check flashvars overrides
 			if( fv[ pluginName + '.' + attrName ] ){
 				config[ attrName ] = fv[ pluginName + '.' + attrName ];
 			}
-			
+			// Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
+			$uiPluginVars.each( function(inx, node){
+				if( $j( node ).attr('key') == pluginName + '.' + attrName ){
+					if( $j(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
+						config[attrName] = $j(node).get(0).getAttribute('value');
+					}
+					// found break out of loop
+					return false;
+				}
+			});
+		
 			// Convert string to boolean 
 			if( config[ attrName ] === "true" )
 				config[ attrName ] = true;
 			if( config[ attrName ] === "false" )
 				config[ attrName ] = false; 
 		});
-		return config;
+		if( singleAttrName != false ){
+			return config[ singleAttrName ];
+		} else {
+			return config;
+		}
 	},
 	/**
 	 * Alternate source grabbing script ( for cases where we need to hot-swap the source ) 
@@ -245,7 +274,6 @@ mw.KWidgetSupport.prototype = {
 
 		// Add the flashvars
 		playerRequest.flashvars = $j( embedPlayer ).data( 'flashvars' ); 
-		debugger;
 		
 		// Check if we have the player data bootstrap from the iframe
 		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");

@@ -7,7 +7,8 @@ var bumperPlugin = true;
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		//<plugin id="bumper" bumperentryid="1_187nvs4c" clickurl="http://www.nokia.com" lockui="true" playonce="false" presequence="1" width="100%" height="100%"></plugin>
-		var bc = kWidgetSupport.getPluginConfig( 
+		var bc = kWidgetSupport.getPluginConfig(
+				embedPlayer,
 				$uiConf, 
 				'bumper', 
 				['bumperEntryID', 'clickUrl', 'lockUi', 'playOnce', 'preSequence', 'width', 'height']

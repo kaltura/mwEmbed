@@ -429,7 +429,6 @@ EmbedPlayerManager.prototype = {
 			'overflow': 'hidden'
 		} );
 		
-		
 
 		// If we don't already have a loadSpiner add one:
 		if( $j('#loadingSpinner_' + playerInterface.id ).length == 0 ){
