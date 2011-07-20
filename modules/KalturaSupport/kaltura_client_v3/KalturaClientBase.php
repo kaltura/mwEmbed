@@ -261,7 +261,16 @@ class KalturaClientBase
 		else
 			return $this->doPostRequest($url, $params, $files);
 	}
-
+	
+	/**
+	 * Returns a custom signed kaltura header 
+	 */
+	private function getRemoteAddrHeader(){
+		global $wgKalturaRemoteAddressSalt;
+		$s = $_SERVER['REMOTE_ADDR'] . "," . time() . "," . microtime( true );
+		return "X_KALTURA_REMOTE_ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt ) );
+	}
+	
 	/**
 	 * Curl HTTP POST Request
 	 *
@@ -275,6 +284,10 @@ class KalturaClientBase
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POST, 1);
+		
+		// Add the custom kaltura forward for signed header:
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, array( $this->getRemoteAddrHeader() ) );
+		
 		if (count($files) > 0)
 		{
 			foreach($files as &$file)
@@ -329,6 +342,7 @@ class KalturaClientBase
 		$params = array('http' => array(
 					"method" => "POST",
 					"Accept-language: en\r\n".
+					$this->getRemoteAddrHeader() "\r\n".
 					"Content-type: application/x-www-form-urlencoded\r\n",
 					"content" => $formattedData
 		          ));

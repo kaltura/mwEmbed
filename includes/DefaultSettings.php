@@ -39,6 +39,7 @@ while (false !== ($entry = $d->read())) {
  * Default Kaltura Configuration: 
  * TODO move kaltura configuration to KalturaSupport module ( part of ResourceLoader update ) 
  ********************************************************/
+$wgKalturaRemoteAddressSalt = 'yourSaltGoesHere';
 
 // Default debug mode
 $wgEnableScriptDebug = false;
