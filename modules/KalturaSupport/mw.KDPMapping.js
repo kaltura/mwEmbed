@@ -356,8 +356,8 @@
 					});
 					break;	
 				case 'entryReady':
-					b( 'KalturaSupport_MetaDataReady', function( event, embedPlayer ) {
-						callback( embedPlayer , embedPlayer.id );
+					b( 'KalturaSupport_MetaDataReady', function( event, entryMetaData ) {
+						callback( entryMetaData , embedPlayer.id );
 					});
 					break;
 				case 'mediaReady':
@@ -486,6 +486,8 @@
 					$j( embedPlayer ).bind('playerReady.kdpMapping', function(){	
 						// Do normal stop then play:
 						if( chnagePlayingMedia ){
+							// make sure the play button is not displayed:
+							embedPlayer.$interface.find( '.play-btn-large' ).hide();
 							if( embedPlayer.isPersistentNativePlayer() ){
 								embedPlayer.switchPlaySrc( embedPlayer.getSrc() );
 							} else {

@@ -8,8 +8,8 @@
 window['jsCallbackReady'] = function( videoId ){
 	// add a local ref to the kdp: 
 	var kdp = document.getElementById( videoId );
-	$('.changeMedia').click(function(e){
-		kdp.sendNotification( "changeMedia", { 'entryId' : e.currentTarget.dataset.entryid });
+	$( '.changeMedia' ).click(function(){
+		kdp.sendNotification( "changeMedia", { 'entryId' : $(this).attr('data-entryId') });
 	});
 }
 function jsKalturaPlayerTest( videoId ){
@@ -17,14 +17,24 @@ function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "KMix No Sources Entry" );
 		
-	asyncTest("Change Media", function(){
+	asyncTest("Change Media 1_oz8y7d5a", function(){
 		window['kalturaQunitEntryReady'] = function( entry ){
-			equal(entry.id, "1_oz8y7d5a", "Entry change success" );
-			equal(entry.name, "kaltura test.avi", "name of entry updated");
-			start();
+			// check for the inital entry ready:
+			if( entry.id == '1_2qy6yq5j' ){
+				equal(entry.id, "1_2qy6yq5j", "Mix entry ready" );
+				// switch to the next entry:
+				$( ".changeMedia" ).get(1).click();
+			} else if( entry.id == "1_oz8y7d5a" ) {
+				equal(entry.id, "1_oz8y7d5a", "Entry 1_oz8y7d5a change success" );
+				equal(entry.name, "kaltura test.avi", "name of entry updated");
+				$( ".changeMedia" ).get(2).click();
+			} else if ( entry.id == "1_ur8f1q6u" ){
+				equal(entry.id, "1_ur8f1q6u", "Entry 1_ur8f1q6u change success" );
+				// done with tests:
+				start();
+			}
 		}
 		kdp.addJsListener("entryReady", "kalturaQunitEntryReady");
-		$(".changeMedia").get(1).click();
 	});
 }
 </script>

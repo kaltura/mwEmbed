@@ -1666,6 +1666,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	updatePosterHTML: function () {
 		mw.log( 'EmbedPlayer:updatePosterHTML::' + this.id );
+		var _this = this;
 		var thumb_html = '';
 		var class_atr = '';
 		var style_atr = '';
@@ -1681,7 +1682,11 @@ mw.EmbedPlayer.prototype = {
 
 		// Update PersistentNativePlayer poster:
 		if( this.isPersistentNativePlayer() ){
-			$j( '#' + this.pid ).attr('poster', posterSrc).show();
+			$j( '#' + this.pid ).attr( 'poster', posterSrc ).hide();
+			// Add a quick timeout hide / show ( firefox bug with native poster updates )
+			setTimeout(function(){
+				$j( '#' + _this.pid ).show();
+			},1);
 		} else {
 			// Poster support is not very consistent in browsers
 			// use a jpg poster image:
