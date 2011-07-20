@@ -459,7 +459,7 @@ EmbedPlayerManager.prototype = {
 	playerReady: function( player ) {
 		var _this = this;
 		mw.log( 'EmbedPlayer::ReadyToPlay callback player:' + player.id );
-		player.readyToPlay = true;
+		player.readyToPlay = true;		
 
 		// Remove the player loader spinner:
 		$j('#loadingSpinner_' + player.id ).remove();
@@ -1119,7 +1119,7 @@ mw.EmbedPlayer.prototype = {
 
 			// Run player display with timeout to avoid function stacking
 			setTimeout(function(){
-				_this.showPlayer();
+				_this.showPlayer();			
 				// Run the callback if provided
 				if ( typeof callback == 'function' ){
 					callback();
@@ -1503,11 +1503,7 @@ mw.EmbedPlayer.prototype = {
 			)
 		)
 		// Hide the interface components
-		.find( '.control-bar,.play-btn-large').hide();
-		
-		if( this.isPersistentNativePlayer() ){
-			$target.show().parent().find('video').hide();
-		}
+		.find( '.control-bar,.play-btn-large').hide();		
 		return ;
 	},
 	/**
@@ -1682,11 +1678,15 @@ mw.EmbedPlayer.prototype = {
 
 		// Update PersistentNativePlayer poster:
 		if( this.isPersistentNativePlayer() ){
-			$j( '#' + this.pid ).attr( 'poster', posterSrc ).hide();
+			var $vid = $j( '#' + this.pid )
+			$vid.attr( 'poster', posterSrc );
 			// Add a quick timeout hide / show ( firefox bug with native poster updates )
-			setTimeout(function(){
-				$j( '#' + _this.pid ).show();
-			},1);
+			if( $.browser.mozilla ){
+				$vid.hide();
+				setTimeout(function(){
+					$vid.show();
+				},1);
+			}
 		} else {
 			// Poster support is not very consistent in browsers
 			// use a jpg poster image:
