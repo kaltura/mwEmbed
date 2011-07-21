@@ -563,7 +563,7 @@ class KalturaResultObject {
 		$resultObject = array_merge( $this->getBaseResultObject(), array(
 			'flavors' 			=> 	$rawResultObject[0],
 			'accessControl' 	=> 	$rawResultObject[1],
-			'meta'				=>	$rawResultObject[2]			
+			'meta'				=>	$rawResultObject[2]
 		) );
 		
 		if( isset( $rawResultObject[3]->objects ) && 
@@ -695,7 +695,7 @@ class KalturaResultObject {
 			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".entry.txt";
 	
 			// Check modify time on cached php file
-			$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
+			$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
 			if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
 				$this->resultObj = $this->getResultObjectFromApi();
 			} else {

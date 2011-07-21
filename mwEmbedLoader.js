@@ -1,5 +1,4 @@
 /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/
-
 /**
 * Kaltura html5 library loader 
 * For more info on mwEmbed / kaltura html5 library see: 

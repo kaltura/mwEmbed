@@ -26,6 +26,8 @@ class kalturaIframe {
 	var $debug = false;
 	var $error = false;
 	var $playerError = false;
+	var $uiConfXml = null; // lazy init
+	
 	// A list of kaltura plugins and associated includes	
 	public static $iframePluginMap = array(
 		'ageGate' => 'iframePlugins/AgeGate.php'
@@ -267,12 +269,20 @@ class kalturaIframe {
 		}
 		return $o;
 	}
-	private function checkIframePlugins(){
+	private function getUiConfXML(){
 		global $wgKalturaIframe;
-		if( ! $this->getResultObject()->getUiConf() ){
-			return ;
+		if( !$this->uiConfXml ){
+			if( ! $this->getResultObject()->getUiConf() ){
+				return ;
+			}
+			$this->uiConfXml = new SimpleXMLElement( $this->getResultObject()->getUiConf() );
 		}
-		$xml = new SimpleXMLElement( $this->getResultObject()->getUiConf() );
+		return $this->uiConfXml;
+	}
+	private function checkIframePlugins(){
+		$xml = $this->getUiConfXML();
+		if( ! $xml )
+			return ;
 		if( isset( $xml->HBox ) && isset( $xml->HBox->Canvas ) && isset( $xml->HBox->Canvas->Plugin ) ){
 			foreach ($xml->HBox->Canvas->Plugin as $plugin ){
 				$attributes = $plugin->attributes();
@@ -342,6 +352,28 @@ class kalturaIframe {
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		}
 	}
+	
+	/**
+	 * Get the location of the mwEmbed library
+	 */
+	private function getMwEmbedLoaderLocation(){
+		global $wgMwEmbedPathUrl, $wgKalturaCDNUrl;
+		$defaultLoaderPath = $wgMwEmbedPathUrl . 'mwEmbedLoader.php';
+		$xml = $this->getUiConfXML();
+		if( $xml && isset( $xml->layout ) && isset( $xml->layout[0] ) ){
+			foreach($xml->layout[0]->attributes() as $name => $value) {
+				if( $name == 'html5_url' ){
+					if( $value[0] == '/' ){
+						return $wgKalturaCDNUrl	 . $value;
+					} else if( substr( $value,0, 4 ) == 'http' ) {
+						return $value;
+					}
+				}
+			}
+		}
+		return $defaultLoaderPath;
+	}
+	
 	/**
 	 * Get the iframe css
 	 */
@@ -447,7 +479,7 @@ class kalturaIframe {
 		<?php echo $this->outputIframeHeadCss(); ?>
 		<script type="text/javascript">
 			// Insert the html5 kalturaLoader script
-			document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>mwEmbedLoader.php' type='text/javascript'%3E%3C/script%3E"));
+			document.write(unescape("%3Cscript src='<?php echo $this->getMwEmbedLoaderLocation() ?>' type='text/javascript'%3E%3C/script%3E"));
 		</script>
 		<script type="text/javascript">
 			// Insert JSON support if in missing ( IE 7, 8 )

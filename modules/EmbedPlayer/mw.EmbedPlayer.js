@@ -1678,7 +1678,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Update PersistentNativePlayer poster:
 		if( this.isPersistentNativePlayer() ){
-			var $vid = $j( '#' + this.pid )
+			var $vid = $j( '#' + this.pid );
 			$vid.attr( 'poster', posterSrc );
 			// Add a quick timeout hide / show ( firefox bug with native poster updates )
 			if( $.browser.mozilla ){
