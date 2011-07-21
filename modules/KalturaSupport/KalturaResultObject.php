@@ -535,8 +535,14 @@ class KalturaResultObject {
 			}
 
 			// Entry Cue Points
+			// By default we load the cue points unless there's a flashvar who says no
+			$loadCuePoints = true; 
 			if( isset( $this->urlParameters[ 'flashvars' ][ 'getCuePointsData' ] ) &&
-					$this->urlParameters[ 'flashvars' ][ 'getCuePointsData' ] != "false" ) {
+					$this->urlParameters[ 'flashvars' ][ 'getCuePointsData' ] == "false" ) {
+				$loadCuePoints = false;
+			}
+
+			if( $loadCuePoints ) {
 				$filter = new KalturaCuePointFilter();
 				$filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
 				$filter->entryIdEqual = $this->urlParameters['entry_id'];
@@ -553,7 +559,7 @@ class KalturaResultObject {
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 			return array();
 		}
-		//echo '<pre>'; print_r( $rawResultObject[5] ); exit();
+
 		$resultObject = array_merge( $this->getBaseResultObject(), array(
 			'flavors' 			=> 	$rawResultObject[0],
 			'accessControl' 	=> 	$rawResultObject[1],
@@ -572,9 +578,10 @@ class KalturaResultObject {
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf'] = $rawResultObject[4]->confFile;
 		}
-		
+		//echo '<pre>'; print_r( $rawResultObject[5] ); exit();
 		// Add Cue Point data. Also check for 'code' error
-		if( isset( $rawResultObject[5] ) && !isset( $rawResultObject[5]['code'] ) && $rawResultObject[5]->totalCount > 0 ){
+
+		if( isset( $rawResultObject[5] ) && is_object( $rawResultObject[5] ) && $rawResultObject[5]->totalCount > 0 ){
 			$resultObject[ 'entryCuePoints' ] = $rawResultObject[5]->objects;
 		}
 

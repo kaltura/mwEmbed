@@ -63,6 +63,7 @@
 	mw.addResourcePaths( {
 		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
 		"mw.KCuePoints" : "mw.KCuePoints.js",
+		"mw.KCaptions" : "mw.KCaptions.js",
 		"mw.KAnalytics" : "mw.KAnalytics.js",
 		"mw.PlaylistHandlerKaltura"	: "mw.PlaylistHandlerKaltura.js", 
 		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
@@ -72,6 +73,7 @@
 		"faderPlugin" : "uiConfComponents/faderPlugin.js",
 		"watermarkPlugin" :  "uiConfComponents/watermarkPlugin.js",
 		"adPlugin"	: 	"uiConfComponents/adPlugin.js",
+		"captionPlugin"	: 	"uiConfComponents/captionPlugin.js",
 		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
 		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",
 		"omniturePlugin" : "uiConfComponents/omniturePlugin.js",
@@ -88,11 +90,13 @@
 		'mw.KCuePoints',
 		'mw.KAnalytics',
 		'mw.KDPMapping',
-		'mw.KAds',	
+		'mw.KAds',
+		'mw.KCaptions',
 		'controlbarLayout',
 		'faderPlugin',
 		'watermarkPlugin',
 		'adPlugin',
+		'captionPlugin',
 		'bumperPlugin',
 		'omniturePlugin'
 	];

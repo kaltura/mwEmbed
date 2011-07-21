@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Captions example html5 / kdp</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript">
+/* Load Temp Captions
+** Basic example from server */
+mw.setConfig( 'Kaltura.TempCaptions', [
+	{
+		"captionParamsId":0,
+		"language":"English",
+		"isDefault":null,
+		"label":"English",
+		"format":"1",
+		"id":"0_ia1zyksl",
+		"entryId":"0_hofywpnz",
+		"partnerId":495794,
+		"status":2,
+		"version":"1",
+		"size":639,
+		"tags":"",
+		"fileExt":"srt",
+		"createdAt":1311172955,
+		"updatedAt":1311172956,
+		"deletedAt":null,
+		"description":"",
+		"partnerData":null
+	}
+]);
+
+// Sample serve url:
+// http://devtests.kaltura.dev/api_v3/index.php?service=caption_captionasset&action=serve&captionAssetId=0_ia1zyksl&ks=MjEzZGU3ZjIxMmRmZmRiNWMwZWJhZTczMGM5MTEyOTI2ZDY2NzlhOXw0OTU3OTQ7NDk1Nzk0OzEzMTI5ODA5NDY7MjsxMzEwMzg4OTQ2LjkzNTE7cmFuQG1haWxpbmF0b3IuY29tOyo7Ow
+
+</script>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Captions for kdp flash player and html5 player </h2>
+<a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
+<br /><br />
+
+<div style="float:left">
+<object id="kaltura_player_1311257016" name="kaltura_player_1311257016" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1311257016/wid/_423851/uiconf_id/5209112/entry_id/1_71dhcu80" data="http://www.kaltura.com/index.php/kwidget/cache_st/1311257016/wid/_423851/uiconf_id/5209112/entry_id/1_71dhcu80"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1311257016/wid/_423851/uiconf_id/5209112/entry_id/1_71dhcu80" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/423851/sp/42385100/thumbnail/entry_id/1_71dhcu80/width/120/height/90/bgcolor/000000/type/2"></a> <span property="dc:description" content=""></span><span property="media:title" content="The Dark Knight Rises - Official Teaser Trailer [HD].mp4"></span> <span property="media:width" content="400"></span><span property="media:height" content="333"></span> <span property="media:type" content="application/x-shockwave-flash"></span> </object>
+</div>
+
+</body>
+</html>

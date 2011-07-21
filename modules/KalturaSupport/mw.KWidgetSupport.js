@@ -150,7 +150,7 @@ mw.KWidgetSupport.prototype = {
 			// Allow other plugins to subscribe to cuePoint ready event:
 			$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
 		}
-		
+
 		if( embedPlayer.$uiConf ){
 			// Trigger the check kaltura uiConf event					
 			$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport_CheckUiConf', embedPlayer.$uiConf, function(){	

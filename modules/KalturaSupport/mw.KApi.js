@@ -225,7 +225,12 @@ mw.KApi.prototype = {
 		}
 
 		// Get Cue Points if not disable
-		if( kProperties.flashvars && kProperties.flashvars.getCuePointsData && kProperties.flashvars.getCuePointsData != "false" ){
+		var loadCuePoints = true;
+		if( kProperties.flashvars && kProperties.flashvars.getCuePointsData && kProperties.flashvars.getCuePointsData == "false") {
+			loadCuePoints = false;
+		}
+
+		if( loadCuePoints ){
 			requestObject.push({
 	        	 'service' : 'cuepoint_cuepoint',
 	        	 'action' : 'list',

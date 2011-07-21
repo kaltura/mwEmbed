@@ -79,18 +79,12 @@ mw.KAds.prototype = {
 
 				var originalSrc = _this.embedPlayer.getSrc();
 				var seekTime = ( parseFloat( cuePoint.cuePoint.startTime / 1000 ) / parseFloat( _this.embedPlayer.duration ) );
-				console.log('SEEK', cuePoint.cuePoint.startTime,  _this.embedPlayer.duration, seekTime);
+				var oldDuration = _this.embedPlayer.duration;
 
 				// Set restore function
 				var restorePlayer = function() {
 					_this.embedPlayer.restoreEventPropagation();
 					_this.embedPlayer.enableSeekBar();
-					_this.embedPlayer.play();
-					
-					// Seek to where we did the switch
-					setTimeout(function() {
-						_this.embedPlayer.doSeek( seekTime );
-					}, 100);
 				};
 
 				// Set switch back function
@@ -100,12 +94,18 @@ mw.KAds.prototype = {
 					// so switch back and restore original bindings
 					if ( originalSrc != vid.src ) {
 						_this.embedPlayer.switchPlaySrc(originalSrc, function() {
-								mw.log( "AdTimeline:: restored original src:" + vid.src);
-								// Restore embedPlayer native bindings
-								// async for iPhone issues
-								setTimeout(function(){
-									restorePlayer();
-								},100);
+							mw.log( "AdTimeline:: restored original src:" + vid.src);
+							// Restore embedPlayer native bindings
+							// async for iPhone issues
+							setTimeout(function(){
+								restorePlayer();
+							},100);
+
+							// Sometimes the duration of the video is zero after switching source
+							// So i'm re-setting it to it's old duration
+							_this.embedPlayer.duration = oldDuration;
+							// Seek to where we did the switch
+							_this.embedPlayer.doSeek( seekTime );
 						});
 					} else {
 						restorePlayer();

@@ -35,7 +35,7 @@
 		init: function( source , textProvider) {
 			//	Inherits mediaSource
 			for( var i in source){
-				this[ i ] =  source[ i];
+				this[ i ] =  source[ i ];
 			}
 			
 			// Set default category to subtitle if unset:
