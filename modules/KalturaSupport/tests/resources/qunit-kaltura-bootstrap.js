@@ -19,7 +19,7 @@ if( window.QUnit ){
 			stop();
 		}
 		// Add entry ready listener
-		document.getElementById( videoId ).addJsListener("entryReady", "kalturaQunitEntryReady");
+		document.getElementById( videoId ).addJsListener("mediaReady", "kalturaQunitMediaReady");
 
 		jsCallbackCalled = true;
 		if( jsKalturaPlayerTest ){
@@ -48,23 +48,23 @@ if( window.QUnit ){
 			waitCount++;
 		}, 10);
 	});
-	var entryReadyCallbacks = [];
-	var entryReadyAlreadyCalled = false;
+	var mediaReadyCallbacks = [];
+	var mediaReadyAlreadyCalled = false;
 	// Utility function for entry ready testing handler
-	window['kalturaQunitEntryReady'] = function(){
+	window['kalturaQunitMediaReady'] = function(){
 		// run in async call to ensure non-blocking build out is in dom
 		setTimeout(function(){
-			while( entryReadyCallbacks.length ){
-				entryReadyCallbacks.shift()();
+			while( mediaReadyCallbacks.length ){
+				mediaReadyCallbacks.shift()();
 			}
-			entryReadyAlreadyCalled = true;
+			mediaReadyAlreadyCalled = true;
 		}, 10 );
 	};
 	window['kalturaQunitWaitForPlayer'] = function( callback ){		
-		if( entryReadyAlreadyCalled ){
+		if( mediaReadyAlreadyCalled ){
 			callback();
 			return ;
 		}
-		entryReadyCallbacks.push( callback );
+		mediaReadyCallbacks.push( callback );
 	};
 }

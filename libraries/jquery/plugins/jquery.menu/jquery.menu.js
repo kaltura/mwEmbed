@@ -606,8 +606,15 @@ Menu.prototype.setPosition = function(widget, caller, options) {
 		refH: referrer.getTotalHeight()
 	};	
 	var options = options;
-	var xVal, yVal;
+	var xVal, yVal; 
 	
+	// Remove any other empty menuHelpers:
+	$('.menuPositionHelper').each( function(inx, menuHelper ){
+		if( $( menuHelper ).children().length == 0  ){
+			$( menuHelper ).remove();
+		}
+	});
+
 	var helper = $( '<div class="menuPositionHelper">' );	
 	helper.css( 'z-index', options.zindex );
 	

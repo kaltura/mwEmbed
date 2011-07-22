@@ -19,12 +19,12 @@
 		init: function( ){
 			if( mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
 				this.addIframePlayerHooksServer();
-			} else {
-				// For client side of the iframe add iframe hooks and player hooks ( will bind to 
-				// different build player build outs and lets us support pages with both
-				// iframe and no iframes players
-				this.addIframePlayerHooksClient();
-			}
+				return ;
+			} 
+			// For client side of the iframe add iframe hooks and player hooks ( will bind to 
+			// different build player build outs and lets us support pages with both
+			// iframe and no iframes players
+			this.addIframePlayerHooksClient();
 			// Always add player hooks
 			this.addPlayerHooks();
 		},
@@ -135,7 +135,10 @@
 				embedPlayer.setKDPAttribute = function( componentName, property, value ) {
 					_this.setKDPAttribute( embedPlayer, componentName, property, value );
 				};
-
+				
+				embedPlayer.evaluate = function( objectString ){
+					return _this.evaluate( embedPlayer, objectString);
+				}
 			});
 		},
 		
@@ -368,7 +371,7 @@
 				case 'mediaReady':
 					// check for "media ready" ( namespace to kdpMapping )
 					b( 'playerReady', function() {
-						callback( embedPlayer.id );
+						callback( embedPlayer.id );						
 					});
 					break;
 				case 'cuePointsReceived':

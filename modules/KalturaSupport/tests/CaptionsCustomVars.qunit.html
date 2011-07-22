@@ -3,27 +3,44 @@
 <head>
 <title>Captions kaltura custom vars</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
-	
+	var kdp = $( '#' + videoId ).get(0);
 	// Name this module
-	module( "Basic Player" );
+	module( "Captions kaltura" );
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
+	var iframeKdp = $iframe.find( '#' + videoId ).get(0);
 	var iframeContext = window.frames['kaltura_player_ifp'];
 	
-	test( "Timed text on screen", function() {
-		// play the video
-		$( '#' + videoId ).get(0).play();
+	asyncTest( "Timed text on screen", function() {
+		kalturaQunitWaitForPlayer(function(){
+			// Setup text:
+			iframeKdp.timedText.setupTextSources(function(){
+				ok( iframeKdp.timedText.textSources.length, "Text sources found" );
+				kdp.sendNotification( 'doPlay' );
+				setTimeout(function(){
+					// Check that the text is displayed: 
+					kdp.sendNotification( 'doSeek', 2);
+					kdp.sendNotification( 'doPause', 2);
+
+					kdp.sendNotification( 'doSeek', 2);
+					setTimeout(function(){
+						ok( $iframe.find('.track_subtitles').length, "text container in DOM");
+						equal( $iframe.find('.track_subtitles span').text(), "Harold is the coffee alright?", "Text matches srt");
+						start();
+					}, 500 );
+				},500);
+
+				// give the player 1 second to do the seek 
+				//( the seek should update the time before the player acutally gets there )
+				
+				
+			});
+		});
 	});
 }
-$(document).ready(function(){
-	$('#cat').click(function(){
-		$( '#kaltura_player_1311316803' ).get(0).play();
-	});
-});
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
@@ -36,6 +53,5 @@ $(document).ready(function(){
 <div style="float:left">
 	<object id="kaltura_player_1311316803" name="kaltura_player_1311316803" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1311316803/wid/_243342/uiconf_id/5260062/entry_id/0_uka1msg4" data="http://www.kaltura.com/index.php/kwidget/cache_st/1311803/wid/_243342/uiconf_id/5260062/entry_id/0_uka1msg4"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1311316803/wid/_243342/uiconf_id/5260062/entry_id/0_uka1msg4" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_uka1msg4/width/120/height/90/bgcolor/000000/type/2"></a> <span property="dc:description" content="test folgers coffe"></span><span property="media:title" content="FolgersCoffe.mpeg"></span> <span property="media:width" content="400"></span><span property="media:height" content="330"></span> <span property="media:type" content="application/x-shockwave-flash"></span> </object>
 </div>
-<a id="cat" href="#">test</a>
 </body>
 </html>

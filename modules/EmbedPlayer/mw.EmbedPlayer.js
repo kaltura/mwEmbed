@@ -924,7 +924,7 @@ mw.EmbedPlayer.prototype = {
 		if( !this.mediaElement ){
 			return false;
 		}
-		return this.mediaElement.getTextTracks().length;
+		return ( this.mediaElement.getTextTracks().length > 0 );
 	},
 	/**
 	 * Get text tracks from the mediaElement
@@ -2484,7 +2484,6 @@ mw.EmbedPlayer.prototype = {
 	 * Update the Buffer status based on the local bufferedPercent var
 	 */
 	updateBufferStatus: function() {
-
 		// Get the buffer target based for playlist vs clip
 		$buffer = this.$interface.find( '.mw_buffer' );
 

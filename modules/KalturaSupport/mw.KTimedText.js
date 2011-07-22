@@ -4,7 +4,7 @@
 ( function( mw, $ ) {
 	
 mw.KTimedText = function( embedPlayer, kalturaConfig, callback ){
-	this.init( embedPlayer, kalturaConfig, callback );
+	return this.init( embedPlayer, kalturaConfig, callback );
 };
 mw.KTimedText.prototype = {
 	init: function( embedPlayer, kalturaConfig, callback ){
@@ -52,6 +52,7 @@ mw.KTimedText.prototype = {
 			_this.textSources.push(
 				_this.getTextSourceFromVars(  _this.kVars )
 			);
+			callback();
 			return ;
 		}	
 		

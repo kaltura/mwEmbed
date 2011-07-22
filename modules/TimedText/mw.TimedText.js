@@ -128,6 +128,8 @@ mw.includeAllModuleMessages();
 			$( embedPlayer ).bind( 'onplay', function() {
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
+				// hide the caption menu if presently displayed
+				$( '#textMenuContainer_' + embedPlayer.id ).parent().remove();
 			} );
 			
 			// Resize the timed text font size per window width

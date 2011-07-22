@@ -250,13 +250,12 @@ class kalturaIframe {
 			return '';
 		}
 		$o = '';
-		$xml = new SimpleXMLElement( $this->getResultObject()->getUiConf() );
+		$xml = $this->getUiConfXML();
 		foreach ($xml->uiVars->var as $var ){
 			if( isset( $var['key'] ) && isset( $var['value'] ) 
 				&& $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
 				&& $var['key'] != 'Mw.CustomResourceIncludes' 
 			){
-				
 				$o.="mw.setConfig('" . htmlspecialchars( addslashes( $var['key'] ) ) . "', ";
 				// check for boolean attributes: 
 				if( $var['value'] == 'false' || $var['value'] == 'true' ){
@@ -497,7 +496,6 @@ class kalturaIframe {
 				// Set custom global vars for this player: 
 				echo $this->getCustomPlayerConfig();
 			?>
-			
 			// Don't do an iframe rewrite inside an iframe!
 			mw.setConfig( 'Kaltura.IframeRewrite', false );
 
