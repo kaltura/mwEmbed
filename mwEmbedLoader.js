@@ -197,6 +197,8 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( mw.getConfig( 'forceMobileHTML5' ) ){
 		iframeSrc += '&forceMobileHTML5=true';
 	}
+	// Also append the script version to purge the cdn cache for iframe: 
+	iframeSrc += '&urid=' + KALTURA_LOADER_VERSION;
 
 	var targetNode = document.getElementById( replaceTargetId );
 	var parentNode = targetNode.parentNode;
