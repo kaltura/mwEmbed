@@ -55,6 +55,7 @@ $messages['en'] = array(
 	'mwe-timedtext-textcat-lrc' => 'Lyrics',
 	'mwe-timedtext-textcat-lin' => 'Linguistic markup',
 	'mwe-timedtext-textcat-cue' => 'Cue points',
+	'mwe-timedtext-no-subs' => 'No subtitles available',
 	'mwe-timedtext-language-subtitles-for-clip' => '$1 subtitles for clip: $2',
 	'mwe-timedtext-language-no-subtitles-for-clip' => 'No $1 subtitles where found for clip: $2',
 	'mwe-timedtext-request-subs' => 'Request transcription',

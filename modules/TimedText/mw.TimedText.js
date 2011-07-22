@@ -19,7 +19,6 @@ mw.includeAllModuleMessages();
   	   'srclang',
   	   'kind',
 	   'label',
-	   'data-mwtitle'
 	]);
 	
 	/**
@@ -104,8 +103,8 @@ mw.includeAllModuleMessages();
 			}
 			
 			this.addPlayerBindings();
-			
 		},
+		
 		/**
 		 * Add timed text related player bindings
 		 * @return
@@ -113,6 +112,7 @@ mw.includeAllModuleMessages();
 		addPlayerBindings: function(){
 			var _this = this;
 			var embedPlayer = this.embedPlayer;
+			
 			// Check for timed text support:
 			$( embedPlayer ).bind( 'addControlBarComponent', function(event, controlBar ){
 				if( embedPlayer.hasTextTracks() ){
@@ -120,7 +120,6 @@ mw.includeAllModuleMessages();
 					controlBar.components['timedText'] = _this.getTimedTextButton();					
 				}
 			});
-			
 			
 			$( embedPlayer ).bind( 'monitorEvent', function() {
 				_this.monitor();
@@ -292,7 +291,6 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			// Load textSources
 			_this.loadTextSources( function() {
-
 				// Enable a default source and issue a request to "load it"
 				_this.autoSelectSource();
 
@@ -369,7 +367,6 @@ mw.includeAllModuleMessages();
 
 		/**
 		 * Load all the available text sources from the inline embed
-		 * 	or from a apiProvider
 		 * @param {Function} callback Function to call once text sources are loaded
 		 */
 		loadTextSources: function( callback ) {
@@ -384,9 +381,8 @@ mw.includeAllModuleMessages();
 			$.each( this.embedPlayer.getTextTracks(), function( inx, textSource ){
 				_this.textSources.push( new mw.TextSource( textSource ) );
 			});
-
-			// load any module based text sources ( via API calls, run callback after done )
-			$( this.embedPlayer ).triggerQueueCallback( 'LoadTextSources', this.textSources, callback );
+			// return the callback with sources
+			callback( _this.textSources );
 		},
 
 		/**
@@ -486,11 +482,9 @@ mw.includeAllModuleMessages();
 		*  Should be called anytime enabled Source list is updated
 		*/
 		loadEnabledSources: function() {
-			for(var i=0; i < this.enabledSources.length; i++ ) {
-				var enabledSource = this.enabledSources[ i ];
-				if( ! enabledSource.loaded )
-					enabledSource.load();
-			}
+			$.each( this.enabledSources, function( inx, enabledSource ) {
+				enabledSource.load();
+			});
 		},
 
 		/**
@@ -509,8 +503,7 @@ mw.includeAllModuleMessages();
 		* 	false if source is off
 		*/
 		isSourceEnabled: function( source ) {
-			for(var i=0; i < this.enabledSources.length; i++ ) {
-				var enabledSource = this.enabledSources[i];
+			$.each( this.enabledSources, function( inx, enabledSource ) {
 				if( source.id ) {
 					if( source.id == enabledSource.id )
 						return true;
@@ -519,7 +512,7 @@ mw.includeAllModuleMessages();
 					if( source.srclang == enabledSource.srclang )
 						return true;
 				}
-			}
+			});
 			return false;
 		},
 
@@ -559,18 +552,26 @@ mw.includeAllModuleMessages();
 			
 			// Build the source list menu item:
 			var $menu = $( '<ul>' );
-			// Show text menu item ( if there are sources)
+			
+			// Show text menu item with layout option (if not fullscren ) 
 			if( _this.textSources.length != 0 ) {
 				$menu.append(
 					$.getLineItem( gM( 'mwe-timedtext-choose-text'), 'comment' ).append(
 						_this.getLanguageMenu()
-					),
-						// Layout Menu option
+					)					
+				);
+			} 
+			
+			// Layout Menu option if not in an iframe and we can expand video size: 
+			if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
+				$menu.append(
 					$.getLineItem( gM( 'mwe-timedtext-layout' ), 'image' ).append(
 						_this.getLayoutMenu()
 					)
 				);
-			} else {
+			}
+			
+			if(  _this.textSources.length == 0 ){
 				// Add a link to request timed text for this clip:
 				if( mw.getConfig( 'TimedText.ShowRequestTranscript' ) ){
 					$menu.append(
@@ -595,6 +596,12 @@ mw.includeAllModuleMessages();
 			// Allow other modules to add to the timed text menu:
 			$( _this.embedPlayer ).trigger( 'TimedText.BuildCCMenu', $menu ) ;
 
+			// Test if only one menu item move its children to the top level
+			if( $menu.children('li').length == 1 ){
+				$menu.find('li > ul > li').detach().appendTo( $menu );  
+				$menu.find('li').eq(0).remove();
+			}
+			
 			return $menu;
 		},
 
@@ -926,7 +933,8 @@ mw.includeAllModuleMessages();
 						'width': '100%',
 						'display': 'block',
 						'opacity': .8,
-						'text-align':'center'
+						'text-align':'center',
+						'z-index': 2
 					})
 					.append(
 						$('<span \>')

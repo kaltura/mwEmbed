@@ -19,12 +19,13 @@
 		init: function( ){
 			if( mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
 				this.addIframePlayerHooksServer();
-				return ;
+			} else {
+				// For client side of the iframe add iframe hooks and player hooks ( will bind to 
+				// different build player build outs and lets us support pages with both
+				// iframe and no iframes players
+				this.addIframePlayerHooksClient();
 			}
-			// For client side of the iframe add iframe hooks and player hooks ( will bind to 
-			// different build player build outs and lets us support pages with both
-			// iframe and no iframes players
-			this.addIframePlayerHooksClient();
+			// Always add player hooks
 			this.addPlayerHooks();
 		},
 		addPlayerHooks: function(){
@@ -160,6 +161,10 @@
 		 * emulates kaltura evaluate function
 		 */
 		evaluate: function( embedPlayer, objectString ){
+			// If the first character is not a { directly return the string:
+			if( objectString[0] != '{' ){
+				return objectString;
+			}
 			// Strip the { } from the objectString
 			objectString = objectString.replace( /\{|\}/g, '' );
 			objectPath = objectString.split('.');

@@ -280,10 +280,6 @@
 		// ( while keeping the full player api available )
 		'data-playerError': null,
 
-		// ROE url ( for xml based metadata )
-		// also see: http://wiki.xiph.org/ROE
-		"roe" : null,
-
 		// If serving an ogg_chop segment use this to offset the presentation
 		// time
 		// ( for some plugins that use ogg page time rather than presentation

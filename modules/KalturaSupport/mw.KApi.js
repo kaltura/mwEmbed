@@ -308,9 +308,9 @@ mw.KApi.prototype = {
 // ( so that multiple partner types don't conflict if used on a single page )
 mw.KApiPartnerCache = [];
 
-mw.kApiGetPartnerClient = function( partner_or_widget_id ){
+mw.kApiGetPartnerClient = function( partnerOrWidgetId ){
 	// strip leading _ turn widget to partner
-	var partner_id = partner_or_widget_id.replace(/_/g, '');
+	var partner_id = partnerOrWidgetId.replace(/_/g, '');
 	
 	if( !mw.KApiPartnerCache[ partner_id ] ){
 		mw.KApiPartnerCache[ partner_id ] = new mw.KApi( partner_id );

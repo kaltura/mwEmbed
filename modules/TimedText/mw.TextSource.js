@@ -55,16 +55,19 @@
 		 */
 		load: function( callback ) {
 			var _this = this;
-			// check if the captions have already been loaded:
-			if( _this.loaded ){
-				callback(  _this.captions );
-				return ;
+			// setup up a callabck stup ( in case it was not defined )
+			if( !callback )
+				callback = function(){ return ; };
+				
+			// Check if the captions have already been loaded:
+			if( this.captions.length != 0 ){
+				return callback();
 			} 
-			 _this.loaded = true;					
 	
 			// Try to load src via XHR source
 			if( !this.getSrc() ) {
-				mw.log("Error: no source url for text track");
+				mw.log( "Error: TextSource no source url for text track");
+				return callback();
 			}
 			
 			// Check if we can directly request the content: 
@@ -72,24 +75,28 @@
 				$.get( this.getSrc(), function( data ) {
 					// Parse and load captions:
 					_this.captions = _this.getCaptions( data );
-					mw.log("mw.TimedText:: loaded from srt file: " + _this.captions.length + ' captions');
-					// Update the loaded state:
-					_this.loaded = true;
-					if( callback ) {
-						callback();
-					}
+					mw.log("mw.TextSource :: loaded from srt file: " + _this.captions.length + ' captions' );
+					// Issue the callback: 
+					callback();
 				}, 'text');
 				return ;
 			}
 			
-			// Check if we can load by proxy ::
+			// Check if we can load by proxy
 			if ( !mw.isLocalDomain( this.getSrc() ) && !mw.getConfig('Mw.XmlProxyUrl') ) {
 				mw.log("Error: no text proxy and requesting cross domain srt location: " + this.getSrc() );
-				return ;
+				return callback();
 			}
-			
-			// @@TODO  Load via proxy:
-			
+			// Load via proxy:
+			var proxyUrl = mw.getConfig('Mw.XmlProxyUrl');
+			$.getJSON( proxyUrl + '?url=' + encodeURIComponent(  this.getSrc() ) + '&callback=?', function( result ){
+				if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
+					mw.log("Error: TextSource Error with http response");
+					return callback();
+				}				 
+				// Parse and load captions:
+				_this.captions = _this.getCaptions( result['contents'] );
+			});
 		},
 	
 		/**

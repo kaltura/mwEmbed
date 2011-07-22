@@ -6,8 +6,8 @@
  * TODO this loader is a little too large portions should be refactored into separate files
  *  this refactor can happen post resource loader
  */
-// Scope everything in "mw" ( keeps the global namespace clean ) 
 
+// Scope everything in "mw" ( keeps the global namespace clean ) 
 ( function( mw ) {
 
 	mw.setDefaultConfig( {
@@ -63,7 +63,7 @@
 	mw.addResourcePaths( {
 		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
 		"mw.KCuePoints" : "mw.KCuePoints.js",
-		"mw.KCaptions" : "mw.KCaptions.js",
+		"mw.KTimedText" : "mw.KTimedText.js",
 		"mw.KAnalytics" : "mw.KAnalytics.js",
 		"mw.PlaylistHandlerKaltura"	: "mw.PlaylistHandlerKaltura.js", 
 		"mw.PlaylistHandlerKalturaRss" : "mw.PlaylistHandlerKalturaRss.js",
@@ -91,7 +91,7 @@
 		'mw.KAnalytics',
 		'mw.KDPMapping',
 		'mw.KAds',
-		'mw.KCaptions',
+		'mw.KTimedText',
 		'controlbarLayout',
 		'faderPlugin',
 		'watermarkPlugin',

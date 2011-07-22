@@ -12,6 +12,7 @@ mw.KWidgetSupport.prototype = {
 		if( options ){
 			$j.extend( this, options);
 		}
+		this.addPlayerHooks();
 	},
 	
 	/**
@@ -595,6 +596,7 @@ mw.KWidgetSupport.prototype = {
 		if( deviceSources['ogg'] ) {
 			addSource( deviceSources['ogg'], 'video/ogg' );
 		}
+		
 		return sources;
 	}
 };
@@ -604,21 +606,8 @@ if( !window.kWidgetSupport ){
 	window.kWidgetSupport = new mw.KWidgetSupport();
 };
 
-
-// Add player Manager binding ( if playerManager not ready bind to when its ready )
-// NOTE we may want to move this into the loader since its more "action/loader" code
-if( mw.playerManager ){
-	kWidgetSupport.addPlayerHooks();
-} else {
-	mw.log( 'KWidgetSupport::bind:EmbedPlayerManagerReady');
-	$j( mw ).bind( 'EmbedPlayerManagerReady', function(){
-		mw.log( "KWidgetSupport::EmbedPlayerManagerReady" );
-		kWidgetSupport.addPlayerHooks();
-	});
-};
-
 /**
- * Register a global shortcuts for the kaltura sources query
+ * Register a global shortcuts for the Kaltura sources query
  */
 mw.getEntryIdSourcesFromApi = function( widgetId, entryId, callback ){
 	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, entryId, callback);

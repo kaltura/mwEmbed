@@ -2040,7 +2040,7 @@ mw.EmbedPlayer.prototype = {
 		if( this.paused === true ){
 			this.paused = false;
 			// Check if we should Trigger the play event
-			mw.log("EmbedPlayer:: trigger play even::" + !this.paused + ' events:' + this._propagateEvents );
+			mw.log("EmbedPlayer:: trigger play event::" + !this.paused + ' events:' + this._propagateEvents );
 			if(  this._propagateEvents  ) {
 				$j( this ).trigger( 'onplay' );
 			}

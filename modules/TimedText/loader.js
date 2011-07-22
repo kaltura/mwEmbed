@@ -19,22 +19,20 @@
 	// Merge in timed text related attributes: TODO add merge config support with some way to 
 	// classify configuration as "default" vs custom. 
 	var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes');
-	mw.setConfig( 'EmbedPlayer.SourceAttributes', $.extend( sourceAttr, [
+	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 	   'srclang',
 	   'category'
-	]) );
+	] );
 	
 	mw.setDefaultConfig( {
 		// If the Timed Text interface should be displayed:
 		// 'always' Displays link and call to contribute always
 		// 'auto' Looks for child timed text elements or "apiTitleKey" & load interface
 		// 'off' Does not display the timed text interface
-		"TimedText.showInterface" : "auto",
+		"TimedText.ShowInterface" : "auto",
 
-		/**
-		* If the "add timed text" link / interface should be exposed
-		*/
-		'TimedText.showAddTextLink' : true,
+		// If the "add timed text" link / interface should be exposed
+		'TimedText.ShowAddTextLink' : true,
 
 		// The category for listing videos that need transcription:
 		'TimedText.NeedsTranscriptCategory' : 'Videos needing subtitles'
@@ -80,7 +78,7 @@
 	 * Note we check for text sources outside of
 	 */
 	mw.checkForTimedText = function( playerElement ) {
-		if( mw.getConfig( 'TimedText.showInterface' ) == 'always' ) {
+		if( mw.getConfig( 'TimedText.ShowInterface' ) == 'always' ) {
 			return true;
 		}
 		if ( !playerElement ){
@@ -91,18 +89,7 @@
 			return playerElement.hasTextTracks();
 		}
 		
-		var modulesIsTextSupported = false;
-		$( mw ).trigger( 'TimedText_IsSupported', playerElement, function( isSupported ) {
-			if( isSupported ){
-				modulesIsTextSupported = true;
-			}
-		});
-		// Check for timed text sources or api/ roe url
-		if ( modulesIsTextSupported || $( playerElement ).find('track').length ) {
-			return true;
-		} else {
-			return false;
-		}
+		return false;
 	};
 	
 	// TimedText editor:

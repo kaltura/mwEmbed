@@ -28,7 +28,7 @@ mw.KCuePoints.prototype = {
 		}
 
 		// Bind to monitorEvent to trigger the cue points events
-		$( embedPlayer ).bind( 'monitorEvent.kCuePoints', function() {
+		$( embedPlayer ).bind( "monitorEvent.kCuePoints", function() {
 			var currentTime = embedPlayer.currentTime * 1000;
 			if( currentTime >= nextCuePoint.startTime ) {
 				// Trigger the cue point
@@ -40,7 +40,7 @@ mw.KCuePoints.prototype = {
 		});
 
 		// Handle last cue point (postRoll)
-		$( embedPlayer ).bind("ended.kCuePoints", function(){
+		$( embedPlayer ).bind( "ended.kCuePoints", function(){
 			var cuePoints = _this.getCuePoints();
 			var lastCuePoint = cuePoints[ cuePoints.length - 1];
 			if( lastCuePoint.startTime >= _this.getEndTime() ) {
@@ -50,7 +50,7 @@ mw.KCuePoints.prototype = {
 		});
 
 		// Bind for seeked event to update the nextCuePoint
-		$( embedPlayer ).bind("seeked.kCuePoints", function(){
+		$( embedPlayer ).bind( "seeked.kCuePoints", function(){
 			var currentTime = embedPlayer.currentTime * 1000;
 			nextCuePoint = _this.getCuePoint(currentTime);
 		});
@@ -66,7 +66,7 @@ mw.KCuePoints.prototype = {
 	},
 	/**
 	* Returns the next cuePoint object for requested time
-	* @param {Number} time Time in mili seconds
+	* @param {Number} time Time in milliseconds
 	*/
 	getCuePoint: function( time ){
 		// Check if embedPlayer has entryCuePoints
@@ -118,7 +118,6 @@ mw.KCuePoints.prototype = {
 			return 'mid';
 		}
 	}
-	
 };
 
 } )( window.mw, jQuery );

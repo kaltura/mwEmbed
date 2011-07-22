@@ -358,8 +358,7 @@ mw.MediaElement.prototype = {
 		// mw.log( 'f:tryAddSource:' + $( element ).attr( "src" ) );
 		var newSrc = $( element ).attr( 'src' );
 		if ( newSrc ) {
-			// make sure an existing element with the same src does not already
-			// exist:
+			// make sure an existing element with the same src does not already exist:
 			for ( var i = 0; i < this.sources.length; i++ ) {
 				if ( this.sources[i].src == newSrc ) {
 					// Source already exists update any new attr:
@@ -372,8 +371,7 @@ mw.MediaElement.prototype = {
 		var source = new mw.MediaSource( element );
 
 		this.sources.push( source );
-		// mw.log( 'tryAddSource: added source ::' + source + 'sl:' +
-		// this.sources.length );
+		// mw.log( 'tryAddSource: added source ::' + source + 'sl:' + this.sources.length );
 		return source;
 	},
 

@@ -149,8 +149,8 @@ $enable_native   = false;
 $valid_url_regex = '/.*/';
 
 $enable_fullHeaders = true;
-$contentType_regex = '/(text|application)\/xml/';
-$validateXML = true;
+$contentType_regex = '/(text|application)\/(xml|x-srt|plain)/';
+$validateXML = false;
 $encodeCDATASections = true;
 $proxyCookies = true;
 $proxySession = true;
