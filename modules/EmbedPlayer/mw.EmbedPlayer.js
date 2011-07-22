@@ -2361,7 +2361,6 @@ mw.EmbedPlayer.prototype = {
 		// Check for current time update outside of embed player
 		this.checkForCurrentTimeSeek();
 
-
 		// Update currentTime via embedPlayer
 		_this.currentTime = _this.getPlayerElementTime();
 
@@ -2453,15 +2452,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Update buffer information
 		this.updateBufferStatus();
-
-		// run the "native" progress event on the virtual html5 object if set
-		if( this.progressEventData ) {
-			// mw.log("trigger:progress event on html5 proxy");
-			if( _this._propagateEvents ){
-				$j( this ).trigger( 'progress', this.progressEventData );
-			}
-		}
-
+		
 		// Call monitor at 250ms interval. ( use setInterval to avoid stacking
 		// monitor requests )
 		if( ! this.isStopped() ) {
@@ -2534,7 +2525,7 @@ mw.EmbedPlayer.prototype = {
 	 *            perc Value between 0 and 1 for position of playhead
 	 */
 	updatePlayHead: function( perc ) {
-		// mw.log( 'EmbedPlayer: updatePlayHead: '+ perc);
+		mw.log( 'EmbedPlayer: updatePlayHead: '+ perc);
 		$playHead = this.$interface.find( '.play_head' );
 		if ( this.controls && $playHead.length != 0 ) {
 			var val = parseInt( perc * 1000 );

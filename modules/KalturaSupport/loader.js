@@ -417,8 +417,6 @@
 				// Also append the script version to purge the cdn cache for iframe: 
 				iframeSrc += '&urid=' + KALTURA_LOADER_VERSION;
 
-				
-
 				var iframeId = $j( playerTarget ).attr('id');				
 				iframeRequest+= mw.getIframeHash( iframeId);
 				
