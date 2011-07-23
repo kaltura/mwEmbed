@@ -687,7 +687,6 @@ mw.includeAllModuleMessages();
 						gM( 'mwe-timedtext-layout-' + layoutMode),
 						icon,
 						function() {
-							alert('wtr? ::' + layoutMode);
 							_this.selectLayout( layoutMode );
 						} )
 					);
