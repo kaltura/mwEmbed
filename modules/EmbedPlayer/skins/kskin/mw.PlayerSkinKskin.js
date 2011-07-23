@@ -73,7 +73,7 @@ mw.PlayerSkinKskin = {
 				// Setup menu offset ( if player height < getOverlayHeight )
 				// This displays the menu outside of the player on small embeds
 				if ( embedPlayer.getPlayerHeight() < ctrlObj.getOverlayHeight() ) {
-					var topPos = ( ctrlObj.checkOverlayControls() )
+					var topPos = ( ctrlObj.isOverlayControls() )
 							? embedPlayer.getPlayerHeight()
 							: embedPlayer.getPlayerHeight() + ctrlObj.getHeight();
 

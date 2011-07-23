@@ -96,7 +96,7 @@ mw.PlayerControlBuilder.prototype = {
 			.css( 'height', this.height );
 
 		// Controls are hidden by default if overlaying controls: 
-		if( _this.checkOverlayControls() ){
+		if( _this.isOverlayControls() ){
 			$controlBar.hide();
 		}
 
@@ -108,7 +108,7 @@ mw.PlayerControlBuilder.prototype = {
 		} );
 
 		// Check for overlay controls:
-		/*if( ! _this.checkOverlayControls() && ! embedPlayer.controls === false ) {
+		/*if( ! _this.isOverlayControls() && ! embedPlayer.controls === false ) {
 			// Add some space to interface for the control bar ( if not overlaying controls )
 			$( embedPlayer ).css( {
 				'height' : parseInt( embedPlayer.height ) - parseInt( this.height )
@@ -236,7 +236,7 @@ mw.PlayerControlBuilder.prototype = {
 		var offsetLeft = ( targetWidth < windowSize.width )? ( windowSize.width- targetWidth ) / 2 : 0;
 
 		// See if we need to leave space for control bar
-		if( !_this.checkOverlayControls() ){
+		if( !_this.isOverlayControls() ){
 			targetHeight =  targetHeight - this.height;
 			offsetTop = offsetTop - this.height;
 			if( offsetTop < 0 ) offsetTop = 0;
@@ -257,7 +257,7 @@ mw.PlayerControlBuilder.prototype = {
 	getFullscreenPlayButtonCss: function( size ) {
 		var _this = this;
 		var pos = this.getAspectPlayerWindowCss( size );
-		if( !_this.checkOverlayControls() ){
+		if( !_this.isOverlayControls() ){
 			pos.top = pos.top - this.height;
 		}
 		return {
@@ -424,7 +424,7 @@ mw.PlayerControlBuilder.prototype = {
 		});
 		
 		// Check every 2 seconds reset flag status if controls are overlay
-		if( _this.checkOverlayControls() ){
+		if( _this.isOverlayControls() ){
 			function checkMovedMouse(){
 				if( _this.fullscreenMode ){
 					if( _this.mouseMovedFlag ){
@@ -567,7 +567,7 @@ mw.PlayerControlBuilder.prototype = {
 		this.fullscreenMode = false;
 
 		var $interface = embedPlayer.$interface;
-		var interfaceHeight = ( _this.checkOverlayControls() )
+		var interfaceHeight = ( _this.isOverlayControls() )
 			? embedPlayer.getHeight()
 			: embedPlayer.getHeight() + _this.getHeight();
 
@@ -698,7 +698,7 @@ mw.PlayerControlBuilder.prototype = {
 			$(window).unbind('keyup.mwPlayer');
 		};
 		// Add hide show bindings for control overlay (if overlay is enabled )
-		if( ! _this.checkOverlayControls() ) {
+		if( ! _this.isOverlayControls() ) {
 			$interface
 				.show()
 				.hover( bindSpaceUp, bindSpaceDown );
@@ -813,7 +813,7 @@ mw.PlayerControlBuilder.prototype = {
 	* Checks if the browser supports overlays and the controlsOverlay is
 	* set to true for the player or via config
 	*/
-	checkOverlayControls: function(){
+	isOverlayControls: function(){
 
 		//if the player "supports" overlays:
 		if( ! this.embedPlayer.supports['overlays'] ){

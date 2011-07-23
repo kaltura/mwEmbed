@@ -851,7 +851,7 @@ mw.includeAllModuleMessages();
 					_this.getLiAddText()
 				);
 			}
-
+			
 			return $langMenu;
 		},
 
@@ -883,9 +883,29 @@ mw.includeAllModuleMessages();
 				}
 			});
 		},
-		
+		getCaptionsTarget: function(){
+			var $capTarget = this.embedPlayer.$interface.find('.captionsLayoutTarget');
+			var layoutCss = {
+				'left' : 0,
+				'top' :0,
+				'right':0,
+				'position': 'absolute'
+			};
+			if( this.embedPlayer.controlBuilder.isOverlayControls() ){
+				layoutCss['bottom'] = 0;				
+			} else {
+				layoutCss['bottom'] = this.embedPlayer.controlBuilder.getHeight();
+			}
+			
+			if( $capTarget.length == 0 ){
+				$capTarget = $( '<div />' )
+				 	.addClass( 'captionsLayoutTarget' )
+					.css( layoutCss )
+					.appendTo( '#' + this.embedPlayer.id );
+			}
+			return $capTarget;
+		},
 		addCaption: function( source, capId, caption ){
-			var $playerTarget = this.embedPlayer.$interface;
 			// use capId as a class instead of id for easy selections and no conflicts with 
 			// multiple players on page. 
 			var $textTarget = $('<div />')
@@ -893,13 +913,6 @@ mw.includeAllModuleMessages();
 				.attr( 'data-capId', capId )
 				.hide();
 			
-			// Update the style of the text object if set
-			if( caption.styleId ){
-				$textTarget.css(
-					source.getStyleCssById( caption.styleId )
-				);
-			}
-
 			// Update text ( use "html" instead of "text" so that subtitle format can
 			// include html formating 
 			// TOOD we should scrub this for non-formating html
@@ -908,8 +921,9 @@ mw.includeAllModuleMessages();
 					.css( 'display','inline' )
 					.html( caption.content )
 			);
-			
-				// Add/update the lang option
+
+
+			// Add/update the lang option
 			$textTarget.attr( 'lang', source.srclang.toLowerCase() );
 			
 			// Update any links to point to a new window
@@ -922,12 +936,20 @@ mw.includeAllModuleMessages();
 				} else {
 					$textTarget.css( this.getDefaultStyle() );
 				}
-				$playerTarget.append( 
+				this.getCaptionsTarget().append( 
 					$textTarget	
 				);
 			} else {
 				// else apply the default layout system:
 				this.addTextToDefaultLocation( $textTarget );
+			}
+			
+			// Update the style of the text object if set
+			if( caption.styleId ){
+				var capCss = source.getStyleCssById( caption.styleId );
+				$textTarget.find('span').css(
+					capCss
+				);
 			}
 		
 			$textTarget.fadeIn('fast');
@@ -939,7 +961,7 @@ mw.includeAllModuleMessages();
 					'width': '100%',
 					'display': 'block',
 					'opacity': .8,
-					'text-align':'center',
+					'text-align': 'center',
 					'z-index': 2
 				};
 			baseCss =$.extend( baseCss, this.getInterfaceSizeTextCss({

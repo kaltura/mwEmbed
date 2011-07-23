@@ -236,12 +236,27 @@
 				// there are 35 columns across and 15 rows high 
 				var $meta = $(p).find( 'metadata' );
 				if( $meta.length ){
-					captionObj['css'] = {};
-					if( $meta.attr('ccrow') ){
-						captionObj['css']['left'] = ( $meta.attr('ccrow') / 35 ) * 100 +'%';
-					}
+					captionObj['css'] = {
+						'position': 'absolute'
+					};
 					if( $meta.attr('cccol') ){
-						captionObj['css']['top'] = ( $meta.attr('cccol') / 15 ) * 100 +'%';
+						captionObj['css']['left'] = ( $meta.attr('cccol') / 35 ) * 100 +'%';
+						// also means the width has to be reduced:
+						captionObj['css']['width'] =  100 - parseInt( captionObj['css']['left'] ) + '%'; 
+					}
+					if( $meta.attr('ccrow') ){
+						captionObj['css']['top'] = ( $meta.attr('ccrow') / 15 ) * 100 +'%';
+					}
+				}
+				if( $(p).attr('tts:textAlign') ){
+					if( !captionObj['css'] )
+						captionObj['css'] = {};
+					captionObj['css']['text-align'] = $(p).attr('tts:textAlign');
+					
+					// Remove text align is "right" flip the css left:
+					if( captionObj['css']['text-align'] == 'right' && captionObj['css']['left'] ){
+						captionObj['css']['width'] = captionObj['css']['left'];
+						captionObj['css']['left'] = null;
 					}
 				}
 				

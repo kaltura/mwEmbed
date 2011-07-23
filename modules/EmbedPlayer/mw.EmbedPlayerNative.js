@@ -204,7 +204,7 @@ mw.EmbedPlayerNative = {
 			mw.log( 'left:' + ( ( $j( this ).width() - pWidth ) * .5 ) + ' this width:' +  $j( this ).width() );
 			// see if we need to leave room for controls: 
 			var controlBarOffset = 0;
-			if( ! this.controlBuilder.checkOverlayControls() ){
+			if( ! this.controlBuilder.isOverlayControls() ){
 				controlBarOffset = this.controlBuilder.height;
 			}
 			

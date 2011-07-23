@@ -1145,7 +1145,7 @@ mw.EmbedPlayer.prototype = {
 				_this.$interface.find( '.track' ).remove();
 				// We have to re-bind hoverIntent ( has to happen in this scope
 				// )
-				if( _this.controls && _this.controlBuilder.checkOverlayControls() ){
+				if( _this.controls && _this.controlBuilder.isOverlayControls() ){
 					_this.controlBuilder.showControlBar();
 					_this.$interface.hoverIntent({
 						'sensitivity': 4,
@@ -1382,14 +1382,14 @@ mw.EmbedPlayer.prototype = {
 				'background': null
 			});
 
-			if( this.isPersistentNativePlayer() && !_this.controlBuilder.checkOverlayControls() ){
+			if( this.isPersistentNativePlayer() && !_this.controlBuilder.isOverlayControls() ){
 				// if Persistent native player always give it the player height
 				$j('#' + this.pid ).css('height', this.height - _this.controlBuilder.height );
 			}
 			$j( this ).show();
 			this.controls = true;
 		}
-		if(  !this.useNativePlayerControls() && !this.isPersistentNativePlayer() && !_this.controlBuilder.checkOverlayControls() ){
+		if(  !this.useNativePlayerControls() && !this.isPersistentNativePlayer() && !_this.controlBuilder.isOverlayControls() ){
 			// Update the video size per available control space.
 			$j(this).css('height', this.height - _this.controlBuilder.height );
 		}
