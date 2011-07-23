@@ -565,13 +565,12 @@ mw.includeAllModuleMessages();
 			} 
 			
 			// Layout Menu option if not in an iframe and we can expand video size: 
-			if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
-				$menu.append(
-					$.getLineItem( gM( 'mwe-timedtext-layout' ), 'image' ).append(
-						_this.getLayoutMenu()
-					)
-				);
-			}
+
+			$menu.append(
+				$.getLineItem( gM( 'mwe-timedtext-layout' ), 'image' ).append(
+					_this.getLayoutMenu()
+				)
+			);
 			
 			if(  _this.textSources.length == 0 ){
 				// Add a link to request timed text for this clip:
@@ -584,7 +583,7 @@ mw.includeAllModuleMessages();
 				} else {
 					$menu.append(
 						$.getLineItem( gM( 'mwe-timedtext-no-subs'), 'close' )
-					)
+					);
 				}
 			}
 
@@ -620,8 +619,8 @@ mw.includeAllModuleMessages();
 		getLiAddText: function() {
 			var _this = this;
 			return $.getLineItem( gM( 'mwe-timedtext-upload-timed-text'), 'script', function() {
-					_this.showTimedTextEditUI( 'add' );
-			} );
+				_this.showTimedTextEditUI( 'add' );
+			});
 		},
 
 		/**
@@ -675,7 +674,9 @@ mw.includeAllModuleMessages();
 				layoutOptions.push( 'ontop' );
 
 			//Add below and "off" options:
-			layoutOptions.push( 'below' );
+			if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
+				layoutOptions.push( 'below' );
+			}
 			layoutOptions.push( 'off' );
 
 			$ul = $('<ul>');
@@ -686,6 +687,7 @@ mw.includeAllModuleMessages();
 						gM( 'mwe-timedtext-layout-' + layoutMode),
 						icon,
 						function() {
+							alert('wtr? ::' + layoutMode);
 							_this.selectLayout( layoutMode );
 						} )
 					);
@@ -725,7 +727,7 @@ mw.includeAllModuleMessages();
 		selectTextSource: function( source ) {
 			var _this = this;
 			mw.log("mw.TimedText:: selectTextSource: select lang: " + source.srclang );
-
+			
 			// For some reason we lose binding for the menu ~sometimes~ re-bind
 			this.bindTextButton( this.embedPlayer.$interface.find('timed-text') );
 			
@@ -906,6 +908,9 @@ mw.includeAllModuleMessages();
 			return $capTarget;
 		},
 		addCaption: function( source, capId, caption ){
+			if( this.getLayoutMode() == 'off' ){
+				return ;
+			}
 			// use capId as a class instead of id for easy selections and no conflicts with 
 			// multiple players on page. 
 			var $textTarget = $('<div />')
