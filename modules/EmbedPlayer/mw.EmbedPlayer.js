@@ -2524,7 +2524,7 @@ mw.EmbedPlayer.prototype = {
 	 *            perc Value between 0 and 1 for position of playhead
 	 */
 	updatePlayHead: function( perc ) {
-		mw.log( 'EmbedPlayer: updatePlayHead: '+ perc);
+		//mw.log( 'EmbedPlayer: updatePlayHead: '+ perc);
 		$playHead = this.$interface.find( '.play_head' );
 		if ( this.controls && $playHead.length != 0 ) {
 			var val = parseInt( perc * 1000 );

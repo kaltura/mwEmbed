@@ -860,136 +860,133 @@ mw.includeAllModuleMessages();
 		 * @param {Object} source Source to update
 		 */
 		updateSourceDisplay: function ( source, time ) {
+			var _this = this;
 			// Get the source text for the requested time:
-			var caption = source.getCaptionObj( time );
-
-			// We do a type comparison so that "undefined" != "false"
-			// ( check if we are updating the text )
-			if( caption === this.prevText[ source.kind ] ){
-				return ;
-			}
-
-			//mw.log( 'mw.TimedText:: updateTextDisplay: srcid: ' +  source.id + ' time: ' + time + " caption\n" + caption.content );
-
-			var $playerTarget = this.embedPlayer.$interface;
-			var $textTarget = $playerTarget.find( '.track_' + source.kind + ' span' );
+			var activeCaptions = source.getCaptionForTime( time );
+			var addedCaption = false;
+			// Show captions that are on: 
+			$.each(activeCaptions, function( capId, caption){
+				if( _this.embedPlayer.$interface.find( '.track[data-capId="' + capId +'"]').length == 0){
+					_this.addCaption( source, capId, caption );
+					addedCaption = true;
+				}
+			});
 			
-			// If we are missing the target add it:
-			if( $textTarget.length == 0 ) {
-				this.addItextDiv( source.kind );
-				// Re-grab the textTarget:
-				$textTarget = $playerTarget.find( '.track_' + source.kind + ' span' );
-			}
-
-			// If text is "false" fade out the subtitle:
-			if( caption === false ) {
-				$textTarget.fadeOut('fast');
-			}else{
-				// update the style of the text object if set
-				if( caption.styleId ){
-					$textTarget.css( 
-						source.getStyleCssById( caption.styleId )
-					);
+			// hide captions that are off: 
+			_this.embedPlayer.$interface.find( '.track' ).each(function( inx, caption){
+				if( !activeCaptions[ $( caption ).attr('data-capId') ] ){
+					if( addedCaption ){
+						$( caption ).remove();
+					} else {
+						$( caption ).fadeOut( mw.getConfig('EmbedPlayer.MonitorRate'), function(){ $(this).remove();} );
+					}
 				}
-				
-				// Fade in the target if not visible
-				if( ! $textTarget.is(':visible') ) {
-					$textTarget.fadeIn('fast');
-				}
-				// Update text ( use "html" instead of "text" so that subtitle format can
-				// include html formating 
-				// TOOD we should scrub this for non-formating html
-				$textTarget.html( caption.content );
-
-				// Add/update the lang option
-				$textTarget.attr( 'lang', source.srclang.toLowerCase() );
-				
-				// Update any links to point to a new window
-				$textTarget.find( 'a' ).attr( 'target', '_blank' );
-			}
-			//mw.log( ' Added content to: ' + $textTarget.length + ' ' + $textTarget.html() );
-			// Update the prev text:
-			this.prevText[ source.kind ] = caption.content;
+			});
 		},
-
-
-		/**
-		 * Add an track div to the embedPlayer
-		 */
-		addItextDiv: function( kind ) {
-			
-			mw.log(" addItextDiv: " + kind );
-			// Get the relative positioned player class from the controlBuilder:
+		
+		addCaption: function( source, capId, caption ){
 			var $playerTarget = this.embedPlayer.$interface;
-			//Remove any existing track divs for this player;
-			$playerTarget.find('.track_' + kind ).remove();
-
-			// Setup the display text div:
-			if( this.getLayoutMode() == 'ontop' ) {
-				this.embedPlayer.controlBuilder.keepControlBarOnScreen = false;
-				var $track = $('<div>')
-					.addClass( 'track' + ' ' + 'track_' + kind )
-					.css( {
-						'position':'absolute',
-						'bottom': ( this.embedPlayer.controlBuilder.getHeight() + 10 ),
-						'width': '100%',
-						'display': 'block',
-						'opacity': .8,
-						'text-align':'center',
-						'z-index': 2
-					})
-					.append(
-						$('<span \>')
-					);
-
-				// Scale the text Relative to player size:
-				$track.css(
-					this.getInterfaceSizeTextCss({
-						'width' :  this.embedPlayer.getWidth(),
-						'height' : this.embedPlayer.getHeight()
-					})
+			// use capId as a class instead of id for easy selections and no conflicts with 
+			// multiple players on page. 
+			var $textTarget = $('<div />')
+				.addClass( 'track' )
+				.attr( 'data-capId', capId )
+				.hide();
+			
+			// Update the style of the text object if set
+			if( caption.styleId ){
+				$textTarget.css(
+					source.getStyleCssById( caption.styleId )
 				);
-				// Resize the interface for layoutMode == 'below' ( if not in full screen)
-				if( ! this.embedPlayer.controlBuilder.fullscreenMode ){
-					this.embedPlayer.$interface.animate({
-						'height': this.embedPlayer.getHeight() 
-					});
-				}
-				$playerTarget.append( $track );
-				
-			} else {
-				this.embedPlayer.controlBuilder.keepControlBarOnScreen = true;
-				// Set the belowBar size to 60 pixels:
-				var belowBarHeight = 60;
-				// Append before controls:
-				$playerTarget.find( '.control-bar' ).before(
-					$('<div>').addClass( 'track' + ' ' + 'track_' + kind )
-						.css({
-							'position' : 'absolute',
-							'top' : this.embedPlayer.getHeight(),
-							'display' : 'block',
-							'width' : '100%',
-							'height' : belowBarHeight + 'px',
-							'background-color' : '#000',
-							'text-align' : 'center',
-							'padding-top' : '5px'
-						} ).append(
-							$('<span>').css( {
-								'color':'white'
-							} )
-						)
-				);
-				// Add some height for the bar and interface
-				var height = ( belowBarHeight + 8 ) + this.embedPlayer.getHeight() + this.embedPlayer.controlBuilder.getHeight();
-				// Resize the interface for layoutMode == 'below' ( if not in full screen)
-				if( ! this.embedPlayer.controlBuilder.fullscreenMode ){
-					this.embedPlayer.$interface.animate({
-						'height': height
-					});
-				}
-				mw.log( 'TimedText:: height of ' + this.embedPlayer.id + ' is now: ' + $( '#' + this.embedPlayer.id ).height() );
 			}
-			mw.log( 'TimedText:: should have been appended: ' + $playerTarget.find('.track').length );
+
+			// Update text ( use "html" instead of "text" so that subtitle format can
+			// include html formating 
+			// TOOD we should scrub this for non-formating html
+			$textTarget.append( 
+				$('<span />')
+					.css( 'display','inline' )
+					.html( caption.content )
+			);
+			
+				// Add/update the lang option
+			$textTarget.attr( 'lang', source.srclang.toLowerCase() );
+			
+			// Update any links to point to a new window
+			$textTarget.find( 'a' ).attr( 'target', '_blank' );
+			
+			// Apply any custom style ( if we are ontop of the video )
+			if( this.getLayoutMode() == 'ontop' ){
+				if( caption.css ){
+					$textTarget.css( caption.css );
+				} else {
+					$textTarget.css( this.getDefaultStyle() );
+				}
+				$playerTarget.append( 
+					$textTarget	
+				);
+			} else {
+				// else apply the default layout system:
+				this.addTextToDefaultLocation( $textTarget );
+			}
+		
+			$textTarget.fadeIn('fast');
+		},
+		getDefaultStyle: function(){
+			var baseCss =  {
+					'position':'absolute',
+					'bottom': ( this.embedPlayer.controlBuilder.getHeight() + 10 ),
+					'width': '100%',
+					'display': 'block',
+					'opacity': .8,
+					'text-align':'center',
+					'z-index': 2
+				};
+			baseCss =$.extend( baseCss, this.getInterfaceSizeTextCss({
+				'width' :  this.embedPlayer.getWidth(),
+				'height' : this.embedPlayer.getHeight()
+			}));
+			return baseCss;
+		},
+		/**
+		 * Applies the default layout for a text target
+		 */
+		addTextBelowVideo: function( $textTarget ) {
+			var $playerTarget = this.embedPlayer.$interface;
+			// Get the relative positioned player class from the controlBuilder:
+			this.embedPlayer.controlBuilder.keepControlBarOnScreen = true;
+			// Set the belowBar size to 60 pixels:
+			var belowBarHeight = 60;
+			
+			// Append before controls:
+			$playerTarget.find( '.control-bar' ).before(
+				$('<div>').addClass( 'captionContainer' )
+					.css({
+						'position' : 'absolute',
+						'top' : this.embedPlayer.getHeight(),
+						'display' : 'block',
+						'width' : '100%',
+						'height' : belowBarHeight + 'px',
+						'background-color' : '#000',
+						'text-align' : 'center',
+						'padding-top' : '5px'
+					} ).append(
+						$textTarget.css( {
+							'color':'white'
+						} )
+					)
+			);
+			
+			// Add some height for the bar and interface
+			var height = ( belowBarHeight + 8 ) + this.embedPlayer.getHeight() + this.embedPlayer.controlBuilder.getHeight();
+			
+			// Resize the interface for layoutMode == 'below' ( if not in full screen)
+			if( ! this.embedPlayer.controlBuilder.fullscreenMode ){
+				this.embedPlayer.$interface.animate({
+					'height': height
+				});
+			}
+			mw.log( 'TimedText:: height of ' + this.embedPlayer.id + ' is now: ' + $( '#' + this.embedPlayer.id ).height() );
 		}
 	};
 

@@ -252,12 +252,10 @@ class KalturaResultObject {
 		}
 
 		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
-
 			// if flavor status is not ready - continute to the next flavor
 			if( $KalturaFlavorAsset->status != 2 ) { 
 				continue; 
 			}
-
 			// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
 			if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
 				$assetUrl = $flavorUrl . '/format/applehttp/protocol/http/a.m3u8';
@@ -269,7 +267,6 @@ class KalturaResultObject {
 				);
 				continue;
 			}
-			
 			// Check for rtsp as well:
 			if( strpos( $KalturaFlavorAsset->tags, 'hinted' ) !== false ){
 				$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id .  '/format/rtsp/name/a.3gp';

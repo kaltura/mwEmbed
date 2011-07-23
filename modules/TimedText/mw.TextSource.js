@@ -104,17 +104,19 @@
 		*
 		* @param {String} time Time in seconds
 		*/
-		getCaptionObj: function ( time ) {
+		getCaptionForTime: function ( time ) {
 			var prevCaption = this.captions[ this.prevIndex ];
-	
+			var captionSet = {};
+			
 			// Setup the startIndex:
 			if( prevCaption && time >= prevCaption.start ) {
 				var startIndex = this.prevIndex;
 			}else{
-				//If a backwards seek start searching at the start:
+				// If a backwards seek start searching at the start:
 				var startIndex = 0;
 			}
-			// Start looking for the text via time, return first match:
+			var firstCapIndex = 0;
+			// Start looking for the text via time, add all matches that are in range
 			for( var i = startIndex ; i < this.captions.length; i++ ) {
 				var caption = this.captions[ i ];
 				// Don't handle captions with 0 or -1 end time:
@@ -123,13 +125,23 @@
 	
 				if( time >= caption.start &&
 					time <= caption.end ) {
-					this.prevIndex = i;
+					// set the earliest valid time to the current start index:
+					if( !firstCapIndex ){
+						firstCapIndex = caption.start; 
+					}
+					
 					//mw.log("Start cap time: " + caption.start + ' End time: ' + caption.end );
-					return caption;
+					captionSet[i] = caption ;
+				}
+				// captions are stored in start order stop search if we get larger than time
+				if( caption.start > time ){
+					break;
 				}
 			}
-			//No text found in range return false:
-			return false;
+			// Update the prevIndex: 
+			this.prevIndex =firstCapIndex;
+			//Return the set of captions in range:
+			return captionSet;
 		},
 		
 		getCaptions: function( data ){
@@ -189,7 +201,18 @@
 				_this.styleCss[ $( style).attr('id') ] = cssObject;
 			});
 			
-			$( xml ).find('p').each(function(inx, p ){
+			$( xml ).find( 'p' ).each( function( inx, p ){
+
+				// Get text content ( just a quick hack, we need more detailed spec or TTML parser )
+				var content = '';
+				$( p.childNodes ).each(function(inx,node){
+				   if( node.nodeName != '#text' && node.nodeName != 'metadata' ){
+					   // Add any html tags:
+					   content +='<' + node.nodeName + '/>';
+				    } else {
+				    	content += node.textContent;
+				    }
+				});
 				
 				// Get the end time:
 				var end = null;
@@ -202,16 +225,6 @@
 						mw.npt2seconds( $( p ).attr( 'dur' ) );
 				}
 				
-				// Get text content ( just a quick hack, we need more detailed spec or TTML parser )
-				var content = '';
-				$( p.childNodes ).each(function(inx,node){
-				   if( node.nodeName != '#text' && node.nodeName != 'metadata' ){
-					   content+='<' + node.nodeName + '/>';
-				    } else {
-				    	content+= node.textContent;
-				    }
-				});
-				
 				// Create the caption object :
 				var captionObj ={
 					'start': mw.npt2seconds( $( p ).attr( 'begin' ) ),
@@ -220,15 +233,15 @@
 				};
 				
 				// See if we have custom metadata for position of this caption object 
-				// ( not really part of the spec but used by at least a few major content producers )
+				// there are 35 columns across and 15 rows high 
 				var $meta = $(p).find( 'metadata' );
 				if( $meta.length ){
 					captionObj['css'] = {};
 					if( $meta.attr('ccrow') ){
-						captionObj['css']['left'] = ( $meta.attr('ccrow') / 21 ) * 100 +'%';
+						captionObj['css']['left'] = ( $meta.attr('ccrow') / 35 ) * 100 +'%';
 					}
 					if( $meta.attr('cccol') ){
-						captionObj['css']['top'] = ( $meta.attr('cccol') / 21 ) * 100 +'%';
+						captionObj['css']['top'] = ( $meta.attr('cccol') / 15 ) * 100 +'%';
 					}
 				}
 				
@@ -273,16 +286,19 @@
 					// parse time string
 					var m = s[1].match(/(\d+):(\d+):(\d+)(?:,(\d+))?\s*--?>\s*(\d+):(\d+):(\d+)(?:,(\d+))?/);
 					if (m) {
+						var startms = ( m[4] )? (parseInt(m[4], 10) / 1000) : 0;
 						start =
 							(parseInt(m[1], 10) * 60 * 60) +
 							(parseInt(m[2], 10) * 60) +
 							(parseInt(m[3], 10)) +
-							(parseInt(m[4], 10) / 1000);
+							startms;
+						
+						var endms = ( m[8] )? (parseInt(m[8], 10) / 1000) : 0;
 						end =
 							(parseInt(m[5], 10) * 60 * 60) +
 							(parseInt(m[6], 10) * 60) +
 							(parseInt(m[7], 10)) +
-							(parseInt(m[8], 10) / 1000);
+							endms;
 					} else {
 						// Unrecognized timestring
 						continue;
@@ -299,7 +315,7 @@
 					'content' : content
 				} );
 			}
-		
+			
 			return captions;
 		}
 	};
