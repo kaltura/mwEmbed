@@ -272,13 +272,13 @@ mw.IA =
           player.currentTime = star;
           try {
     	    player.play();
-          } catch (e) { mw.IA.log('play threw cept'); }
+          } catch (e) { mw.IA.log('play threw cept'); mw.IA.log(e); }
 
           setTimeout(function(){
     	    player.play();
-    	  },200);
+    	  },300);
 
-    	},100);
+    	},200);
       }
       });
     }
