@@ -3,14 +3,19 @@
  * @param embedPlayer
  * @param config
  */
- mw.Omniture = function( config ){
- 	return this.init(  config );
- };
+( function( mw, $){
+
+mw.Omniture = function( embedPlayer, config ){
+ 	return this.init( embedPlayer,  config );
+};
 
 mw.Omniture.prototype = {
 	
- 	init: function( config ){
+ 	init: function( embedPlayer, config ){
 		var _this = this;
+		// Setup reference to embedPlayer
+		this.embedPlayer = embedPlayer;
+		
  		// Check for required config: 
  		this.config = config;
  		
@@ -22,6 +27,7 @@ mw.Omniture.prototype = {
  		}
  	},
  	/**
+ 	 * Dispatches an event to  
  	 * 
  	 * @param {String} eventId The omniture event id
  	 * @param {Object} eVars The set of eVar name value pairs
@@ -30,11 +36,10 @@ mw.Omniture.prototype = {
  	 * @return
  	 */
  	dispatchEvent: function( eventId, eVars, props, eventName ){
- 		// dispatch the event to the log: 
- 		if( mw.getConfig( 'Omniture.DispatchLog' ) ){
- 			mw.getConfig( 'Omniture.DispatchLog' )( eventId, eVars, props, eventName );
- 		}
+ 		$( this.embedPlayer ).trigger( 'Omniture_DispachEvent', $.makeArray( arguments ) );
  		// Send an Omniture beacon
- 		
+ 		// XXX We need Omniture beacon documentation!
  	}
 };
+
+} )( mw, jQuery );
