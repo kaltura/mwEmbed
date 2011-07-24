@@ -170,6 +170,10 @@ mw.KApi.prototype = {
 			callback( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] );
 			return ;
 		}
+		// Check if we have ks flashvar and use it for our request
+		if( kProperties.flashvars && kProperties.flashvars.ks ) {
+			this.setKS( kProperties.flashvars.ks );
+		}
 		if( kProperties.entry_id ){
 			// The referring  url ( can be from the iframe if in iframe mode ) 
 			var refer = ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ? 
@@ -314,7 +318,7 @@ mw.kApiGetPartnerClient = function( partnerOrWidgetId ){
 	
 	if( !mw.KApiPartnerCache[ partner_id ] ){
 		mw.KApiPartnerCache[ partner_id ] = new mw.KApi( partner_id );
-	};
+	}
 	return mw.KApiPartnerCache[ partner_id ];
 };
 

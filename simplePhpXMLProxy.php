@@ -259,7 +259,7 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
   	  	if( strtolower( $headKey) == 'content-type' ){
   	  		$contentType =  $headValue;
   	  	}
-  	  }  	 	
+  	  } 
 	  if( 0 == preg_match( $contentType_regex, $contentType ) ){
 	  	$status = array( 'http_code' => 'ERROR');
 	  	$contents = "Error invalid content type did not match: " . str_replace( '/', '' , $contentType_regex);  	
@@ -309,10 +309,13 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
   
   // Get JSONP callback.
   $jsonp_callback = $enable_jsonp && isset($_GET['callback']) ? $_GET['callback'] : null;
-  
+
+  // Some characters breaks json_encode, we should clear the contents before.
+  $data["contents"] = str_replace(chr(146), "&#39;", $data["contents"]);
+
   // Generate JSON/JSONP string
   $json = json_encode( $data );
-  
+
   print $jsonp_callback ? "$jsonp_callback($json)" : $json;
   
 }

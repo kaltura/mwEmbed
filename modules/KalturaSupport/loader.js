@@ -190,9 +190,12 @@
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
 						videoEmbedAttributes.kentryid = kEmbedSettings.entry_id;
 						if( kEmbedSettings.p ){
+							// if we have flashvar  we need to pass the ks to thumbnail url
+							var ks = ( flashvars && flashvars.loadThumbnailWithKs ) ? flashvars.ks : false;
 							var thumb_url =  mw.getKalturaThumbUrl({
 								'partner_id': kEmbedSettings.p,
 								'entry_id' :  kEmbedSettings.entry_id,
+								'ks' : ks,
 								'width' : parseInt( width ),
 								'height' : parseInt( height )
 							});
@@ -511,9 +514,11 @@
 			entry.width = 400;
 		if( entry.height == '100%')
 			entry.height = 300;
+
+		var ks = (entry.ks) ? '/ks/' + entry.ks : '';
 		
 		return kCdn + '/p/' + entry.partner_id + '/sp/' +
-			entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
+			entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + ks + '/width/' +
 			parseInt(entry.width) + '/height/' + parseInt(entry.height);
 	};
 	

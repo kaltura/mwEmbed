@@ -51,7 +51,7 @@ $wgEnableScriptDebug = false;
 $wgKalturaServiceUrl = 'http://www.kaltura.com';
 
 // Default Kaltura CDN url: 
-$wgKalturaCDNUrl = 'http://cdn.kaltura.com';
+$wgKalturaCDNUrl = 'http://cdnbakmi.kaltura.com';
 
 // Default Kaltura service url:
 $wgKalturaServiceBase = '/api_v3/index.php?service=';

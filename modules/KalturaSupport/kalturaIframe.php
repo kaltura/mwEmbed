@@ -130,9 +130,15 @@ class kalturaIframe {
 			'wid' => 'kwidgetid',
 			'autoplay' => 'autoplay',
 		);
+		//check if we have flashvar: loadThumbnailWithKs, if so load the thumbnail with KS
+		$ksParam = null;
+		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) && 
+				isset( $_REQUEST['flashvars']['loadThumbnailWithKs']) ) {
+			$ksParam = '/ks/' . $this->getResultObject()->getKS();
+		}
 		$posterUrl =  $wgKalturaCDNUrl . '/p/' . $this->getResultObject()->getPartnerId() . '/sp/' .
 						$this->getResultObject()->getPartnerId() . '00/thumbnail/' .
-						'entry_id/' .  $this->getResultObject()->getEntryId() .
+						'entry_id/' .  $this->getResultObject()->getEntryId() . $ksParam .
 						'/height/480';
 		try {
 			$sources = $this->getResultObject()->getSources();

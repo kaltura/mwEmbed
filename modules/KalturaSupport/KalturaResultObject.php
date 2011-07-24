@@ -243,8 +243,8 @@ class KalturaResultObject {
 		// Decide if to use playManifest or flvClipper URL
 		if( $wgKalturaUseManifestUrls ){
 			$flavorUrl =  $wgKalturaServiceUrl .'/p/' . $this->getPartnerId() . '/sp/' .
-			$this->getPartnerId() . '00/playManifest/entryId/' .
-			$this->urlParameters['entry_id'];
+			$this->getPartnerId() . '00/playManifest/entryId/' . $this->urlParameters['entry_id']
+			. '/ks/' . $this->getKS();
 		} else {
 			$flavorUrl = $wgKalturaCDNUrl .'/p/' . $this->getPartnerId() . '/sp/' .
 			$this->getPartnerId() . '00/flvclipper/entry_id/' .
@@ -629,18 +629,22 @@ class KalturaResultObject {
 		
 		$client = new KalturaClient( $conf );
 
-		// Check modify time on cached php file
-		$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
-		if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ) {
-			try{
-		    	$session = $client->session->startWidgetSession( $this->urlParameters['wid'] );
-		    	$this->ks = $session->ks;
-		    	$this->putCacheFile( $cacheFile,  $this->ks );
-			} catch ( Exception $e ){
-				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
-			}
+		if( isset($this->urlParameters[ 'flashvars' ][ 'ks' ]) ) {
+			$this->ks = $this->urlParameters[ 'flashvars' ][ 'ks' ];
 		} else {
-		  	$this->ks = file_get_contents( $cacheFile );
+			// Check modify time on cached php file
+			$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
+			if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ) {
+				try{
+					$session = $client->session->startWidgetSession( $this->urlParameters['wid'] );
+					$this->ks = $session->ks;
+					$this->putCacheFile( $cacheFile,  $this->ks );
+				} catch ( Exception $e ){
+					throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+				}
+			} else {
+				$this->ks = file_get_contents( $cacheFile );
+			}
 		}
 		// Set the kaltura ks and return the client
 		$client->setKS( $this->ks );

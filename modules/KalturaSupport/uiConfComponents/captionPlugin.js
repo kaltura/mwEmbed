@@ -21,8 +21,8 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 });
 
 var captionPlugin = function( embedPlayer, captionConfig, callback){
-	// Load the Kaltura Captions and TimedText Module:
-	mw.load( [ "TimedText", "mw.KCaptions" ], function() {
+	// Load the Kaltura TimedText and TimedText Module:
+	mw.load( [ "TimedText", "mw.KTimedText" ], function() {
 		// Add captions to the player
 		embedPlayer.timedText = new mw.KTimedText( embedPlayer, captionConfig ); 
 		mw.log("CaptionPlugin: done registering captions, run callback");

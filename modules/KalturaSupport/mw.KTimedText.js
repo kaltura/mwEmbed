@@ -74,6 +74,7 @@ mw.KTimedText.prototype = {
 	 * Get the text sources from the api: 
 	 */
 	getTextSourcesFromApi: function( callback ){
+		var _this = this;
 		// @@TODO  Remove this when eagle is out
 		if( mw.getConfig('Kaltura.TempCaptions') ) {
 			callback( mw.getConfig('Kaltura.TempCaptions') );
@@ -133,12 +134,11 @@ mw.KTimedText.prototype = {
 	 * @param {Object} textSource
 	 */
 	getTextSourceFromDB: function( dbTextSource ){
-		var _this = this;
 		
 		dbTextSource.languageCode = 'en'; // TODO: Hardcoded for now, remove when new client is generated
 		
 		// Try to insert the track source:
-		var embedSource = _this.embedPlayer.mediaElement.tryAddSource( 
+		var embedSource = this.embedPlayer.mediaElement.tryAddSource( 
 				$( '<track />' ).attr({
 					'kind'		: 'subtitles',
 					'language'	: dbTextSource.language,
@@ -150,7 +150,6 @@ mw.KTimedText.prototype = {
 					'title'		: dbTextSource.label
 				}).get(0) 
 		);
-		
 		// Return a "textSource" object:
 		return new mw.TextSource( embedSource );
 	},
