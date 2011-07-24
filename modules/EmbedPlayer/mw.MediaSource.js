@@ -113,7 +113,10 @@ mw.MediaSource.prototype = {
 		if ( typeof pUrl.query[ 't' ] != 'undefined' ) {
 			this.URLTimeEncoding = true;
 		}
-
+                else if ( typeof mw.IA != 'undefined' ) {
+		  this.URLTimeEncoding = mw.IA.isURLTimeEncoding(this.src);
+                }
+          
 		var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes' );
 		$.each(sourceAttr, function(inx, attr){
 			if ( $j( element ).attr( attr ) ) {

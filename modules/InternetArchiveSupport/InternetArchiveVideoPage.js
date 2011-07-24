@@ -265,7 +265,9 @@ mw.IA =
 
       player.showPlayer();
       player.stop();
+      //debugger;
       player.setupSourcePlayer();
+                 
       {
     	setTimeout(function(){
           player.stop();
@@ -283,7 +285,14 @@ mw.IA =
       });
     }
   },
-      
+
+  
+  isURLTimeEncoding:function(src)// called in mw.MediaSource.js
+  {
+    var suffix = src.substr(0, src.length-4).toLowerCase();
+    return (suffix=='.mp4'  ||  suffix=='.ogv');
+  },
+  
   
   oldswapper:function()
   {
