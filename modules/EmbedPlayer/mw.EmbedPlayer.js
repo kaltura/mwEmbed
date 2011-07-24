@@ -2012,6 +2012,7 @@ mw.EmbedPlayer.prototype = {
 	 * false Updates pause button Starts the "monitor"
 	 */
 	firstPlay : true,
+	replayEventCount : 0,
 	play: function() {
 		var _this = this;
 		
@@ -2052,9 +2053,11 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		// If we previously finished playing this clip run the "replay hook"
-		if( this.donePlayingCount > 0 && !this.paused && this._propagateEvents ) {
-			mw.log("replayEvent");
-			$j( this ).trigger( 'replayEvent' );
+		if( this.donePlayingCount > 0 && !this.paused && this._propagateEvents ) {			
+			this.replayEventCount++;
+			if( this.replayEventCount <= this.donePlayingCount){
+				$j( this ).trigger( 'replayEvent' );
+			}
 		}
 
 		this.$interface.find('.play-btn span')

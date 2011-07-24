@@ -23,7 +23,7 @@ function jsCallbackReady( playerId ){
 			propsStr +='<b>' + inx +':</b>' + $.param( set ) + '<br />';
 		});
 		$('#eventRowDesc').after(
-			$('<tr />').append(
+			$( '<tr />' ).append(
 				$('<td />').text( kalturaEventName ),
 				$('<td />').text( eventId ),
 				$('<td />').html( eVarsStr ),
