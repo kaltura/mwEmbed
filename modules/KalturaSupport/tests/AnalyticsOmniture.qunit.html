@@ -19,7 +19,7 @@ function jsCallbackReady( playerId ){
 			eVarsStr +='<b>' + inx +':</b>' + $.param( set ) + '<br />';
 		});
 		var propsStr ='';
-		$.each( eVars, function(inx, set ){
+		$.each( props, function(inx, set ){
 			propsStr +='<b>' + inx +':</b>' + $.param( set ) + '<br />';
 		});
 		$('#eventRowDesc').after(
