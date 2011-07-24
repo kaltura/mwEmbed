@@ -310,8 +310,8 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
   // Get JSONP callback.
   $jsonp_callback = $enable_jsonp && isset($_GET['callback']) ? $_GET['callback'] : null;
 
-  // Some characters breaks json_encode, we should clear the contents before.
-  $data["contents"] = str_replace(chr(146), "&#39;", $data["contents"]);
+  // Be sure to utf8_encode contents so no remote content break JSON encoding 
+  $data["contents"] = utf8_encode( $data["contents"] );
 
   // Generate JSON/JSONP string
   $json = json_encode( $data );
