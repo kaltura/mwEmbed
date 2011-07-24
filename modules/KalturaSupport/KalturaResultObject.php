@@ -243,8 +243,7 @@ class KalturaResultObject {
 		// Decide if to use playManifest or flvClipper URL
 		if( $wgKalturaUseManifestUrls ){
 			$flavorUrl =  $wgKalturaServiceUrl .'/p/' . $this->getPartnerId() . '/sp/' .
-			$this->getPartnerId() . '00/playManifest/entryId/' . $this->urlParameters['entry_id']
-			. '/ks/' . $this->getKS();
+			$this->getPartnerId() . '00/playManifest/entryId/' . $this->urlParameters['entry_id'];			
 		} else {
 			$flavorUrl = $wgKalturaCDNUrl .'/p/' . $this->getPartnerId() . '/sp/' .
 			$this->getPartnerId() . '00/flvclipper/entry_id/' .
@@ -358,10 +357,11 @@ class KalturaResultObject {
 				'data-flavorid' => 'iPhoneNew'
 			);
 		}
+		// Add in playManifest authentication tokens ( both the KS and referee url ) 
 		if( $wgKalturaUseManifestUrls ){
 			foreach($sources as &$source ){
 				if( isset( $source['src'] )){
-					$source['src'] .= '?referrer=' . base64_encode( $this->getReferer() );
+					$source['src'] .= '?ks=' . $this->getKS() . '&referrer=' . base64_encode( $this->getReferer() );
 				}
 			}
 		}
