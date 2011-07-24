@@ -429,102 +429,110 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		var deviceSources = {};
-
-		// Get KS for playManifest URL
-		this.kClient.getKS( function( ks ) {
 		
-			// Setup the src defines
-			var ipadFlavors = '';
-			var iphoneFlavors = '';
+		// Setup the src defines
+		var ipadFlavors = '';
+		var iphoneFlavors = '';
 
-			// Setup flavorUrl
+		// Setup flavorUrl
+		if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
+			var flavorUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id +
+					'/sp/' +  partner_id + '00/playManifest';
+		} else {
+			var flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
+				   '/sp/' +  partner_id + '00/flvclipper';
+		}
+
+		// Find a compatible stream
+		for( var i = 0 ; i < flavorData.length; i ++ ) {
+			var asset = flavorData[i];
+			var entryId = asset.entryId;
+
+			// if flavor status is not ready - continue to the next flavor
+			if( asset.status != 2 ) {
+				continue;
+			}
+
+			// Check playManifest conditional
 			if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
-				var flavorUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partner_id +
-						'/sp/' +  partner_id + '00/playManifest';
-			} else {
-				var flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
-					   '/sp/' +  partner_id + '00/flvclipper';
-			}
 
-			// Find a compatible stream
-			for( var i = 0 ; i < flavorData.length; i ++ ) {
-				var asset = flavorData[i];
-				var entryId = asset.entryId;
+				var src  = flavorUrl + '/entryId/' + asset.entryId;
 
-				// if flavor status is not ready - continue to the next flavor
-				if( asset.status != 2 ) {
-					continue;
-				}
-
-				// Check playManifest conditional
-				if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
-
-					var src  = flavorUrl + '/entryId/' + asset.entryId + '/ks/' + ks;
-
-					// Check for Apple http streaming
-					if( asset.tags.indexOf('applembr') != -1 ) {
-						src += '/format/applehttp/protocol/http';
-						deviceSources['AppleMBR'] = src + '/a.m3u8';
-					} else {
-						src += '/flavorId/' + asset.id + '/format/url/protocol/http';
-					}
-
+				// Check for Apple http streaming
+				if( asset.tags.indexOf('applembr') != -1 ) {
+					src += '/format/applehttp/protocol/http';
+					deviceSources['AppleMBR'] = src + '/a.m3u8';
 				} else {
-					var src  = flavorUrl + '/entry_id/' + asset.entryId + '/flavor/' + asset.id ;
+					src += '/flavorId/' + asset.id + '/format/url/protocol/http';
 				}
 
-				// Add iPad Akamai flavor to iPad flavor Ids list
-				if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipadnew') != -1 ){
-					ipadFlavors += asset.id + ',';
-				}
-
-				// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
-				if( asset.fileExt == 'mp4' && asset.tags.indexOf('iphonenew') != -1 ){
-					ipadFlavors += asset.id + ',';
-					iphoneFlavors += asset.id + ',';
-				}
-
-				// Check the tags to read what type of mp4 source
-				if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipad') != -1 ){
-					deviceSources['iPad'] = src + '/a.mp4';
-				}
-
-				// Check for iPhone src
-				if( asset.fileExt == 'mp4' && asset.tags.indexOf('iphone') != -1 ){
-					deviceSources['iPhone'] = src + '/a.mp4';
-				}
-
-				// Check for ogg source
-				if( asset.fileExt == 'ogg' || asset.fileExt == 'ogv'){
-					deviceSources['ogg'] = src + '/a.ogg';
-				}
-
-				// Check for webm source
-				if( asset.fileExt == 'webm' ){
-					deviceSources['webm'] = src + '/a.webm';
-				}
-
-				// Check for 3gp source
-				if( asset.fileExt == '3gp' ){
-					deviceSources['3gp'] = src + '/a.3gp';
-				}
+			} else {
+				var src  = flavorUrl + '/entry_id/' + asset.entryId + '/flavor/' + asset.id ;
 			}
 
-			ipadFlavors = ipadFlavors.substr(0, (ipadFlavors.length-1) );
-			iphoneFlavors = iphoneFlavors.substr(0, (iphoneFlavors.length-1) );
-
-			// Create iPad flavor for Akamai HTTP
-			if(ipadFlavors.length != 0) {
-				deviceSources['iPadNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadFlavors + '/format/applehttp/protocol/http/a.m3u8';
+			// Add iPad Akamai flavor to iPad flavor Ids list
+			if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipadnew') != -1 ){
+				ipadFlavors += asset.id + ',';
 			}
 
-			// Create iPhone flavor for Akamai HTTP
-			if(iphoneFlavors.length != 0) {
-				deviceSources['iPhoneNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneFlavors + '/format/applehttp/protocol/http/a.m3u8';
+			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
+			if( asset.fileExt == 'mp4' && asset.tags.indexOf('iphonenew') != -1 ){
+				ipadFlavors += asset.id + ',';
+				iphoneFlavors += asset.id + ',';
 			}
 
+			// Check the tags to read what type of mp4 source
+			if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipad') != -1 ){
+				deviceSources['iPad'] = src + '/a.mp4';
+			}
+
+			// Check for iPhone src
+			if( asset.fileExt == 'mp4' && asset.tags.indexOf('iphone') != -1 ){
+				deviceSources['iPhone'] = src + '/a.mp4';
+			}
+
+			// Check for ogg source
+			if( asset.fileExt == 'ogg' || asset.fileExt == 'ogv'){
+				deviceSources['ogg'] = src + '/a.ogg';
+			}
+
+			// Check for webm source
+			if( asset.fileExt == 'webm' ){
+				deviceSources['webm'] = src + '/a.webm';
+			}
+
+			// Check for 3gp source
+			if( asset.fileExt == '3gp' ){
+				deviceSources['3gp'] = src + '/a.3gp';
+			}
+		}
+
+		ipadFlavors = ipadFlavors.substr(0, (ipadFlavors.length-1) );
+		iphoneFlavors = iphoneFlavors.substr(0, (iphoneFlavors.length-1) );
+
+		// Create iPad flavor for Akamai HTTP
+		if(ipadFlavors.length != 0) {
+			deviceSources['iPadNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadFlavors + '/format/applehttp/protocol/http/a.m3u8';
+		}
+
+		// Create iPhone flavor for Akamai HTTP
+		if(iphoneFlavors.length != 0) {
+			deviceSources['iPhoneNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneFlavors + '/format/applehttp/protocol/http/a.m3u8';
+		}
+		
+		// Append KS to all source if available 
+		// Get KS for playManifest URL ( this should run synchronously since ks should already be available )
+		var ksCheck = false;
+		this.kClient.getKS( function( ks ) {
+			ksCheck = true;
+			$j.each( deviceSources, function(inx, source){
+				deviceSources[inx] = deviceSources[inx] + '?ks=' + ks;
+			});
 		});
-	
+		if( !ksCheck ){
+			mw.log("Error:: KWidgetSupport: KS not defined in time, streams are missing ks paramter");
+		}
+
 		return deviceSources;
 	},
 	
