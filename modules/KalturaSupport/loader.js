@@ -515,11 +515,11 @@
 		if( entry.height == '100%')
 			entry.height = 300;
 
-		var ks = (entry.ks) ? '/ks/' + entry.ks : '';
+		var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
 		
 		return kCdn + '/p/' + entry.partner_id + '/sp/' +
-			entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + ks + '/width/' +
-			parseInt(entry.width) + '/height/' + parseInt(entry.height);
+			entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
+			parseInt(entry.width) + '/height/' + parseInt(entry.height) + ks;
 	};
 	
 	/**
