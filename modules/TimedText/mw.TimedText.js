@@ -961,7 +961,7 @@ mw.includeAllModuleMessages();
 		getDefaultStyle: function(){
 			var baseCss =  {
 					'position':'absolute',
-					'bottom': ( this.embedPlayer.controlBuilder.getHeight() + 10 ),
+					'bottom': 10,
 					'width': '100%',
 					'display': 'block',
 					'opacity': .8,
