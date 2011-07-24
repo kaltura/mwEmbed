@@ -298,8 +298,10 @@ mw.KApi.prototype = {
 		$j.each(kProperties, function(inx, value){
 			if( inx == 'flashvars' ){
 				// add in the flashvars that can vary the api response
-				rKey += kProperties.flashvars.getCuePointsData;
-				rKey += kProperties.flashvars.ks
+				if( typeof kProperties.flashvars == 'object'){
+					rKey += kProperties.flashvars.getCuePointsData;
+					rKey += kProperties.flashvars.ks
+				}
 			} else {
 				rKey+=inx + '_' + value;
 			}
