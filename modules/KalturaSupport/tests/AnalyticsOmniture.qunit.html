@@ -15,12 +15,14 @@ function jsCallbackReady( playerId ){
 	// All Omniture Events are dispached on this side of the iframe as well. 
 	$('#' + playerId ).bind( 'Omniture_DispachEvent', function( event,  eventId, eVars, props, kalturaEventName  ){
 		var eVarsStr ='';
-		$.each( eVars, function(inx, set ){
-			eVarsStr +='<b>' + inx +':</b>' + $.param( set ) + '<br />';
+		$.each( eVars, function( inx, set ){
+			var pSet = $.param( set )
+			eVarsStr +='<b>' + inx +':</b>' + pSet.substr(0,35)  + '<br />';
 		});
 		var propsStr ='';
-		$.each( props, function(inx, set ){
-			propsStr +='<b>' + inx +':</b>' + $.param( set ) + '<br />';
+		$.each( props, function( inx, set ){
+			var pSet = $.param( set )
+			propsStr +='<b>' + inx +':</b>' + pSet.substr(0,35)  + '<br />';
 		});
 		$('#eventRowDesc').after(
 			$( '<tr />' ).append(
@@ -29,7 +31,7 @@ function jsCallbackReady( playerId ){
 				$('<td />').html( eVarsStr ),
 				$('<td />').html( propsStr )
 			)
-		)	
+		);
 		// Also track events for testing: 
 		trackEventForTests( eventId, eVars, props, kalturaEventName );
 	});

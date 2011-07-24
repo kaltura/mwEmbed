@@ -224,17 +224,24 @@
 					switch( objectPath[1] ){
 						case 'flashvars':
 							if( objectPath[2] ) {
+								var fv = $( embedPlayer ).data('flashvars' );
+								
 								switch( objectPath[2] ) {
 									case 'autoPlay':
 										// get autoplay
 										return embedPlayer.autoplay;
 									break;
+									case 'referer':
+										// Check for the fv:
+										if( fv && fv[ objectPath[2] ] ){
+											return fv[ objectPath[2] ];
+										}
+										// Else use the iframeParentUrl if set:
+										return mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
+										break;
 									default: 
-										if( $( embedPlayer ).data('flashvars' ) ){
-											fv = $( embedPlayer ).data('flashvars' );
-											if( fv[ objectPath[2] ] ){
-												return fv[ objectPath[2] ]
-											}
+										if( fv && fv[ objectPath[2] ] ){
+											return fv[ objectPath[2] ]
 										}
 										return null;
 										break;

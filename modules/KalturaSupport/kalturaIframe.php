@@ -17,7 +17,6 @@ if( ! ob_start("ob_gzhandler") ) ob_start();
 $wgKalturaIframe->outputIFrame();
 ob_end_flush();
 
-
 /**
  * Kaltura iFrame class:
  */
