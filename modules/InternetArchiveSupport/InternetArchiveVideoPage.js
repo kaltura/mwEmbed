@@ -289,7 +289,7 @@ mw.IA =
   
   isURLTimeEncoding:function(src)// called in mw.MediaSource.js
   {
-    var suffix = src.substr(0, src.length-4).toLowerCase();
+    var suffix = src.substr(src.length-4).toLowerCase();
     return (suffix=='.mp4'  ||  suffix=='.ogv');
   },
   
