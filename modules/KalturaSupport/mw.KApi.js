@@ -173,7 +173,7 @@ mw.KApi.prototype = {
 		// Check if we have ks flashvar and use it for our request
 		if( kProperties.flashvars && kProperties.flashvars.ks ) {
 			this.setKS( kProperties.flashvars.ks );
-		}
+		};
 		if( kProperties.entry_id ){
 			// The referring  url ( can be from the iframe if in iframe mode ) 
 			var refer = ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ? 
@@ -295,9 +295,14 @@ mw.KApi.prototype = {
 	 */
 	getCacheKey: function( kProperties ){
 		var rKey = '';
-		//TODO if a framework provides a sorting system we could use that
 		$j.each(kProperties, function(inx, value){
-			rKey+=inx + '_' + value;
+			if( inx == 'flashvars' ){
+				// add in the flashvars that can vary the api response
+				rKey += kProperties.flashvars.getCuePointsData;
+				rKey += kProperties.flashvars.ks
+			} else {
+				rKey+=inx + '_' + value;
+			}
 		});
 		return rKey;
 	}
