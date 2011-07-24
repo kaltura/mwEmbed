@@ -265,13 +265,21 @@ mw.IA =
 
       player.showPlayer();
       player.stop();
-      player.setupSourcePlayer( function(){
+      player.setupSourcePlayer();
+      {
     	setTimeout(function(){
           player.stop();
-          player.currentTime = star;           
-    	  player.play();
+          player.currentTime = star;
+          try {
+    	    player.play();
+          } catch (e) { mw.IA.log('play threw cept'); }
+
+          setTimeout(function(){
+    	    player.play();
+    	  },200);
+
     	},100);
-        });
+      }
       });
     }
   },
