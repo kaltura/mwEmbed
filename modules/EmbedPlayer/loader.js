@@ -503,11 +503,11 @@
 		// Add the parentUrl to the iframe config: 
 		iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
 
-		return '#' + encodeURIComponent( 
-				JSON.stringify({
-					'mwConfig' :iframeMwConfig,
-					'playerId' : playerId
-				})
+		return '#' + encodeURIComponent(
+			JSON.stringify({
+				'mwConfig' :iframeMwConfig,
+				'playerId' : playerId
+			})
 		);
 	};
 	

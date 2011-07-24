@@ -68,7 +68,7 @@
 	// On new embed player check if we need to add timedText
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		if( mw.checkForTimedText( embedPlayer ) ){
-			new mw.TimedText( embedPlayer );
+			embedPlayer.timedText = new mw.TimedText( embedPlayer );
 		}
 	});
 	
@@ -83,6 +83,9 @@
 		}
 		if ( !playerElement ){
 			return false;
+		}
+		if( $( playerElement ).find('track').length ){
+			return true;
 		}
 		// check if we are handling an embedPlayer with hasTextTracks method
 		if( playerElement.hasTextTracks ){

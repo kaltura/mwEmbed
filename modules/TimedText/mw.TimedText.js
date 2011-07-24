@@ -892,7 +892,9 @@ mw.includeAllModuleMessages();
 				'right':0,
 				'position': 'absolute'
 			};
-			if( this.embedPlayer.controlBuilder.isOverlayControls() ){
+			if( this.embedPlayer.controlBuilder.isOverlayControls() || 
+				!mw.setConfig( 'EmbedPlayer.OverlayControls')  )
+			{
 				layoutCss['bottom'] = 0;				
 			} else {
 				layoutCss['bottom'] = this.embedPlayer.controlBuilder.getHeight();
