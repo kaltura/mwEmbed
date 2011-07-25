@@ -66,7 +66,7 @@
 						$('<p />').text( gM('mwe-embedwizard-player-desc')),
 						$('<div />')
 							.addClass("videoContainer")
-							.css('overflow', 'scroll')
+							.css('overflow', 'hidden')
 						
 					),
 					$('<div />').attr('id', 'mweew-tab-code').append(
@@ -234,7 +234,10 @@
 						],
 						's' : 10,
 						'cb' : function( _this, val, inx){							
-							_this.getTag().find('source').gt(inx).attr('src', val );
+							//_this.getTag().find('source').gt(inx).attr('src', val );
+							//console.log(jQuery(_this.getTag().find('source')[0]).attr('src', 'source'));
+							//console.log(inx);
+							jQuery(_this.getTag().find('source')[inx]).attr('src', val );
 						}
 					}
 				}
