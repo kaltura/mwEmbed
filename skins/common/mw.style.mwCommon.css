@@ -20,6 +20,7 @@
 	display:block;
 	padding:0px;
 	background-image: url('images/loading_ani.gif');
+	margin: auto;
 }
 .cssLoadingSpinner {
 	position:relative;
@@ -55,93 +56,6 @@
 	to   {-webkit-transform:scale(0.7) rotate(360deg);}
 }
 
-/* jquery.ui overides */
-
-.ui-icon_link {
-	padding: .4em 1em .4em 20px;
-	text-decoration: none;
-	position: relative;	
-}
-.ui-icon_link span.ui-icon {
-	margin: 0 5px 0 0;
-	position: absolute;
-	left: 0.2em;
-	right: auto;
-	top: 50%;
-	margin-top: -8px;
-	zoom: 1;
-}
-.ui-icon_link span.ui-text {	
-	position: absolute;
-	left: 0.2em;
-	right: auto;	
-	margin-top: -3px;
-	zoom: 1;
-}
-
-.ui-progressbar-value{
-	background-image: url('images/pbar-ani.gif');
-}
-
-.ui-widget-overlay{
-	background: url('images/ui-bg_diagonals-thick_20_666666_40x40.png') repeat scroll 50% 50% #666666;
-	opacity:0.5;
-}
-
-.ui-widget-content input {
-	padding: 5px;
-}
-.ui-widget-content a {
-	color:#009;
-}
-
-ul.ui-provider-selection {
-	list-style-type: none;
-	margin: 0 0 0.6em 0;
-	overflow: hidden;
-	padding: 0;
-	text-align: center;
-}
-
-ul.ui-provider-selection li {
-	border-left: 1px solid black;
-	float: left;
-	line-height: 1.1em;
-	margin: 0 0.5em 0 -0.5em;
-	padding: 0 0.5em;
-	color: blue;
-	list-style-image:none;	
-	cursor:pointer;	
-}
-
-ul.ui-provider-selection li .ui-selected {
-	color: black;
-	font-weight: bold;
-}
-
-ul.ui-provider-selection li a.ui-active {
-	color: black;
-	font-weight: bold;
-}
-
-ul.ui-provider-selection li a {
-	color: blue;
-	text-decoration: none;	
-}
-
-/* Vertical Tabs
-----------------------------------
-.ui-dialog-buttonpane { padding:4px !important; }
-.ui-tabs-vertical { width: 100%; }
-.ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 25%; }
-.ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
-.ui-tabs-vertical .ui-tabs-nav li a { display:block; }
-.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-selected { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; border-right-width: 1px; }
-.ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 68%;}
-
-.ui-dialog .ui-dialog-buttonpane button { float: left !important; }
-*/
-
 
 .mw-imported-resource{
 	border: thin solid black;
@@ -169,15 +83,7 @@ ul.ui-provider-selection li a {
 	-moz-background-inline-policy: continuous; 
 }
 
-.fg-menu .ui-icon{
-	position:relative;
-	top:-1px;
-}
 
-.ui-dialog-buttonpane a{
-	float: right;
-	margin-right: 10px;
-}
 
 /**
 * Special Video player play-btn 
