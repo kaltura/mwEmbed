@@ -428,7 +428,6 @@ function getFlashVersion(){
 
 // Check DOM for Kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
-var ranKCheckAddScript = false;
 function kCheckAddScript(){
 	/**
 	 * Hard code some defaults for users not using the kaltura SAS
@@ -819,7 +818,7 @@ function doScrollCheck() {
  * Get the list of embed objects on the page that are 'kaltura players'
  * Copied from kalturaSupport loader mw.getKalturaPlayerList  
  */
-kGetKalturaPlayerList = function(){
+function kGetKalturaPlayerList(){
 	var kalturaPlayers = [];
 	// check all objects for kaltura compatible urls 
 	var objectList = document.getElementsByTagName('object');

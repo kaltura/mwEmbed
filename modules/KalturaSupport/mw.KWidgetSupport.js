@@ -142,7 +142,6 @@ mw.KWidgetSupport.prototype = {
 			playerData.entryCuePoints = mw.getConfig( 'Kaltura.TempCuePoints' );
 		}
 		// End Remove
-
 		if( playerData.entryCuePoints ) {
 			mw.log( "KCuePoints:: Add CuePoints to embedPlayer");
 			embedPlayer.entryCuePoints = playerData.entryCuePoints;
