@@ -64,7 +64,10 @@
 					),
 					$('<div />').attr('id', 'mweew-tab-player').append(
 						$('<p />').text( gM('mwe-embedwizard-player-desc')),
-						$('<div />').addClass("videoContainer")
+						$('<div />')
+							.addClass("videoContainer")
+							.css('overflow', 'scroll')
+						
 					),
 					$('<div />').attr('id', 'mweew-tab-code').append(
 						$('<p />').text( gM('mwe-embedwizard-embedcode-desc') ),
@@ -79,6 +82,7 @@
 		updatePlayerCodePreview:function(){
 			// update the textarea: 
 			this.$target.find('.playerCodePreview textarea').val(
+				'<script type="text/javascript" src="http://html5.kaltura.org/js"></script>' + 
 				$('<div />').append( 
 					this.getTag()
 				).html()
