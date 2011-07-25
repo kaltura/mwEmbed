@@ -77,8 +77,17 @@
 			$( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {
 
 				$( playerProxy ).bind( 'jsListenerEvent', function(event, globalFuncName, listenerArgs){
+					// check if globalFuncName has decendent properties
 					if( typeof window[ globalFuncName ] == 'function' ){
 						window[ globalFuncName ].apply( this, listenerArgs );
+					} else {
+						// try to send the global function name: 
+						try{
+							var evalFunctionName = eval( globalFuncName );
+							evalFunctionName.apply( this, listenerArgs );
+						} catch (e){
+							mw.log( "Warning KDPMapping: jsListenerEvent function name not found");
+						}
 					}
 				});
 				
@@ -272,7 +281,7 @@
 		 */
 		addJsListener: function( embedPlayer, eventName, callbackName ){
 			var _this = this;
-			//mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
+			mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
 
 			if( typeof callbackName == 'string' ){
 				this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName)  ] = window[ callbackName ];
