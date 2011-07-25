@@ -22,7 +22,7 @@ if( window.QUnit ){
 		document.getElementById( videoId ).addJsListener("mediaReady", "kalturaQunitMediaReady");
 
 		jsCallbackCalled = true;
-		if( jsKalturaPlayerTest ){
+		if( typeof jsKalturaPlayerTest == 'function' ){
 			jsKalturaPlayerTest( videoId );
 		}
 		

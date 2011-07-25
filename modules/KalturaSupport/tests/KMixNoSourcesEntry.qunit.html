@@ -14,12 +14,15 @@ window['jsCallbackReady'] = function( videoId ){
 }
 function jsKalturaPlayerTest( videoId ){
 	var kdp = document.getElementById( videoId );
+	// add the entry ready event: 
+	kdp.addJsListener( 'entryReady', 'entryReadyFunction');
+	
 	// Name this module
-	module( "Entry with no sources switch" );
+	module( "Entry with no sources" );
 		
-	asyncTest("Change Media 1_oz8y7d5a", function(){
-		window['kalturaQunitEntryReady'] = function( entry ){
-			alert('wtf?');
+	asyncTest("Change Media", function(){
+		window.entryReadyFunction = function(){
+			var entry = kdp.evaluate('{mediaProxy.entry}');
 			// check for the inital entry ready:
 			if( entry.id == '1_2qy6yq5j' ){
 				equal(entry.id, "1_2qy6yq5j", "Mix entry ready" );
@@ -34,10 +37,11 @@ function jsKalturaPlayerTest( videoId ){
 				// done with tests:
 				start();
 			}
-		}
-		kdp.addJsListener("entryReady", "kalturaQunitEntryReady");
+		};
 	});
 }
+
+
 </script>
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>

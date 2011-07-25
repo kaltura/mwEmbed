@@ -77,7 +77,7 @@
 			$( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {
 
 				$( playerProxy ).bind( 'jsListenerEvent', function(event, globalFuncName, listenerArgs){
-					// check if globalFuncName has decendent properties
+					// check if globalFuncName has descendant properties
 					if( typeof window[ globalFuncName ] == 'function' ){
 						window[ globalFuncName ].apply( this, listenerArgs );
 					} else {
