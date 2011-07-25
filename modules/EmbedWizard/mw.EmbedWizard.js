@@ -178,7 +178,7 @@
 								'size' : conf.s,
 								'type' : conf.type,
 								'name' : key + inx,
-								'value' : conf.d
+								'value' : ( typeof conf.d == 'object' )? conf.d[inx] : conf.d,
 							}).change(function(){
 								conf.cb( _this, $(this).val(), inx );
 								_this.updatePlayerCodePreview();
