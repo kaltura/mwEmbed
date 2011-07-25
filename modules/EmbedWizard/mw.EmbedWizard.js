@@ -52,15 +52,19 @@
 				.append(
 					$('<ul />').append(
 						$('<li />').append(
+								$('<a />')
+									.attr( 'href', '#mweew-tab-player' )
+									.text( gM('mwe-embedwizard-player') )
+						),
+						$('<li />').append(
 							$('<a />')
 								.attr( 'href', '#mweew-tab-code' )
 								.text( gM('mwe-embedwizard-embedcode') )
-						), 
-						$('<li />').append(
-							$('<a />')
-								.attr( 'href', '#mweew-tab-player' )
-								.text( gM('mwe-embedwizard-player') )
 						)
+					),
+					$('<div />').attr('id', 'mweew-tab-player').append(
+						$('<p />').text( gM('mwe-embedwizard-player-desc')),
+						$('<div />').addClass("videoContainer")
 					),
 					$('<div />').attr('id', 'mweew-tab-code').append(
 						$('<p />').text( gM('mwe-embedwizard-embedcode-desc') ),
@@ -69,9 +73,6 @@
 							'width' : '90%',
 							'height' : '40%'
 						})
-					),
-					$('<div />').attr('id', 'mweew-tab-player').append(
-						$('<p />').text( gM('mwe-embedwizard-player-desc'))
 					)
 				);
 		},
@@ -82,6 +83,10 @@
 					this.getTag()
 				).html()
 			);
+			this.$target.find('.videoContainer').empty().append(
+				this.getTag()
+			);
+			this.getTag().embedPlayer();
 		},
 		getPlayerInputs: function(){
 			if( this.$target.find( '.playerInputs').length == 0 ){
@@ -118,12 +123,27 @@
 		getTag: function(){
 			var _this = this;
 			if( ! _this.$media ){
-				_this.$media = $('<video />')
-					.append(
-						$('<source />'),
-						$('<source />'),
-						$('<source />')
+				_this.$media = $('<video />');
+				var sizePosterInput = this.playerInputSet.sizeposter.inputTypes
+				// TODO replace with a loop over default values
+				var poster =  sizePosterInput.poster.d;
+				if( poster )
+					_this.$media.attr('poster', poster);
+				
+				var width =  sizePosterInput.width.d;
+				if( width )
+					_this.$media.css('width', width);
+				
+				var height =  sizePosterInput.height.d;
+				if( width )
+					_this.$media.css('height', height);
+				
+				var sourcesObj = this.playerInputSet.sources.inputTypes.src; 
+				for(var i = 0 ; i < sourcesObj.count; i++){
+					_this.$media.append(
+						$('<source />').attr('src', sourcesObj.d[i] )
 					);
+				}
 			}
 			return _this.$media;
 		},
@@ -153,7 +173,8 @@
 							$('<input />').attr({
 								'size' : conf.s,
 								'type' : conf.type,
-								'name' : key + inx
+								'name' : key + inx,
+								'value' : conf.d
 							}).change(function(){
 								conf.cb( _this, $(this).val(), inx );
 								_this.updatePlayerCodePreview();
@@ -177,6 +198,7 @@
 				'inputTypes': {
 					'poster' : {
 						's' : 10,
+						'd' : 'http://html5video.org/players/media/folgers.jpg',
 						'cb':function( _this, val){
 							_this.getTag().attr('poster', val );
 						}
@@ -201,6 +223,11 @@
 				'inputTypes': {
 					'src' : {
 						'count' : 3,
+						'd' : [
+						       'http://html5video.org/players/media/folgers.mp4',
+						       'http://html5video.org/players/media/folgers.ogv',
+						       'http://html5video.org/players/media/folgers.webm'
+						],
 						's' : 10,
 						'cb' : function( _this, val, inx){							
 							_this.getTag().find('source').gt(inx).attr('src', val );
@@ -209,6 +236,6 @@
 				}
 			}
 		}
-	}
+	};
 		
 })( mw, window.jQuery );

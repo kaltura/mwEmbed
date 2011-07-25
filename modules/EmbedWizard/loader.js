@@ -4,6 +4,7 @@
 		"mw.EmbedWizard" : "mw.EmbedWizard.js"
 	});
 	var EmbedWizardRequestSet = [
+	     "EmbedPlayer",
          "mw.EmbedWizard",
          "$j.ui",
      	 "$j.widget",
