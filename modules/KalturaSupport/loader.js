@@ -415,7 +415,10 @@
 				}
 				// Add the flashvars to the request:
 				if( iframeParams['flashvars'] ){
-					iframeRequest += '&' + $j.param( {'flashvars': iframeParams['flashvars'] } );
+					$j.each( iframeParams['flashvars'], function( key, value){
+						iframeRequest += '&' + encodeURIComponent( 'flashvars[' + key + ']' ) + 
+								'=' + encodeURIComponent( value );
+					});
 				}
 				// Also append the script version to purge the cdn cache for iframe: 
 				iframeRequest += '&urid=' + KALTURA_LOADER_VERSION;

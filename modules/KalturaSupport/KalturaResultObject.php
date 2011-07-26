@@ -570,7 +570,7 @@ class KalturaResultObject {
 			
 			$resultObject['entryMeta'] = $this->xmlToArray( new SimpleXMLElement( $rawResultObject[3]->objects[0]->xml ) );
 		}
-		
+
 		if( isset( $rawResultObject[4] ) && $rawResultObject[4]->confFile ){
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf'] = $rawResultObject[4]->confFile;
@@ -628,8 +628,7 @@ class KalturaResultObject {
 		$conf->curlTimeout = $wgKalturaServiceTimeout;
 		
 		$client = new KalturaClient( $conf );
-
-		if( isset($this->urlParameters[ 'flashvars' ][ 'ks' ]) ) {
+		if( isset($this->urlParameters[ 'flashvars' ]) && isset($this->urlParameters[ 'flashvars' ][ 'ks' ]) ) {
 			$this->ks = $this->urlParameters[ 'flashvars' ][ 'ks' ];
 		} else {
 			// Check modify time on cached php file
