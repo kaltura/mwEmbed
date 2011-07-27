@@ -68,8 +68,10 @@ mw.AdLoader = {
 	 * 		The type of string
 	 */
 	getAdFormat: function( xmlString ){
+		// XXX temp force vast
+		return 'vast';
 		var lowerCaseXml = xmlString.toLowerCase();
-		
+
 		// Check xml  for "<vast> </vast> tag
 		if( lowerCaseXml.indexOf('<vast') != -1 &&
 			lowerCaseXml.indexOf('</vast>')	)
