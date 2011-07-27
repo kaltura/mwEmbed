@@ -376,7 +376,7 @@ class kalturaIframe {
 				foreach($xml->layout[0]->attributes() as $name => $value) {
 					if( $name == 'html5_url' ){
 						if( $value[0] == '/' ){
-							return $wgKalturaCDNUrl	 . $value . $versionParam 
+							return $wgKalturaCDNUrl	 . $value . $versionParam;
 						} else if( substr( $value,0, 4 ) == 'http' ) {
 							return $value . $versionParam;
 						}
@@ -410,9 +410,9 @@ body {
 	color: #fff;
 }
 
-<?
-php 
-		if (  $this->isError ()  ){ ?> .error {
+<?php 
+		if (  $this->isError ()  ){ ?> 
+.error {
 	position: absolute;
 	top: 37%;
 	left: 50%;
@@ -432,8 +432,7 @@ php
 	font-size: 14px;
 }
 
-<?
-php
+<?php
  
 		
 }
@@ -482,10 +481,7 @@ else { ?> .loadingSpinner { background:url( '<?php echo $wgMwEmbedPathUrl ?>skin
 	width: 100%;
 	height: 100%;
 }
-<?
-php
- 
-		
+<?php
 }
 ?>
 </style>
