@@ -381,9 +381,7 @@ class kalturaIframe {
 				}
 			}
 		}
-		
 		return $loaderPath . $versionParam;
-		return $defaultLoaderPath;
 	}
 	
 	/**
