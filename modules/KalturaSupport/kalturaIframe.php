@@ -362,19 +362,27 @@ class kalturaIframe {
 	 */
 	private function getMwEmbedLoaderLocation(){
 		global $wgMwEmbedPathUrl, $wgKalturaCDNUrl;
-		$defaultLoaderPath = $wgMwEmbedPathUrl . 'mwEmbedLoader.php';
+		$loaderPath = $wgMwEmbedPathUrl . 'mwEmbedLoader.php';
+		
+		$versionParam = '';
+		if( isset( $urlParam['urid'] ) ){
+			$versionParam = '?urid=' . htmlspecialchars( $urlParam['urid'] );
+		}
+		
 		$xml = $this->getUiConfXML();
 		if( $xml && isset( $xml->layout ) && isset( $xml->layout[0] ) ){
 			foreach($xml->layout[0]->attributes() as $name => $value) {
 				if( $name == 'html5_url' ){
 					if( $value[0] == '/' ){
-						return $wgKalturaCDNUrl	 . $value;
+						$loaderPath = $wgKalturaCDNUrl	 . $value;
 					} else if( substr( $value,0, 4 ) == 'http' ) {
-						return $value;
+						$loaderPath = $value;
 					}
 				}
 			}
 		}
+		
+		return $loaderPath . $versionParam;
 		return $defaultLoaderPath;
 	}
 	
