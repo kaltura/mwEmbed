@@ -149,7 +149,9 @@ $enable_native   = false;
 $valid_url_regex = '/.*/';
 
 $enable_fullHeaders = true;
-$contentType_regex = '/(text|application)\/(xml|x-srt|plain)/';
+// Don't validate content for now ( having some issues with ad server content type )
+$contentType_regex = false;
+// '/(text|application)\/(xml|x-srt|plain)/';
 $validateXML = false;
 $encodeCDATASections = true;
 $proxyCookies = true;
