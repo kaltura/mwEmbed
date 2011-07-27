@@ -149,9 +149,7 @@ $enable_native   = false;
 $valid_url_regex = '/.*/';
 
 $enable_fullHeaders = true;
-// Don't validate content for now ( having some issues with ad server content type )
-$contentType_regex = false;
-// '/(text|application)\/(xml|x-srt|plain)/';
+$contentType_regex = '/(text|application)\/(xml|x-srt|plain)/';
 $validateXML = false;
 $encodeCDATASections = true;
 $proxyCookies = true;
@@ -160,7 +158,6 @@ $proxySession = true;
 // ############################################################################
 
 $url = urldecode( $_GET['url'] );
-
 if ( !$url ) {
   
   // Passed url not specified.
@@ -210,6 +207,7 @@ if ( !$url ) {
   $parts = preg_split( '/([\r\n][\r\n])\\1/', curl_exec( $ch ), 2 );
   if( count($parts) != 2 ){
 	$status = array( 'http_code' => 'ERROR' );
+	$header ='';
   } else {
   	list( $header, $contents ) = $parts;
   }
