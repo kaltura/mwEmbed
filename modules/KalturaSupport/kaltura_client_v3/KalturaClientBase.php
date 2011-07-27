@@ -194,7 +194,6 @@ class KalturaClientBase
 		
 		list($postResult, $error) = $this->doHttpRequest($url, $params, $files);
 		
-		
 		if ($error)
 		{
 			throw new KalturaClientException($error, KalturaClientException::ERROR_GENERIC);
@@ -212,6 +211,10 @@ class KalturaClientBase
 
 				if ($result === false && serialize(false) !== $postResult) 
 				{
+					/*print $url . "\n\n";
+					print_r( $params);
+					print "resutl:$postResult\n ";
+					die();*/
 					throw new KalturaClientException("failed to unserialize server result\n$postResult", KalturaClientException::ERROR_UNSERIALIZE_FAILED);
 				}
 				$dump = print_r($result, true);
