@@ -25,7 +25,7 @@
 			// NOTE: security wise we should try and "scrub" the html for script tags
 			$j('#' + companionObject.elementid ).html( 
 					companionObject.html
-			)
+			);
 		});
 	});
 

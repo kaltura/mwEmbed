@@ -10,6 +10,20 @@ mw.AdLoader = {
 	 */
 	load: function( adUrl, callback ){
 		var _this = this;
+		// First try to directly load the ad url:
+		$.ajax({
+			url: adUrl,
+			success: function( data ) {
+				_this.handleResult( data, callback );
+			},
+			error: function( jqXHR, textStatus, errorThrown ){
+				// try to load the file with the proxy:
+				_this.loadFromProxy( adUrl, callback );
+			}
+		});
+	},
+	loadFromProxy: function( adUrl, callback ){
+		var _this = this;
 		// We use a xml proxy ( passing on the clients ip for geo lookup ) 
 		// since the ad server is almost never on the same domain as the api.
 		// @@todo also we should explore html5 based cross domain request to avoid the proxy
@@ -25,22 +39,24 @@ mw.AdLoader = {
 				callback(false);
 				return ;
 			}
-			
-			switch( _this.getAdFormat( result['contents'] ) ){
-				case 'vast':
-					// If we have lots of ad formats we could conditionally load them here: 
-					// ( normally we load VastAdParser before we get here but just in-case ) 
-					mw.load( 'mw.VastAdParser', function(){
-						callback(
-							mw.VastAdParser.parse( result['contents'] )
-						);
-					});
-					return ;
-				break;
-			}					
-			mw.log("Error: could not parse adFormat from add content: \n" + result['contents']);
-			callback( {} );
+			_this.handleResult( result['contents'], callback );
 		});
+	},
+	handleResult: function(data, callback ){
+		switch( _this.getAdFormat( data) ){
+			case 'vast':
+				// If we have lots of ad formats we could conditionally load them here: 
+				// ( normally we load VastAdParser before we get here but just in-case ) 
+				mw.load( 'mw.VastAdParser', function(){
+					callback(
+						mw.VastAdParser.parse( data )
+					);
+				});
+				return ;
+			break;
+		}					
+		mw.log("Error: could not parse adFormat from add content: \n" + data);
+		callback( {} );
 	},
 	/**
 	 * Get ad Format
