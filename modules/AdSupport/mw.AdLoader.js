@@ -43,6 +43,7 @@ mw.AdLoader = {
 		});
 	},
 	handleResult: function(data, callback ){
+		var _this = this;
 		switch( _this.getAdFormat( data) ){
 			case 'vast':
 				// If we have lots of ad formats we could conditionally load them here: 
