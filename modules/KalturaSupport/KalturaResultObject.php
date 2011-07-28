@@ -560,7 +560,7 @@ class KalturaResultObject {
 		}
 
 		// Check that the ks was valid: 
-		if( isset( $rawResultObject[0]['code'] ) && == $rawResultObject[0]['code'] == 'INVALID_KS' ){
+		if( isset( $rawResultObject[0]['code'] ) && $rawResultObject[0]['code'] == 'INVALID_KS' ){
 			throw new Exception( 'Error invalid KS');
 			return array();
 		}
