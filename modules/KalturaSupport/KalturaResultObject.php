@@ -26,6 +26,7 @@ class KalturaResultObject {
 		'entry_id' => null,
 		'flashvars' => null,
 		'playlist_id' => null,
+		'urid' => null,
 	);
 
 	function __construct( $clientTag = 'php'){

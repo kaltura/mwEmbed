@@ -365,6 +365,7 @@ class kalturaIframe {
 		$loaderPath = $wgMwEmbedPathUrl . 'mwEmbedLoader.php';
 		
 		$versionParam = '';
+		$urlParam = $this->getResultObject()->getUrlParameters();
 		if( isset( $urlParam['urid'] ) ){
 			$versionParam = '?urid=' . htmlspecialchars( $urlParam['urid'] );
 		}
