@@ -128,7 +128,7 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.entryMeta ){
 			embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
 		}
-		
+
 		// Apply player metadata
 		if( playerData.meta ) {
 			embedPlayer.duration = playerData.meta.duration;

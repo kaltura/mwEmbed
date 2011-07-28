@@ -554,17 +554,23 @@ class KalturaResultObject {
 			$rawResultObject = $client->doQueue();
 			$client->throwExceptionIfError( $this->resultObj );
 		} catch( Exception $e ){
-			// update the Exception and pass it upward
+			// Update the Exception and pass it upward
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 			return array();
 		}
 
+		// Check that the ks was valid: 
+		if( $rawResultObject[0]['code'] == 'INVALID_KS' ){
+			throw new Exception( 'Error invalid KS');
+			return array();
+		}
+		
 		$resultObject = array_merge( $this->getBaseResultObject(), array(
 			'flavors' 			=> 	$rawResultObject[0],
 			'accessControl' 	=> 	$rawResultObject[1],
 			'meta'				=>	$rawResultObject[2]
 		) );
-		
+
 		if( isset( $rawResultObject[3]->objects ) && 
 			isset( $rawResultObject[3]->objects[0] ) && 
 			isset( $rawResultObject[3]->objects[0]->xml )
@@ -572,7 +578,6 @@ class KalturaResultObject {
 			
 			$resultObject['entryMeta'] = $this->xmlToArray( new SimpleXMLElement( $rawResultObject[3]->objects[0]->xml ) );
 		}
-
 		if( isset( $rawResultObject[4] ) && $rawResultObject[4]->confFile ){
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf'] = $rawResultObject[4]->confFile;
