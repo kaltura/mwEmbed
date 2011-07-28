@@ -59,6 +59,9 @@ $wgKalturaServiceBase = '/api_v3/index.php?service=';
 // Default api request timeout in seconds 
 $wgKalturaServiceTimeout = 20;
 
+// If we should include the cue points request
+$wgKalturaEnableCuePointsRequest = false;
+
 // If the iframe will accept 3rd party domain remote service requests 
 // should be left "off" in production. 
 $wgAllowRemoteKalturaService = false;

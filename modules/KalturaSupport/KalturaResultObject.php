@@ -493,6 +493,7 @@ class KalturaResultObject {
 		return $resultObject;
 	}
 	function getEntryResult( &$client ){
+		global $wgKalturaEnableCuePointsRequest;
 		try{
 			// NOTE this should probably be wrapped in a service class
 			$kparams = array();
@@ -540,7 +541,7 @@ class KalturaResultObject {
 				$loadCuePoints = false;
 			}
 
-			if( $loadCuePoints ) {
+			if( $loadCuePoints && $wgKalturaEnableCuePointsRequest ) {
 				$filter = new KalturaCuePointFilter();
 				$filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
 				$filter->entryIdEqual = $this->urlParameters['entry_id'];
