@@ -49,6 +49,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			// Check for autoContinue ( we check false state so that by default we autoContinue ) 
 			var $ac = $uiConf.find("uivars [key='playlistAPI.autoContinue']");
 			_this.autoContinue = ( $ac.length && $ac.get(0).getAttribute('value') == 'false' )? false: true;
+			
 			// Check for flash var override: 
 			if( _this.flashvars['playlistAPI.autoContinue'] == 'true' ){
 				_this.autoContinue = true;

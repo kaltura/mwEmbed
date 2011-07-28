@@ -7,13 +7,13 @@ mw.VastAdParser = {
 	 * VAST support
 	 * Convert the vast ad display format into a display conf:
 	 */	
-	parse: function( xmlString ){
+	parse: function( xmlObject ){
 		var _this = this;
 		var adConf = {};
-		var $vast = $j( xmlString );
+		var $vast = $j( xmlObject );
 		// Get the basic set of sequences
 		adConf.ads = [];
-		$vast.find( 'ad' ).each( function( inx, node ){
+		$vast.find( 'Ad' ).each( function( inx, node ){
 			mw.log( 'VastAdParser:: getVastAdDisplayConf: ' + node );
 			var $ad = $j( node );
 			
@@ -22,7 +22,7 @@ mw.VastAdParser = {
 			
 			// Set duration
 			if( $ad.find('duration') ){
-				currentAd.duration = mw.npt2seconds( $ad.find('duration').text() );
+				currentAd.duration = mw.npt2seconds( $ad.find( 'duration' ).text() );
 			}
 			
 			// Set impression urls
@@ -30,7 +30,7 @@ mw.VastAdParser = {
 			$ad.find( 'Impression' ).each( function(na, node){
 				// Check if there is lots of impressions or just one: 
 				if( $j(node).find('URL').length ){
-					$ad.find('URL').each( function(na, urlNode){
+					$ad.find('URL').each( function( na, urlNode ){
 						currentAd.impressions.push({
 							'beaconUrl' : _this.getURLFromNode( urlNode ),
 							'idtype' : $j( urlNode ).attr('id')
@@ -264,7 +264,7 @@ mw.VastAdParser = {
 			// use the first url we find: 
 			node = $j( node ).find( 'URL' ).get(0);
 		}	
-		return $j.trim( decodeURIComponent( $j( node ).html() )  )
+		return $j.trim( decodeURIComponent( $j( node ).text() )  )
 			.replace( /^\<\!\-?\-?\[CDATA\[/, '' )
 			.replace(/\]\]\-?\-?\>/, '');		
 	}

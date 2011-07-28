@@ -83,10 +83,10 @@
  * }
  */
 mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
-	mw.log("AdTimeline::Add \n\n" + timeType + ' \n\n dispCof:' + adConf + "\n\n\n");
+	mw.log("AdTimeline::Add:" + timeType + '  dispCof:' + adConf + "\n");
 	
 	if (!embedPlayer.adTimeline) {
-		embedPlayer.adTimeline = new mw.AdTimeline(embedPlayer);
+		embedPlayer.adTimeline = new mw.AdTimeline( embedPlayer );
 	}
 	embedPlayer.adTimeline.addToTimeline( timeType, adConf );
 };
@@ -143,7 +143,7 @@ mw.AdTimeline.prototype = {
 		
 		$j(_this.embedPlayer).bind('onplay', function() {
 			// Check if this is the "first play" request:
-			if (!firstPlay) {
+			if ( !firstPlay ) {
 				return 
 			}
 			firstPlay = false;
@@ -189,15 +189,14 @@ mw.AdTimeline.prototype = {
 					}
 				});
 			};
-
 			// Chain display of preroll and then bumper:
 			var prerollsLength = _this.getTimelineTargets('preroll').length;
-			for( var i=0; i<prerollsLength; i++) {
-				if( i == (prerollsLength - 1) ) {
+			for( var i=0; i < prerollsLength; i++) {
+				if( i == ( prerollsLength - 1 ) ) {
 					_this.display('preroll', showBumper);
 				} else {
 					_this.display('preroll', function() {
-						++_this.timelineTargetsIndex['preroll'];
+						_this.timelineTargetsIndex['preroll']++;
 					});
 				}
 			}
@@ -222,7 +221,6 @@ mw.AdTimeline.prototype = {
 							// Restore embedPlayer native bindings
 							mw.log('Done with postroll ad, trigger normal ended');
 							_this.embedPlayer.enableSeekBar();
-							
 							_this.embedPlayer.restoreEventPropagation();
 							// Run stop for now. 
 							_this.embedPlayer.stop();
@@ -247,7 +245,7 @@ mw.AdTimeline.prototype = {
 			
 			// See if we have overlay ads:
 			if( _this.getTimelineTargets('overlay').length > 0 ){
-				var overlayTiming = _this.getTimelineTargets('overlay')[ _this.timelineTargetsIndex[ 'overlay' ] ];
+				var overlayTiming = _this.getTimelineTargets('overlay')[  _this.timelineTargetsIndex[ 'overlay' ] ];
 				var lastPlayEndTime = false;
 				var playedStart = false;
 				// Note there may be a better measurement of timeout
@@ -395,7 +393,7 @@ mw.AdTimeline.prototype = {
 
 		// Check for companion ads:
 		if ( adConf.companions && adConf.companions.length ) {
-			this.displayCompanion(  displayTarget, adConf );
+			this.displayCompanion(  displayTarget, adConf, timeTargetType);
 		};
 		
 		// Check for nonLinear overlays
@@ -515,13 +513,16 @@ mw.AdTimeline.prototype = {
 	 * @param adConf
 	 * @return
 	 */
-	displayCompanion:  function( displayTarget, adConf ){
+	displayCompanion:  function( displayTarget, adConf, timeTargetType ){
 		var _this = this;
 		var companionConf = this.selectFromArray( adConf.companions );
 		mw.log("AdTimeline::selectCompanion: " + companionConf.html );
 		// NOTE:: is not clear from the ui conf response if multiple
 		// targets need to be supported, and how you would do that
 		var ctargets = this.getTimelineTargets( timeTargetType ).companionTargets;
+		if( ! ctargets || !ctargets.length ){
+			return ;
+		}
 		var companionTarget = ctargets[ Math.floor(Math.random() * ctargets.length) ];
 		
 		

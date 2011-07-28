@@ -11,6 +11,7 @@ mw.AdLoader = {
 	load: function( adUrl, callback ){
 		var _this = this;
 		// First try to directly load the ad url:
+		try{
 		$.ajax({
 			url: adUrl,
 			success: function( data ) {
@@ -21,6 +22,9 @@ mw.AdLoader = {
 				_this.loadFromProxy( adUrl, callback );
 			}
 		});
+		} catch ( e ){
+			mw.log( "AdLodaer:: first cross domain request failed, trying with proxy");
+		}
 	},
 	loadFromProxy: function( adUrl, callback ){
 		var _this = this;
@@ -39,7 +43,15 @@ mw.AdLoader = {
 				callback(false);
 				return ;
 			}
-			_this.handleResult( result['contents'], callback );
+			try{
+				var resultXML = $j.parseXML( result['contents'] );
+			} catch (e){
+				mw.log("Error: AdLoader could not parse:" + resultXML);
+				callback({});
+				return ;
+			}
+			// get the xml document:
+			_this.handleResult( resultXML, callback );
 		});
 	},
 	handleResult: function(data, callback ){
@@ -67,23 +79,16 @@ mw.AdLoader = {
 	 * @type {string}
 	 * 		The type of string
 	 */
-	getAdFormat: function( xmlString ){
-		// XXX temp force vast
-		return 'vast';
-		var lowerCaseXml = xmlString.toLowerCase();
-
-		// Check xml  for "<vast> </vast> tag
-		if( lowerCaseXml.indexOf('<vast') != -1 &&
-			lowerCaseXml.indexOf('</vast>')	)
-		{
+	getAdFormat: function( xmlObject ){
+		if( xmlObject.childNodes ){
+			var rootNodeName = xmlObject.childNodes[0].nodeName;
+		}
+		if( rootNodeName && ( 
+				rootNodeName.toLowerCase() == 'vast' || 
+				rootNodeName.toLowerCase() == 'videoadservingtemplate' ) 
+		){
 			return 'vast';
 		}
-		// OpenX vast ads have a root element of videoAdServingTemplate
-		if( lowerCaseXml.indexOf('<videoadservingtemplate') != -1 &&
-			lowerCaseXml.indexOf('</videoadservingtemplate>')	)
-		{
-			return 'vast';
-		}	
 		return 'unknown';
 	}
 };
