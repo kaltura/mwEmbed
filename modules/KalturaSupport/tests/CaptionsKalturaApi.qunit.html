@@ -6,33 +6,58 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript">
-/* Load Temp Captions
-** Basic example from server */
-mw.setConfig( 'Kaltura.TempCaptions', [
-	{
-		"captionParamsId":0,
-		"language":"English",
-		"isDefault":null,
-		"label":"English",
-		"format":"1",
-		"id":"0_ia1zyksl",
-		"entryId":"0_hofywpnz",
-		"partnerId":495794,
-		"status":2,
-		"version":"1",
-		"size":639,
-		"tags":"",
-		"fileExt":"srt",
-		"createdAt":1311172955,
-		"updatedAt":1311172956,
-		"deletedAt":null,
-		"description":"",
-		"partnerData":null
-	}
-]);
+/*
+ * Load Temp Captions
+ * example result from server
+ * Note: we don't have url attribute on captionAsset, added manually for testing purpose
+ */
 
-// Sample serve url:
-// http://devtests.kaltura.dev/api_v3/index.php?service=caption_captionasset&action=serve&captionAssetId=0_ia1zyksl&ks=MjEzZGU3ZjIxMmRmZmRiNWMwZWJhZTczMGM5MTEyOTI2ZDY2NzlhOXw0OTU3OTQ7NDk1Nzk0OzEzMTI5ODA5NDY7MjsxMzEwMzg4OTQ2LjkzNTE7cmFuQG1haWxpbmF0b3IuY29tOyo7Ow
+mw.setConfig( 'Kaltura.TempCaptions', [
+	{ "captionParamsId" : 0,
+        "createdAt" : 1311504966,
+        "deletedAt" : null,
+        "description" : "",
+        "entryId" : "0_hofywpnz",
+        "fileExt" : "srt",
+        "format" : "1",
+        "id" : "0_icf6nefe",
+        "isDefault" : true,
+        "label" : "English",
+        "language" : "English",
+        "languageCode" : "en",
+        "partnerData" : null,
+        "partnerDescription" : null,
+        "partnerId" : 495794,
+        "size" : 639,
+        "status" : 2,
+        "tags" : "",
+        "updatedAt" : 1311509098,
+        "version" : "1",
+		"url" : "http://projects.kaltura.com/ran/subs/test_sub.srt"
+      },
+      { "captionParamsId" : 0,
+        "createdAt" : 1311509710,
+        "deletedAt" : null,
+        "description" : "",
+        "entryId" : "0_hofywpnz",
+        "fileExt" : "xml",
+        "format" : "2",
+        "id" : "0_f5ys1ccs",
+        "isDefault" : false,
+        "label" : "English TT",
+        "language" : "English",
+        "languageCode" : "en",
+        "partnerData" : null,
+        "partnerDescription" : null,
+        "partnerId" : 495794,
+        "size" : 928,
+        "status" : 2,
+        "tags" : "",
+        "updatedAt" : 1311509710,
+        "version" : "1",
+		"url" : "http://projects.kaltura.com/ran/subs/test_sub.xml"
+      }
+    ]);
 
 </script>
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>

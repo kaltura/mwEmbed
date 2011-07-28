@@ -134,8 +134,9 @@ mw.KTimedText.prototype = {
 	 * @param {Object} textSource
 	 */
 	getTextSourceFromDB: function( dbTextSource ){
-		
-		dbTextSource.languageCode = 'en'; // TODO: Hardcoded for now, remove when new client is generated
+
+		// @@TODO  Change this when eagle is out
+		dbTextSource.url = (dbTextSource.url) ? dbTextSource.url : this.getCaptionUrl( dbTextSource.id, dbTextSource.fileExt );
 		
 		// Try to insert the track source:
 		var embedSource = this.embedPlayer.mediaElement.tryAddSource( 
@@ -146,7 +147,7 @@ mw.KTimedText.prototype = {
 					'label'		: dbTextSource.label,
 					'id'		: dbTextSource.id,
 					'fileExt'	: dbTextSource.fileExt,
-					'src'		: this.getCaptionUrl( dbTextSource.id, dbTextSource.fileExt ),
+					'src'		: dbTextSource.url,
 					'title'		: dbTextSource.label
 				}).get(0) 
 		);
