@@ -410,7 +410,11 @@ mw.PlaylistHandlerKaltura.prototype = {
 					break;
 				case 'width':
 				case 'height':
-					$target.css(attr.nodeName, attr.nodeValue);
+					var appendPx = '';
+					if( attr.nodeValue.indexOf('%') == -1 ){
+						appendPx= 'px';
+					}
+					$target.css( attr.nodeName, attr.nodeValue + appendPx );
 					break;
 				case 'paddingright':
 					$target.css( 'padding-right', attr.nodeValue);
