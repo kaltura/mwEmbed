@@ -1,6 +1,8 @@
 mw.PlaylistHandlerKaltura = function( playlist, options ){
 	return this.init( playlist, options );
 };
+// for players that don't have layout information
+mw.setConfig('KalturaSupport.PlaylistDefaultItemRenderer', '<hbox id="irCont" height="100%" width="100%" x="10" y="10" verticalalign="top" stylename="Button_upSkin_default"> <img id="irImageIrScreen" url="{this.thumbnailUrl}" source="{this.thumbnailUrl}" height="48" width="72"> <vbox height="100%" width="100%" id="labelsHolder" verticalgap="0"> <hbox id="nameAndDuration" width="100%" height="18"> <label id="irLinkIrScreen" height="18" width="100%" text="{this.name}" stylename="itemRendererLabel" label="{this.name}" prefix="" font="Arial"></label> <label id="irDurationIrScreen" height="18" width="70" text="{formatDate(this.duration, \'NN:SS\')}" stylename="itemRendererLabel" prefix="" font="Arial"></label> </hbox> <label id="irDescriptionIrScreen" width="240" height="18" text="{this.description}" stylename="itemRendererLabel" prefix="" font="Arial"></label> </vbox> </hbox>');
 
 mw.PlaylistHandlerKaltura.prototype = {
 		
@@ -74,7 +76,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			// Store all the playlist item render information:
 			_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
-			debugger;
+			if( _this.$playlistItemRenderer.children().length == 0  ){
+				// No layout info use default
+				_this.$playlistItemRenderer = $j( mw.getConfig('KalturaSupport.PlaylistDefaultItemRenderer') );
+			}
 			// Force autoContoinue if there is no interface 
 			if( !_this.includeInLayout ){
 				_this.autoContinue = true;
