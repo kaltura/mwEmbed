@@ -74,7 +74,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			// Store all the playlist item render information:
 			_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
-			
+			debugger;
 			// Force autoContoinue if there is no interface 
 			if( !_this.includeInLayout ){
 				_this.autoContinue = true;
