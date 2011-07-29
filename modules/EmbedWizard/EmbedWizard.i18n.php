@@ -8,8 +8,8 @@
 
 $messages = array();
 $messages['en'] = array(
-	'mwe-embedwizard-sizeposter-title' => 'Poster and size',
-	'mwe-embedwizard-sizeposter-desc' => 'Set a poster image url and size of player',
+	'mwe-embedwizard-size-title' => 'Video Size',
+	'mwe-embedwizard-size-desc' => 'Set the size of player',
 	'mwe-embedwizard-poster' => 'Poster url',
 	'mwe-embedwizard-width' => 'Player width',
 	'mwe-embedwizard-height' => 'Player height',

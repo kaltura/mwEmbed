@@ -128,6 +128,13 @@
 			var _this = this;
 			if( ! _this.$media ){
 				_this.$media = $('<video />');
+				// Set all the defaults
+				$.each(this.playerInputSet, function( inx, inputSet ) {
+					$.each( inputSet.inputTypes, function( inputKey, inputObj ){
+						inputObj.cb( _this, inputObj.d );
+					});
+				});
+				/*
 				var sizePosterInput = this.playerInputSet.sizeposter.inputTypes
 				// TODO replace with a loop over default values
 				var poster =  sizePosterInput.poster.d;
@@ -147,7 +154,7 @@
 					_this.$media.append(
 						$('<source />').attr('src', sourcesObj.d[i] )
 					);
-				}
+				} */
 			}
 			return _this.$media;
 		},
@@ -198,15 +205,8 @@
 			}
 		},
 		playerInputSet: {
-			'sizeposter':{
+			'size': {
 				'inputTypes': {
-					'poster' : {
-						's' : 10,
-						'd' : 'http://html5video.org/players/media/folgers.jpg',
-						'cb':function( _this, val){
-							_this.getTag().attr('poster', val );
-						}
-					},
 					'width' : {
 						's' : 4,
 						'd' : 400,
@@ -225,6 +225,13 @@
 			},
 			'sources': {		
 				'inputTypes': {
+					'poster' : {
+						's' : 10,
+						'd' : 'http://html5video.org/players/media/folgers.jpg',
+						'cb':function( _this, val){
+							_this.getTag().attr('poster', val );
+						}
+					},
 					'src' : {
 						'count' : 3,
 						'd' : [
@@ -233,11 +240,25 @@
 						       'http://html5video.org/players/media/folgers.webm'
 						],
 						's' : 10,
-						'cb' : function( _this, val, inx){							
+						'cb' : function( _this, val, inx ){
+							var setObj = {};
+							if( ! inx )
+								inx = 0;
+							if( typeof val != 'object' ){
+								setObj[ inx ]= val;
+							}
 							//_this.getTag().find('source').gt(inx).attr('src', val );
 							//console.log(jQuery(_this.getTag().find('source')[0]).attr('src', 'source'));
 							//console.log(inx);
-							jQuery(_this.getTag().find('source')[inx]).attr('src', val );
+							$.each( val, function( i, valItem ){
+								if( $(_this.getTag() ).find('source')[i] ) ){
+									$( _this.getTag() ).find( 'source' )[i];
+									debugger;
+									$( _this.getTag() ).find( 'source' )[i].attr('src', valItem );
+								} else {
+									$( '<source />' ).attr( 'src', valItem).appendTo( _this.getTag() );
+								}
+							});
 						}
 					}
 				}
