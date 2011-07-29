@@ -673,6 +673,10 @@ class KalturaResultObject {
 	public function getEntryId(){
 		return $this->urlParameters['entry_id'];
 	}
+	public function getThumbnailUrl() {
+		$result =  $this->getResultObject();
+		return $result['meta']->thumbnailUrl;
+	}
 	public function getUrlParameters(){
 		return $this->urlParameters;
 	}

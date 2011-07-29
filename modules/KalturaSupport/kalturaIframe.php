@@ -136,10 +136,9 @@ class kalturaIframe {
 				isset( $_REQUEST['flashvars']['loadThumbnailWithKs']) ) {
 			$ksParam = '?ks=' . $this->getResultObject()->getKS();
 		}
-		$posterUrl =  $wgKalturaCDNUrl . '/p/' . $this->getResultObject()->getPartnerId() . '/sp/' .
-						$this->getResultObject()->getPartnerId() . '00/thumbnail/' .
-						'entry_id/' .  $this->getResultObject()->getEntryId() .
-						'/height/480' . $ksParam;
+		// We should grab the thumbnail url from our entry to get the latest version of the thumbnail
+		$posterUrl = $this->getResultObject()->getThumbnailUrl() . '/height/480' . $ksParam;
+		
 		try {
 			$sources = $this->getResultObject()->getSources();
 			// If no sources get the black sources:
