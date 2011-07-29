@@ -35,6 +35,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );
 			
 			_this.playlistSet = [];
+			// @@TODO clean up with getConf option
 			
 			// Add in flashvars playlist id if present:
 			if( _this.playlist_id !== null ){
@@ -64,9 +65,12 @@ mw.PlaylistHandlerKaltura.prototype = {
 			var $il = $uiConf.find("uivars [key='playlist.includeInLayout']");
 			_this.includeInLayout = ( $il.length && $il.get(0).getAttribute('value') == 'false' )? false : true;
 			
-			// Check for videolist width
-			debugger;
-			_this.videolistWidth = $uiConf.find('#playlist,#playlistAPI').get(0).getAttribute('width');
+			if( $uiConf.find('#playlist').get(0) ){
+				// Check for videolist width
+				_this.videolistWidth = $uiConf.find('#playlist').get(0).getAttribute('width');
+			} else {
+				_this.videolistWidth = 250;
+			}
 			
 			// Store all the playlist item render information:
 			_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
