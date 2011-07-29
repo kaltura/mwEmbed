@@ -42,7 +42,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 					'playlist_id' : _this.playlist_id 
 				});
 			}
-			
 			// Add all playlists to playlistSet
 			var $uiConf = $j( playerData.uiConf );
 			
@@ -66,7 +65,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			_this.includeInLayout = ( $il.length && $il.get(0).getAttribute('value') == 'false' )? false : true;
 			
 			// Check for videolist width
-			_this.videolistWidth = $uiConf.find('#playlist').get(0).getAttribute('width');
+			_this.videolistWidth = $uiConf.find('#playlist,#playlistAPI').get(0).getAttribute('width');
 			
 			// Store all the playlist item render information:
 			_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
