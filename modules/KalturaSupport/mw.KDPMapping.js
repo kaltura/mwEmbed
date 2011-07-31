@@ -234,7 +234,6 @@
 						case 'flashvars':
 							if( objectPath[2] ) {
 								var fv = $( embedPlayer ).data('flashvars' );
-								
 								switch( objectPath[2] ) {
 									case 'autoPlay':
 										// get autoplay

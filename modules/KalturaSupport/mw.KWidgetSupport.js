@@ -171,7 +171,10 @@ mw.KWidgetSupport.prototype = {
 	 */
 	baseUiConfChecks: function( embedPlayer ){
 		// Check for autoplay:
-		//var autoPlay = getPluginConfig( embedPlayer, $uiConf, '', 'autoPlay');
+		var autoPlay = this.getPluginConfig( embedPlayer, embedPlayer.$uiConf, '', 'autoPlay');
+		if( autoPlay ){
+			embedPlayer.autoplay = true;
+		}
 	},
 	/**
 	 * Check for xml config, let flashvars override  
@@ -184,8 +187,26 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		var config = {};
-		var $plugin = $uiConf.find( 'plugin#' + pluginName );
-		var $uiPluginVars = $uiConf.find( 'var[key^="' + pluginName + '"]' );
+		var $plugin = [];
+		var $uiPluginVars = [];
+		
+		if( pluginName ){
+			$plugin = $uiConf.find( 'plugin#' + pluginName );
+			$uiPluginVars = $uiConf.find( 'var[key^="' + pluginName + '"]' );
+		} else {
+			// When pluginName is empty we still need to check for config in the ui Plugin Vars section
+			var uiPluginVarsSelect = '';
+			// pre-build out $uiPluginVars list
+			var coma = '';
+			$j.each( attr, function(inx, attrName ){
+				uiPluginVarsSelect+= coma + 'var[key="' + attrName + '"]';
+				coma = ',';
+			});
+			if( uiPluginVarsSelect ){
+				$uiPluginVars = $uiConf.find( uiPluginVarsSelect );
+			}
+		}		
+		
 		// @@TODO the iframe really should apply the "data" instead of this hacky merge here:
 		var fv = mw.getConfig( 'KalturaSupport.IFramePresetFlashvars' );
 		// Check for embedPlayer flashvars ( will overwrite iframe values if present )
@@ -218,6 +239,7 @@ mw.KWidgetSupport.prototype = {
 					return false;
 				}
 			});
+			
 		
 			// Convert string to boolean 
 			if( config[ attrName ] === "true" )

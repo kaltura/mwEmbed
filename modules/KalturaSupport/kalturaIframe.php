@@ -157,7 +157,7 @@ class kalturaIframe {
 		$o = "\n" .'<video class="persistentNativePlayer" ' .
 			'poster="' . htmlspecialchars( $posterUrl ) . '" ' .
 			'id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
-			'style="width:100%;height:100%" ';
+			'style="position:absolute;width:100%;height:100%" ';
 
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
