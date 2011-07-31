@@ -3,13 +3,25 @@
 */
 ( function( mw, $ ) {
 	
-	// can be removed once we move to new resource loader:
+	// Can be removed once we move to new resource loader:
 	mw.includeAllModuleMessages();
-	
+
+	mw.setDefaultConfig( 'EmbedWizard.DefaultAttributes', {
+		'poster': 'http://html5video.org/players/media/folgers.jpg',
+		'width' : 400,
+		'height': 300,
+		'durationHint' : 60,
+		'sources' : [
+		       'http://html5video.org/players/media/folgers.mp4',
+		       'http://html5video.org/players/media/folgers.ogv',
+		       'http://html5video.org/players/media/folgers.webm'
+		]
+	});
 	
 	mw.EmbedWizard = function( target, options ){
 		return this.init( target, options );
 	};
+	
 	mw.EmbedWizard.prototype = {
 		init: function( target, options ){
 			var _this = this;
@@ -80,7 +92,7 @@
 				);
 		},
 		updatePlayerCodePreview:function(){
-			// update the textarea: 
+			// Update the textarea: 
 			this.$target.find('.playerCodePreview textarea').val(
 				'<script type="text/javascript" src="http://html5.kaltura.org/js"></script>' + 
 				$('<div />').append( 
@@ -115,7 +127,7 @@
 						$('<p />').html( gM('mwe-embedwizard-' + inputKey + '-desc' ) ),
 						_this.getInputSet( inputObject )
 					)
-				);	
+				);
 			});
 			// make sure links point to a new target:
 			$pSet.find('a').attr('target', '_new');
@@ -128,10 +140,13 @@
 			var _this = this;
 			if( ! _this.$media ){
 				_this.$media = $('<video />');
+				
+				// Get the default tag setup:
+				var defaultAttributes = mw.getConfig('EmbedWizard.DefaultAttributes');
 				// Set all the defaults
 				$.each(this.playerInputSet, function( inx, inputSet ) {
 					$.each( inputSet.inputTypes, function( inputKey, inputObj ){
-						inputObj.cb( _this, inputObj.d );
+						inputObj.cb( _this, defaultAttributes[ inputKey ] );
 					});
 				});
 				/*
@@ -186,7 +201,7 @@
 								'type' : conf.type,
 								'name' : key + inx,
 								'value' : ( typeof conf.d == 'object' )? conf.d[inx] : conf.d
-							}).change(function(){
+							}).change( function(){
 								conf.cb( _this, $(this).val(), inx );
 								_this.updatePlayerCodePreview();
 							})
@@ -209,14 +224,12 @@
 				'inputTypes': {
 					'width' : {
 						's' : 4,
-						'd' : 400,
 						'cb' : function(_this,  val ){
 							_this.getTag().css('width',  val);
 						}
 					},
 					'height' : {
 						's' : 4,
-						'd' : 300,
 						'cb' : function( _this, val ){
 							_this.getTag().css('height', val);
 						}
@@ -226,20 +239,20 @@
 			'sources': {		
 				'inputTypes': {
 					'poster' : {
-						's' : 10,
-						'd' : 'http://html5video.org/players/media/folgers.jpg',
-						'cb':function( _this, val){
+						's' : 15,
+						'cb': function( _this, val ){
 							_this.getTag().attr('poster', val );
+						}
+					},
+					'durationHint': {
+						's' : 4,
+						'cb': function( _this, val ){
+							_this.getTag().attr( 'data-durationHint', val );
 						}
 					},
 					'src' : {
 						'count' : 3,
-						'd' : [
-						       'http://html5video.org/players/media/folgers.mp4',
-						       'http://html5video.org/players/media/folgers.ogv',
-						       'http://html5video.org/players/media/folgers.webm'
-						],
-						's' : 10,
+						's' : 15,
 						'cb' : function( _this, val, inx ){
 							var setObj = {};
 							if( ! inx )
@@ -247,13 +260,11 @@
 							if( typeof val != 'object' ){
 								setObj[ inx ]= val;
 							}
-							//_this.getTag().find('source').gt(inx).attr('src', val );
 							//console.log(jQuery(_this.getTag().find('source')[0]).attr('src', 'source'));
 							//console.log(inx);
 							$.each( val, function( i, valItem ){
-								if( $(_this.getTag() ).find('source')[i] ) ){
+								if( $( _this.getTag() ).find('source')[i] ){
 									$( _this.getTag() ).find( 'source' )[i];
-									debugger;
 									$( _this.getTag() ).find( 'source' )[i].attr('src', valItem );
 								} else {
 									$( '<source />' ).attr( 'src', valItem).appendTo( _this.getTag() );

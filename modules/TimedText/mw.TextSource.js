@@ -102,7 +102,7 @@
 		/**
 		* Returns the text content for requested time
 		*
-		* @param {String} time Time in seconds
+		* @param {Number} time Time in seconds
 		*/
 		getCaptionForTime: function ( time ) {
 			var prevCaption = this.captions[ this.prevIndex ];

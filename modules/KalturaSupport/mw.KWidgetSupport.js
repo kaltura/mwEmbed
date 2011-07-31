@@ -28,7 +28,7 @@ mw.KWidgetSupport.prototype = {
 			});
 			// Add kaltura iframe share support:
 			$j( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
-				callback( mw.getConfig('Kaltura.ServiceUrl') + '/p/' + _this.kClient.getPartnerId() +
+				callback( mw.getConfig( 'Kaltura.ServiceUrl' ) + '/p/' + _this.kClient.getPartnerId() +
 						'/embedIframe/entry_id/' + embedPlayer.kentryid +
 						'/uiconf_id/' + embedPlayer.kuiconfid );
 			});
@@ -142,16 +142,18 @@ mw.KWidgetSupport.prototype = {
 			playerData.entryCuePoints = mw.getConfig( 'Kaltura.TempCuePoints' );
 		}
 		// End Remove
+		
 		if( playerData.entryCuePoints ) {
 			mw.log( "KCuePoints:: Add CuePoints to embedPlayer");
 			embedPlayer.entryCuePoints = playerData.entryCuePoints;
 			new mw.KCuePoints( embedPlayer );
 
 			// Allow other plugins to subscribe to cuePoint ready event:
-			$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
+			$j( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
 		}
 
 		if( embedPlayer.$uiConf ){
+			_this.baseUiConfChecks( embedPlayer );
 			// Trigger the check kaltura uiConf event					
 			$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport_CheckUiConf', embedPlayer.$uiConf, function(){	
 				mw.log("KWidgetSupport::KalturaSupport_CheckUiConf callback");
@@ -163,9 +165,16 @@ mw.KWidgetSupport.prototype = {
 		}
 	},
 	/**
+	 * Run base ui conf / flashvars checks
+	 * @param embedPlayer
+	 * @return
+	 */
+	baseUiConfChecks: function( embedPlayer ){
+		// Check for autoplay:
+		//var autoPlay = getPluginConfig( embedPlayer, $uiConf, '', 'autoPlay');
+	},
+	/**
 	 * Check for xml config, let flashvars override  
-	 * @param {Object} $uiConf jQuery object xml to look for plugin attributes
-	 * @param {Object} $uiConf jQuery object xml to look for plugin attributes
 	 */
 	getPluginConfig: function( embedPlayer, $uiConf, pluginName, attr ){
 		var singleAttrName = false;
@@ -184,21 +193,24 @@ mw.KWidgetSupport.prototype = {
 			fv = $j( embedPlayer ).data('flashvars' );
 		}
 		$j.each( attr, function(inx, attrName ){
-			if( $plugin.attr( attrName ) ){
-				config[attrName] = $plugin.attr( attrName );
-			}
-			// XML sometimes comes in all lower case
-			if( $plugin.attr( attrName.toLowerCase() ) ){
-				config[attrName] = $plugin.attr( attrName.toLowerCase() );
+			if( $plugin.length ){
+				if( $plugin.attr( attrName ) ){
+					config[attrName] = $plugin.attr( attrName );
+				}
+				// XML sometimes comes in all lower case
+				if( $plugin.attr( attrName.toLowerCase() ) ){
+					config[attrName] = $plugin.attr( attrName.toLowerCase() );
+				}
 			}
 			
 			// Check flashvars overrides
-			if( fv[ pluginName + '.' + attrName ] ){
-				config[ attrName ] = fv[ pluginName + '.' + attrName ];
+			var pluginPrefix = ( pluginName )? pluginName + '.': '';
+			if( fv[ pluginPrefix + attrName ] ){
+				config[ attrName ] = fv[ pluginPrefix + attrName ];
 			}
 			// Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
 			$uiPluginVars.each( function(inx, node){
-				if( $j( node ).attr('key') == pluginName + '.' + attrName ){
+				if( $j( node ).attr('key') == pluginPrefix + attrName ){
 					if( $j(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
 						config[attrName] = $j(node).get(0).getAttribute('value');
 					}

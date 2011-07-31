@@ -862,6 +862,10 @@ mw.includeAllModuleMessages();
 		 */
 		updateSourceDisplay: function ( source, time ) {
 			var _this = this;
+			if( this.timeOffset ){
+				time = time + parseInt( this.timeOffset );
+			}
+			
 			// Get the source text for the requested time:
 			var activeCaptions = source.getCaptionForTime( time );
 			var addedCaption = false;

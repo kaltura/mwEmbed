@@ -9,7 +9,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				$uiConf, 
 				'closedCaptions', 
 				[ 'plugin', 'relativeTo', 'position', 'width', 'height', 'skin', 'bg',
-				 'fontsize', 'opacity', 'fontFamily', 'type',  'ccUrl' ]
+				 'fontsize', 'opacity', 'fontFamily', 'type',  'ccUrl', 'timeOffset' ]
 		);
 		// TODO: remove check for TempCaptions once Eagle is out
 		if( captionConfig.plugin || mw.getConfig('Kaltura.TempCaptions')){
