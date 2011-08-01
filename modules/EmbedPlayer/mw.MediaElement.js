@@ -173,7 +173,6 @@ mw.MediaElement.prototype = {
 			_this.selectedSource = source;
 			return _this.selectedSource;
 		};
-
 		// Set via user-preference
 		$.each( playableSources, function( inx, source ){
 			var mimeType =source.mimeType;
@@ -216,17 +215,19 @@ mw.MediaElement.prototype = {
 		
 		// Set via embed resolution closest to relative to display size 
 		var minSizeDelta = null;
-		var displayWidth = $('#' + this.parentEmbedId).width();
-		$.each( playableSources, function(inx, source ){
-			if( source.width && displayWidth ){
-				var sizeDelta =  Math.abs( source.width - displayWidth );
-				mw.log('MediaElement::autoSelectSource: size delta : ' + sizeDelta + ' for s:' + source.width );
-				if( minSizeDelta == null ||  sizeDelta < minSizeDelta){
-					minSizeDelta = sizeDelta;
-					setSelectedSource( source );
+		if( this.parentEmbedId ){
+			var displayWidth = $('#' + this.parentEmbedId).width();
+			$.each( playableSources, function(inx, source ){
+				if( source.width && displayWidth ){
+					var sizeDelta =  Math.abs( source.width - displayWidth );
+					mw.log('MediaElement::autoSelectSource: size delta : ' + sizeDelta + ' for s:' + source.width );
+					if( minSizeDelta == null ||  sizeDelta < minSizeDelta){
+						minSizeDelta = sizeDelta;
+						setSelectedSource( source );
+					}
 				}
-			}
-		});
+			});
+		}
 		
 		// If we found a source via display resolution return true
 		if ( this.selectedSource ) {
