@@ -12,18 +12,18 @@ mw.AdLoader = {
 		var _this = this;
 		// First try to directly load the ad url:
 		try{
-		$.ajax({
-			url: adUrl,
-			success: function( data ) {
-				_this.handleResult( data, callback );
-			},
-			error: function( jqXHR, textStatus, errorThrown ){
-				// try to load the file with the proxy:
-				_this.loadFromProxy( adUrl, callback );
-			}
-		});
+			$.ajax({
+				url: adUrl,
+				success: function( data ) {
+					_this.handleResult( data, callback );
+				},
+				error: function( jqXHR, textStatus, errorThrown ){
+					// try to load the file with the proxy:
+					_this.loadFromProxy( adUrl, callback );
+				}
+			});
 		} catch ( e ){
-			mw.log( "AdLodaer:: first cross domain request failed, trying with proxy");
+			mw.log( "AdLodaer:: first cross domain request failed, trying with proxy" );
 		}
 	},
 	loadFromProxy: function( adUrl, callback ){
@@ -33,7 +33,7 @@ mw.AdLoader = {
 		// @@todo also we should explore html5 based cross domain request to avoid the proxy
 		var proxyUrl = mw.getConfig( 'Mw.XmlProxyUrl' );
 		if( !proxyUrl ){
-			mw.log("Error: mw.KAds : missing kaltura proxy url ( can't load ad ) ");
+			mw.log( "Error: mw.KAds : missing kaltura proxy url ( can't load ad )");
 			return ; 
 		}
 		$j.getJSON( proxyUrl + '?url=' + encodeURIComponent( adUrl ) + '&callback=?', function( result ){

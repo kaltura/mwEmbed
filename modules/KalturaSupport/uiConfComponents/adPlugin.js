@@ -7,10 +7,11 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		// Check if the kaltura ad plugin is enabled:
 		if( $uiConf.find('Plugin#vast').length ){
 			adPlugin( embedPlayer,  $uiConf, callback );
-		} else {
-			// Continue player build out for players without ads
-			callback();
+			return ;
 		}
+		
+		// Continue player build out for players without ads
+		callback();
 	});
 });
 

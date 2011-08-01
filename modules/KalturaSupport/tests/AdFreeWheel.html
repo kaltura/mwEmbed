@@ -1,0 +1,103 @@
+<html>
+<head>
+<title>FreeWheel Ad and Companion </title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript"> 
+
+function fw_config() {
+	return {
+		siteSectionId: 'abc.com_demotest',
+		siteSectionIdType: '0'
+	};
+}
+
+</script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "FreeWheel Ad and Companion" );
+	var kdp = $('#' + videoId ).get(0);
+	
+	asyncTest( "FreeWheel Ad and Companion", function(){
+		kalturaQunitWaitForPlayer(function(){
+			kdp.sendNotification( 'doPlay' );
+			// wait for 10 seconds given time
+			var waitTries = 0;
+			waitForCompanions = function(){
+				if( waitTries > 100 ){
+					ok( false, "No companions after 10 seconds" );
+					start();
+					return ;
+				}
+				if( $('#testLongCompanion').find('a').length && 
+					$('#testCompanion').find('a').length ){
+					equal( $('#testLongCompanion').find('a').attr('href'), "http://www.google.com", "testLongCompanion updated link" );
+					equal( $('#testCompanion').find('a').attr('href'), "http://www.google.com", "testCompanion updated link" );
+					kdp.sendNotification( 'doPause' );
+
+
+					debugger;
+					start();
+					return ;
+				}
+				// increment wait count
+				waitTries++;
+				// Else loop: 
+				setTimeout( waitForCompanions, 100 );
+			}
+			// Give the player time for attribute sync cyle ( happens every 250ms )
+			setTimeout( waitForCompanions, 300 );
+		});
+	});
+
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> FreeWheel Ad and Companion </h2>
+<span id="300x250slot" class="_fwph">
+	<form id="_fw_form_300x250slot" style="display:none">
+		<input type="hidden" name="_fw_input_300x250slot" id="_fw_input_300x250slot" value="w=300&h=250&envp=g_js&sflg=-nrpl;">
+	</form>
+	<span id="_fw_container_300x250slot" class="_fwac"></span>
+</span>
+<span id="728x90slot" class="_fwph">
+	<form id="_fw_form_728x90slot" style="display:none">
+		<input type="hidden" name="_fw_input_728x90slot" id="_fw_input_728x90slot" value="w=728&h=90&envp=g_js&sflg=-nrpl;">
+	</form>
+	<span id="_fw_container_728x90slot" class="_fwac"></span>
+</span>
+<span id="88x31slot" class="_fwph">
+	<form id="_fw_form_88x31slot" style="display:none">
+		<input type="hidden" name="_fw_input_88x31slot" id="_fw_input_88x31slot" value="w=88&h=31&envp=g_js&sflg=-nrpl;">
+	</form>
+	<span id="_fw_container_88x31slot" class="_fwac"></span>
+</span> 
+
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br></br>
+
+<object id="kaltura_player_1312148943" 
+	name="kaltura_player_1312148943" 
+	type="application/x-shockwave-flash" 
+	allowFullScreen="true" 
+	allowNetworking="all" 
+	allowScriptAccess="always" 
+	height="330" width="400" 
+	bgcolor="#000000" 
+	xmlns:dc="http://purl.org/dc/terms/" 
+	xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
+	rel="media:video" 
+	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1312148943/wid/_243342/uiconf_id/5357341/entry_id/0_uka1msg4" 
+	data="http://www.kaltura.com/index.php/kwidget/cache_st/1312148943/wid/_243342/uiconf_id/5357341/entry_id/0_uka1msg4">
+		<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />
+		<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />
+		<param name="flashVars" value="&" />
+		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1312148943/wid/_243342/uiconf_id/5316052/entry_id/0_uka1msg4" />
+</object>
+</body>
+</html>

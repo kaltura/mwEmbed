@@ -437,9 +437,12 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		mw.log( 'EmbedPlayerNative:: switchPlaySrc:' + src + ' native time: ' + this.getPlayerElement().currentTime );
 		if( !src ){
-			switchCallback()
+			if( switchCallback ){
+				switchCallback();
+			}
 			setTimeout(function(){
-				doneCallback();
+				if( doneCallback )
+					doneCallback();
 			},100);
 			return ;
 		}

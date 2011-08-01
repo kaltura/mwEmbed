@@ -568,12 +568,14 @@ mw.AdTimeline.prototype = {
 		$j( _this.embedPlayer ).trigger( 'AdSupport_UpdateCompanion', [ companionObject ] );
 		
 		// Once display is over restore the original companion html
-		displayTarget.doneFunctions.push(function(){
+		displayTarget.doneFunctions.push( function(){
+			// Do not restore content This should be configurable. 
+			/*
 			if( originalCompanionHtml ){
 				$j( '#' + companionTarget.elementid ).html( originalCompanionHtml );
 			}
 			$j( _this.embedPlayer ).trigger( 'AdSupport_RestoreCompanion', companionTarget.elementid );
-			
+			*/
 		});
 	},
 	/**
