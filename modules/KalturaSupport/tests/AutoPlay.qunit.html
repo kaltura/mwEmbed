@@ -8,16 +8,14 @@ function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
 	module( "Auto Play Test" );
-
-	var $iframe = $('#' + videoId + '_ifp').contents();
-	var iframeContext = window.frames['kaltura_player_ifp'];
 	var kdp = $('#' + videoId ).get(0);
+	
 	asyncTest("AutoPlay has started", function(){
 		kalturaQunitWaitForPlayer(function(){
 			equals(	kdp.evaluate('{configProxy.flashvars.autoPlay}'), true, "Autoplay config proxy set");
 			// wait for a given time
 			var waitTries = 0;
-			var waitForTimeUpdate = function(){
+			waitForTimeUpdate = function(){
 				if( waitTries > 100 ){
 					ok( false, "Playback started time out after 10 seconds" );
 					start();
@@ -25,6 +23,7 @@ function jsKalturaPlayerTest( videoId ){
 				}
 				if( kdp.evaluate('{video.player.currentTime}') > 1 ){
 					ok( true, "Playback started" );
+					kdp.sendNotification( 'doStop' );
 					start();
 					return ;
 				}
@@ -32,7 +31,8 @@ function jsKalturaPlayerTest( videoId ){
 				waitTries++;
 				// Else loop: 
 				setTimeout( waitForTimeUpdate, 100 );
-			}();
+			}
+			setTimeout( waitForTimeUpdate, 100 );
 		});
 	});
 

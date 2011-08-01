@@ -72,7 +72,7 @@ mw.VastAdParser = {
 					type = 'video/h264';
 				}
 				
-				if(  type == 'video/h264' || type == 'video/ogg' || type == 'video/webm' ){			
+				if(  type == 'video/h264' || type == 'video/ogg' || type == 'video/webm' ){
 					currentAd.videoFiles.push({ 
 						'src' :_this.getURLFromNode( mediaFile ),
 						'type' : type
@@ -86,12 +86,11 @@ mw.VastAdParser = {
 				currentAd.clickThrough = _this.getURLFromNode( clickThrough );
 			});
 			
-			// Set videoFile to default if not set: 
+			// Skip if no videoFile set: 
 			if( currentAd.videoFiles.length == 0 ){
-				mw.log( 'VastAdParser::MISSING videoFile no video url: ');
+				mw.log( 'Error:; VastAdParser::MISSING videoFile no video url: ( skip ) ');
 				//currentAd.videoFiles = mw.getConfig( 'Kaltura.MissingFlavorSources');
 			}
-			
 			// Set the CompanionAds if present: 
 			currentAd.companions = [];
 			$ad.find('CompanionAds Companion').each( function( na, companionNode ){				
@@ -197,14 +196,14 @@ mw.VastAdParser = {
 					'height' : companionObj['height'] + 'px'
 				});
 				
-				if( $j( companionNode ).find('AltText').html() != '' ){	
+				if( $j( companionNode ).find('AltText').text() != '' ){	
 					$img.attr('alt', _this.getURLFromNode( 
 							 $j( companionNode ).find('AltText')
 						)
 					);
 				}
 				// Add the image to the $companionHtml
-				if( $j( companionNode ).find('CompanionClickThrough').html() != '' ){
+				if( $j( companionNode ).find('CompanionClickThrough').text() != '' ){
 					$companionHtml = $j('<a />')
 						.attr({
 							'href' : _this.getURLFromNode(

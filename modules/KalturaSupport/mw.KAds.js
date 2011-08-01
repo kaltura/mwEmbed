@@ -243,9 +243,11 @@ mw.KAds.prototype = {
 		var addCompanions = function( companionType, companionString ){
 			var companions = companionString.split(';');
 			for( var i=0;i < companions.length ; i++ ){
-				companionTargets.push( 
-					_this.getCompanionObject( companionType, companions[i]  )
-				);
+				if( companions[i] ){
+					companionTargets.push( 
+						_this.getCompanionObject( companionType, companions[i]  )
+					);
+				}
 			}
 		};
 		if( this.$adConfig.attr( 'htmlCompanions' ) ) {

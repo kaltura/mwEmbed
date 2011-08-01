@@ -12,21 +12,24 @@
 	});
 	
 	// Ads have to communicate with parent iframe to support companion ads.
-	// ( we have to add them for all players since checkUiConf is done on the other side of the
-	// iframe proxy )
 	$j( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
 		// Add the updateCompanionTarget binding to bridge iframe
-		exportedBindings.push( 'updateCompanionTarget' );
+		exportedBindings.push( 'AdSupport_UpdateCompanion', 'AdSupport_RestoreCompanion' );
 	});
 	
 	// Add the updateCompanion binding to new iframeEmbedPlayers
 	$j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ){
-		$j( playerProxy ).bind( 'updateCompanionTarget', function( event, companionObject) {
-			// NOTE: security wise we should try and "scrub" the html for script tags
+		var companionHTMLCache = {}; 
+		$j( playerProxy ).bind( 'AdSupport_UpdateCompanion', function( event, companionObject) {
+			companionHTMLCache[ companionObject.elementid ] = $j('#' + companionObject.elementid ).html();
 			$j('#' + companionObject.elementid ).html( 
-					companionObject.html
+				companionObject.html
 			);
 		});
+		$j( playerProxy ).bind('AdSupport_RestoreCompanion', function( event, companionId){
+			if( companionHTMLCache[companionId] ){
+				$j('#' + companionId ).html( companionHTMLCache[companionId] );
+			}
+		});
 	});
-
 } )( window.mw );

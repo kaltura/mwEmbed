@@ -537,9 +537,16 @@ mw.EmbedPlayerNative = {
 	/**
 	 * Stop the player ( end all listeners )
 	 */
-	stop:function(){
+	stop: function(){
+		var _this = this;
 		if( this.playerElement ){
-			$j( this.playerElement ).unbind();
+			this.stopEventPropagation();
+			this.playerElement.currentTime = 0;
+			this.playerElement.pause();
+			// Restore event propagation after stop; 
+			setTimeout( function(){
+				_this.restoreEventPropagation();
+			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 		}
 		this.parent_stop();
 	},

@@ -204,7 +204,7 @@ mw.AdTimeline.prototype = {
 			// Bind the player "ended" event to play the postroll if present
 			if( _this.getTimelineTargets('postroll').length > 0 ){
 				var displayedPostroll = false;
-				$j( _this.embedPlayer ).bind( 'ended', function(event){				
+				$j( _this.embedPlayer ).bind( 'ended', function(event){
 					if( displayedPostroll ){
 						return ;
 					}
@@ -393,7 +393,7 @@ mw.AdTimeline.prototype = {
 
 		// Check for companion ads:
 		if ( adConf.companions && adConf.companions.length ) {
-			this.displayCompanion(  displayTarget, adConf, timeTargetType);
+			this.displayCompanions(  displayTarget, adConf, timeTargetType);
 		};
 		
 		// Check for nonLinear overlays
@@ -508,44 +508,64 @@ mw.AdTimeline.prototype = {
 		);
 	},
 	/**
-	 * Display a companion add
+	 * Display companion ads
 	 * @param displayTarget
 	 * @param adConf
 	 * @return
 	 */
-	displayCompanion:  function( displayTarget, adConf, timeTargetType ){
+	displayCompanions:  function( displayTarget, adConf, timeTargetType ){
 		var _this = this;
-		var companionConf = this.selectFromArray( adConf.companions );
-		mw.log("AdTimeline::selectCompanion: " + companionConf.html );
+		mw.log("AdTimeline::displayCompanions: " + timeTargetType );
 		// NOTE:: is not clear from the ui conf response if multiple
 		// targets need to be supported, and how you would do that
-		var ctargets = this.getTimelineTargets( timeTargetType ).companionTargets;
-		if( ! ctargets || !ctargets.length ){
+		var timelineTarget = this.getTimelineTargets( timeTargetType )[ _this.timelineTargetsIndex[ timeTargetType ] ];;
+		var companionTargets = timelineTarget.companionTargets;
+		// Make sure we have some companion targets:
+		if( ! companionTargets || !companionTargets.length ){
 			return ;
 		}
-		var companionTarget = ctargets[ Math.floor(Math.random() * ctargets.length) ];
-		
-		
-		if( companionTarget.elementid ){
-			var originalCompanionHtml = $j('#' + companionTarget.elementid ).html();
-
-			// Display the companion:
-			$j( '#' + companionTarget.elementid ).html( companionConf.html );
-			
-			// Display the companion across the iframe client ( if setup );
-			var companionObject = {
-				'elementid' : companionTarget.elementid,
-				'html' : companionConf.html
-			};
-			$j( _this.embedPlayer ).trigger( 'updateCompanionTarget', [ companionObject ] );
-			
-			// Once display is over restore the original companion html
-			displayTarget.doneFunctions.push(function(){
-				$j( '#' + companionTarget.elementid ).html( originalCompanionHtml );
+		// Store filledCompanion ids
+		var filledCompanions = {};
+		// Go though all the companions see if there are good companionTargets
+		$j.each( adConf.companions, function( inx, companion ){			
+			// Check for matching size: 
+			// TODO we should check for multiple matching size companions 
+			// ( although VAST should only return one of matching type )
+			$j.each( companionTargets, function( cInx, companionTarget){
+				if( companionTarget.width ==  companion.width && 
+						companionTarget.height == companion.height )
+				{			
+					if( !filledCompanions[ companionTarget.elementid ]){
+						_this.displayCompanion( displayTarget, companionTarget, companion);
+						filledCompanions[ companionTarget.elementid ] = true;
+					}
+				}
 			});
-		} else {
-			mw.log( "AdTimeline: possible error no elementid in companionTarget");
-		}	
+		});
+	},
+	displayCompanion: function( displayTarget, companionTarget, companion ){
+		var _this = this;
+		var originalCompanionHtml = $j('#' + companionTarget.elementid ).html();
+		// Display the companion if local to the page target:
+		if( $j( '#' + companionTarget.elementid ).length ){
+			$j( '#' + companionTarget.elementid ).html( companion.html );
+		}
+		
+		// Display the companion across the iframe client
+		var companionObject = {
+			'elementid' : companionTarget.elementid,
+			'html' : companion.html
+		};
+		$j( _this.embedPlayer ).trigger( 'AdSupport_UpdateCompanion', [ companionObject ] );
+		
+		// Once display is over restore the original companion html
+		displayTarget.doneFunctions.push(function(){
+			if( originalCompanionHtml ){
+				$j( '#' + companionTarget.elementid ).html( originalCompanionHtml );
+			}
+			$j( _this.embedPlayer ).trigger( 'AdSupport_RestoreCompanion', companionTarget.elementid );
+			
+		});
 	},
 	/**
 	 * Display a nonLinier add ( like a banner overlay )
