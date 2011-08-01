@@ -2591,11 +2591,12 @@ mw.EmbedPlayer.prototype = {
 				'src' : source.src,
 				'type' : source.type
 			}));
+			mw.log("EmbedPlayer::getCompatibleSource: add " + source.src + ' of type:' + source.type );
 		});
 		var myMediaElement =  new mw.MediaElement( $media.get(0) );
 		var source = myMediaElement.autoSelectSource();
 		if( source ){
-			mw.log("AdTimeline::getCompatibleSource: " + source.getSrc());
+			mw.log("EmbedPlayer::getCompatibleSource: " + source.getSrc());
 			return source.getSrc();
 		}
 		mw.log("Error:: could not find compatible source");

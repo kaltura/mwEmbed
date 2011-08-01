@@ -418,6 +418,15 @@ mw.AdTimeline.prototype = {
 	 */
 	displayVideoFile: function( displayTarget, adConf ){
 		var _this = this;
+		
+		// check that we have a video to display: 
+		var targetSrc =  _this.embedPlayer.getCompatibleSource( adConf.videoFiles );
+		if( !targetSrc ){
+			displayTarget.playbackDone();
+			return ;
+		}
+		mw.log("AdTimeline:: adConf.videoFiles: " + targetSrc );
+		
 		if ( adConf.lockUI ) {
 			// TODO lock controls
 			_this.getNativePlayerElement().controls = false;
@@ -436,9 +445,9 @@ mw.AdTimeline.prototype = {
 				return true;							
 			});
 		}
-
+		
 		// Play the source then run the callback
-		_this.embedPlayer.switchPlaySrc( _this.embedPlayer.getCompatibleSource( adConf.videoFiles ), 
+		_this.embedPlayer.switchPlaySrc( targetSrc, 
 			function(vid) {
 				mw.log("AdTimeline:: source updated, add tracking");
 				// Bind all the tracking events ( currently vast based but will abstract if needed ) 

@@ -68,7 +68,7 @@ mw.VastAdParser = {
 				// Add the video source ( if an html5 compatible type ) 
 				var type  = $j( mediaFile ).attr('type');
 				// Normalize mp4 into h264 format: 
-				if( type  == 'video/x-mp4' ){
+				if( type  == 'video/x-mp4' || type == 'video/mp4' ){
 					type = 'video/h264';
 				}
 				

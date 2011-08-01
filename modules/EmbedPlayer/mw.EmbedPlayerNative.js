@@ -436,6 +436,13 @@ mw.EmbedPlayerNative = {
 	switchPlaySrc: function( src, switchCallback, doneCallback ){
 		var _this = this;
 		mw.log( 'EmbedPlayerNative:: switchPlaySrc:' + src + ' native time: ' + this.getPlayerElement().currentTime );
+		if( !src ){
+			switchCallback()
+			setTimeout(function(){
+				doneCallback();
+			},100);
+			return ;
+		}
 		// Update some parent embedPlayer vars: 
 		this.duration = 0;
 		this.currentTime = 0;
