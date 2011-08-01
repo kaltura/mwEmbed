@@ -15,8 +15,8 @@ mw.KTimedText.prototype = {
 		_this.kVars = kalturaConfig;
 		
 		// Check for kaltura plugin representation of offset:
-		if( kVars.timeOffset ){
-			this.timeOffset = kVars.timeOffset;
+		if( _this.kVars.timeOffset ){
+			this.timeOffset = _this.kVars.timeOffset;
 		}
 
 		// Inherit the timed text support via the base TimedText module:
