@@ -1,5 +1,5 @@
 mw.addResourcePaths({
-	"mw.Omniture": "mw.Omniture.js"
+	"mw.Comscore": "mw.Comscore.js"
 });
 
 // Omniture communicates all the dispatched events to the parent frame

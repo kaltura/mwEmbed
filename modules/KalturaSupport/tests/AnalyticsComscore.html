@@ -1,0 +1,132 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Comscore analytics example html5 / kdp</title>
+
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<!--  qUnit TESTING -->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script type="text/javascript">
+var testEventObject = {};
+// Setup Comscore host page event tracker:
+function jsCallbackReady( playerId ){
+	// All Comscore Events are dispached on this side of the iframe as well. 
+	$('#' + playerId ).bind( 'Comscore_DispatchEvent', function( event,  eventId, eVars, props, kalturaEventName  ){
+		var eVarsStr ='';
+		$.each( eVars, function( inx, set ){
+			var pSet = $.param( set )
+			eVarsStr +='<b>' + inx +':</b>' + pSet.substr(0,35)  + '<br />';
+		});
+		var propsStr ='';
+		$.each( props, function( inx, set ){
+			var pSet = $.param( set )
+			propsStr +='<b>' + inx +':</b>' + pSet.substr(0,35)  + '<br />';
+		});
+		$('#eventRowDesc').after(
+			$( '<tr />' ).append(
+				$('<td />').text( kalturaEventName ),
+				$('<td />').text( eventId ),
+				$('<td />').html( eVarsStr ),
+				$('<td />').html( propsStr )
+			)
+		);
+		// Also track events for testing: 
+		trackEventForTests( eventId, eVars, props, kalturaEventName );
+	});
+}
+
+var testEventObject = {};
+// We use this round about way of tracking events to show the events are being sent for Comscore.
+function trackEventForTests( eventId, eVars, props, kalturaEventName ) {
+	// Delay trigger to ensure we have time to setup the binding
+	setTimeout(function(){
+		$( testEventObject ).trigger( kalturaEventName, {
+			'eventId': eventId, 
+			'eVars' : eVars, 
+			'props':props, 
+			'kalturaEventName' : kalturaEventName 
+		} );
+	}, 100);
+}
+function jsKalturaPlayerTest( videoId ){
+	// Name this module
+	module( "Comscore Analytics" );
+	var kdp = $j( videoId ).get(0);
+	
+	asyncTest("mediaReady event sent", function(){
+		$j( testEventObject ).bind('mediaReady', function(event, testEvent ){
+			equal( testEvent.action, "mediaReady", "action mediaReady sent" );
+			equal( testEvent.opt_label, "0_swup5zao", "opt_label entry id set to entry id" );
+			start();
+		});
+	});	
+	asyncTest("play, pause and seek events", function(){
+		$j( testEventObject ).bind('doPlay', function(event, testEvent){
+			equal( testEvent.action, "doPlay", "action doPlay event sent" );
+		});
+		$j( testEventObject ).bind('doPause', function(event, testEvent){
+			equal( testEvent.action, "doPause", "action doPause event sent" );
+		});
+		$j( testEventObject ).bind('doSeek', function(event, testEvent){
+			equal( testEvent.action, "doSeek", "action doSeek event sent" );
+			equal( testEvent.opt_value, "10", "opt_value doSeek set to seek time" );
+			start();
+		});
+		kdp.sendNotification('doPlay');
+		setTimeout(function(){
+			kdp.sendNotification( 'doPause' );
+			kdp.sendNotification( 'doSeek', 10 );
+		},1000 );
+	});
+}
+</script>
+</head>
+<body>
+<h2> Comscore analytics for html5 player </h2>
+<div>
+<a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
+<br />
+
+<div id="player_container" style="float:left;" >
+
+<object id="kaltura_player_1311039657" 
+	name="kaltura_player_1311039657" 
+	type="application/x-shockwave-flash" 
+	allowFullScreen="true" 
+	allowNetworking="all" 
+	allowScriptAccess="always"
+	height="330" 
+	width="400" 
+	bgcolor="#000000" 
+	xmlns:dc="http://purl.org/dc/terms/" 
+	xmlns:media="http://search.yahoo.com/searchmonkey/media/"
+	rel="media:video" 
+	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1311452087/wid/_243342/uiconf_id/5367091/entry_id/0_uka1msg4" 
+	data="http://www.kaltura.com/index.php/kwidget/cache_st/1311452087/wid/_243342/uiconf_id/5367091/entry_id/0_uka1msg4">
+ 		<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />
+ 		<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />
+ 		<param name="flashVars" value="&" />
+ 		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1311039657/wid/_243342/uiconf_id/4617422/entry_id/0_uka1msg4" />
+ </object>
+
+</div>
+
+<div style="float:left;padding-left:30px;">
+<i>Comscore Analytics events ( html5 only ) </i><br />
+<table border="1" width="500">
+<tr id="eventRowDesc">
+	<td>KalturaEvent Name</td>
+	<td>Comscore Event Id</td>
+	<td>Evars</td>
+	<td>Props</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+	 
+</body>
+</html>
