@@ -17,8 +17,10 @@ mw.freeWheelControler.prototype = {
 		// Load the ad manager url:
 		// XXX todo we should be able to read this from "adManagerUrl"
 		var AdManagerUrl = mw.getConfig( 'FreeWheel.AdManagerUrl' );
-		// For debuging use local copy: 
+		
 		//$j.getScript(AdManagerUrl, function(){
+		
+		// For debugging use local copy: 
 		mw.load('tv.freewheel.SDK', function(){
 			_this.setupAds();
 		});
@@ -43,8 +45,6 @@ mw.freeWheelControler.prototype = {
 	adsRequestComplete: function(){
 		var _this = this;
 		mw.log( "freeWheelControler::adsRequestComplete> " + this.callback);
-		if( this.callback )
-			this.callback();
 		
 		// Read the ad response
 		$j( this.embedPlayer ).bind( 'onplay', function(){
@@ -53,11 +53,14 @@ mw.freeWheelControler.prototype = {
 				_this.prerollComplete 
 			});
 		});
+		
+		// Freewheel ad loading is complete issue callback: 
+		if( this.callback ){
+			this.callback();
+		}
 	},
 	prerollComplete: function(){
 		var _this = this;
-		debugger;
-		
 		this.embedPlayer.restoreEventPropagation();
 		// Restore player
 		mw.log('freeWheelControler:: restore original video ');
