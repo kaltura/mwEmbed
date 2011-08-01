@@ -13,7 +13,7 @@ var testEventObject = {};
 // Setup Omniture host page event tracker:
 function jsCallbackReady( playerId ){
 	// All Omniture Events are dispached on this side of the iframe as well. 
-	$('#' + playerId ).bind( 'Omniture_DispachEvent', function( event,  eventId, eVars, props, kalturaEventName  ){
+	$('#' + playerId ).bind( 'Omniture_DispatchEvent', function( event,  eventId, eVars, props, kalturaEventName  ){
 		var eVarsStr ='';
 		$.each( eVars, function( inx, set ){
 			var pSet = $.param( set )

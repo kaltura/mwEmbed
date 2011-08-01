@@ -36,9 +36,10 @@ mw.Omniture.prototype = {
  	 * @return
  	 */
  	dispatchEvent: function( eventId, eVars, props, eventName ){
- 		$( this.embedPlayer ).trigger( 'Omniture_DispachEvent', $.makeArray( arguments ) );
- 		// Send an Omniture beacon
- 		// XXX We need Omniture beacon documentation!
+ 		// Dispach the event across the iframe 
+ 		$( this.embedPlayer ).trigger( 'Omniture_DispatchEvent', $.makeArray( arguments ) );
+ 		// Send an Omniture beacon XXX we need s_code.js !
+ 		
  	}
 };
 

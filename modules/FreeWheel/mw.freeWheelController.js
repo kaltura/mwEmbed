@@ -1,7 +1,7 @@
-mw.addFreeWheelControler = function( embedPlayer, $adConfig, callback ) {
+mw.addFreeWheelControler = function( embedPlayer, config, callback ) {
 	embedPlayer.freeWheelAds = new mw.freeWheelControler({ 
 		'embedPlayer' : embedPlayer,
-		'$adConfig' :$adConfig,
+		'config' : config,
 		'callback' :  callback
 	});
 };
@@ -12,37 +12,54 @@ mw.freeWheelControler = function( opt ){
 
 mw.freeWheelControler.prototype = {
 	init: function( opt ){
+		var _this = this;
 		$j.extend( this, opt);
-		this.setupAds();
+		// Load the ad manager url:
+		// XXX todo we should be able to read this from "adManagerUrl"
+		var AdManagerUrl = mw.getConfig( 'FreeWheel.AdManagerUrl' );
+		// For debuging use local copy: 
+		//$j.getScript(AdManagerUrl, function(){
+		mw.load('tv.freewheel.SDK', function(){
+			_this.setupAds();
+		});
 	},
 	setupAds: function(){
 		var _this = this;
 		this.freewheel= new tv.freewheel.SDK.AdManager();
-		this.freewheel.registerVideoDisplayBase( "videoContainer" );
-		this.freewheel.setVideoAsset( "test",  this.embedPlayer.duration );
-		this.freewheel.setSiteSection( "test" );
-		this.freewheel.setServerURL( 'http://demo.v.fwmrm.net/ad/g/1?nw=81026&prof=81026:html5&flag=+sltp+exvt+slcb+unka+unks;' );
+		this.freewheel.registerVideoDisplayBase( 'videoContainer' );
+		
+		// @@TODO Need to confirm relatively arbitrary mapping
+		this.freewheel.setVideoAsset( this.config.videoAssetId,  this.embedPlayer.duration );
+		this.freewheel.setSiteSection( this.config.networkId );
+		this.freewheel.setServerURL( this.config.serverUrl );
+		
+		// XXX strange.. FreeWheels servers respond with SVLads037 while its not defined ?
+		window.SVLads037 = true;
+		
 		this.freewheel.submitRequest( function(){ 
 			_this.adsRequestComplete();
-		}, 2000 );
+		}, 4000 );
 	},
 	adsRequestComplete: function(){
 		var _this = this;
-		mw.log("freeWheelControler::adsRequestComplete>" + this.callback);
+		mw.log( "freeWheelControler::adsRequestComplete> " + this.callback);
 		if( this.callback )
 			this.callback();
-		// Built out our internal ad playing timeline ( we can't use freewheel playSlots since it
-		// takes control of things )
 		
-		// read the ad repsonse from teh
-		$j(this.embedPlayer).bind('onplay', function(){
+		// Read the ad response
+		$j( this.embedPlayer ).bind( 'onplay', function(){
 			_this.embedPlayer.stopEventPropagation();
-			_this.freewheel.playSlots( tv.freewheel.SDK.TIME_POSITION_CLASS_PREROLL, this.prerollComplete );
+			_this.freewheel.playSlots( tv.freewheel.SDK.TIME_POSITION_CLASS_PREROLL, function(){
+				_this.prerollComplete 
+			});
 		});
 	},
 	prerollComplete: function(){
-		_this.embedPlayer.restoreEventPropagation();
-		// restore player
-		mw.log('mw.freeWheelControler:: restore original video ');
+		var _this = this;
+		debugger;
+		
+		this.embedPlayer.restoreEventPropagation();
+		// Restore player
+		mw.log('freeWheelControler:: restore original video ');
 	}
 };

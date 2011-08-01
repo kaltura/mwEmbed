@@ -3,8 +3,8 @@
 */
 
 //Global mw.addKAd manager
-mw.addKalturaAds = function( embedPlayer, $adConfig, callback ) {
-	embedPlayer.ads = new mw.KAds( embedPlayer, $adConfig, callback );
+mw.addKalturaAds = function( embedPlayer, $uiConf, callback ) {
+	embedPlayer.ads = new mw.KAds( embedPlayer, $uiConf, callback );
 };
 
 mw.sendBeaconUrl = function( beaconUrl ){
@@ -17,19 +17,19 @@ mw.sendBeaconUrl = function( beaconUrl ){
 	);
 };
 
-mw.KAds = function( embedPlayer, $adConfig, callback) {
+mw.KAds = function( embedPlayer, $uiConf, callback) {
 	// Create a Player Manager
-	return this.init( embedPlayer, $adConfig ,callback );
+	return this.init( embedPlayer, $uiConf ,callback );
 };
 
 mw.KAds.prototype = {
 	
-	init: function( embedPlayer, $adConfig, callback ){
+	init: function( embedPlayer, $uiConf, callback ){
 		var _this = this; 
 		this.embedPlayer = embedPlayer;
-		this.$adConfig = $adConfig['config'];	
-		this.$notice = $adConfig['notice'];
-		this.$skipBtn = $adConfig['skipBtn'];
+		this.$adConfig = $uiConf.find( 'Plugin#vast' );	
+		this.$notice = $uiConf.find( 'label#noticeMessage' );
+		this.$skipBtn = $uiConf.find( 'button#skipBtn' );
 
 		// Load the Ads from uiConf
 		_this.loadAds( function(){

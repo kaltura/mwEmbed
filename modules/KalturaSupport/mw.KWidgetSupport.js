@@ -26,7 +26,7 @@ mw.KWidgetSupport.prototype = {
 			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
 				_this.loadAndUpdatePlayerData( embedPlayer, callback );
 			});
-			// Add kaltura iframe share support:
+			// Add Kaltura iframe share support:
 			$j( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
 				callback( mw.getConfig( 'Kaltura.ServiceUrl' ) + '/p/' + _this.kClient.getPartnerId() +
 						'/embedIframe/entry_id/' + embedPlayer.kentryid +
@@ -78,7 +78,7 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.accessControl ){
 			var acStatus = _this.getAccessControlStatus( playerData.accessControl );
 			if( acStatus !== true ){
-				$j('.loadingSpinner').remove();
+				$j( '.loadingSpinner' ).remove();
 				embedPlayer.showErrorMsg( acStatus );
 				return ;
 			}
@@ -192,6 +192,10 @@ mw.KWidgetSupport.prototype = {
 		
 		if( pluginName ){
 			$plugin = $uiConf.find( 'plugin#' + pluginName );
+			// When defined from uiConf ( "plugin" tag is equivalent to "pluginName.plugin = true" in the uiVars )
+			if( $plugin.length && $j.inArray( 'plugin', attr ) ){
+				config['plugin'] = true;
+			}
 			$uiPluginVars = $uiConf.find( 'var[key^="' + pluginName + '"]' );
 		} else {
 			// When pluginName is empty we still need to check for config in the ui Plugin Vars section
@@ -216,11 +220,11 @@ mw.KWidgetSupport.prototype = {
 		$j.each( attr, function(inx, attrName ){
 			if( $plugin.length ){
 				if( $plugin.attr( attrName ) ){
-					config[attrName] = $plugin.attr( attrName );
+					config[ attrName ] = $plugin.attr( attrName );
 				}
 				// XML sometimes comes in all lower case
 				if( $plugin.attr( attrName.toLowerCase() ) ){
-					config[attrName] = $plugin.attr( attrName.toLowerCase() );
+					config[ attrName ] = $plugin.attr( attrName.toLowerCase() );
 				}
 			}
 			

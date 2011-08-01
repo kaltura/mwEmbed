@@ -37,6 +37,7 @@ _fwsdk.EVENT_ERROR = "_e_unknown";
 _fwsdk.EVENT_RESELLER_NO_AD = "resellerNoAd";
 _fwsdk.INFO_KEY_CUSTOM_ID = "customId";
 _fwsdk.INFO_KEY_MODULE_TYPE = "moduleType";
+_fwsdk.MODULE_TYPE_EXTENSION = "extension";
 _fwsdk.MODULE_TYPE_RENDERER = "renderer";
 _fwsdk.MODULE_TYPE_TRANSLATOR = "translator";
 _fwsdk.INFO_KEY_ERROR_CODE = "errorCode";
@@ -49,9 +50,10 @@ _fwsdk.ERROR_ADINSTANCE_UNAVAILABLE = "_e_adinst-unavail";
 _fwsdk.ERROR_UNKNOWN = "_e_unknown";
 _fwsdk.ERROR_MISSING_PARAMETER = "_e_missing-param";
 _fwsdk.ERROR_NO_AD_AVAILABLE = "_e_no-ad";
-_fwsdk.ERROR_PARSE_ERROR = "_e_parse-error";
+_fwsdk.ERROR_PARSE = "_e_parse";
 _fwsdk.ERROR_INVALID_VALUE = "_e_invalid-value";
 _fwsdk.ERROR_NO_RENDERER = "_e_no-renderer";
+_fwsdk.ERROR_DEVICE_LIMIT = "_e_device-limit";
 _fwsdk.INFO_KEY_SHOW_BROWSER = "showBrowser";
 _fwsdk.INFO_KEY_CUSTOM_EVENT_NAME = "customEventName";
 _fwsdk.EVENT_TYPE_CLICK_TRACKING = "CLICKTRACKING";
@@ -111,28 +113,28 @@ _fwsdk.Util = {
     buildNode: function (a, b, c, d, e) {
         _fwsdk.log("Util.buildNode()");
         c || (c = document);
-        var g = navigator.userAgent.match(/Firefox/) != null;
+        var f = navigator.userAgent.match(/Firefox/) != null;
         a.innerHTML = b || "";
         a = a.getElementsByTagName("script");
-        var h = c.getElementsByTagName("head")[0];
-        for (b = 0; b < a.length; ++b) if (g || a[b].src) {
-            var f = c.createElement("script");
-            if (a[b].charset) f.charset = a[b].charset;
-            if (a[b].src) f.src = a[b].src;
-            if (a[b].innerHTML) f.innerHTML = a[b].innerHTML;
-            f.onload = f.onreadystatechange = function () {
-                if (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") h.removeChild(f)
+        var g = c.getElementsByTagName("head")[0];
+        for (b = 0; b < a.length; ++b) if (f || a[b].src) {
+            var h = c.createElement("script");
+            if (a[b].charset) h.charset = a[b].charset;
+            if (a[b].src) h.src = a[b].src;
+            if (a[b].innerHTML) h.innerHTML = a[b].innerHTML;
+            h.onload = h.onreadystatechange = function () {
+                if (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") g.removeChild(h)
             };
             try {
-                h.appendChild(f)
-            } catch (k) {
-                _fwsdk.log("load script err: " + k)
+                g.appendChild(h)
+            } catch (l) {
+                _fwsdk.log("load script err: " + l)
             }
         } else {
-            f = a[b].innerHTML;
-            if (d) f = f.replace(/var fw_scope = document;/, "var fw_scope=" + d + ";");
-            if (e) f = f.replace(/var fw_scope_window = window;/, "var fw_scope_window=" + e + ";");
-            eval(f)
+            h = a[b].innerHTML;
+            if (d) h = h.replace(/var fw_scope = document;/, "var fw_scope=" + d + ";");
+            if (e) h = h.replace(/var fw_scope_window = window;/, "var fw_scope_window=" + e + ";");
+            eval(h)
         }
     },
     replacePageSlot: function (a, b) {
@@ -141,40 +143,76 @@ _fwsdk.Util = {
         try {
             c = document.getElementById(a) ? document : parent.document.getElementById(a) ? parent.document : null;
             d = document.getElementById(a) ? "window" : parent.document.getElementById(a) ? "parent" : null
-        } catch (g) {
+        } catch (f) {
             d = c = null
         }
-        if (!c) for (var h = 0; h < window.frames.length; h++) try {
-            if (window.frames[h].document.getElementById(a)) {
-                c = window.frames[h].document;
-                d = "window.frames[" + h + "]"
+        if (!c) for (var g = 0; g < window.frames.length; g++) try {
+            if (window.frames[g].document.getElementById(a)) {
+                c = window.frames[g].document;
+                d = "window.frames[" + g + "]"
             }
-        } catch (f) {
-            _fwsdk.log(f)
+        } catch (h) {
+            _fwsdk.log(h)
         }
         if (d) e = d + ".document";
         _fwsdk.log("fw replacing slot " + a + " in frame " + e);
         if (!c) throw "Slot element not found: " + a;
-        h = c.getElementById("_fw_container_" + a);
-        _fwsdk.Util.buildNode(h, b, c, e, d)
+        g = c.getElementById("_fw_container_" + a);
+        _fwsdk.Util.buildNode(g, b, c, e, d)
+    },
+    pingURLWithIframe: function (a) {
+        var b = Math.random(),
+            c = document.createElement("iframe");
+        c.name = "_fw_cb_" + b;
+        c.id = "_fw_cb_" + b;
+        c.width = "0";
+        c.height = "0";
+        c.scrolling = "no";
+        c.frameborder = "0";
+        c.style.position = "absolute";
+        c.style.bottom = "0";
+        c.style.right = "0";
+        c.src = a;
+        document.body && document.body.appendChild(c)
+    },
+    pingURLWithForm: function (a, b, c) {
+        c = c ? "_fw_request" : "_fw_cb";
+        if (b == null) b = Math.random();
+        var d = document.createElement("iframe");
+        d.name = c + "_iframe_" + b;
+        d.id = c + "_iframe_" + b;
+        d.style.position = "absolute";
+        d.style.left = -10000;
+        d.style.width = 1;
+        d.style.visibility = "hidden";
+        var e = document.createElement("form");
+        e.action = a;
+        e.id = c + "_form_" + b;
+        e.target = d.id;
+        e.method = "post";
+        e.style.position = "absolute";
+        e.style.left = -10000;
+        e.style.width = 1;
+        e.style.visibility = "hidden";
+        if (document.body) {
+            document.body.appendChild(d);
+            document.body.appendChild(e);
+            e.submit();
+            document.body.removeChild(e)
+        }
+    },
+    pingURLWithScript: function (a) {
+        var b = document.getElementsByTagName("head")[0],
+            c = document.createElement("script");
+        c.src = a;
+        c.onload = c.onreadystatechange = function () {
+            if (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") b.removeChild(c)
+        };
+        b.appendChild(c)
     },
     pingURL: function (a) {
         _fwsdk.log("send callback: " + a);
-        if (a) {
-            var b = Math.random(),
-                c = document.createElement("iframe");
-            c.name = "_fw_cb_" + b;
-            c.id = "_fw_cb_" + b;
-            c.width = "0";
-            c.height = "0";
-            c.scrolling = "no";
-            c.frameborder = "0";
-            c.style.position = "absolute";
-            c.style.bottom = "0";
-            c.style.right = "0";
-            c.src = a;
-            document.body && document.body.appendChild(c)
-        }
+        if (a) _fwsdk.Util.isSafari() && (_fwsdk.Util.iOSVersion() == 0 || _fwsdk.Util.iOSVersion() > 3.2) ? _fwsdk.Util.pingURLWithForm(a, null, false) : _fwsdk.Util.pingURLWithIframe(a)
     },
     pingURLs: function (a) {
         for (var b = 0; b < a.length; b++) _fwsdk.Util.pingURL(a[b])
@@ -184,19 +222,19 @@ _fwsdk.Util = {
         var d = false,
             e;
         a = a.split("?");
-        var g;
+        var f;
         c = encodeURIComponent(c);
         if (a[1]) {
-            g = a[1].split("&");
-            for (var h = 0; h < g.length; ++h) {
-                e = g[h].split("=");
+            f = a[1].split("&");
+            for (var g = 0; g < f.length; ++g) {
+                e = f[g].split("=");
                 if (e[0] == b) {
-                    g[h] = e[0] + "=" + c;
+                    f[g] = e[0] + "=" + c;
                     d = true;
                     break
                 }
             }
-            e = g.join("&");
+            e = f.join("&");
             d || (e = b + "=" + c + "&" + e)
         } else e = b + "=" + c;
         return e = a[0] + "?" + e
@@ -204,8 +242,8 @@ _fwsdk.Util = {
     isIPad: function () {
         return navigator.userAgent.toLowerCase().search("ipad") > -1
     },
-    isIPhone: function () {
-        return navigator.userAgent.toLowerCase().search("iphone") > -1
+    isIPhoneOrIPod: function () {
+        return navigator.userAgent.toLowerCase().search("iphone") > -1 || navigator.userAgent.toLowerCase().search("ipod") > -1
     },
     iOSVersion: function () {
         var a = navigator.userAgent.toLowerCase(),
@@ -214,8 +252,58 @@ _fwsdk.Util = {
             var c = a.substr(b + 3, 1);
             a = a.substr(b + 5, 1);
             return 1 * c + 0.1 * a
-        } else
-        return 0
+        } else return 0
+    },
+    isAndroid: function () {
+        return navigator.userAgent.toLowerCase().search("android") > -1
+    },
+    isSafari: function () {
+        return !_fwsdk.Util.isAndroid() && navigator.userAgent.toLowerCase().search("chrome") < 0 && navigator.userAgent.toLowerCase().search("safari") > -1
+    },
+    androidVersion: function () {
+        var a = navigator.userAgent.toLowerCase(),
+            b = a.search(/android \d\.\d/);
+        if (b > -1) {
+            var c = a.substr(b + 8, 1);
+            a = a.substr(b + 10, 1);
+            return 1 * c + 0.1 * a
+        } else return 0
+    },
+    isMobile: function () {
+        return _fwsdk.Util.iOSVersion() > 0 || _fwsdk.Util.isAndroid()
+    },
+    flashVersion: function () {
+        _fwsdk.log("Util.flashVersion(" + Array.prototype.slice.call(arguments).join(",") + ")");
+        var a = "0,0,0,0";
+        if (navigator.plugins != null && navigator.plugins.length > 0) {
+            if (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]) try {
+                var b = navigator.plugins["Shockwave Flash" + (navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "")].description.split(" "),
+                    c = b[2].split("."),
+                    d = c[0],
+                    e = c[1],
+                    f = b[3];
+                if (f == "") f = b[4];
+                if (f[0] == "d") f = f.substring(1);
+                else if (f[0] == "r") {
+                    f = f.substring(1);
+                    if (f.indexOf("d") > 0) f = f.substring(0, f.indexOf("d"))
+                }
+                a = d + "," + e + "," + f + ",0"
+            } catch (g) {
+                _fwsdk.log("Flash detction failed on navigator method")
+            }
+        } else {
+            var h;
+            try {
+                h = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7");
+                var l = h.GetVariable("$version").split(" ")[1].split(",");
+                if (l.length == 3) a = l.join(",") + ",0";
+                else if (l.length == 4) a = l.join(",")
+            } catch (k) {
+                _fwsdk.log("Flash detction failed on ActiveX method")
+            }
+        }
+        return a
     }
 };
 _fwsdk.MediaState = function () {};
@@ -396,8 +484,7 @@ _fwsdk.Util.mixin(_fwsdk.Creative.prototype, {
         }
     },
     getCreativeRendition: function (a, b) {
-        for (var c =
-        null, d = 0, e = this._creativeRenditions || []; d < e.length; d++) if (e[d]._id == a) {
+        for (var c = null, d = 0, e = this._creativeRenditions || []; d < e.length; d++) if (e[d]._id == a) {
             if (e[d]._replicaId == b) return e[d];
             if (!c || e[d]._replicaId < c._replicaId) c = e[d]
         }
@@ -430,8 +517,7 @@ _fwsdk.Util.mixin(_fwsdk.CreativeRendition.prototype, {
         return this._wrapperUrl
     },
     setWrapperUrl: function (a) {
-        this._wrapperUrl =
-        a
+        this._wrapperUrl = a
     },
     getBaseUnit: function () {
         return this._baseUnit
@@ -542,8 +628,7 @@ _fwsdk.Util.mixin(_fwsdk.CreativeRenditionAsset.prototype, {
     parse: function (a) {
         if (a) {
             this._id = a.id || null;
-            this._name =
-            a.name || null;
+            this._name = a.name || null;
             this._url = a.url || null;
             this._content = a.content || null;
             this._contentType = a.contentType || null;
@@ -552,6 +637,63 @@ _fwsdk.Util.mixin(_fwsdk.CreativeRenditionAsset.prototype, {
         }
     }
 });
+_fwsdk.AdControlExtension = function (a) {
+    this._context = a;
+    this._currentSlot = this._clickEvent = this._targetElement = null
+};
+_fwsdk.AdControlExtension.prototype = {
+    start: function () {
+        if (!this._clickEvent) this._clickEvent = _fwsdk.Util.isMobile() ? "touchend" : "click";
+        this._onAdClicked = _fwsdk.Util.bind(this, function () {
+            _fwsdk.log("clicked on target element: " + this._targetElement.id);
+            this._currentSlot && this._currentSlot.getCurrentAdInstance() && this._currentSlot.getCurrentAdInstance().getRendererController().processEvent({
+                name: _fwsdk.EVENT_AD_CLICK
+            })
+        });
+        this._onSlotStarted = _fwsdk.Util.bind(this, function (a) {
+            if (a.slot && this._isTargetSlot(a.slot)) {
+                this._clearListener();
+                this._attachListener(a.slot)
+            }
+        });
+        this._onSlotEnded = _fwsdk.Util.bind(this, function (a) {
+            a.slot && this._isTargetSlot(a.slot) && this._clearListener()
+        });
+        this._context.addEventListener(_fwsdk.EVENT_SLOT_ENDED, this._onSlotEnded);
+        this._context.addEventListener(_fwsdk.EVENT_SLOT_STARTED, this._onSlotStarted)
+    },
+    _onAdClicked: function () {},
+    _onSlotStarted: function () {},
+    _onSlotEnded: function () {},
+    _attachListener: function (a) {
+        _fwsdk.log("AdControlExtension._attachListener(" + Array.prototype.slice.call(arguments).join(",") + ")");
+        var b = this._context.getParameter(_fwsdk.PARAMETER_EXTENSION_AD_CONTROL_CLICK_ELEMENT);
+        if (b) if (this._targetElement = document.getElementById(b)) {
+            this._currentSlot = a;
+            this._targetElement.addEventListener(this._clickEvent, this._onAdClicked, false)
+        } else _fwsdk.log("Attempted to process click/tap via PARAMETER_EXTENSION_AD_CONTROL_CLICK_ELEMENT specified html element: '" + b + "'. The specified element is not available on the current HTML page.")
+    },
+    _clearListener: function () {
+        if (this._targetElement) {
+            this._targetElement.removeEventListener(this._clickEvent, this._onAdClicked, false);
+            this._targetElement = null
+        }
+        this._currentSlot = null
+    },
+    _isTargetSlot: function (a) {
+        if (a.getType() == _fwsdk.SLOT_TYPE_TEMPORAL && a.getTimePositionClass() != _fwsdk.TIME_POSITION_CLASS_OVERLAY) return true;
+        return false
+    },
+    dispose: function () {
+        _fwsdk.log("AdControlExtension.dispose(" + Array.prototype.slice.call(arguments).join(",") + ")");
+        this._clearListener();
+        this._onAdClicked = null;
+        this._context.removeEventListener(_fwsdk.EVENT_SLOT_ENDED, this._onSlotEnded);
+        this._context.removeEventListener(_fwsdk.EVENT_SLOT_STARTED, this._onSlotStarted);
+        this._onSlotEnded = this._onSlotStarted = null
+    }
+};
+_fwsdk.AdControlExtension.prototype.constructor = _fwsdk.AdControlExtension;
 _fwsdk.AdInstance = function (a) {
     this._context = a;
     this._primaryCreativeRendition = this._replicaId = this._creativeRenditionId = this._creativeId = this._adId = this._slot = null;
@@ -601,20 +743,25 @@ _fwsdk.Util.mixin(_fwsdk.AdInstance.prototype, {
         var c = [],
             d = b == _fwsdk.EVENT_TYPE_CLICK,
             e = b == _fwsdk.EVENT_TYPE_CLICK_TRACKING,
-            g = _fwsdk.EventCallback.getEventCallback(this._eventCallbacks, a, e ? _fwsdk.EVENT_TYPE_CLICK : b);
-        if (!g) return c;
-        e || c.push(g.getUrl());
+            f = _fwsdk.EventCallback.getEventCallback(this._eventCallbacks, a, e ? _fwsdk.EVENT_TYPE_CLICK : b);
+        if (!f) return c;
+        if (d) f._showBrowser && c.push(f.getUrl());
+        else if (e) f._showBrowser || c.push(f.getUrl());
+        else c.push(f.getUrl());
         if (!d) {
             d = 0;
-            for (g = g._trackingUrls; d < g.length; d++) c.push(g[d]);
+            for (f = f._trackingUrls; d < f.length; d++) c.push(f[d]);
             d = 0;
-            for (g = this.getExternalEventCallbackUrls(a, b); d < g.length; d++) c.push(g[d])
+            for (f = this.getExternalEventCallbackUrls(a, b); d < f.length; d++) c.push(f[d])
         }
         return c
     },
     addEventCallbackUrls: function (a, b, c) {
-        if (c && this._isValidEventNameAndType(a, b)) if (b == _fwsdk.EVENT_TYPE_CLICK) this.getEventCallback(a, b).setUrlParameter(_fwsdk.URL_PARAMETER_KEY_CR, c.length > 0 ? c[0] : "");
-        else {
+        if (c && this._isValidEventNameAndType(a, b)) if (b == _fwsdk.EVENT_TYPE_CLICK) {
+            a = this.getEventCallback(a, b);
+            a.setUrlParameter(_fwsdk.URL_PARAMETER_KEY_CR, c.length > 0 ? c[0] : "");
+            a._showBrowser = true
+        } else {
             for (var d = this._externalEventCallbackUrlsDictionary[b + "-" + a] || [], e = 0; e < c.length; e++) d.push(c[e]);
             this._externalEventCallbackUrlsDictionary[b + "-" + a] = d
         }
@@ -626,8 +773,7 @@ _fwsdk.Util.mixin(_fwsdk.AdInstance.prototype, {
         a._creativeId = this._creativeId;
         a._slot = this.getSlot();
         for (var b = 0; b < this._eventCallbacks.length; b++) {
-            var c =
-            this._eventCallbacks[b].copy();
+            var c = this._eventCallbacks[b].copy();
             c._adInstance = a;
             a._eventCallbacks.push(c)
         }
@@ -749,6 +895,14 @@ _fwsdk.Util.mixin(_fwsdk.AdInstance.prototype, {
     getExternalEventCallbackUrls: function (a, b) {
         return this._externalEventCallbackUrlsDictionary[b + "-" + a] || []
     },
+    reset: function () {
+        this._rendererController.reset();
+        for (var a = 0; a < this._companionAdInstances.length; a++) {
+            var b = this._companionAdInstances[a];
+            if (b._state == _fwsdk.MediaPlayingState.instance || b._state == _fwsdk.MediaReplayingState.instance) b.complete();
+            b._rendererController.reset()
+        }
+    },
     _isValidEventNameAndType: function (a, b) {
         if (_fwsdk.Util.isBlank(a) || _fwsdk.Util.isBlank(b)) return false;
         return b == _fwsdk.EVENT_TYPE_CLICK || b == _fwsdk.EVENT_TYPE_CLICK_TRACKING || b == _fwsdk.EVENT_TYPE_IMPRESSION && (a == _fwsdk.EVENT_AD_IMPRESSION || a == _fwsdk.EVENT_AD_FIRST_QUARTILE || a == _fwsdk.EVENT_AD_MIDPOINT || a == _fwsdk.EVENT_AD_THIRD_QUARTILE || a == _fwsdk.EVENT_AD_COMPLETE) || b == _fwsdk.EVENT_TYPE_STANDARD && (a == _fwsdk.EVENT_AD_PAUSE || a == _fwsdk.EVENT_AD_RESUME || a == _fwsdk.EVENT_AD_REWIND || a == _fwsdk.EVENT_AD_MUTE || a == _fwsdk.EVENT_AD_UNMUTE || a == _fwsdk.EVENT_AD_COLLAPSE || a == _fwsdk.EVENT_AD_EXPAND || a == _fwsdk.EVENT_AD_MINIMIZE || a == _fwsdk.EVENT_AD_CLOSE || a == _fwsdk.EVENT_AD_ACCEPT_INVITATION)
@@ -841,35 +995,34 @@ _fwsdk.AdManager.prototype = {
         if (typeof b != "function") b = function () {};
         if (this._context._adResponse) {
             for (var c = [], d = this._context.getTemporalSlots(), e = 0; e < d.length; ++e) {
-                var g = d[e];
-                if (Math.abs(g._timePosition - a) < 0.1 || a == g._timePositionClass.toUpperCase()) c.push(g)
+                var f = d[e];
+                if (Math.abs(f._timePosition - a) < 0.1 || a == f._timePositionClass.toUpperCase()) c.push(f)
             }
             if (c.length === 0) {
                 _fwsdk.log("AdManager.playSlots(): no slot matches", a);
                 b()
-            } else if (a == _fwsdk.TIME_POSITION_CLASS_OVERLAY || a == _fwsdk.TIME_POSITION_CLASS_MIDROLL) for (e = 0; e < c.length; e++)(function (h) {
-                if (!h._onContentVideoTimeUpdate) {
-                    var f =
-                    h.getBase().getElementsByTagName("video")[0],
-                        k = h._onContentVideoTimeUpdate = function () {
-                            if (!f.paused && f.currentTime - h._timePosition >= 0 && f.currentTime - h._timePosition < 1) {
-                                f.removeEventListener("timeupdate", k, false);
-                                h._play(function () {
-                                    var j = setInterval(function () {
-                                        if (!f.paused && Math.abs(f.currentTime - h._timePosition) > 2) {
-                                            f.addEventListener("timeupdate", k, false);
-                                            clearInterval(j)
+            } else if (a == _fwsdk.TIME_POSITION_CLASS_OVERLAY || a == _fwsdk.TIME_POSITION_CLASS_MIDROLL) for (e = 0; e < c.length; e++)(function (g) {
+                if (!g._onContentVideoTimeUpdate) {
+                    var h = g.getBase().getElementsByTagName("video")[0],
+                        l = g._onContentVideoTimeUpdate = function () {
+                            if (!h.paused && h._fw_videoAdPlaying !== true && h.currentTime - g._timePosition >= 0 && h.currentTime - g._timePosition < 1) {
+                                h.removeEventListener("timeupdate", l, false);
+                                g._play(function () {
+                                    var k = setInterval(function () {
+                                        if (!h.paused && Math.abs(h.currentTime - g._timePosition) > 2) {
+                                            h.addEventListener("timeupdate", l, false);
+                                            clearInterval(k)
                                         }
                                     }, 1E3)
                                 })
                             }
                         };
-                    f.addEventListener("timeupdate", k, false)
+                    h.addEventListener("timeupdate", l, false)
                 }
             })(c[e]);
             else(function () {
-                var h = c.shift();
-                h ? h._play(arguments.callee) : b()
+                var g = c.shift();
+                g ? g._play(arguments.callee) : b()
             })()
         } else {
             _fwsdk.log("AdManager._playSlots() request is not completed");
@@ -898,8 +1051,7 @@ _fwsdk.AdRequest = function (a) {
     this._assetAutoPlayType = _fwsdk.VIDEO_ASSET_AUTO_PLAY_TYPE_ATTENDED;
     this._assetViewRandom = this._assetFallbackId = 0;
     this._siteSectionNetworkId = this._siteSectionId = this._siteSectionCustomId = "";
-    this._siteSectionViewRandom =
-    this._siteSectionFallbackId = 0;
+    this._siteSectionViewRandom = this._siteSectionFallbackId = 0;
     this._slotScanner = new _fwsdk.PageSlotScanner;
     this._urlParams = {};
     this._urlKeyValues = [];
@@ -941,10 +1093,10 @@ _fwsdk.AdRequest.prototype = {
             if (b.length > 0) this._compatibleDimensions = b.join("|")
         }
     },
-    setVideoAsset: function (a, b, c, d, e, g, h, f) {
+    setVideoAsset: function (a, b, c, d, e, f, g, h) {
         _fwsdk.log("AdRequest.setVideoAsset(" + Array.prototype.slice.call(arguments).join(",") + ")");
         if (a) {
-            switch (h) {
+            switch (g) {
             case _fwsdk.ID_TYPE_FW:
                 this._assetId = a;
                 break;
@@ -957,11 +1109,10 @@ _fwsdk.AdRequest.prototype = {
             }
             if (typeof b == "number") this._assetDuration = Math.round(b * 10) / 10;
             if (typeof c == "number") this._assetNetworkId = c;
-            if (typeof d == "string") this._assetLocation =
-            d;
+            if (typeof d == "string") this._assetLocation = d;
             if (typeof e == "number") this._assetAutoPlayType = e;
-            if (typeof g == "number") this._assetViewRandom = g;
-            if (typeof f == "number") this._assetFallbackId = f
+            if (typeof f == "number") this._assetViewRandom = f;
+            if (typeof h == "number") this._assetFallbackId = h
         } else _fwsdk.log("AdRequest.setVideoAsset(): id required")
     },
     setSiteSection: function (a, b, c, d, e) {
@@ -1020,8 +1171,7 @@ _fwsdk.AdRequest.prototype = {
         if (a) {
             if (a.charAt(a.length - 1) == ";") a = a.substring(0, a.length - 1);
             var b = a.split(";");
-            if (b[0]) for (var c =
-            b[0].split("&"), d = 0; d < c.length; ++d) {
+            if (b[0]) for (var c = b[0].split("&"), d = 0; d < c.length; ++d) {
                 var e = c[d].split("=");
                 if (e.length == 2) this._urlParams[e[0]] = e[1]
             }
@@ -1051,7 +1201,8 @@ _fwsdk.AdRequest.prototype = {
             ["sfid", this._siteSectionFallbackId, "number"],
             ["cd", this._compatibleDimensions || this.detectScreenDimension(), "string"],
             ["vclr", _fwsdk.version, "string"],
-            ["resp", "json", "string"],
+            ["resp", _fwsdk.Util.isSafari() && (_fwsdk.Util.iOSVersion() == 0 || _fwsdk.Util.iOSVersion() > 3.2) ? "json2" : "json", "string"],
+            ["orig", window.location.protocol + "//" + window.location.host, "string"],
             ["cbfn", "tv.freewheel.SDK._instanceQueue['Context_" + this._context._instanceId + "'].requestComplete", "string"]
         ], b = 0; b < a.length; b++) {
             var c = a[b];
@@ -1067,6 +1218,10 @@ _fwsdk.AdRequest.prototype = {
         a = "";
         for (key in this._urlParams) Object[key] || (a += key + "=" + this._urlParams[key] + "&");
         a = a.substring(0, a.length - 1);
+        if (this._slotScanner._candidateAds.length > 0) {
+            this._capabilities._capabilities[_fwsdk.CAPABILITY_CHECK_COMPANION] == null && this._capabilities.setCapability(_fwsdk.CAPABILITY_CHECK_COMPANION, _fwsdk.CAPABILITY_STATUS_ON);
+            this._capabilities._capabilities[_fwsdk.CAPABILITY_CHECK_TARGETING] == null && this._capabilities.setCapability(_fwsdk.CAPABILITY_CHECK_TARGETING, _fwsdk.CAPABILITY_STATUS_OFF)
+        }
         a = this._capabilities.parseCapabilites(a);
         b = "";
         switch (this._assetAutoPlayType) {
@@ -1084,9 +1239,10 @@ _fwsdk.AdRequest.prototype = {
     },
     generateKeyValuesStr: function () {
         _fwsdk.log("AdRequest.generateKeyValuesStr(" + Array.prototype.slice.call(arguments).join(",") + ")");
-        for (var a = this._keyValues.concat("_fw_h_x_flash_version=" + encodeURIComponent("0,0,0,0")), b = 0; b < this._urlKeyValues.length; b++) {
-            var c =
-            this._urlKeyValues[b];
+        var a = _fwsdk.Util.flashVersion();
+        a = this._keyValues.concat("_fw_h_x_flash_version=" + encodeURIComponent(a));
+        for (var b = 0; b < this._urlKeyValues.length; b++) {
+            var c = this._urlKeyValues[b];
             a.indexOf(c) < 0 && a.push(c)
         }(b = this._context._adManager._location) && a.push("ltlg=" + encodeURIComponent(Math.round(b.coords.latitude * 1E4) / 1E4 + "," + Math.round(b.coords.longitude * 1E4) / 1E4));
         return a.join("&")
@@ -1102,14 +1258,14 @@ _fwsdk.AdRequest.prototype = {
                 ["tpos", d._timePosition, "number"],
                 ["envp", d._slotProfile, "string"]
             ];
-            for (var e = [], g = 0; g < d.length; g++) {
-                var h = d[g];
-                switch (h[2]) {
+            for (var e = [], f = 0; f < d.length; f++) {
+                var g = d[f];
+                switch (g[2]) {
                 case "string":
-                    _fwsdk.Util.isBlank(h[1]) || e.push(h[0] + "=" + encodeURIComponent(h[1]));
+                    _fwsdk.Util.isBlank(g[1]) || e.push(g[0] + "=" + encodeURIComponent(g[1]));
                     break;
                 case "number":
-                    h[1] >= 0 && e.push(h[0] + "=" + h[1]);
+                    g[1] >= 0 && e.push(g[0] + "=" + g[1]);
                     break
                 }
             }
@@ -1129,15 +1285,14 @@ _fwsdk.AdResponse = function (a) {
 _fwsdk.AdResponse.prototype = {};
 _fwsdk.AdResponse.prototype.constructor = _fwsdk.AdResponse;
 _fwsdk.Util.mixin(_fwsdk.AdResponse.prototype, {
-    parse: function (a, b, c) {
+    parse: function (a, b) {
         this._data = a;
         this._temporalSlots = [];
         this._videoPlayerNonTemporalSlots = [];
         this._siteSectionNonTemporalSlots = [];
         this._profileParameters = {};
-        this._knownPageSlots = c;
         this._ads = [];
-        var d;
+        var c, d;
         d = _fwsdk.Util.getObject("parameters", a) || [];
         for (c = 0; c < d.length; ++c) {
             var e = d[c];
@@ -1163,25 +1318,16 @@ _fwsdk.Util.mixin(_fwsdk.AdResponse.prototype, {
             e._type = _fwsdk.SLOT_TYPE_VIDEOPLAYER_NONTEMPORAL;
             e.parse(d[c]);
             e._timePositionClass = _fwsdk.TIME_POSITION_CLASS_DISPLAY;
+            this._initSlotData(e);
             this._videoPlayerNonTemporalSlots.push(e)
         }
         d = _fwsdk.Util.getObject("siteSection.adSlots", a) || [];
         for (c = 0; c < d.length; ++c) {
-            e =
-            new _fwsdk.Slot(this._context);
+            e = new _fwsdk.Slot(this._context);
             e._type = _fwsdk.SLOT_TYPE_SITESECTION_NONTEMPORAL;
             e.parse(d[c]);
             e._timePositionClass = _fwsdk.TIME_POSITION_CLASS_DISPLAY;
-            this._siteSectionNonTemporalSlots.push(e)
-        }
-        if (this._knownPageSlots) for (c = 0; c < this._knownPageSlots.length; ++c) if (!this.getSlotByCustomId(this._knownPageSlots[c])) {
-            e = new _fwsdk.Slot(this._context);
-            e._type = _fwsdk.SLOT_TYPE_SITESECTION_NONTEMPORAL;
-            e.parse({
-                customId: this._knownPageSlots[c],
-                eventCallbacks: [],
-                selectedAds: []
-            });
+            this._initSlotData(e);
             this._siteSectionNonTemporalSlots.push(e)
         }
     },
@@ -1210,6 +1356,15 @@ _fwsdk.Util.mixin(_fwsdk.AdResponse.prototype, {
         for (b = 0; b < this._siteSectionNonTemporalSlots.length; ++b) if (this._siteSectionNonTemporalSlots[b]._customId == a) return this._siteSectionNonTemporalSlots[b];
         _fwsdk.log("getSlotByCustomId(): not found", a);
         return null
+    },
+    _initSlotData: function (a) {
+        for (var b = 0; b < this._context._adRequest._slotScanner._knownSlots.length; b++) {
+            var c = this._context._adRequest._slotScanner._knownSlots[b];
+            if (a._customId == c.id) {
+                a._width = c.width;
+                a._height = c.height
+            }
+        }
     }
 });
 _fwsdk.Capabilities = function () {
@@ -1243,7 +1398,7 @@ _fwsdk.Capabilities.prototype = {
         return a
     }
 };
-_fwsdk.version = "js-3.8.0-r6437-201103090647";
+_fwsdk.version = "js-4.1.0-r6929-201107260715";
 if (typeof window != "undefined") {
     if (!window._fw_admanager) window._fw_admanager = {};
     window._fw_admanager.version = _fwsdk.version
@@ -1276,13 +1431,25 @@ _fwsdk.TIME_POSITION_CLASS_POSTROLL = "POSTROLL";
 _fwsdk.TIME_POSITION_CLASS_OVERLAY = "OVERLAY";
 _fwsdk.TIME_POSITION_CLASS_DISPLAY = "DISPLAY";
 _fwsdk.EVENT_REQUEST_COMPLETE = "onRequestComplete";
+_fwsdk.EVENT_SLOT_STARTED = "onSlotStarted";
 _fwsdk.EVENT_SLOT_ENDED = "onSlotEnded";
+_fwsdk.EVENT_CONTENT_VIDEO_PAUSE_REQUEST = "contentVideoPauseRequest";
+_fwsdk.EVENT_CONTENT_VIDEO_RESUME_REQUEST = "contentVideoResumeRequest";
+_fwsdk.EVENT_CONTENT_VIDEO_ATTACH = "contentVideoAttach";
+_fwsdk.EVENT_CONTENT_VIDEO_DETACH = "contentVideoDetach";
 _fwsdk.CAPABILITY_STATUS_OFF = 0;
 _fwsdk.CAPABILITY_STATUS_ON = 1;
 _fwsdk.PARAMETER_LEVEL_PROFILE = 0;
 _fwsdk.PARAMETER_LEVEL_GLOBAL = 1;
 _fwsdk.PARAMETER_LEVEL_OVERRIDE = 5;
+_fwsdk.PARAMETER_EXTENSION_AD_CONTROL_CLICK_ELEMENT = "extension.ad.control.clickElement";
 _fwsdk.PARAMETER_PLAY_MIDROLL_BY_CURRENT_VIDEO_ELEMENT = "PARAMETER_PLAY_MIDROLL_BY_CURRENT_VIDEO_ELEMENT";
+_fwsdk.PARAMETER_RENDERER_VIDEO_START_DETECT_TIMEOUT = "renderer.video.startDetectTimeout";
+_fwsdk.PARAMETER_RENDERER_VIDEO_PROGRESS_DETECT_TIMEOUT = "renderer.video.progressDetectTimeout";
+_fwsdk.PARAMETER_EXTENSION_CONTENT_VIDEO_ENABLED = "extension.contentVideo.enabled";
+_fwsdk.PARAMETER_EXTENSION_CONTENT_VIDEO_AUTO_SEEK_BACK = "extension.contentVideo.autoSeekBack";
+_fwsdk.PARAMETER_RENDERER_VIDEO_ANDROID_DELAY = "renderer.video.android.delay";
+_fwsdk.PARAMETER_VIDEO_POOL_SIZE = "sdk.videoPoolSize";
 _fwsdk.ID_TYPE_FW = 1;
 _fwsdk.ID_TYPE_CUSTOM = 2;
 _fwsdk.ID_TYPE_GROUP = 3;
@@ -1297,16 +1464,122 @@ _fwsdk.ADUNIT_PREROLL = "preroll";
 _fwsdk.ADUNIT_MIDROLL = "midroll";
 _fwsdk.ADUNIT_POSTROLL = "postroll";
 _fwsdk.ADUNIT_OVERLAY = "overlay";
+_fwsdk.ContentVideoExtension = function (a) {
+    this._context = a;
+    this._contentVideo = null
+};
+_fwsdk.ContentVideoExtension.prototype = {
+    _resume: function () {},
+    _pause: function () {},
+    _onAttach: function () {},
+    _onDetach: function () {},
+    start: function (a) {
+        _fwsdk.log("ContentVideoExtension.start(" + Array.prototype.slice.call(arguments).join(",") + ")");
+        this._contentVideo = document.getElementById(a).getElementsByTagName("video")[0];
+        this._resume = _fwsdk.Util.bind(this, function () {
+            if (this._isDisabled()) this.dispose();
+            else {
+                _fwsdk.log("ContentVideoExtension: resume content video");
+                if (_fwsdk.Util.isAndroid() && _fwsdk.Util.androidVersion() >= 3.1) {
+                    var b = this._context.getVideoDisplaySize();
+                    this._contentVideo.style.position = b.position;
+                    this._contentVideo.style.left = b.left;
+                    this._contentVideo.style.top = b.top
+                } else if (_fwsdk.Util.iOSVersion() == 0 || _fwsdk.Util.iOSVersion() >= 3.2) this._contentVideo.style.display = "";
+                this._contentVideo.play();
+                if (_fwsdk.Util.iOSVersion() > 0 && !_fwsdk.Util.isIPhoneOrIPod()) if (this._context.getParameter(_fwsdk.PARAMETER_EXTENSION_CONTENT_VIDEO_AUTO_SEEK_BACK) != false) {
+                    if (this._fixContentVideoCurrentTime) {
+                        this._contentVideo.removeEventListener("timeupdate", this._fixContentVideoCurrentTime, false);
+                        this._fixContentVideoCurrentTime = null
+                    }
+                    this._fixContentVideoCurrentTime = _fwsdk.Util.bind(this, function () {
+                        if (!(this._contentVideo.currentTime <= 0 || this._contentVideo.seekable.length <= 0)) {
+                            this._contentVideo.removeEventListener("timeupdate", this._fixContentVideoCurrentTime, false);
+                            this._fixContentVideoCurrentTime = null;
+                            if (this._contentVideo.currentTime > 0 && this._contentVideo.currentTime < 1) {
+                                _fwsdk.log("ContentVideoExtension: seeking to original time " + this._originalTime);
+                                try {
+                                    this._contentVideo.currentTime = this._originalTime
+                                } catch (c) {
+                                    _fwsdk.log("ContentVideoExtension: seek error")
+                                }
+                            }
+                        }
+                    });
+                    this._contentVideo.addEventListener("timeupdate", this._fixContentVideoCurrentTime, false)
+                }
+            }
+        });
+        this._pause = _fwsdk.Util.bind(this, function () {
+            if (this._isDisabled()) this.dispose();
+            else {
+                _fwsdk.log("ContentVideoExtension: pause content video");
+                this._originalTime = this._contentVideo.currentTime;
+                this._contentVideo.pause();
+                if (_fwsdk.Util.isAndroid() && _fwsdk.Util.androidVersion() >= 3.1) {
+                    this._contentVideo.style.position = "absolute";
+                    this._contentVideo.style.left = "-10000";
+                    this._contentVideo.style.top = "-10000"
+                } else if (_fwsdk.Util.iOSVersion() == 0 || _fwsdk.Util.iOSVersion() >= 3.2) this._contentVideo.style.display = "none"
+            }
+        });
+        this._onAttach = _fwsdk.Util.bind(this, function (b) {
+            if (this._isDisabled()) this.dispose();
+            else if ((b = b.slot) && b.getType() == _fwsdk.SLOT_TYPE_TEMPORAL && b.getTimePositionClass() != _fwsdk.TIME_POSITION_CLASS_OVERLAY) {
+                _fwsdk.log("ContentVideoExtension: EVENT_CONTENT_VIDEO_ATTACH from " + b.getTimePositionClass() + " slot");
+                this._src = this._contentVideo.src;
+                this._controls = this._contentVideo.controls
+            }
+        });
+        this._onDetach = _fwsdk.Util.bind(this, function (b) {
+            if (this._isDisabled()) this.dispose();
+            else if ((b = b.slot) && b.getType() == _fwsdk.SLOT_TYPE_TEMPORAL && b.getTimePositionClass() != _fwsdk.TIME_POSITION_CLASS_OVERLAY) {
+                _fwsdk.log("ContentVideoExtension: EVENT_CONTENT_VIDEO_DETACH from " + b.getTimePositionClass() + " slot");
+                _fwsdk.log("restore contentVideo.src:" + this._src);
+                this._contentVideo.src = this._src;
+                this._contentVideo.controls = this._controls;
+                b.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_PREROLL && this._contentVideo.load()
+            }
+        });
+        this._context.addEventListener(_fwsdk.EVENT_CONTENT_VIDEO_PAUSE_REQUEST, this._pause);
+        this._context.addEventListener(_fwsdk.EVENT_CONTENT_VIDEO_RESUME_REQUEST, this._resume);
+        this._context.addEventListener(_fwsdk.EVENT_CONTENT_VIDEO_ATTACH, this._onAttach);
+        this._context.addEventListener(_fwsdk.EVENT_CONTENT_VIDEO_DETACH, this._onDetach)
+    },
+    _isDisabled: function () {
+        if (this._context.getParameter(_fwsdk.PARAMETER_EXTENSION_CONTENT_VIDEO_ENABLED) === false) {
+            _fwsdk.log("content video extension disabled");
+            return true
+        }
+        return false
+    },
+    dispose: function () {
+        if (this._context) {
+            _fwsdk.log("ContentVideoExtension.dispose(" + Array.prototype.slice.call(arguments).join(",") + ")");
+            this._context.removeEventListener(_fwsdk.EVENT_CONTENT_VIDEO_PAUSE_REQUEST, this._pause);
+            this._context.removeEventListener(_fwsdk.EVENT_CONTENT_VIDEO_RESUME_REQUEST, this._resume);
+            this._context.removeEventListener(_fwsdk.EVENT_CONTENT_VIDEO_ATTACH, this._onAttach);
+            this._context.removeEventListener(_fwsdk.EVENT_CONTENT_VIDEO_DETACH, this._onDetach);
+            if (this._contentVideo && this._fixContentVideoCurrentTime) {
+                this._contentVideo.removeEventListener("timeupdate", this._fixContentVideoCurrentTime, false);
+                this._fixContentVideoCurrentTime = null
+            }
+            this._context = null
+        }
+    }
+};
+_fwsdk.ContentVideoExtension.prototype.constructor = _fwsdk.ContentVideoExtension;
 _fwsdk.Context = function (a) {
     this._adManager = a;
     this._adRequest = new _fwsdk.AdRequest(this);
-    this._temporalSlotBaseId = this._adResponse = null;
+    this._videoDisplaySize = this._temporalSlotBaseId = this._adResponse = null;
     this._globalLevelParameterDictionary = {};
     this._overrideLevelParameterDictionary = {};
     this._rendererManifest = {};
     this._eventDispatcher = new _fwsdk.EventDispatcher;
     this._requestTimeoutId = null;
     this._isRequestSubmitted = false;
+    this._adControlExtension = new _fwsdk.AdControlExtension(this);
     this._instanceId = _fwsdk._instanceCounter;
     _fwsdk._instanceQueue["Context_" + _fwsdk._instanceCounter] = this;
     _fwsdk._instanceCounter++
@@ -1325,8 +1598,7 @@ _fwsdk.Context.prototype = {
         var d = null;
         if (c == _fwsdk.PARAMETER_LEVEL_GLOBAL) d = this._globalLevelParameterDictionary;
         else if (c == _fwsdk.PARAMETER_LEVEL_OVERRIDE) d = this._overrideLevelParameterDictionary;
-        else
-        return;
+        else return;
         if (b === null) delete d[a];
         else d[a] = b
     },
@@ -1336,8 +1608,8 @@ _fwsdk.Context.prototype = {
         else if (b == _fwsdk.PARAMETER_LEVEL_OVERRIDE) return this._overrideLevelParameterDictionary[a];
         else {
             if (this._overrideLevelParameterDictionary.hasOwnProperty(a)) return this._overrideLevelParameterDictionary[a];
-            if (this._globalLevelParameterDictionary.hasOwnProperty(a)) return this._globalLevelParameterDictionary[a];
             if (this._adResponse && this._adResponse._profileParameters.hasOwnProperty(a)) return this._adResponse._profileParameters[a];
+            if (this._globalLevelParameterDictionary.hasOwnProperty(a)) return this._globalLevelParameterDictionary[a];
             return null
         }
     },
@@ -1348,7 +1620,31 @@ _fwsdk.Context.prototype = {
     registerVideoDisplayBase: function (a) {
         _fwsdk.log("Context.registerVideoDisplayBase(" + Array.prototype.slice.call(arguments).join(",") + ")");
         if (!a || typeof a != "string") _fwsdk.log("Context.registerVideoDisplayBase(): id required");
-        else this._temporalSlotBaseId = a
+        else {
+            this._temporalSlotBaseId = a;
+            if (!this._videoDisplaySize) {
+                var b = document.getElementById(a).getElementsByTagName("video")[0];
+                this.setVideoDisplaySize(b.style.left, b.style.top, b.style.pixelWidth ? b.style.pixelWidth : b.offsetWidth, b.style.pixelHeight ? b.style.pixelHeight : b.offsetHeight, b.style.position)
+            }
+            if (this.getParameter(_fwsdk.PARAMETER_EXTENSION_CONTENT_VIDEO_ENABLED) === false) _fwsdk.log("content video extension disabled");
+            else {
+                this._contentVideoExtension && this._contentVideoExtension.dispose();
+                this._contentVideoExtension = new _fwsdk.ContentVideoExtension(this);
+                this._contentVideoExtension.start(this._temporalSlotBaseId)
+            }
+        }
+    },
+    setVideoDisplaySize: function (a, b, c, d, e) {
+        this._videoDisplaySize = {
+            left: a,
+            top: b,
+            width: c,
+            height: d,
+            position: e
+        }
+    },
+    getVideoDisplaySize: function () {
+        return this._videoDisplaySize
     },
     setVideoDisplayCompatibleSizes: function (a) {
         _fwsdk.log("Context.setVideoDisplayCompatibleSizes(" + Array.prototype.slice.call(arguments).join(",") + ")");
@@ -1358,9 +1654,9 @@ _fwsdk.Context.prototype = {
         _fwsdk.log("Context.setProfile(" + Array.prototype.slice.call(arguments).join(",") + ")");
         this._adRequest.setProfile(a)
     },
-    setVideoAsset: function (a, b, c, d, e, g, h, f) {
+    setVideoAsset: function (a, b, c, d, e, f, g, h) {
         _fwsdk.log("Context.setVideoAsset(" + Array.prototype.slice.call(arguments).join(",") + ")");
-        this._adRequest.setVideoAsset(a, b, c, d, e, g, h, f)
+        this._adRequest.setVideoAsset(a, b, c, d, e, f, g, h)
     },
     setSiteSection: function (a, b, c, d, e) {
         _fwsdk.log("Context.setSiteSection(" + Array.prototype.slice.call(arguments).join(",") + ")");
@@ -1381,32 +1677,38 @@ _fwsdk.Context.prototype = {
         else {
             this._isRequestSubmitted = true;
             this._adRequest.scanPageSlots();
-            var b = document.getElementsByTagName("head")[0],
-                c = document.createElement("script"),
-                d = this._adManager._serverURL;
-            if (d.substring(d.length - 3, d.length) != ".js") d = this._adRequest.generateTypeBRequestUrl();
-            c.src = d;
-            c.onload = c.onreadystatechange = function () {
-                if (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") b.removeChild(c)
-            };
-            var e = this;
+            var b = this._adManager._serverURL;
+            if (b.substring(b.length - 3, b.length) != ".js") b = this._adRequest.generateTypeBRequestUrl();
+            var c = this;
             if (typeof a != "number" || a <= 0 || !a) a = 5;
             this._requestTimeoutId = setTimeout(function () {
                 _fwsdk.log("request timeout");
-                e.requestComplete(null)
+                c.requestComplete(null)
             }, a * 1E3);
-            _fwsdk.log("will send request to", c.src, "id", this._requestTimeoutId, "timeout", a);
-            b.appendChild(c)
+            _fwsdk.log("will send request to", b, "id", this._requestTimeoutId, "timeout", a);
+            if (_fwsdk.Util.isSafari() && (_fwsdk.Util.iOSVersion() == 0 || _fwsdk.Util.iOSVersion() > 3.2)) {
+                _fwsdk.Util.pingURLWithForm(b, this._instanceId, true);
+                c._onMessagePosted = function (d) {
+                    typeof d.data == "object" && d.data.hasOwnProperty("cbfn") && d.data.cbfn.indexOf("['Context_" + c._instanceId + "']") > -1 && c.requestComplete(d.data.response)
+                };
+                window.addEventListener("message", c._onMessagePosted, false)
+            } else _fwsdk.Util.pingURLWithScript(b)
         }
     },
     requestComplete: function (a) {
         _fwsdk.log("Context.requestComplete(" + Array.prototype.slice.call(arguments).join(",") + ")");
         clearTimeout(this._requestTimeoutId);
-        var b = false;
+        if (_fwsdk.Util.isSafari() && (_fwsdk.Util.iOSVersion() == 0 || _fwsdk.Util.iOSVersion() > 3.2)) {
+            window.removeEventListener("message", this._onMessagePosted, false);
+            var b = document.getElementById("_fw_request_iframe_" + this._instanceId);
+            document.body.removeChild(b)
+        }
+        b = false;
         if (a !== null) {
+            this._adControlExtension.start();
             _fwsdk._instanceQueue["Context_" + this._isntanceId] = null;
             this._adResponse = new _fwsdk.AdResponse(this);
-            this._adResponse.parse(a, this._temporalSlotBaseId, this._adRequest._slotScanner._knownSlots);
+            this._adResponse.parse(a, this._temporalSlotBaseId);
             var c = false;
             for (b = 0; b < this._adResponse._temporalSlots.length; b++) if (this._adResponse._temporalSlots[b].getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_PREROLL) {
                 c = true;
@@ -1453,41 +1755,47 @@ _fwsdk.Context.prototype = {
     },
     dispose: function () {
         _fwsdk.log("Context.dispose(" + Array.prototype.slice.call(arguments).join(",") + ")");
-        if (this._adResponse) for (var a = 0, b = this._adResponse._temporalSlots || []; a < b.length; ++a) {
-            var c = b[a];
-            if (c._onContentVideoTimeUpdate) {
-                c.getBase().getElementsByTagName("video")[0].removeEventListener("timeupdate", c._onContentVideoTimeUpdate, false);
-                c._onContentVideoTimeUpdate =
-                null
+        if (this._adResponse) {
+            if (this._contentVideoExtension) {
+                this._contentVideoExtension.dispose();
+                this._contentVideoExtension = null
+            }
+            this._adControlExtension.dispose();
+            for (var a = 0, b = this._adResponse._temporalSlots || []; a < b.length; ++a) {
+                var c = b[a];
+                if (c._onContentVideoTimeUpdate) {
+                    c.getBase().getElementsByTagName("video")[0].removeEventListener("timeupdate", c._onContentVideoTimeUpdate, false);
+                    c._onContentVideoTimeUpdate = null
+                }
             }
         }
     },
     _fillVideoPool: function (a, b) {
         _fwsdk.log("Context._fillVideoPool(" + Array.prototype.slice.call(arguments).join(",") + ")");
         _fwsdk._videoPool = _fwsdk._videoPool || [];
+        var c = document.getElementById(this._temporalSlotBaseId).getElementsByTagName("video")[0];
+        this.dispatchEvent(_fwsdk.EVENT_CONTENT_PAUSE_REQUEST, {});
         if (_fwsdk.Util.iOSVersion() >= 4.2 && a == _fwsdk.TIME_POSITION_CLASS_PREROLL) {
-            var c = document.getElementById(this._temporalSlotBaseId).getElementsByTagName("video")[0],
-                d = c.src;
-            _fwsdk._videoPoolSize = _fwsdk._videoPoolSize || 20;
-            for (var e = _fwsdk._videoPoolSize - _fwsdk._videoPool.length + 1, g = 0, h = 0; h < e; h++) {
-                var f = h === 0 ? c : document.createElement("video");
-                f.src = "";
-                f.addEventListener("error", function (k) {
-                    var j = k.target;
-                    j.removeEventListener("error", arguments.callee);
-                    if (j === c) {
-                        j.src = d;
-                        _fwsdk.log("restore content <video> src to " + j.src)
+            var d = c.src;
+            _fwsdk._videoPoolSize = this.getParameter(_fwsdk.PARAMETER_VIDEO_POOL_SIZE) || _fwsdk._videoPoolSize || 2;
+            for (var e = _fwsdk._videoPoolSize - _fwsdk._videoPool.length + 1, f = 0, g = 0; g < e; g++) {
+                var h = g === 0 ? c : document.createElement("video");
+                h.src = "http://127.0.0.1:1/404.mp4";
+                h.addEventListener("error", function (l) {
+                    var k = l.target;
+                    k.removeEventListener("error", arguments.callee);
+                    if (k === c) {
+                        k.src = d;
+                        _fwsdk.log("restore content <video> src to " + k.src)
                     } else {
-                        j._fw_fromVideoPool = true;
-                        _fwsdk._videoPool.push(j)
+                        k._fw_fromVideoPool = true;
+                        _fwsdk._videoPool.push(k)
                     }
-                    g++;
-                    _fwsdk.log("pre-played <video> " + g + "/" + e);
-                    g >= e && setTimeout(b, 100)
+                    f++;
+                    _fwsdk.log("pre-played <video> " + f + "/" + e);
+                    f >= e && setTimeout(b, 100)
                 }, false);
-                f.load();
-                f.play()
+                h.load()
             }
         } else b()
     }
@@ -1566,8 +1874,7 @@ _fwsdk.EventCallback.newEventCallback = function (a, b, c) {
     else if (b == _fwsdk.EVENT_VIDEO_VIEW) d = new _fwsdk.VideoViewEventCallback(a);
     else if (b == _fwsdk.EVENT_RESELLER_NO_AD) d = new _fwsdk.ResellerNoAdEventCallback(a);
     else if (b == _fwsdk.EVENT_AD_FIRST_QUARTILE || b == _fwsdk.EVENT_AD_MIDPOINT || b == _fwsdk.EVENT_AD_THIRD_QUARTILE || b == _fwsdk.EVENT_AD_COMPLETE) d = new _fwsdk.AdQuartileEventCallback(a);
-    else
-    return null;
+    else return null;
     d._name = b;
     d._type = c;
     return d
@@ -1697,7 +2004,7 @@ _fwsdk.Util.mixin(_fwsdk.ErrorEventCallback.prototype, {
         c || (c = "");
         (a = a[_fwsdk.INFO_KEY_ERROR_MODULE]) || (a = "");
         this._url.setParameter(_fwsdk.URL_PARAMETER_KEY_CN, b);
-        this._url.setParameter(_fwsdk.URL_PARAMETER_KEY_KEY_VALUE, _fwsdk.URL_PARAMETER_KEY_ERROR_MODULE + "=" + a + "&" + _fwsdk.URL_PARAMETER_KEY_ERROR_INFO + "=" + c)
+        this._url.setParameter(_fwsdk.URL_PARAMETER_KEY_KEY_VALUE, encodeURIComponent(_fwsdk.URL_PARAMETER_KEY_ERROR_MODULE) + "=" + encodeURIComponent(a) + "&" + encodeURIComponent(_fwsdk.URL_PARAMETER_KEY_ERROR_INFO) + "=" + encodeURIComponent(c))
     },
     getUrl: function () {
         this._url.setParameter(_fwsdk.URL_PARAMETER_KEY_ET, this._getShortType());
@@ -1811,16 +2118,25 @@ _fwsdk.NullAdRenderer.prototype.constructor = _fwsdk.NullAdRenderer;
 _fwsdk.OverlayAdRenderer = function () {};
 _fwsdk.OverlayAdRenderer.prototype = {
     start: function (a) {
-        if (_fwsdk.Util.isIPhone()) a.processEvent({
+        if (_fwsdk.Util.isIPhoneOrIPod()) a.processEvent({
             name: _fwsdk.RENDERER_STATE_FAILED,
             info: {
                 errorModule: "OverlayAdRenderer",
-                errorInfo: "does not support iPhone"
+                errorCode: _fwsdk.ERROR_DEVICE_LIMIT,
+                errorInfo: "overlay on iPhone/" + _fwsdk.Util.iOSVersion()
+            }
+        });
+        else if (_fwsdk.Util.isAndroid() && _fwsdk.Util.androidVersion() < 3.1) a.processEvent({
+            name: _fwsdk.RENDERER_STATE_FAILED,
+            info: {
+                errorModule: "OverlayAdRenderer",
+                errorCode: _fwsdk.ERROR_DEVICE_LIMIT,
+                errorInfo: "overlay on Android/" + _fwsdk.Util.androidVersion()
             }
         });
         else {
-            a.setCapability(_fwsdk.EVENT_AD_CLICK, _fwsdk.CAPABILITY_STATUS_OFF);
             var b = a.getAdInstance();
+            this._isImageAsset(b.getPrimaryCreativeRendition().getPrimaryCreativeRenditionAsset()) || a.setCapability(_fwsdk.EVENT_AD_CLICK, _fwsdk.CAPABILITY_STATUS_OFF);
             this._render(a, b);
             a.processEvent({
                 name: _fwsdk.RENDERER_STATE_STARTED
@@ -1828,66 +2144,62 @@ _fwsdk.OverlayAdRenderer.prototype = {
         }
     },
     _render: function (a, b) {
-        _fwsdk.log("OverlayAdRenderer._render");
+        _fwsdk.log("OverlayAdRenderer._render()");
         var c = b.getSlot(),
-            d = c.getBase();
-        b = b.getPrimaryCreativeRendition();
-        var e = b.getPrimaryCreativeRenditionAsset();
-        this._videoBaseWidth = d.style.pixelWidth ? d.style.pixelWidth : d.offsetWidth;
-        this._videoBaseHeight = d.style.pixelHeight ? d.style.pixelHeight : d.offsetHeight;
-        this._renditionWidth = b.getWidth();
-        var g = function (k) {
-            _fwsdk.log("OverlayAdRenderer.stop(", k, ")", a);
-            var j = document.getElementById("fw_ad_container_div");
-            if (j) {
-                if (k) try {
-                    _fwsdk.log("OverlayAdRenderer resuming main video..");
-                    j.parentNode.getElementsByTagName("video")[0].play()
-                } catch (n) {
-                    _fwsdk.log("OverlayAdRenderer.stop(): something went wrong when trying to resume main video.")
-                } else _fwsdk.log("remove ad without resuming main video.");
-                a.processEvent({
-                    name: _fwsdk.RENDERER_STATE_COMPLETING
-                });
-                j.parentNode.removeChild(j);
-                a.processEvent({
-                    name: _fwsdk.RENDERER_STATE_COMPLETED
-                })
-            }
-        };
-        c = c.getTimePositionClass();
-        var h = a.getParameter("renderer.overlay.mode") || this._layoutMode(c),
-            f = c != _fwsdk.TIME_POSITION_CLASS_OVERLAY;
-        _fwsdk.log("OverlayAdRenderer mode:", h);
-        if (h == "overlay") {
+            d = c.getBase(),
+            e = b.getPrimaryCreativeRendition(),
+            f = e.getPrimaryCreativeRenditionAsset();
+        this._videoBaseWidth = c.getVideoDisplaySize().width;
+        this._videoBaseHeight = c.getVideoDisplaySize().height;
+        this._renditionWidth = e.getWidth();
+        var g = function () {
+                _fwsdk.log("OverlayAdRenderer.stop()", a);
+                if (h == _fwsdk.TIME_POSITION_CLASS_PREROLL || h == _fwsdk.TIME_POSITION_CLASS_POSTROLL) l.controls = k;
+                var n = document.getElementById("fw_ad_container_div");
+                if (n) {
+                    a.processEvent({
+                        name: _fwsdk.RENDERER_STATE_COMPLETING
+                    });
+                    n.parentNode.removeChild(n);
+                    a.processEvent({
+                        name: _fwsdk.RENDERER_STATE_COMPLETED
+                    })
+                }
+            },
+            h = c.getTimePositionClass();
+        c = a.getParameter("renderer.overlay.mode") || this._layoutMode(h);
+        _fwsdk.log("OverlayAdRenderer mode:", c);
+        if (c == "overlay") {
             if (this._renditionWidth <= 0 || this._renditionWidth > this._videoBaseWidth) this._renditionWidth = this._videoBaseWidth;
-            this._renditionHeight = b.getHeight();
+            this._renditionHeight = e.getHeight();
             if (this._renditionHeight <= 0) this._renditionHeight = 0.25 * this._videoBaseHeight;
             else if (this._renditionHeight > this._videoBaseHeight) this._renditionHeight = this._videoBaseHeight;
             c = document.createElement("div");
             c.id = "fw_ad_container_div";
             d.appendChild(c);
             d.style.position = "relative";
-            this._layoutOverlayNode(a, c, d, b);
-            this._injectAd(c, e);
-            setTimeout(g, 1E3 * b.getDuration())
+            this._layoutOverlayNode(a, c, d, e);
+            this._injectAd(c, f, b);
+            setTimeout(g, 1E3 * e.getDuration())
         } else {
+            if (h == _fwsdk.TIME_POSITION_CLASS_PREROLL || h == _fwsdk.TIME_POSITION_CLASS_POSTROLL) {
+                var l = d.getElementsByTagName("video")[0],
+                    k = l.controls;
+                l.controls = false
+            }
             this._videoBaseWidth = a.getParameter("renderer.overlay.baseWidth") || this._videoBaseWidth;
             this._videoBaseHeight = a.getParameter("renderer.overlay.baseHeight") || this._videoBaseHeight;
-            this._renditionWidth = b.getWidth();
+            this._renditionWidth = e.getWidth();
             if (this._renditionWidth <= 0 || this._renditionWidth > this._videoBaseWidth) this._renditionWidth = this._videoBaseWidth;
-            this._renditionHeight = b.getHeight();
+            this._renditionHeight = e.getHeight();
             if (this._renditionHeight <= 0 || this._renditionHeight > this._videoBaseHeight) this._renditionHeight = this._videoBaseHeight;
-            f && d.getElementsByTagName("video")[0].pause();
             d.style.position = "relative";
             d = this._createBaseDiv(a, d);
-            this._injectAd(this._createDisplayDiv(a, d), e);
-            if ((a.getParameter("renderer.overlay.supportDuration") || "true") == "true") setTimeout(g, 1E3 * b.getDuration(), f);
+            this._injectAd(this._createDisplayDiv(a, d), f, b);
+            if ((a.getParameter("renderer.overlay.supportDuration") || "true") == "true") setTimeout(g, 1E3 * e.getDuration());
             else {
-                d = a.getParameter("renderer.overlay.closeCallback") || "closeFWAd";
-                window[d] = function () {
-                    g(f)
-                }
+                b = a.getParameter("renderer.overlay.closeCallback") || "closeFWAd";
+                window[b] = g
             }
         }
     },
@@ -1895,20 +2207,23 @@ _fwsdk.OverlayAdRenderer.prototype = {
         var c = document.createElement("div");
         c.id = "fw_ad_container_div";
         b.appendChild(c);
+        b = a.getAdInstance().getSlot();
+        var d = b.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_MIDROLL,
+            e = b.getVideoDisplaySize();
         b = a.getParameter("renderer.overlay.zIndex") || "100000";
-        var d = a.getParameter("renderer.overlay.baseX") || "0px",
-            e = a.getParameter("renderer.overlay.baseY") || "0px",
-            g = a.getParameter("renderer.overlay.backgroundColor") || "0x000000";
-        if (g) g = g.toLowerCase().split("0x").join("#");
-        _fwsdk.log(g, a.getParameter("renderer.overlay.backgroundColor"));
-        c.style.position = "absolute";
+        var f = a.getParameter("renderer.overlay.baseX") || (d ? e.left : "0px"),
+            g = a.getParameter("renderer.overlay.baseY") || (d ? e.top : "0px");
+        d = d ? e.position : "absolute";
+        if (e = a.getParameter("renderer.overlay.backgroundColor") || "0x000000") e = e.toLowerCase().split("0x").join("#");
+        _fwsdk.log(e, a.getParameter("renderer.overlay.backgroundColor"));
+        c.style.position = d;
         c.style.overflow = "hidden";
         c.style.zIndex = b;
-        c.style.left = d;
-        c.style.top = e;
+        c.style.left = f;
+        c.style.top = g;
         c.style.width = this._videoBaseWidth;
         c.style.height = this._videoBaseHeight;
-        c.style.backgroundColor = g;
+        c.style.backgroundColor = e;
         return c
     },
     _createDisplayDiv: function (a, b) {
@@ -1918,23 +2233,36 @@ _fwsdk.OverlayAdRenderer.prototype = {
         b = a.getParameter("renderer.overlay.adMarginLeft") || 0.5 * (this._videoBaseWidth - this._renditionWidth);
         a = a.getParameter("renderer.overlay.adMarginTop") || 0.5 * (this._videoBaseHeight - this._renditionHeight);
         c.style.position = "absolute";
+        c.style.overflow = "hidden";
         c.style.width = this._renditionWidth;
         c.style.height = this._renditionHeight;
         c.style.left = b;
         c.style.top = a;
         return c
     },
-    _injectAd: function (a, b) {
-        if (_fwsdk.Util.isBlank(b.getUrl())) _fwsdk.Util.buildNode(a, b.getContent());
-        else {
-            var c = document.createElement("iframe");
-            c.frameBorder = 0;
-            c.scrolling = "no";
-            c.src = b.getUrl();
-            c.width = this._renditionWidth;
-            c.height = this._renditionHeight;
-            a.appendChild(c)
+    _injectAd: function (a, b, c) {
+        var d = true,
+            e = b.getUrl();
+        if (_fwsdk.Util.isBlank(e)) {
+            d = false;
+            e = b.getContent()
+        } else if (this._isImageAsset(b)) if ((b = c.getEventCallbackUrls("defaultClick", _fwsdk.EVENT_TYPE_CLICK)) && b.length > 0) {
+            d = false;
+            e = '<a href="' + b[0] + '" target="_blank" style="border:none 0"><img alt="" src="' + e + '"/></a>'
         }
+        if (d) {
+            d = document.createElement("iframe");
+            d.frameBorder = 0;
+            d.scrolling = "no";
+            d.src = e;
+            d.width = this._renditionWidth;
+            d.height = this._renditionHeight;
+            a.appendChild(d)
+        } else _fwsdk.Util.buildNode(a, e)
+    },
+    _isImageAsset: function (a) {
+        if (a && !_fwsdk.Util.isBlank(a.getUrl()) && a.getMimeType().match(/image\//)) return true;
+        return false
     },
     info: function () {
         return {
@@ -1950,9 +2278,10 @@ _fwsdk.OverlayAdRenderer.prototype = {
         b.style.height = this._renditionHeight;
         b.style.position = "absolute";
         b.style.overflow = "hidden";
+        var c = a.getParameter("renderer.overlay.zIndex") || "100000";
+        b.style.zIndex = c;
         a = a.getParameter("renderer.overlay.primaryAnchor") || "bc";
-        if (a == "tl") b.style.left = b.style.top =
-        0;
+        if (a == "tl") b.style.left = b.style.top = 0;
         else if (a == "tr") b.style.right = b.style.top = 0;
         else if (a == "bl") b.style.left = b.style.bottom = 0;
         else if (a == "br") b.style.right = b.style.bottom = 0;
@@ -1967,19 +2296,19 @@ _fwsdk.OverlayAdRenderer.prototype = {
             b.style.right = 0
         } else {
             b.style.left = (this._videoBaseWidth - this._renditionWidth) * 0.5;
-            b.style.bottom =
-            0
+            b.style.bottom = 0
         }
     }
 };
 _fwsdk.OverlayAdRenderer.prototype.constructor = _fwsdk.OverlayAdRenderer;
 _fwsdk.PageSlotScanner = function () {
     this._knownSlots = [];
-    this._slots = {}
+    this._slots = {};
+    this._candidateAds = []
 };
 _fwsdk.PageSlotScanner.prototype = {
     isSlotDuplicate: function (a) {
-        for (var b = 0; b < this._knownSlots.length; ++b) if (this._knownSlots[b] == a) return true;
+        for (var b = 0; b < this._knownSlots.length; ++b) if (this._knownSlots[b].id == a) return true;
         return false
     },
     findPageSlotByScope: function (a) {
@@ -1989,44 +2318,50 @@ _fwsdk.PageSlotScanner.prototype = {
         if (!a._fw_admanager) a._fw_admanager = {};
         a._fw_admanager.pageScanState = true;
         for (a = 0; a < e.length; ++a) {
-            var g;
+            var f;
             c = e[a];
             if (d.test(c.className)) {
                 c = c.getAttribute("id");
-                if ((g = b.getElementById("_fw_input_" + c)) && !this.isSlotDuplicate(c)) if (g = g.getAttribute("value")) {
-                    if (g.charAt(g.length - 1) != ";") g += ";";
-                    g = g.split(";");
-                    var h = g[g.length - 2];
-                    g = false;
-                    if (h.search("lo=i") != -1) g = true;
-                    var f = false;
-                    if (h.search("prct=") != -1) f = true;
-                    if (h.search("flag=") < 0) h += "&flag=";
-                    if (h.search("ptgt=") < 0) h = "ptgt=s&" + h;
-                    var k = [];
-                    h = h.split("&");
-                    for (var j, n = 0; n < h.length; ++n) {
-                        j = h[n].split("=");
-                        if (j.length == 2) {
-                            j[1] = decodeURIComponent(j[1]);
-                            if (j[0] == "ssct") if (f) continue;
+                if ((f = b.getElementById("_fw_input_" + c)) && !this.isSlotDuplicate(c)) if (f = f.getAttribute("value")) {
+                    if (f.charAt(f.length - 1) != ";") f += ";";
+                    f = f.split(";");
+                    var g = f[f.length - 2];
+                    f = false;
+                    if (g.search("lo=i") != -1) f = true;
+                    var h = false;
+                    if (g.search("prct=") != -1) h = true;
+                    if (g.search("flag=") < 0) g += "&flag=";
+                    if (g.search("ptgt=") < 0) g = "ptgt=s&" + g;
+                    var l = [];
+                    g = g.split("&");
+                    for (var k, n, j, o = 0; o < g.length; ++o) {
+                        k = g[o].split("=");
+                        if (k.length == 2) {
+                            k[1] = decodeURIComponent(k[1]);
+                            if (k[0] == "ssct") if (h) continue;
                             else {
-                                f = true;
-                                j[0] = "prct"
+                                h = true;
+                                k[0] = "prct"
                             }
-                            if (j[0] == "flag") {
-                                if (j[1].search(/[-\+]cmpn/) == -1) j[1] += "+cmpn";
-                                if (j[1].charAt(0) != "+" && j[1].charAt(0) != "-") j[1] = "+" + j[1];
-                                if (g && j[1].search("-init") == -1) j[1] += "-init";
-                                if (j[1].search("-nrpl") != -1) j[1] = j[1].replace("-nrpl", "+cmpn")
-                            }
-                            j = encodeURIComponent(j[0]) + "=" + encodeURIComponent(j[1]);
-                            k.push(j)
+                            if (k[0] == "flag") {
+                                if (k[1].search(/[-\+]cmpn/) == -1) k[1] += "+cmpn";
+                                if (k[1].charAt(0) != "+" && k[1].charAt(0) != "-") k[1] = "+" + k[1];
+                                if (f && k[1].search("-init") == -1) k[1] += "-init";
+                                if (k[1].search("-nrpl") != -1) k[1] = k[1].replace("-nrpl", "+cmpn")
+                            } else if (k[0] == "w") n = Number(k[1]);
+                            else if (k[0] == "h") j = Number(k[1]);
+                            else k[0] == "cana" && this._addCandidateAds(k[1]);
+                            k = encodeURIComponent(k[0]) + "=" + encodeURIComponent(k[1]);
+                            l.push(k)
                         }
                     }
-                    f || k.push("prct=" + encodeURIComponent("text/html_lit_js_wc_nw"));
-                    this._slots[c] = k.join("&") + ";";
-                    this._knownSlots.push(c)
+                    h || l.push("prct=" + encodeURIComponent("text/html_lit_js_wc_nw"));
+                    this._slots[c] = l.join("&") + ";";
+                    this._knownSlots.push({
+                        id: c,
+                        width: n,
+                        height: j
+                    })
                 }
             }
         }
@@ -2052,6 +2387,13 @@ _fwsdk.PageSlotScanner.prototype = {
         }
         if (a) a = a.substring(0, a.length - 1);
         return a
+    },
+    _addCandidateAds: function (a) {
+        a = a.split(",");
+        for (var b = 0; b < a.length; b++) {
+            var c = parseInt(a[b]);
+            c > 0 && this._candidateAds.push(c)
+        }
     }
 };
 _fwsdk.PageSlotScanner.prototype.constructor = _fwsdk.PageSlotScanner;
@@ -2097,8 +2439,8 @@ _fwsdk.Util.mixin(_fwsdk.RendererController.prototype, {
         var b = this._context._adResponse.getCreative(this._adInstance._adId, this._adInstance._creativeId);
         if (b && b._parameters.hasOwnProperty(a)) return b._parameters[a];
         if (this._adInstance.getSlot()._parameters.hasOwnProperty(a)) return this._adInstance.getSlot()._parameters[a];
-        if (this._context._globalLevelParameterDictionary.hasOwnProperty(a)) return this._context._globalLevelParameterDictionary[a];
         if (this._context._adResponse._profileParameters.hasOwnProperty(a)) return this._context._adResponse._profileParameters[a];
+        if (this._context._globalLevelParameterDictionary.hasOwnProperty(a)) return this._context._globalLevelParameterDictionary[a];
         return null
     },
     scheduleAdInstances: function (a) {
@@ -2110,10 +2452,10 @@ _fwsdk.Util.mixin(_fwsdk.RendererController.prototype, {
         c = c.scheduleAdInstance();
         b.push(c);
         var e = 0;
-        for (d = d._companionAdInstances; e < d.length; e++) for (var g = d[e], h = 1; h < a.length; h++) if (a[h] == g._slot) {
-            g = g.schedule();
-            c._companionAdInstances.push(g);
-            b.push(g);
+        for (d = d._companionAdInstances; e < d.length; e++) for (var f = d[e], g = 1; g < a.length; g++) if (a[g] == f._slot) {
+            f = f.schedule();
+            c._companionAdInstances.push(f);
+            b.push(f);
             break
         }
         return b
@@ -2133,6 +2475,9 @@ _fwsdk.Util.mixin(_fwsdk.RendererController.prototype, {
                 errorCode: _fwsdk.ERROR_NO_RENDERER
             }
         })
+    },
+    dispatchEvent: function (a, b) {
+        this._context.dispatchEvent(a, b)
     },
     _matchRendererClassName: function (a) {
         var b = a.getContentType();
@@ -2168,8 +2513,8 @@ _fwsdk.RenditionSelector.prototype = {
         a = this.filterRenditionsByBitrate(a, this._targetByterate);
         if (a.length > 0) {
             for (var d = a[0], e = 1; e < a.length; ++e) {
-                var g = this.compareVisualMetrics(d, a[e], b, c);
-                if (g) d = g
+                var f = this.compareVisualMetrics(d, a[e], b, c);
+                if (f) d = f
             }
             return d
         }
@@ -2179,10 +2524,9 @@ _fwsdk.RenditionSelector.prototype = {
         for (var c = [], d, e = 0; e < a.length; ++e) if (this.validateCreativeRendition(a[e])) if (this.getBitrate(a[e]) <= b) c.push(a[e]);
         else if (!d || this.getBitrate(a[e]) < this.getBitrate(d)) d = a[e];
         c.length === 0 && d && c.push(d);
-        var g =
-        this;
-        c.sort(function (h, f) {
-            return g.sortOnBitrate(h, f)
+        var f = this;
+        c.sort(function (g, h) {
+            return f.sortOnBitrate(g, h)
         });
         return c
     },
@@ -2193,10 +2537,10 @@ _fwsdk.RenditionSelector.prototype = {
         if (e && !d) return a;
         if (!e && !d) return null;
         c = this._conversionFactor * this._arWeight * Math.log(e.arRatio);
-        var g = this._pxWeight * Math.log(e.pixelation);
+        var f = this._pxWeight * Math.log(e.pixelation);
         e = this._conversionFactor * this._arWeight * Math.log(d.arRatio);
         d = this._pxWeight * Math.log(d.pixelation);
-        c = this.findDistance(c, g, 0, 0);
+        c = this.findDistance(c, f, 0, 0);
         e = this.findDistance(e, d, 0, 0);
         if (c == e) return null;
         return c < e ? a : b
@@ -2204,9 +2548,9 @@ _fwsdk.RenditionSelector.prototype = {
     calculateVisualRatios: function (a, b, c, d) {
         if (a > 0 && b > 0 && c > 0 && d > 0) {
             var e = a / b,
-                g = c / d;
+                f = c / d;
             a = a * b;
-            if (e > g) {
+            if (e > f) {
                 c = c;
                 d = c / e
             } else {
@@ -2214,7 +2558,7 @@ _fwsdk.RenditionSelector.prototype = {
                 c = d * e
             }
             return {
-                arRatio: e / g,
+                arRatio: e / f,
                 pixelation: a / (c * d)
             }
         }
@@ -2284,6 +2628,9 @@ _fwsdk.Util.mixin(_fwsdk.Slot.prototype, {
         if (!this._baseId) return null;
         return document.getElementById(this._baseId)
     },
+    getVideoDisplaySize: function () {
+        return this._context.getVideoDisplaySize()
+    },
     dispose: function () {
         this._onTimeUpdate && this._contentVideo.removeEventListener("timeupdate", this._onTimeUpdate, false)
     },
@@ -2302,8 +2649,7 @@ _fwsdk.Util.mixin(_fwsdk.Slot.prototype, {
                     this._eventCallbacks.push(e)
                 }
             }
-            b =
-            0;
+            b = 0;
             for (c = a.selectedAds || []; b < c.length; b++) {
                 d = c[b];
                 a = new _fwsdk.AdInstance(this._context);
@@ -2326,6 +2672,9 @@ _fwsdk.Util.mixin(_fwsdk.Slot.prototype, {
         a._acceptPrimaryContentType = this._acceptPrimaryContentType;
         a._acceptContentType = this._acceptContentType;
         return a
+    },
+    getCurrentAdInstance: function () {
+        return this._currentAdInstance
     },
     schduleAdInstance: function () {
         return this._scheduledAdInstance = this._currentAdInstance.schedule()
@@ -2362,11 +2711,26 @@ _fwsdk.Util.mixin(_fwsdk.Slot.prototype, {
             var a = _fwsdk.EventCallback.getEventCallback(this._eventCallbacks, _fwsdk.EVENT_SLOT_IMPRESSION, _fwsdk.EVENT_TYPE_IMPRESSION);
             a && a.process()
         }
-        for (a =
-        0; a < this._adInstances.length; a++) this._adInstances[a]._rendererController.reset();
+        for (a = 0; a < this._adInstances.length; a++) this._adInstances[a].reset();
+        this.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_MIDROLL && this._adInstances.length > 0 && this._context.dispatchEvent(_fwsdk.EVENT_CONTENT_VIDEO_PAUSE_REQUEST, {
+            slot: this
+        });
+        this._context.dispatchEvent(_fwsdk.EVENT_SLOT_STARTED, {
+            slot: this
+        });
         this.playNextAdInstance()
     },
     _onCompletePlaying: function () {
+        if (this.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_PREROLL || this.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_POSTROLL) {
+            if (this._contentVideoAttached) {
+                this._context.dispatchEvent(_fwsdk.EVENT_CONTENT_VIDEO_DETACH, {
+                    slot: this
+                });
+                this._contentVideoAttached = false
+            }
+        } else this.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_MIDROLL && this._adInstances.length > 0 && this._context.dispatchEvent(_fwsdk.EVENT_CONTENT_VIDEO_RESUME_REQUEST, {
+            slot: this
+        });
         var a = this._onSlotEnded;
         this._onSlotEnded = null;
         a && a();
@@ -2379,6 +2743,15 @@ _fwsdk.Util.mixin(_fwsdk.Slot.prototype, {
         this._commitScheduledAdInstance();
         this._currentAdInstance = this._nextPlayableAdInstance();
         if (!this._currentAdInstance) return false;
+        if (this.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_PREROLL || this.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_POSTROLL) {
+            var a = this._currentAdInstance._rendererController._matchRendererClassName(this._currentAdInstance._primaryCreativeRendition);
+            if (!this._contentVideoAttached && a == "_fwsdk.VideoAdRenderer") {
+                this._context.dispatchEvent(_fwsdk.EVENT_CONTENT_VIDEO_ATTACH, {
+                    slot: this
+                });
+                this._contentVideoAttached = true
+            }
+        }
         this._currentAdInstance._rendererController.play();
         return true
     },
@@ -2465,150 +2838,231 @@ _fwsdk.Util.mixin(_fwsdk.Url.prototype, {
 _fwsdk.VideoAdRenderer = function () {};
 _fwsdk.VideoAdRenderer.prototype = {
     start: function (a) {
-        _fwsdk.log("VideoAdRenderer start() at iOS " + _fwsdk.Util.iOSVersion() + " device");
         var b = a.getAdInstance(),
-            c = b.getSlot(),
-            d = c.getBase().getElementsByTagName("video")[0];
-        d.pause();
-        var e = d.style.pixelWidth ? d.style.pixelWidth : d.offsetWidth,
-            g = d.style.pixelHeight ? d.style.pixelHeight : d.offsetHeight;
-        d.style.display = "none";
-        var h = b.getAllCreativeRenditions();
-        h = (new _fwsdk.RenditionSelector(1E3, 1, 1, 0.2)).getBestFitRendition(h, e, g);
-        b.setPrimaryCreativeRendition(h);
-        h = h ? h.getPrimaryCreativeRenditionAsset() : null;
-        if (!h || !h.getUrl()) a.processEvent({
+            c = b.getSlot();
+        if (_fwsdk.Util.isAndroid()) if (_fwsdk.Util.androidVersion() < 2.2 || c.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_MIDROLL && _fwsdk.Util.androidVersion() < 3.1) {
+            a.processEvent({
+                name: _fwsdk.RENDERER_STATE_FAILED,
+                info: {
+                    errorModule: "VideoAdRenderer",
+                    errorCode: _fwsdk.ERROR_DEVICE_LIMIT,
+                    errorInfo: c.getTimePositionClass().toLowerCase() + " on Android/" + _fwsdk.Util.androidVersion()
+                }
+            });
+            return
+        } else _fwsdk.log("VideoAdRenderer start() at Android " + _fwsdk.Util.androidVersion() + " device");
+        else {
+            _fwsdk.log("VideoAdRenderer start() at iOS " + _fwsdk.Util.iOSVersion() + " device");
+            if (_fwsdk.Util.iOSVersion() > 0 && _fwsdk.Util.iOSVersion() < 3.2 && c.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_MIDROLL) {
+                a.processEvent({
+                    name: _fwsdk.RENDERER_STATE_FAILED,
+                    info: {
+                        errorModule: "VideoAdRenderer",
+                        errorCode: _fwsdk.ERROR_DEVICE_LIMIT,
+                        errorInfo: "midroll on iPhone/" + _fwsdk.Util.iOSVersion()
+                    }
+                });
+                return
+            }
+        }
+        var d = c.getBase().getElementsByTagName("video")[0];
+        if (c.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_MIDROLL && _fwsdk.Util.iOSVersion() >= 4.2 && !_fwsdk.Util.isIPhoneOrIPod() && d.webkitDisplayingFullscreen) a.processEvent({
             name: _fwsdk.RENDERER_STATE_FAILED,
             info: {
                 errorModule: "VideoAdRenderer",
-                errorCode: _fwsdk.ERROR_NULL_ASSET
+                errorInfo: "main video full screen on iPad/" + _fwsdk.Util.iOSVersion()
             }
         });
         else {
-            a.setCapability(_fwsdk.EVENT_AD_QUARTILE, _fwsdk.CAPABILITY_STATUS_ON);
-            _fwsdk.Util.isIPad() || a.setCapability(_fwsdk.EVENT_AD_CLICK, _fwsdk.CAPABILITY_STATUS_OFF);
-            var f = _fwsdk._videoPool && _fwsdk._videoPool.shift() || document.createElement("video");
-            f.width = e;
-            f.height = g;
-            f.style.position = d.style.position;
-            f.style.left =
-            d.style.left;
-            f.style.right = d.style.right;
-            f.style.top = d.style.top;
-            f.style.bottom = d.style.bottom;
-            f.style.background = "black";
-            f.controls = "controls";
-            d.parentNode.appendChild(f);
-            var k = this,
-                j = null,
-                n = function (l) {
-                    _fwsdk.log("adVideo event " + l.type);
-                    a.processEvent({
-                        name: _fwsdk.EVENT_AD_CLICK
-                    })
-                },
-                r = function (l) {
-                    _fwsdk.log("adVideo event " + l.type);
-                    f.controls = true
-                },
-                s = function (l) {
-                    _fwsdk.log("adVideo event " + l.type);
-                    f.controls = false
-                },
-                q = function (l) {
-                    _fwsdk.log("adVideo event " + l.type);
-                    f.removeEventListener("timeupdate", q, false);
-                    if (j) {
-                        clearTimeout(j);
-                        j = null
-                    }
-                    k._quartileTimerId = setInterval(function () {
-                        var m = f.currentTime,
-                            p = f.duration;
-                        if (!(typeof m !== "number" || typeof p !== "number")) {
-                            m >= p * 0.25 && a.processEvent({
-                                name: _fwsdk.EVENT_AD_FIRST_QUARTILE
-                            });
-                            m >= p * 0.5 && a.processEvent({
-                                name: _fwsdk.EVENT_AD_MIDPOINT
-                            });
-                            if (m >= p * 0.75) {
-                                clearInterval(k._quartileTimerId);
-                                k._quartileTimerId = null;
-                                a.processEvent({
-                                    name: _fwsdk.EVENT_AD_THIRD_QUARTILE
-                                })
-                            }
+            var e = c.getVideoDisplaySize().width,
+                f = c.getVideoDisplaySize().height,
+                g = b.getAllCreativeRenditions();
+            g = (new _fwsdk.RenditionSelector(1E3, 1, 1, 0.2)).getBestFitRendition(g, e, f);
+            b.setPrimaryCreativeRendition(g);
+            var h = g ? g.getPrimaryCreativeRenditionAsset() : null;
+            if (!h || !h.getUrl()) a.processEvent({
+                name: _fwsdk.RENDERER_STATE_FAILED,
+                info: {
+                    errorModule: "VideoAdRenderer",
+                    errorCode: _fwsdk.ERROR_NULL_ASSET
+                }
+            });
+            else {
+                a.setCapability(_fwsdk.EVENT_AD_QUARTILE, _fwsdk.CAPABILITY_STATUS_ON);
+                var l = !_fwsdk.Util.isIPhoneOrIPod() && !(_fwsdk.Util.iOSVersion() == 3.2 && c.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_MIDROLL);
+                l || a.setCapability(_fwsdk.EVENT_AD_CLICK, _fwsdk.CAPABILITY_STATUS_OFF);
+                var k = _fwsdk.Util.isMobile() ? "touchend" : "click",
+                    n = c.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_PREROLL || c.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_POSTROLL,
+                    j;
+                if (n) {
+                    _fwsdk.log("use main video ");
+                    j = d;
+                    j.controls = false
+                } else {
+                    j = _fwsdk._videoPool && _fwsdk._videoPool.shift() || document.createElement("video");
+                    j.width = e;
+                    j.height = f;
+                    j.style.position = c.getVideoDisplaySize().position;
+                    j.style.left = c.getVideoDisplaySize().left;
+                    j.style.top = c.getVideoDisplaySize().top;
+                    j.style.background = "black";
+                    j.controls = false;
+                    d.parentNode.appendChild(j)
+                }
+                var o = this,
+                    q = null,
+                    s = null,
+                    z = function () {
+                        _fwsdk.log("checkTimeUpdate()");
+                        r("timeout when playing")
+                    },
+                    t = function () {
+                        if (s) {
+                            clearTimeout(s);
+                            s = null
                         }
-                    }, 1E3);
-                    a.processEvent({
-                        name: _fwsdk.RENDERER_STATE_STARTED
-                    })
-                },
-                o = function (l) {
-                    var m = null;
-                    if (l) _fwsdk.log("ad video event " + l.type);
-                    else m = "timeout";
-                    if (j) {
-                        clearTimeout(j);
-                        j = null
-                    }
-                    f.removeEventListener("touchend", n, false);
-                    f.removeEventListener("ended", o, false);
-                    f.removeEventListener("error", o, false);
-                    f.removeEventListener("pause", r, false);
-                    f.removeEventListener("playing", s, false);
-                    f.removeEventListener("timeupdate", q, false);
-                    if (f.error) m = "error:" + f.error + ",code:" + f.error.code;
-                    a.processEvent({
-                        name: _fwsdk.RENDERER_STATE_COMPLETING
-                    });
-                    f.parentNode.removeChild(f);
-                    d.style.display = "";
-                    (function () {
-                        delete f._fw_videoAdPlaying;
-                        if (k._quartileTimerId) {
-                            clearInterval(k._quartileTimerId);
-                            k._quartileTimerId = null
-                        }
-                        if (m) a.processEvent({
-                            name: _fwsdk.RENDERER_STATE_FAILED,
-                            info: {
-                                errorModule: "VideoAdRenderer",
-                                errorInfo: m
-                            }
-                        });
-                        else {
+                    },
+                    u = function (m) {
+                        if (j.paused && _fwsdk.Util.androidVersion() >= 3.1) j.play();
+                        else if (!a.getParameter(_fwsdk.PARAMETER_EXTENSION_AD_CONTROL_CLICK_ELEMENT)) {
+                            _fwsdk.log("adVideo event " + m.type);
                             a.processEvent({
-                                name: _fwsdk.EVENT_AD_FIRST_QUARTILE
-                            });
-                            a.processEvent({
-                                name: _fwsdk.EVENT_AD_MIDPOINT
-                            });
-                            a.processEvent({
-                                name: _fwsdk.EVENT_AD_THIRD_QUARTILE
-                            });
-                            a.processEvent({
-                                name: _fwsdk.EVENT_AD_COMPLETE
-                            });
-                            a.processEvent({
-                                name: _fwsdk.RENDERER_STATE_COMPLETED
+                                name: _fwsdk.EVENT_AD_CLICK
                             })
                         }
-                    })();
-                    c.getTimePositionClass() == _fwsdk.TIME_POSITION_CLASS_MIDROLL && b == c._adInstances[c._adInstances.length - 1] && d.play()
+                    },
+                    v = function (m) {
+                        _fwsdk.log("adVideo event " + m.type);
+                        j.controls = true;
+                        t()
+                    },
+                    w = function (m) {
+                        _fwsdk.log("adVideo event " + m.type);
+                        j.controls = false
+                    },
+                    x = false,
+                    y = function () {
+                        t();
+                        s = setTimeout(z, a.getParameter(_fwsdk.PARAMETER_RENDERER_VIDEO_PROGRESS_DETECT_TIMEOUT) || 6E3);
+                        if (!x) {
+                            x = true;
+                            if (q) {
+                                clearTimeout(q);
+                                q = null
+                            }
+                            o._quartileTimerId = setInterval(function () {
+                                var m = j.currentTime,
+                                    p = j.duration;
+                                if (!(typeof m !== "number" || typeof p !== "number")) {
+                                    m >= p * 0.25 && a.processEvent({
+                                        name: _fwsdk.EVENT_AD_FIRST_QUARTILE
+                                    });
+                                    m >= p * 0.5 && a.processEvent({
+                                        name: _fwsdk.EVENT_AD_MIDPOINT
+                                    });
+                                    if (m >= p * 0.75) {
+                                        clearInterval(o._quartileTimerId);
+                                        o._quartileTimerId = null;
+                                        a.processEvent({
+                                            name: _fwsdk.EVENT_AD_THIRD_QUARTILE
+                                        })
+                                    }
+                                }
+                            }, 1E3);
+                            a.processEvent({
+                                name: _fwsdk.RENDERER_STATE_STARTED
+                            })
+                        }
+                    },
+                    r = function (m) {
+                        var p = null;
+                        if (m.type) _fwsdk.log("ad video event " + m.type);
+                        else p = m;
+                        t();
+                        if (q) {
+                            clearTimeout(q);
+                            q = null
+                        }
+                        l && j.removeEventListener(k, u, false);
+                        j.removeEventListener("ended", r, false);
+                        j.removeEventListener("error", r, false);
+                        j.removeEventListener("pause", v, false);
+                        j.removeEventListener("playing", w, false);
+                        j.removeEventListener("timeupdate", y, false);
+                        if (j.error) p = "error:" + j.error + ",code:" + j.error.code;
+                        a.processEvent({
+                            name: _fwsdk.RENDERER_STATE_COMPLETING
+                        });
+                        n || j.parentNode.removeChild(j);
+                        (function () {
+                            delete j._fw_videoAdPlaying;
+                            if (o._quartileTimerId) {
+                                clearInterval(o._quartileTimerId);
+                                o._quartileTimerId = null
+                            }
+                            if (p) a.processEvent({
+                                name: _fwsdk.RENDERER_STATE_FAILED,
+                                info: {
+                                    errorModule: "VideoAdRenderer",
+                                    errorInfo: p
+                                }
+                            });
+                            else {
+                                a.processEvent({
+                                    name: _fwsdk.EVENT_AD_FIRST_QUARTILE
+                                });
+                                a.processEvent({
+                                    name: _fwsdk.EVENT_AD_MIDPOINT
+                                });
+                                a.processEvent({
+                                    name: _fwsdk.EVENT_AD_THIRD_QUARTILE
+                                });
+                                a.processEvent({
+                                    name: _fwsdk.EVENT_AD_COMPLETE
+                                });
+                                a.processEvent({
+                                    name: _fwsdk.RENDERER_STATE_COMPLETED
+                                })
+                            }
+                        })()
+                    },
+                    A = function (m) {
+                        _fwsdk.Util.isAndroid() && _fwsdk.Util.androidVersion() < 3.1 ? _fwsdk.log(m + " on android " + _fwsdk.Util.androidVersion()) : r(m)
+                    };
+                if (n) j._fw_videoAdPlaying = true;
+                b = function () {
+                    l && j.addEventListener(k, u, false);
+                    j.addEventListener("ended", r, false);
+                    j.addEventListener("error", r, false);
+                    j.addEventListener("pause", v, false);
+                    j.addEventListener("playing", w, false);
+                    j.addEventListener("timeupdate", y, false);
+                    j.src = h.getUrl();
+                    _fwsdk.log("play video ad " + j.src);
+                    j.load();
+                    if (j._fw_fromVideoPool || _fwsdk.Util.iOSVersion() === 0 || _fwsdk.Util.iOSVersion() >= 3.2 && _fwsdk.Util.iOSVersion() < 4.2) {
+                        var m = a.getParameter(_fwsdk.PARAMETER_RENDERER_VIDEO_START_DETECT_TIMEOUT) || 3E3;
+                        q = setTimeout(A, m, m + "ms timeout before playing")
+                    }
+                    if (_fwsdk.Util.isAndroid()) {
+                        m = a.getParameter(_fwsdk.PARAMETER_RENDERER_VIDEO_ANDROID_DELAY) || 100;
+                        setTimeout(function () {
+                            j.play()
+                        }, m)
+                    } else setTimeout(function () {
+                        j.play()
+                    }, 100)
                 };
-            f.addEventListener("touchend", n, false);
-            f.addEventListener("ended", o, false);
-            f.addEventListener("error", o, false);
-            f.addEventListener("pause", r, false);
-            f.addEventListener("playing", s, false);
-            f.addEventListener("timeupdate", q, false);
-            f.src = h.getUrl();
-            _fwsdk.log("play video ad " + f.src);
-            f.load();
-            if (f._fw_fromVideoPool || _fwsdk.Util.iOSVersion() === 0 || _fwsdk.Util.iOSVersion() >= 3.2 && _fwsdk.Util.iOSVersion() < 4.2) j = setTimeout(o, 3E3);
-            f.play()
+                if (!_fwsdk.VideoAdRenderer._fw_playedDummyVideo && n && _fwsdk.Util.iOSVersion() > 0 && _fwsdk.Util.iOSVersion() < 4.2) {
+                    _fwsdk.VideoAdRenderer._fw_playedDummyVideo = true;
+                    _fwsdk.log("play dummy video");
+                    j.src = "http://127.0.0.1:1/404.mp4";
+                    j.load();
+                    j.play();
+                    j._fw_videoAdPlaying = true;
+                    setTimeout(b, 500)
+                } else b()
+            }
         }
     },
     info: function () {
@@ -2617,9 +3071,4 @@ _fwsdk.VideoAdRenderer.prototype = {
         }
     }
 };
-_fwsdk.VideoAdRenderer.prototype.constructor = _fwsdk.VideoAdRenderer; /*   paste in your code and press Beautify button   */
-if ('this_is' == /an_example/) {
-    do_something();
-} else {
-    var a = b ? (c % d) : e[f];
-}
+_fwsdk.VideoAdRenderer.prototype.constructor = _fwsdk.VideoAdRenderer;
