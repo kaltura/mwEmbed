@@ -107,7 +107,6 @@ mw.freeWheelControler.prototype = {
 	 * @return
 	 */
 	onRequestComplete: function( event ){
-		debugger;
 		var _this = mw.freeWheelGlobalContextInstance;
 		mw.log("freeWheelController::onRequestComplete>");
 		if ( event.success ){
