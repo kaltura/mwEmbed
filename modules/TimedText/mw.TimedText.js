@@ -128,7 +128,7 @@ mw.includeAllModuleMessages();
 			$( embedPlayer ).bind( 'onplay', function() {
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
-				// hide the caption menu if presently displayed
+				// Hide the caption menu if presently displayed
 				$( '#textMenuContainer_' + embedPlayer.id ).parent().remove();
 			} );
 			
@@ -362,10 +362,13 @@ mw.includeAllModuleMessages();
 			// Get the text per kind
 			var textCategories = [ ];
 
-			for( var i = 0; i < this.enabledSources.length ; i++ ) {
-				var source = this.enabledSources[ i ];
-				this.updateSourceDisplay( source, currentTime );
-			}
+			//for( var i = 0; i < this.enabledSources.length ; i++ ) {
+				//var source = this.enabledSources[ i ];
+				var source = this.enabledSources[ 0 ];
+				if( source ) {
+					this.updateSourceDisplay( source, currentTime );
+				}
+			//}
 		},
 
 		/**
@@ -428,7 +431,7 @@ mw.includeAllModuleMessages();
 				for( var i=0; i < this.textSources.length; i++ ) {
 					var source = this.textSources[ i ];
 					if( source.srclang.toLowerCase() == 'en' ) {
-						this.enableSource( source );
+						_this.enableSource( source );
 						return ;
 					}
 				}
@@ -437,7 +440,7 @@ mw.includeAllModuleMessages();
 			if( this.enabledSources.length == 0 ) {
 				for( var i=0; i < this.textSources.length; i++ ) {
 					var source = this.textSources[ i ];
-					this.enableSource( source );
+					_this.enableSource( source );
 					return ;
 				}
 			}
@@ -497,6 +500,8 @@ mw.includeAllModuleMessages();
 		*/
 		selectMenuItem: function( item ) {
 			mw.log("selectMenuItem: " + $( item ).find('a').attr('class') );
+			console.log(item);
+			//this.currentLangKey = ''
 		},
 
 		/**

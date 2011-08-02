@@ -118,6 +118,10 @@ class KalturaResultObject {
 		if( isset( $sources['iphone'] ) ) {
 			$flavorUrl = $sources['iphone']['src'];
 		}
+		// h264 for iPad
+		if( isset( $sources['ipad'] ) ) {
+			$flavorUrl = $sources['ipad']['src'];
+		}
 		// rtsp3gp for BlackBerry
 		if( strpos( $userAgent, 'BlackBerry' ) !== false && $sources['rtsp3gp'] ){
 			return 	$sources['rtsp3gp']['src'];
