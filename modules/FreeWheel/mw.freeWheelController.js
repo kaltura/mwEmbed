@@ -95,8 +95,9 @@ mw.freeWheelControler.prototype = {
 		// Add local companion targets
 		this.addCompanionBindings();
 		
-		// FreeWheel sets SVLads003 as the response? 
+		// XXX FreeWheel sets SVLads003 as the response? 
 		window['SVLads003'] = true;
+		
 		// Load add data ( will call onRequestComplete once ready )
 		mw.log("freeWheelController::submitRequest>");
 		this.getContext().submitRequest();
@@ -107,7 +108,7 @@ mw.freeWheelControler.prototype = {
 	 * @return
 	 */
 	onRequestComplete: function( event ){
-		var _this = mw.freeWheelGlobalContextInstance;
+		var _this = this;
 		mw.log("freeWheelController::onRequestComplete>");
 		if ( event.success ){
 			var fwTemporalSlots = _this.getContext().getTemporalSlots();
@@ -130,7 +131,7 @@ mw.freeWheelControler.prototype = {
 				_this.prerollSlots[0].play();
 		}
 		// issue the "ready callback"
-		mw.freeWheelGlobalContextInstance.callback();
+		_this.callback();
 	},
 	/**
 	 * Adds local companion targets ( if they  exists ) for easy passing across iframe 
@@ -263,8 +264,11 @@ mw.freeWheelControler.prototype = {
 		
 	},
 	addContextListners: function(){
+		var _this = this;
 		mw.log("freeWheelController::addContextListners>" );
-		this.getContext().addEventListener( tv.freewheel.SDK.EVENT_REQUEST_COMPLETE, this.onRequestComplete );
+		this.getContext().addEventListener( tv.freewheel.SDK.EVENT_REQUEST_COMPLETE, function( event ){
+			_this.onRequestComplete( event );
+		});
 		this.getContext().addEventListener( tv.freewheel.SDK.EVENT_SLOT_ENDED, this.onSlotEnded );
 	},
 	setContextTimeout: function(){
