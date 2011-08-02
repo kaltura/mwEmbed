@@ -18,7 +18,7 @@ mw.includeAllModuleMessages();
 	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
   	   'srclang',
   	   'kind',
-	   'label',
+	   'label'
 	]);
 	
 	/**
@@ -231,6 +231,7 @@ mw.includeAllModuleMessages();
 				'font-size' : this.getInterfaceSizePercent( size ) + '%'
 			};
 		},
+		
 		/**
 		* Show the text interface library and show the text interface near the player.
 		*/

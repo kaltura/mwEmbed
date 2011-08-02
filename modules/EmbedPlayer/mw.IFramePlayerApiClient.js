@@ -155,12 +155,12 @@ mw.IFramePlayerApiClient.prototype = {
 		});
 		// Update any attributes
 		if( msgObject.attributes ){
-			$j.each(msgObject.attributes, function( i, notUsed){
+			$j.each( msgObject.attributes, function( i, notUsed ){
 				if( i != 'id' && i != 'class' && i != 'style' ){
-					try{
+					try {
 						_this.playerProxy[ i ] = msgObject.attributes[i];
 						_this._prevPlayerProxy[i] = msgObject.attributes[i];
-					} catch( e ){
+					} catch( e ) {
 						mw.log("Error could not set:" + i );
 					}
 				}
