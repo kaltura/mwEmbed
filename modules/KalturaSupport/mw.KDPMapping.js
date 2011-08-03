@@ -382,7 +382,9 @@
 					b( "onCloseFullScreen" );
 					break;
 				case 'playerUpdatePlayhead':
-					b('monitorEvent' );
+					b('monitorEvent', function() {
+						callback( embedPlayer.currentTime );
+					});
 					break;	
 				case 'changeMedia':
 					b( 'KalturaSupport_changeMedia', function( event, newEntryId){

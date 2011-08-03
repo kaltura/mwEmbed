@@ -20,7 +20,7 @@ mw.KTimedText.prototype = {
 		}
 
 		// Inherit the timed text support via the base TimedText module:
-		var baseTimedText = new mw.TimedText( embedPlayer );
+		var baseTimedText = new mw.TimedText( embedPlayer, kalturaConfig );
 		for( var i in _this ){
 			if( baseTimedText[ i ] ){
 				baseTimedText[ 'parent_' + i] = baseTimedText[i];

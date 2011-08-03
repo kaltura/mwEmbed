@@ -190,10 +190,10 @@ mw.KWidgetSupport.prototype = {
 		var $plugin = [];
 		var $uiPluginVars = [];
 		
-		if( pluginName ){
+		if( pluginName ){ 
 			$plugin = $uiConf.find( 'plugin#' + pluginName );
 			// When defined from uiConf ( "plugin" tag is equivalent to "pluginName.plugin = true" in the uiVars )
-			if( $plugin.length && $j.inArray( 'plugin', attr ) ){
+			if( $plugin.length && $j.inArray( 'plugin', attr ) != -1 ){ 
 				config['plugin'] = true;
 			}
 			$uiPluginVars = $uiConf.find( 'var[key^="' + pluginName + '"]' );

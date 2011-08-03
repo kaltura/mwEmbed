@@ -160,14 +160,14 @@ mw.AdTimeline.prototype = {
 			// TODO read the add disable control bar to ad config and check that here. 
 			_this.embedPlayer.disableSeekBar();
 			
-			var restorePlayer = function(){
+			var restorePlayer = function(){ 
 				_this.embedPlayer.restoreEventPropagation();
 				_this.embedPlayer.enableSeekBar();
 				_this.embedPlayer.play();
 			};
 			
-			var showBumper = function() {
-				_this.display('bumper', function() {
+			var showBumper = function() { 
+				_this.display('bumper', function() { 
 					var vid = _this.getNativePlayerElement();
 					// Enable overlays ( for monitor overlay events )
 					_this.adOverlaysEnabled = true;
@@ -184,7 +184,7 @@ mw.AdTimeline.prototype = {
 								},100);
 							}
 						);
-					} else {
+					} else { 
 						restorePlayer();
 					}
 				});
@@ -192,7 +192,7 @@ mw.AdTimeline.prototype = {
 			// Chain display of preroll and then bumper:
 			var prerollsLength = _this.getTimelineTargets('preroll').length;
 			for( var i=0; i < prerollsLength; i++) {
-				if( i == ( prerollsLength - 1 ) ) {
+				if( i == ( prerollsLength - 1 ) ) { 
 					_this.display('preroll', showBumper);
 				} else {
 					_this.display('preroll', function() {
@@ -200,7 +200,11 @@ mw.AdTimeline.prototype = {
 					});
 				}
 			}
-
+			// if no prerolls, restore player
+			if( prerollsLength === 0 ) {
+				restorePlayer();
+				_this.adOverlaysEnabled = true;
+			}
 			// Bind the player "ended" event to play the postroll if present
 			if( _this.getTimelineTargets('postroll').length > 0 ){
 				var displayedPostroll = false;
@@ -244,7 +248,7 @@ mw.AdTimeline.prototype = {
 			}
 			
 			// See if we have overlay ads:
-			if( _this.getTimelineTargets('overlay').length > 0 ){
+			if( _this.getTimelineTargets('overlay').length > 0 ){ 
 				var overlayTiming = _this.getTimelineTargets('overlay')[  _this.timelineTargetsIndex[ 'overlay' ] ];
 				var lastPlayEndTime = false;
 				var playedStart = false;
@@ -255,7 +259,7 @@ mw.AdTimeline.prototype = {
 					var time = _this.embedPlayer.currentTime;
 					if( !lastPlayEndTime ){
 						lastPlayEndTime = time;
-					}
+					} 
 					if( ( 	
 							( time >= overlayTiming.start && ! playedStart )
 							||

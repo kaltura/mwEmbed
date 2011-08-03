@@ -153,7 +153,7 @@ mw.includeAllModuleMessages();
 			
 			// Update the timed text size
 			$( embedPlayer ).bind( 'onResizePlayer', function(e, size, animate) {
-				mw.log( 'TimedText::onResizePlayer: ' + _this.getInterfaceSizeTextCss(size)['font-size'] );
+				mw.log( 'TimedText::onResizePlayer: ' + _this.getInterfaceSizeTextCss(size)['font-size']);
 				if (animate) {
 					embedPlayer.$interface.find( '.track' ).animate( _this.getInterfaceSizeTextCss( size ) );
 				} else {
@@ -903,7 +903,7 @@ mw.includeAllModuleMessages();
 				'position': 'absolute'
 			};
 			if( this.embedPlayer.controlBuilder.isOverlayControls() || 
-				!mw.setConfig( 'EmbedPlayer.OverlayControls')  )
+				!mw.getConfig( 'EmbedPlayer.OverlayControls')  )
 			{
 				layoutCss['bottom'] = 0;				
 			} else {
@@ -934,7 +934,7 @@ mw.includeAllModuleMessages();
 			// TOOD we should scrub this for non-formating html
 			$textTarget.append( 
 				$('<span />')
-					.css( 'display','inline' )
+					.css( this.getCaptionCss() )
 					.html( caption.content )
 			);
 
@@ -970,7 +970,7 @@ mw.includeAllModuleMessages();
 		
 			$textTarget.fadeIn('fast');
 		},
-		getDefaultStyle: function(){
+		getDefaultStyle: function(){ 
 			var baseCss =  {
 					'position':'absolute',
 					'bottom': 10,
@@ -1025,6 +1025,49 @@ mw.includeAllModuleMessages();
 				});
 			}
 			mw.log( 'TimedText:: height of ' + this.embedPlayer.id + ' is now: ' + $( '#' + this.embedPlayer.id ).height() );
+		},
+		/**
+		 * Build css for caption using this.options
+		 */
+		getCaptionCss: function() {
+			var options = this.options;
+			var style = {'display': 'inline'};
+
+			if( options.bg ) {
+				style["background-color"] = this.getHexColor( options.bg );
+			}
+			if( options.fontColor ) {
+				style["color"] = this.getHexColor( options.fontColor );
+			}
+			if( options.fontFamily ){
+				style["font-family"] = options.fontFamily;
+			}
+			if( options.fontsize ) {
+				style["font-size"] = options.fontsize + 'px';
+			}
+			if( options.useGlow && options.glowBlur && options.glowColor ) {
+				style["text-shadow"] = '0 0 ' + options.glowBlur + 'px ' + this.getHexColor( options.glowColor );
+			}
+
+			return style;
+		},
+
+		getHexColor: function(color) {
+			if( color.substr(0,2) == "0x" ) {
+				return color.replace('0x', '#');
+			} else {
+				color = parseInt( color );
+				color = color.toString(16);
+				var len = 6 - color.length;
+				if( len > 0 ) {
+					var pre = '';
+					for( var i=0; i<len; i++) {
+						pre += '0';
+					}
+					color = pre + color;
+				}
+				return '#' + color;
+			}
 		}
 	};
 
