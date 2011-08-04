@@ -11,7 +11,7 @@
 		'width' : 400,
 		'height': 300,
 		'durationHint' : 60,
-		'sources' : [
+		'src' : [
 		       'http://html5video.org/players/media/folgers.mp4',
 		       'http://html5video.org/players/media/folgers.ogv',
 		       'http://html5video.org/players/media/folgers.webm'
@@ -83,22 +83,31 @@
 					),
 					$('<div />').attr('id', 'mweew-tab-code').append(
 						$('<p />').text( gM('mwe-embedwizard-embedcode-desc') ),
-						$('<textarea />')
+						$('<pre />')
+						.addClass('brush: html')
 						.css({
+							'white-space' : 'pre-wrap !important',
 							'width' : '90%',
-							'height' : '40%'
+							'height' : '400'
 						})
 					)
 				);
 		},
 		updatePlayerCodePreview:function(){
+			var _this = this;
 			// Update the textarea: 
-			this.$target.find('.playerCodePreview textarea').val(
-				'<script type="text/javascript" src="http://html5.kaltura.org/js"></script>' + 
+			this.$target.find( '.playerCodePreview pre' ).text(
+				'<script type="text/javascript" src="http://html5.kaltura.org/js"></script>' + "\n" +
 				$('<div />').append( 
 					this.getTag()
-				).html()
-			);
+				).html().replace( />/g, ">\n").replace( /" /g, "\"\n" )
+			).syntaxHighlighter( function(){
+				// hide the command_help button
+				setTimeout(function(){
+					_this.$target.find( '.toolbar' ).hide();
+				},1000);
+			});
+			
 			this.$target.find('.videoContainer').empty().append(
 				this.getTag()
 			);
@@ -149,27 +158,6 @@
 						inputObj.cb( _this, defaultAttributes[ inputKey ] );
 					});
 				});
-				/*
-				var sizePosterInput = this.playerInputSet.sizeposter.inputTypes
-				// TODO replace with a loop over default values
-				var poster =  sizePosterInput.poster.d;
-				if( poster )
-					_this.$media.attr('poster', poster);
-				
-				var width =  sizePosterInput.width.d;
-				if( width )
-					_this.$media.css('width', width);
-				
-				var height =  sizePosterInput.height.d;
-				if( width )
-					_this.$media.css('height', height);
-				
-				var sourcesObj = this.playerInputSet.sources.inputTypes.src; 
-				for(var i = 0 ; i < sourcesObj.count; i++){
-					_this.$media.append(
-						$('<source />').attr('src', sourcesObj.d[i] )
-					);
-				} */
 			}
 			return _this.$media;
 		},
@@ -190,6 +178,8 @@
 		},
 		getInputRow:function( key, conf, inx ){
 			var _this = this;
+			// Get the default tag setup:
+			var defaultAttributes = mw.getConfig('EmbedWizard.DefaultAttributes');
 			
 			return $('<tr />').append(
 						$('<td />').text(
@@ -200,7 +190,7 @@
 								'size' : conf.s,
 								'type' : conf.type,
 								'name' : key + inx,
-								'value' : ( typeof conf.d == 'object' )? conf.d[inx] : conf.d
+								'value' : ( typeof defaultAttributes[key] == 'object' )? defaultAttributes[key][inx] : defaultAttributes[key]
 							}).change( function(){
 								conf.cb( _this, $(this).val(), inx );
 								_this.updatePlayerCodePreview();
@@ -225,13 +215,13 @@
 					'width' : {
 						's' : 4,
 						'cb' : function(_this,  val ){
-							_this.getTag().css('width',  val);
+							_this.getTag().attr('width',  val);
 						}
 					},
 					'height' : {
 						's' : 4,
 						'cb' : function( _this, val ){
-							_this.getTag().css('height', val);
+							_this.getTag().attr('height', val);
 						}
 					}
 				}				
@@ -247,7 +237,7 @@
 					'durationHint': {
 						's' : 4,
 						'cb': function( _this, val ){
-							_this.getTag().attr( 'data-durationHint', val );
+							_this.getTag().attr( 'durationHint', val );
 						}
 					},
 					'src' : {
@@ -260,14 +250,16 @@
 							if( typeof val != 'object' ){
 								setObj[ inx ]= val;
 							}
+
 							//console.log(jQuery(_this.getTag().find('source')[0]).attr('src', 'source'));
 							//console.log(inx);
 							$.each( val, function( i, valItem ){
-								if( $( _this.getTag() ).find('source')[i] ){
+								if( $( _this.getTag() ).find( 'source' )[i] ){
 									$( _this.getTag() ).find( 'source' )[i];
 									$( _this.getTag() ).find( 'source' )[i].attr('src', valItem );
 								} else {
-									$( '<source />' ).attr( 'src', valItem).appendTo( _this.getTag() );
+									$( '<source />' ).attr( 'src', valItem)
+									.appendTo( _this.getTag() );
 								}
 							});
 						}

@@ -24,4 +24,6 @@ $messages['en'] = array(
 	'mwe-embedwizard-sources-title' => 'Video sources',
 	'mwe-embedwizard-sources-desc' => 'Input urls to video sources. Its best to include a h.264 
 source, webm and ogg. See [http://html5video.org/wiki/index.php/Encoding_Guide encoding html5 video guide] for more info',
+
+	'mwe-embedwizard-durationHint' => 'Duration hint'
 );
