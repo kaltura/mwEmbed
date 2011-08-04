@@ -387,7 +387,7 @@
 					});
 					break;	
 				case 'changeMedia':
-					b( 'KalturaSupport_changeMedia', function( event, newEntryId){
+					b( 'KalturaSupport_ChangeMedia', function( event, newEntryId){
 						callback( {'entryId' : newEntryId }, embedPlayer.id );
 					});
 					break;
@@ -404,12 +404,12 @@
 					});
 					break;
 				case 'cuePointReached':
-					b( 'KalturaSupport_cuePointReached', function( event, cuePoint ) {
+					b( 'KalturaSupport_CuePointReached', function( event, cuePoint ) {
 						callback( cuePoint, embedPlayer.id );
 					});
 					break;
 				case 'adOpportunity':
-					b( 'KalturaSupport_adOpportunity', function( event, cuePoint ) {
+					b( 'KalturaSupport_AdOpportunity', function( event, cuePoint ) {
 						callback( cuePoint, embedPlayer.id );
 					});
 					break;
@@ -494,7 +494,7 @@
 					}
 
 					// CHANGE_MEDIA (changeMedia): Start the init of change media macro commands
-					$( embedPlayer ).trigger( 'KalturaSupport_changeMedia', notificationData.entryId );
+					$( embedPlayer ).trigger( 'KalturaSupport_ChangeMedia', notificationData.entryId );
 					
 					var chnagePlayingMedia = embedPlayer.isPlaying();
 					// Pause player during media switch

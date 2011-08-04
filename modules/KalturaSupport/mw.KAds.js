@@ -23,13 +23,37 @@ mw.KAds = function( embedPlayer, $uiConf, callback) {
 };
 
 mw.KAds.prototype = {
+	// The ad types 
+	namedAdTimelineTypes : [ 'preroll', 'postroll', 'midroll', 'overlay' ],
+	// Ad attribute map 
+	adAttributeMap: {
+		"Interval": 'frequency',
+		"StartAt": 'start'
+	},
 	
 	init: function( embedPlayer, $uiConf, callback ){
 		var _this = this; 
 		this.embedPlayer = embedPlayer;
-		this.$adConfig = $uiConf.find( 'Plugin#vast' );	
 		this.$notice = $uiConf.find( 'label#noticeMessage' );
 		this.$skipBtn = $uiConf.find( 'button#skipBtn' );
+
+		
+		var configSet = ['htmlCompanions' , 'flashCompanions' ];
+		$.each(this.namedAdTimelineTypes, function( inx, adType ){
+			$j.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
+				// Add all the ad types to the config set: 
+				configSet.push( adType + adAttributeName);
+			});
+			// Add the ad type Url
+			configSet.push( adType + 'Url');
+		});
+		
+		this.adConfig = kWidgetSupport.getPluginConfig(
+				embedPlayer,
+			$uiConf, 
+			'vast',
+			configSet
+		);
 
 		// Load the Ads from uiConf
 		_this.loadAds( function(){
@@ -39,7 +63,7 @@ mw.KAds.prototype = {
 
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
-		$j( this.embedPlayer ).bind('KalturaSupport_adOpportunity', function( event, cuePoint ) {
+		$j( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePoint ) {
 			_this.loadAd( cuePoint );
 		});
 	},
@@ -137,8 +161,8 @@ mw.KAds.prototype = {
 		this.getAdConfigSet( function( adConfigSet){			
 			
 			// Get global timeout ( should be per adType ) 
-			if( _this.$adConfig.attr('timeout') ){
-				baseDisplayConf[ 'timeout' ] = _this.$adConfig.attr( 'timeout' ); 
+			if( _this.adConfig.timeout ){
+				baseDisplayConf[ 'timeout' ] = _this.adConfig.timeout; 
 			}
 			
 			// Merge in the companion targets and add to player timeline: 
@@ -191,12 +215,7 @@ mw.KAds.prototype = {
 	 */
 	getAdConfigSet: function( callback ){
 		var _this = this;
-		var namedAdTimelineTypes = [ 'preroll', 'postroll', 'midroll', 'overlay' ];
-		// Maps ui-conf ads to named types
-		var adAttributeMap = {
-				"Interval": 'frequency',
-				"StartAt": 'start'
-		};
+		
 		var adConfigSet = {};
 		var loadQueueCount = 0;
 		
@@ -209,26 +228,26 @@ mw.KAds.prototype = {
 		};
 		
 		// Add timeline events: 	
-		$j(namedAdTimelineTypes).each( function( na, adTypePrefix ){		
+		$j( this.namedAdTimelineTypes ).each( function( na, adType ){
 			var adConf = {};
 
-			$j.each(adAttributeMap, function( adAttributeName,  displayConfName ){
-				if( _this.$adConfig.attr( adTypePrefix + adAttributeName ) ){
-					adConf[ displayConfName ] = _this.$adConfig.attr( adTypePrefix + adAttributeName );
+			$j.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
+				if( _this.adConfig[ adType + adAttributeName ] ){
+					adConf[ displayConfName ] =  _this.adConfig[ adType + adAttributeName ];
 				}
 			});
 			
-			if( _this.$adConfig.attr( adTypePrefix + 'Url' ) ){
+			if( _this.adConfig[ adType + 'Url' ] ){
 				loadQueueCount++;				
 				// Load and parse the adXML into displayConf format
-				mw.AdLoader.load( _this.$adConfig.attr( adTypePrefix + 'Url' ) , function( adDisplayConf ){
-					mw.log("KalturaAds loaded: " + adTypePrefix );
+				mw.AdLoader.load( _this.adConfig[ adType + 'Url' ] , function( adDisplayConf ){
+					mw.log("KalturaAds loaded: " + adType );
 					loadQueueCount--;
-					addAdCheckLoadDone( adTypePrefix,  $j.extend({}, adConf, adDisplayConf ) );
+					addAdCheckLoadDone( adType,  $j.extend({}, adConf, adDisplayConf ) );
 				});
 			} else {
 				// No async request
-				addAdCheckLoadDone( adTypePrefix, adConf );
+				addAdCheckLoadDone( adType, adConf );
 			}
 		});										
 		// Check if no ads had to be loaded ( no ads in _this.$adConfig )
@@ -250,10 +269,10 @@ mw.KAds.prototype = {
 				}
 			}
 		};
-		if( this.$adConfig.attr( 'htmlCompanions' ) ) {
-			addCompanions( 'html',  this.$adConfig.attr( 'htmlCompanions' ) );			
-		} else if( this.$adConfig.attr( 'flashCompanions' ) ){
-			addCompanions( 'flash', this.$adConfig.attr( 'flashCompanions' ) );
+		if( this.adConfig.htmlCompanions ) {
+			addCompanions( 'html',  this.adConfig.htmlCompanions );			
+		} else if( this.adConfig.flashCompanions ){
+			addCompanions( 'flash', this.adConfig.flashCompanions );
 		}
 		return companionTargets;
 	},
