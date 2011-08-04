@@ -56,7 +56,7 @@ mw.freeWheelControler.prototype = {
 		
 		// XXX temporary override config for testing
 		this.config = {
-			'networkId' :'96749',
+			'networkId': 96749,
 			'serverUrl' : 'http://sdnyadvip1-d.fwmrm.net/ad/g/1',
 			'videoAssetId' : 'DemoVideoGroup.01',
 			'videoDuration' : 500
@@ -230,7 +230,7 @@ mw.freeWheelControler.prototype = {
 	getAdManager: function(){
 		if( !this.adManager ){
 			this.adManager = new tv.freewheel.SDK.AdManager();
-			this.adManager.setNetwork( this.getProperty( 'networkId' ) );
+			this.adManager.setNetwork( parseInt( this.getProperty( 'networkId' ) ) );
 			this.adManager.setServer( this.getProperty('serverUrl') );
 		}
 		return this.adManager;
