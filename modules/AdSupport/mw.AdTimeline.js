@@ -453,6 +453,9 @@ mw.AdTimeline.prototype = {
 		// Play the source then run the callback
 		_this.embedPlayer.switchPlaySrc( targetSrc, 
 			function(vid) {
+				if( !vid ){
+					return ;
+				}
 				mw.log("AdTimeline:: source updated, add tracking");
 				// Bind all the tracking events ( currently vast based but will abstract if needed ) 
 				if( adConf.trackingEvents ){

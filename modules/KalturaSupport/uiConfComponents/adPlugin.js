@@ -9,8 +9,9 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		var loadingAdPlugin = false;
 		
+
 		// Check if the kaltura ad plugin is enabled:
-		if( $uiConf.find( 'Plugin#vast').length ){
+		if( kWidgetSupport.getPluginConfig( embedPlayer, $uiConf, 'vast', 'plugin' ) ){
 			loadingAdPlugin = true;
 			// Load the Kaltura Ads and AdSupport Module:
 			mw.load( [ "AdSupport", "mw.KAds" ], function(){

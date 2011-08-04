@@ -47,17 +47,17 @@ mw.KAds.prototype = {
 			// Add the ad type Url
 			configSet.push( adType + 'Url');
 		});
-		
+
 		this.adConfig = kWidgetSupport.getPluginConfig(
-				embedPlayer,
+			embedPlayer,
 			$uiConf, 
 			'vast',
 			configSet
 		);
-
+		
 		// Load the Ads from uiConf
 		_this.loadAds( function(){
-			mw.log("KAds::All ads have been loaded");
+			mw.log( "KAds::All ads have been loaded" );
 			callback();
 		});
 
@@ -158,7 +158,7 @@ mw.KAds.prototype = {
 		// Get companion targets:
 		var baseDisplayConf = this.getBaseDisplayConf();
 		// Get ad Configuration
-		this.getAdConfigSet( function( adConfigSet){			
+		this.getAdConfigSet( function( adConfigSet){
 			
 			// Get global timeout ( should be per adType ) 
 			if( _this.adConfig.timeout ){
@@ -236,7 +236,7 @@ mw.KAds.prototype = {
 					adConf[ displayConfName ] =  _this.adConfig[ adType + adAttributeName ];
 				}
 			});
-			
+
 			if( _this.adConfig[ adType + 'Url' ] ){
 				loadQueueCount++;				
 				// Load and parse the adXML into displayConf format
@@ -247,12 +247,12 @@ mw.KAds.prototype = {
 				});
 			} else {
 				// No async request
-				addAdCheckLoadDone( adType, adConf );
+				adConfigSet[ adType ] = adConf;
 			}
 		});										
-		// Check if no ads had to be loaded ( no ads in _this.$adConfig )
+		// Check if we have no async requests
 		if( loadQueueCount == 0 ){
-			callback();
+			callback( adConfigSet );
 		}
 	},
 	// Parse the rather odd ui-conf companion format

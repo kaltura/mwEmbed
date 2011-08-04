@@ -453,7 +453,7 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();		
 		if ( vid ) {
 			try {
-				// issue a play request on the source
+				// Issue a play request on the source
 				vid.play();
 				setTimeout(function(){
 					// Remove all native player bindings
@@ -472,7 +472,7 @@ mw.EmbedPlayerNative = {
 						}
 						vid.src = src;
 						// Give iOS 50ms to figure out the src got updated ( iPad OS 4.0 )
-						setTimeout(function() {
+						setTimeout( function() {
 							var vid = _this.getPlayerElement();
 							if (!vid){
 								mw.log( 'Error: switchPlaySrc no vid');
@@ -484,10 +484,10 @@ mw.EmbedPlayerNative = {
 							// for the switchCallback
 							setTimeout(function() {
 								var vid = _this.getPlayerElement();			
-								// restore controls 
+								// Restore controls 
 								vid.controls = orginalControlsState;
 								// add the end binding: 
-								$j(vid).bind('ended', function( event ) {
+								$j( vid ).bind( 'ended', function( event ) {
 									if(typeof doneCallback == 'function' ){
 										doneCallback();
 									}
@@ -503,7 +503,7 @@ mw.EmbedPlayerNative = {
 						// Null the src and wait 50ms ( helps unload video without crashing
 						// google chrome 7.x )
 						vid.src = '';
-						setTimeout(updateSrcAndPlay, 100);
+						setTimeout( updateSrcAndPlay, 100);
 					} else {
 						updateSrcAndPlay();
 					}
@@ -513,7 +513,24 @@ mw.EmbedPlayerNative = {
 			}
 		}
 	},
-	
+	/** if html5 implementation did not suck we could use the following code: */
+	/*switchPlaySrc: function( src, switchCallback, doneCallback ){
+		var vid = this.getPlayerElement();
+		
+		$j(vid).unbind();
+		
+		$j( vid ).bind( 'ended', function( event ) {
+			if( doneCallback ){
+				doneCallback();
+			}
+			return false;
+		});
+		if ( switchCallback ) {
+			switchCallback( vid );
+		}
+		vid.src = src;
+		vid.play();
+	},*/
 	/**
 	* Pause the video playback
 	* calls parent_pause to update the interface
