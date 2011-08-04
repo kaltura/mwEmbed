@@ -185,6 +185,11 @@ mw.KWidgetSupport.prototype = {
 			singleAttrName = attr;
 			attr = $j.makeArray( attr );
 		}
+		// If we have the "plugin" enabled check also check for "disableHTML5"
+		if( $j.inArray( 'plugin', attr ) != -1 ){
+			attr.push( "disableHTML5" );
+		}
+		
 
 		var config = {};
 		var $plugin = [];
@@ -251,6 +256,13 @@ mw.KWidgetSupport.prototype = {
 			if( config[ attrName ] === "false" )
 				config[ attrName ] = false; 
 		});
+		
+		// Check if disableHTML5 was "true" and return false for the plugin config ( since we are the html5 library ) 
+		if( config['disableHTML5'] == true && config['plugin'] ){
+			config['plugin'] = false;
+		}
+		
+		
 		if( singleAttrName != false ){
 			return config[ singleAttrName ];
 		} else {
