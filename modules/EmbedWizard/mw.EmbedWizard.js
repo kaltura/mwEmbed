@@ -155,7 +155,7 @@
 				// Set all the defaults
 				$.each(this.playerInputSet, function( inx, inputSet ) {
 					$.each( inputSet.inputTypes, function( inputKey, inputObj ){
-						inputObj.cb( _this, defaultAttributes[ inputKey ] );
+						inputObj.update( _this, defaultAttributes[ inputKey ] );
 					});
 				});
 			}
@@ -182,30 +182,85 @@
 			var defaultAttributes = mw.getConfig('EmbedWizard.DefaultAttributes');
 			
 			return $('<tr />').append(
-						$('<td />').text(
+						$('<td />')
+						.css('width', '10em' )
+						.text(
 							gM( 'mwe-embedwizard-' + key )
 						),
 						$('<td />').append(
 							$('<input />').attr({
-								'size' : conf.s,
+								'size' : conf.size,
 								'type' : conf.type,
 								'name' : key + inx,
-								'value' : ( typeof defaultAttributes[key] == 'object' )? defaultAttributes[key][inx] : defaultAttributes[key]
-							}).change( function(){
-								conf.cb( _this, $(this).val(), inx );
-								_this.updatePlayerCodePreview();
+								'value' : ( typeof defaultAttributes[key] == 'object' ) ? 
+										defaultAttributes[ key ][ inx ] : defaultAttributes[ key ]
+							})
+							.keyup(function(){
+								// Don't enter non numeric values into int fields: 
+								if( conf.format == 'int' ){
+									 $(this).val( parseInt( $(this).val() ) );
+								}
+							})
+							.change( function(){
+								if( _this.validateInput( $(this).val(), conf.format ) ){
+									// hide error
+									$(this).siblings('.ui-state-error').remove();
+									conf.update( _this, $(this).val(), inx );
+									_this.updatePlayerCodePreview();
+								} else {
+									$(this).siblings('.ui-state-error').remove();
+									// show an error
+									$(this).before(
+										_this.getErrorMsg( 'mwe-embedwizard-error-input-' + conf.format )
+									);
+								}
 							})
 						)
 					);
+		},
+		getErrorMsg: function( msgKey ){
+			return $('<div />')
+				.addClass("ui-state-error ui-corner-all")
+				.css("padding", '0 .7em' )
+				.append( 
+					$('<p />')
+					.append( 
+						$('<span />')
+						.addClass('ui-icon ui-icon-alert')
+						.css({
+							'float': 'left',
+							'margin-right' : '.3em'
+						}),
+						gM( msgKey )
+					)
+				);
+		},
+		/**
+		 * Validate input
+		 */
+		validateInput: function( value, format ){
+			switch( format ){
+				case 'int':
+					return !isNaN( parseFloat( value)  );
+					break;
+				case 'time': 
+					return ( mw.npt2seconds( value ) > 0 );
+					break;
+				case 'url': 
+					return ( mw.isUrl( value ) );
+					break;
+			}
+			return false;
 		},
 		/**
 		 * Defines the default input type and all its settings:
 		 */
 		defaultInputConf: {
 			'count' : 1,
-			's' : 10,
+			'format' : 'int',
+			'size' : 10,
 			'type' :'text',
-			'cb' : function( _this, val ){
+			'update' : function( _this, val ){
 				_this.getTag().attr( key, val );
 			}
 		},
@@ -213,14 +268,14 @@
 			'size': {
 				'inputTypes': {
 					'width' : {
-						's' : 4,
-						'cb' : function(_this,  val ){
+						'size' : 4,
+						'update' : function(_this,  val ){
 							_this.getTag().attr('width',  val);
 						}
 					},
 					'height' : {
-						's' : 4,
-						'cb' : function( _this, val ){
+						'size' : 4,
+						'update' : function( _this, val ){
 							_this.getTag().attr('height', val);
 						}
 					}
@@ -229,21 +284,24 @@
 			'sources': {		
 				'inputTypes': {
 					'poster' : {
-						's' : 15,
-						'cb': function( _this, val ){
+						'format' : 'url',
+						'size' : 15,
+						'update': function( _this, val ){
 							_this.getTag().attr('poster', val );
 						}
 					},
 					'durationHint': {
-						's' : 4,
-						'cb': function( _this, val ){
+						'format' : 'time',
+						'size' : 4,
+						'update': function( _this, val ){
 							_this.getTag().attr( 'durationHint', val );
 						}
 					},
 					'src' : {
+						'format': 'url',
 						'count' : 3,
-						's' : 15,
-						'cb' : function( _this, val, inx ){
+						'size' : 15,
+						'update' : function( _this, val, inx ){
 							var setObj = {};
 							if( ! inx )
 								inx = 0;
