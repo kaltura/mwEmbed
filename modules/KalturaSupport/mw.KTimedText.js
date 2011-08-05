@@ -42,7 +42,6 @@ mw.KTimedText.prototype = {
 	 */
 	loadTextSources: function( callback ) {
 		var _this = this;
-		
 		// Check if text sources are already loaded ( not null )
 		if( this.textSources !== null ){
 			callback();
@@ -57,6 +56,7 @@ mw.KTimedText.prototype = {
 			_this.textSources.push(
 				_this.getTextSourceFromVars(  _this.kVars )
 			);
+			callback();
 			return ;
 		}	
 		
