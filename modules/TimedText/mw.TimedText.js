@@ -46,7 +46,9 @@ mw.includeAllModuleMessages();
 			//Set the default kind of timedText to display ( un-categorized timed-text is by default "subtitles" )
 			'userKind' : 'subtitles'
 		},
-
+		// Default options are empty
+		options: {},
+		
 		/**
 		 * The list of enabled sources
 		 */
@@ -94,7 +96,9 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;
-			this.options = options;
+			if( options ){
+				this.options = options;
+			}
 			
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
