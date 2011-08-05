@@ -19,10 +19,10 @@ if( window.QUnit ){
 				start();
 			};
 			
-			//window.preMwEmbedConfig = {};
-			//window.preMwEmbedConfig[ 'forceMobileHTML5' ] = true;
+			window.preMwEmbedConfig = {};
+			window.preMwEmbedConfig[ 'forceMobileHTML5' ] = true;
 			$('head').append( '<script src="../../../mwEmbedLoader.php" type="text/javascript" />' );
-			
+
 			// add and embed player:
 			$('body').append('<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" ' +
 					'allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" ' +

@@ -95,7 +95,7 @@ mw.includeAllModuleMessages();
 		init: function( embedPlayer, options ) {
 			var _this = this;
 			mw.log("TimedText: init() ");
-			this.embedPlayer = embedPlayer;
+			this.embedPlayer = embedPlayer;	
 			if( options ){
 				this.options = options;
 			}

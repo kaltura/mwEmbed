@@ -21,7 +21,7 @@
 *	// Path to kaltura api 
 *	'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
 *
-*	// The CDN url that hosts your assets.
+*	// The CDN url that hosts your assets
 *	'Kaltura.CdnUrl' : 'http://cdn.kaltura.com'
 *
 *	// If the html5 library should be loaded when there are video tags in the page.  
@@ -35,7 +35,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.4b20';
+KALTURA_LOADER_VERSION = '1.4b21';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
