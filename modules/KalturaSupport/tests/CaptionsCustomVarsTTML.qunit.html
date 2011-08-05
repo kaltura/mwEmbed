@@ -1,14 +1,14 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Captions kaltura custom vars</title>
+<title>TTML Captions Custom vars</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	var kdp = $( '#' + videoId ).get(0);
 	// Name this module
-	module( "Captions kaltura" );
+	module( "TTML Captions Custom vars" );
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var iframeKdp = $iframe.find( '#' + videoId ).get(0);
@@ -27,8 +27,8 @@ function jsKalturaPlayerTest( videoId ){
 
 					kdp.sendNotification( 'doSeek', 2);
 					setTimeout(function(){
-						ok( $iframe.find('.track_subtitles').length, "text container in DOM");
-						equal( $iframe.find('.track_subtitles span').text(), "Harold is the coffee alright?", "Text matches srt");
+						ok( $iframe.find('.track').length, "text container in DOM");
+						equal( $iframe.find('.track').text(), "ALIGN RIGHT. ROW 0 COL 10 Line Break.", "Text matches ttml");
 						start();
 					}, 500 );
 				},500);
@@ -46,7 +46,7 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2>Captions kaltura custom vars TTML text </h2>
+<h2>TTML Captions Custom vars </h2>
 <a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
 <br /><br />
 <a href="http://www.kaltura.org/apis/html5lib/mwEmbed/modules/KalturaSupport/tests/resources/FishTmmlFeatureTest.en.xml"> TTML XML being displayed</a>
