@@ -82,7 +82,7 @@ function trackEventForTests(category, action, opt_label, opt_value ) {
 	// delay trigger to ensure we have setup the binding
 	setTimeout(function(){
 		$j( testEventObject ).trigger( action, {'category': category, 'action' : action, 'opt_label':opt_label, 'opt_value' : opt_value } );
-	},100);
+	}, 1000);
 }
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
