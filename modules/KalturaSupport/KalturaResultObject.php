@@ -207,6 +207,11 @@ class KalturaResultObject {
 			return "Un authorized country\nWe're sorry, this content is only available on certain countries.";
 		}
 
+		/* IP Address Restricted */
+		if($accessControl->isIpAddressRestricted) {
+			return "Un authorized IP address\nWe're sorry, this content is only available for ceratin IP addresses.";
+		}
+
 		/* Session Restricted */
 		if( $accessControl->isSessionRestricted && $accessControl->previewLength == -1 ) {
 			return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
