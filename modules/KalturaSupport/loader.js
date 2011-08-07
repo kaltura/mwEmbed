@@ -184,6 +184,16 @@
 						'kuiconfid' : kEmbedSettings.uiconf_id,
 						'style' : $j( element ).attr('style')
 					};
+
+					// See if we got entry id in flashvars (entryId/videoPresentationEntryId)
+					if( flashvars ) {
+						if( flashvars.entryId ) {
+							kEmbedSettings.entry_id = flashvars.entryId;
+						}
+						if( flashvars.videoPresentationEntryId ) {
+							kEmbedSettings.entry_id = flashvars.videoPresentationEntryId;
+						}
+					}
 					
 					if( kEmbedSettings.entry_id ) {
 						loadEmbedPlayerFlag = true;
