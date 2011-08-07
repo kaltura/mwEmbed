@@ -25,7 +25,8 @@ $exportedJsConfig= array(
 	'EmbedPlayer.EnableIpadHTMLControls' => $wgEnableIpadHTMLControls,
 	'EmbedPlayer.UseFlashOnAndroid' => true,
 	'Kaltura.LoadScriptForVideoTags' => true,
-	'Kaltura.AllowRemoteService' => $wgAllowRemoteKalturaService
+	'Kaltura.AllowRemoteService' => $wgAllowRemoteKalturaService,
+	'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive
 );
 // Append Custom config: 
 foreach( $exportedJsConfig as $key => $val ){

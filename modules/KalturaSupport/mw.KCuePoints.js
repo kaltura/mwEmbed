@@ -98,10 +98,10 @@ mw.KCuePoints.prototype = {
 		};
 		if( cuePoint.cuePointType == 'codeCuePoint.Code' ) {
 			// Code type cue point
-			eventName = 'cuePointReached';
+			eventName = 'CuePointReached';
 		} else if( cuePoint.cuePointType == 'adCuePoint.Ad' ) {
 			// Ad type cue point
-			eventName = 'adOpportunity';
+			eventName = 'AdOpportunity';
 			obj.context = this.getAdType(cuePoint);
 		}
 		$( this.embedPlayer ).trigger( 'KalturaSupport_' + eventName, obj );

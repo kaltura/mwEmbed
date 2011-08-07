@@ -82,6 +82,9 @@ $wgKalturaUseManifestUrls = true;
 // By default do not allow custom resource includes. 
 $wgAllowCustomResourceIncludes = false;
 
+// By default use apple adaptive if we have the ability
+$wgKalturaUseAppleAdaptive = true;
+
 /*********************************************************
  * Include local settings override:
  ********************************************************/

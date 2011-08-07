@@ -220,7 +220,7 @@ class KalturaResultObject {
 	}
 	// Load the Kaltura library and grab the most compatible flavor
 	public function getSources(){
-		global $wgKalturaServiceUrl, $wgKalturaCDNUrl, $wgKalturaUseManifestUrls;
+		global $wgKalturaServiceUrl, $wgKalturaCDNUrl, $wgKalturaUseManifestUrls, $wgKalturaUseAppleAdaptive;
 		// Check the access control before returning any source urls
 		if( !$this->isAccessControlAllowed() ) {
 			return array();
@@ -341,7 +341,7 @@ class KalturaResultObject {
 		$iphoneFlavors = trim($iphoneFlavors, ",");
 
 		// Create iPad flavor for Akamai HTTP
-		if ( $ipadFlavors ){
+		if ( $ipadFlavors && $wgKalturaUseAppleAdaptive ){
 			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/http';
 
 			$sources['ipadnew'] = array(
@@ -352,7 +352,7 @@ class KalturaResultObject {
 		}
 
 		// Create iPhone flavor for Akamai HTTP
-		if ($iphoneFlavors)
+		if ( $iphoneFlavors && $wgKalturaUseAppleAdaptive )
 		{
 			$assetUrl = $flavorUrl . '/flavorIds/' . $iphoneFlavors . '/format/applehttp/protocol/http';
 
