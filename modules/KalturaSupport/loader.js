@@ -136,7 +136,7 @@
 				$j.each( kalturaObjectPlayerList, function( inx, element ){
 					// don't rewrite special id
 					if( $j(element).attr('name') == 'kaltura_player_iframe_no_rewrite' ){
-						return true;;
+						return true;
 					}
 					// Clear the kalturaSwapObjectClass
 					var kalturaSwapObjectClass = '';
@@ -164,6 +164,10 @@
 			
 					// Check if its a playlist or a entryId
 					mw.log( "Got kEmbedSettings.entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
+					if(!kEmbedSettings.uiconf_id || !kEmbedSettings.wid ) {
+						mw.log( "Error: Missing uiConfId/widgetId!");
+					}
+					
 					var height = $j( element ).attr('height');
 					var width = $j( element ).attr('width');
 					
@@ -185,16 +189,6 @@
 						'style' : $j( element ).attr('style')
 					};
 
-					// See if we got entry id in flashvars (entryId/videoPresentationEntryId)
-					if( flashvars ) {
-						if( flashvars.entryId ) {
-							kEmbedSettings.entry_id = flashvars.entryId;
-						}
-						if( flashvars.videoPresentationEntryId ) {
-							kEmbedSettings.entry_id = flashvars.videoPresentationEntryId;
-						}
-					}
-					
 					if( kEmbedSettings.entry_id ) {
 						loadEmbedPlayerFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
@@ -315,7 +309,7 @@
 							var playlistPlayer = $j( '#' + playlistTarget.id ).playlist({
 								'layout': layout,
 								'titleHeight' : 0 // kaltura playlist don't include the title ontop of the video
-							});
+							}); 
 						});
 						// XXX todo playlist is not really ready for api calls at this point :(
 						// we need to setup a binding and ready event
@@ -580,7 +574,7 @@
 				case 'entry_id':
 					embedSettings.entry_id = prevUrlPart;
 				break;
-				case 'uiconf_id':
+				case 'uiconf_id': case 'ui_conf_id':
 					embedSettings.uiconf_id = prevUrlPart;
 				break;
 				case 'cache_st':
@@ -597,6 +591,18 @@
 		if( embedSettings[ 'entryid' ] ){
 			embedSettings['entry_id'] =  embedSettings['entryid'];
 		}
+
+				
+		// Use entryId from flashvar
+		if( flashvars && flashvars.entryId ) {
+			embedSettings['entry_id'] = flashvars.entryId;
+		}
+
+		// Use uiConf from flashvar
+		if( flashvars && flashvars.uiConfId ) {
+			embedSettings['uiconf_id'] = flashvars.uiConfId;
+		}
+
 		return embedSettings;
 	};
 } )( window.mw );
