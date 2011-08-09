@@ -76,7 +76,7 @@ mw.MediaElement.prototype = {
 	getTextTracks: function(){
 		var textTracks = [];
 		$.each( this.sources, function(inx, source ){
-			if (  source.nodeName == 'track' || source.mimeType.indexOf('text/') !== -1 ){
+			if (  source.nodeName == 'track' || source.mimeType && source.mimeType.indexOf('text/') !== -1 ){
 				textTracks.push( source );
 			}
 		});

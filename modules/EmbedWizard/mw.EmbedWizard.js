@@ -12,11 +12,12 @@
 		// Raw source:
 		'poster': 'http://html5video.org/players/media/folgers.jpg',
 		'durationHint' : 60,
-		'src' : [
-		       'http://html5video.org/players/media/folgers.mp4',
-		       'http://html5video.org/players/media/folgers.ogv',
-		       'http://html5video.org/players/media/folgers.webm'
-		],
+		
+		'sourceIphone' : 'http://html5video.org/players/media/folgers.mp4',
+		'sourceWebM' : 'http://html5video.org/players/media/folgers.ogv',
+		'sourceOgg' : '',
+		'sourceIPad' : '',
+		
 		// Kaltura based sources
 		'kentryid' : '0_uka1msg4',
 		'kwidgetid' : '243342'
@@ -99,35 +100,38 @@
 					),
 					$('<div />').attr('id', 'mweew-tab-code').append(
 						$('<p />').text( gM('mwe-embedwizard-embedcode-desc') ),
-						$('<pre />')
-						.addClass('brush: html')
-						.css({
-							'white-space' : 'pre-wrap !important',
-							'width' : '90%',
-							'height' : '400'
-						})
+						this.getEmbedCodePre()
 					)
 				);
 		},
+		getEmbedCodePre: function(){
+			return $('<div />')
+				.attr('id', 'mweew-embedcodetext')
+				.append(
+					this.getHTMLPreBrush()
+				);
+		},
+		getHTMLPreBrush: function(){
+			return $('<pre />')
+			.addClass('brush: html')
+			.css({
+				'white-space' : 'pre-wrap !important',
+				'width' : '90%',
+				'height' : '400'
+			})
+		},
 		upatePlayerTabSelect: function( inputSetId ){
 			var _this = this;
+			mw.log( "EmbedWizard::upatePlayerTabSelect " + inputSetId );
 			var inputTabs = this.getPlayerInputSet()[ inputSetId ].inputTabs;
 			// check which tab is enabled: 
 			$.each( inputTabs , function( tabKey, inputTypes ){
 				var isActive = ( _this.$target.find('.tabInputPannel .ui-state-active a[href="#tabPanel-' + tabKey + '"]' ).length );
 				$.each( inputTypes, function( key, conf){
 					// Check if multiple count
-					if( conf.count > 1){
-						for( var i = 0; i < conf.count ; i++ ){
-							mw.log("Set value: " + key + i + ' val: ' + $('#' + key +i ).val()  );
-							var value = ( isActive )? $('#' + key +i ).val() : null;
-							conf.update( _this, key, value, i );
-						}
-					} else {
-						mw.log("clear value: " +key + ' target: ' + $('#' + key + '0' ) + ' isActive:' + isActive );
-						var value = ( isActive )? $('#' + key + '0' ).val() : null;
-						conf.update( _this, key, value, i);
-					}
+					mw.log( "EmbedWizard:: clear value: " + key + ' target: ' + $( '#' + key ) + ' isActive:' + isActive );
+					var value = ( isActive )? $( '#' + key ).val() : null;
+					conf.update( _this, key, value );
 				});
 			});
 			_this.updatePlayerCodePreview();
@@ -141,13 +145,18 @@
 				.replace( /" /g, "\"\n" );
 
 			// Update the textarea: 
-			this.$target.find( '.playerCodePreview pre' ).text(
-					'<script type="text/javascript" src="http://html5.kaltura.org/js"></script>' + "\n" + playerString
+			$('#mweew-embedcodetext').empty().append( 
+					_this.getHTMLPreBrush()
+			).find('pre').text(
+				"<script type=\"text/javascript\" src=\"http://html5.kaltura.org/js\">\n</script>" + "\n" + playerString
 			).syntaxHighlighter();
 			
+			setTimeout(function(){
+				$('#mweew-embedcodetext').find( '.toolbar' ).remove();
+			}, 250);
 			this.$target.find('.videoContainer').empty().append(
 				playerString
-			).find('video').embedPlayer();
+			).find('video').embedPlayer();	
 		},
 		getPlayerInputs: function(){
 			if( this.$target.find( '.playerInputs').length == 0 ){
@@ -211,7 +220,7 @@
 						)
 					);
 				});
-				// add the tabUL and enable tabs:
+				// Add the tabUL and enable tabs:
 				return $inputPanel;
 			}
 		},
@@ -236,8 +245,10 @@
 					if ( inputObject.inputTabs ){
 						$.each( inputObject.inputTabs, function( tabKey, inputTypes ){
 							if( _this.$target.find('.tabInputPannel .ui-state-active a[href="#tabPanel-' + tabKey + '"]' ).length ){
+							
 								// key is active set children
 								$.each( inputTypes, function( inputKey, inputItem ){
+									mw.log( 'update ' +  inputKey);
 									inputItem.update( _this, inputKey, defaultAttributes[ inputKey ] );
 								});
 							}
@@ -252,17 +263,14 @@
 			var $inputSet = $( '<table />' ).addClass( 'playerInput' );
 			$.each( inputTypes, function( key, conf){
 				var inputConf = $.extend( {}, _this.defaultInputConf, conf );
-				// check if we need to duplicate the input set
-				for( var i=0; i < inputConf.count; i++){
-					$inputSet.append(
-						_this.getInputRow( key, inputConf, i )
-					);
-				}
+				$inputSet.append(
+					_this.getInputRow( key, inputConf )
+				);
 			});
 
 			return $inputSet;
 		},
-		getInputRow:function( key, conf, inx ){
+		getInputRow:function( key, conf ){
 			var _this = this;
 			// Get the default tag setup:
 			var defaultAttributes = mw.getConfig('EmbedWizard.DefaultAttributes');
@@ -270,22 +278,28 @@
 			return $('<tr />').append(
 						$('<td />')
 						.css('width', '10em' )
-						.text(
+						.append(
+							$.button( {
+								'icon' : 'info',
+								'text' : gM('')
+							})
+							.click( function(){
+								
+							})
+							.buttonHover()
+							,
 							gM( 'mwe-embedwizard-' + key )
 						),
 						$('<td />').append(
 							$('<input />').attr({
 								'size' : conf.size,
 								'type' : conf.type,
-								'name' : key + inx,
-								'id' :  key + inx,
+								'name' : key,
+								'id' :  key,
 								'value' : ( typeof defaultAttributes[key] == 'object' ) ? 
 										defaultAttributes[ key ][ inx ] : defaultAttributes[ key ]
 							})
-							.data({
-								'key' : key,
-								'inx' : inx
-							})
+							.addClass( ".ui-corner-all" )
 							.keyup(function(){
 								// Don't enter non numeric values into int fields: 
 								if( conf.format == 'int' ){
@@ -293,10 +307,10 @@
 								}
 							})
 							.change( function(){
-								if( _this.validateInput( $(this).val(), conf.format ) ){
+								if( _this.validateInput( $(this).val(), conf.format, conf.ext ) ){
 									// hide error
 									$(this).siblings('.ui-state-error').remove();
-									conf.update( _this, $(this).data('key'), $(this).val(), inx );
+									conf.update( _this, key, $(this).val() );
 									_this.updatePlayerCodePreview();
 								} else {
 									$(this).siblings('.ui-state-error').remove();
@@ -327,9 +341,19 @@
 				);
 		},
 		/**
+		* Get the extension of a url
+		* @param String uri
+		*/
+		getExt : function( uri ){
+			var urlParts =  mw.parseUri( uri );
+			// Get the extension from the url or from the relative name:
+			var ext = ( urlParts.file )?  /[^.]+$/.exec( urlParts.file )  :  /[^.]+$/.exec( uri );
+			return ext.toString().toLowerCase()
+		},
+		/**
 		 * Validate input
 		 */
-		validateInput: function( value, format ){
+		validateInput: function( value, format, ext ){
 			switch( format ){
 				case 'string':
 					return true;
@@ -341,7 +365,16 @@
 					return ( mw.npt2seconds( value ) > 0 );
 					break;
 				case 'url': 
-					return ( mw.isUrl( value ) );
+					if( !ext ){
+						return ( mw.isUrl( value ) );
+					}
+					if( typeof ext != 'object' )
+						ext = $.makeArray( ext );
+					// check for url and extension
+					if(  mw.isUrl( value ) && $.inArray( this.getExt( value ), ext ) != -1 ){
+						return true;
+					}
+					
 					break;
 			}
 			return false;
@@ -351,7 +384,6 @@
 		 */
 		getDefaultInputConf: function() {
 			return {
-				'count' : 1,
 				'format' : 'string',
 				'size' : 10,
 				'type' :'text',
@@ -360,6 +392,32 @@
 						_this.getTag().removeAttr( attrName );
 					} else {
 						_this.getTag().attr( attrName, val );
+					}
+				}
+			};
+		},
+		getSourceConf: function(){
+			return {
+				'format': 'url',
+				'count' : 3,
+				'size' : 20,
+				'update' : function(  _this, attrName, val ){
+					mw.log(" update source: " + attrName + ' val:' + val);
+					// Check for the flavor tag:
+					var $source = _this.getTag().find( 'source[data-flavorid="' + this.flavorid + '"]');
+					if( $source.length ){
+						if( val == null ){
+							$source.remove();
+						} else {
+							$source.attr('src', val);
+						}
+					} else if ( val ){
+						_this.getTag().append( 
+							$('<source />').attr({
+								'data-flavorid' : this.flavorid,
+								'src' : val
+							})
+						);
 					}
 				}
 			};
@@ -382,39 +440,22 @@
 								'format' : 'time',
 								'size' : 4
 							}),
-							'src' : {
-								'format': 'url',
-								'count' : 3,
-								'size' : 15,
-								'update' : function( _this, attrName, val, inx ){
-									var setObj = {};
-									if( typeof val == 'string' ){
-										if( $( _this.getTag() ).find( 'source' )[inx] ){
-											$( $( _this.getTag() ).find( 'source' )[inx] ).attr('src', val );
-										} else {
-											$( '<source />' ).attr( 'src', val)
-											.appendTo( _this.getTag() );
-										}
-										return ;
-									} 
-									if ( val == null && inx != null && $( _this.getTag() ).find( 'source' ).length ){
-										$( $( _this.getTag() ).find( 'source' )[inx] ).remove();
-										return ;
-									}
-									$.each( val, function( i, valItem ){
-										if( $( _this.getTag() ).find( 'source' )[i] ){
-											if( valItem == null ){
-												$( $( _this.getTag() ).find( 'source' )[i] ).remove();
-											} else {
-												$( $( _this.getTag() ).find( 'source' )[i] ).attr('src', valItem );
-											}
-										} else if( valItem ) {
-											$( '<source />' ).attr( 'src', valItem)
-											.appendTo( _this.getTag() );
-										}
-									});
-								}
-							}
+							'sourceIphone' : $.extend( {}, _this.getSourceConf(),{
+								'flavorid': 'iPhone',
+								'ext' : ['mp4', 'm4v']
+							}),
+							'sourceWebM' :$.extend( {}, _this.getSourceConf(),{
+								'flavorid': 'webm',
+								'ext' : 'webm'
+							}),
+							'sourceOgg' : $.extend( {}, _this.getSourceConf(),{
+								'flavorid': 'ogg',
+								'ext' : ['ogv', 'ogg']
+							}),
+							'sourceIpad' : $.extend( {}, _this.getSourceConf(),{
+								'flavorid' : 'iPad',
+								'ext' :	['mp4', 'm4v']
+							})
 						}
 					}
 				},

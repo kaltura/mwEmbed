@@ -2849,6 +2849,7 @@ if( window.jQuery ){
 		var $button = $j('<a />')
 			.attr('href', '#')
 			.addClass( 'ui-state-default ui-corner-all ui-icon_link' );
+		
 		// Add css if set:
 		if( options.css ) {
 			$button.css( options.css );
