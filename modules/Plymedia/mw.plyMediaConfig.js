@@ -29,7 +29,7 @@ mw.plyMediaConfig = {
 				embedPlayer.$interface.append( 
 				'<div class="plyMediaTimedText" style="position:absolute;bottom:40px;right:150px;"></div> ')
 			}
-			embedPlayer.$interface.find( '.plyMediaTimedText').text('plyMedia Timed Text at ' +  Math.floor( currentTime ) );
+			embedPlayer.$interface.find( '.plyMediaTimedText').text( 'plyMedia Timed Text at ' +  Math.floor( currentTime ) );
 		});
 	
 	}		
