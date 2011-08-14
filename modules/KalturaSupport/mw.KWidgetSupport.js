@@ -189,7 +189,6 @@ mw.KWidgetSupport.prototype = {
 		if( $j.inArray( 'plugin', attr ) != -1 ){
 			attr.push( "disableHTML5" );
 		}
-		
 
 		var config = {};
 		var $plugin = [];
@@ -422,6 +421,8 @@ mw.KWidgetSupport.prototype = {
 	addFlavorSources: function( embedPlayer, flavorData ) {
 		var _this = this;
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
+		var cat = flavorData;
+		debugger;
 		// Set the poster ( if not already set ) 
 		if( !embedPlayer.poster && embedPlayer.kentryid ){
 			embedPlayer.poster = mw.getKalturaThumbUrl({
@@ -480,8 +481,8 @@ mw.KWidgetSupport.prototype = {
 		var deviceSources = {};
 		
 		// Setup the src defines
-		var ipadFlavors = '';
-		var iphoneFlavors = '';
+		var ipadFlavors = [];
+		var iphoneFlavors = [];
 
 		// Setup flavorUrl
 		if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
@@ -521,13 +522,13 @@ mw.KWidgetSupport.prototype = {
 
 			// Add iPad Akamai flavor to iPad flavor Ids list
 			if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipadnew') != -1 ){
-				ipadFlavors += asset.id + ',';
+				ipadFlavors.push( asset.id );
 			}
 
 			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
 			if( asset.fileExt == 'mp4' && asset.tags.indexOf('iphonenew') != -1 ){
-				ipadFlavors += asset.id + ',';
-				iphoneFlavors += asset.id + ',';
+				ipadFlavors.push( asset.id );
+				iphoneFlavors.push( asset.id );
 			}
 
 			// Check the tags to read what type of mp4 source
@@ -556,17 +557,14 @@ mw.KWidgetSupport.prototype = {
 			}
 		}
 
-		ipadFlavors = ipadFlavors.substr(0, (ipadFlavors.length-1) );
-		iphoneFlavors = iphoneFlavors.substr(0, (iphoneFlavors.length-1) );
-
 		// Create iPad flavor for Akamai HTTP
-		if(ipadFlavors.length != 0) {
-			deviceSources['iPadNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadFlavors + '/format/applehttp/protocol/http/a.m3u8';
+		if( ipadFlavors.length != 0) {
+			deviceSources['iPadNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadFlavors.join(',')  + '/format/applehttp/protocol/http/a.m3u8';
 		}
 
 		// Create iPhone flavor for Akamai HTTP
 		if(iphoneFlavors.length != 0) {
-			deviceSources['iPhoneNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneFlavors + '/format/applehttp/protocol/http/a.m3u8';
+			deviceSources['iPhoneNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneFlavors.join(',')  + '/format/applehttp/protocol/http/a.m3u8';
 		}
 		
 		// Append KS to all source if available 
