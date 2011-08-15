@@ -398,7 +398,7 @@ function kOverideJsFlashEmbed(){
 	}
 }
 
-function getFlashVersion(){
+function kGetFlashVersion(){
 	// navigator browsers:
 	if (navigator.plugins && navigator.plugins.length) {
 		try {
@@ -535,7 +535,7 @@ function kSupportsHTML5(){
 	return false;
 }
 function kSupportsFlash(){
-    var version = getFlashVersion().split(',').shift();
+    var version = kGetFlashVersion().split(',').shift();
     if( version < 10 ){
     	return false;
     } else {
