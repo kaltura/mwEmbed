@@ -421,8 +421,6 @@ mw.KWidgetSupport.prototype = {
 	addFlavorSources: function( embedPlayer, flavorData ) {
 		var _this = this;
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
-		var cat = flavorData;
-		debugger;
 		// Set the poster ( if not already set ) 
 		if( !embedPlayer.poster && embedPlayer.kentryid ){
 			embedPlayer.poster = mw.getKalturaThumbUrl({

@@ -25,7 +25,6 @@ class kalturaIframe {
 	var $debug = false;
 	var $error = false;
 	var $playerError = false;
-	var $uiConfXml = null; // lazy init
 	
 	// A list of kaltura plugins and associated includes	
 	public static $iframePluginMap = array(
@@ -254,7 +253,7 @@ class kalturaIframe {
 			return '';
 		}
 		$o = '';
-		$xml = $this->getUiConfXML();
+		$xml = $this->getResultObject()->getUiConfXML();
 		foreach ($xml->uiVars->var as $var ){
 			if( isset( $var['key'] ) && isset( $var['value'] ) 
 				&& $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
@@ -272,18 +271,8 @@ class kalturaIframe {
 		}
 		return $o;
 	}
-	private function getUiConfXML(){
-		global $wgKalturaIframe;
-		if( !$this->uiConfXml ){
-			if( ! $this->getResultObject()->getUiConf() ){
-				return ;
-			}
-			$this->uiConfXml = new SimpleXMLElement( $this->getResultObject()->getUiConf() );
-		}
-		return $this->uiConfXml;
-	}
 	private function checkIframePlugins(){
-		$xml = $this->getUiConfXML();
+		$xml = $this->getResultObject()->getUiConfXML();
 		if( ! $xml )
 			return ;
 		if( isset( $xml->HBox ) && isset( $xml->HBox->Canvas ) && isset( $xml->HBox->Canvas->Plugin ) ){
@@ -369,7 +358,7 @@ class kalturaIframe {
 			$versionParam = '?urid=' . htmlspecialchars( $urlParam['urid'] );
 		}
 		
-		$xml = $this->getUiConfXML();
+		$xml = $this->getResultObject()->getUiConfXML();
 		if( $xml && isset( $xml->layout ) && isset( $xml->layout[0] ) ){
 			foreach($xml->layout[0]->attributes() as $name => $value) {
 				if( $name == 'html5_url' ){

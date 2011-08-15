@@ -11,6 +11,7 @@ class KalturaResultObject {
 	 
 	var $resultObj = null; // lazy init with getResultObject
 	var $clientTag = null;
+	var $uiConfXml = null; // lazy init
 	
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
@@ -88,7 +89,7 @@ class KalturaResultObject {
 		);
 	}
 	
-	// check if the requested url is a playlist
+	// Check if the requested url is a playlist
 	public function isPlaylist(){
 		return ( $this->urlParameters['playlist_id'] !== null || $this->urlParameters['entry_id'] === null);
 	}
@@ -100,7 +101,7 @@ class KalturaResultObject {
 		return $_SERVER['HTTP_USER_AGENT'];
 	}
 
-	public function userAgentRestricted( $uiConf ) {
+	public function userAgentRestricted() {
 		// Get flashvars
 		$flashVars = $this->urlParameters[ 'flashvars' ];
 		$restrictedMessage = true;
@@ -112,7 +113,7 @@ class KalturaResultObject {
 			}
 		} else if( $uiConf ) {
 			// Check for plug definition in uiConf
-			$xml = new SimpleXMLElement( $uiConf );
+			$xml = $this->getUiConfXML();
 			$restrictUserAgentPlugin = $xml->xpath("*//Plugin[@id = 'restrictUserAgent']");
 			if( $restrictUserAgentPlugin ) {
 				$restrictUserAgentPlugin = $restrictUserAgentPlugin[0]->attributes();
@@ -266,11 +267,11 @@ class KalturaResultObject {
 		//echo $this->getUserAgent() . '<br />';
 		//echo '<pre>'; print_r($accessControl); exit();
 		//die($this->getKS());
-		$userAgentMessage = "User Agent Restricted\nWe're sorry, this content is not available for certain user agents.";
+		$userAgentMessage = "User Agent Restricted\nWe're sorry, this content is not available for your device.";
 		if(isset($accessControl->isUserAgentRestricted) && $accessControl->isUserAgentRestricted ) {
 			return $userAgentMessage;
 		} else {
-			$userAgentRestricted = $this->userAgentRestricted( $resultObject['uiConf'] );
+			$userAgentRestricted = $this->userAgentRestricted();
 			if( $userAgentRestricted === false ) {
 				return true;
 			} else {
@@ -762,6 +763,16 @@ class KalturaResultObject {
 		} else {
 			return false;
 		}
+	}
+	public function getUiConfXML(){
+		global $wgKalturaIframe;
+		if( !$this->uiConfXml ){
+			if( ! $this->getUiConf() ){
+				return false;
+			}
+			$this->uiConfXml = new SimpleXMLElement( $this->getUiConf() );
+		}
+		return $this->uiConfXml;
 	}
 	public function getMeta(){
 		$result = $this->getResultObject();
