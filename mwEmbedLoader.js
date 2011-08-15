@@ -662,7 +662,7 @@ function kAddScript( callback ){
 	kLoadJsRequestSet( jsRequestSet, callback );
 }
 
-function isIE(){
+function kIsIE(){
 	return /msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);
 }
 
@@ -674,7 +674,7 @@ function kAppendScriptUrl( url, callback ) {
 	if( callback ){
 		// IE sucks .. issues onload callback before ready 
 		// xxx could conditional the callback delay on user 
-		if( isIE() ){
+		if( kIsIE() ){
 			script.onload = new function(){
 				setTimeout(function(){
 					callback();
