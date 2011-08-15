@@ -753,7 +753,7 @@ if ( document.readyState === "complete" ) {
 	kRunMwDomReady();
 }
 // fallback function that should fire for all browsers 
-var kOrgOnLoad = null;
+var kOrgOnLoad = false;
 if( window.onload ){
 	kOrgOnLoad = window.onload;
 }

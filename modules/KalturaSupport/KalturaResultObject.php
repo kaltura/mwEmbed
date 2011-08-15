@@ -100,11 +100,16 @@ class KalturaResultObject {
 	private function getUserAgent() {
 		return $_SERVER['HTTP_USER_AGENT'];
 	}
-
-	public function userAgentRestricted() {
+	/**
+	 * Checks if a user agent is restricted via the user restriction plugin present in the uiConf XML
+	 * this check is run as part of resultObject handling so we must pass in the uiConf string
+	 */ 
+	public function isUserAgentRestrictedPlugin( $uiConf ) {
 		// Get flashvars
 		$flashVars = $this->urlParameters[ 'flashvars' ];
 		$restrictedMessage = true;
+		
+		
 		// Check for plugin definition in flashVars
 		if( $flashVars && isset($flashVars['restrictUserAgent.plugin']) ) {
 			$restrictedStrings = $flashVars['restrictUserAgent.restrictedUserAgents'];
@@ -112,9 +117,13 @@ class KalturaResultObject {
 				$restrictedMessage = $flashVars['restrictUserAgent.restrictedUserAgentTitle'] ."\n". $flashVars['restrictUserAgent.restrictedUserAgentMessage'];
 			}
 		} else if( $uiConf ) {
+			// Use the local uiConfXml object location to avoid re-parsing the uiConf
+			// @@TODO clean up getUiConfXMl() method to handle unitialized resultObject state
+			if( !$this->uiConfXml ){
+				$this->uiConfXml = new SimpleXMLElement( $uiConf );
+			}
 			// Check for plug definition in uiConf
-			$xml = $this->getUiConfXML();
-			$restrictUserAgentPlugin = $xml->xpath("*//Plugin[@id = 'restrictUserAgent']");
+			$restrictUserAgentPlugin = $this->uiConfXml->xpath("*//Plugin[@id = 'restrictUserAgent']");
 			if( $restrictUserAgentPlugin ) {
 				$restrictUserAgentPlugin = $restrictUserAgentPlugin[0]->attributes();
 				$restrictedStrings = $restrictUserAgentPlugin->restrictedUserAgents;
@@ -247,12 +256,12 @@ class KalturaResultObject {
 		}
 
 		/* Country Restricted */
-		if($accessControl->isCountryRestricted) {
+		if( $accessControl->isCountryRestricted) {
 			return "Un authorized country\nWe're sorry, this content is only available on certain countries.";
 		}
 
 		/* IP Address Restricted */
-		if($accessControl->isIpAddressRestricted) {
+		if( $accessControl->isIpAddressRestricted) {
 			return "Un authorized IP address\nWe're sorry, this content is only available for ceratin IP addresses.";
 		}
 
@@ -261,17 +270,18 @@ class KalturaResultObject {
 			return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
 		}
 
-		if($accessControl->isScheduledNow === 0) {
+		if( $accessControl->isScheduledNow === 0) {
 			return "Out of scheduling\nWe're sorry, this content is currently unavailable.";
 		}
+		
 		//echo $this->getUserAgent() . '<br />';
 		//echo '<pre>'; print_r($accessControl); exit();
 		//die($this->getKS());
 		$userAgentMessage = "User Agent Restricted\nWe're sorry, this content is not available for your device.";
-		if(isset($accessControl->isUserAgentRestricted) && $accessControl->isUserAgentRestricted ) {
+		if( isset( $accessControl->isUserAgentRestricted ) && $accessControl->isUserAgentRestricted ) {
 			return $userAgentMessage;
 		} else {
-			$userAgentRestricted = $this->userAgentRestricted();
+			$userAgentRestricted = $this->isUserAgentRestrictedPlugin( $resultObject[ 'uiConf'] );
 			if( $userAgentRestricted === false ) {
 				return true;
 			} else {
@@ -282,7 +292,6 @@ class KalturaResultObject {
 				}
 			}
 		}
-
 		return true;
 	}
 	// Load the Kaltura library and grab the most compatible flavor
@@ -649,6 +658,7 @@ class KalturaResultObject {
 			
 			$resultObject['entryMeta'] = $this->xmlToArray( new SimpleXMLElement( $rawResultObject[3]->objects[0]->xml ) );
 		}
+		
 		if( isset( $rawResultObject[4] ) && $rawResultObject[4]->confFile ){
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf'] = $rawResultObject[4]->confFile;
@@ -660,12 +670,12 @@ class KalturaResultObject {
 		if( isset( $rawResultObject[5] ) && is_object( $rawResultObject[5] ) && $rawResultObject[5]->totalCount > 0 ){
 			$resultObject[ 'entryCuePoints' ] = $rawResultObject[5]->objects;
 		}
-
 		// Check access control and throw an exception if not allowed: 
 		$acStatus = $this->isAccessControlAllowed( $resultObject );
 		if( $acStatus !== true ){
 			throw new Exception( $acStatus );
 		}	
+		
 		return $resultObject;
 	}
 	function getBaseResultObject(){
@@ -783,6 +793,7 @@ class KalturaResultObject {
 		}
 	}
 	private function getResultObject(){
+	
 		global $wgKalturaUiConfCacheTime;
 		// Check if we have a cached result object:
 		if( !$this->resultObj ){
@@ -796,13 +807,19 @@ class KalturaResultObject {
 				$this->outputFromCache = true;
 				$this->resultObj = unserialize( file_get_contents( $cacheFile ) );
 			}
-			
 			// Test if the resultObject can be cached ( no access control restrictions )
-			if( $this->isAccessControlAllowed( $this->resultObj ) === true ){
+			if( $this->isCachableRequest() ){
 				$this->putCacheFile( $cacheFile, serialize( $this->resultObj  ) );
 			}
 		}
 		return $this->resultObj;
+	}
+	private function isCachableRequest(){
+		if( $this->isAccessControlAllowed( $this->resultObj ) !== true  ){
+			return false;
+		}
+		// No prestrictions 
+		return true;
 	}
 	private function putCacheFile( $cacheFile, $data ){
 		global $wgEnableScriptDebug;
