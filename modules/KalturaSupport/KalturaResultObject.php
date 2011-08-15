@@ -100,6 +100,49 @@ class KalturaResultObject {
 		return $_SERVER['HTTP_USER_AGENT'];
 	}
 
+	public function userAgentRestricted( $uiConf ) {
+		// Get flashvars
+		$flashVars = $this->urlParameters[ 'flashvars' ];
+		$restrictedMessage = true;
+		// Check for plugin definition in flashVars
+		if( $flashVars && isset($flashVars['restrictUserAgent.plugin']) ) {
+			$restrictedStrings = $flashVars['restrictUserAgent.restrictedUserAgents'];
+			if( isset($flashVars['restrictUserAgent.restrictedUserAgentTitle']) && isset($flashVars['restrictUserAgent.restrictedUserAgentMessage']) ) {
+				$restrictedMessage = $flashVars['restrictUserAgent.restrictedUserAgentTitle'] ."\n". $flashVars['restrictUserAgent.restrictedUserAgentMessage'];
+			}
+		} else if( $uiConf ) {
+			// Check for plug definition in uiConf
+			$xml = new SimpleXMLElement( $uiConf );
+			$restrictUserAgentPlugin = $xml->xpath("*//Plugin[@id = 'restrictUserAgent']");
+			if( $restrictUserAgentPlugin ) {
+				$restrictUserAgentPlugin = $restrictUserAgentPlugin[0]->attributes();
+				$restrictedStrings = $restrictUserAgentPlugin->restrictedUserAgents;
+				if( isset($restrictUserAgentPlugin->restrictedUserAgentTitle) && isset($restrictUserAgentPlugin->restrictedUserAgentMessage) ) {
+					$restrictedMessage = $restrictUserAgentPlugin->restrictedUserAgentTitle . "\n" . $restrictUserAgentPlugin->restrictedUserAgentMessage;
+				}
+			}
+		} else {
+			return false;
+		}
+		
+		// If we don't have any string to search for, return true
+		if( !isset($restrictedStrings) || empty($restrictedStrings) ) { return false; }
+
+		// Lower case user agents string
+		$userAgent = strtolower( $this->getUserAgent() );
+		$restrictedStrings = strtolower( $restrictedStrings );
+		$restrictedStrings = explode(",", $restrictedStrings);
+		
+		foreach( $restrictedStrings as $string ) {
+			$string = str_replace(".*", "", $string); // Removes .*
+			$string = trim($string);
+			if( ! strpos( $userAgent, $string ) === false ) {
+				return $restrictedMessage;
+			}
+		}
+		return false;
+	}
+
 	public function getSourceForUserAgent( $sources = null, $userAgent = false ){
 		// Get all sources
 		if( !$sources ){
@@ -219,6 +262,24 @@ class KalturaResultObject {
 
 		if($accessControl->isScheduledNow === 0) {
 			return "Out of scheduling\nWe're sorry, this content is currently unavailable.";
+		}
+		//echo $this->getUserAgent() . '<br />';
+		//echo '<pre>'; print_r($accessControl); exit();
+		//die($this->getKS());
+		$userAgentMessage = "User Agent Restricted\nWe're sorry, this content is not available for certain user agents.";
+		if(isset($accessControl->isUserAgentRestricted) && $accessControl->isUserAgentRestricted ) {
+			return $userAgentMessage;
+		} else {
+			$userAgentRestricted = $this->userAgentRestricted( $resultObject['uiConf'] );
+			if( $userAgentRestricted === false ) {
+				return true;
+			} else {
+				if( $userAgentRestricted === true ) {
+					return $userAgentMessage;
+				} else {
+					return $userAgentRestricted;
+				}
+			}
 		}
 
 		return true;
@@ -573,7 +634,7 @@ class KalturaResultObject {
 			throw new Exception( 'Error invalid KS');
 			return array();
 		}
-		
+
 		$resultObject = array_merge( $this->getBaseResultObject(), array(
 			'flavors' 			=> 	$rawResultObject[0],
 			'accessControl' 	=> 	$rawResultObject[1],
@@ -591,7 +652,8 @@ class KalturaResultObject {
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf'] = $rawResultObject[4]->confFile;
 		}
-		//echo '<pre>'; print_r( $rawResultObject[5] ); exit();
+		//echo '<pre>'; print_r( $rawResultObject[4] ); exit();
+		//echo htmlspecialchars($rawResultObject[4]->confFile); exit();
 		// Add Cue Point data. Also check for 'code' error
 
 		if( isset( $rawResultObject[5] ) && is_object( $rawResultObject[5] ) && $rawResultObject[5]->totalCount > 0 ){
@@ -642,6 +704,7 @@ class KalturaResultObject {
 		$conf->serviceUrl = $wgKalturaServiceUrl;
 		$conf->clientTag = $this->clientTag;
 		$conf->curlTimeout = $wgKalturaServiceTimeout;
+		$conf->userAgent = $this->getUserAgent();
 		
 		$client = new KalturaClient( $conf );
 		if( isset($this->urlParameters[ 'flashvars' ]) && isset($this->urlParameters[ 'flashvars' ][ 'ks' ]) ) {
@@ -713,7 +776,7 @@ class KalturaResultObject {
 		// Check if we have a cached result object:
 		if( !$this->resultObj ){
 			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".entry.txt";
-	
+			
 			// Check modify time on cached php file
 			$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
 			if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){

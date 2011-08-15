@@ -309,7 +309,7 @@ class KalturaClientBase
 		}
 		curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_USERAGENT, '');
+		curl_setopt($ch, CURLOPT_USERAGENT, $this->config->userAgent);
 		if (count($files) > 0)
 			curl_setopt($ch, CURLOPT_TIMEOUT, 0);
 		else
@@ -771,6 +771,7 @@ class KalturaConfiguration
 	public $format        				= 3;
 	public $clientTag 	  				= "php5";
 	public $curlTimeout   				= 10;
+	public $userAgent					= '';
 	public $startZendDebuggerSession 	= false;
 	
 	/**
