@@ -198,7 +198,8 @@ if ( !$url ) {
 
   // Forward the client ip for GeoLookup: ( geo-lookup server hopefully is not dumb and uses X-Forwarded-For ) 
   curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-  	'X-Forwarded-For: ' . $_SERVER['REMOTE_ADDR']
+  	'X-Forwarded-For: ' . $_SERVER['REMOTE_ADDR'],
+	'Expect:' // used to ignore "100 Continue Header" when using post
   ));
   
   
@@ -259,7 +260,7 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
   	  	if( strtolower( $headKey) == 'content-type' ){
   	  		$contentType =  $headValue;
   	  	}
-  	  } 
+  	  }
 	  if( 0 == preg_match( $contentType_regex, $contentType ) ){
 	  	$status = array( 'http_code' => 'ERROR');
 	  	$contents = "Error invalid content type did not match: " . str_replace( '/', '' , $contentType_regex);  	
