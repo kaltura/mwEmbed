@@ -753,7 +753,14 @@ if ( document.readyState === "complete" ) {
 	kRunMwDomReady();
 }
 // fallback function that should fire for all browsers 
+var kOrgOnLoad = null;
+if( window.onload ){
+	kOrgOnLoad = window.onload;
+}
 window.onload = function(){
+	if( typeof kOrgOnLoad == 'function' ){
+		kOrgOnLoad();
+	}
 	kRunMwDomReady();
 };
 // Cleanup functions for the document ready method
