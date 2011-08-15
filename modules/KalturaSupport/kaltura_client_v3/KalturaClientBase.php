@@ -348,6 +348,7 @@ class KalturaClientBase
 		$formattedData = http_build_query($params , "", "&");
 		$params = array('http' => array(
 					"method" => "POST",
+					"User-Agent: " . $this->config->userAgent . "\r\n";
 					"Accept-language: en\r\n".
 					( $this->getRemoteAddrHeader() != '' )? $this->getRemoteAddrHeader() . "\r\n": '' .
 					"Content-type: application/x-www-form-urlencoded\r\n",
