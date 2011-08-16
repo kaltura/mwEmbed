@@ -227,7 +227,7 @@ class kalturaIframe {
 		if( ! $this->getResultObject()->getUiConf() ){
 			return false;
 		}
-		$xml = new SimpleXMLElement( $this->getResultObject()->getUiConf() );
+		$xml = $this->getResultObject()->getUiConfXML();
 		$resourceIncludes = array();
 		foreach ($xml->uiVars->var as $var ){
 			if( $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'){

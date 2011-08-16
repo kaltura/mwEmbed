@@ -780,7 +780,9 @@ class KalturaResultObject {
 			if( ! $this->getUiConf() ){
 				return false;
 			}
-			$this->uiConfXml = new SimpleXMLElement( $this->getUiConf() );
+			$uiConf = str_replace( '[kClick="', 'kClick="', $this->getUiConf() );
+			// remove this hack as soon as possible
+			$this->uiConfXml = new SimpleXMLElement( $uiConf );
 		}
 		return $this->uiConfXml;
 	}
