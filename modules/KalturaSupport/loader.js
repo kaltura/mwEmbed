@@ -70,6 +70,7 @@
 		"mw.KDPMapping" : "mw.KDPMapping.js",
 		"mw.KApi" : "mw.KApi.js",		
 		"mw.KAds" : "mw.KAds.js",
+		"mw.KPPTWidget" : "mw.KPPTWidget.js",
 		"faderPlugin" : "uiConfComponents/faderPlugin.js",
 		"watermarkPlugin" :  "uiConfComponents/watermarkPlugin.js",
 		"adPlugin"	: 	"uiConfComponents/adPlugin.js",
@@ -131,7 +132,7 @@
 			if( mw.isHTML5FallForwardNative() || mw.getConfig( 'Kaltura.IframeRewrite' ) ){
 				
 				// setup load flags
-				var loadEmbedPlayerFlag = loadPlaylistFlag = false;
+				var loadEmbedPlayerFlag = loadWidgetFlag = false;
 				
 				$j.each( kalturaObjectPlayerList, function( inx, element ){
 					// don't rewrite special id
@@ -173,7 +174,7 @@
 					
 					// Check that the id is unique per player embed instance ( else give it a vid_{inx} id: 
 					var videoId = $j( element ).attr('id');
-					$j('.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap').each(function( inx, swapElement){
+					$j('.mwEmbedKalturaVideoSwap,.mwEmbedKalturaWidgetSwap').each(function( inx, swapElement){
 						if( $j( swapElement ).attr('id') ==  videoId ){
 							videoId = 'vid_' + inx;
 						}
@@ -215,9 +216,9 @@
 							});
 						}
 					} else {
-						// Assume playlist 
-						loadPlaylistFlag = true;
-						kalturaSwapObjectClass = 'mwEmbedKalturaPlaylistSwap';
+						// Assume widget ( can be playlist or other widgets )
+						loadWidgetFlag = true;
+						kalturaSwapObjectClass = 'mwEmbedKalturaWidgetSwap';
 					}
 					
 					var widthType = ( width.indexOf('%') == -1 )? 'px' : '';
@@ -248,6 +249,11 @@
 							.loadingSpinner()
 						)
 					);
+					var elm = $j('#' + videoEmbedAttributes.id ).get(0);
+					// assign values to DOM object methods ( not just attributes ) 
+					$j.each( videoEmbedAttributes, function( attrName, attrValue ){
+						elm[ attrName ] = attrValue;
+					});
 				});
 				
 				// Check if we are doing iFrame rewrite ( skip local library loading )
@@ -261,11 +267,11 @@
 						}
 					};
 					// if there were no targets to rewrite just issue the callback directly
-					if( $j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
+					if( $j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaWidgetSwap' ).length == 0 ){
 						rewriteDoneCallback();
 						return ;
 					}
-					$j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaPlaylistSwap' ).each( function(inx, playerTarget ) {
+					$j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaWidgetSwap' ).each( function(inx, playerTarget ) {
 						var kParams = {};
 						var iframeRequestMap = {
 								'kwidgetid': 'wid',
@@ -282,38 +288,34 @@
 							kParams['flashvars'] = $j( playerTarget).data('flashvars');
 						}
 
-						// XXX UGLY TEMPORARY HACK ( don't use iframe for playlist ) 
 						iframeRewriteCount++;
 						$j( playerTarget )
-							.removeClass('mwEmbedKalturaPlaylistSwap')
+							.removeClass('mwEmbedKalturaWidgetSwap')
 							.removeClass('mwEmbedKalturaVideoSwap')
 							.kalturaIframePlayer( kParams, doneWithIframePlayer);
 					});					
 					// if there are no playlists left to process return: 
-					if( $j( '.mwEmbedKalturaPlaylistSwap' ).length == 0 ){
+					if( $j( '.mwEmbedKalturaWidgetSwap' ).length == 0 ){
 						rewriteDoneCallback();
 						return true;
 					}
 				}
 				
 				// Do loading then rewrite each tag:
-				if( loadPlaylistFlag ){
+				if( loadWidgetFlag ){
 					kLoadKalturaSupport = true;
-					var playlistRequest = [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ];
-					mw.load( playlistRequest, function(){
-						// kalturaPlaylistObject has player loader built in: 
-						$j('.mwEmbedKalturaPlaylistSwap').each( function( inx, playlistTarget ) {
-							// Quick non-ui conf check for layout mode
-							var layout = ( $j( playlistTarget ).width() > $j( playlistTarget ).height() ) 
-											? 'horizontal' : 'vertical';
-							var playlistPlayer = $j( '#' + playlistTarget.id ).playlist({
-								'layout': layout,
-								'titleHeight' : 0 // kaltura playlist don't include the title ontop of the video
-							}); 
+					// Have kWidget Support handle the uiConf swap: 
+					mw.load( [ 'mw.KAPI', 'mw.KWidgetSupport' ], function(){
+						var rewriteCount = 0;
+						$j('.mwEmbedKalturaWidgetSwap').each( function( inx, widgetTarget ) {
+							rewriteCount++;
+							window.kWidgetSupport.rewriteTarget( widgetTarget, function(){
+								rewriteCount--;
+								if( rewriteCount == 0){
+									rewriteDoneCallback();
+								}
+							})
 						});
-						// XXX todo playlist is not really ready for api calls at this point :(
-						// we need to setup a binding and ready event
-						rewriteDoneCallback();
 					});
 				}
 				if( loadEmbedPlayerFlag ){
@@ -324,7 +326,7 @@
 					});
 				}
 				// no loader, run the callback directly: 
-				if( !loadPlaylistFlag && !loadEmbedPlayerFlag ){
+				if( !loadWidgetFlag && !loadEmbedPlayerFlag ){
 					rewriteDoneCallback();
 				}
 			}

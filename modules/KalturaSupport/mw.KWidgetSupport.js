@@ -34,7 +34,48 @@ mw.KWidgetSupport.prototype = {
 			});
 		});
 	},
-	
+	rewriteTarget: function( widgetTarget, callback ){
+		var _this = this;
+		this.loadPlayerData( widgetTarget, function( playerData ){
+			// look for widget type in uiConf file: 
+			switch( _this.getWidgetType( playerData.uiConf ) ){
+				case 'playlist' :
+					mw.load( [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){
+						// Quick non-ui conf check for layout mode 
+						// @@TOOD we can fix this now!
+						var layout = ( $j( widgetTarget ).width() > $j( widgetTarget ).height() ) 
+										? 'horizontal' : 'vertical';
+						var playlistPlayer = $j( '#' + widgetTarget.id ).playlist({
+							'layout': layout,
+							'titleHeight' : 0 // kaltura playlist don't include the title ontop of the video
+						}); 
+						callback();
+					});
+				break;
+				case 'pptwidget': 
+					mw.load([ 'EmbedPlayer', 'mw.KPPTWidget'], function(){
+						new mw.KPPTWidget( widgetTarget, playerData.uiConf );
+					});
+				break;
+				default:
+					mw.log("Error:: Could not read widget type for uiconf:\n " + playerData.uiConf );
+				break;
+			}
+		});
+		/*
+		
+		*/
+	},
+	getWidgetType: function( uiConf ){
+		var $uiConf = $j( uiConf );
+		if( $uiConf.find('plugin#playlistAPI').length ){
+			return 'playlist';
+		}
+		if( $uiConf.find('plugin#pptWidgetAPI') ){
+			return 'pptwidget';
+		}
+		return null;
+	},
 	/**
 	 * Load and bind embedPlayer from kaltura api entry request
 	 * @param embedPlayer
@@ -305,7 +346,7 @@ mw.KWidgetSupport.prototype = {
 		var playerRequest = {};
 		// Check for widget id	 
 		if( ! embedPlayer.kwidgetid ){
-			mw.log( "Error: missing required widget paramater");
+			mw.log( "Error: missing required widget paramater ( kwidgetid ) ");
 			callback( false );
 			return false;
 		} else {

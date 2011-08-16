@@ -218,6 +218,23 @@ mw.KApi.prototype = {
 	        	 'pager:pageSize' : 1
 		    });
 			
+			// Get Cue Points if not disable and on an entry_id
+			var loadCuePoints = true;
+			if( kProperties.flashvars && kProperties.flashvars.getCuePointsData && kProperties.flashvars.getCuePointsData == "false") {
+				loadCuePoints = false;
+			}
+
+			if( loadCuePoints ){
+				requestObject.push({
+		        	 'service' : 'cuepoint_cuepoint',
+		        	 'action' : 'list',
+		        	 'filter:objectType' : 'KalturaCuePointFilter',
+		        	 'filter:orderBy' : '+startTime',
+		        	 'filter:statusEqual' : 1,
+		        	 'filter:entryIdEqual' : kProperties.entry_id
+			    });
+			}
+			
 		}		
 		if( kProperties.uiconf_id ){
 			// Get Ui Conf if property is present
@@ -228,22 +245,7 @@ mw.KApi.prototype = {
 		    });
 		}
 
-		// Get Cue Points if not disable
-		var loadCuePoints = true;
-		if( kProperties.flashvars && kProperties.flashvars.getCuePointsData && kProperties.flashvars.getCuePointsData == "false") {
-			loadCuePoints = false;
-		}
-
-		if( loadCuePoints ){
-			requestObject.push({
-	        	 'service' : 'cuepoint_cuepoint',
-	        	 'action' : 'list',
-	        	 'filter:objectType' : 'KalturaCuePointFilter',
-	        	 'filter:orderBy' : '+startTime',
-	        	 'filter:statusEqual' : 1,
-	        	 'filter:entryIdEqual' : kProperties.entry_id
-		    });
-		}
+		
 
 		// Do the request and pass along the callback
 		this.doRequest( requestObject, function( data ){
