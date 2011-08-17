@@ -150,8 +150,8 @@ mw.KPPTWidget.prototype = {
 			'border-radius' : '3px',
 			'margin' : '5px',
 			'float' : 'left',
-			'background-image' : '-webkit-gradient(linear, left top, left bottom, from(#AAA), to(#666))',
-			'background-image' : '-moz-linear-gradient(top, #AAA, #666)'
+			'background-image' : '-webkit-gradient(linear, left top, left bottom, from(#FFF), to(#BBB))',
+			'background-image' : '-moz-linear-gradient(top, #FFF, #BBB)'
 		};
 		// check for prev 
 		$prvConf = $syncButtonsConfig.find('#syncPrevButton');
