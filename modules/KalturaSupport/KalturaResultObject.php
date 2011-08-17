@@ -116,7 +116,7 @@ class KalturaResultObject {
 			if( isset($flashVars['restrictUserAgent.restrictedUserAgentTitle']) && isset($flashVars['restrictUserAgent.restrictedUserAgentMessage']) ) {
 				$restrictedMessage = $flashVars['restrictUserAgent.restrictedUserAgentTitle'] ."\n". $flashVars['restrictUserAgent.restrictedUserAgentMessage'];
 			}
-		} else if( $uiConf ) {
+		} else {
 			// Use the local uiConfXml object location to avoid re-parsing the uiConf
 			// @@TODO clean up getUiConfXMl() method to handle unitialized resultObject state
 			if( !$this->uiConfXml ){
@@ -130,9 +130,9 @@ class KalturaResultObject {
 				if( isset($restrictUserAgentPlugin->restrictedUserAgentTitle) && isset($restrictUserAgentPlugin->restrictedUserAgentMessage) ) {
 					$restrictedMessage = $restrictUserAgentPlugin->restrictedUserAgentTitle . "\n" . $restrictUserAgentPlugin->restrictedUserAgentMessage;
 				}
+			}else {
+				return false;
 			}
-		} else {
-			return false;
 		}
 		
 		// If we don't have any string to search for, return true
