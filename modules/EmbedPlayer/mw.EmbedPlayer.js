@@ -1538,7 +1538,7 @@ mw.EmbedPlayer.prototype = {
 				gM( 'mwe-embedplayer-download-warn', mw.getConfig('EmbedPlayer.FirefoxLink') )
 			);
 			// Make sure we have a play btn:
-			if( ! $j( this ).find('.play-btn-large').length ) {
+			if( $j( this ).find('.play-btn-large').length == 0) {
 				this.$interface.append(
 						this.controlBuilder.getComponent( 'playButtonLarge' )
 				);
@@ -1700,7 +1700,9 @@ mw.EmbedPlayer.prototype = {
 		}
 		if ( this.controls && this.controlBuilder
 			&& this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
+			&& $j( this ).find('.play-btn-large').length == 0
 		) {
+			
 			$j( this ).append(
 				this.controlBuilder.getComponent( 'playButtonLarge' )
 			);
