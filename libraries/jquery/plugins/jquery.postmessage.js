@@ -188,7 +188,8 @@
             || ( $.isFunction( source_origin ) && source_origin( e.origin ) === FALSE ) ) {
         	  if( console && console.log ){
         		  console.log ( " Skiping event from " + source_origin + ' does not match event orgin: ' + e.origin );
-            return FALSE;
+        	  }
+        	  return FALSE;
           }
           callback( e );
         };
