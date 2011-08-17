@@ -82,6 +82,9 @@ $wgKalturaUseManifestUrls = true;
 // By default do not allow custom resource includes. 
 $wgAllowCustomResourceIncludes = false;
 
+// An array of partner ids for which apple adaptive should be disabled. 
+$wgKalturaPartnerDisableAppleAdaptive = array();
+
 // By default use apple adaptive if we have the ability
 $wgKalturaUseAppleAdaptive = true;
 

@@ -452,7 +452,8 @@ class KalturaResultObject {
 	
 	// Parse the embedFrame request and sanitize input
 	private function parseRequest(){
-		global $wgAllowRemoteKalturaService, $wgEnableScriptDebug;
+		global $wgAllowRemoteKalturaService, $wgEnableScriptDebug, $wgKalturaUseAppleAdaptive, 
+				$wgKalturaPartnerDisableAppleAdaptive;
 		// Support /key/value path request:
 		if( isset( $_SERVER['PATH_INFO'] ) ){
 			$urlParts = explode( '/', $_SERVER['PATH_INFO'] );
@@ -509,6 +510,12 @@ class KalturaResultObject {
 				$wgKalturaCDNUrl = 'http://' .  $_REQUEST['cdnHost'];
 			}
 		}
+		
+		// Dissable apple adaptive per partner id:
+		if( in_array( $this->getPartnerId(), $wgKalturaPartnerDisableAppleAdaptive ) ){
+			$wgKalturaUseAppleAdaptive = false;
+		}
+		
 	}
 	private function getCacheDir(){
 		global $mwEmbedRoot, $wgScriptCacheDirectory;
