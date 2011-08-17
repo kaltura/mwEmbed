@@ -182,12 +182,12 @@
         // Unbind an existing callback if it exists.
         rm_callback && p_receiveMessage();
         
-        // Bind the callback. A reference to the callback is stored for ease of
-        // unbinding.
+        // Bind the callback. A reference to the callback is stored for ease of unbinding.
         rm_callback = function(e) {
           if ( ( typeof source_origin === 'string' && e.origin !== source_origin )
             || ( $.isFunction( source_origin ) && source_origin( e.origin ) === FALSE ) ) {
-        	  throw "ERROR: " +source_origin + ' does not match event orgin: ' + e.origin;
+        	  if( console && console.log ){
+        		  console.log ( " Skiping event from " + source_origin + ' does not match event orgin: ' + e.origin );
             return FALSE;
           }
           callback( e );
