@@ -135,7 +135,7 @@ mw.KPPTWidget.prototype = {
 		
 	},
 	getSyncPlayButtons: function( $target, $syncButtonsConfig){
-		// add a center div
+		// Add a center div
 		var $syncButtonsContainer = $('<div />').css({
 				'position' : 'absolute',
 				'top' : '20px',
@@ -144,8 +144,9 @@ mw.KPPTWidget.prototype = {
 			})
 			.addClass( 'syncButtonsContainer' )
 		var baseButtonCss = {
+			'cursor' : 'pointer',
 			'position' : 'relative',
-			'border' : 'solid thin black',
+			'border' : 'solid thin #666',
 			'-moz-border-radius' : '3px',
 			'border-radius' : '3px',
 			'margin' : '5px',
@@ -175,7 +176,7 @@ mw.KPPTWidget.prototype = {
 			)
 		}
 		
-		// check for play 
+		// Check for play 
 		$playConf =  $syncButtonsConfig.find('#playBtnControllerScreen')
 		if( $playConf.length ){
 			$syncButtonsContainer.append( 
@@ -190,7 +191,7 @@ mw.KPPTWidget.prototype = {
 					.css({
 						'position' : 'absolute',
 						'top' : '8px',
-						'left':'20px'
+						'left':'22px'
 					})
 				)
 			)
@@ -302,7 +303,7 @@ mw.KPPTWidget.prototype = {
 			.css( baseSliderCss )
 			.css({
 				'height' : '5px',
-				'border' : 'solid thin black',
+				'border' : 'solid thin #333',
 				'background-color' : '#AAA',
 				'background-image' : '-webkit-gradient(linear, left top, left bottom, from(#AAA), to(#666))',
 				'background-image' : '-moz-linear-gradient(top, #AAA, #666)',
