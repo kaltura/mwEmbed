@@ -330,17 +330,18 @@ mw.kApiGetPartnerClient = function( partnerOrWidgetId ){
 	}
 	return mw.KApiPartnerCache[ partner_id ];
 };
-
 mw.KApiPlayerLoader = function( kProperties, callback ){
 	if( !kProperties.widget_id ) {
 		mw.log( "Error:: mw.KApiPlayerLoader:: cant run player loader with widget_id "  + kProperties.widget_id );
 	}
 	// Convert widget_id to partner id
-	var partner_id = kProperties.widget_id.replace(/_/g, '');
-	
-	var kClient = mw.kApiGetPartnerClient( partner_id );
+	var kClient = mw.kApiGetPartnerClient( kProperties.widget_id );
 	kClient.playerLoader( kProperties, callback );
 	
 	// Return the kClient api object for future requests
 	return kClient;
+};
+mw.KApiRequest = function( partnerId, requestObject, callback ){
+	var kClient = mw.kApiGetPartnerClient( partnerId );
+	kClient.doRequest( requestObject, callback );
 };

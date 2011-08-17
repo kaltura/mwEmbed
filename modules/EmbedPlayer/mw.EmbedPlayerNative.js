@@ -92,6 +92,7 @@ mw.EmbedPlayerNative = {
 		
 		// Check if using native controls and already the "pid" is already in the DOM
 		if( this.isPersistentNativePlayer() && vid ) {
+			alert( )
 			_this.postEmbedJS();
 			return ;
 		}
@@ -125,6 +126,10 @@ mw.EmbedPlayerNative = {
 		// If autoplay pass along to attribute
 		if( this.autoplay ) {
 			playerAttribtues['autoplay'] = 'true';
+		}
+		// if controls are true and we are not in nativePlayerControls mode add controls:
+		if( this.useNativePlayerControls() && this.controls ){
+			playerAttribtues['controls'] = 'true';
 		}
 		
 		if( !cssSet ){
