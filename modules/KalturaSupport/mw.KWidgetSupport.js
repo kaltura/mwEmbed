@@ -45,7 +45,7 @@ mw.KWidgetSupport.prototype = {
 						// @@TOOD we can fix this now!
 						var layout = ( $j( widgetTarget ).width() > $j( widgetTarget ).height() ) 
 										? 'horizontal' : 'vertical';
-						var playlistPlayer = $j( '#' + widgetTarget.id ).playlist({
+						$j( '#' + widgetTarget.id ).playlist({
 							'layout': layout,
 							'titleHeight' : 0 // kaltura playlist don't include the title ontop of the video
 						}); 
@@ -53,8 +53,8 @@ mw.KWidgetSupport.prototype = {
 					});
 				break;
 				case 'pptwidget': 
-					mw.load([ 'EmbedPlayer', 'mw.KPPTWidget'], function(){
-						new mw.KPPTWidget( widgetTarget, playerData.uiConf );
+					mw.load([ 'EmbedPlayer', 'mw.KPPTWidget', 'mw.KLayout'], function(){
+						new mw.KPPTWidget( widgetTarget, playerData.uiConf, callback );
 					});
 				break;
 				default:

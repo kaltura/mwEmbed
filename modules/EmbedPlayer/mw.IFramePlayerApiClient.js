@@ -4,7 +4,7 @@
 * Client side ( binds a given iFrames to expose the player api ) 
 */
 
-( function( mw ) {
+( function( mw, $ ) {
 	
 mw.IFramePlayerApiClient = function( iframe, playerProxy ){
 	return this.init( iframe , playerProxy );
@@ -265,4 +265,4 @@ jQuery.fn.iFramePlayer = function( readyCallback ){
 	return this;
 };
 
-} )( window.mw );
+} )( window.mw, window.jQuery );

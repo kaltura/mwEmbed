@@ -1785,7 +1785,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 * 
 	 * @param {Float}
 	 *            sec Seconds
-	 * @param {Boolean}
+	 * @param {Number}
 	 *            verbose If hours and milliseconds should padded be displayed.
 	 * @return {Float} String npt format
 	 */

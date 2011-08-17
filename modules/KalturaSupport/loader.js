@@ -71,6 +71,7 @@
 		"mw.KApi" : "mw.KApi.js",		
 		"mw.KAds" : "mw.KAds.js",
 		"mw.KPPTWidget" : "mw.KPPTWidget.js",
+		"mw.KLayout" : "mw.KLayout.js",
 		"faderPlugin" : "uiConfComponents/faderPlugin.js",
 		"watermarkPlugin" :  "uiConfComponents/watermarkPlugin.js",
 		"adPlugin"	: 	"uiConfComponents/adPlugin.js",
@@ -195,7 +196,7 @@
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
 						videoEmbedAttributes.kentryid = kEmbedSettings.entry_id;
 						if( kEmbedSettings.p ){
-							// if we have flashvar  we need to pass the ks to thumbnail url
+							// If we have flashvar  we need to pass the ks to thumbnail url
 							var ks = ( flashvars && flashvars.loadThumbnailWithKs ) ? flashvars.ks : false;
 							var thumb_url =  mw.getKalturaThumbUrl({
 								'partner_id': kEmbedSettings.p,

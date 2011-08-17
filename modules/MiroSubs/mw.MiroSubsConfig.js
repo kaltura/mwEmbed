@@ -266,7 +266,7 @@ mw.MiroSubsConfig = {
 		var srtString = '';
 		for(var i =0; i < miroSubs.length ; i ++ ){
 			var miroSub = miroSubs[i];
-			var startStr = String( mw.seconds2npt( miroSub.start_time, true ) ).replace('.',',');
+			var startStr = String( mw.seconds2npt( miroSub.start_time, true) ).replace('.',',');
 			var endStr = String( mw.seconds2npt( miroSub.end_time, true ) ).replace( '.', ',' );
 			srtString += miroSub.sub_order + "\n" +
 				startStr + ' --> ' + endStr + "\n" +
