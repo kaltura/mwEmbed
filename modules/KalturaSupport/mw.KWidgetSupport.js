@@ -531,7 +531,6 @@ mw.KWidgetSupport.prototype = {
 			var flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
 				   '/sp/' +  partner_id + '00/flvclipper';
 		}
-
 		// Find a compatible stream
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 			var asset = flavorData[i];
@@ -548,7 +547,7 @@ mw.KWidgetSupport.prototype = {
 				var src  = flavorUrl + '/entryId/' + asset.entryId;
 
 				// Check if Apple http streaming is enabled and the tags include applembr
-				if( mw.getConfig('Kaltura.UseAppleAdaptive') && asset.tags.indexOf('applembr') != -1 ) {
+				if( asset.tags.indexOf('applembr') != -1 ) {
 					src += '/format/applehttp/protocol/http';
 					deviceSources['AppleMBR'] = src + '/a.m3u8';
 				} else {
@@ -560,12 +559,12 @@ mw.KWidgetSupport.prototype = {
 			}
 			
 			// Add iPad Akamai flavor to iPad flavor Ids list id list
-			if( mw.getConfig('Kaltura.UseAppleAdaptive') && asset.fileExt == 'mp4' && asset.tags.indexOf('ipadnew') != -1 ){
+			if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipadnew') != -1 ){
 				ipadAdaptiveFlavors.push( asset.id );
 			}
 
 			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
-			if( mw.getConfig('Kaltura.UseAppleAdaptive') && asset.fileExt == 'mp4' && asset.tags.indexOf('iphonenew') != -1 ){
+			if( asset.fileExt == 'mp4' && asset.tags.indexOf('iphonenew') != -1 ){
 				ipadAdaptiveFlavors.push( asset.id );
 				iphoneAdaptiveFlavors.push( asset.id );
 			}
@@ -639,19 +638,21 @@ mw.KWidgetSupport.prototype = {
 			// Check if we like to use iPad flavor for iPad & iPhone4
 			var useIpadFlavor = ( mw.isIpad() || mw.isIphone4() );
 
-			// Prefer Apple HTTP streaming
-			if( deviceSources['AppleMBR'] ) {
-				addSource( deviceSources['AppleMBR'] , 'application/vnd.apple.mpegurl' );
-				return sources;
-			}
-			if( deviceSources['iPadNew'] && useIpadFlavor ){
-				mw.log( "KwidgetSupport:: Add iPad Source using Akamai HTTP" );
-				addSource( deviceSources['iPadNew'] , 'application/vnd.apple.mpegurl' );
-				return sources;
-			} else if ( deviceSources['iPhoneNew']) {
-				mw.log( "KwidgetSupport:: Add iPhone Source using Akamai HTTP" );
-				addSource( deviceSources['iPhoneNew'], 'application/vnd.apple.mpegurl' );
-				return sources;
+			// Prefer Apple HTTP streaming if enabled: 
+			if( mw.getConfig('Kaltura.UseAppleAdaptive') ){
+				if( deviceSources['AppleMBR'] ) {
+					addSource( deviceSources['AppleMBR'] , 'application/vnd.apple.mpegurl' );
+					return sources;
+				}
+				if( deviceSources['iPadNew'] && useIpadFlavor ){
+					mw.log( "KwidgetSupport:: Add iPad Source using Akamai HTTP" );
+					addSource( deviceSources['iPadNew'] , 'application/vnd.apple.mpegurl' );
+					return sources;
+				} else if ( deviceSources['iPhoneNew']) {
+					mw.log( "KwidgetSupport:: Add iPhone Source using Akamai HTTP" );
+					addSource( deviceSources['iPhoneNew'], 'application/vnd.apple.mpegurl' );
+					return sources;
+				}
 			}
 
 			if( deviceSources['iPad'] && useIpadFlavor ){
