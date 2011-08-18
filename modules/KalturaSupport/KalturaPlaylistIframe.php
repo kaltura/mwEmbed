@@ -1,6 +1,11 @@
 <?php
-
-/* Kaltura Playlist Iframe support */
+/**
+ * Sample Playlist Iframe with nested iframe player
+ * 
+ *  NOTE:: this file was created a POC, and needs clean up before usage outside
+ *  of that context. 
+ *  
+ */
 
 // Include configuration: ( will include LocalSettings.php )
 require( '../../includes/DefaultSettings.php' );
@@ -183,27 +188,30 @@ class kalturaPlaylistIframe {
 		{"src":"http://projects.kaltura.com/ran/guestbook/mw.KGuestbook.css","type":"css"}
 	]);
 	var kdp;
-	var firstPlay = true;
-	mw.ready( function() {
-		$('.playlist_item').click(function() {
-			var $this = $(this);
-			$('.playlist_item').removeClass('active');
-			$this.addClass('active');
-			kdp.sendNotification('changeMedia', { 'entryId' : $this.data('entryid') });
-		});
-	});
+	var didClick = false;
+	
 	function jsCallbackReady( playerId ) {
 		kdp = document.getElementById( playerId );
-		kdp.addJsListener('entryReady', 'doPlay');
+		
+		kdp.addJsListener( 'entryReady', 'doPlay' );
+		// add playlist link binding:
+		$('.playlist_item')
+		.click( function() {
+			var $this = $(this);
+			$( '.playlist_item' ).removeClass('active');
+			$this.addClass('active');
+			didClick = true;
+			kdp.sendNotification('changeMedia', { 'entryId' : $this.data('entryid') });
+		});
 	}
-
-	function doPlay() {
-		if( firstPlay ) {
-			firstPlay = false;
-		} else {
-			setTimeout( function() {
-				kdp.sendNotification('doPlay');
-			}, 250);
+	function doPlay(){
+		if( didClick ) {
+			setTimeout(function(){
+				if( !kdp['guestbookonscreen'] ){
+					kdp.sendNotification('doPlay');
+				}
+			}, 300);
+			didClick = false;
 		}
 	}
 	</script>

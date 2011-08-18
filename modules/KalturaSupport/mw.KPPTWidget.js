@@ -461,7 +461,7 @@ mw.KPPTWidget.prototype = {
 				}
 			});
 			if( maxInx !== false ){
-				_this.showSlide( maxInx  );
+				_this.showSlide( maxInx );
 			}
 		});
 	},
