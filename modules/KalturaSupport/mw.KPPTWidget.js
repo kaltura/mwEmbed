@@ -64,11 +64,12 @@ mw.KPPTWidget.prototype = {
 			
 			// Update embed player
 			_this.$target.find( 'video' ).embedPlayer( function(){
-				// add a play button to the player ( all other controls are hidden ) 
-				//_this.getEmbedPlayer().controlBuilder.getComponent( 'playButtonLarge' )
+				// Add slide tags
+				_this.addSlideTags();
 				
-				// Add bindings
+				// Add Player bindings
 				_this.addBindings();
+				
 				if( callback )
 					callback();
 			});
@@ -169,6 +170,7 @@ mw.KPPTWidget.prototype = {
 		
 	},
 	getSyncPlayButtons: function( $target, $syncButtonsConfig){
+		var _this = this;
 		// Add a center div
 		var $syncButtonsContainer = $('<div />').css({
 				'position' : 'absolute',
@@ -176,7 +178,7 @@ mw.KPPTWidget.prototype = {
 				'left' : ( this.$target.width() / 2 )- 100,
 				'width': '300px'
 			})
-			.addClass( 'syncButtonsContainer' )
+			.addClass( 'syncButtonsContainer' );
 		var baseButtonCss = {
 			'cursor' : 'pointer',
 			'position' : 'relative',
@@ -215,20 +217,41 @@ mw.KPPTWidget.prototype = {
 		if( $playConf.length ){
 			$syncButtonsContainer.append( 
 				$('<div />')
+				.addClass('playBtnControllerScreen')
 				.css( baseButtonCss )
 				.css({
 					'width' : $playConf.attr('minWidth'),
 					'height' : $playConf.attr('minHeight')
 				})
 				.append( 
-					$('<img />').attr('src',  this.getIconSrc( 'PlayArrow' ) )
+					$('<img />').attr('src',  _this.getIconSrc( 'PlayArrow' ) )
 					.css({
 						'position' : 'absolute',
 						'top' : '8px',
 						'left':'22px'
 					})
 				)
-			)
+			).click(function(){
+				var embedPlayer = _this.getEmbedPlayer();
+				if( embedPlayer.paused ){
+					embedPlayer.play();
+				} else {
+					embedPlayer.pause();
+				}
+			});
+			
+			_this.readyBindings.push(function( embedPlayer ){
+				$( embedPlayer ).bind('onplay.ppt', function(){
+					$syncButtonsContainer.find( '.playBtnControllerScreen img' ).attr('src', 
+						_this.getIconSrc( 'PauseBtn' ) 
+					);
+				});
+				$( embedPlayer ).bind('onpause.ppt', function(){
+					$syncButtonsContainer.find( '.playBtnControllerScreen img' ).attr('src', 
+						_this.getIconSrc( 'PlayArrow' ) 
+					);
+				});
+			});
 		}
 		
 		// check for next 
@@ -309,11 +332,13 @@ mw.KPPTWidget.prototype = {
 		}
 	},
 	getProgressBar: function( node ){
+		var _this = this;
 		var baseSliderCss = {
 			'width' : 'auto',
 			'margin-left': '5px',
 			'margin-right' : '10px'
 		};
+		
 		$progressBar = $('<div />').css({
 			'float': 'left',
 			// size is set once all the spacers are in place. 
@@ -336,6 +361,7 @@ mw.KPPTWidget.prototype = {
 			.addClass( "progressBarContainer" )
 			.css( baseSliderCss )
 			.css({
+				'cursor' : 'pointer',
 				'height' : '5px',
 				'border' : 'solid thin #333',
 				'background-color' : '#AAA',
@@ -344,14 +370,30 @@ mw.KPPTWidget.prototype = {
 				'-moz-border-radius' : '3px',
 				'border-radius' : '3px'
 			})
+			.click( function( e ){
+				var x = e.pageX - this.offsetLeft;
+				var perc = x / $( this ).width();
+				mw.log( 'KPPTWidget:: progressbar seek:' + perc );
+				_this.getEmbedPlayer().doSeek( perc );
+			})
 		);
+		var $playbackProgress = $('<div />').css({
+			'background-color' : '#DDD',
+			'border-radius' : '3px',
+			'height' : '4px'
+		})
+		.appendTo( $progressBar.find( '.progressBarContainer' ) );
+		
+		_this.progressBindings.push(function( embedPlayer ){
+			$playbackProgress.css('width', ( embedPlayer.currentTime / embedPlayer.duration ) *
+					$progressBar.find( '.progressBarContainer' ).width() );
+		});
+		
 		return $progressBar;
 	},
 	addBindings: function(){
 		var _this = this;
 		var embedPlayer = $('#' + this.getEmbedPlayerId() ).get(0);
-		
-		_this.addSlideTags();
 		
 		// Run any player ready bindings: 
 		$.each( _this.readyBindings, function(inx, readyCallback){
@@ -372,6 +414,26 @@ mw.KPPTWidget.prototype = {
 			var slideNum =  $( node ).find( 'slide').text();
 			_this.addSlideTag( slideNum, videoTime );
 		});
+		// on ready display the "first" slide without highlight the marker
+		this.readyBindings.push( function( embedPlayer ){
+			// make sure we have slides ( to show the first one ) : 
+			if( _this.$target.find( '.slideTagsContainer .slideTag' ).length ){
+				_this.showSlide( 0 );
+				$('#' + _this.getSlideTagId( 0) + ' img').attr( 'src', _this.getIconSrc( 'YelloTag' ) );
+			}
+		});
+		// Setup a progressBindings to update slides
+		this.progressBindings.push( function( embedPlayer ){
+			var maxInx = false;
+			_this.$target.find( '.slideTagsContainer .slideTag' ).each(function(inx, slideTag){
+				if( embedPlayer.currentTime > $( slideTag).data( 'videoTime' ) ){
+					maxInx = $( slideTag).data( 'slideInx' );
+				}
+			});
+			if( maxInx !== false ){
+				_this.showSlide( maxInx  );
+			}
+		});
 	},
 	addSlideTag: function( slideNum, videoTime ){
 		var _this = this;
@@ -384,14 +446,20 @@ mw.KPPTWidget.prototype = {
 			.attr('id', this.getSlideTagId( slideInx) )
 			.addClass( 'slideTag' )
 			.css({
+				'cursor' : 'pointer',
 				'position' :'absolute',
 				'top' : '1px',
 				'left' : offsetLeft + 'px'
 			})
-			.data('slideNum', slideNum)
+			.data({
+				'slideInx' : slideInx,
+				'slideNum': slideNum,
+				'videoTime' : videoTime
+			})
 			.click( function(){
-				// do video seek:
-				_this.getEmbedPlayer().
+				var embedPlayer = _this.getEmbedPlayer()
+				// do video seek 
+				embedPlayer.doSeek( videoTime / embedPlayer.getDuration() );
 				// show the requested slide
 				_this.showSlide( slideInx );
 			})
@@ -415,6 +483,7 @@ mw.KPPTWidget.prototype = {
 		var $curTag = $('#' + this.getSlideTagId( tagInx) );
 		// Make the current slide tag red: 
 		$curTag.find('img').attr('src', _this.getIconSrc( 'RedTag' ) );
+		
 		// Update the slide image
 		var imageUrl = mw.getConfig('Kaltura.PPTWidgetSlidePath' ) + this.getDataEntryId() + 
 						'/' + $curTag.data( 'slideNum' ) + '.jpg';
@@ -423,7 +492,7 @@ mw.KPPTWidget.prototype = {
 			.css({
 				'height':'100%'
 			})
-			.attr('src' , imageUrl)
+			.attr( 'src' , imageUrl )
 		);
 		
 	},
@@ -449,7 +518,7 @@ mw.KPPTWidget.prototype = {
 		
 		if( $(node).attr('timerType') == 'backwards' ){
 			this.progressBindings.push( function( embedPlayer ){
-				$timer.text( 
+				$timer.text(
 					_this.formatTime( embedPlayer.duration - embedPlayer.currentTime, timeFormat)
 				);
 			});
@@ -481,7 +550,7 @@ mw.KPPTWidget.prototype = {
 		// @@TODO We need to define what formatParts we need to parse: for now just do part count
 		if( formatParts.length == 2 ){
 			return leadZero( ( tm.days * 60 * 24 ) + ( tm.hours * 60 ) + tm.minutes ) + ':'
-					+ leadZero( tm.seconds );
+					+ leadZero( parseInt( tm.seconds ) );
 		}
 		if( formatParts.length == 3){
 			return leadZero( ( tm.days * 24 ) + tm.hours ) + ':' + leadZero( tm.minutes ) + ':'

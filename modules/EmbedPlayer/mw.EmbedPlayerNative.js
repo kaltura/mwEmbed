@@ -71,7 +71,7 @@ mw.EmbedPlayerNative = {
 			this.supports.overlays = false;
 			this.supports.volumeControl = false;
 		}
-		// iOS  does not support volume control ( only iPad can have controls ) 
+		// iOS does not support volume control 
 		if( mw.isIpad() ){
 			this.supports.volumeControl = false;
 		}
@@ -92,7 +92,6 @@ mw.EmbedPlayerNative = {
 		
 		// Check if using native controls and already the "pid" is already in the DOM
 		if( this.isPersistentNativePlayer() && vid ) {
-			alert( )
 			_this.postEmbedJS();
 			return ;
 		}
@@ -174,11 +173,24 @@ mw.EmbedPlayerNative = {
 
 		// Make sure we start playing in the correct place:
 		if( this.currentTime != vid.currentTime ){
-			vid.currentTime = this.currentTime;
+			var waitReadyStateCount = 0;
+			var checkReadyState = function(){
+				if( vid.readyState > 0 ){
+					vid.currentTime = this.currentTime;
+					return ;
+				}
+				if( waitReadyStateCount > 1000 ){
+					mw.log("Error: EmbedPlayerNative: could not run native seek");
+					return ;
+				}
+				waitReadyStateCount++;
+				setTimeout( function() {
+					checkReadyState();
+				}, 10 );
+			};
 		}
-		
 		// Check for load flag
-		if ( this.onlyLoadFlag ) {
+		if ( this.onlyLoadFlag || this.paused ) {
 			vid.pause();
 			vid.load();
 		} else {
@@ -304,7 +316,7 @@ mw.EmbedPlayerNative = {
 			// (could also check bufferedPercent > percent seek (and issue oggz_chop request or not)
 			this.doNativeSeek( percent );
 		} else {
-			// try to do a play then seek:
+			// Try to do a play then seek:
 			this.doPlayThenSeek( percent );
 		}
 	},
@@ -314,7 +326,7 @@ mw.EmbedPlayerNative = {
 	* @param {float} percent
 	* 		Percent to seek to of full time
 	*/
-	doNativeSeek: function( percent ) {
+	doNativeSeek: function( percent, callback ) {
 		var _this = this;
 		mw.log( 'EmbedPlayerNative::doNativeSeek::' + percent );
 		this.seeking = true;
@@ -337,18 +349,22 @@ mw.EmbedPlayerNative = {
 	doPlayThenSeek: function( percent ) {
 		mw.log( 'native::doPlayThenSeek::' + percent );
 		var _this = this;
+		var oldPauseState = this.paused;
 		this.play();
 		var retryCount = 0;
 		var readyForSeek = function() {
 			_this.getPlayerElement();
 			// If we have duration then we are ready to do the seek
 			if ( _this.playerElement && _this.playerElement.duration ) {
+				if( oldPauseState ){
+					_this.pause();
+				}
 				_this.doNativeSeek( percent );
 			} else {
 				// Try to get player for  30 seconds:
 				// (it would be nice if the onmetadata type callbacks where fired consistently)
 				if ( retryCount < 800 ) {
-					setTimeout( readyForSeek, 50 );
+					setTimeout( readyForSeek, 10 );
 					retryCount++;
 				} else {
 					mw.log( 'error:doPlayThenSeek failed :' + _this.playerElement.duration);
@@ -372,6 +388,7 @@ mw.EmbedPlayerNative = {
 			callbackCount = 0;
 		this.getPlayerElement();
 		if( _this.playerElement.readyState >= 1 ){
+			// check if we already are at the requested time ( directly issue the callback ) 
 			if( _this.playerElement.currentTime == time ){
 				callback();
 				return;

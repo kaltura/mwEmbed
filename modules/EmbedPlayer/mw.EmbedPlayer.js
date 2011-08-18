@@ -2090,11 +2090,13 @@ mw.EmbedPlayer.prototype = {
 			this.paused = true;
 			mw.log('EmbedPlayer:trigger pause:' + this.paused);
 			if(  this._propagateEvents ){
+				// "pause" will be deprecated in favor of "onpause"
 				$j( this ).trigger( 'pause' );
+				$j( this ).trigger( 'onpause' );
 			}
 		}
 
-		// update the ctrl "paused state"
+		// Update the ctrl "paused state"
 		if( this.$interface ){
 			this.$interface.find('.play-btn span' )
 			.removeClass( 'ui-icon-pause' )
@@ -2523,7 +2525,7 @@ mw.EmbedPlayer.prototype = {
 	updatePlayHead: function( perc ) {
 		//mw.log( 'EmbedPlayer: updatePlayHead: '+ perc);
 		$playHead = this.$interface.find( '.play_head' );
-		if ( !this.useNativeControls() && $playHead.length != 0 ) {
+		if ( !this.useNativePlayerControls() && $playHead.length != 0 ) {
 			var val = parseInt( perc * 1000 );
 			$playHead.slider( 'value', val );
 		}
