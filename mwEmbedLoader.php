@@ -13,7 +13,7 @@ $loaderJs .= file_get_contents( 'mwEmbedLoader.js' );
 
 // Append ResourceLoder path to loader.js
 $loaderJs .= "\n" . "SCRIPT_LOADER_URL = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
-	
+
 // Set up globals to be exported as mwEmbed config: 
 $exportedJsConfig= array(
 	'Kaltura.UseManifestUrls' => $wgKalturaUseManifestUrls,
