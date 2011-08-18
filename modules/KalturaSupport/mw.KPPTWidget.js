@@ -193,7 +193,7 @@ mw.KPPTWidget.prototype = {
 		// check for prev 
 		$prvConf = $syncButtonsConfig.find('#syncPrevButton');
 		if( $prvConf.length ){
-			$syncButtonsContainer.append( 
+			$syncButtonsContainer.append(
 				$('<div />')
 				.css( baseButtonCss )
 				.css({
@@ -209,6 +209,17 @@ mw.KPPTWidget.prototype = {
 						'left':'10px'
 					})
 				)
+				.click(function(){
+					// Get active tag:
+					$activeTag = _this.$target.find( '.slideTagsContainer .activeTag' );
+					if( $activeTag.length  ){
+						$allTags = _this.$target.find( '.slideTagsContainer .slideTag' );
+						// check if we can go prev: 
+						if( $activeTag.data( 'slideInx' ) - 1  >= 0 ){
+							_this.activateTag( $activeTag.data( 'slideInx' ) - 1  );
+						}
+					}
+				})
 			);
 		}
 		
@@ -231,15 +242,15 @@ mw.KPPTWidget.prototype = {
 						'left':'22px'
 					})
 				)
-			).click(function(){
-				var embedPlayer = _this.getEmbedPlayer();
-				if( embedPlayer.paused ){
-					embedPlayer.play();
-				} else {
-					embedPlayer.pause();
-				}
-			});
-			
+				.click(function(){
+					var embedPlayer = _this.getEmbedPlayer();
+					if( embedPlayer.paused ){
+						embedPlayer.play();
+					} else {
+						embedPlayer.pause();
+					}
+				})
+			);
 			_this.readyBindings.push(function( embedPlayer ){
 				$( embedPlayer ).bind('onplay.ppt', function(){
 					$syncButtonsContainer.find( '.playBtnControllerScreen img' ).attr('src', 
@@ -257,7 +268,7 @@ mw.KPPTWidget.prototype = {
 		// check for next 
 		$nextConf = $syncButtonsConfig.find('#syncNextButton');
 		if( $nextConf.length ){
-			$syncButtonsContainer.append( 
+			$syncButtonsContainer.append(
 				$('<div />')
 				.css( baseButtonCss )
 				.css({
@@ -273,7 +284,22 @@ mw.KPPTWidget.prototype = {
 						'left':'15px'
 					})
 				)
-			)
+				.click(function(){
+					// Get active tag:
+					$activeTag = _this.$target.find( '.slideTagsContainer .activeTag' );
+					if( $activeTag.length  ){
+						$allTags = _this.$target.find( '.slideTagsContainer .slideTag' );
+						// check if we can go next: 
+						if( $activeTag.data( 'slideInx' ) + 1  <  $allTags.length ){
+							_this.activateTag( $activeTag.data( 'slideInx' ) + 1  );
+						}
+						// already at the end
+					} else {
+						// display the first tag
+						_this.activateTag( 0 );
+					}
+				})
+			);
 		}
 		// add the 
 		$target.append( $syncButtonsContainer );
@@ -419,14 +445,18 @@ mw.KPPTWidget.prototype = {
 			// make sure we have slides ( to show the first one ) : 
 			if( _this.$target.find( '.slideTagsContainer .slideTag' ).length ){
 				_this.showSlide( 0 );
-				$('#' + _this.getSlideTagId( 0) + ' img').attr( 'src', _this.getIconSrc( 'YelloTag' ) );
+				// de-activeate the tag:
+				$('#' + _this.getSlideTagId( 0) )
+				.removeClass( 'activeTag')
+				.find( 'img').attr( 'src', _this.getIconSrc( 'YelloTag' ) );
 			}
 		});
 		// Setup a progressBindings to update slides
 		this.progressBindings.push( function( embedPlayer ){
 			var maxInx = false;
 			_this.$target.find( '.slideTagsContainer .slideTag' ).each(function(inx, slideTag){
-				if( embedPlayer.currentTime > $( slideTag).data( 'videoTime' ) ){
+				// add an extra .25 seconds buffer so that seeks don't result in jumping
+				if( embedPlayer.currentTime + .25 > $( slideTag).data( 'videoTime' ) ){
 					maxInx = $( slideTag).data( 'slideInx' );
 				}
 			});
@@ -457,11 +487,7 @@ mw.KPPTWidget.prototype = {
 				'videoTime' : videoTime
 			})
 			.click( function(){
-				var embedPlayer = _this.getEmbedPlayer()
-				// do video seek 
-				embedPlayer.doSeek( videoTime / embedPlayer.getDuration() );
-				// show the requested slide
-				_this.showSlide( slideInx );
+				_this.activateTag( slideInx );
 			})
 			.append( 
 				$('<img />')
@@ -472,17 +498,30 @@ mw.KPPTWidget.prototype = {
 	getSlideTagId:function( inx ){
 		 return this.$target.attr('id') + '_slideTag_' + inx;
 	},
+	activateTag: function( inx ){
+		var embedPlayer = this.getEmbedPlayer();
+		var $tag = $( '#' + this.getSlideTagId( inx ) );
+		var videoTime = $tag.data('videoTime');
+		// Do video seek
+		embedPlayer.doSeek( videoTime / embedPlayer.getDuration() );
+		// Show the requested slide
+		this.showSlide( inx );
+	},
 	showSlide: function( tagInx ){
 		var _this = this;
 		var $slideContainer = this.$target.find( '.slideTagsContainer' );
 		// Make sure all tags are yellow:
-		$slideContainer.find( '.slideTag img' ).each( function( inx, node){
-			$( node ).attr( 'src', _this.getIconSrc( 'YelloTag' ) );
+		$slideContainer.find( '.slideTag' ).each( function( inx, node){
+			$( node )
+			.removeClass('activeTag')
+			.find('img').attr( 'src', _this.getIconSrc( 'YelloTag' ) );
 		});
 
 		var $curTag = $('#' + this.getSlideTagId( tagInx) );
 		// Make the current slide tag red: 
-		$curTag.find('img').attr('src', _this.getIconSrc( 'RedTag' ) );
+		$curTag
+		.addClass('activeTag')
+		.find('img').attr('src', _this.getIconSrc( 'RedTag' ) );
 		
 		// Update the slide image
 		var imageUrl = mw.getConfig('Kaltura.PPTWidgetSlidePath' ) + this.getDataEntryId() + 
