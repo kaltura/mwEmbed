@@ -28,6 +28,7 @@ $exportedJsConfig= array(
 	'Kaltura.AllowRemoteService' => $wgAllowRemoteKalturaService,
 	'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive
 );
+
 // Append Custom config: 
 foreach( $exportedJsConfig as $key => $val ){
 	// @@TODO use a library Boolean conversion routine: 

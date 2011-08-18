@@ -18,8 +18,8 @@
  *            embedPlayer the embedPlayer target ( creates a mobileTimeline
  *            controller on the embedPlayer target if it does not already exist )
  * @param {Object}
- *            timeType Stores the target string can be 'start', 'bumper', 'end',
- *            or 'overlay'->
+ *            timeType Stores the target string can be 'preroll', 'bumper', 'overlay', 
+ *            'midroll', 'postroll' 
  * @param {Object}
  *            adConf adConf object see
  *            mw.MobilePlayerTimeline.display
@@ -771,7 +771,6 @@ mw.AdTimeline.prototype = {
 	addToTimeline : function( timeType, adConf ) {
 		// Validate the timeType
 		if (typeof this.timelineTargets[ timeType ] != 'undefined') {
-			// only one adConf per timeType
 			this.timelineTargets[ timeType ].push( adConf );
 		}
 	},
