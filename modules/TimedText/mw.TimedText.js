@@ -139,12 +139,12 @@ mw.includeAllModuleMessages();
 			// Resize the timed text font size per window width
 			$( embedPlayer ).bind( 'onCloseFullScreen onOpenFullScreen', function() {
 				var textOffset = _this.embedPlayer.controlBuilder.fullscreenMode ? 30 : 10;
-				var textCss = embedPlayer.$interface.width() + ' = ' + _this.getInterfaceSizeTextCss({
+				var textCss = _this.getInterfaceSizeTextCss({
 					'width' :  embedPlayer.$interface.width(),
 					'height' : embedPlayer.$interface.height()
 				});
 				
-				mw.log( 'TimedText::set text size for: : ' + textCss['font-size'] );
+				mw.log( 'TimedText::set text size for: : ' + embedPlayer.$interface.width() + ' = ' + textCss['font-size'] );
 				
 				embedPlayer.$interface.find( '.track' )
 				.css( textCss )
@@ -152,7 +152,6 @@ mw.includeAllModuleMessages();
 					// Get the text size scale then set it to control bar height + 10 px; 
 					'bottom': ( _this.embedPlayer.controlBuilder.getHeight() + textOffset ) + 'px'
 				});
-				
 			});
 			
 			// Update the timed text size
@@ -281,8 +280,8 @@ mw.includeAllModuleMessages();
 			return $( '#' + textMenuId );
 		},
 		getInterfaceSizePercent: function( size ) {
-			// Some arbitrary scale relative to window size ( 400px wide is text size 105% )
-			var textSize = size.width / 5.2;
+			// Some arbitrary scale relative to window size ( 400px wide is text size 100% )
+			var textSize = size.width / 4;
 			if( textSize < 95 ) textSize = 95;
 			if( textSize > 200 ) textSize = 200;
 			return textSize;
@@ -1048,7 +1047,16 @@ mw.includeAllModuleMessages();
 				style["font-family"] = options.fontFamily;
 			}
 			if( options.fontsize ) {
-				style["font-size"] = options.fontsize + 'px';
+				// Translate to em size so that font-size parent percentage
+				// base on http://pxtoem.com/
+				var emFontMap = { '6': .375, '7': .438, '8' : .5, '9': .563, '10': .625, '11':.688,
+						'12':.75, '13': .813, '14': .875, '15':.938, '16':1, '17':1.063, '18': 1.125, '19': 1.888,
+						'20':1.25, '21':1.313, '22':1.375, '23':1.438, '24':1.5};
+				// Make sure its an int: 
+				options.fontsize = parseInt( options.fontsize );
+				style[ "font-size" ] = ( emFontMap[ options.fontsize ] ) ?  
+						emFontMap[ options.fontsize ] +'em' :
+						(  options.fontsize > 24 )?  emFontMap[24]+'em' : emFontMap[6];
 			}
 			if( options.useGlow && options.glowBlur && options.glowColor ) {
 				style["text-shadow"] = '0 0 ' + options.glowBlur + 'px ' + this.getHexColor( options.glowColor );
