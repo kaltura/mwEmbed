@@ -187,6 +187,7 @@ class kalturaPlaylistIframe {
 		{"src":"http://projects.kaltura.com/ran/guestbook/mw.KGuestbook.js","type":"js"},
 		{"src":"http://projects.kaltura.com/ran/guestbook/mw.KGuestbook.css","type":"css"}
 	]);
+	mw.setConfig('Kaltura.UseAppleAdaptive' , false );
 	var kdp;
 	var didClick = false;
 	
