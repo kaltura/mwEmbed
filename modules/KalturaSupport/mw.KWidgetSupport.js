@@ -558,14 +558,14 @@ mw.KWidgetSupport.prototype = {
 			} else {
 				var src  = flavorUrl + '/entry_id/' + asset.entryId + '/flavor/' + asset.id ;
 			}
-
+			
 			// Add iPad Akamai flavor to iPad flavor Ids list
-			if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipadnew') != -1 ){
+			if( mw.getConfig('Kaltura.UseAppleAdaptive') && asset.fileExt == 'mp4' && asset.tags.indexOf('ipadnew') != -1 ){
 				ipadFlavors.push( asset.id );
 			}
 
 			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
-			if( asset.fileExt == 'mp4' && asset.tags.indexOf('iphonenew') != -1 ){
+			if( mw.getConfig('Kaltura.UseAppleAdaptive') && asset.fileExt == 'mp4' && asset.tags.indexOf('iphonenew') != -1 ){
 				ipadFlavors.push( asset.id );
 				iphoneFlavors.push( asset.id );
 			}
