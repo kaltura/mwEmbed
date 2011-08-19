@@ -11,9 +11,7 @@ mw.setConfig( {
 	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js'
 } );
 
-mw.addModuleLoader( 'FreeWheel', [
-    'mw.freeWheelController'
-]);
+mw.addModuleLoader( 'FreeWheel', ['mw.freeWheelController']);
 
 // To support companion ads.
 $( mw ).bind( 'AddIframePlayerMethods', function( event, exportedMethods ){
