@@ -175,7 +175,7 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.duration = playerData.meta.duration;
 			// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 			embedPlayer.kalturaPlayerMetaData = playerData.meta;
-			$j( embedPlayer ).trigger( 'KalturaSupport_MetaDataReady', embedPlayer.kalturaPlayerMetaData );
+			$j( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
 		}
 
 		// TODO: Remove this when Eagle is out

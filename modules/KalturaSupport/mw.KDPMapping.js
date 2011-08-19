@@ -392,7 +392,9 @@
 					});
 					break;
 				case 'entryReady':
-					b( 'KalturaSupport_MetaDataReady' );
+					b( 'KalturaSupport_EntryDataReady', function( event, entryData ){
+						callback( entryData, embedPlayer.id );
+					});
 					break;
 				case 'mediaReady':
 					// check for "media ready" ( namespace to kdpMapping )

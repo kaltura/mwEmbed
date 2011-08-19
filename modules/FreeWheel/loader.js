@@ -12,7 +12,7 @@ mw.setConfig( {
 } );
 
 mw.addModuleLoader( 'FreeWheel', [
-    'mw.freeWheelController',
+    'mw.freeWheelController'
 ]);
 
 // To support companion ads.
