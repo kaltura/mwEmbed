@@ -200,10 +200,9 @@ mw.AdTimeline.prototype = {
 					});
 				}
 			}
-			// if no prerolls, restore player
+			// if no prerolls, show bumper
 			if( prerollsLength === 0 ) {
-				restorePlayer();
-				_this.adOverlaysEnabled = true;
+				showBumper();
 			}
 			// Bind the player "ended" event to play the postroll if present
 			if( _this.getTimelineTargets('postroll').length > 0 ){
@@ -226,8 +225,11 @@ mw.AdTimeline.prototype = {
 							mw.log('Done with postroll ad, trigger normal ended');
 							_this.embedPlayer.enableSeekBar();
 							_this.embedPlayer.restoreEventPropagation();
-							// Run stop for now. 
-							_this.embedPlayer.stop();
+							// Run stop for now.
+							setTimeout( function() {
+								_this.embedPlayer.stop();
+							}, 100);
+							
 							mw.log( " run video pause ");
 							if( vid && vid.pause ){
 								// Pause playback state

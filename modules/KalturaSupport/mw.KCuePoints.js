@@ -9,8 +9,6 @@ mw.KCuePoints = function( embedPlayer ){
 mw.KCuePoints.prototype = {
 	init: function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
-		//In order to get the entry duration we need to get it before we start playing
-		this.entryDuration = embedPlayer.duration;
 		this.addPlayerBindings();
 	},
 	/**
@@ -56,7 +54,7 @@ mw.KCuePoints.prototype = {
 		});
 	},
 	getEndTime: function(){
-		return this.entryDuration * 1000;
+		return this.embedPlayer.kalturaPlayerMetaData.msDuration;
 	},
 	getCuePoints: function(){
 		if( ! this.embedPlayer.entryCuePoints || ! this.embedPlayer.entryCuePoints.length ){
@@ -90,7 +88,6 @@ mw.KCuePoints.prototype = {
 	triggerCuePoint: function( cuePoint ) {
 		/*
 		 *  We need different events for each cue point type
-		 *  TODO: will be changed according to the real type from the server
 		 */
 		var eventName;
 		var obj = {

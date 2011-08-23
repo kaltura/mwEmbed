@@ -128,8 +128,23 @@ mw.KAds.prototype = {
 							// Sometimes the duration of the video is zero after switching source
 							// So i'm re-setting it to it's old duration
 							_this.embedPlayer.duration = oldDuration;
-							// Seek to where we did the switch
-							_this.embedPlayer.doSeek( seekTime );
+							if( adType == 'postroll' ) {
+								// Run stop for now.
+								setTimeout( function() {
+									_this.embedPlayer.stop();
+								}, 100);
+
+								mw.log( " run video pause ");
+								if( vid && vid.pause ){
+									// Pause playback state
+									vid.pause();
+									// iPhone does not catch synchronous pause
+									setTimeout( function(){ if( vid && vid.pause ){ vid.pause(); } }, 100 );
+								}
+							} else {
+								// Seek to where we did the switch
+								_this.embedPlayer.doSeek( seekTime );
+							}
 						});
 					} else {
 						restorePlayer();
@@ -141,6 +156,11 @@ mw.KAds.prototype = {
 					// Disable player
 					_this.embedPlayer.stopEventPropagation();
 					_this.embedPlayer.disableSeekBar();
+
+					// Remove big play button if we have one
+					if( _this.embedPlayer.$interface ){
+						_this.embedPlayer.$interface.find( '.play-btn-large' ).remove();
+					}		
 				} else {
 					// in case of overlay do nothing
 					doneCallback = function() {};
