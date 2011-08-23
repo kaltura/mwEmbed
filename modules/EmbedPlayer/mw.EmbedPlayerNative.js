@@ -387,7 +387,7 @@ mw.EmbedPlayerNative = {
 		if( !callbackCount )
 			callbackCount = 0;
 		this.getPlayerElement();
-		if( _this.playerElement.readyState >= 1 ){
+		if( _this.playerElement.readyState >= 1 && _this.playerElement.duration ){
 			// check if we already are at the requested time ( directly issue the callback ) 
 			if( _this.playerElement.currentTime == time ){
 				callback();
@@ -403,20 +403,18 @@ mw.EmbedPlayerNative = {
 			_this.playerElement.addEventListener( 'seeked', once, false );
 			try {
 				_this.playerElement.currentTime = time;
-			} catch (e) {
-				mw.log("Could not seek to this point. Unbuffered point.");
-				callback();
-				return;
-			}
-		} else {
-			if( callbackCount >= 300 ){
-				mw.log("Error with seek request, media never in ready state");
 				return ;
+			} catch (e) {
+				mw.log("Could not seek to this point. Unbuffered point? retry in 25ms: " + e);
 			}
-			setTimeout( function(){
-				_this.setCurrentTime( time, callback , callbackCount++);
-			}, 10 );
+		} 
+		if( callbackCount >= 1000 ){ // try seeking for 20 seconds.
+			mw.log("Error with seek request, could not setCurrentTime");
+			return ;
 		}
+		setTimeout( function(){
+			_this.setCurrentTime( time, callback , callbackCount++);
+		}, 25 );
 	},
 
 	/**
