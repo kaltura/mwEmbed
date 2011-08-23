@@ -315,6 +315,7 @@ class kalturaIframe {
 				'rel="media:video" '.
 				'resource="' . htmlspecialchars( $this->getSwfUrl() ) . '" '.
 				'data="' . htmlspecialchars( $this->getSwfUrl() ) . '"> '.
+				'<param name="wmode" value="opaque" />' .
 				'<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />' .
 				'<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />'.
 				'<param name="flashVars" value="';
