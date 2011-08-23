@@ -12,6 +12,7 @@ class KalturaResultObject {
 	var $resultObj = null; // lazy init with getResultObject
 	var $clientTag = null;
 	var $uiConfXml = null; // lazy init
+	var $noCache = false;
 	
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
@@ -494,6 +495,11 @@ class KalturaResultObject {
 			$wgEnableScriptDebug = true;
 		}
 
+		// Check for no cache flag
+		if( isset( $_REQUEST['nocache'] ) && $_REQUEST['nocache'] == true ) {
+			$this->noCache = true;
+		}
+
 		// Check for required config
 		if( $this->urlParameters['wid'] == null ){
 			throw new Exception( 'Can not display player, missing widget id' );
@@ -585,21 +591,29 @@ class KalturaResultObject {
 			// NOTE this should probably be wrapped in a service class
 			$kparams = array();
 
+			// if no cache flag is on, ask the client to get request without cache
+			if( $this->noCache ) {
+				$client->addParam( $kparams, "nocache",  true );
+				$default_params = $kparams;
+			} else {
+				$default_params = array();
+			}
+
 			// sources
 			$client->addParam( $kparams, "entryId",  $this->urlParameters['entry_id'] );
 			$client->queueServiceActionCall( "flavorAsset", "getByEntryId", $kparams );
-			$kparams = array();
+			$kparams = $default_params;
 			
 			// access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
 			$client->addParam( $kparams, "entryId",  $this->urlParameters['entry_id'] );
 			$client->addParam( $kparams, "contextDataParams",  array( 'referrer' =>  $this->getReferer() ) );
 			$client->queueServiceActionCall( "baseEntry", "getContextData", $kparams );
-			$kparams = array();
+			$kparams = $default_params;
 
 			// Entry Meta
 			$client->addParam( $kparams, "entryId",  $this->urlParameters['entry_id'] );
 			$client->queueServiceActionCall( "baseEntry", "get", $kparams );						
-			$kparams = array();
+			$kparams = $default_params;
 			
 			// Entry Custom Metadata
 			$filter = new KalturaMetadataFilter();
@@ -612,12 +626,12 @@ class KalturaResultObject {
 			$client->addParam( $kparams, "filter",  $filter );
 			$client->addParam( $kparams, "metadataPager",  $metadataPager );
 			$client->queueServiceActionCall( "metadata_metadata", "list", $kparams );
-			$kparams = array();
+			$kparams = $default_params;
 			
 			if( $this->urlParameters['uiconf_id']) {
 				$client->addParam( $kparams, "id",  $this->urlParameters['uiconf_id'] );
 				$client->queueServiceActionCall( "uiconf", "get", $kparams );
-				$kparams = array();
+				$kparams = $default_params;
 			}
 
 			// Entry Cue Points
@@ -635,7 +649,7 @@ class KalturaResultObject {
 
 				$client->addParam( $kparams, "filter",  $filter );
 				$client->queueServiceActionCall( "cuepoint_cuepoint", "list", $kparams );
-				$kparams = array();
+				$kparams = $default_params;
 			}
 			
 			$rawResultObject = $client->doQueue();
@@ -833,7 +847,7 @@ class KalturaResultObject {
 	private function putCacheFile( $cacheFile, $data ){
 		global $wgEnableScriptDebug;
 		// Don't cache things when in "debug" mode:
-		if( $wgEnableScriptDebug ){
+		if( $wgEnableScriptDebug || $this->noCache ){
 			return ;
 		}
 		file_put_contents( $cacheFile, $data );

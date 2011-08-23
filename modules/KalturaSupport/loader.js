@@ -163,7 +163,7 @@
 						swfSource = $j( element ).find( "param[name=data]" ).attr( 'value' );						                                      
 					}
 					var kEmbedSettings = mw.getKalturaEmbedSettings( swfSource, flashvars );
-			
+
 					// Check if its a playlist or a entryId
 					mw.log( "Got kEmbedSettings.entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
 					if(!kEmbedSettings.uiconf_id || !kEmbedSettings.wid ) {
@@ -234,7 +234,10 @@
 							'height' : height + heightType,
 							'display' : 'inline-block' // more or less the <object> tag default display
 						})
-						.data( 'flashvars', flashvars )
+						.data( {
+							'flashvars': flashvars,
+							'cache_st': kEmbedSettings.cacheSt
+						})
 						.addClass( kalturaSwapObjectClass )
 						.append(
 							$imgThumb, 
@@ -287,6 +290,10 @@
 						}
 						if( $j( playerTarget).data( 'flashvars' ) ){
 							kParams['flashvars'] = $j( playerTarget).data('flashvars');
+						}
+						// Pass along cache_st to remove cache
+						if( $j( playerTarget).data( 'cache_st' ) ){
+							kParams['cache_st'] = $j( playerTarget).data('cache_st');
 						}
 
 						iframeRewriteCount++;
@@ -419,6 +426,10 @@
 				// Add debug flag if set: 
 				if( mw.getConfig( 'debug' ) ){
 					iframeRequest+= '&debug=true';
+				}
+				// Add no cache flag if set:
+				if( mw.getConfig('Kaltura.NoCache') ) {
+					iframeRequest+= '&nocache=true';
 				}
 				// Add the flashvars to the request:
 				if( iframeParams['flashvars'] ){
