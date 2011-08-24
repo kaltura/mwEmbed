@@ -158,7 +158,7 @@ mw.KWidgetSupport.prototype = {
 		if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
 			mw.addKAnalytics( embedPlayer, _this.kClient );
 		}
-		
+		//mediaType
 		// Apply player Sources
 		if( playerData.flavors ){
 			_this.addFlavorSources( embedPlayer, playerData.flavors );
@@ -462,6 +462,7 @@ mw.KWidgetSupport.prototype = {
 	addFlavorSources: function( embedPlayer, flavorData ) {
 		var _this = this;
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
+
 		// Set the poster ( if not already set ) 
 		if( !embedPlayer.poster && embedPlayer.kentryid ){
 			embedPlayer.poster = mw.getKalturaThumbUrl({
@@ -469,8 +470,9 @@ mw.KWidgetSupport.prototype = {
 				'entry_id' : embedPlayer.kentryid,
 				'width' : embedPlayer.getWidth(),
 				'height' :  embedPlayer.getHeight()
-			});			
+			});
 		}
+		
 		
 		var deviceSources = {};
 		// Check existing sources have kaltura specific flavorid attribute ) 

@@ -7,9 +7,9 @@ mw.addResourcePaths({
 		
 });
 // Set the base config:
-mw.setConfig( {
+mw.setConfig({
 	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js'
-} );
+});
 
 mw.addModuleLoader( 'FreeWheel', ['mw.freeWheelController']);
 

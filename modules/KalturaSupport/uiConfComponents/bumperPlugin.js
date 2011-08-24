@@ -12,9 +12,10 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				embedPlayer,
 				$uiConf, 
 				'bumper', 
-				['plugin', 'bumperEntryID', 'clickUrl', 'lockUi', 'playOnce', 'preSequence', 'width', 'height']
+				['plugin', 'bumperEntryID', 'clickUrl', 'lockUi', 'playOnce', 'preSequence', 'postSequence', 'width', 'height']
 		);
-		if( !bc.plugin || ! bc.bumperEntryID || bc.preSequence == "0" ){
+		// check if the plugin is enabled and we have an entryId:
+		if( !bc.plugin || ! bc.bumperEntryID ){
 			callback();
 			return ;
 		}
@@ -22,65 +23,21 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		mw.log( "KWidget:: checkUiConf: get sources for " + bc.bumperEntryID);
 		var originalSrc = embedPlayer.getSrc();
 		mw.getEntryIdSourcesFromApi( embedPlayer.kwidgetid, bc.bumperEntryID, function( sources ){
-			// Check if we are doing ads ( should always come before bumper ) and add bumper to 
-			// ad timeline instead of binding to play: 
-			if( embedPlayer.ads ){
-				mw.addAdToPlayerTimeline( embedPlayer, 'bumper', {
+			// Load adSupport for player timeline:
+			mw.load( 'AdSupport', function(){
+				var targetType = ( bc.postSequence == 1 )? 'postroll' : 'bumper';
+				mw.addAdToPlayerTimeline( embedPlayer, targetType, {
 					'ads': [
 						{
 							'videoFiles' :sources,
 							'clickThrough' : bc.clickUrl
 						}
-					]
+					],
+					'lockUI' : bc.lockUi 
 				}); 
+				// done loading bumper code issue callback
 				callback();
-				return ;
-			}
-			// set up initial play count: 
-			embedPlayer.bumperPlayCount = 0;
-			
-			// Add to the bumper per entry id:						
-			$j( embedPlayer ).unbind( 'onplay.bumper' ).bind( 'onplay.bumper', function(){
-				// Don't play the bumper 
-				// we don't use the "playonce" attribute (check of the kdp is function)
-				//if( playOnce == "true" && embedPlayer.bumperPlayCount >= 1){
-				if( embedPlayer.bumperPlayCount >= 1){						
-					return true;
-				}
-				if( !bc.playOnce && embedPlayer.bumperPlayCount > embedPlayer.donePlayingCount ){
-					// Don't play the bumper again, until we are done playing once
-					return true;
-				}
-				
-				embedPlayer.bumperPlayCount++;
-				
-				if( bc.lockUi ){
-					embedPlayer.disableSeekBar();
-				}
-				// Call the special insertAndPlaySource function ( used for ads / video inserts ) 
-				embedPlayer.switchPlaySrc( embedPlayer.getCompatibleSource( sources ), 
-					function(){
-						if( bc.clickUrl ){
-							$j( embedPlayer ).bind( 'click.bumper', function(){
-								// try to do a popup ( only one click per bumper ) 
-								if( !embedPlayer.clickedBumperFlag){
-									embedPlayer.clickedBumperFlag = true;
-									window.open( bc.clickUrl );								
-								}
-								return true;							
-							});
-						}
-					}, function(){
-						// restore the original source:
-						embedPlayer.switchPlaySrc( originalSrc );
-						embedPlayer.enableSeekBar();
-						$j( embedPlayer ).unbind('click.bumper');
-					}
-				);
 			});
-				
-			// run callback once bumper has been looked up and all bindings set
-			callback();
 		});
 	});
 });

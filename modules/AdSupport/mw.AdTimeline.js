@@ -166,15 +166,15 @@ mw.AdTimeline.prototype = {
 				_this.embedPlayer.play();
 			};
 			
-			var showBumper = function() { 
-				_this.display('bumper', function() { 
+			var showBumper = function() {
+				_this.display( 'bumper', function() { 
 					var vid = _this.getNativePlayerElement();
 					// Enable overlays ( for monitor overlay events )
 					_this.adOverlaysEnabled = true;
 					// Check if the src does not match original src if
 					// so switch back and restore original bindings
 					if ( _this.originalSrc != vid.src ) {
-						_this.embedPlayer.switchPlaySrc(_this.originalSrc,
+						_this.embedPlayer.switchPlaySrc( _this.originalSrc,
 							function() {
 								mw.log( "AdTimeline:: restored original src:" + vid.src);
 								// Restore embedPlayer native bindings
@@ -235,7 +235,7 @@ mw.AdTimeline.prototype = {
 								_this.embedPlayer.stop();
 							}, 100);
 							
-							mw.log( " run video pause ");
+							mw.log( "AdTimeline:: run video pause ");
 							if( vid && vid.pause ){
 								// Pause playback state
 								vid.pause();							
@@ -439,8 +439,7 @@ mw.AdTimeline.prototype = {
 		mw.log("AdTimeline:: adConf.videoFiles: " + targetSrc );
 		
 		if ( adConf.lockUI ) {
-			// TODO lock controls
-			_this.getNativePlayerElement().controls = false;
+			_this.embedPlayer.disableSeekBar();
 		};						
 		
 		// Check for click binding 
