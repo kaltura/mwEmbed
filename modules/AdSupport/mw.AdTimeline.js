@@ -193,7 +193,12 @@ mw.AdTimeline.prototype = {
 			var prerollsLength = _this.getTimelineTargets('preroll').length;
 			for( var i=0; i < prerollsLength; i++) {
 				if( i == ( prerollsLength - 1 ) ) { 
-					_this.display('preroll', showBumper);
+					_this.display('preroll', function() {
+						// After preroll had ended we like to increase the index
+						// So when we have preroll from cue points, we will show that correct one
+						_this.timelineTargetsIndex[ 'preroll' ]++;
+						showBumper();
+					});
 				} else {
 					_this.display('preroll', function() {
 						_this.timelineTargetsIndex['preroll']++;
@@ -318,7 +323,7 @@ mw.AdTimeline.prototype = {
 		}
 		
 		var displayTarget =  this.getTimelineTargets( timeTargetType )[ _this.timelineTargetsIndex[ timeTargetType ] ];
-
+		
 		// If the current ad type is already being displayed don't do anything
 		if( displayTarget.currentlyDisplayed === true ){
 			return ;

@@ -657,7 +657,7 @@ mw.PlayerControlBuilder.prototype = {
 			// Remove parent dbl click ( so we can handle play clicks )
 			$( embedPlayer ).unbind("click.onplayer").bind('click.onplayer', function() {
 				// Don't bind anything if native controls displayed:
-				if( embedPlayer.usenativecontrols ) {
+				if( embedPlayer.useNativePlayerControls() ) {
 					return ;
 				}		
 				var clickTime = new Date().getTime();

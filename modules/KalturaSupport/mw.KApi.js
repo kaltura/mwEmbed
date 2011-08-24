@@ -44,6 +44,11 @@ mw.KApi.prototype = {
 		if( !requestObject.length && !this.ks ){
 			requestObject = [ requestObject ];
 		}
+
+		// If we have Kaltura.NoApiCache flag, pass 'nocache' param to the client
+		if( mw.getConfig('Kaltura.NoApiCache') === true ) {
+			param['nocache'] = 'true';
+		}
 		
 		// Check that we have a session established if not make it part of our multi-part request
 		if( requestObject.length ){

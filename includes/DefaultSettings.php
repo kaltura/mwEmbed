@@ -47,11 +47,14 @@ $wgKalturaRemoteAddressSalt = false;
 // Default debug mode
 $wgEnableScriptDebug = false;
 
+// Default HTTP protocol
+$wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
+
 // The default Kaltura service url:
-$wgKalturaServiceUrl = 'http://www.kaltura.com';
+$wgKalturaServiceUrl = $wgHTTPProtocol . '://www.kaltura.com';
 
 // Default Kaltura CDN url: 
-$wgKalturaCDNUrl = 'http://cdnbakmi.kaltura.com';
+$wgKalturaCDNUrl = $wgHTTPProtocol . '://cdnsecakmi.kaltura.com';
 
 // Default Kaltura service url:
 $wgKalturaServiceBase = '/api_v3/index.php?service=';

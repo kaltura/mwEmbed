@@ -167,7 +167,8 @@ mw.KAds.prototype = {
 				}
 
 				// Tell the player to show the Ad
-				_this.embedPlayer.adTimeline.display( adType, doneCallback, (cuePoint.cuePoint.duration / 1000) );
+				var adDuration = Math.round(cuePoint.cuePoint.duration / 1000);
+				_this.embedPlayer.adTimeline.display( adType, doneCallback, adDuration );
 			});
 		}
 	},
