@@ -33,7 +33,8 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 							'clickThrough' : bc.clickUrl
 						}
 					],
-					'lockUI' : bc.lockUi 
+					'lockUI': bc.lockUi,
+					'playOnce': bc.playOnce
 				}); 
 				// done loading bumper code issue callback
 				callback();

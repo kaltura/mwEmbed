@@ -280,7 +280,7 @@ mw.MediaElement.prototype = {
 					player.library == 'Kplayer'
 				)
 			) {
-				if(source ){
+				if( source ){
 					mw.log('MediaElement::autoSelectSource: Set h264 via native or flash fallback:' + source.getTitle() );
 					return setSelectedSource( source );
 				}
@@ -356,7 +356,7 @@ mw.MediaElement.prototype = {
 	 *      element <video>, <source> or <mediaSource> <text> element.
 	 */
 	tryAddSource: function( element ) {
-		// mw.log( 'f:tryAddSource:' + $( element ).attr( "src" ) );
+		mw.log( 'mw.MediaElement::tryAddSource:' + $( element ).attr( "src" ) );
 		var newSrc = $( element ).attr( 'src' );
 		if ( newSrc ) {
 			// make sure an existing element with the same src does not already exist:
@@ -372,7 +372,7 @@ mw.MediaElement.prototype = {
 		var source = new mw.MediaSource( element );
 
 		this.sources.push( source );
-		// mw.log( 'tryAddSource: added source ::' + source + 'sl:' + this.sources.length );
+		//mw.log( 'tryAddSource: added source ::' + source + 'sl:' + this.sources.length );
 		return source;
 	},
 

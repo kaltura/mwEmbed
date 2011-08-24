@@ -2,7 +2,7 @@
 * Sequencer add media support ( ties into mwEmbed AddMedia Module )
 */
 
-//Wrap in mw closure
+// Wrap in mw closure
 ( function( mw ) {
 
 mw.SequencerAddMedia = function( sequencer ) {

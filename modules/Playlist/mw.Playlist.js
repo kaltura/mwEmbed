@@ -498,6 +498,7 @@ mw.Playlist.prototype = {
 			
 			// Auto select the source
 			embedPlayer.mediaElement.autoSelectSource();
+
 			// Auto select player based on default order
 			if ( !embedPlayer.mediaElement.selectedSource ) {
 				mw.log( 'Error no source for playlist swich' );
@@ -544,10 +545,12 @@ mw.Playlist.prototype = {
 		mw.log( "mw.Playlist:: updatePlayer " + clipIndex );
 		var playerSize = _this.getTargetPlayerSize();
 		this.clipIndex = clipIndex;
-		// If we have a ui .. update it: 
+		
+		// If we have a ui update it: 
 		if( _this.sourceHandler.hasPlaylistUi() ){
 			this.updatePlayerUi( clipIndex );
 		}
+				
 		// Check if we really have to update: 
 		var embedPlayer = _this.getEmbedPlayer();
 		if( $( embedPlayer ).data('clipIndex') == clipIndex ){
@@ -785,7 +788,7 @@ mw.Playlist.prototype = {
 	},
 
 	/**
-	 * Set the playlsit source handler
+	 * Set the playlist source handler
 	 */
 	setSourceHandler: function ( sourceHandler ){
 		this.sourceHandler = sourceHandler;

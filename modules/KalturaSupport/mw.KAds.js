@@ -134,7 +134,7 @@ mw.KAds.prototype = {
 									_this.embedPlayer.stop();
 								}, 100);
 
-								mw.log( " run video pause ");
+								mw.log( "AdTimeline:: run video pause ");
 								if( vid && vid.pause ){
 									// Pause playback state
 									vid.pause();
@@ -153,8 +153,7 @@ mw.KAds.prototype = {
 
 				// If out ad is preroll/midroll/postroll, disable the player 
 				if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
-					// Disable player
-					//_this.embedPlayer.stopEventPropagation();
+					//
 					_this.embedPlayer.disableSeekBar();
 
 					// Remove big play button if we have one

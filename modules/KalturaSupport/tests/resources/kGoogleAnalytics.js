@@ -115,7 +115,7 @@ kGoogleAnalytics.prototype = {
 	 */
 	init: function( options ){
 		// Map options to local "this" object
-		var map = ['pageTracker','playerElement','trackingCategory','trackEventMonitor'];
+		var map = ['pageTracker', 'playerElement', 'trackingCategory', 'trackEventMonitor'];
 		for( var i = 0 ; i < map.length; i++ ){
 			if( options[ map[i] ] ){
 				this[ map[i] ] =options[ map[i] ];
