@@ -1519,14 +1519,19 @@ mw.EmbedPlayer.prototype = {
 		this.updatePosterHTML();
 
 		if( !this.mediaElement.sources.length ){
-			// add the no sources error:
+			var noSourceMsg = gM('mwe-embedplayer-missing-source');
+			$j( this ).trigger( 'NoSourcesCustomError', function( customErrorMsg ){
+				if( customErrorMsg){
+					noSourceMsg = customErrorMsg;
+				}
+        	});
+			
+			// Add the no sources error:
 			$j(this).append( 
-						$j('<div />')
-						.addClass('error')
-						.text ( 
-							gM('mwe-embedplayer-missing-source') 
-						)
-					);
+				$j('<div />')
+				.addClass('error')
+				.html( noSourceMsg )
+			);
 			$j( this ).find('.play-btn-large').remove();
 		} else {
 			// Add the warning

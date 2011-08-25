@@ -331,10 +331,14 @@ class KalturaResultObject {
 			$this->getPartnerId() . '00/flvclipper/entry_id/' .
 			$this->urlParameters['entry_id'];
 		}
-
+		
+		$videoIsTranscodingFlag = false;
 		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
 			// if flavor status is not ready - continute to the next flavor
 			if( $KalturaFlavorAsset->status != 2 ) { 
+				if( $KalturaFlavorAsset->status == 4 ){
+					$videoIsTranscodingFlag = true;
+				}
 				continue; 
 			}
 			// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
@@ -414,6 +418,11 @@ class KalturaResultObject {
 				);
 			};
 		}
+		// If there are no sources and we are waiting for a transcode throw an error
+		if( count( $sources ) == 0 && $videoIsTranscodingFlag ){
+			throw new Exception( "Video is transcoding, check back later" );
+		}
+		
 		$ipadFlavors = trim($ipadFlavors, ",");
 		$iphoneFlavors = trim($iphoneFlavors, ",");
 

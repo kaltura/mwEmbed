@@ -489,6 +489,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		var deviceSources = {};
+		
 		// Check existing sources have kaltura specific flavorid attribute ) 
 		// NOTE we may refactor how we package in the kaltura pay-load from the iframe 
 		var sources = embedPlayer.mediaElement.getSources();
@@ -497,14 +498,20 @@ mw.KWidgetSupport.prototype = {
 			for(var i=0; i< sources.length;i++){
 				deviceSources[ sources[i]['flavorid'] ] = sources[i].src;
 			}
-			// Unset existing DOM source children ( so that html5 video hacks work better ) 
-			$j('#' + embedPlayer.pid).find('source').remove();
+			// Unset existing DOM source children 
+			$j('#' + embedPlayer.pid ).find('source').remove();
 			// Empty the embedPlayers sources ( we don't want iPad h.264 being used for iPhone devices ) 
 			embedPlayer.mediaElement.sources = [];
 			// Update the set of sources in the embedPlayer ( might cause issues with other plugins ) 
 		} else {		
 			// Get device flavors ( if not already set )
 			deviceSources = _this.getEntryIdSourcesFromFlavorData( this.kClient.getPartnerId(), flavorData );	
+		}
+		// Setup the error hook: 
+		if( _this.videoIsTranscodingFlag ){
+			$j(embedPlayer).bind( 'NoSourcesCustomError', function( callback ) {
+				callback( "Video is transcoding, check back later"  );
+			});
 		}
 		// Update the source list per the current user-agent device: 
 		var sources = _this.getSourcesForDevice( deviceSources );
@@ -527,7 +534,7 @@ mw.KWidgetSupport.prototype = {
 	 */
 	getEntryIdSourcesFromFlavorData: function( partner_id, flavorData ){
 		var _this = this;
-
+		
 		if( !flavorData ){
 			mw.log("Error: KWidgetSupport: flavorData is not defined ");
 			return ;
@@ -547,19 +554,23 @@ mw.KWidgetSupport.prototype = {
 			var flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
 				   '/sp/' +  partner_id + '00/flvclipper';
 		}
+		_this.videoIsTranscodingFlag = false;
 		// Find a compatible stream
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 			var asset = flavorData[i];
 			var entryId = asset.entryId;
-
-			// if flavor status is not ready - continue to the next flavor
-			if( asset.status != 2 ) {
+			
+			// continue if clip is not ready (2) and not in a transcoding state (4 )
+			if( asset.status != 2  ) {
+				// if an asset is transcoding and no other source is found bind an error callback: 
+				if( asset.status == 4 ){
+					_this.videoIsTranscodingFlag = true;
+				}
 				continue;
 			}
-
+			
 			// Check playManifest conditional
 			if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
-
 				var src  = flavorUrl + '/entryId/' + asset.entryId;
 				// Check if Apple http streaming is enabled and the tags include applembr
 				if( asset.tags.indexOf('applembr') != -1 ) {
@@ -570,6 +581,7 @@ mw.KWidgetSupport.prototype = {
 				}
 
 			} else {
+				mw.log( "Error: KWidgetSupport: non-manifest urls are deprecated" );
 				var src  = flavorUrl + '/entry_id/' + asset.entryId + '/flavor/' + asset.id ;
 			}
 			
