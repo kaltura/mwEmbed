@@ -40,7 +40,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			_this.playlistSet = [];
 			// @@TODO clean up with getConf option
-			
 			// Add in flashvars playlist id if present:
 			if( _this.playlist_id !== null ){
 				_this.playlistSet.push({
@@ -389,7 +388,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 				});
 			}
 		});
-	
 		return $boxContainer;
 	},
 	

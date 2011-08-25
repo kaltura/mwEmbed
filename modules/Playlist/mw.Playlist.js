@@ -313,6 +313,7 @@ mw.Playlist.prototype = {
 					});
 				}
 			}
+			
 			var $videoList = $j( _this.target + ' .media-rss-video-list' );
 			$videoList.show();
 			// show the video list and apply the swipe binding

@@ -356,10 +356,10 @@ mw.MediaElement.prototype = {
 	 *      element <video>, <source> or <mediaSource> <text> element.
 	 */
 	tryAddSource: function( element ) {
-		mw.log( 'mw.MediaElement::tryAddSource:' + $( element ).attr( "src" ) );
+		//mw.log( 'mw.MediaElement::tryAddSource:' + $( element ).attr( "src" ) );
 		var newSrc = $( element ).attr( 'src' );
 		if ( newSrc ) {
-			// make sure an existing element with the same src does not already exist:
+			// Make sure an existing element with the same src does not already exist:
 			for ( var i = 0; i < this.sources.length; i++ ) {
 				if ( this.sources[i].src == newSrc ) {
 					// Source already exists update any new attr:
