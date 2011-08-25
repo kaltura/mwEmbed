@@ -510,7 +510,7 @@ mw.KWidgetSupport.prototype = {
 		// Setup the error hook: 
 		if( _this.videoIsTranscodingFlag ){
 			$j(embedPlayer).bind( 'NoSourcesCustomError', function( callback ) {
-				callback( "Video is transcoding, check back later"  );
+				callback( "Video is transcoding, check back later" );
 			});
 		}
 		// Update the source list per the current user-agent device: 
