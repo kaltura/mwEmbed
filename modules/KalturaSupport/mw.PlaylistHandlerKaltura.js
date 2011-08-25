@@ -385,7 +385,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			){
 				$j(node).css({
 					'float': '',
-					'display': 'inline'
+					'display': 'block'
 				});
 			}
 		});
@@ -464,7 +464,11 @@ mw.PlaylistHandlerKaltura.prototype = {
 	uiConfValueLookup: function(clipIndex, objectString ){
 		var parsedString = objectString.replace( /\{|\}/g, '' );
 		var objectPath = parsedString.split('.');
+		mw.log("GET: " + objectPath[0]);
 		switch( objectPath[0] ){
+			case 'div10002(this': 
+				return this.uiConfValueLookup(clipIndex, 'this.' + objectPath[1].replace( /\)/, '' ) );
+				break;
 			// XXX todo a more complete parser and ui-conf evaluate property / text emulator
 			case 'formatDate(this':
 				// xxx should use suggested formating

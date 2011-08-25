@@ -301,7 +301,7 @@ mw.Playlist.prototype = {
 				$j( _this.target + ' .media-rss-video-list').css( {
 					'top' : '0px',
 					'left' : $j( _this.target + ' .media-rss-video-player-container' ).width() + 4,
-					'right' : '4px'
+					'right' : '0px'
 				} );
 				// Add space for the multi-playlist selector:
 				if( _this.sourceHandler.hasMultiplePlaylists() ){
