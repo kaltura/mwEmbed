@@ -144,7 +144,6 @@ mw.freeWheelControler.prototype = {
 		})
 	},
 	playSlot: function( slot ){
-		alert( 'playSlot: ' + this.getSlotType( slot )  );
 		if( slot.alreadyPlayed ){
 			return false;
 		}
@@ -173,7 +172,6 @@ mw.freeWheelControler.prototype = {
 	},
 	onSlotEnded: function ( event ){
 		var _this = this;
-		alert( event + ' ' + this.getSlotType );
 		var slotType =_this.getSlotType( event.slot );
 		
 		alert( 'onSlotEnded:: type:' + slotType );

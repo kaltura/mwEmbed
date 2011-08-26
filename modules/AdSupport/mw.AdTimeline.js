@@ -242,6 +242,7 @@ mw.AdTimeline.prototype = {
 		});
 	},
 	displayInternalSlots: function( slotSet, inx, doneCallback ){
+		var _this = this;
 		// Get the slot set: 
 		if( slotSet[inx] ){
 			_this.display( slotSet[inx], function(){

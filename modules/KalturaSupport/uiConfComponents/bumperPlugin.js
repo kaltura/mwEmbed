@@ -14,6 +14,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				'bumper', 
 				['plugin', 'bumperEntryID', 'clickUrl', 'lockUi', 'playOnce', 'preSequence', 'postSequence', 'width', 'height']
 		);
+		
 		// check if the plugin is enabled and we have an entryId:
 		if( !bc.plugin || ! bc.bumperEntryID ){
 			callback();
