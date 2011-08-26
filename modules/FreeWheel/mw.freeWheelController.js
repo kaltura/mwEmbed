@@ -173,6 +173,7 @@ mw.freeWheelControler.prototype = {
 	},
 	onSlotEnded: function ( event ){
 		var _this = this;
+		alert( event + ' ' + this.getSlotType );
 		var slotType =_this.getSlotType( event.slot );
 		
 		alert( 'onSlotEnded:: type:' + slotType );
@@ -182,7 +183,7 @@ mw.freeWheelControler.prototype = {
 			return ;
 		}
 		if( slotType== 'preroll' ){
-			this.getContext().setVideoState(tv.freewheel.SDK.VIDEO_STATE_PLAYING);
+			_this.getContext().setVideoState(tv.freewheel.SDK.VIDEO_STATE_PLAYING);
 		}
 		if( slotType == 'postroll' ){
 			_this.getContext().setVideoState(tv.freewheel.SDK.VIDEO_STATE_COMPLETED);
@@ -237,6 +238,7 @@ mw.freeWheelControler.prototype = {
 				break;
 		}
 		mw.log("Error: freeWheel Control could not get slot type: " + slotKey );
+		return 'unknown_type';
 	},
 	
 	/**
@@ -308,7 +310,9 @@ mw.freeWheelControler.prototype = {
 		this.getContext().addEventListener( tv.freewheel.SDK.EVENT_REQUEST_COMPLETE, function( event ){
 			_this.onRequestComplete( event );
 		});
-		this.getContext().addEventListener( tv.freewheel.SDK.EVENT_SLOT_ENDED, this.onSlotEnded );
+		this.getContext().addEventListener( tv.freewheel.SDK.EVENT_SLOT_ENDED, function( event ){
+			_this.onSlotEnded( event );
+		})
 	},
 	setContextTimeout: function(){
 		mw.log("freeWheelController::setContextTimeout>" );

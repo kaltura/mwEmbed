@@ -235,6 +235,9 @@ mw.AdTimeline.prototype = {
 		// we also pass in a reference to the slot set ( in case the plugin wants to look at how many
 		// ads we already have )
 		$( _this.embedPlayer ).triggerQueueCallback( 'AdSupport_' + slotType, function(){
+			// Restore the player:
+			_this.restorePlayer();
+			// Now display internal slots
 			_this.displayInternalSlots( slotSet, inx, doneCallback);
 		});
 	},
