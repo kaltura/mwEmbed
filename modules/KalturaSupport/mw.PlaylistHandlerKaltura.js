@@ -296,7 +296,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	getPlaylistItem: function( clipIndex ){
 		var _this = this;
-
+		
 		var $item = $j('<div />');
 		$item.append( 
 			this.getBoxLayout(clipIndex, this.$playlistItemRenderer) 
@@ -320,7 +320,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 					var $node = $j('<div />'); 
 					if( offsetLeft )
 						$node.css('margin-left', offsetLeft );
-					
 					$node.append( 
 						_this.getBoxLayout( clipIndex, $j(boxItem) ) 
 					);
@@ -372,7 +371,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			// and box layout does crazy things with virtual margins :( remove width for irDescriptionIrScreen
 			if( $j(node).data('id') == 'irDescriptionIrScreen' || $j(node).data('id') == 'irDescriptionIrText'  ){
-				$j(node).css('width', '');
+				$j(node).css('height', '');
 			}
 			if( $j(node).hasClass('hbox') || $j(node).hasClass('vbox') || $j(node).hasClass('canvas') ){
 				$j(node).css('height', '');
