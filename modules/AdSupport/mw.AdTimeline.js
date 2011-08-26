@@ -84,12 +84,14 @@
  */
 mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
 	mw.log("AdTimeline::Add:" + timeType + '  dispCof:' + adConf + "\n");
-	
+	mw.addAdTimeline( embedPlayer );
+	embedPlayer.adTimeline.addToTimeline( timeType, adConf );
+};
+mw.addAdTimeline = function( embedPlayer ){
 	if (!embedPlayer.adTimeline) {
 		embedPlayer.adTimeline = new mw.AdTimeline( embedPlayer );
 	}
-	embedPlayer.adTimeline.addToTimeline( timeType, adConf );
-};
+}
 
 mw.AdTimeline = function(embedPlayer) {
 	return this.init(embedPlayer);
@@ -223,17 +225,26 @@ mw.AdTimeline.prototype = {
 		var _this = this;
 		var slotSet = _this.getTimelineTargets( slotType );
 		mw.log( "AdTimeline:: displaySlots: " + slotType + ' inx: ' + inx + ' of ' + slotSet.length + ' ads' );
+		
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		_this.embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here. 
 		_this.embedPlayer.disableSeekBar();
+		
+		// If on the first inx trigger displaySlot event so that other adPlugins can insert any ads:
+		// we also pass in a reference to the slot set ( in case the plugin wants to look at how many
+		// ads we already have )
+		$( _this.embedPlayer ).triggerQueueCallback( 'AdSupport_' + slotType, function(){
+			_this.displayInternalSlots( slotSet, inx, doneCallback);
+		});
+	},
+	displayInternalSlots: function( slotSet, inx, doneCallback ){
 		// Get the slot set: 
-	
 		if( slotSet[inx] ){
 			_this.display( slotSet[inx], function(){
 				// display the next slot:
 				setTimeout(function(){ // setTimeout to avoid call stack
-					_this.displaySlots( slotSet, inx++, doneCallback);
+					_this.displayInternalSlots( slotSet, inx++, doneCallback);
 				},1);
 			});
 			return ;
@@ -243,7 +254,6 @@ mw.AdTimeline.prototype = {
 		// Run the done callback
 		doneCallback();
 	},
-	
 	/**
 	 * Restore a player from ad state
 	 * @return

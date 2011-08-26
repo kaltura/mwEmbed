@@ -27,17 +27,19 @@ mw.freeWheelControler.prototype = {
 	// The pre video url
 	contentVideoURL : null, 
 	
-	// prerollSlots
-	prerollSlots : [],
+	// local slot storage for preroll, midroll, postroll
+	slots : {
+		'preroll' : [],
+		'postroll' : [],
+		'overlay' : [],
+		'midroll' : []
+	},
 	
-	// midroll_overlaySlots
-	midroll_overlaySlots : [],
-	
-	// postrollSlots
-	postrollSlots: [],
-	
-	// slotPlaying 
-	slotPlaying: false,
+	// The current active slot
+	currentSlotDoneCb: null,
+		
+	// if an overlay slot is active:  
+	overlaySlotActive: false,
 	
 	/**
 	 * Initialize the adMannager javascript and setup adds
@@ -67,9 +69,7 @@ mw.freeWheelControler.prototype = {
 		// XXX todo we should be able to read this from "adManagerUrl"
 		var AdManagerUrl = mw.getConfig( 'FreeWheel.AdManagerUrl' );
 		
-		//$.getScript(AdManagerUrl, function(){
-		// For debugging use local copy: 
-		mw.load( 'tv.freewheel.SDK', function(){
+		$.getScript(AdManagerUrl, function(){
 			_this.setupAds();
 		});
 	},
@@ -93,7 +93,9 @@ mw.freeWheelControler.prototype = {
 		this.addTemporalSlots();
 
 		// Add local companion targets
-		this.addCompanionBindings();
+		if( mw.getConfig( 'FreeWheel.PostMessageIframeCompanions' ) ){
+			this.addCompanionBindings();
+		}
 		
 		// XXX FreeWheel sets SVLads003 as the response? 
 		window['SVLads003'] = true;
@@ -101,6 +103,92 @@ mw.freeWheelControler.prototype = {
 		// Load add data ( will call onRequestComplete once ready )
 		mw.log("freeWheelController::submitRequest>");
 		this.getContext().submitRequest();
+	},
+	addPlayerBindings: function(){
+		mw.log("FreeWheelControl:: addPlayerBindings");
+		var _this = this;
+		
+		$.each(_this.slots, function( slotType, slotSet){
+			if( slotType == 'midroll' && slotType == 'overlay' ){
+				$( _this.embedPlayer ).bind( 'monitorEvent', function(){
+					_this.displayOverlayInRange( slotSet, time );
+				});
+				return true;
+			}
+			
+			// else set of preroll or postroll clips setup normal binding: 
+			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType, function( event, callback ){
+				// Run the freewheel slot add, then run the callback once done 
+				_this.displayFreeWheelSlots( slotSet, 0, function(){
+					// Restore the player:
+					_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
+					// Run the callback: 
+					callback();
+				});
+			});
+		});
+		// run the player callback once we have added player bindings
+		this.callback();
+	},
+	displayOverlayInRange: function( slotSet, time ){
+		$.each(slotSet, function(inx, slot){
+			var slotTimePosition = slot.getTimePosition();
+			if ( _this.embedPlayer.currentTime - slotTimePosition >= 0 && 
+				_this.embedPlayer.currentTime - slotTimePosition <= 1 && 
+				!_this.overlaySlotActive 
+			){
+				if( _this.playSlot( slot ) ){
+					_this.overlaySlotActive = true;
+				}
+			}
+		})
+	},
+	playSlot: function( slot ){
+		alert( 'playSlot: ' + this.getSlotType( slot )  );
+		if( slot.alreadyPlayed ){
+			return false;
+		}
+		slot.play();
+		slot.alreadyPlayed = true;
+		return true;
+	},
+	displayFreeWheelSlots: function( slotSet, inx, doneCallback ){
+		var _this = this;
+		// Make sure we have a slot to be displayed:
+		if( !slotSet[inx] ){
+			doneCallback();
+			return ;
+		}
+		
+		this.currentSlotDoneCB = function(){
+			// play the next slot in the series: 
+			_this.displayFreeWheelSlots( slotSet, inx++, doneCallback );
+		};
+	
+		// Display the current slot:
+		if( ! _this.playSlot( slotSet[ inx ] ) ){
+			// if we did not play it, jump directly to slot done:
+			this.currentSlotDoneCB();
+		}
+	},
+	onSlotEnded: function ( event ){
+		var _this = this;
+		var slotType =_this.getSlotType( event.slot );
+		
+		alert( 'onSlotEnded:: type:' + slotType );
+		
+		if( slotType == 'overlay' ){
+			_this.overlaySlotActive = false;
+			return ;
+		}
+		if( slotType== 'preroll' ){
+			this.getContext().setVideoState(tv.freewheel.SDK.VIDEO_STATE_PLAYING);
+		}
+		if( slotType == 'postroll' ){
+			_this.getContext().setVideoState(tv.freewheel.SDK.VIDEO_STATE_COMPLETED);
+		}
+		// Run current slot done callback: 
+		this.currentSlotDoneCB();
 	},
 	/**
 	 * Called on the completion of freeWheel add loading
@@ -111,95 +199,46 @@ mw.freeWheelControler.prototype = {
 		var _this = this;
 		mw.log("freeWheelController::onRequestComplete>");
 		if ( event.success ){
-			var fwTemporalSlots = _this.getContext().getTemporalSlots();
-			for (var i=0; i < fwTemporalSlots.length; i++){
-				var slot = fwTemporalSlots[i];
-				switch ( slot.getTimePositionClass() ){
-					case tv.freewheel.SDK.TIME_POSITION_CLASS_PREROLL:
-						_this.prerollSlots.push(slot);
-						break;
-					case tv.freewheel.SDK.TIME_POSITION_CLASS_MIDROLL:
-					case tv.freewheel.SDK.TIME_POSITION_CLASS_OVERLAY:
-						_this.midroll_overlaySlots.push(slot);
-						break;
-					case tv.freewheel.SDK.TIME_POSITION_CLASS_POSTROLL:
-						_this.postrollSlots.push(slot);
-						break;
-				}
-			}
-			if( _this.prerollSlots[0] )
-				_this.prerollSlots[0].play();
-		}
-		// issue the "ready callback"
-		_this.callback();
-	},
-	/**
-	 * Adds local companion targets ( if they  exists ) for easy passing across iframe 
-	 * @return
-	 */
-	addCompanionBindings: function(){
-		var _this = this;
-		mw.log("freeWheelController::addCompanionBindings>");
-		// Add some hidden companion targets if we are running in an iframe
-		if( !mw.getConfig('EmbedPlayer.IsIframeServer') ){
-			return ;
-		}
-		// Setup the embedPlayer server setFreeWheelAddCompanions method
-		this.embedPlayer.setFreeWheelAddCompanions = function( companionSet ){
-			_this.addCompanionTargets( companionSet );
-		};
-		
-		// Trigger the adding of any server side bindings: 
-		$( this.embedPlayer ).trigger( 'FreeWheel_GetAddCompanions' );
-		// we now monitor for companion html changes and pass that across the iframe 
-		this.monitorForCompanionChanges();
-	},
-	monitorForCompanionChanges: function(){
-		var _this = this;
-		var companionStateCache = {};
-		setInterval(function(){
-			$('#fw_companion_container').find( '._fwph').each(function(inx, node){
-				var id = $(node).attr('id');
-				var curHtml = $('#_fw_container_' + id ).html(); 
-				if( curHtml && companionStateCache[ id ] != curHtml){
-					$( _this.embedPlayer ).trigger('FreeWheel_UpdateCompanion', {
-						'id' : id,
-						'content' : curHtml
-					});
-					companionStateCache[ id ] = curHtml;
-				}
+			$.each( _this.getContext().getTemporalSlots(), function(inx, slot ){
+				_this.addSlot( slot );
 			});
-		},1000);
-	},
-	/**
-	 * Add hidden companion targets for companions to be passed overt the iframe
-	 * @param companionSet
-	 * @return
-	 */
-	addCompanionTargets: function( companionSet ){
-		if(! $('#fw_companion_container').length ){
-			$('body').append( $('<div />').attr('id', 'fw_companion_container' ) );
+		} 
+		// Check if we found freewheel ads: 
+		if( _this.getContext().getTemporalSlots().length ){
+			// Load the adTimeline ( so that we get slots binding targets then add bindings ) 
+			mw.load( 'AdSupport', function(){
+				// Add The embed player AdTimeline: 
+				mw.addAdTimeline( _this.embedPlayer );
+				// Add the freeWheel bindings:
+				_this.addPlayerBindings();
+			});
+		} else {
+			// no adds issue callback directly
+			this.callback();
 		}
-			
-		$.each(companionSet, function(inx, companion){
-			var id =  companion.id;
-			$('#fw_companion_container').append( 
-				$('<span />').attr('id', id ).addClass( '_fwph' )
-				.css('display', 'none')
-				.append(
-					$('<form />').attr('id', '_fw_form_' + id )
-					.append(
-						$('<input type="hidden"/>').attr({
-							'name' : '_fw_input_' + id,
-							'id' : '_fw_input_' + id
-						})
-					),
-					$('<span />').attr('id', '_fw_container_' + id )
-				)
-			);
-		});
-		mw.log( 'freeWheelController:: addCompanionTargets: Added:' + $('#fw_companion_container ._fwph').length + ' targets' );
 	},
+	addSlot: function( slot ){
+		mw.log("FreeWheelControl:: addSlot of type:" +  this.getSlotType( slot ) );
+		this.slots[ this.getSlotType( slot ) ].push( slot );
+	},
+	getSlotType: function( slot ){
+		switch (  slot.getTimePositionClass() ){
+			case tv.freewheel.SDK.TIME_POSITION_CLASS_PREROLL:
+				return 'preroll';
+				break;
+			case tv.freewheel.SDK.TIME_POSITION_CLASS_MIDROLL:
+				return 'midroll';
+				break;
+			case tv.freewheel.SDK.TIME_POSITION_CLASS_OVERLAY:
+				return 'overlay';
+				break;
+			case tv.freewheel.SDK.TIME_POSITION_CLASS_POSTROLL:
+				return 'postroll';
+				break;
+		}
+		mw.log("Error: freeWheel Control could not get slot type: " + slotKey );
+	},
+	
 	/**
 	 * Gets a property from config if possible
 	 * @param propId
@@ -280,53 +319,82 @@ mw.freeWheelControler.prototype = {
 	addTemporalSlots: function(){
 		mw.log("freeWheelController::addTemporalSlots>")
 		var context = this.getContext();
-		//Add 1 preroll, 1 midroll, 2 overlay, 1 postroll slot
+		// @@TODO we need to drive this mapping from the config!
+		
+		// Add 1 preroll, 1 midroll, 2 overlay, 1 postroll slot
 		context.addTemporalSlot("Preroll_1", tv.freewheel.SDK.ADUNIT_PREROLL, 0);
 		context.addTemporalSlot("Midroll_1", tv.freewheel.SDK.ADUNIT_MIDROLL, 5);
 		context.addTemporalSlot("Overlay_1", tv.freewheel.SDK.ADUNIT_OVERLAY, 10);
 		context.addTemporalSlot("Overlay_2", tv.freewheel.SDK.ADUNIT_OVERLAY, 15);
 		context.addTemporalSlot("Postroll_1", tv.freewheel.SDK.ADUNIT_POSTROLL, 60);
 	},
-	onSlotEnded: function ( event ){
+	
+	/**
+	 * Adds local companion targets ( if they  exists ) for easy passing across iframe 
+	 * @return
+	 */
+	addCompanionBindings: function(){
 		var _this = this;
-		var slotTimePositionClass = event.slot.getTimePositionClass();
-		mw.log("freeWheelControl:: onSlotEnded slotTimePositionClass: " + slotTimePositionClass );
-		switch (slotTimePositionClass)
-		{
-			case tv.freewheel.SDK.TIME_POSITION_CLASS_PREROLL:
-				if ( this.prerollSlots.length ){
-					this.prerollSlots.shift();
-					if ( this.prerollSlots.length )
-						this.prerollSlots[0].play();
-					else{
-						// restore player
-						/*
-						$('#videoPlayer').bind('ended', onContentVideoEnded);
-						$('#videoPlayer').bind('timeupdate', onContentVideoTimeUpdated);
-						$('#videoPlayer').attr('controls', true);
-						$('#videoPlayer').attr('src', contentVideoURL);
-						$('#videoPlayer')[0].play();
-						*/
-						this.getContext().setVideoState(tv.freewheel.SDK.VIDEO_STATE_PLAYING);
-					}
-				}
-				break;
-			case tv.freewheel.SDK.TIME_POSITION_CLASS_MIDROLL:
-			case tv.freewheel.SDK.TIME_POSITION_CLASS_OVERLAY:
-				this.slotPlaying = false;
-				break;
-			case tv.freewheel.SDK.TIME_POSITION_CLASS_POSTROLL:
-				if ( this.postrollSlots.length ){
-					this.postrollSlots.shift();
-					if ( this.postrollSlots.length ){
-						postrollSlots[0].play();
-					} else {
-						_this.getContext().setVideoState(tv.freewheel.SDK.VIDEO_STATE_COMPLETED);
-						$("#start").attr('disabled', false);
-					}
-				}
-				break;
+		mw.log("freeWheelController::addCompanionBindings>");
+		// Add some hidden companion targets if we are running in an iframe
+		if( !mw.getConfig('EmbedPlayer.IsIframeServer') ){
+			return ;
 		}
+		// Setup the embedPlayer server setFreeWheelAddCompanions method
+		this.embedPlayer.setFreeWheelAddCompanions = function( companionSet ){
+			_this.addCompanionTargets( companionSet );
+		};
+		
+		// Trigger the adding of any server side bindings: 
+		$( this.embedPlayer ).trigger( 'FreeWheel_GetAddCompanions' );
+		// we now monitor for companion html changes and pass that across the iframe 
+		this.monitorForCompanionChanges();
+	},
+	monitorForCompanionChanges: function(){
+		var _this = this;
+		var companionStateCache = {};
+		setInterval(function(){
+			$('#fw_companion_container').find( '._fwph').each(function(inx, node){
+				var id = $(node).attr('id');
+				var curHtml = $('#_fw_container_' + id ).html(); 
+				if( curHtml && companionStateCache[ id ] != curHtml){
+					$( _this.embedPlayer ).trigger('FreeWheel_UpdateCompanion', {
+						'id' : id,
+						'content' : curHtml
+					});
+					companionStateCache[ id ] = curHtml;
+				}
+			});
+		},1000);
+	},
+	/**
+	 * Add hidden companion targets for companions to be passed overt the iframe
+	 * @param companionSet
+	 * @return
+	 */
+	addCompanionTargets: function( companionSet ){
+		if(! $('#fw_companion_container').length ){
+			$('body').append( $('<div />').attr('id', 'fw_companion_container' ) );
+		}
+			
+		$.each(companionSet, function(inx, companion){
+			var id =  companion.id;
+			$('#fw_companion_container').append( 
+				$('<span />').attr('id', id ).addClass( '_fwph' )
+				.css('display', 'none')
+				.append(
+					$('<form />').attr('id', '_fw_form_' + id )
+					.append(
+						$('<input type="hidden"/>').attr({
+							'name' : '_fw_input_' + id,
+							'id' : '_fw_input_' + id
+						})
+					),
+					$('<span />').attr('id', '_fw_container_' + id )
+				)
+			);
+		});
+		mw.log( 'freeWheelController:: addCompanionTargets: Added:' + $('#fw_companion_container ._fwph').length + ' targets' );
 	}
 };
 
