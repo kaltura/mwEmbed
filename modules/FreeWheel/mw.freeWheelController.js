@@ -174,8 +174,6 @@ mw.freeWheelControler.prototype = {
 		var _this = this;
 		var slotType =_this.getSlotType( event.slot );
 		
-		alert( 'onSlotEnded:: type:' + slotType );
-		
 		if( slotType == 'overlay' ){
 			_this.overlaySlotActive = false;
 			return ;
