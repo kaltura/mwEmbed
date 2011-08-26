@@ -238,17 +238,21 @@ mw.AdTimeline.prototype = {
 			// Restore the player:
 			_this.restorePlayer();
 			// Now display internal slots
-			_this.displayInternalSlots( slotSet, inx, doneCallback);
+			mw.log( "AdTimeline:: CALL:: displayInternalSlots: with " + inx );
+			_this.displayInternalSlots( slotType, inx, doneCallback);
 		});
 	},
-	displayInternalSlots: function( slotSet, inx, doneCallback ){
+	displayInternalSlots: function( slotType, inx, doneCallback ){
 		var _this = this;
+		var slotSet = _this.getTimelineTargets( slotType );
 		// Get the slot set: 
 		if( slotSet[inx] ){
 			_this.display( slotSet[inx], function(){
+				// increment the index:
+				inx++;
 				// display the next slot:
 				setTimeout(function(){ // setTimeout to avoid call stack
-					_this.displayInternalSlots( slotSet, inx++, doneCallback);
+					_this.displayInternalSlots( slotType, inx, doneCallback);
 				},1);
 			});
 			return ;
@@ -282,7 +286,7 @@ mw.AdTimeline.prototype = {
 	 */
 	display: function( adSlot, displayDoneCallback, displayDuration ) {
 		var _this = this;
-		mw.log("AdTimeline::display:" + adSlot );
+		mw.log("AdTimeline::display:" + adSlot.type + ' ads:' +  adSlot.ads.length );
 		
 		// If the current ad type is already being displayed don't do anything
 		if( adSlot.currentlyDisplayed === true ){
