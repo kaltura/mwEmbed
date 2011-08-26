@@ -23,6 +23,7 @@
 		$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf , callback){
 			// Check for plyMedia in kaltura uiConf
 			if( kWidgetSupport.getPluginConfig( embedPlayer, $uiConf, 'plymedia', 'plugin' ) ){
+				alert( embedPlayer.kentryid );
 				// Load the plyMeida module:
 			    mw.load( 'plyMedia', function(){
 			    	mw.plyMediaConfig.bindPlayer( embedPlayer );
