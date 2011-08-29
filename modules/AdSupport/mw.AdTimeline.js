@@ -238,7 +238,6 @@ mw.AdTimeline.prototype = {
 			// Restore the player:
 			_this.restorePlayer();
 			// Now display internal slots
-			mw.log( "AdTimeline:: CALL:: displayInternalSlots: with " + inx );
 			_this.displayInternalSlots( slotType, inx, doneCallback);
 		});
 	},

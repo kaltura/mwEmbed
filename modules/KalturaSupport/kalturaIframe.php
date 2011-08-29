@@ -191,7 +191,7 @@ class kalturaIframe {
 
 		// To be on the safe side include the flash player and
 		// direct file link as a child of the video tag
-		// ( if javascript is "off" and they dont have video tag support for example )
+		// ( if javascript is "off" and they don't have video tag support for example )
 		$o.= $this->getFlashEmbedHTML(
 			$this->getFileLinkHTML(), 
 			'kaltura_player_iframe_no_rewrite'
