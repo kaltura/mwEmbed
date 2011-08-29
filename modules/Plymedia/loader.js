@@ -1,37 +1,39 @@
 /**
 * Plymedia close caption module loader
 * 
-* @Description of plymedia module goes here
-* @author plymedia authored by
+* @The module fetches subtitles from Subply by kaltura's entryId
+* @author Elizabeth Marr
 */
 ( function( mw ) {	
 	// List named resource paths
 	mw.addResourcePaths({
-		"plyMediaPlayer" : "plyMedia/Your_PlyMedia_HTML5_Lib_Could_Go_Here.js",
-		"plyMedia.style" :  "plyMedia/Your_Css_File_Could_Go_Here_.css",
-		"mw.plyMediaConfig" : "mw.plyMediaConfig.js"
+		"plymedia.style" :  "styles/plymediaStyles.css",
+		"mw.Subply" : "mw.Subply.js"
 	});
-	
-	mw.addModuleLoader( 'plyMedia', function(){
+
+	mw.addModuleLoader( 'plymedia', function(){
 		// load any files needed for plyMedia player ( ie plyMediaPlayer and plyMedia.style )
-		return ['mw.plyMediaConfig' ];
+		return ['mw.Subply', 'plymedia.style' ];
 	});
 	
 	// Bind the plyMedia player where the uiconf includes the plymedia plugin
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		
+		// For testing purposes, always load plymedia
+	    mw.load( 'plymedia', function(){
+	    	mw.Subply.bindPlayer( embedPlayer );
+	    });
+		
+		/*
 		$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf , callback){
-			// Check for plyMedia in kaltura uiConf
 			if( kWidgetSupport.getPluginConfig( embedPlayer, $uiConf, 'plymedia', 'plugin' ) ){
-				alert( embedPlayer.kentryid );
-				// Load the plyMeida module:
-			    mw.load( 'plyMedia', function(){
-			    	mw.plyMediaConfig.bindPlayer( embedPlayer );
+			    mw.load( 'plymedia', function(){
+			    	mw.Subply.bindPlayer( embedPlayer );
 			    });
 			}
-			// Don't block player display on plyMedia plugin loading ( directly issue the callback )
 			callback();
 		});
+		*/
 	});
 
 } )( window.mw );
