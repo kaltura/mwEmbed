@@ -184,7 +184,7 @@ class kalturaIframe {
 		foreach( $sources as $source ){
 			$o.="\n" .'<source ' .
 					'type="' . htmlspecialchars( $source['type'] ) . '" ' .
-					'src="' . htmlspecialchars(  $source['src'] ) . '" '.
+					'src="' . $source['src'] . '" '.
 					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" '.
 				'></source>';
 		}
