@@ -2012,7 +2012,7 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		
-		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster:' +  this.posterDisplayed );
+		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.posterDisplayed + ' native: ' +  this.useNativePlayerControls());
 	
 		// Hide any overlay:
 		if( this.controlBuilder ){
@@ -2020,7 +2020,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		// Check if thumbnail is being displayed and embed html
-		if ( this.posterDisplayed ) {
+		if ( this.posterDisplayed &&  !this.useNativePlayerControls() ) {
 			if ( !this.selectedPlayer ) {
 				this.showPluginMissingHTML();
 				return;

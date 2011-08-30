@@ -8,7 +8,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// Alias the config lookup function for clean code lookup of properties
 		var gP = function( prop ){
-			return kWidgetSupport.getPluginConfig(embedPlayer, $uiConf, 'omniture', prop);
+			return embedPlayer.getKalturaConfig( 'omniture', prop);
 		};
 		// Check the "plugin" prop of 'omniture'
 		var pluginEnabled = gP( 'plugin' );

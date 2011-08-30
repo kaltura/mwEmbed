@@ -48,9 +48,7 @@ mw.KAds.prototype = {
 			configSet.push( adType + 'Url');
 		});
 
-		this.adConfig = kWidgetSupport.getPluginConfig(
-			embedPlayer,
-			$uiConf, 
+		this.adConfig = embedPlayer.getKalturaConfig(
 			'vast',
 			configSet
 		);

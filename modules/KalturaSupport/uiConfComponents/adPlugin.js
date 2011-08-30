@@ -9,9 +9,8 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		var loadingAdPlugin = false;
 		
-
 		// Check if the kaltura ad plugin is enabled:
-		if( kWidgetSupport.getPluginConfig( embedPlayer, $uiConf, 'vast', 'plugin' ) ){
+		if( embedPlayer.getKalturaConfig( 'vast', 'plugin' ) ){
 			loadingAdPlugin = true;
 			// Load the Kaltura Ads and AdSupport Module:
 			mw.load( [ "AdSupport", "mw.KAds" ], function(){
@@ -26,11 +25,9 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		}
 		
 		// Check for freewheel ads
-		if( $uiConf.find( 'Plugin#FreeWheel' ).length ){
+		if( embedPlayer.getKalturaConfig( 'FreeWheel',  'plugin' ) ){
 			loadingAdPlugin = true;
-			var fwConfig = kWidgetSupport.getPluginConfig(
-				embedPlayer,
-				$uiConf, 
+			var fwConfig = embedPlayer.getKalturaConfig(
 				'FreeWheel',
 				[ 'plugin', 'preSequence', 'postSequence', 'width', 'height', 'asyncInit',
 				 'adManagerUrl', 'serverUrl', 'networkId', 'videoAssetId',  'videoAssetIdType', 

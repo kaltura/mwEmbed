@@ -208,6 +208,11 @@ mw.KWidgetSupport.prototype = {
 			$j( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
 		}
 
+		// Add getKalturaConfig to embed player:
+		embedPlayer.getKalturaConfig = function( pluginName, attr ){
+			return _this.getPluginConfig( $( embedPlayer ).data('flashvars'), embedPlayer.$uiConf, pluginName, attr);
+		};
+		
 		if( embedPlayer.$uiConf ){
 			_this.baseUiConfChecks( embedPlayer );
 			// Trigger the check kaltura uiConf event					
@@ -231,11 +236,14 @@ mw.KWidgetSupport.prototype = {
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
+		
 	},
+	
 	/**
-	 * Check for xml config, let flashvars override  
+	 * Check for xml config, let flashvars override 
+	 * 
 	 */
-	getPluginConfig: function( embedPlayer, $uiConf, pluginName, attr ){
+	getPluginConfig: function( flashvars, $uiConf, pluginName, attr ){
 		var singleAttrName = false;
 		if( typeof attr == 'string' ){
 			singleAttrName = attr;
@@ -249,6 +257,15 @@ mw.KWidgetSupport.prototype = {
 		var config = {};
 		var $plugin = [];
 		var $uiPluginVars = [];
+		
+		
+		// merge in flashvars config 
+		var fv = mw.getConfig( 'KalturaSupport.IFramePresetFlashvars' );
+		// Check for embedPlayer flashvars ( will overwrite iframe values if present )
+		if( flashvars ){
+			fv = flashvars;
+		}
+		
 		
 		if( pluginName ){ 
 			$plugin = $uiConf.find( 'plugin#' + pluginName );
@@ -271,12 +288,6 @@ mw.KWidgetSupport.prototype = {
 			}
 		}		
 		
-		// @@TODO the iframe really should apply the "data" instead of this hacky merge here:
-		var fv = mw.getConfig( 'KalturaSupport.IFramePresetFlashvars' );
-		// Check for embedPlayer flashvars ( will overwrite iframe values if present )
-		if( $j( embedPlayer ).data('flashvars' ) ){
-			fv = $j( embedPlayer ).data('flashvars' );
-		}
 		$j.each( attr, function(inx, attrName ){
 			if( $plugin.length ){
 				if( $plugin.attr( attrName ) ){

@@ -648,6 +648,8 @@ function kAddScript( callback ){
 		  'faderPlugin',
 		  'watermarkPlugin',
 		  'adPlugin',
+		  'captionPlugin',
+		  'omniturePlugin',
 		  'bumperPlugin'
 		);
 		// Kaltura playlist support ( so small relative to client libraries that we always include it )	

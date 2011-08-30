@@ -13,27 +13,18 @@
 
 	mw.addModuleLoader( 'plymedia', function(){
 		// load any files needed for plyMedia player ( ie plyMediaPlayer and plyMedia.style )
-		return ['mw.Subply', 'plymedia.style' ];
+		return [ 'mw.Subply', 'plymedia.style' ];
 	});
 	
 	// Bind the plyMedia player where the uiconf includes the plymedia plugin
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-		
-		// For testing purposes, always load plymedia
-	    mw.load( 'plymedia', function(){
-	    	mw.Subply.bindPlayer( embedPlayer );
-	    });
-		
-		/*
 		$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf , callback){
-			if( kWidgetSupport.getPluginConfig( embedPlayer, $uiConf, 'plymedia', 'plugin' ) ){
-			    mw.load( 'plymedia', function(){
-			    	mw.Subply.bindPlayer( embedPlayer );
-			    });
-			}
+			// @@TODO check ui-conf for plymedia plugin
+			mw.load( 'plymedia', function(){
+				mw.Subply.bindPlayer( embedPlayer );
+		    });
 			callback();
 		});
-		*/
 	});
 
 } )( window.mw );

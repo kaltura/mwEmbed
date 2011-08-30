@@ -19,7 +19,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 	// ui conf data
 	uiConfData : null,
-	includeInLayout: false,
+	includeInLayout: true,
 	
 	init: function ( playlist, options ){
 		this.playlist = playlist;
@@ -46,28 +46,23 @@ mw.PlaylistHandlerKaltura.prototype = {
 					'playlist_id' : _this.playlist_id 
 				});
 			}
+			
 			// Add all playlists to playlistSet
 			var $uiConf = $j( playerData.uiConf );
 			
-			// Check for autoContinue ( we check false state so that by default we autoContinue ) 
-			var $ac = $uiConf.find("uivars [key='playlistAPI.autoContinue']");
-			_this.autoContinue = ( $ac.length && $ac.get(0).getAttribute('value') == 'false' )? false: true;
+			// load the playlist config: 
+			var plApi = kWidgetSupport.getPluginConfig(
+					_this.flashvars,
+					$uiConf, 
+					'playlistAPI', 
+					['autoContinue', 'autoPlay']
+			);
+
+			// Check for autoContinue 
+			_this.autoContinue = plApi.autoContinue;
 			
-			// Check for flash var override: 
-			if( _this.flashvars['playlistAPI.autoContinue'] == 'true' ){
-				_this.autoContinue = true;
-			}
-			
-			var $ap = $uiConf.find("uivars [key='playlistAPI.autoPlay']");
-			_this.autoPlay = ( $ap.length && $ap.get(0).getAttribute('value') == 'false' )? false: true;
-			// Check for flash var override: 
-			if( _this.flashvars['playlistAPI.autoPlay'] == 'true' ){
-				_this.autoPlay = true;
-			}
-			
-			var $il = $uiConf.find("uivars [key='playlist.includeInLayout']");
-			_this.includeInLayout = ( $il.length && $il.get(0).getAttribute('value') == 'false' )? false : true;
-			
+			_this.autoPlay = plApi.autoPlay;
+	
 			if( $uiConf.find('#playlist').get(0) ){
 				// Check for videolist width
 				_this.videolistWidth = $uiConf.find('#playlist').get(0).getAttribute('width');
@@ -77,13 +72,14 @@ mw.PlaylistHandlerKaltura.prototype = {
 			} else {
 				_this.videolistWidth = 250;
 			}
-			
+
 			// Store all the playlist item render information:
 			_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
 			if( _this.$playlistItemRenderer.children().length == 0  ){
 				// No layout info use default
 				_this.$playlistItemRenderer = $j( mw.getConfig('KalturaSupport.PlaylistDefaultItemRenderer') );
 			}
+			
 			// Force autoContoinue if there is no interface 
 			if( !_this.includeInLayout ){
 				_this.autoContinue = true;
@@ -91,7 +87,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			// Find all the playlists by number  
 			for( var i=0; i < 50 ; i ++ ){
-				var playlist_id = playlistName = null;
+				var playlist_id = playlistName = null;					
+				
 				var idElm = $uiConf.find("uivars var[key='kpl" + i +"EntryId']").get(0);
 				if( idElm ){
 					playlist_id  = idElm.getAttribute('value');
@@ -100,6 +97,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 						playlistName = nameElm.getAttribute('value');
 					}
 				}
+				
 				// Check if flashvars override or set value:
 				if( _this.flashvars['playlistAPI.kpl' +i + 'Url' ] ){
 					var kplUrl = _this.flashvars['playlistAPI.kpl' +i + 'Url' ];
@@ -130,7 +128,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 					break;
 				}
 			}		
-			
 			// Allow plugins to add extra playlists to the playlist set:
 			$j( mw ).trigger( 'KalturaPlaylist_AddToPlaylistSet', [ _this.playlistSet ] );
 			

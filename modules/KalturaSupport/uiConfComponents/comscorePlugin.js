@@ -12,7 +12,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			propSet.push ( 'c' + i );
 		}
 		// Alias the config lookup function for clean code lookup of properties
-		var comConf = kWidgetSupport.getPluginConfig(embedPlayer, $uiConf, 'comscore', propSet );
+		var comConf =embedPlayer.getKalturaConfig( 'comscore', propSet );
 		// check if the plugin is enabled: 
 		if( !comConf.plugin ){
 			// no com score plugin active: 

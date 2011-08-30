@@ -6,7 +6,7 @@
 $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		var $fader = $uiConf.find("Plugin#fader");
-		faderPlugin(embedPlayer, $fader )
+		faderPlugin(embedPlayer, $fader );
 		callback();		
 	});
 });

@@ -6,26 +6,20 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 
 		// Old closeCaption plugin
-		var oldCaptionConfig = kWidgetSupport.getPluginConfig(
-				embedPlayer,
-				$uiConf, 
+		var oldCaptionConfig = embedPlayer.getKalturaConfig(
 				'closedCaptions', 
 				[ 'plugin', 'relativeTo', 'position', 'width', 'height', 'skin', 'bg',
 				 'fontsize', 'opacity', 'fontFamily', 'type',  'ccUrl', 'timeOffset' ]
 		);
 
 		// closeCaption Under player plugin
-		var underCaptionConfig = kWidgetSupport.getPluginConfig(
-				embedPlayer,
-				$uiConf, 
+		var underCaptionConfig = embedPlayer.getKalturaConfig(
 				'closedCaptionsUnderPlayer', 
 				[ 'plugin', 'width', 'height', 'fontsize', 'bg', 'fontcolor', 'opacity', 'fontFamily' ]
 		);
 
 		// closeCaption Over player plugin
-		var overCaptionConfig = kWidgetSupport.getPluginConfig(
-				embedPlayer,
-				$uiConf,
+		var overCaptionConfig = embedPlayer.getKalturaConfig(
 				'closedCaptionsOverPlayer',
 				[ 'plugin', 'width', 'height', 'fontsize', 'bg', 'fontColor', 'opacity',
 					'fontFamily', 'useGlow', 'glowColor', 'glowBlur' ]
