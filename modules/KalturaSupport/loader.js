@@ -237,7 +237,7 @@
 						})
 						.data( {
 							'flashvars': flashvars,
-							'cache_st': kEmbedSettings.cacheSt
+							'cache_st': kEmbedSettings.cache_st
 						})
 						.addClass( kalturaSwapObjectClass )
 						.append(
@@ -593,7 +593,7 @@
 					embedSettings.uiconf_id = prevUrlPart;
 				break;
 				case 'cache_st':
-					embedSettings.cacheSt = prevUrlPart;
+					embedSettings.cache_st = prevUrlPart;
 				break;
 			}
 			prevUrlPart = curUrlPart;

@@ -120,6 +120,7 @@ mw.freeWheelControler.prototype = {
 			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType, function( event, callback ){
 				// Run the freewheel slot add, then run the callback once done 
 				_this.displayFreeWheelSlots( slotSet, 0, function(){
+					alert("restore player");
 					// Restore the player:
 					_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
 					// Run the callback: 
@@ -147,6 +148,7 @@ mw.freeWheelControler.prototype = {
 		if( slot.alreadyPlayed ){
 			return false;
 		}
+		alert('play:' + this.getSlotType( slot ) );
 		slot.play();
 		slot.alreadyPlayed = true;
 		return true;
@@ -174,15 +176,17 @@ mw.freeWheelControler.prototype = {
 		var _this = this;
 		var slotType =_this.getSlotType( event.slot );
 		
+		alert( 'onSlotEnded:' + slotType );
+		
 		if( slotType == 'overlay' ){
 			_this.overlaySlotActive = false;
 			return ;
 		}
 		if( slotType== 'preroll' ){
-			_this.getContext().setVideoState(tv.freewheel.SDK.VIDEO_STATE_PLAYING);
+			_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
 		}
 		if( slotType == 'postroll' ){
-			_this.getContext().setVideoState(tv.freewheel.SDK.VIDEO_STATE_COMPLETED);
+			_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_COMPLETED) ;
 		}
 		// Run current slot done callback: 
 		this.currentSlotDoneCB();
@@ -365,7 +369,7 @@ mw.freeWheelControler.prototype = {
 					companionStateCache[ id ] = curHtml;
 				}
 			});
-		},1000);
+		}, 1000);
 	},
 	/**
 	 * Add hidden companion targets for companions to be passed overt the iframe

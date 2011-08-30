@@ -937,7 +937,7 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 				embedSettings.uiconf_id = prevUrlPart;
 			break;
 			case 'cache_st':
-				embedSettings.cacheSt = prevUrlPart;
+				embedSettings.cache_st = prevUrlPart;
 			break;
 		}
 		prevUrlPart = curUrlPart;

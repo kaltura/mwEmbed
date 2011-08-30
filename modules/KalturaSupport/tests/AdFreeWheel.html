@@ -37,8 +37,6 @@ function jsKalturaPlayerTest( videoId ){
 					equal( $('#testCompanion').find('a').attr('href'), "http://www.google.com", "testCompanion updated link" );
 					kdp.sendNotification( 'doPause' );
 
-
-					debugger;
 					start();
 					return ;
 				}
@@ -59,6 +57,29 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> FreeWheel Ad and Companion </h2>
+
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br></br>
+
+<object id="kaltura_player_1312148943" 
+	name="kaltura_player_1312148943" 
+	type="application/x-shockwave-flash" 
+	allowFullScreen="true" 
+	allowNetworking="all" 
+	allowScriptAccess="always" 
+	height="330" width="400" 
+	bgcolor="#000000" 
+	xmlns:dc="http://purl.org/dc/terms/" 
+	xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
+	rel="media:video" 
+	resource="http://www.kaltura.com/index.php/kwidget/cache_st/131214899/wid/_243342/uiconf_id/5357341/entry_id/0_uka1msg4" 
+	data="http://www.kaltura.com/index.php/kwidget/cache_st/131214899/wid/_243342/uiconf_id/5357341/entry_id/0_uka1msg4">
+		<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />
+		<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />
+		<param name="flashVars" value="&" />
+		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/13121489439/wid/_243342/uiconf_id/5316052/entry_id/0_uka1msg4" />
+</object>
+
 <table border='1' cellpadding='1'>
 		<tr><th>COMPANION SLOTS</th></tr>
 		<tr>
@@ -96,27 +117,5 @@ function jsKalturaPlayerTest( videoId ){
 			</td>
 		</tr>
 	</table>
-
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
-<br></br>
-
-<object id="kaltura_player_1312148943" 
-	name="kaltura_player_1312148943" 
-	type="application/x-shockwave-flash" 
-	allowFullScreen="true" 
-	allowNetworking="all" 
-	allowScriptAccess="always" 
-	height="330" width="400" 
-	bgcolor="#000000" 
-	xmlns:dc="http://purl.org/dc/terms/" 
-	xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
-	rel="media:video" 
-	resource="http://www.kaltura.com/index.php/kwidget/cache_st/131214899/wid/_243342/uiconf_id/5357341/entry_id/0_uka1msg4" 
-	data="http://www.kaltura.com/index.php/kwidget/cache_st/131214899/wid/_243342/uiconf_id/5357341/entry_id/0_uka1msg4">
-		<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />
-		<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />
-		<param name="flashVars" value="&" />
-		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/13121489439/wid/_243342/uiconf_id/5316052/entry_id/0_uka1msg4" />
-</object>
 </body>
 </html>
