@@ -35,9 +35,9 @@ kdpClientIframe.prototype = {
 		// Add exported kdp methods to iframe proxy: 
 		this.addIframeKDPMethods();
 		
-		// Add hanldeReciveMsg binding: 
+		// Add hanldeReciveMessage binding: 
 		$j.receiveMessage( function( event ){
-			_this.hanldeReciveMsg( event )
+			_this.hanldeReciveMessage( event )
 		}, this.iframeServer);
 				
 	},
@@ -101,7 +101,7 @@ kdpClientIframe.prototype = {
 	/**
 	 * Handle received events
 	 */
-	'hanldeReciveMsg': function( event ){
+	'hanldeReciveMessage': function( event ){
 		var _this = this;		
 		// Confirm the event is coming for the target host:
 		if( event.origin != this.iframeServer){
@@ -111,7 +111,7 @@ kdpClientIframe.prototype = {
 		};
 		// Decode the message 
 		var msgObject = JSON.parse( event.data );
-		//mw.log("KdpApiClient:: hanldeReciveMsg: " + msgObject.callbackName );
+		//mw.log("KdpApiClient:: hanldeReciveMessage: " + msgObject.callbackName );
 				
 		// Update evaluateData
 		if( msgObject.evaluateData ){
@@ -145,7 +145,7 @@ kdpClientIframe.prototype = {
 					window[ msgObject.callbackName ]( args[0], args[1], args[2], args[3] );
 				}							
 			} catch( e ){
-				mw.log('Error with hanldeReciveMsg::' +  msgObject.callbackName );
+				mw.log('Error with hanldeReciveMessage::' +  msgObject.callbackName );
 			}
 		}
 	},

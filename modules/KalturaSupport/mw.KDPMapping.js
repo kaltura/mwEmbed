@@ -173,6 +173,7 @@
 					embedPlayer.endTime = parseFloat(value);
 				break;
 			}
+			
 		},
 		
 		/**
