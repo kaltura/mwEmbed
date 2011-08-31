@@ -91,8 +91,87 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		}
 		return this.$rss.find('item').length;
 	},
+	playClip: function( embedPlayer, clipIndex ){
+		// Add a loader to the embed player: 
+		$j( embedPlayer )
+		.getAbsoluteOverlaySpinner()
+		.attr('id', _this.getVideoPlayerId() + '_mappingSpinner' );
+	    
+		// Update the poster
+		embedPlayer.updatePosterSrc( _this.sourceHandler.getClipPoster( clipIndex, _this.getTargetPlayerSize() ) );
+		// Empty existing sources
+	    embedPlayer.emptySources();
 
-	getClipSources: function( clipIndex, callback ){
+		// Update the interface sources
+	    this.updateEmbedPlayer( embedPlayer, clipIndex );
+	    
+	    var clipSources = this.getClipSources( clipIndex );
+	    
+		if( !clipSources ){
+			mw.log("Error: mw.Playlist no sources found for clipIndex:" + clipIndex);
+		}
+		for( var i =0; i < clipSources.length; i++ ){
+			var $source = $j('<source />')
+			.attr( clipSources[i] );
+			embedPlayer.mediaElement.tryAddSource( $source.get(0) ) ;
+		}
+		
+		// Auto select the source
+		embedPlayer.mediaElement.autoSelectSource();
+		
+		
+
+		// Auto select player based on default order
+		if ( !embedPlayer.mediaElement.selectedSource ) {
+			mw.log( 'Error no source for playlist swich' );
+			if( typeof callback != 'undefined' ) {
+				callback();
+			}
+			return ;
+		} else {
+			embedPlayer.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( embedPlayer.mediaElement.selectedSource.mimeType );
+		}
+		// If we switched to a source that is non-native playback jump out to normal swap 
+		if( embedPlayer.selectedPlayer.library != 'Native' ){
+			$j('.loadingSpinner').remove();
+			$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
+			
+			_this.addEmbedPlayerInterface( clipIndex, function(){
+				embedPlayer.play();
+			});
+			return ;
+		}
+		// Run switchPlaying source 
+		if ( typeof _this.nextPlayIndex == 'undefined' ){
+			_this.nextPlayIndex = _this.clipIndex + 1;
+		}
+		mw.log('mw.Playlist:: Play next: ' + _this.nextPlayIndex);
+		embedPlayer.switchPlaySrc( embedPlayer.mediaElement.selectedSource.getSrc(), 
+				function() { 
+					$j('.loadingSpinner').remove(); 
+					$( embedPlayer ).data('clipIndex', clipIndex); 
+				},
+				function() { 
+					if( _this.nextPlayIndex < _this.sourceHandler.getClipCount() ){
+						_this.playClip( _this.nextPlayIndex ); 
+					}
+    			}
+		);
+	},
+	updateEmbedPlayer: function( clipIndex, $video, callback ){
+		var _this = this;
+		// Lookup the sources from the playlist provider:
+		var clipSources = _this.sourceHandler.getClipSources( clipIndex );
+		mw.log( "mw.Playlist:: getClipSources cb for " + clipIndex );
+		if( clipSources ){
+			for( var i =0; i < clipSources.length; i++ ){
+				var $source = $j('<source />')
+					.attr( clipSources[i] );
+				$video.append( $source );
+			}
+		}
+	},
+	getClipSources: function( clipIndex ){
 		var _this = this;
 		var $item = $j( this.$rss.find('item')[ clipIndex ] );
 		var clipSources = [];
@@ -111,14 +190,16 @@ mw.PlaylistHandlerMediaRss.prototype = {
 				clipSources.push( clipSource );
 			}
 		});
-		callback( clipSources );
+		return clipSources;
 	},
 
 	getCustomAttributes: function( clipIndex){
 		// no custom metadata present in mrss playlist handler:
 		return {};
 	},
-	
+	addEmbedPlayerBindings: function( embedPlayer ){
+		// no custom bindings in default mrss playlist handler
+	},
 	getClipList: function(){
 		return this.$rss.find('item');
 	},

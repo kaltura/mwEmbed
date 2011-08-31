@@ -226,32 +226,41 @@ mw.PlaylistHandlerKaltura.prototype = {
 	getClipList: function(){
 		return this.clipList;
 	},
-	
-	getClipSources: function( clipIndex, callback ){
-		mw.log("PlaylistHandlerKaltura:: getClipSources: " + clipIndex);
-		var _this = this;
-		if( this.mrssHandler ){
-			this.mrssHandler.getClipSources(clipIndex, callback);
-			return ;
-		}
-		mw.getEntryIdSourcesFromApi( this.getKClient().getPartnerId(),  this.getClipList()[ clipIndex ].id, function( sources ){
-			// Add the durationHint to the sources: 
-			for( var i in sources){
-				sources[i].durationHint = _this.getClipDuration( clipIndex );
-			}
-			callback( sources );
+	playClip: function( embedPlayer, clipIndex ){
+		var bindName = 'KalturaSupport_EntryDataReady.playlist';
+		$( embedPlayer ).unbind(bindName).bind( bindName, function( event ){
+			// run play after we switch 
+			embedPlayer.play();
 		});
+		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );	
 	},
-
-	getCustomAttributes: function( clipIndex ){
+	updateEmbedPlayer: function( clipIndex, $video ){
 		// Clear out custom data ( as to not pre-set custom attributes )
 		mw.setConfig("KalturaSupport.IFramePresetPlayerData", false);
-		return { 
+		$video.attr({ 
 			'kentryid' : this.getClip( clipIndex ).id,
 			'kwidgetid' : this.widget_id
-		};
+		});
+	},	
+	addEmbedPlayerBindings: function( embedPlayer ){
+		var _this = this;
+		var bindName = 'Kaltura_SetKDPAttribute.playlist';
+		$( embedPlayer ).unbind( bindName ).bind( bindName, function( event, componentName, property, value ){
+			switch( componentName ){
+				case "playlistAPI.dataProvider":
+					_this.doDataProviderAction( property, value );
+				break;
+			}
+		});
 	},
-	
+	doDataProviderAction: function ( property, value ){
+		 switch( property ){
+		 	case 'selectedIndex':
+		 		// update the selected clip ( and actually play it apparently ) 
+		 		this.playlist.playClip( parseInt( value ) );
+			break;
+		 }
+	},
 	/**
 	* Get an items poster image ( return missing thumb src if not found )
 	*/ 

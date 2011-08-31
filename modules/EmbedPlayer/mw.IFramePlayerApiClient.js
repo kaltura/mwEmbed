@@ -112,7 +112,7 @@ mw.IFramePlayerApiClient.prototype = {
 				.css( orgSize )
 				.data(
 					'isFullscreen', false
-				)
+				);
 			// restore any parent absolute pos: 
 			$j( parentsAbsoluteList ).each( function() {	
 				$j( this ).css( 'position', 'absolute' );

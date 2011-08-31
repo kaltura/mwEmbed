@@ -35,7 +35,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 					'lockUI': bc.lockUi,
 					'playOnce': bc.playOnce
 				}); 
-				// done loading bumper code issue callback
+				// Done loading bumper code issue callback
 				callback();
 			});
 		});

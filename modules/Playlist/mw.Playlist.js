@@ -461,82 +461,14 @@ mw.Playlist.prototype = {
 		var $inDomAV = $j( _this.target + ' .media-rss-video-player video, '+ _this.target + ' .media-rss-video-player audio' );
 		var embedPlayer = this.getEmbedPlayer();
 	
-		if( $inDomAV.length == 0 || embedPlayer.instanceOf != 'Native' || !mw.isMobileDevice() ){
-			_this.updatePlayer( clipIndex, function(){
-				mw.log("mw.Playlist:: PlayClip: callback" );
-				_this.play();
-			});
-			return ;
-		}
-
 		if (typeof _this.nextPlayIndex !='undefined'){
 			if (clipIndex < _this.nextPlayIndex) {
 				return;
 			}
 			_this.nextPlayIndex = clipIndex + 1;
-		}  
-          
-		// Add a loader to the embed player: 
-		$j( embedPlayer )
-		.getAbsoluteOverlaySpinner()
-		.attr('id', _this.getVideoPlayerId() + '_mappingSpinner' );
-	    
-		// Update the poster
-		embedPlayer.updatePosterSrc( _this.sourceHandler.getClipPoster( clipIndex, _this.getTargetPlayerSize() ) );
-		// Empty existing sources
-	    embedPlayer.emptySources();
-
-		// Update the interface sources
-	    this.sourceHandler.getClipSources( clipIndex, function( clipSources ){
-			if( !clipSources ){
-				mw.log("Error: mw.Playlist no sources found for clipIndex:" + clipIndex);
-			}
-			for( var i =0; i < clipSources.length; i++ ){
-				var $source = $j('<source />')
-				.attr( clipSources[i] );
-				embedPlayer.mediaElement.tryAddSource( $source.get(0) ) ;
-			}
-			
-			// Auto select the source
-			embedPlayer.mediaElement.autoSelectSource();
-
-			// Auto select player based on default order
-			if ( !embedPlayer.mediaElement.selectedSource ) {
-				mw.log( 'Error no source for playlist swich' );
-				if( typeof callback != 'undefined' ) {
-					callback();
-				}
-				return ;
-			} else {
-				embedPlayer.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( embedPlayer.mediaElement.selectedSource.mimeType );
-			}
-			// If we switched to a source that is non-native playback jump out to normal swap 
-			if( embedPlayer.selectedPlayer.library != 'Native' ){
-				$j('.loadingSpinner').remove();
-				$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
-				
-				_this.addEmbedPlayerInterface( clipIndex, function(){
-					embedPlayer.play();
-				});
-				return ;
-			}
-			// Run switchPlaying source 
-			if ( typeof _this.nextPlayIndex == 'undefined' ){
-				_this.nextPlayIndex = _this.clipIndex + 1;
-			}
-			mw.log('mw.Playlist:: Play next: ' + _this.nextPlayIndex);
-			embedPlayer.switchPlaySrc( embedPlayer.mediaElement.selectedSource.getSrc(), 
-					function() { 
-						$j('.loadingSpinner').remove(); 
-						$( embedPlayer ).data('clipIndex', clipIndex); 
-					},
-					function() { 
-						if( _this.nextPlayIndex < _this.sourceHandler.getClipCount() ){
-							_this.playClip( _this.nextPlayIndex ); 
-						}
-	    			}
-			);
-	    });
+		}
+        // Hand off play clip request to sourceHandler: 
+		_this.sourceHandler.playClip( embedPlayer, clipIndex );
 	},
 	/**
 	* Update the player
@@ -570,22 +502,62 @@ mw.Playlist.prototype = {
 			playerSize
 		);
 		
-		// Lookup the sources from the playlist provider:
-		_this.sourceHandler.getClipSources( clipIndex, function( clipSources ){
-			mw.log("mw.Playlist:: getClipSources cb for " + clipIndex );
-			if( clipSources ){
-				for( var i =0; i < clipSources.length; i++ ){
-					var $source = $j('<source />')
-						.attr( clipSources[i] );
-					$video.append( $source );
-				}
-			}
-			// Put the video player into the page and create the embedPlayer interface
-			$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
-			_this.addEmbedPlayerInterface( clipIndex, function(){
-				callback();
-			});
+		// Update the embed player attributes: 
+		_this.sourceHandler.updateEmbedPlayer( clipIndex, $video );
+		
+		// Put the video player into the page:
+		$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
+		
+		// Add the embedPlayer interface:
+		_this.addEmbedPlayerInterface( clipIndex, function(){
+			callback();
 		});
+	},
+	addEmbedPlayerInterface: function( clipIndex, callback ){
+		var _this = this;
+		mw.log( "mw.Playlist:: addEmbedPlayerInterface " );
+		
+		var $video = $j( '#' +_this.getVideoPlayerId() );
+		// Update the video tag with the embedPlayer
+		$video.unbind().embedPlayer( function(){
+			var embedPlayer = _this.getEmbedPlayer();
+			if(!embedPlayer){
+				mw.log("mw.Playlist::updateVideoPlayer > Error, embedPlayer not defined at embedPlayer ready time");
+				return;
+			}
+			
+			// Once the player is ready add any custom bindings
+			_this.sourceHandler.addEmbedPlayerBindings( embedPlayer );
+			
+			// Update the player clip index
+			$( embedPlayer ).data('clipIndex', clipIndex); 
+			
+			// Setup ondone playing binding to play next clip (if autoContinue is true )
+			if( _this.sourceHandler.autoContinue == true ){
+				$j( embedPlayer ).unbind('ended.playlist').bind( 'ended.playlist', function(event ){
+					mw.log("Playlist:: updateVideoPlayer -> finished clip" + _this.clipIndex );
+					// Play next clip
+					if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
+						// Update the onDone action object to not run the base control done:
+						embedPlayer.onDoneInterfaceFlag = false;
+						_this.clipIndex++;
+	
+						// update the player and play the next clip
+						_this.playClip( _this.clipIndex );
+					} else {
+						mw.log("Reached end of playlist run normal end action" );
+						// Update the onDone action object to not run the base control done:
+						embedPlayer.onDoneInterfaceFlag = true;
+					}
+				});
+			}
+			_this.addPlaylistSeekButtons( embedPlayer );
+			mw.log( "mw.Playlist:: player should be ready: " + _this.clipIndex + ' ' + $j('#' +_this.getVideoPlayerId() ) );
+			// Run the callback if its set
+			if( callback ){
+				callback();
+			}
+		} );
 	},
 	updatePlayerUi:function( clipIndex ){
 		var _this = this;
@@ -613,52 +585,8 @@ mw.Playlist.prototype = {
 			.addClass( 'ui-state-active' );
 
 	},
-
 	getVideoPlayerId: function( ){
 		return this.playerId;
-	},
-	addEmbedPlayerInterface: function( clipIndex, callback ){
-		var _this = this;
-		mw.log( "mw.Playlist:: addEmbedPlayerInterface " );
-		var $video = $j( '#' +_this.getVideoPlayerId() );
-		// Add any custom attributes that may be needed for embedPlayer bindings
-		var attributes = _this.sourceHandler.getCustomAttributes( _this.clipIndex );
-		// Update the video tag with the embedPlayer
-		$video.unbind().embedPlayer( attributes, function(){
-			var embedPlayer = _this.getEmbedPlayer();
-			if(!embedPlayer){
-				mw.log("mw.Playlist::updateVideoPlayer > Error, embedPlayer not defined at embedPlayer ready time");
-				return;
-			}
-			// update the player clip index
-			$( embedPlayer ).data('clipIndex', clipIndex); 
-			
-			// Setup ondone playing binding to play next clip (if autoContinue is true )
-			if( _this.sourceHandler.autoContinue == true ){
-				$j( embedPlayer ).unbind('ended.playlist').bind( 'ended.playlist', function(event ){
-					mw.log("Playlist:: updateVideoPlayer -> finished clip" + _this.clipIndex );
-					// Play next clip
-					if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
-						// Update the onDone action object to not run the base control done:
-						embedPlayer.onDoneInterfaceFlag = false;
-						_this.clipIndex++;
-	
-						// update the player and play the next clip
-						_this.playClip( _this.clipIndex );
-					} else {
-						mw.log("Reached end of playlist run normal end action" );
-						// Update the onDone action object to not run the base control done:
-						embedPlayer.onDoneInterfaceFlag = true;
-					}
-				});
-			}
-			_this.addPlaylistSeekButtons( embedPlayer );
-			mw.log( "player should be ready: " + _this.clipIndex + ' ' + $j('#' +_this.getVideoPlayerId() ) );
-			// Run the callback if its set
-			if( callback ){
-				callback();
-			}
-		} );
 	},
 	// Checks if the player has next prev playlist buttons if not adds them.
 	addPlaylistSeekButtons: function( embedPlayer ){

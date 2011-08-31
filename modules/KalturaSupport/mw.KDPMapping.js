@@ -161,7 +161,7 @@
 		 * Emulates kaltura setAttribute function
 		 */
 		setKDPAttribute: function( embedPlayer, componentName, property, value ) {
-			mw.log(" cn: " + componentName + " p:" + property + " v:" + value);
+			mw.log("KDPMapping::setKDPAttribute " + componentName + " p:" + property + " v:" + value  + ' for: ' + embedPlayer.id );
 			switch( property ) {
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
@@ -173,7 +173,8 @@
 					embedPlayer.endTime = parseFloat(value);
 				break;
 			}
-			
+			// Give kdp plugins a chance to take attribute actions 
+			$( embedPlayer ).trigger( 'Kaltura_SetKDPAttribute', [componentName, property, value] );
 		},
 		
 		/**

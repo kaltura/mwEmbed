@@ -119,8 +119,7 @@ mw.freeWheelControler.prototype = {
 			// else set of preroll or postroll clips setup normal binding: 
 			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType, function( event, callback ){
 				// Run the freewheel slot add, then run the callback once done 
-				_this.displayFreeWheelSlots( slotSet, 0, function(){
-					alert("restore player");
+				_this.displayFreeWheelSlots( slotType, 0, function(){
 					// Restore the player:
 					_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
 					// Run the callback: 
@@ -134,6 +133,7 @@ mw.freeWheelControler.prototype = {
 	displayOverlayInRange: function( slotSet, time ){
 		$.each(slotSet, function(inx, slot){
 			var slotTimePosition = slot.getTimePosition();
+			mw.log('check slot: ' + slot.getTimePosition() );k
 			if ( _this.embedPlayer.currentTime - slotTimePosition >= 0 && 
 				_this.embedPlayer.currentTime - slotTimePosition <= 1 && 
 				!_this.overlaySlotActive 
@@ -142,7 +142,7 @@ mw.freeWheelControler.prototype = {
 					_this.overlaySlotActive = true;
 				}
 			}
-		})
+		});
 	},
 	playSlot: function( slot ){
 		if( slot.alreadyPlayed ){
@@ -153,31 +153,29 @@ mw.freeWheelControler.prototype = {
 		slot.alreadyPlayed = true;
 		return true;
 	},
-	displayFreeWheelSlots: function( slotSet, inx, doneCallback ){
+	displayFreeWheelSlots: function( slotType, inx, doneCallback ){
 		var _this = this;
+		var slotSet = this.slots[ slotType ];
 		// Make sure we have a slot to be displayed:
-		if( !slotSet[inx] ){
+		if( !slotSet[ inx ] ){
 			doneCallback();
 			return ;
 		}
 		
-		this.currentSlotDoneCB = function(){
-			// play the next slot in the series: 
-			_this.displayFreeWheelSlots( slotSet, inx++, doneCallback );
-		};
-	
+		// Setup the active slots
+		this.curentSlotIndex = inx;
+		this.currentSlotDoneCB = doneCallback;
+		
 		// Display the current slot:
 		if( ! _this.playSlot( slotSet[ inx ] ) ){
 			// if we did not play it, jump directly to slot done:
-			this.currentSlotDoneCB();
+			this.onSlotEnded( {  'slot' : slotSet[ inx ] });
 		}
 	},
 	onSlotEnded: function ( event ){
 		var _this = this;
 		var slotType =_this.getSlotType( event.slot );
-		
-		alert( 'onSlotEnded:' + slotType );
-		
+		alert( 'onSlotEnded:' + slotType + ' inx:' + this.curentSlotIndex);
 		if( slotType == 'overlay' ){
 			_this.overlaySlotActive = false;
 			return ;
@@ -188,8 +186,9 @@ mw.freeWheelControler.prototype = {
 		if( slotType == 'postroll' ){
 			_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_COMPLETED) ;
 		}
-		// Run current slot done callback: 
-		this.currentSlotDoneCB();
+		// play the next slot in the series if present
+		this.curentSlotIndex++;
+		_this.displayFreeWheelSlots( slotType, this.curentSlotIndex, this.currentSlotDoneCB );
 	},
 	/**
 	 * Called on the completion of freeWheel add loading

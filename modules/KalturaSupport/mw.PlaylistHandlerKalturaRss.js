@@ -20,32 +20,34 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 			this[i] = options[i];
 		}
 	},
-	getClipSources: function( clipIndex, callback ){
-		this.parent_getClipSources( clipIndex, function( clipSources ){
-			// Kaltura mediaRss feeds define a single "content" tag with flash swf as the url
-			if( clipSources[0] && 
-				clipSources.length == 1 && 
-				mw.getKalturaEmbedSettings( clipSources[0].src )['entry_id'] 
-			){	
-				var kEmbedSettings = mw.getKalturaEmbedSettings( clipSources[0].src );
-				var playerRequest = {
-					'entry_id' : kEmbedSettings.entry_id,
-					'widget_id' : kEmbedSettings.wid
-				};
-				var clipDuration = clipSources[0].duration;		
-				
-				// Make sure we have a client session established: 
-				mw.KApiPlayerLoader( playerRequest, function( playerData ) {
-					mw.getEntryIdSourcesFromApi(kEmbedSettings.wid, kEmbedSettings.entry_id , function( sources ){						
-						for( var i in sources ){
-							sources[i].durationHint = clipDuration;
-						}
-						callback( sources );
-					});
-				});
-			} else {
-				mw.log("Error: kalturaPlaylist MediaRss used with multiple sources or non-kaltura flash applet url");
-			}			
+	playClip: function( embedPlayer, clipIndex ){
+		var kEmbedSettings = this.getKalturaClipAttributes( clipIndex );
+		var bindName = 'KalturaSupport_EntryDataReady.playlist';
+		$( embedPlayer ).unbind(bindName).bind( bindName, function( event ){
+			// run play after we switch 
+			embedPlayer.play();
 		});
+		embedPlayer.sendNotification( "changeMedia", { 'entryId' : kEmbedSettings.entry_id } );	
+	},
+	updateEmbedPlayer: function( clipIndex, $video ){
+		var kEmbedSettings = this.getKalturaClipAttributes( clipIndex );
+		$video.attr({ 
+			'kentryid' : kEmbedSettings.entry_id,
+			'kwidgetid' :kEmbedSettings.wid
+		});
+	},
+	getKalturaClipAttributes: function( clipIndex ){
+		// Get the sources via parent mediaRss parser: 
+		var clipSources = this.getClipSources( clipIndex );
+		
+		// Kaltura mediaRss feeds define a single "content" tag with flash swf as the url
+		if( clipSources[0] && 
+			clipSources.length == 1 && 
+			mw.getKalturaEmbedSettings( clipSources[0].src )['entry_id'] 
+		){	
+			return mw.getKalturaEmbedSettings( clipSources[0].src );
+		}
+		mw.log("Error: kalturaPlaylist MediaRss used with multiple sources or non-kaltura flash applet url");
+		return {}
 	}
 };
