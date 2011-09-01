@@ -470,7 +470,7 @@ mw.EmbedPlayerNative = {
 		this.duration = 0;
 		this.currentTime = 0;
 		this.previousTime = 0;
-		var vid = this.getPlayerElement();		
+		var vid = this.getPlayerElement();
 		if ( vid ) {
 			try {
 				// Issue a play request on the source

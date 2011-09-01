@@ -389,8 +389,8 @@
 					});
 					break;	
 				case 'changeMedia':
-					b( 'KalturaSupport_ChangeMedia', function( event, newEntryId){
-						callback( {'entryId' : newEntryId }, embedPlayer.id );
+					b( 'onChangeMedia', function( event ){
+						callback( {'entryId' : embedPlayer.kentryid }, embedPlayer.id );
 					});
 					break;
 				case 'entryReady':
@@ -496,32 +496,13 @@
 					    embedPlayer.emptySources();
 					    break;
 					}
-
-					// CHANGE_MEDIA (changeMedia): Start the init of change media macro commands
-					$( embedPlayer ).trigger( 'KalturaSupport_ChangeMedia', notificationData.entryId );
-					
-					var chnagePlayingMedia = embedPlayer.isPlaying();
-					// Pause player during media switch
-					embedPlayer.pause();
-
-					// Reset first play to true, to count that play event
-					embedPlayer.firstPlay = true;
-					
-					// Clear out any bootstrap data from the iframe 
-					mw.setConfig('KalturaSupport.IFramePresetPlayerData', false);
-					// Clear out any player error:
-					embedPlayer['data-playerError'] = null;
-					// Clear out the player error div:
-					embedPlayer.$interface.find('.error').remove();
-					// restore the control bar:
-					embedPlayer.$interface.find('.control-bar').show();
-					
 					// Update the entry id
 					embedPlayer.kentryid = notificationData.entryId;
+					// Clear out any bootstrap data from the iframe 
+					mw.setConfig('KalturaSupport.IFramePresetPlayerData', false);
 					// Clear player & entry meta 
 				    embedPlayer.kalturaPlayerMetaData = null;
 				    embedPlayer.kalturaEntryMetaData = null;
-					
 					// Update the poster
 					embedPlayer.updatePosterSrc( 
 						mw.getKalturaThumbUrl({
@@ -531,43 +512,11 @@
 							'height' :  embedPlayer.getHeight()
 						})
 					);
-					embedPlayer.updatePosterHTML();
-					
-					// Add a loader to the embed player: 
-					$( embedPlayer )
-					.getAbsoluteOverlaySpinner()
-					.attr('id', embedPlayer.id + '_mappingSpinner' );
-					
-					if( embedPlayer.$interface ){
-						embedPlayer.$interface.find('.play-btn-large').hide(); // hide the play btn
-					}
-
 					// Empty out embedPlayer object sources
 					embedPlayer.emptySources();
 					
-					// Bind the ready state:
-					$( embedPlayer ).bind('playerReady.kdpMapping', function(){	
-						// Do normal stop then play:
-						if( chnagePlayingMedia ){
-							// make sure the play button is not displayed:
-							embedPlayer.$interface.find( '.play-btn-large' ).hide();
-							if( embedPlayer.isPersistentNativePlayer() ){
-								embedPlayer.switchPlaySrc( embedPlayer.getSrc() );
-							} else {
-								embedPlayer.stop();
-								embedPlayer.play();	
-							}
-						}
-					});
-					
-					// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
-					$( embedPlayer ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
-						$( '#' + embedPlayer.id + '_mappingSpinner' ).remove();
-						if( embedPlayer.$interface ){
-							embedPlayer.$interface.find( '.play-btn-large' ).show(); // show the play btn
-						}
-						embedPlayer.setupSourcePlayer();
-					});
+					// run the embedPlayer changeMedia function
+					embedPlayer.changeMedia();
 				break;
 			}
 		}

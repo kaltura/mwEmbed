@@ -105,7 +105,7 @@ mw.Playlist.prototype = {
 				.append(
 					_this.getPlayerContainer()
 				);
-				_this.updatePlayer( _this.clipIndex, callback );
+				_this.addPlayer( _this.clipIndex, callback );
 			}
 		});
 	},
@@ -278,7 +278,7 @@ mw.Playlist.prototype = {
 		_this.addMediaList();
 
 		// Add the player
-		_this.updatePlayer( _this.clipIndex, function(){
+		_this.addPlayer( _this.clipIndex, function(){
 			// Update the list height ( vertical layout )
 			if( _this.layout == 'vertical' ){
 				$j( _this.target + ' .media-rss-video-list' ).css( {
@@ -413,7 +413,6 @@ mw.Playlist.prototype = {
 		// Get the target width and height:
 		this.targetWidth = $j( this.target ).width();
 		this.targetHeight = $j( this.target ).height();
-		
 		// if there is no player interface take all the allowed space:
 		if( !_this.sourceHandler.hasPlaylistUi() ){
 			return {
@@ -461,21 +460,21 @@ mw.Playlist.prototype = {
 		var $inDomAV = $j( _this.target + ' .media-rss-video-player video, '+ _this.target + ' .media-rss-video-player audio' );
 		var embedPlayer = this.getEmbedPlayer();
 	
-		if (typeof _this.nextPlayIndex !='undefined'){
-			if (clipIndex < _this.nextPlayIndex) {
-				return;
-			}
-			_this.nextPlayIndex = clipIndex + 1;
-		}
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex );
+		
+		bindName ='onend.playlist';
+		$( embedPlayer ).unbind( bindName ).bind( bindName, function( event ){
+			alert('done play clip');
+		});
+		
 	},
 	/**
 	* Update the player
 	*/
-	updatePlayer: function( clipIndex , callback ){
+	addPlayer: function( clipIndex , callback ){
 		var _this = this;
-		mw.log( "mw.Playlist:: updatePlayer " + clipIndex );
+		mw.log( "mw.Playlist:: addPlayer " + clipIndex );
 		var playerSize = _this.getTargetPlayerSize();
 		this.clipIndex = clipIndex;
 		
@@ -521,43 +520,48 @@ mw.Playlist.prototype = {
 		// Update the video tag with the embedPlayer
 		$video.unbind().embedPlayer( function(){
 			var embedPlayer = _this.getEmbedPlayer();
-			if(!embedPlayer){
+			if( !embedPlayer ){
 				mw.log("mw.Playlist::updateVideoPlayer > Error, embedPlayer not defined at embedPlayer ready time");
 				return;
 			}
-			
-			// Once the player is ready add any custom bindings
-			_this.sourceHandler.addEmbedPlayerBindings( embedPlayer );
+			_this.addClipBindings( embedPlayer );
 			
 			// Update the player clip index
 			$( embedPlayer ).data('clipIndex', clipIndex); 
 			
-			// Setup ondone playing binding to play next clip (if autoContinue is true )
-			if( _this.sourceHandler.autoContinue == true ){
-				$j( embedPlayer ).unbind('ended.playlist').bind( 'ended.playlist', function(event ){
-					mw.log("Playlist:: updateVideoPlayer -> finished clip" + _this.clipIndex );
-					// Play next clip
-					if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
-						// Update the onDone action object to not run the base control done:
-						embedPlayer.onDoneInterfaceFlag = false;
-						_this.clipIndex++;
-	
-						// update the player and play the next clip
-						_this.playClip( _this.clipIndex );
-					} else {
-						mw.log("Reached end of playlist run normal end action" );
-						// Update the onDone action object to not run the base control done:
-						embedPlayer.onDoneInterfaceFlag = true;
-					}
-				});
-			}
 			_this.addPlaylistSeekButtons( embedPlayer );
+			
 			mw.log( "mw.Playlist:: player should be ready: " + _this.clipIndex + ' ' + $j('#' +_this.getVideoPlayerId() ) );
 			// Run the callback if its set
 			if( callback ){
 				callback();
 			}
 		} );
+	},
+	addClipBindings: function( embedPlayer ){
+		var _this = this;
+		// Once the player is ready add any custom bindings
+		_this.sourceHandler.addEmbedPlayerBindings( embedPlayer );
+		
+		// Setup ondone playing binding to play next clip (if autoContinue is true )
+		if( _this.sourceHandler.autoContinue == true ){
+			$j( embedPlayer ).unbind('ended.playlist').bind( 'ended.playlist', function(event ){
+				mw.log("Playlist:: updateVideoPlayer -> finished clip" + _this.clipIndex );
+				// Play next clip
+				if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
+					// Update the onDone action object to not run the base control done:
+					embedPlayer.onDoneInterfaceFlag = false;
+					_this.clipIndex++;
+
+					// update the player and play the next clip
+					_this.playClip( _this.clipIndex );
+				} else {
+					mw.log("Reached end of playlist run normal end action" );
+					// Update the onDone action object to not run the base control done:
+					embedPlayer.onDoneInterfaceFlag = true;
+				}
+			});
+		}
 	},
 	updatePlayerUi:function( clipIndex ){
 		var _this = this;
@@ -674,8 +678,6 @@ mw.Playlist.prototype = {
 			.click( function(){
 				// Update _this.clipIndex
 				_this.clipIndex = $j( this ).data( 'clipIndex' );
-
-				_this.nextPlayIndex = _this.clipIndex;
 
 				_this.playClip( _this.clipIndex );
 

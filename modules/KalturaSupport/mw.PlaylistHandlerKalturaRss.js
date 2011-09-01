@@ -23,8 +23,8 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 	playClip: function( embedPlayer, clipIndex ){
 		var kEmbedSettings = this.getKalturaClipAttributes( clipIndex );
 		var bindName = 'KalturaSupport_EntryDataReady.playlist';
-		$( embedPlayer ).unbind(bindName).bind( bindName, function( event ){
-			// run play after we switch 
+		$( embedPlayer ).unbind( bindName ).bind( bindName, function( event ){
+			// Run play after we switch 
 			embedPlayer.play();
 		});
 		embedPlayer.sendNotification( "changeMedia", { 'entryId' : kEmbedSettings.entry_id } );	

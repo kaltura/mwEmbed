@@ -93,76 +93,26 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	},
 	playClip: function( embedPlayer, clipIndex ){
 		var _this = this;
-		
-		// Add a loader to the embed player: 
-		$j( embedPlayer )
-		.getAbsoluteOverlaySpinner()
-		.attr('id', _this.playlist.getVideoPlayerId() + '_mappingSpinner' );
-	    
 		// Update the poster
 		embedPlayer.updatePosterSrc( _this.getClipPoster( clipIndex, _this.playlist.getTargetPlayerSize() ) );
 		// Empty existing sources
 	    embedPlayer.emptySources();
-
-		// Update the interface sources
-	    this.updateEmbedPlayer( embedPlayer, clipIndex );
 	    
 	    var clipSources = this.getClipSources( clipIndex );
-	    
 		if( !clipSources ){
 			mw.log("Error: mw.Playlist no sources found for clipIndex:" + clipIndex);
+			return ;
 		}
 		for( var i =0; i < clipSources.length; i++ ){
 			var $source = $j('<source />')
 			.attr( clipSources[i] );
 			embedPlayer.mediaElement.tryAddSource( $source.get(0) ) ;
 		}
-		
-		// Auto select the source
-		embedPlayer.mediaElement.autoSelectSource();
-		
-		// Auto select player based on default order
-		if ( !embedPlayer.mediaElement.selectedSource ) {
-			mw.log( 'Error no source for playlist swich' );
-			if( typeof callback != 'undefined' ) {
-				callback();
-			}
-			return ;
-		} else {
-			embedPlayer.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( embedPlayer.mediaElement.selectedSource.mimeType );
-		}
-		// If we switched to a source that is non-native playback jump out to normal swap 
-		if( embedPlayer.selectedPlayer.library != 'Native' ){
-			$j('.loadingSpinner').remove();
-			var $video = $('<video />');
-			$j( _this.target + ' .media-rss-video-player' ).empty().append( 
-				 
-			);
-			
-			_this.playlist.addEmbedPlayerInterface( clipIndex, function(){
-				embedPlayer.play();
-			});
-			return ;
-		}
-		// Run switchPlaying source  
-		// @@TODO clean this up a bit more
-		if ( typeof _this.playlist.nextPlayIndex == 'undefined' ){
-			_this.playlist.nextPlayIndex = _this.clipIndex + 1;
-		}
-		mw.log( 'mw.Playlist:: Play next: ' + _this.playlist.nextPlayIndex );
-		embedPlayer.switchPlaySrc( embedPlayer.mediaElement.selectedSource.getSrc(), 
-				function() { 
-					$j('.loadingSpinner').remove(); 
-					$( embedPlayer ).data('clipIndex', clipIndex); 
-				},
-				function() { 
-					if( _this.playlist.nextPlayIndex < _this.sourceHandler.getClipCount() ){
-						_this.playlist.playClip( _this.playlist.nextPlayIndex ); 
-					}
-    			}
-		);
+		embedPlayer.changeMedia( function(){
+			embedPlayer.play();
+		});
 	},
-	updateEmbedPlayer: function( clipIndex, $video, callback ){
+	updateEmbedPlayer: function( clipIndex, $video ){
 		var _this = this;
 		// Lookup the sources from the playlist provider:
 		var clipSources = _this.getClipSources( clipIndex );

@@ -1648,6 +1648,74 @@ mw.EmbedPlayer.prototype = {
 	updatePosterSrc: function( posterSrc ){
 		this.poster = posterSrc;
 		this.updatePosterHTML();
+		this.applyIntrinsicAspect();
+	},
+	/**
+	 * Called after sources are updated, and your ready for the player to change media
+	 * @return
+	 */
+	changeMedia: function( callback ){
+		var _this = this;
+		
+		// onChangeMedia): triggered at the start of the change media commands
+		$( this ).trigger( 'onChangeMedia' );
+		
+		// setup flag for change media
+		var chnagePlayingMedia = this.isPlaying();
+		
+		// Pause player during media switch
+		this.pause();
+
+		// Reset first play to true, to count that play event
+		this.firstPlay = true;
+		
+		// Add a loader to the embed player: 
+		$( this )
+		.getAbsoluteOverlaySpinner()
+		.attr('id', this.id + '_mappingSpinner' );
+		
+		// Clear out any player error:
+		this['data-playerError'] = null;
+		// Clear out the player error div:
+		this.$interface.find('.error').remove();
+		// restore the control bar:
+		this.$interface.find('.control-bar').show();
+		
+		if( this.$interface ){
+			this.$interface.find('.play-btn-large').hide(); // hide the play btn
+		}
+		
+		//If we are change playing media add a ready binding: 
+		var bindName = 'playerReady.changeMedia';
+		$( this ).unbind( bindName ).bind( bindName, function(){
+			// Always show the control bar on switch:
+			if( _this.controlBuilder ){
+				_this.controlBuilder.showControlBar();
+			}
+			
+			if( chnagePlayingMedia ){
+				// make sure the play button is not displayed:
+				if( _this.isPersistentNativePlayer() ){
+					_this.switchPlaySrc( _this.getSrc() );
+				} else {
+					_this.stop();
+					_this.play();
+				}
+			}
+			if ($.isFunction( callback) ){
+				callback();
+			}
+		});
+
+		// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
+		$( this ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
+			$( '#' + _this.id + '_mappingSpinner' ).remove();
+			if( _this.$interface && !chnagePlayingMedia){
+				_this.$interface.find( '.play-btn-large' ).show(); // show the play btn
+			}
+			// Start player events leading to playerReady
+			_this.setupSourcePlayer();
+		});
 	},
 	
 	/**
@@ -1709,7 +1777,7 @@ mw.EmbedPlayer.prototype = {
 			);
 		}
 	},
-
+	
 	/**
 	 * Checks if native controls should be used
 	 * 
