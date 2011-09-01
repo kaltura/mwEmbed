@@ -893,10 +893,10 @@ function kFlashVars2Object( flashvarsString ){
 }
 
 function kServiceConfigToUrl(){
-	var serviceVars = ['ServiceUrl', 'CdnUrl', 'ServiceBase'];
+	var serviceVars = ['ServiceUrl', 'CdnUrl', 'ServiceBase', 'UseManifestUrls'];
 	var urlParam = '';
 	for( var i=0; i < serviceVars.length; i++){
-		if( mw.getConfig('Kaltura.' + serviceVars[i] )  ){
+		if( mw.getConfig('Kaltura.' + serviceVars[i] ) !== null ){
 			urlParam += '&' + serviceVars[i] + '=' + encodeURIComponent( mw.getConfig('Kaltura.' + serviceVars[i] ) );
 		}
 	}

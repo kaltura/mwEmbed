@@ -33,6 +33,7 @@ class KalturaResultObject {
 		'ServiceUrl'=> null,
 		'ServiceBase'=>null,
 		'CdnUrl'=> null,
+		'UseManifestUrls' => null
 	
 	);
 	function __construct( $clientTag = 'php'){
@@ -64,6 +65,10 @@ class KalturaResultObject {
 			case 'CdnUrl':
 				global $wgKalturaCDNUrl;
 				return $wgKalturaCDNUrl;
+				break;
+			case 'UseManifestUrls':
+				global $wgKalturaUseManifestUrls;
+				return $wgKalturaUseManifestUrls;
 				break;
 		}
 		// else thorw an erro? 
@@ -326,7 +331,7 @@ class KalturaResultObject {
 	}
 	// Load the Kaltura library and grab the most compatible flavor
 	public function getSources(){
-		global $wgKalturaServiceUrl,  $wgKalturaUseManifestUrls, $wgKalturaUseAppleAdaptive;
+		global $wgKalturaServiceUrl, $wgKalturaUseAppleAdaptive;
 		// Check the access control before returning any source urls
 		if( !$this->isAccessControlAllowed() ) {
 			return array();
@@ -353,7 +358,7 @@ class KalturaResultObject {
 		$iphoneFlavors = '';
 
 		// Decide if to use playManifest or flvClipper URL
-		if( $wgKalturaUseManifestUrls ){
+		if( $this->getServiceConfig( 'UseManifestUrls' ) ){
 			$flavorUrl =  $this->getServiceConfig( 'ServiceUrl' ) .'/p/' . $this->getPartnerId() . '/sp/' .
 			$this->getPartnerId() . '00/playManifest/entryId/' . $this->urlParameters['entry_id'];			
 		} else {
@@ -479,7 +484,7 @@ class KalturaResultObject {
 			);
 		}
 		// Add in playManifest authentication tokens ( both the KS and referee url ) 
-		if( $wgKalturaUseManifestUrls ){
+		if( $this->getServiceConfig( 'UseManifestUrls' ) ){
 			foreach($sources as &$source ){
 				if( isset( $source['src'] )){
 					$source['src'] .= '?ks=' . $this->getKS() . '&referrer=' . base64_encode( $this->getReferer() );
@@ -521,7 +526,16 @@ class KalturaResultObject {
 				}
 			}
 		}
-
+		// string to bollean  
+		foreach( $this->urlParameters as $k=>$v){
+			if( $v == 'false'){
+				$this->urlParameters[$k] = false;
+			}
+			if( $v == 'true' ){
+				$this->urlParameters[$k] = true;
+			}
+		}
+		
 		// add p == _widget
 		if( isset( $this->urlParameters['p'] ) && !isset( $this->urlParameters['wid'] ) ){
 			$this->urlParameters['wid'] = '_' . $this->urlParameters['p'];  

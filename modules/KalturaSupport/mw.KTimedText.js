@@ -53,9 +53,11 @@ mw.KTimedText.prototype = {
 		// Check for kaltura ccUrl style text tracks ( not eagle api ) 
 		if( this.kVars.ccUrl ){
 			// Set up a single source from the custom vars:
-			_this.textSources.push(
-				_this.getTextSourceFromVars(  _this.kVars )
-			);
+			$.each( _this.getTextSourceFromVars( _this.kVars ), function(inx, textSource ){
+				_this.textSources.push(
+					textSource
+				);
+			})
 			callback();
 			return ;
 		}
@@ -118,7 +120,7 @@ mw.KTimedText.prototype = {
 		var ccUrl = this.embedPlayer.evaluate( kalturaTextVars.ccUrl );
 		if( !type || !ccUrl ){
 			mw.log("Error: KTimedText error missing type or text source from custom vars");
-			return ;
+			return [];
 		}
 		var embedSource = this.embedPlayer.mediaElement.tryAddSource( 
 			$( '<track />' ).attr({
