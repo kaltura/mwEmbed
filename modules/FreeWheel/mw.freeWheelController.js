@@ -134,7 +134,6 @@ mw.freeWheelControler.prototype = {
 		var _this = this;
 		$.each(slotSet, function(inx, slot){
 			var slotTimePosition = slot.getTimePosition();
-			mw.log('displayOverlayInRange::check slot: ' + slot.getTimePosition() );
 			if ( _this.embedPlayer.currentTime - slotTimePosition >= 0 && 
 				_this.embedPlayer.currentTime - slotTimePosition <= 1 && 
 				!_this.overlaySlotActive 
