@@ -58,7 +58,6 @@ class kalturaIframe {
 	}
 
 	function getPlayEventUrl() {
-		global $wgKalturaServiceUrl, $wgKalturaServiceBase;
 		$param = array(
 			'action' => 'collect',
 			'apiVersion' => '3.0',
@@ -95,7 +94,9 @@ class kalturaIframe {
 		$param['kalsig'] = md5( $sigString );
 		$requestString =  http_build_query( $param );
 
-		return $wgKalturaServiceUrl . $wgKalturaServiceBase . 'stats&' . $requestString;
+		return $this->getResultObject()->getServiceConfig('ServiceUrl') .
+			 	$this->getResultObject()->getServiceConfig('ServiceBase' ) . 
+			 	'stats&' . $requestString;
 	}
 
 	// Returns a simple image with a direct link to the asset
@@ -122,7 +123,6 @@ class kalturaIframe {
 	}
 
 	private function getVideoHTML( ){
-		global $wgKalturaCDNUrl;
 		$videoTagMap = array(
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
@@ -289,8 +289,7 @@ class kalturaIframe {
 		}
 	}
 	private function getSwfUrl(){
-		global $wgKalturaServiceUrl;
-		$swfUrl = $wgKalturaServiceUrl . '/index.php/kwidget';
+		$swfUrl = $this->getResultObject()->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
 		// pass along player attributes to the swf:
 		$urlParams = $this->getResultObject()->getUrlParameters();	
 		foreach($urlParams as $key => $val ){
@@ -350,7 +349,8 @@ class kalturaIframe {
 	 * Get the location of the mwEmbed library
 	 */
 	private function getMwEmbedLoaderLocation(){
-		global $wgMwEmbedPathUrl, $wgKalturaCDNUrl;
+		global $wgMwEmbedPathUrl;
+		
 		$loaderPath = $wgMwEmbedPathUrl . 'mwEmbedLoader.php';
 		
 		$versionParam = '';
@@ -364,7 +364,7 @@ class kalturaIframe {
 			foreach($xml->layout[0]->attributes() as $name => $value) {
 				if( $name == 'html5_url' ){
 					if( $value[0] == '/' ){
-						$loaderPath = $wgKalturaCDNUrl	 . $value;
+						$loaderPath = $this->getResultObject()->getServiceConfig( 'CdnUrl' ) . $value;
 					} else if( substr( $value,0, 4 ) == 'http' ) {
 						$loaderPath = $value;
 					}

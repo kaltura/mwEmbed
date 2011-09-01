@@ -134,6 +134,7 @@ function kDoIframeRewriteList( rewriteObjects ){
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( !options )
 		options = {};
+	
 	// Empty the replace target:
 	var elm = document.getElementById( replaceTargetId );
 	if( ! elm ){
@@ -190,8 +191,14 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			}
 		}
 	}
-	// add the flashvars:
+	
+	// Add the flashvars:
 	iframeSrc += '?' + kFlashVarsToUrl( kEmbedSettings.flashvars );
+	
+	// If remote service is enabled pass along service arguments: 
+	if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) ){
+	  iframeSrc += kServiceConfigToUrl();
+	}
 	
 	// add the forceMobileHTML5 to the iframe if present on the client: 
 	if( mw.getConfig( 'forceMobileHTML5' ) ){
@@ -430,11 +437,10 @@ function kGetFlashVersion(){
 // && html5 video tag ( for fallback & html5 player interface )
 function kCheckAddScript(){
 	/**
-	 * Hard code some defaults for users not using the kaltura SAS
-	 * It kind of sucks to hard code this, But we can't deliver iframes for non SAS users atm. 
+	 * If Kaltura.AllowIframeRemoteService is not enabled force in page rewrite: 
 	 */
 	var serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
-	if( ! mw.getConfig( 'Kaltura.AllowRemoteService' ) ) {
+	if( ! mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) ) {
 		if( ! serviceUrl || serviceUrl != 'http://www.kaltura.com' ){
 			// if not hosted on kaltura for now we can't use the iframe to load the player
 			mw.setConfig( 'Kaltura.IframeRewrite', false );
@@ -884,6 +890,17 @@ function kFlashVars2Object( flashvarsString ){
 		}
 	}
 	return flashvars;
+}
+
+function kServiceConfigToUrl(){
+	var serviceVars = ['ServiceUrl', 'CdnUrl', 'ServiceBase'];
+	var urlParam = '';
+	for( var i=0; i < serviceVars.length; i++){
+		if( mw.getConfig('Kaltura.' + serviceVars[i] )  ){
+			urlParam += '&' + serviceVars[i] + '=' + encodeURIComponent( mw.getConfig('Kaltura.' + serviceVars[i] ) );
+		}
+	}
+	return urlParam;
 }
 
 function kFlashVarsToUrl( flashVarsObject ){

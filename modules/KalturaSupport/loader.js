@@ -424,6 +424,11 @@
 				// Add the player id: 
 				iframeRequest+= '/?playerId=' + $j( playerTarget ).attr('id');
 				
+				// If remote service is enabled pass along service arguments: 
+				if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) ){
+					iframeRequest += kServiceConfigToUrl();
+				}
+				
 				// Add debug flag if set: 
 				if( mw.getConfig( 'debug' ) ){
 					iframeRequest+= '&debug=true';

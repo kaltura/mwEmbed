@@ -29,8 +29,12 @@ class KalturaResultObject {
 		'flashvars' => null,
 		'playlist_id' => null,
 		'urid' => null,
+		// Custom service url properties ( only used when wgKalturaAllowIframeRemoteService is set to true ) 
+		'ServiceUrl'=> null,
+		'ServiceBase'=>null,
+		'CdnUrl'=> null,
+	
 	);
-
 	function __construct( $clientTag = 'php'){
 		$this->clientTag = $clientTag;
 		//parse input:
@@ -38,7 +42,32 @@ class KalturaResultObject {
 		// load the request object:
 		$this->getResultObject();
 	}
-
+	function getServiceConfig( $name ){
+		global $wgKalturaAllowIframeRemoteService;
+		// Check if we allow URL override: 
+		if( $wgKalturaAllowIframeRemoteService ){
+			// Check for urlParameters
+			if( isset( $this->urlParameters[ $name ] ) ){
+				return $this->urlParameters[ $name ];
+			}
+		}
+		// Else use the global config: 
+		switch( $name ){
+			case 'ServiceUrl' : 
+				global $wgKalturaServiceUrl;
+				return $wgKalturaServiceUrl;
+				break;
+			case 'ServiceBase':
+				global $wgKalturaServiceBase;
+				return $wgKalturaServiceBase;
+				break;
+			case 'CdnUrl':
+				global $wgKalturaCDNUrl;
+				return $wgKalturaCDNUrl;
+				break;
+		}
+		// else thorw an erro? 
+	}
 	/**
 	 * Kaltura object provides sources, sometimes no sources are found or an error occurs in 
 	 * a video delivery context we don't want ~nothing~ to happen instead we send a special error
@@ -297,13 +326,14 @@ class KalturaResultObject {
 	}
 	// Load the Kaltura library and grab the most compatible flavor
 	public function getSources(){
-		global $wgKalturaServiceUrl, $wgKalturaCDNUrl, $wgKalturaUseManifestUrls, $wgKalturaUseAppleAdaptive;
+		global $wgKalturaServiceUrl,  $wgKalturaUseManifestUrls, $wgKalturaUseAppleAdaptive;
 		// Check the access control before returning any source urls
 		if( !$this->isAccessControlAllowed() ) {
 			return array();
 		}
 
 		$resultObject =  $this->getResultObject(); 
+		
 		// add any web sources
 		$sources = array();
 
@@ -324,10 +354,10 @@ class KalturaResultObject {
 
 		// Decide if to use playManifest or flvClipper URL
 		if( $wgKalturaUseManifestUrls ){
-			$flavorUrl =  $wgKalturaServiceUrl .'/p/' . $this->getPartnerId() . '/sp/' .
+			$flavorUrl =  $this->getServiceConfig( 'ServiceUrl' ) .'/p/' . $this->getPartnerId() . '/sp/' .
 			$this->getPartnerId() . '00/playManifest/entryId/' . $this->urlParameters['entry_id'];			
 		} else {
-			$flavorUrl = $wgKalturaCDNUrl .'/p/' . $this->getPartnerId() . '/sp/' .
+			$flavorUrl = $this->getServiceConfig( 'CdnUrl' ) .'/p/' . $this->getPartnerId() . '/sp/' .
 			$this->getPartnerId() . '00/flvclipper/entry_id/' .
 			$this->urlParameters['entry_id'];
 		}
@@ -462,7 +492,7 @@ class KalturaResultObject {
 	
 	// Parse the embedFrame request and sanitize input
 	private function parseRequest(){
-		global $wgAllowRemoteKalturaService, $wgEnableScriptDebug, $wgKalturaUseAppleAdaptive, 
+		global $wgEnableScriptDebug, $wgKalturaUseAppleAdaptive, 
 				$wgKalturaPartnerDisableAppleAdaptive;
 		// Support /key/value path request:
 		if( isset( $_SERVER['PATH_INFO'] ) ){
@@ -514,18 +544,6 @@ class KalturaResultObject {
 			throw new Exception( 'Can not display player, missing widget id' );
 		}
 		
-		// If remote service is allowed enable the $wgKalturaServiceUrl $wgKalturaCDNUrl and $wgKalturaServiceBase to be set via iframe request
-		// NOTE this is kind of dangerous XSS wise and should only be used in testing
-		if( $wgAllowRemoteKalturaService ){
-			global $wgKalturaServiceUrl, $wgKalturaCDNUrl,  $wgKalturaServiceBase;
-			if( isset( $_REQUEST['host'] ) ){
-				$wgKalturaServiceUrl = 'http://' . $_REQUEST['host'];
-			}
-			if( isset( $_REQUEST['cdnHost'] ) ){
-				$wgKalturaCDNUrl = 'http://' .  $_REQUEST['cdnHost'];
-			}
-		}
-		
 		// Dissable apple adaptive per partner id:
 		if( in_array( $this->getPartnerId(), $wgKalturaPartnerDisableAppleAdaptive ) ){
 			$wgKalturaUseAppleAdaptive = false;
@@ -545,7 +563,6 @@ class KalturaResultObject {
 	 * Returns a cache key for the result object based on Referer and partner id
 	 */
 	private function getResultObjectCacheKey(){
-		global $wgKalturaServiceUrl;		
 		// Get a key based on partner id,  entry_id and ui_confand and refer url:
 		$playerUnique = ( isset( $this->urlParameters['entry_id'] ) ) ?  $this->urlParameters['entry_id'] : '';
 		$playerUnique .= ( isset( $this->urlParameters['uiconf_id'] ) ) ?  $this->urlParameters['uiconf_id'] : '';
@@ -553,7 +570,7 @@ class KalturaResultObject {
 		$playerUnique .= $this->getReferer();
 
 		// hash the service url, the partner_id, the player_id and the Referer url: 
-		return substr( md5( $wgKalturaServiceUrl ), 0, 5 ) . '_' . $this->getPartnerId() . '_' . 
+		return substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . $this->getPartnerId() . '_' . 
 			   substr( md5( $playerUnique ), 0, 16 );
 	}
 
@@ -586,7 +603,6 @@ class KalturaResultObject {
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 			return array();
 		}
-		
 		$resultObject = $this->getBaseResultObject();
 		if( isset( $rawResultObject[0] ) && $rawResultObject[0]->confFile ){
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
@@ -662,6 +678,7 @@ class KalturaResultObject {
 			}
 			
 			$rawResultObject = $client->doQueue();
+
 			$client->throwExceptionIfError( $this->resultObj );
 		} catch( Exception $e ){
 			// Update the Exception and pass it upward
@@ -732,7 +749,7 @@ class KalturaResultObject {
 	}
 
 	private function getClient(){
-		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgKalturaServiceUrl, $wgScriptCacheDirectory, 
+		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgScriptCacheDirectory, 
 			$wgMwEmbedVersion, $wgKalturaServiceTimeout;
 
 		$cacheDir = $wgScriptCacheDirectory;
@@ -742,7 +759,8 @@ class KalturaResultObject {
 
 		$conf = new KalturaConfiguration( $this->getPartnerId() );
 
-		$conf->serviceUrl = $wgKalturaServiceUrl;
+		$conf->serviceUrl = $this->getServiceConfig( 'ServiceUrl' );
+		$conf->serviceBase = $this->getServiceConfig( 'ServiceBase' );
 		$conf->clientTag = $this->clientTag;
 		$conf->curlTimeout = $wgKalturaServiceTimeout;
 		$conf->userAgent = $this->getUserAgent();

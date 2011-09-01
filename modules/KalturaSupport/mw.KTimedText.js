@@ -58,7 +58,7 @@ mw.KTimedText.prototype = {
 			);
 			callback();
 			return ;
-		}	
+		}
 		
 		// Api sources require that we have a KS handy ( make sure its cached ) 
 		_this.getKalturaClient().getKS( function( ks ) {
@@ -69,7 +69,7 @@ mw.KTimedText.prototype = {
 						_this.getTextSourceFromDB( dbTextSource ) 
 					);
 				});
-				// done adding source issue callback
+				// Done adding source issue callback
 				callback(); 
 			});
 		});
@@ -118,6 +118,7 @@ mw.KTimedText.prototype = {
 		var ccUrl = this.embedPlayer.evaluate( kalturaTextVars.ccUrl );
 		if( !type || !ccUrl ){
 			mw.log("Error: KTimedText error missing type or text source from custom vars");
+			return ;
 		}
 		var embedSource = this.embedPlayer.mediaElement.tryAddSource( 
 			$( '<track />' ).attr({

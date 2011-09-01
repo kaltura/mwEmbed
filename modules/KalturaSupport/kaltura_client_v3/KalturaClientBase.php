@@ -123,7 +123,7 @@ class KalturaClientBase
 		$signature = $this->signature($params);
 		$this->addParam($params, "kalsig", $signature);
 		
-		$url = $this->config->serviceUrl . "/api_v3/index.php?service={$call->service}&action={$call->action}";
+		$url = $this->config->serviceUrl . $this->config->serviceBase . "{$call->service}&action={$call->action}";
 		$url .= '&' . http_build_query($params); 
 		$this->log("Returned url [$url]");
 		return $url;
@@ -165,7 +165,7 @@ class KalturaClientBase
 		$this->addParam($params, "format", $this->config->format);
 		$this->addParam($params, "clientTag", $this->config->clientTag);
 		
-		$url = $this->config->serviceUrl."/api_v3/index.php?service=";
+		$url = $this->config->serviceUrl . $this->config->serviceBase;
 		if ($this->isMultiRequest)
 		{
 			$url .= "multirequest";

@@ -67,7 +67,7 @@ $wgKalturaEnableCuePointsRequest = false;
 
 // If the iframe will accept 3rd party domain remote service requests 
 // should be left "off" in production. 
-$wgAllowRemoteKalturaService = false;
+$wgKalturaAllowIframeRemoteService = false;
 
 // Default expire time for ui conf api queries in seconds 
 $wgKalturaUiConfCacheTime = 600;

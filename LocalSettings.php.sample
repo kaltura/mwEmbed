@@ -16,8 +16,8 @@ $wgEnableIpadHTMLControls = true;
 $wgKalturaUseManifestUrls = true;
 
 // Allows remote kaltura service queries from php ( useful for onPrem or CE editions using the iframe 
-//on a diffrent server from their mwEmbed library location)
-$wgAllowRemoteKalturaService = false;
+//on a different server from their mwEmbed library location)
+$wgKalturaAllowIframeRemoteService = false;
 
 // Allows custom resources to be loaded from the ui-conf, useful for custom plugins, 
 // DO NOT enable this if you have other services on the same domain as the iframe as it essentially

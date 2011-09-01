@@ -69,9 +69,17 @@ mw.freeWheelControler.prototype = {
 		// XXX todo we should be able to read this from "adManagerUrl"
 		var AdManagerUrl = mw.getConfig( 'FreeWheel.AdManagerUrl' );
 		
+		// add a adTarget 
+		$( this.embedPlayer ).after( 
+			$( '<div />' ).attr( 'id', this.getVideoDisplayBaseId() ).append( "<video />" )
+		);
+		
 		$.getScript(AdManagerUrl, function(){
 			_this.setupAds();
 		});
+	},	
+	getVideoDisplayBaseId: function(){
+		return "freeWheelAdTarget";
 	},
 	/**
 	 * Setup ads, main freeWheel control flow
@@ -139,7 +147,8 @@ mw.freeWheelControler.prototype = {
 				!_this.overlaySlotActive 
 			){
 				if( _this.playSlot( slot ) ){
-					_this.overlaySlotActive = true;
+					if(  _this.getSlotType( slot ) == 'overlay' )
+						_this.overlaySlotActive = true;
 				}
 			}
 		});
@@ -148,7 +157,7 @@ mw.freeWheelControler.prototype = {
 		if( slot.alreadyPlayed ){
 			return false;
 		}
-		alert('play:' + this.getSlotType( slot ) );
+		mw.log('mw.FreeWheelControl:: playSlot:' + this.getSlotType( slot ) );
 		slot.play();
 		slot.alreadyPlayed = true;
 		return true;
@@ -175,8 +184,7 @@ mw.freeWheelControler.prototype = {
 	onSlotEnded: function ( event ){
 		var _this = this;
 		var slotType =_this.getSlotType( event.slot );
-		alert( 'onSlotEnded:' + slotType + ' inx:' + this.curentSlotIndex);
-		if( slotType == 'overlay' ){
+		if( slotType == 'overlay'  ){
 			_this.overlaySlotActive = false;
 			return ;
 		}
@@ -280,6 +288,7 @@ mw.freeWheelControler.prototype = {
 			this.adContext = this.getAdManager().newContext();
 			
 			this.adContext.registerVideoDisplayBase( 'videoContainer' );
+
 			this.adContext.setProfile( this.getProperty( 'profileId' ) );
 			
 			this.adContext.setVideoAsset( 
@@ -326,8 +335,8 @@ mw.freeWheelControler.prototype = {
 		
 		// Add 1 preroll, 1 midroll, 2 overlay, 1 postroll slot
 		context.addTemporalSlot("Preroll_1", tv.freewheel.SDK.ADUNIT_PREROLL, 0);
-		context.addTemporalSlot("Midroll_1", tv.freewheel.SDK.ADUNIT_MIDROLL, 5);
-		context.addTemporalSlot("Overlay_1", tv.freewheel.SDK.ADUNIT_OVERLAY, 10);
+		context.addTemporalSlot("Midroll_1", tv.freewheel.SDK.ADUNIT_MIDROLL, 10);
+		context.addTemporalSlot("Overlay_1", tv.freewheel.SDK.ADUNIT_OVERLAY, 5);
 		context.addTemporalSlot("Overlay_2", tv.freewheel.SDK.ADUNIT_OVERLAY, 15);
 		context.addTemporalSlot("Postroll_1", tv.freewheel.SDK.ADUNIT_POSTROLL, 60);
 	},
