@@ -227,10 +227,11 @@ mw.PlaylistHandlerKaltura.prototype = {
 		return this.clipList;
 	},
 	playClip: function( embedPlayer, clipIndex ){
-		var bindName = 'KalturaSupport_EntryDataReady.playlist';
+		var bindName = 'playerReady.playlist';
 		$( embedPlayer ).unbind(bindName).bind( bindName, function( event ){
+			
 			// run play after we switch 
-			embedPlayer.play();
+			embedPlayer.sendNotification( 'doPlay' );
 		});
 		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );	
 	},

@@ -107,11 +107,11 @@ mw.freeWheelControler.prototype = {
 	addPlayerBindings: function(){
 		mw.log("FreeWheelControl:: addPlayerBindings");
 		var _this = this;
-		
+	
 		$.each(_this.slots, function( slotType, slotSet){
-			if( slotType == 'midroll' && slotType == 'overlay' ){
-				$( _this.embedPlayer ).bind( 'monitorEvent', function(){
-					_this.displayOverlayInRange( slotSet, time );
+			if( slotType == 'midroll' || slotType == 'overlay' ){
+				$( _this.embedPlayer ).bind( 'monitorEvent.freewheel', function( event ){
+					_this.displayOverlayInRange( slotSet );
 				});
 				return true;
 			}
@@ -130,10 +130,11 @@ mw.freeWheelControler.prototype = {
 		// run the player callback once we have added player bindings
 		this.callback();
 	},
-	displayOverlayInRange: function( slotSet, time ){
+	displayOverlayInRange: function( slotSet ){
+		var _this = this;
 		$.each(slotSet, function(inx, slot){
 			var slotTimePosition = slot.getTimePosition();
-			mw.log('check slot: ' + slot.getTimePosition() );k
+			mw.log('displayOverlayInRange::check slot: ' + slot.getTimePosition() );
 			if ( _this.embedPlayer.currentTime - slotTimePosition >= 0 && 
 				_this.embedPlayer.currentTime - slotTimePosition <= 1 && 
 				!_this.overlaySlotActive 

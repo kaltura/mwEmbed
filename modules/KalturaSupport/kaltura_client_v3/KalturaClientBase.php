@@ -327,7 +327,7 @@ class KalturaClientBase
 			$cookiesStr = http_build_query($cookies, null, '; ');
 			curl_setopt($ch, CURLOPT_COOKIE, $cookiesStr);
 		} 
-
+ 
 		$result = curl_exec($ch);
 		$curlError = curl_error($ch);
 		curl_close($ch);
