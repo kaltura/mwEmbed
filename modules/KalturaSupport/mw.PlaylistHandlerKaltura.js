@@ -63,17 +63,23 @@ mw.PlaylistHandlerKaltura.prototype = {
 					_this.flashvars,
 					$uiConf, 
 					'playlist', 
-					[ 'includeInLayout' ]
+					[ 'includeInLayout', 'width', 'height' ]
 			);
 
 			// Check for autoContinue 
 			_this.autoContinue = plApi.autoContinue;
-			
+			// Set autoPlay
 			_this.autoPlay = plApi.autoPlay;
+			
+			// Set width:
+			_this.videolistWidth = ( plConf.width )?  plConf.width : $uiConf.find('#playlist').attr('width');
+			// Set height:
+			_this.videolistHeight = ( plConf.height )?  plConf.height : $uiConf.find('#playlist').attr('height');
+			 
 			if( plConf.includeInLayout === false ){
 				_this.includeInLayout = false;
-			} else {
-				_this.videolistWidth = 250;
+			} else if( parseInt( _this.videolistWidth ) == 0 ){
+				_this.videolistWidth  = 250;
 			}
 
 			// Store all the playlist item render information:
