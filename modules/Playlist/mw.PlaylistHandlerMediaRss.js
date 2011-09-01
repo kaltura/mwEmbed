@@ -136,7 +136,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			$j('.loadingSpinner').remove();
 			$j( _this.target + ' .media-rss-video-player' ).empty().append( $video );
 			
-			_this.addEmbedPlayerInterface( clipIndex, function(){
+			_this.playlist.addEmbedPlayerInterface( clipIndex, function(){
 				embedPlayer.play();
 			});
 			return ;
@@ -152,8 +152,8 @@ mw.PlaylistHandlerMediaRss.prototype = {
 					$( embedPlayer ).data('clipIndex', clipIndex); 
 				},
 				function() { 
-					if( _this.nextPlayIndex < _this.sourceHandler.getClipCount() ){
-						_this.playClip( _this.nextPlayIndex ); 
+					if( _this.playlist.nextPlayIndex < _this.sourceHandler.getClipCount() ){
+						_this.playlist.playClip( _this.playlist.nextPlayIndex ); 
 					}
     			}
 		);
@@ -161,7 +161,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	updateEmbedPlayer: function( clipIndex, $video, callback ){
 		var _this = this;
 		// Lookup the sources from the playlist provider:
-		var clipSources = _this.sourceHandler.getClipSources( clipIndex );
+		var clipSources = _this.getClipSources( clipIndex );
 		mw.log( "mw.Playlist:: getClipSources cb for " + clipIndex );
 		if( clipSources ){
 			for( var i =0; i < clipSources.length; i++ ){
