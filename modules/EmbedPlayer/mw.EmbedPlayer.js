@@ -1272,17 +1272,14 @@ mw.EmbedPlayer.prototype = {
 	 */
 	onClipDone: function() {
 		var _this = this;
+		mw.log( 'EmbedPlayer::onClipDone: propagate:' +  _this._propagateEvents + ' id:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
 		// don't run onclipdone if _propagateEvents is off
 		if( !_this._propagateEvents ){
 			return ;
 		}
-		mw.log( 'EmbedPlayer::onClipDone:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
 		// Only run stopped once:
 		if( !this.isStopped() ){
 			
-			// Stop the monitor and event propagation
-			this.stopEventPropagation();
-
 			// Show the control bar:
 			this.controlBuilder.showControlBar();
 
@@ -2472,8 +2469,7 @@ mw.EmbedPlayer.prototype = {
 			_this.muted = _this.getPlayerElementMuted();
 		}
 
-		// mw.log( 'Monitor:: ' + this.currentTime + ' duration: ' + ( parseInt(
-		// this.getDuration() ) + 1 ) + ' is seeking: ' + this.seeking );
+		//mw.log( 'Monitor:: ' + this.currentTime + ' duration: ' + this.duration + ' is seeking: ' + this.seeking );
 
 		if ( this.currentTime >= 0 && this.duration ) {
 			if ( !this.userSlide && !this.seeking ) {
@@ -2492,11 +2488,9 @@ mw.EmbedPlayer.prototype = {
 			// Check if we are "done"
 			var endPresentationTime = ( this.startOffset ) ? ( this.startOffset + this.duration ) : this.duration;
 			if ( this.currentTime >= endPresentationTime ) {
-				// mw.log( "mWEmbedPlayer::should run clip done :: " +
-				// this.currentTime + ' > ' + endPresentationTime );
+				// mw.log( "mWEmbedPlayer::should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 				this.onClipDone();
 			}
-
 			// End video if we have endTime attribute
 			if( this.endTime && (this.currentTime > this.endTime) ) {
 				this.pause();

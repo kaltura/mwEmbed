@@ -136,7 +136,7 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	addControlComponents: function( ) {
 		var _this = this;
-
+		
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 
@@ -202,7 +202,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( this.available_width > 30 ){
 			addComponent( 'playHead' );	
 		}
-			
+		$(embedPlayer).trigger( 'controlBarBuildDone' );
 	},
 
 	/**

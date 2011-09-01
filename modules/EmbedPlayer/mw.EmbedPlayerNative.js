@@ -586,8 +586,7 @@ mw.EmbedPlayerNative = {
 	 */
 	stop: function(){
 		var _this = this;
-		if( this.playerElement ){
-			this.stopEventPropagation();
+		if( this.playerElement && this.playerElement.currentTime){
 			this.playerElement.currentTime = 0;
 			this.playerElement.pause();
 			// Restore event propagation after stop; 

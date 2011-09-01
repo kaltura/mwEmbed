@@ -462,12 +462,6 @@ mw.Playlist.prototype = {
 	
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex );
-		
-		bindName ='onend.playlist';
-		$( embedPlayer ).unbind( bindName ).bind( bindName, function( event ){
-			alert('done play clip');
-		});
-		
 	},
 	/**
 	* Update the player
@@ -529,8 +523,6 @@ mw.Playlist.prototype = {
 			// Update the player clip index
 			$( embedPlayer ).data('clipIndex', clipIndex); 
 			
-			_this.addPlaylistSeekButtons( embedPlayer );
-			
 			mw.log( "mw.Playlist:: player should be ready: " + _this.clipIndex + ' ' + $j('#' +_this.getVideoPlayerId() ) );
 			// Run the callback if its set
 			if( callback ){
@@ -542,6 +534,11 @@ mw.Playlist.prototype = {
 		var _this = this;
 		// Once the player is ready add any custom bindings
 		_this.sourceHandler.addEmbedPlayerBindings( embedPlayer );
+
+		// Add the seek forward / back buttons 
+		$(embedPlayer ).bind('controlBarBuildDone',function(){
+			_this.addPlaylistSeekButtons( embedPlayer );
+		});
 		
 		// Setup ondone playing binding to play next clip (if autoContinue is true )
 		if( _this.sourceHandler.autoContinue == true ){
@@ -605,7 +602,7 @@ mw.Playlist.prototype = {
 				return false;
 			}
 			
-			// make space ( reduce playhead lenght ) 
+			// make space ( reduce playhead length ) 
 			var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 56;
 			$controlBar.find('.play_head').css('left', pleft);
 			$plButton = $j('<div />')
