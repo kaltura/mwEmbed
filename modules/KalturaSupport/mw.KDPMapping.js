@@ -157,7 +157,7 @@
 			});
 		},
 		
-		/*
+		/**
 		 * Emulates kaltura setAttribute function
 		 */
 		setKDPAttribute: function( embedPlayer, componentName, property, value ) {
@@ -193,7 +193,7 @@
 					switch( objectPath[1] ){
 						case 'volume': 
 							return embedPlayer.volume;
-						break;
+							break;
 						case 'player':
 							switch( objectPath[2] ){
 								case 'currentTime':
@@ -230,7 +230,6 @@
 						break;
 					}
 				break;
-				
 				case 'configProxy':
 					switch( objectPath[1] ){
 						case 'flashvars':
@@ -263,7 +262,6 @@
 						break;
 					}
 				break;	
-				
 				case 'playerStatusProxy':
 					switch( objectPath[1] ){
 						case 'kdpStatus': 

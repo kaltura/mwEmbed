@@ -35,7 +35,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.4b31';
+KALTURA_LOADER_VERSION = '1.4b32';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -46,7 +46,7 @@ var FORCE_LOAD_JQUERY = false;
 // SCRIPT_LOADER_URL = 'http://192.168.1.69/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
-	console.log( 'Kaltura MwEmbed Loader Version: ' + KALTURA_LOADER_VERSION );
+	console.log( 'Kaltura HTML5 Version: ' + KALTURA_LOADER_VERSION );
 }
 
 // Define mw ( if not already set ) 

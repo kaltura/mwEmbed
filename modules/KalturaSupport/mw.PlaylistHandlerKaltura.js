@@ -81,7 +81,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			} else if( parseInt( _this.videolistWidth ) == 0 ){
 				_this.videolistWidth  = 250;
 			}
-
+			
 			// Store all the playlist item render information:
 			_this.$playlistItemRenderer = $uiConf.find('#playlistItemRenderer');
 			if( _this.$playlistItemRenderer.children().length == 0  ){
@@ -136,7 +136,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 					// stop looking for playlists
 					break;
 				}
-			}		
+			}
 			// Allow plugins to add extra playlists to the playlist set:
 			$j( mw ).trigger( 'KalturaPlaylist_AddToPlaylistSet', [ _this.playlistSet ] );
 			
