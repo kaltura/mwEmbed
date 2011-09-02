@@ -1,15 +1,15 @@
 /**
 * Supports the parsing of ads
 */
-
+( function( mw, $ ) {
 //Global mw.addKAd manager
 mw.addKalturaAds = function( embedPlayer, $uiConf, callback ) {
 	embedPlayer.ads = new mw.KAds( embedPlayer, $uiConf, callback );
 };
 
 mw.sendBeaconUrl = function( beaconUrl ){
-	$j('body').append( 
-		$j( '<img />' ).attr({
+	$('body').append( 
+		$( '<img />' ).attr({
 			'src' : beaconUrl,
 			'width' : 0,
 			'height' : 0
@@ -40,7 +40,7 @@ mw.KAds.prototype = {
 		
 		var configSet = ['htmlCompanions' , 'flashCompanions' ];
 		$.each(this.namedAdTimelineTypes, function( inx, adType ){
-			$j.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
+			$.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
 				// Add all the ad types to the config set: 
 				configSet.push( adType + adAttributeName);
 			});
@@ -61,7 +61,7 @@ mw.KAds.prototype = {
 
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
-		$j( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePoint ) {
+		$( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePoint ) {
 			_this.loadAd( cuePoint );
 		});
 	},
@@ -79,7 +79,7 @@ mw.KAds.prototype = {
 
 				var adsCuePointConf = {
 					ads: [
-						$j.extend( adConf.ads[0], adCuePointConf )
+						$.extend( adConf.ads[0], adCuePointConf )
 					],
 					skipBtn: {
 						'text' : "Skip ad",
@@ -190,7 +190,7 @@ mw.KAds.prototype = {
 					mw.addAdToPlayerTimeline(
 						_this.embedPlayer,
 						adType,
-						$j.extend({}, baseDisplayConf, adConfigSet[ adType ] ) // merge in baseDisplayConf
+						$.extend({}, baseDisplayConf, adConfigSet[ adType ] ) // merge in baseDisplayConf
 					);
 				}
 			};
@@ -246,10 +246,10 @@ mw.KAds.prototype = {
 		};
 		
 		// Add timeline events: 	
-		$j( this.namedAdTimelineTypes ).each( function( na, adType ){
+		$( this.namedAdTimelineTypes ).each( function( na, adType ){
 			var adConf = {};
 
-			$j.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
+			$.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
 				if( _this.adConfig[ adType + adAttributeName ] ){
 					adConf[ displayConfName ] =  _this.adConfig[ adType + adAttributeName ];
 				}
@@ -261,7 +261,7 @@ mw.KAds.prototype = {
 				mw.AdLoader.load( _this.adConfig[ adType + 'Url' ] , function( adDisplayConf ){
 					mw.log("KalturaAds loaded: " + adType );
 					loadQueueCount--;
-					addAdCheckLoadDone( adType,  $j.extend({}, adConf, adDisplayConf ) );
+					addAdCheckLoadDone( adType,  $.extend({}, adConf, adDisplayConf ) );
 				});
 			} else {
 				// No async request
@@ -328,3 +328,5 @@ mw.KAds.prototype = {
 		return type;
 	}
 };
+
+})( mediaWiki, jQuery );

@@ -1,6 +1,7 @@
 /*
  * The "kaltura player" embedPlayer interface for fallback h.264 and flv video format support
  */
+( function( mw, $ ) {
 
 // Called from the kdp.swf
 function jsInterfaceReadyFunc() {
@@ -1300,3 +1301,5 @@ var swfobject = function() {
 		}
 	};
 }();
+
+} )( mediaWiki, jQuery );

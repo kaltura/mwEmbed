@@ -8,7 +8,7 @@
  */
 
 // Scope everything in "mw" ( keeps the global namespace clean ) 
-( function( mw ) {
+( function( mw, $ ) {
 
 	mw.setDefaultConfig( {
 		'Kaltura.EnableAnalytics' : true,
@@ -625,4 +625,4 @@
 
 		return embedSettings;
 	};
-} )( window.mw );
+} )( window.mw, jQuery );

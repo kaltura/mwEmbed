@@ -14,11 +14,11 @@
 *  fallback iframe cross domain hack will target IE6/7
 */
 
-( function( mw ) {
+( function( mw, $ ) {
 	
 
 // Bind apiServer to newEmbedPlayers:
-$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
+$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 	// Check if the iFrame player api is enabled and we have a parent iframe url: 
 	if ( mw.getConfig('EmbedPlayer.EnableIframeApi') 
 			&& 
@@ -55,16 +55,16 @@ mw.IFramePlayerApiServer.prototype = {
 		}
 		
 		// Allow modules to extend the list of iframeExported bindings
-		$j( mw ).trigger( 'AddIframePlayerBindings', [ this.exportedBindings ]);
+		$( mw ).trigger( 'AddIframePlayerBindings', [ this.exportedBindings ]);
 
 		this.addIframeListener();
 		this.addIframeSender();
-		$j( mw ).trigger( 'newIframePlayerServerSide', [ embedPlayer ] );
+		$( mw ).trigger( 'newIframePlayerServerSide', [ embedPlayer ] );
 				
 		// Block until we receive prePlayerProxyListnersDone event. When we have a parent url 
 		// and we are not in fullscreen iframe ( no parent ) 
 		if( this.getParentUrl() && !mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
-			$j( embedPlayer ).bind( 'startPlayerBuildOut', function(event, callback ){
+			$( embedPlayer ).bind( 'startPlayerBuildOut', function(event, callback ){
 				var proxyHandShakeComplete = false;
 				// Once the iframe client is done adding its pre-player listeners the client calls:
 				// proxyAcknowledgment
@@ -78,7 +78,7 @@ mw.IFramePlayerApiServer.prototype = {
 						callback();
 				}, 250);
 				// Trigger the proxyReady event ( will add all the prePlayerProxy listeners 
-				$j( embedPlayer ).trigger( 'proxyReady' );
+				$( embedPlayer ).trigger( 'proxyReady' );
 			});
 		}
 	},
@@ -89,7 +89,7 @@ mw.IFramePlayerApiServer.prototype = {
 	'addIframeListener': function(){
 		var _this = this;	
 		//mw.log('IFramePlayerApiServer::_addIframeListener' + jQuery.receiveMessage );
-		$j.receiveMessage( function( event ) {
+		$.receiveMessage( function( event ) {
 			_this.hanldeMsg( event );
 		}, this.getParentUrl() );
 	},
@@ -110,16 +110,16 @@ mw.IFramePlayerApiServer.prototype = {
 		// window.postMessage (this URL could be hard-coded).
 		
 		// Set the initial attributes once player is "ready"
-		$j( this.embedPlayer ).bind( 'playerReady', function(){
+		$( this.embedPlayer ).bind( 'playerReady', function(){
 			_this.sendPlayerAttributes();
 		});		
 		// On monitor event package the attributes for cross domain delivery:
-		$j( this.embedPlayer ).bind( 'monitorEvent', function(){			
+		$( this.embedPlayer ).bind( 'monitorEvent', function(){			
 			_this.sendPlayerAttributes();
 		});
-		$j.each( this.exportedBindings, function( inx, bindName ){
-			$j( _this.embedPlayer ).bind( bindName, function( event ){				
-				var argSet = $j.makeArray( arguments );
+		$.each( this.exportedBindings, function( inx, bindName ){
+			$( _this.embedPlayer ).bind( bindName, function( event ){				
+				var argSet = $.makeArray( arguments );
 				// Remove the event from the arg set
 				argSet.shift();
 				// protect against a jQuery event getting past as an arguments:
@@ -171,7 +171,7 @@ mw.IFramePlayerApiServer.prototype = {
 			return ;
 		}	
 		// By default postMessage sends the message to the parent frame:		
-		$j.postMessage( 
+		$.postMessage( 
 			messageString,
 			this.getParentUrl(),
 			window.parent
@@ -200,12 +200,12 @@ mw.IFramePlayerApiServer.prototype = {
 		var msgObject = JSON.parse( event.data );
 		// Call a method:
 		if( msgObject.method && this.embedPlayer[ msgObject.method ] ){
-			this.embedPlayer[ msgObject.method ].apply( this.embedPlayer, $j.makeArray( msgObject.args ) );			
+			this.embedPlayer[ msgObject.method ].apply( this.embedPlayer, $.makeArray( msgObject.args ) );			
 		}
 		// Update a attribute
 		if( typeof msgObject.attrName != 'undefined' && typeof msgObject.attrValue != 'undefined' ){
 			try{
-				$j( this.embedPlayer ).attr( msgObject.attrName, msgObject.attrValue);
+				$( this.embedPlayer ).attr( msgObject.attrName, msgObject.attrValue);
 			} catch(e){
 				// possible error can't set attribute msgObject.attrName
 			}
@@ -252,4 +252,4 @@ mw.IFramePlayerApiServer.prototype = {
 	}
 };
 
-} )( window.mw );
+} )( mediaWiki, jQuery );

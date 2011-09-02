@@ -1,6 +1,9 @@
 /*
 * Simple embed object for unknown application/ogg plugin
 */
+
+( function( mw, $ ) {
+
 mw.EmbedPlayerGeneric = {
 	// List of supported features of the generic plugin
 	 supports: {
@@ -22,10 +25,12 @@ mw.EmbedPlayerGeneric = {
 	* 	embed code for generic ogg plugin
 	*/
 	doEmbedHTML: function() {
-		$j( this ).html(
+		$( this ).html(
 			'<object type="application/ogg" ' +
 			'width="' + this.getWidth() + '" height="' + this.getHeight() + '" ' +
 			'data="' + this.getSrc( this.seek_time_sec ) + '"></object>'
 		);
 	}
 };
+
+})( mediaWiki, jQuery );

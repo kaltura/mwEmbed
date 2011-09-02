@@ -9,8 +9,6 @@
  *      library external script containing the plugin interface code.
  * @constructor
  */
-
-	
 ( function( mw, $ ) {
 	
 mw.MediaPlayer = function( id, supported_types, library )
@@ -76,4 +74,5 @@ mw.MediaPlayer.prototype = {
 		} );
 	}
 };
+
 } )( mediaWiki, jQuery );

@@ -119,10 +119,10 @@ mw.MediaSource.prototype = {
           
 		var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes' );
 		$.each(sourceAttr, function(inx, attr){
-			if ( $j( element ).attr( attr ) ) {
+			if ( $( element ).attr( attr ) ) {
 				// strip data- from the attribute name
 				var attrName = ( attr.indexOf('data-') === 0)? attr.substr(5) : attr
-				_this[ attrName ] = $j( element ).attr( attr );
+				_this[ attrName ] = $( element ).attr( attr );
 			}
 		});
 

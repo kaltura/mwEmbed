@@ -3,6 +3,10 @@
 *
 * Enables embedPlayer support for native html5 browser playback system
 */
+
+( function( mw, $ ) {
+	
+
 mw.EmbedPlayerNative = {
 
 	//Instance Name
@@ -801,3 +805,5 @@ mw.EmbedPlayerNative = {
 		}
 	}
 };
+
+} )( mediaWiki, jQuery );

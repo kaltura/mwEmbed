@@ -26,7 +26,7 @@ mw.IFramePlayerApiClient.prototype = {
 		this.playerProxy = playerProxy;
 	
 		// Set the iframe server
-		var srcParts = mw.parseUri( mw.absoluteUrl( $j(this.iframe).attr('src') ) );
+		var srcParts = mw.parseUri( mw.absoluteUrl( $(this.iframe).attr('src') ) );
 		this.iframeServer = srcParts.protocol + '://' + srcParts.authority;
 		
 		this.addPlayerSendApi();
@@ -39,13 +39,13 @@ mw.IFramePlayerApiClient.prototype = {
 		var _this = this;		
 		
 		// Allow modules to extend the list of iframeExported bindings
-		$j( mw ).trigger( 'AddIframePlayerMethods', [ this.exportedMethods ]);
+		$( mw ).trigger( 'AddIframePlayerMethods', [ this.exportedMethods ]);
 		
-		$j.each( this.exportedMethods, function(na, method){
+		$.each( this.exportedMethods, function(na, method){
 			_this.playerProxy[ method ] = function(){	
 				_this.postMessage( {
 					'method' : method,
-					'args' : $j.makeArray( arguments )
+					'args' : $.makeArray( arguments )
 				} );
 			};
 		});
@@ -53,7 +53,7 @@ mw.IFramePlayerApiClient.prototype = {
 	'addPlayerReciveApi': function(){
 		var _this = this;		
 
-		$j.receiveMessage( function( event ){
+		$.receiveMessage( function( event ){
 			_this.handleReceiveMessage( event );
 		}, this.iframeServer);
 	},
@@ -62,9 +62,9 @@ mw.IFramePlayerApiClient.prototype = {
 		parentsAbsoluteList = [];
 		var fullscreenMode = false;
 		var orgSize = {
-			'width' : $j( _this.iframe ).width(),
-			'height' : $j( _this.iframe ).height(),
-			'position' : $j( _this.iframe ).css( 'position' )
+			'width' : $( _this.iframe ).width(),
+			'height' : $( _this.iframe ).height(),
+			'position' : $( _this.iframe ).css( 'position' )
 		};
 		
 		// Add a local scope variable to register 
@@ -74,7 +74,7 @@ mw.IFramePlayerApiClient.prototype = {
 		var localIframeInFullscreen = false;
 		
 		// Bind orientation change to resize player ( if fullscreen )
-		$j(window).bind( 'orientationchange', function(e){
+		$(window).bind( 'orientationchange', function(e){
 			if( localIframeInFullscreen ){
 				doFullscreen();
 			}
@@ -84,43 +84,43 @@ mw.IFramePlayerApiClient.prototype = {
 			mw.log("iframeClient:: doFullscreen()");
 			localIframeInFullscreen = true;
 			// Make the iframe fullscreen
-			$j( _this.iframe )
+			$( _this.iframe )
 				.css({
 					'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
 					'position': 'absolute',
 					'top' : 0,
 					'left' : 0,
-					'width' : $j(window).width(),
-					'height' : $j(window).height()
+					'width' : $(window).width(),
+					'height' : $(window).height()
 				})
 				.data(
 					'isFullscreen', true
 				);
 			
 			// Remove absolute css of the interface parents
-			$j( _this.iframe ).parents().each( function() {
-				if( $j( this ).css( 'position' ) == 'absolute' ) {
-					parentsAbsoluteList.push( $j( this ) );
-					$j( this ).css( 'position', null );
+			$( _this.iframe ).parents().each( function() {
+				if( $( this ).css( 'position' ) == 'absolute' ) {
+					parentsAbsoluteList.push( $( this ) );
+					$( this ).css( 'position', null );
 				}
 			});
 		};
 		
 		var restoreWindowMode = function(){
 			localIframeInFullscreen = false;
-			$j( _this.iframe )
+			$( _this.iframe )
 				.css( orgSize )
 				.data(
 					'isFullscreen', false
 				);
 			// restore any parent absolute pos: 
-			$j( parentsAbsoluteList ).each( function() {	
-				$j( this ).css( 'position', 'absolute' );
+			$( parentsAbsoluteList ).each( function() {	
+				$( this ).css( 'position', 'absolute' );
 			} );
 		};
 		
-		$j( this.playerProxy ).bind( 'onOpenFullScreen', doFullscreen);
-		$j( this.playerProxy ).bind( 'onCloseFullScreen', restoreWindowMode);
+		$( this.playerProxy ).bind( 'onOpenFullScreen', doFullscreen);
+		$( this.playerProxy ).bind( 'onCloseFullScreen', restoreWindowMode);
 		
 	},
 	/**
@@ -141,7 +141,7 @@ mw.IFramePlayerApiClient.prototype = {
 		}
 		
 		// Before we update local attributes check that the object has not been updated by user js
-		$j.each(playerAttributes, function( inx, attrName ) {
+		$.each(playerAttributes, function( inx, attrName ) {
  			if( attrName != 'id' ){
 				if( _this._prevPlayerProxy[ attrName ] != _this.playerProxy[ attrName ] ){
 					//mw.log( "IFramePlayerApiClient:: User js update:" + attrName + ' set to: ' + this.playerProxy[ attrName ] + ' != old: ' + _this._prevPlayerProxy[ attrName ] );
@@ -155,7 +155,7 @@ mw.IFramePlayerApiClient.prototype = {
 		});
 		// Update any attributes
 		if( msgObject.attributes ){
-			$j.each( msgObject.attributes, function( i, notUsed ){
+			$.each( msgObject.attributes, function( i, notUsed ){
 				if( i != 'id' && i != 'class' && i != 'style' ){
 					try {
 						_this.playerProxy[ i ] = msgObject.attributes[i];
@@ -171,16 +171,16 @@ mw.IFramePlayerApiClient.prototype = {
 		// Trigger any binding events 
 		if( typeof msgObject.triggerName != 'undefined' && msgObject.triggerArgs != 'undefined') {
 			//mw.log('IFramePlayerApiClient::handleReceiveMessage: trigger: ' + msgObject.triggerName );
-			$j( _this.playerProxy ).trigger( msgObject.triggerName, msgObject.triggerArgs );
+			$( _this.playerProxy ).trigger( msgObject.triggerName, msgObject.triggerArgs );
 		}
 	},
 	'postMessage': function( msgObject ){
 		/*mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObject ) + 
 				' iframe: ' +  this.iframe + ' cw:' + this.iframe.contentWindow + 
-				' src: ' + mw.absoluteUrl( $j( this.iframe ).attr('src')  ) );*/
-		$j.postMessage(
+				' src: ' + mw.absoluteUrl( $( this.iframe ).attr('src')  ) );*/
+		$.postMessage(
 			this.stringify( msgObject ), 
-			mw.absoluteUrl( $j( this.iframe ).attr('src') ), 
+			mw.absoluteUrl( $( this.iframe ).attr('src') ), 
 			this.iframe.contentWindow 
 		);
 	},
@@ -196,7 +196,7 @@ mw.IFramePlayerApiClient.prototype = {
 		    // recurse array or object
 		    var n, v, json = [], arr = (obj && obj.constructor == Array);
 		
-		    $j.each(obj, function(n, na) {
+		    $.each(obj, function(n, na) {
 		        v = obj[n];
 		        t = typeof(v);
 		        if (obj.hasOwnProperty(n)) {
@@ -212,47 +212,47 @@ mw.IFramePlayerApiClient.prototype = {
 //Add the jQuery binding
 jQuery.fn.iFramePlayer = function( readyCallback ){
 	if( ! this.selector ){
-		this.selector = $j( this );
+		this.selector = $( this );
 	}
 	// Handle each embed frame 
-	$j( this.selector ).each( function( inx, targetPlayer ){
+	$( this.selector ).each( function( inx, targetPlayer ){
 		mw.log( "$.iFramePlayer::" + targetPlayer.id );
 		// Append '_ifp' ( iframe player ) to id of real iframe so that 'id', and 'src' attributes don't conflict
-		var playerProxyId = ( $j( targetPlayer ).attr( 'id' ) )? $j( targetPlayer ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
+		var playerProxyId = ( $( targetPlayer ).attr( 'id' ) )? $( targetPlayer ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
 		var iframePlayerId = playerProxyId + '_ifp';
 
 		// Update the id and wrap with the proxy 
-		$j( targetPlayer)
+		$( targetPlayer)
 			.attr({
 				'id': iframePlayerId,
 				'name' : iframePlayerId
 			})
 			.wrap(
-				$j('<div />')
+				$('<div />')
 				.attr( {
 					'id': playerProxyId,
-					'style' : $j( targetPlayer).attr('style')
+					'style' : $( targetPlayer).attr('style')
 				})
 			);
 		
-		var playerProxy = $j( '#' + playerProxyId ).get(0);
+		var playerProxy = $( '#' + playerProxyId ).get(0);
 		
 		// Allow modules to extend the 'iframe' based player
-		$j( mw ).trigger( 'newIframePlayerClientSide', [ playerProxy ] );
+		$( mw ).trigger( 'newIframePlayerClientSide', [ playerProxy ] );
 		
 		// Once the proxy ready event is received from the server complete the handshake
 		// and send the proxyAcknowledgment back to the iframe server
-		$j( playerProxy ).bind('proxyReady', function(){
+		$( playerProxy ).bind('proxyReady', function(){
 			playerProxy.proxyAcknowledgment();
 		});
 		
 		// Bind the iFrame player ready callback
 		if( readyCallback ){
-			$j( playerProxy ).bind( 'playerReady', readyCallback );		
+			$( playerProxy ).bind( 'playerReady', readyCallback );		
 		};
 		
 		// Setup the iframe:
-		var iframe = $j('#' + iframePlayerId).get(0);
+		var iframe = $('#' + iframePlayerId).get(0);
 		if( !iframe ){
 			mw.log("$.iFramePlayer:: Error invalid iFramePlayer request");
 			return false;

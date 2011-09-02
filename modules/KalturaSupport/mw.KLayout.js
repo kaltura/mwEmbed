@@ -146,7 +146,7 @@ mw.KLayout.prototype = {
 		}
 		var styleName = null;
 		var idName = null;
-		$j.each( confTag.attributes, function( inx , attr){
+		$.each( confTag.attributes, function( inx , attr){
 			switch(  attr.nodeName.toLowerCase() ){
 				case 'id':
 					idName = attr.nodeValue;

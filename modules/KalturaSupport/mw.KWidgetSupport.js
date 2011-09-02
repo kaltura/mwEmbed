@@ -1,3 +1,5 @@
+( function( mw, $ ) {
+	
 mw.KWidgetSupport = function( options ) {
 	// Create KWidgetSupport instance
 	return this.init( options );
@@ -752,3 +754,4 @@ mw.getEntryIdSourcesFromApi = function( widgetId, entryId, callback ){
 	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, entryId, callback);
 };
 
+})( mediaWiki, jQuery );

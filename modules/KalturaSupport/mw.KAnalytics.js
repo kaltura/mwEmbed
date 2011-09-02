@@ -1,7 +1,8 @@
 /**
  * Kaltura style analytics reporting class
  */
-
+( function( mw, $ ) {
+	
 // Avoid undefined symbol for javascript response "Kaltura" from the api
 window['Kaltura'] = true;
 
@@ -151,7 +152,7 @@ mw.KAnalytics.prototype = {
 		}
 
 		// Send events for this player:
-		$j( this.embedPlayer ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey ] );
+		$( this.embedPlayer ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey ] );
 
 		// Add in base service and action calls:
 		var eventRequest = {'service' : 'stats', 'action' : 'collect'};
@@ -174,7 +175,7 @@ mw.KAnalytics.prototype = {
 		
 		// Setup shortcut anonymous function for player bindings
 		var b = function( hookName, eventType ){
-			$j( _this.embedPlayer ).bind( hookName, function(){
+			$( _this.embedPlayer ).bind( hookName, function(){
 				_this.sendAnalyticsEvent( eventType );
 			});
 		};
@@ -212,7 +213,7 @@ mw.KAnalytics.prototype = {
 		b( 'replayEvent', 'REPLAY' );	
 	
 		// Bind on the seek event
-		$j( embedPlayer ).bind( 'seeked', function( seekTarget ) {
+		$( embedPlayer ).bind( 'seeked', function( seekTarget ) {
 			// Don't send a bunch of seeks on scrub:
 			if( _this.lastSeekEventTime == 0 || 
 				_this.lastSeekEventTime + 2000	< new Date().getTime() )
@@ -230,7 +231,7 @@ mw.KAnalytics.prototype = {
 		
 		// Let updateTimeStats handle the currentTime monitor timing
 
-		$j( embedPlayer ).bind( 'monitorEvent', function(){
+		$( embedPlayer ).bind( 'monitorEvent', function(){
 			_this.updateTimeStats();			
 		}); 
 				
@@ -293,3 +294,4 @@ mw.KAnalytics.prototype = {
 	}
 };
 
+})( mediaWiki, jQuery );

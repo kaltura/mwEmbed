@@ -1,3 +1,5 @@
+( function( mw, $ ) {
+
 mw.PlaylistHandlerKalturaRss = function( playlist, options ){
 	return this.init( playlist, options);
 };
@@ -51,3 +53,5 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 		return {}
 	}
 };
+
+})( mediaWiki, jQuery );

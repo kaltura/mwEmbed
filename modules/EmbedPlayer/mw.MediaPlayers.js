@@ -3,7 +3,6 @@
  *
  * @constructor
  */
-
 ( function( mw, $ ) {
 	
 mw.MediaPlayers = function(){
