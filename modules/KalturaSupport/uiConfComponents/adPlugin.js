@@ -1,12 +1,12 @@
-
+( function( mw, $ ) {
 // XXX can be removed once we move to new resource loader: 
 window.adPlugin = true;
 
 // Check for new Embed Player events: 
-$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	
 	// Check for KalturaSupport uiConf
-	$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		var loadingAdPlugin = false;
 		
 		// Check if the kaltura ad plugin is enabled:
@@ -45,3 +45,4 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	});
 });
 
+})( mediaWiki, jQuery );

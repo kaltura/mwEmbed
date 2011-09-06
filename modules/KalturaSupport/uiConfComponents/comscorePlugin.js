@@ -1,11 +1,12 @@
 /**
 * Adds Comscore plugin support
 */
+( function( mw, $ ) {
 // XXX can remove once we move to new resource loader:
 window.comscorePlugin = true;
 
-$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-	$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		var propSet = ['plugin', 'cTagsMap'];
 		// Also check for c2 to c10
 		for( var i = 2; i < 11; i++ ){
@@ -27,3 +28,5 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		});
 	});
 });
+
+})( mediaWiki, jQuery );

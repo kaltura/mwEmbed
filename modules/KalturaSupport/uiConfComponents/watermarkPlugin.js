@@ -1,5 +1,5 @@
+( function( mw, $ ) {
 	
-
 	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark 
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
@@ -15,7 +15,7 @@
 			callback();
 		});
 	});
-	var watermarkPlugin = function( embedPlayer, $watermarkConf ){
+	window.watermarkPlugin = function( embedPlayer, $watermarkConf ){
 		// Make sure we have a watermark url: 
 		if( !$watermarkConf.attr('watermarkPath') ){
 			return false;
@@ -65,3 +65,4 @@
 		);
 	};
 	
+})( mediaWiki, jQuery );

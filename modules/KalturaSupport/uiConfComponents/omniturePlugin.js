@@ -1,6 +1,8 @@
 /**
 * Adds Omniture plugin support
 */
+( function( mw, $ ) {
+	
 // XXX can remove once we move to new resource loader:
 window.omniturePlugin = true;
 
@@ -84,3 +86,5 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		});
 	});
 });
+
+})( mediaWiki, jQuery );

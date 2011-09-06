@@ -1,6 +1,6 @@
-
-	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-		$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+( function( mw, $ ) {
+	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 
 			var disabled = [];
 			
@@ -50,8 +50,8 @@
 			
 		});
 	});
-	var controlbarLayout = function( embedPlayer, disabled ){
-		$j( embedPlayer ).bind( 'updateFeatureSupportEvent', function( e, supports ){
+	window.controlbarLayout = function( embedPlayer, disabled ){
+		$( embedPlayer ).bind( 'updateFeatureSupportEvent', function( e, supports ){
 			for( var i = 0; i < disabled.length ; i++ ){
 				var comm = disabled[i];
 				supports[comm] = false;
@@ -59,3 +59,4 @@
 		});
 	};
 	
+})( mediaWiki, jQuery );
