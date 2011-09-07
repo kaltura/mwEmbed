@@ -49,6 +49,9 @@
 		
 		// If the options control bar menu item should be enabled: 
 		'EmbedPlayer.EnableOptionsMenu' : true,
+		
+		// If users can right click on the player
+		'EmbedPlayer.EnableRightClick' : true,
 
 		// Default supported menu items is merged with skin menu items
 		'EmbedPlayer.EnabledOptionsMenuItems' : [
