@@ -217,6 +217,7 @@ mw.EmbedPlayerNative = {
 		var pHeight = $j( vid ).height();
 		// Check for intrinsic width and maintain aspect ratio
 		if( vid.videoWidth && vid.videoHeight ){
+			
 			var pWidth = parseInt(  vid.videoWidth / vid.videoHeight * pHeight);
 			if( pWidth > this.$interface.width() ){
 				pWidth = this.$interface.width();
@@ -228,11 +229,16 @@ mw.EmbedPlayerNative = {
 			if( ! this.controlBuilder.isOverlayControls() ){
 				controlBarOffset = this.controlBuilder.height;
 			}
+			// Check for existing offset: 
+			var topOffset = $j( vid ).css('top') ?
+					$j( vid ).css('top') :
+					( ( this.$interface.height() - controlBarOffset - pHeight ) * .5 ) + 'px';
+			
 			$j( vid ).css({
 				'height' : pHeight + 'px',
 				'width':  pWidth + 'px',
 				'left': ( ( this.$interface.width() - pWidth ) * .5 ) + 'px',
-				'top': ( ( this.$interface.height() - controlBarOffset - pHeight ) * .5 ) + 'px'
+				'top': topOffset
 			});
 			
 		}
@@ -585,6 +591,7 @@ mw.EmbedPlayerNative = {
 			this.monitor();
 		}
 	},
+	
 	/**
 	 * Stop the player ( end all listeners )
 	 */

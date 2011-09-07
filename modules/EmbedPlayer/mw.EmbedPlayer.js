@@ -876,8 +876,8 @@ mw.EmbedPlayer.prototype = {
 		// Set to parent size ( resize events will cause player size updates)
 		if( this.height.indexOf('100%') != -1 || this.width.indexOf('100%') != -1 ){
 			$relativeParent = $(element).parents().filter(function() {
-				 // reduce to only relative position or "body" elements
-				 return $(this).is('body') || $(this).css('position') == 'relative';
+				// Reduce to only relative position or "body" elements
+				return $(this).is('body') || $(this).css('position') == 'relative';
 			}).slice(0,1); // grab only the "first"
 			this.width = $relativeParent.width();
 			this.height = $relativeParent.height();
@@ -917,8 +917,7 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		// On load sometimes attr is temporally -1 as we don't have video
-		// metadata yet.
-		// or in IE we get NaN for width height
+		// metadata yet. or in IE we get NaN for width / height
 		//
 		// NOTE: browsers that do support height width should set "waitForMeta"
 		// flag in addElement
@@ -952,9 +951,11 @@ mw.EmbedPlayer.prototype = {
 		var callback = function(){
 			setTimeout(function(){
 				_this.applyIntrinsicAspect();
+				
+				if( resizePlayerCallback )
+					resizePlayerCallback();
+				
 			},10);
-			if( resizePlayerCallback )
-				resizePlayerCallback();
 		}
 		// Check if we are native display then resize the playerElement directly
 		if( this.useNativePlayerControls() ){
@@ -1397,7 +1398,8 @@ mw.EmbedPlayer.prototype = {
 
 			// Run the ended trigger
 			mw.log("EmbedPlayer::onClipDone:Trigger ended");
-
+			
+			this.stopEventPropagation();
 			// TOOD we should improve the end event flow
 			$( this ).trigger( 'ended' );
 
@@ -1850,7 +1852,7 @@ mw.EmbedPlayer.prototype = {
 		if( this.isPersistentNativePlayer() ){
 			var $vid = $( '#' + this.pid );
 			$vid.attr( 'poster', posterSrc );
-			// Add a quick timeout hide / show ( firefox bug with native poster updates )
+			// Add a quick timeout hide / show ( firefox 4x bug with native poster updates )
 			if( $.browser.mozilla ){
 				$vid.hide();
 				setTimeout(function(){
@@ -1858,8 +1860,7 @@ mw.EmbedPlayer.prototype = {
 				},1);
 			}
 		} else {
-			// Poster support is not very consistent in browsers
-			// use a jpg poster image:
+			// Poster support is not very consistent in browsers use a jpg poster image:
 			$( this ).html(
 				$( '<img />' )
 				.css({
@@ -1973,8 +1974,7 @@ mw.EmbedPlayer.prototype = {
 		// Bind native events:
 		this.applyMediaElementBindings();
 
-		// Android only can play with a special play button ( no native controls
-		// persistentNativePlayer has no controls:
+		// Android only can play with a special play button, android 2x has no native controls
 		if( mw.isAndroid2() ){
 			this.addPlayBtnLarge();
 		}

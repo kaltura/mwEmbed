@@ -55,7 +55,7 @@ mw.KWidgetSupport.prototype = {
 					});
 				break;
 				case 'pptwidget': 
-					mw.load([ 'EmbedPlayer', 'mw.KPPTWidget', 'mw.KLayout'], function(){
+					mw.load([ 'EmbedPlayer', 'mw.KPPTWidget', 'mw.KLayout' ], function(){
 						new mw.KPPTWidget( widgetTarget, playerData.uiConf, callback );
 					});
 				break;
@@ -238,7 +238,6 @@ mw.KWidgetSupport.prototype = {
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
-		
 	},
 	
 	/**

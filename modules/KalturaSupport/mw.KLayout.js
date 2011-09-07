@@ -37,14 +37,14 @@ mw.KLayout.prototype = {
 			}
 		});
 	},
-	getLayout: function( $currentBox ){
-		if( !$currentBox ){
-			$currentBox = this.$layoutBox;
+	getLayout: function( $uiConfBox ){
+		if( !$uiConfBox ){
+			$uiConfBox = this.$layoutBox;
 		}
 		var _this = this;
 		var offsetLeft = 0;
 		var $boxContainer = $('<div />');
-		$j.each( $currentBox.children(), function( inx, boxItem ){
+		$j.each( $uiConfBox.children(), function( inx, boxItem ){
 			var $node = $('<div />'); 
 			switch( boxItem.nodeName.toLowerCase() ){
 				case 'video':
@@ -80,7 +80,7 @@ mw.KLayout.prototype = {
 					return [];
 					break;
 			}
-			mw.log("KLayout::getLayout > " + boxItem.nodeName.toLowerCase() );
+			mw.log( "KLayout::getLayout > " + boxItem.nodeName.toLowerCase() );
 			$node.addClass( boxItem.nodeName.toLowerCase() );
 			if( $node && $node.length ){
 				_this.applyUiConfAttributes( $node, boxItem);
@@ -101,42 +101,9 @@ mw.KLayout.prototype = {
 				}
 			}
 		});
-		/*
-		// check for box model ("100%" single line float right, left );
-		if( $boxContainer.find('span').length == 2 && $boxContainer.find('span').slice(0).css('width') == '100%'){
-			 $boxContainer.find('span').slice(0).css({'width':'', 'float':'left'});
-			 $boxContainer.find('span').slice(1).css('float', 'right');
-		} else if ( $boxContainer.find('span').length > 1 ){ // check for multiple spans
-			$boxContainer.find('span').each(function(inx, node){
-				if( $(node).css('float') != 'right'){
-					$(node).css('float', 'left');
-				}
-			} );
-		}
-		// and adjust 100% width to 95% ( handles edge cases of child padding )
-		$boxContainer.find('div,span').each(function( inx, node){
-			if( $(node).css('width') == '100%')
-				$(node).css('width', '95%'); 
+		// Apply props to the outer box:
+		this.applyUiConfAttributes( $boxContainer, $uiConfBox.get(0) ); 
 			
-			// and box layout does crazy things with virtual margins :( remove width for irDescriptionIrScreen
-			if( $(node).data('id') == 'irDescriptionIrScreen' || $(node).data('id') == 'irDescriptionIrText'  ){
-				$(node).css('width', '');
-			}
-			if( $(node).hasClass('hbox') || $(node).hasClass('vbox') || $(node).hasClass('canvas') ){
-				$(node).css('height', '');
-			}
-
-			if( $(node).hasClass('itemRendererLabel') 
-				&& $(node).css('float') == 'left'
-				&& ( $(node).siblings().hasClass('hbox') || $(node).siblings().hasClass('vbox')  )
-			){
-				$(node).css({
-					'float': '',
-					'display': 'inline'
-				});
-			}
-		});
-		*/
 		return $boxContainer;
 	},
 	applyUiConfAttributes:function( $target, confTag ){
@@ -150,7 +117,9 @@ mw.KLayout.prototype = {
 			switch(  attr.nodeName.toLowerCase() ){
 				case 'id':
 					idName = attr.nodeValue;
-					$target.data('id', idName);
+					$target
+						.data('id', idName)
+						.addClass( idName );
 					break;
 				case 'stylename': 
 					styleName = attr.nodeValue;
@@ -166,6 +135,10 @@ mw.KLayout.prototype = {
 						appendPx= 'px';
 					}
 					$target.css( attr.nodeName, attr.nodeValue + appendPx );
+					break;
+				case 'paddingtop':
+					debugger;
+					$target.css( 'padding-top', attr.nodeValue);
 					break;
 				case 'paddingright':
 					$target.css( 'padding-right', attr.nodeValue);

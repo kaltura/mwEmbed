@@ -51,7 +51,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			// Add all playlists to playlistSet
 			var $uiConf = $j( playerData.uiConf );
 			
-			// load the playlist config: 
+			// Load the playlist config: 
 			var plApi = kWidgetSupport.getPluginConfig(
 					_this.flashvars,
 					$uiConf, 
@@ -476,7 +476,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	uiConfValueLookup: function(clipIndex, objectString ){
 		var parsedString = objectString.replace( /\{|\}/g, '' );
 		var objectPath = parsedString.split('.');
-		mw.log("GET: " + objectPath[0]);
+		mw.log("mw.Playlist:: uiConfValueLookup >: " + objectPath[0]);
 		switch( objectPath[0] ){
 			case 'div10002(this': 
 				return this.uiConfValueLookup(clipIndex, 'this.' + objectPath[1].replace( /\)/, '' ) );

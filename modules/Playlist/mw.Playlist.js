@@ -536,7 +536,7 @@ mw.Playlist.prototype = {
 		_this.sourceHandler.addEmbedPlayerBindings( embedPlayer );
 
 		// Add the seek forward / back buttons 
-		$(embedPlayer ).bind('controlBarBuildDone',function(){
+		$(embedPlayer ).bind( 'controlBarBuildDone', function(){
 			_this.addPlaylistSeekButtons( embedPlayer );
 		});
 		

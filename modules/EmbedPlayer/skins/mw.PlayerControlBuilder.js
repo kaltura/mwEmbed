@@ -207,6 +207,9 @@ mw.PlayerControlBuilder.prototype = {
 
 	/**
 	* Get a window size for the player while preserving aspect ratio:
+	* 
+	* @@TODO This has similar logic to mw.embedPlayerNative applyIntrinsicAspect we should look 
+	* at merging their functionality.  
 	*
 	* @param {object} windowSize
 	* 		object that set { 'width': {width}, 'height':{height} } of target window
@@ -232,7 +235,10 @@ mw.PlayerControlBuilder.prototype = {
 			targetHeight = windowSize.height;
 			targetWidth = targetHeight * ( embedPlayer.getWidth() / embedPlayer.getHeight() );
 		}
-		var offsetTop = ( targetHeight < windowSize.height )? ( windowSize.height- targetHeight ) / 2 : 0;
+		var offsetTop = parseInt( $( embedPlayer.getPlayerElement() ).css( 'top' ) );
+		// if the video is very wide in a tall window adjust the size: 
+		offsetTop+= ( targetHeight < windowSize.height )? ( windowSize.height- targetHeight ) / 2 : 0;
+		// if the video is very tall in a short window adjust the size:
 		var offsetLeft = ( targetWidth < windowSize.width )? ( windowSize.width- targetWidth ) / 2 : 0;
 
 		// See if we need to leave space for control bar
@@ -241,7 +247,7 @@ mw.PlayerControlBuilder.prototype = {
 			offsetTop = offsetTop - this.height;
 			if( offsetTop < 0 ) offsetTop = 0;
 		}
-		//mw.log( 'PlayerControlBuilder::getAspectPlayerWindowCss: ' + ' h:' + targetHeight + ' w:' + targetWidth + ' t:' + offsetTop + ' l:' + offsetLeft );
+		// mw.log( 'PlayerControlBuilder::getAspectPlayerWindowCss: ' + ' h:' + targetHeight + ' w:' + targetWidth + ' t:' + offsetTop + ' l:' + offsetLeft );
 		return {
 			'position' : 'absolute',
 			'height': parseInt( targetHeight ),
@@ -369,7 +375,7 @@ mw.PlayerControlBuilder.prototype = {
 		$('body').css( 'overflow', 'hidden' );
 
 
-		var topOffset = '0px';
+		var topOffset = '0px'
 		var leftOffset = '0px';
 
 		// Check if we have an offsetParent
@@ -512,7 +518,6 @@ mw.PlayerControlBuilder.prototype = {
 	 */
 	resizePlayer: function( size, animate, callback ){
 		var _this = this;
-		
 		// Update interface container:
 		var interfaceCss = {
 			'top' : ( size.top ) ? size.top : '0px',
@@ -1667,10 +1672,7 @@ mw.PlayerControlBuilder.prototype = {
 						'class'	: "play-btn-large"
 					} )
 					// Get dynamic position for big play button
-					.css( {
-						'left' 	: ( ( ctrlObj.embedPlayer.getPlayerWidth() - this.w ) / 2 ),
-						'top'	: ( ( ctrlObj.embedPlayer.getPlayerHeight() - this.h ) / 2 )
-					} )
+					.css( ctrlObj.getFullscreenPlayButtonCss() )
 					// Add play hook:
 					.click( function() {
 						$(this).remove();

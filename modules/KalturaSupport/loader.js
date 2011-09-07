@@ -76,10 +76,12 @@
 		"faderPlugin" : "uiConfComponents/faderPlugin.js",
 		"watermarkPlugin" :  "uiConfComponents/watermarkPlugin.js",
 		"adPlugin"	: 	"uiConfComponents/adPlugin.js",
-		"captionPlugin"	: 	"uiConfComponents/captionPlugin.js",
-		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
+		"captionPlugin"	: 	"uiConfComponents/captionPlugin.js",		
 		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",
 		"omniturePlugin" : "uiConfComponents/omniturePlugin.js",
+		
+		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
+		"titleLayout" : "uiConfComponents/titleLayout.js",
 		
 		"kdpClientIframe" : "kdpIframeApi/kdpClientIframe.js",
 		"kdpServerIFrame" : "kdpIframeApi/kdpServerIFrame.js"
@@ -95,7 +97,9 @@
 		'mw.KDPMapping',
 		'mw.KAds',
 		'mw.KTimedText',
+		'mw.KLayout',
 		'controlbarLayout',
+		'titleLayout',		
 		'faderPlugin',
 		'watermarkPlugin',
 		'adPlugin',
