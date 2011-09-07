@@ -292,7 +292,7 @@ class KalturaResultObject {
 
 		/* Country Restricted */
 		if( $accessControl->isCountryRestricted) {
-			return "Un authorized country\nWe're sorry, this content is only available on certain countries.";
+			return "Un authorized country\nWe're sorry, this content is only available in certain countries.";
 		}
 
 		/* IP Address Restricted */
