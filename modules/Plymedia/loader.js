@@ -19,10 +19,11 @@
 	// Bind the plyMedia player where the uiconf includes the plymedia plugin
 	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf , callback){
-			// @@TODO check ui-conf for plymedia plugin
-			mw.load( 'plymedia', function(){
-				mw.Subply.bindPlayer( embedPlayer );
-		    });
+			if( embedPlayer.getKalturaConfig( 'plymedia', 'plugin' ) ){
+				mw.load( 'plymedia', function(){
+					mw.Subply.bindPlayer( embedPlayer );
+			    });
+			}
 			callback();
 		});
 	});
