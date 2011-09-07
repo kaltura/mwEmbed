@@ -266,6 +266,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( !_this.isOverlayControls() ){
 			pos.top = pos.top - this.height;
 		}
+		
 		return {
 			'left' : ( ( pos.width - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
 			'top' : ( ( pos.height - this.getComponentHeight( 'playButtonLarge' ) ) / 2 )
