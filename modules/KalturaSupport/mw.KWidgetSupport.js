@@ -215,6 +215,11 @@ mw.KWidgetSupport.prototype = {
 			return _this.getPluginConfig( $( embedPlayer ).data('flashvars'), embedPlayer.$uiConf, pluginName, attr);
 		};
 		
+		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
+		if( $(embedPlayer).data('uiConfXml') ){
+			embedPlayer.$uiConf = $(embedPlayer).data('uiConfXml');
+		}
+		
 		if( embedPlayer.$uiConf ){
 			_this.baseUiConfChecks( embedPlayer );
 			// Trigger the check kaltura uiConf event					
@@ -371,6 +376,7 @@ mw.KWidgetSupport.prototype = {
 	loadPlayerData: function( embedPlayer, callback ){
 		var _this = this;
 		var playerRequest = {};
+		
 		// Check for widget id	 
 		if( ! embedPlayer.kwidgetid ){
 			mw.log( "Error: missing required widget paramater ( kwidgetid ) ");
@@ -398,7 +404,7 @@ mw.KWidgetSupport.prototype = {
 		// Insure the bootStrap data has all the required info: 
 		if( bootstrapData 
 			&& bootstrapData.partner_id == embedPlayer.kwidgetid.replace('_', '')
-			&&  bootstrapData.ks
+			&& bootstrapData.ks
 		){
 			mw.log( 'KWidgetSupport::loaded player data from KalturaSupport.IFramePresetPlayerData config' );
 			// Clear bootstrap data from configuration: 
