@@ -259,7 +259,7 @@ class kalturaIframe {
 				&& $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
 				&& $var['key'] != 'Mw.CustomResourceIncludes' 
 			){
-				$o.="mw.setConfig('" . htmlspecialchars( addslashes( $var['key'] ) ) . "', ";
+				$o.= "mw.setConfig('" . htmlspecialchars( addslashes( $var['key'] ) ) . "', ";
 				// check for boolean attributes: 
 				if( $var['value'] == 'false' || $var['value'] == 'true' ){
 					$o.=  $var['value'];
@@ -494,8 +494,6 @@ class kalturaIframe {
 				if( $wgAllowCustomResourceIncludes && $this->getCustomPlayerIncludesJSON() ){
 					echo 'mw.setConfig( \'Mw.CustomResourceIncludes\', '. $this->getCustomPlayerIncludesJSON() .' );';
 				}
-				// Set custom global vars for this player: 
-				echo $this->getCustomPlayerConfig();
 			?>
 			// Don't do an iframe rewrite inside an iframe!
 			mw.setConfig( 'Kaltura.IframeRewrite', false );
@@ -514,18 +512,6 @@ class kalturaIframe {
 			// Add Packaging Kaltura Player Data ( JSON Encoded )
 			mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
 
-			// Get the flashvars object:
-			var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';
-			var fvparts = flashVarsString.split('&');
-			var flashvarsObject = {};
-			for(var i=0;i<fvparts.length;i++){
-				var kv = fvparts[i].split('=');
-				if( kv[0] && kv[1] ){
-					flashvarsObject[ unescape( kv[0] ) ] = unescape( kv[1] );
-				}
-			}
-			mw.setConfig( 'KalturaSupport.IFramePresetFlashvars', flashvarsObject );
-
 			// Parse any configuration options passed in via hash url:
 			var hashString = document.location.hash;
 			if( hashString ){
@@ -539,6 +525,25 @@ class kalturaIframe {
 					mw.setConfig('EmbedPlayer.IframeParentPlayerId', hashObj.playerId );
 				}
 			}
+
+			// Get the flashvars object:
+			var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';
+			var fvparts = flashVarsString.split('&');
+			var flashvarsObject = {};
+			for(var i=0;i<fvparts.length;i++){
+				var kv = fvparts[i].split('=');
+				if( kv[0] && kv[1] ){
+					flashvarsObject[ unescape( kv[0] ) ] = unescape( kv[1] );
+				}
+			}
+			mw.setConfig( 'KalturaSupport.IFramePresetFlashvars', flashvarsObject );
+
+			
+			// Set uiConf global vars for this player ( overides iframe based hash url config )
+			<?php 
+			echo $this->getCustomPlayerConfig();
+			?>
+			
 			// Remove the fullscreen option if we are in an iframe: 
 			if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
 				mw.setConfig('EmbedPlayer.EnableFullscreen', false );
@@ -560,9 +565,9 @@ class kalturaIframe {
 			mw.setConfig( "EmbedPlayer.IsIframeServer", true );
 
 			<?php 
-				if( !$this->getResultObject()->isPlaylist() ){
+			//	if( !$this->getResultObject()->isPlaylist() ){
 					echo $this->javascriptPlayerLogic();
-				}
+			//	}
 			?>
 		</script>
 	</head>
@@ -598,7 +603,7 @@ class kalturaIframe {
 					if( mw.getConfig( 'EmbedPlayer.IframeCurrentTime' ) ){
 						embedPlayer.currentTime = mw.getConfig( 'EmbedPlayer.IframeCurrentTime' );					
 					}
-					// this unfortunatly won't work on iOS but will support play state for html5 browsers
+					// Maintain play state for html5 browsers
 					if( mw.getConfig('EmbedPlayer.IframeIsPlaying') ){
 						embedPlayer.play();
 					}
