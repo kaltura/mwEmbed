@@ -565,9 +565,9 @@ class kalturaIframe {
 			mw.setConfig( "EmbedPlayer.IsIframeServer", true );
 
 			<?php 
-			//	if( !$this->getResultObject()->isPlaylist() ){
+			if( !$this->getResultObject()->isPlaylist() ){
 					echo $this->javascriptPlayerLogic();
-			//	}
+			}
 			?>
 		</script>
 	</head>
@@ -583,7 +583,7 @@ class kalturaIframe {
 				<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
 				<?php echo $this->getVideoHTML(); ?>
 			</div>
-			<?php 
+			<?php
 		}
 		?>
 	</body>
