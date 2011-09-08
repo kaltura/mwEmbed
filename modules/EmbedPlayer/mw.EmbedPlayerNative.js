@@ -45,7 +45,7 @@ mw.EmbedPlayerNative = {
 		'waiting',
 		'playing',
 		'canplay',
-		'canplaythough',
+		'canplaythrough',
 		'seeking',
 		'seeked',
 		'timeupdate',
