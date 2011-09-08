@@ -35,7 +35,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.4c1';
+KALTURA_LOADER_VERSION = '1.4c2';
 // Static script loader url: 
 var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
 var SCRIPT_FORCE_DEBUG = false;
@@ -195,9 +195,14 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// Add the flashvars:
 	iframeSrc += '?' + kFlashVarsToUrl( kEmbedSettings.flashvars );
 	
-	// If remote service is enabled pass along service arguments: 
-	if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) ){
-	  iframeSrc += kServiceConfigToUrl();
+	// If remote service is enabled pass along service arguments:
+	if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) && 
+		(
+			mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.com') === -1 &&
+			mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1 
+		)
+	){
+		iframeSrc += kServiceConfigToUrl();
 	}
 	
 	// add the forceMobileHTML5 to the iframe if present on the client: 
@@ -476,7 +481,7 @@ function kCheckAddScript(){
 	}
 	// Restore the jsCallbackReady ( we are not rewriting )
 	if( !kalturaDynamicEmbed ){
-		restoreKalturaKDPCallback();
+		window.restoreKalturaKDPCallback();
 	}
 }
 function kIsIOS(){
@@ -487,7 +492,7 @@ function kIsIOS(){
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not available 
 function kIsHTML5FallForward(){
 	// Check for a mobile html5 user agent:
-	if ( kIsIOS() || mw.getConfig( 'forceMobileHTML5' ) ){
+	if ( kIsIOS() || ( mw.getConfig( 'forceMobileHTML5' ) && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )  )  ){
 		return true;
 	}
 	// Special check for Android:
@@ -985,7 +990,7 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 /**
  * To support kaltura kdp mapping override
  */
-var checkForKDPCallback = function(){
+window.checkForKDPCallback = function(){
 	if( typeof window.jsCallbackReady != 'undefined' && !window.KalturaKDPCallbackReady ){
 		window.KalturaKDPCallbackReady = window.jsCallbackReady;
 		window.jsCallbackReady = function( player_id ){
@@ -994,7 +999,7 @@ var checkForKDPCallback = function(){
 	}
 };
 
-var restoreKalturaKDPCallback = function(){
+window.restoreKalturaKDPCallback = function(){
 	// To restore when we are not rewriting: 
 	if( window.KalturaKDPCallbackReady ){
 		window.jsCallbackReady = window.KalturaKDPCallbackReady;
