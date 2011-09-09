@@ -4,9 +4,8 @@
  * Add support for kaltura api calls
  * 
  * TODO this loader is a little too large portions should be refactored into separate files
- *  this refactor can happen post resource loader
+ *  this refactor can happen post rl_17 resource loader support
  */
-
 // Scope everything in "mw" ( keeps the global namespace clean ) 
 ( function( mw, $ ) {
 
@@ -129,7 +128,7 @@
 		}else {
 		
 			// Check if we are NOT rewriting tags: 
-			if( !mw.isHTML5FallForwardNative() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) {
+			if( !kIsHTML5FallForward() ) {
 				restoreKalturaKDPCallback();
 				rewriteDoneCallback();
 				return ;
@@ -431,7 +430,12 @@
 				iframeRequest+= '/?playerId=' + $j( playerTarget ).attr('id');
 				
 				// If remote service is enabled pass along service arguments: 
-				if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) ){
+				if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' )  && 
+					(
+						mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.com') === -1 &&
+						mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1 
+					)
+				){
 					iframeRequest += kServiceConfigToUrl();
 				}
 				
