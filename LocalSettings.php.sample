@@ -25,5 +25,5 @@ $wgKalturaAllowIframeRemoteService = false;
 $wgAllowCustomResourceIncludes = false;
 
 
-$wgMwEmbedEnabledModules = array( 'EmbedPlayer', 'KalturaSupport', 'AdSupport', 'Playlist', 'TimedText', 'FreeWheel' );
+$wgMwEmbedEnabledModules = array( 'EmbedPlayer', 'KalturaSupport', 'AdSupport', 'Playlist', 'TimedText' );
 ?>
