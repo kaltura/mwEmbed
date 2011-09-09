@@ -42,8 +42,8 @@ if($wgEnableScriptDebug === true) {
     $loaderJs .= 'SCRIPT_FORCE_DEBUG = true;';
 }
 
-// Set the expire time for the loader to 60 seconds. ( it controls the version of the actual library payload )
-$max_age = 60; 
+// Set the expire time for the loader to 5 min. ( it controls the version of the actual library payload )
+$max_age = 60*5; 
 header("Cache-Control: private, max-age=$max_age max-stale=0");
 header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $max_age) . 'GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time()) . 'GMT');
