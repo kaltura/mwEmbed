@@ -1,29 +1,16 @@
 <?php
 /**
- * This file store all of mwEmbed local configuration ( in a default svn check out this file is empty )
+ * This file store all of mwEmbed local configuration
  * 
  * See includes/DefaultSettings.php for a configuration options
  * 
- * For an clean debug environment, save this sample to LocalSettings.php
  */
 
-$wgEnableScriptDebug = true;
+// Set this to true for debug support
+$wgEnableScriptDebug = false;
 
-$wgKalturaIframeRewrite = true;
-$wgEnableIframeApi = true;
-
-$wgEnableIpadHTMLControls = true;
-$wgKalturaUseManifestUrls = true;
-
-// Allows remote kaltura service queries from php ( useful for onPrem or CE editions using the iframe 
-//on a different server from their mwEmbed library location)
-$wgKalturaAllowIframeRemoteService = false;
-
-// Allows custom resources to be loaded from the ui-conf, useful for custom plugins, 
-// DO NOT enable this if you have other services on the same domain as the iframe as it essentially
-// allows any ui-conf user to include javascript on the iframe player page
-$wgAllowCustomResourceIncludes = false;
-
-
+// By default we enable ( all ) the modules. You probably only want player related modules enabled: 
+// Here are the most common used modules: 
 $wgMwEmbedEnabledModules = array( 'EmbedPlayer', 'KalturaSupport', 'AdSupport', 'Playlist', 'TimedText' );
+
 ?>
