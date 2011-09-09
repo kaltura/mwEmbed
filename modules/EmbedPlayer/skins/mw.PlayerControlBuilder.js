@@ -422,8 +422,6 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		});
 
-
-
 		// Bind mouse move in interface to hide control bar
 		_this.mouseMovedFlag = false;
 		$interface.mousemove( function(e){
@@ -538,7 +536,7 @@ mw.PlayerControlBuilder.prototype = {
 			// Update play button pos
 			$interface.find('.play-btn-large').animate( _this.getFullscreenPlayButtonCss( size ) );
 			
-			if( embedPlayer.isPersistentNativePlayer() ){
+			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( _this.getAspectPlayerWindowCss( size ) );
 			}
 		} else {
@@ -548,7 +546,7 @@ mw.PlayerControlBuilder.prototype = {
 			// Update play button pos
 			$interface.find('.play-btn-large').css( _this.getFullscreenPlayButtonCss( size ) );
 			
-			if( embedPlayer.isPersistentNativePlayer() ){
+			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).css( _this.getAspectPlayerWindowCss( size ) );
 			}
 			
@@ -951,10 +949,13 @@ mw.PlayerControlBuilder.prototype = {
 		if( embedPlayer.getWidth() < 200 ){
 			return false;
 		}
+		var warnId = "warningOverlay_" + embedPlayer.id;
+		$( '#' + warnId ).remove();
+		
 		// Add the targetWarning: 
 		var $targetWarning = $('<div />')
 		.attr( {
-			'id': "warningOverlay_" + embedPlayer.id
+			'id': warnId
 		} )
 		.addClass( 'ui-state-highlight ui-corner-all' )
 		.css({
