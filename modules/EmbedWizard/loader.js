@@ -14,7 +14,13 @@
     ];
 	$.fn.embedWizard = function( options, callback ){
 		var _this = this;
-		$(this).loadingSpinner();
+		$(this).css('position', 'relative').loadingSpinner();
+		$(this).find('.loadingSpinner').css({
+			'position' : 'absolute',
+			'top' : $(this).height() / 2,
+			'left' : $(this).width() / 2
+		})
+		
 		mw.load( EmbedWizardRequestSet, function(){
 			$(_this).find('.loadingSpinner').remove();
 			$(_this).each( function( inx, node) {
