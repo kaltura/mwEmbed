@@ -42,6 +42,12 @@ if($wgEnableScriptDebug === true) {
     $loaderJs .= 'SCRIPT_FORCE_DEBUG = true;';
 }
 
+// Set the expire time for the loader to 60 seconds. ( it controls the version of the actual library payload )
+$max_age = 60; 
+header("Cache-Control: private, max-age=$max_age max-stale=0");
+header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $max_age) . 'GMT');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time()) . 'GMT');
+
 // TODO Minify via php_min
 // ob_gzhandler automatically checks for browser gzip support and gzips
 ob_start("ob_gzhandler");
