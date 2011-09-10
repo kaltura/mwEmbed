@@ -5,7 +5,6 @@
 */
 
 ( function( mw, $ ) {
-	
 
 mw.EmbedPlayerNative = {
 

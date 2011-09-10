@@ -70,7 +70,7 @@ $wgKalturaEnableCuePointsRequest = false;
 $wgKalturaAllowIframeRemoteService = false;
 
 // Default expire time for ui conf api queries in seconds 
-$wgKalturaUiConfCacheTime = 600;
+$wgKalturaUiConfCacheTime = 60*10; // 10 min
 
 // By default enable the iframe rewrite
 $wgKalturaIframeRewrite = true;

@@ -158,7 +158,10 @@
 		},
 		
 		/**
-		 * Emulates kaltura setAttribute function
+		 * Emulates Kaltura setAttribute function
+		 * @param {Object} embedPlayer Base embedPlayer to be affected 
+		 * @param {String} componentName Name of component to be updated
+		 * @param {String} property The value to give the named attribute
 		 */
 		setKDPAttribute: function( embedPlayer, componentName, property, value ) {
 			mw.log("KDPMapping::setKDPAttribute " + componentName + " p:" + property + " v:" + value  + ' for: ' + embedPlayer.id );
@@ -256,8 +259,8 @@
 										break;
 								}
 							} else {
-								// get flashvars
-								return $( embedPlayer ).data('flashvars' );
+								// Get flashvars
+								return $( embedPlayer ).data( 'flashvars' );
 							}
 						break;
 					}
@@ -273,7 +276,7 @@
 		},
 		
 		/**
-		 * Emulates kalatura addJsListener function
+		 * Emulates Kalatura addJsListener function
 		 * @param {Object} EmbedPlayer the player to bind against
 		 * @param {String} eventName the name of the event. 
 		 * @param {Mixed} String of callback name, or function ref

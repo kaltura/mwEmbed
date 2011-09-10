@@ -18,9 +18,9 @@
 		
 		function doTitleLayout(){
 			// Add bindings
-			$( embedPlayer ).bind("playerReady", updatePlayerLayout);
+			$( embedPlayer ).bind( "playerReady", updatePlayerLayout);
 
-			$( embedPlayer ).bind("onResizePlayer", updatePlayerLayout);
+			$( embedPlayer ).bind( "onResizePlayer", updatePlayerLayout);
 			
 			// Add title div to interface:
 			$( embedPlayer ).bind("playerReady", function(){

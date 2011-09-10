@@ -171,7 +171,7 @@ mw.IFramePlayerApiServer.prototype = {
 			return ;
 		}	
 		// By default postMessage sends the message to the parent frame:		
-		$.postMessage( 
+		$.postMessage(
 			messageString,
 			this.getParentUrl(),
 			window.parent

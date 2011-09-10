@@ -22,7 +22,7 @@ mw.KApi = function( partner_id ){
 mw.KApi.prototype = {
 	baseParam: {
 		'apiVersion' : '3.1',
-		'clientTag' : 'html5:v' + window['KALTURA_LOADER_VERSION'],
+		'clientTag' : 'html5:v' + window[ 'KALTURA_LOADER_VERSION' ],
 		'expiry' : '86400',
 		'format' : 9, // 9 = JSONP format
 		'ignoreNull' : 1

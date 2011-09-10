@@ -279,15 +279,6 @@
 						$('<td />')
 						.css('width', '10em' )
 						.append(
-							$.button( {
-								'icon' : 'info',
-								'text' : gM('')
-							})
-							.click( function(){
-								
-							})
-							.buttonHover()
-							,
 							gM( 'mwe-embedwizard-' + key )
 						),
 						$('<td />').append(

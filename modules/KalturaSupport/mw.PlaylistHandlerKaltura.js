@@ -29,14 +29,43 @@ mw.PlaylistHandlerKaltura.prototype = {
 			this[i] = options[i];
 		}
 	},
-	
+	updateUiConfId: function( uiconf_id ){
+		mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', null );
+		this.$uiConf = null;
+		this.uiconf_id = uiconf_id;
+	},
+	getPlaylistUiConf: function( callback ){
+		var _this = this;
+		// check if we have the local cache: 
+		if( _this.$uiConf ){
+			callback( _this.$uiConf );
+			return ;
+		}
+		
+		// Check for boot strap data:
+		var playerData = mw.getConfig( 'KalturaSupport.IFramePresetPlayerData' ); 
+		if(  playerData.uiConf ){
+			_this.$uiConf = $( playerData.uiConf );
+			callback( _this.$uiConf );
+			return ;
+		}
+		
+		// Run the api request:
+		_this.getKClient().playerLoader({
+				'uiconf_id' : _this.uiconf_id
+			}, 
+			function( playerData ){
+				// Add all playlists to playlistSet
+				_this.$uiConf = $( playerData.uiConf );
+				callback( _this.$uiConf );
+			}
+		);
+	},
 	loadPlaylist: function ( callback ){
 		var _this = this;
 		mw.log( "mw.PlaylistHandlerKaltura:: loadPlaylist > ");
 		// Get the kaltura client:
-		this.getKClient().playerLoader({
-			'uiconf_id' : this.uiconf_id
-		}, function( playerData ){
+		_this.getPlaylistUiConf( function( $uiConf ){
 			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );
 			
 			_this.playlistSet = [];
@@ -47,9 +76,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 					'playlist_id' : _this.playlist_id 
 				});
 			}
-			
-			// Add all playlists to playlistSet
-			_this.$uiConf = $j( playerData.uiConf );
 			
 			// Load the playlist config: 
 			var plApi = kWidgetSupport.getPluginConfig(
@@ -86,7 +112,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			_this.$playlistItemRenderer = _this.$uiConf.find('#playlistItemRenderer');
 			if( _this.$playlistItemRenderer.children().length == 0  ){
 				// No layout info use default
-				_this.$playlistItemRenderer = $j( mw.getConfig('KalturaSupport.PlaylistDefaultItemRenderer') );
+				_this.$playlistItemRenderer = $( mw.getConfig('KalturaSupport.PlaylistDefaultItemRenderer') );
 			}
 			
 			// Force autoContoinue if there is no interface 
@@ -137,8 +163,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 					break;
 				}
 			}
-			// Allow plugins to add extra playlists to the playlist set:
-			$j( mw ).trigger( 'KalturaPlaylist_AddToPlaylistSet', [ _this.playlistSet ] );
 			
 			if( !_this.playlistSet[0] ){
 				mw.log( "Error could not get playlist entry id in the following player data::" + _this.$uiConf.html() );
@@ -188,9 +212,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 				
 		var playlistRequest = { 
-				'service' : 'playlist', 
-				'action' : 'execute',
-				'id': playlist_id
+			'service' : 'playlist', 
+			'action' : 'execute',
+			'id': playlist_id
 		};
 		this.getKClient().doRequest( playlistRequest, function( playlistDataResult ) {
 			// Empty the clip list
@@ -314,7 +338,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	getPlaylistItem: function( clipIndex ){
 		var _this = this;
 		
-		var $item = $j('<div />');
+		var $item = $('<div />');
 		$item.append( 
 			this.getBoxLayout(clipIndex, this.$playlistItemRenderer) 
 		);
@@ -323,31 +347,31 @@ mw.PlaylistHandlerKaltura.prototype = {
 	getBoxLayout: function(  clipIndex, $currentBox ){
 		var _this = this;
 		var offsetLeft = 0;
-		var $boxContainer = $j('<div />');
-		$j.each( $currentBox.children(), function( inx, boxItem ){
+		var $boxContainer = $('<div />');
+		$.each( $currentBox.children(), function( inx, boxItem ){
 			switch( boxItem.nodeName.toLowerCase() ){
 				case 'img':
-					var $node = $j('<img />');
+					var $node = $('<img />');
 					// Custom html based alt tag ( not described in uiConf
 					$node.attr('alt', _this.getClipTitle( clipIndex ) );
 					break;
 				case 'vbox':
 				case 'hbox':
 				case 'canvas':
-					var $node = $j('<div />'); 
+					var $node = $('<div />'); 
 					if( offsetLeft )
 						$node.css('margin-left', offsetLeft );
 					$node.append( 
-						_this.getBoxLayout( clipIndex, $j(boxItem) ) 
+						_this.getBoxLayout( clipIndex, $(boxItem) ) 
 					);
 					break;
 				case 'spacer':
 					// spacers do nothing for now.
-					$node = $j('<div />').css('display','inline');
+					$node = $('<div />').css('display','inline');
 					break;
 				case 'label':
 				case 'text':
-					var $node = $j('<span />').css('display','block');
+					var $node = $('<span />').css('display','block');
 					break;
 			}
 			$node.addClass( boxItem.nodeName.toLowerCase() );
@@ -365,7 +389,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				// For hboxes add another div with the given height to block out any space represented by inline text types
 				if(  boxItem.nodeName.toLowerCase() == 'hbox' ){
 					$boxContainer.append( 
-						$j("<div />").css( 'height', $node.css('height') ) 
+						$("<div />").css( 'height', $node.css('height') ) 
 					);
 				}
 			}
@@ -376,29 +400,29 @@ mw.PlaylistHandlerKaltura.prototype = {
 			 $boxContainer.find('span').slice(1).css('float', 'right');
 		} else if ( $boxContainer.find('span').length > 1 ){ // check for multiple spans
 			$boxContainer.find('span').each(function(inx, node){
-				if( $j(node).css('float') != 'right'){
-					$j(node).css('float', 'left');
+				if( $(node).css('float') != 'right'){
+					$(node).css('float', 'left');
 				}
 			} );
 		}
 		// and adjust 100% width to 95% ( handles edge cases of child padding )
 		$boxContainer.find('div,span').each(function( inx, node){
-			if( $j(node).css('width') == '100%')
-				$j(node).css('width', '95%'); 
+			if( $(node).css('width') == '100%')
+				$(node).css('width', '95%'); 
 			
 			// and box layout does crazy things with virtual margins :( remove width for irDescriptionIrScreen
-			if( $j(node).data('id') == 'irDescriptionIrScreen' || $j(node).data('id') == 'irDescriptionIrText'  ){
-				$j(node).css('height', '');
+			if( $(node).data('id') == 'irDescriptionIrScreen' || $(node).data('id') == 'irDescriptionIrText'  ){
+				$(node).css('height', '');
 			}
-			if( $j(node).hasClass('hbox') || $j(node).hasClass('vbox') || $j(node).hasClass('canvas') ){
-				$j(node).css('height', '');
+			if( $(node).hasClass('hbox') || $(node).hasClass('vbox') || $(node).hasClass('canvas') ){
+				$(node).css('height', '');
 			}
 
-			if( $j(node).hasClass('itemRendererLabel') 
-				&& $j(node).css('float') == 'left'
-				&& ( $j(node).siblings().hasClass('hbox') || $j(node).siblings().hasClass('vbox')  )
+			if( $(node).hasClass('itemRendererLabel') 
+				&& $(node).css('float') == 'left'
+				&& ( $(node).siblings().hasClass('hbox') || $(node).siblings().hasClass('vbox')  )
 			){
-				$j(node).css({
+				$(node).css({
 					'float': '',
 					'display': 'block'
 				});
@@ -414,7 +438,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 		var styleName = null;
 		var idName = null;
-		$j.each( confTag.attributes, function( inx , attr){
+		$.each( confTag.attributes, function( inx , attr){
 			switch(  attr.nodeName.toLowerCase() ){
 				case 'id':
 					idName = attr.nodeValue;

@@ -105,7 +105,7 @@ if( ! mw.getConfig ){
 
 
 // Wrap mw.ready to preMwEmbedReady values
-if( !mw.ready){
+if( !mw.ready ){
 	mw.ready = function( fn ){	
 		window.preMwEmbedReady.push( fn );
 		kAddReadyHook(function(){
@@ -134,7 +134,7 @@ function kDoIframeRewriteList( rewriteObjects ){
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( !options )
 		options = {};
-	
+	alert( 'kalturaIframeEmbed' );
 	// Empty the replace target:
 	var elm = document.getElementById( replaceTargetId );
 	if( ! elm ){
@@ -655,6 +655,7 @@ function kAddScript( callback ){
 		  'mw.AdLoader',
 		  'mw.VastAdParser',
 		  'mw.KCuePoints',
+		  'mw.KTimedText',
 		  'controlbarLayout',
 		  'faderPlugin',
 		  'watermarkPlugin',

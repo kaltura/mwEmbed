@@ -3,6 +3,7 @@
  * @package External
  * @subpackage Kaltura
  */
+
 class KalturaClientBase 
 {
 	const KALTURA_SERVICE_FORMAT_JSON = 1;
@@ -191,8 +192,8 @@ class KalturaClientBase
 		
 		$signature = $this->signature($params);
 		$this->addParam($params, "kalsig", $signature);
-		
-		list($postResult, $error) = $this->doHttpRequest($url, $params, $files);
+
+		list( $postResult, $error ) = $this->doHttpRequest($url, $params, $files);
 		
 		if ($error)
 		{
@@ -208,13 +209,8 @@ class KalturaClientBase
 			if ($this->config->format == self::KALTURA_SERVICE_FORMAT_PHP)
 			{
 				$result = @unserialize($postResult);
-
 				if ($result === false && serialize(false) !== $postResult) 
 				{
-					/*print $url . "\n\n";
-					print_r( $params);
-					print "resutl:$postResult\n ";
-					die();*/
 					throw new KalturaClientException("failed to unserialize server result\n$postResult", KalturaClientException::ERROR_UNSERIALIZE_FAILED);
 				}
 				$dump = print_r($result, true);
@@ -230,7 +226,6 @@ class KalturaClientBase
 		$endTime = microtime (true);
 		
 		$this->log("execution time for [".$url."]: [" . ($endTime - $startTime) . "]");
-		
 		return $result;
 	}
 
