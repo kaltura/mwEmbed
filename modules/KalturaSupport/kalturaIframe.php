@@ -83,9 +83,10 @@ class kalturaIframe {
 			'entryId'   =>   $this->getResultObject()->getEntryId(),
 		);
 		foreach( $eventSet as $key=> $val){
-			$param['event:' . $key ] = $val;
+			$param[ 'event:' . $key ] = $val;
 		}
 		ksort( $param );
+		
 		// Get the signature:
 		$sigString = '';
 		foreach( $param as $key => $val ){
@@ -122,7 +123,7 @@ class kalturaIframe {
 		return $o;
 	}
 
-	private function getVideoHTML( ){
+	private function getVideoHTML(){
 		$videoTagMap = array(
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
@@ -176,13 +177,13 @@ class kalturaIframe {
 		}
 		
 		
-		//Close the open video tag
+		// Close the open video tag
 		$o.='>';
 
 		// Output each source as a child element ( for javascript off browsers to have a chance
 		// to playback the content
 		foreach( $sources as $source ){
-			$o.="\n" .'<source ' .
+			$o.= "\n\t" .'<source ' .
 					'type="' . htmlspecialchars( $source['type'] ) . '" ' .
 					'src="' . $source['src'] . '" '.
 					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" '.
@@ -192,13 +193,12 @@ class kalturaIframe {
 		// To be on the safe side include the flash player and
 		// direct file link as a child of the video tag
 		// ( if javascript is "off" and they don't have video tag support for example )
-		$o.= $this->getFlashEmbedHTML(
+		$o.= "\n\t\t" . $this->getFlashEmbedHTML(
 			$this->getFileLinkHTML(), 
 			'kaltura_player_iframe_no_rewrite'
 		);
 
-
-		$o.= "\n" .'</video>';
+		$o.= "\n" . "</video>\n";
 		return $o;
 	}
 	/**
@@ -302,7 +302,7 @@ class kalturaIframe {
 	
 	private function getPreFlashVars( $idOverride = false ){
 		// Check if a playlist
-		$playerName = ( $this->getResultObject()->isPlaylist() ) ? 'kaltura_playlist' : 'kaltura_player_iframe_no_rewrite';
+		$playerName = 'kaltura_player_iframe_no_rewrite';
 		
 		$playerId = ( $idOverride )? $idOverride :  $this->getIframeId();
 		
@@ -337,6 +337,7 @@ class kalturaIframe {
 		if( $this->getResultObject()->isCachedOutput() ){
 			header( 'Pragma: public' );
 			// Cache for $wgKalturaUiConfCacheTime
+			header( "Cache-Control: public, max-age=$wgKalturaUiConfCacheTime, max-stale=0");
 			header( "Expires: " . gmdate( "D, d M Y H:i:s", time() + $wgKalturaUiConfCacheTime ) . " GM" );
 		} else {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
@@ -556,7 +557,7 @@ class kalturaIframe {
 			}
 			// For testing limited capacity browsers
 			//var kIsHTML5FallForward = function(){ return false };
-			//var kSupportsFlash = function(){ return false };
+			//var kSupportsFlash = function(){ return false	 };
 
 			// Don't do an iframe rewrite inside an iframe!
 			mw.setConfig( 'Kaltura.IframeRewrite', false );
@@ -565,27 +566,15 @@ class kalturaIframe {
 			mw.setConfig( "EmbedPlayer.IsIframeServer", true );
 
 			<?php 
-			if( !$this->getResultObject()->isPlaylist() ){
-					echo $this->javascriptPlayerLogic();
-			}
+				echo $this->javascriptPlayerLogic();
 			?>
 		</script>
 	</head>
 	<body>	
-		<?php 
-		if( $this->getResultObject()->isPlaylist() ){
-			echo "<!-- Playlist is rewriteen from flash object ( no standard html5 representation atm ) -->\n";
-			// if playlist just output the playlist object and let javascript rewrite it:
-			echo $this->getFlashEmbedHTML() . "\n";
-		}else {
-			?>
-			<div id="videoContainer" >
-				<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
-				<?php echo $this->getVideoHTML(); ?>
-			</div>
-			<?php
-		}
-		?>
+		<div id="videoContainer" >
+			<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
+			<?php echo $this->getVideoHTML(); ?>
+		</div>
 	</body>
 </html>
 <?php
