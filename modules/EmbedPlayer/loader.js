@@ -19,6 +19,11 @@
 		// With html controls you can support html themed controls, overlays, ads etc. )
 		'EmbedPlayer.EnableIpadHTMLControls': false,
 		
+		// If webkitSupportsFullscreen is true, this option will make the fullscreen button 
+		// use the native players fullscreen ( rather than pop-up a new window with the in-browser
+		// fullscreen. 
+		'EmbedPlayer.EnableIpadNativeFullscreen': false,
+		
 		'EmbedPlayer.LibraryPage': 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 
 		// A default apiProvider ( ie where to lookup subtitles, video properties etc )

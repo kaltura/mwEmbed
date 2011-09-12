@@ -79,6 +79,7 @@
 		"captionPlugin"	: 	"uiConfComponents/captionPlugin.js",		
 		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",
 		"omniturePlugin" : "uiConfComponents/omniturePlugin.js",
+		"playlistPlugin" : "uiConfComponents/playlistPlugin.js",
 		
 		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
 		"titleLayout" : "uiConfComponents/titleLayout.js",
@@ -106,7 +107,8 @@
 		'adPlugin',
 		'captionPlugin',
 		'bumperPlugin',
-		'omniturePlugin'
+		'omniturePlugin',
+		'playlistPlugin'
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {

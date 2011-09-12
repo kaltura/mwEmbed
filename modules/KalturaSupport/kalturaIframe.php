@@ -1,7 +1,6 @@
 <?php
 /**
  * KalturaIframe support
- *
  */
 
 define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server, something maybe broken or server is under high load. Please try again.");
@@ -280,7 +279,6 @@ class kalturaIframe {
 				$attributes = $plugin->attributes();
 				$pluginId = (string) $attributes['id'];
 				if( in_array( $pluginId, array_keys ( self::$iframePluginMap ) ) ){
-				
 					require_once( self::$iframePluginMap[ $pluginId] );
 					$this->plugins[$pluginId] = new $pluginId( $this );
 					$this->plugins[$pluginId ]->run();
@@ -328,7 +326,7 @@ class kalturaIframe {
 	}
 	
 	/**
-	 * void function to set iframe content headers
+	 * Void function to set iframe content headers
 	 */
 	private function setIFrameHeaders(){
 		global $wgKalturaUiConfCacheTime;

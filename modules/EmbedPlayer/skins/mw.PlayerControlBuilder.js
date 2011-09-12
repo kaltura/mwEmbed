@@ -281,21 +281,6 @@ mw.PlayerControlBuilder.prototype = {
 	toggleFullscreen: function( forceClose ) {
 		var _this = this;
 		
-		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
-		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			mw.log("PlayerControl::toggleFullscreen: iframe server");
-			if( this.fullscreenMode ){
-				mw.log("iframeServer:: trigger onCloseFullScreen()");
-				$( _this.embedPlayer ).trigger( 'onCloseFullScreen' );
-				this.fullscreenMode = false;
-			} else {
-				mw.log("iframeServer:: trigger onOpenFullScreen()");
-				$( _this.embedPlayer ).trigger( 'onOpenFullScreen' );
-				this.fullscreenMode = true;
-			}
-			return ;
-		}
-		
 		// Do normal in-page fullscreen handling: 
 		if( this.fullscreenMode ){			
 			this.restoreWindowPlayer();
@@ -318,13 +303,26 @@ mw.PlayerControlBuilder.prototype = {
 		// Setup a local reference to the player interface:
 		var $interface = embedPlayer.$interface;
 
-
 		// Check fullscreen state ( if already true do nothing )
 		if( this.fullscreenMode == true ){
 			return ;
 		}
 		this.fullscreenMode = true;
-
+		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+			if( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen')
+					&&
+				this.embedPlayer.getPlayerElement().webkitSupportsFullscreen 
+			){
+				this.embedPlayer.getPlayerElement().webkitEnterFullscreen();
+			} else {
+				this.doFullScreenPlayerDom();
+			}
+		}
+		$( embedPlayer ).trigger( 'onOpenFullScreen' );
+	},
+	doFullScreenPlayerDom: function(){
+		var _this = this;
+		var embedPlayer = this.embedPlayer;
 		//Remove any old mw-fullscreen-overlay
 		$( '.mw-fullscreen-overlay' ).remove();
 
@@ -342,7 +340,6 @@ mw.PlayerControlBuilder.prototype = {
 			.hide()
 			.fadeIn("slow")
 		);
-		
 		
 		// Change the interface to absolute positioned:
 		this.windowPositionStyle = $interface.css( 'position' );
@@ -375,8 +372,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Hide the body scroll bar
 		$('body').css( 'overflow', 'hidden' );
 
-
-		var topOffset = '0px'
+		var topOffset = '0px';
 		var leftOffset = '0px';
 
 		// Check if we have an offsetParent
@@ -408,8 +404,6 @@ mw.PlayerControlBuilder.prototype = {
 			'height' : $( window ).height()
 		}, aninmate, function(){
 			_this.displayFullscreenTip();
-			// Trigger the enter fullscreen event 
-			$( _this.embedPlayer ).trigger( 'onOpenFullScreen' );
 		});
 
 		// Remove absolute css of the interface parents
@@ -562,25 +556,36 @@ mw.PlayerControlBuilder.prototype = {
 	restoreWindowPlayer: function() {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-
-		// Check fullscreen state
-		if( this.fullscreenMode == false ){
+		// Check if fullscreen mode is already restored: 
+		if( this.fullscreenMode === false ){
 			return ;
 		}
 		// Set fullscreen mode to false
 		this.fullscreenMode = false;
-
+	
+		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
+		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+			this.restoreWindowPlayerDom();
+		} 
+		// Trigger the onCloseFullscreen event: 
+		$( this.embedPlayer ).trigger( 'onCloseFullScreen' );
+	},
+	restoreWindowPlayerDom:function(){
+		
+		// local ref to embedPlayer: 
+		var embedPlayer = this.embedPlayer; 
+		
 		var $interface = embedPlayer.$interface;
 		var interfaceHeight = ( _this.isOverlayControls() )
 			? embedPlayer.getHeight()
 			: embedPlayer.getHeight() + _this.getHeight();
-
+	
 		// only animate if we are not inside an iframe
 		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
 			
 		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
 		$('.mw-fullscreen-overlay').fadeOut( 'slow' );
-
+	
 		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
 		// Restore the player:
 		embedPlayer.resizePlayer( {
@@ -597,13 +602,13 @@ mw.PlayerControlBuilder.prototype = {
 				'top' : '0px',
 				'left' : '0px'
 			});
-
+	
 			// Restore absolute layout of parents:
 			$.each( _this.parentsAbsolute, function( na, element ){
 				$( element ).css( 'position', 'absolute' );
 			} );
 			_this.parentsAbsolute = null;
-
+	
 			// Restore the body scroll bar
 			$('body').css( 'overflow', 'auto' );
 			
@@ -614,11 +619,8 @@ mw.PlayerControlBuilder.prototype = {
 				});
 			}
 		});
-		
-		// Trigger the onCloseFullscreen event: 
-		$( this.embedPlayer ).trigger( 'onCloseFullScreen' );
 	},
-
+	
 	/**
 	* Get minimal width for interface overlay
 	*/

@@ -538,7 +538,7 @@ mw.EmbedPlayerNative = {
 					}
 				}, 100 );
 			} catch (e) {
-				mw.log("Error: Error in swiching source playback");
+				mw.log("Error: Error in switching source playback");
 			}
 		}
 	},
