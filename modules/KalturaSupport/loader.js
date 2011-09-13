@@ -79,6 +79,7 @@
 		"captionPlugin"	: 	"uiConfComponents/captionPlugin.js",		
 		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",
 		"omniturePlugin" : "uiConfComponents/omniturePlugin.js",
+		"convivaPlugin" : "uiConfComponents/convivaPlugin.js",
 		"playlistPlugin" : "uiConfComponents/playlistPlugin.js",
 		
 		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
@@ -108,6 +109,7 @@
 		'captionPlugin',
 		'bumperPlugin',
 		'omniturePlugin',
+		'convivaPlugin',
 		'playlistPlugin'
 	];
 	

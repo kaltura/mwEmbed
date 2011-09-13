@@ -323,7 +323,7 @@ mw.PlayerControlBuilder.prototype = {
 	doFullScreenPlayerDom: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		//Remove any old mw-fullscreen-overlay
+		// Remove any old mw-fullscreen-overlay
 		$( '.mw-fullscreen-overlay' ).remove();
 
 		// Special hack for mediawiki monobook skin search box
