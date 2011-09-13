@@ -55,4 +55,4 @@ window.captionPlugin = function( embedPlayer, captionConfig, callback){
 	});
 };
 
-})( mediaWiki, jQuery );
+})( window.mw, jQuery );

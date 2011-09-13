@@ -20,4 +20,4 @@ window.faderPlugin = function( embedPlayer, $fader ){
 	}
 };
 
-})( mediaWiki, jQuery );
+})( window.mw, jQuery );

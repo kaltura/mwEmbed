@@ -87,4 +87,4 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	});
 });
 
-})( mediaWiki, jQuery );
+})( window.mw, jQuery );

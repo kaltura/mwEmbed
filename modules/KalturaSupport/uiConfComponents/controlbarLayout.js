@@ -59,4 +59,4 @@
 		});
 	};
 	
-})( mediaWiki, jQuery );
+})( window.mw, jQuery );

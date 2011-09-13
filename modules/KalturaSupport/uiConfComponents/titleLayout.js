@@ -64,7 +64,6 @@
 		};		
 		// once all functions are defined call the doTitleLayout
 		doTitleLayout();
-
-	}
+	};
 	
-})( mediaWiki, jQuery );
+})( window.mw, jQuery );
