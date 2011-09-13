@@ -4,7 +4,7 @@
 * @The module fetches subtitles from Subply by kaltura's entryId
 * @author Elizabeth Marr
 */
-( function( mw ) {	
+( function( mw, $ ) {	
 	// List named resource paths
 	mw.addResourcePaths({
 		"plymedia.style" :  "styles/plymediaStyles.css",
@@ -17,15 +17,17 @@
 	});
 	
 	// Bind the plyMedia player where the uiconf includes the plymedia plugin
-	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-		$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf , callback){
+	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf , callback){
 			if( embedPlayer.getKalturaConfig( 'plymedia', 'plugin' ) ){
 				mw.load( 'plymedia', function(){
 					mw.Subply.bindPlayer( embedPlayer );
+					callback();
 			    });
+			} else {
+				callback();
 			}
-			callback();
 		});
 	});
 
-} )( window.mw );
+} )( window.mw, jQuery );

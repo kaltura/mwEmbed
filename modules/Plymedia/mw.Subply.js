@@ -3,7 +3,6 @@
 */
 mw.Subply = {	
 	bindPlayer: function( embedPlayer ){
-		
 	var intializeRestUrl = "http://services.plymedia.com/jsinitialize?platform=kaltura&video=http://www.kaltura.com/extservices/plymedia?movie=entry_";
 	var entryId	= "";
 	var currentVideoUrl = "";
@@ -147,8 +146,7 @@ mw.Subply = {
 	
 	function setupCaptionsBylanguageCode(langcode)
 	{
-		if (console.log)
-			console.log("[setupCaptionsBylanguageCode] "+langcode);
+		mw.log("Subply::[setupCaptionsBylanguageCode] "+langcode);
 			
 		// Find js url by language code in languages array
 		var counter;
@@ -166,8 +164,7 @@ mw.Subply = {
 		
 		if (url!=undefined && url.length > 0)
 		{
-			if (console.log)
-				console.log("[setupCaptionsBylanguageCode] loading "+url);
+			mw.log("Subply::[setupCaptionsBylanguageCode] loading "+url);
 							
 			$.getScript(url, function(data, textStatus){
 				captionsFileLoadedHandler();
@@ -177,8 +174,7 @@ mw.Subply = {
 	
 	function captionsFileLoadedHandler()
 	{
-		if (console.log)
-			console.log("[captionsFileLoadedHandler] ");
+		mw.log("Subply::[captionsFileLoadedHandler] ");
 			
 		currentCaptions = mw.Subply.loadedData;
 	};
@@ -277,8 +273,7 @@ mw.Subply = {
 			// For testing !!! :
 			//eid = "entry_1_qmk1pnre";
 			
-			if (console.log)
-				console.log("[initializeByEntryId] for "+intializeRestUrl+eid);
+			mw.log("Subply::[initializeByEntryId] for "+intializeRestUrl+eid);
 			
 			$.getScript(intializeRestUrl+eid, function(data, textStatus){
 				videoDetailsLoadedHandler();
@@ -295,8 +290,7 @@ mw.Subply = {
 			
 			if (languages.length > 0)
 			{
-				if (console.log)
-					console.log("[videoDetailsLoadedHandler] have captions. Will create menu. ");
+				mw.log("Subply::[videoDetailsLoadedHandler] have captions. Will create menu. ");
 									
 				createCaptionsMenu();				
 			};
@@ -332,7 +326,7 @@ mw.Subply = {
 			
 		});		
 		
-		$j( embedPlayer ).bind( 'mediaLoaded', function(){
+		$j( embedPlayer ).bind( 'playerReady', function(){
 			
 			currentVideoUrl = embedPlayer.getSrc();
 			entryId = embedPlayer.kentryid;
