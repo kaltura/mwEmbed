@@ -75,6 +75,29 @@ class KalturaResultObject {
 		}
 		// else thorw an erro? 
 	}
+
+	// Returns the value of given flashvar
+	// Make sure to use '===' when comparing values
+	function getFlashvarConfig( $name ) {
+		// If no flash vars retrun false
+		if( !isset ($this->urlParameters[ 'flashvars' ]) ) {
+			return null;
+		}
+
+		// If value doesn't exists retrun false
+		if( !isset( $this->urlParameters[ 'flashvars' ][ $name ] ) ) {
+			return null;
+		}
+
+		$value = $this->urlParameters[ 'flashvars' ][ $name ];
+		// If value has boolean value, return it as boolean
+		if( $value == "true") {
+			$value = true;
+		} elseif( $value == "false" ) {
+			$value = false;
+		}
+		return $value;
+	}
 	/**
 	 * Kaltura object provides sources, sometimes no sources are found or an error occurs in 
 	 * a video delivery context we don't want ~nothing~ to happen instead we send a special error
@@ -145,16 +168,13 @@ class KalturaResultObject {
 	 * this check is run as part of resultObject handling so we must pass in the uiConf string
 	 */ 
 	public function isUserAgentRestrictedPlugin( $uiConf ) {
-		// Get flashvars
-		$flashVars = $this->urlParameters[ 'flashvars' ];
+		//echo('<textarea style="width: 100%; height: 100%;">' . $uiConf . '</textarea>'); exit();
 		$restrictedMessage = true;
-		
-		
 		// Check for plugin definition in flashVars
-		if( $flashVars && isset($flashVars['restrictUserAgent.plugin']) ) {
-			$restrictedStrings = $flashVars['restrictUserAgent.restrictedUserAgents'];
-			if( isset($flashVars['restrictUserAgent.restrictedUserAgentTitle']) && isset($flashVars['restrictUserAgent.restrictedUserAgentMessage']) ) {
-				$restrictedMessage = $flashVars['restrictUserAgent.restrictedUserAgentTitle'] ."\n". $flashVars['restrictUserAgent.restrictedUserAgentMessage'];
+		if( $this->getFlashvarConfig('restrictUserAgent.plugin') ) {
+			$restrictedStrings = $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgents');
+			if( $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentTitle') && $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentMessage') ) {
+				$restrictedMessage = $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentTitle') ."\n". $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentMessage');
 			}
 		} else {
 			// Use the local uiConfXml object location to avoid re-parsing the uiConf
@@ -321,7 +341,7 @@ class KalturaResultObject {
 		if( isset( $accessControl->isUserAgentRestricted ) && $accessControl->isUserAgentRestricted ) {
 			return $userAgentMessage;
 		} else {
-			$userAgentRestricted = $this->isUserAgentRestrictedPlugin( $resultObject[ 'uiConf'] );
+			$userAgentRestricted = $this->isUserAgentRestrictedPlugin( $resultObject['uiConf'] );
 			if( $userAgentRestricted === false ) {
 				return true;
 			} else {
@@ -692,12 +712,9 @@ class KalturaResultObject {
 			}
 		}
 		// Check for flashvar style playlist id
-		if( $checkFlashVar && isset( $this->urlParameters[ 'flashvars' ])
-				&& 
-			isset( $this->urlParameters[ 'flashvars' ]['playlistAPI.kpl0Url'] ) 
-		){
+		if( $checkFlashVar && $this->getFlashvarConfig('playlistAPI.kpl0Url') ){
 			// Check for flashvar 
-			$playlistId = $this->urlParameters[ 'flashvars' ]['playlistAPI.kpl0Url'];
+			$playlistId = $this->getFlashvarConfig('playlistAPI.kpl0Url');
 			
 		}
 		
@@ -747,35 +764,31 @@ class KalturaResultObject {
 			$client->addParam( $kparams, "entryId",  $this->urlParameters['entry_id'] );
 			$client->queueServiceActionCall( "baseEntry", "get", $kparams );						
 			$kparams = $default_params;
-			
-			// Entry Custom Metadata
-			$filter = new KalturaMetadataFilter();
-			$filter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
-			$filter->objectIdEqual = $this->urlParameters['entry_id'];
-			$filter->metadataObjectTypeEqual = KalturaMetadataObjectType::ENTRY;
-			$metadataPager =  new KalturaFilterPager();
-			$metadataPager->pageSize = 1;
 
-			$client->addParam( $kparams, "filter",  $filter );
-			$client->addParam( $kparams, "metadataPager",  $metadataPager );
-			$client->queueServiceActionCall( "metadata_metadata", "list", $kparams );
-			$kparams = $default_params;
-			
+			// UiconfId
 			if( $this->urlParameters['uiconf_id'] ) {
 				$client->addParam( $kparams, "id",  $this->urlParameters['uiconf_id'] );
 				$client->queueServiceActionCall( "uiconf", "get", $kparams );
 				$kparams = $default_params;
 			}
 
-			// Entry Cue Points
-			// By default we load the cue points unless there's a flashvar who says no
-			$loadCuePoints = true; 
-			if( isset( $this->urlParameters[ 'flashvars' ][ 'getCuePointsData' ] ) &&
-					$this->urlParameters[ 'flashvars' ][ 'getCuePointsData' ] == "false" ) {
-				$loadCuePoints = false;
+			// Entry Custom Metadata
+			if( $this->getFlashvarConfig('requiredMetadataFields') ) {
+				$filter = new KalturaMetadataFilter();
+				$filter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
+				$filter->objectIdEqual = $this->urlParameters['entry_id'];
+				$filter->metadataObjectTypeEqual = KalturaMetadataObjectType::ENTRY;
+				$metadataPager =  new KalturaFilterPager();
+				$metadataPager->pageSize = 1;
+
+				$client->addParam( $kparams, "filter",  $filter );
+				$client->addParam( $kparams, "metadataPager",  $metadataPager );
+				$client->queueServiceActionCall( "metadata_metadata", "list", $kparams );
+				$kparams = $default_params;
 			}
 
-			if( $loadCuePoints && $wgKalturaEnableCuePointsRequest ) {
+			// Entry Cue Points
+			if( $this->getFlashvarConfig('getCuePointsData') !== false && $wgKalturaEnableCuePointsRequest ) {
 				$filter = new KalturaCuePointFilter();
 				$filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
 				$filter->entryIdEqual = $this->urlParameters['entry_id'];
@@ -804,23 +817,27 @@ class KalturaResultObject {
 			'meta'				=>	$rawResultObject[2]
 		) );
 
-		if( isset( $rawResultObject[3]->objects ) && 
-			isset( $rawResultObject[3]->objects[0] ) && 
-			isset( $rawResultObject[3]->objects[0]->xml )
+		if( isset( $rawResultObject[3] ) && $rawResultObject[3]->confFile ){
+			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
+			$resultObject[ 'uiConf'] = $rawResultObject[3]->confFile;
+		}
+
+		if( isset( $rawResultObject[4]->objects ) &&
+			isset( $rawResultObject[4]->objects[0] ) &&
+			isset( $rawResultObject[4]->objects[0]->xml )
 		){			
 			$resultObject['entryMeta'] = $this->xmlToArray( new SimpleXMLElement( $rawResultObject[3]->objects[0]->xml ) );
 		}
-		if( isset( $rawResultObject[4] ) && $rawResultObject[4]->confFile ){
-			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
-			$resultObject[ 'uiConf'] = $rawResultObject[4]->confFile;
-		}
 		// echo '<pre>'; print_r( $rawResultObject[4] ); exit();
 		// echo htmlspecialchars($rawResultObject[4]->confFile); exit();
-		// Add Cue Point data. Also check for 'code' error
 
-		if( isset( $rawResultObject[5] ) && is_object( $rawResultObject[5] ) && $rawResultObject[5]->totalCount > 0 ){
-			$resultObject[ 'entryCuePoints' ] = $rawResultObject[5]->objects;
+		// Set cuePoints index if we load custom metadata or not
+		$cuePointsIndex = ($loadCustomMetadata) ? 5 : 4;
+		// Add Cue Point data. Also check for 'code' error
+		if( isset( $rawResultObject[$cuePointsIndex] ) && is_object( $rawResultObject[$cuePointsIndex] ) && $rawResultObject[$cuePointsIndex]->totalCount > 0 ){
+			$resultObject[ 'entryCuePoints' ] = $rawResultObject[$cuePointsIndex]->objects;
 		}
+
 		// Check access control and throw an exception if not allowed: 
 		$acStatus = $this->isAccessControlAllowed( $resultObject );
 		if( $acStatus !== true ){
@@ -870,8 +887,8 @@ class KalturaResultObject {
 		$conf->userAgent = $this->getUserAgent();
 		
 		$client = new KalturaClient( $conf );
-		if( isset($this->urlParameters[ 'flashvars' ]) && isset($this->urlParameters[ 'flashvars' ][ 'ks' ]) ) {
-			$this->ks = $this->urlParameters[ 'flashvars' ][ 'ks' ];
+		if( $this->getFlashvarConfig('ks') ) {
+			$this->ks = $this->getFlashvarConfig('ks');
 		} else {
 			// Check modify time on cached php file
 			$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist

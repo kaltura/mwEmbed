@@ -209,6 +209,7 @@ if ( !$url ) {
   if( count($parts) != 2 ){
 	$status = array( 'http_code' => 'ERROR' );
 	$header ='';
+	$contents = curl_error( $ch );
   } else {
   	list( $header, $contents ) = $parts;
   }
