@@ -219,7 +219,6 @@ mw.KWidgetSupport.prototype = {
 		if( $(embedPlayer).data('uiConfXml') ){
 			embedPlayer.$uiConf = $(embedPlayer).data('uiConfXml');
 		}
-		
 		if( embedPlayer.$uiConf ){
 			_this.baseUiConfChecks( embedPlayer );
 			// Trigger the check kaltura uiConf event					

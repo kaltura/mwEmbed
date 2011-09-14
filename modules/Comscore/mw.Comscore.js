@@ -7,3 +7,8 @@
 * 
 * Comsore is fired at the start of each clip. 
 */
+
+// Load the cTagsMap if set
+if( comConf.cTagsMap ){
+	
+}
