@@ -482,6 +482,7 @@ mw.Playlist.prototype = {
 	*/
 	addPlayer: function( clipIndex , callback ){
 		var _this = this;
+		debugger;
 		mw.log( "mw.Playlist:: addPlayer " + clipIndex );
 		var playerSize = _this.getTargetPlayerSize();
 		this.clipIndex = clipIndex;

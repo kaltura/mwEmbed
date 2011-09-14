@@ -193,7 +193,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 		// Check for playlist cache
 		if( embedPlayer.playlistCache && embedPlayer.playlistCache[ playlist_id ] ){
-			_this.clipList =  embedPlayer.playlistCache[ playlist_id ];
+			_this.clipList = embedPlayer.playlistCache[ playlist_id ];
 			callback();
 			return ;
 		}

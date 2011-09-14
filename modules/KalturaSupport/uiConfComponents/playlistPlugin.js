@@ -20,7 +20,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 								? 'horizontal' : 'vertical';
 				
 				// XXX hard coded for now think about a better way to get at this info:
-				$( '#videoContainer' ).playlist({
+				$( '#playlistContainer' ).playlist({
 					'layout': layout,
 					'embedPlayer' : embedPlayer
 				}); 
