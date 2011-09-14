@@ -41,7 +41,8 @@ mw.KWidgetSupport.prototype = {
 		this.loadPlayerData( widgetTarget, function( playerData ){
 			// look for widget type in uiConf file: 
 			switch( _this.getWidgetType( playerData.uiConf ) ){
-				case 'playlist' :
+				// We have moved playlist into a "player" based uiconf plugin
+				/*case 'playlist' :
 					mw.load( [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){
 						// Quick non-ui conf check for layout mode 
 						// @@TOOD we can fix this now!
@@ -54,6 +55,7 @@ mw.KWidgetSupport.prototype = {
 						callback();
 					});
 				break;
+				*/
 				case 'pptwidget': 
 					mw.load([ 'EmbedPlayer', 'mw.KPPTWidget', 'mw.KLayout' ], function(){
 						new mw.KPPTWidget( widgetTarget, playerData.uiConf, callback );
@@ -217,8 +219,15 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
 		if( $(embedPlayer).data('uiConfXml') ){
-			embedPlayer.$uiConf = $(embedPlayer).data('uiConfXml');
+			embedPlayer.$uiConf = $( embedPlayer ).data('uiConfXml');
 		}
+		
+		// Check for playlist cache based 
+		if( playerData.playlistCache ){
+			embedPlayer.playlistCache = playerData.playlistCache;
+		}
+		
+		
 		if( embedPlayer.$uiConf ){
 			_this.baseUiConfChecks( embedPlayer );
 			// Trigger the check kaltura uiConf event					
@@ -309,18 +318,22 @@ mw.KWidgetSupport.prototype = {
 			if( fv[ pluginPrefix + attrName ] ){
 				config[ attrName ] = fv[ pluginPrefix + attrName ];
 			}
+			
 			// Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
 			$uiPluginVars.each( function(inx, node){
 				if( $j( node ).attr('key') == pluginPrefix + attrName ){
 					if( $j(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
 						config[attrName] = $j(node).get(0).getAttribute('value');
 					}
-					// found break out of loop
+					// Found break out of loop
 					return false;
 				}
 			});
 			
-		
+			// Unescape values that would come in from flashvars
+			if( config[ attrName ] ){
+				config[ attrName ] = unescape( config[ attrName ] );
+			}
 			// Convert string to boolean 
 			if( config[ attrName ] === "true" )
 				config[ attrName ] = true;

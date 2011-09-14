@@ -114,14 +114,14 @@
 	];
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
-		return $j.merge( kalturaSupportRequestSet,
+		return $.merge( kalturaSupportRequestSet,
 			[
 			  'mw.PlaylistHandlerKaltura', 
 			  'mw.PlaylistHandlerKalturaRss'
 			] );
 	});
 	// Check if the document has kaltura objects ( for fall forward support ) 
-	$j( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
+	$( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
 
 		var kalturaObjectPlayerList = mw.getKalturaPlayerList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
@@ -145,19 +145,19 @@
 				// setup load flags
 				var loadEmbedPlayerFlag = loadWidgetFlag = false;
 				
-				$j.each( kalturaObjectPlayerList, function( inx, element ){
+				$.each( kalturaObjectPlayerList, function( inx, element ){
 					// don't rewrite special id
-					if( $j(element).attr('name') == 'kaltura_player_iframe_no_rewrite' ){
+					if( $(element).attr('name') == 'kaltura_player_iframe_no_rewrite' ){
 						return true;
 					}
 					// Clear the kalturaSwapObjectClass
 					var kalturaSwapObjectClass = '';
 					// Setup the flashvars variable
 					var flashvars = {};
-					var flashVarsString = $j( element ).find( "param[name='flashvars']" ).val();
+					var flashVarsString = $( element ).find( "param[name='flashvars']" ).val();
 					// try alternate case: 
 					if( !flashVarsString ){
-						flashVarsString = $j( element ).find( "param[name='flashVars']" ).val();
+						flashVarsString = $( element ).find( "param[name='flashVars']" ).val();
 					}
 					if( flashVarsString ){
 						var flashVarPairs = flashVarsString.split('&');
@@ -167,10 +167,10 @@
 						}
 					}
 					// Get the swf source from the element: 
-					var swfSource =  $j( element ).attr( 'data' );
+					var swfSource =  $( element ).attr( 'data' );
 					// try to get the source from a param if not defined in the top level embed. 
 					if( !swfSource ) {
-						swfSource = $j( element ).find( "param[name=data]" ).attr( 'value' );						                                      
+						swfSource = $( element ).find( "param[name=data]" ).attr( 'value' );						                                      
 					}
 					var kEmbedSettings = mw.getKalturaEmbedSettings( swfSource, flashvars );
 
@@ -180,13 +180,13 @@
 						mw.log( "Error: Missing uiConfId/widgetId!");
 					}
 					
-					var height = $j( element ).attr('height');
-					var width = $j( element ).attr('width');
+					var height = $( element ).attr('height');
+					var width = $( element ).attr('width');
 					
 					// Check that the id is unique per player embed instance ( else give it a vid_{inx} id: 
-					var videoId = $j( element ).attr('id');
-					$j('.mwEmbedKalturaVideoSwap,.mwEmbedKalturaWidgetSwap').each(function( inx, swapElement){
-						if( $j( swapElement ).attr('id') ==  videoId ){
+					var videoId = $( element ).attr('id');
+					$('.mwEmbedKalturaVideoSwap,.mwEmbedKalturaWidgetSwap').each(function( inx, swapElement){
+						if( $( swapElement ).attr('id') ==  videoId ){
 							videoId = 'vid_' + inx;
 						}
 					});
@@ -198,7 +198,7 @@
 						'id' : videoId,
 						'kwidgetid' : kEmbedSettings.wid,
 						'kuiconfid' : kEmbedSettings.uiconf_id,
-						'style' : $j( element ).attr('style')
+						'style' : $( element ).attr('style')
 					};
 
 					if( kEmbedSettings.entry_id ) {
@@ -215,7 +215,7 @@
 								'width' : parseInt( width ),
 								'height' : parseInt( height )
 							});
-							$imgThumb = $j('<img />').attr({
+							$imgThumb = $('<img />').attr({
 								'src' : thumb_url
 							})
 							.css({
@@ -236,8 +236,8 @@
 					var heightType = ( height.indexOf('%') == -1 )? 'px' : '';
 					
 					// Replace with a mwEmbedKalturaVideoSwap
-					$j( element ).replaceWith( 
-						$j('<div />')
+					$( element ).replaceWith( 
+						$('<div />')
 						.attr( videoEmbedAttributes )
 						.css({
 							'width' : width + widthType,
@@ -251,7 +251,7 @@
 						.addClass( kalturaSwapObjectClass )
 						.append(
 							$imgThumb, 
-							$j('<div />')
+							$('<div />')
 							.attr('id', 'loadingSpinner_' + videoId )
 							.css({
 								'margin' : 'auto',
@@ -263,9 +263,9 @@
 							.loadingSpinner()
 						)
 					);
-					var elm = $j('#' + videoEmbedAttributes.id ).get(0);
+					var elm = $('#' + videoEmbedAttributes.id ).get(0);
 					// assign values to DOM object methods ( not just attributes ) 
-					$j.each( videoEmbedAttributes, function( attrName, attrValue ){
+					$.each( videoEmbedAttributes, function( attrName, attrValue ){
 						elm[ attrName ] = attrValue;
 					});
 				});
@@ -281,11 +281,11 @@
 						}
 					};
 					// if there were no targets to rewrite just issue the callback directly
-					if( $j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaWidgetSwap' ).length == 0 ){
+					if( $( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaWidgetSwap' ).length == 0 ){
 						rewriteDoneCallback();
 						return ;
 					}
-					$j( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaWidgetSwap' ).each( function(inx, playerTarget ) {
+					$( '.mwEmbedKalturaVideoSwap,.mwEmbedKalturaWidgetSwap' ).each( function(inx, playerTarget ) {
 						var kParams = {};
 						var iframeRequestMap = {
 								'kwidgetid': 'wid',
@@ -294,26 +294,26 @@
 						};
 						// Set default to playerTraget.kEmbedSettings						
 						for( var tagKey in iframeRequestMap ){
-							if( $j(playerTarget).attr( tagKey ) ){
-								kParams[ iframeRequestMap[tagKey] ] = $j(playerTarget).attr( tagKey );
+							if( $(playerTarget).attr( tagKey ) ){
+								kParams[ iframeRequestMap[tagKey] ] = $(playerTarget).attr( tagKey );
 							}
 						}
-						if( $j( playerTarget).data( 'flashvars' ) ){
-							kParams['flashvars'] = $j( playerTarget).data('flashvars');
+						if( $( playerTarget).data( 'flashvars' ) ){
+							kParams['flashvars'] = $( playerTarget).data('flashvars');
 						}
 						// Pass along cache_st to remove cache
-						if( $j( playerTarget).data( 'cache_st' ) ){
-							kParams['cache_st'] = $j( playerTarget).data('cache_st');
+						if( $( playerTarget).data( 'cache_st' ) ){
+							kParams['cache_st'] = $( playerTarget).data('cache_st');
 						}
 
 						iframeRewriteCount++;
-						$j( playerTarget )
+						$( playerTarget )
 							.removeClass('mwEmbedKalturaWidgetSwap')
 							.removeClass('mwEmbedKalturaVideoSwap')
 							.kalturaIframePlayer( kParams, doneWithIframePlayer);
 					});					
 					// if there are no playlists left to process return: 
-					if( $j( '.mwEmbedKalturaWidgetSwap' ).length == 0 ){
+					if( $( '.mwEmbedKalturaWidgetSwap' ).length == 0 ){
 						rewriteDoneCallback();
 						return true;
 					}
@@ -325,7 +325,7 @@
 					// Have kWidget Support handle the uiConf swap: 
 					mw.load( [ 'mw.KAPI', 'mw.KWidgetSupport' ], function(){
 						var rewriteCount = 0;
-						$j('.mwEmbedKalturaWidgetSwap').each( function( inx, widgetTarget ) {
+						$('.mwEmbedKalturaWidgetSwap').each( function( inx, widgetTarget ) {
 							rewriteCount++;
 							window.kWidgetSupport.rewriteTarget( widgetTarget, function(){
 								rewriteCount--;
@@ -340,7 +340,7 @@
 					mw.log("KalturaLoader:: load EmbedPlayer");
 					mw.load('EmbedPlayer', function(){
 						// Remove the general loading spinner ( embedPlayer takes over )
-						$j('.mwEmbedKalturaVideoSwap').embedPlayer( rewriteDoneCallback );
+						$('.mwEmbedKalturaVideoSwap').embedPlayer( rewriteDoneCallback );
 					});
 				}
 				// no loader, run the callback directly: 
@@ -353,44 +353,44 @@
 	
 	var kLoadKalturaSupport = false;
 	
-	
-	$j( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
+	$( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
 		// Check if any video tag uses the "kEmbedSettings.entryId"  
-		if(  playerElement.kwidgetid || $j(playerElement).attr( 'kwidgetid' ) ){
+		if(  playerElement.kwidgetid || $(playerElement).attr( 'kwidgetid' ) ){
 			kLoadKalturaSupport = true;
 		}
 		// Add kaltura support hook
 		if( kLoadKalturaSupport ) {
 			for(var i =0; i < kalturaSupportRequestSet.length; i++ ){
-				if( $j.inArray(kalturaSupportRequestSet[i], classRequest ) == -1 ){
+				if( $.inArray(kalturaSupportRequestSet[i], classRequest ) == -1 ){
 					classRequest.push( kalturaSupportRequestSet[i] );
 				}
 			}
 		}
 	} );
 	
-	$j( mw ).bind("Playlist_GetSourceHandler", function( event, playlist){
-		var $playlistTarget = $j( '#' + playlist.id );
+	$( mw ).bind("Playlist_GetSourceHandler", function( event, playlist ){
+		var $playlistTarget = $( '#' + playlist.id );
+		
+		var playlistEmbed = playlist.embedPlayer;
+		
 		// Check if we are dealing with a kaltura player: 
-		// XXX should move these properties over to data- or .data attributes 
-		if( !$playlistTarget.attr('kwidgetid') ){
+		if( !playlistEmbed.kwidgetid ){
 			return ;
 		}
 		
 		var playlistConfig = {
-			'uiconf_id' : $playlistTarget.attr('kuiconfid'),
-			'widget_id' : $playlistTarget.attr('kwidgetid'),
-			'flashvars' : $playlistTarget.data('flashvars')
+			'uiconf_id' : playlistEmbed.kuiconfid,
+			'widget_id' : playlistEmbed.kwidgetid
 		};		
-		var kplUrl0 = playlistConfig.flashvars['playlistAPI.kpl0Url'];
-
-		// if loading from ui-conf ( no kplUrl ) or kplUrl is from kaltura.com and a playlist_id
+		var kplUrl0 = playlistEmbed.getKalturaConfig( 'playlistAPI', 'kpl0Url' )
+		
+		// No kpl0Url, no good
 		if( !kplUrl0 ){
-			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
 			return ;
 		} 
 		var plId =  mw.parseUri( kplUrl0 ).queryKey['playlist_id'];
-		if( plId && mw.parseUri( kplUrl0 ).host.replace('www.', '') == 'kaltura.com'  ){
+		// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
+		if( plId && mw.parseUri( kplUrl0 ).queryKey['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
 			playlistConfig.playlist_id = plId;
 			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
 			return ;
@@ -413,8 +413,8 @@
 	 * 	optional function called once iframe player has been loaded
 	 */
 	jQuery.fn.kalturaIframePlayer = function( iframeParams, callback ) {
-		$j( this ).each( function( inx, playerTarget ){
-			mw.log( '$j.kalturaIframePlayer::' + $j( playerTarget ).attr('id') );
+		$( this ).each( function( inx, playerTarget ){
+			mw.log( '$.kalturaIframePlayer::' + $( playerTarget ).attr('id') );
 			// Establish the "server" domain via mwEmbed path: 
 			var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
 			
@@ -431,7 +431,7 @@
 						'/' + encodeURIComponent( iframeParams [ key ] );
 				}
 				// Add the player id: 
-				iframeRequest+= '/?playerId=' + $j( playerTarget ).attr('id');
+				iframeRequest+= '/?playerId=' + $( playerTarget ).attr('id');
 				
 				// If remote service is enabled pass along service arguments: 
 				if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' )  && 
@@ -453,7 +453,7 @@
 				}
 				// Add the flashvars to the request:
 				if( iframeParams['flashvars'] ){
-					$j.each( iframeParams['flashvars'], function( key, value){
+					$.each( iframeParams['flashvars'], function( key, value){
 						iframeRequest += '&' + encodeURIComponent( 'flashvars[' + key + ']' ) + 
 								'=' + encodeURIComponent( value );
 					});
@@ -461,30 +461,30 @@
 				// Also append the script version to purge the cdn cache for iframe: 
 				iframeRequest += '&urid=' + KALTURA_LOADER_VERSION;
 
-				var iframeId = $j( playerTarget ).attr('id');				
+				var iframeId = $( playerTarget ).attr('id');				
 				iframeRequest+= mw.getIframeHash( iframeId);
 				
-				var $iframe = $j('<iframe />')
+				var $iframe = $('<iframe />')
 				.attr({
 					'id' : iframeId,
-					'class' : $j( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',					
+					'class' : $( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',					
 					'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest,
-					'height' : $j( playerTarget ).height(),
-					'width' : $j( playerTarget ).width()
+					'height' : $( playerTarget ).height(),
+					'width' : $( playerTarget ).width()
 				})
-				.attr( 'style', $j( playerTarget ).attr('style') ) 
+				.attr( 'style', $( playerTarget ).attr('style') ) 
 				.css({
 					'border': '0px'
 				});
 				// Replace the player with the iframe: 
-				$j( playerTarget ).replaceWith( $iframe );
+				$( playerTarget ).replaceWith( $iframe );
 				
-				mw.log('$j.kalturaIframePlayer::iframe in page: ' + $j( 'iframe#' + iframeId ).length );
+				mw.log('$.kalturaIframePlayer::iframe in page: ' + $( 'iframe#' + iframeId ).length );
 				
 				// if the server is enabled 
 				if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 					// Invoke the iframe player api system:
-					var iframeEmbedPlayer = $j( '#' + iframeId ).iFramePlayer( callback );
+					var iframeEmbedPlayer = $( '#' + iframeId ).iFramePlayer( callback );
 				}
 			};
 			

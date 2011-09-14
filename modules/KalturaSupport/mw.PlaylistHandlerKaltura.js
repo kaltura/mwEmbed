@@ -30,24 +30,22 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 	},
 	updateUiConfId: function( uiconf_id ){
-		mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', null );
 		this.$uiConf = null;
 		this.uiconf_id = uiconf_id;
 	},
 	getPlaylistUiConf: function( callback ){
 		var _this = this;
-		// check if we have the local cache: 
+		// Check if we have the local cache: 
 		if( _this.$uiConf ){
 			callback( _this.$uiConf );
 			return ;
 		}
 		
-		// Check for boot strap data:
-		var playerData = mw.getConfig( 'KalturaSupport.IFramePresetPlayerData' ); 
-		if(  playerData.uiConf ){
-			_this.$uiConf = $( playerData.uiConf );
+		// Check for playlist embedPlayer uiconf
+		if( this.playlist.embedPlayer.$uiConf ){
+			// Setupup local pointer: 
+			_this.$uiConf = this.playlist.embedPlayer.$uiConf ;
 			callback( _this.$uiConf );
-			return ;
 		}
 		
 		// Run the api request:
@@ -67,7 +65,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Get the kaltura client:
 		_this.getPlaylistUiConf( function( $uiConf ){
 			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );
-			
 			_this.playlistSet = [];
 			// @@TODO clean up with getConf option
 			// Add in flashvars playlist id if present:
@@ -78,27 +75,25 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 			
 			// Load the playlist config: 
-			var plApi = kWidgetSupport.getPluginConfig(
-					_this.flashvars,
-					_this.$uiConf, 
+			var plApi = _this.playlist.embedPlayer.getKalturaConfig(
 					'playlistAPI', 
 					['autoContinue', 'autoPlay']
 			);
 			
-			var plConf =  kWidgetSupport.getPluginConfig(
-					_this.flashvars,
-					_this.$uiConf, 
+			var plConf = _this.playlist.embedPlayer.getKalturaConfig(
 					'playlist', 
 					[ 'includeInLayout', 'width', 'height' ]
 			);
 
 			// Check for autoContinue 
 			_this.autoContinue = plApi.autoContinue;
+			
 			// Set autoPlay
 			_this.autoPlay = plApi.autoPlay;
 			
 			// Set width:
 			_this.videolistWidth = ( plConf.width )?  plConf.width : _this.$uiConf.find('#playlist').attr('width');
+			
 			// Set height:
 			_this.videolistHeight = ( plConf.height )?  plConf.height : _this.$uiConf.find('#playlist').attr('height');
 			 
@@ -122,33 +117,19 @@ mw.PlaylistHandlerKaltura.prototype = {
 			
 			// Find all the playlists by number  
 			for( var i=0; i < 50 ; i ++ ){
-				var playlist_id = playlistName = null;					
+				var playlist_id = playlistName = null;
 				
-				var idElm = _this.$uiConf.find("uivars var[key='kpl" + i +"EntryId']").get(0);
-				if( idElm ){
-					playlist_id  = idElm.getAttribute('value');
-					var nameElm = _this.$uiConf.find("uiVars var[key='playlistAPI.kpl" + i + "Name']").get(0);
-					if( nameElm ){
-						playlistName = nameElm.getAttribute('value');
-					}
-				}
+				// Try and get the playlist id and name: 
+				var kplUrl = _this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl' + i + 'Url' );
+				playlistName =_this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl' + i + 'Name' ); 
 				
-				// Check if flashvars override or set value:
-				if( _this.flashvars['playlistAPI.kpl' +i + 'Url' ] ){
-					var kplUrl = _this.flashvars['playlistAPI.kpl' +i + 'Url' ];
-					if( kplUrl ){
-						// check for name
-						if( _this.flashvars['playlistAPI.kpl' + i + 'Name'] ){
-							playlistName = _this.flashvars['playlistAPI.kpl' + i + 'Name'].replace(/\+/gi, ' ');
-						}
-						var plId =  mw.parseUri( kplUrl ).queryKey['playlist_id'];
-						// Make sure we are loading from kaltura.com
-						if( plId && mw.parseUri( kplUrl ).host.replace('www.', '') == 'kaltura.com'){
-							playlist_id = plId;
-						} else {
-							playlist_id = kplUrl;
-						}
-					}
+				// update the id: 
+				var plId =  mw.parseUri( kplUrl ).queryKey['playlist_id'];
+				// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
+				if( plId && mw.parseUri( kplUrl ).queryKey['partner_id'] && kplUrl.indexOf('executeplaylist') != -1 ){
+					playlist_id = plId;
+				} else {
+					playlist_id = kplUrl;
 				}
 				
 				if( playlist_id ){
@@ -169,7 +150,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 				return false;
 			}
 			mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );	
-
 			// Set the playlist to the first playlist
 			_this.setPlaylistIndex( 0 );
 			
@@ -199,15 +179,22 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	loadPlaylistById: function( playlist_id, callback ){
 		var _this = this;
+		var embedPlayer = this.playlist.embedPlayer;
+		
 		// Check if the playlist is mrss url ( and use the mrss handler )
 		if( mw.isUrl( playlist_id ) ){
 			this.playlist.src = playlist_id;
 			this.mrssHandler = new mw.PlaylistHandlerKalturaRss( this.playlist );
 			this.mrssHandler.loadPlaylist( function(){
 				_this.clipList = _this.mrssHandler.getClipList();
-				if( callback ) 
-					callback();
+				callback();
 			});
+			return ;
+		}
+		// Check for playlist cache
+		if( embedPlayer.playlistCache && embedPlayer.playlistCache[ playlist_id ] ){
+			_this.clipList =  embedPlayer.playlistCache[ playlist_id ];
+			callback();
 			return ;
 		}
 				
@@ -268,7 +255,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	updateEmbedPlayer: function( clipIndex, $video ){
 		// Update the 
-		mw.setConfig("KalturaSupport.IFramePresetPlayerData", null);
 		$video.attr({ 
 			'kentryid' : this.getClip( clipIndex ).id,
 			'kwidgetid' : this.widget_id

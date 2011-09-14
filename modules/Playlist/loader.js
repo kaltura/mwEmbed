@@ -56,17 +56,12 @@
 // Add the jQuery hook:
 ( function( $ ) {
 	$.fn.playlist = function( options, callback ){
-		var _this = this;
-		if ( !this.selector ) {
-			mw.log( "Error: Calling mediaRssPlayer with empty selector " + this.selector);
+		if ( !this ) {
+			mw.log( "Error: Calling mediaRssPlayer with empty selector " + this );
 			return ;
 		}
-		// Set the target to loading
-		$j( this.selector ).loadingSpinner();
-
 		// Set the target
-		options[ 'target' ] = _this.selector;
-
+		options[ 'target' ] = this;
 		// Load the mediaRss class ( if not already loaded )
 		mw.load ( ['EmbedPlayer', 'Playlist'], function(){
 			// load and display the media Rss
@@ -78,6 +73,7 @@
 				}
 			});
 		});
-	}
+	};
+	
 } )( jQuery );
 

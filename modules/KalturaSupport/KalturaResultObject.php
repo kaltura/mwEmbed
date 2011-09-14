@@ -622,35 +622,56 @@ class KalturaResultObject {
 		$uiConfXml = new SimpleXMLElement( $resultObject[ 'uiConf'] );
 		
 		// Get the first playlist list:
-		$playlistObject = $this->getFirstPlaylist( $uiConfXml  );
+		$playlistId =  $this->getFirstPlaylistId( $uiConfXml );
+		$playlistObject = $this->getPlaylistObject( $playlistId  );
 		
-		if( $playlistObject->playlistContent ){
-			list( $entryId ) = explode( ',', $playlistObject->playlistContent ) ;
-		}
-		if( $entryId ){
-			$this->urlParameters['entry_id'] = $entryId;
+		// Create an empty resultObj
+		if( $playlistObject[0]->id ){
+			$this->urlParameters['entry_id'] = $playlistObject[0]->id;
 			// Now that we have all the entry data, return that:
-			$entryResult = $this->getEntryResult();
+			$resultObj = $this->getEntryResult();
+			
+			// Include the playlist in the response:
+			$resultObj[ 'playlistCache' ] = array(
+				$playlistId => $playlistObject
+			);
+			return $resultObj;
+		} else {
+			// XXX could not get first playlist item: 	
+			return array();
 		}
-		// Include first playlist in the response:
-		$entryResult[ 'playlists' ] = array(
-			$playlistObject->id => $playlistObject
-		);
-		// Get the first entry in the first playlist list:
-		return $entryResult;
+		
 	}
-	
+	/**
+	 * Get playlist object
+	 */
+	function getPlaylistObject( $playlistId ){ 
+		$client = $this->getClient();
+		// Build the reqeust: 
+		$kparams = array();
+		try {
+			$client->addParam( $kparams, "id", $playlistId);
+			$client->queueServiceActionCall( "playlist", "execute", $kparams );
+			$kparams = array();
+			
+			return $client->doQueue();
+		} catch( Exception $e ){
+			// Throw an Exception and pass it upward
+			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+			return false;
+		}
+	}
 	/**
 	 * Get the XML for the first playlist ( the one likely to be displayed ) 
 	 * 
 	 * this is so we can pre-load details about the first entry for fast playlist loading,
 	 * and so that the first entry video can be in the page at load time.   
 	 */
-	function getFirstPlaylist( &$uiConfXml ){
+	function getFirstPlaylistId( &$uiConfXml ){
 		// Setup the intial playlist id to null 
 		$playlistId = null;
 		$checkFlashVar = true;
-		// Check for uiConf style playlsti id ( should only match one )
+		// Check for uiConf style playlist id ( should only match one )
 		$result = $uiConfXml->xpath( "*//var[@key = 'playlistAPI.kpl0Url']" );
 		if( isset( $result[0] ) ){
 			foreach ( $result[0]->attributes() as $key => $val ) {
@@ -662,7 +683,7 @@ class KalturaResultObject {
 				}
 			}
 		}
-		
+		// Check for flashvar style playlist id
 		if( $checkFlashVar && isset( $this->urlParameters[ 'flashvars' ])
 				&& 
 			isset( $this->urlParameters[ 'flashvars' ]['playlistAPI.kpl0Url'] ) 
@@ -684,20 +705,7 @@ class KalturaResultObject {
 				}
 			}
 		}
-		$client = $this->getClient();
-		// Build the reqeust: 
-		$kparams = array();
-		try{
-			$client->addParam( $kparams, "id", $playlistId);
-			$client->queueServiceActionCall( "playlist", "get", $kparams );
-			$kparams = array();
-			
-			return $client->doQueue();
-		} catch( Exception $e ){
-			// Throw an Exception and pass it upward
-			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
-			return false;
-		}
+		return $playlistId;
 	}
 	
 	function getEntryResult(){

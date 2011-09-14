@@ -121,7 +121,15 @@ class kalturaIframe {
 
 		return $o;
 	}
-
+	// outputs the playlist wrapper 
+	private function getPlaylistWraper( $videoHtml ){
+		// XXX this hard codes some layout assumptions ( but no good way around that for now )
+		return '<span class="media-rss-video-player-container" style="float:left">' . 
+					'<div class="media-rss-video-player" style="position:relative">' . 
+						$videoHtml .
+					'</div>' . 
+				'</span>';
+	}
 	private function getVideoHTML(){
 		$videoTagMap = array(
 			'entry_id' => 'kentryid',
@@ -571,7 +579,14 @@ class kalturaIframe {
 	<body>	
 		<div id="videoContainer" >
 			<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
-			<?php echo $this->getVideoHTML(); ?>
+			<?php 
+			if( $this->isPlaylist() ){ 
+				echo $this->getPlaylistWraper( 
+					$this->getVideoHTML() 
+				);
+			} else {
+				echo $this->getVideoHTML();
+			}?>
 		</div>
 	</body>
 </html>
