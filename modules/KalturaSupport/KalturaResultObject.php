@@ -13,6 +13,8 @@ class KalturaResultObject {
 	var $clientTag = null;
 	var $uiConfXml = null; // lazy init
 	var $noCache = false;
+	// flag to control if we are in playlist mode
+	var $isPlaylist = false;
 	
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
@@ -126,6 +128,10 @@ class KalturaResultObject {
 	
 	// Check if the requested url is a playlist
 	public function isPlaylist(){
+		// first check the flag
+		if( $this->isPlaylist )
+			return true;
+		// else check url params: 
 		return ( $this->urlParameters['playlist_id'] !== null || $this->urlParameters['entry_id'] === null);
 	}
 	public function isCachedOutput(){
@@ -626,7 +632,9 @@ class KalturaResultObject {
 		$playlistObject = $this->getPlaylistObject( $playlistId  );
 		
 		// Create an empty resultObj
-		if( $playlistObject[0]->id ){
+		if( isset( $playlistObject[0] ) && $playlistObject[0]->id ){
+			// Set the isPlaylist flag now that we are for sure dealing with a playlist
+			$this->isPlaylist = true;
 			$this->urlParameters['entry_id'] = $playlistObject[0]->id;
 			// Now that we have all the entry data, return that:
 			$resultObj = $this->getEntryResult();

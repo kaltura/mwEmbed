@@ -10,28 +10,28 @@ mw.Omniture = function( embedPlayer, config ){
 };
 
 mw.Omniture.prototype = {
-	
+	config: null, 
  	init: function( embedPlayer, callback ){
 		var _this = this;
 		// Setup reference to embedPlayer
 		this.embedPlayer = embedPlayer;
-		
- 		// Check for required config: 
- 		this.config = this.getPluginConfig();
  		
- 		if( !this.config.trackingServer ){
+ 		if( !this.getConfig().trackingServer ){
  			mw.log( "Error:: mw.Omniture missing tracking server" );
  		}
- 		if( !this.config.account ){
+ 		if( !this.getConfig().account ){
  			mw.log( "Error: mw.Omniture missing account name" );
  		}
  		this.addPlayerBindings();
- 		// after all bindings are setup issue the callback
+ 		// After all bindings are setup issue the callback
   		callback();
  	},
- 	getPluginConfig: function(){
+ 	getConfig: function(){
  		// Make sure all the config takes flash override values or whats in the uiconf
- 		this.config = this.embedPlayer.getKalturaConfig('omniture', ['trackingServer', 'visitorNamespace', 'account' ] );
+ 		if( !this.config ){
+ 			this.config = this.embedPlayer.getKalturaConfig('omniture', ['trackingServer', 'visitorNamespace', 'account' ] );
+ 		}
+ 		return this.config;
  	},
  	addPlayerBindings: function(){
  		var omintureEvents = [ 

@@ -580,7 +580,7 @@ class kalturaIframe {
 		<div id="videoContainer" >
 			<div id="iframeLoadingSpinner" class="loadingSpinner"></div>
 			<?php 
-			if( $this->isPlaylist() ){ 
+			if( $this->getResultObject()->isPlaylist() ){ 
 				echo $this->getPlaylistWraper( 
 					$this->getVideoHTML() 
 				);

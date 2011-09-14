@@ -18,7 +18,9 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				// Check ui-conf for horizontal or vertical playlist
 				var layout = ( $uiConf.find('#playlistHolder').attr('width') != '100%' ) 
 								? 'horizontal' : 'vertical';
-				$(embedPlayer).parent().playlist({
+				
+				// XXX hard coded for now think about a better way to get at this info:
+				$( '#videoContainer' ).playlist({
 					'layout': layout,
 					'embedPlayer' : embedPlayer
 				}); 

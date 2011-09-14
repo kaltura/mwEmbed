@@ -486,11 +486,11 @@ mw.Playlist.prototype = {
 		var playerSize = _this.getTargetPlayerSize();
 		this.clipIndex = clipIndex;
 		
-		// If we have a ui update it: 
+		// If we have a UI update it: 
 		if( _this.sourceHandler.hasPlaylistUi() ){
 			this.updatePlayerUi( clipIndex );
 		}
-				
+		
 		// Check if we really have to update: 
 		var embedPlayer = _this.getEmbedPlayer();
 		if( $( embedPlayer ).data('clipIndex') == clipIndex ){
