@@ -1693,7 +1693,10 @@ mw.PlayerControlBuilder.prototype = {
 						'class'	: "play-btn-large"
 					} )
 					// Get dynamic position for big play button
-					.css( ctrlObj.getFullscreenPlayButtonCss() )
+					.css( ctrlObj.getFullscreenPlayButtonCss({
+						'width' : ctrlObj.embedPlayer.getWidth(),
+						'height' :  ctrlObj.embedPlayer.getHeight()
+					}) )
 					// Add play hook:
 					.click( function() {
 						$(this).remove();
