@@ -133,8 +133,7 @@ class kalturaIframe {
 				</div>';
 	}
 	private function getVideoHTML(){
-		return '<div id="videoContainer" >
-					<div id="iframeLoadingSpinner" class="loadingSpinner"></div>' . 
+		return '<div id="videoContainer" > ' .
 					$this->getVideoTag() . 
 				'</div>';
 	}
