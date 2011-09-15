@@ -90,19 +90,9 @@ mw.KApi.prototype = {
 		// ideally this could be part of the multi-request but could not get it to work 
 		// see commented out code above. 
 		this.getKS( function( ks ){
-			// remove service tag ( hard coded into the api url ) 
-			var serviceType = param['service'];
-			delete param['service'];				
-			
 			param['ks'] = ks;
-			param['kalsig'] = _this.getSignature( param );
-			var requestUrl = _this.getApiUrl() + serviceType + '&' + $j.param( param );
 			// Do the getJSON jQuery call with special callback=? parameter: 
-			$j.getJSON( requestUrl +  '&callback=?', function( data ){
-				if( callback ){
-					callback( data );
-				}
-			});
+			_this.doApiRequest( param, callback);
 		});
 	},
 	setKS: function( ks ){
@@ -110,7 +100,7 @@ mw.KApi.prototype = {
 	},
 	getKS: function( callback ){
 		if( this.ks ){
-			callback(this.ks);
+			callback( this.ks );
 			return true;
 		}
 		var _this = this;
@@ -121,12 +111,39 @@ mw.KApi.prototype = {
         	'partnerId' : + this.partner_id // don't ask me, I did not design the API!
         };
 		// add in the base parameters:
-		var param = $j.extend( {}, this.baseParam, ksParam );
-		var requestURL = this.getApiUrl() + 'session&' + $j.param( param );
-		$j.getJSON( requestURL + '&callback=?', function( data ){
+		var param = $.extend( { 'service' : 'session' }, this.baseParam, ksParam );
+		this.doApiRequest( param, function( data ){
 			_this.ks = data.ks;
 			callback( _this.ks );
 		});
+	},
+	doApiRequest: function( param, callback ){
+		var _this = this;
+		// Remove service tag ( hard coded into the api url ) 
+		var serviceType = param['service'];
+		delete param['service'];	
+		
+		// Add the signature ( if not a session init ) 
+		if( serviceType != 'session' ){
+			param['kalsig'] = _this.getSignature( param );
+		}
+
+		// Build the request url with sorted params:
+		var requestURL = _this.getApiUrl() + serviceType + '&' + $.param( param );
+		
+		var globalCBName = 'kapi_' + _this.getSignature( param );
+		if( window[ globalCBName ] ){
+			mw.log("Error global callback name already exists: " + globalCBName )
+			this.doApiRequest(requestUrl, sig + Math.random(), callback );
+		}
+		window[ globalCBName ] = function( data ){
+			// issue the local scope callback:
+			callback( data );
+			// null this global function name: 
+			window[ globalCBName ] = null;
+		};
+		mw.log("kAPI:: doApiRequest: " + requestURL);
+		$.getScript( requestURL + '&callback=' + globalCBName );
 	},
 	getApiUrl : function(){
 		return mw.getConfig( 'Kaltura.ServiceUrl' ) + mw.getConfig( 'Kaltura.ServiceBase' );
@@ -287,9 +304,9 @@ mw.KApi.prototype = {
 	convertCustomDataXML: function( data ){
 		var result = {};
 		if( data && data.objects && data.objects[0] ){			
-			var xml = $j.parseXML( data.objects[0].xml );		
-			var $xml = $j( xml ).find('metadata').children();			
-			$j.each( $xml, function(inx, node){
+			var xml = $.parseXML( data.objects[0].xml );		
+			var $xml = $( xml ).find('metadata').children();			
+			$.each( $xml, function(inx, node){
 				result[ node.nodeName ] = node.textContent;
 			});		
 		}
@@ -302,7 +319,7 @@ mw.KApi.prototype = {
 	 */
 	getCacheKey: function( kProperties ){
 		var rKey = '';
-		$j.each(kProperties, function(inx, value){
+		$.each(kProperties, function(inx, value){
 			if( inx == 'flashvars' ){
 				// add in the flashvars that can vary the api response
 				if( typeof kProperties.flashvars == 'object'){
@@ -350,3 +367,4 @@ mw.KApiRequest = function( partnerId, requestObject, callback ){
 	var kClient = mw.kApiGetPartnerClient( partnerId );
 	kClient.doRequest( requestObject, callback );
 };
+
