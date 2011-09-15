@@ -30,6 +30,7 @@ mw.KAds.prototype = {
 		"Interval": 'frequency',
 		"StartAt": 'start'
 	},
+	displayedCuePoints: [],
 	
 	init: function( embedPlayer, $uiConf, callback ){
 		var _this = this; 
@@ -68,10 +69,24 @@ mw.KAds.prototype = {
 
 	// Load the ad from cue point
 	loadAd: function( cuePoint ) {
+		
 		var _this = this;
+		var adType = _this.getAdTypeFromCuePoint( cuePoint );
+		
+		// Check if cue point already displayed
+		if( $j.inArray(cuePoint.cuePoint.id, _this.displayedCuePoints) >= 0 ) {
+			return ;
+		}
+
+		// If ad type is midroll pause the video
+		if( adType == 'midroll' ) {
+			// Pause the video
+			_this.embedPlayer.pause();
+		}
+		
 		if( cuePoint.cuePoint.sourceUrl ) {
 			mw.AdLoader.load( cuePoint.cuePoint.sourceUrl, function( adConf ){
-
+				
 				var adCuePointConf = {
 					duration: ( (cuePoint.cuePoint.endTime - cuePoint.cuePoint.startTime) / 1000 ),
 					start: ( cuePoint.cuePoint.startTime / 1000  )
@@ -87,17 +102,9 @@ mw.KAds.prototype = {
 							'right': '5px',
 							'bottom' : '5px'
 						}
-					}
+					},
+					type: adType
 				};
-
-				var adType = _this.getAdTypeFromCuePoint( cuePoint );
-
-				// Add the cue point to Ad Timeline
-				mw.addAdToPlayerTimeline( 
-					_this.embedPlayer,
-					adType,
-					adsCuePointConf
-				);
 
 				var originalSrc = _this.embedPlayer.getSrc();
 				var seekTime = ( parseFloat( cuePoint.cuePoint.startTime / 1000 ) / parseFloat( _this.embedPlayer.duration ) );
@@ -111,6 +118,9 @@ mw.KAds.prototype = {
 
 				// Set switch back function
 				var doneCallback = function() {
+					// Add cuePoint Id to displayed cuePoints array
+					_this.displayedCuePoints.push(cuePoint.cuePoint.id);
+					
 					var vid = _this.embedPlayer.getPlayerElement();
 					// Check if the src does not match original src if
 					// so switch back and restore original bindings
@@ -142,6 +152,9 @@ mw.KAds.prototype = {
 							} else {
 								// Seek to where we did the switch
 								_this.embedPlayer.doSeek( seekTime );
+								_this.embedPlayer.bind('seeked.ad', function() {
+									_this.embedPlayer.play();
+								});
 							}
 						});
 					} else {
@@ -151,7 +164,6 @@ mw.KAds.prototype = {
 
 				// If out ad is preroll/midroll/postroll, disable the player 
 				if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
-					//
 					_this.embedPlayer.disableSeekBar();
 
 					// Remove big play button if we have one
@@ -165,7 +177,11 @@ mw.KAds.prototype = {
 
 				// Tell the player to show the Ad
 				var adDuration = Math.round(cuePoint.cuePoint.duration / 1000);
-				_this.embedPlayer.adTimeline.display( adType, doneCallback, adDuration );
+				// Load adTimeline
+				if (!_this.embedPlayer.adTimeline) {
+					_this.embedPlayer.adTimeline = new mw.AdTimeline( _this.embedPlayer );
+				}
+				_this.embedPlayer.adTimeline.display( adsCuePointConf, doneCallback, adDuration );
 			});
 		}
 	},

@@ -417,6 +417,8 @@ mw.AdTimeline.prototype = {
 					return ;
 				}
 				mw.log("AdTimeline:: source updated, add tracking");
+				// Trigger AdStart event (used by comscore)
+				$( _this.embedPlayer ).trigger('KalturaSupport_AdStart');
 				// Bind all the tracking events ( currently vast based but will abstract if needed ) 
 				if( adConf.trackingEvents ){
 					_this.bindTrackingEvents( adConf.trackingEvents );
