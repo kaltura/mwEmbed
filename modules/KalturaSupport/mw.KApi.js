@@ -129,7 +129,7 @@ mw.KApi.prototype = {
 		}
 
 		// Build the request url with sorted params:
-		var requestURL = _this.getApiUrl() + serviceType + '&' + $j.param( param );
+		var requestURL = _this.getApiUrl(serviceType) + '&' + $j.param( param );
 		
 		var globalCBName = 'kapi_' + _this.getSignature( param );
 		if( window[ globalCBName ] ){
@@ -145,8 +145,12 @@ mw.KApi.prototype = {
 		mw.log("kAPI:: doApiRequest: " + requestURL);
 		$j.getScript( requestURL + '&callback=' + globalCBName );
 	},
-	getApiUrl : function(){
-		return mw.getConfig( 'Kaltura.ServiceUrl' ) + mw.getConfig( 'Kaltura.ServiceBase' );
+	getApiUrl : function( serviceType ){
+		var serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
+		if( serviceType && serviceType == 'stats') {
+			serviceUrl = mw.getConfig( 'Kaltura.StatsServiceUrl' );
+		}
+		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
 	},
 	getSignature: function( params ){
 		params = this.ksort(params);
@@ -195,12 +199,21 @@ mw.KApi.prototype = {
 		// Check if we have ks flashvar and use it for our request
 		if( kProperties.flashvars && kProperties.flashvars.ks ) {
 			this.setKS( kProperties.flashvars.ks );
-		};
+		}
+
+		// Always ask for uiConf
+		requestObject.push({
+				'service' : 'uiconf',
+				'id' : kProperties.uiconf_id,
+				'action' : 'get'
+		});
+
 		if( kProperties.entry_id ){
 			// The referring  url ( can be from the iframe if in iframe mode ) 
 			var refer = ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ? 
 							mw.getConfig( 'EmbedPlayer.IframeParentUrl') : 
 							document.URL;
+			refer = refer.substr(0,refer.indexOf("#"));
 			
 			// Add Context Data request 			
 			requestObject.push({
@@ -257,16 +270,7 @@ mw.KApi.prototype = {
 			    });
 			}
 			
-		}		
-		if( kProperties.uiconf_id ){
-			// Get Ui Conf if property is present
-			requestObject.push({
-		        	'service' : 'uiconf',
-		        	'id' : kProperties.uiconf_id,
-		        	'action' : 'get'
-		    });
 		}
-
 		
 
 		// Do the request and pass along the callback
@@ -274,29 +278,24 @@ mw.KApi.prototype = {
 			mw.log( "KApi:: playerLoader got data response" );
 			var namedData = {};
 			// Name each result data type for easy access
-			if( kProperties.entry_id ){ 
-				namedData['accessControl'] = data[0];
-				namedData['flavors'] = data[1];
-				namedData['meta'] = data[2];
-				namedData['entryMeta'] = _this.convertCustomDataXML( data[3] );
 
-				if( kProperties.uiconf_id ){
-					if( data[4] ){
-						namedData['uiConf'] = data[4]['confFile'];
-					}
-					if( data[5] && data[5].totalCount > 0 ) {
-						namedData['entryCuePoints'] = data[5].objects;
-					}
-				} else {
-					if( data[4] && data[4].totalCount > 0 ) {
-						namedData['entryCuePoints'] = data[4].objects;
-					}
-				}
-					
-			} else if( kProperties.uiconf_id ){
-				// If only loading the confFile set here: 
+			// Check if we got uiConf
+			if( data[0].code ) {
+				mw.log('Error getting uiConf: ' + data[0].message);
+			} else {
 				namedData['uiConf'] = data[0]['confFile'];
-			}	
+			}
+
+			if( kProperties.entry_id ){ 
+				namedData['accessControl'] = data[1];
+				namedData['flavors'] = data[2];
+				namedData['meta'] = data[3];
+				namedData['entryMeta'] = _this.convertCustomDataXML( data[4] );
+
+				if( data[5] && data[5].totalCount > 0 ) {
+					namedData['entryCuePoints'] = data[5].objects;
+				}
+			}
 			_this.playerLoaderCache[ _this.getCacheKey( kProperties ) ] = namedData;
 			callback( namedData );
 		});

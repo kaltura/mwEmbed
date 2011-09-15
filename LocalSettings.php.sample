@@ -9,6 +9,9 @@
 // Set this to true for debug support
 $wgEnableScriptDebug = false;
 
+// Set Kaltura Stats service url to custom domain
+// $wgKalturaStatsServiceUrl = $wgHTTPProtocol . '://stats.kaltura.com';
+
 // By default we enable ( all ) the modules. You probably only want player related modules enabled: 
 // Here are the most common used modules: 
 $wgMwEmbedEnabledModules = array( 'EmbedPlayer', 'KalturaSupport', 'AdSupport', 'Playlist', 'TimedText' );

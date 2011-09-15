@@ -36,8 +36,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			captionConfig = overCaptionConfig;
 		}
 
-		// TODO: remove check for TempCaptions once Eagle is out
-		if( captionConfig.plugin || mw.getConfig('Kaltura.TempCaptions')){
+		if( captionConfig.plugin ){
 			captionPlugin( embedPlayer, captionConfig ,  callback );
 		} else {
 			callback();

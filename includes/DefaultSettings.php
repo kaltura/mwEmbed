@@ -51,7 +51,7 @@ $wgEnableScriptDebug = false;
 $wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "https" : "http";
 
 // The default Kaltura service url:
-$wgKalturaServiceUrl = $wgHTTPProtocol . '://www.kaltura.com';
+$wgKalturaServiceUrl = $wgHTTPProtocol . '://cdnapi.kaltura.com';
 
 // Default Kaltura CDN url: 
 $wgKalturaCDNUrl = $wgHTTPProtocol . '://cdnsecakmi.kaltura.com';
@@ -100,5 +100,7 @@ if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
 
+// Check if we have local setting for Stats url
+$wgKalturaStatsServiceUrl = isset($wgKalturaStatsServiceUrl) ? $wgKalturaStatsServiceUrl : $wgKalturaServiceUrl;
 
 ?>
