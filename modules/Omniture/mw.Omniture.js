@@ -49,7 +49,8 @@ mw.Omniture.prototype = {
 			'playerPlayEndEvent',
 			'mediaReadyEvent'
 		];
-		
+		var embedPlayer = this.embedPlayer;
+		var gP = embedPlayer.getKalturaConfig;
 		// Get all the plugin config for all the omniture events 
 		$j.each( omintureEvents , function( inx, eventName){
 			var eventId = gP( eventName );
@@ -68,7 +69,7 @@ mw.Omniture.prototype = {
 					break;
 				}
 				var v = {};
-				v[eVarId] =embedPlayer.evaluate( eVarVal );
+				v[eVarId] = embedPlayer.evaluate( eVarVal );
 				eVars.push( v );
 			}
 			// Look for up-to 10 associated Props
