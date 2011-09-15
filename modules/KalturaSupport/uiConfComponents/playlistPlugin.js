@@ -26,8 +26,10 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				}); 
 				callback();
 			});
+		} else {
+			// if playlist is not enabled continue player build out
+			callback();
 		}
-		callback();
 	});
 });
 

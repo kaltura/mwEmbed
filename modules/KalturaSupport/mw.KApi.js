@@ -133,7 +133,7 @@ mw.KApi.prototype = {
 		
 		var globalCBName = 'kapi_' + _this.getSignature( param );
 		if( window[ globalCBName ] ){
-			mw.log("Error global callback name already exists: " + globalCBName )
+			mw.log("Error global callback name already exists: " + globalCBName );
 			this.doApiRequest(requestUrl, _this.getSignature( param ) + Math.random(), callback );
 		}
 		window[ globalCBName ] = function( data ){

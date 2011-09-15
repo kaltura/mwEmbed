@@ -18,6 +18,28 @@ mw.setConfig({
 
 mw.addModuleLoader( 'FreeWheel', ['mw.freeWheelController'] );
 
+// Check if the plugin is enabled: 
+$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+		if( embedPlayer.getKalturaConfig( 'FreeWheel',  'plugin' ) ){
+			loadingAdPlugin = true;
+			var fwConfig = embedPlayer.getKalturaConfig(
+				'FreeWheel',
+				[ 'plugin', 'preSequence', 'postSequence', 'width', 'height', 'asyncInit',
+				 'adManagerUrl', 'serverUrl', 'networkId', 'videoAssetId',  'videoAssetIdType', 
+				 'playerProfile', 'videoAssetNetworkId' ]
+			);
+			mw.load( ["FreeWheel"], function(){
+				mw.addFreeWheelControler( embedPlayer, fwConfig, callback );
+			});
+		} else {
+			// no freewheel plugin issue callback to continue player build out
+			callback();
+		}
+	});
+});
+
+
 // To support companion ads.
 $( mw ).bind( 'AddIframePlayerMethods', function( event, exportedMethods ){
 	exportedMethods.push( 'setFreeWheelAddCompanions' );

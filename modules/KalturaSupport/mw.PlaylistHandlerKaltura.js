@@ -126,7 +126,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				// update the id: 
 				var plId =  mw.parseUri( kplUrl ).queryKey['playlist_id'];
 				// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
-				if( plId && mw.parseUri( kplUrl ).queryKey['partner_id'] && kplUrl.indexOf('executeplaylist') != -1 ){
+				if( plId && mw.parseUri( kplUrl ).queryKey['partner_i d'] && kplUrl.indexOf('executeplaylist') != -1 ){
 					playlist_id = plId;
 				} else {
 					playlist_id = kplUrl;

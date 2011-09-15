@@ -24,20 +24,6 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			});
 		}
 		
-		// Check for freewheel ads
-		if( embedPlayer.getKalturaConfig( 'FreeWheel',  'plugin' ) ){
-			loadingAdPlugin = true;
-			var fwConfig = embedPlayer.getKalturaConfig(
-				'FreeWheel',
-				[ 'plugin', 'preSequence', 'postSequence', 'width', 'height', 'asyncInit',
-				 'adManagerUrl', 'serverUrl', 'networkId', 'videoAssetId',  'videoAssetIdType', 
-				 'playerProfile', 'videoAssetNetworkId' ]
-			);
-			mw.load( ["FreeWheel"], function(){
-				mw.addFreeWheelControler( embedPlayer, fwConfig, callback );
-			});
-		}
-		
 		if( !loadingAdPlugin ){
 			// Continue player build out for players without ads
 			callback();
