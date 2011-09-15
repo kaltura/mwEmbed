@@ -791,6 +791,8 @@ class KalturaResultObject {
 			}
 			// Get the result object as a combination of baseResult and multiRequest
 			$resultObject = $namedMultiRequest->doQueue();
+			// merge in the base result object: 
+			$resultObject = array_merge( $this->getBaseResultObject(), $resultObject);
 			
 		} catch( Exception $e ){
 			// Update the Exception and pass it upward
