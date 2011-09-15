@@ -188,7 +188,7 @@ mw.KApi.prototype = {
 		var _this = this;
 		var requestObject = [];
 		mw.log( "KApi:: playerLoader, in cache: " + !!( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ) );
-		if( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ){
+		if( this.getCacheKey( kProperties ) && this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ){
 			callback( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] );
 			return ;
 		}
@@ -319,17 +319,19 @@ mw.KApi.prototype = {
 	 */
 	getCacheKey: function( kProperties ){
 		var rKey = '';
-		$.each(kProperties, function(inx, value){
-			if( inx == 'flashvars' ){
-				// add in the flashvars that can vary the api response
-				if( typeof kProperties.flashvars == 'object'){
-					rKey += kProperties.flashvars.getCuePointsData;
-					rKey += kProperties.flashvars.ks
+		if( kProperties ){
+			$.each(kProperties, function( inx, value ){
+				if( inx == 'flashvars' ){
+					// add in the flashvars that can vary the api response
+					if( typeof kProperties.flashvars == 'object'){
+						rKey += kProperties.flashvars.getCuePointsData;
+						rKey += kProperties.flashvars.ks
+					}
+				} else {
+					rKey+=inx + '_' + value;
 				}
-			} else {
-				rKey+=inx + '_' + value;
-			}
-		});
+			});
+		}
 		return rKey;
 	}
 };
