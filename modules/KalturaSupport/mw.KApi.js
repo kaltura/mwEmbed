@@ -14,6 +14,7 @@
  * 		Array An Array of request params for multi-request 
  * 		Object Named request params
  */
+( function( mw, $ ) {
 	
 mw.KApi = function( partner_id ){
 	return this.init( partner_id );	
@@ -370,3 +371,4 @@ mw.KApiRequest = function( partnerId, requestObject, callback ){
 	kClient.doRequest( requestObject, callback );
 };
 
+})( window.mw, jQuery );
