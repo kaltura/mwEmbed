@@ -348,10 +348,12 @@ class kalturaIframe {
 
 		// Set relevent expire headers:
 		if( $this->getResultObject()->isCachedOutput() ){
+			$time = $this->getResultObject()->getFileCacheTime();
 			header( 'Pragma: public' );
 			// Cache for $wgKalturaUiConfCacheTime
 			header( "Cache-Control: public, max-age=$wgKalturaUiConfCacheTime, max-stale=0");
-			header( "Expires: " . gmdate( "D, d M Y H:i:s", time() + $wgKalturaUiConfCacheTime ) . " GM" );
+			header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $time) . "GMT");
+			header( "Expires: " . gmdate( "D, d M Y H:i:s", $time + $wgKalturaUiConfCacheTime ) . " GM" );
 		} else {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Pragma: no-cache");

@@ -196,15 +196,8 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kalturaPlayerMetaData = playerData.meta;
 			$j( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
 		}
-
-		// TODO: Remove this when Eagle is out
-		if( mw.getConfig( 'Kaltura.TempCuePoints' ) ) {
-			playerData.entryCuePoints = mw.getConfig( 'Kaltura.TempCuePoints' );
-		}
-		// End Remove
-		
 		if( playerData.entryCuePoints ) {
-			mw.log( "KCuePoints:: Add CuePoints to embedPlayer");
+			mw.log( "KCuePoints:: Added " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
 			embedPlayer.entryCuePoints = playerData.entryCuePoints;
 			new mw.KCuePoints( embedPlayer );
 
@@ -225,8 +218,7 @@ mw.KWidgetSupport.prototype = {
 		// Check for playlist cache based 
 		if( playerData.playlistCache ){
 			embedPlayer.playlistCache = playerData.playlistCache;
-		}
-		
+		}	
 		
 		if( embedPlayer.$uiConf ){
 			_this.baseUiConfChecks( embedPlayer );
@@ -459,6 +451,9 @@ mw.KWidgetSupport.prototype = {
 		}
 		if( ac.isScheduledNow === 0 ){
 			return 'is not scheduled now';
+		}
+		if( ac.isIpAddressRestricted ) {
+			return 'ip restricted';
 		}
 		if( ac.isSessionRestricted && ac.previewLength === -1 ){
 			return 'session restricted';
@@ -762,7 +757,7 @@ mw.KWidgetSupport.prototype = {
 //Setup the kWidgetSupport global if not already set
 if( !window.kWidgetSupport ){
 	window.kWidgetSupport = new mw.KWidgetSupport();
-};
+}
 
 /**
  * Register a global shortcuts for the Kaltura sources query
