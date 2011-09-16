@@ -375,7 +375,7 @@
 		var playlistEmbed = playlist.embedPlayer;
 		
 		// Check if we are dealing with a kaltura player: 
-		if( !playlistEmbed.kwidgetid ){
+		if( !playlistEmbed  ||  !playlistEmbed.kwidgetid ){
 			return ;
 		}
 		
