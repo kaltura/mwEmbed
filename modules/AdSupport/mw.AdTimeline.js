@@ -423,7 +423,7 @@ mw.AdTimeline.prototype = {
 				}
 				mw.log("AdTimeline:: source updated, add tracking");
 				// Trigger AdStart event (used by comscore)
-				$( _this.embedPlayer ).trigger('KalturaSupport_AdStart');
+				$( _this.embedPlayer ).trigger( 'AdSupport_AdStart', [adConf.type, adSlot] );
 				// Bind all the tracking events ( currently vast based but will abstract if needed ) 
 				if( adConf.trackingEvents ){
 					_this.bindTrackingEvents( adConf.trackingEvents );
@@ -653,7 +653,7 @@ mw.AdTimeline.prototype = {
 		$( videoPlayer ).bind('ended', function(){			
 			sendBeacon( 'complete' );
 			clearInterval( monitorInterval );
-		})
+		});
 		
 		// On pause / resume: 
 		$( videoPlayer ).bind( 'pause', function(){
