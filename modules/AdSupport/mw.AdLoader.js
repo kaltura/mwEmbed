@@ -1,4 +1,5 @@
-
+( function( mw, $ ) {
+	
 mw.AdLoader = {
 	/**
 	 * Get ad display configuration object from a url
@@ -36,7 +37,7 @@ mw.AdLoader = {
 			mw.log( "Error: mw.KAds : missing kaltura proxy url ( can't load ad )");
 			return ; 
 		}
-		$j.getJSON( proxyUrl + '?url=' + encodeURIComponent( adUrl ) + '&callback=?', function( result ){
+		$.getJSON( proxyUrl + '?url=' + encodeURIComponent( adUrl ) + '&callback=?', function( result ){
 			var adDisplayConf = {};
 			if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
 				mw.log("Error: loadAdXml error with http response");
@@ -44,7 +45,7 @@ mw.AdLoader = {
 				return ;
 			}
 			try{
-				var resultXML = $j.parseXML( result['contents'] );
+				var resultXML = $.parseXML( result['contents'] );
 			} catch (e){
 				mw.log("Error: AdLoader could not parse:" + resultXML);
 				callback({});
@@ -92,3 +93,4 @@ mw.AdLoader = {
 		return 'unknown';
 	}
 };
+} )( window.mw, jQuery );
