@@ -482,7 +482,6 @@ mw.Playlist.prototype = {
 	*/
 	addPlayer: function( clipIndex , callback ){
 		var _this = this;
-		debugger;
 		mw.log( "mw.Playlist:: addPlayer " + clipIndex );
 		var playerSize = _this.getTargetPlayerSize();
 		this.clipIndex = clipIndex;
@@ -512,7 +511,6 @@ mw.Playlist.prototype = {
 		
 		// Update the embed player attributes: 
 		_this.sourceHandler.updateEmbedPlayer( clipIndex, $video );
-		debugger;
 		// Put the video player into the page:
 		$( _this.target + ' .media-rss-video-player' ).empty().append( $video );
 		
