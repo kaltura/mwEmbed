@@ -235,7 +235,13 @@ mw.PlayerControlBuilder.prototype = {
 			targetHeight = windowSize.height;
 			targetWidth = targetHeight * ( embedPlayer.getWidth() / embedPlayer.getHeight() );
 		}
-		var offsetTop = parseInt( $( embedPlayer.getPlayerElement() ).css( 'top' ) );
+		var offsetTop = 0;
+		if( embedPlayer.getPlayerElement() ){
+			offsetTop = parseInt( $( embedPlayer.getPlayerElement() ).css( 'top' ) );
+		} else if( embedPlayer.$interface.find('.playerPoster') ){
+			var ot = parseInt(embedPlayer.$interface.find('.playerPoster').css( 'top' ) );
+			offsetTop = !isNaN( ot ) ? ot : 0;
+		}
 		// if the video is very wide in a tall window adjust the size: 
 		offsetTop+= ( targetHeight < windowSize.height )? ( windowSize.height- targetHeight ) / 2 : 0;
 		// if the video is very tall in a short window adjust the size:
@@ -323,6 +329,8 @@ mw.PlayerControlBuilder.prototype = {
 	doFullScreenPlayerDom: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
+		var $interface = embedPlayer.$interface;
+		
 		// Remove any old mw-fullscreen-overlay
 		$( '.mw-fullscreen-overlay' ).remove();
 
@@ -349,7 +357,6 @@ mw.PlayerControlBuilder.prototype = {
 		this.windowOffset = $interface.offset();
 		this.windowOffset.top = this.windowOffset.top - $(document).scrollTop();
 		this.windowOffset.left = this.windowOffset.left - $(document).scrollLeft();
-
 		// Change the z-index of the interface
 		$interface.css( {
 			'position' : 'fixed',
@@ -522,26 +529,28 @@ mw.PlayerControlBuilder.prototype = {
 		// Set up local pointer to interface:
 		var embedPlayer = this.embedPlayer;
 		var $interface = embedPlayer.$interface;
+		var targetAspectSize = _this.getAspectPlayerWindowCss( size );
 		if( animate ){
 			$interface.animate( interfaceCss );
-			// Update player size
-			$( embedPlayer ).animate( _this.getAspectPlayerWindowCss( size ), callback );
+			$interface.find('.playerPoster').animate( targetAspectSize  );
+			// Update player container size:
+			$( embedPlayer ).animate(  interfaceCss, callback );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large').animate( _this.getFullscreenPlayButtonCss( size ) );
+			$interface.find('.play-btn-large').animate(  _this.getFullscreenPlayButtonCss( interfaceCss ) );
 			
 			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() ).animate( _this.getAspectPlayerWindowCss( size ) );
+				$( embedPlayer.getPlayerElement() ).animate( targetAspectSize );
 			}
 		} else {
 			$interface.css( interfaceCss );
 			// Update player size
-			$( embedPlayer ).css( _this.getAspectPlayerWindowCss( size ) );
+			$( embedPlayer ).css( targetAspectSize );
 			// Update play button pos
-			$interface.find('.play-btn-large').css( _this.getFullscreenPlayButtonCss( size ) );
+			$interface.find('.play-btn-large').css(  _this.getFullscreenPlayButtonCss( size ) );
 			
 			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() ).css( _this.getAspectPlayerWindowCss( size ) );
+				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
 			}
 			
 			if( callback ){
@@ -571,7 +580,7 @@ mw.PlayerControlBuilder.prototype = {
 		$( this.embedPlayer ).trigger( 'onCloseFullScreen' );
 	},
 	restoreWindowPlayerDom:function(){
-		
+		var _this = this;
 		// local ref to embedPlayer: 
 		var embedPlayer = this.embedPlayer; 
 		
@@ -587,6 +596,7 @@ mw.PlayerControlBuilder.prototype = {
 		$('.mw-fullscreen-overlay').fadeOut( 'slow' );
 	
 		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
+
 		// Restore the player:
 		embedPlayer.resizePlayer( {
 			'top' : _this.windowOffset.top + 'px',
@@ -594,21 +604,19 @@ mw.PlayerControlBuilder.prototype = {
 			'width' : embedPlayer.getWidth(),
 			'height' : embedPlayer.getHeight()
 		}, aninmate, function(){
+			var topPos = {
+					'position' : _this.windowPositionStyle,
+					'z-index' : 0,
+					'overlow' : 'visible',
+					'top' : '0px',
+					'left' : '0px'
+				};
 			// Restore non-absolute layout:
-			$interface.css({
-				'position' : _this.windowPositionStyle,
-				'z-index' : _this.windowZindex,
-				'overlow' : 'visible',
-				'top' : '0px',
-				'left' : '0px'
-			});
-	
-			// Restore absolute layout of parents:
-			$.each( _this.parentsAbsolute, function( na, element ){
-				$( element ).css( 'position', 'absolute' );
-			} );
-			_this.parentsAbsolute = null;
-	
+			$( [ $interface, $interface.find('.playerPoster'), embedPlayer ] ).css(topPos);
+			if( embedPlayer.getPlayerElement() ){
+				$( embedPlayer.getPlayerElement() )
+					.css( topPos )
+			}
 			// Restore the body scroll bar
 			$('body').css( 'overflow', 'auto' );
 			

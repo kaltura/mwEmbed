@@ -134,7 +134,7 @@ mw.KApi.prototype = {
 		var globalCBName = 'kapi_' + _this.getSignature( param );
 		if( window[ globalCBName ] ){
 			mw.log("Error global callback name already exists: " + globalCBName );
-			this.doApiRequest(requestURL, _this.getSignature( param ) + Math.random(), callback );
+			this.doApiRequest( requestURL, _this.getSignature( param ) + Math.random(), callback );
 		}
 		window[ globalCBName ] = function( data ){
 			// issue the local scope callback:

@@ -446,7 +446,7 @@ function kCheckAddScript(){
 	 */
 	var serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
 	if( ! mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) ) {
-		if( ! serviceUrl || serviceUrl != 'http://www.kaltura.com' ){
+		if( ! serviceUrl || serviceUrl.indexOf( 'kaltura.com' ) === -1 ){
 			// if not hosted on kaltura for now we can't use the iframe to load the player
 			mw.setConfig( 'Kaltura.IframeRewrite', false );
 			mw.setConfig( 'Kaltura.UseManifestUrls', false);
@@ -979,7 +979,7 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 			embedSettings.wid = val;
 			embedSettings.p = val.replace(/_/,'');
 		}	
-		if( key == 'parentid' ||  key == 'parent_id'){
+		if( key == 'partnerid' ||  key == 'partner_id'){
 			embedSettings.wid = '_' + val;
 			embedSettings.p = val;
 		}
