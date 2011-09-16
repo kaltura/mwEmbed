@@ -268,14 +268,9 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	getFullscreenPlayButtonCss: function( size ) {
 		var _this = this;
-		var pos = this.getAspectPlayerWindowCss( size );
-		if( !_this.isOverlayControls() ){
-			pos.top = pos.top - this.height;
-		}
-		
 		return {
-			'left' : ( ( pos.width - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
-			'top' : ( ( pos.height - this.getComponentHeight( 'playButtonLarge' ) ) / 2 )
+			'left' : ( ( parseInt( size.width ) - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
+			'top' : ( ( parseInt( size.height ) - this.getComponentHeight( 'playButtonLarge' ) ) / 2 )
 		};
 	},
 
@@ -404,7 +399,6 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// only animate if we are not inside an iframe
 		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
-		
 		// Resize the player keeping aspect and with the widow scroll offset:
 		embedPlayer.resizePlayer({
 			'top' : topOffset,
@@ -519,6 +513,7 @@ mw.PlayerControlBuilder.prototype = {
 	 * Resize the player to a target size keeping aspect ratio
 	 */
 	resizePlayer: function( size, animate, callback ){
+		mw.log("PlayerControlBuilder:: resizePlayer: " + size.width + 'x' + size.height );
 		var _this = this;
 		// Update interface container:
 		var interfaceCss = {
@@ -534,16 +529,18 @@ mw.PlayerControlBuilder.prototype = {
 		var targetAspectSize = _this.getAspectPlayerWindowCss( size );
 		if( animate ){
 			$interface.animate( interfaceCss );
+			
 			$interface.find('.playerPoster').animate( targetAspectSize  );
-			// Update player container size:
-			$( embedPlayer ).animate(  interfaceCss, callback );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large').animate(  _this.getFullscreenPlayButtonCss( interfaceCss ) );
+			$interface.find('.play-btn-large').animate(  _this.getFullscreenPlayButtonCss( size ) );
 			
 			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() ).animate( targetAspectSize );
+				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
 			}
+			
+			// Update player container size:
+			$( embedPlayer ).animate(  interfaceCss, callback );
 		} else {
 			$interface.css( interfaceCss );
 			// Update player size

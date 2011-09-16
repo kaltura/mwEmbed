@@ -222,7 +222,6 @@ mw.EmbedPlayerNative = {
 				pWidth = this.$interface.width();
 				pHeight =  parseInt( vid.videoHeight / vid.videoWidth * pWidth );
 			}
-			mw.log( 'EmbedPlayerNative: applyIntrinsicAspect:: left:' + ( ( $j( this ).width() - pWidth ) * .5 ) + ' this width:' +  $j( this ).width() );
 			// see if we need to leave room for controls: 
 			var controlBarOffset = 0;
 			if( ! this.controlBuilder.isOverlayControls() ){
@@ -232,8 +231,10 @@ mw.EmbedPlayerNative = {
 			var topOffset = $j( vid ).css('top') ?
 					$j( vid ).css('top') :
 					( ( this.$interface.height() - controlBarOffset - pHeight ) * .5 ) + 'px';
-			
+
+			mw.log( 'EmbedPlayerNative: applyIntrinsicAspect:: left:' + ( ( $j( this ).width() - pWidth ) * .5 ) + ' this width:' +  $j( this ).width() );
 			$j( vid ).css({
+				'position' : 'absolute',
 				'height' : pHeight + 'px',
 				'width':  pWidth + 'px',
 				'left': ( ( this.$interface.width() - pWidth ) * .5 ) + 'px',

@@ -949,23 +949,18 @@ mw.EmbedPlayer.prototype = {
 		mw.log("EmbedPlayer::resizePlayer:" + size.width + ' x ' + size.height );
 		var _this = this;
 		var callback = function(){
-			setTimeout(function(){
-				_this.applyIntrinsicAspect();
+			_this.applyIntrinsicAspect();
+			if( resizePlayerCallback )
+				resizePlayerCallback();
 				
-				if( resizePlayerCallback )
-					resizePlayerCallback();
-				
-			},10);
-		}
+		};
 		// Check if we are native display then resize the playerElement directly
 		if( this.useNativePlayerControls() ){
 			if( animate ){
 				$( this.getPlayerElement() ).animate( size , callback);
 			} else {
 				$( this.getPlayerElement() ).css( size );
-				if( callback ) {
-					callback();
-				}
+				callback();
 			}
 		} else {
 			this.controlBuilder.resizePlayer( size, animate, callback);
