@@ -82,6 +82,8 @@
  * 		]
  * }
  */
+( function( mw, $ ) {
+	
 mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
 	mw.log("AdTimeline::Add:" + timeType + '  dispCof:' + adConf + "\n");
 	mw.addAdTimeline( embedPlayer );
@@ -134,7 +136,7 @@ mw.AdTimeline.prototype = {
 		_this.originalSrc = _this.embedPlayer.getSrc();
 		// Flag to store if its the first time play is being called:
 		var firstPlay = true;
-		$j(_this.embedPlayer).bind('onplay.AdTimeline', function() {
+		$(_this.embedPlayer).bind('onplay.AdTimeline', function() {
 			// Check if this is the "first play" request:
 			if ( !firstPlay ) {
 				return 
@@ -150,14 +152,17 @@ mw.AdTimeline.prototype = {
 			_this.displaySlots( 'preroll', 0,  function(){
 				// Show bumpers:
 				_this.displaySlots( 'bumper', 0,  function(){
-					// Continue playback
-					_this.embedPlayer.play();
+					_this.embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+						// Continue playback
+						_this.embedPlayer.play();
+					});
+					
 				});
 			});
 			
 			// Bind the player "ended" event to play the postroll if present
 			var displayedPostroll = false;
-			$j( _this.embedPlayer ).bind( 'ended.AdTimeline', function( event ){
+			$( _this.embedPlayer ).bind( 'ended.AdTimeline', function( event ){
 				if( displayedPostroll ){
 					return ;
 				}
@@ -187,7 +192,7 @@ mw.AdTimeline.prototype = {
 		// Note there may be a better measurement of timeout
 		var adDuration = overlaySlot.timeout;
 		// Monitor:
-		$j( _this.embedPlayer ).bind( 'monitorEvent', function() {	
+		$( _this.embedPlayer ).bind( 'monitorEvent', function() {	
 			var time = _this.embedPlayer.currentTime;
 			if( !lastPlayEndTime ){
 				lastPlayEndTime = time;
@@ -316,9 +321,9 @@ mw.AdTimeline.prototype = {
 		adSlot.doneFunctions = [];
 		adSlot.playbackDone = function(){
 			// Remove notice if present: 
-			$j('#' + _this.embedPlayer.id + '_ad_notice' ).remove();
+			$('#' + _this.embedPlayer.id + '_ad_notice' ).remove();
 			// Remove skip button if present: 
-			$j('#' + _this.embedPlayer.id + '_ad_skipBtn' ).remove();
+			$('#' + _this.embedPlayer.id + '_ad_skipBtn' ).remove();
 			
 			while( adSlot.doneFunctions.length ){
 				adSlot.doneFunctions.shift()();
@@ -376,7 +381,7 @@ mw.AdTimeline.prototype = {
 		
 	},
 	/**
-	 * Display a companion add
+	 * Display a video slot
 	 * @param adSlot
 	 * @param adConf
 	 * @return
@@ -399,7 +404,7 @@ mw.AdTimeline.prototype = {
 		// Check for click binding 
 		if( adConf.clickThrough ){	
 			var clickedBumper = false;
-			$j( _this.embedPlayer ).bind( 'click.ad', function(){
+			$( _this.embedPlayer ).bind( 'click.ad', function(){
 				// try to do a popup:
 				if(!clickedBumper){
 					clickedBumper = true;
@@ -434,19 +439,19 @@ mw.AdTimeline.prototype = {
 					var noticeId =_this.embedPlayer.id + '_ad_notice';
 					// Add the notice target:
 					_this.embedPlayer.$interface.append( 
-						$j('<span />')
+						$('<span />')
 							.attr('id', noticeId)
 							.css( helperCss )
 							.css('font-size', '90%')
 							.css( adSlot.notice.css )
 					);
 					var localNoticeCB = function(){
-						if( vid && $j('#' + noticeId).length ){
+						if( vid && $('#' + noticeId).length ){
 							var timeLeft = Math.round( vid.duration - vid.currentTime );
 							if( isNaN( timeLeft ) ){
 								timeLeft = '...';
 							}
-							$j('#' + noticeId).text(
+							$('#' + noticeId).text(
 								adSlot.notice.text.replace('$1', timeLeft)
 							);
 							setTimeout( localNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -458,28 +463,28 @@ mw.AdTimeline.prototype = {
 				if( adSlot.skipBtn ){
 					var skipId = _this.embedPlayer.id + '_ad_skipBtn';
 					_this.embedPlayer.$interface.append(
-						$j('<span />')
+						$('<span />')
 							.attr('id', skipId)
 							.text( adSlot.skipBtn.text )
 							.css( helperCss )
 							.css('cursor', 'pointer')
 							.css( adSlot.skipBtn.css )				
 							.click(function(){
-								$j( _this.embedPlayer ).unbind( 'click.ad' );	
+								$( _this.embedPlayer ).unbind( 'click.ad' );	
 								adSlot.playbackDone();
 							})
 					);
 					// TODO move up via layout engine ( for now just the control bar ) 
-					var bottomPos = parseInt( $j('#' +skipId ).css('bottom') );
+					var bottomPos = parseInt( $('#' +skipId ).css('bottom') );
 					if( !isNaN( bottomPos ) ){
-						$j('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() );
+						$('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() );
 					}
 				}
 				
 			},
 			function(){					
 				// unbind any click ad bindings:
-				$j( _this.embedPlayer ).unbind( 'click.ad' );					
+				$( _this.embedPlayer ).unbind( 'click.ad' );					
 				adSlot.playbackDone();
 			}
 		);
@@ -503,11 +508,11 @@ mw.AdTimeline.prototype = {
 		// Store filledCompanion ids
 		var filledCompanions = {};
 		// Go though all the companions see if there are good companionTargets
-		$j.each( adConf.companions, function( inx, companion ){			
+		$.each( adConf.companions, function( inx, companion ){			
 			// Check for matching size: 
 			// TODO we should check for multiple matching size companions 
 			// ( although VAST should only return one of matching type )
-			$j.each( companionTargets, function( cInx, companionTarget){
+			$.each( companionTargets, function( cInx, companionTarget){
 				if( companionTarget.width ==  companion.width && 
 						companionTarget.height == companion.height )
 				{			
@@ -521,10 +526,10 @@ mw.AdTimeline.prototype = {
 	},
 	displayCompanion: function( adSlot, companionTarget, companion ){
 		var _this = this;
-		var originalCompanionHtml = $j('#' + companionTarget.elementid ).html();
+		var originalCompanionHtml = $('#' + companionTarget.elementid ).html();
 		// Display the companion if local to the page target:
-		if( $j( '#' + companionTarget.elementid ).length ){
-			$j( '#' + companionTarget.elementid ).html( companion.html );
+		if( $( '#' + companionTarget.elementid ).length ){
+			$( '#' + companionTarget.elementid ).html( companion.html );
 		}
 		
 		// Display the companion across the iframe client
@@ -532,7 +537,7 @@ mw.AdTimeline.prototype = {
 			'elementid' : companionTarget.elementid,
 			'html' : companion.html
 		};
-		$j( _this.embedPlayer ).trigger( 'AdSupport_UpdateCompanion', [ companionObject ] );
+		$( _this.embedPlayer ).trigger( 'AdSupport_UpdateCompanion', [ companionObject ] );
 		
 	},
 	/**
@@ -547,9 +552,9 @@ mw.AdTimeline.prototype = {
 		var nonLinearConf = _this.selectFromArray( adConf.nonLinear ); 
 		
 		// Add the overlay if not already present: 
-		if( $j('#' +overlayId ).length == 0 ){
+		if( $('#' +overlayId ).length == 0 ){
 			_this.embedPlayer.$interface.append(
-				$j('<div />')					
+				$('<div />')					
 				.css({
 					'position':'absolute',
 					'z-index' : 1
@@ -573,13 +578,13 @@ mw.AdTimeline.prototype = {
 		}
 		
 		// Show the overlay update its position and content
-		$j('#' +overlayId )
+		$('#' +overlayId )
 		.css( layout )
 		.html( nonLinearConf.html )
 		.fadeIn('fast')
 		.append(
 			// Add a absolute positioned close button: 
-			$j('<span />')
+			$('<span />')
 			.css({
 				'top' : 0,
 				'right' : 0,
@@ -588,24 +593,24 @@ mw.AdTimeline.prototype = {
 			})
 			.addClass("ui-icon ui-icon-closethick")				
 			.click(function(){
-				$j(this).parent().fadeOut('fast');
+				$(this).parent().fadeOut('fast');
 			})
 		);
 		
 		
 		// Bind control bar display hide / show
-		$j( _this.embedPlayer ).bind( 'onShowControlBar', function(event,  layout ){
-			if( $j('#' +overlayId ).length )
-				$j('#' +overlayId ).animate( layout, 'fast');
+		$( _this.embedPlayer ).bind( 'onShowControlBar', function(event,  layout ){
+			if( $('#' +overlayId ).length )
+				$('#' +overlayId ).animate( layout, 'fast');
 		});
-		$j( _this.embedPlayer ).bind( 'onHideControlBar', function(event, layout ){
-			if( $j('#' +overlayId ).length )
-				$j('#' +overlayId ).animate( layout, 'fast');
+		$( _this.embedPlayer ).bind( 'onHideControlBar', function(event, layout ){
+			if( $('#' +overlayId ).length )
+				$('#' +overlayId ).animate( layout, 'fast');
 		});
 		
 		// Only display the the overlay for allocated time:
 		adSlot.doneFunctions.push(function(){
-			$j('#' +overlayId ).fadeOut('fast');
+			$('#' +overlayId ).fadeOut('fast');
 		});
 		
 	},
@@ -645,24 +650,24 @@ mw.AdTimeline.prototype = {
 		};
 				
 		// On end stop monitor / clear interval: 
-		$j( videoPlayer ).bind('ended', function(){			
+		$( videoPlayer ).bind('ended', function(){			
 			sendBeacon( 'complete' );
 			clearInterval( monitorInterval );
 		})
 		
 		// On pause / resume: 
-		$j( videoPlayer ).bind( 'pause', function(){
+		$( videoPlayer ).bind( 'pause', function(){
 			sendBeacon( 'pause' );
 		});
 		
 		// On resume: 
-		$j( videoPlayer ).bind( 'onplay', function(){
+		$( videoPlayer ).bind( 'onplay', function(){
 			sendBeacon( 'resume' );
 		});
 		
 		var time = 0;
 		// On seek backwards 
-		$j( videoPlayer ).bind( 'seek', function(){
+		$( videoPlayer ).bind( 'seek', function(){
 			if( videoPlayer.currentTime < time ){
 				sendBeacon( 'rewind' );
 			}
@@ -733,3 +738,5 @@ mw.AdTimeline.prototype = {
 		return this.embedPlayer.getPlayerElement();
 	}
 };
+
+} )( window.mw, jQuery );
