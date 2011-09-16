@@ -349,9 +349,11 @@ mw.PlayerControlBuilder.prototype = {
 			.fadeIn("slow")
 		);
 		
-		// Change the interface to absolute positioned:
-		this.windowPositionStyle = $interface.css( 'position' );
-		this.windowZindex = $interface.css( 'z-index' );
+		// get the original interface to absolute positioned:
+		if( ! this.windowPositionStyle  )
+			this.windowPositionStyle = $interface.css( 'position' );
+		if( !this.windowZindex )
+			this.windowZindex = $interface.css( 'z-index' );
 
 		// Get the base offset:
 		this.windowOffset = $interface.offset();
@@ -606,7 +608,7 @@ mw.PlayerControlBuilder.prototype = {
 		}, aninmate, function(){
 			var topPos = {
 					'position' : _this.windowPositionStyle,
-					'z-index' : 0,
+					'z-index' : _this.windowZindex,
 					'overlow' : 'visible',
 					'top' : '0px',
 					'left' : '0px'
