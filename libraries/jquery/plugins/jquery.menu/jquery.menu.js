@@ -23,7 +23,6 @@ var allUIMenus = [];
 
 (function($) {
 
-
 /**
 * Utility line item ( li ) from text string function
 *
@@ -44,7 +43,6 @@ $.getLineItem = function( string, icon , callback) {
 		);
 	}		
 	$li.find( 'a' ).append( $('<span>').text( string ) );
-//	mw.log(string + "\n" + ' li html: ' + $('<div>').append( $li ).html() );
 	return $li;
 };
 	

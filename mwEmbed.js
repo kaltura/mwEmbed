@@ -2780,7 +2780,6 @@ if( window.jQuery ){
 			}
 		});
 		// correct the position: 
-		$(this).css({'padding-left': 22, 'padding-top' : 22 });
 		return this;
 	};
 	
@@ -2791,11 +2790,11 @@ if( window.jQuery ){
 	$.fn.getAbsoluteOverlaySpinner = function(){
 		var pos = $j( this ).offset();
 		var posLeft = ( $j( this ).width() ) ?
-			parseInt( pos.left + ( .5 * $j( this ).width() ) -22 ) :
+			parseInt( pos.left + ( .5 * $j( this ).width() ) ) :
 			pos.left + 30;
 
 		var posTop = ( $j( this ).height() ) ?
-			parseInt( pos.top + ( .5 * $j( this ).height() ) -22 ) :
+			parseInt( pos.top + ( .5 * $j( this ).height() ) ) :
 			pos.top + 30;
 
 		var $spinner = $j('<div />')

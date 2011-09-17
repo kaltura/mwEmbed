@@ -439,16 +439,14 @@ mw.KWidgetSupport.prototype = {
 			callback( bootstrapData );
 		} else {
 			// Run the request: ( run async to avoid function call stack overflow )
-			setTimeout(function(){
-				_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
-					if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
-						$j('.loadingSpinner').remove();
-						$j(embedPlayer).replaceWith( "Error invalid KS" );
-						return ;
-					}
-					callback( playerData );
-				});
-			}, 1);
+			_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
+				if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
+					$j('.loadingSpinner').remove();
+					$j(embedPlayer).replaceWith( "Error invalid KS" );
+					return ;
+				}
+				callback( playerData );
+			});
 		}
 	},
 	
@@ -551,7 +549,7 @@ mw.KWidgetSupport.prototype = {
 			// Update the set of sources in the embedPlayer ( might cause issues with other plugins ) 
 		} else {		
 			// Get device flavors ( if not already set )
-			deviceSources = _this.getEntryIdSourcesFromFlavorData( this.kClient.getPartnerId(), flavorData );	
+			deviceSources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), flavorData );	
 		}
 		// Setup the error hook: 
 		if( _this.videoIsTranscodingFlag ){

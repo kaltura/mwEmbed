@@ -359,8 +359,12 @@ mw.KApiPlayerLoader = function( kProperties, callback ){
 	}
 	// Convert widget_id to partner id
 	var kClient = mw.kApiGetPartnerClient( kProperties.widget_id );
-	kClient.playerLoader( kProperties, callback );
-	
+	kClient.playerLoader( kProperties, function( data ){
+		// Add a timeout so that we return the kClient before issuing the callback
+		setTimeout(function(){
+			callback( data );
+		},1);
+	});
 	// Return the kClient api object for future requests
 	return kClient;
 };

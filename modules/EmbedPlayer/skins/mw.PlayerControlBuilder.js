@@ -1153,7 +1153,9 @@ mw.PlayerControlBuilder.prototype = {
 	optionMenuItems: {
 		// Player select menu item
 		'playerSelect': function( ctrlObj ){
-			if( mw.isIpad() ) return false;
+			if( mw.isIpad() ){
+				return [];
+			}
 			return $.getLineItem(
 				gM( 'mwe-embedplayer-choose_player' ),
 				'gear',
