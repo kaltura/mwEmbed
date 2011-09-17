@@ -1,15 +1,12 @@
 ( function( mw, $ ) {
 
 mw.addFreeWheelControler = function( embedPlayer, callback ) {
-	embedPlayer.freeWheelAds = new mw.FreeWheelControler({ 
-		'embedPlayer' : embedPlayer,
-		'callback' :  callback
-	});	
+	embedPlayer.freeWheelAds = new mw.FreeWheelControler(embedPlayer, callback);	
 	mw.freeWheelGlobalContextInstance = embedPlayer.freeWheelAds;
 };
 
-mw.FreeWheelControler = function( opt ){
-	return this.init( opt );
+mw.FreeWheelControler = function( embedPlayer, callback ){
+	return this.init( embedPlayer, callback );
 };
 
 mw.FreeWheelControler.prototype = {
@@ -51,18 +48,26 @@ mw.FreeWheelControler.prototype = {
 	 * }
 	 * @return
 	 */
-	init: function( opt ){
+	init: function( embedPlayer, callback  ){
 		var _this = this;
-		$.extend( this, opt);
+		// add init params; 
+		this.embedPlayer = embedPlayer;
+		this.callback = callback;
+		
 		// Get the freewheel configuration
 		this.config = this.embedPlayer.getKalturaConfig(
 			'FreeWheel',
 			[ 'plugin', 'preSequence', 'postSequence', 'width', 'height', 'asyncInit',
 			 'adManagerUrl', 'serverUrl', 'networkId', 'videoAssetId',  'videoAssetIdType', 
-			 'playerProfile', 'videoAssetNetworkId', 'siteSectionId' ]
+			 'playerProfile', 'videoAssetNetworkId', 'siteSectionId', 'adManagerJsUrl' ]
 		);
 		// XXX todo we should read "adManagerUrl" from uiConf config
-		$.getScript( mw.getConfig( 'FreeWheel.AdManagerUrl' ), function(){
+		var adManagerUrl = ( this.config[ 'adManagerJsUrl' ] ) ? 
+							this.config[ 'adManagerJsUrl' ] : 
+							mw.getConfig( 'FreeWheel.AdManagerUrl' );
+							
+		// Load the freewheel ad mannager then setup the ads
+		$.getScript(adManagerUrl, function(){
 			_this.setupAds();
 		});
 	},	
