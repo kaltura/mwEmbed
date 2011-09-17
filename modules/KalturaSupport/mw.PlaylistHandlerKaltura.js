@@ -248,7 +248,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	playClip: function( embedPlayer, clipIndex ){
 		var bindName = 'playerReady.playlist';
 		$( embedPlayer ).unbind(bindName).bind( bindName, function( event ){
-			// run play after we switch 
+			// Run play after we switch 
 			embedPlayer.sendNotification( 'doPlay' );
 		});
 		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );	

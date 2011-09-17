@@ -1797,6 +1797,10 @@ mw.EmbedPlayer.prototype = {
 			
 			if( chnagePlayingMedia ){
 				// make sure the play button is not displayed:
+				if( _this.$interface ){
+					_this.$interface.find( '.play-btn-large' ).hide();
+				}
+				
 				if( _this.isPersistentNativePlayer() ){
 					_this.switchPlaySrc( _this.getSrc() );
 				} else {

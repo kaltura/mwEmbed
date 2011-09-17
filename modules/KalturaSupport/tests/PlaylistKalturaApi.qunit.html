@@ -20,7 +20,7 @@ function jsKalturaPlayerTest( videoId ){
 		kalturaQunitWaitForPlayer(function(){
 			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
 			ok( $iframe.find('.play-btn').length, ".play-btn found" );
-			equal( $iframe.find('.playlistSetList').find('a').length, 2, 'found two playlists');
+			equal( $iframe.find('.playlist-set-list').find('a').length, 2, 'found two playlists');
 			start();
 		});
 	});

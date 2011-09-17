@@ -40,14 +40,14 @@
 	margin:5px;
 }
 
-.playlistSetList{
+.playlist-set-list{
 	padding-left:15px;	
 	font-size: 14px;
 }
-.playlistSetList a{
+.playlist-set-list a{
 	color: #999;
 }
-.playlistSetList a.active{
+.playlist-set-list a.active{
 	color: #fff;
 }
 .btnText { font-family: Arial; font-size: 13px; }

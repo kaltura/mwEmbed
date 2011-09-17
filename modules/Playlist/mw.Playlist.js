@@ -157,6 +157,8 @@ mw.Playlist.prototype = {
 				_this.getPlayerContainer()
 			);
 		}
+		// @@TODO Add media-playlist-ui container
+
 		// Add the video list: 
 		$( _this.target ).append(
 			$( '<div />')
@@ -195,14 +197,14 @@ mw.Playlist.prototype = {
 			})
 			.append(
 				$('<span />')
-				.addClass( 'playlistSetList' )
+				.addClass( 'playlist-set-list' )
 				.css( {
 					'white-space':'pre'
 				})
 			);
 			$( _this.target ).append( $plListContainer );
 			
-			var $plListSet = $( _this.target ).find( '.playlistSetList' );
+			var $plListSet = $( _this.target ).find( '.playlist-set-list' );
 
 			$.each( playlistSet, function( inx, playlist){
 				// check for playlist name: 
@@ -391,6 +393,7 @@ mw.Playlist.prototype = {
 				'height' : '30px',
 				'left' : playerWidth + 18
 			})
+			.addClass('playlist-scroll-buttons')
 			.append(
 				$.button({
 					'text' : 'scroll down',
@@ -471,7 +474,7 @@ mw.Playlist.prototype = {
 			
 			this.targetPlayerSize = {
 				'height' : ( this.targetHeight - this.titleHeight - 10 ) + 'px',
-				'width' : playerWidth
+				'width' : playerWidth + 'px'
 			};
 		}
 		if( this.targetPlayerSize.width > this.targetWidth ){
@@ -505,11 +508,6 @@ mw.Playlist.prototype = {
 		mw.log( "mw.Playlist:: updatePlayer " + clipIndex );
 		this.clipIndex = clipIndex;
 		
-		// If we have a UI update it: 
-		if( _this.sourceHandler.hasPlaylistUi() ){
-			_this.updatePlayerUi( clipIndex );
-		}
-		
 		// Check if we really have to update: 
 		var embedPlayer = _this.getEmbedPlayer();
 		if( $( embedPlayer ).data('clipIndex') == clipIndex ){
@@ -518,6 +516,9 @@ mw.Playlist.prototype = {
 		}
 		// Pass off player updates to sourceHandler
 		_this.sourceHandler.drawEmbedPlayer( clipIndex, $( _this.target + ' .media-rss-video-player' ), function(){
+			// update Ui: 
+			_this.updatePlayerUi( clipIndex );
+			
 			// Add playlist specific bindings: 
 			_this.addClipBindings();
 			// Issue the playlist ready callback 
@@ -531,9 +532,7 @@ mw.Playlist.prototype = {
 		_this.sourceHandler.addEmbedPlayerBindings( embedPlayer );
 
 		// Add the seek forward / back buttons 
-		$(embedPlayer ).bind( 'controlBarBuildDone', function(){
-			_this.addPlaylistSeekButtons( embedPlayer );
-		});
+		_this.addPlaylistSeekButtons( embedPlayer );
 		
 		// Setup ondone playing binding to play next clip (if autoContinue is true )
 		if( _this.sourceHandler.autoContinue == true ){
@@ -554,10 +553,27 @@ mw.Playlist.prototype = {
 				}
 			});
 		}
+		var uiSelector = '.playlist-set-list,.media-rss-video-list,.playlist-scroll-buttons';
+		// fullscreen support
+		$( embedPlayer ).bind('onOpenFullScreen', function(){
+			// hide inteface comonets ( these should readlly all be in their own div! )
+			$(uiSelector).hide(); 
+		});
+		$( embedPlayer ).bind('onCloseFullScreen', function(){
+			setTimeout(function(){// give some time for the dom to update
+				var playerSize = _this.getTargetPlayerSize();
+				// add control bar height ( for now ) 
+				embedPlayer.resizePlayer( {
+					'height' : parseInt( playerSize.height ) + 30,
+					'width' : playerSize.width
+				}, false);
+				$(uiSelector).show();
+			},10);
+		});
+		
 	},
 	updatePlayerUi:function( clipIndex ){
 		var _this = this;
-		var playerSize = _this.getTargetPlayerSize() ;
 		// Give a chance for sourceHandler to update player ui
 		_this.sourceHandler.updatePlayerUi( clipIndex );
 		

@@ -422,7 +422,7 @@
 					break;	
 				case 'changeMedia':
 					b( 'onChangeMedia', function( event ){
-						callback( {'entryId' : embedPlayer.kentryid }, embedPlayer.id );
+						callback({ 'entryId' : embedPlayer.kentryid }, embedPlayer.id );
 					});
 					break;
 				case 'entryReady':
