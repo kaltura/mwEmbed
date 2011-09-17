@@ -30,7 +30,6 @@ mw.Playlist.prototype = {
 	// constructor
 	init: function( options ) {
 		var _this = this;
-		
 		// Check for required options: 
 		if( options.src )
 			this.src = options.src;
@@ -51,8 +50,10 @@ mw.Playlist.prototype = {
 							this.embedPlayer.id : 
 						( options['id'] )?  options['id'] :
 							$( this.target ).attr( 'id' );
+						
 		// Setup the id for the playlist container: 		
 		this.id = 'plholder_' + this.playerId;
+		
 		// Update the target id 
 		$( this.target ).attr( 'id', this.id );
 		this.target = '#' + this.id;
@@ -99,41 +100,47 @@ mw.Playlist.prototype = {
 			drawDoneCallback();
 		};
 		this.loadPlaylistHandler( function( sourceHandler ){
+			// done loading playlist hide loader ( this is kind of messy )
+			if( !_this.embedPlayer ){
+				$( _this.target ).empty();
+			}
 			mw.log("Playlist::drawPlaylist: sourceHandler loaded");
 			// Check if load failed or empty playlist
 			if( _this.sourceHandler.getClipList().length == 0 ){
-				$( _this.target ).empty().text( gM('mwe-playlist-empty') );
+				$( _this.target ).text( gM('mwe-playlist-empty') );
+				callback();
 				return ;
 			}
 			// Check if we should include the ui 
 			if( _this.sourceHandler.hasPlaylistUi() ){
 				_this.drawUI( callback );
 			} else {
-				$( _this.target )
-				.empty()
-				.append(
-					_this.getPlayerContainer()
-				);
-				_this.addPlayer( _this.clipIndex, callback );
+				if( !_this.isPlayerPreset() ){
+					$( _this.target )
+					.empty()
+					.append(
+						_this.getPlayerContainer()
+					);
+				}
+				_this.drawEmbedPlayer( _this.clipIndex, callback );
 			}
 		});
 	},
 	getClipList:function(){
 		return  this.sourceHandler.getClipList();
 	},
-	getPlayerContainer:function(){
+	isPlayerPreset:function(){
 		// check if the player container already exists ( playlist iframe pre-layout ) 
 		var $pl =  $( this.target ).find( '.media-rss-video-player-container' );
-		if( $pl.length ){
-			return $pl;
-		} else {
-			return $( '<span />' )
-				.addClass( 'media-rss-video-player-container')
-				.css({
-					'float' : 'left'
-				})
-				.append( $('<div />').addClass( 'media-rss-video-player' ).css( 'position', 'relative' ) );
-		}
+		return !!( $pl.length );
+	},
+	getPlayerContainer:function(){
+		return $( '<span />' )
+			.addClass( 'media-rss-video-player-container')
+			.css({
+				'float' : 'left'
+			})
+			.append( $('<div />').addClass( 'media-rss-video-player' ).css( 'position', 'relative' ) );
 	},
 	/**
 	* Draw the media rss playlist ui
@@ -143,10 +150,15 @@ mw.Playlist.prototype = {
 		// Empty the target and setup player and playerList divs
 		$( _this.target )
 		.addClass( 'ui-widget-content' )
-		.css('position', 'relative' )
-		.append(
-			_this.getPlayerContainer()
-			,
+		.css('position', 'relative' );
+		
+		if( !_this.isPlayerPreset() ){
+			$( _this.target ).append(
+				_this.getPlayerContainer()
+			);
+		}
+		// Add the video list: 
+		$( _this.target ).append(
 			$( '<div />')
 			.addClass( 'media-rss-video-list' )
 			.attr('id', _this.id + '_videolist')
@@ -159,7 +171,6 @@ mw.Playlist.prototype = {
 			})
 			.hide()
 		);
-
 		// Check if we have multiple playlist and setup the list and bindings
 		if( _this.sourceHandler.hasMultiplePlaylists() ){
 			var playlistSet = _this.sourceHandler.getPlaylistSet();
@@ -168,6 +179,9 @@ mw.Playlist.prototype = {
 			} else {
 				// just the default left side assignment ( updates once we have player size ) 
 				var leftPx = '444px';
+				var playerSize = _this.getTargetPlayerSize();
+				if( playerSize.width )
+					leftPx = playerSize.width;
 			}
 			var $plListContainer =$('<div />')
 			.addClass( 'playlistSet-container' )
@@ -187,7 +201,7 @@ mw.Playlist.prototype = {
 				})
 			);
 			$( _this.target ).append( $plListContainer );
-
+			
 			var $plListSet = $( _this.target ).find( '.playlistSetList' );
 
 			$.each( playlistSet, function( inx, playlist){
@@ -211,10 +225,12 @@ mw.Playlist.prototype = {
 						 _this.sourceHandler.setPlaylistIndex( inx );
 						 mw.log( 'mw.Playlist:: selectPlaylist:' + inx );
 						 $( _this.target + ' .media-rss-video-list').loadingSpinner();
+						 
 						 _this.sourceHandler.loadCurrentPlaylist( function(){
 							 $( _this.target + ' .media-rss-video-list').empty();
 							_this.addMediaList();
 						 });
+						 
 						return false;
 					})
 					.buttonHover();
@@ -291,12 +307,13 @@ mw.Playlist.prototype = {
 		// Add the selectable media list
 		_this.addMediaList();
 
-		// Add the player
-		_this.addPlayer( _this.clipIndex, function(){
+		// Update the player
+		_this.drawEmbedPlayer( _this.clipIndex, function(){
+			var playerSize = _this.getTargetPlayerSize();
 			// Update the list height ( vertical layout )
 			if( _this.layout == 'vertical' ){
 				$( _this.target + ' .media-rss-video-list' ).css( {
-					'top' : $( _this.target + ' .media-rss-video-player-container' ).height() + 4,
+					'top' : parseInt( playerSize.height ) + 4,
 					'width' : '95%'
 				} );
 				// Add space for the multi-playlist selector:
@@ -306,21 +323,20 @@ mw.Playlist.prototype = {
 						'top' : $( _this.target + ' .media-rss-video-player-container' ).height() + 4
 					});
 					$( _this.target + ' .media-rss-video-list' ).css({
-						'top' : $( _this.target + ' .media-rss-video-player-container' ).height() + 26
+						'top' : parseInt( playerSize.height ) + 26
 					});
 				}
-
 			} else {
 				// Update horizontal layout
 				$( _this.target + ' .media-rss-video-list').css( {
 					'top' : '0px',
-					'left' : $( _this.target + ' .media-rss-video-player-container' ).width() + 4,
+					'left' :  parseInt( playerSize.width ) + 4,
 					'right' : '0px'
 				} );
 				// Add space for the multi-playlist selector:
 				if( _this.sourceHandler.hasMultiplePlaylists() ){
 					$( _this.target + ' .playlistSet-container').css( {
-						'left' : $( _this.target + ' .media-rss-video-player-container' ).width() + 4
+						'left' : parseInt( playerSize.width ) + 4
 					});
 					$( _this.target + ' .media-rss-video-list').css( {
 						'top' : '26px'
@@ -332,6 +348,7 @@ mw.Playlist.prototype = {
 			$videoList.show();
 			// show the video list and apply the swipe binding
 			$( _this.target ).find('.media-rss-video-list-wrapper').fadeIn();
+			
 			if( mw.isHTML5FallForwardNative() ){
 				// iScroll is buggy with current version of iPad / iPhone use scroll buttons instead
 				/*
@@ -365,13 +382,14 @@ mw.Playlist.prototype = {
 	},
 	addScrollButtons: function( $videoList){
 		var _this = this;
+		var playerWidth = _this.getTargetPlayerSize().width;
 		$( _this.target ).append(
 			$( '<div />').css({
 				'position' : 'absolute',
-				'bottom' : '15px',
+				'bottom' : '8px',
 				'right': '8px',
 				'height' : '30px',
-				'width' : $( _this.target + ' .media-rss-video-list').width()
+				'left' : playerWidth + 18
 			})
 			.append(
 				$.button({
@@ -476,19 +494,20 @@ mw.Playlist.prototype = {
 	
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex );
+		// Do any local player interface updates: 
+		_this.updatePlayerUi( clipIndex );
 	},
 	/**
 	* Update the player
 	*/
-	addPlayer: function( clipIndex , callback ){
+	drawEmbedPlayer: function( clipIndex , callback ){
 		var _this = this;
-		mw.log( "mw.Playlist:: addPlayer " + clipIndex );
-		var playerSize = _this.getTargetPlayerSize();
+		mw.log( "mw.Playlist:: updatePlayer " + clipIndex );
 		this.clipIndex = clipIndex;
 		
 		// If we have a UI update it: 
 		if( _this.sourceHandler.hasPlaylistUi() ){
-			this.updatePlayerUi( clipIndex );
+			_this.updatePlayerUi( clipIndex );
 		}
 		
 		// Check if we really have to update: 
@@ -497,54 +516,17 @@ mw.Playlist.prototype = {
 			callback();
 			return ;
 		}
-		
-		// Build the video tag object:
-		var $video = $( '<video />' )
-		.attr({
-			'id' : _this.getVideoPlayerId(),
-			'poster' : _this.sourceHandler.getClipPoster( clipIndex, playerSize)
-		})
-		.addClass( 'mwPlaylist' )
-		.css(
-			playerSize
-		);
-		
-		// Update the embed player attributes: 
-		_this.sourceHandler.updateEmbedPlayer( clipIndex, $video );
-		// Put the video player into the page:
-		$( _this.target + ' .media-rss-video-player' ).empty().append( $video );
-		
-		// Add the embedPlayer interface:
-		_this.addEmbedPlayerInterface( clipIndex, function(){
+		// Pass off player updates to sourceHandler
+		_this.sourceHandler.drawEmbedPlayer( clipIndex, $( _this.target + ' .media-rss-video-player' ), function(){
+			// Add playlist specific bindings: 
+			_this.addClipBindings();
+			// Issue the playlist ready callback 
 			callback();
 		});
 	},
-	addEmbedPlayerInterface: function( clipIndex, callback ){
+	addClipBindings: function( ){
 		var _this = this;
-		mw.log( "mw.Playlist:: addEmbedPlayerInterface " );
-		
-		var $video = $( '#' +_this.getVideoPlayerId() );
-		// Update the video tag with the embedPlayer
-		$video.unbind().embedPlayer( function(){
-			var embedPlayer = _this.getEmbedPlayer();
-			if( !embedPlayer ){
-				mw.log("mw.Playlist:: updateVideoPlayer > Error, embedPlayer not defined at embedPlayer ready time");
-				return;
-			}
-			_this.addClipBindings( embedPlayer );
-			
-			// Update the player clip index
-			$( embedPlayer ).data('clipIndex', clipIndex); 
-			
-			mw.log( "mw.Playlist:: player should be ready: " + _this.clipIndex + ' ' + $('#' +_this.getVideoPlayerId() ) );
-			// Run the callback if its set
-			if( callback ){
-				callback();
-			}
-		} );
-	},
-	addClipBindings: function( embedPlayer ){
-		var _this = this;
+		var embedPlayer = _this.getEmbedPlayer();
 		// Once the player is ready add any custom bindings
 		_this.sourceHandler.addEmbedPlayerBindings( embedPlayer );
 
@@ -576,21 +558,9 @@ mw.Playlist.prototype = {
 	updatePlayerUi:function( clipIndex ){
 		var _this = this;
 		var playerSize = _this.getTargetPlayerSize() ;
-		if( this.titleHeight != 0){
-			// Build and output the title
-			var $title = $('<div />' )
-				.addClass( 'playlist-title ui-state-default ui-widget-header ui-corner-all')
-				.css( {
-					'top' : '0px',
-					'height' : _this.titleHeight,
-					'width' : playerSize.width
-				} )
-				.text(
-					_this.sourceHandler.getClipTitle( clipIndex )
-				);
-			$( _this.target + ' .media-rss-video-player-container' ).find('.playlist-title').remove();
-			$( _this.target + ' .media-rss-video-player-container' ).prepend( $title );
-		}
+		// Give a chance for sourceHandler to update player ui
+		_this.sourceHandler.updatePlayerUi( clipIndex );
+		
 		// Update the player list if present:
 		$( _this.target + ' .clipItemBlock')
 			.removeClass( 'ui-state-active' )
@@ -709,12 +679,12 @@ mw.Playlist.prototype = {
 
 	/**
 	 * Load the playlist driver from a source
+	 * @param {function} callback Function to be called once load is complete. 
 	 */
 	loadPlaylistHandler: function( callback ){
 		var _this = this;
 		// Allow plugins to setup the source handler: 
 		$(mw).trigger('Playlist_GetSourceHandler', [this] );
-		
 		if( !_this.sourceHandler ){
 			switch( this.type ){
 				case 'application/rss+xml':

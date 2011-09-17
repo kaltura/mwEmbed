@@ -393,6 +393,9 @@ class KalturaResultObject {
 		}
 		
 		$videoIsTranscodingFlag = false;
+		if( !isset( $resultObject['flavors'] ) ){
+			return array();
+		}
 		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
 			// if flavor status is not ready - continute to the next flavor
 			if( $KalturaFlavorAsset->status != 2 ) { 
@@ -936,6 +939,10 @@ class KalturaResultObject {
 				// TODO we need to clean this up because getResultObject has a bit of parsing logic right now.
 				//  getResultObject should not call any parsing functions
 				$uiConf = $this->getUiConf();
+			}
+			if( $uiConf == ''){
+				// empty uiConf ( don't try and parse, return an empty object)
+				return new SimpleXMLElement('<xml />' );
 			}
 			// remove this hack as soon as possible
 			$uiConf = str_replace( '[kClick="', 'kClick="', $uiConf);

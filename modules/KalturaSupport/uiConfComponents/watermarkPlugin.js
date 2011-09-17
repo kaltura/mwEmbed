@@ -1,14 +1,14 @@
 ( function( mw, $ ) {
 	
 	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark 
-	$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-		$j( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			// Check if the ui conf includes watermark
 			if( $uiConf.find( 'watermark' ).length ){
 				// Wait for the player to be ready 
-				$j( embedPlayer ).bind( 'playerReady', function(){
+				$( embedPlayer ).bind( 'playerReady', function(){
 					// Run the watermark plugin code
-					watermarkPlugin( embedPlayer, $j( $uiConf ).find( 'watermark' ) );
+					watermarkPlugin( embedPlayer, $( $uiConf ).find( 'watermark' ) );
 				})
 			}
 			// Continue trigger event regardless of if ui-conf is found or not
@@ -49,14 +49,14 @@
 		
 		var watermarkCss = getCss( $watermarkConf );
 		embedPlayer.$interface.append( 
-			$j('<span />')
+			$('<span />')
 			.css( watermarkCss )
 			.append( 
-				$j('<a />').attr({
+				$('<a />').attr({
 					'href' : $watermarkConf.attr('watermarkClickPath'),
 					'target' : '_blank'
 				}).append( 
-					$j('<img />').attr({
+					$('<img />').attr({
 						'src': $watermarkConf.attr('watermarkPath'),
 						'id' : embedPlayer.id + '_' + $watermarkConf.attr('id')
 					})

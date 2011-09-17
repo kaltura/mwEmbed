@@ -77,7 +77,7 @@ mw.KAds.prototype = {
 		var adType = _this.getAdTypeFromCuePoint( cuePoint );
 		
 		// Check if cue point already displayed
-		if( $j.inArray(cuePoint.cuePoint.id, _this.displayedCuePoints) >= 0 ) {
+		if( $.inArray(cuePoint.cuePoint.id, _this.displayedCuePoints) >= 0 ) {
 			return ;
 		}
 

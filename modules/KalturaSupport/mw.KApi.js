@@ -14,7 +14,8 @@
  * 		Array An Array of request params for multi-request 
  * 		Object Named request params
  */
-	
+( function( mw, $ ) {
+
 mw.KApi = function( partner_id ){
 	return this.init( partner_id );	
 };
@@ -111,7 +112,7 @@ mw.KApi.prototype = {
         	'partnerId' : + this.partner_id // don't ask me, I did not design the API!
         };
 		// add in the base parameters:
-		var param = $j.extend( { 'service' : 'session' }, this.baseParam, ksParam );
+		var param = $.extend( { 'service' : 'session' }, this.baseParam, ksParam );
 		this.doApiRequest( param, function( data ){
 			_this.ks = data.ks;
 			callback( _this.ks );
@@ -129,7 +130,7 @@ mw.KApi.prototype = {
 		}
 
 		// Build the request url with sorted params:
-		var requestURL = _this.getApiUrl(serviceType) + '&' + $j.param( param );
+		var requestURL = _this.getApiUrl(serviceType) + '&' + $.param( param );
 		
 		var globalCBName = 'kapi_' + _this.getSignature( param );
 		if( window[ globalCBName ] ){
@@ -143,7 +144,7 @@ mw.KApi.prototype = {
 			window[ globalCBName ] = null;
 		};
 		mw.log("kAPI:: doApiRequest: " + requestURL);
-		$j.getScript( requestURL + '&callback=' + globalCBName );
+		$.getScript( requestURL + '&callback=' + globalCBName );
 	},
 	getApiUrl : function( serviceType ){
 		var serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
@@ -303,9 +304,9 @@ mw.KApi.prototype = {
 	convertCustomDataXML: function( data ){
 		var result = {};
 		if( data && data.objects && data.objects[0] ){			
-			var xml = $j.parseXML( data.objects[0].xml );		
-			var $xml = $j( xml ).find('metadata').children();			
-			$j.each( $xml, function(inx, node){
+			var xml = $.parseXML( data.objects[0].xml );		
+			var $xml = $( xml ).find('metadata').children();			
+			$.each( $xml, function(inx, node){
 				result[ node.nodeName ] = node.textContent;
 			});		
 		}
@@ -319,7 +320,7 @@ mw.KApi.prototype = {
 	getCacheKey: function( kProperties ){
 		var rKey = '';
 		if( kProperties ){
-			$j.each(kProperties, function( inx, value ){
+			$.each(kProperties, function( inx, value ){
 				if( inx == 'flashvars' ){
 					// add in the flashvars that can vary the api response
 					if( typeof kProperties.flashvars == 'object'){
@@ -373,3 +374,4 @@ mw.KApiRequest = function( partnerId, requestObject, callback ){
 	kClient.doRequest( requestObject, callback );
 };
 
+})( window.mw, jQuery );

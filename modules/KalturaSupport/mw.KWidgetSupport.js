@@ -42,20 +42,18 @@ mw.KWidgetSupport.prototype = {
 			// look for widget type in uiConf file: 
 			switch( _this.getWidgetType( playerData.uiConf ) ){
 				// We have moved playlist into a "player" based uiconf plugin
-				/*case 'playlist' :
+				case 'playlist' :
 					mw.load( [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){
 						// Quick non-ui conf check for layout mode 
-						// @@TOOD we can fix this now!
-						var layout = ( $j( widgetTarget ).width() > $j( widgetTarget ).height() ) 
+						var layout = ( $( widgetTarget ).width() > $( widgetTarget ).height() ) 
 										? 'horizontal' : 'vertical';
-						$j( '#' + widgetTarget.id ).playlist({
+						$( '#' + widgetTarget.id ).playlist({
 							'layout': layout,
 							'titleHeight' : 0 // Kaltura playlist don't include the title ontop of the video
 						}); 
 						callback();
 					});
 				break;
-				*/
 				case 'pptwidget': 
 					mw.load([ 'EmbedPlayer', 'mw.KPPTWidget', 'mw.KLayout' ], function(){
 						new mw.KPPTWidget( widgetTarget, playerData.uiConf, callback );
@@ -499,6 +497,8 @@ mw.KWidgetSupport.prototype = {
 	checkForUrlEntryId:function( embedPlayer ){
 		if( embedPlayer.kentryid 
 				&& 
+			typeof embedPlayer.kentryid == 'string'
+				&&
 			embedPlayer.kentryid.indexOf('://') != -1 )
 		{
 			embedPlayer.mediaElement.tryAddSource(
@@ -785,4 +785,4 @@ mw.getEntryIdSourcesFromApi = function( widgetId, entryId, callback ){
 	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, entryId, callback);
 };
 
-})( mediaWiki, jQuery );
+})( window.mw, jQuery );

@@ -898,7 +898,6 @@ mw.EmbedPlayer.prototype = {
 
 		// Special case for audio
 		// Firefox sets audio height to "0px" while webkit uses 32px .. force
-		// zero:
 		if( element.tagName.toLowerCase() == 'audio' && this.height == '32' ) {
 			this.height = 0;
 		}

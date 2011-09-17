@@ -134,7 +134,6 @@ function kDoIframeRewriteList( rewriteObjects ){
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( !options )
 		options = {};
-	alert( 'kalturaIframeEmbed' );
 	// Empty the replace target:
 	var elm = document.getElementById( replaceTargetId );
 	if( ! elm ){

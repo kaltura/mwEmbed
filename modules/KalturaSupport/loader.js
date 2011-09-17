@@ -371,21 +371,25 @@
 	
 	$( mw ).bind("Playlist_GetSourceHandler", function( event, playlist ){
 		var $playlistTarget = $( '#' + playlist.id );
-		
 		var playlistEmbed = playlist.embedPlayer;
-		
+		var kplUrl0, playlistConfig;
 		// Check if we are dealing with a kaltura player: 
-		if( !playlistEmbed  ||  !playlistEmbed.kwidgetid ){
-			return ;
+		if( !playlistEmbed  ){
+			// XXX deprecated old rewrite method: 
+			playlistConfig = {
+				'uiconf_id' : $playlistTarget.attr('kuiconfid'),
+				'widget_id' : $playlistTarget.attr('kwidgetid'),
+				'flashvars' : $playlistTarget.data('flashvars')
+			};		
+			kplUrl0 = playlistConfig['flashvars']['playlistAPI.kpl0Url'];
+		} else {
+			playlistConfig = {
+				'uiconf_id' : playlistEmbed.kuiconfid,
+				'widget_id' : playlistEmbed.kwidgetid
+			};		
+			kplUrl0 = playlistEmbed.getKalturaConfig( 'playlistAPI', 'kpl0Url' )
 		}
-		
-		var playlistConfig = {
-			'uiconf_id' : playlistEmbed.kuiconfid,
-			'widget_id' : playlistEmbed.kwidgetid
-		};		
-		var kplUrl0 = playlistEmbed.getKalturaConfig( 'playlistAPI', 'kpl0Url' )
-		
-		// No kpl0Url, no good
+		// No kpl0Url, not a kaltura playlist good
 		if( !kplUrl0 ){
 			return ;
 		} 
@@ -399,8 +403,7 @@
 		// must be a media rss url:
 		if( mw.isUrl( kplUrl0 ) ){
 			playlist.src = kplUrl0;
-			//playlist.sourceHandler = new mw.PlaylistHandlerKalturaRss( playlist, playlistConfig );
-			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
+			playlist.sourceHandler = new mw.PlaylistHandlerKalturaRss( playlist, playlistConfig );
 			return ;
 		}
 		mw.log("Error playlist source not found");

@@ -354,6 +354,7 @@ mw.PlayerControlBuilder.prototype = {
 		this.windowOffset = $interface.offset();
 		this.windowOffset.top = this.windowOffset.top - $(document).scrollTop();
 		this.windowOffset.left = this.windowOffset.left - $(document).scrollLeft();
+		
 		// Change the z-index of the interface
 		$interface.css( {
 			'position' : 'fixed',

@@ -31,7 +31,13 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 		});
 		embedPlayer.sendNotification( "changeMedia", { 'entryId' : kEmbedSettings.entry_id } );	
 	},
-	updateEmbedPlayer: function( clipIndex, $video ){
+	/**
+	 * Kaltura rss playlist include entry and widget id's to build the player source list
+	 * @param clipIndex
+	 * @param $video
+	 * @return
+	 */
+	updateVideoSources: function( clipIndex, $video ){
 		var kEmbedSettings = this.getKalturaClipAttributes( clipIndex );
 		$video.attr({ 
 			'kentryid' : kEmbedSettings.entry_id,

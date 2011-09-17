@@ -46,6 +46,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			// Setupup local pointer: 
 			_this.$uiConf = this.playlist.embedPlayer.$uiConf ;
 			callback( _this.$uiConf );
+			return ;
 		}
 		
 		// Run the api request:
@@ -126,7 +127,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				// update the id: 
 				var plId =  mw.parseUri( kplUrl ).queryKey['playlist_id'];
 				// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
-				if( plId && mw.parseUri( kplUrl ).queryKey['partner_i d'] && kplUrl.indexOf('executeplaylist') != -1 ){
+				if( plId && mw.parseUri( kplUrl ).queryKey['partner_id'] && kplUrl.indexOf('executeplaylist') != -1 ){
 					playlist_id = plId;
 				} else {
 					playlist_id = kplUrl;
@@ -144,7 +145,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 					break;
 				}
 			}
-			
 			if( !_this.playlistSet[0] ){
 				mw.log( "Error could not get playlist entry id in the following player data::" + _this.$uiConf.html() );
 				return false;
@@ -253,15 +253,47 @@ mw.PlaylistHandlerKaltura.prototype = {
 		});
 		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );	
 	},
-	updateEmbedPlayer: function( clipIndex, $video ){
-		// Update the 
-		$video.attr({ 
-			'kentryid' : this.getClip( clipIndex ).id,
+	drawEmbedPlayer: function( clipIndex, $target, callback){
+		var _this = this;
+		// Check for the embedPlayer at the target
+		if( ! $('#' + _this.playlist.getVideoPlayerId() ).length ){
+			mw.log("Warning: Playlist Handler works best with video pre-loaded in the DOM");
+			$target.append(
+				_this.getKalturaVideoTag()
+			);
+			// trigger embeding:
+			$target.find('video').embedPlayer( callback );
+			return ;
+		}
+		// Get the embed 
+		var embedPlayer = _this.playlist.getEmbedPlayer();
+		
+		// set up ready binding (for ready )
+		$( embedPlayer ).bind('playerReady', function(){
+			callback();
+		});
+	},	
+	updatePlayerUi: function( clipIndex ){
+		// no updates need since kaltura player interface components are managed by the player
+	},
+	getKalturaVideoTag:function(){
+		var _this = this;
+		var playerSize = _this.playlist.getTargetPlayerSize();
+		return $('<video />').attr({ 
+			'kentryid' :  this.getClip( clipIndex ).id,
 			'kwidgetid' : this.widget_id
+		});
+		$( '<video />' )
+		.attr({
+			'id' : _this.playlist.getVideoPlayerId(),
+			'poster' : _this.getClipPoster( clipIndex, playerSize)
 		})
+		.css(
+			playerSize
+		)
 		// Add a pointer to uiConfXml data
 		.data( 'uiConfXml', this.$uiConf );
-	},	
+	},
 	addEmbedPlayerBindings: function( embedPlayer ){
 		var _this = this;
 		var bindName = 'Kaltura_SetKDPAttribute.playlist';

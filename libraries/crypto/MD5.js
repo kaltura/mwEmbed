@@ -204,4 +204,4 @@ var MD5 = function (string) {
 	var temp = WordToHex(a)+WordToHex(b)+WordToHex(c)+WordToHex(d);
  
 	return temp.toLowerCase();
-}
+};

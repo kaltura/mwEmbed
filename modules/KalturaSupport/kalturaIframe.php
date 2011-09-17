@@ -132,12 +132,7 @@ class kalturaIframe {
 				'</span> .
 				</div>';
 	}
-	private function getVideoHTML(){
-		return '<div id="videoContainer" > ' .
-					$this->getVideoTag() . 
-				'</div>';
-	}
-	private function getVideoTag(){
+	private function getVideoHTML( $playerSize = 'width:100%;height:100%;'  ){
 		$videoTagMap = array(
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
@@ -171,7 +166,7 @@ class kalturaIframe {
 		$o = "\n" .'<video class="persistentNativePlayer" ' .
 			'poster="' . htmlspecialchars( $posterUrl ) . '" ' .
 			'id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
-			'style="position:absolute;width:100%;height:100%" ';
+			'style="position:absolute;' . $playerSize . '" ';
 
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
@@ -191,7 +186,7 @@ class kalturaIframe {
 		}
 		
 		
-		// Close the open video tag
+		// Close the open video tag attribute set
 		$o.='>';
 
 		// Output each source as a child element ( for javascript off browsers to have a chance
@@ -213,16 +208,36 @@ class kalturaIframe {
 		);
 
 		$o.= "\n" . "</video>\n";
-		return $o;
+		// Wrap in a videoContainer
+		return  '<div id="videoContainer" > ' . $o . '</div>';
 	}
 	/**
 	 * Get Flash embed code with default flashvars:
 	 * @param childHtml Html string to set as child of object embed
 	 */	
 	private function getFlashEmbedHTML( $childHTML = '', $idOverride = false ){		
-		return 	$this->getPreFlashVars( $idOverride) . 
-				$this->getFlashVarsString() . 
-				$this->getPostFlashVars( $childHTML );
+		
+		$playerId = ( $idOverride )? $idOverride :  $this->getIframeId();
+		
+		$o = '<object id="' . htmlspecialchars( $playerId ) . '" name="' . $playerId . '" ' .
+				'type="application/x-shockwave-flash" allowFullScreen="true" '.
+				'allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" style="height:100%;width:100%" '.
+				'xmlns:dc="http://purl.org/dc/terms/" '.
+				'xmlns:media="http://search.yahoo.com/searchmonkey/media/" '.
+				'rel="media:video" '.
+				'resource="' . htmlspecialchars( $this->getSwfUrl() ) . '" '.
+				'data="' . htmlspecialchars( $this->getSwfUrl() ) . '"> '.
+				'<param name="wmode" value="opaque" />' .
+				'<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />' .
+				'<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />'.
+				'<param name="flashVars" value="';
+		
+		$o.= $this->getFlashVarsString() ;
+		// close the object tag add the movie param and childHTML: 
+		$o.='" /><param name="movie" value="' . htmlspecialchars( $this->getSwfUrl() ) . '" />'.
+				$childHTML .
+			'</object>';
+		return $o;
 	}
 	private function getFlashVarsString(){
 		// output the escaped flash vars from get arguments
@@ -286,9 +301,12 @@ class kalturaIframe {
 		return $o;
 	}
 	private function checkIframePlugins(){
-		$xml = $this->getResultObject()->getUiConfXML();
-		if( ! $xml )
+		try{
+			$xml = $this->getResultObject()->getUiConfXML();
+		} catch ( Exception $e ){
+			//$this->fatalError( $e->getMessage() );
 			return ;
+		}
 		if( isset( $xml->HBox ) && isset( $xml->HBox->Canvas ) && isset( $xml->HBox->Canvas->Plugin ) ){
 			foreach ($xml->HBox->Canvas->Plugin as $plugin ){
 				$attributes = $plugin->attributes();
@@ -311,33 +329,6 @@ class kalturaIframe {
 			}
 		}
 		return $swfUrl;
-	}
-	
-	private function getPreFlashVars( $idOverride = false ){
-		// Check if a playlist
-		$playerName = 'kaltura_player_iframe_no_rewrite';
-		
-		$playerId = ( $idOverride )? $idOverride :  $this->getIframeId();
-		
-		return '<object id="' . htmlspecialchars( $playerId ) . '" name="' . $playerName . '" ' .
-				'type="application/x-shockwave-flash" allowFullScreen="true" '.
-				'allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" style="height:100%;width:100%" '.
-				'xmlns:dc="http://purl.org/dc/terms/" '.
-				'xmlns:media="http://search.yahoo.com/searchmonkey/media/" '.
-				'rel="media:video" '.
-				'resource="' . htmlspecialchars( $this->getSwfUrl() ) . '" '.
-				'data="' . htmlspecialchars( $this->getSwfUrl() ) . '"> '.
-				'<param name="wmode" value="opaque" />' .
-				'<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />' .
-				'<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />'.
-				'<param name="flashVars" value="';
-	}
-	
-	private function getPostFlashVars( $childHTML = '' ){
-			return '" />'.
-				'<param name="movie" value="' . htmlspecialchars( $this->getSwfUrl() ) . '" />'.
-					$childHTML .
-				'</object>';
 	}
 	
 	/**
@@ -587,13 +578,20 @@ class kalturaIframe {
 	</head>
 	<body>	
 		<?php 
-		if( $this->getResultObject()->isPlaylist() ){ 
-			echo $this->getPlaylistWraper( 
-				$this->getVideoHTML() 
-			);
-		} else { 
-			echo $this->getVideoHTML();
-		} 
+		// If we have an empty uiConf just pass the object off to javascript and see if it can 
+		// do anything useful
+		if( !$this->getResultObject()->getUiConf() || $this->getResultObject()->getUiConf() == '') {
+			echo $this->getFlashEmbedHTML();
+		} else {
+			if( $this->getResultObject()->isPlaylist() ){ 
+				echo $this->getPlaylistWraper( 
+					// Get video html with a default playlist video size ( we can adjust it later in js )
+					$this->getVideoHTML( 'width:400px;height:330px;' ) 
+				);
+			} else { 
+				echo $this->getVideoHTML();
+			} 
+		}
 		?>
 	</body>
 </html>
@@ -602,10 +600,14 @@ class kalturaIframe {
 	private function javaScriptPlayerLogic(){
 		?>
 		if( kIsHTML5FallForward() ){
+				// remove the no_rewrite flash object ( never used in rewrite )
+				var obj = document.getElementById('kaltura_player_iframe_no_rewrite');
+				if( obj ){
+					document.getElementById('<?php echo $this->getIframeId()?>').removeChild( obj );
+				}
+					
 				// Load the mwEmbed resource library and add resize binding
 				mw.ready(function(){
-					// remove the no_rewrite flash object:
-					$j('#kaltura_player_iframe_no_rewrite').remove();
 				
 					var embedPlayer = $j( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' ).get(0);
 					// Try to seek to the IframeSeekOffset time:
