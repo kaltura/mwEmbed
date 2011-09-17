@@ -71,7 +71,7 @@ mw.EmbedPlayerKplayer = {
 		attributes.name = this.pid;
 
 		mw.log(" KPlayer:: doEmbedHTML: about to add the pid container" );
-		$j(this).html($j('<div />').attr('id', this.pid + '_container'));
+		$(this).html($('<div />').attr('id', this.pid + '_container'));
 		// Call swm dom loaded function:
 		swfobject.callDomLoadFunctions();
 		// Do the flash embedding with embedSWF
@@ -81,7 +81,7 @@ mw.EmbedPlayerKplayer = {
 
 		// Direct object embed
 		/*
-		 * $j( this ).html( '<object
+		 * $( this ).html( '<object
 		 * classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="780"
 		 * height="420">'+ '<param name="movie" value="myContent.swf" />'+ '<!--[if
 		 * !IE]>-->'+ '<object type="application/x-shockwave-flash"
@@ -94,10 +94,10 @@ mw.EmbedPlayerKplayer = {
 		}, 100);
 
 		// Flash player loses its bindings once it changes sizes::
-		$j(_this).bind('onOpenFullScreen', function() {
+		$(_this).bind('onOpenFullScreen', function() {
 			_this.postEmbedJS();
 		});
-		$j(_this).bind('onCloseFullScreen', function() {
+		$(_this).bind('onCloseFullScreen', function() {
 			_this.postEmbedJS();
 		});
 	},
@@ -122,7 +122,7 @@ mw.EmbedPlayerKplayer = {
 				'bytesDownloadedChange' : 'onBytesDownloadedChange'
 			};
 			
-			$j.each( bindEventMap, function( bindName, localMethod ) {
+			$.each( bindEventMap, function( bindName, localMethod ) {
 				_this.bindPlayerFunction(bindName, localMethod);
 			});
 			this.bindTryCount = 0;
@@ -153,7 +153,7 @@ mw.EmbedPlayerKplayer = {
 	 */
 	bindPlayerFunction : function(bindName, methodName) {
 		// The kaltura kdp can only call a global function by given name
-		var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id;
+		var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
 
 		// Create an anonymous function with local player scope
 		var createGlobalCB = function(cName, embedPlayer) {
@@ -163,7 +163,6 @@ mw.EmbedPlayerKplayer = {
 				}
 			};
 		}(gKdpCallbackName, this);
-
 		// Add the listener to the KDP flash player:
 		this.playerElement.addJsListener(bindName, gKdpCallbackName);
 	},
@@ -185,11 +184,10 @@ mw.EmbedPlayerKplayer = {
 	},
 
 	onDurationChange : function(data, id) {
-		mw.log("KPlayer::onDurationChange: " + data.newValue);
-		// update the duration ( only if not in url time encoding mode:
+		// Update the duration ( only if not in url time encoding mode:
 		if( !this.supportsURLTimeEncoding() ){
 			this.duration = data.newValue;
-			$j(this).trigger('durationchange');
+			$(this).trigger('durationchange');
 		}
 	},
 
@@ -268,7 +266,7 @@ mw.EmbedPlayerKplayer = {
 		var seekedCallback = 'kdp_seek_' + this.id + '_' + new Date().getTime();
 		window[ seekedCallback ] = function(){
 			_this.seeking = false;
-			$j( this ).trigger( 'seeked' );
+			$( this ).trigger( 'seeked' );
 			if( seekInterval  ) {
 				clearInterval( seekInterval );
 			}
@@ -277,7 +275,7 @@ mw.EmbedPlayerKplayer = {
 		
 		if ( this.getPlayerElement() ) {		
 			// trigger the html5 event: 
-			$j( this ).trigger( 'seeking' );
+			$( this ).trigger( 'seeking' );
 			
 			// Issue the seek to the flash player:
 			this.playerElement.sendNotification('doSeek', seekTime);
@@ -288,7 +286,7 @@ mw.EmbedPlayerKplayer = {
 				if( _this.flashCurrentTime != orgTime ){
 					_this.seeking = false;
 					clearInterval( seekInterval );
-					$j( this ).trigger( 'seeked' );
+					$( this ).trigger( 'seeked' );
 				}
 			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 			
@@ -315,7 +313,7 @@ mw.EmbedPlayerKplayer = {
 	
 		// let the player know we are seeking
 		_this.seeking = true;
-		$j( this ).trigger( 'seeking' );
+		$( this ).trigger( 'seeking' );
 	
 		var getPlayerCount = 0;
 		var readyForSeek = function() {
@@ -355,8 +353,8 @@ mw.EmbedPlayerKplayer = {
 	/**
 	 * function called by flash at set interval to update the playhead.
 	 */
-	onUpdatePlayhead : function(playheadValue) {
-		//mw.log('Update play head::' + playheadValue);
+	onUpdatePlayhead : function( playheadValue ) {
+		mw.log('Update play head::' + playheadValue);
 		this.flashCurrentTime = playheadValue;
 	},
 	
@@ -376,7 +374,7 @@ mw.EmbedPlayerKplayer = {
 		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
 	
 		// Fire the parent html5 action
-		$j(this).trigger('progress', {
+		$( this ).trigger('progress', {
 			'loaded' : this.bytesLoaded,
 			'total' : this.bytesTotal
 		});
