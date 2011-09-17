@@ -354,7 +354,7 @@ mw.EmbedPlayerKplayer = {
 	 * function called by flash at set interval to update the playhead.
 	 */
 	onUpdatePlayhead : function( playheadValue ) {
-		mw.log('Update play head::' + playheadValue);
+		//mw.log('Update play head::' + playheadValue);
 		this.flashCurrentTime = playheadValue;
 	},
 	
