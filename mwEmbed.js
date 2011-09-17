@@ -2766,7 +2766,7 @@ if( window.jQuery ){
 		// some defaults 
 		if(!opts)
 			opts = {};
-		opts = $.extend( {'color' : '#eee' }, opts)
+		opts = $.extend( {'color' : '#eee', 'shadow': true }, opts)
 		this.each(function() {
 			var $this = $(this).empty(),
 			data = $this.data();

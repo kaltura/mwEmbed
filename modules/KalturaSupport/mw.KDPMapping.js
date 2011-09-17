@@ -182,15 +182,39 @@
 		
 		/**
 		 * Emulates kaltura evaluate function
+		 * 
+		 * @@TODO move this into a separate uiConfValue parser script, 
+		 * I predict ( unfortunately ) it will expand a lot.
 		 */
 		evaluate: function( embedPlayer, objectString ){
-			// If the first character is not a { directly return the string:
-			if( objectString[0] != '{' ){
+			var _this = this;
+			if( typeof objectString != 'string'){
 				return objectString;
 			}
-			// Strip the { } from the objectString
-			objectString = objectString.replace( /\{|\}/g, '' );
-			objectPath = objectString.split('.');
+			// Replace any { } calls with evaluated expression. 
+			var text = objectString.replace(/\{(.*)\}/g, function(match, contents, offset, s)
+			    {
+			        return _this.evaluateExpression( embedPlayer, contents );
+			    }
+			);
+			
+			return text;
+		},
+		evaluateExpression: function( embedPlayer, expression){
+			var _this = this;
+			
+			// Check if we have a function call: 
+			if( expression.indexOf( '(' ) !== -1 ){
+				var fparts = expression.split( '(' );
+				return _this.evaluateStringFunction( 
+						fparts[0], 
+						// Remove the closing ) and evaluate the Expression 
+						// should not include ( nesting !
+						_this.evaluateExpression(embedPlayer, fparts[1].slice( 0, -1) )
+				);
+			}
+			// Split the uiConf expression into parts separated by '.'
+			var objectPath = expression.split('.');
 			switch( objectPath[0] ){
 				case 'video':
 					switch( objectPath[1] ){
@@ -272,6 +296,13 @@
 						break;
 					}
 				break;					
+			}
+		},
+		evaluateStringFunction: function( functionName, value ){
+			switch( functionName ){
+				case 'encodeUrl':
+					return encodeURI( value );
+					break;
 			}
 		},
 		

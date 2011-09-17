@@ -5,7 +5,6 @@ require_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
 // Include the kaltura named multi request helper class: 
 require_once(  dirname( __FILE__ ) . '/KalturaNamedMultiRequest.php');
 
-
 /**
  * Generates a kaltura result object based on url Parameters 
  */
@@ -179,11 +178,9 @@ class KalturaResultObject {
 				$restrictedMessage = $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentTitle') ."\n". $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentMessage');
 			}
 		} else {
-			// Use the local uiConfXml object location to avoid re-parsing the uiConf
-			// @@TODO clean up getUiConfXMl() method to handle unitialized resultObject state
-			if( !$this->uiConfXml ){
-				$this->uiConfXml = new SimpleXMLElement( $uiConf );
-			}
+		
+			// Pass in the uiConf string ( need to clean up resultObject parsing logic ) 
+			$this->getUiConfXMl( $uiConf );
 			// Check for plug definition in uiConf
 			$restrictUserAgentPlugin = $this->uiConfXml->xpath("*//Plugin[@id = 'restrictUserAgent']");
 			if( $restrictUserAgentPlugin ) {
@@ -769,7 +766,8 @@ class KalturaResultObject {
 			}
 			
 			// Entry Custom Metadata
-			if( $this->getFlashvarConfig('requiredMetadataFields') ) {
+			// Always get custom metadata for now 
+			//if( $this->getFlashvarConfig('requiredMetadataFields') ) {
 				$filter = new KalturaMetadataFilter();
 				$filter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
 				$filter->objectIdEqual = $this->urlParameters['entry_id'];
@@ -779,7 +777,8 @@ class KalturaResultObject {
 
 				$params = array( 'filter' => $filter, 'metadataPager', $metadataPager );
 				$namedMultiRequest->addNamedRequest( 'entryMeta', 'metadata_metadata', 'list', $params );
-			}
+			//}
+			
 			// Entry Cue Points
 			if( $this->getFlashvarConfig('getCuePointsData') !== false && $wgKalturaEnableCuePointsRequest ) {
 				$filter = new KalturaCuePointFilter();
@@ -930,14 +929,19 @@ class KalturaResultObject {
 			return false;
 		}
 	}
-	public function getUiConfXML(){
+	public function getUiConfXML( $uiConf  = false ){
 		global $wgKalturaIframe;
 		if( !$this->uiConfXml ){
-			if( ! $this->getUiConf() ){
-				return false;
+			if( !$uiConf ){
+				// TODO we need to clean this up because getResultObject has a bit of parsing logic right now.
+				//  getResultObject should not call any parsing functions
+				$uiConf = $this->getUiConf();
 			}
 			// remove this hack as soon as possible
-			$uiConf = str_replace( '[kClick="', 'kClick="', $this->getUiConf() );
+			$uiConf = str_replace( '[kClick="', 'kClick="', $uiConf);
+			// remove this hack as soon as possible as well!
+			$brokenFlashVarXMl =  'autoPlay=false&screensLayer.startScreenOverId=startScreen&screensLayer.startScreenId=startScreen';
+			$uiConf = str_replace( $brokenFlashVarXMl, htmlentities( $brokenFlashVarXMl ), $uiConf );
 			$this->uiConfXml = new SimpleXMLElement( $uiConf );
 		}
 		return $this->uiConfXml;

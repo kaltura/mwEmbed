@@ -237,7 +237,7 @@
 					var heightType = ( height.indexOf('%') == -1 )? 'px' : '';
 					
 					// Replace with a mwEmbedKalturaVideoSwap
-					$( element ).replaceWith( 
+					$( element ).empty().replaceWith( 
 						$('<div />')
 						.attr( videoEmbedAttributes )
 						.css({

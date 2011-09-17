@@ -151,6 +151,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// Check if the iframe API is enabled in which case we have to load client code and use that 
 	// to rewrite the frame
 	if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && ( kSupportsFlash() || kSupportsHTML5() ) ){
+		// Check if we are dealing with an html5 player or flash player
 		if( kIsHTML5FallForward() ){
 			kAddScript( function(){
 				// Options include 'width' and 'height'

@@ -2,13 +2,11 @@
 ( function( mw, $ ) {
 	
 mw.addResourcePaths({
-	"mw.freeWheelController": "mw.freeWheelController.js",
-	"tv.freewheel.SDK" : "freeWheelAdMannager.js"
-		
+	"mw.FreeWheelController": "mw.FreeWheelController.js"
 });
 // Set the base config:
 mw.setConfig({
-	// The url for the ad Mannager
+	// The url for the ad Manager
 	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js',
 	
 	// Controls if companions should be setup on the iframe then passing to the client page.
@@ -16,21 +14,15 @@ mw.setConfig({
 	'FreeWheel.PostMessageIframeCompanions': false
 });
 
-mw.addModuleLoader( 'FreeWheel', ['mw.freeWheelController'] );
+mw.addModuleLoader( 'FreeWheel', ['mw.FreeWheelController'] );
 
 // Check if the plugin is enabled: 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+		// Check if the freewheel plugin is enabled:
 		if( embedPlayer.getKalturaConfig( 'FreeWheel',  'plugin' ) ){
-			loadingAdPlugin = true;
-			var fwConfig = embedPlayer.getKalturaConfig(
-				'FreeWheel',
-				[ 'plugin', 'preSequence', 'postSequence', 'width', 'height', 'asyncInit',
-				 'adManagerUrl', 'serverUrl', 'networkId', 'videoAssetId',  'videoAssetIdType', 
-				 'playerProfile', 'videoAssetNetworkId' ]
-			);
 			mw.load( ["FreeWheel"], function(){
-				mw.addFreeWheelControler( embedPlayer, fwConfig, callback );
+				mw.addFreeWheelControler( embedPlayer, callback );
 			});
 		} else {
 			// no freewheel plugin issue callback to continue player build out
@@ -39,8 +31,9 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	});
 });
 
-
-// To support companion ads.
+////////////////////////////////////////////////////////
+// To support companion ads across the iframe
+////////////////////////////////////////////////////////
 $( mw ).bind( 'AddIframePlayerMethods', function( event, exportedMethods ){
 	exportedMethods.push( 'setFreeWheelAddCompanions' );
 });

@@ -15,7 +15,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			// Load the Kaltura Ads and AdSupport Module:
 			mw.load( [ "AdSupport", "mw.KAds" ], function(){
 				// Add the ads to the player: 
-				mw.addKalturaAds( embedPlayer, $uiConf, function(){
+				mw.addKalturaAds( embedPlayer, function(){
 					mw.log("AdPlugin ( done loading ads, run callback:");
 					// Wait until ads are loaded before running callback
 					// ( ie we don't want to display the player until ads are ready )

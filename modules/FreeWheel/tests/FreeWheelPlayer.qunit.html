@@ -1,0 +1,177 @@
+<html>
+<head>
+<title>FreeWheel Player test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript">	
+
+mw.setConfig( 'Kaltura.TempCuePoints', [
+	{ "code" : "SOME CODE",
+	      "createdAt" : 1310457621,
+	      "cuePointType" : "codeCuePoint.Code",
+	      "description" : "Code Cue Point",
+	      "entryId" : "0_uka1msg4",
+	      "forceStop" : null,
+	      "id" : "0_1kszo2z6",
+	      "partnerData" : null,
+	      "partnerId" : 495794,
+	      "partnerSortValue" : null,
+	      "startTime" : 3000,
+	      "status" : 1,
+	      "systemName" : null,
+	      "tags" : null,
+	      "thumbOffset" : null,
+	      "updatedAt" : 1310457621,
+	      "userId" : "ran@mailinator.com"
+	},
+	{ "adType" : 2,
+	      "createdAt" : 1310457025,
+	      "cuePointType" : "adCuePoint.Ad",
+	      "duration" : 7000,
+	      "endTime" : 13000,
+	      "entryId" : "0_uka1msg4",
+	      "forceStop" : null,
+	      "id" : "0_0nmqtoor",
+	      "partnerData" : null,
+	      "partnerId" : 495794,
+	      "partnerSortValue" : null,
+	      "protocolType" : 1,
+	      "sourceUrl" : "http://kaldev.kaltura.com/myopenx/www/delivery/fc.php?script=bannerTypeHtml:vastInlineBannerTypeHtml:vastInlineHtml&source=&format=vast&charset=UTF_8&nz=1&zones=z1=19",
+	      "startTime" : 6000,
+	      "status" : 1,
+	      "systemName" : null,
+	      "tags" : "vast",
+	      "thumbOffset" : null,
+	      "title" : "My Overlay",
+	      "updatedAt" : 1310457025,
+	      "userId" : "ran@mailinator.com"
+	},
+	{ "code" : "SOME CODE",
+	      "createdAt" : 1310457894,
+	      "cuePointType" : "codeCuePoint.Code",
+	      "description" : "Code Cue Point 2",
+	      "entryId" : "0_uka1msg4",
+	      "forceStop" : null,
+	      "id" : "0_sud78fly",
+	      "partnerData" : null,
+	      "partnerId" : 495794,
+	      "partnerSortValue" : null,
+	      "startTime" : 20000,
+	      "status" : 1,
+	      "systemName" : null,
+	      "tags" : null,
+	      "thumbOffset" : null,
+	      "updatedAt" : 1310457894,
+	      "userId" : "ran@mailinator.com"
+	},
+	{ "adType" : 1,
+	      "createdAt" : 1310457850,
+	      "cuePointType" : "adCuePoint.Ad",
+	      "duration" : 0,
+	      "endTime" : 0,
+	      "entryId" : "0_uka1msg4",
+	      "forceStop" : true,
+	      "id" : "0_oxx941wi",
+	      "partnerData" : null,
+	      "partnerId" : 495794,
+	      "partnerSortValue" : null,
+	      "protocolType" : 1,
+	      "sourceUrl" : "http://d1.openx.org/fc.php?script=bannerTypeHtml:vastInlineBannerTypeHtml:vastInlineHtml&source=&format=vast&charset=UTF_8&nz=1&zones=z1=182104",
+	      "startTime" : 30000,
+	      "status" : 1,
+	      "systemName" : null,
+	      "tags" : null,
+	      "thumbOffset" : null,
+	      "title" : "Midroll",
+	      "updatedAt" : 1310457850,
+	      "userId" : "ran@mailinator.com"
+	}
+]);
+
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "FreeWheel Player" );
+
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	var iframeContext = window.frames['kaltura_player_ifp'];
+	
+	test( "Iframe in DOM", function() {
+		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
+		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+	});
+
+	asyncTest("Iframe layout elements", function(){
+		kalturaQunitWaitForPlayer(function(){
+			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
+			ok( $iframe.find('.play-btn').length, ".play-btn found" );
+			start();
+		});
+	});
+	
+	asyncTest("Iframe config", function(){
+		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
+		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
+		// Test page context config: 
+		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
+		start();
+	});
+
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> FreeWheel Player test </h2>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br />
+<object id="kaltura_player_1316173768" 
+	name="kaltura_player_1316173768" 
+	type="application/x-shockwave-flash" 
+	allowFullScreen="true" allowNetworking="all" 
+	allowScriptAccess="always" height="330" width="400"
+	bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" 
+	xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
+	rel="media:video" 
+	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1316173768/wid/_243342/uiconf_id/5357341/entry_id/0_uka1msg4" data="http://www.kaltura.com/index.php/kwidget/cache_st/1316173768/wid/_243342/uiconf_id/5357341/entry_id/0_uka1msg4"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1316173768/wid/_243342/uiconf_id/5357341/entry_id/0_uka1msg4" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_uka1msg4/width/120/height/90/bgcolor/000000/type/2"></a> <span property="dc:description" content="test folgers coffe"></span><span property="media:title" content="FolgersCoffe.mpeg"></span> <span property="media:width" content="400"></span><span property="media:height" content="330"></span> <span property="media:type" content="application/x-shockwave-flash"></span> </object>
+</body>
+
+	<table border='1' cellpadding='1'>
+		<tr><th>COMPANION SLOTS</th></tr>
+		<tr>
+			<td>
+			    <span id="VPNT_1" class="_fwph" >
+			        <form id="_fw_form_VPNT_1" style="display:none">
+			            <input type="hidden" name="_fw_input_VPNT_1" id="_fw_input_VPNT_1" value="ptgt=p&h=90&w=728&cd=216,30">
+			        </form>
+			        <span id="_fw_container_VPNT_1">COMPANION_SLOT_1</span>
+			    </span>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			    <span id="SSNT_1" class="_fwph" >
+			        <form id="_fw_form_SSNT_1" style="display:none">
+			            <input type="hidden" name="_fw_input_SSNT_1" id="_fw_input_SSNT_1" value="w=300&h=250">
+			        </form>
+			        <span id="_fw_container_SSNT_1">COMPANION_SLOT_2</span>
+			    </span>
+			</td>
+		</tr>
+	</table>
+	<br>
+	<table border='1' cellpadding='1'>
+		<tr><th>STAND ALONE DISPLAY SLOTS</th></tr>
+		<tr>
+			<td>
+			    <span id="SSNT_2" class="_fwph" >
+			        <form id="_fw_form_SSNT_2" style="display:none">
+			            <input type="hidden" name="_fw_input_SSNT_2" id="_fw_input_SSNT_2" value="ptgt=p&h=90&w=728&cd=216,30&flag=-cmpn">
+			        </form>
+			        <span id="_fw_container_SSNT_2">DISPLAY_SLOT_1</span>
+			    </span>
+			</td>
+		</tr>
+	</table>
+</html>

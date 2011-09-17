@@ -4,7 +4,7 @@
 ( function( mw, $ ) {
 	
 mw.KCuePoints = function( embedPlayer ){
-	this.init( embedPlayer );
+	return this.init( embedPlayer );
 };
 mw.KCuePoints.prototype = {
 	init: function( embedPlayer ){
@@ -54,7 +54,7 @@ mw.KCuePoints.prototype = {
 		});
 	},
 	getEndTime: function(){
-		return this.embedPlayer.kalturaPlayerMetaData.msDuration;
+		return this.embedPlayer.evaluate('{mediaProxy.entry.msDuration}');
 	},
 	getCuePoints: function(){
 		if( ! this.embedPlayer.entryCuePoints || ! this.embedPlayer.entryCuePoints.length ){
@@ -90,30 +90,34 @@ mw.KCuePoints.prototype = {
 		 *  We need different events for each cue point type
 		 */
 		var eventName;
-		var obj = {
-			cuePoint: cuePoint
-		};
 		if( cuePoint.cuePointType == 'codeCuePoint.Code' ) {
-			// Code type cue point
-			eventName = 'CuePointReached';
+			// Code type cue point ( make it easier for people grepping the code base for an event )
+			eventName = 'KalturaSupport_CuePointReached';
 		} else if( cuePoint.cuePointType == 'adCuePoint.Ad' ) {
 			// Ad type cue point
-			eventName = 'AdOpportunity';
-			obj.context = this.getAdType(cuePoint);
+			eventName = 'KalturaSupport_AdOpportunity';
 		}
-		$( this.embedPlayer ).trigger( 'KalturaSupport_' + eventName, obj );
+		$( this.embedPlayer ).trigger(  eventName, cuePoint );
 		mw.log('Cue Points :: Triggered event: ' + eventName + ' - ' + cuePoint.cuePointType + ' at: ' + cuePoint.startTime );
 	},
 	
-	// Determine our cue point Ad type
+	// Get Ad Type from Cue Point
 	getAdType: function( cuePoint ) {
 		if( cuePoint.startTime == 1 ) {
-			return 'pre';
+				return 'preroll';
 		} else if( cuePoint.startTime == this.getEndTime() ) {
-			return 'post';
+				return 'postroll';
 		} else {
-			return 'mid';
+			// Midroll
+			if( cuePoint.adType == 1 ) {
+				return 'midroll';
+			}
+			// Overlay
+			else if ( cuePoint.adType == 2 ) {
+				return  'overlay';
+			}
 		}
+		mw.log("Error:: KCuePoints could not determine adType");
 	}
 };
 

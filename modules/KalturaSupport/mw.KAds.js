@@ -3,8 +3,8 @@
 */
 ( function( mw, $ ) {
 //Global mw.addKAd manager
-mw.addKalturaAds = function( embedPlayer, $uiConf, callback ) {
-	embedPlayer.ads = new mw.KAds( embedPlayer, $uiConf, callback );
+mw.addKalturaAds = function( embedPlayer, callback ) {
+	embedPlayer.ads = new mw.KAds( embedPlayer, callback );
 };
 
 mw.sendBeaconUrl = function( beaconUrl ){
@@ -32,15 +32,18 @@ mw.KAds.prototype = {
 	},
 	displayedCuePoints: [],
 	
-	init: function( embedPlayer, $uiConf, callback ){
+	init: function( embedPlayer, callback ){
 		var _this = this; 
 		this.embedPlayer = embedPlayer;
+		
+		// setup local pointer: 
+		var $uiConf = embedPlayer.$uiConf;
 		this.$notice = $uiConf.find( 'label#noticeMessage' );
 		this.$skipBtn = $uiConf.find( 'button#skipBtn' );
 
-		
+		// Build out the selection of kAds
 		var configSet = ['htmlCompanions' , 'flashCompanions' ];
-		$.each(this.namedAdTimelineTypes, function( inx, adType ){
+		$.each( this.namedAdTimelineTypes, function( inx, adType ){
 			$.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
 				// Add all the ad types to the config set: 
 				configSet.push( adType + adAttributeName);
@@ -97,7 +100,7 @@ mw.KAds.prototype = {
 						$.extend( adConf.ads[0], adCuePointConf )
 					],
 					skipBtn: {
-						'text' : "Skip ad",
+						'text' : "Skip ad", // TODO i8ln 
 						'css' : {
 							'right': '5px',
 							'bottom' : '5px'
@@ -119,7 +122,7 @@ mw.KAds.prototype = {
 				// Set switch back function
 				var doneCallback = function() {
 					// Add cuePoint Id to displayed cuePoints array
-					_this.displayedCuePoints.push(cuePoint.cuePoint.id);
+					_this.displayedCuePoints.push( cuePoint.cuePoint.id );
 					
 					var vid = _this.embedPlayer.getPlayerElement();
 					// Check if the src does not match original src if
@@ -318,30 +321,6 @@ mw.KAds.prototype = {
 			'width' :  companionParts[1],
 			'height' :  companionParts[2]
 		};
-	},
-	// Get Ad Type from Cue Point
-	getAdTypeFromCuePoint: function( cuePoint ) {
-		//['preroll', 'bumper','overlay', 'midroll', 'postroll']
-		var type = null;
-		switch (cuePoint.context) {
-			case 'pre':
-				type = 'preroll';
-				break;
-			case 'post':
-				type = 'postroll';
-				break;
-			case 'mid':
-				// Midroll
-				if( cuePoint.cuePoint.adType == 1 ) {
-					type = 'midroll';
-				}
-				// Overlay
-				else if ( cuePoint.cuePoint.adType == 2 ) {
-					type = 'overlay';
-				}
-				break;
-		}
-		return type;
 	}
 };
 

@@ -196,18 +196,22 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kalturaPlayerMetaData = playerData.meta;
 			$j( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
 		}
+		
+		
+		// XXX remove once we have support for Cue points from the api
+		if( mw.getConfig("Kaltura.TempCuePoints" ) ){
+			playerData.entryCuePoints = mw.getConfig("Kaltura.TempCuePoints" );
+		}
+		
 		if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
 			mw.log( "KCuePoints:: Added " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
 			embedPlayer.entryCuePoints = playerData.entryCuePoints;
-			new mw.KCuePoints( embedPlayer );
-
-			// Allow other plugins to subscribe to cuePoint ready event:
-			$j( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
+			embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 		}
 
 		// Add getKalturaConfig to embed player:
 		embedPlayer.getKalturaConfig = function( pluginName, attr ){
-			return _this.getPluginConfig( $( embedPlayer ).data('flashvars'), embedPlayer.$uiConf, pluginName, attr);
+			return _this.getPluginConfig( embedPlayer, pluginName, attr );
 		};
 		
 		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
@@ -220,16 +224,26 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.playlistCache = playerData.playlistCache;
 		}	
 		
+		// Local function to defer the trigger of loaded cuePoints so that plugins have time to load
+		// and setup their binding to KalturaSupport_CuePointsReady
+		var doneWithUiConf = function(){
+			if( embedPlayer.entryCuePoints ){
+				// Allow other plugins to subscribe to cuePoint ready event:
+				$j( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
+			};
+			callback();
+		};
+		
 		if( embedPlayer.$uiConf ){
 			_this.baseUiConfChecks( embedPlayer );
 			// Trigger the check kaltura uiConf event					
 			$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport_CheckUiConf', embedPlayer.$uiConf, function(){	
-				mw.log("KWidgetSupport::KalturaSupport_CheckUiConf callback");
+				mw.log("KWidgetSupport::KalturaSupport_CheckUiConf done with all uiConf checks");
 				// Ui-conf file checks done
-				callback();
+				doneWithUiConf();
 			});
 		} else {
-			callback();
+			doneWithUiConf();
 		}
 	},
 	/**
@@ -239,7 +253,7 @@ mw.KWidgetSupport.prototype = {
 	 */
 	baseUiConfChecks: function( embedPlayer ){
 		// Check for autoplay:
-		var autoPlay = this.getPluginConfig( embedPlayer, embedPlayer.$uiConf, '', 'autoPlay');
+		var autoPlay = this.getPluginConfig( embedPlayer, '', 'autoPlay');
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
@@ -249,7 +263,11 @@ mw.KWidgetSupport.prototype = {
 	 * Check for xml config, let flashvars override 
 	 * 
 	 */
-	getPluginConfig: function( flashvars, $uiConf, pluginName, attr ){
+	getPluginConfig: function( embedPlayer, pluginName, attr ){
+		// Setup local pointers: 
+		var flashvars = $( embedPlayer ).data('flashvars');
+		var $uiConf = embedPlayer.$uiConf;
+		
 		var singleAttrName = false;
 		if( typeof attr == 'string' ){
 			singleAttrName = attr;
@@ -331,6 +349,10 @@ mw.KWidgetSupport.prototype = {
 				config[ attrName ] = true;
 			if( config[ attrName ] === "false" )
 				config[ attrName ] = false; 
+			
+			// Do any value handling 
+			config[ attrName ] = embedPlayer.evaluate( config[ attrName ] );
+			
 		});
 		
 		// Check if disableHTML5 was "true" and return false for the plugin config ( since we are the html5 library ) 
@@ -373,7 +395,6 @@ mw.KWidgetSupport.prototype = {
 			callback( sources );
 		});
 	},
-	
 	/**
 	 * Sets up variables and issues the mw.KApiPlayerLoader call
 	 */

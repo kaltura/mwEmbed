@@ -515,7 +515,7 @@ class kalturaIframe {
 			mw.setConfig( 'Kaltura.IframeRewrite', false );
 
 			// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
-			mw.setConfig('Mw.LogPrepend', 'iframe:' );
+			mw.setConfig('Mw.LogPrepend', 'iframe:');
 
 			// Don't rewrite the video tag from the loader ( if html5 is supported it will be
 			// invoked bellow and respect the persistant video tag option for iPad overlays )
