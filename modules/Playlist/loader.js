@@ -57,17 +57,17 @@ $.fn.playlist = function( options, callback ){
 		mw.log( "Error: Calling mediaRssPlayer with empty selector " + this );
 		return ;
 	}
+	var _this = this;
 	
 	// Set the target
 	options[ 'target' ] = this;
 	// Load the mediaRss class ( if not already loaded )
 	mw.load ( ['EmbedPlayer', 'Playlist'], function(){
 		// load and display the media Rss
-		var myPlaylist = new mw.Playlist( options );
-		myPlaylist.drawPlaylist( function(){
+		_this.playlist = new mw.Playlist( options );
+		_this.playlist.drawPlaylist( function(){
 			if( callback ){
-				callback( myPlaylist );
-				callback = null;
+				callback( _this.playlist );
 			}
 		});
 	});
