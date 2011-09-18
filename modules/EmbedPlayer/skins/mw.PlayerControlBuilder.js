@@ -298,6 +298,7 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		return size;
 	},
+	
 	/**
 	* Get the fullscreen play button css
 	*/
@@ -1852,15 +1853,15 @@ mw.PlayerControlBuilder.prototype = {
 						// Fullscreen binding:
 						.buttonHover();
 				
-				// Link out to another window if iPad 3x 
+				// Link out to another window if iPad 3x ( broken iframe resize ) 
 				if( (
 						mw.getConfig('EmbedPlayer.IsIframeServer') 
 						&& 
-						( navigator.userAgent.indexOf("iPad; U; CPU OS 3_") != -1 ) 
+						mw.isIpad3() 
 					)
 						||
 					  mw.getConfig( "EmbedPlayer.NewWindowFullscreen" ) 
-				){	
+				){
 					var url = document.URL.split('#')[0];
 					mw.setConfig('EmbedPlayer.IsFullscreenIframe', true);
 					url += mw.getIframeHash();

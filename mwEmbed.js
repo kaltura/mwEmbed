@@ -1208,6 +1208,9 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	mw.isIpad = function(){
 		return ( navigator.userAgent.indexOf('iPad') != -1 );
 	};
+	mw.isIpad3 = function(){
+		return ( mw.isIpad() && navigator.userAgent.indexOf(' 3_') != -1 );
+	};
 	// Android 2 has some restrictions vs other mobile platforms
 	mw.isAndroid2 = function(){		
 		return ( navigator.userAgent.indexOf( 'Android 2.') != -1 );

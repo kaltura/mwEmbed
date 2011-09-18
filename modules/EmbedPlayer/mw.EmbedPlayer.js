@@ -1517,7 +1517,8 @@ mw.EmbedPlayer.prototype = {
 			this.showErrorMsg( this['data-playerError'] );
 			return ;
 		}
-		if ( this.autoplay ) {
+		// auto play does not work on iPad > 3 
+		if ( this.autoplay && ( !mw.Ipad() || mw.isIpad3() ) ) {
 			mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
 			_this.play();
 		}

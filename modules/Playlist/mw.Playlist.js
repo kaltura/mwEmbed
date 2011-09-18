@@ -95,7 +95,10 @@ mw.Playlist.prototype = {
 		}
 		var callback = function(){
 			if( _this.sourceHandler.autoPlay || _this.autoPlay ){
-				_this.playClip( _this.clipIndex );
+				// only auto play if ipad3x ( iPad 4 and iOS does not let you autoplay )
+				if( !mw.isIOS() || mw.isIpad3() ){
+					_this.playClip( _this.clipIndex );
+				}
 			}
 			drawDoneCallback();
 		};
