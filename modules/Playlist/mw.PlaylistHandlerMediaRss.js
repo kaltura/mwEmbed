@@ -159,6 +159,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		}
 	},
 	updatePlayerUi: function( clipIndex ){
+		var _this = this;
 		var playerSize = _this.playlist.getTargetPlayerSize();
 		if( this.playlist.titleHeight != 0){
 			// Build and output the title
