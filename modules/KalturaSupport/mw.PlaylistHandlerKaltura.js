@@ -253,8 +253,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 		});
 		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );	
 	},
-	drawEmbedPlayer: function( clipIndex, $target, callback){
+	drawEmbedPlayer: function( clipIndex, callback){
 		var _this = this;
+		var $target = _this.playlist.getVideoPlayerTarget();
 		// Check for the embedPlayer at the target
 		if( ! $('#' + _this.playlist.getVideoPlayerId() ).length ){
 			mw.log("Warning: Playlist Handler works best with video pre-loaded in the DOM");
@@ -520,7 +521,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	uiConfValueLookup: function(clipIndex, objectString ){
 		var parsedString = objectString.replace( /\{|\}/g, '' );
 		var objectPath = parsedString.split('.');
-		mw.log("mw.Playlist:: uiConfValueLookup >: " + objectPath[0]);
+		//mw.log("mw.Playlist:: uiConfValueLookup >: " + objectPath[0]);
 		switch( objectPath[0] ){
 			case 'div10002(this': 
 				return this.uiConfValueLookup(clipIndex, 'this.' + objectPath[1].replace( /\)/, '' ) );

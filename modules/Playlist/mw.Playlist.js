@@ -104,7 +104,7 @@ mw.Playlist.prototype = {
 			if( !_this.embedPlayer ){
 				$( _this.target ).empty();
 			}
-			mw.log("Playlist::drawPlaylist: sourceHandler loaded");
+			mw.log("Playlist::drawPlaylist: sourceHandler:" + sourceHandler);
 			// Check if load failed or empty playlist
 			if( _this.sourceHandler.getClipList().length == 0 ){
 				$( _this.target ).text( gM('mwe-playlist-empty') );
@@ -309,12 +309,14 @@ mw.Playlist.prototype = {
 		// Add the selectable media list
 		_this.addMediaList();
 
+		var $videoList = $( _this.target + ' .media-rss-video-list' );
+		
 		// Update the player
 		_this.drawEmbedPlayer( _this.clipIndex, function(){
 			var playerSize = _this.getTargetPlayerSize();
 			// Update the list height ( vertical layout )
 			if( _this.layout == 'vertical' ){
-				$( _this.target + ' .media-rss-video-list' ).css( {
+				$videoList.css( {
 					'top' : parseInt( playerSize.height ) + 4,
 					'width' : '95%'
 				} );
@@ -330,7 +332,7 @@ mw.Playlist.prototype = {
 				}
 			} else {
 				// Update horizontal layout
-				$( _this.target + ' .media-rss-video-list').css( {
+				$videoList.css( {
 					'top' : '0px',
 					'left' :  parseInt( playerSize.width ) + 4,
 					'right' : '0px'
@@ -340,14 +342,14 @@ mw.Playlist.prototype = {
 					$( _this.target + ' .playlistSet-container').css( {
 						'left' : parseInt( playerSize.width ) + 4
 					});
-					$( _this.target + ' .media-rss-video-list').css( {
+					$videoList.css( {
 						'top' : '26px'
 					});
 				}
 			}
-			
-			var $videoList = $( _this.target + ' .media-rss-video-list' );
+			// Show the videoList
 			$videoList.show();
+			
 			// show the video list and apply the swipe binding
 			$( _this.target ).find('.media-rss-video-list-wrapper').fadeIn();
 			
@@ -361,14 +363,14 @@ mw.Playlist.prototype = {
 				// Add space for scroll buttons:
 				var curTop = $( _this.target + ' .media-rss-video-list' ).css('top');
 				if(!curTop) curTop = '0px';
-				$( _this.target + ' .media-rss-video-list' ).css( {
+				$videoList.css( {
 					'position' : 'absolute',
 					'height' : null,
 					'top' : curTop,
 					'bottom' : '48px'
 				});
 				if( _this.layout == 'vertical' ){
-					$( _this.target + ' .media-rss-video-list' ).css({
+					$videoList.css({
 						'top' : $( _this.target + ' .media-rss-video-player-container' ).height() + 8
 					});
 				}
@@ -488,6 +490,9 @@ mw.Playlist.prototype = {
 	getEmbedPlayer: function(){
 		return $('#' + this.getVideoPlayerId() ).get(0);
 	},
+	getVideoPlayerTarget: function(){
+		return $( this.target + ' .media-rss-video-player' );
+	},
 	// Play a clipIndex, if the player is already in the page swap the player src to the new target
 	playClip: function( clipIndex ){
 		var _this = this;
@@ -515,7 +520,7 @@ mw.Playlist.prototype = {
 			return ;
 		}
 		// Pass off player updates to sourceHandler
-		_this.sourceHandler.drawEmbedPlayer( clipIndex, $( _this.target + ' .media-rss-video-player' ), function(){
+		_this.sourceHandler.drawEmbedPlayer( clipIndex, function(){
 			// update Ui: 
 			_this.updatePlayerUi( clipIndex );
 			

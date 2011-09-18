@@ -113,9 +113,10 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		});
 	},
 	
-	drawEmbedPlayer: function( clipIndex, $target, callback ){
+	drawEmbedPlayer: function( clipIndex, callback ){
 		var _this = this;
 		var playerSize = _this.playlist.getTargetPlayerSize();
+		var $target = _this.playlist.getVideoPlayerTarget();
 		var $video;
 		// Check that the player is not already in the dom: 
 		if( $('#' + _this.playlist.getVideoPlayerId()).length ){
