@@ -232,7 +232,7 @@ mw.EmbedPlayerNative = {
 					$( vid ).css('top') :
 					( ( this.$interface.height() - controlBarOffset - pHeight ) * .5 ) + 'px';
 
-			mw.log( 'EmbedPlayerNative: applyIntrinsicAspect:: left:' + ( ( $( this ).width() - pWidth ) * .5 ) + ' this width:' +  $( this ).width() );
+			mw.log( 'EmbedPlayerNative: applyIntrinsicAspect:: top: ' + topOffset + ' left:' + ( ( $( this ).width() - pWidth ) * .5 ) + ' this width:' +  $( this ).width() );
 			$( vid ).css({
 				'position' : 'absolute',
 				'height' : pHeight + 'px',

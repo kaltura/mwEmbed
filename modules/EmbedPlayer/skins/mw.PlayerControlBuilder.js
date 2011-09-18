@@ -400,6 +400,8 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// only animate if we are not inside an iframe
 		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
+		
+		alert( 'top: ' + topOffset);
 		// Resize the player keeping aspect and with the widow scroll offset:
 		embedPlayer.resizePlayer({
 			'top' : topOffset,
@@ -523,7 +525,6 @@ mw.PlayerControlBuilder.prototype = {
 			'width' : size.width,
 			'height' : size.height
 		};
-		
 		// Set up local pointer to interface:
 		var embedPlayer = this.embedPlayer;
 		var $interface = embedPlayer.$interface;
@@ -596,7 +597,6 @@ mw.PlayerControlBuilder.prototype = {
 		$('.mw-fullscreen-overlay').fadeOut( 'slow' );
 	
 		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
-
 		// Restore the player:
 		embedPlayer.resizePlayer( {
 			'top' : _this.windowOffset.top + 'px',
@@ -612,7 +612,7 @@ mw.PlayerControlBuilder.prototype = {
 					'left' : '0px'
 				};
 			// Restore non-absolute layout:
-			$( [ $interface, $interface.find('.playerPoster'), embedPlayer ] ).css(topPos);
+			$( [ $interface, $interface.find('.playerPoster'), embedPlayer ] ).css( topPos );
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() )
 					.css( topPos )

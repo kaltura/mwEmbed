@@ -437,6 +437,11 @@
 				// Add the player id: 
 				iframeRequest+= '/?playerId=' + $( playerTarget ).attr('id');
 				
+				// Add the width and height of the player
+				iframeRequest+= '&iframeSize=' +  $( playerTarget ).width() + 
+								'x' + $(playerTarget).height();
+					
+				
 				// If remote service is enabled pass along service arguments: 
 				if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' )  && 
 					(

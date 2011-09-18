@@ -121,6 +121,32 @@ class kalturaIframe {
 
 		return $o;
 	}
+	private function getPlaylistPlayerSizeCss(){
+		$width = 400;
+		$height = 300;
+		// check if we have iframeSize paramater: 
+		if( isset( $_GET[ 'iframeSize' ] ) ){
+			
+			list( $iframeWidth, $iframeHeight ) = explode( 'x',  $_GET[ 'iframeSize' ]);
+			$iframeWidth = intval( $iframeWidth );
+			$iframeHeight = intval( $iframeHeight );
+			$xml = $this->getResultObject()->getUiConfXML();
+			$result = $xml->xpath("//*[@id='playlistHolder']");
+			if( isset( $result[0] ) ){
+				foreach ( $result[0]->attributes() as $key => $value ) {
+					if( $key == 'width' && $value != '100%' ){
+						$width = $iframeWidth - intval( $value );
+						$height = $iframeHeight;
+					}
+					if( $key == 'height' && $value != '100%' ){
+						$height = $iframeHeight - intval( $value );
+						$width = $iframeWidth;
+					}
+				}
+			}
+		}
+		return "width:{$width}px;height:{$height}px;";
+	}
 	// outputs the playlist wrapper 
 	private function getPlaylistWraper( $videoHtml ){
 		// XXX this hard codes some layout assumptions ( but no good way around that for now )
@@ -163,7 +189,7 @@ class kalturaIframe {
 		// Add default video tag with 100% width / height
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
-		$o = "\n" .'<video class="persistentNativePlayer" ' .
+		$o = "\n\n\t" .'<video class="persistentNativePlayer" ' .
 			'poster="' . htmlspecialchars( $posterUrl ) . '" ' .
 			'id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
 			'style="position:absolute;' . $playerSize . '" ';
@@ -192,7 +218,7 @@ class kalturaIframe {
 		// Output each source as a child element ( for javascript off browsers to have a chance
 		// to playback the content
 		foreach( $sources as $source ){
-			$o.= "\n\t" .'<source ' .
+			$o.= "\n\t\t" .'<source ' .
 					'type="' . htmlspecialchars( $source['type'] ) . '" ' .
 					'src="' . $source['src'] . '" '.
 					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" '.
@@ -202,7 +228,7 @@ class kalturaIframe {
 		// To be on the safe side include the flash player and
 		// direct file link as a child of the video tag
 		// ( if javascript is "off" and they don't have video tag support for example )
-		$o.= "\n\t\t" . $this->getFlashEmbedHTML(
+		$o.= "\n\t\t\t" . $this->getFlashEmbedHTML(
 			$this->getFileLinkHTML(), 
 			'kaltura_player_iframe_no_rewrite'
 		);
@@ -494,7 +520,7 @@ class kalturaIframe {
 			if( $this->getResultObject()->isPlaylist() ){ 
 				echo $this->getPlaylistWraper( 
 					// Get video html with a default playlist video size ( we can adjust it later in js )
-					$this->getVideoHTML( 'width:400px;height:330px;' ) 
+					$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() ) 
 				);
 			} else { 
 				echo $this->getVideoHTML();
