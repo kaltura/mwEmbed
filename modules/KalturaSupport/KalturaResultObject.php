@@ -652,7 +652,7 @@ class KalturaResultObject {
 		// Get the first playlist list:
 		$playlistId =  $this->getFirstPlaylistId( $uiConfXml );
 		$playlistObject = $this->getPlaylistObject( $playlistId  );
-		
+
 		// Create an empty resultObj
 		if( isset( $playlistObject[0] ) && $playlistObject[0]->id ){
 			// Set the isPlaylist flag now that we are for sure dealing with a playlist
@@ -706,7 +706,7 @@ class KalturaResultObject {
 		if( isset( $result[0] ) ){
 			foreach ( $result[0]->attributes() as $key => $val ) {
 				if( $key == 'value' ){
-					$playlistId = $val;
+					$playlistId = urldecode( $val );
 				}
 				if( $key == 'overrideflashvar' && $val == 'true' ){
 					$checkFlashVar = false;	
