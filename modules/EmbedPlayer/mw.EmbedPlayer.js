@@ -2191,6 +2191,10 @@ mw.EmbedPlayer.prototype = {
 		if( this.controlBuilder ){
 			this.controlBuilder.closeMenuOverlay();
 		}
+		// Hide any button if present:
+		if( this.$interface ){
+			this.$interface.find( '.play-btn-large' ).remove();
+		}
 		
 		// Check if thumbnail is being displayed and embed html
 		if ( this.posterDisplayed &&  !this.useNativePlayerControls() ) {
@@ -2199,10 +2203,6 @@ mw.EmbedPlayer.prototype = {
 				return;
 			} else {
 				this.posterDisplayed = false;
-				// Hide any button if present:
-				if( this.$interface ){
-					this.$interface.find( '.play-btn-large' ).remove();
-				}
 				this.doEmbedHTML();
 			}
 		}
