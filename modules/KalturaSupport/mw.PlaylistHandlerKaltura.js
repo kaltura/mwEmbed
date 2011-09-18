@@ -462,6 +462,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				case 'id':
 					idName = attr.nodeValue;
 					$target.data('id', idName);
+					$target.addClass(idName);
 					break;
 				case 'stylename': 
 					styleName = attr.nodeValue;
