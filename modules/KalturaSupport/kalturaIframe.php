@@ -126,7 +126,6 @@ class kalturaIframe {
 		$height = 300;
 		// check if we have iframeSize paramater: 
 		if( isset( $_GET[ 'iframeSize' ] ) ){
-			
 			list( $iframeWidth, $iframeHeight ) = explode( 'x',  $_GET[ 'iframeSize' ]);
 			$iframeWidth = intval( $iframeWidth );
 			$iframeHeight = intval( $iframeHeight );

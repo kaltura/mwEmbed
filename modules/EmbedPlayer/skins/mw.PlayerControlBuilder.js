@@ -226,34 +226,40 @@ mw.PlayerControlBuilder.prototype = {
 				'height' : $( window ).height()
 			};
 		}
+		windowSize.width = parseInt( windowSize.width );
+		windowSize.height = parseInt( windowSize.height );
+		// See if we need to leave space for control bar
+		if( !_this.isOverlayControls() ){
+			//targetHeight =  targetHeight - this.height;
+			windowSize.height = windowSize.height - this.height;
+		}
+		
+		
+		// Check if we can read intrinsic size, if not just take image or video tag size
+		var intrinsicSize = _this.getIntrinsicSize();
 		// Set target width
 		var targetWidth = windowSize.width;
-		var targetHeight = targetWidth * ( embedPlayer.getHeight() / embedPlayer.getWidth() );
-		
+		var targetHeight = targetWidth * ( intrinsicSize.height / intrinsicSize.width );
 		// Check if it exceeds the height constraint:
 		if( targetHeight > windowSize.height ){
 			targetHeight = windowSize.height;
-			targetWidth = targetHeight * ( embedPlayer.getWidth() / embedPlayer.getHeight() );
+			targetWidth = targetHeight * ( intrinsicSize.width / intrinsicSize.height );
 		}
 		var offsetTop = 0;
-		if( embedPlayer.getPlayerElement() ){
+		/*if( embedPlayer.getPlayerElement() ){
+			// space for titles?
 			offsetTop = parseInt( $( embedPlayer.getPlayerElement() ).css( 'top' ) );
 		} else if( embedPlayer.$interface.find('.playerPoster') ){
 			var ot = parseInt(embedPlayer.$interface.find('.playerPoster').css( 'top' ) );
-			offsetTop = !isNaN( ot ) ? ot : 0;
 		}
-		// if the video is very wide in a tall window adjust the size: 
+		offsetTop = !isNaN( ot ) ? ot : 0;
+		*/
+		//  Move the video down 1/2 of the difference of window height
 		offsetTop+= ( targetHeight < windowSize.height )? ( windowSize.height- targetHeight ) / 2 : 0;
 		// if the video is very tall in a short window adjust the size:
 		var offsetLeft = ( targetWidth < windowSize.width )? ( windowSize.width- targetWidth ) / 2 : 0;
 
-		// See if we need to leave space for control bar
-		if( !_this.isOverlayControls() ){
-			targetHeight =  targetHeight - this.height;
-			offsetTop = offsetTop - this.height;
-			if( offsetTop < 0 ) offsetTop = 0;
-		}
-		// mw.log( 'PlayerControlBuilder::getAspectPlayerWindowCss: ' + ' h:' + targetHeight + ' w:' + targetWidth + ' t:' + offsetTop + ' l:' + offsetLeft );
+		mw.log( 'PlayerControlBuilder::getAspectPlayerWindowCss: ' + ' h:' + targetHeight + ' w:' + targetWidth + ' t:' + offsetTop + ' l:' + offsetLeft );
 		return {
 			'position' : 'absolute',
 			'height': parseInt( targetHeight ),
@@ -262,7 +268,36 @@ mw.PlayerControlBuilder.prototype = {
 			'left': parseInt( offsetLeft) 
 		};
 	},
-
+	/**
+	 * This recreates some functionality in applyIntrinsic aspect 
+	 * @@TODO we should merge
+	 * @return
+	 */
+	getIntrinsicSize: function(){
+		var size = {};
+		var vid = this.embedPlayer.getPlayerElement()
+		// Check for embedVideo size: 
+		if( vid ){
+			size.width = vid.videoWidth;
+			size.height = vid.videoHeight;
+		}
+		// check for posterImage size: ( should have Intrinsic aspect size as well ) 
+		var img = this.embedPlayer.$interface.find('.playerPoster').get(0);
+		if( !size.width && img.naturalWidth){
+			size.width = img.naturalWidth;
+		}
+		if( !size.height && img.naturalHeight ){
+			size.height = img.naturalHeight;
+		}
+		// if all else fails use embedPlayer.getWidth()
+		if( !size.width ){
+			size.width = this.embedPlayer.getWidth();
+		}
+		if( !size.height ){
+			size.height = this.embedPlayer.getHeight();
+		}
+		return size;
+	},
 	/**
 	* Get the fullscreen play button css
 	*/
@@ -549,6 +584,7 @@ mw.PlayerControlBuilder.prototype = {
 			$( embedPlayer ).css( targetAspectSize );
 			// Update play button pos
 			$interface.find('.play-btn-large').css(  _this.getFullscreenPlayButtonCss( size ) );
+			
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
