@@ -22,7 +22,7 @@
 		// If webkitSupportsFullscreen is true, this option will make the fullscreen button 
 		// use the native players fullscreen ( rather than pop-up a new window with the in-browser
 		// fullscreen. 
-		'EmbedPlayer.EnableIpadNativeFullscreen': false,
+		'EmbedPlayer.EnableIpadNativeFullscreen': true,
 		
 		'EmbedPlayer.LibraryPage': 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 

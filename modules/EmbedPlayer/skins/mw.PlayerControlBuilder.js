@@ -283,10 +283,10 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		// check for posterImage size: ( should have Intrinsic aspect size as well ) 
 		var img = this.embedPlayer.$interface.find('.playerPoster').get(0);
-		if( !size.width && img.naturalWidth){
+		if( !size.width && img && img.naturalWidth){
 			size.width = img.naturalWidth;
 		}
-		if( !size.height && img.naturalHeight ){
+		if( !size.height && img && img.naturalHeight ){
 			size.height = img.naturalHeight;
 		}
 		// if all else fails use embedPlayer.getWidth()
@@ -301,9 +301,10 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	* Get the fullscreen play button css
 	*/
-	getFullscreenPlayButtonCss: function( size ) {
+	getPlayButtonPosition: function( size ) {
 		var _this = this;
 		return {
+			'position' : 'absolute',
 			'left' : ( ( parseInt( size.width ) - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
 			'top' : ( ( parseInt( size.height ) - this.getComponentHeight( 'playButtonLarge' ) ) / 2 )
 		};
@@ -436,7 +437,6 @@ mw.PlayerControlBuilder.prototype = {
 		// only animate if we are not inside an iframe
 		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
 		
-		alert( 'top: ' + topOffset);
 		// Resize the player keeping aspect and with the widow scroll offset:
 		embedPlayer.resizePlayer({
 			'top' : topOffset,
@@ -570,7 +570,7 @@ mw.PlayerControlBuilder.prototype = {
 			$interface.find('.playerPoster').animate( targetAspectSize  );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large').animate(  _this.getFullscreenPlayButtonCss( size ) );
+			$interface.find('.play-btn-large').animate(  _this.getPlayButtonPosition( targetAspectSize ) );
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
@@ -583,7 +583,7 @@ mw.PlayerControlBuilder.prototype = {
 			// Update player size
 			$( embedPlayer ).css( targetAspectSize );
 			// Update play button pos
-			$interface.find('.play-btn-large').css(  _this.getFullscreenPlayButtonCss( size ) );
+			$interface.find('.play-btn-large').css(  _this.getPlayButtonPosition( targetAspectSize ) );
 			
 			
 			if( embedPlayer.getPlayerElement() ){
@@ -1739,7 +1739,7 @@ mw.PlayerControlBuilder.prototype = {
 						'class'	: "play-btn-large"
 					} )
 					// Get dynamic position for big play button
-					.css( ctrlObj.getFullscreenPlayButtonCss({
+					.css( ctrlObj.getPlayButtonPosition({
 						'width' : ctrlObj.embedPlayer.getWidth(),
 						'height' :  ctrlObj.embedPlayer.getHeight()
 					}) )
@@ -1852,10 +1852,15 @@ mw.PlayerControlBuilder.prototype = {
 						// Fullscreen binding:
 						.buttonHover();
 				
-				// iPad fullscreen in an iframe is very broken 
-				if( ( mw.getConfig('EmbedPlayer.IsIframeServer') && mw.isIpad() ) 
-						|| mw.getConfig( "EmbedPlayer.NewWindowFullscreen" ) 
-					){	
+				// Link out to another window if iPad 3x 
+				if( (
+						mw.getConfig('EmbedPlayer.IsIframeServer') 
+						&& 
+						( navigator.userAgent.indexOf("iPad; U; CPU OS 3_") != -1 ) 
+					)
+						||
+					  mw.getConfig( "EmbedPlayer.NewWindowFullscreen" ) 
+				){	
 					var url = document.URL.split('#')[0];
 					mw.setConfig('EmbedPlayer.IsFullscreenIframe', true);
 					url += mw.getIframeHash();
