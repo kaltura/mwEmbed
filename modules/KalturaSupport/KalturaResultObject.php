@@ -706,7 +706,7 @@ class KalturaResultObject {
 		if( isset( $result[0] ) ){
 			foreach ( $result[0]->attributes() as $key => $val ) {
 				if( $key == 'value' ){
-					$playlistId = urldecode( $val );
+					$playlistId = $val;
 				}
 				if( $key == 'overrideflashvar' && $val == 'true' ){
 					$checkFlashVar = false;	
@@ -719,7 +719,7 @@ class KalturaResultObject {
 			$playlistId = $this->getFlashvarConfig('playlistAPI.kpl0Url');
 			
 		}
-		
+		$playlistId = htmlspecialchars_decode( $playlistId );
 		// Parse out the "playlistId from the url ( if its a url )
 		$plParsed = parse_url( $playlistId );
 
