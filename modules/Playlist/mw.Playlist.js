@@ -58,7 +58,7 @@ mw.Playlist.prototype = {
 		$( this.target ).attr( 'id', this.id );
 		this.target = '#' + this.id;
 		
-		// Set binding to disable "waitForMeta" for playlist items ( we know the size and length )
+		// Set binding to disable "waitForMeta" for playlist items ( We know the size and length )
 		$( mw ).bind( 'checkPlayerWaitForMetaData', function(even, playerElement ){
 			if( $( playerElement ).hasClass( 'mwPlaylist') ){
 				playerElement.waitForMeta = false;
@@ -571,7 +571,7 @@ mw.Playlist.prototype = {
 				// add control bar height ( for now ) 
 				embedPlayer.resizePlayer( {
 					'height' : parseInt( playerSize.height ) + 30,
-					'width' : playerSize.width
+					'width' : parseInt( playerSize.width )
 				}, false);
 				$(uiSelector).show();
 			},10);

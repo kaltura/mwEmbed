@@ -944,15 +944,9 @@ mw.EmbedPlayer.prototype = {
 	 * Resize the player to a new size preserving aspect ratio Wraps the
 	 * controlBuilder.resizePlayer function
 	 */
-	resizePlayer: function( size , animate, resizePlayerCallback){
+	resizePlayer: function( size , animate, callback){
 		mw.log("EmbedPlayer::resizePlayer:" + size.width + ' x ' + size.height );
 		var _this = this;
-		var callback = function(){
-			_this.applyIntrinsicAspect();
-			if( resizePlayerCallback )
-				resizePlayerCallback();
-				
-		};
 		// Check if we are native display then resize the playerElement directly
 		if( this.useNativePlayerControls() ){
 			if( animate ){
