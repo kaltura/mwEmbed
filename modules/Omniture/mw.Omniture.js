@@ -34,6 +34,7 @@ mw.Omniture.prototype = {
  		return this.config;
  	},
  	addPlayerBindings: function(){
+ 		var _this = this;
  		var omintureEvents = [ 
 		    'videoViewEvent' ,
 			'shareEvent',
@@ -50,7 +51,9 @@ mw.Omniture.prototype = {
 			'mediaReadyEvent'
 		];
 		var embedPlayer = this.embedPlayer;
-		var gP = embedPlayer.getKalturaConfig;
+		var gP = function( eventName ){
+			return embedPlayer.getKalturaConfig( 'omniture', eventName )
+		};
 		// Get all the plugin config for all the omniture events 
 		$j.each( omintureEvents , function( inx, eventName){
 			var eventId = gP( eventName );
@@ -86,7 +89,7 @@ mw.Omniture.prototype = {
 			// Add the binding: 
 			var kEventName = eventName.replace( 'Event', '');
 			embedPlayer.addJsListener( kEventName, function(){
-				embedPlayer.omniture.dispatchEvent( eventId, eVars, props, kEventName);
+				_this.dispatchEvent( eventId, eVars, props, kEventName);
 			});
 		});
  	},

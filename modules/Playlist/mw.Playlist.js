@@ -497,9 +497,7 @@ mw.Playlist.prototype = {
 	playClip: function( clipIndex ){
 		var _this = this;
 		// Check for a video/audio tag already in the page:
-		var $inDomAV = $( _this.target + ' .media-rss-video-player video, '+ _this.target + ' .media-rss-video-player audio' );
 		var embedPlayer = this.getEmbedPlayer();
-	
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex );
 		// Do any local player interface updates: 
@@ -655,7 +653,9 @@ mw.Playlist.prototype = {
 		this.playlistItemWidth = $targetItemList.width();
 		$.each( this.sourceHandler.getClipList(), function( inx, clip ){
 			mw.log( 'mw.Playlist::addMediaList: On clip: ' + inx);
-
+			if( inx > mw.getConfig( 'Playlist.MaxClips' ) ){
+				return false;
+			}
 			// Output each item with the current selected index:
 			$itemBlock = $('<div />')
 				.addClass( 'ui-widget-content ui-corner-all playlistItem ui-helper-clearfix' );

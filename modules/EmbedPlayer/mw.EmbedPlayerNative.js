@@ -87,7 +87,7 @@ mw.EmbedPlayerNative = {
 	doEmbedHTML : function () {
 		var _this = this;
 		var vid = _this.getPlayerElement();
-		if( vid && $j( vid ).attr('src') == this.getSrc( this.currentTime ) ){
+		if( vid && $( vid ).attr('src') == this.getSrc( this.currentTime ) ){
 			_this.postEmbedJS();
 			return ;
 		}
@@ -103,7 +103,7 @@ mw.EmbedPlayerNative = {
 		_this.bufferStartFlag = false;
 		_this.bufferEndFlag = false;
 		
-		$j( this ).html(
+		$( this ).html(
 			_this.getNativePlayerHtml()
 		);
 
@@ -148,7 +148,7 @@ mw.EmbedPlayerNative = {
 
 		var tagName = ( this.isAudio() ) ? 'audio' : 'video';
 
-		return	$j( '<' + tagName + ' />' )
+		return	$( '<' + tagName + ' />' )
 			// Add the special nativeEmbedPlayer to avoid any rewrites of of this video tag.
 			.addClass( 'nativeEmbedPlayerPid' )
 			.attr( playerAttribtues )
@@ -167,8 +167,8 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Update the player source ( if needed ) 
-		if( $j( '#' + this.pid ).attr( 'src') !=  this.getSrc( this.currentTime )  ){
-			$j( '#' + this.pid ).attr( 'src', this.getSrc( this.currentTime ) );
+		if( $( '#' + this.pid ).attr( 'src') !=  this.getSrc( this.currentTime )  ){
+			$( '#' + this.pid ).attr( 'src', this.getSrc( this.currentTime ) );
 		}
 
 		// Apply media element bindings:
@@ -213,7 +213,7 @@ mw.EmbedPlayerNative = {
 			return this.parent_applyIntrinsicAspect();
 		}
 
-		var pHeight = $j( vid ).height();
+		var pHeight = $( vid ).height();
 		// Check for intrinsic width and maintain aspect ratio
 		if( vid.videoWidth && vid.videoHeight ){
 			
@@ -228,12 +228,12 @@ mw.EmbedPlayerNative = {
 				controlBarOffset = this.controlBuilder.height;
 			}
 			// Check for existing offset: 
-			var topOffset = $j( vid ).css('top') ?
-					$j( vid ).css('top') :
+			var topOffset = $( vid ).css('top') ?
+					$( vid ).css('top') :
 					( ( this.$interface.height() - controlBarOffset - pHeight ) * .5 ) + 'px';
 
-			mw.log( 'EmbedPlayerNative: applyIntrinsicAspect:: left:' + ( ( $j( this ).width() - pWidth ) * .5 ) + ' this width:' +  $j( this ).width() );
-			$j( vid ).css({
+			mw.log( 'EmbedPlayerNative: applyIntrinsicAspect:: left:' + ( ( $( this ).width() - pWidth ) * .5 ) + ' this width:' +  $( this ).width() );
+			$( vid ).css({
 				'position' : 'absolute',
 				'height' : pHeight + 'px',
 				'width':  pWidth + 'px',
@@ -254,16 +254,16 @@ mw.EmbedPlayerNative = {
 			mw.log( " Error: applyMediaElementBindings without player elemnet");
 			return ;
 		}
-		$j.each( _this.nativeEvents, function( inx, eventName ){
-			$j( vid ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function(){
+		$.each( _this.nativeEvents, function( inx, eventName ){
+			$( vid ).unbind( eventName + '.embedPlayerNative').bind( eventName + '.embedPlayerNative', function(){
 				if( _this._propagateEvents ){
-					var argArray = $j.makeArray( arguments );
+					var argArray = $.makeArray( arguments );
 					// Check if there is local handler:
 					if( _this['on' + eventName ] ){
 						_this['on' + eventName ].apply( _this, argArray);
 					} else {
 						// No local handler directly propagate the event to the abstract object:
-						$j( _this ).trigger( eventName, argArray );
+						$( _this ).trigger( eventName, argArray );
 					}
 				}
 			});
@@ -307,7 +307,7 @@ mw.EmbedPlayerNative = {
 		
 		// trigger the seeking event: 
 		mw.log('Native::doSeek:trigger');
-		$j( this ).trigger( 'seeking' );
+		$( this ).trigger( 'seeking' );
 		
 		// Run the onSeeking interface update
 		this.controlBuilder.onSeek();
@@ -345,7 +345,7 @@ mw.EmbedPlayerNative = {
 		this.setCurrentTime( ( percent * this.duration ) , function(){
 			_this.seeking = false;
 			// done seeking: 
-			$j( this ).trigger( 'seeked' );
+			$( this ).trigger( 'seeked' );
 			_this.monitor();
 		});
 	},
@@ -447,7 +447,7 @@ mw.EmbedPlayerNative = {
 	// Update the poster src ( updates the native object if in dom ) 
 	updatePosterSrc: function( src ){
 		if( this.getPlayerElement() ){
-			$j( this.getPlayerElement() ).attr('poster', src );
+			$( this.getPlayerElement() ).attr('poster', src );
 		}
 		// Also update the embedPlayer poster 
 		this.parent_updatePosterSrc( src );
@@ -487,7 +487,7 @@ mw.EmbedPlayerNative = {
 				vid.play();
 				setTimeout(function(){
 					// Remove all native player bindings
-					$j(vid).unbind();
+					$(vid).unbind();
 					vid.pause();
 					var orginalControlsState = vid.controls;
 					// Hide controls ( to not display native play button while switching sources ) 
@@ -517,7 +517,7 @@ mw.EmbedPlayerNative = {
 								// Restore controls 
 								vid.controls = orginalControlsState;
 								// add the end binding: 
-								$j( vid ).bind( 'ended', function( event ) {
+								$( vid ).bind( 'ended', function( event ) {
 									if(typeof doneCallback == 'function' ){
 										doneCallback();
 									}
@@ -547,9 +547,9 @@ mw.EmbedPlayerNative = {
 	/*switchPlaySrc: function( src, switchCallback, doneCallback ){
 		var vid = this.getPlayerElement();
 		
-		$j(vid).unbind();
+		$(vid).unbind();
 		
-		$j( vid ).bind( 'ended', function( event ) {
+		$( vid ).bind( 'ended', function( event ) {
 			if( doneCallback ){
 				doneCallback();
 			}
@@ -688,7 +688,7 @@ mw.EmbedPlayerNative = {
 	* Get /update the playerElement value
 	*/
 	getPlayerElement: function () {
-		this.playerElement = $j( '#' + this.pid ).get( 0 );
+		this.playerElement = $( '#' + this.pid ).get( 0 );
 		return this.playerElement;
 	},
 
@@ -712,7 +712,7 @@ mw.EmbedPlayerNative = {
 
 			// Trigger the html5 "seeking" trigger
 			mw.log("native:seeking:trigger:: " + this.seeking);
-			$j( this ).trigger( 'seeking' );
+			$( this ).trigger( 'seeking' );
 		}
 	},
 
@@ -727,7 +727,7 @@ mw.EmbedPlayerNative = {
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
 			this.seeking = false;
-			$j( this ).trigger( 'seeked' );
+			$( this ).trigger( 'seeked' );
 		}
 		this.seeking = false;
 	},
@@ -774,7 +774,7 @@ mw.EmbedPlayerNative = {
 
 		// Trigger "media loaded"
 		if( ! this.mediaLoadedFlag ){
-			$j( this ).trigger( 'mediaLoaded' );
+			$( this ).trigger( 'mediaLoaded' );
 			this.mediaLoadedFlag = true;
 		}
 	},

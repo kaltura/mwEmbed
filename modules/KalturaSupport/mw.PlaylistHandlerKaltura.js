@@ -247,10 +247,17 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	playClip: function( embedPlayer, clipIndex ){
 		var bindName = 'playerReady.playlist';
+		// check if entry id already matches:
+		if( embedPlayer.kentryid == this.getClip( clipIndex ).id ){
+			embedPlayer.play();
+			return ;
+		}
+		// Else change the media then play: 
 		$( embedPlayer ).unbind(bindName).bind( bindName, function( event ){
 			// Run play after we switch 
-			embedPlayer.sendNotification( 'doPlay' );
+			embedPlayer.play();
 		});
+		// Use internal changeMedia call to issue all relevant events
 		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );	
 	},
 	drawEmbedPlayer: function( clipIndex, callback){

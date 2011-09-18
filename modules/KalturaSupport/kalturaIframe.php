@@ -483,6 +483,25 @@ class kalturaIframe {
 <!DOCTYPE html>
 <html>
 	<head>
+	</head>
+	<body>	
+		<?php 
+		// If we have an empty uiConf just pass the object off to javascript and see if it can 
+		// do anything useful
+		if( !$this->getResultObject()->getUiConf() || $this->getResultObject()->getUiConf() == '') {
+			echo $this->getFlashEmbedHTML();
+		} else {
+			if( $this->getResultObject()->isPlaylist() ){ 
+				echo $this->getPlaylistWraper( 
+					// Get video html with a default playlist video size ( we can adjust it later in js )
+					$this->getVideoHTML( 'width:400px;height:330px;' ) 
+				);
+			} else { 
+				echo $this->getVideoHTML();
+			} 
+		}
+		?>
+		
 		<?php echo $this->outputIframeHeadCss(); ?>
 		<script type="text/javascript">
 			// Insert the html5 kalturaLoader script
@@ -575,24 +594,6 @@ class kalturaIframe {
 				echo $this->javascriptPlayerLogic();
 			?>
 		</script>
-	</head>
-	<body>	
-		<?php 
-		// If we have an empty uiConf just pass the object off to javascript and see if it can 
-		// do anything useful
-		if( !$this->getResultObject()->getUiConf() || $this->getResultObject()->getUiConf() == '') {
-			echo $this->getFlashEmbedHTML();
-		} else {
-			if( $this->getResultObject()->isPlaylist() ){ 
-				echo $this->getPlaylistWraper( 
-					// Get video html with a default playlist video size ( we can adjust it later in js )
-					$this->getVideoHTML( 'width:400px;height:330px;' ) 
-				);
-			} else { 
-				echo $this->getVideoHTML();
-			} 
-		}
-		?>
 	</body>
 </html>
 <?php
