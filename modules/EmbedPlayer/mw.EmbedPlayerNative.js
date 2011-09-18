@@ -212,7 +212,6 @@ mw.EmbedPlayerNative = {
 		if( !vid ){
 			return this.parent_applyIntrinsicAspect();
 		}
-
 		var pHeight = $( vid ).height();
 		// Check for intrinsic width and maintain aspect ratio
 		if( vid.videoWidth && vid.videoHeight ){
