@@ -40,7 +40,6 @@
 				'embedPlayer' : embedPlayer
 			});
 			return titleLayout.getLayout();
-
 		}
 		function updatePlayerLayout(){
 			var $vid = $( embedPlayer.getPlayerElement() );
@@ -58,7 +57,7 @@
 				});
 			}
 		};		
-		// once all functions are defined call the doTitleLayout
+		// Once all functions are defined call the doTitleLayout
 		doTitleLayout();
 	};
 	

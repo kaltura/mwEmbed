@@ -54,15 +54,13 @@ mw.KTimedText.prototype = {
 		if( this.kVars.ccUrl ){
 			// Set up a single source from the custom vars:
 			$.each( _this.getTextSourceFromVars( _this.kVars ), function(inx, textSource ){
-				_this.textSources.push(
-					textSource
-				);
-			})
+				_this.textSources.push( textSource)
+			});
 			callback();
 			return ;
 		}
 		
-		// Api sources require that we have a KS handy ( make sure its cached ) 
+		// Api sources require that a api query
 		_this.getKalturaClient().getKS( function( ks ) {
 			_this.ksCache = ks;
 			_this.getTextSourcesFromApi( function( dbTextSources ){
@@ -133,7 +131,7 @@ mw.KTimedText.prototype = {
 			}).get(0)
 		);
 		// Return a "textSource" object:
-		return new mw.TextSource( embedSource );
+		return [ new mw.TextSource( embedSource ) ];
 	},
 	
 	/**

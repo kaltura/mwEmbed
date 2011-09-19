@@ -9,14 +9,16 @@ mw.DoubleClickIMA.prototype = {
 		var _this = this;
 		this.embedPlayer = embedPlayer;
 		this.callback = callback;
-		
+
 		// Load the google libraries
 		this.getGoogleAdsLoader( function( adsLoader ){
+			
 			// Set up listeners:
 			adsLoader.addEventListener(
 			    google.ima.AdsLoadedEvent.Type.ADS_LOADED,
-			    function(){ _this.onAdsLoaded() },
+			    function( adsLoadedEvent ){ _this.onAdsLoaded( adsLoadedEvent ) },
 			    false);
+			
 			adsLoader.addEventListener(
 			    google.ima.AdErrorEvent.Type.AD_ERROR,
 			    function(adErrorEvent){ _this.onAdsError(adErrorEvent) },
@@ -28,8 +30,7 @@ mw.DoubleClickIMA.prototype = {
 		});
 	},
 	onAdsLoaded: function( adsLoadedEvent ){
-		mw.log("DoubleClickIMA:: onAdsLoaded");
-		var _this = this;
+		mw.log("DoubleClickIMA:: onAdsLoaded " + adsLoadedEvent);
 		
 		// Get the ads manager
 		var adsManager = adsLoadedEvent.getAdsManager();
