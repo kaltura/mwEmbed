@@ -28,7 +28,7 @@
 }
 .playlistItem .clipDuration{
 	float: right;
-	height:20px;
+	height:16px;
 	display:block;
 	padding-right: 2px;
 }
@@ -51,3 +51,17 @@
 	color: #fff;
 }
 .btnText { font-family: Arial; font-size: 13px; }
+
+.playlistSet-container a { text-decoration: none; border: 0; font-size: 13px; font-family: Arial; }
+.playlistSet-container a:hover { border-width: 0; background: transparent; }
+.playlistSet-container .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, .playlistSet-container .ui-widget-content .ui-state-hover, .playlistSet-container .ui-widget-header .ui-state-hover { border-width: 0; }
+.mv-player .play_head .ui-slider-handle { border-width: 1px; }
+.media-rss-video-list { margin-left: 8px; }
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { border-width: 0; }
+.playlistItem { background: #252525; min-height: 50px; border-radius: 4px; padding: 8px; margin-bottom: 4px; cursor: pointer; border-width: 0; font-family: Arial; }
+.playlistItem img { float: left; margin-right: 8px; width: 72px; height: 48px; padding: 0; }
+.playlistItem:hover { background: #3C3C3C; }
+.playlistItem { background: #3C3C3C; font-size: 11px; }
+.irLinkIrScreen, .clipTitle { float: left; max-width: 175px; color: #bcbcbc; word-wrap: break-word; }
+.irDurationIrScreen, .clipDuration { float: right; margin-right: 20px; color: #bcbcbc; font-size: 10px; }
+.irDescriptionIrScreen, .clipDescription { color: #bcbcbc; word-wrap: break-word; max-width: 188px; display: inline-block; }
