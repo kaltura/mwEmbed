@@ -192,11 +192,20 @@
 				return objectString;
 			}
 			// Replace any { } calls with evaluated expression. 
-			var text = objectString.replace(/\{(.*)\}/g, function(match, contents, offset, s)
+			var text = objectString.replace(/\{([^\}]*)\}/g, function(match, contents, offset, s)
 			    {
 			        return _this.evaluateExpression( embedPlayer, contents );
 			    }
 			);
+
+			// Return undefined to string: undefined, null, ''
+			if( text === "undefined" || text === "null" || text == "" )
+				text = undefined;
+
+			if( text === "false")
+				text = false;
+			if( text === "true")
+				text = true;
 			
 			return text;
 		},

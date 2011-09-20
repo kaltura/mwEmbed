@@ -13,6 +13,7 @@ $j( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
 // Add the Comscore client ( could put into a "client" file but so small: 
 $j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ){
 	$j( playerProxy ).bind( 'Comscore_Beacon', function( event, beconObject) {
+		console.log('send Comscore_Beacon', beconObject);
 		var sendBecon = function(){
 			COMSCORE.beacon( beconObject );
 		};
@@ -30,22 +31,18 @@ $j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ){
 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-		var propSet = ['plugin', 'cTagsMap'];
-		// Also check for c2 to c10
-		for( var i = 2; i < 11; i++ ){
-			propSet.push ( 'c' + i );
-		}
-		// Alias the config lookup function for clean code lookup of properties
-		var comConf = embedPlayer.getKalturaConfig( 'comscore', propSet );
+
 		// check if the plugin is enabled: 
-		if( !comConf.plugin ){
+		if( embedPlayer.isPluginEnabled( 'comscore' ) ){
+			mw.load( "mw.Comscore", function(){
+				new mw.Comscore( embedPlayer, callback );
+			});
+		} else {
 			// no com score plugin active: 
 			callback();
 			return ;
 		}
-		mw.load( "mw.Comscore", function(){
-			new mw.Comscore( embedPlayer );
-		});
+		
 	});
 });
 

@@ -72,7 +72,7 @@ kdpClientIframe.prototype = {
 			return _this.evaluate( objectString );
 		}
 	},
-	'evaluate': function( objectString  ){		
+	'evaluate': function( objectString  ){
 		objectString = objectString.replace( /\{|\}/g, '' );
 		var objectPath = objectString.split('.');
 		var errorOut = function(){

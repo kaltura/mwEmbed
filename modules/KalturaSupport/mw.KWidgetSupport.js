@@ -211,6 +211,10 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.getKalturaConfig = function( confPrefix, attr ){
 			return _this.getPluginConfig( embedPlayer, confPrefix, attr );
 		};
+
+		embedPlayer.isPluginEnabled = function( pluginName ) {
+			return _this.getPluginConfig( embedPlayer, pluginName, 'plugin');
+		};
 		
 		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
 		if( $(embedPlayer).data('uiConfXml') ){
