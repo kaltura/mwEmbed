@@ -208,8 +208,8 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		// Add getKalturaConfig to embed player:
-		embedPlayer.getKalturaConfig = function( pluginName, attr ){
-			return _this.getPluginConfig( embedPlayer, pluginName, attr );
+		embedPlayer.getKalturaConfig = function( confPrefix, attr ){
+			return _this.getPluginConfig( embedPlayer, confPrefix, attr );
 		};
 		
 		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
@@ -259,10 +259,14 @@ mw.KWidgetSupport.prototype = {
 	
 	/**
 	 * Check for xml config, let flashvars override 
-	 * 
+	 * @param embedPlayer {Object} the embedPlayer for which configuration is being retrived
+	 * @param confPrefix {String} the confPrefix, Can be empty if you want a non-prefixed attribute
+	 * @param attr {Optional: Array|String} A list of attributes you want to get for the confPrefix 
+	 * 				if null, we retrive all settings with the provided confPrefix 
 	 */
-	getPluginConfig: function( embedPlayer, pluginName, attr ){
+	getPluginConfig: function( embedPlayer, confPrefix, attr ){
 		// Setup local pointers: 
+		var _this = this;
 		var flashvars = $( embedPlayer ).data('flashvars');
 		var $uiConf = embedPlayer.$uiConf;
 		
@@ -271,8 +275,9 @@ mw.KWidgetSupport.prototype = {
 			singleAttrName = attr;
 			attr = $j.makeArray( attr );
 		}
+		
 		// If we have the "plugin" enabled check also check for "disableHTML5"
-		if( $j.inArray( 'plugin', attr ) != -1 ){
+		if( attr && $j.inArray( 'plugin', attr ) != -1 ){
 			attr.push( "disableHTML5" );
 		}
 
@@ -280,24 +285,23 @@ mw.KWidgetSupport.prototype = {
 		var $plugin = [];
 		var $uiPluginVars = [];
 		
-		
-		// merge in flashvars config 
+		// Merge in flashvars config 
 		var fv = mw.getConfig( 'KalturaSupport.IFramePresetFlashvars' );
 		// Check for embedPlayer flashvars ( will overwrite iframe values if present )
 		if( flashvars ){
 			fv = flashvars;
 		}
 		
-		
-		if( pluginName ){ 
-			$plugin = $uiConf.find( 'plugin#' + pluginName );
-			// When defined from uiConf ( "plugin" tag is equivalent to "pluginName.plugin = true" in the uiVars )
-			if( $plugin.length && $j.inArray( 'plugin', attr ) != -1 ){ 
+		// if confPrefix is not an empty string or null check for the conf prefix
+		if( confPrefix ){ 
+			$plugin = $uiConf.find( 'plugin#' + confPrefix );
+			// When defined from uiConf ( "plugin" tag is equivalent to "confPrefix.plugin = true" in the uiVars )
+			if( $plugin.length && attr && $j.inArray( 'plugin', attr ) != -1 ){ 
 				config['plugin'] = true;
 			}
-			$uiPluginVars = $uiConf.find( 'var[key^="' + pluginName + '"]' );
+			$uiPluginVars = $uiConf.find( 'var[key^="' + confPrefix + '"]' );
 		} else {
-			// When pluginName is empty we still need to check for config in the ui Plugin Vars section
+			// When confPrefix is empty we still need to check for config in the ui Plugin Vars section
 			var uiPluginVarsSelect = '';
 			// pre-build out $uiPluginVars list
 			var coma = '';
@@ -308,9 +312,32 @@ mw.KWidgetSupport.prototype = {
 			if( uiPluginVarsSelect ){
 				$uiPluginVars = $uiConf.find( uiPluginVarsSelect );
 			}
-		}		
+		}
+		
+		if( attr == null && confPrefix ){
+			$.each( $plugin.get(0).attributes, function(i, nodeAttr){
+				 config[ nodeAttr.name ] = nodeAttr.value;
+			});
+			// @@TODO php should give us more structured configuration 
+			$.each(fv, function( key, val) {
+				if( key.indexOf( confPrefix ) === 0 ){
+					config[key] = val;
+				}
+			})
+			
+			// Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
+			$uiPluginVars.each( function(inx, node){
+				if( $j(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
+					config[attrName] = $j(node).get(0).getAttribute('value');
+				}
+				// Found break out of loop
+				return false;
+			});
+			return _this.postProcessConfig(embedPlayer, config );
+		};
 		
 		$j.each( attr, function(inx, attrName ){
+			// Plugin
 			if( $plugin.length ){
 				if( $plugin.attr( attrName ) ){
 					config[ attrName ] = $plugin.attr( attrName );
@@ -321,13 +348,13 @@ mw.KWidgetSupport.prototype = {
 				}
 			}
 			
-			// Check flashvars overrides
-			var pluginPrefix = ( pluginName )? pluginName + '.': '';
+			// Flashvars overrides
+			var pluginPrefix = ( confPrefix )? confPrefix + '.': '';
 			if( fv[ pluginPrefix + attrName ] ){
 				config[ attrName ] = fv[ pluginPrefix + attrName ];
 			}
 			
-			// Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
+			// Uivars Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
 			$uiPluginVars.each( function(inx, node){
 				if( $j( node ).attr('key') == pluginPrefix + attrName ){
 					if( $j(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
@@ -338,32 +365,39 @@ mw.KWidgetSupport.prototype = {
 				}
 			});
 			
-			// Unescape values that would come in from flashvars
-			if( config[ attrName ] ){
-				config[ attrName ] = unescape( config[ attrName ] );
-			}
-			// Convert string to boolean 
-			if( config[ attrName ] === "true" )
-				config[ attrName ] = true;
-			if( config[ attrName ] === "false" )
-				config[ attrName ] = false; 
-			
-			// Do any value handling 
-			config[ attrName ] = embedPlayer.evaluate( config[ attrName ] );
-			
 		});
 		
-		// Check if disableHTML5 was "true" and return false for the plugin config ( since we are the html5 library ) 
-		if( config['disableHTML5'] == true && config['plugin'] ){
-			config['plugin'] = false;
-		}
-		
+		config = _this.postProcessConfig(embedPlayer, config );
 		
 		if( singleAttrName != false ){
 			return config[ singleAttrName ];
 		} else {
 			return config;
 		}
+	},
+	postProcessConfig: function(embedPlayer,  config ){
+		var _this = this;
+		$.each(config, function( attrName, value ) {
+			// Unescape values that would come in from flashvars
+			if( value ){
+				config[ attrName ] = unescape( value );
+			}
+			// Convert string to boolean 
+			if( value === "true" )
+				config[ attrName ] = true;
+			if( value === "false" )
+				config[ attrName ] = false; 
+			
+			// Do any value handling 
+			config[ attrName ] = embedPlayer.evaluate( value );
+		})
+		
+		// Check if disableHTML5 was "true" and return false for the plugin config ( since we are the html5 library ) 
+		if( config['disableHTML5'] == true && config['plugin'] ){
+			config['plugin'] = false;
+		}
+		
+		return config;
 	},
 	/**
 	 * Alternate source grabbing script ( for cases where we need to hot-swap the source ) 

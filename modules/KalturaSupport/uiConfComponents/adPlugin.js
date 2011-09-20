@@ -8,7 +8,6 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	// Check for KalturaSupport uiConf
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		var loadingAdPlugin = false;
-		
 		// Check if the kaltura ad plugin is enabled:
 		if( embedPlayer.getKalturaConfig( 'vast', 'plugin' ) ){
 			loadingAdPlugin = true;
