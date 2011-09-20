@@ -178,7 +178,6 @@ mw.Comscore.prototype = {
 			cParams['c' + i] = this.parseCAttribute('c' + i);
 		}
 
-		console.log( mw.getConfig( 'KalturaSupport.IFramePresetFlashvars' ) );
 		console.log( $(this.embedPlayer).data('flashvars'));
 		console.log(this.embedPlayer.$uiConf.find("#comscore"));
 		console.log(config);

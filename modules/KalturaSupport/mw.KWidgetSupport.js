@@ -291,13 +291,6 @@ mw.KWidgetSupport.prototype = {
 		var $plugin = [];
 		var $uiPluginVars = [];
 		
-		// Merge in flashvars config 
-		var fv = mw.getConfig( 'KalturaSupport.IFramePresetFlashvars' );
-		// Check for embedPlayer flashvars ( will overwrite iframe values if present )
-		if( flashvars ){
-			fv = flashvars;
-		}
-		
 		// if confPrefix is not an empty string or null check for the conf prefix
 		if( confPrefix ){ 
 			$plugin = $uiConf.find( 'plugin#' + confPrefix );
@@ -327,7 +320,7 @@ mw.KWidgetSupport.prototype = {
 				});
 			}
 			// @@TODO php should give us more structured configuration 
-			$.each(fv, function( key, val) {
+			$.each(flashvars, function( key, val) {
 				if( key.indexOf( confPrefix ) === 0 ){
 					config[key] = val;
 				}
@@ -335,6 +328,7 @@ mw.KWidgetSupport.prototype = {
 			
 			// Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
 			$uiPluginVars.each( function(inx, node){
+				var attrName = $(node).attr('key');
 				if( $(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
 					config[attrName] = $(node).get(0).getAttribute('value');
 				}
@@ -358,8 +352,8 @@ mw.KWidgetSupport.prototype = {
 			
 			// Flashvars overrides
 			var pluginPrefix = ( confPrefix )? confPrefix + '.': '';
-			if( fv[ pluginPrefix + attrName ] ){
-				config[ attrName ] = fv[ pluginPrefix + attrName ];
+			if( flashvars[ pluginPrefix + attrName ] ){
+				config[ attrName ] = flashvars[ pluginPrefix + attrName ];
 			}
 			
 			// Uivars Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"

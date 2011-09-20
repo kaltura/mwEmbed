@@ -47,4 +47,4 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 });
 
 
-})( window.mw, jQuery);
+})( window.mw, window.jQuery);
