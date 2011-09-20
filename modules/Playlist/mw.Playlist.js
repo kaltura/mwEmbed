@@ -626,7 +626,7 @@ mw.Playlist.prototype = {
 				if( _this.onTouchScroll ){
 					return true;
 				}
-				alert( 'click update: ' +  $( this ).data( 'clipIndex' ));
+				//alert( 'click update: ' +  $( this ).data( 'clipIndex' ));
 				// Update _this.clipIndex
 				_this.clipIndex = $( this ).data( 'clipIndex' );
 				_this.playClip( _this.clipIndex );
