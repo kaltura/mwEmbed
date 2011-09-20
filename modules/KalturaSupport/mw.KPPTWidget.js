@@ -37,7 +37,8 @@ mw.KPPTWidget.prototype = {
 	init: function( widgetTarget, uiConf, callback ){
 		var _this = this;
 		mw.log('mw.KPPTWidget::init');
-		this.$uiConf = $( uiConf );
+		var xml =  $.parseXML( uiConf );
+		this.$uiConf = $( xml );
 		this.$target = $( widgetTarget );
 
 		// update the playerId mapping: 

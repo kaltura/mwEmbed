@@ -12,7 +12,7 @@ mw.KWidgetSupport.prototype = {
 	// Constructor check settings etc
 	init: function( options ){
 		if( options ){
-			$j.extend( this, options);
+			$.extend( this, options);
 		}
 		this.addPlayerHooks();
 	},
@@ -23,13 +23,13 @@ mw.KWidgetSupport.prototype = {
 	addPlayerHooks: function( ){
 		var _this = this;	
 		// Add the hooks to the player manager
-		$j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
+		$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 			// Add hook for check player sources to use local kEntry ID source check:
-			$j( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
+			$( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
 				_this.loadAndUpdatePlayerData( embedPlayer, callback );
 			});
 			// Add Kaltura iframe share support:
-			$j( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
+			$( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
 				callback( mw.getConfig( 'Kaltura.ServiceUrl' ) + '/p/' + _this.kClient.getPartnerId() +
 						'/embedIframe/entry_id/' + embedPlayer.kentryid +
 						'/uiconf_id/' + embedPlayer.kuiconfid );
@@ -66,7 +66,7 @@ mw.KWidgetSupport.prototype = {
 		});
 	},
 	getWidgetType: function( uiConf ){
-		var $uiConf = $j( uiConf );
+		var $uiConf = $( uiConf );
 		if( $uiConf.find('plugin#playlistAPI').length ){
 			return 'playlist';
 		}
@@ -98,18 +98,18 @@ mw.KWidgetSupport.prototype = {
 		// Check for uiConf	and attach it to the embedPlayer object:
 		if( playerData.uiConf ){
 			// Store the parsed uiConf in the embedPlayer object:
-			embedPlayer.$uiConf = $j( playerData.uiConf );
+			embedPlayer.$uiConf = $( playerData.uiConf );
 			
 			// Set any global configuration present in custom variables of the playerData
 			embedPlayer.$uiConf.find( 'uiVars var' ).each( function( inx, customVar ){
-				if( $j( customVar ).attr('key') &&  $j( customVar ).attr('value') ){
-					var cVar = $j( customVar ).attr('value');
+				if( $( customVar ).attr('key') &&  $( customVar ).attr('value') ){
+					var cVar = $( customVar ).attr('value');
 					// String to boolean: 
 					cVar = ( cVar === "false" ) ? false : cVar;
 					cVar = ( cVar === "true" ) ? true : cVar;
 					
-					mw.log("KWidgetSupport::addPlayerHooks> Set Global Config:  " + $j( customVar ).attr('key') + ' ' + cVar );
-					mw.setConfig(  $j( customVar ).attr('key'), cVar);
+					mw.log("KWidgetSupport::addPlayerHooks> Set Global Config:  " + $( customVar ).attr('key') + ' ' + cVar );
+					mw.setConfig(  $( customVar ).attr('key'), cVar);
 				}
 			});
 		}
@@ -118,32 +118,32 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.accessControl ){
 			var acStatus = _this.getAccessControlStatus( playerData.accessControl );
 			if( acStatus !== true ){
-				$j( '.loadingSpinner' ).remove();
+				$( '.loadingSpinner' ).remove();
 				embedPlayer.showErrorMsg( acStatus );
 				return ;
 			}
 			// Check for preview access control and add special onEnd binding: 
 			if( playerData.accessControl.preview && playerData.accessControl.previewLength != -1 ){
-				$j( embedPlayer ).bind('ended.acpreview', function(){
+				$( embedPlayer ).bind('ended.acpreview', function(){
 					mw.log( 'KWidgetSupport:: ended.acpreview>' );
 					// Don't run normal onend action: 
 					embedPlayer.onDoneInterfaceFlag = false;
 					var closeAcMessage = function(){
-						$j( embedPlayer ).unbind('ended.acpreview');
+						$( embedPlayer ).unbind('ended.acpreview');
 						embedPlayer.stop();
 						embedPlayer.onClipDone();
 					};
 					// Display player dialog 
 					// TODO i8ln!!
 					embedPlayer.controlBuilder.displayMenuOverlay(
-						$j('<div />').append( 
-							$j('<h3 />').append( 'Free preview completed, need to purchase'),
-							$j('<span />').text( 'Access to the rest of the content is restricted' ),
-							$j('<br />'),$j('<br />'),
-							$j('<button />').attr({'type' : "button" })
+						$('<div />').append( 
+							$('<h3 />').append( 'Free preview completed, need to purchase'),
+							$('<span />').text( 'Access to the rest of the content is restricted' ),
+							$('<br />'),$('<br />'),
+							$('<button />').attr({'type' : "button" })
 							.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
 							.append( 
-								$j('<span />').addClass( "ui-button-text" )
+								$('<span />').addClass( "ui-button-text" )
 								.text( 'Ok' )
 								.css('margin', '10')
 							).click( closeAcMessage )
@@ -166,7 +166,7 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.meta && playerData.meta.mediaType == 2 ){ 
 			mw.log( 'KWidgetSupport:: add image Source:: ( use poster getter ) ' );
 			embedPlayer.mediaElement.tryAddSource(
-				$j('<source />')
+				$('<source />')
 				.attr( {
 					'src' : mw.getKalturaThumbUrl({
 						'partner_id' : this.kClient.getPartnerId(),
@@ -192,7 +192,7 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.duration = playerData.meta.duration;
 			// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 			embedPlayer.kalturaPlayerMetaData = playerData.meta;
-			$j( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
+			$( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
 		}
 		
 		
@@ -227,15 +227,17 @@ mw.KWidgetSupport.prototype = {
 		var doneWithUiConf = function(){
 			if( embedPlayer.entryCuePoints ){
 				// Allow other plugins to subscribe to cuePoint ready event:
-				$j( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
+				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
 			};
+			// Run the DoneWithUiConf trigger ( allows dependency based loaders to include setup code )
+			$( embedPlayer ).trigger( 'KalturaSupport_DoneWithUiConf' );
 			callback();
 		};
 		
 		if( embedPlayer.$uiConf ){
 			_this.baseUiConfChecks( embedPlayer );
 			// Trigger the check kaltura uiConf event					
-			$j( embedPlayer ).triggerQueueCallback( 'KalturaSupport_CheckUiConf', embedPlayer.$uiConf, function(){	
+			$( embedPlayer ).triggerQueueCallback( 'KalturaSupport_CheckUiConf', embedPlayer.$uiConf, function(){	
 				mw.log("KWidgetSupport::KalturaSupport_CheckUiConf done with all uiConf checks");
 				// Ui-conf file checks done
 				doneWithUiConf();
@@ -273,11 +275,11 @@ mw.KWidgetSupport.prototype = {
 		var singleAttrName = false;
 		if( typeof attr == 'string' ){
 			singleAttrName = attr;
-			attr = $j.makeArray( attr );
+			attr = $.makeArray( attr );
 		}
 		
-		// If we have the "plugin" enabled check also check for "disableHTML5"
-		if( attr && $j.inArray( 'plugin', attr ) != -1 ){
+		// If we are getting attributes and we are checking "plugin", Also check for "disableHTML5"
+		if( attr && $.inArray( 'plugin', attr ) != -1 ){
 			attr.push( "disableHTML5" );
 		}
 
@@ -296,7 +298,7 @@ mw.KWidgetSupport.prototype = {
 		if( confPrefix ){ 
 			$plugin = $uiConf.find( 'plugin#' + confPrefix );
 			// When defined from uiConf ( "plugin" tag is equivalent to "confPrefix.plugin = true" in the uiVars )
-			if( $plugin.length && attr && $j.inArray( 'plugin', attr ) != -1 ){ 
+			if( $plugin.length && attr && $.inArray( 'plugin', attr ) != -1 ){ 
 				config['plugin'] = true;
 			}
 			$uiPluginVars = $uiConf.find( 'var[key^="' + confPrefix + '"]' );
@@ -305,7 +307,7 @@ mw.KWidgetSupport.prototype = {
 			var uiPluginVarsSelect = '';
 			// pre-build out $uiPluginVars list
 			var coma = '';
-			$j.each( attr, function(inx, attrName ){
+			$.each( attr, function(inx, attrName ){
 				uiPluginVarsSelect+= coma + 'var[key="' + attrName + '"]';
 				coma = ',';
 			});
@@ -315,9 +317,11 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		if( attr == null && confPrefix ){
-			$.each( $plugin.get(0).attributes, function(i, nodeAttr){
-				 config[ nodeAttr.name ] = nodeAttr.value;
-			});
+			if( $plugin.length ) {
+				$.each( $plugin.get(0).attributes, function(i, nodeAttr){
+					 config[ nodeAttr.name ] = nodeAttr.value;
+				});
+			}
 			// @@TODO php should give us more structured configuration 
 			$.each(fv, function( key, val) {
 				if( key.indexOf( confPrefix ) === 0 ){
@@ -327,8 +331,8 @@ mw.KWidgetSupport.prototype = {
 			
 			// Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
 			$uiPluginVars.each( function(inx, node){
-				if( $j(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
-					config[attrName] = $j(node).get(0).getAttribute('value');
+				if( $(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
+					config[attrName] = $(node).get(0).getAttribute('value');
 				}
 				// Found break out of loop
 				return false;
@@ -336,7 +340,7 @@ mw.KWidgetSupport.prototype = {
 			return _this.postProcessConfig(embedPlayer, config );
 		};
 		
-		$j.each( attr, function(inx, attrName ){
+		$.each( attr, function(inx, attrName ){
 			// Plugin
 			if( $plugin.length ){
 				if( $plugin.attr( attrName ) ){
@@ -356,9 +360,9 @@ mw.KWidgetSupport.prototype = {
 			
 			// Uivars Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
 			$uiPluginVars.each( function(inx, node){
-				if( $j( node ).attr('key') == pluginPrefix + attrName ){
-					if( $j(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
-						config[attrName] = $j(node).get(0).getAttribute('value');
+				if( $( node ).attr('key') == pluginPrefix + attrName ){
+					if( $(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
+						config[attrName] = $(node).get(0).getAttribute('value');
 					}
 					// Found break out of loop
 					return false;
@@ -453,7 +457,7 @@ mw.KWidgetSupport.prototype = {
 		playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
 
 		// Add the flashvars
-		playerRequest.flashvars = $j( embedPlayer ).data( 'flashvars' ); 
+		playerRequest.flashvars = $( embedPlayer ).data( 'flashvars' ); 
 		
 		// Check if we have the player data bootstrap from the iframe
 		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
@@ -473,8 +477,8 @@ mw.KWidgetSupport.prototype = {
 			// Run the request: ( run async to avoid function call stack overflow )
 			_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
 				if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
-					$j('.loadingSpinner').remove();
-					$j(embedPlayer).replaceWith( "Error invalid KS" );
+					$('.loadingSpinner').remove();
+					$(embedPlayer).replaceWith( "Error invalid KS" );
 					return ;
 				}
 				callback( playerData );
@@ -536,7 +540,7 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kentryid.indexOf('://') != -1 )
 		{
 			embedPlayer.mediaElement.tryAddSource(
-					$j('<source />')
+					$('<source />')
 					.attr( {
 						'src' : embedPlayer.kentryid
 					} )
@@ -577,7 +581,7 @@ mw.KWidgetSupport.prototype = {
 				deviceSources[ sources[i]['flavorid'] ] = sources[i].src;
 			}
 			// Unset existing DOM source children 
-			$j('#' + embedPlayer.pid ).find('source').remove();
+			$('#' + embedPlayer.pid ).find('source').remove();
 			// Empty the embedPlayers sources ( we don't want iPad h.264 being used for iPhone devices ) 
 			embedPlayer.mediaElement.sources = [];
 			// Update the set of sources in the embedPlayer ( might cause issues with other plugins ) 
@@ -587,7 +591,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		// Setup the error hook: 
 		if( _this.videoIsTranscodingFlag ){
-			$j(embedPlayer).bind( 'NoSourcesCustomError', function( callback ) {
+			$(embedPlayer).bind( 'NoSourcesCustomError', function( callback ) {
 				callback( "Video is transcoding, check back later" );
 			});
 		}
@@ -597,7 +601,7 @@ mw.KWidgetSupport.prototype = {
 		for( var i=0; i < sources.length; i++) {
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  sources[i].src + ' type: ' +  sources[i].type);
 			embedPlayer.mediaElement.tryAddSource(
-				$j('<source />')
+				$('<source />')
 				.attr( {
 					'src' : sources[i].src,
 					'type' : sources[i].type
@@ -715,7 +719,7 @@ mw.KWidgetSupport.prototype = {
 		var ksCheck = false;
 		this.kClient.getKS( function( ks ) {
 			ksCheck = true;
-			$j.each( deviceSources, function(inx, source){
+			$.each( deviceSources, function(inx, source){
 				deviceSources[inx] = deviceSources[inx] + '?ks=' + ks;
 			});
 		});

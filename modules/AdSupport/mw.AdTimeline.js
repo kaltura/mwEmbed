@@ -93,7 +93,7 @@ mw.addAdTimeline = function( embedPlayer ){
 	if (!embedPlayer.adTimeline) {
 		embedPlayer.adTimeline = new mw.AdTimeline( embedPlayer );
 	}
-}
+};
 
 mw.AdTimeline = function(embedPlayer) {
 	return this.init(embedPlayer);
@@ -167,7 +167,11 @@ mw.AdTimeline.prototype = {
 					return ;
 				}
 				displayedPostroll = true;
-				_this.displaySlots( 'postroll', 0,  function(){
+				_this.embedPlayer.onDoneInterfaceFlag = false;
+				
+				_this.displaySlots( 'postroll', 0, function(){
+					// restore ondone interface: 
+					_this.embedPlayer.onDoneInterfaceFlag = false;
 					// Stop the player after we finish postroll. 
 					_this.embedPlayer.stop();
 				});
@@ -231,11 +235,7 @@ mw.AdTimeline.prototype = {
 		var slotSet = _this.getTimelineTargets( slotType );
 		mw.log( "AdTimeline:: displaySlots: " + slotType + ' inx: ' + inx + ' of ' + slotSet.length + ' ads' );
 		
-		// Stop the native embedPlayer events so we can play the preroll and bumper
-		_this.embedPlayer.stopEventPropagation();
-		// TODO read the add disable control bar to ad config and check that here. 
-		_this.embedPlayer.disableSeekBar();
-		
+		_this.startAdPlayback();
 		// If on the first inx trigger displaySlot event so that other adPlugins can insert any ads:
 		// we also pass in a reference to the slot set ( in case the plugin wants to look at how many
 		// ads we already have )
@@ -266,6 +266,14 @@ mw.AdTimeline.prototype = {
 		// Run the done callback
 		doneCallback();
 	},
+	startAdPlayback: function(){
+		// Stop the native embedPlayer events so we can play the preroll and bumper
+		this.embedPlayer.stopEventPropagation();
+		// TODO read the add disable control bar to ad config and check that here. 
+		this.embedPlayer.disableSeekBar();
+		// trigger an event so plugins can get out of the way for ads:
+		$( this.embedPlayer ).trigger( 'AdSupport_StartAdPlayback');
+	},
 	/**
 	 * Restore a player from ad state
 	 * @return
@@ -273,6 +281,8 @@ mw.AdTimeline.prototype = {
 	restorePlayer: function( ){
 		this.embedPlayer.restoreEventPropagation();
 		this.embedPlayer.enableSeekBar();
+		// trigger an event so plugins can restore their contnet based actions
+		$( this.embedPlayer ).trigger( 'AdSupport_EndAdPlayback');
 	},
 	/**
 	 * Display a given timeline target, if the timeline target affects the core

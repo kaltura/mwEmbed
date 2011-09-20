@@ -7,7 +7,6 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	
 	// Check for KalturaSupport uiConf
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-		var loadingAdPlugin = false;
 		// Check if the kaltura ad plugin is enabled:
 		if( embedPlayer.getKalturaConfig( 'vast', 'plugin' ) ){
 			loadingAdPlugin = true;
@@ -21,12 +20,10 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 					callback();
 				});
 			});
+			return ;
 		}
-		
-		if( !loadingAdPlugin ){
-			// Continue player build out for players without ads
-			callback();
-		}
+		// Continue player build out for players without ads
+		callback();
 	});
 });
 

@@ -1,11 +1,17 @@
 ( function( mw, $){
 
-mw.DoubleClickIMA = function( embedPlayer, callback ){
+mw.DoubleClick = function( embedPlayer, callback ){
 	this.init( embedPlayer, callback );
 };
-mw.DoubleClickIMA.prototype = {
+mw.DoubleClick.prototype = {
+	// local config object
+	config: {},
+	
+	// The google ad mannager:
+	adsManager: null,
+	
 	init: function( embedPlayer, callback ){
-		mw.log( 'DoubleClickIMA:: init: ' + embedPlayer.id );
+		mw.log( 'DoubleClick:: init: ' + embedPlayer.id );
 		var _this = this;
 		this.embedPlayer = embedPlayer;
 		this.callback = callback;
@@ -26,66 +32,97 @@ mw.DoubleClickIMA.prototype = {
 			
 			// Make request
 			_this.adsLoader.requestAds( _this.getAdsRequest() );
-
 		});
 	},
 	onAdsLoaded: function( adsLoadedEvent ){
-		mw.log("DoubleClickIMA:: onAdsLoaded " + adsLoadedEvent);
+		var _this = this;
+		mw.log("DoubleClick:: onAdsLoaded " + adsLoadedEvent );
 		
 		// Get the ads manager
-		var adsManager = adsLoadedEvent.getAdsManager();
-		adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, function( adError ){
+		this.adsManager = adsLoadedEvent.getAdsManager();
+		
+		// Add the error handler: 
+		this.adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, function( adError ){
 			_this.onAdError( adError );
 		});
 
 		// Listen and respond to events which require you to pause/resume content
-	    adsManager.addEventListener(
+		this.adsManager.addEventListener(
 	        google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
-	        function(){ _this.onPauseRequested(); } 
+	        function(){ _this.onPauseRequested(); }
 	    );
-	    adsManager.addEventListener(
+		this.adsManager.addEventListener(
 	        google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
 	        function(){ _this.onResumeRequested(); } 
 	    );
 	    
 	    // Set a visual element on which clicks should be tracked for video ads
-	    adsManager.setClickTrackingElement( _this.embed );
-	    try {
-	      // Call play to start showing the ad.
-	      adsManager.play( _this.embedPlayer.getPlayerElement() );
-	    } catch (adError) {
-	      // An error may be thrown if there was a problem with the VAST response.
-	    }
+		this.adsManager.setClickTrackingElement( _this.embedPlayer );
+	   
+	    // Check if we found adds;
+		_this.addPlayerBindings();
 		
 		this.callback();
 	},
+	addPlayerBindings: function(){
+		var _this = this;
+		
+		var slotSet = [];
+		// Check for pre-sequence: 
+		if( this.getConfig( 'preSequence') )
+			slotSet.push( 'preroll');
+		
+		if( this.getConfig( 'postSequence') )
+			slotSet.push( 'postroll' );
+		
+		$.each( slotSet, function(inx, slotType){
+			// Add the adSlot binding
+			// @@TODO use the "sequence number" as a slot identifier. 
+			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType, function( event, callback ){
+				// Call play to start showing the ad.
+				_this.adsManager.play( _this.embedPlayer.getPlayerElement() );
+				_this.onResumeRequestedCallback = function(){
+					callback();
+				};
+			});
+		});
+	},
 	onPauseRequested: function(){
-		_this.embedPlayer.pause();
+		mw.log( "DoubleClick:: onPauseRequested" );
+		//_this.embedPlayer.pause();
 		 // Setup UI for showing ads (e.g. display ad timer countdown,
 	    // disable seeking, etc.)
 	    // setupUIForAd();
 	},
 	onResumeRequested: function(){
-	    // Setup UI back for showing content.
-	    // setupUIForContent();
-		_this.embedPlayer.play();
+		mw.log( "DoubleClick:: onResumeRequested" );
+		if( this.onResumeRequestedCallback ){
+			this.onResumeRequestedCallback();
+		}
+		this.onResumeRequestedCallback = false;
 	},
 	onAdsError: function(adErrorEvent){
-		mw.log("DoubleClickIMA:: onAdsError:" + adErrorEvent.getError() );
+		mw.log("DoubleClick:: onAdsError:" + adErrorEvent.getError() );
 		this.callback();
 	},
 	getAdsRequest: function(){
-		return {
-				adTagUrl: this.getConfig( 'adTagUrl' ),
-				adType: "video"
-			};
+		var _this = this;
+		var adRequest = {};
+		// Would be good to also support: 
+		// 'channels','contentId', 'publisherId'
+		var namedUiConfProps = ['adTagUrl','adType' ];
+		$.each(namedUiConfProps, function(inx, propName){
+			propValue =  _this.getConfig( propName );
+			if( propValue != null ){
+				adRequest[ propName ] = propValue;
+			}
+		});
+		
+		return adRequest;
 	},
 	getConfig: function( configName ){
-		if( !this.config ){
-			this.config = this.embedPlayer.getKalturaConfig( 'doubleclick', ['adTagUrl'] );
-		}
-		// will return null or undefined if configName is not set
-		return this.config[ configName ];
+		// always get the config from the embedPlayer so that is up-to-date
+		return this.embedPlayer.getKalturaConfig( 'doubleclick', configName );
 	},
 	getGoogleAdsLoader: function( callback ){
 		var _this = this;

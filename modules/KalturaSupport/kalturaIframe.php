@@ -281,21 +281,28 @@ class kalturaIframe {
 		if( ! $this->getResultObject()->getUiConf() ){
 			return false;
 		}
-		$xml = $this->getResultObject()->getUiConfXML();
+		// Try to get uiConf
+		try{
+			$xml = $this->getResultObject()->getUiConfXML();
+		} catch ( Exception $e ){
+			$this->fatalError( $e->getMessage() );
+		}
 		$resourceIncludes = array();
-		foreach ($xml->uiVars->var as $var ){
-			if( $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'){
-				continue;
+		if( is_array( $xml->uiVars->var ) ){
+			foreach ($xml->uiVars->var as $var ){
+				if( $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'){
+					continue;
+				}
+				
+				$resource = array( 'src'=> htmlspecialchars(  $var['value'] ) );
+				if( $var['key'] == 'HTML5PluginUrl' ){
+					$resource['type'] = 'js';
+				}
+				if( $var['key'] == 'HTML5PlayerCssUrl'){
+					$resource['type'] = 'css';
+				}
+				$resourceIncludes[] = $resource;
 			}
-			
-			$resource = array( 'src'=> htmlspecialchars(  $var['value'] ) );
-			if( $var['key'] == 'HTML5PluginUrl' ){
-				$resource['type'] = 'js';
-			}
-			if( $var['key'] == 'HTML5PlayerCssUrl'){
-				$resource['type'] = 'css';
-			}
-			$resourceIncludes[] = $resource;
 		}
 		return json_encode( $resourceIncludes );
 	}
@@ -308,19 +315,21 @@ class kalturaIframe {
 		}
 		$o = '';
 		$xml = $this->getResultObject()->getUiConfXML();
-		foreach ($xml->uiVars->var as $var ){
-			if( isset( $var['key'] ) && isset( $var['value'] ) 
-				&& $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
-				&& $var['key'] != 'Mw.CustomResourceIncludes' 
-			){
-				$o.= "mw.setConfig('" . htmlspecialchars( addslashes( $var['key'] ) ) . "', ";
-				// check for boolean attributes: 
-				if( $var['value'] == 'false' || $var['value'] == 'true' ){
-					$o.=  $var['value'];
-				}else {
-					$o.= "'" . htmlspecialchars( addslashes( $var['value'] ) ) . "'";
+		if( is_array( $xml->uiVars->var ) ){
+			foreach ($xml->uiVars->var as $var ){
+				if( isset( $var['key'] ) && isset( $var['value'] ) 
+					&& $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
+					&& $var['key'] != 'Mw.CustomResourceIncludes' 
+				){
+					$o.= "mw.setConfig('" . htmlspecialchars( addslashes( $var['key'] ) ) . "', ";
+					// check for boolean attributes: 
+					if( $var['value'] == 'false' || $var['value'] == 'true' ){
+						$o.=  $var['value'];
+					}else {
+						$o.= "'" . htmlspecialchars( addslashes( $var['value'] ) ) . "'";
+					}
+					$o.= ");\n";
 				}
-				$o.= ");\n";
 			}
 		}
 		return $o;
@@ -546,6 +555,7 @@ class kalturaIframe {
 					echo 'mw.setConfig( \'Mw.CustomResourceIncludes\', '. $this->getCustomPlayerIncludesJSON() .' );';
 				}
 			?>
+			
 			// Don't do an iframe rewrite inside an iframe!
 			mw.setConfig( 'Kaltura.IframeRewrite', false );
 

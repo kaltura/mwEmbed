@@ -8,9 +8,19 @@
 	});
 	
 	mw.addModuleLoader('AdSupport', function(){
-		return [ 'mw.MobileAdTimeline', 'mw.AdLoader', 'mw.VastAdParser' ];
+		return [ 'mw.AdTimeline', 'mw.AdLoader', 'mw.VastAdParser' ];
 	});
 	
+	// Check if a dependency of any plugin included AdSupport, if so add a adTimeline
+	// AdTimeline fires player events at ad opportunities
+	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
+		$( embedPlayer ).bind( 'KalturaSupport_DoneWithUiConf', function(){
+			if( mw.addAdTimeline ){
+				mw.addAdTimeline ( embedPlayer );
+			}
+		});
+	});
+
 	// Ads have to communicate with parent iframe to support companion ads.
 	$( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
 		// Add the updateCompanionTarget binding to bridge iframe

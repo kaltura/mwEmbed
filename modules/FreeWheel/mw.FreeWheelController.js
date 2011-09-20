@@ -222,15 +222,10 @@ mw.FreeWheelControler.prototype = {
 		} 
 		// Check if we found freewheel ads: 
 		if( _this.getContext().getTemporalSlots().length ){
-			// Load the adTimeline ( so that we get slots binding targets then add bindings ) 
-			mw.load( 'AdSupport', function(){
-				// Add The embed player AdTimeline: 
-				mw.addAdTimeline( _this.embedPlayer );
-				// Add the freeWheel bindings:
-				_this.addPlayerBindings();
-			});
+			// Add the freeWheel bindings:
+			_this.addPlayerBindings();
 		} else {
-			debugger;
+			mw.log("FreeWheelController:: no freewheel ads avaliable");
 			// no adds issue callback directly
 			this.callback();
 		}
