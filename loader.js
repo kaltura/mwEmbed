@@ -94,6 +94,7 @@ mw.addResourcePaths( {
 
 	"$j.mobile"				: "libraries/jquerymobile/jquery.mobile-1.0a2.js",
 	"mw.style.mobile"		: "libraries/jquerymobile/jquery.mobile-1.0a2.css",
+	"iScroll"				: "libraries/iscroll/src/iscroll-lite.js",
 	
 	"mw.Language"			: "components/mw.Language.js",
 	"mw.Parser"				: "components/mw.Parser.js",

@@ -27,6 +27,9 @@ mw.Playlist.prototype = {
 	// player Id
 	playerId: null,	
 	
+	// Store if the current mouse guestor was a mouse up ( only affects iPad emulation with desktop browers ) 
+	onTouchScroll: false,
+	
 	// constructor
 	init: function( options ) {
 		var _this = this;
@@ -164,9 +167,8 @@ mw.Playlist.prototype = {
 
 		// Add the video list: 
 		$( _this.target ).append(
-			$( '<div />')
-			.addClass( 'media-rss-video-list' )
-			.attr('id', _this.id + '_videolist')
+			$('<div />')
+			.attr( 'id',  'video-list-wrapper-' + _this.id )
 			.css({
 				'position' : 'absolute',
 				'z-index' : '1',
@@ -174,6 +176,11 @@ mw.Playlist.prototype = {
 				'overflow-y' : 'auto',
 				'bottom': '7px'
 			})
+			.append( 
+				$( '<div />')
+				.addClass( 'media-rss-video-list' )
+				.attr( 'id',  'media-rss-video-list-' + _this.id )
+			)
 			.hide()
 		);
 		// Check if we have multiple playlist and setup the list and bindings
@@ -312,14 +319,14 @@ mw.Playlist.prototype = {
 		// Add the selectable media list
 		_this.addMediaList();
 
-		var $videoList = $( _this.target + ' .media-rss-video-list' );
+		var $videoListWraper = $( '#video-list-wrapper-' + _this.id );
 		
 		// Update the player
 		_this.drawEmbedPlayer( _this.clipIndex, function(){
 			var playerSize = _this.getTargetPlayerSize();
 			// Update the list height ( vertical layout )
 			if( _this.layout == 'vertical' ){
-				$videoList.css( {
+				$videoListWraper.css( {
 					'top' : parseInt( playerSize.height ) + 4,
 					'width' : '95%'
 				} );
@@ -329,117 +336,52 @@ mw.Playlist.prototype = {
 					$( _this.target + ' .playlistSet-container').css( {
 						'top' : $( _this.target + ' .media-rss-video-player-container' ).height() + 4
 					});
-					$( _this.target + ' .media-rss-video-list' ).css({
+					$videoListWraper.css({
 						'top' : parseInt( playerSize.height ) + 26
 					});
 				}
 			} else {
 				// Update horizontal layout
-				$videoList.css( {
+				$videoListWraper.css( {
 					'top' : '0px',
 					'left' :  parseInt( playerSize.width ) + 4,
-					'right' : '0px'
+					'right' : '2px'
 				} );
 				// Add space for the multi-playlist selector:
 				if( _this.sourceHandler.hasMultiplePlaylists() ){
 					$( _this.target + ' .playlistSet-container').css( {
 						'left' : parseInt( playerSize.width ) + 4
 					});
-					$videoList.css( {
+					$videoListWraper.css( {
 						'top' : '26px'
 					});
 				}
 			}
 			// Show the videoList
-			$videoList.show();
+			$videoListWraper.show();
 			
-			// show the video list and apply the swipe binding
-			$( _this.target ).find('.media-rss-video-list-wrapper').fadeIn();
-			
-			if( mw.isHTML5FallForwardNative() ){
-				// iScroll is buggy with current version of iPad / iPhone use scroll buttons instead
-				/*
-				document.addEventListener('touchmove', function(e){ e.preventDefault(); });
-				var myScroll = iScroll( _this.id + '_videolist' );
-				setTimeout(function () { myScroll.refresh(); }, 0);
-				*/
-				// Add space for scroll buttons:
-				var curTop = $( _this.target + ' .media-rss-video-list' ).css('top');
-				if(!curTop) curTop = '0px';
-				$videoList.css( {
-					'position' : 'absolute',
-					'height' : null,
-					'top' : curTop,
-					'bottom' : '48px'
-				});
-				if( _this.layout == 'vertical' ){
-					$videoList.css({
-						'top' : $( _this.target + ' .media-rss-video-player-container' ).height() + 8
+			// Should test for touch support
+			if( mw.isMobileDevice() && !$('#video-list-wrapper-' + _this.id ).get(0).iScroll ){
+				// give real height for iScroll:
+				$videoListWraper.css("height", $videoListWraper.height() );
+				// add iScroll:
+				$('#video-list-wrapper-' + _this.id ).get(0).iScroll = 
+					new iScroll( 'video-list-wrapper-' + _this.id, { 
+						'onTouchEnd': function(e, moved){ 
+							if( moved !== false){
+								_this.onTouchScroll = true;
+							} else {
+								_this.onTouchScroll = false
+							}
+							return false 
+						}, 
+						'hScroll' : false, 
+						'hideScrollbar' : false 
 					});
-				}
-				
-				// Add scroll buttons if configured to do so:
-				if( mw.getConfig( 'Playlist.ShowScrollButtons' ) ){
-					_this.addScrollButtons( $videoList );
-				}				
-			}
+			}				
 			if( callback ) 
 				callback();
 		});
-	},
-	addScrollButtons: function( $videoList){
-		var _this = this;
-		var playerWidth = _this.getTargetPlayerSize().width;
-		$( _this.target ).append(
-			$( '<div />').css({
-				'position' : 'absolute',
-				'bottom' : '8px',
-				'right': '8px',
-				'height' : '30px',
-				'left' : playerWidth + 18
-			})
-			.addClass('playlist-scroll-buttons')
-			.append(
-				$.button({
-					'text' : 'scroll down',
-					'icon' : 'circle-arrow-s'
-				})
-				.css('float', 'right')
-				.click(function(){
-					var clipListCount = $videoList.children().length;
-					var clipSize = $videoList.children(':first').height();
-					var curTop = $videoList.get(0).scrollTop;
-
-					var targetPos = curTop + (clipSize * 3);
-					if( targetPos > clipListCount * clipSize ){
-						targetPos = ( clipListCount * ( clipSize -1 ) );
-					}
-					mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
-					$videoList.animate({'scrollTop': targetPos }, 500 );
-
-					return false;
-				}),
-				$.button({
-					'text' : 'scroll up',
-					'icon' : 'circle-arrow-n'
-				})
-				.css('float', 'left')
-				.click(function(){
-					var clipListCount = $videoList.children().length;
-					var clipSize = $videoList.children(':first').height();
-					var curTop = $videoList.get(0).scrollTop;
-
-					var targetPos = curTop - (clipSize * 3);
-					if( targetPos < 0 ){
-						targetPos = 0;
-					}
-					mw.log(" animate to: " +curTop + ' + ' + (clipSize * 3) + ' = ' + targetPos );
-					$videoList.animate({'scrollTop': targetPos }, 500 );
-
-					return false;
-				})
-			)
-		);
 	},
 	/**
 	* Update the target size of the player
@@ -679,7 +621,11 @@ mw.Playlist.prototype = {
 			.css( {
 				'cursor': 'pointer'
 			} )
-			.click( function(){
+			.click( function(event){
+				// from chrome pretending to be iOS ( store the last touch event ) 
+				if( _this.onTouchScroll ){
+					return true;
+				}
 				// Update _this.clipIndex
 				_this.clipIndex = $( this ).data( 'clipIndex' );
 

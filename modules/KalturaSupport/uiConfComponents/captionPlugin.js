@@ -2,10 +2,8 @@
 ( function( mw, $ ) {
 // Check for new Embed Player events: 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-
 	// Check for KalturaSupport uiConf
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-
 		// Old closeCaption plugin
 		var oldCaptionConfig = embedPlayer.getKalturaConfig(
 				'closedCaptions', 

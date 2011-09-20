@@ -416,10 +416,6 @@ div.overlay-content        {\n\
         'Playlist.TitleLength': 30
       });
 
-    if (!mw.isMobileDevice())
-      mw.setConfig({'Playlist.ShowScrollButtons':false});
-
-
     // NOTE: keep this outside "mw.ready()" so that "click-to-play" does indeed
     // cause the newEmbedPlayerEvent() call
     $( mw ).bind('newEmbedPlayerEvent', mw.IA.newEmbedPlayerEvent);

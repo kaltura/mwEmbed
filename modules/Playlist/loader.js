@@ -30,8 +30,6 @@ mw.setDefaultConfig( {
 	// Max number of playlist items: 
 	'Playlist.MaxClips' : '20',
 	
-	'Playlist.ShowScrollButtons' : true,
-
 	// Height of the mediaRss title
 	'Playlist.TitleHeight' : '20',
 
@@ -45,9 +43,8 @@ mw.setDefaultConfig( {
 
 // Module loader
 mw.addModuleLoader( 'Playlist', function(){
-	// TODO loader should check playlist configuration and conditionally load the MobileTheme
-	//, 'mw.PlaylistThemeUi', 'mw.PlaylistLayoutMobile'
-	return [ "mw.Playlist", "mw.style.playlist", "mw.PlaylistHandlerMediaRss" ];
+	// TODO loader should check user agent and conditionally load iScroll
+	return [ "mw.Playlist", "mw.style.playlist", "mw.PlaylistHandlerMediaRss", "iScroll" ];
 });
 
 

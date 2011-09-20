@@ -87,7 +87,7 @@ mw.DoubleClickIMA.prototype = {
 	},
 	getGoogleAdsLoader: function( callback ){
 		var _this = this;
-		$.getScript('http://www.google.com/jsapi',function(){
+		$.getScript('http://www.google.com/jsapi', function(){
 			google.load("ima", "1", {"callback" : function(){
 				_this.adsLoader = new google.ima.AdsLoader();
 				callback( _this.adsLoader );
