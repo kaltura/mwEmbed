@@ -43,7 +43,7 @@ mw.DoubleClick.prototype = {
 		
 		// Add the error handler: 
 		this.adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, function( adError ){
-			_this.onAdError( adError );
+			_this.onAdsError( adError );
 		});
 
 		// Listen and respond to events which require you to pause/resume content
