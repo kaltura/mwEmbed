@@ -195,7 +195,6 @@ mw.KWidgetSupport.prototype = {
 			$( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
 		}
 		
-		
 		// XXX remove once we have support for Cue points from the api
 		if( mw.getConfig("Kaltura.TempCuePoints" ) ){
 			playerData.entryCuePoints = mw.getConfig("Kaltura.TempCuePoints" );

@@ -783,14 +783,15 @@ class KalturaResultObject {
 			//}
 			
 			// Entry Cue Points
-			if( $this->getFlashvarConfig('getCuePointsData') !== false && $wgKalturaEnableCuePointsRequest ) {
+			// Alwasy get cuepoints for now: 
+			//if( $this->getFlashvarConfig('getCuePointsData') !== false && $wgKalturaEnableCuePointsRequest ) {
 				$filter = new KalturaCuePointFilter();
 				$filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
 				$filter->entryIdEqual = $this->urlParameters['entry_id'];
 
 				$params = array( 'filter' => $filter );
 				$namedMultiRequest->addNamedRequest( 'entryCuePoints', "cuepoint_cuepoint", "list", $params );
-			}
+			//}
 			// Get the result object as a combination of baseResult and multiRequest
 			$resultObject = $namedMultiRequest->doQueue();
 			// merge in the base result object: 
@@ -940,8 +941,8 @@ class KalturaResultObject {
 				//  getResultObject should not call any parsing functions
 				$uiConf = $this->getUiConf();
 			}
-			if( $uiConf == ''){
-				// empty uiConf ( don't try and parse, return an empty object)
+			if( $uiConf == '' ) {
+				// Empty uiConf ( don't try and parse, return an empty object)
 				return new SimpleXMLElement('<xml />' );
 			}
 			// remove this hack as soon as possible

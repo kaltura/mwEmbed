@@ -7,7 +7,7 @@ mw.DoubleClick.prototype = {
 	// local config object
 	config: {},
 	
-	// The google ad mannager:
+	// The google ad manager:
 	adsManager: null,
 	
 	init: function( embedPlayer, callback ){
@@ -75,7 +75,7 @@ mw.DoubleClick.prototype = {
 		if( this.getConfig( 'postSequence') )
 			slotSet.push( 'postroll' );
 		
-		$.each( slotSet, function(inx, slotType){
+		$.each( slotSet, function( inx, slotType ){
 			// Add the adSlot binding
 			// @@TODO use the "sequence number" as a slot identifier. 
 			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType, function( event, callback ){
@@ -86,6 +86,34 @@ mw.DoubleClick.prototype = {
 				};
 			});
 		});
+		
+		// Check for cuepoints
+		if( this.embedPlayer.entryCuePoints ){
+			// Setup cuepoints 
+			$.each( this.embedPlayer.entryCuePoints, function( inx, cuePoint ){
+				// Make sure the cue point is tagged for dobuleclick
+				if( cuePoint.tags.indexOf( "doubleclick" ) !== -1 ){
+					return true;
+				}
+				// Get the ad type for each cuepoint
+				var adType = embedPlayer.kCuePoints.getAdType( cuePoint );
+				if( adType == 'overlay' ){
+					// TODO add it to the right place in the timeline
+				}
+				if( adType == 'midroll' ){
+					var doneMidroll = false;
+					// TOOD add this to the timeline ( not the monitor ) 
+					$( _this.embedPlayer).bind('monitorEvent', function(){
+						if( _this.embedPlayer.currentTime > cuePoint.startTime && doneMidroll == false ){
+							// play the midroll
+							_this.adsManager.play( _this.embedPlayer.getPlayerElement() );
+						}
+					});
+				}
+			});
+		}
+		
+		
 	},
 	onPauseRequested: function(){
 		mw.log( "DoubleClick:: onPauseRequested" );
@@ -133,7 +161,7 @@ mw.DoubleClick.prototype = {
 			}});
 		});
 	}
-}
+};
 	
 })( window.mw, jQuery);
 
