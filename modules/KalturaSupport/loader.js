@@ -164,7 +164,9 @@
 						var flashVarPairs = flashVarsString.split('&');
 						for( var i =0; i < flashVarPairs.length; i++ ) {
 							var parts = flashVarPairs[i].split('=');
-							flashvars[ parts[0] ] = unescape( parts.slice(1).join('=') );
+							if( parts[0] ) {
+								flashvars[ parts[0] ] = unescape( parts.slice(1).join('=') );
+							}
 						}
 					}
 					// Get the swf source from the element: 
@@ -361,6 +363,9 @@
 		}
 		// Add kaltura support hook
 		if( kLoadKalturaSupport ) {
+			// Pass the flashvars to the iframe
+			$(playerElement).data('flashvars', mw.getConfig('KalturaSupport.IFramePresetFlashvars'));
+
 			for(var i =0; i < kalturaSupportRequestSet.length; i++ ){
 				if( $.inArray(kalturaSupportRequestSet[i], classRequest ) == -1 ){
 					classRequest.push( kalturaSupportRequestSet[i] );
@@ -463,8 +468,10 @@
 				// Add the flashvars to the request:
 				if( iframeParams['flashvars'] ){
 					$.each( iframeParams['flashvars'], function( key, value){
-						iframeRequest += '&' + encodeURIComponent( 'flashvars[' + key + ']' ) + 
+						if( key ) {
+							iframeRequest += '&' + encodeURIComponent( 'flashvars[' + key + ']' ) +
 								'=' + encodeURIComponent( value );
+						}
 					});
 				}
 				// Also append the script version to purge the cdn cache for iframe: 
