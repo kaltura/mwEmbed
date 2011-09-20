@@ -383,14 +383,14 @@ mw.KWidgetSupport.prototype = {
 				config[ attrName ] = unescape( value );
 			}
 			// Convert string to boolean 
-			if( value === "true" )
+			if( config[ attrName ] === "true" )
 				config[ attrName ] = true;
-			if( value === "false" )
+			if( config[ attrName ] === "false" )
 				config[ attrName ] = false; 
 			
 			// Do any value handling 
-			config[ attrName ] = embedPlayer.evaluate( value );
-		})
+			config[ attrName ] = embedPlayer.evaluate( config[ attrName ] );
+		});
 		
 		// Check if disableHTML5 was "true" and return false for the plugin config ( since we are the html5 library ) 
 		if( config['disableHTML5'] == true && config['plugin'] ){
