@@ -27,7 +27,7 @@ mw.DoubleClick.prototype = {
 			
 			adsLoader.addEventListener(
 			    google.ima.AdErrorEvent.Type.AD_ERROR,
-			    function( adErrorEvent ){ _this.onAdsError(adErrorEvent); },
+			    function( adErrorEvent ){ _this.onAdsError( adErrorEvent ); },
 			    false);
 			
 			// Make request
@@ -101,7 +101,7 @@ mw.DoubleClick.prototype = {
 		}
 		this.onResumeRequestedCallback = false;
 	},
-	onAdsError: function(adErrorEvent){
+	onAdsError: function( adErrorEvent ){
 		mw.log("DoubleClick:: onAdsError:" + adErrorEvent.getError() );
 		this.callback();
 	},
