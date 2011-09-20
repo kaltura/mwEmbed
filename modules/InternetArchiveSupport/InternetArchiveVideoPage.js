@@ -344,8 +344,10 @@ audio { z-index:666 !important; position:absolute !important; bottom:0px !import
 div.playlistItem {\n\
   font-family:Lucida Grande;\n\
   margin:0px 5px 0px 5px !important;\n\
+  min-height:10px;\n\
 }\n\
 div.maudio div.playlistItem { padding:0px !important; }\n\
+div.maudio div.play_head { right:160px !important; }\n\
 div.playlist-title { display:none; }\n\
 div.playlistItem img { display:none; }\n\
 div.playlistItem span.clipTitle     { padding-left:15px; }\n\
