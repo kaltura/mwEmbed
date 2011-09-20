@@ -2338,7 +2338,6 @@ mw.EmbedPlayer.prototype = {
 			// Reset the playhead
 			mw.log("EmbedPlayer::Stop:: Reset play head")
 			this.updatePlayHead( 0 );
-
 		}
 	},
 
