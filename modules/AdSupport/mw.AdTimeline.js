@@ -281,6 +281,7 @@ mw.AdTimeline.prototype = {
 	restorePlayer: function( ){
 		this.embedPlayer.restoreEventPropagation();
 		this.embedPlayer.enableSeekBar();
+		this.embedPlayer.monitor();
 		// trigger an event so plugins can restore their contnet based actions
 		$( this.embedPlayer ).trigger( 'AdSupport_EndAdPlayback');
 	},
