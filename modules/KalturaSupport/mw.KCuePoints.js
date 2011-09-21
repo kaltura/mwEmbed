@@ -86,7 +86,7 @@ mw.KCuePoints.prototype = {
 	 * @param (Object) Cue Point object
 	 **/
 	triggerCuePoint: function( cuePoint ) {
-		/*
+		/**
 		 *  We need different events for each cue point type
 		 */
 		var eventName;
@@ -94,6 +94,8 @@ mw.KCuePoints.prototype = {
 		 * The cue point object is wrapped with another object that has context property.
 		 * We used that property so that the different plugins will know the context of the ad
 		 * In case the cue point is not a adOpportunity their will be no context
+		 * 
+		 * This matches the KDP implementation
 		 * */
 		var obj = {
 			cuePoint: cuePoint
