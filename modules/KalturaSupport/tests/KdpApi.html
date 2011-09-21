@@ -5,20 +5,6 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 		<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
-		<script type="text/javascript">
-		// Disable default Iframe Rewrite and use Video tag rewrite
-		if( document.URL.indexOf('forceMobileHTML5' ) !== -1 ){
-			mw.setConfig( 'EmbedPlayer.EnableIframeApi', false );
-			mw.setConfig( 'Kaltura.IframeRewrite', false );
-			mw.setConfig( 'forceMobileHTML5', true );
-		}
-		//
-		if( document.URL.indexOf('forceMobileHTML5AndIframe' ) !== -1 ){
-			mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
-			mw.setConfig( 'Kaltura.IframeRewrite', true );
-			mw.setConfig( 'forceMobileHTML5', true );
-		}
-		</script>
 		<style type="text/css">
 		html, body { margin:0; padding:0; }
 		body, td, th, pre, code, select, option, input, textarea { font-family:"Trebuchet MS", Arial, Sans-serif; font-size:10pt; }
@@ -147,8 +133,6 @@
 		<h1 class="title">Kaltura Dynamic Player version 3 ( HTML5lib backend test ) </h1>
 		Choose player type: <a href="?" title="Normal KDP">Normal KDP</a> |
 		<a href="?forceMobileHTML5" title="Switch the KDP to HTML5 Player">HTML5 Player</a> |
-		<a href="?forceMobileHTML5AndIframe" title="Switch the KDP to HTML5 Player inside an Iframe">Iframe HTML5 Player</a> |
-		<a href="?forceIframe" title="Switch the KDP to KDP inside Iframe">Iframe KDP</a>.<br /><br />
 
 		<div id="playerContainer"> 
 			<div id="kdp3" style="width:400px;height:330px;"></div>
