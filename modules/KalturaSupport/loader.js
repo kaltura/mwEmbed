@@ -79,8 +79,6 @@
 		"captionPlugin"	: 	"uiConfComponents/captionPlugin.js",		
 		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",
 
-		"convivaPlugin" : "uiConfComponents/convivaPlugin.js",
-		
 		"playlistPlugin" : "uiConfComponents/playlistPlugin.js",
 		
 		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
