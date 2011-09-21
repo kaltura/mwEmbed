@@ -1,9 +1,7 @@
-/**
-* EmbedPlayer loader
-*/
-/**
-* Default player module configuration
-*/
+
+( function ($) { //wacky wrapper to allow us to use jQuery as $ w/o collision...
+
+//support for Internet Archive (archive.org) site audio/video pages using mwEmbed
 
 mw.IA =
 {
@@ -120,7 +118,7 @@ mw.IA =
   {
     mw.IA.log('newEmbedPlayerEvent');
 
-    if (typeof($('#iframeVidso').get(0)) != 'undefined')
+    if ($('#iframeVidso').length)
     {
       mw.setConfig( {
         'EmbedPlayer.EnabledOptionsMenuItems':
@@ -221,7 +219,7 @@ mw.IA =
     
     if (str==mw.IA.mrss)
     {
-      console.dirxml($j.parseXML(unescape(mw.IA.mrss).replace(/\+/g,' ')));
+      console.dirxml($.parseXML(unescape(mw.IA.mrss).replace(/\+/g,' ')));
       return;
     }
     mw.log('      ---IA------------------------------>   '+str);
@@ -430,3 +428,5 @@ div.overlay-content        {\n\
 };
 
 mw.IA.setup();
+
+}) ( jQuery );//wacky wrapper to allow us to use jQuery as $ w/o collision...
