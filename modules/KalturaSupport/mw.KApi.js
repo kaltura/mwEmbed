@@ -35,6 +35,9 @@ mw.KApi.prototype = {
 	init: function( partner_id ){
 		this.partner_id = partner_id;
 	},
+	// Stores a callback index for duplicate api requests
+	callbackIndex:0,
+	
 	getPartnerId: function( ){
 		return this.partner_id;
 	},
@@ -130,12 +133,14 @@ mw.KApi.prototype = {
 		}
 
 		// Build the request url with sorted params:
-		var requestURL = _this.getApiUrl(serviceType) + '&' + $.param( param, true );
+		var requestURL = _this.getApiUrl(serviceType) + '&' + $.param( param );
 		
 		var globalCBName = 'kapi_' + _this.getSignature( param );
 		if( window[ globalCBName ] ){
 			mw.log("Error global callback name already exists: " + globalCBName );
-			this.doApiRequest( requestURL, _this.getSignature( param ) + Math.random(), callback );
+			// Update the globalCB name inx.
+			this.callbackIndex++;
+			globalCBName = globalCBName + this.callbackIndex;
 		}
 		window[ globalCBName ] = function( data ){
 			// issue the local scope callback:
