@@ -73,9 +73,9 @@ mw.KAds.prototype = {
 	// Load the ad from cue point
 	loadAd: function( cuePoint ) {
 		var _this = this;
-		
+		var embedPlayer = this.embedPlayer;
 		var adType = this.embedPlayer.kCuePoints.getAdSlotType( cuePoint );
-		
+
 		// Check if cue point already displayed
 		if( $.inArray(cuePoint.cuePoint.id, _this.displayedCuePoints) >= 0 ) {
 			return ;
@@ -85,6 +85,7 @@ mw.KAds.prototype = {
 		if( adType == 'midroll' ) {
 			// Pause the video
 			_this.embedPlayer.pause();
+			$( embedPlayer ).getAbsoluteOverlaySpinner().attr('id', embedPlayer.id + '_mappingSpinner' );
 		}
 		
 		if( cuePoint.cuePoint.sourceUrl ) {
@@ -109,14 +110,14 @@ mw.KAds.prototype = {
 					type: adType
 				};
 
-				var originalSrc = _this.embedPlayer.getSrc();
-				var seekTime = ( parseFloat( cuePoint.cuePoint.startTime / 1000 ) / parseFloat( _this.embedPlayer.duration ) );
-				var oldDuration = _this.embedPlayer.duration;
+				var originalSrc = embedPlayer.getSrc();
+				var seekTime = ( parseFloat( cuePoint.cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
+				var oldDuration = embedPlayer.duration;
 
 				// Set restore function
 				var restorePlayer = function() {
-					_this.embedPlayer.restoreEventPropagation();
-					_this.embedPlayer.enableSeekBar();
+					embedPlayer.restoreEventPropagation();
+					embedPlayer.enableSeekBar();
 				};
 
 				// Set switch back function
@@ -124,11 +125,11 @@ mw.KAds.prototype = {
 					// Add cuePoint Id to displayed cuePoints array
 					_this.displayedCuePoints.push( cuePoint.cuePoint.id );
 					
-					var vid = _this.embedPlayer.getPlayerElement();
+					var vid = embedPlayer.getPlayerElement();
 					// Check if the src does not match original src if
 					// so switch back and restore original bindings
 					if ( originalSrc != vid.src ) {
-						_this.embedPlayer.switchPlaySrc(originalSrc, function() {
+						embedPlayer.switchPlaySrc(originalSrc, function() {
 							mw.log( "AdTimeline:: restored original src:" + vid.src);
 							// Restore embedPlayer native bindings
 							// async for iPhone issues
@@ -138,11 +139,11 @@ mw.KAds.prototype = {
 
 							// Sometimes the duration of the video is zero after switching source
 							// So i'm re-setting it to it's old duration
-							_this.embedPlayer.duration = oldDuration;
+							embedPlayer.duration = oldDuration;
 							if( adType == 'postroll' ) {
 								// Run stop for now.
 								setTimeout( function() {
-									_this.embedPlayer.stop();
+									embedPlayer.stop();
 								}, 100);
 
 								mw.log( "AdTimeline:: run video pause ");
@@ -154,9 +155,11 @@ mw.KAds.prototype = {
 								}
 							} else {
 								// Seek to where we did the switch
-								_this.embedPlayer.doSeek( seekTime );
-								_this.embedPlayer.bind('seeked.ad', function() {
-									_this.embedPlayer.play();
+								embedPlayer.doSeek( seekTime );
+								$( embedPlayer ).bind('seeked.ad', function() {
+									setTimeout( function() {
+										embedPlayer.play();
+									}, 250);
 								});
 							}
 						});
@@ -184,6 +187,7 @@ mw.KAds.prototype = {
 				if (!_this.embedPlayer.adTimeline) {
 					_this.embedPlayer.adTimeline = new mw.AdTimeline( _this.embedPlayer );
 				}
+				$( '#' + embedPlayer.id + '_mappingSpinner' ).remove();
 				_this.embedPlayer.adTimeline.display( adsCuePointConf, doneCallback, adDuration );
 			});
 		}

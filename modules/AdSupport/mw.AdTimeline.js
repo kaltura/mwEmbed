@@ -355,7 +355,7 @@ mw.AdTimeline.prototype = {
 			if( typeof vid == 'undefined' // stop display of overlay if video playback is no longer active 
 				|| ( _this.getNativePlayerElement().currentTime - startTime) > displayDuration )
 			{
-				mw.log("AdTimeline::display:" + timeTargetType + " Playback done because vid does not exist or > displayDuration " + displayDuration );
+				mw.log("AdTimeline::display:" + adSlot.type + " Playback done because vid does not exist or > displayDuration " + displayDuration );
 				adSlot.playbackDone();
 			} else {
 				setTimeout( monitorForDisplayDuration, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -433,8 +433,6 @@ mw.AdTimeline.prototype = {
 					return ;
 				}
 				mw.log("AdTimeline:: source updated, add tracking");
-				// Trigger AdStart event (used by comscore)
-				$( _this.embedPlayer ).trigger( 'AdSupport_AdStart', [adConf.type, adSlot] );
 				// Bind all the tracking events ( currently vast based but will abstract if needed ) 
 				if( adConf.trackingEvents ){
 					_this.bindTrackingEvents( adConf.trackingEvents );

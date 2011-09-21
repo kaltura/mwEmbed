@@ -125,7 +125,7 @@ mw.KCuePoints.prototype = {
 	},
 
 	getAdSlotType: function( cuePoint ) {		
-		if( cuePoint.adType == 1 ) {
+		if( cuePoint.cuePoint.adType == 1 ) {
 			return this.getAdType( cuePoint ) + 'roll';
 		} else {
 			return 'overlay';

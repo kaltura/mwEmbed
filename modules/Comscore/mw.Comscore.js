@@ -61,12 +61,12 @@ mw.Comscore.prototype = {
 		var loadFromProxy = function() {
 			var proxyUrl = mw.getConfig( 'Mw.XmlProxyUrl' );
 			if( !proxyUrl ){
-				mw.log( "Error: mw.KAds : missing kaltura proxy url ( can't load ad )");
+				mw.log( "Error: mw.Comscore : missing kaltura proxy url ( can't load ad )");
 				return ;
 			}
 			$.getJSON( proxyUrl + '?url=' + encodeURIComponent( _this.config.cTagsMap ) + '&callback=?', function( result ){
 				if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
-					mw.log("Error: loadAdXml error with http response");
+					mw.log("Error: loadXml error with http response");
 					return ;
 				}
 				try{
@@ -106,46 +106,44 @@ mw.Comscore.prototype = {
 	addPlayerBindings: function() {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		var config = this.config;
 		var cParams = _this.cParams;
 
 		// Bind to entry ready
 		$( embedPlayer ).bind('KalturaSupport_EntryDataReady', function() {
 			_this.playerPlayedFired = false;
-			_this.createCParams();
+			_this.setupCParams();
 		});
 
 		// Bind to player played
 		$( embedPlayer ).bind('onplay', function() {
 			if (!_this.playerPlayedFired)
 			{
-				cParams["c5"] = config.c5;
-
 				// Send beacon
-				$( embedPlayer ).trigger('Comscore_Beacon', {});
-
+				_this.comScoreBeacon( cParams );
 				_this.playerPlayedFired = true;
 			}
 		});
 
 		// Bind to ad start
-		$( embedPlayer ).bind('AdSupport_AdStart', function( event, adType, adConf ) {
+		$( embedPlayer ).bind('AdSupport_StartAdPlayback', function( event, adData ) {
 
-			switch (adType)
+			var adType = adData[0];
+			var adConf = adData[1];
+			console.log(adType);
+			switch ( adType )
 			{
-				case SequenceContextType.PRE:
+				case 'pre':
 					cParams["c5"] = _this.prerollAdContentType;
 				break;
-				case SequenceContextType.POST:
+				case 'post':
 					cParams["c5"] = _this.postrollAdContentType;
 				break;
-				case SequenceContextType.MID:
+				case 'mid':
 					cParams["c5"] = _this.midrollAdContentType;
 				break;
 			}
 
 			// Send beacon
-			//$( embedPlayer ).trigger('Comscore_Beacon', {});
 			_this.comScoreBeacon( cParams );
 
 		});
@@ -178,10 +176,10 @@ mw.Comscore.prototype = {
 			cParams['c' + i] = this.parseCAttribute('c' + i);
 		}
 
-		console.log( $(this.embedPlayer).data('flashvars'));
-		console.log(this.embedPlayer.$uiConf.find("#comscore"));
-		console.log(config);
-		console.log(cParams);
+		//console.log( $(this.embedPlayer).data('flashvars'));
+		//console.log(this.embedPlayer.$uiConf.find("#comscore"));
+		//console.log(config);
+		//console.log(cParams);
 	},
 
 	/**
@@ -210,7 +208,7 @@ mw.Comscore.prototype = {
 
 		var returnValue = config[cName];
 		
-		if( _this.loadedXML && config[cName+"attributeKey"] )
+		if( _this.loadedXML && config[cName+"attributeKey"] ) {
 
 			//get name of property
 			var attributeKey = config[cName+"attributeKey"];
@@ -229,8 +227,9 @@ mw.Comscore.prototype = {
 			if( map[value] ) {
 				return map[value];
 			}
+		}
 
-			return returnValue;
+		return returnValue;
 		
 	},
 
@@ -241,26 +240,35 @@ mw.Comscore.prototype = {
 		loadUrl += "scorecardresearch.com/p?";
 
 		for (var cParam in beconObject) {
-			loadUrl += cParam+"="+beconObject[cParam]+"&";
+			loadUrl += cParam + "=" + encodeURIComponent(beconObject[cParam]) + "&";
 		}
 
 		// Setup page, title and referrer
 		var page, title, referrer;
+		page = referrer = mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
+		
 		if (page && page != "") {
-			loadUrl += "c7=" + page +"&";
+			loadUrl += "c7=" + encodeURIComponent(page) +"&";
 		}
 
 		if (title && title != "") {
-			loadUrl += "c8=" + title +"&";
+			loadUrl += "c8=" + encodeURIComponent(title) +"&";
 		}
 
 		if (referrer && referrer != "") {
-			loadUrl += "c9=" + referrer +"&";
+			loadUrl += "c9=" + encodeURIComponent(referrer) +"&";
 		}
 
 		loadUrl += "rn=" + Math.random().toString() + "&";
 		loadUrl +="cv=" + _this.pluginVersion;
 
-		console.log(loadUrl);
+		// load img to send the beacon
+		$('body').append(
+			$( '<img />' ).attr({
+				'src' : loadUrl,
+				'width' : 0,
+				'height' : 0
+			})
+		);
 	}
 };
