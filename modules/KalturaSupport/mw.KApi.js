@@ -130,7 +130,7 @@ mw.KApi.prototype = {
 		}
 
 		// Build the request url with sorted params:
-		var requestURL = _this.getApiUrl(serviceType) + '&' + $.param( param );
+		var requestURL = _this.getApiUrl(serviceType) + '&' + $.param( param, true );
 		
 		var globalCBName = 'kapi_' + _this.getSignature( param );
 		if( window[ globalCBName ] ){
