@@ -153,7 +153,7 @@ mw.KApi.prototype = {
 	},
 	getApiUrl : function( serviceType ){
 		var serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
-		if( serviceType && serviceType == 'stats') {
+		if( serviceType && serviceType == 'stats' &&  mw.getConfig( 'Kaltura.StatsServiceUrl' ) ) {
 			serviceUrl = mw.getConfig( 'Kaltura.StatsServiceUrl' );
 		}
 		return serviceUrl + mw.getConfig( 'Kaltura.ServiceBase' ) + serviceType;
