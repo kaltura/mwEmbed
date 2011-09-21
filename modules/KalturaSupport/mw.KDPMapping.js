@@ -450,12 +450,12 @@
 					break;
 				case 'cuePointReached':
 					b( 'KalturaSupport_CuePointReached', function( event, cuePoint ) {
-						callback( cuePoint, embedPlayer.id );
+						callback( {'cuePoint':cuePoint}, embedPlayer.id );
 					});
 					break;
 				case 'adOpportunity':
 					b( 'KalturaSupport_AdOpportunity', function( event, cuePoint ) {
-						callback( cuePoint, embedPlayer.id );
+						callback( {'cuePoint':cuePoint}, embedPlayer.id );
 					});
 					break;
 				/**

@@ -271,8 +271,8 @@ mw.AdTimeline.prototype = {
 		this.embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here. 
 		this.embedPlayer.disableSeekBar();
-		// trigger an event so plugins can get out of the way for ads:
-		$( this.embedPlayer ).trigger( 'AdSupport_StartAdPlayback');
+		// Trigger an event so plugins can get out of the way for ads:
+		$( this.embedPlayer ).trigger( 'AdSupport_StartAdPlayback' );
 	},
 	/**
 	 * Restore a player from ad state
