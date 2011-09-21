@@ -119,11 +119,18 @@ mw.KCuePoints.prototype = {
 		} else if( cuePoint.startTime == this.getEndTime() ) {
 			return 'post';
 		} else {
-			// Midroll
 			return 'mid';
 		}
 		mw.log("Error:: KCuePoints could not determine adType");
+	},
+
+	getAdSlotType: function( cuePoint ) {		
+		if( cuePoint.adType == 1 ) {
+			return this.getAdType( cuePoint ) + 'roll';
+		} else {
+			return 'overlay';
+		}
 	}
 };
 
-} )( window.mw, jQuery );
+} )( window.mw, window.jQuery );

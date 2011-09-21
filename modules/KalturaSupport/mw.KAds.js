@@ -74,7 +74,7 @@ mw.KAds.prototype = {
 	loadAd: function( cuePoint ) {
 		var _this = this;
 		
-		var adType = this.embedPlayer.kCuePoints.getAdType( cuePoint );
+		var adType = this.embedPlayer.kCuePoints.getAdSlotType( cuePoint );
 		
 		// Check if cue point already displayed
 		if( $.inArray(cuePoint.cuePoint.id, _this.displayedCuePoints) >= 0 ) {
