@@ -90,32 +90,35 @@ mw.KCuePoints.prototype = {
 		 *  We need different events for each cue point type
 		 */
 		var eventName;
+		/*
+		 * The cue point object is wrapped with another object that has context property.
+		 * We used that property so that the different plugins will know the context of the ad
+		 * In case the cue point is not a adOpportunity their will be no context
+		 * */
+		var obj = {
+			cuePoint: cuePoint
+		};
 		if( cuePoint.cuePointType == 'codeCuePoint.Code' ) {
 			// Code type cue point ( make it easier for people grepping the code base for an event )
 			eventName = 'KalturaSupport_CuePointReached';
 		} else if( cuePoint.cuePointType == 'adCuePoint.Ad' ) {
 			// Ad type cue point
 			eventName = 'KalturaSupport_AdOpportunity';
+			obj.context = this.getAdType(cuePoint);
 		}
-		$( this.embedPlayer ).trigger(  eventName, cuePoint );
+		$( this.embedPlayer ).trigger(  eventName, obj );
 		mw.log('mw.KCuePoints :: Triggered event: ' + eventName + ' - ' + cuePoint.cuePointType + ' at: ' + cuePoint.startTime );
 	},
 	
 	// Get Ad Type from Cue Point
 	getAdType: function( cuePoint ) {
 		if( cuePoint.startTime == 1 ) {
-				return 'preroll';
+			return 'pre';
 		} else if( cuePoint.startTime == this.getEndTime() ) {
-				return 'postroll';
+			return 'post';
 		} else {
 			// Midroll
-			if( cuePoint.adType == 1 ) {
-				return 'midroll';
-			}
-			// Overlay
-			else if ( cuePoint.adType == 2 ) {
-				return  'overlay';
-			}
+			return 'mid';
 		}
 		mw.log("Error:: KCuePoints could not determine adType");
 	}

@@ -195,11 +195,6 @@ mw.KWidgetSupport.prototype = {
 			$( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
 		}
 		
-		// XXX remove once we have support for Cue points from the api
-		if( mw.getConfig("Kaltura.TempCuePoints" ) ){
-			playerData.entryCuePoints = mw.getConfig("Kaltura.TempCuePoints" );
-		}
-		
 		if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
 			mw.log( "KCuePoints:: Added " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
 			embedPlayer.entryCuePoints = playerData.entryCuePoints;
@@ -211,9 +206,15 @@ mw.KWidgetSupport.prototype = {
 			return _this.getPluginConfig( embedPlayer, confPrefix, attr );
 		};
 
+		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
 			return _this.getPluginConfig( embedPlayer, pluginName, 'plugin');
 		};
+
+		// Add getFlashvars to embed player:
+		embedPlayer.getFlashvars = function() {
+			return $( embedPlayer ).data('flashvars');
+		}
 		
 		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
 		if( $(embedPlayer).data('uiConfXml') ){
@@ -272,7 +273,7 @@ mw.KWidgetSupport.prototype = {
 	getPluginConfig: function( embedPlayer, confPrefix, attr ){
 		// Setup local pointers: 
 		var _this = this;
-		var flashvars = $( embedPlayer ).data('flashvars');
+		var flashvars = embedPlayer.getFlashvars();
 		var $uiConf = embedPlayer.$uiConf;
 		
 		var singleAttrName = false;
