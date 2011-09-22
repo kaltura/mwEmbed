@@ -460,22 +460,26 @@ mw.EmbedPlayerNative = {
 	 */
 	switchPlaySrc: function( src, switchCallback, doneCallback ){
 		var _this = this;
-		mw.log( 'EmbedPlayerNative:: switchPlaySrc:' + src + ' native time: ' + this.getPlayerElement().currentTime );
-		if( !src ){
+		var vid = this.getPlayerElement();
+		
+		mw.log( 'EmbedPlayerNative:: switchPlaySrc:' + src + ' native time: ' + vid.currentTime );
+		// make sure the switch source is diffrent: 
+		if( !src || src == vid.src ){
 			if( switchCallback ){
 				switchCallback();
 			}
 			setTimeout(function(){
 				if( doneCallback )
 					doneCallback();
-			},100);
+			}, 100);
 			return ;
 		}
+		
 		// Update some parent embedPlayer vars: 
 		this.duration = 0;
 		this.currentTime = 0;
 		this.previousTime = 0;
-		var vid = this.getPlayerElement();
+	
 		if ( vid ) {
 			try {
 				// Issue a play request on the source
@@ -668,7 +672,7 @@ mw.EmbedPlayerNative = {
 		this.getPlayerElement();
 		if ( !this.playerElement ) {
 			// No vid loaded
-			mw.log( 'native::load() ... doEmbed' );
+			mw.log( 'EmbedPlayerNative::load() ... doEmbed' );
 			this.onlyLoadFlag = true;
 			this.doEmbedHTML();
 			this.onLoadedCallback = callback;
@@ -697,7 +701,7 @@ mw.EmbedPlayerNative = {
 	* fired when "seeking"
 	*/
 	onseeking: function() {
-		mw.log( "native:onSeeking " + this.seeking);
+		mw.log( "EmbedPlayerNative::onSeeking " + this.seeking);
 		// Trigger the html5 seeking event
 		//( if not already set from interface )
 		if( !this.seeking ) {
@@ -707,7 +711,7 @@ mw.EmbedPlayerNative = {
 			this.controlBuilder.onSeek();
 
 			// Trigger the html5 "seeking" trigger
-			mw.log("native:seeking:trigger:: " + this.seeking);
+			mw.log("EmbedPlayerNative::seeking:trigger:: " + this.seeking);
 			$( this ).trigger( 'seeking' );
 		}
 	},
@@ -717,13 +721,13 @@ mw.EmbedPlayerNative = {
 	* fired when done seeking
 	*/
 	onseeked: function() {
-		mw.log("native:onSeeked " + this.seeking + ' ct:' + this.playerElement.currentTime );
+		mw.log("EmbedPlayerNative::onSeeked " + this.seeking + ' ct:' + this.playerElement.currentTime );
 		// sync the seek checks so that we don't re-issue the seek request
 		this.previousTime = this.currentTime = this.playerElement.currentTime;
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
 			this.seeking = false;
-			if( _this._propagateEvents ){
+			if( this._propagateEvents ){
 				$( this ).trigger( 'seeked' );
 			}
 		}
@@ -736,7 +740,7 @@ mw.EmbedPlayerNative = {
 	* Handle the native paused event
 	*/
 	onpause: function(){
-		mw.log( "EmbedPlayer:native: OnPaused:: " +  this._propagateEvents );
+		mw.log( "EmbedPlayerNative:: OnPaused:: " +  this._propagateEvents );
 		if(  this._propagateEvents && ! this.paused){
 			this.parent_pause();
 		}

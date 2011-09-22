@@ -56,11 +56,13 @@ mw.DoubleClick.prototype = {
 		
 		var slotSet = [];
 		// Check for pre-sequence: 
-		if( this.getConfig( 'preSequence') )
+		if( this.getConfig( 'preSequence') ){
 			slotSet.push( 'preroll');
+		}
 		
-		if( this.getConfig( 'postSequence') )
+		if( this.getConfig( 'postSequence') ){
 			slotSet.push( 'postroll' );
+		}
 		
 		// Add preroll / post roll
 		$.each( slotSet, function( inx, slotType ){
@@ -94,6 +96,11 @@ mw.DoubleClick.prototype = {
 					_this.embedPlayer.play();
 				}, cuePoint);
 			}
+		});
+		// on clip done hide any overlay banners that are still active
+		$( _this.embedPlayer ).bind( 'ended', function(){
+			 if( _this.activeOverlayadManager )
+				 _this.activeOverlayadManager.unload();
 		});
 	},
 	/**
@@ -171,7 +178,7 @@ mw.DoubleClick.prototype = {
 	 */
 	loadAndPlayVideoSlot: function( slotType, callback, cuePoint){
 		var _this = this;
-		// pause playback:
+		// Pause playback:
 		_this.embedPlayer.pauseLoading();
 		
 		// Remove any active overlays: 

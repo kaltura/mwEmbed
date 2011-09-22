@@ -171,7 +171,6 @@ mw.AdTimeline.prototype = {
 				if( displayedPostroll ){
 					return ;
 				}
-				
 				displayedPostroll = true;
 				_this.displaySlots( 'postroll', 0, function(){
 					/** TODO support postroll bumper and leave behind */
@@ -179,7 +178,7 @@ mw.AdTimeline.prototype = {
 						// restore ondone interface: 
 						_this.embedPlayer.onDoneInterfaceFlag = true;
 						// Stop the player after we finish postroll. 
-						_this.onClipDone();
+						_this.embedPlayer.onClipDone();
 					});
 				});
 			});
@@ -664,7 +663,7 @@ mw.AdTimeline.prototype = {
 		var videoPlayer = _this.getNativePlayerElement();
 		
 		// unbind any existing adTimeline events
-		$( videoPlayer).unbind( '.adTimeline' );
+		$( videoPlayer).unbind( '.adTracking' );
 		
 		// Only send events once: 
 		var sentEvents = {};
@@ -685,27 +684,27 @@ mw.AdTimeline.prototype = {
 		};
 		
 		// On end stop monitor / clear interval: 
-		$( videoPlayer ).bind('ended.adTimeline', function(){			
+		$( videoPlayer ).bind('ended.Tracking', function(){			
 			sendBeacon( 'complete' );
 			// stop monitor
 			clearInterval( monitorInterval );
 			// clear any bindings 
-			$( videoPlayer).unbind( '.adTimeline' );
+			$( videoPlayer).unbind( '.Tracking' );
 		});
 		
 		// On pause / resume: 
-		$( videoPlayer ).bind( 'pause.adTimeline', function(){
+		$( videoPlayer ).bind( 'pause.Tracking', function(){
 			sendBeacon( 'pause' );
 		});
 		
 		// On resume: 
-		$( videoPlayer ).bind( 'onplay.adTimeline', function(){
+		$( videoPlayer ).bind( 'onplay.Tracking', function(){
 			sendBeacon( 'resume' );
 		});
 		
 		var time = 0;
 		// On seek backwards 
-		$( videoPlayer ).bind( 'seek.adTimeline', function(){
+		$( videoPlayer ).bind( 'seek.Tracking', function(){
 			if( videoPlayer.currentTime < time ){
 				sendBeacon( 'rewind' );
 			}
@@ -726,7 +725,7 @@ mw.AdTimeline.prototype = {
 				sendBeacon( 'midpoint' );
 			
 			if( time > dur / 1.5 )
-				sendBeacon( 'firstQuartile' )
+				sendBeacon( 'thirdQuartile' );
 			
 		}, mw.getConfig('EmbedPlayer.MonitorRate') );		
 	},
