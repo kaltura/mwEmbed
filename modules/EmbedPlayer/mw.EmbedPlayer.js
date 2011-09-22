@@ -806,7 +806,6 @@ mw.EmbedPlayer.prototype = {
 
 	stopEventPropagation: function(){
 		this._propagateEvents = false;
-		this.stopMonitor();
 	},
 	restoreEventPropagation: function(){
 		this._propagateEvents = true;
@@ -1325,6 +1324,8 @@ mw.EmbedPlayer.prototype = {
 		
 		if( percent > 1 )
 			percent = 1;
+		// set the playhead to the target position
+		this.updatePlayHead( percent );
 
 		// See if we should do a server side seek ( player independent )
 		if ( this.supportsURLTimeEncoding() ) {
@@ -1340,7 +1341,6 @@ mw.EmbedPlayer.prototype = {
 			// Make sure this.serverSeekTime is up-to-date:
 			this.serverSeekTime = mw.npt2seconds( this.start_npt ) + parseFloat( percent * this.getDuration() );
 			// Update the slider
-			this.updatePlayHead( percent );
 		}
 
 		// Do play request in 100ms ( give the dom time to swap out the embed

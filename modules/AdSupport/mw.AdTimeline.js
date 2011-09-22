@@ -437,6 +437,7 @@ mw.AdTimeline.prototype = {
 		// Stop event propagation: 
 		_this.updateUiForAdPlayback( adSlot.type );
 		
+		
 		// Play the source then run the callback
 		_this.embedPlayer.switchPlaySrc( targetSrc, 
 			function(vid) {
@@ -651,6 +652,10 @@ mw.AdTimeline.prototype = {
 	bindTrackingEvents: function ( trackingEvents ){
 		var _this = this;
 		var videoPlayer = _this.getNativePlayerElement();
+		
+		// unbind any existing adTimeline events
+		$( videoPlayer).unbind( '.adTimeline' );
+		
 		// Only send events once: 
 		var sentEvents = {};
 		
@@ -672,7 +677,10 @@ mw.AdTimeline.prototype = {
 		// On end stop monitor / clear interval: 
 		$( videoPlayer ).bind('ended.adTimeline', function(){			
 			sendBeacon( 'complete' );
+			// stop monitor
 			clearInterval( monitorInterval );
+			// clear any bindings 
+			$( videoPlayer).unbind( '.adTimeline' );
 		});
 		
 		// On pause / resume: 
@@ -708,8 +716,8 @@ mw.AdTimeline.prototype = {
 				sendBeacon( 'midpoint' );
 			
 			if( time > dur / 1.5 )
-				sendBeacon( 'complete' );
-
+				sendBeacon( 'firstQuartile' )
+			
 		}, mw.getConfig('EmbedPlayer.MonitorRate') );		
 	},
 	/**
