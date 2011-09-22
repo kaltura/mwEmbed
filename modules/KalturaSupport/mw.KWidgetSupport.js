@@ -196,7 +196,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
-			mw.log( "KCuePoints:: Added " + playerData.rawCuePoints.length + " CuePoints to embedPlayer");
+			mw.log( "KCuePoints:: Added " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
 			embedPlayer.rawCuePoints = playerData.entryCuePoints;
 			embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 		}
