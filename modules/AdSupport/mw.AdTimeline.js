@@ -248,10 +248,10 @@ mw.AdTimeline.prototype = {
 		var slotSet = _this.getTimelineTargets( slotType );
 		
 		// Exit if we don't have ads 
-		if( slotSet.length == 0 ) {
+		/*if( slotSet.length == 0 ) {
 			doneCallback();
 			return ;
-		}
+		}*/
 		if( slotType == 'postroll' /* TODO check AdSupport_ bindings postroll count / accumulate sequenceSlots */ ){
 			_this.embedPlayer.onDoneInterfaceFlag = false;
 		}
