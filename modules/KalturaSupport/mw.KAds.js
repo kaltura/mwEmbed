@@ -155,7 +155,6 @@ mw.KAds.prototype = {
 							} else {
 								
 								$( embedPlayer ).bind('seeked.ad', function() {
-									alert('good');
 									embedPlayer.play();
 									setTimeout( function() {
 										embedPlayer.play();
