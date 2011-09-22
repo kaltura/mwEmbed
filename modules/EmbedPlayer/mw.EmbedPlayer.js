@@ -1383,12 +1383,12 @@ mw.EmbedPlayer.prototype = {
 			this.donePlayingCount ++;
 
 			// Run the ended trigger
-			mw.log("EmbedPlayer::onClipDone:Trigger ended");
-			
 			this.stopEventPropagation();
 			// TOOD we should improve the end event flow
 			$( this ).trigger( 'ended' );
 
+			mw.log("EmbedPlayer::onClipDone:Trigged ended, reset playhead? " + this.onDoneInterfaceFlag);
+			
 			// if the ended event did not trigger more timeline actions run the
 			// actual stop:
 			if( this.onDoneInterfaceFlag ){
@@ -2600,14 +2600,16 @@ mw.EmbedPlayer.prototype = {
 			}
 			// Check if we are "done"
 			var endPresentationTime = ( this.startOffset ) ? ( this.startOffset + this.duration ) : this.duration;
-			if ( this.currentTime >= endPresentationTime ) {
+			if ( this.currentTime > endPresentationTime ) {
 				// mw.log( "mWEmbedPlayer::should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 				this.onClipDone();
+				return ;
 			}
 			// End video if we have endTime attribute
 			if( this.endTime && (this.currentTime > this.endTime) ) {
 				this.pause();
 				this.onClipDone();
+				return ;
 			}
 
 		} else {
@@ -2636,7 +2638,7 @@ mw.EmbedPlayer.prototype = {
 				this.monitorInterval = setInterval( function(){
 					if( _this.monitor )
 						_this.monitor();
-				}, this.monitorRate )
+				}, this.monitorRate );
 			}
 		} else {
 			// If stopped "stop" monitor:

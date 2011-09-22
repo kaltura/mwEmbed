@@ -121,6 +121,8 @@ mw.KAds.prototype = {
 
 				// Set switch back function
 				var doneCallback = function() {
+					// continue playback ( if not already playing ) 
+					embedPlayer.play();
 					// Add cuePoint Id to displayed cuePoints array
 					_this.displayedCuePoints.push( cuePoint.id );
 					

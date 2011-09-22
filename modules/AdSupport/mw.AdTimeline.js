@@ -169,6 +169,7 @@ mw.AdTimeline.prototype = {
 				
 				displayedPostroll = true;
 				_this.displaySlots( 'postroll', 0, function(){
+					/** TODO support postroll bumper and leave behind */
 					_this.embedPlayer.switchPlaySrc( _this.originalSrc, function(){
 						// restore ondone interface: 
 						_this.embedPlayer.onDoneInterfaceFlag = true;
