@@ -136,6 +136,10 @@ mw.AdTimeline.prototype = {
 		_this.originalSrc = _this.embedPlayer.getSrc();
 		// Flag to store if its the first time play is being called:
 		var firstPlay = true;
+		$( _this.embedPlayer).bind('onChangeMedia.AdTimeline', function(){
+			_this.destroy();
+		});
+		
 		$(_this.embedPlayer).bind('onplay.AdTimeline', function() {
 			// Check if this is the "first play" request:
 			if ( !firstPlay ) {
@@ -184,6 +188,12 @@ mw.AdTimeline.prototype = {
 			if( _this.getTimelineTargets('overlay').length > 0 ){
 				_this.addOverlayBindings();
 			}
+		});
+	},
+	destroy: function(){
+		// empty out the timeline targets
+		$.each( _this.timelineTargets, function(inx, key ){
+			_this.timelineTargets[key] = [];
 		});
 	},
 	/**

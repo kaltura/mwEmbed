@@ -13,6 +13,9 @@ mw.DoubleClick.prototype = {
 	// The resume request callback
 	onResumeRequestedCallback: null, 
 	
+	// A pointer to the active adManager
+	activeOverlayadManager: null,
+	
 	init: function( embedPlayer, callback ){
 		mw.log( 'DoubleClick:: init: ' + embedPlayer.id );
 		var _this = this;
@@ -64,57 +67,179 @@ mw.DoubleClick.prototype = {
 			// Add the adSlot binding
 			// @@TODO use the "sequence number" as a slot identifier. 
 			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType, function( event, callback ){
-				// pause base playback:
-				 _this.embedPlayer.pause(); 
-				 
-				// Ad a loading spinner: 
-				$( _this.embedPlayer ).getAbsoluteOverlaySpinner();
-		
-				// Setup the current ad callback: 
-				_this.currentAdLoadedCallback = function( adsManager ){
-					adsManager.play( _this.embedPlayer.getPlayerElement() );
-				};
-				// Setup the restore callback
-				_this.onResumeRequestedCallback = function(){
-					callback();
-				};
-				// Request the ad ( will trigger the currentAdCallback and onResumeRequestedCallback when done )
-				_this.getAdsLoader( function( adsLoader ){
-					adsLoader.requestAds( {
-						'adTagUrl' : _this.getAdTagUrl(),
-						'adType': 'VIDEO'
-					});
-				});
+				_this.loadAndPlayVideoSlot( slotType, callback );
 			});
 		});
 		
-		// Check for cuepoints
-		if( _this.embedPlayer.rawCuePoints ){
-			// Setup cuepoints 
-			$.each( _this.embedPlayer.rawCuePoints, function( inx, cuePoint ){
-				// Make sure the cue point is tagged for dobuleclick
-				if( cuePoint.tags.indexOf( "doubleclick" ) === -1 ){
-					return true;
-				}
-				// Get the ad type for each cuepoint
-				var adType = _this.embedPlayer.kCuePoints.getAdSlotType( cuePoint );
-				if( adType == 'overlay' ){
-					// TODO add it to the right place in the timeline
-					
-					return true; // continue to next cue point
-				}
-				if( adType == 'midroll' ){
-					var doneMidroll = false;
-					// TODO add this to the timeline ( not the monitor ) 
-					$( _this.embedPlayer).bind('monitorEvent', function(){
-						if( _this.embedPlayer.currentTime > cuePoint.startTime && doneMidroll == false ){
-							// play the midroll
-							_this.adsManager.play( _this.embedPlayer.getPlayerElement() );
-						}
-					});
-				}
+		// Add a binding for cuepoints:
+		$( _this.embedPlayer ).bind( 'KalturaSupport_AdOpportunity', function(event,  cuePointWrapper ){
+			var cuePoint = cuePointWrapper.cuePoint;
+			
+			// Make sure the cue point is tagged for dobuleclick
+			if( cuePoint.tags.indexOf( "doubleclick" ) === -1 ){
+				return true;
+			}
+			mw.log("DoubleClick:: AdOpportunity:: " + cuePoint.startTime );
+			
+			// Get the ad type for each cuepoint
+			var adType = _this.embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
+			if( adType == 'overlay' ){
+				_this.loadAndDisplayOverlay(cuePoint);
+				// TODO add it to the right place in the timeline
+				return true; // continue to next cue point
+			}
+			if( adType == 'midroll' ){
+				_this.loadAndPlayVideoSlot( 'midroll', function(){
+					// play the restored entry ( restore propagation ) 
+					_this.embedPlayer.play();
+				}, cuePoint);
+			}
+		});
+	},
+	/**
+	 * Load and display an overaly 
+	 * @param cuePoint
+	 * @return
+	 */
+	loadAndDisplayOverlay: function( cuePoint ){
+		var _this = this;
+		// Setup the current ad callback: 
+		_this.currentAdLoadedCallback = function( adsManager ){
+			var embedPlayer = _this.embedPlayer;
+			
+			 // Keep the overlay positioned per controls overlay
+		    var bottom = 0;
+			// Check if we are overlaying controls ( move the banner up ) 
+			if( embedPlayer.controlBuilder.isOverlayControls() ){
+				$( embedPlayer ).bind( 'onShowControlBar', function(){
+					$overlay.animate({ 'bottom': embedPlayer.controlBuilder.height + 'px'}, 'fast');
+				});
+				$( embedPlayer ).bind( 'onHideControlBar', function(){
+					$overlay.animate({ 'bottom': 0 + 'px'}, 'fast');
+				});
+			} else {
+				bottom = ctrlBarBottom = embedPlayer.controlBuilder.height ;
+			}
+			var $overlay = _this.getOverlaySlot( bottom );
+
+			// add binding for resize player
+			$( embedPlayer ).bind( 'onCloseFullScreen onOpenFullScreen onResizePlayer', function(e) {
+				adsManager.setAdSlotWidth( embedPlayer.getPlayerWidth() );
+			    adsManager.setAdSlotHeight( embedPlayer.getPlayerHeight() );
 			});
+			
+		    // Set the ad slot size.
+		    adsManager.setAdSlotWidth( embedPlayer.getPlayerWidth() );
+		    adsManager.setAdSlotHeight( embedPlayer.getPlayerHeight() - bottom );
+		    
+		    // Set Alignment
+		    adsManager.setHorizontalAlignment( google.ima.AdSlotAlignment.HorizontalAlignment.CENTER );
+		    adsManager.setVerticalAlignment( google.ima.AdSlotAlignment.VerticalAlignment.BOTTOM );
+
+		    adsManager.play( $overlay.get(0) );
+		    
+		    // Set the active overlay manager: 
+		    _this.activeOverlayadManager = adsManager;
+		};
+		
+		// Request the ad ( will trigger the currentAdCallback and onResumeRequestedCallback when done )
+		_this.getAdsLoader( function( adsLoader ){
+			adsLoader.requestAds( {
+				'adTagUrl' : _this.getAdTagUrl( 'overlay', cuePoint ),
+				'adType': 'overlay'
+			});
+		});
+	},
+	getOverlaySlot: function( ctrlBarBottom){
+		// Add a ad slot:
+		if( ! $( this.embedPlayer ).find('.doubleclick-overlay-slot').length ){
+			$( this.embedPlayer ).append( 
+					$('<div />')
+					.addClass('doubleclick-overlay-slot')
+					.css({
+						'position' : 'absolute',
+						'left' : 0,
+						'top' : 0,
+						'bottom' : ctrlBarBottom + 'px'
+					})
+			);
 		}
+		return $( this.embedPlayer ).find('.doubleclick-overlay-slot');
+	},
+	/**
+	 * Load and play a given slot
+	 */
+	loadAndPlayVideoSlot: function( slotType, callback, cuePoint){
+		var _this = this;
+		// pause playback:
+		_this.embedPlayer.pauseLoading();
+		
+		// Remove any active overlays: 
+		if( _this.activeOverlayadManager ){
+			_this.activeOverlayadManager.unload();
+			_this.activeOverlayadManager = null;
+		}
+
+		// Setup the current ad callback: 
+		_this.currentAdLoadedCallback = function( adsManager ){
+			 // Set a visual element on which clicks should be tracked for video ads
+			adsManager.setClickTrackingElement( _this.embedPlayer );
+			// hide the loader; 
+			_this.embedPlayer.hidePlayerSpinner();
+			_this.embedPlayer.stopEventPropagation();
+			_this.embedPlayer.disableSeekBar();
+			// update the playhead to play state:
+			_this.embedPlayer.play();
+			// TODO This should not be needed ( fix event stop event propagation ) 
+			_this.embedPlayer.monitor();
+			adsManager.play( _this.embedPlayer.getPlayerElement() );
+		};
+		// Setup the restore callback
+		_this.onResumeRequestedCallback = function(){
+			_this.embedPlayer.restoreEventPropagation();
+			_this.embedPlayer.enableSeekBar();
+			// Clear out the older currentAdLoadedCallback
+			_this.currentAdLoadedCallback = null;
+			callback();
+		};
+		// Request the ad ( will trigger the currentAdCallback and onResumeRequestedCallback when done )
+		_this.getAdsLoader( function( adsLoader ){
+			adsLoader.requestAds( {
+				'adTagUrl' : _this.getAdTagUrl( slotType, cuePoint ),
+				'adType': 'video'
+			});
+		});
+	},
+	/**
+	 * Tries to get an AdSlotUrl in the few places it could be located
+	 * @param slotType
+	 * @param cuePoint
+	 * @return URL
+	 */
+	getAdTagUrl: function ( slotType, cuePoint ){
+		// Return the cuePoint after evaluating any substitutions 
+		return this.embedPlayer.evaluate(  
+				this.findTagUrl( slotType, cuePoint ) 
+			);
+	},
+	/**
+	 * Tries to get an AdSlotUrl in the few places it could be located
+	 * @param slotType
+	 * @param cuePoint
+	 * @return URL
+	 */
+	findTagUrl: function( slotType, cuePoint ){
+		// if the cuePoint includes a url return that: 
+		if( cuePoint && cuePoint.Url ){
+			debugger;
+			return cuePoint.Url;
+		}
+		// Check if the ui conf has defined an AdTagUrl for preAdTagUrl or postAdTagUrl
+		if( this.getConfig( slotType + 'AdTagUrl') ){
+			return this.getConfig( slotType + 'AdTagUrl' );
+		}
+		// else just return a master adTagUrl config var:
+		return this.getConfig( 'adTagUrl' );
 	},
 	getAdsLoader: function( callback ){
 		var _this = this;
@@ -132,7 +257,6 @@ mw.DoubleClick.prototype = {
 	onAdsLoaded: function( adsLoadedEvent ){
 		var _this = this;
 		mw.log("DoubleClick:: onAdsLoaded " + adsLoadedEvent );
-		debugger;
 		// Get the ads manager
 		var adsManager = adsLoadedEvent.getAdsManager();
 		
@@ -140,7 +264,7 @@ mw.DoubleClick.prototype = {
 		adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, function( adError ){
 			_this.onAdsError( adError );
 		});
-
+		
 		// Listen and respond to events which require you to pause/resume content
 		adsManager.addEventListener(
 	        google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
@@ -151,9 +275,10 @@ mw.DoubleClick.prototype = {
 	        function(){ _this.onResumeRequested(); } 
 	    );
 	    
-	    // Set a visual element on which clicks should be tracked for video ads
-		adsManager.setClickTrackingElement( _this.embedPlayer );
-		
+		// if currentAdLoadedCallback is set issue the adLoad callback: 
+		if( this.currentAdLoadedCallback ){
+			 this.currentAdLoadedCallback( adsManager );
+		}
 	},
 	onPauseRequested: function(){
 		mw.log( "DoubleClick:: onPauseRequested" );
@@ -171,7 +296,6 @@ mw.DoubleClick.prototype = {
 	},
 	onAdsError: function( adErrorEvent ){
 		mw.log("DoubleClick:: onAdsError:" + adErrorEvent.getError() );
-		this.callback();
 	},
 	getConfig: function( configName ){
 		// always get the config from the embedPlayer so that is up-to-date
