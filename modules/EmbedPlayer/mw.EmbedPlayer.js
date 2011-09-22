@@ -571,7 +571,7 @@ EmbedPlayerManager.prototype = {
 		player.readyToPlay = true;		
 
 		// Remove the player loader spinner:
-		$('#loadingSpinner_' + player.id ).remove();
+		player.hidePlayerSpinner();
 
 		// Run the player ready trigger
 		$( player ).trigger( 'playerReady' );
@@ -1451,7 +1451,7 @@ mw.EmbedPlayer.prototype = {
 		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );
 		var _this = this;
 		// Remove the player loader spinner if it exists
-		$('#loadingSpinner_' + this.id ).remove();
+		this.hidePlayerSpinner();
 		// Set-up the local controlBuilder instance:
 		this.controlBuilder = new mw.PlayerControlBuilder( this );
 		var _this = this;
@@ -1600,7 +1600,7 @@ mw.EmbedPlayer.prototype = {
 	showPluginMissingHTML: function( ) {
 		mw.log("EmbedPlayer::showPluginMissingHTML");
 		// Hide loader
-		$('#loadingSpinner_' + this.id ).remove();
+		this.hidePlayerSpinner();
 		// Set the top level container to relative position:
 		$(this).css('position', 'relative');
 		
@@ -1937,7 +1937,7 @@ mw.EmbedPlayer.prototype = {
 		$(this).empty();
 
 		// Remove the player loader spinner if it exists
-		$('#loadingSpinner_' + this.id ).remove();
+		this.hidePlayerSpinner();
 
 		// Get the selected source:
 		var source = this.mediaElement.selectedSource;
@@ -2225,6 +2225,8 @@ mw.EmbedPlayer.prototype = {
 		this.$interface.find('.play-btn span')
 		.removeClass( 'ui-icon-play' )
 		.addClass( 'ui-icon-pause' );
+		
+		this.hidePlayerSpinner();
 
 		this.$interface.find( '.play-btn' )
 		.unbind('click')

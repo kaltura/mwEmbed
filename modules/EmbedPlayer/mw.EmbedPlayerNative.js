@@ -525,6 +525,7 @@ mw.EmbedPlayerNative = {
 								if (typeof switchCallback == 'function') {
 									switchCallback(vid);
 								}
+								_this.hidePlayerSpinner();
 							}, 100);
 						}, 100);
 					};

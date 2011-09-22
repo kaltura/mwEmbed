@@ -125,10 +125,7 @@ mw.Comscore.prototype = {
 		});
 
 		// Bind to ad start
-		$( embedPlayer ).bind('AdSupport_StartAdPlayback', function( event, adData ) {
-
-			var adType = adData[0];
-			var adConf = adData[1];
+		$( embedPlayer ).bind('AdSupport_StartAdPlayback', function( event, adType ) {
 			console.log(adType);
 			switch ( adType )
 			{
