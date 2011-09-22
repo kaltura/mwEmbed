@@ -65,19 +65,19 @@ mw.KAds.prototype = {
 
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
-		$( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePoint ) {
-			_this.loadAd( cuePoint );
+		$( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePointWrapper ) {
+			_this.loadAd( cuePointWrapper );
 		});
 	},
 
 	// Load the ad from cue point
-	loadAd: function( cuePoint ) {
+	loadAd: function( cuePointWrapper ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		var adType = this.embedPlayer.kCuePoints.getAdSlotType( cuePoint );
-
+		var adType = this.embedPlayer.kCuePoints.getAdSlotType( cuePointWrapper );
+		var cuePoint = cuePointWrapper.cuePoint;
 		// Check if cue point already displayed
-		if( $.inArray(cuePoint.cuePoint.id, _this.displayedCuePoints) >= 0 ) {
+		if( $.inArray( cuePoint.id, _this.displayedCuePoints) >= 0 ) {
 			return ;
 		}
 
@@ -88,12 +88,12 @@ mw.KAds.prototype = {
 			$( embedPlayer ).getAbsoluteOverlaySpinner().attr('id', embedPlayer.id + '_mappingSpinner' );
 		}
 		
-		if( cuePoint.cuePoint.sourceUrl ) {
-			mw.AdLoader.load( cuePoint.cuePoint.sourceUrl, function( adConf ){
+		if( cuePoint.sourceUrl ) {
+			mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
 				
 				var adCuePointConf = {
-					duration: ( (cuePoint.cuePoint.endTime - cuePoint.cuePoint.startTime) / 1000 ),
-					start: ( cuePoint.cuePoint.startTime / 1000  )
+					duration: ( (cuePoint.endTime - cuePoint.startTime) / 1000 ),
+					start: ( cuePoint.startTime / 1000  )
 				};
 
 				var adsCuePointConf = {
@@ -111,7 +111,7 @@ mw.KAds.prototype = {
 				};
 
 				var originalSrc = embedPlayer.getSrc();
-				var seekTime = ( parseFloat( cuePoint.cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
+				var seekTime = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
 				var oldDuration = embedPlayer.duration;
 
 				// Set restore function
@@ -123,7 +123,7 @@ mw.KAds.prototype = {
 				// Set switch back function
 				var doneCallback = function() {
 					// Add cuePoint Id to displayed cuePoints array
-					_this.displayedCuePoints.push( cuePoint.cuePoint.id );
+					_this.displayedCuePoints.push( cuePoint.id );
 					
 					var vid = embedPlayer.getPlayerElement();
 					// Check if the src does not match original src if
@@ -182,7 +182,7 @@ mw.KAds.prototype = {
 				}
 
 				// Tell the player to show the Ad
-				var adDuration = Math.round(cuePoint.cuePoint.duration / 1000);
+				var adDuration = Math.round( cuePoint.duration / 1000);
 				// Load adTimeline
 				if (!_this.embedPlayer.adTimeline) {
 					_this.embedPlayer.adTimeline = new mw.AdTimeline( _this.embedPlayer );

@@ -357,8 +357,8 @@ mw.FreeWheelControler.prototype = {
 			}
 		}
 		// Add CuePoint slots: 
-		if( this.embedPlayer.entryCuePoints ){
-			this.addCuePointSlots( this.embedPlayer.entryCuePoints, slotCounts );
+		if( this.embedPlayer.rawCuePoints ){
+			this.addCuePointSlots( this.embedPlayer.rawCuePoints, slotCounts );
 		}
 	},
 	addCuePointSlots: function( cuePoints, slotCounts ){

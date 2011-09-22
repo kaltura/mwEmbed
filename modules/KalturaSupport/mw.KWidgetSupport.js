@@ -195,9 +195,9 @@ mw.KWidgetSupport.prototype = {
 			$( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
 		}
 		
-		if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
-			mw.log( "KCuePoints:: Added " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
-			embedPlayer.entryCuePoints = playerData.entryCuePoints;
+		if( playerData.rawCuePoints && playerData.rawCuePoints.length > 0 ) {
+			mw.log( "KCuePoints:: Added " + playerData.rawCuePoints.length + " CuePoints to embedPlayer");
+			embedPlayer.rawCuePoints = playerData.rawCuePoints;
 			embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 		}
 
@@ -229,9 +229,9 @@ mw.KWidgetSupport.prototype = {
 		// Local function to defer the trigger of loaded cuePoints so that plugins have time to load
 		// and setup their binding to KalturaSupport_CuePointsReady
 		var doneWithUiConf = function(){
-			if( embedPlayer.entryCuePoints ){
+			if( embedPlayer.rawCuePoints ){
 				// Allow other plugins to subscribe to cuePoint ready event:
-				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.entryCuePoints );
+				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints );
 			};
 			// Run the DoneWithUiConf trigger ( allows dependency based loaders to include setup code )
 			$( embedPlayer ).trigger( 'KalturaSupport_DoneWithUiConf' );

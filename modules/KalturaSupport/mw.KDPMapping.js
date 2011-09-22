@@ -445,17 +445,17 @@
 					break;
 				case 'cuePointsReceived':
 					b( 'KalturaSupport_CuePointsReady', function( event, cuePoints ) {
-						callback( embedPlayer.entryCuePoints, embedPlayer.id );
+						callback( embedPlayer.rawCuePoints, embedPlayer.id );
 					});
 					break;
 				case 'cuePointReached':
-					b( 'KalturaSupport_CuePointReached', function( event, cuePoint ) {
-						callback( cuePoint, embedPlayer.id );
+					b( 'KalturaSupport_CuePointReached', function( event, cuePointWrapper ) {
+						callback( cuePointWrapper, embedPlayer.id );
 					});
 					break;
 				case 'adOpportunity':
-					b( 'KalturaSupport_AdOpportunity', function( event, cuePoint ) {
-						callback( cuePoint, embedPlayer.id );
+					b( 'KalturaSupport_AdOpportunity', function( event, cuePointWrapper ) {
+						callback( cuePointWrapper, embedPlayer.id );
 					});
 					break;
 				/**

@@ -31,7 +31,6 @@ mw.KCuePoints.prototype = {
 			if( currentTime >= nextCuePoint.startTime ) {
 				// Trigger the cue point
 				_this.triggerCuePoint( nextCuePoint );
-
 				// Get next cue point
 				nextCuePoint = _this.getCuePoint( currentTime );
 			}
@@ -57,10 +56,10 @@ mw.KCuePoints.prototype = {
 		return this.embedPlayer.evaluate('{mediaProxy.entry.msDuration}');
 	},
 	getCuePoints: function(){
-		if( ! this.embedPlayer.entryCuePoints || ! this.embedPlayer.entryCuePoints.length ){
+		if( ! this.embedPlayer.rawCuePoints || ! this.embedPlayer.rawCuePoints.length ){
 			return false;
 		}
-		return this.embedPlayer.entryCuePoints;
+		return this.embedPlayer.rawCuePoints;
 	},
 	/**
 	* Returns the next cuePoint object for requested time
@@ -72,8 +71,9 @@ mw.KCuePoints.prototype = {
 			return false;
 		}
 		var cuePoints = this.getCuePoints();
+		debugger;
 		// Start looking for the cue point via time, return first match:
-		for( var i = 0; i<cuePoints.length; i++) {
+		for( var i = 0; i < cuePoints.length; i++) {
 			if( cuePoints[i].startTime >= time ) {
 				return cuePoints[i];
 			}
@@ -85,7 +85,8 @@ mw.KCuePoints.prototype = {
 	 * Triggers the given cue point
 	 * @param (Object) Cue Point object
 	 **/
-	triggerCuePoint: function( cuePoint ) {
+	triggerCuePoint: function( rawCuePoint ) {
+		debugger;
 		/**
 		 *  We need different events for each cue point type
 		 */
@@ -97,19 +98,19 @@ mw.KCuePoints.prototype = {
 		 * 
 		 * This matches the KDP implementation
 		 * */
-		var obj = {
-			cuePoint: cuePoint
+		var cuePointWrapper = {
+			'cuePoint' : rawCuePoint
 		};
-		if( cuePoint.cuePointType == 'codeCuePoint.Code' ) {
+		if( rawCuePoint.cuePointType == 'codeCuePoint.Code' ) {
 			// Code type cue point ( make it easier for people grepping the code base for an event )
 			eventName = 'KalturaSupport_CuePointReached';
-		} else if( cuePoint.cuePointType == 'adCuePoint.Ad' ) {
+		} else if( rawCuePoint.cuePointType == 'adCuePoint.Ad' ) {
 			// Ad type cue point
 			eventName = 'KalturaSupport_AdOpportunity';
-			obj.context = this.getAdType(cuePoint);
+			cuePointWrapper.context = this.getAdType( rawCuePoint );
 		}
-		$( this.embedPlayer ).trigger(  eventName, obj );
-		mw.log('mw.KCuePoints :: Triggered event: ' + eventName + ' - ' + cuePoint.cuePointType + ' at: ' + cuePoint.startTime );
+		$( this.embedPlayer ).trigger(  eventName, cuePointWrapper );
+		mw.log('mw.KCuePoints :: Triggered event: ' + eventName + ' - ' + rawCuePoint.cuePointType + ' at: ' + rawCuePoint.startTime );
 	},
 	
 	// Get Ad Type from Cue Point
@@ -123,9 +124,13 @@ mw.KCuePoints.prototype = {
 		}
 		mw.log("Error:: KCuePoints could not determine adType");
 	},
-
-	getAdSlotType: function( cuePoint ) {		
-		if( cuePoint.cuePoint.adType == 1 ) {
+	/**
+	 * Accept a cuePoint wrapper 
+	 * @param cuePointWrapper
+	 * @return
+	 */
+	getAdSlotType: function( cuePointWrapper ) {		
+		if( cuePointWrapper.cuePoint.adType == 1 ) {
 			return this.getAdType( cuePoint ) + 'roll';
 		} else {
 			return 'overlay';

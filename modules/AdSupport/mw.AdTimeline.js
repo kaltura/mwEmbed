@@ -235,7 +235,9 @@ mw.AdTimeline.prototype = {
 		var slotSet = _this.getTimelineTargets( slotType );
 		mw.log( "AdTimeline:: displaySlots: " + slotType + ' inx: ' + inx + ' of ' + slotSet.length + ' ads' );
 		
-		_this.startAdPlayback( slotType );
+		// Start video ad playback 
+		// ( we should check if AdSupport_' + slotType ) exists
+		_this.startVideoAdPlayback( slotType );
 		// If on the first inx trigger displaySlot event so that other adPlugins can insert any ads:
 		// we also pass in a reference to the slot set ( in case the plugin wants to look at how many
 		// ads we already have )
@@ -266,7 +268,7 @@ mw.AdTimeline.prototype = {
 		// Run the done callback
 		doneCallback();
 	},
-	startAdPlayback: function( slotType ){
+	startVideoAdPlayback: function( slotType ){
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		this.embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here. 
@@ -425,6 +427,8 @@ mw.AdTimeline.prototype = {
 				return true;							
 			});
 		}
+		// Stop event propagation: 
+		_this.startVideoAdPlayback( adSlot.type );
 		
 		// Play the source then run the callback
 		_this.embedPlayer.switchPlaySrc( targetSrc, 

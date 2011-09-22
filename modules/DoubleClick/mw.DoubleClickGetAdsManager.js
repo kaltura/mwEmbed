@@ -16,23 +16,11 @@ mw.DoubleClickGetAdsManager.prototype = {
 		var _this = this;
 		// add in the options
 		$.extend( this, options );
-		// Run ght google Ads Loader call:
+		// Run get the google Ads Loader call:
 		_this.getGoogleAdsLoader( )
 	},
 	// Load the google libraries
 	getGoogleAdsLoader: function( adsLoader ){
-		
-		// Set up listeners:
-		adsLoader.addEventListener(
-		    google.ima.AdsLoadedEvent.Type.ADS_LOADED,
-		    function( adsLoadedEvent ){ _this.onAdsLoaded( adsLoadedEvent ); },
-		    false);
-		
-		adsLoader.addEventListener(
-		    google.ima.AdErrorEvent.Type.AD_ERROR,
-		    function( adErrorEvent ){ _this.onAdsError( adErrorEvent ); },
-		    false);
-		
 		// Make request
 		_this.adsLoader.requestAds( _this.getAdsRequest() );
 	},

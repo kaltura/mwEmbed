@@ -1592,6 +1592,7 @@ mw.EmbedPlayer.prototype = {
 		.find( '.control-bar,.play-btn-large').hide();		
 		return ;
 	},
+	
 	/**
 	 * Get missing plugin html (check for user included code)
 	 * 
@@ -2243,7 +2244,15 @@ mw.EmbedPlayer.prototype = {
 		// Start the monitor if not already started
 		this.monitor();
 	},
-	
+	/**
+	 * Pause player
+	 * @return
+	 */
+	pauseLoading: function(){
+		_this.pause();
+		$( this ).getAbsoluteOverlaySpinner()
+			.attr( 'id', 'loadingSpinner_' + embedPlayer.id );
+	},
 	/**
 	 * Base embed pause Updates the play/pause button state.
 	 * 
