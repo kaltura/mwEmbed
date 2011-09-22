@@ -235,7 +235,7 @@ mw.includeAllModuleMessages();
 				} else {
 					addedToPlayerManager = true;
 					// Add the player
-					mw.playerManager.addPlayerElement( playerElement, attributes);
+					mw.playerManager.addPlayerElement( playerElement, attributes );
 				}
 			} );
 			if( addedToPlayerManager ){
@@ -2251,6 +2251,9 @@ mw.EmbedPlayer.prototype = {
 		this.pause();
 		$( this ).getAbsoluteOverlaySpinner()
 			.attr( 'id', 'loadingSpinner_' + this.id );
+	},
+	hidePlayerSpinner: function(){
+		$( '#loadingSpinner_' + this.id ).remove();
 	},
 	/**
 	 * Base embed pause Updates the play/pause button state.
