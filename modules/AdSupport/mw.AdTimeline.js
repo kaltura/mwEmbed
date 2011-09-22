@@ -166,14 +166,15 @@ mw.AdTimeline.prototype = {
 				if( displayedPostroll ){
 					return ;
 				}
-				displayedPostroll = true;
-				_this.embedPlayer.onDoneInterfaceFlag = false;
 				
+				displayedPostroll = true;
 				_this.displaySlots( 'postroll', 0, function(){
-					// restore ondone interface: 
-					_this.embedPlayer.onDoneInterfaceFlag = false;
-					// Stop the player after we finish postroll. 
-					_this.embedPlayer.stop();
+					_this.embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+						// restore ondone interface: 
+						_this.embedPlayer.onDoneInterfaceFlag = true;
+						// Stop the player after we finish postroll. 
+						_this.onClipDone();
+					});
 				});
 			});
 			
@@ -234,13 +235,14 @@ mw.AdTimeline.prototype = {
 		var _this = this;
 		var slotSet = _this.getTimelineTargets( slotType );
 		
-		// Exit if we don't have ads
+		// Exit if we don't have ads 
 		if( slotSet.length == 0 ) {
 			return ;
 		}
-
+		if( slotType == 'postroll' /* TODO check AdSupport_ bindings postroll count / accumulate sequenceSlots */ ){
+			_this.embedPlayer.onDoneInterfaceFlag = false;
+		}
 		mw.log( "AdTimeline:: displaySlots: " + slotType + ' inx: ' + inx + ' of ' + slotSet.length + ' ads' );
-		
 		// Start video ad playback 
 		// ( we should check if AdSupport_' + slotType ) exists
 		_this.startVideoAdPlayback( slotType );
