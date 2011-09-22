@@ -195,9 +195,9 @@ mw.KWidgetSupport.prototype = {
 			$( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
 		}
 		
-		if( playerData.rawCuePoints && playerData.rawCuePoints.length > 0 ) {
+		if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
 			mw.log( "KCuePoints:: Added " + playerData.rawCuePoints.length + " CuePoints to embedPlayer");
-			embedPlayer.rawCuePoints = playerData.rawCuePoints;
+			embedPlayer.rawCuePoints = playerData.entryCuePoints;
 			embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 		}
 
