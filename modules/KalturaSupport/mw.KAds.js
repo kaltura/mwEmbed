@@ -153,14 +153,17 @@ mw.KAds.prototype = {
 									setTimeout( function(){ if( vid && vid.pause ){ vid.pause(); } }, 100 );
 								}
 							} else {
-								// Seek to where we did the switch
-								embedPlayer.doSeek( seekTime );
+								
 								$( embedPlayer ).bind('seeked.ad', function() {
+									alert('good');
 									embedPlayer.play();
 									setTimeout( function() {
 										embedPlayer.play();
 									}, 250);
 								});
+
+								// Seek to where we did the switch
+								embedPlayer.doSeek( seekTime );
 							}
 						});
 					} else {

@@ -344,7 +344,7 @@ mw.EmbedPlayerNative = {
 		this.setCurrentTime( ( percent * this.duration ) , function(){
 			_this.seeking = false;
 			// done seeking: 
-			$( this ).trigger( 'seeked' );
+			$( _this ).trigger( 'seeked' );
 			_this.monitor();
 		});
 	},
