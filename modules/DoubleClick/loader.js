@@ -1,8 +1,7 @@
 ( function( mw, $){
 
 mw.addResourcePaths({
-	"mw.DoubleClick": "mw.DoubleClick.js",
-	"mw.DoubleClickGetAdsManager": "mw.DoubleClickGetAdsManager.js"
+	"mw.DoubleClick": "mw.DoubleClick.js"
 });
 mw.addModuleLoader( 'DoubleClick', ['AdSupport', 'mw.DoubleClick'] );
 
