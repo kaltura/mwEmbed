@@ -2245,7 +2245,7 @@ mw.EmbedPlayer.prototype = {
 		this.monitor();
 	},
 	/**
-	 * Pause player
+	 * Pause player, and display a loading animation
 	 * @return
 	 */
 	pauseLoading: function(){

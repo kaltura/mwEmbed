@@ -84,8 +84,7 @@ mw.KAds.prototype = {
 		// If ad type is midroll pause the video
 		if( adType == 'midroll' ) {
 			// Pause the video
-			_this.embedPlayer.pause();
-			$( embedPlayer ).getAbsoluteOverlaySpinner().attr('id', embedPlayer.id + '_mappingSpinner' );
+			_this.embedPlayer.pauseLoading();
 		}
 		
 		if( cuePoint.sourceUrl ) {
@@ -157,6 +156,7 @@ mw.KAds.prototype = {
 								// Seek to where we did the switch
 								embedPlayer.doSeek( seekTime );
 								$( embedPlayer ).bind('seeked.ad', function() {
+									embedPlayer.play();
 									setTimeout( function() {
 										embedPlayer.play();
 									}, 250);
@@ -187,7 +187,6 @@ mw.KAds.prototype = {
 				if (!_this.embedPlayer.adTimeline) {
 					_this.embedPlayer.adTimeline = new mw.AdTimeline( _this.embedPlayer );
 				}
-				$( '#' + embedPlayer.id + '_mappingSpinner' ).remove();
 				_this.embedPlayer.adTimeline.display( adsCuePointConf, doneCallback, adDuration );
 			});
 		}

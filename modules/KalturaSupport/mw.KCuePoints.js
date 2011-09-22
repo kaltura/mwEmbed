@@ -71,7 +71,6 @@ mw.KCuePoints.prototype = {
 			return false;
 		}
 		var cuePoints = this.getCuePoints();
-		debugger;
 		// Start looking for the cue point via time, return first match:
 		for( var i = 0; i < cuePoints.length; i++) {
 			if( cuePoints[i].startTime >= time ) {
@@ -86,7 +85,6 @@ mw.KCuePoints.prototype = {
 	 * @param (Object) Cue Point object
 	 **/
 	triggerCuePoint: function( rawCuePoint ) {
-		debugger;
 		/**
 		 *  We need different events for each cue point type
 		 */
@@ -114,10 +112,10 @@ mw.KCuePoints.prototype = {
 	},
 	
 	// Get Ad Type from Cue Point
-	getAdType: function( cuePoint ) {
-		if( cuePoint.startTime == 1 ) {
+	getAdType: function( rawCuePoint ) {
+		if( rawCuePoint.startTime == 1 ) {
 			return 'pre';
-		} else if( cuePoint.startTime == this.getEndTime() ) {
+		} else if( rawCuePoint.startTime == this.getEndTime() ) {
 			return 'post';
 		} else {
 			return 'mid';
@@ -131,7 +129,14 @@ mw.KCuePoints.prototype = {
 	 */
 	getAdSlotType: function( cuePointWrapper ) {		
 		if( cuePointWrapper.cuePoint.adType == 1 ) {
-			return this.getAdType( cuePoint ) + 'roll';
+			return this.getAdType( cuePointWrapper.cuePoint ) + 'roll';
+		} else {
+			return 'overlay';
+		}
+	},
+	getRawAdSlotType: function( rawCuePoint ){
+		if( rawCuePoint.adType == 1 ) {
+			return this.getAdType( rawCuePoint ) + 'roll';
 		} else {
 			return 'overlay';
 		}
