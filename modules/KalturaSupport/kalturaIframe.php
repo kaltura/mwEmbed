@@ -315,21 +315,19 @@ class kalturaIframe {
 		}
 		$o = '';
 		$xml = $this->getResultObject()->getUiConfXML();
-		if( is_array( $xml->uiVars->var ) ){
-			foreach ($xml->uiVars->var as $var ){
-				if( isset( $var['key'] ) && isset( $var['value'] ) 
-					&& $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
-					&& $var['key'] != 'Mw.CustomResourceIncludes' 
-				){
-					$o.= "mw.setConfig('" . htmlspecialchars( addslashes( $var['key'] ) ) . "', ";
-					// check for boolean attributes: 
-					if( $var['value'] == 'false' || $var['value'] == 'true' ){
-						$o.=  $var['value'];
-					}else {
-						$o.= "'" . htmlspecialchars( addslashes( $var['value'] ) ) . "'";
-					}
-					$o.= ");\n";
+		foreach ($xml->uiVars->var as $var ){
+			if( isset( $var['key'] ) && isset( $var['value'] ) 
+				&& $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
+				&& $var['key'] != 'Mw.CustomResourceIncludes' 
+			){
+				$o.= "mw.setConfig('" . htmlspecialchars( addslashes( $var['key'] ) ) . "', ";
+				// check for boolean attributes: 
+				if( $var['value'] == 'false' || $var['value'] == 'true' ){
+					$o.=  $var['value'];
+				}else {
+					$o.= "'" . htmlspecialchars( addslashes( $var['value'] ) ) . "'";
 				}
+				$o.= ");\n";
 			}
 		}
 		return $o;
