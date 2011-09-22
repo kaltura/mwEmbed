@@ -233,6 +233,12 @@ mw.AdTimeline.prototype = {
 	displaySlots: function( slotType, inx, doneCallback ){
 		var _this = this;
 		var slotSet = _this.getTimelineTargets( slotType );
+		
+		// Exit if we don't have ads
+		if( slotSet.length == 0 ) {
+			return ;
+		}
+
 		mw.log( "AdTimeline:: displaySlots: " + slotType + ' inx: ' + inx + ' of ' + slotSet.length + ' ads' );
 		
 		// Start video ad playback 

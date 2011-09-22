@@ -164,6 +164,7 @@ mw.Comscore.prototype = {
 	},
 
 	setupCParams: function() {
+		mw.log('Comscore:: Setup CParams');
 		//Set up cParams object
 		var config = this.config;
 		var cParams = this.cParams;
@@ -237,7 +238,9 @@ mw.Comscore.prototype = {
 		loadUrl += "scorecardresearch.com/p?";
 
 		for (var cParam in beconObject) {
-			loadUrl += cParam + "=" + encodeURIComponent(beconObject[cParam]) + "&";
+			if( beconObject[cParam] ) {
+				loadUrl += cParam + "=" + encodeURIComponent(beconObject[cParam]) + "&";
+			}
 		}
 
 		// Setup page, title and referrer
@@ -267,5 +270,7 @@ mw.Comscore.prototype = {
 				'height' : 0
 			})
 		);
+
+		mw.log('Comscore:: Sent Beacon: ' + loadUrl);
 	}
 };

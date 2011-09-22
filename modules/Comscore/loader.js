@@ -6,6 +6,7 @@ mw.addResourcePaths({
 });
 
 // Send beacons on the parent iframe page so that we can use the on-page comscore include if present
+/*
 $j( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
 	exportedBindings.push( 'Comscore_Beacon' );
 });
@@ -28,7 +29,7 @@ $j( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ){
 		}
 	});
 });
-
+*/
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 
