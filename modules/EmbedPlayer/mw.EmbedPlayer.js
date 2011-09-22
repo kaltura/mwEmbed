@@ -805,12 +805,10 @@ mw.EmbedPlayer.prototype = {
 	},
 
 	stopEventPropagation: function(){
-		this.stopMonitor();
 		this._propagateEvents = false;
 	},
 	restoreEventPropagation: function(){
 		this._propagateEvents = true;
-		this.startMonitor();
 	},
 
 	enableSeekBar: function(){
@@ -2190,6 +2188,7 @@ mw.EmbedPlayer.prototype = {
 			this.$interface.find( '.play-btn-large' ).remove();
 		}
 		
+		
 		// Check if thumbnail is being displayed and embed html
 		if ( this.posterDisplayed &&  !this.useNativePlayerControls() ) {
 			if ( !this.selectedPlayer ) {
@@ -2249,9 +2248,9 @@ mw.EmbedPlayer.prototype = {
 	 * @return
 	 */
 	pauseLoading: function(){
-		_this.pause();
+		this.pause();
 		$( this ).getAbsoluteOverlaySpinner()
-			.attr( 'id', 'loadingSpinner_' + embedPlayer.id );
+			.attr( 'id', 'loadingSpinner_' + this.id );
 	},
 	/**
 	 * Base embed pause Updates the play/pause button state.
