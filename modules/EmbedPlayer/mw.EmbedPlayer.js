@@ -806,9 +806,11 @@ mw.EmbedPlayer.prototype = {
 
 	stopEventPropagation: function(){
 		this._propagateEvents = false;
+		this.stopMonitor();
 	},
 	restoreEventPropagation: function(){
 		this._propagateEvents = true;
+		this.startMonitor();
 	},
 
 	enableSeekBar: function(){
@@ -1346,7 +1348,6 @@ mw.EmbedPlayer.prototype = {
 		setTimeout( function() {
 			_this.seeking = false;
 			_this.play();
-			_this.monitor();
 		}, 100 );
 
 		// Run the onSeeking interface update
@@ -2582,7 +2583,6 @@ mw.EmbedPlayer.prototype = {
 			_this.muted = _this.getPlayerElementMuted();
 		}
 
-		//mw.log( 'Monitor:: ' + this.currentTime + ' duration: ' + this.duration + ' is seeking: ' + this.seeking );
 
 		if ( this.currentTime >= 0 && this.duration ) {
 			if ( !this.userSlide && !this.seeking ) {
@@ -2645,7 +2645,7 @@ mw.EmbedPlayer.prototype = {
 			this.stopMonitor();
 		}
 
-		// mw.log('trigger:monitor:: ' + this.currentTime );
+		mw.log('trigger:monitor:: ' + this.currentTime  + ' propagate events: ' + _this._propagateEvents);
 		if( _this._propagateEvents ){
 			$( this ).trigger( 'monitorEvent' );
 		}

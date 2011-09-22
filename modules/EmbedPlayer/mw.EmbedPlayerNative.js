@@ -201,10 +201,6 @@ mw.EmbedPlayerNative = {
 			vid.load();
 			vid.play();
 		}
-		
-		setTimeout( function() {
-			_this.monitor();
-		}, 100 );
 	},
 	applyIntrinsicAspect: function(){
 		var vid = this.getPlayerElement();
@@ -727,7 +723,9 @@ mw.EmbedPlayerNative = {
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
 			this.seeking = false;
-			$( this ).trigger( 'seeked' );
+			if( _this._propagateEvents ){
+				$( this ).trigger( 'seeked' );
+			}
 		}
 		this.seeking = false;
 		// update the playhead status

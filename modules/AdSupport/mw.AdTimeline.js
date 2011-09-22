@@ -153,6 +153,7 @@ mw.AdTimeline.prototype = {
 				// Show bumpers:
 				_this.displaySlots( 'bumper', 0,  function(){
 					_this.embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+						_this.restorePlayer();
 						// Continue playback
 						_this.embedPlayer.play();
 					});
@@ -238,6 +239,7 @@ mw.AdTimeline.prototype = {
 		
 		// Exit if we don't have ads 
 		if( slotSet.length == 0 ) {
+			doneCallback();
 			return ;
 		}
 		if( slotType == 'postroll' /* TODO check AdSupport_ bindings postroll count / accumulate sequenceSlots */ ){
@@ -246,13 +248,11 @@ mw.AdTimeline.prototype = {
 		mw.log( "AdTimeline:: displaySlots: " + slotType + ' inx: ' + inx + ' of ' + slotSet.length + ' ads' );
 		// Start video ad playback 
 		// ( we should check if AdSupport_' + slotType ) exists
-		_this.startVideoAdPlayback( slotType );
+		_this.updateUiForAdPlayback( slotType );
 		// If on the first inx trigger displaySlot event so that other adPlugins can insert any ads:
 		// we also pass in a reference to the slot set ( in case the plugin wants to look at how many
 		// ads we already have )
 		$( _this.embedPlayer ).triggerQueueCallback( 'AdSupport_' + slotType, function( /* TODO playHandOverCallback, sequenceSlot */ ){
-			// Restore the player:
-			_this.restorePlayer();
 			// Now display internal slots
 			_this.displayInternalSlots( slotType, inx, doneCallback);
 		});
@@ -272,12 +272,10 @@ mw.AdTimeline.prototype = {
 			});
 			return ;
 		};
-		// Restore the player:
-		_this.restorePlayer();
 		// Run the done callback
 		doneCallback();
 	},
-	startVideoAdPlayback: function( slotType ){
+	updateUiForAdPlayback: function( slotType ){
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		this.embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here. 
@@ -437,7 +435,7 @@ mw.AdTimeline.prototype = {
 			});
 		}
 		// Stop event propagation: 
-		_this.startVideoAdPlayback( adSlot.type );
+		_this.updateUiForAdPlayback( adSlot.type );
 		
 		// Play the source then run the callback
 		_this.embedPlayer.switchPlaySrc( targetSrc, 
@@ -670,26 +668,26 @@ mw.AdTimeline.prototype = {
 				};
 			};			
 		};
-				
+		
 		// On end stop monitor / clear interval: 
-		$( videoPlayer ).bind('ended', function(){			
+		$( videoPlayer ).bind('ended.adTimeline', function(){			
 			sendBeacon( 'complete' );
 			clearInterval( monitorInterval );
 		});
 		
 		// On pause / resume: 
-		$( videoPlayer ).bind( 'pause', function(){
+		$( videoPlayer ).bind( 'pause.adTimeline', function(){
 			sendBeacon( 'pause' );
 		});
 		
 		// On resume: 
-		$( videoPlayer ).bind( 'onplay', function(){
+		$( videoPlayer ).bind( 'onplay.adTimeline', function(){
 			sendBeacon( 'resume' );
 		});
 		
 		var time = 0;
 		// On seek backwards 
-		$( videoPlayer ).bind( 'seek', function(){
+		$( videoPlayer ).bind( 'seek.adTimeline', function(){
 			if( videoPlayer.currentTime < time ){
 				sendBeacon( 'rewind' );
 			}

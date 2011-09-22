@@ -28,7 +28,7 @@ mw.KCuePoints.prototype = {
 		// Bind to monitorEvent to trigger the cue points events
 		$( embedPlayer ).bind( "monitorEvent.kCuePoints", function() {
 			var currentTime = embedPlayer.currentTime * 1000;
-			if( currentTime >= nextCuePoint.startTime ) {
+			if( currentTime >= nextCuePoint.startTime && embedPlayer._propagateEvents ) {
 				// Trigger the cue point
 				_this.triggerCuePoint( nextCuePoint );
 				// Get next cue point
