@@ -28,7 +28,9 @@ mw.FreeWheelControler.prototype = {
 		'preroll' : [],
 		'postroll' : [],
 		'overlay' : [],
-		'midroll' : []
+		'midroll' : [],
+		// an unknown or unsupported type
+		'unknown_type': []
 	},
 	
 	// The current active slot
@@ -249,7 +251,7 @@ mw.FreeWheelControler.prototype = {
 				return 'postroll';
 				break;
 		}
-		mw.log("Error: freeWheel Control could not get slot type: " + slotKey );
+		mw.log("Error: freeWheel Control could not get slot type: " + slot.getTimePositionClass() );
 		return 'unknown_type';
 	},
 	

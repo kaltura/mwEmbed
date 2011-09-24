@@ -949,6 +949,9 @@ class KalturaResultObject {
 			// remove this hack as soon as possible as well!
 			$brokenFlashVarXMl =  'autoPlay=false&screensLayer.startScreenOverId=startScreen&screensLayer.startScreenId=startScreen';
 			$uiConf = str_replace( $brokenFlashVarXMl, htmlentities( $brokenFlashVarXMl ), $uiConf );
+			// handle any non-escapsed &
+			$uiConf = preg_replace('/&[^; ]{0,6}.?/e', "((substr('\\0',-1) == ';') ? '\\0' : '&amp;'.substr('\\0',1))", $uiConf);
+			
 			$this->uiConfXml = new SimpleXMLElement( $uiConf );
 		}
 		return $this->uiConfXml;

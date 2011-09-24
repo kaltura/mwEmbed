@@ -7,13 +7,13 @@
 function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
-	module( "Basic Player" );
+	module( "DoubleClick Player" );
 
-	var $iframe = $('#' + videoId + '_ifp').contents();
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
 	var iframeContext = window.frames['kaltura_player_ifp'];
 	
 	test( "Iframe in DOM", function() {
-		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
+		ok( $( '#' + videoId + '_ifp' ).length , 'iframe found' );
 		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
 	});
 

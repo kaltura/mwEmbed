@@ -234,7 +234,6 @@ mw.PlayerControlBuilder.prototype = {
 			windowSize.height = windowSize.height - this.height;
 		}
 		
-		
 		// Check if we can read intrinsic size, if not just take image or video tag size
 		var intrinsicSize = _this.getIntrinsicSize();
 		// Set target width
