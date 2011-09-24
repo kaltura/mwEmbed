@@ -54,10 +54,8 @@ mw.KTimedText.prototype = {
 		if( this.kVars.ccUrl ){
 			// Set up a single source from the custom vars:
 			$.each( _this.getTextSourceFromVars( _this.kVars ), function(inx, textSource ){
-				_this.textSources.push( textSource)
+				_this.textSources.push( textSource);
 			});
-			callback();
-			return ;
 		}
 		
 		// Api sources require that a api query
