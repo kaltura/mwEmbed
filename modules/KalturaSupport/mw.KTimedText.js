@@ -148,7 +148,8 @@ mw.KTimedText.prototype = {
 					'id'		: dbTextSource.id,
 					'fileExt'	: dbTextSource.fileExt,
 					'src'		: _this.getCaptionUrl( dbTextSource.id, dbTextSource.fileExt ),
-					'title'		: dbTextSource.label
+					'title'		: dbTextSource.label,
+					'default'	: dbTextSource.isDefault
 				}).get(0) 
 		);
 		// Return a "textSource" object:
