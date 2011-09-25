@@ -56,11 +56,11 @@ mw.DoubleClick.prototype = {
 		
 		var slotSet = [];
 		// Check for pre-sequence: 
-		if( this.getConfig( 'preSequence') ){
+		if( parseInt( this.getConfig( 'preSequence') ) ){
 			slotSet.push( 'preroll');
 		}
 		
-		if( this.getConfig( 'postSequence') ){
+		if( parseInt( this.getConfig( 'postSequence') ) ){
 			slotSet.push( 'postroll' );
 		}
 		
@@ -237,13 +237,15 @@ mw.DoubleClick.prototype = {
 	 */
 	findTagUrl: function( slotType, cuePoint ){
 		// if the cuePoint includes a url return that: 
-		if( cuePoint && cuePoint.Url ){
-			debugger;
-			return cuePoint.Url;
+		if( cuePoint && cuePoint.sourceUrl ){
+			return cuePoint.sourceUrl;
 		}
 		// Check if the ui conf has defined an AdTagUrl for preAdTagUrl or postAdTagUrl
 		if( this.getConfig( slotType + 'AdTagUrl') ){
 			return this.getConfig( slotType + 'AdTagUrl' );
+		}
+		if(!this.getConfig( 'adTagUrl' ) ){
+			mw.log("Error: DoubleClick no adTagUrl found for " + slotType );
 		}
 		// else just return a master adTagUrl config var:
 		return this.getConfig( 'adTagUrl' );
