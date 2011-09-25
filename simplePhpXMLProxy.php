@@ -219,7 +219,7 @@ if ( !$url ) {
 }
 // Be sure to utf8_encode contents so no remote content break JSON encoding
 if( mb_detect_encoding($contents, 'UTF-8', true) != "UTF-8" ) {
-	$contents = utf8_encode($contents );
+	$contents = utf8_encode( $contents );
 }
 // remove leading ? in some kaltura cc xml responses :(
 if( $contents[0] == '?' ){

@@ -775,6 +775,9 @@ mw.includeAllModuleMessages();
 			} else {
 				_this.refreshDisplay();
 			}
+
+			// Trigger the event
+			$( this.embedPlayer ).trigger( 'TimedText_ChangeSource' );
 		},
 
 		/**

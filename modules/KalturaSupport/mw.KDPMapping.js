@@ -481,6 +481,17 @@
 				case 'gotoEditorWindow':
 					mw.log( "Warning: kdp event: " + eventName + " does not have an html5 mapping" );
 					break;
+
+				/* For closedCaption plguin */
+				case 'ccDataLoaded':
+					b('KalturaSupport_ccDataLoaded');
+					break;
+				case 'newClosedCaptionsData':
+					b('KalturaSupport_newClosedCaptionsData');
+					break;
+				case 'changedClosedCaptions':
+					b('TimedText_ChangeSource');
+					break;
 				default:
 					mw.log("Error unkown JsListener: " + eventName );
 					return false;
