@@ -14,14 +14,14 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		// closeCaption Under player plugin
 		var underCaptionConfig = embedPlayer.getKalturaConfig(
 				'closedCaptionsUnderPlayer', 
-				[ 'plugin', 'width', 'height', 'fontsize', 'bg', 'fontcolor', 'opacity', 'fontFamily' ]
+				[ 'plugin', 'width', 'height', 'fontsize', 'bg', 'fontcolor', 'opacity', 'fontFamily', 'timeOffset' ]
 		);
 
 		// closeCaption Over player plugin
 		var overCaptionConfig = embedPlayer.getKalturaConfig(
 				'closedCaptionsOverPlayer',
 				[ 'plugin', 'width', 'height', 'fontsize', 'bg', 'fontColor', 'opacity',
-					'fontFamily', 'useGlow', 'glowColor', 'glowBlur' ]
+					'fontFamily', 'useGlow', 'glowColor', 'glowBlur', 'timeOffset' ]
 		);
 
 		// Select the available plugin

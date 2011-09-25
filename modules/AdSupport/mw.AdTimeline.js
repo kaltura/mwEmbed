@@ -118,6 +118,8 @@ mw.AdTimeline.prototype = {
 	// Original source of embedPlayer
 	originalSrc: false,
 
+	// Flag to store if its the first time play is being called:
+	firstPlay: true,
 
 	/**
 	 * @constructor
@@ -134,18 +136,17 @@ mw.AdTimeline.prototype = {
 		var _this = this;
 		// Setup the original source
 		_this.originalSrc = _this.embedPlayer.getSrc();
-		// Flag to store if its the first time play is being called:
-		var firstPlay = true;
+
 		$( _this.embedPlayer).bind('onChangeMedia.AdTimeline', function(){
 			_this.destroy();
 		});
 		
 		$(_this.embedPlayer).bind('onplay.AdTimeline', function() {
 			// Check if this is the "first play" request:
-			if ( !firstPlay ) {
-				return 
+			if ( !_this.firstPlay ) {
+				return ;
 			}
-			firstPlay = false;
+			_this.firstPlay = false;
 			
 			mw.log( "AdTimeline:: First Play Start / bind Ad timeline" );
 
@@ -191,10 +192,14 @@ mw.AdTimeline.prototype = {
 	},
 	destroy: function(){
 		var _this = this;
+		// Reset firstPlay flag
+		_this.firstPlay = true;
 		// empty out the timeline targets
-		$.each( _this.timelineTargets, function(inx, key ){
-			_this.timelineTargets[key] = [];
-		});
+		//$.each( _this.timelineTargets, function(inx, key ){
+		//	_this.timelineTargets[key] = [];
+		//});
+		// Unbind all adTimeline events
+		//$( _this.embedPlayer ).unbind( '.AdTimeline' );
 	},
 	/**
 	 * Add an overlay binding:
