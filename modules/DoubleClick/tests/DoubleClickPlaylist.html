@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>DoubleClick Playlist test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "DoubleClick Playlist test" );
+
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
+	var iframeContext = window.frames['kaltura_player_ifp'];
+	
+	test( "Iframe in DOM", function() {
+		ok( $( '#' + videoId + '_ifp' ).length , 'iframe found' );
+		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+	});
+
+	asyncTest("Iframe layout elements", function(){
+		kalturaQunitWaitForPlayer(function(){
+			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
+			ok( $iframe.find('.play-btn').length, ".play-btn found" );
+			start();
+		});
+	});
+	
+	asyncTest("Iframe config", function(){
+		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
+		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
+		// Test page context config: 
+		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
+		start();
+	});
+
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> DoubleClick Playlist test </h2>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br />
+
+<object id="kaltura_player_1316977410" name="kaltura_player_1316977410"
+ type="application/x-shockwave-flash" allowFullScreen="true" 
+ allowNetworking="all" allowScriptAccess="always" height="620" width="400"
+ bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" 
+ xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
+ resource="http://www.kaltura.com/index.php/kwidget/cache_st/1316977410/wid/_243342/uiconf_id/5846281" 
+ data="http://www.kaltura.com/index.php/kwidget/cache_st/1316977410/wid/_243342/uiconf_id/5846281">
+ 	<param name="allowFullScreen" value="true" />
+ 	<param name="allowNetworking" value="all" />
+ 	<param name="allowScriptAccess" value="always" />
+ 	<param name="bgcolor" value="#000000" />
+ 	<param name="flashVars" 
+ 		value="playlistAPI.autoInsert=true&playlistAPI.kpl0Name=test 4 item playlist&playlistAPI.kpl0Url=http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fuid%3D%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%26playlist_id%3D0_q79jh71b&" />
+ 		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1316977410/wid/_243342/uiconf_id/5846281" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> {SEO} </object>
+	
+</body>
+</html>

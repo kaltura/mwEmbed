@@ -42,7 +42,7 @@ mw.KAds.prototype = {
 		this.$skipBtn = $uiConf.find( 'button#skipBtn' );
 
 		// Build out the selection of kAds
-		var configSet = ['htmlCompanions' , 'flashCompanions' ];
+		var configSet = [ 'htmlCompanions' , 'flashCompanions' ];
 		$.each( this.namedAdTimelineTypes, function( inx, adType ){
 			$.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
 				// Add all the ad types to the config set: 

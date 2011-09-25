@@ -326,18 +326,15 @@ mw.Playlist.prototype = {
 			var playerSize = _this.getTargetPlayerSize();
 			// Update the list height ( vertical layout )
 			if( _this.layout == 'vertical' ){
+				var verticalSpace = $( _this.target + ' .media-rss-video-player-container' ).height();
 				$videoListWraper.css( {
-					'top' : parseInt( playerSize.height ) + 4,
+					'top' : parseInt( verticalSpace ) + 4,
 					'width' : '95%'
 				} );
 				// Add space for the multi-playlist selector:
 				if( _this.sourceHandler.hasMultiplePlaylists() ){
-					// also adjust .playlistSet-container if present
-					$( _this.target + ' .playlistSet-container').css( {
-						'top' : $( _this.target + ' .media-rss-video-player-container' ).height() + 4
-					});
 					$videoListWraper.css({
-						'top' : parseInt( playerSize.height ) + 26
+						'top' : parseInt( verticalSpace ) + 26
 					});
 				}
 			} else {
