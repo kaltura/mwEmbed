@@ -17,7 +17,7 @@ mw.DoubleClick.prototype = {
 	activeOverlayadManager: null,
 	
 	// The bind bindPostfix for all doubleclick bindings
-	bindPostfix: '.dobuleClick',
+	bindPostfix: '.doubleClick',
 	
 	init: function( embedPlayer, callback ){
 		mw.log( 'DoubleClick:: init: ' + embedPlayer.id );
