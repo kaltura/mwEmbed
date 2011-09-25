@@ -555,6 +555,14 @@
 					// Clear player & entry meta 
 				    embedPlayer.kalturaPlayerMetaData = null;
 				    embedPlayer.kalturaEntryMetaData = null;
+				    
+				    // clear cuepoint data:
+				    embedPlayer.rawCuePoints = null;
+				    embedPlayer.kCuePoints = null;
+				    
+				    // clear ad data ..
+				    embedPlayer.ads = null;
+				    
 					// Update the poster
 					embedPlayer.updatePosterSrc( 
 						mw.getKalturaThumbUrl({

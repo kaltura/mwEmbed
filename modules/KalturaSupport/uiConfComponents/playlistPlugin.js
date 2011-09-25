@@ -25,6 +25,10 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				var layout = ( $uiConf.find('#playlistHolder').attr('width') != '100%' ) 
 								? 'horizontal' : 'vertical';
 				
+				// Some weird bug with firefox xml parser ( loses % ) on Canvas tag :( 
+				if( $uiConf.find('#playlistHolder').attr('width') == '100' )
+					layout = 'vertical';
+				
 				// XXX hard coded for now think about a better way to get at this info:
 				$playlist.playlist({
 					'layout': layout,

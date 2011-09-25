@@ -16,10 +16,17 @@ mw.DoubleClick.prototype = {
 	// A pointer to the active adManager
 	activeOverlayadManager: null,
 	
+	// The bind bindPostfix for all doubleclick bindings
+	bindPostfix: '.dobuleClick',
+	
 	init: function( embedPlayer, callback ){
 		mw.log( 'DoubleClick:: init: ' + embedPlayer.id );
 		var _this = this;
 		this.embedPlayer = embedPlayer;
+		
+		// Unbind any old doubleClick stuff: 
+		$( this.embedPlayer ).unbind( this.bindPostfix );
+		
 		// Load the ad manager:
 		this.getAdsLoader( function( adsLoader ){
 			
@@ -68,14 +75,18 @@ mw.DoubleClick.prototype = {
 		$.each( slotSet, function( inx, slotType ){
 			// Add the adSlot binding
 			// @@TODO use the "sequence number" as a slot identifier. 
-			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType, function( event, callback ){
+			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType + _this.bindPostfix, function( event, callback ){
 				_this.loadAndPlayVideoSlot( slotType, callback );
 			});
 		});
 		
 		// Add a binding for cuepoints:
-		$( _this.embedPlayer ).bind( 'KalturaSupport_AdOpportunity', function(event,  cuePointWrapper ){
+		$( _this.embedPlayer ).bind( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function(event,  cuePointWrapper ){
 			var cuePoint = cuePointWrapper.cuePoint;
+			// TODO we should not need this~ make sure cuepoints are still there 
+			if( !_this.embedPlayer.kCuePoints ){
+				return ;
+			}
 			
 			// Make sure the cue point is tagged for dobuleclick
 			if( cuePoint.tags.indexOf( "doubleclick" ) === -1 ){
@@ -98,9 +109,18 @@ mw.DoubleClick.prototype = {
 			}
 		});
 		// on clip done hide any overlay banners that are still active
-		$( _this.embedPlayer ).bind( 'ended', function(){
+		$( _this.embedPlayer ).bind( 'ended' + _this.bindPostfix, function(){
 			 if( _this.activeOverlayadManager )
 				 _this.activeOverlayadManager.unload();
+		});
+		// on change media remove any existing ads: 
+		$( _this.embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
+			 if( _this.activeOverlayadManager )
+				 _this.activeOverlayadManager.unload();
+			 
+			 if( _this.onResumeRequestedCallback )
+				 _this.onResumeRequestedCallback();
+				 
 		});
 	},
 	/**
@@ -118,10 +138,10 @@ mw.DoubleClick.prototype = {
 		    var bottom = 0;
 			// Check if we are overlaying controls ( move the banner up ) 
 			if( embedPlayer.controlBuilder.isOverlayControls() ){
-				$( embedPlayer ).bind( 'onShowControlBar', function(){
+				$( embedPlayer ).bind( 'onShowControlBar' + _this.bindPostfix, function(){
 					$overlay.animate({ 'bottom': embedPlayer.controlBuilder.height + 'px'}, 'fast');
 				});
-				$( embedPlayer ).bind( 'onHideControlBar', function(){
+				$( embedPlayer ).bind( 'onHideControlBar' + _this.bindPostfix, function(){
 					$overlay.animate({ 'bottom': 0 + 'px'}, 'fast');
 				});
 			} else {
@@ -130,7 +150,9 @@ mw.DoubleClick.prototype = {
 			var $overlay = _this.getOverlaySlot( bottom );
 
 			// add binding for resize player
-			$( embedPlayer ).bind( 'onCloseFullScreen onOpenFullScreen onResizePlayer', function(e) {
+			$( embedPlayer ).bind( 'onCloseFullScreen'+ _this.bindPostfix +
+					' onOpenFullScreen' + _this.bindPostfix + 
+					' onResizePlayer'+ _this.bindPostfix, function(e) {
 				adsManager.setAdSlotWidth( embedPlayer.getPlayerWidth() );
 			    adsManager.setAdSlotHeight( embedPlayer.getPlayerHeight() );
 			});
@@ -191,20 +213,28 @@ mw.DoubleClick.prototype = {
 		_this.currentAdLoadedCallback = function( adsManager ){
 			 // Set a visual element on which clicks should be tracked for video ads
 			adsManager.setClickTrackingElement( _this.embedPlayer );
+			
 			// hide the loader; 
 			_this.embedPlayer.hidePlayerSpinner();
-			_this.embedPlayer.stopEventPropagation();
-			_this.embedPlayer.disableSeekBar();
+			
+			// TODO integrate into timeline proper: 
+			if( _this.embedPlayer.adTimeline && slotType != 'overlay' ){
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback();
+			}
+
 			// update the playhead to play state:
 			_this.embedPlayer.play();
 			// TODO This should not be needed ( fix event stop event propagation ) 
 			_this.embedPlayer.monitor();
+			
 			adsManager.play( _this.embedPlayer.getPlayerElement() );
 		};
 		// Setup the restore callback
 		_this.onResumeRequestedCallback = function(){
-			_this.embedPlayer.restoreEventPropagation();
-			_this.embedPlayer.enableSeekBar();
+			// TODO integrate into timeline proper: 
+			if( _this.embedPlayer.adTimeline ){
+				_this.embedPlayer.adTimeline.restorePlayer();
+			}
 			// Clear out the older currentAdLoadedCallback
 			_this.currentAdLoadedCallback = null;
 			callback();

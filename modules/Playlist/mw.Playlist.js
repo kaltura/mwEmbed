@@ -27,8 +27,11 @@ mw.Playlist.prototype = {
 	// player Id
 	playerId: null,	
 	
-	// Store if the current mouse guestor was a mouse up ( only affects iPad emulation with desktop browers ) 
+	// Store if the current mouse gesture was a mouse up ( only affects iPad emulation with desktop browers ) 
 	onTouchScroll: false,
+	
+	// Flag for disabling jumping between clips 
+	enableClipSwitch: true,
 	
 	// constructor
 	init: function( options ) {
@@ -329,7 +332,9 @@ mw.Playlist.prototype = {
 				var verticalSpace = $( _this.target + ' .media-rss-video-player-container' ).height();
 				$videoListWraper.css( {
 					'top' : parseInt( verticalSpace ) + 4,
-					'width' : '95%'
+					'left' : '0px',
+					'right' : '4px'
+						
 				} );
 				// Add space for the multi-playlist selector:
 				if( _this.sourceHandler.hasMultiplePlaylists() ){
@@ -478,7 +483,10 @@ mw.Playlist.prototype = {
 		_this.sourceHandler.addEmbedPlayerBindings( embedPlayer );
 
 		// Add the seek forward / back buttons 
-		_this.addPlaylistSeekButtons( embedPlayer );
+		_this.addPlaylistSeekButtons();
+		
+		// Add ad bindings
+		_this.addPlaylistAdBindings(); 
 		
 		// Setup ondone playing binding to play next clip (if autoContinue is true )
 		if( _this.sourceHandler.autoContinue == true ){
@@ -535,8 +543,9 @@ mw.Playlist.prototype = {
 		return this.playerId;
 	},
 	// Checks if the player has next prev playlist buttons if not adds them.
-	addPlaylistSeekButtons: function( embedPlayer ){
+	addPlaylistSeekButtons: function(){
 		var _this = this;
+		var embedPlayer = this.getEmbedPlayer();
 		// add previous / next buttons if not present: 
 		// TODO (HACK) we should do real controlBar support for custom buttons
 		if( embedPlayer.controlBuilder ){
@@ -562,7 +571,7 @@ mw.Playlist.prototype = {
 						'title' : 'Previous clip'
 					})
 					.click(function(){					
-						if( _this.clipIndex - 1 >= 0 ){
+						if( _this.enableClipSwitch && _this.clipIndex - 1 >= 0 ){
 							_this.clipIndex--;
 							_this.playClip( _this.clipIndex );
 							return ;
@@ -575,7 +584,7 @@ mw.Playlist.prototype = {
 						'title' : 'Next clip'
 					})
 					.click(function(){
-						if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
+						if(_this.enableClipSwitch &&  _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
 							_this.clipIndex++;
 							_this.playClip( _this.clipIndex );
 							return ;
@@ -585,6 +594,48 @@ mw.Playlist.prototype = {
 					.find('span').addClass('ui-icon-seek-next').parent()
 			);
 		}
+	},
+	// add bindings for playlist playback ( disable playlist item selection during ad Playback )
+	addPlaylistAdBindings: function(){
+		var _this = this;
+		var embedPlayer = this.getEmbedPlayer();
+		$( embedPlayer ).bind('AdSupport_StartAdPlayback', function(){
+			//  disable clip switch flag: 
+			_this.enableClipSwitch = false;
+			
+			// Add a gray overlay
+			var $listwrap = $( '#video-list-wrapper-plholder_' + this.id );
+			var cssPops = ['width','height', 'position', 'bottom', 'right', 'left', 'top'];
+			var cssObj = {};
+			
+			// Copy in all the settings:
+			$.each( cssPops, function(inx, prop){
+				cssObj[ prop ] = $listwrap.css(prop);
+			});
+			
+			if( !$( _this.target + ' .playlist-block-list').length ){
+				$listwrap.before( 
+					$('<div />').css( cssObj )
+					.addClass('playlist-block-list')
+					.css({
+						'z-index': 2,
+						'background-color' : '#FFF',
+						'opacity' : '0.8',
+						'filter' : 'alpha(opacity=80)'
+					})
+					.click(function(){
+						// don't let event propagate
+						return false;
+					})
+				);
+			}
+		});
+		$( embedPlayer ).bind('AdSupport_EndAdPlayback', function(){
+			// Restore clip switch: 
+			_this.enableClipSwitch = true;
+			$( _this.target + ' .playlist-block-list').remove();
+			
+		});
 	},
 	/**
 	* Add the media list with the selected clip highlighted

@@ -7,9 +7,17 @@ mw.KCuePoints = function( embedPlayer ){
 	return this.init( embedPlayer );
 };
 mw.KCuePoints.prototype = {
+		
+	// the bind postfix:
+	bindPostfix: '.kCuePoints',
+	
 	init: function( embedPlayer ){
 		this.embedPlayer = embedPlayer;
 		this.addPlayerBindings();
+	},
+	
+	removePlayerBindings: function(){
+		$(this.embedPlayer).unbind( this.bindPostfix );
 	},
 	/**
 	 * Adds player cue point bindings
@@ -26,7 +34,7 @@ mw.KCuePoints.prototype = {
 		}
 
 		// Bind to monitorEvent to trigger the cue points events
-		$( embedPlayer ).bind( "monitorEvent.kCuePoints", function() {
+		$( embedPlayer ).bind( "monitorEvent" + this.bindPostfix, function() {
 			var currentTime = embedPlayer.currentTime * 1000;
 			if( currentTime >= nextCuePoint.startTime && embedPlayer._propagateEvents ) {
 				// Trigger the cue point
@@ -37,7 +45,7 @@ mw.KCuePoints.prototype = {
 		});
 
 		// Handle last cue point (postRoll)
-		$( embedPlayer ).bind( "ended.kCuePoints", function(){
+		$( embedPlayer ).bind( "ended" + this.bindPostfix, function(){
 			var cuePoints = _this.getCuePoints();
 			var lastCuePoint = cuePoints[ cuePoints.length - 1];
 			if( lastCuePoint.startTime >= _this.getEndTime() ) {
@@ -47,7 +55,7 @@ mw.KCuePoints.prototype = {
 		});
 
 		// Bind for seeked event to update the nextCuePoint
-		$( embedPlayer ).bind( "seeked.kCuePoints", function(){
+		$( embedPlayer ).bind( "seeked" + this.bindPostfix, function(){
 			var currentTime = embedPlayer.currentTime * 1000;
 			nextCuePoint = _this.getCuePoint(currentTime);
 		});

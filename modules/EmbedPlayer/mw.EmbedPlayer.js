@@ -1820,7 +1820,6 @@ mw.EmbedPlayer.prototype = {
 	/**
 	 * Returns the HTML code for the video when it is in thumbnail mode.
 	 * playing, configuring the player, inline cmml display, HTML 
-,
 	 * download, and embed code.
 	 */
 	updatePosterHTML: function () {
