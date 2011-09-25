@@ -24,6 +24,7 @@
 		// fullscreen. 
 		'EmbedPlayer.EnableIpadNativeFullscreen': true,
 		
+		// The attribution library page
 		'EmbedPlayer.LibraryPage': 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 
 		// A default apiProvider ( ie where to lookup subtitles, video properties etc )
@@ -43,7 +44,7 @@
 		// The attribution button
 		'EmbedPlayer.AttributionButton' :{
 			'title' : 'Kaltura html5 video library',
-		 	'href' : 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
+		 	'href' : 'http://www.kaltura.com',
 			// Style icon to be applied
 			'class' : 'kaltura-icon',
 			// Style to be applied to the outer attribution button container div

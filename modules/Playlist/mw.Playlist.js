@@ -602,7 +602,7 @@ mw.Playlist.prototype = {
 		$( embedPlayer ).bind('AdSupport_StartAdPlayback', function(){
 			//  disable clip switch flag: 
 			_this.enableClipSwitch = false;
-			
+
 			// Add a gray overlay
 			var $listwrap = $( '#video-list-wrapper-plholder_' + this.id );
 			var cssPops = ['width','height', 'position', 'bottom', 'right', 'left', 'top'];

@@ -1758,16 +1758,11 @@ mw.EmbedPlayer.prototype = {
 		// setup flag for change media
 		var chnagePlayingMedia = this.isPlaying();
 		
-		// Pause player during media switch
-		this.pause();
-
 		// Reset first play to true, to count that play event
 		this.firstPlay = true;
 		
 		// Add a loader to the embed player: 
-		$( this )
-		.getAbsoluteOverlaySpinner()
-		.attr('id', this.id + '_mappingSpinner' );
+		this.pauseLoading();
 		
 		// Clear out any player error:
 		this['data-playerError'] = null;
@@ -1808,7 +1803,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
 		$( this ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
-			$( '#' + _this.id + '_mappingSpinner' ).remove();
+			_this.hidePlayerSpinner();
 			if( _this.$interface && !chnagePlayingMedia){
 				_this.$interface.find( '.play-btn-large' ).show(); // show the play btn
 			}

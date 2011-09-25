@@ -168,6 +168,8 @@ mw.AdTimeline.prototype = {
 			
 			// Bind the player "ended" event to play the postroll if present
 			var displayedPostroll = false;
+			// TODO We really need a "preend" event for thing like this. 
+			// So that playlist next clip or other end bindings don't get triggered. 
 			$( _this.embedPlayer ).bind( 'ended.AdTimeline', function( event ){
 				if( displayedPostroll ){
 					return ;
@@ -455,7 +457,6 @@ mw.AdTimeline.prototype = {
 		// Stop event propagation: 
 		_this.updateUiForAdPlayback( adSlot.type );
 		
-		
 		// Play the source then run the callback
 		_this.embedPlayer.switchPlaySrc( targetSrc, 
 			function(vid) {
@@ -670,9 +671,9 @@ mw.AdTimeline.prototype = {
 	bindTrackingEvents: function ( trackingEvents ){
 		var _this = this;
 		var videoPlayer = _this.getNativePlayerElement();
-		
+		var bindPostfix = '.adTracking';
 		// unbind any existing adTimeline events
-		$( videoPlayer).unbind( '.adTracking' );
+		$( videoPlayer).unbind( bindPostfix );
 		
 		// Only send events once: 
 		var sentEvents = {};
@@ -693,27 +694,27 @@ mw.AdTimeline.prototype = {
 		};
 		
 		// On end stop monitor / clear interval: 
-		$( videoPlayer ).bind('ended.Tracking', function(){			
+		$( videoPlayer ).bind('ended' + bindPostfix, function(){			
 			sendBeacon( 'complete' );
 			// stop monitor
 			clearInterval( monitorInterval );
 			// clear any bindings 
-			$( videoPlayer).unbind( '.Tracking' );
+			$( videoPlayer).unbind( bindPostfix);
 		});
 		
 		// On pause / resume: 
-		$( videoPlayer ).bind( 'pause.Tracking', function(){
+		$( videoPlayer ).bind( 'pause' + bindPostfix, function(){
 			sendBeacon( 'pause' );
 		});
 		
 		// On resume: 
-		$( videoPlayer ).bind( 'onplay.Tracking', function(){
+		$( videoPlayer ).bind( 'onplay' + bindPostfix, function(){
 			sendBeacon( 'resume' );
 		});
 		
 		var time = 0;
 		// On seek backwards 
-		$( videoPlayer ).bind( 'seek.Tracking', function(){
+		$( videoPlayer ).bind( 'seek' + bindPostfix, function(){
 			if( videoPlayer.currentTime < time ){
 				sendBeacon( 'rewind' );
 			}
