@@ -222,10 +222,15 @@ mw.EmbedPlayerNative = {
 			if( ! this.controlBuilder.isOverlayControls() ){
 				controlBarOffset = this.controlBuilder.height;
 			}
-			// Check for existing offset: 
+			// Check for existing offset:
+			/*
+			 * Comment for now, if vid has top:auto it doesn't get calculated
+			 * for now always calculate the top position of vid tag.
 			var topOffset = $( vid ).css('top') ?
 					$( vid ).css('top') :
 					( ( this.$interface.height() - controlBarOffset - pHeight ) * .5 ) + 'px';
+			*/
+		   var topOffset = ( ( this.$interface.height() - controlBarOffset - pHeight ) * .5 ) + 'px';
 
 			mw.log( 'EmbedPlayerNative: applyIntrinsicAspect:: top: ' + topOffset + ' left:' + ( ( $( this ).width() - pWidth ) * .5 ) + ' this width:' +  $( this ).width() );
 			$( vid ).css({
