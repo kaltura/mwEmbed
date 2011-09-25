@@ -190,6 +190,7 @@ mw.AdTimeline.prototype = {
 		});
 	},
 	destroy: function(){
+		var _this = this;
 		// empty out the timeline targets
 		$.each( _this.timelineTargets, function(inx, key ){
 			_this.timelineTargets[key] = [];

@@ -443,6 +443,7 @@ mw.Playlist.prototype = {
 		var _this = this;
 		// Check for a video/audio tag already in the page:
 		var embedPlayer = this.getEmbedPlayer();
+		this.clipIndex = clipIndex;
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex );
 		// Do any local player interface updates: 
@@ -465,7 +466,7 @@ mw.Playlist.prototype = {
 		// Pass off player updates to sourceHandler
 		_this.sourceHandler.drawEmbedPlayer( clipIndex, function(){
 			// update Ui: 
-			_this.updatePlayerUi( clipIndex );
+			_this.updatePlayerUi( _this.clipIndex );
 			
 			// Add playlist specific bindings: 
 			_this.addClipBindings();
