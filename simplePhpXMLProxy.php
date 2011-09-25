@@ -199,7 +199,7 @@ if ( !$url ) {
   // Forward the client ip for GeoLookup: ( geo-lookup server hopefully is not dumb and uses X-Forwarded-For ) 
   curl_setopt($ch, CURLOPT_HTTPHEADER, array(
   	'X-Forwarded-For: ' . $_SERVER['REMOTE_ADDR'],
-	'Expect:' // used to ignore "100 Continue Header" when using post
+	'Expect:' // used to ignore "100 Continue Header" when using POST
   ));
   
   
@@ -217,9 +217,9 @@ if ( !$url ) {
   
   curl_close( $ch );
 }
-// Be sure to utf8_decode contents so no remote content break JSON encoding
+// Be sure to utf8_encode contents so no remote content break JSON encoding
 if( mb_detect_encoding($contents, 'UTF-8', true) != "UTF-8" ) {
-	$contents = utf8_decode($contents );
+	$contents = utf8_encode($contents );
 }
 // remove leading ? in some kaltura cc xml responses :(
 if( $contents[0] == '?' ){
