@@ -195,11 +195,14 @@ mw.AdTimeline.prototype = {
 		// Reset firstPlay flag
 		_this.firstPlay = true;
 		// empty out the timeline targets
-		//$.each( _this.timelineTargets, function(inx, key ){
-		//	_this.timelineTargets[key] = [];
-		//});
+		$.each( _this.timelineTargets, function(inx, key ){
+			_this.timelineTargets[key] = [];
+		});
 		// Unbind all adTimeline events
-		//$( _this.embedPlayer ).unbind( '.AdTimeline' );
+		$( _this.embedPlayer ).unbind( '.AdTimeline' );
+
+		// Remove adTimeline from embedPlayer
+		delete _this.embedPlayer.adTimeline;
 	},
 	/**
 	 * Add an overlay binding:

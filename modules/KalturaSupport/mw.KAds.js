@@ -17,9 +17,9 @@ mw.sendBeaconUrl = function( beaconUrl ){
 	);
 };
 
-mw.KAds = function( embedPlayer, $uiConf, callback) {
+mw.KAds = function( embedPlayer, callback) {
 	// Create a Player Manager
-	return this.init( embedPlayer, $uiConf ,callback );
+	return this.init( embedPlayer, callback );
 };
 
 mw.KAds.prototype = {
@@ -65,7 +65,7 @@ mw.KAds.prototype = {
 
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
-		$( this.embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePointWrapper ) {
+		$( embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePointWrapper ) {
 			_this.loadAd( cuePointWrapper );
 		});
 	},
@@ -219,7 +219,7 @@ mw.KAds.prototype = {
 						$.extend({}, baseDisplayConf, adConfigSet[ adType ] ) // merge in baseDisplayConf
 					);
 				}
-			};
+			}
 			// Run the callabck once all the ads have been loaded. 
 			callback();
 		});
@@ -331,4 +331,4 @@ mw.KAds.prototype = {
 	}
 };
 
-})( mediaWiki, jQuery );
+})( window.mw, window.jQuery );
