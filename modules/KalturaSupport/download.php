@@ -33,7 +33,7 @@ class downloadEntry {
 			}
 		}
 		return $this->resultObject;
-	}		
+	}
 	// Errors set special X-Kaltura and X-Kaltura-App: header and then deliver the no sources video
 	private function fatalError( $errorMsg ) {
 		header( "X-Kaltura: error-6" );
@@ -61,7 +61,5 @@ class downloadEntry {
 		// Redirect to flavor
 		header( "location: " . $flavorUrl );
 	}
-
 }
-
 ?>

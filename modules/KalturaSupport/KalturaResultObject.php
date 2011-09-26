@@ -340,14 +340,16 @@ class KalturaResultObject {
 		if( isset( $accessControl->isUserAgentRestricted ) && $accessControl->isUserAgentRestricted ) {
 			return $userAgentMessage;
 		} else {
-			$userAgentRestricted = $this->isUserAgentRestrictedPlugin( $resultObject['uiConf'] );
-			if( $userAgentRestricted === false ) {
-				return true;
-			} else {
-				if( $userAgentRestricted === true ) {
-					return $userAgentMessage;
+			if( isset( $resultObject['uiConf'] ) ){
+				$userAgentRestricted = $this->isUserAgentRestrictedPlugin( $resultObject['uiConf'] );
+				if( $userAgentRestricted === false ) {
+					return true;
 				} else {
-					return $userAgentRestricted;
+					if( $userAgentRestricted === true ) {
+						return $userAgentMessage;
+					} else {
+						return $userAgentRestricted;
+					}
 				}
 			}
 		}
