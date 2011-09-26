@@ -24,6 +24,8 @@ mw.Comscore.prototype = {
 	playerPlayedFired: false,
 	loadedXML: false,
 
+	bindPostfix: '.Comscore',
+
 	cParams: {
 		c1: "1",
 		c2: "",
@@ -109,13 +111,13 @@ mw.Comscore.prototype = {
 		var cParams = _this.cParams;
 
 		// Bind to entry ready
-		$( embedPlayer ).bind('KalturaSupport_EntryDataReady', function() {
+		$( embedPlayer ).bind('KalturaSupport_EntryDataReady' + this.bindPostfix, function() {
 			_this.playerPlayedFired = false;
 			_this.setupCParams();
 		});
 
 		// Bind to player played
-		$( embedPlayer ).bind('onplay', function() {
+		$( embedPlayer ).bind('onplay' + this.bindPostfix, function() {
 			if (!_this.playerPlayedFired)
 			{
 				// Send beacon
@@ -125,7 +127,7 @@ mw.Comscore.prototype = {
 		});
 
 		// Bind to ad start
-		$( embedPlayer ).bind('AdSupport_StartAdPlayback', function( event, adType ) {
+		$( embedPlayer ).bind('AdSupport_StartAdPlayback' + this.bindPostfix, function( event, adType ) {
 			console.log(adType);
 			switch ( adType )
 			{
@@ -143,6 +145,11 @@ mw.Comscore.prototype = {
 			// Send beacon
 			_this.comScoreBeacon( cParams );
 
+		});
+
+		// on change media remove any existing ads:
+		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
+			_this.destroy();
 		});
 	},
 
@@ -272,5 +279,8 @@ mw.Comscore.prototype = {
 		);
 
 		mw.log('Comscore:: Sent Beacon: ' + loadUrl);
+	},
+	destroy: function() {
+		$( this.embedPlayer ).unbind( this.bindPostfix );
 	}
 };

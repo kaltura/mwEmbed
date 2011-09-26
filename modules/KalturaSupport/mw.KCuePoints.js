@@ -16,7 +16,7 @@ mw.KCuePoints.prototype = {
 		this.addPlayerBindings();
 	},
 	
-	removePlayerBindings: function(){
+	destroy: function(){
 		$(this.embedPlayer).unbind( this.bindPostfix );
 	},
 	/**
@@ -58,6 +58,10 @@ mw.KCuePoints.prototype = {
 		$( embedPlayer ).bind( "seeked" + this.bindPostfix, function(){
 			var currentTime = embedPlayer.currentTime * 1000;
 			nextCuePoint = _this.getCuePoint(currentTime);
+		});
+
+		$( embedPlayer ).bind( 'onChangeMedia' + this.bindPostfix, function(){
+			_this.destroy();
 		});
 	},
 	getEndTime: function(){

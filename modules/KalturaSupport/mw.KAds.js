@@ -31,6 +31,8 @@ mw.KAds.prototype = {
 		"StartAt": 'start'
 	},
 	displayedCuePoints: [],
+
+	bindPostfix: '.KAds',
 	
 	init: function( embedPlayer, callback ){
 		var _this = this; 
@@ -65,8 +67,12 @@ mw.KAds.prototype = {
 
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
-		$( embedPlayer ).bind('KalturaSupport_AdOpportunity', function( event, cuePointWrapper ) {
+		$( embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event, cuePointWrapper ) {
 			_this.loadAd( cuePointWrapper );
+		});
+
+		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
+			_this.destroy();
 		});
 	},
 
@@ -156,7 +162,7 @@ mw.KAds.prototype = {
 								}
 							} else {
 								
-								$( embedPlayer ).bind('seeked.ad', function() {
+								$( embedPlayer ).bind('seeked' + _this.bindPostfix, function() {
 									embedPlayer.play();
 									setTimeout( function() {
 										embedPlayer.play();
@@ -328,6 +334,10 @@ mw.KAds.prototype = {
 			'width' :  companionParts[1],
 			'height' :  companionParts[2]
 		};
+	},
+
+	destroy: function(){
+		$( this.embedPlayer ).unbind( _this.bindPostfix );
 	}
 };
 
