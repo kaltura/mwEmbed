@@ -535,7 +535,8 @@ EmbedPlayerManager.prototype = {
 		$( swapPlayerElement ).css( {
 			'width' : playerInterface.width + 'px',
 			'height' : playerInterface.height + 'px',
-			'overflow': 'hidden'
+			'overflow': 'hidden',
+			'top' : '0px'
 		} );
 		
 

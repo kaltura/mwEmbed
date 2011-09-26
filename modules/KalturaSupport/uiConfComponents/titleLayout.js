@@ -43,19 +43,15 @@
 		}
 		function updatePlayerLayout(){
 			var $vid = $( embedPlayer.getPlayerElement() );
-			if( $vid.length && parseInt( $vid.css('top') ) < titleScreenHeight ){		
-				// add space for the title: 
-				$vid
-				.css({
-					'height' : ( $vid.height() - titleScreenHeight ) + 'px', 
-					'top' : titleScreenHeight + 'px'
-				});						
-			} else {
-				$( '#' + embedPlayer.id ).css( {
-					'height' : $( '#' + embedPlayer.id).height() - titleScreenHeight  + 'px', 
-					'width' : $( '#' + embedPlayer.id).width() + 'px'
-				});
-			}
+			// add space for the title: 
+			$vid
+			.css({
+				'height' : ( $vid.height() - titleScreenHeight ) + 'px', 
+				'top' : titleScreenHeight + 'px'
+			});
+			embedPlayer.$interface.find(".play-btn-large").css({
+				'top' : parseInt( ( $vid.height() + parseInt(titleScreenHeight ) ) / 2 )  + 'px'
+			});
 		};		
 		// Once all functions are defined call the doTitleLayout
 		doTitleLayout();
