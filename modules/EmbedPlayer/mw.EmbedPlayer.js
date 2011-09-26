@@ -1804,7 +1804,7 @@ mw.EmbedPlayer.prototype = {
 		// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
 		$( this ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
 			_this.hidePlayerSpinner();
-			if( _this.$interface && !chnagePlayingMedia){
+			if( _this.$interface && !chnagePlayingMedia ){
 				_this.$interface.find( '.play-btn-large' ).show(); // show the play btn
 			}
 			// Start player events leading to playerReady

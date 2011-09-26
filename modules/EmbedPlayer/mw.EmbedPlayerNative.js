@@ -202,7 +202,8 @@ mw.EmbedPlayerNative = {
 			vid.play();
 		}
 	},
-	applyIntrinsicAspect: function(){
+	// dissabled for now.. use native layout support
+	/*applyIntrinsicAspect: function(){
 		var vid = this.getPlayerElement();
 		// check if a video tag is present 
 		if( !vid ){
@@ -229,7 +230,7 @@ mw.EmbedPlayerNative = {
 			var topOffset = $( vid ).css('top') ?
 					$( vid ).css('top') :
 					( ( this.$interface.height() - controlBarOffset - pHeight ) * .5 ) + 'px';
-			*/
+			
 		   var topOffset = ( ( this.$interface.height() - controlBarOffset - pHeight ) * .5 ) + 'px';
 
 			mw.log( 'EmbedPlayerNative: applyIntrinsicAspect:: top: ' + topOffset + ' left:' + ( ( $( this ).width() - pWidth ) * .5 ) + ' this width:' +  $( this ).width() );
@@ -243,7 +244,7 @@ mw.EmbedPlayerNative = {
 			
 		}
 	},
-	
+	*/
 	/**
 	 * Apply media element bindings
 	 */
@@ -468,7 +469,7 @@ mw.EmbedPlayerNative = {
 		var vid = this.getPlayerElement();
 		
 		mw.log( 'EmbedPlayerNative:: switchPlaySrc:' + src + ' native time: ' + vid.currentTime );
-		// make sure the switch source is diffrent: 
+		// make sure the switch source is different: 
 		if( !src || src == vid.src ){
 			if( switchCallback ){
 				switchCallback();
@@ -487,62 +488,58 @@ mw.EmbedPlayerNative = {
 	
 		if ( vid ) {
 			try {
-				// Issue a play request on the source
-				vid.play();
-				setTimeout(function(){
-					// Remove all native player bindings
-					$(vid).unbind();
-					vid.pause();
-					var orginalControlsState = vid.controls;
-					// Hide controls ( to not display native play button while switching sources ) 
-					vid.removeAttribute('controls');
-					
-					// Local scope update source and play function to work around google chrome bug
-					var updateSrcAndPlay = function() {
+				// Remove all native player bindings
+				$(vid).unbind();
+				vid.pause();
+				var orginalControlsState = vid.controls;
+				// Hide controls ( to not display native play button while switching sources ) 
+				vid.removeAttribute('controls');
+				
+				// Local scope update source and play function to work around google chrome bug
+				var updateSrcAndPlay = function() {
+					var vid = _this.getPlayerElement();
+					if (!vid){
+						mw.log( 'Error: switchPlaySrc no vid');
+						return ;
+					}
+					vid.src = src;
+					// Give iOS 50ms to figure out the src got updated ( iPad OS 4.0 )
+					setTimeout( function() {
 						var vid = _this.getPlayerElement();
 						if (!vid){
 							mw.log( 'Error: switchPlaySrc no vid');
 							return ;
-						}
-						vid.src = src;
-						// Give iOS 50ms to figure out the src got updated ( iPad OS 4.0 )
-						setTimeout( function() {
-							var vid = _this.getPlayerElement();
-							if (!vid){
-								mw.log( 'Error: switchPlaySrc no vid');
-								return ;
-							}	
-							vid.load();
-							vid.play();
-							// Wait another 100ms then bind the end event and any custom events
-							// for the switchCallback
-							setTimeout(function() {
-								var vid = _this.getPlayerElement();			
-								// Restore controls 
-								vid.controls = orginalControlsState;
-								// add the end binding: 
-								$( vid ).bind( 'ended', function( event ) {
-									if(typeof doneCallback == 'function' ){
-										doneCallback();
-									}
-									return false;
-								});
-								if (typeof switchCallback == 'function') {
-									switchCallback(vid);
+						}	
+						vid.load();
+						vid.play();
+						// Wait another 100ms then bind the end event and any custom events
+						// for the switchCallback
+						setTimeout(function() {
+							var vid = _this.getPlayerElement();			
+							// Restore controls 
+							vid.controls = orginalControlsState;
+							// add the end binding: 
+							$( vid ).bind( 'ended', function( event ) {
+								if(typeof doneCallback == 'function' ){
+									doneCallback();
 								}
-								_this.hidePlayerSpinner();
-							}, 100);
+								return false;
+							});
+							if (typeof switchCallback == 'function') {
+								switchCallback(vid);
+							}
+							_this.hidePlayerSpinner();
 						}, 100);
-					};
-					if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
-						// Null the src and wait 50ms ( helps unload video without crashing
-						// google chrome 7.x )
-						vid.src = '';
-						setTimeout( updateSrcAndPlay, 100);
-					} else {
-						updateSrcAndPlay();
-					}
-				}, 100 );
+					}, 100);
+				};
+				if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
+					// Null the src and wait 50ms ( helps unload video without crashing
+					// google chrome 7.x )
+					vid.src = '';
+					setTimeout( updateSrcAndPlay, 100);
+				} else {
+					updateSrcAndPlay();
+				}
 			} catch (e) {
 				mw.log("Error: Error in switching source playback");
 			}

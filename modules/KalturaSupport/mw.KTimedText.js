@@ -44,7 +44,7 @@
 			return this.kClient;
 		},
 	
-		/**
+	/**
 	 * Load the list of captions sources from the kaltura api, or from plugin config
 	 */
 		loadTextSources: function( callback ) {

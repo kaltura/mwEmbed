@@ -1,4 +1,4 @@
-/*
+/**
  * Simple kaltura javascript api
  *
  * uses configuration Kaltura.ServiceUrl and Kaltura.ServiceBase for api entry point
@@ -148,8 +148,9 @@ mw.KApi.prototype = {
 			// null this global function name: 
 			window[ globalCBName ] = null;
 		};
+		requestURL+= '&callback=' + globalCBName; 
 		mw.log("kAPI:: doApiRequest: " + requestURL);
-		$.getScript( requestURL + '&callback=' + globalCBName );
+		$.getScript( requestURL );
 	},
 	getApiUrl : function( serviceType ){
 		var serviceUrl = mw.getConfig( 'Kaltura.ServiceUrl' );
