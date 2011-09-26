@@ -24,9 +24,6 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		this.embedPlayer = embedPlayer;
 		
-		// Unbind any old doubleClick stuff: 
-		$( this.embedPlayer ).unbind( this.bindPostfix );
-		
 		// Load the ad manager:
 		this.getAdsLoader( function( adsLoader ){
 			
@@ -81,7 +78,7 @@ mw.DoubleClick.prototype = {
 		});
 		
 		// Add a binding for cuepoints:
-		$( _this.embedPlayer ).bind( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function(event,  cuePointWrapper ){
+		$( _this.embedPlayer ).bind( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event,  cuePointWrapper ){
 			var cuePoint = cuePointWrapper.cuePoint;
 			// TODO we should not need this~ make sure cuepoints are still there 
 			if( !_this.embedPlayer.kCuePoints ){
@@ -115,13 +112,22 @@ mw.DoubleClick.prototype = {
 		});
 		// on change media remove any existing ads: 
 		$( _this.embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
-			 if( _this.activeOverlayadManager )
-				 _this.activeOverlayadManager.unload();
-			 
-			 if( _this.onResumeRequestedCallback )
-				 _this.onResumeRequestedCallback();
-				 
+			_this.destroy();
 		});
+	},
+	/**
+	 *  Destroy the doubleClick binding instance:
+	 */ 
+	destroy:function(){
+		// Unbind any old doubleClick stuff: 
+		$( this.embedPlayer ).unbind( this.bindPostfix );
+		
+		 if( this.activeOverlayadManager )
+			 this.activeOverlayadManager.unload();
+		 
+		 if( this.onResumeRequestedCallback )
+			 this.onResumeRequestedCallback();
+		
 	},
 	/**
 	 * Load and display an overaly 

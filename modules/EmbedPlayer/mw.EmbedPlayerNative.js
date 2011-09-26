@@ -202,8 +202,10 @@ mw.EmbedPlayerNative = {
 			vid.play();
 		}
 	},
-	// dissabled for now.. use native layout support
-	/*applyIntrinsicAspect: function(){
+	// disabled for now.. use native layout support
+	applyIntrinsicAspect: function(){
+		return ;
+		/*
 		var vid = this.getPlayerElement();
 		// check if a video tag is present 
 		if( !vid ){
@@ -243,8 +245,8 @@ mw.EmbedPlayerNative = {
 			});
 			
 		}
+		*/
 	},
-	*/
 	/**
 	 * Apply media element bindings
 	 */
@@ -529,8 +531,8 @@ mw.EmbedPlayerNative = {
 								switchCallback(vid);
 							}
 							_this.hidePlayerSpinner();
-						}, 100);
-					}, 100);
+						}, 50);
+					}, 50);
 				};
 				if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
 					// Null the src and wait 50ms ( helps unload video without crashing
