@@ -178,7 +178,7 @@ mw.IA =
   {
     if (mw.isMobileDevice())
       return;
-    
+   
     if (!mw.IA.video)
       return;
     
@@ -200,8 +200,7 @@ mw.IA =
         av.resizePlayer({'width': wd, 'height':ht}, true);
     }
 
-    $('         #mwplayer_videolist').css('top', ht);
-    $('#plholder_mwplayer_videolist').css('top', ht);
+    $('#video-list-wrapper-plholder_mwplayer').css('top', ht);
       
     $('#avplaydiv').css('width', wd);
       
@@ -292,7 +291,7 @@ mw.IA =
   },
   
   
-  oldswapper:function()
+  oldswapper:function()// unused.  just here now for reminiscence
   {
     mw.ready(function(){
 
@@ -342,7 +341,11 @@ audio { z-index:666 !important; position:absolute !important; bottom:0px !import
 div.playlistItem {\n\
   font-family:Lucida Grande;\n\
   margin:0px 5px 0px 5px !important;\n\
-  min-height:10px;\n\
+  padding:1px 5px 1px 5px !important;\n\
+  min-height:15px !important;\n\
+}\n\
+div.playlistItem > div {\n\
+  height:15px !important;\n\
 }\n\
 div.maudio div.playlistItem { padding:0px !important; }\n\
 div.maudio div.play_head { right:160px !important; }\n\
@@ -372,6 +375,7 @@ div.control-bar { -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-bord
 \n\
 \n\
 div.movies div.media-rss-video-list { background-image:url(/logos/hires/ia-tight-60x60-one-third-opacity.png); background-position:bottom; background-repeat:no-repeat; }\n\
+div.maudio #video-list-wrapper-plholder_mwplayer { top:30px !important; }\n\
 div.maudio div.media-rss-video-list { background-image:url(/logos/hires/ia-tight-240x240-one-third-opacity.png); background-position:bottom; background-repeat:no-repeat; }\n\
 div.maudio div.fullscreen-btn { display:none !important; }\n\
 div.maudio img.playerPoster   { display:none; } \n\
@@ -413,7 +417,7 @@ div.overlay-content        {\n\
                     
         'imagesPath' : 'http://www/archive.org/images/', //xxxxxxx not working yet
                     
-        'Playlist.TitleLength': 30
+        'Playlist.TitleLength': 26
       });
 
     // NOTE: keep this outside "mw.ready()" so that "click-to-play" does indeed
