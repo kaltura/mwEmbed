@@ -36,8 +36,11 @@ mw.FreeWheelControler.prototype = {
 	// The current active slot
 	currentSlotDoneCb: null,
 		
-	// if an overlay slot is active:  
+	// if an overlay slot is active:
 	overlaySlotActive: false,
+
+	// bindPostfix enables namespacing the plugin binding
+	bindPostfix: '.freeWheel',
 	
 	/**
 	 * Initialize the adMannager javascript and setup adds
@@ -110,14 +113,14 @@ mw.FreeWheelControler.prototype = {
 	
 		$.each(_this.slots, function( slotType, slotSet){
 			if( slotType == 'midroll' || slotType == 'overlay' ){
-				$( _this.embedPlayer ).bind( 'monitorEvent.freewheel', function( event ){
+				$( _this.embedPlayer ).bind( 'monitorEvent' + bindPostfix, function( event ){
 					_this.playSlotsInRange( slotSet );
 				});
 				return true;
 			}
 			
 			// else set of preroll or postroll clips setup normal binding: 
-			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType, function( event, callback ){
+			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType + bindPostfix, function( event, callback ){
 				// Run the freewheel slot add, then run the callback once done 
 				_this.displayFreeWheelSlots( slotType, 0, function(){
 					// Restore the player:
@@ -127,10 +130,20 @@ mw.FreeWheelControler.prototype = {
 				});
 			});
 		});
-		// add the "unload" binding
+		
+		// Add the "unload" binding for playlists
+		$( _this.embedPlayer ).bind( 'changeMedia' + bindPostfix, function() {
+			_this.destory();
+		}); 
 		
 		// Run the player callback once we have added player bindings
 		this.callback();
+	},
+	destroy: function(){
+		// Remove player bindings: 
+		$( this.embedPlayer ).unbind( this.bindPostfix );
+		// Remove freewheel based bindings:
+		this.getContext().
 	},
 	playSlotsInRange: function( slotSet ){
 		var _this = this;

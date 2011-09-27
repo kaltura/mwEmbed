@@ -478,12 +478,12 @@
 
 				var iframeId = $( playerTarget ).attr('id');				
 				iframeRequest+= mw.getIframeHash( iframeId);
+
 				
 				var $iframe = $('<iframe />')
 				.attr({
 					'id' : iframeId,
 					'class' : $( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',					
-					'src' : mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest,
 					'height' : $( playerTarget ).height(),
 					'width' : $( playerTarget ).width()
 				})
@@ -491,6 +491,15 @@
 				.css({
 					'border': '0px'
 				});
+				
+				// Check if we are setting iframe src or propagating via callback:
+				if( mw.getConfig('EmbedPlayer.PageDomainIframe') ){
+					// set the iframe contents via callback 
+					
+				} else {
+					$iframe.attr('src', mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest);
+				}
+				
 				// Replace the player with the iframe: 
 				$( playerTarget ).replaceWith( $iframe );
 				
@@ -562,7 +571,7 @@
 	};
 	
 	/**
-	 * Get kaltura thumb url from entry object
+	 * Get Kaltura thumb url from entry object
 	 */
 	mw.getKalturaThumbUrl = function ( entry ){
 		var kCdn = ( mw.getConfig('Kaltura.CdnUrl') ) ? mw.getConfig('Kaltura.CdnUrl') : 'http://cdnakmi.kaltura.com';

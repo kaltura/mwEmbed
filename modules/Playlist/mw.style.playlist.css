@@ -39,7 +39,9 @@
 .media-rss-video-list{
 	margin:5px;
 }
-
+.video-list-wrapper{
+	background-color: #111;
+}
 .playlist-set-list{
 	padding-left:15px;	
 	font-size: 14px;

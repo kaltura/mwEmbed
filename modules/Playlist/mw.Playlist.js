@@ -172,12 +172,13 @@ mw.Playlist.prototype = {
 		$( _this.target ).append(
 			$('<div />')
 			.attr( 'id',  'video-list-wrapper-' + _this.id )
+			.addClass('video-list-wrapper')
 			.css({
 				'position' : 'absolute',
 				'z-index' : '1',
 				'overflow-x' : 'hidden',
 				'overflow-y' : 'auto',
-				'bottom': '7px'
+				'bottom': '0px'
 			})
 			.append( 
 				$( '<div />')
@@ -347,7 +348,8 @@ mw.Playlist.prototype = {
 				$videoListWraper.css( {
 					'top' : '0px',
 					'left' :  parseInt( playerSize.width ) + 4,
-					'right' : '2px'
+					'right' : '2px',
+					'margin-top' : '5px'
 				} );
 				// Add space for the multi-playlist selector:
 				if( _this.sourceHandler.hasMultiplePlaylists() ){
@@ -397,6 +399,7 @@ mw.Playlist.prototype = {
 		// Get the target width and height:
 		this.targetWidth = $( this.target ).width();
 		this.targetHeight = $( this.target ).height();
+		
 		// if there is no player interface take all the allowed space:
 		if( !_this.sourceHandler.hasPlaylistUi() ){
 			return {
@@ -414,18 +417,22 @@ mw.Playlist.prototype = {
 			};
 		} else {
 			/* horizontal layout */
-			if( _this.sourceHandler.getVideoListWidth() != 'auto' ){
-				var playerWidth = this.targetWidth - _this.sourceHandler.getVideoListWidth();
-			} else {
-				var pa = this.playerAspect.split(':');
-				var playerWidth = parseInt( ( pa[0] / pa[1] ) * this.targetHeight );
+			// Check if we have explicit video size
+			var playerWidth = parseInt( $( this.target + ' .media-rss-video-player-container' ).css('width') );
+			if(  isNaN( playerWidth) || !playerWidth ){
+				if( _this.sourceHandler.getVideoListWidth() != 'auto' ){
+					playerWidth = this.targetWidth - _this.sourceHandler.getVideoListWidth();
+				} else {
+					var pa = this.playerAspect.split(':');
+					playerWidth = parseInt( ( pa[0] / pa[1] ) * this.targetHeight );
+				}
 			}
-			
 			this.targetPlayerSize = {
 				'height' : ( this.targetHeight - this.titleHeight - 10 ) + 'px',
 				'width' : playerWidth + 'px'
 			};
 		}
+		
 		if( this.targetPlayerSize.width > this.targetWidth ){
 			var pa = this.playerAspect.split(':');
 			this.targetPlayerSize.width = this.targetWidth;
@@ -507,7 +514,7 @@ mw.Playlist.prototype = {
 				}
 			});
 		}
-		var uiSelector = '.playlist-set-list,.media-rss-video-list,.playlist-scroll-buttons';
+		var uiSelector = '.playlist-block-list,.video-list-wrapper,.playlist-scroll-buttons';
 		// fullscreen support
 		$( embedPlayer ).bind('onOpenFullScreen', function(){
 			// hide inteface comonets ( these should readlly all be in their own div! )
@@ -620,8 +627,8 @@ mw.Playlist.prototype = {
 					.css({
 						'z-index': 2,
 						'background-color' : '#FFF',
-						'opacity' : '0.8',
-						'filter' : 'alpha(opacity=80)'
+						'opacity' : '0.7',
+						'filter' : 'alpha(opacity=70)'
 					})
 					.click(function(){
 						// don't let event propagate

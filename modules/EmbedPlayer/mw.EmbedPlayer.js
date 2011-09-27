@@ -1689,7 +1689,7 @@ mw.EmbedPlayer.prototype = {
 		this.updatePlayHead( 0 );
 
 		// reset seek_offset:
-		if ( this.mediaElement.selectedSource.URLTimeEncoding ) {
+		if ( this.mediaElement.selectedSource && this.mediaElement.selectedSource.URLTimeEncoding ) {
 			this.serverSeekTime = 0;
 		} else {
 			this.serverSeekTime = mw.npt2seconds( start_npt );

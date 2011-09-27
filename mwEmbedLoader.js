@@ -27,6 +27,9 @@
 *	// If the html5 library should be loaded when there are video tags in the page.  
 *	'Kaltura.LoadScriptForVideoTags' : true
 *
+*	// If set to true will output the iframe as inline contents on the same domain as page contents 
+*	'EmbedPlayer.PageDomainIframe' : false
+*
 *	// If the iframe should expose a javascript api emulating the video tag bindings and api
 *	// lets you treat the iframe id like a video tag ie: 
 *	// $j('#iframeid').get(0).play() 
