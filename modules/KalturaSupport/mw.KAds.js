@@ -80,16 +80,21 @@ mw.KAds.prototype = {
 	loadAd: function( cuePointWrapper ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		var adType = this.embedPlayer.kCuePoints.getAdSlotType( cuePointWrapper );
 		var cuePoint = cuePointWrapper.cuePoint;
+		var adType = this.embedPlayer.kCuePoints.getAdSlotType( cuePointWrapper );
+		var adDuration = Math.round( cuePoint.duration / 1000);
 		// Check if cue point already displayed
 		if( $.inArray( cuePoint.id, _this.displayedCuePoints) >= 0 ) {
 			return ;
 		}
 
+		// Load adTimeline
+		if (!_this.embedPlayer.adTimeline) {
+			_this.embedPlayer.adTimeline = new mw.AdTimeline( _this.embedPlayer );
+		}
+
 		// If ad type is midroll pause the video
 		if( adType == 'midroll' ) {
-			// Pause the video
 			_this.embedPlayer.pauseLoading();
 		}
 		
@@ -119,12 +124,6 @@ mw.KAds.prototype = {
 				var seekTime = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
 				var oldDuration = embedPlayer.duration;
 
-				// Set restore function
-				var restorePlayer = function() {
-					embedPlayer.restoreEventPropagation();
-					embedPlayer.enableSeekBar();
-				};
-
 				// Set switch back function
 				var doneCallback = function() {
 					// continue playback ( if not already playing ) 
@@ -141,7 +140,7 @@ mw.KAds.prototype = {
 							// Restore embedPlayer native bindings
 							// async for iPhone issues
 							setTimeout(function(){
-								restorePlayer();
+								embedPlayer.adTimeline.restorePlayer();
 							}, 100 );
 
 							// Sometimes the duration of the video is zero after switching source
@@ -174,29 +173,19 @@ mw.KAds.prototype = {
 							}
 						});
 					} else {
-						restorePlayer();
+						embedPlayer.adTimeline.restorePlayer();
 					}
 				};
 
 				// If out ad is preroll/midroll/postroll, disable the player 
 				if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
-					_this.embedPlayer.disableSeekBar();
-
-					// Remove big play button if we have one
-					if( _this.embedPlayer.$interface ){
-						_this.embedPlayer.$interface.find( '.play-btn-large' ).remove();
-					}
+					_this.embedPlayer.$interface.find( '.play-btn-large' ).remove();
 				} else {
 					// in case of overlay do nothing
 					doneCallback = function() {};
 				}
 
 				// Tell the player to show the Ad
-				var adDuration = Math.round( cuePoint.duration / 1000);
-				// Load adTimeline
-				if (!_this.embedPlayer.adTimeline) {
-					_this.embedPlayer.adTimeline = new mw.AdTimeline( _this.embedPlayer );
-				}
 				_this.embedPlayer.adTimeline.display( adsCuePointConf, doneCallback, adDuration );
 			});
 		}
@@ -337,7 +326,7 @@ mw.KAds.prototype = {
 	},
 
 	destroy: function(){
-		$( this.embedPlayer ).unbind( _this.bindPostfix );
+		$( this.embedPlayer ).unbind( this.bindPostfix );
 	}
 };
 

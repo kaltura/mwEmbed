@@ -85,7 +85,7 @@
 ( function( mw, $ ) {
 	
 mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
-	mw.log("AdTimeline::Add:" + timeType + '  dispCof:' + adConf + "\n");
+	mw.log("AdTimeline::Add:" + timeType + '  dispCof:', adConf);
 	mw.addAdTimeline( embedPlayer );
 	embedPlayer.adTimeline.addToTimeline( timeType, adConf );
 };
@@ -197,9 +197,15 @@ mw.AdTimeline.prototype = {
 		// Reset firstPlay flag
 		_this.firstPlay = true;
 		// empty out the timeline targets
-		$.each( _this.timelineTargets, function(inx, key ){
-			_this.timelineTargets[key] = [];
-		});
+
+		_this.timelineTargets = {
+				'preroll' : [],
+				'bumper' : [],
+				'overlay' : [],
+				'midroll' : [],
+				'postroll' : []
+		};
+		
 		// Unbind all adTimeline events
 		$( _this.embedPlayer ).unbind( '.AdTimeline' );
 
@@ -258,17 +264,17 @@ mw.AdTimeline.prototype = {
 		var slotSet = _this.getTimelineTargets( slotType );
 		
 		// Exit if we don't have ads 
-		/*if( slotSet.length == 0 ) {
+		if( slotSet.length == 0 ) {
 			doneCallback();
 			return ;
-		}*/
+		}
 		if( slotType == 'postroll' /* TODO check AdSupport_ bindings postroll count / accumulate sequenceSlots */ ){
 			_this.embedPlayer.onDoneInterfaceFlag = false;
 		}
 		mw.log( "AdTimeline:: displaySlots: " + slotType + ' inx: ' + inx + ' of ' + slotSet.length + ' ads' );
 		// Start video ad playback 
 		// ( we should check if AdSupport_' + slotType ) exists
-		_this.updateUiForAdPlayback( slotType );
+		//_this.updateUiForAdPlayback( slotType );
 		// If on the first inx trigger displaySlot event so that other adPlugins can insert any ads:
 		// we also pass in a reference to the slot set ( in case the plugin wants to look at how many
 		// ads we already have )

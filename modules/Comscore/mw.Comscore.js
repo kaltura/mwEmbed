@@ -128,16 +128,16 @@ mw.Comscore.prototype = {
 
 		// Bind to ad start
 		$( embedPlayer ).bind('AdSupport_StartAdPlayback' + this.bindPostfix, function( event, adType ) {
-			console.log(adType);
+			
 			switch ( adType )
 			{
-				case 'pre':
+				case 'preroll':
 					cParams["c5"] = _this.prerollAdContentType;
 				break;
-				case 'post':
+				case 'postroll':
 					cParams["c5"] = _this.postrollAdContentType;
 				break;
-				case 'mid':
+				case 'midroll':
 					cParams["c5"] = _this.midrollAdContentType;
 				break;
 			}
@@ -181,10 +181,13 @@ mw.Comscore.prototype = {
 			cParams['c' + i] = this.parseCAttribute('c' + i);
 		}
 
-		//console.log( $(this.embedPlayer).data('flashvars'));
-		//console.log(this.embedPlayer.$uiConf.find("#comscore"));
-		//console.log(config);
-		//console.log(cParams);
+		/**
+		 * For debug:
+		 * console.log( $(this.embedPlayer).data('flashvars'));
+		 * console.log(this.embedPlayer.$uiConf.find("#comscore"));
+		 * console.log(config);
+		 * console.log(cParams);
+		 */
 	},
 
 	/**
@@ -238,15 +241,15 @@ mw.Comscore.prototype = {
 		
 	},
 
-	comScoreBeacon: function( beconObject ) {
+	comScoreBeacon: function( beaconObject ) {
 		var _this = this;
 		
 		var loadUrl = (document.location.protocol == "https:" ? "https://sb." : "http://b");
 		loadUrl += "scorecardresearch.com/p?";
 
-		for (var cParam in beconObject) {
-			if( beconObject[cParam] ) {
-				loadUrl += cParam + "=" + encodeURIComponent(beconObject[cParam]) + "&";
+		for (var cParam in beaconObject) {
+			if( beaconObject[cParam] ) {
+				loadUrl += cParam + "=" + encodeURIComponent(beaconObject[cParam]) + "&";
 			}
 		}
 
@@ -278,7 +281,7 @@ mw.Comscore.prototype = {
 			})
 		);
 
-		mw.log('Comscore:: Sent Beacon: ' + loadUrl);
+		mw.log('Comscore:: Sent Beacon: ' + loadUrl, beaconObject);
 	},
 	destroy: function() {
 		$( this.embedPlayer ).unbind( this.bindPostfix );

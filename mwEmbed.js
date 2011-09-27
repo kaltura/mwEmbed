@@ -1424,22 +1424,33 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 * 
 	 * all mw.log statements will be removed on minification so lots of mw.log
 	 * calls will not impact performance in non debug mode
+	 *
+	 * Pass multiple arguments to log
+	 * http://paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
 	 * 
 	 * @param {String}
 	 *            string String to output to console
 	 */
-	mw.log = function( string ) {
+	mw.log = function() {
 		// Add any prepend debug strings if necessary
-		if ( mw.getConfig( 'Mw.LogPrepend' ) ){
-			string = mw.getConfig( 'Mw.LogPrepend' ) + string;
+		if ( mw.getConfig( 'Mw.LogPrepend' ) && arguments.length > 0 ){
+			arguments[0] = mw.getConfig('Mw.LogPrepend') + arguments[0];
 		}
+		if(window.console){
+			if (arguments.length == 1) {
+				console.log( arguments[0] );
+			} else {
+				console.log( Array.prototype.slice.call(arguments) );
+			}
+		}
+
 		// To debug stack size ( useful for iPad / safari that have a 100 call
 		// stack limit
 		// string = mw.getCallStack().length -1 + ' : ' + string;
-		
+		/*
 		if ( window.console ) {
 			window.console.log( string );
-		} else {
+		} else {*/
 			/**
 			 * Old IE and non-Firebug debug: ( commented out for now )
 			 */
@@ -1453,7 +1464,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			 * log_elm.value+=string+"\n"; // scroll to bottom:
 			 * log_elm.scrollTop = log_elm.scrollHeight; }
 			 */
-		}
+		//}
 	};
 	mw.getCallStack = function(){
 		var stringifyArguments = function(args) {

@@ -1791,7 +1791,7 @@ mw.EmbedPlayer.prototype = {
 				}
 				
 				if( _this.isPersistentNativePlayer() ){
-					_this.switchPlaySrc( _this.getSrc() );
+					//_this.switchPlaySrc( _this.getSrc() );
 				} else {
 					_this.stop();
 					_this.play();

@@ -406,6 +406,9 @@ mw.EmbedPlayerNative = {
 				callback();
 				return;
 			}
+			// Enforce a specific amount of decimal digits
+			// http://blog.millermedeiros.com/2011/03/html5-video-issues-on-the-ipad-and-how-to-solve-them/
+			time = time.toFixed(1);
 			var once = function( event ) {
 				if( callback ){
 					callback();
