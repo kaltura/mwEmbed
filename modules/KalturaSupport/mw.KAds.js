@@ -146,7 +146,7 @@ mw.KAds.prototype = {
 					// Check if the src does not match original src if
 					// so switch back and restore original bindings
 					if ( originalSrc != vid.src ) {
-						embedPlayer.switchPlaySrc(originalSrc, function() {
+						embedPlayer.switchPlaySrc( originalSrc, function() {
 							mw.log( "AdTimeline:: restored original src:" + vid.src);
 							// Restore embedPlayer native bindings
 							// async for iPhone issues
@@ -221,12 +221,12 @@ mw.KAds.prototype = {
 				if( adConfigSet[ adType ].ads ) {
 					$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
 						// add to sequenceProxy:
-						sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( callback ){
+						sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( doneCallback ){
 							var adConfig = $.extend({}, baseDisplayConf, adConfigSet[ adType ] );
 							adConfig.type = adType;
 							_this.embedPlayer.adTimeline.display( adConfig, function(){
 								// Done playing Ad issue sequenceProxy callback: 
-								callback();
+								doneCallback();
 							});
 						};
 					});

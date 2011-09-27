@@ -278,25 +278,27 @@ mw.AdTimeline.prototype = {
 		$.each( sequenceProxy, function(k, na){
 			keyList.push( k );
 		});
+		
+		// if don't have any ads issue the callback directly:
+		if( !keyList.length ){
+			doneCallback();
+			return ;
+		}
+		
 		keyList.sort();
 		var seqInx = 0;
 		// Run each sequence key in order:
 		var runSequeceProxyInx = function( seqInx ){
 			var key = keyList[ seqInx ] ;
 			if( !sequenceProxy[key] ){
-				// Done with sequence proxy: 
-				_this.restorePlayer();
 				doneCallback();
 				return ;
-			}
-			// Set the player to ad mode: 
-			_this.updateUiForAdPlayback();
-			
+			}			
 			// Run the sequence proxy function: 
 			sequenceProxy[ key]( function(){
 				// done with the current proxy call next
 				seqInx++;
-				// call with a timeout to avoid function stack overload for long sequences. 
+				// call with a timeout to avoid function stack
 				setTimeout(function(){
 					runSequeceProxyInx( seqInx );
 				},1);
