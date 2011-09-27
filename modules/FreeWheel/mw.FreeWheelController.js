@@ -127,6 +127,8 @@ mw.FreeWheelControler.prototype = {
 				});
 			});
 		});
+		// add the "unload" binding
+		
 		// Run the player callback once we have added player bindings
 		this.callback();
 	},

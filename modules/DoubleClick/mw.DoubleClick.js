@@ -93,6 +93,7 @@ mw.DoubleClick.prototype = {
 			
 			// Get the ad type for each cuepoint
 			var adType = _this.embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
+			
 			if( adType == 'overlay' ){
 				_this.loadAndDisplayOverlay(cuePoint);
 				// TODO add it to the right place in the timeline
