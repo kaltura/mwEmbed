@@ -155,8 +155,8 @@ class kalturaIframe {
 					'<div class="media-rss-video-player" style="position:relative">' . 
 						$videoHtml .
 					'</div>' . 
-				'</span> .
-				</div>';
+				'</span>
+			</div>';
 	}
 	private function getVideoHTML( $playerSize = 'width:100%;height:100%;'  ){
 		$videoTagMap = array(
