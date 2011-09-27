@@ -55,8 +55,10 @@ mw.FreeWheelControler.prototype = {
 	 */
 	init: function( embedPlayer, callback  ){
 		var _this = this;
-		// add init params; 
-		this.embedPlayer = embedPlayer;
+		// Inherit BaseAdPlugin
+		mw.inherit( this, new mw.BaseAdPlugin(  embedPlayer, callback ) );
+		
+		// setp local pointer to callback: 
 		this.callback = callback;
 		
 		// Get the freewheel configuration
@@ -113,37 +115,32 @@ mw.FreeWheelControler.prototype = {
 	
 		$.each(_this.slots, function( slotType, slotSet){
 			if( slotType == 'midroll' || slotType == 'overlay' ){
-				$( _this.embedPlayer ).bind( 'monitorEvent' + bindPostfix, function( event ){
+				$( _this.embedPlayer ).bind( 'monitorEvent' + _this.bindPostfix, function( event ){
 					_this.playSlotsInRange( slotSet );
 				});
 				return true;
 			}
 			
-			// else set of preroll or postroll clips setup normal binding: 
-			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType + bindPostfix, function( event, callback ){
-				// Run the freewheel slot add, then run the callback once done 
-				_this.displayFreeWheelSlots( slotType, 0, function(){
-					// Restore the player:
-					_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
-					// Run the callback: 
-					callback();
-				});
+			// Else set of preroll or postroll clips setup normal binding: 
+			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType + _this.bindPostfix, function( event, sequenceProxy ){
+				sequenceProxy[ _this.getSequenceIndex( slotType ) ] = function( callback ){
+					// Run the freewheel slot add, then run the callback once done 
+					_this.displayFreeWheelSlots( slotType, 0, function(){
+						// Restore the player:
+						_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
+						// Run the callback: 
+						callback();
+					});
+				};
 			});
 		});
 		
 		// Add the "unload" binding for playlists
-		$( _this.embedPlayer ).bind( 'changeMedia' + bindPostfix, function() {
+		$( _this.embedPlayer ).bind( 'changeMedia' + _this.bindPostfix, function() {
 			_this.destory();
 		}); 
-		
 		// Run the player callback once we have added player bindings
 		this.callback();
-	},
-	destroy: function(){
-		// Remove player bindings: 
-		$( this.embedPlayer ).unbind( this.bindPostfix );
-		// Remove freewheel based bindings:
-		this.getContext().
 	},
 	playSlotsInRange: function( slotSet ){
 		var _this = this;
@@ -243,7 +240,7 @@ mw.FreeWheelControler.prototype = {
 			_this.addPlayerBindings();
 		} else {
 			mw.log("FreeWheelController:: no freewheel ads avaliable");
-			// no adds issue callback directly
+			// No adds issue callback directly
 			this.callback();
 		}
 	},
@@ -351,27 +348,22 @@ mw.FreeWheelControler.prototype = {
 		mw.log("FreeWheelController::addTemporalSlots>")
 		var context = this.getContext();
 		var embedPlayer = this.embedPlayer;
-		
 		var slotCounts = {
 			'pre':0,
 			'post':0,
 			'mid':0,
 			'over':0
 		};
-		
+			
 		// Check for number of prerolls from config: 
-		if( this.config.preSequence ){
-			for(var i=0;i< parseInt(  this.config.preSequence ); i++ ){
-				slotCounts['pre']++;
-				context.addTemporalSlot("Preroll_" + slotCounts['pre'], tv.freewheel.SDK.ADUNIT_PREROLL, 0);
-			}
+		if( parseInt( this.config.preSequence ) ){
+			slotCounts['pre']++;
+			context.addTemporalSlot("Preroll_" + slotCounts['pre'], tv.freewheel.SDK.ADUNIT_PREROLL, 0);
 		}
 		// Check for post rolls: 
-		if( this.config.preSequence ){
-			for(var i=0;i< parseInt(  this.config.preSequence ); i++ ){
-				slotCounts['post']++;
-				context.addTemporalSlot("Postroll_" + slotCounts['post'], tv.freewheel.SDK.ADUNIT_PREROLL, 0);
-			}
+		if( parseInt( this.config.postSequence ) ){
+			slotCounts['post']++;
+			context.addTemporalSlot("Postroll_" + slotCounts['post'], tv.freewheel.SDK.ADUNIT_PREROLL, 0);
 		}
 		// Add CuePoint slots: 
 		if( this.embedPlayer.rawCuePoints ){

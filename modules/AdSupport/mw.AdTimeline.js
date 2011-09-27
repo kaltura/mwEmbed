@@ -84,11 +84,6 @@
  */
 ( function( mw, $ ) {
 	
-mw.addAdToPlayerTimeline = function( embedPlayer, timeType, adConf ) {
-	mw.log("AdTimeline::Add:" + timeType + '  dispCof:', adConf);
-	mw.addAdTimeline( embedPlayer );
-	embedPlayer.adTimeline.addToTimeline( timeType, adConf );
-};
 mw.addAdTimeline = function( embedPlayer ){
 	if (!embedPlayer.adTimeline) {
 		embedPlayer.adTimeline = new mw.AdTimeline( embedPlayer );
@@ -175,12 +170,16 @@ mw.AdTimeline.prototype = {
 					return ;
 				}
 				displayedPostroll = true;
+				_this.embedPlayer.onDoneInterfaceFlag = false;
 				_this.displaySlots( 'postroll', 0, function(){
 					/** TODO support postroll bumper and leave behind */
 					_this.embedPlayer.switchPlaySrc( _this.originalSrc, function(){
-						// restore ondone interface: 
+						_this.restorePlayer();
+						// stop the playback: 
+						_this.embedPlayer.pause();
+						// Restore ondone interface: 
 						_this.embedPlayer.onDoneInterfaceFlag = true;
-						// Stop the player after we finish postroll. 
+						// run the clipdone event:
 						_this.embedPlayer.onClipDone();
 					});
 				});
@@ -263,43 +262,47 @@ mw.AdTimeline.prototype = {
 		var _this = this;
 		var slotSet = _this.getTimelineTargets( slotType );
 		
-		// Exit if we don't have ads 
-		if( slotSet.length == 0 ) {
-			doneCallback();
-			return ;
-		}
-		if( slotType == 'postroll' /* TODO check AdSupport_ bindings postroll count / accumulate sequenceSlots */ ){
-			_this.embedPlayer.onDoneInterfaceFlag = false;
-		}
+		// Setup a sequence timeline set: 
+		var sequenceProxy = {};
+		
+		// Get the sequence ad set
+		$( _this.embedPlayer ).trigger( 'AdSupport_' + slotType,  [ sequenceProxy ]);
+		
 		mw.log( "AdTimeline:: displaySlots: " + slotType + ' inx: ' + inx + ' of ' + slotSet.length + ' ads' );
-		// Start video ad playback 
-		// ( we should check if AdSupport_' + slotType ) exists
-		//_this.updateUiForAdPlayback( slotType );
-		// If on the first inx trigger displaySlot event so that other adPlugins can insert any ads:
-		// we also pass in a reference to the slot set ( in case the plugin wants to look at how many
-		// ads we already have )
-		$( _this.embedPlayer ).triggerQueueCallback( 'AdSupport_' + slotType, function( /* TODO playHandOverCallback, sequenceSlot */ ){
-			// Now display internal slots
-			_this.displayInternalSlots( slotType, inx, doneCallback);
+		
+		// loop over all items in the sequence proxy.
+		// @@TODO what does flash do?
+		
+		// Generate a sorted key list:
+		var keyList = [];
+		$.each( sequenceProxy, function(k, na){
+			keyList.push( k );
 		});
-	},
-	displayInternalSlots: function( slotType, inx, doneCallback ){
-		var _this = this;
-		var slotSet = _this.getTimelineTargets( slotType );
-		// Get the slot set: 
-		if( slotSet[inx] ){
-			_this.display( slotSet[inx], function(){
-				// increment the index:
-				inx++;
-				// display the next slot:
-				setTimeout(function(){ // setTimeout to avoid call stack
-					_this.displayInternalSlots( slotType, inx, doneCallback);
+		keyList.sort();
+		var seqInx = 0;
+		// Run each sequence key in order:
+		var runSequeceProxyInx = function( seqInx ){
+			var key = keyList[ seqInx ] ;
+			if( !sequenceProxy[key] ){
+				// Done with sequence proxy: 
+				_this.restorePlayer();
+				doneCallback();
+				return ;
+			}
+			// Set the player to ad mode: 
+			_this.updateUiForAdPlayback();
+			
+			// Run the sequence proxy function: 
+			sequenceProxy[ key]( function(){
+				// done with the current proxy call next
+				seqInx++;
+				// call with a timeout to avoid function stack overload for long sequences. 
+				setTimeout(function(){
+					runSequeceProxyInx( seqInx );
 				},1);
 			});
-			return ;
 		};
-		// Run the done callback
-		doneCallback();
+		runSequeceProxyInx( seqInx );
 	},
 	updateUiForAdPlayback: function( slotType ){
 		// Stop the native embedPlayer events so we can play the preroll and bumper
@@ -424,7 +427,6 @@ mw.AdTimeline.prototype = {
 				mw.sendBeaconUrl( adConf.impressions[i].beaconUrl );
 			}
 		}
-		
 	},
 	/**
 	 * Display a video slot
@@ -751,7 +753,6 @@ mw.AdTimeline.prototype = {
 	selectFromArray: function( array ){
 		return array[Math.floor(Math.random() * array.length)];
 	},
-	
 
 	/**
 	 * getTimelineTargets get list of timeline targets by type
@@ -765,22 +766,6 @@ mw.AdTimeline.prototype = {
 			return this.timelineTargets[ timeType ];
 		} else {
 			return [];
-		}
-	},
-
-	/**
-	 * addToTimeline adds a given display configuration to the timelineTargets
-	 *
-	 * @param {string}
-	 *            timeType
-	 * @param {object}
-	 *            adConf
-	 */
-	addToTimeline : function( timeType, adConf ) {
-		// Validate the timeType
-		if (typeof this.timelineTargets[ timeType ] != 'undefined') {
-			adConf.type = timeType;
-			this.timelineTargets[ timeType ].push( adConf );
 		}
 	},
 	

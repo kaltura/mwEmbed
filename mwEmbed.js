@@ -141,7 +141,21 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			return ;
 		}
 	};
-
+	/**
+	 * Simple inheritance. We will move to something like 
+	 * http://javascriptmvc.com/docs.html#&who=jQuery.Class 
+	 * in the near future. This is just a stop gap. 
+	 */
+	mw.inherit = function( _this, inhertParent ){ 
+		for ( var method in inhertParent ) {
+			if ( _this[ method ] ) {
+				_this['parent_' + method] = inhertParent[method];
+			} else {
+				_this[ method ] = inhertParent[method];
+			}
+		}
+	};
+	
 	/**
 	 * Getter for configuration values
 	 * 

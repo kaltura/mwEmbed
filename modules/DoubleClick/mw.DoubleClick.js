@@ -22,7 +22,9 @@ mw.DoubleClick.prototype = {
 	init: function( embedPlayer, callback ){
 		mw.log( 'DoubleClick:: init: ' + embedPlayer.id );
 		var _this = this;
-		this.embedPlayer = embedPlayer;
+		
+		// Inherit BaseAdPlugin
+		mw.inherit( this, new mw.BaseAdPlugin(  embedPlayer, callback ) );
 		
 		// Load the ad manager:
 		this.getAdsLoader( function( adsLoader ){
@@ -72,8 +74,11 @@ mw.DoubleClick.prototype = {
 		$.each( slotSet, function( inx, slotType ){
 			// Add the adSlot binding
 			// @@TODO use the "sequence number" as a slot identifier. 
-			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType + _this.bindPostfix, function( event, callback ){
-				_this.loadAndPlayVideoSlot( slotType, callback );
+			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType + _this.bindPostfix, function( event, sequenceProxy ){
+				// Add the slot to the given sequence proxy target target
+				sequenceProxy[ _this.getSequenceIndex( slotType ) ] = function( callback ){
+					_this.loadAndPlayVideoSlot( slotType, callback );	
+				};
 			});
 		});
 		
@@ -84,7 +89,6 @@ mw.DoubleClick.prototype = {
 			if( !_this.embedPlayer.kCuePoints ){
 				return ;
 			}
-			
 			// Make sure the cue point is tagged for dobuleclick
 			if( cuePoint.tags.indexOf( "doubleclick" ) === -1 ){
 				return true;
@@ -95,7 +99,7 @@ mw.DoubleClick.prototype = {
 			var adType = _this.embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
 			
 			if( adType == 'overlay' ){
-				_this.loadAndDisplayOverlay(cuePoint);
+				_this.loadAndDisplayOverlay( cuePoint );
 				// TODO add it to the right place in the timeline
 				return true; // continue to next cue point
 			}
@@ -116,12 +120,13 @@ mw.DoubleClick.prototype = {
 			_this.destroy();
 		});
 	},
+	
 	/**
 	 *  Destroy the doubleClick binding instance:
 	 */ 
 	destroy:function(){
-		// Unbind any old doubleClick stuff: 
-		$( this.embedPlayer ).unbind( this.bindPostfix );
+		// Run the parent destroy:
+		this.parent_destroy();
 		
 		 if( this.activeOverlayadManager )
 			 this.activeOverlayadManager.unload();

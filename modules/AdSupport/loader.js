@@ -3,12 +3,13 @@
 	
 	mw.addResourcePaths({
 		"mw.AdTimeline" : "mw.AdTimeline.js",
+		"mw.BaseAdPlugin" : "mw.BaseAdPlugin.js",
 		"mw.AdLoader" : "mw.AdLoader.js",
 		"mw.VastAdParser" : "mw.VastAdParser.js"
 	});
 	
 	mw.addModuleLoader('AdSupport', function(){
-		return [ 'mw.AdTimeline', 'mw.AdLoader', 'mw.VastAdParser' ];
+		return [ 'mw.AdTimeline', 'mw.BaseAdPlugin', 'mw.AdLoader', 'mw.VastAdParser' ];
 	});
 	
 	// Check if a dependency of any plugin included AdSupport, if so add a adTimeline

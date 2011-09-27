@@ -75,8 +75,11 @@
 			mw.load( "mw.AdTimeline", function(){
 		
 				var updateRoll = function( type, $input ){
-					mw.addAdToPlayerTimeline( embedPlayer, type, 
-		 	 	 		{ 
+					var bindName = 'AdSupport_' + type;
+					// We are updating a binding so unbind it first 
+					$( embedPlayer ).unbind(bindName).bind(bindName, function(event, sequenceProxy){
+						var adConf ={
+							'type' :  type,
 		 	 	 	 		'ads': [
 				 	 	 	 	{
 			 	 					'videoFiles' : [{
@@ -96,12 +99,18 @@
 		 							'elementid':'companionTarget'
 		 						}
 		 					]	 					
-		 	 	 		}							
-					)
+		 	 	 		}
+		 	 	 		// set it to the first targert for this even type:
+						sequenceProxy[1] = function( callback ){
+							embedPlayer.adTimeline.display( adConf, callback );
+						};
+					});
+				
 	 			};
 				var updateOverlayAd = function( overalyText ){
+					// FIXME overlays need internal timers in bind trigger model. 
 					// Insert the overlay video
-					mw.addAdToPlayerTimeline( embedPlayer, 'overlay', 
+					/*mw.addAdToPlayerTimeline( embedPlayer, 'overlay', 
 	 	 	 	 		{ 
 	 	 	 	 	 		'ads': [
 			 	 	 	 		{			 	 
@@ -129,7 +138,7 @@
 			 	 					}			
 	 	 	 	 			]
 	 	 	 	 		}
-					);
+					);*/
 				}
 	 			
 	 			// update the preroll / postroll

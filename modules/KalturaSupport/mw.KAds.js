@@ -36,29 +36,15 @@ mw.KAds.prototype = {
 	
 	init: function( embedPlayer, callback ){
 		var _this = this; 
-		this.embedPlayer = embedPlayer;
+
+		// Inherit BaseAdPlugin
+		mw.inherit( this, new mw.BaseAdPlugin(  embedPlayer, callback ) );
 		
 		// setup local pointer: 
 		var $uiConf = embedPlayer.$uiConf;
 		this.$notice = $uiConf.find( 'label#noticeMessage' );
 		this.$skipBtn = $uiConf.find( 'button#skipBtn' );
 
-		// Build out the selection of kAds
-		var configSet = [ 'htmlCompanions' , 'flashCompanions' ];
-		$.each( this.namedAdTimelineTypes, function( inx, adType ){
-			$.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
-				// Add all the ad types to the config set: 
-				configSet.push( adType + adAttributeName);
-			});
-			// Add the ad type Url
-			configSet.push( adType + 'Url');
-		});
-
-		this.adConfig = embedPlayer.getKalturaConfig(
-			'vast',
-			configSet
-		);
-		
 		// Load the Ads from uiConf
 		_this.loadAds( function(){
 			mw.log( "KAds::All ads have been loaded" );
@@ -75,7 +61,32 @@ mw.KAds.prototype = {
 			_this.destroy();
 		});
 	},
+	/**
+	 * Get ad config
+	 * @param name
+	 * @return
+	 */
+	getConfig: function( name ){
+		var _this = this;
+		if( ! this.config ){
+			// Build out the selection of kAds
+			var configSet = [ 'preSequence', 'postSequence', 'htmlCompanions' , 'flashCompanions' ];
+			$.each( this.namedAdTimelineTypes, function( inx, adType ){
+				$.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
+					// Add all the ad types to the config set: 
+					configSet.push( adType + adAttributeName);
+				});
+				// Add the ad type Url
+				configSet.push( adType + 'Url');
+			});
 
+			this.config = this.embedPlayer.getKalturaConfig(
+				'vast',
+				configSet
+			);
+		}
+		return this.config[ name ];
+	},
 	// Load the ad from cue point
 	loadAd: function( cuePointWrapper ) {
 		var _this = this;
@@ -200,26 +211,31 @@ mw.KAds.prototype = {
 		this.getAdConfigSet( function( adConfigSet){
 			
 			// Get global timeout ( should be per adType ) 
-			if( _this.adConfig.timeout ){
-				baseDisplayConf[ 'timeout' ] = _this.adConfig.timeout; 
+			if( _this.getConfig( 'timeout' ) ){
+				baseDisplayConf[ 'timeout' ] = _this.getConfig('timeout'); 
 			}
 			
-			// Merge in the companion targets and add to player timeline: 
+			// add in a binding for the adType
 			for( var adType in adConfigSet ){
 				// Add to timeline only if we have ads
 				if( adConfigSet[ adType ].ads ) {
-					mw.addAdToPlayerTimeline(
-						_this.embedPlayer,
-						adType,
-						$.extend({}, baseDisplayConf, adConfigSet[ adType ] ) // merge in baseDisplayConf
-					);
+					$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
+						// add to sequenceProxy:
+						sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( callback ){
+							var adConfig = $.extend({}, baseDisplayConf, adConfigSet[ adType ] );
+							adConfig.type = adType;
+							_this.embedPlayer.adTimeline.display( adConfig, function(){
+								// Done playing Ad issue sequenceProxy callback: 
+								callback();
+							});
+						};
+					});
 				}
 			}
 			// Run the callabck once all the ads have been loaded. 
 			callback();
 		});
 	},
-	
 	/** 
 	 * Get base display configuration:
 	 */
@@ -271,15 +287,15 @@ mw.KAds.prototype = {
 			var adConf = {};
 
 			$.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
-				if( _this.adConfig[ adType + adAttributeName ] ){
-					adConf[ displayConfName ] =  _this.adConfig[ adType + adAttributeName ];
+				if( _this.getConfig( adType + adAttributeName ) ){
+					adConf[ displayConfName ] = _this.getConfig( adType + adAttributeName );
 				}
 			});
 
-			if( _this.adConfig[ adType + 'Url' ] ){
+			if( _this.getConfig( adType + 'Url' ) ){
 				loadQueueCount++;				
 				// Load and parse the adXML into displayConf format
-				mw.AdLoader.load( _this.adConfig[ adType + 'Url' ] , function( adDisplayConf ){
+				mw.AdLoader.load( _this.getConfig( adType + 'Url' ) , function( adDisplayConf ){
 					mw.log("KalturaAds loaded: " + adType );
 					loadQueueCount--;
 					addAdCheckLoadDone( adType,  $.extend({}, adConf, adDisplayConf ) );
@@ -308,10 +324,10 @@ mw.KAds.prototype = {
 				}
 			}
 		};
-		if( this.adConfig.htmlCompanions ) {
-			addCompanions( 'html',  this.adConfig.htmlCompanions );			
-		} else if( this.adConfig.flashCompanions ){
-			addCompanions( 'flash', this.adConfig.flashCompanions );
+		if( this.getConfig( 'htmlCompanions' ) ){
+			addCompanions( 'html',  this.getConfig( 'htmlCompanions' ) );			
+		} else if( this.getConfig( 'flashCompanions') ){
+			addCompanions( 'flash', this.getConfig( 'flashCompanions') );
 		}
 		return companionTargets;
 	},

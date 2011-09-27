@@ -14,7 +14,7 @@ mw.setConfig({
 	'FreeWheel.PostMessageIframeCompanions': false
 });
 
-mw.addModuleLoader( 'FreeWheel', ['mw.FreeWheelController'] );
+mw.addModuleLoader( 'FreeWheel', ['AdSupport', 'mw.FreeWheelController'] );
 
 // Check if the plugin is enabled: 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
