@@ -1805,7 +1805,7 @@ mw.EmbedPlayer.prototype = {
 				} else {
 					_this.stop();
 					_this.play();
-					calback();
+					callback();
 				}
 			} else {
 				callback();	
