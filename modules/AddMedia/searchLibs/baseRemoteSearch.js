@@ -91,7 +91,7 @@ baseRemoteSearch.prototype = {
 	/**
 	* getProviderResults abstract method
 	*/
-	getProviderResults: function( searchQuery , calback) {
+	getProviderResults: function( searchQuery , callback) {
 		mw.log( 'Error: getProviderResults not set by provider' );
 		callback( 'error-provider' );
 	},
