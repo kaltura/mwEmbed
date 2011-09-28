@@ -209,6 +209,7 @@ mw.IA =
     $(         '#mwplayer').css('height', ht + mw.IA.VIDEO_PLAYLIST_HEIGHT);
     $('#plholder_mwplayer').css('height', ht + mw.IA.VIDEO_PLAYLIST_HEIGHT);
     
+    // NOTE: done this way to override jQuery dynamic $...css() re/setting
     mw.IA.css(
       ".mv-player .overlay-win { "+
       "height:"+ht+"px !important;"+
