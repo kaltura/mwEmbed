@@ -145,6 +145,7 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		// Setup the current ad callback: 
 		_this.currentAdLoadedCallback = function( adsManager ){
+			mw.log( "DoubleClick::loadAndDisplayOverlay> currentAdLoadedCallback ")
 			var embedPlayer = _this.embedPlayer;
 			
 			 // Keep the overlay positioned per controls overlay
@@ -332,16 +333,28 @@ mw.DoubleClick.prototype = {
 		// Listen and respond to events which require you to pause/resume content
 		adsManager.addEventListener(
 	        google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
-	        function(){ _this.onPauseRequested(); }
+	        function(){ 
+	        	_this.onPauseRequested(); 
+	        }
 	    );
 		adsManager.addEventListener(
 	        google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
-	        function(){ _this.onResumeRequested(); } 
+	        function(){ 
+	        	_this.onResumeRequested(); 
+	        } 
 	    );
 	    
 		// if currentAdLoadedCallback is set issue the adLoad callback: 
 		if( this.currentAdLoadedCallback ){
 			 this.currentAdLoadedCallback( adsManager );
+		} else{
+			// no current ad loaded callback? restore player
+			// TODO integrate into timeline proper: 
+			if( _this.embedPlayer.adTimeline ){
+				_this.embedPlayer.adTimeline.restorePlayer();
+			}
+			_this.embedPlayer.play();
+
 		}
 	},
 	onPauseRequested: function(){
