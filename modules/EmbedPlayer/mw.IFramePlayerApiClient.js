@@ -22,6 +22,7 @@ mw.IFramePlayerApiClient.prototype = {
 	
 	// Stores the current playerProxy ( can be updated by user js )
 	'init': function( iframe , playerProxy, options ){
+		mw.log( "mw.IFramePlayerApiClient:: init" );
 		this.iframe = iframe;
 		this.playerProxy = playerProxy;
 	

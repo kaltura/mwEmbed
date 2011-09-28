@@ -492,7 +492,6 @@
 				});
 				var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest;
 				
-				
 				// Check if we are setting iframe src or propagating via callback:
 				if( mw.getConfig('EmbedPlayer.PageDomainIframe') ){
 					// Set the iframe contents via callback 
@@ -506,10 +505,10 @@
 						var newDoc = $( '#' + iframeId ).get(0).contentDocument;
 						newDoc.open();
 						newDoc.write( iframeData.content );
-						newDoc.close(); // spurious error in some versions of FF, no workaround known
-					};		
-					//$iframe.attr('src', mw.getIframeHash( iframeId) );
-					// debugger;
+						newDoc.close();
+						// clear out this global function 
+						window[ cbName ] = null;
+					};
 					// Replace the player with the iframe: 
 					$( playerTarget ).replaceWith( $iframe );
 					$.getScript( iframeUrl + '&callback=' + cbName );
@@ -536,7 +535,7 @@
 					doRewriteIframe();											
 				});
 			} else {
-				doRewriteIframe();			
+				doRewriteIframe();
 			}
 		});
 	};
