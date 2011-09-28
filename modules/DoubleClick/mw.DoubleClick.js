@@ -85,7 +85,7 @@ mw.DoubleClick.prototype = {
 		// Add a binding for cuepoints:
 		$( _this.embedPlayer ).bind( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event,  cuePointWrapper ){
 			var cuePoint = cuePointWrapper.cuePoint;
-			// TODO we should not need this~ make sure cuepoints are still there 
+			// TODO remove .. we should not need to make sure cuepoints are still there 
 			if( !_this.embedPlayer.kCuePoints ){
 				return ;
 			}
@@ -249,6 +249,7 @@ mw.DoubleClick.prototype = {
 			}
 			// Clear out the older currentAdLoadedCallback
 			_this.currentAdLoadedCallback = null;
+			// issue the callback 
 			callback();
 		};
 		// Request the ad ( will trigger the currentAdCallback and onResumeRequestedCallback when done )
@@ -347,6 +348,8 @@ mw.DoubleClick.prototype = {
 	},
 	onAdsError: function( adErrorEvent ){
 		mw.log("DoubleClick:: onAdsError:" + adErrorEvent.getError() );
+		// On ad error don't stop playback: 
+		this.onResumeRequested();
 	},
 	getConfig: function( configName ){
 		// always get the config from the embedPlayer so that is up-to-date

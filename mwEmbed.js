@@ -165,6 +165,8 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 *         found
 	 */
 	mw.getConfig = function ( name ) {
+		if( ! name )
+			return mwConfig;
 		if( mwConfig[ name ] )
 			return mwConfig[ name ];
 		return false;

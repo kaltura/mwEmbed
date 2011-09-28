@@ -13,7 +13,21 @@ $wgKalturaIframe = new kalturaIframe();
 
 // Start output buffering to 'catch errors' and override output
 if( ! ob_start("ob_gzhandler") ) ob_start();
+
 $wgKalturaIframe->outputIFrame();
+// Check if we are wrapping the iframe output in a callback
+if( isset( $_REQUEST['callback']  )) {
+	// get the output buffer:
+	$out = ob_get_contents();
+	ob_end_clean();
+	// Re-start the output buffer: 
+	if( ! ob_start("ob_gzhandler") ) ob_start();
+	
+	header('Content-type: text/javascript' );
+	echo htmlspecialchars( $_REQUEST['callback'] ) . '(' . 
+		json_encode( array( 'content' => $out ) ) . ');';
+} 
+// flush the buffer.
 ob_end_flush();
 
 /**
@@ -499,7 +513,7 @@ class kalturaIframe {
 					width: 100%;
 					height: 100%;
 				}
-			<?php 
+			<?php
 		}
 		?>
 			</style>
@@ -572,19 +586,28 @@ class kalturaIframe {
 			// Add Packaging Kaltura Player Data ( JSON Encoded )
 			mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
 
-			// Parse any configuration options passed in via hash url:
-			var hashString = document.location.hash;
-			if( hashString ){
-				var hashObj = JSON.parse(
-						decodeURIComponent( hashString.replace( /^#/, '' ) )
-					);
-				if( hashObj.mwConfig ){
-					mw.setConfig( hashObj.mwConfig );
+			// try to get configuration from "same domain" iframe
+			try{
+				if( window['parent'] ){
+					// Grab config from parent frame:
+					mw.setConfig( window['parent']['preMwEmbedConfig'] );
 				}
-				if( hashObj.playerId ){
-					mw.setConfig('EmbedPlayer.IframeParentPlayerId', hashObj.playerId );
+			} catch (e){
+				mw.log( "Could not get config from parent, try hash tags");
+				// Parse any configuration options passed in via hash url:
+				var hashString = document.location.hash;
+				if( hashString ){
+					var hashObj = JSON.parse(
+							decodeURIComponent( hashString.replace( /^#/, '' ) )
+						);
+					if( hashObj.mwConfig ){
+						mw.setConfig( hashObj.mwConfig );
+					}
+					if( hashObj.playerId ){
+						mw.setConfig('EmbedPlayer.IframeParentPlayerId', hashObj.playerId );
+					}
 				}
-			}
+			}	
 
 			// Get the flashvars object:
 			var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';
@@ -721,7 +744,6 @@ class kalturaIframe {
 		if( strpos( $errorTitle, "\n" ) !== false ){
 			list( $errorTitle, $errorMsg) = explode( "\n", $errorTitle);
 		};
-		
 		$this->setError( $errorTitle );
 		
 		// clear the buffer
@@ -752,6 +774,18 @@ class kalturaIframe {
 		?></div>
 	</body>
 </html><?php
+		// TODO clean up flow ( should not have two checks for callback )
+		if( isset( $_REQUEST['callback']  )) {
+			// get the output buffer:
+			$out = ob_get_contents();
+			ob_end_clean();
+			// Re-start the output buffer: 
+			if( ! ob_start("ob_gzhandler") ) ob_start();
+			header('Content-type: text/javascript' );
+			echo htmlspecialchars( $_REQUEST['callback'] ) . '(' . 
+				json_encode( array( 'content' => $out ) ) . ');';
+		} 
+
 		ob_end_flush();
 		// Iframe error exit
 		exit( 1 );

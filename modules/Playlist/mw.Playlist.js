@@ -710,7 +710,8 @@ mw.Playlist.prototype = {
 	loadPlaylistHandler: function( callback ){
 		var _this = this;
 		// Allow plugins to setup the source handler: 
-		$(mw).trigger('Playlist_GetSourceHandler', [this] );
+		$( mw ).trigger('Playlist_GetSourceHandler', [ this ] );
+		
 		if( !_this.sourceHandler ){
 			switch( this.type ){
 				case 'application/rss+xml':

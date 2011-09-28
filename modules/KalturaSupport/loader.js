@@ -223,7 +223,7 @@
 							.css({
 								'width' : width,
 								'height' : height,
-								'position' : 'absolute',
+								//'position' : 'absolute',
 								'top' : '0px',
 								'left' : '0px'
 							});
@@ -238,12 +238,13 @@
 					var heightType = ( height.indexOf('%') == -1 )? 'px' : '';
 					
 					// Replace with a mwEmbedKalturaVideoSwap
-					$( element ).empty().replaceWith( 
+					$( element ).replaceWith( 
 						$('<div />')
 						.attr( videoEmbedAttributes )
 						.css({
 							'width' : width + widthType,
 							'height' : height + heightType,
+							'position' : 'relative',
 							'display' : 'inline-block' // more or less the <object> tag default display
 						})
 						.data( {
@@ -252,19 +253,18 @@
 						})
 						.addClass( kalturaSwapObjectClass )
 						.append(
-							$imgThumb, 
+							$imgThumb,
 							$('<div />')
 							.attr('id', 'loadingSpinner_' + videoId )
 							.css({
-								'margin' : 'auto',
-								'top' : '35%',
-								'position' : 'relative',
-								'width' : '32px',
-								'height' : '32px'
+								'top' : '50%',
+								'left' : '50%',
+								'position' : 'absolute'
 							})
 							.loadingSpinner()
 						)
-					);
+					)
+					
 					var elm = $('#' + videoEmbedAttributes.id ).get(0);
 					// assign values to DOM object methods ( not just attributes ) 
 					$.each( videoEmbedAttributes, function( attrName, attrValue ){
@@ -385,7 +385,9 @@
 				'widget_id' : $playlistTarget.attr('kwidgetid'),
 				'flashvars' : $playlistTarget.data('flashvars')
 			};		
-			kplUrl0 = playlistConfig['flashvars']['playlistAPI.kpl0Url'];
+			if( playlistConfig && playlistConfig['flashvars'] ){
+				kplUrl0 = playlistConfig['flashvars']['playlistAPI.kpl0Url'];
+			}
 		} else {
 			playlistConfig = {
 				'uiconf_id' : playlistEmbed.kuiconfid,
@@ -477,9 +479,6 @@
 				iframeRequest += '&urid=' + KALTURA_LOADER_VERSION;
 
 				var iframeId = $( playerTarget ).attr('id');				
-				iframeRequest+= mw.getIframeHash( iframeId);
-
-				
 				var $iframe = $('<iframe />')
 				.attr({
 					'id' : iframeId,
@@ -491,27 +490,45 @@
 				.css({
 					'border': '0px'
 				});
+				var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest;
+				
 				
 				// Check if we are setting iframe src or propagating via callback:
 				if( mw.getConfig('EmbedPlayer.PageDomainIframe') ){
-					// set the iframe contents via callback 
-					
+					// Set the iframe contents via callback 
+					var cbName = 'mwi_' + iframeId.replace(/[^0-9a-zA-Z]/g, '');
+					if( window[ cbName ] ){
+						mw.log( "Error: iframe callback already defined: " + cbName );	
+						cbName += parseInt( Math.random()* 1000 );
+						return ;
+					}
+					window[ cbName ] = function( iframeData ){
+						var newDoc = $( '#' + iframeId ).get(0).contentDocument;
+						newDoc.open();
+						newDoc.write( iframeData.content );
+						newDoc.close(); // spurious error in some versions of FF, no workaround known
+					};		
+					//$iframe.attr('src', mw.getIframeHash( iframeId) );
+					// debugger;
+					// Replace the player with the iframe: 
+					$( playerTarget ).replaceWith( $iframe );
+					$.getScript( iframeUrl + '&callback=' + cbName );
 				} else {
-					$iframe.attr('src', mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest);
-				}
+					iframeUrl+= mw.getIframeHash( iframeId);
+					// update the iframe url:
+					$iframe.attr( 'src', iframeUrl );
+					
+					// Replace the player with the iframe: 
+					$( playerTarget ).replaceWith( $iframe );
 				
-				// Replace the player with the iframe: 
-				$( playerTarget ).replaceWith( $iframe );
-				
-				mw.log('$.kalturaIframePlayer::iframe in page: ' + $( 'iframe#' + iframeId ).length );
-				
-				// if the server is enabled 
-				if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
-					// Invoke the iframe player api system:
-					var iframeEmbedPlayer = $( '#' + iframeId ).iFramePlayer( callback );
+					mw.log('$.kalturaIframePlayer::iframe in page: ' + $( 'iframe#' + iframeId ).length );
+					// if the iframe server is enabled, invoke the iframe player server: 
+					if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
+						// Invoke the iframe player api system:
+						$( '#' + iframeId ).iFramePlayer( callback );
+					}
 				}
 			};
-			
 			// Check if the iframe API is enabled: 
 			if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 				// Make sure the iFrame player client is loaded: 
