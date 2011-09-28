@@ -134,11 +134,11 @@ mw.AdTimeline.prototype = {
 		// Setup the original source
 		_this.originalSrc = _this.embedPlayer.getSrc();
 
-		$( _this.embedPlayer).bind('onChangeMedia.AdTimeline', function(){
-			_this.destroy();
+		$( _this.embedPlayer).bind( 'onChangeMedia.AdTimeline', function(){
+		//	_this.destroy();
 		});
 		
-		$(_this.embedPlayer).bind('onplay' + _this.bindPostfix, function() {
+		$(_this.embedPlayer).bind( 'onplay' + _this.bindPostfix, function() {
 			// Check if this is the "first play" request:
 			if ( !_this.firstPlay ) {
 				return ;
