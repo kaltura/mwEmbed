@@ -133,9 +133,9 @@ mw.AdTimeline.prototype = {
 		var _this = this;
 		// Setup the original source
 		_this.originalSrc = _this.embedPlayer.getSrc();
-
-		$( _this.embedPlayer).bind( 'onChangeMedia.AdTimeline', function(){
-		//	_this.destroy();
+		
+		$( _this.embedPlayer).bind( 'onChangeMedia' + this.bindPostfix, function(){
+			_this.destroy();
 		});
 		
 		$(_this.embedPlayer).bind( 'onplay' + _this.bindPostfix, function() {
@@ -158,6 +158,11 @@ mw.AdTimeline.prototype = {
 						_this.restorePlayer();
 						// Continue playback
 						_this.embedPlayer.play();
+
+						// sometimes the player does not play on first request: 
+						setTimeout(function(){
+							_this.embedPlayer.play();
+						}, 250)
 					});
 					
 				});

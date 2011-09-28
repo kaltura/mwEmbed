@@ -678,9 +678,13 @@ mw.Playlist.prototype = {
 				'cursor': 'pointer'
 			} )
 			.click( function(event){
+				// check that we can switch clips:
+				if( !_this.enableClipSwitch ){
+					return ;
+				}
 				// from chrome pretending to be iOS ( store the last touch event ) 
 				if( _this.onTouchScroll ){
-					return true;
+					return ;
 				}
 				//alert( 'click update: ' +  $( this ).data( 'clipIndex' ));
 				// Update _this.clipIndex

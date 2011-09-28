@@ -59,7 +59,8 @@ mw.DoubleClick.prototype = {
 	 */
 	addPlayerBindings: function(){
 		var _this = this;
-		var slotSet = [];		
+		var slotSet = [];
+
 		// Check for pre-sequence: 
 		if( parseInt( this.getConfig( 'preSequence') ) ){
 			slotSet.push( 'preroll');
@@ -236,11 +237,18 @@ mw.DoubleClick.prototype = {
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback();
 			}
 
-			// update the playhead to play state:
+			// Update the playhead to play state:
 			_this.embedPlayer.play();
+
+			// sometimes the player does not play on first request: 
+			setTimeout(function(){
+				_this.embedPlayer.play();
+			}, 250)
+			
 			// TODO This should not be needed ( fix event stop event propagation ) 
 			_this.embedPlayer.monitor();
 			mw.log( "DoubleClick::adsManager.play" );
+			
 			adsManager.play( _this.embedPlayer.getPlayerElement() );
 		};
 		// Setup the restore callback

@@ -1759,6 +1759,9 @@ mw.EmbedPlayer.prototype = {
 	 */
 	changeMedia: function( callback ){
 		var _this = this;
+		if(!callback){
+			callback = function(){};
+		}
 		// onChangeMedia): triggered at the start of the change media commands
 		$( this ).trigger( 'onChangeMedia' );
 		
@@ -1798,14 +1801,14 @@ mw.EmbedPlayer.prototype = {
 				if( _this.isPersistentNativePlayer() ){
 					// Restored switch play ( seems to help with playlist sequences ) 
 					// TODO investigate. 
-					_this.switchPlaySrc( _this.getSrc() );
+					_this.switchPlaySrc( _this.getSrc(), callback  );
 				} else {
 					_this.stop();
 					_this.play();
+					calback();
 				}
-			}
-			if ($.isFunction( callback) ){
-				callback();
+			} else {
+				callback();	
 			}
 		});
 
