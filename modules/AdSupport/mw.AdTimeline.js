@@ -115,6 +115,8 @@ mw.AdTimeline.prototype = {
 
 	// Flag to store if its the first time play is being called:
 	firstPlay: true,
+	
+	bindPostfix: '.AdTimeline',
 
 	/**
 	 * @constructor
@@ -136,7 +138,7 @@ mw.AdTimeline.prototype = {
 			_this.destroy();
 		});
 		
-		$(_this.embedPlayer).bind('onplay.AdTimeline', function() {
+		$(_this.embedPlayer).bind('onplay' + _this.bindPostfix, function() {
 			// Check if this is the "first play" request:
 			if ( !_this.firstPlay ) {
 				return ;
@@ -165,7 +167,7 @@ mw.AdTimeline.prototype = {
 			var displayedPostroll = false;
 			// TODO We really need a "preend" event for thing like this. 
 			// So that playlist next clip or other end bindings don't get triggered. 
-			$( _this.embedPlayer ).bind( 'ended.AdTimeline', function( event ){
+			$( _this.embedPlayer ).bind( 'ended' + _this.bindPostfix, function( event ){
 				if( displayedPostroll ){
 					return ;
 				}
@@ -189,7 +191,7 @@ mw.AdTimeline.prototype = {
 			if( _this.getTimelineTargets('overlay').length > 0 ){
 				_this.addOverlayBindings();
 			}
-		});
+		});		
 	},
 	destroy: function(){
 		var _this = this;
@@ -206,10 +208,7 @@ mw.AdTimeline.prototype = {
 		};
 		
 		// Unbind all adTimeline events
-		$( _this.embedPlayer ).unbind( '.AdTimeline' );
-
-		// Remove adTimeline from embedPlayer
-		delete _this.embedPlayer.adTimeline;
+		$( _this.embedPlayer ).unbind( _this.bindPostfix );
 	},
 	/**
 	 * Add an overlay binding:
@@ -322,6 +321,7 @@ mw.AdTimeline.prototype = {
 		this.embedPlayer.restoreEventPropagation();
 		this.embedPlayer.enableSeekBar();
 		this.embedPlayer.monitor();
+		this.embedPlayer.seeking = false;
 		// trigger an event so plugins can restore their content based actions
 		$( this.embedPlayer ).trigger( 'AdSupport_EndAdPlayback');
 	},

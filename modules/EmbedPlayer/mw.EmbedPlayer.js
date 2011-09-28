@@ -1795,9 +1795,10 @@ mw.EmbedPlayer.prototype = {
 				if( _this.$interface ){
 					_this.$interface.find( '.play-btn-large' ).hide();
 				}
-				
 				if( _this.isPersistentNativePlayer() ){
-					//_this.switchPlaySrc( _this.getSrc() );
+					// Restored switch play ( seems to help with playlist sequences ) 
+					// TODO investigate. 
+					_this.switchPlaySrc( _this.getSrc() );
 				} else {
 					_this.stop();
 					_this.play();
@@ -2797,7 +2798,7 @@ mw.EmbedPlayer.prototype = {
 		} else if( timeUrls == 'always' ){
 			return this.mediaElement.selectedSource.URLTimeEncoding;
 		} else if( timeUrls == 'flash' ){
-			if( this.mediaElement.selectedSource.URLTimeEncoding){
+			if( this.mediaElement.selectedSource && this.mediaElement.selectedSource.URLTimeEncoding){
 				// see if the current selected player is flash:
 				return ( this.instanceOf == 'Kplayer' );
 			}

@@ -60,7 +60,7 @@ mw.DoubleClick.prototype = {
 	addPlayerBindings: function(){
 		var _this = this;
 		
-		var slotSet = [];
+		var slotSet = [];		
 		// Check for pre-sequence: 
 		if( parseInt( this.getConfig( 'preSequence') ) ){
 			slotSet.push( 'preroll');
@@ -254,6 +254,7 @@ mw.DoubleClick.prototype = {
 		};
 		// Request the ad ( will trigger the currentAdCallback and onResumeRequestedCallback when done )
 		_this.getAdsLoader( function( adsLoader ){
+			mw.log("DoubleClick: request Ads from adTagUrl: " +  _this.getAdTagUrl( slotType, cuePoint ));
 			adsLoader.requestAds( {
 				'adTagUrl' : _this.getAdTagUrl( slotType, cuePoint ),
 				'adType': 'video'

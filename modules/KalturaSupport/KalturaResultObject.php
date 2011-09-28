@@ -954,6 +954,17 @@ class KalturaResultObject {
 			// handle any non-escapsed &
 			$uiConf = preg_replace('/&[^; ]{0,6}.?/e', "((substr('\\0',-1) == ';') ? '\\0' : '&amp;'.substr('\\0',1))", $uiConf);
 			
+			/*
+			libxml_use_internal_errors(true);
+			$sxe = simplexml_load_string($uiConf);
+			if (!$sxe) {
+			    echo "Failed loading XML\n";
+			    foreach(libxml_get_errors() as $error) {
+			        echo "\t", $error->message;
+			    }
+			}
+			*/
+			
 			$this->uiConfXml = new SimpleXMLElement( $uiConf );
 		}
 		return $this->uiConfXml;
