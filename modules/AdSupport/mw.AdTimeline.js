@@ -85,9 +85,7 @@
 ( function( mw, $ ) {
 	
 mw.addAdTimeline = function( embedPlayer ){
-	if (!embedPlayer.adTimeline) {
-		embedPlayer.adTimeline = new mw.AdTimeline( embedPlayer );
-	}
+	embedPlayer.adTimeline = new mw.AdTimeline( embedPlayer );
 };
 
 mw.AdTimeline = function(embedPlayer) {
@@ -134,6 +132,7 @@ mw.AdTimeline.prototype = {
 		// Setup the original source
 		_this.originalSrc = _this.embedPlayer.getSrc();
 		
+		// On change media clear out any old adTimeline bindings
 		$( _this.embedPlayer).bind( 'onChangeMedia' + this.bindPostfix, function(){
 			_this.destroy();
 		});
@@ -203,7 +202,6 @@ mw.AdTimeline.prototype = {
 		// Reset firstPlay flag
 		_this.firstPlay = true;
 		// empty out the timeline targets
-
 		_this.timelineTargets = {
 				'preroll' : [],
 				'bumper' : [],
@@ -211,7 +209,6 @@ mw.AdTimeline.prototype = {
 				'midroll' : [],
 				'postroll' : []
 		};
-		
 		// Unbind all adTimeline events
 		$( _this.embedPlayer ).unbind( _this.bindPostfix );
 	},
