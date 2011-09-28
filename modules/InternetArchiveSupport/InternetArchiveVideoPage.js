@@ -208,6 +208,13 @@ mw.IA =
     $('#plholder_mwplayer').css('width',  wd);
     $(         '#mwplayer').css('height', ht + mw.IA.VIDEO_PLAYLIST_HEIGHT);
     $('#plholder_mwplayer').css('height', ht + mw.IA.VIDEO_PLAYLIST_HEIGHT);
+    
+    mw.IA.css(
+      ".mv-player .overlay-win { "+
+      "height:"+ht+"px !important;"+
+      "width:"+wd+"px !important;"+
+      "top:0px !important; left:-5px !important;"+
+      "}");
   },
 
 
@@ -384,21 +391,6 @@ div.maudio div.media-rss-video-player { height:26px !important; } \n\
 div.maudio div.mrss_mwplayer_0 { height:26px !important; } \n\
 div.maudio div.mv-player  { height:26px !important; } \n\
 div.maudio div.control-bar { display:block !important; } \n\
-\n\
-\n\
-\n\
-\n\
-div.overlay-content { background-color:#666 !important; } \n\
-div.overlay-content div h2 { background-color:transparent; }\n\
-div.overlay-content        {\n\
-  padding-top:0px !important; \n\
-  border: 1px solid #666; \n\
-  -moz-border-radius: 10px;\n\
-  -webkit-border-radius:10px;\n\
-  -khtml-border-radius:10px;\n\
-  border-radius: 10px;\n\
-}\n\
-.mv-player .overlay-win textarea { height:60px !important; }\n\
 ");
 
     
@@ -431,6 +423,7 @@ div.overlay-content        {\n\
   }
 };
 
-mw.IA.setup();
+  if (!location.pathname.match(/^\/(~tracey|test)\//))
+    mw.IA.setup();
 
 }) ( jQuery );//wacky wrapper to allow us to use jQuery as $ w/o collision...
