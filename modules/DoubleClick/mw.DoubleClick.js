@@ -240,11 +240,6 @@ mw.DoubleClick.prototype = {
 
 			// Update the playhead to play state:
 			_this.embedPlayer.play();
-
-			// sometimes the player does not play on first request: 
-			setTimeout(function(){
-				_this.embedPlayer.play();
-			}, 250)
 			
 			// TODO This should not be needed ( fix event stop event propagation ) 
 			_this.embedPlayer.monitor();
@@ -347,22 +342,10 @@ mw.DoubleClick.prototype = {
 		// if currentAdLoadedCallback is set issue the adLoad callback: 
 		if( this.currentAdLoadedCallback ){
 			 this.currentAdLoadedCallback( adsManager );
-		} else{
-			// no current ad loaded callback? restore player
-			// TODO integrate into timeline proper: 
-			if( _this.embedPlayer.adTimeline ){
-				_this.embedPlayer.adTimeline.restorePlayer();
-			}
-			_this.embedPlayer.play();
-
 		}
 	},
 	onPauseRequested: function(){
 		mw.log( "DoubleClick:: onPauseRequested" );
-		//_this.embedPlayer.pause();
-		 // Setup UI for showing ads (e.g. display ad timer countdown,
-	    // disable seeking, etc.)
-	    // setupUIForAd();
 	},
 	onResumeRequested: function(){
 		mw.log( "DoubleClick:: onResumeRequested" );
