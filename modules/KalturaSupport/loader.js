@@ -506,6 +506,10 @@
 						newDoc.open();
 						newDoc.write( iframeData.content );
 						newDoc.close();
+						
+						// TODO a custom iframe player api system per same domain iframe
+						//$( '#' + iframeId ).iFramePlayer( callback );
+
 						// clear out this global function 
 						window[ cbName ] = null;
 					};
@@ -513,7 +517,8 @@
 					$( playerTarget ).replaceWith( $iframe );
 					$.getScript( iframeUrl + '&callback=' + cbName );
 				} else {
-					iframeUrl+= mw.getIframeHash( iframeId);
+					
+					iframeUrl+= mw.getIframeHash( iframeId );
 					// update the iframe url:
 					$iframe.attr( 'src', iframeUrl );
 					

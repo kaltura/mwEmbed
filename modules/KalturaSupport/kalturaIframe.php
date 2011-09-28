@@ -143,6 +143,7 @@ class kalturaIframe {
 			list( $iframeWidth, $iframeHeight ) = explode( 'x',  $_GET[ 'iframeSize' ]);
 			$iframeWidth = intval( $iframeWidth );
 			$iframeHeight = intval( $iframeHeight );
+			
 			$xml = $this->getResultObject()->getUiConfXML();
 			$result = $xml->xpath("//*[@id='playlistHolder']");
 			if( isset( $result[0] ) ){
@@ -154,6 +155,17 @@ class kalturaIframe {
 					if( $key == 'height' && $value != '100%' ){
 						$height = $iframeHeight - intval( $value );
 						$width = $iframeWidth;
+					}
+				}
+			} else {
+				// check for playlist.includeInLayout property and set to full size:
+				$result = $xml->xpath("//*[@key='playlist.includeInLayout']" );
+				if( isset( $result[0] ) ){
+					foreach ( $result[0]->attributes() as $key => $value ) {
+						if( $key == 'value' && $value == "false" ){
+							$width = $iframeWidth;
+							$height = 	$iframeHeight;						
+						}
 					}
 				}
 			}
@@ -586,28 +598,25 @@ class kalturaIframe {
 			// Add Packaging Kaltura Player Data ( JSON Encoded )
 			mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
 
-			// try to get configuration from "same domain" iframe
-			try{
-				if( window['parent'] ){
-					// Grab config from parent frame:
-					mw.setConfig( window['parent']['preMwEmbedConfig'] );
+			var hashString = document.location.hash;
+			// Parse any configuration options passed in via hash url:
+			if( hashString ){
+				var hashObj = JSON.parse(
+						decodeURIComponent( hashString.replace( /^#/, '' ) )
+					);
+				if( hashObj.mwConfig ){
+					mw.setConfig( hashObj.mwConfig );
 				}
-			} catch (e){
-				mw.log( "Could not get config from parent, try hash tags");
-				// Parse any configuration options passed in via hash url:
-				var hashString = document.location.hash;
-				if( hashString ){
-					var hashObj = JSON.parse(
-							decodeURIComponent( hashString.replace( /^#/, '' ) )
-						);
-					if( hashObj.mwConfig ){
-						mw.setConfig( hashObj.mwConfig );
-					}
-					if( hashObj.playerId ){
-						mw.setConfig('EmbedPlayer.IframeParentPlayerId', hashObj.playerId );
-					}
+				if( hashObj.playerId ){
+					mw.setConfig('EmbedPlayer.IframeParentPlayerId', hashObj.playerId );
 				}
-			}	
+				
+			} else 	if( window['parent'] && window['parent']['preMwEmbedConfig'] ){ 
+				// try to get configuration from "same domain" iframe
+			
+				// Grab config from parent frame:
+				mw.setConfig( window['parent']['preMwEmbedConfig'] );
+			}
 
 			// Get the flashvars object:
 			var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';
