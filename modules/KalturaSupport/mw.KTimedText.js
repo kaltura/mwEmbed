@@ -43,10 +43,9 @@
 			}
 			return this.kClient;
 		},
-	
-	/**
-	 * Load the list of captions sources from the kaltura api, or from plugin config
-	 */
+		/**
+		 * Load the list of captions sources from the kaltura api, or from plugin config
+		 */
 		loadTextSources: function( callback ) {
 			var _this = this;
 			// Check if text sources are already loaded ( not null )
@@ -82,8 +81,8 @@
 			});
 		},
 		/**
-	 * Get the text sources from the api: 
-	 */
+		 * Get the text sources from the api: 
+		 */
 		getTextSourcesFromApi: function( callback ){
 			var _this = this;
 		
@@ -136,9 +135,9 @@
 		},
 	
 		/**
-	 * Gets a text source we can use the application from a database textSource
-	 * @param {Object} textSource
-	 */
+		 * Gets a text source we can use the application from a database textSource
+		 * @param {Object} textSource
+		 */
 		getTextSourceFromDB: function( dbTextSource ){
 			var _this = this;
 			// Try to insert the track source:
@@ -160,10 +159,10 @@
 		},
 	
 		/**
-	* Returns the caption serve url
-	* @param {String} captionId - caption asset id
-	* @param {String} type - caption asset type
-	*/
+		* Returns the caption serve url
+		* @param {String} captionId - caption asset id
+		* @param {String} type - caption asset type
+		*/
 		getCaptionUrl: function( captionId, type ){
 			// Sample Url for Caption serve
 			// http://www.kaltura.com/api_v3/index.php?service=caption_captionasset&action=serve&captionAssetId=@ID@&ks=@KS@
