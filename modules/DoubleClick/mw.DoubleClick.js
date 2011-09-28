@@ -59,7 +59,6 @@ mw.DoubleClick.prototype = {
 	 */
 	addPlayerBindings: function(){
 		var _this = this;
-		
 		var slotSet = [];		
 		// Check for pre-sequence: 
 		if( parseInt( this.getConfig( 'preSequence') ) ){
@@ -84,30 +83,27 @@ mw.DoubleClick.prototype = {
 
 		// Add a binding for cuepoints:
 		$( _this.embedPlayer ).bind( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event,  cuePointWrapper ){
+			 _this.embedPlayer.pause();
 			var cuePoint = cuePointWrapper.cuePoint;
 			// check if trackCuePoints has been disabled 
 			if( _this.getConfig( 'trackCuePoints') === false){
 				return ;
 			}
-			// TODO remove .. we should not need to make sure cuepoints are still there 
-			if( !_this.embedPlayer.kCuePoints ){
-				return ;
-			}
 			// Make sure the cue point is tagged for dobuleclick
 			if( cuePoint.tags.indexOf( "doubleclick" ) === -1 ){
-				return true;
-			}
-			mw.log("DoubleClick:: AdOpportunity:: " + cuePoint.startTime );
-			
+				return ;
+			}			
 			// Get the ad type for each cuepoint
 			var adType = _this.embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
 			
+			mw.log("DoubleClick:: AdOpportunity:: " + cuePoint.startTime + ' ad type: ' + adType);
 			if( adType == 'overlay' ){
 				_this.loadAndDisplayOverlay( cuePoint );
 				// TODO add it to the right place in the timeline
 				return true; // continue to next cue point
 			}
-			if( adType == 'midroll' ){
+			// check if video type: 
+			if( adType == 'midroll'  ||  adType == 'preroll' || adType == 'postroll'  ){
 				_this.loadAndPlayVideoSlot( 'midroll', function(){
 					// play the restored entry ( restore propagation ) 
 					_this.embedPlayer.play();
@@ -216,6 +212,7 @@ mw.DoubleClick.prototype = {
 	 */
 	loadAndPlayVideoSlot: function( slotType, callback, cuePoint){
 		var _this = this;
+		mw.log( "DoubleClick::loadAndPlayVideoSlot> pause while loading ads ");
 		// Pause playback:
 		_this.embedPlayer.pauseLoading();
 		
@@ -227,6 +224,7 @@ mw.DoubleClick.prototype = {
 
 		// Setup the current ad callback: 
 		_this.currentAdLoadedCallback = function( adsManager ){
+			mw.log( "DoubleClick::loadAndPlayVideoSlot> currentAdLoaded got adsManager" );
 			 // Set a visual element on which clicks should be tracked for video ads
 			adsManager.setClickTrackingElement( _this.embedPlayer );
 			
@@ -242,11 +240,12 @@ mw.DoubleClick.prototype = {
 			_this.embedPlayer.play();
 			// TODO This should not be needed ( fix event stop event propagation ) 
 			_this.embedPlayer.monitor();
-			
+			mw.log( "DoubleClick::adsManager.play" );
 			adsManager.play( _this.embedPlayer.getPlayerElement() );
 		};
 		// Setup the restore callback
 		_this.onResumeRequestedCallback = function(){
+			mw.log( "DoubleClick::loadAndPlayVideoSlot> onResumeRequestedCallback" );
 			// TODO integrate into timeline proper: 
 			if( _this.embedPlayer.adTimeline ){
 				_this.embedPlayer.adTimeline.restorePlayer();
