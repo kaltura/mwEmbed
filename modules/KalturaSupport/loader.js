@@ -352,9 +352,7 @@
 			}
 		}		
 	});
-	
 	var kLoadKalturaSupport = false;
-	
 	$( mw ).bind( 'LoaderEmbedPlayerUpdateRequest', function( event, playerElement, classRequest ) {
 		// Check if any video tag uses the "kEmbedSettings.entryId"  
 		if(  playerElement.kwidgetid || $(playerElement).attr( 'kwidgetid' ) ){
@@ -509,7 +507,8 @@
 						
 						// TODO a custom iframe player api system per same domain iframe
 						//$( '#' + iframeId ).iFramePlayer( callback );
-
+						$( '#' + iframeId ).pageDomainIFramePlayer( callback );
+						
 						// clear out this global function 
 						window[ cbName ] = null;
 					};

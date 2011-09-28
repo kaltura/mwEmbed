@@ -1759,9 +1759,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	changeMedia: function( callback ){
 		var _this = this;
-		if(!callback){
-			callback = function(){};
-		}
 		// onChangeMedia): triggered at the start of the change media commands
 		$( this ).trigger( 'onChangeMedia' );
 		
@@ -1805,10 +1802,10 @@ mw.EmbedPlayer.prototype = {
 				} else {
 					_this.stop();
 					_this.play();
-					callback();
+					if( callback ) callback();
 				}
 			} else {
-				callback();	
+				if( callback ) callback();	
 			}
 		});
 

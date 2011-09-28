@@ -208,7 +208,25 @@ mw.IFramePlayerApiClient.prototype = {
 		}
 	}
 };
-
+// Export the target players to the top level javascript scope. 
+$.fn.pageDomainIFramePlayer = function ( readyCallback ){
+	if( ! this.selector ){
+		this.selector = $( this );
+	}
+	// Handle each embed frame 
+	$( this.selector ).each( function( inx, targetPlayer ){
+		// Get the player id
+		var playerProxyId = ( $( targetPlayer ).attr( 'id' ) )? $( targetPlayer ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
+		// Change the id of the real iframe: 
+		$( targetPlayer ).attr( playerProxyId + '_ifp' );
+		// Once the iframe is "ready" setup a virtual ref the player inside the iframe
+		
+		// setup the binding for iframe resize for fullscreen. 
+		
+		// fire the ready callback
+		
+	});
+};
 //Add the jQuery binding
 jQuery.fn.iFramePlayer = function( readyCallback ){
 	if( ! this.selector ){

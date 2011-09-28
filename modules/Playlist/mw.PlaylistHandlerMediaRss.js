@@ -109,6 +109,14 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			embedPlayer.mediaElement.tryAddSource( $source.get(0) ) ;
 		}
 		embedPlayer.changeMedia( function(){
+			// restore playlist bindings: 
+			// update Ui: 
+			_this.playlist.updatePlayerUi( _this.clipIndex );
+			
+			// Add playlist specific bindings: 
+			_this.playlist.addClipBindings();
+			
+			// do the actual play: 
 			embedPlayer.play();
 		});
 	},
