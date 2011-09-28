@@ -86,7 +86,7 @@ mw.DoubleClick.prototype = {
 		$( _this.embedPlayer ).bind( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event,  cuePointWrapper ){
 			var cuePoint = cuePointWrapper.cuePoint;
 			// check if trackCuePoints has been disabled 
-			if( getConfig( 'trackCuePoints') === false){
+			if( _this.getConfig( 'trackCuePoints') === false){
 				return ;
 			}
 			// TODO remove .. we should not need to make sure cuepoints are still there 
