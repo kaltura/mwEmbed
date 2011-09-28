@@ -341,6 +341,7 @@ mw.MediaElement.prototype = {
 	 * Checks if media is a playable type
 	 */
 	isPlayableType: function( mimeType ) {
+		mw.log("isPlayableType:: " + mimeType);
 		if ( mw.EmbedTypes.getMediaPlayers().defaultPlayer( mimeType ) ) {
 			return true;
 		} else {

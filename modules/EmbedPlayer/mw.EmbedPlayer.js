@@ -1615,7 +1615,8 @@ mw.EmbedPlayer.prototype = {
 		// Update the poster and html:
 		this.updatePosterHTML();
 
-		if( !this.mediaElement.sources.length ){
+		// on iOS devices don't try to add warnings
+		if( !this.mediaElement.sources.length || mw.isIOS() ){
 			var noSourceMsg = gM('mwe-embedplayer-missing-source');
 			$( this ).trigger( 'NoSourcesCustomError', function( customErrorMsg ){
 				if( customErrorMsg){
@@ -1624,8 +1625,13 @@ mw.EmbedPlayer.prototype = {
         	});
 			
 			// Add the no sources error:
-			$(this).append( 
+			this.$interface.append( 
 				$('<div />')
+				.css({
+					'position' : 'absolute',
+					'top' : ( this.height /2 ) - 10, 
+					'left': this.left/2
+				})
 				.addClass('error')
 				.html( noSourceMsg )
 			);
@@ -1656,7 +1662,7 @@ mw.EmbedPlayer.prototype = {
 		// states
 		// http://www.whatwg.org/specs/web-apps/current-work/#media-element
 		this.doneLoading = true;
-		mw.playerManager.playerReady( this );
+		//mw.playerManager.playerReady( this );
 	},
 
 	/**
