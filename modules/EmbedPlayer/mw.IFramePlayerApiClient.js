@@ -22,14 +22,19 @@ mw.IFramePlayerApiClient.prototype = {
 	
 	// Stores the current playerProxy ( can be updated by user js )
 	'init': function( iframe , playerProxy, options ){
-		mw.log( "mw.IFramePlayerApiClient:: init" );
+		mw.log( "mw.IFramePlayerApiClient:: init" + playerProxy.id );
 		this.iframe = iframe;
 		this.playerProxy = playerProxy;
-	
-		// Set the iframe server
-		var srcParts = mw.parseUri( mw.absoluteUrl( $(this.iframe).attr('src') ) );
-		this.iframeServer = srcParts.protocol + '://' + srcParts.authority;
+		var srcParts;
 		
+		if( $(this.iframe).attr('src') ){
+			// Set the iframe server
+			srcParts = mw.parseUri( mw.absoluteUrl( $(this.iframe).attr('src') ) );
+		} else {
+			// local domain iframe server: 
+			srcParts = mw.parseUri( document.URL );
+		}
+		this.iframeServer = srcParts.protocol + '://' + srcParts.authority;
 		this.addPlayerSendApi();
 		this.addPlayerReciveApi();
 		
@@ -170,7 +175,7 @@ mw.IFramePlayerApiClient.prototype = {
 		
 		// Trigger any binding events 
 		if( typeof msgObject.triggerName != 'undefined' && msgObject.triggerArgs != 'undefined') {
-			//mw.log('IFramePlayerApiClient::handleReceiveMessage: trigger: ' + msgObject.triggerName );
+			mw.log('IFramePlayerApiClient::handleReceiveMessage: trigger: ' + msgObject.triggerName );
 			$( _this.playerProxy ).trigger( msgObject.triggerName, msgObject.triggerArgs );
 		}
 	},
@@ -208,52 +213,18 @@ mw.IFramePlayerApiClient.prototype = {
 		}
 	}
 };
-// Export the target players to the top level javascript scope. 
-$.fn.pageDomainIFramePlayer = function ( readyCallback ){
-	if( ! this.selector ){
-		this.selector = $( this );
-	}
-	// Handle each embed frame 
-	$( this.selector ).each( function( inx, targetPlayer ){
-		// Get the player id
-		var playerProxyId = ( $( targetPlayer ).attr( 'id' ) )? $( targetPlayer ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
-		// Change the id of the real iframe: 
-		$( targetPlayer ).attr( playerProxyId + '_ifp' );
-		// Once the iframe is "ready" setup a virtual ref the player inside the iframe
-		
-		// setup the binding for iframe resize for fullscreen. 
-		
-		// fire the ready callback
-		
-	});
-};
+
 //Add the jQuery binding
 jQuery.fn.iFramePlayer = function( readyCallback ){
 	if( ! this.selector ){
 		this.selector = $( this );
 	}
 	// Handle each embed frame 
-	$( this.selector ).each( function( inx, targetPlayer ){
-		mw.log( "$.iFramePlayer::" + targetPlayer.id );
-		// Append '_ifp' ( iframe player ) to id of real iframe so that 'id', and 'src' attributes don't conflict
-		var playerProxyId = ( $( targetPlayer ).attr( 'id' ) )? $( targetPlayer ).attr( 'id' ) : Math.floor( 9999999 * Math.random() );
-		var iframePlayerId = playerProxyId + '_ifp';
-
-		// Update the id and wrap with the proxy 
-		$( targetPlayer)
-			.attr({
-				'id': iframePlayerId,
-				'name' : iframePlayerId
-			})
-			.wrap(
-				$('<div />')
-				.attr( {
-					'id': playerProxyId,
-					'style' : $( targetPlayer).attr('style')
-				})
-			);
+	$( this.selector ).each( function( inx, playerProxy ){
+		mw.log( "$.iFramePlayer::" + playerProxy.id );
 		
-		var playerProxy = $( '#' + playerProxyId ).get(0);
+		// Setup pointer to real iframe
+		var iframePlayerId = $( playerProxy ).attr('id') + '_ifp';
 		
 		// Allow modules to extend the 'iframe' based player
 		$( mw ).trigger( 'newIframePlayerClientSide', [ playerProxy ] );
