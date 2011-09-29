@@ -308,8 +308,7 @@ mw.DoubleClick.prototype = {
 	getAdsLoader: function( callback ){
 		var _this = this;
 		if( _this.adsLoader ){
-			// refresh the ads loader: 
-			_this.adsLoader = _this.adsLoader = new google.ima.AdsLoader();
+			// Refresh the ads loader?
 			callback( _this.adsLoader );
 			return ;
 		}
