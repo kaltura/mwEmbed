@@ -113,7 +113,7 @@ mw.IA =
 
   // Set up so that:
   //   - when "click to play" clicked, resize video window and playlist
-  //   - we advance to the next clip (when 2+ present)
+  //   - we indicate which clip in playlist is playing
   newEmbedPlayerEvent:function(arg)
   {
     mw.IA.log('newEmbedPlayerEvent');
@@ -139,18 +139,18 @@ mw.IA =
 
     if (typeof(mw.IA.mrss)!='undefined')
     {
+      player.unbind('onplay').bind('onplay', mw.IA.onPlay);
+        
       if (mw.IA.video)
       {
         mw.IA.log('this is /details/ video!');
         mw.IA.video = true;
 
-        player.unbind('onplay').bind('onplay', mw.IA.resize);
-        
         // player.bind('pause', mw.IA.pause); //xxx hash not quite ready yet 
         if (!mw.isMobileDevice())
         {
           player.bind('onCloseFullScreen', function(){ setTimeout(function() { 
-            mw.IA.resize(); }, 500); });
+            mw.IA.onPlay(); }, 500); });
         }
       }
       else
@@ -173,16 +173,32 @@ mw.IA =
       '/start=' + Math.round($('#mwplayer').get(0).currentTime * 10) / 10;
   },
 
+  
+  indicateIsPlaying:function()
+  {
+    if (!mw.IA.playlist)
+      return;
+    
+    var player = $('#'+mw.playerManager.getPlayerList()[0]).get(0);
+    if (!player)
+      return;
 
-  resize:function()
+    $('div.playlistItem').removeClass('IA-active');
+    $($('div.playlistItem').get(mw.IA.playlist.clipIndex)).addClass('IA-active');
+  },
+  
+
+  onPlay:function()
   {
     if (mw.isMobileDevice())
       return;
    
+    mw.IA.indicateIsPlaying();
+    
     if (!mw.IA.video)
       return;
     
-    mw.IA.log('resize');
+    mw.IA.log('onPlay');
     
     var av=$('div.mv-player video, div.mv-player object, div.mv-player embed').parent().get(0);
     
@@ -241,6 +257,7 @@ mw.IA =
     if (mw.IA.startcalled)
       return;
     mw.IA.startcalled = true;
+    mw.IA.playlist = playlist; //stash this away for "indicateIsPlaying()"
     
     var star = (mw.IA.arg('start') ? parseFloat(mw.IA.arg('start')) : 0);
     if (!star)
@@ -363,7 +380,7 @@ div.playlistItem span.clipTitle     { padding-left:15px; }\n\
 div.playlistItem span.tn            { display:inline-block; width:25px; text-align:right; padding-right:5px; border-right:1px solid gray; }\n\
 div.playlistItem div.clipDuration  { padding-right:20px; padding-top:1px; }\n\
 div.movies div.playlistItem div.clipDuration  { display:none; }\n\
-div.ui-state-active {\n\
+div.playlistItem div.ui-state-active, .IA-active {\n\
   background-image:url(/images/orange_arrow.gif) !important;\n\
   background-position:10px 2px !important;\n\
   background-repeat:no-repeat !important;\n\
