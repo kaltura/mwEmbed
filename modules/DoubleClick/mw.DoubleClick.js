@@ -90,8 +90,12 @@ mw.DoubleClick.prototype = {
 			if( _this.getConfig( 'trackCuePoints') === false){
 				return ;
 			}
+			
 			// Make sure the cue point is tagged for dobuleclick
-			if( cuePoint.tags.indexOf( "doubleclick" ) === -1 ){
+			if( cuePoint.tags.indexOf( "doubleclick" ) === -1 
+					&& 
+				cuePoint.title.indexOf( "doubleclick" ) === -1
+			){
 				return ;
 			}			
 			// Get the ad type for each cuepoint
@@ -304,6 +308,8 @@ mw.DoubleClick.prototype = {
 	getAdsLoader: function( callback ){
 		var _this = this;
 		if( _this.adsLoader ){
+			// refresh the ads loader: 
+			_this.adsLoader = _this.adsLoader = new google.ima.AdsLoader();
 			callback( _this.adsLoader );
 			return ;
 		}
