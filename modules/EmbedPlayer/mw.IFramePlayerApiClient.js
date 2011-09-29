@@ -35,6 +35,7 @@ mw.IFramePlayerApiClient.prototype = {
 			srcParts = mw.parseUri( document.URL );
 		}
 		this.iframeServer = srcParts.protocol + '://' + srcParts.authority;
+		
 		this.addPlayerSendApi();
 		this.addPlayerReciveApi();
 		
@@ -134,7 +135,6 @@ mw.IFramePlayerApiClient.prototype = {
 	'handleReceiveMessage': function( event ){
 		var _this = this;
 		//mw.log('IFramePlayerApiClient::handleReceiveMessage:' + event.data );
-		
 		// Decode the message 
 		var msgObject = JSON.parse( event.data );
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );

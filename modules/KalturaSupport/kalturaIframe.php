@@ -610,10 +610,10 @@ class kalturaIframe {
 					mw.setConfig( hashObj.mwConfig );
 				}
 			} else 	if( window['parent'] && window['parent']['preMwEmbedConfig'] ){ 
-				// try to get configuration from "same domain" iframe
-			
 				// Grab config from parent frame:
 				mw.setConfig( window['parent']['preMwEmbedConfig'] );
+				// Set the "iframeServer" to the current domain: 
+				mw.setConfig( 'EmbedPlayer.IframeParentUrl', document.URL ); 
 			}
 
 			// Get the flashvars object:
