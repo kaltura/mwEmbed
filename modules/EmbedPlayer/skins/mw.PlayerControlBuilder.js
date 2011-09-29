@@ -345,17 +345,20 @@ mw.PlayerControlBuilder.prototype = {
 			return ;
 		}
 		this.fullscreenMode = true;
+		var triggerOnOpenFullScreen = true;
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			if( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen')
 					&&
 				this.embedPlayer.getPlayerElement().webkitSupportsFullscreen 
 			){
 				this.embedPlayer.getPlayerElement().webkitEnterFullscreen();
+				triggerOnOpenFullScreen = false;
 			} else {
 				this.doFullScreenPlayerDom();
 			}
 		}
-		$( embedPlayer ).trigger( 'onOpenFullScreen' );
+		if( triggerOnOpenFullScreen )
+			$( embedPlayer ).trigger( 'onOpenFullScreen' );
 	},
 	doFullScreenPlayerDom: function(){
 		var _this = this;
@@ -602,13 +605,15 @@ mw.PlayerControlBuilder.prototype = {
 	restoreWindowPlayer: function() {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
+		embedPlayer.$interface.css({'position':'relative'});
+	  
 		// Check if fullscreen mode is already restored: 
 		if( this.fullscreenMode === false ){
 			return ;
 		}
 		// Set fullscreen mode to false
 		this.fullscreenMode = false;
-	
+
 		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			this.restoreWindowPlayerDom();
