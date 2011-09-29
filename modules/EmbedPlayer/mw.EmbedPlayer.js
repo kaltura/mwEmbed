@@ -1385,8 +1385,10 @@ mw.EmbedPlayer.prototype = {
 			this.donePlayingCount ++;
 
 			// TOOD we should improve the end event flow
+			this.stopEventPropagation();
 			$( this ).trigger( 'ended' );
-
+			this.restoreEventPropagation();
+			
 			mw.log("EmbedPlayer::onClipDone:Trigged ended, reset playhead? " + this.onDoneInterfaceFlag);
 			
 			// if the ended event did not trigger more timeline actions run the
@@ -1395,7 +1397,7 @@ mw.EmbedPlayer.prototype = {
 				mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
 				this.stop();
 				// restore event propagation
-				this.restoreEventPropagation();
+				
 				// Check if we have the "loop" property set
 				if( this.loop ) {
 					this.play();
