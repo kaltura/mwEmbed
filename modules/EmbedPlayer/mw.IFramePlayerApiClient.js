@@ -179,7 +179,7 @@ mw.IFramePlayerApiClient.prototype = {
 		
 		// Trigger any binding events 
 		if( typeof msgObject.triggerName != 'undefined' && msgObject.triggerArgs != 'undefined') {
-			mw.log('IFramePlayerApiClient::handleReceiveMessage: trigger: ' + msgObject.triggerName );
+			//mw.log('IFramePlayerApiClient::handleReceiveMessage: trigger: ' + msgObject.triggerName );
 			$( _this.playerProxy ).trigger( msgObject.triggerName, msgObject.triggerArgs );
 		}
 	},
