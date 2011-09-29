@@ -245,11 +245,6 @@ mw.DoubleClick.prototype = {
 			// Update the playhead to play state:
 			_this.embedPlayer.play();
 			
-			// sometimes play does not stick with ad switch
-			setTimeout(function(){
-				_this.embedPlayer.play();
-			},500)
-			
 			// TODO This should not be needed ( fix event stop event propagation ) 
 			_this.embedPlayer.monitor();
 			mw.log( "DoubleClick::adsManager.play" );
