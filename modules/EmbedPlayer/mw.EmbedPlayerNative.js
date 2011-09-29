@@ -807,10 +807,7 @@ mw.EmbedPlayerNative = {
 	},
 
 	/**
-	* Local method for progress event
-	* fired as the video is downloaded / buffered
-	*
-	* Used to update the bufferedPercent
+	* Local method for end of media event
 	*/
 	onended: function() {
 		var _this = this;
