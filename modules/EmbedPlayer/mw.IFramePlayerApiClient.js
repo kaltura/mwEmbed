@@ -25,15 +25,8 @@ mw.IFramePlayerApiClient.prototype = {
 		mw.log( "mw.IFramePlayerApiClient:: init" + playerProxy.id );
 		this.iframe = iframe;
 		this.playerProxy = playerProxy;
-		var srcParts;
 		
-		if( $(this.iframe).attr('src') ){
-			// Set the iframe server
-			srcParts = mw.parseUri( mw.absoluteUrl( $(this.iframe).attr('src') ) );
-		} else {
-			// local domain iframe server: 
-			srcParts = mw.parseUri( document.URL );
-		}
+		var srcParts = mw.parseUri( this.getIframeSrc() );
 		this.iframeServer = srcParts.protocol + '://' + srcParts.authority;
 		
 		this.addPlayerSendApi();
@@ -41,6 +34,17 @@ mw.IFramePlayerApiClient.prototype = {
 		
 		this.addIframeFullscreenBinding();
 		
+	},
+	/**
+	 * Gets an iframe src ( uses the local domain src if the iframe has no source and is in 
+	 * same domain iframe mode )
+	 */
+	'getIframeSrc' : function(){
+		if( $( this.iframe ).attr('src') ){
+			 return $( this.iframe ).attr('src')
+		} else {
+			return document.URL;
+		}
 	},
 	'addPlayerSendApi': function(){
 		var _this = this;		
@@ -185,7 +189,7 @@ mw.IFramePlayerApiClient.prototype = {
 				' src: ' + mw.absoluteUrl( $( this.iframe ).attr('src')  ) );*/
 		$.postMessage(
 			this.stringify( msgObject ), 
-			mw.absoluteUrl( $( this.iframe ).attr('src') ), 
+			mw.absoluteUrl(  this.getIframeSrc() ), 
 			this.iframe.contentWindow 
 		);
 	},
