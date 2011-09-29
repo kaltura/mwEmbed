@@ -2268,8 +2268,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	pause: function( event ) {
 		var _this = this;
-		// Trigger the pause event if not already paused and using native
-		// controls:
+		// Trigger the pause event if not already paused and using native controls:
 		if( this.paused === false ){
 			this.paused = true;
 			mw.log('EmbedPlayer:trigger pause:' + this.paused);

@@ -158,10 +158,10 @@ mw.AdTimeline.prototype = {
 						// Continue playback
 						_this.embedPlayer.play();
 
-						// sometimes the player does not play on first request: 
+						// Sometimes the player gets a pause event out of order be sure to "play" 
 						setTimeout(function(){
 							_this.embedPlayer.play();
-						}, 250)
+						}, 300 );
 					});
 					
 				});

@@ -245,6 +245,11 @@ mw.DoubleClick.prototype = {
 			// Update the playhead to play state:
 			_this.embedPlayer.play();
 			
+			// Sometimes the player gets a pause event out of order be sure to "play" 
+			setTimeout(function(){
+				_this.embedPlayer.play();
+			}, 300 );
+			
 			// TODO This should not be needed ( fix event stop event propagation ) 
 			_this.embedPlayer.monitor();
 			mw.log( "DoubleClick::adsManager.play" );
@@ -260,6 +265,8 @@ mw.DoubleClick.prototype = {
 			}
 			// Clear out the older currentAdLoadedCallback
 			_this.currentAdLoadedCallback = null;
+			// Continue playback
+			_this.embedPlayer.play();
 			// issue the callback 
 			callback();
 		};
@@ -361,6 +368,8 @@ mw.DoubleClick.prototype = {
 	},
 	onAdsError: function( adErrorEvent ){
 		mw.log("DoubleClick:: onAdsError:" + adErrorEvent.getError() );
+		// Update the playhead to play state:
+		this.embedPlayer.play();
 		// On ad error don't stop playback: 
 		this.onResumeRequested();
 	},
