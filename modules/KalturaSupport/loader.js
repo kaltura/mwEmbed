@@ -421,66 +421,78 @@
 	 * 	optional function called once iframe player has been loaded
 	 */
 	jQuery.fn.kalturaIframePlayer = function( iframeParams, callback ) {
+
 		$( this ).each( function( inx, playerTarget ){
 			mw.log( '$.kalturaIframePlayer::' + $( playerTarget ).attr('id') );
-			// Establish the "server" domain via mwEmbed path: 
-			var mwPathUri = mw.parseUri( mw.getMwEmbedPath() );
+			// Check if the iframe API is enabled: 
+			if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
+				// Make sure the iFrame player client is loaded: 
+				mw.load( ['mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' ], function(){
+					doRewriteIframe( iframeParams, playerTarget );											
+				});
+			} else {
+				doRewriteIframe( iframeParams, playerTarget );
+			}
+		});
+		
+		// Local function to handle iframe rewrites: 
+		function doRewriteIframe (iframeParams,  playerTarget ){
+			// Build the iframe request from supplied iframeParams: 
+			var iframeRequest = '';
+			for( var key in iframeParams ){
+				// don't put flashvars into the post url. 
+				if( key == 'flashvars' )
+					continue;
+				
+				iframeRequest+= '/' + key + 
+					'/' + encodeURIComponent( iframeParams [ key ] );
+			}
+			// Add the player id: 
+			iframeRequest+= '/?playerId=' + $( playerTarget ).attr('id');
 			
-			// Local function to handle iframe rewrites: 
-			var doRewriteIframe = function(){
-				// Build the iframe request from supplied iframeParams: 
-				var iframeRequest = '';
-				for( var key in iframeParams ){
-					// don't put flashvars into the post url. 
-					if( key == 'flashvars' )
-						continue;
-					
-					iframeRequest+= '/' + key + 
-						'/' + encodeURIComponent( iframeParams [ key ] );
-				}
-				// Add the player id: 
-				iframeRequest+= '/?playerId=' + $( playerTarget ).attr('id');
+			// Add the width and height of the player
+			iframeRequest+= '&iframeSize=' +  $( playerTarget ).width() + 
+							'x' + $(playerTarget).height();
 				
-				// Add the width and height of the player
-				iframeRequest+= '&iframeSize=' +  $( playerTarget ).width() + 
-								'x' + $(playerTarget).height();
-					
-				
-				// If remote service is enabled pass along service arguments: 
-				if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' )  && 
-					(
-						mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.com') === -1 &&
-						mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1 
-					)
-				){
-					iframeRequest += kServiceConfigToUrl();
-				}
-				
-				// Add debug flag if set: 
-				if( mw.getConfig( 'debug' ) ){
-					iframeRequest+= '&debug=true';
-				}
-				// Add no cache flag if set:
-				if( mw.getConfig('Kaltura.NoApiCache') ) {
-					iframeRequest+= '&nocache=true';
-				}
-				// Add the flashvars to the request:
-				if( iframeParams['flashvars'] ){
-					$.each( iframeParams['flashvars'], function( key, value){
-						if( key ) {
-							iframeRequest += '&' + encodeURIComponent( 'flashvars[' + key + ']' ) +
-								'=' + encodeURIComponent( value );
-						}
-					});
-				}
-				// Also append the script version to purge the cdn cache for iframe: 
-				iframeRequest += '&urid=' + KALTURA_LOADER_VERSION;
+			
+			// If remote service is enabled pass along service arguments: 
+			if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' )  && 
+				(
+					mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.com') === -1 &&
+					mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1 
+				)
+			){
+				iframeRequest += kServiceConfigToUrl();
+			}
 
-				var iframeId = $( playerTarget ).attr('id');				
-				var $iframe = $('<iframe />')
+			// Add debug flag if set: 
+			if( mw.getConfig( 'debug' ) ){
+				iframeRequest+= '&debug=true';
+			}
+			// Add no cache flag if set:
+			if( mw.getConfig('Kaltura.NoApiCache') ) {
+				iframeRequest+= '&nocache=true';
+			}
+			// Add the flashvars to the request:
+			if( iframeParams['flashvars'] ){
+				$.each( iframeParams['flashvars'], function( key, value){
+					if( key ) {
+						iframeRequest += '&' + encodeURIComponent( 'flashvars[' + key + ']' ) +
+							'=' + encodeURIComponent( value );
+					}
+				});
+			}
+			// Also append the script version to purge the cdn cache for iframe: 
+			iframeRequest += '&urid=' + KALTURA_LOADER_VERSION;
+
+			var baseClass = $( playerTarget ).attr('class' ) ? $( playerTarget ).attr('class' ) + ' ' : '';
+			var iframeId = $( playerTarget ).attr('id') + '_ifp';		
+
+			var $iframe = $('<iframe />')
 				.attr({
 					'id' : iframeId,
-					'class' : $( playerTarget ).attr('class' ) + ' mwEmbedKalturaIframe',					
+					'name' : iframeId,
+					'class' : baseClass + 'mwEmbedKalturaIframe',					
 					'height' : $( playerTarget ).height(),
 					'width' : $( playerTarget ).width()
 				})
@@ -488,60 +500,56 @@
 				.css({
 					'border': '0px'
 				});
-				var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest;
-				
-				// Check if we are setting iframe src or propagating via callback:
-				if( mw.getConfig('EmbedPlayer.PageDomainIframe') ){
-					// Set the iframe contents via callback 
-					var cbName = 'mwi_' + iframeId.replace(/[^0-9a-zA-Z]/g, '');
-					if( window[ cbName ] ){
-						mw.log( "Error: iframe callback already defined: " + cbName );	
-						cbName += parseInt( Math.random()* 1000 );
-						return ;
-					}
-					window[ cbName ] = function( iframeData ){
-						var newDoc = $( '#' + iframeId ).get(0).contentDocument;
-						newDoc.open();
-						newDoc.write( iframeData.content );
-						newDoc.close();
-						
-						// TODO a custom iframe player api system per same domain iframe
-						//$( '#' + iframeId ).iFramePlayer( callback );
-						$( '#' + iframeId ).pageDomainIFramePlayer( callback );
-						
-						// clear out this global function 
-						window[ cbName ] = null;
-					};
-					// Replace the player with the iframe: 
-					$( playerTarget ).replaceWith( $iframe );
-					$.getScript( iframeUrl + '&callback=' + cbName );
-				} else {
-					
-					iframeUrl+= mw.getIframeHash( iframeId );
-					// update the iframe url:
-					$iframe.attr( 'src', iframeUrl );
-					
-					// Replace the player with the iframe: 
-					$( playerTarget ).replaceWith( $iframe );
-				
-					mw.log('$.kalturaIframePlayer::iframe in page: ' + $( 'iframe#' + iframeId ).length );
-					// if the iframe server is enabled, invoke the iframe player server: 
-					if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
-						// Invoke the iframe player api system:
-						$( '#' + iframeId ).iFramePlayer( callback );
-					}
+			
+			// Create the iframe proxy that wraps the actual $iframe
+			// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
+			var $iframeProxy = $('<div />').attr({
+				'id' : $( playerTarget ).attr('id'),
+				'name' : $( playerTarget ).attr('id')
+			})
+			.append( $iframe );
+			
+			// Setup the iframe ur
+			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php' + iframeRequest;
+			
+			// Check if we are setting iframe src or propagating via callback:
+			if( mw.getConfig('EmbedPlayer.PageDomainIframe') ){
+				// Set the iframe contents via callback 
+				var cbName = 'mwi_' + iframeId.replace(/[^0-9a-zA-Z]/g, '');
+				if( window[ cbName ] ){
+					mw.log( "Error: iframe callback already defined: " + cbName );	
+					cbName += parseInt( Math.random()* 1000 );
+					return ;
 				}
-			};
-			// Check if the iframe API is enabled: 
-			if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
-				// Make sure the iFrame player client is loaded: 
-				mw.load( ['mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' ], function(){
-					doRewriteIframe();											
-				});
+				window[ cbName ] = function( iframeData ){
+					var newDoc = $( '#' + iframeId ).get(0).contentDocument;
+					newDoc.open();
+					newDoc.write( iframeData.content );
+					newDoc.close();
+				
+					// Invoke the iframe player api system:
+					$iframeProxy.iFramePlayer( callback );
+					
+					// clear out this global function 
+					window[ cbName ] = null;
+				};
+				// Replace the player with the iframe: 
+				$( playerTarget ).replaceWith( $iframeProxy );
+				$.getScript( iframeUrl + '&callback=' + cbName );
 			} else {
-				doRewriteIframe();
+				iframeUrl += mw.getIframeHash( iframeId );
+				// update the iframe url:
+				$iframe.attr( 'src', iframeUrl );
+				
+				// Replace the player with the iframe: 
+				$( playerTarget ).replaceWith( $iframeProxy );
+			
+				if(  mw.getConfig('EmbedPlayer.EnableIframeApi') ){
+					// Invoke the iframe player api system:
+					$iframeProxy.iFramePlayer( callback );
+				}
 			}
-		});
+		};
 	};
 	
 	/**

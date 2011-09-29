@@ -1384,8 +1384,6 @@ mw.EmbedPlayer.prototype = {
 			// Update the clip done playing count:
 			this.donePlayingCount ++;
 
-			// Run the ended trigger
-			this.stopEventPropagation();
 			// TOOD we should improve the end event flow
 			$( this ).trigger( 'ended' );
 
