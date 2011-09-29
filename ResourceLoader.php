@@ -165,7 +165,7 @@ class ResourceLoader {
                                 if (isset($_SERVER['SERVER_NAME'])  &&
                                     strpos($_SERVER['SERVER_NAME'],'archive.org')){
                                   $ia = realpath( dirname( __FILE__ ) ) .
-                                    '/modules/InternetArchiveSupport/InternetArchiveVideoPage.js';
+                                    '/modules/InternetArchiveSupport/InternetArchiveVideoPage.js'; // loads into mw.IA
                                   if ( is_file( $ia ) ){
                                     wfSuppressWarnings();
                                     $this->output .= file_get_contents( $ia );
