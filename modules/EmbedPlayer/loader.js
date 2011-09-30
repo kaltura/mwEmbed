@@ -138,7 +138,7 @@
 		'EmbedPlayer.EnableIframeApi' : true,
 		
 		// If set to true will output the iframe as inline contents on the same domain as page contents 
-		'EmbedPlayer.PageDomainIframe' : false
+		'EmbedPlayer.PageDomainIframe' : true
 	} );
 	
 	/**
