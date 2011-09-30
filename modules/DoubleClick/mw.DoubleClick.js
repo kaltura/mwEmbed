@@ -84,7 +84,6 @@ mw.DoubleClick.prototype = {
 
 		// Add a binding for cuepoints:
 		$( _this.embedPlayer ).bind( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event,  cuePointWrapper ){
-			 _this.embedPlayer.pause();
 			var cuePoint = cuePointWrapper.cuePoint;
 			// check if trackCuePoints has been disabled 
 			if( _this.getConfig( 'trackCuePoints') === false){
@@ -193,7 +192,7 @@ mw.DoubleClick.prototype = {
 		    $(embedPlayer).bind( 'monitorEvent' + _this.bindPostfix, function(){
 		    	if( embedPlayer.currentTime - startTime  > ( cuePoint.duration / 1000 ) ){
 		    		// remove the overly
-		    		if( activeOverlayadManager ){
+		    		if( _this.activeOverlayadManager ){
 			    		_this.activeOverlayadManager.unload();
 						_this.activeOverlayadManager = null;
 		    		}
