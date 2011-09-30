@@ -65,8 +65,9 @@ mw.FreeWheelControler.prototype = {
 		this.config = this.embedPlayer.getKalturaConfig(
 			'FreeWheel',
 			[ 'plugin', 'preSequence', 'postSequence', 'width', 'height', 'asyncInit',
-			 'adManagerUrl', 'serverUrl', 'networkId', 'videoAssetId',  'videoAssetIdType', 
-			 'playerProfile', 'playerProfileHTML5', 'videoAssetNetworkId', 'siteSectionId', 'adManagerJsUrl' ]
+			 'adManagerUrl','adManagerJsUrl', 'serverUrl', 'networkId', 'videoAssetId',  
+			 'videoAssetIdType', 'playerProfile', 'playerProfileHTML5', 'videoAssetNetworkId', 
+			 'siteSectionId', 'visitorId'  ]
 		);
 		// XXX todo we should read "adManagerUrl" from uiConf config
 		var adManagerUrl = ( this.config[ 'adManagerJsUrl' ] ) ? 
@@ -190,7 +191,8 @@ mw.FreeWheelControler.prototype = {
 		var slotSet = this.slots[ slotType ];
 		// Make sure we have a slot to be displayed:
 		if( !slotSet[ inx ] ){
-			doneCallback();
+			if( doneCallback )
+				doneCallback();
 			return ;
 		}
 		
@@ -287,8 +289,7 @@ mw.FreeWheelControler.prototype = {
 			case 'profileId':
 				return 'global-js';
 				break;
-		}
-		mw.log( "Error :: mw.FreeWheel:: getConfig> could not get config:" + propId );
+		}		
 		return null;
 	},
 	getAdManager: function(){
@@ -306,12 +307,16 @@ mw.FreeWheelControler.prototype = {
 			this.adContext.registerVideoDisplayBase( 'videoContainer' );
 
 			this.adContext.setProfile( this.getConfig( 'profileId' ) );
+
+			// Check if we have a visitorId 
+			if( this.getConfig('visitorId') ){
+				this.adContext.setVisitor( this.getConfig('visitorId') );
+			}
 			
-			/** TODO set player profile 
+			// Check for "html5" player profile: 
 			if( this.getConfig('playerProfileHTML5') ){
 				this.adContext.setPlayerProfile( this.getConfig('playerProfileHTML5') );
 			}
-			*/
 			
 			this.adContext.setVideoAsset( 
 					this.getConfig( 'videoAssetId' ),
@@ -333,12 +338,16 @@ mw.FreeWheelControler.prototype = {
 		if( !keyValueSet){
 			return ;
 		}
+		// Add some generic key value pairs:
+		var autoPlay = ( this.embedPlayer.autoplay )? 'true' : 'false';
+		context.addKeyValue( 'autoplay', autoPlay );
+		
 		$.each( keyValueSet.split( '&' ), function(inx, set){
 			var kv = set.split('=');
 			if( kv[0] && kv[1] ){
 				context.addKeyValue( kv[0], kv[1] );
 			}
-		})
+		});
 		
 	},
 	addContextListners: function(){
