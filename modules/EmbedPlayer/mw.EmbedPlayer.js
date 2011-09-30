@@ -2646,7 +2646,7 @@ mw.EmbedPlayer.prototype = {
 			this.stopMonitor();
 		}
 
-//		mw.log('trigger:monitor:: ' + this.currentTime  + ' propagate events: ' + _this._propagateEvents);
+		//mw.log('trigger:monitor:: ' + this.currentTime  + ' propagate events: ' + _this._propagateEvents);
 		if( _this._propagateEvents ){
 			$( this ).trigger( 'monitorEvent' );
 		}

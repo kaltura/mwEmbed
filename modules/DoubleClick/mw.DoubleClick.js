@@ -40,7 +40,7 @@ mw.DoubleClick.prototype = {
 			
 			adsLoader.addEventListener(
 			    google.ima.AdErrorEvent.Type.AD_ERROR,
-			    function( adErrorEvent ){ 
+			    function( adErrorEvent ){
 			    	_this.onAdsError( adErrorEvent ); 
 			    },
 			    false
@@ -49,7 +49,7 @@ mw.DoubleClick.prototype = {
 			// Add all the player bindings for loading ads at the correct times
 			_this.addPlayerBindings();
 			
-			// issue the callback to continue player build out
+			// Issue the callback to continue player build out
 			callback();
 		});
 	},
@@ -96,7 +96,8 @@ mw.DoubleClick.prototype = {
 				cuePoint.title.indexOf( "doubleclick" ) === -1
 			){
 				return ;
-			}			
+			}
+			
 			// Get the ad type for each cuepoint
 			var adType = _this.embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
 			
@@ -109,6 +110,9 @@ mw.DoubleClick.prototype = {
 			// check if video type: 
 			if( adType == 'midroll'  ||  adType == 'preroll' || adType == 'postroll'  ){
 				_this.loadAndPlayVideoSlot( 'midroll', function(){
+					if( _this.embedPlayer.adTimeline ){
+						_this.embedPlayer.adTimeline.restorePlayer();
+					}
 					// play the restored entry ( restore propagation ) 
 					_this.embedPlayer.play();
 				}, cuePoint);
@@ -197,7 +201,7 @@ mw.DoubleClick.prototype = {
 						_this.activeOverlayadManager = null;
 		    		}
 		    		// remove this binding:
-		    		 $(embedPlayer).ungbind( 'monitorEvent' + _this.bindPostfix );
+		    		 $(embedPlayer).unbind( 'monitorEvent' + _this.bindPostfix );
 		    	}
 		    });
 		};

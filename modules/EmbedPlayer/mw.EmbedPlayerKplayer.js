@@ -104,6 +104,7 @@ mw.EmbedPlayerKplayer = {
 	
 	// The number of times we have tried to bind the player
 	bindTryCount : 0,
+	
 	/**
 	 * javascript run post player embedding
 	 */
@@ -222,24 +223,48 @@ mw.EmbedPlayerKplayer = {
 	 */
 	switchPlaySrc: function( src, switchCallback, doneCallback ){
 		var _this = this;
-		if( !this.getPlayerElement() ) {
-			// Can't switch play src if no source is present
-			mw.log('Error: switchPlaySrc can not switchPlaySrc if no source is playing' );
-			return ;
-		}
-		var gPlayerReady = 'kdp_' + this.id + '_switchSrcReady';
-		var gDoneName = 'kdp_' + this.id + '_switchSrcEnd';
-		setTimeout(function(){
-			mw.log("Kplayer switchPlaySrc: " + src);
-			_this.getPlayerElement().sendNotification("changeMedia", {entryId:src} );
-			_this.monitor();
-			switchCallback( this );
-			
-			window[ gDoneName ] = doneCallback;
-			_this.getPlayerElement().addJsListener( 'playerPlayEnd', gDoneName);
-		}, 500);
-		// This is very fragile..it sucks we can't use 
-		this.getPlayerElement().addJsListener( 'playerReady', gPlayerReady );
+		var waitCount = 0;
+		var waitForJsListen = function( callback ){
+			if(  _this.getPlayerElement() &&  _this.getPlayerElement().addJsListener ){
+				callback();
+			} else {
+				// waited for 2 seconds fail
+				if( waitCount > 20 ){
+					mw.log( "Error: Failed to swtich player source");
+					if( switchCallback )
+						switchCallback();
+					if( doneCallback )
+						doneCallback();
+					return;
+				}
+				
+				setTimeout(function(){
+					waitCount++;
+					waitForJsListen( callback );
+				},100)
+			}
+		};
+		// wait for jslistener to be ready:
+		waitForJsListen( function(){
+			var gPlayerReady = 'kdp_' + _this.id + '_switchSrcReady';
+			var gDoneName = 'kdp_' + _this.id + '_switchSrcEnd';
+			window[gPlayerReady] = function(){
+				mw.log("Kplayer switchPlaySrc: " + src);
+				
+				_this.getPlayerElement().sendNotification("changeMedia", { 'entryId': src } );
+				_this.monitor();
+				switchCallback( _this );
+				
+				window[ gDoneName ] = function(){
+					if( doneCallback )
+						doneCallback();
+				};
+				_this.getPlayerElement().addJsListener( 'playerPlayEnd', gDoneName);
+			};
+			// This is very fragile..it sucks we can't use 
+			_this.getPlayerElement().addJsListener( 'playerReady', gPlayerReady );
+		
+		});
 	},
 	
 	/**
