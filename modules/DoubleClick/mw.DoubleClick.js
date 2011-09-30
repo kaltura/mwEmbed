@@ -276,7 +276,7 @@ mw.DoubleClick.prototype = {
 		});
 	},
 	/**
-	 * Tries to get an AdSlotUrl in the few places it could be located
+	 * Assembles an AdSlotUrl 
 	 * @param slotType
 	 * @param cuePoint
 	 * @return URL
