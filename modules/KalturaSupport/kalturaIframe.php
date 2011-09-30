@@ -563,6 +563,13 @@ class kalturaIframe {
 		
 		<?php echo $this->outputIframeHeadCss(); ?>
 		<script type="text/javascript">
+			// In same page iframe mode the script loading happens inline and not all the settings get set in time
+			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
+			preMwEmbedConfig = {};
+			preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
+			// Don't do an iframe rewrite inside an iframe
+			preMwEmbedConfig['Kaltura.IframeRewrite'] = false;
+			
 			// Insert the html5 kalturaLoader script
 			document.write(unescape("%3Cscript src='<?php echo $this->getMwEmbedLoaderLocation() ?>' type='text/javascript'%3E%3C/script%3E"));
 		</script>
@@ -581,9 +588,6 @@ class kalturaIframe {
 				}
 			?>
 			
-			// Don't do an iframe rewrite inside an iframe!
-			mw.setConfig( 'Kaltura.IframeRewrite', false );
-
 			// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
 			mw.setConfig('Mw.LogPrepend', 'iframe:');
 
@@ -647,12 +651,6 @@ class kalturaIframe {
 			// For testing limited capacity browsers
 			//var kIsHTML5FallForward = function(){ return false };
 			//var kSupportsFlash = function(){ return false	 };
-
-			// Don't do an iframe rewrite inside an iframe!
-			mw.setConfig( 'Kaltura.IframeRewrite', false );
-
-			// Identify the player as an iframe server
-			mw.setConfig( "EmbedPlayer.IsIframeServer", true );
 
 			<?php 
 				echo $this->javascriptPlayerLogic();

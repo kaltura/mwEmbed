@@ -5,14 +5,16 @@
 // include configuration 
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 
-// TODO Check cache to see if its expired ( file modified time of mwEmbedLoader.js vs cache modified time ) 
-$loaderJs = 'KALTURA_SCRIPT_NAME =  "' . addslashes( $_SERVER['REQUEST_URI'] ) . '";' . "\n";
+// Append ResourceLoder path to loader.js
+$loaderJs = "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
+
+// Add debug flag global as well
+if( $wgEnableScriptDebug === true ) {
+    $loaderJs .= "window['SCRIPT_FORCE_DEBUG'] = true;\n";
+}
 
 // Get resource (  mwEmbedLoader.js )
 $loaderJs .= file_get_contents( 'mwEmbedLoader.js' );
-
-// Append ResourceLoder path to loader.js
-$loaderJs .= "\n" . "SCRIPT_LOADER_URL = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
 
 // Set up globals to be exported as mwEmbed config: 
 $exportedJsConfig= array(
@@ -37,10 +39,6 @@ foreach( $exportedJsConfig as $key => $val ){
 	$val = ( $val === false )? $val = 'false' : $val;
 	$val = ( $val != 'true' && $val != 'false' )? "'" . addslashes( $val ) . "'": $val;
 	$loaderJs .= "mw.setConfig('". addslashes( $key ). "', $val );\n";
-}
-
-if($wgEnableScriptDebug === true) {
-    $loaderJs .= 'SCRIPT_FORCE_DEBUG = true;';
 }
 
 // Set the expire time for the loader to 5 min. ( it controls the version of the actual library payload )

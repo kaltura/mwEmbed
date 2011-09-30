@@ -427,7 +427,7 @@
 			// Check if the iframe API is enabled: 
 			if( mw.getConfig('EmbedPlayer.EnableIframeApi') ){
 				// Make sure the iFrame player client is loaded: 
-				mw.load( ['mw.EmbedPlayerNative' , '$j.postMessage' , 'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' ], function(){
+				mw.load( ['$j.postMessage', 'mw.EmbedPlayerNative' , 'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' ], function(){
 					doRewriteIframe( iframeParams, playerTarget );											
 				});
 			} else {

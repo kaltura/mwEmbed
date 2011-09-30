@@ -42,7 +42,7 @@
 // 0.5 - (9/11/2009) Improved cache-busting
 // 0.4 - (8/25/2009) Initial release
 
-(function($){
+( function( $ ){
   '$:nomunge'; // Used by YUI compressor.
   
   // A few vars used in non-awesome browsers.
@@ -167,7 +167,6 @@
   // Returns:
   // 
   //  Nothing!
-  
   $.receiveMessage = p_receiveMessage = function( callback, source_origin, delay ) {
 	  if( !source_origin){
 		  return FALSE;
@@ -227,5 +226,5 @@
     }
   };
   
-})(window.$j);
+})( window.jQuery );
 

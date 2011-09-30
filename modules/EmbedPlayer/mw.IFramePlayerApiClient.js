@@ -22,7 +22,7 @@ mw.IFramePlayerApiClient.prototype = {
 	
 	// Stores the current playerProxy ( can be updated by user js )
 	'init': function( iframe , playerProxy, options ){
-		mw.log( "mw.IFramePlayerApiClient:: init" + playerProxy.id );
+		mw.log( "mw.IFramePlayerApiClient:: init: " + playerProxy.id );
 		this.iframe = iframe;
 		this.playerProxy = playerProxy;
 		
@@ -33,7 +33,6 @@ mw.IFramePlayerApiClient.prototype = {
 		this.addPlayerReciveApi();
 		
 		this.addIframeFullscreenBinding();
-		
 	},
 	/**
 	 * Gets an iframe src ( uses the local domain src if the iframe has no source and is in 
@@ -63,7 +62,6 @@ mw.IFramePlayerApiClient.prototype = {
 	},
 	'addPlayerReciveApi': function(){
 		var _this = this;		
-
 		$.receiveMessage( function( event ){
 			_this.handleReceiveMessage( event );
 		}, this.iframeServer);

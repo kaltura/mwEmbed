@@ -39,14 +39,12 @@
 */
 // The version of this script
 KALTURA_LOADER_VERSION = '1.4c9';
+
 // Static script loader url: 
-var SCRIPT_LOADER_URL = 'http://www.kaltura.org/apis/html5lib/mwEmbed/ResourceLoader.php';
-var SCRIPT_FORCE_DEBUG = false;
 var FORCE_LOAD_JQUERY = false;
 
 // These Lines are for local testing: 
 // SCRIPT_FORCE_DEBUG = true;
-// SCRIPT_LOADER_URL = 'http://192.168.1.69/html5.kaltura/mwEmbed/ResourceLoader.php';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura HTML5 Version: ' + KALTURA_LOADER_VERSION );
@@ -172,7 +170,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
 				jsRequestSet.push( ['window.jQuery'] );
 			}
-			jsRequestSet.push('mwEmbed', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'kdpClientIframe', 'JSON' );
+			jsRequestSet.push('mwEmbed', '$j.cookie', '$j.postMessage', 'mw.EmbedPlayerNative',  'kdpClientIframe', 'JSON' );
 			
 			// Load just the files needed for flash iframe bindings	
 			kLoadJsRequestSet( jsRequestSet, function(){
@@ -566,7 +564,7 @@ function kAddScript( callback ){
 		return ;
 	}
 	kAddedScript = true;
-
+	
 	var jsRequestSet = [];
 	if( typeof window.jQuery == 'undefined' || FORCE_LOAD_JQUERY ) {
 		jsRequestSet.push( 'window.jQuery' );
@@ -574,7 +572,7 @@ function kAddScript( callback ){
 	// Check if we are using an iframe ( load only the iframe api client ) 
 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) && ! kPageHasAudioOrVideoTags() ) {
 		if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') && ( kSupportsFlash() || kSupportsHTML5() ) ){
-			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', '$j.postMessage',  'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );		
+			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', '$j.postMessage', 'mw.EmbedPlayerNative', 'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );		
 			// Load a minimal set of modules for iframe api
 			kLoadJsRequestSet( jsRequestSet, callback );
 			return ;
@@ -627,6 +625,7 @@ function kAddScript( callback ){
 		'mw.TimedText',
 		'mw.style.TimedText'
 	);
+
 	// If an iframe server include iframe server stuff: 
 	if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
 		jsRequestSet.push(
@@ -704,6 +703,9 @@ function kAppendScriptUrl( url, callback ) {
 }
 
 function kLoadJsRequestSet( jsRequestSet, callback ){
+	if( typeof SCRIPT_LOADER_URL == 'undefined' ){
+		alert( 'Error invalid entry point');
+	}
 	var url = SCRIPT_LOADER_URL + '?class=';
 	// Add all the requested classes
 	url+= jsRequestSet.join(',') + ',';
