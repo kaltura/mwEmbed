@@ -224,6 +224,9 @@ mw.EmbedPlayerKplayer = {
 	switchPlaySrc: function( src, switchCallback, doneCallback ){
 		var _this = this;
 		var waitCount = 0;
+		// Throw an error this won't work 
+		throw "Kaltura Player Error: Tyring to swtich sources with non-native player. Probably missing webm flavor";
+		
 		var waitForJsListen = function( callback ){
 			if(  _this.getPlayerElement() &&  _this.getPlayerElement().addJsListener ){
 				callback();

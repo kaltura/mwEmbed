@@ -200,7 +200,7 @@ mw.Playlist.prototype = {
 					leftPx = playerSize.width;
 			}
 			var $plListContainer =$('<div />')
-			.addClass( 'playlistSet-container' )
+			.addClass( 'playlist-set-container' )
 			.css({
 				'position' : 'absolute',
 				'overflow' : 'hidden',
@@ -353,7 +353,7 @@ mw.Playlist.prototype = {
 				} );
 				// Add space for the multi-playlist selector:
 				if( _this.sourceHandler.hasMultiplePlaylists() ){
-					$( _this.target + ' .playlistSet-container').css( {
+					$( _this.target + ' .playlist-set-container').css( {
 						'left' : parseInt( playerSize.width ) + 4
 					});
 					$videoListWraper.css( {
@@ -514,7 +514,7 @@ mw.Playlist.prototype = {
 				}
 			});
 		}
-		var uiSelector = '.playlist-block-list,.video-list-wrapper,.playlist-scroll-buttons';
+		var uiSelector = '.playlist-set-container,.playlist-block-list,.video-list-wrapper,.playlist-scroll-buttons';
 		// fullscreen support
 		$( embedPlayer ).bind('onOpenFullScreen', function(){
 			// hide inteface comonets ( these should readlly all be in their own div! )

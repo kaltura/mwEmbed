@@ -1041,13 +1041,10 @@ mw.EmbedPlayer.prototype = {
 	},
 
 	/**
-	 * Insert and play a video source ( useful for ads or bumper videos )
-	 * 
-	 * Only works while video is in active play back. Only tested with native
-	 * playback atm.
+	 * Insert and play a video source ( useful for ads or bumper videos )	 
 	 */
-	switchPlaySrc: function( source ){
-		mw.log("Error: only native playback supports insertAndPlaySource right now");
+	switchPlaySrc: function( src ){
+		// do nothing ( must be implemented by player )
 	},
 
 	/**

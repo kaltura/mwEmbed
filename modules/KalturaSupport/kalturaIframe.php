@@ -567,8 +567,6 @@ class kalturaIframe {
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
 			preMwEmbedConfig = {};
 			preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
-			// Don't do an iframe rewrite inside an iframe
-			preMwEmbedConfig['Kaltura.IframeRewrite'] = false;
 			
 			// Insert the html5 kalturaLoader script
 			document.write(unescape("%3Cscript src='<?php echo $this->getMwEmbedLoaderLocation() ?>' type='text/javascript'%3E%3C/script%3E"));
@@ -587,6 +585,8 @@ class kalturaIframe {
 					echo 'mw.setConfig( \'Mw.CustomResourceIncludes\', '. $this->getCustomPlayerIncludesJSON() .' );';
 				}
 			?>
+			// Don't do an iframe rewrite inside an iframe
+			mw.setConfig('Kaltura.IframeRewrite', false );
 			
 			// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
 			mw.setConfig('Mw.LogPrepend', 'iframe:');
