@@ -184,9 +184,23 @@ mw.DoubleClick.prototype = {
 		    adsManager.setVerticalAlignment( google.ima.AdSlotAlignment.VerticalAlignment.BOTTOM );
 
 		    adsManager.play( $overlay.get(0) );
-		    
+
 		    // Set the active overlay manager: 
 		    _this.activeOverlayadManager = adsManager;
+		    
+		    // Only display for cuePoint duration time 
+		    var startTime = embedPlayer.currentTime;		    	
+		    $(embedPlayer).bind( 'monitorEvent' + _this.bindPostfix, function(){
+		    	if( embedPlayer.currentTime - startTime  > ( cuePoint.duration / 1000 ) ){
+		    		// remove the overly
+		    		if( activeOverlayadManager ){
+			    		_this.activeOverlayadManager.unload();
+						_this.activeOverlayadManager = null;
+		    		}
+		    		// remove this binding:
+		    		 $(embedPlayer).ungbind( 'monitorEvent' + _this.bindPostfix );
+		    	}
+		    });
 		};
 		
 		// Request the ad ( will trigger the currentAdCallback and onResumeRequestedCallback when done )
