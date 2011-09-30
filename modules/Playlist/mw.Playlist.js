@@ -585,7 +585,9 @@ mw.Playlist.prototype = {
 						}
 						mw.log("Cant prev: cur:" + _this.clipIndex );
 					})
-					.find('span').addClass('ui-icon-seek-prev').parent()			
+					.find('span').addClass('ui-icon-seek-prev')
+					.parent()
+					.buttonHover()
 				,					
 				$plButton.clone().attr({
 						'title' : 'Next clip'
@@ -598,7 +600,9 @@ mw.Playlist.prototype = {
 						}
 						mw.log("Cant next: cur:" + _this.clipIndex );
 					})
-					.find('span').addClass('ui-icon-seek-next').parent()
+					.find('span').addClass('ui-icon-seek-next')
+					.parent()
+					.buttonHover()
 			);
 		}
 	},

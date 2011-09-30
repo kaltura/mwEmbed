@@ -21,6 +21,7 @@ function jsKalturaPlayerTest( videoId ){
 	module( "Entry with no sources" );
 		
 	asyncTest("Change Media", function(){
+		
 		window.entryReadyFunction = function(){
 			var entry = kdp.evaluate('{mediaProxy.entry}');
 			// check for the inital entry ready:

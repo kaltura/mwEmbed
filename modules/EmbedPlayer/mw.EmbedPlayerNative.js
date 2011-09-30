@@ -473,10 +473,11 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var vid = this.getPlayerElement();
 		mw.log( 'EmbedPlayerNative:: switchPlaySrc:' + src + ' native time: ' + vid.currentTime );
-		// make sure the switch source is different: 
+
+		// Make sure the switch source is different: 
 		if( !src || src == vid.src ){
 			if( switchCallback ){
-				switchCallback();
+				switchCallback( vid );
 			}
 			setTimeout(function(){
 				if( doneCallback )

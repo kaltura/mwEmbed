@@ -1795,18 +1795,18 @@ mw.EmbedPlayer.prototype = {
 				if( _this.$interface ){
 					_this.$interface.find( '.play-btn-large' ).hide();
 				}
-				if( _this.isPersistentNativePlayer() ){
+				/*if( _this.isPersistentNativePlayer() ){
 					// Restored switch play ( seems to help with playlist sequences ) 
 					// TODO investigate. 
-					_this.switchPlaySrc( _this.getSrc(), callback  );
+				_this.switchPlaySrc( _this.getSrc(), function(){
+						if( callback ) callback()
+					});
 				} else {
 					_this.stop();
-					_this.play();
-					if( callback ) callback();
-				}
-			} else {
-				if( callback ) callback();	
-			}
+				}*/				
+				_this.play();
+			} 
+			if( callback ) callback();	
 		});
 
 		// Load new sources per the entry id via the checkPlayerSourcesEvent hook:

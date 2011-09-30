@@ -66,7 +66,7 @@ mw.FreeWheelControler.prototype = {
 			'FreeWheel',
 			[ 'plugin', 'preSequence', 'postSequence', 'width', 'height', 'asyncInit',
 			 'adManagerUrl', 'serverUrl', 'networkId', 'videoAssetId',  'videoAssetIdType', 
-			 'playerProfile', 'videoAssetNetworkId', 'siteSectionId', 'adManagerJsUrl' ]
+			 'playerProfile', 'playerProfileHTML5', 'videoAssetNetworkId', 'siteSectionId', 'adManagerJsUrl' ]
 		);
 		// XXX todo we should read "adManagerUrl" from uiConf config
 		var adManagerUrl = ( this.config[ 'adManagerJsUrl' ] ) ? 
@@ -307,6 +307,12 @@ mw.FreeWheelControler.prototype = {
 
 			this.adContext.setProfile( this.getConfig( 'profileId' ) );
 			
+			/** TODO set player profile 
+			if( this.getConfig('playerProfileHTML5') ){
+				this.adContext.setPlayerProfile( this.getConfig('playerProfileHTML5') );
+			}
+			*/
+			
 			this.adContext.setVideoAsset( 
 					this.getConfig( 'videoAssetId' ),
 					this.getConfig( 'videoDuration' ),
@@ -323,9 +329,16 @@ mw.FreeWheelControler.prototype = {
 		mw.log("FreeWheelController::freeWheelController>")
 		// XXX todo read key value pairs from plugin config ?
 		var context = this.getContext();
-		context.addKeyValue("module","DemoPlayer");
-		context.addKeyValue("feature","trackingURLs");
-		context.addKeyValue("feature", "simpleAds");
+		var keyValueSet = this.getConfig('keyValues');
+		if( !keyValueSet){
+			return ;
+		}
+		$.each( keyValueSet.split( '&' ), function(inx, set){
+			var kv = set.split('=');
+			if( kv[0] && kv[1] ){
+				context.addKeyValue( kv[0], kv[1] );
+			}
+		})
 		
 	},
 	addContextListners: function(){

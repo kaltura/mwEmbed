@@ -8,6 +8,13 @@ window.bumperPlugin = true;
 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+		var bumpPostfix = '.Bumper';
+		
+		// On change media clear any bumper settings: 
+		$( embedPlayer ).bind( "onChangeMedia" + bumpPostfix, function(){
+			$( embedPlayer ).unbind( bumpPostfix ); 
+		});
+		
 		// <plugin id="bumper" bumperentryid="1_187nvs4c" clickurl="http://www.nokia.com" lockui="true" playonce="false" presequence="1" width="100%" height="100%"></plugin>
 		var bc = embedPlayer.getKalturaConfig(
 				'bumper', 
@@ -41,7 +48,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				};
 				// handle prerolls
 				if( bc.preSequence ){
-					$( embedPlayer ).bind( 'AdSupport_bumper', function(event, sequenceProxy){
+					$( embedPlayer ).bind( 'AdSupport_bumper' + bumpPostfix, function(event, sequenceProxy){
 						adConf.type = 'bumper';
 						sequenceProxy[ bc.preSequence ] = function( doneCallback ){
 							embedPlayer.adTimeline.display( adConf, doneCallback );
@@ -50,14 +57,14 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				}
 				// technically the postroll bumper should be named something else. 
 				if( bc.postSequence ){
-					$( embedPlayer ).bind( 'AdSupport_postroll', function(event, sequenceProxy){
+					$( embedPlayer ).bind( 'AdSupport_postroll' + bumpPostfix, function(event, sequenceProxy){
 						adConf.type = 'postroll';
 						sequenceProxy[ bc.postSequence ] = function( doneCallback ){
 							embedPlayer.adTimeline.display( adConf, doneCallback );
 						};
 					});
 				}
-				// Done adding bumper bindings issue
+				// Done adding bumper bindings issue callback
 				callback();
 			});
 		});

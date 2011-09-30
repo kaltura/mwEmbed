@@ -40,6 +40,11 @@ mw.KAds.prototype = {
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin(  embedPlayer, callback ) );
 		
+		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
+			_this.destroy();
+		});
+		_this.destroy();
+		
 		// setup local pointer: 
 		var $uiConf = embedPlayer.$uiConf;
 		this.$notice = $uiConf.find( 'label#noticeMessage' );
@@ -50,16 +55,13 @@ mw.KAds.prototype = {
 			mw.log( "KAds::All ads have been loaded" );
 			callback();
 		});
-
+		
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
 		$( embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event, cuePointWrapper ) {
 			_this.loadAd( cuePointWrapper );
 		});
 
-		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
-			_this.destroy();
-		});
 	},
 	/**
 	 * Get ad config
@@ -209,7 +211,6 @@ mw.KAds.prototype = {
 		var baseDisplayConf = this.getBaseDisplayConf();
 		// Get ad Configuration
 		this.getAdConfigSet( function( adConfigSet){
-			
 			// Get global timeout ( should be per adType ) 
 			if( _this.getConfig( 'timeout' ) ){
 				baseDisplayConf[ 'timeout' ] = _this.getConfig('timeout'); 
@@ -221,8 +222,8 @@ mw.KAds.prototype = {
 				if( adConfigSet[ adType ].ads ) {
 					$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
 						// add to sequenceProxy:
-						sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( doneCallback ){
-							var adConfig = $.extend({}, baseDisplayConf, adConfigSet[ adType ] );
+						sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( doneCallback ){		
+							var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
 							adConfig.type = adType;
 							_this.embedPlayer.adTimeline.display( adConfig, function(){
 								// Done playing Ad issue sequenceProxy callback: 
