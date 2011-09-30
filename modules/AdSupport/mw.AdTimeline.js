@@ -120,7 +120,7 @@ mw.AdTimeline.prototype = {
 		var _this = this;
 		// Setup the original source
 		_this.originalSrc = _this.embedPlayer.getSrc();
-		// clear out any old bindings
+		// Clear out any old bindings
 		_this.destroy();
 		// On change media clear out any old adTimeline bindings
 		$( _this.embedPlayer).bind( 'onChangeMedia' + _this.bindPostfix, function(){

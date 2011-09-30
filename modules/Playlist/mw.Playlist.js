@@ -611,7 +611,7 @@ mw.Playlist.prototype = {
 		var _this = this;
 		var embedPlayer = this.getEmbedPlayer();
 		$( embedPlayer ).bind('AdSupport_StartAdPlayback', function(){
-			//  disable clip switch flag: 
+			//  Disable clip switch flag: 
 			_this.enableClipSwitch = false;
 
 			// Add a gray overlay

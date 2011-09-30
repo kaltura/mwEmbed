@@ -1761,7 +1761,6 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		// onChangeMedia): triggered at the start of the change media commands
 		$( this ).trigger( 'onChangeMedia' );
-		
 		// setup flag for change media
 		var chnagePlayingMedia = this.isPlaying();
 		
@@ -1791,22 +1790,28 @@ mw.EmbedPlayer.prototype = {
 			}
 			
 			if( chnagePlayingMedia ){
-				// make sure the play button is not displayed:
+				// Make sure the play button is not displayed:
 				if( _this.$interface ){
 					_this.$interface.find( '.play-btn-large' ).hide();
 				}
-				/*if( _this.isPersistentNativePlayer() ){
-					// Restored switch play ( seems to help with playlist sequences ) 
-					// TODO investigate. 
-				_this.switchPlaySrc( _this.getSrc(), function(){
+				if( _this.isPersistentNativePlayer() ){
+					// If switching a Persistent native player update the source:
+					// ( stop and play won't refresh the source  )
+					_this.switchPlaySrc( _this.getSrc(), function(){
+						$( _this ).trigger( 'onChangeMediaDone' );
 						if( callback ) callback()
 					});
+					// we are handling trigger and callback asynchronously return here. 
+					return ;
 				} else {
+					//stop should unload the native player
 					_this.stop();
-				}*/				
-				_this.play();
+					// reload the player
+					_this.play();
+				}
 			} 
-			if( callback ) callback();	
+			$( _this ).trigger( 'onChangeMediaDone' );
+			if( callback ) callback();
 		});
 
 		// Load new sources per the entry id via the checkPlayerSourcesEvent hook:

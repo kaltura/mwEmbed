@@ -246,15 +246,14 @@ mw.PlaylistHandlerKaltura.prototype = {
 		return this.clipList;
 	},
 	playClip: function( embedPlayer, clipIndex ){
-		var bindName = 'playerReady.playlist';
-		// check if entry id already matches:
+		// Check if entry id already matches:
 		if( embedPlayer.kentryid == this.getClip( clipIndex ).id ){
 			embedPlayer.play();
 			return ;
-		}
-		// Else change the media then play: 
-		$( embedPlayer ).unbind(bindName).bind( bindName, function( event ){
-			// Run play after we switch 
+		}		
+		// listen for change media done
+		var bindName = 'onChangeMediaDone.playlist';
+		$( embedPlayer).unbind( bindName ).bind( bindName, function(){
 			embedPlayer.play();
 		});
 		// Use internal changeMedia call to issue all relevant events

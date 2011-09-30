@@ -26,32 +26,11 @@ mw.DoubleClick.prototype = {
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin(  embedPlayer, callback ) );
 		
-		// Load the ad manager:
-		this.getAdsLoader( function( adsLoader ){
-			
-			// Set up listeners:
-			adsLoader.addEventListener(
-			    google.ima.AdsLoadedEvent.Type.ADS_LOADED,
-			    function( adsLoadedEvent ){ 
-			    	_this.onAdsLoaded( adsLoadedEvent ); 
-			    },
-			    false
-			);
-			
-			adsLoader.addEventListener(
-			    google.ima.AdErrorEvent.Type.AD_ERROR,
-			    function( adErrorEvent ){
-			    	_this.onAdsError( adErrorEvent ); 
-			    },
-			    false
-			);
-			
-			// Add all the player bindings for loading ads at the correct times
-			_this.addPlayerBindings();
-			
-			// Issue the callback to continue player build out
-			callback();
-		});
+		// Add all the player bindings for loading ads at the correct times
+		_this.addPlayerBindings();
+		
+		// Issue the callback to continue player build out
+		callback();
 	},
 	/**
 	 * Adds the player bindings for double click configuration. 
@@ -323,7 +302,7 @@ mw.DoubleClick.prototype = {
 		if( this.getConfig( slotType + 'AdTagUrl') ){
 			return this.getConfig( slotType + 'AdTagUrl' );
 		}
-		if(!this.getConfig( 'adTagUrl' ) ){
+		if( !this.getConfig( 'AdTagUrl' ) ){
 			mw.log("Error: DoubleClick no adTagUrl found for " + slotType );
 		}
 		// else just return a master adTagUrl config var:
@@ -331,15 +310,39 @@ mw.DoubleClick.prototype = {
 	},
 	getAdsLoader: function( callback ){
 		var _this = this;
-		if( _this.adsLoader ){
+		
+		var createLoader = function(){
+			// Create a new ad Loader:
+			var adsLoader = new google.ima.AdsLoader()
+			
+			// Set up listeners:
+			adsLoader.addEventListener(
+			    google.ima.AdsLoadedEvent.Type.ADS_LOADED,
+			    function( adsLoadedEvent ){ 
+			    	_this.onAdsLoaded( adsLoadedEvent ); 
+			    },
+			    false
+			);
+			
+			adsLoader.addEventListener(
+			    google.ima.AdErrorEvent.Type.AD_ERROR,
+			    function( adErrorEvent ){
+			    	_this.onAdsError( adErrorEvent ); 
+			    },
+			    false
+			);
+			callback( adsLoader );
+		};
+		
+		// Check if google ima is already loaded: 
+		if( typeof google != 'undefined' && google.ima && google.ima.AdsLoader ){
 			// Refresh the ads loader?
-			callback( _this.adsLoader );
+			createLoader();
 			return ;
 		}
 		$.getScript('http://www.google.com/jsapi', function(){
 			google.load("ima", "1", {"callback" : function(){
-				_this.adsLoader = new google.ima.AdsLoader();
-				callback( _this.adsLoader );
+				createLoader();
 			}});
 		});
 	},
