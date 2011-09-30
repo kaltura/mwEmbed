@@ -283,9 +283,17 @@ mw.DoubleClick.prototype = {
 	 */
 	getAdTagUrl: function ( slotType, cuePoint ){
 		// Return the cuePoint after evaluating any substitutions 
-		return this.embedPlayer.evaluate(  
+		var adUrl = this.embedPlayer.evaluate(  
 				this.findTagUrl( slotType, cuePoint ) 
 			);
+		// Add in structured ui-conf componets to ad url request:
+		if( this.getConfig( 'contentId' ) ){
+			adUrl+= '&vid=' + this.getConfig( 'contentId' ); 
+		}
+		if( this.getConfig( 'publisherId' ) ){
+			adUrl+= '&cmsid=' + this.getConfig('publisherId');
+		};
+		return adUrl;
 	},
 	/**
 	 * Tries to get an AdSlotUrl in the few places it could be located
