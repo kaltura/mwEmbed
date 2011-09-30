@@ -12,7 +12,7 @@
 		'EmbedPlayer.OverlayControls' : true,
 
 		// The preferred media format order 
-		'EmbedPlayer.CodecPreference': [ 'webm', 'h264', 'ogg' ],
+		'EmbedPlayer.CodecPreference': [ 'webm', 'h264', 'mp3', 'ogg' ],
 		
 		// If the iPad should use html controls 
 		// With html controls you can't access native fullscreen 
