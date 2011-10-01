@@ -415,9 +415,9 @@ class kalturaIframe {
 	 * Get the location of the mwEmbed library
 	 */
 	private function getMwEmbedLoaderLocation(){
-		global $wgMwEmbedPathUrl;
+		global $wgResourceLoaderUrl;
 		
-		$loaderPath = $wgMwEmbedPathUrl . 'mwEmbedLoader.php';
+		$loaderPath = $wgResourceLoaderUrl;
 		
 		$versionParam = '';
 		$urlParam = $this->getResultObject()->getUrlParameters();
@@ -444,7 +444,8 @@ class kalturaIframe {
 	 * Get the iframe css
 	 */
 	private function outputIframeHeadCss(){
-		global $wgMwEmbedPathUrl;
+		global $wgResourceLoaderUrl;
+		$path = str_replace( $wgResourceLoaderUrl, 'ResourceLoader.php', '' ):
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 		<title>Kaltura Embed Player iFrame</title>
@@ -487,7 +488,7 @@ class kalturaIframe {
 		} else {
 			?>
 			.loadingSpinner {
-					background: url( '<?php echo $wgMwEmbedPathUrl ?>skins/common/images/loading_ani.gif');
+					background: url( '<?php echo $path ?>skins/common/images/loading_ani.gif');
 					position: absolute;
 					top: 50%; left: 50%;
 					width:32px;
@@ -510,7 +511,7 @@ class kalturaIframe {
 				}
 				/* Should allow this to be overided */
 				#directFileLinkButton {
-					background: url( '<?php echo $wgMwEmbedPathUrl ?>skins/common/images/player_big_play_button.png');
+					background: url( '<?php echo $path ?>skins/common/images/player_big_play_button.png');
 					width: 70px;
 					height: 53px;
 					position: absolute;
@@ -532,7 +533,8 @@ class kalturaIframe {
 		<?php
 	}
 	function outputIFrame( ){
-		global $wgMwEmbedPathUrl;
+		global $wgResourceLoaderUrl;
+		$path = str_replace( $wgResourceLoaderUrl, 'ResourceLoader.php', '' ):
 		
 		// Check for plugins ( can overide output) 
 		$this->checkIframePlugins();
@@ -574,7 +576,7 @@ class kalturaIframe {
 		<script type="text/javascript">
 			// Insert JSON support if in missing ( IE 7, 8 )
 			if( typeof JSON == 'undefined' ){ 
-				document.write(unescape("%3Cscript src='<?php echo $wgMwEmbedPathUrl ?>/libraries/json/json2.js' type='text/javascript'%3E%3C/script%3E"));
+				document.write(unescape("%3Cscript src='<?php echo $path ?>/libraries/json/json2.js' type='text/javascript'%3E%3C/script%3E"));
 			}
 		</script>
 		

@@ -37,14 +37,15 @@ class AgeGate {
 	  return ('data:' . $mime . ';base64,' . $base64);
 	}
 	private function outputAgeForm(){
-		global $wgMwEmbedPathUrl;
+		global $wgResourceLoaderUrl;
+		$path = str_replace( $wgResourceLoaderUrl, 'ResourceLoader.php', '' ):
 		?>
 <!DOCTYPE html>
 <html>
 	<head>
 		<title> Validate Age </title>
 	</head>
-	<script src='<?php echo $wgMwEmbedPathUrl ?>mwEmbedLoader.php' type='text/javascript'></script>
+	<script src='<?php echo $path ?>mwEmbedLoader.php' type='text/javascript'></script>
 	<script>
 	var showSorry = function(){
 		$('#inputAgeForm').hide();
@@ -105,7 +106,7 @@ class AgeGate {
 				text-align: center;
 			}
 			#loadingSpinner {
-				background: url( '<?php echo $wgMwEmbedPathUrl ?>skins/common/images/loading_ani.gif');
+				background: url( '<?php echo $path ?>skins/common/images/loading_ani.gif');
 				position: absolute;
 				top: 50%; left: 50%;
 				width:32px;
