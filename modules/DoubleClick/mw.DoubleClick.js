@@ -290,10 +290,10 @@ mw.DoubleClick.prototype = {
 		if( this.getConfig( 'contentId' ) ){
 			adUrl+= '&vid=' + this.getConfig( 'contentId' ); 
 		}
-		// publisherId not used in html5
-		/*if( this.getConfig( 'publisherId' ) ){
-			adUrl+= '&cmsid=' + this.getConfig('publisherId');
-		};*/
+		// cmsId in html5
+		if( this.getConfig( 'cmsId' ) ){
+			adUrl+= '&cmsid=' + this.getConfig('cmsId');
+		};
 		return adUrl;
 	},
 	/**
