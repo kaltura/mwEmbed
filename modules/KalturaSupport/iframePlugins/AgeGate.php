@@ -38,7 +38,7 @@ class AgeGate {
 	}
 	private function outputAgeForm(){
 		global $wgResourceLoaderUrl;
-		$path = str_replace( $wgResourceLoaderUrl, 'ResourceLoader.php', '' ):
+		$path = str_replace( 'ResourceLoader.php', '', $wgResourceLoaderUrl );
 		?>
 <!DOCTYPE html>
 <html>

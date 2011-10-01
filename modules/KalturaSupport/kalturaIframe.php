@@ -416,9 +416,7 @@ class kalturaIframe {
 	 */
 	private function getMwEmbedLoaderLocation(){
 		global $wgResourceLoaderUrl;
-		
-		$loaderPath = $wgResourceLoaderUrl;
-		
+		$loaderPath = str_replace( 'ResourceLoader.php', 'mwEmbedLoader.php', $wgResourceLoaderUrl );
 		$versionParam = '';
 		$urlParam = $this->getResultObject()->getUrlParameters();
 		if( isset( $urlParam['urid'] ) ){
@@ -445,7 +443,7 @@ class kalturaIframe {
 	 */
 	private function outputIframeHeadCss(){
 		global $wgResourceLoaderUrl;
-		$path = str_replace( $wgResourceLoaderUrl, 'ResourceLoader.php', '' ):
+		$path = str_replace( 'ResourceLoader.php', '', $wgResourceLoaderUrl );
 		?>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 		<title>Kaltura Embed Player iFrame</title>
@@ -534,7 +532,7 @@ class kalturaIframe {
 	}
 	function outputIFrame( ){
 		global $wgResourceLoaderUrl;
-		$path = str_replace( $wgResourceLoaderUrl, 'ResourceLoader.php', '' ):
+		$path = str_replace( 'ResourceLoader.php', '', $wgResourceLoaderUrl );
 		
 		// Check for plugins ( can overide output) 
 		$this->checkIframePlugins();
