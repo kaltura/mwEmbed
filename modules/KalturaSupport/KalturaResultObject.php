@@ -795,8 +795,15 @@ class KalturaResultObject {
 			}
 			// Get the result object as a combination of baseResult and multiRequest
 			$resultObject = $namedMultiRequest->doQueue();
-			// merge in the base result object: 
+			// merge in the base result object:
 			$resultObject = array_merge( $this->getBaseResultObject(), $resultObject);
+			
+			// Check if the server cached the result by search for "cached-dispatcher" in the request headers
+			// If not, do not cache the request (Used for Access control cache issue)
+			$requestCached = strpos($client->getHeaders(), "X-Kaltura: cached-dispatcher");
+			if( $requestCached === false ) {
+				$this->noCache = true;
+			}
 			
 		} catch( Exception $e ){
 			// Update the Exception and pass it upward

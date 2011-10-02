@@ -187,15 +187,20 @@
 		 */
 		evaluate: function( embedPlayer, objectString ){
 			var _this = this;
+			var evExp;
 			if( typeof objectString != 'string'){
 				return objectString;
 			}
-			// Replace any { } calls with evaluated expression. 
-			var text = objectString.replace(/\{([^\}]*)\}/g, function(match, contents, offset, s)
-			    {
-			        return _this.evaluateExpression( embedPlayer, contents );
-			    }
-			);
+			// Replace any { } calls with evaluated expression.
+			var text = objectString.replace(/\{([^\}]*)\}/g, function(match, contents, offset, s) {
+				evExp = contents;
+			});
+			// We can't use return inside the replace callback,
+			// because if we return an object {mediaProxy.entryMetadata}
+			// It will be returned as a string [object Object]
+			if( evExp ) {
+				text = _this.evaluateExpression( embedPlayer, evExp );
+			}
 
 			// Return undefined to string: undefined, null, ''
 			if( text === "undefined" || text === "null" || text == "" )

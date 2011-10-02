@@ -542,6 +542,7 @@ class kalturaIframe {
 <!DOCTYPE html>
 <html>
 	<head>
+		<?php echo $this->outputIframeHeadCss(); ?>
 	</head>
 	<body>	
 		<?php 
@@ -561,7 +562,6 @@ class kalturaIframe {
 		}
 		?>
 		
-		<?php echo $this->outputIframeHeadCss(); ?>
 		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
@@ -584,26 +584,7 @@ class kalturaIframe {
 				if( $wgAllowCustomResourceIncludes && $this->getCustomPlayerIncludesJSON() ){
 					echo 'mw.setConfig( \'Mw.CustomResourceIncludes\', '. $this->getCustomPlayerIncludesJSON() .' );';
 				}
-			?>
-			// Don't do an iframe rewrite inside an iframe
-			mw.setConfig('Kaltura.IframeRewrite', false );
-			
-			// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
-			mw.setConfig('Mw.LogPrepend', 'iframe:');
-
-			// Don't rewrite the video tag from the loader ( if html5 is supported it will be
-			// invoked bellow and respect the persistant video tag option for iPad overlays )
-			mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );
-
-			// Don't wait for player metada for size layout and duration Won't be needed since
-			// we add durationHint and size attributes to the video tag
-			mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
-
-			// Add Packaging Kaltura Player Data ( JSON Encoded )
-			mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
-
-			mw.setConfig('EmbedPlayer.IframeParentPlayerId', '<?php echo $this->getIframeId()?>' );
-			
+			?>	
 			var hashString = document.location.hash;
 			// Parse any configuration options passed in via hash url:
 			if( hashString ){
@@ -632,6 +613,27 @@ class kalturaIframe {
 			}
 			mw.setConfig( 'KalturaSupport.IFramePresetFlashvars', flashvarsObject );
 
+			// We should first read the config for the hashObj and after that overwrite with our own settings
+			// The entire block below must be after mw.setConfig( hashObj.mwConfig );
+
+			// Don't do an iframe rewrite inside an iframe
+			mw.setConfig('Kaltura.IframeRewrite', false );
+
+			// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
+			mw.setConfig('Mw.LogPrepend', 'iframe:');
+
+			// Don't rewrite the video tag from the loader ( if html5 is supported it will be
+			// invoked bellow and respect the persistant video tag option for iPad overlays )
+			mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );
+
+			// Don't wait for player metada for size layout and duration Won't be needed since
+			// we add durationHint and size attributes to the video tag
+			mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
+
+			// Add Packaging Kaltura Player Data ( JSON Encoded )
+			mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
+
+			mw.setConfig('EmbedPlayer.IframeParentPlayerId', '<?php echo $this->getIframeId()?>' );			
 			
 			// Set uiConf global vars for this player ( overides iframe based hash url config )
 			<?php 

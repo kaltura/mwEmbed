@@ -41,6 +41,22 @@ class KalturaClientBase
 	private $callsQueue = array();
 
 	/**
+	 * @var array
+	 */
+	static $headers = '';
+
+	public function readHeader($ch, $string)
+	{
+		self::$headers .= $string;
+		return strlen($string);
+	}
+
+	public function getHeaders()
+	{
+		return self::$headers;
+	}
+
+	/**
 	 * Array of all plugin services
 	 *
 	 * @var array<KalturaServiceBase>
@@ -282,6 +298,9 @@ class KalturaClientBase
 	 */
 	private function doCurl($url, $params = array(), $files = array())
 	{
+		// Reset headers array
+		self::$headers = '';
+
 		$cookies = array();
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -302,6 +321,9 @@ class KalturaClientBase
 			$this->log("curl: $url&$opt");
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $opt);
 		}
+		// Add function to save headers
+		curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'KalturaClientBase::readHeader');
+
 		curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

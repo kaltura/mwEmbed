@@ -43,8 +43,10 @@ KALTURA_LOADER_VERSION = '1.4c9';
 // Static script loader url: 
 var FORCE_LOAD_JQUERY = false;
 
-// These Lines are for local testing: 
-// SCRIPT_FORCE_DEBUG = true;
+// Default for debug mode
+if( ! SCRIPT_FORCE_DEBUG ) {
+	SCRIPT_FORCE_DEBUG = false;
+}
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura HTML5 Version: ' + KALTURA_LOADER_VERSION );

@@ -21,13 +21,12 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				//  $uiConf disappears in this scope: maybe a timeout in mw.load 
 				// XXX RL17 re-check this
 				var $uiConf = embedPlayer.$uiConf;
+
 				// Check ui-conf for horizontal or vertical playlist
-				var layout = ( $uiConf.find('#playlistHolder').attr('width') != '100%' ) 
-								? 'horizontal' : 'vertical';
-				
-				// Some weird bug with firefox xml parser ( loses % ) on Canvas tag :( 
-				if( $uiConf.find('#playlistHolder').attr('width') == '100' )
-					layout = 'vertical';
+				// Were know if the playlist is vertical or horizontal based on the parent element of the #playlist
+				// vbox - vertical | hbox - horizontal
+				var playlistParentNodeName = $uiConf.find("#playlist").parent().get(0).nodeName.toLowerCase();
+				var layout = (playlistParentNodeName == 'vbox') ? 'vertical' : 'horizontal';
 				
 				// XXX hard coded for now think about a better way to get at this info:
 				$playlist.playlist({
