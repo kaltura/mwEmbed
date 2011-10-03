@@ -187,31 +187,33 @@
 		 */
 		evaluate: function( embedPlayer, objectString ){
 			var _this = this;
-			var evExp;
+			var result;
 			if( typeof objectString != 'string'){
 				return objectString;
 			}
-			// Replace any { } calls with evaluated expression.
-			var text = objectString.replace(/\{([^\}]*)\}/g, function(match, contents, offset, s) {
-				evExp = contents;
-			});
-			// We can't use return inside the replace callback,
-			// because if we return an object {mediaProxy.entryMetadata}
-			// It will be returned as a string [object Object]
-			if( evExp ) {
-				text = _this.evaluateExpression( embedPlayer, evExp );
+			// Check if a simple direct evaluation: 
+			if( objectString[0] == '{' &&  objectString[  objectString.length -1 ] == '}' ){
+				result = _this.evaluateExpression( embedPlayer, objectString.substring(1, objectString.length-1) );
+			} else if ( objectString.split( '{' ).length > 2 ){ // Check if we are doing a string based evaluate concatenation: 
+				// Replace any { } calls with evaluated expression.
+				result = objectString.replace(/\{([^\}]*)\}/g, function(match, contents, offset, s) {
+					return _this.evaluateExpression( embedPlayer, contents );
+				});
+			} else {
+				// echo the evaluated string: 
+				result = objectString;
 			}
 
 			// Return undefined to string: undefined, null, ''
-			if( text === "undefined" || text === "null" || text == "" )
-				text = undefined;
+			if( result === "undefined" || result === "null" || result == "" )
+				result = undefined;
 
-			if( text === "false")
-				text = false;
-			if( text === "true")
-				text = true;
+			if( result === "false")
+				result = false;
+			if( result === "true")
+				result = true;
 			
-			return text;
+			return result;
 		},
 		evaluateExpression: function( embedPlayer, expression){
 			var _this = this;
