@@ -427,6 +427,7 @@ div.maudio div.control-bar { display:block !important; } \n\
                     
         'imagesPath' : 'http://www/archive.org/images/', //xxxxxxx not working yet
                     
+        'Playlist.MaxClips': 1000, // default is *20* !
         'Playlist.TitleLength': 26
       });
 
