@@ -268,7 +268,11 @@
 					var elm = $('#' + videoEmbedAttributes.id ).get(0);
 					// assign values to DOM object methods ( not just attributes ) 
 					$.each( videoEmbedAttributes, function( attrName, attrValue ){
-						elm[ attrName ] = attrValue;
+						try{
+							elm[ attrName ] = attrValue;
+						} catch ( e ){
+							mw.log("Error: Kaltura loader could not set: " + attrName);
+						}
 					});
 				});
 				
