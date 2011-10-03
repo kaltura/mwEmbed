@@ -122,10 +122,12 @@ if( document.URL.indexOf('forceMobileHTML5') !== -1 ){
 	mw.setConfig( 'forceMobileHTML5', true );
 }
 
-// Set iframe config
-mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL);
-mw.setConfig('EmbedPlayer.IframeParentTitle', document.title);
-mw.setConfig('EmbedPlayer.IframeParentReferrer', document.referrer);
+// Set iframe config ( if in the client ) 
+if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
+	mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL);
+	mw.setConfig('EmbedPlayer.IframeParentTitle', document.title);
+	mw.setConfig('EmbedPlayer.IframeParentReferrer', document.referrer);
+}
 
 function kDoIframeRewriteList( rewriteObjects ){
 	for( var i=0; i < rewriteObjects.length; i++ ){
