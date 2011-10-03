@@ -152,6 +152,39 @@ mw.KCuePoints.prototype = {
 		} else {
 			return 'overlay';
 		}
+	},
+
+	// Returns the number of Ads
+	// @filter - string/optional | could be 'video', 'overlay'
+	getTotalAdsCount: function( filter ) {
+		var cuePoints = this.getCuePoints();
+		if( !cuePoints )
+			return 0;
+
+		var totalVideoAds = 0;
+		var totalOverlayAds = 0;
+
+		$.each(cuePoints, function( idx, rawCuePoint) {
+			if(rawCuePoint.cuePointType == 'adCuePoint.Ad') {
+				if( rawCuePoint.adType == 1 ) {
+					totalVideoAds++;
+				} else {
+					totalOverlayAds++;
+				}
+			}
+		});
+
+		var totalAllAds = totalVideoAds + totalOverlayAds;
+
+		if( filter ) {
+			if( filter == 'video' ) {
+				return totalVideoAds;
+			} else if( filter == 'overlay' ) {
+				return totalOverlayAds;
+			}
+		}
+
+		return  totalAllAds;
 	}
 };
 

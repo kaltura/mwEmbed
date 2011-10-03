@@ -36,6 +36,8 @@ mw.Comscore.prototype = {
 		c10: ""
 	},
 
+	adIndex: 0, // Used for C10 tag (read comments in getC10 method)
+
 	init: function( embedPlayer, callback ){
 		this.embedPlayer = embedPlayer;
 		this.setupConfig();
@@ -113,6 +115,7 @@ mw.Comscore.prototype = {
 		// Bind to entry ready
 		$( embedPlayer ).bind('KalturaSupport_EntryDataReady' + this.bindPostfix, function() {
 			_this.playerPlayedFired = false;
+			_this.adIndex = 0;
 			_this.setupCParams();
 		});
 
@@ -121,6 +124,7 @@ mw.Comscore.prototype = {
 			if (!_this.playerPlayedFired)
 			{
 				// Send beacon
+				_this.adIndex++;
 				_this.comScoreBeacon( cParams );
 				_this.playerPlayedFired = true;
 			}
@@ -143,6 +147,7 @@ mw.Comscore.prototype = {
 			}
 
 			// Send beacon
+			_this.adIndex++;
 			_this.comScoreBeacon( cParams );
 
 		});
@@ -183,10 +188,10 @@ mw.Comscore.prototype = {
 
 		/**
 		 * For debug:
-		 * console.log( $(this.embedPlayer).data('flashvars'));
-		 * console.log(this.embedPlayer.$uiConf.find("#comscore"));
-		 * console.log(config);
-		 * console.log(cParams);
+		 console.log( $(this.embedPlayer).data('flashvars'));
+		 console.log(this.embedPlayer.$uiConf.find("#comscore"));
+		 console.log(config);
+		 console.log(cParams);
 		 */
 	},
 
@@ -241,32 +246,50 @@ mw.Comscore.prototype = {
 		
 	},
 
+	/*
+	 * C10- Segment level reporting
+		    Segments refer to ad breaks. The only events being for are the start of a video
+			or the start of an ad. The following format should be used: “Current Segment # -Total Segments.”
+			So if the given stream is the second segment out of four, the C10 should read “2-4”.
+			If there are no segments in the video, the tag should either be empty, or return 1-1
+	 */
+	getC10: function() {
+		if( ! this.embedPlayer.kCuePoints ) { return "1-1"; }
+		var adsCount = this.embedPlayer.kCuePoints.getTotalAdsCount( 'video' );
+		if( adsCount == 0 ){
+			return "1-1";
+		} else {
+			return this.adIndex + "-" + ( parseInt(adsCount) + 1);
+		}
+	},
+
 	comScoreBeacon: function( beaconObject ) {
 		var _this = this;
 		
 		var loadUrl = (document.location.protocol == "https:" ? "https://sb." : "http://b");
 		loadUrl += "scorecardresearch.com/p?";
 
+		// Setup C7 - Page URL Param
+		if ( mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) ) {
+			beaconObject["c7"] = mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
+		}
+
+		// Setup C8 - Page Title Param
+		if ( mw.getConfig( 'EmbedPlayer.IframeParentTitle' ) ) {
+			beaconObject["c8"] = mw.getConfig( 'EmbedPlayer.IframeParentTitle' );
+		}
+
+		// Setup C9 - Page Referrer Param
+		if ( mw.getConfig( 'EmbedPlayer.IframeParentReferrer' ) ) {
+			beaconObject["c9"] = mw.getConfig( 'EmbedPlayer.IframeParentReferrer' );
+		}
+		// Setup C10 - Segment Level Param
+		beaconObject["c10"] = _this.getC10();
+
 		for (var cParam in beaconObject) {
 			if( beaconObject[cParam] ) {
 				loadUrl += cParam + "=" + encodeURIComponent(beaconObject[cParam]) + "&";
 			}
-		}
-
-		// Setup page, title and referrer
-		var page, title, referrer;
-		page = referrer = mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
-		
-		if (page && page != "") {
-			loadUrl += "c7=" + encodeURIComponent(page) +"&";
-		}
-
-		if (title && title != "") {
-			loadUrl += "c8=" + encodeURIComponent(title) +"&";
-		}
-
-		if (referrer && referrer != "") {
-			loadUrl += "c9=" + encodeURIComponent(referrer) +"&";
 		}
 
 		loadUrl += "rn=" + Math.random().toString() + "&";

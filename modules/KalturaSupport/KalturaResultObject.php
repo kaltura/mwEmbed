@@ -625,6 +625,10 @@ class KalturaResultObject {
 		}
 	
 	}
+	/* TODO:
+	 * Need to change getPlaylistResult to something like getWidgetUiConf
+	 * Because on pptWidget we get to this function as well
+	 */
 	function getPlaylistResult(){
 		// if no uiconf_id .. now way to return playlist data
 		if( !$this->urlParameters['uiconf_id']) {
@@ -649,7 +653,7 @@ class KalturaResultObject {
 		}
 		
 		// Try to parse the uiconf data: 
-		$uiConfXml = new SimpleXMLElement( $resultObject[ 'uiConf'] );
+		$uiConfXml = $this->getUiConfXML( $resultObject[ 'uiConf'] );
 		
 		// Get the first playlist list:
 		$playlistId =  $this->getFirstPlaylistId( $uiConfXml );
@@ -941,7 +945,7 @@ class KalturaResultObject {
 			return false;
 		}
 	}
-	public function getUiConfXML( $uiConf  = false ){
+	public function getUiConfXML( $uiConf = false ){
 		global $wgKalturaIframe;
 		if( !$this->uiConfXml ){
 			if( !$uiConf ){

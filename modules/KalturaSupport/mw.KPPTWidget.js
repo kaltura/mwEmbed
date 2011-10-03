@@ -37,6 +37,7 @@ mw.KPPTWidget.prototype = {
 	init: function( widgetTarget, uiConf, callback ){
 		var _this = this;
 		mw.log('mw.KPPTWidget::init');
+		uiConf = uiConf.replace('[kClick', 'kClick'); // Ugly hack!
 		var xml =  $.parseXML( uiConf );
 		this.$uiConf = $( xml );
 		this.$target = $( widgetTarget );
@@ -105,7 +106,6 @@ mw.KPPTWidget.prototype = {
 	addFixedLayout:function(){
 		var _this = this;
 		// Setup the container with target 
-		
 		// Find out if the video is on the left or right
 		var $PlayerHolderWrapper = this.$uiConf.find( '#PlayerHolderWrapper');
 		
@@ -127,6 +127,18 @@ mw.KPPTWidget.prototype = {
 				'position' : 'absolute',
 				'left': '0px'
 			})
+		);
+
+		// Add slides message
+		var $pptScreenWrapper = this.$target.find('.pptWidgetScreenWrapper');
+		$pptScreenWrapper.append(
+			$('<div />')
+			.css({
+				'margin-top': ( ($pptScreenWrapper.height() / 2) - 20),
+				'text-align': 'center',
+				'font-family': 'Arial'
+			})
+			.text('Slides currently not supported on mobile devices.')
 		);
 		
 		// Set up the video player and give it layout size ( give it the max size available, 
@@ -167,7 +179,7 @@ mw.KPPTWidget.prototype = {
 		}
 		
 		// Add the play and slide jump buttons
-		this.getSyncPlayButtons( this.$target.find( '.ControllerScreenHolder' ), $ControllerScreenHolder )
+		this.getSyncPlayButtons( this.$target.find( '.ControllerScreenHolder' ), $ControllerScreenHolder );
 		
 	},
 	getSyncPlayButtons: function( $target, $syncButtonsConfig){
@@ -192,7 +204,7 @@ mw.KPPTWidget.prototype = {
 			'background-image' : '-moz-linear-gradient(top, #FFF, #BBB)'
 		};
 		// check for prev 
-		$prvConf = $syncButtonsConfig.find('#syncPrevButton');
+		var $prvConf = $syncButtonsConfig.find('#syncPrevButton');
 		if( $prvConf.length ){
 			$syncButtonsContainer.append(
 				$('<div />')
@@ -212,9 +224,9 @@ mw.KPPTWidget.prototype = {
 				)
 				.click(function(){
 					// Get active tag:
-					$activeTag = _this.$target.find( '.slideTagsContainer .activeTag' );
+					var $activeTag = _this.$target.find( '.slideTagsContainer .activeTag' );
 					if( $activeTag.length  ){
-						$allTags = _this.$target.find( '.slideTagsContainer .slideTag' );
+						var $allTags = _this.$target.find( '.slideTagsContainer .slideTag' );
 						// check if we can go prev: 
 						if( $activeTag.data( 'slideInx' ) - 1  >= 0 ){
 							_this.activateTag( $activeTag.data( 'slideInx' ) - 1  );
@@ -225,7 +237,7 @@ mw.KPPTWidget.prototype = {
 		}
 		
 		// Check for play 
-		$playConf =  $syncButtonsConfig.find('#playBtnControllerScreen')
+		var $playConf =  $syncButtonsConfig.find('#playBtnControllerScreen')
 		if( $playConf.length ){
 			$syncButtonsContainer.append( 
 				$('<div />')
@@ -267,7 +279,7 @@ mw.KPPTWidget.prototype = {
 		}
 		
 		// check for next 
-		$nextConf = $syncButtonsConfig.find('#syncNextButton');
+		var $nextConf = $syncButtonsConfig.find('#syncNextButton');
 		if( $nextConf.length ){
 			$syncButtonsContainer.append(
 				$('<div />')
@@ -287,9 +299,9 @@ mw.KPPTWidget.prototype = {
 				)
 				.click(function(){
 					// Get active tag:
-					$activeTag = _this.$target.find( '.slideTagsContainer .activeTag' );
+					var $activeTag = _this.$target.find( '.slideTagsContainer .activeTag' );
 					if( $activeTag.length  ){
-						$allTags = _this.$target.find( '.slideTagsContainer .slideTag' );
+						var $allTags = _this.$target.find( '.slideTagsContainer .slideTag' );
 						// check if we can go next: 
 						if( $activeTag.data( 'slideInx' ) + 1  <  $allTags.length ){
 							_this.activateTag( $activeTag.data( 'slideInx' ) + 1  );
@@ -366,7 +378,7 @@ mw.KPPTWidget.prototype = {
 			'margin-right' : '10px'
 		};
 		
-		$progressBar = $('<div />').css({
+		var $progressBar = $('<div />').css({
 			'float': 'left',
 			// size is set once all the spacers are in place. 
 			'width' : 0,
