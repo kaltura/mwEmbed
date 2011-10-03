@@ -409,6 +409,7 @@ div.maudio div.media-rss-video-player { height:26px !important; } \n\
 div.maudio div.mrss_mwplayer_0 { height:26px !important; } \n\
 div.maudio div.mv-player  { height:26px !important; } \n\
 div.maudio div.control-bar { display:block !important; } \n\
+div.maudio div.overlay-content { border:1px solid #385C74; background-color:#333 !important; -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-border-radius:6px; border-radius:6px; } \n\
 ");
 
     
