@@ -66,8 +66,8 @@ mw.FreeWheelControler.prototype = {
 			 'siteSectionId', 'visitorId'  ]
 		);
 		// XXX todo we should read "adManagerUrl" from uiConf config
-		var adManagerUrl = ( this.mw.getConfig( 'adManagerJsUrl' ) ) ? 
-							this.mw.getConfig( 'adManagerJsUrl' )  : 
+		var adManagerUrl = ( this.getConfig( 'adManagerJsUrl' ) ) ? 
+							this.getConfig( 'adManagerJsUrl' )  : 
 							mw.getConfig( 'FreeWheel.AdManagerUrl' );
 							
 		// Load the freewheel ad mannager then setup the ads
