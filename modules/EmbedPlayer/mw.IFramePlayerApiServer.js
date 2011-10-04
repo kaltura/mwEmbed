@@ -252,4 +252,4 @@ mw.IFramePlayerApiServer.prototype = {
 	}
 };
 
-} )( mediaWiki, jQuery );
+} )( mediaWiki, window.jQuery );

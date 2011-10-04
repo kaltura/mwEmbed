@@ -57,14 +57,6 @@ mw.FreeWheelControler.prototype = {
 		// setp local pointer to callback: 
 		this.callback = callback;
 		
-		// Get the freewheel configuration
-		this.config = this.embedPlayer.getKalturaConfig(
-			'FreeWheel',
-			[ 'plugin', 'preSequence', 'postSequence', 'width', 'height', 'asyncInit',
-			 'profileId', 'adManagerUrl','adManagerJsUrl', 'serverUrl', 'networkId', 'videoAssetId',  
-			 'profileIdHTML5',  'videoAssetNetworkId', 
-			 'siteSectionId', 'visitorId'  ]
-		);
 		// XXX todo we should read "adManagerUrl" from uiConf config
 		var adManagerUrl = ( this.getConfig( 'adManagerJsUrl' ) ) ? 
 							this.getConfig( 'adManagerJsUrl' )  : 
@@ -271,16 +263,12 @@ mw.FreeWheelControler.prototype = {
 	 * @return
 	 */
 	getConfig: function( propId ){
-		// Check if the property was set in config: 
-		if( this.config[propId] ){
-			return this.config[propId];
-		}
 		// Dynamic values: 
 		if( propId == 'videoDuration' ){
 			return this.embedPlayer.evaluate('{mediaProxy.entry.duration}');
 		}
-		// XXX some default copied from freeWheelSample.html
-		return null;
+		// return the live attribute value
+		return this.embedPlayer.getKalturaConfig('FreeWheel', propId );
 	},
 	getAdManager: function(){
 		if( !this.adManager ){
@@ -296,6 +284,7 @@ mw.FreeWheelControler.prototype = {
 	},
 	getContext: function(){
 		if( !this.adContext ){
+			mw.log( "FreeWheelController:: getContext> " );
 			this.adContext = this.getAdManager().newContext();
 			
 			this.adContext.registerVideoDisplayBase( 'videoContainer' );
@@ -308,20 +297,22 @@ mw.FreeWheelControler.prototype = {
 			} else {
 				this.adContext.setProfile( this.getConfig( 'profileId' ) );
 			}
-			
+		
 			// Check if we have a visitorId 
 			if( this.getConfig('visitorId') ){
 				this.adContext.setVisitor( this.getConfig('visitorId') );
 			}
+			// hardcore visitor
+			this.adContext.setVisitor('0818B8BC-0E0F-4325-8580-257241439DB5&cd=1920%2C1200');
 			
 			this.adContext.setVideoAsset( 
 				this.getConfig( 'videoAssetId' ),
 				this.getConfig( 'videoDuration' ),
 				this.getConfig( 'networkId' ),
 				this.embedPlayer.getSrc(),
-				( this.embedPlayer.autoplay )? 'true' : 'false',
+				( this.embedPlayer.autoplay ) ? 'true' : 'false',
 				this.rand(),
-				tv.freewheel.SDK.ID_TYPE_CUSTOM, 
+				tv.freewheel.SDK.ID_TYPE_CUSTOM,
 				this.getConfig( 'videoAssetFallbackId' )
 			);
 			
@@ -336,7 +327,7 @@ mw.FreeWheelControler.prototype = {
 		return this.adContext;
 	},
 	rand: function(){
-		return Math.floor( Math.random() * 10000 / 10000 );
+		return Math.floor( Math.random() * 10000 );
 	},
 	addContextKeyValues: function(){
 		mw.log("FreeWheelController::freeWheelController>")
@@ -386,12 +377,12 @@ mw.FreeWheelControler.prototype = {
 		};
 			
 		// Check for number of prerolls from config: 
-		if( parseInt( this.config.preSequence ) ){
+		if( parseInt( this.getConfig( 'preSequence' ) ) ){
 			slotCounts['pre']++;
 			context.addTemporalSlot("Preroll_" + slotCounts['pre'], tv.freewheel.SDK.ADUNIT_PREROLL, 0);
 		}
 		// Check for post rolls: 
-		if( parseInt( this.config.postSequence ) ){
+		if( parseInt( this.getConfig( 'postSequence' ) ) ){
 			slotCounts['post']++;
 			context.addTemporalSlot("Postroll_" + slotCounts['post'], tv.freewheel.SDK.ADUNIT_PREROLL, 0);
 		}
