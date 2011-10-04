@@ -246,7 +246,12 @@ function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 			console.log( "Error could not find object target: " + replaceTargetId );
 	}
 	// remove all object children
-	targetNode.innerHTML = '';
+	// use try/catch to fix ie issue
+	try {
+		targetNode.innerHTML = '';
+	} catch (e) {
+		//alert(e);
+	}
 	//while ( targetNode.hasChildNodes() ) {
 	//   targetNode.removeChild( targetNode.lastChild );
 	//}
