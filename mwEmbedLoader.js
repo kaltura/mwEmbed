@@ -38,7 +38,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.4c9';
+KALTURA_LOADER_VERSION = '1.4c10';
 
 // Static script loader url: 
 var FORCE_LOAD_JQUERY = false;

@@ -195,7 +195,9 @@ class KalturaResultObject {
 		}
 		
 		// If we don't have any string to search for, return true
-		if( !isset($restrictedStrings) || empty($restrictedStrings) ) { return false; }
+		if( !isset($restrictedStrings) || empty($restrictedStrings) ) { 
+			return false; 
+		}
 
 		// Lower case user agents string
 		$userAgent = strtolower( $this->getUserAgent() );
@@ -263,15 +265,12 @@ class KalturaResultObject {
 			}
 		}
 		
-		// Firefox 4x and chrome support webm ( use after ogg )
+		// Firefox > 3 and chrome support webm ( use after ogg )
 		if( isset( $sources['webm'] ) ){
 			if( strpos( $userAgent, 'Chrome' ) !== false ){
 				$flavorUrl = $sources['webm']['src'];
 			}
-			if( strpos( $userAgent, 'Firefox/4' ) !== false
-				||
-				strpos( $userAgent, 'Firefox/5' ) !== false 
-			){
+			if( strpos( $userAgent, 'Firefox/3' ) === false ){
 				$flavorUrl = $sources['webm']['src'];
 			}
 		}
