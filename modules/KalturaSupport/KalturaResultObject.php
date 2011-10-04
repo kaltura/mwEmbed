@@ -12,6 +12,7 @@ class KalturaResultObject {
 	 
 	var $resultObj = null; // lazy init with getResultObject
 	var $clientTag = null;
+	var $uiConfFile = null;
 	var $uiConfXml = null; // lazy init
 	var $noCache = false;
 	// flag to control if we are in playlist mode
@@ -37,8 +38,10 @@ class KalturaResultObject {
 		'ServiceBase'=>null,
 		'CdnUrl'=> null,
 		'UseManifestUrls' => null
-	
 	);
+	
+	private $playerConfig = array();
+
 	function __construct( $clientTag = 'php'){
 		$this->clientTag = $clientTag;
 		//parse input:
@@ -168,8 +171,7 @@ class KalturaResultObject {
 	 * Checks if a user agent is restricted via the user restriction plugin present in the uiConf XML
 	 * this check is run as part of resultObject handling so we must pass in the uiConf string
 	 */ 
-	public function isUserAgentRestrictedPlugin( $uiConf ) {
-		//echo('<textarea style="width: 100%; height: 100%;">' . $uiConf . '</textarea>'); exit();
+	public function isUserAgentRestrictedPlugin() {
 		$restrictedMessage = true;
 		// Check for plugin definition in flashVars
 		if( $this->getFlashvarConfig('restrictUserAgent.plugin') ) {
@@ -178,11 +180,9 @@ class KalturaResultObject {
 				$restrictedMessage = $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentTitle') ."\n". $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentMessage');
 			}
 		} else {
-		
-			// Pass in the uiConf string ( need to clean up resultObject parsing logic ) 
-			$this->getUiConfXMl( $uiConf );
 			// Check for plug definition in uiConf
-			$restrictUserAgentPlugin = $this->uiConfXml->xpath("*//Plugin[@id = 'restrictUserAgent']");
+			$xml = $this->getUiConfXML();
+			$restrictUserAgentPlugin = $xml->xpath("*//Plugin[@id = 'restrictUserAgent']");
 			if( $restrictUserAgentPlugin ) {
 				$restrictUserAgentPlugin = $restrictUserAgentPlugin[0]->attributes();
 				$restrictedStrings = $restrictUserAgentPlugin->restrictedUserAgents;
@@ -340,16 +340,16 @@ class KalturaResultObject {
 		if( isset( $accessControl->isUserAgentRestricted ) && $accessControl->isUserAgentRestricted ) {
 			return $userAgentMessage;
 		} else {
-			if( isset( $resultObject['uiConf'] ) ){
-				$userAgentRestricted = $this->isUserAgentRestrictedPlugin( $resultObject['uiConf'] );
-				if( $userAgentRestricted === false ) {
-					return true;
+			$userAgentRestricted = $this->isUserAgentRestrictedPlugin();
+			if( $userAgentRestricted === false ) {
+				return true;
+			} else {
+				// We have user agent restriction, set up noCache flag
+				$this->noCache = true;
+				if( $userAgentRestricted === true ) {
+					return $userAgentMessage;
 				} else {
-					if( $userAgentRestricted === true ) {
-						return $userAgentMessage;
-					} else {
-						return $userAgentRestricted;
-					}
+					return $userAgentRestricted;
 				}
 			}
 		}
@@ -618,6 +618,7 @@ class KalturaResultObject {
 	}
 
 	private function getResultObjectFromApi(){
+
 		if( $this->isPlaylist() ){
 			return $this->getPlaylistResult();
 		} else {
@@ -625,38 +626,66 @@ class KalturaResultObject {
 		}
 	
 	}
+
+	function loadUiConf() {
+		global $wgKalturaUiConfCacheTime;
+		// if no uiconf_id .. throw exception
+		if( !$this->urlParameters['uiconf_id']) {
+			throw new Exception( "Missing uiConf ID" );
+		}
+		// Check if we have a cached result object:
+		if( !$this->uiConfFile ){
+			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".uiconf.txt";
+
+			// Check modify time on cached php file
+			$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
+			if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
+				$this->uiConfFile = $this->loadUiConfFromApi();
+			} else {
+				//$this->outputFromCache = true;
+				$this->uiConfFile = file_get_contents( $cacheFile );
+			}
+			$this->putCacheFile( $cacheFile, $this->uiConfFile );
+		}
+
+		$this->parseUiConfXML( $this->uiConfFile );
+		$this->setupPlayerConfig();
+	}
+
+	function loadUiConfFromApi() {
+		$client = $this->getClient();
+		$kparams = array();
+		try {
+			if( $this->noCache ) {
+				$client->addParam( $kparams, "nocache",  true );
+			}
+			$client->addParam( $kparams, "id",  $this->urlParameters['uiconf_id'] );
+			$client->queueServiceActionCall( "uiconf", "get", $kparams );
+
+			$rawResultObject = $client->doQueue();
+		} catch( Exception $e ){
+			// Update the Exception and pass it upward
+			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+		}
+
+		if( isset( $rawResultObject ) && $rawResultObject->confFile ){
+			return $this->cleanUiConf( $rawResultObject->confFile );
+		}
+		return null;
+	}
+
+	function setupPlayerConfig() {
+		$uiConfXml = $this->getUiConfXML();
+
+		$this->playerConfig = array();
+	}
 	/* TODO:
 	 * Need to change getPlaylistResult to something like getWidgetUiConf
 	 * Because on pptWidget we get to this function as well
 	 */
 	function getPlaylistResult(){
-		// if no uiconf_id .. now way to return playlist data
-		if( !$this->urlParameters['uiconf_id']) {
-			return array();
-		}
-		$client = $this->getClient();
-		try {
-			$client->addParam( $kparams, "id",  $this->urlParameters['uiconf_id'] );
-			$client->queueServiceActionCall( "uiconf", "get", $kparams );
-			$kparams = array();
-			
-			$rawResultObject = $client->doQueue();
-		} catch( Exception $e ){
-			// Update the Exception and pass it upward
-			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
-			return array();
-		}
-		$resultObject = $this->getBaseResultObject();
-		if( isset( $rawResultObject ) && $rawResultObject->confFile ){
-			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
-			$resultObject[ 'uiConf'] = $rawResultObject->confFile;
-		}
-		
-		// Try to parse the uiconf data: 
-		$uiConfXml = $this->getUiConfXML( $resultObject[ 'uiConf'] );
-		
 		// Get the first playlist list:
-		$playlistId =  $this->getFirstPlaylistId( $uiConfXml );
+		$playlistId =  $this->getFirstPlaylistId();
 		$playlistObject = $this->getPlaylistObject( $playlistId  );
 
 		// Create an empty resultObj
@@ -676,7 +705,6 @@ class KalturaResultObject {
 			// XXX could not get first playlist item: 	
 			return array();
 		}
-		
 	}
 	/**
 	 * Get playlist object
@@ -688,7 +716,6 @@ class KalturaResultObject {
 		try {
 			$client->addParam( $kparams, "id", $playlistId);
 			$client->queueServiceActionCall( "playlist", "execute", $kparams );
-			$kparams = array();
 			
 			return $client->doQueue();
 		} catch( Exception $e ){
@@ -703,12 +730,12 @@ class KalturaResultObject {
 	 * this is so we can pre-load details about the first entry for fast playlist loading,
 	 * and so that the first entry video can be in the page at load time.   
 	 */
-	function getFirstPlaylistId( &$uiConfXml ){
+	function getFirstPlaylistId(){
 		// Setup the intial playlist id to null 
 		$playlistId = null;
 		$checkFlashVar = true;
 		// Check for uiConf style playlist id ( should only match one )
-		$result = $uiConfXml->xpath( "*//var[@key = 'playlistAPI.kpl0Url']" );
+		$result = $this->getUiConfXML()->xpath( "*//var[@key = 'playlistAPI.kpl0Url']" );
 		if( isset( $result[0] ) ){
 			foreach ( $result[0]->attributes() as $key => $val ) {
 				if( $key == 'value' ){
@@ -769,11 +796,6 @@ class KalturaResultObject {
 			// Entry Meta
 			$namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'get', $entryParam );
 			
-			if( $this->urlParameters['uiconf_id'] ) {
-				$params =  array( "id" =>  $this->urlParameters['uiconf_id'] );
-				$namedMultiRequest->addNamedRequest( 'uiConf', "uiconf", "get", $params );
-			}
-			
 			// Entry Custom Metadata
 			// Always get custom metadata for now 
 			//if( $this->getFlashvarConfig('requiredMetadataFields') ) {
@@ -827,10 +849,10 @@ class KalturaResultObject {
 			$resultObject['entryMeta'] = $this->xmlToArray( new SimpleXMLElement( $resultObject['entryMeta']->objects[0]->xml ) );
 		}
 		
-		// Convert uiConf to confFile response
-		if( isset( $resultObject['uiConf'] ) && $resultObject['uiConf']->confFile ){
+		// Ads uiConf file to our object
+		if( $this->uiConfFile ){
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
-			$resultObject[ 'uiConf'] = $resultObject['uiConf']->confFile;
+			$resultObject[ 'uiConf' ] = $this->uiConfFile;
 		}
 
 		// Add Cue Point data. Also check for 'code' error
@@ -937,47 +959,48 @@ class KalturaResultObject {
 	public function getJSON(){
 		return json_encode( $this->getResultObject() );
 	}
-	public function getUiConf(){
-		$result = $this->getResultObject();
-		if( isset( $result['uiConf'] ) ){
-			return $result['uiConf'];
-		} else {
-			return false;
-		}
+
+	/* 
+	 * Cleans up uiConf XML from bad format
+	 * Hopefully we could remove this function in the future
+	 */
+	public function cleanUiConf( $uiConf ) {
+		// remove this hack as soon as possible
+		$uiConf = str_replace( '[kClick="', 'kClick="', $uiConf);
+		// remove this hack as soon as possible as well!
+		$brokenFlashVarXMl =  'autoPlay=false&screensLayer.startScreenOverId=startScreen&screensLayer.startScreenId=startScreen';
+		$uiConf = str_replace( $brokenFlashVarXMl, htmlentities( $brokenFlashVarXMl ), $uiConf );
+		// handle any non-escapsed &
+		$uiConf = preg_replace('/&[^; ]{0,6}.?/e', "((substr('\\0',-1) == ';') ? '\\0' : '&amp;'.substr('\\0',1))", $uiConf);
+
+		return $uiConf;
 	}
-	public function getUiConfXML( $uiConf = false ){
-		global $wgKalturaIframe;
-		if( !$this->uiConfXml ){
-			if( !$uiConf ){
-				// TODO we need to clean this up because getResultObject has a bit of parsing logic right now.
-				//  getResultObject should not call any parsing functions
-				$uiConf = $this->getUiConf();
-			}
-			if( $uiConf == '' ) {
-				// Empty uiConf ( don't try and parse, return an empty object)
-				return new SimpleXMLElement('<xml />' );
-			}
-			// remove this hack as soon as possible
-			$uiConf = str_replace( '[kClick="', 'kClick="', $uiConf);
-			// remove this hack as soon as possible as well!
-			$brokenFlashVarXMl =  'autoPlay=false&screensLayer.startScreenOverId=startScreen&screensLayer.startScreenId=startScreen';
-			$uiConf = str_replace( $brokenFlashVarXMl, htmlentities( $brokenFlashVarXMl ), $uiConf );
-			// handle any non-escapsed &
-			$uiConf = preg_replace('/&[^; ]{0,6}.?/e', "((substr('\\0',-1) == ';') ? '\\0' : '&amp;'.substr('\\0',1))", $uiConf);
-			
-			/*
-			libxml_use_internal_errors(true);
-			$sxe = simplexml_load_string($uiConf);
-			if (!$sxe) {
-			    echo "Failed loading XML\n";
-			    foreach(libxml_get_errors() as $error) {
-			        echo "\t", $error->message;
-			    }
-			}
-			*/
-			
-			$this->uiConfXml = new SimpleXMLElement( $uiConf );
+	/*
+	 * Parse uiConf XML
+	 */
+	public function parseUiConfXML( $uiConf ){
+		if( $uiConf == '' ) {
+			// Empty uiConf ( don't try and parse, return an empty object)
+			return new SimpleXMLElement('<xml />' );
 		}
+
+		/*
+		libxml_use_internal_errors(true);
+		$sxe = simplexml_load_string($uiConf);
+		if (!$sxe) {
+			echo "Failed loading XML\n";
+			foreach(libxml_get_errors() as $error) {
+				echo "\t", $error->message;
+			}
+		}
+		*/
+		
+		$this->uiConfXml = new SimpleXMLElement( $uiConf );
+	}
+	public function getUiConf() {
+		return $this->uiConfFile;
+	}
+	public function getUiConfXML() {
 		return $this->uiConfXml;
 	}
 	public function getMeta(){
@@ -990,6 +1013,10 @@ class KalturaResultObject {
 	}
 	private function getResultObject(){
 		global $wgKalturaUiConfCacheTime;
+
+		// load the uiConf first so we could setup our player configuration
+		$this->loadUiConf();
+		
 		// Check if we have a cached result object:
 		if( !$this->resultObj ){
 			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".entry.txt";
