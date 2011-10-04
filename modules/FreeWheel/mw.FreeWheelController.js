@@ -317,15 +317,26 @@ mw.FreeWheelControler.prototype = {
 			this.adContext.setVideoAsset( 
 				this.getConfig( 'videoAssetId' ),
 				this.getConfig( 'videoDuration' ),
-				this.getConfig( 'networkId' )
+				this.getConfig( 'networkId' ),
+				this.embedPlayer.getSrc(),
+				( this.embedPlayer.autoplay )? 'true' : 'false',
+				this.rand(),
+				tv.freewheel.SDK.ID_TYPE_CUSTOM, 
+				this.getConfig( 'videoAssetFallbackId' )
 			);
 			
 			this.adContext.setSiteSection(
 				this.getConfig('siteSectionId') , 
-				this.getConfig( 'networkId' ) 
+				this.getConfig( 'networkId' ),
+				this.rand(),
+				tv.freewheel.SDK.ID_TYPE_CUSTOM,
+				this.getConfig( 'siteSectionFallbackId' )
 			);
 		}
 		return this.adContext;
+	},
+	rand: function(){
+		return Math.floor( Math.random() * 10000 / 10000 );
 	},
 	addContextKeyValues: function(){
 		mw.log("FreeWheelController::freeWheelController>")
