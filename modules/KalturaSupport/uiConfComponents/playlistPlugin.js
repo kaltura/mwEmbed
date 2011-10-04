@@ -21,14 +21,23 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				//  $uiConf disappears in this scope: maybe a timeout in mw.load 
 				// XXX RL17 re-check this
 				var $uiConf = embedPlayer.$uiConf;
-
+				var layout;
 				// Check ui-conf for horizontal or vertical playlist
 				// Were know if the playlist is vertical or horizontal based on the parent element of the #playlist
-				// vbox - vertical | hbox - horizontal
-				var playlistParentNodeName = $uiConf.find("#playlist").parent().get(0).nodeName.toLowerCase();
-				var layout = (playlistParentNodeName == 'vbox') ? 'vertical' : 'horizontal';
+				// vbox - vertical | hbox - horizontal 
+				if( $uiConf.find("#playlist").parent().length ){
+					layout = ( $uiConf.find("#playlist").parent().get(0).nodeName.toLowerCase() == 'vbox') ? 
+								'vertical' : 
+								'horizontal';
+				} else if( $uiConf.find('#playlistHolder').length ){
+					layout = ( parseInt( $uiConf.find('#playlistHolder').attr('width') ) != 100 ) ? 
+								'horizontal' : 
+								'vertical';
+				} else {
+					mw.log("Error could not determin playlist layout type");
+					layout = 'horizontal';
+				}
 				
-				// XXX hard coded for now think about a better way to get at this info:
 				$playlist.playlist({
 					'layout': layout,
 					'embedPlayer' : embedPlayer
