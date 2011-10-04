@@ -200,7 +200,7 @@
 					return _this.evaluateExpression( embedPlayer, contents );
 				});
 			} else {
-				// echo the evaluated string: 
+				// Echo the evaluated string: 
 				result = objectString;
 			}
 

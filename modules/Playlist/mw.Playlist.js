@@ -109,10 +109,12 @@ mw.Playlist.prototype = {
 			drawDoneCallback();
 		};
 		this.loadPlaylistHandler( function( sourceHandler ){
-			// done loading playlist hide loader ( this is kind of messy )
+
+			// Done loading playlist hide loader ( this is kind of messy )
 			if( !_this.embedPlayer ){
 				$( _this.target ).empty();
 			}
+			
 			mw.log("Playlist::drawPlaylist: sourceHandler:" + sourceHandler);
 			// Check if load failed or empty playlist
 			if( _this.sourceHandler.getClipList().length == 0 ){

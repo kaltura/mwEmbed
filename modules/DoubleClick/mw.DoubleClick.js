@@ -83,9 +83,9 @@ mw.DoubleClick.prototype = {
 			mw.log("DoubleClick:: AdOpportunity:: " + cuePoint.startTime + ' ad type: ' + adType);
 			if( adType == 'overlay' ){
 				_this.loadAndDisplayOverlay( cuePoint );
-				// TODO add it to the right place in the timeline
 				return true; // continue to next cue point
 			}
+			
 			// check if video type: 
 			if( adType == 'midroll'  ||  adType == 'preroll' || adType == 'postroll'  ){
 				_this.loadAndPlayVideoSlot( 'midroll', function(){
@@ -206,7 +206,7 @@ mw.DoubleClick.prototype = {
 						'bottom' : ctrlBarBottom + 'px'
 					})
 			);
-		}
+		};
 		return $( this.embedPlayer ).find('.doubleclick-overlay-slot');
 	},
 	/**
@@ -286,11 +286,11 @@ mw.DoubleClick.prototype = {
 		var adUrl = this.embedPlayer.evaluate(  
 				this.findTagUrl( slotType, cuePoint ) 
 			);
-		// Add in structured ui-conf componets to ad url request:
+		// Add in structured ui-conf components to ad url request:
 		if( this.getConfig( 'contentId' ) ){
 			adUrl+= '&vid=' + this.getConfig( 'contentId' ); 
 		}
-		// cmsId in html5
+		// cmsId 
 		if( this.getConfig( 'cmsId' ) ){
 			adUrl+= '&cmsid=' + this.getConfig('cmsId');
 		};

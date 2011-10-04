@@ -62,6 +62,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	loadPlaylist: function ( callback ){
 		var _this = this;
+		
 		mw.log( "mw.PlaylistHandlerKaltura:: loadPlaylist > ");
 		// Get the kaltura client:
 		_this.getPlaylistUiConf( function( $uiConf ){

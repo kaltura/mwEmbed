@@ -263,10 +263,10 @@
 							})
 							.loadingSpinner()
 						)
-					)
+					);
 					
 					var elm = $('#' + videoEmbedAttributes.id ).get(0);
-					// assign values to DOM object methods ( not just attributes ) 
+					// Assign values to DOM object methods ( not just attributes ) 
 					$.each( videoEmbedAttributes, function( attrName, attrValue ){
 						try{
 							elm[ attrName ] = attrValue;
@@ -402,6 +402,7 @@
 			return ;
 		} 
 		var plId =  mw.parseUri( kplUrl0 ).queryKey['playlist_id'];
+		
 		// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
 		if( plId && mw.parseUri( kplUrl0 ).queryKey['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
 			playlistConfig.playlist_id = plId;
@@ -425,7 +426,6 @@
 	 * 	optional function called once iframe player has been loaded
 	 */
 	jQuery.fn.kalturaIframePlayer = function( iframeParams, callback ) {
-
 		$( this ).each( function( inx, playerTarget ){
 			mw.log( '$.kalturaIframePlayer::' + $( playerTarget ).attr('id') );
 			// Check if the iframe API is enabled: 

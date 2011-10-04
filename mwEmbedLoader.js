@@ -122,7 +122,7 @@ if( document.URL.indexOf('forceMobileHTML5') !== -1 ){
 	mw.setConfig( 'forceMobileHTML5', true );
 }
 
-// Set iframe config ( if in the client ) 
+// Set iframe config if in the client page, will be passed to the iframe along with other config
 if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 	mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL);
 	mw.setConfig('EmbedPlayer.IframeParentTitle', document.title);
