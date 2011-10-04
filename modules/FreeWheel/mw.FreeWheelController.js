@@ -45,12 +45,8 @@ mw.FreeWheelControler.prototype = {
 	/**
 	 * Initialize the adMannager javascript and setup adds
 	 * 
-	 * @param {Object} opt Object 
-	 * {
-	 * 	'embedPlayer' {object} the embedPlayer instance
-	 * 	'config' {object} any freewheel configuration
-	 * 	'callback' {function} called on load complete
-	 * }
+	 * @param {Object} embedPlayer
+	 * @param {Function} callback
 	 * @return
 	 */
 	init: function( embedPlayer, callback  ){
@@ -65,8 +61,8 @@ mw.FreeWheelControler.prototype = {
 		this.config = this.embedPlayer.getKalturaConfig(
 			'FreeWheel',
 			[ 'plugin', 'preSequence', 'postSequence', 'width', 'height', 'asyncInit',
-			 'adManagerUrl','adManagerJsUrl', 'serverUrl', 'networkId', 'videoAssetId',  
-			 'videoAssetIdType', 'playerProfile', 'playerProfileHTML5', 'videoAssetNetworkId', 
+			 'profileId', 'adManagerUrl','adManagerJsUrl', 'serverUrl', 'networkId', 'videoAssetId',  
+			 'playerProfile', 'playerProfileHTML5', 'videoAssetNetworkId', 
 			 'siteSectionId', 'visitorId'  ]
 		);
 		// XXX todo we should read "adManagerUrl" from uiConf config
@@ -203,11 +199,12 @@ mw.FreeWheelControler.prototype = {
 		// Display the current slot:
 		if( ! _this.playSlot( slotSet[ inx ] ) ){
 			// if we did not play it, jump directly to slot done:
-			this.onSlotEnded( {  'slot' : slotSet[ inx ] });
+			this.onSlotEnded( {  'slot' : slotSet[ inx ] } );
 		}
 	},
 	onSlotEnded: function ( event ){
 		var _this = this;
+		mw.log( "FreeWheelController::onSlotEnded> " + event.slot.getTimePositionClass() );
 		var slotType =_this.getSlotType( event.slot );
 		if( slotType == 'overlay'  ){
 			_this.overlaySlotActive = false;
@@ -265,7 +262,7 @@ mw.FreeWheelControler.prototype = {
 				return 'postroll';
 				break;
 		}
-		mw.log("Error: freeWheel Control could not get slot type: " + slot.getTimePositionClass() );
+		mw.log("FreeWheel Control could not get slot type: skip " + slot.getTimePositionClass() );
 		return 'unknown_type';
 	},
 	
@@ -284,19 +281,17 @@ mw.FreeWheelControler.prototype = {
 			return this.embedPlayer.evaluate('{mediaProxy.entry.duration}');
 		}
 		// XXX some default copied from freeWheelSample.html
-		// TODO make these values dynamic! 
-		switch( propId ){
-			case 'profileId':
-				return 'global-js';
-				break;
-		}		
 		return null;
 	},
 	getAdManager: function(){
 		if( !this.adManager ){
 			this.adManager = new tv.freewheel.SDK.AdManager();
-			this.adManager.setNetwork( parseInt( this.getConfig( 'networkId' ) ) );
-			this.adManager.setServer( this.getConfig('serverUrl') );
+			this.adManager.setNetwork( 
+				parseInt( this.getConfig( 'networkId' ) ) 
+			);
+			this.adManager.setServer( 
+				this.getConfig('serverUrl') 
+			);
 		}
 		return this.adManager;
 	},
@@ -305,7 +300,6 @@ mw.FreeWheelControler.prototype = {
 			this.adContext = this.getAdManager().newContext();
 			
 			this.adContext.registerVideoDisplayBase( 'videoContainer' );
-
 			this.adContext.setProfile( this.getConfig( 'profileId' ) );
 
 			// Check if we have a visitorId 
@@ -315,14 +309,17 @@ mw.FreeWheelControler.prototype = {
 			
 			// Check for "html5" player profile: 
 			if( this.getConfig('playerProfileHTML5') ){
-				this.adContext.setPlayerProfile( this.getConfig('playerProfileHTML5') );
+				this.adContext.setPlayerProfile( 
+					this.getConfig('playerProfileHTML5') 
+				);
 			}
 			
 			this.adContext.setVideoAsset( 
-					this.getConfig( 'videoAssetId' ),
-					this.getConfig( 'videoDuration' ),
-					this.getConfig( 'networkId' )
+				this.getConfig( 'videoAssetId' ),
+				this.getConfig( 'videoDuration' ),
+				this.getConfig( 'networkId' )
 			);
+			
 			this.adContext.setSiteSection(
 				this.getConfig('siteSectionId') , 
 				this.getConfig( 'networkId' ) 
@@ -371,10 +368,10 @@ mw.FreeWheelControler.prototype = {
 		var context = this.getContext();
 		var embedPlayer = this.embedPlayer;
 		var slotCounts = {
-			'pre':0,
-			'post':0,
-			'mid':0,
-			'over':0
+			'pre': 0,
+			'post': 0,
+			'mid': 0,
+			'over': 0
 		};
 			
 		// Check for number of prerolls from config: 
@@ -440,10 +437,9 @@ mw.FreeWheelControler.prototype = {
 		this.embedPlayer.setFreeWheelAddCompanions = function( companionSet ){
 			_this.addCompanionTargets( companionSet );
 		};
-		
 		// Trigger the adding of any server side bindings: 
 		$( this.embedPlayer ).trigger( 'FreeWheel_GetAddCompanions' );
-		// we now monitor for companion html changes and pass that across the iframe 
+		// We now monitor for companion html changes and pass that across the iframe 
 		this.monitorForCompanionChanges();
 	},
 	monitorForCompanionChanges: function(){
