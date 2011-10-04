@@ -44,8 +44,8 @@ KALTURA_LOADER_VERSION = '1.4c9';
 var FORCE_LOAD_JQUERY = false;
 
 // Default for debug mode
-if( ! SCRIPT_FORCE_DEBUG ) {
-	SCRIPT_FORCE_DEBUG = false;
+if( ! window['SCRIPT_FORCE_DEBUG'] ) {
+	window['SCRIPT_FORCE_DEBUG'] = false;
 }
 
 if( typeof console != 'undefined' && console.log ) {
