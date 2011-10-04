@@ -334,10 +334,8 @@
 		if( !!document.createElement('video').canPlayType && !$.browser.safari ) {
 			dependencyRequest[0].push( 'mw.EmbedPlayerNative' )
 		}
-		// Check if the iFrame player api is enabled and we have a parent iframe url: 
-		if ( mw.getConfig('EmbedPlayer.EnableIframeApi') 
-				&& 
-			mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) 
+		// Check if the iFrame server is enabled: 
+		if ( mw.getConfig('EmbedPlayer.IsIframeServer' ) 
 		){
 			dependencyRequest[0].push('mw.EmbedPlayerNative');
 			dependencyRequest[0].push('$.postMessage');
