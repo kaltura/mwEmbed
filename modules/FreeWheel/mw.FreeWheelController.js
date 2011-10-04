@@ -62,12 +62,12 @@ mw.FreeWheelControler.prototype = {
 			'FreeWheel',
 			[ 'plugin', 'preSequence', 'postSequence', 'width', 'height', 'asyncInit',
 			 'profileId', 'adManagerUrl','adManagerJsUrl', 'serverUrl', 'networkId', 'videoAssetId',  
-			 'playerProfile', 'playerProfileHTML5', 'videoAssetNetworkId', 
+			 'profileIdHTML5',  'videoAssetNetworkId', 
 			 'siteSectionId', 'visitorId'  ]
 		);
 		// XXX todo we should read "adManagerUrl" from uiConf config
-		var adManagerUrl = ( this.config[ 'adManagerJsUrl' ] ) ? 
-							this.config[ 'adManagerJsUrl' ] : 
+		var adManagerUrl = ( this.mw.getConfig( 'adManagerJsUrl' ) ) ? 
+							this.mw.getConfig( 'adManagerJsUrl' )  : 
 							mw.getConfig( 'FreeWheel.AdManagerUrl' );
 							
 		// Load the freewheel ad mannager then setup the ads
@@ -90,7 +90,6 @@ mw.FreeWheelControler.prototype = {
 		
 		// Set context timeout
 		this.setContextTimeout();
-
 		// Add the temporal slots for this "player"
 		this.addTemporalSlots();
 
@@ -300,18 +299,19 @@ mw.FreeWheelControler.prototype = {
 			this.adContext = this.getAdManager().newContext();
 			
 			this.adContext.registerVideoDisplayBase( 'videoContainer' );
-			this.adContext.setProfile( this.getConfig( 'profileId' ) );
 
+			// Check for "html5" player profile: 
+			if( this.getConfig('profileIdHTML5') ){
+				this.adContext.setProfile( 
+					this.getConfig('profileIdHTML5') 
+				);
+			} else {
+				this.adContext.setProfile( this.getConfig( 'profileId' ) );
+			}
+			
 			// Check if we have a visitorId 
 			if( this.getConfig('visitorId') ){
 				this.adContext.setVisitor( this.getConfig('visitorId') );
-			}
-			
-			// Check for "html5" player profile: 
-			if( this.getConfig('playerProfileHTML5') ){
-				this.adContext.setPlayerProfile( 
-					this.getConfig('playerProfileHTML5') 
-				);
 			}
 			
 			this.adContext.setVideoAsset( 
