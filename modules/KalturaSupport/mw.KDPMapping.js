@@ -366,6 +366,13 @@
 			switch( eventName ){
 				case 'kdpEmpty':
 					// TODO: When we have video tag without an entry
+					b( 'playerReady', function(){
+						// only trigger kdpEmpty when the player is empty
+						// TODO support 'real' player empty state!
+						if( embedPlayer['data-playerError'] ){
+							callback( embedPlayer.id );
+						}
+					});
 					break;
 				case 'kdpReady':
 					// TODO: When player is ready with entry, only happens once
