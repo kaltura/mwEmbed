@@ -194,9 +194,9 @@
 			// Check if a simple direct evaluation: 
 			if( objectString[0] == '{' &&  objectString[  objectString.length -1 ] == '}' ){
 				result = _this.evaluateExpression( embedPlayer, objectString.substring(1, objectString.length-1) );
-			} else if ( objectString.split( '{' ).length > 2 ){ // Check if we are doing a string based evaluate concatenation: 
+			} else if ( objectString.split( '{' ).length > 1 ){ // Check if we are doing a string based evaluate concatenation: 
 				// Replace any { } calls with evaluated expression.
-				result = objectString.replace(/\{([^\}]*)\}/g, function(match, contents, offset, s) {
+				result = objectString.replace(/\{([^\}]*)\}/g, function( match, contents, offset, s) {
 					return _this.evaluateExpression( embedPlayer, contents );
 				});
 			} else {
