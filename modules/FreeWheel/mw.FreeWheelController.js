@@ -1,5 +1,11 @@
 ( function( mw, $ ) {
 
+// Set the freewheel config:
+mw.setConfig({
+	// The url for the ad Manager
+	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js'
+});
+
 mw.addFreeWheelControler = function( embedPlayer, callback ) {
 	embedPlayer.freeWheelAds = new mw.FreeWheelControler(embedPlayer, callback);	
 	mw.freeWheelGlobalContextInstance = embedPlayer.freeWheelAds;
@@ -421,72 +427,6 @@ mw.FreeWheelControler.prototype = {
 				}
 			}
 		}
-	},
-	/**
-	 * Adds local companion targets ( if they  exists ) for easy passing across iframe 
-	 * @return
-	 */
-	addCompanionBindings: function(){
-		var _this = this;
-		mw.log("FreeWheelController::addCompanionBindings>");
-		// Add some hidden companion targets if we are running in an iframe
-		if( !mw.getConfig('EmbedPlayer.IsIframeServer') ){
-			return ;
-		}
-		// Setup the embedPlayer server setFreeWheelAddCompanions method
-		this.embedPlayer.setFreeWheelAddCompanions = function( companionSet ){
-			_this.addCompanionTargets( companionSet );
-		};
-		// Trigger the adding of any server side bindings: 
-		$( this.embedPlayer ).trigger( 'FreeWheel_GetAddCompanions' );
-		// We now monitor for companion html changes and pass that across the iframe 
-		this.monitorForCompanionChanges();
-	},
-	monitorForCompanionChanges: function(){
-		var _this = this;
-		var companionStateCache = {};
-		setInterval(function(){
-			$('#fw_companion_container').find( '._fwph').each(function(inx, node){
-				var id = $(node).attr('id');
-				var curHtml = $('#_fw_container_' + id ).html(); 
-				if( curHtml && companionStateCache[ id ] != curHtml){
-					$( _this.embedPlayer ).trigger('FreeWheel_UpdateCompanion', {
-						'id' : id,
-						'content' : curHtml
-					});
-					companionStateCache[ id ] = curHtml;
-				}
-			});
-		}, 1000);
-	},
-	/**
-	 * Add hidden companion targets for companions to be passed overt the iframe
-	 * @param companionSet
-	 * @return
-	 */
-	addCompanionTargets: function( companionSet ){
-		if(! $('#fw_companion_container').length ){
-			$('body').append( $('<div />').attr('id', 'fw_companion_container' ) );
-		}
-			
-		$.each(companionSet, function(inx, companion){
-			var id =  companion.id;
-			$('#fw_companion_container').append( 
-				$('<span />').attr('id', id ).addClass( '_fwph' )
-				.css('display', 'none')
-				.append(
-					$('<form />').attr('id', '_fw_form_' + id )
-					.append(
-						$('<input type="hidden"/>').attr({
-							'name' : '_fw_input_' + id,
-							'id' : '_fw_input_' + id
-						})
-					),
-					$('<span />').attr('id', '_fw_container_' + id )
-				)
-			);
-		});
-		mw.log( 'FreeWheelController:: addCompanionTargets: Added:' + $('#fw_companion_container ._fwph').length + ' targets' );
 	}
 };
 
