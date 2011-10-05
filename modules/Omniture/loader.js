@@ -16,8 +16,9 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			});
 			// wait for omniture plugin ( return to block callback bellow )
 			return ;
+		} else{
+			// no Omniture, run callback directly
+			callback();
 		}
-		// no Omniture, run callback directly
-		callback();
 	});
 });
