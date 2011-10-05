@@ -1498,9 +1498,8 @@ mw.EmbedPlayer.prototype = {
 		setTimeout(function(){
 			_this.applyIntrinsicAspect();
 		}, 10);
-		
+
 		mw.playerManager.playerReady( this );
-		
 		
 		// Right before player autoplay ... check if there are any errors that prevent playback or player:
 		if( this['data-playerError'] ){

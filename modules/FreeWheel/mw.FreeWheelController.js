@@ -119,6 +119,7 @@ mw.FreeWheelControler.prototype = {
 						// Run the callback: 
 						callback();
 					});
+					// find the video 
 				};
 			});
 		});
@@ -302,7 +303,6 @@ mw.FreeWheelControler.prototype = {
 			if( this.getConfig('visitorId') ){
 				this.adContext.setVisitor( this.getConfig('visitorId') );
 			}
-			
 			this.adContext.setVideoAsset( 
 				this.getConfig( 'videoAssetId' ),
 				this.getConfig( 'videoDuration' ),
