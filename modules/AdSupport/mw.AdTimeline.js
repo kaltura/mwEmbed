@@ -199,6 +199,11 @@ mw.AdTimeline.prototype = {
 	 */
 	displaySlots: function( slotType, doneCallback ){
 		var _this = this;
+		var restorePlayerCallback = function(){
+			_this.restorePlayer();
+			doneCallback();
+		};
+		
 		// Setup a sequence timeline set: 
 		var sequenceProxy = {};
 		
@@ -219,13 +224,16 @@ mw.AdTimeline.prototype = {
 			return ;
 		}
 		
+		// Update the interface for ads: 
+		this.updateUiForAdPlayback();
+		
 		keyList.sort();
 		var seqInx = 0;
 		// Run each sequence key in order:
 		var runSequeceProxyInx = function( seqInx ){
 			var key = keyList[ seqInx ] ;
 			if( !sequenceProxy[key] ){
-				doneCallback();
+				restorePlayerCallback();
 				return ;
 			}			
 			// Run the sequence proxy function: 
