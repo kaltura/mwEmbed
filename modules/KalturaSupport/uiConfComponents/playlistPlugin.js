@@ -34,7 +34,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 								'horizontal' : 
 								'vertical';
 				} else {
-					mw.log("Error could not determin playlist layout type");
+					mw.log("Error could not determine playlist layout type");
 					layout = 'horizontal';
 				}
 				

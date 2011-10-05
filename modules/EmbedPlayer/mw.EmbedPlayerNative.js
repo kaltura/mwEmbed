@@ -284,7 +284,11 @@ mw.EmbedPlayerNative = {
 		}
 		// Update the bufferedPercent
 		if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
-			this.bufferedPercent = ( vid.buffered.end(0) / vid.duration );
+			try{
+				this.bufferedPercent = ( vid.buffered.end(0) / vid.duration );
+			} catch ( e ){
+				// opera does not have buffered.end zero index support ? 
+			}
 		}
 		_this.parent_monitor();
 	},

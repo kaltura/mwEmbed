@@ -2546,7 +2546,6 @@ mw.EmbedPlayer.prototype = {
 
 		// Update currentTime via embedPlayer
 		_this.currentTime = _this.getPlayerElementTime();
-
 		// Update any offsets from server seek
 		if( _this.serverSeekTime && _this.supportsURLTimeEncoding() ){
 			_this.currentTime = parseInt( _this.serverSeekTime ) + parseInt( _this.getPlayerElementTime() );

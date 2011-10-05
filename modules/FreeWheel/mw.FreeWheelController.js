@@ -302,8 +302,6 @@ mw.FreeWheelControler.prototype = {
 			if( this.getConfig('visitorId') ){
 				this.adContext.setVisitor( this.getConfig('visitorId') );
 			}
-			// hardcore visitor
-			this.adContext.setVisitor('0818B8BC-0E0F-4325-8580-257241439DB5&cd=1920%2C1200');
 			
 			this.adContext.setVideoAsset( 
 				this.getConfig( 'videoAssetId' ),

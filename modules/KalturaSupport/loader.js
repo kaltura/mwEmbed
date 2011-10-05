@@ -200,9 +200,11 @@
 						'id' : videoId,
 						'kwidgetid' : kEmbedSettings.wid,
 						'kuiconfid' : kEmbedSettings.uiconf_id,
-						'style' : $( element ).attr('style')
+						'style' : $( element ).attr('style'),
+						'width' : $( element ).attr('width'),
+						'heigth' : $( element ).attr('height')
 					};
-
+					
 					if( kEmbedSettings.entry_id ) {
 						loadEmbedPlayerFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
@@ -236,7 +238,6 @@
 					
 					var widthType = ( width.indexOf('%') == -1 )? 'px' : '';
 					var heightType = ( height.indexOf('%') == -1 )? 'px' : '';
-					
 					// Replace with a mwEmbedKalturaVideoSwap
 					$( element ).empty().replaceWith( 
 						$('<div />')
@@ -247,7 +248,7 @@
 							'position' : 'relative',
 							'display' : 'inline-block' // more or less the <object> tag default display
 						})
-						.data( {
+						.data({
 							'flashvars': flashvars,
 							'cache_st': kEmbedSettings.cache_st
 						})
@@ -263,12 +264,14 @@
 							})
 							.loadingSpinner()
 						)
-					);
-					
+					);					
 					var elm = $('#' + videoEmbedAttributes.id ).get(0);
 					// Assign values to DOM object methods ( not just attributes ) 
 					$.each( videoEmbedAttributes, function( attrName, attrValue ){
-						try{
+						// skip style attr:
+						if( attrName == 'style' )
+							return true;
+						try {
 							elm[ attrName ] = attrValue;
 						} catch ( e ){
 							mw.log("Error: Kaltura loader could not set: " + attrName);
@@ -311,12 +314,12 @@
 						if( $( playerTarget).data( 'cache_st' ) ){
 							kParams['cache_st'] = $( playerTarget).data('cache_st');
 						}
-
+						
 						iframeRewriteCount++;
 						$( playerTarget )
 							.removeClass('mwEmbedKalturaWidgetSwap')
 							.removeClass('mwEmbedKalturaVideoSwap')
-							.kalturaIframePlayer( kParams, doneWithIframePlayer);
+							.kalturaIframePlayer( kParams, doneWithIframePlayer );
 					});					
 					// if there are no playlists left to process return: 
 					if( $( '.mwEmbedKalturaWidgetSwap' ).length == 0 ){
@@ -338,7 +341,7 @@
 								if( rewriteCount == 0){
 									rewriteDoneCallback();
 								}
-							})
+							});
 						});
 					});
 				}
