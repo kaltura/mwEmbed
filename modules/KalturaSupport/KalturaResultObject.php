@@ -80,27 +80,32 @@ class KalturaResultObject {
 		// else thorw an erro? 
 	}
 
-	// Returns the value of given flashvar
-	// Make sure to use '===' when comparing values
-	function getFlashvarConfig( $name ) {
-		// If no flash vars retrun false
-		if( !isset ($this->urlParameters[ 'flashvars' ]) ) {
-			return null;
+	function getPlayerConfig( $confPrefix = false, $attr = false ) {
+
+		$plugins = $this->playerConfig['plugins'];
+		$vars = $this->playerConfig['vars'];
+
+		if( $confPrefix ) {
+			if( isset( $plugins[ $confPrefix ] ) ) {
+				if( $attr ) {
+					if( isset( $plugins[ $confPrefix ][ $attr ] ) ) {
+						return $plugins[ $confPrefix ][ $attr ];
+					} else {
+						return null;
+					}
+				} else {
+					return $plugins[ $confPrefix ];
+				}
+			} else {
+				return null;
+			}
 		}
 
-		// If value doesn't exists retrun false
-		if( !isset( $this->urlParameters[ 'flashvars' ][ $name ] ) ) {
-			return null;
+		if( $attr && isset( $vars[ $attr ] ) ) {
+			return $vars[ $attr ];
 		}
 
-		$value = $this->urlParameters[ 'flashvars' ][ $name ];
-		// If value has boolean value, return it as boolean
-		if( $value == "true") {
-			$value = true;
-		} elseif( $value == "false" ) {
-			$value = false;
-		}
-		return $value;
+		return null;
 	}
 	/**
 	 * Kaltura object provides sources, sometimes no sources are found or an error occurs in 
@@ -172,43 +177,28 @@ class KalturaResultObject {
 	 * this check is run as part of resultObject handling so we must pass in the uiConf string
 	 */ 
 	public function isUserAgentRestrictedPlugin() {
-		$restrictedMessage = true;
-		// Check for plugin definition in flashVars
-		if( $this->getFlashvarConfig('restrictUserAgent.plugin') ) {
-			$restrictedStrings = $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgents');
-			if( $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentTitle') && $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentMessage') ) {
-				$restrictedMessage = $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentTitle') ."\n". $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentMessage');
-			}
-		} else {
-			// Check for plug definition in uiConf
-			$xml = $this->getUiConfXML();
-			$restrictUserAgentPlugin = $xml->xpath("*//Plugin[@id = 'restrictUserAgent']");
-			if( $restrictUserAgentPlugin ) {
-				$restrictUserAgentPlugin = $restrictUserAgentPlugin[0]->attributes();
-				$restrictedStrings = $restrictUserAgentPlugin->restrictedUserAgents;
-				if( isset($restrictUserAgentPlugin->restrictedUserAgentTitle) && isset($restrictUserAgentPlugin->restrictedUserAgentMessage) ) {
-					$restrictedMessage = $restrictUserAgentPlugin->restrictedUserAgentTitle . "\n" . $restrictUserAgentPlugin->restrictedUserAgentMessage;
-				}
-			}else {
-				return false;
-			}
-		}
-		
-		// If we don't have any string to search for, return true
-		if( !isset($restrictedStrings) || empty($restrictedStrings) ) { 
-			return false; 
-		}
 
-		// Lower case user agents string
-		$userAgent = strtolower( $this->getUserAgent() );
-		$restrictedStrings = strtolower( $restrictedStrings );
-		$restrictedStrings = explode(",", $restrictedStrings);
-		
-		foreach( $restrictedStrings as $string ) {
-			$string = str_replace(".*", "", $string); // Removes .*
-			$string = trim($string);
-			if( ! strpos( $userAgent, $string ) === false ) {
-				return $restrictedMessage;
+		$userAgentPlugin = $this->getPlayerConfig('restrictUserAgent');
+		if( $userAgentPlugin ) {
+			$restrictedMessage = true;
+			// Set error message
+			if( $userAgentPlugin['restrictedUserAgentTitle'] && $userAgentPlugin['restrictedUserAgentMessage'] ) {
+				$restrictedMessage = $userAgentPlugin['restrictedUserAgentTitle'] . "\n" . $userAgentPlugin['restrictedUserAgentMessage'];
+			}
+
+			$restrictedStrings = $userAgentPlugin['restrictedUserAgents'];
+			if( $restrictedStrings ) {
+				$userAgent = strtolower( $this->getUserAgent() );
+				$restrictedStrings = strtolower( $restrictedStrings );
+				$restrictedStrings = explode(",", $restrictedStrings);
+
+				foreach( $restrictedStrings as $string ) {
+					$string = str_replace(".*", "", $string); // Removes .*
+					$string = trim($string);
+					if( ! strpos( $userAgent, $string ) === false ) {
+						return $restrictedMessage;
+					}
+				}
 			}
 		}
 		return false;
@@ -353,6 +343,121 @@ class KalturaResultObject {
 			}
 		}
 		return true;
+	}
+
+	function formatString( $str ) {
+		$str = trim($str);
+		if( $str === "true" ) {
+			return true;
+		} else if( $str === "false" ) {
+			return false;
+		} else {
+			return $str;
+		}
+	}
+
+	/* setupPlayerConfig()
+	 * Creates an array of our player configuration.
+	 * The array is build from: Flashvars, uiVars, uiConf
+	 * The array include 2 arrays:
+	 * plugins - contains all of our plugins configuration
+	 * vars - contain flat player configuration
+	 */
+	function setupPlayerConfig() {
+
+		$plugins = array();
+		$vars = array();
+
+		// Get all plugins elements
+		$pluginsXml = $this->getUiConfXML()->xpath("*//Plugin");
+		for( $i=0; $i < count($pluginsXml); $i++ ) {
+			$pluginId = (string) $pluginsXml[ $i ]->attributes()->id;
+			$plugins[ $pluginId ] = array(
+				'plugin' => true
+			);
+			foreach( $pluginsXml[ $i ]->attributes() as $key => $value) {
+				if( $key == "id" ) {
+					continue;
+				}
+				$plugins[ $pluginId ][ $key ] = $this->formatString((string) $value);
+			}
+		}
+
+		// Flashvars
+		if( $this->urlParameters[ 'flashvars' ] ) {
+			$flashVars = $this->urlParameters[ 'flashvars' ];
+			foreach( $flashVars as $fvKey => $fvValue) {
+				if( $fvKey && $fvValue ) {
+					$vars[ $fvKey ] = $this->formatString($fvValue);
+				}
+			}
+		}
+
+		// uiVars
+		$uiVarsXml = $this->getUiConfXML()->xpath("*//var");
+		for( $i=0; $i < count($uiVarsXml); $i++ ) {
+
+			$key = (string) $uiVarsXml[ $i ]->attributes()->key;
+			$value = (string) $uiVarsXml[ $i ]->attributes()->value;
+			$override = (string) $uiVarsXml[ $i ]->attributes()->overrideflashvar;
+
+			// Continue if flashvar exists and can't override
+			if( isset( $vars[ $key ] ) && !$override ) {
+				continue;
+			}
+			$vars[ $key ] = $this->formatString($value);
+		}
+
+		// Set Plugin attributes from uiVars/flashVars to our plugins array
+		foreach( $vars as $key => $value ) {
+			// If this is not a plugin setting, continue
+			if( strpos($key, "." ) === false ) {
+				continue;
+			}
+
+			$pluginKeys = explode(".", $key);
+			$pluginId = $pluginKeys[0];
+			$pluginAttribute = $pluginKeys[1];
+
+			// If plugin exists, just add/override attribute
+			if( isset( $plugins[ $pluginId ] ) ) {
+				$plugins[ $pluginId ][ $pluginAttribute ] = $value;
+			} else {
+				// Plugin does not exists, lets check if we have $pluginId.plugin = true attribute
+				if( isset( $vars[ $pluginId . '.plugin' ] ) && $vars[ $pluginId . '.plugin' ] == "true" ) {
+					// Add to plugins array with the current key/value
+					$plugins[ $pluginId ] = array(
+						$pluginAttribute => $value
+					);
+				}
+			}
+
+			// Removes from vars array (keep only flat vars)
+			unset( $vars[ $key ] );
+		}
+
+		// Get Watermark
+		// $watermarkXml = $this->getUiConfXML()->xpath("*//Watermark");
+		/*
+		foreach( $watermarkXml[0]->attributes() as $key => $value ) {
+			if( $key == "id" ) {
+				$pluginId = (string) $value;
+				$plugins[ $pluginId ] = array();
+			} else {
+				$plugins[ $pluginId ][ $key ] = (string) $value;
+			}
+		}
+		*/
+
+		$this->playerConfig = array(
+			'plugins' => $plugins,
+			'vars' => $vars
+		);
+
+		//echo '<pre>';
+		//echo json_encode( $this->playerConfig );
+		//print_r( $this->playerConfig );
+		//exit();
 	}
 	
 	// Load the Kaltura library and grab the most compatible flavor
@@ -618,6 +723,10 @@ class KalturaResultObject {
 
 	private function getResultObjectFromApi(){
 
+		/* TODO:
+		 * We need method for: getWidgetType -> single, playlist, ppt
+		 * Because right now if our player is pptWidget we will use getPlaylist result */
+
 		if( $this->isPlaylist() ){
 			return $this->getPlaylistResult();
 		} else {
@@ -666,22 +775,16 @@ class KalturaResultObject {
 			// Update the Exception and pass it upward
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 		}
-
-		if( isset( $rawResultObject ) && $rawResultObject->confFile ){
+		
+		if( isset( $rawResultObject->code ) ) {
+			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $rawResultObject['message'] );
+		}
+		if( isset( $rawResultObject->confFile ) ){
 			return $this->cleanUiConf( $rawResultObject->confFile );
 		}
 		return null;
 	}
 
-	function setupPlayerConfig() {
-		$uiConfXml = $this->getUiConfXML();
-
-		$this->playerConfig = array();
-	}
-	/* TODO:
-	 * Need to change getPlaylistResult to something like getWidgetUiConf
-	 * Because on pptWidget we get to this function as well
-	 */
 	function getPlaylistResult(){
 		// Get the first playlist list:
 		$playlistId =  $this->getFirstPlaylistId();
@@ -730,27 +833,7 @@ class KalturaResultObject {
 	 * and so that the first entry video can be in the page at load time.   
 	 */
 	function getFirstPlaylistId(){
-		// Setup the intial playlist id to null 
-		$playlistId = null;
-		$checkFlashVar = true;
-		// Check for uiConf style playlist id ( should only match one )
-		$result = $this->getUiConfXML()->xpath( "*//var[@key = 'playlistAPI.kpl0Url']" );
-		if( isset( $result[0] ) ){
-			foreach ( $result[0]->attributes() as $key => $val ) {
-				if( $key == 'value' ){
-					$playlistId = urldecode( $val );
-				}
-				if( $key == 'overrideflashvar' && $val == 'true' ){
-					$checkFlashVar = false;	
-				}
-			}
-		}
-		// Check for flashvar style playlist id
-		if( $checkFlashVar && $this->getFlashvarConfig('playlistAPI.kpl0Url') ){
-			// Check for flashvar 
-			$playlistId = $this->getFlashvarConfig('playlistAPI.kpl0Url');
-			
-		}
+		$playlistId = $this->getPlayerConfig('playlistAPI', 'kpl0Url');
 		$playlistId = htmlspecialchars_decode( $playlistId );
 		// Parse out the "playlistId from the url ( if its a url )
 		$plParsed = parse_url( $playlistId );
@@ -797,7 +880,7 @@ class KalturaResultObject {
 			
 			// Entry Custom Metadata
 			// Always get custom metadata for now 
-			//if( $this->getFlashvarConfig('requiredMetadataFields') ) {
+			//if( $this->getPlayerConfig(false, 'requiredMetadataFields') ) {
 				$filter = new KalturaMetadataFilter();
 				$filter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
 				$filter->objectIdEqual = $this->urlParameters['entry_id'];
@@ -810,7 +893,7 @@ class KalturaResultObject {
 			//}
 			
 			// Entry Cue Points
-			if( $this->getFlashvarConfig('getCuePointsData') !== false ) {
+			if( $this->getPlayerConfig(false, 'getCuePointsData') !== false ) {
 				$filter = new KalturaCuePointFilter();
 				$filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
 				$filter->entryIdEqual = $this->urlParameters['entry_id'];
@@ -910,8 +993,8 @@ class KalturaResultObject {
 		$conf->userAgent = $this->getUserAgent();
 		
 		$client = new KalturaClient( $conf );
-		if( $this->getFlashvarConfig('ks') ) {
-			$this->ks = $this->getFlashvarConfig('ks');
+		if( $this->getPlayerConfig(false, 'ks') ) {
+			$this->ks = $this->getPlayerConfig(false, 'ks');
 		} else {
 			// Check modify time on cached php file
 			$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
