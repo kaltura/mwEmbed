@@ -838,6 +838,7 @@ class KalturaResultObject {
 	 */
 	function getFirstPlaylistId(){
 		$playlistId = $this->getPlayerConfig('playlistAPI', 'kpl0Url');
+		$playlistId = urldecode($playlistId);
 		$playlistId = htmlspecialchars_decode( $playlistId );
 		// Parse out the "playlistId from the url ( if its a url )
 		$plParsed = parse_url( $playlistId );
