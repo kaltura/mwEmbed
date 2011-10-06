@@ -108,7 +108,7 @@ mw.KWidgetSupport.prototype = {
 					cVar = ( cVar === "false" ) ? false : cVar;
 					cVar = ( cVar === "true" ) ? true : cVar;
 					
-					mw.log("KWidgetSupport::addPlayerHooks> Set Global Config:  " + $( customVar ).attr('key') + ' ' + cVar );
+					// mw.log("KWidgetSupport::addPlayerHooks> Set Global Config:  " + $( customVar ).attr('key') + ' ' + cVar );
 					mw.setConfig(  $( customVar ).attr('key'), cVar);
 				}
 			});

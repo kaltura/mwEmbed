@@ -422,7 +422,7 @@
 					b( "seeked");
 					break;
 				case 'playerPlayEnd':
-					b("ended" );
+					b( "ended" );
 					break;
 				case 'durationChange': 
 					b( "durationchange", function(){
@@ -438,7 +438,7 @@
 					b( "onCloseFullScreen" );
 					break;
 				case 'playerUpdatePlayhead':
-					b('monitorEvent', function() {
+					b( 'monitorEvent', function() {
 						callback( embedPlayer.currentTime );
 					});
 					break;	
