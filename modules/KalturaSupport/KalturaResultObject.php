@@ -15,7 +15,7 @@ class KalturaResultObject {
 	var $uiConfXml = null; // lazy init
 	var $noCache = false;
 	// flag to control if we are in playlist mode
-	var $isPlaylist = false;
+	var $isPlaylist = null; // lazy init
 	
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
@@ -150,14 +150,6 @@ class KalturaResultObject {
 		);
 	}
 	
-	// Check if the requested url is a playlist
-	public function isPlaylist(){
-		// first check the flag
-		if( $this->isPlaylist )
-			return true;
-		// else check url params: 
-		return ( $this->urlParameters['playlist_id'] !== null || $this->urlParameters['entry_id'] === null);
-	}
 	public function isCachedOutput(){
 		return $this->outputFromCache;
 	}
@@ -168,7 +160,7 @@ class KalturaResultObject {
 	 * Checks if a user agent is restricted via the user restriction plugin present in the uiConf XML
 	 * this check is run as part of resultObject handling so we must pass in the uiConf string
 	 */ 
-	public function isUserAgentRestrictedPlugin( $uiConf ) {
+	public function isUserAgentRestrictedPlugin() {
 		//echo('<textarea style="width: 100%; height: 100%;">' . $uiConf . '</textarea>'); exit();
 		$restrictedMessage = true;
 		// Check for plugin definition in flashVars
@@ -179,7 +171,7 @@ class KalturaResultObject {
 			}
 		} else {
 			// Pass in the uiConf string ( need to clean up resultObject parsing logic ) 
-			$this->getUiConfXMl( $uiConf );
+			$this->getUiConfXMl();
 			// Check for plug definition in uiConf
 			$restrictUserAgentPlugin = $this->uiConfXml->xpath("*//Plugin[@id = 'restrictUserAgent']");
 			if( $restrictUserAgentPlugin ) {
@@ -282,9 +274,8 @@ class KalturaResultObject {
 	*  Access Control Handling
 	*/
 	public function isAccessControlAllowed( &$resultObject = null ) {
-		// Kaltura only has entry level access control not playlist level access control atm: 
-		// don't check playlist
-		if( $this->isPlaylist() ){
+		// Kaltura only has entry level access control
+		if( !isset( $this->urlParameters['entry_id'] ) ){
 			return true;
 		}
 		
@@ -340,7 +331,7 @@ class KalturaResultObject {
 			return $userAgentMessage;
 		} else {
 			if( isset( $resultObject['uiConf'] ) ){
-				$userAgentRestricted = $this->isUserAgentRestrictedPlugin( $resultObject['uiConf'] );
+				$userAgentRestricted = $this->isUserAgentRestrictedPlugin();
 				if( $userAgentRestricted === false ) {
 					return true;
 				} else {
@@ -362,7 +353,6 @@ class KalturaResultObject {
 		if( !$this->isAccessControlAllowed() ) {
 			return array();
 		}
-
 		$resultObject =  $this->getResultObject(); 
 		
 		// add any web sources
@@ -617,14 +607,13 @@ class KalturaResultObject {
 	}
 
 	private function getResultObjectFromApi(){
-		if( $this->isPlaylist() ){
-			return $this->getPlaylistResult();
-		} else {
+		if( $this->urlParameters['entry_id'] ){
 			return $this->getEntryResult();
+		} else {
+			return $this->getWidgetResult();
 		}
-	
 	}
-	function getPlaylistResult(){
+	function getWidgetResult(){
 		// if no uiconf_id .. now way to return playlist data
 		if( !$this->urlParameters['uiconf_id']) {
 			return array();
@@ -646,9 +635,30 @@ class KalturaResultObject {
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf'] = $rawResultObject->confFile;
 		}
-		// Try to parse the uiconf data: 
-		$uiConfXml = $this->getUiConfXML( $resultObject[ 'uiConf'] );
 		
+		// If we are dealing with a playlist add playlist data ( this kind of sucks )
+		if( $this->isPlaylist( $resultObject[ 'uiConf'] ) ){
+			// If it is a playlist return playlist result object ( which includes first entry info ) 
+			return $this->getPlaylistResult();
+		}
+		
+		return $resultObject;
+	}
+	function isPlaylist( $uiConf = false ){
+		// Check if the playlist is null: 
+		if( !is_null ( $this->isPlaylist ) ){
+			return $this->isPlaylist;
+		}
+		// Check if its a playlist: 
+		if(  $uiConf ){
+			$pl =  $this->getUiConfXML( $uiConf )->xpath("//*[@id='playlist']");
+			$this->isPlaylist = ( count( $pl ) != 0 );
+		}
+		return $this->isPlaylist;
+	}
+			
+	function getPlaylistResult(){
+		$uiConfXml = $this->getUiConfXML();
 		// Get the first playlist list:
 		$playlistId =  $this->getFirstPlaylistId( $uiConfXml );
 		$playlistObject = $this->getPlaylistObject( $playlistId  );
@@ -670,7 +680,6 @@ class KalturaResultObject {
 			// XXX could not get first playlist item: 	
 			return array();
 		}
-		
 	}
 	/**
 	 * Get playlist object
@@ -833,12 +842,6 @@ class KalturaResultObject {
 			$resultObject[ 'entryCuePoints' ] = $resultObject['entryCuePoints']->objects;
 		}
 		
-		// Check access control and throw an exception if not allowed: 
-		$acStatus = $this->isAccessControlAllowed( $resultObject );
-		if( $acStatus !== true ){
-			throw new Exception( $acStatus );
-		}	
-		
 		return $resultObject;
 	}
 
@@ -923,7 +926,11 @@ class KalturaResultObject {
 	}
 	public function getThumbnailUrl() {
 		$result =  $this->getResultObject();
-		return $result['meta']->thumbnailUrl;
+		if( isset( $result['meta'] ) ){
+			return $result['meta']->thumbnailUrl;
+		} else {
+			return false;
+		}
 	}
 	public function getUrlParameters(){
 		return $this->urlParameters;
@@ -939,29 +946,32 @@ class KalturaResultObject {
 			return false;
 		}
 	}
-	public function getUiConfXML( $uiConf  = false ){
+	public function getUiConfXML( $uiConf = false ){
 		global $wgKalturaIframe;
 		if( !$this->uiConfXml ){
 			if( !$uiConf ){
-				// TODO we need to clean this up because getResultObject has a bit of parsing logic right now.
-				//  getResultObject should not call any parsing functions
 				$uiConf = $this->getUiConf();
 			}
-			if( $uiConf == '' ) {
-				// Empty uiConf ( don't try and parse, return an empty object)
-				return new SimpleXMLElement('<xml />' );
-			}
-			// remove this hack as soon as possible
-			$uiConf = str_replace( '[kClick="', 'kClick="', $uiConf);
-			// remove this hack as soon as possible as well!
-			$brokenFlashVarXMl =  'autoPlay=false&screensLayer.startScreenOverId=startScreen&screensLayer.startScreenId=startScreen';
-			$uiConf = str_replace( $brokenFlashVarXMl, htmlentities( $brokenFlashVarXMl ), $uiConf );
-			// handle any non-escapsed &
-			$uiConf = preg_replace('/&[^; ]{0,6}.?/e', "((substr('\\0',-1) == ';') ? '\\0' : '&amp;'.substr('\\0',1))", $uiConf);
+			/* can log uiConf here */
 			
-			$this->uiConfXml = new SimpleXMLElement( $uiConf );
+			$this->uiConfXml = new SimpleXMLElement( 
+				$this->cleanUpUiConfXml( 
+					$uiConf
+				) 
+			);
 		}
 		return $this->uiConfXml;
+	}
+	// TODO remove this once kaltura improves xml parsing for api updates of uiConf:
+	public function cleanUpUiConfXml( $uiConf ){
+		// remove this hack as soon as possible
+		$uiConf = str_replace( '[kClick="', 'kClick="', $uiConf);
+		// remove this hack as soon as possible as well!
+		$brokenFlashVarXMl =  'autoPlay=false&screensLayer.startScreenOverId=startScreen&screensLayer.startScreenId=startScreen';
+		$uiConf = str_replace( $brokenFlashVarXMl, htmlentities( $brokenFlashVarXMl ), $uiConf );
+		// handle any non-escapsed &
+		$uiConf = preg_replace('/&[^; ]{0,6}.?/e', "((substr('\\0',-1) == ';') ? '\\0' : '&amp;'.substr('\\0',1))", $uiConf);
+		return $uiConf;
 	}
 	public function getMeta(){
 		$result = $this->getResultObject();

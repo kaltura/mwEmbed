@@ -4,7 +4,7 @@
  */
 
 define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server, something maybe broken or server is under high load. Please try again.");
-
+	
 // Setup the kalturaIframe
 global $wgKalturaIframe;
 $wgKalturaIframe = new kalturaIframe();
@@ -197,27 +197,39 @@ class kalturaIframe {
 				isset( $_REQUEST['flashvars']['loadThumbnailWithKs']) ) {
 			$ksParam = '?ks=' . $this->getResultObject()->getKS();
 		}
-		// We should grab the thumbnail url from our entry to get the latest version of the thumbnail
-		$posterUrl = $this->getResultObject()->getThumbnailUrl() . '/height/480' . $ksParam;
-		
-		try {
-			$sources = $this->getResultObject()->getSources();
-			// If no sources get the black sources:
-			if( count( $sources ) == 0 ) {
-				$this->playerError = "No mobile sources found";
-				$sources = $this->getResultObject()->getBlackVideoSources();
+	
+		// see if we have access control restrictions
+		// Check access control and throw an exception if not allowed: 
+		$acStatus = $this->getResultObject()->isAccessControlAllowed( $resultObject );
+		if( $acStatus !== true ){
+			$this->playerError = $acStatus;
+			$sources = $this->getResultObject()->getBlackVideoSources();
+		} else {	
+			try {
+				// We should grab the thumbnail url from our entry to get the latest version of the thumbnail
+				$posterUrl = $this->getResultObject()->getThumbnailUrl() . '/height/480' . $ksParam;
+				// get Player sources: 
+				$sources = $this->getResultObject()->getSources();
+				// If no sources get the black sources:
+				if( count( $sources ) == 0 ) {
+					$this->playerError = "No mobile sources found";
+					$sources = $this->getResultObject()->getBlackVideoSources();
+				}
+			} catch ( Exception $e ){
+				// xxx log an empty entry id lookup!
+				$this->fatalError( $e->getMessage() );
 			}
-		} catch ( Exception $e ){
-			// xxx log an empty entry id lookup!
-			$this->fatalError( $e->getMessage() );
 		}
 
 		// Add default video tag with 100% width / height
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
-		$o = "\n\n\t" .'<video class="persistentNativePlayer" ' .
-			'poster="' . htmlspecialchars( $posterUrl ) . '" ' .
-			'id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
+		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
+		// output the poster if set: 
+		if( $posterUrl ){
+			$o.='poster="' . htmlspecialchars( $posterUrl ) . '" ';
+		}
+		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
 			'style="position:absolute;' . $playerSize . '" ';
 
 		$urlParams = $this->getResultObject()->getUrlParameters();
