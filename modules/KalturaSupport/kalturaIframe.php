@@ -560,7 +560,7 @@ class kalturaIframe {
 		<?php 
 		// If we have an empty uiConf just pass the object off to javascript and see if it can 
 		// do anything useful
-		if( !$this->getResultObject()->getUiConf() || $this->getResultObject()->getUiConf() == '') {
+		if( $this->getResultObject()->isJavascriptRewriteObject() ) {
 			echo $this->getFlashEmbedHTML();
 		} else {
 			if( $this->getResultObject()->isPlaylist() ){ 

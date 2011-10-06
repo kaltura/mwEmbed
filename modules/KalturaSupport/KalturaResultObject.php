@@ -17,6 +17,7 @@ class KalturaResultObject {
 	var $noCache = false;
 	// flag to control if we are in playlist mode
 	var $isPlaylist = null; // lazy init
+	var $isJavascriptRewriteObject = null;
 	
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
@@ -170,6 +171,23 @@ class KalturaResultObject {
 		$pl =  $this->getUiConfXML()->xpath("//*[@id='playlist']");
 		$this->isPlaylist = ( count( $pl ) != 0 );
 		return $this->isPlaylist;
+	}
+	function isJavascriptRewriteObject() {
+
+		// If our playlist is Mrss, handle the playlist in the client side
+		$playlistUrl = $this->getPlayerConfig('playlistAPI', 'kpl0Url');
+		if( $playlistUrl ) {
+			if( strpos($playlistUrl, "playlist_id") === false ) {
+				return true;
+			}
+		}
+
+		// If this is a pptWidget, handle in client side
+		if( $this->getPlayerConfig('pptWidgetAPI', 'plugin') ) {
+			return true;
+		}
+		
+		return false;
 	}
 	public function isCachedOutput(){
 		return $this->outputFromCache;
@@ -793,7 +811,7 @@ class KalturaResultObject {
 		// Get the first playlist list:
 		$playlistId =  $this->getFirstPlaylistId();
 		$playlistObject = $this->getPlaylistObject( $playlistId  );
-
+		
 		// Create an empty resultObj
 		if( isset( $playlistObject[0] ) && $playlistObject[0]->id ){
 			// Set the isPlaylist flag now that we are for sure dealing with a playlist
