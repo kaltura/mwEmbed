@@ -18,6 +18,7 @@ class KalturaResultObject {
 	// flag to control if we are in playlist mode
 	var $isPlaylist = null; // lazy init
 	var $isJavascriptRewriteObject = null;
+	var $error = false;
 	
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
@@ -80,7 +81,9 @@ class KalturaResultObject {
 		}
 		// else thorw an erro? 
 	}
-
+	function getError() {
+		return $this->error;
+	}
 	function getPlayerConfig( $confPrefix = false, $attr = false ) {
 		if( ! $this->playerConfig ) {
 			$this->setupPlayerConfig();
@@ -499,7 +502,7 @@ class KalturaResultObject {
 		if( isset( $resultObject['flavors']['code'] ) ){
 			switch(  $resultObject['flavors']['code'] ){
 				case  'ENTRY_ID_NOT_FOUND':
-					throw new Exception( "Entry Id not found\n" . $resultObject['flavors']['message'] );
+					$this->error = "Entry Id not found\n";
 				break;
 			}
 			// @@TODO should probably refactor to use throw catch error system.
@@ -1056,7 +1059,7 @@ class KalturaResultObject {
 	}
 	public function getThumbnailUrl() {
 		$result =  $this->getResultObject();
-		if( isset( $result['meta'] ) ){
+		if( isset( $result['meta'] ) && !$result['meta']['code'] ){
 			return $result['meta']->thumbnailUrl;
 		} else {
 			return false;

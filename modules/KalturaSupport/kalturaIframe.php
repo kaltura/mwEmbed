@@ -210,6 +210,11 @@ class kalturaIframe {
 				$posterUrl = $this->getResultObject()->getThumbnailUrl() . '/height/480' . $ksParam;
 				// get Player sources: 
 				$sources = $this->getResultObject()->getSources();
+				// If we have an error, show it
+				if( $this->getResultObject()->getError() ) {
+					$this->playerError = $this->getResultObject()->getError();
+					$sources = $this->getResultObject()->getBlackVideoSources();
+				}
 				// If no sources get the black sources:
 				if( count( $sources ) == 0 ) {
 					$this->playerError = "No mobile sources found";
