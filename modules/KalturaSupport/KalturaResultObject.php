@@ -642,13 +642,12 @@ class KalturaResultObject {
 			return array();
 		}
 		$resultObject = $this->getBaseResultObject();
-		//print_r( $rawResultObject);
 		if( isset( $rawResultObject ) && $rawResultObject->confFile ){
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf'] = $rawResultObject->confFile;
 		}
 		// Try to parse the uiconf data: 
-		$uiConfXml = new SimpleXMLElement( $resultObject[ 'uiConf'] );
+		$uiConfXml = $this->getUiConfXML( $resultObject[ 'uiConf'] );
 		
 		// Get the first playlist list:
 		$playlistId =  $this->getFirstPlaylistId( $uiConfXml );
