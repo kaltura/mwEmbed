@@ -178,7 +178,6 @@ class KalturaResultObject {
 				$restrictedMessage = $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentTitle') ."\n". $this->getFlashvarConfig('restrictUserAgent.restrictedUserAgentMessage');
 			}
 		} else {
-		
 			// Pass in the uiConf string ( need to clean up resultObject parsing logic ) 
 			$this->getUiConfXMl( $uiConf );
 			// Check for plug definition in uiConf
@@ -643,11 +642,11 @@ class KalturaResultObject {
 			return array();
 		}
 		$resultObject = $this->getBaseResultObject();
+		//print_r( $rawResultObject);
 		if( isset( $rawResultObject ) && $rawResultObject->confFile ){
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf'] = $rawResultObject->confFile;
 		}
-		
 		// Try to parse the uiconf data: 
 		$uiConfXml = new SimpleXMLElement( $resultObject[ 'uiConf'] );
 		
@@ -960,17 +959,6 @@ class KalturaResultObject {
 			$uiConf = str_replace( $brokenFlashVarXMl, htmlentities( $brokenFlashVarXMl ), $uiConf );
 			// handle any non-escapsed &
 			$uiConf = preg_replace('/&[^; ]{0,6}.?/e', "((substr('\\0',-1) == ';') ? '\\0' : '&amp;'.substr('\\0',1))", $uiConf);
-			
-			/*
-			libxml_use_internal_errors(true);
-			$sxe = simplexml_load_string($uiConf);
-			if (!$sxe) {
-			    echo "Failed loading XML\n";
-			    foreach(libxml_get_errors() as $error) {
-			        echo "\t", $error->message;
-			    }
-			}
-			*/
 			
 			$this->uiConfXml = new SimpleXMLElement( $uiConf );
 		}
