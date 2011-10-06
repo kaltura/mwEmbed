@@ -41,7 +41,7 @@ if( document.URL.indexOf('runQunitTests') != -1 ){
 		QUnit.config.autostart = false;
 	};
 	document.write( '<script defer="defer" type="text/javascript">' + 
-		'setTimeout(function(){jQuery(document).ready(qunitSetup);}, 10);' +
+		'setTimeout(function(){window.jQuery(document).ready(qunitSetup);}, 100);' +
 	'</script>');
 } else {
 	window.addRunTestLink = function(){
@@ -67,7 +67,7 @@ if( document.URL.indexOf('runQunitTests') != -1 ){
 	};
 	// if not running unit tests provide a link:
 	document.write('<script defer="defer" type="text/javascript">' + 
-			'setTimeout(function(){jQuery(document).ready( addRunTestLink );}, 10);' +
+			'setTimeout(function(){window.jQuery(document).ready( addRunTestLink );}, 100);' +
 			'</script>'
 	);
 }
