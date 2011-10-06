@@ -450,8 +450,10 @@ mw.KWidgetSupport.prototype = {
 			playerRequest.entry_id =  embedPlayer.kentryid;
 		}
 		
-		// Add the uiconf_id 
-		playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
+		// only request the ui Conf if we don't already have it: 
+		if( !embedPlayer.$uiConf ){
+			playerRequest.uiconf_id = this.getUiConfId( embedPlayer );
+		}
 
 		// Add the flashvars
 		playerRequest.flashvars = $( embedPlayer ).data( 'flashvars' ); 
@@ -520,11 +522,10 @@ mw.KWidgetSupport.prototype = {
 	 * Get the uiconf id, if unset its the kwidget id / partner id default
 	 */
 	getUiConfId: function( embedPlayer ){
-		var uiConfId = ( embedPlayer.kuiconfid ) ? embedPlayer.kuiconfid : false; 
-		if( !uiConfId && embedPlayer.kwidgetid ) {
-			uiConfId = embedPlayer.kwidgetid.replace( '_', '' );
+		if( !embedPlayer.kuiconfid && embedPlayer.kwidgetid ) {
+			embedPlayer.kuiconfid = embedPlayer.kwidgetid.replace( '_', '' );
 		}
-		return uiConfId;
+		return embedPlayer.kuiconfid;
 	},
 	/**
 	 * Check if the entryId is a url ( add source and do not include in request ) 

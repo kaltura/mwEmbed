@@ -595,7 +595,6 @@ class kalturaIframe {
 				document.write(unescape("%3Cscript src='<?php echo $path ?>/libraries/json/json2.js' type='text/javascript'%3E%3C/script%3E"));
 			}
 		</script>
-		
 		<script type="text/javascript">
 			<?php 
 				global $wgAllowCustomResourceIncludes;
@@ -603,6 +602,7 @@ class kalturaIframe {
 					echo 'mw.setConfig( \'Mw.CustomResourceIncludes\', '. $this->getCustomPlayerIncludesJSON() .' );';
 				}
 			?>	
+
 			var hashString = document.location.hash;
 			// Parse any configuration options passed in via hash url:
 			if( hashString ){
@@ -688,7 +688,9 @@ class kalturaIframe {
 				// remove the no_rewrite flash object ( never used in rewrite )
 				var obj = document.getElementById('kaltura_player_iframe_no_rewrite');
 				if( obj ){
-					document.getElementById('<?php echo $this->getIframeId()?>').removeChild( obj );
+					var parent = document.getElementById('<?php echo $this->getIframeId()?>');
+					if( parent ) 
+						parent.removeChild( obj );
 				}
 					
 				// Load the mwEmbed resource library and add resize binding
