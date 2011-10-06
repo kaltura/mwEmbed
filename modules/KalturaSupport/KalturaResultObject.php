@@ -163,6 +163,9 @@ class KalturaResultObject {
 			),
 		);
 	}
+	public static function getBlackPoster(){
+		return 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_vp5cng42/version/100000/height/480';
+	}
 	
 	// Check if the requested url is a playlist
 	function isPlaylist(){
@@ -1062,7 +1065,7 @@ class KalturaResultObject {
 	}
 	public function getThumbnailUrl() {
 		$result =  $this->getResultObject();
-		if( isset( $result['meta'] ) && !isset($result['meta']->code) ){
+		if( isset( $result['meta'] ) && is_object( $result['meta'] ) && !isset( $result['meta']->code) ){
 			return $result['meta']->thumbnailUrl;
 		} else {
 			return false;

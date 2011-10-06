@@ -207,7 +207,11 @@ class kalturaIframe {
 		} else {	
 			try {
 				// We should grab the thumbnail url from our entry to get the latest version of the thumbnail
-				$posterUrl = $this->getResultObject()->getThumbnailUrl() . '/height/480' . $ksParam;
+				if( $this->getResultObject()->getThumbnailUrl() ){
+					$posterUrl = $this->getResultObject()->getThumbnailUrl() . '/height/480' . $ksParam;
+				} else {
+					$posterUrl = $this->getResultObject()->getBlackPoster();
+				}
 				// get Player sources: 
 				$sources = $this->getResultObject()->getSources();
 				// If we have an error, show it
