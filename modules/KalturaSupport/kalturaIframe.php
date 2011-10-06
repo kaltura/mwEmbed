@@ -665,8 +665,10 @@ class kalturaIframe {
 			//var kIsHTML5FallForward = function(){ return false };
 			//var kSupportsFlash = function(){ return false	 };
 
-			<?php 
-				echo $this->javascriptPlayerLogic();
+			<?php
+				if( ! $this->getResultObject()->isJavascriptRewriteObject() ) {
+					echo $this->javascriptPlayerLogic();
+				}
 			?>
 		</script>
 	</body>
