@@ -33,7 +33,6 @@ function jsKalturaPlayerTest( videoId ){
 		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
 		start();
 	});
-
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
@@ -44,7 +43,7 @@ function jsKalturaPlayerTest( videoId ){
 Sets player default by user agent rules. <br></br>
 
 The player has the following rules: </br>
-0) Disable the forceMobileHTML5 url flag
+0) Disable the forceMobileHTML5 url flag </br> 
 1) If using chrome 14 or above lead with html5 </br>
 2) If using firefox 3.6 Force flash and do not fallback to html5. </br>
 3) If using an iPhone show an html message  </br>

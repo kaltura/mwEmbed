@@ -32,9 +32,9 @@
 *
 *	// If the iframe should expose a javascript api emulating the video tag bindings and api
 *	// lets you treat the iframe id like a video tag ie: 
-*	// $j('#iframeid').get(0).play() 
+*	// $('#iframeid').get(0).play() 
 *	//   and 
-*	// $j('#iframeid').bind('ended', function(){ .. end playback event ... }
+*	// $('#iframeid').bind('ended', function(){ .. end playback event ... }
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
@@ -106,7 +106,6 @@ if( ! mw.getConfig ){
 	};
 }
 
-
 // Wrap mw.ready to preMwEmbedReady values
 if( !mw.ready ){
 	mw.ready = function( fn ){	
@@ -117,17 +116,14 @@ if( !mw.ready ){
 	};
 }
 
-// Set url based config:
-if( document.URL.indexOf('forceMobileHTML5') !== -1 ){
-	mw.setConfig( 'forceMobileHTML5', true );
-}
 
-// Set iframe config if in the client page, will be passed to the iframe along with other config
+//Set iframe config if in the client page, will be passed to the iframe along with other config
 if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 	mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL);
 	mw.setConfig('EmbedPlayer.IframeParentTitle', document.title);
 	mw.setConfig('EmbedPlayer.IframeParentReferrer', document.referrer);
 }
+
 
 function kDoIframeRewriteList( rewriteObjects ){
 	for( var i=0; i < rewriteObjects.length; i++ ){
@@ -383,7 +379,7 @@ function kOverideJsFlashEmbed(){
 					return ;
 				}
 
-				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
+				if( kIsHTML5FallForward( uiconf_id ) && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else {
 					// if its a kaltura player embed restore kdp callback:
@@ -414,7 +410,7 @@ function kOverideJsFlashEmbed(){
 				}
 
 				// Check if kIsHTML5FallForward
-				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){ 
+				if( kIsHTML5FallForward( kEmbedSettings.uiconf_id ) && kEmbedSettings.uiconf_id ){ 
 					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
 				} else {
 					// if its a kaltura player embed restore kdp callback:
@@ -480,6 +476,10 @@ function kCheckAddScript(){
 		return ;
 	}
 	
+	// Set url based config ( as long as it not disabled ) 
+	if( ! mw.getConfig( 'disableForceMobileHTML5') && document.URL.indexOf('forceMobileHTML5') !== -1 ){
+		mw.setConfig( 'forceMobileHTML5', true );
+	}
 	/**
 	 * If Kaltura.AllowIframeRemoteService is not enabled force in page rewrite: 
 	 */
@@ -530,7 +530,9 @@ function kIsIOS(){
 	(navigator.userAgent.indexOf('iPad') != -1) );
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not available 
-function kIsHTML5FallForward(){
+function kIsHTML5FallForward( uiconf_id ){
+	// TODO Check if per ui-conf id settings
+	
 	// Check for a mobile html5 user agent:
 	if ( kIsIOS() || ( mw.getConfig( 'forceMobileHTML5' ) && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )  )  ){
 		return true;
@@ -884,7 +886,7 @@ function doScrollCheck() {
  */
 function kGetKalturaPlayerList(){
 	var kalturaPlayers = [];
-	// check all objects for kaltura compatible urls 
+	// Check all objects for kaltura compatible urls 
 	var objectList = document.getElementsByTagName('object');
 	if( !objectList.length && document.getElementById('kaltura_player') ){
 		objectList = [ document.getElementById('kaltura_player') ];
@@ -940,7 +942,6 @@ function kFlashVars2Object( flashvarsString ){
 	}
 	return flashvars;
 }
-
 function kServiceConfigToUrl(){
 	var serviceVars = ['ServiceUrl', 'CdnUrl', 'ServiceBase', 'UseManifestUrls'];
 	var urlParam = '';
@@ -959,7 +960,6 @@ function kFlashVarsToUrl( flashVarsObject ){
 	}
 	return params;
 }
-
 function kGetEntryThumbUrl( entry ){
 	var kCdn = mw.getConfig( 'Kaltura.CdnUrl', 'http://cdnakmi.kaltura.com' ); 
 	return kCdn + '/p/' + entry.partner_id + '/sp/' +

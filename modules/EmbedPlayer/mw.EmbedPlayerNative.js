@@ -262,8 +262,8 @@ mw.EmbedPlayerNative = {
 				if( _this._propagateEvents ){
 					var argArray = $.makeArray( arguments );
 					// Check if there is local handler:
-					if( _this['on' + eventName ] ){
-						_this['on' + eventName ].apply( _this, argArray);
+					if( _this[ 'on' + eventName ] ){
+						_this[ 'on' + eventName ].apply( _this, argArray);
 					} else {
 						// No local handler directly propagate the event to the abstract object:
 						$( _this ).trigger( eventName, argArray );

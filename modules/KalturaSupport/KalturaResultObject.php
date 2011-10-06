@@ -1050,6 +1050,9 @@ class KalturaResultObject {
 	public function getCacheSt(){
 		return ( isset( $this->urlParameters['cache_st'] ) ) ? $this->urlParameters['cache_st'] : '';
 	}
+	public function getUiConfId(){
+		return $this->urlParameters[ 'uiconf_id' ];
+	}
 	public function getPartnerId(){
 		// Partner id is widget_id but strip the first character
 		return substr( $this->urlParameters['wid'], 1 );

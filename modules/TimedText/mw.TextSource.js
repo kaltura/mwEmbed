@@ -143,7 +143,6 @@
 			//Return the set of captions in range:
 			return captionSet;
 		},
-		
 		getCaptions: function( data ){
 			// detect caption data type: 
 			switch( this.mimeType ){

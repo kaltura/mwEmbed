@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
 * This file injects all on Page uiConf based javascript and configuration and loader. 
 *
@@ -22,11 +22,13 @@ ob_end_flush();
 class KalturaUiConfJs{
 	var $resultObject = null;
 	var $preLoaderMode = false;
+	var $jsConfigCheckDone = false;
 	
 	function outputUiConfJs(){
 		$o = '/* kaltura uiConfJS loader */';
-		$o.= $this->getUserAgentPlayerRules();
 		// get the checkUserAgentPlayerRules call if present in plugins
+		$o.= $this->getUserAgentPlayerRules();
+		// add any on-page javascript
 		
 		$this->sendHeaders();
 		echo $o;
@@ -45,13 +47,14 @@ class KalturaUiConfJs{
 				'Action' => array()
 			);
 			foreach( $userAgentPlayerRules[0]->attributes() as $key => $val ){
+				//print "key:$key val:$val\n";
 				// Check for special keys: 
-				if( $key == 'disableForceMobileHTML5' ){
+				if( $key == 'disableForceMobileHTML5' && $val =='true' ){
 					$o.=$this->getJsConfigLine( 'disableForceMobileHTML5', 'true');
 					continue;	
 				}
-				// parse the rule index and type: 
-				preg_match('/r([0-9]+)(.*)/', $key, $matches);
+				// Parse the rule index and type: 
+				preg_match( '/r([0-9]+)(.*)/', $key, $matches );
 				if( count( $matches ) ){
 					if( $matches[2] == 'Match' || $matches[2] == 'RegMatch' ){
 						$rule = array();
@@ -68,15 +71,18 @@ class KalturaUiConfJs{
 					}
 				}
 			}
-			$o='if( !window[\'kUserAgentPlayerRules\'] ){ kUserAgentPlayerRules = {}; }; '. "\n";
-			$o.= 'kUserAgentPlayerRules=' . json_encode( $rulesObject );
+			$o.= 'if( !window[\'kUserAgentPlayerRules\'] ){ kUserAgentPlayerRules = {}; }; '. "\n";
+			$o.= 'kUserAgentPlayerRules[\'' . $this->getResultObject()->getUiConfId() . '\'] = ' . json_encode( $rulesObject );
 		}
 		return $o;
 	}
 	// allows for the script to support being called directly or via pre-loader that includes uiConf info
 	function getJsConfigLine( $configName, $value ){
 		if( $this->preLoaderMode ){
-			$o='if( ! window[\'preMwEmbedConfig\'] ) { preMwEmbedConfig = {}; };';
+			if( ! $this->jsConfigCheckDone){
+				$o='if( ! window[\'preMwEmbedConfig\'] ) { preMwEmbedConfig = {}; };';
+				$this->jsConfigCheckDone = true;
+			}
 			return $o . 'preMwEmbedConfig[\'' . htmlspecialchars( $configName ) . '\'] = ' . $value . ';' . "\n";
 		} else {
 			return 'mw.setConfig(\'' . htmlspecialchars( $configName ) . '\', ' . $value . ');' . "\n";
