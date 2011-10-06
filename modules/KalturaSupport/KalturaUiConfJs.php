@@ -24,7 +24,7 @@ class KalturaUiConfJs{
 	var $preLoaderMode = false;
 	
 	function outputUiConfJs(){
-		$o = '';
+		$o = '/* kaltura uiConfJS loader */';
 		$o.= $this->getUserAgentPlayerRules();
 		// get the checkUserAgentPlayerRules call if present in plugins
 		
@@ -35,6 +35,7 @@ class KalturaUiConfJs{
 	 * Outputs the user agent playing rules if present in uiConf
 	 */
 	function getUserAgentPlayerRules(){
+		$o='';
 		// Do an xml query for the plugin
 		$userAgentPlayerRules = $this->getResultObject()->getUiConfXML()->xpath("*//Plugin[@id='userAgentPlayerRules']");
 		if( $userAgentPlayerRules ) {
@@ -43,7 +44,6 @@ class KalturaUiConfJs{
 				'rules' => array(),
 				'Action' => array()
 			);
-			$o='';
 			foreach( $userAgentPlayerRules[0]->attributes() as $key => $val ){
 				// Check for special keys: 
 				if( $key == 'disableForceMobileHTML5' ){
