@@ -371,7 +371,7 @@ EmbedPlayerManager.prototype = {
 				var swapPlayer = _this.swapEmbedPlayerElement( playerElement, playerInterface );
 
 				// Trigger the newEmbedPlayerEvent for embedPlayer interface
-				mw.log("EmbedPlayer::addPlayerElement :trigger " + playerInterface.id );
+				mw.log("EmbedPlayer::addPlayerElement :trigger newEmbedPlayerEvent:" + playerInterface.id );
 				$( mw ).trigger ( 'newEmbedPlayerEvent', $( '#' + playerInterface.id ).get(0) );
 
 
@@ -383,6 +383,7 @@ EmbedPlayerManager.prototype = {
 				// setup. like iframes asynchronous announcing its ready for
 				// bindings that can
 				// affect player setup.
+				mw.log("EmbedPlayer::addPlayerElement :trigger startPlayerBuildOut:" + playerInterface.id );
 				$( '#' + playerInterface.id ).triggerQueueCallback( 'startPlayerBuildOut', function(){
 					// Issue the checkPlayerSources call to the new player
 					// interface: make sure to use the element that is in the

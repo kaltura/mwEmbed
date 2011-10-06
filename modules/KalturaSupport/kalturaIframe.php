@@ -587,7 +587,7 @@ class kalturaIframe {
 			preMwEmbedConfig = {};
 			preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
 		</script>
-		<!-- Always Insert the html5 kalturaLoader script -->
+		<!--  Add the mwEmbedLoader.php -->
 		<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>" type="text/javascript"></script>
 		<script type="text/javascript">
 			// Insert JSON support if in missing ( IE 7, 8 )
@@ -602,7 +602,6 @@ class kalturaIframe {
 					echo 'mw.setConfig( \'Mw.CustomResourceIncludes\', '. $this->getCustomPlayerIncludesJSON() .' );';
 				}
 			?>	
-
 			var hashString = document.location.hash;
 			// Parse any configuration options passed in via hash url:
 			if( hashString ){
@@ -688,9 +687,9 @@ class kalturaIframe {
 				// remove the no_rewrite flash object ( never used in rewrite )
 				var obj = document.getElementById('kaltura_player_iframe_no_rewrite');
 				if( obj ){
-					var parent = document.getElementById('<?php echo $this->getIframeId()?>');
-					if( parent ) 
-						parent.removeChild( obj );
+					var targetVideoParent = document.getElementById('<?php echo $this->getIframeId()?>');
+					if( targetVideoParent )
+						targetVideoParent.removeChild( obj );
 				}
 					
 				// Load the mwEmbed resource library and add resize binding
@@ -720,7 +719,11 @@ class kalturaIframe {
 			//  but rewriting gives us flexiblity in in selection criteria as
 			// part of the javascript check kIsHTML5FallForward )
 			if( document.getElementById( 'videoContainer' ) ){
-				document.getElementById( 'videoContainer' ).innerHTML = "";
+				try{
+					document.getElementById( 'videoContainer' ).innerHTML = "";
+				}catch(e){
+					// failed to empty video tag
+				}
 			}
 			
 			if( kSupportsFlash() ||  mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){				

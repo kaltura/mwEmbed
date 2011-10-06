@@ -234,6 +234,7 @@ jQuery.fn.iFramePlayer = function( readyCallback ){
 		// Once the proxy ready event is received from the server complete the handshake
 		// and send the proxyAcknowledgment back to the iframe server
 		$( playerProxy ).bind('proxyReady', function(){
+			mw.log("iFramePlayer::proxyReady");
 			playerProxy.proxyAcknowledgment();
 		});
 		
