@@ -40,8 +40,8 @@ if( document.URL.indexOf('runQunitTests') != -1 ){
 				'<div id="qunit-fixture">test markup, will be hidden</div>' );
 		QUnit.config.autostart = false;
 	};
-	document.write( '<script type="text/javascript">' + 
-		'jQuery(document).ready(qunitSetup);' +
+	document.write( '<script defer="defer" type="text/javascript">' + 
+		'setTimeout(function(){jQuery(document).ready(qunitSetup);}, 10);' +
 	'</script>');
 } else {
 	window.addRunTestLink = function(){
