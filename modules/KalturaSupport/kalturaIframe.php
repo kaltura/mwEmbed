@@ -563,8 +563,7 @@ class kalturaIframe {
 	</head>
 	<body>	
 		<?php 
-		// If we have an empty uiConf just pass the object off to javascript and see if it can 
-		// do anything useful
+		// Check if the object should be writen by javascript ( instead of outputing video tag and player pay load )
 		if( $this->getResultObject()->isJavascriptRewriteObject() ) {
 			echo $this->getFlashEmbedHTML();
 		} else {

@@ -16,6 +16,9 @@ if( $wgEnableScriptDebug === true ) {
 // Get resource (  mwEmbedLoader.js )
 $loaderJs .= file_get_contents( 'mwEmbedLoader.js' );
 
+// Include checkUserAgentPlayer code
+$loaderJs .= file_get_contents( 'modules/KalturaSupport/kdpPageJs/checkUserAgentPlayerRules.js' );
+
 // Set up globals to be exported as mwEmbed config: 
 $exportedJsConfig= array(
 	'Kaltura.UseManifestUrls' => $wgKalturaUseManifestUrls,
@@ -41,17 +44,22 @@ foreach( $exportedJsConfig as $key => $val ){
 	$loaderJs .= "mw.setConfig('". addslashes( $key ). "', $val );\n";
 }
 
-// Set the expire time for the loader to 5 min. ( it controls the version of the actual library payload )
-$max_age = 60*5; 
-header("Cache-Control: private, max-age=$max_age max-stale=0");
-header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $max_age) . 'GMT');
-header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time()) . 'GMT');
-
-// TODO Minify via php_min
-// ob_gzhandler automatically checks for browser gzip support and gzips
-ob_start("ob_gzhandler");
-
 header("Content-type: text/javascript");
-echo $loaderJs;
+if( isset( $_GET['debug'] ) ){
+	echo $loaderJs;
+} else {
+	// Get the JSmin class:
+	require_once( realpath( dirname( __FILE__ ) ) . '/includes/library/JSMin.php' );
+	
+	// Set the expire time for the loader to 5 min. ( it controls the version of the actual library payload )
+	$max_age = 60*5; 
+	header("Cache-Control: private, max-age=$max_age max-stale=0");
+	header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $max_age) . 'GMT');
+	header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time()) . 'GMT');
+	
+	// TODO Minify via php_min
+	// ob_gzhandler automatically checks for browser gzip support and gzips
+	ob_start("ob_gzhandler");
 
-?>
+	echo JSMin::minify( $loaderJs );
+}

@@ -134,9 +134,9 @@ function kDoIframeRewriteList( rewriteObjects ){
 		var options = { 'width': rewriteObjects[i].width, 'height': rewriteObjects[i].height };
 		// If we have no flash &  no html5 fallback and don't care about about player rewrite 
 		if( ! kSupportsFlash() && ! kSupportsHTML5() ) {
-			kDirectDownloadFallback( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
+			kDirectDownloadFallback( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings, options );
 		} else {
-			kalturaIframeEmbed( rewriteObjects[i].id, rewriteObjects[i].kSettings, options );
+			kalturaIframeEmbed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings, options );
 		}
 	}
 }
@@ -192,18 +192,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// ( no javascript api needed )
 	
 	var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
-	var kalturaAttributeList = ['uiconf_id', 'entry_id', 'wid', 'p', 'cache_st'];
-	for(var attrKey in kEmbedSettings ){
-		// Check if the attrKey is in the kalturaAttributeList:
-		for( var i =0 ; i < kalturaAttributeList.length; i++){
-			if( kalturaAttributeList[i] == attrKey ){
-				iframeSrc += '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
-			}
-		}
-	}
-	
-	// Add the flashvars:
-	iframeSrc += '?' + kFlashVarsToUrl( kEmbedSettings.flashvars );
+	iframeSrc += kEmbedSettingsToUrl( kEmbedSettings );
 	
 	// If remote service is enabled pass along service arguments:
 	if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) && 
@@ -235,7 +224,22 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	parentNode.replaceChild(iframe, targetNode );
 
 }
-
+function kEmbedSettingsToUrl( kEmbedSettings ){
+	var kalturaAttributeList = ['uiconf_id', 'entry_id', 'wid', 'p', 'cache_st'];
+	var url = '';
+	for(var attrKey in kEmbedSettings ){
+		// Check if the attrKey is in the kalturaAttributeList:
+		for( var i =0 ; i < kalturaAttributeList.length; i++){
+			if( kalturaAttributeList[i] == attrKey ){
+				url += '/' + attrKey + '/' + encodeURIComponent( kEmbedSettings[attrKey] );  
+			}
+		}
+	}
+	// Add the flashvars:
+	url += '?' + kFlashVarsToUrl( kEmbedSettings.flashvars );
+	
+	return url;
+}
 // Fallback handling for older devices
 function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 
@@ -456,6 +460,26 @@ function kGetFlashVersion(){
 // Check DOM for Kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
 function kCheckAddScript(){
+
+	// Check if we already have got uiConfJs or not
+	if( ! mw.getConfig( 'Kaltura.UiConfJsLoaded') ){
+		// We have not yet loaded uiConfJS... load it for each ui_conf id
+		var playerList = kGetKalturaPlayerList();
+		var baseUiConfJsUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'modules/KalturaSupport/KalturaUiConfJs.php');
+		var requestCount =0;
+		for( var i=0;i < playerList.length; i++){
+			requestCount++;
+			kAppendScriptUrl(baseUiConfJsUrl + kEmbedSettingsToUrl( playerList[i].kEmbedSettings), function(){
+				requestCount--;
+				if( requestCount == 0){
+					mw.setConfig( 'Kaltura.UiConfJsLoaded', true);
+					kCheckAddScript();
+				}
+			});
+		}
+		return ;
+	}
+	
 	/**
 	 * If Kaltura.AllowIframeRemoteService is not enabled force in page rewrite: 
 	 */
@@ -467,6 +491,7 @@ function kCheckAddScript(){
 			mw.setConfig( 'Kaltura.UseManifestUrls', false);
 		}
 	}
+	
 	// If user javascript is using mw.ready add script
 	if( window.preMwEmbedReady.length ) {
 		kAddScript();
@@ -868,7 +893,7 @@ function kGetKalturaPlayerList(){
 	var tryAddKalturaEmbed = function( url , flashvars){
 		var settings = kGetKalturaEmbedSettings( url, flashvars );
 		if( settings && settings.uiconf_id && settings.wid ){
-			objectList[i].kSettings = settings;
+			objectList[i].kEmbedSettings = settings;
 			kalturaPlayers.push(  objectList[i] );
 			return true;
 		}

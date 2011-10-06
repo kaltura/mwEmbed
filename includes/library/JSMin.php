@@ -1,6 +1,5 @@
 <?php
 
-if ( !defined( 'MEDIAWIKI' ) )  die( 1 );
 /**
  * jsmin.php - PHP implementation of Douglas Crockford's JSMin.
  *
