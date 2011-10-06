@@ -730,7 +730,7 @@ class KalturaResultObject {
 		 * Because right now if our player is pptWidget we will use getPlaylist result */
 
 		if( $this->isPlaylist() ){
-			return $this->getWidgetResult();
+			return $this->getPlaylistResult();
 		} else {
 			return $this->getEntryResult();
 		}
