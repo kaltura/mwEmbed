@@ -81,7 +81,9 @@ class KalturaResultObject {
 	}
 
 	function getPlayerConfig( $confPrefix = false, $attr = false ) {
-
+		if( ! $this->playerConfig ) {
+			$this->setupPlayerConfig();
+		}
 		$plugins = $this->playerConfig['plugins'];
 		$vars = $this->playerConfig['vars'];
 
@@ -995,8 +997,8 @@ class KalturaResultObject {
 		$conf->userAgent = $this->getUserAgent();
 		
 		$client = new KalturaClient( $conf );
-		if( $this->getPlayerConfig(false, 'ks') ) {
-			$this->ks = $this->getPlayerConfig(false, 'ks');
+		if( isset($this->urlParameters['flashvars']['ks']) ) {
+			$this->ks = $this->urlParameters['flashvars']['ks'];
 		} else {
 			// Check modify time on cached php file
 			$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
@@ -1086,9 +1088,15 @@ class KalturaResultObject {
 		$this->uiConfXml = new SimpleXMLElement( $uiConf );
 	}
 	public function getUiConf() {
+		if( ! $this->uiConfFile ) {
+			$this->loadUiConf();
+		}
 		return $this->uiConfFile;
 	}
 	public function getUiConfXML() {
+		if( !$this->uiConfXml ){
+			$this->loadUiConf();
+		}
 		return $this->uiConfXml;
 	}
 	public function getMeta(){
