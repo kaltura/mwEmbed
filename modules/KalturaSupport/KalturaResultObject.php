@@ -1059,7 +1059,7 @@ class KalturaResultObject {
 	}
 	public function getThumbnailUrl() {
 		$result =  $this->getResultObject();
-		if( isset( $result['meta'] ) && !$result['meta']['code'] ){
+		if( isset( $result['meta'] ) && !isset($result['meta']->code) ){
 			return $result['meta']->thumbnailUrl;
 		} else {
 			return false;
