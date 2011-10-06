@@ -67,7 +67,7 @@ if( document.URL.indexOf('runQunitTests') != -1 ){
 	};
 	// if not running unit tests provide a link:
 	document.write('<script defer="defer" type="text/javascript">' + 
-			'jQuery(document).ready( addRunTestLink );' +
+			'setTimeout(function(){jQuery(document).ready( addRunTestLink );}, 10);' +
 			'</script>'
 	);
 }
