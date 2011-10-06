@@ -586,10 +586,9 @@ class kalturaIframe {
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
 			preMwEmbedConfig = {};
 			preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
-			
-			// Insert the html5 kalturaLoader script
-			document.write(unescape("%3Cscript src='<?php echo $this->getMwEmbedLoaderLocation() ?>' type='text/javascript'%3E%3C/script%3E"));
 		</script>
+		<!-- Always Insert the html5 kalturaLoader script -->
+		<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>" type="text/javascript"></script>
 		<script type="text/javascript">
 			// Insert JSON support if in missing ( IE 7, 8 )
 			if( typeof JSON == 'undefined' ){ 

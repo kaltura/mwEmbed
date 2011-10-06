@@ -18,6 +18,19 @@ var getModuleName = function(){
 if( !window.jQuery ){
 	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../ResourceLoader.php?class=window.jQuery' + '"></script>');
 }
+var qunitWaitCount =0;
+var qunitWaitForJQuery = function( callback ){
+	if( window.jQuery ){
+		callback();
+		return ;
+	}
+	if( qunitWaitCount < 1000 ){
+		qunitWaitCount++;
+		setTimeout(function(){
+			qunitWaitForJQuery( callback );
+		},10)
+	}
+};
 // Check for the url for runQunitTests argument
 if( document.URL.indexOf('runQunitTests') != -1 ){
 	document.write('' +
@@ -40,9 +53,10 @@ if( document.URL.indexOf('runQunitTests') != -1 ){
 				'<div id="qunit-fixture">test markup, will be hidden</div>' );
 		QUnit.config.autostart = false;
 	};
-	document.write( '<script defer="defer" type="text/javascript">' + 
-		'setTimeout(function(){window.jQuery(document).ready(qunitSetup);}, 100);' +
-	'</script>');
+	// run qunit set: 
+	qunitWaitForJQuery( function(){
+		jQuery( document ).ready( window.qunitSetup );
+	});
 } else {
 	window.addRunTestLink = function(){
 		var url = document.URL;
@@ -66,10 +80,10 @@ if( document.URL.indexOf('runQunitTests') != -1 ){
 		);
 	};
 	// if not running unit tests provide a link:
-	document.write('<script defer="defer" type="text/javascript">' + 
-			'setTimeout(function(){window.jQuery(document).ready( addRunTestLink );}, 100);' +
-			'</script>'
-	);
+	qunitWaitForJQuery( function(){
+		jQuery(document).ready( window.addRunTestLink );
+	});
+	
 }
 
 })();
