@@ -39,7 +39,8 @@ class KalturaResultObject {
 		'ServiceUrl'=> null,
 		'ServiceBase'=>null,
 		'CdnUrl'=> null,
-		'UseManifestUrls' => null
+		'UseManifestUrls' => null,
+		'debug' => null
 	);
 	
 	private $playerConfig = array();

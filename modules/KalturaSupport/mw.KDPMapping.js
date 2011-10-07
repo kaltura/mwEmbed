@@ -217,7 +217,6 @@
 		},
 		evaluateExpression: function( embedPlayer, expression){
 			var _this = this;
-			
 			// Check if we have a function call: 
 			if( expression.indexOf( '(' ) !== -1 ){
 				var fparts = expression.split( '(' );
@@ -225,7 +224,7 @@
 						fparts[0], 
 						// Remove the closing ) and evaluate the Expression 
 						// should not include ( nesting !
-						_this.evaluateExpression(embedPlayer, fparts[1].slice( 0, -1) )
+						_this.evaluateExpression( embedPlayer, fparts[1].slice( 0, -1) )
 				);
 			}
 			// Split the uiConf expression into parts separated by '.'
@@ -298,11 +297,13 @@
 										break;
 								}
 							} else {
-								// Get flashvars
+								// Get full flashvars object
 								return $( embedPlayer ).data( 'flashvars' );
 							}
 						break;
 					}
+					// no objectPath[1] match return the full configProx object: 
+					return { 'flashvars' : $( embedPlayer ).data( 'flashvars' ) }
 				break;	
 				case 'playerStatusProxy':
 					switch( objectPath[1] ){

@@ -162,17 +162,26 @@ mw.IFramePlayerApiClient.prototype = {
 		});
 		// Update any attributes
 		if( msgObject.attributes ){
-			$.each( msgObject.attributes, function( i, notUsed ){
-				if( i != 'id' && i != 'class' && i != 'style' ){
+			$.each( playerAttributes, function( attrName , na) {
+				if( !msgObject.attributes[attrName] )
+					return true;
+				if( attrName != 'id' && attrName != 'class' && attrName != 'style' ){
 					try {
-						_this.playerProxy[ i ] = msgObject.attributes[i];
-						_this._prevPlayerProxy[i] = msgObject.attributes[i];
+						_this.playerProxy[ attrName ] = msgObject.attributes[attrName];
+						_this._prevPlayerProxy[attrName] = msgObject.attributes[attrName];
 					} catch( e ) {
-						mw.log("Error could not set:" + i );
+						mw.log("Error could not set:" + attrName );
 					}
 				}
 			});
 		}
+		// Update any dataAttributes:
+		var dataAttributes =  mw.getConfig( 'EmbedPlayer.DataAttributes' );
+		$.each( dataAttributes, function( attrName , na ){
+			if( msgObject.attributes[attrName] ){
+				$( _this.playerProxy ).data( attrName,  msgObject.attributes[attrName] );
+			}
+		});
 		//mw.log("handle event method name: " + msgObject.triggerName );
 		
 		// Trigger any binding events 

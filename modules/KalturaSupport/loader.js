@@ -54,7 +54,11 @@
 		'kwidgetid' : null,
 		'kuiconfid' : null,
 		'kalturaPlayerMetaData' : null,
-		'kalturaEntryMetaData' : null
+		'kalturaEntryMetaData' : null,
+	});
+	
+	mw.mergeConfig( 'EmbedPlayer.DataAttributes', {
+		'flashvars': null
 	});
 	
 	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
@@ -120,6 +124,14 @@
 			  'mw.PlaylistHandlerKalturaRss'
 			] );
 	});
+	
+	// Set binding to disable "waitForMeta" for kaltura items ( We get size and length from api)
+	$( mw ).bind( 'checkPlayerWaitForMetaData', function(even, playerElement ){
+		if( $( playerElement ).attr( 'uiconf_id') || $( playerElement ).attr( 'entry_id') ){
+			playerElement.waitForMeta = false;
+		}
+	});
+	
 	// Check if the document has kaltura objects ( for fall forward support ) 
 	$( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
 
@@ -429,6 +441,7 @@
 	 * 	optional function called once iframe player has been loaded
 	 */
 	jQuery.fn.kalturaIframePlayer = function( iframeParams, callback ) {
+	
 		$( this ).each( function( inx, playerTarget ){
 			mw.log( '$.kalturaIframePlayer::' + $( playerTarget ).attr('id') );
 			// Check if the iframe API is enabled: 
@@ -447,9 +460,10 @@
 			// Build the iframe request from supplied iframeParams: 
 			var iframeRequest = '';
 			for( var key in iframeParams ){
-				// don't put flashvars into the post url. 
-				if( key == 'flashvars' )
+				// don't put flashvars into the post url ( will be a request param ) 
+				if( key == 'flashvars' ){
 					continue;
+				}
 				
 				iframeRequest+= '/' + key + 
 					'/' + encodeURIComponent( iframeParams [ key ] );
@@ -461,6 +475,10 @@
 			iframeRequest+= '&iframeSize=' +  $( playerTarget ).width() + 
 							'x' + $(playerTarget).height();
 				
+			// Add &debug is in debug mode
+			if( mw.getConfig( 'debug') ){
+				iframeRequest+= '&debug=true';
+			}
 			
 			// If remote service is enabled pass along service arguments: 
 			if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' )  && 
@@ -471,7 +489,7 @@
 			){
 				iframeRequest += kServiceConfigToUrl();
 			}
-
+		
 			// Add debug flag if set: 
 			if( mw.getConfig( 'debug' ) ){
 				iframeRequest+= '&debug=true';

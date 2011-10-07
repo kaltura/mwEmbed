@@ -234,8 +234,6 @@ class kalturaIframe {
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
-		// output the duration 
-		
 		// output the poster if set: 
 		if( $posterUrl ){
 			$o.='poster="' . htmlspecialchars( $posterUrl ) . '" ';
@@ -259,7 +257,6 @@ class kalturaIframe {
 			// TODO should move this to i8ln keys instead of raw msgs
 			$o.= ' data-playerError="' . htmlentities( $this->playerError ) . '" ';
 		}
-		
 		
 		// Close the open video tag attribute set
 		$o.='>';
@@ -440,10 +437,13 @@ class kalturaIframe {
 	private function getMwEmbedLoaderLocation(){
 		global $wgResourceLoaderUrl;
 		$loaderPath = str_replace( 'ResourceLoader.php', 'mwEmbedLoader.php', $wgResourceLoaderUrl );
-		$versionParam = '';
+		$versionParam = '?';
 		$urlParam = $this->getResultObject()->getUrlParameters();
 		if( isset( $urlParam['urid'] ) ){
-			$versionParam = '?urid=' . htmlspecialchars( $urlParam['urid'] );
+			$versionParam .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
+		}
+		if( isset( $ulrParam['debug'] ) ){
+			$versionParam .= '&debug=true';
 		}
 		
 		$xml = $this->getResultObject()->getUiConfXML();
@@ -589,6 +589,9 @@ class kalturaIframe {
 			preMwEmbedConfig = {};
 			preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
 		</script>
+		<!-- Add any iframe side per-player logic --> 
+		<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>" type="text/javascript"></script>
+		
 		<!--  Add the mwEmbedLoader.php -->
 		<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>" type="text/javascript"></script>
 		<script type="text/javascript">
@@ -706,9 +709,11 @@ class kalturaIframe {
 				// remove the no_rewrite flash object ( never used in rewrite )
 				var obj = document.getElementById('kaltura_player_iframe_no_rewrite');
 				if( obj ){
-					var targetVideoParent = document.getElementById('<?php echo $this->getIframeId()?>');
-					if( targetVideoParent )
-						targetVideoParent.removeChild( obj );
+					try {
+						document.getElementById('<?php echo $this->getIframeId()?>').removeChild( obj );
+					} catch( e ){
+						// could not remove node
+					}
 				}
 				
 				// Load the mwEmbed resource library and add resize binding

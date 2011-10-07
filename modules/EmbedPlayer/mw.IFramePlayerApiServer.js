@@ -148,6 +148,11 @@ mw.IFramePlayerApiServer.prototype = {
 				}
 			}
 		}
+		// Also copy in any 'data' attributes
+		var dataAttributes = mw.getConfig( 'EmbedPlayer.DataAttributes' );
+		for( var i in dataAttributes){
+			attrSet[ i ] = $( this.embedPlayer ).data( i );
+		}
 		return attrSet;
 	},
 	/**

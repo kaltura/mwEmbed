@@ -4,27 +4,16 @@
 *
 * it requires a partner_id and a uiconf_id 
 */
+$wgMwEmbedApiServices['uiconfJs'] = 'mweApiUiConfJs';
 
-// Include configuration: ( will include LocalSettings.php ) 
-require(  dirname( __FILE__ ) . '../../../includes/DefaultSettings.php' );
-
-// Setup the kalturaIframe
-global $wgKalturaUiConfJs;
-$wgKalturaUiConfJs = new KalturaUiConfJs();
-
-if( ! ob_start("ob_gzhandler") ) ob_start();
-// Output the uiConf js
-echo $wgKalturaUiConfJs->outputUiConfJs();
-// flush the buffer.
-ob_end_flush();
-
-
-class KalturaUiConfJs{
+// should extend a base mwApiService class
+// TODO split into two services "pageResources" and "userAgentPlayerRules"
+class mweApiUiConfJs {
 	var $resultObject = null;
 	var $preLoaderMode = false;
 	var $jsConfigCheckDone = false;
 	
-	function outputUiConfJs(){
+	function run(){
 		$o = '/* kaltura uiConfJS loader */';
 		// get the checkUserAgentPlayerRules call if present in plugins
 		$o.= $this->getUserAgentPlayerRules();

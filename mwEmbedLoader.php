@@ -8,11 +8,6 @@ require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' 
 // Append ResourceLoder path to loader.js
 $loaderJs = "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
 
-// Add debug flag global as well
-if( $wgEnableScriptDebug === true ) {
-    $loaderJs .= "window['SCRIPT_FORCE_DEBUG'] = true;\n";
-}
-
 // Get resource (  mwEmbedLoader.js )
 $loaderJs .= file_get_contents( 'mwEmbedLoader.js' );
 
@@ -21,6 +16,7 @@ $loaderJs .= file_get_contents( 'modules/KalturaSupport/kdpPageJs/checkUserAgent
 
 // Set up globals to be exported as mwEmbed config: 
 $exportedJsConfig= array(
+	'debug' => $wgEnableScriptDebug,
 	'Kaltura.UseManifestUrls' => $wgKalturaUseManifestUrls,
 	'Kaltura.ServiceUrl' => $wgKalturaServiceUrl,
 	'Kaltura.ServiceBase' => $wgKalturaServiceBase,
