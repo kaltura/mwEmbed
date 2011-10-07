@@ -13,7 +13,12 @@ window.checkUserAgentPlayerRules = function( ruleSet ){
 	}
 	var getAction = function( inx ){
 		if( ruleSet.actions && ruleSet.actions[ inx ] ){
-			return ruleSet.actions[ inx ];
+			var action =  ruleSet.actions[ inx ];
+			if( action.mode == 'leadWithHTML5' || action.mode == 'forceFlash' ){
+				return action.mode;
+			} else {
+				return action.val;
+			}
 		}
 		// No defined action for this rule, lead with flash
 		return 'flash';
@@ -25,8 +30,7 @@ window.checkUserAgentPlayerRules = function( ruleSet ){
 				return getAction( i );
 		} else if( rule.regMatch  ){
 			// Do a regex match
-			var pattern = new RegExp( rule.regMatch );
-			if( pattern.test( ua ) )
+			if( ua.match( eval( rule.regMatch ) ) )
 				return getAction( i );
 		}
 	}

@@ -589,11 +589,13 @@ class kalturaIframe {
 			preMwEmbedConfig = {};
 			preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
 		</script>
-		<!-- Add any iframe side per-player logic --> 
-		<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>" type="text/javascript"></script>
-		
 		<!--  Add the mwEmbedLoader.php -->
 		<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>" type="text/javascript"></script>
+		<!-- Add the kaltura ui logic as inline script: --> 
+		<script type="text/javascript"><?php
+			$uiConfJ = new mweApiUiConfJs();
+			echo $uiConfJ->getUserAgentPlayerRules();
+		?></script>
 		<script type="text/javascript">
 			// Insert JSON support if in missing ( IE 7, 8 )
 			if( typeof JSON == 'undefined' ){ 
@@ -705,7 +707,14 @@ class kalturaIframe {
 	}
 	private function javaScriptPlayerLogic(){
 		?>
-		if( kIsHTML5FallForward() ){
+		var isHTML5 = kIsHTML5FallForward();
+		if( kUserAgentPlayerRules ) {
+			var playerMode = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ '<?php echo $this->getResultObject()->getUiConfId() ?>' ] );
+			if( playerMode == 'leadWithHTML5' ){
+				isHTML5 = true;
+			}
+		}
+		if( isHTML5){
 				// remove the no_rewrite flash object ( never used in rewrite )
 				var obj = document.getElementById('kaltura_player_iframe_no_rewrite');
 				if( obj ){

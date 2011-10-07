@@ -141,11 +141,12 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// to rewrite the frame
 	if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && ( kSupportsFlash() || kSupportsHTML5() ) ){
 		var uiconf_id = kEmbedSettings.uiconf_id;
+		
+		var isHTML5 =  kIsHTML5FallForward();
 		// check if we even need to rewrite the page at all
 		// Evaluate per user agent rules: 
 		if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
 			var playerMode = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
-			
 			// Default play mode, if here and really using flash remap: 
 			switch( playerMode ){
 				case 'flash':
@@ -154,16 +155,19 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 						return ;
 					}
 				break;
+				case 'leadWithHTML5':
+					isHTML5 = true;
+				break;
 			}
+			
 			// clear out any kUserAgentPlayerRules
 			// XXX Ugly hack to recall AddScript ( loader is in desperate need of a refactor ) 
 			window.kUserAgentPlayerRules = false;
 			window.kAddedScript = false;
-			
 		}
 		
 		// Check if we are dealing with an html5 player or flash player
-		if( kIsHTML5FallForward() ){
+		if( isHTML5 ){
 			kAddScript( function(){
 				// Options include 'width' and 'height'
 				$j('#' + replaceTargetId ).css({
