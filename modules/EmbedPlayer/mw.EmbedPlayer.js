@@ -379,10 +379,8 @@ EmbedPlayerManager.prototype = {
 				// Allow modules to block player build out
 				//
 				// this is needed in cases where you need to do an asynchronous
-				// player interface
-				// setup. like iframes asynchronous announcing its ready for
-				// bindings that can
-				// affect player setup.
+				// player interface setup. like iframes asynchronous announcing its ready for
+				// bindings that can affect player setup.
 				mw.log("EmbedPlayer::addPlayerElement :trigger startPlayerBuildOut:" + playerInterface.id );
 				$( '#' + playerInterface.id ).triggerQueueCallback( 'startPlayerBuildOut', function(){
 					// Issue the checkPlayerSources call to the new player
@@ -2660,6 +2658,13 @@ mw.EmbedPlayer.prototype = {
 		mw.log("Error: getPlayerElementTime should be implemented by embed library");
 	},
 
+	/**
+	 * Abstract getPlayerElementTime function
+	 */
+	getPlayerElement: function(){
+		mw.log("Error: getPlayerElement should be implemented by embed library, or you may be calling this event too soon");
+	},
+	
 	/**
 	 * Update the Buffer status based on the local bufferedPercent var
 	 */
