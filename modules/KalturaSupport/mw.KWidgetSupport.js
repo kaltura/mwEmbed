@@ -666,23 +666,23 @@ mw.KWidgetSupport.prototype = {
 			}
 			
 			// Add iPad Akamai flavor to iPad flavor Ids list id list
-			if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipadnew') != -1 ){
+			if( asset.tags.indexOf('ipadnew') != -1 ){
 				ipadAdaptiveFlavors.push( asset.id );
 			}
 
 			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
-			if( asset.fileExt == 'mp4' && asset.tags.indexOf('iphonenew') != -1 ){
+			if( asset.tags.indexOf('iphonenew') != -1 ){
 				ipadAdaptiveFlavors.push( asset.id );
 				iphoneAdaptiveFlavors.push( asset.id );
 			}
 
 			// Check the tags to read what type of mp4 source
-			if( asset.fileExt == 'mp4' && asset.tags.indexOf('ipad') != -1 ){
+			if( asset.tags.indexOf('ipad') != -1 ){
 				deviceSources['iPad'] = src + '/a.mp4';
 			}
 
 			// Check for iPhone src
-			if( asset.fileExt == 'mp4' && asset.tags.indexOf('iphone') != -1 ){
+			if( asset.tags.indexOf('iphone') != -1 ){
 				deviceSources['iPhone'] = src + '/a.mp4';
 			}
 
@@ -692,7 +692,7 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			// Check for webm source
-			if( asset.fileExt == 'webm' ){
+			if( asset.fileExt == 'webm' || asset.tags.indexOf('webm') != -1 ){
 				deviceSources['webm'] = src + '/a.webm';
 			}
 
@@ -701,7 +701,6 @@ mw.KWidgetSupport.prototype = {
 				deviceSources['3gp'] = src + '/a.3gp';
 			}
 		}
-
 		// Create iPad flavor for Akamai HTTP
 		if( ipadAdaptiveFlavors.length != 0) {
 			deviceSources['iPadNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/http/a.m3u8';
