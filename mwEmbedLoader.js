@@ -77,31 +77,31 @@ if( !window.preMwEmbedReady ){
 	window.preMwEmbedReady = [];
 }
 // Setup a preMwEmbedConfig var
-if( ! preMwEmbedConfig ) {
-	var preMwEmbedConfig = {};
+if( ! window.preMwEmbedConfig ) {
+	window.preMwEmbedConfig = {};
 }
 if( ! mw.setConfig ){
 	mw.setConfig = function( set, value ){
 		var valueQueue = {};
 		if( typeof value != 'undefined'  ) {
-			preMwEmbedConfig[ set	] = value;
+			window.preMwEmbedConfig[ set ] = value;
 		} else if ( typeof set == 'object' ){
 			for( var i in set ){
-				preMwEmbedConfig[ i ] = set[i];
+				window.preMwEmbedConfig[ i ] = set[i];
 			}
 		}
 	};
 }
 
 if( ! mw.getConfig ){
-	mw.getConfig = function ( name, defaultValue ){
-		if( typeof preMwEmbedConfig[ name ] == 'undefined' ){
+	mw.getConfig = function ( key, defaultValue ){
+		if( typeof window.preMwEmbedConfig[ key ] == 'undefined' ){
 			if( typeof defaultValue != 'undefined' ){
 				return defaultValue;
 			}
 			return null;
 		} else {
-			return preMwEmbedConfig[ name ];
+			return window.preMwEmbedConfig[ key ];
 		}
 	};
 }
@@ -140,6 +140,7 @@ function kDoIframeRewriteList( rewriteObjects ){
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( !options )
 		options = {};
+
 	// Empty the replace target:
 	var elm = document.getElementById( replaceTargetId );
 	if( ! elm ){
@@ -147,7 +148,6 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 		return false;
 	}
 	replaceTargetId.innerHTML = '';
-	
 	// Don't rewrite special key kaltura_player_iframe_no_rewrite
 	if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
 		return ;
@@ -730,15 +730,8 @@ function kAppendScriptUrl( url, callback ) {
 	if( callback ){
 		// IE sucks .. issues onload callback before ready 
 		// xxx could conditional the callback delay on user 
-		if( kIsIE() ){
-			script.onload = new function(){
-				setTimeout(function(){
-					callback();
-				}, 100 );
-			};
-		} else {
+		
 			script.onload = callback;
-		}
 	}
 	document.getElementsByTagName('head')[0].appendChild( script );	
 }

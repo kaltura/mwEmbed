@@ -33,7 +33,7 @@ if( typeof window.preMwEmbedReady == 'undefined'){
 }
 // Globals to pre-set config values in dynamic loading of mwEmbed
 if( typeof window.preMwEmbedConfig == 'undefined') {
-	window.preMwEmbedConfig = [];
+	window.preMwEmbedConfig = {};
 }
 
 /**
@@ -90,7 +90,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	};
 	
 	// Apply any pre-setup config:
-	mw.setConfig( preMwEmbedConfig );
+	mw.setConfig( window.preMwEmbedConfig );
 	
 	/**
 	 * Merge in a configuration value:
@@ -1454,12 +1454,11 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		}
 		if(window.console){
 			if (arguments.length == 1) {
-				console.log( arguments[0] );
+				console.log( /*'ss:' + mw.getCallStack().length + ' ' +  */ arguments[0] );
 			} else {
 				console.log( Array.prototype.slice.call(arguments) );
 			}
 		}
-
 		// To debug stack size ( useful for iPad / safari that have a 100 call
 		// stack limit
 		// string = mw.getCallStack().length -1 + ' : ' + string;

@@ -234,6 +234,8 @@ class kalturaIframe {
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
+		// output the duration 
+		
 		// output the poster if set: 
 		if( $posterUrl ){
 			$o.='poster="' . htmlspecialchars( $posterUrl ) . '" ';
@@ -596,86 +598,103 @@ class kalturaIframe {
 			}
 		</script>
 		<script type="text/javascript">
-			<?php 
-				global $wgAllowCustomResourceIncludes;
-				if( $wgAllowCustomResourceIncludes && $this->getCustomPlayerIncludesJSON() ){
-					echo 'mw.setConfig( \'Mw.CustomResourceIncludes\', '. $this->getCustomPlayerIncludesJSON() .' );';
+			// IE has crazy out of order crap , so we have a pooling funciton to make sure mw is ready before we procceed. 
+			var waitForMwCount = 0;
+			var waitforMw = function( callback ){
+				if( window.mw ){
+					callback();
+					return ;
 				}
-			?>	
-			var hashString = document.location.hash;
-			// Parse any configuration options passed in via hash url:
-			if( hashString ){
-				var hashObj = JSON.parse(
-					decodeURIComponent( hashString.replace( /^#/, '' ) )
-				);
-				if( hashObj.mwConfig ){
-					mw.setConfig( hashObj.mwConfig );
+				setTimeout(function(){ 
+					if( waitForMwCount++ > 1000 ){
+						waitforMw( callback );
+					} else {
+						console.log("Error in loading mwEmbedLodaer");
+					}
+				}, 10 );
+			};
+			waitforMw( function(){
+				<?php 
+					global $wgAllowCustomResourceIncludes;
+					if( $wgAllowCustomResourceIncludes && $this->getCustomPlayerIncludesJSON() ){
+						echo 'mw.setConfig( \'Mw.CustomResourceIncludes\', '. $this->getCustomPlayerIncludesJSON() .' );';
+					}
+				?>	
+				var hashString = document.location.hash;
+				// Parse any configuration options passed in via hash url:
+				if( hashString ){
+					var hashObj = JSON.parse(
+						decodeURIComponent( hashString.replace( /^#/, '' ) )
+					);
+					if( hashObj.mwConfig ){
+						mw.setConfig( hashObj.mwConfig );
+					}
+				} else 	if( window['parent'] && window['parent']['preMwEmbedConfig'] ){ 
+					// Grab config from parent frame:
+					mw.setConfig( window['parent']['preMwEmbedConfig'] );
+					// Set the "iframeServer" to the current domain: 
+					mw.setConfig( 'EmbedPlayer.IframeParentUrl', document.URL ); 
 				}
-			} else 	if( window['parent'] && window['parent']['preMwEmbedConfig'] ){ 
-				// Grab config from parent frame:
-				mw.setConfig( window['parent']['preMwEmbedConfig'] );
-				// Set the "iframeServer" to the current domain: 
-				mw.setConfig( 'EmbedPlayer.IframeParentUrl', document.URL ); 
-			}
-
-			// Get the flashvars object:
-			var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';
-			var fvparts = flashVarsString.split('&');
-			var flashvarsObject = {};
-			for(var i=0;i<fvparts.length;i++){
-				var kv = fvparts[i].split('=');
-				if( kv[0] && kv[1] ){
-					flashvarsObject[ unescape( kv[0] ) ] = unescape( kv[1] );
+	
+				// Get the flashvars object:
+				var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';
+				var fvparts = flashVarsString.split('&');
+				var flashvarsObject = {};
+				for(var i=0;i<fvparts.length;i++){
+					var kv = fvparts[i].split('=');
+					if( kv[0] && kv[1] ){
+						flashvarsObject[ unescape( kv[0] ) ] = unescape( kv[1] );
+					}
 				}
-			}
-			mw.setConfig( 'KalturaSupport.IFramePresetFlashvars', flashvarsObject );
-
-			// We should first read the config for the hashObj and after that overwrite with our own settings
-			// The entire block below must be after mw.setConfig( hashObj.mwConfig );
-
-			// Don't do an iframe rewrite inside an iframe
-			mw.setConfig('Kaltura.IframeRewrite', false );
-
-			// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
-			mw.setConfig('Mw.LogPrepend', 'iframe:');
-
-			// Don't rewrite the video tag from the loader ( if html5 is supported it will be
-			// invoked bellow and respect the persistant video tag option for iPad overlays )
-			mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );
-
-			// Don't wait for player metada for size layout and duration Won't be needed since
-			// we add durationHint and size attributes to the video tag
-			mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
-
-			// Add Packaging Kaltura Player Data ( JSON Encoded )
-			mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
-
-			mw.setConfig('EmbedPlayer.IframeParentPlayerId', '<?php echo $this->getIframeId()?>' );			
-			
-			// Set uiConf global vars for this player ( overides iframe based hash url config )
-			<?php 
-			echo $this->getCustomPlayerConfig();
-			?>
-			
-			// Remove the fullscreen option if we are in an iframe: 
-			if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
-				mw.setConfig('EmbedPlayer.EnableFullscreen', false );
-			} else {
-				// If we don't get a 'EmbedPlayer.IframeParentUrl' update fullscreen to pop-up new 
-				// window. ( we won't have the iframe api to resize the iframe ) 
-				if( mw.getConfig('EmbedPlayer.IframeParentUrl') === null ){
-					mw.setConfig( "EmbedPlayer.NewWindowFullscreen", true ); 
+				mw.setConfig( 'KalturaSupport.IFramePresetFlashvars', flashvarsObject );
+	
+				// We should first read the config for the hashObj and after that overwrite with our own settings
+				// The entire block below must be after mw.setConfig( hashObj.mwConfig );
+	
+				// Don't do an iframe rewrite inside an iframe
+				mw.setConfig('Kaltura.IframeRewrite', false );
+	
+				// Set a prepend flag so its easy to see whats happening on client vs server side of the iframe:
+				mw.setConfig('Mw.LogPrepend', 'iframe:');
+	
+				// Don't rewrite the video tag from the loader ( if html5 is supported it will be
+				// invoked bellow and respect the persistant video tag option for iPad overlays )
+				mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );
+	
+				// Don't wait for player metada for size layout and duration Won't be needed since
+				// we add durationHint and size attributes to the video tag
+				mw.setConfig( 'EmbedPlayer.WaitForMeta', false );
+	
+				// Add Packaging Kaltura Player Data ( JSON Encoded )
+				mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
+				
+				mw.setConfig('EmbedPlayer.IframeParentPlayerId', '<?php echo $this->getIframeId()?>' );			
+				
+				// Set uiConf global vars for this player ( overides iframe based hash url config )
+				<?php 
+				echo $this->getCustomPlayerConfig();
+				?>
+				
+				// Remove the fullscreen option if we are in an iframe: 
+				if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
+					mw.setConfig('EmbedPlayer.EnableFullscreen', false );
+				} else {
+					// If we don't get a 'EmbedPlayer.IframeParentUrl' update fullscreen to pop-up new 
+					// window. ( we won't have the iframe api to resize the iframe ) 
+					if( mw.getConfig('EmbedPlayer.IframeParentUrl') === null ){
+						mw.setConfig( "EmbedPlayer.NewWindowFullscreen", true ); 
+					}
 				}
-			}
-			// For testing limited capacity browsers
-			//var kIsHTML5FallForward = function(){ return false };
-			//var kSupportsFlash = function(){ return false	 };
-
-			<?php
-				if( ! $this->getResultObject()->isJavascriptRewriteObject() ) {
-					echo $this->javascriptPlayerLogic();
-				}
-			?>
+				// For testing limited capacity browsers
+				//var kIsHTML5FallForward = function(){ return false };
+				//var kSupportsFlash = function(){ return false	 };
+	
+				<?php
+					if( ! $this->getResultObject()->isJavascriptRewriteObject() ) {
+						echo $this->javascriptPlayerLogic();
+					}
+				?>
+			});
 		</script>
 	</body>
 </html>
@@ -691,11 +710,14 @@ class kalturaIframe {
 					if( targetVideoParent )
 						targetVideoParent.removeChild( obj );
 				}
-					
+				
 				// Load the mwEmbed resource library and add resize binding
 				mw.ready(function(){
 				
-					var embedPlayer = $j( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' ).get(0);
+					// try again to remove the flash player if not already removed: 
+					$('#kaltura_player_iframe_no_rewrite').remove();
+					
+					var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' ).get(0);
 					// Try to seek to the IframeSeekOffset time:
 					if( mw.getConfig( 'EmbedPlayer.IframeCurrentTime' ) ){
 						embedPlayer.currentTime = mw.getConfig( 'EmbedPlayer.IframeCurrentTime' );					
@@ -705,11 +727,11 @@ class kalturaIframe {
 						embedPlayer.play();
 					}
 					// Bind window resize to reize the player:
-					$j( window ).resize( function(){
-						$j( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )
+					$( window ).resize( function(){
+						$( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )
 							.get(0).resizePlayer({
-								'width' : $j(window).width(),
-								'height' : $j(window).height()
+								'width' : $(window).width(),
+								'height' : $(window).height()
 							});
 					});				    
 				});
