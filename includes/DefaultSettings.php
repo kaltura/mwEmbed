@@ -97,7 +97,7 @@ $wgKalturaUseAppleAdaptive = true;
 $wgKalturaStatsServiceUrl = isset($wgKalturaStatsServiceUrl) ? $wgKalturaStatsServiceUrl : $wgKalturaServiceUrl;
 
 // Add Kaltura api services: ( should be part of kaltura module config)
-include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/mweApiUiConfJs.php' );
+include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );
 
 
 /*********************************************************

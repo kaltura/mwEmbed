@@ -33,7 +33,7 @@ class mweApiUiConfJs {
 			$attr = $userAgentPlayerRules[0]->attributes();
 			$rulesObject = array(
 				'rules' => array(),
-				'Action' => array()
+				'actions' => array()
 			);
 			foreach( $userAgentPlayerRules[0]->attributes() as $key => $val ){
 				//print "key:$key val:$val\n";
@@ -85,7 +85,7 @@ class mweApiUiConfJs {
 	function getResultObject(){
 		global $wgMwEmbedVersion;
 		if( ! $this->resultObject ){
-			require_once( dirname( __FILE__ ) .  '/KalturaResultObject.php' );
+			require_once( dirname( __FILE__ ) .  '/../KalturaResultObject.php' );
 			try{
 				// Init a new result object with the client tag: 
 				$this->resultObject = new KalturaResultObject( 'html5iframe:' . $wgMwEmbedVersion );;

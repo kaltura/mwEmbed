@@ -1454,7 +1454,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		}
 		if(window.console){
 			if (arguments.length == 1) {
-				console.log( /*'ss:' + mw.getCallStack().length + ' ' +  */ arguments[0] );
+				console.log( /*'ss:' + mw.getCallStack().length + ' ' + */ arguments[0] );
 			} else {
 				console.log( Array.prototype.slice.call(arguments) );
 			}

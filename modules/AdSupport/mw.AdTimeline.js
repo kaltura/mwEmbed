@@ -144,14 +144,16 @@ mw.AdTimeline.prototype = {
 				// Show bumpers:
 				_this.displaySlots( 'bumper', function(){
 					_this.embedPlayer.switchPlaySrc( _this.originalSrc, function(){
-						_this.restorePlayer();
-						// Continue playback
-						_this.embedPlayer.play();
-
-						// Sometimes the player gets a pause event out of order be sure to "play" 
-						setTimeout(function(){
+						setTimeout(function(){ // avoid function stack
+							_this.restorePlayer();
+							// Continue playback
 							_this.embedPlayer.play();
-						}, 300 );
+
+							// Sometimes the player gets a pause event out of order be sure to "play" 
+							setTimeout(function(){
+								_this.embedPlayer.play();
+							}, 300 );
+						},1);
 					});
 					
 				});

@@ -18,7 +18,7 @@ window.checkUserAgentPlayerRules = function( ruleSet ){
 		// No defined action for this rule, lead with flash
 		return 'flash';
 	};
-	for( var i=0; i < ruleSet.rules.length; i++){
+	for( var i in ruleSet.rules ){
 		var rule = ruleSet.rules[i];
 		if( rule.match ){
 			if( ua.indexOf( rule.match ) !== -1 )

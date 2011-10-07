@@ -42,6 +42,11 @@ foreach( $exportedJsConfig as $key => $val ){
 
 header("Content-type: text/javascript");
 if( isset( $_GET['debug'] ) ){
+	
+	header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+	header("Pragma: no-cache");
+	header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+	
 	echo $loaderJs;
 } else {
 	// Get the JSmin class:

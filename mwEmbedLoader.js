@@ -125,6 +125,7 @@ function kDoIframeRewriteList( rewriteObjects ){
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( !options )
 		options = {};
+	
 	// Empty the replace target:
 	var elm = document.getElementById( replaceTargetId );
 	if( ! elm ){
@@ -136,12 +137,33 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
 		return ;
 	}
-	
 	// Check if the iframe API is enabled in which case we have to load client code and use that 
 	// to rewrite the frame
 	if( mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) && ( kSupportsFlash() || kSupportsHTML5() ) ){
+		var uiconf_id = kEmbedSettings.uiconf_id;
+		// check if we even need to rewrite the page at all
+		// Evaluate per user agent rules: 
+		if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
+			var playerMode = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
+			
+			// Default play mode, if here and really using flash remap: 
+			switch( playerMode ){
+				case 'flash':
+					if( !kIsHTML5FallForward() ){
+						restoreKalturaKDPCallback();
+						return ;
+					}
+				break;
+			}
+			// clear out any kUserAgentPlayerRules
+			// XXX Ugly hack to recall AddScript ( loader is in desperate need of a refactor ) 
+			window.kUserAgentPlayerRules = false;
+			window.kAddedScript = false;
+			
+		}
+		
 		// Check if we are dealing with an html5 player or flash player
-		if( kIsHTML5FallForward( kEmbedSettings.uiconf_id ) ){
+		if( kIsHTML5FallForward() ){
 			kAddScript( function(){
 				// Options include 'width' and 'height'
 				$j('#' + replaceTargetId ).css({
@@ -338,14 +360,15 @@ function kOverideJsFlashEmbed(){
 					kDirectDownloadFallback( targetId, kEmbedSettings, {'width':attributes.width, 'height':attributes.height}   );
 					return ;
 				}
-				if( kEmbedSettings.uiconf_id && kIsHTML5FallForward( kEmbedSettings.uiconf_id )  ){
+				if( kEmbedSettings.uiconf_id && kIsHTML5FallForward()  ){
 					document.getElementById( targetId ).innerHTML = '<div id="' + attributes.id + '"></div>';
 					
 					doEmbedSettingsWrite( kEmbedSettings, attributes.id, attributes.width, attributes.height);
 				} else {
 					// if its a kaltura player embed restore kdp callback:
-					if( kEmbedSettings.uiconf_id )
+					if( kEmbedSettings.uiconf_id ){
 						restoreKalturaKDPCallback();
+					}
 					// Use the original flash player embed:  
 					originalFlashembed( targetId, attributes, flashvars );
 				}
@@ -367,7 +390,7 @@ function kOverideJsFlashEmbed(){
 					return ;
 				}
 
-				if( kIsHTML5FallForward( kEmbedSettings.uiconf_id ) && kEmbedSettings.uiconf_id ){
+				if( kIsHTML5FallForward() && kEmbedSettings.uiconf_id ){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else {
 					// if its a kaltura player embed restore kdp callback:
@@ -398,7 +421,7 @@ function kOverideJsFlashEmbed(){
 				}
 
 				// Check if kIsHTML5FallForward
-				if( kIsHTML5FallForward( kEmbedSettings.uiconf_id ) && kEmbedSettings.uiconf_id ){ 
+				if( kIsHTML5FallForward( ) && kEmbedSettings.uiconf_id ){ 
 					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
 				} else {
 					// if its a kaltura player embed restore kdp callback:
@@ -440,7 +463,9 @@ function kGetFlashVersion(){
 	} catch(e) {}
 	return '0,0,0';
 }
-
+function checkForPlayerRulesRewrite(){
+	
+}
 // Check DOM for Kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
 function kCheckAddScript(){
@@ -462,11 +487,17 @@ function kCheckAddScript(){
 		}
 		return ;
 	}
-	
 	// Set url based config ( as long as it not disabled ) 
 	if( ! mw.getConfig( 'disableForceMobileHTML5') && document.URL.indexOf('forceMobileHTML5') !== -1 ){
 		mw.setConfig( 'forceMobileHTML5', true );
 	}
+	
+	// Check if we have player rules and then issue kAddScript call 
+	if( window.kUserAgentPlayerRules  ){
+		kAddScript();
+		return ;
+	}
+	
 	/**
 	 * If Kaltura.AllowIframeRemoteService is not enabled force in page rewrite: 
 	 */
@@ -517,18 +548,7 @@ function kIsIOS(){
 	(navigator.userAgent.indexOf('iPad') != -1) );
 }
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not available 
-function kIsHTML5FallForward( uiconf_id ){
-	// TODO Check if we need to do per ui-conf checks and return true for any html5 check that
-	// lacks a particular uiconf_id, We will follow up with per player checks and evaluations
-	if( !uiconf_id && window.kUserAgentPlayerRules ){
-		return true;
-	}
-	// Evaluate per user agent rules: 
-	if( uiconf_id && kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
-		var playerMode = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
-		debugger;
-	}
-	
+function kIsHTML5FallForward( ){
 	// Check for a mobile html5 user agent:
 	if ( kIsIOS() || ( mw.getConfig( 'forceMobileHTML5' ) && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )  )  ){
 		return true;
@@ -608,7 +628,7 @@ function kAddScript( callback ){
 	}
 	// Check if we are using an iframe ( load only the iframe api client ) 
 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) && ! kPageHasAudioOrVideoTags() ) {
-		if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') && ( kSupportsFlash() || kSupportsHTML5() ) ){
+		if( !window.kUserAgentPlayerRules && mw.getConfig( 'EmbedPlayer.EnableIframeApi') && ( kSupportsFlash() || kSupportsHTML5() ) ){
 			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', '$j.postMessage', 'mw.EmbedPlayerNative', 'mw.IFramePlayerApiClient', 'mw.KDPMapping', 'JSON' );		
 			// Load a minimal set of modules for iframe api
 			kLoadJsRequestSet( jsRequestSet, callback );

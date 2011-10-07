@@ -601,7 +601,7 @@ class kalturaIframe {
 			}
 		</script>
 		<script type="text/javascript">
-			// IE has crazy out of order crap , so we have a pooling funciton to make sure mw is ready before we procceed. 
+			// IE has crazy out of order stuff going on ... so we have a pooling funciton to make sure mw is ready before we procceed. 
 			var waitForMwCount = 0;
 			var waitforMw = function( callback ){
 				if( window.mw ){

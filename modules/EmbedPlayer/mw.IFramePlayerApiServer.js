@@ -153,6 +153,7 @@ mw.IFramePlayerApiServer.prototype = {
 		for( var i in dataAttributes){
 			attrSet[ i ] = $( this.embedPlayer ).data( i );
 		}
+		
 		return attrSet;
 	},
 	/**
