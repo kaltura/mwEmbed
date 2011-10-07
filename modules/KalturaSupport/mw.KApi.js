@@ -294,18 +294,24 @@ mw.KApi.prototype = {
 			} else {
 				var dataIndex = -1;
 				if(  data[0]['confFile'] ){
-					namedData['uiConf'] = data[ dataIndex++ ]['confFile'];
+					dataIndex++;
+					namedData['uiConf'] = data[ dataIndex ]['confFile'];
 				}
 			}
 
 			if( kProperties.entry_id ){ 
-				namedData['accessControl'] = data[ dataIndex++ ];
-				namedData['flavors'] = data[ dataIndex++ ];
-				namedData['meta'] = data[ dataIndex++ ];
-				namedData['entryMeta'] = _this.convertCustomDataXML( data[ dataIndex++ ] );
+				dataIndex++;
+				namedData['accessControl'] = data[ dataIndex ];
+				dataIndex++;
+				namedData['flavors'] = data[ dataIndex ];
+				dataIndex++;
+				namedData['meta'] = data[ dataIndex ];
+				dataIndex++;
+				namedData['entryMeta'] = _this.convertCustomDataXML( data[ dataIndex ] );
 
+				dataIndex++;
 				if( data[ dataIndex ] && data[ dataIndex].totalCount > 0 ) {
-					namedData['entryCuePoints'] = data[5].objects;
+					namedData['entryCuePoints'] = data[ dataIndex ].objects;
 				}
 			}
 			_this.playerLoaderCache[ _this.getCacheKey( kProperties ) ] = namedData;

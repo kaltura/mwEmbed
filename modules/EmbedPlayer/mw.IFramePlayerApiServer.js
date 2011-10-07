@@ -172,7 +172,7 @@ mw.IFramePlayerApiServer.prototype = {
 			mw.log("Error: could not JSON object: " + msgObject + ' ' + e);
 			return ;
 		}	
-		mw.log( "postMessage:"  + window.parent + ' to ' + messageString);
+		//mw.log( "postMessage:"  + window.parent + ' to ' + messageString);
 		// By default postMessage sends the message to the parent frame:		
 		$.postMessage(
 			messageString,
