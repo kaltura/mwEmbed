@@ -35,5 +35,5 @@ window.checkUserAgentPlayerRules = function( ruleSet ){
 		}
 	}
 	// No rules applied, lead with flash
-	return 'falsh';
+	return 'flash';
 };
