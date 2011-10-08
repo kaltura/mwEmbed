@@ -708,8 +708,8 @@ class kalturaIframe {
 	private function javaScriptPlayerLogic(){
 		?>
 		var isHTML5 = kIsHTML5FallForward();
-		if( kUserAgentPlayerRules ) {
-			var playerMode = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ '<?php echo $this->getResultObject()->getUiConfId() ?>' ] );
+		if( window.kUserAgentPlayerRules ) {
+			var playerMode = window.checkUserAgentPlayerRules( window.kUserAgentPlayerRules[ '<?php echo $this->getResultObject()->getUiConfId() ?>' ] );
 			if( playerMode == 'leadWithHTML5' ){
 				isHTML5 = true;
 			}
