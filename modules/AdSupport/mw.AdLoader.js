@@ -11,8 +11,13 @@ mw.AdLoader = {
 	 */
 	load: function( adUrl, callback ){
 		var _this = this;
+		// See if we should even try to request via xhr:
+		if ( !('withCredentials' in new XMLHttpRequest()) && !(typeof XDomainRequest !== "undefined")){
+			_this.loadFromProxy( adUrl, callback );
+			return ;
+		}
 		// First try to directly load the ad url:
-		try{
+		try {
 			$.ajax({
 				url: adUrl,
 				success: function( data ) {
