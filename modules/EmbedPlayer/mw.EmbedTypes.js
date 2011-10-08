@@ -135,6 +135,11 @@ mw.EmbedTypes = {
 						this.mediaPlayers.addPlayer( webmNativePlayer );
 					}
 
+					// Test for MP3:
+					if ( this.supportedMimeType('audio/mpeg') ) {
+							this.mediaPlayers.addPlayer( mp3NativePlayer );
+					}
+                                  
 					// Test for h264:
 					if ( dummyvid.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
 						this.mediaPlayers.addPlayer( h264NativePlayer );
