@@ -108,3 +108,8 @@ class mweApiUiConfJs {
 		header( "Expires: " . gmdate( "D, d M Y H:i:s", $time + $wgKalturaUiConfCacheTime ) . " GM" );
 	}
 }
+// lcfirst does not exist in old php
+if ( false === function_exists('lcfirst') ):
+    function lcfirst( $str )
+    { return (string)(strtolower(substr($str,0,1)).substr($str,1));}
+endif; 
