@@ -1751,9 +1751,7 @@ mw.PlayerControlBuilder.prototype = {
 					// Add play hook:
 					.click( function() {
 						$(this).remove();
-						setTimeout(function(){ // isssue play in setTimeout to avoid funciton stack
-							ctrlObj.embedPlayer.play();		
-						},1);
+						ctrlObj.embedPlayer.play();		
 						return false; // Event Stop Propagation
 					} );
 			}
