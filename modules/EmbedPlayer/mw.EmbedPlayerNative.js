@@ -599,10 +599,8 @@ mw.EmbedPlayerNative = {
 		this.getPlayerElement();
 		_this.parent_play(); // update interface
 		if ( this.playerElement && this.playerElement.play ) {
-			// issue a play request if the media is paused:
-			if( this.playerElement.paused ){
-				this.playerElement.play();
-			}
+			// issue a play request 
+			this.playerElement.play();
 			// re-start the monitor:
 			this.monitor();
 		}
