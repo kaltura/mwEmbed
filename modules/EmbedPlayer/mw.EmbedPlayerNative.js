@@ -597,9 +597,7 @@ mw.EmbedPlayerNative = {
 	play: function( ) {
 		var _this = this;
 		this.getPlayerElement();
-		setTimeout(function(){ // avoid js stack build up
-			_this.parent_play(); // update interface
-		},1);
+		_this.parent_play(); // update interface
 		if ( this.playerElement && this.playerElement.play ) {
 			// issue a play request if the media is paused:
 			if( this.playerElement.paused ){
