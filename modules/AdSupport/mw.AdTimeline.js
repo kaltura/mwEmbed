@@ -118,16 +118,17 @@ mw.AdTimeline.prototype = {
 
 	bindPlayer: function() {
 		var _this = this;
+		var embedPlayer = this.embedPlayer;
 		// Setup the original source
-		_this.originalSrc = _this.embedPlayer.getSrc();
+		_this.originalSrc = embedPlayer.getSrc();
 		// Clear out any old bindings
 		_this.destroy();
 		// On change media clear out any old adTimeline bindings
-		$( _this.embedPlayer).bind( 'onChangeMedia' + _this.bindPostfix, function(){
+		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
 		});
 		
-		$(_this.embedPlayer).bind( 'onplay' + _this.bindPostfix, function() {
+		$( embedPlayer ).bind( 'onplay' + _this.bindPostfix, function() {
 			// Check if this is the "first play" request:
 			if ( !_this.firstPlay ) {
 				return ;
@@ -143,15 +144,15 @@ mw.AdTimeline.prototype = {
 			_this.displaySlots( 'preroll', function(){
 				// Show bumpers:
 				_this.displaySlots( 'bumper', function(){
-					_this.embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+					embedPlayer.switchPlaySrc( _this.originalSrc, function(){
 						setTimeout(function(){ // avoid function stack
 							_this.restorePlayer();
 							// Continue playback
-							_this.embedPlayer.play();
+							embedPlayer.play();
 
 							// Sometimes the player gets a pause event out of order be sure to "play" 
 							setTimeout(function(){
-								_this.embedPlayer.play();
+								embedPlayer.play();
 							}, 300 );
 						},1);
 					});
@@ -163,22 +164,22 @@ mw.AdTimeline.prototype = {
 			var displayedPostroll = false;
 			// TODO We really need a "preend" event for thing like this. 
 			// So that playlist next clip or other end bindings don't get triggered. 
-			$( _this.embedPlayer ).bind( 'ended' + _this.bindPostfix, function( event ){
+			$( embedPlayer ).bind( 'ended' + _this.bindPostfix, function( event ){
 				if( displayedPostroll ){
 					return ;
 				}
 				displayedPostroll = true;
-				_this.embedPlayer.onDoneInterfaceFlag = false;
+				embedPlayer.onDoneInterfaceFlag = false;
 				_this.displaySlots( 'postroll', function(){
 					/** TODO support postroll bumper and leave behind */
-					_this.embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+					embedPlayer.switchPlaySrc( _this.originalSrc, function(){
 						_this.restorePlayer();
 						// stop the playback: 
-						_this.embedPlayer.pause();
+						embedPlayer.pause();
 						// Restore ondone interface: 
-						_this.embedPlayer.onDoneInterfaceFlag = true;
+						embedPlayer.onDoneInterfaceFlag = true;
 						// run the clipdone event:
-						_this.embedPlayer.onClipDone();
+						embedPlayer.onClipDone();
 					});
 				});
 			});
