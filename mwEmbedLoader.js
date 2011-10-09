@@ -284,11 +284,16 @@ function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 	if( !options.height )
 		options.height = 300;
 	if( !options.width )
-		options.width = 400;	
+		options.width = 400;
 
 	// TODO: Add playEventUrl for stats
 	var downloadUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'modules/KalturaSupport/download.php' ) +
-			'/wid/' + kEmbedSettings.wid + '/entry_id/'+ kEmbedSettings.entry_id;
+			'/wid/' + kEmbedSettings.wid;
+
+	if( kEmbedSettings.entry_id ) {
+		downloadUrl += '/entry_id/'+ kEmbedSettings.entry_id;
+	}
+
 	var thumbSrc = kGetEntryThumbUrl({
 		'entry_id' : kEmbedSettings.entry_id,
 		'partner_id' : kEmbedSettings.p,

@@ -183,10 +183,8 @@ class KalturaResultObject {
 
 		// If our playlist is Mrss, handle the playlist in the client side
 		$playlistUrl = $this->getPlayerConfig('playlistAPI', 'kpl0Url');
-		if( $playlistUrl ) {
-			if( strpos($playlistUrl, "playlist_id") === false ) {
-				return true;
-			}
+		if( $playlistUrl && strpos($playlistUrl, "partnerservices") === false ) {
+			return true;
 		}
 
 		// If this is a pptWidget, handle in client side
@@ -771,7 +769,7 @@ class KalturaResultObject {
 			throw new Exception( "Missing uiConf ID" );
 		}
 		// Check if we have a cached result object:
-		if( !$this->uiConfFile ){
+		if( ! $this->uiConfFile ){
 			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".uiconf.txt";
 
 			// Check modify time on cached php file
