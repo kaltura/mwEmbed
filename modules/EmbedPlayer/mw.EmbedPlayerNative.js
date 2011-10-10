@@ -265,8 +265,8 @@ mw.EmbedPlayerNative = {
 				if( _this._propagateEvents ){
 					var argArray = $.makeArray( arguments );
 					// Check if there is local handler:
-					if( _this[ 'on' + eventName ] ){
-						_this[ 'on' + eventName ].apply( _this, argArray);
+					if( _this[ '_on' + eventName ] ){
+						_this[ '_on' + eventName ].apply( _this, argArray);
 					} else {
 						// No local handler directly propagate the event to the abstract object:
 						$( _this ).trigger( eventName, argArray );
@@ -714,7 +714,7 @@ mw.EmbedPlayerNative = {
 	* Local method for seeking event
 	* fired when "seeking"
 	*/
-	onseeking: function() {
+	_onseeking: function() {
 		mw.log( "EmbedPlayerNative::onSeeking " + this.seeking);
 		// Trigger the html5 seeking event
 		//( if not already set from interface )
@@ -734,7 +734,7 @@ mw.EmbedPlayerNative = {
 	* Local method for seeked event
 	* fired when done seeking
 	*/
-	onseeked: function() {
+	_onseeked: function() {
 		mw.log("EmbedPlayerNative::onSeeked " + this.seeking + ' ct:' + this.playerElement.currentTime );
 		// sync the seek checks so that we don't re-issue the seek request
 		this.previousTime = this.currentTime = this.playerElement.currentTime;
@@ -753,7 +753,7 @@ mw.EmbedPlayerNative = {
 	/**
 	* Handle the native paused event
 	*/
-	onpause: function(){
+	_onpause: function(){
 		mw.log( "EmbedPlayerNative:: OnPaused:: " +  this._propagateEvents );
 		if(  this._propagateEvents && ! this.paused){
 			this.parent_pause();
@@ -763,7 +763,7 @@ mw.EmbedPlayerNative = {
 	/**
 	* Handle the native play event
 	*/
-	onplay: function(){
+	_onplay: function(){
 		mw.log("EmbedPlayerNative:: OnPlay:: propogate" +  this._propagateEvents + ' paused: ' + this.paused);
 		// Update the interface ( if paused )
 		if(  this._propagateEvents && this.paused ){
@@ -778,7 +778,7 @@ mw.EmbedPlayerNative = {
 	* Used to update the media duration to
 	* accurately reflect the src duration
 	*/
-	onloadedmetadata: function() {
+	_onloadedmetadata: function() {
 		this.getPlayerElement();
 		if ( this.playerElement && ! isNaN( this.playerElement.duration ) ) {
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );
@@ -806,7 +806,7 @@ mw.EmbedPlayerNative = {
 	* Note: this way of updating buffer was only supported in Firefox 3.x and
 	* not supported in Firefox 4.x
 	*/
-	onprogress: function( event ) {
+	_onprogress: function( event ) {
 		var e = event.originalEvent;
 		if( e && e.loaded && e.total ) {
 			this.bufferedPercent = e.loaded / e.total;
@@ -817,7 +817,7 @@ mw.EmbedPlayerNative = {
 	/**
 	* Local method for end of media event
 	*/
-	onended: function() {
+	_onended: function() {
 		var _this = this;
 		if( this.getPlayerElement() ){
 			mw.log( 'EmbedPlayer:native: onended:' + this.playerElement.currentTime + ' real dur:' + this.getDuration() + ' ended ' + this._propagateEvents );
