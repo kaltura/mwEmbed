@@ -324,6 +324,9 @@ mw.DoubleClick.prototype = {
 			// Create a new ad Loader:
 			var adsLoader = new google.ima.AdsLoader()
 			
+			// Turn off Competitive Exclusion 
+			adsLoader.setCompetitiveExclusion(false);
+			
 			// Set up listeners:
 			adsLoader.addEventListener(
 			    google.ima.AdsLoadedEvent.Type.ADS_LOADED,
