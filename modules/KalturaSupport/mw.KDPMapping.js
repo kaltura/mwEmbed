@@ -75,7 +75,6 @@
 			});
 
 			$( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {
-
 				$( playerProxy ).bind( 'jsListenerEvent', function(event, globalFuncName, listenerArgs){
 					// check if globalFuncName has descendant properties
 					if( typeof window[ globalFuncName ] == 'function' ){
@@ -391,11 +390,9 @@
 					b( 'pause', function(){
 						callback( 'pause', embedPlayer.id );
 					});
-					
 					b( 'onplay', function(){
 						callback( 'onplay', embedPlayer.id );
 					});
-					
 					break;
 				case 'doStop':
 				case 'stop':

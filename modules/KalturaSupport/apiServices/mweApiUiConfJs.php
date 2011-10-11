@@ -94,7 +94,10 @@ class mweApiUiConfJs {
 		}
 		return $this->resultObject;
 	}
-	
+	// report nothing on failure
+	function fatalError(){
+		return ;
+	}
 	function sendHeaders(){
 		global $wgKalturaUiConfCacheTime;
 		header('Content-type: text/javascript' );
@@ -107,6 +110,7 @@ class mweApiUiConfJs {
 		header( "Expires: " . gmdate( "D, d M Y H:i:s", $time + $wgKalturaUiConfCacheTime ) . " GM" );
 	}
 }
+
 // lcfirst does not exist in old php
 if ( false === function_exists('lcfirst') ):
     function lcfirst( $str )

@@ -321,7 +321,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Do normal in-page fullscreen handling: 
 		if( this.fullscreenMode ){			
 			this.restoreWindowPlayer();
-		}else{			
+		}else {
 			this.doFullScreenPlayer();		
 		}
 	},
@@ -330,7 +330,7 @@ mw.PlayerControlBuilder.prototype = {
 	* Do full-screen mode
 	*/
 	doFullScreenPlayer: function( callback) {		
-		mw.log(" controlBuilder :: toggle full-screen ");
+		mw.log(" controlBuilder :: doFullScreenPlayer" );
 		// Setup pointer to control builder :
 		var _this = this;
 
@@ -604,6 +604,7 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	restoreWindowPlayer: function() {
 		var _this = this;
+		mw.log(" controlBuilder :: restoreWindowPlayer" );
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.$interface.css({'position':'relative'});
 	  
@@ -1278,8 +1279,7 @@ mw.PlayerControlBuilder.prototype = {
 	},
 
 	/**
-	* Generic function to display custom HTML overlay
-	* on video.
+	* Generic function to display custom HTML overlay on video.
 	*
 	* @param {String} overlayContent content to be displayed
 	*/

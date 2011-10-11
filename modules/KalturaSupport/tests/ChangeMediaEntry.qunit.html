@@ -15,15 +15,14 @@ window['jsCallbackReady'] = function( videoId ){
 }
 function jsKalturaPlayerTest( videoId ){
 	var kdp = document.getElementById( videoId );
-	// add the entry ready event: 
-	kdp.addJsListener( 'entryReady', 'entryReadyFunction');
-	
 	// Name this module
 	module( "Entry with no sources" );
-		
+
+	// Add the entry ready event: 
+	kdp.addJsListener( 'mediaReady', 'mediaReadyFunction');
+	
 	asyncTest("Change Media", function(){
-		
-		window.entryReadyFunction = function(){
+		window.mediaReadyFunction = function(){
 			var entry = kdp.evaluate('{mediaProxy.entry}');
 			// check for the inital entry ready:
 			if( entry.id == '1_2qy6yq5j' ){

@@ -42,6 +42,18 @@ function jsKalturaPlayerTest( videoId ){
 <h2> User Agent Player Rules </h2>
 Sets player default by user agent rules. <br></br>
 
+<input id="forcedUserAgent" type="text" size="70"></input> 
+<select id="selectUA">
+	<option value="">Select a user agent</option>
+	<option value="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.2 (KHTML, like Gecko) Ubuntu/11.04 Chromium/15.0.865.0 Chrome/15.0.865.0 Safari/535.2">Chrome 15 Linux</option>
+	<option value="Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_8; en-us) AppleWebKit/531.21.8 (KHTML, like Gecko) Version/4.0.4 Safari/5">Safari 4 OSX</option>
+	<option value="Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10">Ipad 3_2</option>
+	<option value="Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0">IE9 windows 6</option>
+	<option value="Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.20 (KHTML, like Gecko) Mobile/7B298g">iPhone 3_2</option>
+</select>
+</br>
+<br>
+
 The player has the following rules: </br>
 0) Disable the forceMobileHTML5 url flag </br> 
 1) If using chrome 14 or above lead with html5 </br>
@@ -50,6 +62,26 @@ The player has the following rules: </br>
 4) If using firefox above version 4 lead with html5 <br>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> Notice that this url param has no effect since user agent rule <i>"disableForceMobileHTML5"</i> takes precedence.  
 <br />
-<object id="kaltura_player_1317897813" name="kaltura_player_1317897813" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1317897813/wid/_243342/uiconf_id/5940092/entry_id/0_uka1msg4" data="http://www.kaltura.com/index.php/kwidget/cache_st/1317897813/wid/_243342/uiconf_id/5940092/entry_id/0_uka1msg4"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1317897813/wid/_243342/uiconf_id/5940092/entry_id/0_uka1msg4" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_uka1msg4/width/120/height/90/bgcolor/000000/type/2"></a> <span property="dc:description" content="test folgers coffe"></span><span property="media:title" content="FolgersCoffe.mpeg"></span> <span property="media:width" content="400"></span><span property="media:height" content="330"></span> <span property="media:type" content="application/x-shockwave-flash"></span> </object>
+<div id="videoContainer">
+</div>
+<script type="text/javascript">
+	$('#forcedUserAgent').val( navigator.userAgent );
+	$('#selectUA').change( function(){
+		$('#forcedUserAgent').val(  
+			$("#selectUA option:selected").val()
+		);
+		mw.setConfig( 'KalturaSupport_ForceUserAgent', $("#selectUA option:selected").val() );
+		reEmbedPlayer();
+	});
+	function reEmbedPlayer(){
+		$('#videoContainer').empty().append(
+			'<object id="kaltura_player_1317897818" name="kaltura_player_1317897818" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1317897818/wid/_243342/uiconf_id/5940092/entry_id/0_uka1msg4" data="http://www.kaltura.com/index.php/kwidget/cache_st/1317897818/wid/_243342/uiconf_id/5940092/entry_id/0_uka1msg4"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1317897818/wid/_243342/uiconf_id/5940092/entry_id/0_uka1msg4" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_uka1msg4/width/120/height/90/bgcolor/000000/type/2"></a> <span property="dc:description" content="test folgers coffe"></span><span property="media:title" content="FolgersCoffe.mpeg"></span> <span property="media:width" content="400"></span><span property="media:height" content="330"></span> <span property="media:type" content="application/x-shockwave-flash"></span> </object>'
+		);
+		window.kUserAgentPlayerRules = false;
+		window.kAddedScript = false;
+		kCheckAddScript();
+	}
+	reEmbedPlayer();
+</script>
 </body>
 </html>

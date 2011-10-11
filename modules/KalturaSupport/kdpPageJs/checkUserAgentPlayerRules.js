@@ -4,8 +4,12 @@
  * @return {String} What player should the browser lead with:
  * 		 'flash' ( default, lead with flash) | leadWithHTML5 | forceFlash | forceMsg Raw html message string to be displayed ( instead of player ) 
  */
-window.checkUserAgentPlayerRules = function( ruleSet ){
-	var ua = navigator.userAgent;
+window.getUserAgentPlayerRulesMsg = function( ruleSet ){
+	return window.checkUserAgentPlayerRules( ruleSet, true );
+};
+window.checkUserAgentPlayerRules = function( ruleSet, getMsg ){
+	var ua = ( mw.getConfig( 'KalturaSupport_ForceUserAgent' ) )? 
+			mw.getConfig( 'KalturaSupport_ForceUserAgent' ) : navigator.userAgent;
 	// Check for current user agent rules
 	if( !ruleSet.rules ){
 		// No rules, lead with flash
@@ -17,7 +21,11 @@ window.checkUserAgentPlayerRules = function( ruleSet ){
 			if( action.mode == 'leadWithHTML5' || action.mode == 'forceFlash' ){
 				return action.mode;
 			} else {
-				return action.val;
+				if( getMsg ){
+					return action.val;
+				} else {
+					return 'forceMsg';
+				}
 			}
 		}
 		// No defined action for this rule, lead with flash

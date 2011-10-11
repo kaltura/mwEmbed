@@ -6,8 +6,7 @@
  * 
  * TODO make this into a real api entry point. 
  * 
- * TODO adopt an api framework ( maybe mediaWiki? ) not sure. 
- * 			other good options probably exist. 
+ * TODO adopt an api framework 
  */
 // Include configuration: ( will include LocalSettings.php, and all the extension hooks ) 
 require(  dirname( __FILE__ ) . '/includes/DefaultSettings.php' );
@@ -15,12 +14,12 @@ require(  dirname( __FILE__ ) . '/includes/DefaultSettings.php' );
 $mwEmbedApi = new mwEmbedApi();
 $mwEmbedApi->handleRequest();
 
-// Dispach on extension entry points 
+// Dispatch on extension entry points 
 class mwEmbedApi{
 	function handleRequest(){
 		global $wgMwEmbedApiServices;
-		$serviceName = $this->getUrlParam('service');
-		if( isset( $wgMwEmbedApiServices[$serviceName] ) ){
+		$serviceName = $this->getUrlParam( 'service' );
+		if( isset( $wgMwEmbedApiServices[ $serviceName ] ) ){
 			$service = new $wgMwEmbedApiServices[$serviceName ];
 			$service->run();
 		}
