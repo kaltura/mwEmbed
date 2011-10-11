@@ -2,8 +2,6 @@
 /**
  * KalturaIframe support
  */
-
-define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server, something maybe broken or server is under high load. Please try again.");
 	
 // Setup the kalturaIframe
 global $wgKalturaIframe;

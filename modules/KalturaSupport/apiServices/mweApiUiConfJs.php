@@ -87,7 +87,7 @@ class mweApiUiConfJs {
 			require_once( dirname( __FILE__ ) .  '/../KalturaResultObject.php' );
 			try{
 				// Init a new result object with the client tag: 
-				$this->resultObject = new KalturaResultObject( 'html5iframe:' . $wgMwEmbedVersion );;
+				$this->resultObject = new KalturaResultObject( 'html5iframe:' . $wgMwEmbedVersion );
 			} catch ( Exception $e ){
 				$this->fatalError( $e->getMessage() );
 			}
@@ -95,8 +95,10 @@ class mweApiUiConfJs {
 		return $this->resultObject;
 	}
 	// report nothing on failure
-	function fatalError(){
-		return ;
+	function fatalError( $error ){
+		die( json_encode(
+			array('error' => $error)
+		) );
 	}
 	function sendHeaders(){
 		global $wgKalturaUiConfCacheTime;
