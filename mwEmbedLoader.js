@@ -165,7 +165,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 				if( elm && elm.parentNode ){
 					var divTarget = document.createElement("div");
 					divTarget.innerHTML = unescape( msg );
-					elm.parentNode.replaceChild( mySpan, elm );
+					elm.parentNode.replaceChild( divTarget, elm );
 				}
 				break;
 		}
