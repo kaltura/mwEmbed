@@ -452,7 +452,12 @@
 					break;
 				case 'mediaReady':
 					// check for "media ready" ( namespace to kdpMapping )
-					b( 'playerReady' );
+					b( 'playerReady',function( event ){
+						// only issue the media ready callback if entry is actually ready.
+						if( embedPlayer.kentryid ){
+							callback( embedPlayer.id )
+						}
+					});
 					break;
 				case 'cuePointsReceived':
 					b( 'KalturaSupport_CuePointsReady', function( event, cuePoints ) {
