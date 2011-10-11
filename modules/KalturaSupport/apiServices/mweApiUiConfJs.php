@@ -96,9 +96,7 @@ class mweApiUiConfJs {
 	}
 	// report nothing on failure
 	function fatalError( $error ){
-		die( json_encode(
-			array('error' => $error)
-		) );
+		die( '/* Error: ' . $error . ' */' );
 	}
 	function sendHeaders(){
 		global $wgKalturaUiConfCacheTime;
