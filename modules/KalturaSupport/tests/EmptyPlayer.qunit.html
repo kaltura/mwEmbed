@@ -22,7 +22,7 @@ function jsKalturaPlayerTest( videoId ){
 	});
 	// listen for the empty kdp event: 
 	
-	asyncTest("Empty kdp event", function(){
+	asyncTest("Empty KDP", function(){
 		window.kdpEmptyFunction = function(){
 			ok( true, 'Empty event fired' );
 			ok( typeof kdp.sendNotification != 'undefined', "Player Api present" ); 
@@ -30,16 +30,14 @@ function jsKalturaPlayerTest( videoId ){
 			kdp.addJsListener( 'entryReady', kdpEntryReady );
 			// Change player entry: 
 			kdp.sendNotification( "changeMedia", { 'entryId' : '0_uka1msg4' } ); 
-			start();
+
+			window.kdpEntryReady = function(){
+				ok( true, 'Changed entry event fired');
+				var entry = kdp.evaluate('{mediaProxy.entry}');
+				equal( '0_uka1msg4', entry.id, "Entry ids match");
+				start();
+			}
 		};
-	});
-	asyncTest( "Change Entry", function(){
-		window.kdpEntryReady = function(){
-			ok( true, 'Changed entry event fired');
-			var entry = kdp.evaluate('{mediaProxy.entry}');
-			equal( '0_uka1msg4', entry.id, "Entry ids match");
-			start();
-		}
 	});
 }
 </script>

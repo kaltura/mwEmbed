@@ -2186,10 +2186,11 @@ mw.EmbedPlayer.prototype = {
 		if( this.controlBuilder ){
 			this.controlBuilder.closeMenuOverlay();
 		}
-		// Hide any button if present:
+		// Hide any buttons or errors  if present:
 		if( this.$interface ){
-			this.$interface.find( '.play-btn-large' ).remove();
+			this.$interface.find( '.play-btn-large,.error' ).remove();
 		}
+		
 		
 		
 		// Check if thumbnail is being displayed and embed html
