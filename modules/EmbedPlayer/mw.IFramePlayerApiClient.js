@@ -163,7 +163,7 @@ mw.IFramePlayerApiClient.prototype = {
 		// Update any attributes
 		if( msgObject.attributes ){
 			$.each( playerAttributes, function( attrName , na) {
-				if( !msgObject.attributes[attrName] )
+				if( typeof msgObject.attributes[ attrName ] == 'undefined' )
 					return true;
 				if( attrName != 'id' && attrName != 'class' && attrName != 'style' ){
 					try {
