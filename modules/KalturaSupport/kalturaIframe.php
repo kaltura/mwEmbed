@@ -338,7 +338,6 @@ class kalturaIframe {
 				if( $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'){
 					continue;
 				}
-				
 				$resource = array( 'src'=> htmlspecialchars(  $var['value'] ) );
 				if( $var['key'] == 'HTML5PluginUrl' ){
 					$resource['type'] = 'js';
@@ -857,4 +856,3 @@ class kalturaIframe {
 		exit( 1 );
 	}
 }
-?>
