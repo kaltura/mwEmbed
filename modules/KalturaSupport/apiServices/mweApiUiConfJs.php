@@ -68,10 +68,10 @@ class mweApiUiConfJs {
 	function getJsConfigLine( $configName, $value ){
 		if( $this->preLoaderMode ){
 			if( ! $this->jsConfigCheckDone){
-				$o='if( ! window[\'preMwEmbedConfig\'] ) { preMwEmbedConfig = {}; };';
+				$o='if( ! window[\'preMwEmbedConfig\'] ) { window.preMwEmbedConfig = {}; };';
 				$this->jsConfigCheckDone = true;
 			}
-			return $o . 'preMwEmbedConfig[\'' . htmlspecialchars( $configName ) . '\'] = ' . $value . ';' . "\n";
+			return $o . 'window.preMwEmbedConfig[\'' . htmlspecialchars( $configName ) . '\'] = ' . $value . ';' . "\n";
 		} else {
 			return 'mw.setConfig(\'' . htmlspecialchars( $configName ) . '\', ' . $value . ');' . "\n";
 		}

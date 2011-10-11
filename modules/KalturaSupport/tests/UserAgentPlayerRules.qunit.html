@@ -44,7 +44,7 @@ Sets player default by user agent rules. <br></br>
 
 <input id="forcedUserAgent" type="text" size="70"></input> 
 <select id="selectUA">
-	<option value="">Select a user agent</option>
+	<option id="ybua" value=""> Your browser user agent</option>
 	<option value="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.2 (KHTML, like Gecko) Ubuntu/11.04 Chromium/15.0.865.0 Chrome/15.0.865.0 Safari/535.2">Chrome 15 Linux</option>
 	<option value="Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_8; en-us) AppleWebKit/531.21.8 (KHTML, like Gecko) Version/4.0.4 Safari/5">Safari 4 OSX</option>
 	<option value="Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10">Ipad 3_2</option>
@@ -65,6 +65,7 @@ The player has the following rules: </br>
 <div id="videoContainer">
 </div>
 <script type="text/javascript">
+	$('#ybua').val(  navigator.userAgent );
 	$('#forcedUserAgent').val( navigator.userAgent );
 	$('#selectUA').change( function(){
 		$('#forcedUserAgent').val(  
@@ -81,7 +82,9 @@ The player has the following rules: </br>
 		window.kAddedScript = false;
 		kCheckAddScript();
 	}
-	reEmbedPlayer();
+	$(document).ready( function(){
+		reEmbedPlayer();
+	});
 </script>
 </body>
 </html>

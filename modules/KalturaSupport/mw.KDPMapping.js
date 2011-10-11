@@ -368,8 +368,8 @@
 					// TODO: When we have video tag without an entry
 					b( 'playerReady', function(){
 						// only trigger kdpEmpty when the player is empty
-						// TODO support 'real' player empty state! not generic player error
-						if( embedPlayer['data-playerError'] ){
+						// TODO support 'real' player empty state, ie not via "error handler" 
+						if( embedPlayer['data-playerError'] && ! embedPlayer.kentryid ){
 							callback( embedPlayer.id );
 						}
 					});

@@ -707,8 +707,8 @@ class kalturaIframe {
 		?>
 		var isHTML5 = kIsHTML5FallForward();
 		if( window.kUserAgentPlayerRules ) {
-			var playerMode = window.checkUserAgentPlayerRules( window.kUserAgentPlayerRules[ '<?php echo $this->getResultObject()->getUiConfId() ?>' ] );
-			if( playerMode == 'leadWithHTML5' ){
+			var playerAction = window.checkUserAgentPlayerRules( window.kUserAgentPlayerRules[ '<?php echo $this->getResultObject()->getUiConfId() ?>' ] );
+			if( playerAction.mode == 'leadWithHTML5' ){
 				isHTML5 = true;
 			}
 		}

@@ -57,12 +57,8 @@ var kAlreadyRunDomReadyFlag = false;
 kOverideJsFlashEmbed();
 
 // Setup preMwEmbedReady queue
-if( !window.preMwEmbedReady ){
+if( !window['preMwEmbedReady'] ){
 	window.preMwEmbedReady = [];
-}
-// Setup a preMwEmbedConfig var
-if( ! window.preMwEmbedConfig ) {
-	window.preMwEmbedConfig = {};
 }
 if( ! mw.setConfig ){
 	mw.setConfig = function( set, value ){
@@ -79,6 +75,9 @@ if( ! mw.setConfig ){
 
 if( ! mw.getConfig ){
 	mw.getConfig = function ( key, defaultValue ){
+		if( !window['preMwEmbedConfig'] ) {
+			window.preMwEmbedConfig = {};
+		}
 		if( typeof window.preMwEmbedConfig[ key ] == 'undefined' ){
 			if( typeof defaultValue != 'undefined' ){
 				return defaultValue;
@@ -148,9 +147,9 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// Check if we even need to rewrite the page at all
 	// Evaluate per user agent rules: 
 	if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
-		var playerMode = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
+		var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
 		// Default play mode, if here and really using flash remap: 
-		switch( playerMode ){
+		switch( playerAction.mode ){
 			case 'flash':
 				if( !kIsHTML5FallForward() ){
 					restoreKalturaKDPCallback();
@@ -161,16 +160,16 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 				isHTML5 = true;
 				break;
 			case 'forceMsg':
-				var msg =  window.getUserAgentPlayerRulesMsg( kUserAgentPlayerRules[ uiconf_id ] );
+				var msg = playerAction.val;
 				// write out a message:
 				if( elm && elm.parentNode ){
-					var mySpan = document.createElement("span");
-					mySpan.innerHTML = unescape( msg );
+					var divTarget = document.createElement("div");
+					divTarget.innerHTML = unescape( msg );
 					elm.parentNode.replaceChild( mySpan, elm );
 				}
 				break;
 		}
-		// clear out any kUserAgentPlayerRules
+		// Clear out any kUserAgentPlayerRules
 		// XXX Ugly hack to recall AddScript ( loader is in desperate need of a refactor ) 
 		window.kUserAgentPlayerRules = false;
 		window.kAddedScript = false;
@@ -229,7 +228,7 @@ function kIframeWithoutApi( replaceTargetId, kEmbedSettings , options ){
 	if( mw.getConfig( 'forceMobileHTML5' ) ){
 		iframeSrc += '&forceMobileHTML5=true';
 	}
-	if( mw.getConfig( 'debug') ){
+	if( mw.getConfig( '	') ){
 		iframeSrc += mw.getConfig( 'debug');
 	}
 	

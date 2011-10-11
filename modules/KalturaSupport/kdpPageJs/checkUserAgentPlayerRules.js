@@ -17,16 +17,7 @@ window.checkUserAgentPlayerRules = function( ruleSet, getMsg ){
 	}
 	var getAction = function( inx ){
 		if( ruleSet.actions && ruleSet.actions[ inx ] ){
-			var action =  ruleSet.actions[ inx ];
-			if( action.mode == 'leadWithHTML5' || action.mode == 'forceFlash' ){
-				return action.mode;
-			} else {
-				if( getMsg ){
-					return action.val;
-				} else {
-					return 'forceMsg';
-				}
-			}
+			return ruleSet.actions[ inx ];
 		}
 		// No defined action for this rule, lead with flash
 		return 'flash';
