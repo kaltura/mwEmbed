@@ -769,7 +769,7 @@ class KalturaResultObject {
 			throw new Exception( "Missing uiConf ID" );
 		}
 		// Check if we have a cached result object:
-		if( ! $this->uiConfFile ){
+		if( !$this->uiConfFile ){
 			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".uiconf.txt";
 
 			// Check modify time on cached php file

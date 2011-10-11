@@ -140,7 +140,6 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
 		return ;
 	}
-debugger;
 	// Check if the iframe API is enabled in which case we have to load client code and use that 
 	// to rewrite the frame
 	var uiconf_id = kEmbedSettings.uiconf_id;
