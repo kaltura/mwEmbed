@@ -353,9 +353,11 @@ mw.EmbedPlayerNative = {
 		
 		this.seek_time_sec = 0;
 		this.setCurrentTime( ( percent * this.duration ) , function(){
-			_this.seeking = false;
 			// done seeking ( should be a fallback trigger event ) : 
-			// $( _this ).trigger( 'seeked' );
+			if( _this.seeking ){
+				$( _this ).trigger( 'seeked' );
+				_this.seeking = false;
+			}
 			_this.monitor();
 		});
 	},
@@ -720,7 +722,6 @@ mw.EmbedPlayerNative = {
 		//( if not already set from interface )
 		if( !this.seeking ) {
 			this.seeking = true;
-
 			// Run the onSeeking interface update
 			this.controlBuilder.onSeek();
 
