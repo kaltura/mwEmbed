@@ -28,14 +28,13 @@ class mweApiUiConfJs {
 	function getUserAgentPlayerRules(){
 		$o='';
 		// Do an xml query for the plugin
-		$userAgentPlayerRules = $this->getResultObject()->getUiConfXML()->xpath("*//Plugin[@id='userAgentPlayerRules']");
-		if( $userAgentPlayerRules ) {
-			$attr = $userAgentPlayerRules[0]->attributes();
+		$userAgentPlayerRules = $this->getResultObject()->getPlayerConfig( 'userAgentPlayerRules' );
+		if( count( $userAgentPlayerRules ) ) {
 			$rulesObject = array(
 				'rules' => array(),
 				'actions' => array()
 			);
-			foreach( $userAgentPlayerRules[0]->attributes() as $key => $val ){
+			foreach( $userAgentPlayerRules as $key => $val ){
 				//print "key:$key val:$val\n";
 				// Check for special keys: 
 				if( $key == 'disableForceMobileHTML5' && $val =='true' ){
