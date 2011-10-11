@@ -354,8 +354,8 @@ mw.EmbedPlayerNative = {
 		this.seek_time_sec = 0;
 		this.setCurrentTime( ( percent * this.duration ) , function(){
 			_this.seeking = false;
-			// done seeking: 
-			$( _this ).trigger( 'seeked' );
+			// done seeking ( should be a fallback trigger event ) : 
+			// $( _this ).trigger( 'seeked' );
 			_this.monitor();
 		});
 	},
