@@ -140,6 +140,7 @@ mw.IFramePlayerApiClient.prototype = {
 		// Decode the message 
 		var msgObject = JSON.parse( event.data );
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
+		
 		// check if the message object is for "this" player
 		if( msgObject.playerId !=  _this.playerProxy.id ){
 			// mw.log(' handleReceiveMessage (skiped ) ' + msgObject.playerId + ' != ' + _this.playerProxy.id );

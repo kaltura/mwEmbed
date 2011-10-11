@@ -202,7 +202,9 @@
 				// Echo the evaluated string: 
 				result = objectString;
 			}
-
+			if( result === 0 ){
+				return result;
+			}
 			// Return undefined to string: undefined, null, ''
 			if( result === "undefined" || result === "null" || result == "" )
 				result = undefined;
