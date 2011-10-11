@@ -118,8 +118,10 @@ mw.FreeWheelControler.prototype = {
 			// Else set of preroll or postroll clips setup normal binding: 
 			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType + _this.bindPostfix, function( event, sequenceProxy ){
 				sequenceProxy[ _this.getSequenceIndex( slotType ) ] = function( callback ){
+					debugger;
 					// Run the freewheel slot add, then run the callback once done 
 					_this.displayFreeWheelSlots( slotType, 0, function(){
+						debugger;
 						// Restore the player:
 						_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
 						// Run the callback: 
@@ -182,6 +184,8 @@ mw.FreeWheelControler.prototype = {
 	},
 	displayFreeWheelSlots: function( slotType, inx, doneCallback ){
 		var _this = this;
+		mw.log( "FreeWheelController::displayFreeWheelSlots> " + slotType + ' ' + inx );
+
 		var slotSet = this.slots[ slotType ];
 		// Make sure we have a slot to be displayed:
 		if( !slotSet[ inx ] ){
@@ -215,8 +219,10 @@ mw.FreeWheelControler.prototype = {
 			_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_COMPLETED) ;
 		}
 		// play the next slot in the series if present
-		this.curentSlotIndex++;
-		_this.displayFreeWheelSlots( slotType, this.curentSlotIndex, this.currentSlotDoneCB );
+		if( slotType == 'preroll' || slotType=='postroll' || slotType=='midroll'){
+			_this.curentSlotIndex++;
+			_this.displayFreeWheelSlots( slotType, this.curentSlotIndex, this.currentSlotDoneCB );
+		}
 	},
 	/**
 	 * Called on the completion of freeWheel add loading
