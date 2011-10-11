@@ -420,7 +420,7 @@
 					b( "seeked");
 					break;
 				case 'playerPlayEnd':
-					b( "ended" );
+					b( "onEndedDone" );
 					break;
 				case 'durationChange': 
 					b( "durationchange", function(){
@@ -451,7 +451,7 @@
 					});
 					break;
 				case 'mediaReady':
-					// check for "media ready" ( namespace to kdpMapping )
+					// Check for "media ready" ( namespace to kdpMapping )
 					b( 'playerReady',function( event ){
 						// only issue the media ready callback if entry is actually ready.
 						if( embedPlayer.kentryid ){

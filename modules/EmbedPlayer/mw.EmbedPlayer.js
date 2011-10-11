@@ -1412,6 +1412,9 @@ mw.EmbedPlayer.prototype = {
 
 				// Do the controlBuilder onClip done interface
 				this.controlBuilder.onClipDone();
+
+				// An event for once the all ended events are done.
+				$( this ).trigger( 'onEndedDone' );
 			}
 		}
 	},
@@ -2190,8 +2193,6 @@ mw.EmbedPlayer.prototype = {
 		if( this.$interface ){
 			this.$interface.find( '.play-btn-large,.error' ).remove();
 		}
-		
-		
 		
 		// Check if thumbnail is being displayed and embed html
 		if ( this.posterDisplayed &&  !this.useNativePlayerControls() ) {
