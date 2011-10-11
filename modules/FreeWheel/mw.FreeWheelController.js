@@ -8,7 +8,6 @@ mw.setConfig({
 
 mw.addFreeWheelControler = function( embedPlayer, callback ) {
 	embedPlayer.freeWheelAds = new mw.FreeWheelControler(embedPlayer, callback);	
-	mw.freeWheelGlobalContextInstance = embedPlayer.freeWheelAds;
 };
 
 mw.FreeWheelControler = function( embedPlayer, callback ){
@@ -219,7 +218,7 @@ mw.FreeWheelControler.prototype = {
 		// play the next slot in the series if present
 		if( slotType == 'preroll' || slotType=='postroll' || slotType=='midroll'){
 			_this.curentSlotIndex++;
-			_this.displayFreeWheelSlots( slotType, this.curentSlotIndex, this.currentSlotDoneCB );
+			_this.displayFreeWheelSlots( slotType, _this.curentSlotIndex, _this.currentSlotDoneCB );
 		}
 	},
 	/**
@@ -364,8 +363,10 @@ mw.FreeWheelControler.prototype = {
 			_this.onRequestComplete( event );
 		});
 		this.getContext().addEventListener( tv.freewheel.SDK.EVENT_SLOT_ENDED, function( event ){
-			_this.onSlotEnded( event );
-		})
+			// Use the embedPlayer instance of FreeWheel ads so that the non-prototype methods are not lost in 
+			// freewheels callback 
+			_this.embedPlayer.freeWheelAds.onSlotEnded( event );
+		});
 	},
 	setContextTimeout: function(){
 		mw.log("FreeWheelController::setContextTimeout>" );
