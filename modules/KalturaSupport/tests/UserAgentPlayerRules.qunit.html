@@ -11,7 +11,7 @@ function jsKalturaPlayerTest( videoId ){
 	module( "User Agent" );
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
-	var iframeContext = window.frames['kaltura_player_ifp'];
+	var iframeContext = window.frames[ 'kaltura_player_ifp' ];
 	
 	test( "Iframe in DOM", function() {
 		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
@@ -42,6 +42,18 @@ function jsKalturaPlayerTest( videoId ){
 <h2> User Agent Player Rules </h2>
 Sets player default by user agent rules. <br></br>
 
+The player has the following rules: </br>
+0) Disable the forceMobileHTML5 url flag </br> 
+1) If using chrome 14 or above lead with html5 </br>
+2) If using firefox 3.6 Force flash and do not fallback to html5. </br>
+3) If using an iPhone show an html message  </br>
+4) If using firefox above version 4 lead with html5 <br>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> Notice that this url param has no effect since user agent rule <i>"disableForceMobileHTML5"</i> takes precedence.  
+<br />
+<div id="videoContainer">
+	<object id="kaltura_player_1317897818" name="kaltura_player_1317897818" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1317897818/wid/_243342/uiconf_id/5940092/entry_id/0_uka1msg4" data="http://www.kaltura.com/index.php/kwidget/cache_st/1317897818/wid/_243342/uiconf_id/5940092/entry_id/0_uka1msg4"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1317897818/wid/_243342/uiconf_id/5940092/entry_id/0_uka1msg4" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/0_uka1msg4/width/120/height/90/bgcolor/000000/type/2"></a> <span property="dc:description" content="test folgers coffe"></span><span property="media:title" content="FolgersCoffe.mpeg"></span> <span property="media:width" content="400"></span><span property="media:height" content="330"></span> <span property="media:type" content="application/x-shockwave-flash"></span> </object>
+</div>
+<!-- 
 <input id="forcedUserAgent" type="text" size="70"></input> 
 <select id="selectUA">
 	<option id="ybua" value=""> Your browser user agent</option>
@@ -54,16 +66,6 @@ Sets player default by user agent rules. <br></br>
 </br>
 <br>
 
-The player has the following rules: </br>
-0) Disable the forceMobileHTML5 url flag </br> 
-1) If using chrome 14 or above lead with html5 </br>
-2) If using firefox 3.6 Force flash and do not fallback to html5. </br>
-3) If using an iPhone show an html message  </br>
-4) If using firefox above version 4 lead with html5 <br>
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> Notice that this url param has no effect since user agent rule <i>"disableForceMobileHTML5"</i> takes precedence.  
-<br />
-<div id="videoContainer">
-</div>
 <script type="text/javascript">
 	$('#ybua').val(  navigator.userAgent );
 	$('#forcedUserAgent').val( navigator.userAgent );
@@ -86,5 +88,7 @@ The player has the following rules: </br>
 		reEmbedPlayer();
 	});
 </script>
+
+-->
 </body>
 </html>
