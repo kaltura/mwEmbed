@@ -47,14 +47,14 @@
 			}
 		]
 	} );
-	
+
 	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
 	mw.mergeConfig( 'EmbedPlayer.Attributes', {
 		'kentryid' : null,
 		'kwidgetid' : null,
 		'kuiconfid' : null,
 		'kalturaPlayerMetaData' : null,
-		'kalturaEntryMetaData' : null,
+		'kalturaEntryMetaData' : null
 	});
 	
 	mw.mergeConfig( 'EmbedPlayer.DataAttributes', {

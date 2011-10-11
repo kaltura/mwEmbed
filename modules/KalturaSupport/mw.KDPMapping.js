@@ -417,7 +417,7 @@
 					});
 					break;
 				case 'playerSeekEnd':
-					b( "seeked");
+					b( "seeked" );
 					break;
 				case 'playerPlayEnd':
 					b( "onEndedDone" );

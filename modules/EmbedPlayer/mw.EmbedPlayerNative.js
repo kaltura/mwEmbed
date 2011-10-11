@@ -746,7 +746,6 @@ mw.EmbedPlayerNative = {
 				$( this ).trigger( 'seeked' );
 			}
 		}
-		this.seeking = false;
 		// update the playhead status
 		this.monitor();
 	},
