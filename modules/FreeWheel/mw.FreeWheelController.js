@@ -118,10 +118,8 @@ mw.FreeWheelControler.prototype = {
 			// Else set of preroll or postroll clips setup normal binding: 
 			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType + _this.bindPostfix, function( event, sequenceProxy ){
 				sequenceProxy[ _this.getSequenceIndex( slotType ) ] = function( callback ){
-					debugger;
 					// Run the freewheel slot add, then run the callback once done 
 					_this.displayFreeWheelSlots( slotType, 0, function(){
-						debugger;
 						// Restore the player:
 						_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
 						// Run the callback: 
