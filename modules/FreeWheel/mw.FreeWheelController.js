@@ -375,7 +375,7 @@ mw.FreeWheelControler.prototype = {
 		this.getContext().setParameter(tv.freewheel.SDK.PARAMETER_RENDERER_VIDEO_PROGRESS_DETECT_TIMEOUT,10000,tv.freewheel.SDK.PARAMETER_LEVEL_GLOBAL);
 	},
 	addTemporalSlots: function(){
-		mw.log("FreeWheelController::addTemporalSlots>")
+		mw.log("FreeWheelController::addTemporalSlots>");
 		var context = this.getContext();
 		var embedPlayer = this.embedPlayer;
 		var slotCounts = {
