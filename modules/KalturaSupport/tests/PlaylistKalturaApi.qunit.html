@@ -53,6 +53,21 @@ function jsKalturaPlayerTest( videoId ){
 </script>
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 
+<script type="text/javascript">	
+	function jsCallbackReady( videoId ){
+		var kdp = document.getElementById( videoId );
+		kdp.addJsListner( 'changeMedia', 'testFunc');
+		alert( 'added list');
+	}
+	window.testFunc = function(){
+		alert( 'cm');
+	}
+	test = {
+			'fish' : function(){
+				alert('change media');
+			}
+	}
+</script>
 </head>
 <body>
 <h2> Playlist Kaltura api </h2>

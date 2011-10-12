@@ -144,7 +144,7 @@
 			return captionSet;
 		},
 		getCaptions: function( data ){
-			// detect caption data type: 
+			// Detect caption data type: 
 			switch( this.mimeType ){
 				case 'text/x-srt':
 					return this.getCaptionsFromSrt( data);

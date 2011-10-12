@@ -119,7 +119,6 @@ function kDoIframeRewriteList( rewriteObjects ){
 		}
 	}
 }
-
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( !options )
 		options = {};
@@ -1114,16 +1113,7 @@ window.KWidget = {
 	}
 };
 
-// Re-map the global jsCallbackReady method if already set
-if( window.jsCallbackReady ){
-	var kWidgetOrgCallbackReady = window.jsCallbackReady;
-}
-window.jsCallbackReady = function( widgetId ){
-	window.KWidget.globalJsReadyCallback( widgetId );
-	if( kWidgetOrgCallbackReady )
-		kWidgetOrgCallbackReady( widgetId );
-};
-
+window.KalturaKDPCallbackAlreadyCalled = [];
 /**
  * To support kaltura kdp mapping override
  */
@@ -1131,7 +1121,7 @@ window.checkForKDPCallback = function(){
 	if( typeof window.jsCallbackReady != 'undefined' && !window.KalturaKDPCallbackReady ){
 		window.KalturaKDPCallbackReady = window.jsCallbackReady;
 		window.jsCallbackReady = function( player_id ){
-			window.KalturaKDPCallbackAlreadyCalled = player_id;
+			window.KalturaKDPCallbackAlreadyCalled.push( player_id );
 		};
 	}
 };
@@ -1142,7 +1132,9 @@ window.restoreKalturaKDPCallback = function(){
 		window.jsCallbackReady = window.KalturaKDPCallbackReady;
 		window.KalturaKDPCallbackReady = null;
 		if( window.KalturaKDPCallbackAlreadyCalled ){
-			window.jsCallbackReady( window.KalturaKDPCallbackAlreadyCalled );
+			for( var i =0 ; i < window.KalturaKDPCallbackAlreadyCalled.length; i++){
+				window.jsCallbackReady( window.KalturaKDPCallbackAlreadyCalled[i] );
+			}
 		}
 	}
 };

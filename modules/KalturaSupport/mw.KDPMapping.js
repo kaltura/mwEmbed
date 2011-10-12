@@ -443,7 +443,8 @@
 					});
 					break;	
 				case 'changeMedia':
-					b( 'onChangeMediaDone', function( event ){
+					// apparently change media is the same as playerReady
+					b( 'playerReady', function( event ){
 						callback({ 'entryId' : embedPlayer.kentryid }, embedPlayer.id );
 					});
 					break;

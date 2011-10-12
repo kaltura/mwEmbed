@@ -184,7 +184,6 @@ mw.includeAllModuleMessages();
 		
 		/**
 		 * Get the current language key
-		 * 
 		 * @return 
 		 * @type {string}
 		 */

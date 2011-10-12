@@ -28,7 +28,7 @@ class mweApiUiConfJs {
 	 */
 	function getPluginPageJs(){
 		// Get all the "plugins" 
-		$o="";
+		$o = "";
 		// @@TODO clean this up with a real getPlayerConfig method
 		$resultObject = $this->getResultObject();
 		$playerConfig =  $resultObject->playerConfig;
@@ -57,7 +57,7 @@ class mweApiUiConfJs {
 	 * Outputs the user agent playing rules if present in uiConf
 	 */
 	function getUserAgentPlayerRules(){
-		$o='';
+		$o = '';
 		// Do an xml query for the plugin
 		$userAgentPlayerRules = $this->getResultObject()->getPlayerConfig( 'userAgentPlayerRules' );
 		if( count( $userAgentPlayerRules ) ) {
