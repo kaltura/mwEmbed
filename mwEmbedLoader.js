@@ -1085,7 +1085,10 @@ window.KWidget = {
 	addReadyCallback : function( readyCallback ){
 		// issue the ready callback for any existing ready widgets: 
 		for( var i = 0; i < this.readyWidgets.length; i++){
-			readyCallback( this.readyWidgets[i] );
+			// make sure the player is still in the dom before running the ready callback
+			if( document.getElementById(this.readyWidgets[i] ) ){
+				readyCallback( this.readyWidgets[i] );
+			}
 		}
 		// add the callback to the readyCallbacks array for any other players that become ready
 		this.readyCallbacks.push( readyCallback );
