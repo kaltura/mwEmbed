@@ -498,7 +498,7 @@ function kCheckAddScript(){
 		var requestCount =0;
 		for( var i=0;i < playerList.length; i++){
 			requestCount++;
-			kAppendScriptUrl(baseUiConfJsUrl + kEmbedSettingsToUrl( playerList[i].kEmbedSettings), function(){
+			kAppendScriptUrl( baseUiConfJsUrl + kEmbedSettingsToUrl( playerList[i].kEmbedSettings), function(){
 				requestCount--;
 				if( requestCount == 0){
 					mw.setConfig( 'Kaltura.UiConfJsLoaded', true);
@@ -758,7 +758,15 @@ function kAddScript( callback ){
 function kIsIE(){
 	return /msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);
 }
-
+function kAppendCssUrl( url ){
+	var head = document.getElementsByTagName("head")[0];         
+	var cssNode = document.createElement('link');
+	cssNode.type = 'text/css';
+	cssNode.rel = 'stylesheet';
+	cssNode.media = 'screen';
+	cssNode.href = url;
+	head.appendChild(cssNode);
+}
 function kAppendScriptUrl( url, callback ) {
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
@@ -767,8 +775,7 @@ function kAppendScriptUrl( url, callback ) {
 	if( callback ){
 		// IE sucks .. issues onload callback before ready 
 		// xxx could conditional the callback delay on user 
-		
-			script.onload = callback;
+		script.onload = callback;
 	}
 	document.getElementsByTagName('head')[0].appendChild( script );	
 }
@@ -1062,6 +1069,51 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 	}
 	return embedSettings;
 }
+/**
+ * KWidget static object.
+ * Will eventually host all the loader logic. 
+ */
+window.KWidget = {
+	// Stores widgets that are ready: 
+	readyWidgets: [],
+	
+	// First ready callback issued
+	readyCallbacks: [],
+	/**
+	 * Adds a ready callback to be called once the kdp or html5 player is ready
+	 */
+	addReadyCallback : function( readyCallback ){
+		// issue the ready callback for any existing ready widgets: 
+		for( var i = 0; i < this.readyWidgets.length; i++){
+			readyCallback( this.readyWidgets[i] );
+		}
+		// add the callback to the readyCallbacks array for any other players that become ready
+		this.readyCallbacks.push( readyCallback );
+	},
+	/**
+	 * Takes in the global ready callback events and ads them to the 
+	 * readyWidgets array
+	 * @param playerId
+	 * @return
+	 */
+	globalJsReadyCallback: function( widgetId ){
+		// issue the callback for all readyCallbacks 
+		while( this.readyCallbacks.length ){
+			this.readyCallbacks.shift()( widgetId );
+		}
+		this.readyWidgets.push( widgetId );
+	}
+};
+
+// Re-map the global jsCallbackReady method if already set
+if( window.jsCallbackReady ){
+	var kWidgetOrgCallbackReady = window.jsCallbackReady;
+}
+window.jsCallbackReady = function( widgetId ){
+	window.KWidget.globalJsReadyCallback( widgetId );
+	if( kWidgetOrgCallbackReady )
+		kWidgetOrgCallbackReady( widgetId );
+};
 
 /**
  * To support kaltura kdp mapping override

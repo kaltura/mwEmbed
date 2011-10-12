@@ -327,26 +327,27 @@ class kalturaIframe {
 			return false;
 		}
 		// Try to get uiConf
-		try{
-			$xml = $this->getResultObject()->getUiConfXML();
-		} catch ( Exception $e ){
-			$this->fatalError( $e->getMessage() );
-		}
+		$xml = $this->getResultObject()->getUiConfXML();
 		$resourceIncludes = array();
-		if( is_array( $xml->uiVars->var ) ){
-			foreach ($xml->uiVars->var as $var ){
-				if( $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'){
-					continue;
-				}
-				$resource = array( 'src'=> htmlspecialchars(  $var['value'] ) );
-				if( $var['key'] == 'HTML5PluginUrl' ){
-					$resource['type'] = 'js';
-				}
-				if( $var['key'] == 'HTML5PlayerCssUrl'){
-					$resource['type'] = 'css';
-				}
-				$resourceIncludes[] = $resource;
+		
+		$uiVarsXml = $xml->xpath("*//var");
+		for( $i=0; $i < count($uiVarsXml); $i++ ) {
+
+			$key = (string) $uiVarsXml[ $i ]->attributes()->key;
+			$value = (string) $uiVarsXml[ $i ]->attributes()->value;
+			// Check for valid plugin types: 
+			$resource = array( 
+				'src'=> htmlspecialchars( $value ) 
+			);
+			if( strpos( $key, 'IframeCustomPluginJs' ) === 0 ){
+				$resource['type'] = 'js';
+			} else if( strpos( $key, 'IframeCustomPluginCss' ) === 0 ){
+				$resource['type'] = 'css';
+			} else{
+				continue;
 			}
+			// Add the resource	
+			$resourceIncludes[] = $resource;
 		}
 		return json_encode( $resourceIncludes );
 	}
@@ -600,7 +601,7 @@ class kalturaIframe {
 			}
 		</script>
 		<script type="text/javascript">
-			// IE has crazy out of order stuff going on ... so we have a pooling funciton to make sure mw is ready before we procceed. 
+			// IE has out of order stuff execution... we have a pooling funciton to make sure mw is ready before we procceed. 
 			var waitForMwCount = 0;
 			var waitforMw = function( callback ){
 				if( window.mw ){
@@ -618,7 +619,7 @@ class kalturaIframe {
 			waitforMw( function(){
 				<?php 
 					global $wgAllowCustomResourceIncludes;
-					if( $wgAllowCustomResourceIncludes && $this->getCustomPlayerIncludesJSON() ){
+					if( $wgAllowCustomResourceIncludes ){
 						echo 'mw.setConfig( \'Mw.CustomResourceIncludes\', '. $this->getCustomPlayerIncludesJSON() .' );';
 					}
 				?>	

@@ -45,7 +45,7 @@ class KalturaResultObject {
 		'debug' => null
 	);
 	
-	private $playerConfig = array();
+	var $playerConfig = array();
 
 	function __construct( $clientTag = 'php'){
 		$this->clientTag = $clientTag;
@@ -839,7 +839,7 @@ class KalturaResultObject {
 	/**
 	 * Get playlist object
 	 */
-	function getPlaylistObject( $playlistId ){ 
+	function getPlaylistObject( $playlistId ){
 		$client = $this->getClient();
 		// Build the reqeust: 
 		$kparams = array();

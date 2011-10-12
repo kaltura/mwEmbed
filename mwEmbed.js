@@ -1730,7 +1730,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			return ;
 		}
 
-		mw.log( ' add css: ' + url );
+		mw.log( 'mwEmbed:: Add css: ' + url );
 		$j( 'head' ).append(
 			$j('<link />').attr( {
 				'rel' : 'stylesheet',
@@ -2261,11 +2261,13 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 
 		// pop up a loadSet item and re call loadCustomResourceIncludes
 		var resource = loadSet.shift();
-		// Check for a direct set of array values
-		var url = ( resource.src )? resource.src : resource;
-		mw.getScript( url, function(){
-			mw.loadCustomResourceIncludes( loadSet, callback );
-		});
+		if( resource.type == 'js' ){
+			$j.getScript( resource.src, function(){
+				mw.loadCustomResourceIncludes( loadSet, callback );
+			});
+		} else if resource.type == 'css' ){
+			mw.getStyleSheet( resource.src, callback );
+		}
 	};
 	/**
 	 * Checks for jquery ui css by name jquery-ui-1.7.2.css NOTE: this is a hack

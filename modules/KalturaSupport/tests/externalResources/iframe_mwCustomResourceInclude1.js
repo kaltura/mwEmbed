@@ -1,1 +1,0 @@
-mw.log( 'ExternalResources:: iframe CustomResourceIncludes 1' );

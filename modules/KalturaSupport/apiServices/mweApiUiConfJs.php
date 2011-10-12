@@ -14,13 +14,44 @@ class mweApiUiConfJs {
 	var $jsConfigCheckDone = false;
 	
 	function run(){
-		$o = '/* kaltura uiConfJS loader */';
+		$o = "/* kaltura uiConfJS loader */\n";
 		// get the checkUserAgentPlayerRules call if present in plugins
 		$o.= $this->getUserAgentPlayerRules();
+		// Get on page javascript: 
+		$o.= $this->getPluginPageJs();
 		// add any on-page javascript
-		
 		$this->sendHeaders();
 		echo $o;
+	}
+	/**
+	 * outputs 
+	 */
+	function getPluginPageJs(){
+		// Get all the "plugins" 
+		$o="";
+		// @@TODO clean this up with a real getPlayerConfig method
+		$resultObject = $this->getResultObject();
+		$playerConfig =  $resultObject->playerConfig;
+		foreach( $playerConfig['plugins'] as $pluginName => $plugin){
+			foreach( $plugin as $pluginAttr => $pluginAttrValue ){
+				if( strpos( $pluginAttr, 'onPageJs' ) === 0 ){
+					$o.= "kAppendScriptUrl( '{$pluginAttrValue}' );\n";
+				}
+				if( strpos( $pluginAttr, 'onPageCss' ) === 0 ){
+					$o.= "kAppendCssUrl( '{$pluginAttrValue}' );\n";
+				}
+			}
+		}
+		foreach( $playerConfig['vars'] as $varName => $varValue){
+			// check for vars based plugin config: 
+			if( strpos( $pluginAttr, 'onPageJs' ) === 0 ){
+				$o.= "kAppendScriptUrl( '{$pluginAttrValue}' );\n";
+			}
+			if( strpos( $pluginAttr, 'onPageCss' ) === 0 ){
+				$o.= "kAppendCssUrl( '{$pluginAttrValue}' );\n";
+			}
+		}
+		return $o;
 	}
 	/**
 	 * Outputs the user agent playing rules if present in uiConf
