@@ -143,26 +143,26 @@ class kalturaIframe {
 			$iframeHeight = intval( $iframeHeight );
 			
 			$xml = $this->getResultObject()->getUiConfXML();
-			$result = $xml->xpath("//*[@id='playlistHolder']");
+			// check for playlist.includeInLayout property and set to full size:
+			$result = $xml->xpath("//*[@key='playlist.includeInLayout']" );
 			if( isset( $result[0] ) ){
 				foreach ( $result[0]->attributes() as $key => $value ) {
-					if( $key == 'width' && $value != '100%' ){
-						$width = $iframeWidth - intval( $value );
-						$height = $iframeHeight;
-					}
-					if( $key == 'height' && $value != '100%' ){
-						$height = $iframeHeight - intval( $value );
+					if( $key == 'value' && $value == "false" ){
 						$width = $iframeWidth;
+						$height = 	$iframeHeight;						
 					}
 				}
 			} else {
-				// check for playlist.includeInLayout property and set to full size:
-				$result = $xml->xpath("//*[@key='playlist.includeInLayout']" );
+				$result = $xml->xpath("//*[@id='playlistHolder']");
 				if( isset( $result[0] ) ){
 					foreach ( $result[0]->attributes() as $key => $value ) {
-						if( $key == 'value' && $value == "false" ){
+						if( $key == 'width' && $value != '100%' ){
+							$width = $iframeWidth - intval( $value );
+							$height = $iframeHeight;
+						}
+						if( $key == 'height' && $value != '100%' ){
+							$height = $iframeHeight - intval( $value );
 							$width = $iframeWidth;
-							$height = 	$iframeHeight;						
 						}
 					}
 				}

@@ -18,6 +18,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 	playlistSet : [],
 	
+	titleHeight : 0, // Kaltura playlist include title via player ( not playlist ) 
+	
 	// ui conf data
 	$uiConf : null,
 	includeInLayout: true,

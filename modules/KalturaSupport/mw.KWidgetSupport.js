@@ -49,7 +49,7 @@ mw.KWidgetSupport.prototype = {
 										? 'horizontal' : 'vertical';
 						$( '#' + widgetTarget.id ).playlist({
 							'layout': layout,
-							'titleHeight' : 0 // Kaltura playlist don't include the title ontop of the video
+							'titleHeight' : 0 // Kaltura playlist include title via player ( not playlist ) 
 						}); 
 						callback();
 					});
