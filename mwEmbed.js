@@ -2265,7 +2265,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			$j.getScript( resource.src, function(){
 				mw.loadCustomResourceIncludes( loadSet, callback );
 			});
-		} else if resource.type == 'css' ){
+		} else if ( resource.type == 'css' ){
 			mw.getStyleSheet( resource.src, callback );
 		}
 	};
