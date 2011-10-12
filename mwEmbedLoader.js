@@ -508,6 +508,7 @@ function kCheckAddScript(){
 		}
 		return ;
 	}
+	
 	// Set url based config ( as long as it not disabled ) 
 	if( ! mw.getConfig( 'disableForceMobileHTML5') && document.URL.indexOf('forceMobileHTML5') !== -1 ){
 		mw.setConfig( 'forceMobileHTML5', true );
@@ -833,7 +834,7 @@ function kAddReadyHook( callback ){
 		kReadyHookSet.push( callback );
 	}
 }
-function kRunMwDomReady(){
+function kRunMwDomReady( event ){
 	// run dom ready with a 1ms timeout to prevent sync execution in browsers like chrome
 	// Async call give a chance for configuration variables to be set
 	kAlreadyRunDomReadyFlag  = true;
@@ -841,6 +842,10 @@ function kRunMwDomReady(){
 		kReadyHookSet.shift()();
 	}
 	kOverideJsFlashEmbed();
+	// When in iframe, wait for endOfIframe event status. ( IE9 has issues ) 
+	if( mw.getConfig('EmbedPlayer.IsIframeServer')  && !event !== 'endOfIframeJs' ){
+		return ;
+	}
 	kCheckAddScript();
 }
 

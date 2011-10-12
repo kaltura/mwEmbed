@@ -172,7 +172,8 @@ class KalturaResultObject {
 	// empty player test ( nothing in the uiConf says "player" diffrent from other widgets so we 
 	// we just have to use the 
 	function isEmptyPlayer(){
-		if( !$this->urlParameters['entry_id'] && !$this->isJavascriptRewriteObject() ){
+		if( !$this->urlParameters['entry_id'] && !$this->isJavascriptRewriteObject()
+			&& !$this->isPlaylist() ){
 			return true;
 		}
 		return false;
@@ -1111,7 +1112,6 @@ class KalturaResultObject {
 			// Empty uiConf ( don't try and parse, return an empty object)
 			return new SimpleXMLElement('<xml />' );
 		}
-
 		/*
 		libxml_use_internal_errors(true);
 		$sxe = simplexml_load_string($uiConf);

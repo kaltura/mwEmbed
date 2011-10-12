@@ -604,12 +604,13 @@ class kalturaIframe {
 			// IE has out of order stuff execution... we have a pooling funciton to make sure mw is ready before we procceed. 
 			var waitForMwCount = 0;
 			var waitforMw = function( callback ){
-				if( window.mw ){
+				if( window['mw'] ){
 					callback();
 					return ;
 				}
 				setTimeout(function(){ 
-					if( waitForMwCount++ > 1000 ){
+					waitForMwCount++;
+					if(  waitForMwCount < 1000 ){
 						waitforMw( callback );
 					} else {
 						console.log("Error in loading mwEmbedLodaer");
@@ -670,7 +671,7 @@ class kalturaIframe {
 	
 				// Add Packaging Kaltura Player Data ( JSON Encoded )
 				mw.setConfig( 'KalturaSupport.IFramePresetPlayerData', <?php echo $this->getResultObject()->getJSON(); ?>);
-				
+
 				mw.setConfig('EmbedPlayer.IframeParentPlayerId', '<?php echo $this->getIframeId()?>' );			
 				
 				// Set uiConf global vars for this player ( overides iframe based hash url config )
@@ -697,6 +698,9 @@ class kalturaIframe {
 						echo $this->javascriptPlayerLogic();
 					}
 				?>
+
+				// Because IE has out of order execution issues, we don't check the dom until we get here: 
+				kRunMwDomReady( 'endOfIframeJs' );
 			});
 		</script>
 	</body>
