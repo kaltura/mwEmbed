@@ -169,7 +169,14 @@ class KalturaResultObject {
 	public static function getBlackPoster(){
 		return 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_vp5cng42/version/100000/height/480';
 	}
-	
+	// empty player test ( nothing in the uiConf says "player" diffrent from other widgets so we 
+	// we just have to use the 
+	function isEmptyPlayer(){
+		if( !$this->urlParameters['entry_id'] && !$this->isJavascriptRewriteObject() ){
+			return true;
+		}
+		return false;
+	}
 	// Check if the requested url is a playlist
 	function isPlaylist(){
 		// Check if the playlist is null: 
@@ -750,19 +757,22 @@ class KalturaResultObject {
 	}
 
 	private function getResultObjectFromApi(){
-
-		/* TODO:
-		 * We need method for: getWidgetType -> single, playlist, ppt
-		 * Because right now if our player is pptWidget we will use getPlaylist result */
-
-		if( $this->isPlaylist() ){
+		if( $this->isEmptyPlayer() ){
+			return $this->getUiConfResult();
+		} else if( $this->isPlaylist() ){
 			return $this->getPlaylistResult();
 		} else {
 			return $this->getEntryResult();
 		}
 	
 	}
-
+	function getUiConfResult(){
+		// no need to call this.. the getters don't have clean lazy init and . 
+		// $this->loadUiConf
+		$resultObject = Array( 'uiConf' => $this->uiConfFile );
+		$resultObject = array_merge( $this->getBaseResultObject(), $resultObject);
+		return $resultObject;
+	}
 	function loadUiConf() {
 		global $wgKalturaUiConfCacheTime;
 		// if no uiconf_id .. throw exception
@@ -1138,9 +1148,9 @@ class KalturaResultObject {
 	private function getResultObject(){
 		global $wgKalturaUiConfCacheTime;
 
-		// load the uiConf first so we could setup our player configuration
+		// Load the uiConf first so we could setup our player configuration
 		$this->loadUiConf();
-		
+
 		// Check if we have a cached result object:
 		if( !$this->resultObj ){
 			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".entry.txt";

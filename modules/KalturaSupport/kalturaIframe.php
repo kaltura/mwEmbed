@@ -196,7 +196,7 @@ class kalturaIframe {
 			$ksParam = '?ks=' . $this->getResultObject()->getKS();
 		}
 	
-		// see if we have access control restrictions
+		// See if we have access control restrictions
 		// Check access control and throw an exception if not allowed: 
 		$acStatus = $this->getResultObject()->isAccessControlAllowed( $resultObject );
 		if( $acStatus !== true ){

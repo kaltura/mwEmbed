@@ -224,9 +224,13 @@ class KalturaClientBase
 			
 			if ($this->config->format == self::KALTURA_SERVICE_FORMAT_PHP)
 			{
+				
 				$result = @unserialize($postResult);
 				if ($result === false && serialize(false) !== $postResult) 
 				{
+					print $url . "\n";
+					print_r( $params );
+					die($error );
 					throw new KalturaClientException("failed to unserialize server result\n$postResult", KalturaClientException::ERROR_UNSERIALIZE_FAILED);
 				}
 				$dump = print_r($result, true);
