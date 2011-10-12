@@ -176,9 +176,8 @@ class KalturaResultObject {
 		if( !is_null ( $this->isPlaylist ) ){
 			return $this->isPlaylist;
 		}
-		// Check if its a playlist: 
-		$pl =  $this->getUiConfXML()->xpath("//*[@id='playlist']");
-		$this->isPlaylist = ( count( $pl ) != 0 );
+		// Check if its a playlist url exists ( better check for playlist than playlist id )
+		$this->isPlaylist = !! $this->getPlayerConfig('playlistAPI', 'kpl0Url');;
 		return $this->isPlaylist;
 	}
 	function isJavascriptRewriteObject() {

@@ -14,7 +14,9 @@
 	});
 
 	window.faderPlugin = function( embedPlayer, $fader ){
-		if( $fader.attr('target') === "{controllersVbox}" ){
+		if( $fader.attr('target') == "{controllersVbox}" || 
+				$fader.attr('target') == "{playerAndControllerHolder}" )
+		{
 			embedPlayer.overlaycontrols = true;
 		} else {
 			embedPlayer.overlaycontrols = false;
