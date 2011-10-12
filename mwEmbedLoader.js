@@ -38,7 +38,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.4c11';
+KALTURA_LOADER_VERSION = '1.5';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura HTML5 Version: ' + KALTURA_LOADER_VERSION );
@@ -491,7 +491,7 @@ function kGetFlashVersion(){
 // && html5 video tag ( for fallback & html5 player interface )
 function kCheckAddScript(){
 	// Check if we already have got uiConfJs or not
-	if( ! mw.getConfig( 'Kaltura.UiConfJsLoaded') ){
+	if( ! mw.getConfig( 'Kaltura.UiConfJsLoaded') && ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
 		var playerList = kGetKalturaPlayerList();
 		var baseUiConfJsUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'services.php?service=uiconfJs');
@@ -1069,13 +1069,14 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 	}
 	return embedSettings;
 }
+
 /**
  * KWidget static object.
  * Will eventually host all the loader logic. 
  */
 window.KWidget = {
 	// Stores widgets that are ready: 
-	readyWidgets: [],
+	readyWidgets: {},
 	
 	// First ready callback issued
 	readyCallbacks: [],
@@ -1084,10 +1085,10 @@ window.KWidget = {
 	 */
 	addReadyCallback : function( readyCallback ){
 		// issue the ready callback for any existing ready widgets: 
-		for( var i = 0; i < this.readyWidgets.length; i++){
-			// make sure the player is still in the dom before running the ready callback
-			if( document.getElementById(this.readyWidgets[i] ) ){
-				readyCallback( this.readyWidgets[i] );
+		for( wid in this.readyWidgets ){
+			// Make sure the widget is still in the dom before running the ready callback
+			if( document.getElementById( wid ) ){
+				readyCallback( wid );
 			}
 		}
 		// add the callback to the readyCallbacks array for any other players that become ready
@@ -1104,7 +1105,7 @@ window.KWidget = {
 		while( this.readyCallbacks.length ){
 			this.readyCallbacks.shift()( widgetId );
 		}
-		this.readyWidgets.push( widgetId );
+		this.readyWidgets[ widgetId ] = true;
 	}
 };
 

@@ -263,13 +263,13 @@ mw.DoubleClick.prototype = {
 			_this.currentAdLoadedCallback = null;
 			// Continue playback
 			_this.embedPlayer.play();
-			// issue the callback 
+			// Issue the callback 
 			callback();
 		};
 		// Request the ad ( will trigger the currentAdCallback and onResumeRequestedCallback when done )
 		_this.getAdsLoader( function( adsLoader ){
 			mw.log("DoubleClick: request Ads from adTagUrl: " +  _this.getAdTagUrl( slotType, cuePoint ));
-			adsLoader.requestAds( {
+			adsLoader.requestAds({
 				'adTagUrl' : _this.getAdTagUrl( slotType, cuePoint ),
 				'adType': 'video'
 			});
