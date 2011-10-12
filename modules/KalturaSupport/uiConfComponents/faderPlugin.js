@@ -7,16 +7,20 @@
 
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			var $fader = $uiConf.find("Plugin#fader");
-			faderPlugin(embedPlayer, $fader );
+			// get Raw config ( we don't support id name resolution yet )
+			var faderConfig = embedPlayer.getRawKalturaConfig(
+					'fader', 
+					['plugin', 'target', 'hoverTarget', 'duration', 'fadeOutDelay', 'autoHide']
+			);
+			faderPlugin(embedPlayer, faderConfig );
 			callback();
 		});
 	});
 
-	window.faderPlugin = function( embedPlayer, $fader ){
-		if( $fader.attr('target') == "{controllersVbox}" || 
-				$fader.attr('target') == "{playerAndControllerHolder}" )
-		{
+	window.faderPlugin = function( embedPlayer, faderConfig ){
+		if( faderConfig.target == "{controllersVbox}" || 
+			faderConfig.target == "{controlsHolder}" 
+		){
 			embedPlayer.overlaycontrols = true;
 		} else {
 			embedPlayer.overlaycontrols = false;

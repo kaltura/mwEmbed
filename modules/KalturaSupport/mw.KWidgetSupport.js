@@ -198,7 +198,9 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.rawCuePoints = playerData.entryCuePoints;
 			embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 		}
-
+		embedPlayer.getRawKalturaConfig = function( confPrefix, attr ){
+			return _this.getRawPluginConfig( embedPlayer, confPrefix, attr );
+		};
 		// Add getKalturaConfig to embed player:
 		embedPlayer.getKalturaConfig = function( confPrefix, attr ){
 			return _this.getPluginConfig( embedPlayer, confPrefix, attr );
@@ -260,7 +262,6 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.autoplay = true;
 		}
 	},
-	
 	/**
 	 * Check for xml config, let flashvars override 
 	 * @param embedPlayer {Object} the embedPlayer for which configuration is being retrived
@@ -269,16 +270,28 @@ mw.KWidgetSupport.prototype = {
 	 * 				if null, we retrive all settings with the provided confPrefix 
 	 */
 	getPluginConfig: function( embedPlayer, confPrefix, attr ){
-		// Setup local pointers: 
-		var _this = this;
-		var flashvars = embedPlayer.getFlashvars();
-		var $uiConf = embedPlayer.$uiConf;
-		
 		var singleAttrName = false;
 		if( typeof attr == 'string' ){
 			singleAttrName = attr;
 			attr = $.makeArray( attr );
 		}
+		
+		var rawConfig = this.getRawPluginConfig( embedPlayer, confPrefix, attr);
+		var config =  this.postProcessConfig( embedPlayer, rawConfig );
+		
+		if( singleAttrName != false ){
+			return config[ singleAttrName ];
+		} else {
+			return config;
+		}
+	},
+
+	getRawPluginConfig: function( embedPlayer, confPrefix, attr ){
+		// Setup local pointers: 
+		var _this = this;
+		var flashvars = embedPlayer.getFlashvars();
+		var $uiConf = embedPlayer.$uiConf;
+	
 		
 		// If we are getting attributes and we are checking "plugin", Also check for "disableHTML5"
 		if( attr && $.inArray( 'plugin', attr ) != -1 ){
@@ -333,7 +346,7 @@ mw.KWidgetSupport.prototype = {
 				// Found break out of loop
 				return false;
 			});
-			return _this.postProcessConfig(embedPlayer, config );
+			return 
 		};
 		
 		$.each( attr, function(inx, attrName ){
@@ -366,14 +379,8 @@ mw.KWidgetSupport.prototype = {
 			});
 			
 		});
+		return config;
 		
-		config = _this.postProcessConfig(embedPlayer, config );
-		
-		if( singleAttrName != false ){
-			return config[ singleAttrName ];
-		} else {
-			return config;
-		}
 	},
 	postProcessConfig: function(embedPlayer,  config ){
 		var _this = this;
