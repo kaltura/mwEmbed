@@ -55,9 +55,8 @@
 				embedPlayer.setKDPAttribute = function( componentName, property, value ) {
 					_this.setKDPAttribute( embedPlayer, componentName, property, value );
 				};
-				
 				// Fire the KalturaKDPCallbackReady event with the player id: 
-				if( window.deepLinkId ){
+				if( window.KalturaKDPCallbackReady ){
 					window.KalturaKDPCallbackReady( embedPlayer.id );
 				}
 			});

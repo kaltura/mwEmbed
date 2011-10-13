@@ -1117,24 +1117,22 @@ window.KWidget = {
 		this.readyWidgets[ widgetId ] = true;
 	}
 };
-// Add the globalJsReadyCallback hook to jsCallbackReady
-if( window.jsCallbackReady ){
-	window.orgKWidgetJsReadyCallback = window.jsCallbackReady;
-};
-window.jsCallbackReady = function( playerId ){
-	window.KWidget.globalJsReadyCallback( playerId );
-	if( window.orgKWidgetJsReadyCallback )
-		window.orgKWidgetJsReadyCallback();
-};
-
 window.KalturaKDPCallbackAlreadyCalled = [];
 
 /**
  * To support kaltura kdp mapping override
  */
 window.checkForKDPCallback = function(){
-	if( typeof window.jsCallbackReady != 'undefined' && !window.KalturaKDPCallbackReady ){
-		window.KalturaKDPCallbackReady = window.jsCallbackReady;
+	if( !window.KalturaKDPCallbackReady ){
+		if( window.jsCallbackReady ){
+			window.originalKDPCallbackReady = window.jsCallbackReady;
+		}
+		window.KalturaKDPCallbackReady = function( playerId ){
+			if( window.originalKDPCallbackReady ){
+				window.originalKDPCallbackReady( playerId );
+			}
+			window.KWidget.globalJsReadyCallback( playerId );
+		};
 		window.jsCallbackReady = function( player_id ){
 			window.KalturaKDPCallbackAlreadyCalled.push( player_id );
 		};
@@ -1148,7 +1146,9 @@ window.restoreKalturaKDPCallback = function(){
 		window.KalturaKDPCallbackReady = null;
 		if( window.KalturaKDPCallbackAlreadyCalled ){
 			for( var i =0 ; i < window.KalturaKDPCallbackAlreadyCalled.length; i++){
-				window.jsCallbackReady( window.KalturaKDPCallbackAlreadyCalled[i] );
+				var playerId = window.KalturaKDPCallbackAlreadyCalled[i];
+				window.jsCallbackReady( playerId );
+				window.KWidget.globalJsReadyCallback( playerId );
 			}
 		}
 	}
