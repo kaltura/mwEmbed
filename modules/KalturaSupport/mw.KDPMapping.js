@@ -238,6 +238,9 @@
 			// Split the uiConf expression into parts separated by '.'
 			var objectPath = expression.split('.');
 			switch( objectPath[0] ){
+				case 'isHTML5':
+					return true;
+					break;
 				case 'video':
 					switch( objectPath[1] ){
 						case 'volume': 
