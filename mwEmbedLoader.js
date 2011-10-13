@@ -500,11 +500,11 @@ function kCheckAddScript(){
 			kAppendScriptUrl( baseUiConfJsUrl + kEmbedSettingsToUrl( playerList[i].kEmbedSettings), function(){
 				requestCount--;
 				if( requestCount == 0){
-					mw.setConfig( 'Kaltura.UiConfJsLoaded', true);
 					kCheckAddScript();
 				}
 			});
 		}
+		mw.setConfig( 'Kaltura.UiConfJsLoaded', true);
 		return ;
 	}
 	
