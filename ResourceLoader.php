@@ -1300,12 +1300,12 @@ class simpleFileCache {
 	protected function checkCacheDirs() {
 		$mydir2 = substr( $this->filename, 0, strrpos( $this->filename, '/' ) ); # subdirectory level 2
 		$mydir1 = substr( $mydir2, 0, strrpos( $mydir2, '/' ) ); # subdirectory level 1
-		// don't try to create directories that already exist
-		if( is_dir( $mydir1 ) && is_dir( $mydir2 ) ){
-			return true;
-		}
 		// Suppress error so javascript can format it
 		if ( @wfMkdirParents( $mydir1 ) === false || @wfMkdirParents( $mydir2 ) === false ) {
+			// if the directories exist don't error
+			if( is_dir( $mydir1 ) && is_dir( $mydir2 ) ){
+				return true;
+			}
 			return 'Could not create cache directory. Check your cache directory permissions?';
 		} else {
 			return true;
