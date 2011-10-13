@@ -584,8 +584,8 @@ class kalturaIframe {
 		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
-			preMwEmbedConfig = {};
-			preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
+			window.preMwEmbedConfig = {};
+			window.preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
 		</script>
 		<!--  Add the mwEmbedLoader.php -->
 		<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>" type="text/javascript"></script>
