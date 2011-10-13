@@ -31,5 +31,4 @@ mw.BaseAdPlugin.prototype = {
 		// Remove player bindings: 
 		$( this.embedPlayer ).unbind( this.bindPostfix );
 	}
-		
-}
+};
