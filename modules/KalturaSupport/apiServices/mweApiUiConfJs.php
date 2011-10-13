@@ -35,23 +35,32 @@ class mweApiUiConfJs {
 		foreach( $playerConfig['plugins'] as $pluginName => $plugin){
 			foreach( $plugin as $pluginAttr => $pluginAttrValue ){
 				if( strpos( $pluginAttr, 'onPageJs' ) === 0 ){
-					$o.= "kAppendScriptUrl( '{$pluginAttrValue}' );\n";
+					$o.= "kAppendScriptUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
 				}
 				if( strpos( $pluginAttr, 'onPageCss' ) === 0 ){
-					$o.= "kAppendCssUrl( '{$pluginAttrValue}' );\n";
+					$o.= "kAppendCssUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
 				}
 			}
 		}
 		foreach( $playerConfig['vars'] as $varName => $varValue){
 			// check for vars based plugin config: 
 			if( strpos( $pluginAttr, 'onPageJs' ) === 0 ){
-				$o.= "kAppendScriptUrl( '{$pluginAttrValue}' );\n";
+				$o.= "kAppendScriptUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
 			}
 			if( strpos( $pluginAttr, 'onPageCss' ) === 0 ){
-				$o.= "kAppendCssUrl( '{$pluginAttrValue}' );\n";
+				$o.= "kAppendCssUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
 			}
 		}
 		return $o;
+	}
+	function getExternalResourceUrl( $url ){
+		global $wgEnableScriptDebug;
+		// Append time if in debug mode 
+		if( $wgEnableScriptDebug ){
+			$url.= ( strpos( $url, '?' ) === false )? '?':'&';
+			$url.= time();
+		}
+		return $url;
 	}
 	/**
 	 * Outputs the user agent playing rules if present in uiConf

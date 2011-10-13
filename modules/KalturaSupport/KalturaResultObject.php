@@ -215,7 +215,7 @@ class KalturaResultObject {
 		global $wgEnableScriptDebug;
 		if( $wgEnableScriptDebug ) 
 			return false;
-		return $this->$outputUiConfFileFromCache	
+		return $this->outputUiConfFileFromCache;
 	}
 	private function getUserAgent() {
 		return $_SERVER['HTTP_USER_AGENT'];
