@@ -1302,12 +1302,7 @@ class simpleFileCache {
 		$mydir1 = substr( $mydir2, 0, strrpos( $mydir2, '/' ) ); # subdirectory level 1
 		// Suppress error so javascript can format it
 		if ( @wfMkdirParents( $mydir1 ) === false || @wfMkdirParents( $mydir2 ) === false ) {
-			// if the directories exist don't error
-			if( is_dir( $mydir1 ) && is_dir( $mydir2 ) ){
-				return true;
-			}
-			//return 'Could not create cache directory. Check your cache directory permissions?';
-			// Something is broken ( its clearly cached output but reporting it as failure ) 
+			return 'Could not create cache directory. Check your cache directory permissions?';
 			return true;
 		} else {
 			return true;
