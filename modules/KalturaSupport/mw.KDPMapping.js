@@ -78,13 +78,13 @@
 				$( playerProxy ).bind( 'jsListenerEvent', function(event, globalFuncName, listenerArgs){
 					// check if globalFuncName has descendant properties
 					if( typeof window[ globalFuncName ] == 'function' ){
-						window[ globalFuncName ].apply( this, listenerArgs );
+						window[ globalFuncName ].apply( window[ globalFuncName ], listenerArgs );
 					} else {
 						// try to send the global function name: 
 						try{
 							var winPrefix = ( globalFuncName.indexOf( 'window.' ) === 0 )?'':'window.';
 							var evalFunctionName = eval( winPrefix + globalFuncName );
-							evalFunctionName.apply( this, listenerArgs );
+							evalFunctionName.apply( evalFunctionName, listenerArgs );
 						} catch (e){
 							mw.log( "Warning KDPMapping: jsListenerEvent function name not found");
 						}
