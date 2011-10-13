@@ -26,7 +26,6 @@ mw.BaseAdPlugin.prototype = {
 		// What about multiple cuepoints? 
 		return 1;
 	},
-	
 	destroy: function(){
 		// Remove player bindings: 
 		$( this.embedPlayer ).unbind( this.bindPostfix );

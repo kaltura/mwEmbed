@@ -82,7 +82,8 @@
 					} else {
 						// try to send the global function name: 
 						try{
-							var evalFunctionName = eval( globalFuncName );
+							var winPrefix = ( globalFuncName.indexOf( 'window.' ) === 0 )?'':'window.';
+							var evalFunctionName = eval( winPrefix + globalFuncName );
 							evalFunctionName.apply( this, listenerArgs );
 						} catch (e){
 							mw.log( "Warning KDPMapping: jsListenerEvent function name not found");

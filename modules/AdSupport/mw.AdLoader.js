@@ -1,3 +1,4 @@
+
 ( function( mw, $ ) {
 	
 mw.AdLoader = {
