@@ -140,6 +140,8 @@ class mweApiUiConfJs {
 	}
 	function sendHeaders(){
 		global $wgKalturaUiConfCacheTime;
+		// set content type to javascript:
+		header("Content-type: text/javascript");
 		// Set relevent expire headers:
 		if( $this->getResultObject()->isCachedUiConfFile() ){
 			$time = $this->getResultObject()->getFileCacheTime();
