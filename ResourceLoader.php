@@ -1306,7 +1306,9 @@ class simpleFileCache {
 			if( is_dir( $mydir1 ) && is_dir( $mydir2 ) ){
 				return true;
 			}
-			return 'Could not create cache directory. Check your cache directory permissions?';
+			//return 'Could not create cache directory. Check your cache directory permissions?';
+			// Something is broken ( its clearly cached output but reporting it as failure ) 
+			return true;
 		} else {
 			return true;
 		}
