@@ -83,8 +83,15 @@
 						// try to send the global function name: 
 						try{
 							var winPrefix = ( globalFuncName.indexOf( 'window.' ) === 0 )?'':'window.';
-							var evalFunctionName = eval( winPrefix + globalFuncName );
-							evalFunctionName.apply( evalFunctionName, listenerArgs );
+							var evalFunction = eval( winPrefix + globalFuncName );
+							// try to get the parent 
+							try{
+								var evalFunctionParent =  eval( globalFuncName.split('.').slice(0,-1).join('.') );
+							} catch (e ){
+								// can't get the parent just pass the function scope: 
+								var evalFunctionParent = evalFunction;
+							}
+							evalFunction.apply( evalFunctionParent, listenerArgs );
 						} catch (e){
 							mw.log( "Warning KDPMapping: jsListenerEvent function name not found");
 						}
