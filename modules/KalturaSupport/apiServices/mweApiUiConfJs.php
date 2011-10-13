@@ -131,14 +131,19 @@ class mweApiUiConfJs {
 	}
 	function sendHeaders(){
 		global $wgKalturaUiConfCacheTime;
-		header('Content-type: text/javascript' );
-		// always cached: 
-		header( 'Pragma: public' );
-		// Cache for $wgKalturaUiConfCacheTime
-		$time = $this->getResultObject()->getFileCacheTime();
-		header( "Cache-Control: public, max-age=$wgKalturaUiConfCacheTime, max-stale=0");
-		header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $time) . "GMT");
-		header( "Expires: " . gmdate( "D, d M Y H:i:s", $time + $wgKalturaUiConfCacheTime ) . " GM" );
+		// Set relevent expire headers:
+		if( $this->getResultObject()->isCachedUiConfFile() ){
+			$time = $this->getResultObject()->getFileCacheTime();
+			header( 'Pragma: public' );
+			// Cache for $wgKalturaUiConfCacheTime
+			header( "Cache-Control: public, max-age=$wgKalturaUiConfCacheTime, max-stale=0");
+			header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $time) . "GMT");
+			header( "Expires: " . gmdate( "D, d M Y H:i:s", $time + $wgKalturaUiConfCacheTime ) . " GM" );
+		} else {
+			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+			header("Pragma: no-cache");
+			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+		}
 	}
 }
 

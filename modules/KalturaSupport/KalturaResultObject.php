@@ -24,6 +24,8 @@ class KalturaResultObject {
 	
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
+	// local flag to store if the uiconf file was from cache.
+	private $outputUiConfFileFromCache = false;
 	
 	/**
 	 * Variables set by the Frame request:
@@ -204,7 +206,16 @@ class KalturaResultObject {
 		return false;
 	}
 	public function isCachedOutput(){
+		global $wgEnableScriptDebug; 
+		if( $wgEnableScriptDebug )
+			return false;
 		return $this->outputFromCache;
+	}
+	public function isCachedUiConfFile(){
+		global $wgEnableScriptDebug;
+		if( $wgEnableScriptDebug ) 
+			return false;
+		return $this->$outputUiConfFileFromCache	
 	}
 	private function getUserAgent() {
 		return $_SERVER['HTTP_USER_AGENT'];
@@ -789,9 +800,9 @@ class KalturaResultObject {
 			if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
 				$this->uiConfFile = $this->loadUiConfFromApi();
 			} else {
-				//$this->outputFromCache = true;
 				$this->uiConfFile = file_get_contents( $cacheFile );
 			}
+			$this->outputUiConfFileFromCache = true;
 			$this->putCacheFile( $cacheFile, $this->uiConfFile );
 		}
 
