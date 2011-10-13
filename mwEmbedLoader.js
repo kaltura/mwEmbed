@@ -1117,8 +1117,18 @@ window.KWidget = {
 		this.readyWidgets[ widgetId ] = true;
 	}
 };
+// Add the globalJsReadyCallback hook to jsCallbackReady
+if( window.jsCallbackReady ){
+	window.orgKWidgetJsReadyCallback = window.jsCallbackReady;
+};
+window.jsCallbackReady = function( playerId ){
+	window.KWidget.globalJsReadyCallback( playerId );
+	if( window.orgKWidgetJsReadyCallback )
+		window.orgKWidgetJsReadyCallback();
+};
 
 window.KalturaKDPCallbackAlreadyCalled = [];
+
 /**
  * To support kaltura kdp mapping override
  */

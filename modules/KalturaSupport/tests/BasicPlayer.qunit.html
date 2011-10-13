@@ -25,7 +25,6 @@ function jsKalturaPlayerTest( videoId ){
 			start();
 		});
 	});
-	
 	asyncTest("Iframe config", function(){
 		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
 		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
@@ -33,7 +32,6 @@ function jsKalturaPlayerTest( videoId ){
 		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
 		start();
 	});
-
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
