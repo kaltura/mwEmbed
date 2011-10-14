@@ -757,10 +757,14 @@ class KalturaResultObject {
 	 * Returns a cache key for the result object based on Referer and partner id
 	 */
 	private function getResultObjectCacheKey(){
-		// Get a key based on partner id,  entry_id and ui_confand and refer url:
+		// Get a key based on partner id,  entry_id and ui_confand and refer url
 		$playerUnique = ( isset( $this->urlParameters['entry_id'] ) ) ?  $this->urlParameters['entry_id'] : '';
 		$playerUnique .= ( isset( $this->urlParameters['uiconf_id'] ) ) ?  $this->urlParameters['uiconf_id'] : '';
 		$playerUnique .= ( isset( $this->urlParameters['cache_st'] ) ) ? $this->urlParameters['cache_st'] : ''; 
+		// Check for playlist urls
+		$playerUnique .= ( isset( $this->urlParameters['flashvars']['playlistAPI.kpl0Url']  ) )? 
+			$this->urlParameters['flashvars']['playlistAPI.kpl0Url']  : '';
+			
 		$playerUnique .= $this->getReferer();
 
 		// hash the service url, the partner_id, the player_id and the Referer url: 
@@ -794,18 +798,16 @@ class KalturaResultObject {
 		// Check if we have a cached result object:
 		if( !$this->uiConfFile ){
 			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".uiconf.txt";
-
 			// Check modify time on cached php file
 			$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
 			if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
 				$this->uiConfFile = $this->loadUiConfFromApi();
+				$this->putCacheFile( $cacheFile, $this->uiConfFile );
 			} else {
 				$this->uiConfFile = file_get_contents( $cacheFile );
+				$this->outputUiConfFileFromCache = true;
 			}
-			$this->outputUiConfFileFromCache = true;
-			$this->putCacheFile( $cacheFile, $this->uiConfFile );
 		}
-
 		$this->parseUiConfXML( $this->uiConfFile );
 		$this->setupPlayerConfig();
 	}
@@ -1157,7 +1159,7 @@ class KalturaResultObject {
 		}
 	}
 	private function getResultObject(){
-		global $wgKalturaUiConfCacheTime;
+		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug;
 
 		// Load the uiConf first so we could setup our player configuration
 		$this->loadUiConf();
@@ -1168,15 +1170,15 @@ class KalturaResultObject {
 			
 			// Check modify time on cached php file
 			$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
-			if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
+			if ( $wgEnableScriptDebug || !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
 				$this->resultObj = $this->getResultObjectFromApi();
+				// Test if the resultObject can be cached ( no access control restrictions )
+				if( $this->isCachableRequest() ){
+					$this->putCacheFile( $cacheFile, serialize( $this->resultObj  ) );
+				}
 			} else {
 				$this->outputFromCache = true;
 				$this->resultObj = unserialize( file_get_contents( $cacheFile ) );
-			}
-			// Test if the resultObject can be cached ( no access control restrictions )
-			if( $this->isCachableRequest() ){
-				$this->putCacheFile( $cacheFile, serialize( $this->resultObj  ) );
 			}
 		}
 		return $this->resultObj;

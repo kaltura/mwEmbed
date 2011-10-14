@@ -717,7 +717,6 @@ class kalturaIframe {
 						echo $this->javascriptPlayerLogic();
 					}
 				?>
-
 				// Because IE has out of order execution issues, we don't check the dom until we get here: 
 				kRunMwDomReady( 'endOfIframeJs' );
 			});
