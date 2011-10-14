@@ -635,12 +635,14 @@ class kalturaIframe {
 				}, 10 );
 			};
 			waitforMw( function(){
+				
 				<?php 
 					global $wgAllowCustomResourceIncludes;
 					if( $wgAllowCustomResourceIncludes ){
 						echo 'mw.setConfig( \'Mw.CustomResourceIncludes\', '. $this->getCustomPlayerIncludesJSON() .' );';
 					}
-				?>	
+				?>
+				
 				var hashString = document.location.hash;
 				// Parse any configuration options passed in via hash url:
 				if( hashString ){
@@ -718,6 +720,7 @@ class kalturaIframe {
 
 				// Because IE has out of order execution issues, we don't check the dom until we get here: 
 				kRunMwDomReady( 'endOfIframeJs' );
+				mw.domReady( true );
 			});
 		</script>
 	</body>

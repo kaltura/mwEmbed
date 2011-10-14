@@ -1498,7 +1498,6 @@ mw.EmbedPlayer.prototype = {
 		
 		// Update the poster and html:
 		this.updatePosterHTML();
-
 		// on iOS devices don't try to add warnings
 		if( !this.mediaElement.sources.length || mw.isIOS() ){
 			var noSourceMsg = gM('mwe-embedplayer-missing-source');
@@ -1519,12 +1518,14 @@ mw.EmbedPlayer.prototype = {
 				.addClass('error')
 				.html( noSourceMsg )
 			);
+			
 			$( this ).find('.play-btn-large').remove();
 		} else {
 			// Add the warning
 			this.controlBuilder.doWarningBindinng( 'EmbedPlayer.DirectFileLinkWarning',
 				gM( 'mwe-embedplayer-download-warn', mw.getConfig('EmbedPlayer.FirefoxLink') )
 			);
+			$( this ).show();
 			// Make sure we have a play btn:
 			if( $( this ).find('.play-btn-large').length == 0) {
 				this.$interface.append(
@@ -1534,9 +1535,11 @@ mw.EmbedPlayer.prototype = {
 			
 			// Set the play button to the first available source:
 			this.$interface.find('.play-btn-large')
+			.show()
 			.unbind('click')
 			.wrap(
 				$('<a />').attr( {
+					'target' : '_new',
 					'href': this.mediaElement.sources[0].getSrc(),
 					'title' : gM('mwe-embedplayer-play_clip')
 				} )

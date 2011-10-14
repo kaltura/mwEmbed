@@ -2497,9 +2497,9 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 * This will get called when the DOM is ready Will check configuration and
 	 * issue a mw.setupMwEmbed call if needed
 	 */
-	mw.domReady = function ( ) {
+	mw.domReady = function ( forceSetup ) {
 		mw.log('mw.domReady: ' + mwDomReadyFlag );
-		if( mwDomReadyFlag ) {
+		if( mwDomReadyFlag && !forceSetup) {
 			return ;
 		}
 		mwDomReadyFlag = true;		

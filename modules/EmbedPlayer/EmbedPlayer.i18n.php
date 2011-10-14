@@ -62,7 +62,7 @@ $messages['en'] = array(
 	'mwe-embedplayer-ogg-player-omtkplayer' => 'OMTK Flash Vorbis',
 	'mwe-embedplayer-generic_missing_plugin' => 'You browser does not appear to support the following playback type: <b>$1</b><br />Visit the <a href="http://commons.wikimedia.org/wiki/Commons:Media_help">Playback methods</a> page to download a player.<br />',
 	'mwe-embedplayer-for_best_experience' => 'For a better video playback experience we recommend the <b><a href="http://www.mozilla.com/en-US/firefox/upgrade.html?from=mwEmbed">latest Firefox</a>.</b>',
-	'mwe-embedplayer-download-warn' => 'No compatible in browser player was detected, for in browser playback please download the [$1 latest Firefox]',
+	'mwe-embedplayer-download-warn' => 'No compatible in browser player was detected, direct link to file provided',
 	'mwe-embedplayer-do_not_warn_again' => 'Dismiss for now.',
 	'mwe-embedplayer-playerSelect' => 'Players',
 	'mwe-embedplayer-read_before_embed' => '<a href="http://mediawiki.org/wiki/Security_Notes_on_Remote_Embedding" target="_new">Read this</a> before embedding.',
