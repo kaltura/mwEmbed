@@ -204,10 +204,6 @@ mw.AdTimeline.prototype = {
 	 */
 	displaySlots: function( slotType, doneCallback ){
 		var _this = this;
-		var restorePlayerCallback = function(){
-			_this.restorePlayer();
-			doneCallback();
-		};
 		
 		// Setup a sequence timeline set: 
 		var sequenceProxy = {};
@@ -238,9 +234,9 @@ mw.AdTimeline.prototype = {
 		var runSequeceProxyInx = function( seqInx ){
 			var key = keyList[ seqInx ] ;
 			if( !sequenceProxy[key] ){
-				restorePlayerCallback();
+				doneCallback();
 				return ;
-			}			
+			}
 			// Run the sequence proxy function: 
 			sequenceProxy[ key]( function(){
 				// done with the current proxy call next
@@ -256,10 +252,10 @@ mw.AdTimeline.prototype = {
 	updateUiForAdPlayback: function( slotType ){
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		this.embedPlayer.stopEventPropagation();
-		// update the interface to play state:
-		this.embedPlayer.playInterfaceUpdate();
 		// TODO read the add disable control bar to ad config and check that here. 
 		this.embedPlayer.disableSeekBar();
+		// update the interface to play state:
+		this.embedPlayer.playInterfaceUpdate();
 		// Trigger an event so plugins can get out of the way for ads:
 		$( this.embedPlayer ).trigger( 'AdSupport_StartAdPlayback', slotType );
 	},

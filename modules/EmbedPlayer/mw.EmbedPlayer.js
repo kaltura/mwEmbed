@@ -2147,7 +2147,9 @@ mw.EmbedPlayer.prototype = {
 	 * @return
 	 */
 	pauseLoading: function(){
+		this.stopEventPropagation();
 		this.pause();
+		this.restoreEventPropagation();
 		$( this ).getAbsoluteOverlaySpinner()
 			.attr( 'id', 'loadingSpinner_' + this.id );
 	},

@@ -192,7 +192,8 @@ class kalturaIframe {
 		// Check if we have flashvar: loadThumbnailWithKs, if so load the thumbnail with KS
 		$ksParam = '';
 		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) && 
-				isset( $_REQUEST['flashvars']['loadThumbnailWithKs']) ) {
+			isset( $_REQUEST['flashvars']['loadThumbnailWithKs']) ) 
+		{
 			$ksParam = '?ks=' . $this->getResultObject()->getKS();
 		}
 	
@@ -255,7 +256,6 @@ class kalturaIframe {
 			// TODO should move this to i8ln keys instead of raw msgs
 			$o.= ' data-playerError="' . htmlentities( $this->playerError ) . '" ';
 		}
-		
 		// Close the open video tag attribute set
 		$o.='>';
 
@@ -611,7 +611,7 @@ class kalturaIframe {
 			$uiConfJ = new mweApiUiConfJs();
 			echo $uiConfJ->getUserAgentPlayerRules();
 		?></script>
-		<script type="text/javascript">
+		<script type="text/javascript" >
 			// Insert JSON support if in missing ( IE 7, 8 )
 			if( typeof JSON == 'undefined' ){ 
 				document.write(unescape("%3Cscript src='<?php echo $path ?>/libraries/json/json2.js' type='text/javascript'%3E%3C/script%3E"));
@@ -635,7 +635,6 @@ class kalturaIframe {
 				}, 10 );
 			};
 			waitforMw( function(){
-				
 				<?php 
 					global $wgAllowCustomResourceIncludes;
 					if( $wgAllowCustomResourceIncludes ){
