@@ -2499,18 +2499,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 */
 	mw.domReady = function ( forceSetup ) {
 		mw.log('mw.domReady: ' + mwDomReadyFlag );
-		if( mwDomReadyFlag && !forceSetup) {
-			return ;
-		}
-		mwDomReadyFlag = true;		
-		// Set the onDomReady Flag
-		if( mwFirstLoadDoneCB === true ){
-			mwFirstLoadDoneCB = function(){
-				mw.setupMwEmbed();
-			};
-		} else {
-			mw.setupMwEmbed();
-		}
+		mw.setupMwEmbed();
 	};
 	/**
 	* Check if the url is a request for the local domain
