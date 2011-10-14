@@ -59,17 +59,15 @@ mw.FreeWheelControler.prototype = {
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin(  embedPlayer, callback ) );
 		
-		// setp local pointer to callback: 
-		this.callback = callback;
-		
 		// XXX todo we should read "adManagerUrl" from uiConf config
 		var adManagerUrl = ( this.getConfig( 'adManagerJsUrl' ) ) ? 
 							this.getConfig( 'adManagerJsUrl' )  : 
 							mw.getConfig( 'FreeWheel.AdManagerUrl' );
 							
-		// Load the freewheel ad mannager then setup the ads
+		// Load the freewheel ad manager then setup the ads
 		$.getScript(adManagerUrl, function(){
 			_this.setupAds();
+			callback();
 		});
 	},	
 	/**
@@ -88,7 +86,7 @@ mw.FreeWheelControler.prototype = {
 		// Set context timeout
 		this.setContextTimeout();
 		// Add the temporal slots for this "player"
-		this.addTemporalSlots();
+		// this.addTemporalSlots();
 
 		// Add local companion targets
 		if( mw.getConfig( 'FreeWheel.PostMessageIframeCompanions' ) ){
@@ -100,7 +98,34 @@ mw.FreeWheelControler.prototype = {
 		
 		// Load add data ( will call onRequestComplete once ready )
 		mw.log("FreeWheelController::submitRequest>");
-		this.getContext().submitRequest();
+		$( _this.embedPlayer ).bind( 'AdSupport_OnPlayAdLoad', function( event, callback ){
+			// Get Freewheel ads: 
+			_this.getContext().submitRequest();
+			// set the callback 
+			_this.callback  = callback;
+		});
+	},
+	/**
+	 * Called on the completion of freeWheel add loading, continue playback
+	 * @param event
+	 * @return
+	 */
+	onRequestComplete: function( event ){
+		var _this = this;
+		mw.log("FreeWheelController::onRequestComplete>");
+		if ( event.success ){
+			$.each( _this.getContext().getTemporalSlots(), function(inx, slot ){
+				_this.addSlot( slot );
+			});
+		} 
+		// Check if we found freewheel ads: 
+		if( _this.getContext().getTemporalSlots().length ){
+			// Add the freeWheel bindings:
+			_this.addPlayerBindings();
+		} else {
+			mw.log("FreeWheelController:: no freewheel ads avaliable");
+		}
+		_this.callback();
 	},
 	addPlayerBindings: function(){
 		mw.log("FreeWheelControl:: addPlayerBindings");
@@ -133,8 +158,6 @@ mw.FreeWheelControler.prototype = {
 		$( _this.embedPlayer ).bind( 'changeMedia' + _this.bindPostfix, function() {
 			_this.destory();
 		}); 
-		// Run the player callback once we have added player bindings
-		this.callback();
 	},
 	playSlotsInRange: function( slotSet ){
 		var _this = this;
@@ -219,29 +242,6 @@ mw.FreeWheelControler.prototype = {
 		if( slotType == 'preroll' || slotType=='postroll' || slotType=='midroll'){
 			_this.curentSlotIndex++;
 			_this.displayFreeWheelSlots( slotType, _this.curentSlotIndex, _this.currentSlotDoneCB );
-		}
-	},
-	/**
-	 * Called on the completion of freeWheel add loading
-	 * @param event
-	 * @return
-	 */
-	onRequestComplete: function( event ){
-		var _this = this;
-		mw.log("FreeWheelController::onRequestComplete>");
-		if ( event.success ){
-			$.each( _this.getContext().getTemporalSlots(), function(inx, slot ){
-				_this.addSlot( slot );
-			});
-		} 
-		// Check if we found freewheel ads: 
-		if( _this.getContext().getTemporalSlots().length ){
-			// Add the freeWheel bindings:
-			_this.addPlayerBindings();
-		} else {
-			mw.log("FreeWheelController:: no freewheel ads avaliable");
-			// No adds issue callback directly
-			this.callback();
 		}
 	},
 	addSlot: function( slot ){

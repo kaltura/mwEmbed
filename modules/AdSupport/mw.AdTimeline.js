@@ -128,63 +128,65 @@ mw.AdTimeline.prototype = {
 			_this.destroy();
 		});
 		
-		$( embedPlayer ).bind( 'onplay' + _this.bindPostfix, function() {
-			// Check if this is the "first play" request:
-			if ( !_this.firstPlay ) {
+		$( embedPlayer ).bind( 'firstPlay' + _this.bindPostfix, function() {
+			mw.log( "AdTimeline:: First Play Start / bind Ad timeline" );
+			embedPlayer.pauseLoading();
+			// given an opportunity for ads to load for ads to load: 
+			$( embedPlayer ).triggerQueueCallback( 'AdSupport_OnPlayAdLoad',function(){
+				// Once all the ads have loaded setup on onPlay actions: 
+				_this.doPlayTimeline();
+			});
+		});		
+	},
+	doPlayTimeline: function(){
+		var embedPlayer = this.embedPlayer;
+		var _this = this;
+		// Disable overlays for preroll / bumper
+		_this.adOverlaysEnabled = false;
+
+		// Show prerolls:
+		_this.displaySlots( 'preroll', function(){
+			// Show bumpers:
+			_this.displaySlots( 'bumper', function(){
+				embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+					setTimeout(function(){ // avoid function stack
+						_this.restorePlayer();
+						// Continue playback
+						embedPlayer.play();
+
+						// Sometimes the player gets a pause event out of order be sure to "play" 
+						setTimeout(function(){
+							embedPlayer.play();
+						}, 300 );
+					},1);
+				});
+				
+			});
+		});
+		
+		// Bind the player "ended" event to play the postroll if present
+		var displayedPostroll = false;
+		// TODO We really need a "preend" event for thing like this. 
+		// So that playlist next clip or other end bindings don't get triggered. 
+		$( embedPlayer ).bind( 'ended' + _this.bindPostfix, function( event ){
+			if( displayedPostroll ){
 				return ;
 			}
-			_this.firstPlay = false;
-			
-			mw.log( "AdTimeline:: First Play Start / bind Ad timeline" );
-
-			// Disable overlays for preroll / bumper
-			_this.adOverlaysEnabled = false;
-
-			// Show prerolls:
-			_this.displaySlots( 'preroll', function(){
-				// Show bumpers:
-				_this.displaySlots( 'bumper', function(){
-					embedPlayer.switchPlaySrc( _this.originalSrc, function(){
-						setTimeout(function(){ // avoid function stack
-							_this.restorePlayer();
-							// Continue playback
-							embedPlayer.play();
-
-							// Sometimes the player gets a pause event out of order be sure to "play" 
-							setTimeout(function(){
-								embedPlayer.play();
-							}, 300 );
-						},1);
-					});
-					
+			displayedPostroll = true;
+			embedPlayer.onDoneInterfaceFlag = false;
+			_this.displaySlots( 'postroll', function(){
+				/** TODO support postroll bumper and leave behind */
+				embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+					_this.restorePlayer();
+					// stop the playback: 
+					embedPlayer.pause();
+					// Restore ondone interface: 
+					embedPlayer.onDoneInterfaceFlag = true;
+					// run the clipdone event:
+					embedPlayer.onClipDone();
 				});
 			});
-			
-			// Bind the player "ended" event to play the postroll if present
-			var displayedPostroll = false;
-			// TODO We really need a "preend" event for thing like this. 
-			// So that playlist next clip or other end bindings don't get triggered. 
-			$( embedPlayer ).bind( 'ended' + _this.bindPostfix, function( event ){
-				if( displayedPostroll ){
-					return ;
-				}
-				displayedPostroll = true;
-				embedPlayer.onDoneInterfaceFlag = false;
-				_this.displaySlots( 'postroll', function(){
-					/** TODO support postroll bumper and leave behind */
-					embedPlayer.switchPlaySrc( _this.originalSrc, function(){
-						_this.restorePlayer();
-						// stop the playback: 
-						embedPlayer.pause();
-						// Restore ondone interface: 
-						embedPlayer.onDoneInterfaceFlag = true;
-						// run the clipdone event:
-						embedPlayer.onClipDone();
-					});
-				});
-			});
-			
-		});		
+		});
 	},
 	destroy: function(){
 		var _this = this;
