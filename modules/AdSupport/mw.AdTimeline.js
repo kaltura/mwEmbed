@@ -133,6 +133,7 @@ mw.AdTimeline.prototype = {
 			embedPlayer.pauseLoading();
 			// given an opportunity for ads to load for ads to load: 
 			$( embedPlayer ).triggerQueueCallback( 'AdSupport_OnPlayAdLoad',function(){
+				embedPlayer.play();
 				// Once all the ads have loaded setup on onPlay actions: 
 				_this.doPlayTimeline();
 			});
