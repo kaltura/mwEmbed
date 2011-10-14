@@ -2250,7 +2250,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	};
 	mw.loadCustomResourceIncludes = function( loadSet, callback ){
 		// XXX this needs to be cleaned up ( for now don't include custom resources if not an iframe player )
-		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) || loadSet.length == 0 ){
+		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) || !loadSet || loadSet.length == 0 ){
 			callback();
 			return ;
 		}
