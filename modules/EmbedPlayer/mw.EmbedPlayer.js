@@ -2074,15 +2074,6 @@ mw.EmbedPlayer.prototype = {
 		
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.posterDisplayed + ' native: ' +  this.useNativePlayerControls());
 	
-		// Hide any overlay:
-		if( this.controlBuilder ){
-			this.controlBuilder.closeMenuOverlay();
-		}
-		// Hide any buttons or errors  if present:
-		if( this.$interface ){
-			this.$interface.find( '.play-btn-large,.error' ).remove();
-		}
-		
 		// Check if thumbnail is being displayed and embed html
 		if ( this.posterDisplayed &&  !this.useNativePlayerControls() ) {
 			if ( !this.selectedPlayer ) {
@@ -2116,6 +2107,26 @@ mw.EmbedPlayer.prototype = {
 			}
 		}
 
+		// if we have start time defined, start playing from that point
+		if( this.currentTime < this.startTime ) {
+			var percent = parseFloat( this.startTime ) / this.getDuration();
+			this.doSeek( percent );
+		}
+		this.playInterfaceUpdate();
+		
+		// Start the monitor if not already started
+		this.monitor();
+	},
+	playInterfaceUpdate: function(){
+		// Hide any overlay:
+		if( this.controlBuilder ){
+			this.controlBuilder.closeMenuOverlay();
+		}
+		// Hide any buttons or errors  if present:
+		if( this.$interface ){
+			this.$interface.find( '.play-btn-large,.error' ).remove();
+		}
+		
 		this.$interface.find('.play-btn span')
 		.removeClass( 'ui-icon-play' )
 		.addClass( 'ui-icon-pause' );
@@ -2129,15 +2140,6 @@ mw.EmbedPlayer.prototype = {
 		 	_this.pause();
 		 } )
 		.attr( 'title', gM( 'mwe-embedplayer-pause_clip' ) );
-
-		// if we have start time defined, start playing from that point
-		if( this.currentTime < this.startTime ) {
-			var percent = parseFloat( this.startTime ) / this.getDuration();
-			this.doSeek( percent );
-		}
-
-		// Start the monitor if not already started
-		this.monitor();
 	},
 	/**
 	 * Pause player, and display a loading animation

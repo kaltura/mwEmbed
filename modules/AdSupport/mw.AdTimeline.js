@@ -133,7 +133,6 @@ mw.AdTimeline.prototype = {
 			embedPlayer.pauseLoading();
 			// given an opportunity for ads to load for ads to load: 
 			$( embedPlayer ).triggerQueueCallback( 'AdSupport_OnPlayAdLoad',function(){
-				embedPlayer.play();
 				// Once all the ads have loaded setup on onPlay actions: 
 				_this.doPlayTimeline();
 			});
@@ -255,6 +254,7 @@ mw.AdTimeline.prototype = {
 		runSequeceProxyInx( seqInx );
 	},
 	updateUiForAdPlayback: function( slotType ){
+		this.embedPlayer.playInterfaceUpdate();
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		this.embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here. 
