@@ -1122,10 +1122,10 @@ window.KalturaKDPCallbackAlreadyCalled = [];
  * To support kaltura kdp mapping override
  */
 window.checkForKDPCallback = function(){
+	if( window.jsCallbackReady && !window.originalKDPCallbackReady){
+		window.originalKDPCallbackReady = window.jsCallbackReady;
+	}
 	if( !window.KalturaKDPCallbackReady ){
-		if( window.jsCallbackReady ){
-			window.originalKDPCallbackReady = window.jsCallbackReady;
-		}
 		window.KalturaKDPCallbackReady = function( playerId ){
 			if( window.originalKDPCallbackReady ){
 				window.originalKDPCallbackReady( playerId );
@@ -1143,13 +1143,15 @@ window.restoreKalturaKDPCallback = function(){
 	if( window.KalturaKDPCallbackReady ){
 		window.jsCallbackReady = window.KalturaKDPCallbackReady;
 		window.KalturaKDPCallbackReady = null;
-		if( window.KalturaKDPCallbackAlreadyCalled ){
+		if( window.KalturaKDPCallbackAlreadyCalled.length ){
+			alert(   window.KalturaKDPCallbackAlreadyCalled.length );
 			for( var i =0 ; i < window.KalturaKDPCallbackAlreadyCalled.length; i++){
 				var playerId = window.KalturaKDPCallbackAlreadyCalled[i];
 				window.jsCallbackReady( playerId );
 				window.KWidget.globalJsReadyCallback( playerId );
 			}
 		}
+		// should have to do nothing.. kdp will call window.jsCallbackReady directly
 	}
 };
 
