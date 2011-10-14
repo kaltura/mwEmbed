@@ -49,7 +49,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
             
             $.ajax({
                 type: "GET",
-                url: '/html5.kaltura/mwEmbed/modules/Conviva/tempConvivaNOCOMMIT.js' /*config[ 'convivaKalturaHTML5Lib' ]*/ ,
+                url: config[ 'convivaKalturaHTML5Lib' ],
                 dataType: 'script',
                 timeout: config[ 'convivaAjaxTimeout' ],
                 success: function() {
