@@ -2118,6 +2118,7 @@ mw.EmbedPlayer.prototype = {
 		this.monitor();
 	},
 	playInterfaceUpdate: function(){
+		var _this = this;
 		// Hide any overlay:
 		if( this.controlBuilder ){
 			this.controlBuilder.closeMenuOverlay();
