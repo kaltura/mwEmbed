@@ -2356,7 +2356,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 * converters are included automatically.
 	 */
 	mw.checkModuleLoaderFiles = function( callback ) {
-		mw.log( 'doLoaderCheck::' );
+		mw.log( 'checkModuleLoaderFiles::' );
 
 		// Check if we are using scriptloader ( handles loader include
 		// automatically )
@@ -2487,9 +2487,6 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		return false;
 	};
 
-	// Flag to register the domReady has been called
-	var mwDomReadyFlag = false;
-
 	// Flag to register if the domreadyHooks have been called
 	var mwModuleLoaderCheckFlag = false;
 	
@@ -2498,7 +2495,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 * issue a mw.setupMwEmbed call if needed
 	 */
 	mw.domReady = function ( forceSetup ) {
-		mw.log('mw.domReady: ' + mwDomReadyFlag );
+		mw.log('mw.domReady:' );
 		mw.setupMwEmbed();
 	};
 	/**
