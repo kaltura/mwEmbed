@@ -326,19 +326,16 @@ class kalturaIframe {
 		if( ! $this->getResultObject()->getUiConf() ){
 			return false;
 		}
+		
 		// Try to get uiConf
 		$xml = $this->getResultObject()->getUiConfXML();
 		$resourceIncludes = array();
+		$playerConfig =  $this->getResultObject()->playerConfig;
 		
-		$uiVarsXml = $xml->xpath("*//var");
-		for( $i=0; $i < count($uiVarsXml); $i++ ) {
-
-			$key = (string) $uiVarsXml[ $i ]->attributes()->key;
-			$value = (string) $uiVarsXml[ $i ]->attributes()->value;
+		// vars
+		foreach( $playerConfig['vars'] as $key => $value ){
 			// Check for valid plugin types: 
-			$resource = array( 
-				'src'=> htmlspecialchars( $value ) 
-			);
+			$resource = array();
 			if( strpos( $key, 'IframeCustomPluginJs' ) === 0 ){
 				$resource['type'] = 'js';
 			} else if( strpos( $key, 'IframeCustomPluginCss' ) === 0 ){
@@ -346,9 +343,30 @@ class kalturaIframe {
 			} else{
 				continue;
 			}
+			// we have a valid type key add src:
+			$resource['src']= htmlspecialchars( $value );
+			
 			// Add the resource	
 			$resourceIncludes[] = $resource;
+		}		
+		// plugins
+		foreach( $playerConfig['plugins'] as $pluginId => $plugin ){
+			foreach( $plugin as $attr => $value ){
+				$resource = array();
+				if( strpos( $attr, 'iframeHTML5Js' ) === 0 ){
+					$resource['type'] = 'js';
+				} else if( strpos( $attr, 'iframeHTML5Css' ) === 0 ){
+					$resource['type'] = 'css';
+				} else {
+					continue;
+				}
+				// we have a valid type key add src:
+				$resource['src']= htmlspecialchars( $value );
+				// Add the resource	
+				$resourceIncludes[] = $resource;
+			}
 		}
+		// return the resource array in JSON: 
 		return json_encode( $resourceIncludes );
 	}
 	/** 
@@ -362,7 +380,6 @@ class kalturaIframe {
 		$xml = $this->getResultObject()->getUiConfXML();
 		foreach ($xml->uiVars->var as $var ){
 			if( isset( $var['key'] ) && isset( $var['value'] ) 
-				&& $var['key'] != 'HTML5PluginUrl' && $var['key'] != 'HTML5PlayerCssUrl'
 				&& $var['key'] != 'Mw.CustomResourceIncludes' 
 			){
 				$o.= "mw.setConfig('" . htmlspecialchars( addslashes( $var['key'] ) ) . "', ";

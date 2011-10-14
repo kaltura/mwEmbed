@@ -15,11 +15,8 @@ mw.includeAllModuleMessages();
 
 ( function( mw, $ ) {
 	
-	
-	
-	
-	/*
-	 * embeds all players that match the rewrite player tags config Passes off
+	/**
+	 * Embeds all players that match the rewrite player tags config Passes off
 	 * request to the embedPlayer selector:
 	 * 
 	 * @param {Object} attributes Attributes to apply to embed players @param

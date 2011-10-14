@@ -185,6 +185,7 @@ mw.KWidgetSupport.prototype = {
 		// Add any custom metadata:
 		if( playerData.entryMeta ){
 			embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
+			$( embedPlayer ).trigger( 'KalturaSupport_MetadataReceived', embedPlayer.kalturaEntryMetaData );
 		}
 		// Apply player metadata
 		if( playerData.meta ) {

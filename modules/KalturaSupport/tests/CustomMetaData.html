@@ -3,11 +3,10 @@
 <head>
 <title>Custom Meta data</title>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
-
 <script type="text/javascript">		
 	function jsCallbackReady( playerId ){
-		$( '#' + playerId ).get(0).addJsListener( 'mediaReady', 'showCustomData' );
+		var kdp = $( '#' + playerId ).get(0);
+		kdp.addJsListener( 'metadataReceived', 'showCustomData' );
 
 		$('#switchSource').click(function(){
 			$('#customData tr').not('.head').remove();
@@ -22,6 +21,7 @@
 		}); 
 	}	
 </script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 </head>
 <body style="font-size:14px">
 <h2> Custom Meta data </h2>

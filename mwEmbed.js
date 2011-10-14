@@ -2250,23 +2250,24 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	};
 	mw.loadCustomResourceIncludes = function( loadSet, callback ){
 		// XXX this needs to be cleaned up ( for now don't include custom resources if not an iframe player )
-		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) || loadSet.length == 0 ){
 			callback();
 			return ;
 		}
-		if(!loadSet || loadSet.length == 0 ){
-			callback();
-			return ;
-		}
-
-		// pop up a loadSet item and re call loadCustomResourceIncludes
-		var resource = loadSet.shift();
-		if( resource.type == 'js' ){
-			$j.getScript( resource.src, function(){
-				mw.loadCustomResourceIncludes( loadSet, callback );
-			});
-		} else if ( resource.type == 'css' ){
-			mw.getStyleSheet( resource.src, callback );
+		var loadCount = loadSet.length - 1;
+		var checkLoadDone = function(){
+			loadCount--;
+			if( loadCount == 0 )
+				callback();
+		};
+		var resource;
+		for( var i =0 ; i < loadSet.length; i ++ ){
+			resource = loadSet[i];
+			if( resource.type == 'js' ){
+				$j.getScript( resource.src, checkLoadDone);
+			} else if ( resource.type == 'css' ){
+				mw.getStyleSheet( resource.src, checkLoadDone);
+			}
 		}
 	};
 	/**

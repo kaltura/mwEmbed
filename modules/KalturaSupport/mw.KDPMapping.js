@@ -472,6 +472,9 @@
 						}
 					});
 					break;
+				case 'metadataReceived':
+					b('KalturaSupport_MetadataReceived');
+					break;
 				case 'cuePointsReceived':
 					b( 'KalturaSupport_CuePointsReady', function( event, cuePoints ) {
 						callback( embedPlayer.rawCuePoints, embedPlayer.id );

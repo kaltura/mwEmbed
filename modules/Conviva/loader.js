@@ -7,9 +7,7 @@
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 
     $( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
-    	
         if( embedPlayer.isPluginEnabled ( 'Conviva' ) ) {
-        
             var config = embedPlayer.getKalturaConfig( 'Conviva', [ 'convivaKalturaHTML5Lib', 'convivaAjaxTimeout', 'convivaCustomerId', 'convivaServiceUrl', 'tags' ] );
             
             var initParameter = function( parameter, defaultValue ) {
@@ -51,7 +49,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
             
             $.ajax({
                 type: "GET",
-                url: config[ 'convivaKalturaHTML5Lib' ],
+                url: '/html5.kaltura/mwEmbed/modules/Conviva/tempConvivaNOCOMMIT.js' /*config[ 'convivaKalturaHTML5Lib' ]*/ ,
                 dataType: 'script',
                 timeout: config[ 'convivaAjaxTimeout' ],
                 success: function() {
