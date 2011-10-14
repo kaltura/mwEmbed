@@ -254,9 +254,10 @@ mw.AdTimeline.prototype = {
 		runSequeceProxyInx( seqInx );
 	},
 	updateUiForAdPlayback: function( slotType ){
-		this.embedPlayer.playInterfaceUpdate();
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		this.embedPlayer.stopEventPropagation();
+		// update the interface to play state:
+		this.embedPlayer.playInterfaceUpdate();
 		// TODO read the add disable control bar to ad config and check that here. 
 		this.embedPlayer.disableSeekBar();
 		// Trigger an event so plugins can get out of the way for ads:
