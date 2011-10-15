@@ -24,7 +24,7 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		
 		// Inherit BaseAdPlugin
-		mw.inherit( this, new mw.BaseAdPlugin(  embedPlayer, callback ) );
+		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 		
 		// Add all the player bindings for loading ads at the correct times
 		_this.addPlayerBindings();

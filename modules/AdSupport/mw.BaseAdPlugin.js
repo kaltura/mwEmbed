@@ -6,9 +6,17 @@ mw.BaseAdPlugin = function( embedPlayer, callback){
 };
 
 mw.BaseAdPlugin.prototype = {
+		
 	init: function( embedPlayer, callback ){
-		this.embedPlayer = embedPlayer;
+		var _this = this;
+		_this.embedPlayer = embedPlayer;
 		// Should extend "BasePlugin" ( but we have to write that first ) 
+		
+		// Remove all ad bindings on change media:
+		$( _this.embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function( event ) {
+			debugger;
+			_this.destroy();
+		}); 
 	},
 	/**
 	 * gets the target index for a given sequence item

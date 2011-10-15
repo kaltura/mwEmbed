@@ -57,19 +57,27 @@ mw.FreeWheelControler.prototype = {
 	init: function( embedPlayer, callback  ){
 		var _this = this;
 		// Inherit BaseAdPlugin
-		mw.inherit( this, new mw.BaseAdPlugin(  embedPlayer, callback ) );
+		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 		
-		// XXX todo we should read "adManagerUrl" from uiConf config
-		var adManagerUrl = ( this.getConfig( 'adManagerJsUrl' ) ) ? 
-							this.getConfig( 'adManagerJsUrl' )  : 
-							mw.getConfig( 'FreeWheel.AdManagerUrl' );
-							
+		// unbind any existing bindings:
+		$( _this.embedPlayer ).unbind( _this.bindPostfix );
+		
 		// Load the freewheel ad manager then setup the ads
-		$.getScript(adManagerUrl, function(){
+		if( !window['tv'] || !tv.freewheel ){
+			$.getScript( _this.getAdManagerUrl(), function(){
+				_this.setupAds();
+				callback();
+			});
+		} else{
 			_this.setupAds();
 			callback();
-		});
+		}
 	},	
+	getAdManagerUrl: function(){
+		return ( this.getConfig( 'adManagerJsUrl' ) ) ? 
+				this.getConfig( 'adManagerJsUrl' )  : 
+				mw.getConfig( 'FreeWheel.AdManagerUrl' );
+	},
 	/**
 	 * Setup ads, main freeWheel control flow
 	 * @return
@@ -98,7 +106,7 @@ mw.FreeWheelControler.prototype = {
 		
 		// Load add data ( will call onRequestComplete once ready )
 		mw.log("FreeWheelController::submitRequest>");
-		$( _this.embedPlayer ).bind( 'AdSupport_OnPlayAdLoad', function( event, callback ){
+		$( _this.embedPlayer ).bind( 'AdSupport_OnPlayAdLoad' + _this.bindPostfix, function( event, callback ){
 			// Get Freewheel ads: 
 			_this.getContext().submitRequest();
 			// set the callback 
@@ -153,11 +161,6 @@ mw.FreeWheelControler.prototype = {
 				};
 			});
 		});
-		
-		// Add the "unload" binding for playlists
-		$( _this.embedPlayer ).bind( 'changeMedia' + _this.bindPostfix, function() {
-			_this.destory();
-		}); 
 	},
 	playSlotsInRange: function( slotSet ){
 		var _this = this;
@@ -213,7 +216,7 @@ mw.FreeWheelControler.prototype = {
 				doneCallback();
 			return ;
 		}
-		
+
 		// Setup the active slots
 		this.curentSlotIndex = inx;
 		this.currentSlotDoneCB = doneCallback;

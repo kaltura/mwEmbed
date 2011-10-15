@@ -2089,13 +2089,14 @@ mw.EmbedPlayer.prototype = {
 			this.paused = false;
 			// Check if we should Trigger the play event
 			mw.log("EmbedPlayer:: trigger play event::" + !this.paused + ' events:' + this._propagateEvents );
-			if(  this._propagateEvents  ) {
-				$( this ).trigger( 'onplay' );
-			}
 			// We need first play event for analytics purpose
 			if( this.firstPlay ) {
 				this.firstPlay = false;
 				$( this ).trigger( 'firstPlay' );
+			}
+			// trigger the actual play event: 
+			if(  this._propagateEvents  ) {
+				$( this ).trigger( 'onplay' );
 			}
 		}
 		
