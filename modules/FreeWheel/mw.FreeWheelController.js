@@ -1,6 +1,6 @@
 ( function( mw, $ ) {
 
-// Set the freewheel config:
+// Set the FreeWheel config:
 mw.setConfig({
 	// The url for the ad Manager
 	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js'
@@ -34,7 +34,7 @@ mw.FreeWheelControler.prototype = {
 		'postroll' : [],
 		'overlay' : [],
 		'midroll' : [],
-		// an unknown or unsupported type
+		// An unknown or unsupported type
 		'unknown_type': []
 	},
 	
@@ -43,6 +43,9 @@ mw.FreeWheelControler.prototype = {
 		
 	// if an overlay slot is active:
 	overlaySlotActive: false,
+	
+	// Local storage of ad freewheel ad metadata indexed by ad Id
+	fwAdParams: {},
 
 	// bindPostfix enables namespacing the plugin binding
 	bindPostfix: '.freeWheel',
@@ -135,6 +138,28 @@ mw.FreeWheelControler.prototype = {
 		}
 		_this.callback();
 	},
+	// Returns freewheel ad parameters by ad Id
+	getFwAdMetaData: function( creativeId ){
+		var _this = this;
+		var context = this.getContext();
+		if( context._adResponse && context._adResponse._ads ){
+			for(var i=0; i < context._adResponse._ads.length; i++){
+				var ad = context._adResponse._ads[i];
+				// Check for params: 
+				if( ad._creatives ){
+					for( var j=0; j < ad._creatives.length ; j++){
+						var creative = ad._creatives[j];
+						// Check that this is the "video" object
+						if(creativeId == creative._id ){
+							return creative._parameters;
+						}
+					}
+				}
+			}
+		}
+		// else no parameters found: 
+		return {};
+	},
 	addPlayerBindings: function(){
 		mw.log("FreeWheelControl:: addPlayerBindings");
 		var _this = this;
@@ -200,7 +225,11 @@ mw.FreeWheelControler.prototype = {
 		if( slot.alreadyPlayed ){
 			return false;
 		}
-		mw.log('mw.FreeWheelControl:: playSlot:' + this.getSlotType( slot ) );
+		mw.log('mw.FreeWheelController:: playSlot:' + this.getSlotType( slot ) );
+		
+		// TODO send adMeta data to adMetadata object
+		var adMeta = this.getFwAdMetaData( slot._adInstances[0]._creativeId ) );
+
 		slot.play();
 		slot.alreadyPlayed = true;
 		return true;
@@ -216,7 +245,6 @@ mw.FreeWheelControler.prototype = {
 				doneCallback();
 			return ;
 		}
-
 		// Setup the active slots
 		this.curentSlotIndex = inx;
 		this.currentSlotDoneCB = doneCallback;
