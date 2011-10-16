@@ -1122,18 +1122,19 @@ window.KalturaKDPCallbackAlreadyCalled = [];
  * To support kaltura kdp mapping override
  */
 window.checkForKDPCallback = function(){
-	if( window.jsCallbackReady && !window.KalturaKDPCallbackReady){
-		window.originalKDPCallbackReady = window.jsCallbackReady;
+	var pushAlreadyCalled = function( player_id ){
+		window.KalturaKDPCallbackAlreadyCalled.push( player_id );
 	}
+	if( window.jsCallbackReady && window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
+		window.originalKDPCallbackReady = window.jsCallbackReady;
+		window.jsCallbackReady = pushAlreadyCalled
+	};
 	if( !window.KalturaKDPCallbackReady ){
 		window.KalturaKDPCallbackReady = function( playerId ){
 			if( window.originalKDPCallbackReady ){
 				window.originalKDPCallbackReady( playerId );
 			}
 			window.KWidget.globalJsReadyCallback( playerId );
-		};
-		window.jsCallbackReady = function( player_id ){
-			window.KalturaKDPCallbackAlreadyCalled.push( player_id );
 		};
 	}
 };

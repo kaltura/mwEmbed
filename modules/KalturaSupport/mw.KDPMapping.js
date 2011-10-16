@@ -415,6 +415,12 @@
 				case 'doPause':
 					b( "pause" );
 					break;
+				case 'pre1start':
+					b( 'preSequence');
+					break;
+				case 'post1start':
+					b( 'postSequence');
+					break;
 				case 'playerPlayed':
 				case 'play':
 				case 'doPlay':
@@ -432,7 +438,7 @@
 					b( "seeked" );
 					break;
 				case 'playerPlayEnd':
-					b( "onEndedDone" );
+					b( "ended" );
 					break;
 				case 'durationChange': 
 					b( "durationchange", function(){
@@ -493,7 +499,7 @@
 				/**
 				 * Mostly for analytics ( rather than strict kdp compatibility )
 				 */
-				case 'videoView':
+				case 'videoView': // is this part of the kdp api? 
 					b('firstPlay' );
 					break;
 				case 'share':

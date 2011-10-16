@@ -128,39 +128,31 @@ mw.AdTimeline.prototype = {
 			_this.destroy();
 		});
 		
-		$( embedPlayer ).bind( 'firstPlay' + _this.bindPostfix, function() {
+		// On play preSequence
+		$( embedPlayer ).bind( 'preSequence' + _this.bindPostfix, function() {
 			mw.log( "AdTimeline:: First Play Start / bind Ad timeline" );
 			embedPlayer.pauseLoading();
 			// given an opportunity for ads to load for ads to load: 
 			$( embedPlayer ).triggerQueueCallback( 'AdSupport_OnPlayAdLoad',function(){
-				// Once all the ads have loaded setup on onPlay actions: 
-				_this.doPlayTimeline();
-			});
-		});		
-	},
-	doPlayTimeline: function(){
-		var embedPlayer = this.embedPlayer;
-		var _this = this;
-		// Disable overlays for preroll / bumper
-		_this.adOverlaysEnabled = false;
+				// Show prerolls:
+				_this.displaySlots( 'preroll', function(){
+					// Show bumpers:
+					_this.displaySlots( 'bumper', function(){
+						embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+							setTimeout(function(){ // avoid function stack
+								_this.restorePlayer();
+								// Continue playback
+								embedPlayer.play();
 
-		// Show prerolls:
-		_this.displaySlots( 'preroll', function(){
-			// Show bumpers:
-			_this.displaySlots( 'bumper', function(){
-				embedPlayer.switchPlaySrc( _this.originalSrc, function(){
-					setTimeout(function(){ // avoid function stack
-						_this.restorePlayer();
-						// Continue playback
-						embedPlayer.play();
-
-						// Sometimes the player gets a pause event out of order be sure to "play" 
-						setTimeout(function(){
-							embedPlayer.play();
-						}, 300 );
-					},1);
+								// Sometimes the player gets a pause event out of order be sure to "play" 
+								setTimeout(function(){
+									embedPlayer.play();
+								}, 300 );
+							},1);
+						});
+						
+					});
 				});
-				
 			});
 		});
 		

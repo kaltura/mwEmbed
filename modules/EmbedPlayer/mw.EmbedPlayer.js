@@ -1249,9 +1249,23 @@ mw.EmbedPlayer.prototype = {
 
 	/**
 	 * On clip done action. Called once a clip is done playing
+	 * TODO CLEAN UP END EVENT
 	 */
+	postSequence: false,
 	onClipDone: function() {
 		var _this = this;
+		// Trigger the post Sequence 
+		// TODO migrate to triggerQueueCallback instead of _propagateEvents and
+		// onDoneInterfaceFlag hacks!
+		/*if( !this.postSequence ) {
+			this.postSequence = true;
+			mw.log( "EmbedPlayer:: trigger postSequence " );
+			$( this ).triggerQueueCallback( 'postSequence', function(){
+				_this.onClipDone();
+			});
+			return ;
+		}*/
+		
 		mw.log( 'EmbedPlayer::onClipDone: propagate:' +  _this._propagateEvents + ' id:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
 		// don't run onclipdone if _propagateEvents is off
 		if( !_this._propagateEvents ){
@@ -1259,7 +1273,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		// Only run stopped once:
 		if( !this.isStopped() ){
-			
+			this.stop();
 			// Show the control bar:
 			this.controlBuilder.showControlBar();
 
@@ -1653,7 +1667,8 @@ mw.EmbedPlayer.prototype = {
 		
 		// Reset first play to true, to count that play event
 		this.firstPlay = true;
-		
+		this.preSequence = false;
+		this.postSequence = false;
 		// Add a loader to the embed player: 
 		this.pauseLoading();
 		
@@ -2068,23 +2083,34 @@ mw.EmbedPlayer.prototype = {
 	 * false Updates pause button Starts the "monitor"
 	 */
 	firstPlay : true,
+	preSequence: false,
 	replayEventCount : 0,
 	play: function() {
 		var _this = this;
 		
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.posterDisplayed + ' native: ' +  this.useNativePlayerControls());
-	
+		
 		// Check if thumbnail is being displayed and embed html
-		if ( this.posterDisplayed &&  !this.useNativePlayerControls() ) {
-			if ( !this.selectedPlayer ) {
-				this.showPluginMissingHTML();
+		if ( _this.posterDisplayed &&  !_this.useNativePlayerControls() ) {
+			if ( !_this.selectedPlayer ) {
+				_this.showPluginMissingHTML();
 				return;
 			} else {
-				this.posterDisplayed = false;
-				this.doEmbedHTML();
+				_this.posterDisplayed = false;
+				_this.doEmbedHTML();
 			}
 		}
-
+		
+		// NOTE: play: should be essentially overwritten by ad timeline and avoid adTimeline / sequencer
+		// logic like this preSequence bit:
+		// Trigger the preSequence event if the preSequence has not run yet
+		if( !this.preSequence ) {
+			this.preSequence = true;
+			mw.log( "EmbedPlayer:: trigger preSequence " );
+			$( this ).trigger( 'preSequence' );
+		}
+		
+		
 		if( this.paused === true ){
 			this.paused = false;
 			// Check if we should Trigger the play event
@@ -2115,8 +2141,8 @@ mw.EmbedPlayer.prototype = {
 		}
 		this.playInterfaceUpdate();
 		
-		// Start the monitor if not already started
 		this.monitor();
+		
 	},
 	playInterfaceUpdate: function(){
 		var _this = this;
@@ -2497,15 +2523,16 @@ mw.EmbedPlayer.prototype = {
 			}
 			// Check if we are "done"
 			var endPresentationTime = ( this.startOffset ) ? ( this.startOffset + this.duration ) : this.duration;
-			if ( this.currentTime > endPresentationTime ) {
+			if ( this.currentTime >= endPresentationTime ) {
 				// mw.log( "mWEmbedPlayer::should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
-				this.onClipDone();
+				if( this._propagateEvents )
+					this.onClipDone();
 				return ;
 			}
 			// End video if we have endTime attribute
-			if( this.endTime && (this.currentTime > this.endTime) ) {
-				this.pause();
-				this.onClipDone();
+			if( this.endTime && (this.currentTime >= this.endTime) ) {
+				if( this._propagateEvents )
+					this.onClipDone();
 				return ;
 			}
 
