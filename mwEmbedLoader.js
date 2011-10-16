@@ -1122,7 +1122,7 @@ window.KalturaKDPCallbackAlreadyCalled = [];
  * To support kaltura kdp mapping override
  */
 window.checkForKDPCallback = function(){
-	if( window.jsCallbackReady && !window.originalKDPCallbackReady){
+	if( window.jsCallbackReady && !window.KalturaKDPCallbackReady){
 		window.originalKDPCallbackReady = window.jsCallbackReady;
 	}
 	if( !window.KalturaKDPCallbackReady ){
