@@ -52,6 +52,9 @@ $wgMwEmbedApiServices = array();
 // $wgKalturaRemoteAddressSalt configuration option. 
 $wgKalturaRemoteAddressSalt = false;
 
+// For force ip testing geo restrictions
+$wgKalturaForceIP = false;
+
 // The default Kaltura service url:
 $wgKalturaServiceUrl = $wgHTTPProtocol . '://cdnapi.kaltura.com';
 

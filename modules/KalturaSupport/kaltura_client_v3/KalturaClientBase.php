@@ -228,9 +228,6 @@ class KalturaClientBase
 				$result = @unserialize($postResult);
 				if ($result === false && serialize(false) !== $postResult) 
 				{
-					print $url . "\n";
-					print_r( $params );
-					die($error );
 					throw new KalturaClientException("failed to unserialize server result\n$postResult", KalturaClientException::ERROR_UNSERIALIZE_FAILED);
 				}
 				$dump = print_r($result, true);
@@ -285,11 +282,15 @@ class KalturaClientBase
 	 * Returns a custom signed kaltura header 
 	 */
 	private function getRemoteAddrHeader(){
-		global $wgKalturaRemoteAddressSalt;
+		global $wgKalturaRemoteAddressSalt, $wgKalturaForceIP;
 		if( $wgKalturaRemoteAddressSalt === false ){
 			return '';
 		}
-		$s = $_SERVER['REMOTE_ADDR'] . "," . time() . "," . microtime( true );
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if( $wgKalturaForceIP ){
+			$ip = $wgKalturaForceIP;
+		}
+		$s = $ip . "," . time() . "," . microtime( true );
 		return "X_KALTURA_REMOTE_ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
 	}
 	
