@@ -859,15 +859,16 @@ if ( document.readyState === "complete" ) {
 // Fallback function that should fire for all browsers ( only for non-iframe ) 
 if( ! mw.getConfig( 'EmbedPlayer.IsIframeServer') ){
 	kSiteOnLoadCall = false;
-	if( window.onload ){
-		kSiteOnLoadCall = window.onload;
-	}
-	window.onload = function(){
+	var kDomReadyCall = function(){
 		if( typeof kSiteOnLoadCall == 'function' ){
 			kSiteOnLoadCall();
 		}
 		kRunMwDomReady();
 	};
+	if( window.onload && window.onload.toString() != kDomReadyCall.toString() ){
+		kSiteOnLoadCall = window.onload;
+	}
+	window.onload = kDomReadyCall;
 }
 // Cleanup functions for the document ready method
 if ( document.addEventListener ) {

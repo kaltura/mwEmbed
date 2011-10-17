@@ -227,8 +227,10 @@ mw.FreeWheelControler.prototype = {
 		}
 		mw.log('mw.FreeWheelController:: playSlot:' + this.getSlotType( slot ) );
 		
-		// TODO send adMeta data to adMetadata object
-		var adMeta = this.getFwAdMetaData( slot._adInstances[0]._creativeId );
+		if(  slot._adInstances.length ){
+			// TODO send adMeta data to adMetadata object
+			var adMeta = this.getFwAdMetaData( slot._adInstances[0]._creativeId );
+		}
 
 		slot.play();
 		slot.alreadyPlayed = true;
