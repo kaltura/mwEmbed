@@ -2298,6 +2298,8 @@ mw.EmbedPlayer.prototype = {
 		this.setVolume( percent );
 		// Update the interface
 		this.setInterfaceVolume( percent );
+		// TODO Don't update the inteface ( instaed bind to ontogglemute )
+		$(this).trigger('onToggleMute');
 	},
 
 	/**

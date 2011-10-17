@@ -1125,17 +1125,14 @@ class KalturaResultObject {
 			// Empty uiConf ( don't try and parse, return an empty object)
 			return new SimpleXMLElement('<xml />' );
 		}
-		/*
-		libxml_use_internal_errors(true);
+		/*libxml_use_internal_errors(true);
 		$sxe = simplexml_load_string($uiConf);
 		if (!$sxe) {
 			echo "Failed loading XML\n";
 			foreach(libxml_get_errors() as $error) {
 				echo "\t", $error->message;
 			}
-		}
-		*/
-		
+		}*/
 		$this->uiConfXml = new SimpleXMLElement( $uiConf );
 	}
 	public function getUiConf() {
