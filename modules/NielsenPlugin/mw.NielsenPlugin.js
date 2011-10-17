@@ -33,7 +33,7 @@ mw.NielsenPlugin.prototype = {
 			$.getScript( this.getGgCmbUrl(), function(){
 				// Nielsen specific global param option: 
 				var nolggGlobalParams = {
-					  clientid: "us-200124"
+					  clientid: _this.getConfig( "clientId" )
 				};	
 				_this.gg = new gg();
 				var uid = 0; // "provided by Nielsen"
