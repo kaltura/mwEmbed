@@ -27,7 +27,7 @@ mw.PlayerControlBuilder.prototype = {
 	volume_layout : 'vertical',
 
 	// Default control bar height
-	height: 31,
+	height: mw.getConfig( 'EmbedPlayer.ControlsHeight' ),
 
 	// Default supported components is merged with embedPlayer set of supported types
 	supportedComponets: {
