@@ -70,6 +70,12 @@ mw.PlayerControlBuilder.prototype = {
 	* @return {Number} control bar height
 	*/
 	getHeight: function(){
+		// Check if the configuration was updated
+		// Probably will break things to set control bar height late 
+		// but try to support it anyway
+		if( mw.getConfig( 'EmbedPlayer.ControlsHeight' ) != this.height ){
+			this.height = mw.getConfig( 'EmbedPlayer.ControlsHeight' ) ;
+		}
 		return this.height;
 	},
 
