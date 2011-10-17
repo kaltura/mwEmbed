@@ -113,8 +113,6 @@ mw.NielsenPlugin.prototype = {
 				_this.dispatchEvent( 49, embedPlayer.currentTime );
 			}
 		});
-		
-
 	},
 	/**
 	 * Dispatches a Nielsen event via the gg.ggPM call.  
@@ -134,7 +132,6 @@ mw.NielsenPlugin.prototype = {
 		// TODO support "ads type" events.
 		// TODO find out the string type name for "ads" or "preroll", "postroll" etc. 
 		var type = "content";
-		
 		// What is the diff between 15 and 3? What does "video played" mean at meta data ready time? 
 		// AutoPlay? embedPlayer.isPlaying() ? 
 		if( this.embedPlayer.autoPlay ) {
@@ -150,7 +147,7 @@ mw.NielsenPlugin.prototype = {
 			return vid.src;
 		}
 		// else just return the normal content source: 
-		this.embedPlayer.getSrc();
+		return this.embedPlayer.getSrc();
 	},
 	// Gets the "raw" video duration ( works with ad assets ) 
 	getCurrentVideoDuration: function(){
@@ -159,7 +156,7 @@ mw.NielsenPlugin.prototype = {
 			return vid.duration;
 		}
 		// else try normal embedPlayer duration: 
-		this.embedPlayer.getDuration();
+		return this.embedPlayer.getDuration();
 	},
 	/**
 	 * Get the Nielsen xml string: 
