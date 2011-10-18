@@ -1973,10 +1973,6 @@ mw.PlayerControlBuilder.prototype = {
 				if ( ctrlObj.volume_layout == 'vertical' ) {
 					$volumeOut.find('.volume_control').append(
 						$( '<div />' )
-						.css( {
-							'position' : 'absolute',
-							'left' : '0px'
-						})
 						.hide()
 						.addClass( "vol_container ui-corner-all" )
 						.append(
