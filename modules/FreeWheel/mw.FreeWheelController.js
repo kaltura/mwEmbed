@@ -117,6 +117,7 @@ mw.FreeWheelControler.prototype = {
 	 */
 	onRequestComplete: function( event ){
 		var _this = this;
+		
 		mw.log("FreeWheelController::onRequestComplete>");
 		if ( event.success && _this.getContext().getTemporalSlots().length ){
 			$.each( _this.getContext().getTemporalSlots(), function(inx, slot ){
@@ -383,7 +384,7 @@ mw.FreeWheelControler.prototype = {
 		var _this = this;
 		mw.log("FreeWheelController::addContextListners>" );
 		this.getContext().addEventListener( tv.freewheel.SDK.EVENT_REQUEST_COMPLETE, function( event ){
-			_this.onRequestComplete( event );
+			_this.embedPlayer.freeWheel.onRequestComplete( event );
 		});
 		this.getContext().addEventListener( tv.freewheel.SDK.EVENT_SLOT_ENDED, function( event ){
 			// Use the embedPlayer instance of FreeWheel ads so that the non-prototype methods are not lost in 
