@@ -157,14 +157,14 @@ mw.FreeWheelControler.prototype = {
 	
 		$.each(_this.slots, function( slotType, slotSet){
 			if( slotType == 'midroll' || slotType == 'overlay' ){
-				$( _this.embedPlayer ).bind( 'monitorEvent' + _this.bindPostfix, function( event ){
+				_this.embedPlayer.freeWheelBindingHelper( 'monitorEvent' + _this.bindPostfix, function( event ){
 					_this.playSlotsInRange( slotSet );
 				});
 				return true;
 			}
 			
 			// Else set of preroll or postroll clips setup normal binding: 
-			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType + _this.bindPostfix, function( event, sequenceProxy ){
+			_this.embedPlayer.freeWheelBindingHelper( 'AdSupport_' + slotType + _this.bindPostfix, function( event, sequenceProxy ){
 				sequenceProxy[ _this.getSequenceIndex( slotType ) ] = function( callback ){
 					// Run the freewheel slot add, then run the callback once done 
 					_this.displayFreeWheelSlots( slotType, 0, function(){
@@ -197,10 +197,10 @@ mw.FreeWheelControler.prototype = {
 						}
 						// Check if we are overlaying controls ( move the banner up ) 
 						if( embedPlayer.controlBuilder.isOverlayControls() ){
-							$( embedPlayer ).bind( 'onShowControlBar', function(){
+							_this.embedPlayer.freeWheelBindingHelper( 'onShowControlBar', function(){
 								$('#fw_ad_container_div').animate({'bottom': ctrlBarBottom + 'px'}, 'fast');
 							});
-							$( embedPlayer ).bind( 'onHideControlBar', function(){
+							_this.embedPlayer.freeWheelBindingHelper( 'onHideControlBar', function(){
 								$('#fw_ad_container_div').animate({'bottom': bottom + 'px'}, 'fast');
 							});
 						} else {

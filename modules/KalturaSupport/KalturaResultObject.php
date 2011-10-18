@@ -939,9 +939,9 @@ class KalturaResultObject {
 				$filter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
 				$filter->objectIdEqual = $this->urlParameters['entry_id'];
 				$filter->metadataObjectTypeEqual = KalturaMetadataObjectType::ENTRY;
+				
 				$metadataPager =  new KalturaFilterPager();
 				$metadataPager->pageSize = 1;
-
 				$params = array( 'filter' => $filter, 'metadataPager', $metadataPager );
 				$namedMultiRequest->addNamedRequest( 'entryMeta', 'metadata_metadata', 'list', $params );
 			//}

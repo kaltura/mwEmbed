@@ -721,8 +721,8 @@ mw.EmbedPlayer.prototype = {
 	},
 	
 	applyIntrinsicAspect: function(){
-		// check if a image thumbnail is present:
-		if( this.$interface.find('.playerPoster').length ){
+		// Check if a image thumbnail is present:
+		if(  this.$interface && this.$interface.find('.playerPoster').length ){
 			var img = this.$interface.find('.playerPoster').get(0);
 			var pHeight = $( this ).height();
 			// Check for intrinsic width and maintain aspect ratio
