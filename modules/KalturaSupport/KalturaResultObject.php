@@ -672,7 +672,14 @@ class KalturaResultObject {
 				}
 			}
 		}
-        //echo '<pre>'; print_r($sources); exit();
+
+		// If no sources and entry->mediaType is not image, then show error message
+		$mediaType = $resultObject['meta']->mediaType;
+		if( count($sources) == 0 && $mediaType != 2 ) {
+			$this->error = "No mobile sources found";
+		}
+
+		//echo '<pre>'; print_r($sources); exit();
 		return $sources;
 	}
 	
@@ -985,7 +992,7 @@ class KalturaResultObject {
 			$resultObject['entryMeta'] = $this->xmlToArray( new SimpleXMLElement( $resultObject['entryMeta']->objects[0]->xml ) );
 		}
 		
-		// Ads uiConf file to our object
+		// Add uiConf file to our object
 		if( $this->uiConfFile ){
 			$resultObject[ 'uiconf_id' ] = $this->urlParameters['uiconf_id'];
 			$resultObject[ 'uiConf' ] = $this->uiConfFile;

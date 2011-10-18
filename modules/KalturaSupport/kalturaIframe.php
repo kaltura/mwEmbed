@@ -218,11 +218,6 @@ class kalturaIframe {
 					$this->playerError = $this->getResultObject()->getError();
 					$sources = $this->getResultObject()->getBlackVideoSources();
 				}
-				// If no sources get the black sources:
-				if( count( $sources ) == 0 ) {
-					$this->playerError = "No mobile sources found";
-					$sources = $this->getResultObject()->getBlackVideoSources();
-				}
 			} catch ( Exception $e ){
 				// xxx log an empty entry id lookup!
 				$this->fatalError( $e->getMessage() );
