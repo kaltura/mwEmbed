@@ -260,7 +260,6 @@ class KalturaResultObject {
 		if( !$userAgent ){
 			$userAgent = $this->getUserAgent();
 		}
-	
 		//@@TODO integrate a library for doing this user-agent -> source selection
 		// what follows somewhat arbitrary
 		
@@ -510,6 +509,7 @@ class KalturaResultObject {
 	// Load the Kaltura library and grab the most compatible flavor
 	public function getSources(){
 		global $wgKalturaServiceUrl, $wgKalturaUseAppleAdaptive;
+		
 		// Check the access control before returning any source urls
 		if( !$this->isAccessControlAllowed() ) {
 			return array();

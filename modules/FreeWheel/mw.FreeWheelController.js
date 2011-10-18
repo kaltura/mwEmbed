@@ -6,10 +6,6 @@ mw.setConfig({
 	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js'
 });
 
-mw.addFreeWheelControler = function( embedPlayer, callback ) {
-	embedPlayer.freeWheelAds = new mw.FreeWheelControler(embedPlayer, callback);	
-};
-
 mw.FreeWheelControler = function( embedPlayer, callback ){
 	return this.init( embedPlayer, callback );
 };
@@ -64,6 +60,9 @@ mw.FreeWheelControler.prototype = {
 		
 		// unbind any existing bindings:
 		$( _this.embedPlayer ).unbind( _this.bindPostfix );
+		
+		// Setup an embedPlayer ref to "this": ( some freewheel callbacks happen without context )
+		_this.embedPlayer.freeWheelAds = this
 		
 		// Load the freewheel ad manager then setup the ads
 		if( !window['tv'] || !tv.freewheel ){
@@ -201,8 +200,8 @@ mw.FreeWheelControler.prototype = {
 						// @@TODO handle close caption layout conflict
 						var bottom = parseInt( $('#fw_ad_container_div').css('bottom') );
 						var ctrlBarBottom  = bottom;
-						if( bottom < embedPlayer.controlBuilder.height ){
-							ctrlBarBottom = bottom + embedPlayer.controlBuilder.height ;
+						if( bottom < embedPlayer.controlBuilder.getHeight() ){
+							ctrlBarBottom = bottom + embedPlayer.controlBuilder.getHeight();
 						}
 						// Check if we are overlaying controls ( move the banner up ) 
 						if( embedPlayer.controlBuilder.isOverlayControls() ){
@@ -229,9 +228,8 @@ mw.FreeWheelControler.prototype = {
 		
 		if(  slot._adInstances.length ){
 			// TODO send adMeta data to adMetadata object
-			var adMeta = this.getFwAdMetaData( slot._adInstances[0]._creativeId );
+			_this.embedPlayer.adTimeline.updateMeta( this.getFwAdMetaData( slot._adInstances[0]._creativeId ) );
 		}
-
 		slot.play();
 		slot.alreadyPlayed = true;
 		return true;
@@ -254,7 +252,7 @@ mw.FreeWheelControler.prototype = {
 		// Display the current slot:
 		if( ! _this.playSlot( slotSet[ inx ] ) ){
 			// if we did not play it, jump directly to slot done:
-			this.onSlotEnded( {  'slot' : slotSet[ inx ] } );
+			this.onSlotEnded({ 'slot' : slotSet[ inx ] });
 		}
 	},
 	onSlotEnded: function ( event ){

@@ -115,7 +115,10 @@ mw.AdTimeline.prototype = {
 		// Bind to the "play" and "end"
 		this.bindPlayer();
 	},
-
+	//  method to update adMetadata:
+	updateMeta: function( adMeta ){
+		embedPlayer.sequenceProxy.activePluginMetadata = adMeta;
+	},
 	bindPlayer: function() {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
@@ -123,6 +126,9 @@ mw.AdTimeline.prototype = {
 		_this.originalSrc = embedPlayer.getSrc();
 		// Clear out any old bindings
 		_this.destroy();
+		// Create an empty sequence proxy object ( stores information about the current sequence ) 
+		embedPlayer.sequenceProxy = {};
+
 		// On change media clear out any old adTimeline bindings
 		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
@@ -224,8 +230,11 @@ mw.AdTimeline.prototype = {
 		var seqInx = 0;
 		// Run each sequence key in order:
 		var runSequeceProxyInx = function( seqInx ){
+			// Update the "sequenceProxy" var
+			_this.embedPlayer.sequenceProxy.isInSequence = true;
 			var key = keyList[ seqInx ] ;
 			if( !sequenceProxy[key] ){
+				_this.embedPlayer.sequenceProxy.isInSequence = false;
 				doneCallback();
 				return ;
 			}
