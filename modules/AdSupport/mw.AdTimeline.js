@@ -117,7 +117,7 @@ mw.AdTimeline.prototype = {
 	},
 	//  method to update adMetadata:
 	updateMeta: function( adMeta ){
-		embedPlayer.sequenceProxy.activePluginMetadata = adMeta;
+		this.embedPlayer.sequenceProxy.activePluginMetadata = adMeta;
 	},
 	bindPlayer: function() {
 		var _this = this;
