@@ -4,9 +4,6 @@
  *
  * @author ran
  */
-
-define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server, something maybe broken or server is under high load. Please try again.");
-
 // Include configuration: ( will include LocalSettings.php )
 require_once( realpath( '../../' ) . '/includes/DefaultSettings.php' );
 
@@ -15,7 +12,6 @@ $download->redirectDownload();
 
 class downloadEntry {
 	var $resultObject = null; // lazy init
-	
 	/**
 	 * The result object grabber, caches a local result object for easy access
 	 * to result object properties. 
@@ -41,12 +37,9 @@ class downloadEntry {
 	}
 	
 	function redirectDownload() {
-		if( !$sources ){
-			$sources =  $this->getResultObject()->getSources();
-		}
+		$sources =  $this->getResultObject()->getSources();
 		$flavorUrl = $this->getResultObject()->getSourceForUserAgent( $sources );
 		// Redirect to flavor
 		header( "location: " . $flavorUrl );
 	}
 }
-?>
