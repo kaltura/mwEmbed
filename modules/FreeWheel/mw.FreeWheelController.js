@@ -216,6 +216,7 @@ mw.FreeWheelControler.prototype = {
 		});
 	},
 	playSlot: function( slot ){
+		var _this = this;
 		if( slot.alreadyPlayed ){
 			return false;
 		}
