@@ -22,10 +22,9 @@ mw.DoubleClick.prototype = {
 	init: function( embedPlayer, callback ){
 		mw.log( 'DoubleClick:: init: ' + embedPlayer.id );
 		var _this = this;
-		
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
-		
+		this.embedPlayer = embedPlayer;
 		// Add all the player bindings for loading ads at the correct times
 		_this.addPlayerBindings();
 		

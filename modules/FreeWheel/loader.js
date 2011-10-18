@@ -13,8 +13,12 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		// Check if the freewheel plugin is enabled:
 		if( embedPlayer.isPluginEnabled( 'FreeWheel' ) ){
 			mw.load( ["FreeWheel"], function(){
+				embedPlayer.freeWheelBindingHelper = function(bindName, callback){
+					$( embedPlayer ).bind( bindName, callback);
+				}
 				// pass the freewheel plugin 
 				new mw.FreeWheelControler(embedPlayer, callback);
+				
 			});
 		} else {
 			// No FreeWheel plugin issue callback to continue player build out

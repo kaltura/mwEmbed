@@ -75,7 +75,6 @@ class mweApiUiConfJs {
 				'actions' => array()
 			);
 			foreach( $userAgentPlayerRules as $key => $val ){
-				//print "key:$key val:$val\n";
 				// Check for special keys: 
 				if( $key == 'disableForceMobileHTML5' && $val =='true' ){
 					$o.=$this->getJsConfigLine( 'disableForceMobileHTML5', 'true');

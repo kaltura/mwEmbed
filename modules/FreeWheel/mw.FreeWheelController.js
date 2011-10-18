@@ -108,7 +108,11 @@ mw.FreeWheelControler.prototype = {
 		
 		// Load add data ( will call onRequestComplete once ready )
 		mw.log("FreeWheelController::submitRequest>");
-		$( _this.embedPlayer ).bind( 'AdSupport_OnPlayAdLoad' + _this.bindPostfix, function( event, callback ){
+		
+		// We should be able to use: 
+		// $(_this.embedPlayer ).bind .. but this ~sometimes~ fails on OSX safari and iOS 
+		// TODO investigate wtf is going on
+		_this.embedPlayer.freeWheelBindingHelper( 'AdSupport_OnPlayAdLoad' + _this.bindPostfix, function( event, callback ){
 			// Get Freewheel ads: 
 			_this.getContext().submitRequest();
 			// set the callback 
@@ -123,13 +127,10 @@ mw.FreeWheelControler.prototype = {
 	onRequestComplete: function( event ){
 		var _this = this;
 		mw.log("FreeWheelController::onRequestComplete>");
-		if ( event.success ){
+		if ( event.success && _this.getContext().getTemporalSlots().length ){
 			$.each( _this.getContext().getTemporalSlots(), function(inx, slot ){
 				_this.addSlot( slot );
 			});
-		} 
-		// Check if we found freewheel ads: 
-		if( _this.getContext().getTemporalSlots().length ){
 			// Add the freeWheel bindings:
 			_this.addPlayerBindings();
 		} else {

@@ -2090,17 +2090,6 @@ mw.EmbedPlayer.prototype = {
 		
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.posterDisplayed + ' native: ' +  this.useNativePlayerControls());
 		
-		// Check if thumbnail is being displayed and embed html
-		if ( _this.posterDisplayed &&  !_this.useNativePlayerControls() ) {
-			if ( !_this.selectedPlayer ) {
-				_this.showPluginMissingHTML();
-				return;
-			} else {
-				_this.posterDisplayed = false;
-				_this.doEmbedHTML();
-			}
-		}
-		
 		// NOTE: play: should be essentially overwritten by ad timeline and avoid adTimeline / sequencer
 		// logic like this preSequence bit:
 		// Trigger the preSequence event if the preSequence has not run yet
@@ -2110,7 +2099,18 @@ mw.EmbedPlayer.prototype = {
 			$( this ).trigger( 'preSequence' );
 			// if we have an adTimeline the timeline will take over playback: 
 			if( this.adTimeline ){
-				return ;
+				return false;
+			}
+		}
+		
+		// Check if thumbnail is being displayed and embed html
+		if ( _this.posterDisplayed &&  !_this.useNativePlayerControls() ) {
+			if ( !_this.selectedPlayer ) {
+				_this.showPluginMissingHTML();
+				return false;
+			} else {
+				_this.posterDisplayed = false;
+				_this.doEmbedHTML();
 			}
 		}
 		
@@ -2146,7 +2146,8 @@ mw.EmbedPlayer.prototype = {
 		this.playInterfaceUpdate();
 		
 		this.monitor();
-		
+
+		return true;
 	},
 	playInterfaceUpdate: function(){
 		var _this = this;

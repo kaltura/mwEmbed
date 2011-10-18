@@ -38,7 +38,9 @@ mw.KAds.prototype = {
 		var _this = this; 
 
 		// Inherit BaseAdPlugin
-		mw.inherit( this, new mw.BaseAdPlugin(  embedPlayer, callback ) );
+		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
+		
+		_this.embedPlayer = embedPlayer;
 		
 		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
