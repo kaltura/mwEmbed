@@ -302,7 +302,12 @@ function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 	// TODO: Add playEventUrl for stats
 	var downloadUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'modules/KalturaSupport/download.php' ) +
 			'/wid/' + kEmbedSettings.wid;
-
+	
+	// Also add the uiconf id to the url:
+	if( kEmbedSettings.uiconf_id ){
+		downloadUrl += '/uiconf_id/' + kEmbedSettings.uiconf_id;
+	}
+	
 	if( kEmbedSettings.entry_id ) {
 		downloadUrl += '/entry_id/'+ kEmbedSettings.entry_id;
 	}
@@ -1057,7 +1062,7 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 		prevUrlPart = curUrlPart;
 	}
 	// Add in Flash vars embedSettings ( they take precedence over embed url )
-	for( var key in  flashvars){	
+	for( var key in  flashvars ){	
 		var val = flashvars[key];
 		var key = key.toLowerCase();
 		// Normalize to the url based settings: 
