@@ -17,7 +17,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 					$( embedPlayer ).bind( bindName, callback);
 				}
 				// pass the freewheel plugin 
-				new mw.FreeWheelControler(embedPlayer, callback);
+				embedPlayer.freeWheel = new mw.FreeWheelControler(embedPlayer, callback);
 				
 			});
 		} else {

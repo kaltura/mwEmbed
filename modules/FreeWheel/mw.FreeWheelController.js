@@ -61,9 +61,6 @@ mw.FreeWheelControler.prototype = {
 		// unbind any existing bindings:
 		$( _this.embedPlayer ).unbind( _this.bindPostfix );
 		
-		// Setup an embedPlayer ref to "this": ( some freewheel callbacks happen without context )
-		_this.embedPlayer.freeWheelAds = this
-		
 		// Load the freewheel ad manager then setup the ads
 		if( !window['tv'] || !tv.freewheel ){
 			$.getScript( _this.getAdManagerUrl(), function(){
@@ -86,33 +83,27 @@ mw.FreeWheelControler.prototype = {
 	 */
 	setupAds: function(){
 		var _this = this;
-		
-		// Add key-values for ad targeting.
-		this.addContextKeyValues();
-		
-		// Listen to AdManager Events
-		this.addContextListners();
-		
-		// Set context timeout
-		this.setContextTimeout();
-		// Add the temporal slots for this "player"
-		// this.addTemporalSlots();
-
-		// Add local companion targets
-		if( mw.getConfig( 'FreeWheel.PostMessageIframeCompanions' ) ){
-			this.addCompanionBindings();
-		}
-		
-		// XXX FreeWheel sets SVLads003 as the response? 
-		window['SVLads003'] = true;
-		
-		// Load add data ( will call onRequestComplete once ready )
-		mw.log("FreeWheelController::submitRequest>");
-		
 		// We should be able to use: 
 		// $(_this.embedPlayer ).bind .. but this ~sometimes~ fails on OSX safari and iOS 
 		// TODO investigate wtf is going on
 		_this.embedPlayer.freeWheelBindingHelper( 'AdSupport_OnPlayAdLoad' + _this.bindPostfix, function( event, callback ){
+			
+			// Add key-values for ad targeting.
+			_this.addContextKeyValues();
+			
+			// Listen to AdManager Events
+			_this.addContextListners();
+			
+			// Set context timeout
+			_this.setContextTimeout();
+			// Add the temporal slots for this "player"
+			// this.addTemporalSlots();
+
+			// XXX FreeWheel sets SVLads003 as the response? 
+			window['SVLads003'] = true;
+			
+			// Load add data ( will call onRequestComplete once ready )
+			mw.log("FreeWheelController::submitRequest>");
 			// Get Freewheel ads: 
 			_this.getContext().submitRequest();
 			// set the callback 
@@ -397,7 +388,7 @@ mw.FreeWheelControler.prototype = {
 		this.getContext().addEventListener( tv.freewheel.SDK.EVENT_SLOT_ENDED, function( event ){
 			// Use the embedPlayer instance of FreeWheel ads so that the non-prototype methods are not lost in 
 			// freewheels callback 
-			_this.embedPlayer.freeWheelAds.onSlotEnded( event );
+			_this.embedPlayer.freeWheel.onSlotEnded( event );
 		});
 	},
 	setContextTimeout: function(){
