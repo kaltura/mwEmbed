@@ -124,7 +124,7 @@ mw.FreeWheelControler.prototype = {
 			for( var i =0;i < slotSet.length;i++){
 				var slot = slotSet[i];
 				this.addSlot( slot );
-			});
+			};
 			// Add the freeWheel bindings:
 			this.addPlayerBindings();
 		} else {
