@@ -774,6 +774,7 @@ class KalturaResultObject {
 
 	private function getResultObjectFromApi(){
 		if( $this->isEmptyPlayer() ){
+			$this->error = "No Entry ID was found";
 			return $this->getUiConfResult();
 		} else if( $this->isPlaylist() ){
 			return $this->getPlaylistResult();
@@ -785,7 +786,7 @@ class KalturaResultObject {
 	function getUiConfResult(){
 		// no need to call this.. the getters don't have clean lazy init and . 
 		// $this->loadUiConf
-		$resultObject = Array( 'uiConf' => $this->uiConfFile );
+		$resultObject = Array( 'uiConf' => $this->uiConfFile, 'uiconf_id' => $this->urlParameters['uiconf_id'] );
 		$resultObject = array_merge( $this->getBaseResultObject(), $resultObject);
 		return $resultObject;
 	}
