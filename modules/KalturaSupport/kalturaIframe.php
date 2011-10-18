@@ -717,7 +717,9 @@ class kalturaIframe {
 					}
 				?>
 				// Because IE has out of order execution issues, we don't check the dom until we get here: 
-				kRunMwDomReady( 'endOfIframeJs' );
+				setTimeout(function(){
+					kRunMwDomReady( 'endOfIframeJs' );
+				},0);
 			});
 		</script>
 	</body>
