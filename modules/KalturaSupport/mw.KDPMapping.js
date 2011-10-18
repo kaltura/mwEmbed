@@ -418,9 +418,13 @@
 				case 'pre1start':
 					b( 'preSequence');
 					break;
+				case 'preSequenceComplete':
+					b( 'preSequenceComplete');
 				case 'post1start':
 					b( 'postSequence');
 					break;
+				case 'postSequenceComplete':
+					b( 'postSequenceComplete' );
 				case 'playerPlayed':
 				case 'play':
 				case 'doPlay':

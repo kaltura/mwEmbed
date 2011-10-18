@@ -145,6 +145,9 @@ mw.AdTimeline.prototype = {
 					// Show bumpers:
 					_this.displaySlots( 'bumper', function(){
 						embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+							// trigger the preSequenceComplete event
+							$( embedPlayer ).trigger( 'preSequenceComplete' );
+							
 							setTimeout(function(){ // avoid function stack
 								_this.restorePlayer();
 								// Continue playback
@@ -173,6 +176,8 @@ mw.AdTimeline.prototype = {
 			displayedPostroll = true;
 			embedPlayer.onDoneInterfaceFlag = false;
 			_this.displaySlots( 'postroll', function(){
+				// Trigger the postSequenceComplete event
+				$(embedPlayer).trigger( 'postSequenceComplete' );
 				/** TODO support postroll bumper and leave behind */
 				embedPlayer.switchPlaySrc( _this.originalSrc, function(){
 					_this.restorePlayer();
