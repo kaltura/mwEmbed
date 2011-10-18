@@ -120,11 +120,13 @@ mw.FreeWheelControler.prototype = {
 		
 		mw.log("FreeWheelController::onRequestComplete>");
 		if ( event.success && _this.getContext().getTemporalSlots().length ){
-			$.each( _this.getContext().getTemporalSlots(), function(inx, slot ){
-				_this.addSlot( slot );
+			var slotSet = _this.getContext().getTemporalSlots();
+			for( var i =0;i < slotSet.length;i++){
+				var slot = slotSet[i];
+				this.addSlot( slot );
 			});
 			// Add the freeWheel bindings:
-			_this.addPlayerBindings();
+			this.addPlayerBindings();
 		} else {
 			mw.log("FreeWheelController:: no freewheel ads avaliable");
 		}
