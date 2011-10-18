@@ -2091,6 +2091,9 @@ mw.EmbedPlayer.prototype = {
 		
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.posterDisplayed + ' native: ' +  this.useNativePlayerControls());
 		
+		// start monitoring when playing
+		this.monitor();
+		
 		// NOTE: play: should be essentially overwritten by ad timeline and avoid adTimeline / sequencer
 		// logic like this preSequence bit:
 		// Trigger the preSequence event if the preSequence has not run yet
@@ -2150,9 +2153,6 @@ mw.EmbedPlayer.prototype = {
 			this.doSeek( percent );
 		}
 		this.playInterfaceUpdate();
-		
-		this.monitor();
-
 		return true;
 	},
 	playInterfaceUpdate: function(){
