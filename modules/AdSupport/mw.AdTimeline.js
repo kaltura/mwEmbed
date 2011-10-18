@@ -138,6 +138,7 @@ mw.AdTimeline.prototype = {
 		$( embedPlayer ).bind( 'preSequence' + _this.bindPostfix, function() {
 			mw.log( "AdTimeline:: First Play Start / bind Ad timeline" );
 			embedPlayer.pauseLoading();
+			embedPlayer.inPreSequence = true;
 			// given an opportunity for ads to load for ads to load: 
 			$( embedPlayer ).triggerQueueCallback( 'AdSupport_OnPlayAdLoad',function(){
 				// Show prerolls:
@@ -145,6 +146,8 @@ mw.AdTimeline.prototype = {
 					// Show bumpers:
 					_this.displaySlots( 'bumper', function(){
 						embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+							// turn off preSequence
+							embedPlayer.inPreSequence = false;
 							// trigger the preSequenceComplete event
 							$( embedPlayer ).trigger( 'preSequenceComplete' );
 							

@@ -2084,6 +2084,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	firstPlay : true,
 	preSequence: false,
+	inPreSequence: false,
 	replayEventCount : 0,
 	play: function() {
 		var _this = this;
@@ -2093,6 +2094,11 @@ mw.EmbedPlayer.prototype = {
 		// NOTE: play: should be essentially overwritten by ad timeline and avoid adTimeline / sequencer
 		// logic like this preSequence bit:
 		// Trigger the preSequence event if the preSequence has not run yet
+		if( this.inPreSequence ){
+			this.playInterfaceUpdate()
+			// if in presequence just update the interface
+			return true;
+		}
 		if( !this.preSequence ) {
 			this.preSequence = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );
