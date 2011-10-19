@@ -1400,7 +1400,8 @@ mw.EmbedPlayer.prototype = {
 		setTimeout(function(){
 			_this.applyIntrinsicAspect();
 		}, 10);
-
+		
+		// triggers autoplay: 
 		mw.playerManager.playerReady( this );
 		
 		// Right before player autoplay ... check if there are any errors that prevent playback or player:
@@ -1563,7 +1564,6 @@ mw.EmbedPlayer.prototype = {
 		// states
 		// http://www.whatwg.org/specs/web-apps/current-work/#media-element
 		this.doneLoading = true;
-		//mw.playerManager.playerReady( this );
 	},
 
 	/**

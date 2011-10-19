@@ -1,6 +1,26 @@
 /**
 * NielsenPlugin implemented per document outlined here: 
 * https://portal.kaltura.com/product/Shared%20Documents/Solution%20Architects/_Generic%20PRDs/Nielsen/KDP%20Nielsen%20Plugin%20PRD.docx
+* 
+* Basic player flow: 
+* 
+* 	load player meta data ready:
+	send "3" to designate the content metadata ( with first segment length ) sequence index "1" 
+	15 for preroll with "ad" type
+		send "7" to end the ad
+		send "4" unload ad
+	5 of type "content" content playback 
+	"7" stop content 
+	"15" load midroll "ad" type
+		send "7" to end the ad
+		send "4" unload ad
+	15 second segment of content as a "load play" 
+		"7" stop "content" 
+		"4" unload "content"
+	15 postroll 
+		send "7" to end the ad
+		send "4" unload ad
+* 
 */
 
 mw.NielsenPlugin = function( embedPlayer, callback ){
@@ -21,45 +41,43 @@ mw.NielsenPlugin.prototype = {
 		
 		this.getGg( function( gg ){
 			$( embedPlayer ).bind( 'playerReady' + _this.bindPostFix, function(){
-				_this.setupPlayerSegments();
+				_this.onContentMeta();
+				_this.addPlayerBindings();
 			});
 			callback();
 		});
 	},
 	/**
-	 * Sets up player segment targets and ad bindings for the player: 
-	 * 
-	 * Nielsen works with player segment system. 
+	 * Triggered on playerReady where all metaData is loaded:
 	 */
-	setupPlayerSegments: function(){
+	onContentMeta : function() {
 		var _this = this;
-		embedPlayer = this.embedPlayer;
-		// Check if we have cuepoints:
-		if( embedPlayer.)
+		// Dispatch a "preLoad" event ( will finish with a 5 once we have actual content playing ) 
+		this.dispatchEvent( 3, this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 	},
 	/**
-	 * Adds player bindings:
+	 * Adds player bindings for either ads or players
 	 */
-	addPlayerBindings: function(){
+	addPlayerBindings: function( player ){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		
-		// setup a shortcut to bind call ( including bindPostFix )
+		// Setup a shortcut to bind call ( including bindPostFix )
 		var b = function( bindName, callback ){
 			$( embedPlayer ).bind( bindName + _this.bindPostFix, callback);
 		}
 		
 		// on play:
 		b('onplay', function(){
-			_this.dispatchEvent( 5, embedPlayer.currentTime );
+			_this.dispatchEvent( 5, _this.getRelativeTime('currentTime') );
 		});
 		// on pause:
 		b( 'onpause', function(){
-			_this.dispatchEvent( 6, embedPlayer.currentTime);
+			_this.dispatchEvent( 6, _this.getRelativeTime('currentTime'));
 		});
 		// on complete: 
 		b( 'ended', function(){
-			_this.dispatchEvent( 7, embedPlayer.currentTime);
+			_this.dispatchEvent( 7, _this.getRelativeTime('currentTime'));
 		});
 		// Fullscreen: 
 		b( 'onOpenFullScreen', function(){
@@ -73,7 +91,7 @@ mw.NielsenPlugin.prototype = {
 			_this.dispatchEvent( 9, String(embedPlayer.mute) );
 		})
 		// Volume change: 
-		b( 'volumeChanged', function(){
+		b( 'volumechange', function(){
 			_this.dispatchEvent( 11, String(embedPlayer.volume) );
 		});
 		
@@ -82,20 +100,18 @@ mw.NielsenPlugin.prototype = {
 		
 		// Monitor:
 		var lastTime = 0;
-		
-		// TODO WE NEED TO USE RELATIVE TIME per the segment ( not the actual current time ) 
-		b( 'monitorEvent' + _this.bindPostFix, function(){
+		b( 'progress' + _this.bindPostFix, function(){
 			var posDelta  = Math.abs( embedPlayer.currentTime - lastTime );
 			// Check for position changed more than "3" 
 			// NOTE: changed Nielsen example of 2 seconds to 3 since progress query interval is 
 			// also set to 2 it would appear as if there were seeks all the time. 
 			if( posDelta > 3 ){
-				_this.dispatchEvent( 8, String( lastTime ), String( embedPlayer.currentTime ) );
+				_this.dispatchEvent( 8, String( lastTime ), String( _this.getRelativeTime('currentTime') ) );
 			}
 			// Dispatch player progress every 2 seconds:
 			if( posDelta > _this.queryInterval ){
 				lastTime = embedPlayer.currentTime;
-				_this.dispatchEvent( 49, embedPlayer.currentTime );
+				_this.dispatchEvent( 49, String( _this.getRelativeTime('currentTime') ) );
 			}
 		});
 	},
@@ -109,44 +125,6 @@ mw.NielsenPlugin.prototype = {
 		mw.log("NielsenPlugin:: dispatchEvent: " + eventString);
 		this.gg.ggPM.apply( this, args);
 	},
-	/**
-	 * Triggered on playerReady where all metaData is loaded:
-	 */
-	onMediaMeta : function() {
-		var _this = this;
-		
-		// here are the cuePoints
-		this.embedPlayer.cuePoints
-		// get the segment length
-		this.getSegmentLength ( '1 ')
-		
-		
-		// TODO support "ads type" events.
-		// TODO find out the string type name for "ads" or 
-		// "preroll" 15 start  7 end
-		// content "15 start 7 end" 
-			// You have to "end" before a midroll"
-			// !!!your duration for content is only to the first cuepoint segment. 
-		
-		var type = "content";
-		// 15 states that the video is loaded and starting playback at zero time. 
-		
-		// All prerolls are "segment 1" , 
-		// midroll "2 or 3 etc"
-		// postroll 
-		
-		// have to load CUEPOINT map before we send the first 15!. 
-		
-		// SEGMENTS START AT 1 
-		this.dispatchEvent( 15, this.getCurrentVideoSrc() , type, _this.getMetaXmlString(), 1 );
-		
-		// play preroll -> segment 1 
-		
-		
-		
-		// 3 could be used in cases where we skip ahead at start of playback
-		//	this.dispatchEvent( 3, this.getCurrentVideoSrc(), type, _this.getMetaXmlString());
-	},
 	// Gets the "raw" current source ( works with ad assets )  
 	getCurrentVideoSrc: function(){
 		var vid = this.embedPlayer.getPlayerElement(); 
@@ -156,14 +134,39 @@ mw.NielsenPlugin.prototype = {
 		// else just return the normal content source: 
 		return this.embedPlayer.getSrc();
 	},
-	// Gets the "raw" video duration ( works with ad assets ) 
-	getCurrentVideoDuration: function(){
-		var vid = this.embedPlayer.getPlayerElement(); 
-		if( vid && vid.duration ){
-			return vid.duration;
+	/**
+	 * Get video duration: includes relative 
+	 */
+	getRelativeTime: function( type ){
+		var embedPlayer = this.embedPlayer;
+		if( type != 'duration' && type != 'currentTime' ){
+			mw.log("Error:: calling getRelativeTime with invalid type: " + type );
+			return 0;
 		}
-		// else try normal embedPlayer duration: 
-		return this.embedPlayer.getDuration();
+		// Check if we are in an Ad and return the raw player duration or time: 
+		if( this.inAd() ){
+			var vid = this.embedPlayer.getPlayerElement(); 
+			if( vid && vid[type]){
+				return vid[type];
+			}
+		}
+		// Check if we have cuepoints
+		
+		// @@TODO we should probably keep track of cuePoint segments in the sequence proxy
+		// because "seeks" are not 100% accurate across all platforms and we don't want to send 
+		// the wrong metadata. 
+		if( embedPlayer.rawCuePoints ){
+			var absolutePlayerTime = embedPlayer.currentTime;
+			for( var i =0; i < embedPlayer.rawCuePoints.length; i++ ){
+				var cuePoint = embedPlayer.rawCuePoints[i];
+				// See which relative segment time duration we should return 
+			}
+		}
+		// If no cuePoints are found return normal embedPlayer currentTime or duration:  
+		return embedPlayer[type];
+	},
+	inAd:function(){
+		return this.embedPlayer.evaluate('{sequenceProxy.isInSequence}'); 
 	},
 	/**
 	 * Get the Nielsen xml string: 
@@ -171,22 +174,15 @@ mw.NielsenPlugin.prototype = {
 	getMetaXmlString: function(){
 		// These won't change 
 		var meta = ''+
-			"<title>"+
-				this.getConfig('tag_title') +
-			"</title>" +
 			"<uurl>"+
 				this.getCurrentVideoSrc() +
 			"</uurl>" +
 			"<length>"+
-				this.getCurrentVideoDuration() + 
+				this.getRelativeTime( 'duration' ) + 
 			"</length>";
-		// TODO Get all the  "tag" props  
-		
-		// get anything that starts with tag_ 
-		// <tag>
-		//	value
-		// </tag>
-
+		// Get all tags: 
+		var allConfig = this.embedPlayer.getKalturaConfig('NielsenPlugin');
+		debugger;
 		
 		return meta;
 	},

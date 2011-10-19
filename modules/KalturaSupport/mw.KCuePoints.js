@@ -15,7 +15,6 @@ mw.KCuePoints.prototype = {
 		this.embedPlayer = embedPlayer;
 		this.addPlayerBindings();
 	},
-	
 	destroy: function(){
 		$(this.embedPlayer).unbind( this.bindPostfix );
 	},
@@ -69,7 +68,7 @@ mw.KCuePoints.prototype = {
 	},
 	getCuePoints: function(){
 		if( ! this.embedPlayer.rawCuePoints || ! this.embedPlayer.rawCuePoints.length ){
-			return false;
+			return [];
 		}
 		return this.embedPlayer.rawCuePoints;
 	},
@@ -78,10 +77,6 @@ mw.KCuePoints.prototype = {
 	* @param {Number} time Time in milliseconds
 	*/
 	getCuePoint: function( time ){
-		// Check if embedPlayer has entryCuePoints
-		if( ! this.getCuePoints() ){
-			return false;
-		}
 		var cuePoints = this.getCuePoints();
 		// Start looking for the cue point via time, return first match:
 		for( var i = 0; i < cuePoints.length; i++) {
