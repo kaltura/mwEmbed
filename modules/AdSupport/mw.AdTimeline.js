@@ -148,7 +148,7 @@ mw.AdTimeline.prototype = {
 					_this.displaySlots( 'bumper', function(){
 						embedPlayer.switchPlaySrc( _this.originalSrc, function(){
 							// turn off preSequence
-							embedPlayer.sequenceProxy.isInSequence = true;
+							embedPlayer.sequenceProxy.isInSequence = false;
 							// trigger the preSequenceComplete event
 							$( embedPlayer ).trigger( 'preSequenceComplete' );
 							
