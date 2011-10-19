@@ -14,7 +14,7 @@
 		'Kaltura.ServiceUrl' : 'http://www.kaltura.com',
 		'Kaltura.StatsServiceUrl' : 'http://www.kaltura.com',
 		'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
-		'Kaltura.CdnUrl' : 'http://cdn.kaltura.com',
+		'Kaltura.CdnUrl' : 'http://cdnakmi.kaltura.com',
 		'Kaltura.NoApiCache' : false, // By default tell the client to cache results
 		// A video file for when no suitable flavor can be found
 		'Kaltura.MissingFlavorSources' : [
@@ -54,7 +54,7 @@
 		'kwidgetid' : null,
 		'kuiconfid' : null,
 		'kalturaPlayerMetaData' : null,
-		'kalturaEntryMetaData' : null,
+		'kalturaEntryMetaData' : null
 	});
 	
 	mw.mergeConfig( 'EmbedPlayer.DataAttributes', {
@@ -135,7 +135,7 @@
 	// Check if the document has kaltura objects ( for fall forward support ) 
 	$( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
 
-		var kalturaObjectPlayerList = mw.getKalturaPlayerList();
+		var kalturaObjectPlayerList = kGetKalturaPlayerList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
 		if( ! kalturaObjectPlayerList.length ) {
 			// No players to rewrite ( and don't run  window.KalturaKDPCallbackReady )
@@ -186,7 +186,7 @@
 					if( !swfSource ) {
 						swfSource = $( element ).find( "param[name=data]" ).attr( 'value' );						                                      
 					}
-					var kEmbedSettings = mw.getKalturaEmbedSettings( swfSource, flashvars );
+					var kEmbedSettings = kGetKalturaEmbedSettings( swfSource, flashvars );
 
 					// Check if its a playlist or a entryId
 					mw.log( "Got kEmbedSettings.entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
@@ -578,56 +578,9 @@
 	};
 	
 	/**
-	 * Get the list of embed objects on the page that are 'kaltura players' 
-	 */
-	mw.getKalturaPlayerList = function(){
-		var kalturaPlayers = [];
-		// Check all objects for kaltura compatible urls 
-		var objectList = document.getElementsByTagName('object');
-		var tryAddKalturaEmbed = function( url , flashvars){
-			var settings = kGetKalturaEmbedSettings( url, flashvars );
-			if( settings && settings.uiconf_id && settings.wid ){
-				objectList[i].kSettings = settings;
-				kalturaPlayers.push(  objectList[i] );
-				return true;
-			}
-			return false;
-		};
-		
-		for( var i =0; i < objectList.length; i++){
-			var swfUrl = '';
-			var flashvars = '';
-			var paramTags = objectList[i].getElementsByTagName('param');
-			for( var j = 0; j < paramTags.length; j++){
-				if( paramTags[j].getAttribute('name') == 'data'
-					||
-					paramTags[j].getAttribute('name') == 'src' )
-				{
-					swfUrl =  paramTags[j].getAttribute('value');
-				}
-				if( paramTags[j].getAttribute('name') == 'flashvars' ){
-					flashvars =	paramTags[j].getAttribute('value');		
-				}
-			}
-			if( swfUrl != '' && tryAddKalturaEmbed( swfUrl, flashvars) ){
-				continue;
-			}
-			
-			// Check for object data style url: 
-			if( objectList[i].getAttribute('data') ){
-				if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) )
-					continue;
-			}
-		}
-		mw.log( 'mw.getKalturaPlayerList found ' + kalturaPlayers.length + ' kalturaPlayers' );
-		return kalturaPlayers;
-	};
-	
-	/**
 	 * Get Kaltura thumb url from entry object
 	 */
 	mw.getKalturaThumbUrl = function ( entry ){
-		var kCdn = ( mw.getConfig('Kaltura.CdnUrl') ) ? mw.getConfig('Kaltura.CdnUrl') : 'http://cdnakmi.kaltura.com';
 		if( entry.width == '100%')
 			entry.width = 400;
 		if( entry.height == '100%')
@@ -635,85 +588,9 @@
 
 		var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
 		
-		return kCdn + '/p/' + entry.partner_id + '/sp/' +
+		return mw.getConfig('Kaltura.CdnUrl') + '/p/' + entry.partner_id + '/sp/' +
 			entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
 			parseInt(entry.width) + '/height/' + parseInt(entry.height) + ks;
 	};
 	
-	/**
-	 * Get kaltura embed settings from a swf url and flashvars object
-	 * 
-	 * @param {string} swfUrl
-	 * 	url to kaltura platform hosted swf
-	 * @param {object} flashvars
-	 * 	object mapping kaltura variables, ( overrides url based variables ) 
-	 */
-	mw.getKalturaEmbedSettings = function( swfUrl, flashvars ){
-		var embedSettings = {};
-		// Convert flashvars if in string format: 
-		if( typeof flashvars == 'string' ){
-			var flashVarsSet = ( flashvars )? flashvars.split('&'): [];
-			flashvars = {};
-			for( var i =0 ;i < flashVarsSet.length; i ++){
-				var currentVar = flashVarsSet[i].split('=');
-				if( currentVar[0] && currentVar[1] ){
-					flashvars[ flashVar[0] ] = flashVar[1];
-				}
-			}
-		}
-		if( !flashvars ){
-			flashvars= {};
-		}
-		// Include flashvars
-		embedSettings.flashvars = flashvars;
-			
-		var dataUrlParts = swfUrl.split('/');
-		
-		// Search backward for key value pairs
-		var prevUrlPart = null;
-		while( dataUrlParts.length ){
-			var curUrlPart =  dataUrlParts.pop();
-			switch( curUrlPart ){
-				case 'p':
-					embedSettings.wid = '_' + prevUrlPart;
-					embedSettings.p = prevUrlPart;
-				break;
-				case 'wid':
-					embedSettings.wid = prevUrlPart;
-					embedSettings.p = prevUrlPart.replace(/_/,'');
-				break;
-				case 'entry_id':
-					embedSettings.entry_id = prevUrlPart;
-				break;
-				case 'uiconf_id': case 'ui_conf_id':
-					embedSettings.uiconf_id = prevUrlPart;
-				break;
-				case 'cache_st':
-					embedSettings.cache_st = prevUrlPart;
-				break;
-			}
-			prevUrlPart = curUrlPart;
-		}
-		// Add in Flash vars embedSettings ( they take precedence over embed url )
-		for( var i in  flashvars){
-			embedSettings[ i.toLowerCase() ] = flashvars[i];
-		}
-		// Normalize the entryid to url request equivalents
-		if( embedSettings[ 'entryid' ] ){
-			embedSettings['entry_id'] =  embedSettings['entryid'];
-		}
-
-				
-		// Use entryId from flashvar
-		if( flashvars && flashvars.entryId ) {
-			embedSettings['entry_id'] = flashvars.entryId;
-		}
-
-		// Use uiConf from flashvar
-		if( flashvars && flashvars.uiConfId ) {
-			embedSettings['uiconf_id'] = flashvars.uiConfId;
-		}
-
-		return embedSettings;
-	};
 } )( window.mw, jQuery );

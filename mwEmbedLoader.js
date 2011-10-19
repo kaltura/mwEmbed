@@ -935,7 +935,6 @@ function doScrollCheck() {
 
 /**
  * Get the list of embed objects on the page that are 'kaltura players'
- * Copied from kalturaSupport loader mw.getKalturaPlayerList  
  */
 function kGetKalturaPlayerList(){
 	var kalturaPlayers = [];
@@ -981,6 +980,8 @@ function kGetKalturaPlayerList(){
 				continue;
 		}
 	}
+	if( console && console.log )
+			console.log(  'kGetKalturaPlayerList found ' + kalturaPlayers.length + ' kalturaPlayers' );
 	return kalturaPlayers;
 };
 
@@ -1019,7 +1020,14 @@ function kGetEntryThumbUrl( entry ){
 		entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
 		entry.width + '/height/' + entry.height;
 }
-// Copied from kalturaSupport loader mw.getKalturaEmbedSettings  
+/**
+ * Get kaltura embed settings from a swf url and flashvars object
+ *
+ * @param {string} swfUrl
+ * 	url to kaltura platform hosted swf
+ * @param {object} flashvars
+ * 	object mapping kaltura variables, ( overrides url based variables )
+ */
 function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 	var embedSettings = {};	
 	
