@@ -961,9 +961,9 @@ function kGetKalturaPlayerList(){
 		var flashvars = {};
 		var paramTags = objectList[i].getElementsByTagName('param');
 		for( var j = 0; j < paramTags.length; j++){
-			var pName = paramTags[j].getAttribute('name');
+			var pName = paramTags[j].getAttribute('name').toLowerCase();
 			var pVal = paramTags[j].getAttribute('value');
-			if( pName == 'data' ||	pName == 'src' ) {
+			if( pName == 'data' ||	pName == 'src' || pName == 'movie' ) {
 				swfUrl =  pVal;
 			}
 			if( pName == 'flashvars' ){
