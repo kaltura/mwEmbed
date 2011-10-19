@@ -146,9 +146,14 @@ mw.AdTimeline.prototype = {
 				_this.displaySlots( 'preroll', function(){
 					// Show bumpers:
 					_this.displaySlots( 'bumper', function(){
+						
 						embedPlayer.switchPlaySrc( _this.originalSrc, function(){
 							// turn off preSequence
 							embedPlayer.sequenceProxy.isInSequence = false;
+							
+							// trigger another onplay ( to match the kaltura kdp ) on play event: 
+							$(embedPlayer).trigger('onplay');
+							
 							// trigger the preSequenceComplete event
 							$( embedPlayer ).trigger( 'preSequenceComplete' );
 							
