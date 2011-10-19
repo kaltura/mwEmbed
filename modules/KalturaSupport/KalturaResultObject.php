@@ -673,7 +673,11 @@ class KalturaResultObject {
 		}
 
 		// If no sources and entry->mediaType is not image, then show error message
-		$mediaType = $resultObject['meta']->mediaType;
+		//echo '<pre>'; print_r($resultObject['meta']);exit();
+		$mediaType = 1;
+		if( isset($resultObject['meta']->mediaType) ) {
+			$mediaType = $resultObject['meta']->mediaType;
+		}
 		if( count($sources) == 0 && $mediaType != 2 ) {
 			$this->error = "No mobile sources found";
 		}

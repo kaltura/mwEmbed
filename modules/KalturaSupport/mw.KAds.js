@@ -99,6 +99,8 @@ mw.KAds.prototype = {
 		if( $.inArray( cuePoint.id, _this.displayedCuePoints) >= 0 ) {
 			return ;
 		}
+		
+		mw.log('kAds::loadAd:: load ' + adType + ', duration: ' + adDuration, cuePoint);
 
 		// Load adTimeline
 		if (!_this.embedPlayer.adTimeline) {
@@ -112,7 +114,7 @@ mw.KAds.prototype = {
 		
 		if( cuePoint.sourceUrl ) {
 			mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
-				
+
 				var adCuePointConf = {
 					duration: ( (cuePoint.endTime - cuePoint.startTime) / 1000 ),
 					start: ( cuePoint.startTime / 1000  )
@@ -191,12 +193,13 @@ mw.KAds.prototype = {
 				// If out ad is preroll/midroll/postroll, disable the player 
 				if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
 					_this.embedPlayer.$interface.find( '.play-btn-large' ).remove();
-					// Tell the player to show the Ad
-					_this.embedPlayer.adTimeline.display( adsCuePointConf, doneCallback, adDuration );
 				} else {
 					// in case of overlay do nothing
 					doneCallback = function() {};
 				}
+
+				// Tell the player to show the Ad
+				_this.embedPlayer.adTimeline.display( adsCuePointConf, doneCallback, adDuration );
 
 			});
 		}
