@@ -63,6 +63,8 @@
 	width:23px;
 	height:75px;
 	width:23px;
+	position:absolute;
+	left:0px;
 	background: #CCC;
 }
 .mv-player .vol_container_below{

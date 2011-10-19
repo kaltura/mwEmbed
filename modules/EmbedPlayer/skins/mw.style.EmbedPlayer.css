@@ -15,11 +15,6 @@
 	/*http://art.gnome.org/themes/gtk2*/
 }
 
-.volume_control div {
-	position:absolute;
-	left:7px;
-}
-
 .mv_status {
 	font-family:"Times New Roman", Times, serif;
 	font-size:14px;

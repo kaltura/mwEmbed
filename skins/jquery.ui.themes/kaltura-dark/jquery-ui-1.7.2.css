@@ -316,7 +316,13 @@
 .mv-player .overlay-content div a { color: #00a8ff }
 .mv-player .overlay-content div a:hover { color: #3abcff }
 .mv-player .overlay-content ul { list-style: none; margin: 0 0 10px 0; padding: 0; }
-.mv-player .vol_container { background: #272727; opacity: .80;filter:Alpha(Opacity=80); }
+.mv-player .vol_container { 
+	background: #272727; 
+	opacity: .80;
+	filter:Alpha(Opacity=80); 
+	position:absolute;
+	left:0px;
+}
 .ui-widget-overlay { background: black; opacity: .40; filter: Alpha(Opacity=40); }
 .mv-player .ui-icon ui-icon-closethick { border: 1px solid #606060; background: #222;font-weight: normal; color: #EEE; }
 .mv-player .overlay-win textarea { background: #e4e4e4; height: 35px; padding: 6px; color: #666; border: 0; }
