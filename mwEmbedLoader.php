@@ -41,7 +41,7 @@ foreach( $exportedJsConfig as $key => $val ){
 }
 
 header("Content-type: text/javascript");
-if( isset( $_GET['debug'] ) ){
+if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	
 	header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 	header("Pragma: no-cache");
