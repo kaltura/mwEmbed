@@ -250,7 +250,7 @@
 							return embedPlayer.sequenceProxy.activePluginMetadata;
 							break;
 					}
-					// return the base object if 
+					// return the base object if no secondary path is specified 
 					return embedPlayer.sequenceProxy;
 					break;
 				case 'video':
@@ -432,6 +432,7 @@
 					break;
 				case 'preSequenceComplete':
 					b( 'preSequenceComplete');
+					break;
 				case 'post1start':
 					b( 'postSequence');
 					break;
