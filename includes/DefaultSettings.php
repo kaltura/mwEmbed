@@ -90,8 +90,8 @@ $wgEnableIpadHTMLControls = true;
 
 $wgKalturaUseManifestUrls = true;
 
-// By default do not allow custom resource includes. 
-$wgAllowCustomResourceIncludes = false;
+// By default do allow custom resource includes. 
+$wgAllowCustomResourceIncludes = true;
 
 // An array of partner ids for which apple adaptive should be disabled. 
 $wgKalturaPartnerDisableAppleAdaptive = array();
