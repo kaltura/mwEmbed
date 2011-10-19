@@ -55,6 +55,9 @@ $wgKalturaRemoteAddressSalt = false;
 // For force ip testing geo restrictions
 $wgKalturaForceIP = false;
 
+// To test sites with referre restrictions: 
+$wgKalturaForceReferer = false;
+
 // The default Kaltura service url:
 $wgKalturaServiceUrl = $wgHTTPProtocol . '://cdnapi.kaltura.com';
 

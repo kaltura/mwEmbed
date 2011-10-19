@@ -1034,6 +1034,10 @@ class KalturaResultObject {
 		return (is_array($data)) ? array_map( array( $this, __FUNCTION__) ,$data) : $data;
 	}	
 	private function getReferer(){
+		global $wgKalturaForceReferer;
+		if( $wgKalturaForceReferer !== false ){
+			return $wgKalturaForceReferer;
+		}
 		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.org/';
 	}
 	private function getClient(){
