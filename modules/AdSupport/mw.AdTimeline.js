@@ -181,7 +181,7 @@ mw.AdTimeline.prototype = {
 			embedPlayer.onDoneInterfaceFlag = false;
 			// Trigger the postSequenceStart event
 			// start the postSequence: 
-			$(embedPlayer).trigger( 'postSequenceStart');
+			$( embedPlayer ).trigger( 'postSequence');
 			embedPlayer.sequenceProxy.isInSequence = true;
 			
 			_this.displaySlots( 'postroll', function(){
