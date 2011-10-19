@@ -438,6 +438,7 @@
 					break;
 				case 'postSequenceComplete':
 					b( 'postSequenceComplete' );
+					break;
 				case 'playerPlayed':
 				case 'play':
 				case 'doPlay':
