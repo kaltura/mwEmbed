@@ -440,8 +440,7 @@ mw.KWidgetSupport.prototype = {
 	 */
 	loadPlayerData: function( embedPlayer, callback ){
 		var _this = this;
-		var playerRequest = {};
-		
+		var playerRequest = {};debugger;
 		// Check for widget id	 
 		if( ! embedPlayer.kwidgetid ){
 			mw.log( "Error: missing required widget paramater ( kwidgetid ) ");
@@ -527,12 +526,9 @@ mw.KWidgetSupport.prototype = {
 	},
 	
 	/**
-	 * Get the uiconf id, if unset its the kwidget id / partner id default
+	 * Get the uiconf id
 	 */
 	getUiConfId: function( embedPlayer ){
-		if( !embedPlayer.kuiconfid && embedPlayer.kwidgetid ) {
-			embedPlayer.kuiconfid = embedPlayer.kwidgetid.replace( '_', '' );
-		}
 		return embedPlayer.kuiconfid;
 	},
 	/**
