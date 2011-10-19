@@ -8,6 +8,11 @@
 		"mw.VastAdParser" : "mw.VastAdParser.js"
 	});
 	
+	// Add sequence proxy to the player ( so that it gets sent over the iframe ) 
+	mw.mergeConfig( 'EmbedPlayer.Attributes', {
+		'sequenceProxy': null
+	});
+	
 	mw.addModuleLoader('AdSupport', function(){
 		return [ 'mw.AdTimeline', 'mw.BaseAdPlugin', 'mw.AdLoader', 'mw.VastAdParser' ];
 	});
