@@ -45,8 +45,7 @@ mw.KPPTWidget.prototype = {
 		// update the playerId mapping: 
 		this.playerId = this.$target.attr('id');
 		this.$target.attr('id', this.playerId + '_pptContainer' );
-		
-		this.flashvar = $( widgetTarget ).data( 'flashvars' );
+		this.flashvar = mw.getConfig('KalturaSupport.IFramePresetFlashvars');
 		// Setup the layout object via KLayout
 		/*this.layout = new mw.KLayout({
 			'$layoutBox' : this.$uiConf.find('#topLevel'),
@@ -90,14 +89,14 @@ mw.KPPTWidget.prototype = {
 		mw.KApiRequest(widgetId, {
 			'service': 'data',
 			'action' : 'get',
-			'entryId' : this.getDataEntryId()
+			'entryId' : _this.getDataEntryId()
 		}, function( data ){
 			_this.dataEntry = data;
 			callback();
 		});
 	},
 	getDataEntryId: function(){
-		return this.flashvar[ 'videoPresentationEntryId' ];
+		return this.flashvar.videoPresentationEntryId;
 	},
 	/**
 	 * Do some simple checks but mostly hard coded layout
