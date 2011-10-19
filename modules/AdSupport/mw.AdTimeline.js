@@ -180,8 +180,6 @@ mw.AdTimeline.prototype = {
 			displayedPostroll = true;
 			embedPlayer.onDoneInterfaceFlag = false;
 			_this.displaySlots( 'postroll', function(){
-				// Trigger the postSequenceComplete event
-				$(embedPlayer).trigger( 'postSequenceComplete' );
 				/** TODO support postroll bumper and leave behind */
 				embedPlayer.switchPlaySrc( _this.originalSrc, function(){
 					_this.restorePlayer();
@@ -189,6 +187,8 @@ mw.AdTimeline.prototype = {
 					embedPlayer.pause();
 					// Restore ondone interface: 
 					embedPlayer.onDoneInterfaceFlag = true;
+					// Trigger the postSequenceComplete event
+					$(embedPlayer).trigger( 'postSequenceComplete' );
 					// run the clipdone event:
 					embedPlayer.onClipDone();
 				});
