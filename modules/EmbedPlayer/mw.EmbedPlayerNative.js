@@ -145,7 +145,6 @@ mw.EmbedPlayerNative = {
 		if( this.loop ) {
 			playerAttribtues['loop'] = 'true';
 		}
-
 		var tagName = ( this.isAudio() ) ? 'audio' : 'video';
 
 		return	$( '<' + tagName + ' />' )
@@ -169,9 +168,6 @@ mw.EmbedPlayerNative = {
 		// Update the player source ( if needed ) 
 		if( $( '#' + this.pid ).attr( 'src') !=  this.getSrc( this.currentTime )  ){
 			$( '#' + this.pid ).attr( 'src', this.getSrc( this.currentTime ) );
-		}
-		if( !vid ){
-			alert("WEFES");
 		}
 		// Apply media element bindings:
 		_this.applyMediaElementBindings();

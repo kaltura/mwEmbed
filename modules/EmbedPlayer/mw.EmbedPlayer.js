@@ -2091,27 +2091,6 @@ mw.EmbedPlayer.prototype = {
 		
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.posterDisplayed + ' native: ' +  this.useNativePlayerControls());
 		
-		// start monitoring when playing
-		this.monitor();
-		
-		// NOTE: play: should be essentially overwritten by ad timeline and avoid adTimeline / sequencer
-		// logic like this preSequence bit:
-		// Trigger the preSequence event if the preSequence has not run yet
-		if( this.inPreSequence ){
-			this.playInterfaceUpdate()
-			// if in presequence just update the interface
-			return true;
-		}
-		if( !this.preSequence ) {
-			this.preSequence = true;
-			mw.log( "EmbedPlayer:: trigger preSequence " );
-			$( this ).trigger( 'preSequence' );
-			// if we have an adTimeline the timeline will take over playback: 
-			if( this.adTimeline ){
-				return false;
-			}
-		}
-		
 		// Check if thumbnail is being displayed and embed html
 		if ( _this.posterDisplayed &&  !_this.useNativePlayerControls() ) {
 			if ( !_this.selectedPlayer ) {
@@ -2123,6 +2102,17 @@ mw.EmbedPlayer.prototype = {
 			}
 		}
 		
+		if( !this.preSequence ) {
+			this.preSequence = true;
+			mw.log( "EmbedPlayer:: trigger preSequence " );
+			if( !this.inPreSequence ){
+				$( this ).trigger( 'preSequence' );
+			}
+			// if we have an adTimeline the timeline will take over playback: 
+			if( this.adTimeline ){
+				return false;
+			}
+		}
 		
 		if( this.paused === true ){
 			this.paused = false;
@@ -2474,7 +2464,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	monitor: function() {
 		var _this = this;
-
 		// Check for current time update outside of embed player
 		this.checkForCurrentTimeSeek();
 
