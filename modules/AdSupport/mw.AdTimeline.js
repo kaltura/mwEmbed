@@ -141,6 +141,7 @@ mw.AdTimeline.prototype = {
 			embedPlayer.inPreSequence = true;
 			// given an opportunity for ads to load for ads to load: 
 			$( embedPlayer ).triggerQueueCallback( 'AdSupport_OnPlayAdLoad',function(){
+				mw.log( "AdTimeline:: AdSupport_OnPlayAdLoad ");
 				// Show prerolls:
 				_this.displaySlots( 'preroll', function(){
 					// Show bumpers:

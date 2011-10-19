@@ -381,7 +381,6 @@ mw.DoubleClick.prototype = {
 	        	_this.onResumeRequested(); 
 	        } 
 	    );
-	    
 		// if currentAdLoadedCallback is set issue the adLoad callback: 
 		if( this.currentAdLoadedCallback ){
 			 this.currentAdLoadedCallback( adsManager );

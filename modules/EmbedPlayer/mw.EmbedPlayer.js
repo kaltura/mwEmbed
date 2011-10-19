@@ -2105,13 +2105,7 @@ mw.EmbedPlayer.prototype = {
 		if( !this.preSequence ) {
 			this.preSequence = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );
-			if( !this.inPreSequence ){
-				$( this ).trigger( 'preSequence' );
-			}
-			// if we have an adTimeline the timeline will take over playback: 
-			if( this.adTimeline ){
-				return false;
-			}
+			$( this ).trigger( 'preSequence' );
 		}
 		
 		if( this.paused === true ){

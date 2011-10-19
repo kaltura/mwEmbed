@@ -229,10 +229,10 @@
 			if( expression.indexOf( '(' ) !== -1 ){
 				var fparts = expression.split( '(' );
 				return _this.evaluateStringFunction( 
-						fparts[0], 
-						// Remove the closing ) and evaluate the Expression 
-						// should not include ( nesting !
-						_this.evaluateExpression( embedPlayer, fparts[1].slice( 0, -1) )
+					fparts[0], 
+					// Remove the closing ) and evaluate the Expression 
+					// should not include ( nesting !
+					_this.evaluateExpression( embedPlayer, fparts[1].slice( 0, -1) )
 				);
 			}
 			// Split the uiConf expression into parts separated by '.'
@@ -240,6 +240,18 @@
 			switch( objectPath[0] ){
 				case 'isHTML5':
 					return true;
+					break;
+				case 'sequenceProxy':
+					switch( objectPath[1] ){
+						case 'isInSequence':
+							return embedPlayer.sequenceProxy.isInSequence;
+							break;
+						case 'activePluginMetadata':
+							return embedPlayer.sequenceProxy.activePluginMetadata;
+							break;
+					}
+					// return the base object if 
+					return embedPlayer.sequenceProxy;
 					break;
 				case 'video':
 					switch( objectPath[1] ){
