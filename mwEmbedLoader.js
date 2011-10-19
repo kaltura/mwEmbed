@@ -494,6 +494,7 @@ function kGetFlashVersion(){
 // Check DOM for Kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
 function kCheckAddScript(){
+	
 	// Check if we already have got uiConfJs or not
 	if( ! mw.getConfig( 'Kaltura.UiConfJsLoaded') && ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
@@ -511,7 +512,7 @@ function kCheckAddScript(){
 		mw.setConfig( 'Kaltura.UiConfJsLoaded', true);
 		return ;
 	}
-	
+
 	// Set url based config ( as long as it not disabled ) 
 	if( ! mw.getConfig( 'disableForceMobileHTML5') && document.URL.indexOf('forceMobileHTML5') !== -1 ){
 		mw.setConfig( 'forceMobileHTML5', true );
@@ -851,7 +852,7 @@ function kRunMwDomReady( event ){
 	}
 	kOverideJsFlashEmbed();
 	// When in iframe, wait for endOfIframe event status. ( IE9 has issues ) 
-	if( mw.getConfig('EmbedPlayer.IsIframeServer')  && !event !== 'endOfIframeJs' ){
+	if( mw.getConfig('EmbedPlayer.IsIframeServer')  && event !== 'endOfIframeJs' ){
 		return ;
 	}
 	kCheckAddScript();
@@ -980,8 +981,8 @@ function kGetKalturaPlayerList(){
 				continue;
 		}
 	}
-	if( console && console.log )
-			console.log(  'kGetKalturaPlayerList found ' + kalturaPlayers.length + ' kalturaPlayers' );
+//	if( console && console.log )
+//			console.log(  'kGetKalturaPlayerList found ' + kalturaPlayers.length + ' kalturaPlayers' );
 	return kalturaPlayers;
 };
 
