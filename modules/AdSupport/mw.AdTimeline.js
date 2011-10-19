@@ -188,7 +188,6 @@ mw.AdTimeline.prototype = {
 			// start the postSequence: 
 			$( embedPlayer ).trigger( 'postSequence');
 			embedPlayer.sequenceProxy.isInSequence = true;
-			
 			_this.displaySlots( 'postroll', function(){
 				// Turn off preSequence
 				embedPlayer.sequenceProxy.isInSequence = false;
@@ -261,13 +260,13 @@ mw.AdTimeline.prototype = {
 				return ;
 			}
 			// Run the sequence proxy function: 
-			sequenceProxy[ key]( function(){
+			sequenceProxy[ key ]( function(){
 				// done with the current proxy call next
 				seqInx++;
 				// call with a timeout to avoid function stack
 				setTimeout(function(){
 					runSequeceProxyInx( seqInx );
-				},1);
+				},0);
 			});
 		};
 		runSequeceProxyInx( seqInx );
@@ -299,8 +298,8 @@ mw.AdTimeline.prototype = {
 	 * video playback bindings, it will wait until the subclip completes before
 	 * issuing the "displayDoneCallback"
 	 * 
-	 * @param {string}
-	 *          adSlot AdadSlot type
+	 * @param {Object}
+	 *          adSlot AdadSlot object
 	 * @param {function}
 	 *          displayDoneCallback The callback function called once the display
 	 *          request has been completed
@@ -328,6 +327,7 @@ mw.AdTimeline.prototype = {
 				adSlot.doneFunctions.shift()();
 			}
 			adSlot.currentlyDisplayed = false;
+			// give time for the end event to clear
 			setTimeout(function(){
 				adSlot.doneCallback();
 			}, 50);
@@ -558,7 +558,6 @@ mw.AdTimeline.prototype = {
 			'html' : companion.html
 		};
 		$( _this.embedPlayer ).trigger( 'AdSupport_UpdateCompanion', [ companionObject ] );
-		
 	},
 	/**
 	 * Display a nonLinier add ( like a banner overlay )

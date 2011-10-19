@@ -191,7 +191,6 @@ class KalturaResultObject {
 		return $this->isPlaylist;
 	}
 	function isJavascriptRewriteObject() {
-
 		// If our playlist is Mrss, handle the playlist in the client side
 		$playlistUrl = $this->getPlayerConfig('playlistAPI', 'kpl0Url');
 		if( $playlistUrl && strpos($playlistUrl, "partnerservices") === false ) {

@@ -1299,7 +1299,13 @@ mw.EmbedPlayer.prototype = {
 					this.play();
 					return;
 				}
-
+				// Make sure we have a play btn:
+				if( $( this ).find('.play-btn-large').length == 0) {
+					this.$interface.append(
+							this.controlBuilder.getComponent( 'playButtonLarge' )
+					);
+				}
+				
 				// Stop the clip (load the thumbnail etc)
 				this.serverSeekTime = 0;
 				this.updatePlayHead( 0 );

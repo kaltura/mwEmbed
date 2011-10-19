@@ -74,7 +74,7 @@ mw.KAds.prototype = {
 		var _this = this;
 		if( ! this.config ){
 			// Build out the selection of kAds
-			var configSet = [ 'preSequence', 'postSequence', 'htmlCompanions' , 'flashCompanions' ];
+			var configSet = [ 'preSequence', 'postSequence', 'htmlCompanions' , 'flashCompanions', 'timeout' ];
 			$.each( this.namedAdTimelineTypes, function( inx, adType ){
 				$.each( _this.adAttributeMap, function( adAttributeName,  displayConfName ){
 					// Add all the ad types to the config set: 
@@ -83,11 +83,8 @@ mw.KAds.prototype = {
 				// Add the ad type Url
 				configSet.push( adType + 'Url');
 			});
-
-			this.config = this.embedPlayer.getKalturaConfig(
-				'vast',
-				configSet
-			);
+			
+			this.config = this.embedPlayer.getKalturaConfig( 'vast', configSet );
 		}
 		return this.config[ name ];
 	},
@@ -175,7 +172,6 @@ mw.KAds.prototype = {
 									setTimeout( function(){ if( vid && vid.pause ){ vid.pause(); } }, 100 );
 								}
 							} else {
-								
 								$( embedPlayer ).bind('seeked' + _this.bindPostfix, function() {
 									embedPlayer.play();
 									setTimeout( function() {
@@ -195,13 +191,13 @@ mw.KAds.prototype = {
 				// If out ad is preroll/midroll/postroll, disable the player 
 				if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
 					_this.embedPlayer.$interface.find( '.play-btn-large' ).remove();
+					// Tell the player to show the Ad
+					_this.embedPlayer.adTimeline.display( adsCuePointConf, doneCallback, adDuration );
 				} else {
 					// in case of overlay do nothing
 					doneCallback = function() {};
 				}
 
-				// Tell the player to show the Ad
-				_this.embedPlayer.adTimeline.display( adsCuePointConf, doneCallback, adDuration );
 			});
 		}
 	},
@@ -217,26 +213,71 @@ mw.KAds.prototype = {
 			if( _this.getConfig( 'timeout' ) ){
 				baseDisplayConf[ 'timeout' ] = _this.getConfig('timeout'); 
 			}
-			
 			// add in a binding for the adType
 			for( var adType in adConfigSet ){
 				// Add to timeline only if we have ads
 				if( adConfigSet[ adType ].ads ) {
-					$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
-						// add to sequenceProxy:
-						sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( doneCallback ){		
-							var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
-							adConfig.type = adType;
-							_this.embedPlayer.adTimeline.display( adConfig, function(){
-								// Done playing Ad issue sequenceProxy callback: 
-								doneCallback();
-							});
-						};
-					});
+					if( adType == 'midroll' ||  adType == 'postroll' || adType =='preroll' ){
+						_this.addSequenceProxyBinding( adType, adConfigSet );
+					}
+					if( adType == 'overlay' ){
+						_this.addOverlayBinding( adConfigSet[ adType ] );
+					}
 				}
 			}
 			// Run the callabck once all the ads have been loaded. 
 			callback();
+		});
+	},
+	addSequenceProxyBinding: function( adType, adConfigSet ){
+		var _this = this;
+		var baseDisplayConf = this.getBaseDisplayConf();
+		$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
+			// add to sequenceProxy:
+			sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( doneCallback ){		
+				var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
+				adConfig.type = adType;
+				_this.embedPlayer.adTimeline.display( adConfig, function(){
+					// Done playing Ad issue sequenceProxy callback: 
+					doneCallback();
+				});
+			};
+		});
+	},
+	addOverlayBinding: function( overlayConfig ){
+		var _this = this;
+		var embedPlayer = this.embedPlayer;
+		var startOvelrayDisplayed = false;
+		var lastDisplay = 0;
+		var timeout = this.embedPlayer.getKalturaConfig( 'vast', 'timeout' );
+		
+		// Set overlay to 5 seconds if we can't get overlay info: 
+		if( ! timeout )
+			timeout = 5;
+		overlayConfig.type = 'overlay';
+		// Display the overlay 
+		var displayOverlay = function(){
+			_this.embedPlayer.adTimeline.display( 
+				overlayConfig, 
+				function(){
+					mw.log("KAds::overlay done");
+				},
+				timeout
+			)
+		}
+		$( embedPlayer ).bind( 'monitorEvent', function(){
+			if( embedPlayer.currentTime > overlayConfig.start && !startOvelrayDisplayed){
+				lastDisplay = embedPlayer.currentTime;
+				startOvelrayDisplayed = true;
+				mw.log("KAds::displayOverlay::startOvelrayDisplayed " + startOvelrayDisplayed)
+				displayOverlay();
+			}
+			if( startOvelrayDisplayed && embedPlayer.currentTime > ( lastDisplay + parseInt( overlayConfig.frequency ) )  ){
+				// reset the lastDisplay time: 
+				mw.log("KAds::displayOverlay::overlayConfig.frequency ct:" +embedPlayer.currentTime + ' > ' + ( lastDisplay + parseInt( overlayConfig.frequency) ) )
+				displayOverlay();
+				lastDisplay =  embedPlayer.currentTime;
+			}
 		});
 	},
 	/** 

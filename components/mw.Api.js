@@ -2,7 +2,7 @@
 * API Helper functions
 */
 
-( function( mw ) {
+( function( mw, $ ) {
 	// xxx note we should namespace the following helper functions into Api class.
 	mw.Api = {};
 
@@ -12,7 +12,7 @@
 	*
 	* Assumes "follow redirects"
 	*
-	* $j.getTitleText( [apiUrl], title, callback )
+	* $.getTitleText( [apiUrl], title, callback )
 	*
 	* @param {String} url or title key
 	* @parma {Mixed} title or callback function
@@ -62,7 +62,7 @@
 	mw.parseWikiText = function( wikitext, title, callback ) {
 		mw.log("mw.parseWikiText text length: " + wikitext.length + ' title context: ' + title );
 		mw.load( 'JSON', function(){
-			$j.ajax({
+			$.ajax({
 				type: 'POST',
 				url: mw.getLocalApiUrl(),
 				// Give the wiki 60 seconds to parse the wiki-text
@@ -178,7 +178,7 @@
 			}
 		}, mw.getConfig( 'defaultRequestTimeout' ) * 1000 );
 
-		//mw.log("run getJSON: " + mw.replaceUrlParams( url, data ) );
+		// mw.log("run getJSON: " + mw.replaceUrlParams( url, data ) );
 
 		// Check if the request requires a "post"
 		if( mw.checkRequestPost( data ) || data['_method'] == 'post' ) {
@@ -197,7 +197,7 @@
 
 			} else {
 				// Do the request an ajax post
-				$j.post( url, data, myCallback, 'json');
+				$.post( url, data, myCallback, 'json');
 			}
 			return ;
 		}
@@ -210,7 +210,7 @@
 			}
 		}
 		// Pass off the jQuery getJSON request:
-		$j.getJSON( url, data, myCallback );
+		$.getJSON( url, data, myCallback );
 	}
 
 	/**
@@ -221,7 +221,7 @@
 	* 	false if the request does not
 	*/
 	mw.checkRequestPost = function ( data ) {
-		if( $j.inArray( data['action'], mw.getConfig( 'apiPostActions' ) ) != -1 ) {
+		if( $.inArray( data['action'], mw.getConfig( 'apiPostActions' ) ) != -1 ) {
 			return true;
 		}
 		if( data['prop'] == 'info' && data['intoken'] ) {
@@ -352,4 +352,4 @@
 		return false;
 	};
 
-}) ( window.mw );
+}) ( window.mw, window.jQuery );
