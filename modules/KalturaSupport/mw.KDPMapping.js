@@ -427,18 +427,25 @@
 				case 'doPause':
 					b( "pause" );
 					break;
+
+				// Pre sequences: 
+				case 'preSequenceStart':
 				case 'pre1start':
 					b( 'preSequence');
 					break;
 				case 'preSequenceComplete':
 					b( 'preSequenceComplete');
 					break;
+				
+				// Post sequences:
 				case 'post1start':
+				case 'postSequenceStart':
 					b( 'postSequence');
 					break;
 				case 'postSequenceComplete':
 					b( 'postSequenceComplete' );
 					break;
+					
 				case 'playerPlayed':
 				case 'play':
 				case 'doPlay':

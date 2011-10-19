@@ -138,7 +138,7 @@ mw.AdTimeline.prototype = {
 		$( embedPlayer ).bind( 'preSequence' + _this.bindPostfix, function() {
 			mw.log( "AdTimeline:: First Play Start / bind Ad timeline" );
 			embedPlayer.pauseLoading();
-			embedPlayer.inPreSequence = true;
+			embedPlayer.sequenceProxy.isInSequence = true;
 			// given an opportunity for ads to load for ads to load: 
 			$( embedPlayer ).triggerQueueCallback( 'AdSupport_OnPlayAdLoad',function(){
 				mw.log( "AdTimeline:: AdSupport_OnPlayAdLoad ");
@@ -148,7 +148,7 @@ mw.AdTimeline.prototype = {
 					_this.displaySlots( 'bumper', function(){
 						embedPlayer.switchPlaySrc( _this.originalSrc, function(){
 							// turn off preSequence
-							embedPlayer.inPreSequence = false;
+							mbedPlayer.sequenceProxy.isInSequence = true;
 							// trigger the preSequenceComplete event
 							$( embedPlayer ).trigger( 'preSequenceComplete' );
 							
@@ -161,7 +161,7 @@ mw.AdTimeline.prototype = {
 								setTimeout(function(){
 									embedPlayer.play();
 								}, 300 );
-							},1);
+							},0);
 						});
 						
 					});
@@ -179,7 +179,17 @@ mw.AdTimeline.prototype = {
 			}
 			displayedPostroll = true;
 			embedPlayer.onDoneInterfaceFlag = false;
+			// Trigger the postSequenceStart event
+			// start the postSequence: 
+			$(embedPlayer).trigger( 'postSequenceStart');
+			embedPlayer.sequenceProxy.isInSequence = true;
+			
 			_this.displaySlots( 'postroll', function(){
+				// Turn off preSequence
+				embedPlayer.sequenceProxy.isInSequence = false;
+				// Trigger the postSequenceComplete event
+				$(embedPlayer).trigger( 'postSequenceComplete' );
+				
 				/** TODO support postroll bumper and leave behind */
 				embedPlayer.switchPlaySrc( _this.originalSrc, function(){
 					_this.restorePlayer();
@@ -187,8 +197,6 @@ mw.AdTimeline.prototype = {
 					embedPlayer.pause();
 					// Restore ondone interface: 
 					embedPlayer.onDoneInterfaceFlag = true;
-					// Trigger the postSequenceComplete event
-					$(embedPlayer).trigger( 'postSequenceComplete' );
 					// run the clipdone event:
 					embedPlayer.onClipDone();
 				});
