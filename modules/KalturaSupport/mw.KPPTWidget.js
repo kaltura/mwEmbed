@@ -2,7 +2,6 @@
 * Adds Power Point Widget Support
 */
 ( function( mw, $ ) {
-	
 // Temporary location for slide images: 
 mw.setConfig('Kaltura.PPTWidgetSlidePath', 'http://projects.kaltura.com/thomson-reuters/public/slides/');
 	
@@ -62,7 +61,8 @@ mw.KPPTWidget.prototype = {
 		this.loadPPTData( function(){
 			// Do a "fixed" layout for now: 
 			_this.addFixedLayout();
-			
+			// God knows why we have to do this. ( bug in chrome, this is not needed in firefox) 
+			jQuery.fn.embedPlayer = window.jQueryEmbedPlayer;
 			// Update embed player
 			_this.$target.find( 'video' ).embedPlayer( function(){
 				// Add slide tags
@@ -640,4 +640,4 @@ mw.KPPTWidget.prototype = {
 	}
 };
 
-} )( window.mw, jQuery );
+} )( window.mw, window.jQuery );

@@ -388,7 +388,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				case 'canvas':
 					var $node = $('<div />'); 
 					if( offsetLeft )
-						$node.css('margin-left', offsetLeft );
+						$node.css( 'margin-left', offsetLeft );
 					$node.append( 
 						_this.getBoxLayout( clipIndex, $(boxItem) ) 
 					);

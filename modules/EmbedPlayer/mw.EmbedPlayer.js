@@ -19,6 +19,8 @@ mw.includeAllModuleMessages();
 	 * Embeds all players that match the rewrite player tags config Passes off
 	 * request to the embedPlayer selector:
 	 * 
+	 * deprecated 
+	 * 
 	 * @param {Object} attributes Attributes to apply to embed players @param
 	 * {Function} callback Function to call once embedding is done
 	 */
@@ -137,8 +139,8 @@ mw.includeAllModuleMessages();
 	
 		});
 	};
-
-
+	// Setup global pointer to this jquery method, Function scope bug in Chrome 15x
+	window.jQueryEmbedPlayer = $.fn.embedPlayer;
 /**
  * EmbedPlayerManager
  * 
@@ -2731,4 +2733,4 @@ mw.EmbedPlayer.prototype = {
 	}
 };
 
-})( mediaWiki, jQuery );
+})( window.mw, window.jQuery );
