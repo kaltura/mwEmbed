@@ -1265,7 +1265,6 @@ mw.EmbedPlayer.prototype = {
 			});
 			return ;
 		}*/
-		
 		mw.log( 'EmbedPlayer::onClipDone: propagate:' +  _this._propagateEvents + ' id:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
 		// don't run onclipdone if _propagateEvents is off
 		if( !_this._propagateEvents ){
@@ -1299,12 +1298,6 @@ mw.EmbedPlayer.prototype = {
 					this.play();
 					return;
 				}
-				// Make sure we have a play btn:
-				if( $( this ).find('.play-btn-large').length == 0) {
-					this.$interface.append(
-							this.controlBuilder.getComponent( 'playButtonLarge' )
-					);
-				}
 				
 				// Stop the clip (load the thumbnail etc)
 				this.serverSeekTime = 0;
@@ -1316,8 +1309,8 @@ mw.EmbedPlayer.prototype = {
 					return ;
 				}
 
-				// Do the controlBuilder onClip done interface
-				this.controlBuilder.onClipDone();
+				// Do the controlBuilder onClip done interface ( does not do anything atm )
+				//this.controlBuilder.onClipDone();
 
 				// An event for once the all ended events are done.
 				$( this ).trigger( 'onEndedDone' );
@@ -1886,18 +1879,23 @@ mw.EmbedPlayer.prototype = {
 		}
 		return ;
 	},
+	// Add a play button to the interface if no interface is present add it as a sibling: 
 	addPlayBtnLarge:function(){
 		var _this = this;
-		var $pid = $( '#' + _this.pid );
-		$pid.siblings('.play-btn-large').remove();
 		$playButton = this.controlBuilder.getComponent('playButtonLarge');
-		$pid.after(
-			$playButton
-			.css({
-				'left' : parseInt( $pid.position().left ) + parseInt( $playButton.css('left') ),
-				'top' : parseInt( $pid.position().top ) +  parseInt( $playButton.css('top') )
-			})
-		);
+		if( this.$interface ){
+			this.$interface.append( $playButton );
+		}else {
+			var $pid = $( '#' + _this.pid );
+			$pid.siblings('.play-btn-large').remove();
+			$pid.after(
+				$playButton
+				.css({
+					'left' : parseInt( $pid.position().left ) + parseInt( $playButton.css('left') ),
+					'top' : parseInt( $pid.position().top ) +  parseInt( $playButton.css('top') )
+				})
+			);
+		}
 	},
 	/**
 	 * Should be set via native embed support
@@ -2094,7 +2092,6 @@ mw.EmbedPlayer.prototype = {
 	replayEventCount : 0,
 	play: function() {
 		var _this = this;
-		
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.posterDisplayed + ' native: ' +  this.useNativePlayerControls());
 		
 		// Check if thumbnail is being displayed and embed html
@@ -2258,24 +2255,20 @@ mw.EmbedPlayer.prototype = {
 				this.pause();
 			}
 		}
+		// restore the play button: 
+		this.addPlayBtnLarge();
 		// Native player controls:
-		if( this.useNativePlayerControls() ){
-			this.getPlayerElement().currentTime = 0;
-			this.getPlayerElement().pause();
-			// If on android when we "stop" we re add the large play button
-			if( mw.isAndroid2() ){
-				this.addPlayBtnLarge();
-			}
-		} else {
+		if( !this.isPersistentNativePlayer() ){			
 			// Rewrite the html to thumbnail disp
 			this.showThumbnail();
 			this.bufferedPercent = 0; // reset buffer state
 			this.controlBuilder.setStatus( this.getTimeRange() );
-
-			// Reset the playhead
-			mw.log("EmbedPlayer::Stop:: Reset play head")
-			this.updatePlayHead( 0 );
 		}
+		// Reset the playhead
+		this.updatePlayHead( 0 );
+		// update the status: 
+		// update mv_time
+		this.controlBuilder.setStatus( this.getTimeRange() );
 	},
 
 	/**
