@@ -87,6 +87,7 @@ mw.DoubleClick.prototype = {
 			
 			// check if video type: 
 			if( adType == 'midroll'  ||  adType == 'preroll' || adType == 'postroll'  ){
+				// All cuepoints act as "midrolls" 
 				_this.loadAndPlayVideoSlot( 'midroll', function(){
 					if( _this.embedPlayer.adTimeline ){
 						_this.embedPlayer.adTimeline.restorePlayer();
@@ -96,12 +97,12 @@ mw.DoubleClick.prototype = {
 				}, cuePoint);
 			}
 		});
-		// on clip done hide any overlay banners that are still active
+		// On clip done hide any overlay banners that are still active
 		$( _this.embedPlayer ).bind( 'ended' + _this.bindPostfix, function(){
 			 if( _this.activeOverlayadManager )
 				 _this.activeOverlayadManager.unload();
 		});
-		// on change media remove any existing ads: 
+		// On change media remove any existing ads: 
 		$( _this.embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
 		});
@@ -110,7 +111,7 @@ mw.DoubleClick.prototype = {
 	/**
 	 *  Destroy the doubleClick binding instance:
 	 */ 
-	destroy:function(){
+	destroy: function(){
 		// Run the parent destroy:
 		this.parent_destroy();
 		
