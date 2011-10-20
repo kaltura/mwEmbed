@@ -276,7 +276,6 @@ mw.KWidgetSupport.prototype = {
 			singleAttrName = attr;
 			attr = $.makeArray( attr );
 		}
-		
 		var rawConfig = this.getRawPluginConfig( embedPlayer, confPrefix, attr);
 		var config =  this.postProcessConfig( embedPlayer, rawConfig );
 		
@@ -324,8 +323,7 @@ mw.KWidgetSupport.prototype = {
 				$uiPluginVars = $uiConf.find( uiPluginVarsSelect );
 			}
 		}
-		
-		if( attr == null && confPrefix ){
+		if( !attr && confPrefix ){
 			if( $plugin.length ) {
 				$.each( $plugin.get(0).attributes, function(i, nodeAttr){
 					 config[ nodeAttr.name ] = nodeAttr.value;
@@ -347,41 +345,39 @@ mw.KWidgetSupport.prototype = {
 				// Found break out of loop
 				return false;
 			});
-			return 
-		};
-		
-		$.each( attr, function(inx, attrName ){
-			// Plugin
-			if( $plugin.length ){
-				if( $plugin.attr( attrName ) ){
-					config[ attrName ] = $plugin.attr( attrName );
-				}
-				// XML sometimes comes in all lower case
-				if( $plugin.attr( attrName.toLowerCase() ) ){
-					config[ attrName ] = $plugin.attr( attrName.toLowerCase() );
-				}
-			}
-			
-			// Flashvars overrides
-			var pluginPrefix = ( confPrefix )? confPrefix + '.': '';
-			if( flashvars[ pluginPrefix + attrName ] ){
-				config[ attrName ] = flashvars[ pluginPrefix + attrName ];
-			}
-			
-			// Uivars Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
-			$uiPluginVars.each( function(inx, node){
-				if( $( node ).attr('key') == pluginPrefix + attrName ){
-					if( $(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
-						config[attrName] = $(node).get(0).getAttribute('value');
+		} else {
+			$.each( attr, function(inx, attrName ){
+				// Plugin
+				if( $plugin.length ){
+					if( $plugin.attr( attrName ) ){
+						config[ attrName ] = $plugin.attr( attrName );
 					}
-					// Found break out of loop
-					return false;
+					// XML sometimes comes in all lower case
+					if( $plugin.attr( attrName.toLowerCase() ) ){
+						config[ attrName ] = $plugin.attr( attrName.toLowerCase() );
+					}
 				}
+				
+				// Flashvars overrides
+				var pluginPrefix = ( confPrefix )? confPrefix + '.': '';
+				if( flashvars[ pluginPrefix + attrName ] ){
+					config[ attrName ] = flashvars[ pluginPrefix + attrName ];
+				}
+				
+				// Uivars Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
+				$uiPluginVars.each( function(inx, node){
+					if( $( node ).attr('key') == pluginPrefix + attrName ){
+						if( $(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
+							config[attrName] = $(node).get(0).getAttribute('value');
+						}
+						// Found break out of loop
+						return false;
+					}
+				});
+				
 			});
-			
-		});
+		}
 		return config;
-		
 	},
 	postProcessConfig: function(embedPlayer,  config ){
 		var _this = this;

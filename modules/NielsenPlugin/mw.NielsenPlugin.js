@@ -5,6 +5,7 @@
 * Basic player flow: 
 * 
 * 	load player meta data ready:
+
 	send "3" to designate the content metadata ( with first segment length ) sequence index "1" 
 	15 for preroll with "ad" type
 		send "7" to end the ad
@@ -182,7 +183,6 @@ mw.NielsenPlugin.prototype = {
 			"</length>";
 		// Get all tags: 
 		var allConfig = this.embedPlayer.getKalturaConfig('NielsenPlugin');
-		debugger;
 		
 		return meta;
 	},

@@ -55,7 +55,7 @@ mw.Playlist.prototype = {
 		this.playerId = ( this.embedPlayer )? 
 							this.embedPlayer.id : 
 						( options['id'] )?  options['id'] :
-							$( this.target ).attr( 'id' );
+						$( this.target ).attr( 'id' );
 						
 		// Setup the id for the playlist container: 		
 		this.id = 'plholder_' + this.playerId;

@@ -61,6 +61,9 @@ mw.FreeWheelControler.prototype = {
 		// unbind any existing bindings:
 		$( _this.embedPlayer ).unbind( _this.bindPostfix );
 		
+		// Checks if we are loading ads async 
+//		var checkAsyncAds 
+		
 		// Load the freewheel ad manager then setup the ads
 		if( !window['tv'] || !tv.freewheel ){
 			$.getScript( _this.getAdManagerUrl(), function(){
@@ -83,6 +86,8 @@ mw.FreeWheelControler.prototype = {
 	 */
 	setupAds: function(){
 		var _this = this;
+		
+		
 		// We should be able to use: 
 		// $(_this.embedPlayer ).bind .. but this ~sometimes~ fails on OSX safari and iOS 
 		// TODO investigate wtf is going on

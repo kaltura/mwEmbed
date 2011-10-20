@@ -241,11 +241,6 @@ mw.DoubleClick.prototype = {
 			// Update the playhead to play state:
 			_this.embedPlayer.play();
 			
-			// Sometimes the player gets a pause event out of order be sure to "play" 
-			setTimeout(function(){
-				_this.embedPlayer.play();
-			}, 300 );
-			
 			// TODO This should not be needed ( fix event stop event propagation ) 
 			_this.embedPlayer.monitor();
 			mw.log( "DoubleClick::adsManager.play" );
