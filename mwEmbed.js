@@ -2213,15 +2213,19 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 
 						// Update the magic keywords
 						mw.Language.magicSetup();						
-
-
-						// Special Hack for conditional jquery ui inclusion (
-						// once
-						// Usability extension
-						// registers the jquery.ui skin in mw.style
-						if( mw.hasJQueryUiCss() ){
+						
+						// Check if we have a global jquery ui skin: 
+						if( mw.getConfig('IframeCustomjQueryUISkinCss' ) ){
 							mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;
+							// skin should already be loaded in the "loader" 
+							mw.getStyleSheet( mw.getConfig('IframeCustomjQueryUISkinCss' )  );
+						} else {
+							// Special Hack for conditional jquery ui inclusion 
+							if( mw.hasJQueryUiCss() ){
+								mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;
+							}
 						}
+						
 						// load any  Mw.CustomResourceIncludes
 						mw.loadCustomResourceIncludes( mw.getConfig('Mw.CustomResourceIncludes'), function(){
 							// Make sure style sheets are loaded:

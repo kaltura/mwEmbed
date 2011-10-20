@@ -718,10 +718,14 @@ function kAddScript( callback ){
 	}
 	
 	// Add the jquery ui skin: 
-	if( mw.getConfig( 'jQueryUISkin' ) ){
-		jsRequestSet.push( 'mw.style.ui_' + mw.getConfig( 'jQueryUISkin' )  );
+	if( mw.getConfig('IframeCustomjQueryUISkinCss' ) ){
+		kAppendCssUrl( mw.getConfig('IframeCustomjQueryUISkinCss' )  );
 	} else {
-		jsRequestSet.push( 'mw.style.ui_kdark'  );
+		if( mw.getConfig( 'jQueryUISkin' ) ){
+			jsRequestSet.push( 'mw.style.ui_' + mw.getConfig( 'jQueryUISkin' )  );
+		} else {
+			jsRequestSet.push( 'mw.style.ui_kdark'  );
+		}
 	}
 	
 	var objectPlayerList = kGetKalturaPlayerList();
