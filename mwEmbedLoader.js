@@ -38,7 +38,7 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.5.5';
+KALTURA_LOADER_VERSION = '1.5.6';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura HTML5 Version: ' + KALTURA_LOADER_VERSION );
@@ -1146,8 +1146,11 @@ window.checkForKDPCallback = function(){
 	}
 	if( window.jsCallbackReady && window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
 		window.originalKDPCallbackReady = window.jsCallbackReady;
-		window.jsCallbackReady = pushAlreadyCalled
 	};
+	// Always update the jsCallbackReady to call pushAlreadyCalled
+	if( !window.jsCallbackReady || window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
+		window.jsCallbackReady = pushAlreadyCalled;
+	}
 	if( !window.KalturaKDPCallbackReady ){
 		window.KalturaKDPCallbackReady = function( playerId ){
 			if( window.originalKDPCallbackReady ){
