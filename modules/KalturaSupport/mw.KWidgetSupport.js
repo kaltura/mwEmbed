@@ -436,7 +436,7 @@ mw.KWidgetSupport.prototype = {
 	 */
 	loadPlayerData: function( embedPlayer, callback ){
 		var _this = this;
-		var playerRequest = {};debugger;
+		var playerRequest = {};
 		// Check for widget id	 
 		if( ! embedPlayer.kwidgetid ){
 			mw.log( "Error: missing required widget paramater ( kwidgetid ) ");
