@@ -2218,7 +2218,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 						if( mw.getConfig('IframeCustomjQueryUISkinCss' ) ){
 							mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;
 							// skin should already be loaded in the "loader" 
-							mw.getStyleSheet( mw.getConfig('IframeCustomjQueryUISkinCss' )  );
+							//mw.getStyleSheet( mw.getConfig('IframeCustomjQueryUISkinCss' )  );
 						} else {
 							// Special Hack for conditional jquery ui inclusion 
 							if( mw.hasJQueryUiCss() ){
