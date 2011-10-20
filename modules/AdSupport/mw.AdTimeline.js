@@ -151,14 +151,16 @@ mw.AdTimeline.prototype = {
 							// turn off preSequence
 							embedPlayer.sequenceProxy.isInSequence = false;
 							
-							// trigger another onplay ( to match the kaltura kdp ) on play event: 
-							$(embedPlayer).trigger('onplay');
-							
 							// trigger the preSequenceComplete event
 							$( embedPlayer ).trigger( 'preSequenceComplete' );
 							
 							setTimeout(function(){ // avoid function stack
 								_this.restorePlayer();
+								
+								// trigger another onplay ( to match the kaltura kdp ) on play event
+								// afte the ad is complete 
+								$(embedPlayer).trigger('onplay');
+								
 								// Continue playback
 								embedPlayer.play();
 
