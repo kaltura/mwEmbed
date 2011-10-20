@@ -133,6 +133,18 @@ class kalturaIframe {
 
 		return $o;
 	}
+	private function getPlayerSizeCss() {
+		// Set defaults
+		$width = 400;
+		$height = 300;
+		// check if we have iframeSize paramater:
+		if( isset( $_GET[ 'iframeSize' ] ) ){
+			list( $width, $height ) = explode( 'x',  $_GET[ 'iframeSize' ]);
+			$width = intval( $width );
+			$height = intval( $height );
+		}		
+		return "width:{$width}px;height:{$height}px;";
+	}
 	private function getPlaylistPlayerSizeCss(){
 		$width = 400;
 		$height = 300;
@@ -233,7 +245,7 @@ class kalturaIframe {
 			$o.='poster="' . htmlspecialchars( $posterUrl ) . '" ';
 		}
 		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
-			'style="position:absolute;' . $playerSize . '" ';
+			'style="' . $playerSize . '" ';
 
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
@@ -257,8 +269,10 @@ class kalturaIframe {
 		// Output each source as a child element ( for javascript off browsers to have a chance
 		// to playback the content
 		foreach( $sources as $source ){
+			// Android has issues with type attribute on source element
+			$type = ($this->isAndroid() ) ? '' : 'type="' . htmlspecialchars( $source['type'] ) . '" ';
 			$o.= "\n\t\t" .'<source ' .
-					'type="' . htmlspecialchars( $source['type'] ) . '" ' .
+					$type .
 					'src="' . $source['src'] . '" '.
 					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" '.
 				'></source>';
@@ -388,6 +402,10 @@ class kalturaIframe {
 			}
 		}
 		return $o;
+	}
+	private function isAndroid() {
+		$ua = strtolower( $this->getResultObject()->getUserAgent() );
+		return strpos($ua, "android");
 	}
 	private function checkIframePlugins(){
 		try{
@@ -564,6 +582,7 @@ class kalturaIframe {
 		<?php
 	}
 	function outputIFrame( ){
+		//die( '<pre>' . htmlspecialchars($this->getVideoHTML()) );
 		global $wgResourceLoaderUrl;
 		$path = str_replace( 'ResourceLoader.php', '', $wgResourceLoaderUrl );
 		
@@ -589,9 +608,10 @@ class kalturaIframe {
 					$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() ) 
 				);
 			} else { 
-				echo $this->getVideoHTML();
+				echo $this->getVideoHTML( $this->getPlayerSizeCss() );
 			} 
 		}
+		//exit();
 		?>
 		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time

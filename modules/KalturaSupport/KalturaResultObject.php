@@ -216,7 +216,7 @@ class KalturaResultObject {
 			return false;
 		return $this->outputUiConfFileFromCache;
 	}
-	private function getUserAgent() {
+	public function getUserAgent() {
 		return $_SERVER['HTTP_USER_AGENT'];
 	}
 	/**
