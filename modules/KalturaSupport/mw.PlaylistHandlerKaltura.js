@@ -370,6 +370,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 		$item.append( 
 			this.getBoxLayout(clipIndex, this.$playlistItemRenderer) 
 		);
+		$item.find('.nameAndDuration')
+			.after( $('<div />').css({'display': 'block', 'height': '20px'} ) )
+			.find('div span:last').css('float', 'right')
 		return $item;
 	},
 	getBoxLayout: function(  clipIndex, $currentBox ){
@@ -386,7 +389,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				case 'vbox':
 				case 'hbox':
 				case 'canvas':
-					var $node = $('<div />'); 
+					var $node = $('<div />');
 					if( offsetLeft )
 						$node.css( 'margin-left', offsetLeft );
 					$node.append( 
@@ -435,8 +438,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 		// and adjust 100% width to 95% ( handles edge cases of child padding )
 		$boxContainer.find('div,span').each(function( inx, node){
-			if( $(node).css('width') == '100%')
-				$(node).css('width', '95%'); 
+			//if( $(node).css('width') == '100%')
+			$(node).css('width', ''); 
 			
 			// and box layout does crazy things with virtual margins :( remove width for irDescriptionIrScreen
 			if( $(node).data('id') == 'irDescriptionIrScreen' || $(node).data('id') == 'irDescriptionIrText'  ){

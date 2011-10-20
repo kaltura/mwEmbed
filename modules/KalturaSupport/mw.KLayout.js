@@ -137,7 +137,6 @@ mw.KLayout.prototype = {
 					$target.css( attr.nodeName, attr.nodeValue + appendPx );
 					break;
 				case 'paddingtop':
-					debugger;
 					$target.css( 'padding-top', attr.nodeValue);
 					break;
 				case 'paddingright':

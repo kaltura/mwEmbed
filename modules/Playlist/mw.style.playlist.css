@@ -66,4 +66,4 @@
 .playlistItem { background: #3C3C3C; font-size: 11px; }
 .irLinkIrScreen, .clipTitle { float: left; max-width: 175px; color: #bcbcbc; word-wrap: break-word; }
 .irDurationIrScreen, .clipDuration { float: right; margin-right: 20px; color: #bcbcbc; font-size: 10px; }
-.irDescriptionIrScreen, .clipDescription { color: #bcbcbc; word-wrap: break-word; max-width: 188px; display: inline-block; }
+.irDescriptionIrScreen, .clipDescription { color: #bcbcbc; word-wrap: break-word; max-width: 170px; display: inline-block; }
