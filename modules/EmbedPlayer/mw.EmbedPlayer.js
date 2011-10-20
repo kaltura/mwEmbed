@@ -1339,8 +1339,7 @@ mw.EmbedPlayer.prototype = {
 		// Make sure the controlBuilder bindings are up-to-date
 		this.controlBuilder.addControlBindings();
 
-		// Once the thumbnail is shown run the mediaReady trigger (if not using
-		// native controls)
+		// Once the thumbnail is shown run the mediaReady trigger (if not using native controls)
 		if( !this.useNativePlayerControls() ){
 			mw.log("mediaLoaded");
 			$( this ).trigger( 'mediaLoaded' );
@@ -1478,6 +1477,9 @@ mw.EmbedPlayer.prototype = {
 	 *            errorMsg
 	 */
 	showErrorMsg: function( errorMsg ){
+		// remove a loading spiner: 
+		this.hidePlayerSpinner();
+		
 		if( this.$interface ){
 			$target = this.$interface;
 		} else{
