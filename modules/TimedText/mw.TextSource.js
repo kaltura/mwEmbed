@@ -176,6 +176,12 @@
 			var captions = [];
 			var xml = $.parseXML( data );
 			
+			// Check for parse error: 
+			if( $( xml ).find('parsererror').length ){
+				mw.log("Error: close caption parse error: " +  $( xml ).find('parsererror').text() );
+				return captions;
+			}
+			
 			// Set the body Style
 			var bodyStyleId = $( xml ).find('body').attr('style');
 			
@@ -281,7 +287,7 @@
 			// check if the "srt" parses as an XML 
 			try{
 				var xml = $.parseXML( data );
-				if( xml && $( xml ).find( 'p').length ){
+				if( xml && $( xml ).find( 'body').length ){
 					return this.getCaptionsFromTMML( data );
 				}
 			} catch ( e ){
