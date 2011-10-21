@@ -55,7 +55,7 @@
 		 */
 		load: function( callback ) {
 			var _this = this;
-			// setup up a callabck stup ( in case it was not defined )
+			// Setup up a callback ( in case it was not defined )
 			if( !callback )
 				callback = function(){ return ; };
 				

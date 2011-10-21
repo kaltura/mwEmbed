@@ -46,6 +46,9 @@ mw.includeAllModuleMessages();
 			//Set the default kind of timedText to display ( un-categorized timed-text is by default "subtitles" )
 			'userKind' : 'subtitles'
 		},
+		// The bind prefix:
+		bindPostFix: '.timedText',
+		
 		// Default options are empty
 		options: {},
 		
@@ -106,9 +109,11 @@ mw.includeAllModuleMessages();
 				this.config = JSON.parse(  preferenceConfig );
 			}
 			
+			// remove any old player bindings; 
+			$( this.embedPlayer ).unbind( this.bindPostFix )
+			
 			this.addPlayerBindings();
 		},
-		
 		/**
 		 * Add timed text related player bindings
 		 * @return
@@ -118,18 +123,18 @@ mw.includeAllModuleMessages();
 			var embedPlayer = this.embedPlayer;
 			
 			// Check for timed text support:
-			$( embedPlayer ).bind( 'addControlBarComponent', function(event, controlBar ){
+			$( embedPlayer ).bind( 'addControlBarComponent' + this.bindPostFix, function(event, controlBar ){
 				if( embedPlayer.hasTextTracks() ){
 					controlBar.supportedComponets['timedText'] = true;
 					controlBar.components['timedText'] = _this.getTimedTextButton();					
 				}
 			});
 			
-			$( embedPlayer ).bind( 'monitorEvent', function() {
+			$( embedPlayer ).bind( 'monitorEvent'+ this.bindPostFix, function() {
 				_this.monitor();
 			} );
 
-			$( embedPlayer ).bind( 'onplay', function() {
+			$( embedPlayer ).bind( 'onplay'+ this.bindPostFix, function() {
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
 				// Hide the caption menu if presently displayed
@@ -137,7 +142,7 @@ mw.includeAllModuleMessages();
 			} );
 			
 			// Resize the timed text font size per window width
-			$( embedPlayer ).bind( 'onCloseFullScreen onOpenFullScreen', function() {
+			$( embedPlayer ).bind( 'onCloseFullScreen'+ this.bindPostFix + ' onOpenFullScreen'+ this.bindPostFix, function() {
 				var textOffset = _this.embedPlayer.controlBuilder.fullscreenMode ? 30 : 10;
 				var textCss = _this.getInterfaceSizeTextCss({
 					'width' :  embedPlayer.$interface.width(),
@@ -155,7 +160,7 @@ mw.includeAllModuleMessages();
 			});
 			
 			// Update the timed text size
-			$( embedPlayer ).bind( 'onResizePlayer', function(e, size, animate) {
+			$( embedPlayer ).bind( 'onResizePlayer'+ this.bindPostFix, function(event, size, animate) {
 				var textCss = _this.getInterfaceSizeTextCss( size );
 				mw.log( 'TimedText::onResizePlayer: ' + textCss['font-size']);
 				if (animate) {
@@ -166,22 +171,21 @@ mw.includeAllModuleMessages();
 			});
 
 			// Setup display binding
-			$( embedPlayer ).bind( 'onShowControlBar', function(event, layout ){
+			$( embedPlayer ).bind( 'onShowControlBar'+ this.bindPostFix, function(event, layout ){
 				// Move the text track if present
 				embedPlayer.$interface.find( '.track' )
 				.stop()
 				.animate( layout, 'fast' );
 			});
 			
-			$( embedPlayer ).bind( 'onHideControlBar', function(event, layout ){
+			$( embedPlayer ).bind( 'onHideControlBar'+ this.bindPostFix, function(event, layout ){
 				// Move the text track down if present
 				embedPlayer.$interface.find( '.track' )
 				.stop()
 				.animate( layout, 'fast' );
 			});
-			
 		},
-		
+
 		/**
 		 * Get the current language key
 		 * @return 
