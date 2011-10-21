@@ -396,10 +396,7 @@ mw.PlayerControlBuilder.prototype = {
 			this.windowZindex = $interface.css( 'z-index' );
 
 		// Get the base offset:
-		this.windowOffset = $interface.offset();
-		this.windowOffset.top = this.windowOffset.top - $(document).scrollTop();
-		this.windowOffset.left = this.windowOffset.left - $(document).scrollLeft();
-		
+		this.windowOffset = this.getWindowOffset();
 		// Change the z-index of the interface
 		$interface.css( {
 			'position' : 'fixed',
@@ -510,6 +507,13 @@ mw.PlayerControlBuilder.prototype = {
 				_this.restoreWindowPlayer();
 			}
 		} );
+	},
+	getWindowOffset: function(){
+		var windowOffset = this.embedPlayer.$interface.offset();
+		windowOffset.top = windowOffset.top - $(document).scrollTop();
+		windowOffset.left = windowOffset.left - $(document).scrollLeft();
+		this.windowOffset = windowOffset;
+		return this.windowOffset;
 	},
 	// Display a fullscreen tip if configured to do and the browser supports it. 
 	displayFullscreenTip: function(){

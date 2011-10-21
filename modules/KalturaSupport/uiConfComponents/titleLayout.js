@@ -46,6 +46,7 @@
 			// add space for the title: 
 			$vid
 			.css({
+				'position' : 'absolute',
 				'height' : ( $vid.height() - titleScreenHeight ) + 'px', 
 				'top' : titleScreenHeight + 'px'
 			});

@@ -23,7 +23,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		// convert the pre and post to ints: 
 		bc.preSequence = parseInt( bc.preSequence );
 		bc.postSequence = parseInt( bc.postSequence );
-		
+
 		// check if the plugin is enabled and we have an entryId:
 		if( !bc.plugin || ! bc.bumperEntryID && ( !bc.preSequence || !bc.postSequence ) ){
 			callback();

@@ -1401,6 +1401,7 @@ mw.EmbedPlayer.prototype = {
 			_this.applyIntrinsicAspect();
 		}, 10);
 		
+		
 		// triggers autoplay: 
 		mw.playerManager.playerReady( this );
 		

@@ -66,7 +66,6 @@ mw.NielsenPlugin.prototype = {
 		
 		// Bind ad Playback
 		$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
-			// 
 			var duration = this.getRelativeTime( 'duration' );
 			// Playing an ad fire a 15 with all ad Meatadata
 			_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "ad", _this.getMetaXmlString() );
@@ -185,7 +184,7 @@ mw.NielsenPlugin.prototype = {
 			var absolutePlayerTime = embedPlayer.currentTime;
 			for( var i =0; i < embedPlayer.rawCuePoints.length; i++ ){
 				var cuePoint = embedPlayer.rawCuePoints[i];
-				// See which relative segment time duration we should return 
+				// TODO see which relative segment time duration we should return 
 			}
 		}
 		// If no cuePoints are found return normal embedPlayer currentTime or duration:  
