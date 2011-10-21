@@ -607,8 +607,12 @@ class kalturaIframe {
 					// Get video html with a default playlist video size ( we can adjust it later in js )
 					$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() ) 
 				);
-			} else { 
-				echo $this->getVideoHTML( $this->getPlayerSizeCss() );
+			} else {
+				if( $this->isAndroid() ) {
+					echo $this->getVideoHTML( $this->getPlayerSizeCss() );
+				} else {
+					echo $this->getVideoHTML();
+				}
 			} 
 		}
 		//exit();
