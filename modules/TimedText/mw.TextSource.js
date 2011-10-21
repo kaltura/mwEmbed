@@ -171,6 +171,7 @@
 		 */
 		getCaptionsFromTMML: function( data ){
 			var _this = this;
+			mw.log("TextSource::getCaptionsFromTMML");
 			// set up display information:
 			var captions = [];
 			var xml = $.parseXML( data );
@@ -276,6 +277,7 @@
 		 * @param {String} data Srt string to be parsed
 		 */
 		getCaptionsFromSrt: function ( data ){
+			mw.log("TextSource::getCaptionsFromSrt");
 			// Remove dos newlines
 			var srt = data.replace(/\r+/g, '');
 		
