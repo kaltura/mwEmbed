@@ -1166,7 +1166,7 @@ class KalturaResultObject {
 	}
 	public function getMeta(){
 		$result = $this->getResultObject();
-		if( isset( $result['meta']  ) ){
+		if( isset( $result['meta'] ) ){
 			return $result['meta'];
 		} else {
 			return false;

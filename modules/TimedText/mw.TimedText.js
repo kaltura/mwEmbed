@@ -102,17 +102,23 @@ mw.includeAllModuleMessages();
 			if( options ){
 				this.options = options;
 			}
-			
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
 				this.config = JSON.parse(  preferenceConfig );
 			}
-			
+			// remove any old bindings on change media: 
+			$( this.embedPlayer ).bind('onChangeMedia', function(){
+				_this.destroy();
+			});
+			// Remove any old bindings before we add the current bindings: 
+			_this.destroy();
+			// Add player bindings
+			this.addPlayerBindings();
+		},
+		destroy:function(){
 			// remove any old player bindings; 
 			$( this.embedPlayer ).unbind( this.bindPostFix )
-			
-			this.addPlayerBindings();
 		},
 		/**
 		 * Add timed text related player bindings

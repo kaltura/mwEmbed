@@ -63,7 +63,6 @@ mw.NielsenPlugin.prototype = {
 		var currentSeqId = 1;
 		// Dispatch a "preLoad" event ( will finish with a 5 once we have actual content playing ) 
 		this.dispatchEvent( 3, this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
-		thi
 		
 		// Bind ad Playback
 		$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
