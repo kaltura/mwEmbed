@@ -278,6 +278,15 @@
 		 */
 		getCaptionsFromSrt: function ( data ){
 			mw.log("TextSource::getCaptionsFromSrt");
+			// check if the "srt" parses as an XML 
+			try{
+				var xml = $.parseXML( data );
+				if( xml && $( xml ).find( 'p').length ){
+					return this.getCaptionsFromTMML( data );
+				}
+			} catch ( e ){
+				// srt should not be xml
+			}
 			// Remove dos newlines
 			var srt = data.replace(/\r+/g, '');
 		
