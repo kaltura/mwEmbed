@@ -2252,7 +2252,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			});
 		});
 	};
-	mw.loadCustomResourceIncludes = function( loadSet, callback ){
+	mw.loadCustomResourceIncludes = function( loadSet, callback ){ debugger;
 		// XXX this needs to be cleaned up ( for now don't include custom resources if not an iframe player )
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) || !loadSet || loadSet.length == 0 ){
 			callback();
@@ -2260,9 +2260,9 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		}
 		var loadCount = loadSet.length - 1;
 		var checkLoadDone = function(){
-			loadCount--;
 			if( loadCount == 0 )
 				callback();
+			loadCount--;
 		};
 		var resource;
 		for( var i =0 ; i < loadSet.length; i ++ ){
