@@ -118,6 +118,20 @@ class KalturaResultObject {
 
 		return null;
 	}
+
+	public function getWidgetPlugins() {
+		if( ! $this->playerConfig ) {
+			$this->setupPlayerConfig();
+		}
+		return $this->playerConfig['plugins'];
+	}
+
+	public function getWidgetUiVars() {
+		if( ! $this->playerConfig ) {
+			$this->setupPlayerConfig();
+		}
+		return $this->playerConfig['vars'];
+	}	
 	/**
 	 * Kaltura object provides sources, sometimes no sources are found or an error occurs in 
 	 * a video delivery context we don't want ~nothing~ to happen instead we send a special error
