@@ -69,24 +69,25 @@
 				mw.log( "Error: TextSource no source url for text track");
 				return callback();
 			}
-			
-			// Check if we can directly request the content: 
-			if( mw.isLocalDomain( this.getSrc() ) ){
-				$.get( this.getSrc(), function( data ) {
-					// Parse and load captions:
-					_this.captions = _this.getCaptions( data );
-					mw.log("mw.TextSource :: loaded from srt file: " + _this.captions.length + ' captions' );
-					// Issue the callback: 
-					callback();
-				}, 'text');
-				return ;
+			try {
+				$.ajax({
+					url: _this.getSrc(),
+					success: function( data ) {
+						_this.captions = _this.getCaptions( data );
+						mw.log("mw.TextSource :: loaded from srt file: " + _this.captions.length + ' captions' );
+						callback();
+					},
+					error: function( jqXHR, textStatus, errorThrown ){
+						// try to load the file with the proxy:
+						_this.loadViaProxy( callback );
+					}
+				});
+			} catch ( e ){
+				mw.log( "TimedText source:: first cross domain request failed, trying via proxy" );
 			}
-			
-			// Check if we can load by proxy
-			if ( !mw.isLocalDomain( this.getSrc() ) && !mw.getConfig('Mw.XmlProxyUrl') ) {
-				mw.log("Error: no text proxy and requesting cross domain srt location: " + this.getSrc() );
-				return callback();
-			}
+		},
+		loadViaProxy: function( callback ){
+			var _this = this;
 			// Load via proxy:
 			var proxyUrl = mw.getConfig('Mw.XmlProxyUrl');
 			$.getJSON( proxyUrl + '?url=' + encodeURIComponent(  this.getSrc() ) + '&callback=?', function( result ){
@@ -96,9 +97,10 @@
 				}				 
 				// Parse and load captions:
 				_this.captions = _this.getCaptions( result['contents'] );
+				mw.log("mw.TextSource :: loaded from proxy xml request: captions length: " + _this.captions.length + ' captions' );
+				callback();
 			});
 		},
-	
 		/**
 		* Returns the text content for requested time
 		*

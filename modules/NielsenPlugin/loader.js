@@ -13,7 +13,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				new mw.NielsenPlugin( embedPlayer, callback );
 			});
 		} else {
-			// No NielsenPlugin active, ( continue player build out )  
+			// No NielsenPlugin active( continue player build out )  
 			callback();
 		}
 	});

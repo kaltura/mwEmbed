@@ -1675,8 +1675,10 @@ mw.EmbedPlayer.prototype = {
 		// Add a loader to the embed player: 
 		this.pauseLoading();
 		
-		// Clear out any player error:
+		// Clear out any player error ( both via attr and object property ):
 		this['data-playerError'] = null;
+		$(this).attr( 'data-playerError', '');
+		
 		// Clear out the player error div:
 		this.$interface.find('.error').remove();
 		// restore the control bar:
@@ -2096,7 +2098,7 @@ mw.EmbedPlayer.prototype = {
 	replayEventCount : 0,
 	play: function() {
 		var _this = this;
-		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.posterDisplayed + ' native: ' +  this.useNativePlayerControls());
+		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.posterDisplayed );
 		
 		// Check if thumbnail is being displayed and embed html
 		if ( _this.posterDisplayed &&  !_this.useNativePlayerControls() ) {
