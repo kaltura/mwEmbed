@@ -144,7 +144,10 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			
 			// Add the video to the target:
 			$target.append( $video );
-			
+
+			// God knows why we have to do this. ( bug in chrome, this is not needed in firefox)
+			jQuery.fn.embedPlayer = window.jQueryEmbedPlayer;
+
 			// create the EmbedPlayer and issue the callback: 
 			$video.embedPlayer( callback );
 		}
