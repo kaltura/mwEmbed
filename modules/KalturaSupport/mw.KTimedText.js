@@ -85,7 +85,6 @@
 		 */
 		getTextSourcesFromApi: function( callback ){
 			var _this = this;
-		
 			this.getKalturaClient().doRequest( {
 				'service' : 'caption_captionasset',
 				'action' : 'list',

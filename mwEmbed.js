@@ -1680,7 +1680,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		mw.style[ cssResourceName ] = true;
 		// Add the spinner directly ( without jQuery in case we have to
 		// dynamically load jQuery )
-		mw.log( 'Adding style:' + cssResourceName + " to dom " );
+		// mw.log( 'Adding style:' + cssResourceName + " to dom " );
 		var styleNode = document.createElement('style');
 		styleNode.type = "text/css";
 		// Use cssText or createTextNode depending on browser:

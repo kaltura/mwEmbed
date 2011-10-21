@@ -156,9 +156,8 @@ mw.AdTimeline.prototype = {
 							
 							setTimeout(function(){ // avoid function stack
 								_this.restorePlayer();
-								
 								// trigger another onplay ( to match the kaltura kdp ) on play event
-								// afte the ad is complete 
+								// after the ad is complete 
 								$(embedPlayer).trigger('onplay');
 								
 								// Continue playback
@@ -270,6 +269,10 @@ mw.AdTimeline.prototype = {
 					runSequeceProxyInx( seqInx );
 				},0);
 			});
+			// Trigger an ad start event once we execute the sequenceProxy
+			setTimeout(function(){
+				$( _this.embedPlayer ).trigger( 'AdSupport_StartAdPlayback', slotType );
+			},0);
 		};
 		runSequeceProxyInx( seqInx );
 	},
@@ -280,8 +283,6 @@ mw.AdTimeline.prototype = {
 		this.embedPlayer.disableSeekBar();
 		// update the interface to play state:
 		this.embedPlayer.playInterfaceUpdate();
-		// Trigger an event so plugins can get out of the way for ads:
-		$( this.embedPlayer ).trigger( 'AdSupport_StartAdPlayback', slotType );
 	},
 	/**
 	 * Restore a player from ad state

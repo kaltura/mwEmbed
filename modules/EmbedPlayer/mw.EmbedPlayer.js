@@ -2612,7 +2612,7 @@ mw.EmbedPlayer.prototype = {
 		// if we have not already run the buffer start hook
 		if( this.bufferedPercent > 0 && !this.bufferStartFlag ) {
 			this.bufferStartFlag = true;
-			mw.log("bufferStart");
+			mw.log("EmbedPlayer::bufferStart");
 			$( this ).trigger( 'bufferStartEvent' );
 		}
 

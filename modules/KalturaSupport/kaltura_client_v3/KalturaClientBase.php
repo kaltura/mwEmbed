@@ -286,7 +286,7 @@ class KalturaClientBase
 		if( $wgKalturaRemoteAddressSalt === false ){
 			return '';
 		}
-		$ip = $_SERVER['REMOTE_ADDR'];
+		$ip = $_SERVER[ 'REMOTE_ADDR' ];
 		if( $wgKalturaForceIP ){
 			$ip = $wgKalturaForceIP;
 		}

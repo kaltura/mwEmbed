@@ -1173,8 +1173,12 @@ class KalturaResultObject {
 		}
 	}
 	private function getResultObject(){
-		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug;
+		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug, $wgKalturaEnableUiConfCacheInDebug;
 
+		$debugCache = $wgEnableScriptDebug;
+		if( $wgKalturaEnableUiConfCacheInDebug ){
+			$debugCache = false;
+		}
 		// Load the uiConf first so we could setup our player configuration
 		$this->loadUiConf();
 
@@ -1184,7 +1188,7 @@ class KalturaResultObject {
 			
 			// Check modify time on cached php file
 			$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
-			if ( $wgEnableScriptDebug || !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
+			if ( $debugCache || !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
 				$this->resultObj = $this->getResultObjectFromApi();
 				// Test if the resultObject can be cached ( no access control restrictions )
 				if( $this->isCachableRequest() ){

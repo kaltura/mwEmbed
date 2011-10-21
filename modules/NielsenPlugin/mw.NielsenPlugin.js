@@ -35,6 +35,8 @@ mw.NielsenPlugin.prototype = {
 	
 	// The query interval to send progress updates to Nielsen 
 	queryInterval: 2,
+	
+	contentSource: null,.
 		
 	init: function( embedPlayer, callback ){
 		var _this = this;
@@ -42,19 +44,43 @@ mw.NielsenPlugin.prototype = {
 		
 		this.getGg( function( gg ){
 			$( embedPlayer ).bind( 'playerReady' + _this.bindPostFix, function(){
-				_this.onContentMeta();
-				_this.addPlayerBindings();
+				_this.addSequenceBinding();
 			});
 			callback();
 		});
+		
+		// on change media remove any existing bindings ( the next clip will re-invoke the plugin )
+		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
+			$( embedPlayer ).unbind( _this.bindPostfix );
+		});
 	},
 	/**
-	 * Triggered on playerReady where all metaData is loaded:
+	 * called on player ready sets up all the bindings and fires the initial content beacon. 
 	 */
-	onContentMeta : function() {
+	addSequenceBinding: function(){
 		var _this = this;
+		var embedPlayer = this.embedPlayer;
+		var currentSeqId = 1;
 		// Dispatch a "preLoad" event ( will finish with a 5 once we have actual content playing ) 
 		this.dispatchEvent( 3, this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+		thi
+		
+		// Bind ad Playback
+		$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
+			// 
+			var duration = this.getRelativeTime( 'duration' );
+			// Playing an ad fire a 15 with all ad Meatadata
+			_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "ad", _this.getMetaXmlString() );
+		});
+		// When starting content finish up content beacon and add content bindings
+		$( embedPlayer ).bind( 'onplay'  + _this.bindPostFix, function(){
+			// check if the play event is content or "inAdSequence" 
+			if( ! embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
+				// playing content fire the 5 content beacon and start content tracking
+				this.dispatchEvent( 3, this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+			}
+		});
+
 	},
 	/**
 	 * Adds player bindings for either ads or players
@@ -181,9 +207,29 @@ mw.NielsenPlugin.prototype = {
 			"<length>"+
 				this.getRelativeTime( 'duration' ) + 
 			"</length>";
-		// Get all tags: 
-		var allConfig = this.embedPlayer.getKalturaConfig('NielsenPlugin');
-		
+		// A tag map that allows for ads to override content values
+		var tagMap = {};
+		// Get the current config evaluated expressions: 
+		var evalConfig = this.embedPlayer.getKalturaConfig('NielsenPlugin');
+		$.each(evalConfig, function( attr, evalValue ){
+			// set the tag value 
+			if( attr.indexOf('tag_') === 0 ){
+				// When in an Ad check if the tag already exists
+				if( _this.inAd() && tagMap[ attr.substr( 4 ) ] ){
+					// don't override ad tags 
+				} else {
+					tagMap[ attr.substr( 4 ) ]
+				}
+			}
+			// if in an ad override the tagMap with ad_ tag value:
+			if( _this.inAd() && attr.indexOf('ad_') === 0 ){
+				tagMap[ attr.substr( 3 ) ] = evalValue;
+			}
+		});
+		// output the final tag map: 
+		$.each( tagMap, function(attr, evalValue){
+			meta += '<' + attr + '>' + evalValue + '</' + evalValue + '>' + "\n";
+		})
 		return meta;
 	},
 	getAdMetaXmlString: function(){

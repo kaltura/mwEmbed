@@ -52,6 +52,9 @@ $wgMwEmbedApiServices = array();
 // $wgKalturaRemoteAddressSalt configuration option. 
 $wgKalturaRemoteAddressSalt = false;
 
+// Enables the ui conf cache while in debug mode
+$wgKalturaEnableUiConfCacheInDebug = false;
+
 // For force ip testing geo restrictions
 $wgKalturaForceIP = false;
 
