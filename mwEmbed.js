@@ -2217,8 +2217,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 						// Check if we have a global jquery ui skin: 
 						if( mw.getConfig('IframeCustomjQueryUISkinCss' ) ){
 							mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;
-							// skin should already be loaded in the "loader" 
-							//mw.getStyleSheet( mw.getConfig('IframeCustomjQueryUISkinCss' )  );
+							mw.getStyleSheet( mw.getConfig('IframeCustomjQueryUISkinCss' )  );
 						} else {
 							// Special Hack for conditional jquery ui inclusion 
 							if( mw.hasJQueryUiCss() ){
@@ -2252,7 +2251,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			});
 		});
 	};
-	mw.loadCustomResourceIncludes = function( loadSet, callback ){ 
+	mw.loadCustomResourceIncludes = function( loadSet, callback ){
 		// XXX this needs to be cleaned up ( for now don't include custom resources if not an iframe player )
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) || !loadSet || loadSet.length == 0 ){
 			callback();
