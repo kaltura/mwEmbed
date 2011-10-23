@@ -155,8 +155,6 @@ mw.PlayerControlBuilder.prototype = {
 		// Build the supportedComponets list
 		this.supportedComponets = $.extend( this.supportedComponets, embedPlayer.supports );
 		
-		$(embedPlayer).trigger( 'addControlBarComponent', this);
-			
 		// Check for Attribution button
 		if( mw.getConfig( 'EmbedPlayer.AttributionButton' ) && embedPlayer.attributionbutton ){
 			this.supportedComponets[ 'attributionButton' ] = true;
@@ -170,6 +168,8 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.getConfig( 'EmbedPlayer.EnableOptionsMenu' ) === false ){
 			this.supportedComponets[ 'options'] = false;
 		}
+
+		$(embedPlayer).trigger( 'addControlBarComponent', this);
 		
 		var addComponent = function( component_id ){
 			if ( _this.supportedComponets[ component_id ] ) {
