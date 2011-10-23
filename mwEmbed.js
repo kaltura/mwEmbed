@@ -2224,7 +2224,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 								mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;
 							}
 						}
-						
+
 						// load any  Mw.CustomResourceIncludes
 						mw.loadCustomResourceIncludes( mw.getConfig('Mw.CustomResourceIncludes'), function(){
 							// Make sure style sheets are loaded:
