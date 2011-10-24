@@ -496,7 +496,8 @@ function kGetFlashVersion(){
 function kCheckAddScript(){
 	
 	// Check if we already have got uiConfJs or not
-	if( ! mw.getConfig( 'Kaltura.UiConfJsLoaded') && ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
+	if( mw.getConfig( 'Kaltura.EnableEmbedUiConfJs' ) && 
+		! mw.getConfig( 'Kaltura.UiConfJsLoaded') && ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
 		var playerList = kGetKalturaPlayerList();
 		var baseUiConfJsUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'services.php?service=uiconfJs');

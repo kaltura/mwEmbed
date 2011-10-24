@@ -52,6 +52,9 @@ $wgMwEmbedApiServices = array();
 // $wgKalturaRemoteAddressSalt configuration option. 
 $wgKalturaRemoteAddressSalt = false;
 
+// If we should check for onPage resources per the external resources plugin
+$wgKalturaEnableEmbedUiConfJs = false;
+
 // Enables the result cache while in debug mode 
 // This enables fast player rendering while scripts remain unminifed. 
 // ( normally $wgEnableScriptDebug disables result cache )

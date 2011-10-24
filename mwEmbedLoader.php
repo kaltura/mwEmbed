@@ -28,7 +28,8 @@ $exportedJsConfig= array(
 	'EmbedPlayer.UseFlashOnAndroid' => true,
 	'Kaltura.LoadScriptForVideoTags' => true,
 	'Kaltura.AllowIframeRemoteService' => $wgKalturaAllowIframeRemoteService,
-	'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive
+	'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
+	'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs
 );
 
 // Append Custom config: 
