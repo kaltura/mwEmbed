@@ -49,8 +49,6 @@
 		function updatePlayerLayout(){
 			var $vid = $( embedPlayer.getPlayerElement() );
 			// add space for the title: 
-			var vidHeight = $vid.height();
-			debugger;
 			$vid
 			.css({
 				'position' : 'absolute',
