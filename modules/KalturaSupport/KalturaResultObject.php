@@ -16,6 +16,7 @@ class KalturaResultObject {
 	var $clientTag = null;
 	var $uiConfFile = null;
 	var $uiConfXml = null; // lazy init
+	var $playlistObject = null; // lazy init playlist Object
 	var $noCache = false;
 	// flag to control if we are in playlist mode
 	var $isPlaylist = null; // lazy init
@@ -832,14 +833,12 @@ class KalturaResultObject {
 		// Check if we have a cached result object:
 		if( !$this->uiConfFile ){
 			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".uiconf.txt";
-			// Check modify time on cached php file
-			$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
-			if ( !$useCache || !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
-				$this->uiConfFile = $this->loadUiConfFromApi();
-				$this->putCacheFile( $cacheFile, $this->uiConfFile );
-			} else {
+			if( $this->canUseCacheFile( $cacheFile ) ){
 				$this->uiConfFile = file_get_contents( $cacheFile );
 				$this->outputUiConfFileFromCache = true;
+			} else {
+				$this->uiConfFile = $this->loadUiConfFromApi();
+				$this->putCacheFile( $cacheFile, $this->uiConfFile );
 			}
 		}
 		$this->parseUiConfXML( $this->uiConfFile );
@@ -898,19 +897,30 @@ class KalturaResultObject {
 	 * Get playlist object
 	 */
 	function getPlaylistObject( $playlistId ){
+		
 		$client = $this->getClient();
 		// Build the reqeust: 
 		$kparams = array();
-		try {
-			$client->addParam( $kparams, "id", $playlistId);
-			$client->queueServiceActionCall( "playlist", "execute", $kparams );
-			
-			return $client->doQueue();
-		} catch( Exception $e ){
-			// Throw an Exception and pass it upward
-			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
-			return false;
+		if( !$this->playlistObject ){
+			$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . '.' . $this->getCacheSt() . $playlistId;
+			if( $this->canUseCacheFile( $cacheFile ) ){
+				return unserialize( file_get_contents( $cacheFile ) );
+			} else {
+				try {
+					$client->addParam( $kparams, "id", $playlistId);
+					$client->queueServiceActionCall( "playlist", "execute", $kparams );
+					
+					$this->playlistObject = $client->doQueue();
+					$this->putCacheFile( $cacheFile, serialize( $this->playlistObject) );
+				
+				} catch( Exception $e ){
+					// Throw an Exception and pass it upward
+					throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+					return false;
+				}
+			}
 		}
+		return $this->playlistObject;
 	}
 	/**
 	 * Get the XML for the first playlist ( the one likely to be displayed ) 
@@ -1087,9 +1097,9 @@ class KalturaResultObject {
 		if( isset($this->urlParameters['flashvars']['ks']) ) {
 			$this->ks = $this->urlParameters['flashvars']['ks'];
 		} else {
-			// Check modify time on cached php file
-			$filemtime = @filemtime($cacheFile);  // returns FALSE if file does not exist
-			if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $cacheLife ) ) {
+			if( $this->canUseCacheFile( $cacheFile ) ){
+				$this->ks = file_get_contents( $cacheFile );
+			} else {
 				try{
 					$session = $client->session->startWidgetSession( $this->urlParameters['wid'] );
 					$this->ks = $session->ks;
@@ -1097,8 +1107,6 @@ class KalturaResultObject {
 				} catch ( Exception $e ){
 					throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 				}
-			} else {
-				$this->ks = file_get_contents( $cacheFile );
 			}
 		}
 		// Set the kaltura ks and return the client
@@ -1198,29 +1206,22 @@ class KalturaResultObject {
 	private function getResultObject(){
 		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug, $wgKalturaForceResultCache;
 
-		$useCache = !$wgEnableScriptDebug;
-		if( $wgKalturaForceResultCache === true){
-			$useCache = true;
-		}
-		
 		// Load the uiConf first so we could setup our player configuration
 		$this->loadUiConf();
 
 		// Check if we have a cached result object:
 		if( !$this->resultObj ){
 			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".entry.txt";
-			
-			// Check modify time on cached php file
-			$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
-			if ( !$useCache || !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
+			// Check if we can use the cache file: 
+			if( $this->canUseCacheFile( $cacheFile ) ){
+				$this->outputFromCache = true;
+				$this->resultObj = unserialize( file_get_contents( $cacheFile ) );
+			} else {
 				$this->resultObj = $this->getResultObjectFromApi();
 				// Test if the resultObject can be cached ( no access control restrictions )
 				if( $this->isCachableRequest() ){
 					$this->putCacheFile( $cacheFile, serialize( $this->resultObj  ) );
 				}
-			} else {
-				$this->outputFromCache = true;
-				$this->resultObj = unserialize( file_get_contents( $cacheFile ) );
 			}
 		}
 		return $this->resultObj;
@@ -1228,6 +1229,18 @@ class KalturaResultObject {
 	public function getFileCacheTime() {
 		$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".entry.txt";
 		return ( @filemtime( $cacheFile ) )? @filemtime( $cacheFile ) : time();
+	}
+	private function canUseCacheFile( $cacheFile ){
+		global $wgEnableScriptDebug, $wgKalturaForceResultCache, $wgKalturaUiConfCacheTime;
+		$useCache = !$wgEnableScriptDebug;
+		if( $wgKalturaForceResultCache === true){
+			$useCache = true;
+		}
+		$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
+		if ( !$useCache || !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
+			return false;
+		}
+		return true;
 	}
 	private function isCachableRequest(){
 		if( $this->isAccessControlAllowed( $this->resultObj ) !== true  ){
