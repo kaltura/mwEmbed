@@ -340,7 +340,10 @@ class KalturaResultObject {
 		if( !$resultObject ){
 			$resultObject =  $this->getResultObject();
 		}
-		
+		// check for access control resultObject property:
+		if( !isset( $resultObject['accessControl']) ){
+			return true;
+		}
 		$accessControl = $resultObject['accessControl'];
 		
 		// Check if we had no access control due to playlist
