@@ -815,9 +815,15 @@ class KalturaResultObject {
 		return $resultObject;
 	}
 	function loadUiConf() {
-		global $wgKalturaUiConfCacheTime;
+		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug, $wgKalturaForceResultCache;
+		
+		$useCache = !$wgEnableScriptDebug;
+		if( $wgKalturaForceResultCache === true){
+			$useCache = true;
+		}
+		
 		// if no uiconf_id .. throw exception
-		if( !$this->urlParameters['uiconf_id']) {
+		if( !$this->urlParameters['uiconf_id'] ) {
 			throw new Exception( "Missing uiConf ID" );
 		}
 		// Check if we have a cached result object:
@@ -825,7 +831,7 @@ class KalturaResultObject {
 			$cacheFile = $this->getCacheDir() . '/' . $this->getResultObjectCacheKey() . ".uiconf.txt";
 			// Check modify time on cached php file
 			$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
-			if ( !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
+			if ( !$useCache || !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
 				$this->uiConfFile = $this->loadUiConfFromApi();
 				$this->putCacheFile( $cacheFile, $this->uiConfFile );
 			} else {
@@ -986,7 +992,7 @@ class KalturaResultObject {
 			
 			// Check if the server cached the result by search for "cached-dispatcher" in the request headers
 			// If not, do not cache the request (Used for Access control cache issue)
-			$requestCached = strpos($client->getHeaders(), "X-Kaltura: cached-dispatcher");
+			$requestCached = strpos( $client->getHeaders(), "X-Kaltura: cached-dispatcher" );
 			if( $requestCached === false ) {
 				$this->noCache = true;
 			}
@@ -1187,12 +1193,13 @@ class KalturaResultObject {
 		}
 	}
 	private function getResultObject(){
-		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug, $wgKalturaEnableUiConfCacheInDebug;
+		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug, $wgKalturaForceResultCache;
 
-		$debugCache = $wgEnableScriptDebug;
-		if( $wgKalturaEnableUiConfCacheInDebug ){
-			$debugCache = false;
+		$useCache = !$wgEnableScriptDebug;
+		if( $wgKalturaForceResultCache === true){
+			$useCache = true;
 		}
+		
 		// Load the uiConf first so we could setup our player configuration
 		$this->loadUiConf();
 
@@ -1202,7 +1209,7 @@ class KalturaResultObject {
 			
 			// Check modify time on cached php file
 			$filemtime = @filemtime( $cacheFile );  // returns FALSE if file does not exist
-			if ( $debugCache || !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
+			if ( !$useCache || !$filemtime || filesize( $cacheFile ) === 0 || ( time() - $filemtime >= $wgKalturaUiConfCacheTime ) ){
 				$this->resultObj = $this->getResultObjectFromApi();
 				// Test if the resultObject can be cached ( no access control restrictions )
 				if( $this->isCachableRequest() ){
@@ -1227,9 +1234,8 @@ class KalturaResultObject {
 		return true;
 	}
 	private function putCacheFile( $cacheFile, $data ){
-		global $wgEnableScriptDebug;
-		// Don't cache things when in "debug" mode:
-		if( $wgEnableScriptDebug || $this->noCache ){
+		// Don't cache if noCache flag has been set. 
+		if( $this->noCache ){
 			return ;
 		}
 		file_put_contents( $cacheFile, $data );

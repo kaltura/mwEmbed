@@ -17,10 +17,15 @@
 		var titleScreenHeight = $titleConfig.attr( 'height' );
 		
 		function doTitleLayout(){
+			// unbind any old bindings: 
+			$( embedPlayer ).unbind( ".titleLayout" );
+			
 			// Add bindings
-			$( embedPlayer ).bind( "playerReady", updatePlayerLayout);
+			$( embedPlayer ).bind( "playerReady.titleLayout", function(){
+				updatePlayerLayout();
+			});
 
-			$( embedPlayer ).bind( "onResizePlayer", updatePlayerLayout);
+			$( embedPlayer ).bind( "onResizePlayer.titleLayout", updatePlayerLayout);
 			
 			// Add title div to interface:
 			$( embedPlayer ).bind("playerReady", function(){
@@ -44,6 +49,8 @@
 		function updatePlayerLayout(){
 			var $vid = $( embedPlayer.getPlayerElement() );
 			// add space for the title: 
+			var vidHeight = $vid.height();
+			debugger;
 			$vid
 			.css({
 				'position' : 'absolute',

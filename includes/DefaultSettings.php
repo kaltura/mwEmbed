@@ -52,8 +52,10 @@ $wgMwEmbedApiServices = array();
 // $wgKalturaRemoteAddressSalt configuration option. 
 $wgKalturaRemoteAddressSalt = false;
 
-// Enables the ui conf cache while in debug mode
-$wgKalturaEnableUiConfCacheInDebug = false;
+// Enables the result cache while in debug mode 
+// This enables fast player rendering while scripts remain unminifed. 
+// ( normally $wgEnableScriptDebug disables result cache )
+$wgKalturaForceResultCache = false;
 
 // For force ip testing geo restrictions
 $wgKalturaForceIP = false;

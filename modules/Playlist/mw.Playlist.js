@@ -248,7 +248,17 @@ mw.Playlist.prototype = {
 						
 						 _this.sourceHandler.setPlaylistIndex( inx );
 						 mw.log( 'mw.Playlist:: selectPlaylist:' + inx );
-						 $( _this.target + ' .media-rss-video-list').loadingSpinner();
+						 $( _this.target + ' .media-rss-video-list')
+						 .empty()
+						 .append(
+							$('<div />')
+							.css({
+								'position' : 'absolute',
+								'top' : '45%',
+								'left' : '45%'
+							})
+							.loadingSpinner()
+						 )
 						 
 						 _this.sourceHandler.loadCurrentPlaylist( function(){
 							 $( _this.target + ' .media-rss-video-list').empty();

@@ -38,14 +38,14 @@
 *	'EmbedPlayer.EnableIframeApi' : true
 */
 // The version of this script
-KALTURA_LOADER_VERSION = '1.5.7';
+KALTURA_LOADER_VERSION = '1.5.8';
 
 if( typeof console != 'undefined' && console.log ) {
 	console.log( 'Kaltura HTML5 Version: ' + KALTURA_LOADER_VERSION );
 }
 
 // Define mw ( if not already set ) 
-if( !window['mw'] ){
+if( !window['mw'] ) {
 	window['mw'] = {};
 }
 

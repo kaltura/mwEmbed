@@ -25,7 +25,7 @@ window.mediaWiki =  window.mw;
 /**
  * Set the mwEmbedVersion
  */
-var MW_EMBED_VERSION = '1.3';
+var MW_EMBED_VERSION = '1.5';
 
 // Globals to pre-set ready functions in dynamic loading of mwEmbed
 if( typeof window.preMwEmbedReady == 'undefined'){
