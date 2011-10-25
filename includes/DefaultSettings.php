@@ -70,10 +70,13 @@ $wgKalturaForceReferer = false;
 $wgKalturaServiceUrl = $wgHTTPProtocol . '://cdnapi.kaltura.com';
 
 // Default Kaltura CDN url: 
-$wgKalturaCDNUrl = $wgHTTPProtocol . '://cdnsecakmi.kaltura.com';
+$wgKalturaCDNUrl = $wgHTTPProtocol . '://cdnbakmi.kaltura.com';
 
 // Default Kaltura service url:
 $wgKalturaServiceBase = '/api_v3/index.php?service=';
+
+// Default CDN Asset Path
+$wgCDNAssetPath = $wgHTTPProtocol . '://' . $_SERVER['HTTP_HOST'];
 
 // Default api request timeout in seconds 
 $wgKalturaServiceTimeout = 20;

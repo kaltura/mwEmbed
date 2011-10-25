@@ -474,8 +474,8 @@ class ResourceLoader {
 
 		// php_self is the URL that invoked this script, without CGI parameters or fragment.
 		//return $protocol . '://' . $_SERVER['HTTP_HOST'] . $port . $_SERVER['PHP_SELF'];
-		global $wgKalturaCDNUrl;
-		return $wgKalturaCDNUrl.$_SERVER['PHP_SELF'];
+		global $wgCDNAssetPath;
+		return $wgCDNAssetPath. $port .$_SERVER['PHP_SELF'];
 	}
 
 
@@ -495,7 +495,7 @@ class ResourceLoader {
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		}else{
 			// Cache for 1 day ( we update the request urid so this has a long expire delay )
-			$max_age = 60;
+			$max_age = 60 * 60 * 24 * 30;
 			header("Cache-Control: private, max-age=$max_age, max-stale=0");
 			header("Expires: " . gmdate( "D, d M Y H:i:s", time() + $max_age ) . " GMT" );
 			header("Last-Modified: " . gmdate('D, d M Y H:i:s', time()) . ' GMT');
