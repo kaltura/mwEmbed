@@ -1506,8 +1506,9 @@ mw.EmbedPlayer.prototype = {
 		mw.log("EmbedPlayer::showPluginMissingHTML");
 		// Hide loader
 		this.hidePlayerSpinner();
+		
 		// Set the top level container to relative position:
-		$(this).css('position', 'relative');
+		$( this ).css('position', 'relative');
 		
 		// Control builder ( for play button )
 		this.controlBuilder = new mw.PlayerControlBuilder( this );					

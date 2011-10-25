@@ -1774,6 +1774,7 @@ mw.PlayerControlBuilder.prototype = {
 			'w' : 28,
 			'o' : function( ctrlObj ){
 				var buttonConfig = mw.getConfig( 'EmbedPlayer.AttributionButton');
+				alert( buttonConfig );
 				// Check for source ( by configuration convention this is a 16x16 image
 				if( buttonConfig.iconurl ){
 					var $icon =  $('<img />')
@@ -1792,7 +1793,7 @@ mw.PlayerControlBuilder.prototype = {
 				if( buttonConfig.style.width ){
 					this.w = parseInt( buttonConfig.style.width );
 				} else {
-					 buttonConfig.style.width =parseInt( this.w ) + 'px';
+					 buttonConfig.style.width = parseInt( this.w ) + 'px';
 				}
 				
 				return $('<a />')

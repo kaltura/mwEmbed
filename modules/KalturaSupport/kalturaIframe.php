@@ -387,7 +387,7 @@ class kalturaIframe {
 		}
 		$o = '';
 		$xml = $this->getResultObject()->getUiConfXML();
-		foreach ($xml->uiVars->var as $var ){
+		foreach ( $xml->uiVars->var as $var ){
 			if( isset( $var['key'] ) && isset( $var['value'] ) 
 				&& $var['key'] != 'Mw.CustomResourceIncludes' 
 			){
@@ -395,7 +395,11 @@ class kalturaIframe {
 				// check for boolean attributes: 
 				if( $var['value'] == 'false' || $var['value'] == 'true' ){
 					$o.=  $var['value'];
-				}else {
+				} else if( substr($var['value'][0], 0, 1 ) == '{' 
+					&&  substr($var['value'], -1, 1 ) == '}' )
+				{ // check for json valuse
+					$o.= $var['value'];
+				} else { //escape string values:
 					$o.= "'" . htmlspecialchars( addslashes( $var['value'] ) ) . "'";
 				}
 				$o.= ");\n";
@@ -713,9 +717,8 @@ class kalturaIframe {
 				
 				// Set uiConf global vars for this player ( overides iframe based hash url config )
 				<?php 
-				echo $this->getCustomPlayerConfig();
+					echo $this->getCustomPlayerConfig();
 				?>
-				
 				// Remove the fullscreen option if we are in an iframe: 
 				if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
 					mw.setConfig('EmbedPlayer.EnableFullscreen', false );

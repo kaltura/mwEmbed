@@ -100,18 +100,20 @@ mw.KWidgetSupport.prototype = {
 			// Store the parsed uiConf in the embedPlayer object:
 			embedPlayer.$uiConf = $( playerData.uiConf );
 			
-			// Set any global configuration present in custom variables of the playerData
-			embedPlayer.$uiConf.find( 'uiVars var' ).each( function( inx, customVar ){
-				if( $( customVar ).attr('key') &&  $( customVar ).attr('value') ){
-					var cVar = $( customVar ).attr('value');
-					// String to boolean: 
-					cVar = ( cVar === "false" ) ? false : cVar;
-					cVar = ( cVar === "true" ) ? true : cVar;
-					
-					// mw.log("KWidgetSupport::addPlayerHooks> Set Global Config:  " + $( customVar ).attr('key') + ' ' + cVar );
-					mw.setConfig(  $( customVar ).attr('key'), cVar);
-				}
-			});
+			// if not in an iframe server set any configuration present in custom variables of the playerData
+			if( !mw.getConfig('EmbedPlayer.IsIframeServer') ){
+				embedPlayer.$uiConf.find( 'uiVars var' ).each( function( inx, customVar ){
+					if( $( customVar ).attr('key') &&  $( customVar ).attr('value') ){
+						var cVar = $( customVar ).attr('value');
+						// String to boolean: 
+						cVar = ( cVar === "false" ) ? false : cVar;
+						cVar = ( cVar === "true" ) ? true : cVar;
+						
+						// mw.log("KWidgetSupport::addPlayerHooks> Set Global Config:  " + $( customVar ).attr('key') + ' ' + cVar );
+						mw.setConfig(  $( customVar ).attr('key'), cVar);
+					}
+				});
+			}
 		}
 		
 		// Check access controls ( this is kind of silly and needs to be done on the server ) 
@@ -503,9 +505,9 @@ mw.KWidgetSupport.prototype = {
 		if( ac.isAdmin){
 			return true;
 		}
-		if( ac.isCountryRestricted ){
-			return 'country is restricted';
-		}
+		//if( ac.isCountryRestricted ){
+		//	return 'country is restricted';
+		//}
 		if( ac.isScheduledNow === 0 ){
 			return 'is not scheduled now';
 		}
