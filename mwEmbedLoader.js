@@ -754,7 +754,8 @@ function kAddScript( callback ){
 		  'watermarkPlugin',
 		  'adPlugin',
 		  'captionPlugin',
-		  'bumperPlugin'
+		  'bumperPlugin',
+		  'myLogo'
 		);
 		// Kaltura playlist support ( so small relative to client libraries that we always include it )	
 		jsRequestSet.push(

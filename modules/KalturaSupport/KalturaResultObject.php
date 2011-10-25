@@ -387,7 +387,6 @@ class KalturaResultObject {
 		
 		//echo $this->getUserAgent() . '<br />';
 		//echo '<pre>'; print_r($accessControl); exit();
-		//die($this->getKS());
 		$userAgentMessage = "User Agent Restricted\nWe're sorry, this content is not available for your device.";
 		if( isset( $accessControl->isUserAgentRestricted ) && $accessControl->isUserAgentRestricted ) {
 			return $userAgentMessage;

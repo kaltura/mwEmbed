@@ -83,6 +83,7 @@
 		"adPlugin"	: 	"uiConfComponents/adPlugin.js",
 		"captionPlugin"	: 	"uiConfComponents/captionPlugin.js",		
 		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",
+		"myLogo" : "uiConfComponents/myLogo.js",
 
 		"playlistPlugin" : "uiConfComponents/playlistPlugin.js",
 		
