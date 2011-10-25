@@ -503,9 +503,9 @@ mw.KWidgetSupport.prototype = {
 		if( ac.isAdmin){
 			return true;
 		}
-		//if( ac.isCountryRestricted ){
-		//	return 'country is restricted';
-		//}
+		if( ac.isCountryRestricted ){
+			return 'country is restricted';
+		}
 		if( ac.isScheduledNow === 0 ){
 			return 'is not scheduled now';
 		}
