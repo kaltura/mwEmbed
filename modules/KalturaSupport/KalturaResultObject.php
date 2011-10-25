@@ -1221,6 +1221,7 @@ class KalturaResultObject {
 				// Test if the resultObject can be cached ( no access control restrictions )
 				if( $this->isCachableRequest() ){
 					$this->putCacheFile( $cacheFile, serialize( $this->resultObj  ) );
+					$this->outputFromCache = true;
 				}
 			}
 		}
