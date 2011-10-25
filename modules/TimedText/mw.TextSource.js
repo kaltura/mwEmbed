@@ -177,7 +177,7 @@
 			var xml = $.parseXML( data );
 			
 			// Check for parse error: 
-			if( $( xml ).find('parsererror').length ){
+			if( !xml || $( xml ).find('parsererror').length ){
 				mw.log("Error: close caption parse error: " +  $( xml ).find('parsererror').text() );
 				return captions;
 			}
