@@ -287,7 +287,7 @@
 			// check if the "srt" parses as an XML 
 			try{
 				var xml = $.parseXML( data );
-				if( xml && $( xml ).find( 'body').length ){
+				if( xml && $( xml ).find('parsererror').length == 0 ){
 					return this.getCaptionsFromTMML( data );
 				}
 			} catch ( e ){
