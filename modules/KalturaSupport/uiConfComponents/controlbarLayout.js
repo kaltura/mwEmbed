@@ -1,3 +1,4 @@
+
 ( function( mw, $ ) {
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
@@ -50,6 +51,7 @@
 			
 		});
 	});
+	
 	window.controlbarLayout = function( embedPlayer, disabled ){
 		$( embedPlayer ).bind( 'updateFeatureSupportEvent', function( e, supports ){
 			for( var i = 0; i < disabled.length ; i++ ){

@@ -590,7 +590,7 @@ mw.Playlist.prototype = {
 				
 			$playButton = $controlBar.find( '.play-btn');
 			
-			if( embedPlayer.$uiConf.find( 'button#nextBtnControllerScreen' ).length ){	
+			if( _this.sourceHandler.isNextButtonDisplayed() ){	
 			 	// make space ( reduce playhead length ) 
 				var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 28;
 				$controlBar.find('.play_head').css('left', pleft);
@@ -613,7 +613,7 @@ mw.Playlist.prototype = {
 				$playButton.after($nextButton);
 			}
 				
-			if( embedPlayer.$uiConf.find( 'button#previousBtnControllerScreen' ).length ){
+			if(  _this.sourceHandler.isPreviousButtonDisplayed() ){
 				// make space ( reduce playhead length ) 
 				var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 28;
 				$controlBar.find('.play_head').css('left', pleft);

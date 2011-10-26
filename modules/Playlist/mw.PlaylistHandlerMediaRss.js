@@ -75,6 +75,12 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		} 
 		return this.includeInLayout;
 	},
+	isNextButtonDisplayed: function(){
+		return true;
+	},
+	isPreviousButtonDisplayed: function(){
+		return true;
+	},
 	getVideoListWidth: function(){
 		return 'auto';
 	},

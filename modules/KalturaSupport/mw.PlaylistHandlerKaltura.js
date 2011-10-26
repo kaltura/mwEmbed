@@ -166,6 +166,12 @@ mw.PlaylistHandlerKaltura.prototype = {
 	hasPlaylistUi: function(){
 		return this.includeInLayout;
 	},
+	isNextButtonDisplayed: function(){
+		return !!this.playlist.getEmbedPlayer().$uiConf.find( 'button#nextBtnControllerScreen' ).length;
+	},
+	isPreviousButtonDisplayed: function(){
+		return !!this.playlist.getEmbedPlayer().$uiConf.find( 'button#previousBtnControllerScreen' ).length;
+	},
 	getPlaylistSet: function(){
 		return this.playlistSet;
 	},
