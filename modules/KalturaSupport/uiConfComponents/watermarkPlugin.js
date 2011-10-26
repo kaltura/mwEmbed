@@ -11,7 +11,7 @@
 					mw.setConfig('EmbedPlayer.AttributionButton', false);
 					// wait for addToContolBar time: 
 					$( embedPlayer ).bind('addControlBarComponent', function(event, controlBar ){
-						controlBar.supportedComponets['controlBarWatermark'] = true;
+						controlBar.supportedComponents['controlBarWatermark'] = true;
 						controlBar.components['controlBarWatermark'] = {
 								'w': 28,
 								'o': function( ctrlObj ) {

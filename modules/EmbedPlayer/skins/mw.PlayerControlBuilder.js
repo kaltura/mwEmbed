@@ -28,9 +28,12 @@ mw.PlayerControlBuilder.prototype = {
 
 	// Default control bar height
 	height: mw.getConfig( 'EmbedPlayer.ControlsHeight' ),
+	
+	// Set time display width
+	timeDisplayWidth: mw.getConfig( 'EmbedPlayer.TimeDisplayWidth' ),
 
 	// Default supported components is merged with embedPlayer set of supported types
-	supportedComponets: {
+	supportedComponents: {
 		// All playback types support options
 		'options': true
 	},
@@ -152,27 +155,27 @@ mw.PlayerControlBuilder.prototype = {
 		this.available_width = embedPlayer.getPlayerWidth();
 
 		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.available_width );
-		// Build the supportedComponets list
-		this.supportedComponets = $.extend( this.supportedComponets, embedPlayer.supports );
+		// Build the supportedComponents list
+		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );
 		
 		// Check for Attribution button
 		if( mw.getConfig( 'EmbedPlayer.AttributionButton' ) && embedPlayer.attributionbutton ){
-			this.supportedComponets[ 'attributionButton' ] = true;
+			this.supportedComponents[ 'attributionButton' ] = true;
 		}
 
 		// Check global fullscreen enabled flag
 		if( mw.getConfig( 'EmbedPlayer.EnableFullscreen' ) === false ){
-			this.supportedComponets[ 'fullscreen'] = false;
+			this.supportedComponents[ 'fullscreen'] = false;
 		}
 		// Check if the options item is available  
 		if( mw.getConfig( 'EmbedPlayer.EnableOptionsMenu' ) === false ){
-			this.supportedComponets[ 'options'] = false;
+			this.supportedComponents[ 'options'] = false;
 		}
 
 		$(embedPlayer).trigger( 'addControlBarComponent', this);
 		
 		var addComponent = function( component_id ){
-			if ( _this.supportedComponets[ component_id ] ) {
+			if ( _this.supportedComponents[ component_id ] ) {
 				if ( _this.available_width > _this.components[ component_id ].w ) {
 					// Append the component
 					$controlBar.append(
@@ -1301,7 +1304,7 @@ mw.PlayerControlBuilder.prototype = {
 		this.displayOptionsMenuFlag = true;
 		mw.log(" set displayOptionsMenuFlag:: " + this.displayOptionsMenuFlag);
 
-		if ( !this.supportedComponets[ 'overlays' ] ) {
+		if ( !this.supportedComponents[ 'overlays' ] ) {
 			embedPlayer.stop();
 		}
 

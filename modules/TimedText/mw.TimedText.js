@@ -131,7 +131,7 @@ mw.includeAllModuleMessages();
 			// Check for timed text support:
 			$( embedPlayer ).bind( 'addControlBarComponent' + this.bindPostFix, function(event, controlBar ){
 				if( embedPlayer.hasTextTracks() ){
-					controlBar.supportedComponets['timedText'] = true;
+					controlBar.supportedComponents['timedText'] = true;
 					controlBar.components['timedText'] = _this.getTimedTextButton();					
 				}
 			});

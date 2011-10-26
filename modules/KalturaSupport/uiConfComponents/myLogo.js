@@ -27,7 +27,7 @@
 			myLogoConfig.width = 28;
 		// wait for addToContolBar time: 
 		$( embedPlayer ).bind('addControlBarComponent', function(event, controlBar ){
-			controlBar.supportedComponets['controlBarWatermark'] = true;
+			controlBar.supportedComponents['controlBarWatermark'] = true;
 			controlBar.components['controlBarWatermark'] = {
 					'w': myLogoConfig.width,
 					'o': function( ctrlObj ) {
