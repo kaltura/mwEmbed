@@ -35,7 +35,10 @@ mw.KCuePoints.prototype = {
 		// Bind to monitorEvent to trigger the cue points events
 		$( embedPlayer ).bind( "monitorEvent" + this.bindPostfix, function() {
 			var currentTime = embedPlayer.currentTime * 1000;
-			if( currentTime >= nextCuePoint.startTime && embedPlayer._propagateEvents ) {
+			var cuePointType = _this.getRawAdSlotType(nextCuePoint);
+			// Don't trigger postrolls
+			// TODO: we should remove preroll / postroll from the cuePoints array and handle them different
+			if( currentTime >= nextCuePoint.startTime && cuePointType != 'postroll' && embedPlayer._propagateEvents ) {
 				// Trigger the cue point
 				_this.triggerCuePoint( nextCuePoint );
 				// Get next cue point
@@ -114,8 +117,8 @@ mw.KCuePoints.prototype = {
 			eventName = 'KalturaSupport_AdOpportunity';
 			cuePointWrapper.context = this.getAdType( rawCuePoint );
 		}
+		mw.log('mw.KCuePoints :: Trigger event: ' + eventName + ' - ' + rawCuePoint.cuePointType + ' at: ' + rawCuePoint.startTime );
 		$( this.embedPlayer ).trigger(  eventName, cuePointWrapper );
-		mw.log('mw.KCuePoints :: Triggered event: ' + eventName + ' - ' + rawCuePoint.cuePointType + ' at: ' + rawCuePoint.startTime );
 	},
 	
 	// Get Ad Type from Cue Point
