@@ -181,7 +181,12 @@ mw.PlayerControlBuilder.prototype = {
 					$controlBar.append(
 						_this.getComponent( component_id )
 					);
-					_this.available_width -= _this.components[ component_id ].w;
+					if(component_id != 'timeDisplay') {
+						_this.available_width -= _this.components[ component_id ].w;
+					}
+					else {
+						_this.available_width -= _this.timeDisplayWidth;
+					}
 				} else {
 					mw.log( 'Not enough space for control component:' + component_id );
 				}
@@ -1997,7 +2002,7 @@ mw.PlayerControlBuilder.prototype = {
 		* The time display area
 		*/
 		'timeDisplay': {
-			'w' : 85,
+			'w' : 55,
 			'o' : function( ctrlObj ) {
 				return $( '<div />' )
 				.addClass( "ui-widget time-disp" )
@@ -2081,7 +2086,7 @@ mw.PlayerControlBuilder.prototype = {
 					.css({
 						"position" : 'absolute',
 						"left" : '33px',
-						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.available_width ) - 25) + 'px'
+						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.available_width ) + 5) + 'px'
 					})
 					// Playhead binding
 					.slider( sliderConfig );
