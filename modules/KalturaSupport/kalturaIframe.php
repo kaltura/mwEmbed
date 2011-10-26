@@ -239,13 +239,14 @@ class kalturaIframe {
 		// Add default video tag with 100% width / height
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
+		$playerPostion = ($this->isAndroid()) ? '' : 'position: absolute;';
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
 		// output the poster if set: 
 		if( $posterUrl ){
 			$o.='poster="' . htmlspecialchars( $posterUrl ) . '" ';
 		}
 		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
-			'style="' . $playerSize . '" ';
+			'style="' . $playerPostion . $playerSize . '" ';
 
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
