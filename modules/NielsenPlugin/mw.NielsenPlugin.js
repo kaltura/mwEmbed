@@ -36,7 +36,7 @@ mw.NielsenPlugin.prototype = {
 	// The query interval to send progress updates to Nielsen 
 	queryInterval: 2,
 	
-	contentSource: null,.
+	contentSource: null,
 		
 	init: function( embedPlayer, callback ){
 		var _this = this;
@@ -66,17 +66,21 @@ mw.NielsenPlugin.prototype = {
 		
 		// Bind ad Playback
 		$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
-			var duration = this.getRelativeTime( 'duration' );
+			var duration = _this.getRelativeTime( 'duration' );
 			// Playing an ad fire a 15 with all ad Meatadata
 			_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "ad", _this.getMetaXmlString() );
 		});
 		// When starting content finish up content beacon and add content bindings
 		$( embedPlayer ).bind( 'onplay'  + _this.bindPostFix, function(){
-			// check if the play event is content or "inAdSequence" 
+			// Check if the play event is content or "inAdSequence" 
 			if( ! embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
 				// playing content fire the 5 content beacon and start content tracking
-				this.dispatchEvent( 3, this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+				_this.dispatchEvent( 3, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 			}
+		});
+		// on player "ended" send end event 7
+		$( embedPlayer ).bind( 'ended' + _this.bindPostFix, function(){
+			_this.dispatchEvent( 7, _this.getCurrentVideoSrc(), "content", _this.getMetaXmlString(), 1 );
 		});
 
 	},
@@ -121,7 +125,7 @@ mw.NielsenPlugin.prototype = {
 		});
 		
 		// Kaltura HTML5 does not really have an idle state:
-		//sender.onIdle(function(args) {ggCom1.onCurrentStateChanged(args)});
+		// sender.onIdle(function(args) {ggCom1.onCurrentStateChanged(args)});
 		
 		// Monitor:
 		var lastTime = 0;
@@ -197,6 +201,7 @@ mw.NielsenPlugin.prototype = {
 	 * Get the Nielsen xml string: 
 	 */
 	getMetaXmlString: function(){
+		var _this = this;
 		// These won't change 
 		var meta = ''+
 			"<uurl>"+
