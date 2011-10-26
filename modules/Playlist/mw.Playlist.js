@@ -580,9 +580,6 @@ mw.Playlist.prototype = {
 				return false;
 			}
 			
-			// make space ( reduce playhead length ) 
-			var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 56;
-			$controlBar.find('.play_head').css('left', pleft);
 			$plButton = $('<div />')
 				.addClass("ui-state-default ui-corner-all ui-icon_link lButton")
 				.buttonHover()
@@ -590,37 +587,54 @@ mw.Playlist.prototype = {
 					$('<span />')
 					.addClass( "ui-icon")
 				);
-			$controlBar.find( '.play-btn').after(
-				$plButton.clone().attr({
-						'title' : 'Previous clip'
-					})
-					.click(function(){					
-						if( _this.enableClipSwitch && _this.clipIndex - 1 >= 0 ){
-							_this.clipIndex--;
-							_this.playClip( _this.clipIndex );
-							return ;
-						}
-						mw.log("Cant prev: cur:" + _this.clipIndex );
-					})
-					.find('span').addClass('ui-icon-seek-prev')
-					.parent()
-					.buttonHover()
-				,					
-				$plButton.clone().attr({
-						'title' : 'Next clip'
-					})
-					.click(function(){
-						if(_this.enableClipSwitch &&  _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
-							_this.clipIndex++;
-							_this.playClip( _this.clipIndex );
-							return ;
-						}
-						mw.log("Cant next: cur:" + _this.clipIndex );
-					})
-					.find('span').addClass('ui-icon-seek-next')
-					.parent()
-					.buttonHover()
-			);
+				
+			$playButton = $controlBar.find( '.play-btn');
+			
+			if( embedPlayer.$uiConf.find( 'button#nextBtnControllerScreen' ).length ){	
+			 	// make space ( reduce playhead length ) 
+				var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 28;
+				$controlBar.find('.play_head').css('left', pleft);
+					
+				$nextButton = $plButton.clone().attr({
+							'title' : 'Next clip'
+						})
+						.click(function(){
+							if(_this.enableClipSwitch &&  _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
+								_this.clipIndex++;
+								_this.playClip( _this.clipIndex );
+								return ;
+							}
+							mw.log("Cant next: cur:" + _this.clipIndex );
+						})
+						.find('span').addClass('ui-icon-seek-next')
+						.parent()
+						.buttonHover();
+						
+				$playButton.after($nextButton);
+			}
+				
+			if( embedPlayer.$uiConf.find( 'button#previousBtnControllerScreen' ).length ){
+				// make space ( reduce playhead length ) 
+				var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 28;
+				$controlBar.find('.play_head').css('left', pleft);
+				
+				$prevButton = $plButton.clone().attr({
+							'title' : 'Previous clip'
+						})
+						.click(function(){					
+							if( _this.enableClipSwitch && _this.clipIndex - 1 >= 0 ){
+								_this.clipIndex--;
+								_this.playClip( _this.clipIndex );
+								return ;
+							}
+							mw.log("Cant prev: cur:" + _this.clipIndex );
+						})
+						.find('span').addClass('ui-icon-seek-prev')
+						.parent()
+						.buttonHover();
+						
+				$playButton.after($prevButton);
+			}
 		}
 	},
 	// add bindings for playlist playback ( disable playlist item selection during ad Playback )
