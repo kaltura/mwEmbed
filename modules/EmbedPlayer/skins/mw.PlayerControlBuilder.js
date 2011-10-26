@@ -29,9 +29,6 @@ mw.PlayerControlBuilder.prototype = {
 	// Default control bar height
 	height: mw.getConfig( 'EmbedPlayer.ControlsHeight' ),
 	
-	// Set time display width
-	timeDisplayWidth: mw.getConfig( 'EmbedPlayer.TimeDisplayWidth' ),
-
 	// Default supported components is merged with embedPlayer set of supported types
 	supportedComponents: {
 		// All playback types support options
@@ -181,12 +178,7 @@ mw.PlayerControlBuilder.prototype = {
 					$controlBar.append(
 						_this.getComponent( component_id )
 					);
-					if(component_id != 'timeDisplay') {
-						_this.available_width -= _this.components[ component_id ].w;
-					}
-					else {
-						_this.available_width -= _this.timeDisplayWidth;
-					}
+					_this.available_width -= _this.components[ component_id ].w;
 				} else {
 					mw.log( 'Not enough space for control component:' + component_id );
 				}
@@ -2002,7 +1994,7 @@ mw.PlayerControlBuilder.prototype = {
 		* The time display area
 		*/
 		'timeDisplay': {
-			'w' : 55,
+			'w' : mw.getConfig( 'EmbedPlayer.TimeDisplayWidth' ),
 			'o' : function( ctrlObj ) {
 				return $( '<div />' )
 				.addClass( "ui-widget time-disp" )
@@ -2086,7 +2078,7 @@ mw.PlayerControlBuilder.prototype = {
 					.css({
 						"position" : 'absolute',
 						"left" : '33px',
-						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.available_width ) + 5) + 'px'
+						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.available_width ) ) + 'px'
 					})
 					// Playhead binding
 					.slider( sliderConfig );
