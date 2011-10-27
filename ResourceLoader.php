@@ -494,8 +494,8 @@ class ResourceLoader {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		}else{
-			// Cache for 1 day ( we update the request urid so this has a long expire delay )
-			$max_age = 60 * 60 * 24 * 30;
+			// Cache for 30 days ( we update the request urid so this has a long expire delay )
+			$max_age = 86400 * 30;
 			header("Cache-Control: private, max-age=$max_age, max-stale=0");
 			header("Expires: " . gmdate( "D, d M Y H:i:s", time() + $max_age ) . " GMT" );
 			header("Last-Modified: " . gmdate('D, d M Y H:i:s', time()) . ' GMT');
