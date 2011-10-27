@@ -1920,7 +1920,7 @@ mw.EmbedPlayer.prototype = {
 	 * NOTE this could probably share a bit more code with getShareEmbedVideoJs
 	 */
 	getShareIframeObject: function(){
-		// todo move to GetShareIframeSrc
+		// todo move to getShareIframeSrc
         if (typeof(mw.IA) != 'undefined'){
         	return mw.IA.embedCode();
         }
@@ -1942,9 +1942,9 @@ mw.EmbedPlayer.prototype = {
 	},
 	getIframeSourceUrl: function(){
 		var iframeUrl = false;
-		$( this ).trigger( 'GetShareIframeSrc', function( localIframeSrc ){
+		$( this ).trigger( 'getShareIframeSrc', function( localIframeSrc ){
 			if( iframeUrl){
-				mw.log("Error multiple modules binding GetShareIframeSrc" );
+				mw.log("Error multiple modules binding getShareIframeSrc" );
 			}
 			iframeUrl = localIframeSrc;
     	});
@@ -1953,7 +1953,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		// old style embed:
 		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
-		var params = {'src[]':[]};
+		var params = { 'src[]' : [] };
 
 		// TODO move to mediaWiki Support module
 		if( this.apiTitleKey ) {

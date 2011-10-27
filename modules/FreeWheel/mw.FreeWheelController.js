@@ -86,7 +86,6 @@ mw.FreeWheelControler.prototype = {
 	setupAds: function(){
 		var _this = this;
 		
-		
 		// We should be able to use: 
 		// $(_this.embedPlayer ).bind .. but this ~sometimes~ fails on OSX safari and iOS 
 		// TODO investigate wtf is going on
@@ -102,7 +101,9 @@ mw.FreeWheelControler.prototype = {
 			_this.setContextTimeout();
 			
 			// Add the temporal slots for this "player"
-			_this.addTemporalSlots();
+			if( _this.getConfig( 'useKalturaTemporalSlots') === true ){
+				_this.addTemporalSlots();
+			}
 
 			// XXX FreeWheel sets SVLads003 as the response? 
 			window['SVLads003'] = true;
@@ -237,8 +238,6 @@ mw.FreeWheelControler.prototype = {
 	},
 	displayFreeWheelSlots: function( slotType, inx, doneCallback ){
 		var _this = this;
-		mw.log( "FreeWheelController::displayFreeWheelSlots> " + slotType + ' index:' + inx );
-
 		var slotSet = this.slots[ slotType ];
 		// Make sure we have a slot to be displayed:
 		if( !slotSet[ inx ] ){
@@ -246,6 +245,7 @@ mw.FreeWheelControler.prototype = {
 				doneCallback();
 			return ;
 		}
+		mw.log( "FreeWheelController::displayFreeWheelSlots> " + slotType + ' index:' + inx );
 		// Setup the active slots
 		this.curentSlotIndex = inx;
 		this.currentSlotDoneCB = doneCallback;

@@ -675,7 +675,7 @@ class kalturaIframe {
 				// Parse any configuration options passed in via hash url:
 				if( hashString ){
 					var hashObj = JSON.parse(
-						decodeURIComponent( hashString.replace( /^#/, '' ) )
+						unescape( hashString.replace( /^#/, '' ) )
 					);
 					if( hashObj.mwConfig ){
 						mw.setConfig( hashObj.mwConfig );
@@ -789,14 +789,19 @@ class kalturaIframe {
 					if( mw.getConfig('EmbedPlayer.IframeIsPlaying') ){
 						embedPlayer.play();
 					}
-					// Bind window resize to reize the player:
-					$( window ).resize( function(){
+					function doResizePlayer(){
 						$( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )
 							.get(0).resizePlayer({
 								'width' : $(window).width(),
 								'height' : $(window).height()
 							});
-					});				    
+					}
+					// Bind window resize to reize the player:
+					$( window ).resize( doResizePlayer );
+					// Resize the player per player on ready
+					if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
+						doResizePlayer();
+					}
 				});
 		} else {
 			// Remove the video tag and output a clean "object" or file link

@@ -29,10 +29,13 @@ mw.KWidgetSupport.prototype = {
 				_this.loadAndUpdatePlayerData( embedPlayer, callback );
 			});
 			// Add Kaltura iframe share support:
-			$( embedPlayer ).bind( 'GetShareIframeSrc', function(event, callback){
-				callback( mw.getConfig( 'Kaltura.ServiceUrl' ) + '/p/' + _this.kClient.getPartnerId() +
-						'/embedIframe/entry_id/' + embedPlayer.kentryid +
-						'/uiconf_id/' + embedPlayer.kuiconfid );
+			$( embedPlayer ).bind( 'getShareIframeSrc', function( event, callback ){
+				var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
+				iframeUrl +='/wid/_' + _this.kClient.getPartnerId() +
+				'/uiconf_id/' + embedPlayer.kuiconfid +
+				'/entry_id/' + embedPlayer.kentryid + '/';
+				// return the iframeUrl via the callback: 
+				callback( iframeUrl );
 			});
 		});
 	},

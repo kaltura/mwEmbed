@@ -1851,7 +1851,6 @@ mw.PlayerControlBuilder.prototype = {
 		'fullscreen': {
 			'w': 28,
 			'o': function( ctrlObj ) {
-
 				// Setup "dobuleclick" fullscreen binding to embedPlayer
 				$( ctrlObj.embedPlayer ).unbind("dblclick").bind("dblclick", function(){
 					ctrlObj.embedPlayer.fullscreen();
@@ -1866,7 +1865,6 @@ mw.PlayerControlBuilder.prototype = {
 						)
 						// Fullscreen binding:
 						.buttonHover();
-				
 				// Link out to another window if iPad 3x ( broken iframe resize ) 
 				if( (
 						mw.getConfig('EmbedPlayer.IsIframeServer') 
@@ -1885,7 +1883,7 @@ mw.PlayerControlBuilder.prototype = {
 						})
 						.click(function(){
 							// Update the url: 			
-							var url = document.URL.split('#')[0];
+							var url = $(this).attr('href');
 							mw.setConfig('EmbedPlayer.IsFullscreenIframe', true);
 							// add a seek offset:
 							mw.setConfig('EmbedPlayer.IframeCurrentTime',  ctrlObj.embedPlayer.currentTime );
@@ -1893,7 +1891,6 @@ mw.PlayerControlBuilder.prototype = {
 							mw.setConfig('EmbedPlayer.IframeIsPlaying',  ctrlObj.embedPlayer.isPlaying() );
 							
 							url += mw.getIframeHash();
-							
 							ctrlObj.embedPlayer.pause();
 							// try and do a browser popup:
 							var newwin = window.open(
@@ -1901,7 +1898,7 @@ mw.PlayerControlBuilder.prototype = {
 								 ctrlObj.embedPlayer.id, 
 								 // Fullscreen window params: 
 								'width=' + screen.width + 
-								', height=' + (screen.height-90) +
+								', height=' + ( screen.height - 90 ) +
 								', top=0, left=0' + 
 								', fullscreen=yes'
 							);						
