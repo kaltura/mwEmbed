@@ -54,7 +54,8 @@
 		'kwidgetid' : null,
 		'kuiconfid' : null,
 		'kalturaPlayerMetaData' : null,
-		'kalturaEntryMetaData' : null
+		'kalturaEntryMetaData' : null,
+		'kalturaPlaylistData' : null
 	});
 	
 	mw.mergeConfig( 'EmbedPlayer.DataAttributes', {

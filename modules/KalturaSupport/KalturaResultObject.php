@@ -883,7 +883,7 @@ class KalturaResultObject {
 			$resultObj = $this->getEntryResult();
 			
 			// Include the playlist in the response:
-			$resultObj[ 'playlistCache' ] = array(
+			$resultObj[ 'playlistData' ] = array(
 				$playlistId => $playlistObject
 			);
 			return $resultObj;

@@ -52,21 +52,20 @@ function jsKalturaPlayerTest( videoId ){
 }
 </script>
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
-
-<script type="text/javascript">	
-	function jsCallbackReady( videoId ){
-		var kdp = document.getElementById( videoId );
-		kdp.addJsListner( 'changeMedia', 'testFunc');
-		alert( 'added list');
+<script>
+	// simple function to return the page kdp: 
+	function kdp(){
+		return document.getElementById( 'kaltura_player_1306453574' );
 	}
-	window.testFunc = function(){
-		alert( 'cm');
-	}
-	test = {
-			'fish' : function(){
-				alert('change media');
-			}
-	}
+	// TODO add these to the qUnit test!
+	$(document).ready(function(){
+		$('#currentIndex').click( function(){
+			alert( kdp().evaluate( "{playlistAPI.dataProvider.selectedIndex}" ) );
+		});
+		$('#plData').click( function(){
+			alert( JSON.stringify( kdp().evaluate("{playlistAPI.dataProvider}") ) );
+		});
+	})
 </script>
 </head>
 <body>
@@ -74,7 +73,13 @@ function jsKalturaPlayerTest( videoId ){
 <a href="?forceMobileHTML5"> Force HTML5</a> for testing with desktop chrome and safari.
 <br />
 
-<p>Multiple Playlists</p>
+<p>Multiple Playlists with api</p>
+<p>alerts: <a href="#" id="currentIndex"> Current Index</a> | 
+<a href="#" id="plData"> Playlist Data </a> 
+</p>
+
+
+
 <object id="kaltura_player_1306453574" name="kaltura_player_1306453574" type="application/x-shockwave-flash" 
 allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="740" 
 bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" 

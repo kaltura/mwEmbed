@@ -228,8 +228,8 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		// Check for playlist cache based 
-		if( playerData.playlistCache ){
-			embedPlayer.playlistCache = playerData.playlistCache;
+		if( playerData.playlistData ){
+			embedPlayer.kalturaPlaylistData = playerData.playlistData;
 		}	
 		
 		// Local function to defer the trigger of loaded cuePoints so that plugins have time to load

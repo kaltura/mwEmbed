@@ -223,6 +223,15 @@
 			
 			return result;
 		},
+		/**
+		 * Maps a kdp expression to embedPlayer property.
+		 * 
+		 * NOTE: embedPlayer can be a playerProxy when on the other side of the iframe
+		 * so anything not exported over the iframe will not be available 
+		 * 
+		 * @param {object} embedPlayer Player Proxy or embedPlayer object 
+		 * @param {string} expression The expression to be evaluated
+		 */
 		evaluateExpression: function( embedPlayer, expression){
 			var _this = this;
 			// Check if we have a function call: 
@@ -235,6 +244,7 @@
 					_this.evaluateExpression( embedPlayer, fparts[1].slice( 0, -1) )
 				);
 			}
+			
 			// Split the uiConf expression into parts separated by '.'
 			var objectPath = expression.split('.');
 			switch( objectPath[0] ){
@@ -334,8 +344,32 @@
 							//TODO
 						break;
 					}
-				break;					
+				break;
+				// TODO We should move playlistAPI into the kaltura playlist handler code
+				// ( but tricky to do because of cross iframe communication issue ) 
+				case 'playlistAPI':
+					switch( objectPath[1] ) {
+						case 'dataProvider':
+							// get the current data provider: 
+							if( !embedPlayer.kalturaPlaylistData ){
+								return null;
+							}
+							var plData = embedPlayer.kalturaPlaylistData;
+							var plId =  plData['currentPlaylistId'];
+							var dataProvider = {
+								'content' : plData[ plId ],
+								'length' : plData[ plId ].length,
+								'selectedIndex' : plData['selectedIndex']
+							}
+							if( objectPath[2] == 'selectedIndex' ) {
+								return dataProvider.selectedIndex;
+							}
+							return dataProvider;
+						break;
+					}
+				break;
 			}
+			// nothing found ( returns undefined ) 
 		},
 		evaluateStringFunction: function( functionName, value ){
 			switch( functionName ){

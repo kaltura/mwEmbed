@@ -25,7 +25,7 @@ kdpServerIframe.prototype = {
 	// flag to work around strange kdp error: 
 	sentConfigProxyFlag : false,
 	
-	// Stores the local instance names of callback functions maped to the listen name
+	// Stores the local instance names of callback functions mapped to the listen name
 	listenerCallbackLookup: [],
 	'init': function( kdpPlayer ){
 		var _this = this;
@@ -104,7 +104,7 @@ kdpServerIframe.prototype = {
 				return ;
 			}					
 
-			// Tragically we can't use .apply :(
+			// Tragically we can't use .apply because its calling a native object exposed method
 			if( msgObject.method == 'setKDPAttribute' ){
 				if( msgObject.args.length == 3 ){
 					this.kdpPlayer.setKDPAttribute( msgObject.args[0], msgObject.args[1], msgObject.args[2] );
