@@ -167,7 +167,7 @@ mw.KAds.prototype = {
 							// Sometimes the duration of the video is zero after switching source
 							// So i'm re-setting it to it's old duration
 							embedPlayer.duration = oldDuration;
-							if( adType == 'postroll' ) {alert('me');
+							if( adType == 'postroll' ) {
 								// Run stop for now.
 								setTimeout( function() {
 									embedPlayer.stop();
