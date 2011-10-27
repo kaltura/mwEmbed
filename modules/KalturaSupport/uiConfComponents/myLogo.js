@@ -28,7 +28,10 @@
 		// wait for addToContolBar time: 
 		$( embedPlayer ).bind('addControlBarComponent', function(event, controlBar ){
 			controlBar.supportedComponents['controlBarWatermark'] = true;
-			controlBar.components['controlBarWatermark'] = {
+			
+			//Make a new associative array because we want this at the beginning.
+			var components = {};
+			components['controlBarWatermark'] = {
 					'w': myLogoConfig.width,
 					'o': function( ctrlObj ) {
 						var $watermarkButton = $('<div />')
@@ -60,6 +63,13 @@
 						return $watermarkButton;
 				}
 			};
+			
+			// Add them back in the same order
+			for ( var component_id in controlBar.components ) {
+				components[component_id] = controlBar.components[component_id];
+			}
+			
+			controlBar.components = components;
 		});
 	}
 
