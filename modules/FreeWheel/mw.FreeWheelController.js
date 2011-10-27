@@ -61,8 +61,7 @@ mw.FreeWheelControler.prototype = {
 		// unbind any existing bindings:
 		$( _this.embedPlayer ).unbind( _this.bindPostfix );
 		
-		// Checks if we are loading ads async 
-//		var checkAsyncAds 
+		// TODO Checks if we are loading ads async 
 		
 		// Load the freewheel ad manager then setup the ads
 		if( !window['tv'] || !tv.freewheel ){
@@ -101,8 +100,9 @@ mw.FreeWheelControler.prototype = {
 			
 			// Set context timeout
 			_this.setContextTimeout();
+			
 			// Add the temporal slots for this "player"
-			// this.addTemporalSlots();
+			_this.addTemporalSlots();
 
 			// XXX FreeWheel sets SVLads003 as the response? 
 			window['SVLads003'] = true;
@@ -237,7 +237,7 @@ mw.FreeWheelControler.prototype = {
 	},
 	displayFreeWheelSlots: function( slotType, inx, doneCallback ){
 		var _this = this;
-		mw.log( "FreeWheelController::displayFreeWheelSlots> " + slotType + ' ' + inx );
+		mw.log( "FreeWheelController::displayFreeWheelSlots> " + slotType + ' index:' + inx );
 
 		var slotSet = this.slots[ slotType ];
 		// Make sure we have a slot to be displayed:

@@ -61,19 +61,15 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436448/wid/_243342/u
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
       
-      <Plugin id="FreeWheel" 
-      	adManagerUrl="http://adm.fwmrm.net/p/release/latest-AS3/adm/dbg/AdManager.swf"
-      	adManagerJsUrl="http://adm.fwmrm.net/p/release/latest-JS/adm/dbg/AdManager.js"
-      	serverUrl="http://demo.v.fwmrm.net"
-      	networkId="176538"
-      	profileId="176538:KDP_Flash"
-      	profileIdHTML5="176538:KDP_HTML5"
-      	siteSectionId="defaultsection"
-      	videoAssetFallbackId="34800494"
-      	preSequence="1"
-      	postSequence="1"
-      	videoAssetId="34800494"
-      />
+      <Plugin id="vast" 
+	    numPreroll="1" 
+	    prerollInterval="1" 
+	    prerollStartWith="1" 
+	    prerollUrl="http://ad.doubleclick.net/pfadx/AngelaSite;kw=html5linearnonlinear;sz=300x300;ord=5036130;dcmt=text/xml" 
+	    preSequence="1" 
+	    timeout="4" 
+	    htmlCompanions="testCompanion:300:250;testLongCompanion:728:90;"
+	  />
       
       <Plugin id="NielsenPlugin" 
       	clientId="us-502202" 
