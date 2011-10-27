@@ -95,10 +95,13 @@ mw.KAds.prototype = {
 		var cuePoint = cuePointWrapper.cuePoint;
 		var adType = this.embedPlayer.kCuePoints.getAdSlotType( cuePointWrapper );
 		var adDuration = Math.round( cuePoint.duration / 1000);
+		
 		// Check if cue point already displayed
 		if( $.inArray( cuePoint.id, _this.displayedCuePoints) >= 0 ) {
 			return ;
 		}
+		// Add cuePoint Id to displayed cuePoints array
+		_this.displayedCuePoints.push( cuePoint.id );		
 		
 		mw.log('kAds::loadAd:: load ' + adType + ', duration: ' + adDuration, cuePoint);
 
@@ -110,6 +113,12 @@ mw.KAds.prototype = {
 		// If ad type is midroll pause the video
 		if( adType == 'midroll' ) {
 			_this.embedPlayer.pauseLoading();
+		}
+
+		if( adType == 'postroll' ) {
+			setTimeout(function() {
+				_this.embedPlayer.pauseLoading();
+			}, 100);
 		}
 		
 		if( cuePoint.sourceUrl ) {
@@ -142,8 +151,6 @@ mw.KAds.prototype = {
 				var doneCallback = function() {
 					// continue playback ( if not already playing ) 
 					embedPlayer.play();
-					// Add cuePoint Id to displayed cuePoints array
-					_this.displayedCuePoints.push( cuePoint.id );
 					
 					var vid = embedPlayer.getPlayerElement();
 					// Check if the src does not match original src if
@@ -160,7 +167,7 @@ mw.KAds.prototype = {
 							// Sometimes the duration of the video is zero after switching source
 							// So i'm re-setting it to it's old duration
 							embedPlayer.duration = oldDuration;
-							if( adType == 'postroll' ) {
+							if( adType == 'postroll' ) {alert('me');
 								// Run stop for now.
 								setTimeout( function() {
 									embedPlayer.stop();
