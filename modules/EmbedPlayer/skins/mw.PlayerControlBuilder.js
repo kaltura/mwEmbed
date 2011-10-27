@@ -1876,16 +1876,14 @@ mw.PlayerControlBuilder.prototype = {
 						||
 					  mw.getConfig( "EmbedPlayer.NewWindowFullscreen" ) 
 				){
-					var url = document.URL.split('#')[0];
-					mw.setConfig('EmbedPlayer.IsFullscreenIframe', true);
-					url += mw.getIframeHash();
+					// Get the iframe url: 
+					var url = ctrlObj.embedPlayer.getIframeSourceUrl();
 					// Change button into new window ( of the same url as the iframe ) : 
 					return	$('<a />').attr({
 							'href': url,
 							'target' : '_new'
 						})
 						.click(function(){
-							
 							// Update the url: 			
 							var url = document.URL.split('#')[0];
 							mw.setConfig('EmbedPlayer.IsFullscreenIframe', true);

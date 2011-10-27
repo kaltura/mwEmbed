@@ -1383,14 +1383,8 @@ mw.EmbedPlayer.prototype = {
 		this.updatePosterHTML();
 
 		// Add controls if enabled:
-		if ( this.useNativePlayerControls() ) {
-			// Need to think about this some more...
-			// Interface is hidden if controls are "off"
-			this.$interface.hide();
-		} else {
-			if( this.controls ){
-				this.controlBuilder.addControls();
-			}
+		if ( ! this.useNativePlayerControls() && this.controls ) {
+			this.controlBuilder.addControls();
 		}
 
 		// Update temporal url if present
@@ -1887,23 +1881,10 @@ mw.EmbedPlayer.prototype = {
 		}
 		return ;
 	},
-	// Add a play button to the interface if no interface is present add it as a sibling: 
+	// Add a play button 
 	addPlayBtnLarge:function(){
-		var _this = this;
-		$playButton = this.controlBuilder.getComponent('playButtonLarge');
-		if( this.$interface ){
-			this.$interface.append( $playButton );
-		}else {
-			var $pid = $( '#' + _this.pid );
-			$pid.siblings('.play-btn-large').remove();
-			$pid.after(
-				$playButton
-				.css({
-					'left' : parseInt( $pid.position().left ) + parseInt( $playButton.css('left') ),
-					'top' : parseInt( $pid.position().top ) +  parseInt( $playButton.css('top') )
-				})
-			);
-		}
+		$playButton = this.controlBuilder.getComponent( 'playButtonLarge' );
+		this.$interface.append( $playButton );
 	},
 	/**
 	 * Should be set via native embed support
@@ -1933,28 +1914,17 @@ mw.EmbedPlayer.prototype = {
 			break;
 		}
 	},
-
 	/**
 	 * Get the share embed object code
 	 * 
 	 * NOTE this could probably share a bit more code with getShareEmbedVideoJs
 	 */
 	getShareIframeObject: function(){
-
-		var iframeUrl = false;
+		// todo move to GetShareIframeSrc
         if (typeof(mw.IA) != 'undefined'){
         	return mw.IA.embedCode();
-        } else {
-        	$( this ).trigger( 'GetShareIframeSrc', function( localIframeSrc ){
-				if( iframeUrl){
-					mw.log("Error multiple modules binding GetShareIframeSrc" );
-				}
-				iframeUrl = localIframeSrc;
-        	});
         }
-		if( !iframeUrl ){
-			iframeUrl = this.getIframeSourceUrl();
-		}
+		iframeUrl = this.getIframeSourceUrl();
 
 		// Set up embedFrame src path
 		var embedCode = '&lt;iframe src=&quot;' + mw.escapeQuotesHTML( iframeUrl ) + '&quot; ';
@@ -1971,8 +1941,16 @@ mw.EmbedPlayer.prototype = {
 		return embedCode;
 	},
 	getIframeSourceUrl: function(){
-		var iframeUrl = '';
-
+		var iframeUrl = false;
+		$( this ).trigger( 'GetShareIframeSrc', function( localIframeSrc ){
+			if( iframeUrl){
+				mw.log("Error multiple modules binding GetShareIframeSrc" );
+			}
+			iframeUrl = localIframeSrc;
+    	});
+		if( iframeUrl ){
+			return iframeUrl;
+		}
 		// old style embed:
 		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
 		var params = {'src[]':[]};

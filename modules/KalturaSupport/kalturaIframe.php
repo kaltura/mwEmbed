@@ -194,7 +194,7 @@ class kalturaIframe {
 				'</span>
 			</div>';
 	}
-	private function getVideoHTML( $playerSize = 'width:100%;height:100%;'  ){
+	private function getVideoHTML( $playerSize = ''  ){
 		$videoTagMap = array(
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
@@ -236,17 +236,15 @@ class kalturaIframe {
 			}
 		}
 
-		// Add default video tag with 100% width / height
 		// NOTE: special persistentNativePlayer class will prevent the video from being swapped
 		// so that overlays work on the iPad.
-		$playerPostion = ($this->isAndroid()) ? '' : 'position: absolute;';
 		$o = "\n\n\t" .'<video class="persistentNativePlayer" ';
 		// output the poster if set: 
 		if( $posterUrl ){
 			$o.='poster="' . htmlspecialchars( $posterUrl ) . '" ';
 		}
 		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
-			'style="' . $playerPostion . $playerSize . '" ';
+			'style="' . $playerSize . '" ';
 
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
@@ -271,9 +269,8 @@ class kalturaIframe {
 		// to playback the content
 		foreach( $sources as $source ){
 			// Android has issues with type attribute on source element
-			$type = ($this->isAndroid() ) ? '' : 'type="' . htmlspecialchars( $source['type'] ) . '" ';
 			$o.= "\n\t\t" .'<source ' .
-					$type .
+					'type="' . htmlspecialchars( $source['type'] ) . '" ' . 
 					'src="' . $source['src'] . '" '.
 					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" '.
 				'></source>';
@@ -408,10 +405,6 @@ class kalturaIframe {
 		}
 		return $o;
 	}
-	private function isAndroid() {
-		$ua = strtolower( $this->getResultObject()->getUserAgent() );
-		return strpos($ua, "android");
-	}
 	private function checkIframePlugins(){
 		try{
 			$xml = $this->getResultObject()->getUiConfXML();
@@ -434,7 +427,7 @@ class kalturaIframe {
 	private function getSwfUrl(){
 		$swfUrl = $this->getResultObject()->getServiceConfig('ServiceUrl') . '/index.php/kwidget';
 		// pass along player attributes to the swf:
-		$urlParams = $this->getResultObject()->getUrlParameters();	
+		$urlParams = $this->getResultObject()->getUrlParameters();
 		foreach($urlParams as $key => $val ){
 			if( $val != null && $key != 'flashvars' ){
 				$swfUrl.='/' . $key . '/' . $val;
@@ -613,14 +606,26 @@ class kalturaIframe {
 					$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() ) 
 				);
 			} else {
-				if( $this->isAndroid() ) {
-					echo $this->getVideoHTML( $this->getPlayerSizeCss() );
-				} else {
-					echo $this->getVideoHTML();
-				}
+				// For the actual video tag we need to use a document.write since android dies 
+				// on some video tag properties
+				?>
+				<script type="text/javascript">
+					var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
+					// Android can't handle position:absolute style on video tags and requires an absolute size: 
+					if( navigator.userAgent.indexOf('Android' ) !== -1 ){
+						// Also android does not like "type" on source tags
+						videoTagHTML= videoTagHTML.replace(/type=\"[^\"]*\"/g, '');
+						styleValue = '<?php echo $this->getPlayerSizeCss(); ?>';
+					} else {
+						// iOS and other OSs are fine with 100% size and position:abolute;
+						styleValue = 'position:absolute;width:100%;height:100%';
+					}
+					videoTagHTML = videoTagHTML.replace(/style=\"\"/, 'style="' + styleValue + '"');
+					document.write( videoTagHTML );
+				</script>
+				<?php
 			} 
 		}
-		//exit();
 		?>
 		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time

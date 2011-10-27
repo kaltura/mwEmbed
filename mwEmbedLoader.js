@@ -985,8 +985,6 @@ function kGetKalturaPlayerList(){
 				continue;
 		}
 	}
-//	if( console && console.log )
-//			console.log(  'kGetKalturaPlayerList found ' + kalturaPlayers.length + ' kalturaPlayers' );
 	return kalturaPlayers;
 };
 
