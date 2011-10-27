@@ -90,13 +90,15 @@ mw.IFramePlayerApiClient.prototype = {
 		});
 		
 		var doFullscreen = function(){
+			// Alway scroll to top
+			window.scroll(0,0);
 			mw.log("iframeClient:: doFullscreen()");
 			localIframeInFullscreen = true;
 			// Make the iframe fullscreen
 			$( _this.iframe )
 				.css({
 					'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
-					'position': 'absolute',
+					'position': 'fixed',
 					'top' : 0,
 					'left' : 0,
 					'width' : $(window).width(),
