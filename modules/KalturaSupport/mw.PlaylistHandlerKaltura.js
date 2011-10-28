@@ -184,8 +184,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 	setPlaylistIndex: function( playlistIndex ){
 		this.playlist_id = this.playlistSet[ playlistIndex ].playlist_id;
 		var embedPlayer =  this.playlist.getEmbedPlayer();
-		// Update the player data:
-		embedPlayer.kalturaPlaylistData.currentPlaylistId = this.playlist_id;
+		// Update the player data ( if we can ) 
+		if( embedPlayer.kalturaPlaylistData ){
+			embedPlayer.kalturaPlaylistData.currentPlaylistId = this.playlist_id;
+		}
 		// Make sure the iframe contains this currentPlaylistId update: 
 		$( embedPlayer ).trigger( 'updateIframeData' );
 	},
