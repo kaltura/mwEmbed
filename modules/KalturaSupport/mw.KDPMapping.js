@@ -252,6 +252,9 @@
 					return true;
 					break;
 				case 'sequenceProxy':
+					if( ! embedPlayer.sequenceProxy ){
+						return null;
+					}
 					switch( objectPath[1] ){
 						case 'isInSequence':
 							return embedPlayer.sequenceProxy.isInSequence;

@@ -110,6 +110,11 @@ mw.KAnalytics.prototype = {
 	doSendAnalyticsEvent: function( ks, KalturaStatsEventKey ){
 		var _this = this;				
 		
+		// Kalutra analytics does not collect info for ads: 
+		if( this.embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
+			return ;
+		}
+		
 		// get the id for the given event: 	
 		var eventKeyId = this.kEventTypes[ KalturaStatsEventKey ];
 		
