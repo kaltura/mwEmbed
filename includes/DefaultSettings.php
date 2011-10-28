@@ -19,7 +19,7 @@ $wgMwEmbedPathUrl = str_replace(
 );
 
 // The version of the library ( should match the mwEmbedLoader KALTURA_LOADER_VERSION )
-$wgMwEmbedVersion = '1.5.11';
+$wgMwEmbedVersion = '1.5.13';
 
 // Url to the resource loader php script: 
 $wgResourceLoaderUrl = $wgMwEmbedPathUrl . 'ResourceLoader.php';

@@ -226,11 +226,10 @@ mw.KWidgetSupport.prototype = {
 		if( $(embedPlayer).data('uiConfXml') ){
 			embedPlayer.$uiConf = $( embedPlayer ).data('uiConfXml');
 		}
-		
 		// Check for playlist cache based 
 		if( playerData.playlistData ){
 			embedPlayer.kalturaPlaylistData = playerData.playlistData;
-		}	
+		}
 		
 		// Local function to defer the trigger of loaded cuePoints so that plugins have time to load
 		// and setup their binding to KalturaSupport_CuePointsReady
