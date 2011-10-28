@@ -279,7 +279,7 @@
 							}
 						break;
 					}
-				break;			
+				break;
 				case 'duration':
 					return embedPlayer.duration;
 					break;

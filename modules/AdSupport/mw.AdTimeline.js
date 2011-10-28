@@ -244,9 +244,6 @@ mw.AdTimeline.prototype = {
 			return ;
 		}
 		
-		// Update the interface for ads: 
-		this.updateUiForAdPlayback();
-		
 		// Sort the sequence proxy key list: 
 		keyList.sort();
 		var seqInx = 0;
@@ -269,20 +266,22 @@ mw.AdTimeline.prototype = {
 					runSequeceProxyInx( seqInx );
 				},0);
 			});
-			// Trigger an ad start event once we execute the sequenceProxy
-			setTimeout(function(){
-				$( _this.embedPlayer ).trigger( 'AdSupport_StartAdPlayback', slotType );
-			},0);
+			// If we called sequenceProxy player,  update the interface for ads: 
+			_this.updateUiForAdPlayback();
 		};
 		runSequeceProxyInx( seqInx );
 	},
 	updateUiForAdPlayback: function( slotType ){
+		var embedPlayer = this.embedPlayer;
 		// Stop the native embedPlayer events so we can play the preroll and bumper
-		this.embedPlayer.stopEventPropagation();
+		embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here. 
-		this.embedPlayer.disableSeekBar();
+		embedPlayer.disableSeekBar();
 		// update the interface to play state:
-		this.embedPlayer.playInterfaceUpdate();
+		embedPlayer.playInterfaceUpdate();
+		
+		// Trigger an ad start event once we enter an ad state
+		$( embedPlayer ).trigger( 'AdSupport_StartAdPlayback', slotType );
 	},
 	/**
 	 * Restore a player from ad state

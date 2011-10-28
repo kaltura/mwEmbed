@@ -16,7 +16,7 @@ mw.KCuePoints.prototype = {
 		this.addPlayerBindings();
 	},
 	destroy: function(){
-		$(this.embedPlayer).unbind( this.bindPostfix );
+		$( this.embedPlayer ).unbind( this.bindPostfix );
 	},
 	/**
 	 * Adds player cue point bindings
