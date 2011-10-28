@@ -61,7 +61,10 @@ mw.KAds.prototype = {
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
 		$( embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event, cuePointWrapper ) {
-			_this.loadAd( cuePointWrapper );
+			// TODO we really need a better way to identify VAST vs "other provider" 
+			if( cuePointWrapper.cuePoint.tags == "" ){
+				_this.loadAd( cuePointWrapper );
+			}
 		});
 
 	},
