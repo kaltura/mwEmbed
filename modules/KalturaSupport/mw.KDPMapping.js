@@ -345,17 +345,17 @@
 						break;
 					}
 				break;
-				// TODO We should move playlistAPI into the kaltura playlist handler code
+				// TODO We should move playlistAPI into the Kaltura playlist handler code
 				// ( but tricky to do because of cross iframe communication issue ) 
 				case 'playlistAPI':
 					switch( objectPath[1] ) {
 						case 'dataProvider':
-							// get the current data provider: 
+							// Get the current data provider: 
 							if( !embedPlayer.kalturaPlaylistData ){
 								return null;
 							}
 							var plData = embedPlayer.kalturaPlaylistData;
-							var plId =  plData['currentPlaylistId'];
+							var plId = plData['currentPlaylistId'];
 							var dataProvider = {
 								'content' : plData[ plId ],
 								'length' : plData[ plId ].length,

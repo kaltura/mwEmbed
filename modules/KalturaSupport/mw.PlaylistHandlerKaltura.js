@@ -183,9 +183,11 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	setPlaylistIndex: function( playlistIndex ){
 		this.playlist_id = this.playlistSet[ playlistIndex ].playlist_id;
+		var embedPlayer =  this.playlist.getEmbedPlayer();
 		// Update the player data:
-		this.playlist.getEmbedPlayer().kalturaPlaylistData.currentPlaylistId = this.playlist_id;
-		mw.log( "PlaylistHandlerKalutra::setPlaylistIndex: playlist id: " + this.playlist_id);
+		embedPlayer.kalturaPlaylistData.currentPlaylistId = this.playlist_id;
+		// Make sure the iframe contains this currentPlaylistId update: 
+		$( embedPlayer ).trigger( 'updateIframeData' );
 	},
 	loadCurrentPlaylist: function( callback ){
 		this.loadPlaylistById( this.playlist_id, callback );
@@ -219,7 +221,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		this.getKClient().doRequest( playlistRequest, function( playlistDataResult ) {
 			// Empty the clip list
 			_this.clipList = [];
-			
+			var playlistData;
 			// The api does strange things with multi-playlist vs single playlist
 			if( playlistDataResult[0].id ){
 				playlistData = playlistDataResult;
@@ -232,6 +234,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 			if( playlistData.length > mw.getConfig( "Playlist.MaxClips" ) ){
 				playlistData = playlistData.splice(0, mw.getConfig( "Playlist.MaxClips" ) );
 			}
+			// Add it to the cache:
+			embedPlayer.kalturaPlaylistData[ playlist_id ] = playlistData;
+			$( embedPlayer ).trigger('updateIframeData');
+			// update the clipList:
 			_this.clipList = playlistData;
 			callback();
 		});

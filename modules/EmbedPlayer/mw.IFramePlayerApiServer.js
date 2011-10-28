@@ -118,6 +118,10 @@ mw.IFramePlayerApiServer.prototype = {
 		$( this.embedPlayer ).bind( 'monitorEvent', function(){			
 			_this.sendPlayerAttributes();
 		});
+		// A method to enable plugin providers to update iframe data
+		$( this.embedPlayer ).bind( 'updateIframeData', function(){
+			_this.sendPlayerAttributes();
+		})
 		$.each( this.exportedBindings, function( inx, bindName ){
 			$( _this.embedPlayer ).bind( bindName, function( event ){				
 				var argSet = $.makeArray( arguments );
