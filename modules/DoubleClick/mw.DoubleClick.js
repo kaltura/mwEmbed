@@ -281,13 +281,16 @@ mw.DoubleClick.prototype = {
 		var adUrl = this.embedPlayer.evaluate(  
 				this.findTagUrl( slotType, cuePoint ) 
 			);
+		
+		var rParam = ( adUrl.indexOf('?') ===  -1 ) ? '?' : '&';
 		// Add in structured ui-conf components to ad url request:
 		if( this.getConfig( 'contentId' ) ){
-			adUrl+= '&vid=' + this.getConfig( 'contentId' ); 
+			adUrl+= rParam + 'vid=' + this.getConfig( 'contentId' ); 
+			rParam = '&';
 		}
 		// cmsId 
 		if( this.getConfig( 'cmsId' ) ){
-			adUrl+= '&cmsid=' + this.getConfig('cmsId');
+			adUrl+= rParam + 'cmsid=' + this.getConfig('cmsId');
 		};
 		return adUrl;
 	},
@@ -303,10 +306,11 @@ mw.DoubleClick.prototype = {
 			return cuePoint.sourceUrl;
 		}
 		// Check if the ui conf has defined an AdTagUrl for preAdTagUrl or postAdTagUrl
-		if( this.getConfig( slotType + 'AdTagUrl') ){
+		if( this.getConfig( slotType + 'adTagUrl') ){
 			return this.getConfig( slotType + 'AdTagUrl' );
 		}
-		if( !this.getConfig( 'AdTagUrl' ) ){
+
+		if( !this.getConfig( 'adTagUrl' ) ){
 			mw.log("Error: DoubleClick no adTagUrl found for " + slotType );
 		}
 		// else just return a master adTagUrl config var:
@@ -401,7 +405,7 @@ mw.DoubleClick.prototype = {
 	},
 	getConfig: function( configName ){
 		// always get the config from the embedPlayer so that is up-to-date
-		return this.embedPlayer.getKalturaConfig( 'doubleclick', configName );
+		return this.embedPlayer.getKalturaConfig( 'DoubleClick', configName );
 	}
 };
 	

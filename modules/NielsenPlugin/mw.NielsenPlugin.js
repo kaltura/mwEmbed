@@ -214,7 +214,7 @@ mw.NielsenPlugin.prototype = {
 		var tagMap = {};
 		// Get the current config evaluated expressions: 
 		var evalConfig = this.embedPlayer.getKalturaConfig('NielsenPlugin');
-		$.each(evalConfig, function( attr, evalValue ){
+		$.each( evalConfig, function( attr, evalValue ){
 			// set the tag value 
 			if( attr.indexOf('tag_') === 0 ){
 				// When in an Ad check if the tag already exists
@@ -234,9 +234,6 @@ mw.NielsenPlugin.prototype = {
 			meta += '<' + attr + '>' + evalValue + '</' + evalValue + '>' + "\n";
 		})
 		return meta;
-	},
-	getAdMetaXmlString: function(){
-		// most of these are overrides. ~ 
 	},
 	/**
 	 * Get a configuration value with full expression evaluation: 

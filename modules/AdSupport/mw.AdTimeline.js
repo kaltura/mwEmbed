@@ -224,7 +224,6 @@ mw.AdTimeline.prototype = {
 	 */
 	displaySlots: function( slotType, doneCallback ){
 		var _this = this;
-		
 		// Setup a sequence timeline set: 
 		var sequenceProxy = {};
 		
@@ -237,7 +236,7 @@ mw.AdTimeline.prototype = {
 			keyList.push( k );
 		});
 		
-		mw.log( "AdTimeline:: displaySlots: " + slotType + ' found: ' + keyList.length + ' ad callback slots' );
+		mw.log( "AdTimeline:: displaySlots: " + slotType + ' found sequenceProxy length: ' + keyList.length );
 		
 		// if don't have any ads issue the callback directly:
 		if( !keyList.length ){
@@ -248,6 +247,7 @@ mw.AdTimeline.prototype = {
 		// Update the interface for ads: 
 		this.updateUiForAdPlayback();
 		
+		// Sort the sequence proxy key list: 
 		keyList.sort();
 		var seqInx = 0;
 		// Run each sequence key in order:
@@ -669,7 +669,7 @@ mw.AdTimeline.prototype = {
 			// See if we have any beacons by that name: 
 			for(var i =0;i < trackingEvents.length; i++){
 				if( eventName == trackingEvents[ i ].eventName ){
-					mw.log("kAds:: sendBeacon: " + eventName );
+					mw.log("AdTimeline:: sendBeacon: " + eventName + ' to: ' + trackingEvents[ i ].beaconUrl );
 					mw.sendBeaconUrl( trackingEvents[ i ].beaconUrl );
 				};
 			};			
@@ -686,12 +686,12 @@ mw.AdTimeline.prototype = {
 		
 		// On pause / resume: 
 		$( videoPlayer ).bind( 'pause' + bindPostfix, function(){
-			sendBeacon( 'pause' );
+			sendBeacon( 'pause', true );
 		});
 		
 		// On resume: 
 		$( videoPlayer ).bind( 'onplay' + bindPostfix, function(){
-			sendBeacon( 'resume' );
+			sendBeacon( 'resume', true );
 		});
 		
 		var time = 0;

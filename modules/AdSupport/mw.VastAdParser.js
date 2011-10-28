@@ -55,12 +55,17 @@ mw.VastAdParser = {
 			
 			// Set tracking events: 
 			currentAd.trackingEvents = [];
-			$ad.find('trackingEvents Tracking').each( function( na, trackingNode ){					
+			// Check for Linear descendant ( double click vast XML has multiple trackingEvents per Linear and non-Linear and 
+			var selector = 'trackingEvents Tracking';
+			if( $ad.find( 'InLine Linear').length ){
+				selector = 'InLine Linear ' + selector;
+			} 
+			$ad.find( selector ).each( function( na, trackingNode ){					
 				currentAd.trackingEvents.push({
 					'eventName' : $j( trackingNode ).attr('event'),  
 					'beaconUrl' : _this.getURLFromNode( trackingNode )
 				});
-			});					
+			});
 						
 			currentAd.videoFiles = [];
 			// Set the media file:

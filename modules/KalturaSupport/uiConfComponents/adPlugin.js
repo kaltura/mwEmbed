@@ -20,6 +20,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 					callback();
 				});
 			});
+			// wait for the vast loaded callback
 			return ;
 		}
 		// Continue player build out for players without ads
