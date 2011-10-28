@@ -394,8 +394,9 @@ class kalturaIframe {
 				if( $var['value'] == 'false' || $var['value'] == 'true' ){
 					$o.=  $var['value'];
 				} else if( substr($var['value'][0], 0, 1 ) == '{' 
-					&&  substr($var['value'], -1, 1 ) == '}' )
-				{ // check for json valuse
+					&&  substr($var['value'], -1, 1 ) == '}' 
+					&& json_decode( $var['value'] ) !== null
+				){ // check for json valuse
 					$o.= $var['value'];
 				} else { //escape string values:
 					$o.= "'" . htmlspecialchars( addslashes( $var['value'] ) ) . "'";
