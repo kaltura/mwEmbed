@@ -654,6 +654,9 @@ mw.Playlist.prototype = {
 			$.each( cssPops, function(inx, prop){
 				cssObj[ prop ] = $listwrap.css(prop);
 			});
+			// remove height
+			if( cssObj[ 'height' ] )
+				cssObj[ 'height' ] = null; 
 			
 			if( !$( _this.target + ' .playlist-block-list').length ){
 				$listwrap.before( 
