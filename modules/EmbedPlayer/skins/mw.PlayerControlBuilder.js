@@ -104,6 +104,9 @@ mw.PlayerControlBuilder.prototype = {
 		// Controls are hidden by default if overlaying controls: 
 		if( _this.isOverlayControls() ){
 			$controlBar.hide();
+		} else {
+			embedPlayer.height =  embedPlayer.getHeight() - this.getHeight();
+			$( embedPlayer ).css('height', embedPlayer.height +'px' );
 		}
 
 		$controlBar.css( {
@@ -312,7 +315,7 @@ mw.PlayerControlBuilder.prototype = {
 		return {
 			'position' : 'absolute',
 			'left' : ( ( parseInt( size.width ) - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
-			'top' : ( ( parseInt( size.height ) - this.getComponentHeight( 'playButtonLarge' ) ) / 2 )
+			'top' : ( ( parseInt( size.height ) - this.getComponentHeight( 'playButtonLarge' ) / 2  ) / 2 )
 		};
 	},
 
@@ -597,7 +600,6 @@ mw.PlayerControlBuilder.prototype = {
 			$( embedPlayer ).css( targetAspectSize );
 			// Update play button pos
 			$interface.find('.play-btn-large').css(  _this.getPlayButtonPosition( targetAspectSize ) );
-			
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );

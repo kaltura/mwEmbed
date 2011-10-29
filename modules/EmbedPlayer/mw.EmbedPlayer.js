@@ -1380,14 +1380,15 @@ mw.EmbedPlayer.prototype = {
 			$(this).css('height', this.height - _this.controlBuilder.height );
 		}
 
-		// Update Thumbnail for the "player"
-		this.updatePosterHTML();
 
 		// Add controls if enabled:
 		if ( ! this.useNativePlayerControls() && this.controls ) {
 			this.controlBuilder.addControls();
 		}
 
+		// Update Thumbnail for the "player"
+		this.updatePosterHTML();
+		
 		// Update temporal url if present
 		this.updateTemporalUrl();
 		
@@ -2486,7 +2487,7 @@ mw.EmbedPlayer.prototype = {
 			_this.muted = _this.getPlayerElementMuted();
 		}
 
-		//mw.log( 'ct: ' + this.currentTime + ' d:' + this.duration + ' us:' + this.userSlide + ' seek:' + this.seeking );
+		// mw.log( 'ct: ' + this.currentTime + ' d:' + this.duration + ' us:' + this.userSlide + ' seek:' + this.seeking );
 		if ( this.currentTime >= 0 && this.duration ) {
 			if ( !this.userSlide && !this.seeking ) {
 				if ( parseInt( this.startOffset ) != 0 ) {
