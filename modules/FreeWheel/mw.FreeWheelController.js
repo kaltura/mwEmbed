@@ -196,7 +196,9 @@ mw.FreeWheelControler.prototype = {
 				_this.embedPlayer.currentTime - slotTimePosition <= 1 && 
 				!_this.overlaySlotActive 
 			){
+				// try to play the midroll or display the overlay: 
 				if( _this.playSlot( slot ) ){
+					// overlay has special handling: 
 					if(  _this.getSlotType( slot ) == 'overlay' ){
 						// @@TODO handle close caption layout conflict
 						var bottom = parseInt( $('#fw_ad_container_div').css('bottom') );

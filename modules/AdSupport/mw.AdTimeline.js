@@ -258,7 +258,6 @@ mw.AdTimeline.prototype = {
 				doneCallback();
 				return ;
 			}
-			
 			// Run the sequence proxy function: 
 			sequenceProxy[ key ]( function(){
 				// done with the current proxy call next

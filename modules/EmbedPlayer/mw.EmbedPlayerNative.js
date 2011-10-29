@@ -500,8 +500,8 @@ mw.EmbedPlayerNative = {
 	
 		if ( vid ) {
 			try {
+				// Remove all switch player bindings
 				$( vid ).unbind( switchBindPostfix );
-				// Remove all native player bindings
 				vid.pause();
 				var orginalControlsState = vid.controls;
 				// Hide controls ( to not display native play button while switching sources ) 
@@ -527,7 +527,9 @@ mw.EmbedPlayerNative = {
 						// Wait another 100ms then bind the end event and any custom events
 						// for the switchCallback
 						setTimeout(function() {
-							var vid = _this.getPlayerElement();			
+							var vid = _this.getPlayerElement();
+							// dissable seeking ( if we were in a seeking state before the switch )
+							_this.seeking = false;
 							// Restore controls 
 							vid.controls = orginalControlsState;
 							// add the end binding: 
