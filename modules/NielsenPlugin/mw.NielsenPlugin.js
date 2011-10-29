@@ -73,6 +73,10 @@ mw.NielsenPlugin.prototype = {
 			$( vid ).bind( 'durationchange.nielsenAd', function(e){
 				// unbind our duration change event: 
 				$( vid ).unbind( '.nielsenAd' );
+				// Make sure we are still in an ad: 
+				if( !_this.inAd() ){
+					return ;
+				}
 				// Playing an ad fire a 15 with all ad Meatadata
 				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "ad", _this.getMetaXmlString() );
 				// add event bindings: 
