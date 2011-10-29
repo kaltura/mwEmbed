@@ -138,9 +138,25 @@ mw.FreeWheelControler.prototype = {
 		}
 		_this.callback();
 	},
-	// Returns freewheel ad parameters by ad Id
-	getFwAdMetaData: function( creativeId ){
+	/*	Returns freewheel ad parameters by ad Id
+	 * 
+	 * The adMetadata object is as follows: 
+	 * 
+	 * ID The unique identifier of the ad unit adId
+	 * width The width of the ad unit width
+	 * height The height of the ad unit height
+	 * mimeType The MIME type of the ad unit: ‘text’, ‘video’, ‘image’, ‘flash’ contentType
+	 * url The URL origin of the ad unit defined as an absolute path url
+	 * duration The duration in seconds (float) of the ad unit duration
+	 * type The type of ad unit: timePositionClass
+	 * name The name of the advertiser ‘Freewheel’
+	 * title The ad unit title name
+	 * iabCategory The ad unit IAB category -
+	 * CampaignID Holds the unique ID/Name of the campaign that the ad is part of. creativeId
+	 */ 
+	getFwAdMetaData: function( slot ){
 		var _this = this;
+		var creativeId = slot._adInstances[0]._creativeId;
 		var context = this.getContext();
 		if( context._adResponse && context._adResponse._ads ){
 			for(var i=0; i < context._adResponse._ads.length; i++){
@@ -149,15 +165,34 @@ mw.FreeWheelControler.prototype = {
 				if( ad._creatives ){
 					for( var j=0; j < ad._creatives.length ; j++){
 						var creative = ad._creatives[j];
-						// Check that this is the "video" object
-						if(creativeId == creative._id ){
-							return creative._parameters;
+						if( creativeId == creative._id ){
+							// We only support 1 rendition for now
+							var rendition = creative._creativeRenditions[0];
+							var asset = rendition._primaryCreativeRenditionAsset;
+							
+							return {
+								'ID' :  ad._id,
+								'width': rendition._width,
+								'height': rendition._height,
+								// Or we could use the "real" mime type:
+								// rendition._primaryCreativeRenditionAsset._contentType
+								'mimeType': rendition._baseUnit,
+								'url' : asset._url,
+								'duration': creative._duration,
+								'type' : _this.getSlotType( slot ),
+								'name' : 'Freewheel',
+								// TODO also check _parameters
+								'title': asset._name,
+								'iabCategory' : null,
+								// TODO confim CampaignID == creativeId ? 
+								'CampaignID' : creative._id
+							};
 						}
 					}
 				}
 			}
 		}
-		// else no parameters found: 
+		// No meta data found: 
 		return {};
 	},
 	addPlayerBindings: function(){
@@ -232,7 +267,9 @@ mw.FreeWheelControler.prototype = {
 		
 		if(  slot._adInstances.length ){
 			// TODO send adMeta data to adMetadata object
-			_this.embedPlayer.adTimeline.updateMeta( this.getFwAdMetaData( slot._adInstances[0]._creativeId ) );
+			_this.embedPlayer.adTimeline.updateMeta( 
+					this.getFwAdMetaData( slot) 
+			);
 		}
 		slot.play();
 		slot.alreadyPlayed = true;
@@ -427,7 +464,7 @@ mw.FreeWheelControler.prototype = {
 		// Check for post rolls: 
 		if( parseInt( this.getConfig( 'postSequence' ) ) ){
 			slotCounts['post']++;
-			context.addTemporalSlot("Postroll_" + slotCounts['post'], tv.freewheel.SDK.ADUNIT_PREROLL, 0);
+			context.addTemporalSlot("Postroll_" + slotCounts['post'], tv.freewheel.SDK.ADUNIT_POSTROLL, 0);
 		}
 		// Add CuePoint slots: 
 		if( this.embedPlayer.rawCuePoints ){

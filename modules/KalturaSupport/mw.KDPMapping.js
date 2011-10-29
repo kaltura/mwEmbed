@@ -260,6 +260,11 @@
 							return embedPlayer.sequenceProxy.isInSequence;
 							break;
 						case 'activePluginMetadata':
+							if(  objectPath[2] ){
+								if( ! embedPlayer.sequenceProxy.activePluginMetadata )
+									return null;
+								return embedPlayer.sequenceProxy.activePluginMetadata[ objectPath[2] ]
+							}
 							return embedPlayer.sequenceProxy.activePluginMetadata;
 							break;
 					}

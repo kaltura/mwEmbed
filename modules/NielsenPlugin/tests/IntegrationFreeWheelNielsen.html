@@ -35,7 +35,7 @@ function jsKalturaPlayerTest( videoId ){
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
 <h2> Integration FreeWheel Nielsen test </h2>
@@ -44,14 +44,14 @@ function jsKalturaPlayerTest( videoId ){
 <object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
 allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
 xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436448/wid/_243342/uiconf_id/6119791/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436448/wid/_243342/uiconf_id/6119791/entry_id/0_uka1msg4">
+resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436453/wid/_243342/uiconf_id/6119791/entry_id/0_uka1msg4" 
+data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436453/wid/_243342/uiconf_id/6119791/entry_id/0_uka1msg4">
 	<param name="allowFullScreen" value="true" />
 	<param name="allowNetworking" value="all" />
 	<param name="allowScriptAccess" value="always" />
 	<param name="bgcolor" value="#000000" />
 	<param name="flashVars" value="&" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436448/wid/_243342/uiconf_id/6119791/entry_id/0_uka1msg4" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436453/wid/_243342/uiconf_id/6119791/entry_id/0_uka1msg4" />
 </object>
 <!--
 
@@ -71,22 +71,26 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436448/wid/_243342/u
       	siteSectionId="defaultsection"
       	preSequence="1"
       	postSequence="1"
-      	
+      	useKalturaTemporalSlots="true"
       	videoAssetId="playerdefined"
       	videoAssetFallbackId="playerdefined"
       />
       
       <Plugin id="NielsenPlugin" 
-      	clientId="us-502202" 
-      	vcid="c15"
-      	tag_title="{mediaProxy.entry.name}"
-      	tag_category="{mediaProxy.entry.categories}"
-      	tag_subcategory="{mediaProxy.entryMetadata.subcategories}"
-      	tag_censuscategory="{mediaProxy.entry.censuscategories}"
-      	tag_imgurl="{mediaProxy.entry.thumbnailUrl}"
-      />
-      	
-      	
+	    clientid="kg-98765-1"
+	    path="http://gg-dev.glanceguide.com/kaltura/NielsenPlugin.swf"
+	    relativeTo="PlayerHolder"
+	    position="lastChild"
+	    includeInLayout="false"
+	    tag_category="{mediaProxy.entry.categories}"
+	    tag_title="{mediaProxy.entry.name}"
+	    tag_xtag="{mediaProxy.entry.id}"
+	    prod="sc,iag"
+	    ad_title="{sequenceProxy.activePluginMetadata.title}"
+	    allowedAdTypes="midroll, brandslate, interactive"
+	    ad_iag_epi="{mediaProxy.entry.categories} - {mediaProxy.entry.name}"
+	  />
+ 
       	
       <Canvas id="PlayerHolder" height="100%" width="100%" styleName="black">
         <Video id="video" width="100%" height="100%"/>
