@@ -434,6 +434,12 @@ mw.AdTimeline.prototype = {
 		if( adConf.clickThrough ){	
 			var clickedBumper = false;
 			$( _this.embedPlayer ).bind( 'click.ad', function(){
+				// Show the control bar with a ( force on screen option for iframe based clicks on ads ) 
+				_this.embedPlayer.controlBuilder.showControlBar( true );
+				$( _this.embedPlayer ).bind('play.adClick', function(){
+					$( _this.embedPlayer ).unbind('play.adClick');
+					_this.embedPlayer.controlBuilder.restoreControlsHover();
+				})
 				// try to do a popup:
 				if(!clickedBumper){
 					clickedBumper = true;

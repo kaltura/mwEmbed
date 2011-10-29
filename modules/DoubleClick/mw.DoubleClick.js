@@ -243,12 +243,28 @@ mw.DoubleClick.prototype = {
 			// TODO This should not be needed ( fix event stop event propagation ) 
 			_this.embedPlayer.monitor();
 			mw.log( "DoubleClick::adsManager.play" );
+			var vid = _this.embedPlayer.getPlayerElement();
 			
-			adsManager.play( _this.embedPlayer.getPlayerElement() );
+			adsManager.play( vid );
+			
+			// Show the control bar with a ( force on screen option for iframe based clicks on ads ) 
+			// double click only gives us a "raw pause" 
+			$( vid ).bind('pause.dcAdClick', function(){
+				// force display the control bar: 
+				_this.embedPlayer.controlBuilder.showControlBar( true );
+				// add a play binding: to restore hover 
+				$( vid ).unbind('play.dcAdClick', function(){
+					_this.embedPlayer.controlBuilder.restoreControlsHover();
+				});
+			});
 		};
 		// Setup the restore callback
 		_this.onResumeRequestedCallback = function(){
 			mw.log( "DoubleClick::loadAndPlayVideoSlot> onResumeRequestedCallback" );
+			var vid = _this.embedPlayer.getPlayerElement();
+			// unbind the click 
+			$( vid ).unbind( '.dcAdClick');
+			
 			// TODO integrate into timeline proper: 
 			if( _this.embedPlayer.adTimeline ){
 				_this.embedPlayer.adTimeline.restorePlayer();

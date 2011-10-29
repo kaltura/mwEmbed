@@ -866,6 +866,9 @@ mw.PlayerControlBuilder.prototype = {
 		$( this.embedPlayer ).trigger('onHideControlBar', {'bottom' : 15} );
 
 	},
+	restoreControlsHover:function(){
+		this.keepControlBarOnScreen = false;
+	},
 
 	/**
 	* Show the control bar
