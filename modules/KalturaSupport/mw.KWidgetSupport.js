@@ -346,15 +346,13 @@ mw.KWidgetSupport.prototype = {
 					config[key] = val;
 				}
 			})
-			
-			// Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
+			// Check for uiVars
 			$uiPluginVars.each( function(inx, node){
 				var attrName = $(node).attr('key');
 				if( $(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
-					config[attrName] = $(node).get(0).getAttribute('value');
+					var attrKey = attrName.replace( confPrefix + '.', '');
+					config[ attrKey ] = $(node).get(0).getAttribute('value');
 				}
-				// Found break out of loop
-				return false;
 			});
 		} else {
 			$.each( attr, function(inx, attrName ){

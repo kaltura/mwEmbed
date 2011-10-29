@@ -104,6 +104,8 @@ mw.AdTimeline.prototype = {
 	firstPlay: true,
 	
 	bindPostfix: '.AdTimeline',
+	
+	trackingBindPostfix: '.AdTracking',
 
 	/**
 	 * @constructor
@@ -193,8 +195,8 @@ mw.AdTimeline.prototype = {
 				// Turn off preSequence
 				embedPlayer.sequenceProxy.isInSequence = false;
 				// Trigger the postSequenceComplete event
-				$(embedPlayer).trigger( 'postSequenceComplete' );
-				
+				$( embedPlayer ).trigger( 'postSequenceComplete' );
+
 				/** TODO support postroll bumper and leave behind */
 				embedPlayer.switchPlaySrc( _this.originalSrc, function(){
 					_this.restorePlayer();
@@ -253,20 +255,26 @@ mw.AdTimeline.prototype = {
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
 			var key = keyList[ seqInx ] ;
 			if( !sequenceProxy[key] ){
-				_this.embedPlayer.sequenceProxy.isInSequence = false;
 				doneCallback();
 				return ;
 			}
+			
 			// Run the sequence proxy function: 
 			sequenceProxy[ key ]( function(){
 				// done with the current proxy call next
 				seqInx++;
+				// Trigger the EndAdPlayback between each ad in the sequence proxy 
+				// ( if we have more ads to go )
+				if( sequenceProxy[ keyList[ seqInx ] ] ){
+					$( _this.embedPlayer ).trigger( 'AdSupport_EndAdPlayback');
+				}
 				// call with a timeout to avoid function stack
 				setTimeout(function(){
 					runSequeceProxyInx( seqInx );
 				},0);
 			});
-			// If we called sequenceProxy player,  update the interface for ads: 
+			
+			// Update the interface for ads: 
 			_this.updateUiForAdPlayback();
 		};
 		runSequeceProxyInx( seqInx );
@@ -279,7 +287,6 @@ mw.AdTimeline.prototype = {
 		embedPlayer.disableSeekBar();
 		// update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
-		
 		// Trigger an ad start event once we enter an ad state
 		$( embedPlayer ).trigger( 'AdSupport_StartAdPlayback', slotType );
 	},
@@ -320,6 +327,7 @@ mw.AdTimeline.prototype = {
 		adSlot.doneCallback = displayDoneCallback;
 		
 		adSlot.playbackDone = function(){
+			mw.log("AdTimeline:: display: adSlot.playbackDone" );
 			// Remove notice if present: 
 			$('#' + _this.embedPlayer.id + '_ad_notice' ).remove();
 			// Remove skip button if present: 
@@ -435,8 +443,6 @@ mw.AdTimeline.prototype = {
 				return true;							
 			});
 		}
-		// Stop event propagation: 
-		_this.updateUiForAdPlayback( adSlot.type );
 		
 		// Play the source then run the callback
 		_this.embedPlayer.switchPlaySrc( targetSrc, 
@@ -492,7 +498,9 @@ mw.AdTimeline.prototype = {
 							.css('cursor', 'pointer')
 							.css( adSlot.skipBtn.css )				
 							.click(function(){
-								$( _this.embedPlayer ).unbind( 'click.ad' );	
+								$( _this.embedPlayer ).unbind( 'click.ad' );
+								// unbind any vast tracking: 
+								$( _this.getNativePlayerElement() ).unbind( _this.trackingBindPostfix );
 								adSlot.playbackDone();
 							})
 					);
@@ -652,7 +660,7 @@ mw.AdTimeline.prototype = {
 	bindTrackingEvents: function ( trackingEvents ){
 		var _this = this;
 		var videoPlayer = _this.getNativePlayerElement();
-		var bindPostfix = '.adTracking';
+		var bindPostfix = _this.trackingBindPostfix;
 		// unbind any existing adTimeline events
 		$( videoPlayer).unbind( bindPostfix );
 		
@@ -680,7 +688,7 @@ mw.AdTimeline.prototype = {
 			// stop monitor
 			clearInterval( monitorInterval );
 			// clear any bindings 
-			$( videoPlayer).unbind( bindPostfix);
+			$( videoPlayer).unbind( bindPostfix );
 		});
 		
 		// On pause / resume: 

@@ -60,22 +60,42 @@ mw.NielsenPlugin.prototype = {
 	addSequenceBinding: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		var currentSeqId = 1;
 		// Dispatch a "preLoad" event ( will finish with a 5 once we have actual content playing ) 
 		this.dispatchEvent( 3, this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 		
 		// Bind ad Playback
+		var adOpenUrl = false;
 		$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
-			var duration = _this.getRelativeTime( 'duration' );
-			// Playing an ad fire a 15 with all ad Meatadata
-			_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "ad", _this.getMetaXmlString() );
+			var vid = _this.embedPlayer.getPlayerElement(); 
+			// We are in an ad:
+			adOpenUrl = _this.getCurrentVideoSrc();
+			// wait for duration change event 
+			$( vid ).bind( 'durationchange.nielsenAd', function(e){
+				// unbind our duration change event: 
+				$( vid ).unbind( '.nielsenAd' );
+				// Playing an ad fire a 15 with all ad Meatadata
+				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "ad", _this.getMetaXmlString() );
+				// add event bindings: 
+				_this.addPlayerBindings( vid, 'ad' );
+			});
 		});
+		$( embedPlayer ).bind( 'AdSupport_EndAdPlayback' + _this.bindPostFix, function( event, slotType ){
+			// close the current ad: 
+			if( adOpenUrl ){
+				// Ad fire a 4 to 'unload' the ad ( always called even if we don't get to "ended" event )
+				_this.dispatchEvent( 4, adOpenUrl, 'ad' );
+				adOpenUrl = false;
+			}
+		});
+		
 		// When starting content finish up content beacon and add content bindings
 		$( embedPlayer ).bind( 'onplay'  + _this.bindPostFix, function(){
 			// Check if the play event is content or "inAdSequence" 
-			if( ! embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
-				// playing content fire the 5 content beacon and start content tracking
-				_this.dispatchEvent( 3, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+			if( !_this.inAd() ){
+				// Playing content fire the 5 content beacon and start content tracking
+				_this.dispatchEvent( 5, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+				// Add player "raw" player bindings:
+				_this.addPlayerBindings( _this.embedPlayer.getPlayerElement(), "content" );
 			}
 		});
 		// on player "ended" send end event 7
@@ -87,41 +107,46 @@ mw.NielsenPlugin.prototype = {
 	/**
 	 * Adds player bindings for either ads or players
 	 */
-	addPlayerBindings: function( player ){
+	addPlayerBindings: function( player, type ){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
+		var trackerPostFix = '.nielsenPlayerTracker';
+		// unbind any existing bindings: : 
+		$( embedPlayer ).unbind( trackerPostFix );
+		$( player ).unbind( trackerPostFix );
+		
+		// Non-native events: ( have to bind against embedPlayer instead of the video instance )
+		$( embedPlayer ).bind( 'onOpenFullScreen' + trackerPostFix, function(){
+			_this.dispatchEvent( 10, "true", type);
+		})
+		$( embedPlayer ).bind( 'onCloseFullScreen' + trackerPostFix, function(){
+			_this.dispatchEvent( 10, "false", type);			
+		})
+		// Mute:
+		$( embedPlayer ).bind( 'onToggleMute' + trackerPostFix, function(){
+			_this.dispatchEvent( 9, String(embedPlayer.muted), type );
+		})
 		
 		// Setup a shortcut to bind call ( including bindPostFix )
 		var b = function( bindName, callback ){
-			$( embedPlayer ).bind( bindName + _this.bindPostFix, callback);
+			$( player ).bind( bindName + trackerPostFix, callback);
 		}
 		
 		// on play:
-		b('onplay', function(){
-			_this.dispatchEvent( 5, _this.getRelativeTime('currentTime') );
+		b('play', function(){
+			_this.dispatchEvent( 5, _this.getRelativeTime('currentTime'), type );
 		});
 		// on pause:
-		b( 'onpause', function(){
-			_this.dispatchEvent( 6, _this.getRelativeTime('currentTime'));
+		b( 'pause', function(){
+			_this.dispatchEvent( 6, _this.getRelativeTime('currentTime'), type);
 		});
 		// on complete: 
 		b( 'ended', function(){
-			_this.dispatchEvent( 7, _this.getRelativeTime('currentTime'));
+			_this.dispatchEvent( 7, _this.getRelativeTime('currentTime'), type);
 		});
-		// Fullscreen: 
-		b( 'onOpenFullScreen', function(){
-			_this.dispatchEvent( 10, "true");			
-		})
-		b( 'onCloseFullScreen', function(){
-			_this.dispatchEvent( 10, "false");			
-		})
-		// Mute:
-		b( 'onToggleMute', function(){
-			_this.dispatchEvent( 9, String(embedPlayer.mute) );
-		})
 		// Volume change: 
 		b( 'volumechange', function(){
-			_this.dispatchEvent( 11, String(embedPlayer.volume) );
+			_this.dispatchEvent( 11, String(player.volume), type );
 		});
 		
 		// Kaltura HTML5 does not really have an idle state:
@@ -129,18 +154,18 @@ mw.NielsenPlugin.prototype = {
 		
 		// Monitor:
 		var lastTime = 0;
-		b( 'progress' + _this.bindPostFix, function(){
-			var posDelta  = Math.abs( embedPlayer.currentTime - lastTime );
+		b( 'timeupdate', function(){
+			var posDelta  = Math.abs( player.currentTime - lastTime );
 			// Check for position changed more than "3" 
 			// NOTE: changed Nielsen example of 2 seconds to 3 since progress query interval is 
 			// also set to 2 it would appear as if there were seeks all the time. 
 			if( posDelta > 3 ){
-				_this.dispatchEvent( 8, String( lastTime ), String( _this.getRelativeTime('currentTime') ) );
+				_this.dispatchEvent( 8, String( lastTime ), String( _this.getRelativeTime('currentTime') ), type );
 			}
 			// Dispatch player progress every 2 seconds:
 			if( posDelta > _this.queryInterval ){
 				lastTime = embedPlayer.currentTime;
-				_this.dispatchEvent( 49, String( _this.getRelativeTime('currentTime') ) );
+				_this.dispatchEvent( 49, String( _this.getRelativeTime('currentTime') ), type );
 			}
 		});
 	},
@@ -150,7 +175,7 @@ mw.NielsenPlugin.prototype = {
 	 */
 	dispatchEvent: function(){
 		var args = $.makeArray( arguments ); 
-		var eventString = args.join(', '); 
+		var eventString = args.join("\n\n"); 
 		mw.log("NielsenPlugin:: dispatchEvent: " + eventString);
 		this.gg.ggPM.apply( this, args);
 	},
@@ -195,7 +220,7 @@ mw.NielsenPlugin.prototype = {
 		return embedPlayer[type];
 	},
 	inAd:function(){
-		return this.embedPlayer.evaluate('{sequenceProxy.isInSequence}'); 
+		return !! this.embedPlayer.evaluate('{sequenceProxy.isInSequence}'); 
 	},
 	/**
 	 * Get the Nielsen xml string: 
@@ -206,10 +231,10 @@ mw.NielsenPlugin.prototype = {
 		var meta = ''+
 			"<uurl>"+
 				this.getCurrentVideoSrc() +
-			"</uurl>" +
+			"</uurl>\n" +
 			"<length>"+
 				this.getRelativeTime( 'duration' ) + 
-			"</length>";
+			"</length>\n";
 		// A tag map that allows for ads to override content values
 		var tagMap = {};
 		// Get the current config evaluated expressions: 
@@ -221,14 +246,16 @@ mw.NielsenPlugin.prototype = {
 				if( _this.inAd() && tagMap[ attr.substr( 4 ) ] ){
 					// don't override ad tags 
 				} else {
-					tagMap[ attr.substr( 4 ) ]
+					// set the content tag:
+					tagMap[ attr.substr( 4 ) ] = evalValue;
 				}
 			}
 			// if in an ad override the tagMap with ad_ tag value:
-			if( _this.inAd() && attr.indexOf('ad_') === 0 ){
+			if( _this.inAd() && attr.indexOf('ad_') === 0 && evalValue ){
 				tagMap[ attr.substr( 3 ) ] = evalValue;
 			}
 		});
+		
 		// output the final tag map: 
 		$.each( tagMap, function(attr, evalValue){
 			meta += '<' + attr + '>' + evalValue + '</' + evalValue + '>' + "\n";
@@ -250,7 +277,7 @@ mw.NielsenPlugin.prototype = {
 			$.getScript( this.getGgCmbUrl(), function(){
 				// Nielsen specific global param option: 
 				var nolggGlobalParams = {
-					  clientid: _this.getConfig( "clientId" )
+					  clientid: _this.getConfig( "clientid" )
 				};	
 				_this.gg = new gg();
 				var uid = 0; // "provided by Nielsen"

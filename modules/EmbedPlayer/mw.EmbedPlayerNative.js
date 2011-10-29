@@ -478,6 +478,7 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var vid = this.getPlayerElement();
 		
+		var switchBindPostfix = '.switchPlaySrc';
 		// Make sure the switch source is different: 
 		if( !src || src == vid.src ){
 			if( switchCallback ){
@@ -499,8 +500,8 @@ mw.EmbedPlayerNative = {
 	
 		if ( vid ) {
 			try {
+				$( vid ).unbind( switchBindPostfix );
 				// Remove all native player bindings
-				$(vid).unbind();
 				vid.pause();
 				var orginalControlsState = vid.controls;
 				// Hide controls ( to not display native play button while switching sources ) 
@@ -530,14 +531,17 @@ mw.EmbedPlayerNative = {
 							// Restore controls 
 							vid.controls = orginalControlsState;
 							// add the end binding: 
-							$( vid ).bind( 'ended', function( event ) {
+							$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
+								// remove end binding: 
+								$( vid ).unbind( switchBindPostfix );
+								
 								if(typeof doneCallback == 'function' ){
 									doneCallback();
 								}
 								return false;
 							});
 							if (typeof switchCallback == 'function') {
-								switchCallback(vid);
+								switchCallback( vid );
 							}
 							_this.hidePlayerSpinner();
 						}, 50);

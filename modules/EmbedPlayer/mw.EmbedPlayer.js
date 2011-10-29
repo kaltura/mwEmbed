@@ -1283,6 +1283,7 @@ mw.EmbedPlayer.prototype = {
 
 			// TOOD we should improve the end event flow
 			this.stopEventPropagation();
+			mw.log("EmbedPlayer:: trigger: ended");
 			$( this ).trigger( 'ended' );
 			this.restoreEventPropagation();
 			
@@ -1315,6 +1316,7 @@ mw.EmbedPlayer.prototype = {
 				//this.controlBuilder.onClipDone();
 
 				// An event for once the all ended events are done.
+				mw.log("EmbedPlayer:: trigger: onEndedDone");
 				$( this ).trigger( 'onEndedDone' );
 			}
 		}

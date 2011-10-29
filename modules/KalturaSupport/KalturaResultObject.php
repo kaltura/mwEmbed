@@ -794,9 +794,9 @@ class KalturaResultObject {
 			
 		$playerUnique .= $this->getReferer();
 
-		// hash the service url, the partner_id, the player_id and the Referer url: 
+		// Hash the service url, the partner_id, the player_id and the Referer url: 
 		return substr( md5( $this->getServiceConfig( 'ServiceUrl' )  ), 0, 5 ) . '_' . $this->getPartnerId() . '_' . 
-			   substr( md5( $playerUnique ), 0, 16 );
+			   substr( md5( $playerUnique ), 0, 20 );
 	}
 
 	private function getResultObjectFromApi(){
@@ -818,13 +818,6 @@ class KalturaResultObject {
 		return $resultObject;
 	}
 	function loadUiConf() {
-		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug, $wgKalturaForceResultCache;
-		
-		$useCache = !$wgEnableScriptDebug;
-		if( $wgKalturaForceResultCache === true){
-			$useCache = true;
-		}
-		
 		// if no uiconf_id .. throw exception
 		if( !$this->urlParameters['uiconf_id'] ) {
 			throw new Exception( "Missing uiConf ID" );
@@ -1232,6 +1225,7 @@ class KalturaResultObject {
 	}
 	private function canUseCacheFile( $cacheFile ){
 		global $wgEnableScriptDebug, $wgKalturaForceResultCache, $wgKalturaUiConfCacheTime;
+		
 		$useCache = !$wgEnableScriptDebug;
 		if( $wgKalturaForceResultCache === true){
 			$useCache = true;
