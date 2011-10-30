@@ -65,6 +65,7 @@ mw.NielsenPlugin.prototype = {
 		
 		// Bind ad Playback
 		var adOpenUrl = false;
+		var dispachedAdStart = false;
 		$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
 			var vid = _this.embedPlayer.getPlayerElement(); 
 			// We are in an ad:
@@ -73,10 +74,12 @@ mw.NielsenPlugin.prototype = {
 			$( vid ).bind( 'durationchange.nielsenAd', function(e){
 				// unbind our duration change event: 
 				$( vid ).unbind( '.nielsenAd' );
-				// Make sure we are still in an ad: 
+				// Make sure we are still in an ad ( if not don't send anything and unset adOpenUrl ) 
 				if( !_this.inAd() ){
+					adOpenUrl = false;
 					return ;
 				}
+				dispachedAdStart = true;
 				// Playing an ad fire a 15 with all ad Meatadata
 				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "ad", _this.getMetaXmlString() );
 				// add event bindings: 
@@ -85,17 +88,18 @@ mw.NielsenPlugin.prototype = {
 		});
 		$( embedPlayer ).bind( 'AdSupport_EndAdPlayback' + _this.bindPostFix, function( event, slotType ){
 			// close the current ad: 
-			if( adOpenUrl ){
+			if( adOpenUrl && dispachedAdStart ){
 				// Ad fire a 4 to 'unload' the ad ( always called even if we don't get to "ended" event )
 				_this.dispatchEvent( 4, adOpenUrl, 'ad' );
 				adOpenUrl = false;
 			}
 		});
-		
+		var firstNonAdPlay = true;
 		// When starting content finish up content beacon and add content bindings
 		$( embedPlayer ).bind( 'onplay'  + _this.bindPostFix, function(){
 			// Check if the play event is content or "inAdSequence" 
-			if( !_this.inAd() ){
+			if( !_this.inAd() && firstNonAdPlay ){
+				firstNonAdPlay = false;
 				// Playing content fire the 5 content beacon and start content tracking
 				_this.dispatchEvent( 5, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 				// Add player "raw" player bindings:
@@ -138,7 +142,7 @@ mw.NielsenPlugin.prototype = {
 		
 		// on play:
 		b('play', function(){
-			_this.dispatchEvent( 5, _this.getRelativeTime('currentTime'), type );
+			_this.dispatchEvent( 5, _this.getRelativeTime('currentTime') );
 		});
 		// on pause:
 		b( 'pause', function(){
