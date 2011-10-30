@@ -105,8 +105,10 @@ mw.PlayerControlBuilder.prototype = {
 		if( _this.isOverlayControls() ){
 			$controlBar.hide();
 		} else {
-			embedPlayer.height =  embedPlayer.getHeight() - this.getHeight();
+			embedPlayer.height =  embedPlayer.$interface.height() - this.getHeight();
 			$( embedPlayer ).css('height', embedPlayer.height +'px' );
+			// update native element height:
+			$('#' + embedPlayer.pid ).css('height', embedPlayer.height);
 		}
 
 		$controlBar.css( {

@@ -1368,11 +1368,6 @@ mw.EmbedPlayer.prototype = {
 				'left' : '0px',
 				'background': null
 			});
-
-			if( this.isPersistentNativePlayer() && !_this.controlBuilder.isOverlayControls() ){
-				// if Persistent native player always give it the player height
-				$('#' + this.pid ).css('height', this.height - _this.controlBuilder.height );
-			}
 			$( this ).show();
 		}
 		if(  !this.useNativePlayerControls() && !this.isPersistentNativePlayer() && !_this.controlBuilder.isOverlayControls() ){
