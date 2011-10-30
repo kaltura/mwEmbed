@@ -81,6 +81,7 @@ mw.IFramePlayerApiClient.prototype = {
 		// ( without this variable we would call fullscreen on all iframes on 
 		// orientation change ) 
 		var localIframeInFullscreen = false;
+		var verticalScrollPosition = 0;
 		
 		// Bind orientation change to resize player ( if fullscreen )
 		$(window).bind( 'orientationchange', function(e){
@@ -90,7 +91,8 @@ mw.IFramePlayerApiClient.prototype = {
 		});
 		
 		var doFullscreen = function(){
-			// Alway scroll to top
+			// Save vertical scroll position and scroll to top
+			verticalScrollPosition = (document.all ? document.scrollTop : window.pageYOffset);
 			window.scroll(0,0);
 			mw.log("iframeClient:: doFullscreen()");
 			localIframeInFullscreen = true;
@@ -98,7 +100,7 @@ mw.IFramePlayerApiClient.prototype = {
 			$( _this.iframe )
 				.css({
 					'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
-					'position': 'fixed',
+					'position': 'fixed', // changed to fixed from absolute in order to "disable" scrolling
 					'top' : 0,
 					'left' : 0,
 					'width' : $(window).width(),
@@ -118,6 +120,8 @@ mw.IFramePlayerApiClient.prototype = {
 		};
 		
 		var restoreWindowMode = function(){
+			// Scroll back to the previews positon
+			window.scroll(0, verticalScrollPosition);
 			localIframeInFullscreen = false;
 			$( _this.iframe )
 				.css( orgSize )
