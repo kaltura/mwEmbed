@@ -258,8 +258,9 @@ mw.DoubleClick.prototype = {
 				// force display the control bar: 
 				_this.embedPlayer.controlBuilder.showControlBar( true );
 				// add a play binding: to restore hover 
-				$( vid ).unbind('play.dcAdClick', function(){
+				$( vid ).bind('play.dcAdClick', function(){
 					_this.embedPlayer.controlBuilder.restoreControlsHover();
+					$( vid ).unbind( '.dcAdClick' );
 				});
 			});
 		};
