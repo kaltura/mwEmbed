@@ -276,8 +276,6 @@ mw.DoubleClick.prototype = {
 			}
 			// Clear out the older currentAdLoadedCallback
 			_this.currentAdLoadedCallback = null;
-			// Continue playback
-			_this.embedPlayer.play();
 			// Issue the callback 
 			callback();
 		};
