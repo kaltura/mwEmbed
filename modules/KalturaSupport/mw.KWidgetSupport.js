@@ -57,7 +57,7 @@ mw.KWidgetSupport.prototype = {
 						callback();
 					});
 				break;
-				case 'pptwidget': 
+				case 'pptwidget':
 					mw.load([ 'EmbedPlayer', 'mw.KPPTWidget', 'mw.KLayout' ], function(){
 						new mw.KPPTWidget( widgetTarget, playerData.uiConf, callback );
 					});
@@ -145,7 +145,7 @@ mw.KWidgetSupport.prototype = {
 							$('<h3 />').append( 'Free preview completed, need to purchase'),
 							$('<span />').text( 'Access to the rest of the content is restricted' ),
 							$('<br />'),$('<br />'),
-							$('<button />').attr({'type' : "button" })
+							$('<button />').attr({'type' : "button"})
 							.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
 							.append( 
 								$('<span />').addClass( "ui-button-text" )
@@ -401,8 +401,10 @@ mw.KWidgetSupport.prototype = {
 			if( config[ attrName ] === "false" )
 				config[ attrName ] = false; 
 			
-			// Do any value handling 
-			config[ attrName ] = embedPlayer.evaluate( config[ attrName ] );
+			// Do any value handling
+			// If JS Api disabled, evaluate is undefined
+			if( embedPlayer.evaluate )
+				config[ attrName ] = embedPlayer.evaluate( config[ attrName ] );
 		});
 		
 		// Check if disableHTML5 was "true" and return false for the plugin config ( since we are the html5 library ) 
