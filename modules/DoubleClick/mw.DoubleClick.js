@@ -260,7 +260,6 @@ mw.DoubleClick.prototype = {
 				// add a play binding: to restore hover 
 				$( vid ).bind('play.dcAdClick', function(){
 					_this.embedPlayer.controlBuilder.restoreControlsHover();
-					$( vid ).unbind( '.dcAdClick' );
 				});
 			});
 		};

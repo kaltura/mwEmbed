@@ -25,17 +25,14 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				// Check ui-conf for horizontal or vertical playlist
 				// Were know if the playlist is vertical or horizontal based on the parent element of the #playlist
 				// vbox - vertical | hbox - horizontal 
-				if( $uiConf.find("#playlist").parent().length ){
-					layout = ( $uiConf.find("#playlist").parent().get(0).nodeName.toLowerCase() == 'vbox') ? 
-								'vertical' : 
-								'horizontal';
-				} else if( $uiConf.find('#playlistHolder').length ){
+				if( $uiConf.find('#playlistHolder').length ){
 					layout = ( parseInt( $uiConf.find('#playlistHolder').attr('width') ) != 100 ) ? 
 								'horizontal' : 
 								'vertical';
 				} else {
-					mw.log("Error could not determine playlist layout type");
-					layout = 'horizontal';
+					mw.log("Error could not determine playlist layout type ( use target size ) ");
+					layout = ( $playlist.width() < $playlist.height() ) 
+						? 'vertical' : 'horizontal';
 				}
 				
 				$playlist.playlist({
