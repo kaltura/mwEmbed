@@ -129,6 +129,11 @@ mw.DoubleClick.prototype = {
 	 */
 	loadAndDisplayOverlay: function( cuePoint ){
 		var _this = this;
+		// Don't display overlays if in an ad: 
+		if( this.embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
+			return ;
+		}
+		
 		// Setup the current ad callback: 
 		_this.currentAdLoadedCallback = function( adsManager ){
 			mw.log( "DoubleClick::loadAndDisplayOverlay> currentAdLoadedCallback ")
