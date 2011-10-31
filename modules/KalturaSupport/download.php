@@ -20,7 +20,11 @@ class downloadEntry {
 		global $wgMwEmbedVersion;
 		if( ! $this->resultObject ){
 			require_once( dirname( __FILE__ ) .  '/KalturaResultObject.php' );
-			$this->resultObject = new KalturaResultObject( 'html5download:' . $wgMwEmbedVersion );
+			try {
+				$this->resultObject = new KalturaResultObject( 'html5download:' . $wgMwEmbedVersion );
+			} catch ( Exception $e ){
+				die( $e->getMessage() );
+			}
 		}
 		return $this->resultObject;
 	}
