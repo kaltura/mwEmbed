@@ -1226,14 +1226,14 @@ mw.EmbedPlayer.prototype = {
 			// Make sure this.serverSeekTime is up-to-date:
 			this.serverSeekTime = mw.npt2seconds( this.start_npt ) + parseFloat( percent * this.getDuration() );
 			// Update the slider
+			
+			// Do play request in 100ms ( give the dom time to swap out the embed
+			// player )
+			setTimeout( function() {
+				_this.seeking = false;
+				_this.play();
+			}, 100 );
 		}
-
-		// Do play request in 100ms ( give the dom time to swap out the embed
-		// player )
-		setTimeout( function() {
-			_this.seeking = false;
-			_this.play();
-		}, 100 );
 
 		// Run the onSeeking interface update
 		// NOTE controlBuilder should really bind to html5 events rather
@@ -2140,7 +2140,7 @@ mw.EmbedPlayer.prototype = {
 		.removeClass( 'ui-icon-play' )
 		.addClass( 'ui-icon-pause' );
 		
-		this.hidePlayerSpinner();
+		this.hideSpinnerOncePlaying()
 
 		this.$interface.find( '.play-btn' )
 		.unbind('click')
@@ -2156,11 +2156,29 @@ mw.EmbedPlayer.prototype = {
 	 */
 	pauseLoading: function(){
 		this.pause();
+		this.addPlayerSpinner();
+	},
+	addPlayerSpinner: function(){
 		$( this ).getAbsoluteOverlaySpinner()
 			.attr( 'id', 'loadingSpinner_' + this.id );
 	},
 	hidePlayerSpinner: function(){
 		$( '#loadingSpinner_' + this.id ).remove();
+	},
+	hideSpinnerOncePlaying: function(){
+		var _this = this;
+		// Hide the spinner once we start playing: 
+		var baseTime = this.getPlayerElementTime();
+		var doHideCheck = function(){
+			if( !_this.seeking && Math.abs( baseTime - _this.getPlayerElementTime() ) > .050  ){
+				_this.hidePlayerSpinner();
+				return ;
+			}
+			setTimeout(function(){
+				doHideCheck();
+			}, 50 );
+		}
+		doHideCheck();
 	},
 	/**
 	 * Base embed pause Updates the play/pause button state.

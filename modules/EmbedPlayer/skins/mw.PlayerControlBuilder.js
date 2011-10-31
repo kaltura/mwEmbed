@@ -1193,6 +1193,10 @@ mw.PlayerControlBuilder.prototype = {
 		//mw.log( "controlBuilder:: onSeek" );
 		// Update the interface:
 		this.setStatus( gM( 'mwe-embedplayer-seeking' ) );
+		// add a loading spinner: 
+		this.embedPlayer.addPlayerSpinner();
+		// hide once playing again:
+		this.embedPlayer.hideSpinnerOncePlaying();
 	},
 
 	/**

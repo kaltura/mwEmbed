@@ -464,17 +464,7 @@ mw.EmbedPlayerNative = {
 		this.parent_updatePosterSrc( src );
 	},
 	
-	/**
-	 * switchPlaySrc switches the player source working around a few bugs in browsers
-	 * 
-	 * @param {string}
-	 *            src Video url Source to switch to.
-	 * @param {function}
-	 *            switchCallback Function to call once the source has been switched
-	 * @param {function}
-	 *            doneCallback Function to call once the clip has completed playback
-	 */
-	switchPlaySrc: function( src, switchCallback, doneCallback ){
+	/*switchPlaySrc: function( src, switchCallback, doneCallback ){
 		var _this = this;
 		var vid = this.getPlayerElement();
 		
@@ -561,25 +551,47 @@ mw.EmbedPlayerNative = {
 				mw.log("Error: EmbedPlayerNative Error in switching source playback");
 			}
 		}
-	},
-	/** if html5 implementation did not suck we could use the following code: */
-	/*switchPlaySrc: function( src, switchCallback, doneCallback ){
+	},*/
+	/**
+	 * switchPlaySrc switches the player source working around a few bugs in browsers
+	 * 
+	 * @param {string}
+	 *            src Video url Source to switch to.
+	 * @param {function}
+	 *            switchCallback Function to call once the source has been switched
+	 * @param {function}
+	 *            doneCallback Function to call once the clip has completed playback
+	 */
+	switchPlaySrc: function( src, switchCallback, doneCallback ){
+		var _this = this;
 		var vid = this.getPlayerElement();
+		var switchBindPostfix = '.switchPlaySrc';
+		$(vid).unbind( switchBindPostfix );
 		
-		$(vid).unbind();
-		
-		$( vid ).bind( 'ended', function( event ) {
+		$( vid ).bind( 'ended' + switchBindPostfix, function( event ) {
 			if( doneCallback ){
 				doneCallback();
 			}
-			return false;
 		});
+		// add a loading spinner: 
+		this.addPlayerSpinner();
+		// once we can play remove the spinner
+		$( vid ).bind( 'canplaythrough' +switchBindPostfix, function( event ){
+			_this.hidePlayerSpinner();
+		});
+
+		// Swicth the src and play: 
+		try{
+			vid.src = src;
+			vid.load();
+			vid.play();
+		} catch ( e ){
+			mw.log("Error: could not switch source")
+		}
 		if ( switchCallback ) {
 			switchCallback( vid );
 		}
-		vid.src = src;
-		vid.play();
-	},*/
+	},
 	/**
 	* Pause the video playback
 	* calls parent_pause to update the interface

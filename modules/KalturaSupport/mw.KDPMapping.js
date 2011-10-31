@@ -25,8 +25,8 @@
 				// iframe and no iframes players
 				this.addIframePlayerClientBindings();
 			}
-			// if not an api server include non-iframe player hooks
-			if( !window.kWidgetSupport.isIframeApiServer() ){
+			// if not an api server include non-iframe player hooks 
+			if( window.kWidgetSupport && !window.kWidgetSupport.isIframeApiServer() ){
 				this.addPlayerHooks();
 			}
 		},
