@@ -91,16 +91,18 @@ mw.IFramePlayerApiClient.prototype = {
 		});
 		
 		var doFullscreen = function(){
+			mw.log("iframeClient:: doFullscreen()");
 			// Save vertical scroll position and scroll to top
 			verticalScrollPosition = (document.all ? document.scrollTop : window.pageYOffset);
 			window.scroll(0,0);
-			mw.log("iframeClient:: doFullscreen()");
 			localIframeInFullscreen = true;
+			// changed to fixed from absolute in order to "disable" scrolling
+			var playerCssPosition = (mw.isIpad()) ? 'absolute' : 'fixed';
 			// Make the iframe fullscreen
 			$( _this.iframe )
 				.css({
 					'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
-					'position': 'fixed', // changed to fixed from absolute in order to "disable" scrolling
+					'position': playerCssPosition,
 					'top' : 0,
 					'left' : 0,
 					'width' : $(window).width(),
