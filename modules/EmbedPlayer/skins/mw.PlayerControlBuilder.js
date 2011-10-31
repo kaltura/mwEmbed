@@ -1467,6 +1467,20 @@ mw.PlayerControlBuilder.prototype = {
 			$shareList
 		);		    
 
+		var $shareButton = false;
+		if( ! mw.isIpad() ) {
+			$shareButton = $('<button />')
+			.addClass( 'ui-state-default ui-corner-all copycode' )
+			.text( gM( 'mwe-embedplayer-copy-code' ) )
+			.click(function() {
+				$shareInterface.find( 'textarea' ).focus().select();
+				// Copy the text if supported:
+				if ( document.selection ) {
+					CopiedTxt = document.selection.createRange();
+					CopiedTxt.execCommand( "Copy" );
+				}
+			} );
+		}
 		$shareInterface.append(
 
 			$( '<textarea />' )
@@ -1478,19 +1492,7 @@ mw.PlayerControlBuilder.prototype = {
 
 			$('<br />'),
 			$('<br />'),
-
-			$('<button />')
-			.addClass( 'ui-state-default ui-corner-all copycode' )
-			.text( gM( 'mwe-embedplayer-copy-code' ) )
-			.click(function() {
-				$shareInterface.find( 'textarea' ).focus().select();
-				// Copy the text if supported:
-				if ( document.selection ) {
-					CopiedTxt = document.selection.createRange();
-					CopiedTxt.execCommand( "Copy" );
-				}
-			} )
-
+			$shareButton
 		);
 		return $shareInterface;
 	},
