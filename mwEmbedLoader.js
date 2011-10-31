@@ -350,14 +350,14 @@ function kOverideJsFlashEmbed(){
 			'kwidgetid' : kEmbedSettings.wid,
 			'kuiconfid' : kEmbedSettings.uiconf_id
 		};
-		var width = ( widthStr )? parseInt( widthStr ) : $j('#' + replaceTargetId ).width();
-		var height = ( heightStr)? parseInt( heightStr ) : $j('#' + replaceTargetId ).height();
+		var width = ( widthStr )? ( widthStr ) : $j('#' + replaceTargetId ).width();
+		var height = ( heightStr)? ( heightStr ) : $j('#' + replaceTargetId ).height();
 		
 		if( kEmbedSettings.entry_id ){
 			embedPlayerAttributes.kentryid = kEmbedSettings.entry_id;				
 			embedPlayerAttributes.poster = kGetEntryThumbUrl( {
-				'width' : width,
-				'height' : height,
+				'width' : parseInt(width),
+				'height' : parseInt(height),
 				'entry_id' :  kEmbedSettings.entry_id,
 				'partner_id': kEmbedSettings.p 
 			});
