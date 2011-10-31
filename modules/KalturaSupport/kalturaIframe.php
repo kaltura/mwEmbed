@@ -194,7 +194,7 @@ class kalturaIframe {
 				'</span>
 			</div>';
 	}
-	private function getVideoHTML( $playerSize = ''  ){
+	private function getVideoHTML( $playerStyle = ''  ){
 		$videoTagMap = array(
 			'entry_id' => 'kentryid',
 			'uiconf_id' => 'kuiconfid',
@@ -244,7 +244,7 @@ class kalturaIframe {
 			$o.='poster="' . htmlspecialchars( $posterUrl ) . '" ';
 		}
 		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
-			'style="' . $playerSize . '" ';
+			'style="' . $playerStyle . '" ';
 
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
@@ -604,7 +604,8 @@ class kalturaIframe {
 			if( $this->getResultObject()->isPlaylist() ){ 
 				echo $this->getPlaylistWraper( 
 					// Get video html with a default playlist video size ( we can adjust it later in js )
-					$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() ) 
+					// iOS needs display type block: 
+					$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() . ';display:block' ) 
 				);
 			} else {
 				// For the actual video tag we need to use a document.write since android dies 

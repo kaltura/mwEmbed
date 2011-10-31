@@ -4,8 +4,6 @@
  * @param {Object} source Source object to extend
  * @param {Object} textProvider [Optional] The text provider interface ( to load source from api )
  */
-
-
 ( function( mw, $ ) {
 
 	mw.TextSource = function( source ) {
@@ -74,7 +72,7 @@
 					url: _this.getSrc(),
 					success: function( data ) {
 						_this.captions = _this.getCaptions( data );
-						mw.log("mw.TextSource :: loaded from srt file: " + _this.captions.length + ' captions' );
+						mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
 						callback();
 					},
 					error: function( jqXHR, textStatus, errorThrown ){
@@ -171,7 +169,7 @@
 		 */
 		getCaptionsFromTMML: function( data ){
 			var _this = this;
-			mw.log("TextSource::getCaptionsFromTMML");
+			mw.log("TextSource::getCaptionsFromTMML::\n\n" + data);
 			// set up display information:
 			var captions = [];
 			var xml = $.parseXML( data );
