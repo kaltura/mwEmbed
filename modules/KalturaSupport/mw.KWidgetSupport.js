@@ -17,9 +17,11 @@ mw.KWidgetSupport.prototype = {
 		this.addPlayerHooks();
 	},
 	isIframeApiServer: function(){
-		return ( mw.getConfig('EmbedPlayer.EnableIframeApi') 
+		return ( mw.getConfig( 'EmbedPlayer.IsIframeServer' )
 					&& 
-				mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) );
+				mw.getConfig( 'EmbedPlayer.EnableIframeApi' ) 
+					&& 
+				mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) )
 	},
 	/**
 	* Add Player hooks for supporting Kaltura api

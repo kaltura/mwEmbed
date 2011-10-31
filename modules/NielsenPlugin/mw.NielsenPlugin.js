@@ -263,8 +263,7 @@ mw.NielsenPlugin.prototype = {
 				tagMap[ attr.substr( 3 ) ] = evalValue;
 			}
 		});
-		
-		// output the final tag map: 
+		// Output the final tag map: 
 		$.each( tagMap, function(attr, evalValue){
 			meta += '<' + attr + '>' + evalValue + '</' + attr + '>' + "\n";
 		})

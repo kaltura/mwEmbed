@@ -494,7 +494,6 @@ function kGetFlashVersion(){
 // Check DOM for Kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
 function kCheckAddScript(){
-	
 	// Check if we already have got uiConfJs or not
 	if( mw.getConfig( 'Kaltura.EnableEmbedUiConfJs' ) && 
 		! mw.getConfig( 'Kaltura.UiConfJsLoaded') && ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
@@ -1033,7 +1032,6 @@ function kGetEntryThumbUrl( entry ){
  */
 function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 	var embedSettings = {};	
-	
 	// Convert flashvars if in string format:
 	if( typeof flashvars == 'string' ){
 		flashvars = kFlashVars2Object( flashvars );
