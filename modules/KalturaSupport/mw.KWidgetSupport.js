@@ -16,7 +16,11 @@ mw.KWidgetSupport.prototype = {
 		}
 		this.addPlayerHooks();
 	},
-	
+	isIframeApiServer: function(){
+		return ( mw.getConfig('EmbedPlayer.EnableIframeApi') 
+					&& 
+				mw.getConfig( 'EmbedPlayer.IframeParentUrl' ) );
+	},
 	/**
 	* Add Player hooks for supporting Kaltura api
 	*/ 
@@ -96,7 +100,7 @@ mw.KWidgetSupport.prototype = {
 		});
 	},
 	
-	updatePlayerData:function( embedPlayer,  playerData, callback ){
+	updatePlayerData: function( embedPlayer,  playerData, callback ){
 		var _this = this;
 		// Check for uiConf	and attach it to the embedPlayer object:
 		if( playerData.uiConf ){

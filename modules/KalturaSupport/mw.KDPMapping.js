@@ -18,15 +18,17 @@
 		*/ 
 		init: function( ){
 			if( mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
-				this.addIframePlayerHooksServer();
+				this.addIframePlayerServerBindings();
 			} else {
 				// For client side of the iframe add iframe hooks and player hooks ( will bind to 
 				// different build player build outs and lets us support pages with both
 				// iframe and no iframes players
-				this.addIframePlayerHooksClient();
+				this.addIframePlayerClientBindings();
 			}
-			// Always add player hooks
-			this.addPlayerHooks();
+			// if not an api server include non-iframe player hooks
+			if( !window.kWidgetSupport.isIframeApiServer() ){
+				this.addPlayerHooks();
+			}
 		},
 		addPlayerHooks: function(){
 			var _this = this;
@@ -64,9 +66,9 @@
 		/***************************************
 		 * Client side kdp mapping iframe player setup: 
 		 **************************************/	
-		addIframePlayerHooksClient: function(){
+		addIframePlayerClientBindings: function(){
 			var _this = this;
-			mw.log( "KDPMapping::addIframePlayerHooksClient" );
+			mw.log( "KDPMapping::addIframePlayerClientBindings" );
 
 			$( mw ).bind( 'AddIframePlayerMethods', function( event, playerMethods ){
 				playerMethods.push( 'addJsListener', 'removeJsListener', 'sendNotification', 'setKDPAttribute' );
@@ -112,9 +114,9 @@
 		/***************************************
 		 * Server side kdp mapping iframe player setup: 
 		 **************************************/
-		addIframePlayerHooksServer: function(){
+		addIframePlayerServerBindings: function(){
 			var _this = this;
-			mw.log("KDPMapping::addIframePlayerHooksServer");
+			mw.log("KDPMapping::addIframePlayerServerBindings");
 			$( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings ){
 				exportedBindings.push( 'jsListenerEvent', 'Kaltura.SendAnalyticEvent' );
 			});
