@@ -19,12 +19,12 @@
 		init: function( ){
 			if( mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
 				this.addIframePlayerHooksServer();
-				return ;
-			} 
-			// For client side of the iframe add iframe hooks and player hooks ( will bind to 
-			// different build player build outs and lets us support pages with both
-			// iframe and no iframes players
-			this.addIframePlayerHooksClient();
+			} else {
+				// For client side of the iframe add iframe hooks and player hooks ( will bind to 
+				// different build player build outs and lets us support pages with both
+				// iframe and no iframes players
+				this.addIframePlayerHooksClient();
+			}
 			// Always add player hooks
 			this.addPlayerHooks();
 		},
@@ -44,7 +44,6 @@
 				embedPlayer.sendNotification = function( notificationName, notificationData ){
 					_this.sendNotification( embedPlayer, notificationName, notificationData);
 				};
-				
 				embedPlayer.evaluate = function( objectString ){
 					return _this.evaluate( embedPlayer, objectString);
 				};

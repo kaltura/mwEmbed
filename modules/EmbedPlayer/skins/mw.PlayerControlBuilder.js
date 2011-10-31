@@ -1882,6 +1882,8 @@ mw.PlayerControlBuilder.prototype = {
 					)
 						||
 					  mw.getConfig( "EmbedPlayer.NewWindowFullscreen" ) 
+					  	||
+					( mw.getConfig('EmbedPlayer.IsIframeServer')  && mw.getConfig('EmbedPlayer.EnableIframeApi') === false )
 				){
 					// Get the iframe url: 
 					var url = ctrlObj.embedPlayer.getIframeSourceUrl();
