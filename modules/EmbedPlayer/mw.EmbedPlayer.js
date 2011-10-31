@@ -1402,7 +1402,7 @@ mw.EmbedPlayer.prototype = {
 			return ;
 		}
 		// auto play does not work on iPad > 3 
-		if ( this.autoplay && ( !mw.isIpad() || mw.isIpad3() ) ) {
+		if ( this.autoplay && ( !mw.isIOS() || mw.isIpad3() ) ) {
 			mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
 			_this.play();
 		}
