@@ -72,6 +72,9 @@ $wgKalturaServiceUrl = $wgHTTPProtocol . '://cdnapi.kaltura.com';
 // Default Kaltura CDN url: 
 $wgKalturaCDNUrl = $wgHTTPProtocol . '://cdnbakmi.kaltura.com';
 
+// Default Kaltura Stats url
+$wgKalturaStatsServiceUrl = $wgHTTPProtocol . '://stats.kaltura.com';
+
 // Default Kaltura service url:
 $wgKalturaServiceBase = '/api_v3/index.php?service=';
 
@@ -109,9 +112,6 @@ $wgKalturaPartnerDisableAppleAdaptive = array();
 
 // By default use apple adaptive if we have the ability
 $wgKalturaUseAppleAdaptive = true;
-
-// Check if we have local setting for Stats url
-$wgKalturaStatsServiceUrl = isset($wgKalturaStatsServiceUrl) ? $wgKalturaStatsServiceUrl : $wgKalturaServiceUrl;
 
 // Add Kaltura api services: ( should be part of kaltura module config)
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );
