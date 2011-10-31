@@ -2791,15 +2791,14 @@ if( window.jQuery ){
 			opts = {};
 		opts = $.extend( {'color' : '#eee', 'shadow': true }, opts)
 		this.each(function() {
-			var $this = $(this).empty(),
-			data = $this.data();
-		
-			if (data.spinner) {
-				data.spinner.stop();
-				delete data.spinner;
+			var $this = $(this).empty();
+			var thisSpinner = $this.data('spinner');
+			if (thisSpinner) {
+				thisSpinner.stop();
+				delete thisSpinner;
 			}
 			if (opts !== false) {
-				data.spinner = new Spinner($.extend({color: $this.css('color')}, opts)).spin(this);
+				thisSpinner = new Spinner($.extend({color: $this.css('color')}, opts)).spin(this);
 			}
 		});
 		// correct the position: 
