@@ -22,7 +22,7 @@ $mwEmbedRoot = dirname( __FILE__ );
 // @@TODO Need a php based configuration system for modules so they 
 // can extend / override entry points
 
-if( isset( $myMwEmbedFrame->kwidgetid ) ){	
+if( isset( $myMwEmbedFrame->kwidgetid ) || isset($_REQUEST['wid']) ){
 	require(  dirname( __FILE__ ) . '/modules/KalturaSupport/kalturaIframe.php');
 	exit();
 }
