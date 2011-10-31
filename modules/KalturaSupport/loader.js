@@ -262,10 +262,8 @@
 							'position' : 'relative',
 							'display' : 'inline-block' // more or less the <object> tag default display
 						})
-						.data({
-							'flashvars': flashvars,
-							'cache_st': kEmbedSettings.cache_st
-						})
+						.data('flashvars', flashvars)
+						.data('cache_st', kEmbedSettings.cache_st)
 						.addClass( kalturaSwapObjectClass )
 						.append(
 							$imgThumb,
