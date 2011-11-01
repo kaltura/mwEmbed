@@ -103,7 +103,7 @@ mw.NielsenPlugin.prototype = {
 			// close the current ad: 
 			if( adOpenUrl && dispachedAdStart ){
 				// Ad fire a 4 to 'unload' the ad ( always called even if we don't get to "ended" event )
-				_this.dispatchEvent( 4, adOpenUrl, 'ad' );
+				_this.dispatchEvent( 4, this.getRelativeTime( 'duration' ), 'ad' );
 				adOpenUrl = false;
 			}
 			// unbind tracking ( will be re-instated via addPlayerBindings on subsequent ads or content 
@@ -115,8 +115,8 @@ mw.NielsenPlugin.prototype = {
 			if( !_this.inAd() && !contentPlay ){
 				contentPlay = true;
 				
-				// Playing content fire the 5 content beacon and start content tracking
-				_this.dispatchEvent( 5, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+				// Playing content fire the 15 content beacon and start content tracking
+				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 				
 				// Add player "raw" player bindings:
 				_this.addPlayerBindings( _this.embedPlayer.getPlayerElement(), "content" );
