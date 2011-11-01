@@ -39,6 +39,10 @@ mw.NielsenPlugin.prototype = {
 	queryInterval: 2,
 	
 	contentSource: null,
+	
+	// store the most recent ad Time ( needed because we don't have good ad skip events, so by 
+	// the time we get an ad skip we may have already switched sources )
+	currentAdTime: null,
 		
 	init: function( embedPlayer, callback ){
 		var _this = this;
@@ -69,6 +73,7 @@ mw.NielsenPlugin.prototype = {
 		var contentPlay = false;
 		var adOpenUrl = false;
 		var dispachedAdStart = false;
+		var currentContentSegmentDuration = 0;
 		$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
 			var vid = _this.embedPlayer.getPlayerElement(); 
 			
@@ -76,13 +81,14 @@ mw.NielsenPlugin.prototype = {
 			if( contentPlay ){
 				contentPlay = false;
 				// Stop content: 
-				_this.dispatchEvent( 7, _this.getRelativeTime('currentTime'), 'content' );
+				_this.dispatchEvent( 7, currentContentSegmentDuration, 'content' );
 			}
 			
 			// We are in an ad:
 			adOpenUrl = _this.getCurrentVideoSrc();
 			// wait for duration change event 
 			$( vid ).bind( 'durationchange.nielsenAd', function(e){
+				currentAdDuration = vid.duration;
 				// unbind our duration change event: 
 				$( vid ).unbind( '.nielsenAd' );
 				// Make sure we are still in an ad ( if not don't send anything and unset adOpenUrl ) 
@@ -102,8 +108,10 @@ mw.NielsenPlugin.prototype = {
 		$( embedPlayer ).bind( 'AdSupport_EndAdPlayback' + _this.bindPostFix, function( event, slotType ){
 			// close the current ad: 
 			if( adOpenUrl && dispachedAdStart ){
+				// Stop the ad: 
+				_this.dispatchEvent( 7, _this.currentAdTime, 'ad' );
 				// Ad fire a 4 to 'unload' the ad ( always called even if we don't get to "ended" event )
-				_this.dispatchEvent( 4, _this.getRelativeTime( 'duration' ), 'ad' );
+				_this.dispatchEvent( 4, currentAdDuration, 'ad' );
 				adOpenUrl = false;
 			}
 			// unbind tracking ( will be re-instated via addPlayerBindings on subsequent ads or content 
@@ -111,6 +119,7 @@ mw.NielsenPlugin.prototype = {
 		});
 		// When starting content finish up content beacon and add content bindings
 		$( embedPlayer ).bind( 'onplay'  + _this.bindPostFix, function(){
+			var vid = _this.embedPlayer.getPlayerElement(); 
 			// Check if the play event is content or "inAdSequence" 
 			if( !_this.inAd() && !contentPlay ){
 				contentPlay = true;
@@ -120,6 +129,12 @@ mw.NielsenPlugin.prototype = {
 				
 				// Add player "raw" player bindings:
 				_this.addPlayerBindings( _this.embedPlayer.getPlayerElement(), "content" );
+				
+				// set the segment update as soon as we have a timeupdate:
+				$( vid ).bind( 'timeupdate' + _this.bindPostFix, function(){
+					currentContentSegmentDuration = vid.duration;
+					$( vid ).unbind( 'timeupdate' + _this.bindPostFix );
+				});
 			}
 		});
 	},
@@ -176,8 +191,12 @@ mw.NielsenPlugin.prototype = {
 		// Monitor:
 		var lastTime = -1;
 		b( 'timeupdate', function(){
+			if( type == 'ad' )
+				_this.currentAdTime = player.currentTime;
+			
 			if( lastTime === -1 )
-				lastTime = embedPlayer.currentTime;
+				lastTime = player.currentTime;
+			
 			var posDelta  = Math.abs( parseFloat( player.currentTime )  - parseFloat( lastTime ) );
 			// Check for position changed more than "3" ( seek )
 			if( posDelta > 3 ){
