@@ -32,6 +32,7 @@ class mweApiUiConfJs {
 		// @@TODO clean this up with a real getPlayerConfig method
 		$resultObject = $this->getResultObject();
 		$playerConfig =  $resultObject->playerConfig;
+		
 		foreach( $playerConfig['plugins'] as $pluginName => $plugin){
 			foreach( $plugin as $pluginAttr => $pluginAttrValue ){
 				if( strpos( $pluginAttr, 'onPageJs' ) === 0 ){
@@ -44,11 +45,11 @@ class mweApiUiConfJs {
 		}
 		foreach( $playerConfig['vars'] as $varName => $varValue){
 			// check for vars based plugin config: 
-			if( strpos( $pluginAttr, 'onPageJs' ) === 0 ){
-				$o.= "kAppendScriptUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
+			if( strpos( $varName, 'onPageJs' ) === 0 ){
+				$o.= "kAppendScriptUrl( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
 			}
-			if( strpos( $pluginAttr, 'onPageCss' ) === 0 ){
-				$o.= "kAppendCssUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
+			if( strpos( $varName, 'onPageCss' ) === 0 ){
+				$o.= "kAppendCssUrl( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
 			}
 		}
 		return $o;
