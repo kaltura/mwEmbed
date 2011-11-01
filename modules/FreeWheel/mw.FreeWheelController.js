@@ -477,8 +477,12 @@ mw.FreeWheelControler.prototype = {
 		for( var i=0; i < cuePoints.length; i++){
 			var cuePoint =  cuePoints[i];
 			// Add ads for each cuePoint type: 
-			if( cuePoint.cuePointType == 'adCuePoint.Ad' ){
+			if( cuePoint.cuePointType == 'adCuePoint.Ad' 
+				&&
+				cuePoint.tags.toLowerCase().indexOf('freewheel') !== -1 
+			){
 				var adType = embedPlayer.kCuePoints.getAdType( cuePoint );
+				mw.log("FreeWheel::addCuePointSlots: " + adType );
 				switch( adType ){
 					case 'preroll':
 						slotCounts['pre']++;

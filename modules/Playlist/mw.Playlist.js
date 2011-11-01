@@ -33,6 +33,8 @@ mw.Playlist.prototype = {
 	// Flag for disabling jumping between clips 
 	enableClipSwitch: true,
 	
+	bindPostFix: '.playlist',
+	
 	// constructor
 	init: function( options ) {
 		var _this = this;
@@ -504,6 +506,9 @@ mw.Playlist.prototype = {
 	addClipBindings: function( ){
 		var _this = this;
 		var embedPlayer = _this.getEmbedPlayer();
+		// remove any old playlist bindings:
+		$( embedPlayer ).unbind( this.bindPostFix );
+		
 		// Once the player is ready add any custom bindings
 		_this.sourceHandler.addEmbedPlayerBindings( embedPlayer );
 
@@ -515,14 +520,12 @@ mw.Playlist.prototype = {
 		
 		// Setup ondone playing binding to play next clip (if autoContinue is true )
 		if( _this.sourceHandler.autoContinue == true ){
-			$( embedPlayer ).unbind('ended.playlist').bind( 'ended.playlist', function(event ){
-				mw.log("Playlist:: updateVideoPlayer -> finished clip" + _this.clipIndex );
+			$( embedPlayer ).bind( 'onEndedDone' + this.bindPostFix, function(event ){
 				// Play next clip
 				if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
 					// Update the onDone action object to not run the base control done:
 					embedPlayer.onDoneInterfaceFlag = false;
 					_this.clipIndex++;
-
 					// update the player and play the next clip
 					_this.playClip( _this.clipIndex );
 				} else {
@@ -534,11 +537,11 @@ mw.Playlist.prototype = {
 		}
 		var uiSelector = '.playlist-set-container,.playlist-block-list,.video-list-wrapper,.playlist-scroll-buttons';
 		// fullscreen support
-		$( embedPlayer ).bind('onOpenFullScreen', function(){
+		$( embedPlayer ).bind('onOpenFullScreen' + this.bindPostFix, function(){
 			// hide inteface comonets ( these should readlly all be in their own div! )
 			$(uiSelector).hide(); 
 		});
-		$( embedPlayer ).bind('onCloseFullScreen', function(){
+		$( embedPlayer ).bind('onCloseFullScreen' + this.bindPostFix, function(){
 			setTimeout(function(){ // give some time for the dom to update
 				var playerSize = {
 					'width' : $( _this.target + ' .media-rss-video-player-container' ).width() + 'px',

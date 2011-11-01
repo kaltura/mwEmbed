@@ -1293,10 +1293,13 @@ mw.EmbedPlayer.prototype = {
 			// actual stop:
 			if( this.onDoneInterfaceFlag ){
 				mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
+				// Prevent the native "onPlay" event from propagating that happens when we rewind:
+				this.stopEventPropagation();
 				this.stop();
 				
 				// Check if we have the "loop" property set
 				if( this.loop ) {
+					this.restoreEventPropagation(); 
 					this.play();
 					return;
 				}
@@ -1310,13 +1313,17 @@ mw.EmbedPlayer.prototype = {
 				if ( this.previewMode ) {
 					return ;
 				}
-
 				// Do the controlBuilder onClip done interface ( does not do anything atm )
-				//this.controlBuilder.onClipDone();
+				// this.controlBuilder.onClipDone();
 
 				// An event for once the all ended events are done.
 				mw.log("EmbedPlayer:: trigger: onEndedDone");
 				$( this ).trigger( 'onEndedDone' );
+				
+				setTimeout(function(){
+					_this.restoreEventPropagation(); 
+				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+				
 			}
 		}
 	},
@@ -1699,7 +1706,8 @@ mw.EmbedPlayer.prototype = {
 					// ( stop and play won't refresh the source  )
 					_this.switchPlaySrc( _this.getSrc(), function(){
 						$( _this ).trigger( 'onChangeMediaDone' );
-						if( callback ) callback()
+						if( callback ) 
+							callback()
 					});
 					// we are handling trigger and callback asynchronously return here. 
 					return ;
@@ -2076,7 +2084,6 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.posterDisplayed );
-		
 		// Check if thumbnail is being displayed and embed html
 		if ( _this.posterDisplayed &&  !_this.useNativePlayerControls() ) {
 			if ( !_this.selectedPlayer ) {
