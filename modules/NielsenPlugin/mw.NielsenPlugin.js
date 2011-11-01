@@ -230,6 +230,8 @@ mw.NielsenPlugin.prototype = {
 	},
 	/**
 	 * Get video duration: includes relative 
+	 * 
+	 * @returns a int value
 	 */
 	getRelativeTime: function( type ){
 		var embedPlayer = this.embedPlayer;
@@ -241,7 +243,7 @@ mw.NielsenPlugin.prototype = {
 		if( this.inAd() ){
 			var vid = this.embedPlayer.getPlayerElement(); 
 			if( vid && vid[type]){
-				return vid[type];
+				return parseInt( vid[type] );
 			}
 		}
 		// Check if we have cuepoints
@@ -257,7 +259,7 @@ mw.NielsenPlugin.prototype = {
 			}
 		}
 		// If no cuePoints are found return normal embedPlayer currentTime or duration:  
-		return embedPlayer[type];
+		return parseInt( embedPlayer[type] );
 	},
 	inAd:function(){
 		return !! this.embedPlayer.evaluate('{sequenceProxy.isInSequence}'); 
