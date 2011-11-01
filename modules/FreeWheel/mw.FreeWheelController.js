@@ -214,7 +214,7 @@ mw.FreeWheelControler.prototype = {
 					_this.displayFreeWheelSlots( slotType, 0, function(){
 						// Restore the player:
 						_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
-						// Run the callback: 
+						// Run the callback:
 						callback();
 					});
 					// find the video 
@@ -226,6 +226,7 @@ mw.FreeWheelControler.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		$.each(slotSet, function(inx, slot){
+			var slotType =  _this.getSlotType( slot );
 			var slotTimePosition = slot.getTimePosition();
 			if ( _this.embedPlayer.currentTime - slotTimePosition >= 0 && 
 				_this.embedPlayer.currentTime - slotTimePosition <= 1 && 
@@ -233,8 +234,14 @@ mw.FreeWheelControler.prototype = {
 			){
 				// try to play the midroll or display the overlay: 
 				if( _this.playSlot( slot ) ){
+					// if a midroll setup ad state
+					if( slotType == 'midroll' ){
+						_this.embedPlayer.adTimeline.updateUiForAdPlayback()
+					}
+					
+					
 					// overlay has special handling: 
-					if(  _this.getSlotType( slot ) == 'overlay' ){
+					if( slotType == 'overlay' ){
 						// @@TODO handle close caption layout conflict
 						var bottom = parseInt( $('#fw_ad_container_div').css('bottom') );
 						var ctrlBarBottom  = bottom;
@@ -280,8 +287,7 @@ mw.FreeWheelControler.prototype = {
 		var slotSet = this.slots[ slotType ];
 		// Make sure we have a slot to be displayed:
 		if( !slotSet[ inx ] ){
-			if( doneCallback )
-				doneCallback();
+			doneCallback();
 			return ;
 		}
 		mw.log( "FreeWheelController::displayFreeWheelSlots> " + slotType + ' index:' + inx );
@@ -310,9 +316,13 @@ mw.FreeWheelControler.prototype = {
 			_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_COMPLETED) ;
 		}
 		// play the next slot in the series if present
-		if( slotType == 'preroll' || slotType=='postroll' || slotType=='midroll'){
+		if( slotType == 'preroll' || slotType=='postroll' ){
 			_this.curentSlotIndex++;
 			_this.displayFreeWheelSlots( slotType, _this.curentSlotIndex, _this.currentSlotDoneCB );
+		}
+		if( slotType=='midroll' ){
+			// midroll done
+			_this.embedPlayer.adTimeline.restorePlayer();
 		}
 	},
 	addSlot: function( slot ){
@@ -481,8 +491,8 @@ mw.FreeWheelControler.prototype = {
 				&&
 				cuePoint.tags.toLowerCase().indexOf('freewheel') !== -1 
 			){
-				var adType = embedPlayer.kCuePoints.getAdType( cuePoint );
-				mw.log("FreeWheel::addCuePointSlots: " + adType );
+				var adType = embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
+				mw.log("FreeWheel:: context.addCuePointSlots: " + adType );
 				switch( adType ){
 					case 'preroll':
 						slotCounts['pre']++;
