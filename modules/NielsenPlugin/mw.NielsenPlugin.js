@@ -103,7 +103,7 @@ mw.NielsenPlugin.prototype = {
 			// close the current ad: 
 			if( adOpenUrl && dispachedAdStart ){
 				// Ad fire a 4 to 'unload' the ad ( always called even if we don't get to "ended" event )
-				_this.dispatchEvent( 4, this.getRelativeTime( 'duration' ), 'ad' );
+				_this.dispatchEvent( 4, _this.getRelativeTime( 'duration' ), 'ad' );
 				adOpenUrl = false;
 			}
 			// unbind tracking ( will be re-instated via addPlayerBindings on subsequent ads or content 
