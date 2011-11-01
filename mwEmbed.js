@@ -2789,7 +2789,7 @@ if( window.jQuery ){
 		// some defaults 
 		if(!opts)
 			opts = {};
-		opts = $.extend( {'color' : '#eee', 'shadow': true }, opts)
+		opts = $.extend( {'color' : '#eee', 'shadow': true }, opts);
 		this.each(function() {
 			var $this = $(this).empty();
 			var thisSpinner = $this.data('spinner');

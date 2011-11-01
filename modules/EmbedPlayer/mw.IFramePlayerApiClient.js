@@ -89,6 +89,13 @@ mw.IFramePlayerApiClient.prototype = {
 				doFullscreen();
 			}
 		});
+
+		// Bind to resize event to enlarge the player size ( if fullscreen )
+		$(window).bind('resize', function() {
+			if( localIframeInFullscreen ){
+				doFullscreen();
+			}
+		});
 		
 		var doFullscreen = function(){
 			mw.log("iframeClient:: doFullscreen()");
