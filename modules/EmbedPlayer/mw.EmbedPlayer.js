@@ -1202,7 +1202,6 @@ mw.EmbedPlayer.prototype = {
 	doSeek: function( percent ) {
 		var _this = this;
 		this.seeking = true;
-		
 		// Do some bounds checking:
 		if( percent < 0 )
 			percent = 0;
@@ -1886,10 +1885,15 @@ mw.EmbedPlayer.prototype = {
 		}
 		return ;
 	},
-	// Add a play button 
+	// Add a play button (if not already there ) 
 	addPlayBtnLarge:function(){
-		$playButton = this.controlBuilder.getComponent( 'playButtonLarge' );
-		this.$interface.append( $playButton );
+		if( this.$interface.find( '.play-btn-large').length ){
+			this.$interface.find( '.play-btn-large').show();
+		} else {
+			this.$interface.append( 
+				this.controlBuilder.getComponent( 'playButtonLarge' )
+			);
+		}
 	},
 	/**
 	 * Should be set via native embed support

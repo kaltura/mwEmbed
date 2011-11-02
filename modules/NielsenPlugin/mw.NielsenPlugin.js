@@ -50,6 +50,9 @@ mw.NielsenPlugin.prototype = {
 		
 		this.getGg( function( gg ){
 			$( embedPlayer ).bind( 'playerReady' + _this.bindPostFix, function(){
+				// Dispatch a "preLoad" event ( will finish with a 5 once we have actual content playing ) 
+				_this.dispatchEvent( 3, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+				// add sequence binding: 
 				_this.addSequenceBinding();
 			});
 			callback();
@@ -66,9 +69,7 @@ mw.NielsenPlugin.prototype = {
 	addSequenceBinding: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		// Dispatch a "preLoad" event ( will finish with a 5 once we have actual content playing ) 
-		this.dispatchEvent( 3, this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
-		
+	
 		// Bind ad Playback
 		var contentPlay = false;
 		var adOpenUrl = false;
@@ -102,7 +103,7 @@ mw.NielsenPlugin.prototype = {
 				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "ad", _this.getMetaXmlString() );
 				
 				// Add event bindings: 
-				_this.addPlayerBindings( vid, 'ad' );
+				_this.addPlayerTracking( 'ad' );
 			});
 		});
 		$( embedPlayer ).bind( 'AdSupport_EndAdPlayback' + _this.bindPostFix, function( event, slotType ){
@@ -114,7 +115,7 @@ mw.NielsenPlugin.prototype = {
 				_this.dispatchEvent( 4, currentAdDuration, 'ad' );
 				adOpenUrl = false;
 			}
-			// unbind tracking ( will be re-instated via addPlayerBindings on subsequent ads or content 
+			// unbind tracking ( will be re-instated via addPlayerTracking on subsequent ads or content 
 			$( embedPlayer ).unbind( _this.trackerPostFix );
 		});
 		// When starting content finish up content beacon and add content bindings
@@ -128,7 +129,7 @@ mw.NielsenPlugin.prototype = {
 				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 				
 				// Add player "raw" player bindings:
-				_this.addPlayerBindings( _this.embedPlayer.getPlayerElement(), "content" );
+				_this.addPlayerTracking( "content" );
 				
 				// set the segment update as soon as we have a timeupdate:
 				$( vid ).bind( 'timeupdate' + _this.bindPostFix, function(){
@@ -137,17 +138,33 @@ mw.NielsenPlugin.prototype = {
 				});
 			}
 		});
+		// Watch for 'ended' event for cases where finish all ads post sequence and everything "stop the player" 
+		$( embedPlayer ).bind( 'onEndedDone' + _this.bindPostFix, function(){
+			// Stop the content: 
+			_this.dispatchEvent( 7, currentContentSegmentDuration, 'content' );
+			// At this point we have reset the player so reset bindings: 
+			$( embedPlayer ).unbind( _this.bindPostfix );
+			_this.unbindPlayerTracking();
+			
+			// Reset the bindings for a replay: ( don't stack) 
+			setTimeout(function(){
+				_this.addSequenceBinding();
+			},0);
+		});
+	},
+	unbindPlayerTracking: function(){
+		$( this.embedPlayer ).unbind( this.trackerPostFix );
+		$( this.embedPlayer.getPlayerElement() ).unbind( this.trackerPostFix );
 	},
 	/**
 	 * Adds player bindings for either ads or players
 	 */
-	addPlayerBindings: function( player, type ){
+	addPlayerTracking: function( type ){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		
+		var vid = _this.embedPlayer.getPlayerElement();
 		// Unbind any existing bindings: : 
-		$( embedPlayer ).unbind( this.trackerPostFix );
-		$( player ).unbind( this.trackerPostFix );
+		this.unbindPlayerTracking();
 		
 		// Non-native events: ( have to bind against embedPlayer instead of the video instance )
 		$( embedPlayer ).bind( 'onOpenFullScreen' + _this.trackerPostFix, function(){
@@ -163,7 +180,7 @@ mw.NielsenPlugin.prototype = {
 		
 		// Setup a shortcut to bind call ( including bindPostFix )
 		var b = function( bindName, callback ){
-			$( player ).bind( bindName + _this.trackerPostFix, callback);
+			$( vid ).bind( bindName + _this.trackerPostFix, callback);
 		}
 		// on pause:
 		b( 'pause', function(){
@@ -192,17 +209,17 @@ mw.NielsenPlugin.prototype = {
 		var lastTime = -1;
 		b( 'timeupdate', function(){
 			if( type == 'ad' )
-				_this.currentAdTime = player.currentTime;
+				_this.currentAdTime = vid.currentTime;
 			
 			if( lastTime === -1 )
-				lastTime = player.currentTime;
+				lastTime = vid.currentTime;
 			
-			var posDelta  = Math.abs( parseFloat( player.currentTime )  - parseFloat( lastTime ) );
+			var posDelta  = Math.abs( parseFloat( vid.currentTime )  - parseFloat( lastTime ) );
 			// Check for position changed more than "3" ( seek )
 			if( posDelta > 3 ){
 				_this.dispatchEvent( 8, String( lastTime ), String( _this.getRelativeTime('currentTime') ), type );
 			}
-			// Dispatch player progress every 2 seconds:
+			// Dispatch vid progress every 2 seconds:
 			if( posDelta > _this.queryInterval ){
 				lastTime = embedPlayer.currentTime;
 				_this.dispatchEvent( 49, String( _this.getRelativeTime('currentTime') ), type );
