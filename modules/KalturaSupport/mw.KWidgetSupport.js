@@ -37,7 +37,7 @@ mw.KWidgetSupport.prototype = {
 			// Add Kaltura iframe share support:
 			$( embedPlayer ).bind( 'getShareIframeSrc', function( event, callback ){
 				var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
-				iframeUrl +='/wid/_' + _this.kClient.getPartnerId() +
+				iframeUrl +='/wid/_' + embedPlayer.kwidgetid +
 				'/uiconf_id/' + embedPlayer.kuiconfid +
 				'/entry_id/' + embedPlayer.kentryid + '/';
 				// return the iframeUrl via the callback: 
@@ -520,9 +520,9 @@ mw.KWidgetSupport.prototype = {
 		if( ac.isAdmin){
 			return true;
 		}
-		//if( ac.isCountryRestricted ){
-		//	return 'country is restricted';
-		//}
+		if( ac.isCountryRestricted ){
+			return 'country is restricted';
+		}
 		if( ac.isScheduledNow === 0 ){
 			return 'is not scheduled now';
 		}
