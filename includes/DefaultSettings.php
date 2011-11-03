@@ -70,8 +70,8 @@ $wgKalturaForceReferer = false;
 $wgKalturaServiceUrl = 'http://"cdnapi.kaltura.com';
 // if https use cdnsecakmi
 if( $wgHTTPProtocol == 'https' ){
-	$wgKalturaServiceUrl =  'https://cdnapi.kaltura.com';
-} 
+	$wgKalturaServiceUrl =  'https://www.kaltura.com';
+}
 
 // Default Kaltura CDN url: 
 $wgKalturaCDNUrl = 'http://cdnbakmi.kaltura.com';
