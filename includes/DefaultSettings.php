@@ -67,7 +67,7 @@ $wgKalturaForceIP = false;
 $wgKalturaForceReferer = false;
 
 // The default Kaltura service url:
-$wgKalturaServiceUrl = 'http://"cdnapi.kaltura.com';
+$wgKalturaServiceUrl = 'http://cdnapi.kaltura.com';
 // if https use cdnsecakmi
 if( $wgHTTPProtocol == 'https' ){
 	$wgKalturaServiceUrl =  'https://www.kaltura.com';
