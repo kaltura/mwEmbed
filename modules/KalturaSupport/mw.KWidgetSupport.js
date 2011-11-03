@@ -129,7 +129,7 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.accessControl ){
 			var acStatus = _this.getAccessControlStatus( playerData.accessControl );
 			if( acStatus !== true ){
-				$( '.loadingSpinner' ).remove();
+				embedPlayer.hidePlayerSpinner();
 				embedPlayer.showErrorMsg( acStatus );
 				return ;
 			}
@@ -480,7 +480,6 @@ mw.KWidgetSupport.prototype = {
 		// Check if we have the player data bootstrap from the iframe
 		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
 
-		//alert( 'bootstrap:' + mw.getConfig( 'KalturaSupport.IFramePresetPlayerData' ) ) ;
 		// Insure the bootStrap data has all the required info: 
 		if( bootstrapData 
 			&& bootstrapData.partner_id == embedPlayer.kwidgetid.replace('_', '')

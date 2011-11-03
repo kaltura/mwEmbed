@@ -427,7 +427,7 @@ EmbedPlayerManager.prototype = {
 		} );
 		
 
-		// If we don't already have a loadSpiner add one:
+		// If we don't already have a loadSpinner add one:
 		if( $('#loadingSpinner_' + playerInterface.id ).length == 0 ){
 			if( playerInterface.useNativePlayerControls() || playerInterface.isPersistentNativePlayer() ) {
 				var $spinner = $( targetElement )
@@ -557,7 +557,9 @@ mw.EmbedPlayer.prototype = {
 
 	// If the onDone interface should be displayed
 	'onDoneInterfaceFlag': true,
-
+	
+	// if we should check for a loading spinner in the moitor function: 
+	'_checkHideSpinner' : false,
 
 	/**
 	 * embedPlayer
@@ -1475,7 +1477,7 @@ mw.EmbedPlayer.prototype = {
 	 *            errorMsg
 	 */
 	showErrorMsg: function( errorMsg ){
-		// remove a loading spiner: 
+		// remove a loading spinner: 
 		this.hidePlayerSpinner();
 		
 		if( this.$interface ){
@@ -2174,22 +2176,10 @@ mw.EmbedPlayer.prototype = {
 			.attr( 'id', 'loadingSpinner_' + this.id );
 	},
 	hidePlayerSpinner: function(){
-		$( '#loadingSpinner_' + this.id ).remove();
+		$( '#loadingSpinner_' + this.id + ',.loadingSpinner' ).remove();
 	},
 	hideSpinnerOncePlaying: function(){
-		var _this = this;
-		// Hide the spinner once we start playing: 
-		var baseTime = this.getPlayerElementTime();
-		var doHideCheck = function(){
-			if( !_this.seeking && Math.abs( baseTime - _this.getPlayerElementTime() ) > .050  ){
-				_this.hidePlayerSpinner();
-				return ;
-			}
-			setTimeout(function(){
-				doHideCheck();
-			}, 50 );
-		}
-		doHideCheck();
+		this._checkHideSpinner = true;
 	},
 	/**
 	 * Base embed pause Updates the play/pause button state.
@@ -2469,7 +2459,13 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		// Check for current time update outside of embed player
 		this.checkForCurrentTimeSeek();
-
+		
+		// Hide the spinner once we have time update: 
+		if( this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
+			_this._checkHideSpinner = false;
+			_this.hidePlayerSpinner();
+		}
+		
 		// Update currentTime via embedPlayer
 		_this.currentTime = _this.getPlayerElementTime();
 		// Update any offsets from server seek
