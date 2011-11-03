@@ -11,7 +11,6 @@ require_once(  dirname( __FILE__ ) . '/KalturaNamedMultiRequest.php');
  * Generates a kaltura result object based on url Parameters 
  */
 class KalturaResultObject {
-	 
 	var $resultObj = null; // lazy init with getResultObject
 	var $clientTag = null;
 	var $uiConfFile = null;
@@ -276,7 +275,7 @@ class KalturaResultObject {
 		}
 		//@@TODO integrate a library for doing this user-agent -> source selection
 		// what follows somewhat arbitrary
-		
+
 		$flavorUrl = false ;
 		// First set the most compatible source ( iPhone h.264 )
 		if( isset( $sources['iphone'] ) ) {
