@@ -200,13 +200,15 @@ mw.AdTimeline.prototype = {
 
 				/** TODO support postroll bumper and leave behind */
 				embedPlayer.switchPlaySrc( _this.originalSrc, function(){
-					_this.restorePlayer();
-					// stop the playback: 
-					embedPlayer.pause();
-					// Restore ondone interface: 
-					embedPlayer.onDoneInterfaceFlag = true;
-					// run the clipdone event:
-					embedPlayer.onClipDone();
+						_this.restorePlayer();
+						// stop the playback: 
+						embedPlayer.pause();
+						// Restore ondone interface: 
+						embedPlayer.onDoneInterfaceFlag = true;
+						// run the clipdone event:
+						if( playedAnAdFlag ){
+							embedPlayer.onClipDone();
+						}
 				});
 			});
 		});
