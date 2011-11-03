@@ -18,6 +18,10 @@
 * NOTE: All user / application module code should go into /modules
 * and enabled in mwEnabledModuleList below.
 */
+
+( function( mw, $ ) {
+	
+
 var mwCoreComponentList = [
 	'mw.Parser',
 	'mw.Language',
@@ -177,3 +181,8 @@ mw.addStyleResourceDependency( {
 	'$j.ui' : ( 'mw.style.ui_' + mw.getConfig( 'jQueryUISkin' ) )
 } );
 
+mw.bindHelper = function( bindName, callback ){
+	$( window.mw ).bind( bindName, callback );
+};
+
+} )( window.mw, window.jQuery );
