@@ -26,6 +26,9 @@ mw.EmbedPlayerNative = {
 
 	// If the media loaded event has been fired
 	mediaLoadedFlag: null,
+	
+	// A flag to designate the first play event, as to not propagate the native event in this case
+	isFirstEmbedPlay: null,
 
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
@@ -87,6 +90,8 @@ mw.EmbedPlayerNative = {
 	doEmbedHTML : function () {
 		var _this = this;
 		var vid = _this.getPlayerElement();
+		this.isFirstEmbedPlay = true;
+		
 		if( vid && $( vid ).attr('src') == this.getSrc( this.currentTime ) ){
 			_this.postEmbedJS();
 			return ;
@@ -780,11 +785,14 @@ mw.EmbedPlayerNative = {
 	* Handle the native play event
 	*/
 	_onplay: function(){
+		alert('onplay');
 		mw.log("EmbedPlayerNative:: OnPlay:: propogate" +  this._propagateEvents + ' paused: ' + this.paused);
 		// Update the interface ( if paused )
-		if(  this._propagateEvents && this.paused ){
+		if( ! this.isFirstEmbedPlay && this._propagateEvents && this.paused ){
 			this.parent_play();
 		}
+		// restore firstEmbedPlay state: 
+		this.isFirstEmbedPlay = false;
 	},
 
 	/**

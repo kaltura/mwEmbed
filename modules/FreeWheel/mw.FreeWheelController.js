@@ -381,14 +381,14 @@ mw.FreeWheelControler.prototype = {
 			this.adContext.registerVideoDisplayBase( 'videoContainer' );
 
 			// Check for "html5" player profile: 
-			if( this.getConfig('profileIdHTML5') ){
+			if( this.getConfig("playerProfileHTML5")){
 				this.adContext.setProfile( 
-					this.getConfig('profileIdHTML5') 
+					this.getConfig('playerProfileHTML5') 
 				);
-			} else {
-				this.adContext.setProfile( this.getConfig( 'profileId' ) );
+			} else if( this.getConfig( 'playerProfile' ) ){
+				this.adContext.setProfile( this.getConfig( 'playerProfile' ) );
 			}
-		
+			
 			// Check if we have a visitorId 
 			if( this.getConfig('visitorId') ){
 				this.adContext.setVisitor( this.getConfig('visitorId') );
