@@ -890,8 +890,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 
 			// Set the loadDone callback per the provided resourceName
 			mw.setLoadDoneCB( resourceName, callback );
-			// Issue the request to load the resource (include resource name in
-			// result callback:
+			// Issue the request to load the resource (include resource name in result callback:
 			mw.getScript( scriptRequest, function( scriptRequest ) {
 				// If its a "style sheet" manually set its resource to true
 				var ext = scriptRequest.substr( scriptRequest.split('?')[0].lastIndexOf( '.' ), 4 ).toLowerCase();
@@ -2166,7 +2165,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 */
 	// Flag to ensure setup is only run once:
 	var mwSetupFlag = false;
-	mw.setupMwEmbed = function ( ) {	
+	mw.setupMwEmbed = function ( ) {
 		// Only run the setup once:
 		if( mwSetupFlag ) {
 			return ;
@@ -2267,6 +2266,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		for( var i =0 ; i < loadSet.length; i ++ ){
 			resource = loadSet[i];
 			if( resource.type == 'js' ){
+				// For some reason safair loses context:
 				$j.getScript( resource.src, checkLoadDone);
 			} else if ( resource.type == 'css' ){
 				mw.getStyleSheet( resource.src, checkLoadDone);
@@ -2548,11 +2548,6 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		// Same version:
 		return true;
 	};
-
-	/**
-	 * Utility jQuery bindings Setup after jQuery is available ).
-	 */
-	
 
 } )( window.mw );
 

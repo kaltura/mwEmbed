@@ -508,8 +508,8 @@ mw.KWidgetSupport.prototype = {
 	/**
 	 * Check if the access control is oky and set a given error message
 	 * 
-	 * NOTE should match the iframe messages
-	 * NOTE need to i8ln message with gM( 'msg-key' );
+	 * TODO should match the iframe messages keys
+	 * TODO need to i8ln message with gM( 'msg-key' );
 	 * 
 	 * @return 
 	 * @type boolean 
@@ -517,7 +517,7 @@ mw.KWidgetSupport.prototype = {
 	 * 		false if the media should not be played. 
 	 */
 	getAccessControlStatus: function( ac ){
-		if( ac.isAdmin){
+		if( ac.isAdmin ){
 			return true;
 		}
 		if( ac.isCountryRestricted ){
