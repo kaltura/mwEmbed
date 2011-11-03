@@ -67,10 +67,10 @@ $wgKalturaForceIP = false;
 $wgKalturaForceReferer = false;
 
 // The default Kaltura service url:
-$wgKalturaServiceUrl = 'http://cdnbakmi.kaltura.com';
+$wgKalturaServiceUrl = 'http://"cdnapi.kaltura.com';
 // if https use cdnsecakmi
 if( $wgHTTPProtocol == 'https' ){
-	$wgKalturaServiceUrl =  'https://cdnsecakmi.kaltura.com';
+	$wgKalturaServiceUrl =  'https://cdnapi.kaltura.com';
 } 
 
 // Default Kaltura CDN url: 
