@@ -357,7 +357,6 @@ class kalturaIframe {
 			$resourceIncludes[] = $resource;
 		}
 		
-		$resourceIncludes[] = array('type' => 'js', 'src' => '/testOverlay.js');
 		
 		// plugins
 		foreach( $playerConfig['plugins'] as $pluginId => $plugin ){
