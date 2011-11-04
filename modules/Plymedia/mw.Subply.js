@@ -9,11 +9,34 @@ mw.Subply = {
 	var defaultlang =  "eng";
 	var currentlang =  "off";
 	var totalMenuHeight =  0;
+	var menuItemHeight	= 28;
 	var videoDetails = null;
 	var currentCaptions = null;
 	var languages = null;
 	var activeElements = [];
-
+	
+	var anchorWidth = 0;
+	var menuIsOpened = false;
+	var currCaptionText = "";
+	var currCaptionWidth = 0;
+	var currPlayerWidth = 0;
+	var currCaptionLeft = 0;
+	var captionLeftCalculatedByAnchor = true;
+	
+	function toggleMenuHandler(e)
+	{
+		if (menuIsOpened)
+		{
+			closeMenu();
+		}
+		else
+		{
+			openMenu();
+		};
+		
+		menuIsOpened = !menuIsOpened;
+	};
+	
 	function openMenuHandler(e)
 	{
         if (!e) e   = window.event;
@@ -23,7 +46,7 @@ mw.Subply = {
         else if (e.srcElement)
             target = e.srcElement;
 
-	    var h = embedPlayer.$interface.find( '#captionMenu').height();
+	    //embedPlayer.$interface.find( '#captionMenu').height(totalMenuHeight);
 
 	    openMenu();
 
@@ -37,7 +60,6 @@ mw.Subply = {
 	        embedPlayer.$interface.find( '#captionMenu').height(h + 3);
 	        window.setTimeout(openMenu, 0);
 	    }
-	
 	};
 
 	function closeMenuHandler(e) {
@@ -49,22 +71,21 @@ mw.Subply = {
         else if (e.srcElement)
             target = e.srcElement;
 
-	    var h = embedPlayer.$interface.find( '#captionMenu').height();
+	    //embedPlayer.$interface.find( '#captionMenu').height(menuItemHeight);
 
 	    closeMenu();
-
 	};
 	
 	function closeMenu() {
 
 	    var h = embedPlayer.$interface.find( '#captionMenu').height();
 
-	    if (h >= 20) {
+	    if (h >= menuItemHeight) {
 	        embedPlayer.$interface.find('#captionMenu').height(h - 3);
 	        window.setTimeout(closeMenu, 0);
 	    }else{
-	        if (h < 20)
-	            embedPlayer.$interface.find( '#captionMenu').height(20);
+	        if (h < menuItemHeight)
+	            embedPlayer.$interface.find( '#captionMenu').height(menuItemHeight);
 	    }
 	};
 	
@@ -73,7 +94,7 @@ mw.Subply = {
 	    if (bol==true)
 	        elem.className = "captionMenuItem selMenuItem";
 	    else
-	        elem.className = "captionMenuItem gradient";    
+	        elem.className = "captionMenuItem gradient";  
 	};
 
 	function markLangRolledOver(elem, bol)
@@ -95,8 +116,9 @@ mw.Subply = {
 	    var key = 0;
 	    for (key in languages)
 	    {
+			//mw.log("Subply::[getLangTextByCode] code ? "+ code + " languages[key].code ? " + languages[key].code + " languages[key].language ? " + languages[key].language);
 	        if (languages[key].code==code)
-	            name = languages[key].text;
+	            name = languages[key].language;
 	    }    
 
 	    return name;
@@ -108,7 +130,7 @@ mw.Subply = {
 	    var key = 0;
 	    for (key in languages)
 	    {
-	        if (languages[key].text==txt)
+	        if (languages[key].language==txt)
 	            name = languages[key].code;
 	    }    
 
@@ -125,10 +147,11 @@ mw.Subply = {
 	    closeMenu();
 
 	    // Deselect old language
-		
+
 		if (currentlang!="off")
 		{
 		    var menuitem = document.getElementById( getLangTextByCode(currentlang) + "MenuItem");
+
 		    markLangSelected(menuitem, false);
 		
 			currentCaptions = null;
@@ -234,7 +257,7 @@ mw.Subply = {
 	        counter++;
 	    };
 
-	    totalMenuHeight = 21 * (counter+1);
+	    totalMenuHeight = (menuItemHeight + 1) * (counter+1);
 
 		return captionMenu;
 	};	
@@ -251,10 +274,14 @@ mw.Subply = {
 		
 		function createCaptionsMenu()
 		{
+			mw.log("Subply::[createCaptionsMenu]");
+			
 			embedPlayer.$interface.append( drawCaptionsMenu() );
 			
-			embedPlayer.$interface.find('#captionMenu').mouseenter(openMenuHandler);
-			embedPlayer.$interface.find('#captionMenu').mouseleave(closeMenuHandler);
+			//embedPlayer.$interface.find('#captionMenu').mouseenter(openMenuHandler);
+			//embedPlayer.$interface.find('#captionMenu').mouseleave(closeMenuHandler);
+			
+			embedPlayer.$interface.find('#captionMenu').click(toggleMenuHandler);
 			
 			var eid;
 			var ecode;
@@ -267,6 +294,19 @@ mw.Subply = {
 				embedPlayer.$interface.find('#'+eid).mouseleave(languageControlOutHandler);
 			};
 		};
+		
+		function createSubtitlesArea()
+		{
+			mw.log("Subply::[createSubtitlesArea]");
+			
+			if( embedPlayer.$interface.find('.subplySubtitles').length == 0 )
+			{
+				embedPlayer.$interface.append( '<div class="subplySubtitles"></div> ');
+				embedPlayer.$interface.find('.subplySubtitles').hide();
+				
+				embedPlayer.$interface.find('.subplySubtitles').css('bottom', '40px');			
+			};			
+		}
 		
 		function initializeByEntryId(eid)
 		{
@@ -288,25 +328,44 @@ mw.Subply = {
 			
 			languages = videoDetails.Subtitles;
 			
+			// For resize
+			
+			anchorWidth = embedPlayer.getPlayerWidth() / 100;
+			
 			if (languages.length > 0)
 			{
 				mw.log("Subply::[videoDetailsLoadedHandler] have captions. Will create menu. ");
 									
-				createCaptionsMenu();				
+				createCaptionsMenu();
+				createSubtitlesArea();			
 			};
 		};
 
 		function getInterfaceSizeTextCss( size ) {
+			mw.log("Subply::[getInterfaceSizeTextCss] "+getInterfaceSizePercent( size ) +" currCaptionWidth: "+currCaptionWidth+" anchorWidth: "+anchorWidth);
+			
+			var pr = getInterfaceSizePercent( size );
+			var prevPr = getInterfaceSizePercent( {width:currPlayerWidth} );
+			
+			
+			
+			var cw = (captionLeftCalculatedByAnchor)? currCaptionWidth*(pr/100) : currCaptionWidth/(prevPr/100);
+			var wx = (size.width - cw )/2;
+			var lx = wx;
+			mw.log("Subply::[getInterfaceSizeTextCss]  captionLeftCalculatedByAnchor: "+captionLeftCalculatedByAnchor+" lx: "+lx+" pr: "+pr+" prevPr: "+prevPr+" cw: "+cw+" wx: "+wx);
+			//pw:656 sw:351 x:149.5px
+			//pw:1440 sw:526 x:454px
 			return {
-				'font-size' : getInterfaceSizePercent( size ) + '%',
-				'width' : size.width + 'px'
+				'font-size' : pr + '%',
+				'left': lx + "px"
+				//'width' : size.width + 'px'
 			};
 		};
 		
 		function getInterfaceSizePercent( size ) {
-			var textSize = size.width / 5.2;
+			var textSize = size.width / anchorWidth;
 			if( textSize < 95 ) textSize = 95;
-			if( textSize > 200 ) textSize = 200;
+			if( textSize > 150 ) textSize = 150;
 			return textSize;
 		};		
 		
@@ -335,34 +394,27 @@ mw.Subply = {
 		});		
 
 		$j( embedPlayer ).bind( 'onResizePlayer', function(e, size, animate){
+			mw.log("Subply::[onResizePlayer] size "+size);
 
 			if (animate) {
 				embedPlayer.$interface.find( '.subplySubtitles' ).animate( getInterfaceSizeTextCss( size ) );
 			} else {
 				embedPlayer.$interface.find( '.subplySubtitles' ).css( getInterfaceSizeTextCss( size ) );
 			};		
+			
+			currPlayerWidth = size.width;
 		});		
 		
 		$j( embedPlayer ).bind( 'monitorEvent', function(){
 			
+			if (embedPlayer.$interface.find( '.subplySubtitles').length == 0 || currentCaptions == null)
+				return;
+
 			var currentTime = embedPlayer.currentTime;
 
-			if( embedPlayer.$interface.find('.subplySubtitles').length == 0 )
-			{
-				embedPlayer.$interface.append( '<div class="subplySubtitles"></div> ');
-				
-				var w = embedPlayer.getPlayerWidth().toString() + "px";
-				
-				embedPlayer.$interface.find( '.subplySubtitles').css('width', w);
-				embedPlayer.$interface.find( '.subplySubtitles').css('bottom', '40px');
-				embedPlayer.$interface.find( '.subplySubtitles').css('left', '0px');				
-			};
-			
 		    var text = "";
 		    var time = currentTime;
-			
-		    if (currentCaptions != null)
-			{
+
 		        for (var i = 0; i < currentCaptions.length; i++)
 				{
 		            var start = new Number(currentCaptions[i].From);
@@ -374,9 +426,39 @@ mw.Subply = {
 		                break;
 		            };
 		        };
-		        embedPlayer.$interface.find('.subplySubtitles').text( text );
-		    };			
+		
+			if (text=="")
+				embedPlayer.$interface.find( '.subplySubtitles').hide();
+			else
+			{
+				if (currCaptionText != text)
+				{
+					embedPlayer.$interface.find( '.subplySubtitles').hide();
+					embedPlayer.$interface.find( '.subplySubtitles').css('left', "0px");
+					embedPlayer.$interface.find('.subplySubtitles').text( text );
+					
+					// 6 is padding
+					
+					currCaptionWidth = embedPlayer.$interface.find('.subplySubtitles').width() + 6;
+					
+					if (currPlayerWidth > 0 && currPlayerWidth != embedPlayer.getPlayerWidth())
+						captionLeftCalculatedByAnchor = false;
+					else
+						captionLeftCalculatedByAnchor = true;
+						
+					var ww = (currPlayerWidth > 0)? currPlayerWidth : embedPlayer.getPlayerWidth();
+					currCaptionLeft = (ww - currCaptionWidth )/2;
+					var cx = currCaptionLeft + "px";
+					
+					mw.log("Subply::[monitorEvent] new caption stats: pw:" +ww + " sw:" +embedPlayer.$interface.find('.subplySubtitles').width() + " x:" + cx);
+					
+					embedPlayer.$interface.find( '.subplySubtitles').css('left', cx);
+					
+					embedPlayer.$interface.find( '.subplySubtitles').show();
+				}
+			};
 			
+			currCaptionText = text;
 		});
 	
 	}		
