@@ -262,6 +262,7 @@ mw.DoubleClick.prototype = {
 					_this.embedPlayer.controlBuilder.restoreControlsHover();
 				});
 			});
+			
 		};
 		// Setup the restore callback
 		_this.onResumeRequestedCallback = function(){
@@ -276,7 +277,7 @@ mw.DoubleClick.prototype = {
 			}
 			// Clear out the older currentAdLoadedCallback
 			_this.currentAdLoadedCallback = null;
-			// Issue the callback 
+			// Issue the loadAndPlayVideoSlot callback 
 			callback();
 		};
 		// Request the ad ( will trigger the currentAdCallback and onResumeRequestedCallback when done )

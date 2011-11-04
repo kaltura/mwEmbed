@@ -119,6 +119,15 @@
 		'playlistPlugin'
 	];
 	
+	mw.newEmbedPlayerCheckUiConf = function( callback ){
+		$( mw ).bind( 'newEmbedPlayerEvent', function(event, embedPlayer){
+			$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, checkUiCallback ){
+				callback( embedPlayer, checkUiCallback );
+			})
+		} );
+	};
+	
+	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
 		return $.merge( kalturaSupportRequestSet,
 			[

@@ -248,8 +248,11 @@ mw.KWidgetSupport.prototype = {
 			// Run the DoneWithUiConf trigger 
 			// Allows modules that depend on other modules initialization to do what they need to do. 
 			mw.log("KWidgetSupport:: trigger KalturaSupport_DoneWithUiConf");
-			$( embedPlayer ).trigger( 'KalturaSupport_DoneWithUiConf' );
-			callback();
+			// don't stack
+			setTimeout(function(){
+				$( embedPlayer ).trigger( 'KalturaSupport_DoneWithUiConf' );
+				callback();
+			},0);
 		};
 		
 		// sync iframe with attribute data updates:
