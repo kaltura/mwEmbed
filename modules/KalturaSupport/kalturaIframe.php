@@ -357,7 +357,6 @@ class kalturaIframe {
 			$resourceIncludes[] = $resource;
 		}
 		
-		
 		// plugins
 		foreach( $playerConfig['plugins'] as $pluginId => $plugin ){
 			foreach( $plugin as $attr => $value ){
