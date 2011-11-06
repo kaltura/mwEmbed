@@ -368,6 +368,10 @@ mw.PlayerControlBuilder.prototype = {
 				this.doFullScreenPlayerDom();
 			}
 		}
+		// Disable scrolling on iPad
+		$( document ).bind( 'touchmove.fullscreen', function(e){
+			e.preventDefault();
+		}); 
 		if( triggerOnOpenFullScreen )
 			$( embedPlayer ).trigger( 'onOpenFullScreen' );
 	},
@@ -633,6 +637,8 @@ mw.PlayerControlBuilder.prototype = {
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			this.restoreWindowPlayerDom();
 		} 
+		// Restore scrolling on iPad
+		$( document ).unbind('touchmove.fullscreen');
 		// Trigger the onCloseFullscreen event: 
 		$( this.embedPlayer ).trigger( 'onCloseFullScreen' );
 	},
