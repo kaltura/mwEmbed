@@ -2986,8 +2986,14 @@ if( window.jQuery ){
   /**
    * Insert a new stylesheet to hold the @keyframe or VML rules.
    */
-  ins(document.getElementsByTagName('head')[0], createEl('style'));
-  var sheet = document.styleSheets[document.styleSheets.length-1];
+  //ins(document.getElementsByTagName('head')[0], createEl('style'));
+  //var sheet = document.styleSheets[document.styleSheets.length-1];
+  var sheet = (function() {
+    ins(document.getElementsByTagName('head')[0], createEl('style', {title: 'spinjs'}));
+    for (var i=0, sheets=document.styleSheets; i < sheets.length; i++) {
+      if (sheets[i].title == 'spinjs') return sheets[i];
+    }
+  })();
 
   /**
    * Creates an opacity keyframe animation rule and returns its name.
