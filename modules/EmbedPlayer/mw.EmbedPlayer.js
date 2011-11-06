@@ -1518,7 +1518,7 @@ mw.EmbedPlayer.prototype = {
 		// Update the poster and html:
 		this.updatePosterHTML();
 		// on iOS devices don't try to add warnings
-		if( !this.mediaElement.sources.length || mw.isIOS() ){
+		if( !this.mediaElement.sources.length || mw.isIOS() || !mw.getConfig('EmbedPlayer.NotPlayableDownloadLink') ){
 			var noSourceMsg = gM('mwe-embedplayer-missing-source');
 			$( this ).trigger( 'NoSourcesCustomError', function( customErrorMsg ){
 				if( customErrorMsg){
