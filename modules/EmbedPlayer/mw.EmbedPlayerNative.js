@@ -348,6 +348,11 @@ mw.EmbedPlayerNative = {
 	* 		Percent to seek to of full time
 	*/
 	doNativeSeek: function( percent, callback ) {
+		// If player already seeking, exit
+		if( _this.playerElement.seeking ) {
+			return ;
+		}
+		
 		var _this = this;
 		mw.log( 'EmbedPlayerNative::doNativeSeek::' + percent );
 		this.seeking = true;
