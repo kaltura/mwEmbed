@@ -161,18 +161,6 @@ class ResourceLoader {
 					wfRestoreWarnings();
 				}
 
-                                // InternetArchive temporary hack
-                                if (isset($_SERVER['SERVER_NAME'])  &&
-                                    strpos($_SERVER['SERVER_NAME'],'archive.org')){
-                                  $ia = realpath( dirname( __FILE__ ) ) .
-                                    '/modules/InternetArchiveSupport/InternetArchiveVideoPage.js'; // loads into mw.IA
-                                  if ( is_file( $ia ) ){
-                                    wfSuppressWarnings();
-                                    $this->output .= file_get_contents( $ia );
-                                    wfRestoreWarnings();
-                                  }
-                                }
-
 				// Add the required core mwEmbed style sheets
 				// removed for now because when creating stand alone packages js package with css
 				// the paths get messed up.
