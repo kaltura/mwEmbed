@@ -368,10 +368,10 @@ mw.PlayerControlBuilder.prototype = {
 				this.doFullScreenPlayerDom();
 			}
 		}
-		// Disable scrolling on iPad
-		$( document ).bind( 'touchmove.fullscreen', function(e){
-			e.preventDefault();
-		}); 
+		// Pass on touch move event to parent
+		$( document ).bind( 'touchend.fullscreen', function(e){
+			$( embedPlayer ).trigger( 'onTouchEnd' );
+		});
 		if( triggerOnOpenFullScreen )
 			$( embedPlayer ).trigger( 'onOpenFullScreen' );
 	},
