@@ -445,7 +445,7 @@ class kalturaIframe {
 		global $wgKalturaUiConfCacheTime;
 
 		// Set relevent expire headers:
-		if( $this->getResultObject()->isCachedOutput() ){
+		if( $this->getResultObject()->isCachedOutput() && ! $this->isError() ){
 			$time = $this->getResultObject()->getFileCacheTime();
 			header( 'Pragma: public' );
 			// Cache for $wgKalturaUiConfCacheTime
@@ -870,6 +870,8 @@ class kalturaIframe {
 			list( $errorTitle, $errorMsg) = explode( "\n", $errorTitle);
 		};
 		$this->setError( $errorTitle );
+		// Send expire headers: 
+		$this->setIFrameHeaders();
 		
 		// clear the buffer
 		$pageInProgress = ob_end_clean();
