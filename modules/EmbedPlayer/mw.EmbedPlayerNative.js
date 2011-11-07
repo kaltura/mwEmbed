@@ -349,11 +349,11 @@ mw.EmbedPlayerNative = {
 	*/
 	doNativeSeek: function( percent, callback ) {
 		// If player already seeking, exit
+		var _this = this;
 		if( _this.playerElement.seeking ) {
 			return ;
 		}
 		
-		var _this = this;
 		mw.log( 'EmbedPlayerNative::doNativeSeek::' + percent );
 		this.seeking = true;
 		
