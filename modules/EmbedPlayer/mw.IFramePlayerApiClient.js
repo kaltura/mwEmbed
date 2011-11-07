@@ -84,20 +84,6 @@ mw.IFramePlayerApiClient.prototype = {
 		var verticalScrollPosition = 0;
 		var viewPortTag;
 		
-		// Bind orientation change to resize player ( if fullscreen )
-		$(window).bind( 'orientationchange', function(e){
-			if( localIframeInFullscreen ){
-				doFullscreen();
-			}
-		});
-
-		// Bind to resize event to enlarge the player size ( if fullscreen )
-		$(window).bind('resize', function() {
-			if( localIframeInFullscreen ){
-				doFullscreen();
-			}
-		});
-
 		/* Un-used for now
 		var disableZoom = function() {
 			viewPortTag = $('head meta[name=viewport]').get(0);
@@ -161,8 +147,20 @@ mw.IFramePlayerApiClient.prototype = {
 			} );
 		};
 		
+		// Bind orientation change to resize player ( if fullscreen )
+		$(window).bind( 'orientationchange', function(e){
+			if( localIframeInFullscreen ){
+				doFullscreen();
+			}
+		});
+
+		// Bind to resize event to enlarge the player size ( if fullscreen )
+		$(window).bind('resize', function() {
+			if( localIframeInFullscreen ){
+				doFullscreen();
+			}
+		});
 		$( this.playerProxy ).bind( 'onOpenFullScreen', doFullscreen);
-		$( this.playerProxy ).bind( 'onCloseFullScreen', restoreWindowMode);
 		$( this.playerProxy ).bind( 'onTouchEnd', scrollToTop);
 	},
 	/**

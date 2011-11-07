@@ -1506,6 +1506,12 @@ mw.EmbedPlayer.prototype = {
 		// Hide loader
 		this.hidePlayerSpinner();
 		
+		// Check if there is a more specific error: 
+		if( this['data-playerError'] ){
+			this.showErrorMsg( this['data-playerError'] );
+			return ;
+		}
+		
 		// Set the top level container to relative position:
 		$( this ).css('position', 'relative');
 		

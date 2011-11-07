@@ -220,6 +220,7 @@ class KalturaResultObject {
 	}
 	public function isCachedOutput(){
 		global $wgEnableScriptDebug; 
+		// Don't cache output if an iframe or there is an error.
 		if( $wgEnableScriptDebug || $this->error ){
 			return false;
 		}

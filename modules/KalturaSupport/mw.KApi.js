@@ -289,9 +289,10 @@ mw.KApi.prototype = {
 			var namedData = {};
 			// Name each result data type for easy access
 
-			// Check if we got uiConf
+			// Check if we have an error
 			if( data[0].code ) {
 				mw.log('Error in kaltura api response: ' + data[0].message);
+				callback( { 'error' :  data[0].message } );
 				return ;
 			} else {
 				var dataIndex = -1;
@@ -380,10 +381,10 @@ mw.KApiPlayerLoader = function( kProperties, callback ){
 	// Convert widget_id to partner id
 	var kClient = mw.kApiGetPartnerClient( kProperties.widget_id );
 	kClient.playerLoader( kProperties, function( data ){
-		// Add a timeout so that we return the kClient before issuing the callback
+		// Add a timeout so that we are sure to return kClient before issuing the callback
 		setTimeout(function(){
 			callback( data );
-		},1);
+		},0);
 	});
 	// Return the kClient api object for future requests
 	return kClient;

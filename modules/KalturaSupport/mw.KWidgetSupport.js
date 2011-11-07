@@ -104,6 +104,11 @@ mw.KWidgetSupport.prototype = {
 	
 	updatePlayerData: function( embedPlayer,  playerData, callback ){
 		var _this = this;
+		// Check for playerData error: 
+		if( playerData.error ){
+			embedPlayer['data-playerError'] = playerData.error;
+		}
+		
 		// Check for uiConf	and attach it to the embedPlayer object:
 		if( playerData.uiConf ){
 			// Store the parsed uiConf in the embedPlayer object:
