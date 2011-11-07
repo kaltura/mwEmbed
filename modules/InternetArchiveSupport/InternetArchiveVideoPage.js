@@ -131,6 +131,13 @@ mw.IA =
     $('div.playlistItem span.clipTitle').html(function(i,html) {
       return html.replace(/^(\d+)(.*)/, '<span class="tn">$1</span>$2');
     });    
+
+    
+    if (window.jQuery('#nowplaying').length)
+    {
+      mw.IA.log('this is tvarchive');
+      return;
+    }
     
     
     var player = $('#mwplayer');
