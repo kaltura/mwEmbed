@@ -520,7 +520,7 @@ mw.Playlist.prototype = {
 		
 		// Setup ondone playing binding to play next clip (if autoContinue is true )
 		if( _this.sourceHandler.autoContinue == true ){
-			$( embedPlayer ).bind( 'onEndedDone' + this.bindPostFix, function(event ){
+			$( embedPlayer ).bind( 'postEnded' + this.bindPostFix, function(event ){
 				// Play next clip
 				if( _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
 					// Update the onDone action object to not run the base control done:

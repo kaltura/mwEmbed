@@ -1283,6 +1283,7 @@ mw.EmbedPlayer.prototype = {
 			this.donePlayingCount ++;
 
 			// TOOD we should improve the end event flow
+			// First end event for ads or current clip ended bindings
 			this.stopEventPropagation();
 			mw.log("EmbedPlayer:: trigger: ended");
 			$( this ).trigger( 'ended' );
@@ -1290,6 +1291,11 @@ mw.EmbedPlayer.prototype = {
 			
 			mw.log("EmbedPlayer::onClipDone:Trigged ended, reset playhead? " + this.onDoneInterfaceFlag);
 			
+			// A secondary end event for playlist and clip sequence endings
+			if( this.onDoneInterfaceFlag ){
+				mw.log("EmbedPlayer:: trigger: postEnded");
+				$( this ).trigger( 'postEnded' );
+			}
 			// if the ended event did not trigger more timeline actions run the
 			// actual stop:
 			if( this.onDoneInterfaceFlag ){

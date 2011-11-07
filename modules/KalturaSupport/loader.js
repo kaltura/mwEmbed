@@ -145,7 +145,10 @@
 	
 	// Check if the document has kaltura objects ( for fall forward support ) 
 	$( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
-
+		// if kGetKalturaPlayerList is not defined ( we are not in a kaltura env )
+		if( typeof kGetKalturaPlayerList == 'undefined'){
+			return ;
+		}
 		var kalturaObjectPlayerList = kGetKalturaPlayerList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
 		if( ! kalturaObjectPlayerList.length ) {
