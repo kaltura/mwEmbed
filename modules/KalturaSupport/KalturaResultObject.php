@@ -220,8 +220,9 @@ class KalturaResultObject {
 	}
 	public function isCachedOutput(){
 		global $wgEnableScriptDebug; 
-		if( $wgEnableScriptDebug )
+		if( $wgEnableScriptDebug || $this->error ){
 			return false;
+		}
 		return $this->outputFromCache;
 	}
 	public function isCachedUiConfFile(){
