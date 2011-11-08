@@ -351,7 +351,8 @@ mw.EmbedPlayerNative = {
 	doNativeSeek: function( percent, callback ) {
 		// If player already seeking, exit
 		var _this = this;
-		if( _this.playerElement.seeking ) {
+		var isChrome = (navigator.userAgent.indexOf('Chrome') === -1) ? false : true;
+		if( isChrome && _this.playerElement.seeking ) {
 			return ;
 		}
 		
