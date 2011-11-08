@@ -161,6 +161,7 @@ mw.IFramePlayerApiClient.prototype = {
 			}
 		});
 		$( this.playerProxy ).bind( 'onOpenFullScreen', doFullscreen);
+		$( this.playerProxy ).bind( 'onCloseFullScreen', restoreWindowMode);
 		$( this.playerProxy ).bind( 'onTouchEnd', scrollToTop);
 	},
 	/**
