@@ -273,7 +273,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// listen for change media done
 		var bindName = 'onChangeMediaDone' + this.bindPostFix;
 		$( embedPlayer).unbind( bindName ).bind( bindName, function(){
-			//alert('change media play');
 			embedPlayer.play();
 			if( callback )
 				callback();

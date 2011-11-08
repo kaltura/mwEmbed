@@ -488,6 +488,7 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var vid = this.getPlayerElement();
 		var switchBindPostfix = '.switchPlaySrc';
+		this.isPauseLoading = false;
 		// Make sure the switch source is different: 
 		if( !src || src == vid.src ){
 			if( switchCallback ){
@@ -628,9 +629,7 @@ mw.EmbedPlayerNative = {
 		this.getPlayerElement();
 		this.parent_pause(); // update interface
 		if ( this.playerElement ) { // update player
-			if( !this.playerElement.paused ){
-				this.playerElement.pause();
-			}
+			this.playerElement.pause();
 		}
 	},
 
@@ -644,8 +643,13 @@ mw.EmbedPlayerNative = {
 		if( _this.parent_play() ){
 			this.getPlayerElement();
 			if ( this.playerElement && this.playerElement.play ) {
-				// issue a play request 
+				// issue a play request ( capture the user gesture on iOS ) 
 				this.playerElement.play();
+				
+				// Dont play if in pauseloading state
+				if( this.isPauseLoading ){
+					this.playerElement.pause();
+				}
 				// re-start the monitor:
 				this.monitor();
 			}

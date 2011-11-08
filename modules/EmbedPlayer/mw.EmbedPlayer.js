@@ -2123,6 +2123,7 @@ mw.EmbedPlayer.prototype = {
 			this.preSequence = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );
 			$( this ).trigger( 'preSequence' );
+			this.playInterfaceUpdate();
 		}
 		
 		if( this.paused === true ){
@@ -2188,12 +2189,14 @@ mw.EmbedPlayer.prototype = {
 	pauseLoading: function(){
 		this.pause();
 		this.addPlayerSpinner();
+		this.isPauseLoading = true;
 	},
 	addPlayerSpinner: function(){
 		$( this ).getAbsoluteOverlaySpinner()
 			.attr( 'id', 'loadingSpinner_' + this.id );
 	},
 	hidePlayerSpinner: function(){
+		this.isPauseLoading = false;
 		$( '#loadingSpinner_' + this.id + ',.loadingSpinner' ).remove();
 	},
 	hideSpinnerOncePlaying: function(){
