@@ -825,11 +825,12 @@ mw.PlayerControlBuilder.prototype = {
 				};
 			
 			// Check if we should display the interface: 
-			$interface.hoverIntent( hoverIntentConfig )
 			// special check for IE9 ( does not count hover on non-visiable inerface div
 			if( mw.isIE9() ){
 				$( embedPlayer.getPlayerElement() ).hoverIntent( hoverIntentConfig );
-			};
+			} else {
+				$interface.hoverIntent( hoverIntentConfig );
+			}
 			
 		}
 

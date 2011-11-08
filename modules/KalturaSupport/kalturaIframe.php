@@ -446,15 +446,17 @@ class kalturaIframe {
 	 */
 	private function setIFrameHeaders(){
 		global $wgKalturaUiConfCacheTime;
-
+		// Only cache for 30 seconds if there is an error: 
+		$cacheTime = ( $this->isError() )? 30 : $wgKalturaUiConfCacheTime;
+		
 		// Set relevent expire headers:
-		if( $this->getResultObject()->isCachedOutput() && ! $this->isError() ){
+		if( $this->getResultObject()->isCachedOutput() ){
 			$time = $this->getResultObject()->getFileCacheTime();
 			header( 'Pragma: public' );
 			// Cache for $wgKalturaUiConfCacheTime
-			header( "Cache-Control: public, max-age=$wgKalturaUiConfCacheTime, max-stale=0");
+			header( "Cache-Control: public, max-age=$cacheTime, max-stale=0");
 			header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $time) . "GMT");
-			header( "Expires: " . gmdate( "D, d M Y H:i:s", $time + $wgKalturaUiConfCacheTime ) . " GM" );
+			header( "Expires: " . gmdate( "D, d M Y H:i:s", $time + $cacheTime ) . " GM" );
 		} else {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Pragma: no-cache");
@@ -860,8 +862,9 @@ class kalturaIframe {
 	private function setError( $errorTitle ){
 		$this->error = true;
 	}
+	// Check if there is a local iframe error or result object error
 	private function isError( ){
-		return $this->error;
+		return ( $this->error || $this->getResultObject()->getError() );
 	}
 	/**
 	 * Output a fatal error and exit with error code 1
