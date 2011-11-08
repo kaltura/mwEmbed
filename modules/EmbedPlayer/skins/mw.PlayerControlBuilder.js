@@ -810,21 +810,26 @@ mw.PlayerControlBuilder.prototype = {
 				// ( once the user touched the video "don't hide" )
 			} );
 
-			// Add a special absolute overlay for hover ( to keep menu displayed
+			var hoverIntentConfig = {
+					'sensitivity': 100,
+					'timeout' : 1000,
+					'over' : function(){
+						// Show controls with a set timeout ( avoid fade in fade out on short mouse over )
+						_this.showControlBar();
+						bindSpaceUp();
+					},
+					'out' : function(){
+						_this.hideControlBar();
+						bindSpaceDown();
+					}
+				};
 			
-			$interface.hoverIntent({
-				'sensitivity': 100,
-				'timeout' : 1000,
-				'over' : function(){
-					// Show controls with a set timeout ( avoid fade in fade out on short mouse over )
-					_this.showControlBar();
-					bindSpaceUp();
-				},
-				'out' : function(){
-					_this.hideControlBar();
-					bindSpaceDown();
-				}
-			});
+			// Check if we should display the interface: 
+			$interface.hoverIntent( hoverIntentConfig )
+			// special check for IE9 ( does not count hover on non-visiable inerface div
+			if( mw.isIE9() ){
+				$( embedPlayer.getPlayerElement() ).hoverIntent( hoverIntentConfig );
+			};
 			
 		}
 
