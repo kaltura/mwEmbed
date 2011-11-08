@@ -79,7 +79,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 					'playlist_id' : _this.playlist_id 
 				});
 			}
-			
 			// Load the playlist config: 
 			var plApi = _this.playlist.embedPlayer.getKalturaConfig(
 					'playlistAPI', 
@@ -90,7 +89,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 					'playlist', 
 					[ 'includeInLayout', 'width', 'height' ]
 			);
-
 			// Check for autoContinue 
 			_this.autoContinue = plApi.autoContinue;
 			
@@ -266,7 +264,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	getClipList: function(){
 		return this.clipList;
 	},
-	playClip: function( embedPlayer, clipIndex ){
+	playClip: function( embedPlayer, clipIndex, callback ){
 		// Check if entry id already matches:
 		if( embedPlayer.kentryid == this.getClip( clipIndex ).id ){
 			embedPlayer.play();
@@ -275,7 +273,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// listen for change media done
 		var bindName = 'onChangeMediaDone' + this.bindPostFix;
 		$( embedPlayer).unbind( bindName ).bind( bindName, function(){
+			//alert('change media play');
 			embedPlayer.play();
+			if( callback )
+				callback();
 		});
 		// Use internal changeMedia call to issue all relevant events
 		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );	

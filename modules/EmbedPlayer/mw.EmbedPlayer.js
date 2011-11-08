@@ -1289,15 +1289,15 @@ mw.EmbedPlayer.prototype = {
 			$( this ).trigger( 'ended' );
 			this.restoreEventPropagation();
 			
-			mw.log("EmbedPlayer::onClipDone:Trigged ended, reset playhead? " + this.onDoneInterfaceFlag);
+			mw.log("EmbedPlayer::onClipDone:Trigged ended, continue? " + this.onDoneInterfaceFlag);
 			
 			// A secondary end event for playlist and clip sequence endings
 			if( this.onDoneInterfaceFlag ){
 				mw.log("EmbedPlayer:: trigger: postEnded");
 				$( this ).trigger( 'postEnded' );
 			}
-			// if the ended event did not trigger more timeline actions run the
-			// actual stop:
+		
+			// if the ended event did not trigger more timeline actions run the actual stop:
 			if( this.onDoneInterfaceFlag ){
 				mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
 				// Prevent the native "onPlay" event from propagating that happens when we rewind:
@@ -1685,6 +1685,7 @@ mw.EmbedPlayer.prototype = {
 		this.firstPlay = true;
 		this.preSequence = false;
 		this.postSequence = false;
+		
 		// Add a loader to the embed player: 
 		this.pauseLoading();
 		
@@ -1709,30 +1710,35 @@ mw.EmbedPlayer.prototype = {
 				_this.controlBuilder.showControlBar();
 			}
 			
-			if( chnagePlayingMedia ){
-				// Make sure the play button is not displayed:
-				if( _this.$interface ){
-					_this.$interface.find( '.play-btn-large' ).hide();
+		
+			// Make sure the play button is not displayed:
+			if( _this.$interface ){
+				_this.$interface.find( '.play-btn-large' ).hide();
+			}
+			if( _this.isPersistentNativePlayer() ){
+				// If switching a Persistent native player update the source:
+				// ( stop and play won't refresh the source  )
+				_this.switchPlaySrc( _this.getSrc(), function(){
+					$( _this ).trigger( 'onChangeMediaDone' );
+					if( chnagePlayingMedia ){
+						_this.play();
+					}
+					if( callback )
+						callback()
+				});
+				// we are handling trigger and callback asynchronously return here. 
+				return ;
+			} else {
+				//stop should unload the native player
+				_this.stop();
+				// reload the player
+				if( chnagePlayingMedia ){
+					_this.play()
 				}
-				if( _this.isPersistentNativePlayer() ){
-					// If switching a Persistent native player update the source:
-					// ( stop and play won't refresh the source  )
-					_this.switchPlaySrc( _this.getSrc(), function(){
-						$( _this ).trigger( 'onChangeMediaDone' );
-						if( callback ) 
-							callback()
-					});
-					// we are handling trigger and callback asynchronously return here. 
-					return ;
-				} else {
-					//stop should unload the native player
-					_this.stop();
-					// reload the player
-					_this.play();
-				}
-			} 
+			}
 			$( _this ).trigger( 'onChangeMediaDone' );
-			if( callback ) callback();
+			if( callback ) 
+				callback();
 		});
 
 		// Load new sources per the entry id via the checkPlayerSourcesEvent hook:

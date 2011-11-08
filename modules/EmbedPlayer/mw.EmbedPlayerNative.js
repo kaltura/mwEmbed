@@ -302,8 +302,9 @@ mw.EmbedPlayerNative = {
 	* Issue a seeking request.
 	*
 	* @param {Float} percent
+	* @param {bollean} stopAfterSeek if the player should stop after the seek
 	*/
-	doSeek: function( percent ) {
+	doSeek: function( percent, stopAfterSeek ) {
 		// bounds check
 		if( percent < 0 )
 			percent = 0;
@@ -333,7 +334,7 @@ mw.EmbedPlayerNative = {
 				// We support URLTimeEncoding call parent seek:
 				this.parent_doSeek( percent );
 			}
-		} else if ( this.playerElement && this.playerElement.duration ) {
+		} else if ( this.playerElement && this.playerElement.duration && stopAfterSeek ) {
 			// (could also check bufferedPercent > percent seek (and issue oggz_chop request or not)
 			this.doNativeSeek( percent );
 		} else {
@@ -473,11 +474,19 @@ mw.EmbedPlayerNative = {
 		// Also update the embedPlayer poster 
 		this.parent_updatePosterSrc( src );
 	},
-	
-	/*switchPlaySrc: function( src, switchCallback, doneCallback ){
+	/**
+	 * switchPlaySrc switches the player source working around a few bugs in browsers
+	 * 
+	 * @param {string}
+	 *            src Video url Source to switch to.
+	 * @param {function}
+	 *            switchCallback Function to call once the source has been switched
+	 * @param {function}
+	 *            doneCallback Function to call once the clip has completed playback
+	 */
+	switchPlaySrc: function( src, switchCallback, doneCallback ){
 		var _this = this;
 		var vid = this.getPlayerElement();
-		
 		var switchBindPostfix = '.switchPlaySrc';
 		// Make sure the switch source is different: 
 		if( !src || src == vid.src ){
@@ -490,6 +499,9 @@ mw.EmbedPlayerNative = {
 			}, 100);
 			return ;
 		}
+		// don't propgate events while switching: 
+		this.stopEventPropagation();
+		
 		// only display switch msg if actually switching: 
 		mw.log( 'EmbedPlayerNative:: switchPlaySrc:' + src + ' native time: ' + vid.currentTime );
 		
@@ -515,7 +527,7 @@ mw.EmbedPlayerNative = {
 						return ;
 					}
 					vid.src = src;
-					// Give iOS 50ms to figure out the src got updated ( iPad OS 4.0 )
+					// Give iOS 50ms to figure out the src got updated ( iPad OS 3.x )
 					setTimeout( function() {
 						var vid = _this.getPlayerElement();
 						if (!vid){
@@ -547,6 +559,13 @@ mw.EmbedPlayerNative = {
 							}
 							_this.hidePlayerSpinner();
 						}, 50);
+						// restore events after we get the pause trigger
+						$( vid ).bind( 'pause' + switchBindPostfix, function(){
+							// remove pause binding: 
+							$( vid ).unbind( 'pause' + switchBindPostfix );
+							// restore event propagation
+							_this.restoreEventPropagation();
+						});
 					}, 50);
 				};
 				if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
@@ -561,35 +580,34 @@ mw.EmbedPlayerNative = {
 				mw.log("Error: EmbedPlayerNative Error in switching source playback");
 			}
 		}
-	},*/
+	},
 	/**
-	 * switchPlaySrc switches the player source working around a few bugs in browsers
+	 * switchPlaySrc switches the player source
 	 * 
-	 * @param {string}
-	 *            src Video url Source to switch to.
-	 * @param {function}
-	 *            switchCallback Function to call once the source has been switched
-	 * @param {function}
-	 *            doneCallback Function to call once the clip has completed playback
+	 * we don't appear to be able to use this simple sync switch ( fails on some browsers )
+	 * firefox 7x and iPad OS 3.2 right now) 
 	 */
-	switchPlaySrc: function( src, switchCallback, doneCallback ){
+	/*switchPlaySrc: function( src, switchCallback, doneCallback ){
 		var _this = this;
 		var vid = this.getPlayerElement();
 		var switchBindPostfix = '.switchPlaySrc';
 		$(vid).unbind( switchBindPostfix );
 		
 		$( vid ).bind( 'ended' + switchBindPostfix, function( event ) {
+			$(vid).unbind( 'ended' + switchBindPostfix );
 			if( doneCallback ){
 				doneCallback();
 			}
 		});
 		// add a loading spinner: 
 		this.addPlayerSpinner();
+		
 		// once we can play remove the spinner
 		$( vid ).bind( 'canplaythrough' +switchBindPostfix, function( event ){
+			$(vid).unbind( 'canplaythrough' + switchBindPostfix );
 			_this.hidePlayerSpinner();
 		});
-
+		
 		// Swicth the src and play: 
 		try{
 			vid.src = src;
@@ -598,10 +616,10 @@ mw.EmbedPlayerNative = {
 		} catch ( e ){
 			mw.log("Error: could not switch source")
 		}
-		if ( switchCallback ) {
-			switchCallback( vid );
+		if( switchCallback ){
+			switchCallback();
 		}
-	},
+	},*/
 	/**
 	* Pause the video playback
 	* calls parent_pause to update the interface

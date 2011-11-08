@@ -199,17 +199,23 @@ mw.AdTimeline.prototype = {
 				$( embedPlayer ).trigger( 'postSequenceComplete' );
 
 				/** TODO support postroll bumper and leave behind */
-				embedPlayer.switchPlaySrc( _this.originalSrc, function(){
-						_this.restorePlayer();
-						// stop the playback: 
-						embedPlayer.pause();
-						// Restore ondone interface: 
-						embedPlayer.onDoneInterfaceFlag = true;
-						// run the clipdone event:
-						if( playedAnAdFlag ){
+				if( playedAnAdFlag ){
+					embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+							_this.restorePlayer();
+							// stop the playback: 
+							embedPlayer.pause();
+							// Restore ondone interface: 
+							embedPlayer.onDoneInterfaceFlag = true;
+							// run the clipdone event:
 							embedPlayer.onClipDone();
-						}
-				});
+					});
+				} else {
+					_this.restorePlayer();
+					// Restore ondone interface: 
+					embedPlayer.onDoneInterfaceFlag = true;
+					// run the clipdone event:
+					embedPlayer.onClipDone();
+				}
 			});
 		});
 	},

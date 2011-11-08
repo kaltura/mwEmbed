@@ -328,7 +328,7 @@ mw.KWidgetSupport.prototype = {
 		var $uiPluginVars = [];
 		
 		// if confPrefix is not an empty string or null check for the conf prefix
-		if( confPrefix ){ 
+		if( confPrefix ){
 			$plugin = $uiConf.find( 'plugin#' + confPrefix );
 			// When defined from uiConf ( "plugin" tag is equivalent to "confPrefix.plugin = true" in the uiVars )
 			if( $plugin.length && attr && $.inArray( 'plugin', attr ) != -1 ){ 
@@ -380,7 +380,7 @@ mw.KWidgetSupport.prototype = {
 						config[ attrName ] = $plugin.attr( attrName.toLowerCase() );
 					}
 				}
-				
+
 				// Flashvars overrides
 				var pluginPrefix = ( confPrefix )? confPrefix + '.': '';
 				if( flashvars[ pluginPrefix + attrName ] ){

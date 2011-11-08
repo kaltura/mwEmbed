@@ -474,9 +474,12 @@ mw.Playlist.prototype = {
 		var embedPlayer = this.getEmbedPlayer();
 		this.clipIndex = clipIndex;
         // Hand off play clip request to sourceHandler: 
-		_this.sourceHandler.playClip( embedPlayer, clipIndex );
-		// Do any local player interface updates: 
-		_this.updatePlayerUi( clipIndex );
+		_this.sourceHandler.playClip( embedPlayer, clipIndex, function(){
+			// Do any local player interface updates: 
+			_this.updatePlayerUi( clipIndex );
+			// Add playlist specific bindings: 
+			_this.addClipBindings();
+		} );
 	},
 	/**
 	* Update the player

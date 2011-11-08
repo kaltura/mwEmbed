@@ -115,8 +115,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			embedPlayer.mediaElement.tryAddSource( $source.get(0) ) ;
 		}
 		embedPlayer.changeMedia( function(){
-			// restore playlist bindings: 
-			// update Ui: 
+			// restore playlist bindings and update update Ui: 
 			_this.playlist.updatePlayerUi( _this.clipIndex );
 			
 			// Add playlist specific bindings: 
