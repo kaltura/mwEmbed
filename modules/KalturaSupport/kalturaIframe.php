@@ -201,6 +201,7 @@ class kalturaIframe {
 			'wid' => 'kwidgetid',
 			'autoplay' => 'autoplay',
 		);
+		$posterUrl = false;
 		// Check if we have flashvar: loadThumbnailWithKs, if so load the thumbnail with KS
 		$ksParam = '';
 		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) && 
@@ -616,15 +617,14 @@ class kalturaIframe {
 				?>
 				<script type="text/javascript">
 					var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
-					// Android can't handle position:absolute style on video tags and requires an absolute size: 
+					// Android can't handle position:absolute style on video tags
 					if( navigator.userAgent.indexOf('Android' ) !== -1 ){
 						// Also android does not like "type" on source tags
 						videoTagHTML= videoTagHTML.replace(/type=\"[^\"]*\"/g, '');
-						styleValue = '<?php echo $this->getPlayerSizeCss(); ?>';
-					} else {
-						// iOS and other OSs are fine with 100% size and position:abolute;
-						styleValue = 'position:absolute;width:100%;height:100%';
-					}
+					} 
+					//styleValue = 'position:absolute;width:100%;height:100%';
+					styleValue = 'display: block;<?php echo $this->getPlayerSizeCss(); ?>';
+					
 					videoTagHTML = videoTagHTML.replace(/style=\"\"/, 'style="' + styleValue + '"');
 					document.write( videoTagHTML );
 				</script>
@@ -671,7 +671,7 @@ class kalturaIframe {
 			waitforMw( function(){
 				<?php 
 					global $wgAllowCustomResourceIncludes;
-					if( $wgAllowCustomResourceIncludes ){
+					if( $wgAllowCustomResourceIncludes && $this->getCustomPlayerIncludesJSON() ){
 						echo 'mw.setConfig( \'Mw.CustomResourceIncludes\', '. $this->getCustomPlayerIncludesJSON() .' );';
 					}
 				?>
