@@ -10,7 +10,18 @@
 		"plymedia.style" :  "styles/plymediaStyles.css",
 		"mw.Subply" : "mw.Subply.js"
 	});
-
+	
+	mw.setDefaultConfig( {
+		// 1 - 100. 1 being highest (captions at the top of the video), 100 being lowest (captions at the default bottom which is 40 px)
+		"Plymedia.subpos" : 100,
+		
+		// default language - language code or 'none' for no default language
+		'Plymedia.deflang' : 'off',
+		
+		// whether captions have background or not
+		'Plymedia.showbackground' : true
+	} );	
+	
 	mw.addModuleLoader( 'plymedia', function(){
 		// load any files needed for plyMedia player ( ie plyMediaPlayer and plyMedia.style )
 		return [ 'mw.Subply', 'plymedia.style' ];
