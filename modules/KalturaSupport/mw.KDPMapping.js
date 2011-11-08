@@ -470,7 +470,12 @@
 				case 'doPause':
 					b( "pause" );
 					break;
-
+				case 'adStart':
+					b('AdSupport_StartAdPlayback');
+					break;
+				case 'adEnd':
+					b('AdSupport_EndAdPlayback');
+					break;
 				// Pre sequences: 
 				case 'preSequenceStart':
 				case 'pre1start':
