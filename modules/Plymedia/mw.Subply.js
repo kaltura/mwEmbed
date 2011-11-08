@@ -145,7 +145,9 @@ mw.Subply = {
 	function languageControlUpHandler(e)
 	{
 	    closeMenu();
-
+		
+		mw.log("Subply::[languageControlUpHandler] currentlang: "+ currentlang + " e.data.lang: " + e.data.lang);
+		
 	    // Deselect old language
 
 		if (currentlang!="off")
@@ -158,13 +160,22 @@ mw.Subply = {
 		}
 
 	    // Select new language
+		
+		if (currentlang == e.data.lang)
+		{
+			currentlang = 'off';
+			
+			markLangSelected(e, false);
+		}
+		else
+		{
+		    currentlang = e.data.lang;
 
-	    currentlang = e.data.lang;
-
-	    markLangSelected(e, true);
+		    markLangSelected(e, true);			
+		};
 	
 		if (currentlang!="off")
-			setupCaptionsBylanguageCode(currentlang);
+			setupCaptionsBylanguageCode(currentlang); 
 	};
 	
 	function setupCaptionsBylanguageCode(langcode)
@@ -297,14 +308,36 @@ mw.Subply = {
 		
 		function createSubtitlesArea()
 		{
-			mw.log("Subply::[createSubtitlesArea]");
+			mw.log("Subply::[createSubtitlesArea] player height: "+embedPlayer.getPlayerHeight()+" Plymedia.subpos "+mw.getConfig( 'Plymedia.subpos' ));
+			
+			var confpos = mw.getConfig( 'Plymedia.subpos' );
+			var subbuttompos = 9;
+			var csspostype = 'bottom';
+			
+			// pos over 50 - will calculate for css 'bottom'. under 50 - will calculate for css 'top'
+			if ( confpos >= 50)
+			{
+				subbuttompos = 100 - confpos;
+				if (subbuttompos < 9)
+					subbuttompos = 9;
+			}
+			else
+			{
+				csspostype = 'top';
+				subbuttompos = confpos;			
+			};
+
+			mw.log("Subply::[createSubtitlesArea] positioning at: " + csspostype + " " + subbuttompos + "%");
 			
 			if( embedPlayer.$interface.find('.subplySubtitles').length == 0 )
 			{
 				embedPlayer.$interface.append( '<div class="subplySubtitles"></div> ');
 				embedPlayer.$interface.find('.subplySubtitles').hide();
 				
-				embedPlayer.$interface.find('.subplySubtitles').css('bottom', '40px');			
+				embedPlayer.$interface.find('.subplySubtitles').css( csspostype, (subbuttompos + '%') );
+				
+				if (mw.getConfig( 'Plymedia.showbackground' ) == false)
+					embedPlayer.$interface.find('.subplySubtitles').css( 'background', 'none' );
 			};			
 		}
 		
@@ -314,6 +347,14 @@ mw.Subply = {
 			//eid = "entry_1_qmk1pnre";
 			
 			mw.log("Subply::[initializeByEntryId] for "+intializeRestUrl+eid);
+			mw.log("Subply::[initializeByEntryId] config params: Plymedia.subpos "+mw.getConfig( 'Plymedia.subpos' )+" Plymedia.deflang "+mw.getConfig( 'Plymedia.deflang' )+" Plymedia.showbackground "+mw.getConfig( 'Plymedia.showbackground' ) );
+			
+			// Setup currentlang to Plymedia.deflang
+			
+			currentlang = mw.getConfig( 'Plymedia.deflang' );
+			
+			if (currentlang == null || currentlang == 'none' || currentlang == 'null')
+				currentlang = 'off';
 			
 			$.getScript(intializeRestUrl+eid, function(data, textStatus){
 				videoDetailsLoadedHandler();
@@ -334,10 +375,15 @@ mw.Subply = {
 			
 			if (languages.length > 0)
 			{
-				mw.log("Subply::[videoDetailsLoadedHandler] have captions. Will create menu. ");
+				mw.log("Subply::[videoDetailsLoadedHandler] have captions. Will create menu. deflang? "+currentlang);
 									
 				createCaptionsMenu();
-				createSubtitlesArea();			
+				createSubtitlesArea();	
+				
+				// Load default subtitles
+				
+				if (currentlang!="off")
+					setupCaptionsBylanguageCode(currentlang);		
 			};
 		};
 
