@@ -169,10 +169,10 @@
 		 */
 		getCaptionsFromTMML: function( data ){
 			var _this = this;
-			mw.log("TextSource::getCaptionsFromTMML::\n\n" + data);
+			mw.log("TextSource::getCaptionsFromTMML", data);
 			// set up display information:
 			var captions = [];
-			var xml = $.parseXML( data );
+			var xml = ( $( data ).find("tt").length ) ? data : $.parseXML( data );
 			
 			// Check for parse error: 
 			try {
