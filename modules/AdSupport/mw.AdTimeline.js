@@ -186,6 +186,9 @@ mw.AdTimeline.prototype = {
 				return ;
 			}
 			playedAnAdFlag = false;
+			$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
+				playedAnAdFlag = true;
+			});
 			displayedPostroll = true;
 			embedPlayer.onDoneInterfaceFlag = false;
 			// Trigger the postSequenceStart event
