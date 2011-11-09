@@ -523,7 +523,8 @@
 			iframeRequest += '&urid=' + KALTURA_LOADER_VERSION;
 
 			var baseClass = $( playerTarget ).attr('class' ) ? $( playerTarget ).attr('class' ) + ' ' : '';
-			var iframeId = $( playerTarget ).attr('id') + '_ifp';		
+			var iframeId = $( playerTarget ).attr('id') + '_ifp';
+			var iframeStyle = ( $( playerTarget ).attr('style') ) ? $( playerTarget ).attr('style') : '';
 
 			var $iframe = $('<iframe />')
 				.attr({
@@ -533,7 +534,7 @@
 					'height' : $( playerTarget ).height(),
 					'width' : $( playerTarget ).width()
 				})
-				.attr( 'style', $( playerTarget ).attr('style') ) 
+				.attr('style', iframeStyle)
 				.css({
 					'border': '0px'
 				});

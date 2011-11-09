@@ -183,10 +183,12 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( isHTML5 ){
 		kAddScript( function(){
 			// Options include 'width' and 'height'
-			$j('#' + replaceTargetId ).css({
-				'width': options.width + 'px',
-				'height': options.height + 'px'
-			});
+			var sizeUnit = (typeof options.width == 'string' && options.width.indexOf("px") === -1) ? 'px' : '';
+			var targetSize = {
+				'width': options.width + sizeUnit,
+				'height': options.height + sizeUnit
+			};
+			$j('#' + replaceTargetId ).css(targetSize);
 			// Do kaltura iframe player
 			$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
 		});	
