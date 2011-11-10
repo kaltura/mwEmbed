@@ -1820,39 +1820,39 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 *            verbose If hours and milliseconds should padded be displayed.
 	 * @return {Float} String npt format
 	 */
-	mw.seconds2npt = function( sec, verbose ) {
+	mw.seconds2npt = function( sec, show_ms ) {
 		if ( isNaN( sec ) ) {
-			mw.log("Warning: trying to get npt time on NaN:" + sec);
+			mw.log("Warning: trying to get npt time on NaN:" + sec);			
 			return '0:00:00';
 		}
-
+		
 		var tm = mw.seconds2Measurements( sec );
-
+				
 		// Round the number of seconds to the required number of significant
 		// digits
-		if ( verbose ) {
+		if ( show_ms ) {
 			tm.seconds = Math.round( tm.seconds * 1000 ) / 1000;
 		} else {
-			tm.seconds = Math.round( tm.seconds );
+			roundedSec = Math.round( tm.seconds );
+			if( roundedSec == 60 ){
+				tm.seconds = 0;
+				tm.minutes = parseInt( tm.minutes ) + 1;
+			}
 		}
 		if ( tm.seconds < 10 ){
 			tm.seconds = '0' +	tm.seconds;
 		}
-		if( tm.hours == 0 && !verbose ){
+		if( tm.hours == 0 ){
 			hoursStr = '';
 		} else {
-			if ( tm.minutes < 10 && verbose) {
+			if ( tm.minutes < 10 )
 				tm.minutes = '0' + tm.minutes;
-			}
-
-			if( tm.hours < 10 && verbose){
-				tm.hours = '0' + tm.hours;
-			}
-
-			hoursStr = tm.hours + ':';
+			
+			hoursStr = tm.hours + ":"; 
 		}
 		return hoursStr + tm.minutes + ":" + tm.seconds;
 	};
+	
 	/**
 	 * Given seconds return array with 'days', 'hours', 'min', 'seconds'
 	 * 
@@ -1865,10 +1865,6 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		tm.hours = Math.floor( sec / 3600 );
 		tm.minutes = Math.floor( ( sec / 60 ) % 60 );
 		tm.seconds = sec % 60;
-		if( tm.seconds == 60 ){
-			tm.seconds = 0;
-			tm.minutes = parseInt( tm.minutes ) + 1;
-		}
 		return tm;
 	};
 	/**
