@@ -1705,7 +1705,7 @@ mw.EmbedPlayer.prototype = {
 		// restore the control bar:
 		this.$interface.find('.control-bar').show();
 		
-		if( this.$interface ){
+		if( !chnagePlayingMedia && this.$interface ){
 			this.$interface.find('.play-btn-large').hide(); // hide the play btn
 		}
 		
