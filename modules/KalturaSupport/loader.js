@@ -149,6 +149,7 @@
 		if( typeof kGetKalturaPlayerList == 'undefined'){
 			return ;
 		}
+		
 		var kalturaObjectPlayerList = kGetKalturaPlayerList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
 		if( ! kalturaObjectPlayerList.length ) {

@@ -195,25 +195,28 @@ mw.KWidgetSupport.prototype = {
 				.get( 0 )
 			);
 		}
-		
 		mw.log("KWidgetSupport:: check for meta:");
-
-		// Add any custom metadata:
-		if( playerData.entryMeta ){
-			embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
-			$( embedPlayer ).trigger( 'KalturaSupport_MetadataReceived', embedPlayer.kalturaEntryMetaData );
-		}
-		// Apply player metadata
-		if( playerData.meta ) {
-			embedPlayer.duration = playerData.meta.duration;
-			// We have to assign embedPlayer metadata as an attribute to bridge the iframe
-			embedPlayer.kalturaPlayerMetaData = playerData.meta;
-			$( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
-		}
-		if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
-			mw.log( "KCuePoints:: Added " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
-			embedPlayer.rawCuePoints = playerData.entryCuePoints;
-			embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
+		// check for entry id not found: 
+		if( playerData.meta && playerData.meta.code == 'ENTRY_ID_NOT_FOUND' ){
+			$( embedPlayer ).trigger( 'KalturaSupport_EntryFailed' );
+		} else {
+			// Add any custom metadata:
+			if( playerData.entryMeta ){
+				embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
+				$( embedPlayer ).trigger( 'KalturaSupport_MetadataReceived', embedPlayer.kalturaEntryMetaData );
+			}
+			// Apply player metadata
+			if( playerData.meta ) {
+				embedPlayer.duration = playerData.meta.duration;
+				// We have to assign embedPlayer metadata as an attribute to bridge the iframe
+				embedPlayer.kalturaPlayerMetaData = playerData.meta;
+				$( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
+			}
+			if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
+				mw.log( "KCuePoints:: Added " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
+				embedPlayer.rawCuePoints = playerData.entryCuePoints;
+				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
+			}
 		}
 		embedPlayer.getRawKalturaConfig = function( confPrefix, attr ){
 			return _this.getRawPluginConfig( embedPlayer, confPrefix, attr );
@@ -225,23 +228,29 @@ mw.KWidgetSupport.prototype = {
 
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
-			return _this.getPluginConfig( embedPlayer, pluginName, 'plugin');
+			return _this.getPluginConfig( embedPlayer, pluginName, 'plugin' );
 		};
 
 		// Add getFlashvars to embed player:
 		embedPlayer.getFlashvars = function() {
-			return $( embedPlayer ).data('flashvars');
+			return $( embedPlayer ).data( 'flashvars' );
 		}
 		
 		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
-		if( $(embedPlayer).data('uiConfXml') ){
-			embedPlayer.$uiConf = $( embedPlayer ).data('uiConfXml');
+		if( $(embedPlayer).data( 'uiConfXml' ) ){
+			embedPlayer.$uiConf = $( embedPlayer ).data( 'uiConfXml' );
 		}
 		// Check for playlist cache based 
 		if( playerData.playlistData ){
 			embedPlayer.kalturaPlaylistData = playerData.playlistData;
 		}
-		
+		_this.handleUiConf( embedPlayer, callback );
+	},
+	/**
+	 * Handle the ui conf 
+	 */
+	handleUiConf: function( embedPlayer, callback ){
+		var _this = this;
 		// Local function to defer the trigger of loaded cuePoints so that plugins have time to load
 		// and setup their binding to KalturaSupport_CuePointsReady
 		var doneWithUiConf = function(){
@@ -253,14 +262,15 @@ mw.KWidgetSupport.prototype = {
 			// Run the DoneWithUiConf trigger 
 			// Allows modules that depend on other modules initialization to do what they need to do. 
 			mw.log("KWidgetSupport:: trigger KalturaSupport_DoneWithUiConf");
-			// don't stack
+			
+			// Don't stack
 			setTimeout(function(){
 				$( embedPlayer ).trigger( 'KalturaSupport_DoneWithUiConf' );
 				callback();
-			},0);
+			}, 0 );
 		};
 		
-		// sync iframe with attribute data updates:
+		// Sync iframe with attribute data updates:
 		$( embedPlayer ).trigger('updateIframeData');
 		
 		if( embedPlayer.$uiConf ){
@@ -274,7 +284,7 @@ mw.KWidgetSupport.prototype = {
 			});
 		} else {
 			doneWithUiConf();
-		}
+		}		
 	},
 	/**
 	 * Run base ui conf / flashvars checks

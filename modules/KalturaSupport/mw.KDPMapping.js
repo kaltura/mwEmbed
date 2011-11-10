@@ -431,6 +431,11 @@
 				});
 			};
 			switch( eventName ){
+				case 'mediaLoadError':
+					b( 'KalturaSupport_MediaLoadError');
+					break;
+				case 'mediaError':
+					b( 'KalturaSupport_MediaError' );
 				case 'kdpEmpty':
 					// TODO: When we have video tag without an entry
 					b( 'playerReady', function(){
@@ -540,6 +545,9 @@
 					b( 'KalturaSupport_EntryDataReady', function( event, entryData ){
 						callback( entryData, embedPlayer.id );
 					});
+					break;
+				case 'entryFailed':
+					b( 'KalturaSupport_EntryFailed' );
 					break;
 				case 'mediaReady':
 					// Check for "media ready" ( namespace to kdpMapping )

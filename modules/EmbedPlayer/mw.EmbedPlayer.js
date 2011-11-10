@@ -1512,6 +1512,13 @@ mw.EmbedPlayer.prototype = {
 		// Hide loader
 		this.hidePlayerSpinner();
 		
+		// Error in loading media ( trigger the mediaLoadError )
+		$( this ).trigger( 'KalturaSupport_MediaLoadError' );
+		
+		// We don't distiguish between mediaError and mediaLoadError right now 
+		$( this ).trigger( 'KalturaSupport_MediaError' );
+		
+		
 		// Check if there is a more specific error: 
 		if( this['data-playerError'] ){
 			this.showErrorMsg( this['data-playerError'] );
