@@ -638,7 +638,7 @@ mw.PlayerControlBuilder.prototype = {
 			this.restoreWindowPlayerDom();
 		} 
 		// Restore scrolling on iPad
-		$( document ).unbind('touchmove.fullscreen');
+		$( document ).unbind('touchend.fullscreen');
 		// Trigger the onCloseFullscreen event: 
 		$( embedPlayer ).trigger( 'onCloseFullScreen' );
 	},
