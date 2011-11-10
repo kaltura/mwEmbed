@@ -1833,10 +1833,12 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		if ( show_ms ) {
 			tm.seconds = Math.round( tm.seconds * 1000 ) / 1000;
 		} else {
-			roundedSec = Math.round( tm.seconds );
+			var roundedSec = Math.round( tm.seconds );
 			if( roundedSec == 60 ){
 				tm.seconds = 0;
 				tm.minutes = parseInt( tm.minutes ) + 1;
+			} else { 
+				tm.seconds = roundedSec;
 			}
 		}
 		if ( tm.seconds < 10 ){
