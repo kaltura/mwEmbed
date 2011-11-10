@@ -288,6 +288,9 @@ mw.FreeWheelControler.prototype = {
 			setTimeout(function(){
 				vid.removeAttribute( 'controls' );
 			},0)
+			setTimeout(function(){
+				vid.removeAttribute( 'controls' );
+			},100)
 		} );
 		
 		return true;
