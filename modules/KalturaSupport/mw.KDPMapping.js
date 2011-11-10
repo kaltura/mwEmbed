@@ -396,7 +396,7 @@
 		 */
 		addJsListener: function( embedPlayer, eventName, callbackName ){
 			var _this = this;
-			//mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
+			mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
 
 			if( typeof callbackName == 'string' ){
 				this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName)  ] = window[ callbackName ];
