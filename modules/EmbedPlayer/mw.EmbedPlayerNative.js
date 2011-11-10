@@ -556,8 +556,9 @@ mw.EmbedPlayerNative = {
 								}
 								return false;
 							});
-							if (typeof switchCallback == 'function') {
+							if ( switchCallback ) {
 								switchCallback( vid );
+								switchCallback = null;
 							}
 							_this.hidePlayerSpinner();
 						}, 50);
@@ -565,6 +566,12 @@ mw.EmbedPlayerNative = {
 						$( vid ).bind( 'pause' + switchBindPostfix, function(){
 							// remove pause binding: 
 							$( vid ).unbind( 'pause' + switchBindPostfix );
+							
+							if ( switchCallback ) {
+								_this.play();
+								switchCallback( vid );
+								switchCallback = null;
+							}
 							// restore event propagation
 							_this.restoreEventPropagation();
 						});

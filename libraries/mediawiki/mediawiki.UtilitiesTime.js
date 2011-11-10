@@ -55,8 +55,8 @@
 		tm.minutes = Math.floor( ( sec / 60 ) % 60 );
 		tm.seconds = sec % 60;
 		if( tm.seconds == 60 ){
-			tm.seconds = 0
-			tm.minutes = tm.minutes + 1;
+			tm.seconds = 0;
+			tm.minutes = parseInt( tm.minutes ) + 1;
 		}
 		return tm;
 	};
