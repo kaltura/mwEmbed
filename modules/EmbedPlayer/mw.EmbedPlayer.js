@@ -1416,7 +1416,7 @@ mw.EmbedPlayer.prototype = {
 			return ;
 		}
 		// auto play does not work on iPad > 3 
-		if ( this.autoplay && ( !mw.isIOS() || mw.isIpad3() ) ) {
+			if (this.autoplay && (!mw.isIOS() || mw.isIpad3() ) ) {
 			mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
 			_this.play();
 		}
@@ -1513,10 +1513,11 @@ mw.EmbedPlayer.prototype = {
 		this.hidePlayerSpinner();
 		
 		// Error in loading media ( trigger the mediaLoadError )
-		$( this ).trigger( 'KalturaSupport_MediaLoadError' );
+		$( this ).trigger( 'mediaLoadError' );
 		
 		// We don't distiguish between mediaError and mediaLoadError right now 
-		$( this ).trigger( 'KalturaSupport_MediaError' );
+		// TODO fire mediaError only on failed to recive data. 
+		$( this ).trigger( 'mediaError' );
 		
 		
 		// Check if there is a more specific error: 
