@@ -1705,7 +1705,7 @@ mw.EmbedPlayer.prototype = {
 		// restore the control bar:
 		this.$interface.find('.control-bar').show();
 		
-		if( !chnagePlayingMedia && this.$interface ){
+		if( chnagePlayingMedia && this.$interface ){
 			this.$interface.find('.play-btn-large').hide(); // hide the play btn
 		}
 		
@@ -1719,9 +1719,10 @@ mw.EmbedPlayer.prototype = {
 			
 		
 			// Make sure the play button is not displayed:
-			if( _this.$interface ){
+			if(  chnagePlayingMedia && _this.$interface ){
 				_this.$interface.find( '.play-btn-large' ).hide();
 			}
+			
 			if( _this.isPersistentNativePlayer() ){
 				// If switching a Persistent native player update the source:
 				// ( stop and play won't refresh the source  )
