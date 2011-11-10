@@ -693,7 +693,13 @@ mw.EmbedPlayer.prototype = {
 			}
 		}
 	},
-
+	/**
+	 * A bind helper to help iOS retain bind context 
+	 */
+	bindHelper: function( name, callback ){
+		$( this ).bind( name, callback );
+	},
+	
 	stopEventPropagation: function(){
 		this._propagateEvents = false;
 	},

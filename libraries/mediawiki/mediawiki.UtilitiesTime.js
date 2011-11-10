@@ -26,7 +26,11 @@
 		if ( show_ms ) {
 			tm.seconds = Math.round( tm.seconds * 1000 ) / 1000;
 		} else {
-			tm.seconds = Math.round( tm.seconds );
+			roundedSec = Math.round( tm.seconds );
+			if( roundedSec == 60 ){
+				tm.seconds = 0;
+				tm.minutes = parseInt( tm.minutes ) + 1;
+			}
 		}
 		if ( tm.seconds < 10 ){
 			tm.seconds = '0' +	tm.seconds;
@@ -54,10 +58,6 @@
 		tm.hours = Math.floor( sec / 3600 );
 		tm.minutes = Math.floor( ( sec / 60 ) % 60 );
 		tm.seconds = sec % 60;
-		if( tm.seconds == 60 ){
-			tm.seconds = 0;
-			tm.minutes = parseInt( tm.minutes ) + 1;
-		}
 		return tm;
 	};
 	

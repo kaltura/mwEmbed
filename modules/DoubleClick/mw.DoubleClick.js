@@ -52,7 +52,7 @@ mw.DoubleClick.prototype = {
 		$.each( slotSet, function( inx, slotType ){
 			// Add the adSlot binding
 			// @@TODO use the "sequence number" as a slot identifier. 
-			$( _this.embedPlayer ).bind( 'AdSupport_' + slotType + _this.bindPostfix, function( event, sequenceProxy ){
+			_this.embedPlayer.bindHelper( 'AdSupport_' + slotType + _this.bindPostfix, function( event, sequenceProxy ){
 				// Add the slot to the given sequence proxy target target
 				sequenceProxy[ _this.getSequenceIndex( slotType ) ] = function( callback ){
 					_this.loadAndPlayVideoSlot( slotType, callback );	
@@ -61,7 +61,7 @@ mw.DoubleClick.prototype = {
 		});
 
 		// Add a binding for cuepoints:
-		$( _this.embedPlayer ).bind( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event,  cuePointWrapper ){
+		_this.embedPlayer.bindHelper( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event,  cuePointWrapper ){
 			var cuePoint = cuePointWrapper.cuePoint;
 			// check if trackCuePoints has been disabled 
 			if( _this.getConfig( 'trackCuePoints') === false){
@@ -98,12 +98,12 @@ mw.DoubleClick.prototype = {
 			}
 		});
 		// On clip done hide any overlay banners that are still active
-		$( _this.embedPlayer ).bind( 'ended' + _this.bindPostfix, function(){
+		_this.embedPlayer.bindHelper( 'ended' + _this.bindPostfix, function(){
 			 if( _this.activeOverlayadManager )
 				 _this.activeOverlayadManager.unload();
 		});
 		// On change media remove any existing ads: 
-		$( _this.embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
+		_this.embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
 		});
 	},

@@ -89,7 +89,7 @@ mw.FreeWheelControler.prototype = {
 		// We should be able to use: 
 		// $(_this.embedPlayer ).bind .. but this ~sometimes~ fails on OSX safari and iOS 
 		// TODO investigate wtf is going on
-		_this.embedPlayer.freeWheelBindingHelper( 'AdSupport_OnPlayAdLoad' + _this.bindPostfix, function( event, callback ){
+		_this.embedPlayer.bindHelper( 'AdSupport_OnPlayAdLoad' + _this.bindPostfix, function( event, callback ){
 			
 			// Add key-values for ad targeting.
 			_this.addContextKeyValues();
@@ -201,19 +201,18 @@ mw.FreeWheelControler.prototype = {
 	
 		$.each(_this.slots, function( slotType, slotSet){
 			if( slotType == 'midroll' || slotType == 'overlay' ){
-				_this.embedPlayer.freeWheelBindingHelper( 'monitorEvent' + _this.bindPostfix, function( event ){
+				_this.embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostfix, function( event ){
 					_this.playSlotsInRange( slotSet );
 				});
 				return true;
 			}
 			
 			// Else set of preroll or postroll clips setup normal binding: 
-			_this.embedPlayer.freeWheelBindingHelper( 'AdSupport_' + slotType + _this.bindPostfix, function( event, sequenceProxy ){
+			_this.embedPlayer.bindHelper( 'AdSupport_' + slotType + _this.bindPostfix, function( event, sequenceProxy ){
 				sequenceProxy[ _this.getSequenceIndex( slotType ) ] = function( callback ){
 					// Run the freewheel slot add, then run the callback once done 
 					_this.displayFreeWheelSlots( slotType, 0, function(){
-						// Restore the player:
-						_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
+						_this.restorePlayState();
 						// Run the callback:
 						callback();
 					});
@@ -221,6 +220,12 @@ mw.FreeWheelControler.prototype = {
 				};
 			});
 		});
+	},
+	restorePlayState: function(){
+		this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
+		// remove pause binding: 
+		var vid = _this.embedPlayer.getPlayerElement();
+		$( vid ).unbind( 'pause' + _this.bindPostfix );
 	},
 	playSlotsInRange: function( slotSet ){
 		var _this = this;
@@ -250,10 +255,10 @@ mw.FreeWheelControler.prototype = {
 						}
 						// Check if we are overlaying controls ( move the banner up ) 
 						if( embedPlayer.controlBuilder.isOverlayControls() ){
-							_this.embedPlayer.freeWheelBindingHelper( 'onShowControlBar', function(){
+							_this.embedPlayer.bindHelper( 'onShowControlBar', function(){
 								$('#fw_ad_container_div').animate({'bottom': ctrlBarBottom + 'px'}, 'fast');
 							});
-							_this.embedPlayer.freeWheelBindingHelper( 'onHideControlBar', function(){
+							_this.embedPlayer.bindHelper( 'onHideControlBar', function(){
 								$('#fw_ad_container_div').animate({'bottom': bottom + 'px'}, 'fast');
 							});
 						} else {
@@ -286,11 +291,9 @@ mw.FreeWheelControler.prototype = {
 		$( vid ).bind( 'pause' + _this.bindPostfix, function(){
 			// do a async call to remove controls on pause
 			setTimeout(function(){
-				vid.removeAttribute( 'controls' );
-			},0);
-			setTimeout(function(){
-				vid.removeAttribute( 'controls' );
-			},100);
+				var vid = _this.embedPlayer.getPlayerElement();
+				vid.controls = false;
+			},1);
 		} );
 		
 		return true;
@@ -322,6 +325,7 @@ mw.FreeWheelControler.prototype = {
 			_this.overlaySlotActive = false;
 			return ;
 		}
+
 		if( slotType== 'preroll' ){
 			_this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
 		}
@@ -334,6 +338,7 @@ mw.FreeWheelControler.prototype = {
 			_this.displayFreeWheelSlots( slotType, _this.curentSlotIndex, _this.currentSlotDoneCB );
 		}
 		if( slotType=='midroll' ){
+			_this.restorePlayState();
 			// midroll done
 			_this.embedPlayer.adTimeline.restorePlayer();
 		}

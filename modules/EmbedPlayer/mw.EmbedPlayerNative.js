@@ -501,6 +501,9 @@ mw.EmbedPlayerNative = {
 			}, 100);
 			return ;
 		}
+		// Set the poster to a black image
+		vid.poster = mw.getConfig( 'EmbedPlayer.BlackPixle' );
+		
 		// don't propgate events while switching: 
 		this.stopEventPropagation();
 		

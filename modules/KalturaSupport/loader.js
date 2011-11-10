@@ -31,7 +31,6 @@
 		    	'type' : 'video/webm'
 		    }
 		 ],
-		 
 		 'Kaltura.BlackVideoSources' : [
 		    {
 		        'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_oiyfyphl/format/url/protocol/http/a.webm',
