@@ -486,11 +486,16 @@ mw.FreeWheelControler.prototype = {
 		var context = this.getContext();
 		for( var i=0; i < cuePoints.length; i++){
 			var cuePoint =  cuePoints[i];
+			
 			// Add ads for each cuePoint type: 
-			if( cuePoint.cuePointType == 'adCuePoint.Ad' 
-				&&
-				cuePoint.tags.toLowerCase().indexOf('freewheel') !== -1 
-			){
+			if( cuePoint.protocolType === 0 && cuePoint.cuePointType == 'adCuePoint.Ad' ){
+				
+				// Check if we have a provider filter:
+				var providerFilter = this.getConfig('provider');
+				if( providerFilter && cuePoint.tags.toLowerCase().indexOf( providerFilter ) === -1 ){
+					continue;
+				}
+				
 				var adType = embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
 				mw.log("FreeWheel:: context.addCuePointSlots: " + adType );
 				switch( adType ){
