@@ -281,15 +281,14 @@ mw.FreeWheelControler.prototype = {
 		slot.play();
 		slot.alreadyPlayed = true;
 		
-		// suppress freewheel controls attribute change: 
+		// suppress freewheel controls attribute change on pause: 
 		var vid = _this.embedPlayer.getPlayerElement();
 		$( vid ).bind( 'pause' + _this.bindPostfix, function(){
-			vid.removeAttribute( 'controls' );
+			// do a async call to remove controls on pause
 			setTimeout(function(){
 				vid.removeAttribute( 'controls' );
 			},0)
-		} )
-		
+		} );
 		
 		return true;
 	},

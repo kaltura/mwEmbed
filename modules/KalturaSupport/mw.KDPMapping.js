@@ -432,10 +432,10 @@
 			};
 			switch( eventName ){
 				case 'mediaLoadError':
-					b( 'KalturaSupport_MediaLoadError');
+					b( 'mediaLoadError');
 					break;
 				case 'mediaError':
-					b( 'KalturaSupport_MediaError' );
+					b( 'mediaError' );
 				case 'kdpEmpty':
 					// TODO: When we have video tag without an entry
 					b( 'playerReady', function(){
