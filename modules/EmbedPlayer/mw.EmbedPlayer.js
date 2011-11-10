@@ -2488,11 +2488,13 @@ mw.EmbedPlayer.prototype = {
 	monitor: function() {
 		var _this = this;
 		// Check for current time update outside of embed player
-		this.checkForCurrentTimeSeek();
+		_this.checkForCurrentTimeSeek();
 		
 		// Hide the spinner once we have time update: 
 		if( this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
 			_this._checkHideSpinner = false;
+			// also hide the play button ( in case it was there somehow )
+			_this.$interface.find('.play-btn-large').hide()
 			_this.hidePlayerSpinner();
 		}
 		

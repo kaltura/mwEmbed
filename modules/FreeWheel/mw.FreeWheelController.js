@@ -287,10 +287,10 @@ mw.FreeWheelControler.prototype = {
 			// do a async call to remove controls on pause
 			setTimeout(function(){
 				vid.removeAttribute( 'controls' );
-			},0)
+			},0);
 			setTimeout(function(){
 				vid.removeAttribute( 'controls' );
-			},100)
+			},100);
 		} );
 		
 		return true;
