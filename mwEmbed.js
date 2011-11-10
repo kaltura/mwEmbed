@@ -1865,9 +1865,12 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		tm.hours = Math.floor( sec / 3600 );
 		tm.minutes = Math.floor( ( sec / 60 ) % 60 );
 		tm.seconds = sec % 60;
+		if( tm.seconds == 60 ){
+			tm.seconds = 0;
+			tm.minutes = parseInt( tm.minutes ) + 1;
+		}
 		return tm;
 	};
-
 	/**
 	 * Given a float number of seconds, returns npt format response. ( ignore
 	 * days for now )
