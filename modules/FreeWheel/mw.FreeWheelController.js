@@ -280,6 +280,17 @@ mw.FreeWheelControler.prototype = {
 		}
 		slot.play();
 		slot.alreadyPlayed = true;
+		
+		// suppress freewheel controls attribute change: 
+		var vid = _this.embedPlayer.getPlayerElement();
+		$( vid ).bind( 'pause' + _this.bindPostfix, function(){
+			vid.removeAttribute( 'controls' );
+			setTimeout(function(){
+				vid.removeAttribute( 'controls' );
+			},0)
+		} )
+		
+		
 		return true;
 	},
 	displayFreeWheelSlots: function( slotType, inx, doneCallback ){
