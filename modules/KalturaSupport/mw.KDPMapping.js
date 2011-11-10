@@ -233,7 +233,7 @@
 		 * @param {object} embedPlayer Player Proxy or embedPlayer object 
 		 * @param {string} expression The expression to be evaluated
 		 */
-		evaluateExpression: function( embedPlayer, expression){
+		evaluateExpression: function( embedPlayer, expression ){
 			var _this = this;
 			// Check if we have a function call: 
 			if( expression.indexOf( '(' ) !== -1 ){
@@ -689,6 +689,8 @@
 					embedPlayer.changeMedia();
 				break;
 			}
+			// Give kdp plugins a chance to take attribute actions 
+			$( embedPlayer ).trigger( 'Kaltura_SendNotification', [notificationName, notificationData] );
 		}
 	};	
 		

@@ -448,7 +448,6 @@ class kalturaIframe {
 		global $wgKalturaUiConfCacheTime;
 		// Only cache for 30 seconds if there is an error: 
 		$cacheTime = ( $this->isError() )? 30 : $wgKalturaUiConfCacheTime;
-		
 		// Set relevent expire headers:
 		if( $this->getResultObject()->isCachedOutput() ){
 			$time = $this->getResultObject()->getFileCacheTime();
