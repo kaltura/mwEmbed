@@ -141,7 +141,7 @@ mw.AdTimeline.prototype = {
 		});
 		// On play preSequence
 		$( embedPlayer ).bind( 'preSequence' + _this.bindPostfix, function() {
-			mw.log( "AdTimeline:: First Play Start / bind Ad timeline" );
+			mw.log( "AdTimeline:: First Play Start / bind Ad timeline ( " );
 			embedPlayer.pauseLoading();
 			embedPlayer.sequenceProxy.isInSequence = true;
 			// given an opportunity for ads to load for ads to load: 
@@ -165,10 +165,9 @@ mw.AdTimeline.prototype = {
 								// after the ad is complete 
 								if( playedAnAdFlag ){
 									$(embedPlayer).trigger('onplay');
-								
-									// Continue playback
-									embedPlayer.play();
 								}
+								// Continue playback
+								embedPlayer.play();
 							},0);
 						});
 						
@@ -295,7 +294,7 @@ mw.AdTimeline.prototype = {
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here. 
-		embedPlayer.disableSeekBar();
+		//embedPlayer.disableSeekBar();
 		// update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
 		// Trigger an ad start event once we enter an ad state
