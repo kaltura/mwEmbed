@@ -68,13 +68,18 @@ mw.DoubleClick.prototype = {
 				return ;
 			}
 			
-			// Make sure the cue point is tagged for dobuleclick
-			if( cuePoint.tags.indexOf( "doubleclick" ) === -1 
-					&& 
-				cuePoint.title.indexOf( "doubleclick" ) === -1
-			){
+			// Check that the cue point is protocolType = 0 and cuePointType == adCuePoint.Ad
+			if( cuePoint.protocolType !== 0 || cuePoint.cuePointType != 'adCuePoint.Ad' ){
 				return ;
 			}
+			// Check if we have a provider filter:
+			var providerFilter = _this.getConfig('provider');
+			if( providerFilter && cuePoint.tags.toLowerCase().indexOf( providerFilter ) === -1 ){
+				// skip the cuepoint that did not match the provider filter
+				mw.log( "mw.DoubleClick:: skip cuePoint with tag: " + cuePoint.tags + ' != ' + providerFilter );
+				return ;
+			}
+			
 			
 			// Get the ad type for each cuepoint
 			var adType = _this.embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
