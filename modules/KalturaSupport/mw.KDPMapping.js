@@ -612,7 +612,13 @@
 					break;
 				default:
 					// custom listner: 
-					b( eventName );
+					b( eventName, function(){
+						var args = $.makeArray( arguments );
+						if( args.length ){
+							args.shift();
+						}
+						callback.apply( _this, args );
+					} );
 					break;
 			};
 			// The event was successfully binded: 
