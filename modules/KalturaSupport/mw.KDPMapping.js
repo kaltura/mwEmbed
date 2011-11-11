@@ -93,7 +93,7 @@
 							}
 							evalFunction.apply( evalFunctionParent, listenerArgs );
 						} catch (e){
-							mw.log( "Warning KDPMapping: jsListenerEvent function name not found");
+							mw.log( "KDPMapping:: Error in jsListenerEvent callback: " + e );
 						}
 					}
 				});
