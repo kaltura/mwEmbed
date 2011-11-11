@@ -936,7 +936,7 @@ mw.includeAllModuleMessages();
 				$capTarget = $( '<div />' )
 				 	.addClass( 'captionsLayoutTarget' )
 					.css( layoutCss )
-					.appendTo( '#' + this.embedPlayer.id );
+				this.embedPlayer.$interface.append( $capTarget )
 			}
 			return $capTarget;
 		},
