@@ -59,9 +59,9 @@ mw.FreeWheelControler.prototype = {
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 		
 		// unbind any existing bindings:
-		$( _this.embedPlayer ).unbind( _this.bindPostfix );
+		_this.embedPlayer.unbindHelper( _this.bindPostfix );
 		
-		// TODO Checks if we are loading ads async 
+		// TODO Checks if we are loading ads async
 		
 		// Load the freewheel ad manager then setup the ads
 		if( !window['tv'] || !tv.freewheel ){

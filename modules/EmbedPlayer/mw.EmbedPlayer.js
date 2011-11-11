@@ -698,6 +698,9 @@ mw.EmbedPlayer.prototype = {
 	bindHelper: function( name, callback ){
 		$( this ).bind( name, callback );
 	},
+	unbindHelper: function( name ){
+		$( this ).unbind( name ); 
+	},
 	triggerQueueCallback: function( name, callback ){
 		$( this ).triggerQueueCallback( name, callback );
 	},
@@ -1710,16 +1713,14 @@ mw.EmbedPlayer.prototype = {
 		
 		// Clear out any player error ( both via attr and object property ):
 		this['data-playerError'] = null;
-		$(this).attr( 'data-playerError', '');
+		$( this ).attr( 'data-playerError', '');
 		
 		// Clear out the player error div:
 		this.$interface.find('.error').remove();
 		// restore the control bar:
 		this.$interface.find('.control-bar').show();
-		
-		if( chnagePlayingMedia && this.$interface ){
-			this.$interface.find('.play-btn-large').hide(); // hide the play btn
-		}
+		// hide the play btn
+		this.$interface.find('.play-btn-large').hide(); 
 		
 		//If we are change playing media add a ready binding: 
 		var bindName = 'playerReady.changeMedia';
@@ -1728,11 +1729,11 @@ mw.EmbedPlayer.prototype = {
 			if( _this.controlBuilder ){
 				_this.controlBuilder.showControlBar();
 			}
-			
-		
-			// Make sure the play button is not displayed:
-			if(  chnagePlayingMedia && _this.$interface ){
+			// Make sure the play button reflects the original play state
+			if(  chnagePlayingMedia ){
 				_this.$interface.find( '.play-btn-large' ).hide();
+			} else {
+				_this.$interface.find( '.play-btn-large' ).show();
 			}
 			
 			if( _this.isPersistentNativePlayer() ){
@@ -1763,10 +1764,6 @@ mw.EmbedPlayer.prototype = {
 
 		// Load new sources per the entry id via the checkPlayerSourcesEvent hook:
 		$( this ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){
-			_this.hidePlayerSpinner();
-			if( _this.$interface && !chnagePlayingMedia ){
-				_this.$interface.find( '.play-btn-large' ).show(); // show the play btn
-			}
 			// Start player events leading to playerReady
 			_this.setupSourcePlayer();
 		});
