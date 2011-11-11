@@ -202,7 +202,7 @@
 	
 	// Add class file paths
 	mw.addResourcePaths( {
-		"mw.EmbedPlayer"	: "mw.EmbedPlayer.js",
+		"mw.EmbedPlayer" : "mw.EmbedPlayer.js",
 		
 		"mw.MediaElement" : "mw.MediaElement.js",
 		"mw.MediaPlayer" : "mw.MediaPlayer.js",

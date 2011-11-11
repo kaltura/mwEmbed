@@ -14,7 +14,9 @@
 			
 			// Check if the ui conf layout supports timer text
 			// <timer id="timerControllerScreen1" width="40" stylename="timerProgressLeft" format="mm:ss" height="12" dynamiccolor="true" timertype="forwards" color1="14540253"></timer>
-			if( !$uiConf.find( 'timer' ).length ){
+			if( !$uiConf.find( 'timer' ).length && 
+					( $.browser.msie && parseInt( $.browser.version ) >= 9 ) )
+			{
 				disabled.push( 'timeDisplay' );
 			}			
 			

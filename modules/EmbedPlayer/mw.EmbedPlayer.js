@@ -1095,10 +1095,9 @@ mw.EmbedPlayer.prototype = {
 				}
 				_this[ method ] = playerInterface[method];
 			}
-
 			// Update feature support
 			_this.updateFeatureSupport();
-
+			
 			_this.getDuration();
 
 			// Run player display with timeout to avoid function stacking

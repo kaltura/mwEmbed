@@ -598,6 +598,8 @@ class kalturaIframe {
 <!DOCTYPE html>
 <html>
 	<head>
+		<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ 
+		</script>
 		<?php echo $this->outputIframeHeadCss(); ?>
 	</head>
 	<body>	
@@ -680,11 +682,15 @@ class kalturaIframe {
 				var hashString = document.location.hash;
 				// Parse any configuration options passed in via hash url:
 				if( hashString ){
-					var hashObj = JSON.parse(
-						unescape( hashString.replace( /^#/, '' ) )
-					);
-					if( hashObj.mwConfig ){
-						mw.setConfig( hashObj.mwConfig );
+					try{
+						var hashObj = JSON.parse(
+							unescape( hashString.replace( /^#/, '' ) )
+						);
+						if( hashObj.mwConfig ){
+							mw.setConfig( hashObj.mwConfig );
+						}
+					} catch( e ) {
+						//error could not parse hash tag
 					}
 				} else 	if( window['parent'] && window['parent']['preMwEmbedConfig'] ){ 
 					// Grab config from parent frame:
