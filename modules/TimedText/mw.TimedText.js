@@ -981,6 +981,13 @@ mw.includeAllModuleMessages();
 				// else apply the default layout system:
 				this.addTextToDefaultLocation( $textTarget );
 			}
+			// apply any interface size adjustments: 
+			$textTarget.css( this.getInterfaceSizeTextCss({
+					'width' :  this.embedPlayer.$interface.width(),
+					'height' : this.embedPlayer.$interface.height()
+				})
+			);
+			
 			
 			// Update the style of the text object if set
 			if( caption.styleId ){
