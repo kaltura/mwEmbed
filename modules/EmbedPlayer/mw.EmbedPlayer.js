@@ -404,7 +404,6 @@ EmbedPlayerManager.prototype = {
 		// Copy over any data attributes applied to the targetElement to the swapTarget
 		$( swapPlayerElement ).data( $( targetElement ).data() );
 		
-		
 		// Check if we are using native controls or Persistent player ( should keep the video embed around )
 		if( playerInterface.useNativePlayerControls() || playerInterface.isPersistentNativePlayer() ) {
 			$( targetElement )

@@ -130,12 +130,13 @@ mw.AdTimeline.prototype = {
 		_this.destroy();
 		// Create an empty sequence proxy object ( stores information about the current sequence ) 
 		embedPlayer.sequenceProxy = {};
-
+		
+		var playedAnAdFlag = false;
 		// On change media clear out any old adTimeline bindings
 		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
+			playedAnAdFlag = false;
 		});
-		var playedAnAdFlag = false;
 		$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
 			playedAnAdFlag = true;
 		});
