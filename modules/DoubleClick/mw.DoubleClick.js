@@ -94,6 +94,12 @@ mw.DoubleClick.prototype = {
 					}
 					// play the restored entry ( restore propagation ) 
 					_this.embedPlayer.play();
+					_this.embedPlayer.stopEventPropagation();
+					// restore event Propagation after 100ms 
+					// prevents some residual doubleClick pause events from propagating )
+					setTimeout(function(){
+						_this.embedPlayer.restoreEventPropagation();
+					}, 100)
 				}, cuePoint);
 			}
 		});
@@ -219,6 +225,9 @@ mw.DoubleClick.prototype = {
 	loadAndPlayVideoSlot: function( slotType, callback, cuePoint){
 		var _this = this;
 		mw.log( "DoubleClick::loadAndPlayVideoSlot> pause while loading ads ");
+		
+		var adClickPostFix = '.dcAdClick';
+		
 		// Pause playback:
 		_this.embedPlayer.pauseLoading();
 		
@@ -243,22 +252,21 @@ mw.DoubleClick.prototype = {
 			}
 
 			// Update the playhead to play state:
-			_this.embedPlayer.play();
+			_this.embedPlayer.playInterfaceUpdate();
 			
 			// TODO This should not be needed ( fix event stop event propagation ) 
 			_this.embedPlayer.monitor();
 			mw.log( "DoubleClick::adsManager.play" );
 			var vid = _this.embedPlayer.getPlayerElement();
-			
 			adsManager.play( vid );
 			
 			// Show the control bar with a ( force on screen option for iframe based clicks on ads ) 
 			// double click only gives us a "raw pause" 
-			$( vid ).bind('pause.dcAdClick', function(){
+			$( vid ).bind( 'pause' + adClickPostFix, function(){
 				// force display the control bar: 
 				_this.embedPlayer.controlBuilder.showControlBar( true );
 				// add a play binding: to restore hover 
-				$( vid ).bind('play.dcAdClick', function(){
+				$( vid ).bind( 'play' + adClickPostFix, function(){
 					_this.embedPlayer.controlBuilder.restoreControlsHover();
 				});
 			});
@@ -269,7 +277,7 @@ mw.DoubleClick.prototype = {
 			mw.log( "DoubleClick::loadAndPlayVideoSlot> onResumeRequestedCallback" );
 			var vid = _this.embedPlayer.getPlayerElement();
 			// unbind the click 
-			$( vid ).unbind( '.dcAdClick');
+			$( vid ).unbind( adClickPostFix );
 			
 			// TODO integrate into timeline proper: 
 			if( _this.embedPlayer.adTimeline ){

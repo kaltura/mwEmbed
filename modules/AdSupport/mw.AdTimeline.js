@@ -282,7 +282,7 @@ mw.AdTimeline.prototype = {
 				// call with a timeout to avoid function stack
 				setTimeout(function(){
 					runSequeceProxyInx( seqInx );
-				},0);
+				}, 0 );
 			});
 			
 			// Update the interface for ads: 
@@ -430,7 +430,7 @@ mw.AdTimeline.prototype = {
 	 */
 	displayVideoFile: function( adSlot, adConf ){
 		var _this = this;
-
+		var adClickPostFix = '.adClick';
 		// check that we have a video to display: 
 		var targetSrc =  _this.embedPlayer.getCompatibleSource( adConf.videoFiles );
 		if( !targetSrc ){
@@ -444,11 +444,11 @@ mw.AdTimeline.prototype = {
 		// Check for click binding 
 		if( adConf.clickThrough ){	
 			var clickedBumper = false;
-			$( _this.embedPlayer ).bind( 'click.ad', function(){
+			$( _this.embedPlayer ).bind( 'click' + adClickPostFix, function(){
 				// Show the control bar with a ( force on screen option for iframe based clicks on ads ) 
 				_this.embedPlayer.controlBuilder.showControlBar( true );
-				$( _this.embedPlayer ).bind('play.adClick', function(){
-					$( _this.embedPlayer ).unbind('play.adClick');
+				$( _this.embedPlayer ).bind( 'play' + adClickPostFix, function(){
+					$( _this.embedPlayer ).unbind( 'play' + adClickPostFix );
 					_this.embedPlayer.controlBuilder.restoreControlsHover();
 				})
 				// try to do a popup:
@@ -515,7 +515,7 @@ mw.AdTimeline.prototype = {
 							.css('cursor', 'pointer')
 							.css( adSlot.skipBtn.css )				
 							.click(function(){
-								$( _this.embedPlayer ).unbind( 'click.ad' );
+								$( _this.embedPlayer ).unbind( 'click' + adClickPostFix );
 								// unbind any vast tracking: 
 								$( _this.getNativePlayerElement() ).unbind( _this.trackingBindPostfix );
 								adSlot.playbackDone();
@@ -531,7 +531,7 @@ mw.AdTimeline.prototype = {
 			},
 			function(){					
 				// unbind any click ad bindings:
-				$( _this.embedPlayer ).unbind( 'click.ad' );					
+				$( _this.embedPlayer ).unbind( 'click' + adClickPostFix );					
 				adSlot.playbackDone();
 			}
 		);
