@@ -611,8 +611,9 @@
 					b('TimedText_ChangeSource');
 					break;
 				default:
-					mw.log("Error unkown JsListener: " + eventName );
-					return false;
+					// custom listner: 
+					b( eventName );
+					break;
 			};
 			// The event was successfully binded: 
 			return true;
