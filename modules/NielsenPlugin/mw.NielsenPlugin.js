@@ -123,6 +123,8 @@ mw.NielsenPlugin.prototype = {
 			// unbind tracking ( will be re-instated via addPlayerTracking on subsequent ads or content 
 			$( embedPlayer ).unbind( _this.trackerPostFix );
 			
+			// Restore content tracking after ad end:
+			_this.addPlayerTracking( "content" );
 		});
 		
 		// When starting content finish up content beacon and add content bindings
