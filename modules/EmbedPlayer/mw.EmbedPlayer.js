@@ -698,6 +698,12 @@ mw.EmbedPlayer.prototype = {
 	bindHelper: function( name, callback ){
 		$( this ).bind( name, callback );
 	},
+	triggerQueueCallback: function( name, callback ){
+		$( this ).triggerQueueCallback( name, callback );
+	},
+	triggerHelper: function( name, obj ){
+		$( this ).trigger( name, obj );
+	},
 	
 	stopEventPropagation: function(){
 		this._propagateEvents = false;

@@ -133,20 +133,21 @@ mw.AdTimeline.prototype = {
 		
 		var playedAnAdFlag = false;
 		// On change media clear out any old adTimeline bindings
-		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
+		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
 			playedAnAdFlag = false;
 		});
-		$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
+		
+		embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
 			playedAnAdFlag = true;
 		});
 		// On play preSequence
-		$( embedPlayer ).bind( 'preSequence' + _this.bindPostfix, function() {
+		embedPlayer.bindHelper( 'preSequence' + _this.bindPostfix, function() {
 			mw.log( "AdTimeline:: First Play Start / bind Ad timeline ( " );
 			embedPlayer.pauseLoading();
 			embedPlayer.sequenceProxy.isInSequence = true;
 			// given an opportunity for ads to load for ads to load: 
-			$( embedPlayer ).triggerQueueCallback( 'AdSupport_OnPlayAdLoad',function(){
+			embedPlayer.triggerQueueCallback( 'AdSupport_OnPlayAdLoad',function(){
 				mw.log( "AdTimeline:: AdSupport_OnPlayAdLoad ");
 				// Show prerolls:
 				_this.displaySlots( 'preroll', function(){
@@ -158,14 +159,14 @@ mw.AdTimeline.prototype = {
 							embedPlayer.sequenceProxy.isInSequence = false;
 							
 							// trigger the preSequenceComplete event
-							$( embedPlayer ).trigger( 'preSequenceComplete' );
+							embedPlayer.triggerHelper( 'preSequenceComplete' );
 							
 							setTimeout(function(){ // avoid function stack
 								_this.restorePlayer();
 								// trigger another onplay ( to match the kaltura kdp ) on play event
 								// after the ad is complete 
 								if( playedAnAdFlag ){
-									$(embedPlayer).trigger('onplay');
+									embedPlayer.triggerHelper('onplay');
 								}
 								// Continue playback
 								embedPlayer.play();
@@ -181,25 +182,25 @@ mw.AdTimeline.prototype = {
 		var displayedPostroll = false;
 		// TODO We really need a "preend" event for thing like this. 
 		// So that playlist next clip or other end bindings don't get triggered. 
-		$( embedPlayer ).bind( 'ended' + _this.bindPostfix, function( event ){
+		embedPlayer.bindHelper( 'ended' + _this.bindPostfix, function( event ){
 			if( displayedPostroll ){
 				return ;
 			}
 			playedAnAdFlag = false;
-			$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
+			embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
 				playedAnAdFlag = true;
 			});
 			displayedPostroll = true;
 			embedPlayer.onDoneInterfaceFlag = false;
 			// Trigger the postSequenceStart event
 			// start the postSequence: 
-			$( embedPlayer ).trigger( 'postSequence');
+			embedPlayer.triggerHelper( 'postSequence');
 			embedPlayer.sequenceProxy.isInSequence = true;
 			_this.displaySlots( 'postroll', function(){
 				// Turn off preSequence
 				embedPlayer.sequenceProxy.isInSequence = false;
 				// Trigger the postSequenceComplete event
-				$( embedPlayer ).trigger( 'postSequenceComplete' );
+				embedPlayer.triggerHelper( 'postSequenceComplete' );
 
 				/** TODO support postroll bumper and leave behind */
 				if( playedAnAdFlag ){
@@ -242,7 +243,7 @@ mw.AdTimeline.prototype = {
 		var sequenceProxy = {};
 		
 		// Get the sequence ad set
-		$( _this.embedPlayer ).trigger( 'AdSupport_' + slotType,  [ sequenceProxy ]);
+		_this.embedPlayer.triggerHelper( 'AdSupport_' + slotType,  [ sequenceProxy ]);
 		
 		// Generate a sorted key list:
 		var keyList = [];
@@ -277,7 +278,7 @@ mw.AdTimeline.prototype = {
 				// Trigger the EndAdPlayback between each ad in the sequence proxy 
 				// ( if we have more ads to go )
 				if( sequenceProxy[ keyList[ seqInx ] ] ){
-					$( _this.embedPlayer ).trigger( 'AdSupport_EndAdPlayback');
+					_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback');
 				}
 				// call with a timeout to avoid function stack
 				setTimeout(function(){
@@ -299,7 +300,7 @@ mw.AdTimeline.prototype = {
 		// update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
 		// Trigger an ad start event once we enter an ad state
-		$( embedPlayer ).trigger( 'AdSupport_StartAdPlayback', slotType );
+		embedPlayer.triggerHelper( 'AdSupport_StartAdPlayback', slotType );
 	},
 	/**
 	 * Restore a player from ad state
@@ -311,7 +312,7 @@ mw.AdTimeline.prototype = {
 		this.embedPlayer.monitor();
 		this.embedPlayer.seeking = false;
 		// trigger an event so plugins can restore their content based actions
-		$( this.embedPlayer ).trigger( 'AdSupport_EndAdPlayback');
+		this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback');
 	},
 	/**
 	 * Display a given timeline target, if the timeline target affects the core
@@ -584,7 +585,7 @@ mw.AdTimeline.prototype = {
 			'elementid' : companionTarget.elementid,
 			'html' : companion.html
 		};
-		$( _this.embedPlayer ).trigger( 'AdSupport_UpdateCompanion', [ companionObject ] );
+		_this.embedPlayer.triggerHelper( 'AdSupport_UpdateCompanion', [ companionObject ] );
 	},
 	/**
 	 * Display a nonLinier add ( like a banner overlay )
