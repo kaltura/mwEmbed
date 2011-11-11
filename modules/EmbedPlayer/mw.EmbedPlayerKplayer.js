@@ -4,7 +4,7 @@
 ( function( mw, $ ) {
 
 // Called from the kdp.swf
-function jsInterfaceReadyFunc() {
+window.jsInterfaceReadyFunc = function() {
 	return true;
 }
 
@@ -71,7 +71,7 @@ mw.EmbedPlayerKplayer = {
 		attributes.name = this.pid;
 
 		mw.log(" KPlayer:: doEmbedHTML: about to add the pid container" );
-		$(this).html($('<div />').attr('id', this.pid + '_container'));
+		$( this ).html( $('<div />').attr('id', this.pid + '_container') );
 		// Call swm dom loaded function:
 		swfobject.callDomLoadFunctions();
 		// Do the flash embedding with embedSWF
@@ -224,8 +224,17 @@ mw.EmbedPlayerKplayer = {
 	switchPlaySrc: function( src, switchCallback, doneCallback ){
 		var _this = this;
 		var waitCount = 0;
-		// Throw an error this won't work 
-		throw "Kaltura Player Error: Trying to switch sources with non-native player. Probably missing webm flavor";
+		
+		if( !src || src == this.getSrc ){
+			if( switchCallback ){
+				switchCallback();
+			}
+			setTimeout(function(){
+				if( doneCallback )
+					doneCallback();
+			}, 100);
+			return ;
+		}
 		
 		var waitForJsListen = function( callback ){
 			if(  _this.getPlayerElement() &&  _this.getPlayerElement().addJsListener ){
@@ -290,7 +299,7 @@ mw.EmbedPlayerKplayer = {
 				return;
 			}
 		}
-		// add a seeked callback event: 
+		// Add a seeked callback event: 
 		var seekedCallback = 'kdp_seek_' + this.id + '_' + new Date().getTime();
 		window[ seekedCallback ] = function(){
 			_this.seeking = false;

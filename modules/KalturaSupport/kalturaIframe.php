@@ -620,11 +620,23 @@ class kalturaIframe {
 				?>
 				<script type="text/javascript">
 					var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
+					var ua = navigator.userAgent
 					// Android can't handle position:absolute style on video tags
-					if( navigator.userAgent.indexOf('Android' ) !== -1 ){
+					if( ua.indexOf('Android' ) !== -1 ){
 						// Also android does not like "type" on source tags
 						videoTagHTML= videoTagHTML.replace(/type=\"[^\"]*\"/g, '');
 					} 
+					
+					// IE < 8  does not handle class="persistentNativePlayer" very well:
+					if( ua.indexOf("MSIE ")!== -1 
+							&&  
+						parseFloat( ua.substring( ua.indexOf("MSIE ") + 5, ua.indexOf(";", ua.indexOf("MSIE ") ) )) 
+							<= 
+						8
+					) {
+						videoTagHTML = videoTagHTML.replace( /class=\"persistentNativePlayer\"/gi, '' );
+					}
+					
 					//styleValue = 'position:absolute;width:100%;height:100%';
 					styleValue = 'display: block;<?php echo $this->getPlayerSizeCss(); ?>';
 					

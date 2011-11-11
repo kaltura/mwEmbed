@@ -698,7 +698,7 @@
 				break;
 			}
 			// Give kdp plugins a chance to take attribute actions 
-			$( embedPlayer ).trigger( 'Kaltura_SendNotification', [notificationName, notificationData] );
+			$( embedPlayer ).trigger( 'Kaltura_SendNotification', [ notificationName, notificationData ] );
 		}
 	};	
 		
