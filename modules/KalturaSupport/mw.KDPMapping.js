@@ -426,7 +426,7 @@
 				// Add a postfix string
 				bindName += '.kdpMapping';
 				// remove any other kdpMapping binding:
-				$( embedPlayer ).bind( bindName, function(){
+				embedPlayer.bindHelper( bindName, function(){
 					bindCallback.apply( _this, $.makeArray( arguments ) );
 				});
 			};
