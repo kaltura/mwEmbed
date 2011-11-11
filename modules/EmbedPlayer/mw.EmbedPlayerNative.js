@@ -504,9 +504,6 @@ mw.EmbedPlayerNative = {
 		// Set the poster to a black image
 		vid.poster = mw.getConfig( 'EmbedPlayer.BlackPixle' );
 		
-		// don't propgate events while switching: 
-		this.stopEventPropagation();
-		
 		// only display switch msg if actually switching: 
 		mw.log( 'EmbedPlayerNative:: switchPlaySrc:' + src + ' native time: ' + vid.currentTime );
 		
@@ -575,8 +572,6 @@ mw.EmbedPlayerNative = {
 								switchCallback( vid );
 								switchCallback = null;
 							}
-							// restore event propagation
-							_this.restoreEventPropagation();
 						});
 					}, 50);
 				};

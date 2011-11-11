@@ -216,7 +216,6 @@ mw.FreeWheelControler.prototype = {
 						// Run the callback:
 						callback();
 					});
-					// find the video 
 				};
 			});
 		});
@@ -224,8 +223,8 @@ mw.FreeWheelControler.prototype = {
 	restorePlayState: function(){
 		this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
 		// remove pause binding: 
-		var vid = _this.embedPlayer.getPlayerElement();
-		$( vid ).unbind( 'pause' + _this.bindPostfix );
+		var vid = this.embedPlayer.getPlayerElement();
+		$( vid ).unbind( 'pause' + this.bindPostfix );
 	},
 	playSlotsInRange: function( slotSet ){
 		var _this = this;
@@ -286,10 +285,10 @@ mw.FreeWheelControler.prototype = {
 		slot.play();
 		slot.alreadyPlayed = true;
 		
-		// suppress freewheel controls attribute change on pause: 
+		// Suppress freewheel controls attribute change on pause: 
 		var vid = _this.embedPlayer.getPlayerElement();
 		$( vid ).bind( 'pause' + _this.bindPostfix, function(){
-			// do a async call to remove controls on pause
+			// Do a async call to remove controls on pause
 			setTimeout(function(){
 				var vid = _this.embedPlayer.getPlayerElement();
 				vid.controls = false;
@@ -303,14 +302,18 @@ mw.FreeWheelControler.prototype = {
 		var slotSet = this.slots[ slotType ];
 		// Make sure we have a slot to be displayed:
 		if( !slotSet[ inx ] ){
-			doneCallback();
+			if( doneCallback ){
+				doneCallback();
+			} else {
+				mw.log("Error:: FreeWheelController displayFreeWheelSlots missing doneCallback ");
+			}
 			return ;
 		}
 		mw.log( "FreeWheelController::displayFreeWheelSlots> " + slotType + ' index:' + inx );
 		// Setup the active slots
 		this.curentSlotIndex = inx;
 		this.currentSlotDoneCB = doneCallback;
-		
+			
 		// Display the current slot:
 		if( ! _this.playSlot( slotSet[ inx ] ) ){
 			// if we did not play it, jump directly to slot done:

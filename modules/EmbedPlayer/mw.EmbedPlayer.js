@@ -1273,11 +1273,12 @@ mw.EmbedPlayer.prototype = {
 			});
 			return ;
 		}*/
-		mw.log( 'EmbedPlayer::onClipDone: propagate:' +  _this._propagateEvents + ' id:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
 		// don't run onclipdone if _propagateEvents is off
 		if( !_this._propagateEvents ){
 			return ;
 		}
+		mw.log( 'EmbedPlayer::onClipDone: propagate:' +  _this._propagateEvents + ' id:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
+		
 		// Only run stopped once:
 		if( !this.isStopped() ){
 			this.stop();
