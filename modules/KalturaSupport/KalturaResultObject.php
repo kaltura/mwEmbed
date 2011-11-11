@@ -590,7 +590,8 @@ class KalturaResultObject {
 				$sources['applembr'] = array(
 					'src' => $assetUrl,
 					'type' => 'application/vnd.apple.mpegurl',
-					'data-flavorid' => 'AppleMBR'
+					'data-flavorid' => 'AppleMBR',
+					'data-bandwidth' => $KalturaFlavorAsset->bitrate * 8
 				);
 				continue;
 			}
@@ -600,7 +601,8 @@ class KalturaResultObject {
 				$sources['rtsp3gp'] = array(
 					'src' => $assetUrl,
 					'type' => 'application/rtsl',
-					'data-flavorid' => 'rtsp3gp'
+					'data-flavorid' => 'rtsp3gp',
+					'data-bandwidth' => $KalturaFlavorAsset->bitrate * 8
 				);
 				continue;
 			}
@@ -624,14 +626,16 @@ class KalturaResultObject {
 				$sources['iphone'] = array(
 					'src' => $assetUrl . '/a.mp4',
 					'type' => 'video/h264',
-					'data-flavorid' => 'iPhone'
+					'data-flavorid' => 'iPhone',
+					'data-bandwidth' => $KalturaFlavorAsset->bitrate * 8
 				);
 			};
 			if( strpos( $KalturaFlavorAsset->tags, 'ipad' ) !== false ){
 				$sources['ipad'] = array(
 					'src' => $assetUrl  . '/a.mp4',
 					'type' => 'video/h264',
-					'data-flavorid' => 'iPad'
+					'data-flavorid' => 'iPad',
+					'data-bandwidth' => $KalturaFlavorAsset->bitrate * 8
 				);
 			};
 
@@ -649,14 +653,16 @@ class KalturaResultObject {
 				$sources['ogg'] = array(
 					'src' => $assetUrl . '/a.ogg',
 					'type' => 'video/ogg',
-					'data-flavorid' => 'ogg'
+					'data-flavorid' => 'ogg',
+					'data-bandwidth' => $KalturaFlavorAsset->bitrate * 8
 				);
 			};
 			if( $KalturaFlavorAsset->fileExt == '3gp' ){
 				$sources['3gp'] = array(
 					'src' => $assetUrl . '/a.3gp',
 					'type' => 'video/3gp',
-					'data-flavorid' => '3gp'
+					'data-flavorid' => '3gp',
+					'data-bandwidth' => $KalturaFlavorAsset->bitrate * 8
 				);
 			};
 		}

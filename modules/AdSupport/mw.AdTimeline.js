@@ -296,9 +296,11 @@ mw.AdTimeline.prototype = {
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here. 
-		//embedPlayer.disableSeekBar();
+		embedPlayer.disableSeekBar();
 		// update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
+		// Set inSequence property to "true" 
+		embedPlayer.sequenceProxy.isInSequence = true;
 		// Trigger an ad start event once we enter an ad state
 		embedPlayer.triggerHelper( 'AdSupport_StartAdPlayback', slotType );
 	},
@@ -307,12 +309,15 @@ mw.AdTimeline.prototype = {
 	 * @return
 	 */
 	restorePlayer: function( ){
-		this.embedPlayer.restoreEventPropagation();
-		this.embedPlayer.enableSeekBar();
-		this.embedPlayer.monitor();
-		this.embedPlayer.seeking = false;
+		var embedPlayer = this.embedPlayer;
+		embedPlayer.restoreEventPropagation();
+		embedPlayer.enableSeekBar();
+		embedPlayer.monitor();
+		embedPlayer.seeking = false;
+		// restore in sequence property; 
+		embedPlayer.sequenceProxy.isInSequence = false;
 		// trigger an event so plugins can restore their content based actions
-		this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback');
+		embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback');
 	},
 	/**
 	 * Display a given timeline target, if the timeline target affects the core

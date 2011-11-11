@@ -75,20 +75,25 @@ mw.NielsenPlugin.prototype = {
 		var adOpenUrl = false;
 		var dispachedAdStart = false;
 		var currentContentSegmentDuration = 0;
+		var lastContentSegmentDuration = 0;
+		
 		$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
-			var vid = _this.embedPlayer.getPlayerElement(); 
+			var vid = _this.getPlayerElement(); 
 			
 			// Check if we were playing content before this "adStart"
 			if( contentPlay ){
 				contentPlay = false;
 				// Stop content: 
-				_this.dispatchEvent( 7, currentContentSegmentDuration, 'content' );
+				_this.dispatchEvent( 7, parseInt( currentContentSegmentDuration ), 'content' );
+				// Ad fire a 4 to 'unload' the content segment
+				_this.dispatchEvent( 4, parseInt( currentContentSegmentDuration ), 'content' );
+				lastContentSegmentDuration = currentContentSegmentDuration;
 			}
 			
 			// We are in an ad:
 			adOpenUrl = _this.getCurrentVideoSrc();
-			// wait for duration change event 
-			$( vid ).bind( 'durationchange.nielsenAd', function(e){
+			// Wait for duration change event 
+			$( vid ).bind( 'durationchange.nielsenAd', function( e ){
 				currentAdDuration = vid.duration;
 				// unbind our duration change event: 
 				$( vid ).unbind( '.nielsenAd' );
@@ -110,17 +115,19 @@ mw.NielsenPlugin.prototype = {
 			// close the current ad: 
 			if( adOpenUrl && dispachedAdStart ){
 				// Stop the ad: 
-				_this.dispatchEvent( 7, _this.currentAdTime, 'ad' );
+				_this.dispatchEvent( 7, parseInt( _this.currentAdTime ), 'ad' );
 				// Ad fire a 4 to 'unload' the ad ( always called even if we don't get to "ended" event )
-				_this.dispatchEvent( 4, currentAdDuration, 'ad' );
+				_this.dispatchEvent( 4, parseInt( currentAdDuration ), 'ad' );
 				adOpenUrl = false;
 			}
 			// unbind tracking ( will be re-instated via addPlayerTracking on subsequent ads or content 
 			$( embedPlayer ).unbind( _this.trackerPostFix );
+			
 		});
+		
 		// When starting content finish up content beacon and add content bindings
 		$( embedPlayer ).bind( 'onplay'  + _this.bindPostFix, function(){
-			var vid = _this.embedPlayer.getPlayerElement(); 
+			var vid = _this.getPlayerElement(); 
 			// Check if the play event is content or "inAdSequence" 
 			if( !_this.inAd() && !contentPlay ){
 				contentPlay = true;
@@ -133,8 +140,7 @@ mw.NielsenPlugin.prototype = {
 				
 				// set the segment update as soon as we have a timeupdate:
 				$( vid ).bind( 'timeupdate' + _this.bindPostFix, function(){
-					currentContentSegmentDuration = vid.duration;
-					$( vid ).unbind( 'timeupdate' + _this.bindPostFix );
+					currentContentSegmentDuration = vid.currentTime - lastContentSegmentDuration;
 				});
 			}
 		});
@@ -156,13 +162,23 @@ mw.NielsenPlugin.prototype = {
 		$( this.embedPlayer ).unbind( this.trackerPostFix );
 		$( this.embedPlayer.getPlayerElement() ).unbind( this.trackerPostFix );
 	},
+	getPlayerElement: function(){
+		// some ad providers such as freewheel inserts a new video tag into the page 
+		// ( track that instead of the first video source if present ) 
+		if( $( this.embedPlayer.getPlayerElement() ).siblings('video').length ){
+			return $( this.embedPlayer.getPlayerElement() ).siblings('video').get(0);
+		} else {
+			return this.embedPlayer.getPlayerElement();
+		}
+	},
 	/**
 	 * Adds player bindings for either ads or players
 	 */
 	addPlayerTracking: function( type ){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		var vid = _this.embedPlayer.getPlayerElement();
+		var vid = _this.getPlayerElement();
+		
 		// Unbind any existing bindings: : 
 		this.unbindPlayerTracking();
 		
@@ -217,11 +233,12 @@ mw.NielsenPlugin.prototype = {
 			var posDelta  = Math.abs( parseFloat( vid.currentTime )  - parseFloat( lastTime ) );
 			// Check for position changed more than "3" ( seek )
 			if( posDelta > 3 ){
+				mw.log("NielsenPlugin:: Dispach clip jump, seek delta : " + posDelta );
 				_this.dispatchEvent( 8, String( lastTime ), String( _this.getRelativeTime('currentTime') ), type );
 			}
 			// Dispatch vid progress every 2 seconds:
 			if( posDelta > _this.queryInterval ){
-				lastTime = embedPlayer.currentTime;
+				lastTime = vid.currentTime;
 				_this.dispatchEvent( 49, String( _this.getRelativeTime('currentTime') ), type );
 			}
 		});
@@ -238,7 +255,7 @@ mw.NielsenPlugin.prototype = {
 	},
 	// Gets the "raw" current source ( works with ad assets )  
 	getCurrentVideoSrc: function(){
-		var vid = this.embedPlayer.getPlayerElement(); 
+		var vid = this.getPlayerElement(); 
 		if( vid && vid.src ){
 			return vid.src;
 		}
@@ -258,9 +275,9 @@ mw.NielsenPlugin.prototype = {
 		}
 		// Check if we are in an Ad and return the raw player duration or time: 
 		if( this.inAd() ){
-			var vid = this.embedPlayer.getPlayerElement(); 
-			if( vid && vid[type]){
-				return parseInt( vid[type] );
+			var vid = this.getPlayerElement(); 
+			if( vid && vid[ type ]){
+				return parseInt( vid[ type ] );
 			}
 		}
 		// Check if we have cuepoints

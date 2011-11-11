@@ -403,7 +403,7 @@
 				var callback = function(){
 					var listnerId = _this.getListenerId( embedPlayer, eventName, callbackName) ;
 					// Check that the listener is still valid and run the callback with supplied arguments
-					if( _this.listenerList [ listnerId ] ){
+					if( $.isFunction( _this.listenerList [ listnerId ] ) ){
 						_this.listenerList [ listnerId ].apply( _this, $.makeArray( arguments ) );
 					}
 				};
