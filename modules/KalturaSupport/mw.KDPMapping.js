@@ -425,7 +425,7 @@
 				}
 				// Add a postfix string
 				bindName += '.kdpMapping';
-				// remove any other kdpMapping binding:
+				// bind with .kdpMapping postfix::
 				embedPlayer.bindHelper( bindName, function(){
 					bindCallback.apply( _this, $.makeArray( arguments ) );
 				});
@@ -612,11 +612,7 @@
 					break;
 				default:
 					// custom listner: 
-					b( eventName, function(){
-						var args = $.makeArray( arguments );
-						args.shift();
-						callback.apply( _this, args );
-					} );
+					b( eventName );
 					break;
 			};
 			// The event was successfully binded: 
