@@ -4,11 +4,12 @@
 
 ( function( mw, $ ) {
 
-$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
-
-    $( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
+mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
+    
+    embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
+        
         if( embedPlayer.isPluginEnabled ( 'Conviva' ) ) {
-            var config = embedPlayer.getKalturaConfig( 'Conviva', [ 'convivaKalturaHTML5Lib', 'convivaAjaxTimeout', 'convivaCustomerId', 'convivaServiceUrl', 'tags' ] );
+            var config = embedPlayer.getKalturaConfig( 'Conviva', [ 'convivaKalturaHTML5Lib', 'convivaAjaxTimeout', 'convivaCustomerId', 'convivaServiceUrl' ] );
             
             var initParameter = function( parameter, defaultValue ) {
                 if ( ! config[ parameter ] ) {
@@ -26,12 +27,11 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
             
             // Initialize optional config parameters whith default values if not present explicitly
             initParameter( 'convivaAjaxTimeout', 1000 ); // default to 1 second unless explicitly set
-            initParameter( 'tags', '' );
             
             if ( ! initParameter( 'convivaKalturaHTML5Lib' ) ) {
                 isError = true;
                 mw.log( 'Conviva: Error: "Conviva.convivaKalturaHTML5Lib" is a required parameter!' );
-            }            
+            }
             if ( ! initParameter( 'convivaCustomerId' ) ) {
                 isError = true;
                 mw.log( 'Conviva: Error: "Conviva.convivaCustomerId" is a required parameter!' );
