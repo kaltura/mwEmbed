@@ -167,7 +167,7 @@ mw.AdTimeline.prototype = {
 								// trigger another onplay ( to match the kaltura kdp ) on play event
 								// after the ad is complete 
 								if( playedAnAdFlag ){
-									embedPlayer.triggerHelper('onplay');
+									embedPlayer.triggerHelper( 'onplay' );
 								}
 								// Continue playback
 								embedPlayer.play();
