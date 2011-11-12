@@ -161,7 +161,8 @@ mw.AdTimeline.prototype = {
 							// trigger the preSequenceComplete event
 							embedPlayer.triggerHelper( 'preSequenceComplete' );
 							
-							setTimeout(function(){ // avoid function stack
+							// Avoid function stack
+							setTimeout(function(){ 
 								_this.restorePlayer();
 								// trigger another onplay ( to match the kaltura kdp ) on play event
 								// after the ad is complete 
@@ -206,8 +207,6 @@ mw.AdTimeline.prototype = {
 				if( playedAnAdFlag ){
 					embedPlayer.switchPlaySrc( _this.originalSrc, function(){
 							_this.restorePlayer();
-							// stop the playback: 
-							embedPlayer.pause();
 							// Restore ondone interface: 
 							embedPlayer.onDoneInterfaceFlag = true;
 							// run the clipdone event:
@@ -715,7 +714,7 @@ mw.AdTimeline.prototype = {
 		});
 		
 		// On pause / resume: 
-		$( videoPlayer ).bind( 'pause' + bindPostfix, function(){
+		$( videoPlayer ).bind( 'onpause' + bindPostfix, function(){
 			sendBeacon( 'pause', true );
 		});
 		

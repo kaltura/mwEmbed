@@ -1329,14 +1329,11 @@ mw.EmbedPlayer.prototype = {
 				this.serverSeekTime = 0;
 				this.updatePlayHead( 0 );
 
-				// Make sure we are not in preview mode( no end clip actions in
-				// preview mode)
+				// Make sure we are not in preview mode( onEndedDone actions in preview mode)
 				if ( this.previewMode ) {
 					return ;
 				}
-				// Do the controlBuilder onClip done interface ( does not do anything atm )
-				// this.controlBuilder.onClipDone();
-
+				
 				// An event for once the all ended events are done.
 				mw.log("EmbedPlayer:: trigger: onEndedDone");
 				$( this ).trigger( 'onEndedDone' );
@@ -2230,8 +2227,8 @@ mw.EmbedPlayer.prototype = {
 		// Trigger the pause event if not already paused and using native controls:
 		if( this.paused === false ){
 			this.paused = true;
-			mw.log('EmbedPlayer:trigger pause:' + this.paused);
 			if(  this._propagateEvents ){
+				mw.log('EmbedPlayer:trigger pause:' + this.paused);
 				// "pause" will be deprecated in favor of "onpause"
 				$( this ).trigger( 'pause' );
 				$( this ).trigger( 'onpause' );

@@ -809,7 +809,7 @@ mw.EmbedPlayerNative = {
 	*/
 	_onpause: function(){
 		mw.log( "EmbedPlayerNative:: OnPaused:: " +  this._propagateEvents );
-		if(  this._propagateEvents && ! this.paused){
+		if(  this._propagateEvents && ! this.paused ){
 			this.parent_pause();
 		}
 	},

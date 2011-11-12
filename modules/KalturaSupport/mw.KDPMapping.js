@@ -1,9 +1,8 @@
 /**
  * Based on the 'kdp3 javascript api'
- * Add full kaltura mapping support to html5 based players
+ * Add full Kaltura mapping support to html5 based players
  * http://www.kaltura.org/demos/kdp3/docs.html#jsapi
  */
-				
 // scope in mw
 ( function( mw, $ ) {
 	mw.KDPMapping = function( ) {
@@ -459,7 +458,7 @@
 					break;
 				case 'playerStateChange':					
 					// TODO add in other state changes
-					b( 'pause', function(){
+					b( 'onpause', function(){
 						callback( 'pause', embedPlayer.id );
 					});
 					b( 'onplay', function(){
@@ -473,7 +472,7 @@
 				case 'playerPaused':
 				case 'pause':
 				case 'doPause':
-					b( "pause" );
+					b( "onpause" );
 					break;
 				case 'adStart':
 					b('AdSupport_StartAdPlayback');
@@ -611,7 +610,8 @@
 					b('TimedText_ChangeSource');
 					break;
 				default:
-					// custom listner: 
+					// Custom listner 
+					// ( called with any custom arguments that are provided in the trigger)
 					b( eventName, function(){
 						var args = $.makeArray( arguments );
 						if( args.length ){
