@@ -755,7 +755,7 @@ mw.PlayerControlBuilder.prototype = {
 				}		
 				var clickTime = new Date().getTime();
 				if( clickTime -lastClickTime < dblClickTime ) {
-					embedPlayer.fullscreen();
+					//embedPlayer.fullscreen(); // Why do we need to call fullscreen? we already have DblClick binding
 					didDblClick = true;
 					setTimeout( function(){ didDblClick = false; },  dblClickTime + 10 );
 				}
