@@ -44,6 +44,8 @@ mw.PlayerControlBuilder.prototype = {
 	// Flag to store state of overlay on player
 	displayOptionsMenuFlag: false,
 
+	hideControlBarCallback: false,
+
 	/**
 	* Initialization Object for the control builder
 	*
@@ -715,6 +717,8 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		var $interface = embedPlayer.$interface;
 
+		_this.onControlBar = false;
+
 		// Remove any old interface bindings
 		$interface.unbind();
 
@@ -755,7 +759,7 @@ mw.PlayerControlBuilder.prototype = {
 				}		
 				var clickTime = new Date().getTime();
 				if( clickTime -lastClickTime < dblClickTime ) {
-					//embedPlayer.fullscreen(); // Why do we need to call fullscreen? we already have DblClick binding
+					//embedPlayer.fullscreen(); // Why do we need to call fullscreen? we already have DblClick binding (line: 1880)
 					didDblClick = true;
 					setTimeout( function(){ didDblClick = false; },  dblClickTime + 10 );
 				}
@@ -813,12 +817,17 @@ mw.PlayerControlBuilder.prototype = {
 			var hoverIntentConfig = {
 					'sensitivity': 100,
 					'timeout' : 1000,
-					'over' : function(){
+					'over' : function(e){
+						// Clear timeout on IE9
+						if( mw.isIE9() ) {
+							clearTimeout(_this.hideControlBarCallback);
+							_this.hideControlBarCallback = false;
+						}
 						// Show controls with a set timeout ( avoid fade in fade out on short mouse over )
 						_this.showControlBar();
 						bindSpaceUp();
 					},
-					'out' : function(){
+					'out' : function(e){
 						_this.hideControlBar();
 						bindSpaceDown();
 					}
@@ -828,6 +837,20 @@ mw.PlayerControlBuilder.prototype = {
 			// special check for IE9 ( does not count hover on non-visiable inerface div
 			if( mw.isIE9() ){
 				$( embedPlayer.getPlayerElement() ).hoverIntent( hoverIntentConfig );
+
+				// Add hover binding to control bar
+				embedPlayer.$interface.find( '.control-bar' ).hover( function(e) {
+					_this.onControlBar = true;
+					embedPlayer.$interface.find( '.control-bar' ).show();
+				}, function(e) {
+					if (!_this.hideControlBarCallback) {
+						_this.hideControlBarCallback = setTimeout(function(){
+							_this.hideControlBar();
+						},1000);
+					}
+					_this.onControlBar = false;
+				});
+				
 			} else {
 				$interface.hoverIntent( hoverIntentConfig );
 			}
@@ -873,7 +896,11 @@ mw.PlayerControlBuilder.prototype = {
 			return ;
 		}
 
-
+		// IE9: If the user mouse is on the control bar, don't hide it
+		if( this.onControlBar === true ) {
+			return ;
+		}
+		
 		// Hide the control bar
 		this.embedPlayer.$interface.find( '.control-bar')
 			.fadeOut( animateDuration );
