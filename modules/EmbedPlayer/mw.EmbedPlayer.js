@@ -2122,6 +2122,10 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.posterDisplayed );
+
+		// Store the absolute play time ( to track native events that should not invoke interface updates )
+		this.absoluteStartPlayTime =  new Date().getTime();
+		
 		// Check if thumbnail is being displayed and embed html
 		if ( _this.posterDisplayed &&  !_this.useNativePlayerControls() ) {
 			if ( !_this.selectedPlayer ) {
@@ -2168,6 +2172,7 @@ mw.EmbedPlayer.prototype = {
 			var percent = parseFloat( this.startTime ) / this.getDuration();
 			this.doSeek( percent );
 		}
+		
 		this.playInterfaceUpdate();
 		return true;
 	},
@@ -2514,6 +2519,7 @@ mw.EmbedPlayer.prototype = {
 		// changed currentTime )
 		_this.previousTime = _this.currentTime;
 
+		// Stop playback if we reach the end of a temporal fragment: 
 		if( _this.pauseTime && _this.currentTime >  _this.pauseTime ){
 			_this.pause();
 			_this.pauseTime = null;
