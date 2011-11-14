@@ -277,8 +277,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 			if( callback )
 				callback();
 		});
+		mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
 		// Use internal changeMedia call to issue all relevant events
-		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );	
+		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );
 		// Update the playlist data selectedIndex
 		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
 	},
