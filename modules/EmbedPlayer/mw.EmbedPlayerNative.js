@@ -801,6 +801,7 @@ mw.EmbedPlayerNative = {
 			}
 		}
 		// update the playhead status
+		this.hidePlayerSpinner();
 		this.monitor();
 	},
 
