@@ -1189,3 +1189,4 @@ window.restoreKalturaKDPCallback = function(){
 // Check inline and when the DOM is ready:
 checkForKDPCallback();
 kAddReadyHook( checkForKDPCallback );
+

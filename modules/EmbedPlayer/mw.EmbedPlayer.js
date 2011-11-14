@@ -1073,7 +1073,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	inheritEmbedPlayer: function( callback ) {
 		mw.log( "EmbedPlayer::inheritEmbedPlayer:duration is: " + this.getDuration() + ' p: ' + this.id );
-
 		// Clear out any non-base embedObj methods:
 		if ( this.instanceOf ) {
 			eval( 'var tmpObj = mw.EmbedPlayer' + this.instanceOf );
@@ -1714,9 +1713,9 @@ mw.EmbedPlayer.prototype = {
 		
 		// Clear out the player error div:
 		this.$interface.find('.error').remove();
-		// restore the control bar:
+		// Restore the control bar:
 		this.$interface.find('.control-bar').show();
-		// hide the play btn
+		// Hide the play btn
 		this.$interface.find('.play-btn-large').hide(); 
 		
 		//If we are change playing media add a ready binding: 

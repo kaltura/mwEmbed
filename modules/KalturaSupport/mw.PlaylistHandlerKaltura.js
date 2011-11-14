@@ -333,6 +333,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		$( embedPlayer ).unbind( this.bindPostFix );
 		// add the binding: 
 		$( embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostFix, function( event, componentName, property, value ){
+			mw.log("PlaylistHandlerKaltura::Kaltura_SetKDPAttribute:" + property + ' value:' + value);
 			switch( componentName ){
 				case "playlistAPI.dataProvider":
 					_this.doDataProviderAction( property, value );

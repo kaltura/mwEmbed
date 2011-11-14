@@ -7,7 +7,11 @@
 mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
     
     embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
-        
+        // Disable Conviva with IE9
+        if( mw.isIE9() ) {
+        	callback();
+	        return;
+	    }
         if( embedPlayer.isPluginEnabled ( 'Conviva' ) ) {
             var config = embedPlayer.getKalturaConfig( 'Conviva', [ 'convivaKalturaHTML5Lib', 'convivaAjaxTimeout', 'convivaCustomerId', 'convivaServiceUrl' ] );
             
