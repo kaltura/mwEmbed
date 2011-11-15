@@ -534,7 +534,7 @@ class KalturaResultObject {
 	
 	// Load the Kaltura library and grab the most compatible flavor
 	public function getSources(){
-		global $wgKalturaServiceUrl, $wgKalturaUseAppleAdaptive;
+		global $wgKalturaServiceUrl, $wgKalturaUseAppleAdaptive, $wgHTTPProtocol;
 		
 		// Check the access control before returning any source urls
 		if( !$this->isAccessControlAllowed() ) {
@@ -585,7 +585,7 @@ class KalturaResultObject {
 			}
 			// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
 			if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
-				$assetUrl = $flavorUrl . '/format/applehttp/protocol/http/a.m3u8';
+				$assetUrl = $flavorUrl . '/format/applehttp/protocol/' . $wgHTTPProtocol . '/a.m3u8';
 
 				$sources['applembr'] = array(
 					'src' => $assetUrl,
@@ -608,7 +608,7 @@ class KalturaResultObject {
 			}
 			
 			// Else use normal 
-			$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/http';
+			$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/' . $wgHTTPProtocol;
 
 			// Add iPad Akamai flavor to iPad flavor Ids list
 			if( strpos( $KalturaFlavorAsset->tags, 'ipadnew' ) !== false ) {
@@ -676,7 +676,7 @@ class KalturaResultObject {
 
 		// Create iPad flavor for Akamai HTTP
 		if ( $ipadFlavors && $wgKalturaUseAppleAdaptive ){
-			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/http';
+			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/' . $wgHTTPProtocol;
 
 			$sources['ipadnew'] = array(
 				'src' => $assetUrl . '/a.m3u8',
@@ -688,7 +688,7 @@ class KalturaResultObject {
 		// Create iPhone flavor for Akamai HTTP
 		if ( $iphoneFlavors && $wgKalturaUseAppleAdaptive )
 		{
-			$assetUrl = $flavorUrl . '/flavorIds/' . $iphoneFlavors . '/format/applehttp/protocol/http';
+			$assetUrl = $flavorUrl . '/flavorIds/' . $iphoneFlavors . '/format/applehttp/protocol/' . $wgHTTPProtocol;
 
 			$sources['iphonenew'] = array(
 				'src' => $assetUrl . '/a.m3u8',
