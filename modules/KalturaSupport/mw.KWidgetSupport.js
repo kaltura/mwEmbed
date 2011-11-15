@@ -37,7 +37,7 @@ mw.KWidgetSupport.prototype = {
 			// Add Kaltura iframe share support:
 			$( embedPlayer ).bind( 'getShareIframeSrc', function( event, callback ){
 				var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
-				iframeUrl +='/wid/_' + embedPlayer.kwidgetid +
+				iframeUrl +='/wid/' + embedPlayer.kwidgetid +
 				'/uiconf_id/' + embedPlayer.kuiconfid +
 				'/entry_id/' + embedPlayer.kentryid + '/';
 				// return the iframeUrl via the callback: 
