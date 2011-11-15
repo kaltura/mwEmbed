@@ -140,10 +140,10 @@ class kalturaIframe {
 		// check if we have iframeSize paramater:
 		if( isset( $_GET[ 'iframeSize' ] ) ){
 			list( $width, $height ) = explode( 'x',  $_GET[ 'iframeSize' ]);
-			$width = intval( $width );
-			$height = intval( $height );
+			$width = ( strpos($width, '%') === false ) ? intval( $width ) . 'px' : $width;
+			$height = ( strpos($height, '%') === false ) ? intval( $height ) . 'px' : $height;
 		}		
-		return "width:{$width}px;height:{$height}px;";
+		return "width:{$width};height:{$height};";
 	}
 	private function getPlaylistPlayerSizeCss(){
 		$width = 400;
