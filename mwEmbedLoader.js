@@ -89,6 +89,35 @@ if( ! mw.getConfig ){
 	};
 }
 
+/**
+ * A version comparison utility function Handles version of types
+ * {Major}.{MinorN}.{Patch}
+ * 
+ * @param {String}
+ *            minVersion Minnium version needed
+ * @param {String}
+ *            clientVersion Client version to be checked
+ * 
+ * @return true if the version is at least of minVersion false if the
+ *         version is less than minVersion
+ */
+
+if( ! mw.versionIsAtLeast ){
+	mw.versionIsAtLeast = function( minVersion, clientVersion ) {
+		var minVersionParts = minVersion.split('.');
+		var clientVersionParts = clientVersion.split('.');
+		for( var i =0; i < minVersionParts.length; i++ ) {
+			if( parseInt( clientVersionParts[i] ) > parseInt( minVersionParts[i] ) ) {
+				return true;
+			}
+			if( parseInt( clientVersionParts[i] ) < parseInt( minVersionParts[i] ) ) {
+				return false;
+			}
+		}
+		// Same version:
+		return true;
+	};
+}
 // Wrap mw.ready to preMwEmbedReady values
 if( !mw.ready ){
 	mw.ready = function( fn ){	
@@ -122,7 +151,6 @@ function kDoIframeRewriteList( rewriteObjects ){
 function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( !options )
 		options = {};
-
 	// Empty the replace target:
 	var elm = document.getElementById( replaceTargetId );
 	if( ! elm ){
@@ -173,8 +201,15 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 		window.kUserAgentPlayerRules = false;
 		window.kAddedScript = false;
 	}
+	
 	// Check for html with api off: 
-	if( isHTML5 && !mw.getConfig( 'EmbedPlayer.EnableIframeApi') ){
+	if( isHTML5 && !mw.getConfig( 'EmbedPlayer.EnableIframeApi') 
+			|| 
+		( window.jQuery && !mw.versionIsAtLeast( '1.3.2', jQuery.fn.jquery ) ) 
+	){
+		if( window.console && window.console.log ) {
+			console.log( 'Kaltura HTML5 works best with jQuery 1.3.2 or above' );
+		}
 		kIframeWithoutApi( replaceTargetId, kEmbedSettings , options );
 		return ;
 	}
@@ -652,6 +687,10 @@ function kAddScript( callback ){
 		return ;
 	}
 	kAddedScript = true;
+	
+	if( window.jQuery && !mw.versionIsAtLeast( '1.3.2', jQuery.fn.jquery ) ){
+		mw.setConfig( 'EmbedPlayer.EnableIframeApi', false );
+	}
 	
 	var jsRequestSet = [];
 	if( typeof window.jQuery == 'undefined' ) {
