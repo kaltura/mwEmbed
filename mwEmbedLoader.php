@@ -65,8 +65,8 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	
 	$loaderCacheFile = $wgScriptCacheDirectory . '/loader.min.js';
 	
-	$javascriptModTime = filemtime( 'mwEmbedLoader.js' );
-	$cacheModTime = filemtime( $loaderCacheFile );
+	$javascriptModTime = @filemtime( 'mwEmbedLoader.js' );
+	$cacheModTime = @filemtime( $loaderCacheFile );
 	
 	// check if there were any updates to the mwEmbedLoader file
 	if( $javascriptModTime < $cacheModTime &&  $loaderCacheFile && is_file( $loaderCacheFile ) ){
