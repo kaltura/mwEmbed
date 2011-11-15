@@ -214,6 +214,9 @@ function kIframeWithoutApi( replaceTargetId, kEmbedSettings , options ){
 	
 	var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
 	iframeSrc += '?' + kEmbedSettingsToUrl( kEmbedSettings );
+	if( options.width && options.height ) {
+		iframeSrc += '&iframeSize=' + options.width + 'x' + options.height;
+	}
 	
 	// If remote service is enabled pass along service arguments:
 	if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) && 
