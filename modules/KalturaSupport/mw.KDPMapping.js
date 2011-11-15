@@ -377,6 +377,8 @@
 					}
 				break;
 			}
+			// look for a plugin based config: 
+			return embedPlayer.getKalturaConfig( objectPath[0], objectPath[1]);
 			// nothing found ( returns undefined ) 
 		},
 		evaluateStringFunction: function( functionName, value ){

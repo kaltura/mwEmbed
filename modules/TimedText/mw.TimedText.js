@@ -733,7 +733,13 @@ mw.includeAllModuleMessages();
 				_this.updateLayout();
 			}
 		},
-
+		toggleCaptions: function(){
+			if( this.config.layout == 'off' ){
+				this.selectLayout( 'ontop' );
+			} else {
+				this.selectLayout( 'off' );
+			}
+		},
 		/**
 		* Updates the timed text layout ( should be called when config.layout changes )
 		*/
