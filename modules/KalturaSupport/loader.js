@@ -113,8 +113,6 @@
 		'adPlugin',
 		'captionPlugin',
 		'bumperPlugin',
-
-		'convivaPlugin',
 		'playlistPlugin'
 	];
 	
