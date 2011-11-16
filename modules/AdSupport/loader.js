@@ -43,7 +43,7 @@
 			);
 		});
 		$( playerProxy ).bind('AdSupport_RestoreCompanion', function( event, companionId){
-			if( companionHTMLCache[companionId] ){
+			if( companionHTMLCache[ companionId ] ){
 				$('#' + companionId ).html( companionHTMLCache[companionId] );
 			}
 		});

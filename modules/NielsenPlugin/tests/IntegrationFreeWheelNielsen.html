@@ -34,11 +34,20 @@ function jsKalturaPlayerTest( videoId ){
 	});
 }
 </script>
+<script> 
+	function jsCallbackReady( videoId ){
+		$('#evalTag').click(function(){
+			alert( $('#' + videoId ).get(0).evaluate( '{NielsenPlugin.tag_category}' ) );
+		})
+	}
+</script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
+
 </head>
 <body>
 <h2> Integration FreeWheel Nielsen test </h2>
+<a href="#" id="evalTag"> Evaluate {NielsenPlugin.tag_category}</a> -- shows category for current asset. <br>
 Freeshweel Ads:: Preroll, midroll at 10 seconds, postroll.<br> 
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
