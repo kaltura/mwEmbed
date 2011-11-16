@@ -295,7 +295,7 @@ mw.AdTimeline.prototype = {
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here. 
-		embedPlayer.disableSeekBar();
+		embedPlayer.disablePlayControls();
 		// update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
 		// Set inSequence property to "true" 
@@ -310,7 +310,7 @@ mw.AdTimeline.prototype = {
 	restorePlayer: function( ){
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.restoreEventPropagation();
-		embedPlayer.enableSeekBar();
+		embedPlayer.enablePlayControls();
 		embedPlayer.monitor();
 		embedPlayer.seeking = false;
 		// restore in sequence property; 
@@ -442,10 +442,6 @@ mw.AdTimeline.prototype = {
 			adSlot.playbackDone();
 			return ;
 		}
-		if ( adConf.lockUI ) {
-			_this.embedPlayer.disableSeekBar();
-		};						
-		
 		// Check for click binding 
 		if( adConf.clickThrough ){	
 			var clickedBumper = false;

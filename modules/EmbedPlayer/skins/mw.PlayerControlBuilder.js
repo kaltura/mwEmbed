@@ -2122,7 +2122,6 @@ mw.PlayerControlBuilder.prototype = {
 					}
 				}
 			
-			
 				var embedPlayer = ctrlObj.embedPlayer;
 				var _this = this;
 				var $playHead = $( '<div />' )

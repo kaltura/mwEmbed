@@ -559,6 +559,9 @@ mw.EmbedPlayer.prototype = {
 	
 	// if we should check for a loading spinner in the moitor function: 
 	'_checkHideSpinner' : false,
+	
+	// If pause play controls click controls should be active: 
+	'_playContorls' : true,
 
 	/**
 	 * embedPlayer
@@ -716,16 +719,28 @@ mw.EmbedPlayer.prototype = {
 		this.startMonitor();
 	},
 
-	enableSeekBar: function(){
+	enablePlayControls: function(){
 		if( this.useNativePlayerControls() )
 			return ;
+		this._playContorls = true;
+		// re-enable hover: 
+		this.$interface.find( '.play-btn' )
+			.buttonHover()
+			.css('cursor', 'pointer' );
+		
 		this.controlBuilder.enableSeekBar();
 		$( this ).trigger( 'onEnableSeekBar');
 	},
-	disableSeekBar: function(){
+	disablePlayControls: function(){
 		if( this.useNativePlayerControls() ){
 			return ;
 		}
+		this._playContorls = false;
+		// trun off hover: 
+		this.$interface.find( '.play-btn' )
+			.unbind('mouseenter mouseleave')
+			.css('cursor', 'default' );
+
 		this.controlBuilder.disableSeekBar();
 		$( this ).trigger( 'onDisableSeekBar');
 	},
@@ -2194,9 +2209,10 @@ mw.EmbedPlayer.prototype = {
 
 		this.$interface.find( '.play-btn' )
 		.unbind('click')
-		.buttonHover()
 		.click( function( ) {
-		 	_this.pause();
+			if( _this._playContorls ){
+				_this.pause();
+			}
 		 } )
 		.attr( 'title', gM( 'mwe-embedplayer-pause_clip' ) );
 	},
@@ -2251,9 +2267,10 @@ mw.EmbedPlayer.prototype = {
 	
 			this.$interface.find( '.play-btn' )
 			.unbind('click')
-			.buttonHover()
 			.click( function() {
-				_this.play();
+				if( _this._playContorls ){
+					_this.play();
+				}
 			} )
 			.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );
 		}
