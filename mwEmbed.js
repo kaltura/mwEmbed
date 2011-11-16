@@ -2993,10 +2993,13 @@ if( window.jQuery ){
   //ins(document.getElementsByTagName('head')[0], createEl('style'));
   //var sheet = document.styleSheets[document.styleSheets.length-1];
   var sheet = (function() {
-    ins(document.getElementsByTagName('head')[0], createEl('style', {title: 'spinjs'}));
-    for (var i=0, sheets=document.styleSheets; i < sheets.length; i++) {
-      if (sheets[i].title == 'spinjs') return sheets[i];
-    }
+		var style = document.createElement('style');
+		style['title'] = 'spinjs';	
+		document.getElementsByTagName('head')[0].appendChild(style);  
+		if (!window.createPopup) { /* For Safari */  
+		   style.appendChild(document.createTextNode(''));  
+		} 
+		return document.styleSheets[document.styleSheets.length - 1]; 
   })();
 
   /**
