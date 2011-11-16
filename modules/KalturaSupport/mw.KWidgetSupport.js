@@ -158,14 +158,15 @@ mw.KWidgetSupport.prototype = {
 				return ;
 			}
 			// Check for preview access control and add special onEnd binding: 
-			if( playerData.accessControl.preview && playerData.accessControl.previewLength != -1 ){
-				$( embedPlayer ).bind('ended.acpreview', function(){
-					mw.log( 'KWidgetSupport:: ended.acpreview>' );
+			if( playerData.accessControl.previewLength != -1 ){
+				$( embedPlayer ).bind('postEnded.acpreview', function(){
+					mw.log( 'KWidgetSupport:: postEnded.acpreview>' );
+					$( embedPlayer ).trigger( 'KalturaSupport_FreePreviewEnd' );
 					// Don't run normal onend action: 
 					embedPlayer.onDoneInterfaceFlag = false;
 					var closeAcMessage = function(){
-						$( embedPlayer ).unbind('ended.acpreview');
-						embedPlayer.stop();
+						$( embedPlayer ).unbind('postEnded.acpreview');
+						embedPlayer.controlBuilder.closeMenuOverlay();
 						embedPlayer.onClipDone();
 					};
 					// Display player dialog 

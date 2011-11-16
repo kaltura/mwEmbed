@@ -600,7 +600,13 @@
 					mw.log( "Warning: kdp event: " + eventName + " does not have an html5 mapping" );
 					break;
 
-				/* For closedCaption plguin */
+				case 'freePreviewEnd':
+					b('KalturaSupport_FreePreviewEnd');
+					break;
+				/** 
+				 * For closedCaption plguin
+				 *  TODO move to mw.KTimedText.js 
+				 */
 				case 'ccDataLoaded':
 					b('KalturaSupport_ccDataLoaded');
 					break;
