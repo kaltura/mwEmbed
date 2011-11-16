@@ -2219,6 +2219,10 @@ mw.EmbedPlayer.prototype = {
 	},
 	hideSpinnerOncePlaying: function(){
 		this._checkHideSpinner = true;
+		// if using native controls, hide the spinner directly
+		if( this.useNativePlayerControls() ){
+			this.hidePlayerSpinner();
+		}
 	},
 	/**
 	 * Base embed pause Updates the play/pause button state.
