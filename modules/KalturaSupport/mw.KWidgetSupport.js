@@ -252,6 +252,7 @@ mw.KWidgetSupport.prototype = {
 	},
 	addPlayerMethods: function( embedPlayer ){
 		var _this = this;
+		
 		embedPlayer.getRawKalturaConfig = function( confPrefix, attr ){
 			return _this.getRawPluginConfig( embedPlayer, confPrefix, attr );
 		};
