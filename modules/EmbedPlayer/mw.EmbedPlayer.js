@@ -506,11 +506,6 @@ mw.EmbedPlayer.prototype = {
 	// Support list is described in PlayerControlBuilder components
 	'supports': { },
 
-	// Preview mode flag,
-	// some plugins don't seek accurately but in preview mode we need
-	// accurate seeks so we do tricks like hide the image until its ready
-	'previewMode' : false,
-
 	// Ready to play
 	// NOTE: we should switch over to setting the html5 video ready state
 	'readyToPlay' : false,
@@ -1343,11 +1338,6 @@ mw.EmbedPlayer.prototype = {
 				this.serverSeekTime = 0;
 				this.updatePlayHead( 0 );
 
-				// Make sure we are not in preview mode( onEndedDone actions in preview mode)
-				if ( this.previewMode ) {
-					return ;
-				}
-				
 				// An event for once the all ended events are done.
 				mw.log("EmbedPlayer:: trigger: onEndedDone");
 				$( this ).trigger( 'onEndedDone' );
