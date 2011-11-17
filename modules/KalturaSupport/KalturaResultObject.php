@@ -50,9 +50,10 @@ class KalturaResultObject {
 	var $playerConfig = array();
 
 	function __construct( $clientTag = 'php'){
-		$this->clientTag = $clientTag;
 		//parse input:
 		$this->parseRequest();
+		// set client tag with cache_st
+		$this->clientTag = $clientTag . ',cache_st: ' . $this->urlParameters['cache_st'];
 		// load the request object:
 		$this->getResultObject();
 	}
@@ -89,7 +90,7 @@ class KalturaResultObject {
 	function getError() {
 		return $this->error;
 	}
-	function getPlayerConfig( $confPrefix = false, $attr = false ) {
+	public function getPlayerConfig( $confPrefix = false, $attr = false ) {
 		if( ! $this->playerConfig ) {
 			$this->setupPlayerConfig();
 		}
@@ -438,7 +439,7 @@ class KalturaResultObject {
 
 		// Get all plugins elements
 		if( $this->uiConfFile ) {
-			$pluginsXml = $this->getUiConfXML()->xpath("*//Plugin");
+			$pluginsXml = $this->getUiConfXML()->xpath("*//*[@id]");
 			for( $i=0; $i < count($pluginsXml); $i++ ) {
 				$pluginId = (string) $pluginsXml[ $i ]->attributes()->id;
 				$plugins[ $pluginId ] = array(
@@ -479,7 +480,7 @@ class KalturaResultObject {
 				$vars[ $key ] = $this->formatString($value);
 			}
 		}
-
+		
 		// Set Plugin attributes from uiVars/flashVars to our plugins array
 		foreach( $vars as $key => $value ) {
 			// If this is not a plugin setting, continue
@@ -673,6 +674,9 @@ class KalturaResultObject {
 		
 		$ipadFlavors = trim($ipadFlavors, ",");
 		$iphoneFlavors = trim($iphoneFlavors, ",");
+
+		// Disable Apple adaptive for HTTPs
+		$wgKalturaUseAppleAdaptive = ($wgHTTPProtocol == 'https') ? false : true;
 
 		// Create iPad flavor for Akamai HTTP
 		if ( $ipadFlavors && $wgKalturaUseAppleAdaptive ){
