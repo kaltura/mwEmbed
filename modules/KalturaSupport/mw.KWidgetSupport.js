@@ -195,7 +195,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		// Apply player Sources
 		if( playerData.flavors ){
-			_this.addFlavorSources( embedPlayer, playerData.flavors );
+				_this.addFlavorSources( embedPlayer, playerData.flavors );
 		}
 		
 		// Check for "image" mediaType ( 2 ) 

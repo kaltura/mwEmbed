@@ -8,20 +8,23 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		var oldCaptionConfig = embedPlayer.getKalturaConfig(
 				'closedCaptions', 
 				[ 'plugin', 'relativeTo', 'position', 'width', 'height', 'skin', 'bg',
-				 'fontsize', 'opacity', 'fontFamily', 'type',  'ccUrl', 'timeOffset' ]
+				 'fontsize', 'opacity', 'fontFamily', 'type',  'ccUrl', 'timeOffset',
+				 'hideClosedCaptions' ]
 		);
 
 		// closeCaption Under player plugin
 		var underCaptionConfig = embedPlayer.getKalturaConfig(
 				'closedCaptionsUnderPlayer', 
-				[ 'plugin', 'width', 'height', 'fontsize', 'bg', 'fontcolor', 'opacity', 'fontFamily', 'timeOffset' ]
+				[ 'plugin', 'width', 'height', 'fontsize', 'bg', 'fontcolor', 'opacity', 
+				  'fontFamily', 'timeOffset', 'hideClosedCaptions' ]
 		);
 
 		// closeCaption Over player plugin
 		var overCaptionConfig = embedPlayer.getKalturaConfig(
 				'closedCaptionsOverPlayer',
 				[ 'plugin', 'width', 'height', 'fontsize', 'bg', 'fontColor', 'opacity',
-					'fontFamily', 'useGlow', 'glowColor', 'glowBlur', 'timeOffset' ]
+					'fontFamily', 'useGlow', 'glowColor', 'glowBlur', 'timeOffset', 
+					'hideClosedCaptions' ]
 		);
 
 		// Select the available plugin
@@ -46,7 +49,7 @@ window.captionPlugin = function( embedPlayer, captionConfig, callback){
 	// Load the Kaltura TimedText and TimedText Module:
 	mw.load( [ "TimedText", "mw.KTimedText" ], function() {
 		// Add captions to the player
-		embedPlayer.timedText = new mw.KTimedText( embedPlayer, captionConfig ); 
+		new mw.KTimedText( embedPlayer, captionConfig ); 
 		mw.log("CaptionPlugin: done registering captions, run callback");
 		callback();
 	});

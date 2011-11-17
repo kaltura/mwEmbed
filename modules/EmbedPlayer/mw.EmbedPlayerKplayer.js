@@ -68,7 +68,7 @@ mw.EmbedPlayerKplayer = {
 		
 		var kdpPath = playerPath + "/kdp3.3.5.27.swf";
 		
-		mw.log(" KPlayer:: doEmbedHTML" ); 
+		mw.log( "KPlayer:: doEmbedHTML" ); 
 		// remove any existing pid ( if present ) 
 		$( '#' + this.pid ).remove();
 		
@@ -77,8 +77,9 @@ mw.EmbedPlayerKplayer = {
 			_this.postEmbedJS();
 			window.jsCallbackReady = orgJsReadyCallback;
 		};
+		// attributes and params:
 		flashembed( $( this ).attr('id'),
-				{	// attributes and params:
+				{	
 					id :				this.pid,
 					src : 				kdpPath,
 					height :			'100%',

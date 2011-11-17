@@ -21,6 +21,21 @@
 				_this.timeOffset = _this.kVars.timeOffset;
 			}
 
+			// Inherit the timed text support via the base TimedText module:
+			var baseTimedText = new mw.TimedText( embedPlayer, kalturaConfig );
+			for( var i in _this ){
+				if( baseTimedText[ i ] ){
+					baseTimedText[ 'parent_' + i] = baseTimedText[i];
+				}
+				baseTimedText[i] = _this[i];
+			}
+			embedPlayer.timedText = baseTimedText;
+			
+			// Hide captions by default if hideClosedCaptions attribute is set
+			if( _this.kVars['hideClosedCaptions'] == true ){
+				embedPlayer.timedText.selectLayout( 'off' );
+			}
+			
 			// Trigger changed caption
 			$( embedPlayer ).bind( 'TimedText_ChangeSource', function() {
 				$( embedPlayer ).trigger( 'changedClosedCaptions' );
@@ -40,17 +55,6 @@
 						break;
 				}
 			});
-			
-			// Inherit the timed text support via the base TimedText module:
-			var baseTimedText = new mw.TimedText( embedPlayer, kalturaConfig );
-			for( var i in _this ){
-				if( baseTimedText[ i ] ){
-					baseTimedText[ 'parent_' + i] = baseTimedText[i];
-				}
-				baseTimedText[i] = _this[i];
-			}
-			return baseTimedText;
-
 		},
 	
 		getKalturaClient: function(){
