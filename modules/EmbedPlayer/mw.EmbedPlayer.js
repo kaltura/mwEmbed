@@ -524,7 +524,7 @@ mw.EmbedPlayer.prototype = {
 	// for more on CMML see: http://wiki.xiph.org/CMML
 	'cmmlData': null,
 
-	// Stores the seek time request, Updated by the doSeek function
+	// Stores the seek time request, Updated by the seek function
 	'serverSeekTime' : 0,
 
 	// If the embedPlayer is current 'seeking'
@@ -1163,20 +1163,24 @@ mw.EmbedPlayer.prototype = {
 
 	/**
 	 * Get a time range from the media start and end time
-	 * 
-	 * @return start_npt and end_npt time if present
+	 *
+	 * @return startNpt and endNpt time if present
 	 */
 	getTimeRange: function() {
 		var end_time = (this.controlBuilder.longTimeDisp)? '/' + mw.seconds2npt( this.getDuration() ) : '';
 		var default_time_range = '0:00' + end_time;
-		if ( !this.mediaElement )
+		if ( !this.mediaElement ){
 			return default_time_range;
-		if ( !this.mediaElement.selectedSource )
+		}
+		if ( !this.mediaElement.selectedSource ){
 			return default_time_range;
-		if ( !this.mediaElement.selectedSource.end_npt )
+		}
+		if ( !this.mediaElement.selectedSource.endNpt ){
 			return default_time_range;
-		return this.mediaElement.selectedSource.start_npt + this.mediaElement.selectedSource.end_npt;
+		}
+		return this.mediaElement.selectedSource.startNpt + this.mediaElement.selectedSource.endNpt;
 	},
+
 
 	/**
 	 * Get the duration of the embed player
@@ -1214,16 +1218,16 @@ mw.EmbedPlayer.prototype = {
 	 * Get the plugin embed html ( should be implemented by embed player
 	 * interface )
 	 */
-	doEmbedHTML: function() {
-		return 'Error: function doEmbedHTML should be implemented by embed player interface ';
+	embedPlayerHTML: function() {
+		return 'Error: function embedPlayerHTML should be implemented by embed player interface ';
 	},
 
 	/**
 	 * Seek function ( should be implemented by embedPlayer interface
-	 * playerNative, playerKplayer etc. ) embedPlayer doSeek only handles URL
+	 * playerNative, playerKplayer etc. ) embedPlayer seek only handles URL
 	 * time seeks
 	 */
-	doSeek: function( percent ) {
+	seek: function( percent ) {
 		var _this = this;
 		this.seeking = true;
 		// Do some bounds checking:
@@ -1237,7 +1241,7 @@ mw.EmbedPlayer.prototype = {
 
 		// See if we should do a server side seek ( player independent )
 		if ( this.supportsURLTimeEncoding() ) {
-			mw.log( 'EmbedPlayer::doSeek:: updated serverSeekTime: ' + mw.seconds2npt ( this.serverSeekTime ) +
+			mw.log( 'EmbedPlayer::seek:: updated serverSeekTime: ' + mw.seconds2npt ( this.serverSeekTime ) +
 					' currentTime: ' + _this.currentTime );
 			// make sure we need to seek:
 			if( _this.currentTime == _this.serverSeekTime ){
@@ -1247,11 +1251,10 @@ mw.EmbedPlayer.prototype = {
 			this.stop();
 			this.didSeekJump = true;
 			// Make sure this.serverSeekTime is up-to-date:
-			this.serverSeekTime = mw.npt2seconds( this.start_npt ) + parseFloat( percent * this.getDuration() );
+			this.serverSeekTime = mw.npt2seconds( this.startNpt ) + parseFloat( percent * this.getDuration() );
 			// Update the slider
 			
-			// Do play request in 100ms ( give the dom time to swap out the embed
-			// player )
+			// Do play request in 100ms ( give the dom time to swap out the embed player )
 			setTimeout( function() {
 				_this.seeking = false;
 				_this.play();
@@ -1419,7 +1422,7 @@ mw.EmbedPlayer.prototype = {
 		// Check for intrinsic width and maintain aspect ratio
 		setTimeout(function(){
 			_this.applyIntrinsicAspect();
-		}, 10);
+		}, 0);
 		
 		
 		// triggers autoplay: 
@@ -1576,7 +1579,7 @@ mw.EmbedPlayer.prototype = {
 			$( this ).find('.play-btn-large').remove();
 		} else {
 			// Add the warning
-			this.controlBuilder.doWarningBindinng( 'EmbedPlayer.DirectFileLinkWarning',
+			this.controlBuilder.addWarningBinding( 'EmbedPlayer.DirectFileLinkWarning',
 				gM( 'mwe-embedplayer-download-warn', mw.getConfig('EmbedPlayer.FirefoxLink') )
 			);
 			$( this ).show();
@@ -1602,43 +1605,42 @@ mw.EmbedPlayer.prototype = {
 		// TODO we should have a smart done Loading system that registers player
 		// states
 		// http://www.whatwg.org/specs/web-apps/current-work/#media-element
-		this.doneLoading = true;
 	},
 
 	/**
 	 * Update the video time request via a time request string
-	 * 
+	 *
 	 * @param {String}
-	 *            time_req
+	 *      timeRequest video time to be updated
 	 */
-	updateVideoTimeReq: function( time_req ) {
-		mw.log( 'EmbedPlayer::updateVideoTimeReq:' + time_req );
-		var time_parts = time_req.split( '/' );
-		this.updateVideoTime( time_parts[0], time_parts[1] );
+	updateVideoTimeReq: function( timeRequest ) {
+		mw.log( 'EmbedPlayer::updateVideoTimeReq:' + timeRequest );
+		var timeParts = timeRequest.split( '/' );
+		this.updateVideoTime( timeParts[0], timeParts[1] );
 	},
 
 	/**
-	 * Update Video time from provided start_npt and end_npt values
+	 * Update Video time from provided startNpt and endNpt values
 	 * 
 	 * @param {String}
-	 *            start_npt the new start time in npt format
-	 * @pamra {String} end_npt the new end time in npt format
+	 *            startNpt the new start time in npt format
+	 * @pamra {String} endNpt the new end time in npt format
 	 */
-	updateVideoTime: function( start_npt, end_npt ) {
+	updateVideoTime: function( startNpt, endNpt ) {
 		// update media
-		this.mediaElement.updateSourceTimes( start_npt, end_npt );
+		this.mediaElement.updateSourceTimes( startNpt, endNpt );
 
 		// update mv_time
-		this.controlBuilder.setStatus( start_npt + '/' + end_npt );
+		this.controlBuilder.setStatus( startNpt + '/' + endNpt );
 
 		// reset slider
 		this.updatePlayHead( 0 );
 
-		// reset seek_offset:
-		if ( this.mediaElement.selectedSource && this.mediaElement.selectedSource.URLTimeEncoding ) {
+		// Reset the serverSeekTime if urlTimeEncoding is enabled 
+		if ( this.supportsURLTimeEncoding() ) {
 			this.serverSeekTime = 0;
 		} else {
-			this.serverSeekTime = mw.npt2seconds( start_npt );
+			this.serverSeekTime = mw.npt2seconds( startNpt );
 		}
 	},
 
@@ -1662,18 +1664,18 @@ mw.EmbedPlayer.prototype = {
 	updateThumbTime:function( floatSeconds ) {
 		// mw.log('updateThumbTime:'+floatSeconds);
 		var _this = this;
-		if ( typeof this.org_thum_src == 'undefined' ) {
-			this.org_thum_src = this.poster;
+		if ( typeof this.orgThumSrc == 'undefined' ) {
+			this.orgThumSrc = this.poster;
 		}
-		if ( this.org_thum_src.indexOf( 't=' ) !== -1 ) {
-			this.last_thumb_url = mw.replaceUrlParams( this.org_thum_src,
+		if ( this.orgThumSrc.indexOf( 't=' ) !== -1 ) {
+			this.lastThumbUrl = mw.replaceUrlParams( this.orgThumSrc,
 				{
 					't' : mw.seconds2npt( floatSeconds + parseInt( this.startOffset ) )
 				}
 			);
 			if ( !this.thumbnail_updating ) {
-				this.updatePoster( this.last_thumb_url , false );
-				this.last_thumb_url = null;
+				this.updatePoster( this.lastThumbUrl , false );
+				this.lastThumbUrl = null;
 			}
 		}
 	},
@@ -2137,7 +2139,7 @@ mw.EmbedPlayer.prototype = {
 				return false;
 			} else {
 				_this.posterDisplayed = false;
-				_this.doEmbedHTML();
+				_this.embedPlayerHTML();
 			}
 		}
 		
@@ -2174,7 +2176,7 @@ mw.EmbedPlayer.prototype = {
 		// if we have start time defined, start playing from that point
 		if( this.currentTime < this.startTime ) {
 			var percent = parseFloat( this.startTime ) / this.getDuration();
-			this.doSeek( percent );
+			this.seek( percent );
 		}
 		
 		this.playInterfaceUpdate();
@@ -2496,7 +2498,7 @@ mw.EmbedPlayer.prototype = {
 						 _this.currentTime + " javascript based currentTime update to " +
 						 seekPercent + ' == ' + _this.currentTime );
 				_this.previousTime = _this.currentTime;
-				this.doSeek( seekPercent );
+				this.seek( seekPercent );
 			}
 		}
 	},
