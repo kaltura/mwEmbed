@@ -28,7 +28,7 @@ mw.EmbedPlayerJava = {
 	/**
 	* Output the the embed html
 	*/
-	doEmbedHTML: function () {
+	embedPlayerHTML: function () {
 		var _this = this;
 		mw.log( "java play url:" + this.getSrc( this.seek_time_sec ) );
 
@@ -60,32 +60,6 @@ mw.EmbedPlayerJava = {
 			'</applet>';
 
 		$( this ).html( appletCode );
-
-		// Wrap it in an iframe to avoid hanging the event thread in FF 2/3 and similar
-		// NOTE:  This breaks reference to the applet so disabled for now:
-		/*if ( $.browser.mozilla ) {
-			var iframe = document.createElement( 'iframe' );
-			iframe.setAttribute( 'width', this.getWidth() );
-			iframe.setAttribute( 'height', this.getHeight() );
-			iframe.setAttribute( 'scrolling', 'no' );
-			iframe.setAttribute( 'frameborder', 0 );
-			iframe.setAttribute( 'marginWidth', 0 );
-			iframe.setAttribute( 'marginHeight', 0 );
-			iframe.setAttribute( 'id', 'cframe_' + this.id )
-
-			// Append the iframe to the embed object:
-			$( this ).html( iframe );
-
-			// Write out the iframe content:
-			var newDoc = iframe.contentDocument;
-			newDoc.open();
-			newDoc.write( '<html><body>' + appletCode + '</body></html>' );
-			// spurious error in some versions of FF, no workaround known
-			newDoc.close();
-		} else {
-			$( this ).html( appletCode );
-		//}
-		*/
 
 		// Start the monitor:
 		_this.monitor();
@@ -148,15 +122,15 @@ mw.EmbedPlayerJava = {
 	* ( Cortado seek does not seem to work very well )
 	* @param {Float} percentage Percentage to seek into the stream
 	*/
-	doSeek: function( percentage ) {
+	seek: function( percentage ) {
 		mw.log( 'java:seek:p: ' + percentage + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seek_time_sec );
 		this.getPlayerElement();
 
 		if ( this.supportsURLTimeEncoding() ) {
-			this.parent_doSeek( percentage );
+			this.parent_seek( percentage );
 		} else if ( this.playerElement ) {
 			// do a (generally broken) local seek:
-			mw.log( "Cortado seek is not very accurate :: doSeek::" + ( percentage * parseFloat( this.getDuration() ) ) );
+			mw.log( "Cortado seek is not very accurate :: seek::" + ( percentage * parseFloat( this.getDuration() ) ) );
 			this.playerElement.currentTime = ( percentage * parseFloat( this.getDuration() ) );
 		} else {
 			this.doPlayThenSeek( percentage );
@@ -179,7 +153,7 @@ mw.EmbedPlayerJava = {
 			_this.getPlayerElement();
 			// if we have .jre ~in theory~ we can seek (but probably not)
 			if ( _this.playerElement ) {
-				_this.doSeek( perc );
+				_this.seek( perc );
 			} else {
 				// try to get player for 10 seconds:
 				if ( rfsCount < 200 ) {
