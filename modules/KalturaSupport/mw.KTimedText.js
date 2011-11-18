@@ -59,7 +59,7 @@
 						embedPlayer.timedText.selectLayout( 'off' );
 						break;
 				}
-			});	
+			}); 
 		},
 		getKalturaClient: function(){
 			if( ! this.kClient ){

@@ -663,7 +663,7 @@
 				case 'doSeek':
 					// Kaltura doSeek is in seconds rather than percentage:
 					var percent = parseFloat( notificationData ) / embedPlayer.getDuration();
-					embedPlayer.doSeek( percent );
+					embedPlayer.seek( percent );
 					break;
 				case 'changeVolume':
 					embedPlayer.setVolume( parseFloat( notificationData ) );

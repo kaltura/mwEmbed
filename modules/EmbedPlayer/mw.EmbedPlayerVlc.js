@@ -35,7 +35,7 @@ mw.EmbedPlayerVlc = {
 	/**
 	* Get embed HTML
 	*/
-	doEmbedHTML: function() {
+	embedPlayerHTML: function() {
 		var _this = this;
 		$j( this ).html(
 			'<object classid="clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921" ' +
@@ -121,10 +121,10 @@ mw.EmbedPlayerVlc = {
 	*
 	* @param {Float} percent Seek to this percent of the stream
 	*/
-	doSeek : function( percent ) {
+	seek : function( percent ) {
 		this.getPlayerElement();
 		if ( this.supportsURLTimeEncoding() ) {
-			this.parent_doSeek( percent );
+			this.parent_seek( percent );
 		} else if ( this.playerElement ) {
 			this.seeking = true;
 			mw.log( "do vlc http seek to: " + percent )
@@ -154,7 +154,7 @@ mw.EmbedPlayerVlc = {
 			var newState = _this.playerElement.input.state;
 			// if playing we are ready to do the
 			if ( newState == 3 ) {
-				_this.doSeek( percent );
+				_this.seek( percent );
 			} else {
 				// try to get player for 10 seconds:
 				if ( rfsCount < 200 ) {

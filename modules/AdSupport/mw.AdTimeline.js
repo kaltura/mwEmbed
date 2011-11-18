@@ -448,8 +448,8 @@ mw.AdTimeline.prototype = {
 			$( _this.embedPlayer ).bind( 'click' + adClickPostFix, function(){
 				// Show the control bar with a ( force on screen option for iframe based clicks on ads ) 
 				_this.embedPlayer.controlBuilder.showControlBar( true );
-				$( _this.embedPlayer ).bind( 'play' + adClickPostFix, function(){
-					$( _this.embedPlayer ).unbind( 'play' + adClickPostFix );
+				$( _this.embedPlayer ).bind( 'onplay' + adClickPostFix, function(){
+					$( _this.embedPlayer ).unbind( 'onplay' + adClickPostFix );
 					_this.embedPlayer.controlBuilder.restoreControlsHover();
 				})
 				// try to do a popup:

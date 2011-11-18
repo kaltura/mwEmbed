@@ -76,7 +76,7 @@ function runEmbedPlaybackTests(videoSelector) {
 		passed = this.passed;
 		var performTestSeek = function()
 		{
-			player.doSeek( 5 / player.duration );
+			player.seek( 5 / player.duration );
 		};
 		setTimeout( performTestSeek, 10000);
 		setTimeout( function()
@@ -98,7 +98,7 @@ function runEmbedPlaybackTests(videoSelector) {
 		$(player).bind('ended', function() { passed = true } );
 		var performTestSeek = function()
 		{
-			player.doSeek( (player.duration - 2) / player.duration );
+			player.seek( (player.duration - 2) / player.duration );
 		};
 		setTimeout( performTestSeek, 10000);
 		setTimeout( function()

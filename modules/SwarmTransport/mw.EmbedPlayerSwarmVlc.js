@@ -7,7 +7,7 @@ mw.EmbedPlayerSwarmVlc = {
 	//Instance Name:
 	instanceOf : 'SwarmVlc',
 
-	doEmbedHTML: function() {
+	embedPlayerHTML: function() {
 		var _this = this;
 		var oggHttpSource = this.mediaElement.getSources( 'video/ogg' )[0];
 		$j( this ).html(

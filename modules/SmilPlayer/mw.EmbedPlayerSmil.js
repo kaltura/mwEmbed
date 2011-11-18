@@ -49,7 +49,7 @@ mw.EmbedPlayerSmil = {
 	/**
 	* Put the embed player into the container
 	*/
-	doEmbedHTML: function() {
+	embedPlayerHTML: function() {
 		var _this = this;
 
 		// check if we have already embed the player:
@@ -57,10 +57,10 @@ mw.EmbedPlayerSmil = {
 			return;
 		}
 		this.smilPlayerEmbedded = true;
-		mw.log("EmbedPlayerSmil::doEmbedHTML: " + this.id + " time:" + this.smilPlayTime ) ;
+		mw.log("EmbedPlayerSmil::embedPlayerHTML: " + this.id + " time:" + this.smilPlayTime ) ;
 
 		this.setCurrentTime( this.smilPlayTime, function(){
-			mw.log("EmbedPlayerSmil::doEmbedHTML:: render callback ready " );
+			mw.log("EmbedPlayerSmil::embedPlayerHTML:: render callback ready " );
 		});
 		
 		// Be sure the interface does not have black background
@@ -111,8 +111,8 @@ mw.EmbedPlayerSmil = {
 	*
 	* @param {Float} percentage
 	*/
-	doSeek: function( percentage ) {
-		mw.log( 'EmbedPlayerSmil::doSeek p: ' + percentage );
+	seek: function( percentage ) {
+		mw.log( 'EmbedPlayerSmil::seek p: ' + percentage );
 		this.seeking = true;
 		var _this = this;
 		// Run the seeking hook
@@ -357,7 +357,7 @@ mw.EmbedPlayerSmil = {
 			return ;
 		}
 		// If no thumb could be found use the first frame of smil:
-		this.doEmbedHTML();
+		this.embedPlayerHTML();
 	},
 
 	/**

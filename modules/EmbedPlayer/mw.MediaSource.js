@@ -91,10 +91,10 @@ mw.MediaSource.prototype = {
 	id: null,
 
 	// Start time in npt format
-	start_npt: null,
+	startNpt: null,
 
 	// End time in npt format
-	end_npt: null,
+	endNpt: null,
 
 	// Language of the file
 	srclang: null,
@@ -192,23 +192,23 @@ mw.MediaSource.prototype = {
 	 * @param {String}
 	 *      end_time: in NPT format
 	 */
-	updateSrcTime: function ( start_npt, end_npt ) {
-		// mw.log("f:updateSrcTime: "+ start_npt+'/'+ end_npt + ' from org: ' +
-		// this.start_npt+ '/'+this.end_npt);
+	updateSrcTime: function ( startNpt, endNpt ) {
+		// mw.log("f:updateSrcTime: "+ startNpt+'/'+ endNpt + ' from org: ' +
+		// this.startNpt+ '/'+this.endNpt);
 		// mw.log("pre uri:" + this.src);
 		// if we have time we can use:
 		if ( this.URLTimeEncoding ) {
 			// make sure its a valid start time / end time (else set default)
-			if ( !mw.npt2seconds( start_npt ) ) {
-				start_npt = this.start_npt;
+			if ( !mw.npt2seconds( startNpt ) ) {
+				startNpt = this.startNpt;
 			}
 
-			if ( !mw.npt2seconds( end_npt ) ) {
-				end_npt = this.end_npt;
+			if ( !mw.npt2seconds( endNpt ) ) {
+				endNpt = this.endNpt;
 			}
 
 			this.src = mw.replaceUrlParams( this.src, {
-				't': start_npt + '/' + end_npt
+				't': startNpt + '/' + endNpt
 			});
 
 			// update the duration
@@ -224,8 +224,8 @@ mw.MediaSource.prototype = {
 	 */
 	setDuration: function ( duration ) {
 		this.duration = duration;
-		if ( !this.end_npt ) {
-			this.end_npt = mw.seconds2npt( this.startOffset + duration );
+		if ( !this.endNpt ) {
+			this.endNpt = mw.seconds2npt( this.startOffset + duration );
 		}
 	},
 
@@ -255,8 +255,8 @@ mw.MediaSource.prototype = {
 			return this.src;
 		}
 		var endvar = '';
-		if ( this.end_npt ) {
-			endvar = '/' + this.end_npt;
+		if ( this.endNpt ) {
+			endvar = '/' + this.endNpt;
 		}
 		return mw.replaceUrlParams( this.src,
 			{
@@ -334,17 +334,17 @@ mw.MediaSource.prototype = {
 			var annoURL = new mw.Uri( this.src );
 			if ( annoURL.query.t ) {
 				var times = annoURL.query.t.split( '/' );
-				this.start_npt = times[0];
-				this.end_npt = times[1];
-				this.startOffset = mw.npt2seconds( this.start_npt );
-				this.duration = mw.npt2seconds( this.end_npt ) - this.startOffset;
+				this.startNpt = times[0];
+				this.endNpt = times[1];
+				this.startOffset = mw.npt2seconds( this.startNpt );
+				this.duration = mw.npt2seconds( this.endNpt ) - this.startOffset;
 			} else {
 				// look for this info as attributes
 				if ( this.startOffset ) {
-					this.start_npt = mw.seconds2npt( this.startOffset );
+					this.startNpt = mw.seconds2npt( this.startOffset );
 				}
 				if ( this.duration ) {
-					this.end_npt = mw.seconds2npt( parseInt( this.duration ) + parseInt( this.startOffset ) );
+					this.endNpt = mw.seconds2npt( parseInt( this.duration ) + parseInt( this.startOffset ) );
 				}
 			}
 		}

@@ -515,7 +515,7 @@ mw.EmbedPlayer.prototype = {
 
 	// Thumbnail updating flag ( to avoid rewriting an thumbnail thats already
 	// being updated)
-	'thumbnail_updating' : false,
+	'thumbnailUpdatingFlag' : false,
 
 	// Poster display flag
 	'posterDisplayed' : true,
@@ -1168,15 +1168,15 @@ mw.EmbedPlayer.prototype = {
 	 */
 	getTimeRange: function() {
 		var end_time = (this.controlBuilder.longTimeDisp)? '/' + mw.seconds2npt( this.getDuration() ) : '';
-		var default_time_range = '0:00' + end_time;
+		var defaultTimeRange = '0:00' + end_time;
 		if ( !this.mediaElement ){
-			return default_time_range;
+			return defaultTimeRange;
 		}
 		if ( !this.mediaElement.selectedSource ){
-			return default_time_range;
+			return defaultTimeRange;
 		}
 		if ( !this.mediaElement.selectedSource.endNpt ){
-			return default_time_range;
+			return defaultTimeRange;
 		}
 		return this.mediaElement.selectedSource.startNpt + this.mediaElement.selectedSource.endNpt;
 	},
@@ -1673,7 +1673,7 @@ mw.EmbedPlayer.prototype = {
 					't' : mw.seconds2npt( floatSeconds + parseInt( this.startOffset ) )
 				}
 			);
-			if ( !this.thumbnail_updating ) {
+			if ( !this.thumbnailUpdatingFlag ) {
 				this.updatePoster( this.lastThumbUrl , false );
 				this.lastThumbUrl = null;
 			}
@@ -1689,7 +1689,11 @@ mw.EmbedPlayer.prototype = {
 	updateThumbPerc:function( percent ) {
 		return this.updateThumbTime( ( this.getDuration() * percent ) );
 	},
-	// update the video poster:
+	/**
+	 * Update the poster source
+	 * @param {String} 
+	 * 		posterSrc Poster src url
+	 */	
 	updatePosterSrc: function( posterSrc ){
 		this.poster = posterSrc;
 		this.updatePosterHTML();
@@ -1943,12 +1947,15 @@ mw.EmbedPlayer.prototype = {
 			.css( 'width', this.getWidth() )
 			.html( 'Error: Trying to get native html5 player without native support for codec' );
 	},
+	
 	/**
 	 * Should be set via native embed support
 	 */
 	applyMediaElementBindings: function(){
+		mw.log("Warning applyMediaElementBindings should be implemented by player interface" );
 		return ;
 	},
+
 
 	/**
 	 * Gets code to embed the player remotely for "share" this player links
@@ -2299,15 +2306,9 @@ mw.EmbedPlayer.prototype = {
 
 		this.stopMonitor();
 
-		// Issue pause to update interface (only call this parent)
+		// pause playback ( if playing ) 
 		if( !this.paused ){
-			this.paused = true;
-			// update the interface
-			if ( this['parent_pause'] ) {
-				this.parent_pause();
-			} else {
-				this.pause();
-			}
+			this.pause();
 		}
 		// restore the play button: 
 		this.addPlayBtnLarge();
@@ -2456,15 +2457,6 @@ mw.EmbedPlayer.prototype = {
 	},
 
 	/**
-	 * Get paused state
-	 * 
-	 * @return {Boolean} true if playing false if not playing
-	 */
-	isPaused: function() {
-		return this.paused;
-	},
-
-	/**
 	 * Get Stopped state
 	 * 
 	 * @return {Boolean} true if stopped false if playing
@@ -2482,72 +2474,70 @@ mw.EmbedPlayer.prototype = {
 	startMonitor: function(){
 		this.monitor();
 	},
-
 	/**
-	 * Checks if the currentTime was updated outside of the getPlayerElementTime
-	 * function
-	 */
-	checkForCurrentTimeSeek: function(){
-		var _this = this;
-		// Check if a javascript currentTime change based seek has occurred
-		if( _this.previousTime != _this.currentTime && !this.userSlide && !this.seeking){
-			// If the time has been updated and is in range issue a seek
-			if( _this.getDuration() && _this.currentTime <= _this.getDuration() ){
-				var seekPercent = _this.currentTime / _this.getDuration();
-				mw.log("MwEmbed::checkForCurrentTimeSeek::" + _this.previousTime + ' != ' +
-						 _this.currentTime + " javascript based currentTime update to " +
-						 seekPercent + ' == ' + _this.currentTime );
-				_this.previousTime = _this.currentTime;
-				this.seek( seekPercent );
-			}
-		}
-	},
-
-	/**
-	 * Monitor playback and update interface components. underling plugin
-	 * objects are responsible for updating currentTime
+	 * Monitor playback and update interface components. underling player classes
+	 *  are responsible for updating currentTime
 	 */
 	monitor: function() {
 		var _this = this;
+
 		// Check for current time update outside of embed player
-		_this.checkForCurrentTimeSeek();
+		_this.syncCurrentTime();
 		
-		// Hide the spinner once we have time update: 
-		if( this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
-			_this._checkHideSpinner = false;
-			// also hide the play button ( in case it was there somehow )
-			_this.$interface.find('.play-btn-large').hide()
-			_this.hidePlayerSpinner();
-		}
+		// Keep volume proprties set outside of the embed player in sync
+		_this.syncVolume();
+
+		// Update the playhead status:
+		_this.updatePlayheadStatus()
+
+		// Update buffer information
+		_this.updateBufferStatus();
 		
-		// Update currentTime via embedPlayer
-		_this.currentTime = _this.getPlayerElementTime();
-		// Update any offsets from server seek
-		if( _this.serverSeekTime && _this.supportsURLTimeEncoding() ){
-			_this.currentTime = parseInt( _this.serverSeekTime ) + parseInt( _this.getPlayerElementTime() );
+		// Make sure the monitor continues to run as long as the video is not stoped
+		_this.syncMonitor()
+		
+		if( _this._propagateEvents ){
+			// mw.log('trigger:monitor:: ' + this.currentTime );
+			$( this ).trigger( 'monitorEvent' );
+			
+			// Trigger the "progress" event per HTML5 api support
+			if( this.progressEventData ) {
+				$( this ).trigger( 'progress', this.progressEventData );
+			}
 		}
-
-		// Update the previousTime ( so we can know if the user-javascript
-		// changed currentTime )
-		_this.previousTime = _this.currentTime;
-
-		// Stop playback if we reach the end of a temporal fragment: 
-		if( _this.pauseTime && _this.currentTime >  _this.pauseTime ){
-			_this.pause();
-			_this.pauseTime = null;
+	},
+	/**
+	 * Sync the monitor function  
+	 */
+	syncMonitor: function(){
+		var _this = this;
+		// Call monitor at this.monitorRate interval.
+		// ( use setInterval to avoid stacking monitor requests )
+		if( ! this.isStopped() ) {
+			if( !this.monitorInterval ){
+				this.monitorInterval = setInterval( function(){
+					if( _this.monitor )
+						_this.monitor();
+				}, this.monitorRate );
+			}
+		} else {
+			// If stopped "stop" monitor:
+			this.stopMonitor();
 		}
-
-
+	},
+	/**
+	 * Sync the video volume
+	 */
+	syncVolume: function(){
+		var _this = this;
 		// Check if volume was set outside of embed player function
-		// mw.log( ' this.volume: ' + _this.volume + ' prev Volume:: ' +
-		// _this.previousVolume );
+		// mw.log( ' this.volume: ' + _this.volume + ' prev Volume:: ' + _this.previousVolume );
 		if( Math.round( _this.volume * 100 ) != Math.round( _this.previousVolume * 100 ) ) {
 			_this.setInterfaceVolume( _this.volume );
 			if( _this._propagateEvents ){
-				// $( this ).trigger('volumeChanged', _this.volume );
+				$( this ).trigger('volumeChanged', _this.volume );
 			}
 		}
-
 		// Update the previous volume
 		_this.previousVolume = _this.volume;
 
@@ -2556,13 +2546,51 @@ mw.EmbedPlayer.prototype = {
 
 		// update the mute state from the player element
 		if( _this.muted != _this.getPlayerElementMuted() && ! _this.isStopped() ){
-			//	mw.log( "EmbedPlayer::monitor: muted does not mach embed player" );
+			mw.log( "EmbedPlayer::syncVolume: muted does not mach embed player" );
 			_this.toggleMute();
 			// Make sure they match:
 			_this.muted = _this.getPlayerElementMuted();
 		}
+	},
+	
+	/**
+	 * Checks if the currentTime was updated outside of the getPlayerElementTime function
+	 */
+	syncCurrentTime: function(){
+		var _this = this;
+		// Check if a javascript currentTime change based seek has occurred
+		if( _this.previousTime != _this.currentTime && !this.userSlide && !this.seeking){
+			// If the time has been updated and is in range issue a seek
+			if( _this.getDuration() && _this.currentTime <= _this.getDuration() ){
+				var seekPercent = _this.currentTime / _this.getDuration();
+				mw.log("EmbedPlayer::syncCurrentTime::" + _this.previousTime + ' != ' +
+						 _this.currentTime + " javascript based currentTime update to " +
+						 seekPercent + ' == ' + _this.currentTime );
+				_this.previousTime = _this.currentTime;
+				this.seek( seekPercent );
+			}
+		}
+		
+		// Update currentTime via embedPlayer
+		_this.currentTime = _this.getPlayerElementTime();
 
-		// mw.log( 'ct: ' + this.currentTime + ' d:' + this.duration + ' us:' + this.userSlide + ' seek:' + this.seeking );
+		// Update any offsets from server seek
+		if( _this.serverSeekTime && _this.supportsURLTimeEncoding() ){
+			_this.currentTime = parseInt( _this.serverSeekTime ) + parseInt( _this.getPlayerElementTime() );
+		}
+
+		// Update the previousTime ( so we can know if the user-javascript changed currentTime )
+		_this.previousTime = _this.currentTime;
+		
+		// Check for a pauseTime to stop playback in temporal media fragments 
+		if( _this.pauseTime && _this.currentTime >  _this.pauseTime ){
+			_this.pause();
+			_this.pauseTime = null;
+		}
+	},
+
+	updatePlayheadStatus: function(){
+		var _this = this;
 		if ( this.currentTime >= 0 && this.duration ) {
 			if ( !this.userSlide && !this.seeking ) {
 				if ( parseInt( this.startOffset ) != 0 ) {
@@ -2580,23 +2608,14 @@ mw.EmbedPlayer.prototype = {
 			// Check if we are "done"
 			var endPresentationTime = ( this.startOffset ) ? ( this.startOffset + this.duration ) : this.duration;
 			if ( this.currentTime >= endPresentationTime ) {
-				// mw.log( "mWEmbedPlayer::should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
-				if( this._propagateEvents )
-					this.onClipDone();
-				return ;
+				//mw.log( "mWEmbedPlayer::should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
+				this.onClipDone();
 			}
-			// End video if we have endTime attribute
-			if( this.endTime && (this.currentTime >= this.endTime) ) {
-				if( this._propagateEvents )
-					this.onClipDone();
-				return ;
-			}
-
 		} else {
 			// Media lacks duration just show end time
 			if ( this.isStopped() ) {
 				this.controlBuilder.setStatus( this.getTimeRange() );
-			} else if ( this.isPaused() ) {
+			} else if ( this.paused ) {
 				this.controlBuilder.setStatus( gM( 'mwe-embedplayer-paused' ) );
 			} else if ( this.isPlaying() ) {
 				if ( this.currentTime && ! this.duration )
@@ -2606,28 +2625,6 @@ mw.EmbedPlayer.prototype = {
 			} else {
 				this.controlBuilder.setStatus( this.getTimeRange() );
 			}
-		}
-
-		// Update buffer information
-		this.updateBufferStatus();
-		
-		// Call monitor at 250ms interval. ( use setInterval to avoid stacking
-		// monitor requests )
-		if( ! this.isStopped() ) {
-			if( !this.monitorInterval ){
-				this.monitorInterval = setInterval( function(){
-					if( _this.monitor )
-						_this.monitor();
-				}, this.monitorRate );
-			}
-		} else {
-			// If stopped "stop" monitor:
-			this.stopMonitor();
-		}
-
-		//	mw.log('EmbedPlayer:: monitor ' + this.currentTime  + ' propagate events: ' + _this._propagateEvents);
-		if( _this._propagateEvents ){
-			$( this ).trigger( 'monitorEvent' );
 		}
 	},
 

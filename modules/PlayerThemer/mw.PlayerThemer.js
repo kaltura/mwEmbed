@@ -114,7 +114,7 @@ mw.PlayerThemer.prototype = {
 							_this.getEmbedPlayer().seek_time_sec = mw.npt2seconds( _this.getEmbedPlayer().jump_time, true );
 							mw.log( 'do jump to: ' + _this.getEmbedPlayer().jump_time + ' perc:' + perc + ' sts:' + _this.getEmbedPlayer().seek_time_sec );
 							//ctrlObj.setStatus( gM( 'mwe-embedplayer-seeking' ) );
-							_this.getEmbedPlayer().doSeek( perc );
+							_this.getEmbedPlayer().seek( perc );
 							_this.setDisplayState('playing');
 						}
 					}

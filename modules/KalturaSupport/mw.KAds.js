@@ -192,7 +192,7 @@ mw.KAds.prototype = {
 								});
 
 								// Seek to where we did the switch
-								embedPlayer.doSeek( seekTime );
+								embedPlayer.seek( seekTime );
 							}
 						});
 					} else {

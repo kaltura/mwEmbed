@@ -38,7 +38,7 @@ mw.SwarmTransport = {
 			mw.log('SwarmTransport::bind:addControlBindingsEvent');
 			$j( embedPlayer ).bind( 'addControlBindingsEvent', function(){
 				if( mw.getConfig( 'SwarmTransport.Recommend' ) && _this.getPluginLibrary() ){
-					embedPlayer.controlBuilder.doWarningBindinng(
+					embedPlayer.controlBuilder.addWarningBinding(
 						'recommendSwarmTransport',
 						_this.getRecomendSwarmMessage()
 					);

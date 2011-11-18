@@ -59,14 +59,14 @@ mw.MediaElement.prototype = {
 	 * request argument (ie &t=start_time/end_time)
 	 *
 	 * @param {String}
-	 *      start_npt Start time in npt format
+	 *      startNpt Start time in npt format
 	 * @param {String}
-	 *      end_npt End time in npt format
+	 *      endNpt End time in npt format
 	 */
-	updateSourceTimes: function( start_npt, end_npt ) {
+	updateSourceTimes: function( startNpt, endNpt ) {
 		var _this = this;
 		$.each( this.sources, function( inx, mediaSource ) {
-			mediaSource.updateSrcTime( start_npt, end_npt );
+			mediaSource.updateSrcTime( startNpt, endNpt );
 		} );
 	},
 

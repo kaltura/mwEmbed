@@ -549,10 +549,10 @@ mw.ClipEdit.prototype = {
 	* Update the video time
 	* Target video is hard coded to #embed_vid for now
 	*
-	* @param {String} start_npt Start time in npt format
-	* @param {String} end_npt End time in npt format
+	* @param {String} startNpt Start time in npt format
+	* @param {String} endNpt End time in npt format
 	*/
-	updateVideoTime : function ( start_npt, end_npt )	{
+	updateVideoTime : function ( startNpt, endNpt )	{
 		// Update the video title:
 		var ebvid = $j( '#embed_vid' ).get( 0 );
 		if ( ebvid ) {

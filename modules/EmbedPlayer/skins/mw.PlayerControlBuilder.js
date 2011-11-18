@@ -543,7 +543,7 @@ mw.PlayerControlBuilder.prototype = {
 				gM( 'mwe-embedplayer-fullscreen-tip-osx') : 
 				gM( 'mwe-embedplayer-fullscreen-tip');
 		
-		var $targetTip = this.doWarningBindinng( 'EmbedPlayer.FullscreenTip', 
+		var $targetTip = this.addWarningBinding( 'EmbedPlayer.FullscreenTip', 
 			$('<h3/>').html( 
 				toolTipMsg
 			)
@@ -848,7 +848,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Add recommend firefox if we have non-native playback:
 		if ( _this.checkNativeWarning( ) ) {
-			_this.doWarningBindinng(
+			_this.addWarningBinding(
 				'EmbedPlayer.ShowNativeWarning',
 				gM( 'mwe-embedplayer-for_best_experience' )
 			);
@@ -1048,8 +1048,8 @@ mw.PlayerControlBuilder.prototype = {
 	* @param {object} warningMsg The jQuery object warning message to be displayed.
 	*
 	*/
-	doWarningBindinng: function( preferenceId, warningMsg ) {
-		mw.log( 'controlBuilder: doWarningBindinng: ' + preferenceId + ' wm: ' + warningMsg);
+	addWarningBinding: function( preferenceId, warningMsg ) {
+		mw.log( 'controlBuilder: addWarningBinding: ' + preferenceId + ' wm: ' + warningMsg);
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
@@ -2102,7 +2102,7 @@ mw.PlayerControlBuilder.prototype = {
 								if( embedPlayer.isStopped() ){
 									embedPlayer.play();
 								}
-								embedPlayer.doSeek( perc );
+								embedPlayer.seek( perc );
 							}
 						}
 					};

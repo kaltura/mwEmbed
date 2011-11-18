@@ -30,7 +30,7 @@ mw.EmbedPlayerKplayer = {
 	/*
 	 * Write the Embed html to the target
 	 */
-	doEmbedHTML : function() {
+	embedPlayerHTML : function() {
 		var _this = this;
 
 		mw.log("kPlayer:: embed src::" + _this.getSrc());
@@ -68,7 +68,7 @@ mw.EmbedPlayerKplayer = {
 		
 		var kdpPath = playerPath + "/kdp3.3.5.27.swf";
 		
-		mw.log( "KPlayer:: doEmbedHTML" ); 
+		mw.log( "KPlayer:: embedPlayerHTML" ); 
 		// remove any existing pid ( if present ) 
 		$( '#' + this.pid ).remove();
 		
@@ -283,17 +283,17 @@ mw.EmbedPlayerKplayer = {
 	 * @param {Float}
 	 *            percentage Percentage of total stream length to seek to
 	 */
-	doSeek : function(percentage) {
+	seek : function(percentage) {
 		var _this = this;
 		var seekTime = percentage * this.getDuration();
-		mw.log( 'EmbedPlayerKalturaKplayer:: doSeek: ' + percentage + ' time:' + seekTime );
+		mw.log( 'EmbedPlayerKalturaKplayer:: seek: ' + percentage + ' time:' + seekTime );
 		if (this.supportsURLTimeEncoding()) {
 
 			// Make sure we could not do a local seek instead:
 			if (!(percentage < this.bufferedPercent
 					&& this.playerElement.duration && !this.didSeekJump)) {
 				// We support URLTimeEncoding call parent seek:
-				this.parent_doSeek( percentage );
+				this.parent_seek( percentage );
 				return;
 			}
 		}
