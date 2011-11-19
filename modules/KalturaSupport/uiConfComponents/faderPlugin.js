@@ -12,7 +12,7 @@
 					'fader', 
 					['plugin', 'target', 'hoverTarget', 'duration', 'fadeOutDelay', 'autoHide']
 			);
-			faderPlugin(embedPlayer, faderConfig );
+			faderPlugin( embedPlayer, faderConfig );
 			callback();
 		});
 	});

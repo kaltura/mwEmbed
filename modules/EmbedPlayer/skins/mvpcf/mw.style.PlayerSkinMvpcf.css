@@ -99,6 +99,21 @@
 	padding-right:4px;
 }
 
+.mv-player .source-switch {
+	border: medium none;
+	display: inline;
+	color: #eee;
+	font: 11px arial, sans-serif;
+	line-height: 20px;
+	overflow: hidden;
+	width: 70px;
+	cursor: pointer;
+	float: right;
+	text-align: center;
+	padding-top:6px;
+}
+
+
 .mv-player .play_head{
 	float: left;
 	display: inline;

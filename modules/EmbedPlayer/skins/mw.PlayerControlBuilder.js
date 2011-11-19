@@ -2,7 +2,7 @@
 * Msg text is inherited from embedPlayer
 */
 
-( function( mw, $) {
+( function( mw, $ ) {
 /**
 * mw.PlayerControlBuilder object
 *	@param the embedPlayer element we are targeting
@@ -28,11 +28,26 @@ mw.PlayerControlBuilder.prototype = {
 
 	// Default control bar height
 	height: mw.getConfig( 'EmbedPlayer.ControlsHeight' ),
-	
+
 	// Default supported components is merged with embedPlayer set of supported types
 	supportedComponents: {
 		// All playback types support options
 		'options': true
+	},
+
+	// Default supported menu items is merged with skin menu items
+	supportedMenuItems: {
+		// Player Select
+		'playerSelect' : true,
+
+		// Download the file menu
+		'download' : true,
+
+		// Share the video menu
+		'share' : true,
+
+		// Player library link
+		'aboutPlayerLibrary': true
 	},
 
 	// Flag to store the current fullscreen mode
@@ -44,6 +59,7 @@ mw.PlayerControlBuilder.prototype = {
 	// Flag to store state of overlay on player
 	displayOptionsMenuFlag: false,
 
+	// Local storage of ControlBar Callback
 	hideControlBarCallback: false,
 
 	/**
@@ -73,13 +89,14 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	getHeight: function(){
 		// Check if the configuration was updated
-		// Probably will break things to set control bar height late 
+		// Probably will break things to set control bar height config late 
 		// but try to support it anyway
 		if( mw.getConfig( 'EmbedPlayer.ControlsHeight' ) != this.height ){
 			this.height = mw.getConfig( 'EmbedPlayer.ControlsHeight' ) ;
 		}
 		return this.height;
 	},
+
 
 	/**
 	* Add the controls html to player interface
@@ -94,7 +111,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Remove any old controls & old overlays:
 		embedPlayer.$interface.find( '.control-bar,.overlay-win' ).remove();
 
-		// Reset flag:
+		// Reset flags:
 		_this.displayOptionsMenuFlag = false;
 
 
@@ -120,13 +137,7 @@ mw.PlayerControlBuilder.prototype = {
 			'right' : '0px'
 		} );
 
-		// Check for overlay controls:
-		/*if( ! _this.isOverlayControls() && ! embedPlayer.controls === false ) {
-			// Add some space to interface for the control bar ( if not overlaying controls )
-			$( embedPlayer ).css( {
-				'height' : parseInt( embedPlayer.height ) - parseInt( this.height )
-			} );
-		}*/
+
 		// Make room for audio controls in the interface: 
 		if( embedPlayer.isAudio() && embedPlayer.$interface.height() == 0 ){
 			embedPlayer.$interface.css( {
@@ -149,7 +160,7 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	addControlComponents: function( ) {
 		var _this = this;
-		
+
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 
@@ -176,6 +187,11 @@ mw.PlayerControlBuilder.prototype = {
 			this.supportedComponents[ 'options'] = false;
 		}
 
+		// Check if we have multiple playable sources ( if only one source don't display source switch )
+		if( embedPlayer.mediaElement.getPlayableSources().length == 1 ){
+			this.supportedComponents[ 'sourceSwitch'] = false;
+		}
+		
 		$( embedPlayer ).trigger( 'addControlBarComponent', this);
 		
 		var addComponent = function( component_id ){
@@ -205,7 +221,7 @@ mw.PlayerControlBuilder.prototype = {
 			}
 
 			// Skip "fullscreen" button for assets or where height is 0px ( audio )
-			if( component_id == 'fullscreen' && this.embedPlayer.height == 0 ){
+			if( component_id == 'fullscreen' && this.embedPlayer.isAudio() ){
 				continue;
 			}
 			addComponent( component_id );
@@ -258,14 +274,6 @@ mw.PlayerControlBuilder.prototype = {
 			targetWidth = targetHeight * ( intrinsicSize.width / intrinsicSize.height );
 		}
 		var offsetTop = 0;
-		/*if( embedPlayer.getPlayerElement() ){
-			// space for titles?
-			offsetTop = parseInt( $( embedPlayer.getPlayerElement() ).css( 'top' ) );
-		} else if( embedPlayer.$interface.find('.playerPoster') ){
-			var ot = parseInt(embedPlayer.$interface.find('.playerPoster').css( 'top' ) );
-		}
-		offsetTop = !isNaN( ot ) ? ot : 0;
-		*/
 		//  Move the video down 1/2 of the difference of window height
 		offsetTop+= ( targetHeight < windowSize.height )? ( windowSize.height- targetHeight ) / 2 : 0;
 		// if the video is very tall in a short window adjust the size:
@@ -280,10 +288,11 @@ mw.PlayerControlBuilder.prototype = {
 			'left': parseInt( offsetLeft) 
 		};
 	},
+
 	/**
-	 * This recreates some functionality in applyIntrinsic aspect 
-	 * @@TODO we should merge
-	 * @return
+	 * Get the intrinsic media size
+	 * @return {object}
+	 * 			size object with width and height
 	 */
 	getIntrinsicSize: function(){
 		var size = {};
@@ -312,14 +321,17 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	
 	/**
-	* Get the fullscreen play button css
+	* Get the play button css
 	*/
 	getPlayButtonPosition: function( size ) {
 		var _this = this;
+		// Set the offset depending if controls are hidden or displayed: 
+		var pheight = this.getComponentHeight( 'playButtonLarge' );
+		var topCompoentOffset = ( this.isOverlayControls() ) ? pheight : pheight / 2;
 		return {
 			'position' : 'absolute',
 			'left' : ( ( parseInt( size.width ) - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
-			'top' : ( ( parseInt( size.height ) - this.getComponentHeight( 'playButtonLarge' ) / 2  ) / 2 )
+			'top' : ( ( parseInt( size.height ) - topCompoentOffset ) / 2 )
 		};
 	},
 
@@ -618,13 +630,12 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		}
 	},
-
 	/**
 	* Restore the window player
 	*/
 	restoreWindowPlayer: function() {
 		var _this = this;
-		mw.log(" controlBuilder :: restoreWindowPlayer" );
+		mw.log("PlayerControlBuilder :: restoreWindowPlayer" );
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.$interface.css({'position':'relative'});
 	  
@@ -692,7 +703,7 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		});
 	},
-	
+
 	/**
 	* Get minimal width for interface overlay
 	*/
@@ -948,7 +959,6 @@ mw.PlayerControlBuilder.prototype = {
 		if( ! this.embedPlayer.supports['overlays'] ){
 			return false;
 		}
-
 		// If disabled via the player
 		if( this.embedPlayer.overlaycontrols === false ){
 			return false;
@@ -1477,7 +1487,7 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	getShare: function( ) {
 		var embedPlayer = this.embedPlayer;
-		var	embed_code = embedPlayer.getEmbeddingHTML();
+		var	embed_code = embedPlayer.getSharingEmbedCode();
 		var _this = this;
 
 		var $shareInterface = $('<div />');
@@ -1737,7 +1747,49 @@ mw.PlayerControlBuilder.prototype = {
 			);
 		}
 	},
-
+	getSwichSourceMenu: function(){
+		var _this = this;
+		var embedPlayer = this.embedPlayer;
+		// for each source with "native playback" 			
+		$sourceMenu = $('<ul />');
+		
+		// Local function to closure the "source" variable scope: 
+		function addToSourceMenu( source ){			
+			// Check if source is selected: 
+			var icon = ( source.getSrc() == embedPlayer.mediaElement.selectedSource.getSrc() ) ? 'bullet' : 'radio-on';
+			$sourceMenu.append(
+				$.getLineItem( source.getShortTitle() , icon, function(){
+					mw.log( 'PlayerControlBuilder::SwichSourceMenu: ' + source.getSrc() );
+					// TODO this logic should be in mw.EmbedPlayer
+					embedPlayer.mediaElement.setSource( source );					
+					if( ! _this.embedPlayer.isStopped() ){
+						// Get the exact play time from the video element ( instead of parent embed Player ) 
+						var oldMediaTime = _this.embedPlayer.getPlayerElement().currentTime;
+						var oldPaused =  _this.embedPlayer.paused
+						// Do a live switch
+						embedPlayer.switchPlaySrc(source.getSrc(), function( vid ){
+							// issue a seek
+							embedPlayer.setCurrentTime( oldMediaTime );
+							// reflect pause state
+							if( oldPaused ){
+								embedPlayer.pause();
+							}
+						});
+					}
+				})
+			);
+		}
+		$.each( this.embedPlayer.mediaElement.getPlayableSources(), function( sourceIndex, source ) {
+			// Output the player select code:
+			var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( source.getMIMEType() );
+			for ( var i = 0; i < supportingPlayers.length ; i++ ) {
+				if( supportingPlayers[i].library == 'Native' ){
+					addToSourceMenu( source );
+				}
+			}
+		});
+		return $sourceMenu;
+	},
 
 	/**
 	* Get component
@@ -2038,7 +2090,33 @@ mw.PlayerControlBuilder.prototype = {
 				return $volumeOut.html();
 			}
 		},
-
+		
+		'sourceSwitch' : {
+			'w' : 70,
+			'o' : function( ctrlObj ){
+				// Stream switching widget ( display the current selected stream text )
+				return $( '<div />' )
+					.addClass('ui-widget source-switch')
+					.append(
+						ctrlObj.embedPlayer.mediaElement.selectedSource.getShortTitle()
+					).menu( {
+						'content' : ctrlObj.getSwichSourceMenu(),
+						'zindex' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 2,
+						'width' : 115,
+						'positionOpts' : {
+							'posY' : 'top',
+							'directionV' : 'up',
+							'offsetY' : 23
+						},
+						'createMenuCallback' : function(){
+							ctrlObj.showControlBar( true );
+						},
+						'closeMenuCallback' : function(){
+							ctrlObj.keepControlBarOnScreen = false;
+						}
+					} );
+			}
+		},
 		/*
 		* The time display area
 		*/

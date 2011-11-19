@@ -28,6 +28,7 @@ mw.KWidgetSupport.prototype = {
 	*/ 
 	addPlayerHooks: function( ){
 		var _this = this;	
+		 
 		// Add the hooks to the player manager
 		$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 			// Add hook for check player sources to use local kEntry ID source check:
@@ -268,7 +269,11 @@ mw.KWidgetSupport.prototype = {
 		};
 		// Add getFlashvars to embed player:
 		embedPlayer.getFlashvars = function() {
-			return $( embedPlayer ).data( 'flashvars' );
+			var fv = $( embedPlayer ).data( 'flashvars' );
+			if( !fv ){
+				fv = {};
+			}
+			return fv;
 		}
 	},
 	/**

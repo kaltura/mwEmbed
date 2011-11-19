@@ -124,8 +124,11 @@
 		//		the remote site to the mwEmbed javascript and can be a xss issue.
 		"EmbedPlayer.ShareEmbedMode" : 'iframe',
 
+		// The skin list ( should correspond to a folder in skins )
+		"EmbedPlayer.SkinList" : [ 'mvpcf', 'kskin' ],
+		
 		// Default player skin name
-		"EmbedPlayer.SkinName" : "mvpcf",
+		"EmbedPlayer.DefaultSkin" : "mvpcf",
 
 		// Number of milliseconds between interface updates
 		'EmbedPlayer.MonitorRate' : 250,
@@ -177,10 +180,6 @@
 		// display ogg page time rather than presentation time
 		'startOffset',
 
-		// A hint to the duration of the media file so that duration
-		// can be displayed in the player without loading the media file
-		'durationHint',
-
 		// Media start time
 		'start',
 
@@ -203,7 +202,7 @@
 	// Add class file paths
 	mw.addResourcePaths( {
 		"mw.EmbedPlayer" : "mw.EmbedPlayer.js",
-		
+		"mw.processEmbedPlayers" : "mw.processEmbedPlayers.js",
 		"mw.MediaElement" : "mw.MediaElement.js",
 		"mw.MediaPlayer" : "mw.MediaPlayer.js",
 		"mw.MediaPlayers" : "mw.MediaPlayers.js",
@@ -358,6 +357,14 @@
 		// custom data-durationhint attribute or via the media file once its played
 		"duration" : null,
 	
+		// A hint to the duration of the media file so that duration
+		// can be displayed in the player without loading the media file
+		'data-durationhint': null,
+		
+		// Also support direct durationHint attribute ( backwards compatibly )
+		// @deprecated please use data-durationhint instead. 
+		'durationHint' : null,
+		
 		// Mute state
 		"muted" : false,
 	
@@ -424,6 +431,7 @@
 			],
 			[
 				'mw.EmbedPlayer',
+				'mw.processEmbedPlayers',
 				'mw.MediaElement',
 				'mw.MediaPlayer',
 				'mw.MediaPlayers',
@@ -485,8 +493,8 @@
 	mw.embedPlayerUpdateLibraryRequest = function(playerElement, dependencyRequest ){
 		var skinName = $( playerElement ).attr( 'class' );
 		// Set playerClassName to default if unset or not a valid skin
-		if( ! skinName || $.inArray( skinName.toLowerCase(), mw.validSkins ) == -1 ){
-			skinName = mw.getConfig( 'EmbedPlayer.SkinName' );
+		if( ! skinName || $.inArray( skinName.toLowerCase(), mw.validSkins ) === -1 ){
+			skinName = mw.getConfig( 'EmbedPlayer.DefaultSkin' );
 		}
 		skinName = skinName.toLowerCase();
 		// Add the skin to the request
@@ -503,6 +511,7 @@
 		// Allow extension to extend the request.
 		$( mw ).trigger( 'LoaderEmbedPlayerUpdateRequest',
 				[ playerElement, dependencyRequest ] );
+		
 	};
 	
 	/**
@@ -521,5 +530,86 @@
 			})
 		);
 	};
+	
+	
+	/**
+	 * Selector based embedPlayer jQuery binding
+	 * 
+	 * Rewrites all tags via a given selector
+	 * 
+	 * @param {object=}
+	 *            attributes Optional embedPlayer attributes for the given video
+	 *            interface. Attributes Object can include any key value pair
+	 *            that would otherwise be an attribute in the html element.
+	 * 
+	 * also see: mw.getConfig( 'EmbedPlayer.Attributes' )
+	 * 
+	 * @param {Function=}
+	 *            callback Optional Function to be called once video interfaces
+	 *            are ready
+	 * 
+	 */
+	$.fn.embedPlayer = function( attributes, callback ) {
+		mw.log( 'EmbedPlayer:: fn.embedPlayer' );
+		if( this.selector ){
+			var playerSelect = this.selector;
+		} else {
+			var playerSelect = this;
+		}
+	
+		// Define attributes if unset
+		if( !attributes ) {
+			attributes = {};
+		}
+	
+		// Handle optional include of attributes argument:
+		if( typeof attributes == 'function' ){
+			callback = attributes;
+			attributes = {};
+		}
+	
+		$( playerSelect ).each( function( index, playerElement) {
+			// make sure the playerElement has an id:
+			if( !$( playerElement ).attr('id') ){
+				$( playerElement ).attr( "id", 'mwe_v' + ( index ) );
+			}
+	
+			// If we are dynamically embedding on a "div" check if we can
+			// add a poster image behind the loader:
+			if( playerElement.nodeName.toLowerCase() == 'div'
+				&& ( attributes.poster || $(playerElement).attr( 'poster' ) ) ){
+				var posterSrc = ( attributes.poster ) ? attributes.poster : $(playerElement).attr( 'poster' );
+	
+				// Set image size:
+				var width = $( playerElement ).width();
+				var height = $( playerElement ).height();
+				if( !width ){
+					var width = ( attributes.width )? attributes.width : '100%';
+				}
+				if( !height ){
+					var height = ( attributes.height )? attributes.height : '100%';
+				}
+	
+				mw.log('EmbedPlayer:: set loading background: ' + posterSrc);
+				$( playerElement ).append(
+					$( '<img />' )
+					.attr( 'src', posterSrc)
+					.css({
+						'position' : 'absolute',
+						'width' : width,
+						'height' : height
+					})
+				);
+			}
+		});
+	
+		// Make sure we have user preference setup ( for setting preferences on
+		// video selection )
+		mw.load( 'EmbedPlayer', function(){
+			mw.processEmbedPlayers( playerSelect, callback );
+		});
+	};
+	// Setup global pointer to this jquery method, Function scope bug in Chrome 15x
+	window.jQueryEmbedPlayer = $.fn.embedPlayer;
 	
 })( mediaWiki, jQuery );

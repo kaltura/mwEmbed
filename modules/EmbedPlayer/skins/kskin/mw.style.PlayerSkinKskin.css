@@ -122,6 +122,20 @@
 	float: right;
 }
 
+.k-player .source-switch {
+	border: medium none;
+	display: inline;
+	color: #555;
+	font: 11px arial, sans-serif;
+	line-height: 20px;
+	overflow: hidden;
+	width: 70px;
+	cursor: pointer;
+	float: right;
+	text-align: center;
+	padding-top:6px;
+}
+
 .k-player .lButton {
 	cursor: pointer;
 	float: left;

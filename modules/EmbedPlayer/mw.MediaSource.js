@@ -121,7 +121,7 @@ mw.MediaSource.prototype = {
 		$.each(sourceAttr, function(inx, attr){
 			if ( $( element ).attr( attr ) ) {
 				// strip data- from the attribute name
-				var attrName = ( attr.indexOf('data-') === 0)? attr.substr(5) : attr
+				var attrName = ( attr.indexOf('data-') === 0) ? attr.substr(5) : attr
 				_this[ attrName ] = $( element ).attr( attr );
 			}
 		});
@@ -264,7 +264,6 @@ mw.MediaSource.prototype = {
 	  		}
 		);
 	},
-
 	/**
 	 * Title accessor function.
 	 *
@@ -321,7 +320,21 @@ mw.MediaSource.prototype = {
 		// Return the mime type string if not known type.
 		return this.mimeType;
 	},
-
+	/**
+	 * Get a short title for the stream
+	 */
+	getShortTitle: function(){
+		var _this =this;
+		if( this.shorttitle ){
+			return this.shorttitle;
+		}
+		// Just use a short "long title"
+		var longTitle = this.getTitle();
+		if(longTitle.length > 20) {
+			longTitle = longTitle.substring(0,17)+"...";
+		}
+		return longTitle
+	},
 	/**
 	 *
 	 * Get Duration of the media in milliseconds from the source url.

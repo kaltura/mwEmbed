@@ -31,7 +31,6 @@
 		},
 		addPlayerHooks: function(){
 			var _this = this;
-			mw.log("KDPMapping::addPlayerHooks>");
 			// Add the hooks to the player manager			
 			$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 				// Add the addJsListener and sendNotification maps
