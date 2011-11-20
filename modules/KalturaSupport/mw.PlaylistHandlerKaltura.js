@@ -549,6 +549,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			case 'itemRendererLabel':
 				// XXX should use .playlist.formatTitle and formatDescription ( once we fix .playlist ref )
 				// hack to read common description id ( no other way to tell layout size )
+				$target.attr('title', $target.text());
 				if( idName =='irDescriptionIrScreen' || idName == 'irDescriptionIrText' ){
 					$target.text( _this.playlist.formatDescription( $target.text() ) );
 				} else{
