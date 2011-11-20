@@ -887,7 +887,12 @@ class kalturaIframe {
 		};
 		$this->setError( $errorTitle );
 		// Send expire headers: 
-		$this->setIFrameHeaders();
+		// Removed $this->setIFrameHeaders() for now, It cause endless loop, because it calls: 
+		// $this->getResultObject()->isCachedOutput() which calls the constructor and then back to fatalError
+		// For now, just send no cache errors
+		header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+		header("Pragma: no-cache");
+		header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		
 		// clear the buffer
 		$pageInProgress = ob_end_clean();

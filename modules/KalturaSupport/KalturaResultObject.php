@@ -675,9 +675,6 @@ class KalturaResultObject {
 		$ipadFlavors = trim($ipadFlavors, ",");
 		$iphoneFlavors = trim($iphoneFlavors, ",");
 
-		// Disable Apple adaptive for HTTPs
-		$wgKalturaUseAppleAdaptive = ($wgHTTPProtocol == 'https') ? false : true;
-
 		// Create iPad flavor for Akamai HTTP
 		if ( $ipadFlavors && $wgKalturaUseAppleAdaptive ){
 			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/' . $wgHTTPProtocol;
