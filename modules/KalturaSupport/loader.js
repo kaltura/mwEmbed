@@ -419,7 +419,7 @@
 			playlistConfig = {
 				'uiconf_id' : playlistEmbed.kuiconfid,
 				'widget_id' : playlistEmbed.kwidgetid
-			};		
+			};
 			kplUrl0 = playlistEmbed.getKalturaConfig( 'playlistAPI', 'kpl0Url' )
 		}
 		// No kpl0Url, not a kaltura playlist good

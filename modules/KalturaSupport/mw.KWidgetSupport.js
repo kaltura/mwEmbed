@@ -271,7 +271,7 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.getFlashvars = function() {
 			var fv = $( embedPlayer ).data( 'flashvars' );
 			if( !fv ){
-				fv = {};
+				fv = mw.getConfig('KalturaSupport.IFramePresetFlashvars') || {};
 			}
 			return fv;
 		}
