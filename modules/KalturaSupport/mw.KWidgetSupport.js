@@ -684,6 +684,8 @@ mw.KWidgetSupport.prototype = {
 			return ;
 		}
 
+		var protocol = location.protocol.substr(0, location.protocol.length-1); // remove the ':'
+
 		var deviceSources = {};
 		
 		// Setup the src defines
@@ -718,10 +720,10 @@ mw.KWidgetSupport.prototype = {
 				var src  = flavorUrl + '/entryId/' + asset.entryId;
 				// Check if Apple http streaming is enabled and the tags include applembr
 				if( asset.tags.indexOf('applembr') != -1 ) {
-					src += '/format/applehttp/protocol/http';
+					src += '/format/applehttp/protocol/'+ protocol;
 					deviceSources['AppleMBR'] = src + '/a.m3u8';
 				} else {
-					src += '/flavorId/' + asset.id + '/format/url/protocol/http';
+					src += '/flavorId/' + asset.id + '/format/url/protocol/' + protocol;
 				}
 
 			} else {
@@ -767,12 +769,12 @@ mw.KWidgetSupport.prototype = {
 		}
 		// Create iPad flavor for Akamai HTTP
 		if( ipadAdaptiveFlavors.length != 0) {
-			deviceSources['iPadNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/http/a.m3u8';
+			deviceSources['iPadNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8';
 		}
 
 		// Create iPhone flavor for Akamai HTTP
 		if(iphoneAdaptiveFlavors.length != 0) {
-			deviceSources['iPhoneNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/http/a.m3u8';
+			deviceSources['iPhoneNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8';
 		}
 		
 		// Append KS to all source if available 
