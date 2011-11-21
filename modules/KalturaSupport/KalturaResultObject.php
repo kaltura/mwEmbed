@@ -496,31 +496,15 @@ class KalturaResultObject {
 			if( isset( $plugins[ $pluginId ] ) ) {
 				$plugins[ $pluginId ][ $pluginAttribute ] = $value;
 			} else {
-				// Plugin does not exists, lets check if we have $pluginId.plugin = true attribute
-				if( isset( $vars[ $pluginId . '.plugin' ] ) && $vars[ $pluginId . '.plugin' ] == "true" ) {
-					// Add to plugins array with the current key/value
-					$plugins[ $pluginId ] = array(
-						$pluginAttribute => $value
-					);
-				}
+				// Add to plugins array with the current key/value
+				$plugins[ $pluginId ] = array(
+					$pluginAttribute => $value
+				);
 			}
 
 			// Removes from vars array (keep only flat vars)
 			unset( $vars[ $key ] );
 		}
-
-		// Get Watermark
-		// $watermarkXml = $this->getUiConfXML()->xpath("*//Watermark");
-		/*
-		foreach( $watermarkXml[0]->attributes() as $key => $value ) {
-			if( $key == "id" ) {
-				$pluginId = (string) $value;
-				$plugins[ $pluginId ] = array();
-			} else {
-				$plugins[ $pluginId ][ $key ] = (string) $value;
-			}
-		}
-		*/
 
 		$this->playerConfig = array(
 			'plugins' => $plugins,

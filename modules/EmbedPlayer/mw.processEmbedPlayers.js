@@ -9,6 +9,7 @@
 mw.processEmbedPlayers = function( playerSelect, callback ) {
 	mw.log( 'processEmbedPlayers:: playerSelector: '+ playerSelect);
 	
+	// The player id list container
 	var playerIdList = [];
 	
 	// Check if the selected player set is ready if ready issue the parent callback
