@@ -256,7 +256,7 @@
 
 	mw.rewritePagePlayerTags = function( callback ) {
 		mw.log( 'Loader::EmbedPlayer:rewritePagePlayerTags:' + mw.documentHasPlayerTags() );
-		
+
 		// Allow modules to do tag rewrites as well: 
 		var doModuleTagRewrites = function(){
 			$( mw ).triggerQueueCallback( 'LoadeRewritePlayerTags', callback);
@@ -537,20 +537,12 @@
 	 * Selector based embedPlayer jQuery binding
 	 * 
 	 * Rewrites all tags via a given selector
-	 * 
-	 * @param {object=}
-	 *            attributes Optional embedPlayer attributes for the given video
-	 *            interface. Attributes Object can include any key value pair
-	 *            that would otherwise be an attribute in the html element.
-	 * 
-	 * also see: mw.getConfig( 'EmbedPlayer.Attributes' )
-	 * 
 	 * @param {Function=}
 	 *            callback Optional Function to be called once video interfaces
 	 *            are ready
 	 * 
 	 */
-	$.fn.embedPlayer = function( attributes, callback ) {
+	$.fn.embedPlayer = function( callback ) {
 		mw.log( 'EmbedPlayer:: fn.embedPlayer' );
 		if( this.selector ){
 			var playerSelect = this.selector;
@@ -558,21 +550,10 @@
 			var playerSelect = this;
 		}
 	
-		// Define attributes if unset
-		if( !attributes ) {
-			attributes = {};
-		}
-	
-		// Handle optional include of attributes argument:
-		if( typeof attributes == 'function' ){
-			callback = attributes;
-			attributes = {};
-		}
-	
 		$( playerSelect ).each( function( index, playerElement) {
 			// make sure the playerElement has an id:
 			if( !$( playerElement ).attr('id') ){
-				$( playerElement ).attr( "id", 'mwe_v' + ( index ) );
+				$( playerElement ).attr( "id", 'mwe_vid_' + ( index ) );
 			}
 	
 			// If we are dynamically embedding on a "div" check if we can

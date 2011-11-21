@@ -784,6 +784,7 @@ class kalturaIframe {
 	}
 	private function javaScriptPlayerLogic(){
 		?>
+		
 		var isHTML5 = kIsHTML5FallForward();
 		if( window.kUserAgentPlayerRules ) {
 			var playerAction = window.checkUserAgentPlayerRules( window.kUserAgentPlayerRules[ '<?php echo $this->getResultObject()->getUiConfId() ?>' ] );
@@ -791,6 +792,7 @@ class kalturaIframe {
 				isHTML5 = true;
 			}
 		}
+		
 		if( isHTML5){
 				// remove the no_rewrite flash object ( never used in rewrite )
 				var obj = document.getElementById('kaltura_player_iframe_no_rewrite');
@@ -801,11 +803,10 @@ class kalturaIframe {
 						// could not remove node
 					}
 				}
-				
 				// Load the mwEmbed resource library and add resize binding
 				mw.ready(function(){
 				
-					// try again to remove the flash player if not already removed: 
+					// Try again to remove the flash player if not already removed: 
 					$('#kaltura_player_iframe_no_rewrite').remove();
 					
 					var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' ).get(0);
