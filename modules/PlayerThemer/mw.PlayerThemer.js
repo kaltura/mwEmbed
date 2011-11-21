@@ -94,12 +94,12 @@ mw.PlayerThemer.prototype = {
 					},
 					slide: function( event, ui ) {
 						var perc = ui.value / 1000;
-						_this.getEmbedPlayer().jump_time = mw.seconds2npt( parseFloat( parseFloat( _this.getEmbedPlayer().getDuration() ) * perc ) + _this.getEmbedPlayer().start_time_sec );
-						// mw.log('perc:' + perc + ' * ' + embedPlayer.getDuration() + ' jt:'+ this.jump_time);
+						_this.getEmbedPlayer().jumpTime = mw.seconds2npt( parseFloat( parseFloat( _this.getEmbedPlayer().getDuration() ) * perc ) + _this.getEmbedPlayer().startTimeSec );
+						// mw.log('perc:' + perc + ' * ' + embedPlayer.getDuration() + ' jt:'+ this.jumpTime);
 						if ( _this.longTimeDisp ) {
-							//ctrlObj.setStatus( gM( 'mwe-embedplayer-seek_to', embedPlayer.jump_time ) );
+							//ctrlObj.setStatus( gM( 'mwe-embedplayer-seek_to', embedPlayer.jumpTime ) );
 						} else {
-							//ctrlObj.setStatus( embedPlayer.jump_time );
+							//ctrlObj.setStatus( embedPlayer.jumpTime );
 						}
 					},
 					change:function( event, ui ) {
@@ -111,8 +111,8 @@ mw.PlayerThemer.prototype = {
 
 							var perc = ui.value / 1000;
 							// set seek time (in case we have to do a url seek)
-							_this.getEmbedPlayer().seek_time_sec = mw.npt2seconds( _this.getEmbedPlayer().jump_time, true );
-							mw.log( 'do jump to: ' + _this.getEmbedPlayer().jump_time + ' perc:' + perc + ' sts:' + _this.getEmbedPlayer().seek_time_sec );
+							_this.getEmbedPlayer().seekTimeSec = mw.npt2seconds( _this.getEmbedPlayer().jumpTime, true );
+							mw.log( 'do jump to: ' + _this.getEmbedPlayer().jumpTime + ' perc:' + perc + ' sts:' + _this.getEmbedPlayer().seekTimeSec );
 							//ctrlObj.setStatus( gM( 'mwe-embedplayer-seeking' ) );
 							_this.getEmbedPlayer().seek( perc );
 							_this.setDisplayState('playing');

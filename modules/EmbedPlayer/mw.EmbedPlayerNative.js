@@ -314,7 +314,7 @@ mw.EmbedPlayerNative = {
 		if( percent > 1 )
 			percent = 1; 
 		
-		mw.log( 'EmbedPlayerNative::seek p: ' + percent + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seek_time_sec );
+		mw.log( 'EmbedPlayerNative::seek p: ' + percent + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seekTimeSec );
 		this.seeking = true;
 		// Update the current time
 		this.currentTime = ( percent * this.duration ) ;
@@ -361,7 +361,7 @@ mw.EmbedPlayerNative = {
 		mw.log( 'EmbedPlayerNative::doNativeSeek::' + percent );
 		this.seeking = true;
 		
-		this.seek_time_sec = 0;
+		this.seekTimeSec = 0;
 		this.setCurrentTime( ( percent * this.duration ) , function(){
 			// done seeking ( should be a fallback trigger event ) : 
 			if( _this.seeking ){
@@ -512,7 +512,7 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Set the poster to a black image
-		vid.poster = mw.getConfig( 'EmbedPlayer.BlackPixle' );
+		vid.poster = mw.getConfig( 'EmbedPlayer.BlackPixel' );
 		
 		// only display switch msg if actually switching: 
 		mw.log( 'EmbedPlayerNative:: switchPlaySrc:' + src + ' native time: ' + vid.currentTime );

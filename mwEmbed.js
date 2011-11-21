@@ -115,7 +115,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			}
 			return ;
 		}
-		// else do a normal setConfig
+		// Else do a normal setConfig
 		mwConfig[ name ] = value;
 		mwNonDefaultConfigList.push( name );
 	};

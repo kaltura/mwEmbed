@@ -530,7 +530,14 @@ mw.EmbedPlayer.prototype = {
 			_this.updateLoadedPlayerInterface( callback );
 		});
 	},
-	updateLoadedPlayerInterface: function(){
+	/**
+	 * Update a loaded player interface by setting local methods to the 
+	 * updated player prototype methods
+	 * 
+	 * @parma {function}
+	 * 		callback function called once player has been loaded
+	 */
+	updateLoadedPlayerInterface: function( callback ){
 		var _this = this;
 		mw.log( 'EmbedPlayer::updateLoadedPlayerInterface ' + _this.selectedPlayer.library + " player loaded for " + _this.id );
 
@@ -551,7 +558,7 @@ mw.EmbedPlayer.prototype = {
 		setTimeout(function(){
 			_this.showPlayer();
 			// Run the callback if provided
-			if ( typeof callback == 'function'){
+			if ( callback && $.isFunction( callback ) ){
 				callback();
 			}
 		}, 0);
@@ -1912,7 +1919,7 @@ mw.EmbedPlayer.prototype = {
 	startMonitor: function(){
 		this.monitor();
 	},
-	
+
 	/**
 	 * Monitor playback and update interface components. underling player classes
 	 *  are responsible for updating currentTime
@@ -1997,7 +2004,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	syncCurrentTime: function(){
 		var _this = this;
-		
+
 		// Hide the spinner once we have time update: 
 		if( _this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
 			_this._checkHideSpinner = false;
@@ -2005,7 +2012,7 @@ mw.EmbedPlayer.prototype = {
 			_this.$interface.find('.play-btn-large').hide()
 			_this.hidePlayerSpinner();
 		}
-		
+
 		// Check if a javascript currentTime change based seek has occurred
 		if( _this.previousTime != _this.currentTime && !this.userSlide && !this.seeking){
 			// If the time has been updated and is in range issue a seek

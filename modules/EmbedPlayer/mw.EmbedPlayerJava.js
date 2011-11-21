@@ -30,7 +30,7 @@ mw.EmbedPlayerJava = {
 	*/
 	embedPlayerHTML: function () {
 		var _this = this;
-		mw.log( "java play url:" + this.getSrc( this.seek_time_sec ) );
+		mw.log( "java play url:" + this.getSrc( this.seekTimeSec ) );
 
 		mw.log('Applet location: ' +  this.getAppletLocation() );
 		mw.log('Play media: ' + this.getSrc() );
@@ -123,7 +123,7 @@ mw.EmbedPlayerJava = {
 	* @param {Float} percentage Percentage to seek into the stream
 	*/
 	seek: function( percentage ) {
-		mw.log( 'java:seek:p: ' + percentage + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seek_time_sec );
+		mw.log( 'java:seek:p: ' + percentage + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seekTimeSec );
 		this.getPlayerElement();
 
 		if ( this.supportsURLTimeEncoding() ) {

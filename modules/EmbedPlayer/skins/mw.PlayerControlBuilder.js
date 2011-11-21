@@ -2148,17 +2148,17 @@ mw.PlayerControlBuilder.prototype = {
 							embedPlayer.userSlide = true;
 							$( id + ' .play-btn-large' ).fadeOut( 'fast' );
 							// If playlist always start at 0
-							embedPlayer.start_time_sec = ( embedPlayer.instanceOf == 'mvPlayList' ) ? 0:
+							embedPlayer.startTimeSec = ( embedPlayer.instanceOf == 'mvPlayList' ) ? 0:
 											mw.npt2seconds( embedPlayer.getTimeRange().split( '/' )[0] );
 						},
 						slide: function( event, ui ) {
 							var perc = ui.value / 1000;
-							embedPlayer.jump_time = mw.seconds2npt( parseFloat( parseFloat( embedPlayer.getDuration() ) * perc ) + embedPlayer.start_time_sec );
-							// mw.log('perc:' + perc + ' * ' + embedPlayer.getDuration() + ' jt:'+ this.jump_time);
+							embedPlayer.jumpTime = mw.seconds2npt( parseFloat( parseFloat( embedPlayer.getDuration() ) * perc ) + embedPlayer.startTimeSec );
+							// mw.log('perc:' + perc + ' * ' + embedPlayer.getDuration() + ' jt:'+ this.jumpTime);
 							if ( _this.longTimeDisp ) {
-								ctrlObj.setStatus( gM( 'mwe-embedplayer-seek_to', embedPlayer.jump_time ) );
+								ctrlObj.setStatus( gM( 'mwe-embedplayer-seek_to', embedPlayer.jumpTime ) );
 							} else {
-								ctrlObj.setStatus( embedPlayer.jump_time );
+								ctrlObj.setStatus( embedPlayer.jumpTime );
 							}
 							// Update the thumbnail / frame
 							if ( embedPlayer.isPlaying == false ) {
@@ -2174,8 +2174,8 @@ mw.PlayerControlBuilder.prototype = {
 
 								var perc = ui.value / 1000;
 								// set seek time (in case we have to do a url seek)
-								embedPlayer.seek_time_sec = mw.npt2seconds( embedPlayer.jump_time, true );
-								mw.log( 'PlayerControlBuilder:: seek to: ' + embedPlayer.jump_time + ' perc:' + perc + ' sts:' + embedPlayer.seek_time_sec );
+								embedPlayer.seekTimeSec = mw.npt2seconds( embedPlayer.jumpTime, true );
+								mw.log( 'PlayerControlBuilder:: seek to: ' + embedPlayer.jumpTime + ' perc:' + perc + ' sts:' + embedPlayer.seekTimeSec );
 								ctrlObj.setStatus( gM( 'mwe-embedplayer-seeking' ) );
 								if( embedPlayer.isStopped() ){
 									embedPlayer.play();
