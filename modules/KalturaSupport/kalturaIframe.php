@@ -439,24 +439,34 @@ class kalturaIframe {
 	 * Void function to set iframe content headers
 	 */
 	private function setIFrameHeaders(){
-		global $wgKalturaUiConfCacheTime;
+		global $wgKalturaUiConfCacheTime, $wgKalturaErrorCacheTime;
 		// Only cache for 30 seconds if there is an error: 
-		$cacheTime = ( $this->isError() )? 30 : $wgKalturaUiConfCacheTime;
+		$cacheTime = ( $this->isError() )? $wgKalturaErrorCacheTime : $wgKalturaUiConfCacheTime;
 		// Set relevent expire headers:
 		if( $this->getResultObject()->isCachedOutput() ){
 			$time = $this->getResultObject()->getFileCacheTime();
-			header( 'Pragma: public' );
-			// Cache for $wgKalturaUiConfCacheTime
-			header( "Cache-Control: public, max-age=$cacheTime, max-stale=0");
-			header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $time) . "GMT");
-			header( "Expires: " . gmdate( "D, d M Y H:i:s", $time + $cacheTime ) . " GM" );
+			$this->sendPublicHeaders( $cacheTime,  $time );
 		} else {
 			header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 			header("Pragma: no-cache");
 			header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		}
 	}
-	
+	/**
+	 * Sets public header per a provided expire time in seconds
+	 * @param $expireTime Number of seconds before content is expired
+	 * @param $lastModified {optional} TimeStamp of the modification data
+	 */
+	private function sendPublicHeaders( $expireTime, $lastModified = null ){
+		if( $lastModified === null ){
+			$lastModified = time();
+		}
+		header( 'Pragma: public' );
+		// Cache for $wgKalturaUiConfCacheTime
+		header( "Cache-Control: public, max-age=$expireTime, max-stale=0");
+		header( "Last-Modified: " . gmdate( "D, d M Y H:i:s", $lastModified) . "GMT");
+		header( "Expires: " . gmdate( "D, d M Y H:i:s", $lastModified + $expireTime ) . " GM" );
+	}
 	/**
 	 * Get the location of the mwEmbed library
 	 */
@@ -881,18 +891,17 @@ class kalturaIframe {
 	 * Output a fatal error and exit with error code 1
 	 */
 	private function fatalError( $errorTitle, $errorMsg = false ){
+		global $wgKalturaErrorCacheTime;
 		// check for multi line errorTitle array: 
 		if( strpos( $errorTitle, "\n" ) !== false ){
 			list( $errorTitle, $errorMsg) = explode( "\n", $errorTitle);
 		};
 		$this->setError( $errorTitle );
-		// Send expire headers: 
-		// Removed $this->setIFrameHeaders() for now, It cause endless loop, because it calls: 
-		// $this->getResultObject()->isCachedOutput() which calls the constructor and then back to fatalError
-		// For now, just send no cache errors
-		header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
-		header("Pragma: no-cache");
-		header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+		
+		// Send expire headers 
+		// Note: we can't use normal iframeHeader method because it calls the kalturaResultObject
+		// constructor that could be the source of the fatalError 
+		$this->sendPublicHeaders( $wgKalturaErrorCacheTime );
 		
 		// clear the buffer
 		$pageInProgress = ob_end_clean();

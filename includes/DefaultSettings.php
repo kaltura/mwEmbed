@@ -102,6 +102,9 @@ $wgKalturaAllowIframeRemoteService = false;
 // Default expire time for ui conf api queries in seconds 
 $wgKalturaUiConfCacheTime = 60*10; // 10 min
 
+// Cache errors for 30 seconds to avoid overloading apaches in CDN setups
+$wgKalturaErrorCacheTime = 30;
+
 // By default enable the iframe rewrite
 $wgKalturaIframeRewrite = true;
 
