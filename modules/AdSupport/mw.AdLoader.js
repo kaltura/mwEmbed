@@ -63,6 +63,18 @@ mw.AdLoader = {
 	},
 	handleResult: function(data, callback ){
 		var _this = this;
+		
+		// If our data is a string we need to parse it as XML
+		if( typeof data === 'string' ) {
+			// Clean everything before <?xml?> tag
+			var xmlPosition = data.indexOf("<?xml");
+			if( xmlPosition > 0 ) {
+				var junk = data.substr(0,xmlPosition);
+				data = data.replace(junk, '');
+			}
+			data = $.parseXML( data );
+		}
+		
 		switch( _this.getAdFormat( data) ){
 			case 'vast':
 				// If we have lots of ad formats we could conditionally load them here: 
