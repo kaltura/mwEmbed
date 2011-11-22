@@ -94,10 +94,19 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 
 			// Add a player ready binding: 
 			$( inDomPlayer ).bind( 'playerReady', areSelectedPlayersReady );
-			
-			// Issue the checkPlayerSources call to the new player
-			// interface: make sure to use the element that is in the DOM:
-			inDomPlayer.checkPlayerSources();
+
+			//
+			// Allow modules to block player build out
+			//
+			// this is needed in cases where you need to do an asynchronous
+			// player interface setup. like iframes asynchronous announcing its ready for
+			// bindings that can affect player setup.
+			mw.log("EmbedPlayer::addPlayerElement :trigger startPlayerBuildOut:" + inDomPlayer.id );
+			$( '#' + inDomPlayer.id ).triggerQueueCallback( 'startPlayerBuildOut', function(){
+				// Issue the checkPlayerSources call to the new player
+				// interface: make sure to use the element that is in the DOM:
+				inDomPlayer.checkPlayerSources();
+			});
 		}
 
 		if( waitForMeta && mw.getConfig('EmbedPlayer.WaitForMeta' ) ) {
