@@ -936,6 +936,7 @@ mw.EmbedPlayer.prototype = {
 				errorMsg
 			)
 		)
+		.show() // Show the player
 		// Hide the interface components
 		.find( '.control-bar,.play-btn-large').hide();		
 		return ;
