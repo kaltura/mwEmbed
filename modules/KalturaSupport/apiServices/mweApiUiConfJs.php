@@ -86,6 +86,7 @@ class mweApiUiConfJs {
 					// TODO we don't exactly want "forceMobileHTML5" we want "leadWithHTML5", 
 					// use flash if no native html5 support
 					$o .= $this->getJsConfigLine( 'forceMobileHTML5', 'true' );
+					continue;
 				}
 				// Parse the rule index and type: 
 				preg_match( '/r([0-9]+)(.*)/', $key, $matches );
