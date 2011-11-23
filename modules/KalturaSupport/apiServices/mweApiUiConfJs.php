@@ -83,6 +83,8 @@ class mweApiUiConfJs {
 				}
 				// Check for blanket "leadWithHTML5" attribute
 				if( $key == 'leadWithHTML5' && $val == 'true' ){
+					// TODO we don't exactly want "forceMobileHTML5" we want "leadWithHTML5", 
+					// use flash if no native html5 support
 					$o .= $this->getJsConfigLine( 'forceMobileHTML5', 'true' );
 				}
 				// Parse the rule index and type: 
