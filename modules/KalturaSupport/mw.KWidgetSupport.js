@@ -196,7 +196,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		// Apply player Sources
 		if( playerData.flavors ){
-				_this.addFlavorSources( embedPlayer, playerData.flavors );
+			_this.addFlavorSources( embedPlayer, playerData.flavors );
 		}
 		
 		// Check for "image" mediaType ( 2 ) 
@@ -491,8 +491,7 @@ mw.KWidgetSupport.prototype = {
 				}
 			}					
 			// Get device sources 
-			var deviceSources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), playerData.flavors );
-			var sources = _this.getSourcesForDevice( deviceSources );
+			var sources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), playerData.flavors );
 			callback( sources );
 		});
 	},
@@ -612,6 +611,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		return false;
 	},
+	
 	/**
 	* Convert flavorData to embedPlayer sources
 	* 
@@ -631,43 +631,19 @@ mw.KWidgetSupport.prototype = {
 				'height' :  embedPlayer.getHeight()
 			});
 		}
-		
-		var deviceSources = {};
-		
-		// Check existing sources have kaltura specific flavorid attribute ) 
-		// NOTE we may refactor how we package in the kaltura pay-load from the iframe 
+		// Check if we already have sources: 
 		var sources = embedPlayer.mediaElement.getSources();
-		if( sources[0] && sources[0]['flavorid'] ){
-			// Not so clean ... will refactor once we add another source
-			for(var i=0; i< sources.length;i++){
-				deviceSources[ sources[i]['flavorid'] ] = sources[i].src;
-			}
-			// Unset existing DOM source children 
-			$('#' + embedPlayer.pid ).find('source').remove();
-			// Empty the embedPlayers sources ( we don't want iPad h.264 being used for iPhone devices ) 
-			embedPlayer.mediaElement.sources = [];
-			// Update the set of sources in the embedPlayer ( might cause issues with other plugins ) 
-		} else {		
-			// Get device flavors ( if not already set )
-			deviceSources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), flavorData );	
+		if( sources[0] && sources[0]['data-flavorid'] ){
+			return ;
 		}
-		// Setup the error hook: 
-		if( _this.videoIsTranscodingFlag ){
-			$(embedPlayer).bind( 'NoSourcesCustomError', function( callback ) {
-				callback( "Video is transcoding, check back later" );
-			});
-		}
-		// Update the source list per the current user-agent device: 
-		var sources = _this.getSourcesForDevice( deviceSources );
-		
-		for( var i=0; i < sources.length; i++) {
-			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  sources[i].src + ' type: ' +  sources[i].type);
+		// Else get sources from flavor data :
+		var flavorSources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), flavorData );
+		// Add all the sources to the player element: 
+		for( var i=0; i < flavorSources.length; i++) {
+			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  flavorSources[i].src + ' type: ' +  flavorSources[i].type);
 			embedPlayer.mediaElement.tryAddSource(
 				$('<source />')
-				.attr( {
-					'src' : sources[i].src,
-					'type' : sources[i].type
-				} )
+				.attr( flavorSources[i] )
 				.get( 0 )
 			);
 		}
@@ -683,10 +659,12 @@ mw.KWidgetSupport.prototype = {
 			mw.log("Error: KWidgetSupport: flavorData is not defined ");
 			return ;
 		}
+		
+		// Remove the ':' from the protocol
+		var protocol = location.protocol.substr(0, location.protocol.length-1); 
 
-		var protocol = location.protocol.substr(0, location.protocol.length-1); // remove the ':'
-
-		var deviceSources = {};
+		// Setup the deviceSources array
+		var deviceSources = [];
 		
 		// Setup the src defines
 		var ipadAdaptiveFlavors = [];
@@ -700,18 +678,36 @@ mw.KWidgetSupport.prototype = {
 			var flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
 				   '/sp/' +  partner_id + '00/flvclipper';
 		}
-		_this.videoIsTranscodingFlag = false;
+		
 		// Find a compatible stream
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 			var asset = flavorData[i];
 			var entryId = asset.entryId;
 			
-			// continue if clip is not ready (2) and not in a transcoding state (4 )
+			// Setup a source object:
+			var source = {
+				'data-bitrate' :  asset.bitrate * 8
+			};
+			// Continue if clip is not ready (2) and not in a transcoding state (4 )
 			if( asset.status != 2  ) {
 				// if an asset is transcoding and no other source is found bind an error callback: 
 				if( asset.status == 4 ){
-					_this.videoIsTranscodingFlag = true;
+					source.error = 'not-ready-transcoding';
+					deviceSources.push( source );
 				}
+				continue;
+			}
+			
+			// Add iPad Akamai flavor to iPad flavor Ids list id list
+			if( asset.tags.indexOf('ipadnew') != -1 ){
+				iphoneAdaptiveFlavors.push( asset.id );
+				continue;
+			}
+			
+			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
+			if( asset.tags.indexOf('iphonenew') != -1 ){
+				ipadAdaptiveFlavors.push( asset.id );
+				iphoneAdaptiveFlavors.push( asset.id );
 				continue;
 			}
 			
@@ -720,61 +716,68 @@ mw.KWidgetSupport.prototype = {
 				var src  = flavorUrl + '/entryId/' + asset.entryId;
 				// Check if Apple http streaming is enabled and the tags include applembr
 				if( asset.tags.indexOf('applembr') != -1 ) {
-					src += '/format/applehttp/protocol/'+ protocol;
-					deviceSources['AppleMBR'] = src + '/a.m3u8';
+					src += '/format/applehttp/protocol/'+ protocol + '/a.m3u8';
 				} else {
 					src += '/flavorId/' + asset.id + '/format/url/protocol/' + protocol;
 				}
-
 			} else {
 				mw.log( "Error: KWidgetSupport: non-manifest urls are deprecated" );
 				var src  = flavorUrl + '/entry_id/' + asset.entryId + '/flavor/' + asset.id ;
 			}
-			
-			// Add iPad Akamai flavor to iPad flavor Ids list id list
-			if( asset.tags.indexOf('ipadnew') != -1 ){
-				ipadAdaptiveFlavors.push( asset.id );
-			}
-
-			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
-			if( asset.tags.indexOf('iphonenew') != -1 ){
-				ipadAdaptiveFlavors.push( asset.id );
-				iphoneAdaptiveFlavors.push( asset.id );
-			}
 
 			// Check the tags to read what type of mp4 source
 			if( asset.tags.indexOf('ipad') != -1 ){
-				deviceSources['iPad'] = src + '/a.mp4';
+				source['src'] = src + '/a.mp4';
+				source['data-flavorid'] = 'iPad';
+				source['type'] = 'video/h264';
 			}
 
 			// Check for iPhone src
 			if( asset.tags.indexOf('iphone') != -1 ){
-				deviceSources['iPhone'] = src + '/a.mp4';
+				source['src'] = src + '/a.mp4';
+				source['data-flavorid'] = 'iPhone';
+				source['type'] = 'video/h264';
 			}
 
 			// Check for ogg source
 			if( asset.fileExt == 'ogg' || asset.fileExt == 'ogv'){
-				deviceSources['ogg'] = src + '/a.ogg';
+				source['src'] = src + '/a.ogg';
+				source['data-flavorid'] = 'ogg';
+				source['type'] = 'video/ogg';
 			}
 
 			// Check for webm source
 			if( asset.fileExt == 'webm' || asset.tags.indexOf('webm') != -1 ){
-				deviceSources['webm'] = src + '/a.webm';
+				source['src'] = src + '/a.webm';
+				source['data-flavorid'] = 'webm';
+				source['type'] = 'video/webm';
 			}
 
 			// Check for 3gp source
 			if( asset.fileExt == '3gp' ){
-				deviceSources['3gp'] = src + '/a.3gp';
+				source['src'] = src + '/a.3gp';
+				source['data-flavorid'] = '3gp'
+				source['type'] = 'video/3gp';
 			}
+			// Add the source:
+			deviceSources.push( source );
 		}
+		
 		// Create iPad flavor for Akamai HTTP
 		if( ipadAdaptiveFlavors.length != 0) {
-			deviceSources['iPadNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8';
+			deviceSources.push({
+				'data-flavorid' : 'iPadNew',
+				'type' : 'application/vnd.apple.mpegurl',
+				'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
+			});
 		}
-
 		// Create iPhone flavor for Akamai HTTP
 		if(iphoneAdaptiveFlavors.length != 0) {
-			deviceSources['iPhoneNew'] = flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8';
+			deviceSources.push({
+				'data-flavorid' : 'iPhoneNew',
+				'type' : 'application/vnd.apple.mpegurl',
+				'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
+			});
 		}
 		
 		// Append KS to all source if available 
@@ -783,94 +786,13 @@ mw.KWidgetSupport.prototype = {
 		this.kClient.getKS( function( ks ) {
 			ksCheck = true;
 			$.each( deviceSources, function(inx, source){
-				deviceSources[inx] = deviceSources[inx] + '?ks=' + ks;
+				deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + ks;
 			});
 		});
 		if( !ksCheck ){
-			mw.log("Error:: KWidgetSupport: KS not defined in time, streams are missing ks paramter");
+			mw.log("Error:: KWidgetSupport: KS not defined in time, streams will be missing ks paramter");
 		}
-
 		return deviceSources;
-	},
-	
-	getSourcesForDevice: function(  deviceSources ){
-		var sources = [];
-		var addSource = function ( src, type ){
-			sources.push( {
-				'src': src,
-				'type': type
-			} );
-		};
-
-		// If on an iPad or iPhone4 use iPad Source
-		if( mw.isIpad() || mw.isIphone() || mw.isIpod() ) {
-			mw.log( "KwidgetSupport:: Add iOS source");
-			// Note it would be nice to detect if the iPhone was on wifi or 3g
-
-			// Check if we like to use iPad flavor for iPad & iPhone4
-			var useIpadFlavor = ( mw.isIpad() || mw.isIphone4() );
-
-			// Prefer Apple HTTP streaming if enabled: 
-			if( mw.getConfig('Kaltura.UseAppleAdaptive') ){
-				if( deviceSources['AppleMBR'] ) {
-					addSource( deviceSources['AppleMBR'] , 'application/vnd.apple.mpegurl' );
-					return sources;
-				}
-				if( deviceSources['iPadNew'] && useIpadFlavor ){
-					mw.log( "KwidgetSupport:: Add iPad Source using Akamai HTTP" );
-					addSource( deviceSources['iPadNew'] , 'application/vnd.apple.mpegurl' );
-					return sources;
-				} else if ( deviceSources['iPhoneNew']) {
-					mw.log( "KwidgetSupport:: Add iPhone Source using Akamai HTTP" );
-					addSource( deviceSources['iPhoneNew'], 'application/vnd.apple.mpegurl' );
-					return sources;
-				}
-			}
-
-			if( deviceSources['iPad'] && useIpadFlavor ){
-				mw.log( "KwidgetSupport:: Add normal iPad source" );
-				addSource( deviceSources['iPad'] , 'video/h264' );
-				return sources;
-			} else if ( deviceSources['iPhone']) {
-				mw.log( "KwidgetSupport:: Add normal iPhone source" );
-				addSource( deviceSources['iPhone'], 'video/h264' );
-				return sources;
-			}
-		}
-		
-		// If on iPhone or Android or iPod use iPhone src
-		if( ( mw.isIphone() || mw.isAndroid2() || mw.isIpod() ) ){			
-			if( deviceSources['iPhone'] ) {
-				addSource( deviceSources['iPhone'], 'video/h264' );	
-			} else if( deviceSources['3gp'] ){
-				addSource( deviceSources['3gp'], 'video/3gp' );	
-			}
-			return sources;
-		} else {
-			// use h264 source for flash fallback ( desktop browsers ) 
-			mw.log( "KwidgetSupport:: Add from flash h264 fallback" );
-			if( deviceSources['iPad'] ) {
-				addSource( deviceSources['iPad'], 'video/h264' );
-			} else if( deviceSources['iPhone'] ) {
-				addSource( deviceSources['iPhone'], 'video/h264' );
-			}
-		}
-		// Add the webm
-		if( deviceSources['webm'] ){
-			addSource( deviceSources['webm'], 'video/webm' );
-		}
-		
-		// Add the 3gp source if available
-		if( deviceSources['3gp'] ){
-			addSource( deviceSources['3gp'] );
-		}
-		
-		// Always add the oggSrc if we got to this point
-		if( deviceSources['ogg'] ) {
-			addSource( deviceSources['ogg'], 'video/ogg' );
-		}
-		
-		return sources;
 	}
 };
 

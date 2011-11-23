@@ -1131,9 +1131,14 @@ mw.EmbedPlayer.prototype = {
 	 */
 	changeMedia: function( callback ){
 		var _this = this;
-		// onChangeMedia): triggered at the start of the change media commands
+		
+		// Empty out embedPlayer object sources
+		embedPlayer.emptySources();
+		
+		// onChangeMedia triggered at the start of the change media commands
 		$( this ).trigger( 'onChangeMedia' );
-		// setup flag for change media
+		
+		// Setup flag for change media
 		var chnagePlayingMedia = this.isPlaying();
 		
 		// Reset first play to true, to count that play event

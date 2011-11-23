@@ -21,6 +21,8 @@ class KalturaResultObject {
 	var $isPlaylist = null; // lazy init
 	var $isJavascriptRewriteObject = null;
 	var $error = false;
+	// Set of sources
+	var $sources = null;
 	
 	// Local flag to store whether output was came from cache or was a fresh request
 	private $outputFromCache = false;
@@ -276,60 +278,86 @@ class KalturaResultObject {
 		if( !$userAgent ){
 			$userAgent = $this->getUserAgent();
 		}
-		//@@TODO integrate a library for doing this user-agent -> source selection
-		// what follows somewhat arbitrary
 
 		$flavorUrl = false ;
 		// First set the most compatible source ( iPhone h.264 )
-		if( isset( $sources['iphone'] ) ) {
-			$flavorUrl = $sources['iphone']['src'];
+		$iPhoneSrc = $this->getSourceFlavorUrl( 'iPhone' );
+		if( $iPhoneSrc ) {
+			$flavorUrl = $iPhoneSrc;
+		}
+		// if your on an iphone we are done: 
+		if( strpos( $userAgent, 'iPhone' )  ){
+			return $flavorUrl;
 		}
 		// h264 for iPad
-		if( isset( $sources['ipad'] ) ) {
-			$flavorUrl = $sources['ipad']['src'];
+		$iPadSrc = $this->getSourceFlavorUrl( 'ipad' );
+		if( $iPadSrc ) {
+			$flavorUrl = $iPadSrc;
 		}
 		// rtsp3gp for BlackBerry
-		if( strpos( $userAgent, 'BlackBerry' ) !== false && $sources['rtsp3gp'] ){
-			return 	$sources['rtsp3gp']['src'];
+		$rtspSrc = $this->getSourceFlavorUrl( 'rtsp3gp' );
+		if( strpos( $userAgent, 'BlackBerry' ) !== false && $rtspSrc){
+			return 	$rtspSrc;
 		}
 		
 		// 3gp check 
-		if( isset( $sources['3gp'] ) ) {
+		$gpSrc = $this->getSourceFlavorUrl( '3gp' );
+		if( $gpSrc ) {
 			// Blackberry ( newer blackberry's can play the iPhone src but better safe than broken )
 			if( strpos( $userAgent, 'BlackBerry' ) !== false ){
-				$flavorUrl = $sources['3gp']['src'];
+				$flavorUrl = $gpSrc;
 			}
 			// if we have no iphone source then do use 3gp:
 			if( !$flavorUrl ){
-				$flavorUrl = $sources['3gp']['src'];
+				$flavorUrl = $gpSrc;
 			}
 		}
 		
 		// Firefox > 3.5 and chrome support ogg
-		if( isset( $sources['ogg'] ) ){
+		$ogSrc = $this->getSourceFlavorUrl( 'ogg' );
+		if( $ogSrc ){
 			// chrome supports ogg:
 			if( strpos( $userAgent, 'Chrome' ) !== false ){
-				$flavorUrl = $sources['ogg']['src'];
+				$flavorUrl = $ogSrc;
 			}
 			// firefox 3.5 and greater supported ogg:
 			if( strpos( $userAgent, 'Firefox' ) !== false ){
-				$flavorUrl = $sources['ogg']['src'];
+				$flavorUrl = $ogSrc;
 			}
 		}
 		
 		// Firefox > 3 and chrome support webm ( use after ogg )
-		if( isset( $sources['webm'] ) ){
+		$webmSrc = $this->getSourceFlavorUrl( 'webm' );
+		if( $webmSrc ){
 			if( strpos( $userAgent, 'Chrome' ) !== false ){
-				$flavorUrl = $sources['webm']['src'];
+				$flavorUrl = $webmSrc;
 			}
-			if( strpos( $userAgent, 'Firefox/3' ) === false ){
-				$flavorUrl = $sources['webm']['src'];
+			if( strpos( $userAgent, 'Firefox/3' ) === false && strpos( $userAgent, 'Firefox' ) !== false ){
+				$flavorUrl = $webmSrc;
 			}
 		}
-		
 		return $flavorUrl;
 	}
-	
+	/**
+	 * Gets a single source url flavors by flavor id ( gets the first flavor ) 
+	 * 
+	 * TODO we should support setting a bitrate as well.
+	 * 
+	 * @param $sources 
+	 * 	{Array} the set of sources to search 
+	 * @param $flavorId 
+	 * 	{String} the flavor id string
+	 */
+	private function getSourceFlavorUrl( $flavorId = false){
+		// Get all sources ( if not provided ) 
+		$sources = $this->getSources();
+		foreach( $sources as $inx => $source ){
+			if( strtolower( $source[ 'data-flavorid' ] )  == strtolower( $flavorId ) ) {
+				return $source['src'];
+			}
+		}
+		return false;
+	}
 	/**
 	*  Access Control Handling
 	*/
@@ -520,7 +548,10 @@ class KalturaResultObject {
 	// Load the Kaltura library and grab the most compatible flavor
 	public function getSources(){
 		global $wgKalturaServiceUrl, $wgKalturaUseAppleAdaptive, $wgHTTPProtocol;
-		
+		// Check if we already have sources loaded: 
+		if( $this->sources !== null ){
+			return $this->sources;
+		}
 		// Check the access control before returning any source urls
 		if( !$this->isAccessControlAllowed() ) {
 			return array();
@@ -529,7 +560,7 @@ class KalturaResultObject {
 		$resultObject =  $this->getResultObject(); 
 		
 		// add any web sources
-		$sources = array();
+		$this->sources = array();
 
 		// Check for error in getting flavor
 		if( isset( $resultObject['flavors']['code'] ) ){
@@ -572,7 +603,7 @@ class KalturaResultObject {
 			if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
 				$assetUrl = $flavorUrl . '/format/applehttp/protocol/' . $wgHTTPProtocol . '/a.m3u8';
 
-				$sources['applembr'] = array(
+				$this->sources[] = array(
 					'src' => $assetUrl,
 					'type' => 'application/vnd.apple.mpegurl',
 					'data-flavorid' => 'AppleMBR',
@@ -580,10 +611,11 @@ class KalturaResultObject {
 				);
 				continue;
 			}
+			
 			// Check for rtsp as well:
 			if( strpos( $KalturaFlavorAsset->tags, 'hinted' ) !== false ){
 				$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id .  '/format/rtsp/name/a.3gp';
-				$sources['rtsp3gp'] = array(
+				$this->sources[] = array(
 					'src' => $assetUrl,
 					'type' => 'application/rtsl',
 					'data-flavorid' => 'rtsp3gp',
@@ -608,7 +640,7 @@ class KalturaResultObject {
 			}
 
 			if( strpos( $KalturaFlavorAsset->tags, 'iphone' ) !== false ){
-				$sources['iphone'] = array(
+				$this->sources[] = array(
 					'src' => $assetUrl . '/a.mp4',
 					'type' => 'video/h264',
 					'data-flavorid' => 'iPhone',
@@ -616,7 +648,7 @@ class KalturaResultObject {
 				);
 			};
 			if( strpos( $KalturaFlavorAsset->tags, 'ipad' ) !== false ){
-				$sources['ipad'] = array(
+				$this->sources[] = array(
 					'src' => $assetUrl  . '/a.mp4',
 					'type' => 'video/h264',
 					'data-flavorid' => 'iPad',
@@ -625,7 +657,7 @@ class KalturaResultObject {
 			};
 
 			if( $KalturaFlavorAsset->fileExt == 'webm' ){
-				$sources['webm'] = array(
+				$this->sources[] = array(
 					'src' => $assetUrl . '/a.webm',
 					'type' => 'video/webm',
 					'data-flavorid' => 'webm'
@@ -635,7 +667,7 @@ class KalturaResultObject {
 			if( $KalturaFlavorAsset->fileExt == 'ogg' || $KalturaFlavorAsset->fileExt == 'ogv'
 				|| $KalturaFlavorAsset->fileExt == 'oga'
 			){
-				$sources['ogg'] = array(
+				$this->sources[] = array(
 					'src' => $assetUrl . '/a.ogg',
 					'type' => 'video/ogg',
 					'data-flavorid' => 'ogg',
@@ -643,7 +675,7 @@ class KalturaResultObject {
 				);
 			};
 			if( $KalturaFlavorAsset->fileExt == '3gp' ){
-				$sources['3gp'] = array(
+				$this->sources[] = array(
 					'src' => $assetUrl . '/a.3gp',
 					'type' => 'video/3gp',
 					'data-flavorid' => '3gp',
@@ -651,11 +683,7 @@ class KalturaResultObject {
 				);
 			};
 		}
-		// If there are no sources and we are waiting for a transcode throw an error
-		if( count( $sources ) == 0 && $videoIsTranscodingFlag ){
-			$this->error = "Video is transcoding, check back later" ;
-		}
-		
+
 		$ipadFlavors = trim($ipadFlavors, ",");
 		$iphoneFlavors = trim($iphoneFlavors, ",");
 
@@ -663,7 +691,7 @@ class KalturaResultObject {
 		if ( $ipadFlavors && $wgKalturaUseAppleAdaptive ){
 			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/' . $wgHTTPProtocol;
 
-			$sources['ipadnew'] = array(
+			$this->sources[] = array(
 				'src' => $assetUrl . '/a.m3u8',
 				'type' => 'application/vnd.apple.mpegurl',
 				'data-flavorid' => 'iPadNew'
@@ -675,7 +703,7 @@ class KalturaResultObject {
 		{
 			$assetUrl = $flavorUrl . '/flavorIds/' . $iphoneFlavors . '/format/applehttp/protocol/' . $wgHTTPProtocol;
 
-			$sources['iphonenew'] = array(
+			$this->sources[] = array(
 				'src' => $assetUrl . '/a.m3u8',
 				'type' => 'application/vnd.apple.mpegurl',
 				'data-flavorid' => 'iPhoneNew'
@@ -683,25 +711,31 @@ class KalturaResultObject {
 		}
 		// Add in playManifest authentication tokens ( both the KS and referee url ) 
 		if( $this->getServiceConfig( 'UseManifestUrls' ) ){
-			foreach($sources as &$source ){
+			foreach($this->sources as &$source ){
 				if( isset( $source['src'] )){
 					$source['src'] .= '?ks=' . $this->getKS() . '&referrer=' . base64_encode( $this->getReferer() );
 				}
 			}
 		}
 
+		// If there are no sources and we are waiting for a transcode throw an error
+		if( count( $this->sources ) ==  0 && $videoIsTranscodingFlag ){
+			$source['data-error'] = "not-ready-transcoding" ;
+		}
+		
 		// If no sources and entry->mediaType is not image, then show error message
 		//echo '<pre>'; print_r($resultObject['meta']);exit();
 		$mediaType = 1;
 		if( isset($resultObject['meta']->mediaType) ) {
 			$mediaType = $resultObject['meta']->mediaType;
 		}
-		if( count($sources) == 0 && $mediaType != 2 ) {
+		// if the are no sources and we are waiting for transcode add the no sources error
+		if( count( $this->sources ) == 0 && $mediaType != 2 ) {
 			$this->error = "No mobile sources found";
 		}
 
 		//echo '<pre>'; print_r($sources); exit();
-		return $sources;
+		return $this->sources;
 	}
 	
 	// Parse the embedFrame request and sanitize input
@@ -1054,7 +1088,7 @@ class KalturaResultObject {
 	}
 	
 	/**
-	 * convert xml data to array
+	 * Convert xml data to array
 	 */
 	function xmlToArray ( $data ){
 		if ( is_object($data) ){

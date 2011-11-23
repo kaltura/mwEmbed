@@ -720,6 +720,7 @@ function kAddScript( callback ){
 		'mw.style.mwCommon',
 		// embed player:
 		'mw.EmbedPlayer',
+		'mw.processEmbedPlayers',
 
 		'mw.MediaElement',
 		'mw.MediaPlayer',
