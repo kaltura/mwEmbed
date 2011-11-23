@@ -78,8 +78,12 @@ class mweApiUiConfJs {
 			foreach( $userAgentPlayerRules as $key => $val ){
 				// Check for special keys: 
 				if( $key == 'disableForceMobileHTML5' && $val =='true' ){
-					$o.=$this->getJsConfigLine( 'disableForceMobileHTML5', 'true');
+					$o .= $this->getJsConfigLine( 'disableForceMobileHTML5', 'true');
 					continue;	
+				}
+				// Check for blanket "leadWithHTML5" attribute
+				if( $key == 'leadWithHTML5' && $val == 'true' ){
+					$o .= $this->getJsConfigLine( 'forceMobileHTML5', 'true' );
 				}
 				// Parse the rule index and type: 
 				preg_match( '/r([0-9]+)(.*)/', $key, $matches );
