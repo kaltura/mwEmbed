@@ -621,7 +621,6 @@ mw.KWidgetSupport.prototype = {
 	addFlavorSources: function( embedPlayer, flavorData ) {
 		var _this = this;
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
-
 		// Set the poster ( if not already set ) 
 		if( !embedPlayer.poster && embedPlayer.kentryid ){
 			embedPlayer.poster = mw.getKalturaThumbUrl({
@@ -686,7 +685,9 @@ mw.KWidgetSupport.prototype = {
 			
 			// Setup a source object:
 			var source = {
-				'data-bitrate' :  asset.bitrate * 8
+				'data-bitrate' :  asset.bitrate * 8,
+				'data-width' : asset.width,
+				'data-height' : asset.height
 			};
 			// Continue if clip is not ready (2) and not in a transcoding state (4 )
 			if( asset.status != 2  ) {
