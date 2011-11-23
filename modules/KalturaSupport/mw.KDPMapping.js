@@ -289,6 +289,21 @@
 					break;
 				case 'mediaProxy':
 					switch( objectPath[1] ){
+						case 'entryCuePoints':
+							if( ! embedPlayer.rawCuePoints ){
+								return null;
+							}
+							var kdpCuePointFormat = {};
+							$.each( embedPlayer.rawCuePoints, function(inx, cuePoint ){
+								var startTime = parseInt( cuePoint.startTime / 1000 );
+								if( kdpCuePointFormat[ startTime ] ){
+									kdpCuePointFormat[ startTime ].push( cuePoint )
+								} else {
+									kdpCuePointFormat[ startTime ] = [ cuePoint ];
+								}
+							});
+							return kdpCuePointFormat;
+						break;
 						case 'entryMetadata':
 							if( ! embedPlayer.kalturaEntryMetaData ){
 								return null;
@@ -703,9 +718,6 @@
 							'height' :  embedPlayer.getHeight()
 						})
 					);
-					// Empty out embedPlayer object sources
-					embedPlayer.emptySources();
-					
 					// run the embedPlayer changeMedia function
 					embedPlayer.changeMedia();
 				break;
