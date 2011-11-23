@@ -532,7 +532,9 @@
 		);
 	};
 	
-	
+	$.embedPlayers = function(){
+		$( mw.getConfig( 'EmbedPlayer.RewriteSelector' ) ).embedPlayer();	
+	}
 	/**
 	 * Selector based embedPlayer jQuery binding
 	 * 

@@ -653,7 +653,6 @@ mw.KWidgetSupport.prototype = {
 	 */
 	getEntryIdSourcesFromFlavorData: function( partner_id, flavorData ){
 		var _this = this;
-		
 		if( !flavorData ){
 			mw.log("Error: KWidgetSupport: flavorData is not defined ");
 			return ;
@@ -677,8 +676,8 @@ mw.KWidgetSupport.prototype = {
 			var flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partner_id +
 				   '/sp/' +  partner_id + '00/flvclipper';
 		}
-		
-		// Find a compatible stream
+
+		// Add all avaliable sources: 
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 			var asset = flavorData[i];
 			var entryId = asset.entryId;
@@ -694,19 +693,20 @@ mw.KWidgetSupport.prototype = {
 				// if an asset is transcoding and no other source is found bind an error callback: 
 				if( asset.status == 4 ){
 					source.error = 'not-ready-transcoding';
-					deviceSources.push( source );
+					// don't add sources that are not ready ( for now ) 
+					//deviceSources.push( source );
 				}
 				continue;
 			}
 			
 			// Add iPad Akamai flavor to iPad flavor Ids list id list
-			if( asset.tags.indexOf('ipadnew') != -1 ){
+			if( asset.tags.toLowerCase().indexOf('ipadnew') != -1 ){
 				iphoneAdaptiveFlavors.push( asset.id );
 				continue;
 			}
 			
 			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
-			if( asset.tags.indexOf('iphonenew') != -1 ){
+			if( asset.tags.toLowerCase().indexOf('iphonenew') != -1 ){
 				ipadAdaptiveFlavors.push( asset.id );
 				iphoneAdaptiveFlavors.push( asset.id );
 				continue;
@@ -725,30 +725,42 @@ mw.KWidgetSupport.prototype = {
 				mw.log( "Error: KWidgetSupport: non-manifest urls are deprecated" );
 				var src  = flavorUrl + '/entry_id/' + asset.entryId + '/flavor/' + asset.id ;
 			}
-
+			
 			// Check the tags to read what type of mp4 source
-			if( asset.tags.indexOf('ipad') != -1 ){
+			if( asset.tags.toLowerCase().indexOf('ipad') != -1 ){
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPad';
 				source['type'] = 'video/h264';
 			}
 
 			// Check for iPhone src
-			if( asset.tags.indexOf('iphone') != -1 ){
+			if( asset.tags.toLowerCase().indexOf('iphone') != -1 ){
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPhone';
 				source['type'] = 'video/h264';
 			}
 
 			// Check for ogg source
-			if( asset.fileExt == 'ogg' || asset.fileExt == 'ogv'){
+			if( asset.fileExt.toLowerCase() == 'ogg' 
+				|| 
+				asset.fileExt.toLowerCase() == 'ogv'
+				||
+				asset.containerFormat.toLowerCase() == 'ogg'
+			){
 				source['src'] = src + '/a.ogg';
 				source['data-flavorid'] = 'ogg';
 				source['type'] = 'video/ogg';
 			}
 
 			// Check for webm source
-			if( asset.fileExt == 'webm' || asset.tags.indexOf('webm') != -1 ){
+			if( asset.fileExt == 'webm' 
+				|| 
+				asset.tags.indexOf('webm') != -1 
+				|| // Kaltura transcodes give: 'matroska'
+				asset.containerFormat.toLowerCase() == 'matroska'
+				|| // some ingestion systems give "webm" 
+				asset.containerFormat.toLowerCase() == 'webm'
+			){
 				source['src'] = src + '/a.webm';
 				source['data-flavorid'] = 'webm';
 				source['type'] = 'video/webm';
@@ -760,8 +772,10 @@ mw.KWidgetSupport.prototype = {
 				source['data-flavorid'] = '3gp'
 				source['type'] = 'video/3gp';
 			}
-			// Add the source:
-			deviceSources.push( source );
+			// Add the source ( if a src was defined ):
+			if( source['src'] ){
+				deviceSources.push( source );
+			}
 		}
 		
 		// Create iPad flavor for Akamai HTTP
@@ -793,6 +807,7 @@ mw.KWidgetSupport.prototype = {
 		if( !ksCheck ){
 			mw.log("Error:: KWidgetSupport: KS not defined in time, streams will be missing ks paramter");
 		}
+		
 		return deviceSources;
 	}
 };

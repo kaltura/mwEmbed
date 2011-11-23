@@ -486,7 +486,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		if( !this.selectedPlayer ){
 			this.showPluginMissingHTML();
-			if( callback ){
+			if( typeof callback != 'undefined' ){
 				callback();
 			}
 			return ;

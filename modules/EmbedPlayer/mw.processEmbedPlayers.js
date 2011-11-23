@@ -6,6 +6,9 @@
  *      are ready
  *
  */
+
+( function( mw, $ ) {
+	
 mw.processEmbedPlayers = function( playerSelect, callback ) {
 	mw.log( 'processEmbedPlayers:: playerSelector: '+ playerSelect);
 	
@@ -328,3 +331,5 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 		}
 	}
 };
+
+})( window.mw, jQuery );

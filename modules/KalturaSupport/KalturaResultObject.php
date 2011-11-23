@@ -659,7 +659,12 @@ class KalturaResultObject {
 				) );
 			};
 
-			if( $KalturaFlavorAsset->fileExt == 'webm' ){
+			if( $KalturaFlavorAsset->fileExt == 'webm' 
+				|| // Kaltura transcodes give: 'matroska'
+				asset.containerFormat.toLowerCase() == 'matroska'
+				|| // Some ingestion systems give "webm" 
+				asset.containerFormat.toLowerCase() == 'webm'
+			){
 				$this->sources[] = array_merge( $source, array(
 					'src' => $assetUrl . '/a.webm',
 					'type' => 'video/webm',
@@ -667,8 +672,11 @@ class KalturaResultObject {
 				) );
 			}
 
-			if( $KalturaFlavorAsset->fileExt == 'ogg' || $KalturaFlavorAsset->fileExt == 'ogv'
-				|| $KalturaFlavorAsset->fileExt == 'oga'
+			if( $KalturaFlavorAsset->fileExt == 'ogg' 
+				|| 
+				$KalturaFlavorAsset->fileExt == 'ogv'
+				||
+				$KalturaFlavorAsset->containerFormat == 'ogg'
 			){
 				$this->sources[] = array_merge( $source, array(
 					'src' => $assetUrl . '/a.ogg',
@@ -676,11 +684,22 @@ class KalturaResultObject {
 					'data-flavorid' => 'ogg',
 				) );
 			};
+			
+			// Check for ogg audio: 
+			if( $KalturaFlavorAsset->fileExt == 'oga' ){
+				$this->sources[] = array_merge( $source, array(
+					'src' => $assetUrl . '/a.oga',
+					'type' => 'audio/ogg',
+					'data-flavorid' => 'ogg',
+				) );
+			}
+			
+			
 			if( $KalturaFlavorAsset->fileExt == '3gp' ){
 				$this->sources[] = array_merge( $source, array(
 					'src' => $assetUrl . '/a.3gp',
 					'type' => 'video/3gp',
-					'data-flavorid' => '3gp',
+					'data-flavorid' => '3gp'
 				));
 			};
 		}
