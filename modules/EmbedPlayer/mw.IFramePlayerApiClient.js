@@ -70,11 +70,13 @@ mw.IFramePlayerApiClient.prototype = {
 		var _this = this;
 		parentsAbsoluteList = [];
 		var fullscreenMode = false;
+		var $iframe = $( _this.iframe );
 		var orgSize = {
-			'width' : $( _this.iframe ).width(),
-			'height' : $( _this.iframe ).height(),
-			'position' : $( _this.iframe ).css( 'position' )
+			'width' : $iframe.width(),
+			'height' : $iframe.height(),
+			'position' : $iframe.css( 'position' )
 		};
+		var orgStyle = $iframe.attr('style');
 		
 		// Add a local scope variable to register 
 		// local scope fullscreen calls on orientation change
@@ -109,38 +111,41 @@ mw.IFramePlayerApiClient.prototype = {
 			localIframeInFullscreen = true;
 			// changed to fixed from absolute in order to "disable" scrolling
 			var playerCssPosition = (mw.isIpad()) ? 'absolute' : 'fixed';
+			
+			// Remove absolute css of the interface parents
+			$iframe.parents().each( function() {
+				var $parent = $( this );
+				if( $parent.css( 'position' ) == 'absolute' ) {
+					parentsAbsoluteList.push( $parent );
+					$parent.css( 'position', null );
+				}
+			});
 			// Make the iframe fullscreen
-			$( _this.iframe )
+			$iframe
 				.css({
 					'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
 					'position': playerCssPosition,
 					'top' : 0,
 					'left' : 0,
 					'width' : $(window).width(),
-					'height' : $(window).height()
+					'height' : $(window).height(),
+					'margin': 0
 				})
 				.data(
 					'isFullscreen', true
 				);
-			
-			// Remove absolute css of the interface parents
-			$( _this.iframe ).parents().each( function() {
-				if( $( this ).css( 'position' ) == 'absolute' ) {
-					parentsAbsoluteList.push( $( this ) );
-					$( this ).css( 'position', null );
-				}
-			});
 		};
 		
 		var restoreWindowMode = function(){
 			// Scroll back to the previews positon
 			window.scroll(0, verticalScrollPosition);
 			localIframeInFullscreen = false;
-			$( _this.iframe )
+			$iframe
 				.css( orgSize )
 				.data(
 					'isFullscreen', false
-				);
+				)
+				.attr('style', orgStyle);
 			// restore any parent absolute pos: 
 			$( parentsAbsoluteList ).each( function() {	
 				$( this ).css( 'position', 'absolute' );
