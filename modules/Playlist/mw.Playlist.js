@@ -93,7 +93,7 @@ mw.Playlist.prototype = {
 	},
 	formatTitle: function( text ){
 		if( text.length > this.titleLength )
-			return text.substr(0, this.titleLength-3) + ' ...';
+			//return text.substr(0, this.titleLength-3) + ' ...';
 		return text;
 	},
 	formatDescription: function( text ){
