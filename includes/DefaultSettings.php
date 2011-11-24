@@ -81,7 +81,10 @@ if( $wgHTTPProtocol == 'https' ){
 }
 
 // Default Kaltura Stats url
-$wgKalturaStatsServiceUrl = $wgHTTPProtocol . '://stats.kaltura.com';
+$wgKalturaStatsServiceUrl = 'http://stats.kaltura.com';
+if( $wgHTTPProtocol == 'https' ){
+	$wgKalturaStatsServiceUrl = 'https://www.kaltura.com';
+}
 
 // Default Kaltura service url:
 $wgKalturaServiceBase = '/api_v3/index.php?service=';
