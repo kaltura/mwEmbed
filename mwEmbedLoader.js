@@ -50,6 +50,22 @@ if( !window['mw'] ) {
 // Define the DOM ready flag
 var kAlreadyRunDomReadyFlag = false;
 
+window.restoreKalturaKDPCallback = function(){
+	// To restore when we are not rewriting:
+	if( window.KalturaKDPCallbackReady ){
+		window.jsCallbackReady = window.KalturaKDPCallbackReady;
+		window.KalturaKDPCallbackReady = null;
+		if( window.KalturaKDPCallbackAlreadyCalled.length ){
+			for( var i =0 ; i < window.KalturaKDPCallbackAlreadyCalled.length; i++){
+				var playerId = window.KalturaKDPCallbackAlreadyCalled[i];
+				window.jsCallbackReady( playerId );
+				window.KWidget.globalJsReadyCallback( playerId );
+			}
+		}
+		// should have to do nothing.. kdp will call window.jsCallbackReady directly
+	}
+};
+
 // Try and override the swfObject at runtime
 // In case it was included before mwEmbedLoader and the embedSWF call is inline ( so we can't wait for dom ready )
 kOverideJsFlashEmbed();
@@ -1209,22 +1225,6 @@ window.checkForKDPCallback = function(){
 			}
 			window.KWidget.globalJsReadyCallback( playerId );
 		};
-	}
-};
-
-window.restoreKalturaKDPCallback = function(){
-	// To restore when we are not rewriting: 
-	if( window.KalturaKDPCallbackReady ){
-		window.jsCallbackReady = window.KalturaKDPCallbackReady;
-		window.KalturaKDPCallbackReady = null;
-		if( window.KalturaKDPCallbackAlreadyCalled.length ){
-			for( var i =0 ; i < window.KalturaKDPCallbackAlreadyCalled.length; i++){
-				var playerId = window.KalturaKDPCallbackAlreadyCalled[i];
-				window.jsCallbackReady( playerId );
-				window.KWidget.globalJsReadyCallback( playerId );
-			}
-		}
-		// should have to do nothing.. kdp will call window.jsCallbackReady directly
 	}
 };
 
