@@ -612,7 +612,9 @@ function kCheckAddScript(){
 		return ;
 	}
 
-	// Check if no flash and no html5 and no forceFlash ( direct download link ) 
+	// Check if no flash and no html5 and no forceFlash ( direct download link )
+	// for debug purpose:
+	// kSupportsFlash = function() {return false}; kSupportsHTML5 = function() {return false};
 	if( ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 		kAddScript();
 		return ;		
