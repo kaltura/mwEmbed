@@ -661,9 +661,9 @@ class KalturaResultObject {
 
 			if( $KalturaFlavorAsset->fileExt == 'webm' 
 				|| // Kaltura transcodes give: 'matroska'
-				asset.containerFormat.toLowerCase() == 'matroska'
+				strtolower($KalturaFlavorAsset->containerFormat) == 'matroska'
 				|| // Some ingestion systems give "webm" 
-				asset.containerFormat.toLowerCase() == 'webm'
+				strtolower($KalturaFlavorAsset->containerFormat) == 'webm'
 			){
 				$this->sources[] = array_merge( $source, array(
 					'src' => $assetUrl . '/a.webm',
