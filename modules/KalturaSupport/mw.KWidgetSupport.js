@@ -779,7 +779,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		// Create iPad flavor for Akamai HTTP
-		if( ipadAdaptiveFlavors.length != 0) {
+		if( ipadAdaptiveFlavors.length != 0 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
 			deviceSources.push({
 				'data-flavorid' : 'iPadNew',
 				'type' : 'application/vnd.apple.mpegurl',
@@ -787,7 +787,7 @@ mw.KWidgetSupport.prototype = {
 			});
 		}
 		// Create iPhone flavor for Akamai HTTP
-		if(iphoneAdaptiveFlavors.length != 0) {
+		if(iphoneAdaptiveFlavors.length != 0 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
 			deviceSources.push({
 				'data-flavorid' : 'iPhoneNew',
 				'type' : 'application/vnd.apple.mpegurl',
