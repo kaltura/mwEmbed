@@ -88,6 +88,9 @@ mw.EmbedPlayer.prototype = {
 	// If pause play controls click controls should be active: 
 	'_playContorls' : true,
 
+	// If player should be displayed (in some caused like audio, we don't need the player to be visible
+	'displayPlayer': true, 
+
 	/**
 	 * embedPlayer
 	 *
@@ -841,6 +844,13 @@ mw.EmbedPlayer.prototype = {
 		// Update temporal url if present
 		this.updateTemporalUrl();
 
+		// Do we need to show the player?
+		if( this.displayPlayer === false ) {
+			$( _this ).hide(); // Hide embed player
+			$( '#' + _this.pid ).hide(); // Hide video tag
+			this.$interface.css('height', this.controlBuilder.height); // Set the interface height to controlbar height
+		}
+
 		// Check for intrinsic width and maintain aspect ratio
 		setTimeout(function(){
 			_this.applyIntrinsicAspect();
@@ -1133,7 +1143,7 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		
 		// Empty out embedPlayer object sources
-		embedPlayer.emptySources();
+		this.emptySources();
 		
 		// onChangeMedia triggered at the start of the change media commands
 		$( this ).trigger( 'onChangeMedia' );

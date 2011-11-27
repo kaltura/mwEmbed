@@ -172,6 +172,12 @@ class kalturaIframe {
 						$width = $iframeWidth;
 					}
 				}
+
+				// If we don't need to show the player, set the player container height to the controlbar (audio playlist)
+				if( $this->getResultObject()->getPlayerConfig('PlayerHolder', 'visible') === false ||
+						$this->getResultObject()->getPlayerConfig('PlayerHolder', 'includeInLayout') === false ) {
+					$height = $this->getResultObject()->getPlayerConfig('controlsHolder', 'height');
+				}
 			}
 		}
 		return "width:{$width}px;height:{$height}px;";
@@ -616,7 +622,7 @@ class kalturaIframe {
 				echo $this->getPlaylistWraper( 
 					// Get video html with a default playlist video size ( we can adjust it later in js )
 					// iOS needs display type block: 
-					$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() . ';display:block' ) 
+					$this->getVideoHTML( $this->getPlaylistPlayerSizeCss() . ';display:block;' )
 				);
 			} else {
 				// For the actual video tag we need to use a document.write since android dies 

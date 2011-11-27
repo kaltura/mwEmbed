@@ -298,6 +298,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}
 		// Get the embed 
 		var embedPlayer = _this.playlist.getEmbedPlayer();
+
+		// Hide our player if not needed
+		var $playerHolder = embedPlayer.getKalturaConfig('PlayerHolder', ["visible", "includeInLayout"]);
+		if( $playerHolder.visible === false  || $playerHolder.includeInLayout === false ) {
+			embedPlayer.displayPlayer = false;
+		}
+
 		// update the selected index: 
 		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
 		// Set up ready binding (for ready )
@@ -597,4 +604,4 @@ mw.PlaylistHandlerKaltura.prototype = {
 	}
 };
 
-} )( mediaWiki, jQuery );
+} )( window.mediaWiki, window.jQuery );
