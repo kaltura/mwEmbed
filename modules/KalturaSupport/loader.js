@@ -90,6 +90,7 @@
 		
 		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
 		"titleLayout" : "uiConfComponents/titleLayout.js",
+		"volumeBarLayout"	:	"uiConfComponents/volumeBarLayout.js",
 		
 		"kdpClientIframe" : "kdpPageJs/kdpClientIframe.js",
 		"kdpServerIFrame" : "kdpPageJs/kdpServerIFrame.js"
@@ -108,7 +109,8 @@
 		'mw.KLayout',
 		'mw.style.klayout',
 		'controlbarLayout',
-		'titleLayout',		
+		'titleLayout',
+		'volumeBarLayout',
 		'faderPlugin',
 		'watermarkPlugin',
 		'adPlugin',
