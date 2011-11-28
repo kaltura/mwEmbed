@@ -4,6 +4,12 @@
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 
 			var disabled = [];
+
+			// HTML5 Options Menu
+			var optionsMenu = embedPlayer.getKalturaConfig( 'optionsMenu', ['visible', 'includeInLayout'] );
+			if( optionsMenu.visible === false || optionsMenu.includeInLayout === false ) {
+				mw.setConfig('EmbedPlayer.EnableOptionsMenu', false );
+			}
 			
 			// Check if the ui conf layout supports play/pause button
 			// <button id="playBtnControllerScreen" command="play" buttontype="iconButton" focusrectpadding="0" icon="playIcon" overicon="playIcon" downicon="playIcon" disabeledicon="playIcon" selectedupicon="pauseIcon" selectedovericon="pauseIcon" selecteddownicon="pauseIcon" selecteddisabledicon="pauseIcon" tooltip="" uptooltip="Pause" selectedtooltip="Play" k_buttontype="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"></button>
@@ -44,7 +50,7 @@
 			// <button id="onVideoPlayBtnStartScreen" command="play" buttontype="onScreenButton" minwidth="60" labelplacement="top" label="Play" stylename="onScreenBtn" upicon="playIcon" overicon="playIcon" downicon="playIcon" disabeledicon="playIcon" selectedupicon="playIcon" selectedovericon="playIcon" selecteddownicon="playIcon" selecteddisabledicon="playIcon" k_buttontype="buttonIconControllerArea" tooltip="Play video" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"></button>
 			if( !$uiConf.find( 'button #onVideoPlayBtnStartScreen' ).length ){
 				disabled.push( 'playButtonLarge' );
-			}			
+			}		
 			
 			controlbarLayout( embedPlayer, disabled );
 			
