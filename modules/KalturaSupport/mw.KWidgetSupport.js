@@ -806,7 +806,7 @@ mw.KWidgetSupport.prototype = {
 		this.kClient.getKS( function( ks ) {
 			ksCheck = true;
 			$.each( deviceSources, function(inx, source){
-				deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + ks;
+				deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + ks + '&referrer=' + base64_encode(mw.getReferrer());
 			});
 		});
 		if( !ksCheck ){

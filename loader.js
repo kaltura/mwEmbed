@@ -106,6 +106,9 @@ mw.addResourcePaths( {
 	"Modernizr" 			: "libraries/jquery/plugins/modernizr.js",
 	"JSON" 					: "libraries/json/json2.js",
 	"MD5"					: "libraries/crypto/MD5.js",
+	"utf8_encode"			: "libraries/utf8/utf8_encode.js",
+	"base64_encode"			: "libraries/base64/base64_encode.js",
+	"base64_decode"			: "libraries/base64/base64_decode.js",
 
 	"$j.replaceText.js"		: "libraries/jquery/plugins/jquery.replaceText.js",
 

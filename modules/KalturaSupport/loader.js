@@ -99,7 +99,10 @@
 	// Set a local variable with the request set so we can append it to embedPlayer
 	var kalturaSupportRequestSet = [
 		'MD5',
-		"mw.KApi",
+		'utf8_encode',
+		'base64_encode',
+		//'base64_decode',
+		'mw.KApi',
 		'mw.KWidgetSupport',
 		'mw.KCuePoints',
 		'mw.KAnalytics',

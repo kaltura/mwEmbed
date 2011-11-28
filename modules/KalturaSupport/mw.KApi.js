@@ -219,16 +219,10 @@ mw.KApi.prototype = {
 		}
 
 		if( kProperties.entry_id ){
-			// The referring  url ( can be from the iframe if in iframe mode ) 
-			var refer = ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ? 
-							mw.getConfig( 'EmbedPlayer.IframeParentUrl') : 
-							document.URL;
-			refer = refer.substr(0,refer.indexOf("#"));
-			
 			// Add Context Data request 			
 			requestObject.push({
 		        	 'contextDataParams' : {
-			        	 	'referrer' : refer,
+			        	 	'referrer' : mw.getReferrer(),
 			        	 	'objectType' : 'KalturaEntryContextDataParams'
 			         },
 		        	 'service' : 'baseentry',

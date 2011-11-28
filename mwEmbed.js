@@ -2548,6 +2548,19 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		}
 		return false;
 	};
+
+	mw.getReferrer = function() {
+		// The referring  url ( can be from the iframe if in iframe mode )
+		var refer = ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ?
+						mw.getConfig( 'EmbedPlayer.IframeParentUrl') :
+						document.URL;
+
+		// If we have hash, remove everything after that
+		if( refer.indexOf("#") !== -1 ) {
+			refer = refer.substr(0, refer.indexOf("#"));
+		}
+		return refer;
+	};
 	
 	/**
 	 * A version comparison utility function Handles version of types
