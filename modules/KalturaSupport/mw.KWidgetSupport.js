@@ -707,14 +707,14 @@ mw.KWidgetSupport.prototype = {
 			// Add iPad Akamai flavor to iPad flavor Ids list id list
 			if( asset.tags.toLowerCase().indexOf('ipadnew') != -1 ){
 				iphoneAdaptiveFlavors.push( asset.id );
-				continue;
+				// We don't need to continue, the ipadnew/iphonenew flavor are used also for progressive download
+				//continue;
 			}
 			
 			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
 			if( asset.tags.toLowerCase().indexOf('iphonenew') != -1 ){
 				ipadAdaptiveFlavors.push( asset.id );
 				iphoneAdaptiveFlavors.push( asset.id );
-				continue;
 			}
 			
 			// Check playManifest conditional
