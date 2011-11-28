@@ -74,7 +74,7 @@ mw.EmbedPlayerKplayer = {
 		
 		var orgJsReadyCallback = window.jsCallbackReady;
 		window.jsCallbackReady = function( playerId ){
-			_this.postEmbedJS();
+			_this.postEmbedActions();
 			window.jsCallbackReady = orgJsReadyCallback;
 		};
 		// attributes and params:
@@ -93,10 +93,10 @@ mw.EmbedPlayerKplayer = {
 		
 		// Flash player loses its bindings once it changes sizes::
 		$(_this).bind('onOpenFullScreen', function() {
-			_this.postEmbedJS();
+			_this.postEmbedActions();
 		});
 		$(_this).bind('onCloseFullScreen', function() {
-			_this.postEmbedJS();
+			_this.postEmbedActions();
 		});
 	},
 	
@@ -106,7 +106,7 @@ mw.EmbedPlayerKplayer = {
 	/**
 	 * javascript run post player embedding
 	 */
-	postEmbedJS : function() {
+	postEmbedActions : function() {
 		var _this = this;
 		this.getPlayerElement();
 		
@@ -135,7 +135,7 @@ mw.EmbedPlayerKplayer = {
 				return ;
 			}
 			setTimeout(function() {
-				_this.postEmbedJS();
+				_this.postEmbedActions();
 			}, 10);
 		}
 	},

@@ -1893,7 +1893,7 @@ mw.EmbedPlayer.prototype = {
 	 * Abstract method to be run post embedding the player Generally should be
 	 * overwritten by the plug-in / player
 	 */
-	postEmbedJS:function() {
+	postEmbedActions:function() {
 		return ;
 	},
 

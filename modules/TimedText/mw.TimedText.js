@@ -41,7 +41,7 @@ mw.includeAllModuleMessages();
 			'layout' : 'ontop',
 
 			//Set the default local ( should be grabbed from the browser )
-			'userLanugage' : 'en',
+			'userLanguage' : 'en',
 
 			//Set the default kind of timedText to display ( un-categorized timed-text is by default "subtitles" )
 			'userKind' : 'subtitles'
@@ -149,7 +149,12 @@ mw.includeAllModuleMessages();
 			
 			// Resize the timed text font size per window width
 			$( embedPlayer ).bind( 'onCloseFullScreen'+ this.bindPostFix + ' onOpenFullScreen'+ this.bindPostFix, function() {
-				var textOffset = _this.embedPlayer.controlBuilder.fullscreenMode ? 30 : 10;
+				// Check if we are in fullscreen or not, if so add an additional bottom offset of 
+				// double the default bottom padding. 
+				var textOffset = _this.embedPlayer.controlBuilder.fullscreenMode ? 
+						mw.getConfig("TimedText.BottomPadding") *2 : 
+						mw.getConfig("TimedText.BottomPadding");
+						
 				var textCss = _this.getInterfaceSizeTextCss({
 					'width' :  embedPlayer.$interface.width(),
 					'height' : embedPlayer.$interface.height()
@@ -160,16 +165,18 @@ mw.includeAllModuleMessages();
 				embedPlayer.$interface.find( '.track' )
 				.css( textCss )
 				.css({
-					// Get the text size scale then set it to control bar height + 10 px; 
+					// Get the text size scale then set it to control bar height + TimedText.BottomPadding; 
 					'bottom': ( _this.embedPlayer.controlBuilder.getHeight() + textOffset ) + 'px'
 				});
 			});
 			
 			// Update the timed text size
 			$( embedPlayer ).bind( 'onResizePlayer'+ this.bindPostFix, function(event, size, animate) {
+				// If the the player resize action is an animation, animate text resize, 
+				// else instantly adjust the css. 
 				var textCss = _this.getInterfaceSizeTextCss( size );
 				mw.log( 'TimedText::onResizePlayer: ' + textCss['font-size']);
-				if (animate) {
+				if ( animate ) {
 					embedPlayer.$interface.find( '.track' ).animate( textCss);
 				} else {
 					embedPlayer.$interface.find( '.track' ).css( textCss );
@@ -288,11 +295,20 @@ mw.includeAllModuleMessages();
 			}
 			return $( '#' + textMenuId );
 		},
+		/**
+		 * Gets a text size percent relative to about 30 columns of text for 400 
+		 * pixel wide player, at 100% text size.  
+		 * 
+		 * @param size {object} The size of the target player area width and height
+		 */
 		getInterfaceSizePercent: function( size ) {
-			// Some arbitrary scale relative to window size ( 400px wide is text size 100% )
 			var textSize = size.width / 4;
-			if( textSize < 95 ) textSize = 95;
-			if( textSize > 200 ) textSize = 200;
+			if( textSize < 95 ){
+				textSize = 95;
+			}
+			if( textSize > 200 ){
+				textSize = 200;
+			}
 			return textSize;
 		},
 
@@ -408,7 +424,7 @@ mw.includeAllModuleMessages();
 		* Get the layout mode
 		*
 		* Takes into consideration:
-		* 	Playback method overlays support ( have to put subtitles bellow video )
+		* 	Playback method overlays support ( have to put subtitles below video )
 		*
 		*/
 		getLayoutMode: function() {
@@ -430,7 +446,7 @@ mw.includeAllModuleMessages();
 			this.enabledSources = [];
 			// Check if any source matches our "local" pref
 			$.each( this.textSources, function(inx, source){
-				if(	_this.config.userLanugage == source.srclang.toLowerCase() 
+				if(	_this.config.userLanguage == source.srclang.toLowerCase() 
 					&& 
 					_this.config.userKind == source.kind
 				) {
@@ -467,7 +483,7 @@ mw.includeAllModuleMessages();
 		},
 		/**
 		 * Enable a source and update the currentLangKey 
-		 * @param source
+		 * @param {object} source
 		 * @return
 		 */
 		enableSource: function( source ){
@@ -475,9 +491,12 @@ mw.includeAllModuleMessages();
 			this.currentLangKey = source.srclang;
 		},
 
-		// Get the current source sub captions
-		loadCurrentSubSrouce: function( callback ){
-			mw.log("loadCurrentSubSrouce:: enabled source:" + this.enabledSources.length);
+		/**
+		 * Get the current source sub captions
+		 * @param {function} callback function called once source is loaded
+		 */
+		loadCurrentSubSource: function( callback ){
+			mw.log("loadCurrentSubSource:: enabled source:" + this.enabledSources.length);
 			for( var i =0; i < this.enabledSources.length; i++ ){
 				var source = this.enabledSources[i];
 				if( source.kind == 'SUB' ){
@@ -490,11 +509,16 @@ mw.includeAllModuleMessages();
 			return false;
 		},
 
-		// Get sub captions by language key:
+		/**
+		 * Get sub captions by language key:
+		 * 
+		 * @param {string} langKey Key of captions to load
+		 * @pram {function} callback function called once language key is loaded
+		 */
 		getSubCaptions: function( langKey, callback ){
 			for( var i=0; i < this.textSources.length; i++ ) {
 				var source = this.textSources[ i ];
-				if( source.srclang.toLowerCase() == langKey ) {
+				if( source.srclang.toLowerCase() === langKey ) {
 					var source = this.textSources[ i ];
 					source.load( function(){
 						callback( source.captions );
@@ -532,12 +556,14 @@ mw.includeAllModuleMessages();
 		isSourceEnabled: function( source ) {
 			$.each( this.enabledSources, function( inx, enabledSource ) {
 				if( source.id ) {
-					if( source.id == enabledSource.id )
+					if( source.id === enabledSource.id ){
 						return true;
+					}
 				}
 				if( source.srclang ) {
-					if( source.srclang == enabledSource.srclang )
+					if( source.srclang === enabledSource.srclang ){
 						return true;
+					}
 				}
 			});
 			return false;
@@ -545,12 +571,14 @@ mw.includeAllModuleMessages();
 
 		/**
 		* Get a source object by language, returns "false" if not found
+		* @param {string} langKey The language key filter for selected source
 		*/
 		getSourceByLanguage: function ( langKey ) {
 			for(var i=0; i < this.textSources.length; i++) {
 				var source = this.textSources[ i ];
-				if( source.srclang == langKey )
+				if( source.srclang == langKey ){
 					return source;
+				}
 			}
 			return false;
 		},
@@ -581,7 +609,7 @@ mw.includeAllModuleMessages();
 			var $menu = $( '<ul>' );
 			
 			// Show text menu item with layout option (if not fullscren ) 
-			if( _this.textSources.length != 0 ) {
+			if( _this.textSources.length !== 0 ) {
 				$menu.append(
 					$.getLineItem( gM( 'mwe-timedtext-choose-text'), 'comment' ).append(
 						_this.getLanguageMenu()
@@ -598,18 +626,9 @@ mw.includeAllModuleMessages();
 			);
 			
 			if(  _this.textSources.length == 0 ){
-				// Add a link to request timed text for this clip:
-				if( mw.getConfig( 'TimedText.ShowRequestTranscript' ) ){
-					$menu.append(
-						$.getLineItem( gM( 'mwe-timedtext-request-subs'), 'comment', function(){
-							_this.getAddSubRequest();
-						})
-					);
-				} else {
-					$menu.append(
-						$.getLineItem( gM( 'mwe-timedtext-no-subs'), 'close' )
-					);
-				}
+				$menu.append(
+					$.getLineItem( gM( 'mwe-timedtext-no-subs'), 'close' )
+				);
 			}
 
 			// Put in the "Make Transcript" link if config enabled and we have an api key
@@ -695,8 +714,9 @@ mw.includeAllModuleMessages();
 			var layoutOptions = [ ];
 
 			//Only display the "ontop" option if the player supports it:
-			if( this.embedPlayer.supports[ 'overlays' ] )
+			if( this.embedPlayer.supports[ 'overlays' ] ){
 				layoutOptions.push( 'ontop' );
+			}
 
 			//Add below and "off" options:
 			if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
@@ -765,7 +785,7 @@ mw.includeAllModuleMessages();
 			
 			// Update the config language if the source includes language
 			if( source.srclang )
-				this.config.userLanugage = source.srclang;
+				this.config.userLanguage = source.srclang;
 
 			if( source.kind )
 				this.config.userKind = source.kind;
@@ -819,65 +839,69 @@ mw.includeAllModuleMessages();
 
 		/**
 		* Builds the language source list menu
-		* checks all text sources for kind and language key attribute
+		* Cehck if the "track" tags had the "kind" attribute.
+		* 
+		* The kind attribute forms "categories" of text tracks like "subtitles", 
+		*  "audio description", "chapter names". We check for these categories 
+		*  when building out the language menu. 
 		*/
 		getLanguageMenu: function() {
 			var _this = this;
 
 			// See if we have categories to worry about
 			// associative array of SUB etc categories. Each kind contains an array of textSources.
-			var catSourceList = {};
-			var catSourceCount = 0;
+			var categorySourceList = {};
+			var sourcesWithCategoryCount = 0;
 
 			// ( All sources should have a kind (depreciate )
-			var sourcesWithoutKind = [ ];
+			var sourcesWithoutCategory = [ ];
 			for( var i=0; i < this.textSources.length; i++ ) {
 				var source = this.textSources[ i ];
 				if( source.kind ) {
-					var kindKey = source.kind ;
+					var categoryKey = source.kind ;
 					// Init Category menu item if it does not already exist:
-					if( !catSourceList[ kindKey ] ) {
+					if( !categorySourceList[ categoryKey ] ) {
 						// Set up catList pointer:
-						catSourceList[ kindKey ] = [ ];
-						catSourceCount++;
+						categorySourceList[ categoryKey ] = [ ];
+						sourcesWithCategoryCount++;
 					}
 					// Append to the source kind key menu item:
-					catSourceList[ kindKey ].push(
+					categorySourceList[ categoryKey ].push(
 						_this.getLiSource( source )
 					);
 				}else{
-					sourcesWithoutKind.push( _this.getLiSource( source ) );
+					sourcesWithoutCategory.push( _this.getLiSource( source ) );
 				}
 			}
 			var $langMenu = $('<ul>');
 			// Check if we have multiple categories ( if not just list them under the parent menu item)
-			if( catSourceCount > 1 ) {
-				for(var kindKey in catSourceList) {
+			if( sourcesWithCategoryCount > 1 ) {
+				for(var categoryKey in categorySourceList) {
 					var $catChildren = $('<ul>');
-					for(var i=0; i < catSourceList[ kindKey ].length; i++) {
+					for(var i=0; i < categorySourceList[ categoryKey ].length; i++) {
 						$catChildren.append(
-							catSourceList[ kindKey ][i]
+							categorySourceList[ categoryKey ][i]
 						);
 					}
 					// Append a cat menu item for each kind list
 					$langMenu.append(
-						$.getLineItem( gM( 'mwe-timedtext-textcat-' + kindKey.toLowerCase() ) ).append(
+						$.getLineItem( gM( 'mwe-timedtext-textcat-' + categoryKey.toLowerCase() ) ).append(
 							$catChildren
 						)
 					);
 				}
 			} else {
-				for(var kindKey in catSourceList) {
-					for(var i=0; i < catSourceList[ kindKey ].length; i++) {
+				for(var categoryKey in categorySourceList) {
+					for(var i=0; i < categorySourceList[ categoryKey ].length; i++) {
 						$langMenu.append(
-							catSourceList[ kindKey ][i]
+							categorySourceList[ categoryKey ][i]
 						);
 					}
 				}
 			}
-
-			for(var i=0; i < sourcesWithoutKind.length; i++) {
-				$langMenu.append( sourcesWithoutKind[i] );
+			// Add any remaning sources that did nto have a category
+			for(var i=0; i < sourcesWithoutCategory.length; i++) {
+				$langMenu.append( sourcesWithoutCategory[i] );
 			}
 
 			//Add in the "add text" to the end of the interface:
@@ -892,7 +916,8 @@ mw.includeAllModuleMessages();
 
 		/**
 		 * Updates a source display in the interface for a given time
-		 * @param {Object} source Source to update
+		 * @param {object} source Source to update
+		 * @param {number} time Caption time used to add and remove active captions.   
 		 */
 		updateSourceDisplay: function ( source, time ) {
 			var _this = this;
@@ -1029,7 +1054,7 @@ mw.includeAllModuleMessages();
 			// Get the relative positioned player class from the controlBuilder:
 			this.embedPlayer.controlBuilder.keepControlBarOnScreen = true;
 			// Set the belowBar size to 60 pixels:
-			var belowBarHeight = 60;
+			var belowBarHeight = mw.getConfig('TimedText.BelowVideoBlackBoxHeight');
 			
 			// Append before controls:
 			$playerTarget.find( '.control-bar' ).before(

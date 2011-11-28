@@ -54,11 +54,12 @@
 		load: function( callback ) {
 			var _this = this;
 			// Setup up a callback ( in case it was not defined )
-			if( !callback )
+			if( !callback ){
 				callback = function(){ return ; };
+			}
 				
 			// Check if the captions have already been loaded:
-			if( this.captions.length != 0 ){
+			if( this.loaded ){
 				return callback();
 			} 
 	
@@ -72,12 +73,16 @@
 					url: _this.getSrc(),
 					success: function( data ) {
 						_this.captions = _this.getCaptions( data );
+						_this.loaded = true;
 						mw.log("mw.TextSource :: loaded from " +  _this.getSrc() + " Found: " + _this.captions.length + ' captions' );
 						callback();
 					},
 					error: function( jqXHR, textStatus, errorThrown ){
 						// try to load the file with the proxy:
-						_this.loadViaProxy( callback );
+						_this.loadViaProxy( function(){
+							callback();
+							_this.loaded = true;
+						});
 					}
 				});
 			} catch ( e ){
@@ -146,6 +151,9 @@
 		getCaptions: function( data ){
 			// Detect caption data type: 
 			switch( this.mimeType ){
+				case 'text/mw-srt':
+					return this.getCaptiosnFromMediaWikiSrt( data );
+					break;
 				case 'text/x-srt':
 					return this.getCaptionsFromSrt( data);
 					break;
@@ -287,7 +295,8 @@
 		 */
 		getCaptionsFromSrt: function ( data ){
 			mw.log("TextSource::getCaptionsFromSrt");
-			// check if the "srt" parses as an XML 
+			var _this = this;
+			// Check if the "srt" parses as an XML 
 			try{
 				var xml = $.parseXML( data );
 				if( xml && $( xml ).find('parsererror').length == 0 ){
@@ -309,10 +318,10 @@
 			var captions = [];
 			var caplist = srt.split('\n\n');
 			for (var i = 0; i < caplist.length; i++) {
-		 		var caption = "";
-				var content, start, end, s;
-				caption = caplist[i];
-				s = caption.split(/\n/);
+		 		var captionText = "";
+				var caption = false;
+				captionText = caplist[i];
+				s = captionText.split(/\n/);
 				if (s.length < 2) {
 					// file format error or comment lines
 					continue;
@@ -322,38 +331,141 @@
 					// parse time string
 					var m = s[1].match(/(\d+):(\d+):(\d+)(?:,(\d+))?\s*--?>\s*(\d+):(\d+):(\d+)(?:,(\d+))?/);
 					if (m) {
-						var startms = ( m[4] )? (parseInt(m[4], 10) / 1000) : 0;
-						start =
-							(parseInt(m[1], 10) * 60 * 60) +
-							(parseInt(m[2], 10) * 60) +
-							(parseInt(m[3], 10)) +
-							startms;
-						
-						var endms = ( m[8] )? (parseInt(m[8], 10) / 1000) : 0;
-						end =
-							(parseInt(m[5], 10) * 60 * 60) +
-							(parseInt(m[6], 10) * 60) +
-							(parseInt(m[7], 10)) +
-							endms;
+						caption = _this.match2caption( m );
 					} else {
 						// Unrecognized timestring
 						continue;
 					}
-					// concatenate text lines to html text
-					content = s.slice(2).join("<br>");
+					if( caption ){
+						// concatenate text lines to html text
+						caption['content'] = s.slice(2).join("<br>");
+					}
 				} else {
 					// file format error or comment lines
 					continue;
 				}
-				captions.push({
-					'start' : start,
-					'end' : end,
-					'content' : content
-				} );
+				// Add the current caption to the captions set: 
+				captions.push( caption );
 			}
 			
 			return captions;
+		},
+		
+		/**
+		 * Get srts from a mediawiki html / srt string
+		 * 
+		 *  Right now wiki -> html is not always friendly to our srt parsing. 
+		 *  The long term plan is to move the srt parsing to server side and have the api 
+		 *  server up the srt's times in JSON form 
+		 *  
+		 *  Also see https://bugzilla.wikimedia.org/show_bug.cgi?id=29126
+		 *  
+		 * TODO move to mediaWiki specific module. 
+		 */
+		getCaptiosnFromMediaWikiSrt: function( data ){
+			var _this = this;
+			var captions = [ ];
+			var curentCap = {
+				'content': ''
+			};
+			var parseNextAsTime = false;
+			// Note this string concatenation and html error wrapping sometimes causes 
+			// parse issues where the wikitext includes many native <p /> tags without child 
+			// subtitles. In prating this is not a deal breakers because the wikitext for
+			// TimedText namespace and associated srts already has a specific format.
+			// Long term we will move to server side parsing. 
+			$( '<div>' + data + '</div>' ).find('p').each( function() {
+				var currentPtext = $(this).html();
+				//mw.log( 'pText: ' + currentPtext );
+
+				// We translate raw wikitext gennerated html into a matched srt time sample.
+				// The raw html looks like: 
+				// # 
+				// hh:mm:ss,ms --&gt hh:mm:ss,ms
+				// text 
+				// 
+				// You can read more about the srt format here: 
+				// http://en.wikipedia.org/wiki/SubRip
+				//
+				// We attempt to be fairly robust in our regular expression to catch a few 
+				// srt variations such as omition of commas and empty text lines. 
+				var m = currentPtext
+				.replace('--&gt;', '-->') // restore --&gt with --> for easier srt parsing: 
+				.match(/\d+\s([\d\-]+):([\d\-]+):([\d\-]+)(?:,([\d\-]+))?\s*--?>\s*([\d\-]+):([\d\-]+):([\d\-]+)(?:,([\d\-]+))?\n?(.*)/);
+
+				if (m) {
+					captions.push( 
+						_this.match2caption( m ) 
+					);
+					return true;
+				}
+				
+				/***
+				 * Handle multi line sytle output
+				 * 
+				 * Handles cases parse cases where an entire line can't be parsed in the single 
+				 * regular expression above, Since the diffrent captions pars are outputed in 
+				 * diffrent <p /> tags by the wikitext parser output.
+				 */
+				
+				// Check if we have reached the end of a multi line match 
+				if( parseInt( currentPtext ) == currentPtext ) {
+					if( curentCap.content != '' ) {
+						captions.push( curentCap );
+					}
+					// Clear out the current caption content 
+					curentCap = {
+						'content': ''
+					};
+					return true;
+				}
+				// Check only for time match:
+				var m = currentPtext
+					.replace('--&gt;', '-->')
+					.match(/(\d+):(\d+):(\d+)(?:,(\d+))?\s*--?>\s*(\d+):(\d+):(\d+)(?:,(\d+))?/);
+				if (m) {
+					// Update the currentCap: 
+					curentCap = _this.match2caption( m );
+					return true;
+				}
+				// Else append contnet for the curentCap
+				if( currentPtext != '<br>' ) {
+					curentCap['content'] += currentPtext;
+				}
+			});
+			//Push last subtitle:
+			if( curentCap.length != 0) {
+				captions.push( curentCap );
+			}
+			return captions;
+		},
+		/**
+		 * Takes a regular expresion match and converts it to a caption object
+		 */
+		match2caption: function( m ){
+			var caption = {};
+			// Look for ms: 
+			var startMs = (m[4])? (parseInt(m[4], 10) / 1000): 0;
+			var endMs = (m[8])? (parseInt(m[8], 10) / 1000) : 0;
+			caption['start'] = this.timeParts2seconds( m[1], m[2], m[3], startMs ); 
+			caption['end'] = this.timeParts2seconds( m[5], m[6], m[7], endMs );
+			if( m[9] ){
+				caption['content'] = $.trim( m[9] );
+			}
+			return caption;
+		},
+		/**
+		 * Takes time parts in hours, min, seconds and milliseconds and coverts to float seconds. 
+		 */
+		timeParts2seconds: function( hours, min, sec, ms ){
+			return mw.measurements2seconds({
+				'hours': hours, 
+				'minutes':  min,
+				'seconds' : sec,
+				'milliseconds': ms 
+			});
 		}
 	};
+	
 	
 } )( window.mediaWiki, window.jQuery );

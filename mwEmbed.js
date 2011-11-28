@@ -1868,7 +1868,31 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		tm.hours = Math.floor( sec / 3600 );
 		tm.minutes = Math.floor( ( sec / 60 ) % 60 );
 		tm.seconds = sec % 60;
+		tm.milliseconds = sec - Math.floor( sec );
 		return tm;
+	};
+	/**
+	 * Given a timeMeasurements object return the number of seconds
+	 * @param {object} timeMeasurements
+	 */
+	mw.measurements2seconds = function( timeMeasurements ){
+		var seconds = 0;
+		if( timeMeasurements.days ){
+			seconds += parseInt( timeMeasurements.days, 10 ) * 24 * 3600;
+		}
+		if( timeMeasurements.hours ){
+			seconds += parseInt( timeMeasurements.hours, 10 ) * 3600;
+		}
+		if( timeMeasurements.minutes ){
+			seconds += parseInt( timeMeasurements.minutes, 10 ) * 60;
+		}
+		if( timeMeasurements.seconds ){
+			seconds += parseInt( timeMeasurements.seconds, 10 );
+		}
+		if( timeMeasurements.milliseconds ){
+			seconds += parseInt( timeMeasurements.milliseconds, 10 ) / 1000;
+		}
+		return seconds;
 	};
 	/**
 	 * Given a float number of seconds, returns npt format response. ( ignore
@@ -2845,7 +2869,7 @@ if( window.jQuery ){
 
 	/**
 	 * Shortcut to a themed button Should be depreciated for $.button
-	 * bellow
+	 * below
 	 */
 	$.btnHtml = function( msg, styleClass, iconId, opt ) {
 		if ( !opt )

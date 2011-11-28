@@ -94,14 +94,14 @@ mw.EmbedPlayerNative = {
 		this.isFirstEmbedPlay = true;
 		
 		if( vid && $( vid ).attr('src') == this.getSrc( this.currentTime ) ){
-			_this.postEmbedJS();
+			_this.postEmbedActions();
 			return ;
 		}
 		mw.log( "EmbedPlayerNative::embedPlayerHTML > play url:" + this.getSrc( this.currentTime  ) + ' startOffset: ' + this.start_ntp + ' end: ' + this.end_ntp );
 		
 		// Check if using native controls and already the "pid" is already in the DOM
 		if( this.isPersistentNativePlayer() && vid ) {
-			_this.postEmbedJS();
+			_this.postEmbedActions();
 			return ;
 		}
 		
@@ -113,8 +113,8 @@ mw.EmbedPlayerNative = {
 			_this.getNativePlayerHtml()
 		);
 
-		// Directly run postEmbedJS ( if playerElement is not available it will retry )
-		_this.postEmbedJS();
+		// Directly run postEmbedActions ( if playerElement is not available it will retry )
+		_this.postEmbedActions();
 	},
 	
 	/**
@@ -164,7 +164,7 @@ mw.EmbedPlayerNative = {
 	/**
 	* Post element javascript, binds event listeners and starts monitor
 	*/
-	postEmbedJS: function() {
+	postEmbedActions: function() {
 		var _this = this;
 
 		// Setup local pointer:

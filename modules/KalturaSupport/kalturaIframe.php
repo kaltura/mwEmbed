@@ -743,7 +743,7 @@ class kalturaIframe {
 				mw.setConfig('Mw.LogPrepend', 'iframe:');
 	
 				// Don't rewrite the video tag from the loader ( if html5 is supported it will be
-				// invoked bellow and respect the persistant video tag option for iPad overlays )
+				// invoked below and respect the persistant video tag option for iPad overlays )
 				mw.setConfig( 'Kaltura.LoadScriptForVideoTags', false );
 	
 				// Don't wait for player metada for size layout and duration Won't be needed since

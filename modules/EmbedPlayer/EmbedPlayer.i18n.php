@@ -76,6 +76,10 @@ $messages['en'] = array(
 	'mwe-embedplayer-video-webm' => 'WebM video',
 	'mwe-embedplayer-video-ogg' => 'Ogg video',
 	'mwe-embedplayer-video-audio' => 'Ogg audio',
+	'mwe-embedplayer-audio-mpeg' => 'MPEG audio',
+	'mwe-embedplayer-video-3gp' => '3gp video',
+	'mwe-embedplayer-video-mpeg' => 'MPEG video',
+	'mwe-embedplayer-video-msvideo' => 'AVI video',
 	'mwe-embedplayer-missing-source' => 'No source video was found',
 );
 

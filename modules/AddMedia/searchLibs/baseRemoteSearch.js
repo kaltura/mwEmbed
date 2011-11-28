@@ -18,7 +18,7 @@ mw.addMessages( {
 *  @ separates the tag from attribute list
 *  {.}tag_name@{attribute1|attribute2}
 *
-* Also see mapAttributeToResource function bellow
+* Also see mapAttributeToResource function below
 *
 * FIXME should switch this over to something like Xpath if we end up parsing a lot of rss formats
 */

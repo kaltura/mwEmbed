@@ -672,7 +672,7 @@ function kIsHTML5FallForward( ){
 	// No video tag or flash, or iframe, normal "install flash" user flow )
 	return false;
 }
-// basic html5 support check ( note Android 2.2 and bellow fail to return anything on canPlayType
+// basic html5 support check ( note Android 2.2 and below fail to return anything on canPlayType
 // but is part of the mobile check above. 
 function kSupportsHTML5(){
 	var dummyvid = document.createElement( "video" );

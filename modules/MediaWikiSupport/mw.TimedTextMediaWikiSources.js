@@ -122,7 +122,7 @@ if( !apiUrl || !apiTitleKey ) {
 }
 
 //For now only support mediaWikTrack provider library
-this.textProvider = new mw.MediaWikTrackProvider( {
+this.textProvider = new mw.MediaWikiTrackProvider( {
 	'providerId' : providerId,
 	'apiUrl': apiUrl,
 	'embedPlayer': this.embedPlayer
@@ -287,17 +287,8 @@ this.textProvider.loadSources( apiTitleKey, function( textSources ) {
 		return captions;
 	}
 
-
-
-
-
-
-
-
-
-
 	/**
-	 * MediaWikTrackProvider
+	 * MediaWikiTrackProvider
 	 *
 	 * text provider objects let you map your player to a timed text provider
 	 * can provide discovery, and contribution push back
@@ -310,10 +301,10 @@ this.textProvider.loadSources( apiTitleKey, function( textSources ) {
 		'embedPlayer'
 	];
 
-	mw.MediaWikTrackProvider = function( options ) {
+	mw.MediaWikiTrackProvider = function( options ) {
 		this.init( options );
 	};
-	mw.MediaWikTrackProvider.prototype = {
+	mw.MediaWikiTrackProvider.prototype = {
 
 		// The api url:
 		apiUrl: null,
@@ -328,9 +319,9 @@ this.textProvider.loadSources( apiTitleKey, function( textSources ) {
 		init: function( options ) {
 			for(var i in default_textProvider_attr) {
 				var attr = default_textProvider_attr[ i ];
-				if( options[ attr ] )
+				if( options[ attr ] ){
 					this[ attr ] = options[ attr ];
-
+				}
 			}
 		},
 
@@ -371,13 +362,15 @@ this.textProvider.loadSources( apiTitleKey, function( textSources ) {
 				if( ! sourcePages.query.allpages ) {
 					//Check if a shared asset
 					mw.log( 'no subtitle pages found');
-					if( callback )
+					if( callback ){
 						callback();
+					}
 					return ;
 				}
 				// We have sources put them into the player
-				if( callback )
+				if( callback ){
 					callback( _this.getSources( sourcePages ) );
+				}
 			} );
 		},
 
@@ -458,13 +451,13 @@ this.textProvider.loadSources( apiTitleKey, function( textSources ) {
 	 	 * Return the namespace ( if not encoded on the page return default 102 )
 	 	 */
 	 	getTimedTextNS: function() {
-	 		if( this.timedTextNS )
-	 			return this.timedTextNS;
-			if ( typeof wgNamespaceIds != 'undefined' && wgNamespaceIds['timedtext'] ) {
+			if ( !this.timedTextNS && typeof wgNamespaceIds != 'undefined' && wgNamespaceIds['timedtext'] ) {
 				this.timedTextNS = wgNamespaceIds['timedtext'];
-			}else{
-				//default value is 102 ( probably should store this elsewhere )
-				this.timedTextNS = 102;
+			} else {
+				// Default value is 710 
+				// The NS for TimedText (registered on MediaWiki.org)
+				// http://www.mediawiki.org/wiki/Extension_namespace_registration
+				this.timedTextNS = 710;
 			}
 			return this.timedTextNS;
 	 	},

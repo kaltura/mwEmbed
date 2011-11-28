@@ -291,7 +291,7 @@ mw.parseXML = function ( str ) {
 	}
 
 	// For others (Firefox, Safari etc, older browsers
-	// Some don't have native DOMParser either fallback defined bellow.
+	// Some don't have native DOMParser either fallback defined below.
 	try {
 		var xmldata = ( new DOMParser() ).parseFromString( str, "text/xml" );
 	} catch ( e ) {

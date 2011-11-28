@@ -44,7 +44,7 @@ mw.KApi.prototype = {
 	doRequest : function( requestObject, callback ){
 		var _this = this;
 		var param = {};
-		// Convert into a multi-request if no session is set ( ks will be added bellow ) 
+		// Convert into a multi-request if no session is set ( ks will be added below ) 
 		if( !requestObject.length && !this.ks ){
 			requestObject = [ requestObject ];
 		}

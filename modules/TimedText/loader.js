@@ -35,7 +35,13 @@
 		'TimedText.ShowAddTextLink' : true,
 
 		// The category for listing videos that need transcription:
-		'TimedText.NeedsTranscriptCategory' : 'Videos needing subtitles'
+		'TimedText.NeedsTranscriptCategory' : 'Videos needing subtitles',
+			
+		// The default bottom text padding
+		'TimedText.BottomPadding' : 10,
+		
+		// Height of black box below video. 
+		'TimedText.BelowVideoBlackBoxHeight' : 60
 	} );
 
 	var mwTimedTextRequestSet = [

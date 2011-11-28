@@ -17,7 +17,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			mw.load('mw.Omniture', function(){
 				new mw.Omniture( embedPlayer, callback);
 			});
-			// wait for omniture plugin ( return to block callback bellow )
+			// wait for omniture plugin ( return to block callback below )
 			return ;
 		} else{
 			// no Omniture, run callback directly

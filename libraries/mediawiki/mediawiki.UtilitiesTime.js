@@ -45,7 +45,29 @@
 		}
 		return hoursStr + tm.minutes + ":" + tm.seconds;
 	};
-	
+	/**
+	 * Given a timeMeasurements object return the number of seconds
+	 * @param {object} timeMeasurements
+	 */
+	mw.measurements2seconds( timeMeasurements ){
+		var seconds = 0;
+		if( timeMeasurements.days ){
+			seconds += parseInt( timeMeasurements.days, 10 ) * 24 * 3600;
+		}
+		if( timeMeasurements.hours ){
+			seconds += parseInt( timeMeasurements.hours, 10 ) * 3600;
+		}
+		if( timeMeasurements.minutes ){
+			seconds += parseInt( timeMeasurements.minutes, 10 ) * 60;
+		}
+		if( timeMeasurements.seconds ){
+			seconds += parseInt( timeMeasurements.seconds, 10 );
+		}
+		if( timeMeasurements.milliseconds ){
+			seconds += parseInt( timeMeasurements.milliseconds, 10 ) / 1000;
+		}
+		return seconds;
+	}
 	/**
 	 * Given seconds return array with 'days', 'hours', 'min', 'seconds'
 	 * 
@@ -65,22 +87,22 @@
 	 * Take hh:mm:ss,ms or hh:mm:ss.ms input, return the number of seconds
 	 * 
 	 * @param {String}
-	 *            npt_str NPT time string
+	 *            nptString NPT time string
 	 * @return {Float} Number of seconds
 	 */
-	mw.npt2seconds = function ( npt_str ) {
-		if ( !npt_str ) {
+	mw.npt2seconds = function ( nptString ) {
+		if ( !nptString ) {
 			// mw.log('npt2seconds:not valid ntp:'+ntp);
 			return 0;
 		}
 		// Strip {npt:}01:02:20 or 32{s} from time if present
-		npt_str = npt_str.replace( /npt:|s/g, '' );
+		nptString = nptString.replace( /npt:|s/g, '' );
 	
 		var hour = 0;
 		var min = 0;
 		var sec = 0;
 	
-		times = npt_str.split( ':' );
+		times = nptString.split( ':' );
 		if ( times.length == 3 ) {
 			sec = times[2];
 			min = times[1];
