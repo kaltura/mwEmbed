@@ -1545,7 +1545,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 *            callback Function to run once DOM and jQuery are ready
 	 */
 	mw.ready = function( callback ) {
-		alert( 'run ready function! : ' + callback);
+		//alert( 'run ready function! : ' + callback);
 		if( mwReadyFlag === false ) {
 			// Add the callbcak to the onLoad function stack
 			mwOnLoadFunctions.push ( callback );
