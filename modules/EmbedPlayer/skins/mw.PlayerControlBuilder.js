@@ -959,10 +959,17 @@ mw.PlayerControlBuilder.prototype = {
 		if( ! this.embedPlayer.supports['overlays'] ){
 			return false;
 		}
+
 		// If disabled via the player
 		if( this.embedPlayer.overlaycontrols === false ){
 			return false;
 		}
+		
+		// Don't overlay controls if in audio mode: 
+		if( this.embedPlayer.isAudio() ){
+			return false;
+		}
+
 
 		// If the config is false
 		if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) === false){
@@ -973,7 +980,6 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.isIpad() ){
 			return false;
 		}
-		
 
 		// Don't hide controls when content "height" is 0px ( audio tags )
 		if( this.embedPlayer.getPlayerHeight() === 0 &&

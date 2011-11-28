@@ -269,7 +269,7 @@
 			$( mw.getConfig( 'EmbedPlayer.RewriteSelector' ) ).each( function( index, element ){
 
 				// Assign an the element an ID ( if its missing one )
-				if ( $( element ).attr( "id" ) == '' ) {
+				if ( $( element ).attr( "id" ) == '' || ! $( element ).attr( "id" ) ) {
 					$( element ).attr( "id", 'v' + ( rewriteElementCount++ ) );
 				}
 				// Add an absolute positioned loader

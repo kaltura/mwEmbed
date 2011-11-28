@@ -335,8 +335,7 @@ mw.EmbedPlayer.prototype = {
 			this.height = 20;
 		}
 
-		// Use default aspect ration to get height or width ( if rewriting a
-		// non-audio player )
+		// Use default aspect ration to get height or width ( if rewriting a non-audio player )
 		if( this.isAudio() && this.videoAspect ) {
 			var aspect = this.videoAspect.split( ':' );
 			if( this.height && !this.width ) {
@@ -1238,7 +1237,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Set by default thumb value if not found
 		var posterSrc = ( this.poster ) ? this.poster :
-						mw.getConfig( 'imagesPath' ) + 'vid_default_thumb.jpg';
+						mw.getConfig( 'EmbedPlayer.BlackPixel' );
 
 		// Update PersistentNativePlayer poster:
 		if( this.isPersistentNativePlayer() ){
@@ -1674,7 +1673,7 @@ mw.EmbedPlayer.prototype = {
 	},
 	addPlayerSpinner: function(){
 		$( this ).getAbsoluteOverlaySpinner()
-			.attr( 'id', 'loadingSpinner_' + this.id );
+		.attr( 'id', 'loadingSpinner_' + this.id );
 	},
 	hidePlayerSpinner: function(){
 		this.isPauseLoading = false;

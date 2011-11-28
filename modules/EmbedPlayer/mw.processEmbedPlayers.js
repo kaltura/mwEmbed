@@ -156,7 +156,6 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 
 		var width = $( playerElement ).css( 'width' );
 		var height = $( playerElement ).css( 'height' );
-
 		// Css video defaults ( firefox ) 
 		if( $( playerElement ).css( 'width' ) == '300px' &&
 				$( playerElement ).css( 'height' ) == '150px' 			
@@ -165,6 +164,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 		} else {
 			// Check if we should wait for duration:
 			if( $( playerElement ).attr( 'duration') ||
+				$( playerElement ).attr( 'durationHint') ||
 				$( playerElement ).attr('data-durationhint')
 			){
 				// height, width and duration set; do not wait for meta data:
