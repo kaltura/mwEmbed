@@ -2,6 +2,13 @@
 	// 	Check for the Title 
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+			
+			// If iphone don't show the title
+			if( mw.isIphone() ) {
+				callback();
+				return ;
+			}
+
 			// Check for Titles: 
 			if( $uiConf.find( '#TopTitleScreen' ).length ){
 				// Bind changeMedia to update title  
