@@ -396,7 +396,7 @@
 		// Add kaltura support hook
 		if( kLoadKalturaSupport ) {
 			// Pass the flashvars to the iframe
-			$(playerElement).data('flashvars', mw.getConfig('KalturaSupport.IFramePresetFlashvars'));
+			$( playerElement ).data('flashvars', mw.getConfig('KalturaSupport.IFramePresetFlashvars'));
 
 			for(var i =0; i < kalturaSupportRequestSet.length; i++ ){
 				if( $.inArray(kalturaSupportRequestSet[i], classRequest ) == -1 ){

@@ -88,7 +88,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 
 			var playerInterface = new mw.EmbedPlayer( playerElement );
 			var inDomPlayer = swapEmbedPlayerElement( playerElement, playerInterface );	
-								
+			
 			// Trigger the newEmbedPlayerEvent for embedPlayer interface
 			mw.log("processEmbedPlayers::tirgger:: newEmbedPlayerEvent " + inDomPlayer.id );
 			
@@ -232,6 +232,17 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 				swapPlayerElement[ method ] = playerInterface[ method ];
 			}
 		}
+		
+		// Copy any data attributes from the target player element over to the swapPlayerElement
+		var dataAttributes = mw.getConfig("EmbedPlayer.DataAttributes");
+		if( dataAttributes ){
+			$.each( dataAttributes, function( attrName, na ){
+				if( $( targetElement ).data( attrName ) ){
+					$( swapPlayerElement ).data( attrName, $( targetElement ).data( attrName ) );
+				}
+			});
+		}
+		
 		// Check if we are using native controls or Persistent player ( should keep the video embed around )
 		if( playerInterface.useNativePlayerControls() || playerInterface.isPersistentNativePlayer() ) {
 			$( targetElement )

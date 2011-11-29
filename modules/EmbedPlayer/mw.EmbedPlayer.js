@@ -125,6 +125,7 @@ mw.EmbedPlayer.prototype = {
 			if( this[ attr ] == "false" ) this[attr] = false;
 			if( this[ attr ] == "true" ) this[attr] = true;
 		}
+		
 		// Hide "controls" if using native player controls:
 		if( this.useNativePlayerControls() ){
 			_this.controls = false;
