@@ -222,7 +222,7 @@ mw.KApi.prototype = {
 			// Add Context Data request 			
 			requestObject.push({
 		        	 'contextDataParams' : {
-			        	 	'referrer' : mw.getReferrer(),
+			        	 	'referrer' : window.kWidgetSupport.getHostPageUrl(),
 			        	 	'objectType' : 'KalturaEntryContextDataParams'
 			         },
 		        	 'service' : 'baseentry',

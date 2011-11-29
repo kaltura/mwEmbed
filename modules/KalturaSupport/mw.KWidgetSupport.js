@@ -652,7 +652,21 @@ mw.KWidgetSupport.prototype = {
 			);
 		}
 	},
-	
+	/** 
+	 * Get the host page url used passing referrer to kaltura api
+	 */
+	getHostPageUrl: function(){
+		// The referring  url ( can be from the iframe if in iframe mode )
+		var hostUrl = ( mw.getConfig( 'EmbedPlayer.IframeParentUrl') ) ?
+						mw.getConfig( 'EmbedPlayer.IframeParentUrl') :
+						document.URL;
+
+		// If we have hash, remove everything after that
+		if( hostUrl.indexOf("#") !== -1 ) {
+			hostUrl = refer.substr(0, refer.indexOf("#"));
+		}
+		return hostUrl;
+	},
 	/**
 	 * Get client entry id sources: 
 	 */
@@ -806,7 +820,7 @@ mw.KWidgetSupport.prototype = {
 		this.kClient.getKS( function( ks ) {
 			ksCheck = true;
 			$.each( deviceSources, function(inx, source){
-				deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + ks + '&referrer=' + base64_encode(mw.getReferrer());
+				deviceSources[inx]['src'] = deviceSources[inx]['src'] + '?ks=' + ks + '&referrer=' + base64_encode( this.getHostPageUrl() );
 			});
 		});
 		if( !ksCheck ){
