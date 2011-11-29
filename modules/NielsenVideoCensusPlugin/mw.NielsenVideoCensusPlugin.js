@@ -11,6 +11,9 @@ mw.NielsenVideoCensusPlugin.prototype = {
 	// Post fixed applied in player bindings
 	bindPostFix: '.NielsenVideoCensusPlugin',
 	
+	// Local cache of current segment: 
+	localCurrentSegment: 0,
+	
 	init: function( embedPlayer, callback ){
 		this.embedPlayer = embedPlayer;
 		
@@ -37,6 +40,10 @@ mw.NielsenVideoCensusPlugin.prototype = {
 		var _this = this;
 		// remove any existing bindings: 
 		$( this.embedPlayer ).unbind();
+		
+		// Reset the current segment index: 
+		this.localCurrentSegment = 0;
+		
 		// Add the first play binding: 
 		$( this.embedPlayer ).bind( 'firstPlay' + this.bindPostFix, function(){
 			_this.sendBeacon();
@@ -44,6 +51,7 @@ mw.NielsenVideoCensusPlugin.prototype = {
 		// Also send an event once ad playback ends 
 		// ( during a midroll and we are about to continue to content) 
 		$( this.embedPlayer ).bind('AdSupport_EndAdPlayback'+ + this.bindPostFix, function(){
+			_this.localCurrentSegment++;
 			_this.sendBeacon();
 		});
 		
@@ -63,7 +71,7 @@ mw.NielsenVideoCensusPlugin.prototype = {
 	},
 	getBeconParams: function(){
 		// Set all the required params
-		return {
+		var params = {
 			// Set the client Id: 
 			'ci' : this.getConfig( 'clientId'),
 			
@@ -82,6 +90,32 @@ mw.NielsenVideoCensusPlugin.prototype = {
 			// Random number: 
 			'rnd': Math.ceil( Math.random() * 1000000000 ),
 		};
+		// Check if we are sending long form indicator: 
+		if( this.getConfig("lp") ){
+			params['lp'] = this.getLpParam();
+		}
+		return params;
+	},
+	getLpParam: function(){
+		// 1) First param comes from config
+		var lpParam = this.getConfig("lp") + ',';
+		
+		// 2) Current segment/chapter number. Set to 0 if not known
+		lpParam += this.localCurrentSegment + ',';
+		
+		// 3) Length in seconds of this segment/chapter. Set to 0 if not known
+		lpParam += 0; // we don't have an easy way to calculate this right now. 
+		
+		// 4) Anticipated total number of segments/chapters for this episode. Set to 0 if not known.
+		if( this.embedPlayer.rawCuePoints && this.embedPlayer.rawCuePoints.length){
+			// provide the cue point count ( very difficult to know the actual real 
+			// number of segments ( because each plugin decides if cue points are
+			// applicable to that plugin or not. 
+			lpParam += this.embedPlayer.rawCuePoints.length;
+		} else {
+			lpParam = 0;
+		}
+		return lpParam ;
 	},
 	getConfig: function( key ){
 		return this.embedPlayer.getKalturaConfig( 'NielsenVideoCensusPlugin', key );
