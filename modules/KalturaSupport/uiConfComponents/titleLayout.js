@@ -4,7 +4,7 @@
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			
 			// If iphone don't show the title
-			if( mw.isIphone() ) {
+			if( embedPlayer.useNativePlayerControls() ) {
 				callback();
 				return ;
 			}
