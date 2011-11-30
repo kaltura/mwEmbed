@@ -817,6 +817,9 @@ mw.EmbedPlayer.prototype = {
 		// Set up local jQuery object reference to "mwplayer_interface"
 		this.getPlayerInterface();
 
+		// Remove thumbnail from the iframe
+		$('#directFileLinkThumb').remove();
+
 		// If a isPersistentNativePlayer ( overlay the controls )
 		if( !this.useNativePlayerControls() && this.isPersistentNativePlayer() ){
 			this.$interface.css({
@@ -837,7 +840,7 @@ mw.EmbedPlayer.prototype = {
 		if ( ! this.useNativePlayerControls() && this.controls ) {
 			this.controlBuilder.addControls();
 		}
-debugger;
+
 		// Update Thumbnail for the "player"
 		this.updatePosterHTML();
 
@@ -855,9 +858,6 @@ debugger;
 		setTimeout(function(){
 			_this.applyIntrinsicAspect();
 		}, 0);
-
-		// Remove thumbnail from the iframe
-		$('#directFileLinkThumb').remove();
 
 		// Update the playerReady flag
 		this.playerReady = true;
