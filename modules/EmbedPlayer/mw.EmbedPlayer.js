@@ -807,7 +807,7 @@ mw.EmbedPlayer.prototype = {
 	 * Show the player
 	 */
 	showPlayer: function () {
-		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );
+		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );alert('test');
 		var _this = this;
 		// Remove the player loader spinner if it exists
 		this.hidePlayerSpinner();
@@ -988,6 +988,9 @@ mw.EmbedPlayer.prototype = {
 		
 		// Make sure interface is available
 		this.getPlayerInterface();
+
+		// Remove thumbnail from the iframe
+		$('#directFileLinkThumb').remove();
 		
 		// Update the poster and html:
 		this.updatePosterHTML();
