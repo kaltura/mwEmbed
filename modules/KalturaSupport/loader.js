@@ -55,6 +55,7 @@
 		'kalturaPlayerMetaData' : null,
 		'kalturaEntryMetaData' : null,
 		'kalturaPlaylistData' : null,
+		'kalturaExportedEvaluateObject': null,
 		'rawCuePoints' : null
 	});
 	

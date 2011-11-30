@@ -215,10 +215,12 @@
 			if( result === "undefined" || result === "null" || result == "" )
 				result = undefined;
 
-			if( result === "false")
+			if( result === "false"){
 				result = false;
-			if( result === "true")
+			}
+			if( result === "true"){
 				result = true;
+			}
 			
 			return result;
 		},
@@ -246,6 +248,21 @@
 			
 			// Split the uiConf expression into parts separated by '.'
 			var objectPath = expression.split('.');
+			
+			
+			// Check the exported kaltura object ( for manual overrides of any mapping ) 
+			if( embedPlayer.kalturaExportedEvaluateObject
+					&&  
+				embedPlayer.kalturaExportedEvaluateObject[ objectPath[0] ] 
+			){
+				if( !objectPath[1] ){
+					return embedPlayer.kalturaExportedEvaluateObject[ objectPath[0] ];
+				}
+				if( embedPlayer.kalturaExportedEvaluateObject[ objectPath[0] ][ objectPath[1] ] ){
+					return embedPlayer.kalturaExportedEvaluateObject[ objectPath[0] ][ objectPath[1] ];
+				}
+			}
+			
 			switch( objectPath[0] ){
 				case 'isHTML5':
 					return true;
@@ -391,9 +408,8 @@
 					}
 				break;
 			}
-			// look for a plugin based config: 
+			// Look for a plugin based config: 
 			return embedPlayer.getKalturaConfig( objectPath[0], objectPath[1]);
-			// nothing found ( returns undefined ) 
 		},
 		evaluateStringFunction: function( functionName, value ){
 			switch( functionName ){

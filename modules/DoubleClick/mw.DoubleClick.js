@@ -63,7 +63,7 @@ mw.DoubleClick.prototype = {
 		// Add a binding for cuepoints:
 		_this.embedPlayer.bindHelper( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event,  cuePointWrapper ){
 			var cuePoint = cuePointWrapper.cuePoint;
-			// check if trackCuePoints has been disabled 
+			// Check if trackCuePoints has been disabled 
 			if( _this.getConfig( 'trackCuePoints') === false){
 				return ;
 			}

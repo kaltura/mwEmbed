@@ -267,6 +267,20 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.getKalturaConfig = function( confPrefix, attr ){
 			return _this.getPluginConfig( embedPlayer, confPrefix, attr );
 		};
+		
+		// Add an exported plugin value: 
+		embedPlayer.addExportedObject = function( pluginName, objectSet ){
+			if( !embedPlayer.kalturaExportedEvaluateObject ){
+				embedPlayer.kalturaExportedEvaluateObject = {};
+			}
+			if( !embedPlayer.kalturaExportedEvaluateObject[ pluginName ] ){
+				embedPlayer.kalturaExportedEvaluateObject[ pluginName ] = objectSet;
+			} else {
+				$.extend( embedPlayer.kalturaExportedEvaluateObject[ pluginName ], objectSet);
+			}
+			// Sync iframe with attribute data updates:
+			$( embedPlayer ).trigger( 'updateIframeData' );
+		}
 
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
@@ -276,7 +290,7 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.getFlashvars = function() {
 			var fv = $( embedPlayer ).data( 'flashvars' );
 			if( !fv ){
-				fv = mw.getConfig('KalturaSupport.IFramePresetFlashvars') || {};
+				fv = mw.getConfig( 'KalturaSupport.IFramePresetFlashvars' ) || {};
 			}
 			return fv;
 		}
