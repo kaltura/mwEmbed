@@ -286,6 +286,8 @@ class kalturaIframe {
 		);
 
 		$o.= "\n" . "</video>\n";
+		$o.= "<img src='".$posterUrl."' id='directFileLinkThumb' alt='' />";
+		
 		// Wrap in a videoContainer
 		return  '<div id="videoContainer" > ' . $o . '</div>';
 	}
@@ -581,6 +583,7 @@ class kalturaIframe {
 					top:50%;
 					left:50%;
 					margin: -26px 0 0 -35px;
+					z-index: 20;
 				}
 				#directFileLinkThumb{
 					position: absolute;
@@ -588,6 +591,7 @@ class kalturaIframe {
 					left:0px;
 					width: 100%;
 					height: 100%;
+					z-index: 10;
 				}
 			<?php
 		}

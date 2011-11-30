@@ -2852,7 +2852,8 @@ if( window.jQuery ){
 				'height' : 45,
 				'position': 'absolute',
 				'top' : posTop + 'px',
-				'left' : posLeft + 'px'
+				'left' : posLeft + 'px',
+				'z-index' : 100
 			});
 		$j('body').append( $spinner	);
 		return $spinner;

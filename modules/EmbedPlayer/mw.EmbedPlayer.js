@@ -856,6 +856,9 @@ mw.EmbedPlayer.prototype = {
 			_this.applyIntrinsicAspect();
 		}, 0);
 
+		// Remove thumbnail from the iframe
+		$('#directFileLinkThumb').remove();
+
 		// Update the playerReady flag
 		this.playerReady = true;
 		// trigger the player ready event;
