@@ -50,7 +50,13 @@
 			// <button id="onVideoPlayBtnStartScreen" command="play" buttontype="onScreenButton" minwidth="60" labelplacement="top" label="Play" stylename="onScreenBtn" upicon="playIcon" overicon="playIcon" downicon="playIcon" disabeledicon="playIcon" selectedupicon="playIcon" selectedovericon="playIcon" selecteddownicon="playIcon" selecteddisabledicon="playIcon" k_buttontype="buttonIconControllerArea" tooltip="Play video" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"></button>
 			if( !$uiConf.find( '#onVideoPlayBtnStartScreen' ).length ){
 				disabled.push( 'playButtonLarge' );
-			}		
+			}
+
+			// Check if the ui conf layout supports flavorSelector
+			// <FlavorCombo id="flavorComboControllerScreen" width="80" streamerType="{configProxy.flashvars.streamerType}" flavorDataProvider="{mediaProxy.kalturaMediaFlavorArray}" styleName="_kdp" color1="14540253" hdOn="HD On" hdOff="HD Off" selectedMessage="" autoMessage="Automatically switches between bitrates" preferedFlavorBR="{mediaProxy.preferedFlavorBR}" tooltip="{flavorComboControllerScreen.selectedMessage}"/>
+			if( !$uiConf.find( '#flavorComboControllerScreen' ).length ) {
+				disabled.push( 'sourceSwitch' );
+			}
 			
 			controlbarLayout( embedPlayer, disabled );
 			
