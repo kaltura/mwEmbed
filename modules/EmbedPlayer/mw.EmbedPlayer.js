@@ -807,7 +807,7 @@ mw.EmbedPlayer.prototype = {
 	 * Show the player
 	 */
 	showPlayer: function () {
-		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );alert('test');
+		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );
 		var _this = this;
 		// Remove the player loader spinner if it exists
 		this.hidePlayerSpinner();
