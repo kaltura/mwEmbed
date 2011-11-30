@@ -837,7 +837,7 @@ mw.EmbedPlayer.prototype = {
 		if ( ! this.useNativePlayerControls() && this.controls ) {
 			this.controlBuilder.addControls();
 		}
-
+debugger;
 		// Update Thumbnail for the "player"
 		this.updatePosterHTML();
 
