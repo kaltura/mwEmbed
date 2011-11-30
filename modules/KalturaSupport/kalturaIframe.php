@@ -286,7 +286,7 @@ class kalturaIframe {
 		);
 
 		$o.= "\n" . "</video>\n";
-		$o.= "<img src='".$posterUrl."' id='directFileLinkThumb' alt='' />";
+		$o.= "<img src='".$posterUrl."' id='directFileLinkThumb' alt='' onclick='return false;' />";
 		
 		// Wrap in a videoContainer
 		return  '<div id="videoContainer" > ' . $o . '</div>';
