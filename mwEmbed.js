@@ -1450,6 +1450,10 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 *            string String to output to console
 	 */
 	mw.log = function() {
+		// Don't ouptut to console in debug mode; 
+		if( mw.getConfig( 'debug' ) === false ){
+			return ;
+		}
 		// Add any prepend debug strings if necessary
 		if ( mw.getConfig( 'Mw.LogPrepend' ) && arguments.length > 0 ){
 			arguments[0] = mw.getConfig('Mw.LogPrepend') + arguments[0];
