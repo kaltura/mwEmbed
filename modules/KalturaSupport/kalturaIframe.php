@@ -718,11 +718,17 @@ class kalturaIframe {
 					} catch( e ) {
 						//error could not parse hash tag
 					}
-				} else 	if( window['parent'] && window['parent']['preMwEmbedConfig'] ){ 
-					// Grab config from parent frame:
-					mw.setConfig( window['parent']['preMwEmbedConfig'] );
-					// Set the "iframeServer" to the current domain: 
-					mw.setConfig( 'EmbedPlayer.IframeParentUrl', document.URL ); 
+				} else 	{
+					try{
+						if( window['parent'] && window['parent']['preMwEmbedConfig'] ){ 
+							// Grab config from parent frame:
+							mw.setConfig( window['parent']['preMwEmbedConfig'] );
+							// Set the "iframeServer" to the current domain: 
+							mw.setConfig( 'EmbedPlayer.IframeParentUrl', document.URL ); 
+						}
+					} catch( e ) {
+						// could not get config from parent javascript scope
+					}
 				}
 	
 				// Get the flashvars object:
