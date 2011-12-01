@@ -120,6 +120,7 @@
 	height: 10px;
 	margin-left:8px;
 	margin-top:10px;
+	margin-right: 8px;
 	position:relative;
 }
 
@@ -184,3 +185,6 @@
 .mv-player .overlay-win h3 { font-size:14px;}
 
 .active { font-size: 12px; }
+
+.ui-slider-horizontal.volume-slider { width: 44px; height: 2px; top: 7px; }
+.ui-slider-horizontal.volume-slider .ui-slider-handle { border-width: 1px; }

@@ -207,6 +207,11 @@ mw.PlayerControlBuilder.prototype = {
 				}
 			}
 		};
+
+		// Change volumeControl width base on layout
+		if( this.volume_layout == 'horizontal' ) {
+			this.components.volumeControl.w = 70;
+		}
 		
 		// Output components
 		for ( var component_id in this.components ) {
