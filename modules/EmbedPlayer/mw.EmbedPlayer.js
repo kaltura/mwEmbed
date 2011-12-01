@@ -817,9 +817,6 @@ mw.EmbedPlayer.prototype = {
 		// Set up local jQuery object reference to "mwplayer_interface"
 		this.getPlayerInterface();
 
-		// Remove thumbnail from the iframe
-		$('#directFileLinkThumb').remove();
-
 		// If a isPersistentNativePlayer ( overlay the controls )
 		if( !this.useNativePlayerControls() && this.isPersistentNativePlayer() ){
 			this.$interface.css({

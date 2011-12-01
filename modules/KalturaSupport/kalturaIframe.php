@@ -824,6 +824,9 @@ class kalturaIframe {
 				
 					// Try again to remove the flash player if not already removed: 
 					$('#kaltura_player_iframe_no_rewrite').remove();
+
+					// Remove thumbnail from the iframe
+					$('#directFileLinkThumb').remove();
 					
 					var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' ).get(0);
 					// Try to seek to the IframeSeekOffset time:
