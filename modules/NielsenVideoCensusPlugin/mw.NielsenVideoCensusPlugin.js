@@ -50,7 +50,7 @@ mw.NielsenVideoCensusPlugin.prototype = {
 		});
 		// Also send an event once ad playback ends 
 		// ( during a midroll and we are about to continue to content) 
-		$( this.embedPlayer ).bind('AdSupport_EndAdPlayback'+ + this.bindPostFix, function(){
+		$( this.embedPlayer ).bind('AdSupport_EndAdPlayback' + this.bindPostFix, function(){
 			_this.localCurrentSegment++;
 			_this.sendBeacon();
 		});
