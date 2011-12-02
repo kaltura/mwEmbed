@@ -1,6 +1,6 @@
 <?php
 
-define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server, something maybe broken or server is under high load. Please try again.");
+define( 'KALTURA_GENERIC_SERVER_ERROR', "Error getting sources from server. Please try again.");
 
 // Include the kaltura client
 require_once(  dirname( __FILE__ ) . '/kaltura_client_v3/KalturaClient.php' );
