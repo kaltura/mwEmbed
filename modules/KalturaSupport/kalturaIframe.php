@@ -821,7 +821,6 @@ class kalturaIframe {
 				}
 				// Load the mwEmbed resource library and add resize binding
 				mw.ready(function(){
-				
 					// Try again to remove the flash player if not already removed: 
 					$('#kaltura_player_iframe_no_rewrite').remove();
 

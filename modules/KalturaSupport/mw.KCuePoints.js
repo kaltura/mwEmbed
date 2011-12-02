@@ -119,6 +119,7 @@ mw.KCuePoints.prototype = {
 		}
 		mw.log('mw.KCuePoints :: Trigger event: ' + eventName + ' - ' + rawCuePoint.cuePointType + ' at: ' + rawCuePoint.startTime );
 		$( this.embedPlayer ).trigger(  eventName, cuePointWrapper );
+		// TOOD "midSequenceComplete"
 	},
 	
 	// Get Ad Type from Cue Point

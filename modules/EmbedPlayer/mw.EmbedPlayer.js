@@ -858,8 +858,9 @@ mw.EmbedPlayer.prototype = {
 
 		// Update the playerReady flag
 		this.playerReady = true;
+		mw.log("EmbedPlayer:: Trigger: playerReady");
 		// trigger the player ready event;
-		$(this).trigger('playerReady');
+		$( this ).trigger( 'playerReady' );
 
 		// Right before player autoplay ... check if there are any errors that prevent playback or player:
 		if( this['data-playerError'] ){
@@ -1194,6 +1195,8 @@ mw.EmbedPlayer.prototype = {
 					$( _this ).trigger( 'onChangeMediaDone' );
 					if( chnagePlayingMedia ){
 						_this.play();
+					} else {
+						_this.pause();
 					}
 					if( callback ){
 						callback()
@@ -1202,7 +1205,7 @@ mw.EmbedPlayer.prototype = {
 				// we are handling trigger and callback asynchronously return here. 
 				return ;
 			} else {
-				//stop should unload the native player
+				// Stop should unload the native player
 				_this.stop();
 				// reload the player
 				if( chnagePlayingMedia ){
@@ -1233,7 +1236,6 @@ mw.EmbedPlayer.prototype = {
 		var thumb_html = '';
 		var class_atr = '';
 		var style_atr = '';
-		
 		if( this.useNativePlayerControls() && this.mediaElement.selectedSource ){
 			this.showNativePlayer();
 			return ;

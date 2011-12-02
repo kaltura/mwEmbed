@@ -39,22 +39,26 @@ mw.NielsenVideoCensusPlugin.prototype = {
 	addPlayerBindings: function(){
 		var _this = this;
 		// remove any existing bindings: 
-		$( this.embedPlayer ).unbind();
+		$( this.embedPlayer ).unbind( _this.bindPostFix);
 		
 		// Reset the current segment index: 
 		this.localCurrentSegment = 0;
 		
 		// Add the first play binding: 
-		$( this.embedPlayer ).bind( 'firstPlay' + this.bindPostFix, function(){
-			_this.sendBeacon();
-		});
-		// Also send an event once ad playback ends 
-		// ( during a midroll and we are about to continue to content) 
-		$( this.embedPlayer ).bind('AdSupport_EndAdPlayback' + this.bindPostFix, function(){
-			_this.localCurrentSegment++;
+		$( this.embedPlayer ).bind( 'firstPlay' + _this.bindPostFix, function(){
 			_this.sendBeacon();
 		});
 		
+		// Send beacon for midrolls
+		// TODO this should bind to "midSequenceComplete" not a nested AdSupport_EndAdPlayback
+		$( _this.embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostFix, function(){
+			// Remove any old endAdPlayback binding 
+			var bindName = 'AdSupport_EndAdPlayback' + _this.bindPostFix;
+			$( _this.embedPlayer ).unbind( bindName ).bind( bindName, function(){
+				_this.localCurrentSegment++;
+				_this.sendBeacon();
+			});
+		});
 	},
 	sendBeacon: function(){
 		// create a new dav image

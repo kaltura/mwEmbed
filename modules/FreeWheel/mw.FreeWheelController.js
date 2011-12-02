@@ -233,19 +233,17 @@ mw.FreeWheelControler.prototype = {
 			var slotType =  _this.getSlotType( slot );
 			var slotTimePosition = slot.getTimePosition();
 			if ( _this.embedPlayer.currentTime - slotTimePosition >= 0 && 
-				_this.embedPlayer.currentTime - slotTimePosition <= 1 && 
-				!_this.overlaySlotActive 
+				_this.embedPlayer.currentTime - slotTimePosition <= 1 
 			){
 				// try to play the midroll or display the overlay: 
 				if( _this.playSlot( slot ) ){
 					// if a midroll setup ad state
 					if( slotType == 'midroll' ){
-						_this.embedPlayer.adTimeline.updateUiForAdPlayback()
+						_this.embedPlayer.adTimeline.updateUiForAdPlayback();
 					}
 					
-					
 					// overlay has special handling: 
-					if( slotType == 'overlay' ){
+					if( slotType == 'overlay' && _this.overlaySlotActive == false ){
 						// @@TODO handle close caption layout conflict
 						var bottom = parseInt( $('#fw_ad_container_div').css('bottom') );
 						var ctrlBarBottom  = bottom;

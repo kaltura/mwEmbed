@@ -39,19 +39,22 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> NielsenVideoCensusPlugin long form player test </h2>
+preroll freewheel,<br /> 
+overlay at 5 sec <br />
+freewheel midroll at 10 sec ( should send additional becon when resuming content playback ) <br /><br />
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
 <object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
 allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
 xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/12924364502/wid/_243342/uiconf_id/6416881/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/12924364502/wid/_243342/uiconf_id/6416881/entry_id/0_uka1msg4">
+resource="http://www.kaltura.com/index.php/kwidget/cache_st/12924364504/wid/_243342/uiconf_id/6416881/entry_id/0_uka1msg4" 
+data="http://www.kaltura.com/index.php/kwidget/cache_st/12924364504/wid/_243342/uiconf_id/6416881/entry_id/0_uka1msg4">
 	<param name="allowFullScreen" value="true" />
 	<param name="allowNetworking" value="all" />
 	<param name="allowScriptAccess" value="always" />
 	<param name="bgcolor" value="#000000" />
 	<param name="flashVars" value="&" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/12924364502/wid/_243342/uiconf_id/6416881/entry_id/0_uka1msg4" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/12924364504/wid/_243342/uiconf_id/6416881/entry_id/0_uka1msg4" />
 </object>
 <!--  uiConf used in above test: 
 
@@ -63,11 +66,28 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/12924364502/wid/_243342/
       
       <Plugin 
       	id="NielsenVideoCensusPlugin"
+      	path="http://projects.kaltura.com/nu/NielsenVideoCensusPlugin.swf"
       	clientId="us-300437"            
       	videoCensusId="vc,c02"
       	lp="LF"
       	tl="{mediaProxy.entry.name}"
       	cg="{mediaProxy.entry.categories}"
+      />
+     
+      <Plugin id="FreeWheel"
+      	path="http://cdnbakmi.kaltura.com/flash/kdp3/v3.5.33/plugins/freeWheelPlugin.swf"
+      	adManagerUrl="http://adm.fwmrm.net/p/release/latest-AS3/adm/dbg/AdManager.swf"
+      	adManagerJsUrl="http://adm.fwmrm.net/p/release/latest-JS/adm/dbg/AdManager.js"
+      	serverUrl="http://demo.v.fwmrm.net"
+      	networkId="176538"
+      	playerProfile="176538:KDP_Flash"
+      	playerProfileHTML5="176538:KDP_HTML5"
+      	siteSectionId="defaultsection"
+      	preSequence="1"
+      	postSequence="1"
+      	useKalturaTemporalSlots="true"
+      	videoAssetId="playerdefined"
+      	videoAssetFallbackId="playerdefined"
       />
       
       <Canvas id="PlayerHolder" height="100%" width="100%" styleName="black">

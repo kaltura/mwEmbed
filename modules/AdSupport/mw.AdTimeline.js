@@ -298,6 +298,8 @@ mw.AdTimeline.prototype = {
 		embedPlayer.disablePlayControls();
 		// update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
+		// make sure to hide the spinner
+		embedPlayer.hidePlayerSpinner();
 		// Set inSequence property to "true" 
 		embedPlayer.sequenceProxy.isInSequence = true;
 		// Trigger an ad start event once we enter an ad state
