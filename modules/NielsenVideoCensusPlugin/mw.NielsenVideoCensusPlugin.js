@@ -55,6 +55,7 @@ mw.NielsenVideoCensusPlugin.prototype = {
 			// Remove any old endAdPlayback binding 
 			var bindName = 'AdSupport_EndAdPlayback' + _this.bindPostFix;
 			$( _this.embedPlayer ).unbind( bindName ).bind( bindName, function(){
+				alert( ' ended ad playback ');
 				_this.localCurrentSegment++;
 				_this.sendBeacon();
 			});
@@ -64,7 +65,7 @@ mw.NielsenVideoCensusPlugin.prototype = {
 		// create a new dav image
 		var davImg = new Image(); 
 		// Setup the base url: 
-		var url = 'http://secure-us.imrworldwide.com/cgi-bin/m?';
+		var url = ( this.getConfig('serverUrl') ) ? this.getConfig('serverUrl') : 'http://secure-us.imrworldwide.com/cgi-bin/m?';
 
 		url+= $.param( this.getBeconParams() );
 		// Set the Program/Section Name
