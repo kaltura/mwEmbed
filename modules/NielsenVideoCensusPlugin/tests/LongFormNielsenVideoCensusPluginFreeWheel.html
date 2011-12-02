@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>NielsenVideoCensusPlugin player test</title>
+<title>NielsenVideoCensusPlugin flash long form player test </title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
@@ -38,7 +38,7 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> NielsenVideoCensusPlugin long form player test </h2>
+<h2> NielsenVideoCensusPlugin flash long form player test </h2>
 preroll freewheel,<br /> 
 overlay at 5 sec <br />
 freewheel midroll at 10 sec ( should send additional becon when resuming content playback ) <br /><br />
@@ -53,7 +53,7 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/12924364504/wid/_243342/
 	<param name="allowNetworking" value="all" />
 	<param name="allowScriptAccess" value="always" />
 	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&" />
+	<param name="flashVars" value="&debugMode=true" />
 	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/12924364504/wid/_243342/uiconf_id/6416881/entry_id/0_uka1msg4" />
 </object>
 <!--  uiConf used in above test: 
