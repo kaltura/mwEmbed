@@ -64,6 +64,7 @@ mw.NielsenVideoCensusPlugin.prototype = {
 		});
 	},
 	sendBeacon: function(){
+		mw.log("NielsenVideoCensusPlugin:: sendBeacon" );
 		// create a new dav image
 		var davImg = new Image(); 
 		// Setup the base url: 

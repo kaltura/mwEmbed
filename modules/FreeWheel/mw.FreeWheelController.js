@@ -53,7 +53,7 @@ mw.FreeWheelControler.prototype = {
 	 * @param {Function} callback
 	 * @return
 	 */
-	init: function( embedPlayer, callback  ){
+	init: function( embedPlayer, callback ){
 		var _this = this;
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
