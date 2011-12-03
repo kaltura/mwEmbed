@@ -227,8 +227,10 @@ mw.EmbedPlayer.prototype = {
 	},
 
 	enablePlayControls: function(){
-		if( this.useNativePlayerControls() )
+		mw.log("EmbedPlayer:: enablePlayControls" );
+		if( this.useNativePlayerControls() ){
 			return ;
+		}
 		this._playContorls = true;
 		// re-enable hover: 
 		this.$interface.find( '.play-btn' )
@@ -239,6 +241,7 @@ mw.EmbedPlayer.prototype = {
 		$( this ).trigger( 'onEnableSeekBar');
 	},
 	disablePlayControls: function(){
+		mw.log("EmbedPlayer:: disablePlayControls" );
 		if( this.useNativePlayerControls() ){
 			return ;
 		}

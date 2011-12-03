@@ -12,7 +12,11 @@ mw.KCuePoints.prototype = {
 	bindPostfix: '.kCuePoints',
 	
 	init: function( embedPlayer ){
+		// remove any old bindings: 
+		this.destroy();
+		// setup player ref:
 		this.embedPlayer = embedPlayer;
+		// add player bindings:
 		this.addPlayerBindings();
 	},
 	destroy: function(){
@@ -38,11 +42,17 @@ mw.KCuePoints.prototype = {
 			var cuePointType = _this.getRawAdSlotType(nextCuePoint);
 			// Don't trigger postrolls
 			// TODO: we should remove preroll / postroll from the cuePoints array and handle them different
-			if( currentTime >= nextCuePoint.startTime && cuePointType != 'postroll' && embedPlayer._propagateEvents ) {
-				// Trigger the cue point
-				_this.triggerCuePoint( nextCuePoint );
+			if( currentTime >= nextCuePoint.startTime 
+					&& 
+				cuePointType != 'postroll' 
+					&& 
+				embedPlayer._propagateEvents ) 
+			{
+				var currentCuePoint = nextCuePoint;
 				// Get next cue point
 				nextCuePoint = _this.getCuePoint( currentTime );
+				// Trigger the cue point
+				_this.triggerCuePoint( currentCuePoint );
 			}
 		});
 
@@ -59,7 +69,7 @@ mw.KCuePoints.prototype = {
 		// Bind for seeked event to update the nextCuePoint
 		$( embedPlayer ).bind( "seeked" + this.bindPostfix, function(){
 			var currentTime = embedPlayer.currentTime * 1000;
-			nextCuePoint = _this.getCuePoint(currentTime);
+			nextCuePoint = _this.getCuePoint( currentTime );
 		});
 
 		$( embedPlayer ).bind( 'onChangeMedia' + this.bindPostfix, function(){

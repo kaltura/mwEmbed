@@ -310,6 +310,7 @@ mw.AdTimeline.prototype = {
 	 * @return
 	 */
 	restorePlayer: function( ){
+		mw.log( "AdTimeline:: restorePlayer " );
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.restoreEventPropagation();
 		embedPlayer.enablePlayControls();

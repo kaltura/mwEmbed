@@ -50,15 +50,17 @@ mw.NielsenVideoCensusPlugin.prototype = {
 		});
 		
 		// Send beacon for midrolls
+		var inMidroll = false;
 		// TODO this should bind to "midSequenceComplete" not a nested AdSupport_EndAdPlayback
 		$( _this.embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostFix, function(){
-			// Remove any old endAdPlayback binding 
-			var bindName = 'AdSupport_EndAdPlayback' + _this.bindPostFix;
-			$( _this.embedPlayer ).unbind( bindName ).bind( bindName, function(){
-				alert( ' ended ad playback ');
+			inMidroll = true;
+		});
+		$( _this.embedPlayer ).bind( 'AdSupport_EndAdPlayback' + _this.bindName, function(){
+			if( inMidroll ){
+				inMidroll = false;
 				_this.localCurrentSegment++;
 				_this.sendBeacon();
-			});
+			}
 		});
 	},
 	sendBeacon: function(){
