@@ -52,6 +52,8 @@
 		'kentryid' : null,
 		'kwidgetid' : null,
 		'kuiconfid' : null,
+		// helps emulate the kdp behavior of not updating currentTime until a seek is complete. 
+		'kPreSeekTime': null,
 		'kalturaPlayerMetaData' : null,
 		'kalturaEntryMetaData' : null,
 		'kalturaPlaylistData' : null,

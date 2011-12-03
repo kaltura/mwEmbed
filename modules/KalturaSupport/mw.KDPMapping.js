@@ -71,7 +71,7 @@
 			$( mw ).bind( 'AddIframePlayerMethods', function( event, playerMethods ){
 				playerMethods.push( 'addJsListener', 'removeJsListener', 'sendNotification', 'setKDPAttribute' );
 			});
-
+			
 			$( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {
 				$( playerProxy ).bind( 'jsListenerEvent', function(event, globalFuncName, listenerArgs){
 					// check if globalFuncName has descendant properties
@@ -92,6 +92,15 @@
 							evalFunction.apply( evalFunctionParent, listenerArgs );
 						} catch (e){
 							mw.log( "KDPMapping:: Error in jsListenerEvent callback: " + e );
+						}
+					}
+				});
+				// Add local callbacks for local updates of properties in async requests 
+				$( playerProxy ).bind( 'AddIframePlayerMethodCallbacks', function( event, playerMethods ){
+					playerMethods[ 'sendNotification' ] = function( notificationName, notificationData ){
+						// Emulate kdp seek behavior by setting local property at doSeek time. 
+						if( notificationName == 'doSeek' ){
+							playerProxy.kPreSeekTime = playerProxy.currentTime;
 						}
 					}
 				});
@@ -158,6 +167,17 @@
 				embedPlayer.evaluate = function( objectString ){
 					return _this.evaluate( embedPlayer, objectString);
 				};
+				
+				// Add preSeek event binding to upate the kPreSeekTime var
+				$( embedPlayer ).bind( 'preSeek', function(event, percent){
+					embedPlayer.kPreSeekTime = embedPlayer.currentTime;
+					// Sync iframe with attribute data updates:
+					$( embedPlayer ).trigger( 'updateIframeData' );
+				});
+				// Once a seek is complete null the kPreSeekTime ( so we can use currentTime ) in evaluate calls
+				$( embedPlayer ).bind( 'seeked', function( event ){
+					embedPlayer.kPreSeekTime = null;
+				});
 			});
 		},
 		
@@ -295,6 +315,10 @@
 						case 'player':
 							switch( objectPath[2] ){
 								case 'currentTime':
+									// check for kPreSeekTime ( kaltura seek delay update property ) 
+									if( embedPlayer.kPreSeekTime !== null ){
+										return embedPlayer.kPreSeekTime;
+									}
 									return embedPlayer.currentTime;
 								break;
 							}
@@ -693,6 +717,8 @@
 				case 'doSeek':
 					// Kaltura doSeek is in seconds rather than percentage:
 					var percent = parseFloat( notificationData ) / embedPlayer.getDuration();
+					// update local kPreSeekTime
+					embedPlayer.kPreSeekTime =  embedPlayer.currentTime;
 					embedPlayer.seek( percent );
 					break;
 				case 'changeVolume':

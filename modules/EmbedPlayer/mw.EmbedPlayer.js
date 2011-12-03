@@ -674,6 +674,9 @@ mw.EmbedPlayer.prototype = {
 	seek: function( percent ) {
 		var _this = this;
 		this.seeking = true;
+		// trigger preSeek event for plugins that want to store pre seek conditions. 
+		$( this ).trigger( 'preSeek', percent );
+		
 		// Do argument checking:
 		if( percent < 0 ){
 			percent = 0;

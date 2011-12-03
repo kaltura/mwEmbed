@@ -51,8 +51,16 @@ mw.IFramePlayerApiClient.prototype = {
 		// Allow modules to extend the list of iframeExported bindings
 		$( mw ).trigger( 'AddIframePlayerMethods', [ this.exportedMethods ]);
 		
-		$.each( this.exportedMethods, function(na, method){
-			_this.playerProxy[ method ] = function(){	
+		// Allow modules to update local variables client side before doing a asynchronous postMessage call
+		var namedMethodCallbacks = {};
+		$( _this.playerProxy ).trigger( 'AddIframePlayerMethodCallbacks', [ namedMethodCallbacks ]);
+		
+		$.each( this.exportedMethods, function( na, method ){
+			_this.playerProxy[ method ] = function(){
+				// Call any local named callbacks
+				if( namedMethodCallbacks[ method ] ){
+					namedMethodCallbacks[ method ].apply( this, $.makeArray( arguments ) );
+				}
 				_this.postMessage( {
 					'method' : method,
 					'args' : $.makeArray( arguments )
