@@ -102,6 +102,9 @@ mw.NielsenVideoCensusPlugin.prototype = {
 		if( this.getConfig("lp") ){
 			params['lp'] = this.getLpParam();
 		}
+		if( this.getConfig("ls") ){
+			params['ls'] = this.getConfig("ls");
+		}
 		return params;
 	},
 	getLpParam: function(){
