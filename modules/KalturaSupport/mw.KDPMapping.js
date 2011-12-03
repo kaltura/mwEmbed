@@ -563,7 +563,8 @@
 				case 'playerSeekStart':
 				case 'doIntelligentSeek':		
 					b( "seeking", function(){
-						callback( embedPlayer.currentTime, embedPlayer.id );
+						var seekTime = ( embedPlayer.kPreSeekTime !== null ) ? embedPlayer.kPreSeekTime : embedPlayer.currentTime
+						callback( seekTime, embedPlayer.id );
 					});
 					break;
 				case 'playerSeekEnd':
