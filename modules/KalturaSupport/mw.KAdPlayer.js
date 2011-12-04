@@ -582,9 +582,10 @@ mw.KAdPlayer.prototype = {
 				'id' : this.getVideoAdSiblingId()
 			})
 			.css({
-				'width' : '100%'
+				'width' : '100%',
+				'height': '100%'
 			})
-			$( '#' + this.embedPlayer.pid ).after(
+			$( this.embedPlayer ).append(
 				$vidSibling
 			);
 		}
