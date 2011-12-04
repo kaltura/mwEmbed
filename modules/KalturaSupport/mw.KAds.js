@@ -4,7 +4,7 @@
 ( function( mw, $ ) {
 //Global mw.addKAd manager
 mw.addKalturaAds = function( embedPlayer, callback ) {
-	embedPlayer.ads = new mw.KAds( embedPlayer, callback );
+	embedPlayer.kAds = new mw.KAds( embedPlayer, callback );
 };
 
 mw.sendBeaconUrl = function( beaconUrl ){
@@ -45,6 +45,7 @@ mw.KAds.prototype = {
 		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
 		});
+		// clear any existing bindigns: 
 		_this.destroy();
 		
 		// setup local pointer: 
@@ -61,9 +62,9 @@ mw.KAds.prototype = {
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
 		$( embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event, cuePointWrapper ) {
-			// TODO we really need a better way to identify VAST vs "other provider" 
-			if( cuePointWrapper.cuePoint.tags == "" ){
-				_this.loadAd( cuePointWrapper );
+			// Check for  protocolType == 1 ( type = vast ) 
+			if( cuePointWrapper.cuePoint.protocolType == 1 ){
+				_this.loadAndDisplayAd( cuePointWrapper );
 			}
 		});
 
@@ -92,7 +93,7 @@ mw.KAds.prototype = {
 		return this.config[ name ];
 	},
 	// Load the ad from cue point
-	loadAd: function( cuePointWrapper ) {
+	loadAndDisplayAd: function( cuePointWrapper ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var cuePoint = cuePointWrapper.cuePoint;
@@ -106,113 +107,113 @@ mw.KAds.prototype = {
 		// Add cuePoint Id to displayed cuePoints array
 		_this.displayedCuePoints.push( cuePoint.id );		
 		
-		mw.log('kAds::loadAd:: load ' + adType + ', duration: ' + adDuration, cuePoint);
+		mw.log('kAds::loadAndDisplayAd:: load ' + adType + ', duration: ' + adDuration, cuePoint);
 
 		// Load adTimeline
 		if (!_this.embedPlayer.adTimeline) {
 			_this.embedPlayer.adTimeline = new mw.AdTimeline( _this.embedPlayer );
 		}
 
-		// If ad type is midroll pause the video
-		if( adType == 'midroll' ) {
-			_this.embedPlayer.pauseLoading();
-		}
-
-		if( adType == 'postroll' ) {
-			setTimeout(function() {
-				_this.embedPlayer.pauseLoading();
-			}, 100);
+		// no ad to load in cuePoint
+		if( !cuePoint.sourceUrl ) {
+			return ;
 		}
 		
-		if( cuePoint.sourceUrl ) {
-			mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
+		// If ad type is midroll pause the video
+		_this.embedPlayer.pauseLoading();
+		
+		mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
+			if( ! adConf ){
+				// resume content playback
+				_this.embedPlayer.play();				
+				return ;
+			}
 
-				var adCuePointConf = {
-					duration: ( (cuePoint.endTime - cuePoint.startTime) / 1000 ),
-					start: ( cuePoint.startTime / 1000  )
-				};
+			var adCuePointConf = {
+				duration: ( (cuePoint.endTime - cuePoint.startTime) / 1000 ),
+				start: ( cuePoint.startTime / 1000  )
+			};
 
-				var adsCuePointConf = {
-					ads: [
-						$.extend( adConf.ads[0], adCuePointConf )
-					],
-					skipBtn: {
-						'text' : "Skip ad", // TODO i8ln 
-						'css' : {
-							'right': '5px',
-							'bottom' : '5px'
-						}
-					},
-					type: adType
-				};
-
-				var originalSrc = embedPlayer.getSrc();
-				var seekTime = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
-				var oldDuration = embedPlayer.duration;
-
-				// Set switch back function
-				var doneCallback = function() {
-					// continue playback ( if not already playing ) 
-					embedPlayer.play();
-					
-					var vid = embedPlayer.getPlayerElement();
-					// Check if the src does not match original src if
-					// so switch back and restore original bindings
-					if ( originalSrc != vid.src ) {
-						embedPlayer.switchPlaySrc( originalSrc, function() {
-							mw.log( "AdTimeline:: restored original src:" + vid.src);
-							// Restore embedPlayer native bindings
-							// async for iPhone issues
-							setTimeout(function(){
-								embedPlayer.adTimeline.restorePlayer();
-							}, 100 );
-
-							// Sometimes the duration of the video is zero after switching source
-							// So i'm re-setting it to it's old duration
-							embedPlayer.duration = oldDuration;
-							if( adType == 'postroll' ) {
-								// Run stop for now.
-								setTimeout( function() {
-									embedPlayer.stop();
-								}, 100);
-
-								mw.log( "AdTimeline:: run video pause ");
-								if( vid && vid.pause ){
-									// Pause playback state
-									vid.pause();
-									// iPhone does not catch synchronous pause
-									setTimeout( function(){ if( vid && vid.pause ){ vid.pause(); } }, 100 );
-								}
-							} else {
-								$( embedPlayer ).bind('seeked' + _this.bindPostfix, function() {
-									embedPlayer.play();
-									setTimeout( function() {
-										embedPlayer.play();
-									}, 250);
-								});
-
-								// Seek to where we did the switch
-								embedPlayer.seek( seekTime );
-							}
-						});
-					} else {
-						embedPlayer.adTimeline.restorePlayer();
+			var adsCuePointConf = {
+				ads: [
+					$.extend( adConf.ads[0], adCuePointConf )
+				],
+				skipBtn: {
+					'text' : "Skip ad", // TODO i8ln 
+					'css' : {
+						'right': '5px',
+						'bottom' : '5px'
 					}
-				};
+				},
+				type: adType
+			};
 
-				// If out ad is preroll/midroll/postroll, disable the player 
-				if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
-					_this.embedPlayer.$interface.find( '.play-btn-large' ).remove();
+			var originalSrc = embedPlayer.getSrc();
+			var seekTime = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
+			var oldDuration = embedPlayer.duration;
+
+			// Set switch back function
+			var doneCallback = function() {
+				// continue playback ( if not already playing ) 
+				embedPlayer.play();
+				
+				var vid = embedPlayer.getPlayerElement();
+				// Check if the src does not match original src if
+				// so switch back and restore original bindings
+				if ( originalSrc != vid.src ) {
+					embedPlayer.switchPlaySrc( originalSrc, function() {
+						mw.log( "AdTimeline:: restored original src:" + vid.src);
+						// Restore embedPlayer native bindings
+						// async for iPhone issues
+						setTimeout(function(){
+							embedPlayer.adTimeline.restorePlayer();
+						}, 100 );
+
+						// Sometimes the duration of the video is zero after switching source
+						// So i'm re-setting it to it's old duration
+						embedPlayer.duration = oldDuration;
+						if( adType == 'postroll' ) {
+							// Run stop for now.
+							setTimeout( function() {
+								embedPlayer.stop();
+							}, 100);
+
+							mw.log( "AdTimeline:: run video pause ");
+							if( vid && vid.pause ){
+								// Pause playback state
+								vid.pause();
+								// iPhone does not catch synchronous pause
+								setTimeout( function(){ if( vid && vid.pause ){ vid.pause(); } }, 100 );
+							}
+						} else {
+							$( embedPlayer ).bind('seeked' + _this.bindPostfix, function() {
+								embedPlayer.play();
+								setTimeout( function() {
+									embedPlayer.play();
+								}, 250);
+							});
+
+							// Seek to where we did the switch
+							embedPlayer.seek( seekTime );
+						}
+					});
 				} else {
-					// in case of overlay do nothing
-					doneCallback = function() {};
+					embedPlayer.adTimeline.restorePlayer();
 				}
+			};
 
-				// Tell the player to show the Ad
-				_this.embedPlayer.adTimeline.display( adsCuePointConf, doneCallback, adDuration );
+			// If out ad is preroll/midroll/postroll, disable the player 
+			if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
+				_this.embedPlayer.$interface.find( '.play-btn-large' ).remove();
+			} else {
+				// in case of overlay do nothing
+				doneCallback = function() {};
+			}
 
-			});
-		}
+			// Tell the player to show the Ad
+			_this.embedPlayer.adTimeline.display( adsCuePointConf, doneCallback, adDuration );
+
+		});
 	},
 
 	// Load all the ads per the $adConfig

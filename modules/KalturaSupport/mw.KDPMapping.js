@@ -756,7 +756,7 @@
 				    embedPlayer.kCuePoints = null;
 				    
 				    // clear ad data ..
-				    embedPlayer.ads = null;
+				    embedPlayer.kAds = null;
 				    
 					// Update the poster
 					embedPlayer.updatePosterSrc( 

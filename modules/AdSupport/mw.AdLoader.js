@@ -50,7 +50,7 @@ mw.AdLoader = {
 				callback(false);
 				return ;
 			}
-			try{
+			try {
 				var resultXML = $.parseXML( result['contents'] );
 			} catch (e){
 				mw.log("Error: AdLoader could not parse:" + resultXML);
@@ -74,7 +74,6 @@ mw.AdLoader = {
 			}
 			data = $.parseXML( data );
 		}
-		
 		switch( _this.getAdFormat( data) ){
 			case 'vast':
 				// If we have lots of ad formats we could conditionally load them here: 
@@ -88,7 +87,7 @@ mw.AdLoader = {
 			break;
 		}					
 		mw.log("Error: could not parse adFormat from add content: \n" + data);
-		callback( {} );
+		callback( false );
 	},
 	/**
 	 * Get ad Format

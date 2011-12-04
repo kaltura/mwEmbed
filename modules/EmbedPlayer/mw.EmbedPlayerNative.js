@@ -836,6 +836,9 @@ mw.EmbedPlayerNative = {
 			// Some browsers trigger native pause events when they "play" or after a src swtich
 			if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
 				this.parent_pause();
+			} else {
+				// continue playback: 
+				this.getPlayerElement().play();
 			}
 		}
 	},
