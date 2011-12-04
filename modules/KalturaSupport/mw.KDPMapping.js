@@ -291,18 +291,24 @@
 					if( ! embedPlayer.sequenceProxy ){
 						return null;
 					}
-					switch( objectPath[1] ){
-						case 'isInSequence':
-							return embedPlayer.sequenceProxy.isInSequence;
-							break;
-						case 'activePluginMetadata':
-							if(  objectPath[2] ){
-								if( ! embedPlayer.sequenceProxy.activePluginMetadata )
-									return null;
-								return embedPlayer.sequenceProxy.activePluginMetadata[ objectPath[2] ]
-							}
-							return embedPlayer.sequenceProxy.activePluginMetadata;
-							break;
+					if( objectPath[1] ){
+						switch( objectPath[1] ){
+							// check for direct mapping properties: 
+							case 'timeRemaining':
+							case 'isInSequence':
+								return embedPlayer.sequenceProxy[ objectPath[1] ];
+								break;								
+							case 'activePluginMetadata':
+								if(  objectPath[2] ){
+									if( ! embedPlayer.sequenceProxy.activePluginMetadata ){
+										return null;
+									}
+									return embedPlayer.sequenceProxy.activePluginMetadata[ objectPath[2] ]
+								}
+								return embedPlayer.sequenceProxy.activePluginMetadata;
+								break;
+						}
+						return null;
 					}
 					// return the base object if no secondary path is specified 
 					return embedPlayer.sequenceProxy;

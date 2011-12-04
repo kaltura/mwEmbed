@@ -3,6 +3,7 @@
 // Set the FreeWheel config:
 mw.setConfig({
 	// The url for the ad Manager
+	// for debuging we use the following AdManager url: 'http://localhost/html5.kaltura/mwEmbed/modules/FreeWheel/AdManager.js'
 	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js'
 });
 
@@ -34,8 +35,11 @@ mw.FreeWheelControler.prototype = {
 		'unknown_type': []
 	},
 	
-	// The current active slot
+	// The done callback for current active slot
 	currentSlotDoneCb: null,
+	
+	// The current active slot
+	activeSlot: null,
 		
 	// if an overlay slot is active:
 	overlaySlotActive: false,
@@ -210,6 +214,7 @@ mw.FreeWheelControler.prototype = {
 			
 			// Else set of preroll or postroll clips setup normal binding: 
 			_this.embedPlayer.bindHelper( 'AdSupport_' + slotType + _this.bindPostfix, function( event, sequenceProxy ){
+				
 				sequenceProxy[ _this.getSequenceIndex( slotType ) ] = function( callback ){
 					// Run the freewheel slot add, then run the callback once done 
 					_this.displayFreeWheelSlots( slotType, 0, function(){
@@ -218,6 +223,7 @@ mw.FreeWheelControler.prototype = {
 						callback();
 					});
 				};
+				
 			});
 		});
 	},
@@ -245,7 +251,7 @@ mw.FreeWheelControler.prototype = {
 					
 					// overlay has special handling: 
 					if( slotType == 'overlay' && _this.overlaySlotActive == false ){
-						// @@TODO handle close caption layout conflict
+						// TODO handle close caption layout conflict
 						var bottom = parseInt( $('#fw_ad_container_div').css('bottom') );
 						var ctrlBarBottom  = bottom;
 						if( bottom < embedPlayer.controlBuilder.getHeight() ){
@@ -277,15 +283,25 @@ mw.FreeWheelControler.prototype = {
 		slot.alreadyPlayed = true;
 		// Set the "done playing" flag to false: 
 		slot.donePlaying = false;
-		mw.log( 'mw.FreeWheelController:: playSlot:' + this.getSlotType( slot ) );
 		
-		if(  slot._adInstances.length ){
-			// TODO send adMeta data to adMetadata object
-			_this.embedPlayer.adTimeline.updateMeta( 
-					this.getFwAdMetaData( slot) 
-			);
+		mw.log( 'mw.FreeWheelController:: playSlot:' + this.getSlotType( slot ) + ' adInstances: ' +  slot._adInstances.length );
+		
+		// if no ad slots are available return 
+		if( slot._adInstances.length == 0 ){
+			return false;			
 		}
+		
+		// Update ad Meta data:
+		_this.embedPlayer.adTimeline.updateSequenceProxy( 
+			'activePluginMetadata', 
+			this.getFwAdMetaData( slot ) 
+		);
+		// Play the slot
 		slot.play();
+		// Update the active slot
+		this.activeSlot = slot;
+		// Monitor ad progress ( for sequence proxy )
+		this.monitorAdProgress();
 		
 		// Suppress freewheel controls attribute change on pause: 
 		var vid = _this.embedPlayer.getPlayerElement();
@@ -297,6 +313,34 @@ mw.FreeWheelControler.prototype = {
 			},0);
 		} );
 		return true;
+	},
+	monitorAdProgress: function(){
+		var _this = this;
+		// don't monitor ad progress if active slot done. 
+		if( !this.activeSlot ){
+			// clear out the timeRemaining var
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', null );
+			return ;
+		}
+		// Update the timeRemaining ( if not an overlay ) 
+		if(  this.getSlotType( this.activeSlot ) != 'overlay' ){
+			var vid = _this.getAdVideoElement();
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  vid.duration - vid.currentTime );
+		}
+		
+		// Keep monitoring ad progress at MonitorRate
+		setTimeout( function(){
+			_this.monitorAdProgress();
+		}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+	},
+	getAdVideoElement: function(){
+		// Freewheel adds a video element to the dom for midrolls,
+		// We want this ad video element ( not the original pid getPlayerElement()
+		var $siblingVid = $( this.embedPlayer.getPlayerElement() ).siblings('video');
+		if( $siblingVid.length ){
+			return $siblingVid.get(0);
+		}
+		return  this.embedPlayer.getPlayerElement();
 	},
 	displayFreeWheelSlots: function( slotType, inx, doneCallback ){
 		var _this = this;
@@ -324,6 +368,10 @@ mw.FreeWheelControler.prototype = {
 	onSlotEnded: function ( event ){
 		var _this = this;
 		mw.log( "FreeWheelController::onSlotEnded> " + event.slot.getTimePositionClass() );
+		mw.log( 'set active slot to null ' );
+		// Clear the active slot
+		this.activeSlot = null;
+		// Update slot event: 
 		event.slot.donePlaying = true;
 		var slotType =_this.getSlotType( event.slot );
 		if( slotType == 'overlay'  ){

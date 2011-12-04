@@ -5,7 +5,7 @@ mw.addResourcePaths({
 	"mw.FreeWheelController": "mw.FreeWheelController.js"
 });
 
-mw.addModuleLoader( 'FreeWheel', ['AdSupport', 'mw.FreeWheelController'] );
+mw.addModuleLoader( 'FreeWheel', [ 'AdSupport', 'mw.FreeWheelController' ] );
 
 // Check if the plugin is enabled: 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
