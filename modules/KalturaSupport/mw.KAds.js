@@ -257,10 +257,7 @@ mw.KAds.prototype = {
 			sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( doneCallback ){		
 				var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
 				adConfig.type = adType;
-				_this.embedPlayer.adTimeline.display( adConfig, function(){
-					// Done playing Ad issue sequenceProxy callback: 
-					doneCallback();
-				});
+				_this.adPlayer.display( adConfig, doneCallback );
 			};
 		});
 	},
@@ -277,7 +274,7 @@ mw.KAds.prototype = {
 		overlayConfig.type = 'overlay';
 		// Display the overlay 
 		var displayOverlay = function(){
-			_this.embedPlayer.adTimeline.display( 
+			_this.adPlayer.display(
 				overlayConfig, 
 				function(){
 					mw.log("KAds::overlay done");
