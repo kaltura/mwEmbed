@@ -308,13 +308,18 @@ mw.EmbedPlayerNative = {
 	*/
 	seek: function( percent, stopAfterSeek ) {
 		// bounds check
-		if( percent < 0 )
+		if( percent < 0 ){
 			percent = 0;
+		}
 		
-		if( percent > 1 )
+		if( percent > 1 ){
 			percent = 1; 
-		
+		}
 		mw.log( 'EmbedPlayerNative::seek p: ' + percent + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seekTimeSec );
+		
+		// Trigger preSeek event for plugins that want to store pre seek conditions. 
+		$( this ).trigger( 'preSeek', percent );
+		
 		this.seeking = true;
 		// Update the current time
 		this.currentTime = ( percent * this.duration ) ;
@@ -363,7 +368,9 @@ mw.EmbedPlayerNative = {
 		
 		this.seekTimeSec = 0;
 		this.setCurrentTime( ( percent * this.duration ) , function(){
-			// done seeking ( should be a fallback trigger event ) : 
+			// Update the current time ( so that there is not a monitor delay in reflecting "seeked time" )
+			_this.currentTime = _this.getPlayerElement().currentTime;
+			// Done seeking ( should be a fallback trigger event ) : 
 			if( _this.seeking ){
 				$( _this ).trigger( 'seeked' );
 				_this.seeking = false;

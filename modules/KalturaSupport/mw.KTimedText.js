@@ -96,9 +96,9 @@
 						_this.textSources.push(
 							_this.getTextSourceFromDB( dbTextSource )
 						);
-						$( _this.embedPlayer ).trigger('KalturaSupport_newClosedCaptionsData');
+						$( _this.embedPlayer ).trigger('KalturaSupport_NewClosedCaptionsData');
 					});
-					$( _this.embedPlayer ).trigger('KalturaSupport_ccDataLoaded');
+					$( _this.embedPlayer ).trigger('KalturaSupport_CCDataLoaded');
 					// Done adding source issue callback
 					callback();
 				});

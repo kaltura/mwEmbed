@@ -34,6 +34,18 @@ function jsKalturaPlayerTest( videoId ){
 	});
 }
 </script>
+<script>
+	/*
+	function jsCallbackReady( playerId ){
+		var kdp = $( '#' + playerId ).get(0);
+		kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
+	}
+	function onPlayerSeekStart( playerId ){
+		var kdp = $( '#' + playerId ).get(0);
+		alert( kdp.evaluate( '{video.player.currentTime}' ) );
+	}
+	*/
+</script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>

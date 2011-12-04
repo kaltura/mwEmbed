@@ -117,9 +117,16 @@ mw.AdTimeline.prototype = {
 		// Bind to the "play" and "end"
 		this.bindPlayer();
 	},
-	//  method to update adMetadata:
-	updateSequenceProxy: function( propName, adMeta ){
-		this.embedPlayer.sequenceProxy[propName] = adMeta;
+	
+	/**
+	 * Update Sequence Proxy property
+	 * @param {string} 
+	 * 			propName The name of the property 
+	 * @param {object} 
+	 * 			value The value for the suplied property 
+	 */
+	updateSequenceProxy: function( propName, value ){
+		this.embedPlayer.sequenceProxy[ propName ] = value;
 	},
 	bindPlayer: function() {
 		var _this = this;
@@ -209,7 +216,7 @@ mw.AdTimeline.prototype = {
 							_this.restorePlayer();
 							// Restore ondone interface: 
 							embedPlayer.onDoneInterfaceFlag = true;
-							// run the clipdone event:
+							// Run the clipdone event:
 							embedPlayer.onClipDone();
 					});
 				} else {
@@ -233,7 +240,9 @@ mw.AdTimeline.prototype = {
 	 * Displays all the slots of a given set
 	 * 
 	 * @param slotSet
+	 * 			{Object} slotSet Set of slots to be displayed. 
 	 * @param doneCallback
+	 * 			{function} doneCallback Function called once done displaying slots
 	 * @return
 	 */
 	displaySlots: function( slotType, doneCallback ){

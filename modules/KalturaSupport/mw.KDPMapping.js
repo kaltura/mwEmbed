@@ -169,10 +169,8 @@
 				};
 				
 				// Add preSeek event binding to upate the kPreSeekTime var
-				$( embedPlayer ).bind( 'preSeek', function(event, percent){
+				$( embedPlayer ).bind( 'preSeek', function(event, percent){					
 					embedPlayer.kPreSeekTime = embedPlayer.currentTime;
-					// Sync iframe with attribute data updates:
-					$( embedPlayer ).trigger( 'updateIframeData' );
 				});
 				// Once a seek is complete null the kPreSeekTime ( so we can use currentTime ) in evaluate calls
 				$( embedPlayer ).bind( 'seeked', function( event ){
@@ -537,7 +535,7 @@
 					b( "onpause" );
 					break;
 				case 'adStart':
-					b('AdSupport_StartAdPlayback');
+					b('AdSupport_StartAdPlayback');	
 					break;
 				case 'adEnd':
 					b('AdSupport_EndAdPlayback');
@@ -564,10 +562,12 @@
 				case 'doPlay':
 					b( "onplay" );
 					break;
+				case 'playerSeekStart':
+					b( "seeking" ); // playerSeekStart just sends the playerId
+					break;
 				case 'seek':
 				case 'doSeek':
-				case 'playerSeekStart':
-				case 'doIntelligentSeek':		
+				case 'doIntelligentSeek':	
 					b( "seeking", function(){
 						var seekTime = ( embedPlayer.kPreSeekTime !== null ) ? embedPlayer.kPreSeekTime : embedPlayer.currentTime
 						callback( seekTime, embedPlayer.id );
@@ -579,12 +579,12 @@
 				case 'playerPlayEnd':
 					b( "onEndedDone" );
 					break;
-				case 'durationChange': 
+				case 'durationChange':
 					b( "durationchange", function(){
 						callback( { 'newValue' : embedPlayer.duration }, embedPlayer.id );
 					});
 				break;
-				case 'openFullScreen': 
+				case 'openFullScreen':
 				case 'hasOpenedFullScreen':
 					b( "onOpenFullScreen" );
 					break;
@@ -669,10 +669,10 @@
 				 *  TODO move to mw.KTimedText.js 
 				 */
 				case 'ccDataLoaded':
-					b('KalturaSupport_ccDataLoaded');
+					b('KalturaSupport_CCDataLoaded');
 					break;
 				case 'newClosedCaptionsData':
-					b('KalturaSupport_newClosedCaptionsData');
+					b('KalturaSupport_NewClosedCaptionsData');
 					break;
 				case 'changedClosedCaptions':
 					b('TimedText_ChangeSource');
@@ -724,7 +724,7 @@
 				case 'doSeek':
 					// Kaltura doSeek is in seconds rather than percentage:
 					var percent = parseFloat( notificationData ) / embedPlayer.getDuration();
-					// update local kPreSeekTime
+					// Update local kPreSeekTime
 					embedPlayer.kPreSeekTime =  embedPlayer.currentTime;
 					embedPlayer.seek( percent );
 					break;
