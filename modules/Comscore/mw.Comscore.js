@@ -36,7 +36,7 @@ mw.Comscore.prototype = {
 		c10: ""
 	},
 
-	adIndex: 0, // Used for C10 tag (read comments in getC10 method)
+	currentSegment: 0, // Used for C10 tag (read comments in getC10 method)
 
 	init: function( embedPlayer, callback ){
 		this.embedPlayer = embedPlayer;
@@ -44,6 +44,7 @@ mw.Comscore.prototype = {
 		this.loadXML( callback );
 	},
 
+	/* setupConfig: returns plugin attributes from uiConf */
 	setupConfig: function() {
 		
 		var attributes = ['cTagsMap'];
@@ -103,28 +104,46 @@ mw.Comscore.prototype = {
 				mw.log( "Comscore:: first cross domain request failed, trying with proxy" );
 			}
 		} else {
-			callback();
+			this.addPlayerBindings( callback );
 		}
 	},
 
-	addPlayerBindings: function() {
+	handleXMLResult: function( xml, callback ) {
+		mw.log('Comscore:: loaded xml successfully, setup cparams & player bindings');
+
+		// Save XML
+		this.$xml = $(xml);
+		this.loadedXML = true;
+
+		// Add player bindings
+		this.addPlayerBindings( callback );
+	},
+
+	addPlayerBindings: function( callback ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var cParams = _this.cParams;
 
+		// Setup Defaults CParams
+		this.setupCParams();
+
+		// on change media remove any existing ads:
+		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
+			_this.destroy();
+		});
+
 		// Bind to entry ready
 		$( embedPlayer ).bind('KalturaSupport_EntryDataReady' + this.bindPostfix, function() {
 			_this.playerPlayedFired = false;
-			_this.adIndex = 0;
+			_this.currentSegment = 0;
 			_this.setupCParams();
 		});
 
 		// Bind to player played
 		$( embedPlayer ).bind('onplay' + this.bindPostfix, function() {
-			if (!_this.playerPlayedFired)
-			{
+			if ( !_this.playerPlayedFired && !_this.inAd() ){
 				// Send beacon
-				_this.adIndex++;
+				_this.currentSegment++;
 				_this.comScoreBeacon( cParams );
 				_this.playerPlayedFired = true;
 			}
@@ -147,38 +166,18 @@ mw.Comscore.prototype = {
 			}
 
 			// Send beacon
-			_this.adIndex++;
+			_this.currentSegment++;
 			_this.comScoreBeacon( cParams );
 
 		});
 
-		// on change media remove any existing ads:
-		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
-			_this.destroy();
-		});
-	},
-
-	handleXMLResult: function( xml, callback ) {
-		mw.log('Comscore:: loaded xml successfully, setup cparams & player bindings');
-
-		// Save XML
-		this.$xml = $(xml);
-		this.loadedXML = true;
-
-		// Setup Defaults CParams
-		this.setupCParams();
-
-		// Add player bindings
-		this.addPlayerBindings();
-
-		// Run callback to continue player loading
+		// release the player
 		callback();
 	},
 
 	setupCParams: function() {
 		mw.log('Comscore:: Setup CParams');
 		//Set up cParams object
-		var config = this.config;
 		var cParams = this.cParams;
 
 		for( var i = 2 ; i < 10; i++ ){
@@ -190,7 +189,7 @@ mw.Comscore.prototype = {
 		 * For debug:
 		 console.log( $(this.embedPlayer).data('flashvars'));
 		 console.log(this.embedPlayer.$uiConf.find("#comscore"));
-		 console.log(config);
+		 console.log(this.config);
 		 console.log(cParams);
 		 */
 	},
@@ -255,11 +254,11 @@ mw.Comscore.prototype = {
 	 */
 	getC10: function() {
 		if( ! this.embedPlayer.kCuePoints ) { return "1-1"; }
-		var adsCount = this.embedPlayer.kCuePoints.getTotalAdsCount( 'video' );
+		var adsCount = this.embedPlayer.kCuePoints.getCuePointsCount( 'midroll' );
 		if( adsCount == 0 ){
 			return "1-1";
 		} else {
-			return this.adIndex + "-" + ( parseInt(adsCount) + 1);
+			return this.currentSegment + "-" + ( parseInt(adsCount) + 1);
 		}
 	},
 
@@ -308,5 +307,9 @@ mw.Comscore.prototype = {
 	},
 	destroy: function() {
 		$( this.embedPlayer ).unbind( this.bindPostfix );
+	},
+
+	inAd: function(){
+		return !! this.embedPlayer.evaluate('{sequenceProxy.isInSequence}');
 	}
 };
