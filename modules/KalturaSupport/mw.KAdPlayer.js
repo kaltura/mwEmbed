@@ -492,7 +492,7 @@ mw.KAdPlayer.prototype = {
 		$( videoPlayer ).bind('ended' + bindPostfix, function(){			
 			sendBeacon( 'complete' );
 			// stop monitor
-			clearInterval( monitorInterval );
+			clearInterval( _this.adMonitorInterval );
 			// clear any bindings 
 			$( videoPlayer).unbind( bindPostfix );
 		});
@@ -519,7 +519,7 @@ mw.KAdPlayer.prototype = {
 		this.adMonitorInterval = setInterval( function(){
 			// check that the video player is still available: 
 			if( !videoPlayer ){
-				clearInterval( monitorInterval );
+				clearInterval( _this.adMonitorInterval );
 			}
 			time =  videoPlayer.currentTime;
 			dur = videoPlayer.duration;
