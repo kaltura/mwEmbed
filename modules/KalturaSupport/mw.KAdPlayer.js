@@ -582,6 +582,7 @@ mw.KAdPlayer.prototype = {
 				'id' : this.getVideoAdSiblingId()
 			})
 			.css({
+				'-webkit-transform-style': 'preserve-3d',
 				'width' : '100%',
 				'height': '100%'
 			})
