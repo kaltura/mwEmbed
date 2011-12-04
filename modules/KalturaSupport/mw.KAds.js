@@ -42,13 +42,16 @@ mw.KAds.prototype = {
 		
 		_this.embedPlayer = embedPlayer;
 		
+		// Setup the ad player: 
+		_this.adPlayer = new mw.KAdPlayer( embedPlayer );
+		
 		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
 		});
-		// clear any existing bindigns: 
+		// Clear any existing bindings: 
 		_this.destroy();
 		
-		// setup local pointer: 
+		// Setup local pointer: 
 		var $uiConf = embedPlayer.$uiConf;
 		this.$notice = $uiConf.find( 'label#noticeMessage' );
 		this.$skipBtn = $uiConf.find( 'button#skipBtn' );
@@ -67,8 +70,8 @@ mw.KAds.prototype = {
 				_this.loadAndDisplayAd( cuePointWrapper );
 			}
 		});
-
 	},
+	
 	/**
 	 * Get ad config
 	 * @param name
@@ -92,7 +95,10 @@ mw.KAds.prototype = {
 		}
 		return this.config[ name ];
 	},
-	// Load the ad from cue point
+	/**
+	 * load and display an ad
+	 * cuePointWrapper
+	 */
 	loadAndDisplayAd: function( cuePointWrapper ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
@@ -114,8 +120,8 @@ mw.KAds.prototype = {
 			_this.embedPlayer.adTimeline = new mw.AdTimeline( _this.embedPlayer );
 		}
 
-		// no ad to load in cuePoint
-		if( !cuePoint.sourceUrl ) {
+		// Check for empty ad:
+		if( !cuePoint.sourceUrl || $.trim( cuePoint.sourceUrl ) === '' ) {
 			return ;
 		}
 		
@@ -124,14 +130,14 @@ mw.KAds.prototype = {
 		
 		mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
 			if( ! adConf ){
-				// resume content playback
+				// Resume content playback
 				_this.embedPlayer.play();				
 				return ;
 			}
 
 			var adCuePointConf = {
-				duration: ( (cuePoint.endTime - cuePoint.startTime) / 1000 ),
-				start: ( cuePoint.startTime / 1000  )
+				duration:  (cuePoint.endTime - cuePoint.startTime) / 1000,
+				start:  cuePoint.startTime / 1000 
 			};
 
 			var adsCuePointConf = {
@@ -211,7 +217,7 @@ mw.KAds.prototype = {
 			}
 
 			// Tell the player to show the Ad
-			_this.embedPlayer.adTimeline.display( adsCuePointConf, doneCallback, adDuration );
+			_this.adPlayer.display( adsCuePointConf, doneCallback, adDuration );
 
 		});
 	},
@@ -368,6 +374,7 @@ mw.KAds.prototype = {
 			callback( adConfigSet );
 		}
 	},
+	
 	// Parse the rather odd ui-conf companion format
 	getCompanionTargets: function(){
 		var _this = this;

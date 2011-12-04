@@ -12,11 +12,11 @@ mw.KCuePoints.prototype = {
 	bindPostfix: '.kCuePoints',
 	
 	init: function( embedPlayer ){
-		// remove any old bindings: 
+		// Remove any old bindings: 
 		this.destroy();
-		// setup player ref:
+		// Setup player ref:
 		this.embedPlayer = embedPlayer;
-		// add player bindings:
+		// Add player bindings:
 		this.addPlayerBindings();
 	},
 	destroy: function(){
@@ -28,31 +28,30 @@ mw.KCuePoints.prototype = {
 	addPlayerBindings: function(){
 		var _this = this;
 		// Get first cue point
-		var nextCuePoint = this.getCuePoint(0);
+		var currentCuePoint = this.getNextCuePoint(0);
 		var embedPlayer = this.embedPlayer;
 		
 		// Handle first cue point (preRoll)
-		if( nextCuePoint.startTime == 0 ) {
-			nextCuePoint.startTime = 1;
+		if( currentCuePoint.startTime == 0 ) {
+			currentCuePoint.startTime = 1;
 		}
 
 		// Bind to monitorEvent to trigger the cue points events
 		$( embedPlayer ).bind( "monitorEvent" + this.bindPostfix, function() {
 			var currentTime = embedPlayer.currentTime * 1000;
-			var cuePointType = _this.getRawAdSlotType(nextCuePoint);
+			var cuePointType = _this.getRawAdSlotType( currentCuePoint );
 			// Don't trigger postrolls
 			// TODO: we should remove preroll / postroll from the cuePoints array and handle them different
-			if( currentTime >= nextCuePoint.startTime 
+			if( currentTime > currentCuePoint.startTime 
 					&& 
 				cuePointType != 'postroll' 
 					&& 
-				embedPlayer._propagateEvents ) 
-			{
-				var currentCuePoint = nextCuePoint;
-				// Get next cue point
-				nextCuePoint = _this.getCuePoint( currentTime );
-				// Trigger the cue point
+				embedPlayer._propagateEvents 
+			){
+				// Trigger the cue point 
 				_this.triggerCuePoint( currentCuePoint );
+				// Update the current Cue Point to the "next" cue point
+				currentCuePoint = _this.getNextCuePoint( currentTime  );
 			}
 		});
 
@@ -69,7 +68,7 @@ mw.KCuePoints.prototype = {
 		// Bind for seeked event to update the nextCuePoint
 		$( embedPlayer ).bind( "seeked" + this.bindPostfix, function(){
 			var currentTime = embedPlayer.currentTime * 1000;
-			nextCuePoint = _this.getCuePoint( currentTime );
+			nextCuePoint = _this.getNextCuePoint( currentTime );
 		});
 
 		$( embedPlayer ).bind( 'onChangeMedia' + this.bindPostfix, function(){
@@ -89,7 +88,7 @@ mw.KCuePoints.prototype = {
 	* Returns the next cuePoint object for requested time
 	* @param {Number} time Time in milliseconds
 	*/
-	getCuePoint: function( time ){
+	getNextCuePoint: function( time ){
 		var cuePoints = this.getCuePoints();
 		// Start looking for the cue point via time, return first match:
 		for( var i = 0; i < cuePoints.length; i++) {

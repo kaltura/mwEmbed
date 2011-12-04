@@ -799,6 +799,7 @@ function kAddScript( callback ){
 		  'mw.KAnalytics',
 		  'mw.KDPMapping',
 		  'mw.KAds',
+		  'mw.KAdPlayer',
 		  'mw.AdTimeline', 
 		  'mw.BaseAdPlugin',
 		  'mw.AdLoader',
