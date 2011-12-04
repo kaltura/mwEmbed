@@ -131,7 +131,9 @@ mw.KAds.prototype = {
 		mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
 			if( ! adConf ){
 				// Resume content playback
-				_this.embedPlayer.play();				
+				setTimeout( function() { 
+					_this.embedPlayer.play();
+				}, 1);
 				return ;
 			}
 
