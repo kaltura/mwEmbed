@@ -281,7 +281,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 		return swapPlayerElement;
 	};
 
-	// Add a loader for <div> embed player rewrites: 
+	// Add a loader for <div /> embed player rewrites: 
 	$( playerSelect ).each( function( index, playerElement) {
 		
 		// Make sure the playerElement has an id:

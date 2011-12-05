@@ -1210,7 +1210,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
 	},
 	mw.isIE9 = function(){
-		return (/msie 9/.test(navigator.userAgent.toLowerCase()));
+		return ( /msie 9/.test( navigator.userAgent.toLowerCase() ) );
 	}
 	mw.isIphone = function(){
 		return ( navigator.userAgent.indexOf('iPhone') != -1 && ! mw.isIpad() );
