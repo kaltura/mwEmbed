@@ -21,7 +21,6 @@ mw.Comscore.prototype = {
 	midrollAdContentType: "11",
 	inBannerVideoAd: "12",
 
-	playerPlayedFired: false,
 	loadedXML: false,
 
 	bindPostfix: '.Comscore',
@@ -124,6 +123,19 @@ mw.Comscore.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var cParams = _this.cParams;
 
+		/*
+		 * We need to send beacons on Content playback and Ads playback
+		 *
+		 * 1. Send Beacon on 'onPlay' event ( Content Beacon )
+		 * 1. Send Beacon on AdStartPlayback ( Ad Beacon )
+		 * 2. Send Beacon on AdEndPlayback only for Midrolls ( Resume Content Beacon )
+		 * 3. If we had AdOpportunity, but didn't got AdStartPlayback, we need to send a Beacon ( Resume Content Beacon )
+		 *
+		 */
+		var shouldSendBeacon = false;
+		var sendOnSequnceEnd = false;
+		var playerPlayedFired = false;
+
 		// Setup Defaults CParams
 		this.setupCParams();
 
@@ -134,24 +146,36 @@ mw.Comscore.prototype = {
 
 		// Bind to entry ready
 		$( embedPlayer ).bind('KalturaSupport_EntryDataReady' + this.bindPostfix, function() {
-			_this.playerPlayedFired = false;
+			playerPlayedFired = false;
+			shouldSendBeacon = false;
+			sendOnSequnceEnd = false;
 			_this.currentSegment = 0;
 			_this.setupCParams();
 		});
 
 		// Bind to player played
 		$( embedPlayer ).bind('onplay' + this.bindPostfix, function() {
-			if ( !_this.playerPlayedFired && !_this.inAd() ){
+			if ( !playerPlayedFired && !_this.inAd() ){
 				// Send beacon
 				_this.currentSegment++;
+				cParams["c5"] = _this.parseCAttribute('c5');
+				mw.log('Comscore:: Send Content Start Beacon');
 				_this.comScoreBeacon( cParams );
-				_this.playerPlayedFired = true;
+				playerPlayedFired = true;
 			}
 		});
 
-		// Bind to ad start
+		// Listen to Ad opportunities of midroll type and increase the current segment counter
+		$( embedPlayer ).bind('KalturaSupport_AdOpportunity' + this.bindPostfix, function( event, cuePoint ) {
+			if( embedPlayer.kCuePoints.getAdSlotType( cuePoint ) === 'midroll' ) {
+				_this.currentSegment++;
+				// Used setTimeout because it takes few ms to set propagateEvents to false
+				setTimeout( function() { shouldSendBeacon = true; }, mw.getConfig( 'EmbedPlayer.MonitorRate' ));
+			}
+		});
+
 		$( embedPlayer ).bind('AdSupport_StartAdPlayback' + this.bindPostfix, function( event, adType ) {
-			
+
 			switch ( adType )
 			{
 				case 'preroll':
@@ -162,13 +186,33 @@ mw.Comscore.prototype = {
 				break;
 				case 'midroll':
 					cParams["c5"] = _this.midrollAdContentType;
+					sendOnSequnceEnd = true;
 				break;
 			}
 
 			// Send beacon
-			_this.currentSegment++;
+			mw.log('Comscore:: Send Ad Start Beacon');
 			_this.comScoreBeacon( cParams );
+			shouldSendBeacon = false;
 
+		});
+
+		$( embedPlayer ).bind('AdSupport_EndAdPlayback' + this.bindPostfix, function() {
+			if( sendOnSequnceEnd ) {
+				cParams["c5"] = _this.parseCAttribute('c5'); // Reset C5
+				mw.log('Comscore:: Send Ad End Beacon (Resume Content)');
+				_this.comScoreBeacon( cParams );
+				sendOnSequnceEnd = false;
+			}
+		});
+
+		$( embedPlayer ).bind('monitorEvent' + this.bindPostfix, function() {
+			if( shouldSendBeacon ) {
+				cParams["c5"] = _this.parseCAttribute('c5'); // Reset C5
+				mw.log('Comscore:: Send Resume Content Beacon (No Ad)');
+				_this.comScoreBeacon( cParams );
+				shouldSendBeacon = false;
+			}
 		});
 
 		// release the player
@@ -186,12 +230,12 @@ mw.Comscore.prototype = {
 		}
 
 		/**
-		 * For debug:
-		 console.log( $(this.embedPlayer).data('flashvars'));
-		 console.log(this.embedPlayer.$uiConf.find("#comscore"));
-		 console.log(this.config);
-		 console.log(cParams);
-		 */
+		 * For debug:*/
+		 console.log( 'Flashvars: ', $(this.embedPlayer).data('flashvars'));
+		 console.log( 'uiConf: ', this.embedPlayer.$uiConf.find("#comscore"));
+		 console.log( 'Comscore config: ', this.config);
+		 console.log( 'cParams: ', cParams);
+		 /**/
 	},
 
 	/**
@@ -295,13 +339,13 @@ mw.Comscore.prototype = {
 		loadUrl +="cv=" + _this.pluginVersion;
 
 		// load img to send the beacon
-		$('body').append(
+		/*$('body').append(
 			$( '<img />' ).attr({
 				'src' : loadUrl,
 				'width' : 0,
 				'height' : 0
 			})
-		);
+		);*/
 
 		mw.log('Comscore:: Sent Beacon: ' + loadUrl, beaconObject);
 	},
