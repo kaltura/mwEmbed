@@ -217,7 +217,7 @@ mw.NielsenPlugin.prototype = {
 		
 		// Volume change: 
 		b( 'volumechange', function(){
-			_this.dispatchEvent( 11, String(player.volume) );
+			_this.dispatchEvent( 11, String( vid.volume ) );
 		});
 		
 		// Kaltura HTML5 does not really have an idle state:
