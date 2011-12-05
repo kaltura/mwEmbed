@@ -146,7 +146,8 @@ mw.KApi.prototype = {
 		}
 		window[ globalCBName ] = function( data ){
 			// issue the local scope callback:
-			callback( data );
+			if( callback )
+				callback( data );
 			// null this global function name: 
 			window[ globalCBName ] = null;
 		};

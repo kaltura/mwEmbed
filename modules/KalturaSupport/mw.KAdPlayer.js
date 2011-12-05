@@ -14,7 +14,7 @@ mw.KAdPlayer.prototype = {
 	// Ad tracking postFix: 
 	trackingBindPostfix: '.AdTracking',
 
-	// Use Video sibling
+	// Use Video sibling element
 	enableVideoSibling: false,
 	
 	// The local interval for monitoring ad playback: 
