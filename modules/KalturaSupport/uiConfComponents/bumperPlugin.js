@@ -8,6 +8,8 @@ window.bumperPlugin = true;
 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+
+		var adPlayer = new mw.KAdPlayer( embedPlayer );
 		var bumpPostfix = '.Bumper';
 		
 		// On change media clear any bumper settings: 
@@ -51,7 +53,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 					$( embedPlayer ).bind( 'AdSupport_bumper' + bumpPostfix, function(event, sequenceProxy){
 						adConf.type = 'bumper';
 						sequenceProxy[ bc.preSequence ] = function( doneCallback ){
-							embedPlayer.adTimeline.display( adConf, doneCallback );
+							adPlayer.display( adConf, doneCallback );
 						};
 					});
 				}
@@ -60,7 +62,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 					$( embedPlayer ).bind( 'AdSupport_postroll' + bumpPostfix, function(event, sequenceProxy){
 						adConf.type = 'postroll';
 						sequenceProxy[ bc.postSequence ] = function( doneCallback ){
-							embedPlayer.adTimeline.display( adConf, doneCallback );
+							adPlayer.display( adConf, doneCallback );
 						};
 					});
 				}
@@ -71,4 +73,4 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	});
 });
 
-})( window.mw, jQuery );
+})( window.mw, window.jQuery );

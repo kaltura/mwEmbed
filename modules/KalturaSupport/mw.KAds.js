@@ -191,7 +191,7 @@ mw.KAds.prototype = {
 								// Pause playback state
 								vid.pause();
 								// iPhone does not catch synchronous pause
-								setTimeout( function(){ if( vid && vid.pause ){ vid.pause(); } }, 100 );
+								setTimeout( function(){if( vid && vid.pause ){vid.pause();}}, 100 );
 							}
 						} else {
 							$( embedPlayer ).bind('seeked' + _this.bindPostfix, function() {
@@ -219,6 +219,7 @@ mw.KAds.prototype = {
 			}
 
 			// Tell the player to show the Ad
+			_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
 			_this.adPlayer.display( adsCuePointConf, doneCallback, adDuration );
 
 		});
