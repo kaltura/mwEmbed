@@ -485,7 +485,7 @@ mw.KAdPlayer.prototype = {
 					mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + trackingEvents[ i ].beaconUrl );
 					mw.sendBeaconUrl( trackingEvents[ i ].beaconUrl );
 				};
-			};			
+			};				
 		};
 		
 		// On end stop monitor / clear interval: 
@@ -545,23 +545,36 @@ mw.KAdPlayer.prototype = {
 		return array[ Math.floor( Math.random() * array.length ) ];
 	},
 	playVideoSibling: function( src, playingCallback, doneCallback ){
-		// hide any loading spinner
+		var _this = this;
+		// Hide any loading spinner
 		this.embedPlayer.hidePlayerSpinner();
-		// hide the current video:
-		$( this.getNativePlayerElement() ).hide();
 		
-		var vid = this.getVideoAdSiblingElement();
-		vid.src = src;
-		vid.load();
-		vid.play();
-		if( playingCallback ){
-			playingCallback( vid );
-		}
-		if( doneCallback ){
-			$( vid ).bind('ended', function(){
-				doneCallback();
-			})
-		}
+		// include a timeout for the pause event to propagate
+		setTimeout(function(){
+			// make sure the embed player is "paused" 
+			_this.getNativePlayerElement().pause();
+			
+			// put the player into "ad mode" 
+			_this.embedPlayer.adTimeline.updateUiForAdPlayback();
+			
+			// Hide the current video:
+			$( _this.getNativePlayerElement() ).hide();
+			
+			var vid = _this.getVideoAdSiblingElement();
+			vid.src = src;
+			vid.load();
+			vid.play();
+			
+			if( playingCallback ){
+				playingCallback( vid );
+			}
+			if( doneCallback ){
+				$( vid ).bind('ended', function(){
+					doneCallback();
+				})
+			}
+			
+		},0);
 	},
 	restoreEmbedPlayer:function(){
 		// remove the video sibling: 
