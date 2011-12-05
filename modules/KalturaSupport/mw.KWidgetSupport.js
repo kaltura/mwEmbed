@@ -677,7 +677,7 @@ mw.KWidgetSupport.prototype = {
 
 		// If we have hash, remove everything after that
 		if( hostUrl.indexOf("#") !== -1 ) {
-			hostUrl = refer.substr(0, refer.indexOf("#"));
+			hostUrl = hostUrl.substr(0, hostUrl.indexOf("#"));
 		}
 		return hostUrl;
 	},
