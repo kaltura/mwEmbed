@@ -51,6 +51,8 @@ mw.KAdPlayer.prototype = {
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
 			// remove click binding if present
 			$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
+			// stop any ad tracking: 
+			_this.stopAdTracking();
 			
 			// remove the video sibling ( used for ad playback )
 			_this.restoreEmbedPlayer();
@@ -415,9 +417,8 @@ mw.KAdPlayer.prototype = {
 	bindTrackingEvents: function ( trackingEvents ){
 		var _this = this;
 		var videoPlayer = _this.getVideoElement();
-		var bindPostfix = _this.trackingBindPostfix;
 		// unbind any existing adTimeline events
-		$( videoPlayer).unbind( bindPostfix );
+		$( videoPlayer).unbind(  _this.trackingBindPostfix );
 		
 		// Only send events once: 
 		var sentEvents = {};
@@ -438,27 +439,24 @@ mw.KAdPlayer.prototype = {
 		};
 		
 		// On end stop monitor / clear interval: 
-		$( videoPlayer ).bind('ended' + bindPostfix, function(){			
+		$( videoPlayer ).bind('ended' +  _this.trackingBindPostfix, function(){			
 			sendBeacon( 'complete' );
-			// stop monitor
-			clearInterval( _this.adMonitorInterval );
-			// clear any bindings 
-			$( videoPlayer).unbind( bindPostfix );
+			_this.stopAdTracking();
 		});
 		
 		// On pause / resume: 
-		$( videoPlayer ).bind( 'onpause' + bindPostfix, function(){
+		$( videoPlayer ).bind( 'onpause' +  _this.trackingBindPostfix, function(){
 			sendBeacon( 'pause', true );
 		});
 		
 		// On resume: 
-		$( videoPlayer ).bind( 'onplay' + bindPostfix, function(){
+		$( videoPlayer ).bind( 'onplay' +  _this.trackingBindPostfix, function(){
 			sendBeacon( 'resume', true );
 		});
 		
 		var time = 0;
 		// On seek backwards 
-		$( videoPlayer ).bind( 'seek' + bindPostfix, function(){
+		$( videoPlayer ).bind( 'seek' +  _this.trackingBindPostfix, function(){
 			if( videoPlayer.currentTime < time ){
 				sendBeacon( 'rewind' );
 			}
@@ -475,8 +473,8 @@ mw.KAdPlayer.prototype = {
 			
 			// Check if isVideoSiblingEnabled and update the status bar 
 			if( _this.isVideoSiblingEnabled() ) {
-				var endTime = ( this.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( dur ) : '';
-				_this.embedPlayer.setStatus(
+				var endTime = ( _this.embedPlayer.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( dur ) : '';
+				_this.embedPlayer.controlBuilder.setStatus(
 					mw.seconds2npt(	time ) + endTime
 				);
 				_this.embedPlayer.updatePlayHead( time / dur );
@@ -495,7 +493,14 @@ mw.KAdPlayer.prototype = {
 			if( time > dur / 1.5 )
 				sendBeacon( 'thirdQuartile' );
 			
-		}, mw.getConfig('EmbedPlayer.MonitorRate') );		
+		});		
+	},
+	stopAdTracking: function(){
+		var _this = this;
+		// stop monitor
+		clearInterval( _this.adMonitorInterval );
+		// clear any bindings 
+		$(  _this.getVideoElement() ).unbind( _this.trackingBindPostfix );
 	},
 	/**
 	 * Select a random element from the array and return it 
