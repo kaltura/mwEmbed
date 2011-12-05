@@ -99,7 +99,7 @@ mw.KAdPlayer.prototype = {
 		// Start monitoring for display duration end ( if not supplied we depend on videoFile end )
 		if( displayDuration ){
 			// Monitor time for display duration display utility function
-			var startTime = _this.getNativePlayerElement().currentTime;		
+			var startTime = _this.getOriginalPlayerElement().currentTime;		
 			this.monitorForDisplayDuration( adSlot, startTime, displayDuration );		
 		} 
 		
@@ -133,11 +133,11 @@ mw.KAdPlayer.prototype = {
 	monitorForDisplayDuration: function( adSlot, startTime, displayDuration ){
 		var _this = this;
 		// Local base video monitor function: 
-		var vid = _this.getNativePlayerElement();
+		var vid = _this.getOriginalPlayerElement();
 		// Stop display of overlay if video playback is no longer active
 		if( typeof vid == 'undefined'
 			||
-			 _this.getNativePlayerElement().currentTime - startTime > displayDuration 
+			 _this.getOriginalPlayerElement().currentTime - startTime > displayDuration 
 		){
 			mw.log( "KAdPlayer::display:" + adSlot.type + " Playback done because vid does not exist or > displayDuration " + displayDuration );
 			adSlot.playbackDone();
@@ -173,34 +173,31 @@ mw.KAdPlayer.prototype = {
 					_this.embedPlayer.controlBuilder.restoreControlsHover();
 				})
 				// try to do a popup:
-				if(!clickedBumper){
+				if( ! clickedBumper ){
 					clickedBumper = true;
 					window.open( adConf.clickThrough );								
 					return false;
 				}
-				return true;							
+				return true;				
 			});
 		}
+		
+		// Setup the source switch argument object: 
+		var playAdArguments = [
+			targetSrc,
+			function( vid ) {
+				_this.addAdBindings( vid, adSlot, adConf );
+			},
+			function(){
+				adSlot.playbackDone();
+			}
+		];
+		
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled() ) {
-			_this.playVideoSibling( targetSrc,
-				function( vid ) {
-					_this.addAdBindings( vid, adSlot, adConf );
-				},
-				function(){
-					adSlot.playbackDone();
-				}
-			);
+			_this.playVideoSibling.apply( this, playAdArguments );
 		} else {
-			// Play the source then run the callback
-			_this.embedPlayer.switchPlaySrc( targetSrc,
-				function(vid) {
-					_this.addAdBindings( vid, adSlot, adConf );
-				},
-				function(){
-					adSlot.playbackDone();
-				}
-			);
+			_this.embedPlayer.switchPlaySrc( this, playAdArguments );
 		}
 	},
 	/**
@@ -417,7 +414,7 @@ mw.KAdPlayer.prototype = {
 	 */	
 	bindTrackingEvents: function ( trackingEvents ){
 		var _this = this;
-		var videoPlayer = _this.getVideoAdSiblingElement();
+		var videoPlayer = _this.getVideoElement();
 		var bindPostfix = _this.trackingBindPostfix;
 		// unbind any existing adTimeline events
 		$( videoPlayer).unbind( bindPostfix );
@@ -476,6 +473,16 @@ mw.KAdPlayer.prototype = {
 			time =  videoPlayer.currentTime;
 			dur = videoPlayer.duration;
 			
+			// Check if isVideoSiblingEnabled and update the status bar 
+			if( _this.isVideoSiblingEnabled() ) {
+				var endTime = ( this.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( dur ) : '';
+				_this.embedPlayer.setStatus(
+					mw.seconds2npt(	time ) + endTime
+				);
+				_this.embedPlayer.updatePlayHead( time / dur );
+			}
+			
+			
 			if( time > 0 )
 				sendBeacon( 'start' );
 				
@@ -504,13 +511,13 @@ mw.KAdPlayer.prototype = {
 		// include a timeout for the pause event to propagate
 		setTimeout(function(){
 			// make sure the embed player is "paused" 
-			_this.getNativePlayerElement().pause();
+			_this.getOriginalPlayerElement().pause();
 			
 			// put the player into "ad mode" 
 			_this.embedPlayer.adTimeline.updateUiForAdPlayback();
 			
 			// Hide the current video:
-			$( _this.getNativePlayerElement() ).hide();
+			$( _this.getOriginalPlayerElement() ).hide();
 			
 			var vid = _this.getVideoAdSiblingElement();
 			vid.src = src;
@@ -532,15 +539,26 @@ mw.KAdPlayer.prototype = {
 		// remove the video sibling: 
 		$( '#' + this.getVideoAdSiblingId() ).remove();
 		// show the player: 
-		$( this.getNativePlayerElement() ).show();
+		$( this.getOriginalPlayerElement() ).show();
+	},
+	/**
+	 * Get either the video sibling or the orginal player element depending on VideoSiblingEnabled
+	 * or not. 
+	 */
+	getVideoElement:function(){
+		if( this.isVideoSiblingEnabled() ) {
+			return this.getVideoAdSiblingElement()
+		} else {
+			return this.getOriginalPlayerElement();
+		}
 	},
 	getVideoAdSiblingElement: function(){
 		var $vidSibling = $( '#' + this.getVideoAdSiblingId() );
 		if( !$vidSibling.length ){			
 			// check z-index of native player (if set ) 
-			var zIndex = $( this.getNativePlayerElement() ).css('zindex');
+			var zIndex = $( this.getOriginalPlayerElement() ).css('zindex');
 			if( !zIndex ){
-				$( this.getNativePlayerElement() ).css('z-index', 1 );
+				$( this.getOriginalPlayerElement() ).css('z-index', 1 );
 			}
 			$vidSibling = $('<video />')
 			.attr({
@@ -560,7 +578,7 @@ mw.KAdPlayer.prototype = {
 	getVideoAdSiblingId: function(){
 		return this.embedPlayer.pid + '_adSibling';
 	},
-	getNativePlayerElement: function(){
+	getOriginalPlayerElement: function(){
 		return this.embedPlayer.getPlayerElement();
 	}
 }
