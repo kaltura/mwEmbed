@@ -13,6 +13,9 @@ mw.KAdPlayer.prototype = {
 
 	// Ad tracking postFix: 
 	trackingBindPostfix: '.AdTracking',
+
+	// Use Video sibling
+	enableVideoSibling: false,
 	
 	// The local interval for monitoring ad playback: 
 	adMonitorInterval: null,
@@ -177,15 +180,91 @@ mw.KAdPlayer.prototype = {
 			});
 		}
 		
-		// Play the ad as sibbling to the current video element. 
-		_this.playVideoSibling( targetSrc,
-				function( vid ) {
+		// Play the ad as sibbling to the current video element.
+		if( _this.enableVideoSibling ) {
+			_this.playVideoSibling( targetSrc,
+					function( vid ) {
+						if( !vid ){
+							mw.log("KAdPlayer:: Error: displayVideoFile no video in playVideoSibling callback " );
+							return ;
+						}
+						mw.log("KAdPlayer:: source updated, add tracking");
+						// Bind all the tracking events ( currently vast based but will abstract if needed )
+						if( adConf.trackingEvents ){
+							_this.bindTrackingEvents( adConf.trackingEvents );
+						}
+						var helperCss = {
+							'position': 'absolute',
+							'color' : '#FFF',
+							'font-weight':'bold',
+							'text-shadow': '1px 1px 1px #000'
+						};
+						// Check runtimeHelper ( notices
+						if( adSlot.notice ){
+							var noticeId =_this.embedPlayer.id + '_ad_notice';
+							// Add the notice target:
+							_this.embedPlayer.$interface.append(
+								$('<span />')
+									.attr('id', noticeId)
+									.css( helperCss )
+									.css('font-size', '90%')
+									.css( adSlot.notice.css )
+							);
+							var localNoticeCB = function(){
+								if( vid && $('#' + noticeId).length ){
+									var timeLeft = Math.round( vid.duration - vid.currentTime );
+									if( isNaN( timeLeft ) ){
+										timeLeft = '...';
+									}
+									$('#' + noticeId).text(
+										adSlot.notice.text.replace('$1', timeLeft)
+									);
+									setTimeout( localNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+								}
+							};
+							localNoticeCB();
+						}
+						// Check for skip add button
+						if( adSlot.skipBtn ){
+							var skipId = _this.embedPlayer.id + '_ad_skipBtn';
+							_this.embedPlayer.$interface.append(
+								$('<span />')
+									.attr('id', skipId)
+									.text( adSlot.skipBtn.text )
+									.css( helperCss )
+									.css('cursor', 'pointer')
+									.css( adSlot.skipBtn.css )
+									.click(function(){
+										$( _this.embedPlayer ).unbind( 'click' + adClickPostFix );
+										adSlot.playbackDone();
+									})
+							);
+							// TODO move up via layout engine ( for now just the control bar )
+							var bottomPos = parseInt( $('#' +skipId ).css('bottom') );
+							if( !isNaN( bottomPos ) ){
+								$('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() );
+							}
+						}
+
+					},
+					function(){
+						// unbind any click ad bindings:
+						$( _this.embedPlayer ).unbind( 'click' + adClickPostFix );
+						adSlot.playbackDone();
+					}
+			);
+
+			return ;
+		} else {
+			// Play the source then run the callback
+			_this.embedPlayer.switchPlaySrc( targetSrc,
+				function(vid) {
 					if( !vid ){
-						mw.log("KAdPlayer:: Error: displayVideoFile no video in playVideoSibling callback " );
+						mw.log("KAdPlayer:: Error: displayVideoFile no video in switchPlaySrc callback " );
 						return ;
 					}
 					mw.log("KAdPlayer:: source updated, add tracking");
-					// Bind all the tracking events ( currently vast based but will abstract if needed ) 
+					// Bind all the tracking events ( currently vast based but will abstract if needed )
 					if( adConf.trackingEvents ){
 						_this.bindTrackingEvents( adConf.trackingEvents );
 					}
@@ -199,7 +278,7 @@ mw.KAdPlayer.prototype = {
 					if( adSlot.notice ){
 						var noticeId =_this.embedPlayer.id + '_ad_notice';
 						// Add the notice target:
-						_this.embedPlayer.$interface.append( 
+						_this.embedPlayer.$interface.append(
 							$('<span />')
 								.attr('id', noticeId)
 								.css( helperCss )
@@ -216,7 +295,7 @@ mw.KAdPlayer.prototype = {
 									adSlot.notice.text.replace('$1', timeLeft)
 								);
 								setTimeout( localNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
-							}							
+							}
 						};
 						localNoticeCB();
 					}
@@ -229,101 +308,27 @@ mw.KAdPlayer.prototype = {
 								.text( adSlot.skipBtn.text )
 								.css( helperCss )
 								.css('cursor', 'pointer')
-								.css( adSlot.skipBtn.css )				
+								.css( adSlot.skipBtn.css )
 								.click(function(){
 									$( _this.embedPlayer ).unbind( 'click' + adClickPostFix );
 									adSlot.playbackDone();
 								})
 						);
-						// TODO move up via layout engine ( for now just the control bar ) 
+						// TODO move up via layout engine ( for now just the control bar )
 						var bottomPos = parseInt( $('#' +skipId ).css('bottom') );
 						if( !isNaN( bottomPos ) ){
 							$('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() );
 						}
 					}
-					
+
 				},
 				function(){
 					// unbind any click ad bindings:
-					$( _this.embedPlayer ).unbind( 'click' + adClickPostFix );					
+					$( _this.embedPlayer ).unbind( 'click' + adClickPostFix );
 					adSlot.playbackDone();
 				}
-		);
-		
-		return ;
-		
-		// Play the source then run the callback
-		/*_this.embedPlayer.switchPlaySrc( targetSrc, 
-			function(vid) {
-				if( !vid ){
-					mw.log("KAdPlayer:: Error: displayVideoFile no video in switchPlaySrc callback " );
-					return ;
-				}
-				mw.log("KAdPlayer:: source updated, add tracking");
-				// Bind all the tracking events ( currently vast based but will abstract if needed ) 
-				if( adConf.trackingEvents ){
-					_this.bindTrackingEvents( adConf.trackingEvents );
-				}
-				var helperCss = {
-					'position': 'absolute',
-					'color' : '#FFF',
-					'font-weight':'bold',
-					'text-shadow': '1px 1px 1px #000'
-				};
-				// Check runtimeHelper ( notices
-				if( adSlot.notice ){
-					var noticeId =_this.embedPlayer.id + '_ad_notice';
-					// Add the notice target:
-					_this.embedPlayer.$interface.append( 
-						$('<span />')
-							.attr('id', noticeId)
-							.css( helperCss )
-							.css('font-size', '90%')
-							.css( adSlot.notice.css )
-					);
-					var localNoticeCB = function(){
-						if( vid && $('#' + noticeId).length ){
-							var timeLeft = Math.round( vid.duration - vid.currentTime );
-							if( isNaN( timeLeft ) ){
-								timeLeft = '...';
-							}
-							$('#' + noticeId).text(
-								adSlot.notice.text.replace('$1', timeLeft)
-							);
-							setTimeout( localNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
-						}							
-					};
-					localNoticeCB();
-				}
-				// Check for skip add button
-				if( adSlot.skipBtn ){
-					var skipId = _this.embedPlayer.id + '_ad_skipBtn';
-					_this.embedPlayer.$interface.append(
-						$('<span />')
-							.attr('id', skipId)
-							.text( adSlot.skipBtn.text )
-							.css( helperCss )
-							.css('cursor', 'pointer')
-							.css( adSlot.skipBtn.css )				
-							.click(function(){
-								$( _this.embedPlayer ).unbind( 'click' + adClickPostFix );
-								adSlot.playbackDone();
-							})
-					);
-					// TODO move up via layout engine ( for now just the control bar ) 
-					var bottomPos = parseInt( $('#' +skipId ).css('bottom') );
-					if( !isNaN( bottomPos ) ){
-						$('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() );
-					}
-				}
-				
-			},
-			function(){					
-				// unbind any click ad bindings:
-				$( _this.embedPlayer ).unbind( 'click' + adClickPostFix );					
-				adSlot.playbackDone();
-			}
-		);*/
+			);
+		}
 	},
 	/**
 	 * Display companion ads
