@@ -221,7 +221,7 @@ mw.NielsenPlugin.prototype = {
 		});
 		
 		// Kaltura HTML5 does not really have an idle state:
-		// sender.onIdle(function(args) {ggCom1.onCurrentStateChanged(args)});
+		// sender.onIdle( function( args ) { ggCom1.onCurrentStateChanged( args ) } );
 		
 		// Monitor:
 		var lastTime = -1;

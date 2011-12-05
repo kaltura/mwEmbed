@@ -382,7 +382,7 @@
 					mw.log("KalturaLoader:: load EmbedPlayer");
 					mw.load('EmbedPlayer', function(){
 						// Remove the general loading spinner ( embedPlayer takes over )
-						$('.mwEmbedKalturaVideoSwap').embedPlayer( rewriteDoneCallback );
+						$('.mwEmbedKalturaVideoSwap' ).embedPlayer( rewriteDoneCallback );
 					});
 				}
 				// no loader, run the callback directly: 

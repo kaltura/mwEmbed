@@ -103,9 +103,6 @@
 		// don't fully support DOM overlays or don't expose full-screen
 		// functionality to javascript
 		"EmbedPlayer.NativeControls" : false,
-
-		// If mwEmbed should use native controls on mobile safari
-		"EmbedPlayer.NativeControlsMobileSafari" : true,
 		
 		// A link to download the latest firefox:
 		"EmbedPlayer.FirefoxLink" : 'http://www.mozilla.com/en-US/firefox/upgrade.html?from=mwEmbed',
@@ -551,27 +548,28 @@
 		} else {
 			var playerSelect = this;
 		}
-	
 		$( playerSelect ).each( function( index, playerElement) {
 			// make sure the playerElement has an id:
 			if( !$( playerElement ).attr('id') ){
 				$( playerElement ).attr( "id", 'mwe_vid_' + ( index ) );
 			}
-	
+
 			// If we are dynamically embedding on a "div" check if we can
 			// add a poster image behind the loader:
 			if( playerElement.nodeName.toLowerCase() == 'div'
-				&& ( attributes.poster || $(playerElement).attr( 'poster' ) ) ){
-				var posterSrc = ( attributes.poster ) ? attributes.poster : $(playerElement).attr( 'poster' );
+					&&  
+				$(playerElement).attr( 'poster' ) )
+			{
+				var posterSrc = $(playerElement).attr( 'poster' );
 	
 				// Set image size:
 				var width = $( playerElement ).width();
 				var height = $( playerElement ).height();
 				if( !width ){
-					var width = ( attributes.width )? attributes.width : '100%';
+					var width = '100%';
 				}
 				if( !height ){
-					var height = ( attributes.height )? attributes.height : '100%';
+					var height = '100%';
 				}
 	
 				mw.log('EmbedPlayer:: set loading background: ' + posterSrc);

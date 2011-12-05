@@ -18,7 +18,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 	// Check if the selected player set is ready if ready issue the parent callback
 	var areSelectedPlayersReady = function(){
 		var playersLoaded = true;
-		$.each(playerIdList, function(inx, playerId){
+		$.each( playerIdList, function(inx, playerId){
 			if( ! $( '#' + playerId ).get(0).playerReady ){
 				playersLoaded = false;
 				return false;
@@ -47,9 +47,6 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 	 *
 	 * @param {Element}
 	 *      playerElement DOM element to be swapped
-	 * @param {Object}
-	 *      [Optional] attributes Extra attributes to apply to the player
-	 *      interface
 	 */
 	var addPlayerElement = function( playerElement ) {
 		var _this = this;
@@ -242,9 +239,16 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 				}
 			});
 		}
-		
-		// Check if we are using native controls or Persistent player ( should keep the video embed around )
-		if( playerInterface.useNativePlayerControls() || playerInterface.isPersistentNativePlayer() ) {
+		// Check for Persistent native player ( should keep the video embed around )
+		if(  playerInterface.isPersistentNativePlayer() 
+				||
+			// Also check for native controls on a video or audio tag
+			( playerInterface.useNativePlayerControls() 
+					&& 
+				( targetElement.nodeName == 'video' || targetElement.nodeName == 'audio' )
+			)
+		) {
+			
 			$( targetElement )
 			.attr( 'id', playerInterface.pid )
 			.addClass( 'nativeEmbedPlayerPid' )
@@ -290,17 +294,19 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 		// If we are dynamically embedding on a "div" check if we can
 		// add a poster image behind the loader:
 		if( playerElement.nodeName.toLowerCase() == 'div'
-			&& ( attributes.poster || $(playerElement).attr( 'poster' ) ) ){
-			var posterSrc = ( attributes.poster ) ? attributes.poster : $(playerElement).attr( 'poster' );
+				&& 
+			$(playerElement).attr( 'poster' ) )
+		{
+			var posterSrc = $(playerElement).attr( 'poster' );
 
 			// Set image size:
 			var width = $( playerElement ).width();
 			var height = $( playerElement ).height();
 			if( !width ){
-				var width = ( attributes.width ) ? attributes.width : '100%';
+				var width = '100%';
 			}
 			if( !height ){
-				var height = ( attributes.height ) ? attributes.height : '100%';
+				var height = '100%';
 			}
 
 			mw.log('EmbedPlayer:: set loading background: ' + posterSrc);

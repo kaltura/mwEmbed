@@ -890,7 +890,7 @@ mw.EmbedPlayer.prototype = {
 			}
 			// Make sure we have mwplayer_interface
 			$( this ).wrap(
-				$('<div>')
+				$('<div />')
 				.addClass( 'mwplayer_interface ' + this.controlBuilder.playerClass )
 				.css( posObj )
 			)
@@ -989,15 +989,15 @@ mw.EmbedPlayer.prototype = {
 		
 		// Control builder ( for play button )
 		this.controlBuilder = new mw.PlayerControlBuilder( this );					
-		
 		// Make sure interface is available
 		this.getPlayerInterface();
 
 		// Remove thumbnail from the iframe
 		$('#directFileLinkThumb').remove();
-		
+	
 		// Update the poster and html:
 		this.updatePosterHTML();
+	
 		// on iOS devices don't try to add warnings
 		if( !this.mediaElement.sources.length || mw.isIOS() || !mw.getConfig('EmbedPlayer.NotPlayableDownloadLink') ){
 			var noSourceMsg = gM('mwe-embedplayer-missing-source');
