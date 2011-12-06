@@ -126,8 +126,11 @@ mw.PlayerControlBuilder.prototype = {
 		} else {
 			embedPlayer.height =  embedPlayer.$interface.height() - this.getHeight();
 			$( embedPlayer ).css('height', embedPlayer.height +'px' );
-			// update native element height:
-			$('#' + embedPlayer.pid ).css('height', embedPlayer.height);
+			// update native element height ( and reset top offset) 
+			$('#' + embedPlayer.pid ).css({
+				'top' : '0px',
+				'height': embedPlayer.height
+			});
 		}
 
 		$controlBar.css( {
@@ -1870,8 +1873,8 @@ mw.PlayerControlBuilder.prototype = {
 					} )
 					// Get dynamic position for big play button
 					.css( ctrlObj.getPlayButtonPosition({
-						'width' : ctrlObj.embedPlayer.getWidth(),
-						'height' :  ctrlObj.embedPlayer.getHeight()
+						'width' : ctrlObj.embedPlayer.$interface.width(),
+						'height' :  ctrlObj.embedPlayer.$interface.height()
 					}) )
 					// Add play hook:
 					.click( function() {

@@ -1027,11 +1027,7 @@ mw.EmbedPlayer.prototype = {
 			);
 			$( this ).show();
 			// Make sure we have a play btn:
-			if( $( this ).find('.play-btn-large').length == 0) {
-				this.$interface.append(
-						this.controlBuilder.getComponent( 'playButtonLarge' )
-				);
-			}
+			this.addPlayBtnLarge();
 			
 			// Set the play button to the first available source:
 			this.$interface.find('.play-btn-large')
@@ -1279,13 +1275,10 @@ mw.EmbedPlayer.prototype = {
 			);
 		}
 		if ( !this.useNativePlayerControls()  && this.controlBuilder
-			&& this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
-			&& $( this ).find('.play-btn-large').length == 0
+				&& 
+			this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
 		) {
-			
-			$( this ).append(
-				this.controlBuilder.getComponent( 'playButtonLarge' )
-			);
+			this.addPlayBtnLarge();
 		}
 	},
 

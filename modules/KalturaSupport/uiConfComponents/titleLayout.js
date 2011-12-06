@@ -3,7 +3,7 @@
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			
-			// If iphone don't show the title
+			// If native controls don't show the title
 			if( embedPlayer.useNativePlayerControls() ) {
 				callback();
 				return ;
