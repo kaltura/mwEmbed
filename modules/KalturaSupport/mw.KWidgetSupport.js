@@ -8,6 +8,7 @@ mw.KWidgetSupport.prototype = {
 
 	// The Kaltura client local reference
 	kClient : null,
+	kSessionId: null, // Used for Analytics events
 	
 	// Constructor check settings etc
 	init: function( options ){
@@ -842,6 +843,19 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		return deviceSources;
+	},
+
+	generateGUID: function() {
+		var S4 = function() {
+		   return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+		};
+		return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+	},
+	getGUID: function() {
+		if( ! this.kSessionId ) {
+			this.kSessionId = this.generateGUID();
+		}
+		return this.kSessionId;
 	}
 };
 

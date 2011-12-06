@@ -401,6 +401,9 @@
 								return $( embedPlayer ).data( 'flashvars' );
 							}
 						break;
+						case 'sessionId':
+							return window.kWidgetSupport.getGUID();
+						break;
 					}
 					// no objectPath[1] match return the full configProx object: 
 					return { 'flashvars' : $( embedPlayer ).data( 'flashvars' ) }
