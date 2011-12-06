@@ -1866,6 +1866,10 @@ mw.PlayerControlBuilder.prototype = {
 			'w' : 70,
 			'h' : 53,
 			'o' : function( ctrlObj ) {
+				var baseHeight =  ctrlObj.isOverlayControls() 
+					? ctrlObj.embedPlayer.$interface.height()
+					: ctrlObj.embedPlayer.$interface.height() - ctrlObj.getHeight();
+				
 				return $( '<div/>' )
 					.attr( {
 						'title'	: gM( 'mwe-embedplayer-play_clip' ),
@@ -1874,7 +1878,7 @@ mw.PlayerControlBuilder.prototype = {
 					// Get dynamic position for big play button
 					.css( ctrlObj.getPlayButtonPosition({
 						'width' : ctrlObj.embedPlayer.$interface.width(),
-						'height' :  ctrlObj.embedPlayer.$interface.height()
+						'height' :  baseHeight
 					}) )
 					// Add play hook:
 					.click( function() {
