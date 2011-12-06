@@ -1,5 +1,5 @@
 /**
-* NielsenPlugin implemented per document outlined here: 
+* NielsenCombined implemented per document outlined here: 
 * https://portal.kaltura.com/product/Shared%20Documents/Solution%20Architects/_Generic%20PRDs/Nielsen/KDP%20Nielsen%20Plugin%20PRD.docx
 * 
 * Basic player flow: 
@@ -24,14 +24,14 @@
 * 
 */
 
-mw.NielsenPlugin = function( embedPlayer, callback ){
+mw.NielsenCombined = function( embedPlayer, callback ){
 	this.init( embedPlayer, callback );
 };
 
-mw.NielsenPlugin.prototype = {
+mw.NielsenCombined.prototype = {
 		
 	// Binding postfix ( enables us to "clear out" the plugins bindings 
-	bindPostFix: '.NielsenPlugin',
+	bindPostFix: '.NielsenCombined',
 	
 	trackerPostFix: '.nielsenPlayerTracker',
 	
@@ -236,7 +236,7 @@ mw.NielsenPlugin.prototype = {
 			var posDelta  = Math.abs( parseFloat( vid.currentTime )  - parseFloat( lastTime ) );
 			// Check for position changed more than "3" ( seek )
 			if( posDelta > 3 ){
-				mw.log("NielsenPlugin:: Dispach clip jump, seek delta : " + posDelta );
+				mw.log("NielsenCombined:: Dispach clip jump, seek delta : " + posDelta );
 				_this.dispatchEvent( 8, String( lastTime ), String( _this.getRelativeTime('currentTime') ), type );
 			}
 			// Dispatch vid progress every 2 seconds:
@@ -253,7 +253,7 @@ mw.NielsenPlugin.prototype = {
 	dispatchEvent: function(){
 		var args = $.makeArray( arguments ); 
 		var eventString = args.join("\n\n"); 
-		mw.log("NielsenPlugin:: dispatchEvent: " + eventString);
+		mw.log("NielsenCombined:: dispatchEvent: " + eventString);
 		this.gg.ggPM.apply( this, args);
 	},
 	// Gets the "raw" current source ( works with ad assets )  
@@ -328,7 +328,7 @@ mw.NielsenPlugin.prototype = {
 		// A tag map that allows for ads to override content values
 		var tagMap = {};
 		// Get the current config evaluated expressions: 
-		var evalConfig = this.embedPlayer.getKalturaConfig('NielsenPlugin');
+		var evalConfig = this.embedPlayer.getKalturaConfig('NielsenCombined');
 		$.each( evalConfig, function( attr, evalValue ){
 			// set the tag value 
 			if( attr.indexOf('tag_') === 0 ){
@@ -355,7 +355,7 @@ mw.NielsenPlugin.prototype = {
 	 * Get a configuration value with full expression evaluation: 
 	 */
 	getConfig: function( propAttr ){
-		return this.embedPlayer.getKalturaConfig('NielsenPlugin', propAttr );
+		return this.embedPlayer.getKalturaConfig('NielsenCombined', propAttr );
 	},
 	/**
 	 * Get the gg com object: 
