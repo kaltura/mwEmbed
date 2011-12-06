@@ -197,11 +197,12 @@ mw.KAds.prototype = {
 							var waitForPlaybackCount = 0;
 							waitForPlayback = function(){
 								waitForPlaybackCount++;
-								if( vid.currentTime > .25 || waitForPlaybackCount > 100 ){
+								// Wait for playback for 10 seconds 
+								if( vid.currentTime > 0 || waitForPlaybackCount > 200 ){
 									// Seek to where we did the switch
 									embedPlayer.seek( seekPerc );
 								} else {
-									setTimeout(function(){ waitForPlayback() }, 100)
+									setTimeout(function(){ waitForPlayback() }, 50)
 								}
 							}
 							waitForPlayback();
