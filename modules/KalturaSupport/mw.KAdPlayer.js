@@ -183,23 +183,27 @@ mw.KAdPlayer.prototype = {
 				return true;				
 			});
 		}
-		
-		// Setup the source switch argument object: 
-		var playAdArguments = [
-			targetSrc,
-			function( vid ) {
-				_this.addAdBindings( vid, adSlot, adConf );
-			},
-			function(){
-				adSlot.playbackDone();
-			}
-		];
-		
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled() ) {
-			_this.playVideoSibling.apply( this, playAdArguments );
+			_this.playVideoSibling(
+				targetSrc,
+				function( vid ) {
+					_this.addAdBindings( vid, adSlot, adConf );
+				},
+				function(){
+					adSlot.playbackDone();
+				} 
+			);
 		} else {
-			_this.embedPlayer.switchPlaySrc( this, playAdArguments );
+			_this.embedPlayer.switchPlaySrc( 
+				targetSrc,
+				function( vid ) {
+					_this.addAdBindings( vid, adSlot, adConf );
+				},
+				function(){
+					adSlot.playbackDone();
+				}
+			);
 		}
 	},
 	/**
@@ -207,7 +211,7 @@ mw.KAdPlayer.prototype = {
 	 */
 	isVideoSiblingEnabled: function(){
 		// iPhone won't play multiple videos well, use source switch
-		if( mw.isIphone() || mw.isAndroid2() ){
+		if( mw.isIphone() || mw.isAndroid2() || ( mw.isIpad() && ! mw.isIpad3() ) ){
 			return false;
 		}
 		return true;

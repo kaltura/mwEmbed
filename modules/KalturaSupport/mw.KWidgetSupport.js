@@ -320,7 +320,7 @@ mw.KWidgetSupport.prototype = {
 		};
 		
 		// Sync iframe with attribute data updates:
-		$( embedPlayer ).trigger('updateIframeData');
+		$( embedPlayer ).trigger( 'updateIframeData' );
 		
 		if( embedPlayer.$uiConf ){
 			_this.baseUiConfChecks( embedPlayer );
