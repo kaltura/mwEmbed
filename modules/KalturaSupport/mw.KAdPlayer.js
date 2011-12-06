@@ -514,7 +514,7 @@ mw.KAdPlayer.prototype = {
 		this.embedPlayer.hidePlayerSpinner();
 		
 		// include a timeout for the pause event to propagate
-		setTimeout(function(){
+		setTimeout( function(){
 			// make sure the embed player is "paused" 
 			_this.getOriginalPlayerElement().pause();
 			
@@ -535,7 +535,7 @@ mw.KAdPlayer.prototype = {
 				})
 			}
 			
-		},0);
+		}, 0);
 	},
 	restoreEmbedPlayer:function(){
 		// remove the video sibling: 

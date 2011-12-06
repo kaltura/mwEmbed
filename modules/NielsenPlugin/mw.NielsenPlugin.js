@@ -283,23 +283,34 @@ mw.NielsenPlugin.prototype = {
 				return parseInt( vid[ timeAttribute ] );
 			}
 		}
-		// Check if we have cuepoints
 		
-		// @@TODO we should probably keep track of cuePoint segments in the sequence proxy
-		// because "seeks" are not 100% accurate across all platforms and we don't want to send 
-		// the wrong metadata. 
+		// Check if we have cuepoints
 		if( embedPlayer.rawCuePoints ){
-			var absolutePlayerTime = embedPlayer.currentTime;
+			var segmentDuration = 0;
+			var prevCuePointTime = 0;
+			var absolutePlayerTime = embedPlayer.currentTime * 1000;
 			for( var i =0; i < embedPlayer.rawCuePoints.length; i++ ){
-				var cuePoint = embedPlayer.rawCuePoints[i];
-				// TODO see which relative segment time duration we should return 
+				var cuePoint = embedPlayer.rawCuePoints[ i ];
+				// Make sure the cue point is an Ad and not an overlay ( adType 2 )
+				if( cuePoint.cuePointType != 'adCuePoint.Ad' || cuePoint.adType == 2 ){
+					continue;
+				}
+				if( absolutePlayerTime < cuePoint.startTime ){
+					return Math.round( ( cuePoint.startTime - prevCuePointTime ) / 1000 );
+				}
+				// if current Time is > that last cuePoint
+				if( i == embedPlayer.rawCuePoints.length 
+						&&
+					absolutePlayerTime > cuePoint.startTime
+				){
+					return Math.round( embedPlayer.duration - ( cuePoint.startTime / 1000 ) )
+				}
+				prevCuePointTime = cuePoint.startTime;
 			}
 		}
-		// If no cuePoints are found return normal embedPlayer currentTime or duration:  
-		return parseInt( embedPlayer[ timeAttribute ] );
 	},
 	inAd:function(){
-		return !! this.embedPlayer.evaluate('{sequenceProxy.isInSequence}'); 
+		return !! this.embedPlayer.evaluate( '{sequenceProxy.isInSequence}' ); 
 	},
 	/**
 	 * Get the Nielsen xml string: 
