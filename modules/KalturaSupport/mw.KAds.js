@@ -191,7 +191,11 @@ mw.KAds.prototype = {
 								// Pause playback state
 								vid.pause();
 								// iPhone does not catch synchronous pause
-								setTimeout( function(){if( vid && vid.pause ){vid.pause();}}, 100 );
+								setTimeout( function(){
+									if( vid && vid.pause ){
+										vid.pause();
+									}
+								}, 100 );
 							}
 						} else {
 							var waitForPlaybackCount = 0;
