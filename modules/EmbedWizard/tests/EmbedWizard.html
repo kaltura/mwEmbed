@@ -1,0 +1,23 @@
+<html>
+<head>
+<title>Embed Wizard test</title>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<style>
+	table.playerInput{
+		font-size:100%;
+	}
+</style>
+<script type="text/javascript">	
+	mw.setConfig('jQueryUISkin', 'redmond');
+	mw.ready(function(){
+		$('#embedWizard').embedWizard();
+	});
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+</head>
+<body>
+<h2> EmbedWizard default options</h2>
+<div id="embedWizard" style="width:1000px;height:400px;border:solid thin black"></div>
+
+</body>
+</html>

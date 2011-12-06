@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tt xmlns:tts="http://www.w3.org/2006/04/ttaf1#styling" xmlns="http://www.w3.org/2006/04/ttaf1">
+  <head>
+    <styling>
+      <style id="defaultSpeaker" tts:fontSize="24" tts:fontFamily="Arial" tts:fontWeight="normal" tts:fontStyle="normal" tts:textDecoration="none" tts:color="white" tts:backgroundColor="black" tts:textAlign="center"/>
+      <style id="defaultCaption" tts:fontSize="24" tts:fontFamily="Arial" tts:fontWeight="normal" tts:fontStyle="normal" tts:textDecoration="none" tts:color="white" tts:backgroundColor="black" tts:textAlign="center"/>
+    </styling>
+  </head>
+  <body style="defaultCaption" id="thebody">
+    <div>
+      <p begin="00:00:00.00" end="00:00:1.00"  tts:textAlign="left"><metadata ccrow="0" cccol="10"/>ALIGN LEFT, ROW 0 COL 10</p>
+      <p begin="00:00:01.50" end="00:00:03.67" tts:textAlign="right"><metadata ccrow="0" cccol="10"/>ALIGN RIGHT. ROW 0 COL 10<br/> Line Break.</p>
+      <p begin="00:00:05.83" end="00:00:10.83"><metadata ccrow="13" cccol="12"/> ROW 13 COL 12 <br/></p>
+      <p begin="00:00:05.83" end="00:00:15.00"><metadata ccrow="0" cccol="15"/>On screen for 10 sec</p>
+      <p begin="00:00:08.83" end="00:00:15.00"><metadata ccrow="5" cccol="15"/>CCROW 8 COL 15 for 5 sec</p>
+    </div>
+  </body>
+</tt>
+

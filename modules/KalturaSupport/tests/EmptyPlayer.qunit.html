@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Empty Player test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	var kdp = document.getElementById( videoId );
+	// Name this module
+	module( "Empty Player" );
+
+	kdp.addJsListener( 'kdpEmpty', 'kdpEmptyFunction' );
+	
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	var iframeContext = window.frames['kaltura_player_ifp'];
+	
+	test( "Iframe in DOM", function() {
+		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
+		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+		start();
+	});
+	// listen for the empty kdp event: 
+	
+	asyncTest("Empty KDP", function(){
+		window.kdpEmptyFunction = function(){
+			ok( true, 'Empty event fired' );
+			ok( typeof kdp.sendNotification != 'undefined', "Player Api present" ); 
+			// Add a listner for entry ready: 
+			kdp.addJsListener( 'entryReady', kdpEntryReady );
+			// Change player entry: 
+			kdp.sendNotification( "changeMedia", { 'entryId' : '0_uka1msg4' } ); 
+
+			window.kdpEntryReady = function(){
+				ok( true, 'Changed entry event fired');
+				var entry = kdp.evaluate('{mediaProxy.entry}');
+				equal( '0_uka1msg4', entry.id, "Entry ids match");
+				start();
+			}
+		};
+	});
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Empty Player test </h2>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br />
+<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
+allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
+xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
+resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/" 
+data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/">
+	<param name="allowFullScreen" value="true" />
+	<param name="allowNetworking" value="all" />
+	<param name="allowScriptAccess" value="always" />
+	<param name="bgcolor" value="#000000" />
+	<param name="flashVars" value="&" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/" />
+</object>
+</body>
+</html>

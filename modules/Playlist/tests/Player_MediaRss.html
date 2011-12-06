@@ -1,0 +1,73 @@
+<html>
+<head>
+<title> MediaRss player </title>
+
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+
+<script type="text/javascript">
+	// For testing safari in chrome /
+	if( document.URL.indexOf('forceMobileHTML5') != -1 ){
+		mw.setConfig( 'forceMobileHTML5' , true );
+	}
+	mw.ready( function(){
+		$j('#mediaRssTarget').playlist({
+			'src' : "kalturaInterviewPlaylist.xml",
+			'type' : 'application/rss+xml',
+			'layout' : 'vertical'
+		});
+
+		$j('#mediaRssTargetHorizontal').playlist({
+			'src' : "kalturaInterviewPlaylist.xml",
+			'type' : 'application/rss+xml',
+			'layout' : 'horizontal'
+		});
+
+		$j('#mediaRssMobile').playlist({
+			'src' : "kalturaInterviewPlaylist.xml",
+			'type' : 'application/rss+xml',
+			'theme' : 'mobile'
+		});
+
+		$j('#mediaRssMobileExternal').playlist({
+			'src' : "kalturaInterviewPlaylist.xml",
+			'type' : 'application/rss+xml',
+			'layout' : 'noClipList'
+		}, function( playlist ){
+			var $cl = $j('#externalClipList');
+			var clipList = playlist.getClipList();
+			$j.each( clipList, function ( inx, clip ) {
+				$cl.append( 
+					$j('<a />').text( 'clip ' + inx )
+					.attr('href', '#')
+					.click(function(){
+						playlist.playClip( inx );
+						return false;
+					}),
+					$j('<span />').text(' ')
+				);
+			});
+		});
+	});
+</script>
+</head>
+<body>
+<h2> Sample MediaRss Playlist  </h2>
+
+iPad / Android style mobile interface:
+ <div style="width:320px;height:356px" id="mediaRssMobile"> </div>
+<br />
+
+External interface play: <span id="externalClipList"></span>
+ <div style="width:320px;height:240px" id="mediaRssMobileExternal"> </div>
+<br />
+
+
+Sample Media Rss ( <a href="kalturaInterviewPlaylist.xml">kalturaInterviewPlay.xml</a> ) Vertical
+
+	 <div style="width:400px;height:500px" id="mediaRssTarget"> </div>
+<br/><br/><br/>
+Sample Media Rss ( <a href="kalturaInterviewPlaylist.xml">kalturaInterviewPlay.xml</a> ) horizontal
+	 <div style="width:700px;height:300px" id="mediaRssTargetHorizontal"> </div>
+<br/><br/><br/>
+</body>
+</html>

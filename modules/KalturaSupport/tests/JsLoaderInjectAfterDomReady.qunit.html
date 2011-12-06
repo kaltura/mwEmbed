@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Js Post Dom Ready inject</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php -->
+<script type="text/javascript">	
+if( window.QUnit ){	
+	// Name this module
+	module( "JS inject after dom ready" );
+	
+	$( document ).ready( function(){
+
+		window.QUnit.start();
+		asyncTest( "Iframe in DOM", function() {
+			
+			ok(true, "Added flash object  to dom");
+			window['jsCallbackReady'] = function( videoId ){
+				ok(true, "jsCallbackReady callbacked issued");
+				start();
+			};
+			
+			window.preMwEmbedConfig = {};
+			window.preMwEmbedConfig[ 'forceMobileHTML5' ] = true;
+			$('head').append( '<script src="../../../mwEmbedLoader.php" type="text/javascript" />' );
+
+			// add and embed player:
+			$('body').append('<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" ' +
+					'allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" ' +
+						'xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" ' +
+						'resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" ' +
+						'data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4"> ' +
+							'<param name="allowFullScreen" value="true" /> ' +
+							'<param name="allowNetworking" value="all" /> ' +
+							'<param name="allowScriptAccess" value="always" /> ' +
+							'<param name="bgcolor" value="#000000" /> ' +
+							'<param name="flashVars" value="&" /> ' +
+							'<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" /> ' +
+						'</object>' );
+
+			ok( true, "Added mwEmbedLoader to DOM");
+			kCheckAddScript();
+
+		});
+	});	
+		
+
+	
+}
+</script>
+</head>
+<body>
+<h2> Js Post Dom Ready inject </h2>
+<br />
+
+</body>
+</html>

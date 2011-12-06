@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Access Control Preview</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Access Control Preview" );
+
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	var iframeContext = window.frames['kaltura_player_ifp'];
+	
+	test( "Iframe in DOM", function() {
+		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
+		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+	});
+
+	asyncTest("Iframe layout elements", function(){
+		kalturaQunitWaitForPlayer(function(){
+			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
+			ok( $iframe.find('.play-btn').length, ".play-btn found" );
+			start();
+		});
+	});
+}
+</script>
+<script>
+	// TOOD move these into the test setup above 
+	KWidget.addReadyCallback(function( playerId ){
+		var kdp = $( '#' + playerId ).get(0);
+		log( playerId +  ' > addJsListener:: freePreviewEnd' );
+		kdp.addJsListener( 'freePreviewEnd', 'onFreePreviewEnd' );
+	});
+	function onFreePreviewEnd(){
+		log('Event: freePreviewEnd' );
+	}
+ 	function log( text ){
+		$('#previewLog').append( 
+			$('<p />').text( text )
+		)
+	}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Access Control Preview </h2>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br />
+<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1300615418/wid/_309/uiconf_id/3761032/entry_id/0_dawaq3ma" data="http://www.kaltura.com/index.php/kwidget/cache_st/1300615418/wid/_309/uiconf_id/3761032/entry_id/0_dawaq3ma"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="externalInterfaceDisabled=false" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1300615418/wid/_309/uiconf_id/3761032/entry_id/0_dawaq3ma" /></object>
+<h4>Preview log</h4>
+<div id="previewLog"></div>
+
+</body>
+</html>
