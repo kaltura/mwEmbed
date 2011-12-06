@@ -322,7 +322,7 @@ mw.EmbedPlayerNative = {
 		
 		this.seeking = true;
 		// Update the current time
-		this.currentTime = ( percent * this.duration ) ;
+		this.currentTime = ( percent * this.duration ).toFixed( 1 ) ;
 		
 		// trigger the seeking event: 
 		mw.log('EmbedPlayerNative::seek:trigger');

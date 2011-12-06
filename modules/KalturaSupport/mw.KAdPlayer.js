@@ -44,9 +44,6 @@ mw.KAdPlayer.prototype = {
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
 		
-		// Setup local pointer to displayDoneCallback
-		adSlot.doneCallback = displayDoneCallback;
-		
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
 			// remove click binding if present
@@ -67,8 +64,10 @@ mw.KAdPlayer.prototype = {
 			adSlot.currentlyDisplayed = false;
 			// give time for the end event to clear
 			setTimeout(function(){
-				adSlot.doneCallback();
-			}, 50);
+				if( displayDoneCallback ){
+					displayDoneCallback();
+				} 
+			}, 0);
 		};
 		
 		// If the current ad type is already being displayed don't do anything

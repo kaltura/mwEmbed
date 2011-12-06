@@ -157,7 +157,7 @@ mw.KAds.prototype = {
 			};
 
 			var originalSrc = embedPlayer.getSrc();
-			var seekTime = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
+			var seekPerc = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
 			var oldDuration = embedPlayer.duration;
 
 			// Set switch back function
@@ -194,15 +194,17 @@ mw.KAds.prototype = {
 								setTimeout( function(){if( vid && vid.pause ){vid.pause();}}, 100 );
 							}
 						} else {
-							$( embedPlayer ).bind('seeked' + _this.bindPostfix, function() {
-								embedPlayer.play();
-								setTimeout( function() {
-									embedPlayer.play();
-								}, 250);
-							});
-
-							// Seek to where we did the switch
-							embedPlayer.seek( seekTime );
+							var waitForPlaybackCount = 0;
+							waitForPlayback = function(){
+								waitForPlaybackCount++;
+								if( vid.currentTime > .25 || waitForPlaybackCount > 100 ){
+									// Seek to where we did the switch
+									embedPlayer.seek( seekPerc );
+								} else {
+									setTimeout(function(){ waitForPlayback() }, 100)
+								}
+							}
+							waitForPlayback();
 						}
 					});
 				} else {
