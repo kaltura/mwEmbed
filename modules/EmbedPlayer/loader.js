@@ -14,6 +14,10 @@
 		// The preferred media format order 
 		'EmbedPlayer.CodecPreference': [ 'webm', 'h264', 'mp3', 'ogg' ],
 		
+		// If the flavor selector menu option should be displayed: 
+		// This will be enabled by default in some future release of the library
+		'EmbedPlayer.EnableFlavorSelector' : false,
+		
 		// If the iPad should use html controls 
 		// With html controls you can't access native fullscreen 
 		// With html controls you can support html themed controls, overlays, ads etc. )

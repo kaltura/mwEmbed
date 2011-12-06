@@ -54,8 +54,13 @@
 
 			// Check if the ui conf layout supports flavorSelector
 			// <FlavorCombo id="flavorComboControllerScreen" width="80" streamerType="{configProxy.flashvars.streamerType}" flavorDataProvider="{mediaProxy.kalturaMediaFlavorArray}" styleName="_kdp" color1="14540253" hdOn="HD On" hdOff="HD Off" selectedMessage="" autoMessage="Automatically switches between bitrates" preferedFlavorBR="{mediaProxy.preferedFlavorBR}" tooltip="{flavorComboControllerScreen.selectedMessage}"/>
-			if( !$uiConf.find( '#flavorComboControllerScreen' ).length ) {
+			if( mw.getConfig("EmbedPlayer.EnableFlavorSelector") === false ){
 				disabled.push( 'sourceSwitch' );
+			} else {
+				// see if flavorComboControllerScreen layout element is present: 
+				if( ! $uiConf.find( '#flavorComboControllerScreen' ).length ) {
+					disabled.push( 'sourceSwitch' );
+				}
 			}
 			
 			controlbarLayout( embedPlayer, disabled );
