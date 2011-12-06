@@ -1,14 +1,14 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>NielsenVideoCensusPlugin flash long form player test </title>
+<title>NielsenVideoCensus flash long form player test </title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
-	module( "NielsenVideoCensusPlugin player" );
+	module( "NielsenVideoCensus player" );
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var iframeContext = window.frames['kaltura_player_ifp'];
@@ -38,7 +38,7 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> NielsenVideoCensusPlugin flash long form player test </h2>
+<h2> NielsenVideoCensus flash long form player test </h2>
 preroll freewheel,<br /> 
 overlay at 5 sec <br />
 freewheel midroll at 10 sec and 13 seconds ( should send additional becon when resuming content playback ) <br /><br />
@@ -58,15 +58,15 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/12924364504/wid/_243342/
 </object>
 <!--  uiConf used in above test: 
 
-<layout id="full" name="NielsenVideoCensusPlugin test" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
+<layout id="full" name="NielsenVideoCensus test" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
       
       <Plugin 
-      	id="NielsenVideoCensusPlugin"
-      	path="http://projects.kaltura.com/nu/NielsenVideoCensusPlugin.swf"
+      	id="NielsenVideoCensus"
+      	path="http://www.kaltura.com/content/uiconf/ps/abc/kdp3/v3.5.33/plugins/NielsenVideoCensusPlugin.swf"
       	clientId="us-300437"            
       	videoCensusId="vc,c02"
       	lp="LF"

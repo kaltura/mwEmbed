@@ -1,15 +1,15 @@
 /**
-* NielsenVideoCensusPlugin implemented per document outlined here: 
+* NielsenVideoCensus implemented per document outlined here: 
 * https://portal.kaltura.com/product/Shared%20Documents/Solution%20Architects/_Generic%20PRDs/Nielsen/KDP%20Nielsen%20Video%20Census%20Plugin%20PRD.docx
 */
 
-mw.NielsenVideoCensusPlugin = function( embedPlayer, callback ){
+mw.NielsenVideoCensus = function( embedPlayer, callback ){
 	this.init( embedPlayer, callback );
 };
 
-mw.NielsenVideoCensusPlugin.prototype = {
+mw.NielsenVideoCensus.prototype = {
 	// Post fixed applied in player bindings
-	bindPostFix: '.NielsenVideoCensusPlugin',
+	bindPostFix: '.NielsenVideoCensus',
 	
 	// Local cache of current segment: 
 	localCurrentSegment: 0,
@@ -64,7 +64,7 @@ mw.NielsenVideoCensusPlugin.prototype = {
 		});
 	},
 	sendBeacon: function(){
-		mw.log("NielsenVideoCensusPlugin:: sendBeacon" );
+		mw.log("NielsenVideoCensus:: sendBeacon" );
 		// create a new dav image
 		var davImg = new Image(); 
 		// Setup the base url: 
@@ -129,6 +129,6 @@ mw.NielsenVideoCensusPlugin.prototype = {
 		return lpParam ;
 	},
 	getConfig: function( key ){
-		return this.embedPlayer.getKalturaConfig( 'NielsenVideoCensusPlugin', key );
+		return this.embedPlayer.getKalturaConfig( 'NielsenVideoCensus', key );
 	}
 }
