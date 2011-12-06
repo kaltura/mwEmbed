@@ -518,9 +518,6 @@ mw.KAdPlayer.prototype = {
 			// make sure the embed player is "paused" 
 			_this.getOriginalPlayerElement().pause();
 			
-			// put the player into "ad mode" 
-			_this.embedPlayer.adTimeline.updateUiForAdPlayback();
-			
 			// Hide the current video:
 			$( _this.getOriginalPlayerElement() ).hide();
 			

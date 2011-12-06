@@ -105,19 +105,19 @@ mw.NielsenPlugin.prototype = {
 				dispachedAdStart = true;
 				
 				// Playing an ad fire a 15 with all ad Meatadata
-				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "ad", _this.getMetaXmlString() );
+				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , slotType, _this.getMetaXmlString() );
 				
 				// Add event bindings: 
-				_this.addPlayerTracking( 'ad' );
+				_this.addPlayerTracking( slotType );
 			});
 		});
 		$( embedPlayer ).bind( 'AdSupport_EndAdPlayback' + _this.bindPostFix, function( event, slotType ){
 			// close the current ad: 
 			if( adOpenUrl && dispachedAdStart ){
 				// Stop the ad: 
-				_this.dispatchEvent( 7, parseInt( _this.currentAdTime ), 'ad' );
+				_this.dispatchEvent( 7, parseInt( _this.currentAdTime ), slotType );
 				// Ad fire a 4 to 'unload' the ad ( always called even if we don't get to "ended" event )
-				_this.dispatchEvent( 4, parseInt( currentAdDuration ), 'ad' );
+				_this.dispatchEvent( 4, parseInt( currentAdDuration ), slotType );
 				adOpenUrl = false;
 			}
 			// unbind tracking ( will be re-instated via addPlayerTracking on subsequent ads or content 
@@ -134,8 +134,8 @@ mw.NielsenPlugin.prototype = {
 			if( !_this.inAd() && !contentPlay ){
 				contentPlay = true;
 				
-				// Playing content fire the 15 content beacon and start content tracking
-				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+				// Playing content fire the 5 content beacon and start content tracking
+				_this.dispatchEvent( 5, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 				
 				// Add player "raw" player bindings:
 				_this.addPlayerTracking( "content" );
@@ -226,8 +226,9 @@ mw.NielsenPlugin.prototype = {
 		// Monitor:
 		var lastTime = -1;
 		b( 'timeupdate', function(){
-			if( type == 'ad' )
+			if( type != 'content' ){
 				_this.currentAdTime = vid.currentTime;
+			}
 			
 			if( lastTime === -1 )
 				lastTime = vid.currentTime;
@@ -241,7 +242,7 @@ mw.NielsenPlugin.prototype = {
 			// Dispatch vid progress every 2 seconds:
 			if( posDelta > _this.queryInterval ){
 				lastTime = vid.currentTime;
-				_this.dispatchEvent( 49, String( _this.getRelativeTime('currentTime') ), type );
+				_this.dispatchEvent( 49, String( _this.getRelativeTime( 'currentTime' ) ), type );
 			}
 		});
 	},
@@ -269,17 +270,17 @@ mw.NielsenPlugin.prototype = {
 	 * 
 	 * @returns a int value
 	 */
-	getRelativeTime: function( type ){
+	getRelativeTime: function( timeAttribute ){
 		var embedPlayer = this.embedPlayer;
-		if( type != 'duration' && type != 'currentTime' ){
-			mw.log("Error:: calling getRelativeTime with invalid type: " + type );
+		if( timeAttribute != 'duration' && timeAttribute != 'currentTime' ){
+			mw.log("Error:: calling getRelativeTime with invalid timeAttribute: " + timeAttribute );
 			return 0;
 		}
 		// Check if we are in an Ad and return the raw player duration or time: 
 		if( this.inAd() ){
 			var vid = this.getPlayerElement(); 
-			if( vid && vid[ type ]){
-				return parseInt( vid[ type ] );
+			if( vid && vid[ timeAttribute ]){
+				return parseInt( vid[ timeAttribute ] );
 			}
 		}
 		// Check if we have cuepoints
@@ -295,7 +296,7 @@ mw.NielsenPlugin.prototype = {
 			}
 		}
 		// If no cuePoints are found return normal embedPlayer currentTime or duration:  
-		return parseInt( embedPlayer[type] );
+		return parseInt( embedPlayer[ timeAttribute ] );
 	},
 	inAd:function(){
 		return !! this.embedPlayer.evaluate('{sequenceProxy.isInSequence}'); 

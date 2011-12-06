@@ -246,7 +246,7 @@ mw.FreeWheelControler.prototype = {
 				if( _this.playSlot( slot ) ){
 					// If type is midroll ( and the slot is not yet donePlaying ) 
 					if( slotType == 'midroll' && ! slot.donePlaying){
-						_this.embedPlayer.adTimeline.updateUiForAdPlayback();
+						_this.embedPlayer.adTimeline.updateUiForAdPlayback( slotType );
 					}
 					
 					// overlay has special handling: 
