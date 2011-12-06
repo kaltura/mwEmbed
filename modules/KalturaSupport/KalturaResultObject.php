@@ -1121,7 +1121,7 @@ class KalturaResultObject {
 	}
 	private function getClient(){
 		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgScriptCacheDirectory, 
-			$wgMwEmbedVersion, $wgKalturaServiceTimeout;
+			$wgMwEmbedVersion, $wgKalturaServiceTimeout, $wgEnableScriptDebug;
 
 		$cacheDir = $wgScriptCacheDirectory;
 
@@ -1135,6 +1135,11 @@ class KalturaResultObject {
 		$conf->clientTag = $this->clientTag;
 		$conf->curlTimeout = $wgKalturaServiceTimeout;
 		$conf->userAgent = $this->getUserAgent();
+
+		if( $wgEnableScriptDebug ) {
+			require_once 'KalturaLogger.php';
+			$conf->setLogger( new KalturaLogger() );
+		}
 		
 		$client = new KalturaClient( $conf );
 		if( isset($this->urlParameters['flashvars']['ks']) ) {

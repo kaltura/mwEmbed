@@ -120,16 +120,16 @@ mw.KAnalytics.prototype = {
 		
 		// Generate the status event 
 		var eventSet = {
-			'eventType' :	eventKeyId,			
-			'clientVer' : this.version,
-			'currentPoint' : 	parseInt( this.embedPlayer.currentTime * 1000 ),
-			'duration' :	this.embedPlayer.getDuration(),
-			'eventTimestamp' : new Date().getTime(),			
-			'isFirstInSession' : 'false',
-			'objectType' : 'KalturaStatsEvent',
-			'partnerId' :	this.kClient.getPartnerId(),		
-			'sessionId' :	ks, 
-			'uiconfId' : 0
+			'eventType'			: eventKeyId,
+			'clientVer'			: this.version,
+			'currentPoint'		: parseInt( this.embedPlayer.currentTime * 1000 ),
+			'duration'			: this.embedPlayer.getDuration(),
+			'eventTimestamp'	: new Date().getTime(),
+			'isFirstInSession'	: 'false',
+			'objectType'		: 'KalturaStatsEvent',
+			'partnerId'			: this.kClient.getPartnerId(),
+			'sessionId'			: this.embedPlayer.evaluate('{configProxy.sessionId}'),
+			'uiconfId'			: 0
 		};				
 		
 		if( isNaN( eventSet.duration )  ){
@@ -299,4 +299,4 @@ mw.KAnalytics.prototype = {
 	}
 };
 
-})( mediaWiki, jQuery );
+})( window.mw, window.jQuery );

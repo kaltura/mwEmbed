@@ -157,7 +157,7 @@ mw.KAds.prototype = {
 			};
 
 			var originalSrc = embedPlayer.getSrc();
-			var seekTime = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
+			var seekPerc = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
 			var oldDuration = embedPlayer.duration;
 
 			// Set switch back function
@@ -191,18 +191,25 @@ mw.KAds.prototype = {
 								// Pause playback state
 								vid.pause();
 								// iPhone does not catch synchronous pause
-								setTimeout( function(){if( vid && vid.pause ){vid.pause();}}, 100 );
+								setTimeout( function(){
+									if( vid && vid.pause ){
+										vid.pause();
+									}
+								}, 100 );
 							}
 						} else {
-							$( embedPlayer ).bind('seeked' + _this.bindPostfix, function() {
-								embedPlayer.play();
-								setTimeout( function() {
-									embedPlayer.play();
-								}, 250);
-							});
-
-							// Seek to where we did the switch
-							embedPlayer.seek( seekTime );
+							var waitForPlaybackCount = 0;
+							waitForPlayback = function(){
+								waitForPlaybackCount++;
+								// Wait for playback for 10 seconds 
+								if( vid.currentTime > 0 || waitForPlaybackCount > 200 ){
+									// Seek to where we did the switch
+									embedPlayer.seek( seekPerc );
+								} else {
+									setTimeout(function(){ waitForPlayback() }, 50)
+								}
+							}
+							waitForPlayback();
 						}
 					});
 				} else {

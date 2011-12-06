@@ -229,7 +229,7 @@ mw.DoubleClick.prototype = {
 	 */
 	loadAndPlayVideoSlot: function( slotType, callback, cuePoint){
 		var _this = this;
-		mw.log( "DoubleClick::loadAndPlayVideoSlot> pause while loading ads ");
+		mw.log( "DoubleClick::loadAndPlayVideoSlot> " + slotType + " pause while loading ads ");
 		
 		var adClickPostFix = '.dcAdClick';
 		
@@ -253,7 +253,7 @@ mw.DoubleClick.prototype = {
 			
 			// TODO integrate into timeline proper: 
 			if( _this.embedPlayer.adTimeline && slotType != 'overlay' ){
-				_this.embedPlayer.adTimeline.updateUiForAdPlayback();
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( slotType );
 			}
 
 			// Update the playhead to play state:

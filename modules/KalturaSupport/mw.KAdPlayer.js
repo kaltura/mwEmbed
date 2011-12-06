@@ -44,9 +44,6 @@ mw.KAdPlayer.prototype = {
 		// Setup some configuration for done state:
 		adSlot.doneFunctions = [];
 		
-		// Setup local pointer to displayDoneCallback
-		adSlot.doneCallback = displayDoneCallback;
-		
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
 			// remove click binding if present
@@ -67,8 +64,10 @@ mw.KAdPlayer.prototype = {
 			adSlot.currentlyDisplayed = false;
 			// give time for the end event to clear
 			setTimeout(function(){
-				adSlot.doneCallback();
-			}, 50);
+				if( displayDoneCallback ){
+					displayDoneCallback();
+				} 
+			}, 0);
 		};
 		
 		// If the current ad type is already being displayed don't do anything
@@ -183,23 +182,27 @@ mw.KAdPlayer.prototype = {
 				return true;				
 			});
 		}
-		
-		// Setup the source switch argument object: 
-		var playAdArguments = [
-			targetSrc,
-			function( vid ) {
-				_this.addAdBindings( vid, adSlot, adConf );
-			},
-			function(){
-				adSlot.playbackDone();
-			}
-		];
-		
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled() ) {
-			_this.playVideoSibling.apply( this, playAdArguments );
+			_this.playVideoSibling(
+				targetSrc,
+				function( vid ) {
+					_this.addAdBindings( vid, adSlot, adConf );
+				},
+				function(){
+					adSlot.playbackDone();
+				} 
+			);
 		} else {
-			_this.embedPlayer.switchPlaySrc( this, playAdArguments );
+			_this.embedPlayer.switchPlaySrc( 
+				targetSrc,
+				function( vid ) {
+					_this.addAdBindings( vid, adSlot, adConf );
+				},
+				function(){
+					adSlot.playbackDone();
+				}
+			);
 		}
 	},
 	/**
@@ -207,7 +210,7 @@ mw.KAdPlayer.prototype = {
 	 */
 	isVideoSiblingEnabled: function(){
 		// iPhone won't play multiple videos well, use source switch
-		if( mw.isIphone() || mw.isAndroid2() ){
+		if( mw.isIphone() || mw.isAndroid2() || ( mw.isIpad() && ! mw.isIpad3() ) ){
 			return false;
 		}
 		return true;
@@ -514,12 +517,9 @@ mw.KAdPlayer.prototype = {
 		this.embedPlayer.hidePlayerSpinner();
 		
 		// include a timeout for the pause event to propagate
-		setTimeout(function(){
+		setTimeout( function(){
 			// make sure the embed player is "paused" 
 			_this.getOriginalPlayerElement().pause();
-			
-			// put the player into "ad mode" 
-			_this.embedPlayer.adTimeline.updateUiForAdPlayback();
 			
 			// Hide the current video:
 			$( _this.getOriginalPlayerElement() ).hide();
@@ -538,7 +538,7 @@ mw.KAdPlayer.prototype = {
 				})
 			}
 			
-		},0);
+		}, 0);
 	},
 	restoreEmbedPlayer:function(){
 		// remove the video sibling: 

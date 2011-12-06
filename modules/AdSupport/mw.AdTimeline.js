@@ -293,7 +293,7 @@ mw.AdTimeline.prototype = {
 			});
 			
 			// Update the interface for ads: 
-			_this.updateUiForAdPlayback();
+			_this.updateUiForAdPlayback( slotType );
 		};
 		runSequeceProxyInx( seqInx );
 	},
