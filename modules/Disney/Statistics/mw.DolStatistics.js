@@ -9,16 +9,15 @@ mw.DolStatistics = function( embedPlayer, callback ){
 mw.DolStatistics.prototype = {
 
 	pluginVersion: "1.0",
-	bindPostfix: '.DolStatistics',
+	bindPostFix: '.DolStatistics',
+	appName: 'KDP',
 
 	// Increased on change media
 	playbackCounter: 1,
 
 	// Number of seconds between playhead event dispatches
 	playheadFrequency: 5,
-
-	// Last Seek
-	lastSeek: 0,
+	playheadInterval: 0,
 
 	// Entry duration
 	duration: 0,
@@ -46,6 +45,8 @@ mw.DolStatistics.prototype = {
 		
 		this.pluginConfig = this.embedPlayer.getKalturaConfig( 'dolStatistics', attributes );
 
+		this.playheadFrequency = this.pluginConfig.playheadFrequency || 5;
+
 		// List of events we need to track
 		this.eventsList = this.pluginConfig.listenTo.split(",");
 
@@ -59,16 +60,11 @@ mw.DolStatistics.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var $embedPlayer = $( embedPlayer );
-
+		
 		// On change media remove any existing ads:
-		$embedPlayer.bind( 'onChangeMedia' + _this.bindPostfix, function(){
+		$embedPlayer.bind( 'onChangeMedia' + _this.bindPostFix, function(){
 			_this.playbackCounter++;
 			_this.destroy();
-		});
-
-		// Save seek time
-		$embedPlayer.bind( 'seeked' + _this.bindPostfix, function( seekTarget ) {
-			_this.lastSeek = seekTarget;
 		});
 
 		// Register to our events
@@ -79,17 +75,14 @@ mw.DolStatistics.prototype = {
 				// Special event
 				case 'percentReached':
 					_this.calcCuePoints();
-					embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostFix, function() {
+					$embedPlayer.bind( 'monitorEvent' + _this.bindPostFix, function() {
 						_this.monitorPercentage();
 					});
-
 				break;
 
 				// Change playerUpdatePlayhead event to send events on playheadFrequency
 				case 'playerUpdatePlayhead':
-					/*embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostFix, function() {
-						_this.playheadUpdated();
-					});*/
+					_this.addMonitorBindings();
 				break;
 
 				// Use addJsListener for all other events
@@ -120,44 +113,52 @@ mw.DolStatistics.prototype = {
 
 		for( var i=0; i<=100; i=i+10 ) {
 			var cuePoint = Math.round( duration / 100 * i);
-			if( cuePoint === 0 || cuePoint === duration ) continue;
+			if( cuePoint === 0 ) continue;
 			_this.percentCuePoints[ cuePoint ] = false;
 		}
 
-		console.log( _this.percentCuePoints );
+		mw.log('DolStatistics:: calcCuePoints:: ', _this.percentCuePoints);
 	},
 
+	/* Custom percentReached event */
 	monitorPercentage: function() {
-		// Setup local references:
 		var _this = this;
 		var duration = this.getDuration();
 		var percentCuePoints = this.percentCuePoints;
-
-		// Set the seek and time percent:
-		var percent = this.embedPlayer.currentTime / duration;
-		var seekPercent = this.lastSeek / duration;
-
 		var currentTime = Math.round(this.embedPlayer.currentTime);
 
-		console.log('current time: ' + currentTime, 'cuePoints: ', percentCuePoints);
 		if( percentCuePoints[ currentTime ] === false ) {
-			for( var t in percentCuePoints ) {
-				if( currentTime === t ) {
-					percentCuePoints[ currentTime ] = true;
-				}
-			}
+			percentCuePoints[ currentTime ] = true;
+			var percent = Math.round(currentTime * 100 / duration);
+			_this.sendStatsData('percentReached', percent);
 		}
+	},
+
+	/* Custom playerUpdatePlayhead event */
+	addMonitorBindings: function() {
+		var _this = this;
+		var embedPlayer = this.embedPlayer;
+		var $embedPlayer = $( embedPlayer );
+		var intervalTime = this.playheadFrequency * 1000;
 		
-		/*if( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {
-			_this._p25Once = true;
-			_this.sendAnalyticsEvent( 'PLAY_REACHED_25' );
-		}*/
+		// Start monitor
+		$embedPlayer.bind('onplay' + _this.bindPostFix, function() {
+			if( ! this.playheadInterval ) {
+				this.playheadInterval = setInterval( function(){
+					console.log('playheadUpdated:: current time: ' + embedPlayer.currentTime);
+					_this.sendStatsData( 'playerUpdatePlayhead' , embedPlayer.currentTime);
+				}, intervalTime );
+			}
+		});
+
+		// Stop monitor
+		$embedPlayer.bind('doStop' + _this.bindPostFix + ' onpause' + _this.bindPostFix, function() {
+			clearInterval( this.playheadInterval );
+			this.playheadInterval = 0;
+		});
 	},
 
-	playheadUpdated: function() {
-
-	},
-
+	/* Retrive video duration */
 	getDuration: function() {
 		if( ! this.duration )
 			this.duration = this.embedPlayer.evaluate('{duration}');
@@ -165,17 +166,20 @@ mw.DolStatistics.prototype = {
 		return this.duration;
 	},
 
+	/* Send stats data using Beacon or jsCallback */
 	sendStatsData: function( eventName, eventData ) {
 		var _this = this;
 		// If event name not in our event list, exit
-		if( this.pluginConfig.listenTo.indexOf(eventName) === -1 ) {
+		if( this.eventsList.indexOf(eventName) === -1 ) {
 			return ;
 		}
 		
 		// Setup event params
 		var params = {};
+		// App name
+		params['app'] = this.appName;
 		// Grab from plugin config
-		var configAttrs = [ 'GENURL', 'GENTITLE', 'DEVID', 'USRAGNT', 'ASSETNAME', 'BITRATE', 'ASSETID' ];
+		var configAttrs = [ 'GENURL', 'GENTITLE', 'DEVID', 'USRAGNT', 'ASSETNAME', 'ASSETID' ];
 		for(var x=0; x<configAttrs.length; x++) {
 			params[ configAttrs[x] ] = _this.pluginConfig[ configAttrs[x] ] || '';
 		}
@@ -183,6 +187,8 @@ mw.DolStatistics.prototype = {
 		params['GENTIME'] = new Date().getTime();
 		// Widget ID
 		params['WIGID'] = this.embedPlayer.kwidgetid;
+		// Flavor Bitrate
+		params['BITRATE'] = this.embedPlayer.mediaElement.selectedSource.getBitrate();
 		// Video length
 		params['VIDLEN'] = this.getDuration();
 		// Player protocol
@@ -206,13 +212,13 @@ mw.DolStatistics.prototype = {
 			this._executeFunctionByName( callbackName, window.parent, params);
 		} else {
 			// Use beacon to send event data
-			var statsUrl = this.pluginConfig.protocol + '://' + this.pluginConfig.host + '/cp?app=KDP&' + $.param(params);
+			var statsUrl = this.pluginConfig.protocol + '://' + this.pluginConfig.host + '/cp?' + $.param(params);
 			mw.log('DolStatistics:: Send Stats Data ' + statsUrl, params);
 		}
 	},
 
 	destroy: function() {
-		$( this.embedPlayer ).unbind( this.bindPostfix );
+		$( this.embedPlayer ).unbind( this.bindPostFix );
 		this.percentCuePoints = {};
 		this.duration = 0;
 	},
