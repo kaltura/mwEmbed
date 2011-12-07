@@ -6,19 +6,19 @@
 * 
 * 	load player meta data ready:
 
-	send "3" to designate the content metadata ( with first segment length ) sequence index "1" 
-	15 for preroll with "ad" type
+	"3" to designate the content metadata ( with first segment length ) sequence index "1" and type "content" 
+	15 load / play preroll with "preroll" type
 		send "7" to end the ad
 		send "4" unload ad
 	5 of type "content" content playback 
 	"7" stop content 
-	"15" load midroll "ad" type
+	"15" load / play midroll "midroll" type
 		send "7" to end the ad
 		send "4" unload ad
 	15 second segment of content as a "load play" 
 		"7" stop "content" 
 		"4" unload "content"
-	15 postroll 
+	15 postroll load / play with "postroll" type
 		send "7" to end the ad
 		send "4" unload ad
 * 

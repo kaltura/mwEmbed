@@ -121,7 +121,7 @@ mw.AdTimeline.prototype = {
 	 * @param {string} 
 	 * 			propName The name of the property 
 	 * @param {object} 
-	 * 			value The value for the suplied property 
+	 * 			value The value for the supplied property 
 	 */
 	updateSequenceProxy: function( propName, value ){
 		this.embedPlayer.sequenceProxy[ propName ] = value;

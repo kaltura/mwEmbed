@@ -320,12 +320,14 @@ mw.FreeWheelControler.prototype = {
 		if( !this.activeSlot ){
 			// clear out the timeRemaining var
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', null );
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  null );
 			return ;
 		}
 		// Update the timeRemaining ( if not an overlay ) 
 		if(  this.getSlotType( this.activeSlot ) != 'overlay' ){
 			var vid = _this.getAdVideoElement();
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  vid.duration - vid.currentTime );
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 		}
 		
 		// Keep monitoring ad progress at MonitorRate

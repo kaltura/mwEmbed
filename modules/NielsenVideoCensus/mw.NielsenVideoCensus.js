@@ -38,7 +38,7 @@ mw.NielsenVideoCensus.prototype = {
 	*/
 	addPlayerBindings: function(){
 		var _this = this;
-		// remove any existing bindings: 
+		// Remove any existing bindings: 
 		$( this.embedPlayer ).unbind( _this.bindPostFix);
 		
 		// Reset the current segment index: 

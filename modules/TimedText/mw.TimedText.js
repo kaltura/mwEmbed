@@ -1019,7 +1019,6 @@ mw.includeAllModuleMessages();
 				})
 			);
 			
-			
 			// Update the style of the text object if set
 			if( caption.styleId ){
 				var capCss = source.getStyleCssById( caption.styleId );
