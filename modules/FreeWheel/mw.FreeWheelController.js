@@ -110,10 +110,10 @@ mw.FreeWheelControler.prototype = {
 			}
 
 			// XXX FreeWheel sets SVLads003 as the response? 
-			window['SVLads003'] = true;
+			window[ 'SVLads003' ] = true;
 			
 			// Load add data ( will call onRequestComplete once ready )
-			mw.log("FreeWheelController::submitRequest>");
+			mw.log( "FreeWheelController::submitRequest>" );
 			// Get Freewheel ads: 
 			_this.getContext().submitRequest();
 			// set the callback 
@@ -290,12 +290,15 @@ mw.FreeWheelControler.prototype = {
 		if( slot._adInstances.length == 0 ){
 			return false;			
 		}
-		
+		var adMetaData = this.getFwAdMetaData( slot ) ;
 		// Update ad Meta data:
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 
 			'activePluginMetadata', 
-			this.getFwAdMetaData( slot ) 
+			adMetaData
 		);
+		// Update the ad duration ( may change once the media is loaded ) 
+		_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration', adMetaData.duration );
+		
 		// Play the slot
 		slot.play();
 		// Update the active slot
@@ -316,9 +319,8 @@ mw.FreeWheelControler.prototype = {
 	},
 	monitorAdProgress: function(){
 		var _this = this;
-		// don't monitor ad progress if active slot done. 
+		// Don't monitor ad progress if active slot done. 
 		if( !this.activeSlot ){
-			// clear out the timeRemaining var
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', null );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  null );
 			return ;
@@ -326,7 +328,7 @@ mw.FreeWheelControler.prototype = {
 		// Update the timeRemaining ( if not an overlay ) 
 		if(  this.getSlotType( this.activeSlot ) != 'overlay' ){
 			var vid = _this.getAdVideoElement();
-			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  vid.duration - vid.currentTime );
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', vid.duration - vid.currentTime );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 		}
 		
