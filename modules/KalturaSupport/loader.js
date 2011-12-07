@@ -212,7 +212,7 @@
 					var kEmbedSettings = kGetKalturaEmbedSettings( swfSource, flashvars );
 
 					// Check if its a playlist or a entryId
-					mw.log( "Got kEmbedSettings.entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
+					mw.log( "KalturaSupport:: Got object settings: entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
 					if(!kEmbedSettings.uiconf_id || !kEmbedSettings.wid ) {
 						mw.log( "Error: Missing uiConfId/widgetId!");
 					}

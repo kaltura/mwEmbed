@@ -125,8 +125,8 @@ mw.NielsenVideoCensus.prototype = {
 		
 		// 4) Anticipated total number of segments/chapters for this episode. Set to 0 if not known.
 		if( this.embedPlayer.rawCuePoints && this.embedPlayer.rawCuePoints.length){
-			// provide the cue point count ( very difficult to know the actual real 
-			// number of segments ( because each plugin decides if cue points are
+			// provide the cue point count very difficult to know the actual real 
+			// number of segments because each plugin decides if cue points are
 			// applicable to that plugin or not. 
 			lpParam += this.embedPlayer.rawCuePoints.length;
 		} else {

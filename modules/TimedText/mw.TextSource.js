@@ -261,7 +261,7 @@
 					if( $meta.attr('cccol') ){
 						captionObj['css']['left'] = ( $meta.attr('cccol') / 35 ) * 100 +'%';
 						// also means the width has to be reduced:
-						captionObj['css']['width'] =  100 - parseInt( captionObj['css']['left'] ) + '%'; 
+						//captionObj['css']['width'] =  100 - parseInt( captionObj['css']['left'] ) + '%'; 
 					}
 					if( $meta.attr('ccrow') ){
 						captionObj['css']['top'] = ( $meta.attr('ccrow') / 15 ) * 100 +'%';
@@ -274,7 +274,7 @@
 					
 					// Remove text align is "right" flip the css left:
 					if( captionObj['css']['text-align'] == 'right' && captionObj['css']['left'] ){
-						captionObj['css']['width'] = captionObj['css']['left'];
+						//captionObj['css']['width'] = captionObj['css']['left'];
 						captionObj['css']['left'] = null;
 					}
 				}
