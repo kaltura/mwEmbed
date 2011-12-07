@@ -40,6 +40,9 @@ $wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "htt
 // Default debug mode
 $wgEnableScriptDebug = false;
 
+// Default Logging API requests
+$wgLogApiRequests = false;
+
 // Set the global $wgMwEmbedApiServices to an empty array: 
 $wgMwEmbedApiServices = array();
 
