@@ -274,6 +274,7 @@ class kalturaIframe {
 					'type="' . htmlspecialchars( $source['type'] ) . '" ' . 
 					'src="' . $source['src'] . '" '.
 					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" '.
+					'data-bandwidth="' . htmlspecialchars( $source['data-bandwidth'] ) . '" '.
 				'></source>';
 		}
 

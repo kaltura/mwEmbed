@@ -112,11 +112,10 @@ mw.MediaSource.prototype = {
 		var pUrl = new mw.Uri ( this.src );
 		if ( typeof pUrl.query[ 't' ] != 'undefined' ) {
 			this.URLTimeEncoding = true;
+		} else if ( typeof mw.IA != 'undefined' ) {
+			this.URLTimeEncoding = mw.IA.isURLTimeEncoding(this.src);
 		}
-                else if ( typeof mw.IA != 'undefined' ) {
-		  this.URLTimeEncoding = mw.IA.isURLTimeEncoding(this.src);
-                }
-          
+        
 		var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes' );
 		$.each(sourceAttr, function(inx, attr){
 			if ( $( element ).attr( attr ) ) {
@@ -435,6 +434,10 @@ mw.MediaSource.prototype = {
 			break;
 		}
 		mw.log( "Error: could not detect type of media src: " + uri );
+	},
+
+	getBitrate: function() {
+		return this.bandwidth;
 	}
 };
 
