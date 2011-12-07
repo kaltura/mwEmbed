@@ -67,7 +67,7 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	ob_start("ob_gzhandler");
 	
 	$loaderCacheFile = $wgScriptCacheDirectory . '/loader.min.js';
-	
+
 	$javascriptModTime = @filemtime( 'mwEmbedLoader.js' );
 	$cacheModTime = @filemtime( $loaderCacheFile );
 	

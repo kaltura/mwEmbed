@@ -1,14 +1,14 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>NielsenPlugin player test</title>
+<title>NielsenCombined player test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
-	module( "NielsenPlugin player" );
+	module( "NielsenCombined player" );
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var iframeContext = window.frames['kaltura_player_ifp'];
@@ -38,7 +38,7 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> NielsenPlugin player test </h2>
+<h2> NielsenCombined player test </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
 <object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
@@ -55,14 +55,14 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/12924364499/wid/_243342/
 </object>
 <!--  uiConf used in above test: 
 
-<layout id="full" name="NielsenPlugin Test Player" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
+<layout id="full" name="NielsenCombined Test Player" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
       
-      <Plugin id="NielsenPlugin" 
-      	path="http://projects.kaltura.com/nu/NielsenVideoCensusPlugin.swf" 
+      <Plugin id="NielsenCombined" 
+      	path="http://projects.kaltura.com/nu/NielsenVideoCensus.swf" 
       	clientId="us-502202" 
       	vcid="c15"
       	tag_title="{mediaProxy.entry.name}"

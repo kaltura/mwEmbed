@@ -438,9 +438,11 @@ mw.FreeWheelControler.prototype = {
 			this.adManager.setNetwork( 
 				parseInt( this.getConfig( 'networkId' ) ) 
 			);
-			this.adManager.setServer( 
-				this.getConfig('serverUrl') 
-			);
+			var serverUrl = this.getConfig('serverUrlHTML5') ;
+			if( ! serverUrl ){
+				serverUrl = this.getConfig('serverUrl') ;
+			}
+			this.adManager.setServer( serverUrl );
 		}
 		return this.adManager;
 	},

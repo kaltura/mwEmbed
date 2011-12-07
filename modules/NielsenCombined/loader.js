@@ -2,18 +2,18 @@
 ( function( mw, $){
 	
 mw.addResourcePaths({
-	"mw.NielsenPlugin": "mw.NielsenPlugin.js"
+	"mw.NielsenCombined": "mw.NielsenCombined.js"
 });
 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// Check if the plugin is enabled: 
-		if( embedPlayer.isPluginEnabled( 'NielsenPlugin' ) ){
-			mw.load( "mw.NielsenPlugin", function(){
-				new mw.NielsenPlugin( embedPlayer, callback );
+		if( embedPlayer.isPluginEnabled( 'NielsenCombined' ) ){
+			mw.load( "mw.NielsenCombined", function(){
+				new mw.NielsenCombined( embedPlayer, callback );
 			});
 		} else {
-			// No NielsenPlugin active( continue player build out )  
+			// No NielsenCombined active( continue player build out )  
 			callback();
 		}
 	});

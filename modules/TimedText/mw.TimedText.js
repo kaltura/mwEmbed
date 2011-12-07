@@ -136,7 +136,7 @@ mw.includeAllModuleMessages();
 				}
 			});
 			
-			$( embedPlayer ).bind( 'monitorEvent'+ this.bindPostFix, function() {
+			$( embedPlayer ).bind( 'monitorEvent' + this.bindPostFix, function() {
 				_this.monitor();
 			} );
 
