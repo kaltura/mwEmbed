@@ -967,16 +967,17 @@ mw.EmbedPlayer.prototype = {
 	 *            [misssingType] missing type mime
 	 */
 	showPluginMissingHTML: function( ) {
+		var $this = $( this );
 		mw.log("EmbedPlayer::showPluginMissingHTML");
 		// Hide loader
 		this.hidePlayerSpinner();
 		
 		// Error in loading media ( trigger the mediaLoadError )
-		$( this ).trigger( 'mediaLoadError' );
+		$this.trigger( 'mediaLoadError' );
 		
 		// We don't distiguish between mediaError and mediaLoadError right now 
 		// TODO fire mediaError only on failed to recive audio/video  data. 
-		$( this ).trigger( 'mediaError' );
+		$this.trigger( 'mediaError' );
 		
 		
 		// Check if there is a more specific error: 
@@ -986,15 +987,12 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		// Set the top level container to relative position:
-		$( this ).css('position', 'relative');
+		$this.css('position', 'relative');
 		
 		// Control builder ( for play button )
 		this.controlBuilder = new mw.PlayerControlBuilder( this );					
 		// Make sure interface is available
 		this.getPlayerInterface();
-
-		// Remove thumbnail from the iframe
-		$('#directFileLinkThumb').remove();
 	
 		// Update the poster and html:
 		this.updatePosterHTML();
@@ -1002,7 +1000,7 @@ mw.EmbedPlayer.prototype = {
 		// on iOS devices don't try to add warnings
 		if( !this.mediaElement.sources.length || mw.isIOS() || !mw.getConfig('EmbedPlayer.NotPlayableDownloadLink') ){
 			var noSourceMsg = gM('mwe-embedplayer-missing-source');
-			$( this ).trigger( 'NoSourcesCustomError', function( customErrorMsg ){
+			$this.trigger( 'NoSourcesCustomError', function( customErrorMsg ){
 				if( customErrorMsg){
 					noSourceMsg = customErrorMsg;
 				}
@@ -1020,13 +1018,13 @@ mw.EmbedPlayer.prototype = {
 				.html( noSourceMsg )
 			);
 			
-			$( this ).find('.play-btn-large').remove();
+			$this.find('.play-btn-large').remove();
 		} else {
 			// Add the warning
 			this.controlBuilder.addWarningBinding( 'EmbedPlayer.DirectFileLinkWarning',
 				gM( 'mwe-embedplayer-download-warn', mw.getConfig('EmbedPlayer.FirefoxLink') )
 			);
-			$( this ).show();
+			$this.show();
 			// Make sure we have a play btn:
 			this.addPlayBtnLarge();
 			
