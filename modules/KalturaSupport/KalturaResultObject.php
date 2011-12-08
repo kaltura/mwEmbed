@@ -852,7 +852,6 @@ class KalturaResultObject {
 
 	private function getResultObjectFromApi(){
 		if( $this->isEmptyPlayer() ){
-			$this->error = "No Entry ID was found";
 			return $this->getUiConfResult();
 		} else if( $this->isPlaylist() ){
 			return $this->getPlaylistResult();
@@ -1121,7 +1120,7 @@ class KalturaResultObject {
 	}
 	private function getClient(){
 		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgScriptCacheDirectory, 
-			$wgMwEmbedVersion, $wgKalturaServiceTimeout, $wgEnableScriptDebug;
+			$wgMwEmbedVersion, $wgKalturaServiceTimeout, $wgLogApiRequests;
 
 		$cacheDir = $wgScriptCacheDirectory;
 
@@ -1136,7 +1135,7 @@ class KalturaResultObject {
 		$conf->curlTimeout = $wgKalturaServiceTimeout;
 		$conf->userAgent = $this->getUserAgent();
 
-		if( $wgEnableScriptDebug ) {
+		if( $wgLogApiRequests ) {
 			require_once 'KalturaLogger.php';
 			$conf->setLogger( new KalturaLogger() );
 		}
@@ -1256,6 +1255,11 @@ class KalturaResultObject {
 
 		// Load the uiConf first so we could setup our player configuration
 		$this->loadUiConf();
+		
+		// check if its an empty player and set the error: 
+		if( $this->isEmptyPlayer() ){
+			$this->error = "No Entry ID was found";
+		}
 
 		// Check if we have a cached result object:
 		if( !$this->resultObj ){
