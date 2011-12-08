@@ -356,7 +356,7 @@ mw.NielsenCombined.prototype = {
 	 * Get a configuration value with full expression evaluation: 
 	 */
 	getConfig: function( propAttr ){
-		return this.embedPlayer.getKalturaConfig('NielsenCombined', propAttr );
+		return this.embedPlayer.getKalturaConfig('nielsenCombined', propAttr );
 	},
 	/**
 	 * Get the gg com object: 

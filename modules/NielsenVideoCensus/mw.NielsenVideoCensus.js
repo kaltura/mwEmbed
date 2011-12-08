@@ -135,6 +135,6 @@ mw.NielsenVideoCensus.prototype = {
 		return lpParam ;
 	},
 	getConfig: function( key ){
-		return this.embedPlayer.getKalturaConfig( 'NielsenVideoCensus', key );
+		return this.embedPlayer.getKalturaConfig( 'nielsenVideoCensus', key );
 	}
 }

@@ -8,7 +8,7 @@ mw.addResourcePaths({
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// Check if the plugin is enabled: 
-		if( embedPlayer.isPluginEnabled( 'NielsenCombined' ) ){
+		if( embedPlayer.isPluginEnabled( 'nielsenCombined' ) ){
 			mw.load( "mw.NielsenCombined", function(){
 				new mw.NielsenCombined( embedPlayer, callback );
 			});
