@@ -2,7 +2,7 @@
 * Adds captions support
 */
 ( function( mw, $ ) {
-
+	
 	mw.KTimedText = function( embedPlayer, kalturaConfig, callback ){
 		return this.init( embedPlayer, kalturaConfig, callback );
 	};
@@ -21,7 +21,12 @@
 			if( _this.kVars.timeOffset ){
 				_this.timeOffset = _this.kVars.timeOffset;
 			}
-
+			// Check for existing timedText on player and retain visibility. 
+			var existingLayout = null;
+			if( embedPlayer.timedText ){
+				existingLayout = embedPlayer.timedText.config.layout;
+			}
+			
 			// Inherit the timed text support via the base TimedText module:
 			var baseTimedText = new mw.TimedText( embedPlayer, kalturaConfig );
 			for( var i in _this ){
@@ -32,10 +37,13 @@
 			}
 			embedPlayer.timedText = baseTimedText;
 			
-			// Hide captions by default if hideClosedCaptions attribute is set
-			if( _this.kVars['hideClosedCaptions'] == true ){
+			// Update the layout options per existing layout or uiConf preference. 
+			if( existingLayout !== null ){
+				embedPlayer.timedText.selectLayout( existingLayout );
+			} else if( _this.kVars['hideClosedCaptions'] == true ){
 				embedPlayer.timedText.selectLayout( 'off' );
 			}
+			// Bind player: 
 			_this.bindPlayer( embedPlayer );
 		},
 		bindPlayer: function( embedPlayer ){
