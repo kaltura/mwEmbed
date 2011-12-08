@@ -50,8 +50,8 @@ mw.NielsenCombined.prototype = {
 		
 		this.getGg( function( gg ){
 			$( embedPlayer ).bind( 'playerReady' + _this.bindPostFix, function(){
-				// Dispatch a "preLoad" event ( will finish with a 5 once we have actual content playing ) 
-				_this.dispatchEvent( 3, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+				// Do not dispach a  "preLoad" event ( we will fire a 15 once we have actual content playing ) 
+				//_this.dispatchEvent( 3, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 				// add sequence binding: 
 				_this.addSequenceBinding();
 			});
@@ -135,7 +135,7 @@ mw.NielsenCombined.prototype = {
 				contentPlay = true;
 				
 				// Playing content fire the 5 content beacon and start content tracking
-				_this.dispatchEvent( 5, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 				
 				// Add player "raw" player bindings:
 				_this.addPlayerTracking( "content" );
