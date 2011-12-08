@@ -8,7 +8,7 @@ mw.addResourcePaths({
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// Check if the plugin is enabled: 
-		if( embedPlayer.isPluginEnabled( 'NielsenVideoCensus' ) ){
+		if( embedPlayer.isPluginEnabled( 'nielsenVideoCensus' ) ){
 			mw.load( "mw.NielsenVideoCensus", function(){
 				new mw.NielsenVideoCensus( embedPlayer, callback );
 			});

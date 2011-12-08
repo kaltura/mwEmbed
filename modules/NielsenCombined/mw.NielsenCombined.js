@@ -6,19 +6,19 @@
 * 
 * 	load player meta data ready:
 
-	send "3" to designate the content metadata ( with first segment length ) sequence index "1" 
-	15 for preroll with "ad" type
+	"3" to designate the content metadata ( with first segment length ) sequence index "1" and type "content" 
+	15 load / play preroll with "preroll" type
 		send "7" to end the ad
 		send "4" unload ad
 	5 of type "content" content playback 
 	"7" stop content 
-	"15" load midroll "ad" type
+	"15" load / play midroll "midroll" type
 		send "7" to end the ad
 		send "4" unload ad
 	15 second segment of content as a "load play" 
 		"7" stop "content" 
 		"4" unload "content"
-	15 postroll 
+	15 postroll load / play with "postroll" type
 		send "7" to end the ad
 		send "4" unload ad
 * 
@@ -50,8 +50,8 @@ mw.NielsenCombined.prototype = {
 		
 		this.getGg( function( gg ){
 			$( embedPlayer ).bind( 'playerReady' + _this.bindPostFix, function(){
-				// Dispatch a "preLoad" event ( will finish with a 5 once we have actual content playing ) 
-				_this.dispatchEvent( 3, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+				// Do not dispach a  "preLoad" event ( we will fire a 15 once we have actual content playing ) 
+				//_this.dispatchEvent( 3, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 				// add sequence binding: 
 				_this.addSequenceBinding();
 			});
@@ -135,7 +135,7 @@ mw.NielsenCombined.prototype = {
 				contentPlay = true;
 				
 				// Playing content fire the 5 content beacon and start content tracking
-				_this.dispatchEvent( 5, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 				
 				// Add player "raw" player bindings:
 				_this.addPlayerTracking( "content" );
@@ -230,8 +230,9 @@ mw.NielsenCombined.prototype = {
 				_this.currentAdTime = vid.currentTime;
 			}
 			
-			if( lastTime === -1 )
+			if( lastTime === -1 ){
 				lastTime = vid.currentTime;
+			}
 			
 			var posDelta  = Math.abs( parseFloat( vid.currentTime )  - parseFloat( lastTime ) );
 			// Check for position changed more than "3" ( seek )
@@ -355,7 +356,7 @@ mw.NielsenCombined.prototype = {
 	 * Get a configuration value with full expression evaluation: 
 	 */
 	getConfig: function( propAttr ){
-		return this.embedPlayer.getKalturaConfig('NielsenCombined', propAttr );
+		return this.embedPlayer.getKalturaConfig('nielsenCombined', propAttr );
 	},
 	/**
 	 * Get the gg com object: 

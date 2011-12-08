@@ -7,8 +7,8 @@ mw.setConfig({
 	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js'
 });
 
-mw.FreeWheelControler = function( embedPlayer, callback ){
-	return this.init( embedPlayer, callback );
+mw.FreeWheelControler = function( embedPlayer, callback, pluginName ){
+	return this.init( embedPlayer, callback, pluginName );
 };
 
 mw.FreeWheelControler.prototype = {
@@ -57,7 +57,7 @@ mw.FreeWheelControler.prototype = {
 	 * @param {Function} callback
 	 * @return
 	 */
-	init: function( embedPlayer, callback ){
+	init: function( embedPlayer, callback, pluginName ){
 		var _this = this;
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
@@ -65,7 +65,8 @@ mw.FreeWheelControler.prototype = {
 		// unbind any existing bindings:
 		_this.embedPlayer.unbindHelper( _this.bindPostfix );
 		
-		// TODO Checks if we are loading ads async
+		// Set the plugin name ( used to get config ) 
+		this.pluginName = pluginName;
 		
 		// Load the freewheel ad manager then setup the ads
 		if( !window['tv'] || !tv.freewheel ){
@@ -110,10 +111,10 @@ mw.FreeWheelControler.prototype = {
 			}
 
 			// XXX FreeWheel sets SVLads003 as the response? 
-			window['SVLads003'] = true;
+			window[ 'SVLads003' ] = true;
 			
 			// Load add data ( will call onRequestComplete once ready )
-			mw.log("FreeWheelController::submitRequest>");
+			mw.log( "FreeWheelController::submitRequest>" );
 			// Get Freewheel ads: 
 			_this.getContext().submitRequest();
 			// set the callback 
@@ -290,12 +291,15 @@ mw.FreeWheelControler.prototype = {
 		if( slot._adInstances.length == 0 ){
 			return false;			
 		}
-		
+		var adMetaData = this.getFwAdMetaData( slot ) ;
 		// Update ad Meta data:
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 
 			'activePluginMetadata', 
-			this.getFwAdMetaData( slot ) 
+			adMetaData
 		);
+		// Update the ad duration ( may change once the media is loaded ) 
+		_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration', adMetaData.duration );
+		
 		// Play the slot
 		slot.play();
 		// Update the active slot
@@ -431,7 +435,7 @@ mw.FreeWheelControler.prototype = {
 			return this.embedPlayer.evaluate('{mediaProxy.entry.duration}');
 		}
 		// return the live attribute value
-		return this.embedPlayer.getKalturaConfig('FreeWheel', propId );
+		return this.embedPlayer.getKalturaConfig( this.pluginName, propId );
 	},
 	getAdManager: function(){
 		if( !this.adManager ){

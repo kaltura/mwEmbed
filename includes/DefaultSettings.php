@@ -19,7 +19,7 @@ $wgMwEmbedPathUrl = str_replace(
 );
 
 // The version of the library 
-$wgMwEmbedVersion = '1.6.0d';
+$wgMwEmbedVersion = '1.6.0f';
 
 // Url to the resource loader php script: 
 $wgResourceLoaderUrl = $wgMwEmbedPathUrl . 'ResourceLoader.php';
@@ -39,6 +39,9 @@ $wgHTTPProtocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? "htt
 
 // Default debug mode
 $wgEnableScriptDebug = false;
+
+// Default Logging API requests
+$wgLogApiRequests = false;
 
 // Set the global $wgMwEmbedApiServices to an empty array: 
 $wgMwEmbedApiServices = array();
