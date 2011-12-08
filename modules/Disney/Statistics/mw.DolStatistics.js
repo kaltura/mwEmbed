@@ -145,7 +145,6 @@ mw.DolStatistics.prototype = {
 		$embedPlayer.bind('onplay' + _this.bindPostFix, function() {
 			if( ! this.playheadInterval ) {
 				this.playheadInterval = setInterval( function(){
-					console.log('playheadUpdated:: current time: ' + embedPlayer.currentTime);
 					_this.sendStatsData( 'playerUpdatePlayhead' , embedPlayer.currentTime);
 				}, intervalTime );
 			}
@@ -166,6 +165,13 @@ mw.DolStatistics.prototype = {
 		return this.duration;
 	},
 
+	getBitrate: function() {
+		if( this.embedPlayer.mediaElement.selectedSource ) {
+			return this.embedPlayer.mediaElement.selectedSource.getBitrate();
+		}
+		return 0;
+	},
+
 	/* Send stats data using Beacon or jsCallback */
 	sendStatsData: function( eventName, eventData ) {
 		var _this = this;
@@ -179,20 +185,26 @@ mw.DolStatistics.prototype = {
 		// App name
 		params['app'] = this.appName;
 		// Grab from plugin config
-		var configAttrs = [ 'GENURL', 'GENTITLE', 'DEVID', 'USRAGNT', 'ASSETNAME', 'ASSETID' ];
+		var configAttrs = [ 'DEVID', 'ASSETNAME', 'ASSETID' ];
 		for(var x=0; x<configAttrs.length; x++) {
 			params[ configAttrs[x] ] = _this.pluginConfig[ configAttrs[x] ] || '';
 		}
+		// Embedded Page URL
+		params['GENURL'] =  _this.pluginConfig['GENURL'] || window.kWidgetSupport.getHostPageUrl();
+		// Embedded Page Title
+		params['GENTITLE'] =  _this.pluginConfig['GENTITLE'] || mw.getConfig( 'EmbedPlayer.IframeParentTitle' );
+		// User Agent
+		params['USRAGNT'] =  _this.pluginConfig['USRAGNT'] || window.navigator.userAgent;
 		// Current Timestamp
 		params['GENTIME'] = new Date().getTime();
 		// Widget ID
 		params['WIGID'] = this.embedPlayer.kwidgetid;
 		// Flavor Bitrate
-		params['BITRATE'] = this.embedPlayer.mediaElement.selectedSource.getBitrate();
+		params['BITRATE'] = this.getBitrate();
 		// Video length
 		params['VIDLEN'] = this.getDuration();
 		// Player protocol
-		params['KDPPROTO'] = this.pluginConfig.protocol;
+		params['KDPPROTO'] = this.pluginConfig['protocol'] || location.protocol.substr(0, location.protocol.length-1);
 		// Kaltura Player ID
 		params['KDPID'] = this.embedPlayer.kuiconfid;
 		// Kaltura Seesion ID
@@ -205,14 +217,13 @@ mw.DolStatistics.prototype = {
 		if( eventData )
 			params['KDPDAT_VALUE'] = eventData.toString();
 
-
 		if( window.parent && this.pluginConfig.jsFunctionName ) {
 			// If we have acess to parent, call the jsFunction provided
 			var callbackName = this.pluginConfig.jsFunctionName;
 			this._executeFunctionByName( callbackName, window.parent, params);
 		} else {
 			// Use beacon to send event data
-			var statsUrl = this.pluginConfig.protocol + '://' + this.pluginConfig.host + '/cp?' + $.param(params);
+			var statsUrl = this.pluginConfig.protocol + '://' + this.pluginConfig.host + '?' + $.param(params);
 			mw.log('DolStatistics:: Send Stats Data ' + statsUrl, params);
 		}
 	},
