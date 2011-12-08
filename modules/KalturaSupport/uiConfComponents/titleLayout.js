@@ -12,7 +12,7 @@
 			// Check for Titles: 
 			if( $uiConf.find( '#TopTitleScreen' ).length ){
 				// Bind changeMedia to update title  
-				window.titleLayout( embedPlayer, $uiConf.find( '#TopTitleScreen' ) );
+				window.titleLayout( embedPlayer );
 			}
 			// Continue regardless of title is found or not
 			callback();
@@ -20,30 +20,37 @@
 	});
 	
 	// xxx can be removed once we move to RL
-	window.titleLayout = function( embedPlayer, $titleConfig ){
+	window.titleLayout = function( embedPlayer ){
+		var $titleConfig = embedPlayer.$uiConf.find( '#TopTitleScreen' );
 		var titleScreenHeight = $titleConfig.attr( 'height' );
+		
+		var belowPlayer = embedPlayer.$uiConf.find( '#controlsHolder' ).next( '#TopTitleScreen' ).length
 		
 		function doTitleLayout(){
 			// unbind any old bindings: 
 			$( embedPlayer ).unbind( ".titleLayout" );
 			
 			// Add bindings
-			$( embedPlayer ).bind( "playerReady.titleLayout", function(){
-				updatePlayerLayout();
-			});
-
 			$( embedPlayer ).bind( "onResizePlayer.titleLayout", updatePlayerLayout);
 			
 			// Add title div to interface:
-			$( embedPlayer ).bind("playerReady", function(){
-				embedPlayer.$interface.find('.titleContainer').remove();
-				embedPlayer.$interface.prepend(
-					$('<div />')
-						.addClass('titleContainer')
-						.html(
-							getTitleBox()
-						)
+			$( embedPlayer ).bind("playerReady.titleLayout", function(){
+				var $titleContainerDiv = $('<div />')
+				.addClass('titleContainer')
+				.html(
+					getTitleBox()
 				);
+				embedPlayer.$interface.parent().find('.titleContainer').remove();
+				if( belowPlayer ){
+					embedPlayer.$interface.after(
+						$titleContainerDiv
+					);
+				}else { 
+					embedPlayer.$interface.prepend(
+						$titleContainerDiv
+					);
+				}
+				updatePlayerLayout();
 			});
 		}
 		function getTitleBox(){
@@ -55,17 +62,31 @@
 		}
 		function updatePlayerLayout(){
 			var $vid = $( embedPlayer.getPlayerElement() );
+			var vidHeight = ( $vid.height() - titleScreenHeight );
 			// add space for the title: 
 			$vid
 			.css({
 				'position' : 'absolute',
-				'height' : ( $vid.height() - titleScreenHeight ) + 'px', 
-				'top' : titleScreenHeight + 'px'
+				'height' :vidHeight
 			});
-			embedPlayer.$interface.find(".play-btn-large").css({
-				'top' : parseInt( ( $vid.height() + parseInt(titleScreenHeight ) ) / 2 )  + 'px'
-			});
-		};		
+			if( !belowPlayer ){
+				$vid.css( 'top', titleScreenHeight + 'px' );
+				
+				embedPlayer.$interface.find(".play-btn-large").css({
+					'top' : parseInt( ( vidHeight + parseInt( titleScreenHeight ) ) / 2 )  + 'px'
+				});
+			} else {
+				
+				
+				
+				$( embedPlayer ).css('height', vidHeight )
+				embedPlayer.$interface.css( 'height', vidHeight +  embedPlayer.controlBuilder.getHeight() );
+				embedPlayer.$interface.parent().find( '.titleContainer' ).css({
+					'position': 'absolute',
+					'top' : vidHeight + embedPlayer.controlBuilder.getHeight()
+				})
+			}
+		};
 		// Once all functions are defined call the doTitleLayout
 		doTitleLayout();
 	};

@@ -54,6 +54,7 @@
 			$( embedPlayer ).bind( 'TimedText_ChangeSource' + this.bindPostfix , function() {
 				$( embedPlayer ).trigger( 'changedClosedCaptions' );
 			});
+			
 			// Support hide show notifications: 
 			$( embedPlayer ).bind( 'Kaltura_SendNotification'+ this.bindPostfix , function( event, notificationName, notificationData){
 				switch( notificationName ){

@@ -230,8 +230,9 @@ mw.NielsenCombined.prototype = {
 				_this.currentAdTime = vid.currentTime;
 			}
 			
-			if( lastTime === -1 )
+			if( lastTime === -1 ){
 				lastTime = vid.currentTime;
+			}
 			
 			var posDelta  = Math.abs( parseFloat( vid.currentTime )  - parseFloat( lastTime ) );
 			// Check for position changed more than "3" ( seek )

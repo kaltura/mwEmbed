@@ -22,6 +22,10 @@ mw.DoubleClick.prototype = {
 	init: function( embedPlayer, callback ){
 		mw.log( 'DoubleClick:: init: ' + embedPlayer.id );
 		var _this = this;
+		
+		// Set the plugin name ( used to get config ) 
+		this.pluginName = pluginName;
+		
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 		this.embedPlayer = embedPlayer;
@@ -437,7 +441,7 @@ mw.DoubleClick.prototype = {
 	},
 	getConfig: function( configName ){
 		// always get the config from the embedPlayer so that is up-to-date
-		return this.embedPlayer.getKalturaConfig( 'DoubleClick', configName );
+		return this.embedPlayer.getKalturaConfig( this.pluginName, configName );
 	}
 };
 	

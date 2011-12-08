@@ -7,8 +7,8 @@ mw.setConfig({
 	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js'
 });
 
-mw.FreeWheelControler = function( embedPlayer, callback ){
-	return this.init( embedPlayer, callback );
+mw.FreeWheelControler = function( embedPlayer, callback, pluginName ){
+	return this.init( embedPlayer, callback, pluginName );
 };
 
 mw.FreeWheelControler.prototype = {
@@ -57,7 +57,7 @@ mw.FreeWheelControler.prototype = {
 	 * @param {Function} callback
 	 * @return
 	 */
-	init: function( embedPlayer, callback ){
+	init: function( embedPlayer, callback, pluginName ){
 		var _this = this;
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
@@ -65,7 +65,8 @@ mw.FreeWheelControler.prototype = {
 		// unbind any existing bindings:
 		_this.embedPlayer.unbindHelper( _this.bindPostfix );
 		
-		// TODO Checks if we are loading ads async
+		// Set the plugin name ( used to get config ) 
+		this.pluginName = pluginName;
 		
 		// Load the freewheel ad manager then setup the ads
 		if( !window['tv'] || !tv.freewheel ){
@@ -434,7 +435,7 @@ mw.FreeWheelControler.prototype = {
 			return this.embedPlayer.evaluate('{mediaProxy.entry.duration}');
 		}
 		// return the live attribute value
-		return this.embedPlayer.getKalturaConfig('FreeWheel', propId );
+		return this.embedPlayer.getKalturaConfig( this.pluginName, propId );
 	},
 	getAdManager: function(){
 		if( !this.adManager ){
