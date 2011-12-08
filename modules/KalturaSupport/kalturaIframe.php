@@ -266,6 +266,7 @@ class kalturaIframe {
 		// Close the open video tag attribute set
 		$o.='>';
 
+		
 		// Output each source as a child element ( for javascript off browsers to have a chance
 		// to playback the content
 		foreach( $sources as $source ){
@@ -273,9 +274,11 @@ class kalturaIframe {
 			$o.= "\n\t\t" .'<source ' .
 					'type="' . htmlspecialchars( $source['type'] ) . '" ' . 
 					'src="' . $source['src'] . '" '.
-					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" '.
-					'data-bandwidth="' . htmlspecialchars( $source['data-bandwidth'] ) . '" '.
-				'></source>';
+					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" ';
+			if( isset( $source['data-bandwidth'] )){
+				$o.= 'data-bandwidth="' . htmlspecialchars( $source['data-bandwidth'] ) . '" ';
+			}
+			$o.= '></source>';
 		}
 
 		// To be on the safe side include the flash player and
