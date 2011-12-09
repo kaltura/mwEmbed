@@ -19,13 +19,18 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				  'fontFamily', 'timeOffset', 'hideClosedCaptions' ]
 		);
 
-		// closeCaption Over player plugin
-		var overCaptionConfig = embedPlayer.getKalturaConfig(
-				'closedCaptionsOverPlayer',
-				[ 'plugin', 'width', 'height', 'fontsize', 'bg', 'fontColor', 'opacity',
-					'fontFamily', 'useGlow', 'glowColor', 'glowBlur', 'timeOffset', 
-					'hideClosedCaptions' ]
-		);
+		var playerOverConfig = [ 'plugin', 'width', 'height', 'fontsize', 'bg', 'fontColor', 'opacity',
+				'fontFamily', 'useGlow', 'glowColor', 'glowBlur', 'timeOffset', 
+				'hideClosedCaptions' ]
+		
+		// CloseCaption Over player plugin
+		var overCaptionConfig = embedPlayer.getKalturaConfig('closedCaptionsOverPlayer', playerOverConfig );
+		
+		// Check for alternate name for closedCaptionsOverPlayer
+		if( ! overCaptionConfig ){
+			overCaptionConfig = embedPlayer.getKalturaConfig('closedCaptionsFlexible', playerOverConfig );
+		}
+		
 
 		// Select the available plugin
 		var captionConfig = { plugin: false };
