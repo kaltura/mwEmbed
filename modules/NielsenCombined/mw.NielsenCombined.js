@@ -103,7 +103,6 @@ mw.NielsenCombined.prototype = {
 					return ;
 				}
 				dispachedAdStart = true;
-				
 				// Playing an ad fire a 15 with all ad Meatadata
 				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , slotType, _this.getMetaXmlString() );
 				
@@ -133,7 +132,6 @@ mw.NielsenCombined.prototype = {
 			// Check if the play event is content or "inAdSequence" 
 			if( !_this.inAd() && !contentPlay ){
 				contentPlay = true;
-				
 				// Playing content fire the 5 content beacon and start content tracking
 				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 				

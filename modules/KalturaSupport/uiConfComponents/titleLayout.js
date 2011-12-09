@@ -76,9 +76,6 @@
 					'top' : parseInt( ( vidHeight + parseInt( titleScreenHeight ) ) / 2 )  + 'px'
 				});
 			} else {
-				
-				
-				
 				$( embedPlayer ).css('height', vidHeight )
 				embedPlayer.$interface.css( 'height', vidHeight +  embedPlayer.controlBuilder.getHeight() );
 				embedPlayer.$interface.parent().find( '.titleContainer' ).css({
