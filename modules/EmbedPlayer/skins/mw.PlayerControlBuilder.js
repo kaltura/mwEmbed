@@ -126,11 +126,8 @@ mw.PlayerControlBuilder.prototype = {
 		} else {
 			embedPlayer.height =  embedPlayer.$interface.height() - this.getHeight();
 			$( embedPlayer ).css('height', embedPlayer.height +'px' );
-			// update native element height ( and reset top offset) 
-			$('#' + embedPlayer.pid ).css({
-				'top' : '0px',
-				'height': embedPlayer.height
-			});
+			// update native element height:
+			$('#' + embedPlayer.pid ).css('height', embedPlayer.height);
 		}
 
 		$controlBar.css( {
@@ -350,7 +347,6 @@ mw.PlayerControlBuilder.prototype = {
 	 */
 	toggleFullscreen: function( forceClose ) {
 		var _this = this;
-		
 		// Do normal in-page fullscreen handling: 
 		if( this.fullscreenMode ){			
 			this.restoreWindowPlayer();
@@ -608,13 +604,19 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var $interface = embedPlayer.$interface;
 		var targetAspectSize = _this.getAspectPlayerWindowCss( size );
+		// Setup button scale to not reflect controls offset  
+		var butonScale = interfaceCss;
+		if( !_this.isOverlayControls() ){
+			butonScale['height'] =  butonScale['height'] - this.getHeight();
+		}
+		
 		if( animate ){
 			$interface.animate( interfaceCss );
 			
 			$interface.find('.playerPoster').animate( targetAspectSize  );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large').animate(  _this.getPlayButtonPosition( targetAspectSize ) );
+			$interface.find('.play-btn-large').animate(  _this.getPlayButtonPosition( butonScale ) );
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
@@ -626,8 +628,9 @@ mw.PlayerControlBuilder.prototype = {
 			$interface.css( interfaceCss );
 			// Update player size
 			$( embedPlayer ).css( targetAspectSize );
+			
 			// Update play button pos
-			$interface.find('.play-btn-large').css(  _this.getPlayButtonPosition( targetAspectSize ) );
+			$interface.find('.play-btn-large').css(  _this.getPlayButtonPosition( butonScale ) );
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
@@ -1866,10 +1869,6 @@ mw.PlayerControlBuilder.prototype = {
 			'w' : 70,
 			'h' : 53,
 			'o' : function( ctrlObj ) {
-				var baseHeight =  ctrlObj.isOverlayControls() 
-					? ctrlObj.embedPlayer.$interface.height()
-					: ctrlObj.embedPlayer.$interface.height() - ctrlObj.getHeight();
-				
 				return $( '<div/>' )
 					.attr( {
 						'title'	: gM( 'mwe-embedplayer-play_clip' ),
@@ -1877,8 +1876,8 @@ mw.PlayerControlBuilder.prototype = {
 					} )
 					// Get dynamic position for big play button
 					.css( ctrlObj.getPlayButtonPosition({
-						'width' : ctrlObj.embedPlayer.$interface.width(),
-						'height' :  baseHeight
+						'width' : ctrlObj.embedPlayer.getWidth(),
+						'height' :  ctrlObj.embedPlayer.getHeight()
 					}) )
 					// Add play hook:
 					.click( function() {
