@@ -66,13 +66,13 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	// ob_gzhandler automatically checks for browser gzip support and gzips
 	ob_start("ob_gzhandler");
 	
-	$loaderCacheFile = $wgScriptCacheDirectory . '/loader.min.js';
+	$loaderCacheFile = $wgScriptCacheDirectory . '/loader.min.' . $wgMwEmbedVersion . '.js';
 
 	$javascriptModTime = @filemtime( 'mwEmbedLoader.js' );
 	$cacheModTime = @filemtime( $loaderCacheFile );
 	
 	// check if there were any updates to the mwEmbedLoader file
-	if( $javascriptModTime < $cacheModTime &&  $loaderCacheFile && is_file( $loaderCacheFile ) ){
+	if( is_file( $loaderCacheFile ) && $javascriptModTime < $cacheModTime &&  $loaderCacheFile && is_file( $loaderCacheFile ) ){
 		echo file_get_contents( $loaderCacheFile );
 	} else {
 		$loaderMin = JSMin::minify( $loaderJs );
