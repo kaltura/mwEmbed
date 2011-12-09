@@ -605,7 +605,7 @@ mw.PlayerControlBuilder.prototype = {
 		var $interface = embedPlayer.$interface;
 		var targetAspectSize = _this.getAspectPlayerWindowCss( size );
 		// Setup button scale to not reflect controls offset  
-		var butonScale = interfaceCss;
+		var butonScale = $.extend( {}, interfaceCss);
 		if( !_this.isOverlayControls() ){
 			butonScale['height'] =  butonScale['height'] - this.getHeight();
 		}
