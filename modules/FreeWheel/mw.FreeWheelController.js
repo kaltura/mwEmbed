@@ -486,7 +486,7 @@ mw.FreeWheelControler.prototype = {
 			if( this.getConfig('visitorId') ){
 				this.adContext.setVisitor( this.getConfig('visitorId') );
 			}
-			var videoAssetId = ( _this.videoAssetIdOverride )? _this.videoAssetIdOverride  : this.getConfig( 'videoAssetId' );
+			var videoAssetId = ( this.videoAssetIdOverride )? this.videoAssetIdOverride  : this.getConfig( 'videoAssetId' );
 			this.adContext.setVideoAsset( 
 				videoAssetId,
 				this.getConfig( 'videoDuration' ),
