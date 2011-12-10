@@ -720,6 +720,7 @@
 		 * Master send action list: 
 		 */
 		sendNotification: function( embedPlayer, notificationName, notificationData ){
+			mw.log('KDPMapping:: sendNotification > '+ notificationName );
 			switch( notificationName ){
 				case 'doPlay':
 					embedPlayer.play();
