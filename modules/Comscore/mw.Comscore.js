@@ -140,12 +140,12 @@ mw.Comscore.prototype = {
 		this.setupCParams();
 
 		// on change media remove any existing ads:
-		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
+		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
 		});
 
 		// Bind to entry ready
-		$( embedPlayer ).bind('KalturaSupport_EntryDataReady' + this.bindPostfix, function() {
+		embedPlayer.bindHelper('KalturaSupport_EntryDataReady' + this.bindPostfix, function() {
 			playerPlayedFired = false;
 			shouldSendBeacon = false;
 			sendOnSequnceEnd = false;
@@ -154,7 +154,7 @@ mw.Comscore.prototype = {
 		});
 
 		// Bind to player played
-		$( embedPlayer ).bind('onplay' + this.bindPostfix, function() {
+		embedPlayer.bindHelper('onplay' + this.bindPostfix, function() {
 			if ( !playerPlayedFired && !_this.inAd() ){
 				// Send beacon
 				_this.currentSegment++;
@@ -166,7 +166,7 @@ mw.Comscore.prototype = {
 		});
 
 		// Listen to Ad opportunities of midroll type and increase the current segment counter
-		$( embedPlayer ).bind('KalturaSupport_AdOpportunity' + this.bindPostfix, function( event, cuePoint ) {
+		embedPlayer.bindHelper('KalturaSupport_AdOpportunity' + this.bindPostfix, function( event, cuePoint ) {
 			if( embedPlayer.kCuePoints.getAdSlotType( cuePoint ) === 'midroll' ) {
 				_this.currentSegment++;
 				// Used setTimeout because it takes few ms to set propagateEvents to false
@@ -174,7 +174,7 @@ mw.Comscore.prototype = {
 			}
 		});
 
-		$( embedPlayer ).bind('AdSupport_StartAdPlayback' + this.bindPostfix, function( event, adType ) {
+		embedPlayer.bindHelper('AdSupport_StartAdPlayback' + this.bindPostfix, function( event, adType ) {
 
 			switch ( adType )
 			{
@@ -197,7 +197,7 @@ mw.Comscore.prototype = {
 
 		});
 
-		$( embedPlayer ).bind('AdSupport_EndAdPlayback' + this.bindPostfix, function() {
+		embedPlayer.bindHelper('AdSupport_EndAdPlayback' + this.bindPostfix, function() {
 			if( sendOnSequnceEnd ) {
 				cParams["c5"] = _this.parseCAttribute('c5'); // Reset C5
 				mw.log('Comscore:: Send Ad End Beacon (Resume Content)');
@@ -206,7 +206,7 @@ mw.Comscore.prototype = {
 			}
 		});
 
-		$( embedPlayer ).bind('monitorEvent' + this.bindPostfix, function() {
+		embedPlayer.bindHelper('monitorEvent' + this.bindPostfix, function() {
 			if( shouldSendBeacon ) {
 				cParams["c5"] = _this.parseCAttribute('c5'); // Reset C5
 				mw.log('Comscore:: Send Resume Content Beacon (No Ad)');
@@ -292,8 +292,8 @@ mw.Comscore.prototype = {
 	/*
 	 * C10- Segment level reporting
 		    Segments refer to ad breaks. The only events being for are the start of a video
-			or the start of an ad. The following format should be used: “Current Segment # -Total Segments.”
-			So if the given stream is the second segment out of four, the C10 should read “2-4”.
+			or the start of an ad. The following format should be used: â€œCurrent Segment # -Total Segments.â€�
+			So if the given stream is the second segment out of four, the C10 should read â€œ2-4â€�.
 			If there are no segments in the video, the tag should either be empty, or return 1-1
 	 */
 	getC10: function() {

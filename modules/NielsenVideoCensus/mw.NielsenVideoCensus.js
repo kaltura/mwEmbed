@@ -47,7 +47,7 @@ mw.NielsenVideoCensus.prototype = {
 		var contentPlay = false;
 		
 		// Add the first play binding: 
-		$( this.embedPlayer ).bind( 'onplay' + _this.bindPostFix, function(){
+		this.embedPlayer.bindHelper( 'onplay' + _this.bindPostFix, function(){
 			if( !_this.inAd() && !contentPlay){
 				_this.sendBeacon();
 				contentPlay = true;
@@ -57,10 +57,10 @@ mw.NielsenVideoCensus.prototype = {
 		// Send beacon for midrolls
 		var inMidroll = false;
 		// TODO this should bind to "midSequenceComplete" not a nested AdSupport_EndAdPlayback
-		$( _this.embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostFix, function(){
+		_this.embedPlayer.bindHelper('KalturaSupport_AdOpportunity' + _this.bindPostFix, function(){
 			inMidroll = true;
 		});
-		$( _this.embedPlayer ).bind( 'AdSupport_EndAdPlayback' + _this.bindName, function(){
+		_this.embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' + _this.bindName, function(){
 			if( inMidroll ){
 				inMidroll = false;
 				_this.localCurrentSegment++;
