@@ -55,8 +55,8 @@ mw.NielsenCombined.prototype = {
 		});
 		
 		// on change media remove any existing bindings ( the next clip will re-invoke the plugin )
-		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
-			embedPlayer.unbindHelper( _this.bindPostfix );
+		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
+			embedPlayer.unbindHelper( _this.bindPostFix );
 		});
 	},
 	/**
@@ -67,7 +67,7 @@ mw.NielsenCombined.prototype = {
 		var embedPlayer = this.embedPlayer;
 		
 		// Clear out any old bindings
-		$( embedPlayer ).unbind( _this.bindPostfix );
+		$( embedPlayer ).unbind( _this.bindPostFix );
 		
 		// Bind ad Playback
 		var contentPlay = false;
@@ -148,7 +148,7 @@ mw.NielsenCombined.prototype = {
 			// Stop the content: 
 			_this.dispatchEvent( 7, currentContentSegmentDuration, 'content' );
 			// At this point we have reset the player so reset bindings: 
-			$( embedPlayer ).unbind( _this.bindPostfix );
+			$( embedPlayer ).unbind( _this.bindPostFix );
 			_this.unbindPlayerTracking();
 			
 			// Reset the bindings for a replay: ( don't stack) 
