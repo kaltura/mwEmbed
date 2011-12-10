@@ -49,13 +49,8 @@ mw.NielsenCombined.prototype = {
 		this.embedPlayer = embedPlayer;
 		
 		this.getGg( function( gg ){
-			embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix, function(){
-				// Do not dispach a  "preLoad" event ( we will fire a 15 once we have actual content playing ) 
-				//_this.dispatchEvent( 3, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
-				
-				// Add sequence binding ( once player is ready ) 
-				_this.addSequenceBinding();
-			});
+			// Add sequence binding  
+			_this.addSequenceBinding();
 			callback();
 		});
 		
@@ -72,7 +67,7 @@ mw.NielsenCombined.prototype = {
 		var embedPlayer = this.embedPlayer;
 		
 		// Clear out any old bindings
-		embedPlayer.unbindHelper( _this.bindPostfix );
+		$( embedPlayer ).unbind( _this.bindPostfix );
 		
 		// Bind ad Playback
 		var contentPlay = false;
