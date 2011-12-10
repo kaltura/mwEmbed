@@ -49,7 +49,7 @@ mw.NielsenCombined.prototype = {
 		this.embedPlayer = embedPlayer;
 		
 		this.getGg( function( gg ){
-			$( embedPlayer ).bind( 'playerReady' + _this.bindPostFix, function(){
+			embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix, function(){
 				// Do not dispach a  "preLoad" event ( we will fire a 15 once we have actual content playing ) 
 				//_this.dispatchEvent( 3, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
 				// add sequence binding: 
@@ -59,7 +59,7 @@ mw.NielsenCombined.prototype = {
 		});
 		
 		// on change media remove any existing bindings ( the next clip will re-invoke the plugin )
-		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
+		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
 			$( embedPlayer ).unbind( _this.bindPostfix );
 		});
 	},
@@ -77,7 +77,7 @@ mw.NielsenCombined.prototype = {
 		var currentContentSegmentDuration = 0;
 		var lastContentSegmentDuration = 0;
 		
-		$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
+		embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
 			var vid = _this.getPlayerElement(); 
 			
 			// Check if we were playing content before this "adStart"
@@ -110,7 +110,7 @@ mw.NielsenCombined.prototype = {
 				_this.addPlayerTracking( slotType );
 			});
 		});
-		$( embedPlayer ).bind( 'AdSupport_EndAdPlayback' + _this.bindPostFix, function( event, slotType ){
+		embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' + _this.bindPostFix, function( event, slotType ){
 			// close the current ad: 
 			if( adOpenUrl && dispachedAdStart ){
 				// Stop the ad: 
@@ -127,7 +127,7 @@ mw.NielsenCombined.prototype = {
 		});
 		
 		// When starting content finish up content beacon and add content bindings
-		$( embedPlayer ).bind( 'onplay'  + _this.bindPostFix, function(){
+		embedPlayer.bindHelper( 'onplay'  + _this.bindPostFix, function(){
 			var vid = _this.getPlayerElement(); 
 			// Check if the play event is content or "inAdSequence" 
 			if( !_this.inAd() && !contentPlay ){
@@ -145,7 +145,7 @@ mw.NielsenCombined.prototype = {
 			}
 		});
 		// Watch for 'ended' event for cases where finish all ads post sequence and everything "stop the player" 
-		$( embedPlayer ).bind( 'onEndedDone' + _this.bindPostFix, function(){
+		embedPlayer.bindHelper( 'onEndedDone' + _this.bindPostFix, function(){
 			// Stop the content: 
 			_this.dispatchEvent( 7, currentContentSegmentDuration, 'content' );
 			// At this point we have reset the player so reset bindings: 
@@ -183,14 +183,14 @@ mw.NielsenCombined.prototype = {
 		this.unbindPlayerTracking();
 		
 		// Non-native events: ( have to bind against embedPlayer instead of the video instance )
-		$( embedPlayer ).bind( 'onOpenFullScreen' + _this.trackerPostFix, function(){
+		embedPlayer.bindHelper( 'onOpenFullScreen' + _this.trackerPostFix, function(){
 			_this.dispatchEvent( 10, "true", type);
 		})
-		$( embedPlayer ).bind( 'onCloseFullScreen' + _this.trackerPostFix, function(){
+		embedPlayer.bindHelper( 'onCloseFullScreen' + _this.trackerPostFix, function(){
 			_this.dispatchEvent( 10, "false", type);			
 		})
 		// Mute:
-		$( embedPlayer ).bind( 'onToggleMute' + _this.trackerPostFix, function(){
+		embedPlayer.bindHelper( 'onToggleMute' + _this.trackerPostFix, function(){
 			_this.dispatchEvent( 9, String(embedPlayer.muted), type );
 		})
 		
