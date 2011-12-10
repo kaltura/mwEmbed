@@ -52,7 +52,8 @@ mw.NielsenCombined.prototype = {
 			embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix, function(){
 				// Do not dispach a  "preLoad" event ( we will fire a 15 once we have actual content playing ) 
 				//_this.dispatchEvent( 3, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
-				// add sequence binding: 
+				
+				// Add sequence binding ( once player is ready ) 
 				_this.addSequenceBinding();
 			});
 			callback();
@@ -60,7 +61,7 @@ mw.NielsenCombined.prototype = {
 		
 		// on change media remove any existing bindings ( the next clip will re-invoke the plugin )
 		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
-			$( embedPlayer ).unbind( _this.bindPostfix );
+			embedPlayer.unbindHelper( _this.bindPostfix );
 		});
 	},
 	/**
@@ -69,7 +70,10 @@ mw.NielsenCombined.prototype = {
 	addSequenceBinding: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-	
+		
+		// Clear out any old bindings
+		embedPlayer.unbindHelper( _this.bindPostfix );
+		
 		// Bind ad Playback
 		var contentPlay = false;
 		var adOpenUrl = false;
