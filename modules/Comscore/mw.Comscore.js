@@ -16,7 +16,7 @@ mw.Comscore.prototype = {
 
 	pluginVersion: "1.0",
 
-	prerollAdContentType: "09",
+	prerollAdContentType: "09000",
 	postrollAdContentType: "10",
 	midrollAdContentType: "11",
 	inBannerVideoAd: "12",
@@ -122,7 +122,10 @@ mw.Comscore.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var cParams = _this.cParams;
-
+		
+		// Unbind any old bindings: 
+		embedPlayer.unbindHelper( _this.bindPostfix );
+		
 		/*
 		 * We need to send beacons on Content playback and Ads playback
 		 *
@@ -156,12 +159,12 @@ mw.Comscore.prototype = {
 		// Bind to player played
 		embedPlayer.bindHelper('onplay' + this.bindPostfix, function() {
 			if ( !playerPlayedFired && !_this.inAd() ){
+				playerPlayedFired = true;
 				// Send beacon
 				_this.currentSegment++;
 				cParams["c5"] = _this.parseCAttribute('c5');
 				mw.log('Comscore:: Send Content Start Beacon');
 				_this.comScoreBeacon( cParams );
-				playerPlayedFired = true;
 			}
 		});
 
@@ -269,7 +272,7 @@ mw.Comscore.prototype = {
 			//get name of property
 			var attributeKey = config[cName+"attributeKey"];
 			var attributeValue = config[cName+"attributeValue"];
-			var value = config[cName+"Value"];
+			var value = config[ cName + "Value" ];
 
 			//if one of the strings is empty
 			if ( !attributeKey || !attributeValue || !value )
@@ -346,7 +349,6 @@ mw.Comscore.prototype = {
 				'height' : 0
 			})
 		);
-
 		mw.log('Comscore:: Sent Beacon: ' + loadUrl, beaconObject);
 	},
 	destroy: function() {
