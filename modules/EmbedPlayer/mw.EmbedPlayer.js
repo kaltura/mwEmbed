@@ -200,8 +200,8 @@ mw.EmbedPlayer.prototype = {
 	bindHelper: function( name, callback ){
 		$( this ).bind( name, callback );
 	},
-	unbindHelper: function( name ){
-		$( this ).unbind( name ); 
+	unbindHelper: function( bindName ){
+		$( this ).unbind( bindName ); 
 	},
 	triggerQueueCallback: function( name, callback ){
 		$( this ).triggerQueueCallback( name, callback );
@@ -496,6 +496,10 @@ mw.EmbedPlayer.prototype = {
 			if( typeof callback != 'undefined' ){
 				callback();
 			}
+			mw.log( "EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
+			this.playerReady = true;
+			// trigger the player ready event;
+			$( this ).trigger( 'playerReady' );
 			return ;
 		}
 		if ( prevPlayer != this.selectedPlayer ) {
@@ -814,7 +818,7 @@ mw.EmbedPlayer.prototype = {
 	 * Show the player
 	 */
 	showPlayer: function () {
-		mw.log( 'EmbedPlayer:: Show player: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );
+		mw.log( 'EmbedPlayer:: showPlayer: ' + this.id + ' interace: w:' + this.width + ' h:' + this.height );
 		var _this = this;
 		// Remove the player loader spinner if it exists
 		this.hidePlayerSpinner();
@@ -979,7 +983,6 @@ mw.EmbedPlayer.prototype = {
 		// TODO fire mediaError only on failed to recive audio/video  data. 
 		$this.trigger( 'mediaError' );
 		
-		
 		// Check if there is a more specific error: 
 		if( this['data-playerError'] ){
 			this.showErrorMsg( this['data-playerError'] );
@@ -1017,8 +1020,7 @@ mw.EmbedPlayer.prototype = {
 				.addClass('error')
 				.html( noSourceMsg )
 			);
-			
-			$this.find('.play-btn-large').remove();
+			this.$interface.find('.play-btn-large').remove();
 		} else {
 			// Add the warning
 			this.controlBuilder.addWarningBinding( 'EmbedPlayer.DirectFileLinkWarning',
@@ -1147,7 +1149,7 @@ mw.EmbedPlayer.prototype = {
 	changeMedia: function( callback ){
 		var _this = this;
 		var $this = $( this );
-		
+		mw.log( 'EmbedPlayer:: changeMedia ');
 		// Empty out embedPlayer object sources
 		this.emptySources();
 		

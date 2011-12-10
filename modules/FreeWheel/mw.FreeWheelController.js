@@ -25,6 +25,9 @@ mw.FreeWheelControler.prototype = {
 	// The pre video url
 	contentVideoURL : null, 
 	
+	// Allows overide of the video asset id from a updateVideoAssetId notification
+	videoAssetIdOverride: null, 
+	
 	// local slot storage for preroll, midroll, postroll
 	slots : {
 		'preroll' : [],
@@ -90,6 +93,13 @@ mw.FreeWheelControler.prototype = {
 	 */
 	setupAds: function(){
 		var _this = this;
+		// Add support for getting videoAssetId from a notification: 
+		
+		_this.embedPlayer.bindHelper( 'Kaltura_SendNotification' + _this.bindPostfix, function( event, notificationName, notificationData ){
+			if( notificationName == 'updateVideoAssetId' && notificationData['videoAssetId'] ){
+				_this.videoAssetIdOverride = notificationData['videoAssetId'];
+			}
+		});
 		
 		// We should be able to use: 
 		// $(_this.embedPlayer ).bind .. but this ~sometimes~ fails on OSX safari and iOS 
@@ -137,7 +147,7 @@ mw.FreeWheelControler.prototype = {
 				this.addSlot( slot );
 			};
 			// Add the freeWheel bindings:
-			this.addPlayerBindings();
+			this.addSlotBindings();
 		} else {
 			mw.log("FreeWheelController:: no freewheel ads avaliable");
 		}
@@ -200,8 +210,8 @@ mw.FreeWheelControler.prototype = {
 		// No meta data found: 
 		return {};
 	},
-	addPlayerBindings: function(){
-		mw.log("FreeWheelControl:: addPlayerBindings");
+	addSlotBindings: function(){
+		mw.log("FreeWheelControl:: addSlotBindings");
 		var _this = this;
 	
 		$.each(_this.slots, function( slotType, slotSet){
@@ -476,8 +486,9 @@ mw.FreeWheelControler.prototype = {
 			if( this.getConfig('visitorId') ){
 				this.adContext.setVisitor( this.getConfig('visitorId') );
 			}
+			var videoAssetId = ( _this.videoAssetIdOverride )? _this.videoAssetIdOverride  : this.getConfig( 'videoAssetId' );
 			this.adContext.setVideoAsset( 
-				this.getConfig( 'videoAssetId' ),
+				videoAssetId,
 				this.getConfig( 'videoDuration' ),
 				this.getConfig( 'networkId' ),
 				this.embedPlayer.getSrc(),

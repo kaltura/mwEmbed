@@ -102,7 +102,7 @@ mw.DolStatistics.prototype = {
 
 		mw.log('DolStatistics:: addPlayerBindings:: Events list: ', this.eventsList);
 
-		// release the player
+		// Continue player build out
 		callback();
 	},
 
