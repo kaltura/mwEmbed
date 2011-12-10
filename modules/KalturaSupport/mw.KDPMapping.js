@@ -273,12 +273,18 @@
 					&&  
 				embedPlayer.kalturaExportedEvaluateObject[ objectPath[0] ] 
 			){
+				var kObj = embedPlayer.kalturaExportedEvaluateObject[ objectPath[0] ] ;
+				// TODO SHOULD USE A FUNCTION map
 				if( !objectPath[1] ){
-					return embedPlayer.kalturaExportedEvaluateObject[ objectPath[0] ];
+					return kObj;
 				}
-				if( embedPlayer.kalturaExportedEvaluateObject[ objectPath[0] ][ objectPath[1] ] ){
-					return embedPlayer.kalturaExportedEvaluateObject[ objectPath[0] ][ objectPath[1] ];
+				if( !objectPath[2] && kObj[ objectPath[1] ] ){
+					return kObj[ objectPath[1] ];
 				}
+				if( objectPath[2] && kObj[ objectPath[1] ] && kObj[ objectPath[1] ][ objectPath[2] ]  ){
+					return kObj[ objectPath[1] ][ objectPath[2] ];
+				}
+				
 			}
 			
 			switch( objectPath[0] ){
