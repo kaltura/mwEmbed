@@ -39,18 +39,17 @@ mw.NielsenVideoCensus.prototype = {
 	addPlayerBindings: function(){
 		var _this = this;
 		// Remove any existing bindings: 
-		$( this.embedPlayer ).unbind( _this.bindPostFix);
+		this.embedPlayer.unbindHelper( _this.bindPostFix);
 		
 		// Reset the current segment index: 
 		this.localCurrentSegment = 0;
 		
 		var contentPlay = false;
-		
 		// Add the first play binding: 
 		this.embedPlayer.bindHelper( 'onplay' + _this.bindPostFix, function(){
 			if( !_this.inAd() && !contentPlay){
-				_this.sendBeacon();
 				contentPlay = true;
+				_this.sendBeacon();
 			}
 		});
 		
