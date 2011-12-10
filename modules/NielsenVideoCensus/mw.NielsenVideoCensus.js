@@ -28,7 +28,7 @@ mw.NielsenVideoCensus.prototype = {
 	 * 
 	 * Send a start call for each segment the first time it plays.
 	 *	If the user scrubs backwards to a previous segment, and an ad plays before the content resumes 
-	 *		–send an additional call for that segment.
+	 *		send an additional call for that segment.
 	 *	Do not send an additional call for that segment if an ad does not play in between segments.  
 	 *		For example: a full episode with 5 segments might have 5 start calls, potentially more if the user revisits a prior segment and is interrupted by an ad.
 	 *	Include the LP parameter for full episode players
@@ -44,9 +44,14 @@ mw.NielsenVideoCensus.prototype = {
 		// Reset the current segment index: 
 		this.localCurrentSegment = 0;
 		
+		var contentPlay = false;
+		
 		// Add the first play binding: 
-		$( this.embedPlayer ).bind( 'firstPlay' + _this.bindPostFix, function(){
-			_this.sendBeacon();
+		$( this.embedPlayer ).bind( 'onplay' + _this.bindPostFix, function(){
+			if( !_this.inAd() && !contentPlay){
+				_this.sendBeacon();
+				contentPlay = true;
+			}
 		});
 		
 		// Send beacon for midrolls

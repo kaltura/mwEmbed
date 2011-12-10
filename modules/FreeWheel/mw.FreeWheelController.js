@@ -229,11 +229,16 @@ mw.FreeWheelControler.prototype = {
 		});
 	},
 	restorePlayState: function(){
+		var _this = this;
 		mw.log("FreeWheelControl::restorePlayState" );
 		this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
 		// remove pause binding: 
 		var vid = this.embedPlayer.getPlayerElement();
 		$( vid ).unbind( 'pause' + this.bindPostfix );
+		// trigger onplay now that we have restored the player:
+		setTimeout(function(){
+			$( _this.embedPlayer ).trigger('onplay');
+		},0);
 	},
 	playAdCuePoint: function( slotSet, cuePoint ){
 		var _this = this;
