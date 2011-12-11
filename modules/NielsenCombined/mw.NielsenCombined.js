@@ -256,6 +256,11 @@ mw.NielsenCombined.prototype = {
 	},
 	// Gets the "raw" current source ( works with ad assets )  
 	getCurrentVideoSrc: function(){
+		// check for content url config 
+		if( ! this.inAd() && this.getConfig( 'content_url' ) ){
+			return this.getConfig( 'content_url' );
+		}
+		
 		var vid = this.getPlayerElement(); 
 		if( vid && vid.src ){
 			return vid.src;
@@ -326,7 +331,7 @@ mw.NielsenCombined.prototype = {
 		// A tag map that allows for ads to override content values
 		var tagMap = {};
 		// Get the current config evaluated expressions: 
-		var evalConfig = this.embedPlayer.getKalturaConfig('NielsenCombined');
+		var evalConfig = this.embedPlayer.getKalturaConfig('nielsenCombined');
 		$.each( evalConfig, function( attr, evalValue ){
 			// set the tag value 
 			if( attr.indexOf('tag_') === 0 ){
