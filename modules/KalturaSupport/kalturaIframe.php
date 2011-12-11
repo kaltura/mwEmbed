@@ -263,9 +263,15 @@ class kalturaIframe {
 			// TODO should move this to i8ln keys instead of raw msgs
 			$o.= ' data-playerError="' . htmlentities( $this->playerError ) . '" ';
 		}
+		// Check for hide gui errors ( missing entry ) Right this is hard coded, we need a better error handling system! 
+		if( $this->playerError == KalturaResultObject::NO_ENTRY_ID_FOUND ){
+			$o.= ' data-blockPlayerDisplay="true" ';
+		}
+		
 		// Close the open video tag attribute set
 		$o.='>';
 
+		
 		// Output each source as a child element ( for javascript off browsers to have a chance
 		// to playback the content
 		foreach( $sources as $source ){
@@ -273,8 +279,11 @@ class kalturaIframe {
 			$o.= "\n\t\t" .'<source ' .
 					'type="' . htmlspecialchars( $source['type'] ) . '" ' . 
 					'src="' . $source['src'] . '" '.
-					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" '.
-				'></source>';
+					'data-flavorid="' . htmlspecialchars( $source['data-flavorid'] ) . '" ';
+			if( isset( $source['data-bandwidth'] )){
+				$o.= 'data-bandwidth="' . htmlspecialchars( $source['data-bandwidth'] ) . '" ';
+			}
+			$o.= '></source>';
 		}
 
 		// To be on the safe side include the flash player and

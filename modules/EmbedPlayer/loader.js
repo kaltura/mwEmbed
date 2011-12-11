@@ -395,9 +395,15 @@
 		// If the player should include an attribution button:
 		'attributionbutton' : true,
 		
-		// A player error state ( lets you propagate an error instead of a play button ) 
-		// ( while keeping the full player api available )
+		// A player error string
+		// * Used to display an error instead of a play button 
+		// * The full player api available
 		'data-playerError': null,
+		
+		// A flag to hide the player gui and disable autoplay
+		// * Used for empty players or a player where you want to dynamically set sources, then play.
+		// * The player API remains active. 
+		'data-blockPlayerDisplay': null,
 	
 		// If serving an ogg_chop segment use this to offset the presentation time
 		// ( for some plugins that use ogg page time rather than presentation time )
