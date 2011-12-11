@@ -66,9 +66,12 @@ mw.DolStatistics.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		var $embedPlayer = $( embedPlayer );
-		
+
+		// Unbind existing bindings
+		this.destroy();
+
 		// On change media remove any existing ads:
-		$embedPlayer.bind( 'onChangeMedia' + _this.bindPostFix, function(){
+		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
 			$embedPlayer.data('DolStatisticsCounter', $embedPlayer.data('DolStatisticsCounter')+1);
 			_this.destroy();
 		});
@@ -81,7 +84,7 @@ mw.DolStatistics.prototype = {
 				// Special event
 				case 'percentReached':
 					_this.calcCuePoints();
-					$embedPlayer.bind( 'monitorEvent' + _this.bindPostFix, function() {
+					embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostFix, function() {
 						_this.monitorPercentage();
 					});
 				break;
@@ -144,11 +147,10 @@ mw.DolStatistics.prototype = {
 	addMonitorBindings: function() {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		var $embedPlayer = $( embedPlayer );
 		var intervalTime = this.playheadFrequency * 1000;
 		
 		// Start monitor
-		$embedPlayer.bind('onplay' + _this.bindPostFix, function() {
+		embedPlayer.bindHelper('onplay' + _this.bindPostFix, function() {
 			if( ! this.playheadInterval ) {
 				this.playheadInterval = setInterval( function(){
 					_this.sendStatsData( 'playerUpdatePlayhead' , embedPlayer.currentTime);
@@ -157,7 +159,7 @@ mw.DolStatistics.prototype = {
 		});
 
 		// Stop monitor
-		$embedPlayer.bind('doStop' + _this.bindPostFix + ' onpause' + _this.bindPostFix, function() {
+		embedPlayer.bindHelper('doStop' + _this.bindPostFix + ' onpause' + _this.bindPostFix, function() {
 			clearInterval( this.playheadInterval );
 			this.playheadInterval = 0;
 		});
@@ -243,7 +245,7 @@ mw.DolStatistics.prototype = {
 	},
 
 	destroy: function() {
-		$( this.embedPlayer ).unbind( this.bindPostFix );
+		this.embedPlayer.unbindHelper( this.bindPostFix );
 		this.percentCuePoints = {};
 		this.duration = 0;
 	},
