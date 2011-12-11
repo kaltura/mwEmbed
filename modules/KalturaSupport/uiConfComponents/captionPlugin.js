@@ -27,7 +27,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		var overCaptionConfig = embedPlayer.getKalturaConfig( 'closedCaptionsOverPlayer', playerOverConfig );
 		
 		// Check for alternate name for closedCaptionsOverPlayer
-		if( ! overCaptionConfig ){
+		if( !overCaptionConfig || ! overCaptionConfig.plugin ){
 			overCaptionConfig = embedPlayer.getKalturaConfig( 'closedCaptionsFlexible', playerOverConfig );
 		}
 
