@@ -74,7 +74,10 @@ mw.setDefaultConfig ( {
 	'Mw.UserPreferenceExpireDays' : 7,
 	
 	// The xml proxy entry point for loading remote xml
-	'Mw.XmlProxyUrl' : mw.getMwEmbedPath() + 'simplePhpXMLProxy.php'
+	'Mw.XmlProxyUrl' : mw.getMwEmbedPath() + 'simplePhpXMLProxy.php',
+
+	// Loading Spinner Image URL, by default false (we use Spin.js pure css spinner)
+	'LoadingSpinner.ImageUrl' : false
 } );
 
 /**

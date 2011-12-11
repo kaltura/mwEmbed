@@ -2814,7 +2814,7 @@ if( window.jQuery ){
 		$(this).empty();
 
 		// If we have loader path defined, load an image
-		if( mw.getConfig('EmbedPlayer.LoaderPath') ) {
+		if( mw.getConfig('LoadingSpinner.ImageUrl') ) {
 			this.each(function() {
 				var $this = $(this).empty();
 				var thisSpinner = $this.data('spinner');
@@ -2823,7 +2823,7 @@ if( window.jQuery ){
 					delete thisSpinner;
 				}
 				if (opts !== false) {
-					var $loadingSpinner = $('<img />').attr("src", mw.getConfig('EmbedPlayer.LoaderPath')).load(function() {
+					var $loadingSpinner = $('<img />').attr("src", mw.getConfig('LoadingSpinner.ImageUrl')).load(function() {
 						// Set spinner position based on image dimension
 						$( this ).css({
 							'margin-top': '-' + (this.height/2) + 'px',
