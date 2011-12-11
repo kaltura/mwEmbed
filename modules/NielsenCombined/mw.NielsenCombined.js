@@ -331,7 +331,7 @@ mw.NielsenCombined.prototype = {
 		// A tag map that allows for ads to override content values
 		var tagMap = {};
 		// Get the current config evaluated expressions: 
-		var evalConfig = this.embedPlayer.getKalturaConfig('NielsenCombined');
+		var evalConfig = this.embedPlayer.getKalturaConfig('nielsenCombined');
 		$.each( evalConfig, function( attr, evalValue ){
 			// set the tag value 
 			if( attr.indexOf('tag_') === 0 ){
