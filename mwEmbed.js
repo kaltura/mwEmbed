@@ -2812,7 +2812,31 @@ if( window.jQuery ){
 	$.fn.loadingSpinner = function( opts ) {
 		// empty the target: 
 		$(this).empty();
-		// some defaults 
+
+		// If we have loader path defined, load an image
+		if( mw.getConfig('EmbedPlayer.LoaderPath') ) {
+			this.each(function() {
+				var $this = $(this).empty();
+				var thisSpinner = $this.data('spinner');
+				if (thisSpinner) {
+					$this.data('spinner', null);
+					delete thisSpinner;
+				}
+				if (opts !== false) {
+					var $loadingSpinner = $('<img />').attr("src", mw.getConfig('EmbedPlayer.LoaderPath')).load(function() {
+						// Set spinner position based on image dimension
+						$( this ).css({
+							'margin-top': '-' + (this.height/2) + 'px',
+							'margin-left': '-' + (this.width/2) + 'px'
+						});
+					});
+					thisSpinner = $this.append($loadingSpinner);
+				}
+			});
+			return this;
+		}
+
+		// Else, use Spin.js
 		if(!opts)
 			opts = {};
 		opts = $.extend( {'color' : '#eee', 'shadow': true }, opts);
