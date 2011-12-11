@@ -14,6 +14,7 @@
 <script type="text/javascript">	
 // Enable uiconf js which includes external resources 
 mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
+mw.setConfig('LoadingSpinner.ImageUrl', 'externalResources/loading.gif');
 
 function jsKalturaPlayerTest( videoId ){
 	
@@ -56,6 +57,7 @@ function jsKalturaPlayerTest( videoId ){
 	<li><a href="externalResources/IframeCustomPluginJs1.js">IframeCustomPluginJs1</a> -- shows that the resource is loaded early on and can do normal plugin "loader" bindings</li>
     <li><a href="externalResources/IframeCustomPluginJs2.js">IframeCustomPluginJs2</a> -- just a console log showing multiple plugins </li>
     <li><a href="externalResources/IframeCustomPluginCss1.css">IframeCustomPluginCss1</a> -- custom css file ( changes play button to a flower )</li>
+	<li>Custom Loading Spinner - mw.setConfig('LoadingSpinner.ImageUrl', 'externalResources/loading.gif');</li>
 </ul>
 
 <object id="kaltura_player_1318418799" name="kaltura_player_1318418799" 
