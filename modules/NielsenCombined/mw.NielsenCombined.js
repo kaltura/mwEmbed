@@ -256,6 +256,11 @@ mw.NielsenCombined.prototype = {
 	},
 	// Gets the "raw" current source ( works with ad assets )  
 	getCurrentVideoSrc: function(){
+		// check for content url config 
+		if( ! this.inAd() && this.getConfig( 'content_url' ) ){
+			return this.getConfig( 'content_url' );
+		}
+		
 		var vid = this.getPlayerElement(); 
 		if( vid && vid.src ){
 			return vid.src;
@@ -343,6 +348,7 @@ mw.NielsenCombined.prototype = {
 				tagMap[ attr.substr( 3 ) ] = evalValue;
 			}
 		});
+		debugger;
 		// Output the final tag map: 
 		$.each( tagMap, function(attr, evalValue){
 			meta += '<' + attr + '>' + evalValue + '</' + attr + '>' + "\n";
