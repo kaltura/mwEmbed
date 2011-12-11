@@ -263,6 +263,11 @@ class kalturaIframe {
 			// TODO should move this to i8ln keys instead of raw msgs
 			$o.= ' data-playerError="' . htmlentities( $this->playerError ) . '" ';
 		}
+		// Check for hide gui errors ( missing entry ) Right this is hard coded, we need a better error handling system! 
+		if( $this->playerError == KalturaResultObject::NO_ENTRY_ID_FOUND ){
+			$o.= ' data-blockPlayerDisplay="true" ';
+		}
+		
 		// Close the open video tag attribute set
 		$o.='>';
 

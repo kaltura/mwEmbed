@@ -28,6 +28,9 @@ class KalturaResultObject {
 	private $outputFromCache = false;
 	// local flag to store if the uiconf file was from cache.
 	private $outputUiConfFileFromCache = false;
+
+	// Setup static error messages
+	const NO_ENTRY_ID_FOUND = "No Entry ID was found";
 	
 	/**
 	 * Variables set by the Frame request:
@@ -1258,7 +1261,7 @@ class KalturaResultObject {
 		
 		// check if its an empty player and set the error: 
 		if( $this->isEmptyPlayer() ){
-			$this->error = "No Entry ID was found";
+			$this->error = self::NO_ENTRY_ID_FOUND;
 		}
 
 		// Check if we have a cached result object:

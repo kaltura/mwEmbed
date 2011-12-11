@@ -873,11 +873,19 @@ mw.EmbedPlayer.prototype = {
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
 
-		// Right before player autoplay ... check if there are any errors that prevent playback or player:
+		
+		// Check if we want to block the player display
+		if( this['data-blockPlayerDisplay'] ){
+			this.hidePlayerInterface();
+			return ;
+		}
+		
+		// Check if there are any errors to be displayed:
 		if( this['data-playerError'] ){
 			this.showErrorMsg( this['data-playerError'] );
 			return ;
 		}
+		
 		// Auto play if not on an iPad with iOS > 3 
 		if (this.autoplay && (!mw.isIOS() || mw.isIpad3() ) ) {
 			mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
@@ -963,7 +971,10 @@ mw.EmbedPlayer.prototype = {
 		.find( '.control-bar,.play-btn-large').hide();		
 		return ;
 	},
-	
+	hidePlayerInterface: function(){
+		this.showErrorMsg();
+		this.$interface.find( '.error' ).hide();
+	},
 	/**
 	 * Get missing plugin html (check for user included code)
 	 * 
@@ -983,11 +994,18 @@ mw.EmbedPlayer.prototype = {
 		// TODO fire mediaError only on failed to recive audio/video  data. 
 		$this.trigger( 'mediaError' );
 		
+		// Check if we want to block the player display ( no error displayed )
+		if( this['data-blockPlayerDisplay'] ){
+			this.hidePlayerInterface();
+			return ;
+		}
+		
 		// Check if there is a more specific error: 
 		if( this['data-playerError'] ){
 			this.showErrorMsg( this['data-playerError'] );
 			return ;
 		}
+		
 		
 		// Set the top level container to relative position:
 		$this.css('position', 'relative');
@@ -1170,6 +1188,10 @@ mw.EmbedPlayer.prototype = {
 		// Clear out any player error ( both via attr and object property ):
 		this['data-playerError'] = null;
 		$this.attr( 'data-playerError', '');
+		
+		//	Clear out any player display blocks
+		this['data-blockPlayerDisplay'] = null
+		$this.attr( 'data-blockPlayerDisplay', '');
 		
 		// Clear out the player error div:
 		this.$interface.find('.error').remove();
