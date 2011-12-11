@@ -466,6 +466,13 @@
 			var _this = this;
 			mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
 
+			// We can pass [eventName.namespace] as event name, we need it in order to remove listeners with their namespace
+			if( typeof eventName == 'string' ) {
+				var eventData = eventName.split('.', 2);
+				var eventNamespace = ( eventData[1] ) ? eventData[1] : 'kdpMapping';
+				eventName = eventData[0];
+			}
+			
 			if( typeof callbackName == 'string' ){
 				this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName)  ] = window[ callbackName ];
 				var callback = function(){
@@ -492,7 +499,7 @@
 					};
 				}
 				// Add a postfix string
-				bindName += '.kdpMapping';
+				bindName += '.' + eventNamespace;
 				// bind with .kdpMapping postfix::
 				embedPlayer.bindHelper( bindName, function(){
 					bindCallback.apply( _this, $.makeArray( arguments ) );
@@ -706,6 +713,16 @@
 		 * Emulates Kaltura removeJsListener function
 		 */
 		removeJsListener: function( embedPlayer, eventName, callbackName ){
+			// Remove event by namespace
+			if( typeof eventName == 'string' && eventName[0] === '.' ) {
+				var eventData = eventName.split('.', 2);
+				var eventNamespace = eventData[1];
+				if( eventNamespace ) {
+					$( embedPlayer ).unbind('.' + eventNamespace);
+				}
+				return ;
+			}
+
 			var listenerId = this.getListenerId( embedPlayer, eventName, callbackName) ;
 			mw.log("KDPMapping:: removeJsListener " + listenerId );
 			this.listenerList [  listenerId ] = null;

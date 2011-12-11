@@ -12,9 +12,6 @@ mw.DolStatistics.prototype = {
 	bindPostFix: '.DolStatistics',
 	appName: 'KDP',
 
-	// Increased on change media
-	playbackCounter: 1,
-
 	// Number of seconds between playhead event dispatches
 	playheadFrequency: 5,
 	playheadInterval: 0,
@@ -32,6 +29,7 @@ mw.DolStatistics.prototype = {
 		var attributes = [
 			'listenTo',
 			'playheadFrequency',
+			'embededPlayer',
 			'jsFunctionName',
 			'protocol',
 			'host',
@@ -47,8 +45,16 @@ mw.DolStatistics.prototype = {
 
 		this.playheadFrequency = this.pluginConfig.playheadFrequency || 5;
 
+		// Set embeded player to false by default
+		this.embededPlayer = this.pluginConfig.embededPlayer || false;
+
 		// List of events we need to track
 		this.eventsList = this.pluginConfig.listenTo.split(",");
+
+		// Setup player counter, (used global, because on change media we initlize the plugin and reset all vars)
+		if( ! $( embedPlayer ).data('DolStatisticsCounter') ) {
+			$( embedPlayer ).data('DolStatisticsCounter', 1);
+		}
 
 		mw.log('DolStatistics:: Init plugin :: Plugin config: ', this.pluginConfig);
 
@@ -63,7 +69,7 @@ mw.DolStatistics.prototype = {
 		
 		// On change media remove any existing ads:
 		$embedPlayer.bind( 'onChangeMedia' + _this.bindPostFix, function(){
-			_this.playbackCounter++;
+			$embedPlayer.data('DolStatisticsCounter', $embedPlayer.data('DolStatisticsCounter')+1);
 			_this.destroy();
 		});
 
@@ -87,7 +93,7 @@ mw.DolStatistics.prototype = {
 
 				// Use addJsListener for all other events
 				default:
-					embedPlayer.addJsListener(eventName, function() {
+					embedPlayer.addJsListener(eventName + _this.bindPostFix, function() {
 						var eventData = '';
 						for( var x = 0; x < arguments.length; x++ ) {
 							eventData += arguments[x] + ",";
@@ -167,7 +173,7 @@ mw.DolStatistics.prototype = {
 
 	getBitrate: function() {
 		if( this.embedPlayer.mediaElement.selectedSource ) {
-			return this.embedPlayer.mediaElement.selectedSource.getBitrate();
+			return this.embedPlayer.mediaElement.selectedSource.getBitrate() || 0;
 		}
 		return 0;
 	},
@@ -210,20 +216,28 @@ mw.DolStatistics.prototype = {
 		// Kaltura Seesion ID
 		params['KSESSIONID'] = this.embedPlayer.evaluate('{configProxy.sessionId}');
 		// Kaltura Playback ID ( kSessionId + playbackCounter )
-		params['KPLAYBACKID'] = this.embedPlayer.evaluate('{configProxy.sessionId}') + this.playbackCounter;
+		params['KPLAYBACKID'] = this.embedPlayer.evaluate('{configProxy.sessionId}') + $( this.embedPlayer ).data('DolStatisticsCounter');
 		// Kaltura Event name
 		params['KDPEVNT'] = eventName;
 		// KDP Event Data
 		if( eventData )
 			params['KDPDAT_VALUE'] = eventData.toString();
 
-		if( window.parent && this.pluginConfig.jsFunctionName ) {
+		//
+		if( this.embededPlayer === false && this.pluginConfig.jsFunctionName && window.parent ) {
 			// If we have acess to parent, call the jsFunction provided
 			var callbackName = this.pluginConfig.jsFunctionName;
 			this._executeFunctionByName( callbackName, window.parent, params);
 		} else {
 			// Use beacon to send event data
 			var statsUrl = this.pluginConfig.protocol + '://' + this.pluginConfig.host + '?' + $.param(params);
+			$('body').append(
+				$( '<img />' ).attr({
+					'src' : statsUrl,
+					'width' : 0,
+					'height' : 0
+				})
+			);
 			mw.log('DolStatistics:: Send Stats Data ' + statsUrl, params);
 		}
 	},
