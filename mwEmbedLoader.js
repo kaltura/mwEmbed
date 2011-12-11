@@ -632,7 +632,7 @@ function kIsIOS(){
 // Fallforward by default prefers flash, uses html5 only if flash is not installed or not available 
 function kIsHTML5FallForward( ){
 	// Check for a mobile html5 user agent:
-	if ( kIsIOS() || ( mw.getConfig( 'forceMobileHTML5' ) && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )  )  ){
+	if ( kIsIOS() || mw.getConfig( 'forceMobileHTML5' )  ){
 		return true;
 	}
 	// Special check for Android:
