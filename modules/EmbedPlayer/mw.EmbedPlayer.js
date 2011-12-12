@@ -238,7 +238,12 @@ mw.EmbedPlayer.prototype = {
 			.css('cursor', 'pointer' );
 		
 		this.controlBuilder.enableSeekBar();
-		$( this ).trigger( 'onEnableSeekBar');
+		/*
+		 * We should pass an array with enabled components, and the controlBuilder will listen
+		 * to this event and handle the layout changes. we should not call to this.controlBuilder inside embedPlayer.
+		 * [ 'playButton', 'seekBar' ]
+		 */
+		$( this ).trigger( 'onEnableInterfaceComponents');
 	},
 	disablePlayControls: function(){
 		mw.log("EmbedPlayer:: disablePlayControls" );
@@ -252,7 +257,12 @@ mw.EmbedPlayer.prototype = {
 			.css('cursor', 'default' );
 
 		this.controlBuilder.disableSeekBar();
-		$( this ).trigger( 'onDisableSeekBar');
+		/*
+		 * We should pass an array with disabled components, and the controlBuilder will listen
+		 * to this event and handle the layout changes. we should not call to this.controlBuilder inside embedPlayer.
+		 * [ 'playButton', 'seekBar' ]
+		 */
+		$( this ).trigger( 'onDisableInterfaceComponents');
 	},
 
 	/**

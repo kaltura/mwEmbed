@@ -62,6 +62,9 @@ mw.PlayerControlBuilder.prototype = {
 	// Local storage of ControlBar Callback
 	hideControlBarCallback: false,
 
+	// Flag to store controls status (disabled/enabled)
+	controlsDisabled: false,
+
 	/**
 	* Initialization Object for the control builder
 	*
@@ -747,6 +750,15 @@ mw.PlayerControlBuilder.prototype = {
 		var bindFirstPlay = false;		
 		_this.addRightClickBinding();
 		
+		// Bind to EnableInterfaceComponents
+		$( embedPlayer ).unbind('onEnableInterfaceComponents.ctrl').bind('onEnableInterfaceComponents.ctrl', function() {
+			_this.controlsDisabled = false;
+		});
+
+		// Bind to DisableInterfaceComponents
+		$( embedPlayer ).unbind('onDisableInterfaceComponents.ctrl').bind('onDisableInterfaceComponents.ctrl', function() {
+			_this.controlsDisabled = true;
+		});
 		
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
 		$(embedPlayer).unbind('onplay.ctrl').bind('onplay.ctrl', function() { //Only bind once played
@@ -760,12 +772,12 @@ mw.PlayerControlBuilder.prototype = {
 			var lastClickTime = 0;
 			var didDblClick = false;
 			// add right click binding again ( in case the player got swaped )
-			_this.addRightClickBinding()
+			_this.addRightClickBinding();
 			
 			// Remove parent dbl click ( so we can handle play clicks )
 			$( embedPlayer ).unbind( "click.onplayer" ).bind( "click.onplayer", function() {
 				// Don't bind anything if native controls displayed:
-				if( embedPlayer.useNativePlayerControls() ) {
+				if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() ) {
 					return ;
 				}		
 				var clickTime = new Date().getTime();
@@ -1003,6 +1015,12 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Past all tests OverlayControls is true:
 		return true;
+	},
+
+	/* Check if the controls are disabled */
+
+	isControlsDisabled: function() {
+		return this.controlsDisabled;
 	},
 
 	/**
