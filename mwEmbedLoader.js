@@ -873,8 +873,7 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	if ( mw.getConfig('debug') ){
 		url+= '&debug=true';
 	}
-
-	// check for $ library
+	// Check for $ library
 	if( typeof $ != 'undefined' && ! $.jquery ){
 		window['pre$Lib'] = $;
 	}
@@ -885,8 +884,9 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 			jQuery.noConflict();
 			window['$'] = window['pre$Lib'];
 		}
-		if( callback )
+		if( callback ){
 			callback();
+		}
 	});
 }
 function kPageHasAudioOrVideoTags(){

@@ -23,6 +23,12 @@ if( window.QUnit ){
 
 		jsCallbackCalled = true;
 		if( typeof jsKalturaPlayerTest == 'function' ){
+			// since we are in the qUnit scope be sure to restore $
+			if( window['pre$Lib'] ){
+				jQuery.noConflict();
+				window['$'] = window['pre$Lib'];
+				var $ = window['$'];
+			}
 			jsKalturaPlayerTest( videoId );
 		}
 		
