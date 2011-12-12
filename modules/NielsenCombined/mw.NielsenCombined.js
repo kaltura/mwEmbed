@@ -354,17 +354,12 @@ mw.NielsenCombined.prototype = {
 		var evalConfig = this.embedPlayer.getKalturaConfig('nielsenCombined');
 		$.each( evalConfig, function( attr, evalValue ){
 			// set the tag value 
-			if( attr.indexOf('tag_') === 0 ){
-				// When in an Ad check if the tag already exists
-				if( _this.inAd() && tagMap[ attr.substr( 4 ) ] ){
-					// don't override ad tags 
-				} else {
-					// set the content tag:
-					tagMap[ attr.substr( 4 ) ] = evalValue;
-				}
+			if( !_this.inAd() && attr.indexOf('tag_') === 0 ){
+				// set the content tag:
+				tagMap[ attr.substr( 4 ) ] = evalValue;
 			}
-			// if in an ad override the tagMap with ad_ tag value:
-			if( _this.inAd() && attr.indexOf('ad_') === 0 && evalValue ){
+			// set ad tag value: 
+			if( _this.inAd() && attr.indexOf('ad_') === 0 ){
 				tagMap[ attr.substr( 3 ) ] = evalValue;
 			}
 		});
