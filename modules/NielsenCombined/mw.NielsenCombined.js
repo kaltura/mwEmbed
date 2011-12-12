@@ -311,6 +311,8 @@ mw.NielsenCombined.prototype = {
 				prevCuePointTime = cuePoint.startTime;
 			}
 		}
+		// else just return embed player duration 
+		return  Math.round( embedPlayer.duration );
 	},
 	inAd:function(){
 		return !! this.embedPlayer.evaluate( '{sequenceProxy.isInSequence}' ); 
