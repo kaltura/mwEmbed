@@ -311,6 +311,8 @@ mw.NielsenCombined.prototype = {
 				prevCuePointTime = cuePoint.startTime;
 			}
 		}
+		// else just return embed player duration 
+		return  Math.round( embedPlayer.duration );
 	},
 	inAd:function(){
 		return !! this.embedPlayer.evaluate( '{sequenceProxy.isInSequence}' ); 
@@ -370,7 +372,8 @@ mw.NielsenCombined.prototype = {
 			$.getScript( this.getGgCmbUrl(), function(){
 				// Nielsen specific global param option: 
 				var nolggGlobalParams = {
-					  clientid: _this.getConfig( "clientid" )
+					  clientid: _this.getConfig( "clientid" ),
+					  vcid: _this.getConfig( "vcid" )
 				};	
 				_this.gg = new gg();
 				var uid = 0; // "provided by Nielsen"
