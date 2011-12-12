@@ -274,6 +274,7 @@ mw.NielsenCombined.prototype = {
 	 * @returns a int value
 	 */
 	getRelativeTime: function( timeAttribute ){
+		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		if( timeAttribute != 'duration' && timeAttribute != 'currentTime' ){
 			mw.log("Error:: calling getRelativeTime with invalid timeAttribute: " + timeAttribute );
@@ -281,9 +282,16 @@ mw.NielsenCombined.prototype = {
 		}
 		// Check if we are in an Ad and return the raw player duration or time: 
 		if( this.inAd() ){
+			// if looking for duration first check the sequence proxy
+			if( timeAttribute == 'duration'){
+				var seqDuration = embedPlayer.evaluate( '{sequenceProxy.activePluginMetadata.duration}' );
+				if( seqDuration ){
+					return Math.round( seqDuration );
+				}
+			}
 			var vid = this.getPlayerElement(); 
 			if( vid && vid[ timeAttribute ]){
-				return parseInt( vid[ timeAttribute ] );
+				return Math.round( vid[ timeAttribute ] );
 			}
 		}
 		
