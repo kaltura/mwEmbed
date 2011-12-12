@@ -16,10 +16,10 @@ mw.Comscore.prototype = {
 
 	pluginVersion: "1.0",
 
-	prerollAdContentType: "09000",
-	postrollAdContentType: "10000",
-	midrollAdContentType: "11000",
-	inBannerVideoAd: "12000",
+	prerollAdContentType: "090000",
+	postrollAdContentType: "100000",
+	midrollAdContentType: "110000",
+	inBannerVideoAd: "120000",
 
 	loadedXML: false,
 
