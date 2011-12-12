@@ -273,7 +273,7 @@ mw.NielsenCombined.prototype = {
 	 * 
 	 * @returns a int value
 	 */
-	getRelativeTime: function( timeAttribute ){
+	getRelativeTime: function( timeAttribute ){debugger;
 		var embedPlayer = this.embedPlayer;
 		if( timeAttribute != 'duration' && timeAttribute != 'currentTime' ){
 			mw.log("Error:: calling getRelativeTime with invalid timeAttribute: " + timeAttribute );
@@ -350,6 +350,7 @@ mw.NielsenCombined.prototype = {
 		});
 		// Output the final tag map: 
 		$.each( tagMap, function(attr, evalValue){
+			evalValue = evalValue || '';
 			meta += '<' + attr + '>' + evalValue + '</' + attr + '>' + "\n";
 		})
 		return meta;
