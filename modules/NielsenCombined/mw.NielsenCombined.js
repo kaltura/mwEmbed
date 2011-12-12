@@ -273,7 +273,7 @@ mw.NielsenCombined.prototype = {
 	 * 
 	 * @returns a int value
 	 */
-	getRelativeTime: function( timeAttribute ){debugger;
+	getRelativeTime: function( timeAttribute ){
 		var embedPlayer = this.embedPlayer;
 		if( timeAttribute != 'duration' && timeAttribute != 'currentTime' ){
 			mw.log("Error:: calling getRelativeTime with invalid timeAttribute: " + timeAttribute );
@@ -372,7 +372,8 @@ mw.NielsenCombined.prototype = {
 			$.getScript( this.getGgCmbUrl(), function(){
 				// Nielsen specific global param option: 
 				var nolggGlobalParams = {
-					  clientid: _this.getConfig( "clientid" )
+					  clientid: _this.getConfig( "clientid" ),
+					  vcid: _this.getConfig( "vcid" )
 				};	
 				_this.gg = new gg();
 				var uid = 0; // "provided by Nielsen"
