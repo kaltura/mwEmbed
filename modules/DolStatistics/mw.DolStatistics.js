@@ -51,7 +51,7 @@ mw.DolStatistics.prototype = {
 		// List of events we need to track
 		this.eventsList = this.pluginConfig.listenTo.split(",");
 
-		// Setup player counter, (used global, because on change media we initlize the plugin and reset all vars)
+		// Setup player counter, (used global, because on change media we re-initlize the plugin and reset all vars)
 		if( ! $( embedPlayer ).data('DolStatisticsCounter') ) {
 			$( embedPlayer ).data('DolStatisticsCounter', 1);
 		}
@@ -67,7 +67,7 @@ mw.DolStatistics.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var $embedPlayer = $( embedPlayer );
 
-		// Unbind existing bindings
+		// Unbind any existing bindings
 		this.destroy();
 
 		// On change media remove any existing ads:
@@ -98,11 +98,12 @@ mw.DolStatistics.prototype = {
 				default:
 					embedPlayer.addJsListener(eventName + _this.bindPostFix, function() {
 						var eventData = '';
-						for( var x = 0; x < arguments.length; x++ ) {
-							eventData += arguments[x] + ",";
-						}
-						eventData = eventData.substr(0, eventData.length-1);
-						_this.sendStatsData(eventName, eventData);
+						var argSet = $.makeArray( arguments );
+						$.each( argSet, function( inx, argValue ){
+							eventData += argValue + ",";
+						});
+						eventData = eventData.substr( 0, eventData.length-1 );
+						_this.sendStatsData( eventName, eventData );
 					});
 				break;
 			}
@@ -121,7 +122,7 @@ mw.DolStatistics.prototype = {
 		var duration = this.getDuration();
 
 		for( var i=0; i<=100; i=i+10 ) {
-			var cuePoint = Math.round( duration / 100 * i);
+			var cuePoint = Math.round( duration / 100 * i );
 			if( cuePoint === 0 ) continue;
 			_this.percentCuePoints[ cuePoint ] = false;
 		}
@@ -134,12 +135,12 @@ mw.DolStatistics.prototype = {
 		var _this = this;
 		var duration = this.getDuration();
 		var percentCuePoints = this.percentCuePoints;
-		var currentTime = Math.round(this.embedPlayer.currentTime);
+		var currentTime = Math.round( this.embedPlayer.currentTime );
 
 		if( percentCuePoints[ currentTime ] === false ) {
 			percentCuePoints[ currentTime ] = true;
-			var percent = Math.round(currentTime * 100 / duration);
-			_this.sendStatsData('percentReached', percent);
+			var percent = Math.round(currentTime * 100 / duration );
+			_this.sendStatsData( 'percentReached', percent );
 		}
 	},
 
@@ -151,8 +152,8 @@ mw.DolStatistics.prototype = {
 		
 		// Start monitor
 		embedPlayer.bindHelper('onplay' + _this.bindPostFix, function() {
-			if( ! this.playheadInterval ) {
-				this.playheadInterval = setInterval( function(){
+			if( ! _this.playheadInterval ) {
+				_this.playheadInterval = setInterval( function(){
 					_this.sendStatsData( 'playerUpdatePlayhead' , embedPlayer.currentTime);
 				}, intervalTime );
 			}
@@ -160,16 +161,16 @@ mw.DolStatistics.prototype = {
 
 		// Stop monitor
 		embedPlayer.bindHelper('doStop' + _this.bindPostFix + ' onpause' + _this.bindPostFix, function() {
-			clearInterval( this.playheadInterval );
-			this.playheadInterval = 0;
+			clearInterval( _this.playheadInterval );
+			_this.playheadInterval = 0;
 		});
 	},
 
 	/* Retrive video duration */
 	getDuration: function() {
-		if( ! this.duration )
+		if( ! this.duration ){
 			this.duration = this.embedPlayer.evaluate('{duration}');
-
+		}
 		return this.duration;
 	},
 
@@ -222,12 +223,13 @@ mw.DolStatistics.prototype = {
 		// Kaltura Event name
 		params['KDPEVNT'] = eventName;
 		// KDP Event Data
-		if( eventData )
+		if( eventData ) {
 			params['KDPDAT_VALUE'] = eventData.toString();
+		}
 
 		//
 		if( this.embededPlayer === false && this.pluginConfig.jsFunctionName && window.parent ) {
-			// If we have acess to parent, call the jsFunction provided
+			// If we have access to parent, call the jsFunction provided
 			var callbackName = this.pluginConfig.jsFunctionName;
 			this._executeFunctionByName( callbackName, window.parent, params);
 		} else {
@@ -250,8 +252,8 @@ mw.DolStatistics.prototype = {
 		this.duration = 0;
 	},
 
-	/* Execure function like: "cto.trackVideo" */
-	_executeFunctionByName: function(functionName, context /*, args */) {
+	/* Execute function like: "cto.trackVideo" */
+	_executeFunctionByName: function( functionName, context /*, args */) {
 		var args = Array.prototype.slice.call(arguments).splice(2);
 		var namespaces = functionName.split(".");
 		var func = namespaces.pop();
