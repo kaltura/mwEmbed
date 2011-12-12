@@ -294,7 +294,6 @@ mw.NielsenCombined.prototype = {
 				return Math.round( vid[ timeAttribute ] );
 			}
 		}
-		
 		// Check if we have cuepoints
 		if( embedPlayer.rawCuePoints ){
 			var segmentDuration = 0;
@@ -306,21 +305,32 @@ mw.NielsenCombined.prototype = {
 				if( cuePoint.cuePointType != 'adCuePoint.Ad' || cuePoint.adType == 2 ){
 					continue;
 				}
-				if( absolutePlayerTime < cuePoint.startTime ){
-					return Math.round( ( cuePoint.startTime - prevCuePointTime ) / 1000 );
-				}
-				// if current Time is > that last cuePoint
-				if( i == embedPlayer.rawCuePoints.length 
-						&&
-					absolutePlayerTime > cuePoint.startTime
-				){
-					return Math.round( embedPlayer.duration - ( cuePoint.startTime / 1000 ) )
+				// handle relative currentTime: 
+				if( timeAttribute == 'currentTime' ){
+					if( cuePoint.startTime > absolutePlayerTime ){
+						return Math.round( ( absolutePlayerTime - prevCuePointTime )  / 1000 );
+					}
+				} else { // handle duration: 
+					if( absolutePlayerTime < cuePoint.startTime ){
+						return Math.round( ( cuePoint.startTime - prevCuePointTime ) / 1000 );
+					}
+					// if current Time is > that last cuePoint
+					if( i == embedPlayer.rawCuePoints.length 
+							&&
+						absolutePlayerTime > cuePoint.startTime
+					){
+						return Math.round( embedPlayer.duration - ( cuePoint.startTime / 1000 ) )
+					}
 				}
 				prevCuePointTime = cuePoint.startTime;
 			}
+			// currentTime is in the last segment: 
+			if( timeAttribute == 'currentTime' ){
+				return Math.round( ( absolutePlayerTime - prevCuePointTime )  / 1000 );
+			}
 		}
 		// else just return embed player duration 
-		return  Math.round( embedPlayer.duration );
+		return  Math.round( embedPlayer[ timeAttribute ] );
 	},
 	inAd:function(){
 		return !! this.embedPlayer.evaluate( '{sequenceProxy.isInSequence}' ); 
