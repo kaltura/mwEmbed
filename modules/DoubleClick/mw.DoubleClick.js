@@ -1,7 +1,7 @@
 ( function( mw, $){
 
-mw.DoubleClick = function( embedPlayer, callback ){
-	this.init( embedPlayer, callback );
+mw.DoubleClick = function( embedPlayer, callback, pluginName ){
+	this.init( embedPlayer, callback , pluginName);
 };
 mw.DoubleClick.prototype = {
 	// Local config object
@@ -19,7 +19,7 @@ mw.DoubleClick.prototype = {
 	// The bind bindPostfix for all doubleclick bindings
 	bindPostfix: '.doubleClick',
 	
-	init: function( embedPlayer, callback ){
+	init: function( embedPlayer, callback, pluginName ){
 		mw.log( 'DoubleClick:: init: ' + embedPlayer.id );
 		var _this = this;
 		
