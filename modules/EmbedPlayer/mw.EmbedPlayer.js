@@ -1988,16 +1988,16 @@ mw.EmbedPlayer.prototype = {
 		// Keep volume proprties set outside of the embed player in sync
 		_this.syncVolume();
 
-		// Update the playhead status:
-		_this.updatePlayheadStatus()
-
-		// Update buffer information
-		_this.updateBufferStatus();
-		
 		// Make sure the monitor continues to run as long as the video is not stoped
 		_this.syncMonitor()
 		
 		if( _this._propagateEvents ){
+			// Update the playhead status: TODO move to controlBuilder
+			_this.updatePlayheadStatus()
+
+			// Update buffer information TODO move to controlBuilder
+			_this.updateBufferStatus();
+			
 			// mw.log('trigger:monitor:: ' + this.currentTime );
 			$( this ).trigger( 'monitorEvent' );
 			
