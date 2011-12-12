@@ -765,7 +765,9 @@ mw.includeAllModuleMessages();
 		*/
 		updateLayout: function() {
 			var $playerTarget = this.embedPlayer.$interface;
-			$playerTarget.find('.track').remove();
+            if( $playerTarget ) {
+                $playerTarget.find('.track').remove();
+            }            
 			this.refreshDisplay();
 		},
 

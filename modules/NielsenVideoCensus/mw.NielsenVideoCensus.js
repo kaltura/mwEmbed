@@ -116,9 +116,9 @@ mw.NielsenVideoCensus.prototype = {
 		var lpParam = this.getConfig("lp") + ',';
 		
 		// lpParam is
-		if( lpParam == 'SF' ){
-			lpParam  += ',' + this.embedPlayer.duration;
-			return lpPram
+		if( lpParam == 'SF,' ){
+			lpParam  += '1,' + Math.round(this.embedPlayer.duration) + ',1';
+			return lpParam;
 		}
 		
 		// 2) Current segment/chapter number. Set to 0 if not known
