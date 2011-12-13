@@ -1627,7 +1627,7 @@ mw.EmbedPlayer.prototype = {
 		this.absoluteStartPlayTime =  new Date().getTime();
 		
 		// Check if thumbnail is being displayed and embed html
-		if ( _this.posterDisplayed &&  !_this.useNativePlayerControls() ) {
+		if ( _this.posterDisplayed ) {
 			if ( !_this.selectedPlayer ) {
 				_this.showPluginMissingHTML();
 				return false;
