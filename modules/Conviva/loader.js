@@ -4,6 +4,10 @@
 
 ( function( mw, $ ) {
 
+mw.addResourcePaths({
+	"mw.Conviva": "mw.Conviva.js"
+});
+	
 mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
     
     embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
@@ -51,6 +55,11 @@ mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
                 return;
             }
             
+            mw.load('mw.Conviva', function(){
+            	new mw.Conviva( embedPlayer, callback, config );
+            });
+            
+            /*
             $.ajax({
                 type: "GET",
                 url: config[ 'convivaKalturaHTML5Lib' ],
@@ -65,7 +74,7 @@ mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
                     callback();
                }
             });
-            
+            */
             return;
         }
         

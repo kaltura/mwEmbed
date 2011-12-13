@@ -75,6 +75,7 @@ mw.NielsenCombined.prototype = {
 		var dispachedAdStart = false;
 		var currentContentSegmentDuration = 0;
 		var lastContentSegmentDuration = 0;
+		var contentSegmentCount = 1;
 		
 		embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
 			var vid = _this.getPlayerElement(); 
@@ -103,8 +104,7 @@ mw.NielsenCombined.prototype = {
 				}
 				dispachedAdStart = true;
 				// Playing an ad fire a 15 with all ad Meatadata
-				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , slotType, _this.getMetaXmlString() );
-				
+				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , slotType, _this.getMetaXmlString(), contentSegmentCount);
 				// Add event bindings: 
 				_this.addPlayerTracking( slotType );
 			});
@@ -132,7 +132,8 @@ mw.NielsenCombined.prototype = {
 			if( !_this.inAd() && !contentPlay ){
 				contentPlay = true;
 				// Playing content fire the 5 content beacon and start content tracking
-				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), 1 );
+				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), contentSegmentCount );
+				contentSegmentCount++;
 				
 				// Add player "raw" player bindings:
 				_this.addPlayerTracking( "content" );
@@ -208,7 +209,7 @@ mw.NielsenCombined.prototype = {
 			b('play', function(){
 				_this.dispatchEvent( 5, _this.getRelativeTime('currentTime') );
 				// unbind play: 
-				$(embedPlayer).unbind( 'play.nielsenPlayerTracker' );
+				$(embedPlayer).unbind( 'play' + _this.trackerPostFix );
 			});
 		});
 		
@@ -252,6 +253,7 @@ mw.NielsenCombined.prototype = {
 		var args = $.makeArray( arguments ); 
 		var eventString = args.join("\n\n"); 
 		mw.log("NielsenCombined:: dispatchEvent: " + eventString);
+		debugger;
 		this.gg.ggPM.apply( this, args);
 	},
 	// Gets the "raw" current source ( works with ad assets )  
@@ -384,8 +386,12 @@ mw.NielsenCombined.prototype = {
 		if( !this.gg ){
 			$.getScript( this.getGgCmbUrl(), function(){
 				// Nielsen specific global param option: 
+				var clientId = _this.getConfig( "clientid" );
+				if( ! clientId ){
+					clientId = '';
+				}
 				var nolggGlobalParams = {
-					  clientid: _this.getConfig( "clientid" ),
+					  clientid: clientId,
 					  vcid: _this.getConfig( "vcid" )
 				};	
 				_this.gg = new gg();
