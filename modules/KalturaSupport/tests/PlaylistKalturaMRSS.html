@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Playlist with Kaltura MRSS XML</title>
+    </head>
+   <body>
+   	<h3>Playlist with Kaltura MRSS</h3>
+   	 <a href="?forceMobileHTML5"> Force Mobile HTML5</a>  <br> <br>
+   		<div class='video_wrap'>
+              <div id='kplayer'></div>
+       </div>
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+      <script src="/html5.kaltura/mwEmbed/mwEmbedLoader.php" type="text/javascript"></script>
+      <script>
+        //<![CDATA[
+       	 var urlPath = window.location.href.split("PlaylistKalturaMRSS.html")[0];
+         var params = {
+            allowscriptaccess: "always",
+            allownetworking: "all",
+            allowfullscreen: "true",
+            wmode: "opaque"
+          };
+          
+          var flashVars = {
+            "playlistAPI.autoInsert": true,
+            // The html5 iframe is always served from html5.kaltura.org here we test cross site request:
+            "playlistAPI.kpl0Url": "http://www.kaltura.org/apis/html5lib/mwEmbed/modules/KalturaSupport/tests/resources/PlaylistKalturaMrssSampleFile.xml"
+          };
+          
+          swfobject.embedSWF("http://www.kaltura.com/index.php/kwidget/cache_st/1302387141/wid/_507031/uiconf_id/4181012", "kplayer", "740", "330", "9.0.0", false, flashVars, params);
+        //]]>
+      </script>
+
+  </body>
+</html>

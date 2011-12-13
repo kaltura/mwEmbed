@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Change media with no sources</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script>
+window['jsCallbackReady'] = function( videoId ){
+	// add a local ref to the kdp: 
+	var kdp = document.getElementById( videoId );
+	$( '.changeMedia' ).click(function(){
+		kdp.sendNotification( "changeMedia", { 'entryId' : $(this).attr('data-entryId') });
+	});
+}
+function jsKalturaPlayerTest( videoId ){
+	var kdp = document.getElementById( videoId );
+	// Name this module
+	module( "Entry with no sources" );
+
+	// Add the entry ready event: 
+	kdp.addJsListener( 'mediaReady', 'mediaReadyFunction');
+	
+	asyncTest("Change Media", function(){
+		window.mediaReadyFunction = function(){
+			var entry = kdp.evaluate('{mediaProxy.entry}');
+			// check for the inital entry ready:
+			if( entry.id == '1_2qy6yq5j' ){
+				equal(entry.id, "1_2qy6yq5j", "Mix entry ready" );
+				// switch to the next entry:
+				$( ".changeMedia" ).get(1).click();
+			} else if( entry.id == "1_oz8y7d5a" ) {
+				equal(entry.id, "1_oz8y7d5a", "Entry 1_oz8y7d5a change success" );
+				equal(entry.name, "kaltura test.avi", "name of entry updated");
+				$( ".changeMedia" ).get(2).click();
+			} else if ( entry.id == "1_ur8f1q6u" ){
+				equal(entry.id, "1_ur8f1q6u", "Entry 1_ur8f1q6u change success" );
+				// done with tests:
+				start();
+			}
+		};
+	});
+}
+
+
+</script>
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Change media player </h2>
+<h3> Load Kaltura Mix entry and use changeMedia API to load different entry </h3>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers
+<br />
+<object id="kdp3" name="kdp3" class="player" width="600" height="400" type="application/x-shockwave-flash" allowfullscreen="true" allownetworking="all" allowscriptaccess="always" rel="media:video" data="http://www.kaltura.com/kwidget/wid/_552701/uiconf_id/1426242">
+	<param name="movie" value="http://www.kaltura.com/kwidget/wid/_552701/uiconf_id/1426242">
+	<param name="quality" value="best">
+	<param name="wmode" value="opaque">
+	<param name="allowfullscreen" value="yes">
+	<param name="allowscriptaccess" value="always">
+	<param name="allownetworking" value="all">
+	<param name="flashVars" value="entryId=1_2qy6yq5j&amp;sourceType=entryId">
+</object>
+<br /><br />
+<input class="changeMedia" type="button" data-entryId="1_2qy6yq5j" value="Mix Entry" />
+<input class="changeMedia" type="button" data-entryId="1_oz8y7d5a" value="Entry 1" />
+<input class="changeMedia" type="button" data-entryId="1_ur8f1q6u" value="Entry 2" />
+<input class="changeMedia" type="button" data-entryId="1_6rugti8h" value="Entry 3" />
+</body>
+</html>

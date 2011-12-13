@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Auto play Player test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Auto Play Test" );
+	var kdp = $('#' + videoId ).get(0);
+	
+	asyncTest("AutoPlay has started", function(){
+		kalturaQunitWaitForPlayer(function(){
+			equals(	kdp.evaluate('{configProxy.flashvars.autoPlay}'), true, "Autoplay config proxy set");
+			// wait for a given time
+			var waitTries = 0;
+			waitForTimeUpdate = function(){
+				if( waitTries > 100 ){
+					ok( false, "Playback started time out after 10 seconds" );
+					start();
+					return ;
+				}
+				if( kdp.evaluate('{video.player.currentTime}') > 1 ){
+					ok( true, "Playback started" );
+					kdp.sendNotification( 'doStop' );
+					start();
+					return ;
+				}
+				// increment wait count
+				waitTries++;
+				// Else loop: 
+				setTimeout( waitForTimeUpdate, 100 );
+			}
+			setTimeout( waitForTimeUpdate, 100 );
+		});
+	});
+
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Auto Play Test </h2>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br />
+<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
+allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
+xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
+resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" 
+data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4">
+	<param name="allowFullScreen" value="true" />
+	<param name="allowNetworking" value="all" />
+	<param name="allowScriptAccess" value="always" />
+	<param name="bgcolor" value="#000000" />
+	<param name="flashVars" value="&autoPlay=true" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" />
+</object>
+</body>
+</html>

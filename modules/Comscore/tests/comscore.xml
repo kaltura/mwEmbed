@@ -1,0 +1,24 @@
+﻿<comScoreIDs>
+	<c3>
+		<contentOwner name="RADWANTZOR" id="1894" />
+		<contentOwner name="AVGIL" id="8457" />
+		<contentOwner name="SHADMI" id="1540" />
+		<contentOwner name="KRIMOV" id="9841" />
+		<contentOwner name="YEFET" id="9813" />
+	</c3>
+	<c4>
+		<site url="abc" id="3456" />
+		<site url="fox" id="3592" />
+		<site url="cnn" id="6584" />
+		<site url="nbc" id="3456" />
+		<site url="bbc" id="7345" />
+		<site url="default" id="10000" />
+	</c4>
+	<c5>
+		<type name="short form premium" id="02" />
+		<type name="long form premium" id="03" />
+		<type name="long form proseumer" id="04" />
+		<type name="long form proseumer" id="05" />
+		<type name="user generated content" id="06" />
+	</c5>
+</comScoreIDs>
