@@ -29,7 +29,6 @@ mw.DolStatistics.prototype = {
 		var attributes = [
 			'listenTo',
 			'playheadFrequency',
-			'embededPlayer',
 			'jsFunctionName',
 			'protocol',
 			'host',
@@ -44,9 +43,6 @@ mw.DolStatistics.prototype = {
 		this.pluginConfig = this.embedPlayer.getKalturaConfig( 'dolStatistics', attributes );
 
 		this.playheadFrequency = this.pluginConfig.playheadFrequency || 5;
-
-		// Set embeded player to false by default
-		this.embededPlayer = this.pluginConfig.embededPlayer || false;
 
 		// List of events we need to track
 		this.eventsList = this.pluginConfig.listenTo.split(",");
@@ -223,13 +219,10 @@ mw.DolStatistics.prototype = {
 		// Kaltura Event name
 		params['KDPEVNT'] = eventName;
 		// KDP Event Data
-		if( eventData ) {
-			params['KDPDAT_VALUE'] = eventData.toString();
-		}
+		params['KDPDAT_VALUE'] = eventData.toString();
 
-		//
-		if( this.embededPlayer === false && this.pluginConfig.jsFunctionName && window.parent ) {
-			// If we have access to parent, call the jsFunction provided
+		// If we have access to parent, call the jsFunction provided
+		if( this.pluginConfig.jsFunctionName && window.parent ) {
 			var callbackName = this.pluginConfig.jsFunctionName;
 			this._executeFunctionByName( callbackName, window.parent, params);
 		} else {
