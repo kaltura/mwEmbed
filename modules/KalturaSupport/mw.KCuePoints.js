@@ -125,6 +125,9 @@ mw.KCuePoints.prototype = {
 			// Ad type cue point
 			eventName = 'KalturaSupport_AdOpportunity';
 			cuePointWrapper.context = this.getVideoAdType( rawCuePoint );
+		} else {
+			// Ignore all others cue points types
+			return ;
 		}
 		mw.log('mw.KCuePoints :: Trigger event: ' + eventName + ' - ' + rawCuePoint.cuePointType + ' at: ' + rawCuePoint.startTime );
 		$( this.embedPlayer ).trigger(  eventName, cuePointWrapper );
