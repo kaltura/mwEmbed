@@ -112,7 +112,7 @@ mw.KAdPlayer.prototype = {
 		// Check for companion ads:
 		if ( adConf.companions && adConf.companions.length ) {
 			this.displayCompanions(  adSlot, adConf, adSlot.type);
-		};
+		}
 		
 		// Check for nonLinear overlays
 		if ( adConf.nonLinear && adConf.nonLinear.length && adSlot.type == 'overlay' ) {
@@ -224,7 +224,7 @@ mw.KAdPlayer.prototype = {
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Bind all the tracking events ( currently vast based but will abstract if needed )
 		if( adConf.trackingEvents ){
-			_this.bindTrackingEvents( adConf.trackingEvents );
+			_this.bindTrackingEvents( adConf.trackingEvents, adConf.duration );
 		}
 		var helperCss = {
 			'position': 'absolute',
@@ -417,7 +417,7 @@ mw.KAdPlayer.prototype = {
 	 * 
 	 * @param {object} trackingEvents
 	 */	
-	bindTrackingEvents: function ( trackingEvents ){
+	bindTrackingEvents: function ( trackingEvents, adDuration ){
 		var _this = this;
 		var videoPlayer = _this.getVideoElement();
 		// unbind any existing adTimeline events
@@ -437,8 +437,8 @@ mw.KAdPlayer.prototype = {
 				if( eventName == trackingEvents[ i ].eventName ){
 					mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + trackingEvents[ i ].beaconUrl );
 					mw.sendBeaconUrl( trackingEvents[ i ].beaconUrl );
-				};
-			};				
+				}
+			}			
 		};
 		
 		// On end stop monitor / clear interval: 
@@ -472,7 +472,12 @@ mw.KAdPlayer.prototype = {
 				clearInterval( _this.adMonitorInterval );
 			}
 			time =  videoPlayer.currentTime;
-			dur = videoPlayer.duration;
+			// Check for ready state before trying to get duration
+			if( videoPlayer.readyState > 0 ) {
+				dur = videoPlayer.duration;
+			} else {
+				dur = adDuration || 0;
+			}
 			
 			// Check if isVideoSiblingEnabled and update the status bar 
 			if( _this.isVideoSiblingEnabled() ) {
