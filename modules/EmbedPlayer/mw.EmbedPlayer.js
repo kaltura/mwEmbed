@@ -2069,7 +2069,7 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		// Check if a javascript currentTime change based seek has occurred
-		if( _this.previousTime != _this.currentTime && !this.userSlide && !this.seeking){
+		if( parseInt( _this.previousTime ) != parseInt( _this.currentTime ) && !this.userSlide && !this.seeking){
 			// If the time has been updated and is in range issue a seek
 			if( _this.getDuration() && _this.currentTime <= _this.getDuration() ){
 				var seekPercent = _this.currentTime / _this.getDuration();
