@@ -3,7 +3,7 @@
 // Set the FreeWheel config:
 mw.setConfig({
 	// The url for the ad Manager
-	// for debuging we use the following AdManager url: 'http://localhost/html5.kaltura/mwEmbed/modules/FreeWheel/AdManager.js'
+	// for debugging we use the following AdManager url: 'http://localhost/html5.kaltura/mwEmbed/modules/FreeWheel/AdManager.js'
 	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js'
 });
 
@@ -368,7 +368,7 @@ mw.FreeWheelControler.prototype = {
 		if( $siblingVid.length ){
 			return $siblingVid.get(0);
 		}
-		return  this.embedPlayer.getPlayerElement();
+		return this.embedPlayer.getPlayerElement();
 	},
 	displayFreeWheelSlots: function( slotType, inx, doneCallback ){
 		var _this = this;
@@ -443,7 +443,7 @@ mw.FreeWheelControler.prototype = {
 				return 'postroll';
 				break;
 		}
-		mw.log("FreeWheel Control could not get slot type: skip " + slot.getTimePositionClass() );
+		mw.log( "FreeWheel Control could not get slot type: skip " + slot.getTimePositionClass() );
 		return 'unknown_type';
 	},
 	

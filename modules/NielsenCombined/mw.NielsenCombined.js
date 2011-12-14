@@ -253,7 +253,6 @@ mw.NielsenCombined.prototype = {
 		var args = $.makeArray( arguments ); 
 		var eventString = args.join("\n\n"); 
 		mw.log("NielsenCombined:: dispatchEvent: " + eventString);
-		debugger;
 		this.gg.ggPM.apply( this, args);
 	},
 	// Gets the "raw" current source ( works with ad assets )  
