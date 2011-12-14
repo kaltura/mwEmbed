@@ -3,7 +3,7 @@
 // Set the FreeWheel config:
 mw.setConfig({
 	// The url for the ad Manager
-	// for debuging we use the following AdManager url: 'http://localhost/html5.kaltura/mwEmbed/modules/FreeWheel/AdManager.js'
+	// for debugging we use the following AdManager url: 'http://localhost/html5.kaltura/mwEmbed/modules/FreeWheel/AdManager.js'
 	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js'
 });
 
@@ -53,6 +53,9 @@ mw.FreeWheelControler.prototype = {
 	// bindPostfix enables namespacing the plugin binding
 	bindPostfix: '.freeWheel',
 	
+	// used to store interface height before moving it for freewheel clicks to go through. 
+	orginalInterfaceHeight: null,
+	
 	/**
 	 * Initialize the adMannager javascript and setup adds
 	 * 
@@ -82,11 +85,6 @@ mw.FreeWheelControler.prototype = {
 			callback();
 		}
 	},	
-	getAdManagerUrl: function(){
-		return ( this.getConfig( 'adManagerJsUrl' ) ) ? 
-				this.getConfig( 'adManagerJsUrl' )  : 
-				mw.getConfig( 'FreeWheel.AdManagerUrl' );
-	},
 	/**
 	 * Setup ads, main freeWheel control flow
 	 * @return
@@ -125,8 +123,10 @@ mw.FreeWheelControler.prototype = {
 			
 			// Load add data ( will call onRequestComplete once ready )
 			mw.log( "FreeWheelController::submitRequest>" );
+			
 			// Get Freewheel ads: 
 			_this.getContext().submitRequest();
+			
 			// set the callback 
 			_this.callback  = callback;
 		});
@@ -251,8 +251,16 @@ mw.FreeWheelControler.prototype = {
 		mw.log("FreeWheelControl::restorePlayState" );
 		this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
 		// remove pause binding: 
-		var vid = this.embedPlayer.getPlayerElement();
-		$( vid ).unbind( 'pause' + this.bindPostfix );
+		//var vid = this.embedPlayer.getPlayerElement();
+		//$( vid ).unbind( 'pause' + this.bindPostfix );
+		
+		// Restore interace size: 
+		_this.embedPlayer.$interface.css( {
+			'height':  _this.orginalInterfaceHeight,
+			'bottom' : 0,
+			'top' : 0
+		})
+		
 		// trigger onplay now that we have restored the player:
 		setTimeout(function(){
 			$( _this.embedPlayer ).trigger('onplay');
@@ -337,8 +345,16 @@ mw.FreeWheelControler.prototype = {
 			setTimeout(function(){
 				var vid = _this.embedPlayer.getPlayerElement();
 				vid.controls = false;
-			},0);
-		} );
+			}, 0);
+		});
+		_this.orginalInterfaceHeight = _this.embedPlayer.$interface.css( 'height' );
+		
+		// Put the interface at the bottom of the player to allow clicks to work
+		_this.embedPlayer.$interface.css( {
+			'height':  _this.embedPlayer.controlBuilder.getHeight(),
+			'bottom' : '0px',
+			'top' : _this.embedPlayer.height
+		})
 		return true;
 	},
 	monitorAdProgress: function(){
@@ -368,7 +384,7 @@ mw.FreeWheelControler.prototype = {
 		if( $siblingVid.length ){
 			return $siblingVid.get(0);
 		}
-		return  this.embedPlayer.getPlayerElement();
+		return this.embedPlayer.getPlayerElement();
 	},
 	displayFreeWheelSlots: function( slotType, inx, doneCallback ){
 		var _this = this;
@@ -443,7 +459,7 @@ mw.FreeWheelControler.prototype = {
 				return 'postroll';
 				break;
 		}
-		mw.log("FreeWheel Control could not get slot type: skip " + slot.getTimePositionClass() );
+		mw.log( "FreeWheel Control could not get slot type: skip " + slot.getTimePositionClass() );
 		return 'unknown_type';
 	},
 	
@@ -626,6 +642,11 @@ mw.FreeWheelControler.prototype = {
 				}
 			}
 		}
+	},
+	getAdManagerUrl: function(){
+		return ( this.getConfig( 'adManagerJsUrl' ) ) ? 
+				this.getConfig( 'adManagerJsUrl' )  : 
+				mw.getConfig( 'FreeWheel.AdManagerUrl' );
 	}
 };
 
