@@ -225,15 +225,23 @@ mw.FreeWheelControler.prototype = {
 			
 			// Else set of preroll or postroll clips setup normal binding: 
 			_this.embedPlayer.bindHelper( 'AdSupport_' + slotType + _this.bindPostfix, function( event, sequenceProxy ){
-				
-				sequenceProxy[ _this.getSequenceIndex( slotType ) ] = function( callback ){
-					// Run the freewheel slot add, then run the callback once done 
-					_this.displayFreeWheelSlots( slotType, 0, function(){
-						_this.restorePlayState();
-						// Run the callback:
-						callback();
-					});
-				};
+				// Check that the freewheel slotSet actually includes an ad:
+				var adInstancesPresent = false;
+				$.each( slotSet, function( inx, slot ){
+					if( slot._adInstances.length != 0 ){
+						adInstancesPresent = true;
+					}
+				})
+				if( adInstancesPresent ){
+					sequenceProxy[ _this.getSequenceIndex( slotType ) ] = function( callback ){
+						// Run the freewheel slot add, then run the callback once done 
+						_this.displayFreeWheelSlots( slotType, 0, function(){
+							_this.restorePlayState();
+							// Run the callback:
+							callback();
+						});
+					};
+				}
 				
 			});
 		});
@@ -268,7 +276,7 @@ mw.FreeWheelControler.prototype = {
 					// overlay has special handling: 
 					if( slotType == 'overlay' && _this.overlaySlotActive == false ){
 						// TODO handle close caption layout conflict
-						var bottom = parseInt( $('#fw_ad_container_div').css('bottom') );
+						var bottom = parseInt( $('#fw_ad_container_div').css( 'bottom' ) );
 						var ctrlBarBottom  = bottom;
 						if( bottom < embedPlayer.controlBuilder.getHeight() ){
 							ctrlBarBottom = bottom + embedPlayer.controlBuilder.getHeight();
@@ -458,9 +466,9 @@ mw.FreeWheelControler.prototype = {
 			this.adManager.setNetwork( 
 				parseInt( this.getConfig( 'networkId' ) ) 
 			);
-			var serverUrl = this.getConfig('serverUrlHTML5') ;
+			var serverUrl = this.getConfig( 'serverUrlHTML5' ) ;
 			if( ! serverUrl ){
-				serverUrl = this.getConfig('serverUrl') ;
+				serverUrl = this.getConfig( 'serverUrl' ) ;
 			}
 			this.adManager.setServer( serverUrl );
 		}
