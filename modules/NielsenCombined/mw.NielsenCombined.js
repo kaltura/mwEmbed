@@ -159,7 +159,7 @@ mw.NielsenCombined.prototype = {
 		});
 	},
 	round: function( floatValue ){
-		return _this.round( floatValue * 100 ) / 100;
+		return Math.round( floatValue * 100 ) / 100;
 	},
 	unbindPlayerTracking: function(){
 		$( this.embedPlayer ).unbind( this.trackerPostFix );
