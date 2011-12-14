@@ -126,7 +126,9 @@ mw.KAds.prototype = {
 		}
 		
 		// If ad type is midroll pause the video
-		_this.embedPlayer.pauseLoading();
+		if( cuePoint.adType == 1 ) {
+			_this.embedPlayer.pauseLoading();
+		}
 		
 		mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
 			if( ! adConf ){
@@ -226,7 +228,9 @@ mw.KAds.prototype = {
 			}
 
 			// Tell the player to show the Ad
-			_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
+			if( cuePoint.adType == 1 ) {
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
+			}
 			_this.adPlayer.display( adsCuePointConf, doneCallback, adDuration );
 
 		});
