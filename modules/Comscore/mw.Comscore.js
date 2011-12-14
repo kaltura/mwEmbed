@@ -339,9 +339,9 @@ mw.Comscore.prototype = {
 		}
 
 		loadUrl += "rn=" + Math.random().toString() + "&";
-		loadUrl +="cv=" + _this.pluginVersion;
+		loadUrl += "cv=" + _this.pluginVersion;
 
-		// load img to send the beacon
+		// Load img to send the beacon
 		$('body').append(
 			$( '<img />' ).attr({
 				'src' : loadUrl,

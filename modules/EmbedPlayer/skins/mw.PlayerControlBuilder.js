@@ -65,6 +65,9 @@ mw.PlayerControlBuilder.prototype = {
 	// Flag to store controls status (disabled/enabled)
 	controlsDisabled: false,
 
+	// binding postfix
+	bindPostfix: '.controlBuilder',
+	
 	/**
 	* Initialization Object for the control builder
 	*
@@ -745,65 +748,36 @@ mw.PlayerControlBuilder.prototype = {
 		_this.onControlBar = false;
 
 		// Remove any old interface bindings
-		$interface.unbind();
+		$( embedPlayer ).unbind( this.bindPostfix );
 
 		var bindFirstPlay = false;		
 		_this.addRightClickBinding();
 		
+		// add the player click bindings
+		_this.addPlayerClickBindings();
+		
+		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
+		$(embedPlayer).bind('onplay' + this.bindPostfix, function() { //Only bind once played
+			// add right click binding again ( in case the player got swaped )
+			_this.addRightClickBinding();
+		});
+		
 		// Bind to EnableInterfaceComponents
-		$( embedPlayer ).unbind('onEnableInterfaceComponents.ctrl').bind('onEnableInterfaceComponents.ctrl', function() {
+		$( embedPlayer ).bind('onEnableInterfaceComponents' + this.bindPostfix, function() {
 			_this.controlsDisabled = false;
+			_this.addPlayerClickBindings();
 		});
 
 		// Bind to DisableInterfaceComponents
-		$( embedPlayer ).unbind('onDisableInterfaceComponents.ctrl').bind('onDisableInterfaceComponents.ctrl', function() {
+		$( embedPlayer ).bind('onDisableInterfaceComponents' + this.bindPostfix, function() {
 			_this.controlsDisabled = true;
+			_this.removePlayerClickBindings();
 		});
 		
-		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
-		$(embedPlayer).unbind('onplay.ctrl').bind('onplay.ctrl', function() { //Only bind once played
-			if(bindFirstPlay) {
-				return ;
-			}
-			bindFirstPlay = true;
-			
-			
-			var dblClickTime = 300;
-			var lastClickTime = 0;
-			var didDblClick = false;
-			// add right click binding again ( in case the player got swaped )
-			_this.addRightClickBinding();
-			
-			// Remove parent dbl click ( so we can handle play clicks )
-			$( embedPlayer ).unbind( "click.onplayer" ).bind( "click.onplayer", function() {
-				// Don't bind anything if native controls displayed:
-				if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() ) {
-					return ;
-				}		
-				var clickTime = new Date().getTime();
-				if( clickTime -lastClickTime < dblClickTime ) {
-					//embedPlayer.fullscreen(); // Why do we need to call fullscreen? we already have DblClick binding (line: 1880)
-					didDblClick = true;
-					setTimeout( function(){ didDblClick = false; },  dblClickTime + 10 );
-				}
-				lastClickTime = clickTime;
-				setTimeout( function(){
-					// check if no click has since the time we called the setTimeout
-					if( !didDblClick ){
-						if( embedPlayer.paused ) {
-							embedPlayer.play();
-						} else {
-							embedPlayer.pause();
-						}
-					}
-				}, dblClickTime );
-				
-			});		
-		});
 		
 		var bindSpaceUp = function(){
-			$(window).bind('keyup.mwPlayer', function(e) {
-				if(e.keyCode == 32) {
+			$(window).bind('keyup' + this.bindPostfix, function(e) {
+				if( e.keyCode == 32 ) {
 					if(embedPlayer.paused) {
 						embedPlayer.play();
 					} else {
@@ -815,7 +789,7 @@ mw.PlayerControlBuilder.prototype = {
 		};
 		
 		var bindSpaceDown = function() {
-			$(window).unbind('keyup.mwPlayer');
+			$(window).unbind( 'keyup.mwPlayer' );
 		};
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
@@ -826,13 +800,14 @@ mw.PlayerControlBuilder.prototype = {
 		} else { // hide show controls:
 			
 			// Show controls on click: 
-			$(embedPlayer).unbind('click.showCtrlBar').bind('click.showCtrlBar', function(){
+			$(embedPlayer).bind( 'click' + this.bindPostfix , function(){
 				_this.showControlBar();
+				return true;
 			});
 			
 			//$interface.css({'background-color': 'red'});
 			// Bind a startTouch to show controls
-			$interface.bind( 'touchstart', function() {
+			$interface.bind( 'touchstart' + this.bindPostfix, function() {
 				_this.showControlBar();
 				// ( once the user touched the video "don't hide" )
 			} );
@@ -900,8 +875,55 @@ mw.PlayerControlBuilder.prototype = {
 			this.addSkinControlBindings();
 		}
 
-		mw.log('trigger::addControlBindingsEvent');
-		$( embedPlayer ).trigger( 'addControlBindingsEvent');
+		mw.log( 'trigger::addControlBindingsEvent' );
+		$( embedPlayer ).trigger( 'addControlBindingsEvent' );
+	},
+	removePlayerClickBindings: function(){
+		$( this.embedPlayer )
+			.unbind( "click" + this.bindPostfix )
+			.unbind( "dblclick" + this.bindPostfix );
+	},
+	addPlayerClickBindings: function(){
+
+		var _this = this;
+		var embedPlayer = this.embedPlayer;
+		
+		// Setup "dobuleclick" fullscreen binding to embedPlayer ( if enabled ) 
+		if ( this.supportedComponents['fullscreen'] ){
+			$( embedPlayer ).bind( "dblclick" + this.bindPostfix, function(){
+				embedPlayer.fullscreen();
+			});
+		}
+		
+		var dblClickTime = 300;
+		var lastClickTime = 0;
+		var didDblClick = false;
+	
+		// Remove parent dbl click ( so we can handle play clicks )
+		$( embedPlayer ).bind( "click" + this.bindPostfix, function() {
+			// Don't bind anything if native controls displayed:
+			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() ) {
+				return true;
+			}		
+			var clickTime = new Date().getTime();
+			if( clickTime -lastClickTime < dblClickTime ) {
+				didDblClick = true;
+				setTimeout( function(){ 
+					didDblClick = false; 
+				},  dblClickTime + 10 );
+			}
+			lastClickTime = clickTime;
+			setTimeout( function(){
+				// check if no click has since the time we called the setTimeout
+				if( !didDblClick ){
+					if( embedPlayer.paused ) {
+						embedPlayer.play();
+					} else {
+						embedPlayer.pause();
+					}
+				}
+			}, dblClickTime );
+		});
 	},
 	addRightClickBinding: function(){
 		var embedPlayer = this.embedPlayer;
@@ -1990,11 +2012,6 @@ mw.PlayerControlBuilder.prototype = {
 		'fullscreen': {
 			'w': 28,
 			'o': function( ctrlObj ) {
-				// Setup "dobuleclick" fullscreen binding to embedPlayer
-				$( ctrlObj.embedPlayer ).unbind("dblclick").bind("dblclick", function(){
-					ctrlObj.embedPlayer.fullscreen();
-				});
-
 				$btn = $( '<div />' )
 						.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
 						.addClass( "ui-state-default ui-corner-all ui-icon_link rButton fullscreen-btn" )

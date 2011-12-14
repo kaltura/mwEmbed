@@ -9,7 +9,7 @@ mw.NielsenVideoCensus = function( embedPlayer, callback ){
 
 mw.NielsenVideoCensus.prototype = {
 	// Post fixed applied in player bindings
-	bindPostFix: '.NielsenVideoCensus',
+	bindPostfix: '.NielsenVideoCensus',
 	
 	// Local cache of current segment: 
 	localCurrentSegment: 0,
@@ -39,14 +39,14 @@ mw.NielsenVideoCensus.prototype = {
 	addPlayerBindings: function(){
 		var _this = this;
 		// Remove any existing bindings: 
-		this.embedPlayer.unbindHelper( _this.bindPostFix);
+		this.embedPlayer.unbindHelper( _this.bindPostfix );
 		
 		// Reset the current segment index: 
 		this.localCurrentSegment = 0;
 		
 		var contentPlay = false;
 		// Add the first play binding: 
-		this.embedPlayer.bindHelper( 'onplay' + _this.bindPostFix, function(){
+		this.embedPlayer.bindHelper( 'onplay' + _this.bindPostfix, function(){
 			if( !_this.inAd() && !contentPlay){
 				contentPlay = true;
 				_this.sendBeacon();
@@ -56,7 +56,7 @@ mw.NielsenVideoCensus.prototype = {
 		// Send beacon for midrolls
 		var inMidroll = false;
 		// TODO this should bind to "midSequenceComplete" not a nested AdSupport_EndAdPlayback
-		_this.embedPlayer.bindHelper('KalturaSupport_AdOpportunity' + _this.bindPostFix, function(){
+		_this.embedPlayer.bindHelper('KalturaSupport_AdOpportunity' + _this.bindPostfix, function(){
 			inMidroll = true;
 		});
 		_this.embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' + _this.bindName, function(){

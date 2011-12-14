@@ -84,9 +84,9 @@ mw.NielsenCombined.prototype = {
 			if( contentPlay ){
 				contentPlay = false;
 				// Stop content: 
-				_this.dispatchEvent( 7, parseInt( currentContentSegmentDuration ), 'content' );
+				_this.dispatchEvent( 7, _this.round( currentContentSegmentDuration ), 'content' );
 				// Ad fire a 4 to 'unload' the content segment
-				_this.dispatchEvent( 4, parseInt( currentContentSegmentDuration ), 'content' );
+				_this.dispatchEvent( 4, _this.round( currentContentSegmentDuration ), 'content' );
 				lastContentSegmentDuration = currentContentSegmentDuration;
 			}
 			
@@ -113,9 +113,9 @@ mw.NielsenCombined.prototype = {
 			// close the current ad: 
 			if( adOpenUrl && dispachedAdStart ){
 				// Stop the ad: 
-				_this.dispatchEvent( 7, parseInt( _this.currentAdTime ), slotType );
+				_this.dispatchEvent( 7, _this.round( _this.currentAdTime ), slotType );
 				// Ad fire a 4 to 'unload' the ad ( always called even if we don't get to "ended" event )
-				_this.dispatchEvent( 4, parseInt( currentAdDuration ), slotType );
+				_this.dispatchEvent( 4, _this.round( currentAdDuration ), slotType );
 				adOpenUrl = false;
 			}
 			// unbind tracking ( will be re-instated via addPlayerTracking on subsequent ads or content 
@@ -147,7 +147,7 @@ mw.NielsenCombined.prototype = {
 		// Watch for 'ended' event for cases where finish all ads post sequence and everything "stop the player" 
 		embedPlayer.bindHelper( 'onEndedDone' + _this.bindPostFix, function(){
 			// Stop the content: 
-			_this.dispatchEvent( 7, currentContentSegmentDuration, 'content' );
+			_this.dispatchEvent( 7, _this.round( currentContentSegmentDuration), 'content' );
 			// At this point we have reset the player so reset bindings: 
 			$( embedPlayer ).unbind( _this.bindPostFix );
 			_this.unbindPlayerTracking();
@@ -157,6 +157,9 @@ mw.NielsenCombined.prototype = {
 				_this.addSequenceBinding();
 			},0);
 		});
+	},
+	round: function( floatValue ){
+		return _this.round( floatValue * 100 ) / 100;
 	},
 	unbindPlayerTracking: function(){
 		$( this.embedPlayer ).unbind( this.trackerPostFix );
@@ -253,7 +256,6 @@ mw.NielsenCombined.prototype = {
 		var args = $.makeArray( arguments ); 
 		var eventString = args.join("\n\n"); 
 		mw.log("NielsenCombined:: dispatchEvent: " + eventString);
-		debugger;
 		this.gg.ggPM.apply( this, args);
 	},
 	// Gets the "raw" current source ( works with ad assets )  
@@ -288,12 +290,12 @@ mw.NielsenCombined.prototype = {
 			if( timeAttribute == 'duration'){
 				var seqDuration = embedPlayer.evaluate( '{sequenceProxy.activePluginMetadata.duration}' );
 				if( seqDuration ){
-					return Math.round( seqDuration );
+					return _this.round( seqDuration );
 				}
 			}
 			var vid = this.getPlayerElement(); 
 			if( vid && vid[ timeAttribute ]){
-				return Math.round( vid[ timeAttribute ] );
+				return _this.round( vid[ timeAttribute ] );
 			}
 		}
 		// Check if we have cuepoints
@@ -310,29 +312,29 @@ mw.NielsenCombined.prototype = {
 				// handle relative currentTime: 
 				if( timeAttribute == 'currentTime' ){
 					if( cuePoint.startTime > absolutePlayerTime ){
-						return Math.round( ( absolutePlayerTime - prevCuePointTime )  / 1000 );
+						return _this.round( ( absolutePlayerTime - prevCuePointTime )  / 1000 );
 					}
 				} else { // handle duration: 
 					if( absolutePlayerTime < cuePoint.startTime ){
-						return Math.round( ( cuePoint.startTime - prevCuePointTime ) / 1000 );
+						return _this.round( ( cuePoint.startTime - prevCuePointTime ) / 1000 );
 					}
 					// if current Time is > that last cuePoint
 					if( i == embedPlayer.rawCuePoints.length 
 							&&
 						absolutePlayerTime > cuePoint.startTime
 					){
-						return Math.round( embedPlayer.duration - ( cuePoint.startTime / 1000 ) )
+						return _this.round( embedPlayer.duration - ( cuePoint.startTime / 1000 ) )
 					}
 				}
 				prevCuePointTime = cuePoint.startTime;
 			}
 			// currentTime is in the last segment: 
 			if( timeAttribute == 'currentTime' ){
-				return Math.round( ( absolutePlayerTime - prevCuePointTime )  / 1000 );
+				return _this.round( ( absolutePlayerTime - prevCuePointTime )  / 1000 );
 			}
 		}
 		// else just return embed player duration 
-		return  Math.round( embedPlayer[ timeAttribute ] );
+		return _this.round( embedPlayer[ timeAttribute ] );
 	},
 	inAd:function(){
 		return !! this.embedPlayer.evaluate( '{sequenceProxy.isInSequence}' ); 
