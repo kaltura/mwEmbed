@@ -794,6 +794,9 @@ function kAddScript( callback ){
 		// Kaltura client libraries:
 		jsRequestSet.push(
 		  'MD5',
+		  'utf8_encode',
+		  'base64_encode',
+		  //'base64_decode',
 		  "mw.KApi",
 		  'mw.KWidgetSupport',
 		  'mw.KAnalytics',
