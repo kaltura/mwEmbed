@@ -879,13 +879,21 @@ mw.PlayerControlBuilder.prototype = {
 		$( embedPlayer ).trigger( 'addControlBindingsEvent' );
 	},
 	removePlayerClickBindings: function(){
-		$( this.embedPlayer ).unbind( "click" + this.bindPostfix );
+		$( this.embedPlayer )
+			.unbind( "click" + this.bindPostfix )
+			.unbind( "dblclick" + this.bindPostfix );
 	},
 	addPlayerClickBindings: function(){
 
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		
+		// Setup "dobuleclick" fullscreen binding to embedPlayer ( if enabled ) 
+		if ( this.supportedComponents['fullscreen'] ){
+			$( embedPlayer ).bind( "dblclick" + this.bindPostfix, function(){
+				embedPlayer.fullscreen();
+			});
+		}
 		
 		var dblClickTime = 300;
 		var lastClickTime = 0;
@@ -2004,11 +2012,6 @@ mw.PlayerControlBuilder.prototype = {
 		'fullscreen': {
 			'w': 28,
 			'o': function( ctrlObj ) {
-				// Setup "dobuleclick" fullscreen binding to embedPlayer
-				$( ctrlObj.embedPlayer ).unbind("dblclick").bind("dblclick", function(){
-					ctrlObj.embedPlayer.fullscreen();
-				});
-
 				$btn = $( '<div />' )
 						.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
 						.addClass( "ui-state-default ui-corner-all ui-icon_link rButton fullscreen-btn" )
