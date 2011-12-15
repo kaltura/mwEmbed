@@ -128,7 +128,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Hide "controls" if using native player controls:
 		if( this.useNativePlayerControls() ){
-			_this.controls = false;
+			_this.controls = true;
 		}
 		// Set the skin name from the class
 		var	sn = $(element).attr( 'class' );
