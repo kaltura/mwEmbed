@@ -82,12 +82,12 @@ mw.EmbedPlayer.prototype = {
 	// If the onDone interface should be displayed
 	'onDoneInterfaceFlag': true,
 	
-	// if we should check for a loading spinner in the moitor function: 
+	// if we should check for a loading spinner in the monitor function: 
 	'_checkHideSpinner' : false,
 	
 	// If pause play controls click controls should be active: 
 	'_playContorls' : true,
-
+	
 	// If player should be displayed (in some caused like audio, we don't need the player to be visible
 	'displayPlayer': true, 
 
@@ -735,6 +735,7 @@ mw.EmbedPlayer.prototype = {
 	 * On clip done action. Called once a clip is done playing
 	 * TODO clean up end sequence flow
 	 */
+	triggeredEndDone: false,
 	postSequence: false,
 	onClipDone: function() {
 		var _this = this;
@@ -788,8 +789,10 @@ mw.EmbedPlayer.prototype = {
 
 				// An event for once the all ended events are done.
 				mw.log("EmbedPlayer:: trigger: onEndedDone");
-				$( this ).trigger( 'onEndedDone' );
-				
+				if ( !this.triggeredEndDone ){
+					this.triggeredEndDone = true;
+					$( this ).trigger( 'onEndedDone' );
+				}
 				setTimeout(function(){
 					_this.restoreEventPropagation(); 
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -1189,6 +1192,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Reset first play to true, to count that play event
 		this.firstPlay = true;
+		this.triggeredEndDone = false;
 		this.preSequence = false;
 		this.postSequence = false;
 		
@@ -1662,6 +1666,8 @@ mw.EmbedPlayer.prototype = {
 		// If we previously finished playing this clip run the "replay hook"
 		if( this.donePlayingCount > 0 && !this.paused && this._propagateEvents ) {			
 			this.replayEventCount++;
+			// Trigger end done on replay
+			this.triggeredEndDone = false;
 			if( this.replayEventCount <= this.donePlayingCount){
 				$this.trigger( 'replayEvent' );
 			}
@@ -1674,7 +1680,13 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		this.playInterfaceUpdate();
-		return true;
+		// If play controls are enabled continue to video playback:
+		if( _this._playContorls ){
+			return true;
+		} else {
+			// return false ( Mock play event, or handled elsewhere )
+			return false;
+		}
 	},
 	playInterfaceUpdate: function(){
 		var _this = this;
@@ -1803,8 +1815,11 @@ mw.EmbedPlayer.prototype = {
 		if( !this.paused ){
 			this.pause();
 		}
-		// Restore the play button: 
-		this.addPlayBtnLarge();
+		// Restore the play button ( if not native controls or is android ) 
+		if( !this.useNativePlayerControls() || mw.isAndroid2() ){
+			this.addPlayBtnLarge();
+		}
+		
 		// Native player controls:
 		if( !this.isPersistentNativePlayer() ){			
 			// Rewrite the html to thumbnail disp

@@ -94,10 +94,8 @@
 		
 		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
 		"titleLayout" : "uiConfComponents/titleLayout.js",
-		"volumeBarLayout"	:	"uiConfComponents/volumeBarLayout.js",
+		"volumeBarLayout"	:	"uiConfComponents/volumeBarLayout.js"
 		
-		"kdpClientIframe" : "kdpPageJs/kdpClientIframe.js",
-		"kdpServerIFrame" : "kdpPageJs/kdpServerIFrame.js"
 	} );
 	
 	// Set a local variable with the request set so we can append it to embedPlayer

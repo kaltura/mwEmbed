@@ -876,8 +876,6 @@ class kalturaIframe {
 				// Write out the embed object
 				document.write('<?php echo $this->getFlashEmbedHTML() ?>' );
 				
-				// Load server side bindings for kdpServer
-				kLoadJsRequestSet( ['window.jQuery', 'mwEmbed', 'mw.style.mwCommon', '$j.postMessage', 'kdpServerIFrame', 'JSON' ] );
 			} else {
 				
 				// Last resort just provide an image with a link to the file
