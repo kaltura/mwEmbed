@@ -224,7 +224,9 @@ mw.KAdPlayer.prototype = {
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Bind all the tracking events ( currently vast based but will abstract if needed )
 		if( adConf.trackingEvents ){
-			_this.bindTrackingEvents( adConf.trackingEvents, adConf.duration );
+			$( vid ).bind('loadedmetadata', function() {
+				_this.bindTrackingEvents( adConf.trackingEvents );
+			});
 		}
 		var helperCss = {
 			'position': 'absolute',
@@ -418,7 +420,7 @@ mw.KAdPlayer.prototype = {
 	 * 
 	 * @param {object} trackingEvents
 	 */	
-	bindTrackingEvents: function ( trackingEvents, adDuration ){
+	bindTrackingEvents: function ( trackingEvents ){
 		var _this = this;
 		var videoPlayer = _this.getVideoElement();
 		// unbind any existing adTimeline events
@@ -473,12 +475,7 @@ mw.KAdPlayer.prototype = {
 				clearInterval( _this.adMonitorInterval );
 			}
 			time =  videoPlayer.currentTime;
-			// Check for ready state before trying to get duration
-			if( videoPlayer.readyState > 0 ) {
-				dur = videoPlayer.duration;
-			} else {
-				dur = adDuration || 0;
-			}
+			dur = videoPlayer.duration;
 			
 			// Check if isVideoSiblingEnabled and update the status bar 
 			if( _this.isVideoSiblingEnabled() ) {
