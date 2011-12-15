@@ -308,6 +308,7 @@ mw.FreeWheelControler.prototype = {
 	},
 	playSlot: function( slot ){
 		var _this = this;
+		var embedPlayer = this.embedPlayer;
 		if( slot.alreadyPlayed ){
 			return false;
 		}
@@ -346,6 +347,13 @@ mw.FreeWheelControler.prototype = {
 				var vid = _this.embedPlayer.getPlayerElement();
 				vid.controls = false;
 			}, 0);
+			// enter video pause state and enable play/ pause control:
+			embedPlayer.pause();
+			embedPlayer._playContorls = true;
+			embedPlayer.bindHelper( 'onplay.FreeWheelAdResume', function(){
+				embedPlayer.unbindHelper( 'onplay.FreeWheelAdResume' );
+				embedPlayer._playContorls = false;
+			});
 		});
 		_this.orginalInterfaceHeight = _this.embedPlayer.$interface.css( 'height' );
 		
