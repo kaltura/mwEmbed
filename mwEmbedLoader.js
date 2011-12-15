@@ -195,7 +195,6 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// Check if the iframe API is enabled in which case we have to load client code and use that 
 	// to rewrite the frame
 	var uiconf_id = kEmbedSettings.uiconf_id;
-	
 	kEmbedSettings.isHTML5 =  kIsHTML5FallForward();
 	// Check if we even need to rewrite the page at all
 	// Evaluate per user agent rules: 
@@ -284,10 +283,9 @@ function kOutputFlashObject(  replaceTargetId, kEmbedSettings){
 							( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 		
 		var flashvarValue = ( kEmbedSettings.flashvars ) ? kFlashVarsToUrl( kEmbedSettings.flashvars ) : '&';
-		var outputName = ( kEmbedSettings.isHTML5 )? pId : 'kaltura_player_iframe_no_rewrite';
 		
 		divTarget.innerHTML = '<object id="' + pId + '" ' + 
-			'name="' + outputName + '" ' + 
+			'name="' + pId + '" ' + 
 			'type="application/x-shockwave-flash" ' + 
 			'allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" ' + 
 			'width="' + width +'" height="' + height + '" ' + 
