@@ -135,10 +135,9 @@ mw.DoubleClick.prototype = {
 		 if( this.activeOverlayadManager ){
 			 this.activeOverlayadManager.unload();
 		 }
-		 
-		 if( this.onResumeRequestedCallback )
+		 if( this.onResumeRequestedCallback ){
 			 this.onResumeRequestedCallback();
-		
+		 }
 	},
 	/**
 	 * Load and display an overaly 
@@ -291,10 +290,10 @@ mw.DoubleClick.prototype = {
 			// unbind the click 
 			$( vid ).unbind( adClickPostFix );
 			
-			// TODO integrate into timeline proper: 
-			//if( _this.embedPlayer.adTimeline ){
-			//	_this.embedPlayer.adTimeline.restorePlayer();
-			//}
+			// Restore player
+			if( _this.embedPlayer.adTimeline ){
+				_this.embedPlayer.adTimeline.restorePlayer();
+			}
 			// Clear out the older currentAdLoadedCallback
 			_this.currentAdLoadedCallback = null;
 			// Issue the loadAndPlayVideoSlot callback 

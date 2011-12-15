@@ -136,16 +136,14 @@ mw.AdTimeline.prototype = {
 		// Create an empty sequence proxy object ( stores information about the current sequence ) 
 		embedPlayer.sequenceProxy = {};
 		
-		var playedAnAdFlag = false;
 		// On change media clear out any old adTimeline bindings
 		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
-			playedAnAdFlag = false;
 		});
 		
-		embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
-			playedAnAdFlag = true;
-		});
+		// Rest displayed slot count
+		_this.displayedSlotCount = 0;
+		
 		// On play preSequence
 		embedPlayer.bindHelper( 'preSequence' + _this.bindPostfix, function() {
 			mw.log( "AdTimeline:: First Play Start / bind Ad timeline ( " );
@@ -169,10 +167,10 @@ mw.AdTimeline.prototype = {
 							// Avoid function stack
 							setTimeout(function(){ 
 								// trigger another onplay ( to match the kaltura kdp ) on play event
-								// after the ad is complete 
-								if( playedAnAdFlag ){
-									// Reset the played an ad flag:
-									playedAnAdFlag = false;
+								// after the ad plays are compelete
+								if( _this.displayedSlotCount > 0 ){
+									// reset displaySlotCount: 
+									 _this.displayedSlotCount=0;
 									// Restore the player if we played an ad: 
 									_this.restorePlayer();
 									
@@ -253,7 +251,7 @@ mw.AdTimeline.prototype = {
 		var sequenceProxy = {};
 		
 		// Get the sequence ad set
-		_this.embedPlayer.triggerHelper( 'AdSupport_' + slotType,  [ sequenceProxy ]);
+		_this.embedPlayer.triggerHelper( 'AdSupport_' + slotType,  [ sequenceProxy ] );
 		
 		// Generate a sorted key list:
 		var keyList = [];
@@ -283,6 +281,10 @@ mw.AdTimeline.prototype = {
 			}
 			// Run the sequence proxy function: 
 			sequenceProxy[ key ]( function(){
+				
+				// Done with slot increment display slot count
+				_this.displayedSlotCount++;
+				
 				// done with the current proxy call next
 				seqInx++;
 				// Trigger the EndAdPlayback between each ad in the sequence proxy 
