@@ -852,9 +852,8 @@ function kAddScript( callback ){
 		   'mw.PlaylistHandlerKaltura', 
 		   'mw.PlaylistHandlerKalturaRss'
 		);
-		// Include double Click and iScroll ( temporary work around for a loader issue )
+		// Include iScroll
 		jsRequestSet.push(
-			'mw.DoubleClick',
 			'iScroll'
 		);
 		
