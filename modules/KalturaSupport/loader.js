@@ -532,6 +532,10 @@
 			var baseClass = $( playerTarget ).attr('class' ) ? $( playerTarget ).attr('class' ) + ' ' : '';
 			var iframeId = $( playerTarget ).attr('id') + '_ifp';
 			var iframeStyle = ( $( playerTarget ).attr('style') ) ? $( playerTarget ).attr('style') : '';
+			var iframeCss = { 'border': '0px' };
+			var additionalIframeCss = kGetAdditionalTargetCss();
+			
+			$.extend(iframeCss, additionalIframeCss);
 
 			var $iframe = $('<iframe />')
 				.attr({
@@ -542,9 +546,7 @@
 					'width' : $( playerTarget ).width()
 				})
 				.attr('style', iframeStyle)
-				.css({
-					'border': '0px'
-				});
+				.css(iframeCss);
 			
 			// Create the iframe proxy that wraps the actual $iframe
 			// and will be converted into an "iframe" player via jQuery.fn.iFramePlayer call
