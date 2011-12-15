@@ -168,10 +168,14 @@ mw.AdTimeline.prototype = {
 							
 							// Avoid function stack
 							setTimeout(function(){ 
-								_this.restorePlayer();
 								// trigger another onplay ( to match the kaltura kdp ) on play event
 								// after the ad is complete 
 								if( playedAnAdFlag ){
+									// Reset the played an ad flag:
+									playedAnAdFlag = false;
+									// Restore the player if we played an ad: 
+									_this.restorePlayer();
+									
 									embedPlayer.triggerHelper( 'onplay' );
 								}
 								// Continue playback
@@ -284,7 +288,7 @@ mw.AdTimeline.prototype = {
 				// Trigger the EndAdPlayback between each ad in the sequence proxy 
 				// ( if we have more ads to go )
 				if( sequenceProxy[ keyList[ seqInx ] ] ){
-					_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback');
+					_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback' );
 				}
 				// call with a timeout to avoid function stack
 				setTimeout(function(){
@@ -298,6 +302,7 @@ mw.AdTimeline.prototype = {
 		runSequeceProxyInx( seqInx );
 	},
 	updateUiForAdPlayback: function( slotType ){
+		mw.log( "AdTimeline:: updateUiForAdPlayback " );
 		var embedPlayer = this.embedPlayer;
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		embedPlayer.stopEventPropagation();

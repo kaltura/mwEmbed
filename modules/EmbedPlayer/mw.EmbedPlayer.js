@@ -1189,7 +1189,6 @@ mw.EmbedPlayer.prototype = {
 		
 		// Setup flag for change media
 		var chnagePlayingMedia = this.isPlaying();
-		
 		// Reset first play to true, to count that play event
 		this.firstPlay = true;
 		this.triggeredEndDone = false;

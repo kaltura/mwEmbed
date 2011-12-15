@@ -9,6 +9,7 @@ mw.addResourcePaths({
 	"mw.Conviva": "mw.Conviva.js"
 })
 */
+
 	
 mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
     
@@ -56,12 +57,12 @@ mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
                 callback();
                 return;
             }
-            
             /*
             mw.load('mw.Conviva', function(){
             	new mw.Conviva( embedPlayer, callback, config );
             });
-            */
+             */
+
             
             $.ajax({
                 type: "GET",
@@ -78,6 +79,7 @@ mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
                }
             });
             return;
+                       
         }
         
         // don't block player build out if Coviva module is not enabled
