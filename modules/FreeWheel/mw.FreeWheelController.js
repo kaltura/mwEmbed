@@ -347,12 +347,18 @@ mw.FreeWheelControler.prototype = {
 				var vid = _this.embedPlayer.getPlayerElement();
 				vid.controls = false;
 			}, 0);
-			// enter video pause state and enable play/ pause control:
+			// Enter video pause state and enable play/ pause control:
+			// TODO we need more flexible enable /disable PlayControls 
+			// so we don't touch so many internals here
 			embedPlayer.pause();
 			embedPlayer._playContorls = true;
+			embedPlayer._propagateEvents = true;
 			embedPlayer.bindHelper( 'onplay.FreeWheelAdResume', function(){
-				embedPlayer.unbindHelper( 'onplay.FreeWheelAdResume' );
 				embedPlayer._playContorls = false;
+				embedPlayer._propagateEvents = false;
+				embedPlayer.unbindHelper( 'onplay.FreeWheelAdResume' );
+				// issue a play to the ad element ( content play will be blocked by _playContorls = false;
+				_this.getAdVideoElement().play();
 			});
 		});
 		_this.orginalInterfaceHeight = _this.embedPlayer.$interface.css( 'height' );
