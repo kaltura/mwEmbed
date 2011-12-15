@@ -238,7 +238,12 @@ mw.EmbedPlayer.prototype = {
 			.css('cursor', 'pointer' );
 		
 		this.controlBuilder.enableSeekBar();
-		$( this ).trigger( 'onEnableSeekBar');
+		/*
+		 * We should pass an array with enabled components, and the controlBuilder will listen
+		 * to this event and handle the layout changes. we should not call to this.controlBuilder inside embedPlayer.
+		 * [ 'playButton', 'seekBar' ]
+		 */
+		$( this ).trigger( 'onEnableInterfaceComponents');
 	},
 	disablePlayControls: function(){
 		mw.log("EmbedPlayer:: disablePlayControls" );
@@ -252,7 +257,12 @@ mw.EmbedPlayer.prototype = {
 			.css('cursor', 'default' );
 
 		this.controlBuilder.disableSeekBar();
-		$( this ).trigger( 'onDisableSeekBar');
+		/*
+		 * We should pass an array with disabled components, and the controlBuilder will listen
+		 * to this event and handle the layout changes. we should not call to this.controlBuilder inside embedPlayer.
+		 * [ 'playButton', 'seekBar' ]
+		 */
+		$( this ).trigger( 'onDisableInterfaceComponents');
 	},
 
 	/**
@@ -725,6 +735,7 @@ mw.EmbedPlayer.prototype = {
 	 * On clip done action. Called once a clip is done playing
 	 * TODO clean up end sequence flow
 	 */
+	triggeredEndDone: false,
 	postSequence: false,
 	onClipDone: function() {
 		var _this = this;
@@ -778,8 +789,10 @@ mw.EmbedPlayer.prototype = {
 
 				// An event for once the all ended events are done.
 				mw.log("EmbedPlayer:: trigger: onEndedDone");
-				$( this ).trigger( 'onEndedDone' );
-				
+				if ( !this.triggeredEndDone ){
+					this.triggeredEndDone = true;
+					$( this ).trigger( 'onEndedDone' );
+				}
 				setTimeout(function(){
 					_this.restoreEventPropagation(); 
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -1179,6 +1192,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Reset first play to true, to count that play event
 		this.firstPlay = true;
+		this.triggeredEndDone = false;
 		this.preSequence = false;
 		this.postSequence = false;
 		
@@ -1617,7 +1631,7 @@ mw.EmbedPlayer.prototype = {
 		this.absoluteStartPlayTime =  new Date().getTime();
 		
 		// Check if thumbnail is being displayed and embed html
-		if ( _this.posterDisplayed &&  !_this.useNativePlayerControls() ) {
+		if ( _this.posterDisplayed ) {
 			if ( !_this.selectedPlayer ) {
 				_this.showPluginMissingHTML();
 				return false;
@@ -1652,6 +1666,8 @@ mw.EmbedPlayer.prototype = {
 		// If we previously finished playing this clip run the "replay hook"
 		if( this.donePlayingCount > 0 && !this.paused && this._propagateEvents ) {			
 			this.replayEventCount++;
+			// Trigger end done on replay
+			this.triggeredEndDone = false;
 			if( this.replayEventCount <= this.donePlayingCount){
 				$this.trigger( 'replayEvent' );
 			}
@@ -1793,8 +1809,11 @@ mw.EmbedPlayer.prototype = {
 		if( !this.paused ){
 			this.pause();
 		}
-		// Restore the play button: 
-		this.addPlayBtnLarge();
+		// Restore the play button ( if not native controls or is android ) 
+		if( !this.useNativePlayerControls() || mw.isAndroid2() ){
+			this.addPlayBtnLarge();
+		}
+		
 		// Native player controls:
 		if( !this.isPersistentNativePlayer() ){			
 			// Rewrite the html to thumbnail disp
@@ -1978,16 +1997,16 @@ mw.EmbedPlayer.prototype = {
 		// Keep volume proprties set outside of the embed player in sync
 		_this.syncVolume();
 
-		// Update the playhead status:
-		_this.updatePlayheadStatus()
-
-		// Update buffer information
-		_this.updateBufferStatus();
-		
 		// Make sure the monitor continues to run as long as the video is not stoped
 		_this.syncMonitor()
 		
 		if( _this._propagateEvents ){
+			// Update the playhead status: TODO move to controlBuilder
+			_this.updatePlayheadStatus()
+
+			// Update buffer information TODO move to controlBuilder
+			_this.updateBufferStatus();
+			
 			// mw.log('trigger:monitor:: ' + this.currentTime );
 			$( this ).trigger( 'monitorEvent' );
 			
@@ -2059,7 +2078,7 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		// Check if a javascript currentTime change based seek has occurred
-		if( _this.previousTime != _this.currentTime && !this.userSlide && !this.seeking){
+		if( parseInt( _this.previousTime ) != parseInt( _this.currentTime ) && !this.userSlide && !this.seeking){
 			// If the time has been updated and is in range issue a seek
 			if( _this.getDuration() && _this.currentTime <= _this.getDuration() ){
 				var seekPercent = _this.currentTime / _this.getDuration();
