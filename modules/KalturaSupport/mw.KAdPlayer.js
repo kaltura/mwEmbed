@@ -499,7 +499,7 @@ mw.KAdPlayer.prototype = {
 			if( time > dur / 1.5 )
 				sendBeacon( 'thirdQuartile' );
 			
-		});		
+		}, mw.getConfig('EmbedPlayer.MonitorRate') );		
 	},
 	stopAdTracking: function(){
 		var _this = this;
