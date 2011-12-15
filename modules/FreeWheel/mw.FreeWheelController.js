@@ -251,8 +251,8 @@ mw.FreeWheelControler.prototype = {
 		mw.log("FreeWheelControl::restorePlayState" );
 		this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
 		// remove pause binding: 
-		//var vid = this.embedPlayer.getPlayerElement();
-		//$( vid ).unbind( 'pause' + this.bindPostfix );
+		var vid = this.embedPlayer.getPlayerElement();
+		$( vid ).unbind( 'pause' + this.bindPostfix );
 		
 		// Restore interace size: 
 		_this.embedPlayer.$interface.css( {
