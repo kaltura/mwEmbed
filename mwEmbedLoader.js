@@ -74,6 +74,11 @@ kOverideJsFlashEmbed();
 if( !window['preMwEmbedReady'] ){
 	window.preMwEmbedReady = [];
 }
+// Setup preMwEmbedConfig if not set: 
+if( !window['preMwEmbedConfig'] ) {
+	window.preMwEmbedConfig = {};
+}
+
 if( ! mw.setConfig ){
 	mw.setConfig = function( set, value ){
 		var valueQueue = {};
@@ -89,9 +94,6 @@ if( ! mw.setConfig ){
 
 if( ! mw.getConfig ){
 	mw.getConfig = function ( key, defaultValue ){
-		if( !window['preMwEmbedConfig'] ) {
-			window.preMwEmbedConfig = {};
-		}
 		if( typeof window.preMwEmbedConfig[ key ] == 'undefined' ){
 			if( typeof defaultValue != 'undefined' ){
 				return defaultValue;
@@ -101,6 +103,16 @@ if( ! mw.getConfig ){
 			return window.preMwEmbedConfig[ key ];
 		}
 	};
+}
+
+
+/**
+ * Url flags:
+ */
+
+// Note forceMobileHTML5 can be disabled by uiConf 
+if( document.URL.indexOf('forceMobileHTML5') !== -1 ){
+	mw.setConfig( 'forceMobileHTML5', true );
 }
 
 /**
@@ -184,7 +196,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// to rewrite the frame
 	var uiconf_id = kEmbedSettings.uiconf_id;
 	
-	var isHTML5 =  kIsHTML5FallForward();
+	kEmbedSettings.isHTML5 =  kIsHTML5FallForward();
 	// Check if we even need to rewrite the page at all
 	// Evaluate per user agent rules: 
 	if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
@@ -192,13 +204,13 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 		// Default play mode, if here and really using flash remap: 
 		switch( playerAction.mode ){
 			case 'flash':
-				if( !kIsHTML5FallForward() ){
+				if( !kIsHTML5FallForward() && elm.nodeName.toLowerCase() == 'object'){
 					restoreKalturaKDPCallback();
 					return ;
 				}
 			break;
 			case 'leadWithHTML5':
-				isHTML5 = true;
+				kEmbedSettings.isHTML5 = true;
 				break;
 			case 'forceMsg':
 				var msg = playerAction.val;
@@ -215,9 +227,8 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 		window.kUserAgentPlayerRules = false;
 		window.kAddedScript = false;
 	}
-	
 	// Check for html with api off: 
-	if( isHTML5 && !mw.getConfig( 'EmbedPlayer.EnableIframeApi') 
+	if( kEmbedSettings.isHTML5 && !mw.getConfig( 'EmbedPlayer.EnableIframeApi') 
 			|| 
 		( window.jQuery && !mw.versionIsAtLeast( '1.3.2', jQuery.fn.jquery ) ) 
 	){
@@ -229,55 +240,68 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	}
 	
 	// Check if we are dealing with an html5 player or flash player
-	if( isHTML5 ){
+	if( kEmbedSettings.isHTML5 ){
 		kAddScript( function(){
-			// Options include 'width' and 'height'
-			var sizeUnit = (typeof options.width == 'string' && options.width.indexOf("px") === -1) ? 'px' : '';
-			var targetSize = {
-				'width': options.width + sizeUnit,
-				'height': options.height + sizeUnit
-			};
-			$j('#' + replaceTargetId ).css(targetSize);
-			// Do kaltura iframe player
-			$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
+			// TODO refactor loader.js in kalturaSupport to avoid temporary object representation
+			if( elm.nodeName.toLowerCase() != 'object' ){		
+				kOutputFlashObject(  replaceTargetId, kEmbedSettings)
+			} else {
+				// Options include 'width' and 'height'
+				var sizeUnit = (typeof options.width == 'string' && options.width.indexOf("px") === -1) ? 'px' : '';
+				var targetSize = {
+					'width': options.width + sizeUnit,
+					'height': options.height + sizeUnit
+				};
+				$j('#' + replaceTargetId ).css(targetSize);
+				// Do kaltura iframe player
+				$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
+			}
 		});	
 	} else {
-		// Output a normal flash object tag: 
-		if( elm && elm.parentNode ){
-			var divTarget = document.createElement("div");
-			var pId =  ( kEmbedSettings.id )? kEmbedSettings.id : elm.id 
-			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+ 
-				'/wid/' + kEmbedSettings.wid + 
-				'/uiconf_id/' + kEmbedSettings.uiconf_id + 
-				'/entry_id/' + kEmbedSettings.entry_id;
-			if( kEmbedSettings.cache_st ){
-				swfUrl+= kEmbedSettings.cache_st;
-			}
-			// get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300 
-			var width = ( kEmbedSettings.width ) ? kEmbedSettings.width : 
-							( elm.width ) ? elm.width : 
-								( elm.style.width ) ? parseInt( elm.style.width ) : 400;
-			
-			var height = ( kEmbedSettings.height ) ? kEmbedSettings.height : 
-							( elm.height ) ? elm.height : 
-								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
-			
-			flashvarValue = ( kEmbedSettings.flashvars ) ? kFlashVarsToUrl( kEmbedSettings.flashvars ) : '&';
-			divTarget.innerHTML = '<object id="' + pId + '" name="' + pId +'" ' + ' type="application/x-shockwave-flash" ' + 
-				'allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" ' + 
-				'width="' + width +'" height="' + height + '" ' + 
-				'style="width:' + width + ';height:' + height + ';" ' +
-				'resource="' + swfUrl + '" ' +
-				'data="' + swfUrl + '" >' +
-					'<param name="allowFullScreen" value="true" />' + 
-					'<param name="allowNetworking" value="all" />' +
-					'<param name="allowScriptAccess" value="always" />' +
-					'<param name="bgcolor" value="#000000" />' +
-					'<param name="flashVars" value="' + flashvarValue + '" /> ' +
-					'<param name="movie" value="' + swfUrl + '" />' +
-			'</object>';
-			elm.parentNode.replaceChild( divTarget, elm );
+		kOutputFlashObject(  replaceTargetId, kEmbedSettings );
+	}
+}
+function kOutputFlashObject(  replaceTargetId, kEmbedSettings){
+	var elm = document.getElementById( replaceTargetId );
+	// Output a normal flash object tag: 
+	if( elm && elm.parentNode ){
+		var divTarget = document.createElement("div");
+		var pId =  ( kEmbedSettings.id )? kEmbedSettings.id : elm.id 
+		var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+ 
+			'/wid/' + kEmbedSettings.wid + 
+			'/uiconf_id/' + kEmbedSettings.uiconf_id + 
+			'/entry_id/' + kEmbedSettings.entry_id;
+		if( kEmbedSettings.cache_st ){
+			swfUrl+= kEmbedSettings.cache_st;
 		}
+		// get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300 
+		var width = ( kEmbedSettings.width ) ? kEmbedSettings.width : 
+						( elm.width ) ? elm.width : 
+							( elm.style.width ) ? parseInt( elm.style.width ) : 400;
+		
+		var height = ( kEmbedSettings.height ) ? kEmbedSettings.height : 
+						( elm.height ) ? elm.height : 
+							( elm.style.height ) ? parseInt( elm.style.height ) : 300;
+		
+		var flashvarValue = ( kEmbedSettings.flashvars ) ? kFlashVarsToUrl( kEmbedSettings.flashvars ) : '&';
+		var outputName = ( kEmbedSettings.isHTML5 )? pId : 'kaltura_player_iframe_no_rewrite';
+		
+		divTarget.innerHTML = '<object id="' + pId + '" ' + 
+			'name="' + outputName + '" ' + 
+			'type="application/x-shockwave-flash" ' + 
+			'allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" ' + 
+			'width="' + width +'" height="' + height + '" ' + 
+			'style="width:' + width + ';height:' + height + ';" ' +
+			'resource="' + swfUrl + '" ' +
+			'data="' + swfUrl + '" >' +
+				'<param name="allowFullScreen" value="true" />' + 
+				'<param name="allowNetworking" value="all" />' +
+				'<param name="allowScriptAccess" value="always" />' +
+				'<param name="bgcolor" value="#000000" />' +
+				'<param name="flashVars" value="' + flashvarValue + '" /> ' +
+				'<param name="movie" value="' + swfUrl + '" />' +
+		'</object>';
+		elm.parentNode.replaceChild( divTarget, elm );
 	}
 }
 function kIframeWithoutApi( replaceTargetId, kEmbedSettings , options ){
@@ -591,8 +615,8 @@ function kCheckAddScript(){
 	}
 
 	// Set url based config ( as long as it not disabled ) 
-	if( ! mw.getConfig( 'disableForceMobileHTML5') && document.URL.indexOf('forceMobileHTML5') !== -1 ){
-		mw.setConfig( 'forceMobileHTML5', true );
+	if( mw.getConfig( 'disableForceMobileHTML5') ){
+		mw.setConfig( 'forceMobileHTML5', false );
 	}
 	
 	// Check if we have player rules and then issue kAddScript call 
@@ -1205,7 +1229,7 @@ window.KWidget = {
 	
 	/**
 	 * The base embed method
-	 * TODO move kalturaIframeEmbed to this method and have kalturaIframeEmbed be wraper for KWidget.embed : 
+	 * TODO move kalturaIframeEmbed to this method and have kalturaIframeEmbed call KWidget.embed : 
 	 */
 	embed: function( targetId, settings ){
 		kalturaIframeEmbed( targetId, settings );

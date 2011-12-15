@@ -666,7 +666,7 @@ mw.EmbedPlayerNative = {
 		if( _this.parent_play() ){
 			this.getPlayerElement();
 			if ( this.playerElement && this.playerElement.play ) {
-				// issue a play request ( capture the user gesture on iOS ) 
+				// issue a play request 
 				this.playerElement.play();
 				
 				// Dont play if in pauseloading state
