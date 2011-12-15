@@ -13,8 +13,6 @@ mw.addResourcePaths({
 mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
     
     embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
-    	callback();
-    	return ;
         // Disable Conviva with IE9
         if( mw.isIE9() ) {
         	callback();
