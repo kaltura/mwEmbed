@@ -224,9 +224,13 @@ mw.KAdPlayer.prototype = {
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Bind all the tracking events ( currently vast based but will abstract if needed )
 		if( adConf.trackingEvents ){
-			$( vid ).bind('loadedmetadata', function() {
+			if( vid.readyState > 0 ) {
 				_this.bindTrackingEvents( adConf.trackingEvents );
-			});
+			} else {
+				$( vid ).bind('loadedmetadata', function() {
+					_this.bindTrackingEvents( adConf.trackingEvents );
+				});
+			}
 		}
 		var helperCss = {
 			'position': 'absolute',
