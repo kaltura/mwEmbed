@@ -82,12 +82,12 @@ mw.EmbedPlayer.prototype = {
 	// If the onDone interface should be displayed
 	'onDoneInterfaceFlag': true,
 	
-	// if we should check for a loading spinner in the moitor function: 
+	// if we should check for a loading spinner in the monitor function: 
 	'_checkHideSpinner' : false,
 	
 	// If pause play controls click controls should be active: 
 	'_playContorls' : true,
-
+	
 	// If player should be displayed (in some caused like audio, we don't need the player to be visible
 	'displayPlayer': true, 
 
@@ -1680,7 +1680,13 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		this.playInterfaceUpdate();
-		return true;
+		// If play controls are enabled continue to video playback:
+		if( _this._playContorls ){
+			return true;
+		} else {
+			// return false ( Mock play event, or handled elsewhere )
+			return false;
+		}
 	},
 	playInterfaceUpdate: function(){
 		var _this = this;
