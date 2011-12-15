@@ -222,7 +222,7 @@ if( mb_detect_encoding($contents, 'UTF-8', true) != "UTF-8" ) {
 	$contents = utf8_encode( $contents );
 }
 // remove leading ? in some kaltura cc xml responses :(
-if( $contents && $contents[0] == '?' ){
+if( is_string( $contents ) && $contents[0] == '?' ){
 	$contents = substr( $contents, 1 );
 }
 
