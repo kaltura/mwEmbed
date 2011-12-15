@@ -1204,6 +1204,13 @@ window.KWidget = {
 	readyCallbacks: [],
 	
 	/**
+	 * The base embed method
+	 * TODO move kalturaIframeEmbed to this method and have kalturaIframeEmbed be wraper for KWidget.embed : 
+	 */
+	embed: function( targetId, settings ){
+		kalturaIframeEmbed( targetId, settings );
+	},
+	/**
 	 * Adds a ready callback to be called once the kdp or html5 player is ready
 	 */
 	addReadyCallback : function( readyCallback ){
@@ -1231,6 +1238,9 @@ window.KWidget = {
 		this.readyWidgets[ widgetId ] = true;
 	}
 };
+// support lowercase kWidget calls
+window.kWidget = KWidget;
+
 window.KalturaKDPCallbackAlreadyCalled = [];
 
 /**
