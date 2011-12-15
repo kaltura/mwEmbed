@@ -810,6 +810,7 @@ mw.PlayerControlBuilder.prototype = {
 			$interface.bind( 'touchstart' + this.bindPostfix, function() {
 				_this.showControlBar();
 				// ( once the user touched the video "don't hide" )
+				return true;
 			} );
 
 			var hoverIntentConfig = {
@@ -923,6 +924,7 @@ mw.PlayerControlBuilder.prototype = {
 					}
 				}
 			}, dblClickTime );
+			return true;
 		});
 	},
 	addRightClickBinding: function(){

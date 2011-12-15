@@ -239,6 +239,7 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			$textButton.unbind('click.textMenu').bind('click.textMenu', function() {
 				_this.showTextMenu();
+				return true;
 			} );
 		},
 		

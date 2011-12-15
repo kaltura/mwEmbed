@@ -383,6 +383,7 @@ mw.KAdPlayer.prototype = {
 			.addClass("ui-icon ui-icon-closethick")				
 			.click(function(){
 				$( this ).parent().fadeOut('fast');
+				return true;
 			})
 		);
 		

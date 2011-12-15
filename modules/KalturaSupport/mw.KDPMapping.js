@@ -6,7 +6,6 @@
 // scope in mw
 ( function( mw, $ ) {
 	mw.KDPMapping = function( ) {
-		// Create a Player Manage
 		return this.init();
 	};
 	mw.KDPMapping.prototype = {

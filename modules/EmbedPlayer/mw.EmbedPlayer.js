@@ -735,6 +735,7 @@ mw.EmbedPlayer.prototype = {
 	 * On clip done action. Called once a clip is done playing
 	 * TODO clean up end sequence flow
 	 */
+	triggeredEndDone: false,
 	postSequence: false,
 	onClipDone: function() {
 		var _this = this;
@@ -788,8 +789,10 @@ mw.EmbedPlayer.prototype = {
 
 				// An event for once the all ended events are done.
 				mw.log("EmbedPlayer:: trigger: onEndedDone");
-				$( this ).trigger( 'onEndedDone' );
-				
+				if ( !this.triggeredEndDone ){
+					this.triggeredEndDone = true;
+					$( this ).trigger( 'onEndedDone' );
+				}
 				setTimeout(function(){
 					_this.restoreEventPropagation(); 
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -1189,6 +1192,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Reset first play to true, to count that play event
 		this.firstPlay = true;
+		this.triggeredEndDone = false;
 		this.preSequence = false;
 		this.postSequence = false;
 		
@@ -1803,8 +1807,11 @@ mw.EmbedPlayer.prototype = {
 		if( !this.paused ){
 			this.pause();
 		}
-		// Restore the play button: 
-		this.addPlayBtnLarge();
+		// Restore the play button ( if not native controls or is android ) 
+		if( !this.useNativePlayerControls() || mw.isAndroid2() ){
+			this.addPlayBtnLarge();
+		}
+		
 		// Native player controls:
 		if( !this.isPersistentNativePlayer() ){			
 			// Rewrite the html to thumbnail disp
