@@ -242,19 +242,42 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
 		});	
 	} else {
-		// Set iframeClient to true:
-		mw.setConfig('EmbedPlayer.IsIframeClient', true);
-
-		var jsRequestSet = [];
-		if( typeof window.jQuery == 'undefined' ) {
-			jsRequestSet.push( ['window.jQuery'] );
+		// Output a normal flash object tag: 
+		if( elm && elm.parentNode ){
+			var divTarget = document.createElement("div");
+			var pId =  ( kEmbedSettings.id )? kEmbedSettings.id : elm.id 
+			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+ 
+				'/wid/' + kEmbedSettings.wid + 
+				'/uiconf_id/' + kEmbedSettings.uiconf_id + 
+				'/entry_id/' + kEmbedSettings.entry_id;
+			if( kEmbedSettings.cache_st ){
+				swfUrl+= kEmbedSettings.cache_st;
+			}
+			// get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300 
+			var width = ( kEmbedSettings.width ) ? kEmbedSettings.width : 
+							( elm.width ) ? elm.width : 
+								( elm.style.width ) ? parseInt( elm.style.width ) : 400;
+			
+			var height = ( kEmbedSettings.height ) ? kEmbedSettings.height : 
+							( elm.height ) ? elm.height : 
+								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
+			
+			flashvarValue = ( kEmbedSettings.flashvars ) ? kFlashVarsToUrl( kEmbedSettings.flashvars ) : '&';
+			divTarget.innerHTML = '<object id="' + pId + '" name="' + pId +'" ' + ' type="application/x-shockwave-flash" ' + 
+				'allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" ' + 
+				'width="' + width +'" height="' + height + '" ' + 
+				'style="width:' + width + ';height:' + height + ';" ' +
+				'resource="' + swfUrl + '" ' +
+				'data="' + swfUrl + '" >' +
+					'<param name="allowFullScreen" value="true" />' + 
+					'<param name="allowNetworking" value="all" />' +
+					'<param name="allowScriptAccess" value="always" />' +
+					'<param name="bgcolor" value="#000000" />' +
+					'<param name="flashVars" value="' + flashvarValue + '" /> ' +
+					'<param name="movie" value="' + swfUrl + '" />' +
+			'</object>';
+			elm.parentNode.replaceChild( divTarget, elm );
 		}
-		jsRequestSet.push('mwEmbed', '$j.cookie', '$j.postMessage', 'mw.EmbedPlayerNative',  'kdpClientIframe', 'JSON' );
-		
-		// Load just the files needed for flash iframe bindings	
-		kLoadJsRequestSet( jsRequestSet, function(){
-			var iframeRewrite = new kdpClientIframe(replaceTargetId, kEmbedSettings, options);
-		});
 	}
 }
 function kIframeWithoutApi( replaceTargetId, kEmbedSettings , options ){
@@ -282,7 +305,7 @@ function kIframeWithoutApi( replaceTargetId, kEmbedSettings , options ){
 		iframeSrc += '&forceMobileHTML5=true';
 	}
 	if( mw.getConfig( '	') ){
-		iframeSrc += mw.getConfig( 'debug');
+		iframeSrc += mw.getConfig( 'debug' );
 	}
 	
 	// Also append the script version to purge the cdn cache for iframe: 
@@ -298,7 +321,7 @@ function kIframeWithoutApi( replaceTargetId, kEmbedSettings , options ){
 	iframe.style.border = '0px';
 	iframe.style.overflow = 'hidden';
 		
-	parentNode.replaceChild(iframe, targetNode );
+	parentNode.replaceChild( iframe, targetNode );
 
 }
 function kEmbedSettingsToUrl( kEmbedSettings ){
@@ -1180,6 +1203,7 @@ window.KWidget = {
 	
 	// First ready callback issued
 	readyCallbacks: [],
+	
 	/**
 	 * Adds a ready callback to be called once the kdp or html5 player is ready
 	 */
