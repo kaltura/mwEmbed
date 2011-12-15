@@ -439,7 +439,7 @@ mw.KAdPlayer.prototype = {
 					mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + trackingEvents[ i ].beaconUrl );
 					mw.sendBeaconUrl( trackingEvents[ i ].beaconUrl );
 				}
-			}			
+			}
 		};
 		
 		// On end stop monitor / clear interval: 
