@@ -24,6 +24,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 	$uiConf : null,
 	includeInLayout: true,
 	
+	// flag to store the current loading entry
+	loadingEntry: null,
+	
 	bindPostFix: '.playlistHandlerKaltura',
 	
 	init: function ( playlist, options ){
@@ -265,17 +268,27 @@ mw.PlaylistHandlerKaltura.prototype = {
 		return this.clipList;
 	},
 	playClip: function( embedPlayer, clipIndex, callback ){
-		// Check if entry id already matches:
+		var _this = this;
+		// Check if entry id already matches ( and is loaded ) 
 		if( embedPlayer.kentryid == this.getClip( clipIndex ).id ){
-			embedPlayer.play();
+			if( this.loadingEntry ){
+				mw.log("Error: PlaylistHandlerKaltura possible double playClip request");
+			}else {
+				embedPlayer.play();
+			}
 			return ;
-		}		
-		// listen for change media done
+		}	
+		// update the loadingEntry flag:
+		this.loadingEntry = this.getClip( clipIndex ).id;
+		
+		// Listen for change media done
 		var bindName = 'onChangeMediaDone' + this.bindPostFix;
 		$( embedPlayer).unbind( bindName ).bind( bindName, function(){
+			_this.loadingEntry = false;
 			embedPlayer.play();
-			if( callback )
+			if( callback ){
 				callback();
+			}
 		});
 		mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
 		// Use internal changeMedia call to issue all relevant events

@@ -247,11 +247,13 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			} else {
 				// Options include 'width' and 'height'
 				var sizeUnit = (typeof options.width == 'string' && options.width.indexOf("px") === -1) ? 'px' : '';
-				var targetSize = {
+				var targetCss = {
 					'width': options.width + sizeUnit,
 					'height': options.height + sizeUnit
 				};
-				$j('#' + replaceTargetId ).css(targetSize);
+				var additionalTargetCss = kGetAdditionalTargetCss();
+				$j.extend(targetCss, additionalTargetCss);
+				$j('#' + replaceTargetId ).css(targetCss);
 				// Do kaltura iframe player
 				$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
 			}
@@ -483,7 +485,7 @@ function kOverideJsFlashEmbed(){
 			kAddReadyHook(function(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( attributes.src, flashvars);
 				if( ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
-					kDirectDownloadFallback( targetId, kEmbedSettings, {'width':attributes.width, 'height':attributes.height}   );
+					kDirectDownloadFallback( targetId, kEmbedSettings, { 'width':attributes.width, 'height':attributes.height } );
 					return ;
 				}
 				if( kEmbedSettings.uiconf_id && kIsHTML5FallForward()  ){
@@ -1214,6 +1216,25 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 	return embedSettings;
 }
 
+/*
+ * When using Frameset that have iframe with video tag inside, the iframe is not positioned correctly. and you can't click on the controls.
+ * If order to fix that, we allow to hosting page to pass the following configuration:
+ * mw.setConfig('FramesetSupport.Enabled', true); - Disable HTML controls on iPad
+ * mw.setConfig('FramesetSupport.PlayerCssProperties', {}); - CSS properties object to apply to the player
+ * We will use 'PlayerCssProperties' only for iOS devices running version 3-4 ( the position issue was fixed in iOS5)
+ */
+function kGetAdditionalTargetCss() {
+	var ua = navigator.userAgent;
+	if( mw.getConfig('FramesetSupport.Enabled') && kIsIOS() && (ua.indexOf('OS 3') > 0 || ua.indexOf('OS 4') > 0) ) {
+		return mw.getConfig('FramesetSupport.PlayerCssProperties') || {};
+	}
+	return {};
+}
+kAddReadyHook(function() {
+	if( mw.getConfig('FramesetSupport.Enabled') && kIsIOS() ) {
+		mw.setConfig('EmbedPlayer.EnableIpadHTMLControls', false );
+	}
+})
 /**
  * KWidget static object.
  * Will eventually host all the loader logic. 
