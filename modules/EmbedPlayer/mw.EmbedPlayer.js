@@ -1666,6 +1666,8 @@ mw.EmbedPlayer.prototype = {
 		// If we previously finished playing this clip run the "replay hook"
 		if( this.donePlayingCount > 0 && !this.paused && this._propagateEvents ) {			
 			this.replayEventCount++;
+			// be sure to trigger end done on replay
+			this.triggeredEndDone = false;
 			if( this.replayEventCount <= this.donePlayingCount){
 				$this.trigger( 'replayEvent' );
 			}
