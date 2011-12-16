@@ -21,10 +21,14 @@
 		// If the iPad should use html controls 
 		// With html controls you can't access native fullscreen 
 		// With html controls you can support html themed controls, overlays, ads etc. )
-		'EmbedPlayer.EnableIpadHTMLControls': false,
+		'EmbedPlayer.EnableIpadHTMLControls': true,
+		
+		// If the webkit-playsinline attribute should be added to the video tag. Will cause the player
+		// to play inline on iPhone
+		'EmbedPlayer.WebKitPlaysInline': false,
 		
 		// If webkitSupportsFullscreen is true, this option will make the fullscreen button 
-		// use the native players fullscreen ( rather than pop-up a new window with the in-browser
+		// use the native players fullscreen ( rather  than pop-up a new window with the in-browser
 		// fullscreen. 
 		'EmbedPlayer.EnableIpadNativeFullscreen': true,
 		

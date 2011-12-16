@@ -254,13 +254,12 @@ mw.FreeWheelControler.prototype = {
 		var vid = this.embedPlayer.getPlayerElement();
 		$( vid ).unbind( 'pause' + this.bindPostfix );
 		
-		// Restore interace size: 
+		// Restore interface size: 
 		_this.embedPlayer.$interface.css( {
 			'height':  _this.orginalInterfaceHeight,
 			'bottom' : 0,
-			'top' : 0
+			'top' : 0,
 		})
-		
 		// trigger onplay now that we have restored the player:
 		setTimeout(function(){
 			$( _this.embedPlayer ).trigger('onplay');
@@ -361,7 +360,10 @@ mw.FreeWheelControler.prototype = {
 				_this.getAdVideoElement().play();
 			});
 		});
-		_this.orginalInterfaceHeight = _this.embedPlayer.$interface.css( 'height' );
+		// setup original interface height
+		if( !_this.orginalInterfaceHeight ){
+			_this.orginalInterfaceHeight = _this.embedPlayer.$interface.css( 'height' )
+		}
 		
 		// Put the interface at the bottom of the player to allow clicks to work
 		_this.embedPlayer.$interface.css( {
