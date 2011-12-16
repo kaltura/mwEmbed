@@ -53,9 +53,6 @@ mw.FreeWheelControler.prototype = {
 	// bindPostfix enables namespacing the plugin binding
 	bindPostfix: '.freeWheel',
 	
-	// used to store interface height before moving it for freewheel clicks to go through. 
-	orginalInterfaceHeight: null,
-	
 	/**
 	 * Initialize the adMannager javascript and setup adds
 	 * 
@@ -85,6 +82,11 @@ mw.FreeWheelControler.prototype = {
 			callback();
 		}
 	},	
+	getAdManagerUrl: function(){
+		return ( this.getConfig( 'adManagerJsUrl' ) ) ? 
+				this.getConfig( 'adManagerJsUrl' )  : 
+				mw.getConfig( 'FreeWheel.AdManagerUrl' );
+	},
 	/**
 	 * Setup ads, main freeWheel control flow
 	 * @return
@@ -123,10 +125,8 @@ mw.FreeWheelControler.prototype = {
 			
 			// Load add data ( will call onRequestComplete once ready )
 			mw.log( "FreeWheelController::submitRequest>" );
-			
 			// Get Freewheel ads: 
 			_this.getContext().submitRequest();
-			
 			// set the callback 
 			_this.callback  = callback;
 		});
@@ -246,26 +246,6 @@ mw.FreeWheelControler.prototype = {
 			});
 		});
 	},
-	restorePlayState: function(){
-		var _this = this;
-		mw.log("FreeWheelControl::restorePlayState" );
-		this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
-		// remove pause binding: 
-		var vid = this.embedPlayer.getPlayerElement();
-		$( vid ).unbind( 'pause' + this.bindPostfix );
-		
-		// Restore interace size: 
-		_this.embedPlayer.$interface.css( {
-			'height':  _this.orginalInterfaceHeight,
-			'bottom' : 0,
-			'top' : 0
-		})
-		
-		// trigger onplay now that we have restored the player:
-		setTimeout(function(){
-			$( _this.embedPlayer ).trigger('onplay');
-		},0);
-	},
 	playAdCuePoint: function( slotSet, cuePoint ){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
@@ -308,7 +288,6 @@ mw.FreeWheelControler.prototype = {
 	},
 	playSlot: function( slot ){
 		var _this = this;
-		var embedPlayer = this.embedPlayer;
 		if( slot.alreadyPlayed ){
 			return false;
 		}
@@ -346,30 +325,54 @@ mw.FreeWheelControler.prototype = {
 			setTimeout(function(){
 				var vid = _this.embedPlayer.getPlayerElement();
 				vid.controls = false;
-			}, 0);
-			// Enter video pause state and enable play/ pause control:
-			// TODO we need more flexible enable /disable PlayControls 
-			// so we don't touch so many internals here
-			embedPlayer.pause();
-			embedPlayer._playContorls = true;
-			embedPlayer._propagateEvents = true;
-			embedPlayer.bindHelper( 'onplay.FreeWheelAdResume', function(){
-				embedPlayer._playContorls = false;
-				embedPlayer._propagateEvents = false;
-				embedPlayer.unbindHelper( 'onplay.FreeWheelAdResume' );
-				// issue a play to the ad element ( content play will be blocked by _playContorls = false;
-				_this.getAdVideoElement().play();
+			},0);
+			
+			// a click we want to  enable play button: 
+			_this.embedPlayer._playContorls = true;
+			// play interface update:
+			_this.embedPlayer.pauseInterfaceUpdate();
+			$( vid ).bind( 'play.fwPlayBind', function(){
+				$( vid ).unbind( 'play.fwPlayBind' );
+				// a restore _playControls restriction if in an ad ) 
+				if( _this.embedPlayer.sequenceProxy.isInSequence ){
+					_this.embedPlayer._playContorls = false;
+				}
+				_this.embedPlayer.playInterfaceUpdate();
 			});
-		});
-		_this.orginalInterfaceHeight = _this.embedPlayer.$interface.css( 'height' );
+		} );
 		
+		// setup original interface height
+		if( !_this.orginalInterfaceHeight ){
+			_this.orginalInterfaceHeight = _this.embedPlayer.$interface.css( 'height' )
+		}
 		// Put the interface at the bottom of the player to allow clicks to work
 		_this.embedPlayer.$interface.css( {
 			'height':  _this.embedPlayer.controlBuilder.getHeight(),
 			'bottom' : '0px',
 			'top' : _this.embedPlayer.height
 		})
+		
 		return true;
+	},
+	restorePlayState: function(){
+		var _this = this;
+		mw.log("FreeWheelControl::restorePlayState" );
+		this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
+		
+		// Restore interface size: 
+		_this.embedPlayer.$interface.css( {
+			'height':  _this.orginalInterfaceHeight,
+			'bottom' : 0,
+			'top' : 0,
+		})
+		
+		// remove pause binding: 
+		var vid = this.embedPlayer.getPlayerElement();
+		$( vid ).unbind( 'pause' + this.bindPostfix );
+		// trigger onplay now that we have restored the player:
+		setTimeout(function(){
+			$( _this.embedPlayer ).trigger('onplay');
+		},0);
 	},
 	monitorAdProgress: function(){
 		var _this = this;
@@ -656,11 +659,6 @@ mw.FreeWheelControler.prototype = {
 				}
 			}
 		}
-	},
-	getAdManagerUrl: function(){
-		return ( this.getConfig( 'adManagerJsUrl' ) ) ? 
-				this.getConfig( 'adManagerJsUrl' )  : 
-				mw.getConfig( 'FreeWheel.AdManagerUrl' );
 	}
 };
 
