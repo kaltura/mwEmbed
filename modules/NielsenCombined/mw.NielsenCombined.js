@@ -370,7 +370,9 @@ mw.NielsenCombined.prototype = {
 		// Output the final tag map: 
 		$.each( tagMap, function(attr, evalValue){
 			evalValue = evalValue || '';
-			meta += '<' + attr + '>' + evalValue + '</' + attr + '>' + "\n";
+			if( evalValue != ''){
+				meta += '<' + attr + '>' + evalValue + '</' + attr + '>' + "\n";
+			}
 		})
 		return meta;
 	},
