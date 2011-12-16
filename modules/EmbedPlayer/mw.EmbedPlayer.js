@@ -128,7 +128,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Hide "controls" if using native player controls:
 		if( this.useNativePlayerControls() ){
-			_this.controls = false;
+			_this.controls = true;
 		}
 		// Set the skin name from the class
 		var	sn = $(element).attr( 'class' );
@@ -214,6 +214,7 @@ mw.EmbedPlayer.prototype = {
 	 * @return
 	 */
 	stopEventPropagation: function(){
+		mw.log("EmbedPlayer:: stopEventPropagation");
 		this.stopMonitor();
 		this._propagateEvents = false;
 	},
@@ -222,6 +223,7 @@ mw.EmbedPlayer.prototype = {
 	 * @return
 	 */
 	restoreEventPropagation: function(){
+		mw.log("EmbedPlayer:: restoreEventPropagation");
 		this._propagateEvents = true;
 		this.startMonitor();
 	},
@@ -1189,7 +1191,6 @@ mw.EmbedPlayer.prototype = {
 		
 		// Setup flag for change media
 		var chnagePlayingMedia = this.isPlaying();
-		
 		// Reset first play to true, to count that play event
 		this.firstPlay = true;
 		this.triggeredEndDone = false;
@@ -1756,7 +1757,10 @@ mw.EmbedPlayer.prototype = {
 				$( this ).trigger( 'onpause' );
 			}
 		}
-
+		_this.pauseInterfaceUpdate();
+	},
+	pauseInterfaceUpdate: function(){
+		var _this =this;
 		// Update the ctrl "paused state"
 		if( this.$interface ){
 			this.$interface.find('.play-btn span' )
@@ -1773,7 +1777,6 @@ mw.EmbedPlayer.prototype = {
 			.attr( 'title', gM( 'mwe-embedplayer-play_clip' ) );
 		}
 	},
-
 	/**
 	 * Maps the html5 load request. There is no general way to "load" clips so
 	 * underling plugin-player libs should override.
@@ -1999,6 +2002,8 @@ mw.EmbedPlayer.prototype = {
 
 		// Check for current time update outside of embed player
 		_this.syncCurrentTime();
+		
+//		mw.log( "monitor:: " + this.currentTime + ' propagateEvents: ' +  _this._propagateEvents );
 		
 		// Keep volume proprties set outside of the embed player in sync
 		_this.syncVolume();
