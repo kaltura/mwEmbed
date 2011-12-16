@@ -173,8 +173,12 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Update the player source ( if needed ) 
-		if( $( '#' + this.pid ).attr( 'src') !=  this.getSrc( this.currentTime )  ){
-			$( '#' + this.pid ).attr( 'src', this.getSrc( this.currentTime ) );
+		if( $( vid).attr( 'src') !=  this.getSrc( this.currentTime )  ){
+			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
+		}
+		// Update the WebKitPlaysInline value
+		if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') ){
+			$( vid ).attr( 'webkit-playsinline', 1 );
 		}
 		// Apply media element bindings:
 		_this.applyMediaElementBindings();
