@@ -133,7 +133,6 @@ mw.AdTimeline.prototype = {
 		_this.originalSrc = embedPlayer.getSrc();
 		// Clear out any old bindings
 		_this.destroy();
-		
 		// Create an empty sequence proxy object ( stores information about the current sequence ) 
 		embedPlayer.sequenceProxy = {};
 		
@@ -157,24 +156,24 @@ mw.AdTimeline.prototype = {
 				_this.displaySlots( 'preroll', function(){
 					// Show bumpers:
 					_this.displaySlots( 'bumper', function(){
-						// Restore the original source:
+						// restore the original source:
 						embedPlayer.switchPlaySrc( _this.originalSrc, function(){
-							// Turn off preSequence
+							// turn off preSequence
 							embedPlayer.sequenceProxy.isInSequence = false;
 							
-							// Trigger the preSequenceComplete event
+							// trigger the preSequenceComplete event
 							embedPlayer.triggerHelper( 'preSequenceComplete' );
 							
 							// Avoid function stack
 							setTimeout(function(){ 
-								// trigger another onplay 
-								// after the ad plays are complete
+								// trigger another onplay ( to match the kaltura kdp ) on play event
+								// after the ad plays are compelete
 								if( _this.displayedSlotCount > 0 ){
 									// reset displaySlotCount: 
-									 _this.displayedSlotCount = 0;
+									 _this.displayedSlotCount=0;
 									// Restore the player if we played an ad: 
 									_this.restorePlayer();
-									// trigger onplay ( to match the kaltura kdp ) on play event after add
+									
 									embedPlayer.triggerHelper( 'onplay' );
 								}
 								// Continue playback
@@ -203,7 +202,7 @@ mw.AdTimeline.prototype = {
 			embedPlayer.onDoneInterfaceFlag = false;
 			// Trigger the postSequenceStart event
 			// start the postSequence: 
-			embedPlayer.triggerHelper( 'postSequence' );
+			embedPlayer.triggerHelper( 'postSequence');
 			embedPlayer.sequenceProxy.isInSequence = true;
 			_this.displaySlots( 'postroll', function(){
 				// Turn off preSequence
