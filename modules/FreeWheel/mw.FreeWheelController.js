@@ -336,12 +336,32 @@ mw.FreeWheelControler.prototype = {
 				_this.embedPlayer.playInterfaceUpdate();
 			});
 		} );
+		
+		// setup original interface height
+		if( !_this.orginalInterfaceHeight ){
+			_this.orginalInterfaceHeight = _this.embedPlayer.$interface.css( 'height' )
+		}
+		// Put the interface at the bottom of the player to allow clicks to work
+		_this.embedPlayer.$interface.css( {
+			'height':  _this.embedPlayer.controlBuilder.getHeight(),
+			'bottom' : '0px',
+			'top' : _this.embedPlayer.height
+		})
+		
 		return true;
 	},
 	restorePlayState: function(){
 		var _this = this;
 		mw.log("FreeWheelControl::restorePlayState" );
 		this.getContext().setVideoState( tv.freewheel.SDK.VIDEO_STATE_PLAYING );
+		
+		// Restore interface size: 
+		_this.embedPlayer.$interface.css( {
+			'height':  _this.orginalInterfaceHeight,
+			'bottom' : 0,
+			'top' : 0,
+		})
+		
 		// remove pause binding: 
 		var vid = this.embedPlayer.getPlayerElement();
 		$( vid ).unbind( 'pause' + this.bindPostfix );
