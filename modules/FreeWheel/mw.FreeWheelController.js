@@ -333,8 +333,10 @@ mw.FreeWheelControler.prototype = {
 			_this.embedPlayer.pauseInterfaceUpdate();
 			$( vid ).bind( 'play.fwPlayBind', function(){
 				$( vid ).unbind( 'play.fwPlayBind' );
-				// a restore _playControls restriction: 
-				_this.embedPlayer._playContorls = false;
+				// a restore _playControls restriction if in an ad ) 
+				if( embedPlayer.sequenceProxy.isInSequence ){
+					_this.embedPlayer._playContorls = false;
+				}
 				_this.embedPlayer.playInterfaceUpdate();
 			});
 		} );
