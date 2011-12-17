@@ -333,15 +333,15 @@ mw.Comscore.prototype = {
 		beaconObject["c10"] = _this.getC10();
 
 		for (var cParam in beaconObject) {
-			if( beaconObject[cParam] ) {
+			if( beaconObject[cParam] && beaconObject[cParam] != '' ) {
 				loadUrl += cParam + "=" + encodeURIComponent(beaconObject[cParam]) + "&";
 			}
 		}
 
 		loadUrl += "rn=" + Math.random().toString() + "&";
-		loadUrl +="cv=" + _this.pluginVersion;
+		loadUrl += "cv=" + _this.pluginVersion;
 
-		// load img to send the beacon
+		// Load img to send the beacon
 		$('body').append(
 			$( '<img />' ).attr({
 				'src' : loadUrl,
