@@ -333,7 +333,7 @@ mw.Comscore.prototype = {
 		beaconObject["c10"] = _this.getC10();
 
 		for (var cParam in beaconObject) {
-			if( beaconObject[cParam] && beaconObject[cParam] != '' ) {
+			if( beaconObject[cParam] ) {
 				loadUrl += cParam + "=" + encodeURIComponent(beaconObject[cParam]) + "&";
 			}
 		}
