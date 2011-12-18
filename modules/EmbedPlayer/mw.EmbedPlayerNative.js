@@ -463,7 +463,7 @@ mw.EmbedPlayerNative = {
 		vid.addEventListener( 'seeked', once, false );
 		// Try to update the playerElement time: 
 		try {
-			vid.currentTime = time;
+			vid.currentTime = time.toFixed( 2 );
 		} catch (e) {
 			mw.log("Error Could not set video tag time");
 			callback();
