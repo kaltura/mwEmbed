@@ -64,12 +64,14 @@ mw.KAds.prototype = {
 		
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
-		$( embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event, cuePointWrapper ) {
-			// Check for  protocolType == 1 ( type = vast ) 
-			if( cuePointWrapper.cuePoint.protocolType == 1 ){
-				_this.loadAndDisplayAd( cuePointWrapper );
-			}
-		});
+		if( embedPlayer.getKalturaConfig('vast', 'trackCuePoints') === true ) {
+			$( embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event, cuePointWrapper ) {
+				// Check for  protocolType == 1 ( type = vast )
+				if( cuePointWrapper.cuePoint.protocolType == 1 ){
+					_this.loadAndDisplayAd( cuePointWrapper );
+				}
+			});
+		}
 	},
 	
 	/**
@@ -208,7 +210,7 @@ mw.KAds.prototype = {
 									// Seek to where we did the switch
 									embedPlayer.seek( seekPerc );
 								} else {
-									setTimeout(function(){ waitForPlayback() }, 50)
+									setTimeout(function(){waitForPlayback()}, 50)
 								}
 							}
 							waitForPlayback();
