@@ -761,8 +761,6 @@ mw.EmbedPlayer.prototype = {
 			this.stopEventPropagation();
 			mw.log("EmbedPlayer:: trigger: ended");
 			$( this ).trigger( 'ended' );
-			this.restoreEventPropagation();
-			
 			mw.log("EmbedPlayer::onClipDone:Trigged ended, continue? " + this.onDoneInterfaceFlag);
 			
 			// A secondary end event for playlist and clip sequence endings

@@ -691,10 +691,6 @@ mw.EmbedPlayerNative = {
 		if( this.playerElement && this.playerElement.currentTime){
 			this.playerElement.currentTime = 0;
 			this.playerElement.pause();
-			// Restore event propagation after stop; 
-			setTimeout( function(){
-				_this.restoreEventPropagation();
-			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 		}
 		this.parent_stop();
 	},
