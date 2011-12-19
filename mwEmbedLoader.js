@@ -1245,7 +1245,7 @@ kAddReadyHook(function() {
  * KWidget static object.
  * Will eventually host all the loader logic. 
  */
-window.KWidget = {
+window.kWidget = {
 	// Stores widgets that are ready: 
 	readyWidgets: {},
 	
@@ -1287,8 +1287,8 @@ window.KWidget = {
 		this.readyWidgets[ widgetId ] = true;
 	}
 };
-// support lowercase kWidget calls
-window.kWidget = KWidget;
+// Support upper case kWidget calls
+window.KWidget = window.kWidget;
 
 window.KalturaKDPCallbackAlreadyCalled = [];
 
