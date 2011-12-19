@@ -758,10 +758,19 @@ mw.EmbedPlayer.prototype = {
 
 			// TOOD we should improve the end event flow
 			// First end event for ads or current clip ended bindings
-			this.stopEventPropagation();
+			if( ! this.onDoneInterfaceFlag ){
+				this.stopEventPropagation();
+			}
+			
 			mw.log("EmbedPlayer:: trigger: ended");
 			$( this ).trigger( 'ended' );
 			mw.log("EmbedPlayer::onClipDone:Trigged ended, continue? " + this.onDoneInterfaceFlag);
+
+			
+			if( !this.onDoneInterfaceFlag ){
+				// Restore events if we are not running the interface done actions
+				 this.restoreEventPropagation(); 
+			}
 			
 			// A secondary end event for playlist and clip sequence endings
 			if( this.onDoneInterfaceFlag ){
@@ -775,28 +784,24 @@ mw.EmbedPlayer.prototype = {
 				// Prevent the native "onPlay" event from propagating that happens when we rewind:
 				this.stopEventPropagation();
 				this.stop();
+				// Restore events after we rewind the player
+				this.restoreEventPropagation(); 
+				
+				this.serverSeekTime = 0;
+				this.updatePlayHead( 0 );
 				
 				// Check if we have the "loop" property set
 				if( this.loop ) {
-					this.restoreEventPropagation(); 
 					this.play();
 					return;
 				}
 				
-				// Stop the clip (load the thumbnail etc)
-				this.serverSeekTime = 0;
-				this.updatePlayHead( 0 );
-
 				// An event for once the all ended events are done.
 				mw.log("EmbedPlayer:: trigger: onEndedDone");
 				if ( !this.triggeredEndDone ){
 					this.triggeredEndDone = true;
 					$( this ).trigger( 'onEndedDone' );
-				}
-				setTimeout(function(){
-					_this.restoreEventPropagation(); 
-				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
-				
+				}				
 			}
 		}
 	},
