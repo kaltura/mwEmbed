@@ -200,33 +200,38 @@ mw.AdTimeline.prototype = {
 			});
 			displayedPostroll = true;
 			embedPlayer.onDoneInterfaceFlag = false;
-			// Trigger the postSequenceStart event
-			// start the postSequence: 
-			embedPlayer.triggerHelper( 'postSequence' );
-			embedPlayer.sequenceProxy.isInSequence = true;
-			_this.displaySlots( 'postroll', function(){
-				// Turn off preSequence
-				embedPlayer.sequenceProxy.isInSequence = false;
-				// Trigger the postSequenceComplete event
-				embedPlayer.triggerHelper( 'postSequenceComplete' );
+			
+			// Display post roll in setTimeout ( hack to work around end sequence issues ) 
+			// should be refactored. 
+			setTimeout(function(){
+				// Trigger the postSequenceStart event
+				// start the postSequence: 
+				embedPlayer.triggerHelper( 'postSequence' );
+				embedPlayer.sequenceProxy.isInSequence = true;
+				_this.displaySlots( 'postroll', function(){
+					// Turn off preSequence
+					embedPlayer.sequenceProxy.isInSequence = false;
+					// Trigger the postSequenceComplete event
+					embedPlayer.triggerHelper( 'postSequenceComplete' );
 
-				/** TODO support postroll bumper and leave behind */
-				if( playedAnAdFlag ){
-					embedPlayer.switchPlaySrc( _this.originalSrc, function(){
-							_this.restorePlayer();
-							// Restore ondone interface: 
-							embedPlayer.onDoneInterfaceFlag = true;
-							// Run the clipdone event:
-							embedPlayer.onClipDone();
-					});
-				} else {
-					_this.restorePlayer();
-					// Restore ondone interface: 
-					embedPlayer.onDoneInterfaceFlag = true;
-					// run the clipdone event:
-					embedPlayer.onClipDone();
-				}
-			});
+					/** TODO support postroll bumper and leave behind */
+					if( playedAnAdFlag ){
+						embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+								_this.restorePlayer();
+								// Restore ondone interface: 
+								embedPlayer.onDoneInterfaceFlag = true;
+								// Run the clipdone event:
+								embedPlayer.onClipDone();
+						});
+					} else {
+						_this.restorePlayer();
+						// Restore ondone interface: 
+						embedPlayer.onDoneInterfaceFlag = true;
+						// run the clipdone event:
+						embedPlayer.onClipDone();
+					}
+				});
+			}, 0)
 		});
 	},
 	destroy: function(){
