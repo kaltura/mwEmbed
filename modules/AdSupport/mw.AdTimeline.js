@@ -194,7 +194,7 @@ mw.AdTimeline.prototype = {
 			if( displayedPostroll ){
 				return ;
 			}
-			playedAnAdFlag = false;
+			var playedAnAdFlag = false;
 			embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' +  _this.bindPostfix, function(){
 				playedAnAdFlag = true;
 			});

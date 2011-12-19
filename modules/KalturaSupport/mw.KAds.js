@@ -71,6 +71,10 @@ mw.KAds.prototype = {
 					_this.loadAndDisplayAd( cuePointWrapper );
 				}
 			});
+
+			$( embedPlayer ).bind('midSequenceComplete' + _this.bindPostfix, function() {
+				embedPlayer.play();
+			});
 		}
 	},
 	
@@ -113,7 +117,10 @@ mw.KAds.prototype = {
 			return ;
 		}
 		// Add cuePoint Id to displayed cuePoints array
-		_this.displayedCuePoints.push( cuePoint.id );		
+		_this.displayedCuePoints.push( cuePoint.id );
+
+		// Trigger midSequenceStart event (TODO: should moved to AdTimeline)
+		$( embedPlayer ).trigger('midSequenceStart');
 		
 		mw.log('kAds::loadAndDisplayAd:: load ' + adType + ', duration: ' + adDuration, cuePoint);
 
@@ -219,6 +226,9 @@ mw.KAds.prototype = {
 				} else {
 					embedPlayer.adTimeline.restorePlayer();
 				}
+
+				// Trigger midSequenceComplete event (TODO: should moved to AdTimeline)
+				$( embedPlayer ).trigger('midSequenceComplete');
 			};
 
 			// If out ad is preroll/midroll/postroll, disable the player 
