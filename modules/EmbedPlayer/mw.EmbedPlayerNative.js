@@ -173,8 +173,12 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Update the player source ( if needed ) 
-		if( $( '#' + this.pid ).attr( 'src') !=  this.getSrc( this.currentTime )  ){
-			$( '#' + this.pid ).attr( 'src', this.getSrc( this.currentTime ) );
+		if( $( vid).attr( 'src') !=  this.getSrc( this.currentTime )  ){
+			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
+		}
+		// Update the WebKitPlaysInline value
+		if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') ){
+			$( vid ).attr( 'webkit-playsinline', 1 );
 		}
 		// Apply media element bindings:
 		_this.applyMediaElementBindings();
@@ -459,7 +463,7 @@ mw.EmbedPlayerNative = {
 		vid.addEventListener( 'seeked', once, false );
 		// Try to update the playerElement time: 
 		try {
-			vid.currentTime = time;
+			vid.currentTime = time.toFixed( 2 );
 		} catch (e) {
 			mw.log("Error Could not set video tag time");
 			callback();
@@ -666,7 +670,7 @@ mw.EmbedPlayerNative = {
 		if( _this.parent_play() ){
 			this.getPlayerElement();
 			if ( this.playerElement && this.playerElement.play ) {
-				// issue a play request ( capture the user gesture on iOS ) 
+				// issue a play request 
 				this.playerElement.play();
 				
 				// Dont play if in pauseloading state
@@ -687,10 +691,6 @@ mw.EmbedPlayerNative = {
 		if( this.playerElement && this.playerElement.currentTime){
 			this.playerElement.currentTime = 0;
 			this.playerElement.pause();
-			// Restore event propagation after stop; 
-			setTimeout( function(){
-				_this.restoreEventPropagation();
-			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 		}
 		this.parent_stop();
 	},

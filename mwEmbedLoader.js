@@ -195,7 +195,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// Check if the iframe API is enabled in which case we have to load client code and use that 
 	// to rewrite the frame
 	var uiconf_id = kEmbedSettings.uiconf_id;
-	kEmbedSettings.isHTML5 =  kIsHTML5FallForward();
+	kEmbedSettings.isHTML5 = kIsHTML5FallForward();
 	// Check if we even need to rewrite the page at all
 	// Evaluate per user agent rules: 
 	if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
@@ -209,7 +209,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 				}
 			break;
 			case 'leadWithHTML5':
-				kEmbedSettings.isHTML5 = true;
+				kEmbedSettings.isHTML5 = kSupportsHTML5();
 				break;
 			case 'forceMsg':
 				var msg = playerAction.val;
@@ -682,6 +682,12 @@ function kIsHTML5FallForward( ){
 	if ( kIsIOS() || mw.getConfig( 'forceMobileHTML5' )  ){
 		return true;
 	}
+	
+	// Check for "KalturaSupport.LeadWithHTML5" attribute
+	if( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) ){
+		return kSupportsHTML5();
+	}
+
 	// Special check for Android:
 	if( navigator.userAgent.indexOf('Android 2.') != -1 ){
 		if( mw.getConfig( 'EmbedPlayer.UseFlashOnAndroid' ) 
@@ -1239,7 +1245,7 @@ kAddReadyHook(function() {
  * KWidget static object.
  * Will eventually host all the loader logic. 
  */
-window.KWidget = {
+window.kWidget = {
 	// Stores widgets that are ready: 
 	readyWidgets: {},
 	
@@ -1281,8 +1287,8 @@ window.KWidget = {
 		this.readyWidgets[ widgetId ] = true;
 	}
 };
-// support lowercase kWidget calls
-window.kWidget = KWidget;
+// Support upper case kWidget calls
+window.KWidget = window.kWidget;
 
 window.KalturaKDPCallbackAlreadyCalled = [];
 

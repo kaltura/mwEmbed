@@ -44,8 +44,8 @@ mw.KWidgetSupport.prototype = {
 			$( embedPlayer ).bind( 'getShareIframeSrc', function( event, callback ){
 				var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
 				iframeUrl +='/wid/' + embedPlayer.kwidgetid +
-				'/uiconf_id/' + embedPlayer.kuiconfid +
-				'/entry_id/' + embedPlayer.kentryid + '/';
+					'/uiconf_id/' + embedPlayer.kuiconfid +
+					'/entry_id/' + embedPlayer.kentryid + '/';
 				// return the iframeUrl via the callback: 
 				callback( iframeUrl );
 			});
@@ -305,7 +305,7 @@ mw.KWidgetSupport.prototype = {
 		// and setup their binding to KalturaSupport_CuePointsReady
 		var doneWithUiConf = function(){
 			if( embedPlayer.rawCuePoints ){
-				mw.log("KWidgetSupport:: trigger KalturaSupport_CuePointsReady");
+				mw.log("KWidgetSupport:: trigger KalturaSupport_CuePointsReady", embedPlayer.rawCuePoints);
 				// Allow other plugins to subscribe to cuePoint ready event:
 				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints );
 			};

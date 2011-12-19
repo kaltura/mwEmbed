@@ -567,7 +567,7 @@ class KalturaResultObject {
 
 		// Check for error in getting flavor
 		if( isset( $resultObject['flavors']['code'] ) ){
-			switch(  $resultObject['flavors']['code'] ){
+			switch( $resultObject['flavors']['code'] ){
 				case  'ENTRY_ID_NOT_FOUND':
 					$this->error = "Entry Id not found\n";
 				break;

@@ -112,7 +112,7 @@ mw.KAdPlayer.prototype = {
 		// Check for companion ads:
 		if ( adConf.companions && adConf.companions.length ) {
 			this.displayCompanions(  adSlot, adConf, adSlot.type);
-		};
+		}
 		
 		// Check for nonLinear overlays
 		if ( adConf.nonLinear && adConf.nonLinear.length && adSlot.type == 'overlay' ) {
@@ -224,7 +224,13 @@ mw.KAdPlayer.prototype = {
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Bind all the tracking events ( currently vast based but will abstract if needed )
 		if( adConf.trackingEvents ){
-			_this.bindTrackingEvents( adConf.trackingEvents );
+			if( vid.readyState > 0 ) {
+				_this.bindTrackingEvents( adConf.trackingEvents );
+			} else {
+				$( vid ).bind('loadedmetadata', function() {
+					_this.bindTrackingEvents( adConf.trackingEvents );
+				});
+			}
 		}
 		var helperCss = {
 			'position': 'absolute',
@@ -383,6 +389,7 @@ mw.KAdPlayer.prototype = {
 			.addClass("ui-icon ui-icon-closethick")				
 			.click(function(){
 				$( this ).parent().fadeOut('fast');
+				return true;
 			})
 		);
 		
@@ -437,8 +444,8 @@ mw.KAdPlayer.prototype = {
 				if( eventName == trackingEvents[ i ].eventName ){
 					mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + trackingEvents[ i ].beaconUrl );
 					mw.sendBeaconUrl( trackingEvents[ i ].beaconUrl );
-				};
-			};				
+				}
+			}
 		};
 		
 		// On end stop monitor / clear interval: 
@@ -496,7 +503,7 @@ mw.KAdPlayer.prototype = {
 			if( time > dur / 1.5 )
 				sendBeacon( 'thirdQuartile' );
 			
-		});		
+		}, mw.getConfig('EmbedPlayer.MonitorRate') );		
 	},
 	stopAdTracking: function(){
 		var _this = this;

@@ -64,12 +64,18 @@ mw.KAds.prototype = {
 		
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
-		$( embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event, cuePointWrapper ) {
-			// Check for  protocolType == 1 ( type = vast ) 
-			if( cuePointWrapper.cuePoint.protocolType == 1 ){
-				_this.loadAndDisplayAd( cuePointWrapper );
-			}
-		});
+		if( embedPlayer.getKalturaConfig('vast', 'trackCuePoints') === true ) {
+			$( embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event, cuePointWrapper ) {
+				// Check for  protocolType == 1 ( type = vast )
+				if( cuePointWrapper.cuePoint.protocolType == 1 ){
+					_this.loadAndDisplayAd( cuePointWrapper );
+				}
+			});
+
+			$( embedPlayer ).bind('midSequenceComplete' + _this.bindPostfix, function() {
+				embedPlayer.play();
+			});
+		}
 	},
 	
 	/**
@@ -111,7 +117,10 @@ mw.KAds.prototype = {
 			return ;
 		}
 		// Add cuePoint Id to displayed cuePoints array
-		_this.displayedCuePoints.push( cuePoint.id );		
+		_this.displayedCuePoints.push( cuePoint.id );
+
+		// Trigger midSequenceStart event (TODO: should moved to AdTimeline)
+		$( embedPlayer ).trigger('midSequenceStart');
 		
 		mw.log('kAds::loadAndDisplayAd:: load ' + adType + ', duration: ' + adDuration, cuePoint);
 
@@ -126,7 +135,9 @@ mw.KAds.prototype = {
 		}
 		
 		// If ad type is midroll pause the video
-		_this.embedPlayer.pauseLoading();
+		if( cuePoint.adType == 1 ) {
+			_this.embedPlayer.pauseLoading();
+		}
 		
 		mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
 			if( ! adConf ){
@@ -206,7 +217,7 @@ mw.KAds.prototype = {
 									// Seek to where we did the switch
 									embedPlayer.seek( seekPerc );
 								} else {
-									setTimeout(function(){ waitForPlayback() }, 50)
+									setTimeout(function(){waitForPlayback()}, 50)
 								}
 							}
 							waitForPlayback();
@@ -215,6 +226,9 @@ mw.KAds.prototype = {
 				} else {
 					embedPlayer.adTimeline.restorePlayer();
 				}
+
+				// Trigger midSequenceComplete event (TODO: should moved to AdTimeline)
+				$( embedPlayer ).trigger('midSequenceComplete');
 			};
 
 			// If out ad is preroll/midroll/postroll, disable the player 
@@ -226,7 +240,9 @@ mw.KAds.prototype = {
 			}
 
 			// Tell the player to show the Ad
-			_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
+			if( cuePoint.adType == 1 ) {
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
+			}
 			_this.adPlayer.display( adsCuePointConf, doneCallback, adDuration );
 
 		});

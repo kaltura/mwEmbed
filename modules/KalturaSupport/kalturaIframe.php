@@ -715,7 +715,7 @@ class kalturaIframe {
 				?>
 				
 				var hashString = document.location.hash;
-				// Parse any configuration options passed in via hash url:
+				// Parse any configuration options passed in via hash url more reliable than window['parent']
 				if( hashString ){
 					try{
 						var hashObj = JSON.parse(

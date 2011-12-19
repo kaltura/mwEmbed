@@ -6,7 +6,6 @@
 // scope in mw
 ( function( mw, $ ) {
 	mw.KDPMapping = function( ) {
-		// Create a Player Manage
 		return this.init();
 	};
 	mw.KDPMapping.prototype = {
@@ -215,13 +214,13 @@
 				return objectString;
 			}
 			// Check if a simple direct evaluation: 
-			if( objectString[0] == '{' &&  objectString[  objectString.length -1 ] == '}' ){
+			if( objectString[0] == '{' &&  objectString[  objectString.length -1 ] == '}' && objectString.split( '{' ).length == 2 ){
 				result = _this.evaluateExpression( embedPlayer, objectString.substring(1, objectString.length-1) );
 			} else if ( objectString.split( '{' ).length > 1 ){ // Check if we are doing a string based evaluate concatenation: 
 				// Replace any { } calls with evaluated expression.
 				result = objectString.replace(/\{([^\}]*)\}/g, function( match, contents, offset, s) {
 					return _this.evaluateExpression( embedPlayer, contents );
-				});
+				});	
 			} else {
 				// Echo the evaluated string: 
 				result = objectString;
@@ -446,7 +445,11 @@
 				break;
 			}
 			// Look for a plugin based config: 
-			return embedPlayer.getKalturaConfig( objectPath[0], objectPath[1]);
+			var pluginConfigValue = embedPlayer.getKalturaConfig( objectPath[0], objectPath[1]);
+			if( $.isEmptyObject( pluginConfigValue ) ){
+				return ;
+			} 
+			return pluginConfigValue;
 		},
 		evaluateStringFunction: function( functionName, value ){
 			switch( functionName ){
