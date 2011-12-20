@@ -185,7 +185,7 @@ mw.FreeWheelControler.prototype = {
 							var rendition = creative._creativeRenditions[0];
 							var asset = rendition._primaryCreativeRenditionAsset;
 							
-							return {
+							var metaData = {
 								'ID' :  ad._id,
 								'width': rendition._width,
 								'height': rendition._height,
@@ -196,12 +196,15 @@ mw.FreeWheelControler.prototype = {
 								'duration': creative._duration,
 								'type' : _this.getSlotType( slot ),
 								'name' : 'Freewheel',
-								// TODO also check _parameters
 								'title': asset._name,
 								'iabCategory' : null,
 								// TODO confim CampaignID == creativeId ? 
 								'CampaignID' : creative._id
 							};
+							if( creative._parameters._fw_advertiser_name ){
+								metaData['advertiser'] = creative._parameters._fw_advertiser_name;
+							}
+							return metaData;
 						}
 					}
 				}
