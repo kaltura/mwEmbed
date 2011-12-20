@@ -82,6 +82,10 @@
 					'position': 'absolute',
 					'top' : vidHeight + embedPlayer.controlBuilder.getHeight()
 				})
+				var butonHeight = embedPlayer.controlBuilder.getComponentHeight( 'playButtonLarge' );
+				embedPlayer.$interface.find(".play-btn-large").css({
+					'top' : parseInt( ( vidHeight - butonHeight ) / 2 )  + 'px'
+				});
 			}
 		};
 		// Once all functions are defined call the doTitleLayout

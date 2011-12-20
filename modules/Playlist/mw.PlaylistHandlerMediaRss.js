@@ -1,3 +1,4 @@
+( function( mw, $ ) {
 mw.PlaylistHandlerMediaRss = function( playlist ){
 	return this.init( playlist );
 };
@@ -32,7 +33,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		// Check if we have the source pre-loaded:
 		if( this.getSrcPayLoad() ) {
 			var xmlDoc =  $j.parseXML( this.getSrcPayLoad() );
-			this.$rss = $j( xmlDoc );
+			this.$rss = $( xmlDoc );
 			callback( _this.$rss );
 			return ;
 		}
@@ -44,7 +45,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			$j.get( mw.absoluteUrl( this.getSrc() ), function( data ){
 				// jQuery already converts data into xmlDoc so the following is not needed:
 				// var xmlDoc =  $j.parseXML( data );
-				_this.$rss = $j( data );
+				_this.$rss = $( data );
 				callback( _this.$rss );
 			});
 		} else {
@@ -61,7 +62,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 				}
 				// parse the MRSS:
 				var xmlDoc =  $j.parseXML( result['contents'] );
-				_this.$rss = $j( xmlDoc );
+				_this.$rss = $( xmlDoc );
 				callback( _this.$rss );
 			});
 		}
@@ -110,7 +111,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			return ;
 		}
 		for( var i =0; i < clipSources.length; i++ ){
-			var $source = $j('<source />')
+			var $source = $('<source />')
 			.attr( clipSources[i] );
 			embedPlayer.mediaElement.tryAddSource( $source.get(0) ) ;
 		}
@@ -169,7 +170,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		if( clipSources ){
 			// Update the sources from the playlist provider:
 			for( var i =0; i < clipSources.length; i++ ){
-				var $source = $j('<source />')
+				var $source = $('<source />')
 					.attr( clipSources[i] );
 				$video.append( $source );
 			}
@@ -196,19 +197,19 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	},
 	getClipSources: function( clipIndex ){
 		var _this = this;
-		var $item = $j( this.$rss.find('item')[ clipIndex ] );
+		var $item = $( this.$rss.find('item')[ clipIndex ] );
 		var clipSources = [];
 		$j.each( $item.find( '*' ), function( inx, mediaContent){
-			if( $j( mediaContent ).get(0).nodeName == 'media:content' ){
+			if( $( mediaContent ).get(0).nodeName == 'media:content' ){
 				clipSource = {};
-				if( $j( mediaContent ).attr('url' ) ){
-					clipSource.src = $j( mediaContent ).attr('url' );
+				if( $( mediaContent ).attr('url' ) ){
+					clipSource.src = $( mediaContent ).attr('url' );
 				}
-				if( $j( mediaContent ).attr('type' ) ){
-					clipSource.type = $j( mediaContent ).attr('type' );
+				if( $( mediaContent ).attr('type' ) ){
+					clipSource.type = $( mediaContent ).attr('type' );
 				}
-				if( $j( mediaContent ).attr( 'duration' ) ) {
-					clipSource.durationHint = $j( mediaContent ).attr('duration' );
+				if( $( mediaContent ).attr( 'duration' ) ) {
+					clipSource.durationHint = $( mediaContent ).attr('duration' );
 				}
 				clipSources.push( clipSource );
 			}
@@ -232,9 +233,9 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	getClipPoster: function ( clipIndex ){
 		var $item = this.$rss.find('item').eq( clipIndex );
 		var mediaThumb = $item.find( 'media\\:thumbnail, content\\:thumbnail, thumbnail' );
-		mw.log( 'mw.PlaylistMediaRss::getClipPoster: ' + $j( mediaThumb ).attr('url' ) );
-		if( mediaThumb && $j( mediaThumb ).attr('url' ) ){
-			return $j( mediaThumb ).attr('url' );
+		mw.log( 'mw.PlaylistMediaRss::getClipPoster: ' + $( mediaThumb ).attr('url' ) );
+		if( mediaThumb && $( mediaThumb ).attr('url' ) ){
+			return $( mediaThumb ).attr('url' );
 		}
 
 		// return missing thumb url
@@ -247,7 +248,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		var $item = this.$rss.find('item').eq( clipIndex ) ;
 		var mediaTitle = $item.find( 'media\\:title, content\\:title, title' );
 		if( mediaTitle ){
-			return $j( mediaTitle ).text();
+			return $( mediaTitle ).text();
 		}
 		mw.log("Error could not find title for clip: " + clipIndex );
 		return gM('mwe-mediarss-untitled');
@@ -260,7 +261,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		var $item = this.$rss.find('item').eq( clipIndex ) ;
 		var mediaDesc = $item.find( 'media\\:description, content\\:description, description' );
 		if( mediaDesc ){
-			return $j( mediaDesc ).text();
+			return $( mediaDesc ).text();
 		}
 		mw.log("Error could not find description for clip: " + clipIndex );
 		return gM('mwe-mediarss-untitled');
@@ -270,9 +271,9 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		// return the first found media duration
 		var $item = this.$rss.find('item').eq( clipIndex ) ;
 		var itemDuration = 0;
-		$j( $item.find('*')).each( function( inx, mediaContent ){
-			if( $j( mediaContent ).attr( 'duration' ) ) {
-				itemDuration = $j( mediaContent ).attr( 'duration' );
+		$( $item.find('*')).each( function( inx, mediaContent ){
+			if( $( mediaContent ).attr( 'duration' ) ) {
+				itemDuration = $( mediaContent ).attr( 'duration' );
 				// end for loop
 				return false;
 			}
@@ -282,10 +283,10 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	getPlaylistItem: function( clipIndex ){
 		var _this = this;
 		var width = ( _this.playlist.itemThumbWidth )? _this.playlist.itemThumbWidth  : 70;
-		var $item = $j('<div />')
+		var $item = $('<div />')
 			.css('width', '100%')
 			.append(
-				$j('<img />')
+				$('<img />')
 				.attr({
 					'alt' : _this.getClipTitle( clipIndex ),
 					'src' : _this.getClipPoster( clipIndex )
@@ -294,10 +295,10 @@ mw.PlaylistHandlerMediaRss.prototype = {
 					'width': width + 'px'
 				})
 				,
-				$j('<div />')
+				$('<div />')
 				.addClass('clipText')
 				.append(
-					$j('<span />')
+					$('<span />')
 					.addClass('clipTitle')
 					.text( 
 						_this.playlist.formatTitle( 
@@ -305,7 +306,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 						)
 					)
 					,
-					$j('<div />')
+					$('<div />')
 					.addClass('clipDuration')
 					.text(
 						mw.seconds2npt(
@@ -314,16 +315,20 @@ mw.PlaylistHandlerMediaRss.prototype = {
 					)
 				)
 				,
-				$j('<div />').css('clear', 'right')
+				$('<div />').css('clear', 'right')
 				,
-				$j('<span />').addClass('clipDescription').text( 
+				$('<span />').addClass('clipDescription').text( 
 					_this.playlist.formatDescription(
 						_this.getClipDesc( clipIndex )
 					)
 				)
 			)
-			// poor mans tool tip: 
 			.attr('title',_this.getClipDesc( clipIndex ) );
 		return $item;
+	},
+	adjustTextWidthAfterDisplay: function( $clipList ){
+		// no action 
 	}
 };
+
+} )( window.mw, jQuery );

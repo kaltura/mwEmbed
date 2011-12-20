@@ -418,8 +418,15 @@ mw.PlaylistHandlerKaltura.prototype = {
 		);
 		$item.find('.nameAndDuration')
 			.after( $('<div />').css({'display': 'block', 'height': '20px'} ) )
-			.find('div span:last').css('float', 'right')
+			.find( 'div span:last' ).css('float', 'right')
+			
 		return $item;
+	},
+	adjustTextWidthAfterDisplay: function( $clipList ){
+		var textWidth = $clipList.width() - $clipList.find('img').width();
+		// there is about 64 pixles of padding involved; 
+		textWidth = textWidth - 64;
+		$clipList.find( '.irDescriptionIrScreen' ).css( 'width', textWidth );
 	},
 	getBoxLayout: function(  clipIndex, $currentBox ){
 		var _this = this;
