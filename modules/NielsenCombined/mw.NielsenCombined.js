@@ -398,6 +398,9 @@ mw.NielsenCombined.prototype = {
 					  clientid: clientId,
 					  vcid: _this.getConfig( "vcid" )
 				};	
+				if( _this.getConfig( 'prod') ){
+					nolggGlobalParams['prod'] = _this.getConfig( 'prod');
+				}
 				_this.gg = new gg();
 				var uid = 0; // "provided by Nielsen"
 				var oldFlashDetect = false; // no longer used (dummy placeholder for legacy implementations)
