@@ -9,14 +9,14 @@ mw.NielsenVideoCensus = function( embedPlayer, callback ){
 
 mw.NielsenVideoCensus.prototype = {
 	// Post fixed applied in player bindings
-	bindPostFix: '.NielsenVideoCensus',
+	bindPostfix: '.NielsenVideoCensus',
 	
 	// Local cache of current segment: 
 	localCurrentSegment: 0,
 	
 	init: function( embedPlayer, callback ){
 		this.embedPlayer = embedPlayer;
-
+		
 		// Add the player bindings: 
 		this.addPlayerBindings();
 		
@@ -39,14 +39,14 @@ mw.NielsenVideoCensus.prototype = {
 	addPlayerBindings: function(){
 		var _this = this;
 		// Remove any existing bindings: 
-		this.embedPlayer.unbindHelper( _this.bindPostFix);
+		this.embedPlayer.unbindHelper( _this.bindPostfix );
 		
 		// Reset the current segment index: 
 		this.localCurrentSegment = 0;
 		
 		var contentPlay = false;
 		// Add the first play binding: 
-		this.embedPlayer.bindHelper( 'onplay' + _this.bindPostFix, function(){
+		this.embedPlayer.bindHelper( 'onplay' + _this.bindPostfix, function(){
 			if( !_this.inAd() && !contentPlay){
 				contentPlay = true;
 				_this.sendBeacon();
@@ -56,7 +56,7 @@ mw.NielsenVideoCensus.prototype = {
 		// Send beacon for midrolls
 		var inMidroll = false;
 		// TODO this should bind to "midSequenceComplete" not a nested AdSupport_EndAdPlayback
-		_this.embedPlayer.bindHelper('KalturaSupport_AdOpportunity' + _this.bindPostFix, function(){
+		_this.embedPlayer.bindHelper('KalturaSupport_AdOpportunity' + _this.bindPostfix, function(){
 			inMidroll = true;
 		});
 		_this.embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' + _this.bindName, function(){
@@ -68,13 +68,15 @@ mw.NielsenVideoCensus.prototype = {
 		});
 	},
 	sendBeacon: function(){
-		mw.log("NielsenVideoCensus:: sendBeacon" );
+		
 		// create a new dav image
 		var davImg = new Image(); 
 		// Setup the base url: 
 		var url = ( this.getConfig('serverUrl') ) ? this.getConfig('serverUrl') : 'http://secure-us.imrworldwide.com/cgi-bin/m?';
 
 		url+= $.param( this.getBeconParams() );
+		
+		mw.log("NielsenVideoCensus:: sendBeacon " +  url);
 		// Set the Program/Section Name
 		davImg.src = url;
 	},
@@ -109,6 +111,10 @@ mw.NielsenVideoCensus.prototype = {
 		if( this.getConfig("ls") ){
 			params['ls'] = this.getConfig("ls");
 		}
+		// encode all the paramaters; 
+		$.each( params, function( inx, value ){
+			params[inx] = encodeURIComponent( value );
+		});
 		return params;
 	},
 	getLpParam: function(){
@@ -117,7 +123,7 @@ mw.NielsenVideoCensus.prototype = {
 		
 		// lpParam is
 		if( lpParam == 'SF,' ){
-			lpParam  += '1,' + Math.round(this.embedPlayer.duration) + ',1';
+			lpParam  += '1,' + Math.round( this.embedPlayer.duration ) + ',1';
 			return lpParam;
 		}
 		
