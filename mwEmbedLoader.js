@@ -610,7 +610,7 @@ function kCheckAddScript(){
 				}
 			});
 		}
-		mw.setConfig( 'Kaltura.UiConfJsLoaded', true);
+		mw.setConfig( 'Kaltura.UiConfJsLoaded', true );
 		return ;
 	}
 
@@ -619,11 +619,13 @@ function kCheckAddScript(){
 		mw.setConfig( 'forceMobileHTML5', false );
 	}
 	
-	// Check if we have player rules and then issue kAddScript call 
-	if( window.kUserAgentPlayerRules  ){
-		kAddScript();
-		return ;
-	}
+	// Check if we have player rules and then issue kAddScript call
+	setTimeout(function() {
+		if( window.kUserAgentPlayerRules  ){
+			kAddScript();
+			return ;
+		}
+	},0);
 	
 	/**
 	 * If Kaltura.AllowIframeRemoteService is not enabled force in page rewrite: 
@@ -1319,4 +1321,3 @@ window.checkForKDPCallback = function(){
 // Check inline and when the DOM is ready:
 checkForKDPCallback();
 kAddReadyHook( checkForKDPCallback );
-
