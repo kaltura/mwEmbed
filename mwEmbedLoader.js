@@ -199,9 +199,9 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// Check if we even need to rewrite the page at all
 	// Evaluate per user agent rules: 
 	if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
-		var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
+		var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );alert(playerAction);
 		// Default play mode, if here and really using flash remap: 
-		switch( playerAction.mode ){
+		switch( playerAction ){
 			case 'flash':
 				if( !kIsHTML5FallForward() && elm.nodeName.toLowerCase() == 'object'){
 					restoreKalturaKDPCallback();
