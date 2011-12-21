@@ -729,7 +729,7 @@ function kIsHTML5FallForward( ){
 // but is part of the mobile check above. 
 function kSupportsHTML5(){
 	var dummyvid = document.createElement( "video" );
-	// Blackberry does not really support html5 ( 
+	// Blackberry does not really support html5 
 	if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
 		return false ;
 	}

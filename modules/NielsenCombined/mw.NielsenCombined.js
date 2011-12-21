@@ -205,12 +205,12 @@ mw.NielsenCombined.prototype = {
 		b( 'pause', function(){
 			// pause is triggred as part of player end state ( don't dispatch if eventProgatation is off ) 
 			if( embedPlayer._propagateEvents ){
-				_this.dispatchEvent( 6, _this.getRelativeTime('currentTime') );
+				_this.dispatchEvent( 6, _this.round( _this.getRelativeTime('currentTime') ) );
 			}
 			
 			// setup the resume binding:
 			b('play', function(){
-				_this.dispatchEvent( 5, _this.getRelativeTime('currentTime') );
+				_this.dispatchEvent( 5, _this.round( _this.getRelativeTime('currentTime') ) );
 				// unbind play: 
 				$(embedPlayer).unbind( 'play' + _this.trackerPostFix );
 			});
@@ -239,12 +239,12 @@ mw.NielsenCombined.prototype = {
 			// Check for position changed more than "3" ( seek )
 			if( posDelta > 3 ){
 				mw.log("NielsenCombined:: Dispach clip jump, seek delta : " + posDelta );
-				_this.dispatchEvent( 8, String( lastTime ), String( _this.getRelativeTime('currentTime') ), type );
+				_this.dispatchEvent( 8, _this.round( lastTime ), _this.round( _this.getRelativeTime('currentTime') ), type );
 			}
 			// Dispatch vid progress every 2 seconds:
 			if( posDelta > _this.queryInterval ){
 				lastTime = vid.currentTime;
-				_this.dispatchEvent( 49, String( _this.getRelativeTime( 'currentTime' ) ), type );
+				_this.dispatchEvent( 49, _this.round( _this.getRelativeTime( 'currentTime' ) ), type );
 			}
 		});
 	},
@@ -398,6 +398,9 @@ mw.NielsenCombined.prototype = {
 					  clientid: clientId,
 					  vcid: _this.getConfig( "vcid" )
 				};	
+				if( _this.getConfig( 'prod') ){
+					nolggGlobalParams['prod'] = _this.getConfig( 'prod');
+				}
 				_this.gg = new gg();
 				var uid = 0; // "provided by Nielsen"
 				var oldFlashDetect = false; // no longer used (dummy placeholder for legacy implementations)

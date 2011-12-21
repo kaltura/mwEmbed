@@ -384,6 +384,8 @@ mw.Playlist.prototype = {
 			// Show the videoList
 			$videoListWraper.show();
 			
+			_this.sourceHandler.adjustTextWidthAfterDisplay( $videoListWraper );
+			
 			// Should test for touch support
 			if( mw.isMobileDevice() && !$('#video-list-wrapper-' + _this.id ).get(0).iScroll ){
 				// give real height for iScroll:
@@ -704,7 +706,6 @@ mw.Playlist.prototype = {
 			// Output each item with the current selected index:
 			$itemBlock = $('<div />')
 				.addClass( 'ui-widget-content ui-corner-all playlistItem ui-helper-clearfix' );
-				
 
 			if( _this.clipIndex == inx ){
 				$itemBlock.addClass( 'ui-state-active');

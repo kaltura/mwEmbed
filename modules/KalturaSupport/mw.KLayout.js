@@ -12,10 +12,10 @@ mw.KLayout = function( options ){
 mw.KLayout.prototype = {
 		
 	// Default length for titles 
-	titleLength: 28,
+	titleLength: 45,
 	
 	// Default length for descriptions
-	descriptionLength: 60,
+	descriptionLength: 75,
 	
 	/**
 	 * 
@@ -170,9 +170,10 @@ mw.KLayout.prototype = {
 		// Styles enforce some additional constraints
 		switch( styleName ){
 			case 'itemRendererLabel':
+			case 'alertBodyText':
 				// XXX should use .playlist.formatTitle and formatDescription ( once we fix .playlist ref )
 				// hack to read common description id ( no other way to tell layout size )
-				if( idName =='irDescriptionIrScreen' || idName == 'irDescriptionIrText' ){
+				if( idName == 'movieDescription' || idName =='irDescriptionIrScreen' || idName == 'irDescriptionIrText' ){
 					$target.text( _this.formatDescription( $target.text() ) );
 				} else{
 					$target.text( _this.formatTitle( $target.text() ) );

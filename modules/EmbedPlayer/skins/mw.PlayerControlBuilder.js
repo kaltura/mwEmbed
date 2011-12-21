@@ -841,7 +841,7 @@ mw.PlayerControlBuilder.prototype = {
 				embedPlayer.$interface.find( '.control-bar' ).hover( function(e) {
 					_this.onControlBar = true;
 					embedPlayer.$interface.find( '.control-bar' ).show();
-				}, function(e) {
+				}, function( e ) {
 					if (!_this.hideControlBarCallback) {
 						_this.hideControlBarCallback = setTimeout(function(){
 							_this.hideControlBar();
