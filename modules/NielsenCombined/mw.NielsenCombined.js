@@ -76,9 +76,11 @@ mw.NielsenCombined.prototype = {
 		var currentContentSegmentDuration = 0;
 		var lastContentSegmentDuration = 0;
 		var contentSegmentCount = 1;
+		var currentSlotType = null;
 		
 		embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' + _this.bindPostFix, function( event, slotType ){
 			var vid = _this.getPlayerElement(); 
+			currentSlotType = slotType;
 			
 			// Check if we were playing content before this "adStart"
 			if( contentPlay ){
@@ -109,13 +111,13 @@ mw.NielsenCombined.prototype = {
 				_this.addPlayerTracking( slotType );
 			});
 		});
-		embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' + _this.bindPostFix, function( event, slotType ){
+		embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' + _this.bindPostFix, function( event ){
 			// close the current ad: 
 			if( adOpenUrl && dispachedAdStart ){
 				// Stop the ad: 
-				_this.dispatchEvent( 7, _this.round( _this.currentAdTime ), slotType );
+				_this.dispatchEvent( 7, _this.round( _this.currentAdTime ), currentSlotType );
 				// Ad fire a 4 to 'unload' the ad ( always called even if we don't get to "ended" event )
-				_this.dispatchEvent( 4, _this.round( currentAdDuration ), slotType );
+				_this.dispatchEvent( 4, _this.round( currentAdDuration ), currentSlotType );
 				adOpenUrl = false;
 			}
 			// unbind tracking ( will be re-instated via addPlayerTracking on subsequent ads or content 
