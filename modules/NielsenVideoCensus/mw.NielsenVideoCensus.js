@@ -68,13 +68,15 @@ mw.NielsenVideoCensus.prototype = {
 		});
 	},
 	sendBeacon: function(){
-		mw.log("NielsenVideoCensus:: sendBeacon" );
+		
 		// create a new dav image
 		var davImg = new Image(); 
 		// Setup the base url: 
 		var url = ( this.getConfig('serverUrl') ) ? this.getConfig('serverUrl') : 'http://secure-us.imrworldwide.com/cgi-bin/m?';
 
 		url+= $.param( this.getBeconParams() );
+		
+		mw.log("NielsenVideoCensus:: sendBeacon " +  url);
 		// Set the Program/Section Name
 		davImg.src = url;
 	},
@@ -109,6 +111,10 @@ mw.NielsenVideoCensus.prototype = {
 		if( this.getConfig("ls") ){
 			params['ls'] = this.getConfig("ls");
 		}
+		// encode all the paramaters; 
+		$.each( params, function( inx, value ){
+			params[inx] = encodeURIComponent( value );
+		});
 		return params;
 	},
 	getLpParam: function(){
@@ -117,7 +123,7 @@ mw.NielsenVideoCensus.prototype = {
 		
 		// lpParam is
 		if( lpParam == 'SF,' ){
-			lpParam  += '1,' + Math.round(this.embedPlayer.duration) + ',1';
+			lpParam  += '1,' + Math.round( this.embedPlayer.duration ) + ',1';
 			return lpParam;
 		}
 		
