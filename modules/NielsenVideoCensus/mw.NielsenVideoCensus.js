@@ -93,10 +93,10 @@ mw.NielsenVideoCensus.prototype = {
 			'c6' : this.getConfig( 'videoCensusId' ),
 			
 			// Title of the stream: 
-			'tl' : 'dav0-' + this.getConfig( 'tl' ),
+			'tl' : 'dav0-' + encodeURIComponent( this.getConfig( 'tl' ) ),
 			
 			// Set the Program Section name:
-			'cg' :  this.getConfig( 'cg'),
+			'cg' :  encodeURIComponent( this.getConfig( 'cg') ),
 			
 			// Cookie check always 1
 			'cc': 1,
@@ -111,10 +111,6 @@ mw.NielsenVideoCensus.prototype = {
 		if( this.getConfig("ls") ){
 			params['ls'] = this.getConfig("ls");
 		}
-		// encode all the paramaters; 
-		$.each( params, function( inx, value ){
-			params[inx] = encodeURIComponent( value );
-		});
 		return params;
 	},
 	getLpParam: function(){
