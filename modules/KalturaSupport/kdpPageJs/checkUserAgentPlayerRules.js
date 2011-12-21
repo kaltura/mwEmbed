@@ -10,17 +10,21 @@ window.getUserAgentPlayerRulesMsg = function( ruleSet ){
 window.checkUserAgentPlayerRules = function( ruleSet, getMsg ){
 	var ua = ( mw.getConfig( 'KalturaSupport_ForceUserAgent' ) )? 
 			mw.getConfig( 'KalturaSupport_ForceUserAgent' ) : navigator.userAgent;
+	var flashMode = {
+		mode: 'flash',
+		val: true
+	};
 	// Check for current user agent rules
 	if( !ruleSet.rules ){
 		// No rules, lead with flash
-		return 'flash';
+		return flashMode;
 	}
 	var getAction = function( inx ){
 		if( ruleSet.actions && ruleSet.actions[ inx ] ){
 			return ruleSet.actions[ inx ];
 		}
 		// No defined action for this rule, lead with flash
-		return 'flash';
+		return flashMode;
 	};
 	for( var i in ruleSet.rules ){
 		var rule = ruleSet.rules[i];
@@ -34,5 +38,5 @@ window.checkUserAgentPlayerRules = function( ruleSet, getMsg ){
 		}
 	}
 	// No rules applied, lead with flash
-	return 'flash';
+	return flashMode;
 };
