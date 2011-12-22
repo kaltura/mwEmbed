@@ -217,7 +217,7 @@ mw.NielsenCombined.prototype = {
 				b('play', function(){
 					_this.dispatchEvent( 5, pauseTime, type );
 					// unbind play: 
-					$(embedPlayer).unbind( 'play' + _this.trackerPostFix );
+					$( vid ).unbind( 'play' + _this.trackerPostFix );
 				});
 			}
 		});
