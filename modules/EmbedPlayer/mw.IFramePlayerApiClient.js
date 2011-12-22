@@ -273,11 +273,12 @@ mw.IFramePlayerApiClient.prototype = {
 
 //Add the jQuery binding
 jQuery.fn.iFramePlayer = function( readyCallback ){
-	if( ! this.selector ){
-		this.selector = $( this );
-	}
+	// only support ONE iframe player at a time 
+	this.selector = $( this );
+	
 	// Handle each embed frame 
 	$( this.selector ).each( function( inx, playerProxy ){
+		
 		mw.log( "$.iFramePlayer::" + playerProxy.id );
 		
 		// Setup pointer to real iframe
