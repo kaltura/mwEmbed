@@ -91,7 +91,6 @@ function jsKalturaPlayerTest( videoId ){
 	function testSeek(){
 		asyncTest("Seek  8 test", function(){
 			$( player ).bind( 'NielsenCombined_DispatchEvent.seek', function( event, args ){
-				debugger;
 				equal( args[0], 8, "8 seek argument" );
 				equal( Math.floor( args[2] ), 15, "Seek target time is 15 seconds" );
 				equal( args[3], "content", "Seek includes content type" );
