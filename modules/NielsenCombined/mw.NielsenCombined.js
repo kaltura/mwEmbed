@@ -208,6 +208,13 @@ mw.NielsenCombined.prototype = {
 		}
 		var pauseTime = null;
 		
+		// on ended let the player flow take over ( we don't want any of the end trigger events ) 
+		b( 'ended', function(){
+			// let the player take over on end: 
+			_this.unbindPlayerTracking();
+		})
+		
+		
 		// on pause:
 		b( 'pause', function(){
 			// pause is triggered as part of player end state ( don't dispatch if eventProgatation is off ) 
