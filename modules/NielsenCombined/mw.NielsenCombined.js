@@ -210,8 +210,8 @@ mw.NielsenCombined.prototype = {
 			var pauseTime = null;
 			// pause is triggered as part of player end state ( don't dispatch if eventProgatation is off ) 
 			if( embedPlayer._propagateEvents ){
-				pauseTime = _this.round( _this.getRelativeTime('currentTime');
-				_this.dispatchEvent( 6, _this.round( _this.getRelativeTime('currentTime') ), type );
+				pauseTime = _this.round( _this.getRelativeTime('currentTime') );
+				_this.dispatchEvent( 6, pauseTime, type );
 				
 				// setup the resume binding:
 				b('play', function(){
