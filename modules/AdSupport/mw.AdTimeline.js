@@ -315,7 +315,7 @@ mw.AdTimeline.prototype = {
 		embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here. 
 		embedPlayer.disablePlayControls();
-		// update the interface to play state:
+		// Update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
 		// make sure to hide the spinner
 		embedPlayer.hidePlayerSpinner();
@@ -328,7 +328,7 @@ mw.AdTimeline.prototype = {
 	 * Restore a player from ad state
 	 * @return
 	 */
-	restorePlayer: function( ){
+	restorePlayer: function(  ){
 		mw.log( "AdTimeline:: restorePlayer " );
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.restoreEventPropagation();

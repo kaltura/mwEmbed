@@ -95,6 +95,8 @@ function jsKalturaPlayerTest( videoId ){
 				equal( Math.floor( args[2] ), 15, "Seek target time is 15 seconds" );
 				equal( args[3], "content", "Seek includes content type" );
 				$( player ).unbind( 'NielsenCombined_DispatchEvent.seek');
+				// stop playback 
+				player.sendNotification( 'doPause' );
 				start();
 			});
 			// seek to 30 seconds: 

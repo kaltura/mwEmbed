@@ -142,16 +142,17 @@ mw.NielsenCombined.prototype = {
 				
 				// set the segment update as soon as we have a timeupdate:
 				$( vid ).bind( 'timeupdate' + _this.bindPostFix, function(){
-					currentContentSegmentDuration = vid.currentTime - lastContentSegmentDuration;
+					currentContentSegmentDuration = _this.round( _this.getRelativeTime('duration') );
+					$( vid ).unbind( 'timeupdate' + _this.bindPostFix );
 				});
 			}
 		});
 		// Watch for 'ended' event for cases where finish all ads post sequence and everything "stop the player" 
 		embedPlayer.bindHelper( 'onEndedDone' + _this.bindPostFix, function(){
 			// Stop the content: 
-			_this.dispatchEvent( 7, _this.round( currentContentSegmentDuration), 'content' );
+			_this.dispatchEvent( 7, _this.round( _this.getRelativeTime('duration') ), 'content' );
 			// unload the content as well.
-			_this.dispatchEvent( 4, _this.round( currentContentSegmentDuration ), 'content' );
+			_this.dispatchEvent( 4, _this.round( _this.getRelativeTime('duration'), 'content' );
 			// At this point we have reset the player so reset bindings: 
 			$( embedPlayer ).unbind( _this.bindPostFix );
 			_this.unbindPlayerTracking();
@@ -272,6 +273,8 @@ mw.NielsenCombined.prototype = {
 		var args = $.makeArray( arguments ); 
 		var eventString = args.join("\n\n"); 
 		mw.log("NielsenCombined:: dispatchEvent: " + eventString);
+		// trigger dispatch event for testing
+		$( this.embedPlayer ).trigger('NielsenCombined_DispatchEvent', [args]);
 		this.gg.ggPM.apply( this, args);
 	},
 	// Gets the "raw" current source ( works with ad assets )  

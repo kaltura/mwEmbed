@@ -8,7 +8,7 @@ mw.KCuePoints = function( embedPlayer ){
 };
 mw.KCuePoints.prototype = {
 		
-	// the bind postfix:
+	// The bind postfix:
 	bindPostfix: '.kCuePoints',
 	
 	init: function( embedPlayer ){
