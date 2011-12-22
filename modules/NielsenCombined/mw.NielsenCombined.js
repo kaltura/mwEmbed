@@ -338,8 +338,12 @@ mw.NielsenCombined.prototype = {
 				return _this.round( ( absolutePlayerTime - prevCuePointTime )  / 1000 );
 			}
 		}
-		// else just return embed player duration 
-		return _this.round( vid[ timeAttribute ] );
+		if(  vid[ timeAttribute ]  ){
+			return _this.round( vid[ timeAttribute ] );
+		} else {
+			// else just return embed player duration 
+			return embedPlayer[timeAttribute];
+		}
 	},
 	inAd:function(){
 		return !! this.embedPlayer.evaluate( '{sequenceProxy.isInSequence}' ); 
