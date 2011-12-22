@@ -361,7 +361,7 @@ mw.NielsenCombined.prototype = {
 				this.getCurrentVideoSrc() +
 			"</uurl>\n" +
 			"<length>"+
-				this.getRelativeTime( 'duration' ) + 
+				_this.round( this.getRelativeTime( 'duration' ) )+ 
 			"</length>\n";
 		// A tag map that allows for ads to override content values
 		var tagMap = {};
