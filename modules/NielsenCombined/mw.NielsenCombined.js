@@ -205,19 +205,27 @@ mw.NielsenCombined.prototype = {
 		var b = function( bindName, callback ){
 			$( vid ).bind( bindName + _this.trackerPostFix, callback);
 		}
+		var pauseTime = null;
+		
 		// on pause:
 		b( 'pause', function(){
-			var pauseTime = null;
 			// pause is triggered as part of player end state ( don't dispatch if eventProgatation is off ) 
 			if( embedPlayer._propagateEvents ){
 				pauseTime = _this.round( _this.getRelativeTime('currentTime') );
 				_this.dispatchEvent( 6, pauseTime, type );
 				
+				// Update paused time on seek 
+				b('seeked', function(){
+					pauseTime = _this.round( _this.getRelativeTime('currentTime') );
+				})
+				
 				// setup the resume binding:
 				b('play', function(){
-					_this.dispatchEvent( 5, pauseTime, type );
 					// unbind play: 
 					$( vid ).unbind( 'play' + _this.trackerPostFix );
+					if( embedPlayer._propagateEvents ){
+						_this.dispatchEvent( 5, pauseTime, type );
+					}
 				});
 			}
 		});
@@ -233,6 +241,8 @@ mw.NielsenCombined.prototype = {
 		// Monitor:
 		var lastTime = -1;
 		b( 'timeupdate', function(){
+			var vid = _this.getPlayerElement();
+			
 			if( type != 'content' ){
 				_this.currentAdTime = vid.currentTime;
 			}
