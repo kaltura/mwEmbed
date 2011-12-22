@@ -207,17 +207,19 @@ mw.NielsenCombined.prototype = {
 		}
 		// on pause:
 		b( 'pause', function(){
-			// pause is triggred as part of player end state ( don't dispatch if eventProgatation is off ) 
+			var pauseTime = null;
+			// pause is triggered as part of player end state ( don't dispatch if eventProgatation is off ) 
 			if( embedPlayer._propagateEvents ){
+				pauseTime = _this.round( _this.getRelativeTime('currentTime');
 				_this.dispatchEvent( 6, _this.round( _this.getRelativeTime('currentTime') ) );
+				
+				// setup the resume binding:
+				b('play', function(){
+					_this.dispatchEvent( 5, pauseTime ) );
+					// unbind play: 
+					$(embedPlayer).unbind( 'play' + _this.trackerPostFix );
+				});
 			}
-			
-			// setup the resume binding:
-			b('play', function(){
-				_this.dispatchEvent( 5, _this.round( _this.getRelativeTime('currentTime') ) );
-				// unbind play: 
-				$(embedPlayer).unbind( 'play' + _this.trackerPostFix );
-			});
 		});
 		
 		// Volume change: 
