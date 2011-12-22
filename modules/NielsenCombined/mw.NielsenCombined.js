@@ -150,6 +150,8 @@ mw.NielsenCombined.prototype = {
 		embedPlayer.bindHelper( 'onEndedDone' + _this.bindPostFix, function(){
 			// Stop the content: 
 			_this.dispatchEvent( 7, _this.round( currentContentSegmentDuration), 'content' );
+			// unload the content as well.
+			_this.dispatchEvent( 4, _this.round( currentContentSegmentDuration ), 'content' );
 			// At this point we have reset the player so reset bindings: 
 			$( embedPlayer ).unbind( _this.bindPostFix );
 			_this.unbindPlayerTracking();
