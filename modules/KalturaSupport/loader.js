@@ -573,7 +573,6 @@
 					newDoc.open();
 					newDoc.write( iframeData.content );
 					newDoc.close();
-				
 					// Invoke the iframe player api system:
 					$iframeProxy.iFramePlayer( callback );
 					

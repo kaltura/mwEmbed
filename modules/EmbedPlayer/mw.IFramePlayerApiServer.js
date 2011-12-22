@@ -80,7 +80,7 @@ mw.IFramePlayerApiServer.prototype = {
 						callback();
 				}, 250);
 				// Trigger the proxyReady event ( will add all the prePlayerProxy listeners 
-				mw.log( "IframePlayerApiServer::trigger: proxyReady" );
+				mw.log( "IframePlayerApiServer::trigger: proxyReady :: for playerID: " + embedPlayer.id );
 				$( embedPlayer ).trigger( 'proxyReady' );
 			});
 		}

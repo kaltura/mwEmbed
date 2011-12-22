@@ -2100,7 +2100,10 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 * @return {String} absolute url
 	 */
 	mw.absoluteUrl = function( src, contextUrl ) {
-
+		if( ! src ){
+			return ;
+		}
+		
 		var parsedSrc = mw.parseUri( src );
 
 		// Source is already absolute return:
