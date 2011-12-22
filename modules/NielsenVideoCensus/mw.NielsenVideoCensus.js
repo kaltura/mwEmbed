@@ -73,8 +73,13 @@ mw.NielsenVideoCensus.prototype = {
 		var davImg = new Image(); 
 		// Setup the base url: 
 		var url = ( this.getConfig('serverUrl') ) ? this.getConfig('serverUrl') : 'http://secure-us.imrworldwide.com/cgi-bin/m?';
-
-		url+= $.param( this.getBeconParams() );
+		
+		// don't "encode" url params that are not explicitly encoded with getBeconParams
+		var and = '';
+		$.each( this.getBeconParams(), function(key, val){
+			url+= and + key + '=' + val;
+			and = '&';
+		});
 		
 		mw.log("NielsenVideoCensus:: sendBeacon " +  url);
 		// Set the Program/Section Name
