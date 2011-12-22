@@ -284,6 +284,7 @@ mw.NielsenCombined.prototype = {
 	getRelativeTime: function( timeAttribute ){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
+		var vid = this.getPlayerElement(); 
 		if( timeAttribute != 'duration' && timeAttribute != 'currentTime' ){
 			mw.log("Error:: calling getRelativeTime with invalid timeAttribute: " + timeAttribute );
 			return 0;
@@ -306,7 +307,7 @@ mw.NielsenCombined.prototype = {
 		if( embedPlayer.rawCuePoints ){
 			var segmentDuration = 0;
 			var prevCuePointTime = 0;
-			var absolutePlayerTime = embedPlayer.currentTime * 1000;
+			var absolutePlayerTime = vid.currentTime * 1000;
 			for( var i =0; i < embedPlayer.rawCuePoints.length; i++ ){
 				var cuePoint = embedPlayer.rawCuePoints[ i ];
 				// Make sure the cue point is an Ad and not an overlay ( adType 2 )
@@ -327,7 +328,7 @@ mw.NielsenCombined.prototype = {
 							&&
 						absolutePlayerTime > cuePoint.startTime
 					){
-						return _this.round( embedPlayer.duration - ( cuePoint.startTime / 1000 ) )
+						return _this.round( vid.duration - ( cuePoint.startTime / 1000 ) )
 					}
 				}
 				prevCuePointTime = cuePoint.startTime;
@@ -338,7 +339,7 @@ mw.NielsenCombined.prototype = {
 			}
 		}
 		// else just return embed player duration 
-		return _this.round( embedPlayer[ timeAttribute ] );
+		return _this.round( vid[ timeAttribute ] );
 	},
 	inAd:function(){
 		return !! this.embedPlayer.evaluate( '{sequenceProxy.isInSequence}' ); 
