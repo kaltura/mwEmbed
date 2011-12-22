@@ -243,7 +243,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 		kAddScript( function(){
 			// TODO refactor loader.js in kalturaSupport to avoid temporary object representation
 			if( elm.nodeName.toLowerCase() != 'object' ){		
-				kOutputFlashObject(  replaceTargetId, kEmbedSettings)
+				kOutputFlashObject( replaceTargetId, kEmbedSettings, options)
 			} else {
 				// Options include 'width' and 'height'
 				var sizeUnit = (typeof options.width == 'string' && options.width.indexOf("px") === -1) ? 'px' : '';
@@ -259,10 +259,10 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 			}
 		});	
 	} else {
-		kOutputFlashObject(  replaceTargetId, kEmbedSettings );
+		kOutputFlashObject( replaceTargetId, kEmbedSettings, options );
 	}
 }
-function kOutputFlashObject(  replaceTargetId, kEmbedSettings){
+function kOutputFlashObject( replaceTargetId, kEmbedSettings, options ){
 	var elm = document.getElementById( replaceTargetId );
 	// Output a normal flash object tag: 
 	if( elm && elm.parentNode ){
@@ -273,18 +273,18 @@ function kOutputFlashObject(  replaceTargetId, kEmbedSettings){
 			'/uiconf_id/' + kEmbedSettings.uiconf_id + 
 			'/entry_id/' + kEmbedSettings.entry_id;
 		if( kEmbedSettings.cache_st ){
-			swfUrl+= kEmbedSettings.cache_st;
+			swfUrl+= '/cache_st/' + kEmbedSettings.cache_st;
 		}
 		// get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300 
-		var width = ( kEmbedSettings.width ) ? kEmbedSettings.width : 
+		var width = ( options.width ) ? options.width :
 						( elm.width ) ? elm.width : 
 							( elm.style.width ) ? parseInt( elm.style.width ) : 400;
 		
-		var height = ( kEmbedSettings.height ) ? kEmbedSettings.height : 
+		var height = ( options.height ) ? options.height :
 						( elm.height ) ? elm.height : 
 							( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 		
-		var flashvarValue = ( kEmbedSettings.flashvars ) ? kFlashVarsToUrl( kEmbedSettings.flashvars ) : '&';
+		var flashvarValue = ( kEmbedSettings.flashvars ) ? kFlashVarsToString( kEmbedSettings.flashvars ) : '&';
 		
 		divTarget.innerHTML = '<object id="' + pId + '" ' + 
 			'name="' + pId + '" ' + 
@@ -610,7 +610,7 @@ function kCheckAddScript(){
 				}
 			});
 		}
-		mw.setConfig( 'Kaltura.UiConfJsLoaded', true);
+		mw.setConfig( 'Kaltura.UiConfJsLoaded', true );
 		return ;
 	}
 
@@ -619,57 +619,62 @@ function kCheckAddScript(){
 		mw.setConfig( 'forceMobileHTML5', false );
 	}
 	
-	// Check if we have player rules and then issue kAddScript call 
-	if( window.kUserAgentPlayerRules  ){
-		kAddScript();
-		return ;
-	}
-	
-	/**
-	 * If Kaltura.AllowIframeRemoteService is not enabled force in page rewrite: 
-	 */
-	var serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
-	if( ! mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) ) {
-		if( ! serviceUrl || serviceUrl.indexOf( 'kaltura.com' ) === -1 ){
-			// if not hosted on kaltura for now we can't use the iframe to load the player
-			mw.setConfig( 'Kaltura.IframeRewrite', false );
-			mw.setConfig( 'Kaltura.UseManifestUrls', false);
-		}
-	}
-	
-	// If user javascript is using mw.ready add script
-	if( window.preMwEmbedReady.length ) {
-		kAddScript();
-		return ;
-	}
-	if( ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )  
-			&& 
-		( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) && kPageHasAudioOrVideoTags()  )
-	){
-		kAddScript();
-		return ;
-	}
-	// If document includes kaltura embed tags && isMobile safari: 
-	if ( kIsHTML5FallForward()
-			&&  
-		kGetKalturaPlayerList().length 
-	) {
-		// Check for Kaltura objects in the page
-		kAddScript();
-		return ;
-	}
+	// We wrap the entire function in setTimeout because of timing issues on Android devices after loading external file
+	setTimeout(function() {
 
-	// Check if no flash and no html5 and no forceFlash ( direct download link )
-	// for debug purpose:
-	// kSupportsFlash = function() {return false}; kSupportsHTML5 = function() {return false};
-	if( ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
-		kAddScript();
-		return ;		
-	}
-	// Restore the jsCallbackReady ( we are not rewriting )
-	if( !kalturaDynamicEmbed ){
-		window.restoreKalturaKDPCallback();
-	}
+		// Check if we have player rules and then issue kAddScript call
+		if( window.kUserAgentPlayerRules ){
+			kAddScript();
+			return ;
+		}
+	
+		/**
+		 * If Kaltura.AllowIframeRemoteService is not enabled force in page rewrite:
+		 */
+		var serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
+		if( ! mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) ) {
+			if( ! serviceUrl || serviceUrl.indexOf( 'kaltura.com' ) === -1 ){
+				// if not hosted on kaltura for now we can't use the iframe to load the player
+				mw.setConfig( 'Kaltura.IframeRewrite', false );
+				mw.setConfig( 'Kaltura.UseManifestUrls', false);
+			}
+		}
+
+		// If user javascript is using mw.ready add script
+		if( window.preMwEmbedReady.length ) {
+			kAddScript();
+			return ;
+		}
+		if( ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )
+				&&
+			( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) && kPageHasAudioOrVideoTags()  )
+		){
+			kAddScript();
+			return ;
+		}
+		// If document includes kaltura embed tags && isMobile safari:
+		if ( kIsHTML5FallForward()
+				&&
+			kGetKalturaPlayerList().length
+		) {
+			// Check for Kaltura objects in the page
+			kAddScript();
+			return ;
+		}
+
+		// Check if no flash and no html5 and no forceFlash ( direct download link )
+		// for debug purpose:
+		// kSupportsFlash = function() {return false}; kSupportsHTML5 = function() {return false};
+		if( ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+			kAddScript();
+			return ;
+		}
+		// Restore the jsCallbackReady ( we are not rewriting )
+		if( !kalturaDynamicEmbed ){
+			window.restoreKalturaKDPCallback();
+		}
+		
+	}, 0);
 }
 function kIsIOS(){
 	return ( (navigator.userAgent.indexOf('iPhone') != -1) || 
@@ -1140,6 +1145,13 @@ function kFlashVarsToUrl( flashVarsObject ){
 	}
 	return params;
 }
+function kFlashVarsToString( flashVarsObject ) {
+	var params = '';
+	for( var i in flashVarsObject ){
+		params+= '&' + '' + encodeURIComponent( i ) + '=' + encodeURIComponent( flashVarsObject[i] );
+	}
+	return params;
+}
 function kGetEntryThumbUrl( entry ){
 	var kCdn = mw.getConfig( 'Kaltura.CdnUrl', 'http://cdnakmi.kaltura.com' ); 
 	return kCdn + '/p/' + entry.partner_id + '/sp/' +
@@ -1154,7 +1166,7 @@ function kGetEntryThumbUrl( entry ){
  * @param {object} flashvars
  * 	object mapping kaltura variables, ( overrides url based variables )
  */
-function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
+function kGetKalturaEmbedSettings( swfUrl, flashvars ){
 	var embedSettings = {};	
 	// Convert flashvars if in string format:
 	if( typeof flashvars == 'string' ){
@@ -1195,7 +1207,7 @@ function kGetKalturaEmbedSettings ( swfUrl, flashvars ){
 		prevUrlPart = curUrlPart;
 	}
 	// Add in Flash vars embedSettings ( they take precedence over embed url )
-	for( var key in  flashvars ){	
+	for( var key in flashvars ){
 		var val = flashvars[key];
 		var key = key.toLowerCase();
 		// Normalize to the url based settings: 
@@ -1319,4 +1331,3 @@ window.checkForKDPCallback = function(){
 // Check inline and when the DOM is ready:
 checkForKDPCallback();
 kAddReadyHook( checkForKDPCallback );
-

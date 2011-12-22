@@ -68,13 +68,20 @@ mw.NielsenVideoCensus.prototype = {
 		});
 	},
 	sendBeacon: function(){
-		mw.log("NielsenVideoCensus:: sendBeacon" );
+		
 		// create a new dav image
 		var davImg = new Image(); 
 		// Setup the base url: 
 		var url = ( this.getConfig('serverUrl') ) ? this.getConfig('serverUrl') : 'http://secure-us.imrworldwide.com/cgi-bin/m?';
-
-		url+= $.param( this.getBeconParams() );
+		
+		// don't "encode" url params that are not explicitly encoded with getBeconParams
+		var and = '';
+		$.each( this.getBeconParams(), function(key, val){
+			url+= and + key + '=' + val;
+			and = '&';
+		});
+		
+		mw.log("NielsenVideoCensus:: sendBeacon " +  url);
 		// Set the Program/Section Name
 		davImg.src = url;
 	},
@@ -91,10 +98,10 @@ mw.NielsenVideoCensus.prototype = {
 			'c6' : this.getConfig( 'videoCensusId' ),
 			
 			// Title of the stream: 
-			'tl' : 'dav0-' + this.getConfig( 'tl' ),
+			'tl' : 'dav0-' + encodeURIComponent( this.getConfig( 'tl' ) ),
 			
 			// Set the Program Section name:
-			'cg' :  this.getConfig( 'cg'),
+			'cg' :  encodeURIComponent( this.getConfig( 'cg') ),
 			
 			// Cookie check always 1
 			'cc': 1,
@@ -117,7 +124,7 @@ mw.NielsenVideoCensus.prototype = {
 		
 		// lpParam is
 		if( lpParam == 'SF,' ){
-			lpParam  += '1,' + Math.round(this.embedPlayer.duration) + ',1';
+			lpParam  += '1,' + Math.round( this.embedPlayer.duration ) + ',1';
 			return lpParam;
 		}
 		

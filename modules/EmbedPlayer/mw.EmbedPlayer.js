@@ -1824,6 +1824,7 @@ mw.EmbedPlayer.prototype = {
 		// Restore the play button ( if not native controls or is android ) 
 		if( !this.useNativePlayerControls() || mw.isAndroid2() ){
 			this.addPlayBtnLarge();
+			this.pauseInterfaceUpdate();
 		}
 		
 		// Native player controls:

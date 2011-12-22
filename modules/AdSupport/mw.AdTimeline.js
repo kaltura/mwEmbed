@@ -315,20 +315,20 @@ mw.AdTimeline.prototype = {
 		embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here. 
 		embedPlayer.disablePlayControls();
-		// update the interface to play state:
-		embedPlayer.playInterfaceUpdate();
 		// make sure to hide the spinner
 		embedPlayer.hidePlayerSpinner();
 		// Set inSequence property to "true" 
 		embedPlayer.sequenceProxy.isInSequence = true;
 		// Trigger an ad start event once we enter an ad state
 		embedPlayer.triggerHelper( 'AdSupport_StartAdPlayback', slotType );
+		// Update the interface to play state:
+		embedPlayer.playInterfaceUpdate();
 	},
 	/**
 	 * Restore a player from ad state
 	 * @return
 	 */
-	restorePlayer: function( ){
+	restorePlayer: function(  ){
 		mw.log( "AdTimeline:: restorePlayer " );
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.restoreEventPropagation();

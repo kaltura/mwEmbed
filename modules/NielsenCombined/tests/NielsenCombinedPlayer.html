@@ -12,26 +12,89 @@ function jsKalturaPlayerTest( videoId ){
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var iframeContext = window.frames['kaltura_player_ifp'];
+	var player =  $('#' + videoId ).get(0);
 	
-	test( "Iframe in DOM", function() {
-		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
-		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+	// update the log: 
+	$( player ).bind( 'NielsenCombined_DispatchEvent', function( event, args ){
+		$('#log').append( '<br><br>' + args.join(',<br>') );
 	});
 
-	asyncTest("Iframe layout elements", function(){
+	asyncTest("Player Ready", function(){
 		kalturaQunitWaitForPlayer(function(){
 			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
 			start();
+			testPlay();
 		});
 	});
-	asyncTest("Iframe config", function(){
-		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
-		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
-		// Test page context config: 
-		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
-		start();
-	});
+	function testPlay(){
+		// Playback 15 test
+		asyncTest("Playback 15", function(){
+			var playBeaconSent = false;
+			// look for play becaon:
+			$( player ).bind( 'NielsenCombined_DispatchEvent.play', function( event, args ){
+				playBeaconSent = true;
+				
+				equal( args[0], 15, "15 play argument" );
+				equal( args[2], "content", "passed content type" );
+				$( player ).unbind( 'NielsenCombined_DispatchEvent.play' );
+				start();
+				// Test pause after 5 seconds of play
+				setTimeout( function(){  
+					testPause(); 
+				}, 4000 );
+			})
+			player.play();
+			// Add a timeout for the play test
+			setTimeout( function(){
+				if( !playBeaconSent ){
+					ok(false, "Play beacon never sent");
+				}
+				start();
+			}, 1000 )
+		});
+	};
+	function testPause(){
+		asyncTest("Pause 6, Resume 5 test", function(){
+			var pauseTime = null;
+			var pauseBeaconSent = false;
+			$( player ).bind( 'NielsenCombined_DispatchEvent.pause', function( event, args ){
+				pauseBeaconSent = true;
+				equal( args[0], 6, "6 pause argument" );
+				pauseTime =  args[1];
+				equal( args[2], "content", "pause event has content" );
+				$( player ).unbind( 'NielsenCombined_DispatchEvent.pause' );
+				
+				// Check for resume playback: 
+				$( player ).bind( 'NielsenCombined_DispatchEvent.resume', function( event, args){
+					equal( args[0], 5, "5 resume playback" );
+					equal( args[1], pauseTime, "Pause Time In Sync" );
+					equal( args[2], "content", "Resume with content argument"  );
+					// remove resume binding. 
+					$( player ).unbind( 'NielsenCombined_DispatchEvent.resume');
+					// continue with seek test: 
+					testSeek();
+				});
+				// resume playback
+				player.sendNotification( 'doPlay' );
+				
+			});
+			player.sendNotification( 'doPause' );
+			setTimeout( function(){
+				if( !pauseBeaconSent ){
+					ok(false, "Pause beacon never sent");
+				}
+				start();
+			}, 1000 )
+		});
+	}
+	
+	function testSeek(){
+		asyncTest("Seek  8 test", function(){
+			// seek to 30 seconds: 
+			player.sendNotification( 'doSeek', 30 )
+		});
+	}
+	
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
@@ -41,6 +104,7 @@ function jsKalturaPlayerTest( videoId ){
 <h2> NielsenCombined player test </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
+<div style="float:left;width:420px;">
 <object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
 allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
 xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video"
@@ -53,6 +117,8 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/12924364499/wid/_243342/
 	<param name="flashVars" value="&" />
 	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/12924364499/wid/_243342/uiconf_id/6037081/entry_id/0_uka1msg4" />
 </object>
+</div>
+<div id="log" style="float:left;width:400px;overflow:auto;font-family: arial;font-size: 14px;background-color: #eee;"><h3>Nielsen Combined Api Calls</h3></div>
 <!--  uiConf used in above test: 
 
 <layout id="full" name="NielsenCombined Test Player" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
