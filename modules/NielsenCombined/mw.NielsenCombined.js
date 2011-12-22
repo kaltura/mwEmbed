@@ -117,7 +117,7 @@ mw.NielsenCombined.prototype = {
 				// Stop the ad: 
 				_this.dispatchEvent( 7, _this.round( _this.currentAdTime ), currentSlotType );
 				// Ad fire a 4 to 'unload' the ad ( always called even if we don't get to "ended" event )
-				_this.dispatchEvent( 4, _this.round( currentAdDuration ), currentSlotType );
+				_this.dispatchEvent( 4, _this.round( _this.currentAdTime ), currentSlotType );
 				adOpenUrl = false;
 			}
 			// unbind tracking ( will be re-instated via addPlayerTracking on subsequent ads or content 
