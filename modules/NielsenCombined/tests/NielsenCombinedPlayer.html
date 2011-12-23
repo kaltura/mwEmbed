@@ -2,9 +2,11 @@
 <html>
 <head>
 <title>NielsenCombined player test</title>
+<script src="http://code.jquery.com/jquery-1.6.js"></script>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
+
 function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
@@ -14,11 +16,6 @@ function jsKalturaPlayerTest( videoId ){
 	var iframeContext = window.frames['kaltura_player_ifp'];
 	var player =  $('#' + videoId ).get(0);
 	
-	// update the log: 
-	$( player ).bind( 'NielsenCombined_DispatchEvent', function( event, args ){
-		$('#log').append( '<br><br>' + args.join(',<br>') );
-	});
-
 	asyncTest("Player Ready", function(){
 		kalturaQunitWaitForPlayer(function(){
 			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
@@ -105,6 +102,14 @@ function jsKalturaPlayerTest( videoId ){
 	}
 	
 }
+</script>
+<script type="text/javascript">	
+kWidget.addReadyCallback( function( playerId ){
+	var player =  $('#' + playerId ).get(0);
+	player.bindHelper( 'NielsenCombined_DispatchEvent', function( event, args ){
+		$('#log').append( '<br><br>' + args.join(',<br>') );
+	});
+});
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
