@@ -144,7 +144,7 @@ mw.NielsenCombined.prototype = {
 					
 					// set the segment update as soon as we have a timeupdate:
 					currentContentSegmentDuration = _this.round( _this.getRelativeTime('duration') );
-				}
+				};
 				
 				// check if we have duration before sending the event:
 				if( vid.duration ){
@@ -153,9 +153,8 @@ mw.NielsenCombined.prototype = {
 					$( vid ).bind( 'durationchange.nielsenContent', function( e ){
 						sendContentPlayBeacon();
 						$( vid ).unbind( 'durationchange.nielsenContent' );
-					}
-				}
-				
+					});
+				};
 			}
 		});
 		// Watch for 'ended' event for cases where finish all ads post sequence and everything "stop the player" 

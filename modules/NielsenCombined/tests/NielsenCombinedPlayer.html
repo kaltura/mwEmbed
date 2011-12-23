@@ -106,9 +106,12 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript">	
 kWidget.addReadyCallback( function( playerId ){
 	var player =  $('#' + playerId ).get(0);
-	player.bindHelper( 'NielsenCombined_DispatchEvent', function( event, args ){
-		$('#log').append( '<br><br>' + args.join(',<br>') );
-	});
+	// only html5 ( should change to a jsListener if we get the flash verison on this page as well)
+	if( player.bindHelper ){
+		player.bindHelper( 'NielsenCombined_DispatchEvent', function( event, args ){
+			$('#log').append( '<br><br>' + args.join(',<br>') );
+		});
+	}
 });
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
