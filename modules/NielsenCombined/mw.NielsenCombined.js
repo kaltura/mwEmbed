@@ -133,18 +133,29 @@ mw.NielsenCombined.prototype = {
 			// Check if the play event is content or "inAdSequence" 
 			if( !_this.inAd() && !contentPlay ){
 				contentPlay = true;
-				// Playing content fire the 5 content beacon and start content tracking
-				_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), contentSegmentCount );
-				contentSegmentCount++;
 				
-				// Add player "raw" player bindings:
-				_this.addPlayerTracking( "content" );
-				
-				// set the segment update as soon as we have a timeupdate:
-				$( vid ).bind( 'timeupdate' + _this.bindPostFix, function(){
+				var sendContentPlayBeacon = function(){
+					// Playing content fire the 5 content beacon and start content tracking
+					_this.dispatchEvent( 15, _this.getCurrentVideoSrc() , "content", _this.getMetaXmlString(), contentSegmentCount );
+					contentSegmentCount++;
+					
+					// Add player "raw" player bindings:
+					_this.addPlayerTracking( "content" );
+					
+					// set the segment update as soon as we have a timeupdate:
 					currentContentSegmentDuration = _this.round( _this.getRelativeTime('duration') );
-					$( vid ).unbind( 'timeupdate' + _this.bindPostFix );
-				});
+				}
+				
+				// check if we have duration before sending the event:
+				if( vid.duration ){
+					sendContentPlayBeacon();
+				} else {
+					$( vid ).bind( 'durationchange.nielsenContent', function( e ){
+						sendContentPlayBeacon();
+						$( vid ).unbind( 'durationchange.nielsenContent' );
+					}
+				}
+				
 			}
 		});
 		// Watch for 'ended' event for cases where finish all ads post sequence and everything "stop the player" 
