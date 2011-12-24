@@ -67,7 +67,7 @@ mw.NielsenCombined.prototype = {
 		var embedPlayer = this.embedPlayer;
 		
 		// Clear out any old bindings
-		$( embedPlayer ).unbind( _this.bindPostFix );
+		embedPlayer.unbindHelper( _this.bindPostFix );
 		
 		// Bind ad Playback
 		var contentPlay = false;
@@ -121,7 +121,7 @@ mw.NielsenCombined.prototype = {
 				adOpenUrl = false;
 			}
 			// unbind tracking ( will be re-instated via addPlayerTracking on subsequent ads or content 
-			$( embedPlayer ).unbind( _this.trackerPostFix );
+			embedPlayer.unbindHelper( _this.trackerPostFix );
 			
 			// Restore content tracking after ad end:
 			_this.addPlayerTracking( "content" );
@@ -164,7 +164,7 @@ mw.NielsenCombined.prototype = {
 			// unload the content as well.
 			_this.dispatchEvent( 4, _this.round( _this.getRelativeTime('duration') ), 'content' );
 			// At this point we have reset the player so reset bindings: 
-			$( embedPlayer ).unbind( _this.bindPostFix );
+			embedPlayer.unbindHelper( _this.bindPostFix );
 			_this.unbindPlayerTracking();
 			
 			// Reset the bindings for a replay or next clip ( don't stack) 
@@ -177,7 +177,7 @@ mw.NielsenCombined.prototype = {
 		return Math.round( floatValue * 100 ) / 100;
 	},
 	unbindPlayerTracking: function(){
-		$( this.embedPlayer ).unbind( this.trackerPostFix );
+		this.embedPlayer.unbindHelper( this.trackerPostFix );
 		$( this.embedPlayer.getPlayerElement() ).unbind( this.trackerPostFix );
 	},
 	getPlayerElement: function(){
