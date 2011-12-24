@@ -157,8 +157,13 @@ mw.NielsenCombined.prototype = {
 				};
 			}
 		});
+		var ranContentEnd = false;
 		// Watch for 'ended' event for cases where finish all ads post sequence and everything "stop the player" 
-		embedPlayer.bindHelper( 'onEndedDone' + _this.bindPostFix, function(){
+		embedPlayer.bindHelper( 'onEndedDone' + _this.bindPostFix + ',onChangeMediaDone' + _this.bindPostFix, function(){
+			if( ranContentEnd ){
+				return ;
+			}
+			ranContentEnd = true;
 			// Stop the content: 
 			_this.dispatchEvent( 7, _this.round( _this.getRelativeTime('duration') ), 'content' );
 			// unload the content as well.
@@ -167,7 +172,7 @@ mw.NielsenCombined.prototype = {
 			$( embedPlayer ).unbind( _this.bindPostFix );
 			_this.unbindPlayerTracking();
 			
-			// Reset the bindings for a replay: ( don't stack) 
+			// Reset the bindings for a replay or next clip ( don't stack) 
 			setTimeout(function(){
 				_this.addSequenceBinding();
 			},0);
