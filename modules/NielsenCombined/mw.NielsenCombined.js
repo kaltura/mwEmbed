@@ -157,13 +157,8 @@ mw.NielsenCombined.prototype = {
 				};
 			}
 		});
-		var ranContentEnd = false;
 		// Watch for 'ended' event for cases where finish all ads post sequence and everything "stop the player" 
-		embedPlayer.bindHelper( 'onEndedDone' + _this.bindPostFix + ',onChangeMediaDone' + _this.bindPostFix, function(){
-			if( ranContentEnd ){
-				return ;
-			}
-			ranContentEnd = true;
+		embedPlayer.bindHelper( 'onEndedDone' + _this.bindPostFix, function(){
 			// Stop the content: 
 			_this.dispatchEvent( 7, _this.round( _this.getRelativeTime('duration') ), 'content' );
 			// unload the content as well.
