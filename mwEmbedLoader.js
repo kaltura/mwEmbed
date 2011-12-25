@@ -267,7 +267,7 @@ function kOutputFlashObject( replaceTargetId, kEmbedSettings, options ){
 	var elm = document.getElementById( replaceTargetId );
 	// Output a normal flash object tag: 
 	if( elm && elm.parentNode ){
-		var divTarget = document.createElement("div");
+		
 		var pId =  ( kEmbedSettings.id )? kEmbedSettings.id : elm.id 
 		var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+ 
 			'/wid/' + kEmbedSettings.wid + 
@@ -287,22 +287,24 @@ function kOutputFlashObject( replaceTargetId, kEmbedSettings, options ){
 		
 		var flashvarValue = ( kEmbedSettings.flashvars ) ? kFlashVarsToString( kEmbedSettings.flashvars ) : '&';
 
-		divTarget.innerHTML = '<object id="' + pId + '" ' + 
-			'name="' + pId + '" ' + 
-			'type="application/x-shockwave-flash" ' + 
-			'allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" ' + 
-			'width="' + width +'" height="' + height + '" ' + 
-			'style="width:' + width + ';height:' + height + ';" ' +
-			'resource="' + swfUrl + '" ' +
-			'data="' + swfUrl + '" >' +
-				'<param name="allowFullScreen" value="true" />' + 
+		var objectTarget = document.createElement("object");
+		objectTarget.id = pId;
+		objectTarget.name = pId;
+		objectTarget.type = "application/x-shockwave-flash";
+		objectTarget.allowFullScreen = 'true';
+		objectTarget.allowNetworking = 'all';
+		objectTarget.allowScriptAccess = 'always';
+		objectTarget.style.cssText = "width: " + width + "; height: " + height;
+		objectTarget.resource = swfUrl;
+		objectTarget.data = swfUrl;
+		objectTarget.innerHTML = '<param name="allowFullScreen" value="true" />' +
 				'<param name="allowNetworking" value="all" />' +
 				'<param name="allowScriptAccess" value="always" />' +
 				'<param name="bgcolor" value="#000000" />' +
 				'<param name="flashVars" value="' + flashvarValue + '" /> ' +
-				'<param name="movie" value="' + swfUrl + '" />' +
-		'</object>';
-		elm.parentNode.replaceChild( divTarget, elm );
+				'<param name="movie" value="' + swfUrl + '" />';
+			
+		elm.parentNode.replaceChild( objectTarget, elm );
 	}
 }
 function kIframeWithoutApi( replaceTargetId, kEmbedSettings , options ){
