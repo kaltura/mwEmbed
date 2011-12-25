@@ -396,8 +396,9 @@ mw.PlayerControlBuilder.prototype = {
 		$( document ).bind( 'touchend.fullscreen', function(e){
 			$( embedPlayer ).trigger( 'onTouchEnd' );
 		});
-		if( triggerOnOpenFullScreen )
+		if( triggerOnOpenFullScreen ) {
 			$( embedPlayer ).trigger( 'onOpenFullScreen' );
+		}
 	},
 	doFullScreenPlayerDom: function(){
 		var _this = this;

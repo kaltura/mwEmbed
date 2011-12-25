@@ -536,7 +536,7 @@
 			var additionalIframeCss = kGetAdditionalTargetCss();
 			
 			$.extend(iframeCss, additionalIframeCss);
-
+			
 			var $iframe = $('<iframe />')
 				.attr({
 					'id' : iframeId,

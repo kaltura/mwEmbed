@@ -81,7 +81,8 @@ mw.IFramePlayerApiClient.prototype = {
 	},
 	'addIframeFullscreenBinding': function(){
 		var _this = this;
-		parentsAbsoluteList = [];
+		var parentsAbsoluteList = [];
+		var parentsRelativeList = [];
 		var fullscreenMode = false;
 		var $iframe = $( _this.iframe );
 		var orgSize = {
@@ -130,7 +131,11 @@ mw.IFramePlayerApiClient.prototype = {
 				var $parent = $( this );
 				if( $parent.css( 'position' ) == 'absolute' ) {
 					parentsAbsoluteList.push( $parent );
-					$parent.css( 'position', null );
+					$parent.css( 'position', 'static' );
+				}
+				if( $parent.css( 'position' ) == 'relative' ) {
+					parentsRelativeList.push( $parent );
+					$parent.css( 'position', 'static' );
 				}
 			});
 			// Make the iframe fullscreen
@@ -162,6 +167,9 @@ mw.IFramePlayerApiClient.prototype = {
 			// restore any parent absolute pos: 
 			$( parentsAbsoluteList ).each( function() {	
 				$( this ).css( 'position', 'absolute' );
+			} );
+			$( parentsRelativeList ).each( function() {
+				$( this ).css( 'position', 'relative' );
 			} );
 		};
 		
@@ -278,7 +286,7 @@ mw.IFramePlayerApiClient.prototype = {
 //Add the jQuery binding
 jQuery.fn.iFramePlayer = function( readyCallback ){
 	// only support ONE iframe player at a time 
-	var playerProxy = $( this )[0];
+	var playerProxy = this.get(0);
 	mw.log( "$.iFramePlayer::" + playerProxy.id );
 	
 	// Setup pointer to real iframe
