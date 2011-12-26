@@ -9,7 +9,7 @@ function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
 	module( "VAST flashvar DoubleClick Ad and Companion " );
-	var kdp = $('#' + videoId ).get(0);
+	var kdp = $('#' + videoId )[0];
 	
 	asyncTest("VAST DoubleClick Ad", function(){
 		kalturaQunitWaitForPlayer(function(){

@@ -64,7 +64,7 @@ mw.SmilBody.prototype = {
 			}
 			// Apply the unique id attribute
 			$node.attr('id', idString);
-			mw.log('SmilBody:: gave: ' + $node.get(0).nodeName + ' id: ' + $node.attr('id') );
+			mw.log('SmilBody:: gave: ' + $node[0].nodeName + ' id: ' + $node.attr('id') );
 			// Increment the index:
 			_this.idIndex++;
 		}
@@ -429,7 +429,7 @@ mw.SmilBody.prototype = {
 		this.smil.getBuffer().loadElement( $node );
 		// xxx check if the type is "video or audio" else nothing to return
 
-		var vid = $j( '#' + this.smil.getSmilElementPlayerID( $node ) ).find('audio,video').get(0);
+		var vid = $j( '#' + this.smil.getSmilElementPlayerID( $node ) ).find('audio,video')[0];
 		if( vid.duration ){
 			callback( vid.duration );
 		}
@@ -472,7 +472,7 @@ mw.SmilBody.prototype = {
 	 * animation, audio, img, text, textstream and video -> 'ref',
 	 */
 	getNodeSmilType: function( $node ){
-		var blockType = $j( $node ).get(0).nodeName;
+		var blockType = $j( $node )[0].nodeName;
 		//mw.log( 'getNodeSmilType for: ' + blockType );
 		if( this.smilBlockTypeMap[ blockType ] ){
 			blockType = this.smilBlockTypeMap[ blockType ];

@@ -10,7 +10,7 @@
 	
 	// Bind to cuePointReached event
 	var jsCallbackReady = function( playerId ) {
-		myPlayer = $j('#' + playerId ).get(0);
+		myPlayer = $j('#' + playerId )[0];
 
 		myPlayer.addJsListener("cuePointReached", "writeLog");
 		myPlayer.addJsListener("adOpportunity", "writeLog");
@@ -44,7 +44,7 @@ function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "CuePoints" );
 
-	var kdp = $j( '#' + videoId ).get(0);
+	var kdp = $j( '#' + videoId )[0];
 	
 	asyncTest("start cue point", function(){
 		kalturaQunitWaitForPlayer(function(){

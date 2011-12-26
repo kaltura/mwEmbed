@@ -30,7 +30,7 @@ function jsKalturaPlayerTest( videoId ){
 <script>
 	// TOOD move these into the test setup above 
 	KWidget.addReadyCallback(function( playerId ){
-		var kdp = $( '#' + playerId ).get(0);
+		var kdp = $( '#' + playerId )[0];
 		log( playerId +  ' > addJsListener:: freePreviewEnd' );
 		kdp.addJsListener( 'freePreviewEnd', 'onFreePreviewEnd' );
 	});

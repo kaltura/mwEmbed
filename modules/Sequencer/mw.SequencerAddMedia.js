@@ -259,7 +259,7 @@ mw.SequencerAddMedia.prototype = {
 			&&
 			resource.height < mw.getConfig( 'Sequencer.AddMediaImageHeight' )
 		) {
-			callback( $smilRef.get(0) );
+			callback( $smilRef[0] );
 			return ;
 		}
 
@@ -281,7 +281,7 @@ mw.SequencerAddMedia.prototype = {
 			},
 			function( imageObj ){
 				$smilRef.attr('src', imageObj.url )
-				callback( $smilRef.get(0) );
+				callback( $smilRef[0] );
 			}
 		)
 	}

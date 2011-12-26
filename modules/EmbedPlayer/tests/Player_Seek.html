@@ -22,8 +22,8 @@
 				$j('#startTime').val( startTime );
 
 				// update current time then play: 
-				$j('#vid1').get(0).currentTime = startTime;
-				$j('#vid1').get(0).play();
+				$j('#vid1')[0].currentTime = startTime;
+				$j('#vid1')[0].play();
         	}
     		// bind button: 
     		$j('#doPageSeek').click(function(){        		

@@ -180,7 +180,7 @@ mw.SmilAnimate.prototype = {
 
 		// Check if we need to do a smilText clear:
 		if( refType == 'smiltext' ){
-			var el = $j( smilElement ).get(0);
+			var el = $j( smilElement )[0];
 			for ( var i=0; i < el.childNodes.length; i++ ) {
 				var node = el.childNodes[i];
 				// Check for text Node type:
@@ -314,7 +314,7 @@ mw.SmilAnimate.prototype = {
 		// Set initial textValue:
 		var textValue ='';
 
-		var el = $j( textElement ).get(0);
+		var el = $j( textElement )[0];
 		for ( var i=0; i < el.childNodes.length; i++ ) {
 			var node = el.childNodes[i];
 			// Check for text Node type:
@@ -468,7 +468,7 @@ mw.SmilAnimate.prototype = {
 			$target = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ));
 		}
 		if( !htmlElement){
-			htmlElement = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).get(0);
+			htmlElement = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) )[0];
 		}
 		
 		_this.checkForRefTransformWrap( $target );
@@ -478,7 +478,7 @@ mw.SmilAnimate.prototype = {
 			// XXX note we have locked aspect so we can use 'width' here:
 
 			var sizeCss = _this.smil.getLayout().getDominateAspectTransform( natrualSize, null, percentValues.width );
-			//mw.log( ' w: ' + sizeCss.width + ' h ' + sizeCss.height + ' of : ' + $target.get(0).nodeName );
+			//mw.log( ' w: ' + sizeCss.width + ' h ' + sizeCss.height + ' of : ' + $target[0].nodeName );
 			// Run the css transform
 			$target.css( {
 				'position' : 'absolute',

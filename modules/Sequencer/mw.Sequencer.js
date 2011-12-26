@@ -14,7 +14,7 @@ mw.includeAllModuleMessages();
 			mw.log("mw.Sequencer::Error missing target container");
 			return;
 		}
-		var seqContainer = $j( this.selector ).get(0);
+		var seqContainer = $j( this.selector )[0];
 
 		// Support jQuery ui style 'destroy' call
 		if( options == 'destroy' ){

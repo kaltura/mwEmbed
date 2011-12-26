@@ -10,7 +10,7 @@
 <script type="text/javascript">
 	
 	function jsCallbackReady( playerId ) {
-		window.kdp = $('#' + playerId).get(0);
+		window.kdp = $('#' + playerId)[0];
 		kdp.addJsListener('ccDataLoaded', "ccLoaded");
 		kdp.addJsListener('newClosedCaptionsData', "newCCData");
 		kdp.addJsListener('changedClosedCaptions', "ccChanged");

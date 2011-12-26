@@ -37,7 +37,7 @@ function jsKalturaPlayerTest( videoId ){
 <script> 
 	function jsCallbackReady( videoId ){
 		$('#evalTag').click(function(){
-			alert( $('#' + videoId ).get(0).evaluate( '{NielsenPlugin.tag_category}' ) );
+			alert( $('#' + videoId )[0].evaluate( '{NielsenPlugin.tag_category}' ) );
 		})
 	}
 </script>

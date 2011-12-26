@@ -6,12 +6,12 @@
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
-	var kdp = $( '#' + videoId ).get(0);
+	var kdp = $( '#' + videoId )[0];
 	// Name this module
 	module( "TTML Captions Custom vars" );
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
-	var iframeKdp = $iframe.find( '#' + videoId ).get(0);
+	var iframeKdp = $iframe.find( '#' + videoId )[0];
 	var iframeContext = window.frames['kaltura_player_ifp'];
 	
 	asyncTest( "Timed text on screen", function() {

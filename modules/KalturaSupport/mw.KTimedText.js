@@ -160,7 +160,7 @@
 					'fileExt'	: type,
 					'type'		: this.getTextContentType( type ),
 					'src'		: ccUrl
-				}).get(0)
+				})[0]
 				);
 			// Return a "textSource" object:
 			return [ new mw.TextSource( embedSource ) ];
@@ -184,7 +184,7 @@
 					'src'		: _this.getCaptionUrl( dbTextSource.id, dbTextSource.fileExt ),
 					'title'		: dbTextSource.label,
 					'default'	: dbTextSource.isDefault
-				}).get(0) 
+				})[0] 
 				);
 			// Return a "textSource" object:
 			return new mw.TextSource( embedSource );

@@ -344,7 +344,7 @@ mw.EmbedPlayerSmil = {
 	*/
 	getPlayerElement: function(){
 		// return the virtual canvas
-		return $j( '#smilCanvas_' + this.id ).get(0);
+		return $j( '#smilCanvas_' + this.id )[0];
 	},
 
 	/**

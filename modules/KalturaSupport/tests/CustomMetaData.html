@@ -5,17 +5,17 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 <script type="text/javascript">		
 	function jsCallbackReady( playerId ){
-		var kdp = $( '#' + playerId ).get(0);
+		var kdp = $( '#' + playerId )[0];
 		kdp.addJsListener( 'metadataReceived', 'showCustomData' );
 
 		$('#switchSource').click(function(){
 			$('#customData tr').not('.head').remove();
-			$('#kaltura_player').get(0).sendNotification("changeMedia",{ entryId:"0_swup5zao" });	
+			$('#kaltura_player')[0].sendNotification("changeMedia",{ entryId:"0_swup5zao" });	
 		});
 						
 	};
 	function showCustomData(){
-		var customDataList = $( '#kaltura_player' ).get(0).evaluate('{mediaProxy.entryMetadata}');
+		var customDataList = $( '#kaltura_player' )[0].evaluate('{mediaProxy.entryMetadata}');
 		$.each( customDataList, function( key, val ){
 			$('#customData').append( '<tr><td>' + key + '</td><td>' + val + '</td></tr>' );
 		}); 

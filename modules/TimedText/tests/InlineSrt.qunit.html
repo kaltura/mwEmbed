@@ -156,7 +156,7 @@
  		asyncTest( "Subtitles displayed", function(){
 
  			mw.ready(function(){
- 				var vid = $('#subtitlePlayer').get(0);
+ 				var vid = $('#subtitlePlayer')[0];
  				QUnit.ok(true, "Player Loaded");
 
  				$( vid ).bind("seeked", function(){

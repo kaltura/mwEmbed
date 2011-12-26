@@ -212,7 +212,7 @@ mw.VastAdParser = {
 					$companionHtml = $j('<a />')
 						.attr({
 							'href' : _this.getURLFromNode(
-								$j( companionNode ).find('CompanionClickThrough,NonLinearClickThrough').get(0)
+								$j( companionNode ).find('CompanionClickThrough,NonLinearClickThrough')[0]
 							)
 						}).append( $img );
 				} else {
@@ -266,7 +266,7 @@ mw.VastAdParser = {
 	getURLFromNode: function ( node ){
 		if( $j( node ).find('URL').length ){
 			// use the first url we find: 
-			node = $j( node ).find( 'URL' ).get(0);
+			node = $j( node ).find( 'URL' )[0];
 		}	
 		return $j.trim( decodeURIComponent( $j( node ).text() )  )
 			.replace( /^\<\!\-?\-?\[CDATA\[/, '' )

@@ -46,7 +46,7 @@ function jsKalturaPlayerTest( videoId ){
 	// test the iframe api with prototype selector
 	asyncTest("KDP api valid with prototype and jQuery", function(){
 		equal( $( 'kaltura_player' ).evaluate('{mediaProxy.entry.id}'), '0_uka1msg4', "prototype .evaluate() call");
-		equal( jQuery( '#kaltura_player' ).get(0).evaluate('{mediaProxy.entry.id}'), '0_uka1msg4', 'jQuery evaluate() call');
+		equal( jQuery( '#kaltura_player' )[0].evaluate('{mediaProxy.entry.id}'), '0_uka1msg4', 'jQuery evaluate() call');
 		start();
 	});
 

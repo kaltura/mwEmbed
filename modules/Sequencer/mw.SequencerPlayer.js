@@ -106,7 +106,7 @@ mw.SequencerPlayer.prototype = {
 	 * Get the embedplayer object instance
 	 */
 	getEmbedPlayer: function(){
-		return $j( '#' + this.getSmilPlayerId() ).get(0);
+		return $j( '#' + this.getSmilPlayerId() )[0];
 	},
 
 	/**

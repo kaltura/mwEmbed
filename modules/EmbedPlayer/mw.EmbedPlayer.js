@@ -281,7 +281,7 @@ mw.EmbedPlayer.prototype = {
 		var $this = $( this );
 		// Check if a image thumbnail is present:
 		if(  this.$interface && this.$interface.find('.playerPoster').length ){
-			var img = this.$interface.find('.playerPoster').get(0);
+			var img = this.$interface.find('.playerPoster')[0];
 			var pHeight = $this.height();
 			// Check for intrinsic width and maintain aspect ratio
 			if( img.naturalWidth && img.naturalHeight ){
@@ -2294,7 +2294,7 @@ mw.EmbedPlayer.prototype = {
 			}));
 			mw.log("EmbedPlayer::getCompatibleSource: add " + source.src + ' of type:' + source.type );
 		});
-		var myMediaElement =  new mw.MediaElement( $media.get(0) );
+		var myMediaElement =  new mw.MediaElement( $media[0] );
 		var source = myMediaElement.autoSelectSource();
 		if( source ){
 			mw.log("EmbedPlayer::getCompatibleSource: " + source.getSrc());

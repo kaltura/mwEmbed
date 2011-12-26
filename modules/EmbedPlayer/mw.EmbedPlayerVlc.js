@@ -350,7 +350,7 @@ mw.EmbedPlayerVlc = {
 	* Get the embed vlc object
 	*/
 	getPlayerElement : function() {
-		this.playerElement = $( '#' + this.pid ).get(0);
+		this.playerElement = $( '#' + this.pid )[0];
 		return this.playerElement;
 	}
 };

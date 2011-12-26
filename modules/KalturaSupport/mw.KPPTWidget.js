@@ -84,7 +84,7 @@ mw.KPPTWidget.prototype = {
 	loadPPTData: function( callback ){
 		var _this = this;
 		// get the presentation id:
-		var widgetId = this.$target.get(0).kwidgetid;
+		var widgetId = this.$target[0].kwidgetid;
 		// run the api query
 		mw.KApiRequest(widgetId, {
 			'service': 'data',
@@ -431,7 +431,7 @@ mw.KPPTWidget.prototype = {
 	},
 	addBindings: function(){
 		var _this = this;
-		var embedPlayer = $('#' + this.getEmbedPlayerId() ).get(0);
+		var embedPlayer = $('#' + this.getEmbedPlayerId() )[0];
 		
 		// Run any player ready bindings: 
 		$.each( _this.readyBindings, function(inx, readyCallback){
@@ -609,7 +609,7 @@ mw.KPPTWidget.prototype = {
 		}
 	},
 	getEmbedPlayer: function(){
-		return  $('#' + this.getEmbedPlayerId() ).get(0);
+		return  $('#' + this.getEmbedPlayerId() )[0];
 	},
 	getEmbedPlayerId: function(){
 		return this.playerId;
@@ -625,7 +625,7 @@ mw.KPPTWidget.prototype = {
 		return this.getPresentationData().find( 'entryId' ).text();
 	},		
 	getVideoTag: function(){
-		var widgetId = this.$target.get(0).kwidgetid;
+		var widgetId = this.$target[0].kwidgetid;
 		
 		return $('<video />').attr({ 
 			'id' : this.getEmbedPlayerId(),

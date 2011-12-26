@@ -40,11 +40,11 @@ function jsKalturaPlayerTest( videoId ){
 <script>
 	/*
 	function jsCallbackReady( playerId ){
-		var kdp = $( '#' + playerId ).get(0);
+		var kdp = $( '#' + playerId )[0];
 		kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
 	}
 	function onPlayerSeekStart( playerId ){
-		var kdp = $( '#' + playerId ).get(0);
+		var kdp = $( '#' + playerId )[0];
 		alert( kdp.evaluate( '{video.player.currentTime}' ) );
 	}
 	*/

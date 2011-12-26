@@ -8,14 +8,14 @@
 		mw.setConfig( 'EmbedPlayer.OverlayControls', false );
 		mw.ready(function(){
 			$j( "#seekInputTime" ).blur( function(){ 
-				var smilVid = $j('#videoCrossfade').get(0);
+				var smilVid = $j('#videoCrossfade')[0];
 				$j('#seekInProgress').show();
 				smilVid.setCurrentTime( parseFloat( $j(this).val() ), function() {
 					$j('#seekInProgress').hide();
 				});
 			});
 			$j('#startBuffer').click( function(){
-				$j('#videoCrossfade').get(0).load();
+				$j('#videoCrossfade')[0].load();
 				return false;
 			});
 			$j('#renderToFile').click(function(){				

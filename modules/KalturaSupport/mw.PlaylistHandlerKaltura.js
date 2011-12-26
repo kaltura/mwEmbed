@@ -466,7 +466,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 					offsetLeft+= $node.width();
 				}
 				// Box model! containers should not have width:
-				if( $node.get(0).nodeName.toLowerCase() == 'div' ){
+				if( $node[0].nodeName.toLowerCase() == 'div' ){
 					$node.css('width', '');
 				}
 				$boxContainer.append( $node );

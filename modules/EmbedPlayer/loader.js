@@ -346,11 +346,11 @@
 		"currentTime" : 0,
 	
 		// Previous player set time
-		// Lets javascript use $('#videoId').get(0).currentTime = newTime;
+		// Lets javascript use $('#videoId')[0].currentTime = newTime;
 		"previousTime" : 0,
 	
 		// Previous player set volume
-		// Lets javascript use $('#videoId').get(0).volume = newVolume;
+		// Lets javascript use $('#videoId')[0].volume = newVolume;
 		"previousVolume" : 1,
 	
 		// Initial player volume:

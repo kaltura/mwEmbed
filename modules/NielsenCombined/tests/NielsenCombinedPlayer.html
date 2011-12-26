@@ -14,7 +14,7 @@ function jsKalturaPlayerTest( videoId ){
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var iframeContext = window.frames['kaltura_player_ifp'];
-	var player =  $('#' + videoId ).get(0);
+	var player =  $('#' + videoId )[0];
 	
 	asyncTest("Player Ready", function(){
 		kalturaQunitWaitForPlayer(function(){
@@ -105,7 +105,7 @@ function jsKalturaPlayerTest( videoId ){
 </script>
 <script type="text/javascript">	
 kWidget.addReadyCallback( function( playerId ){
-	var player =  $('#' + playerId ).get(0);
+	var player =  $('#' + playerId )[0];
 	// only html5 ( should change to a jsListener if we get the flash verison on this page as well)
 	if( player.bindHelper ){
 		player.bindHelper( 'NielsenCombined_DispatchEvent', function( event, args ){

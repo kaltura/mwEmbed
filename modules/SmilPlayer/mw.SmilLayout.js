@@ -191,7 +191,7 @@ mw.SmilLayout.prototype = {
 							)
 					})
 				);
-				var img = $target.find('img').get(0)
+				var img = $target.find('img')[0]
 				_this.getNaturalSize( img, function( natrualSize ){
 					_this.fitMeetBest(
 						img,
@@ -261,7 +261,7 @@ mw.SmilLayout.prototype = {
 	getVideoCanvasThumb: function( smilElement, $target, relativeTime, callback ){
 		var _this = this;
 		var naturaSize = {};
-		var drawElement = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).find('video').get(0);
+		var drawElement = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).find('video')[0];
 		mw.log( "SmilLayout:: getVideoCanvasThumb ");
 		var drawFrame = function( drawElement ){			
 			if( !drawElement ){
@@ -289,7 +289,7 @@ mw.SmilLayout.prototype = {
 					.addClass("ui-corner-all")
 				)
 				.find( 'canvas')
-					.get(0)
+					[0]
 					.getContext('2d')
 					.drawImage( drawElement, 0, 0);
 			} catch (e){
@@ -314,7 +314,7 @@ mw.SmilLayout.prototype = {
 			$tmpFrameNode.attr('id', $j( smilElement).attr('id') + '_tmpFrameNode' );
 			this.smil.getBuffer().bufferedSeekRelativeTime( $tmpFrameNode, relativeTime, function(){
 				// update the drawElement
-				drawElement = $j( '#' + _this.smil.getSmilElementPlayerID( $tmpFrameNode ) ).get(0);
+				drawElement = $j( '#' + _this.smil.getSmilElementPlayerID( $tmpFrameNode ) )[0];
 				drawFrame( drawElement );
 				// Remove the temporary node from dom
 				$j( drawElement ).remove();
@@ -477,7 +477,7 @@ mw.SmilLayout.prototype = {
 		mw.log("getSmilCDATAHtml:" + $j( smilElement ).attr('id') +' :' + targetWidth );
 
 		// Get "clean" smil data
-		var el = $j( smilElement ).get(0);
+		var el = $j( smilElement )[0];
 		var xmlCdata = '';
 		for ( var i=0; i < el.childNodes.length; i++ ) {
 			var node = el.childNodes[i];
@@ -615,7 +615,7 @@ mw.SmilLayout.prototype = {
 	doSmilElementLayout: function( smilElement ){
 		var _this = this;
 
-		var img = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).get(0);
+		var img = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) )[0];
 		_this.getNaturalSize( img, function( naturalSize) {
 			_this.doAssetLayout( smilElement , naturalSize);
 		});
@@ -664,7 +664,7 @@ mw.SmilLayout.prototype = {
 				'height' : this.smil.embedPlayer.getHeight()
 			}
 			this.fitMeetBest(
-				$j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).get(0),
+				$j( '#' + this.smil.getSmilElementPlayerID( smilElement ) )[0],
 				naturalSize,
 				targetSize
 			);
@@ -753,7 +753,7 @@ mw.SmilLayout.prototype = {
 		//mw.log( 'panZoomLayout:' + $j( smilElement).attr('id') );
 		var panZoom = $j( smilElement).attr('panZoom').split(',');
 		if( !layoutElement ){
-			var layoutElement = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).find('img,video').get(0);
+			var layoutElement = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) ).find('img,video')[0];
 			if( !layoutElement){
 				mw.log('Error getting layoutElement for ' + $j( smilElement).attr('id') );
 			}

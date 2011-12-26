@@ -95,7 +95,7 @@ $j( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 	}
 });
 mw.remoteSequencerAddEditOverlay = function( embedPlayerId ){
-	var embedPlayer = $j( '#' + embedPlayerId ).get(0);
+	var embedPlayer = $j( '#' + embedPlayerId )[0];
 
 	// Check if we can do the overlay::
 	if( !embedPlayer.supports['overlays']

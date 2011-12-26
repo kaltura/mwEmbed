@@ -2756,7 +2756,7 @@ if( window.jQuery ){
 		var callbackSet = [];
 
 		// Check for both jQuery 1.4.4 events location and other jQuery data location: 
-		if( !$( targetObject ).data( 'events' ) && ! $( targetObject).get(0)['__events__'] ){
+		if( !$( targetObject ).data( 'events' ) && ! $( targetObject)[0]['__events__'] ){
 			// No events run the callback directly
 			callback();
 			return ;
@@ -2764,7 +2764,7 @@ if( window.jQuery ){
 		
 		var triggerEventSet = $( targetObject ).data( 'events' ) ?
 					$( targetObject ).data( 'events' )[ triggerBaseName ] :
-					$( targetObject).get(0)['__events__'][ 'events' ][ triggerBaseName ];
+					$( targetObject)[0]['__events__'][ 'events' ][ triggerBaseName ];
 					
 		if( ! triggerNamespace ){
 			callbackSet = triggerEventSet;

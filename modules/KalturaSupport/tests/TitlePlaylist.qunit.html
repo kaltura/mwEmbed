@@ -12,7 +12,7 @@ function jsKalturaPlayerTest( videoId ){
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var iframeContext = window.frames['kaltura_player_ifp'];
-	var kdp = $('#' + videoId ).get(0);
+	var kdp = $('#' + videoId )[0];
 	
 	asyncTest("Iframe layout elements", function(){
 		kalturaQunitWaitForPlayer(function(){

@@ -14,7 +14,7 @@ function jsKalturaPlayerTest( videoId ){
 	module( "Playlist KalturaApi" );
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
-	var kdp = $('#' + videoId ).get(0);
+	var kdp = $('#' + videoId )[0];
 	
 	test("Playlist layout elements present", function(){
 		stop();

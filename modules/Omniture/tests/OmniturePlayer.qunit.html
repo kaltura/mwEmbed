@@ -53,7 +53,7 @@ function trackEventForTests( eventId, eVars, props, kalturaEventName ) {
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "Omniture Analytics" );
-	var kdp = $j( videoId ).get(0);
+	var kdp = $j( videoId )[0];
 	
 	asyncTest("mediaReady event sent", function(){
 		$j( testEventObject ).bind('mediaReady', function(event, testEvent ){

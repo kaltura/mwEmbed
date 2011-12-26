@@ -32,7 +32,7 @@
 			'eventTrackList' : null,
 
 			// The player object to add bindings too:
-			'playerElement' : $('#' + playerId ).get(0), 
+			'playerElement' : $('#' + playerId )[0], 
 			
 			// pageTracker object ( if set to null async tracking is used via _gaq.push calls )
 			'googlePageTracker': null,
@@ -87,7 +87,7 @@ function trackEventForTests(category, action, opt_label, opt_value ) {
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "KdpApi Google Analytics" );
-	var kdp = $j( '#kaltura_player' ).get(0);
+	var kdp = $j( '#kaltura_player' )[0];
 	
 	asyncTest("mediaReady event sent", function(){
 		$j( testEventObject ).bind('mediaReady', function(event, testEvent ){

@@ -102,7 +102,7 @@ mw.IFramePlayerApiClient.prototype = {
 		
 		/* Un-used for now
 		var disableZoom = function() {
-			viewPortTag = $('head meta[name=viewport]').get(0);
+			viewPortTag = $('head meta[name=viewport]')[0];
 			$('head meta[name=viewport]').remove();
 			$('head').prepend('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
 		};
@@ -286,7 +286,7 @@ mw.IFramePlayerApiClient.prototype = {
 //Add the jQuery binding
 jQuery.fn.iFramePlayer = function( readyCallback ){
 	// only support ONE iframe player at a time 
-	var playerProxy = this.get(0);
+	var playerProxy = this[0];
 	mw.log( "$.iFramePlayer::" + playerProxy.id );
 	
 	// Setup pointer to real iframe
@@ -308,7 +308,7 @@ jQuery.fn.iFramePlayer = function( readyCallback ){
 	};
 	
 	// Setup the iframe:
-	var iframe = $('#' + iframePlayerId).get(0);
+	var iframe = $('#' + iframePlayerId)[0];
 	if( !iframe ){
 		mw.log("$.iFramePlayer:: Error invalid iFramePlayer request");
 		return false;

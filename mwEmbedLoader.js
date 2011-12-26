@@ -32,7 +32,7 @@
 *
 *	// If the iframe should expose a javascript api emulating the video tag bindings and api
 *	// lets you treat the iframe id like a video tag ie: 
-*	// $('#iframeid').get(0).play() 
+*	// $('#iframeid')[0].play() 
 *	//   and 
 *	// $('#iframeid').bind('ended', function(){ .. end playback event ... }
 *	'EmbedPlayer.EnableIframeApi' : true

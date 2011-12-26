@@ -187,7 +187,7 @@ mw.DoubleClick.prototype = {
 		    adsManager.setHorizontalAlignment( google.ima.AdSlotAlignment.HorizontalAlignment.CENTER );
 		    adsManager.setVerticalAlignment( google.ima.AdSlotAlignment.VerticalAlignment.BOTTOM );
 
-		    adsManager.play( $overlay.get(0) );
+		    adsManager.play( $overlay[0] );
 		    // Set the active overlay manager: 
 		    _this.activeOverlayadManager = adsManager;
 		    

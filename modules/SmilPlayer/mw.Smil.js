@@ -153,7 +153,7 @@ mw.Smil.prototype = {
 	},
 
 	getXMLString: function(){
-		return (new XMLSerializer()).serializeToString(this.$dom.get(0));
+		return (new XMLSerializer()).serializeToString(this.$dom[0]);
 	},
 
 	/**
@@ -471,7 +471,7 @@ mw.Smil.prototype = {
 			return;
 		}
 		// Get the smil type
-		var smilType = $j(smilElement).get(0).nodeName.toLowerCase();
+		var smilType = $j(smilElement)[0].nodeName.toLowerCase();
 
 		if (this.getBody().smilBlockTypeMap[smilType] != 'ref') {
 			mw.log("Error: trying to get ref type of node that is not a ref"

@@ -582,7 +582,7 @@ mw.KAdPlayer.prototype = {
 				$vidSibling
 			);
 		}
-		return $vidSibling.get(0);
+		return $vidSibling[0];
 	},
 	getVideoAdSiblingId: function(){
 		return this.embedPlayer.pid + '_adSibling';

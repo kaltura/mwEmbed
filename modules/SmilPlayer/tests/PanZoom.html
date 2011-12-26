@@ -8,7 +8,7 @@
 		mw.setConfig( 'EmbedPlayer.OverlayControls', false );
 		mw.ready(function(){
 			$j( "#seekInputTime" ).blur( function(){ 
-				var smilVid = $j('#panzoom').get(0);
+				var smilVid = $j('#panzoom')[0];
 				$j('#seekInProgress').show();
 				smilVid.setCurrentTime( parseFloat( $j(this).val() ), function(){
 					$j('#seekInProgress').hide();

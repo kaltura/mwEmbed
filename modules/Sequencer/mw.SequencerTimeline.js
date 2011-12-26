@@ -429,7 +429,7 @@ mw.SequencerTimeline.prototype = {
 		var thumbRenderStack = 0;
 		var trackRendering = false;
 		smil.getBody().getRefElementsRecurse( smilSequenceTrack, startOffset, function( smilElement ){
-			mw.log("SequncerTimeline:: drawTrackClips node type: " + $j(smilElement).get(0).nodeName.toLowerCase() );
+			mw.log("SequncerTimeline:: drawTrackClips node type: " + $j(smilElement)[0].nodeName.toLowerCase() );
 			var reRenderThumbFlag = false;
 			// Draw the node onto the timeline if the clip is not already there:
 			var $timelineClip = $clipTrackSet.find( '#' + _this.getTimelineClipId( smilElement ) );
@@ -716,11 +716,11 @@ mw.SequencerTimeline.prototype = {
 		var $smilSequenceTrack = $j( this.sequencer.getSmil().getBody().getSeqElements()[ trackIndex ] );
 		if( typeof clipIndex == 'undefined' || clipIndex >= $smilSequenceTrack.children().length ){
 			$smilSequenceTrack.append(
-				$j( smilElement ).get(0)
+				$j( smilElement )[0]
 			);
 		} else {
 			$smilSequenceTrack.children().eq( clipIndex ).before(
-				$j( smilElement ).get(0)
+				$j( smilElement )[0]
 			);
 		}
 
@@ -762,13 +762,13 @@ mw.SequencerTimeline.prototype = {
 		var $seqParent = $movedSmileNode.parent();
 
 		if( clipIndex == $seqParent.children().length ){
-			$seqParent.append( $movedSmileNode.get(0) );
+			$seqParent.append( $movedSmileNode[0] );
 		} else {
 			// see if the index was affected by our move position
 			if( clipIndex >= $movedSmileNode.data('indexOrder') ){
-				$seqParent.children().eq( clipIndex ).after( $movedSmileNode.get(0) );
+				$seqParent.children().eq( clipIndex ).after( $movedSmileNode[0] );
 			}else{
-				$seqParent.children().eq( clipIndex ).before( $movedSmileNode.get(0) );
+				$seqParent.children().eq( clipIndex ).before( $movedSmileNode[0] );
 			}
 		}
 		// If any other clips were selected add them all after smilNode
@@ -782,7 +782,7 @@ mw.SequencerTimeline.prototype = {
 
 					// Update the smil dom
 					var $smilSelected = smil.$dom.find( '#' + $j( selectedClip ).data('smilId') );
-					$smilSelected.insertAfter( $movedSmileNode.get(0) );
+					$smilSelected.insertAfter( $movedSmileNode[0] );
 				}
 			});
 		}

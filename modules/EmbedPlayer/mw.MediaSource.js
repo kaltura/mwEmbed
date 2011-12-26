@@ -135,7 +135,7 @@ mw.MediaSource.prototype = {
 			this.mimeType = $( element ).attr( 'type' );
 		}else if ( $( element ).attr( 'content-type' ) ) {
 			this.mimeType = $( element ).attr( 'content-type' );
-		}else if( $( element ).get(0).tagName.toLowerCase() == 'audio' ){
+		}else if( $( element )[0].tagName.toLowerCase() == 'audio' ){
 			// If the element is an "audio" tag set audio format
 			this.mimeType = 'audio/ogg';
 		} else {

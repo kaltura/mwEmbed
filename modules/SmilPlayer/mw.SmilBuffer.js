@@ -163,7 +163,7 @@ mw.SmilBuffer.prototype = {
 			case 'audio':
 			case 'video':
 				var media = $j( '#' + this.smil.getSmilElementPlayerID( smilElement ) )
-								.find('audio,video').get(0);
+								.find('audio,video')[0];
 				if( !media ){
 					break;
 				}
@@ -235,7 +235,7 @@ mw.SmilBuffer.prototype = {
 		}
 
 		// Set up reference to media object:
-		var media = $media.get(0);
+		var media = $media[0];
 		// Check for buffered attribute ( not all browsers support the progress event )
 		if( media && media.buffered && media.buffered.end && media.duration ) {
 			_this.mediaLoadedPercent[ assetId ] = ( media.buffered.end(0) / media.duration);
@@ -354,7 +354,7 @@ mw.SmilBuffer.prototype = {
 		var $media = $j( '#' + assetId ).find('audio,video');
 		var vid = $j( '#' + assetId ).get( 0 );
 		// if the video element is not in the dom its not ready:
-		if( $media.length == 0 || !$media.get(0) ){
+		if( $media.length == 0 || !$media[0] ){
 			return false;
 		}
 		/* if we have no metadata return false */
@@ -383,7 +383,7 @@ mw.SmilBuffer.prototype = {
 	registerVideoSeekListener: function( assetId ){
 		var _this = this;
 		//mw.log( 'SmilBuffer::registerVideoSeekListener: ' + assetId );
-		var vid = $j ( '#' + assetId).get(0);
+		var vid = $j ( '#' + assetId)[0];
 		vid.addEventListener( 'seeked', function(){
 			// Run the callback
 			if( _this.mediaSeekListeners[ assetId ].callback ) {
@@ -406,7 +406,7 @@ mw.SmilBuffer.prototype = {
 		this.loadElement( smilElement );
 		mw.log( "loadImageCallback:: drwa img: " + assetId + ' found:' + $j( '#' + assetId ).length );
 		// If we already have naturalHeight no need for loading callback
-		if( $j( '#' + assetId ).get(0).naturalHeight ){
+		if( $j( '#' + assetId )[0].naturalHeight ){
 			mw.log( "loadImageCallback: " +assetId + ' already ready: run callback' );
 			callback();
 		} else {
@@ -423,7 +423,7 @@ mw.SmilBuffer.prototype = {
 		// Make sure the target video is in the dom:
 		this.loadElement( smilElement );
 		var $media = $j( '#' + assetId ).find('audio,video');
-		var media = $media.get(0);
+		var media = $media[0];
 		
 		mw.log("SmilBuffer::mediaBufferSeek: " + assetId + ' ctime:' + media.currentTime + ' seekTime:' + seekTime );
 		var mediaLoadedFlag = false;
@@ -505,7 +505,7 @@ mw.SmilBuffer.prototype = {
 		// Make sure the target video is in the dom:
 		this.loadElement( smilElement );
 		var $media = $j( '#' + assetId ).find('audio,video');
-		var media = $media.get(0);
+		var media = $media[0];
 		
 		// Add the asset to the loading set (if not there already )
 		if( !_this.mediaSeekListeners[ assetId ] ){			

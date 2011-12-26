@@ -113,7 +113,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		for( var i =0; i < clipSources.length; i++ ){
 			var $source = $('<source />')
 			.attr( clipSources[i] );
-			embedPlayer.mediaElement.tryAddSource( $source.get(0) ) ;
+			embedPlayer.mediaElement.tryAddSource( $source[0] ) ;
 		}
 		embedPlayer.changeMedia( function(){
 			// restore playlist bindings and update update Ui: 
@@ -200,7 +200,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		var $item = $( this.$rss.find('item')[ clipIndex ] );
 		var clipSources = [];
 		$j.each( $item.find( '*' ), function( inx, mediaContent){
-			if( $( mediaContent ).get(0).nodeName == 'media:content' ){
+			if( $( mediaContent )[0].nodeName == 'media:content' ){
 				clipSource = {};
 				if( $( mediaContent ).attr('url' ) ){
 					clipSource.src = $( mediaContent ).attr('url' );

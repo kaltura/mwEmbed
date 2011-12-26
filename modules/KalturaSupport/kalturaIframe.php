@@ -836,7 +836,7 @@ class kalturaIframe {
 					// Remove thumbnail from the iframe
 					$('#directFileLinkThumb').remove();
 					
-					var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' ).get(0);
+					var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];
 					// Try to seek to the IframeSeekOffset time:
 					if( mw.getConfig( 'EmbedPlayer.IframeCurrentTime' ) ){
 						embedPlayer.currentTime = mw.getConfig( 'EmbedPlayer.IframeCurrentTime' );					
@@ -847,7 +847,7 @@ class kalturaIframe {
 					}
 					function doResizePlayer(){
 						$( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )
-							.get(0).resizePlayer({
+							[0].resizePlayer({
 								'width' : $(window).width(),
 								'height' : $(window).height()
 							});

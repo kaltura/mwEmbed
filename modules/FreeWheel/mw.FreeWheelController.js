@@ -402,7 +402,7 @@ mw.FreeWheelControler.prototype = {
 		// We want this ad video element ( not the original pid getPlayerElement()
 		var $siblingVid = $( this.embedPlayer.getPlayerElement() ).siblings('video');
 		if( $siblingVid.length ){
-			return $siblingVid.get(0);
+			return $siblingVid[0];
 		}
 		return this.embedPlayer.getPlayerElement();
 	},

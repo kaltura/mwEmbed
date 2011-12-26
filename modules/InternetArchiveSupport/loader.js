@@ -189,7 +189,7 @@ mw.IA =
 
     
     location.hash = '#' + // [get ORIG video file from playlist item and then matched back thru mrss variable etc.?]  +
-      '/start=' + Math.round($('#mwplayer').get(0).currentTime * 10) / 10;
+      '/start=' + Math.round($('#mwplayer')[0].currentTime * 10) / 10;
   },
 
   
@@ -198,7 +198,7 @@ mw.IA =
     if (!mw.IA.playlist)
       return;
     
-    var player = $('#'+mw.playerManager.getPlayerList()[0]).get(0);
+    var player = $('#'+mw.playerManager.getPlayerList()[0])[0];
     if (!player)
       return;
 
@@ -219,7 +219,7 @@ mw.IA =
     
     mw.IA.log('onPlay');
     
-    var av=$('div.mv-player video, div.mv-player object, div.mv-player embed').parent().get(0);
+    var av=$('div.mv-player video, div.mv-player object, div.mv-player embed').parent()[0];
     
     if (typeof(av)=='undefined'  &&  $('img.playerPoster').length > 0)
     {
@@ -296,7 +296,7 @@ mw.IA =
     {
       mw.ready(function(){
 
-        var player = $('#'+mw.playerManager.getPlayerList()[0]).get(0);
+        var player = $('#'+mw.playerManager.getPlayerList()[0])[0];
         if (!player)
           return;
                  
@@ -339,7 +339,7 @@ mw.IA =
   {
     mw.ready(function(){
 
-      var player = $('#'+mw.playerManager.getPlayerList()[0]).get(0);
+      var player = $('#'+mw.playerManager.getPlayerList()[0])[0];
       var IAD = {'identifier':'night_of_the_living_dead'};
       var group = {'SRC':['night_of_the_living_dead.ogv',
                           'night_of_the_living_dead_512kb.mp4']};

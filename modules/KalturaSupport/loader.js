@@ -296,7 +296,7 @@
 							.loadingSpinner()
 						)
 					);					
-					var elm = $('#' + videoEmbedAttributes.id ).get(0);
+					var elm = $('#' + videoEmbedAttributes.id )[0];
 					// Assign values to DOM object methods ( not just attributes ) 
 					$.each( videoEmbedAttributes, function( attrName, attrValue ){
 						// skip style attr:
@@ -569,7 +569,7 @@
 					return ;
 				}
 				window[ cbName ] = function( iframeData ){
-					var newDoc = $( '#' + iframeId ).get(0).contentDocument;
+					var newDoc = $( '#' + iframeId )[0].contentDocument;
 					newDoc.open();
 					newDoc.write( iframeData.content );
 					newDoc.close();

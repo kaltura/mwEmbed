@@ -77,19 +77,19 @@
 		function bindIframePlayer(){
 			// Now we can use all the normal player calls bindings and attributes: 
 			$j( '#triggerPlay' ).click(function(){								
-				$('#vid').get(0).play();
+				$('#vid')[0].play();
 			});
 
 			$j( '#triggerPause' ).click(function(){
-				$j( '#vid' ).get(0).pause();
+				$j( '#vid' )[0].pause();
 			});
 
 			$j('#alertTime').click(function(){
-				alert( $j( '#vid').get(0).currentTime );
+				alert( $j( '#vid')[0].currentTime );
 			});
 
 			$j('#seek10').click( function(){
-				$j( '#vid').get(0).currentTime = 10;
+				$j( '#vid')[0].currentTime = 10;
 			});
 
 			$j('#vid').bind('onplay', function(){

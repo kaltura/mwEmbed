@@ -9,7 +9,7 @@ function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
 	module( "Auto Play Test" );
-	var kdp = $('#' + videoId ).get(0);
+	var kdp = $('#' + videoId )[0];
 	
 	asyncTest("AutoPlay has started", function(){
 		kalturaQunitWaitForPlayer(function(){

@@ -14,7 +14,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		if( embedPlayer.getKalturaConfig( 'playlistAPI', 'plugin' ) 
 				&&
 			// Make sure the target is present and not already hosting a playlist
-			( $playlist.get(0) && ! $playlist.get(0).playlist )
+			( $playlist[0] && ! $playlist[0].playlist )
 		){
 			// Call playlist handler
 			mw.load( [ 'EmbedPlayer', 'Playlist', 'KalturaPlaylist' ], function(){

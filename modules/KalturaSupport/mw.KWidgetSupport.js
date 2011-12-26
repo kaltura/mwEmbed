@@ -410,7 +410,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		if( !attr && confPrefix ){
 			if( $plugin.length ) {
-				$.each( $plugin.get(0).attributes, function(i, nodeAttr){
+				$.each( $plugin[0].attributes, function(i, nodeAttr){
 					 config[ nodeAttr.name ] = nodeAttr.value;
 				});
 			}
@@ -425,7 +425,7 @@ mw.KWidgetSupport.prototype = {
 				var attrName = $(node).attr('key');
 				if( $(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
 					var attrKey = attrName.replace( confPrefix + '.', '');
-					config[ attrKey ] = $(node).get(0).getAttribute('value');
+					config[ attrKey ] = $(node)[0].getAttribute('value');
 				}
 			});
 		} else {
@@ -451,7 +451,7 @@ mw.KWidgetSupport.prototype = {
 				$uiPluginVars.each( function(inx, node){
 					if( $( node ).attr('key') == pluginPrefix + attrName ){
 						if( $(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
-							config[attrName] = $(node).get(0).getAttribute('value');
+							config[attrName] = $(node)[0].getAttribute('value');
 						}
 						// Found break out of loop
 						return false;

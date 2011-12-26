@@ -87,16 +87,16 @@
 
 		$(function() {
 			$('#changeMedia').click( function() {
-				$('#kdp3').get(0).sendNotification("changeMedia",{entryId:"1_v1z55w0b"});
+				$('#kdp3')[0].sendNotification("changeMedia",{entryId:"1_v1z55w0b"});
 			});
 
 			$('#clearMedia').click( function() {
-				$('#kdp3').get(0).sendNotification("changeMedia",{entryId:"-1"});
-				//$('#kdp3').get(0).sendNotification("cleanMedia");
+				$('#kdp3')[0].sendNotification("changeMedia",{entryId:"-1"});
+				//$('#kdp3')[0].sendNotification("cleanMedia");
 			});
 
 			$("#removeJsLis").click( function() {
-				$('#kdp3').get(0).removeJsListener("entryReady", "doEntryReady");
+				$('#kdp3')[0].removeJsListener("entryReady", "doEntryReady");
 			});
 		});
 		</script>
@@ -107,21 +107,21 @@
 			<h2>Player Control</h2>
 		<dfn title="Click the play, pause or stop buttons to control the player playback. Set a time in seconds to the seek field and click the 'seek to' button to jump to that seconds in the playing media">Playback control:</dfn>
 		<div class="controls">
-			<a href="#" onclick="$('#kdp3').get(0).sendNotification('doPlay');return false;">Play</a> | <a href="#" onclick="$('#kdp3').get(0).sendNotification('doPause');return false;">Pause</a> | <a href="#" onclick="$('#kdp3').get(0).sendNotification('doStop');return false;">Stop</a>
-				| <a href="#" onclick="alert( $('#kdp3').get(0).evaluate('{mediaProxy.entry.id}') );">Get entry id</a> | 
-				<a href="#" id="changeMedia">Change Media</a> | <a href="#" id="clearMedia">Clear Media</a> | <a href="#" onclick="alert( $('#kdp3').get(0).evaluate('{configProxy.flashvars.autoPlay}') );">Get autoplay status</a> | <a href="#" onclick="alert( $('#kdp3').get(0).evaluate('{playerStatusProxy.kdpStatus}') );">Get KDP status</a> |
+			<a href="#" onclick="$('#kdp3')[0].sendNotification('doPlay');return false;">Play</a> | <a href="#" onclick="$('#kdp3')[0].sendNotification('doPause');return false;">Pause</a> | <a href="#" onclick="$('#kdp3')[0].sendNotification('doStop');return false;">Stop</a>
+				| <a href="#" onclick="alert( $('#kdp3')[0].evaluate('{mediaProxy.entry.id}') );">Get entry id</a> | 
+				<a href="#" id="changeMedia">Change Media</a> | <a href="#" id="clearMedia">Clear Media</a> | <a href="#" onclick="alert( $('#kdp3')[0].evaluate('{configProxy.flashvars.autoPlay}') );">Get autoplay status</a> | <a href="#" onclick="alert( $('#kdp3')[0].evaluate('{playerStatusProxy.kdpStatus}') );">Get KDP status</a> |
 				<a href="#" id="removeJsLis">Remove Entry Ready Listener</a>
 		</div>
 		<div class="controls">
-				Seek to: <input size="4" id="seekto" value="25" type="text"><button onclick="$('#kdp3').get(0).sendNotification('doSeek', parseFloat($('#seekto').val()));return false;">Seek</button>
+				Seek to: <input size="4" id="seekto" value="25" type="text"><button onclick="$('#kdp3')[0].sendNotification('doSeek', parseFloat($('#seekto').val()));return false;">Seek</button>
 		</div>
 			<br>
 		<dfn title="Use the controls below to mute or unmute the player volume or enter a number between 0 and 1 in the 'Set volume' field and click the 'Change' button to set the player volume">Volume control:</dfn>
 		<div class="controls">
-				<a href="#" onclick="newVolume=$('#kdp3').get(0).evaluate('{video.volume}');if(newVolume>0)oldVolume=newVolume;$('#kdp3').get(0).sendNotification('changeVolume', 0);return false;">Mute</a> | <a href="#" onclick="$('#kdp3').get(0).sendNotification('changeVolume', oldVolume);return false;">Unmute</a>
+				<a href="#" onclick="newVolume=$('#kdp3')[0].evaluate('{video.volume}');if(newVolume>0)oldVolume=newVolume;$('#kdp3')[0].sendNotification('changeVolume', 0);return false;">Mute</a> | <a href="#" onclick="$('#kdp3')[0].sendNotification('changeVolume', oldVolume);return false;">Unmute</a>
 		</div>
 			<div class="controls">
-				Set volume: <input size="2" id="vol" value="1" type="text"><span style="color: rgb(85, 85, 85);">(0-1)</span>&nbsp;<button onclick="$('#kdp3').get(0).sendNotification('changeVolume', parseFloat($('#vol').val()));return false;">Change</button>
+				Set volume: <input size="2" id="vol" value="1" type="text"><span style="color: rgb(85, 85, 85);">(0-1)</span>&nbsp;<button onclick="$('#kdp3')[0].sendNotification('changeVolume', parseFloat($('#vol').val()));return false;">Change</button>
 			</div>
 			<br>
 			<div>
