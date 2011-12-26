@@ -295,6 +295,8 @@ function kOutputFlashObject( replaceTargetId, kEmbedSettings, options ){
 		objectTarget.allowNetworking = 'all';
 		objectTarget.allowScriptAccess = 'always';
 		objectTarget.style.cssText = "width: " + width + "; height: " + height;
+		objectTarget.width = width;
+		objectTarget.height = height;
 		objectTarget.resource = swfUrl;
 		objectTarget.data = swfUrl;
 		objectTarget.innerHTML = '<param name="allowFullScreen" value="true" />' +
