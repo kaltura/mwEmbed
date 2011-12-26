@@ -1107,7 +1107,7 @@ mw.EmbedPlayer.prototype = {
 		// update media
 		this.mediaElement.updateSourceTimes( startNpt, endNpt );
 
-		// update mv_time
+		// update time
 		this.controlBuilder.setStatus( startNpt + '/' + endNpt );
 
 		// reset slider
@@ -1199,6 +1199,13 @@ mw.EmbedPlayer.prototype = {
 		this.triggeredEndDone = false;
 		this.preSequence = false;
 		this.postSequence = false;
+		
+		// Rest currentTime
+		this.currentTime = 0;
+		// Reset the playhead
+		this.updatePlayHead( 0 );
+		// update the status: 
+		this.controlBuilder.setStatus( this.getTimeRange() );
 		
 		// Add a loader to the embed player: 
 		this.pauseLoading();
@@ -1837,7 +1844,6 @@ mw.EmbedPlayer.prototype = {
 		// Reset the playhead
 		this.updatePlayHead( 0 );
 		// update the status: 
-		// update mv_time
 		this.controlBuilder.setStatus( this.getTimeRange() );
 	},
 
