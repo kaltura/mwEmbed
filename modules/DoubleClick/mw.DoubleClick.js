@@ -101,17 +101,12 @@ mw.DoubleClick.prototype = {
 			if( adType == 'midroll'  ||  adType == 'preroll' || adType == 'postroll'  ){
 				// All cuepoints act as "midrolls" 
 				_this.loadAndPlayVideoSlot( 'midroll', function(){
-					if( _this.embedPlayer.adTimeline ){
-						_this.embedPlayer.adTimeline.restorePlayer();
-					}
-					// play the restored entry ( restore propagation ) 
-					_this.embedPlayer.play();
-					_this.embedPlayer.stopEventPropagation();
-					// restore event Propagation after 100ms 
-					// prevents some residual doubleClick pause events from propagating )
+					_this.embedPlayer.adTimeline.restorePlayer();
+					// try to play again after a single MonitorRate wait time 
+					// double click player is not fully restored 
 					setTimeout(function(){
-						_this.embedPlayer.restoreEventPropagation();
-					}, 100)
+						_this.embedPlayer.play();
+					}, mw.getConfig( "EmbedPlayer.MonitorRate" ) );
 				}, cuePoint);
 			}
 		});
@@ -271,6 +266,9 @@ mw.DoubleClick.prototype = {
 			var vid = _this.embedPlayer.getPlayerElement();
 			adsManager.play( vid );
 			
+			// TODO this is almost the same as freewheel ad pause.. 
+			// we should add generic support for "adPause" in adSupport
+			
 			// Show the control bar with a ( force on screen option for iframe based clicks on ads ) 
 			// double click only gives us a "raw pause" 
 			$( vid ).bind( 'pause' + adClickPostFix, function(){
@@ -282,7 +280,7 @@ mw.DoubleClick.prototype = {
 				_this.embedPlayer.controlBuilder.showControlBar( true );
 				// Add a play binding: to restore hover 
 				$( vid ).bind( 'play' + adClickPostFix, function(){
-					// remove ad click fix.
+					// remove ad click binding
 					$( vid ).unbind( 'play' + adClickPostFix );
 					_this.embedPlayer.controlBuilder.restoreControlsHover();
 					// a restore _playControls restriction if in an ad ) 
