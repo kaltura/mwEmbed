@@ -274,11 +274,22 @@ mw.DoubleClick.prototype = {
 			// Show the control bar with a ( force on screen option for iframe based clicks on ads ) 
 			// double click only gives us a "raw pause" 
 			$( vid ).bind( 'pause' + adClickPostFix, function(){
+				// a click we want to  enable play button: 
+				_this.embedPlayer._playContorls = true;
+				// play interface update:
+				_this.embedPlayer.pauseInterfaceUpdate();
 				// force display the control bar: 
 				_this.embedPlayer.controlBuilder.showControlBar( true );
-				// add a play binding: to restore hover 
+				// Add a play binding: to restore hover 
 				$( vid ).bind( 'play' + adClickPostFix, function(){
+					// remove ad click fix.
+					$( vid ).unbind( 'play' + adClickPostFix );
 					_this.embedPlayer.controlBuilder.restoreControlsHover();
+					// a restore _playControls restriction if in an ad ) 
+					if( _this.embedPlayer.sequenceProxy.isInSequence ){
+						_this.embedPlayer._playContorls = false;
+					}
+					_this.embedPlayer.playInterfaceUpdate();
 				});
 			});
 			
