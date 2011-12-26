@@ -31,6 +31,11 @@ mw.KCuePoints.prototype = {
 		var currentCuePoint = this.getNextCuePoint(0);
 		var embedPlayer = this.embedPlayer;
 		
+		// Don't add any bindings if no cuePoint exists ) 
+		if( !currentCuePoint ){
+			return ;
+		}
+		
 		// Handle first cue point (preRoll)
 		if( currentCuePoint.startTime == 0 ) {
 			currentCuePoint.startTime = 1;
@@ -40,18 +45,29 @@ mw.KCuePoints.prototype = {
 		$( embedPlayer ).bind( "monitorEvent" + this.bindPostfix, function() {
 			var currentTime = embedPlayer.currentTime * 1000;
 			var cuePointType = _this.getRawAdSlotType( currentCuePoint );
+			
+			// Check if the currentCuePoint exists
+			if( ! currentCuePoint  ){
+				return ;
+			}
+			
 			// Don't trigger postrolls
-			// TODO: we should remove preroll / postroll from the cuePoints array and handle them different
+			// TODO: we should remove preroll / postroll from the cuePoints array and handle 
+			// via the adSupport sequence proxy
 			if( currentTime > currentCuePoint.startTime 
 					&& 
 				cuePointType != 'postroll' 
 					&& 
 				embedPlayer._propagateEvents 
 			){
-				// Trigger the cue point 
-				_this.triggerCuePoint( currentCuePoint );
+				// Make a copy of the cue point to be triggered.
+				// Sometimes the trigger can result in monitorEvent being called and an 
+				// infinite loop ( ie ad network error, no ad received, and restore player calling monitor() ) 
+				var cuePointToBeTriggered = $.extend( {}, currentCuePoint);
 				// Update the current Cue Point to the "next" cue point
 				currentCuePoint = _this.getNextCuePoint( currentTime  );
+				// Trigger the cue point 
+				_this.triggerCuePoint( cuePointToBeTriggered );
 			}
 		});
 
