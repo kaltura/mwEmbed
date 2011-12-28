@@ -543,7 +543,8 @@
 					'name' : iframeId,
 					'class' : baseClass + 'mwEmbedKalturaIframe',					
 					'height' : $( playerTarget ).height(),
-					'width' : $( playerTarget ).width()
+					'width' : $( playerTarget ).width(),
+					'allowfullscreen' : true
 				})
 				.attr('style', iframeStyle)
 				.css(iframeCss);
