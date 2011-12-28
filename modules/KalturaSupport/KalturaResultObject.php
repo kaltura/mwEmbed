@@ -993,7 +993,6 @@ class KalturaResultObject {
 	}
 	
 	function getEntryResult(){
-		global $wgKalturaEnableCuePointsRequest;
 		$client = $this->getClient();
 		$client->startMultiRequest();
 		try {
