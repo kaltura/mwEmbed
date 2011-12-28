@@ -33,10 +33,10 @@
 			// Add the hooks to the player manager			
 			$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 				// Add the addJsListener and sendNotification maps
-				embedPlayer.addJsListener = function(listenerString, globalFuncName){
+				embedPlayer.addJsListener = function( listenerString, globalFuncName ){
 					_this.addJsListener( embedPlayer, listenerString, globalFuncName );
 				};
-				embedPlayer.removeJsListener = function(listenerString, callbackName){
+				embedPlayer.removeJsListener = function( listenerString, callbackName ){
 					_this.removeJsListener( embedPlayer, listenerString, callbackName );
 				};
 				
@@ -72,7 +72,7 @@
 			});
 			
 			$( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {
-				$( playerProxy ).bind( 'jsListenerEvent', function(event, globalFuncName, listenerArgs){
+				$( playerProxy ).bind( 'jsListenerEvent', function( event, globalFuncName, listenerArgs ){
 					// check if globalFuncName has descendant properties
 					if( typeof window[ globalFuncName ] == 'function' ){
 						window[ globalFuncName ].apply( window[ globalFuncName ], listenerArgs );
