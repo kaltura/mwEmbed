@@ -340,7 +340,7 @@ mw.FreeWheelController.prototype = {
 			$( vid ).bind( 'play.fwPlayBind', function(){
 				$( vid ).unbind( 'play.fwPlayBind' );
 				// Restore hover property if set
-				_this.restoreControlsHover();
+				_this.embedPlayer.controlBuilder.restoreControlsHover();
 				// a restore _playControls restriction if in an ad ) 
 				if( _this.embedPlayer.sequenceProxy.isInSequence ){
 					_this.embedPlayer._playContorls = false;
