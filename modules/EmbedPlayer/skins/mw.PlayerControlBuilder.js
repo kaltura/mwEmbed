@@ -929,7 +929,9 @@ mw.PlayerControlBuilder.prototype = {
 
 	},
 	restoreControlsHover:function(){
-		this.keepControlBarOnScreen = false;
+		if( this.isOverlayControls() ){
+			this.keepControlBarOnScreen = false;
+		}
 	},
 
 	/**
