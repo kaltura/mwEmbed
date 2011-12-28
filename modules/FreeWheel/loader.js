@@ -21,7 +21,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		if( pluginName){
 			mw.load( ["FreeWheel"], function(){
 				// pass the freewheel plugin 
-				embedPlayer.freeWheel = new mw.FreeWheelControler( embedPlayer, callback, pluginName );
+				embedPlayer.freeWheel = new mw.FreeWheelController( embedPlayer, callback, pluginName );
 			});
 		} else {
 			// No FreeWheel plugin issue callback to continue player build out

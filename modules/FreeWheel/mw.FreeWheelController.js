@@ -7,11 +7,11 @@ mw.setConfig({
 	'FreeWheel.AdManagerUrl': 'http://adm.fwmrm.net/p/release/latest-JS/adm/prd/AdManager.js'
 });
 
-mw.FreeWheelControler = function( embedPlayer, callback, pluginName ){
+mw.FreeWheelController = function( embedPlayer, callback, pluginName ){
 	return this.init( embedPlayer, callback, pluginName );
 };
 
-mw.FreeWheelControler.prototype = {
+mw.FreeWheelController.prototype = {
 	
 	// The freeWheel adManager 
 	adManager: null,
@@ -330,12 +330,17 @@ mw.FreeWheelControler.prototype = {
 				vid.controls = false;
 			},0);
 			
+			// force display the control bar ( in case it was hiddedn )  
+			_this.embedPlayer.controlBuilder.showControlBar( true );
+			
 			// a click we want to  enable play button: 
 			_this.embedPlayer._playContorls = true;
 			// play interface update:
 			_this.embedPlayer.pauseInterfaceUpdate();
 			$( vid ).bind( 'play.fwPlayBind', function(){
 				$( vid ).unbind( 'play.fwPlayBind' );
+				// Restore hover property if set
+				_this.restoreControlsHover();
 				// a restore _playControls restriction if in an ad ) 
 				if( _this.embedPlayer.sequenceProxy.isInSequence ){
 					_this.embedPlayer._playContorls = false;
