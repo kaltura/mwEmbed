@@ -2698,9 +2698,9 @@ if( mw.isStaticPackge() && !window.jQuery ){
  */
 
 if( window.jQuery ){
-	if( ! mw.versionIsAtLeast( '1.4.2', jQuery.fn.jquery ) ){
+	if( ! mw.versionIsAtLeast( '1.3.2', jQuery.fn.jquery ) ){
 		if( window.console && window.console.log ) {
-			console.log( 'Error Kaltura HTML5 requires jQuery 1.4 or above' );
+			console.log( 'Error Kaltura HTML5 requires jQuery 1.3.2 or above' );
 		}
 	}
 	var dollarFlag = false;

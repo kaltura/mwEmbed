@@ -1176,6 +1176,10 @@ function kGetKalturaEmbedSettings( swfUrl, flashvars ){
 	if( !flashvars ){
 		flashvars= {};
 	}
+
+	var trim = function ( str ) {
+		return str.replace(/^\s+|\s+$/g,"");
+	}
 	
 	// Include flashvars
 	embedSettings.flashvars = flashvars;	
@@ -1204,7 +1208,7 @@ function kGetKalturaEmbedSettings( swfUrl, flashvars ){
 				embedSettings.cache_st = prevUrlPart;
 			break;
 		}
-		prevUrlPart = curUrlPart;
+		prevUrlPart = trim( curUrlPart );
 	}
 	// Add in Flash vars embedSettings ( they take precedence over embed url )
 	for( var key in flashvars ){
