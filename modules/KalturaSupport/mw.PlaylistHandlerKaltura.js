@@ -226,12 +226,12 @@ mw.PlaylistHandlerKaltura.prototype = {
 			_this.clipList = [];
 			var playlistData;
 			// The api does strange things with multi-playlist vs single playlist
-			if( playlistDataResult[0].id ){
+			if( playlistDataResult[0] && playlistDataResult[0].id ){
 				playlistData = playlistDataResult;
-			} else if( playlistDataResult[0][0].id ){
+			} else if( playlistDataResult[0] && playlistDataResult[0][0].id ){
 				playlistData = playlistDataResult[0];
 			} else {
-				mw.log("Error: kaltura playlist:" + playlist_id + " could not load:" + playlistData.code);
+				mw.log("Error: kaltura playlist:" + playlist_id + " could not load:" + playlistDataResult.code);
 			}			
 			mw.log( 'kPlaylistGrabber::Got playlist of length::' +   playlistData.length );
 			if( playlistData.length > mw.getConfig( "Playlist.MaxClips" ) ){
