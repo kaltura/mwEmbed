@@ -65,6 +65,11 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	// TODO Minify via php_min
 	// ob_gzhandler automatically checks for browser gzip support and gzips
 	ob_start("ob_gzhandler");
+
+	// Create cache directory if not exists
+	if( ! file_exists( $wgScriptCacheDirectory ) ) {
+		mkdir( $wgScriptCacheDirectory );
+	}
 	
 	$loaderCacheFile = $wgScriptCacheDirectory . '/loader.min.' . $wgMwEmbedVersion . '.js';
 
