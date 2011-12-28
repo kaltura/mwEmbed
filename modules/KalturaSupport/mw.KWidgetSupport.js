@@ -509,7 +509,14 @@ mw.KWidgetSupport.prototype = {
 					callback( acStatus );
 					return ;
 				}
-			}					
+			}
+
+			// Apple adaptive streaming is sometimes broken for short videos
+			// If video duration is less then 10 seconds, we should disable it
+			if( playerData.meta.duration < 10 ) {
+				mw.setConfig('Kaltura.UseAppleAdaptive', false);
+			}
+
 			// Get device sources 
 			var sources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), playerData.flavors );
 			callback( sources );

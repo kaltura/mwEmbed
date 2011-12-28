@@ -710,6 +710,12 @@ class KalturaResultObject {
 		$ipadFlavors = trim($ipadFlavors, ",");
 		$iphoneFlavors = trim($iphoneFlavors, ",");
 
+		// Apple adaptive streaming is sometimes broken for short videos
+		// If video duration is less then 10 seconds, we should disable it
+		if( $resultObject['meta']->duration < 10 ) {
+			$wgKalturaUseAppleAdaptive = false;
+		}
+
 		// Create iPad flavor for Akamai HTTP
 		if ( $ipadFlavors && $wgKalturaUseAppleAdaptive ){
 			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/' . $wgHTTPProtocol;
