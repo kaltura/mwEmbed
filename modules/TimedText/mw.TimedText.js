@@ -140,7 +140,7 @@ mw.includeAllModuleMessages();
 				_this.monitor();
 			} );
 
-			$( embedPlayer ).bind( 'onplay'+ this.bindPostFix, function() {
+			$( embedPlayer ).bind( 'firstPlay'+ this.bindPostFix, function() {
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
 				// Hide the caption menu if presently displayed
