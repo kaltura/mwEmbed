@@ -538,10 +538,10 @@
 				case 'playerStateChange':					
 					// TODO add in other state changes
 					b( 'onpause', function(){
-						callback( 'pause', embedPlayer.id );
+						callback( 'paused', embedPlayer.id );
 					});
 					b( 'onplay', function(){
-						callback( 'onplay', embedPlayer.id );
+						callback( 'playing', embedPlayer.id );
 					});
 					break;
 				case 'doStop':
