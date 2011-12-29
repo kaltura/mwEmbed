@@ -1301,6 +1301,14 @@ window.kWidget = {
 			this.readyCallbacks.shift()( widgetId );
 		}
 		this.readyWidgets[ widgetId ] = true;
+	},
+
+	/*
+	 * Search the DOM for Object tags and rewrite them to Iframe if needed
+	 */
+	rewriteObjectTags: function() {
+		kAddedScript = false;
+		kCheckAddScript();
 	}
 };
 // Support upper case kWidget calls
