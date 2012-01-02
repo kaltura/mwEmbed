@@ -175,13 +175,13 @@ mw.NielsenCombined.prototype = {
 	},
 	round: function( floatValue ){
 		var roundedValue = Math.round( floatValue * 100 ) / 100;
-		var floatPoint = Math.floor( roundedValue ) - roundedValue;
-		var str = '' + floatPoint;
-		str = str.split('.')[1];
-		while (str.length < 2) {
-	        str = str + '0';
-	    }
-		return floatPoint + '.' + str;
+		var str = '' + roundedValue;
+		if( str.split('.').length == 1 ){
+			str += '.00';
+		} else if(  str.split('.')[1].length == 1){
+			str += '0';
+		}
+		return str;
 	},
 	unbindPlayerTracking: function(){
 		this.embedPlayer.unbindHelper( this.trackerPostFix );
