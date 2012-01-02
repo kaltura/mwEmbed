@@ -174,7 +174,13 @@ mw.NielsenCombined.prototype = {
 		});
 	},
 	round: function( floatValue ){
-		return Math.round( floatValue * 100 ) / 100;
+		var roundedValue = Math.round( floatValue * 100 ) / 100;
+		var floatPoint = Math.floor( roundedValue ) - roundedValue;
+		var str = '' + floatPoint;
+		while (str.length < 2) {
+	        str = str + '0';
+	    }
+		return floatPoint + '.' + str;
 	},
 	unbindPlayerTracking: function(){
 		this.embedPlayer.unbindHelper( this.trackerPostFix );
@@ -184,7 +190,7 @@ mw.NielsenCombined.prototype = {
 		// some ad providers such as freewheel inserts a new video tag into the page 
 		// ( track that instead of the first video source if present ) 
 		if( $( this.embedPlayer.getPlayerElement() ).siblings('video').length ){
-			return $( this.embedPlayer.getPlayerElement() ).siblings('video').get(0);
+			return $( this.embedPlayer.getPlayerElement() ).siblings('video')[0];
 		} else {
 			return this.embedPlayer.getPlayerElement();
 		}
@@ -224,7 +230,7 @@ mw.NielsenCombined.prototype = {
 			_this.unbindPlayerTracking();
 		})
 		
-		
+			
 		// on pause:
 		b( 'pause', function(){
 			// pause is triggered as part of player end state ( don't dispatch if eventProgatation is off ) 
