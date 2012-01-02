@@ -177,6 +177,7 @@ mw.NielsenCombined.prototype = {
 		var roundedValue = Math.round( floatValue * 100 ) / 100;
 		var floatPoint = Math.floor( roundedValue ) - roundedValue;
 		var str = '' + floatPoint;
+		str = str.split('.')[1];
 		while (str.length < 2) {
 	        str = str + '0';
 	    }
