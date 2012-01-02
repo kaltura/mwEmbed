@@ -62,6 +62,12 @@ mw.PlayerControlBuilder.prototype = {
 	// Local storage of ControlBar Callback
 	hideControlBarCallback: false,
 
+	// Flag to store controls status (disabled/enabled)
+	controlsDisabled: false,
+
+	// binding postfix
+	bindPostfix: '.controlBuilder',
+	
 	/**
 	* Initialization Object for the control builder
 	*
@@ -126,11 +132,8 @@ mw.PlayerControlBuilder.prototype = {
 		} else {
 			embedPlayer.height =  embedPlayer.$interface.height() - this.getHeight();
 			$( embedPlayer ).css('height', embedPlayer.height +'px' );
-			// update native element height ( and reset top offset) 
-			$('#' + embedPlayer.pid ).css({
-				'top' : '0px',
-				'height': embedPlayer.height
-			});
+			// update native element height:
+			$('#' + embedPlayer.pid ).css('height', embedPlayer.height);
 		}
 
 		$controlBar.css( {
@@ -311,7 +314,7 @@ mw.PlayerControlBuilder.prototype = {
 			size.height = vid.videoHeight;
 		}
 		// check for posterImage size: ( should have Intrinsic aspect size as well ) 
-		var img = this.embedPlayer.$interface.find('.playerPoster').get(0);
+		var img = this.embedPlayer.$interface.find('.playerPoster')[0];
 		if( !size.width && img && img.naturalWidth){
 			size.width = img.naturalWidth;
 		}
@@ -350,7 +353,6 @@ mw.PlayerControlBuilder.prototype = {
 	 */
 	toggleFullscreen: function( forceClose ) {
 		var _this = this;
-		
 		// Do normal in-page fullscreen handling: 
 		if( this.fullscreenMode ){			
 			this.restoreWindowPlayer();
@@ -394,8 +396,9 @@ mw.PlayerControlBuilder.prototype = {
 		$( document ).bind( 'touchend.fullscreen', function(e){
 			$( embedPlayer ).trigger( 'onTouchEnd' );
 		});
-		if( triggerOnOpenFullScreen )
+		if( triggerOnOpenFullScreen ) {
 			$( embedPlayer ).trigger( 'onOpenFullScreen' );
+		}
 	},
 	doFullScreenPlayerDom: function(){
 		var _this = this;
@@ -454,9 +457,9 @@ mw.PlayerControlBuilder.prototype = {
 		var leftOffset = '0px';
 
 		// Check if we have an offsetParent
-		if( $interface.offsetParent().get(0).tagName 
+		if( $interface.offsetParent()[0].tagName 
 				&& 
-			$interface.offsetParent().get(0).tagName.toLowerCase() != 'body' ) 
+			$interface.offsetParent()[0].tagName.toLowerCase() != 'body' ) 
 		{
 			topOffset = -this.windowOffset.top + 'px';
 			leftOffset = -this.windowOffset.left + 'px';
@@ -608,13 +611,19 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var $interface = embedPlayer.$interface;
 		var targetAspectSize = _this.getAspectPlayerWindowCss( size );
+		// Setup button scale to not reflect controls offset  
+		var butonScale = $.extend( {}, interfaceCss);
+		if( !_this.isOverlayControls() ){
+			butonScale['height'] =  butonScale['height'] - this.getHeight();
+		}
+		
 		if( animate ){
 			$interface.animate( interfaceCss );
 			
 			$interface.find('.playerPoster').animate( targetAspectSize  );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large').animate(  _this.getPlayButtonPosition( targetAspectSize ) );
+			$interface.find('.play-btn-large').animate(  _this.getPlayButtonPosition( butonScale ) );
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
@@ -626,8 +635,9 @@ mw.PlayerControlBuilder.prototype = {
 			$interface.css( interfaceCss );
 			// Update player size
 			$( embedPlayer ).css( targetAspectSize );
+			
 			// Update play button pos
-			$interface.find('.play-btn-large').css(  _this.getPlayButtonPosition( targetAspectSize ) );
+			$interface.find('.play-btn-large').css(  _this.getPlayButtonPosition( butonScale ) );
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
@@ -739,56 +749,36 @@ mw.PlayerControlBuilder.prototype = {
 		_this.onControlBar = false;
 
 		// Remove any old interface bindings
-		$interface.unbind();
+		$( embedPlayer ).unbind( this.bindPostfix );
 
 		var bindFirstPlay = false;		
 		_this.addRightClickBinding();
 		
+		// add the player click bindings
+		_this.addPlayerClickBindings();
 		
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
-		$(embedPlayer).unbind('onplay.ctrl').bind('onplay.ctrl', function() { //Only bind once played
-			if(bindFirstPlay) {
-				return ;
-			}
-			bindFirstPlay = true;
-			
-			
-			var dblClickTime = 300;
-			var lastClickTime = 0;
-			var didDblClick = false;
+		$(embedPlayer).bind('onplay' + this.bindPostfix, function() { //Only bind once played
 			// add right click binding again ( in case the player got swaped )
-			_this.addRightClickBinding()
-			
-			// Remove parent dbl click ( so we can handle play clicks )
-			$( embedPlayer ).unbind( "click.onplayer" ).bind( "click.onplayer", function() {
-				// Don't bind anything if native controls displayed:
-				if( embedPlayer.useNativePlayerControls() ) {
-					return ;
-				}		
-				var clickTime = new Date().getTime();
-				if( clickTime -lastClickTime < dblClickTime ) {
-					//embedPlayer.fullscreen(); // Why do we need to call fullscreen? we already have DblClick binding (line: 1880)
-					didDblClick = true;
-					setTimeout( function(){ didDblClick = false; },  dblClickTime + 10 );
-				}
-				lastClickTime = clickTime;
-				setTimeout( function(){
-					// check if no click has since the time we called the setTimeout
-					if( !didDblClick ){
-						if( embedPlayer.paused ) {
-							embedPlayer.play();
-						} else {
-							embedPlayer.pause();
-						}
-					}
-				}, dblClickTime );
-				
-			});		
+			_this.addRightClickBinding();
 		});
 		
+		// Bind to EnableInterfaceComponents
+		$( embedPlayer ).bind('onEnableInterfaceComponents' + this.bindPostfix, function() {
+			_this.controlsDisabled = false;
+			_this.addPlayerClickBindings();
+		});
+
+		// Bind to DisableInterfaceComponents
+		$( embedPlayer ).bind('onDisableInterfaceComponents' + this.bindPostfix, function() {
+			_this.controlsDisabled = true;
+			_this.removePlayerClickBindings();
+		});
+		
+		
 		var bindSpaceUp = function(){
-			$(window).bind('keyup.mwPlayer', function(e) {
-				if(e.keyCode == 32) {
+			$(window).bind('keyup' + this.bindPostfix, function(e) {
+				if( e.keyCode == 32 ) {
 					if(embedPlayer.paused) {
 						embedPlayer.play();
 					} else {
@@ -800,7 +790,7 @@ mw.PlayerControlBuilder.prototype = {
 		};
 		
 		var bindSpaceDown = function() {
-			$(window).unbind('keyup.mwPlayer');
+			$(window).unbind( 'keyup.mwPlayer' );
 		};
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
@@ -811,15 +801,17 @@ mw.PlayerControlBuilder.prototype = {
 		} else { // hide show controls:
 			
 			// Show controls on click: 
-			$(embedPlayer).unbind('click.showCtrlBar').bind('click.showCtrlBar', function(){
+			$(embedPlayer).bind( 'click' + this.bindPostfix , function(){
 				_this.showControlBar();
+				return true;
 			});
 			
 			//$interface.css({'background-color': 'red'});
 			// Bind a startTouch to show controls
-			$interface.bind( 'touchstart', function() {
+			$interface.bind( 'touchstart' + this.bindPostfix, function() {
 				_this.showControlBar();
 				// ( once the user touched the video "don't hide" )
+				return true;
 			} );
 
 			var hoverIntentConfig = {
@@ -850,7 +842,7 @@ mw.PlayerControlBuilder.prototype = {
 				embedPlayer.$interface.find( '.control-bar' ).hover( function(e) {
 					_this.onControlBar = true;
 					embedPlayer.$interface.find( '.control-bar' ).show();
-				}, function(e) {
+				}, function( e ) {
 					if (!_this.hideControlBarCallback) {
 						_this.hideControlBarCallback = setTimeout(function(){
 							_this.hideControlBar();
@@ -885,8 +877,56 @@ mw.PlayerControlBuilder.prototype = {
 			this.addSkinControlBindings();
 		}
 
-		mw.log('trigger::addControlBindingsEvent');
-		$( embedPlayer ).trigger( 'addControlBindingsEvent');
+		mw.log( 'trigger::addControlBindingsEvent' );
+		$( embedPlayer ).trigger( 'addControlBindingsEvent' );
+	},
+	removePlayerClickBindings: function(){
+		$( this.embedPlayer )
+			.unbind( "click" + this.bindPostfix )
+			.unbind( "dblclick" + this.bindPostfix );
+	},
+	addPlayerClickBindings: function(){
+
+		var _this = this;
+		var embedPlayer = this.embedPlayer;
+		
+		// Setup "dobuleclick" fullscreen binding to embedPlayer ( if enabled ) 
+		if ( this.supportedComponents['fullscreen'] ){
+			$( embedPlayer ).bind( "dblclick" + this.bindPostfix, function(){
+				embedPlayer.fullscreen();
+			});
+		}
+		
+		var dblClickTime = 300;
+		var lastClickTime = 0;
+		var didDblClick = false;
+	
+		// Remove parent dbl click ( so we can handle play clicks )
+		$( embedPlayer ).bind( "click" + this.bindPostfix, function() {
+			// Don't bind anything if native controls displayed:
+			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() ) {
+				return true;
+			}		
+			var clickTime = new Date().getTime();
+			if( clickTime -lastClickTime < dblClickTime ) {
+				didDblClick = true;
+				setTimeout( function(){ 
+					didDblClick = false; 
+				},  dblClickTime + 10 );
+			}
+			lastClickTime = clickTime;
+			setTimeout( function(){
+				// check if no click has since the time we called the setTimeout
+				if( !didDblClick ){
+					if( embedPlayer.paused ) {
+						embedPlayer.play();
+					} else {
+						embedPlayer.pause();
+					}
+				}
+			}, dblClickTime );
+			return true;
+		});
 	},
 	addRightClickBinding: function(){
 		var embedPlayer = this.embedPlayer;
@@ -933,7 +973,6 @@ mw.PlayerControlBuilder.prototype = {
 			this.keepControlBarOnScreen = false;
 		}
 	},
-
 	/**
 	* Show the control bar
 	*/
@@ -1002,6 +1041,12 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Past all tests OverlayControls is true:
 		return true;
+	},
+
+	/* Check if the controls are disabled */
+
+	isControlsDisabled: function() {
+		return this.controlsDisabled;
 	},
 
 	/**
@@ -1868,10 +1913,6 @@ mw.PlayerControlBuilder.prototype = {
 			'w' : 70,
 			'h' : 53,
 			'o' : function( ctrlObj ) {
-				var baseHeight =  ctrlObj.isOverlayControls() 
-					? ctrlObj.embedPlayer.$interface.height()
-					: ctrlObj.embedPlayer.$interface.height() - ctrlObj.getHeight();
-				
 				return $( '<div/>' )
 					.attr( {
 						'title'	: gM( 'mwe-embedplayer-play_clip' ),
@@ -1879,8 +1920,8 @@ mw.PlayerControlBuilder.prototype = {
 					} )
 					// Get dynamic position for big play button
 					.css( ctrlObj.getPlayButtonPosition({
-						'width' : ctrlObj.embedPlayer.$interface.width(),
-						'height' :  baseHeight
+						'width' : ctrlObj.embedPlayer.getWidth(),
+						'height' :  ctrlObj.embedPlayer.getHeight()
 					}) )
 					// Add play hook:
 					.click( function() {
@@ -1975,11 +2016,6 @@ mw.PlayerControlBuilder.prototype = {
 		'fullscreen': {
 			'w': 28,
 			'o': function( ctrlObj ) {
-				// Setup "dobuleclick" fullscreen binding to embedPlayer
-				$( ctrlObj.embedPlayer ).unbind("dblclick").bind("dblclick", function(){
-					ctrlObj.embedPlayer.fullscreen();
-				});
-
 				$btn = $( '<div />' )
 						.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
 						.addClass( "ui-state-default ui-corner-all ui-icon_link rButton fullscreen-btn" )
