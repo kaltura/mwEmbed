@@ -1,0 +1,2 @@
+Some simple plugins for the iframe. Someday we should refactor the iframe support, to put things
+like access control into this iframePlugin framework as well. 

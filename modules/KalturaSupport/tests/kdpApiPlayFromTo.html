@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Kdp Api Play From/To attributes</title>
+		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+		<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+		<script type="text/javascript">
+		var kdp;
+		function jsCallbackReady( playerId ) {
+			console.log('jsCallback Ready', playerId );
+			kdp = $( '#' + playerId )[0];
+
+			kdp.addJsListener("playerPlayed", "runTest");
+		}
+		function runTest() {
+			console.log( 'play time: ' + kdp.evaluate('{video.player.currentTime}') );
+			console.log( 'start time: ' + toSeconds( $("#startTime").val() ) );
+		}
+		
+		$( function() {
+			$("#preview").click( function() {
+
+				var startTime = $("#startTime").val(),
+					endTime = $("#endTime").val();
+
+				console.log('Start Time: ' + startTime + ', End Time: ' + endTime );
+
+				startTime = toSeconds(startTime);
+				endTime = toSeconds(endTime);
+
+				kdp.sendNotification("doStop");
+
+				kdp.setKDPAttribute("mediaProxy", "mediaPlayFrom", startTime );
+				kdp.setKDPAttribute("mediaProxy", "mediaPlayTo", endTime );
+
+				kdp.sendNotification("doPlay");
+			});
+		});
+
+		var toSeconds = function(time) {
+			var arr = time.split(":");
+			var seconds = parseFloat( (arr[0] * 60) * 60 );
+			seconds += parseFloat( arr[1] * 60 );
+			seconds += parseFloat ( arr[2] );
+			return seconds;
+		};
+
+		var toHHMMSS = function (sec) {
+			var sec_numb    = parseInt(sec);
+			var hours   = Math.floor(sec_numb / 3600);
+			var minutes = Math.floor((sec_numb - (hours * 3600)) / 60);
+			var seconds = sec_numb - (hours * 3600) - (minutes * 60);
+
+			if (hours   < 10) {hours   = "0"+hours;}
+			if (minutes < 10) {minutes = "0"+minutes;}
+			if (seconds < 10) {seconds = "0"+seconds;}
+			var time    = hours+':'+minutes+':'+seconds;
+			return time;
+		}
+		</script>
+		<script type="text/javascript">
+		/*
+		function jsKalturaPlayerTest( videoId ){
+			// Name this module
+			module( "CuePoints" );
+
+			var kdp = $j( '#kdp3' )[0];
+
+			asyncTest("start cue point", function(){
+				kalturaQunitWaitForPlayer(function(){
+					$j( testEventObject ).bind('preCueEvent', function(event, qPoint){
+						var type = (qPoint.context) ? 'Ad' : 'Code';
+						equal( qPoint.cuePoint.name, "Preroll", "Preroll event sent" );
+						equal( qPoint.context, "pre", "Preroll Ad cue event sent" );
+						// continue testing
+						start();
+					});
+					kdp.sendNotification('doPlay');
+				});
+			});
+			asyncTest("CuePoint 1 at 3 seconds", function(){
+				$j( testEventObject ).bind('cueEvent', function( event, qPoint ){
+					equal( qPoint.cuePoint.name, "cuePoint 1", "CuePoint 1 event text sent");
+					equal( qPoint.cuePoint.startTime, 3000, "CuePoint 1 Ad cue event sent" );
+					// Finish tests:
+					kdp.sendNotification('doPause');
+					start();
+				});
+			});
+
+		}
+		*/
+		</script>
+	</head>
+	<body>
+		<h1>Kdp Api Play From/To attributes</h1>
+		<a href="?forceMobileHTML5">Force Mobile HTML5 Player</a><br /><br />
+		<object id="kdp3" name="kdp3" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3" data="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&externalInterfaceDisabled=false&steamerType=rtmp" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/423851/sp/42385100/thumbnail/entry_id/1_sfrj36g3/width/120/height/90/bgcolor/000000/type/2"></a> <span property="dc:description" content=""></span><span property="media:title" content="LMFAO - Party Rock Anthem ft. Lauren Bennett, GoonRock.mp4"></span> <span property="media:width" content="400"></span><span property="media:height" content="333"></span> <span property="media:type" content="application/x-shockwave-flash"></span> </object>
+		<br /><br />
+		Start Time: <input id="startTime" value="00:00:10" /><br />
+		End Time: <input id="endTime" value="00:00:30" /><br />
+		<input id="preview" type="button" value=" Preview " />
+	</body>
+</html>

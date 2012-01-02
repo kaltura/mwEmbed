@@ -1,0 +1,53 @@
+
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/" xmlns:kaltura="http://kaltura.com/playlist/1.0"> 
+  <channel> 
+    <description>Kaltura's mRss</description> 
+    <title>Kaltura's mRss</title> 
+    <link></link> 
+    <item> 
+      <description>Kaltura Item</description> 
+      <guid isPermaLink="false">507031|0_ekdxuf6s</guid> 
+      <link/> 
+      <pubDate>2011-04-14 15:29:23</pubDate> 
+      <media:content url="http://cdnbakmi.kaltura.com/p/507031/sp/50703100/flvclipper/entry_id/0_ekdxuf6s/version/0/ext/flv" type="video/x-flv" medium="video" duration="2026" lang="en"></media:content> 
+      <media:title type="plain">0040</media:title> 
+      <media:description>Decatur @ Bob Jones (blue) 10.22.10</media:description> 
+      <media:keywords>aapid_1046, aapid_1047, aapid_1147, aapid_1148, aapid_1149, aapid_1150, aapid_1023, aapid_1024, aapid_1025, aapid_1001, aapid_4db1041946406, aapid_4db1041946643, aapid_4db10419556f0, aapid_4db1041955813, aapid_4db104195593d, aapid_4db1041955ae5, aapid_4db1041939dac, aapid_4db1041944038, aapid_4db1041944199, aapid_4db10419442d4</media:keywords> 
+      <media:thumbnail url="http://cdnbakmi.kaltura.com/p/507031/sp/50703100/thumbnail/entry_id/0_ekdxuf6s/version/100001/width/640/height/480"></media:thumbnail> 
+      <media:credit role="kaltura partner">507031</media:credit> 
+      <kaltura:entryId>0_ekdxuf6s</kaltura:entryId> 
+      <kaltura:views>270</kaltura:views> 
+      <kaltura:plays>9</kaltura:plays> 
+    </item> 
+    <item> 
+      <description>Kaltura Item</description> 
+      <guid isPermaLink="false">507031|0_l51y42j6</guid> 
+      <link/> 
+      <pubDate>2011-04-14 15:29:23</pubDate> 
+      <media:content url="http://cdnbakmi.kaltura.com/p/507031/sp/50703100/flvclipper/entry_id/0_l51y42j6/version/0/ext/flv" type="video/x-flv" medium="video" duration="485" lang="en"></media:content> 
+      <media:title type="plain">568</media:title> 
+      <media:description>ReggieRagland(2012)BobJones(AL)</media:description> 
+      <media:keywords>aapid_4db1041939dac</media:keywords> 
+      <media:thumbnail url="http://cdnbakmi.kaltura.com/p/507031/sp/50703100/thumbnail/entry_id/0_l51y42j6/version/100001/width/640/height/480"></media:thumbnail> 
+      <media:credit role="kaltura partner">507031</media:credit> 
+      <kaltura:entryId>0_l51y42j6</kaltura:entryId> 
+      <kaltura:views>1</kaltura:views> 
+      <kaltura:plays>0</kaltura:plays> 
+    </item> 
+    <item> 
+      <description>Kaltura Item</description> 
+      <guid isPermaLink="false">507031|0_xr4t15hh</guid> 
+      <link/> 
+      <pubDate>2011-04-14 15:29:23</pubDate> 
+      <media:content url="http://cdnbakmi.kaltura.com/p/507031/sp/50703100/flvclipper/entry_id/0_xr4t15hh/version/0/ext/flv" type="video/x-flv" medium="video" duration="1641" lang="en"></media:content> 
+      <media:title type="plain">630</media:title> 
+      <media:description>Frostproof@BobJones(Orange)10(FL)</media:description> 
+      <media:keywords>aapid_4db1041939dac, aapid_4db1041944038, aapid_4db1041944199, aapid_4db10419442d4</media:keywords> 
+      <media:thumbnail url="http://cdnbakmi.kaltura.com/p/507031/sp/50703100/thumbnail/entry_id/0_xr4t15hh/version/100001/width/640/height/480"></media:thumbnail> 
+      <media:credit role="kaltura partner">507031</media:credit> 
+      <kaltura:entryId>0_xr4t15hh</kaltura:entryId> 
+      <kaltura:views>1</kaltura:views> 
+      <kaltura:plays>0</kaltura:plays> 
+    </item> 
+  </channel> 
+</rss> 
