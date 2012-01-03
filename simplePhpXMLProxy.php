@@ -290,10 +290,10 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
   	}  
   }
  
-  // check if there is extra header info leading up to the xml: 
-  if( strpos( $contents, '﻿<?xml' ) !== false &&  strpos( $contents, '﻿<?xml' ) != 0 ){
+  // Check if there is extra header info leading up to the xml: 
+  if( strpos( $contents, '﻿<?xml' ) !== false &&  strpos( $contents, '<?xml' ) != 0 ){
   	// strip all leading conetnt 
-  	$contents = substr( $contents, strpos( $contents, '﻿<?xml' ) );
+  	$contents = trim( substr( $contents, strpos( $contents, '<?xml' ) ) );
   }
   
   //$encodeCDATASections = false;
