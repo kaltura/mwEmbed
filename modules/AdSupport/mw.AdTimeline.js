@@ -216,7 +216,8 @@ mw.AdTimeline.prototype = {
 
 					/** TODO support postroll bumper and leave behind */
 					if( playedAnAdFlag ){
-						embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+						embedPlayer.switchPlaySrc( _this.originalSrc, function( video ){
+								video.pause(); // make sure we pause the video
 								_this.restorePlayer();
 								// Restore ondone interface: 
 								embedPlayer.onDoneInterfaceFlag = true;

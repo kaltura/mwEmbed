@@ -315,13 +315,13 @@ mw.KAds.prototype = {
 		};
 		
 		$( embedPlayer ).bind( 'monitorEvent', function(){
-			if( (embedPlayer.currentTime > overlayConfig.start) && (embedPlayer.currentTime < overlayConfig.end) && !startOvelrayDisplayed){
+			if( (embedPlayer.currentTime > overlayConfig.start) && (embedPlayer.currentTime < overlayConfig.end) && !startOvelrayDisplayed && !embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
 				lastDisplay = embedPlayer.currentTime;
 				startOvelrayDisplayed = true;
 				mw.log("KAds::displayOverlay::startOvelrayDisplayed " + startOvelrayDisplayed)
 				displayOverlay();
 			}
-			if( startOvelrayDisplayed && embedPlayer.currentTime > ( lastDisplay + parseInt( overlayConfig.frequency ) )  ){
+			if( startOvelrayDisplayed && embedPlayer.currentTime > ( lastDisplay + parseInt( overlayConfig.frequency ) ) && !embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
 				// reset the lastDisplay time: 
 				mw.log("KAds::displayOverlay::overlayConfig.frequency ct:" +embedPlayer.currentTime + ' > ' + ( lastDisplay + parseInt( overlayConfig.frequency) ) )
 				displayOverlay();
