@@ -173,6 +173,9 @@ if ( !$url ) {
 } else {
   $ch = curl_init( $url );
   
+  // Always follow redirects: 
+  curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
+  
   if ( strtolower($_SERVER['REQUEST_METHOD']) == 'post' ) {
     curl_setopt( $ch, CURLOPT_POST, true );
     curl_setopt( $ch, CURLOPT_POSTFIELDS, $_POST );
@@ -222,10 +225,9 @@ if( mb_detect_encoding($contents, 'UTF-8', true) != "UTF-8" ) {
 	$contents = utf8_encode( $contents );
 }
 // remove leading ? in some kaltura cc xml responses :(
-if( $contents[0] == '?' ){
+if( is_string( $contents ) && $contents[0] == '?' ){
 	$contents = substr( $contents, 1 );
 }
-
 
 // Split header text into an array.
 $header_text = preg_split( '/[\r\n]+/', $header );
