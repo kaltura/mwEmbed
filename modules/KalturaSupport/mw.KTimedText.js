@@ -40,13 +40,14 @@
 			// Update the layout options per existing layout or uiConf preference. 
 			if( existingLayout !== null ){
 				embedPlayer.timedText.selectLayout( existingLayout );
-			} else if( _this.kVars['hideClosedCaptions'] == true ){
+			} else if( _this.kVars[ 'hideClosedCaptions' ] == true ){
 				embedPlayer.timedText.selectLayout( 'off' );
 			}
 			// Bind player: 
 			_this.bindPlayer( embedPlayer );
 		},
 		bindPlayer: function( embedPlayer ){
+			var _this = this;
 			// remove any old timed text bindings:
 			$( embedPlayer ).unbind( this.bindPostfix );
 			
@@ -68,7 +69,21 @@
 						embedPlayer.timedText.selectLayout( 'off' );
 						break;
 				}
-			}); 
+			});
+			
+			// Support SetKDP attribute style caption updates
+			$( embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostfix, function( event, componentName, property, value ){
+				if( componentName == 'closedCaptions' ){
+					_this.kVars[ property ] = value;
+					if( property == 'ccUrl' ){
+						// empty the text sources:
+						embedPlayer.timedText.textSources = null;
+						// re-setup sources will run loadTextSources 
+						embedPlayer.timedText.setupTextSources();
+					}
+				}
+			});
+			
 		},
 		getKalturaClient: function(){
 			if( ! this.kClient ){

@@ -32,15 +32,18 @@ function jsKalturaPlayerTest( videoId ){
 						start();
 					}, 500 );
 				},500);
-
-				// give the player 1 second to do the seek 
-				//( the seek should update the time before the player acutally gets there )
-				
-				
 			});
 		});
 	});
 }
+$(document).ready(function(){
+	$('#frenchSwitch').click(function(){
+		var frenchSrtPath = document.URL.replace( 'CaptionsCustomVars.qunit.html', 'resources/FolgersCoffe.fr.srt');
+		$('#kaltura_player_1311316803').get(0).setKDPAttribute('closedCaptions','type','srt');
+        $('#kaltura_player_1311316803').get(0).setKDPAttribute('closedCaptions','ccUrl', frenchSrtPath);
+	});
+});
+
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
@@ -48,6 +51,8 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2> Captions for kdp flash player and html5 player </h2>
 <a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
+<br /><br />
+<a id="frenchSwitch" href="#">switch to French srt</a>
 <br /><br />
 
 <div style="float:left">

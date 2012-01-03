@@ -1,0 +1,92 @@
+0
+00:00:01,707 --> 00:00:04,154
+Harold le café est-il bon ?
+
+1
+00:00:04,169 --> 00:00:05,185
+uh-uhmmm
+
+2
+00:00:05,005 --> 00:00:07,785
+Tu veux dire qu’il est aussi mauvais qu’hier ?
+
+3
+00:00:07,785 --> 00:00:08,962
+uh-huh
+
+4
+00:00:09 --> 00:00:10,169
+Aucune amélioration ?
+
+5
+00:00:10,446 --> 00:00:11,823
+uh-uh
+
+6
+00:00:12,002 --> 00:00:17
+Harold ne te contente pas de secouer la tête, tu dois me dire ce qui ne vas pas avec le café
+
+7
+00:00:17,538 --> 00:00:19
+Mauvais goût
+
+8
+00:00:19,477 --> 00:00:21,002
+Que vais-je faire maintenant ?
+
+9
+00:00:22,623 --> 00:00:23,005
+Mary, salut
+
+10
+00:00:23,007 --> 00:00:25
+Bonjour Jane
+
+11
+00:00:25,038 --> 00:00:29,246
+Aide moi s’il-te-plait, Harold déteste mon café. Quelle marque utilises-tu ?
+
+12
+00:00:30 --> 00:00:31
+Instant Folgers
+
+13
+00:00:31 --> 00:00:32
+Instant Folgers ?
+
+14
+00:00:32,002 --> 00:00:34
+Bon comme du café frais
+
+15
+00:00:34,002 --> 00:00:37,008
+Bon comme du café frais. Je vais l’essayer.
+
+16
+00:00:38,725 --> 00:00:42,008
+Jean, ce café est délicieux, le sais-tu ?
+
+17
+00:00:42,002 --> 00:00:42,084
+um-hmmm
+
+18
+00:00:43,464 --> 00:00:46
+Ce n’est pas le même que celui que nous avions avant, n’est-ce pas ?
+
+19
+00:00:46,002 --> 00:00:46,502
+um-uhmmm
+
+20
+00:00:47,148 --> 00:00:51,433
+Ne te contente pas de secouer la tête, dis-moi pourquoi le café est si bon.
+
+21
+00:00:52,664 --> 00:00:54,005
+Bon goût
+
+22
+00:00:55,006 --> 00:00:59
+Bon comme du café frais, Instant Folgers
+
