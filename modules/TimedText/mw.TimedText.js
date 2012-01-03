@@ -140,7 +140,7 @@ mw.includeAllModuleMessages();
 				_this.monitor();
 			} );
 
-			$( embedPlayer ).bind( 'onplay'+ this.bindPostFix, function() {
+			$( embedPlayer ).bind( 'firstPlay' + this.bindPostFix, function() {
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
 				// Hide the caption menu if presently displayed
@@ -239,6 +239,7 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			$textButton.unbind('click.textMenu').bind('click.textMenu', function() {
 				_this.showTextMenu();
+				return true;
 			} );
 		},
 		
@@ -391,13 +392,10 @@ mw.includeAllModuleMessages();
 			// Get the text per kind
 			var textCategories = [ ];
 
-			//for( var i = 0; i < this.enabledSources.length ; i++ ) {
-				//var source = this.enabledSources[ i ];
-				var source = this.enabledSources[ 0 ];
-				if( source ) {
-					this.updateSourceDisplay( source, currentTime );
-				}
-			//}
+			var source = this.enabledSources[ 0 ];
+			if( source ) {
+				this.updateSourceDisplay( source, currentTime );
+			}
 		},
 
 		/**
@@ -754,6 +752,7 @@ mw.includeAllModuleMessages();
 			}
 		},
 		toggleCaptions: function(){
+			mw.log( "TimedText:: toggleCaptions was:" + this.config.layout );
 			if( this.config.layout == 'off' ){
 				this.selectLayout( 'ontop' );
 			} else {
@@ -767,8 +766,8 @@ mw.includeAllModuleMessages();
 			var $playerTarget = this.embedPlayer.$interface;
             if( $playerTarget ) {
                 $playerTarget.find('.track').remove();
-            }
-            this.refreshDisplay();
+            }            
+			this.refreshDisplay();
 		},
 
 		/**
@@ -1020,7 +1019,6 @@ mw.includeAllModuleMessages();
 					'height' : this.embedPlayer.$interface.height()
 				})
 			);
-			
 			
 			// Update the style of the text object if set
 			if( caption.styleId ){
