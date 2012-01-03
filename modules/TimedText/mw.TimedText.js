@@ -485,8 +485,20 @@ mw.includeAllModuleMessages();
 		 * @return
 		 */
 		enableSource: function( source ){
-			this.enabledSources.push( source );
-			this.currentLangKey = source.srclang;
+			var _this = this;
+			// check if we have any source set yet: 
+			if( !_this.enabledSources.length ){
+				_this.enabledSources.push( source );
+				_this.currentLangKey = source.srclang;
+				return ;
+			}
+			// Make sure the source is not already enabled
+			$.each( this.enabledSources, function( inx, enabledSource ){
+				if( source.id != enabledSource.id ){
+					_this.enabledSources.push( source );
+					_this.currentLangKey = source.srclang;
+				}
+			});
 		},
 
 		/**
@@ -530,6 +542,7 @@ mw.includeAllModuleMessages();
 		*  Should be called anytime enabled Source list is updated
 		*/
 		loadEnabledSources: function() {
+			mw.log( "TimedText:: loadEnabledSources " +  this.enabledSources.length );
 			$.each( this.enabledSources, function( inx, enabledSource ) {
 				enabledSource.load();
 			});
@@ -752,6 +765,7 @@ mw.includeAllModuleMessages();
 			}
 		},
 		toggleCaptions: function(){
+			mw.log( "TimedText:: toggleCaptions was:" + this.config.layout );
 			if( this.config.layout == 'off' ){
 				this.selectLayout( 'ontop' );
 			} else {

@@ -173,6 +173,9 @@ if ( !$url ) {
 } else {
   $ch = curl_init( $url );
   
+  // Always follow redirects: 
+  curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
+  
   if ( strtolower($_SERVER['REQUEST_METHOD']) == 'post' ) {
     curl_setopt( $ch, CURLOPT_POST, true );
     curl_setopt( $ch, CURLOPT_POSTFIELDS, $_POST );
@@ -225,7 +228,6 @@ if( mb_detect_encoding($contents, 'UTF-8', true) != "UTF-8" ) {
 if( is_string( $contents ) && $contents[0] == '?' ){
 	$contents = substr( $contents, 1 );
 }
-
 
 // Split header text into an array.
 $header_text = preg_split( '/[\r\n]+/', $header );
@@ -288,6 +290,12 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
   	}  
   }
  
+  // Check if there is extra header info leading up to the xml: 
+  if( strpos( $contents, '<?xml' ) !== false &&  strpos( $contents, '<?xml' ) != 0 ){
+  	// strip all leading conetnt 
+  	$contents = trim( substr( $contents, strpos( $contents, '<?xml' ) ) );
+  }
+  
   //$encodeCDATASections = false;
   // Check if we should encode CDATA sections: 
   if( $encodeCDATASections ){
