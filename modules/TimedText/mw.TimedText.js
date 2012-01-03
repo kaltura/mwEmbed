@@ -752,6 +752,7 @@ mw.includeAllModuleMessages();
 			}
 		},
 		toggleCaptions: function(){
+			mw.log("TimedText:: toggleCaptions was:" + this.config.layout );
 			if( this.config.layout == 'off' ){
 				this.selectLayout( 'ontop' );
 			} else {
