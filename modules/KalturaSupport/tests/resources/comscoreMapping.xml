@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<comScoreIDs>
+  <c3>
+    <contentOwner name="oleg" id="1894" />
+    <contentOwner name="ronny" id="8457" />
+    <contentOwner name="amir" id="1540" />
+    <contentOwner name="ori" id="9841" />
+	<contentOwner name="alon" id="5555" />
+	<contentOwner name="danit" id="1589" />
+	<contentOwner name="moran" id="6108" />
+  </c3>
+  <c4>
+    <site url="abc" id="3456" />
+    <site url="fox" id="3592" />
+    <site url="hbo" id="6584" />
+    <site url="sbc" id="3456" />
+	<site url="tv" id="8309" />
+	<site url="cable" id="9150" />
+    <site url="default" id="10000" />
+  </c4>
+  <c5>
+    <type name="short form premium" id="02" />
+    <type name="long form premium" id="03" />
+    <type name="long form proseumer" id="04" />
+    <type name="long form proseumer" id="05" />
+    <type name="user generated content" id="06" />
+  </c5>
+</comScoreIDs>

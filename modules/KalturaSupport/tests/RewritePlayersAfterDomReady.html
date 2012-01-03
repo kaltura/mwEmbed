@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Js Post Dom Ready inject</title>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="../../../mwEmbedLoader.php" type="text/javascript"></script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php -->
+<script type="text/javascript">	
+$( document ).ready( function(){
+
+	var myPlayerElement = '<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" ' +
+						'allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" ' +
+						'xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" ' +
+						'resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" ' +
+						'data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4"> ' +
+							'<param name="allowFullScreen" value="true" /> ' +
+							'<param name="allowNetworking" value="all" /> ' +
+							'<param name="allowScriptAccess" value="always" /> ' +
+							'<param name="bgcolor" value="#000000" /> ' +
+							'<param name="flashVars" value="&" /> ' +
+							'<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" /> ' +
+						'</object>';
+
+	$('#add').click(function() {
+		$('#container').append( myPlayerElement );
+		kAddedScript = false;
+		kCheckAddScript();
+	});
+
+	$('#remove').click(function() {
+		$('#kaltura_player').remove();
+	});
+
+});	
+</script>
+</head>
+<body>
+<h2> Js Post Dom Ready inject </h2>
+<button id="add">Add Player</button>
+<button id="remove">Remove Player</button>
+<br />
+<div id="container"></div>
+</body>
+</html>

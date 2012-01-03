@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	
+	<link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" />
+
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
+	<script type="text/javascript" src="http://staging.html5video.org/testswarm/js/inject.js"></script>
+	
+	<script src="../../mwEmbedLoader.php?debug=true"></script>
+	<script src="EmbedPlaybackTests.js"></script>
+
+<script>
+
+QUnit.config.autostart = false;
+
+$(document).ready(function(){
+	setTimeout( function(){
+		mw.ready(function(){
+			QUnit.start();
+			runEmbedPlaybackTests("#video");
+		});
+	}, 5000);
+});
+
+</script>
+</head>
+<body>
+	<h1 id="qunit-header">Embed Player Sources</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">test markup, will be hidden</div>
+
+	<video id="video" style="width:544px;height:304px;" 
+		poster="http://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Elephants_Dream.ogg/seek%3D13-Elephants_Dream.ogg.jpg"
+		duration="653.791" 
+		linkback="http://www.elephantsdream.org/" > 		
+		<source type="video/h264" src="http://www.archive.org/download/ElephantsDream/ed_1024_512kb.mp4" >
+		<source type="video/ogg" src="http://www.archive.org/download/ElephantsDream/ed_hd.ogv" >
+	</video>
+
+</body>
+</html>

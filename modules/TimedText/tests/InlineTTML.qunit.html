@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title>Inline TMML Sources</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+	<script type="text/javascript" src="jquery.cookie.js"></script>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+</head>
+<body>
+<h3> Inline TMML Sources </h3>
+
+ <video id="subtitlePlayer" style="width:544px;height:304px;"  
+ 		poster="http://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Elephants_Dream.ogg/seek%3D13-Elephants_Dream.ogg.jpg"
+ 		durationHint="10:53"
+ 		linkback="http://www.elephantsdream.org/" >
+ 		
+<source type="video/ogg" src="http://upload.wikimedia.org/wikipedia/commons/b/bd/Elephants_Dream.ogg" ></source>
+<source type="video/h264" src="http://www.archive.org/download/ElephantsDream/ed_1024_512kb.mp4"></source>
+
+	<!--  Subtitles -->
+      <track kind="subtitles" id="video_af" srclang="af"
+             src="media/elephants_dream/elephans_dream.en.ttml.xml"></track>
+
+	</video>
+
+	<script type="text/javascript">
+	// TMML is not friendly to dynamic playhead positions ( assumes static play control bar ) 
+	mw.setConfig( 'EmbedPlayer.OverlayControls', false );
+	// Show controls for timed text on ipad
+	mw.setConfig( 'EmbedPlayer.EnableIpadHTMLControls', true);
+ 	
+ 	if( window['QUnit'] ){
+ 		// Clear the cookie for the test
+ 		$.cookie( 'TimedText.Preferences', false );
+
+		// if running a test give iOS persistant native player
+		if( kIsIOS() ){
+			$('#subtitlePlayer').addClass( "persistentNativePlayer" );
+		}
+ 		
+ 		QUnit.start();
+ 		// Name this module
+ 		module( "TimedText SRT" );
+ 		
+ 		asyncTest( "Subtitles displayed", function(){
+
+ 			mw.ready(function(){
+ 				var vid = $('#subtitlePlayer')[0];
+ 				QUnit.ok(true, "Player Loaded");
+
+ 				$( vid ).bind("seeked", function(){
+ 					equal( $('.track span').text(), "At the left we can see the...", "Subtitle displayed at seek time 16" );
+ 					start();
+ 				});
+ 				vid.play();
+ 				setTimeout(function(){
+ 					vid.pause();
+ 					vid.currentTime = 16;
+ 				}, 1000);
+	 		});
+ 		});
+ 	}
+ 	</script>
+</body>
+</html>
+

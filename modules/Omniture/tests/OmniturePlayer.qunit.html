@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Omniture analytics example html5 / kdp</title>
+
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<!--  qUnit TESTING -->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<script type="text/javascript">
+var testEventObject = {};
+// Setup Omniture host page event tracker:
+function jsCallbackReady( playerId ){
+	// All Omniture Events are dispached on this side of the iframe as well. 
+	$('#' + playerId ).bind( 'Omniture_DispatchEvent', function( event,  eventId, eVars, props, kalturaEventName  ){
+		var eVarsStr ='';
+		$.each( eVars, function( inx, set ){
+			var pSet = $.param( set )
+			eVarsStr +='<b>' + inx +':</b>' + pSet.substr(0,35)  + '<br />';
+		});
+		var propsStr ='';
+		$.each( props, function( inx, set ){
+			var pSet = $.param( set )
+			propsStr +='<b>' + inx +':</b>' + pSet.substr(0,35)  + '<br />';
+		});
+		$('#eventRowDesc').after(
+			$( '<tr />' ).append(
+				$('<td />').text( kalturaEventName ),
+				$('<td />').text( eventId ),
+				$('<td />').html( eVarsStr ),
+				$('<td />').html( propsStr )
+			)
+		);
+		// Also track events for testing: 
+		trackEventForTests( eventId, eVars, props, kalturaEventName );
+	});
+}
+
+var testEventObject = {};
+// We use this round about way of tracking events to show the events are being sent for Omniture.
+function trackEventForTests( eventId, eVars, props, kalturaEventName ) {
+	// Delay trigger to ensure we have time to setup the binding
+	setTimeout(function(){
+		$( testEventObject ).trigger( kalturaEventName, {
+			'eventId': eventId, 
+			'eVars' : eVars, 
+			'props':props, 
+			'kalturaEventName' : kalturaEventName 
+		} );
+	}, 100);
+}
+function jsKalturaPlayerTest( videoId ){
+	// Name this module
+	module( "Omniture Analytics" );
+	var kdp = $j( videoId )[0];
+	
+	asyncTest("mediaReady event sent", function(){
+		$j( testEventObject ).bind('mediaReady', function(event, testEvent ){
+			equal( testEvent.action, "mediaReady", "action mediaReady sent" );
+			equal( testEvent.opt_label, "0_swup5zao", "opt_label entry id set to entry id" );
+			start();
+		});
+	});	
+	asyncTest("play, pause and seek events", function(){
+		$j( testEventObject ).bind('doPlay', function(event, testEvent){
+			equal( testEvent.action, "doPlay", "action doPlay event sent" );
+		});
+		$j( testEventObject ).bind('doPause', function(event, testEvent){
+			equal( testEvent.action, "doPause", "action doPause event sent" );
+		});
+		$j( testEventObject ).bind('doSeek', function(event, testEvent){
+			equal( testEvent.action, "doSeek", "action doSeek event sent" );
+			equal( testEvent.opt_value, "10", "opt_value doSeek set to seek time" );
+			start();
+		});
+		kdp.sendNotification('doPlay');
+		setTimeout(function(){
+			kdp.sendNotification( 'doPause' );
+			kdp.sendNotification( 'doSeek', 10 );
+		},1000 );
+	});
+}
+</script>
+</head>
+<body>
+<h2> Omniture analytics for html5 player </h2>
+<div>
+<a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
+<br />
+
+<div id="player_container" style="float:left;" >
+
+<object id="kaltura_player_1311039657" 
+	name="kaltura_player_1311039657" 
+	type="application/x-shockwave-flash" 
+	allowFullScreen="true" 
+	allowNetworking="all" 
+	allowScriptAccess="always"
+	height="330" 
+	width="400" 
+	bgcolor="#000000" 
+	xmlns:dc="http://purl.org/dc/terms/" 
+	xmlns:media="http://search.yahoo.com/searchmonkey/media/"
+	rel="media:video" 
+	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1311452087/wid/_243342/uiconf_id/4617422/entry_id/0_uka1msg4" 
+	data="http://www.kaltura.com/index.php/kwidget/cache_st/1311452087/wid/_243342/uiconf_id/4617422/entry_id/0_uka1msg4">
+ 		<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />
+ 		<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />
+ 		<param name="flashVars" value="&" />
+ 		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1311039657/wid/_243342/uiconf_id/4617422/entry_id/0_uka1msg4" />
+ </object>
+
+</div>
+
+<div style="float:left;padding-left:30px;">
+<i>Omniture Analytics events ( html5 only ) </i><br />
+<table border="1" width="500">
+<tr id="eventRowDesc">
+	<td>KalturaEvent Name</td>
+	<td>Omni Event Id</td>
+	<td>Evars</td>
+	<td>Props</td>
+</tr>
+</table>
+</div>
+
+</div>
+<script type="text/javascript">
+
+/*******************************
+ *  player configuration: To have a sane representation of the ui-conf vars we use the
+ * below code:: 
+ ******************************
+
+  	 
+ var omintureEvents = [ 
+       			    'videoViewEvent' ,
+       				'shareEvent',
+       				'saveEvent',
+       				'openFullscreenEvent',
+       				'closefullscreenEvent',
+       				'saveEvent',
+       				'replayEvent',
+       				'seekEvent',
+       				'changeMediaEvent',
+       				'gotoContributorWindowEvent',
+       				'gotoEditorWindowEvent',
+       				'playerPlayEndEvent',
+       				'mediaReadyEvent'
+       			];
+          var output = '';
+          for( var i in omintureEvents ){
+             eventName = omintureEvents[i];
+             
+             var baseEName = '&omniture.' + eventName;
+             output += baseEName +'=' + 'event' + (parseInt(i)+20);
+             output += baseEName + 'Evar1=eVar' + (parseInt(10) + parseInt(i) );
+             output += baseEName + 'Evar1Value={mediaProxy.entry.name}';
+
+             output += baseEName + 'Evar2=eVar' + (parseInt(11) + parseInt(i) );
+             output += baseEName + 'Evar2Value={mediaProxy.entry.id}';
+             
+             output += baseEName + 'Prop1=prop' + (parseInt(i) + 30 );
+             output += baseEName + 'Prop1Value={mediaProxy.entry.name}';
+
+             output += baseEName + 'Prop2=prop' + (parseInt(i) + 31 );
+             output += baseEName + 'Prop2Value={configProxy.flashvars.referer}';
+          }
+          mw.log(output);	  
+
+ 
+the acount configuration part of the ui conf is as follow: 
+	omniture.plugin=true&omniture.width=0&omniture.height=0&omniture.relativeTo=statistics&omniture.position=after&omniture.trackingServer=http://kaltura.org&omniture.account=wdgfepvp1dev
+       
+which gives us the following string that we paste into the ui conf: 
+	omniture.videoViewEvent=event20&omniture.videoViewEventEvar1=eVar10&omniture.videoViewEventEvar1Value={mediaProxy.entry.name}&omniture.videoViewEventEvar2=eVar11&omniture.videoViewEventEvar2Value={mediaProxy.entry.name}&omniture.videoViewEventProp1=prop30&omniture.videoViewEventProp1Value={mediaProxy.entry.name}&omniture.videoViewEventProp2=prop31&omniture.videoViewEventProp2Value={configProxy.flashvars.referer}&omniture.shareEvent=event21&omniture.shareEventEvar1=eVar11&omniture.shareEventEvar1Value={mediaProxy.entry.name}&omniture.shareEventEvar2=eVar12&omniture.shareEventEvar2Value={mediaProxy.entry.name}&omniture.shareEventProp1=prop31&omniture.shareEventProp1Value={mediaProxy.entry.name}&omniture.shareEventProp2=prop32&omniture.shareEventProp2Value={configProxy.flashvars.referer}&omniture.saveEvent=event22&omniture.saveEventEvar1=eVar12&omniture.saveEventEvar1Value={mediaProxy.entry.name}&omniture.saveEventEvar2=eVar13&omniture.saveEventEvar2Value={mediaProxy.entry.name}&omniture.saveEventProp1=prop32&omniture.saveEventProp1Value={mediaProxy.entry.name}&omniture.saveEventProp2=prop33&omniture.saveEventProp2Value={configProxy.flashvars.referer}&omniture.openFullscreenEvent=event23&omniture.openFullscreenEventEvar1=eVar13&omniture.openFullscreenEventEvar1Value={mediaProxy.entry.name}&omniture.openFullscreenEventEvar2=eVar14&omniture.openFullscreenEventEvar2Value={mediaProxy.entry.name}&omniture.openFullscreenEventProp1=prop33&omniture.openFullscreenEventProp1Value={mediaProxy.entry.name}&omniture.openFullscreenEventProp2=prop34&omniture.openFullscreenEventProp2Value={configProxy.flashvars.referer}&omniture.closefullscreenEvent=event24&omniture.closefullscreenEventEvar1=eVar14&omniture.closefullscreenEventEvar1Value={mediaProxy.entry.name}&omniture.closefullscreenEventEvar2=eVar15&omniture.closefullscreenEventEvar2Value={mediaProxy.entry.name}&omniture.closefullscreenEventProp1=prop34&omniture.closefullscreenEventProp1Value={mediaProxy.entry.name}&omniture.closefullscreenEventProp2=prop35&omniture.closefullscreenEventProp2Value={configProxy.flashvars.referer}&omniture.saveEvent=event25&omniture.saveEventEvar1=eVar15&omniture.saveEventEvar1Value={mediaProxy.entry.name}&omniture.saveEventEvar2=eVar16&omniture.saveEventEvar2Value={mediaProxy.entry.name}&omniture.saveEventProp1=prop35&omniture.saveEventProp1Value={mediaProxy.entry.name}&omniture.saveEventProp2=prop36&omniture.saveEventProp2Value={configProxy.flashvars.referer}&omniture.replayEvent=event26&omniture.replayEventEvar1=eVar16&omniture.replayEventEvar1Value={mediaProxy.entry.name}&omniture.replayEventEvar2=eVar17&omniture.replayEventEvar2Value={mediaProxy.entry.name}&omniture.replayEventProp1=prop36&omniture.replayEventProp1Value={mediaProxy.entry.name}&omniture.replayEventProp2=prop37&omniture.replayEventProp2Value={configProxy.flashvars.referer}&omniture.seekEvent=event27&omniture.seekEventEvar1=eVar17&omniture.seekEventEvar1Value={mediaProxy.entry.name}&omniture.seekEventEvar2=eVar18&omniture.seekEventEvar2Value={mediaProxy.entry.name}&omniture.seekEventProp1=prop37&omniture.seekEventProp1Value={mediaProxy.entry.name}&omniture.seekEventProp2=prop38&omniture.seekEventProp2Value={configProxy.flashvars.referer}&omniture.changeMediaEvent=event28&omniture.changeMediaEventEvar1=eVar18&omniture.changeMediaEventEvar1Value={mediaProxy.entry.name}&omniture.changeMediaEventEvar2=eVar19&omniture.changeMediaEventEvar2Value={mediaProxy.entry.name}&omniture.changeMediaEventProp1=prop38&omniture.changeMediaEventProp1Value={mediaProxy.entry.name}&omniture.changeMediaEventProp2=prop39&omniture.changeMediaEventProp2Value={configProxy.flashvars.referer}&omniture.gotoContributorWindowEvent=event29&omniture.gotoContributorWindowEventEvar1=eVar19&omniture.gotoContributorWindowEventEvar1Value={mediaProxy.entry.name}&omniture.gotoContributorWindowEventEvar2=eVar20&omniture.gotoContributorWindowEventEvar2Value={mediaProxy.entry.name}&omniture.gotoContributorWindowEventProp1=prop39&omniture.gotoContributorWindowEventProp1Value={mediaProxy.entry.name}&omniture.gotoContributorWindowEventProp2=prop40&omniture.gotoContributorWindowEventProp2Value={configProxy.flashvars.referer}&omniture.gotoEditorWindowEvent=event30&omniture.gotoEditorWindowEventEvar1=eVar20&omniture.gotoEditorWindowEventEvar1Value={mediaProxy.entry.name}&omniture.gotoEditorWindowEventEvar2=eVar21&omniture.gotoEditorWindowEventEvar2Value={mediaProxy.entry.name}&omniture.gotoEditorWindowEventProp1=prop40&omniture.gotoEditorWindowEventProp1Value={mediaProxy.entry.name}&omniture.gotoEditorWindowEventProp2=prop41&omniture.gotoEditorWindowEventProp2Value={configProxy.flashvars.referer}&omniture.playerPlayEndEvent=event31&omniture.playerPlayEndEventEvar1=eVar21&omniture.playerPlayEndEventEvar1Value={mediaProxy.entry.name}&omniture.playerPlayEndEventEvar2=eVar22&omniture.playerPlayEndEventEvar2Value={mediaProxy.entry.name}&omniture.playerPlayEndEventProp1=prop41&omniture.playerPlayEndEventProp1Value={mediaProxy.entry.name}&omniture.playerPlayEndEventProp2=prop42&omniture.playerPlayEndEventProp2Value={configProxy.flashvars.referer}&omniture.mediaReadyEvent=event32&omniture.mediaReadyEventEvar1=eVar22&omniture.mediaReadyEventEvar1Value={mediaProxy.entry.name}&omniture.mediaReadyEventEvar2=eVar23&omniture.mediaReadyEventEvar2Value={mediaProxy.entry.name}&omniture.mediaReadyEventProp1=prop42&omniture.mediaReadyEventProp1Value={mediaProxy.entry.name}&omniture.mediaReadyEventProp2=prop43&omniture.mediaReadyEventProp2Value={configProxy.flashvars.referer}
+
+
+
+            
+ */
+	 
+</script>
+</body>
+</html>
