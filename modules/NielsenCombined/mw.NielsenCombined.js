@@ -21,7 +21,7 @@
 	15 postroll load / play with "postroll" type
 		send "7" to end the ad
 		send "4" unload ad
-* 
+
 */
 
 mw.NielsenCombined = function( embedPlayer, callback ){
@@ -58,6 +58,12 @@ mw.NielsenCombined.prototype = {
 		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
 			embedPlayer.unbindHelper( _this.bindPostFix );
 		});
+	},
+	// Return the ggcmb370 url ( for now hard coded should be moved to config )
+	getGgCmbUrl: function(){
+		return mw.getMwEmbedPath() + 'modules/NielsenCombined/ggcmb382.js';
+		// temporarily use local copy of ggcmb 
+		//return 'http://secure-us.imrworldwide.com/novms/js/2/ggcmb370.js';
 	},
 	/**
 	 * called on player ready sets up all the bindings and fires the initial content beacon. 
@@ -460,9 +466,5 @@ mw.NielsenCombined.prototype = {
 		} else {
 			callback( this.gg );
 		}
-	},
-	// Return the ggcmb370 url ( for now hard coded should be moved to config )
-	getGgCmbUrl:function(){
-		return 'http://secure-us.imrworldwide.com/novms/js/2/ggcmb370.js';
 	}
 }

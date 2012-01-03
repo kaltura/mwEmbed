@@ -81,7 +81,7 @@ mw.DoubleClick.prototype = {
 			}
 			// Check if we have a provider filter:
 			var providerFilter = _this.getConfig('provider');
-			if( providerFilter && cuePoint.tags.toLowerCase().indexOf( providerFilter ) === -1 ){
+			if( providerFilter && cuePoint.tags.toLowerCase().indexOf( providerFilter.toLowerCase() ) === -1 ){
 				// skip the cuepoint that did not match the provider filter
 				mw.log( "mw.DoubleClick:: skip cuePoint with tag: " + cuePoint.tags + ' != ' + providerFilter );
 				return ;
