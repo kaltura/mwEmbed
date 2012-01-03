@@ -764,13 +764,13 @@ mw.PlayerControlBuilder.prototype = {
 		});
 		
 		// Bind to EnableInterfaceComponents
-		$( embedPlayer ).bind('onEnableInterfaceComponents' + this.bindPostfix, function() {
+		$( embedPlayer ).bind( 'onEnableInterfaceComponents' + this.bindPostfix, function() {
 			_this.controlsDisabled = false;
 			_this.addPlayerClickBindings();
 		});
 
 		// Bind to DisableInterfaceComponents
-		$( embedPlayer ).bind('onDisableInterfaceComponents' + this.bindPostfix, function() {
+		$( embedPlayer ).bind( 'onDisableInterfaceComponents' + this.bindPostfix, function() {
 			_this.controlsDisabled = true;
 			_this.removePlayerClickBindings();
 		});
@@ -969,9 +969,10 @@ mw.PlayerControlBuilder.prototype = {
 
 	},
 	restoreControlsHover:function(){
-		this.keepControlBarOnScreen = false;
+		if( this.isOverlayControls() ){
+			this.keepControlBarOnScreen = false;
+		}
 	},
-
 	/**
 	* Show the control bar
 	*/

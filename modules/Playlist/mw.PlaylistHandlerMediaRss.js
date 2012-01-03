@@ -32,7 +32,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		}
 		// Check if we have the source pre-loaded:
 		if( this.getSrcPayLoad() ) {
-			var xmlDoc =  $j.parseXML( this.getSrcPayLoad() );
+			var xmlDoc =  $.parseXML( this.getSrcPayLoad() );
 			this.$rss = $( xmlDoc );
 			callback( _this.$rss );
 			return ;
@@ -42,9 +42,9 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		// Show an error if a cross domain request:
 		if( mw.isLocalDomain( this.getSrc() ) ) {
 			// Note this only works with local sources
-			$j.get( mw.absoluteUrl( this.getSrc() ), function( data ){
+			$.get( mw.absoluteUrl( this.getSrc() ), function( data ){
 				// jQuery already converts data into xmlDoc so the following is not needed:
-				// var xmlDoc =  $j.parseXML( data );
+				// var xmlDoc =  $.parseXML( data );
 				_this.$rss = $( data );
 				callback( _this.$rss );
 			});
@@ -54,14 +54,14 @@ mw.PlaylistHandlerMediaRss.prototype = {
 				mw.log("Error: mw.KAds : missing kaltura proxy url ( can't load ad ) ");
 				return ; 
 			}
-			$j.getJSON( proxyUrl + '?url=' + encodeURIComponent( this.getSrc() ) + '&callback=?', function( result ){
+			$.getJSON( proxyUrl + '?url=' + encodeURIComponent( this.getSrc() ) + '&callback=?', function( result ){
 				if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
 					mw.log("Error: loading " + _this.getSrc() );
 					callback(false);
 					return ;
 				}
 				// parse the MRSS:
-				var xmlDoc =  $j.parseXML( result['contents'] );
+				var xmlDoc =  $.parseXML( result['contents'] );
 				_this.$rss = $( xmlDoc );
 				callback( _this.$rss );
 			});
@@ -199,7 +199,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		var _this = this;
 		var $item = $( this.$rss.find('item')[ clipIndex ] );
 		var clipSources = [];
-		$j.each( $item.find( '*' ), function( inx, mediaContent){
+		$.each( $item.find( '*' ), function( inx, mediaContent){
 			if( $( mediaContent )[0].nodeName == 'media:content' ){
 				clipSource = {};
 				if( $( mediaContent ).attr('url' ) ){

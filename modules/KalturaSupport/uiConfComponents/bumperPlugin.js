@@ -50,18 +50,22 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				};
 				// handle prerolls
 				if( bc.preSequence ){
-					$( embedPlayer ).bind( 'AdSupport_bumper' + bumpPostfix, function(event, sequenceProxy){
+					$( embedPlayer ).bind( 'AdSupport_bumper' + bumpPostfix, function( event, sequenceProxy ){
 						adConf.type = 'bumper';
 						sequenceProxy[ bc.preSequence ] = function( doneCallback ){
+							// bumper triggers play event: 
+							$( embedPlayer ).trigger( 'onplay' );
 							adPlayer.display( adConf, doneCallback );
 						};
 					});
 				}
-				// technically the postroll bumper should be named something else. 
+				// Technically the postroll bumper should be named something else. 
 				if( bc.postSequence ){
 					$( embedPlayer ).bind( 'AdSupport_postroll' + bumpPostfix, function(event, sequenceProxy){
 						adConf.type = 'postroll';
 						sequenceProxy[ bc.postSequence ] = function( doneCallback ){
+							// bumper triggers play event: 
+							$( embedPlayer ).trigger( 'onplay' );
 							adPlayer.display( adConf, doneCallback );
 						};
 					});

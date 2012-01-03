@@ -204,7 +204,7 @@ mw.NielsenCombined.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var vid = _this.getPlayerElement();
 		
-		// Unbind any existing bindings: : 
+		// Unbind any existing bindings:: 
 		this.unbindPlayerTracking();
 		
 		// Non-native events: ( have to bind against embedPlayer instead of the video instance )
@@ -377,6 +377,7 @@ mw.NielsenCombined.prototype = {
 				return _this.round( ( absolutePlayerTime - prevCuePointTime )  / 1000 );
 			}
 		}
+		// Should not allow length of 0
 		if(  vid[ timeAttribute ]  ){
 			return _this.round( vid[ timeAttribute ] );
 		} else {

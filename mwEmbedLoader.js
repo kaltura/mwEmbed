@@ -870,6 +870,7 @@ function kAddScript( callback ){
 		  'mw.KLayout',
 		  'mw.style.klayout',
 		  'titleLayout',
+		  'volumeBarLayout',
 		  'playlistPlugin',
 		  'controlbarLayout',
 		  'faderPlugin',

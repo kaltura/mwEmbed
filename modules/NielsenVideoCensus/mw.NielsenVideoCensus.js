@@ -81,7 +81,7 @@ mw.NielsenVideoCensus.prototype = {
 			and = '&';
 		});
 		
-		mw.log("NielsenVideoCensus:: sendBeacon " +  url);
+		mw.log("NielsenVideoCensus:: sendBeacon \n" +  url);
 		// Set the Program/Section Name
 		davImg.src = url;
 	},

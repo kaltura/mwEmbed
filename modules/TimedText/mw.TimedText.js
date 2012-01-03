@@ -140,7 +140,7 @@ mw.includeAllModuleMessages();
 				_this.monitor();
 			} );
 
-			$( embedPlayer ).bind( 'firstPlay'+ this.bindPostFix, function() {
+			$( embedPlayer ).bind( 'firstPlay' + this.bindPostFix, function() {
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
 				// Hide the caption menu if presently displayed
@@ -392,13 +392,10 @@ mw.includeAllModuleMessages();
 			// Get the text per kind
 			var textCategories = [ ];
 
-			//for( var i = 0; i < this.enabledSources.length ; i++ ) {
-				//var source = this.enabledSources[ i ];
-				var source = this.enabledSources[ 0 ];
-				if( source ) {
-					this.updateSourceDisplay( source, currentTime );
-				}
-			//}
+			var source = this.enabledSources[ 0 ];
+			if( source ) {
+				this.updateSourceDisplay( source, currentTime );
+			}
 		},
 
 		/**

@@ -535,7 +535,7 @@
 						callback( {'newVolume' : percent }, embedPlayer.id );
 					});
 					break;
-				case 'playerStateChange':					
+				case 'playerStateChange':
 					// TODO add in other state changes
 					b( 'onpause', function(){
 						callback( 'paused', embedPlayer.id );

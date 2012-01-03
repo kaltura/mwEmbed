@@ -235,7 +235,7 @@ mw.KAdPlayer.prototype = {
 			'font-weight':'bold',
 			'text-shadow': '1px 1px 1px #000'
 		};
-		// Check runtimeHelper ( notices
+		// Check runtimeHelper 
 		if( adSlot.notice ){
 			var noticeId =_this.embedPlayer.id + '_ad_notice';
 			// Add the notice target:
@@ -281,6 +281,15 @@ mw.KAdPlayer.prototype = {
 				$('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() );
 			}
 		}
+		
+		// AD slot should include flag for progress monitoring ( for now always update playhead )
+		$( vid ).bind('timeupdate' + this.trackingBindPostfix, function(e){
+			_this.embedPlayer.controlBuilder.setStatus( 
+					mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration ) 
+			);
+			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
+		});
+		
 	},
 	/**
 	 * Display companion ads
