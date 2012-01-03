@@ -44,6 +44,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		if( captionConfig.plugin ){
 			captionPlugin( embedPlayer, captionConfig ,  callback );
 		} else {
+			// No active plugin mode
 			callback();
 		}
 	});

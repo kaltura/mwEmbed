@@ -291,7 +291,7 @@ if ( isset( $_GET['mode'] ) == 'native' ) {
   }
  
   // Check if there is extra header info leading up to the xml: 
-  if( strpos( $contents, '﻿<?xml' ) !== false &&  strpos( $contents, '<?xml' ) != 0 ){
+  if( strpos( $contents, '<?xml' ) !== false &&  strpos( $contents, '<?xml' ) != 0 ){
   	// strip all leading conetnt 
   	$contents = trim( substr( $contents, strpos( $contents, '<?xml' ) ) );
   }
