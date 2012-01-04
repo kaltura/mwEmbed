@@ -736,7 +736,7 @@ function kSupportsHTML5(){
 	var dummyvid = document.createElement( "video" );
 	// Blackberry does not really support html5 
 	if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
-		return false ;
+		return false;
 	}
 	if( dummyvid.canPlayType ) {
 		return true;
@@ -1274,6 +1274,16 @@ window.kWidget = {
 	 * TODO move kalturaIframeEmbed to this method and have kalturaIframeEmbed call KWidget.embed : 
 	 */
 	embed: function( targetId, settings ){
+		
+		// Supports passing settings object as the first parameter
+		if( typeof targetId === 'object' ) {
+			settings = targetId;
+			if( ! settings.targetId ) {
+				console.log('Error: Missing target element Id');
+			}
+			targetId = settings.targetId;
+		}
+
 		kalturaIframeEmbed( targetId, settings );
 	},
 	/**
@@ -1326,7 +1336,7 @@ window.checkForKDPCallback = function(){
 	}
 	if( window.jsCallbackReady && window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
 		window.originalKDPCallbackReady = window.jsCallbackReady;
-	};
+	}
 	// Always update the jsCallbackReady to call pushAlreadyCalled
 	if( !window.jsCallbackReady || window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
 		window.jsCallbackReady = pushAlreadyCalled;
