@@ -830,7 +830,7 @@ mw.EmbedPlayerNative = {
 	*/
 	_onpause: function(){
 		var timeSincePlay =  Math.abs( this.absoluteStartPlayTime - new Date().getTime() );
-		mw.log( "EmbedPlayerNative:: OnPaused:: " +  this._propagateEvents + ' time since play: ' + timeSincePlay );
+		mw.log( "EmbedPlayerNative:: OnPaused:: propagate:" +  this._propagateEvents + ' time since play: ' + timeSincePlay );
 		// Only trigger parent pause if more than MonitorRate time has gone by.
 		// Some browsers trigger native pause events when they "play" or after a src switch
 		if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
