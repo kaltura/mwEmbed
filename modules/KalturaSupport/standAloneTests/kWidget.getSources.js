@@ -17,7 +17,7 @@ if( ! window.kWidget ){
 	if( protocol == 'https' ){ 
 		serviceUrl = 'https://www.kaltura.com';
 	} else {
-		serviceUrl = 'http://cdnapi.kaltura.com';
+		serviceUrl = 'http://cdnbakmi.kaltura.com';
 	}
 	var exportedCallback;
 
