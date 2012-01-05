@@ -1,0 +1,26 @@
+<html>
+<head>
+</head>
+<body>
+	<h3>Sample kWidget.getSources</h3>
+	partnerId : '243342', entryId: '0_uka1msg4'
+	<div id="sourceSet"></div>
+	<script src="kWidget.getSources.js"></script>
+	<script>
+		kWidget.getSources({
+			'partnerId': '243342',
+			'entryId': '0_uka1msg4',
+			'callback': function( sourceSet ){
+				var o = '';
+				for( var i in sourceSet ){
+					var source = sourceSet[i];
+					o += ' <br/>' + ' Source <a href="' + source['src'] + '" >' + source['data-flavorid'] + '</a>, ';
+					o += ( source['data-bitrate'] )? ' bitrate:' + source['data-bitrate'] + ' size: ' + source['data-width'] + 'x' + source['data-height'] : ' ( adaptive ) ';
+					o += '<br />';
+				}
+				document.getElementById( 'sourceSet' ).innerHTML = o;
+			}
+		})
+	</script>
+</body>
+</html>
