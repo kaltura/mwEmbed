@@ -27,7 +27,7 @@ if( ! window.kWidget ){
 		entryId = settings.entryId;
 		partnerId = settings.partnerId;
 		callback = settings.callback;
-		addScript('http://cdnbakmi.kaltura.com/api_v3/index.php?service=multirequest&format=9&1:service=session&1:action=startWidgetSession&1:widgetId=' + wid +'&2:service=flavorasset&2:action=getByEntryId&2:ks={1:result:ks}&2:entryId=' + entryId + '&callback=kWidget.getSourcesCallback'); 
+		addScript('http://cdnapi.kaltura.com/api_v3/index.php?service=multirequest&format=9&1:service=session&1:action=startWidgetSession&1:widgetId=' + wid +'&2:service=flavorasset&2:action=getByEntryId&2:ks={1:result:ks}&2:entryId=' + entryId + '&callback=kWidget.getSourcesCallback'); 
 	};
 
 	// Note we use a local pre-defined callback to enable cdn cache 
