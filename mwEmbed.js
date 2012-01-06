@@ -23,9 +23,9 @@ if ( typeof window.mw == 'undefined' ) {
 window.mediaWiki =  window.mw;
 
 /**
- * Set the mwEmbedVersion
+ * Set the mwEmbedVersion ( set by default settings can be removed once we use the new RL ) 
  */
-var MW_EMBED_VERSION = '1.5';
+var MW_EMBED_VERSION = '1.6';
 
 // Globals to pre-set ready functions in dynamic loading of mwEmbed
 if( typeof window.preMwEmbedReady == 'undefined'){
