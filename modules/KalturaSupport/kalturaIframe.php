@@ -855,9 +855,7 @@ class kalturaIframe {
 					// Bind window resize to reize the player:
 					$( window ).resize( doResizePlayer );
 					// Resize the player per player on ready
-					if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
-						doResizePlayer();
-					}
+					doResizePlayer();
 				});
 		} else {
 			// Remove the video tag and output a clean "object" or file link
