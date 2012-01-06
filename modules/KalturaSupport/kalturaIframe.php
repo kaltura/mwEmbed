@@ -133,18 +133,6 @@ class kalturaIframe {
 
 		return $o;
 	}
-	private function getPlayerSizeCss() {
-		// Set defaults
-		$width = 400;
-		$height = 300;
-		// check if we have iframeSize paramater:
-		if( isset( $_GET[ 'iframeSize' ] ) ){
-			list( $width, $height ) = explode( 'x',  $_GET[ 'iframeSize' ]);
-			$width = ( strpos($width, '%') === false ) ? intval( $width ) . 'px' : $width;
-			$height = ( strpos($height, '%') === false ) ? intval( $height ) . 'px' : $height;
-		}		
-		return "width:{$width};height:{$height};";
-	}
 	private function getPlaylistPlayerSizeCss(){
 		$width = 400;
 		$height = 300;
@@ -642,6 +630,28 @@ class kalturaIframe {
 				// on some video tag properties
 				?>
 				<script type="text/javascript">
+
+					function getViewPortSize(){
+						var w;
+						var h;
+						// the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
+						if (typeof window.innerWidth != 'undefined'){
+						      w = window.innerWidth,
+						      h = window.innerHeight
+						}
+						// IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
+						else if (typeof document.documentElement != 'undefined'
+							&& typeof document.documentElement.clientWidth !=
+							'undefined' && document.documentElement.clientWidth != 0){
+								w = document.documentElement.clientWidth,
+								h = document.documentElement.clientHeight
+						 } else {// older versions of IE
+						 	w = document.getElementsByTagName('body')[0].clientWidth,
+							h = document.getElementsByTagName('body')[0].clientHeight
+						 }
+						 return { 'w': w, 'h': h };
+					}
+				
 					var videoTagHTML = <?php echo json_encode( $this->getVideoHTML() ) ?>;
 					var ua = navigator.userAgent
 					// Android can't handle position:absolute style on video tags
@@ -659,9 +669,8 @@ class kalturaIframe {
 					) {
 						videoTagHTML = videoTagHTML.replace( /class=\"persistentNativePlayer\"/gi, '' );
 					}
-					
-					//styleValue = 'position:absolute;width:100%;height:100%';
-					styleValue = 'display: block;<?php echo $this->getPlayerSizeCss(); ?>';
+					var size = getViewPortSize();
+					styleValue = 'display: block;width:' + size.w + 'px;height:' + size.h + 'px;';
 					
 					videoTagHTML = videoTagHTML.replace(/style=\"\"/, 'style="' + styleValue + '"');
 					document.write( videoTagHTML );
