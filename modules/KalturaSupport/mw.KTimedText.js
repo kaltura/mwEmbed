@@ -73,7 +73,9 @@
 			
 			// Support SetKDP attribute style caption updates
 			$( embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostfix, function( event, componentName, property, value ){
-				if( componentName == 'closedCaptions' ){
+				if( componentName == 'closedCaptions' || 
+					componentName == 'closedCaptionsOverPlayer' ||
+					componentName == 'closedCaptionsFlexible' ){
 					_this.kVars[ property ] = value;
 					if( property == 'ccUrl' ){
 						// empty the text sources:

@@ -1409,7 +1409,10 @@ mw.EmbedPlayer.prototype = {
 			'width' : _this.width,
 			'height' : _this.height
 		};
-
+		// Check if we need to insert
+		if( $( '#' + this.pid ).length == 0 ){
+			$( this ).append( $( '<div />').attr('id', this.pid ) );
+		}
 		$( '#' + this.pid ).replaceWith(
 			_this.getNativePlayerHtml( videoAttribues, cssStyle )
 		);

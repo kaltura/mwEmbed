@@ -163,6 +163,8 @@
 					return this.getCaptionsFromTMML( data );
 					break;
 			}
+			// caption mime not found return empty set: 
+			return [];
 		},
 		
 		getStyleCssById: function( styleId ){
