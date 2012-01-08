@@ -219,7 +219,30 @@ mw.KApi.prototype = {
 			});
 		}
 
-		if( kProperties.entry_id ){
+		if( kProperties.entry_id || kProperties.reference_id ){
+
+			var entryIdValue = kProperties.entry_id;
+			var useReferenceId = false;
+			if( kProperties.entry_id ) {
+				// Get baseEntry
+				requestObject.push({
+						 'service' : 'baseentry',
+						 'action' : 'get',
+						 'version' : '-1',
+						 'entryId' : kProperties.entry_id
+				});
+			} else {
+				// Get the entry Id from the referenceId list response
+				requestObject.push({
+						 'service' : 'baseentry',
+						 'action' : 'listByReferenceId',
+						 'refId' : kProperties.reference_id
+				});
+				useReferenceId = true;
+				entryIdValue = '{1:result:objects:0:id}';
+			}
+
+
 			// Add Context Data request 			
 			requestObject.push({
 		        	 'contextDataParams' : {
@@ -227,23 +250,15 @@ mw.KApi.prototype = {
 			        	 	'objectType' : 'KalturaEntryContextDataParams'
 			         },
 		        	 'service' : 'baseentry',
-		        	 'entryId' : kProperties.entry_id ,
+		        	 'entryId' : entryIdValue,
 		        	 'action' : 'getContextData'
 			});
 			
 			 // Get flavorasset
 			requestObject.push({
-		        	 'entryId' : kProperties.entry_id ,
+		        	 'entryId' : entryIdValue,
 		        	 'service' : 'flavorasset',
 		        	 'action' : 'getByEntryId'
-		    });
-			
-		    // Get baseEntry
-			requestObject.push({
-		        	 'service' : 'baseentry',
-		        	 'action' : 'get',
-		        	 'version' : '-1',
-		        	 'entryId' : kProperties.entry_id
 		    });
 						
 		    // Get custom Metadata	
@@ -254,7 +269,7 @@ mw.KApi.prototype = {
 	        	 // metaDataFilter
 	        	 'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
 	        	 'filter:orderBy' : '+createdAt',
-	        	 'filter:objectIdEqual' : kProperties.entry_id,
+	        	 'filter:objectIdEqual' : entryIdValue,
 	        	 'pager:pageSize' : 1
 		    });
 			
@@ -271,7 +286,7 @@ mw.KApi.prototype = {
 		        	 'filter:objectType' : 'KalturaCuePointFilter',
 		        	 'filter:orderBy' : '+startTime',
 		        	 'filter:statusEqual' : 1,
-		        	 'filter:entryIdEqual' : kProperties.entry_id
+		        	 'filter:entryIdEqual' : entryIdValue
 			    });
 			}
 			
@@ -297,16 +312,26 @@ mw.KApi.prototype = {
 				}
 			}
 
-			if( kProperties.entry_id ){ 
+			if( kProperties.entry_id || kProperties.reference_id ){
+				dataIndex++;
+				if( useReferenceId ) {
+					if( data[ dataIndex ].objects.length == 0 ) {
+						namedData['meta'] = {
+							code: 'ENTRY_ID_NOT_FOUND',
+							message: 'Entry id ' + kProperties.reference_id + ' not found'
+						};
+					} else {
+						namedData['meta'] = data[ dataIndex ].objects[0];
+					}
+				} else {
+					namedData['meta'] = data[ dataIndex ];
+				}
 				dataIndex++;
 				namedData['accessControl'] = data[ dataIndex ];
 				dataIndex++;
 				namedData['flavors'] = data[ dataIndex ];
 				dataIndex++;
-				namedData['meta'] = data[ dataIndex ];
-				dataIndex++;
 				namedData['entryMeta'] = _this.convertCustomDataXML( data[ dataIndex ] );
-
 				dataIndex++;
 				if( data[ dataIndex ] && data[ dataIndex].totalCount > 0 ) {
 					namedData['entryCuePoints'] = data[ dataIndex ].objects;

@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Kaltura Entry by Reference ID</title>
+
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script>
+mw.setConfig('Kaltura.ServiceUrl', 'http://devtests.kaltura.co.cc' );
+mw.setConfig('Kaltura.CdnUrl', 'http://devtests.kaltura.co.cc' );
+mw.setConfig('Kaltura.StatsServiceUrl', 'http://devtests.kaltura.co.cc' );
+function changeMedia() {
+	document.getElementById('kdp').sendNotification('changeMedia', {referenceId: "the-avengers"});
+}
+</script>
+</head>
+<body>
+<h2>Kaltura Entry by Reference ID </h2>	
+<h4>Kaltura allows to set reference Id per entry. You can use reference Id to set custom id for kaltura entry.<br />
+This test allow to load the player with reference Id (without entry Id) and to use changeMedia with reference Id</h4>
+<b>How to use:</b><br />
+<ul>
+	<li>Flashvar: <i>referenceId=the-dark-knight-rises</i></li>
+	<li>changeMedia command: <i>kdp.sendNotification('changeMedia', {referenceId: 'the-avengers'})</i></li>
+</ul><br />
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers
+<br /><br />
+<object id="kdp" name="kdp" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://devtests.kaltura.co.cc/index.php/kwidget/cache_st/1326019150/wid/_495794/uiconf_id/3552919" data="http://devtests.kaltura.co.cc/index.php/kwidget/cache_st/1326019150/wid/_495794/uiconf_id/3552919">
+	<param name="allowFullScreen" value="true" />
+	<param name="allowNetworking" value="all" />
+	<param name="allowScriptAccess" value="always" />
+	<param name="bgcolor" value="#000000" />
+	<param name="flashVars" value="&referenceId=the-dark-knight-rises" />
+	<param name="movie" value="http://devtests.kaltura.co.cc/index.php/kwidget/cache_st/1326019150/wid/_495794/uiconf_id/3552919" />
+</object>
+<br />
+<a href="#" onclick="changeMedia();">Change Entry</a>
+<br />
+</body>
+</html>

@@ -542,6 +542,10 @@ mw.KWidgetSupport.prototype = {
 			// Add entry_id playerLoader call			
 			playerRequest.entry_id =  embedPlayer.kentryid;
 		}
+
+		if( embedPlayer.kreferenceid ) {
+			playerRequest.reference_id = embedPlayer.kreferenceid;
+		}
 		
 		// only request the ui Conf if we don't already have it: 
 		if( !embedPlayer.$uiConf ){
@@ -572,6 +576,15 @@ mw.KWidgetSupport.prototype = {
 					$('.loadingSpinner').remove();
 					$(embedPlayer).replaceWith( "Error invalid KS" );
 					return ;
+				}
+				if( playerData.meta && playerData.meta.id ) {
+					embedPlayer.kentryid = playerData.meta.id;
+					
+					var poster = playerData.meta.thumbnailUrl;
+					poster += '/width/' + embedPlayer.$interface.width();
+					poster += '/height/' + embedPlayer.$interface.height();
+
+					embedPlayer.updatePosterSrc( poster );
 				}
 				callback( playerData );
 			});

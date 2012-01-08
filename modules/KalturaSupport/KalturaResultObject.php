@@ -194,7 +194,7 @@ class KalturaResultObject {
 	// empty player test ( nothing in the uiConf says "player" diffrent from other widgets so we 
 	// we just have to use the 
 	function isEmptyPlayer(){
-		if( !$this->urlParameters['entry_id'] && !$this->isJavascriptRewriteObject()
+		if( !$this->urlParameters['entry_id'] && !$this->urlParameters['flashvars']['referenceId'] && !$this->isJavascriptRewriteObject()
 			&& !$this->isPlaylist() ){
 			return true;
 		}
@@ -607,6 +607,7 @@ class KalturaResultObject {
 				if( $KalturaFlavorAsset->status == 4 ){
 					$source['data-error'] = "not-ready-transcoding" ;
 				}
+				continue;
 			}
 			
 			// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
@@ -1014,23 +1015,34 @@ class KalturaResultObject {
 			}
 			$namedMultiRequest = new KalturaNamedMultiRequest( $client, $default_params );
 			
+			// Added support for passing referenceId instead of entryId
+			$useReferenceId = false;
+			if( ! $this->urlParameters['entry_id'] && isset($this->urlParameters['flashvars']['referenceId']) ) {
+				// Use baseEntry->listByReferenceId
+				$useReferenceId = true;
+				$namedMultiRequest->addNamedRequest( 'referenceResult', 'baseEntry', 'listByReferenceId', array( 'refId' => $this->urlParameters['flashvars']['referenceId'] ) );
+				$entryIdParamValue = '{1:result:objects:0:id}';
+			} else {
+				// Use normal baseEntry->get
+				$namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'get', array( 'entryId' => $this->urlParameters['entry_id'] ) );
+				// Set entry id param value for other requests
+				$entryIdParamValue = $this->urlParameters['entry_id'];
+			}
+			// Set entry parameter
+			$entryParam = array( 'entryId' => $entryIdParamValue );
 			// Flavors: 
-			$entryParam = array( 'entryId' => $this->urlParameters['entry_id'] );
 			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'getByEntryId', $entryParam );
 				
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
 			$params = array_merge( $entryParam, array( "contextDataParams" => array( 'referrer' =>  $this->getReferer() ) ) );
 			$namedMultiRequest->addNamedRequest( 'accessControl', 'baseEntry', 'getContextData', $params );
-
-			// Entry Meta
-			$namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'get', $entryParam );
 			
 			// Entry Custom Metadata
 			// Always get custom metadata for now 
 			//if( $this->getPlayerConfig(false, 'requiredMetadataFields') ) {
 				$filter = new KalturaMetadataFilter();
 				$filter->orderBy = KalturaMetadataOrderBy::CREATED_AT_ASC;
-				$filter->objectIdEqual = $this->urlParameters['entry_id'];
+				$filter->objectIdEqual = $entryIdParamValue;
 				$filter->metadataObjectTypeEqual = KalturaMetadataObjectType::ENTRY;
 				
 				$metadataPager =  new KalturaFilterPager();
@@ -1043,7 +1055,7 @@ class KalturaResultObject {
 			if( $this->getPlayerConfig(false, 'getCuePointsData') !== false ) {
 				$filter = new KalturaCuePointFilter();
 				$filter->orderBy = KalturaAdCuePointOrderBy::START_TIME_ASC;
-				$filter->entryIdEqual = $this->urlParameters['entry_id'];
+				$filter->entryIdEqual = $entryIdParamValue;
 
 				$params = array( 'filter' => $filter );
 				$namedMultiRequest->addNamedRequest( 'entryCuePoints', "cuepoint_cuepoint", "list", $params );
@@ -1055,7 +1067,7 @@ class KalturaResultObject {
 			
 			// Check if the server cached the result by search for "cached-dispatcher" in the request headers
 			// If not, do not cache the request (Used for Access control cache issue)
-			$requestCached = strpos( $client->getHeaders(), "X-Kaltura: cached-dispatcher" );
+			$requestCached = in_array( "X-Kaltura: cached-dispatcher", $client->getResponseHeaders() );
 			if( $requestCached === false ) {
 				$this->noCache = true;
 			}
@@ -1065,8 +1077,18 @@ class KalturaResultObject {
 			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
 			return array();
 		}
+
+		if( $useReferenceId ) {
+			if( $resultObject['referenceResult'] && $resultObject['referenceResult']->objects ) {
+				$this->urlParameters['entry_id'] = $resultObject['referenceResult']->objects[0]->id;
+				$resultObject['meta'] = $resultObject['referenceResult']->objects[0];
+			} else {
+				$resultObject['meta'] = array();
+			}
+		}
+
 		// Check that the ks was valid on the first response ( flavors ) 
-		if( isset( $resultObject['flavors']['code'] ) && $resultObject['flavors']['code'] == 'INVALID_KS' ){
+		if( is_array( $resultObject['meta'] ) && isset( $resultObject['meta']['code'] ) && $resultObject['meta']['code'] == 'INVALID_KS' ){
 			$this->error = 'Error invalid KS';
 			return array();
 		}
@@ -1126,6 +1148,18 @@ class KalturaResultObject {
 		}
 		return ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : 'http://www.kaltura.org/';
 	}
+	private function getRemoteAddrHeader(){
+		global $wgKalturaRemoteAddressSalt, $wgKalturaForceIP;
+		if( $wgKalturaRemoteAddressSalt === false ){
+			return '';
+		}
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if( $wgKalturaForceIP ){
+			$ip = $wgKalturaForceIP;
+		}
+		$s = $ip . "," . time() . "," . microtime( true );
+		return "X_KALTURA_REMOTE_ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
+	}
 	private function getClient(){
 		global $mwEmbedRoot, $wgKalturaUiConfCacheTime, $wgScriptCacheDirectory, 
 			$wgMwEmbedVersion, $wgKalturaServiceTimeout, $wgLogApiRequests;
@@ -1142,6 +1176,8 @@ class KalturaResultObject {
 		$conf->clientTag = $this->clientTag;
 		$conf->curlTimeout = $wgKalturaServiceTimeout;
 		$conf->userAgent = $this->getUserAgent();
+		$conf->verifySSL = false;
+		$conf->requestHeaders = array(  $this->getRemoteAddrHeader() );
 
 		if( $wgLogApiRequests ) {
 			require_once 'KalturaLogger.php';

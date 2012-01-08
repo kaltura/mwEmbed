@@ -767,39 +767,46 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
-					// Check if we don't have entryId or it's -1. than we just empty the source and the metadata
-					if( notificationData.entryId == "" || notificationData.entryId == -1 ) {
-					    // Empty sources
+					// Check if we have entryId and it's not -1. than we change media
+					if( (notificationData.entryId && notificationData.entryId != -1) || (notificationData.referenceId && notificationData.referenceId != -1) ){
+						// Check if we use referenceId
+						if( ! notificationData.entryId && notificationData.referenceId ) {
+							embedPlayer.kreferenceid = notificationData.referenceId;
+						} else {
+							embedPlayer.kreferenceid = null;
+						}
+						// Update the entry id
+						embedPlayer.kentryid = notificationData.entryId;
+						// Clear out any bootstrap data from the iframe
+						mw.setConfig('KalturaSupport.IFramePresetPlayerData', false);
+						// Clear player & entry meta
+						embedPlayer.kalturaPlayerMetaData = null;
+						embedPlayer.kalturaEntryMetaData = null;
+
+						// clear cuepoint data:
+						embedPlayer.rawCuePoints = null;
+						embedPlayer.kCuePoints = null;
+
+						// clear ad data ..
+						embedPlayer.kAds = null;
+
+						// Update the poster
+						embedPlayer.updatePosterSrc(
+							mw.getKalturaThumbUrl({
+								'partner_id': embedPlayer.kwidgetid.replace('_', ''),
+								'entry_id' : embedPlayer.kentryid,
+								'width' : embedPlayer.getWidth(),
+								'height' :  embedPlayer.getHeight()
+							})
+						);
+						// run the embedPlayer changeMedia function
+						embedPlayer.changeMedia();
+						break;
+					} else {
+						// Empty sources
 					    embedPlayer.emptySources();
 					    break;
 					}
-					// Update the entry id
-					embedPlayer.kentryid = notificationData.entryId;
-					// Clear out any bootstrap data from the iframe 
-					mw.setConfig('KalturaSupport.IFramePresetPlayerData', false);
-					// Clear player & entry meta 
-				    embedPlayer.kalturaPlayerMetaData = null;
-				    embedPlayer.kalturaEntryMetaData = null;
-				    
-				    // clear cuepoint data:
-				    embedPlayer.rawCuePoints = null;
-				    embedPlayer.kCuePoints = null;
-				    
-				    // clear ad data ..
-				    embedPlayer.kAds = null;
-				    
-					// Update the poster
-					embedPlayer.updatePosterSrc( 
-						mw.getKalturaThumbUrl({
-							'partner_id': embedPlayer.kwidgetid.replace('_', ''),
-							'entry_id' : embedPlayer.kentryid,
-							'width' : embedPlayer.getWidth(),
-							'height' :  embedPlayer.getHeight()
-						})
-					);
-					// run the embedPlayer changeMedia function
-					embedPlayer.changeMedia();
-				break;
 			}
 			// Give kdp plugins a chance to take attribute actions 
 			$( embedPlayer ).trigger( 'Kaltura_SendNotification', [ notificationName, notificationData ] );
