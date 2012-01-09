@@ -1019,8 +1019,8 @@ class KalturaResultObject {
 			if( ! $this->urlParameters['entry_id'] && isset($this->urlParameters['flashvars']['referenceId']) ) {
 				// Use baseEntry->listByReferenceId
 				$useReferenceId = true;
-				$namedMultiRequest->addNamedRequest( 'referenceResult', 'baseEntry', 'listByReferenceId', array( 'refId' => $this->urlParameters['flashvars']['referenceId'] ) );
-				$entryIdParamValue = '{1:result:objects:0:id}';
+				$refIndex = $namedMultiRequest->addNamedRequest( 'referenceResult', 'baseEntry', 'listByReferenceId', array( 'refId' => $this->urlParameters['flashvars']['referenceId'] ) );
+				$entryIdParamValue = '{' . $refIndex . ':result:objects:0:id}';
 			} else {
 				// Use normal baseEntry->get
 				$namedMultiRequest->addNamedRequest( 'meta', 'baseEntry', 'get', array( 'entryId' => $this->urlParameters['entry_id'] ) );
