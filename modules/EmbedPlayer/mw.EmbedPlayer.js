@@ -1004,7 +1004,12 @@ mw.EmbedPlayer.prototype = {
 		mw.log("EmbedPlayer::showPluginMissingHTML");
 		// Hide loader
 		this.hidePlayerSpinner();
-		
+
+		// Control builder ( for play button )
+		this.controlBuilder = new mw.PlayerControlBuilder( this );
+		// Make sure interface is available
+		this.getPlayerInterface();
+
 		// Error in loading media ( trigger the mediaLoadError )
 		$this.trigger( 'mediaLoadError' );
 		
@@ -1027,11 +1032,6 @@ mw.EmbedPlayer.prototype = {
 		
 		// Set the top level container to relative position:
 		$this.css('position', 'relative');
-		
-		// Control builder ( for play button )
-		this.controlBuilder = new mw.PlayerControlBuilder( this );					
-		// Make sure interface is available
-		this.getPlayerInterface();
 	
 		// Update the poster and html:
 		this.updatePosterHTML();
