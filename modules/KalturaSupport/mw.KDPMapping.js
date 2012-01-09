@@ -767,6 +767,12 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
+					// Check if we don't have entryId and referenceId and they both not -1 - Empty sources
+					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
+						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) ) {
+					    embedPlayer.emptySources();
+					    break;
+					}
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1) || (notificationData.referenceId && notificationData.referenceId != -1) ){
 						// Check if we use referenceId
@@ -791,21 +797,11 @@
 						embedPlayer.kAds = null;
 
 						// Update the poster
-						embedPlayer.updatePosterSrc(
-							mw.getKalturaThumbUrl({
-								'partner_id': embedPlayer.kwidgetid.replace('_', ''),
-								'entry_id' : embedPlayer.kentryid,
-								'width' : embedPlayer.getWidth(),
-								'height' :  embedPlayer.getHeight()
-							})
-						);
+						embedPlayer.updatePosterSrc();
+						
 						// run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
 						break;
-					} else {
-						// Empty sources
-					    embedPlayer.emptySources();
-					    break;
 					}
 			}
 			// Give kdp plugins a chance to take attribute actions 

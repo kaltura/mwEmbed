@@ -201,6 +201,10 @@ mw.KApi.prototype = {
 	playerLoader: function( kProperties, callback ){
 		var _this = this;
 		var requestObject = [];
+		var entryIdValue;
+		var refIndex;
+		var useReferenceId = false;
+
 		mw.log( "KApi:: playerLoader, in cache: " + !!( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ) );
 		if( this.getCacheKey( kProperties ) && this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ){
 			callback( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] );
@@ -221,9 +225,8 @@ mw.KApi.prototype = {
 
 		if( kProperties.entry_id || kProperties.reference_id ){
 
-			var entryIdValue = kProperties.entry_id;
-			var useReferenceId = false;
 			if( kProperties.entry_id ) {
+				entryIdValue = kProperties.entry_id; // will be used in other entry requests
 				// Get baseEntry
 				requestObject.push({
 						 'service' : 'baseentry',
@@ -232,14 +235,20 @@ mw.KApi.prototype = {
 						 'entryId' : kProperties.entry_id
 				});
 			} else {
-				// Get the entry Id from the referenceId list response
+				// Use referenceId andGet the entry Id from the referenceId list response
 				requestObject.push({
 						 'service' : 'baseentry',
 						 'action' : 'listByReferenceId',
 						 'refId' : kProperties.reference_id
 				});
 				useReferenceId = true;
-				entryIdValue = '{1:result:objects:0:id}';
+
+				if( kProperties.uiconf_id ) {
+					refIndex = 2;
+				} else {
+					refIndex = 1;
+				}
+				entryIdValue = '{' + refIndex + ':result:objects:0:id}';
 			}
 
 
@@ -315,10 +324,10 @@ mw.KApi.prototype = {
 			if( kProperties.entry_id || kProperties.reference_id ){
 				dataIndex++;
 				if( useReferenceId ) {
-					if( data[ dataIndex ].objects.length == 0 ) {
+					if( ! data[ dataIndex ].objects || ( data[ dataIndex ].objects && data[ dataIndex ].objects.length == 0 ) ) {
 						namedData['meta'] = {
 							code: 'ENTRY_ID_NOT_FOUND',
-							message: 'Entry id ' + kProperties.reference_id + ' not found'
+							message: 'Entry with reference id ' + kProperties.reference_id + ' not found'
 						};
 					} else {
 						namedData['meta'] = data[ dataIndex ].objects[0];
