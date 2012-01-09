@@ -71,13 +71,13 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 		mkdir( $wgScriptCacheDirectory );
 	}
 	
-	$loaderCacheFile = $wgScriptCacheDirectory . '/loader.min.' . $wgMwEmbedVersion . '.js';
+	$loaderCacheFile = $wgScriptCacheDirectory . '/loader_' . $wgHTTPProtocol . '.min.' . $wgMwEmbedVersion . '.js';
 
 	$javascriptModTime = @filemtime( 'mwEmbedLoader.js' );
 	$cacheModTime = @filemtime( $loaderCacheFile );
 	
 	// check if there were any updates to the mwEmbedLoader file
-	if( is_file( $loaderCacheFile ) && $javascriptModTime < $cacheModTime &&  $loaderCacheFile && is_file( $loaderCacheFile ) ){
+	if( is_file( $loaderCacheFile ) && $javascriptModTime < $cacheModTime ){
 		echo file_get_contents( $loaderCacheFile );
 	} else {
 		$loaderMin = JSMin::minify( $loaderJs );
