@@ -581,9 +581,9 @@ mw.KWidgetSupport.prototype = {
 					embedPlayer.kentryid = playerData.meta.id;
 					
 					var poster = playerData.meta.thumbnailUrl;
-					poster += '/width/' + embedPlayer.$interface.width();
-					poster += '/height/' + embedPlayer.$interface.height();
-
+					// Include width and height info if avaliable: 
+					poster += '/width/' + embedPlayer.getWidth();
+					poster += '/height/' + embedPlayer.getHeight();
 					embedPlayer.updatePosterSrc( poster );
 				}
 				callback( playerData );

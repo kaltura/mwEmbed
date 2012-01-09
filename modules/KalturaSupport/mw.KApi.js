@@ -204,16 +204,30 @@ mw.KApi.prototype = {
 		var entryIdValue;
 		var refIndex;
 		var useReferenceId = false;
+		
+		// RefrenceId in flash vars translates to kProperties.reference_id
+		// TODO do we need both of these representation or does referenceId always come in as 
+		// a flashvar? 
+		if( kProperties.flashvars['referenceId'] ){
+			kProperties.reference_id =  kProperties.flashvars['referenceId'];
+		}
 
-		mw.log( "KApi:: playerLoader, in cache: " + !!( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ) );
 		if( this.getCacheKey( kProperties ) && this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ){
+			mw.log( "KApi:: playerLoader load from cache: " + !!( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] ) );
 			callback( this.playerLoaderCache[ this.getCacheKey( kProperties ) ] );
 			return ;
 		}
+		// Local method to fill the cache key and run the assoicated callback
+		var fillCacheAndRunCallback = function( namedData ){
+			_this.playerLoaderCache[ _this.getCacheKey( kProperties ) ] = namedData;
+			callback( namedData );
+		}
+
 		// Check if we have ks flashvar and use it for our request
 		if( kProperties.flashvars && kProperties.flashvars.ks ) {
 			this.setKS( kProperties.flashvars.ks );
 		}
+		
 		// Check if we should load uiconf_id
 		if( kProperties.uiconf_id ){
 			requestObject.push({
@@ -221,90 +235,100 @@ mw.KApi.prototype = {
 					'id' : kProperties.uiconf_id,
 					'action' : 'get'
 			});
+			// Check if we are ~only~ getting the uiConf: 
+			if( ! kProperties.entry_id && !kProperties.reference_id ){
+				_this.getNamedDataFromRequest( requestObject, fillCacheAndRunCallback );
+				return ;
+			}
 		}
 
-		if( kProperties.entry_id || kProperties.reference_id ){
-
-			if( kProperties.entry_id ) {
-				entryIdValue = kProperties.entry_id; // will be used in other entry requests
-				// Get baseEntry
-				requestObject.push({
-						 'service' : 'baseentry',
-						 'action' : 'get',
-						 'version' : '-1',
-						 'entryId' : kProperties.entry_id
-				});
-			} else {
-				// Use referenceId andGet the entry Id from the referenceId list response
-				requestObject.push({
-						 'service' : 'baseentry',
-						 'action' : 'listByReferenceId',
-						 'refId' : kProperties.reference_id
-				});
-				useReferenceId = true;
-
-				if( kProperties.uiconf_id ) {
-					refIndex = 2;
-				} else {
-					refIndex = 1;
-				}
-				entryIdValue = '{' + refIndex + ':result:objects:0:id}';
-			}
-
-
-			// Add Context Data request 			
-			requestObject.push({
-		        	 'contextDataParams' : {
-			        	 	'referrer' : window.kWidgetSupport.getHostPageUrl(),
-			        	 	'objectType' : 'KalturaEntryContextDataParams'
-			         },
-		        	 'service' : 'baseentry',
-		        	 'entryId' : entryIdValue,
-		        	 'action' : 'getContextData'
-			});
-			
-			 // Get flavorasset
-			requestObject.push({
-		        	 'entryId' : entryIdValue,
-		        	 'service' : 'flavorasset',
-		        	 'action' : 'getByEntryId'
-		    });
-						
-		    // Get custom Metadata	
-			requestObject.push({
-	        	 'service' : 'metadata_metadata',
-	        	 'action' : 'list',
-	        	 'version' : '-1',
-	        	 // metaDataFilter
-	        	 'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
-	        	 'filter:orderBy' : '+createdAt',
-	        	 'filter:objectIdEqual' : entryIdValue,
-	        	 'pager:pageSize' : 1
-		    });
-			
-			// Get Cue Points if not disable and on an entry_id
-			var loadCuePoints = true;
-			if( kProperties.flashvars && kProperties.flashvars.getCuePointsData && kProperties.flashvars.getCuePointsData == "false") {
-				loadCuePoints = false;
-			}
-
-			if( loadCuePoints ){
-				requestObject.push({
-		        	 'service' : 'cuepoint_cuepoint',
-		        	 'action' : 'list',
-		        	 'filter:objectType' : 'KalturaCuePointFilter',
-		        	 'filter:orderBy' : '+startTime',
-		        	 'filter:statusEqual' : 1,
-		        	 'filter:entryIdEqual' : entryIdValue
-			    });
-			}
-			
-		}
 		
+		if( kProperties.entry_id ) {
+			entryIdValue = kProperties.entry_id; // will be used in other entry requests
+			// Get baseEntry
+			requestObject.push({
+					 'service' : 'baseentry',
+					 'action' : 'get',
+					 'version' : '-1',
+					 'entryId' : kProperties.entry_id
+			});
+		} else if( kProperties.reference_id ){
+			// Use referenceId andGet the entry Id from the referenceId list response
+			requestObject.push({
+					 'service' : 'baseentry',
+					 'action' : 'listByReferenceId',
+					 'refId' : kProperties.reference_id
+			});
+			useReferenceId = true;
 
+			if( kProperties.uiconf_id ) {
+				refIndex = 2;
+			} else {
+				refIndex = 1;
+			}
+			entryIdValue = '{' + refIndex + ':result:objects:0:id}';
+		}
+
+
+		// Add Context Data request 			
+		requestObject.push({
+	        	 'contextDataParams' : {
+		        	 	'referrer' : window.kWidgetSupport.getHostPageUrl(),
+		        	 	'objectType' : 'KalturaEntryContextDataParams'
+		         },
+	        	 'service' : 'baseentry',
+	        	 'entryId' : entryIdValue,
+	        	 'action' : 'getContextData'
+		});
+		
+		 // Get flavorasset
+		requestObject.push({
+	        	 'entryId' : entryIdValue,
+	        	 'service' : 'flavorasset',
+	        	 'action' : 'getByEntryId'
+	    });
+					
+	    // Get custom Metadata	
+		requestObject.push({
+        	 'service' : 'metadata_metadata',
+        	 'action' : 'list',
+        	 'version' : '-1',
+        	 // metaDataFilter
+        	 'filter:metadataObjectTypeEqual' :1, /* KalturaMetadataObjectType::ENTRY */
+        	 'filter:orderBy' : '+createdAt',
+        	 'filter:objectIdEqual' : entryIdValue,
+        	 'pager:pageSize' : 1
+	    });
+		
+		// Get Cue Points if not disable and on an entry_id
+		var loadCuePoints = true;
+		if( kProperties.flashvars && kProperties.flashvars.getCuePointsData && kProperties.flashvars.getCuePointsData == "false") {
+			loadCuePoints = false;
+		}
+
+		if( loadCuePoints ){
+			requestObject.push({
+	        	 'service' : 'cuepoint_cuepoint',
+	        	 'action' : 'list',
+	        	 'filter:objectType' : 'KalturaCuePointFilter',
+	        	 'filter:orderBy' : '+startTime',
+	        	 'filter:statusEqual' : 1,
+	        	 'filter:entryIdEqual' : entryIdValue
+		    });
+		}
+		_this.getNamedDataFromRequest( requestObject, fillCacheAndRunCallback );
+	},
+	
+	/**
+	 * Do the player data Request and populate named dat
+	 * @pram {object} requestObject Request object 
+	 * @parm {function} callback Function called with named data
+	 */
+	getNamedDataFromRequest: function( requestObject, callback ){
+		var _this = this;
 		// Do the request and pass along the callback
 		this.doRequest( requestObject, function( data ){
-			mw.log( "KApi:: playerLoader got data response" );
+			mw.log( "KApi:: playerLoader got data response", data );
 			var namedData = {};
 			// Name each result data type for easy access
 
@@ -313,43 +337,45 @@ mw.KApi.prototype = {
 				mw.log('Error in kaltura api response: ' + data[0].message);
 				callback( { 'error' :  data[0].message } );
 				return ;
-			} else {
-				var dataIndex = -1;
-				if(  data[0]['confFile'] ){
-					dataIndex++;
-					namedData['uiConf'] = data[ dataIndex ]['confFile'];
+			}
+			
+			var dataIndex = 0;
+			if( data[0]['confFile'] ){
+				namedData['uiConf'] = data[ dataIndex ]['confFile'];
+				dataIndex++;
+				// See if we only have conf data:
+				if( data.length == 1 ){
+					callback( namedData );
+					return ;
 				}
 			}
-
-			if( kProperties.entry_id || kProperties.reference_id ){
-				dataIndex++;
-				if( useReferenceId ) {
-					if( ! data[ dataIndex ].objects || ( data[ dataIndex ].objects && data[ dataIndex ].objects.length == 0 ) ) {
-						namedData['meta'] = {
-							code: 'ENTRY_ID_NOT_FOUND',
-							message: 'Entry with reference id ' + kProperties.reference_id + ' not found'
-						};
-					} else {
-						namedData['meta'] = data[ dataIndex ].objects[0];
-					}
+			// The first data index should be meta ( it shows up in either objects[0] or as a raw property
+			if( requestObject[dataIndex]['action'] == 'listByReferenceId' ) {
+				if( ! data[ dataIndex ].objects || ( data[ dataIndex ].objects && data[ dataIndex ].objects.length == 0 ) ) {
+					namedData['meta'] = {
+						code: 'ENTRY_ID_NOT_FOUND',
+						message: 'Entry with reference id ' + requestObject[dataIndex]['refId'] + ' not found'
+					};
 				} else {
-					namedData['meta'] = data[ dataIndex ];
+					namedData['meta'] = data[ dataIndex ].objects[0];
 				}
-				dataIndex++;
-				namedData['accessControl'] = data[ dataIndex ];
-				dataIndex++;
-				namedData['flavors'] = data[ dataIndex ];
-				dataIndex++;
-				namedData['entryMeta'] = _this.convertCustomDataXML( data[ dataIndex ] );
-				dataIndex++;
-				if( data[ dataIndex ] && data[ dataIndex].totalCount > 0 ) {
-					namedData['entryCuePoints'] = data[ dataIndex ].objects;
-				}
+			} else {
+				namedData['meta'] = data[ dataIndex ];
 			}
-			_this.playerLoaderCache[ _this.getCacheKey( kProperties ) ] = namedData;
+			dataIndex++;
+			namedData['accessControl'] = data[ dataIndex ];
+			dataIndex++;
+			namedData['flavors'] = data[ dataIndex ];
+			dataIndex++;
+			namedData['entryMeta'] = _this.convertCustomDataXML( data[ dataIndex ] );
+			dataIndex++;
+			if( data[ dataIndex ] && data[ dataIndex].totalCount > 0 ) {
+				namedData['entryCuePoints'] = data[ dataIndex ].objects;
+			}
 			callback( namedData );
 		});
 	},
+	
 	convertCustomDataXML: function( data ){
 		var result = {};
 		if( data && data.objects && data.objects[0] ){			
