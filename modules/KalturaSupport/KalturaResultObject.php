@@ -193,7 +193,7 @@ class KalturaResultObject {
 	// empty player test ( nothing in the uiConf says "player" diffrent from other widgets so we 
 	// we just have to use the 
 	function isEmptyPlayer(){
-		if( !$this->urlParameters['entry_id'] && !$this->urlParameters['flashvars']['referenceId'] && !$this->isJavascriptRewriteObject()
+		if( !$this->urlParameters['entry_id'] && ! isset( $this->urlParameters['flashvars']['referenceId'] ) && !$this->isJavascriptRewriteObject()
 			&& !$this->isPlaylist() ){
 			return true;
 		}
