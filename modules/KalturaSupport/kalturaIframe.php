@@ -262,6 +262,7 @@ class kalturaIframe {
 		
 		// Output each source as a child element ( for javascript off browsers to have a chance
 		// to playback the content
+		/* commented out for now, apperently not needed.
 		foreach( $sources as $source ){
 			// Android has issues with type attribute on source element
 			$o.= "\n\t\t" .'<source ' .
@@ -273,7 +274,7 @@ class kalturaIframe {
 			}
 			$o.= '></source>';
 		}
-
+		*/
 		// To be on the safe side include the flash player and
 		// direct file link as a child of the video tag
 		// ( if javascript is "off" and they don't have video tag support for example )
@@ -330,17 +331,16 @@ class kalturaIframe {
 	 * Get custom player includes for css and javascript
 	 */
 	private function getCustomPlayerIncludesJSON(){
+		// Try to get uiConf
 		if( ! $this->getResultObject()->getUiConf() ){
 			return false;
 		}
 		
-		// Try to get uiConf
-		$xml = $this->getResultObject()->getUiConfXML();
 		$resourceIncludes = array();
-		$playerConfig =  $this->getResultObject()->playerConfig;
 		
 		// vars
-		foreach( $playerConfig['vars'] as $key => $value ){
+		$uiVars = $this->getResultObject()->getWidgetUiVars();
+		foreach( $uiVars as $key => $value ){
 			// Check for valid plugin types: 
 			$resource = array();
 			if( strpos( $key, 'IframeCustomPluginJs' ) === 0 ){
@@ -357,10 +357,9 @@ class kalturaIframe {
 			$resourceIncludes[] = $resource;
 		}
 		
-		//$resourceIncludes[] = array( 'src'=> '/testOverlay.js', 'type' => 'js' );
-		
 		// plugins
-		foreach( $playerConfig['plugins'] as $pluginId => $plugin ){
+		$plugins = $this->getResultObject()->getWidgetPlugins();
+		foreach( $plugins as $pluginId => $plugin ){
 			foreach( $plugin as $attr => $value ){
 				$resource = array();
 				if( strpos( $attr, 'iframeHTML5Js' ) === 0 ){
@@ -380,7 +379,8 @@ class kalturaIframe {
 		return json_encode( $resourceIncludes );
 	}
 	/** 
-	 * Gets a series of mw.setConfig calls set via the uiConf of the kaltura player 
+	 * Gets a series of mw.setConfig calls set via the uiConf of the kaltura player
+	 * TODO: we should use getWidgetUiVars instead of parsing the XML
 	 * */
 	private function getCustomPlayerConfig(){
 		if( ! $this->getResultObject()->getUiConf() ){
