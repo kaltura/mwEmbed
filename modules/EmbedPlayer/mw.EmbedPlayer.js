@@ -1173,6 +1173,9 @@ mw.EmbedPlayer.prototype = {
 	 * 		posterSrc Poster src url
 	 */	
 	updatePosterSrc: function( posterSrc ){
+		if( ! posterSrc ) {
+			posterSrc = mw.getConfig( 'EmbedPlayer.BlackPixel' );
+		}
 		this.poster = posterSrc;
 		this.updatePosterHTML();
 		this.applyIntrinsicAspect();
