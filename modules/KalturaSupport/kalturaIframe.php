@@ -113,22 +113,17 @@ class kalturaIframe {
 
 	// Returns a simple image with a direct link to the asset
 	private function getFileLinkHTML(){
-		try {
-			$sources =  $this->getResultObject()->getSources();
-			// If no sources are found use the error video source: 
-			if( count( $sources ) == 0 ){
-				$sources = $this->getResultObject()->getErrorVideoSources();
-			}
-			$flavorUrl = $this->getResultObject()->getSourceForUserAgent( $sources );
-		} catch ( Exception $e ){
-			$this->fatalError( $e->getMessage() );
-		}
+		
+		$params = $this->getResultObject()->getUrlParameters();
+		$downloadPath = str_replace( 'mwEmbedFrame.php', 'modules/KalturaSupport/download.php', $_SERVER['SCRIPT_NAME']);
+		$downloadUrl = $downloadPath . '/wid/' . $params['wid'] . '/uiconf_id/' . $params['uiconf_id'] . '/entry_id/' . $params['entry_id'];
+
 		// The outer container:
 		$o='<div id="directFileLinkContainer">';
 			// TODO once we hook up with the kaltura client output the thumb here:
 			// ( for now we use javascript to append it in there )
 			$o.='<div id="directFileLinkThumb"></div>';
-			$o.='<a href="' . $flavorUrl . '" id="directFileLinkButton" target="_new"></a>';
+			$o.='<a href="' . $downloadUrl . '" id="directFileLinkButton" target="_blank"></a>';
 		$o.='</div>';
 
 		return $o;
@@ -284,7 +279,6 @@ class kalturaIframe {
 		);
 
 		$o.= "\n" . "</video>\n";
-		$o.= "<img src='".$posterUrl."' id='directFileLinkThumb' alt='' onclick='return false;' />";
 		
 		// Wrap in a videoContainer
 		return  '<div id="videoContainer" > ' . $o . '</div>';
@@ -841,9 +835,6 @@ class kalturaIframe {
 				mw.ready(function(){
 					// Try again to remove the flash player if not already removed: 
 					$('#kaltura_player_iframe_no_rewrite').remove();
-
-					// Remove thumbnail from the iframe
-					$('#directFileLinkThumb').remove();
 					
 					var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];
 					// Try to seek to the IframeSeekOffset time:
