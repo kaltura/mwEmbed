@@ -205,10 +205,8 @@ mw.KApi.prototype = {
 		var refIndex;
 		var useReferenceId = false;
 		
-		// RefrenceId in flash vars translates to kProperties.reference_id
-		// TODO do we need both of these representation or does referenceId always come in as 
-		// a flashvar? 
-		if( kProperties.flashvars['referenceId'] ){
+		// RefrenceId can come from flashVar (for initinal load) or from changeMedia
+		if( !kProperties.reference_id && kProperties.flashvars && kProperties.flashvars['referenceId'] ){
 			kProperties.reference_id =  kProperties.flashvars['referenceId'];
 		}
 
