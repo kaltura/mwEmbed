@@ -10,3 +10,5 @@
 		});
 	});
 })( window.mw, window.jQuery );
+// XXX can be removed once we move to the new resource loader
+window['volumeBarLayout'] = true;
