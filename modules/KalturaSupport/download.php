@@ -132,7 +132,7 @@ class downloadEntry {
 	 */
 	private function getSourceFlavorUrl( $flavorId = false){
 		// Get all sources ( if not provided )
-		$sources = $this->getSources();
+		$sources = $this->getResultObject()->getSources();
 		foreach( $sources as $inx => $source ){
 			if( strtolower( $source[ 'data-flavorid' ] )  == strtolower( $flavorId ) ) {
 				return $source['src'];
@@ -170,4 +170,5 @@ class downloadEntry {
 		    )
 		 );
 	}
+	
 }

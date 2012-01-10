@@ -177,6 +177,9 @@ class kalturaIframe {
 				'</span>
 			</div>';
 	}
+	/*
+	 * TODO: need to remove all source logic (not needed)
+	 */
 	private function getVideoHTML( $playerStyle = ''  ){
 		$videoTagMap = array(
 			'entry_id' => 'kentryid',
@@ -198,7 +201,7 @@ class kalturaIframe {
 		$acStatus = $this->getResultObject()->isAccessControlAllowed( $resultObject );
 		if( $acStatus !== true ){
 			$this->playerError = $acStatus;
-			$sources = $this->getResultObject()->getBlackVideoSources();
+			//$sources = $this->getResultObject()->getBlackVideoSources();
 		} else {	
 			try {
 				// We should grab the thumbnail url from our entry to get the latest version of the thumbnail
@@ -208,11 +211,11 @@ class kalturaIframe {
 					$posterUrl = $this->getResultObject()->getBlackPoster();
 				}
 				// get Player sources: 
-				$sources = $this->getResultObject()->getSources();
+				//$sources = $this->getResultObject()->getSources();
 				// If we have an error, show it
 				if( $this->getResultObject()->getError() ) {
 					$this->playerError = $this->getResultObject()->getError();
-					$sources = $this->getResultObject()->getBlackVideoSources();
+					//$sources = $this->getResultObject()->getBlackVideoSources();
 				}
 			} catch ( Exception $e ){
 				// xxx log an empty entry id lookup!
