@@ -676,7 +676,7 @@ mw.KWidgetSupport.prototype = {
 				'height' :  embedPlayer.getHeight()
 			});
 		}
-		// Check if we already have sources: 
+		// Check if we already have sources with flavorid info 
 		var sources = embedPlayer.mediaElement.getSources();
 		if( sources[0] && sources[0]['data-flavorid'] ){
 			return ;

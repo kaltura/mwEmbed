@@ -41,12 +41,14 @@ mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 	// can be displayed in the player without loading the media file
 	'data-durationhint',
 	
-	// Source stream qualities ( will eventually be adaptive streaming )
+	// Source stream qualities 
+	// NOTE data- is striped from the attribute as we build out the "mediaSource" object 
 	'data-shorttitle', // short title for stream ( useful for stream switching control bar widget) 
 	'data-width', // the width of the stream
 	'data-height', // the height of the stream
 	'data-bandwidth', // the overall bitrate of the stream
 	'data-framerate', // the framereate of the stream
+	'data-flavorid', // a source flavor id ( useful for targeting devices )
 	
 	// Media start time
 	'start',
@@ -371,6 +373,16 @@ mw.MediaSource.prototype = {
 		var ext = ( urlParts.file )?  /[^.]+$/.exec( urlParts.file )  :  /[^.]+$/.exec( uri );
 		return ext.toString().toLowerCase()
 	},
+	/**
+	 * Get the flavorId if available. 
+	 */
+	getFlavorId: function(){
+		if( this.flavorid ){
+			return this.flavorid;
+		}
+		return ;
+	},
+	
 	/**
 	 * Attempts to detect the type of a media file based on the URI.
 	 *
