@@ -14,6 +14,7 @@
 	});
 	
 	mw.addModuleLoader('AdSupport', function(){
+		debugger;
 		return [ 'mw.AdTimeline', 'mw.BaseAdPlugin', 'mw.AdLoader', 'mw.VastAdParser' ];
 	});
 	

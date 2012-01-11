@@ -550,13 +550,6 @@
 						callback( 'paused', embedPlayer.id );
 					});
 					b( 'onplay', function(){
-						// By default the html5 is in dom and loads enough to start playback
-						// so it does not include the buffering state.
-						// for KDP parity we trigger the buffer event
-						// TODO better integrate buffering state to read html5 playerState and
-						// other buffer indicators 
-						callback( 'buffering', embedPlayer.id );
-						
 						// Go into playing state: 
 						callback( 'playing', embedPlayer.id );
 					});
@@ -570,6 +563,7 @@
 				case 'doPause':
 					b( "onpause" );
 					break;
+				// TODO move ad Support events to the sequence proxy ( not in core KDPMapping )
 				case 'adStart':
 					b('AdSupport_StartAdPlayback');	
 					break;
@@ -579,19 +573,19 @@
 				// Pre sequences: 
 				case 'preSequenceStart':
 				case 'pre1start':
-					b( 'preSequence');
+					b( 'AdSupport_PreSequence');
 					break;
 				case 'preSequenceComplete':
-					b( 'preSequenceComplete');
+					b( 'AdSupport_PreSequenceComplete');
 					break;
 				
 				// Post sequences:
 				case 'post1start':
 				case 'postSequenceStart':
-					b( 'postSequence');
+					b( 'AdSupport_PostSequence');
 					break;
 				case 'postSequenceComplete':
-					b( 'postSequenceComplete' );
+					b( 'AdSupport_PostSequenceComplete' );
 					break;
 				case 'playerPlayed':
 				case 'play':

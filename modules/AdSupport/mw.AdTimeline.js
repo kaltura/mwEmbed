@@ -87,7 +87,6 @@
 mw.addAdTimeline = function( embedPlayer ){
 	embedPlayer.adTimeline = new mw.AdTimeline( embedPlayer );
 };
-
 mw.AdTimeline = function(embedPlayer) {
 	return this.init(embedPlayer);
 };
@@ -146,6 +145,9 @@ mw.AdTimeline.prototype = {
 		
 		// On play preSequence
 		embedPlayer.bindHelper( 'preSequence' + _this.bindPostfix, function() {
+			// Start of preSequence			
+			embedPlayer.triggerHelper( 'AdSupport_PreSequence');
+			
 			mw.log( "AdTimeline:: First Play Start / bind Ad timeline ( " );
 			embedPlayer.pauseLoading();
 			embedPlayer.sequenceProxy.isInSequence = true;
@@ -162,7 +164,7 @@ mw.AdTimeline.prototype = {
 							embedPlayer.sequenceProxy.isInSequence = false;
 							
 							// trigger the preSequenceComplete event
-							embedPlayer.triggerHelper( 'preSequenceComplete' );
+							embedPlayer.triggerHelper( 'AdSupport_PreSequenceComplete' );
 							
 							// Avoid function stack
 							setTimeout(function(){ 
@@ -207,13 +209,13 @@ mw.AdTimeline.prototype = {
 			setTimeout(function(){
 				// Trigger the postSequenceStart event
 				// start the postSequence: 
-				embedPlayer.triggerHelper( 'postSequence' );
+				embedPlayer.triggerHelper( 'AdSupport_PostSequence' );
 				embedPlayer.sequenceProxy.isInSequence = true;
 				_this.displaySlots( 'postroll', function(){
 					// Turn off preSequence
 					embedPlayer.sequenceProxy.isInSequence = false;
 					// Trigger the postSequenceComplete event
-					embedPlayer.triggerHelper( 'postSequenceComplete' );
+					embedPlayer.triggerHelper( 'AdSupport_PostSequenceComplete' );
 
 					/** TODO support postroll bumper and leave behind */
 					if( playedAnAdFlag ){
