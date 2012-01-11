@@ -539,7 +539,8 @@
 					});
 					break;
 				case 'playerStateChange':
-					b( 'startPlayerBuildOut', function(){
+					// right before we start loading sources ( we enter a loading state )
+					b( 'preCheckPlayerSources', function(){
 						callback( 'loading', embedPlayer.id );
 					})
 					b( 'playerReady', function(){

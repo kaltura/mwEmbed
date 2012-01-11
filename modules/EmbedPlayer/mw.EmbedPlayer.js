@@ -436,6 +436,8 @@ mw.EmbedPlayer.prototype = {
 	checkPlayerSources: function() {
 		mw.log( 'EmbedPlayer::checkPlayerSources: ' + this.id );
 		var _this = this;
+		// Allow plugins to listen to a preCheckPlayerSources ( for registering the source loading point )
+		$( _this ).trigger( 'preCheckPlayerSources' );
 
 		// Allow plugins to block on sources lookup ( cases where we just have an api key for example )
 		$( _this ).triggerQueueCallback( 'checkPlayerSourcesEvent', function(){

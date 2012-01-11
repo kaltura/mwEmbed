@@ -76,8 +76,10 @@ mw.IFramePlayerApiServer.prototype = {
 				};
 				// Only wait 250ms for the handshake to come through otherwise continue: 
 				setTimeout(function(){
-					if( !proxyHandShakeComplete )
+					if( !proxyHandShakeComplete ){
+						mw.log("Error: could not establish iframe postMessage handshake")
 						callback();
+					}
 				}, 250);
 				// Trigger the proxyReady event ( will add all the prePlayerProxy listeners 
 				mw.log( "IframePlayerApiServer::trigger: proxyReady :: for playerID: " + embedPlayer.id );
