@@ -670,12 +670,12 @@ mw.EmbedPlayerNative = {
 		if( _this.parent_play() ){
 			this.getPlayerElement();
 			if ( this.playerElement && this.playerElement.play ) {
-				// issue a play request 
-				this.playerElement.play();
-				
 				// Dont play if in pauseloading state
 				if( this.isPauseLoading ){
 					this.playerElement.pause();
+				} else {
+					// issue a play request 
+					this.playerElement.play();
 				}
 				// re-start the monitor:
 				this.monitor();

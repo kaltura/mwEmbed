@@ -539,11 +539,24 @@
 					});
 					break;
 				case 'playerStateChange':
-					// TODO add in other state changes
+					b( 'startPlayerBuildOut', function(){
+						callback( 'loading', embedPlayer.id );
+					})
+					b( 'playerReady', function(){
+						callback( 'ready', embedPlayer.id );
+					});
 					b( 'onpause', function(){
 						callback( 'paused', embedPlayer.id );
 					});
 					b( 'onplay', function(){
+						// By default the html5 is in dom and loads enough to start playback
+						// so it does not include the buffering state.
+						// for KDP parity we trigger the buffer event
+						// TODO better integrate buffering state to read html5 playerState and
+						// other buffer indicators 
+						callback( 'buffering', embedPlayer.id );
+						
+						// Go into playing state: 
 						callback( 'playing', embedPlayer.id );
 					});
 					break;

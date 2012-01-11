@@ -1283,6 +1283,10 @@ window.kWidget = {
 			}
 			targetId = settings.targetId;
 		}
+		
+		if( settings.readyCallback ){
+			this.addReadyCallback( settings.readyCallback );
+		}
 
 		kalturaIframeEmbed( targetId, settings );
 	},
@@ -1297,7 +1301,7 @@ window.kWidget = {
 				readyCallback( wid );
 			}
 		}
-		// add the callback to the readyCallbacks array for any other players that become ready
+		// Add the callback to the readyCallbacks array for any other players that become ready
 		this.readyCallbacks.push( readyCallback );
 	},
 	/**
