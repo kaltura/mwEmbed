@@ -198,11 +198,13 @@ mw.MediaElement.prototype = {
 			}
 		});
 
-		//Set via user bandwith pref 
+		//Set via user bandwith pref will always set source to closest bandwith allocation while not going over  EmbedPlayer.UserBandwidth
 		if( $.cookie('EmbedPlayer.UserBandwidth') ){
+			var currentMaxBadwith = 0;
 			$.each( playableSources, function(inx, source ){
 				if( source.bandwidth ){
-					if( source.bandwidth < $.cookie('EmbedPlayer.UserBandwidth') ){
+					if( source.bandwidth > currentMaxBadwith && source.bandwidth <= $.cookie('EmbedPlayer.UserBandwidth') ){
+						currentMaxBadwith = source.bandwidth;
 						setSelectedSource( source );
 					}
 				}
