@@ -530,12 +530,16 @@
 						callback( {}, embedPlayer.id );
 					});
 					break;
+				case 'playerReady': 
+					b( 'playerReady' );
+					break;
 				case 'volumeChanged': 
 					b( 'volumeChanged', function(event, percent){
 						callback( {'newVolume' : percent }, embedPlayer.id );
 					});
 					break;
 				case 'playerStateChange':
+					
 					// TODO add in other state changes
 					b( 'onpause', function(){
 						callback( 'paused', embedPlayer.id );
