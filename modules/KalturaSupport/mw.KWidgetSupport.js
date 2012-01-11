@@ -36,19 +36,8 @@ mw.KWidgetSupport.prototype = {
 			if( ! embedPlayer.kwidgetid ){
 				return ;
 			}
-			// Add hook for check player sources to use local kEntry ID source check:
-			$( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
-				_this.loadAndUpdatePlayerData( embedPlayer, callback );
-			});
-			// Add Kaltura iframe share support:
-			$( embedPlayer ).bind( 'getShareIframeSrc', function( event, callback ){
-				var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
-				iframeUrl +='/wid/' + embedPlayer.kwidgetid +
-					'/uiconf_id/' + embedPlayer.kuiconfid +
-					'/entry_id/' + embedPlayer.kentryid + '/';
-				// return the iframeUrl via the callback: 
-				callback( iframeUrl );
-			});
+			_this.bindPlayer( embedPlayer );
+			
 		});
 		// Ads have to communicate with parent iframe to support companion ads.
 		$( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
@@ -66,6 +55,25 @@ mw.KWidgetSupport.prototype = {
 			});
 		});
 		
+	},
+	/**
+	 * Add player bindings 
+	 */
+	bindPlayer: function( embedPlayer ){
+		var _this = this;
+		// Add hook for check player sources to use local kEntry ID source check:
+		$( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
+			_this.loadAndUpdatePlayerData( embedPlayer, callback );
+		});
+		// Add Kaltura iframe share support:
+		$( embedPlayer ).bind( 'getShareIframeSrc', function( event, callback ){
+			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
+			iframeUrl +='/wid/' + embedPlayer.kwidgetid +
+				'/uiconf_id/' + embedPlayer.kuiconfid +
+				'/entry_id/' + embedPlayer.kentryid + '/';
+			// return the iframeUrl via the callback: 
+			callback( iframeUrl );
+		});
 	},
 	rewriteTarget: function( widgetTarget, callback ){
 		var _this = this;
@@ -117,7 +125,7 @@ mw.KWidgetSupport.prototype = {
 		// Load all the player configuration from kaltura: 
 		_this.loadPlayerData( embedPlayer, function( playerData ){
 			if( !playerData ){
-				mw.log("KWidgetSupport::addPlayerHooks> error no player data!");
+				mw.log("KWidgetSupport::loadAndUpdatePlayerData> error no player data!");
 				callback();
 				return ;
 			}
@@ -148,8 +156,6 @@ mw.KWidgetSupport.prototype = {
 						// String to boolean: 
 						cVar = ( cVar === "false" ) ? false : cVar;
 						cVar = ( cVar === "true" ) ? true : cVar;
-						
-						// mw.log("KWidgetSupport::addPlayerHooks> Set Global Config:  " + $( customVar ).attr('key') + ' ' + cVar );
 						mw.setConfig(  $( customVar ).attr('key'), cVar);
 					}
 				});
