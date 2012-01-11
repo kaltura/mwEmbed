@@ -428,7 +428,7 @@ class KalturaClientBase
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $this->config->requestHeaders );
 
 		// Save response headers
-		curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'KalturaClientBase::readHeader');
+		curl_setopt($ch, CURLOPT_HEADERFUNCTION, array($this, 'readHeader') );
 
 		$result = curl_exec($ch);
 		$curlError = curl_error($ch);
