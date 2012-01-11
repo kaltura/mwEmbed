@@ -748,8 +748,8 @@ class KalturaResultObject {
 		} else {
 			return $this->getEntryResult();
 		}
-	
 	}
+	
 	function getUiConfResult(){
 		// no need to call this.. the getters don't have clean lazy init and . 
 		// $this->loadUiConf

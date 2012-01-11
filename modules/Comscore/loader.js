@@ -7,7 +7,7 @@ mw.addResourcePaths({
 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-		// check if the plugin is enabled: 
+		// Check if the plugin is enabled: 
 		if( embedPlayer.isPluginEnabled( 'comscore' ) ){
 			mw.load( "mw.Comscore", function(){
 				new mw.Comscore( embedPlayer, callback );

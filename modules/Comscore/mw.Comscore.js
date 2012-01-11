@@ -173,14 +173,14 @@ mw.Comscore.prototype = {
 			if( embedPlayer.kCuePoints.getAdSlotType( cuePoint ) === 'midroll' ) {
 				_this.currentSegment++;
 				// Used setTimeout because it takes few ms to set propagateEvents to false
-				setTimeout( function() { shouldSendBeacon = true; }, mw.getConfig( 'EmbedPlayer.MonitorRate' ));
+				setTimeout( function() { 
+					shouldSendBeacon = true;
+				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ));
 			}
 		});
 
 		embedPlayer.bindHelper('AdSupport_StartAdPlayback' + this.bindPostfix, function( event, adType ) {
-
-			switch ( adType )
-			{
+			switch ( adType ){
 				case 'preroll':
 					cParams["c5"] = _this.prerollAdContentType;
 				break;

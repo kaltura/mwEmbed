@@ -539,7 +539,6 @@
 					});
 					break;
 				case 'playerStateChange':
-					
 					// TODO add in other state changes
 					b( 'onpause', function(){
 						callback( 'paused', embedPlayer.id );
