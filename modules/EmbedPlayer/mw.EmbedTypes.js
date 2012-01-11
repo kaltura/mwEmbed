@@ -143,8 +143,8 @@ mw.EmbedTypes = {
 					// Test for h264:
 					if ( dummyvid.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
 						this.mediaPlayers.addPlayer( h264NativePlayer );
-						// check for iOS for vdn player support ( apple adaptive ):
-						if( mw.isIOS() ){
+						// check for iOS for vdn player support ( apple adaptive ) or vdn canPlayType != '' ( ie maybe/probably ) 
+						if( mw.isIOS() || dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
 							this.mediaPlayers.addPlayer( appleVdnPlayer );
 						}
 						
