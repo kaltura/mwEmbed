@@ -761,7 +761,7 @@ mw.KWidgetSupport.prototype = {
 			
 			// Add iPad Akamai flavor to iPad flavor Ids list id list
 			if( asset.tags.toLowerCase().indexOf('ipadnew') != -1 ){
-				iphoneAdaptiveFlavors.push( asset.id );
+				ipadAdaptiveFlavors.push( asset.id );
 				// We don't need to continue, the ipadnew/iphonenew flavor are used also for progressive download
 				//continue;
 			}
