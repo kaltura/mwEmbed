@@ -697,7 +697,7 @@ class KalturaResultObject {
 		}
 
 		// Check for no cache flag
-		if( isset( $_REQUEST['nocache'] ) && $_REQUEST['nocache'] == true ) {
+		if( isset( $_REQUEST['nocache'] ) && $_REQUEST['nocache'] == 'true' ) {
 			$this->noCache = true;
 		}
 
