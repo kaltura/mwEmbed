@@ -55,7 +55,7 @@ window.restoreKalturaKDPCallback = function(){
 	if( window.KalturaKDPCallbackReady ){
 		window.jsCallbackReady = window.KalturaKDPCallbackReady;
 		window.KalturaKDPCallbackReady = null;
-		if( window.KalturaKDPCallbackAlreadyCalled.length ){
+		if( window.KalturaKDPCallbackAlreadyCalled && window.KalturaKDPCallbackAlreadyCalled.length ){
 			for( var i =0 ; i < window.KalturaKDPCallbackAlreadyCalled.length; i++){
 				var playerId = window.KalturaKDPCallbackAlreadyCalled[i];
 				window.jsCallbackReady( playerId );
