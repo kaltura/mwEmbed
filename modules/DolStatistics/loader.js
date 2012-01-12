@@ -15,6 +15,7 @@ mw.addResourcePaths({
 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+		debugger;
 		if( embedPlayer.isPluginEnabled( 'dolStatistics' ) ){
 			mw.load( "mw.DolStatistics", function(){
 				new mw.DolStatistics( embedPlayer, callback );

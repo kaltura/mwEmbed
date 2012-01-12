@@ -8,10 +8,10 @@
   </head>
   <body style="defaultCaption" id="thebody">
     <div>
-      <p begin="00:00:00.00" end="00:00:1.00"  tts:textAlign="left"><metadata ccrow="0" cccol="10"/>ALIGN LEFT, ROW 0 COL 10</p>
-      <p begin="00:00:01.50" end="00:00:03.67" tts:textAlign="right"><metadata ccrow="0" cccol="0"/>ALIGN RIGHT. ROW 0 COL 0<br/> Line Break.</p>
-      <p begin="00:00:04.83" end="00:00:05.83"><metadata ccrow="13" cccol="12"/> ROW 13 COL 12 <br/> HAPPY MOTHER'S DA--</p>
-      <p begin="00:00:05.83" end="00:00:07.00"><metadata ccrow="14" cccol="15"/>AAH!</p>
+      <p begin="00:00:00.00" end="00:00:3.00"  tts:textAlign="left"><metadata ccrow="0" cccol="10"/><b>Bold</b>, <em>em</em> <i>Italic</i> <br/> <strong>Another bold</strong> </p>
+      <p begin="00:00:03.50" end="00:00:05.5" tts:textAlign="right"><metadata ccrow="0" cccol="0"/>ALIGN RIGHT. ROW 0 COL 0<br/> Line Break.</p>
+      <p begin="00:00:05.83" end="00:00:06.83"><metadata ccrow="13" cccol="12"/> ROW 13 COL 12 <br/> HAPPY MOTHER'S DA--</p>
+      <p begin="00:00:06.83" end="00:00:08.00"><metadata ccrow="14" cccol="15"/>AAH!</p>
       <p begin="00:00:15.33" dur="00:00:02.29">At the left we can see the...</p>
       <p begin="00:00:18.81" dur="00:00:02.14">At the right we can see the...</p>
       <p begin="00:00:20.95" dur="00:00:01.43">head snarlers</p>
