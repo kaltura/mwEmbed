@@ -382,9 +382,10 @@ mw.PlayerControlBuilder.prototype = {
 		this.fullscreenMode = true;
 		var triggerOnOpenFullScreen = true;
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+			var vid = this.embedPlayer.getPlayerElement();
 			if( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen')
 					&&
-				this.embedPlayer.getPlayerElement().webkitSupportsFullscreen 
+				vid && vid.webkitSupportsFullscreen 
 			){
 				this.embedPlayer.getPlayerElement().webkitEnterFullscreen();
 				triggerOnOpenFullScreen = false;
@@ -431,6 +432,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Get the base offset:
 		this.windowOffset = this.getWindowOffset();
+		
 		// Change the z-index of the interface
 		$interface.css( {
 			'position' : 'fixed',
