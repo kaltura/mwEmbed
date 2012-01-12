@@ -303,7 +303,13 @@ mw.includeAllModuleMessages();
 		 * @param size {object} The size of the target player area width and height
 		 */
 		getInterfaceSizePercent: function( size ) {
-			var textSize = size.width / 4;
+			// This is a ugly hack we should read "original player size" and set based 
+			// on some standard ish normal 31 columns 15 rows 
+			var sizeFactor = 4;
+			if( size.height / size.width < .7 ){
+				sizeFactor = 6;
+			}
+			var textSize = size.width / sizeFactor;
 			if( textSize < 95 ){
 				textSize = 95;
 			}
