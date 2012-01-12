@@ -313,8 +313,8 @@ mw.includeAllModuleMessages();
 			if( textSize < 95 ){
 				textSize = 95;
 			}
-			if( textSize > 200 ){
-				textSize = 200;
+			if( textSize > 150 ){
+				textSize = 150;
 			}
 			return textSize;
 		},
