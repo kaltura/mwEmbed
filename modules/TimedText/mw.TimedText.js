@@ -116,9 +116,13 @@ mw.includeAllModuleMessages();
 			// Add player bindings
 			this.addPlayerBindings();
 		},
-		destroy:function(){
+		destroy: function(){
 			// remove any old player bindings; 
-			$( this.embedPlayer ).unbind( this.bindPostFix )
+			$( this.embedPlayer ).unbind( this.bindPostFix );
+			// Clear out enabled sources:
+			this.enabledSources = [];
+			// Clear out text sources:
+			this.textSources = [];
 		},
 		/**
 		 * Add timed text related player bindings
