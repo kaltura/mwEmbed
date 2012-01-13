@@ -48,7 +48,7 @@
 		},
 		bindPlayer: function( embedPlayer ){
 			var _this = this;
-			// remove any old timed text bindings:
+			// Remove any old timed text bindings:
 			$( embedPlayer ).unbind( this.bindPostfix );
 			
 			// Trigger changed caption

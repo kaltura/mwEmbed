@@ -529,10 +529,18 @@ mw.PlayerControlBuilder.prototype = {
 		// Bind resize resize window to resize window
 		$( window ).resize( function() {
 			if( _this.fullscreenMode ){
-				embedPlayer.resizePlayer({
+				// don't resize bellow original size: 
+				var targetSize = {
 					'width' : $( window ).width(),
 					'height' : $( window ).height()
-				});
+				};
+				if( targetSize.width < embedPlayer.getWidth() ){
+					targetSize.width = embedPlayer.getWidth();
+				}
+				if( targetSize.height < embedPlayer.getHeight() ){
+					targetSize.height =  embedPlayer.getHeight();
+				}
+				embedPlayer.resizePlayer( targetSize );
 			}
 		});
 
