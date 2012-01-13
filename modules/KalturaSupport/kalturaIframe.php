@@ -125,9 +125,9 @@ class kalturaIframe {
 			$o.='<div id="directFileLinkThumb"></div>';
 			$o.='<a href="' . $downloadUrl . '" id="directFileLinkButton" target="_blank"></a>';
 		$o.='</div>';
-
 		return $o;
 	}
+	
 	private function getPlaylistPlayerSizeCss(){
 		$width = 400;
 		$height = 300;
@@ -297,16 +297,23 @@ class kalturaIframe {
 		$o = '<object id="' . htmlspecialchars( $playerId ) . '" name="' . $playerId . '" ' .
 				'type="application/x-shockwave-flash" allowFullScreen="true" '.
 				'allowNetworking="all" allowScriptAccess="always" height="100%" width="100%" style="height:100%;width:100%" '.
+				'bgcolor="#000000" ' .
 				'xmlns:dc="http://purl.org/dc/terms/" '.
 				'xmlns:media="http://search.yahoo.com/searchmonkey/media/" '.
 				'rel="media:video" '.
 				'resource="' . htmlspecialchars( $this->getSwfUrl() ) . '" '.
-				'data="' . htmlspecialchars( $this->getSwfUrl() ) . '"> '.
-				'<param name="wmode" value="opaque" />' .
-				'<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />' .
-				'<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />'.
-				'<param name="flashVars" value="';
+				'data="' . htmlspecialchars( $this->getSwfUrl() ) . '"> ';
 		
+		// check for wmod param:
+		if( isset( $_REQUEST['wmode'] ) && ( $_REQUEST['wmode'] == 'opaque' ||  $_REQUEST['wmode'] =='transparent' ) ){
+			$o.= '<param name="wmode" value="transparent" />';
+		} else {
+			$o.= '<param name="wmode" value="direct" />';
+		}
+		
+		$o.= '<param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" />' .
+			'<param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" />'.
+			'<param name="flashVars" value="';
 		$o.= $this->getFlashVarsString() ;
 		// close the object tag add the movie param and childHTML: 
 		$o.='" /><param name="movie" value="' . htmlspecialchars( $this->getSwfUrl() ) . '" />'.
