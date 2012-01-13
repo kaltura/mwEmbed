@@ -446,7 +446,7 @@ mw.KWidgetSupport.prototype = {
 						config[ attrName ] = $plugin.attr( attrName.toLowerCase() );
 					}
 				}
-
+				
 				// Flashvars overrides
 				var pluginPrefix = ( confPrefix )? confPrefix + '.': '';
 				if( flashvars[ pluginPrefix + attrName ] ){
@@ -456,7 +456,7 @@ mw.KWidgetSupport.prototype = {
 				// Uivars Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
 				$uiPluginVars.each( function(inx, node){
 					if( $( node ).attr('key') == pluginPrefix + attrName ){
-						if( $(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
+						if( $(node).attr('overrideflashvar') == "true" || ! config[attrName] ){
 							config[attrName] = $(node)[0].getAttribute('value');
 						}
 						// Found break out of loop
