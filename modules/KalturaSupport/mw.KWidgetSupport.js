@@ -777,7 +777,7 @@ mw.KWidgetSupport.prototype = {
 				var src  = flavorUrl + '/entryId/' + asset.entryId;
 				// Check if Apple http streaming is enabled and the tags include applembr
 				if( asset.tags.indexOf('applembr') != -1 ) {
-					src += '/format/applehttp/protocol/'+ protocol + '/a.m3u8';
+					src += '/format/applehttp/protocol/' + protocol + '/a.m3u8';
 					continue;
 				} else {
 					src += '/flavorId/' + asset.id + '/format/url/protocol/' + protocol;
