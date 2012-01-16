@@ -29,7 +29,7 @@ function jsKalturaPlayerTest( videoId ){
 	
 	function testAutoPlay(){
 		test("AutoPlay flashvar passing", function(){
-			ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar present');
+			ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
 		});
 	}
 }
