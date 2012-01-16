@@ -48,42 +48,40 @@ window.bumperPlugin = function( embedPlayer, bumperConfig, callback ){
 	var originalSrc = embedPlayer.getSrc();
 	mw.getEntryIdSourcesFromApi( embedPlayer.kwidgetid, bumperConfig.bumperEntryID, function( sources ){
 		// Load adSupport for player timeline:
-		mw.load( 'AdSupport', function(){
-			var adConf =  {
-				'ads': [
-					{
-						'videoFiles' :sources,
-						'clickThrough' : bumperConfig.clickUrl
-					}
-				],
-				'lockUI': bumperConfig.lockUi,
-				'playOnce': bumperConfig.playOnce
-			};
-			// handle prerolls
-			if( bumperConfig.preSequence ){
-				$( embedPlayer ).bind( 'AdSupport_bumper' + bumpPostfix, function( event, sequenceProxy ){
-					adConf.type = 'bumper';
-					sequenceProxy[ bumperConfig.preSequence ] = function( doneCallback ){
-						// bumper triggers play event: 
-						$( embedPlayer ).trigger( 'onplay' );
-						adPlayer.display( adConf, doneCallback );
-					};
-				});
-			}
-			// Technically the postroll bumper should be named something else. 
-			if( bumperConfig.postSequence ){
-				$( embedPlayer ).bind( 'AdSupport_postroll' + bumpPostfix, function(event, sequenceProxy){
-					adConf.type = 'postroll';
-					sequenceProxy[ bumperConfig.postSequence ] = function( doneCallback ){
-						// bumper triggers play event: 
-						$( embedPlayer ).trigger( 'onplay' );
-						adPlayer.display( adConf, doneCallback );
-					};
-				});
-			}
-			// Done adding bumper bindings issue callback
-			callback();
-		});
+		var adConf =  {
+			'ads': [
+				{
+					'videoFiles' :sources,
+					'clickThrough' : bumperConfig.clickUrl
+				}
+			],
+			'lockUI': bumperConfig.lockUi,
+			'playOnce': bumperConfig.playOnce
+		};
+		// handle prerolls
+		if( bumperConfig.preSequence ){
+			$( embedPlayer ).bind( 'AdSupport_bumper' + bumpPostfix, function( event, sequenceProxy ){
+				adConf.type = 'bumper';
+				sequenceProxy[ bumperConfig.preSequence ] = function( doneCallback ){
+					// bumper triggers play event: 
+					$( embedPlayer ).trigger( 'onplay' );
+					adPlayer.display( adConf, doneCallback );
+				};
+			});
+		}
+		// Technically the postroll bumper should be named something else. 
+		if( bumperConfig.postSequence ){
+			$( embedPlayer ).bind( 'AdSupport_postroll' + bumpPostfix, function(event, sequenceProxy){
+				adConf.type = 'postroll';
+				sequenceProxy[ bumperConfig.postSequence ] = function( doneCallback ){
+					// bumper triggers play event: 
+					$( embedPlayer ).trigger( 'onplay' );
+					adPlayer.display( adConf, doneCallback );
+				};
+			});
+		}
+		// Done adding bumper bindings issue callback
+		callback();
 	});
 }
 
