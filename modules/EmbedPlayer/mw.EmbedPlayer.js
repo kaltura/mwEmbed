@@ -1479,9 +1479,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	getShareIframeObject: function(){
 		// TODO move to getShareIframeSrc
-        if (typeof(mw.IA) != 'undefined'){
-        	return mw.IA.embedCode();
-        }
 		iframeUrl = this.getIframeSourceUrl();
 
 		// Set up embedFrame src path
