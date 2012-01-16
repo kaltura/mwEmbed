@@ -228,7 +228,7 @@ mw.DoubleClick.prototype = {
 	/**
 	 * Load and play a given slot
 	 */
-	loadAndPlayVideoSlot: function( slotType, callback, cuePoint){
+	loadAndPlayVideoSlot: function( slotType, callback, cuePoint ){
 		var _this = this;
 		mw.log( "DoubleClick::loadAndPlayVideoSlot> " + slotType + " pause while loading ads ");
 		
@@ -259,6 +259,9 @@ mw.DoubleClick.prototype = {
 
 			// Update the playhead to play state:
 			_this.embedPlayer.playInterfaceUpdate();
+			
+			// Monitor local ad playback
+			_this.monitorAdProgress();
 			
 			// TODO This should not be needed ( fix event stop event propagation ) 
 			_this.embedPlayer.monitor();
@@ -316,6 +319,40 @@ mw.DoubleClick.prototype = {
 				'adType': 'video'
 			});
 		});
+	},
+	/**
+	 * Monitor Ad Progress
+	 */
+	monitorAdProgress: function(){
+		var _this = this;
+		// Don't monitor ad progress if no longer active:
+		if( !_this.embedPlayer.sequenceProxy.isInSequence ){
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', null );
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  null );
+			return ;
+		}
+		// Update the timeRemaining sequence proxy
+		var vid = _this.getAdVideoElement();
+		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', vid.duration - vid.currentTime );
+		_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
+		
+		// TODO player updates should be configurable see Mantis 14076 and 14019
+		_this.embedPlayer.controlBuilder.setStatus( 
+				mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration ) 
+		);
+		_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
+		
+		// Keep monitoring ad progress at MonitorRate
+		setTimeout( function(){
+			_this.monitorAdProgress();
+		}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+	},
+	/**
+	 * Get the target ad video element ( double click always uses the embedPlayer video and swaps sources )
+	 * Other ad plugins inject addtional video elements. 
+	 */
+	getAdVideoElement: function(){
+		return this.embedPlayer.getPlayerElement();
 	},
 	/**
 	 * Assembles an AdSlotUrl 
