@@ -238,11 +238,16 @@
 						'heigth' : $( element ).attr('height')
 					};
 					
-					if( kEmbedSettings.entry_id ) {
+					if( kEmbedSettings.entry_id || kEmbedSettings.reference_id ) {
 						loadEmbedPlayerFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
-						videoEmbedAttributes.kentryid = kEmbedSettings.entry_id;
-						if( kEmbedSettings.p ){
+						
+						if( kEmbedSettings.reference_id ){
+							kEmbedSettings.kreferenceid;
+						}
+						
+						if( kEmbedSettings.entry_id || kEmbedSettings.p ){
+							videoEmbedAttributes.kentryid = kEmbedSettings.entry_id;
 							// If we have flashvar  we need to pass the ks to thumbnail url
 							var ks = ( flashvars && flashvars.loadThumbnailWithKs ) ? flashvars.ks : false;
 							var thumb_url =  mw.getKalturaThumbUrl({

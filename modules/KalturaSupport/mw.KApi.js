@@ -205,7 +205,7 @@ mw.KApi.prototype = {
 		var refIndex;
 		var useReferenceId = false;
 		
-		// RefrenceId can come from flashVar (for initinal load) or from changeMedia
+		// RefrenceId can come from flashVar (for initial load) or from changeMedia
 		if( !kProperties.reference_id && kProperties.flashvars && kProperties.flashvars['referenceId'] ){
 			kProperties.reference_id =  kProperties.flashvars['referenceId'];
 		}
