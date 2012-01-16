@@ -152,7 +152,7 @@ mw.IFramePlayerApiClient.prototype = {
 			// Make the iframe fullscreen
 			$iframe
 				.css({
-					'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 1,
+					'z-index': mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ),
 					'position': playerCssPosition,
 					'top' : 0,
 					'left' : 0,
