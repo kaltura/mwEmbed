@@ -1224,6 +1224,9 @@ function kGetKalturaEmbedSettings( swfUrl, flashvars ){
 			embedSettings.wid = '_' + val;
 			embedSettings.p = val;
 		}
+		if( key == 'referenceid' ){
+			embedSettings.reference_id = val;
+		}
 	}
 
 	// Always pass cache_st
