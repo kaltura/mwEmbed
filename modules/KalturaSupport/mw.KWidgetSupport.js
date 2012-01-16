@@ -142,7 +142,11 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for uiConf	and attach it to the embedPlayer object:
 		if( playerData.uiConf ){
-			// Pass along the uiConf data
+			// check raw data for xml header ( remove ) 
+			// <?xml version="1.0" encoding="UTF-8"?>
+			playerData.uiConf = $.trim( playerData.uiConf.replace( /\<\?xml.*\?\>/, '' ) );
+			
+			// Pass along the raw uiConf data
 			$( embedPlayer ).trigger( 'KalturaSupport_RawUiConfReady', [ playerData.uiConf ] );
 			
 			// Store the parsed uiConf in the embedPlayer object:
