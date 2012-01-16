@@ -418,7 +418,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		);
 		$item.find('.nameAndDuration')
 			.after( $('<div />').css({'display': 'block', 'height': '20px'} ) )
-			.find( 'div span:last' ).css('float', 'right')
+			//.find( 'div span:last' ).css('float', 'right')
 			
 		return $item;
 	},
