@@ -12,6 +12,7 @@ function jsKalturaPlayerTest( videoId ){
 	module( "kWidget Player" );
 
 	var $iframe = $('#' + videoId + '_ifp').contents();
+	var kdp =  $('#' + videoId ).get(0);
 	
 	test( "Iframe in DOM", function() {
 		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
@@ -20,9 +21,17 @@ function jsKalturaPlayerTest( videoId ){
 	asyncTest("Inline readyCallback fired", function(){
 		kalturaQunitWaitForPlayer(function(){
 			equal( window.kWidgetCallbackWithID, videoId, " ReadyCallback fired with id:" + videoId );
+			testAutoPlay();
+			// done with async
 			start();
 		});
 	});
+	
+	function testAutoPlay(){
+		test("AutoPlay flashvar passing", function(){
+			ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar present');
+		});
+	}
 }
 function readyCallbackFired( playerId ){
 	window.kWidgetCallbackWithID = playerId;
@@ -50,7 +59,8 @@ function readyCallbackFired( playerId ){
 		'uiconf_id' : '2877502',
 		'entry_id' : '0_uka1msg4',
 		'flashvars':{
-			'externalInterfaceDisabled' : false
+			'externalInterfaceDisabled' : false,
+			'autoPlay' : true
 		},
 		'readyCallback': function( playerId ){
 			console.warn( "kWidget player ready: " + playerId );
