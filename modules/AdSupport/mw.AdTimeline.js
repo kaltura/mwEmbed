@@ -174,8 +174,9 @@ mw.AdTimeline.prototype = {
 									// Restore the player if we played an ad: 
 									_this.restorePlayer();
 									
-									embedPlayer.triggerHelper( 'onplay' );
 								}
+								// Trigger onplay ( even if there were no ads )
+								embedPlayer.triggerHelper( 'onplay' );
 								// Continue playback
 								embedPlayer.play();
 							},0);

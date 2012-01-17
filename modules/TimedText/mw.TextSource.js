@@ -231,7 +231,7 @@
 				$( p.childNodes ).each(function(inx,node){
 				   if( node.nodeName != '#text' && node.nodeName != 'metadata' ){
 					   // Add any html tags:
-					   content +='<' + node.nodeName + '/>';
+					   content +='<' + node.nodeName + '>' + node.textContent + '</' + node.nodeName + '>' ;
 				    } else {
 				    	content += node.textContent;
 				    }
