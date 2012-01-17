@@ -220,6 +220,7 @@
 		"mw.EmbedPlayerHtml" : "mw.EmbedPlayerHtml.js",
 		"mw.EmbedPlayerJava": "mw.EmbedPlayerJava.js",
 		"mw.EmbedPlayerNative"	: "mw.EmbedPlayerNative.js",
+		"mw.EmbedPlayerImageOverlay" : "mw.EmbedPlayerImageOverlay.js", 
 
 		"mw.EmbedPlayerVlc" : "mw.EmbedPlayerVlc.js",
 

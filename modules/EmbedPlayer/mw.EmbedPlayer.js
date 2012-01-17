@@ -179,7 +179,7 @@ mw.EmbedPlayer.prototype = {
 		// Set the player size attributes based loaded video element:
 		this.loadPlayerSize( element );
 
-		// Set the plugin id
+		// Set the playerElementId id
 		this.pid = 'pid_' + this.id;
 
 		// Grab any innerHTML and set it to missing_plugin_html
@@ -540,7 +540,8 @@ mw.EmbedPlayer.prototype = {
 		// Clear out any non-base embedObj methods:
 		if ( this.instanceOf ) {
 			eval( 'var tmpObj = mw.EmbedPlayer' + this.instanceOf );
-			for ( var i in tmpObj ) { // for in loop oky for object
+			for ( var i in tmpObj ) { 
+				// Restore parent into local location
 				if ( this[ 'parent_' + i ] ) {
 					this[i] = this[ 'parent_' + i];
 				} else {
@@ -548,7 +549,6 @@ mw.EmbedPlayer.prototype = {
 				}
 			}
 		}
-
 		// Set up the new embedObj
 		mw.log( 'EmbedPlayer::updatePlaybackInterface: embedding with ' + this.selectedPlayer.library );
 		this.selectedPlayer.load( function() {
@@ -568,7 +568,12 @@ mw.EmbedPlayer.prototype = {
 
 		// Get embed library player Interface
 		var playerInterface = mw[ 'EmbedPlayer' + _this.selectedPlayer.library ];
-
+		
+		// Build the player interface ( if the interface includes an init )
+		if( playerInterface.init ){
+			playerInterface.init();
+		}
+		
 		for ( var method in playerInterface ) {
 			if ( _this[method] && !_this['parent_' + method] ) {
 				_this['parent_' + method] = _this[method];
@@ -597,6 +602,7 @@ mw.EmbedPlayer.prototype = {
 	 *      system include vlc, native, java etc.
 	 */
 	selectPlayer: function( player ) {
+		mw.log("EmbedPlayer:: selectPlayer " + player.id );
 		var _this = this;
 		if ( this.selectedPlayer.id != player.id ) {
 			this.selectedPlayer = player;
@@ -858,14 +864,14 @@ mw.EmbedPlayer.prototype = {
 			});
 			$( this ).show();
 		}
-		if(  !this.useNativePlayerControls() && !this.isPersistentNativePlayer() && !_this.controlBuilder.isOverlayControls() ){
+		if( !this.useNativePlayerControls() && !this.isPersistentNativePlayer() && !_this.controlBuilder.isOverlayControls() ){
 			// Update the video size per available control space.
 			$(this).css('height', this.height - _this.controlBuilder.height );
 		}
 
 
 		// Add controls if enabled:
-		if ( ! this.useNativePlayerControls() && this.controls ) {
+		if ( !this.useNativePlayerControls() && this.controls ) {
 			this.controlBuilder.addControls();
 		}
 
@@ -1322,7 +1328,6 @@ mw.EmbedPlayer.prototype = {
 					'height' : '100%'
 				})
 				.attr({
-					'id' : 'img_thumb_' + this.id,
 					'src' : posterSrc
 				})
 				.addClass( 'playerPoster' )
@@ -2018,7 +2023,7 @@ mw.EmbedPlayer.prototype = {
 		// Check for current time update outside of embed player
 		_this.syncCurrentTime();
 		
-//		mw.log( "monitor:: " + this.currentTime + ' propagateEvents: ' +  _this._propagateEvents );
+		// mw.log( "monitor:: " + this.currentTime + ' propagateEvents: ' +  _this._propagateEvents );
 		
 		// Keep volume proprties set outside of the embed player in sync
 		_this.syncVolume();

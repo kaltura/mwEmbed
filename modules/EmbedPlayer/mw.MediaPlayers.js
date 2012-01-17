@@ -42,10 +42,10 @@ mw.MediaPlayers.prototype = {
 		this.defaultPlayers['video/mpeg'] = ['Vlc'];
 		this.defaultPlayers['video/x-msvideo'] = ['Vlc'];
 
-		this.defaultPlayers['text/html'] = ['Html'];
-		this.defaultPlayers['image/jpeg'] = ['Html'];
-		this.defaultPlayers['image/png'] = ['Html'];
-		this.defaultPlayers['image/svg'] = ['Html'];
+		// this.defaultPlayers['text/html'] = ['Html'];
+		this.defaultPlayers['image/jpeg'] = ['ImageOverlay'];
+		this.defaultPlayers['image/png'] = ['ImageOverlay'];
+		this.defaultPlayers['image/svg'] = ['ImageOverlay'];
 
 	},
 

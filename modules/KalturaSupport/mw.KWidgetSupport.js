@@ -218,7 +218,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for "image" mediaType ( 2 ) 
 		if( playerData.meta && playerData.meta.mediaType == 2 ){ 
-			mw.log( 'KWidgetSupport:: add image Source:: ( use poster getter ) ' );
+			mw.log( 'KWidgetSupport:: Add Entry Image:: ( use getKalturaThumbUrl ) ' );
 			embedPlayer.mediaElement.tryAddSource(
 				$('<source />')
 				.attr( {

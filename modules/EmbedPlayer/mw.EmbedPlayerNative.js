@@ -173,7 +173,7 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Update the player source ( if needed ) 
-		if( $( vid).attr( 'src') !=  this.getSrc( this.currentTime )  ){
+		if( $( vid).attr( 'src' ) !=  this.getSrc( this.currentTime )  ){
 			$( vid ).attr( 'src', this.getSrc( this.currentTime ) );
 		}
 		// Update the WebKitPlaysInline value
