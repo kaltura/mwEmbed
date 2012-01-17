@@ -4,17 +4,17 @@
  * @param {String}
  *      id id used for the plugin.
  * @param {Array}
- *      supported_types an array of supported MIME types.
+ *      supportedTypes an array of supported MIME types.
  * @param {String}
  *      library external script containing the plugin interface code.
  * @constructor
  */
 ( function( mw, $ ) {
 	
-mw.MediaPlayer = function( id, supported_types, library )
+mw.MediaPlayer = function( id, supportedTypes, library )
 {
 	this.id = id;
-	this.supported_types = supported_types;
+	this.supportedTypes = supportedTypes;
 	this.library = library;
 	this.loaded = false;
 	this.loading_callbacks = new Array();
@@ -25,7 +25,7 @@ mw.MediaPlayer.prototype = {
 	id:null,
 
 	// Mime types supported by this player
-	supported_types:null,
+	supportedTypes:null,
 
 	// Player library ie: native, vlc, java etc.
 	library:null,
@@ -37,13 +37,13 @@ mw.MediaPlayer.prototype = {
 	 * Checks support for a given MIME type
 	 *
 	 * @param {String}
-	 *      type Mime type to check against supported_types
+	 *      type Mime type to check against supportedTypes
 	 * @return {Boolean} true if mime type is supported false if mime type is
 	 *     unsupported
 	 */
 	supportsMIMEType: function( type ) {
-		for ( var i = 0; i < this.supported_types.length; i++ ) {
-			if ( this.supported_types[i] == type )
+		for ( var i = 0; i < this.supportedTypes.length; i++ ) {
+			if ( this.supportedTypes[i] == type )
 				return true;
 		}
 		return false;
