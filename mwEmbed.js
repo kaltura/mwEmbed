@@ -2536,7 +2536,9 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 */
 	mw.domReady = function ( forceSetup ) {
 		mw.log('mw.domReady:' );
-		mw.setupMwEmbed();
+		setTimeout(function(){
+			mw.setupMwEmbed();
+		}, 0);
 	};
 	/**
 	* Check if the url is a request for the local domain
