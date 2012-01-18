@@ -408,7 +408,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// if confPrefix is not an empty string or null check for the conf prefix
 		if( confPrefix ){
-			$plugin = $uiConf.find( 'plugin#' + confPrefix );
+			$plugin = $uiConf.find( '#' + confPrefix );
 			// When defined from uiConf ( "plugin" tag is equivalent to "confPrefix.plugin = true" in the uiVars )
 			if( $plugin.length && attr && $.inArray( 'plugin', attr ) != -1 ){ 
 				config['plugin'] = true;

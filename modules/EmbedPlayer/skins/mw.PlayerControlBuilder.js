@@ -1563,7 +1563,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		var $shareInterface = $('<div />');
 
-		$shareList = $( '<ul />' );
+		var $shareList = $( '<ul />' );
 
 		$shareList
 		.append(
