@@ -4,7 +4,6 @@ window.adPlugin = true;
 
 // Check for new Embed Player events: 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-	
 	// Check for KalturaSupport uiConf
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// Check if the kaltura ad plugin is enabled:

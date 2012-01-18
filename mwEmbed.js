@@ -390,7 +390,6 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		 */
 		load: function( loadRequest, instanceCallback ) {
 			var _this = this;
-
 			// Throw out any loadRequests that are not strings
 			loadRequest = this.cleanLoadRequest( loadRequest );
 
@@ -985,8 +984,9 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		 * false
 		 */
 	 	getResourcePath: function( resourceName ) {
-	 		if( this.resourcePaths[ resourceName ] )
+	 		if( this.resourcePaths[ resourceName ] ){
 	 			return this.resourcePaths[ resourceName ];
+	 		}
 	 		return false;
 	 	}
 	};
@@ -2213,78 +2213,81 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 
 		// Check core mwEmbed loader.js file ( to get configuration and paths )
 		mw.checkCoreLoaderFile( function(){
-			// Make sure we have jQuery
-			mw.load( 'window.jQuery', function() {
-			
-				// Add jQuery to $j var.
-				if ( ! window[ '$j' ] ) {
-					window[ '$j' ] = jQuery.noConflict();
-				}
+			// give the browser a chance to parse the rest of the javascript file. 
+			setTimeout(function(){
+				// Make sure we have jQuery
+				mw.load( 'window.jQuery', function() {
 				
-				// Setup user config:
-				mw.setupUserConfig( function(){
-					// Get module loader.js, and language files
-					// ( will hit callback directly if set via resource loader )
-					mw.checkModuleLoaderFiles( function() {
+					// Add jQuery to $j var.
+					if ( ! window[ '$j' ] ) {
+						window[ '$j' ] = jQuery.noConflict();
+					}
+					
+					// Setup user config:
+					mw.setupUserConfig( function(){
+						// Get module loader.js, and language files
+						// ( will hit callback directly if set via resource loader )
+						mw.checkModuleLoaderFiles( function() {
 
-						// Set the User language
-						if( typeof wgUserLanguage != 'undefined' && mw.isValidLang( wgUserLanguage) ) {
-							mw.setConfig( 'userLanguage', wgUserLanguage );
-						}else{
-							// Grab it from the included url
-							var langKey = mw.parseUri( mw.getMwEmbedSrc() ).queryKey['uselang'];
-							if ( langKey && mw.isValidLang( langKey ) ) {
-								mw.setConfig( 'userLanguage', langKey);
-							}
-						}
-
-						// Update the image path
-						mw.setConfig( 'imagesPath', mw.getMwEmbedPath() + 'skins/common/images/' );
-
-						// Set up AJAX to not send dynamic URLs for loading
-						// scripts
-						$j.ajaxSetup( {
-							cache: true
-						} );
-
-						// Update the magic keywords
-						mw.Language.magicSetup();						
-						
-						// Check if we have a global jquery ui skin: 
-						if( mw.getConfig('IframeCustomjQueryUISkinCss' ) ){
-							mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;
-							mw.getStyleSheet( mw.getConfig('IframeCustomjQueryUISkinCss' )  );
-						} else {
-							// Special Hack for conditional jquery ui inclusion 
-							if( mw.hasJQueryUiCss() ){
-								mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;
-							}
-						}
-
-						// load any  Mw.CustomResourceIncludes
-						mw.loadCustomResourceIncludes( mw.getConfig('Mw.CustomResourceIncludes'), function(){
-							// Make sure style sheets are loaded:
-							mw.load( ['mw.style.mwCommon'] , function(){
-								// Run all the setup function hooks
-								// NOTE: setup functions are added via addSetupHook calls
-								// and must include a callback.
-								//
-								// Once complete we can run .ready() queued functions
-								function runSetupFunctions() {
-									if( mwSetupFunctions.length ) {
-										mwSetupFunctions.shift()( function() {
-											runSetupFunctions();
-										} );
-									}else{
-										mw.runReadyFunctions();
-									}
+							// Set the User language
+							if( typeof wgUserLanguage != 'undefined' && mw.isValidLang( wgUserLanguage) ) {
+								mw.setConfig( 'userLanguage', wgUserLanguage );
+							}else{
+								// Grab it from the included url
+								var langKey = mw.parseUri( mw.getMwEmbedSrc() ).queryKey['uselang'];
+								if ( langKey && mw.isValidLang( langKey ) ) {
+									mw.setConfig( 'userLanguage', langKey);
 								}
-								runSetupFunctions();
+							}
+
+							// Update the image path
+							mw.setConfig( 'imagesPath', mw.getMwEmbedPath() + 'skins/common/images/' );
+
+							// Set up AJAX to not send dynamic URLs for loading
+							// scripts
+							$j.ajaxSetup( {
+								cache: true
+							} );
+
+							// Update the magic keywords
+							mw.Language.magicSetup();						
+							
+							// Check if we have a global jquery ui skin: 
+							if( mw.getConfig('IframeCustomjQueryUISkinCss' ) ){
+								mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;
+								mw.getStyleSheet( mw.getConfig('IframeCustomjQueryUISkinCss' )  );
+							} else {
+								// Special Hack for conditional jquery ui inclusion 
+								if( mw.hasJQueryUiCss() ){
+									mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;
+								}
+							}
+
+							// load any  Mw.CustomResourceIncludes
+							mw.loadCustomResourceIncludes( mw.getConfig('Mw.CustomResourceIncludes'), function(){
+								// Make sure style sheets are loaded:
+								mw.load( ['mw.style.mwCommon'] , function(){
+									// Run all the setup function hooks
+									// NOTE: setup functions are added via addSetupHook calls
+									// and must include a callback.
+									//
+									// Once complete we can run .ready() queued functions
+									function runSetupFunctions() {
+										if( mwSetupFunctions.length ) {
+											mwSetupFunctions.shift()( function() {
+												runSetupFunctions();
+											} );
+										}else{
+											mw.runReadyFunctions();
+										}
+									}
+									runSetupFunctions();
+								});
 							});
-						});
-					} );
+						} );
+					});
 				});
-			});
+			},0);
 		});
 	};
 	mw.loadCustomResourceIncludes = function( loadSet, callback ){
