@@ -32,7 +32,7 @@ color5="16777215" font="Arial" />
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			
 			// Check if plugin exists
-			if( embedPlayer.getKalturaConfig( 'ShareSnippet', 'plugin' ) ) {
+			if( embedPlayer.isPluginEnabled( 'ShareSnippet' ) ) {
 				window['shareSnippet'].init( embedPlayer );
 			}
 
