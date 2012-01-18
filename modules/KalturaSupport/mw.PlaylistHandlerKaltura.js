@@ -29,6 +29,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 	
 	bindPostFix: '.playlistHandlerKaltura',
 	
+	// store any playlist loading errors:
+	errorMsg: null,
+	
 	init: function ( playlist, options ){
 		this.playlist = playlist;
 		// set all the options: 
@@ -197,6 +200,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	loadPlaylistById: function( playlist_id, callback ){
 		var _this = this;
+		mw.log("PlaylistHandlerKaltura::loadPlaylistById> " + playlist_id );
 		var embedPlayer = this.playlist.embedPlayer;
 		
 		// Check if the playlist is mrss url ( and use the mrss handler )
@@ -232,6 +236,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				playlistData = playlistDataResult[0];
 			} else {
 				mw.log("Error: kaltura playlist:" + playlist_id + " could not load:" + playlistDataResult.code);
+				_this.errorMsg = "Error loading playlist:" + playlistDataResult.code;
 				callback();
 				return ;
 			}
@@ -272,7 +277,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	playClip: function( embedPlayer, clipIndex, callback ){
 		var _this = this;
 		if( !embedPlayer ){
-			mw.log("Error:: PlaylistHandlerKaltura no embed player");
+			mw.log("Error:: PlaylistHandlerKaltura:playClip > no embed player");
 			callback();
 			return;
 		}

@@ -33,16 +33,15 @@ function jsKalturaPlayerTest( videoId ){
 }
 </script>
 <script>
-	/*
 	function jsCallbackReady( playerId ){
 		var kdp = $( '#' + playerId )[0];
-		kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
+		$( '#changeToVid' ).click(function(){
+			kdp.sendNotification( "changeMedia", { 'entryId' : '1_oz8y7d5a' });
+		})
+		$( '#changeToImage' ).click(function(){
+			kdp.sendNotification( "changeMedia", { 'entryId' : '1_ui4no6oc' });
+		})
 	}
-	function onPlayerSeekStart( playerId ){
-		var kdp = $( '#' + playerId )[0];
-		alert( kdp.evaluate( '{video.player.currentTime}' ) );
-	}
-	*/
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
@@ -59,5 +58,7 @@ function jsKalturaPlayerTest( videoId ){
 	<param name="flashVars" value="&" />
 	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1318173596/wid/_423851/uiconf_id/5902462/entry_id/1_ui4no6oc" />
 </object>
+<br />
+<a href="#" id="changeToVid"> Change to video entry </a> | <a href="#" id="changeToImage"> Change to image entry </a>
 </body>
 </html>
