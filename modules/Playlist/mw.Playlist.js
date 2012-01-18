@@ -578,6 +578,11 @@ mw.Playlist.prototype = {
 	addPlaylistSeekButtons: function(){
 		var _this = this;
 		var embedPlayer = this.getEmbedPlayer();
+		
+		// Don't add seek buttons if we don't have an embedPlayer:
+		if( ! embedPlayer ){
+			return ;
+		}
 		// add previous / next buttons if not present: 
 		// TODO (HACK) we should do real controlBar support for custom buttons
 		if( embedPlayer.controlBuilder ){

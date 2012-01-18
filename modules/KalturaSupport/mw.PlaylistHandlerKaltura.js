@@ -271,6 +271,12 @@ mw.PlaylistHandlerKaltura.prototype = {
 	},
 	playClip: function( embedPlayer, clipIndex, callback ){
 		var _this = this;
+		if( !embedPlayer ){
+			mw.log("Error:: PlaylistHandlerKaltura no embed player");
+			callback();
+			return;
+		}
+		
 		// Check if entry id already matches ( and is loaded ) 
 		if( embedPlayer.kentryid == this.getClip( clipIndex ).id ){
 			if( this.loadingEntry ){
