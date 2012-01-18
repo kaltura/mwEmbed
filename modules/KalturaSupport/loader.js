@@ -96,8 +96,8 @@
 		
 		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
 		"titleLayout" : "uiConfComponents/titleLayout.js",
-		"volumeBarLayout"	:	"uiConfComponents/volumeBarLayout.js"
-		
+		"volumeBarLayout"	:	"uiConfComponents/volumeBarLayout.js",
+		"shareSnippet"	:	"uiConfComponents/shareSnippet.js"
 	} );
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
@@ -121,6 +121,7 @@
 		'volumeBarLayout',
 		'faderPlugin',
 		'watermarkPlugin',
+		'shareSnippet',
 		'adPlugin',
 		'captionPlugin',
 		'bumperPlugin',
