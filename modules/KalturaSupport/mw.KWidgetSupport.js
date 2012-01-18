@@ -65,6 +65,14 @@ mw.KWidgetSupport.prototype = {
 		$( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
 		});
+		// Add black sources: 
+		$( embedPlayer ).bind( 'addEmptyBlackSources', function( event, vid ){
+			$.each( mw.getConfig('Kaltura.BlackVideoSources'), function(inx, sourceAttr ){
+				$(vid).append(
+					$('<source />').attr( sourceAttr )
+				)	
+			});
+		});
 		// Add Kaltura iframe share support:
 		$( embedPlayer ).bind( 'getShareIframeSrc', function( event, callback ){
 			var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';

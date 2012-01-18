@@ -31,7 +31,13 @@
 		    	'type' : 'video/webm'
 		    }
 		 ],
-		 'Kaltura.BlackVideoSources' : [
+		 // Black video sources. Useful for capturing play user gesture events on a live video tag for iPad 
+		 // while displaying an error message or image overlay and not any 'real' video content. 
+		'Kaltura.BlackVideoSources' : [
+			{
+				'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/http/a.mp4',
+				'type' : 'video/h264'
+			},
 		    {
 		        'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_oiyfyphl/format/url/protocol/http/a.webm',
 		        'type' : 'video/webm'
@@ -39,10 +45,6 @@
 			{
 				'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6yqa4nmd/format/url/protocol/http/a.ogg',
 				'type' : 'video/ogg'
-			},
-			{
-				'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/http/a.mp4',
-				'type' : 'video/h264'
 			}
 		]
 	} );
@@ -132,7 +134,6 @@
 			})
 		} );
 	};
-	
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
 		return $.merge( kalturaSupportRequestSet,

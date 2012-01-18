@@ -327,7 +327,7 @@ mw.EmbedPlayer.prototype = {
 		if( this.height.indexOf('100%') != -1 || this.width.indexOf('100%') != -1 ){
 			$relativeParent = $(element).parents().filter(function() {
 				 // reduce to only relative position or "body" elements
-				 return $(this).is('body') || $(this).css('position') == 'relative';
+				 return $( this ).is('body') || $( this ).css('position') == 'relative';
 			}).slice(0,1); // grab only the "first"
 			this.width = $relativeParent.width();
 			this.height = $relativeParent.height();

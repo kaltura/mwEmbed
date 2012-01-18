@@ -22,19 +22,7 @@ mw.EmbedPlayerImageOverlay = {
 	
 	// The local clock used to emulate playback time
 	clockStartTime: 0,
-	
-	/**
-	 * Extends nativePlayer methods to support image playback 
-	 * @param {function} callback
-	 */
-	updatePlaybackInterface: function( callback ){
-		mw.log( 'EmbedPlayerImageOverlay:: updatePlaybackInterface remove imageOverlay: ' + $(this).siblings( '.imageOverlay' ).length );
-		// Clear imageOverlay sibling:
-		$( this ).siblings( '.imageOverlay' ).remove();
-		// Call normal parent updatePlaybackInterface
-		this.parent_updatePlaybackInterface( callback );
-	},
-	
+
 	/**
 	 * Build the player interface:
 	 */
@@ -54,6 +42,44 @@ mw.EmbedPlayerImageOverlay = {
 	},
 	
 	/**
+	 * When on playback method switch remove imageOverlay
+	 * @param {function} callback
+	 */
+	updatePlaybackInterface: function( callback ){
+		mw.log( 'EmbedPlayerImageOverlay:: updatePlaybackInterface remove imageOverlay: ' + $(this).siblings( '.imageOverlay' ).length );
+		// Clear imageOverlay sibling:
+		$( this ).siblings( '.imageOverlay' ).remove();
+		// restore the video element on screen position:  
+		$( this.getPlayerElement() ).css('left', 0 );
+		// Call normal parent updatePlaybackInterface
+		this.parent_updatePlaybackInterface( callback );
+	},
+	
+	/**
+	 * The method called to "show the player" 
+	 * For image overlay we want to:
+	 * 	Set black video urls for player source
+	 * 	Add an image overlay
+	 */
+	updatePosterHTML: function(){
+		var vid = this.getPlayerElement();
+		$( vid ).empty()
+		// Provide modules the opportunity to supply black sources ( for registering event click )
+		// this is need for iPad to capture the play click to auto continue after "playing an image"
+		// ( iOS requires a user gesture to initiate video playback ) 
+		
+		// We don't just include the sources as part of core config, since it would result in 
+		// a possible privacy leakage i.e hitting the kaltura servers when playing images.  
+		this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
+
+		// embed the image: 
+		this.embedPlayerHTML();
+		
+		// add the play btn: 
+		this.addPlayBtnLarge();
+	},
+	
+	/**
 	*  Play function starts the video playback
 	*/
 	play: function() {
@@ -64,7 +90,7 @@ mw.EmbedPlayerImageOverlay = {
 		var vid = this.getPlayerElement();
 		vid.play();
 		setTimeout(function(){
-			
+			vid.pause();
 		}, mw.getConfig( ));
 		
 		// call the parent play ( to update interface and call respective triggers )
@@ -132,14 +158,14 @@ mw.EmbedPlayerImageOverlay = {
 	* Get the "embed" html for the html player
 	*/
 	embedPlayerHTML: function() {
-		mw.log( 'EmbedPlayerImageOverlay :doEmbedHTML: ' + this.id );
-		// set up the css for our parent div:		 
-		$( this ).css( {
-			'overflow':"hidden"
-		} );
+		if( this.$interface.find('.imageOverlay').length ){
+			// don't re embed the imageOverlay:
+			return ;
+		}
 		
-		// Put the image stuff on top 
-		$( this ).before( 
+		mw.log( 'EmbedPlayerImageOverlay :doEmbedHTML: ' + this.id );
+		
+		var $image =
 			$( '<img />' )
 			.css({
 				'position': 'relative',
@@ -149,11 +175,26 @@ mw.EmbedPlayerImageOverlay = {
 			.attr({
 				'src' : this.poster
 			})
-			.addClass( 'imageOverlay' )		
-		);
+			.addClass( 'imageOverlay' );
+		
+		// move the video element off screen: 
+		$( this.getPlayerElement() ).css({
+			'left': this.getWidth()+50,
+			'position' : 'absolute'
+		});
+		
+		// Add the image before the video element or before the playerInterface 
+		$( this ).before( $image ); 
+		
+		this.applyIntrinsicAspect();
+	},
+	// wrap the parent rewize player to apply intensic apsect
+	resizePlayer: function( size , animate, callback){
+		this.parent_resizePlayer( size , animate, callback );
+		this.applyIntrinsicAspect();
 	},
 	applyIntrinsicAspect: function(){
-		var $this = $( this );
+		var $this = this.$interface;
 		// Check if a image thumbnail is present:
 		if(  this.$interface && this.$interface.find('.imageOverlay').length ){
 			var img = this.$interface.find('.imageOverlay')[0];
