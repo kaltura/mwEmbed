@@ -11,6 +11,9 @@ $loaderJs = "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl 
 // Add the library version: 
 $loaderJs.= "KALTURA_LOADER_VERSION = '$wgMwEmbedVersion';";
 
+// Get resource (  kWidgetLoader.js )
+$loaderJs .= file_get_contents( 'kWidgetLoader.js' );
+
 // Get resource (  mwEmbedLoader.js )
 $loaderJs .= file_get_contents( 'mwEmbedLoader.js' );
 
