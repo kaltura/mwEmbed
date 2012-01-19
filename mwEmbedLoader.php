@@ -5,11 +5,17 @@
 // include configuration 
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 
+// Kaltura Comment
+$loaderComment = "/**
+* Kaltura HTML5 Library v$wgMwEmbedVersion 
+* http://html5video.org/wiki/Kaltura_SaaS_FAQ
+*/\n";
+
 // Append ResourceLoder path to loader.js
 $loaderJs = "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl ) . "';\n";
 
 // Add the library version: 
-$loaderJs.= "KALTURA_LOADER_VERSION = '$wgMwEmbedVersion';";
+$loaderJs .= "window['KALTURA_LOADER_VERSION'] = '$wgMwEmbedVersion';\n";
 
 // Get resource (  kWidgetLoader.js )
 $loaderJs .= file_get_contents( 'kWidgetLoader.js' );
@@ -54,7 +60,7 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	header("Pragma: no-cache");
 	header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 	
-	echo $loaderJs;
+	echo $loaderComment.$loaderJs;
 } else {
 	// Get the JSmin class:
 	require_once( realpath( dirname( __FILE__ ) ) . '/includes/library/JSMin.php' );
@@ -88,6 +94,6 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	} else {
 		$loaderMin = JSMin::minify( $loaderJs );
 		file_put_contents( $loaderCacheFile, $loaderMin );
-		echo $loaderMin;
+		echo $loaderComment.$loaderMin;
 	}
 }
