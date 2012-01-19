@@ -1710,6 +1710,10 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 *            callback Function called once sheet is ready
 	 */
 	mw.getStyleSheet = function( url , callback) {
+		if( !url ){
+			return ;
+		}
+		
 		// Add URL params ( if not already included )
 		if ( url.indexOf( '?' ) == -1 ) {
 			url += '?' + mw.getUrlParam();
@@ -2251,7 +2255,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 						mw.Language.magicSetup();						
 						
 						// Check if we have a global jquery ui skin: 
-						if( mw.getConfig('IframeCustomjQueryUISkinCss' ) ){
+						if( mw.getConfig('IframeCustomjQueryUISkinCss' ) != null ){
 							mw.style[ 'ui_' + mw.getConfig( 'jQueryUISkin' ) ] = true;
 							mw.getStyleSheet( mw.getConfig('IframeCustomjQueryUISkinCss' )  );
 						} else {

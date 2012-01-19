@@ -798,7 +798,7 @@ function kAddScript( callback ){
 	}
 	
 	// Add the jquery ui skin: 
-	if( !mw.getConfig('IframeCustomjQueryUISkinCss' ) ){
+	if( ! mw.getConfig('IframeCustomjQueryUISkinCss' ) ){
 		if( mw.getConfig( 'jQueryUISkin' ) ){
 			jsRequestSet.push( 'mw.style.ui_' + mw.getConfig( 'jQueryUISkin' )  );
 		} else {
