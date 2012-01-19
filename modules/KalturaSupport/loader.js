@@ -123,7 +123,7 @@
 		'faderPlugin',
 		'watermarkPlugin',
 		'shareSnippet',
-                'flagPlugin',
+        'moderationPlugin',
 		'adPlugin',
 		'captionPlugin',
 		'bumperPlugin',
