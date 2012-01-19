@@ -8,7 +8,14 @@ require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' 
 // Kaltura Comment
 $loaderComment = "/**
 * Kaltura HTML5 Library v$wgMwEmbedVersion 
+* Library Page http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
+* 
+* Common configuration options see: 
 * http://html5video.org/wiki/Kaltura_SaaS_FAQ
+*
+* Whats in this version of Kaltura HTML5
+* http://html5video.org/wiki/Kaltura_HTML5_Release_Notes
+* 
 */\n";
 
 // Append ResourceLoder path to loader.js
