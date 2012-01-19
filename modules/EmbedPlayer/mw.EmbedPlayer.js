@@ -477,13 +477,29 @@ mw.EmbedPlayer.prototype = {
 	},
 
 	/**
-	 * Switch and play a video source ( useful for ads or bumper videos )
-	 *
-	 * Only works while video is in active play back. Only tested with native
-	 * playback atm.
+	 * Switch and play a video source
+	 * 
+	 * Checks if the target source is the same playback mode and does player switch if needed.
+	 * and calls playerSwichSource 
 	 */
-	switchPlaySrc: function(){
-		mw.log("Error: only native playback supports insertAndPlaySource right now");
+	switchPlaySource: function( source, switchCallback, doneCallback ){
+		var _this = this;
+		var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType ) ;
+		if( targetPlayer.id != this.selectedPlayer.id ){
+			this.selectedPlayer = targetPlayer;
+			this.updatePlaybackInterface( function(){
+				_this.playerSwichSource( source, switchCallback, doneCallback );
+			});
+		} else {
+			// call the player switch directly:
+			_this.playerSwichSource( source, switchCallback, doneCallback );
+		}
+	},
+	/**
+	 * abstract function  player interface must support actual source switch
+	 */
+	playerSwichSource: function( source, switchCallback, doneCallback  ){
+		mw.log( "Error player interface must support actual source switch");
 	},
 
 	/**
@@ -1253,7 +1269,7 @@ mw.EmbedPlayer.prototype = {
 			if( _this.isPersistentNativePlayer() ){
 				// If switching a Persistent native player update the source:
 				// ( stop and play won't refresh the source  )
-				_this.switchPlaySrc( _this.getSrc(), function(){
+				_this.switchPlaySource( _this.getSource(), function(){
 					$this.trigger( 'onChangeMediaDone' );
 					if( chnagePlayingMedia ){
 						_this.play();
@@ -2291,7 +2307,14 @@ mw.EmbedPlayer.prototype = {
 		// No selected source return false:
 		return false;
 	},
-	
+	/**
+	 * Return the currently selected source
+	 */
+	getSource: function(){
+		// update the current selected source: 
+		this.mediaElement.autoSelectSource();
+		return this.mediaElement.selectedSource;
+	},
 	/**
 	 * Static helper to get media sources from a set of videoFiles
 	 * 
@@ -2316,7 +2339,7 @@ mw.EmbedPlayer.prototype = {
 		var source = myMediaElement.autoSelectSource();
 		if( source ){
 			mw.log("EmbedPlayer::getCompatibleSource: " + source.getSrc());
-			return source.getSrc();
+			return source;
 		}
 		mw.log("Error:: could not find compatible source");
 		return false;

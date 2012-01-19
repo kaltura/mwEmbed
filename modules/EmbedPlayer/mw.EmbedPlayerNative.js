@@ -497,19 +497,20 @@ mw.EmbedPlayerNative = {
 		this.parent_updatePosterSrc( src );
 	},
 	/**
-	 * switchPlaySrc switches the player source working around a few bugs in browsers
+	 * playerSwichSource switches the player source working around a few bugs in browsers
 	 * 
-	 * @param {string}
-	 *            src Video url Source to switch to.
+	 * @param {Object}
+	 *            Source object to switch to.
 	 * @param {function}
 	 *            switchCallback Function to call once the source has been switched
 	 * @param {function}
 	 *            doneCallback Function to call once the clip has completed playback
 	 */
-	switchPlaySrc: function( src, switchCallback, doneCallback ){
+	playerSwichSource: function( source, switchCallback, doneCallback ){
 		var _this = this;
+		var src = source.getSrc();
 		var vid = this.getPlayerElement();
-		var switchBindPostfix = '.switchPlaySrc';
+		var switchBindPostfix = '.switchPlaySource';
 		this.isPauseLoading = false;
 		// Make sure the switch source is different: 
 		if( !src || src == vid.src ){
@@ -526,7 +527,7 @@ mw.EmbedPlayerNative = {
 		vid.poster = mw.getConfig( 'EmbedPlayer.BlackPixel' );
 		
 		// only display switch msg if actually switching: 
-		mw.log( 'EmbedPlayerNative:: switchPlaySrc:' + src + ' native time: ' + vid.currentTime );
+		mw.log( 'EmbedPlayerNative:: switchPlaySource:' + src + ' native time: ' + vid.currentTime );
 		
 		// Update some parent embedPlayer vars: 
 		this.duration = 0;
@@ -546,7 +547,7 @@ mw.EmbedPlayerNative = {
 				var updateSrcAndPlay = function() {
 					var vid = _this.getPlayerElement();
 					if (!vid){
-						mw.log( 'Error: EmbedPlayerNative switchPlaySrc no vid');
+						mw.log( 'Error: EmbedPlayerNative switchPlaySource no vid');
 						return ;
 					}
 					vid.src = src;
@@ -554,7 +555,7 @@ mw.EmbedPlayerNative = {
 					setTimeout( function() {
 						var vid = _this.getPlayerElement();
 						if (!vid){
-							mw.log( 'Error: EmbedPlayerNative switchPlaySrc no vid');
+							mw.log( 'Error: EmbedPlayerNative switchPlaySource no vid');
 							return ;
 						}	
 						vid.load();
@@ -609,16 +610,19 @@ mw.EmbedPlayerNative = {
 			}
 		}
 	},
+	doSwitchNativeSource:function(){
+		
+	},
 	/**
-	 * switchPlaySrc switches the player source
+	 * switchPlaySource switches the player source
 	 * 
 	 * we don't appear to be able to use this simple sync switch ( fails on some browsers )
 	 * firefox 7x and iPad OS 3.2 right now) 
 	 */
-	/*switchPlaySrc: function( src, switchCallback, doneCallback ){
+	/*switchPlaySource: function( src, switchCallback, doneCallback ){
 		var _this = this;
 		var vid = this.getPlayerElement();
-		var switchBindPostfix = '.switchPlaySrc';
+		var switchBindPostfix = '.switchPlaySource';
 		$(vid).unbind( switchBindPostfix );
 		
 		$( vid ).bind( 'ended' + switchBindPostfix, function( event ) {

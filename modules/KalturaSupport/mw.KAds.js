@@ -180,7 +180,7 @@ mw.KAds.prototype = {
 				// Check if the src does not match original src if
 				// so switch back and restore original bindings
 				if ( originalSrc != vid.src ) {
-					embedPlayer.switchPlaySrc( originalSrc, function() {
+					embedPlayer.switchPlaySource( originalSrc, function() {
 						mw.log( "AdTimeline:: restored original src:" + vid.src);
 						// Restore embedPlayer native bindings
 						// async for iPhone issues

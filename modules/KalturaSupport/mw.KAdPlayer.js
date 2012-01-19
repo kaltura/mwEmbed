@@ -154,8 +154,8 @@ mw.KAdPlayer.prototype = {
 	displayVideoFile: function( adSlot, adConf ){
 		var _this = this;
 		// check that we have a video to display: 
-		var targetSrc =  _this.embedPlayer.getCompatibleSource( adConf.videoFiles );
-		if( !targetSrc ){
+		var targetSource =  _this.embedPlayer.getCompatibleSource( adConf.videoFiles );
+		if( !targetSource ){
 			mw.log("KAdPlayer:: displayVideoFile> Error no adSlot video src ");
 			adSlot.playbackDone();
 			return ;
@@ -182,7 +182,7 @@ mw.KAdPlayer.prototype = {
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled() ) {
 			_this.playVideoSibling(
-				targetSrc,
+				targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
 				},
@@ -191,8 +191,8 @@ mw.KAdPlayer.prototype = {
 				} 
 			);
 		} else {
-			_this.embedPlayer.switchPlaySrc( 
-				targetSrc,
+			_this.embedPlayer.switchPlaySource( 
+				targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
 				},

@@ -97,7 +97,7 @@ mw.AdTimeline.prototype = {
 	adOverlaysEnabled: true,
 
 	// Original source of embedPlayer
-	originalSrc: false,
+	originalSource: false,
 
 	// Flag to store if its the first time play is being called:
 	firstPlay: true,
@@ -129,7 +129,7 @@ mw.AdTimeline.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		// Setup the original source
-		_this.originalSrc = embedPlayer.getSrc();
+		_this.originalSource = embedPlayer.getSource();
 		// Clear out any old bindings
 		_this.destroy();
 		// Create an empty sequence proxy object ( stores information about the current sequence ) 
@@ -159,7 +159,7 @@ mw.AdTimeline.prototype = {
 					// Show bumpers:
 					_this.displaySlots( 'bumper', function(){
 						// restore the original source:
-						embedPlayer.switchPlaySrc( _this.originalSrc, function(){
+						embedPlayer.switchPlaySource( _this.originalSource, function(){
 							// turn off preSequence
 							embedPlayer.sequenceProxy.isInSequence = false;
 							
@@ -219,7 +219,7 @@ mw.AdTimeline.prototype = {
 
 					/** TODO support postroll bumper and leave behind */
 					if( playedAnAdFlag ){
-						embedPlayer.switchPlaySrc( _this.originalSrc, function( video ){
+						embedPlayer.switchPlaySource( _this.originalSource, function( video ){
 								// make sure we pause the video
 								video.pause();
 								/* iPad iOS v4.3.1 ignore video pause (probably timing issue) */

@@ -1838,7 +1838,7 @@ mw.PlayerControlBuilder.prototype = {
 						var oldMediaTime = _this.embedPlayer.getPlayerElement().currentTime;
 						var oldPaused =  _this.embedPlayer.paused
 						// Do a live switch
-						embedPlayer.switchPlaySrc(source.getSrc(), function( vid ){
+						embedPlayer.switchPlaySource(source, function( vid ){
 							// issue a seek
 							embedPlayer.setCurrentTime( oldMediaTime );
 							// reflect pause state

@@ -210,19 +210,20 @@ mw.EmbedPlayerKplayer = {
 		this.parent_pause();
 	},
 	/**
-	 * switchPlaySrc switches the player source working around a few bugs in browsers
+	 * playerSwichSource switches the player source working around a few bugs in browsers
 	 * 
-	 * @param {string}
-	 *            src Video url Source to switch to.
+	 * @param {object}
+	 *            source Video Source object to switch to.
 	 * @param {function}
 	 *            switchCallback Function to call once the source has been switched
 	 * @param {function}
 	 *            doneCallback Function to call once the clip has completed playback
 	 */
-	switchPlaySrc: function( src, switchCallback, doneCallback ){
+	playerSwichSource: function( source, switchCallback, doneCallback ){
 		var _this = this;
 		var waitCount = 0;
-		
+		var src = source.getSrc();
+		// Check if the source is already set to the target:
 		if( !src || src == this.getSrc ){
 			if( switchCallback ){
 				switchCallback();
@@ -259,7 +260,7 @@ mw.EmbedPlayerKplayer = {
 			var gPlayerReady = 'kdp_' + _this.id + '_switchSrcReady';
 			var gDoneName = 'kdp_' + _this.id + '_switchSrcEnd';
 			window[gPlayerReady] = function(){
-				mw.log("Kplayer switchPlaySrc: " + src);
+				mw.log("Kplayer switchPlaySource: " + src);
 				
 				_this.getPlayerElement().sendNotification("changeMedia", { 'entryId': src } );
 				_this.monitor();

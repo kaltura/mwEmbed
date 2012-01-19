@@ -146,7 +146,14 @@ mw.EmbedPlayerImageOverlay = {
 			callback();
 		}
 	},
-	
+	/**
+	 * Switch the image playback 
+	 */
+	playerSwichSource: function(  source, switchCallback, doneCallback ){
+		this.selectedSource = source;
+		this.embedPlayerHTML();
+		this.play();
+	},
 	/**
 	* Get the embed player time
 	*/
@@ -158,13 +165,15 @@ mw.EmbedPlayerImageOverlay = {
 	* Get the "embed" html for the html player
 	*/
 	embedPlayerHTML: function() {
-		if( this.$interface.find('.imageOverlay').length ){
-			// don't re embed the imageOverlay:
-			return ;
-		}
-		
+		// remove any old imageOverlay:
+		this.$interface.find('.imageOverlay').remove();
 		mw.log( 'EmbedPlayerImageOverlay :doEmbedHTML: ' + this.id );
 		
+		var currentSoruceObj = this.getSource( );
+		if( !currentSoruceObj ){
+			mw.log("Error:: EmbedPlayerImageOverlay:embedPlayerHTML> missing source" );
+			return ;
+		}
 		var $image =
 			$( '<img />' )
 			.css({
@@ -173,7 +182,7 @@ mw.EmbedPlayerImageOverlay = {
 				'height': '100%'
 			})
 			.attr({
-				'src' : this.poster
+				'src' : currentSoruceObj.getSrc()
 			})
 			.addClass( 'imageOverlay' );
 		
