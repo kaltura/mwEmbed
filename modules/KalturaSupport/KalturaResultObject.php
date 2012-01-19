@@ -209,7 +209,7 @@ class KalturaResultObject {
 		return $this->outputUiConfFileFromCache;
 	}
 	public function getUserAgent() {
-		return $_SERVER['HTTP_USER_AGENT'];
+		return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 	}
 	/**
 	 * Checks if a user agent is restricted via the user restriction plugin present in the uiConf XML
