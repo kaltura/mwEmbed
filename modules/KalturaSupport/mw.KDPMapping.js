@@ -194,7 +194,7 @@
 					embedPlayer.startTime = parseFloat(value);
 				break;
 				case 'mediaPlayTo':
-					embedPlayer.endTime = parseFloat(value);
+					embedPlayer.pauseTime = parseFloat(value);
 				break;
 			}
 			// Give kdp plugins a chance to take attribute actions 

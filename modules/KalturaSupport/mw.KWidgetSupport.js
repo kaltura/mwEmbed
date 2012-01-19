@@ -366,6 +366,16 @@ mw.KWidgetSupport.prototype = {
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
+		// Check for mediaPlayFrom
+		var mediaPlayFrom = this.getPluginConfig( embedPlayer, '', 'mediaProxy.mediaPlayFrom');
+		if( mediaPlayFrom ) {
+			embedPlayer.startTime = parseFloat( mediaPlayFrom );
+		}
+		// Check for mediaPlayTo
+		var mediaPlayTo = this.getPluginConfig( embedPlayer, '', 'mediaProxy.mediaPlayTo');
+		if( mediaPlayTo ) {
+			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
+		}
 	},
 	/**
 	 * Check for xml config, let flashvars override 
