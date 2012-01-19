@@ -44,30 +44,23 @@ color5="16777215" font="Arial" />
 	// Share snippet
 	window['shareSnippet'] = {
 
+		pluginName: 'ShareSnippet',
+
 		init: function( embedPlayer ) {
 			this.embedPlayer = embedPlayer;
-			this.setupConfig();
 			this.addPlayerBindings();
 			this.addShareButton();
 		},
 
-		setupConfig: function() {
-
-			var shareConfig = [
-				'landingPagePrefix',
-				'uuidType',
-				'uuidFieldName',
-				'generatorEmbedPrefix',
-				'customSnippetBefore',
-				'customSnippetAfter'
-			];
-
-			this.config = this.embedPlayer.getKalturaConfig('ShareSnippet', shareConfig);
+		// We should have a base Plugin that will have getConfig method and plugin will extend that class and call the partner getConfig
+		getConfig: function( attr ) {
+			return this.embedPlayer.getKalturaConfig( this.pluginName, attr );
 		},
 
 		addPlayerBindings: function() {
 			var _this = this;
-			$( this.embedPlayer ).unbind('showShareSnippets').bind('showShareSnippets', function() {
+			this.embedPlayer.unbindHelper('showShareSnippets');
+			this.embedPlayer.bindHelper('showShareSnippets', function() {
 				_this.drawModal();
 			});
 		},
@@ -80,7 +73,7 @@ color5="16777215" font="Arial" />
 			if( shareButtonClick.indexOf('showShareSnippets') ) {
 
 				mw.log('shareSnippet :: add share button');
-				$( embedPlayer ).bind( 'addControlBarComponent', function(event, controlBar ){
+				embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ){
 
 					var $shareButton = {
 						'w': 28,
@@ -92,7 +85,7 @@ color5="16777215" font="Arial" />
 								.append( $( '<span />' ).addClass( "ui-icon ui-icon-link" ) )
 								.buttonHover()
 								.click(function() {
-									$( embedPlayer ).trigger('showShareSnippets');
+									embedPlayer.triggerHelper('showShareSnippets');
 								});
 
 							return $textButton;
@@ -109,17 +102,16 @@ color5="16777215" font="Arial" />
 		},
 
 		getUniqueId: function() {
-			if( this.config['uuidType'] == 'entryId' ) {
+			if( this.getConfig('uuidType') == 'entryId' ) {
 				return this.embedPlayer.evaluate('{mediaProxy.entry.id}');
 			} else {
-				return this.embedPlayer.evaluate('{mediaProxy.entryMetadata.' + this.config['uuidFieldName'] + '}');
+				return this.embedPlayer.evaluate('{mediaProxy.entryMetadata.' + this.getConfig('uuidFieldName') + '}');
 			}
 		},
 
 		drawModal: function() {
 
 			var embedPlayer = this.embedPlayer,
-				config = this.config,
 				showError = false,
 				videoId = this.getUniqueId(),
 				shareUrl,
@@ -127,9 +119,9 @@ color5="16777215" font="Arial" />
 				customSnippet;
 
 			// Generate Share URL
-			if( config['landingPagePrefix'] ) {
+			if( this.getConfig('landingPagePrefix') ) {
 				// Custom share URL
-				shareUrl = config['landingPagePrefix'] + videoId;
+				shareUrl = this.getConfig('landingPagePrefix') + videoId;
 			} else {
 				// Default KMC preview page
 				var partnerId = embedPlayer.kwidgetid.substr(1,embedPlayer.kwidgetid.length);
@@ -138,8 +130,8 @@ color5="16777215" font="Arial" />
 			}
 
 			// Genrate Embed Code
-			if( config['generatorEmbedPrefix'] ) {
-				generatorPageUrl = config['generatorEmbedPrefix'] + videoId;
+			if( this.getConfig('generatorEmbedPrefix') ) {
+				generatorPageUrl = this.getConfig('generatorEmbedPrefix') + videoId;
 			} else {
 				showError = true;
 				generatorPageUrl = "Plugin is not configured correctly. Generator page prefix is not set";
@@ -148,7 +140,7 @@ color5="16777215" font="Arial" />
 			if( showError ) {
 				customSnippet = generatorPageUrl;
 			} else {
-				customSnippet = unescape(config['customSnippetBefore']) + generatorPageUrl + unescape(config['customSnippetAfter']);
+				customSnippet = unescape(this.getConfig('customSnippetBefore')) + generatorPageUrl + unescape(this.getConfig('customSnippetAfter'));
 			}
 
 			var $title = $('<h2 />').text('Share');
@@ -166,6 +158,9 @@ color5="16777215" font="Arial" />
 				$('<textarea />')
 				.css({'width': '95%', 'height': '30px'})
 				.text(customSnippet)
+				.click( function() {
+					this.select();
+				})
 			).css({'margin-top': '20px', 'clear': 'both'});
 
 			var $selectLinkButton = false;
