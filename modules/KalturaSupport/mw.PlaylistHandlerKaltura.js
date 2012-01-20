@@ -71,7 +71,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		);
 	},
 	getConfig: function( key ){
-		return _this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', key );
+		return this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', key );
 	},
 	loadPlaylist: function ( callback ){
 		var _this = this;
