@@ -70,6 +70,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 		);
 	},
+	getConfig: function( key ){
+		return _this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', key );
+	},
 	loadPlaylist: function ( callback ){
 		var _this = this;
 		
@@ -85,21 +88,15 @@ mw.PlaylistHandlerKaltura.prototype = {
 					'playlist_id' : _this.playlist_id 
 				});
 			}
-			// Load the playlist config: 
-			var plApi = _this.playlist.embedPlayer.getKalturaConfig(
-					'playlistAPI', 
-					['autoContinue', 'autoPlay']
-			);
-			
 			var plConf = _this.playlist.embedPlayer.getKalturaConfig(
 					'playlist', 
 					[ 'includeInLayout', 'width', 'height' ]
 			);
 			// Check for autoContinue 
-			_this.autoContinue = plApi.autoContinue;
+			_this.autoContinue = _this.getConfig( 'autoContinue' );
 			
 			// Set autoPlay
-			_this.autoPlay = plApi.autoPlay;
+			_this.autoPlay =_this.getConfig( 'autoPlay' );
 			
 			// Set width:
 			_this.videolistWidth = ( plConf.width )?  plConf.width : _this.$uiConf.find('#playlist').attr('width');
@@ -377,7 +374,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	doDataProviderAction: function ( property, value ){
 		 switch( property ){
 		 	case 'selectedIndex':
-		 		// update the selected clip ( and actually play it apparently ) 
+		 		// Update the selected clip ( and actually play it apparently ) 
 		 		this.playlist.playClip( parseInt( value ) );
 			break;
 		 }
