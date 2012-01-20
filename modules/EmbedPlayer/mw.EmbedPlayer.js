@@ -1,4 +1,3 @@
-b
 /**
 * embedPlayer is the base class for html5 video tag javascript abstraction library
 * embedPlayer include a few subclasses:
