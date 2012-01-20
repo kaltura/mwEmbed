@@ -1,3 +1,4 @@
+b
 /**
 * embedPlayer is the base class for html5 video tag javascript abstraction library
 * embedPlayer include a few subclasses:
@@ -1364,6 +1365,10 @@ mw.EmbedPlayer.prototype = {
 	 *     false if the mwEmbed player interface should not be used
 	 */
 	useNativePlayerControls: function() {
+
+ 		if( mw.getConfig('EmbedPlayer.WebKitPlaysInline') === true && mw.isIphone() ) {
+ 			return false;
+ 		}
 
 		if( this.usenativecontrols === true ){
 			return true;
