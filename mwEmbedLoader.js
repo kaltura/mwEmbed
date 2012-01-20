@@ -488,8 +488,9 @@ function kOverideJsFlashEmbed(){
 					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 				} else {
 					// if its a kaltura player embed restore kdp callback:
-					if( kEmbedSettings.uiconf_id )
+					if( kEmbedSettings.uiconf_id ){
 						restoreKalturaKDPCallback();
+					}
 					// use the original flash player embed:  
 					_this.originalWrite( targetId );
 				}
@@ -519,8 +520,9 @@ function kOverideJsFlashEmbed(){
 					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
 				} else {
 					// if its a kaltura player embed restore kdp callback:
-					if( kEmbedSettings.uiconf_id )
+					if( kEmbedSettings.uiconf_id ){
 						restoreKalturaKDPCallback();
+					}
 					// Else call the original EmbedSWF with all its arguments 
 					window['swfobject']['originalEmbedSWF']( swfUrlStr, replaceElemIdStr, widthStr,
 							heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn );
@@ -633,7 +635,7 @@ function kCheckAddScript(){
 		return ;
 	}
 	// Restore the jsCallbackReady ( we are not rewriting )
-	if( !kalturaDynamicEmbed ){
+	if( !kalturaDynamicEmbed && window.restoreKalturaKDPCallback ){
 		window.restoreKalturaKDPCallback();
 	}
 }

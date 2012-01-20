@@ -2540,9 +2540,10 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 */
 	mw.domReady = function ( forceSetup ) {
 		mw.log('mw.domReady:' );
+		// Don't run the setup inline to avoid domready event before the rest of the script has run
 		setTimeout(function(){
 			mw.setupMwEmbed();
-		},0);
+		}, 0 );
 	};
 	/**
 	* Check if the url is a request for the local domain
