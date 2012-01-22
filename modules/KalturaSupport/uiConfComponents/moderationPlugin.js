@@ -70,8 +70,8 @@
                     'o': function( ctrlObj ) {
                         var $textButton = $( '<div />' )
                             .attr( 'title', embedPlayer.getKalturaConfig('flagBtnControllerScreen', 'tooltip') )
-                            .addClass( "ui-state-default ui-corner-all ui-icon-alert ui-icon_link rButton" )
-                            .append( $( '<span />' ).addClass( "ui-icon ui-icon-alert" ) )
+                            .addClass( "ui-state-default ui-corner-all ui-icon-image ui-icon_link rButton" )
+                            .append( $( '<span />' ).addClass( "ui-icon ui-icon-image" ) )
                             // TODO: Add label/text buttons support
                             // .append( $( '<span />' ).text( _this.config.label ).css( {'font-family': embedPlayer.getKalturaConfig('flagBtnControllerScreen', 'font'),'font-size': '12px'} ) )
                             .buttonHover()
