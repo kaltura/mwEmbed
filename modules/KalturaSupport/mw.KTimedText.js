@@ -99,7 +99,7 @@
 		loadTextSources: function( callback ) {
 			var _this = this;
 			// Check if text sources are already loaded ( not null )
-			if( this.textSources !== null ){
+			if( this.textSources.length ){
 				callback();
 				return ;
 			}
