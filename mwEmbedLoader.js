@@ -379,7 +379,7 @@ function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 		downloadUrl += '/entry_id/'+ kEmbedSettings.entry_id;
 	}
 
-	var thumbSrc = kGetEntryThumbUrl({
+	var thumbSrc = mw.getKalturaThumbUrl({
 		'entry_id' : kEmbedSettings.entry_id,
 		'partner_id' : kEmbedSettings.p,
 		'width' : parseInt( options.width),
@@ -422,7 +422,7 @@ function kOverideJsFlashEmbed(){
 		
 		if( kEmbedSettings.entry_id ){
 			embedPlayerAttributes.kentryid = kEmbedSettings.entry_id;				
-			embedPlayerAttributes.poster = kGetEntryThumbUrl( {
+			embedPlayerAttributes.poster = mw.getKalturaThumbUrl( {
 				'width' : parseInt(width),
 				'height' : parseInt(height),
 				'entry_id' :  kEmbedSettings.entry_id,
@@ -1110,12 +1110,21 @@ function kFlashVarsToString( flashVarsObject ) {
 	}
 	return params;
 }
-function kGetEntryThumbUrl( entry ){
-	var kCdn = mw.getConfig( 'Kaltura.CdnUrl', 'http://cdnakmi.kaltura.com' ); 
-	return kCdn + '/p/' + entry.partner_id + '/sp/' +
+/**
+ * Get Kaltura thumb url from entry object
+ */
+mw.getKalturaThumbUrl = function ( entry ){
+	if( entry.width == '100%')
+		entry.width = 400;
+	if( entry.height == '100%')
+		entry.height = 300;
+
+	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
+
+	return mw.getConfig('Kaltura.CdnUrl') + '/p/' + entry.partner_id + '/sp/' +
 		entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
-		entry.width + '/height/' + entry.height;
-}
+		parseInt(entry.width) + '/height/' + parseInt(entry.height) + ks;
+};
 /**
  * Get kaltura embed settings from a swf url and flashvars object
  *

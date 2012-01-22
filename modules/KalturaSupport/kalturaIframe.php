@@ -894,7 +894,7 @@ class kalturaIframe {
 				// also we need to see if the entryId supports direct download links
 				document.write('<?php echo $this->getFileLinkHTML()?>');
 
-				var thumbSrc = kGetEntryThumbUrl({
+				var thumbSrc = mw.getKalturaThumbUrl({
 					'entry_id' : '<?php echo $this->getResultObject()->getEntryId() ?>',
 					'partner_id' : '<?php echo $this->getResultObject()->getPartnerId() ?>',
 					'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
