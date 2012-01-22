@@ -71,7 +71,7 @@ mw.includeAllModuleMessages();
 		/**
 		* Text sources ( a set of textSource objects )
 		*/
-		textSources: null,
+		textSources: [],
 
 		/**
 		* Valid "Track" categories
