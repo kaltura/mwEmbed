@@ -214,11 +214,7 @@ mw.KWidgetSupport.prototype = {
 				});
 			}
 		}
-
-		// Add Kaltura analytics if we have a session if we have a client ( set in loadPlayerData )
-		if( mw.getConfig( 'Kaltura.EnableAnalytics' ) === true && _this.kClient ) {
-			mw.addKAnalytics( embedPlayer, _this.kClient );
-		}
+		
 		// Apply player Sources
 		if( playerData.flavors ){
 			_this.addFlavorSources( embedPlayer, playerData.flavors );

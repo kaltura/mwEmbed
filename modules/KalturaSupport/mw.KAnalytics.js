@@ -7,14 +7,14 @@
 window['Kaltura'] = true;
 
 // KAnalytics Constructor
-mw.KAnalytics = function( embedPlayer, kalturaClient ){
-	this.init( 	embedPlayer, kalturaClient );
+mw.KAnalytics = function( embedPlayer ){
+	this.init( embedPlayer );
 };
 
 // Add analytics to the embed player: 
-mw.addKAnalytics = function( embedPlayer, kalturaClient ) {
+mw.addKAnalytics = function( embedPlayer ) {
 	if( ! embedPlayer.kAnalytics ) {
-		embedPlayer.kAnalytics = new mw.KAnalytics( embedPlayer, kalturaClient );
+		embedPlayer.kAnalytics = new mw.KAnalytics( embedPlayer );
 	}
 }
 
@@ -73,11 +73,13 @@ mw.KAnalytics.prototype = {
 	 * @parma {Object} 
 	 * 			kalturaClient Kaltura client object for the api session.  
 	 */
-	init: function( embedPlayer, kClient ) {
+	init: function( embedPlayer ) {
 	
 		// Setup the local reference to the embed player
 		this.embedPlayer = embedPlayer;
-		this.kClient = kClient;
+		if( ! this.kClient ) {
+			this.kClient = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
+		}
 		
 		// Setup the initial state of some flags
 		this._p25Once = false;
