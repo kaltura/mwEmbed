@@ -524,7 +524,8 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Set the poster to a black image
-		vid.poster = mw.getConfig( 'EmbedPlayer.BlackPixel' );
+		// Commented out by Ran: cause the poster to always be black, we already set the poster to black earlier (onChangeMedia)
+		// vid.poster = mw.getConfig( 'EmbedPlayer.BlackPixel' );
 		
 		// only display switch msg if actually switching: 
 		mw.log( 'EmbedPlayerNative:: switchPlaySource:' + src + ' native time: ' + vid.currentTime );

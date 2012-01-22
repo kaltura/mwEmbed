@@ -64,6 +64,7 @@ window.kWidget = {
 	 * Search the DOM for Object tags and rewrite them to Iframe if needed
 	 */
 	rewriteObjectTags: function() {
+		// TODO: needs refactor ASAP!
 		kAddedScript = false;
 		kCheckAddScript();
 	},
