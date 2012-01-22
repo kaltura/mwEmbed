@@ -626,7 +626,7 @@ mw.EmbedPlayer.prototype = {
 				// Hide / remove track container
 				_this.$interface.find( '.track' ).remove();
 				// We have to re-bind hoverIntent ( has to happen in this scope )
-				if( !this.useNativePlayerControls() && _this.controls && _this.controlBuilder.isOverlayControls() ){
+				if( !_this.useNativePlayerControls() && _this.controls && _this.controlBuilder.isOverlayControls() ){
 					_this.controlBuilder.showControlBar();
 					_this.$interface.hoverIntent({
 						'sensitivity': 4,

@@ -246,21 +246,34 @@ mw.MediaElement.prototype = {
 		}
 		
 		
+		// If we have at least one native source, throw out non-native sources 
+		// for size based source selection: 
+		var nativePlayableSources = [];
+		$.each( playableSources, function(inx, source ){
+			var mimeType = source.mimeType;
+			var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( mimeType );
+			if ( player && player.library == 'Native'	) {
+				nativePlayableSources.push( source );
+			}
+		});
 		
-		// Set via embed resolution closest to relative to display size 
-		var minSizeDelta = null;
-		if( this.parentEmbedId ){
-			var displayWidth = $('#' + this.parentEmbedId).width();
-			$.each( playableSources, function(inx, source ){
-				if( source.width && displayWidth ){
-					var sizeDelta =  Math.abs( source.width - displayWidth );
-					mw.log('MediaElement::autoSelectSource: size delta : ' + sizeDelta + ' for s:' + source.width );
-					if( minSizeDelta == null ||  sizeDelta < minSizeDelta){
-						minSizeDelta = sizeDelta;
-						setSelectedSource( source );
+		// if we have native sources to chouse from chouse based on embed size: 
+		if( nativePlayableSources.length ){
+			// Set via embed resolution closest to relative to display size 
+			var minSizeDelta = null;
+			if( this.parentEmbedId ){
+				var displayWidth = $('#' + this.parentEmbedId).width();
+				$.each( nativePlayableSources, function(inx, source ){
+					if( source.width && displayWidth ){
+						var sizeDelta =  Math.abs( source.width - displayWidth );
+						mw.log('MediaElement::autoSelectSource: size delta : ' + sizeDelta + ' for s:' + source.width );
+						if( minSizeDelta == null ||  sizeDelta < minSizeDelta){
+							minSizeDelta = sizeDelta;
+							setSelectedSource( source );
+						}
 					}
-				}
-			});
+				});
+			}
 		}
 		// If we found a source via display resolution return true
 		if ( this.selectedSource ) {

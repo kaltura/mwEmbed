@@ -517,9 +517,11 @@ mw.EmbedPlayerNative = {
 			if( switchCallback ){
 				switchCallback( vid );
 			}
+			// Delay done callback to allow any non-blocking switch callback code to fully execute 
 			setTimeout(function(){
-				if( doneCallback )
+				if( doneCallback ){
 					doneCallback();
+				}
 			}, 100);
 			return ;
 		}

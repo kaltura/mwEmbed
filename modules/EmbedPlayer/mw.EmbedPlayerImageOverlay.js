@@ -152,6 +152,7 @@ mw.EmbedPlayerImageOverlay = {
 	playerSwichSource: function(  source, switchCallback, doneCallback ){
 		this.selectedSource = source;
 		this.embedPlayerHTML();
+		this.applyIntrinsicAspect();
 		this.play();
 	},
 	/**
