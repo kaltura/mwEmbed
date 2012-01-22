@@ -6,7 +6,6 @@
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 
 			// Check if plugin exists
-			// mw.getConfig( 'Kaltura.EnableAnalytics' ) 
 			if( embedPlayer.isPluginEnabled( 'statistics' ) ) {
 				mw.addKAnalytics( embedPlayer );
 			}

@@ -10,7 +10,6 @@
 ( function( mw, $ ) {
 
 	mw.setDefaultConfig( {
-		'Kaltura.EnableAnalytics' : true,
 		'Kaltura.ServiceUrl' : 'http://www.kaltura.com',
 		'Kaltura.StatsServiceUrl' : 'http://www.kaltura.com',
 		'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
