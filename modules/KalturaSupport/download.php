@@ -12,6 +12,7 @@ $download->redirectDownload();
 
 class downloadEntry {
 	var $resultObject = null; // lazy init
+	var $sources = null;
 	/**
 	 * The result object grabber, caches a local result object for easy access
 	 * to result object properties. 
@@ -41,26 +42,227 @@ class downloadEntry {
 	}
 	
 	function redirectDownload() {
-		$sources =  $this->getResultObject()->getSources();
-		$flavorUrl = $this->getSourceForUserAgent( $sources );
+		$flavorUrl = $this->getSourceForUserAgent( $this->getSources() );
 		// Redirect to flavor
 		header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 		header("Pragma: no-cache");
 		header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		header("Location: " . $flavorUrl );
 	}
-
-	public function getSourceForUserAgent( $sources = null, $userAgent = false ){
-		// Get all sources
-		if( !$sources ){
-			$sources = $this->getResultObject()->getSources();
+	// Load the Kaltura library and grab the most compatible flavor
+	public function getSources(){
+		global $wgKalturaServiceUrl, $wgKalturaUseAppleAdaptive, $wgHTTPProtocol;
+		// Check if we already have sources loaded:
+		if( $this->sources !== null ){
+			return $this->sources;
 		}
+		// Check the access control before returning any source urls
+		$isAccessControlAllowed = $this->getResultObject()->isAccessControlAllowed();
+		if( ! $isAccessControlAllowed ) {
+			return $this->fatalError( $isAccessControlAllowed );
+			return array();
+		}
+
+		$kResultObject = $this->getResultObject();
+		$resultObject =  $kResultObject->getResultObject();
+
+		// add any web sources
+		$this->sources = array();
+
+		// Check for empty flavor set:
+		if( !isset( $resultObject['flavors'] ) ){
+			$this->fatalError( 'No flavors were found' );
+			return array();
+		}
+
+		// Check for error in getting flavor
+		if( isset( $resultObject['flavors']['code'] ) ){
+			$this->fatalError( $resultObject['flavors']['message'] );
+			return array();
+		}
+
+		// Store flavorIds for Akamai HTTP
+		$ipadFlavors = '';
+		$iphoneFlavors = '';
+
+		// Decide if to use playManifest or flvClipper URL
+		if( $kResultObject->getServiceConfig( 'UseManifestUrls' ) ){
+			$flavorUrl =  $kResultObject->getServiceConfig( 'ServiceUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
+			$kResultObject->getPartnerId() . '00/playManifest/entryId/' . $kResultObject->urlParameters['entry_id'];
+		} else {
+			$flavorUrl = $kResultObject->getServiceConfig( 'CdnUrl' ) .'/p/' . $kResultObject->getPartnerId() . '/sp/' .
+			$kResultObject->getPartnerId() . '00/flvclipper/entry_id/' . $kResultObject->urlParameters['entry_id'];
+		}
+
+		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
+			$source = array(
+				'data-bandwidth' => $KalturaFlavorAsset->bitrate * 8,
+				'data-width' =>  $KalturaFlavorAsset->width,
+				'data-height' =>  $KalturaFlavorAsset->height
+			);
+
+			// If flavor status is not ready - continute to the next flavor
+			if( $KalturaFlavorAsset->status != 2 ) {
+				if( $KalturaFlavorAsset->status == 4 ){
+					$source['data-error'] = "not-ready-transcoding" ;
+				}
+				continue;
+			}
+
+			// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
+			if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
+				$assetUrl = $flavorUrl . '/format/applehttp/protocol/' . $wgHTTPProtocol . '/a.m3u8';
+
+				$this->sources[] = array_merge( $source, array(
+					'src' => $assetUrl,
+					'type' => 'application/vnd.apple.mpegurl',
+					'data-flavorid' => 'AppleMBR',
+				) );
+				continue;
+			}
+
+			// Check for rtsp as well:
+			if( strpos( $KalturaFlavorAsset->tags, 'hinted' ) !== false ){
+				$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id .  '/format/rtsp/name/a.3gp';
+				$this->sources[] = array_merge( $source, array(
+					'src' => $assetUrl,
+					'type' => 'application/rtsl',
+					'data-flavorid' => 'rtsp3gp',
+				) );
+				continue;
+			}
+
+			// Else use normal
+			$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/' . $wgHTTPProtocol;
+
+			// Add iPad Akamai flavor to iPad flavor Ids list
+			if( strpos( $KalturaFlavorAsset->tags, 'ipadnew' ) !== false ) {
+				$ipadFlavors .= $KalturaFlavorAsset->id . ",";
+			}
+
+			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
+			if( strpos( $KalturaFlavorAsset->tags, 'iphonenew' ) !== false )
+			{
+				$ipadFlavors .= $KalturaFlavorAsset->id . ",";
+				$iphoneFlavors .= $KalturaFlavorAsset->id . ",";
+			}
+
+			if( strpos( $KalturaFlavorAsset->tags, 'iphone' ) !== false ){
+				$this->sources[] = array_merge( $source, array(
+					'src' => $assetUrl . '/a.mp4',
+					'type' => 'video/h264',
+					'data-flavorid' => 'iPhone',
+				) );
+			};
+			if( strpos( $KalturaFlavorAsset->tags, 'ipad' ) !== false ){
+				$this->sources[] = array_merge( $source, array(
+					'src' => $assetUrl  . '/a.mp4',
+					'type' => 'video/h264',
+					'data-flavorid' => 'iPad',
+				) );
+			};
+
+			if( $KalturaFlavorAsset->fileExt == 'webm'
+				|| // Kaltura transcodes give: 'matroska'
+				strtolower($KalturaFlavorAsset->containerFormat) == 'matroska'
+				|| // Some ingestion systems give "webm"
+				strtolower($KalturaFlavorAsset->containerFormat) == 'webm'
+			){
+				$this->sources[] = array_merge( $source, array(
+					'src' => $assetUrl . '/a.webm',
+					'type' => 'video/webm',
+					'data-flavorid' => 'webm'
+				) );
+			}
+
+			if( $KalturaFlavorAsset->fileExt == 'ogg'
+				||
+				$KalturaFlavorAsset->fileExt == 'ogv'
+				||
+				$KalturaFlavorAsset->containerFormat == 'ogg'
+			){
+				$this->sources[] = array_merge( $source, array(
+					'src' => $assetUrl . '/a.ogg',
+					'type' => 'video/ogg',
+					'data-flavorid' => 'ogg',
+				) );
+			};
+
+			// Check for ogg audio:
+			if( $KalturaFlavorAsset->fileExt == 'oga' ){
+				$this->sources[] = array_merge( $source, array(
+					'src' => $assetUrl . '/a.oga',
+					'type' => 'audio/ogg',
+					'data-flavorid' => 'ogg',
+				) );
+			}
+
+
+			if( $KalturaFlavorAsset->fileExt == '3gp' ){
+				$this->sources[] = array_merge( $source, array(
+					'src' => $assetUrl . '/a.3gp',
+					'type' => 'video/3gp',
+					'data-flavorid' => '3gp'
+				));
+			};
+		}
+
+		$ipadFlavors = trim($ipadFlavors, ",");
+		$iphoneFlavors = trim($iphoneFlavors, ",");
+
+		// Apple adaptive streaming is sometimes broken for short videos
+		// If video duration is less then 10 seconds, we should disable it
+		if( $resultObject['meta']->duration < 10 ) {
+			$wgKalturaUseAppleAdaptive = false;
+		}
+
+		// Create iPad flavor for Akamai HTTP
+		if ( $ipadFlavors && $wgKalturaUseAppleAdaptive ){
+			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/' . $wgHTTPProtocol;
+			// Adaptive flavors have no inheret bitrate or size:
+			$this->sources[] = array(
+				'src' => $assetUrl . '/a.m3u8',
+				'type' => 'application/vnd.apple.mpegurl',
+				'data-flavorid' => 'iPadNew'
+			);
+		}
+
+		// Create iPhone flavor for Akamai HTTP
+		if ( $iphoneFlavors && $wgKalturaUseAppleAdaptive )
+		{
+			$assetUrl = $flavorUrl . '/flavorIds/' . $iphoneFlavors . '/format/applehttp/protocol/' . $wgHTTPProtocol;
+			// Adaptive flavors have no inheret bitrate or size:
+			$this->sources[] = array(
+				'src' => $assetUrl . '/a.m3u8',
+				'type' => 'application/vnd.apple.mpegurl',
+				'data-flavorid' => 'iPhoneNew'
+			);
+		}
+
+		// Add in playManifest authentication tokens ( both the KS and referee url )
+		if( $kResultObject->getServiceConfig( 'UseManifestUrls' ) ){
+			foreach($this->sources as & $source ){
+				if( isset( $source['src'] )){
+					$source['src'] .= '?ks=' . $kResultObject->getKS() . '&referrer=' . base64_encode( $kResultObject->getReferer() );
+				}
+			}
+		}
+
+		// if the are no sources and we are waiting for transcode add the no sources error
+		if( count( $this->sources ) == 0 ) {
+			$this->fatalError( "No mobile sources found" );
+			return array();
+		}
+
+		//echo '<pre>'; print_r($sources); exit();
+		return $this->sources;
+	}
+	public function getSourceForUserAgent( $sources = null ){
+
 		// Get user agent
-		if( !$userAgent ){
-			$userAgent = $this->getResultObject()->getUserAgent();
-		}
+		$userAgent = $this->getResultObject()->getUserAgent();
 
-		$flavorUrl = false ;
+		$flavorUrl = false;
 		// First set the most compatible source ( iPhone h.264 )
 		$iPhoneSrc = $this->getSourceFlavorUrl( 'iPhone' );
 		if( $iPhoneSrc ) {
@@ -71,7 +273,7 @@ class downloadEntry {
 			return $flavorUrl;
 		}
 		// h264 for iPad
-		$iPadSrc = $this->getSourceFlavorUrl( 'ipad' );
+		$iPadSrc = $this->getSourceFlavorUrl( 'iPad' );
 		if( $iPadSrc ) {
 			$flavorUrl = $iPadSrc;
 		}
@@ -132,7 +334,7 @@ class downloadEntry {
 	 */
 	private function getSourceFlavorUrl( $flavorId = false){
 		// Get all sources ( if not provided )
-		$sources = $this->getResultObject()->getSources();
+		$sources = $this->getSources();
 		foreach( $sources as $inx => $source ){
 			if( strtolower( $source[ 'data-flavorid' ] )  == strtolower( $flavorId ) ) {
 				return $source['src'];

@@ -35,7 +35,7 @@ class KalturaResultObject {
 	/**
 	 * Variables set by the Frame request:
 	 */
-	private $urlParameters = array(
+	public $urlParameters = array(
 		'cache_st' => null,
 		'p' => null,
 		'wid' => null,
@@ -137,30 +137,8 @@ class KalturaResultObject {
 			$this->setupPlayerConfig();
 		}
 		return $this->playerConfig['vars'];
-	}	
-	public static function getBlackVideoSources(){
-		// @@TODO merge with Kaltura.BlackVideoSources config!!
-		return array(
-		    'webm' => array(
-		        'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_oiyfyphl/format/url/protocol/http/a.webm',
-		        'type' => 'video/webm',
-				'data-flavorid' => 'webm'
-			),
-			'ogg' => array(
-				'src' => 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6yqa4nmd/format/url/protocol/http/a.ogg',
-				'type' => 'video/ogg',
-				'data-flavorid' => 'ogg'
-			),
-			'iphone' => array(
-				'src' =>'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6wf0o9n7/format/url/protocol/http/a.mp4',
-				'type' => 'video/h264',
-				'data-flavorid' => 'iPhone'
-			),
-		);
 	}
-	public static function getBlackPoster(){
-		return 'http://cdnbakmi.kaltura.com/p/243342/sp/24334200/thumbnail/entry_id/1_vp5cng42/version/100000/height/480';
-	}
+
 	// empty player test ( nothing in the uiConf says "player" diffrent from other widgets so we 
 	// we just have to use the 
 	function isEmptyPlayer(){
@@ -426,222 +404,6 @@ class KalturaResultObject {
 		//echo json_encode( $this->playerConfig );
 		//print_r( $this->playerConfig );
 		//exit();
-	}
-	
-	// Load the Kaltura library and grab the most compatible flavor
-	public function getSources(){
-		global $wgKalturaServiceUrl, $wgKalturaUseAppleAdaptive, $wgHTTPProtocol;
-		// Check if we already have sources loaded: 
-		if( $this->sources !== null ){
-			return $this->sources;
-		}
-		// Check the access control before returning any source urls
-		if( !$this->isAccessControlAllowed() ) {
-			return array();
-		}
-
-		$resultObject =  $this->getResultObject(); 
-		
-		// add any web sources
-		$this->sources = array();
-
-		// Check for error in getting flavor
-		if( isset( $resultObject['flavors']['code'] ) ){
-			switch( $resultObject['flavors']['code'] ){
-				case  'ENTRY_ID_NOT_FOUND':
-					$this->error = "Entry Id not found\n";
-				break;
-			}
-			// @@TODO should probably refactor to use throw catch error system.
-			return array();
-		}
-
-		// Store flavorIds for Akamai HTTP
-		$ipadFlavors = '';
-		$iphoneFlavors = '';
-
-		// Decide if to use playManifest or flvClipper URL
-		if( $this->getServiceConfig( 'UseManifestUrls' ) ){
-			$flavorUrl =  $this->getServiceConfig( 'ServiceUrl' ) .'/p/' . $this->getPartnerId() . '/sp/' .
-			$this->getPartnerId() . '00/playManifest/entryId/' . $this->urlParameters['entry_id'];			
-		} else {
-			$flavorUrl = $this->getServiceConfig( 'CdnUrl' ) .'/p/' . $this->getPartnerId() . '/sp/' .
-			$this->getPartnerId() . '00/flvclipper/entry_id/' .
-			$this->urlParameters['entry_id'];
-		}
-		
-		// Check for empty flavor set: 
-		if( !isset( $resultObject['flavors'] ) ){
-			return array();
-		}
-		
-		foreach( $resultObject['flavors'] as $KalturaFlavorAsset ){
-			$source = array(
-				'data-bandwidth' => $KalturaFlavorAsset->bitrate * 8,
-				'data-width' =>  $KalturaFlavorAsset->width,
-				'data-height' =>  $KalturaFlavorAsset->height
-			);
-			
-			// If flavor status is not ready - continute to the next flavor
-			if( $KalturaFlavorAsset->status != 2 ) { 
-				if( $KalturaFlavorAsset->status == 4 ){
-					$source['data-error'] = "not-ready-transcoding" ;
-				}
-				continue;
-			}
-			
-			// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
-			if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
-				$assetUrl = $flavorUrl . '/format/applehttp/protocol/' . $wgHTTPProtocol . '/a.m3u8';
-
-				$this->sources[] = array_merge( $source, array(
-					'src' => $assetUrl,
-					'type' => 'application/vnd.apple.mpegurl',
-					'data-flavorid' => 'AppleMBR',
-				) );
-				continue;
-			}
-			
-			// Check for rtsp as well:
-			if( strpos( $KalturaFlavorAsset->tags, 'hinted' ) !== false ){
-				$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id .  '/format/rtsp/name/a.3gp';
-				$this->sources[] = array_merge( $source, array(
-					'src' => $assetUrl,
-					'type' => 'application/rtsl',
-					'data-flavorid' => 'rtsp3gp',
-				) );
-				continue;
-			}
-			
-			// Else use normal 
-			$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/' . $wgHTTPProtocol;
-
-			// Add iPad Akamai flavor to iPad flavor Ids list
-			if( strpos( $KalturaFlavorAsset->tags, 'ipadnew' ) !== false ) {
-				$ipadFlavors .= $KalturaFlavorAsset->id . ",";
-			}
-
-			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
-			if( strpos( $KalturaFlavorAsset->tags, 'iphonenew' ) !== false )
-			{
-				$ipadFlavors .= $KalturaFlavorAsset->id . ",";
-				$iphoneFlavors .= $KalturaFlavorAsset->id . ",";
-			}
-
-			if( strpos( $KalturaFlavorAsset->tags, 'iphone' ) !== false ){
-				$this->sources[] = array_merge( $source, array(
-					'src' => $assetUrl . '/a.mp4',
-					'type' => 'video/h264',
-					'data-flavorid' => 'iPhone',
-				) );
-			};
-			if( strpos( $KalturaFlavorAsset->tags, 'ipad' ) !== false ){
-				$this->sources[] = array_merge( $source, array(
-					'src' => $assetUrl  . '/a.mp4',
-					'type' => 'video/h264',
-					'data-flavorid' => 'iPad',
-				) );
-			};
-
-			if( $KalturaFlavorAsset->fileExt == 'webm' 
-				|| // Kaltura transcodes give: 'matroska'
-				strtolower($KalturaFlavorAsset->containerFormat) == 'matroska'
-				|| // Some ingestion systems give "webm" 
-				strtolower($KalturaFlavorAsset->containerFormat) == 'webm'
-			){
-				$this->sources[] = array_merge( $source, array(
-					'src' => $assetUrl . '/a.webm',
-					'type' => 'video/webm',
-					'data-flavorid' => 'webm'
-				) );
-			}
-
-			if( $KalturaFlavorAsset->fileExt == 'ogg' 
-				|| 
-				$KalturaFlavorAsset->fileExt == 'ogv'
-				||
-				$KalturaFlavorAsset->containerFormat == 'ogg'
-			){
-				$this->sources[] = array_merge( $source, array(
-					'src' => $assetUrl . '/a.ogg',
-					'type' => 'video/ogg',
-					'data-flavorid' => 'ogg',
-				) );
-			};
-			
-			// Check for ogg audio: 
-			if( $KalturaFlavorAsset->fileExt == 'oga' ){
-				$this->sources[] = array_merge( $source, array(
-					'src' => $assetUrl . '/a.oga',
-					'type' => 'audio/ogg',
-					'data-flavorid' => 'ogg',
-				) );
-			}
-			
-			
-			if( $KalturaFlavorAsset->fileExt == '3gp' ){
-				$this->sources[] = array_merge( $source, array(
-					'src' => $assetUrl . '/a.3gp',
-					'type' => 'video/3gp',
-					'data-flavorid' => '3gp'
-				));
-			};
-		}
-
-		$ipadFlavors = trim($ipadFlavors, ",");
-		$iphoneFlavors = trim($iphoneFlavors, ",");
-
-		// Apple adaptive streaming is sometimes broken for short videos
-		// If video duration is less then 10 seconds, we should disable it
-		if( $resultObject['meta']->duration < 10 ) {
-			$wgKalturaUseAppleAdaptive = false;
-		}
-
-		// Create iPad flavor for Akamai HTTP
-		if ( $ipadFlavors && $wgKalturaUseAppleAdaptive ){
-			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/' . $wgHTTPProtocol;
-			// Adaptive flavors have no inheret bitrate or size: 
-			$this->sources[] = array(
-				'src' => $assetUrl . '/a.m3u8',
-				'type' => 'application/vnd.apple.mpegurl',
-				'data-flavorid' => 'iPadNew'
-			);
-		}
-
-		// Create iPhone flavor for Akamai HTTP
-		if ( $iphoneFlavors && $wgKalturaUseAppleAdaptive )
-		{
-			$assetUrl = $flavorUrl . '/flavorIds/' . $iphoneFlavors . '/format/applehttp/protocol/' . $wgHTTPProtocol;
-			// Adaptive flavors have no inheret bitrate or size: 
-			$this->sources[] = array(
-				'src' => $assetUrl . '/a.m3u8',
-				'type' => 'application/vnd.apple.mpegurl',
-				'data-flavorid' => 'iPhoneNew'
-			);
-		}
-		
-		// Add in playManifest authentication tokens ( both the KS and referee url ) 
-		if( $this->getServiceConfig( 'UseManifestUrls' ) ){
-			foreach($this->sources as & $source ){
-				if( isset( $source['src'] )){
-					$source['src'] .= '?ks=' . $this->getKS() . '&referrer=' . base64_encode( $this->getReferer() );
-				}
-			}
-		}
-
-		// If no sources and entry->mediaType is not image, then show error message
-		//echo '<pre>'; print_r($resultObject['meta']);exit();
-		$mediaType = 1;
-		if( isset($resultObject['meta']->mediaType) ) {
-			$mediaType = $resultObject['meta']->mediaType;
-		}
-		// if the are no sources and we are waiting for transcode add the no sources error
-		if( count( $this->sources ) == 0 && $mediaType != 2 ) {
-			$this->error = "No mobile sources found";
-		}
-
-		//echo '<pre>'; print_r($sources); exit();
-		return $this->sources;
 	}
 	
 	// Parse the embedFrame request and sanitize input
@@ -1021,7 +783,7 @@ class KalturaResultObject {
 		}
 		return (is_array($data)) ? array_map( array( $this, __FUNCTION__) ,$data) : $data;
 	}	
-	private function getReferer(){
+	public function getReferer(){
 		global $wgKalturaForceReferer;
 		if( $wgKalturaForceReferer !== false ){
 			return $wgKalturaForceReferer;
@@ -1105,11 +867,20 @@ class KalturaResultObject {
 		return $this->urlParameters['entry_id'];
 	}
 	public function getThumbnailUrl() {
+		// Get result object
 		$result =  $this->getResultObject();
+
+		// Add KS if needed
+		$ksParam = '';
+		if( $this->getWidgetUiVars('loadThumbnailWithKs') ) {
+			$ksParam = '?ks=' . $this->getKS();
+		}
+
 		if( isset( $result['meta'] ) && is_object( $result['meta'] ) && !isset( $result['meta']->code) ){
-			return $result['meta']->thumbnailUrl;
+			return $result['meta']->thumbnailUrl . '/height/480' . $ksParam;
 		} else {
-			return false;
+			// return black pixel
+			return "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82";
 		}
 	}
 	public function getUrlParameters(){
@@ -1174,7 +945,7 @@ class KalturaResultObject {
 			return false;
 		}
 	}
-	private function getResultObject(){
+	public function getResultObject(){
 		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug, $wgKalturaForceResultCache;
 
 		// Load the uiConf first so we could setup our player configuration
