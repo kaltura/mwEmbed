@@ -55,6 +55,7 @@
 		'kuiconfid' : null,
 		// helps emulate the kdp behavior of not updating currentTime until a seek is complete. 
 		'kPreSeekTime': null,
+		// Kaltura player Metadata exported across the iframe
 		'kalturaPlayerMetaData' : null,
 		'kalturaEntryMetaData' : null,
 		'kalturaPlaylistData' : null,

@@ -3013,7 +3013,6 @@ if( window.jQuery ){
 
 
 // XXX note with new Resource loader we can move spin.js into seperate class and make it part
-
 // of the "startup modules"
 //fgnass.github.com/spin.js#v1.1
 (function(window, document, undefined) {
