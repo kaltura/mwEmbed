@@ -35,14 +35,14 @@ class downloadEntry {
 		header( "X-Kaltura-App: exiting on error 6 - requested flavor was not found" );
 		header( "X-Kaltura-Error: " . htmlspecialchar( $errorMsg ) );
 		// Then redirect to no-sources video: 
-		$sources = $this->getErrorVideoSources();		
-		$flavorUrl = $this->getSourceForUserAgent( $sources );
+		$this->sources = $this->getErrorVideoSources();
+		$flavorUrl = $this->getSourceForUserAgent();
 		header( "location: " . $flavorUrl );
 		exit(1);
 	}
 	
 	function redirectDownload() {
-		$flavorUrl = $this->getSourceForUserAgent( $this->getSources() );
+		$flavorUrl = $this->getSourceForUserAgent();
 		// Redirect to flavor
 		header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 		header("Pragma: no-cache");
@@ -257,7 +257,7 @@ class downloadEntry {
 		//echo '<pre>'; print_r($sources); exit();
 		return $this->sources;
 	}
-	public function getSourceForUserAgent( $sources = null ){
+	public function getSourceForUserAgent(){
 
 		// Get user agent
 		$userAgent = $this->getResultObject()->getUserAgent();
