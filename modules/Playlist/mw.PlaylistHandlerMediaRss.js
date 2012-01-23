@@ -98,7 +98,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		}
 		return this.$rss.find('item').length;
 	},
-	playClip: function( embedPlayer, clipIndex ){
+	playClip: function( embedPlayer, clipIndex, callback ){
 		var _this = this;
 		// Update the poster
 		embedPlayer.updatePosterSrc( _this.getClipPoster( clipIndex, _this.playlist.getTargetPlayerSize() ) );
@@ -124,6 +124,11 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			
 			// do the actual play: 
 			embedPlayer.play();
+			
+			// if there was a play callback call it
+			if( callback ){
+				callback();
+			}
 		});
 	},
 	

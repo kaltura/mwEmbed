@@ -12,7 +12,7 @@ mw.EmbedPlayerImageOverlay = {
 	playerReady : true,
 	
 	// Pause time used to track player time between pauses
-	pauseTime:0,
+	lastPauseTime: 0,
 	
 	// currentTime updated via internal clockStartTime var
 	currentTime:0,
@@ -47,9 +47,11 @@ mw.EmbedPlayerImageOverlay = {
 	 */
 	updatePlaybackInterface: function( callback ){
 		mw.log( 'EmbedPlayerImageOverlay:: updatePlaybackInterface remove imageOverlay: ' + $(this).siblings( '.imageOverlay' ).length );
+		// Reset lastPauseTime
+		this.lastPauseTime  = 0;
 		// Clear imageOverlay sibling:
 		$( this ).siblings( '.imageOverlay' ).remove();
-		// restore the video element on screen position:  
+		// Restore the video element on screen position:  
 		$( this.getPlayerElement() ).css('left', 0 );
 		// Call normal parent updatePlaybackInterface
 		this.parent_updatePlaybackInterface( callback );
@@ -91,6 +93,7 @@ mw.EmbedPlayerImageOverlay = {
 		if( this.imageDuration ){
 			this.duration = this.imageDuration ;
 		}
+		this.duration = 100;
 		
 		// No longer in a stopped state:
 		this.stopped = false;
@@ -98,9 +101,9 @@ mw.EmbedPlayerImageOverlay = {
 		// Capture the play event on the native player: ( should just be black silent sources ) 
 		var vid = this.getPlayerElement();
 		vid.play();
-		setTimeout(function(){
+		setTimeout(function(){			
 			vid.pause();
-		}, mw.getConfig( ));
+		}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 		
 		// call the parent play ( to update interface and call respective triggers )
 		this.parent_play();
@@ -120,8 +123,8 @@ mw.EmbedPlayerImageOverlay = {
 	* Preserves the pause time across for timed playback 
 	*/
 	pause:function() {
-		this.pauseTime = this.currentTime;
-		mw.log( 'EmbedPlayerImageOverlay::pause, pauseTime: ' + this.pauseTime );
+		this.lastPauseTime = this.currentTime;
+		mw.log( 'EmbedPlayerImageOverlay::pause, lastPauseTime: ' + this.lastPauseTime );
 		// run parent pause; 
 		this.parent_pause();
 		this.stopMonitor();
@@ -136,12 +139,17 @@ mw.EmbedPlayerImageOverlay = {
 		this.parent_monitor();
 	},
 	/**
-	* Seeks to a given percent and updates the pauseTime
+	* Seeks to a given percent and updates the lastPauseTime
 	*
 	* @param {Float} seekPercent Percentage to seek into the virtual player
 	*/
-	doSeek:function( seekPercent ) {
-		this.pauseTime = seekPercent * this.getDuration();
+	seek:function( seekPercent ) {
+		this.lastPauseTime = seekPercent * this.getDuration();
+		this.seeking = false;
+		// start seeking: 
+		$( this ).trigger( 'seeking' );
+		// Done seeking
+		$( this ).trigger( 'seeked' );
 		this.play();
 	},
 	
@@ -152,7 +160,11 @@ mw.EmbedPlayerImageOverlay = {
 	* @param {Function} callback Function called once time has been updated
 	*/
 	setCurrentTime:function( time, callback ) {
-		this.pauseTime = time;
+		this.lastPauseTime = time;
+		// start seeking: 
+		$( this ).trigger( 'seeking' );
+		// Done seeking
+		$( this ).trigger( 'seeked' );
 		if( callback ){
 			callback();
 		}
@@ -165,12 +177,18 @@ mw.EmbedPlayerImageOverlay = {
 		this.embedPlayerHTML();
 		this.applyIntrinsicAspect();
 		this.play();
+		if( switchCallback ){
+			switchCallback();
+		}
+		if( doneCallback ){
+			doneCallback();
+		}
 	},
 	/**
 	* Get the embed player time
 	*/
 	getPlayerElementTime: function() {
-		var currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.pauseTime;		
+		var currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.lastPauseTime;		
 		return currentTime;
 	},
 	/**

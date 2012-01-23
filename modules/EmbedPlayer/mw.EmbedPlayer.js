@@ -907,10 +907,10 @@ mw.EmbedPlayer.prototype = {
 		setTimeout(function(){
 			_this.applyIntrinsicAspect();
 		}, 0);
-
 		// Update the playerReady flag
 		this.playerReady = true;
 		mw.log("EmbedPlayer:: Trigger: playerReady");
+		
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
 
@@ -1225,8 +1225,6 @@ mw.EmbedPlayer.prototype = {
 		this.triggeredEndDone = false;
 		this.preSequence = false;
 		this.postSequence = false;
-		// Reset the onDoneInterfaceFlag flag
-		this.onDoneInterfaceFlag = true;
 		
 		// Rest currentTime
 		this.currentTime = 0;
@@ -1253,9 +1251,10 @@ mw.EmbedPlayer.prototype = {
 		// Hide the play btn
 		this.$interface.find('.play-btn-large').hide(); 
 		
-		//If we are change playing media add a ready binding: 
+		//If we are change playing media add a ready binding:
 		var bindName = 'playerReady.changeMedia';
 		$this.unbind( bindName ).bind( bindName, function(){
+			mw.log('mw.EmbedPlayer::changeMedia playerReady callback');
 			// Always show the control bar on switch:
 			if( _this.controlBuilder ){
 				_this.controlBuilder.showControlBar();

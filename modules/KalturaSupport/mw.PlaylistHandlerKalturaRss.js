@@ -22,12 +22,15 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 			this[i] = options[i];
 		}
 	},
-	playClip: function( embedPlayer, clipIndex ){
+	playClip: function( embedPlayer, clipIndex, callback ){
 		var kEmbedSettings = this.getKalturaClipAttributes( clipIndex );
 		var bindName = 'onChangeMediaDone.playlist';
 		$( embedPlayer ).unbind( bindName ).bind( bindName, function( event ){
 			// Run play after we switch 
 			embedPlayer.play();
+			if( callback ){
+				callback();
+			}
 		});
 		embedPlayer.sendNotification( "changeMedia", { 'entryId' : kEmbedSettings.entry_id } );	
 	},

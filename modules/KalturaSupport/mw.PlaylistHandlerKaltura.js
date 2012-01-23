@@ -294,6 +294,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Listen for change media done
 		var bindName = 'onChangeMediaDone' + this.bindPostFix;
 		$( embedPlayer).unbind( bindName ).bind( bindName, function(){
+			mw.log( 'mw.PlaylistHandlerKaltura:: onChangeMediaDone' );
 			_this.loadingEntry = false;
 			embedPlayer.play();
 			if( callback ){

@@ -12,7 +12,7 @@
 				var $watermarkConf = $uiConf.find( 'watermark' );
 				// check if the watermark is a descendant of controlsHolder
 				if( $uiConf.find('#controlsHolder watermark').length ){
-					// turn off default attribution
+					// Turn off default attribution
 					mw.setConfig('EmbedPlayer.AttributionButton', false);
 					// wait for addToContolBar time: 
 					embedPlayer.bindHelper( 'addControlBarComponent' + bindPostFix, function(event, controlBar ){
