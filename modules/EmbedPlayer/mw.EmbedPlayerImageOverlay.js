@@ -93,7 +93,6 @@ mw.EmbedPlayerImageOverlay = {
 		if( this.imageDuration ){
 			this.duration = this.imageDuration ;
 		}
-		this.duration = 100;
 		
 		// No longer in a stopped state:
 		this.stopped = false;
