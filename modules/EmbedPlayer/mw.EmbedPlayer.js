@@ -47,8 +47,8 @@ mw.EmbedPlayer.prototype = {
 	// being updated)
 	'thumbnailUpdatingFlag' : false,
 
-	// Poster display flag
-	'posterDisplayed' : true,
+	// Stopped state flag
+	'stopped' : true,
 
 	// Local variable to hold CMML meeta data about the current clip
 	// for more on CMML see: http://wiki.xiph.org/CMML
@@ -558,7 +558,7 @@ mw.EmbedPlayer.prototype = {
 			eval( 'var tmpObj = mw.EmbedPlayer' + this.instanceOf );
 			for ( var i in tmpObj ) { 
 				// Restore parent into local location
-				if ( this[ 'parent_' + i ] ) {
+				if ( typeof this[ 'parent_' + i ] != 'undefined' ) {
 					this[i] = this[ 'parent_' + i];
 				} else {
 					this[i] = null;
@@ -591,10 +591,10 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		for ( var method in playerInterface ) {
-			if ( _this[method] && !_this['parent_' + method] ) {
+			if ( typeof _this[method] != 'undefined' && !_this['parent_' + method] ) {
 				_this['parent_' + method] = _this[method];
 			}
-			_this[ method ] = playerInterface[method];
+			_this[ method ] = playerInterface[ method ];
 		}
 		// Update feature support
 		_this.updateFeatureSupport();
@@ -801,7 +801,6 @@ mw.EmbedPlayer.prototype = {
 				mw.log("EmbedPlayer:: trigger: postEnded");
 				$( this ).trigger( 'postEnded' );
 			}
-		
 			// if the ended event did not trigger more timeline actions run the actual stop:
 			if( this.onDoneInterfaceFlag ){
 				mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
@@ -836,7 +835,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	showThumbnail: function() {
 		var _this = this;
-		mw.log( 'EmbedPlayer::showThumbnail' + this.posterDisplayed );
+		mw.log( 'EmbedPlayer::showThumbnail' + this.stopped );
 
 		// Close Menu Overlay:
 		this.controlBuilder.closeMenuOverlay();
@@ -845,7 +844,7 @@ mw.EmbedPlayer.prototype = {
 		this.updatePosterHTML();
 
 		this.paused = true;
-		this.posterDisplayed = true;
+		this.stopped = true;
 		// Make sure the controlBuilder bindings are up-to-date
 		this.controlBuilder.addControlBindings();
 
@@ -1226,6 +1225,8 @@ mw.EmbedPlayer.prototype = {
 		this.triggeredEndDone = false;
 		this.preSequence = false;
 		this.postSequence = false;
+		// Reset the onDoneInterfaceFlag flag
+		this.onDoneInterfaceFlag = true;
 		
 		// Rest currentTime
 		this.currentTime = 0;
@@ -1666,18 +1667,18 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		var $this = $( this );
-		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.posterDisplayed );
+		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
 
 		// Store the absolute play time ( to track native events that should not invoke interface updates )
 		this.absoluteStartPlayTime =  new Date().getTime();
 		
 		// Check if thumbnail is being displayed and embed html
-		if ( _this.posterDisplayed ) {
+		if ( _this.stopped ) {
 			if ( !_this.selectedPlayer ) {
 				_this.showPluginMissingHTML();
 				return false;
 			} else {
-				_this.posterDisplayed = false;
+				_this.stopped = false;
 				_this.embedPlayerHTML();
 			}
 		}
@@ -1873,6 +1874,8 @@ mw.EmbedPlayer.prototype = {
 			this.bufferedPercent = 0; // reset buffer state
 			this.controlBuilder.setStatus( this.getTimeRange() );
 		}
+		// update the player to stopped state: 
+		this.stopped = true;
 		// Reset the playhead
 		this.updatePlayHead( 0 );
 		// update the status: 
@@ -2002,7 +2005,7 @@ mw.EmbedPlayer.prototype = {
 	 * @return {Boolean} true if playing false if not playing
 	 */
 	isPlaying : function() {
-		if ( this.posterDisplayed ) {
+		if ( this.stopped ) {
 			// in stopped state
 			return false;
 		} else if ( this.paused ) {
@@ -2019,7 +2022,7 @@ mw.EmbedPlayer.prototype = {
 	 * @return {Boolean} true if stopped false if playing
 	 */
 	isStopped: function() {
-		return this.posterDisplayed;
+		return this.stopped;
 	},
 	/**
 	 * Stop the play state monitor
@@ -2180,7 +2183,7 @@ mw.EmbedPlayer.prototype = {
 			// Check if we are "done"
 			var endPresentationTime = ( this.startOffset ) ? ( this.startOffset + this.duration ) : this.duration;
 			if ( this.currentTime >= endPresentationTime ) {
-				//mw.log( "mWEmbedPlayer::should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
+				mw.log( "mw.EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 				this.onClipDone();
 			}
 		} else {

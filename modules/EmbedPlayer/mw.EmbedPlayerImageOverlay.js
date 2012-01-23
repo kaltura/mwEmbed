@@ -33,7 +33,7 @@ mw.EmbedPlayerImageOverlay = {
 		}
 		// inherit mw.EmbedPlayerNative ( 
 		for( var i in mw.EmbedPlayerNative ){
-			if( mw.EmbedPlayerImageOverlay[ i ] ){
+			if( typeof mw.EmbedPlayerImageOverlay[ i ] != 'undefined' ){
 				this['native_' + i ] = mw.EmbedPlayerNative[i];
 			} else { 
 				this[ i ] = mw.EmbedPlayerNative[i];
@@ -64,6 +64,7 @@ mw.EmbedPlayerImageOverlay = {
 	updatePosterHTML: function(){
 		var vid = this.getPlayerElement();
 		$( vid ).empty()
+		
 		// Provide modules the opportunity to supply black sources ( for registering event click )
 		// this is need for iPad to capture the play click to auto continue after "playing an image"
 		// ( iOS requires a user gesture to initiate video playback ) 
@@ -85,11 +86,14 @@ mw.EmbedPlayerImageOverlay = {
 	play: function() {
 		mw.log( 'EmbedPlayerImageOverlay::play' );
 		this.applyIntrinsicAspect();
-		
-		// Check for image duration: 
+
+		// Check for image duration  
 		if( this.imageDuration ){
 			this.duration = this.imageDuration ;
 		}
+		
+		// No longer in a stopped state:
+		this.stopped = false;
 		
 		// Capture the play event on the native player: ( should just be black silent sources ) 
 		var vid = this.getPlayerElement();
@@ -109,7 +113,7 @@ mw.EmbedPlayerImageOverlay = {
 	*/
 	stop: function() {
 		this.currentTime = 0;
-		this.pause();		
+		this.parent_stop();
 	},
 	
 	/**
@@ -118,8 +122,9 @@ mw.EmbedPlayerImageOverlay = {
 	pause:function() {
 		this.pauseTime = this.currentTime;
 		mw.log( 'EmbedPlayerImageOverlay::pause, pauseTime: ' + this.pauseTime );
-		// Stop monitor: 
-		window.clearInterval( this.monitorTimerId );
+		// run parent pause; 
+		this.parent_pause();
+		this.stopMonitor();
 	},
 	
 	monitor: function(){
