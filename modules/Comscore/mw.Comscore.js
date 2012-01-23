@@ -14,12 +14,12 @@ mw.Comscore = function( embedPlayer, callback ){
 
 mw.Comscore.prototype = {
 
-	pluginVersion: "1.0",
+	pluginVersion: "1.1",
 
-	prerollAdContentType: "090000",
-	postrollAdContentType: "100000",
-	midrollAdContentType: "110000",
-	inBannerVideoAd: "120000",
+	prerollAdContentType: "09",
+	postrollAdContentType: "10",
+	midrollAdContentType: "11",
+	inBannerVideoAd: "12",
 
 	loadedXML: false,
 
