@@ -472,17 +472,19 @@ mw.Playlist.prototype = {
 	// Play a clipIndex, if the player is already in the page swap the player src to the new target
 	playClip: function( clipIndex ){
 		var _this = this;
-		mw.log("mw.Playlist::playClip > " + clipIndex );
+		mw.log( "mw.Playlist::playClip > " + clipIndex );
 		// Check for a video/audio tag already in the page:
 		var embedPlayer = this.getEmbedPlayer();
 		this.clipIndex = clipIndex;
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex, function(){
-			mw.log( "mw.Playlist::playClip> sourceHandler playClip callback ");
+			mw.log( "mw.Playlist::playClip > sourceHandler playClip callback ");
 			// Do any local player interface updates: 
 			_this.updatePlayerUi( clipIndex );
 			// Add playlist specific bindings: 
 			_this.addClipBindings();
+			// Restore onDoneInterfaceFlag 
+			embedPlayer.onDoneInterfaceFlag = true;
 		} );
 	},
 	/**
@@ -538,7 +540,7 @@ mw.Playlist.prototype = {
 					// update the player and play the next clip
 					_this.playClip( _this.clipIndex );
 				} else {
-					mw.log("Reached end of playlist run normal end action" );
+					mw.log("mw.Playlist:: End of playlist, run normal end action" );
 					// Update the onDone action object to not run the base control done:
 					embedPlayer.onDoneInterfaceFlag = true;
 				}

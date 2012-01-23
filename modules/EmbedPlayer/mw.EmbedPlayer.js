@@ -786,14 +786,15 @@ mw.EmbedPlayer.prototype = {
 				this.stopEventPropagation();
 			}
 			
-			mw.log("EmbedPlayer:: trigger: ended");
+			mw.log("EmbedPlayer:: trigger: ended ( inteface continue pre-check: " + this.onDoneInterfaceFlag + ' )' );
 			$( this ).trigger( 'ended' );
 			mw.log("EmbedPlayer::onClipDone:Trigged ended, continue? " + this.onDoneInterfaceFlag);
 
 			
-			if( !this.onDoneInterfaceFlag ){
+			if( ! this.onDoneInterfaceFlag ){
 				// Restore events if we are not running the interface done actions
 				 this.restoreEventPropagation(); 
+				 return ;
 			}
 			
 			// A secondary end event for playlist and clip sequence endings
@@ -1274,7 +1275,8 @@ mw.EmbedPlayer.prototype = {
 					if( chnagePlayingMedia ){
 						_this.play();
 					} else {
-						_this.pause();
+						// need to confirm this pause is not needed ( mdale )
+						//_this.pause();
 					}
 					if( callback ){
 						callback()
