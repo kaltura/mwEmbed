@@ -86,6 +86,11 @@ mw.EmbedPlayerImageOverlay = {
 		mw.log( 'EmbedPlayerImageOverlay::play' );
 		this.applyIntrinsicAspect();
 		
+		// Check for image duration: 
+		if( this.imageDuration ){
+			this.duration = this.imageDuration ;
+		}
+		
 		// Capture the play event on the native player: ( should just be black silent sources ) 
 		var vid = this.getPlayerElement();
 		vid.play();
@@ -122,7 +127,8 @@ mw.EmbedPlayerImageOverlay = {
 			this.disablePlayControls();
 			return ;
 		}
-		this_parent.monitor();
+		// Run the parent monitor:
+		this.parent_monitor();
 	},
 	/**
 	* Seeks to a given percent and updates the pauseTime

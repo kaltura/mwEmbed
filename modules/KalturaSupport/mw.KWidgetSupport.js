@@ -362,6 +362,12 @@ mw.KWidgetSupport.prototype = {
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
+		// Check for imageDefaultDuration
+		var imageDuration = this.getPluginConfig( embedPlayer, '', 'imageDefaultDuration');
+		if( imageDuration ){
+			embedPlayer.imageDuration = imageDuration;
+		}
+		
 		// Check for mediaPlayFrom
 		var mediaPlayFrom = this.getPluginConfig( embedPlayer, '', 'mediaProxy.mediaPlayFrom');
 		if( mediaPlayFrom ) {
