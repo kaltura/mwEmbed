@@ -524,7 +524,7 @@ mw.KAdPlayer.prototype = {
 	selectFromArray: function( array ){
 		return array[ Math.floor( Math.random() * array.length ) ];
 	},
-	playVideoSibling: function( src, playingCallback, doneCallback ){
+	playVideoSibling: function( source, playingCallback, doneCallback ){
 		var _this = this;
 		// Hide any loading spinner
 		this.embedPlayer.hidePlayerSpinner();
@@ -538,7 +538,7 @@ mw.KAdPlayer.prototype = {
 			$( _this.getOriginalPlayerElement() ).hide();
 			
 			var vid = _this.getVideoAdSiblingElement();
-			vid.src = src;
+			vid.src = source.getSrc();
 			vid.load();
 			vid.play();
 			
