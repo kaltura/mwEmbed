@@ -2,6 +2,11 @@
 	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark 
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+			var bindPostFix = '.watermark';
+			// remove any old watermark bindings: 
+			embedPlayer.unbindHelper( bindPostFix );
+			
+			
 			// Check if the uiConf xml includes a watermark 'tag' ( not a normal plugin )
 			if( $uiConf.find( 'watermark' ).length ){
 				var $watermarkConf = $uiConf.find( 'watermark' );
@@ -10,7 +15,7 @@
 					// turn off default attribution
 					mw.setConfig('EmbedPlayer.AttributionButton', false);
 					// wait for addToContolBar time: 
-					$( embedPlayer ).bind('addControlBarComponent', function(event, controlBar ){
+					embedPlayer.bindHelper( 'addControlBarComponent' + bindPostFix, function(event, controlBar ){
 						controlBar.supportedComponents['controlBarWatermark'] = true;
 						controlBar.components['controlBarWatermark'] = {
 								'w': 28,
@@ -42,15 +47,15 @@
 					});
 				} else {
 					// Wait for the player to be ready 
-					$( embedPlayer ).bind( 'playerReady.watermark', function(){
+					embedPlayer.bindHelper( 'playerReady' + bindPostFix, function(){
 						// Run the watermark plugin code
 						watermarkPlugin( embedPlayer, $( $uiConf ).find( 'watermark' ) );
 					});
 					// Set up ad bindings to hide / re show watermark:
-					$( embedPlayer ).bind( 'AdSupport_StartAdPlayback.watermark', function(){
+					embedPlayer.bindHelper( 'AdSupport_StartAdPlayback' + bindPostFix, function(){
 						embedPlayer.$interface.find('.k-watermark-plugin').hide();
 					});
-					$( embedPlayer ).bind( 'AdSupport_EndAdPlayback.watermark', function(){
+					embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' + bindPostFix, function(){
 						embedPlayer.$interface.find('.k-watermark-plugin').show();
 					});
 
