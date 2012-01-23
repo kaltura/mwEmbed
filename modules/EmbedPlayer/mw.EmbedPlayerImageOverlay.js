@@ -12,7 +12,7 @@ mw.EmbedPlayerImageOverlay = {
 	playerReady : true,
 	
 	// Pause time used to track player time between pauses
-	pauseTime:0,
+	lastPauseTime: 0,
 	
 	// currentTime updated via internal clockStartTime var
 	currentTime:0,
@@ -22,6 +22,8 @@ mw.EmbedPlayerImageOverlay = {
 	
 	// The local clock used to emulate playback time
 	clockStartTime: 0,
+	
+	overlayFirstPlay: true,
 
 	/**
 	 * Build the player interface:
@@ -33,7 +35,7 @@ mw.EmbedPlayerImageOverlay = {
 		}
 		// inherit mw.EmbedPlayerNative ( 
 		for( var i in mw.EmbedPlayerNative ){
-			if( mw.EmbedPlayerImageOverlay[ i ] ){
+			if( typeof mw.EmbedPlayerImageOverlay[ i ] != 'undefined' ){
 				this['native_' + i ] = mw.EmbedPlayerNative[i];
 			} else { 
 				this[ i ] = mw.EmbedPlayerNative[i];
@@ -47,9 +49,13 @@ mw.EmbedPlayerImageOverlay = {
 	 */
 	updatePlaybackInterface: function( callback ){
 		mw.log( 'EmbedPlayerImageOverlay:: updatePlaybackInterface remove imageOverlay: ' + $(this).siblings( '.imageOverlay' ).length );
+		// Reset lastPauseTime
+		this.lastPauseTime  = 0;
+		// No longer first overlay image playback:
+		this.overlayFirstPlay = false;
 		// Clear imageOverlay sibling:
 		$( this ).siblings( '.imageOverlay' ).remove();
-		// restore the video element on screen position:  
+		// Restore the video element on screen position:  
 		$( this.getPlayerElement() ).css('left', 0 );
 		// Call normal parent updatePlaybackInterface
 		this.parent_updatePlaybackInterface( callback );
@@ -64,6 +70,7 @@ mw.EmbedPlayerImageOverlay = {
 	updatePosterHTML: function(){
 		var vid = this.getPlayerElement();
 		$( vid ).empty()
+		
 		// Provide modules the opportunity to supply black sources ( for registering event click )
 		// this is need for iPad to capture the play click to auto continue after "playing an image"
 		// ( iOS requires a user gesture to initiate video playback ) 
@@ -85,14 +92,30 @@ mw.EmbedPlayerImageOverlay = {
 	play: function() {
 		mw.log( 'EmbedPlayerImageOverlay::play' );
 		this.applyIntrinsicAspect();
+
+		// Check for image duration  
+		if( this.imageDuration ){
+			this.duration = this.imageDuration ;
+		}
 		
-		// Capture the play event on the native player: ( should just be black silent sources ) 
-		var vid = this.getPlayerElement();
-		vid.play();
-		setTimeout(function(){
-			vid.pause();
-		}, mw.getConfig( ));
+		// No longer in a stopped state:
+		this.stopped = false;
 		
+		// Capture the play event on the native player: ( should just be black silent sources )
+		// This is needed so that if a playlist starts with image, it can continue to play the 
+		// subsequent video without on iOS without requiring another click. 
+		if( this.overlayFirstPlay ){
+			// reset the overlay flag: 
+			this.overlayFirstPlay  = false;
+			var vid = this.getPlayerElement();
+			// populate the video with black video sources: 
+			this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
+			// run play: 
+			vid.play();
+			setTimeout(function(){			
+				vid.pause();
+			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+		}
 		// call the parent play ( to update interface and call respective triggers )
 		this.parent_play();
 		this.clockStartTime = new Date().getTime();
@@ -104,17 +127,18 @@ mw.EmbedPlayerImageOverlay = {
 	*/
 	stop: function() {
 		this.currentTime = 0;
-		this.pause();		
+		this.parent_stop();
 	},
 	
 	/**
 	* Preserves the pause time across for timed playback 
 	*/
-	pause:function() {
-		this.pauseTime = this.currentTime;
-		mw.log( 'EmbedPlayerImageOverlay::pause, pauseTime: ' + this.pauseTime );
-		// Stop monitor: 
-		window.clearInterval( this.monitorTimerId );
+	pause: function() {
+		this.lastPauseTime = this.currentTime;
+		mw.log( 'EmbedPlayerImageOverlay::pause, lastPauseTime: ' + this.lastPauseTime );
+		// run parent pause; 
+		this.parent_pause();
+		this.stopMonitor();
 	},
 	
 	monitor: function(){
@@ -122,15 +146,22 @@ mw.EmbedPlayerImageOverlay = {
 			this.disablePlayControls();
 			return ;
 		}
-		this_parent.monitor();
+		mw.log( 'ov:' + this.getPlayerElementTime() );
+		// Run the parent monitor:
+		this.parent_monitor();
 	},
 	/**
-	* Seeks to a given percent and updates the pauseTime
+	* Seeks to a given percent and updates the lastPauseTime
 	*
 	* @param {Float} seekPercent Percentage to seek into the virtual player
 	*/
-	doSeek:function( seekPercent ) {
-		this.pauseTime = seekPercent * this.getDuration();
+	seek: function( seekPercent ) {
+		this.lastPauseTime = seekPercent * this.getDuration();
+		this.seeking = false;
+		// start seeking: 
+		$( this ).trigger( 'seeking' );
+		// Done seeking
+		$( this ).trigger( 'seeked' );
 		this.play();
 	},
 	
@@ -140,8 +171,12 @@ mw.EmbedPlayerImageOverlay = {
 	* @param {Float} perc Percentage to seek into the virtual player
 	* @param {Function} callback Function called once time has been updated
 	*/
-	setCurrentTime:function( time, callback ) {
-		this.pauseTime = time;
+	setCurrentTime: function( time, callback ) {
+		this.lastPauseTime = time;
+		// start seeking: 
+		$( this ).trigger( 'seeking' );
+		// Done seeking
+		$( this ).trigger( 'seeked' );
 		if( callback ){
 			callback();
 		}
@@ -154,12 +189,21 @@ mw.EmbedPlayerImageOverlay = {
 		this.embedPlayerHTML();
 		this.applyIntrinsicAspect();
 		this.play();
+		if( switchCallback ){
+			switchCallback();
+		}
+		// Delay done callback to allow any non-blocking switch callback code to fully execute
+		if( doneCallback ){
+			setTimeout(function(){
+				doneCallback();
+			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ));
+		}
 	},
 	/**
 	* Get the embed player time
 	*/
 	getPlayerElementTime: function() {
-		var currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.pauseTime;		
+		var currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.lastPauseTime;		
 		return currentTime;
 	},
 	/**

@@ -517,12 +517,12 @@ mw.EmbedPlayerNative = {
 			if( switchCallback ){
 				switchCallback( vid );
 			}
-			// Delay done callback to allow any non-blocking switch callback code to fully execute 
-			setTimeout(function(){
-				if( doneCallback ){
+			// Delay done callback to allow any non-blocking switch callback code to fully execute
+			if( doneCallback ){
+				setTimeout(function(){
 					doneCallback();
-				}
-			}, 100);
+				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ));
+			}
 			return ;
 		}
 		// Set the poster to a black image
