@@ -146,7 +146,6 @@ mw.EmbedPlayerImageOverlay = {
 			this.disablePlayControls();
 			return ;
 		}
-		mw.log( 'ov:' + this.getPlayerElementTime() );
 		// Run the parent monitor:
 		this.parent_monitor();
 	},
