@@ -209,7 +209,7 @@ mw.PlayerControlBuilder.prototype = {
 					);
 					_this.available_width -= _this.components[ component_id ].w;
 				} else {
-					mw.log( 'Not enough space for control component:' + component_id );
+					mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + component_id );
 				}
 			}
 		};
@@ -365,7 +365,7 @@ mw.PlayerControlBuilder.prototype = {
 	* Do full-screen mode
 	*/
 	doFullScreenPlayer: function( callback) {		
-		mw.log(" controlBuilder :: doFullScreenPlayer" );
+		mw.log("PlayerControlBuilder:: doFullScreenPlayer" );
 		// Setup pointer to control builder :
 		var _this = this;
 
@@ -495,7 +495,7 @@ mw.PlayerControlBuilder.prototype = {
 			if( $( this ).css( 'position' ) == 'absolute' ) {
 				_this.parentsAbsolute.push( $( this ) );
 				$( this ).css( 'position', null );
-				mw.log(' should update position: ' + $( this ).css( 'position' ) );
+				mw.log( 'PlayerControlBuilder::  should update position: ' + $( this ).css( 'position' ) );
 			}
 		});
 
@@ -1422,10 +1422,9 @@ mw.PlayerControlBuilder.prototype = {
     displayMenuOverlay: function( overlayContent, closeCallback, hideCloseButton ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
-		mw.log( 'displayMenuOverlay::' );
+		mw.log( 'mw.PlayerControlBuilder:: displayMenuOverlay' );
 		//	set the overlay display flag to true:
 		this.displayOptionsMenuFlag = true;
-		mw.log(" set displayOptionsMenuFlag:: " + this.displayOptionsMenuFlag);
 
 		if ( !this.supportedComponents[ 'overlays' ] ) {
 			embedPlayer.stop();
@@ -1457,7 +1456,7 @@ mw.PlayerControlBuilder.prototype = {
         
         $closeButton = {};
         
-		if (!hideCloseButton) {
+		if ( !hideCloseButton ) {
             // Setup the close button
             $closeButton = $('<div />')
             .addClass( 'ui-state-default ui-corner-all ui-icon_link rButton')
@@ -1523,8 +1522,8 @@ mw.PlayerControlBuilder.prototype = {
 		.find( '.overlay-win' )
 		.fadeIn( "slow" );
 
-		// trigger menu overlay display
-		$(embedPlayer).trigger( 'displayMenuOverlay' );
+		// Trigger menu overlay display
+		$( embedPlayer ).trigger( 'displayMenuOverlay' );
 
 		return false; // onclick action return false
 	},
@@ -1543,7 +1542,7 @@ mw.PlayerControlBuilder.prototype = {
     showAlert: function( alertObj ) {
 		var _this = this,
             embedPlayer = this.embedPlayer;
-		mw.log( 'showAlert:: ' + alertObj.title );
+		mw.log( 'mw.PlayerControlBuilder::showAlert:: ' + alertObj.title );
         var $container = $('<div />').attr('id','alertContainer');
         var $title = $('<div />').text(alertObj.title);
         var $message = $('<div />').text(alertObj.message);
@@ -1660,7 +1659,7 @@ mw.PlayerControlBuilder.prototype = {
 	* @param {Object} $target jQuery target for output
 	*/
 	getPlayerSelect: function( ) {
-		mw.log('ControlBuilder::getPlayerSelect: source:' +
+		mw.log('PlayerControlBuilder::getPlayerSelect: source:' +
 				this.embedPlayer.mediaElement.selectedSource.getSrc() +
 				' player: ' + this.embedPlayer.selectedPlayer.id );
 
@@ -1721,7 +1720,7 @@ mw.PlayerControlBuilder.prototype = {
 								var iparts = $( this ).attr( 'id' ).replace(/sc_/ , '' ).split( '_' );
 								var sourceId = iparts[0];
 								var player_id = iparts[1];
-								mw.log( 'source id: ' + sourceId + ' player id: ' + player_id );
+								mw.log( 'PlayerControlBuilder:: source id: ' + sourceId + ' player id: ' + player_id );
 
 								embedPlayer.controlBuilder.closeMenuOverlay();
 
@@ -1803,7 +1802,7 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	showDownloadWithSources : function( $target ) {
 		var _this = this;
-		mw.log( 'showDownloadWithSources::' + $target.length );
+		mw.log( 'PlayerControlBuilder:: showDownloadWithSources::' + $target.length );
 		var embedPlayer = this.embedPlayer;
 		// Empty the target:
 		$target.empty();
