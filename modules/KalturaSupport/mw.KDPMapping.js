@@ -318,7 +318,7 @@
 					break;
 				case 'video':
 					switch( objectPath[1] ){
-						case 'volume': 
+						case 'volume':
 							return embedPlayer.volume;
 							break;
 						case 'player':
@@ -394,7 +394,7 @@
 										// Else use the iframeParentUrl if set:
 										return mw.getConfig( 'EmbedPlayer.IframeParentUrl' );
 										break;
-									default: 
+									default:
 										if( fv && fv[ objectPath[2] ] ){
 											return fv[ objectPath[2] ]
 										}
@@ -411,11 +411,11 @@
 						break;
 					}
 					// no objectPath[1] match return the full configProx object: 
-					return { 'flashvars' : $( embedPlayer ).data( 'flashvars' ) }
+					return {'flashvars' : $( embedPlayer ).data( 'flashvars' )}
 				break;	
 				case 'playerStatusProxy':
 					switch( objectPath[1] ){
-						case 'kdpStatus': 
+						case 'kdpStatus':
 							//TODO
 						break;
 					}
@@ -530,12 +530,12 @@
 						callback( {}, embedPlayer.id );
 					});
 					break;
-				case 'playerReady': 
+				case 'playerReady':
 					b( 'playerReady' );
 					break;
-				case 'volumeChanged': 
+				case 'volumeChanged':
 					b( 'volumeChanged', function(event, percent){
-						callback( {'newVolume' : percent }, embedPlayer.id );
+						callback( {'newVolume' : percent}, embedPlayer.id );
 					});
 					break;
 				case 'playerStateChange':
@@ -611,7 +611,7 @@
 					break;
 				case 'durationChange':
 					b( "durationchange", function(){
-						callback( { 'newValue' : embedPlayer.duration }, embedPlayer.id );
+						callback( {'newValue' : embedPlayer.duration}, embedPlayer.id );
 					});
 				break;
 				case 'openFullScreen':
@@ -629,7 +629,7 @@
 					break;	
 				case 'changeMedia':
 					b( 'playerReady', function( event ){
-						callback({ 'entryId' : embedPlayer.kentryid }, embedPlayer.id );
+						callback({'entryId' : embedPlayer.kentryid}, embedPlayer.id );
 					});
 					break;
 				case 'entryReady':
@@ -814,6 +814,9 @@
 						embedPlayer.changeMedia();
 						break;
 					}
+                case 'alert':
+                    embedPlayer.controlBuilder.showAlert(notificationData);
+                    break;
 			}
 			// Give kdp plugins a chance to take attribute actions 
 			$( embedPlayer ).trigger( 'Kaltura_SendNotification', [ notificationName, notificationData ] );

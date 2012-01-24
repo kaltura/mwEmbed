@@ -942,7 +942,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		// check config:
 		if( mw.getConfig( 'EmbedPlayer.EnableRightClick') === false ){	
-			document.oncontextmenu= function(e){ return false; };
+			document.oncontextmenu= function(e){return false;};
 			$(embedPlayer).mousedown(function(e){ 
 				if( e.button == 2 ) {
 					return false;
@@ -1005,7 +1005,7 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		
 		// Trigger the screen overlay with layout info: 
-		$( this.embedPlayer ).trigger( 'onShowControlBar', {'bottom' : this.getHeight() + 15 } );		
+		$( this.embedPlayer ).trigger( 'onShowControlBar', {'bottom' : this.getHeight() + 15} );		
 	},
 
 	/**
@@ -1172,7 +1172,7 @@ mw.PlayerControlBuilder.prototype = {
 			.click( function() {
 				mw.log("WarningBindinng:: set " + preferenceId + ' to hidewarning ' );
 				// Set up a cookie for 30 days:
-				$.cookie( preferenceId, 'hidewarning', { expires: 30 } );
+				$.cookie( preferenceId, 'hidewarning', {expires: 30} );
 				// Set the current instance
 				mw.setConfig( preferenceId, false );
 				$( '#warningOverlay_' + embedPlayer.id ).fadeOut( 'slow' );
@@ -1419,7 +1419,7 @@ mw.PlayerControlBuilder.prototype = {
 	*
 	* @param {String} overlayContent content to be displayed
 	*/
-	displayMenuOverlay: function( overlayContent, closeCallback ) {
+    displayMenuOverlay: function( overlayContent, closeCallback, hideCloseButton ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		mw.log( 'displayMenuOverlay::' );
@@ -1454,26 +1454,30 @@ mw.PlayerControlBuilder.prototype = {
 				'z-index' : 2
 			} )
 		);
-
-		// Setup the close button
-		$closeButton = $('<div />')
-		.addClass( 'ui-state-default ui-corner-all ui-icon_link rButton')
-		.css({
-			'position': 'absolute',
-			'cursor' : 'pointer',
-			'top' : '2px',
-			'right' : '2px'
-		})
-		.click( function() {
-			_this.closeMenuOverlay();
-			if( closeCallback ){
-				closeCallback();
-			}
-		} )
-		.append(
-		    	$('<span />')
-			.addClass( 'ui-icon ui-icon-closethick' )
-		);
+        
+        $closeButton = {};
+        
+		if (!hideCloseButton) {
+            // Setup the close button
+            $closeButton = $('<div />')
+            .addClass( 'ui-state-default ui-corner-all ui-icon_link rButton')
+            .css({
+                'position': 'absolute',
+                'cursor' : 'pointer',
+                'top' : '2px',
+                'right' : '2px'
+            })
+            .click( function() {
+                _this.closeMenuOverlay();
+                if( closeCallback ){
+                    closeCallback();
+                }
+            } )
+            .append(
+                    $('<span />')
+                .addClass( 'ui-icon ui-icon-closethick' )
+            );
+        }
 		    
 		var controlBar_height = embedPlayer.$interface.find( '.control-bar' ).height();
 		var overlay_width = (embedPlayer.getWidth() - 30);
@@ -1524,6 +1528,40 @@ mw.PlayerControlBuilder.prototype = {
 
 		return false; // onclick action return false
 	},
+    
+  
+    /**
+    * Generic function to display custom alert overlay on video.
+    * 
+    * @param (Object) Object which includes:
+    *   title Alert Title
+    *   body Alert body
+    *   buttonSet[label,callback] Array of buttons
+    *   style CSS object
+    *   
+    */
+    showAlert: function( alertObj ) {
+		var _this = this,
+            embedPlayer = this.embedPlayer;
+		mw.log( 'showAlert:: ' + alertObj.title );
+        var $container = $('<div />').attr('id','alertContainer');
+        var $title = $('<div />').text(alertObj.title);
+        var $message = $('<div />').text(alertObj.message);
+        var $buttonsContainer = $('<div />');
+        var $buttonSet = alertObj.buttons;
+        // TODO better support of running external JS functions
+        var callback = window.parent[alertObj.callbackFunction];
+        $.each($buttonSet, function() {
+            var label = this.toString();
+            var $currentButton = $('<button />')
+                .text(label)
+                .click(function(e) {callback(e)});
+            $buttonsContainer.append($currentButton);
+        })
+        $container.append($title,$message,$buttonsContainer);
+        embedPlayer.controlBuilder.displayMenuOverlay($container, false, true);
+    },
+    
 	aboutPlayerLibrary: function(){
 		return $( '<div />' )
 			.append(
