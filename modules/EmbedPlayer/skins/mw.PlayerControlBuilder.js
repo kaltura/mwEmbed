@@ -1553,8 +1553,10 @@ mw.PlayerControlBuilder.prototype = {
         $.each($buttonSet, function() {
             var label = this.toString();
             var $currentButton = $('<button />')
-                .text(label)
-                .click(function(e) {callback(e)});
+                .text( label )
+                .click( function( eventObject ) {
+                	callback( eventObject )
+                });
             $buttonsContainer.append($currentButton);
         })
         $container.append($title,$message,$buttonsContainer);
