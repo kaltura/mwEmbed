@@ -1077,12 +1077,7 @@ mw.PlayerControlBuilder.prototype = {
 		var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/ogg' );
 		for ( var i = 0; i < supportingPlayers.length; i++ ) {
 
-			if ( supportingPlayers[i].id == 'oggNative'
-				&&
-				// xxx google chrome has broken oggNative playback:
-				// http://code.google.com/p/chromium/issues/detail?id=56180
-				! /chrome/.test(navigator.userAgent.toLowerCase() )
-			){
+			if ( supportingPlayers[i].id == 'oggNative') {
 				return false;
 			}
 		}
@@ -1130,7 +1125,7 @@ mw.PlayerControlBuilder.prototype = {
 	*
 	*/
 	addWarningBinding: function( preferenceId, warningMsg ) {
-		mw.log( 'controlBuilder: addWarningBinding: ' + preferenceId + ' wm: ' + warningMsg);
+		mw.log( 'mw.PlayerControlBuilder: addWarningBinding: ' + preferenceId + ' wm: ' + warningMsg);
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
