@@ -834,9 +834,10 @@ class kalturaIframe {
 			// part of the javascript check kIsHTML5FallForward )
 			if( document.getElementById( 'videoContainer' ) ){
 				try{
-					document.getElementById( 'videoContainer' ).innerHTML = "";
+					var el = document.getElementById( 'videoContainer' );
+					el.parentNode.removeChild(el);
 				}catch(e){
-					// failed to empty video tag
+					// failed to remove video container
 				}
 			}
 			
