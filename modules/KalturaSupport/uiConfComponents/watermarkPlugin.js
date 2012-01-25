@@ -45,6 +45,16 @@
 							}
 						};
 					});
+					// Center image once control object build out is done:
+					$(embedPlayer).bind('controlBarBuildDone' + bindPostFix, function(){
+						embedPlayer.$interface.find( '.control-bar' ).find( '.k-watermark-plugin img' ).load(function(){
+							var cHeight = embedPlayer.controlBuilder.getHeight();
+							// check  aspect size:
+							if( $( this ).height() < 16 && parseInt( $( this ).css('top') ) == -2 ){
+								 $( this ).css( 'top',  ( cHeight - (  cHeight - ( $( this ).height() / 2)  ) ) );
+							}
+						})
+					})
 				} else {
 					// Wait for the player to be ready 
 					embedPlayer.bindHelper( 'playerReady' + bindPostFix, function(){

@@ -430,6 +430,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 		$item.find('.nameAndDuration')
 			.after( $('<div />').css({'display': 'block', 'height': '20px'} ) )
 			//.find( 'div span:last' ).css('float', 'right')
+		
+		// check for decendent margin-left
+		$item.find('.hasMarginLeft' ).slice(1).css('margin-left', '');
+		
 			
 		return $item;
 	},
@@ -454,8 +458,10 @@ mw.PlaylistHandlerKaltura.prototype = {
 				case 'hbox':
 				case 'canvas':
 					var $node = $('<div />');
-					if( offsetLeft )
-						$node.css( 'margin-left', offsetLeft );
+					if( offsetLeft ){
+						$node.css( 'margin-left', offsetLeft )
+							.addClass("hasMarginLeft")
+					}
 					$node.append( 
 						_this.getBoxLayout( clipIndex, $(boxItem) ) 
 					);
@@ -489,6 +495,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 				}
 			}
 		});
+		
 		// check for box model ("100%" single line float right, left );
 		if( $boxContainer.find('span').length == 2 && $boxContainer.find('span').slice(0).css('width') == '100%'){
 			 $boxContainer.find('span').slice(0).css({'width':'', 'float':'left'});
@@ -504,10 +511,12 @@ mw.PlaylistHandlerKaltura.prototype = {
 		$boxContainer.find('div,span').each(function( inx, node){
 			//if( $(node).css('width') == '100%')
 			$(node).css('width', ''); 
-			
 			// and box layout does crazy things with virtual margins :( remove width for irDescriptionIrScreen
 			if( $(node).data('id') == 'irDescriptionIrScreen' || $(node).data('id') == 'irDescriptionIrText'  ){
-				$(node).css('height', '');
+				$(node).css({
+					'height': '',
+					'float': 'left'
+				});
 			}
 			if( $(node).hasClass('hbox') || $(node).hasClass('vbox') || $(node).hasClass('canvas') ){
 				$(node).css('height', '');
@@ -518,9 +527,12 @@ mw.PlaylistHandlerKaltura.prototype = {
 				&& ( $(node).siblings().hasClass('hbox') || $(node).siblings().hasClass('vbox')  )
 			){
 				$(node).css({
-					'float': '',
 					'display': 'block'
 				});
+			}
+			
+			if( $(node).hasClass('irDurationIrScreen')  ){
+				$( node ).css( 'float', 'right');
 			}
 		});
 		return $boxContainer;
