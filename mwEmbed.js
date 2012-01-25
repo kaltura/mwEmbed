@@ -2592,6 +2592,24 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		// Same version:
 		return true;
 	};
+	
+	mw.getHexColor = function( color ) {
+		if( color.substr(0,2) == "0x" ) {
+			return color.replace('0x', '#');
+		} else {
+			color = parseInt( color );
+			color = color.toString(16);
+			var len = 6 - color.length;
+			if( len > 0 ) {
+				var pre = '';
+				for( var i=0; i<len; i++) {
+					pre += '0';
+				}
+				color = pre + color;
+			}
+			return '#' + color;
+		}
+	};
 
 } )( window.mw );
 

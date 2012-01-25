@@ -1117,10 +1117,10 @@ mw.includeAllModuleMessages();
 			var style = {'display': 'inline'};
 
 			if( options.bg ) {
-				style["background-color"] = this.getHexColor( options.bg );
+				style["background-color"] = mw.getHexColor( options.bg );
 			}
 			if( options.fontColor ) {
-				style["color"] = this.getHexColor( options.fontColor );
+				style["color"] = mw.getHexColor( options.fontColor );
 			}
 			if( options.fontFamily ){
 				style["font-family"] = options.fontFamily;
@@ -1138,28 +1138,10 @@ mw.includeAllModuleMessages();
 						(  options.fontsize > 24 )?  emFontMap[24]+'em' : emFontMap[6];
 			}
 			if( options.useGlow && options.glowBlur && options.glowColor ) {
-				style["text-shadow"] = '0 0 ' + options.glowBlur + 'px ' + this.getHexColor( options.glowColor );
+				style["text-shadow"] = '0 0 ' + options.glowBlur + 'px ' + mw.getHexColor( options.glowColor );
 			}
 
 			return style;
-		},
-
-		getHexColor: function(color) {
-			if( color.substr(0,2) == "0x" ) {
-				return color.replace('0x', '#');
-			} else {
-				color = parseInt( color );
-				color = color.toString(16);
-				var len = 6 - color.length;
-				if( len > 0 ) {
-					var pre = '';
-					for( var i=0; i<len; i++) {
-						pre += '0';
-					}
-					color = pre + color;
-				}
-				return '#' + color;
-			}
 		}
 	};
 

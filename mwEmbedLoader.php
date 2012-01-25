@@ -67,7 +67,7 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	header("Pragma: no-cache");
 	header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 	
-	echo $loaderComment.$loaderJs;
+	echo $loaderComment . $loaderJs;
 } else {
 	// Get the JSmin class:
 	require_once( realpath( dirname( __FILE__ ) ) . '/includes/library/JSMin.php' );
@@ -101,6 +101,6 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	} else {
 		$loaderMin = JSMin::minify( $loaderJs );
 		file_put_contents( $loaderCacheFile, $loaderMin );
-		echo $loaderComment.$loaderMin;
+		echo $loaderComment . $loaderMin;
 	}
 }
