@@ -520,10 +520,6 @@
 				iframeRequest += kServiceConfigToUrl();
 			}
 		
-			// Add debug flag if set: 
-			if( mw.getConfig( 'debug' ) ){
-				iframeRequest+= '&debug=true';
-			}
 			// Add no cache flag if set:
 			if( mw.getConfig('Kaltura.NoApiCache') ) {
 				iframeRequest+= '&nocache=true';
