@@ -122,7 +122,7 @@ mw.KAdPlayer.prototype = {
 		// Check if should fire any impression beacon(s) 
 		if( adConf.impressions && adConf.impressions.length ){
 			// Fire all the impressions
-			for( var i =0; i< adConf.impressions; i++ ){
+			for( var i =0; i< adConf.impressions.length; i++ ){
 				mw.sendBeaconUrl( adConf.impressions[i].beaconUrl );
 			}
 		}

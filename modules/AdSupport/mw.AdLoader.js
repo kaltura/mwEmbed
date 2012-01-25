@@ -12,6 +12,7 @@ mw.AdLoader = {
 	 */
 	load: function( adUrl, callback ){
 		var _this = this;
+		mw.log('AdLoader :: load Ad', adUrl);
 		// See if we should even try to request via xhr:
 		if ( !('withCredentials' in new XMLHttpRequest()) && !(typeof XDomainRequest !== "undefined")){
 			_this.loadFromProxy( adUrl, callback );
@@ -30,7 +31,7 @@ mw.AdLoader = {
 				}
 			});
 		} catch ( e ){
-			mw.log( "AdLodaer:: first cross domain request failed, trying with proxy" );
+			mw.log( "AdLodaer :: first cross domain request failed, trying with proxy" );
 		}
 	},
 	loadFromProxy: function( adUrl, callback ){

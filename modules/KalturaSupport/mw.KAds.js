@@ -254,7 +254,7 @@ mw.KAds.prototype = {
 		// Get companion targets:
 		var baseDisplayConf = this.getBaseDisplayConf();
 		// Get ad Configuration
-		this.getAdConfigSet( function( adConfigSet){
+		this.getAdConfigSet( function( adConfigSet ){
 			// Get global timeout ( should be per adType ) 
 			if( _this.getConfig( 'timeout' ) ){
 				baseDisplayConf[ 'timeout' ] = _this.getConfig('timeout'); 
