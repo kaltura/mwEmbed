@@ -97,7 +97,7 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	
 	// check if there were any updates to the mwEmbedLoader file
 	if( is_file( $loaderCacheFile ) && $javascriptModTime < $cacheModTime ){
-		echo file_get_contents( $loaderCacheFile );
+		echo $loaderComment . file_get_contents( $loaderCacheFile );
 	} else {
 		$loaderMin = JSMin::minify( $loaderJs );
 		file_put_contents( $loaderCacheFile, $loaderMin );
