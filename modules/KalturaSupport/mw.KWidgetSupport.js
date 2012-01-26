@@ -542,14 +542,21 @@ mw.KWidgetSupport.prototype = {
 				}
 			}
 
-			// Apple adaptive streaming is sometimes broken for short videos
-			// If video duration is less then 10 seconds, we should disable it
-			if( playerData.meta.duration < 10 ) {
-				mw.setConfig('Kaltura.UseAppleAdaptive', false);
-			}
-
 			// Get device sources 
 			var sources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), playerData.flavors );
+
+			// Apple adaptive streaming is sometimes broken for short videos
+			// remove adaptive sources if duration is less then 10 seconds, 
+			if( playerData.meta.duration < 10 ) {
+				for( var i =0 ; i < sources.length; i++ ){
+					if( sources[i].type == 'application/vnd.apple.mpegurl' ){
+						// Remove the current source:
+						sources.splice( i, 1 );
+						i--;
+					}
+				}
+			}
+			
 			callback( sources );
 		});
 	},
