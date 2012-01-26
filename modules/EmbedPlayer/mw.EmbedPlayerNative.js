@@ -510,7 +510,7 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var src = source.getSrc();
 		var vid = this.getPlayerElement();
-		var switchBindPostfix = '.switchPlaySource';
+		var switchBindPostfix = '.playerSwichSource';
 		this.isPauseLoading = false;
 		// Make sure the switch source is different: 
 		if( !src || src == vid.src ){
@@ -530,7 +530,7 @@ mw.EmbedPlayerNative = {
 		// vid.poster = mw.getConfig( 'EmbedPlayer.BlackPixel' );
 		
 		// only display switch msg if actually switching: 
-		mw.log( 'EmbedPlayerNative:: switchPlaySource:' + src + ' native time: ' + vid.currentTime );
+		mw.log( 'EmbedPlayerNative:: playerSwichSource: ' + src + ' native time: ' + vid.currentTime );
 		
 		// Update some parent embedPlayer vars: 
 		this.duration = 0;
@@ -561,6 +561,7 @@ mw.EmbedPlayerNative = {
 							mw.log( 'Error: EmbedPlayerNative switchPlaySource no vid');
 							return ;
 						}	
+						mw.log("EmbedPlayerNative:: playerSwichSource> vid.play() ");
 						vid.load();
 						vid.play();
 						// Wait another 100ms then bind the end event and any custom events

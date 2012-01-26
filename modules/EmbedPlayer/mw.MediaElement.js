@@ -301,6 +301,9 @@ mw.MediaElement.prototype = {
 					case 'h264Native':
 						namedSources['h264'] = source;
 						break;
+					case 'appleVdn': 
+						namedSources['appleVdn'] = srouce;
+						break;
 				}
 			}
 		});
@@ -335,7 +338,7 @@ mw.MediaElement.prototype = {
 
 		// Else just select the first playable source
 		if ( !this.selectedSource && playableSources[0] ) {
-			mw.log( 'MediaElement::autoSelectSource: Set via first source: ' + playableSources[0].getTitle() );
+			mw.log( 'MediaElement::autoSelectSource: Set via first source: ' + playableSources[0].getTitle() + ' mime: ' + playableSources[0].getMIMEType() );
 			return setSelectedSource( playableSources[0] );
 		}
 		// No Source found so no source selected

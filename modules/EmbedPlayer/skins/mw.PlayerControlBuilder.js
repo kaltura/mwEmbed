@@ -1068,7 +1068,12 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.getConfig( 'EmbedPlayer.ShowNativeWarning' ) === false ){
 			return false;
 		}
-
+		
+		// Don't show for imageOverlay player: 
+		if( this.embedPlayer.instanceOf == 'ImageOverlay' ){
+			return false;
+		}
+		
 		// If the resolution is too small don't display the warning
 		if( this.embedPlayer.getPlayerHeight() < 199 ){
 			return false;
@@ -1076,7 +1081,6 @@ mw.PlayerControlBuilder.prototype = {
 		// See if we have we have ogg support
 		var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'video/ogg' );
 		for ( var i = 0; i < supportingPlayers.length; i++ ) {
-
 			if ( supportingPlayers[i].id == 'oggNative') {
 				return false;
 			}

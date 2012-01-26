@@ -114,7 +114,7 @@ mw.EmbedPlayerImageOverlay = {
 			vid.play();
 			setTimeout(function(){			
 				vid.pause();
-			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) * 2 );
 		}
 		// call the parent play ( to update interface and call respective triggers )
 		this.parent_play();

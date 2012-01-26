@@ -62,6 +62,10 @@
 		}
 		function updatePlayerLayout(){
 			var $vid = $( embedPlayer.getPlayerElement() );
+			// Check if we are using flash ( don't move the player element )
+			if( embedPlayer.instanceOf != 'Native' ){
+				$vid = [];
+			}
 			var vidHeight = ( $vid.height() - titleScreenHeight );
 			// add space for the title: 
 			$vid
@@ -71,7 +75,6 @@
 			});
 			if( !belowPlayer ){
 				$vid.css( 'top', titleScreenHeight + 'px' );
-				
 				embedPlayer.$interface.find(".play-btn-large").css({
 					'top' : parseInt( ( vidHeight + parseInt( titleScreenHeight ) ) / 2 )  + 'px'
 				});

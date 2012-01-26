@@ -21,7 +21,6 @@ var cortadoPlayer = new mw.MediaPlayer( 'cortado', ['video/ogg', 'audio/ogg', 'a
 // Native html5 players
 var oggNativePlayer = new mw.MediaPlayer( 'oggNative', ['video/ogg', 'audio/ogg', 'application/ogg' ], 'Native' );
 var h264NativePlayer = new mw.MediaPlayer( 'h264Native', ['video/h264'], 'Native' );
-
 var appleVdnPlayer = new mw.MediaPlayer( 'appleVdn', ['application/vnd.apple.mpegurl'], 'Native');
 var mp3NativePlayer = new mw.MediaPlayer( 'mp3Native', ['audio/mpeg'], 'Native' );
 var webmNativePlayer = new mw.MediaPlayer( 'webmNative', ['video/webm'], 'Native' );
