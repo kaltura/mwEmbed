@@ -302,7 +302,7 @@ mw.MediaElement.prototype = {
 						namedSources['h264'] = source;
 						break;
 					case 'appleVdn': 
-						namedSources['appleVdn'] = srouce;
+						namedSources['appleVdn'] = source;
 						break;
 				}
 			}
