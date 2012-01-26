@@ -1718,10 +1718,11 @@ mw.EmbedPlayer.prototype = {
 
 		// if we have start time defined, start playing from that point
 		if( this.currentTime < this.startTime ) {
-			var percent = parseFloat( this.startTime ) / this.getDuration();
-			setTimeout(function() {
+			$this.bind('playing.embedPlayer', function(){
+				var percent = parseFloat( _this.startTime ) / _this.getDuration();
 				_this.seek( percent );
-			}, 50);
+				$this.unbind('playing.embedPlayer');
+			});
 		}
 		
 		this.playInterfaceUpdate();
