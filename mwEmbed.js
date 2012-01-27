@@ -1832,7 +1832,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 */
 	mw.seconds2npt = function( sec, show_ms ) {
 		if ( isNaN( sec ) ) {
-			// mw.log("Warning: trying to get npt time on NaN:" + sec);			
+			//mw.log("Warning: trying to get npt time on NaN:" + sec);			
 			return '0:00:00';
 		}
 		
@@ -1857,9 +1857,9 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		if( tm.hours == 0 ){
 			hoursStr = '';
 		} else {
-			if ( tm.minutes < 10 )
+			if ( tm.minutes < 10 ){
 				tm.minutes = '0' + tm.minutes;
-			
+			}
 			hoursStr = tm.hours + ":"; 
 		}
 		return hoursStr + tm.minutes + ":" + tm.seconds;

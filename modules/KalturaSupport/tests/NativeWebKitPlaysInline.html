@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Native App WebKitPlaysInline test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Native App WebKitPlaysInline" );
+
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	var iframeContext = window.frames['kaltura_player_ifp'];
+	
+	test( "Iframe in DOM", function() {
+		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
+		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+	});
+
+	asyncTest("Iframe layout elements", function(){
+		kalturaQunitWaitForPlayer(function(){
+			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
+			ok( $iframe.find('.play-btn').length, ".play-btn found" );
+			start();
+		});
+	});
+	asyncTest("Iframe config", function(){
+		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
+		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
+		// Test page context config: 
+		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
+		start();
+	});
+}
+</script>
+<script>
+	/*
+	function jsCallbackReady( playerId ){
+		var kdp = $( '#' + playerId )[0];
+		kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
+	}
+	function onPlayerSeekStart( playerId ){
+		var kdp = $( '#' + playerId )[0];
+		alert( kdp.evaluate( '{video.player.currentTime}' ) );
+	}
+	*/
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Native App WebKitPlaysInline test </h2>
+Note this test is specific to Native App Webkit applications and the use of the html5 library.<br>
+You can test by using desktop safari with an iPhone user agent and check for inline controls.
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br />
+<div id="myVideoTarget" style="width:400px;height:330px;">
+	<!--  SEO and video metadata go here -->
+	<span property="dc:description" content="test folgers coffe"></span>
+	<span property="media:title" content="FolgersCoffe.mpeg"></span>
+	<span property="media:width" content="400"></span>
+	<span property="media:height" content="300"></span>
+</div>
+<script>
+	mw.setConfig( 'EmbedPlayer.WebKitPlaysInline', true );
+
+	kWidget.embed({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '2877502',
+		'entry_id' : '0_uka1msg4',
+		'flashvars':{
+			'externalInterfaceDisabled' : false,
+			'autoPlay' : true
+		},
+		'readyCallback': function( playerId ){
+			console.log( "kWidget player ready: " + playerId );
+		}
+	})
+</script>
+</body>
+</html>
