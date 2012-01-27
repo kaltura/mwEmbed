@@ -478,11 +478,15 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		// Make sure we have .vid obj
 		this.getPlayerElement();
-
 		if ( !this.playerElement ) {
 			mw.log( 'EmbedPlayerNative::getPlayerElementTime: ' + this.id + ' not in dom ( stop monitor)' );
 			this.stop();
 			return false;
+		}
+		var ct =  this.playerElement.currentTime;
+		// Return 0 or a positive number: 
+		if( ! ct || isNaN( ct ) || ct < 0 ){
+			return 0;
 		}
 		// Return the playerElement currentTime
 		return this.playerElement.currentTime;
