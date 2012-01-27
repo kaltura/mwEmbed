@@ -53,6 +53,9 @@ function readyCallbackFired( playerId ){
 	<span property="media:height" content="300"></span>
 </div>
 <script>
+	window['doPlayCallback'] = function( playerId ){
+		console.log( 'doPlayCallback ' + playerId );
+	};
 	kWidget.embed({
 		'targetId': 'myVideoTarget',
 		'wid': '_243342',
@@ -63,7 +66,9 @@ function readyCallbackFired( playerId ){
 			'autoPlay' : true
 		},
 		'readyCallback': function( playerId ){
-			console.warn( "kWidget player ready: " + playerId );
+			console.log( "kWidget player ready: " + playerId );
+			var kdp = $('#' + playerId ).get(0);
+			kdp.addJsListener( 'doPlay', 'doPlayCallback')
 			readyCallbackFired( playerId );
 		}
 	})
