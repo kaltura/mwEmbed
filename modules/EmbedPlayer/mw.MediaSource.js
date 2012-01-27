@@ -86,9 +86,6 @@ mw.MediaSource.prototype = {
 	// Duration of the requested segment (0 if not known)
 	duration:0,
 
-	// Is the source playable
-	is_playable: null,
-
 	// source id
 	id: null,
 
