@@ -529,7 +529,7 @@ mw.KWidgetSupport.prototype = {
 	getEntryIdSourcesFromApi:  function( widgetId, entryId, callback ){
 		var _this = this;
 		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + widgetId + ' entry:' + entryId );
-		this.kClient = mw.KApiPlayerLoader( {
+		this.kClient = mw.KApiPlayerLoader({
 			'widget_id' : widgetId, 
 			'entry_id' : entryId
 		}, function( playerData ){
@@ -541,7 +541,6 @@ mw.KWidgetSupport.prototype = {
 					return ;
 				}
 			}
-
 			// Get device sources 
 			var sources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), playerData.flavors );
 
@@ -556,7 +555,7 @@ mw.KWidgetSupport.prototype = {
 					}
 				}
 			}
-			
+			// Return the valid source set
 			callback( sources );
 		});
 	},

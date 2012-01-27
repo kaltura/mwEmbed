@@ -116,7 +116,7 @@ if( !mw.ready ){
 }
 
 
-//Set iframe config if in the client page, will be passed to the iframe along with other config
+// Set iframe config if in the client page, will be passed to the iframe along with other config
 if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 	mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL);
 	mw.setConfig('EmbedPlayer.IframeParentTitle', document.title);

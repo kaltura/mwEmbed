@@ -14,7 +14,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 				'bumper', 
 				['plugin', 'bumperEntryID', 'clickUrl', 'lockUi', 'playOnce', 'preSequence', 'postSequence', 'width', 'height']
 		);
-		// convert the pre and post to ints: 
+		// Convert the pre and post to ints: 
 		bumperConfig.preSequence = parseInt( bumperConfig.preSequence );
 		bumperConfig.postSequence = parseInt( bumperConfig.postSequence );
 
@@ -44,8 +44,7 @@ window.bumperPlugin = function( embedPlayer, bumperConfig, callback ){
 	var adPlayer = new mw.KAdPlayer( embedPlayer );
 	
 	// Get the bumper entryid			
-	mw.log( "KWidget:: checkUiConf: get sources for " + bumperConfig.bumperEntryID);
-	var originalSrc = embedPlayer.getSrc();
+	mw.log( "BumperPlugin::checkUiConf: get sources for " + bumperConfig.bumperEntryID);
 	mw.getEntryIdSourcesFromApi( embedPlayer.kwidgetid, bumperConfig.bumperEntryID, function( sources ){
 		// Load adSupport for player timeline:
 		var adConf =  {
