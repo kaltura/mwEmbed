@@ -53,6 +53,7 @@ mw.KAdPlayer.prototype = {
 			
 			// remove the video sibling ( used for ad playback )
 			_this.restoreEmbedPlayer();
+			
 			// Remove notice if present: 
 			$('#' + _this.embedPlayer.id + '_ad_notice' ).remove();
 			// Remove skip button if present: 
@@ -180,8 +181,8 @@ mw.KAdPlayer.prototype = {
 			});
 		}
 		// Play the ad as sibling to the current video element.
-		if( _this.isVideoSiblingEnabled() ) {
-			_this.playVideoSibling(
+		if( _this.isVideoSiblingEnabled( targetSource ) ) {
+			_this.playVideoSibling(	
 				targetSource,
 				function( vid ) {
 					_this.addAdBindings( vid, adSlot, adConf );
@@ -205,7 +206,12 @@ mw.KAdPlayer.prototype = {
 	/**
 	 * Check if we can use the video sibling method or if we should use the fallback source swap. 
 	 */
-	isVideoSiblingEnabled: function(){
+	isVideoSiblingEnabled: function( targetSource ){
+		// if we have a target source use that to check for "image" and disable sibling video playback
+		if( targetSource && targetSource.getMIMEType().indexOf('image/') != -1 ){
+			return false;
+		}
+		
 		// iPhone won't play multiple videos well, use source switch
 		if( mw.isIphone() || mw.isAndroid2() || ( mw.isIpad() && ! mw.isIpad3() ) ){
 			return false;
@@ -215,7 +221,7 @@ mw.KAdPlayer.prototype = {
 	addAdBindings: function( vid,  adSlot, adConf ){
 		var _this = this;
 		if( !vid ){
-			mw.log("KAdPlayer:: Error: displayVideoFile no video callback " );
+			mw.log("KAdPlayer:: Error: displayVideoFile no vid to bind" );
 			return ;
 		}
 		mw.log("KAdPlayer:: source updated, add tracking");

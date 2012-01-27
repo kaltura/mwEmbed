@@ -45,7 +45,11 @@ window.bumperPlugin = function( embedPlayer, bumperConfig, callback ){
 	
 	// Get the bumper entryid			
 	mw.log( "BumperPlugin::checkUiConf: get sources for " + bumperConfig.bumperEntryID);
-	mw.getEntryIdSourcesFromApi( embedPlayer.kwidgetid, bumperConfig.bumperEntryID, function( sources ){
+	var size = { 
+		'width': embedPlayer.getWidth(), 
+		'height': embedPlayer.getHeight()	
+	}
+	mw.getEntryIdSourcesFromApi( embedPlayer.kwidgetid, bumperConfig.bumperEntryID, size, function( sources ){
 		// Load adSupport for player timeline:
 		var adConf =  {
 			'ads': [

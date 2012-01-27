@@ -228,7 +228,7 @@ mw.MediaSource.prototype = {
 	},
 
 	/**
-	 * MIME type accessors function.
+	 * MIME type accessor function.
 	 *
 	 * @return {String} the MIME type of the source.
 	 */

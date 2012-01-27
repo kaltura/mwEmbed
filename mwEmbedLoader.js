@@ -1120,6 +1120,11 @@ mw.getKalturaThumbUrl = function ( entry ){
 
 	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
 
+	// Support widget_id based thumbs: 
+	if( entry.widget_id && ! entry.partner_id ){
+		entry.partner_id = entry.widget_id.substr(1);
+	}
+	
 	return mw.getConfig('Kaltura.CdnUrl') + '/p/' + entry.partner_id + '/sp/' +
 		entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
 		parseInt(entry.width) + '/height/' + parseInt(entry.height) + ks;

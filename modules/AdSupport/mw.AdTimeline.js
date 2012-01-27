@@ -220,20 +220,20 @@ mw.AdTimeline.prototype = {
 					/** TODO support postroll bumper and leave behind */
 					if( playedAnAdFlag ){
 						embedPlayer.switchPlaySource( _this.originalSource, function( video ){
-								// make sure we pause the video
+							// make sure we pause the video
+							video.pause();
+							/* iPad iOS v4.3.1 ignore video pause (probably timing issue) */
+							$( video ).bind('play.postSequenceComplete', function(){
 								video.pause();
-								/* iPad iOS v4.3.1 ignore video pause (probably timing issue) */
-								$( video ).bind('play.postSequenceComplete', function(){
-									video.pause();
-									$( video ).unbind( '.postSequenceComplete' );
-								});
+								$( video ).unbind( '.postSequenceComplete' );
+							});
 
-								// Restore interface
-								_this.restorePlayer();
-								// Restore ondone interface: 
-								embedPlayer.onDoneInterfaceFlag = true;
-								// Run the clipdone event:
-								embedPlayer.onClipDone();
+							// Restore interface
+							_this.restorePlayer();
+							// Restore ondone interface: 
+							embedPlayer.onDoneInterfaceFlag = true;
+							// Run the clipdone event:
+							embedPlayer.onClipDone();
 						});
 					} else {
 						_this.restorePlayer();

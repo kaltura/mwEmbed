@@ -92,10 +92,12 @@ mw.EmbedPlayerImageOverlay = {
 	play: function() {
 		mw.log( 'EmbedPlayerImageOverlay::play' );
 		this.applyIntrinsicAspect();
-
+		
 		// Check for image duration  
 		if( this.imageDuration ){
 			this.duration = this.imageDuration ;
+		} else {
+			this.duration = mw.getConfig( "EmbedPlayer.DefaultImageDuration" );
 		}
 		
 		// No longer in a stopped state:
@@ -146,8 +148,14 @@ mw.EmbedPlayerImageOverlay = {
 			this.disablePlayControls();
 			return ;
 		}
-		// Run the parent monitor:
-		this.parent_monitor();
+		$( this ).trigger( 'timeupdate' );
+		
+		if ( this.currentTime >= this.duration ) {
+			$( this ).trigger( 'ended' );
+		} else {
+			// Run the parent monitor:
+			this.parent_monitor();
+		}
 	},
 	/**
 	* Seeks to a given percent and updates the lastPauseTime
@@ -184,26 +192,28 @@ mw.EmbedPlayerImageOverlay = {
 	 * Switch the image playback 
 	 */
 	playerSwichSource: function(  source, switchCallback, doneCallback ){
+		var _this = this;
 		this.selectedSource = source;
 		this.embedPlayerHTML();
 		this.applyIntrinsicAspect();
 		this.play();
 		if( switchCallback ){
-			switchCallback();
+			switchCallback( this );
 		}
-		// Delay done callback to allow any non-blocking switch callback code to fully execute
-		if( doneCallback ){
-			setTimeout(function(){
-				doneCallback();
-			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ));
-		}
+		// Wait for ended event to tr
+		$( this ).bind('ended.playerSwichSource', function(){
+			$( _this ).unbind('ended.playerSwichSource');
+			if( doneCallback ) {
+				doneCallback( this );
+			}
+		})
 	},
 	/**
 	* Get the embed player time
 	*/
 	getPlayerElementTime: function() {
-		var currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.lastPauseTime;		
-		return currentTime;
+		this.currentTime = ( ( new Date().getTime() - this.clockStartTime ) / 1000 ) + this.lastPauseTime;		
+		return this.currentTime;
 	},
 	/**
 	* Get the "embed" html for the html player
@@ -213,7 +223,8 @@ mw.EmbedPlayerImageOverlay = {
 		this.$interface.find('.imageOverlay').remove();
 		mw.log( 'EmbedPlayerImageOverlay :doEmbedHTML: ' + this.id );
 		
-		var currentSoruceObj = this.getSource( );
+		var currentSoruceObj = this.selectedSource;
+		
 		if( !currentSoruceObj ){
 			mw.log("Error:: EmbedPlayerImageOverlay:embedPlayerHTML> missing source" );
 			return ;

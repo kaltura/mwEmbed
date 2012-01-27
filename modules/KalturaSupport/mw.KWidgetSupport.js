@@ -85,7 +85,6 @@ mw.KWidgetSupport.prototype = {
 	},
 	rewriteTarget: function( widgetTarget, callback ){
 		var _this = this;
-		debugger;
 		this.loadPlayerData( widgetTarget, function( playerData ){
 			// look for widget type in uiConf file: 
 			switch( _this.getWidgetType( playerData.uiConf ) ){
@@ -526,8 +525,9 @@ mw.KWidgetSupport.prototype = {
 	 * accessible via static reference mw.getEntryIdSourcesFromApi
 	 * 
 	 */
-	getEntryIdSourcesFromApi:  function( widgetId, entryId, callback ){
+	getEntryIdSourcesFromApi:  function( widgetId, entryId, size, callback ){
 		var _this = this;
+		var sources;
 		mw.log( "KWidgetSupport:: getEntryIdSourcesFromApi: w:" + widgetId + ' entry:' + entryId );
 		this.kClient = mw.KApiPlayerLoader({
 			'widget_id' : widgetId, 
@@ -541,9 +541,21 @@ mw.KWidgetSupport.prototype = {
 					return ;
 				}
 			}
-			// Get device sources 
-			var sources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), playerData.flavors );
-
+			// see if we are dealing with an image asset ( no flavor sources )
+			if( playerData.meta && playerData.meta.mediaType == 2 ){ 
+				sources = [{
+						'src' : mw.getKalturaThumbUrl({
+							'widget_id' : widgetId,
+							'entry_id' : entryId,
+							'width' : size.width,
+							'height' : size.height
+						}),
+						'type' : 'image/jpeg'
+					}];
+			} else {
+				// Get device sources 
+				sources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), playerData.flavors );
+			}
 			// Apple adaptive streaming is sometimes broken for short videos
 			// remove adaptive sources if duration is less then 10 seconds, 
 			if( playerData.meta.duration < 10 ) {
@@ -925,8 +937,8 @@ if( !window.kWidgetSupport ){
 /**
  * Register a global shortcuts for the Kaltura sources query
  */
-mw.getEntryIdSourcesFromApi = function( widgetId, entryId, callback ){
-	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, entryId, callback);
+mw.getEntryIdSourcesFromApi = function( widgetId, entryId, size, callback ){
+	kWidgetSupport.getEntryIdSourcesFromApi( widgetId, entryId, size, callback);
 };
 
 })( window.mw, jQuery );

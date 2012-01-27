@@ -1554,7 +1554,7 @@ mw.PlayerControlBuilder.prototype = {
         var $buttonSet = alertObj.buttons;
         // TODO better support of running external JS functions
         var callback = window.parent[alertObj.callbackFunction];
-        $.each($buttonSet, function() {
+        $.each( $buttonSet, function() {
             var label = this.toString();
             var $currentButton = $('<button />')
                 .text( label )
