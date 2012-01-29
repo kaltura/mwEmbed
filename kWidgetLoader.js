@@ -14,6 +14,7 @@ window.kWidget = {
 	 * TODO move kalturaIframeEmbed to this method and have kalturaIframeEmbed call KWidget.embed :
 	 */
 	embed: function( targetId, settings ){
+		window['kalturaDynamicEmbed']  = true; // Make sure we don't call restoreJsReadyCallback in dynamic embedding
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
