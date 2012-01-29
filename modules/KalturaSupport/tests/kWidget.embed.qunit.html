@@ -69,7 +69,6 @@ function readyCallbackFired( playerId ){
 			console.log( "kWidget player ready: " + playerId );
 			var kdp = $('#' + playerId ).get(0);
 			kdp.addJsListener( 'doPlay', 'doPlayCallback');
-			alert( 'wtf');
 			readyCallbackFired( playerId );
 		}
 	})
