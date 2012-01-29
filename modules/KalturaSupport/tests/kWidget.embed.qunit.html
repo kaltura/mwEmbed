@@ -54,7 +54,7 @@ function readyCallbackFired( playerId ){
 </div>
 <script>
 	window['doPlayCallback'] = function( playerId ){
-		console.log( 'doPlayCallback ' + playerId );
+		console.log( 'kwidget doPlayCallback ' + playerId );
 	};
 	kWidget.embed({
 		'targetId': 'myVideoTarget',
@@ -68,7 +68,8 @@ function readyCallbackFired( playerId ){
 		'readyCallback': function( playerId ){
 			console.log( "kWidget player ready: " + playerId );
 			var kdp = $('#' + playerId ).get(0);
-			kdp.addJsListener( 'doPlay', 'doPlayCallback')
+			kdp.addJsListener( 'doPlay', 'doPlayCallback');
+			alert( 'wtf');
 			readyCallbackFired( playerId );
 		}
 	})

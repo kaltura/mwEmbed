@@ -128,7 +128,7 @@ function kDoIframeRewriteList( rewriteObjects ){
 	for( var i=0; i < rewriteObjects.length; i++ ){
 		var options = { 'width': rewriteObjects[i].width, 'height': rewriteObjects[i].height };
 		// If we have no flash &  no html5 fallback and don't care about about player rewrite 
-		if( ! kSupportsFlash() && ! kSupportsHTML5() && !mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) {
+		if( ! kSupportsFlash() && ! kWidget.supportsHTML5() && !mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) {
 			kDirectDownloadFallback( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings, options );
 		} else {
 			kalturaIframeEmbed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings, options );
@@ -171,7 +171,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 				}
 			break;
 			case 'leadWithHTML5':
-				kEmbedSettings.isHTML5 = kSupportsHTML5();
+				kEmbedSettings.isHTML5 = kWidget.supportsHTML5();
 				break;
 			case 'forceMsg':
 				var msg = playerAction.val;
@@ -449,7 +449,7 @@ function kOverideJsFlashEmbed(){
 			kalturaDynamicEmbed = true;
 			kAddReadyHook(function(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( attributes.src, flashvars);
-				if( ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+				if( ! kSupportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 					kDirectDownloadFallback( targetId, kEmbedSettings, { 'width':attributes.width, 'height':attributes.height } );
 					return ;
 				}
@@ -478,7 +478,7 @@ function kOverideJsFlashEmbed(){
 			kAddReadyHook(function(){			
 				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, _this.params.flashVars);
 		
-				if( kEmbedSettings.uiconf_id && ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+				if( kEmbedSettings.uiconf_id && ! kSupportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 					kDirectDownloadFallback( targetId, kEmbedSettings );
 					return ;
 				}
@@ -509,7 +509,7 @@ function kOverideJsFlashEmbed(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj);
 
 
-				if( kEmbedSettings.uiconf_id && ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+				if( kEmbedSettings.uiconf_id && ! kSupportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 					kDirectDownloadFallback( targetId, kEmbedSettings, {'width' : widthStr, 'height' :  heightStr} );
 					return ;
 				}
@@ -628,8 +628,8 @@ function kCheckAddScript(){
 
 	// Check if no flash and no html5 and no forceFlash ( direct download link )
 	// for debug purpose:
-	// kSupportsFlash = function() {return false}; kSupportsHTML5 = function() {return false};
-	if( ! kSupportsFlash() && ! kSupportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+	// kSupportsFlash = function() {return false}; kWidget.supportsHTML5 = function() {return false};
+	if( ! kSupportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 		kAddScript();
 		return ;
 	}
@@ -652,7 +652,7 @@ function kIsHTML5FallForward( ){
 	
 	// Check for "KalturaSupport.LeadWithHTML5" attribute
 	if( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) ){
-		return kSupportsHTML5();
+		return kWidget.supportsHTML5();
 	}
 
 	// Special check for Android:
@@ -680,7 +680,7 @@ function kIsHTML5FallForward( ){
 	}
 	
 	// No flash return true if the browser supports html5 video tag with basic support for canPlayType:
-	if( kSupportsHTML5() ){
+	if( kWidget.supportsHTML5() ){
 		return true;
 	}
 	// if we have the iframe enabled return true ( since the iframe will output a fallback link
@@ -692,19 +692,12 @@ function kIsHTML5FallForward( ){
 	// No video tag or flash, or iframe, normal "install flash" user flow )
 	return false;
 }
-// basic html5 support check ( note Android 2.2 and below fail to return anything on canPlayType
-// but is part of the mobile check above. 
+
+// Include legacy support for supports html5
 function kSupportsHTML5(){
-	var dummyvid = document.createElement( "video" );
-	// Blackberry does not really support html5 
-	if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
-		return false;
-	}
-	if( dummyvid.canPlayType ) {
-		return true;
-	}
-	return false;
+	return kWidget.supportsHTML5();
 }
+
 function kSupportsFlash(){
     var version = kGetFlashVersion().split(',').shift();
     if( version < 10 ){
@@ -734,7 +727,7 @@ function kAddScript( callback ){
 	}
 	// Check if we are using an iframe ( load only the iframe api client ) 
 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) && ! kPageHasAudioOrVideoTags() ) {
-		if( !window.kUserAgentPlayerRules && mw.getConfig( 'EmbedPlayer.EnableIframeApi') && ( kSupportsFlash() || kSupportsHTML5() ) ){
+		if( !window.kUserAgentPlayerRules && mw.getConfig( 'EmbedPlayer.EnableIframeApi') && ( kSupportsFlash() || kWidget.supportsHTML5() ) ){
 			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', '$j.postMessage', 'mw.EmbedPlayerNative', 'mw.IFramePlayerApiClient', 'mw.KWidgetSupport', 'mw.KDPMapping', 'JSON' );		
 			// Load a minimal set of modules for iframe api
 			kLoadJsRequestSet( jsRequestSet, callback );

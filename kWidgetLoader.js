@@ -32,13 +32,29 @@ window.kWidget = {
 		}
 		kalturaIframeEmbed( targetId, settings );
 	},
+	
+	/**
+	 * If the current player supports html5: 
+	 */
+	supportsHTML5: function(){
+		var dummyvid = document.createElement( "video" );
+		// Blackberry does not really support html5 
+		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
+			return false;
+		}
+		if( dummyvid.canPlayType ) {
+			return true;
+		}
+		return false;
+	},
+	
 	/**
 	 * Adds a ready callback to be called once the kdp or html5 player is ready
 	 */
 	addReadyCallback : function( readyCallback ){
 		// issue the ready callback for any existing ready widgets:
 		for( var wid in this.readyWidgets ){
-			// Make sure the widget is still in the dom before running the ready callback
+			// Make sure the widget is not already ready
 			if( document.getElementById( wid ) ){
 				readyCallback( wid );
 			}

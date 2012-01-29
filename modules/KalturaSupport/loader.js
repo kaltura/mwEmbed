@@ -143,8 +143,7 @@
 	};
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
-		return $.merge( kalturaSupportRequestSet,
-			[
+		return $.merge( kalturaSupportRequestSet, [
 			  'mw.PlaylistHandlerKaltura', 
 			  'mw.PlaylistHandlerKalturaRss'
 			] );
