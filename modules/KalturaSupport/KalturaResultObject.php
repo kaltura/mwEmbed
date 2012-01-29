@@ -1105,11 +1105,20 @@ class KalturaResultObject {
 		return $this->urlParameters['entry_id'];
 	}
 	public function getThumbnailUrl() {
+		// Get result object
 		$result =  $this->getResultObject();
+
+		// Add KS if needed
+		$ksParam = '';
+		if( $this->getWidgetUiVars('loadThumbnailWithKs') ) {
+			$ksParam = '?ks=' . $this->getKS();
+		}
+
 		if( isset( $result['meta'] ) && is_object( $result['meta'] ) && !isset( $result['meta']->code) ){
-			return $result['meta']->thumbnailUrl;
+			return $result['meta']->thumbnailUrl . '/height/480' . $ksParam;
 		} else {
-			return false;
+			// return black pixel
+			return "data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%01%00%00%00%01%08%02%00%00%00%90wS%DE%00%00%00%01sRGB%00%AE%CE%1C%E9%00%00%00%09pHYs%00%00%0B%13%00%00%0B%13%01%00%9A%9C%18%00%00%00%07tIME%07%DB%0B%0A%17%041%80%9B%E7%F2%00%00%00%19tEXtComment%00Created%20with%20GIMPW%81%0E%17%00%00%00%0CIDAT%08%D7c%60%60%60%00%00%00%04%00%01'4'%0A%00%00%00%00IEND%AEB%60%82";
 		}
 	}
 	public function getUrlParameters(){
