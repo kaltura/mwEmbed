@@ -815,7 +815,10 @@
 						break;
 					}
                 case 'alert':
-                    embedPlayer.controlBuilder.showAlert(notificationData);
+                    embedPlayer.controlBuilder.displayAlert( notificationData );
+                    break;
+                case 'removealert':
+                    embedPlayer.controlBuilder.closeAlert();
                     break;
 			}
 			// Give kdp plugins a chance to take attribute actions 

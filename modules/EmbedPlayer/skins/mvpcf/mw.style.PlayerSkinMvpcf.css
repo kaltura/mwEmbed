@@ -188,3 +188,37 @@
 
 .ui-slider-horizontal.volume-slider { width: 44px; height: 2px; top: 7px; }
 .ui-slider-horizontal.volume-slider .ui-slider-handle { border-width: 1px; }
+
+.alert-container {
+    background-color: #F1F1F1;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px
+}
+
+.alert-title {
+    background-color : #E6E6E6;
+    padding : 5px;
+    border-bottom : 1px solid #D1D1D1;
+    font-weight : normal !important;
+    -webkit-border-top-left-radius: 3px;
+    -moz-border-radius-topleft: 3px;
+    border-top-left-radius: 3px;
+    -webkit-border-top-right-radius: 3px;
+    -moz-border-radius-topright: 3px;
+    border-top-right-radius: 3px
+}
+
+.alert-message {
+    padding : 5px;
+    font-weight : normal !important;
+}
+
+.alert-buttons-container {
+    text-align: center;
+    padding-bottom: 5px;
+}
+
+.alert-text {
+	color : black !important;
+}

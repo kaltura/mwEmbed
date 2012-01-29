@@ -4,38 +4,63 @@
     <title>Show Alert HTML5</title>
 
     <!-- Twitter Bootstrap -->
-    <link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css">
+    <link rel="stylesheet" href="../../../libraries/twitterbootstrap/bootstrap.min.css">
 
     <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script type="text/javascript">
-        window['testFunc'] = function(e) {
+        window[ 'testFunc' ] = function( e ) {
             var buttonLabel = e.target.textContent;
-            alert(buttonLabel + " pressed");
+            alert( buttonLabel + " button was pressed" );
         }
-        window['jsCallbackReady'] = function( videoId ){
+        window[ 'jsCallbackReady' ] = function( videoId ) {
             // add a local ref to the kdp: 
-            var kdp = $('#'+videoId).get(0);
-            $('#showAlert').removeClass('disabled');
-            $('#showAlert').show();
-            $('#showAlert').click(function(){
+            var kdp = $( '#' + videoId ).get( 0 );
+            $( '#displayAlert' ).removeClass( 'disabled' );
+            $( '#displayAlert' ).show();
+            $( '#displayAlert_b' ).removeClass( 'disabled' );
+            $( '#displayAlert_b' ).show();
+            $( '#closeAlert' ).removeClass( 'disabled' );
+            $( '#closeAlert' ).show();
+            $( '#displayAlert' ).click(function(){
                 kdp.sendNotification( "alert", {
                     'title': 'This is a title',
                     'message': 'This is an HTML message',
-                    'buttons': ['First','Second','Third'],
+                    'buttons': [ 'First', 'Second', 'Third'],
                     'callbackFunction': 'testFunc',
                     'iconClass': 'testClass',
                     'isExternal': true, // KDP defaults to false
                     'isModal': true,
-                    'props': {'titleTextColor': '0xFF0000','textColor': '0x00FF00'}
+                    'props': {
+                        'titleTextColor': '0xFF0000',
+                        'textColor': '0x00FF00',
+                        'buttonRowSpacing': '50px',
+                        'buttonSpacing': '50px',
+                        'buttonHeight': '60px'
+                    }
                 });
             });
+            $( '#displayAlert_b' ).click(function(){
+                kdp.sendNotification( "alert", {
+                    'title': 'This is a different title',
+                    'message': 'This is a different HTML message',
+                    'buttons': [],
+                    'callbackFunction': 'testFunc',
+                    'iconClass': 'testClass',
+                    'isExternal': true, // KDP defaults to false
+                    'isModal': true,
+                    'props': {'titleTextColor': '0xFF00FF','textColor': '0xFFFF00'}
+                });
+            });
+            $( '#closeAlert' ).click(function() {
+                kdp.sendNotification( "removealert" );
+            })
         }
     </script>
 </head>
 <body style="padding: 10px 20px;">
     <h2> Show Alert </h2>
-    <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers
+    <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop HTML5 browsers
     <br />
     <object id="kaltura_player_1327414807"
         name="kaltura_player_1327414807"
@@ -64,6 +89,8 @@
         <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/861182/sp/86118200/thumbnail/entry_id/1_8ions2uv/width/120/height/90/bgcolor/000000/type/2"></a>
     </object>
     <br /><br />
-    <button id="showAlert" class="btn success disabled" style="display: none">Alert</button>
+    <button id="displayAlert" class="btn success disabled" style="display: none">Display Alert</button>
+    <button id="displayAlert_b" class="btn info disabled" style="display: none">Display 2nd Alert</button>
+    <button id="closeAlert" class="btn danger disabled" style="display: none">Close Alert</button>
 </body>
 </html>

@@ -309,7 +309,7 @@
 
 /* Custom */
 .mv-player .overlay-win { background: transparent; border: 0; } /* Custom */
-.mv-player .overlay-content { padding: 20px; }
+.mv-player .overlay-content { padding: 10px; }
 .mv-player .overlay-content h3 { display: block; font-size: 16px; font-weight: bold; color: #fff; font-family: arial; }
 .mv-player .overlay-win h2 { font-size: 18px; margin-top: 0; }
 .mv-player .overlay-content div { font-size: 12px; color: #fff; font-weight: bold; }

@@ -7,7 +7,7 @@
 
 <Button id="flagBtnControllerScreen" 
     buttonType="iconButton"
-    kClick="sendNotification('flagForReview')"
+    kClick="sendNotification( 'flagForReview' )"
     height="22"
     styleName="controllerScreen"
     focusRectPadding="0"
@@ -28,7 +28,7 @@
 			
 			// Check if plugin exists
 			if( embedPlayer.isPluginEnabled( 'moderation' ) ) {
-                window['moderationPlugin'].init( embedPlayer );
+                window[ 'moderationPlugin' ].init( embedPlayer );
 			}
 
 			// Continue player build-out
@@ -36,7 +36,7 @@
 		});
 	});
 
-    window['moderationPlugin'] = {
+    window[ 'moderationPlugin' ] = {
         
         init: function( embedPlayer ) {
             this.embedPlayer = embedPlayer;
@@ -47,44 +47,44 @@
 		addPlayerBindings: function() {
 			var _this = this;
             var embedPlayer = this.embedPlayer;
-			embedPlayer.unbindHelper('flagForReview');
-            embedPlayer.bindHelper('flagForReview', function() {
+			embedPlayer.unbindHelper( 'flagForReview' );
+            embedPlayer.bindHelper( 'flagForReview', function() {
                 _this.drawModal();
             });
-            embedPlayer.unbindHelper('moderationSubmitted');
-            embedPlayer.bindHelper('moderationSubmitted', function(e,flagObj) {
+            embedPlayer.unbindHelper( 'moderationSubmitted' );
+            embedPlayer.bindHelper( 'moderationSubmitted', function(e,flagObj) {
                 _this.submitFlag(flagObj);
             })
 		},
         
         addFlagButton: function() {
 			var embedPlayer = this.embedPlayer;
-            // TODO: We should have better support for kClick attribute [ sendNotification('flagForReview') ]
-            // var flagButtonClick = embedPlayer.getKalturaConfig('flagBtnControllerScreen', 'kClick');
+            // TODO: We should have better support for kClick attribute [ sendNotification( 'flagForReview' ) ]
+            // var flagButtonClick = embedPlayer.getKalturaConfig( 'flagBtnControllerScreen', 'kClick' );
 			
-            mw.log('moderationPlugin :: add flag button');
+            mw.log( 'moderationPlugin :: add flag button' );
             embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ){
 
                 var $flagButton = {
                     'w': 28,
                     'o': function( ctrlObj ) {
                         var $textButton = $( '<div />' )
-                            .attr( 'title', embedPlayer.getKalturaConfig('flagBtnControllerScreen', 'tooltip') )
+                            .attr( 'title', embedPlayer.getKalturaConfig( 'flagBtnControllerScreen', 'tooltip' ) )
                             .addClass( "ui-state-default ui-corner-all ui-icon-flag ui-icon_link rButton" )
                             .append( $( '<span />' ).addClass( "ui-icon ui-icon-flag" ) )
                             // TODO: Add label/text buttons support
-                            // .append( $( '<span />' ).text( _this.config.label ).css( {'font-family': embedPlayer.getKalturaConfig('flagBtnControllerScreen', 'font'),'font-size': '12px'} ) )
+                            // .append( $( '<span />' ).text( _this.config.label ).css( {'font-family': embedPlayer.getKalturaConfig( 'flagBtnControllerScreen', 'font' ),'font-size': '12px'} ) )
                             .buttonHover()
                             .click(function() {
-                                embedPlayer.triggerHelper('flagForReview');
+                                embedPlayer.triggerHelper( 'flagForReview' );
                             });
                         return $textButton;
                     }
                 };
 
                 // Add the button to control bar
-                controlBar.supportedComponents['flagButton'] = true;
-                controlBar.components['flagButton'] = $flagButton;
+                controlBar.supportedComponents[ 'flagButton' ] = true;
+                controlBar.components[ 'flagButton' ] = $flagButton;
             });
         },
         
@@ -92,34 +92,34 @@
 
 			var embedPlayer = this.embedPlayer;
             
-            var $header = $('<h2 />').text(embedPlayer.getKalturaConfig('moderation', 'header'));
-			var $moderationMessage = $('<div />').append(
-				$('<span />').text(embedPlayer.getKalturaConfig('moderation', 'text')),
-                $('<div />').append(
-                    $('<select />')
-                        .attr('id','flagType')
+            var $header = $( '<h2 />' ).text(embedPlayer.getKalturaConfig( 'moderation', 'header' ));
+			var $moderationMessage = $( '<div />' ).append(
+				$( '<span />' ).text(embedPlayer.getKalturaConfig( 'moderation', 'text' )),
+                $( '<div />' ).append(
+                    $( '<select />' )
+                        .attr( 'id','flagType' )
                         .append(
-                            $('<option />').attr('value',1).text('Sexual Content'),
-                            $('<option />').attr('value',2).text('Violent Or Repulsive'),
-                            $('<option />').attr('value',3).text('Harmful Or Dangerous Act'),
-                            $('<option />').attr('value',4).text('Spam / Commercials')
+                            $( '<option />' ).attr( 'value', 1 ).text( 'Sexual Content' ),
+                            $( '<option />' ).attr( 'value', 2 ).text( 'Violent Or Repulsive' ),
+                            $( '<option />' ).attr( 'value', 3 ).text( 'Harmful Or Dangerous Act' ),
+                            $( '<option />' ).attr( 'value', 4 ).text( 'Spam / Commercials' )
                         )
                     ),
-				$('<textarea />')
-                    .attr('id','flagComments')
+				$( '<textarea />' )
+                    .attr( 'id', 'flagComments' )
                     .css({'width': '95%', 'height': '50px', 'margin-top': '5px'}),
-                $('<button />')
+                $( '<button />' )
                     .addClass( 'ui-state-default ui-corner-all copycode' )
-                    .text('Submit')
+                    .text( 'Submit' )
                     .click(function() {
-                        embedPlayer.triggerHelper('moderationSubmitted',[{
-                                'flagType': $('#flagType').val(),
-                                'flagComments': $('#flagComments').val()
+                        embedPlayer.triggerHelper( 'moderationSubmitted',[{
+                                'flagType': $( '#flagType' ).val(),
+                                'flagComments': $( '#flagComments' ).val()
                         }]);
                     })
 			);
 
-			var $moderationScreen = $('<div />').append($header, $moderationMessage );
+			var $moderationScreen = $( '<div />' ).append($header, $moderationMessage );
 
 			embedPlayer.controlBuilder.displayMenuOverlay( $moderationScreen );
 		},
@@ -140,13 +140,13 @@
                 'moderationFlag:comments' : flagObj.flagComments
 			}, function( data ) {
                 embedPlayer.hidePlayerSpinner();
-                var $flagScreen = $('<div />')
+                var $flagScreen = $( '<div />' )
                     .append(
-                        $('<h3 />').text('Thank you for sharing your concerns'),
-                        $('<div />').append(
-                            $('<button />')
+                        $( '<h3 />' ).text( 'Thank you for sharing your concerns' ),
+                        $( '<div />' ).append(
+                            $( '<button />' )
                                 .addClass( 'ui-state-default ui-corner-all copycode' )
-                                .text('Done')
+                                .text( 'Done' )
                                 .click(function() {
                                     embedPlayer.controlBuilder.closeMenuOverlay();
                                 })
