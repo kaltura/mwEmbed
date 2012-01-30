@@ -530,11 +530,12 @@ mw.Playlist.prototype = {
 		
 		// Setup ondone playing binding to play next clip (if autoContinue is true )
 		if( _this.sourceHandler.autoContinue == true ){
-			$( embedPlayer ).bind( 'postEnded' + this.bindPostFix, function(event ){
+			$( embedPlayer ).bind( 'postEnded' + _this.bindPostFix, function(event ){
 				mw.log("mw.Playlist:: postEnded > on inx: " + _this.clipIndex );
 				// Play next clip
 				if( parseInt(  _this.clipIndex ) + 1 < _this.sourceHandler.getClipCount() ){
 					// Update the onDone action object to not run the base control done:
+					mw.log("mw.Playlist:: postEnded > continue playlist set: onDoneInterfaceFlag false ");
 					embedPlayer.onDoneInterfaceFlag = false;
 					_this.clipIndex = parseInt( _this.clipIndex ) + 1;
 					// update the player and play the next clip
@@ -549,21 +550,22 @@ mw.Playlist.prototype = {
 		var uiSelector = '.playlist-set-container,.playlist-block-list,.video-list-wrapper,.playlist-scroll-buttons';
 		// fullscreen support
 		$( embedPlayer ).bind('onOpenFullScreen' + this.bindPostFix, function(){
-			// hide inteface comonets ( these should readlly all be in their own div! )
-			$(uiSelector).hide(); 
+			// hide inteface components ( these should readlly all be in their own div! )
+			$(uiSelector).hide();
 		});
 		$( embedPlayer ).bind('onCloseFullScreen' + this.bindPostFix, function(){
-			setTimeout(function(){ // give some time for the dom to update
-				var playerSize = {
-					'width' : $( _this.target + ' .media-rss-video-player-container' ).width() + 'px',
-					'height' : ( $( _this.target + ' .media-rss-video-player-container' ).height() - _this.getTitleHeight() ) + 'px'
-				};
-				embedPlayer.resizePlayer( playerSize, false);
-				$(uiSelector).show();
-			},30);
+			var playerSize = {
+				'width' : $( _this.target + ' .media-rss-video-player-container' ).width() + 'px',
+				'height' : ( $( _this.target + ' .media-rss-video-player-container' ).height() - _this.getTitleHeight() ) + 'px'
+			};
+			// do another resize on a timeout ( takes for iframe to resize )
+			setTimeout(function(){
+				embedPlayer.resizePlayer( playerSize, false);	
+			}, 100);
+			$(uiSelector).show();
 		});
-		
 	},
+	
 	updatePlayerUi:function( clipIndex ){
 		var _this = this;
 		// Give a chance for sourceHandler to update player ui
