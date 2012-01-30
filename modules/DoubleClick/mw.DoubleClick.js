@@ -22,7 +22,6 @@ mw.DoubleClick.prototype = {
 	init: function( embedPlayer, callback, pluginName ){
 		mw.log( 'DoubleClick:: init: ' + embedPlayer.id );
 		var _this = this;
-		
 		// Set the plugin name ( used to get config ) 
 		this.pluginName = pluginName;
 		
@@ -314,6 +313,7 @@ mw.DoubleClick.prototype = {
 		// Request the ad ( will trigger the currentAdCallback and onResumeRequestedCallback when done )
 		_this.getAdsLoader( function( adsLoader ){
 			mw.log("DoubleClick: request Ads from adTagUrl: " +  _this.getAdTagUrl( slotType, cuePoint ));
+			
 			adsLoader.requestAds({
 				'adTagUrl' : _this.getAdTagUrl( slotType, cuePoint ),
 				'adType': 'video'

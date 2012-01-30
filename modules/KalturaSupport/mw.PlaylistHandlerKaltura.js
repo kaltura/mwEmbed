@@ -94,6 +94,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			);
 			// Check for autoContinue 
 			_this.autoContinue = _this.getConfig( 'autoContinue' );
+			mw.log("mw.PlaylistHandlerKaltura::loadPlaylist > autoContinue: " + _this.autoContinue );
 			
 			// Set autoPlay
 			_this.autoPlay =_this.getConfig( 'autoPlay' );

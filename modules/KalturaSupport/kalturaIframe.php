@@ -817,23 +817,29 @@ class kalturaIframe {
 						'width' : $(window).width(),
 						'height' : $(window).height()
 					};
-					
-					function doResizePlayer(){
+					function doResizePlayer( secondTry ){
 						var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];
 						if( prevWinSize.width == $(window).width() &&  prevWinSize.height ==  $(window).height() ){
-							// window size has not changed do a single timeout:
-							setTimeout(function(){
-								doResizePlayer();	
-							},100);
+							// Window size has not changed try to resize once more: 
+							if( ! secondTry ){
+								alert("second try");
+								setTimeout(function(){
+									doResizePlayer( true );	
+								},100);
+							}
 						} else {
-							embedPlayer.resizePlayer({
+							// Update the prev window size: 
+							prevWinSize = {
 								'width' : $(window).width(),
 								'height' : $(window).height()
-							});
+							};						
+							embedPlayer.resizePlayer(prevWinSize);
 						}
-					}
+					};
+					
 					// Bind window resize to reize the player 					
-					$( window ).resize( doResizePlayer );
+					$( window ).resize( function(){ doResizePlayer() } );
+					
 					// Resize the player per player on ready
 					if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
 						doResizePlayer();

@@ -252,9 +252,9 @@ mw.KAdPlayer.prototype = {
 			// Add the notice target:
 			_this.embedPlayer.$interface.append(
 				$('<span />')
-					.attr('id', noticeId)
+					.attr( 'id', noticeId )
 					.css( helperCss )
-					.css('font-size', '90%')
+					.css( 'font-size', '90%' )
 					.css( adSlot.notice.css )
 			);
 			var localNoticeCB = function(){

@@ -317,8 +317,7 @@ mw.AdTimeline.prototype = {
 					runSequeceProxyInx( seqInx );
 				}, 0 );
 			});
-			
-			// Update the interface for ads: 
+			// Update the interface for ads:
 			_this.updateUiForAdPlayback( slotType );
 		};
 		runSequeceProxyInx( seqInx );
