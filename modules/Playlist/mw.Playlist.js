@@ -560,7 +560,7 @@ mw.Playlist.prototype = {
 				};
 				embedPlayer.resizePlayer( playerSize, false);
 				$(uiSelector).show();
-			},30);
+			}, 100);
 		});
 		
 	},
