@@ -600,14 +600,12 @@ mw.EmbedPlayer.prototype = {
 		_this.updateFeatureSupport();
 		// Update duration
 		_this.getDuration();
-		// Run callback in timeout to avoid function stacking
-		setTimeout(function(){
-			_this.showPlayer();
-			// Run the callback if provided
-			if ( callback && $.isFunction( callback ) ){
-				callback();
-			}
-		}, 0);
+		// Show the palyer after update:
+		_this.showPlayer();
+		// Run the callback if provided
+		if ( callback && $.isFunction( callback ) ){
+			callback();
+		}
 	},
 
 	/**
