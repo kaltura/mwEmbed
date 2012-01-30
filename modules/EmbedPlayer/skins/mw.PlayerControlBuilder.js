@@ -900,6 +900,14 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		
+		// prevent scrolling when in fullscreen:
+		document.ontouchmove = function( e ){
+			mw.log( 'touchmove! ' + _this.fullscreenMode )
+			if( _this.fullscreenMode ){
+				e.preventDefault();
+			}
+		};
+		
 		// Setup "dobuleclick" fullscreen binding to embedPlayer ( if enabled ) 
 		if ( this.supportedComponents['fullscreen'] ){
 			$( embedPlayer ).bind( "dblclick" + this.bindPostfix, function(){
