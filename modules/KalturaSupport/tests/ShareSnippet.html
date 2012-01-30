@@ -17,12 +17,12 @@
 skinPath="/content/uiconf/ps/cornell/kdp_3.5.32/skins/skin3.swf">
   <HBox id="topLevel" width="100%" height="100%">
     <Canvas id="CornellLiveHolder" height="100%" width="100%">
-      <Plugin id="ShareSnippet" width="1" height="1"
+      <Plugin id="shareSnippet" width="1" height="1"
       path="/content/uiconf/ps/cornell/kdp_3.5.32/plugins/ShareSnippetPlugin4.swf"
       visible="false" includeInLayout="false"
       landingPagePrefix="http://www.cornell.edu/video/?videoID="
       generatorEmbedPrefix="http://www.cornell.edu/video/embed.js?videoID="
-      uuidType="customField" uuidFieldName="CCVideoID"
+      uuid="{mediaProxy.entryMetadata.CCVideoID}"
       customSnippetBefore="%3Cscript%20src%3D'"
       customSnippetAfter="' type%3D'text%2Fjavascript'%3E%3C%2Fscript%3E%3Cnoscript%3EEmbedded%20video%20from%20%3Ca%20href%3D'http%3A%2F%2Fwww.cornell.edu%2Fvideo'%3ECornell%20University%3C%2Fa%3E%3C%2Fnoscript%3E" />
       <Plugin id="addThis"
