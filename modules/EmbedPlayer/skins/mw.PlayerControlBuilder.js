@@ -1610,7 +1610,7 @@ mw.PlayerControlBuilder.prototype = {
         $.each( $buttonSet, function(i) {
             var label = this.toString();
             var $currentButton = $( '<button />' )
-                .css('height','30px')
+                .css( { 'padding' : '5px', 'font-size' : '12px' } )
                 .text( label )
                 .click( function( eventObject ) {
                     callback( eventObject );
