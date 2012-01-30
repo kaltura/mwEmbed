@@ -282,13 +282,13 @@ mw.PlayerControlBuilder.prototype = {
 		// Check if it exceeds the height constraint:
 		if( targetHeight > windowSize.height ){
 			targetHeight = windowSize.height;
-			targetWidth = targetHeight * ( intrinsicSize.width / intrinsicSize.height );
+			targetWidth = parseInt( targetHeight * ( intrinsicSize.width / intrinsicSize.height ) );
 		}
 		var offsetTop = 0;
 		//  Move the video down 1/2 of the difference of window height
 		offsetTop+= ( targetHeight < windowSize.height )? ( windowSize.height- targetHeight ) / 2 : 0;
 		// if the video is very tall in a short window adjust the size:
-		var offsetLeft = ( targetWidth < windowSize.width )? ( windowSize.width- targetWidth ) / 2 : 0;
+		var offsetLeft = ( targetWidth < windowSize.width )? parseInt( windowSize.width- targetWidth ) / 2 : 0;
 
 		mw.log( 'PlayerControlBuilder::getAspectPlayerWindowCss: ' + ' h:' + targetHeight + ' w:' + targetWidth + ' t:' + offsetTop + ' l:' + offsetLeft );
 		return {
@@ -630,10 +630,10 @@ mw.PlayerControlBuilder.prototype = {
 		if( animate ){
 			$interface.animate( interfaceCss );
 			
-			$interface.find('.playerPoster').animate( targetAspectSize  );
+			$interface.find('.playerPoster,#loadingSpinner_' + embedPlayer.id ).animate( targetAspectSize  );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large').animate(  _this.getPlayButtonPosition( butonScale ) );
+			$interface.find('.play-btn-large,').animate(  _this.getPlayButtonPosition( butonScale ) );
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
@@ -647,7 +647,7 @@ mw.PlayerControlBuilder.prototype = {
 			$( embedPlayer ).css( targetAspectSize );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large').css(  _this.getPlayButtonPosition( butonScale ) );
+			$interface.find('.play-btn-large,#loadingSpinner_' + embedPlayer.id ).css(  _this.getPlayButtonPosition( butonScale ) );
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
@@ -994,7 +994,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( this.embedPlayer.getPlayerElement && ! this.embedPlayer.isPersistentNativePlayer() ){
 			$( this.embedPlayer.getPlayerElement() ).css( 'z-index', '1' );
 		}
-		mw.log( 'PlayerControlBuilder:: ShowControlBar' );
+		mw.log( 'PlayerControlBuilder:: ShowControlBar,  keep on screen: ' + keepOnScreen );
 		
 		// Show interface controls
 		this.embedPlayer.$interface.find( '.control-bar' )
