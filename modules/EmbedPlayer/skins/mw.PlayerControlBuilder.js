@@ -630,10 +630,15 @@ mw.PlayerControlBuilder.prototype = {
 		if( animate ){
 			$interface.animate( interfaceCss );
 			
-			$interface.find('.playerPoster,#loadingSpinner_' + embedPlayer.id ).animate( targetAspectSize  );
+			$interface.find('.playerPoster' ).animate( targetAspectSize  );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large,').animate(  _this.getPlayButtonPosition( butonScale ) );
+			$interface.find('.play-btn-large' ).animate(  _this.getPlayButtonPosition( butonScale ) );
+			
+			// if a spinner is displayed re-add to center: 
+			if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
+				embedPlayer.addPlayerSpinner();
+			}
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
@@ -647,7 +652,12 @@ mw.PlayerControlBuilder.prototype = {
 			$( embedPlayer ).css( targetAspectSize );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large,#loadingSpinner_' + embedPlayer.id ).css(  _this.getPlayButtonPosition( butonScale ) );
+			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition( butonScale ) );
+			
+			// if a spinner is displayed re-add to center: 
+			if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
+				embedPlayer.addPlayerSpinner();
+			}
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );

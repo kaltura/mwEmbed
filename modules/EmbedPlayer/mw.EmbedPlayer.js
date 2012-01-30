@@ -1766,11 +1766,15 @@ mw.EmbedPlayer.prototype = {
 		this.isPauseLoading = true;
 	},
 	addPlayerSpinner: function(){
+		// remove any old spinner
+		$( '#loadingSpinner_' + this.id ).remove();
+		// re add an absolute positioned spinner: 
 		$( this ).getAbsoluteOverlaySpinner()
 		.attr( 'id', 'loadingSpinner_' + this.id );
 	},
 	hidePlayerSpinner: function(){
 		this.isPauseLoading = false;
+		// remove the spinner
 		$( '#loadingSpinner_' + this.id + ',.loadingSpinner' ).remove();
 		// hide the play btn
 		if( this.$interface ) {
