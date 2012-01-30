@@ -248,18 +248,17 @@ mw.EmbedPlayer.prototype = {
 		$( this ).trigger( 'onEnableInterfaceComponents');
 	},
 	disablePlayControls: function(){
-		mw.log("EmbedPlayer:: disablePlayControls" );
 		if( this.useNativePlayerControls() ){
 			return ;
 		}
 		this._playContorls = false;
-		// trun off hover: 
+		// turn off hover: 
 		this.$interface.find( '.play-btn' )
 			.unbind('mouseenter mouseleave')
 			.css('cursor', 'default' );
 
 		this.controlBuilder.disableSeekBar();
-		/*
+		/**
 		 * We should pass an array with disabled components, and the controlBuilder will listen
 		 * to this event and handle the layout changes. we should not call to this.controlBuilder inside embedPlayer.
 		 * [ 'playButton', 'seekBar' ]
@@ -600,14 +599,12 @@ mw.EmbedPlayer.prototype = {
 		_this.updateFeatureSupport();
 		// Update duration
 		_this.getDuration();
-		// Run callback in timeout to avoid function stacking
-		setTimeout(function(){
-			_this.showPlayer();
-			// Run the callback if provided
-			if ( callback && $.isFunction( callback ) ){
-				callback();
-			}
-		}, 0);
+		// show player inline
+		_this.showPlayer();
+		// Run the callback if provided
+		if ( callback && $.isFunction( callback ) ){
+			callback();
+		}
 	},
 
 	/**
@@ -1775,6 +1772,10 @@ mw.EmbedPlayer.prototype = {
 	hidePlayerSpinner: function(){
 		this.isPauseLoading = false;
 		$( '#loadingSpinner_' + this.id + ',.loadingSpinner' ).remove();
+		// hide the play btn
+		if( this.$interface ) {
+			this.$interface.find('.play-btn-large').hide();
+		}
 	},
 	hideSpinnerOncePlaying: function(){
 		this._checkHideSpinner = true;

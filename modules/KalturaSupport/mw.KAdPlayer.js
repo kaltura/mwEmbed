@@ -16,6 +16,9 @@ mw.KAdPlayer.prototype = {
 
 	// The local interval for monitoring ad playback: 
 	adMonitorInterval: null,
+
+	// Ad tracking flag:
+	adTrackingFlag: false,
 	
 	// The click binding: 
 	adClickPostFix :'.adClick',
@@ -224,14 +227,16 @@ mw.KAdPlayer.prototype = {
 			mw.log("KAdPlayer:: Error: displayVideoFile no vid to bind" );
 			return ;
 		}
+		// start ad tracking
+		this.adTrackingFlag = true;
 		mw.log("KAdPlayer:: source updated, add tracking");
 		// Bind all the tracking events ( currently vast based but will abstract if needed )
 		if( adConf.trackingEvents ){
 			if( vid.readyState > 0 ) {
-				_this.bindTrackingEvents( adConf.trackingEvents );
+				_this.addAdTracking( adConf.trackingEvents );
 			} else {
 				$( vid ).bind('loadedmetadata', function() {
-					_this.bindTrackingEvents( adConf.trackingEvents );
+					_this.addAdTracking( adConf.trackingEvents );
 				});
 			}
 		}
@@ -253,7 +258,7 @@ mw.KAdPlayer.prototype = {
 					.css( adSlot.notice.css )
 			);
 			var localNoticeCB = function(){
-				if( vid && $('#' + noticeId).length ){
+				if( _this.adTrackingFlag ){
 					var timeLeft = Math.round( vid.duration - vid.currentTime );
 					if( isNaN( timeLeft ) ){
 						timeLeft = '...';
@@ -287,15 +292,17 @@ mw.KAdPlayer.prototype = {
 				$('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() );
 			}
 		}
-		
 		// AD slot should include flag for progress monitoring ( for now always update playhead )
-		$( vid ).bind('timeupdate' + this.trackingBindPostfix, function(e){
-			_this.embedPlayer.controlBuilder.setStatus( 
-					mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration ) 
-			);
-			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
-		});
-		
+		var progressMonitor = function(){
+			if( _this.adTrackingFlag ){
+				_this.embedPlayer.controlBuilder.setStatus( 
+						mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration ) 
+				);
+				_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
+				setTimeout(progressMonitor,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) )
+			}
+		}
+		progressMonitor();
 	},
 	/**
 	 * Display companion ads
@@ -436,7 +443,7 @@ mw.KAdPlayer.prototype = {
 	 * 
 	 * @param {object} trackingEvents
 	 */	
-	bindTrackingEvents: function ( trackingEvents ){
+	addAdTracking: function ( trackingEvents ){
 		var _this = this;
 		var videoPlayer = _this.getVideoElement();
 		// unbind any existing adTimeline events
@@ -519,6 +526,7 @@ mw.KAdPlayer.prototype = {
 	},
 	stopAdTracking: function(){
 		var _this = this;
+		this.adTrackingFlag = false;
 		// stop monitor
 		clearInterval( _this.adMonitorInterval );
 		// clear any bindings 
