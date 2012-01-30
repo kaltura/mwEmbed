@@ -1,12 +1,12 @@
 /*
  * Share Snippet plugin:
 
-<Plugin id="ShareSnippet" width="1" height="1"
+<Plugin id="shareSnippet" width="1" height="1"
 path="/content/uiconf/ps/cornell/kdp_3.5.32/plugins/ShareSnippetPlugin4.swf"
 visible="false" includeInLayout="false"
 landingPagePrefix="http://www.cornell.edu/video/?videoID="
 generatorEmbedPrefix="http://www.cornell.edu/video/embed.js?videoID="
-uuidType="customField" uuidFieldName="CCVideoID"
+uuid="{mediaProxy.entryMetadata.CCVideoID}"
 customSnippetBefore="%3Cscript%20src%3D'"
 customSnippetAfter="' type%3D'text%2Fjavascript'%3E%3C%2Fscript%3E%3Cnoscript%3EEmbedded%20video%20from%20%3Ca%20href%3D'http%3A%2F%2Fwww.cornell.edu%2Fvideo'%3ECornell%20University%3C%2Fa%3E%3C%2Fnoscript%3E" />
 
@@ -32,7 +32,7 @@ color5="16777215" font="Arial" />
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			
 			// Check if plugin exists
-			if( embedPlayer.isPluginEnabled( 'ShareSnippet' ) ) {
+			if( embedPlayer.isPluginEnabled( 'shareSnippet' ) ) {
 				window['shareSnippet'].init( embedPlayer );
 			}
 
@@ -44,7 +44,7 @@ color5="16777215" font="Arial" />
 	// Share snippet
 	window['shareSnippet'] = {
 
-		pluginName: 'ShareSnippet',
+		pluginName: 'shareSnippet',
 
 		init: function( embedPlayer ) {
 			this.embedPlayer = embedPlayer;
@@ -101,19 +101,10 @@ color5="16777215" font="Arial" />
 			}
 		},
 
-		getUniqueId: function() {
-			if( this.getConfig('uuidType') == 'entryId' ) {
-				return this.embedPlayer.evaluate('{mediaProxy.entry.id}');
-			} else {
-				return this.embedPlayer.evaluate('{mediaProxy.entryMetadata.' + this.getConfig('uuidFieldName') + '}');
-			}
-		},
-
 		drawModal: function() {
 
 			var embedPlayer = this.embedPlayer,
 				showError = false,
-				videoId = this.getUniqueId(),
 				shareUrl,
 				generatorPageUrl,
 				customSnippet;
@@ -121,7 +112,7 @@ color5="16777215" font="Arial" />
 			// Generate Share URL
 			if( this.getConfig('landingPagePrefix') ) {
 				// Custom share URL
-				shareUrl = this.getConfig('landingPagePrefix') + videoId;
+				shareUrl = this.getConfig('landingPagePrefix') + this.getConfig('uuid');
 			} else {
 				// Default KMC preview page
 				var partnerId = embedPlayer.kwidgetid.substr(1,embedPlayer.kwidgetid.length);
@@ -131,7 +122,7 @@ color5="16777215" font="Arial" />
 
 			// Genrate Embed Code
 			if( this.getConfig('generatorEmbedPrefix') ) {
-				generatorPageUrl = this.getConfig('generatorEmbedPrefix') + videoId;
+				generatorPageUrl = this.getConfig('generatorEmbedPrefix') + this.getConfig('uuid');
 			} else {
 				showError = true;
 				generatorPageUrl = "Plugin is not configured correctly. Generator page prefix is not set";
