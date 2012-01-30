@@ -6,7 +6,7 @@
     loadingPolicy="noWait"/>
 
 <Button id="captureThumbBtnControllerScreen"
-	kClick="sendNotification('captureThumbnail')"
+	kClick="sendNotification( 'captureThumbnail' )"
 	height="22"
 	buttonType="iconButton"
 	focusRectPadding="0"
@@ -35,7 +35,7 @@
 		} );
 	} );
 
-    window['captureThumbnailPlugin'] = {
+    window[ 'captureThumbnailPlugin' ] = {
         
         init: function( embedPlayer ) {
             this.embedPlayer = embedPlayer;
@@ -46,35 +46,35 @@
 		addPlayerBindings: function() {
 			var _this = this;
             var embedPlayer = this.embedPlayer;
-			embedPlayer.unbindHelper('captureThumbnail');
-            embedPlayer.bindHelper('captureThumbnail', function() {
+			embedPlayer.unbindHelper( 'captureThumbnail' );
+            embedPlayer.bindHelper( 'captureThumbnail', function() {
                 _this.captureThumbnail();
             } );
-            embedPlayer.unbindHelper('captureThumbnailFinished');
-            embedPlayer.bindHelper('captureThumbnailFinished', function( e, isPlaying ) {
+            embedPlayer.unbindHelper( 'captureThumbnailFinished' );
+            embedPlayer.bindHelper( 'captureThumbnailFinished', function( e, isPlaying ) {
                 _this.drawModal( isPlaying );
             } )
 		},
         
         addCaptureButton: function() {
 			var embedPlayer = this.embedPlayer;
-            // TODO: We should have better support for kClick attribute [ sendNotification('flagForReview') ]
-            // var captureButtonClick = embedPlayer.getKalturaConfig('captureThumbnail', 'kClick');
+            // TODO: We should have better support for kClick attribute [ sendNotification( 'flagForReview' ) ]
+            // var captureButtonClick = embedPlayer.getKalturaConfig( 'captureThumbnail', 'kClick' );
 			
-            mw.log('captureThumbnailPlugin :: add button');
+            mw.log( 'captureThumbnailPlugin :: add button' );
             embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ) {
 
                 var $captureButton = {
                     'w': 28,
                     'o': function( ctrlObj ) {
                         var $textButton = $( '<div />' )
-                            .attr( 'title', embedPlayer.getKalturaConfig('captureThumbBtnControllerScreen', 'tooltip') )
+                            .attr( 'title', embedPlayer.getKalturaConfig( 'captureThumbBtnControllerScreen', 'tooltip' ) )
                             .addClass( "ui-state-default ui-corner-all ui-icon-image ui-icon_link rButton" )
                             .append( $( '<span />' ).addClass( "ui-icon ui-icon-image" ) )
                             // TODO: Add label/text buttons support
                             .buttonHover()
                             .click(function() {
-                                embedPlayer.triggerHelper('captureThumbnail');
+                                embedPlayer.triggerHelper( 'captureThumbnail' );
                             } );
                         return $textButton;
                     }
@@ -96,7 +96,7 @@
             this.getKalturaClient().doRequest( {
 				'service' : 'thumbasset',
 				'action' : 'generate',
-                'entryId' : embedPlayer.evaluate( '{mediaProxy.entry.id}' ),
+                'entryId' : embedPlayer.kentryid,
                 'thumbParams:quality': 75,
                 'thumbParams:videoOffset': roundedTime,
                 'thumbParams:objectType': 'KalturaThumbParams',

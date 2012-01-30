@@ -13,6 +13,17 @@ $download->redirectDownload();
 class downloadEntry {
 	var $resultObject = null; // lazy init
 	var $sources = null;
+	var $forceDownload = false;
+
+	/**
+	 * Default constructor - Sets the forceDownload flag accordingly
+	 */
+	function __construct() {
+		if( isset( $_GET[ 'forceDownload' ] ) ) {
+			$this->forceDownload = true;
+		}
+	}
+	
 	/**
 	 * The result object grabber, caches a local result object for easy access
 	 * to result object properties. 
@@ -47,8 +58,20 @@ class downloadEntry {
 		header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 		header("Pragma: no-cache");
 		header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
-		header("Location: " . $flavorUrl );
+		if ( $this->forceDownload ) {
+			header( "Content-Description: File Transfer" );
+			header( "Content-Type: application/force-download" ); 
+            $extension = strrchr( strstr( $flavorUrl, "?ks=", true ), '.' );
+            $flavorId = substr( strrchr( strstr( $flavorUrl, "/format/", true ), '/' ), 1 );
+            $filename = $flavorId . $extension;
+			header( "Content-Disposition: attachment; filename=$filename" );
+			readfile( $flavorUrl );
+		}
+		else {
+			header("Location: " . $flavorUrl );
+		}
 	}
+	
 	// Load the Kaltura library and grab the most compatible flavor
 	public function getSources(){
 		global $wgKalturaServiceUrl, $wgKalturaUseAppleAdaptive, $wgHTTPProtocol;

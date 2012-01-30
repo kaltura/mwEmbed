@@ -100,6 +100,7 @@
 		"volumeBarLayout"	:	"uiConfComponents/volumeBarLayout.js",
 		"shareSnippet"	:	"uiConfComponents/shareSnippet.js",
 		"moderationPlugin"    :   "uiConfComponents/moderationPlugin.js",
+        "downloadPlugin"    :   "uiConfComponents/downloadPlugin.js",
         "captureThumbnailPlugin"    :   "uiConfComponents/captureThumbnailPlugin.js"
 	} );
 	
@@ -128,6 +129,7 @@
 		'shareSnippet',
         'moderationPlugin',
         'captureThumbnailPlugin',
+        'downloadPlugin',
 		'adPlugin',
 		'captionPlugin',
 		'bumperPlugin',
