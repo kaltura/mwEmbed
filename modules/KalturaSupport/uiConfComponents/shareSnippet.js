@@ -44,7 +44,7 @@ color5="16777215" font="Arial" />
 	// Share snippet
 	window['shareSnippet'] = {
 
-		pluginName: 'ShareSnippet',
+		pluginName: 'shareSnippet',
 
 		init: function( embedPlayer ) {
 			this.embedPlayer = embedPlayer;
