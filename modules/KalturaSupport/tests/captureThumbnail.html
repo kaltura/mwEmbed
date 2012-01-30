@@ -14,7 +14,7 @@
 			var ks = false;
 
 			var createPlayer = function ( ks ) {
-				console.log( 'create - forceMobileHTML5:'+ mw.getConfig('forceMobileHTML5') );
+				console.log( 'create - forceMobileHTML5:' + mw.getConfig( 'forceMobileHTML5' ) );
 				kWidget.embed({
 					'targetId': 'myVideoTarget',
 					'wid': '_' + $( '#partnerId' ).val(),
@@ -25,10 +25,9 @@
 						'ks' : ks
 					},
 					'readyCallback': function( playerId ){
-						console.log( 'ready - forceMobileHTML5:'+ mw.getConfig('forceMobileHTML5') );
+						console.log( 'ready - forceMobileHTML5:' + mw.getConfig( 'forceMobileHTML5' ) );
 					}
 				});
-
 			};
 
             $( '#getPlayer' ).click(function() {
