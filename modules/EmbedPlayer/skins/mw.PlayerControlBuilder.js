@@ -51,7 +51,7 @@ mw.PlayerControlBuilder.prototype = {
 	},
 
 	// Flag to store the current fullscreen mode
-	fullscreenMode: false,
+	inFullScreen: false,
 
 	// Flag to store if a warning binding has been added
 	addWarningFlag: false,
@@ -354,7 +354,7 @@ mw.PlayerControlBuilder.prototype = {
 	toggleFullscreen: function( forceClose ) {
 		var _this = this;
 		// Do normal in-page fullscreen handling: 
-		if( this.fullscreenMode ){			
+		if( this.inFullScreen ){			
 			this.restoreWindowPlayer();
 		}else {
 			this.doFullScreenPlayer();		
@@ -376,10 +376,10 @@ mw.PlayerControlBuilder.prototype = {
 		var $interface = embedPlayer.$interface;
 
 		// Check fullscreen state ( if already true do nothing )
-		if( this.fullscreenMode == true ){
+		if( this.inFullScreen == true ){
 			return ;
 		}
-		this.fullscreenMode = true;
+		this.inFullScreen = true;
 		var triggerOnOpenFullScreen = true;
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			var vid = this.embedPlayer.getPlayerElement();
@@ -508,7 +508,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Check every 2 seconds reset flag status if controls are overlay
 		if( _this.isOverlayControls() ){
 			function checkMovedMouse(){
-				if( _this.fullscreenMode ){
+				if( _this.inFullScreen ){
 					if( _this.mouseMovedFlag ){
 						_this.mouseMovedFlag = false;
 						_this.showControlBar();
@@ -528,7 +528,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Bind resize resize window to resize window
 		$( window ).resize( function() {
-			if( _this.fullscreenMode ){
+			if( _this.inFullScreen ){
 				// don't resize bellow original size: 
 				var targetSize = {
 					'width' : $( window ).width(),
@@ -678,11 +678,11 @@ mw.PlayerControlBuilder.prototype = {
 		embedPlayer.$interface.css({'position':'relative'});
 	  
 		// Check if fullscreen mode is already restored: 
-		if( this.fullscreenMode === false ){
+		if( this.inFullScreen === false ){
 			return ;
 		}
 		// Set fullscreen mode to false
-		this.fullscreenMode = false;
+		this.inFullScreen = false;
 
 		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
@@ -909,6 +909,17 @@ mw.PlayerControlBuilder.prototype = {
 
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
+		
+		
+		
+		// prevent scrolling when in fullscreen:
+		document.ontouchmove = function( e ){
+			mw.log( 'touchmove! ' + _this.inFullScreen )
+			if( _this.inFullScreen ){
+				e.preventDefault();
+			}
+		};
+		
 		
 		// Setup "dobuleclick" fullscreen binding to embedPlayer ( if enabled ) 
 		if ( this.supportedComponents['fullscreen'] ){
@@ -1807,7 +1818,7 @@ mw.PlayerControlBuilder.prototype = {
 								embedPlayer.controlBuilder.closeMenuOverlay();
 
 								// Close fullscreen if we are in fullscreen mode
-								if( _this.fullscreenMode ){
+								if( _this.inFullScreen ){
 									_this.restoreWindowPlayer();
 								}
 
