@@ -206,7 +206,6 @@ class kalturaIframe {
 		$o.='poster="' . htmlspecialchars( $this->getResultObject()->getThumbnailUrl() ) . '" ';
 		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
 			'style="' . $playerStyle . '" ';
-
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
 		// Add any additional attributes:
@@ -813,14 +812,27 @@ class kalturaIframe {
 					if( mw.getConfig('EmbedPlayer.IframeIsPlaying') ){
 						embedPlayer.play();
 					}
+					
+					var prevWinSize = {
+						'width' : $(window).width(),
+						'height' : $(window).height()
+					};
+					
 					function doResizePlayer(){
-						$( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )
-							[0].resizePlayer({
+						var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];
+						if( prevWinSize.width == $(window).width() &&  prevWinSize.height ==  $(window).height() ){
+							// window size has not changed do a single timeout:
+							setTimeout(function(){
+								doResizePlayer();	
+							},100);
+						} else {
+							embedPlayer.resizePlayer({
 								'width' : $(window).width(),
 								'height' : $(window).height()
 							});
+						}
 					}
-					// Bind window resize to reize the player:
+					// Bind window resize to reize the player 					
 					$( window ).resize( doResizePlayer );
 					// Resize the player per player on ready
 					if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
