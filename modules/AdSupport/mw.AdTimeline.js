@@ -239,6 +239,8 @@ mw.AdTimeline.prototype = {
 						_this.restorePlayer();
 						// Restore ondone interface: 
 						embedPlayer.onDoneInterfaceFlag = true;
+						// on clip done can't be invoked with a stop state ( TOOD clean up end sequence ) 
+						embedPlayer.stopped = false;
 						// run the clipdone event:
 						embedPlayer.onClipDone();
 					}

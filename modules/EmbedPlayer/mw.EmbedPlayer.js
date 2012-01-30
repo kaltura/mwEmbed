@@ -692,9 +692,9 @@ mw.EmbedPlayer.prototype = {
 	 * Check if the selected source is an audio element:
 	 */
 	isAudio: function(){
-		return 	( this.rewriteElementTagName == 'audio'
+		return ( this.rewriteElementTagName == 'audio'
 				||
-				( this.mediaElement && this.mediaElement.selectedSource.mimeType.indexOf('audio/') !== -1 )
+				( this.mediaElement && this.mediaElement.selectedSource && this.mediaElement.selectedSource.mimeType.indexOf('audio/') !== -1 )
 		);
 	},
 
