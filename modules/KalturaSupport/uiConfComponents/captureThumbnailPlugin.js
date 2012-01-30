@@ -129,7 +129,10 @@
                     }
                 },
                 'isExternal': false, // KDP defaults to false
-                'isModal': true
+                'isModal': true,
+                'props': {
+                    'buttonRowSpacing': '5px'
+                }
             } );
 		},      
 
