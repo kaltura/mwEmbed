@@ -10,14 +10,41 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         $(document).ready(function() {
+			
+			var ks = false;
+
+			var createPlayer = function ( ks ) {
+				console.log( 'create - forceMobileHTML5:'+ mw.getConfig('forceMobileHTML5') );
+				kWidget.embed({
+					'targetId': 'myVideoTarget',
+					'wid': '_' + $( '#partnerId' ).val(),
+					'uiconf_id' : '7015551',
+					'entry_id' : $( '#entryId' ).val(),
+					'flashvars':{
+						'externalInterfaceDisabled' : false,
+						'ks' : ks
+					},
+					'readyCallback': function( playerId ){
+						console.log( 'ready - forceMobileHTML5:'+ mw.getConfig('forceMobileHTML5') );
+					}
+				});
+
+			};
+
             $( '#getPlayer' ).click(function() {
                 // TODO: support switch between flash<->html5 - currently not stable
                 if($( '#forceHTML' ).attr( 'checked' ) ) {
                     mw.setConfig( 'forceMobileHTML5', true );
                 }
                 else {
-                    mw.setConfig( 'forceMobileHTML5', '' );
+                    mw.setConfig( 'forceMobileHTML5', false );
                 }
+
+				if( ks ) {
+					createPlayer( ks );
+					return ;
+				}
+
                 $.ajax({
                     url: "http://www.kaltura.com/api_v3/index.php",
                     cache: false,
@@ -31,19 +58,11 @@
                         secret: $( '#adminSecret' ).val()
                     },
                     success: function(result) {
-                        var ks = result;
-                        kWidget.embed({
-                            'targetId': 'myVideoTarget',
-                            'wid': '_' + $( '#partnerId' ).val(),
-                            'uiconf_id' : '7015551',
-                            'entry_id' : $( '#entryId' ).val(),
-                            'flashvars':{
-                                'externalInterfaceDisabled' : false,
-                                'ks' : ks
-                            }
-                        })
+                        ks = result;
+						createPlayer( ks );
                     }
-                })
+                });
+
             })
         })
     </script>
@@ -55,19 +74,19 @@
     <div class="clearfix">
         <label for="partnerId">Partner ID</label>
         <div class="input">
-            <input type="text" id="partnerId" />
+            <input type="text" id="partnerId" value="861182" />
         </div>
     </div>
     <div class="clearfix">
         <label for="adminSecret">Admin Secret</label>
         <div class="input">
-            <input type="text" id="adminSecret" />
+            <input type="text" id="adminSecret" value="fbf00a5ede5018a46aa4e5bb3b2f1b85" />
         </div>
     </div>
     <div class="clearfix">
         <label for="entryId">Entry ID</label>
         <div class="input">
-            <input type="text" id="entryId" />
+            <input type="text" id="entryId" value="1_8ions2uv" />
         </div>
     </div>
     <div class="clearfix">
