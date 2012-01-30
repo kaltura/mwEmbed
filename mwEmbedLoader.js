@@ -203,24 +203,30 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	// Check if we are dealing with an html5 player or flash player
 	if( kEmbedSettings.isHTML5 ){
 		kAddScript( function(){
-			// TODO refactor loader.js in kalturaSupport to avoid temporary object representation
-			if( elm.nodeName.toLowerCase() != 'object' ){		
-				kOutputFlashObject( replaceTargetId, kEmbedSettings, options );
-			} else {
-				// Options include 'width' and 'height'
-				var sizeUnit = (typeof options.width == 'string' && options.width.indexOf("px") === -1) ? 'px' : '';
-				var targetCss = {
-					'width': options.width + sizeUnit,
-					'height': options.height + sizeUnit
-				};
-				var additionalTargetCss = kGetAdditionalTargetCss();
-				$j.extend(targetCss, additionalTargetCss);
-				$j('#' + replaceTargetId ).css(targetCss);
-				// Do kaltura iframe player
-				$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
-			}
+
+			var width = ( options.width ) ? options.width :
+						( elm.width ) ? elm.width :
+							( elm.style.width ) ? parseInt( elm.style.width ) : 400;
+
+			var height = ( options.height ) ? options.height :
+						( elm.height ) ? elm.height :
+							( elm.style.height ) ? parseInt( elm.style.height ) : 300;
+
+			var sizeUnit = (typeof options.width == 'string' && options.width.indexOf("px") === -1) ? 'px' : '';
+
+			var targetCss = {
+				'width': width + sizeUnit,
+				'height': height + sizeUnit
+			};
+
+			var additionalTargetCss = kGetAdditionalTargetCss();
+			$j.extend(targetCss, additionalTargetCss);
+			$j('#' + replaceTargetId ).css(targetCss);
+			// Do kaltura iframe player
+			$j('#' + replaceTargetId ).kalturaIframePlayer( kEmbedSettings );
 		});	
 	} else {
+		restoreKalturaKDPCallback();
 		kOutputFlashObject( replaceTargetId, kEmbedSettings, options );
 	}
 }
@@ -634,7 +640,7 @@ function kCheckAddScript(){
 		return ;
 	}
 	// Restore the jsCallbackReady ( we are not rewriting )
-	if( !kalturaDynamicEmbed && window.restoreKalturaKDPCallback ){
+	if( kGetKalturaPlayerList().length && window.restoreKalturaKDPCallback ){
 		window.restoreKalturaKDPCallback();
 	}
 }
@@ -1247,7 +1253,7 @@ window.checkForKDPCallback = function(){
 				window.originalKDPCallbackReady( playerId );
 			}
 			window.KWidget.globalJsReadyCallback( playerId );
-		};
+		};		
 	}
 };
 
