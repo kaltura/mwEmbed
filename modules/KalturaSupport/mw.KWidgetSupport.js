@@ -827,11 +827,11 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			// Check for ogg source
-			if( asset.fileExt.toLowerCase() == 'ogg' 
+			if( asset.fileExt && ( asset.fileExt.toLowerCase() == 'ogg' 
 				|| 
 				asset.fileExt.toLowerCase() == 'ogv'
 				||
-				asset.containerFormat.toLowerCase() == 'ogg'
+				asset.containerFormat.toLowerCase() == 'ogg' )
 			){
 				source['src'] = src + '/a.ogg';
 				source['data-flavorid'] = 'ogg';
@@ -839,13 +839,13 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			// Check for webm source
-			if( asset.fileExt == 'webm' 
+			if( asset.fileExt && ( asset.fileExt == 'webm' 
 				|| 
 				asset.tags.indexOf('webm') != -1 
 				|| // Kaltura transcodes give: 'matroska'
 				asset.containerFormat.toLowerCase() == 'matroska'
 				|| // some ingestion systems give "webm" 
-				asset.containerFormat.toLowerCase() == 'webm'
+				asset.containerFormat.toLowerCase() == 'webm' )
 			){
 				source['src'] = src + '/a.webm';
 				source['data-flavorid'] = 'webm';
@@ -853,7 +853,7 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			// Check for 3gp source
-			if( asset.fileExt == '3gp' ){
+			if( asset.fileExt && asset.fileExt == '3gp' ){
 				source['src'] = src + '/a.3gp';
 				source['data-flavorid'] = '3gp'
 				source['type'] = 'video/3gp';
