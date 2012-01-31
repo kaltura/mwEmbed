@@ -227,52 +227,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 		});	
 	} else {
 		restoreKalturaKDPCallback();
-		kOutputFlashObject( replaceTargetId, kEmbedSettings, options );
-	}
-}
-function kOutputFlashObject( replaceTargetId, kEmbedSettings, options ){
-	var elm = document.getElementById( replaceTargetId );
-	// Output a normal flash object tag: 
-	if( elm && elm.parentNode ){
-		var spanTarget = document.createElement("span");
-		var pId =  ( kEmbedSettings.id )? kEmbedSettings.id : elm.id 
-		var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+ 
-			'/wid/' + kEmbedSettings.wid + 
-			'/uiconf_id/' + kEmbedSettings.uiconf_id + 
-			'/entry_id/' + kEmbedSettings.entry_id;
-		if( kEmbedSettings.cache_st ){
-			swfUrl+= '/cache_st/' + kEmbedSettings.cache_st;
-		}
-		// get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300 
-		var width = ( options.width ) ? options.width :
-						( elm.width ) ? elm.width : 
-							( elm.style.width ) ? parseInt( elm.style.width ) : 400;
-		
-		var height = ( options.height ) ? options.height :
-						( elm.height ) ? elm.height : 
-							( elm.style.height ) ? parseInt( elm.style.height ) : 300;
-		
-		var flashvarValue = ( kEmbedSettings.flashvars ) ? kFlashVarsToString( kEmbedSettings.flashvars ) : '&';
-
-		spanTarget.innerHTML = '<object id="' + pId + '" ' + 
-			'name="' + pId + '" ' + 
-			'type="application/x-shockwave-flash" ' + 
-			'allowFullScreen="true" ' +
-			'allowNetworking="all" ' +
-			'allowScriptAccess="always" ' + 
-			'width="' + width +'" ' +
-			'height="' + height + '" ' + 
-			'style="width:' + width + ';height:' + height + ';" ' +
-			'resource="' + swfUrl + '" ' +
-			'data="' + swfUrl + '" >' +
-				'<param name="allowFullScreen" value="true" />' + 
-				'<param name="allowNetworking" value="all" />' +
-				'<param name="allowScriptAccess" value="always" />' +
-				'<param name="bgcolor" value="#000000" />' +
-				'<param name="flashVars" value="' + flashvarValue + '" /> ' +
-				'<param name="movie" value="' + swfUrl + '" />' +
-		'</object>';
-		elm.parentNode.replaceChild( spanTarget, elm );
+		kWidget.outputFlashObject( replaceTargetId, kEmbedSettings, options );
 	}
 }
 function kIframeWithoutApi( replaceTargetId, kEmbedSettings , options ){
