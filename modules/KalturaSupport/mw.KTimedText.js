@@ -3,23 +3,23 @@
 */
 ( function( mw, $ ) {
 	
-	mw.KTimedText = function( embedPlayer, kalturaConfig, callback ){
-		return this.init( embedPlayer, kalturaConfig, callback );
+	mw.KTimedText = function( embedPlayer, captionPluginName ){
+		return this.init( embedPlayer, captionPluginName );
 	};
 	mw.KTimedText.prototype = {
 		bindPostfix : '.kTimedText',
-		init: function( embedPlayer, kalturaConfig, callback ){
+		init: function( embedPlayer, captionPluginName ){
 			var _this = this;
-			// Override embedPlayer hasTextTracks:
-			embedPlayer.hasTextTracks = function(){
-				return true
-			};
-			// Set the KTimedText plugin configuration
-			_this.kVars = kalturaConfig;
-		
+			this.embedPlayer = embedPlayer;
+			// Set the caption plugin name so that we can get config from the correct location. 
+			this.captionPluginName = captionPluginName;
+			
+			// ALways includes a captions button:
+			mw.setConfig( 'TimedText.ShowInterface', true ); 
+			
 			// Check for kaltura plugin representation of offset:
-			if( _this.kVars.timeOffset ){
-				_this.timeOffset = _this.kVars.timeOffset;
+			if( _this.getConfig('timeOffset') ){
+				_this.timeOffset = _this.getConfig('timeOffset');
 			}
 			// Check for existing timedText on player and retain visibility. 
 			var existingLayout = null;
@@ -28,7 +28,7 @@
 			}
 			
 			// Inherit the timed text support via the base TimedText module:
-			var baseTimedText = new mw.TimedText( embedPlayer, kalturaConfig );
+			var baseTimedText = new mw.TimedText( embedPlayer );
 			for( var i in _this ){
 				if( baseTimedText[ i ] ){
 					baseTimedText[ 'parent_' + i] = baseTimedText[i];
@@ -39,12 +39,42 @@
 			
 			// Update the layout options per existing layout or uiConf preference. 
 			if( existingLayout !== null ){
-				embedPlayer.timedText.selectLayout( existingLayout );
-			} else if( _this.kVars[ 'hideClosedCaptions' ] == true ){
-				embedPlayer.timedText.selectLayout( 'off' );
+				embedPlayer.timedText.setLayoutMode( existingLayout );
+			} else if( _this.getConfig( 'hideClosedCaptions' ) == true ){
+				embedPlayer.timedText.setLayoutMode( 'off' );
 			}
 			// Bind player: 
 			_this.bindPlayer( embedPlayer );
+		},
+		/* get the captions css from configuration options */
+		getCaptionCss: function(){
+			var style = {'display': 'inline'};
+	
+			if( this.getConfig( 'bg' ) ) {
+				style["background-color"] = mw.getHexColor( this.getConfig( 'bg' ) );
+			}
+			if( this.getConfig( 'fontColor' ) ) {
+				style["color"] = mw.getHexColor( this.getConfig( 'fontColor' ) );
+			}
+			if( this.getConfig( 'fontFamily' ) ){
+				style["font-family"] = this.getConfig( 'fontFamily' );
+			}
+			if( this.getConfig( 'fontsize') ) {
+				// Translate to em size so that font-size parent percentage
+				// base on http://pxtoem.com/
+				var emFontMap = { '6': .375, '7': .438, '8' : .5, '9': .563, '10': .625, '11':.688,
+						'12':.75, '13': .813, '14': .875, '15':.938, '16':1, '17':1.063, '18': 1.125, '19': 1.888,
+						'20':1.25, '21':1.313, '22':1.375, '23':1.438, '24':1.5};
+				// Make sure its an int: 
+				var fontsize = parseInt( this.getConfig( 'fontsize' ) );
+				style[ "font-size" ] = ( emFontMap[ fontsize ] ) ?  
+						emFontMap[ fontsize ] +'em' :
+						(  fontsize > 24 )?  emFontMap[ 24 ]+'em' : emFontMap[ 6 ];
+			}
+			if( this.getConfig('useGlow' ) && this.getConfig('glowBlur') && this.getConfig('glowColor') ) {
+				style["text-shadow"] = '0 0 ' + this.getConfrig('glowBlur') + 'px ' + mw.getHexColor( this.getConfig('glowColor') );
+			}
+			return style;
 		},
 		bindPlayer: function( embedPlayer ){
 			var _this = this;
@@ -63,20 +93,17 @@
 						embedPlayer.timedText.toggleCaptions();
 						break;
 					case 'showClosedCaptions':
-						embedPlayer.timedText.selectLayout( 'ontop' );
+						embedPlayer.timedText.setLayoutMode( );
 						break;
 					case 'hideClosedCaptions':
-						embedPlayer.timedText.selectLayout( 'off' );
+						embedPlayer.timedText.setLayoutMode( 'off' );
 						break;
 				}
 			});
 			
 			// Support SetKDP attribute style caption updates
 			$( embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostfix, function( event, componentName, property, value ){
-				if( componentName == 'closedCaptions' || 
-					componentName == 'closedCaptionsOverPlayer' ||
-					componentName == 'closedCaptionsFlexible' ){
-					_this.kVars[ property ] = value;
+				if( componentName == _this.captionPluginName ){
 					if( property == 'ccUrl' ){
 						// empty the text sources:
 						embedPlayer.timedText.textSources = null;
@@ -85,7 +112,9 @@
 					}
 				}
 			});
-			
+		},
+		getConfig: function( attrName ){
+			return this.embedPlayer.getKalturaConfig( this.pluginName, attrName );
 		},
 		getKalturaClient: function(){
 			if( ! this.kClient ){
@@ -107,14 +136,15 @@
 			this.textSources = [];
 		
 			// Check for kaltura ccUrl style text tracks ( not eagle api )
-			if( this.kVars.ccUrl ){
-				mw.log( 'KTimedText:: loadTextSources> add textSources from ccUrl:' + this.kVars.ccUrl );
+			if( this.getConfig('ccUrl') ){
+				mw.log( 'KTimedText:: loadTextSources> add textSources from ccUrl:' + this.getConfig('ccUrl') );
 				// Set up a single source from the custom vars:
-				$.each( _this.getTextSourceFromVars( _this.kVars ), function(inx, textSource ){
+				var textSource = this.getTextSource( this.getConfig('ccUrl'), this.getConfig('type') );
+				if( textSource ){
 					_this.textSources.push( textSource);
-				});
+				}
 			}
-		
+
 			// Api sources require that a api query
 			_this.getKalturaClient().getKS( function( ks ) {
 				_this.ksCache = ks;
@@ -164,10 +194,8 @@
 					break;
 			}
 		},
-		getTextSourceFromVars: function( kalturaTextVars ){
+		getTextSource: function( ccUrl, type ){
 			var _this = this;
-			var type = this.embedPlayer.evaluate( kalturaTextVars.type );
-			var ccUrl = this.embedPlayer.evaluate( kalturaTextVars.ccUrl );
 			if( !type || !ccUrl ){
 				mw.log("Error: KTimedText error missing type or text source from custom vars");
 				return [];

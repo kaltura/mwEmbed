@@ -42,8 +42,7 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		var slotSet = [];
 		// remove any old binding: 
-		_this.embedPlayer.unbindHelper( _this.bindPostfix );
-		
+		_this.embedPlayer.unbindHelper( _this.bindPostfix );					
 		
 		// Check for pre-sequence: 
 		if( parseInt( this.getConfig( 'preSequence') ) ){
@@ -487,9 +486,12 @@ mw.DoubleClick.prototype = {
 		// On ad error don't stop playback: 
 		this.onResumeRequested();
 	},
-	getConfig: function( configName ){
+	/**
+	 * TODO should be provided by the generic plugin class. 
+	 */
+	getConfig: function( attrName ){
 		// always get the config from the embedPlayer so that is up-to-date
-		return this.embedPlayer.getKalturaConfig( this.pluginName, configName );
+		return this.embedPlayer.getKalturaConfig( this.pluginName, attrName );
 	}
 };
 	

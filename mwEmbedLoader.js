@@ -8,9 +8,6 @@ if( !window['mw'] ) {
 	window['mw'] = {};
 }
 
-// Define the DOM ready flag
-var kAlreadyRunDomReadyFlag = false;
-
 window.restoreKalturaKDPCallback = function(){
 	// To restore when we are not rewriting:
 	if( window.KalturaKDPCallbackReady ){
@@ -820,6 +817,7 @@ function kAppendCssUrl( url ){
 	head.appendChild(cssNode);
 }
 function kAppendScriptUrl( url, callback ) {
+	// If the dom is not ready yet, write our script directly
 	var script = document.createElement( 'script' );
 	script.type = 'text/javascript';
 	script.src = url;
@@ -879,7 +877,7 @@ function kPageHasAudioOrVideoTags(){
 */
 var kReadyHookSet = [];
 function kAddReadyHook( callback ){
-	if( kAlreadyRunDomReadyFlag ){
+	if( kWidget.domIsReady ){
 		callback();
 	} else {
 		kReadyHookSet.push( callback );
@@ -888,7 +886,7 @@ function kAddReadyHook( callback ){
 function kRunMwDomReady( event ){
 	// run dom ready with a 1ms timeout to prevent sync execution in browsers like chrome
 	// Async call give a chance for configuration variables to be set
-	kAlreadyRunDomReadyFlag  = true;
+	kWidget.domIsReady  = true;
 	while( kReadyHookSet.length ){
 		kReadyHookSet.shift()();
 	}
@@ -961,7 +959,7 @@ if ( document.addEventListener ) {
 }
 // The DOM ready check for Internet Explorer
 function doScrollCheck() {
-	if ( kAlreadyRunDomReadyFlag ) {
+	if ( kWidget.domIsReady ) {
 		return;
 	}
 	try {

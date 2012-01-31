@@ -14,7 +14,7 @@ var getModuleName = function(){
 	m = url.match(/.modules\/([^\/]*)/);
 	return ( m[1] ) ? m[1] + '::' : '';
 };
-//Always include jQuery ( unless already included )
+// Always include jQuery ( unless already included )
 if( !window.jQuery ){
 	document.write( '<script type="text/javascript" src="' + getQunitPath()+ '../../ResourceLoader.php?class=window.jQuery' + '"></script>');
 }

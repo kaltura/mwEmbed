@@ -445,17 +445,6 @@ mw.EmbedPlayer.prototype = {
 	},
 
 	/**
-	 * Check if the embedPlayer has text tracks
-	 * 
-	 * @return
-	 */
-	hasTextTracks: function(){
-		if( !this.mediaElement ){
-			return false;
-		}
-		return ( this.mediaElement.getTextTracks().length > 0 );
-	},
-	/**
 	 * Get text tracks from the mediaElement
 	 */
 	getTextTracks: function(){

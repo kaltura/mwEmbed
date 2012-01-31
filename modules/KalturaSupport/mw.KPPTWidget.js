@@ -44,7 +44,7 @@ mw.KPPTWidget.prototype = {
 		// update the playerId mapping: 
 		this.playerId = this.$target.attr('id');
 		this.$target.attr('id', this.playerId + '_pptContainer' );
-		this.flashvar = mw.getConfig('KalturaSupport.IFramePresetFlashvars');
+		this.flashvar = mw.getConfig('KalturaSupport.PlayerConfig')['vars'];
 		// Setup the layout object via KLayout
 		/*this.layout = new mw.KLayout({
 			'$layoutBox' : this.$uiConf.find('#topLevel'),

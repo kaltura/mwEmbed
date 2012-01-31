@@ -196,6 +196,12 @@
 				case 'mediaPlayTo':
 					embedPlayer.pauseTime = parseFloat(value);
 				break;
+				default: 
+					if( !embedPlayer.playerConfig[ componentName ] ){
+						embedPlayer.playerConfig[ componentName ] = {}; 
+					}
+					embedPlayer.playerConfig[ componentName ][ property ] = value; 
+				break;
 			}
 			// Give kdp plugins a chance to take attribute actions 
 			$( embedPlayer ).trigger( 'Kaltura_SetKDPAttribute', [componentName, property, value] );
@@ -268,11 +274,11 @@
 			
 			
 			// Check the exported kaltura object ( for manual overrides of any mapping ) 
-			if( embedPlayer.kalturaExportedEvaluateObject
+			if( embedPlayer.playerConfig
 					&&  
-				embedPlayer.kalturaExportedEvaluateObject[ objectPath[0] ] 
+				embedPlayer.playerConfig[ objectPath[0] ] 
 			){
-				var kObj = embedPlayer.kalturaExportedEvaluateObject[ objectPath[0] ] ;
+				var kObj = embedPlayer.playerConfig[ objectPath[0] ] ;
 				// TODO SHOULD USE A FUNCTION map
 				if( !objectPath[1] ){
 					return kObj;
@@ -380,7 +386,7 @@
 					switch( objectPath[1] ){
 						case 'flashvars':
 							if( objectPath[2] ) {
-								var fv = $( embedPlayer ).data('flashvars' );
+								var fv = embedPlayer.playerConfig['vars'];
 								switch( objectPath[2] ) {
 									case 'autoPlay':
 										// get autoplay

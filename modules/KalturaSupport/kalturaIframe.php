@@ -591,7 +591,6 @@ class kalturaIframe {
 				// on some video tag properties
 				?>
 				<script type="text/javascript">
-
 					function getViewPortSize(){
 						var w;
 						var h;
@@ -709,18 +708,8 @@ class kalturaIframe {
 						// could not get config from parent javascript scope
 					}
 				}
-	
-				// Get the flashvars object:
-				var flashVarsString = '<?php echo $this->getFlashVarsString() ?>';
-				var fvparts = flashVarsString.split('&');
-				var flashvarsObject = {};
-				for(var i=0;i<fvparts.length;i++){
-					var kv = fvparts[i].split('=');
-					if( kv[0] && kv[1] ){
-						flashvarsObject[ unescape( kv[0] ) ] = unescape( kv[1] );
-					}
-				}
-				mw.setConfig( 'KalturaSupport.IFramePresetFlashvars', flashvarsObject );
+
+				mw.setConfig('KalturaSupport.PlayerConfig', <?php echo json_encode( $this->getResultObject()->getPlayerConfig() ); ?> );
 	
 				// We should first read the config for the hashObj and after that overwrite with our own settings
 				// The entire block below must be after mw.setConfig( hashObj.mwConfig );

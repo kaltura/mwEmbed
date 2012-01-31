@@ -25,8 +25,8 @@ mw.includeAllModuleMessages();
 	 * Timed Text Object
 	 * @param embedPlayer Host player for timedText interfaces
 	 */
-	mw.TimedText = function( embedPlayer, options ) {
-		return this.init( embedPlayer, options);
+	mw.TimedText = function( embedPlayer ) {
+		return this.init( embedPlayer);
 	};
 	
 	mw.TimedText.prototype = {
@@ -95,13 +95,10 @@ mw.includeAllModuleMessages();
 		 * @constructor
 		 * @param {Object} embedPlayer Host player for timedText interfaces
 		 */
-		init: function( embedPlayer, options ) {
+		init: function( embedPlayer ) {
 			var _this = this;
 			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;	
-			if( options ){
-				this.options = options;
-			}
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
@@ -134,7 +131,7 @@ mw.includeAllModuleMessages();
 			
 			// Check for timed text support:
 			$( embedPlayer ).bind( 'addControlBarComponent' + this.bindPostFix, function(event, controlBar ){
-				if( embedPlayer.hasTextTracks() ){
+				if( embedPlayer.getTextTracks().length ){
 					controlBar.supportedComponents['timedText'] = true;
 					controlBar.components['timedText'] = _this.getTimedTextButton();					
 				}
@@ -615,7 +612,7 @@ mw.includeAllModuleMessages();
 		*		Chose Language
 		*			All Subtiles here ( if we have categories list them )
 		*		Layout
-		*			Bellow video
+		*			Below video
 		*			Ontop video ( only available to supported plugins )
 		* TODO features:
 		*		[ Search Text ]
@@ -753,7 +750,7 @@ mw.includeAllModuleMessages();
 						gM( 'mwe-timedtext-layout-' + layoutMode),
 						icon,
 						function() {
-							_this.selectLayout( layoutMode );
+							_this.setLayoutMode( layoutMode );
 						} )
 					);
 			});
@@ -761,10 +758,10 @@ mw.includeAllModuleMessages();
 		},
 
 		/**
-		* Select a new layout
+		* set the layout mode
 		* @param {Object} layoutMode The selected layout mode
 		*/
-		selectLayout: function( layoutMode ) {
+		setLayoutMode: function( layoutMode ) {
 			var _this = this;
 			if( layoutMode != _this.config.layout ) {
 				// Update the config and redraw layout
@@ -777,9 +774,9 @@ mw.includeAllModuleMessages();
 		toggleCaptions: function(){
 			mw.log( "TimedText:: toggleCaptions was:" + this.config.layout );
 			if( this.config.layout == 'off' ){
-				this.selectLayout( 'ontop' );
+				this.setLayoutMode( 'ontop' );
 			} else {
-				this.selectLayout( 'off' );
+				this.setLayoutMode( 'off' );
 			}
 		},
 		/**
@@ -1032,6 +1029,8 @@ mw.includeAllModuleMessages();
 				this.getCaptionsTarget().append( 
 					$textTarget	
 				);
+			} else if( this.getLayoutMode() == 'below' ){
+				this.addTextBelowVideo( $textTarget );
 			} else {
 				// else apply the default layout system:
 				this.addTextToDefaultLocation( $textTarget );
@@ -1109,39 +1108,12 @@ mw.includeAllModuleMessages();
 			}
 			mw.log( 'TimedText:: height of ' + this.embedPlayer.id + ' is now: ' + $( '#' + this.embedPlayer.id ).height() );
 		},
+		
 		/**
 		 * Build css for caption using this.options
 		 */
 		getCaptionCss: function() {
-			var options = this.options;
-			var style = {'display': 'inline'};
-
-			if( options.bg ) {
-				style["background-color"] = mw.getHexColor( options.bg );
-			}
-			if( options.fontColor ) {
-				style["color"] = mw.getHexColor( options.fontColor );
-			}
-			if( options.fontFamily ){
-				style["font-family"] = options.fontFamily;
-			}
-			if( options.fontsize ) {
-				// Translate to em size so that font-size parent percentage
-				// base on http://pxtoem.com/
-				var emFontMap = { '6': .375, '7': .438, '8' : .5, '9': .563, '10': .625, '11':.688,
-						'12':.75, '13': .813, '14': .875, '15':.938, '16':1, '17':1.063, '18': 1.125, '19': 1.888,
-						'20':1.25, '21':1.313, '22':1.375, '23':1.438, '24':1.5};
-				// Make sure its an int: 
-				options.fontsize = parseInt( options.fontsize );
-				style[ "font-size" ] = ( emFontMap[ options.fontsize ] ) ?  
-						emFontMap[ options.fontsize ] +'em' :
-						(  options.fontsize > 24 )?  emFontMap[24]+'em' : emFontMap[6];
-			}
-			if( options.useGlow && options.glowBlur && options.glowColor ) {
-				style["text-shadow"] = '0 0 ' + options.glowBlur + 'px ' + mw.getHexColor( options.glowColor );
-			}
-
-			return style;
+			return {};
 		}
 	};
 

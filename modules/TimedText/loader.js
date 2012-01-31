@@ -93,9 +93,9 @@
 		if( $( playerElement ).find('track').length ){
 			return true;
 		}
-		// check if we are handling an embedPlayer with hasTextTracks method
-		if( playerElement.hasTextTracks ){
-			return playerElement.hasTextTracks();
+		// check if we are handling an embedPlayer with getTextTracks method
+		if( playerElement.getTextTracks ){
+			return playerElement.getTextTracks().length;
 		}
 		
 		return false;

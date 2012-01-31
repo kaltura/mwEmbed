@@ -45,12 +45,12 @@
 				'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6yqa4nmd/format/url/protocol/http/a.ogg',
 				'type' : 'video/ogg'
 			}
-		]
+		]	
 	} );
 
 	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
 	mw.mergeConfig( 'EmbedPlayer.Attributes', {
-		'kentryid' : null,
+		'kentryid' : null, // mediaProxy.entry.id
 		'kwidgetid' : null,
 		'kuiconfid' : null,
 		// helps emulate the kdp behavior of not updating currentTime until a seek is complete. 
@@ -59,12 +59,12 @@
 		'kalturaPlayerMetaData' : null,
 		'kalturaEntryMetaData' : null,
 		'kalturaPlaylistData' : null,
-		'kalturaExportedEvaluateObject': null,
+		'playerConfig': null,
 		'rawCuePoints' : null
 	});
 	
 	mw.mergeConfig( 'EmbedPlayer.DataAttributes', {
-		'flashvars': null
+		'flashvars': null // $(embedPlayer).data( 'flashvars' )
 	});
 	
 	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
@@ -295,7 +295,6 @@
 							'position' : 'relative',
 							'display' : 'inline-block' // more or less the <object> tag default display
 						})
-						.data('flashvars', flashvars)
 						.data('cache_st', kEmbedSettings.cache_st)
 						.addClass( kalturaSwapObjectClass )
 						.append(
@@ -351,9 +350,6 @@
 							if( $(playerTarget).attr( tagKey ) ){
 								kParams[ iframeRequestMap[tagKey] ] = $(playerTarget).attr( tagKey );
 							}
-						}
-						if( $( playerTarget).data( 'flashvars' ) ){
-							kParams['flashvars'] = $( playerTarget).data('flashvars');
 						}
 						// Pass along cache_st to remove cache
 						if( $( playerTarget).data( 'cache_st' ) ){
@@ -412,9 +408,6 @@
 		}
 		// Add kaltura support hook
 		if( kLoadKalturaSupport ) {
-			// Pass the flashvars to the iframe
-			$( playerElement ).data('flashvars', mw.getConfig('KalturaSupport.IFramePresetFlashvars'));
-
 			for(var i =0; i < kalturaSupportRequestSet.length; i++ ){
 				if( $.inArray(kalturaSupportRequestSet[i], classRequest ) == -1 ){
 					classRequest.push( kalturaSupportRequestSet[i] );
@@ -425,25 +418,18 @@
 	
 	$( mw ).bind("Playlist_GetSourceHandler", function( event, playlist ){
 		var $playlistTarget = $( '#' + playlist.id );
-		var playlistEmbed = playlist.embedPlayer;
+		var embedPlayer = playlist.embedPlayer;
 		var kplUrl0, playlistConfig;
+		
 		// Check if we are dealing with a kaltura player: 
-		if( !playlistEmbed  ){
-			// XXX deprecated old rewrite method: 
-			playlistConfig = {
-				'uiconf_id' : $playlistTarget.attr('kuiconfid'),
-				'widget_id' : $playlistTarget.attr('kwidgetid'),
-				'flashvars' : $playlistTarget.data('flashvars')
-			};		
-			if( playlistConfig && playlistConfig['flashvars'] ){
-				kplUrl0 = playlistConfig['flashvars']['playlistAPI.kpl0Url'];
-			}
+		if( !embedPlayer  ){
+			mw.log("Error: playlist source handler without embedPlayer");
 		} else {
 			playlistConfig = {
-				'uiconf_id' : playlistEmbed.kuiconfid,
-				'widget_id' : playlistEmbed.kwidgetid
+				'uiconf_id' : embedPlayer.kuiconfid,
+				'widget_id' : embedPlayer.kwidgetid
 			};
-			kplUrl0 = playlistEmbed.getKalturaConfig( 'playlistAPI', 'kpl0Url' )
+			kplUrl0 = embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl0Url' )
 		}
 		// No kpl0Url, not a kaltura playlist good
 		if( !kplUrl0 ){

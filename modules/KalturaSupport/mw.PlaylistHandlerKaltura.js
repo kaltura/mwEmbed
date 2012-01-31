@@ -126,7 +126,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			// Find all the playlists by number  
 			for( var i=0; i < 50 ; i ++ ){
 				var playlist_id = playlistName = null;
-				
 				// Try and get the playlist id and name: 
 				var kplUrl = _this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl' + i + 'Url' );
 				playlistName =_this.playlist.embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl' + i + 'Name' ); 

@@ -234,7 +234,6 @@ mw.Comscore.prototype = {
 
 		/**
 		 * For debug:
-		 console.log( 'Flashvars: ', $(this.embedPlayer).data('flashvars'));
 		 console.log( 'uiConf: ', this.embedPlayer.$uiConf.find("#comscore"));
 		 console.log( 'Comscore config: ', this.config);
 		 console.log( 'cParams: ', cParams);

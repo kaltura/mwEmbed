@@ -286,13 +286,13 @@ mw.KWidgetSupport.prototype = {
 		
 		// Add an exported plugin value: 
 		embedPlayer.addExportedObject = function( pluginName, objectSet ){
-			if( !embedPlayer.kalturaExportedEvaluateObject ){
-				embedPlayer.kalturaExportedEvaluateObject = {};
+			if( !embedPlayer.playerConfig ){
+				embedPlayer.playerConfig = {};
 			}
-			if( !embedPlayer.kalturaExportedEvaluateObject[ pluginName ] ){
-				embedPlayer.kalturaExportedEvaluateObject[ pluginName ] = objectSet;
+			if( !embedPlayer.playerConfig[ pluginName ] ){
+				embedPlayer.playerConfig[ pluginName ] = objectSet;
 			} else {
-				$.extend( embedPlayer.kalturaExportedEvaluateObject[ pluginName ], objectSet);
+				$.extend( embedPlayer.playerConfig[ pluginName ], objectSet);
 			}
 			// Sync iframe with attribute data updates:
 			$( embedPlayer ).trigger( 'updateIframeData' );
@@ -300,13 +300,14 @@ mw.KWidgetSupport.prototype = {
 
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
-			return _this.getPluginConfig( embedPlayer, pluginName, 'plugin' );
+			return ( !_this.getPluginConfig( embedPlayer, pluginName, 'disableHTML5' ) &&
+					_this.getPluginConfig( embedPlayer, pluginName, 'plugin' )  );
 		};
 		// Add getFlashvars to embed player:
 		embedPlayer.getFlashvars = function() {
 			var fv = $( embedPlayer ).data( 'flashvars' );
 			if( !fv ){
-				fv = mw.getConfig( 'KalturaSupport.IFramePresetFlashvars' ) || {};
+				fv = mw.getConfig( 'KalturaSupport.PlayerConfig' )['vars'] || {};
 			}
 			return fv;
 		}
@@ -387,137 +388,63 @@ mw.KWidgetSupport.prototype = {
 	 * 				if null, we retrive all settings with the provided confPrefix 
 	 */
 	getPluginConfig: function( embedPlayer, confPrefix, attr ){
+
 		var singleAttrName = false;
 		if( typeof attr == 'string' ){
 			singleAttrName = attr;
 			attr = $.makeArray( attr );
 		}
-		var rawConfig = this.getRawPluginConfig( embedPlayer, confPrefix, attr);
-		var config =  this.postProcessConfig( embedPlayer, rawConfig );
+
+		var rawConfigArray = this.getRawPluginConfig( embedPlayer, confPrefix, singleAttrName);
+		var configArray = this.postProcessConfig( embedPlayer, rawConfigArray );
 		
 		if( singleAttrName != false ){
-			return config[ singleAttrName ];
+			return configArray[ singleAttrName ];
 		} else {
-			return config;
+			return configArray;
 		}
 	},
 
 	getRawPluginConfig: function( embedPlayer, confPrefix, attr ){
 		// Setup local pointers: 
 		var _this = this;
-		var flashvars = embedPlayer.getFlashvars();
-		var $uiConf = embedPlayer.$uiConf;
+		var plugins =  embedPlayer.playerConfig['plugins'];
 	
-		
-		// If we are getting attributes and we are checking "plugin", Also check for "disableHTML5"
-		if( attr && $.inArray( 'plugin', attr ) != -1 ){
-			attr.push( "disableHTML5" );
-		}
-
-		var config = {};
-		var $plugin = [];
-		var $uiPluginVars = [];
-		
 		// if confPrefix is not an empty string or null check for the conf prefix
-		if( confPrefix ){
-			$plugin = $uiConf.find( '#' + confPrefix );
-			// When defined from uiConf ( "plugin" tag is equivalent to "confPrefix.plugin = true" in the uiVars )
-			if( $plugin.length && attr && $.inArray( 'plugin', attr ) != -1 ){ 
-				config['plugin'] = true;
+		if( confPrefix && plugins[ confPrefix ] ){
+			if( !attr ){
+				return plugins[ confPrefix ];
 			}
-			$uiPluginVars = $uiConf.find( 'var[key^="' + confPrefix + '"]' );
-		} else {
-			// When confPrefix is empty we still need to check for config in the ui Plugin Vars section
-			var uiPluginVarsSelect = '';
-			// pre-build out $uiPluginVars list
-			var coma = '';
-			$.each( attr, function(inx, attrName ){
-				uiPluginVarsSelect+= coma + 'var[key="' + attrName + '"]';
-				coma = ',';
-			});
-			if( uiPluginVarsSelect ){
-				$uiPluginVars = $uiConf.find( uiPluginVarsSelect );
+			
+			if( attr && typeof plugins[ confPrefix ][ attr ] != 'undefined' ){
+				var returnConfig = {};
+				returnConfig[ attr ] = plugins[ confPrefix ][ attr ];
+				return returnConfig;
+			} else {
+				return {};
 			}
 		}
-		if( !attr && confPrefix ){
-			if( $plugin.length ) {
-				$.each( $plugin[0].attributes, function(i, nodeAttr){
-					 config[ nodeAttr.name ] = nodeAttr.value;
-				});
-			}
-			// @@TODO php should give us more structured configuration 
-			$.each(flashvars, function( key, val) {
-				if( key.indexOf( confPrefix ) === 0 ){
-					config[key] = val;
-				}
-			})
-			// Check for uiVars
-			$uiPluginVars.each( function(inx, node){
-				var attrName = $(node).attr('key');
-				if( $(node).attr('overrideflashvar') != "false" || ! config[attrName] ){
-					var attrKey = attrName.replace( confPrefix + '.', '');
-					config[ attrKey ] = $(node)[0].getAttribute('value');
-				}
-			});
-		} else {
-			$.each( attr, function(inx, attrName ){
-				// Plugin
-				if( $plugin.length ){
-					if( $plugin.attr( attrName ) ){
-						config[ attrName ] = $plugin.attr( attrName );
-					}
-					// XML sometimes comes in all lower case
-					if( $plugin.attr( attrName.toLowerCase() ) ){
-						config[ attrName ] = $plugin.attr( attrName.toLowerCase() );
-					}
-				}
-				
-				// Flashvars overrides
-				var pluginPrefix = ( confPrefix )? confPrefix + '.': '';
-				if( flashvars[ pluginPrefix + attrName ] ){
-					config[ attrName ] = flashvars[ pluginPrefix + attrName ];
-				}
-				
-				// Uivars Check for "flat plugin vars" stored at the end of the uiConf ( instead of as attributes )"
-				$uiPluginVars.each( function(inx, node){
-					if( $( node ).attr('key') == pluginPrefix + attrName ){
-						if( $(node).attr('overrideflashvar') == "true" || ! config[attrName] ){
-							config[attrName] = $(node)[0].getAttribute('value');
-						}
-						// Found break out of loop
-						return false;
-					}
-				});
-				
-			});
+		if( !confPrefix && attr ){
+			return embedPlayer.playerConfig['vars'][attr];
 		}
-		return config;
+		return {};		
 	},
-	postProcessConfig: function(embedPlayer,  config ){
+	postProcessConfig: function(embedPlayer, config ){
 		var _this = this;
-		$.each(config, function( attrName, value ) {
+		var returnSet = $.extend( {}, config ); 
+		$.each( returnSet, function( attrName, value ) {
 			// Unescape values that would come in from flashvars
 			if( value ){
-				config[ attrName ] = unescape( value );
+				returnSet[ attrName ] = unescape( value );
 			}
-			// Convert string to boolean 
-			if( config[ attrName ] === "true" )
-				config[ attrName ] = true;
-			if( config[ attrName ] === "false" )
-				config[ attrName ] = false; 
 			
-			// Do any value handling
+			// Do any value handling  ... myPlugin.cat = {video.currentTime}
 			// If JS Api disabled, evaluate is undefined
-			if( embedPlayer.evaluate )
-				config[ attrName ] = embedPlayer.evaluate( config[ attrName ] );
+			if( embedPlayer.evaluate ){
+				returnSet[ attrName ] = embedPlayer.evaluate( returnSet[ attrName ] );
+			}
 		});
-		
-		// Check if disableHTML5 was "true" and return false for the plugin config ( since we are the html5 library ) 
-		if( config['disableHTML5'] == true && config['plugin'] ){
-			config['plugin'] = false;
-		}
-		
-		return config;
+		return returnSet;
 	},
 	/**
 	 * Alternate source grabbing script ( for cases where we need to hot-swap the source ) 
@@ -604,10 +531,14 @@ mw.KWidgetSupport.prototype = {
 
 		// Add the flashvars
 		playerRequest.flashvars = $( embedPlayer ).data( 'flashvars' ); 
+
+		if( mw.getConfig( 'KalturaSupport.PlayerConfig' ) ){
+			embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
+			mw.setConfig('KalturaSupport.PlayerConfig', null );
+		}
 		
 		// Check if we have the player data bootstrap from the iframe
 		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
-
 		// Insure the bootStrap data has all the required info: 
 		if( bootstrapData 
 			&& bootstrapData.partner_id == embedPlayer.kwidgetid.replace('_', '')

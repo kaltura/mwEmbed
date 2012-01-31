@@ -122,7 +122,7 @@ class KalturaResultObject {
 			return $vars[ $attr ];
 		}
 
-		return null;
+		return $this->playerConfig;
 	}
 
 	public function getWidgetPlugins() {
