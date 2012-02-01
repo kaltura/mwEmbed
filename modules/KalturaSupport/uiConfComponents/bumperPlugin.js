@@ -11,7 +11,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		if( embedPlayer.isPluginEnabled( 'bumper') ){
 			window.bumperPlugin( embedPlayer, callback );
 		} else {
-			// no bumper plugin continue player checks
+			// No bumper plugin continue player checks
 			callback();
 		}
 	});

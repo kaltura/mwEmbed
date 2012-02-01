@@ -865,7 +865,6 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			// Setup the Script Request var:
 			var scriptRequest = null;
 
-
 			// If the scriptloader is enabled use the resourceName as the
 			// scriptRequest:
 			if( mw.getResourceLoaderPath() ) {

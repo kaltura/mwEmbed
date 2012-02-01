@@ -523,7 +523,7 @@ class KalturaResultObject {
 		return $resultObject;
 	}
 	function loadUiConf() {
-		// if no uiconf_id .. throw exception
+		// If no uiconf_id .. throw exception
 		if( !$this->urlParameters['uiconf_id'] ) {
 			throw new Exception( "Missing uiConf ID" );
 		}

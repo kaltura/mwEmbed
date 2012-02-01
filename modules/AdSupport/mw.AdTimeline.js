@@ -217,22 +217,22 @@ mw.AdTimeline.prototype = {
 					embedPlayer.sequenceProxy.isInSequence = false;
 					// Trigger the postSequenceComplete event
 					embedPlayer.triggerHelper( 'AdSupport_PostSequenceComplete' );
-
 					/** TODO support postroll bumper and leave behind */
 					if( playedAnAdFlag ){
 						embedPlayer.switchPlaySource( _this.originalSource, function( video ){
-							// make sure we pause the video
+							// Make sure we pause the video
 							video.pause();
 							/* iPad iOS v4.3.1 ignore video pause (probably timing issue) */
 							$( video ).bind('play.postSequenceComplete', function(){
 								video.pause();
 								$( video ).unbind( '.postSequenceComplete' );
 							});
-
 							// Restore interface
 							_this.restorePlayer();
 							// Restore ondone interface: 
 							embedPlayer.onDoneInterfaceFlag = true;
+							// on clip done can't be invoked with a stop state ( TOOD clean up end sequence ) 
+							embedPlayer.stopped = false;
 							// Run the clipdone event:
 							embedPlayer.onClipDone();
 						});
@@ -323,7 +323,7 @@ mw.AdTimeline.prototype = {
 		runSequeceProxyInx( seqInx );
 	},
 	updateUiForAdPlayback: function( slotType ){
-		mw.log( "AdTimeline:: updateUiForAdPlayback " );
+		mw.log( "AdTimeline:: updateUiForAdPlayback" );
 		var embedPlayer = this.embedPlayer;
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		embedPlayer.stopEventPropagation();
