@@ -635,19 +635,23 @@ mw.PlayerControlBuilder.prototype = {
 			// Update play button pos
 			$interface.find('.play-btn-large' ).animate(  _this.getPlayButtonPosition( butonScale ) );
 			
-			// if a spinner is displayed re-add to center: 
-			if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
-				embedPlayer.addPlayerSpinner();
-			}
-			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
 			}
 			
 			// Update player container size:
-			$( embedPlayer ).animate(  interfaceCss, callback );
+			$( embedPlayer ).animate(  interfaceCss, function(){
+				// if a spinner is displayed re-add to center: 
+				if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
+					embedPlayer.addPlayerSpinner();
+				}
+				if( $.isFunction( callback ) ){
+					callback();
+				}
+					
+			});
 		} else {
-			$interface.css( interfaceCss );
+			$interface.css( interfaceCss );()
 			// Update player size
 			$( embedPlayer ).css( targetAspectSize );
 			
