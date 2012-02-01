@@ -9,7 +9,6 @@ mw.addResourcePaths({
 	"mw.Conviva": "mw.Conviva.js"
 })
 */
-
 	
 mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
     

@@ -338,7 +338,7 @@ class KalturaResultObject {
 					if( $key == "id" ) {
 						continue;
 					}
-					$plugins[ $pluginId ][ $key ] = $this->formatString((string) $value);
+					$plugins[ $pluginId ][ strtolower( $key[0] ) . substr($key, 1) ] = $this->formatString((string) $value);
 				}
 			}
 		}

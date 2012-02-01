@@ -300,12 +300,8 @@ mw.KWidgetSupport.prototype = {
 
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
-			// check lower case
+			// Always check with lower case first letter of plugin name: 
 			if( _this.getPluginConfig( embedPlayer, pluginName[0].toLowerCase() + pluginName.substr(1), 'plugin' ) ){
-				return true;
-			}
-			// check upper case:
-			if( _this.getPluginConfig( embedPlayer, pluginName[0].toUpperCase() + pluginName.substr(1), 'plugin' ) ){
 				return true;
 			}
 			return false;
@@ -417,6 +413,12 @@ mw.KWidgetSupport.prototype = {
 		// Setup local pointers: 
 		var _this = this;
 		var plugins =  embedPlayer.playerConfig['plugins'];
+		
+		// confPrefix is the plugin Name and the first letter should always be lower case. 
+		if( confPrefix ){
+			confPrefix = confPrefix[0].toLowerCase() + confPrefix.substr(1);
+		}
+		
 	
 		// if confPrefix is not an empty string or null check for the conf prefix
 		if( confPrefix && plugins[ confPrefix ] ){
