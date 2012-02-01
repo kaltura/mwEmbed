@@ -121,7 +121,11 @@ if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 
 function kDoIframeRewriteList( rewriteObjects ){
 	for( var i=0; i < rewriteObjects.length; i++ ){
-		var options = {'width': rewriteObjects[i].width, 'height': rewriteObjects[i].height};
+		
+		var settings = rewriteObjects[i].kEmbedSettings;
+		settings.width = rewriteObjects[i].width;
+		settings.height = rewriteObjects[i].height;
+		
 		// If we have no flash &  no html5 fallback and don't care about about player rewrite 
 		if( ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && !mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) {
 			kDirectDownloadFallback( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings, options );
@@ -130,10 +134,7 @@ function kDoIframeRewriteList( rewriteObjects ){
 		}
 	}
 }
-function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
-	if( !options ){
-		options = {};
-	}
+function kalturaIframeEmbed( replaceTargetId, kEmbedSettings ){
 	// Empty the replace target:
 	var elm = document.getElementById( replaceTargetId );
 	if( ! elm ){
@@ -189,7 +190,7 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 		( window.jQuery && !mw.versionIsAtLeast( '1.3.2', jQuery.fn.jquery ) ) 
 	){
 		kWidget.log( 'Kaltura HTML5 works best with jQuery 1.3.2 or above' );
-		kIframeWithoutApi( replaceTargetId, kEmbedSettings , options );
+		kIframeWithoutApi( replaceTargetId, kEmbedSettings );
 		return ;
 	}
 	
@@ -197,15 +198,15 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings , options ){
 	if( kEmbedSettings.isHTML5 ){
 		kAddScript( function(){
 
-			var width = ( options.width ) ? options.width :
+			var width = ( kEmbedSettings.width ) ? kEmbedSettings.width :
 						( elm.width ) ? elm.width :
 							( elm.style.width ) ? parseInt( elm.style.width ) : 400;
 
-			var height = ( options.height ) ? options.height :
+			var height = ( kEmbedSettings.height ) ? kEmbedSettings.height :
 						( elm.height ) ? elm.height :
 							( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 
-			var sizeUnit = (typeof options.width == 'string' && options.width.indexOf("px") === -1) ? 'px' : '';
+			var sizeUnit = (typeof kEmbedSettings.width == 'string' && kEmbedSettings.width.indexOf("px") === -1) ? 'px' : '';
 
 			var targetCss = {
 				'width': width + sizeUnit,
@@ -369,8 +370,8 @@ function kOverideJsFlashEmbed(){
 			'kwidgetid' : kEmbedSettings.wid,
 			'kuiconfid' : kEmbedSettings.uiconf_id
 		};
-		var width = ( widthStr )? ( widthStr ) : $j('#' + replaceTargetId ).width();
-		var height = ( heightStr)? ( heightStr ) : $j('#' + replaceTargetId ).height();
+		kEmbedSettings.width = ( widthStr ) ? ( widthStr ) : $j('#' + replaceTargetId ).width();
+		kEmbedSettings.height = ( heightStr) ? ( heightStr ) : $j('#' + replaceTargetId ).height();
 		
 		if( kEmbedSettings.entry_id ){
 			embedPlayerAttributes.kentryid = kEmbedSettings.entry_id;				
@@ -381,14 +382,15 @@ function kOverideJsFlashEmbed(){
 				'partner_id': kEmbedSettings.p 
 			});
 		}
+		
 		if( mw.getConfig( 'Kaltura.IframeRewrite' ) ){
-			kalturaIframeEmbed( replaceTargetId, kEmbedSettings , {'width': width, 'height': height} );
+			kalturaIframeEmbed( replaceTargetId, kEmbedSettings );
 		} else {
 			mw.ready(function(){
 				$('#' + replaceTargetId ).empty()
 				.css({
-					'width' : width,
-					'height' : height
+					'width' : kEmbedSettings.width ,
+					'height' : kEmbedSettings.height
 				})
 				// Issue the embedPlayer call with embed attributes and the KDP ready callback
 				.embedPlayer( embedPlayerAttributes );

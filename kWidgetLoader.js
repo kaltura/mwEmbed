@@ -37,7 +37,7 @@ window.kWidget = {
 	/*
 	 * Create flash object tag
 	 */
-	outputFlashObject: function( targetId, settings, options ) {
+	outputFlashObject: function( targetId, settings ) {
 		var elm = document.getElementById( targetId );
 		// Output a normal flash object tag:
 		if( elm && elm.parentNode ){
@@ -45,40 +45,49 @@ window.kWidget = {
 			var pId =  ( settings.id )? settings.id : elm.id
 			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+
 				'/wid/' + settings.wid +
-				'/uiconf_id/' + settings.uiconf_id +
-				'/entry_id/' + settings.entry_id;
+				'/uiconf_id/' + settings.uiconf_id;
+			
+			if( settings.entry_id ){
+				swfUrl+= '/entry_id/' + settings.entry_id;
+			}
 			if( settings.cache_st ){
 				swfUrl+= '/cache_st/' + settings.cache_st;
 			}
-			// get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
-			var width = ( options.width ) ? options.width :
+			// Get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
+			var width = ( settings.width ) ? settings.width :
 							( elm.width ) ? elm.width :
 								( elm.style.width ) ? parseInt( elm.style.width ) : 400;
 
-			var height = ( options.height ) ? options.height :
+			var height = ( settings.height ) ? settings.height :
 							( elm.height ) ? elm.height :
 								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 
 			var flashvarValue = ( settings.flashvars ) ? kFlashVarsToString( settings.flashvars ) : '&';
 
-			spanTarget.innerHTML = '<object id="' + pId + '" ' +
-				'name="' + pId + '" ' +
-				'type="application/x-shockwave-flash" ' +
-				'allowFullScreen="true" ' +
-				'allowNetworking="all" ' +
-				'allowScriptAccess="always" ' +
+			
+			var defaultParamSet = {
+				'allowFullScreen': 'true',
+				'allowNetworking': 'all',
+				'allowScriptAccess': 'always',
+				'bgcolor' : '#000000'
+			}
+			var o = '<object id="' + pId + '" ' +
+				'name="' + pId + '" '+
 				'width="' + width +'" ' +
 				'height="' + height + '" ' +
 				'style="width:' + width + ';height:' + height + ';" ' +
 				'resource="' + swfUrl + '" ' +
-				'data="' + swfUrl + '" >' +
-					'<param name="allowFullScreen" value="true" />' +
-					'<param name="allowNetworking" value="all" />' +
-					'<param name="allowScriptAccess" value="always" />' +
-					'<param name="bgcolor" value="#000000" />' +
-					'<param name="flashVars" value="' + flashvarValue + '" /> ' +
-					'<param name="movie" value="' + swfUrl + '" />' +
-			'</object>';
+				'data="' + swfUrl + '" ';
+			var p = '<param name="flashVars" value="' + flashvarValue + '" /> ' +
+					'<param name="movie" value="' + swfUrl + '" />';
+			
+			for( var key in defaultParamSet ){
+				var value = ( typeof settings[key] != 'undefined' ) ? settings[key]: defaultParamSet[ key ];
+				o+= key + '="' + value + '" ';
+				p+= '<param name="' + key + '" value="' + value + '" />';
+			}
+			// update the span target: 
+			spanTarget.innerHTML = o + ' > ' + p + '</object>'; 			
 			elm.parentNode.replaceChild( spanTarget, elm );
 		}
 	},	
