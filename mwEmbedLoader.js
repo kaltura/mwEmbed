@@ -18,7 +18,7 @@ window.restoreKalturaKDPCallback = function(){
 				window.KWidget.globalJsReadyCallback( playerId );
 			}
 		}
-		// should have to do nothing.. kdp will call window.jsCallbackReady directly
+		// Should have to do nothing.. kdp will call window.jsCallbackReady directly
 	}
 };
 

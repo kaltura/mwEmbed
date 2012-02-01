@@ -45,7 +45,7 @@
 				'src' : 'http://www.kaltura.com/p/243342/sp/24334200/playManifest/entryId/1_vp5cng42/flavorId/1_6yqa4nmd/format/url/protocol/http/a.ogg',
 				'type' : 'video/ogg'
 			}
-		]	
+		]
 	} );
 
 	// Add the kentryid and kpartnerid and kuiconfid attribute to the embed player
@@ -295,6 +295,7 @@
 							'position' : 'relative',
 							'display' : 'inline-block' // more or less the <object> tag default display
 						})
+						.data('flashvars', flashvars)
 						.data('cache_st', kEmbedSettings.cache_st)
 						.addClass( kalturaSwapObjectClass )
 						.append(
@@ -351,11 +352,14 @@
 								kParams[ iframeRequestMap[tagKey] ] = $(playerTarget).attr( tagKey );
 							}
 						}
+						if( $( playerTarget).data( 'flashvars' ) ){
+							kParams['flashvars'] = $( playerTarget).data('flashvars');
+						}
 						// Pass along cache_st to remove cache
 						if( $( playerTarget).data( 'cache_st' ) ){
 							kParams['cache_st'] = $( playerTarget).data('cache_st');
 						}
-						
+
 						iframeRewriteCount++;
 						$( playerTarget )
 							.removeClass('mwEmbedKalturaWidgetSwap')
@@ -431,12 +435,11 @@
 			};
 			kplUrl0 = embedPlayer.getKalturaConfig( 'playlistAPI', 'kpl0Url' )
 		}
-		// No kpl0Url, not a kaltura playlist good
+		// No kpl0Url, not a kaltura playlist
 		if( !kplUrl0 ){
 			return ;
 		} 
 		var plId =  mw.parseUri( kplUrl0 ).queryKey['playlist_id'];
-		
 		// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
 		if( plId && mw.parseUri( kplUrl0 ).queryKey['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
 			playlistConfig.playlist_id = plId;
@@ -460,7 +463,6 @@
 	 * 	optional function called once iframe player has been loaded
 	 */
 	jQuery.fn.kalturaIframePlayer = function( iframeParams, callback ) {
-	
 		$( this ).each( function( inx, playerTarget ){
 			mw.log( '$.kalturaIframePlayer::' + $( playerTarget ).attr('id') );
 			// Check if the iframe API is enabled: 

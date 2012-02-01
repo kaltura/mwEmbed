@@ -8,7 +8,6 @@
 				callback();
 				return ;
 			}
-
 			// Check for Titles: 
 			if( $uiConf.find( '#TopTitleScreen' ).length ){
 				// Bind changeMedia to update title  

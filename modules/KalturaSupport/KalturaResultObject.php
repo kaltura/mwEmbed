@@ -304,7 +304,10 @@ class KalturaResultObject {
 	}
 
 	function formatString( $str ) {
-		$str = trim($str);
+		// trim any whitespace
+		$str = trim( $str );
+		// decode the value: 
+		$str = html_entity_decode( $str );
 		if( $str === "true" ) {
 			return true;
 		} else if( $str === "false" ) {
@@ -348,7 +351,7 @@ class KalturaResultObject {
 			$flashVars = $this->urlParameters[ 'flashvars' ];
 			foreach( $flashVars as $fvKey => $fvValue) {
 				if( $fvKey && $fvValue ) {
-					$vars[ $fvKey ] = $this->formatString($fvValue);
+					$vars[ $fvKey ] = $this->formatString( $fvValue );
 				}
 			}
 		}
@@ -358,9 +361,9 @@ class KalturaResultObject {
 			$uiVarsXml = $this->getUiConfXML()->xpath("*//var");
 			for( $i=0; $i < count($uiVarsXml); $i++ ) {
 
-				$key = (string) $uiVarsXml[ $i ]->attributes()->key;
-				$value = (string) $uiVarsXml[ $i ]->attributes()->value;
-				$override = (string) $uiVarsXml[ $i ]->attributes()->overrideflashvar;
+				$key = ( string ) $uiVarsXml[ $i ]->attributes()->key;
+				$value = ( string ) $uiVarsXml[ $i ]->attributes()->value;
+				$override = ( string ) $uiVarsXml[ $i ]->attributes()->overrideflashvar;
 
 				// Continue if flashvar exists and can't override
 				if( isset( $vars[ $key ] ) && !$override ) {
@@ -624,7 +627,7 @@ class KalturaResultObject {
 	 */
 	function getFirstPlaylistId(){
 		$playlistId = $this->getPlayerConfig('playlistAPI', 'kpl0Url');
-		$playlistId = urldecode($playlistId);
+		$playlistId = urldecode( $playlistId );
 		$playlistId = htmlspecialchars_decode( $playlistId );
 		// Parse out the "playlistId from the url ( if its a url )
 		$plParsed = parse_url( $playlistId );

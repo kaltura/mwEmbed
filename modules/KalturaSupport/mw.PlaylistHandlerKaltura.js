@@ -158,7 +158,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );	
 			// Set the playlist to the first playlist
 			_this.setPlaylistIndex( 0 );
-			
 			// Load playlist by Id 
 			_this.loadCurrentPlaylist( callback );
 		});
