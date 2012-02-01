@@ -399,7 +399,7 @@ mw.KWidgetSupport.prototype = {
 			attr = $.makeArray( attr );
 		}
 
-		var rawConfigArray = this.getRawPluginConfig( embedPlayer, confPrefix, singleAttrName);
+		var rawConfigArray = this.getRawPluginConfig( embedPlayer, confPrefix, singleAttrName );
 		var configArray = this.postProcessConfig( embedPlayer, rawConfigArray );
 		
 		if( singleAttrName != false ){
@@ -413,6 +413,7 @@ mw.KWidgetSupport.prototype = {
 		// Setup local pointers: 
 		var _this = this;
 		var plugins =  embedPlayer.playerConfig['plugins'];
+		var returnConfig = {};
 		
 		// confPrefix is the plugin Name and the first letter should always be lower case. 
 		if( confPrefix ){
@@ -426,17 +427,13 @@ mw.KWidgetSupport.prototype = {
 				return plugins[ confPrefix ];
 			}
 			if( attr && typeof plugins[ confPrefix ][ attr ] != 'undefined' ){
-				var returnConfig = {};
 				returnConfig[ attr ] = plugins[ confPrefix ][ attr ];
-				return returnConfig;
-			} else {
-				return {};
 			}
 		}
 		if( !confPrefix && attr ){
-			return embedPlayer.playerConfig['vars'][attr];
+			returnConfig[ attr ] = embedPlayer.playerConfig['vars'][attr]
 		}
-		return {};
+		return returnConfig;
 	},
 	postProcessConfig: function(embedPlayer, config ){
 		var _this = this;
