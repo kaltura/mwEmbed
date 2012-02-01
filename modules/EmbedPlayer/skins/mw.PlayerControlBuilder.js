@@ -908,7 +908,6 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// prevent scrolling when in fullscreen:
 		document.ontouchmove = function( e ){
-			mw.log( 'touchmove! ' + _this.fullscreenMode )
 			if( _this.fullscreenMode ){
 				e.preventDefault();
 			}
