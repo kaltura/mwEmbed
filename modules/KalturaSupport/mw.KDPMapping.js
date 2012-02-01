@@ -197,10 +197,10 @@
 					embedPlayer.pauseTime = parseFloat(value);
 				break;
 				default: 
-					if( !embedPlayer.playerConfig[ componentName ] ){
-						embedPlayer.playerConfig[ componentName ] = {}; 
+					if( !embedPlayer.playerConfig['plugins'][ componentName ] ){
+						embedPlayer.playerConfig['plugins'][ componentName ] = {}; 
 					}
-					embedPlayer.playerConfig[ componentName ][ property ] = value; 
+					embedPlayer.playerConfig['plugins'][ componentName ][ property ] = value; 
 				break;
 			}
 			// Give kdp plugins a chance to take attribute actions 
