@@ -11,7 +11,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		// special iframe playlist target:  ( @@todo generalize the target system ) 
 		var $playlist = $('#playlistContainer');
 		// Check if playlist is enabled:
-		if( embedPlayer.getKalturaConfig( 'playlistAPI', 'plugin' ) 
+		if( embedPlayer.isPluginEnabled( 'playlistAPI' ) 
 				&&
 			// Make sure the target is present and not already hosting a playlist
 			( $playlist[0] && ! $playlist[0].playlist )

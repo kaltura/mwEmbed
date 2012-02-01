@@ -648,10 +648,9 @@ mw.PlayerControlBuilder.prototype = {
 				if( $.isFunction( callback ) ){
 					callback();
 				}
-					
 			});
 		} else {
-			$interface.css( interfaceCss );()
+			$interface.css( interfaceCss );
 			// Update player size
 			$( embedPlayer ).css( targetAspectSize );
 			

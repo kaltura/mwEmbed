@@ -4,12 +4,10 @@
 ( function( mw, $ ) {
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-
 			// Check if plugin exists
 			if( embedPlayer.isPluginEnabled( 'statistics' ) ) {
 				mw.addKAnalytics( embedPlayer );
 			}
-
 			callback();
 		});
 	});
