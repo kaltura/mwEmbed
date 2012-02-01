@@ -1138,7 +1138,10 @@ window.checkForKDPCallback = function(){
 	var pushAlreadyCalled = function( player_id ){
 		window.KalturaKDPCallbackAlreadyCalled.push( player_id );
 	}
-	if( window.jsCallbackReady && window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
+	if( window.jsCallbackReady && window.jsCallbackReady.toString() != pushAlreadyCalled.toString() 
+			&&
+		window.KalturaKDPCallbackReady
+	){
 		window.originalKDPCallbackReady = window.jsCallbackReady;
 	}
 	// Always update the jsCallbackReady to call pushAlreadyCalled
@@ -1151,7 +1154,7 @@ window.checkForKDPCallback = function(){
 				window.originalKDPCallbackReady( playerId );
 			}
 			window.KWidget.globalJsReadyCallback( playerId );
-		};		
+		};
 	}
 };
 
