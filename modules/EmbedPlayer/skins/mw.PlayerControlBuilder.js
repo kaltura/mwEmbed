@@ -638,7 +638,7 @@ mw.PlayerControlBuilder.prototype = {
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
 			}
-			
+
 			// Update player container size:
 			$( embedPlayer ).animate(  interfaceCss, callback );
 		} else {
@@ -649,6 +649,12 @@ mw.PlayerControlBuilder.prototype = {
 			// Update play button pos
 			$interface.find('.play-btn-large').css(  _this.getPlayButtonPosition( butonScale ) );
 			
+
+			// if a spinner is displayed re-add to center:
+			if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
+				embedPlayer.addPlayerSpinner();
+			}
+
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
 			}

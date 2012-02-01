@@ -2,7 +2,7 @@
 /** 
  * This file stores default settings for Kaltura html5 client library "mwEmbed".
  * 
- *  DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory. 
+ * DO NOT MODIFY THIS FILE. Instead modify LocalSettings.php in the parent mwEmbd directory. 
  * 
  */
 
@@ -139,4 +139,4 @@ $wgLocalSettingsFile = realpath( dirname( __FILE__ ) ) . '/../LocalSettings.php'
 if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
-?>
+

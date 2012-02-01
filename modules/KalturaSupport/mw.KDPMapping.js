@@ -415,7 +415,7 @@
 				break;	
 				case 'playerStatusProxy':
 					switch( objectPath[1] ){
-						case 'kdpStatus': 
+						case 'kdpStatus':
 							//TODO
 						break;
 					}
@@ -530,12 +530,12 @@
 						callback( {}, embedPlayer.id );
 					});
 					break;
-				case 'playerReady': 
+				case 'playerReady':
 					b( 'playerReady' );
 					break;
-				case 'volumeChanged': 
+				case 'volumeChanged':
 					b( 'volumeChanged', function(event, percent){
-						callback( {'newVolume' : percent }, embedPlayer.id );
+						callback( { 'newVolume' : percent }, embedPlayer.id );
 					});
 					break;
 				case 'playerStateChange':

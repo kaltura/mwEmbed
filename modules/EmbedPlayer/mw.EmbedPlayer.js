@@ -1768,6 +1768,9 @@ mw.EmbedPlayer.prototype = {
 		this.isPauseLoading = true;
 	},
 	addPlayerSpinner: function(){
+		// remove any old spinner
+		$( '#loadingSpinner_' + this.id ).remove();
+		// re add
 		$( this ).getAbsoluteOverlaySpinner()
 		.attr( 'id', 'loadingSpinner_' + this.id );
 	},
