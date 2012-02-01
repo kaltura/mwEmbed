@@ -608,8 +608,8 @@ function kIsHTML5FallForward( ){
 		return true;
 	}
 	
-	// Check for "KalturaSupport.LeadWithHTML5" attribute
-	if( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) ){
+	// Check for "Kaltura.LeadWithHTML5" attribute
+	if( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) || mw.getConfig( 'Kaltura.LeadWithHTML5' ) ){
 		return kWidget.supportsHTML5();
 	}
 
