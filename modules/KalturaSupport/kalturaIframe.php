@@ -470,7 +470,7 @@ class kalturaIframe {
 		global $wgResourceLoaderUrl;
 		$path = str_replace( 'ResourceLoader.php', '', $wgResourceLoaderUrl );
 		?>
-		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Kaltura Embed Player iFrame</title>
 		<style type="text/css">
 			body {
@@ -570,6 +570,7 @@ class kalturaIframe {
 <!DOCTYPE html>
 <html>
 	<head>
+        
 		<script type="text/javascript"> /*@cc_on@if(@_jscript_version<9){'video audio source track'.replace(/\w+/g,function(n){document.createElement(n)})}@end@*/ 
 		</script>
 		<?php echo $this->outputIframeHeadCss(); ?>
