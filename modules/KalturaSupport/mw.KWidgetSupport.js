@@ -300,9 +300,17 @@ mw.KWidgetSupport.prototype = {
 
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
-			return ( !_this.getPluginConfig( embedPlayer, pluginName, 'disableHTML5' ) &&
-					_this.getPluginConfig( embedPlayer, pluginName, 'plugin' )  );
+			// check lower case
+			if( _this.getPluginConfig( embedPlayer, pluginName[0].toLowerCase() + pluginName.substr(1), 'plugin' ) ){
+				return true;
+			}
+			// check upper case:
+			if( _this.getPluginConfig( embedPlayer, pluginName[0].toUpperCase() + pluginName.substr(1), 'plugin' ) ){
+				return true;
+			}
+			return false;
 		};
+		
 		// Add getFlashvars to embed player:
 		embedPlayer.getFlashvars = function() {
 			var fv = $( embedPlayer ).data( 'flashvars' );
@@ -415,7 +423,6 @@ mw.KWidgetSupport.prototype = {
 			if( !attr ){
 				return plugins[ confPrefix ];
 			}
-			
 			if( attr && typeof plugins[ confPrefix ][ attr ] != 'undefined' ){
 				var returnConfig = {};
 				returnConfig[ attr ] = plugins[ confPrefix ][ attr ];
@@ -427,7 +434,7 @@ mw.KWidgetSupport.prototype = {
 		if( !confPrefix && attr ){
 			return embedPlayer.playerConfig['vars'][attr];
 		}
-		return {};		
+		return {};
 	},
 	postProcessConfig: function(embedPlayer, config ){
 		var _this = this;
