@@ -712,7 +712,8 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
 		$('.mw-fullscreen-overlay').fadeOut( 'slow' );
 	
-		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight());
+		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight() );
+		
 		// Restore the player:
 		embedPlayer.resizePlayer( {
 			'top' : _this.windowOffset.top + 'px',

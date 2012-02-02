@@ -164,7 +164,7 @@ mw.DoubleClick.prototype = {
 			}
 			var $overlay = _this.getOverlaySlot( bottom );
 
-			// add binding for resize player
+			// Add binding for resize player
 			embedPlayer.bindHelper( 'onCloseFullScreen'+ _this.bindPostfix +
 					' onOpenFullScreen' + _this.bindPostfix + 
 					' onResizePlayer'+ _this.bindPostfix, function(e) {

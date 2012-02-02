@@ -39,7 +39,7 @@ mw.DolStatistics.prototype = {
 			'USRAGNT',
 			'ASSETID'
 		];
-		
+		debugger;
 		this.pluginConfig = this.embedPlayer.getKalturaConfig( 'dolStatistics', attributes );
 
 		this.playheadFrequency = this.pluginConfig.playheadFrequency || 5;
