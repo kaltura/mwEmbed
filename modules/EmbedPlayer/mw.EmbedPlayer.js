@@ -392,6 +392,10 @@ mw.EmbedPlayer.prototype = {
 	 * controlBuilder.resizePlayer function
 	 */
 	resizePlayer: function( size , animate, callback){
+		// check for empty resize call: 
+		if( !size ){
+			return ;
+		}
 		mw.log("EmbedPlayer::resizePlayer:" + size.width + ' x ' + size.height );
 		var _this = this;
 		// Check if we are native display then resize the playerElement directly

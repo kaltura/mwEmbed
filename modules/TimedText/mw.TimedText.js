@@ -783,7 +783,8 @@ mw.includeAllModuleMessages();
 			mw.log( "TimedText:: updateLayout " );
 			var $playerTarget = this.embedPlayer.$interface;
             if( $playerTarget ) {
-                $playerTarget.find('.track').remove();
+            	// remove any existing caption containers: 
+                $playerTarget.find('.captionContainer,.captionsOverlay').remove();
             }            
 			this.refreshDisplay();
 		},
@@ -964,8 +965,8 @@ mw.includeAllModuleMessages();
 				}
 			});
 		},
-		getCaptionsTarget: function(){
-			var $capTarget = this.embedPlayer.$interface.find('.captionsLayoutTarget');
+		getCaptionsOverlay: function(){
+			var $captionsOverlayTarget = this.embedPlayer.$interface.find('.captionsOverlay');
 			var layoutCss = {
 				'left' : 0,
 				'top' :0,
@@ -980,13 +981,20 @@ mw.includeAllModuleMessages();
 				layoutCss['bottom'] = this.embedPlayer.controlBuilder.getHeight();
 			}
 			
-			if( $capTarget.length == 0 ){
-				$capTarget = $( '<div />' )
-				 	.addClass( 'captionsLayoutTarget' )
+			if( $captionsOverlayTarget.length == 0 ){
+				// TODO make this look more like addBelowVideoCaptionsTarget				
+				$captionsOverlayTarget = $( '<div />' )
+				 	.addClass( 'captionsOverlay' )
 					.css( layoutCss )
-				this.embedPlayer.$interface.append( $capTarget )
+				this.embedPlayer.$interface.append( $captionsOverlayTarget )
+				
+				// Trigger an event to resize the iframe: 
+				var height = ( this.embedPlayer.controlBuilder.isOverlayControls() ) ? 
+						this.embedPlayer.getHeight() : 
+						this.embedPlayer.getHeight() + this.embedPlayer.controlBuilder.getHeight();
+				this.embedPlayer.triggerHelper( 'resizePlayer', [{ 'height' : height }] );
 			}
-			return $capTarget;
+			return $captionsOverlayTarget;
 		},
 		addCaption: function( source, capId, caption ){
 			if( this.getLayoutMode() == 'off' ){
@@ -1022,7 +1030,7 @@ mw.includeAllModuleMessages();
 				} else {
 					$textTarget.css( this.getDefaultStyle() );
 				}
-				this.getCaptionsTarget().append( 
+				this.getCaptionsOverlay().append( 
 					$textTarget	
 				);
 			} else if( this.getLayoutMode() == 'below' ){
@@ -1068,42 +1076,47 @@ mw.includeAllModuleMessages();
 		 */
 		addTextBelowVideo: function( $textTarget ) {
 			var $playerTarget = this.embedPlayer.$interface;
+			
 			// Get the relative positioned player class from the controlBuilder:
 			this.embedPlayer.controlBuilder.keepControlBarOnScreen = true;
-			// Set the belowBar size to 60 pixels:
-			var belowBarHeight = mw.getConfig('TimedText.BelowVideoBlackBoxHeight');
-			
+			if( !$playerTarget.find('.captionContainer').length ){ 
+				this.addBelowVideoCaptionContainer();
+			}
+			$playerTarget.find('.captionContainer').html(
+				$textTarget.css( {
+					'color':'white'
+				} )
+			);
+		},
+		addBelowVideoCaptionContainer: function(){
+			mw.log( "TimedText:: addBelowVideoCaptionContainer" );
+			var $playerTarget = this.embedPlayer.$interface;
 			// Append before controls:
 			$playerTarget.find( '.control-bar' ).before(
 				$('<div>').addClass( 'captionContainer' )
-					.css({
-						'position' : 'absolute',
-						'top' : this.embedPlayer.getHeight(),
-						'display' : 'block',
-						'width' : '100%',
-						'height' : belowBarHeight + 'px',
-						'background-color' : '#000',
-						'text-align' : 'center',
-						'padding-top' : '5px'
-					} ).append(
-						$textTarget.css( {
-							'color':'white'
-						} )
-					)
+				.css({
+					'position' : 'absolute',
+					'top' : this.embedPlayer.getHeight(),
+					'display' : 'block',
+					'width' : '100%',
+					'height' : mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 'px',
+					'background-color' : '#000',
+					'text-align' : 'center',
+					'padding-top' : '5px'
+				} )
 			);
-			
 			// Add some height for the bar and interface
-			var height = ( belowBarHeight + 8 ) + this.embedPlayer.getHeight() + this.embedPlayer.controlBuilder.getHeight();
+			var height = ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 ) + this.embedPlayer.getHeight() + this.embedPlayer.controlBuilder.getHeight();
 			
 			// Resize the interface for layoutMode == 'below' ( if not in full screen)
 			if( ! this.embedPlayer.controlBuilder.fullscreenMode ){
 				this.embedPlayer.$interface.animate({
 					'height': height
 				});
+				// Trigger an event to resize the iframe: 
+				this.embedPlayer.triggerHelper( 'resizePlayer', [{ 'height' : height }] );
 			}
-			mw.log( 'TimedText:: height of ' + this.embedPlayer.id + ' is now: ' + $( '#' + this.embedPlayer.id ).height() );
 		},
-		
 		/**
 		 * Build css for caption using this.options
 		 */

@@ -27,7 +27,7 @@ function jsKalturaPlayerTest( videoId ){
 
 					kdp.sendNotification( 'doSeek', 2);
 					setTimeout(function(){
-						ok( $iframe.find('.captionsLayoutTarget').length, "Text container in DOM");
+						ok( $iframe.find('.captionsOverlay').length, "Text container in DOM");
 						equal( $iframe.find('.track span').text(), "Harold is the coffee alright?", "Text matches srt");
 						start();
 					}, 500 );

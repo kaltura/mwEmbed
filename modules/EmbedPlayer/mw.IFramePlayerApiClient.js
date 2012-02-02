@@ -34,6 +34,8 @@ mw.IFramePlayerApiClient.prototype = {
 		
 		this.addIframeFullscreenBinding();
 		
+		this.addResizeBinding();
+		
 		// Add bind helper ( for odd jQuery javascript scope issues cases iOS ) 
 		playerProxy.bindHelper = function( bindName, callback ){
 			$( this ).bind( bindName, callback );
@@ -208,6 +210,13 @@ mw.IFramePlayerApiClient.prototype = {
 				e.preventDefault();
 			}
 		};
+	},
+	
+	addResizeBinding: function(){
+		var _this = this;
+		$( this.playerProxy ).bind( 'resizePlayer', function(event, newSize){
+			$( _this.iframe ).css( newSize );	
+		});
 	},
 	/**
 	 * Handle received events
