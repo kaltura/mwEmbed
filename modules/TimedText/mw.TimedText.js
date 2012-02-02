@@ -258,8 +258,8 @@ mw.includeAllModuleMessages();
 		bindTextButton: function($textButton){
 			var _this = this;
 			$textButton.unbind('click.textMenu').bind('click.textMenu', function() {
-				_this.showTextMenu();
-				return true;
+                _this.showTextMenu();
+            return true;
 			} );
 		},
 		
@@ -779,7 +779,7 @@ mw.includeAllModuleMessages();
 		toggleCaptions: function(){
 			mw.log( "TimedText:: toggleCaptions was:" + this.config.layout );
 			if( this.config.layout == 'off' ){
-				this.setLayoutMode( 'ontop' );
+				this.setLayoutMode( 'below' );
 			} else {
 				this.setLayoutMode( 'off' );
 			}
@@ -860,6 +860,8 @@ mw.includeAllModuleMessages();
 			// Refresh the Menu (if it has a target to refresh)
 			mw.log( 'TimedText:: bind menu refresh display' );
 			this.buildMenu( this.menuTarget, false );
+            
+            this.resizeInterface();
 			
 			// check if subtitles are off: 
 			
@@ -972,7 +974,7 @@ mw.includeAllModuleMessages();
 					if( addedCaption ){
 						$( caption ).remove();
 					} else {
-						$( caption ).fadeOut( mw.getConfig('EmbedPlayer.MonitorRate'), function(){ $(this).remove();} );
+						$( caption ).fadeOut( mw.getConfig('EmbedPlayer.MonitorRate'), function(){$(this).remove();} );
 					}
 				}
 			});
@@ -1081,27 +1083,9 @@ mw.includeAllModuleMessages();
 				$captionsOverlayTarget = $( '<div />' )
 				 	.addClass( 'captionsOverlay' )
 					.css( layoutCss )
-				this.embedPlayer.$interface.append( $captionsOverlayTarget )
-				
-				// Resize the interface for layoutMode == 'below' ( if not in full screen)
-				if( !_this.embedPlayer.controlBuilder.inFullScreen && _this.originalPlayerHeight ){
-					_this.embedPlayer.$interface.css({
-						'height': _this.originalPlayerHeight
-					});
-					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{ 'height' : _this.originalPlayerHeight }] );
-				} else {
-					var cBarHeight =  ( _this.embedPlayer.controlBuilder.isOverlayControls() ) ?
-							0 :
-							_this.embedPlayer.controlBuilder.getHeight();
-					var newCss = {
-						'height': _this.embedPlayer.$interface.height() -cBarHeight
-					}
-					if( parseInt( $( _this.embedPlayer ).css('top') ) < 0 ){
-						newCss.top = 0;
-					}
-					$( _this.embedPlayer ).css( newCss );
-					$( _this.embedPlayer.getPlayerElement() ).css( newCss );
-				}
+				this.embedPlayer.$interface.append( $captionsOverlayTarget );
+                
+                this.resizeInterface();
 			}
 			// Append the text:
 			$captionsOverlayTarget.append( $textTarget );
@@ -1159,10 +1143,34 @@ mw.includeAllModuleMessages();
 						'height': height
 					});
 					// Trigger an event to resize the iframe: 
-					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{ 'height' : height }] );					
+					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );					
 				}, 50);
 			}
 		},
+        /**
+         * Resize the interface for layoutMode == 'below' ( if not in full screen)
+         */
+        resizeInterface: function(){
+            var _this = this;
+            if( !_this.embedPlayer.controlBuilder.inFullScreen && _this.originalPlayerHeight ){
+                _this.embedPlayer.$interface.css({
+                    'height': _this.originalPlayerHeight
+                });
+                _this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : _this.originalPlayerHeight}] );
+            } else {
+                var cBarHeight =  ( _this.embedPlayer.controlBuilder.isOverlayControls() ) ?
+                        0 :
+                        _this.embedPlayer.controlBuilder.getHeight();
+                var newCss = {
+                    'height': _this.embedPlayer.$interface.height() -cBarHeight
+                }
+                if( parseInt( $( _this.embedPlayer ).css('top') ) < 0 ){
+                    newCss.top = 0;
+                }
+                $( _this.embedPlayer ).css( newCss );
+                $( _this.embedPlayer.getPlayerElement() ).css( newCss );
+            }
+        },
 		positionCaptionContainer: function(){
 			var _this = this;
 			var $belowContainer = _this.embedPlayer.$interface.find('.captionContainer');
