@@ -392,11 +392,9 @@ mw.KWidgetSupport.prototype = {
 	 * 				if null, we retrive all settings with the provided confPrefix 
 	 */
 	getPluginConfig: function( embedPlayer, confPrefix, attr ){
-
 		var singleAttrName = false;
 		if( typeof attr == 'string' ){
 			singleAttrName = attr;
-			attr = $.makeArray( attr );
 		}
 
 		var rawConfigArray = this.getRawPluginConfig( embedPlayer, confPrefix, singleAttrName );
@@ -413,6 +411,9 @@ mw.KWidgetSupport.prototype = {
 		// Setup local pointers: 
 		var _this = this;
 		if( ! embedPlayer.playerConfig ){
+			if( attr ){
+				attr = [ attr ];
+			}
 			return this.getLegacyPluginConfig( embedPlayer, confPrefix, attr );
 		}
 		

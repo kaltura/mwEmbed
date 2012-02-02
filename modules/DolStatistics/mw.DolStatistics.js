@@ -1,14 +1,13 @@
 /*
 * DolStatistics plugin
 */
-
 mw.DolStatistics = function( embedPlayer, callback ){
 	this.init( embedPlayer, callback );
 };
 
 mw.DolStatistics.prototype = {
 
-	pluginVersion: "1.0",
+	pluginVersion: "1.1",
 	bindPostFix: '.DolStatistics',
 	appName: 'KDP',
 
@@ -39,25 +38,27 @@ mw.DolStatistics.prototype = {
 			'USRAGNT',
 			'ASSETID'
 		];
-		debugger;
-		this.pluginConfig = this.embedPlayer.getKalturaConfig( 'dolStatistics', attributes );
-
-		this.playheadFrequency = this.pluginConfig.playheadFrequency || 5;
+		this.playheadFrequency = this.getConfig( 'playheadFrequency' ) || 5;
 
 		// List of events we need to track
-		this.eventsList = this.pluginConfig.listenTo.split(",");
-
+		var eventList = this.getConfig( 'listenTo' );
+		this.eventsList = eventList.split(",");
+		
+		mw.log( 'DolStatistics:: eventList:' + this.eventsList );
+				
 		// Setup player counter, (used global, because on change media we re-initlize the plugin and reset all vars)
 		if( ! $( embedPlayer ).data('DolStatisticsCounter') ) {
-			$( embedPlayer ).data('DolStatisticsCounter', 1);
+			$( embedPlayer ).data('DolStatisticsCounter', 1 );
 		}
 
-		mw.log('DolStatistics:: Init plugin :: Plugin config: ', this.pluginConfig);
+		mw.log('DolStatistics:: Init plugin :: Plugin config: ', this.embedPlayer.getKalturaConfig( 'dolStatistics') );
 
 		// Add player binding
 		this.addPlayerBindings( callback );
 	},
-
+	getConfig: function( attr ){
+		return this.embedPlayer.getKalturaConfig( 'dolStatistics', attr );
+	},
 	addPlayerBindings: function( callback ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
@@ -74,9 +75,7 @@ mw.DolStatistics.prototype = {
 
 		// Register to our events
 		$.each(this.eventsList, function(k, eventName) {
-
 			switch( eventName ) {
-
 				// Special event
 				case 'percentReached':
 					_this.calcCuePoints();
@@ -84,12 +83,10 @@ mw.DolStatistics.prototype = {
 						_this.monitorPercentage();
 					});
 				break;
-
 				// Change playerUpdatePlayhead event to send events on playheadFrequency
 				case 'playerUpdatePlayhead':
 					_this.addMonitorBindings();
 				break;
-
 				// Use addJsListener for all other events
 				default:
 					embedPlayer.addJsListener(eventName + _this.bindPostFix, function() {
@@ -181,7 +178,7 @@ mw.DolStatistics.prototype = {
 	sendStatsData: function( eventName, eventData ) {
 		var _this = this;
 		// If event name not in our event list, exit
-		if( this.eventsList.indexOf(eventName) === -1 ) {
+		if( this.eventsList.indexOf( eventName ) === -1 ) {
 			return ;
 		}
 		
@@ -192,14 +189,14 @@ mw.DolStatistics.prototype = {
 		// Grab from plugin config
 		var configAttrs = [ 'DEVID', 'ASSETNAME', 'ASSETID' ];
 		for(var x=0; x<configAttrs.length; x++) {
-			params[ configAttrs[x] ] = _this.pluginConfig[ configAttrs[x] ] || '';
+			params[ configAttrs[x] ] = _this.getConfig( configAttrs[x] ) || '';
 		}
 		// Embedded Page URL
-		params['GENURL'] =  _this.pluginConfig['GENURL'] || window.kWidgetSupport.getHostPageUrl();
+		params['GENURL'] =  _this.getConfig('GENURL') || window.kWidgetSupport.getHostPageUrl();
 		// Embedded Page Title
-		params['GENTITLE'] =  _this.pluginConfig['GENTITLE'] || mw.getConfig( 'EmbedPlayer.IframeParentTitle' );
+		params['GENTITLE'] =  _this.getConfig('GENTITLE') || mw.getConfig( 'EmbedPlayer.IframeParentTitle' );
 		// User Agent
-		params['USRAGNT'] =  _this.pluginConfig['USRAGNT'] || window.navigator.userAgent;
+		params['USRAGNT'] =  _this.getConfig('USRAGNT') || window.navigator.userAgent;
 		// Current Timestamp
 		params['GENTIME'] = new Date().getTime();
 		// Widget ID
@@ -209,7 +206,7 @@ mw.DolStatistics.prototype = {
 		// Video length
 		params['VIDLEN'] = this.getDuration();
 		// Player protocol
-		params['KDPPROTO'] = this.pluginConfig['protocol'] || location.protocol.substr(0, location.protocol.length-1);
+		params['KDPPROTO'] = this.getConfig('protocol') || location.protocol.substr(0, location.protocol.length-1);
 		// Kaltura Player ID
 		params['KDPID'] = this.embedPlayer.kuiconfid;
 		// Kaltura Seesion ID
@@ -221,13 +218,15 @@ mw.DolStatistics.prototype = {
 		// KDP Event Data
 		params['KDPDAT_VALUE'] = eventData.toString();
 
+		mw.log('DolStatistics:: Send Stats Data ' + statsUrl, params);
+		
 		// If we have access to parent, call the jsFunction provided
-		if( this.pluginConfig.jsFunctionName && window.parent ) {
-			var callbackName = this.pluginConfig.jsFunctionName;
+		if( this.getConfig( 'jsFunctionName' ) && window.parent ) {
+			var callbackName = this.getConfig( 'jsFunctionName' );
 			this._executeFunctionByName( callbackName, window.parent, params);
 		} else {
 			// Use beacon to send event data
-			var statsUrl = this.pluginConfig.protocol + '://' + this.pluginConfig.host + '?' + $.param(params);
+			var statsUrl = this.getConfig( 'protocol' ) + '://' + this.getConfig( 'host' ) + '?' + $.param(params);
 			$('body').append(
 				$( '<img />' ).attr({
 					'src' : statsUrl,
@@ -235,7 +234,6 @@ mw.DolStatistics.prototype = {
 					'height' : 0
 				})
 			);
-			mw.log('DolStatistics:: Send Stats Data ' + statsUrl, params);
 		}
 	},
 

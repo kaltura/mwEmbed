@@ -63,7 +63,6 @@ window.kWidget = {
 								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 
 			var flashvarValue = ( settings.flashvars ) ? kFlashVarsToString( settings.flashvars ) : '&';
-			
 			var defaultParamSet = {
 				'allowFullScreen': 'true',
 				'allowNetworking': 'all',

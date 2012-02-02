@@ -736,19 +736,15 @@ mw.includeAllModuleMessages();
 		*/
 		getLayoutMenu: function() {
 			var _this = this;
-			var layoutOptions = [ ];
 			mw.log( 'TimedText:: getLayoutMenu layout: ' + _this.config.layout );
 
+			var layoutOptions = [];
 			//Only display the "ontop" option if the player supports it:
 			if( this.embedPlayer.supports[ 'overlays' ] ){
 				layoutOptions.push( 'ontop' );
 			}
-
-			// Add below and "off" options:
-			//if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
-				layoutOptions.push( 'below' );
-			//}
-			layoutOptions.push( 'off' );
+			// Support below player display: 
+			layoutOptions.push( 'below', 'off'  );
 
 			$ul = $('<ul>');
 			$.each( layoutOptions, function( na, layoutMode ) {
@@ -757,9 +753,9 @@ mw.includeAllModuleMessages();
 					$.getLineItem(
 						gM( 'mwe-timedtext-layout-' + layoutMode),
 						icon,
-						function() {
+						function(){
 							_this.setLayoutMode( layoutMode );
-						} )
+						})
 					);
 			});
 			return $ul;
@@ -816,11 +812,13 @@ mw.includeAllModuleMessages();
 			this.currentLangKey =  source.srclang;
 			
 			// Update the config language if the source includes language
-			if( source.srclang )
+			if( source.srclang ){
 				this.config.userLanguage = source.srclang;
+			}
 
-			if( source.kind )
+			if( source.kind ){
 				this.config.userKind = source.kind;
+			}
 
 			// (@@todo update kind & setup kind language buckets? )
 
@@ -862,6 +860,8 @@ mw.includeAllModuleMessages();
 			// Refresh the Menu (if it has a target to refresh)
 			mw.log( 'TimedText:: bind menu refresh display' );
 			this.buildMenu( this.menuTarget, false );
+			
+			// check if subtitles are off: 
 			
 			// Issues a "monitor" command to update the timed text for the new layout
 			this.monitor();

@@ -386,7 +386,12 @@
 					switch( objectPath[1] ){
 						case 'flashvars':
 							if( objectPath[2] ) {
-								var fv = embedPlayer.playerConfig['vars'];
+								var fv;
+								if( embedPlayer.playerConfig && embedPlayer.playerConfig['vars'] ){
+									fv = embedPlayer.playerConfig['vars'];
+								} else {
+									fv = $( embedPlayer ).data('flashvars');
+								}
 								switch( objectPath[2] ) {
 									case 'autoPlay':
 										// get autoplay
