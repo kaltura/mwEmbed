@@ -214,7 +214,7 @@ mw.IFramePlayerApiClient.prototype = {
 	
 	addResizeBinding: function(){
 		var _this = this;
-		$( this.playerProxy ).bind( 'resizePlayer', function(event, newSize){
+		$( this.playerProxy ).bind( 'resizeIframeContainer', function(event, newSize){
 			$( _this.iframe ).css( newSize );	
 		});
 	},

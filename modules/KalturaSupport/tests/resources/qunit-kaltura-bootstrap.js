@@ -6,6 +6,10 @@ if( window.QUnit ){
 		window['orgJsCallbackReady'] = window['jsCallbackReady'];
 	}
 	jsCallbackCalled = false;
+	
+	window['']
+	
+	
 	window['jsCallbackReady'] = function( videoId ) {
 		// check if the test can access the iframe
 		var domainRegEx = new RegExp(/^((http[s]?):\/)?\/?([^:\/\s]+)(:([^\/]*))?((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(\?([^#]*))?(#(.*))?$/);
