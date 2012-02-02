@@ -111,7 +111,7 @@ mw.includeAllModuleMessages();
 			// Remove any old bindings before we add the current bindings: 
 			_this.destroy();
 			// Add player bindings
-			this.addPlayerBindings();
+			_this.addPlayerBindings();
 		},
 		destroy: function(){
 			// remove any old player bindings; 
@@ -130,12 +130,7 @@ mw.includeAllModuleMessages();
 			var embedPlayer = this.embedPlayer;
 			
 			// Check for timed text support:
-			$( embedPlayer ).bind( 'addControlBarComponent' + this.bindPostFix, function(event, controlBar ){
-				if( embedPlayer.getTextTracks().length ){
-					controlBar.supportedComponents['timedText'] = true;
-					controlBar.components['timedText'] = _this.getTimedTextButton();					
-				}
-			});
+			_this.addInterface();
 			
 			$( embedPlayer ).bind( 'monitorEvent' + this.bindPostFix, function() {
 				_this.monitor();
@@ -199,7 +194,19 @@ mw.includeAllModuleMessages();
 				.animate( layout, 'fast' );
 			});
 		},
-
+		addInterface: function(){
+			var _this = this;
+			// By default we include a button in the control bar. 
+			$( _this.embedPlayer ).bind( 'addControlBarComponent' + this.bindPostFix, function(event, controlBar ){
+				if( _this.includeCaptionButton() ){
+					controlBar.supportedComponents['timedText'] = true;
+					controlBar.components['timedText'] = _this.getTimedTextButton();					
+				}
+			});
+		},
+		includeCaptionButton:function(){
+			return embedPlayer.getTextTracks().length;
+		},
 		/**
 		 * Get the current language key
 		 * @return 
@@ -350,10 +357,9 @@ mw.includeAllModuleMessages();
 		* @param {Object} target to display the menu
 		* @param {Boolean} autoShow If the menu should be displayed
 		*/
-		bindMenu: function( autoShow) {
+		bindMenu: function( autoShow ) {
 			var _this = this;
 			var $menuButton = this.embedPlayer.$interface.find( '.timed-text' );
-
 			var positionOpts = { };
 			if( this.embedPlayer.supports[ 'overlays' ] ){
 				var positionOpts = {
@@ -554,17 +560,6 @@ mw.includeAllModuleMessages();
 				enabledSource.load();
 			});
 		},
-
-		/**
-		* Selection of a menu item
-		*
-		* @param {Element} item Item selected
-		*/
-		selectMenuItem: function( item ) {
-			mw.log("selectMenuItem: " + $( item ).find('a').attr('class') );
-			//this.currentLangKey = ''
-		},
-
 		/**
 		* Checks if a source is "on"
 		* @return {Boolean}
@@ -730,16 +725,17 @@ mw.includeAllModuleMessages();
 		getLayoutMenu: function() {
 			var _this = this;
 			var layoutOptions = [ ];
+			mw.log( 'TimedText:: getLayoutMenu layout: ' + _this.config.layout );
 
 			//Only display the "ontop" option if the player supports it:
 			if( this.embedPlayer.supports[ 'overlays' ] ){
 				layoutOptions.push( 'ontop' );
 			}
 
-			//Add below and "off" options:
-			if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
+			// Add below and "off" options:
+			//if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 				layoutOptions.push( 'below' );
-			}
+			//}
 			layoutOptions.push( 'off' );
 
 			$ul = $('<ul>');
@@ -763,6 +759,7 @@ mw.includeAllModuleMessages();
 		*/
 		setLayoutMode: function( layoutMode ) {
 			var _this = this;
+			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' + _this.config.layout + ' )' );
 			if( layoutMode != _this.config.layout ) {
 				// Update the config and redraw layout
 				_this.config.layout = layoutMode;						
@@ -783,6 +780,7 @@ mw.includeAllModuleMessages();
 		* Updates the timed text layout ( should be called when config.layout changes )
 		*/
 		updateLayout: function() {
+			mw.log( "TimedText:: updateLayout " );
 			var $playerTarget = this.embedPlayer.$interface;
             if( $playerTarget ) {
                 $playerTarget.find('.track').remove();
@@ -849,10 +847,8 @@ mw.includeAllModuleMessages();
 			this.prevText = [];
 			
 			// Refresh the Menu (if it has a target to refresh)
-			if( this.menuTarget ) {
-				mw.log('bind menu refresh display');
-				this.bindMenu( this.menuTarget, false );
-			}
+			mw.log( 'TimedText:: bind menu refresh display' );
+			this.bindMenu( this.menuTarget, false );
 			
 			// Issues a "monitor" command to update the timed text for the new layout
 			this.monitor();
@@ -950,7 +946,7 @@ mw.includeAllModuleMessages();
 			var activeCaptions = source.getCaptionForTime( time );
 			var addedCaption = false;
 			// Show captions that are on: 
-			$.each(activeCaptions, function( capId, caption){
+			$.each( activeCaptions, function( capId, caption ){
 				if( _this.embedPlayer.$interface.find( '.track[data-capId="' + capId +'"]').length == 0){
 					_this.addCaption( source, capId, caption );
 					addedCaption = true;
@@ -1032,8 +1028,7 @@ mw.includeAllModuleMessages();
 			} else if( this.getLayoutMode() == 'below' ){
 				this.addTextBelowVideo( $textTarget );
 			} else {
-				// else apply the default layout system:
-				this.addTextToDefaultLocation( $textTarget );
+				mw.log("Possible Error, layout mode not recognized: " + this.getLayoutMode() );
 			}
 			// apply any interface size adjustments: 
 			$textTarget.css( this.getInterfaceSizeTextCss({

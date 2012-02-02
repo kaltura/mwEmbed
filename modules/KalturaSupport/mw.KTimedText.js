@@ -3,19 +3,16 @@
 */
 ( function( mw, $ ) {
 	
-	mw.KTimedText = function( embedPlayer, captionPluginName ){
-		return this.init( embedPlayer, captionPluginName );
+	mw.KTimedText = function( embedPlayer, captionPluginName, callback ){
+		return this.init( embedPlayer, captionPluginName, callback );
 	};
 	mw.KTimedText.prototype = {
 		bindPostfix : '.kTimedText',
-		init: function( embedPlayer, captionPluginName ){
+		init: function( embedPlayer, captionPluginName, callback ){
 			var _this = this;
 			this.embedPlayer = embedPlayer;
 			// Set the caption plugin name so that we can get config from the correct location. 
-			this.captionPluginName = captionPluginName;
-			
-			// ALways includes a captions button:
-			mw.setConfig( 'TimedText.ShowInterface', true ); 
+			this.pluginName = captionPluginName;
 			
 			// Check for kaltura plugin representation of offset:
 			if( _this.getConfig('timeOffset') ){
@@ -45,6 +42,7 @@
 			}
 			// Bind player: 
 			_this.bindPlayer( embedPlayer );
+			callback();
 		},
 		/* get the captions css from configuration options */
 		getCaptionCss: function(){
@@ -103,7 +101,7 @@
 			
 			// Support SetKDP attribute style caption updates
 			$( embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostfix, function( event, componentName, property, value ){
-				if( componentName == _this.captionPluginName ){
+				if( componentName == _this.pluginName ){
 					if( property == 'ccUrl' ){
 						// empty the text sources:
 						embedPlayer.timedText.textSources = null;
@@ -112,6 +110,24 @@
 					}
 				}
 			});
+		},
+		/*
+		 *
+		 * 
+		 // TODO support addInterface based on uiConf position. 
+		 addInterface:function(){
+		  
+		  <hbox id="ccOverComboBoxWrapper" horizontalalign="right" width="100%" height="100%" paddingright="5" paddingtop="5">
+          <plugin id="captionsOverFader" width="0%" height="0%" includeinlayout="false" target="{ccOverComboBoxWrapper}" hovertarget="{PlayerHolder}" duration="0.5" autohide="true" path="faderPlugin.swf"></plugin>
+          <combobox id="ccOverComboBox" width="90" stylename="_kdp" selectedindex="{closedCaptionsOverPlayer.currentCCFileIndex}"
+	           kevent_change="sendNotification( 'closedCaptionsSelected' , ccOverComboBox.selectedItem)" 
+	           dataprovider="{closedCaptionsOverPlayer.availableCCFilesLabels}" prompt="Captions" tooltip="">
+          </combobox>
+          
+		 }
+		 */
+		includeCaptionButton:function(){
+			return true;
 		},
 		getConfig: function( attrName ){
 			return this.embedPlayer.getKalturaConfig( this.pluginName, attrName );
@@ -211,7 +227,7 @@
 				})[0]
 				);
 			// Return a "textSource" object:
-			return [ new mw.TextSource( embedSource ) ];
+			return new mw.TextSource( embedSource );
 		},
 	
 		/**

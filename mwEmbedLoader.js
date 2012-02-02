@@ -221,17 +221,17 @@ function kalturaIframeEmbed( replaceTargetId, kEmbedSettings ){
 		});	
 	} else {
 		restoreKalturaKDPCallback();
-		kWidget.outputFlashObject( replaceTargetId, kEmbedSettings, options );
+		kWidget.outputFlashObject( replaceTargetId, kEmbedSettings );
 	}
 }
-function kIframeWithoutApi( replaceTargetId, kEmbedSettings , options ){
+function kIframeWithoutApi( replaceTargetId, kEmbedSettings ){
 	// Else we can avoid loading mwEmbed all together and just rewrite the iframe 
 	// ( no javascript api needed )
 	
 	var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
 	iframeSrc += '?' + kEmbedSettingsToUrl( kEmbedSettings );
 	if( options.width && options.height ) {
-		iframeSrc += '&iframeSize=' + options.width + 'x' + options.height;
+		iframeSrc += '&iframeSize=' + kEmbedSettings.width + 'x' + kEmbedSettings.height;
 	}
 	
 	// If remote service is enabled pass along service arguments:
@@ -1177,9 +1177,9 @@ function kSupportsFlash(){
 	kWidget.log('kSupportsFlash is deprecated. Please use kWidget.supportsFlash');
 	return kWidget.supportsFlash();
 }
-function kOutputFlashObject( targetId, settings, options ) {
+function kOutputFlashObject( targetId, settings ) {
 	kWidget.log('kOutputFlashObject is deprecated. Please use kWidget.outputFlashObject');
-	kWidget.outputFlashObject( targetId, settings, options );
+	kWidget.outputFlashObject( targetId, settings );
 }
 function kIsIE(){
 	return /msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);

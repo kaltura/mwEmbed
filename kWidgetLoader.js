@@ -63,19 +63,18 @@ window.kWidget = {
 								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 
 			var flashvarValue = ( settings.flashvars ) ? kFlashVarsToString( settings.flashvars ) : '&';
-
 			
 			var defaultParamSet = {
 				'allowFullScreen': 'true',
 				'allowNetworking': 'all',
 				'allowScriptAccess': 'always',
-				'bgcolor' : '#000000'
+				'bgcolor': '#000000'
 			}
 			var o = '<object id="' + pId + '" ' +
 				'name="' + pId + '" '+
 				'width="' + width +'" ' +
 				'height="' + height + '" ' +
-				'style="width:' + width + ';height:' + height + ';" ' +
+				'style="width:' + width + 'px;height:' + height + 'px;" ' +
 				'resource="' + swfUrl + '" ' +
 				'data="' + swfUrl + '" ';
 			var p = '<param name="flashVars" value="' + flashvarValue + '" /> ' +
@@ -86,8 +85,9 @@ window.kWidget = {
 				o+= key + '="' + value + '" ';
 				p+= '<param name="' + key + '" value="' + value + '" />';
 			}
+			var objectTag = o + ' > ' + p + '</object>'; 
 			// update the span target: 
-			spanTarget.innerHTML = o + ' > ' + p + '</object>'; 			
+			spanTarget.innerHTML = 	objectTag;	
 			elm.parentNode.replaceChild( spanTarget, elm );
 		}
 	},	

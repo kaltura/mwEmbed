@@ -13,8 +13,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		for( var i =0; i < captionPluginNames.length; i++ ){
 			captionPluginName = captionPluginNames[i];
 			if( embedPlayer.isPluginEnabled( captionPluginName ) ){
-				 captionPlugin( embedPlayer, captionPluginName );
-				 callback();
+				 captionPlugin( embedPlayer, captionPluginName, callback );
 				 return ;
 			}
 		};
@@ -23,11 +22,11 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	});
 });
 
-window.captionPlugin = function( embedPlayer, captionPluginName){
+window.captionPlugin = function( embedPlayer, captionPluginName, callback){
 	// Load the Kaltura TimedText and TimedText Module:
 	mw.load( [ "TimedText", "mw.KTimedText" ], function() {
 		// Add captions to the player
-		new mw.KTimedText( embedPlayer, captionPluginName ); 
+		new mw.KTimedText( embedPlayer, captionPluginName, callback ); 
 	});
 };
 
