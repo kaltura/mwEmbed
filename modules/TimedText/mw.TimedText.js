@@ -280,7 +280,7 @@ mw.includeAllModuleMessages();
 				}
 			}else{				
 				// Bind the text menu:
-				this.bindMenu( true );
+				this.buildMenu( true );
 			}
 		},
 		getTextMenuContainer: function(){
@@ -357,7 +357,7 @@ mw.includeAllModuleMessages();
 		* @param {Object} target to display the menu
 		* @param {Boolean} autoShow If the menu should be displayed
 		*/
-		bindMenu: function( autoShow ) {
+		buildMenu: function( autoShow ) {
 			var _this = this;
 			var $menuButton = this.embedPlayer.$interface.find( '.timed-text' );
 			var positionOpts = { };
@@ -849,7 +849,7 @@ mw.includeAllModuleMessages();
 			
 			// Refresh the Menu (if it has a target to refresh)
 			mw.log( 'TimedText:: bind menu refresh display' );
-			this.bindMenu( this.menuTarget, false );
+			this.buildMenu( this.menuTarget, false );
 			
 			// Issues a "monitor" command to update the timed text for the new layout
 			this.monitor();
@@ -965,7 +965,7 @@ mw.includeAllModuleMessages();
 				}
 			});
 		},
-		getCaptionsOverlay: function(){
+		addTextOverlay: function( $textTarget ){
 			var $captionsOverlayTarget = this.embedPlayer.$interface.find('.captionsOverlay');
 			var layoutCss = {
 				'left' : 0,
@@ -994,7 +994,8 @@ mw.includeAllModuleMessages();
 						this.embedPlayer.getHeight() + this.embedPlayer.controlBuilder.getHeight();
 				this.embedPlayer.triggerHelper( 'resizePlayer', [{ 'height' : height }] );
 			}
-			return $captionsOverlayTarget;
+			// Append the text:
+			$captionsOverlayTarget.append( $textTarget );
 		},
 		addCaption: function( source, capId, caption ){
 			if( this.getLayoutMode() == 'off' ){
@@ -1023,21 +1024,17 @@ mw.includeAllModuleMessages();
 			// Update any links to point to a new window
 			$textTarget.find( 'a' ).attr( 'target', '_blank' );
 			
-			// Apply any custom style ( if we are ontop of the video )
+			// Add TTML or other complex text styles / layouts if we have ontop captions: 
 			if( this.getLayoutMode() == 'ontop' ){
 				if( caption.css ){
 					$textTarget.css( caption.css );
 				} else {
 					$textTarget.css( this.getDefaultStyle() );
 				}
-				this.getCaptionsOverlay().append( 
-					$textTarget	
-				);
-			} else if( this.getLayoutMode() == 'below' ){
-				this.addTextBelowVideo( $textTarget );
-			} else {
-				mw.log("Possible Error, layout mode not recognized: " + this.getLayoutMode() );
 			}
+			// Apply any custom style ( if we are ontop of the video )
+			this.displayTextTarget( $textTarget );
+			
 			// apply any interface size adjustments: 
 			$textTarget.css( this.getInterfaceSizeTextCss({
 					'width' :  this.embedPlayer.$interface.width(),
@@ -1054,6 +1051,17 @@ mw.includeAllModuleMessages();
 			}
 		
 			$textTarget.fadeIn('fast');
+		},
+		displayTextTarget: function( $textTarget ){
+			if( this.getLayoutMode() == 'ontop' ){
+				this.addTextOverlay(
+					$textTarget	
+				);
+			} else if( this.getLayoutMode() == 'below' ){
+				this.addTextBelowVideo( $textTarget );
+			} else {
+				mw.log("Possible Error, layout mode not recognized: " + this.getLayoutMode() );
+			}
 		},
 		getDefaultStyle: function(){ 
 			var baseCss =  {

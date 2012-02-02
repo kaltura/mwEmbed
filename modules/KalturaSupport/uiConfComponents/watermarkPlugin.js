@@ -68,7 +68,7 @@
 					embedPlayer.bindHelper( 'AdSupport_EndAdPlayback' + bindPostFix, function(){
 						embedPlayer.$interface.find('.k-watermark-plugin').show();
 					});
-
+					// TODO on player resize always put the watermark where the video is.  
 				}
 			}
 			// Continue trigger event regardless of if ui-conf is found or not
@@ -86,8 +86,8 @@
 				'position' : 'absolute',
 				'z-index':1
 			};
-			var bottom = (embedPlayer.overlaycontrols) ? 0 : embedPlayer.controlBuilder.getHeight() + 'px';
-			switch( $watermarkConf.attr('watermarkPosition' ) ){
+			var bottom = ( embedPlayer.overlaycontrols ) ? 0 : embedPlayer.controlBuilder.getHeight() + 'px';
+			switch( $watermarkConf.attr( 'watermarkPosition' ) ){
 				case 'topRight': 
 					watermarkCss.top = watermarkCss.right = '0';
 					break;
@@ -108,7 +108,7 @@
 		};
 		
 		var watermarkCss = getCss( $watermarkConf );
-		embedPlayer.$interface.append( 
+		embedPlayer.$interface.append(
 			$('<span />')
 			.addClass('k-watermark-plugin')
 			.css( watermarkCss )
