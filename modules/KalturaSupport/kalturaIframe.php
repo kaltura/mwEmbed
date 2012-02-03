@@ -823,7 +823,6 @@ class kalturaIframe {
 						if( prevWinSize.width == $(window).width() &&  prevWinSize.height ==  $(window).height() ){
 							// Window size has not changed try to resize once more: 
 							if( ! secondTry ){
-								alert("second try");
 								setTimeout(function(){
 									doResizePlayer( true );	
 								},100);
