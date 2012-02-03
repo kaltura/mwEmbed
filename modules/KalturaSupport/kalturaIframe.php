@@ -813,13 +813,31 @@ class kalturaIframe {
 					if( mw.getConfig('EmbedPlayer.IframeIsPlaying') ){
 						embedPlayer.play();
 					}
-					function doResizePlayer(){
-						$( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )
-							[0].resizePlayer({
+					
+					var prevWinSize = {
+						'width' : $(window).width(),
+						'height' : $(window).height()
+					};
+					function doResizePlayer( secondTry ){
+						var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];
+						if( prevWinSize.width == $(window).width() &&  prevWinSize.height ==  $(window).height() ){
+							// Window size has not changed try to resize once more: 
+							if( ! secondTry ){
+								alert("second try");
+								setTimeout(function(){
+									doResizePlayer( true );	
+								},100);
+							}
+						} else {
+							// Update the prev window size: 
+							prevWinSize = {
 								'width' : $(window).width(),
 								'height' : $(window).height()
-							});
-					}
+							};						
+							embedPlayer.resizePlayer(prevWinSize);
+						}
+					};
+
 					// Bind window resize to reize the player:
 					$( window ).resize( doResizePlayer );
 					// Resize the player per player on ready
