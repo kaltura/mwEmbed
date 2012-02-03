@@ -838,7 +838,10 @@ class kalturaIframe {
 					};
 
 					// Bind window resize to reize the player:
-					$( window ).resize( doResizePlayer );
+					$( window ).resize( function(){ 
+						// call inline to avoid passing event as true second try
+						doResizePlayer( false ) ;
+					});
 					// Resize the player per player on ready
 					if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
 						doResizePlayer();
