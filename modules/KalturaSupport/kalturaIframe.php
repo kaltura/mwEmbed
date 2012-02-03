@@ -838,7 +838,7 @@ class kalturaIframe {
 					};
 
 					// Bind window resize to reize the player:
-					$( window ).resize( function(){ 
+					$( window ).resize( function(){
 						// call inline to avoid passing event as true second try
 						doResizePlayer( false ) ;
 					});
