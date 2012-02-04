@@ -814,34 +814,30 @@ class kalturaIframe {
 						embedPlayer.play();
 					}
 					
-					var prevWinSize = {
-						'width' : $(window).width(),
-						'height' : $(window).height()
+					function getWindowSize(){
+						return {
+							'width' : $(window).width(),
+							'height' : $(window).height()
+						};
 					};
-					function doResizePlayer( secondTry ){
+					function syncResizeCheck(){
 						var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];
-						if( prevWinSize.width == $(window).width() &&  prevWinSize.height ==  $(window).height() ){
-							// Window size has not changed try to resize once more: 
-							if( ! secondTry ){
-								setTimeout(function(){
-									doResizePlayer( true );	
-								},100);
-							}
-						} else {
-							// Update the prev window size: 
-							prevWinSize = {
-								'width' : $(window).width(),
-								'height' : $(window).height()
-							};						
-							embedPlayer.resizePlayer(prevWinSize);
+						if( embedPlayer.$interface.height() != $(window).height() 
+							|| 
+							embedPlayer.$interface.width() != $(window).width()
+						){
+							embedPlayer.resizePlayer( getWindowSize() );
 						}
+					}
+					function doResizePlayer(){
+						var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];			
+						embedPlayer.resizePlayer( getWindowSize() );
+						setTimeout(syncResizeCheck, 100 );
 					};
 
 					// Bind window resize to reize the player:
-					$( window ).resize( function(){
-						// call inline to avoid passing event as true second try
-						doResizePlayer( false ) ;
-					});
+					$( window ).resize(doResizePlayer);
+					
 					// Resize the player per player on ready
 					if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
 						doResizePlayer();
