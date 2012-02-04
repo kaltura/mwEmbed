@@ -833,6 +833,8 @@ class kalturaIframe {
 						var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];			
 						embedPlayer.resizePlayer( getWindowSize() );
 						setTimeout(syncResizeCheck, 100 );
+						// another check to ensure sync
+						setTimeout(syncResizeCheck, 500 );
 					};
 
 					// Bind window resize to reize the player:
