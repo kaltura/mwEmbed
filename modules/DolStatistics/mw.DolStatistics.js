@@ -217,7 +217,18 @@ mw.DolStatistics.prototype = {
 		params['KDPEVNT'] = eventName;
 		// KDP Event Data
 		params['KDPDAT_VALUE'] = eventData.toString();
-
+		// Always include the current time: 
+		params['PLAYHEAD_POSITION'] = embedPlayer.currentTime;
+		
+		// Add custom params
+		for( var i =0; i < 10; i++ ){
+			// Check for custom data key value pairs ( up to 9 ) 
+			if( _this.getConfig( 'customDataKey' + i ) &&  _this.getConfig( 'customDataValue' + i ) ){
+				params[  _this.getConfig( 'customDataKey' + i )  ] =  _this.getConfig( 'customDataValue' + i );
+			}
+		}
+		
+		
 		mw.log('DolStatistics:: Send Stats Data ' + statsUrl, params);
 		
 		// If we have access to parent, call the jsFunction provided

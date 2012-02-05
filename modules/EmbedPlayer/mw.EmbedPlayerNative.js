@@ -289,7 +289,7 @@ mw.EmbedPlayerNative = {
 		var vid = _this.getPlayerElement();
 		
 		// Update duration
-		if( vid && vid.duration ){
+		if( vid && vid.duration && isFinite( vid.duration ) ){
 			this.duration = vid.duration; 
 		}
 		// Update the bufferedPercent
@@ -485,7 +485,7 @@ mw.EmbedPlayerNative = {
 		}
 		var ct =  this.playerElement.currentTime;
 		// Return 0 or a positive number: 
-		if( ! ct || isNaN( ct ) || ct < 0 ){
+		if( ! ct || isNaN( ct ) || ct < 0 || ! isFinite( ct ) ){
 			return 0;
 		}
 		// Return the playerElement currentTime
@@ -875,7 +875,7 @@ mw.EmbedPlayerNative = {
 	*/
 	_onloadedmetadata: function() {
 		this.getPlayerElement();
-		if ( this.playerElement && ! isNaN( this.playerElement.duration ) ) {
+		if ( this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration) ) {
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );
 			this.duration = this.playerElement.duration;
 		}
