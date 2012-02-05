@@ -245,10 +245,14 @@
 		},
 		getTextSource: function( ccUrl, type ){
 			var _this = this;
-			if( !type || !ccUrl ){
-				mw.log("Error: KTimedText error missing type or text source from custom vars");
-				return [];
+			if( !ccUrl ){
+				mw.log("Error: KTimedText error missing text source from custom vars");
+				return null;
 			}
+			if( !type ){
+				type  = 'text/x-srt';
+			}
+			
 			var embedSource = this.embedPlayer.mediaElement.tryAddSource(
 				$( '<track />' ).attr({
 					'kind'		: 'subtitles',
