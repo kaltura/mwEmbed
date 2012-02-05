@@ -820,25 +820,19 @@ class kalturaIframe {
 							'height' : $(window).height()
 						};
 					};
-					function syncResizeCheck(){
-						var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];
-						if( embedPlayer.$interface.height() != $(window).height() 
-							|| 
-							embedPlayer.$interface.width() != $(window).width()
-						){
-							embedPlayer.resizePlayer( getWindowSize() );
-						}
-					}
 					function doResizePlayer(){
-						var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];			
-						embedPlayer.resizePlayer( getWindowSize() );
-						setTimeout(syncResizeCheck, 100 );
-						// another check to ensure sync
-						setTimeout(syncResizeCheck, 500 );
+						var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];						
+						setTimeout(function(){
+							if( console && console.log ){
+								// Do not remove this log statment ( there is something strange going on on iPad / iOS 5 that nessetates this ) 
+								console.log( 'Resize player: ' + $( embedPlayer ).width() + ' to:' + $(window).width() );
+							}
+							embedPlayer.resizePlayer( getWindowSize() );
+						},0);
 					};
 
 					// Bind window resize to reize the player:
-					$( window ).resize(doResizePlayer);
+					$( window ).resize( doResizePlayer );
 					
 					// Resize the player per player on ready
 					if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
