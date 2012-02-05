@@ -367,6 +367,7 @@ mw.KWidgetSupport.prototype = {
 		if( autoPlay ){
 			embedPlayer.autoplay = true;
 		}
+		
 		// Check for imageDefaultDuration
 		var imageDuration = this.getPluginConfig( embedPlayer, '', 'imageDefaultDuration');
 		if( imageDuration ){

@@ -201,6 +201,7 @@ mw.IFramePlayerApiClient.prototype = {
 				doFullscreen();
 			}
 		});
+		
 		$( this.playerProxy ).bind( 'onOpenFullScreen', doFullscreen);
 		$( this.playerProxy ).bind( 'onCloseFullScreen', restoreWindowMode);
 		

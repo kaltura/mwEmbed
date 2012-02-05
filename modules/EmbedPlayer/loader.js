@@ -443,7 +443,8 @@
 				'$j.fn.menu',
 				'mw.style.jquerymenu',
 				'$j.ui.slider',
-				'mw.Uri'
+				'mw.Uri',
+				'fullScreenApi'
 			],
 			[
 				'mw.EmbedPlayer',

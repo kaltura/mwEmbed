@@ -364,7 +364,7 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	* Do full-screen mode
 	*/
-	doFullScreenPlayer: function( callback) {		
+	doFullScreenPlayer: function( callback ) {		
 		mw.log("PlayerControlBuilder:: doFullScreenPlayer" );
 		// Setup pointer to control builder :
 		var _this = this;
@@ -381,6 +381,21 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		this.inFullScreen = true;
 		var triggerOnOpenFullScreen = true;
+		
+		// Check for native support for fullscreen and we are in an iframe server
+		if ( window.fullScreenApi.supportsFullScreen && mw.getConfig('EmbedPlayer.IsIframeServer' ) ) {
+			var parentWindow = window.parent; 
+			var parentTarget = parentWindow.document.getElementById( this.embedPlayer.id );
+			// Make the iframe fullscreen:
+			parentWindow.fullScreenApi.requestFullScreen( parentTarget );
+			// Add a binding to catch "escape" fullscreen
+			parentTarget.addEventListener( fullScreenApi.fullScreenEventName, function( event ) {
+				if ( ! parentWindow.fullScreenApi.isFullScreen() ) {
+					_this.restoreWindowPlayer()
+				}
+			});
+		}
+		
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			var vid = this.embedPlayer.getPlayerElement();
 			if( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen')
@@ -605,6 +620,88 @@ mw.PlayerControlBuilder.prototype = {
 	},
 
 	/**
+	* Restore the window player
+	*/
+	restoreWindowPlayer: function() {
+		var _this = this;
+		mw.log("PlayerControlBuilder :: restoreWindowPlayer" );
+		var embedPlayer = this.embedPlayer;
+		embedPlayer.$interface.css({'position':'relative'});
+	  
+		// Check if fullscreen mode is already restored: 
+		if( this.inFullScreen === false ){
+			return ;
+		}
+		// Set fullscreen mode to false
+		this.inFullScreen = false;
+
+		// Check for native support for fullscreen and support native fullscreen restore
+		if ( window.fullScreenApi.supportsFullScreen && mw.getConfig('EmbedPlayer.IsIframeServer' ) ) {
+			var parentWindow = window.parent; 
+			var parentTarget = parentWindow.document.getElementById( this.embedPlayer.id );
+			parentWindow.fullScreenApi.cancelFullScreen( parentTarget );
+		}
+		
+
+		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
+		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+			this.restoreWindowPlayerDom();
+		} 
+		// Restore scrolling on iPad
+		$( document ).unbind('touchend.fullscreen');
+		// Trigger the onCloseFullscreen event: 
+		$( embedPlayer ).trigger( 'onCloseFullScreen' );
+	},
+	restoreWindowPlayerDom:function(){
+		var _this = this;
+		// local ref to embedPlayer: 
+		var embedPlayer = this.embedPlayer; 
+		
+		var $interface = embedPlayer.$interface;
+		var interfaceHeight = ( _this.isOverlayControls() )
+			? embedPlayer.getHeight()
+			: embedPlayer.getHeight() + _this.getHeight();
+	
+		// only animate if we are not inside an iframe
+		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
+			
+		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
+		$('.mw-fullscreen-overlay').fadeOut( 'slow' );
+	
+		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight() );
+		
+		// Restore the player:
+		embedPlayer.resizePlayer( {
+			'top' : _this.windowOffset.top + 'px',
+			'left' : _this.windowOffset.left + 'px',
+			'width' : embedPlayer.getWidth(),
+			'height' : embedPlayer.getHeight()
+		}, aninmate, function(){
+			var topPos = {
+					'position' : _this.windowPositionStyle,
+					'z-index' : _this.windowZindex,
+					'overlow' : 'visible',
+					'top' : '0px',
+					'left' : '0px'
+				};
+			// Restore non-absolute layout:
+			$( [ $interface, $interface.find('.playerPoster'), embedPlayer ] ).css( topPos );
+			if( embedPlayer.getPlayerElement() ){
+				$( embedPlayer.getPlayerElement() )
+					.css( topPos )
+			}
+			// Restore the body scroll bar
+			$('body').css( 'overflow', 'auto' );
+			
+			// If native player restore z-index:
+			if( embedPlayer.isPersistentNativePlayer() ){
+				$( embedPlayer.getPlayerElement() ).css( {
+					'z-index': 'auto'
+				});
+			}
+		});
+	},
+	/**
 	 * Resize the player to a target size keeping aspect ratio
 	 */
 	resizePlayer: function( size, animate, callback ){
@@ -671,81 +768,6 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		}
 	},
-	/**
-	* Restore the window player
-	*/
-	restoreWindowPlayer: function() {
-		var _this = this;
-		mw.log("PlayerControlBuilder :: restoreWindowPlayer" );
-		var embedPlayer = this.embedPlayer;
-		embedPlayer.$interface.css({'position':'relative'});
-	  
-		// Check if fullscreen mode is already restored: 
-		if( this.inFullScreen === false ){
-			return ;
-		}
-		// Set fullscreen mode to false
-		this.inFullScreen = false;
-
-		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
-		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			this.restoreWindowPlayerDom();
-		} 
-		// Restore scrolling on iPad
-		$( document ).unbind('touchend.fullscreen');
-		// Trigger the onCloseFullscreen event: 
-		$( embedPlayer ).trigger( 'onCloseFullScreen' );
-	},
-	restoreWindowPlayerDom:function(){
-		var _this = this;
-		// local ref to embedPlayer: 
-		var embedPlayer = this.embedPlayer; 
-		
-		var $interface = embedPlayer.$interface;
-		var interfaceHeight = ( _this.isOverlayControls() )
-			? embedPlayer.getHeight()
-			: embedPlayer.getHeight() + _this.getHeight();
-	
-		// only animate if we are not inside an iframe
-		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
-			
-		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
-		$('.mw-fullscreen-overlay').fadeOut( 'slow' );
-	
-		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight() );
-		
-		// Restore the player:
-		embedPlayer.resizePlayer( {
-			'top' : _this.windowOffset.top + 'px',
-			'left' : _this.windowOffset.left + 'px',
-			'width' : embedPlayer.getWidth(),
-			'height' : embedPlayer.getHeight()
-		}, aninmate, function(){
-			var topPos = {
-					'position' : _this.windowPositionStyle,
-					'z-index' : _this.windowZindex,
-					'overlow' : 'visible',
-					'top' : '0px',
-					'left' : '0px'
-				};
-			// Restore non-absolute layout:
-			$( [ $interface, $interface.find('.playerPoster'), embedPlayer ] ).css( topPos );
-			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() )
-					.css( topPos )
-			}
-			// Restore the body scroll bar
-			$('body').css( 'overflow', 'auto' );
-			
-			// If native player restore z-index:
-			if( embedPlayer.isPersistentNativePlayer() ){
-				$( embedPlayer.getPlayerElement() ).css( {
-					'z-index': 'auto'
-				});
-			}
-		});
-	},
-
 	/**
 	* Get minimal width for interface overlay
 	*/
