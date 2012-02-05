@@ -34,6 +34,11 @@
 			}
 			embedPlayer.timedText = baseTimedText;
 			
+			// if using the customCaptionsButton existingLayout always starts as "off"
+			if ( _this.embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
+				existingLayout =  'off';
+			}
+			
 			// Update the layout options per existing layout or uiConf preference. 
 			if( existingLayout !== null ){
 				embedPlayer.timedText.setLayoutMode( existingLayout );
@@ -62,8 +67,7 @@
             var _this = this;
             if ( _this.embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
                 return;
-            }
-            else {
+            } else {
                 this.parent_buildMenu( autoShow );
             }
         },
