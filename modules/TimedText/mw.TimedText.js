@@ -863,8 +863,9 @@ mw.includeAllModuleMessages();
             
             this.resizeInterface();
 			
-			// check if subtitles are off: 
-			
+            // add an empty catption: 
+            this.displayTextTarget( $( '<span /> ').text( '') ); 
+            
 			// Issues a "monitor" command to update the timed text for the new layout
 			this.monitor();
 		},
@@ -1152,6 +1153,11 @@ mw.includeAllModuleMessages();
          */
         resizeInterface: function(){
             var _this = this;
+            if( !_this.embedPlayer.controlBuilder ){
+            	// too soon
+            	return ;
+            }
+            
             if( !_this.embedPlayer.controlBuilder.inFullScreen && _this.originalPlayerHeight ){
                 _this.embedPlayer.$interface.css({
                     'height': _this.originalPlayerHeight
@@ -1190,6 +1196,10 @@ mw.includeAllModuleMessages();
 					$( _this.embedPlayer ).height() > _this.embedPlayer.$interface.height() - mw.getConfig('TimedText.BelowVideoBlackBoxHeight')
 				){
 					newCss.height = $( _this.embedPlayer ).height() - mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' );
+				} else {
+					if( $( _this.embedPlayer ).height() > _this.embedPlayer.getHeight() ){
+						newCss.height = _this.embedPlayer.getHeight();
+					}
 				}
 				$( _this.embedPlayer ).css( newCss );
 				$( _this.embedPlayer.getPlayerElement() ).css( newCss );
