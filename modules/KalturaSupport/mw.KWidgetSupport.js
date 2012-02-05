@@ -349,8 +349,12 @@ mw.KWidgetSupport.prototype = {
 			mw.log( "KWidgetSupport:: trigger KalturaSupport_CheckUiConf" );
 			$( embedPlayer ).triggerQueueCallback( 'KalturaSupport_CheckUiConf', embedPlayer.$uiConf, function(){	
 				mw.log("KWidgetSupport::KalturaSupport_CheckUiConf done with all uiConf checks");
-				// Ui-conf file checks done
-				doneWithUiConf();
+				
+				// Trigger the api method for 1.6.7 and above ( eventually we will deprecate KalturaSupport_CheckUiConf );
+				$( mw ).triggerQueueCallback( 'Kaltura_CheckConfig', embedPlayer, function(){
+					// Ui-conf file checks done
+					doneWithUiConf();
+				});
 			});
 		} else {
 			doneWithUiConf();
