@@ -482,7 +482,7 @@
 			var iframeRequest = '';
 			for( var key in iframeParams ){
 				// don't put flashvars into the post url ( will be a request param ) 
-				if( key == 'flashvars' ){
+				if( key == 'flashvars' || key == 'readyCallback' ){
 					continue;
 				}
 				
