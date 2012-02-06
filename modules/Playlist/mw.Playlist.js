@@ -553,6 +553,10 @@ mw.Playlist.prototype = {
 			$(uiSelector).hide(); 
 		});
 		$( embedPlayer ).bind('onCloseFullScreen' + this.bindPostFix, function(){
+			// only resize if the playlist has a ui: 
+			if( !_this.sourceHandler.includeInLayout ){
+				return ;
+			}
 			setTimeout(function(){ // give some time for the dom to update
 				var playerSize = {
 					'width' : $( _this.target + ' .media-rss-video-player-container' ).width() + 'px',
