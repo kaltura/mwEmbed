@@ -427,6 +427,22 @@ mw.PlayerControlBuilder.prototype = {
 		if( triggerOnOpenFullScreen ) {
 			$( embedPlayer ).trigger( 'onOpenFullScreen' );
 		}
+
+		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
+		function getWindowSize(){
+			return {
+				'width' : $(window).width(),
+				'height' : $(window).height()
+			};
+		};
+		function syncPlayerSize(){
+			if( $( embedPlayer ).width() != $(window).width() ){
+				embedPlayer.resizePlayer( getWindowSize() );
+			};
+		}
+		setTimeout( syncPlayerSize, 50);
+		setTimeout( syncPlayerSize, 200);
+		
 	},
 	doFullScreenPlayerDom: function(){
 		var _this = this;
