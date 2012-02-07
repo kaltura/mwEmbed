@@ -90,8 +90,8 @@ class kalturaIframe {
 			'partnerId' =>	$this->getResultObject()->getPartnerId(),
 			'sessionId' =>	$this->getResultObject()->getKS(),
 			'uiconfId' => 0,
-			'seek'	 =>  'false',
-			'entryId'   =>   $this->getResultObject()->getEntryId(),
+			'seek' =>  'false',
+			'entryId' =>   $this->getResultObject()->getEntryId(),
 		);
 		foreach( $eventSet as $key=> $val){
 			$param[ 'event:' . $key ] = $val;
@@ -624,12 +624,11 @@ class kalturaIframe {
 					// IE < 8  does not handle class="persistentNativePlayer" very well:
 					if( ua.indexOf("MSIE ")!== -1 
 							&&  
-						parseFloat( ua.substring( ua.indexOf("MSIE ") + 5, ua.indexOf(";", ua.indexOf("MSIE ") ) )) 
-							<= 
-						8
+						parseFloat( ua.substring( ua.indexOf("MSIE ") + 5, ua.indexOf(";", ua.indexOf("MSIE ") ) )) <= 8
 					) {
 						videoTagHTML = videoTagHTML.replace( /class=\"persistentNativePlayer\"/gi, '' );
 					}
+					
 					var size = getViewPortSize();
 					styleValue = 'display: block;width:' + size.w + 'px;height:' + size.h + 'px;';
 					

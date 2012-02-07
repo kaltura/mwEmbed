@@ -549,11 +549,11 @@ mw.Playlist.prototype = {
 		}
 		var uiSelector = '.playlist-set-container,.playlist-block-list,.video-list-wrapper,.playlist-scroll-buttons';
 		// fullscreen support
-		$( embedPlayer ).bind('onOpenFullScreen' + this.bindPostFix, function(){
+		$( embedPlayer ).bind( 'onOpenFullScreen' + this.bindPostFix, function(){
 			// hide inteface components ( these should readlly all be in their own div! )
 			$(uiSelector).hide();
 		});
-		$( embedPlayer ).bind('onCloseFullScreen' + this.bindPostFix, function(){
+		$( embedPlayer ).bind( 'onCloseFullScreen' + this.bindPostFix, function(){
 			// only resize if the playlist has a ui: 
 			if( !_this.sourceHandler.includeInLayout ){
 				return ;
@@ -562,7 +562,7 @@ mw.Playlist.prototype = {
 				'width' : $( _this.target + ' .media-rss-video-player-container' ).width() + 'px',
 				'height' : ( $( _this.target + ' .media-rss-video-player-container' ).height() - _this.getTitleHeight() ) + 'px'
 			};
-			// do another resize on a timeout ( takes for iframe to resize )
+			// Do another resize on a timeout ( takes time for iframe to resize )
 			setTimeout(function(){
 				embedPlayer.resizePlayer( playerSize, false);	
 			}, 100);

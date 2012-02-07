@@ -146,7 +146,7 @@
 				}
 			}
 			// Update the prevIndex: 
-			this.prevIndex =firstCapIndex;
+			this.prevIndex = firstCapIndex;
 			//Return the set of captions in range:
 			return captionSet;
 		},

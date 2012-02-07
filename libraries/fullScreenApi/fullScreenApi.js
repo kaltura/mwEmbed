@@ -1,7 +1,7 @@
 /* 
 Native FullScreen JavaScript API
 
-Simple fullscreen api wrapper From John Dyer's blog post on the subject: 
+Simple fullscreen api wrapper based on John Dyer's blog post on the subject: 
 http://johndyer.name/native-fullscreen-javascript-api-plus-jquery-plugin/
 
 -------------
