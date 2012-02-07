@@ -386,14 +386,26 @@ mw.PlayerControlBuilder.prototype = {
 		if ( window.fullScreenApi.supportsFullScreen && mw.getConfig('EmbedPlayer.IsIframeServer' ) ) {
 			var parentWindow = window.parent; 
 			var parentTarget = parentWindow.document.getElementById( this.embedPlayer.id );
-			// Make the iframe fullscreen:
-			parentWindow.fullScreenApi.requestFullScreen( parentTarget );
 			// Add a binding to catch "escape" fullscreen
 			parentTarget.addEventListener( fullScreenApi.fullScreenEventName, function( event ) {
 				if ( ! parentWindow.fullScreenApi.isFullScreen() ) {
-					_this.restoreWindowPlayer()
+					_this.restoreWindowPlayer();
 				}
 			});
+			// Make the iframe fullscreen:
+			parentWindow.fullScreenApi.requestFullScreen( parentTarget );
+			
+			// there is a bug with mozfullscreenchange event in firefox 10: 
+			// https://bugzilla.mozilla.org/show_bug.cgi?id=724816
+			// so we have to have an extra binding to check for size change and then restore. 
+			if( $.browser.mozilla && $.browser.version == 10 ){
+				setTimeout( function(){
+					$( window ).bind('resize.postFullScreenResize', function(){
+						$(window).unbind( '.postFullScreenResize' );
+						_this.restoreWindowPlayer();
+					})
+				},100);
+			}
 		}
 		
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
@@ -415,23 +427,6 @@ mw.PlayerControlBuilder.prototype = {
 		if( triggerOnOpenFullScreen ) {
 			$( embedPlayer ).trigger( 'onOpenFullScreen' );
 		}
-		
-
-		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
-		function getWindowSize(){
-			return {
-				'width' : $(window).width(),
-				'height' : $(window).height()
-			};
-		};
-		function syncPlayerSize(){
-			if( $( embedPlayer ).width() != $(window).width() ){
-				embedPlayer.resizePlayer( getWindowSize() );
-			};
-		}
-		setTimeout( syncPlayerSize, 50);
-		setTimeout( syncPlayerSize, 200);
-
 	},
 	doFullScreenPlayerDom: function(){
 		var _this = this;
@@ -695,12 +690,12 @@ mw.PlayerControlBuilder.prototype = {
 			'height' : embedPlayer.getHeight()
 		}, aninmate, function(){
 			var topPos = {
-					'position' : _this.windowPositionStyle,
-					'z-index' : _this.windowZindex,
-					'overlow' : 'visible',
-					'top' : '0px',
-					'left' : '0px'
-				};
+				'position' : _this.windowPositionStyle,
+				'z-index' : _this.windowZindex,
+				'overlow' : 'visible',
+				'top' : '0px',
+				'left' : '0px'
+			};
 			// Restore non-absolute layout:
 			$( [ $interface, $interface.find('.playerPoster'), embedPlayer ] ).css( topPos );
 			if( embedPlayer.getPlayerElement() ){
@@ -2091,7 +2086,7 @@ mw.PlayerControlBuilder.prototype = {
 			'w' : 70,
 			'h' : 53,
 			'o' : function( ctrlObj ) {
-				return $( '<div/>' )
+				return $( '<div />' )
 					.attr( {
 						'title'	: gM( 'mwe-embedplayer-play_clip' ),
 						'class'	: "play-btn-large"
@@ -2103,7 +2098,7 @@ mw.PlayerControlBuilder.prototype = {
 					}) )
 					// Add play hook:
 					.click( function() {
-						$(this).remove();
+						$( this ).remove();
 						ctrlObj.embedPlayer.play();		
 						return false; // Event Stop Propagation
 					} );
