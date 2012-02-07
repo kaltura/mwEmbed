@@ -85,7 +85,6 @@ mw.KWidgetSupport.prototype = {
 	},
 	rewriteTarget: function( widgetTarget, callback ){
 		var _this = this;
-		debugger;
 		this.loadPlayerData( widgetTarget, function( playerData ){
 			// look for widget type in uiConf file: 
 			switch( _this.getWidgetType( playerData.uiConf ) ){
