@@ -218,7 +218,7 @@ mw.DolStatistics.prototype = {
 		// KDP Event Data
 		params['KDPDAT_VALUE'] = eventData.toString();
 		// Always include the current time: 
-		params['PLAYHEAD_POSITION'] = embedPlayer.currentTime;
+		params['KDPDAT_PLAYHEAD'] = embedPlayer.currentTime;
 		
 		// Add custom params
 		for( var i =0; i < 10; i++ ){
