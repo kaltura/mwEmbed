@@ -379,7 +379,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		// Check for mediaPlayFrom
-		var mediaPlayFrom = this.getPluginConfig( embedPlayer, '', 'mediaProxy.mediaPlayFrom');
+		var mediaPlayFrom = this.getPluginConfig( embedPlayer, '', 'mediaProxy.mediaPlayFrom');		
 		if( mediaPlayFrom ) {
 			embedPlayer.startTime = parseFloat( mediaPlayFrom );
 		}

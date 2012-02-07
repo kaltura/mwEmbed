@@ -802,6 +802,7 @@ class kalturaIframe {
 						embedPlayer.play();
 					}
 					
+					
 					function getWindowSize(){
 						return {
 							'width' : $(window).width(),
@@ -810,13 +811,7 @@ class kalturaIframe {
 					};
 					function doResizePlayer(){
 						var embedPlayer = $( '#<?php echo htmlspecialchars( $this->getIframeId() )?>' )[0];						
-						setTimeout(function(){
-							if( console && console.log ){
-								// Do not remove this log statment ( there is something strange going on on iPad / iOS 5 that nessetates this ) 
-								console.log( 'Resize player: ' + $( embedPlayer ).width() + ' to:' + $(window).width() );
-							}
-							embedPlayer.resizePlayer( getWindowSize() );
-						},0);
+						embedPlayer.resizePlayer( getWindowSize() );
 					};
 
 					// Bind window resize to reize the player:

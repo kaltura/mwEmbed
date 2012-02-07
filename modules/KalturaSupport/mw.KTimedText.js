@@ -290,7 +290,7 @@
 					'title'		: dbTextSource.label,
 					'default'	: dbTextSource.isDefault
 				})[0] 
-				);
+			);
 			// Return a "textSource" object:
 			return new mw.TextSource( embedSource );
 		},
