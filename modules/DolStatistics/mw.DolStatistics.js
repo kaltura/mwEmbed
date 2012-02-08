@@ -47,7 +47,7 @@ mw.DolStatistics.prototype = {
 		mw.log( 'DolStatistics:: eventList:' + this.eventsList );
 		
 		
-		// Setup player counter, (used global, because on change media we re-initlize the plugin and reset all vars)
+		// Setup player counter, ( used global, because on change media we re-initialize the plugin and reset all vars )
 		if( $( embedPlayer ).data('DolStatisticsCounter') === null ) {
 			if( embedPlayer['data-playerError'] ){
 				$( embedPlayer ).data('DolStatisticsCounter', 0 ) 
@@ -109,9 +109,7 @@ mw.DolStatistics.prototype = {
 			}
 			
 		});
-
 		mw.log('DolStatistics:: addPlayerBindings:: Events list: ', this.eventsList);
-
 		// Continue player build out
 		callback();
 	},
@@ -184,6 +182,7 @@ mw.DolStatistics.prototype = {
 	/* Send stats data using Beacon or jsCallback */
 	sendStatsData: function( eventName, eventData ) {
 		var _this = this;
+		var embedPlayer = this.embedPlayer;
 		// If event name not in our event list, exit
 		if( this.eventsList.indexOf( eventName ) === -1 ) {
 			return ;
@@ -195,7 +194,7 @@ mw.DolStatistics.prototype = {
 		params['app'] = this.appName;
 		// Grab from plugin config
 		var configAttrs = [ 'DEVID', 'ASSETNAME', 'ASSETID' ];
-		for(var x=0; x<configAttrs.length; x++) {
+		for( var x=0; x<configAttrs.length; x++) {
 			params[ configAttrs[x] ] = _this.getConfig( configAttrs[x] ) || '';
 		}
 		// Embedded Page URL
@@ -227,7 +226,7 @@ mw.DolStatistics.prototype = {
 		// KDP Event Data
 		params['KDPDAT_VALUE'] = eventData.toString();
 		// Always include the current time: 
-		params['KDPDAT_PLAYHEAD'] = embedPlayer.currentTime;
+		params['KDPDAT_PLAYHEAD'] = this.embedPlayer.currentTime;
 		
 		// Add custom params
 		for( var i =0; i < 10; i++ ){
