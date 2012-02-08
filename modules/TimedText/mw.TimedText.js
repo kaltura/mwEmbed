@@ -164,9 +164,9 @@ mw.includeAllModuleMessages();
 					// Get the text size scale then set it to control bar height + TimedText.BottomPadding; 
 					'bottom': ( _this.embedPlayer.controlBuilder.getHeight() + textOffset ) + 'px'
 				});
-				
 			});
-			// add caption container after restore
+			
+			// Add caption container after restore
 			$(_this.embedPlayer ).bind ( 'onCloseFullScreen' + _this.bindPostFix, function(){
 				// Resize the below captions text. 
 				var $belowContainer = _this.embedPlayer.$interface.find('.captionContainer')
@@ -1135,7 +1135,7 @@ mw.includeAllModuleMessages();
 				// give the dom time to resize. 
 				setTimeout(function(){
 					var height = ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 ) +
-									$( _this.embedPlayer ).height() + _this.embedPlayer.controlBuilder.getHeight();
+									parseInt( $( _this.embedPlayer ).height() ) + parseInt( _this.embedPlayer.controlBuilder.getHeight() );
 					
 					// get the orginal player height
 					_this.originalPlayerHeight = _this.embedPlayer.$interface.css('height');

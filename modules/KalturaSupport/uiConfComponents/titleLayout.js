@@ -2,7 +2,7 @@
 	// 	Check for the Title 
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			
+
 			// If native controls don't show the title
 			if( embedPlayer.useNativePlayerControls() ) {
 				callback();
