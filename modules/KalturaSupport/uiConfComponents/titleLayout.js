@@ -61,11 +61,14 @@
 		}
 		function updatePlayerLayout(){
 			var $vid = $( embedPlayer.getPlayerElement() );
+			var vidHeight;
 			// Check if we are using flash ( don't move the player element )
-			if( embedPlayer.instanceOf != 'Native' ){
-				$vid = [];
+			if( embedPlayer.instanceOf != 'Native' || $vid.length == 0 ){
+				$vid = $();
+				vidHeight = embedPlayer.getHeight();
+			} else {
+				vidHeight = ( $vid.height() - titleScreenHeight );
 			}
-			var vidHeight = ( $vid.height() - titleScreenHeight );
 			// add space for the title: 
 			$vid
 			.css({
