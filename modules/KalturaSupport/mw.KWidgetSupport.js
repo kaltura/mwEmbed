@@ -182,8 +182,8 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.showErrorMsg( acStatus );
 				return ;
 			}
-			// Check for preview access control and add special onEnd binding: 
-			if( playerData.accessControl.previewLength != -1 ){
+			// Check for preview access control and add special onEnd binding:
+			if( playerData.accessControl.previewLength &&  playerData.accessControl.previewLength != -1 ){
 				$( embedPlayer ).bind('postEnded.acpreview', function(){
 					mw.log( 'KWidgetSupport:: postEnded.acpreview>' );
 					$( embedPlayer ).trigger( 'KalturaSupport_FreePreviewEnd' );
