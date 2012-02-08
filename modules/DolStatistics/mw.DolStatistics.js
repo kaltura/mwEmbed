@@ -182,6 +182,7 @@ mw.DolStatistics.prototype = {
 	/* Send stats data using Beacon or jsCallback */
 	sendStatsData: function( eventName, eventData ) {
 		var _this = this;
+		var embedPlayer = this.embedPlayer;
 		// If event name not in our event list, exit
 		if( this.eventsList.indexOf( eventName ) === -1 ) {
 			return ;
@@ -225,7 +226,7 @@ mw.DolStatistics.prototype = {
 		// KDP Event Data
 		params['KDPDAT_VALUE'] = eventData.toString();
 		// Always include the current time: 
-		params['KDPDAT_PLAYHEAD'] = embedPlayer.currentTime;
+		params['KDPDAT_PLAYHEAD'] = this.embedPlayer.currentTime;
 		
 		// Add custom params
 		for( var i =0; i < 10; i++ ){
