@@ -47,8 +47,8 @@ mw.DolStatistics.prototype = {
 		mw.log( 'DolStatistics:: eventList:' + this.eventsList );
 		
 		// Setup player counter, ( used global, because on change media we re-initialize the plugin and reset all vars )
-		if( typeof $( embedPlayer ).data('DolStatisticsCounter') == 'undefined' ) {
 			if( embedPlayer['data-playerError'] ){
+		if( typeof $( embedPlayer ).data('DolStatisticsCounter') == 'undefined' ) {
 				$( embedPlayer ).data('DolStatisticsCounter', 0 ) 
 			} else {
 				$( embedPlayer ).data('DolStatisticsCounter', 1 );
