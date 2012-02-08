@@ -45,10 +45,15 @@ mw.DolStatistics.prototype = {
 		this.eventsList = eventList.split(",");
 		
 		mw.log( 'DolStatistics:: eventList:' + this.eventsList );
-				
+		
+		
 		// Setup player counter, (used global, because on change media we re-initlize the plugin and reset all vars)
-		if( ! $( embedPlayer ).data('DolStatisticsCounter') ) {
-			$( embedPlayer ).data('DolStatisticsCounter', 1 );
+		if( $( embedPlayer ).data('DolStatisticsCounter') === null ) {
+			if( embedPlayer['data-playerError'] ){
+				$( embedPlayer ).data('DolStatisticsCounter', 0 ) 
+			} else {
+				$( embedPlayer ).data('DolStatisticsCounter', 1 );
+			}
 		}
 
 		mw.log('DolStatistics:: Init plugin :: Plugin config: ', this.embedPlayer.getKalturaConfig( 'dolStatistics') );
@@ -68,8 +73,10 @@ mw.DolStatistics.prototype = {
 		this.destroy();
 
 		// On change media remove any existing ads:
-		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
-			$embedPlayer.data('DolStatisticsCounter', $embedPlayer.data('DolStatisticsCounter')+1);
+		embedPlayer.bindHelper( 'onChangeMediaDone' + _this.bindPostFix, function(){
+			if( ! embedPlayer['data-playerError'] ){
+				$embedPlayer.data('DolStatisticsCounter', $embedPlayer.data('DolStatisticsCounter') + 1 );
+			}
 			_this.destroy();
 		});
 
@@ -206,13 +213,15 @@ mw.DolStatistics.prototype = {
 		// Video length
 		params['VIDLEN'] = this.getDuration();
 		// Player protocol
-		params['KDPPROTO'] = this.getConfig('protocol') || location.protocol.substr(0, location.protocol.length-1);
+		params['KDPPROTO'] = mw.parseUri( mw.getConfig( 'Kaltura.ServiceUrl' ) ).protocol;
 		// Kaltura Player ID
 		params['KDPID'] = this.embedPlayer.kuiconfid;
 		// Kaltura Seesion ID
 		params['KSESSIONID'] = this.embedPlayer.evaluate('{configProxy.sessionId}');
 		// Kaltura Playback ID ( kSessionId + playbackCounter )
 		params['KPLAYBACKID'] = this.embedPlayer.evaluate('{configProxy.sessionId}') + $( this.embedPlayer ).data('DolStatisticsCounter');
+		// Kaltura session Seq 
+		params['KSESSIONSEQ'] = $( this.embedPlayer ).data('DolStatisticsCounter');
 		// Kaltura Event name
 		params['KDPEVNT'] = eventName;
 		// KDP Event Data
@@ -227,7 +236,6 @@ mw.DolStatistics.prototype = {
 				params[  _this.getConfig( 'customDataKey' + i )  ] =  _this.getConfig( 'customDataValue' + i );
 			}
 		}
-		
 		
 		mw.log('DolStatistics:: Send Stats Data ' + statsUrl, params);
 		
