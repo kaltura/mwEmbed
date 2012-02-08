@@ -376,8 +376,8 @@ function kOverideJsFlashEmbed(){
 		if( kEmbedSettings.entry_id ){
 			embedPlayerAttributes.kentryid = kEmbedSettings.entry_id;				
 			embedPlayerAttributes.poster = mw.getKalturaThumbUrl( {
-				'width' : parseInt(width),
-				'height' : parseInt(height),
+				'width' : parseInt( kEmbedSettings.width ),
+				'height' : parseInt( kEmbedSettings.height ),
 				'entry_id' :  kEmbedSettings.entry_id,
 				'partner_id': kEmbedSettings.p 
 			});

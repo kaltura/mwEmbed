@@ -336,6 +336,8 @@ class KalturaResultObject {
 			$pluginsXml = $this->getUiConfXML()->xpath("*//*[@id]");
 			for( $i=0; $i < count($pluginsXml); $i++ ) {
 				$pluginId = (string) $pluginsXml[ $i ]->attributes()->id;
+				// Enforce the lower case first letter of plugin convention: 
+				$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
 				$plugins[ $pluginId ] = array(
 					'plugin' => true
 				);
@@ -384,6 +386,9 @@ class KalturaResultObject {
 
 			$pluginKeys = explode(".", $key);
 			$pluginId = $pluginKeys[0];
+			// Enforce the lower case first letter of plugin convention: 
+			$pluginId = strtolower( $pluginId[0] ) . substr($pluginId, 1 );
+			
 			$pluginAttribute = $pluginKeys[1];
 
 			// If plugin exists, just add/override attribute
