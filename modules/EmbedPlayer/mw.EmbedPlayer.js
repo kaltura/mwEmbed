@@ -1455,6 +1455,11 @@ mw.EmbedPlayer.prototype = {
 	},
 	// Add a play button (if not already there ) 
 	addPlayBtnLarge:function(){
+		// iPhone in WebKitPlaysInline mode does not support clickable overlays as of iOS 5.0 
+		if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') && mw.isIphone() ) {
+			return ;
+		}
+		
 		if( this.$interface.find( '.play-btn-large').length ){
 			this.$interface.find( '.play-btn-large').show();
 		} else {
