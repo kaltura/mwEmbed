@@ -46,9 +46,8 @@ mw.DolStatistics.prototype = {
 		
 		mw.log( 'DolStatistics:: eventList:' + this.eventsList );
 		
-		
 		// Setup player counter, ( used global, because on change media we re-initialize the plugin and reset all vars )
-		if( $( embedPlayer ).data('DolStatisticsCounter') === null ) {
+		if( typeof $( embedPlayer ).data('DolStatisticsCounter') == 'undefined' ) {
 			if( embedPlayer['data-playerError'] ){
 				$( embedPlayer ).data('DolStatisticsCounter', 0 ) 
 			} else {
@@ -215,7 +214,7 @@ mw.DolStatistics.prototype = {
 		params['KDPPROTO'] = mw.parseUri( mw.getConfig( 'Kaltura.ServiceUrl' ) ).protocol;
 		// Kaltura Player ID
 		params['KDPID'] = this.embedPlayer.kuiconfid;
-		// Kaltura Seesion ID
+		// Kaltura Session ID
 		params['KSESSIONID'] = this.embedPlayer.evaluate('{configProxy.sessionId}');
 		// Kaltura Playback ID ( kSessionId + playbackCounter )
 		params['KPLAYBACKID'] = this.embedPlayer.evaluate('{configProxy.sessionId}') + $( this.embedPlayer ).data('DolStatisticsCounter');
