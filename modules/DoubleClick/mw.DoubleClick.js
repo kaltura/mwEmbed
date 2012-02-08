@@ -1,7 +1,7 @@
 ( function( mw, $){
 
-mw.DoubleClick = function( embedPlayer, callback, pluginName ){
-	this.init( embedPlayer, callback , pluginName);
+mw.DoubleClick = function( embedPlayer, callback ){
+	this.init( embedPlayer, callback);
 };
 mw.DoubleClick.prototype = {
 	// Local config object
@@ -16,15 +16,16 @@ mw.DoubleClick.prototype = {
 	// A pointer to the active adManager
 	activeOverlayadManager: null,
 	
+	// Set the plugin name ( used to get config ) 
+	pluginName: 'doubleClick',
+	
 	// The bind bindPostfix for all doubleclick bindings
 	bindPostfix: '.doubleClick',
 	
-	init: function( embedPlayer, callback, pluginName ){
+	init: function( embedPlayer, callback ){
 		mw.log( 'DoubleClick:: init: ' + embedPlayer.id );
 		var _this = this;
-		// Set the plugin name ( used to get config ) 
-		this.pluginName = pluginName;
-		
+	
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 		this.embedPlayer = embedPlayer;
