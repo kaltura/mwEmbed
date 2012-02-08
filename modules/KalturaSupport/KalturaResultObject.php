@@ -64,13 +64,15 @@ class KalturaResultObject {
 	}
 	function getServiceConfig( $name ){
 		global $wgKalturaAllowIframeRemoteService;
+		
 		// Check if we allow URL override: 
-		if( $wgKalturaAllowIframeRemoteService ){
+		if( $wgKalturaAllowIframeRemoteService == true ){
 			// Check for urlParameters
 			if( isset( $this->urlParameters[ $name ] ) ){
 				return $this->urlParameters[ $name ];
 			}
 		}
+		
 		// Else use the global config: 
 		switch( $name ){
 			case 'ServiceUrl' : 
@@ -341,7 +343,7 @@ class KalturaResultObject {
 					if( $key == "id" ) {
 						continue;
 					}
-					$plugins[ $pluginId ][ strtolower( $key[0] ) . substr($key, 1) ] = $this->formatString((string) $value);
+					$plugins[ $pluginId ][ $key ] = $this->formatString((string) $value);
 				}
 			}
 		}
