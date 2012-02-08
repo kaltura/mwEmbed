@@ -578,8 +578,14 @@ class KalturaResultObject {
 		if( isset( $playlistObject[0] ) && $playlistObject[0]->id ){
 			// Set the isPlaylist flag now that we are for sure dealing with a playlist
 			$this->isPlaylist = true;
-			$this->urlParameters['entry_id'] = $playlistObject[0]->id;
-			// Now that we have all the entry data, return that:
+			// check if we have playlistAPI.initItemEntryId
+			if( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) ){
+				$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
+			} else {
+				$this->urlParameters['entry_id'] = $playlistObject[0]->id;
+			}
+			
+			// Now that we have an entry_id get entry data:
 			$resultObj = $this->getEntryResult();
 			
 			// Include the playlist in the response:

@@ -158,8 +158,23 @@ mw.PlaylistHandlerKaltura.prototype = {
 			mw.log( "PlaylistHandlerKaltura:: got  " +  _this.playlistSet.length + ' playlists ' );	
 			// Set the playlist to the first playlist
 			_this.setPlaylistIndex( 0 );
+			
 			// Load playlist by Id 
-			_this.loadCurrentPlaylist( callback );
+			_this.loadCurrentPlaylist(function(){
+				// Check if clipIndex should be updated
+				var initItemEntryId = _this.getConfig( 'initItemEntryId' );
+				if( initItemEntryId ){
+					$.each( _this.getClipList(), function( inx, clip ){
+						if( clip.id == initItemEntryId ){
+							// Update the clipInx
+							_this.playlist.clipIndex = inx;
+						}
+					});
+				}
+				if( $.isFunction( callback) ){
+					callback(); 
+				}
+			});
 		});
 	},
 	hasMultiplePlaylists: function(){
@@ -277,7 +292,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			callback();
 			return;
 		}
-		
 		// Check if entry id already matches ( and is loaded ) 
 		if( embedPlayer.kentryid == this.getClip( clipIndex ).id ){
 			if( this.loadingEntry ){
