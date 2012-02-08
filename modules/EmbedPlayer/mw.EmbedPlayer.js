@@ -483,7 +483,7 @@ mw.EmbedPlayer.prototype = {
 				_this.playerSwichSource( source, switchCallback, doneCallback );
 			});
 		} else {
-			// call the player switch directly:
+			// Call the player switch directly:
 			_this.playerSwichSource( source, switchCallback, doneCallback );
 		}
 	},
@@ -547,6 +547,8 @@ mw.EmbedPlayer.prototype = {
 		mw.log( "EmbedPlayer::updatePlaybackInterface: duration is: " + this.getDuration() + ' playerId: ' + this.id );
 		// Clear out any non-base embedObj methods:
 		if ( this.instanceOf ) {
+			// Update the prev instance var used for swiching interfaces to know the previous instance.  
+			$( this ).data( 'previousInstanceOf', this.instanceOf );
 			eval( 'var tmpObj = mw.EmbedPlayer' + this.instanceOf );
 			for ( var i in tmpObj ) { 
 				// Restore parent into local location
@@ -808,6 +810,10 @@ mw.EmbedPlayer.prototype = {
 				if( this.loop ) {
 					this.play();
 					return;
+				}
+				// Check if we should hide the large play button on end: 
+				if( $( this ).data( 'hideEndPlayButton' ) ){
+					this.$interface.find('.play-btn-large').hide();
 				}
 				
 				// An event for once the all ended events are done.
@@ -1704,13 +1710,12 @@ mw.EmbedPlayer.prototype = {
 				$this.trigger( 'replayEvent' );
 			}
 		}
-
 		// if we have start time defined, start playing from that point
 		if( this.currentTime < this.startTime ) {
-			$this.bind('playing.embedPlayer', function(){
+			$this.bind('playing.startSeek', function(){
 				var percent = parseFloat( _this.startTime ) / _this.getDuration();
 				_this.seek( percent );
-				$this.unbind('playing.embedPlayer');
+				$this.unbind('playing.startSeek');
 			});
 		}
 		
@@ -1786,14 +1791,16 @@ mw.EmbedPlayer.prototype = {
 	 * 
 	 * There is no general way to pause the video must be overwritten by embed
 	 * object to support this functionality.
+	 * 
+	 * @param {Boolean} if the event was triggered by user action or propagated by js. 
 	 */
-	pause: function( event ) {
+	pause: function() {
 		var _this = this;
 		// Trigger the pause event if not already paused and using native controls:
 		if( this.paused === false ){
 			this.paused = true;
 			if(  this._propagateEvents ){
-				mw.log('EmbedPlayer:trigger pause:' + this.paused);
+				mw.log( 'EmbedPlayer:trigger pause:' + this.paused );
 				// "pause" will be deprecated in favor of "onpause"
 				$( this ).trigger( 'pause' );
 				$( this ).trigger( 'onpause' );

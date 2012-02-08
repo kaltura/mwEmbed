@@ -183,7 +183,7 @@ mw.KWidgetSupport.prototype = {
 				return ;
 			}
 			// Check for preview access control and add special onEnd binding:
-			if( playerData.accessControl.previewLength &&  playerData.accessControl.previewLength != -1 ){
+			if( playerData.accessControl.previewLength && playerData.accessControl.previewLength != -1 ){
 				$( embedPlayer ).bind('postEnded.acpreview', function(){
 					mw.log( 'KWidgetSupport:: postEnded.acpreview>' );
 					$( embedPlayer ).trigger( 'KalturaSupport_FreePreviewEnd' );
@@ -388,6 +388,15 @@ mw.KWidgetSupport.prototype = {
 		if( mediaPlayTo ) {
 			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
 		}
+		
+		// Check for end screen play or "replay" button:
+		// TODO more complete endscreen support by doing basic layout of end screen!!!
+		if( embedPlayer.$uiConf.find( '#endScreen' ).find('button[command="play"],button[kclick="sendNotification(\'doPlay\')"]' ).length == 0 ){
+			// no end play button
+			$( embedPlayer ).data('hideEndPlayButton', true );
+		} else{
+			$( embedPlayer ).data('hideEndPlayButton', false );
+		}
 	},
 	/**
 	 * Check for xml config, let flashvars override 
@@ -425,7 +434,7 @@ mw.KWidgetSupport.prototype = {
 		var plugins =  embedPlayer.playerConfig['plugins'];
 		var returnConfig = {};
 		
-		// confPrefix is the plugin Name and the first letter should always be lower case. 
+		// ConfPrefix is the plugin Name and the first letter should always be lower case. 
 		if( confPrefix ){
 			confPrefix = confPrefix[0].toLowerCase() + confPrefix.substr(1);
 		}

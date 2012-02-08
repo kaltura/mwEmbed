@@ -143,7 +143,6 @@ mw.PlayerControlBuilder.prototype = {
 			'right' : '0px'
 		} );
 
-
 		// Make room for audio controls in the interface: 
 		if( embedPlayer.isAudio() && embedPlayer.$interface.height() == 0 ){
 			embedPlayer.$interface.css( {
@@ -395,7 +394,7 @@ mw.PlayerControlBuilder.prototype = {
 			// Make the iframe fullscreen:
 			parentWindow.fullScreenApi.requestFullScreen( parentTarget );
 			
-			// there is a bug with mozfullscreenchange event in firefox 10: 
+			// There is a bug with mozfullscreenchange event in firefox 10: 
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=724816
 			// so we have to have an extra binding to check for size change and then restore. 
 			if( $.browser.mozilla && $.browser.version == 10 ){
@@ -442,8 +441,8 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		setTimeout( syncPlayerSize, 50);
 		setTimeout( syncPlayerSize, 200);
-		
 	},
+	
 	doFullScreenPlayerDom: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;

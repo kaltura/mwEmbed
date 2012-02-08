@@ -23,16 +23,6 @@ ob_end_flush();
 
 class kalturaPlaylistIframe {
 
-	private $urlParameters = array(
-		'cache_st' => null,
-		'p' => null,
-		'wid' => null,
-		'uiconf_id' => null,
-		'playlist_id' => null,
-		'flashvars' => null,
-		'urid' => null,
-	);
-
 	public $playlistItems = array();
 
 	function __construct( $clientTag = 'php')

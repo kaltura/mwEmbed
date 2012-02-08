@@ -25,7 +25,7 @@ mw.IFramePlayerApiClient.prototype = {
 		mw.log( "mw.IFramePlayerApiClient:: init: " + playerProxy.id );
 		this.iframe = iframe;
 		this.playerProxy = playerProxy;
-		
+
 		var srcParts = mw.parseUri( this.getIframeSrc() );
 		this.iframeServer = srcParts.protocol + '://' + srcParts.authority;
 		
@@ -215,6 +215,10 @@ mw.IFramePlayerApiClient.prototype = {
 	
 	addResizeBinding: function(){
 		var _this = this;
+		/* TODO do something like this
+		$( this.playerProxy ).bind( 'onresize', function(){
+			$( _this.iframe ).css( newSize );
+		})*/
 		$( this.playerProxy ).bind( 'resizeIframeContainer', function(event, newSize){
 			$( _this.iframe ).css( newSize );	
 		});

@@ -214,8 +214,7 @@ mw.KAdPlayer.prototype = {
 		if( targetSource && targetSource.getMIMEType().indexOf('image/') != -1 ){
 			return false;
 		}
-		
-		// iPhone won't play multiple videos well, use source switch
+		// iPhone and IOS 5 does not play multiple videos well, use source switch
 		if( mw.isIphone() || mw.isAndroid2() || ( mw.isIpad() && ! mw.isIpad3() ) ){
 			return false;
 		}

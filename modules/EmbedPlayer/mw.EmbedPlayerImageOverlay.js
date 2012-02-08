@@ -23,8 +23,6 @@ mw.EmbedPlayerImageOverlay = {
 	// The local clock used to emulate playback time
 	clockStartTime: 0,
 	
-	overlayFirstPlay: true,
-
 	/**
 	 * Build the player interface:
 	 */
@@ -51,8 +49,6 @@ mw.EmbedPlayerImageOverlay = {
 		mw.log( 'EmbedPlayerImageOverlay:: updatePlaybackInterface remove imageOverlay: ' + $(this).siblings( '.imageOverlay' ).length );
 		// Reset lastPauseTime
 		this.lastPauseTime  = 0;
-		// No longer first overlay image playback:
-		this.overlayFirstPlay = false;
 		// Clear imageOverlay sibling:
 		$( this ).siblings( '.imageOverlay' ).remove();
 		// Restore the video element on screen position:  
@@ -90,14 +86,18 @@ mw.EmbedPlayerImageOverlay = {
 	*  Play function starts the video playback
 	*/
 	play: function() {
-		mw.log( 'EmbedPlayerImageOverlay::play' );
+		mw.log( 'EmbedPlayerImageOverlay::play> lastPauseTime:' + this.lastPauseTime + ' ct: ' + this.currentTime );
 		this.applyIntrinsicAspect();
-		
 		// Check for image duration  
 		if( this.imageDuration ){
 			this.duration = this.imageDuration ;
 		} else {
 			this.duration = mw.getConfig( "EmbedPlayer.DefaultImageDuration" );
+		}
+
+		// Reset playback if currentTime > duration:
+		if( this.currentTime > this.duration ) {
+			this.currentTime = this.pauseTime = 0;
 		}
 		
 		// No longer in a stopped state:
@@ -106,15 +106,20 @@ mw.EmbedPlayerImageOverlay = {
 		// Capture the play event on the native player: ( should just be black silent sources )
 		// This is needed so that if a playlist starts with image, it can continue to play the 
 		// subsequent video without on iOS without requiring another click. 
-		if( this.overlayFirstPlay ){
-			// reset the overlay flag: 
-			this.overlayFirstPlay  = false;
+		if( ! $( this ).data('previousInstanceOf') ){
+			// Update the previousInstanceOf flag: 
+			$( this ).data('previousInstanceOf', this.instanceOf );
 			var vid = this.getPlayerElement();
 			// populate the video with black video sources: 
 			this.triggerHelper( 'AddEmptyBlackSources', [ vid ] );
 			// run play: 
 			vid.play();
-			setTimeout(function(){			
+			// inline pause
+			setTimeout(function(){
+				vid.pause();				
+			},0);
+			// add another pause request after 500 ms ( iOS sometimes does not listen the first time )
+			setTimeout(function(){
 				vid.pause();
 			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) * 2 );
 		}
@@ -131,13 +136,15 @@ mw.EmbedPlayerImageOverlay = {
 		this.currentTime = 0;
 		this.parent_stop();
 	},
-	
+	_onpause: function(){
+		// catch the native event ( and do nothing ) 
+	},
 	/**
 	* Preserves the pause time across for timed playback 
 	*/
-	pause: function() {
+	pause: function( ) {
 		this.lastPauseTime = this.currentTime;
-		mw.log( 'EmbedPlayerImageOverlay::pause, lastPauseTime: ' + this.lastPauseTime );
+		mw.log( 'EmbedPlayerImageOverlay::pause, lastPauseTime: ' + this.lastPauseTime  );
 		// run parent pause; 
 		this.parent_pause();
 		this.stopMonitor();
