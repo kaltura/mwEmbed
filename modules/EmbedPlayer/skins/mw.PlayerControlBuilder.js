@@ -403,7 +403,7 @@ mw.PlayerControlBuilder.prototype = {
 						$(window).unbind( '.postFullScreenResize' );
 						_this.restoreWindowPlayer();
 					})
-				},100);
+				}, 100);
 			}
 		}
 		
