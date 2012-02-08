@@ -167,7 +167,7 @@ mw.KAds.prototype = {
 				type: adType
 			};
 
-			var originalSrc = embedPlayer.getSrc();
+			var originalSource = embedPlayer.getSource();
 			var seekPerc = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
 			var oldDuration = embedPlayer.duration;
 
@@ -179,8 +179,8 @@ mw.KAds.prototype = {
 				var vid = embedPlayer.getPlayerElement();
 				// Check if the src does not match original src if
 				// so switch back and restore original bindings
-				if ( originalSrc != vid.src ) {
-					embedPlayer.switchPlaySource( originalSrc, function() {
+				if ( originalSource.getSrc() != vid.src ) {
+					embedPlayer.switchPlaySource( originalSource, function() {
 						mw.log( "AdTimeline:: restored original src:" + vid.src);
 						// Restore embedPlayer native bindings
 						// async for iPhone issues
