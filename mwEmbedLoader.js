@@ -1,5 +1,6 @@
 // The version of this script
-kWidget.log( 'Kaltura HTML5 Version: ' + KALTURA_LOADER_VERSION );
+var logIfInIframe = ( typeof preMwEmbedConfig != 'undefined' && preMwEmbedConfig['EmbedPlayer.IsIframeServer'] ) ? ' ( iframe ) ': '';
+kWidget.log( 'Kaltura HTML5 Version: ' + KALTURA_LOADER_VERSION  +  logIfInIframe );
 
 // Define mw ( if not already set ) 
 if( !window['mw'] ) {
@@ -113,7 +114,7 @@ if( !mw.ready ){
 
 // Set iframe config if in the client page, will be passed to the iframe along with other config
 if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
-	mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL);
+	mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL );
 	mw.setConfig('EmbedPlayer.IframeParentTitle', document.title);
 	mw.setConfig('EmbedPlayer.IframeParentReferrer', document.referrer);
 }
@@ -230,9 +231,6 @@ function kIframeWithoutApi( replaceTargetId, kEmbedSettings ){
 	
 	var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
 	iframeSrc += '?' + kEmbedSettingsToUrl( kEmbedSettings );
-	if( options.width && options.height ) {
-		iframeSrc += '&iframeSize=' + kEmbedSettings.width + 'x' + kEmbedSettings.height;
-	}
 	
 	// If remote service is enabled pass along service arguments:
 	if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) && 
@@ -260,8 +258,8 @@ function kIframeWithoutApi( replaceTargetId, kEmbedSettings ){
 	var iframe = document.createElement('iframe');
 	iframe.src = iframeSrc;
 	iframe.id = replaceTargetId;
-	iframe.width = (options.width) ? options.width : '100%';
-	iframe.height = (options.height) ? options.height : '100%';
+	iframe.width = (kEmbedSettings.width) ? kEmbedSettings.width : '100%';
+	iframe.height = (kEmbedSettings.height) ? kEmbedSettings.height : '100%';
 	iframe.style.border = '0px';
 	iframe.style.overflow = 'hidden';
 		
