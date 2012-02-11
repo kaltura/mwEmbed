@@ -395,7 +395,7 @@ mw.FreeWheelController.prototype = {
 			var vid = _this.getAdVideoElement();
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt( vid.duration - vid.currentTime ) );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
-			_this.embedPlayer.triggerHelper( 'adUpdatePlayhead', vid.currentTime );
+			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
 		}
 		
 		// Keep monitoring ad progress at MonitorRate

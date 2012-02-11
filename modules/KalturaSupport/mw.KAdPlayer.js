@@ -503,7 +503,7 @@ mw.KAdPlayer.prototype = {
 			// Update the timeRemaining sequence proxy
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt ( dur - time ) );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  dur );
-			_this.embedPlayer.triggerHelper( 'adUpdatePlayhead', time );
+			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', time );
 			
 			// Check if isVideoSiblingEnabled and update the status bar 
 			if( _this.isVideoSiblingEnabled() ) {
