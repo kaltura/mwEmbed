@@ -393,8 +393,9 @@ mw.FreeWheelController.prototype = {
 		// Update the timeRemaining ( if not an overlay ) 
 		if(  this.getSlotType( this.activeSlot ) != 'overlay' ){
 			var vid = _this.getAdVideoElement();
-			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', vid.duration - vid.currentTime );
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt( vid.duration - vid.currentTime ) );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
+			_this.embedPlayer.triggerHelper( 'adUpdatePlayhead', vid.currentTime );
 		}
 		
 		// Keep monitoring ad progress at MonitorRate

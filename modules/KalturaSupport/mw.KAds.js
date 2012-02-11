@@ -339,7 +339,7 @@ mw.KAds.prototype = {
 		// Add notice if present
 		if( this.$notice.length ){
 			config.notice = {
-				'text' : this.$notice.attr('text').replace('{sequenceProxy.timeRemaining}', '$1'),
+				'evalText' : this.$notice.attr('text'),
 				'css' : {
 					'top': '5px',
 					'left' : '5px'

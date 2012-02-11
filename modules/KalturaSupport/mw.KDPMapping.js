@@ -584,30 +584,7 @@
 				case 'doPause':
 					b( "onpause" );
 					break;
-				// TODO move ad Support events to the sequence proxy ( not in core KDPMapping )
-				case 'adStart':
-					b('AdSupport_StartAdPlayback');	
-					break;
-				case 'adEnd':
-					b('AdSupport_EndAdPlayback');
-					break;
-				// Pre sequences: 
-				case 'preSequenceStart':
-				case 'pre1start':
-					b( 'AdSupport_PreSequence');
-					break;
-				case 'preSequenceComplete':
-					b( 'AdSupport_PreSequenceComplete');
-					break;
-				
-				// Post sequences:
-				case 'post1start':
-				case 'postSequenceStart':
-					b( 'AdSupport_PostSequence');
-					break;
-				case 'postSequenceComplete':
-					b( 'AdSupport_PostSequenceComplete' );
-					break;
+					
 				case 'playerPlayed':
 				case 'play':
 				case 'doPlay':
@@ -673,6 +650,44 @@
 				case 'metadataReceived':
 					b('KalturaSupport_MetadataReceived');
 					break;
+					
+				/**
+				 * Ad support listeneres
+				 *  TODO move to AdTimeline.js ( not in core KDPMapping )
+				 */
+				case 'adStart':
+					b('AdSupport_StartAdPlayback');	
+					break;
+				case 'adEnd':
+					b('AdSupport_EndAdPlayback');
+					break;
+				// Pre sequences: 
+				case 'preSequenceStart':
+				case 'pre1start':
+					b( 'AdSupport_PreSequence');
+					break;
+				case 'preSequenceComplete':
+					b( 'AdSupport_PreSequenceComplete');
+					break;
+				
+				// Post sequences:
+				case 'post1start':
+				case 'postSequenceStart':
+					b( 'AdSupport_PostSequence');
+					break;
+				case 'postSequenceComplete':
+					b( 'AdSupport_PostSequenceComplete' );
+					break;
+				case 
+				case 'adUpdatePlayhead': 
+					b( 'adUpdatePlayhead', function( event, adTime) {
+						callback( adTime, embedPlayer.id );
+					});
+					break;
+					
+				/**
+				 * Cue point listeners TODO ( move to mw.kCuepoints.js )
+				 */
 				case 'cuePointsReceived':
 					b( 'KalturaSupport_CuePointsReady', function( event, cuePoints ) {
 						callback( embedPlayer.rawCuePoints, embedPlayer.id );
@@ -688,6 +703,7 @@
 						callback( cuePointWrapper, embedPlayer.id );
 					});
 					break;
+					
 				/**
 				 * Mostly for analytics ( rather than strict kdp compatibility )
 				 */

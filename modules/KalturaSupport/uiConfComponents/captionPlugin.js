@@ -9,7 +9,6 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		var captionPluginNames = ['closedCaptions', 'closedCaptionsUnderPlayer', 
                                   'closedCaptionsOverPlayer',  'closedCaptionsFlexible'];
 		var captionPluginName;
-
 		for( var i =0; i < captionPluginNames.length; i++ ){
 			captionPluginName = captionPluginNames[i];
 			if( embedPlayer.isPluginEnabled( captionPluginName ) ){

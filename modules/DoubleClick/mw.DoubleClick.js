@@ -333,8 +333,9 @@ mw.DoubleClick.prototype = {
 		}
 		// Update the timeRemaining sequence proxy
 		var vid = _this.getAdVideoElement();
-		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', vid.duration - vid.currentTime );
+		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt( vid.duration - vid.currentTime ) );
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
+		_this.embedPlayer.triggerHelper( 'adUpdatePlayhead', vid.currentTime );
 		
 		// TODO player updates should be configurable see Mantis 14076 and 14019
 		_this.embedPlayer.controlBuilder.setStatus( 

@@ -133,7 +133,11 @@ mw.AdTimeline.prototype = {
 		// Clear out any old bindings
 		_this.destroy();
 		// Create an empty sequence proxy object ( stores information about the current sequence ) 
-		embedPlayer.sequenceProxy = {};
+		embedPlayer.sequenceProxy = {
+			'isInSequence' : false,
+			'timeRemaining' : 0,
+			'duration' : 0
+		};
 		
 		// On change media clear out any old adTimeline bindings
 		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostfix, function(){

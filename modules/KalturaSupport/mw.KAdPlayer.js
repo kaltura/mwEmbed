@@ -229,15 +229,13 @@ mw.KAdPlayer.prototype = {
 		// start ad tracking
 		this.adTrackingFlag = true;
 		mw.log("KAdPlayer:: source updated, add tracking");
-		// Bind all the tracking events ( currently vast based but will abstract if needed )
-		if( adConf.trackingEvents ){
-			if( vid.readyState > 0 ) {
+		// Always track ad progress:
+		if( vid.readyState > 0 ) {
+			_this.addAdTracking( adConf.trackingEvents );
+		} else {
+			$( vid ).bind('loadedmetadata', function() {
 				_this.addAdTracking( adConf.trackingEvents );
-			} else {
-				$( vid ).bind('loadedmetadata', function() {
-					_this.addAdTracking( adConf.trackingEvents );
-				});
-			}
+			});
 		}
 		var helperCss = {
 			'position': 'absolute',
@@ -262,8 +260,9 @@ mw.KAdPlayer.prototype = {
 					if( isNaN( timeLeft ) ){
 						timeLeft = '...';
 					}
+					// Evaluate notice text: 
 					$('#' + noticeId).text(
-						adSlot.notice.text.replace('$1', timeLeft)
+						_this.embedPlayer.evaluate( adSlot.notice.evalText )
 					);
 					setTimeout( localNoticeCB,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 				}
@@ -492,12 +491,19 @@ mw.KAdPlayer.prototype = {
 
 		// Set up a monitor for time events: 
 		this.adMonitorInterval = setInterval( function(){
-			// check that the video player is still available: 
-			if( !videoPlayer ){
+			// check that the video player is still available and we are still in an ad sequence:
+			if( !videoPlayer || !_this.embedPlayer.sequenceProxy.isInSequence  ){
+				_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', null );
+				_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  null );
 				clearInterval( _this.adMonitorInterval );
 			}
 			time =  videoPlayer.currentTime;
 			dur = videoPlayer.duration;
+			
+			// Update the timeRemaining sequence proxy
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt ( dur - time ) );
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  dur );
+			_this.embedPlayer.triggerHelper( 'adUpdatePlayhead', time );
 			
 			// Check if isVideoSiblingEnabled and update the status bar 
 			if( _this.isVideoSiblingEnabled() ) {
