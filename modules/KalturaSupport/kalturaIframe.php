@@ -683,29 +683,26 @@ class kalturaIframe {
 					}
 				?>
 				
-				var hashString = document.location.hash;
 				// Parse any configuration options passed in via hash url more reliable than window['parent']
-				if( hashString ){
+				try{
+					if( window['parent'] && window['parent']['preMwEmbedConfig'] ){ 
+						// Grab config from parent frame:
+						mw.setConfig( window['parent']['preMwEmbedConfig'] );
+						// Set the "iframeServer" to the current domain: 
+						mw.setConfig( 'EmbedPlayer.IframeParentUrl', document.URL ); 
+					}
+				} catch( e ) {
+					// could not get config from parent javascript scope try hash string:
+					var hashString = document.location.hash;
 					try{
 						var hashObj = JSON.parse(
 							unescape( hashString.replace( /^#/, '' ) )
 						);
-						if( hashObj.mwConfig ){
+						if( hashObj && hashObj.mwConfig ){
 							mw.setConfig( hashObj.mwConfig );
 						}
 					} catch( e ) {
-						//error could not parse hash tag
-					}
-				} else 	{
-					try{
-						if( window['parent'] && window['parent']['preMwEmbedConfig'] ){ 
-							// Grab config from parent frame:
-							mw.setConfig( window['parent']['preMwEmbedConfig'] );
-							// Set the "iframeServer" to the current domain: 
-							mw.setConfig( 'EmbedPlayer.IframeParentUrl', document.URL ); 
-						}
-					} catch( e ) {
-						// could not get config from parent javascript scope
+						// error could not parse hash tag ( run with default config )
 					}
 				}
 
@@ -776,7 +773,6 @@ class kalturaIframe {
 				isHTML5 = true;
 			}
 		}
-		
 		if( isHTML5){
 				// remove the no_rewrite flash object ( never used in rewrite )
 				var obj = document.getElementById('kaltura_player_iframe_no_rewrite');

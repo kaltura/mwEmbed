@@ -320,7 +320,7 @@ mw.IFramePlayerApiClient.prototype = {
 jQuery.fn.iFramePlayer = function( readyCallback ){
 	// only support ONE iframe player at a time 
 	var playerProxy = this[0];
-	mw.log( "$.iFramePlayer::" + playerProxy.id );
+	mw.log( "IframePlayerApiClient:: $.iFramePlayer::" + playerProxy.id );
 	
 	// Setup pointer to real iframe
 	var iframePlayerId = $( playerProxy ).attr('id') + '_ifp';
@@ -331,7 +331,7 @@ jQuery.fn.iFramePlayer = function( readyCallback ){
 	// Once the proxy ready event is received from the server complete the handshake
 	// and send the proxyAcknowledgment back to the iframe server
 	$( playerProxy ).bind('proxyReady', function(){
-		mw.log("iFramePlayer::proxyReady");
+		mw.log( "IframePlayerApiClient:: iFramePlayer::proxyReady" );
 		playerProxy.proxyAcknowledgment();
 	});
 	
