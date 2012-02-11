@@ -678,7 +678,6 @@
 				case 'postSequenceComplete':
 					b( 'AdSupport_PostSequenceComplete' );
 					break;
-				case 
 				case 'adUpdatePlayhead': 
 					b( 'adUpdatePlayhead', function( event, adTime) {
 						callback( adTime, embedPlayer.id );
