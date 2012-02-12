@@ -110,16 +110,17 @@ mw.PlayerControlBuilder.prototype = {
 	addControls: function() {
 		// Set up local pointer to the embedPlayer
 		var embedPlayer = this.embedPlayer;
-
+        
 		// Set up local controlBuilder
 		var _this = this;
+        
+        var originalHeight = $( embedPlayer ).parent().parent().height();
 
 		// Remove any old controls & old overlays:
 		embedPlayer.$interface.find( '.control-bar,.overlay-win' ).remove();
 
 		// Reset flags:
 		_this.displayOptionsMenuFlag = false;
-
 
 		// Setup the controlBar container ( starts hidden ) 
 		var $controlBar = $('<div />')
@@ -131,6 +132,9 @@ mw.PlayerControlBuilder.prototype = {
 			$controlBar.hide();
 		} else {
 			embedPlayer.height =  embedPlayer.$interface.height() - this.getHeight();
+            if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
+                embedPlayer.height =  originalHeight - this.getHeight();
+            }
 			$( embedPlayer ).css('height', embedPlayer.height +'px' );
 			// update native element height:
 			$('#' + embedPlayer.pid ).css('height', embedPlayer.height);
@@ -152,6 +156,10 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Add the controls to the interface
 		embedPlayer.$interface.append( $controlBar );
+        
+        if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
+            embedPlayer.triggerHelper( 'resizeIframeContainer', [ { 'height' : embedPlayer.height + $controlBar.height() - 1 } ] );
+        }
 
 		// Add the Controls Component
 		this.addControlComponents();
