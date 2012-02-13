@@ -65,7 +65,7 @@ mw.IFramePlayerApiClient.prototype = {
 		$.each( this.exportedMethods, function( na, method ){
 			_this.playerProxy[ method ] = function(){
 				// Call any local named callbacks
-				if( namedMethodCallbacks[ method ] ){
+				if( $.isFunction( namedMethodCallbacks[ method ] ) ){
 					namedMethodCallbacks[ method ].apply( this, $.makeArray( arguments ) );
 				}
 				_this.postMessage( {
@@ -306,6 +306,9 @@ mw.IFramePlayerApiClient.prototype = {
 		    $.each(obj, function(n, na) {
 		        v = obj[n];
 		        t = typeof(v);
+		        // skip functions
+		        if( t == 'function' )
+		        	return true;
 		        if (obj.hasOwnProperty(n)) {
 		            if (t == "string") v = '"' + v + '"'; else if (t == "object" && v !== null) v = _this.stringify(v);
 		            json.push((arr ? "" : '"' + n + '":') + String(v));
