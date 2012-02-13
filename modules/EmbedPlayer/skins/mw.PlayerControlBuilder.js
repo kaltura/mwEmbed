@@ -158,7 +158,7 @@ mw.PlayerControlBuilder.prototype = {
 		embedPlayer.$interface.append( $controlBar );
         
         if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
-            embedPlayer.triggerHelper( 'resizeIframeContainer', [ { 'height' : embedPlayer.height + $controlBar.height() - 1 } ] );
+            embedPlayer.triggerHelper( 'resizeIframeContainer', [ {'height' : embedPlayer.height + $controlBar.height() - 1} ] );
         }
 
 		// Add the Controls Component
@@ -881,16 +881,23 @@ mw.PlayerControlBuilder.prototype = {
 			
 		} else { // hide show controls:
 			
-			// Show controls on click: 
-			$(embedPlayer).bind( 'click' + this.bindPostfix , function(){
-				_this.showControlBar();
-				return true;
-			});
-			
-			//$interface.css({'background-color': 'red'});
 			// Bind a startTouch to show controls
 			$interface.bind( 'touchstart' + this.bindPostfix, function() {
-				_this.showControlBar();
+                if ( embedPlayer.$interface.find( '.control-bar' ).is( ':visible' ) ) {
+					if( embedPlayer.paused ) {
+						embedPlayer.play();
+					} else {
+						embedPlayer.pause();
+					}
+                }
+                else {
+                    _this.showControlBar();
+                }
+                clearTimeout( _this.hideControlBarCallback );
+                _this.hideControlBarCallback = setTimeout( function() {
+                    _this.hideControlBar()
+                }, 3000 );
+                
 				// ( once the user touched the video "don't hide" )
 				return true;
 			} );
@@ -933,7 +940,9 @@ mw.PlayerControlBuilder.prototype = {
 				});
 				
 			} else {
-				$interface.hoverIntent( hoverIntentConfig );
+                if ( !mw.isIpad() ) {
+                    $interface.hoverIntent( hoverIntentConfig );
+                }
 			}
 			
 		}
@@ -996,7 +1005,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Remove parent dbl click ( so we can handle play clicks )
 		$( embedPlayer ).bind( "click" + this.bindPostfix, function() {
 			// Don't bind anything if native controls displayed:
-			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() ) {
+			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() || mw.isIpad() ) {
 				return true;
 			}		
 			var clickTime = new Date().getTime();
@@ -1118,9 +1127,9 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		// iPad supports overlays but the touch events mean we want the controls displayed all the 
 		// time for now. 
-		if( mw.isIpad() ){
+		/*if( mw.isIpad() ){
 			return false;
-		}
+		}*/
 
 		// Don't hide controls when content "height" is 0px ( audio tags )
 		if( this.embedPlayer.getPlayerHeight() === 0 &&
@@ -1692,7 +1701,7 @@ mw.PlayerControlBuilder.prototype = {
         $.each( $buttonSet, function(i) {
             var label = this.toString();
             var $currentButton = $( '<button />' )
-                .css( { 'padding' : '5px', 'font-size' : '12px' } )
+                .css( {'padding' : '5px', 'font-size' : '12px'} )
                 .text( label )
                 .click( function( eventObject ) {
                     callback( eventObject );
