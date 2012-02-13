@@ -307,8 +307,9 @@ mw.IFramePlayerApiClient.prototype = {
 		        v = obj[n];
 		        t = typeof(v);
 		        // skip functions
-		        if( t == 'function' )
+		        if( t == 'function' ){
 		        	return true;
+		        }
 		        if (obj.hasOwnProperty(n)) {
 		            if (t == "string") v = '"' + v + '"'; else if (t == "object" && v !== null) v = _this.stringify(v);
 		            json.push((arr ? "" : '"' + n + '":') + String(v));

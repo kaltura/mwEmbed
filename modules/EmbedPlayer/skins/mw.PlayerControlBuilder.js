@@ -402,16 +402,17 @@ mw.PlayerControlBuilder.prototype = {
 			// Make the iframe fullscreen:
 			parentWindow.fullScreenApi.requestFullScreen( parentTarget );
 			
-			// There is a bug with mozfullscreenchange event in firefox 10: 
+			// There is a bug with mozfullscreenchange event in all versions of firefox with supportsFullScreen 
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=724816
 			// so we have to have an extra binding to check for size change and then restore. 
-			if( $.browser.mozilla && $.browser.version == 10 ){
+			if( $.browser.mozilla ){
+				// put in a timeout to give the browser time to ~enter~ fullscreen initially. 
 				setTimeout( function(){
 					$( window ).bind('resize.postFullScreenResize', function(){
 						$(window).unbind( '.postFullScreenResize' );
 						_this.restoreWindowPlayer();
 					})
-				}, 100);
+				}, 250 );
 			}
 		}
 		
@@ -595,7 +596,7 @@ mw.PlayerControlBuilder.prototype = {
 		});
 
 		// Bind escape to restore in page clip
-		$( window ).keyup( function(event) {
+		$( window ).keyup( function( event ) {
 			// Escape check
 			if( event.keyCode == 27 ){
 				_this.restoreWindowPlayer();
@@ -676,7 +677,6 @@ mw.PlayerControlBuilder.prototype = {
 			var parentTarget = parentWindow.document.getElementById( this.embedPlayer.id );
 			parentWindow.fullScreenApi.cancelFullScreen( parentTarget );
 		}
-		
 
 		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
