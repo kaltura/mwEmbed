@@ -456,6 +456,13 @@ mw.KWidgetSupport.prototype = {
 			if( attr && typeof plugins[ confPrefix ][ attr ] != 'undefined' ){
 				returnConfig[ attr ] = plugins[ confPrefix ][ attr ];
 			}
+            if ( attr && typeof attr == 'object' ) {
+                for ( var currAttr in attr ) {
+                    if ( plugins[ confPrefix ][ attr[ currAttr ] ] ) {
+                        returnConfig[ attr[ currAttr ] ] = plugins[ confPrefix ][ attr[ currAttr ] ];
+                    }
+                }
+            }
 		}
 		if( !confPrefix && attr ){
 			returnConfig[ attr ] = embedPlayer.playerConfig['vars'][attr]
