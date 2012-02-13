@@ -560,7 +560,7 @@
 			
 			// Check if we are setting iframe src or propagating via callback:
 			if( mw.getConfig('EmbedPlayer.PageDomainIframe') ){
-				// Set the iframe contents via callback 
+				// Set the iframe contents via callback replace any non-alpha numeric charachters 
 				var cbName = 'mwi_' + iframeId.replace(/[^0-9a-zA-Z]/g, '');
 				if( window[ cbName ] ){
 					mw.log( "Error: iframe callback already defined: " + cbName );	
@@ -575,7 +575,7 @@
 					// Invoke the iframe player api system:
 					$iframeProxy.iFramePlayer( callback );
 					
-					// clear out this global function 
+					// Clear out this global function 
 					window[ cbName ] = null;
 				};
 				// Replace the player with the iframe: 

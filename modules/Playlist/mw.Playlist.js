@@ -476,6 +476,10 @@ mw.Playlist.prototype = {
 		// Check for a video/audio tag already in the page:
 		var embedPlayer = this.getEmbedPlayer();
 		this.clipIndex = clipIndex;
+		if( !embedPlayer ){
+			mw.log("Error: Playlist:: playClip called with null embedPlayer ");
+			return ;
+		}
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex, function(){
 			mw.log( "mw.Playlist::playClip > sourceHandler playClip callback ");

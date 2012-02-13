@@ -688,8 +688,8 @@ class kalturaIframe {
 					if( window['parent'] && window['parent']['preMwEmbedConfig'] ){ 
 						// Grab config from parent frame:
 						mw.setConfig( window['parent']['preMwEmbedConfig'] );
-						// Set the "iframeServer" to the current domain: 
-						mw.setConfig( 'EmbedPlayer.IframeParentUrl', document.URL ); 
+						// Set the "iframeServer" to the current domain ( do not include hash tag )
+						mw.setConfig( 'EmbedPlayer.IframeParentUrl', document.URL.replace(/#.*/, '' ) ); 
 					}
 				} catch( e ) {
 					// could not get config from parent javascript scope try hash string:
