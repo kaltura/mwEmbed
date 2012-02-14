@@ -348,25 +348,38 @@ class kalturaIframe {
 			return '';
 		}
 		$o = '';
+		// uiVars
 		$xml = $this->getResultObject()->getUiConfXML();
 		foreach ( $xml->uiVars->var as $var ){
-			if( isset( $var['key'] ) && isset( $var['value'] ) 
-				&& $var['key'] != 'Mw.CustomResourceIncludes' 
-			){
-				$o.= "mw.setConfig('" . htmlspecialchars( addslashes( $var['key'] ) ) . "', ";
-				// check for boolean attributes: 
-				if( $var['value'] == 'false' || $var['value'] == 'true' ){
-					$o.=  $var['value'];
-				} else if( substr($var['value'][0], 0, 1 ) == '{' 
-					&&  substr($var['value'], -1, 1 ) == '}' 
-					&& json_decode( $var['value'] ) !== null
-				){ // check for json valuse
-					$o.= $var['value'];
-				} else { //escape string values:
-					$o.= "'" . htmlspecialchars( addslashes( $var['value'] ) ) . "'";
-				}
-				$o.= ");\n";
+			if( isset( $var['key'] ) && isset( $var['value'] ) ){
+				$o .= $this->getSetConfigLine( $var['key'] , $var['value'] );
 			}
+		}
+		// Flashvars
+		if( $this->getResultObject()->urlParameters[ 'flashvars' ] ) {
+			foreach( $this->getResultObject()->urlParameters[ 'flashvars' ]  as $fvKey => $fvValue) {
+				$o .= $this->getSetConfigLine( $fvKey , $fvValue );
+			}
+		}
+		return $o;
+	}
+	private function getSetConfigLine( $key, $value ){
+		$o= '';
+		// don't allow custom resource includes to be set via flashvars
+		if( $key != 'Mw.CustomResourceIncludes' ){
+			$o.= "mw.setConfig('" . htmlspecialchars( addslashes( $key ) ) . "', ";
+			// check for boolean attributes: 
+			if( $value == 'false' || $value == 'true' ){
+				$o.=  $value;
+			} else if( substr($value[0], 0, 1 ) == '{' 
+				&&  substr($value, -1, 1 ) == '}' 
+				&& json_decode( $value ) !== null
+			){ // don't escape json: 
+				$o.= $value;
+			} else { //escape string values:
+				$o.= "'" . htmlspecialchars( addslashes( $value ) ) . "'";
+			}
+			$o.= ");\n";
 		}
 		return $o;
 	}
