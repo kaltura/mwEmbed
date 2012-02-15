@@ -131,13 +131,15 @@ mw.PlayerControlBuilder.prototype = {
 		if( _this.isOverlayControls() ){
 			$controlBar.hide();
 		} else {
-			embedPlayer.height =  embedPlayer.$interface.height() - this.getHeight();
-            if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
-                embedPlayer.height =  originalHeight - this.getHeight();
-            }
-			$( embedPlayer ).css('height', embedPlayer.height +'px' );
-			// update native element height:
-			$('#' + embedPlayer.pid ).css('height', embedPlayer.height);
+			if( !embedPlayer.height ){
+				embedPlayer.height =  embedPlayer.$interface.height() - this.getHeight();
+	            if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
+	                embedPlayer.height =  originalHeight - this.getHeight();
+	            }
+				$( embedPlayer ).css('height', embedPlayer.height +'px' );
+				// update native element height:
+				$('#' + embedPlayer.pid ).css('height', embedPlayer.height);
+			}
 		}
 
 		$controlBar.css( {
