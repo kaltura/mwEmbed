@@ -367,14 +367,14 @@ class kalturaIframe {
 		if( ! isset( $key ) || ! isset( $value ) ){
 			return '';
 		}
-		$o= '';
+		$o='';
 		// don't allow custom resource includes to be set via flashvars
 		if( $key != 'Mw.CustomResourceIncludes' ){
 			$o.= "mw.setConfig('" . htmlspecialchars( addslashes( $key ) ) . "', ";
 			// check for boolean attributes: 
 			if( $value == 'false' || $value == 'true' ){
 				$o.=  $value;
-			} else if( substr($value[0], 0, 1 ) == '{' 
+			} else if( isset( $value[0] ) && substr($value[0], 0, 1 ) == '{' 
 				&&  substr($value, -1, 1 ) == '}' 
 				&& json_decode( $value ) !== null
 			){ // don't escape json: 
