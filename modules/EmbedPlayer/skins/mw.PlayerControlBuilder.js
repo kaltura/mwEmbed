@@ -439,21 +439,21 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		
 		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
-		function getWindowSize(){
-			return {
-				'width' : $(window).width(),
-				'height' : $(window).height()
-			};
-		};
-		function syncPlayerSize(){
-			if( $( embedPlayer ).width() != $(window).width() ){
-				embedPlayer.resizePlayer( getWindowSize() );
-			};
-		}
-		setTimeout( syncPlayerSize, 50);
-		setTimeout( syncPlayerSize, 200);
+		setTimeout( _this.syncPlayerSize, 50);
+		setTimeout( _this.syncPlayerSize, 200);
 	},
-	
+	syncPlayerSize: function(){
+		var embedPlayer = this.embedPlayer;
+		if( $( embedPlayer ).width() != $(window).width() ){
+			embedPlayer.resizePlayer( _this.getWindowSize() );
+		};
+	},
+	getWindowSize: function(){
+		return {
+			'width' : $(window).width(),
+			'height' : $(window).height()
+		};
+	},
 	doFullScreenPlayerDom: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
@@ -683,7 +683,12 @@ mw.PlayerControlBuilder.prototype = {
 		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			this.restoreWindowPlayerDom();
-		} 
+		}  else {
+			// if an iframe server make sure the player size is in sync with the iframe window size: 
+			// ( iPad sometimes does not fire resize events ) 
+			setTimeout( _this.syncPlayerSize, 50);
+			setTimeout( _this.syncPlayerSize, 200);
+		}
 		// Restore scrolling on iPad
 		$( document ).unbind('touchend.fullscreen');
 		// Trigger the onCloseFullscreen event: 

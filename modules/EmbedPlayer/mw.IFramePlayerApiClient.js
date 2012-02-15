@@ -3,7 +3,6 @@
 * 
 * Client side ( binds a given iFrames to expose the player api ) 
 */
-
 ( function( mw, $ ) {
 	
 mw.IFramePlayerApiClient = function( iframe, playerProxy ){
@@ -23,6 +22,7 @@ mw.IFramePlayerApiClient.prototype = {
 	// Stores the current playerProxy ( can be updated by user js )
 	'init': function( iframe , playerProxy, options ){
 		mw.log( "mw.IFramePlayerApiClient:: init: " + playerProxy.id );
+
 		this.iframe = iframe;
 		this.playerProxy = playerProxy;
 
@@ -38,6 +38,7 @@ mw.IFramePlayerApiClient.prototype = {
 		
 		// Add bind helper ( for odd jQuery javascript scope issues cases iOS ) 
 		playerProxy.bindHelper = function( bindName, callback ){
+			// this == playerProxy here:
 			$( this ).bind( bindName, callback );
 		}
 	},
@@ -49,7 +50,7 @@ mw.IFramePlayerApiClient.prototype = {
 		if( $( this.iframe ).attr('src') ){
 			 return $( this.iframe ).attr('src')
 		} else {
-			return document.URL;
+			return document.URL.replace(/#.*/, '');
 		}
 	},
 	'addPlayerSendApi': function(){

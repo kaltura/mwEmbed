@@ -538,7 +538,7 @@
 		// Append the configuration and request domain to the iframe hash: 
 		var iframeMwConfig =  mw.getNonDefaultConfigObject();
 		// Add the parentUrl to the iframe config: 
-		iframeMwConfig['EmbedPlayer.IframeParentUrl'] = document.URL;
+		iframeMwConfig[ 'EmbedPlayer.IframeParentUrl' ] = document.URL.replace( /#.*/, '' );
 
 		return '#' + encodeURIComponent(
 			JSON.stringify({

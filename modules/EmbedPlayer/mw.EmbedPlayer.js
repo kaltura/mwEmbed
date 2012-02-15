@@ -913,7 +913,6 @@ mw.EmbedPlayer.prototype = {
 		// Update the playerReady flag
 		this.playerReady = true;
 		mw.log("EmbedPlayer:: Trigger: playerReady");
-		
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
 
@@ -1674,6 +1673,7 @@ mw.EmbedPlayer.prototype = {
 	play: function() {
 		var _this = this;
 		var $this = $( this );
+
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
 
 		// Store the absolute play time ( to track native events that should not invoke interface updates )

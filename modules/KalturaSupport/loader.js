@@ -15,6 +15,8 @@
 		'Kaltura.ServiceBase' : '/api_v3/index.php?service=',
 		'Kaltura.CdnUrl' : 'http://cdnakmi.kaltura.com',
 		'Kaltura.NoApiCache' : false, // By default tell the client to cache results
+		// By default support apple adaptive 
+		'Kaltura.UseAppleAdaptive': true,
 		// A video file for when no suitable flavor can be found
 		'Kaltura.MissingFlavorSources' : [
 		    { 
