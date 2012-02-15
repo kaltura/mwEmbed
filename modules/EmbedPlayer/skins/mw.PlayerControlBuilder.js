@@ -158,7 +158,7 @@ mw.PlayerControlBuilder.prototype = {
 		embedPlayer.$interface.append( $controlBar );
         
         if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
-            embedPlayer.triggerHelper( 'resizeIframeContainer', [ {'height' : embedPlayer.height + $controlBar.height() - 1} ] );
+			embedPlayer.triggerHelper( 'resizeIframeContainer', [ { 'height' : embedPlayer.height + $controlBar.height() - 1 } ] );
         }
 
 		// Add the Controls Component
@@ -858,7 +858,7 @@ mw.PlayerControlBuilder.prototype = {
 		
 		
 		var bindSpaceUp = function(){
-			$(window).bind('keyup' + this.bindPostfix, function(e) {
+			$(window).bind('keyup' + _this.bindPostfix, function(e) {
 				if( e.keyCode == 32 ) {
 					if(embedPlayer.paused) {
 						embedPlayer.play();
@@ -871,7 +871,7 @@ mw.PlayerControlBuilder.prototype = {
 		};
 		
 		var bindSpaceDown = function() {
-			$(window).unbind( 'keyup.mwPlayer' );
+			$(window).unbind( 'keyup' + _this.bindPostfix );
 		};
 		// Add hide show bindings for control overlay (if overlay is enabled )
 		if( ! _this.isOverlayControls() ) {
@@ -883,21 +883,20 @@ mw.PlayerControlBuilder.prototype = {
 			
 			// Bind a startTouch to show controls
 			$interface.bind( 'touchstart' + this.bindPostfix, function() {
-                if ( embedPlayer.$interface.find( '.control-bar' ).is( ':visible' ) ) {
+				if ( embedPlayer.$interface.find( '.control-bar' ).is( ':visible' ) ) {
 					if( embedPlayer.paused ) {
 						embedPlayer.play();
 					} else {
 						embedPlayer.pause();
 					}
+				} else {
+					_this.showControlBar();
                 }
-                else {
-                    _this.showControlBar();
-                }
-                clearTimeout( _this.hideControlBarCallback );
-                _this.hideControlBarCallback = setTimeout( function() {
-                    _this.hideControlBar()
-                }, 3000 );
-                
+				clearTimeout( _this.hideControlBarCallback );
+				_this.hideControlBarCallback = setTimeout( function() {
+					_this.hideControlBar()
+				}, 3000 );
+
 				// ( once the user touched the video "don't hide" )
 				return true;
 			} );
@@ -940,9 +939,9 @@ mw.PlayerControlBuilder.prototype = {
 				});
 				
 			} else {
-                if ( !mw.isIpad() ) {
-                    $interface.hoverIntent( hoverIntentConfig );
-                }
+				if ( !mw.isIpad() ) {
+					$interface.hoverIntent( hoverIntentConfig );
+				}
 			}
 			
 		}
@@ -1701,7 +1700,7 @@ mw.PlayerControlBuilder.prototype = {
         $.each( $buttonSet, function(i) {
             var label = this.toString();
             var $currentButton = $( '<button />' )
-                .css( {'padding' : '5px', 'font-size' : '12px'} )
+                .css( { 'padding' : '5px', 'font-size' : '12px' } )
                 .text( label )
                 .click( function( eventObject ) {
                     callback( eventObject );
