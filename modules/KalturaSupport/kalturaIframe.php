@@ -364,6 +364,9 @@ class kalturaIframe {
 		return $o;
 	}
 	private function getSetConfigLine( $key, $value ){
+		if( ! isset( $key ) || ! isset( $value ) ){
+			return '';
+		}
 		$o= '';
 		// don't allow custom resource includes to be set via flashvars
 		if( $key != 'Mw.CustomResourceIncludes' ){
