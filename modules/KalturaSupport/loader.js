@@ -94,16 +94,16 @@
 		"captionPlugin"	: 	"uiConfComponents/captionPlugin.js",		
 		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",
 		"myLogo" : "uiConfComponents/myLogo.js",
-
-		"playlistPlugin" : "uiConfComponents/playlistPlugin.js",
-		
+		"playlistPlugin" : "uiConfComponents/playlistPlugin.js",	
 		"controlbarLayout"	: 	"uiConfComponents/controlbarLayout.js",
 		"titleLayout" : "uiConfComponents/titleLayout.js",
 		"volumeBarLayout"	:	"uiConfComponents/volumeBarLayout.js",
 		"shareSnippet"	:	"uiConfComponents/shareSnippet.js",
 		"moderationPlugin"    :   "uiConfComponents/moderationPlugin.js",
         "downloadPlugin"    :   "uiConfComponents/downloadPlugin.js",
-        "captureThumbnailPlugin"    :   "uiConfComponents/captureThumbnailPlugin.js"
+        "captureThumbnailPlugin"    :   "uiConfComponents/captureThumbnailPlugin.js",
+        "jCarousel"     :   "uiConfComponents/jcarousellite_1.0.1.js",
+        "carouselPlugin"    :   "uiConfComponents/carouselPlugin.js"
 	} );
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
@@ -135,7 +135,9 @@
 		'adPlugin',
 		'captionPlugin',
 		'bumperPlugin',
-		'playlistPlugin'
+		'playlistPlugin',
+        'jCarousel',
+        'carouselPlugin'
 	];
 	
 	mw.newEmbedPlayerCheckUiConf = function( callback ){
