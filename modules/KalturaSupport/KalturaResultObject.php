@@ -19,6 +19,7 @@ class KalturaResultObject {
 	var $noCache = false;
 	// flag to control if we are in playlist mode
 	var $isPlaylist = null; // lazy init
+    var $isCarousel = null;
 	var $isJavascriptRewriteObject = null;
 	var $error = false;
 	// Set of sources
@@ -150,6 +151,14 @@ class KalturaResultObject {
 		}
 		return false;
 	}
+    // Check if the requested url includes a carousel
+    function isCarousel(){
+        if ( !is_null ( $this->isCarousel ) ){
+            return $this->isCarousel;
+        }
+        $this->isCarousel = !! $this->getPlayerConfig( 'carousel' );
+        return $this->isCarousel;
+    }
 	// Check if the requested url is a playlist
 	function isPlaylist(){
 		// Check if the playlist is null: 
@@ -517,7 +526,7 @@ class KalturaResultObject {
 	private function getResultObjectFromApi(){
 		if( $this->isEmptyPlayer() ){
 			return $this->getUiConfResult();
-		} else if( $this->isPlaylist() ){
+		} else if( $this->isPlaylist() || $this->isCarousel() ){
 			return $this->getPlaylistResult();
 		} else {
 			return $this->getEntryResult();
@@ -578,7 +587,13 @@ class KalturaResultObject {
 
 	function getPlaylistResult(){
 		// Get the first playlist list:
-		$playlistId =  $this->getFirstPlaylistId();
+        if ( $this->isCarousel() ) {
+            $playlistId = $this->getPlayerConfig( 'carousel', 'playlist_id' );
+        }
+        else {
+            $playlistId =  $this->getFirstPlaylistId();
+        }
+
 		$playlistObject = $this->getPlaylistObject( $playlistId  );
 		
 		// Create an empty resultObj
