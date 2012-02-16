@@ -828,10 +828,26 @@ class KalturaResultObject {
 		if( $wgKalturaRemoteAddressSalt === false ){
 			return '';
 		}
-		$ip = $_SERVER['REMOTE_ADDR'];
+		$ip = null;
+		// Check for x-forward-for and x-real-ip headers 
+		$requestHeaders = getallheaders(); 
+		if( isset( $requestHeaders['X-Forwarded-For'] ) ){
+			// only care about the fist ip ( most likely source ip address ) 
+			list( $ip ) = explode( ',', $requestHeaders['X-Forwarded-For'] );
+		}
+		// Check for x-real-ip
+		if( !$ip && isset( $requestHeaders['X-Real-IP'] ) ){
+			// also trim any white space
+			list( $ip ) = explode( ',', $requestHeaders['X-Real-IP'] );
+		}
+		if( !$ip ){
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
 		if( $wgKalturaForceIP ){
 			$ip = $wgKalturaForceIP;
 		}
+		// make sure there is no white space
+		$ip = trim( $ip );
 		$s = $ip . "," . time() . "," . microtime( true );
 		return "X_KALTURA_REMOTE_ADDR: " . $s . ',' . md5( $s . "," . $wgKalturaRemoteAddressSalt );
 	}
