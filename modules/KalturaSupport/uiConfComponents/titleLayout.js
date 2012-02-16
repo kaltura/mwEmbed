@@ -73,15 +73,17 @@
 			$vid
 			.css({
 				'position' : 'absolute',
-				'height' :vidHeight
+				'height' : vidHeight
 			});
 			if( !belowPlayer ){
-				$vid.css( 'top', titleScreenHeight + 'px' );
-				embedPlayer.$interface.find(".play-btn-large").css({
+				if( parseInt( $vid.css( 'top' ) ) < titleScreenHeight ){
+					$vid.css( 'top', titleScreenHeight + 'px' );
+				}
+				/* embedPlayer.$interface.find(".play-btn-large").css({
 					'top' : parseInt( ( vidHeight + parseInt( titleScreenHeight ) ) / 2 )  + 'px'
-				});
+				});*/
 			} else {
-				$( embedPlayer ).css('height', vidHeight )
+				// $( embedPlayer ).css('height', vidHeight )
 				embedPlayer.$interface.css( 'height', vidHeight +  embedPlayer.controlBuilder.getHeight() );
 				embedPlayer.$interface.parent().find( '.titleContainer' ).css({
 					'position': 'absolute',

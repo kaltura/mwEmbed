@@ -290,7 +290,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if( !embedPlayer ){
 			mw.log("Error:: PlaylistHandlerKaltura:playClip > no embed player");
 			callback();
-			return;
+			return ;
 		}
 		// Check if entry id already matches ( and is loaded ) 
 		if( embedPlayer.kentryid == this.getClip( clipIndex ).id ){
@@ -315,6 +315,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 		});
 		mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
+		
 		// Use internal changeMedia call to issue all relevant events
 		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );
 		// Update the playlist data selectedIndex

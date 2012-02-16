@@ -52,6 +52,9 @@ mw.PlayerControlBuilder.prototype = {
 
 	// Flag to store the current fullscreen mode
 	inFullScreen: false,
+	
+	// Flag for full window size players
+	isWindowSizePlayer: false,
 
 	// Flag to store if a warning binding has been added
 	addWarningFlag: false,
@@ -131,15 +134,17 @@ mw.PlayerControlBuilder.prototype = {
 		if( _this.isOverlayControls() ){
 			$controlBar.hide();
 		} else {
-			if( !embedPlayer.height ){
 				embedPlayer.height =  embedPlayer.$interface.height() - this.getHeight();
-	            if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
-	                embedPlayer.height =  originalHeight - this.getHeight();
-	            }
-				$( embedPlayer ).css('height', embedPlayer.height +'px' );
+				if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
+	            	embedPlayer.height =  originalHeight - this.getHeight();
+				}
+				var updatedLayout = { 
+						'height' : embedPlayer.height +'px',
+						'top' : '0px'
+				}
+				$( embedPlayer ).css( updatedLayout );
 				// update native element height:
-				$('#' + embedPlayer.pid ).css('height', embedPlayer.height);
-			}
+				$('#' + embedPlayer.pid ).css( updatedLayout );
 		}
 
 		$controlBar.css( {
@@ -439,13 +444,13 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		
 		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
-		setTimeout( _this.syncPlayerSize, 50);
-		setTimeout( _this.syncPlayerSize, 200);
+		setTimeout( function(){ _this.syncPlayerSize() }, 50);
+		setTimeout( function(){ _this.syncPlayerSize() }, 200);
 	},
 	syncPlayerSize: function(){
 		var embedPlayer = this.embedPlayer;
 		if( $( embedPlayer ).width() != $(window).width() ){
-			embedPlayer.resizePlayer( _this.getWindowSize() );
+			embedPlayer.resizePlayer( this.getWindowSize() );
 		};
 	},
 	getWindowSize: function(){
@@ -686,8 +691,10 @@ mw.PlayerControlBuilder.prototype = {
 		}  else {
 			// if an iframe server make sure the player size is in sync with the iframe window size: 
 			// ( iPad sometimes does not fire resize events ) 
-			setTimeout( _this.syncPlayerSize, 50);
-			setTimeout( _this.syncPlayerSize, 200);
+			if( this.isWindowSizePlayer ){
+				setTimeout( function(){ _this.syncPlayerSize() }, 50);
+				setTimeout( function(){ _this.syncPlayerSize() }, 200);
+			}
 		}
 		// Restore scrolling on iPad
 		$( document ).unbind('touchend.fullscreen');
@@ -761,9 +768,9 @@ mw.PlayerControlBuilder.prototype = {
 		var $interface = embedPlayer.$interface;
 		var targetAspectSize = _this.getAspectPlayerWindowCss( size );
 		// Setup button scale to not reflect controls offset  
-		var butonScale = $.extend( {}, interfaceCss);
+		var buttonScale = $.extend( {}, interfaceCss);
 		if( !_this.isOverlayControls() ){
-			butonScale['height'] =  butonScale['height'] - this.getHeight();
+			buttonScale['height'] =  buttonScale['height'] - this.getHeight();
 		}
 		
 		if( animate ){
@@ -772,7 +779,7 @@ mw.PlayerControlBuilder.prototype = {
 			$interface.find('.playerPoster' ).animate( targetAspectSize  );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large' ).animate(  _this.getPlayButtonPosition( butonScale ) );
+			$interface.find('.play-btn-large' ).animate(  _this.getPlayButtonPosition( buttonScale ) );
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
@@ -794,7 +801,7 @@ mw.PlayerControlBuilder.prototype = {
 			$( embedPlayer ).css( targetAspectSize );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition( butonScale ) );
+			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition( buttonScale ) );
 			
 			// if a spinner is displayed re-add to center: 
 			if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
@@ -841,6 +848,11 @@ mw.PlayerControlBuilder.prototype = {
 
 		var bindFirstPlay = false;		
 		_this.addRightClickBinding();
+		
+		// check if the player takes up the full window size: 
+		if( $( embedPlayer ).width() == $(window).width() ){
+			this.isWindowSizePlayer = true;
+		}
 		
 		// add the player click bindings
 		_this.addPlayerClickBindings();
