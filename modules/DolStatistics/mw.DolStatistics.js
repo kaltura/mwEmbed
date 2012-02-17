@@ -97,23 +97,24 @@ mw.DolStatistics.prototype = {
 						_this.monitorPercentage();
 					});
 				break;
+				case 'volumeChanged':
+					embedPlayer.addJsListener(eventName + _this.bindPostFix, function( eventData ) {
+						_this.sendStatsData( 'volumeChanged', eventData.newVolume );
+					});
+				break;
 				// Change playerUpdatePlayhead event to send events on playheadFrequency
 				case 'playerUpdatePlayhead':
 					_this.addMonitorBindings();
 				break;
 				// Use addJsListener for all other events
 				default:
-					embedPlayer.addJsListener(eventName + _this.bindPostFix, function() {
+					embedPlayer.addJsListener(eventName + _this.bindPostFix, function( argValue ) {
 						var eventData = '';
-						var argSet = $.makeArray( arguments );
-						$.each( argSet, function( inx, argValue ){
-							if( typeof argValue == 'object' ){ 
-								eventData += JSON.stringify( argValue ) + ",";
-							} else {
-								eventData += argValue + ",";
-							}
-						});
-						eventData = eventData.substr( 0, eventData.length-1 );
+						if( typeof argValue == 'object' ){ 
+							eventData = JSON.stringify( argValue );
+						} else {
+							eventData = argValue;
+						}
 						_this.sendStatsData( eventName, eventData );
 					});
 				break;
@@ -245,6 +246,14 @@ mw.DolStatistics.prototype = {
 		params['KDPDAT_VALUE'] = eventData.toString();
 		// Always include the current time: 
 		params['KDPDAT_PLAYHEAD'] = this.embedPlayer.currentTime;
+		
+		// try and pull the page title from the parent:
+		try{
+			params['HTML5GenTitle'] = parent.document.title;
+		} catch (e){
+			// could not get title from parent frame
+		}
+		
 		
 		// Add custom params
 		for( var i =0; i < 10; i++ ){
