@@ -844,7 +844,7 @@ mw.KWidgetSupport.prototype = {
 
 		// Setup flavorUrl
 		if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
-			var flavorUrl = mw.getConfig('Kaltura.ServiceUrl') + '/p/' + partnerId +
+			var flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
 					'/sp/' +  partnerId + '00/playManifest';
 		} else {
 			var flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
