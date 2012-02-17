@@ -396,6 +396,9 @@ mw.PlayerControlBuilder.prototype = {
 		this.inFullScreen = true;
 		var triggerOnOpenFullScreen = true;
 		
+		// Store the current scroll location on the iframe: 
+		$( embedPlayer ).trigger( 'fullScreenStoreVerticalScroll' );
+		
 		// Check for native support for fullscreen and we are in an iframe server
 		if ( window.fullScreenApi.supportsFullScreen && mw.getConfig('EmbedPlayer.IsIframeServer' ) ) {
 			var parentWindow = window.parent; 
@@ -697,7 +700,7 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		}
 		// Restore scrolling on iPad
-		$( document ).unbind('touchend.fullscreen');
+		$( document ).unbind( 'touchend.fullscreen' );
 		// Trigger the onCloseFullscreen event: 
 		$( embedPlayer ).trigger( 'onCloseFullScreen' );
 	},

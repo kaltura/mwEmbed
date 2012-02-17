@@ -115,17 +115,17 @@ mw.IFramePlayerApiClient.prototype = {
 			$('head').prepend( viewPortTag );
 		};
 		*/
-
+		var storeVerticalScroll = function(){
+			verticalScrollPosition = (document.all ? document.scrollTop : window.pageYOffset);
+		}
 		var scrollToTop = function() {
 			window.scroll(0, 0);
 		};
 
 		var doFullscreen = function(){
-			mw.log("iframeClient:: doFullscreen()");
 			localIframeInFullscreen = true;
 			
-			// Save vertical scroll position and scroll to top
-			verticalScrollPosition = (document.all ? document.scrollTop : window.pageYOffset);
+			mw.log("iframeClient:: doFullscreen> verticalScrollPosition:" + verticalScrollPosition);
 			scrollToTop();
 			
 			// iPad 5 supports fixed position in a bad way, use absolute pos for iOS
@@ -171,8 +171,7 @@ mw.IFramePlayerApiClient.prototype = {
 		}; 
 		
 		var restoreWindowMode = function(){
-			// Scroll back to the previews positon
-			window.scroll(0, verticalScrollPosition);
+			mw.log("iframeClient:: restoreWindowMode> verticalScrollPosition:" + verticalScrollPosition);
 			localIframeInFullscreen = false;
 			$iframe
 				.css( orgSize )
@@ -180,6 +179,7 @@ mw.IFramePlayerApiClient.prototype = {
 					'isFullscreen', false
 				)
 				.attr('style', orgStyle);
+			
 			// restore any parent absolute pos: 
 			$( parentsAbsoluteList ).each( function() {	
 				$( this ).css( 'position', 'absolute' );
@@ -187,6 +187,9 @@ mw.IFramePlayerApiClient.prototype = {
 			$( parentsRelativeList ).each( function() {
 				$( this ).css( 'position', 'relative' );
 			} );
+			
+			// Scroll back to the previews position
+			window.scroll(0, verticalScrollPosition);
 		};
 		
 		// Bind orientation change to resize player ( if fullscreen )
@@ -203,6 +206,7 @@ mw.IFramePlayerApiClient.prototype = {
 			}
 		});
 		
+		$( this.playerProxy ).bind( 'fullScreenStoreVerticalScroll', storeVerticalScroll );
 		$( this.playerProxy ).bind( 'onOpenFullScreen', doFullscreen);
 		$( this.playerProxy ).bind( 'onCloseFullScreen', restoreWindowMode);
 		

@@ -831,7 +831,6 @@ mw.KWidgetSupport.prototype = {
 			mw.log("Error: KWidgetSupport: flavorData is not defined ");
 			return ;
 		}
-		
 		// Remove the ':' from the protocol
 		var protocol = location.protocol.substr(0, location.protocol.length-1); 
 

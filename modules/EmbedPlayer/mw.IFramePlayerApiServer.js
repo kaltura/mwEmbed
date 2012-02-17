@@ -35,6 +35,7 @@ mw.IFramePlayerApiServer.prototype = {
 	     'proxyReady',
 	     'playerReady',
 	     'monitorEvent',
+	     'fullScreenStoreVerticalScroll',
 	     'onOpenFullScreen',
 	     'onCloseFullScreen',
 		 'onTouchEnd',

@@ -10,7 +10,7 @@ function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "Basic Player" );
 
-	var $iframe = $('#' + videoId + '_ifp').contents();
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
 	var iframeContext = window.frames['kaltura_player_ifp'];
 	
 	test( "Iframe in DOM", function() {
