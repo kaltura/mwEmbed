@@ -1277,7 +1277,7 @@ mw.EmbedPlayer.prototype = {
 						_this.play();
 					} else {
 						// need to confirm this pause is not needed ( mdale )
-						//_this.pause();
+						_this.pause();
 					}
 					if( callback ){
 						callback()
@@ -2081,7 +2081,7 @@ mw.EmbedPlayer.prototype = {
 			// Update buffer information TODO move to controlBuilder
 			_this.updateBufferStatus();
 			
-			// mw.log('trigger:monitor:: ' + this.currentTime );
+			mw.log('trigger:monitor:: ' + this.currentTime );
 			$( this ).trigger( 'monitorEvent' );
 			
 			// Trigger the "progress" event per HTML5 api support
