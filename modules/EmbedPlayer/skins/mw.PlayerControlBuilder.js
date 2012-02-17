@@ -918,8 +918,7 @@ mw.PlayerControlBuilder.prototype = {
 				_this.hideControlBarCallback = setTimeout( function() {
 					_this.hideControlBar()
 				}, 3500 );
-
-				// ( once the user touched the video "don't hide" )
+				// ( Once the user touched the video "don't hide" )
 				return true;
 			} );
 
@@ -1370,6 +1369,7 @@ mw.PlayerControlBuilder.prototype = {
 			slide: function( event, ui ) {
 				var percent = ui.value / 100;
 				mw.log('PlayerControlBuilder::slide:update volume:' + percent);
+				embedPlayer.propagateNativeVolumeEvents = false;
 				embedPlayer.setVolume( percent );
 			},
 			change: function( event, ui ) {
@@ -1381,6 +1381,10 @@ mw.PlayerControlBuilder.prototype = {
 				}
 				mw.log('PlayerControlBuilder::change:update volume:' + percent);
 				embedPlayer.setVolume( percent, true );
+				// Restore native volume events after moonitor time +1 to avoid 1 in 250 race condion dobule beacon 
+				setTimeout( function(){
+					embedPlayer.propagateNativeVolumeEvents = true;
+				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) + 1 );
 			}
 		};
 
