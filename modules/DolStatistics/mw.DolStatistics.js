@@ -120,7 +120,6 @@ mw.DolStatistics.prototype = {
 
 		for( var i=0; i<=100; i=i+10 ) {
 			var cuePoint = Math.round( duration / 100 * i );
-			if( cuePoint === 0 ) continue;
 			_this.percentCuePoints[ cuePoint ] = false;
 		}
 
@@ -133,7 +132,13 @@ mw.DolStatistics.prototype = {
 		var duration = this.getDuration();
 		var percentCuePoints = this.percentCuePoints;
 		var currentTime = Math.round( this.embedPlayer.currentTime );
-
+		
+		// make sure 0% is fired 
+		if( currentTime > 0 && ! percentCuePoints[ 0 ] ){
+			percentCuePoints[ 0 ] = true;
+			_this.sendStatsData( 'percentReached', 0 );
+		}
+			
 		if( percentCuePoints[ currentTime ] === false ) {
 			percentCuePoints[ currentTime ] = true;
 			var percent = Math.round(currentTime * 100 / duration );
