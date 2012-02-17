@@ -2113,7 +2113,7 @@ mw.EmbedPlayer.prototype = {
 	/**
 	 * Sync the video volume
 	 */
-	propagateNativeVolumeEvents: false, // flag for triggering volume changed event 
+	propagateNativeVolumeEvents: true, // flag for triggering volume changed event 
 	syncVolume: function(){
 		var _this = this;
 		// Check if volume was set outside of embed player function
