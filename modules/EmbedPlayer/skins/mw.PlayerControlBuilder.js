@@ -904,7 +904,7 @@ mw.PlayerControlBuilder.prototype = {
 		} else { // hide show controls:
 			
 			// Bind a startTouch to show controls
-			$interface.bind( 'touchstart' + this.bindPostfix, function() {
+			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
 				if ( embedPlayer.$interface.find( '.control-bar' ).is( ':visible' ) ) {
 					if( embedPlayer.paused ) {
 						embedPlayer.play();
@@ -917,7 +917,7 @@ mw.PlayerControlBuilder.prototype = {
 				clearTimeout( _this.hideControlBarCallback );
 				_this.hideControlBarCallback = setTimeout( function() {
 					_this.hideControlBar()
-				}, 3000 );
+				}, 3500 );
 
 				// ( once the user touched the video "don't hide" )
 				return true;
