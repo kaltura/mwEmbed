@@ -554,6 +554,7 @@
 				case 'playerReady':
 					b( 'playerReady' );
 					break;
+				case 'changeVolume':
 				case 'volumeChanged':
 					b( 'volumeChanged', function(event, percent){
 						callback( {'newVolume' : percent}, embedPlayer.id );
