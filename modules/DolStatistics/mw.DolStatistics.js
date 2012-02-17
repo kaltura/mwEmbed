@@ -56,7 +56,7 @@ mw.DolStatistics.prototype = {
 			}
 		}
 		// also increment counter during replays: 
-		embedPlayer.bindHelper('replayEvent', function(){
+		embedPlayer.bindHelper('replayEvent' + this.bindPostFix, function(){
 			// reset the percentage reached counter: 
 			_this.calcCuePoints();
 			var curVal = $( embedPlayer ).data('DolStatisticsCounter' );
@@ -80,12 +80,11 @@ mw.DolStatistics.prototype = {
 		// Unbind any existing bindings
 		this.destroy();
 
-		// On change media remove any existing ads:
+		// On change media remove any existing bindings:
 		embedPlayer.bindHelper( 'onChangeMediaDone' + _this.bindPostFix, function(){
 			if( ! embedPlayer['data-playerError'] ){
 				$embedPlayer.data('DolStatisticsCounter', $embedPlayer.data('DolStatisticsCounter') + 1 );
 			}
-			_this.destroy();
 		});
 		// Register to our events
 		$.each(this.eventsList, function(k, eventName) {
@@ -145,6 +144,7 @@ mw.DolStatistics.prototype = {
 		var duration = this.getDuration();
 		var percentCuePoints = this.percentCuePoints;
 		var currentTime = Math.round( this.embedPlayer.currentTime );
+		mw.log( 'DolStatistics:: monitorPercentage>' + currentTime );
 		
 		// make sure 0% is fired 
 		if( currentTime > 0 && ! percentCuePoints[ 0 ] ){
@@ -268,7 +268,7 @@ mw.DolStatistics.prototype = {
 		for( var i in params ){
 			if( typeof params[i] == 'string' ){
 				// Find undefined with no space on either side
-				params[i] = params[i].replace( /undefined/g, 'NULL' );
+				params[i] = params[i].replace( /undefined/g, '' );
 			}
 		}
 		
