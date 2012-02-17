@@ -800,11 +800,10 @@ mw.KWidgetSupport.prototype = {
 		// Add all the sources to the player element: 
 		for( var i=0; i < flavorSources.length; i++) {
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  flavorSources[i].src + ' type: ' +  flavorSources[i].type);
-			embedPlayer.mediaElement.tryAddSource(
-				$('<source />')
+			var sourceElm = $('<source />')
 				.attr( flavorSources[i] )
-				.get( 0 )
-			);
+				.get( 0 );
+			embedPlayer.mediaElement.tryAddSource( sourceElm );
 		}
 	},
 	/** 
@@ -854,10 +853,9 @@ mw.KWidgetSupport.prototype = {
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 			var asset = flavorData[i];
 			var entryId = asset.entryId;
-			
 			// Setup a source object:
 			var source = {
-				'data-bitrate' : asset.bitrate * 8,
+				'data-bandwidth' : asset.bitrate * 1024,
 				'data-width' : asset.width,
 				'data-height' : asset.height
 			};

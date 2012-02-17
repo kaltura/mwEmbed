@@ -1905,8 +1905,8 @@ mw.EmbedPlayer.prototype = {
 	 * Handles interface updates for toggling mute. Plug-in / player interface
 	 * must handle the actual media player action
 	 */
-	toggleMute: function() {
-		mw.log( 'f:toggleMute:: (old state:) ' + this.muted );
+	toggleMute: function( userAction ) {
+		mw.log( 'EmbedPlayer::toggleMute> (old state:) ' + this.muted );
 		if ( this.muted ) {
 			this.muted = false;
 			var percent = this.preMuteVolume;
@@ -1915,7 +1915,8 @@ mw.EmbedPlayer.prototype = {
 			this.preMuteVolume = this.volume;
 			var percent = 0;
 		}
-		this.setVolume( percent, true );
+		// will auto trigger because of slider change, so no need to trigger volume change in this call
+		this.setVolume( percent );
 		// Update the interface
 		this.setInterfaceVolume( percent );
 		// trigger the onToggleMute event

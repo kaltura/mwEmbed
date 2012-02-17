@@ -405,7 +405,7 @@ mw.EmbedPlayerKplayer = {
 	 * function called by flash applet when download bytes changes
 	 */
 	onBytesDownloadedChange : function(data, id) {
-		mw.log('onBytesDownloadedChange');
+		//mw.log('onBytesDownloadedChange');
 		this.bytesLoaded = data.newValue;
 		this.bufferedPercent = this.bytesLoaded / this.bytesTotal;
 	

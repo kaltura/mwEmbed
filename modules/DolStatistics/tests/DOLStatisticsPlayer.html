@@ -10,10 +10,16 @@ mw.setConfig('Kaltura.CdnUrl', 'http://www.kaltura.co.cc' );
 mw.setConfig('Kaltura.StatsServiceUrl', 'http://www.kaltura.co.cc' );
 
 var cto = {
-	trackVideo: function( data ) {
-		console.log('--- CTO:: trackVideo', data)
-	}
-};
+	trackVideo:function(o) {
+		//alert(1);
+		var out = '\n';
+		for (var p in o) {
+	    	out += p + ': ' + o[p] + '\n';
+	    }
+		console.log("event name: " + o.KDPEVNT + ", event data: " + o.KDPDAT_VALUE);
+		document.getElementById('feedbackXml').innerHTML = document.getElementById('feedbackXml').innerHTML + "\n" + out;
+    }
+}
 </script>
 </head>
 <body>
@@ -30,9 +36,9 @@ var cto = {
 	<param name="flashVars" value="&externalInterfaceDisabled=false" />
 	<param name="movie" value="http://www.kaltura.co.cc/index.php/kwidget/cache_st/1323101371/wid/_1421/uiconf_id/1785641/entry_id/0_8adsa2hl" />
 </object>
-<!--  
-UI CONF GOES HERE!
- -->
-
+<textarea id="feedbackXml" name="feedbackXml" col="5" rows="10" style="width:500px; height:700px; position:absolute;top:0px;right:0px;" ></textarea>
 </body>
+<!--  
+UI CONF GOES HERE!!!!
+ -->
 </html>

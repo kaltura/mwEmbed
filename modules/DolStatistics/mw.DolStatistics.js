@@ -22,6 +22,7 @@ mw.DolStatistics.prototype = {
 	percentCuePoints: {},
 
 	init: function( embedPlayer, callback ){
+		var _this = this;
 		this.embedPlayer = embedPlayer;
 
 		// List of all attributes we need from plugin configuration (flashVars/uiConf)
@@ -54,6 +55,14 @@ mw.DolStatistics.prototype = {
 				$( embedPlayer ).data('DolStatisticsCounter', 1 );
 			}
 		}
+		// also increment counter during replays: 
+		embedPlayer.bindHelper('replayEvent', function(){
+			// reset the percentage reached counter: 
+			_this.calcCuePoints();
+			var curVal = $( embedPlayer ).data('DolStatisticsCounter' );
+			 $( embedPlayer ).data('DolStatisticsCounter', curVal+1 );
+		});
+		
 
 		mw.log('DolStatistics:: Init plugin :: Plugin config: ', this.embedPlayer.getKalturaConfig( 'dolStatistics') );
 
@@ -78,7 +87,6 @@ mw.DolStatistics.prototype = {
 			}
 			_this.destroy();
 		});
-
 		// Register to our events
 		$.each(this.eventsList, function(k, eventName) {
 			switch( eventName ) {
@@ -99,7 +107,11 @@ mw.DolStatistics.prototype = {
 						var eventData = '';
 						var argSet = $.makeArray( arguments );
 						$.each( argSet, function( inx, argValue ){
-							eventData += argValue + ",";
+							if( typeof argValue == 'object' ){ 
+								eventData += JSON.stringify( argValue ) + ",";
+							} else {
+								eventData += argValue + ",";
+							}
 						});
 						eventData = eventData.substr( 0, eventData.length-1 );
 						_this.sendStatsData( eventName, eventData );
@@ -201,6 +213,8 @@ mw.DolStatistics.prototype = {
 		for( var x=0; x<configAttrs.length; x++) {
 			params[ configAttrs[x] ] = _this.getConfig( configAttrs[x] ) || '';
 		}
+		// The auto played property; 
+		params['AUTO'] = embedPlayer.autoplay;
 		// Embedded Page URL
 		params['GENURL'] =  _this.getConfig('GENURL') || window.kWidgetSupport.getHostPageUrl();
 		// Embedded Page Title
@@ -215,8 +229,8 @@ mw.DolStatistics.prototype = {
 		params['BITRATE'] = this.getBitrate();
 		// Video length
 		params['VIDLEN'] = this.getDuration();
-		// Player protocol
-		params['KDPPROTO'] = mw.parseUri( mw.getConfig( 'Kaltura.ServiceUrl' ) ).protocol;
+		// Player protocol ( hard coded to html5 )
+		params['KDPPROTO'] = 'html5'; //mw.parseUri( mw.getConfig( 'Kaltura.ServiceUrl' ) ).protocol;
 		// Kaltura Player ID
 		params['KDPID'] = this.embedPlayer.kuiconfid;
 		// Kaltura Session ID
@@ -236,7 +250,16 @@ mw.DolStatistics.prototype = {
 		for( var i =0; i < 10; i++ ){
 			// Check for custom data key value pairs ( up to 9 ) 
 			if( _this.getConfig( 'customDataKey' + i ) &&  _this.getConfig( 'customDataValue' + i ) ){
-				params[  _this.getConfig( 'customDataKey' + i )  ] =  _this.getConfig( 'customDataValue' + i );
+				params[ _this.getConfig( 'customDataKey' + i ) ] =  _this.getConfig( 'customDataValue' + i );
+			}
+		}
+		// filter out undefined == NULL 
+		// TODO this is kind of an ugly hack we should have 
+		// evaluate support fallback names for undefined properties 
+		for( var i in params ){
+			if( typeof params[i] == 'string' ){
+				// Find undefined with no space on either side
+				params[i] = params[i].replace( /undefined/g, 'NULL' );
 			}
 		}
 		

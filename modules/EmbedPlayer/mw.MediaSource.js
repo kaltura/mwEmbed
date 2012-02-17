@@ -112,11 +112,11 @@ mw.MediaSource.prototype = {
 		if ( typeof pUrl.query[ 't' ] != 'undefined' ) {
 			this.URLTimeEncoding = true;
 		} else if ( typeof mw.IA != 'undefined' ) {
-			this.URLTimeEncoding = mw.IA.isURLTimeEncoding(this.src);
+			this.URLTimeEncoding = mw.IA.isURLTimeEncoding( this.src );
 		}
-        
+     
 		var sourceAttr = mw.getConfig( 'EmbedPlayer.SourceAttributes' );
-		$.each(sourceAttr, function(inx, attr){
+		$.each( sourceAttr, function( inx, attr ){
 			if ( $( element ).attr( attr ) ) {
 				// strip data- from the attribute name
 				var attrName = ( attr.indexOf('data-') === 0) ? attr.substr(5) : attr
@@ -153,7 +153,7 @@ mw.MediaSource.prototype = {
 		// Conform long form "video/ogg; codecs=theora" based attributes
 		// @@TODO we should support codec in the type arguments
 		if( this.mimeType ){
-			this.mimeType = this.mimeType.split(';')[0];
+			this.mimeType = this.mimeType.split( ';' )[0];
 		}
 
 		// Check for parent elements ( supplies categories in "track" )
@@ -444,9 +444,14 @@ mw.MediaSource.prototype = {
 		}
 		mw.log( "Error: could not detect type of media src: " + uri );
 	},
-
+	/**
+	 * bitrate is mesured in kbs rather than bandwith bytes per second
+	 */
 	getBitrate: function() {
-		return this.bandwidth;
+		if( this.bandwidth ){
+			return this.bandwidth / 1024;
+		}
+		return 0;
 	}
 };
 
