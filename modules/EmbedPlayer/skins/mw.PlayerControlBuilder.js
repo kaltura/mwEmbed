@@ -1369,7 +1369,6 @@ mw.PlayerControlBuilder.prototype = {
 			slide: function( event, ui ) {
 				var percent = ui.value / 100;
 				mw.log('PlayerControlBuilder::slide:update volume:' + percent);
-				embedPlayer.propagateNativeVolumeEvents = false;
 				embedPlayer.setVolume( percent );
 			},
 			change: function( event, ui ) {
@@ -1381,10 +1380,6 @@ mw.PlayerControlBuilder.prototype = {
 				}
 				mw.log('PlayerControlBuilder::change:update volume:' + percent);
 				embedPlayer.setVolume( percent, true );
-				// Restore native volume events after monitor time +1 to avoid 1 in 250 race condition double beacon 
-				setTimeout( function(){
-					embedPlayer.propagateNativeVolumeEvents = true;
-				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) + 1 );
 			}
 		};
 

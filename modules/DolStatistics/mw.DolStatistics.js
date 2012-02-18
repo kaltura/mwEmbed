@@ -26,7 +26,6 @@ mw.DolStatistics.prototype = {
 	init: function( embedPlayer, callback ){
 		var _this = this;
 		this.embedPlayer = embedPlayer;
-		mw.log('uiconf: ' + embedPlayer.$uiConf.html() )
 
 		// List of all attributes we need from plugin configuration (flashVars/uiConf)
 		var attributes = [
@@ -92,7 +91,7 @@ mw.DolStatistics.prototype = {
 		// Register to our events
 		$.each(this.eventsList, function(k, eventName) {
 			switch( eventName ) {
-				// Special event
+				// Special events
 				case 'percentReached':
 					_this.calcCuePoints();
 					embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostFix, function() {
@@ -149,7 +148,7 @@ mw.DolStatistics.prototype = {
 		var duration = this.getDuration();
 		var percentCuePoints = this.percentCuePoints;
 		var currentTime = Math.round( this.embedPlayer.currentTime );
-		mw.log( 'DolStatistics:: monitorPercentage>' + currentTime );
+		//mw.log( 'DolStatistics:: monitorPercentage>' + currentTime );
 		
 		// make sure 0% is fired 
 		if( currentTime > 0 && ! percentCuePoints[ 0 ] ){

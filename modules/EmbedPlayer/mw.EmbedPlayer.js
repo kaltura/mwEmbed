@@ -1949,9 +1949,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Update the playerElement volume
 		this.setPlayerElementVolume( percent );
-
-		// mw.log(" setVolume:: " + percent + ' this.volume is: ' +
-		// this.volume);
+		//mw.log("EmbedPlayer:: setVolume:: " + percent + ' trigger volumeChanged: ' + triggerChange );
 		if( triggerChange ){
 			$( _this ).trigger('volumeChanged', percent );
 		}
@@ -2113,16 +2111,12 @@ mw.EmbedPlayer.prototype = {
 	/**
 	 * Sync the video volume
 	 */
-	propagateNativeVolumeEvents: true, // flag for triggering volume changed event 
 	syncVolume: function(){
 		var _this = this;
 		// Check if volume was set outside of embed player function
 		// mw.log( ' this.volume: ' + _this.volume + ' prev Volume:: ' + _this.previousVolume );
 		if( Math.round( _this.volume * 100 ) != Math.round( _this.previousVolume * 100 ) ) {
 			_this.setInterfaceVolume( _this.volume );
-			if( _this._propagateEvents && _this.propagateNativeVolumeEvents ){
-				$( this ).trigger('volumeChanged', _this.volume );
-			}
 		}
 		// Update the previous volume
 		_this.previousVolume = _this.volume;
