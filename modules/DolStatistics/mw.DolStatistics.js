@@ -116,8 +116,12 @@ mw.DolStatistics.prototype = {
 						var eventData = '';
 						if( typeof argValue == 'object' ){ 
 							eventData = JSON.stringify( argValue );
+							eventData = eventData.replace(/\"/g,'');
 						} else {
-							eventData = argValue;
+							// check if argValue is the id in which case send nothing. 
+							if( argValue != embedPlayer.id ){
+								eventData = argValue;
+							}
 						}
 						_this.sendStatsData( eventName, eventData );
 					});
@@ -174,7 +178,7 @@ mw.DolStatistics.prototype = {
 		embedPlayer.bindHelper('onplay' + _this.bindPostFix, function() {
 			if( ! _this.playheadInterval ) {
 				_this.playheadInterval = setInterval( function(){
-					_this.sendStatsData( 'playerUpdatePlayhead' , embedPlayer.currentTime);
+					_this.sendStatsData( 'playerUpdatePlayhead', Math.round( embedPlayer.currentTime ) );
 				}, intervalTime );
 			}
 		});
@@ -188,10 +192,14 @@ mw.DolStatistics.prototype = {
 
 	/* Retrive video duration */
 	getDuration: function() {
-		if( ! this.duration ){
-			this.duration = this.embedPlayer.evaluate('{duration}');
+		// try to get the "raw" duration 
+		if( this.embedPlayer.getPlayerElement() ){
+			var rawDur = this.embedPlayer.getPlayerElement().duration
+			if( ! isNaN( rawDur ) ){
+				return rawDur;
+			}
 		}
-		return this.duration;
+		return this.embedPlayer.evaluate('{duration}');
 	},
 
 	getBitrate: function() {
@@ -216,10 +224,16 @@ mw.DolStatistics.prototype = {
 		params['app'] = this.appName;
 		// The asset id: 
 		params['ASSETNAME'] = _this.getConfig('ASSETNAME');
+		// Kaltura Event name
+		params['KDPEVNT'] = eventName;
+		// KDP Event Data
+		if( eventData != '' ){
+			params['KDPDAT_VALUE'] = eventData.toString();
+		}
 		// Flavor Bitrate
 		params['BITRATE'] = this.getBitrate();
 		// Always include the current time: 
-		params['KDPDAT_PLAYHEAD'] = this.embedPlayer.currentTime;
+		params['KDPDAT_PLAYHEAD'] = Math.round( this.embedPlayer.currentTime * 1000 ) / 1000;
 		// The auto played property; 
 		params['AUTO'] = embedPlayer.autoplay;
 		// Current Timestamp
@@ -234,10 +248,6 @@ mw.DolStatistics.prototype = {
 		params['WIGID'] = this.embedPlayer.kwidgetid;
 		// Kaltura session Seq 
 		params['KSESSIONSEQ'] = $( this.embedPlayer ).data('DolStatisticsCounter');
-		// KDP Event Data
-		params['KDPDAT_VALUE'] = eventData.toString();
-		// Kaltura Event name
-		params['KDPEVNT'] = eventName;
 		// Kaltura Session ID
 		params['KSESSIONID'] = this.embedPlayer.evaluate('{configProxy.sessionId}');
 		// User Agent
