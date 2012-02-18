@@ -99,9 +99,10 @@ mw.DolStatistics.prototype = {
 						_this.monitorPercentage();
 					});
 				break;
+				case 'changedVolume': 
 				case 'volumeChanged':
 					embedPlayer.addJsListener(eventName + _this.bindPostFix, function( eventData ) {
-						_this.sendStatsData( 'volumeChanged', eventData.newVolume );
+						_this.sendStatsData( eventName, eventData.newVolume );
 					});
 				break;
 				// Change playerUpdatePlayhead event to send events on playheadFrequency
