@@ -65,6 +65,10 @@ function jsKalturaPlayerTest( videoId ){
 		$('#plData').click( function(){
 			alert( JSON.stringify( kdp().evaluate("{playlistAPI.dataProvider}") ) );
 		});
+		
+		$('#play2ndItem').click( function(){
+			kdp().setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 1 );
+		});
 	})
 </script>
 </head>
@@ -77,8 +81,9 @@ function jsKalturaPlayerTest( videoId ){
 <p>alerts: <a href="#" id="currentIndex"> Current Index</a> | 
 <a href="#" id="plData"> Playlist Data </a> 
 </p>
-
-
+<p>
+<a href="#" id="play2ndItem"> Play second item </a>( works around iOS autoplay restriction )
+</p>
 
 <object id="kaltura_player_1306453594" name="kaltura_player_1306453594" type="application/x-shockwave-flash" 
 allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="740" 

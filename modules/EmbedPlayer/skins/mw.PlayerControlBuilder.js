@@ -1381,7 +1381,7 @@ mw.PlayerControlBuilder.prototype = {
 				}
 				mw.log('PlayerControlBuilder::change:update volume:' + percent);
 				embedPlayer.setVolume( percent, true );
-				// Restore native volume events after moonitor time +1 to avoid 1 in 250 race condion dobule beacon 
+				// Restore native volume events after monitor time +1 to avoid 1 in 250 race condition double beacon 
 				setTimeout( function(){
 					embedPlayer.propagateNativeVolumeEvents = true;
 				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) + 1 );

@@ -20,10 +20,13 @@ mw.DolStatistics.prototype = {
 
 	// hold list of cue points per 10% of video duration
 	percentCuePoints: {},
+	// hold the indexed percent values
+	percentCuePointsMap: {}, 
 
 	init: function( embedPlayer, callback ){
 		var _this = this;
 		this.embedPlayer = embedPlayer;
+		mw.log('uiconf: ' + embedPlayer.$uiConf.html() )
 
 		// List of all attributes we need from plugin configuration (flashVars/uiConf)
 		var attributes = [

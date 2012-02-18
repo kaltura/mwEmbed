@@ -2081,7 +2081,7 @@ mw.EmbedPlayer.prototype = {
 			// Update buffer information TODO move to controlBuilder
 			_this.updateBufferStatus();
 			
-			mw.log('trigger:monitor:: ' + this.currentTime );
+			// mw.log('trigger:monitor:: ' + this.currentTime );
 			$( this ).trigger( 'monitorEvent' );
 			
 			// Trigger the "progress" event per HTML5 api support

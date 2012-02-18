@@ -102,6 +102,16 @@
 							playerProxy.kPreSeekTime = playerProxy.currentTime;
 						}
 					}
+					// @@TODO if we split kaltura playlist into its own folder with own loader we can move that there. 
+					playerMethods[ 'setKDPAttribute' ] = function( componentName, property, value ){
+						// Check for playlist change media call and issue a play directly on the video element
+						// gets around iOS restriction on async playback
+						if( componentName == 'playlistAPI.dataProvider' && property == 'selectedIndex' ){
+							$( '#' + playerProxy.id + '_ifp' )
+								.get(0).contentWindow
+								.$( '#' + playerProxy.id ).get(0).play();
+						}
+					};
 				});
 				
 				// Directly build out the evaluate call on the playerProxy
