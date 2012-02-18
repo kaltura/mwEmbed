@@ -141,6 +141,12 @@ mw.DolStatistics.prototype = {
 
 		for( var i=0; i<=100; i=i+10 ) {
 			var cuePoint = Math.round( duration / 100 * i );
+			// if on the last cuePoint subtract 1 second to ensure event, 
+			// ( because of monitor interval checks an end event can be triggered before the 
+			// last second gets a chance to be monitored ) 
+			if( i == 100 ){
+				cuePoint = cuePoint -1 ;
+			}
 			_this.percentCuePoints[ cuePoint ] = false;
 			_this.percentCuePointsMap[ cuePoint ] = i;
 		}
@@ -227,7 +233,7 @@ mw.DolStatistics.prototype = {
 		// Kaltura Event name
 		params['KDPEVNT'] = eventName;
 		// KDP Event Data
-		if( eventData != '' ){
+		if( eventData !== '' ){
 			params['KDPDAT_VALUE'] = eventData.toString();
 		}
 		// Flavor Bitrate
@@ -286,6 +292,8 @@ mw.DolStatistics.prototype = {
 			if( typeof params[i] == 'string' ){
 				// Find undefined with no space on either side
 				params[i] = params[i].replace( /undefined/g, '' );
+			} else if( typeof params[i] == 'undefined' ){
+				params[i] == '';
 			}
 		}
 		
