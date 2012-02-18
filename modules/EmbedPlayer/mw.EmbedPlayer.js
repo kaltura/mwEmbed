@@ -1718,6 +1718,7 @@ mw.EmbedPlayer.prototype = {
 			// Trigger end done on replay
 			this.triggeredEndDone = false;
 			if( this.replayEventCount <= this.donePlayingCount){
+				mw.log("EmbedPlayer::play> trigger replayEvent");
 				$this.trigger( 'replayEvent' );
 			}
 		}

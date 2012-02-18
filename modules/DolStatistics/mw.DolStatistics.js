@@ -57,15 +57,6 @@ mw.DolStatistics.prototype = {
 				$( embedPlayer ).data('DolStatisticsCounter', 1 );
 			}
 		}
-		// also increment counter during replays: 
-		embedPlayer.bindHelper('replayEvent' + this.bindPostFix, function(){
-			// reset the percentage reached counter: 
-			_this.calcCuePoints();
-			var curVal = $( embedPlayer ).data('DolStatisticsCounter' );
-			 $( embedPlayer ).data('DolStatisticsCounter', curVal+1 );
-		});
-		
-
 		mw.log('DolStatistics:: Init plugin :: Plugin config: ', this.embedPlayer.getKalturaConfig( 'dolStatistics') );
 
 		// Add player binding
@@ -81,7 +72,16 @@ mw.DolStatistics.prototype = {
 
 		// Unbind any existing bindings
 		this.destroy();
-
+		
+		// Increment counter during replays: 
+		embedPlayer.bindHelper('replayEvent' + this.bindPostFix, function(){
+			// reset the percentage reached counter: 
+			_this.calcCuePoints();
+			var curVal = $( embedPlayer ).data('DolStatisticsCounter' );
+			 $( embedPlayer ).data('DolStatisticsCounter', curVal+1 );
+			 mw.log( 'DolStatistics:: replayEvent> reset cuePoints and increment counter: ' + $( embedPlayer ).data('DolStatisticsCounter' ) );
+		});
+		
 		// On change media remove any existing bindings:
 		embedPlayer.bindHelper( 'onChangeMediaDone' + _this.bindPostFix, function(){
 			if( ! embedPlayer['data-playerError'] ){
@@ -93,10 +93,12 @@ mw.DolStatistics.prototype = {
 			switch( eventName ) {
 				// Special events
 				case 'percentReached':
-					_this.calcCuePoints();
-					embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostFix, function() {
-						_this.monitorPercentage();
-					});
+					embedPlayer.bindHelper( 'playerReady', function(){
+						_this.calcCuePoints();
+						embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostFix, function() {
+							_this.monitorPercentage();
+						});
+					})
 				break;
 				case 'changedVolume': 
 				case 'volumeChanged':
@@ -151,7 +153,7 @@ mw.DolStatistics.prototype = {
 		//mw.log( 'DolStatistics:: monitorPercentage>' + currentTime );
 		
 		// make sure 0% is fired 
-		if( currentTime > 0 && ! percentCuePoints[ 0 ] ){
+		if( currentTime > 0 && percentCuePoints[ 0 ] === false ){
 			percentCuePoints[ 0 ] = true;
 			_this.sendStatsData( 'percentReached', 0 );
 		}
