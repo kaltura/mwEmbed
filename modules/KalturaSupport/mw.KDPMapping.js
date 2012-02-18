@@ -107,9 +107,12 @@
 						// Check for playlist change media call and issue a play directly on the video element
 						// gets around iOS restriction on async playback
 						if( componentName == 'playlistAPI.dataProvider' && property == 'selectedIndex' ){
-							$( '#' + playerProxy.id + '_ifp' )
-								.get(0).contentWindow
-								.$( '#' + playerProxy.id ).get(0).play();
+							// only iOS devices have the autoPlay restriction 
+							if( mw.isIOS() ){
+								$( '#' + playerProxy.id + '_ifp' )
+									.get(0).contentWindow
+									.$( '#' + playerProxy.id ).get(0).play();
+							}
 						}
 					};
 				});
