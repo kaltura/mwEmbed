@@ -599,7 +599,9 @@ class KalturaResultObject {
 		// Create an empty resultObj
 		if( isset( $playlistObject[0] ) && $playlistObject[0]->id ){
 			// Set the isPlaylist flag now that we are for sure dealing with a playlist
-			$this->isPlaylist = true;
+			if ( !$this->isCarousel() ) {
+				$this->isPlaylist = true;
+			}
 			// check if we have playlistAPI.initItemEntryId
 			if( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) ){
 				$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );

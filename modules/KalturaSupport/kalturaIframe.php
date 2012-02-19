@@ -597,7 +597,7 @@ class kalturaIframe {
 		if( $this->getResultObject()->isJavascriptRewriteObject() ) {
 			echo $this->getFlashEmbedHTML();
 		} else {
-			if( $this->getResultObject()->isPlaylist() && !$this->getResultObject()->isCarousel() ){ 
+			if( $this->getResultObject()->isPlaylist() ){ 
 				echo $this->getPlaylistWraper( 
 					// Get video html with a default playlist video size ( we can adjust it later in js )
 					// iOS needs display type block: 
