@@ -13,11 +13,19 @@
 
 			// Continue player build-out
 			callback();
-		});
-	});
+		} );
+	} );
 
     window[ 'carouselPlugin' ] = {
         
+		bindPostFix: '.carousel',
+		// TODO: make thumbnails size configurable based on uiConf
+		imgHeight: 60,
+
+		imgWidth: 100,
+		
+		imgMargin: 15,
+
         init: function( embedPlayer ) {
             this.embedPlayer = embedPlayer;
             this.addPlayerBindings();
@@ -27,20 +35,42 @@
 		addPlayerBindings: function() {
 			var _this = this;
             var embedPlayer = this.embedPlayer;
+			
 			// Add carousel when player is ready
-			embedPlayer.bindHelper( 'playerReady', function() {
+			embedPlayer.unbindHelper( 'playerReady' + _this.bindPostFix );
+			embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix, function() {
 				_this.addCarousel();
 			} );
 			
 			// Add carousel when pausing
-            embedPlayer.bindHelper( 'pause', function() {
-                _this.addCarousel();
-            });
+			embedPlayer.unbindHelper( 'pause' + _this.bindPostFix );
+            embedPlayer.bindHelper( 'pause' + _this.bindPostFix, function() {
+				_this.addCarousel();
+            } );
 			
 			// Remove carousel when playing
-			embedPlayer.bindHelper( 'onplay', function() {
+			embedPlayer.unbindHelper( 'onplay' + _this.bindPostFix );
+			embedPlayer.bindHelper( 'onplay' + _this.bindPostFix, function() {
 				_this.removeAll();
-			});
+			} );
+			
+			embedPlayer.unbindHelper( 'onOpenFullScreen' + _this.bindPostFix );
+			embedPlayer.bindHelper( 'onOpenFullScreen' + _this.bindPostFix, function() {
+				_this.removeAll();
+				if ( embedPlayer.paused ) {
+					_this.addCarousel();
+				}
+			} );
+			
+			embedPlayer.unbindHelper( 'onCloseFullScreen' + _this.bindPostFix );
+			embedPlayer.bindHelper( 'onCloseFullScreen' + _this.bindPostFix, function() {
+				_this.removeAll();
+				if ( embedPlayer.paused ) {
+					setTimeout( function() {
+						_this.addCarousel();
+					}, 50 );
+				}
+			} );
 		},
 		
 		// Add the video name and duration on top of the player
@@ -85,9 +115,12 @@
 		},
 		
 		// Add the carousel components
-        addCarousel: function() {
+        addCarousel: function( visibleThumbnails ) {
 			var _this = this;
             var embedPlayer = this.embedPlayer;
+			
+			var maxThumbnails = _this.getMaxThumbnails();
+			visibleThumbnails = ( ( typeof visibleThumbnails ) !== 'undefined' ) ? visibleThumbnails : maxThumbnails;
 			
 			// Remove any previous carousel
 			_this.removeCarousel();
@@ -103,10 +136,6 @@
             var $carousel = $( '<div />' )
 				.addClass( 'carousel' )
                 .append( '<ul />' );
-			
-			// TODO: make thumbnails size configurable
-			var imgHeight = 60;
-			var imgWidth = 100;
 			
 			// When hovering over an entry, display entry name below carousel
 			var $imgTitle = $( '<div />')
@@ -127,11 +156,11 @@
 					.attr( {
 						'src' : currEntryObj.thumbnailUrl,
 						'title' : currEntryObj.name,
-						'width' : imgWidth + 'px',
-						'height' : imgHeight + 'px'
+						'width' : _this.imgWidth + 'px',
+						'height' : _this.imgHeight + 'px'
 					} )
 					.css( {
-						'margin-right' : '15px',
+						'margin-right' : _this.imgMargin + 'px',
 						'border' : '1px solid white'
 					} )
 					.hover( 
@@ -222,14 +251,14 @@
 				.append( $nextButton );
 			$carouselContainer.after( $imgTitle );
 			// Place the next/previous buttons in the middle of the thumbnails vertically
-			$prevButton.css( 'bottom', parseInt( ( imgHeight / 2 ) ) - parseInt( ( $prevButton.height() / 2 ) ) + 2 + 'px' );
-			$nextButton.css( 'bottom', parseInt( ( imgHeight / 2 ) ) - parseInt( ( $nextButton.height() / 2 ) ) + 2 + 'px' );
+			$prevButton.css( 'bottom', parseInt( ( _this.imgHeight / 2 ) ) - parseInt( ( $prevButton.height() / 2 ) ) + 2 + 'px' );
+			$nextButton.css( 'bottom', parseInt( ( _this.imgHeight / 2 ) ) - parseInt( ( $nextButton.height() / 2 ) ) + 2 + 'px' );
 			$carousel.jCarouselLite( {
 				btnNext: "#next",
 				btnPrev: "#prev",
 				circular: false,
 				// TODO: make number of visible thumbnails configurable or computed (i.e how many that fit)
-				visible: 3,
+				visible: visibleThumbnails,
 				scroll: 1
 			} );
 			$carouselContainer.css( { 
@@ -243,7 +272,7 @@
 			} );
 			return true;
         },
-        
+
 		removeCarousel: function() {
 			var embedPlayer = this.embedPlayer;
 			if ( embedPlayer.$interface ) {
@@ -276,7 +305,19 @@
 			this.removeVideoTitle();
 			this.removeImageTitle();
 			this.removeCarousel();
+		},
+
+		// Calculate how manu thumbnails can be visible based on player and thumbnails width
+		getMaxThumbnails: function() {
+			var embedPlayer = this.embedPlayer;
+			
+			var maxThumbnails = Math.floor( embedPlayer.$interface.width() / ( this.imgWidth + this.imgMargin ) );
+			if ( embedPlayer.controlBuilder.inFullScreen ) {
+				maxThumbnails = Math.floor( screen.width / ( this.imgWidth + this.imgMargin ) );
+			}
+			
+			return maxThumbnails;
 		}
-              
+		
     };
-})( window.mw, window.jQuery );
+} )( window.mw, window.jQuery );
