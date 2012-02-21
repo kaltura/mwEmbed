@@ -80,7 +80,7 @@ window.kWidget = {
 			if(  window.ActiveXObject ){
 				o += 'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
 			}
-				o += 'width="' + width +'" ' +
+			o += 'width="' + width +'" ' +
 				'height="' + height + '" ' +
 				'style="width:' + width + 'px;height:' + height + 'px;" ' +
 				'resource="' + swfUrl + '" ' +

@@ -13,7 +13,7 @@ window.restoreKalturaKDPCallback = function(){
 		window.jsCallbackReady = window.KalturaKDPCallbackReady;
 		window.KalturaKDPCallbackReady = null;
 		if( window.KalturaKDPCallbackAlreadyCalled && window.KalturaKDPCallbackAlreadyCalled.length ){
-			for( var i =0 ; i < window.KalturaKDPCallbackAlreadyCalled.length; i++){
+			for( var i =0 ; i < window.KalturaKDPCallbackAlreadyCalled.length; i++ ){
 				var playerId = window.KalturaKDPCallbackAlreadyCalled[i];
 				window.jsCallbackReady( playerId );
 				window.KWidget.globalJsReadyCallback( playerId );

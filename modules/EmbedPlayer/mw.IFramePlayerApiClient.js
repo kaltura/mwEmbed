@@ -95,6 +95,8 @@ mw.IFramePlayerApiClient.prototype = {
 		};
 		var orgStyle = $iframe.attr('style');
 		
+		var orginalViewPortContent =  $('meta[name="viewport"]').attr('content');
+		
 		// Add a local scope variable to register 
 		// local scope fullscreen calls on orientation change
 		// ( without this variable we would call fullscreen on all iframes on 
@@ -127,6 +129,12 @@ mw.IFramePlayerApiClient.prototype = {
 			
 			mw.log("iframeClient:: doFullscreen> verticalScrollPosition:" + verticalScrollPosition);
 			scrollToTop();
+			
+			// make sure the page has a zoom of 1: 
+			if( !$('meta[name="viewport"]').length ){
+				$('head').append( $( '<meta />' ).attr('name', 'viewport') );
+			}
+			$('meta[name="viewport"]').attr('content', 'width=device-width; initial-scale=1; user-scalable:no;' );
 			
 			// iPad 5 supports fixed position in a bad way, use absolute pos for iOS
 			var playerCssPosition = ( mw.isIOS() ) ? 'absolute': 'fixed';
@@ -173,6 +181,15 @@ mw.IFramePlayerApiClient.prototype = {
 		var restoreWindowMode = function(){
 			mw.log("iframeClient:: restoreWindowMode> verticalScrollPosition:" + verticalScrollPosition);
 			localIframeInFullscreen = false;
+			
+			// Restore document zoom: 
+			if( orginalViewPortContent ){
+				$('meta[name="viewport"]').attr('content', orginalViewPortContent );
+			} else{
+				// Restore user zoom: 
+				$('meta[name="viewport"]').attr('content', 'width=device-width; initial-scale=1;');
+			}
+			
 			$iframe
 				.css( orgSize )
 				.data(
