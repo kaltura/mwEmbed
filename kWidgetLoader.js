@@ -75,9 +75,12 @@ window.kWidget = {
 				'bgcolor': '#000000'
 			}
 			var o = '<object id="' + pId + '" ' +
-				'name="' + pId + '" '+
-				'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ' +
-				'width="' + width +'" ' +
+				'name="' + pId + '" ';
+			// output classid if in IE
+			if(  window.ActiveXObject ){
+				'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
+			}
+				o += 'width="' + width +'" ' +
 				'height="' + height + '" ' +
 				'style="width:' + width + 'px;height:' + height + 'px;" ' +
 				'resource="' + swfUrl + '" ' +
