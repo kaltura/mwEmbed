@@ -78,7 +78,7 @@ window.kWidget = {
 				'name="' + pId + '" ';
 			// output classid if in IE
 			if(  window.ActiveXObject ){
-				'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
+				o += 'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
 			}
 				o += 'width="' + width +'" ' +
 				'height="' + height + '" ' +
