@@ -156,7 +156,7 @@ class KalturaResultObject {
         if ( !is_null ( $this->isCarousel ) ){
             return $this->isCarousel;
         }
-        $this->isCarousel = !! $this->getPlayerConfig( 'carousel' );
+		$this->isCarousel = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getPlayerConfig( 'related' ) );
         return $this->isCarousel;
     }
 	// Check if the requested url is a playlist
@@ -166,7 +166,7 @@ class KalturaResultObject {
 			return $this->isPlaylist;
 		}
 		// Check if its a playlist url exists ( better check for playlist than playlist id )
-		$this->isPlaylist = !! $this->getPlayerConfig('playlistAPI', 'kpl0Url');;
+		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getPlayerConfig( 'list' ) );
 		return $this->isPlaylist;
 	}
 	function isJavascriptRewriteObject() {
@@ -587,12 +587,7 @@ class KalturaResultObject {
 
 	function getPlaylistResult(){
 		// Get the first playlist list:
-        if ( $this->isCarousel() ) {
-            $playlistId = $this->getPlayerConfig( 'carousel', 'playlist_id' );
-        }
-        else {
-            $playlistId =  $this->getFirstPlaylistId();
-        }
+		$playlistId =  $this->getFirstPlaylistId();
 
 		$playlistObject = $this->getPlaylistObject( $playlistId  );
 		

@@ -1,14 +1,16 @@
-/* Carousel Plugin:
-<Plugin id="carousel" ... />
+/* Carousel Plugin
+<Plugin id="playlistAPI" width="0%" height="0%" includeInLayout="false"/>
+<Plugin id="related" path="http://projects.kaltura.com/nu/wwwCoBSchool/plugins/relatedPlugin.swf" 
+	width="100%" height="100" hoverItemName="" styleName="List_background_default" columnWidth="100" 
+	rowHeight="100" columnCount="4" direction="horizontal" dataProvider="{playlistAPI.dataProvider}" itemRenderer="playlistItemRenderer" />
 */
-
 ( function( mw, $ ) {
 	// Bind to new player event
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 			// Check if plugin exists
-			if( embedPlayer.isPluginEnabled( 'carousel' ) ) {
-                window[ 'carouselPlugin' ].init( embedPlayer );
+			if( embedPlayer.isPluginEnabled( 'related' ) && embedPlayer.isPluginEnabled( 'playlistAPI' ) ) {
+				window[ 'carouselPlugin' ].init( embedPlayer );
 			}
 
 			// Continue player build-out
@@ -25,7 +27,7 @@
 		imgWidth: 100,
 		
 		imgMargin: 15,
-
+		
         init: function( embedPlayer ) {
             this.embedPlayer = embedPlayer;
             this.addPlayerBindings();
@@ -71,12 +73,25 @@
 					}, 50 );
 				}
 			} );
+			
+			embedPlayer.unbindHelper( 'onResizePlayer' + _this.bindPostFix );
+			embedPlayer.bindHelper( 'onResizePlayer' + _this.bindPostFix, function() {
+				_this.removeAll();
+				if ( embedPlayer.paused ) {
+					setTimeout( function() {
+						_this.addCarousel();
+					}, 50 );
+				}				
+			} );
 		},
 		
 		// Add the video name and duration on top of the player
 		addTitle: function() {
 			var embedPlayer = this.embedPlayer;
-			var videoName = embedPlayer.kalturaPlayerMetaData.name;
+			var videoName = '';
+			if ( embedPlayer.kalturaPlayerMetaData ) {
+				videoName = embedPlayer.kalturaPlayerMetaData.name;
+			}
 			var $titleContainer = $( '<div />' )
 				.addClass( 'carouselVideoTitle' )
 				.css( {
@@ -126,7 +141,11 @@
 			_this.removeCarousel();
 			
 			// Get all entries in the playlist
-            var entriesArray = embedPlayer.kalturaPlaylistData[ embedPlayer.getKalturaConfig('carousel','playlist_id') ];
+			var entriesArray = [];
+
+			for ( var playlist_id in embedPlayer.kalturaPlaylistData ) {
+				entriesArray = $.merge( entriesArray, embedPlayer.kalturaPlaylistData[ playlist_id ] );
+			}
 			
 			// Carousel Container
 			var $carouselContainer = $( '<div />')
@@ -246,10 +265,21 @@
 				);
 					
 			_this.addTitle();
-			embedPlayer.$interface.prepend( $carouselContainer );
+			
+			// iPhone uses native player so the carousel should be drawn below the player and not on top of it. 
+			// In order to avoid resizing the iframe container, only the player is resized
+			if ( mw.isIphone() ) {
+				_this.resizePlayer( true );
+				embedPlayer.$interface.after( $carouselContainer );
+			}
+			else {
+				embedPlayer.$interface.prepend( $carouselContainer );
+			}
 			$carouselContainer.append( $prevButton )
 				.append( $nextButton );
-			$carouselContainer.after( $imgTitle );
+			if ( !mw.isIphone() ) {
+				$carouselContainer.after( $imgTitle );
+			}
 			// Place the next/previous buttons in the middle of the thumbnails vertically
 			$prevButton.css( 'bottom', parseInt( ( _this.imgHeight / 2 ) ) - parseInt( ( $prevButton.height() / 2 ) ) + 2 + 'px' );
 			$nextButton.css( 'bottom', parseInt( ( _this.imgHeight / 2 ) ) - parseInt( ( $nextButton.height() / 2 ) ) + 2 + 'px' );
@@ -267,6 +297,11 @@
 				'width' : '100%',
 				'z-index' : 100
 			} );
+			if ( mw.isIphone() ) {
+				$carouselContainer.css( { 
+					'bottom' : '0px'
+				} );
+			}
 			$carousel.css( {
 				'left' : '30px'
 			} );
@@ -275,9 +310,13 @@
 
 		removeCarousel: function() {
 			var embedPlayer = this.embedPlayer;
-			if ( embedPlayer.$interface ) {
-				if ( embedPlayer.$interface.find( ".carouselContainer" ).length	) {
-					embedPlayer.$interface.find( ".carouselContainer" ).remove();
+			var $searchNode = embedPlayer.$interface;
+			if ( $searchNode ) {
+				if ( mw.isIphone() ) {
+					$searchNode = $searchNode.parent();
+				}
+				if ( $searchNode.find( ".carouselContainer" ).length ) {
+					$searchNode.find( ".carouselContainer" ).remove();
 				}
 			}
 		},
@@ -305,13 +344,51 @@
 			this.removeVideoTitle();
 			this.removeImageTitle();
 			this.removeCarousel();
+			if ( mw.isIphone() ) {
+				this.resizePlayer();
+			}
 		},
-
+		
+		// Shrink or expand video (When carousel is below the player)
+		resizePlayer: function( shrink ) {
+			var _this = this;
+			var embedPlayer = this.embedPlayer;
+			if ( !embedPlayer.$interface ) {
+				// Too soon
+				return;
+			}
+			var currentInterfaceHeight = embedPlayer.$interface.height();
+			var currentVideoHeight = $( embedPlayer.getPlayerElement() ).height();
+			var changeHeight = _this.imgHeight + 12;
+			if ( shrink ) {
+				embedPlayer.$interface.css( {
+					'height' : currentInterfaceHeight - changeHeight
+				} );
+				$( embedPlayer ).css( {
+					'height' : currentInterfaceHeight - changeHeight
+				} );
+				$( embedPlayer.getPlayerElement() ).css( {
+					'height' : currentVideoHeight - changeHeight
+				} );
+			}
+			else {
+				embedPlayer.$interface.css( {
+					'height' : currentInterfaceHeight + changeHeight
+				} );
+				$( embedPlayer ).css( {
+					'height' : currentInterfaceHeight + changeHeight
+				} );
+				$( embedPlayer.getPlayerElement() ).css( {
+					'height' : currentVideoHeight + changeHeight
+				} );}
+		},
+		
 		// Calculate how manu thumbnails can be visible based on player and thumbnails width
 		getMaxThumbnails: function() {
 			var embedPlayer = this.embedPlayer;
 			
-			var maxThumbnails = Math.floor( embedPlayer.$interface.width() / ( this.imgWidth + this.imgMargin ) );
+			// Available width = (Interface Width) - 30 (Previous/Next arrows)
+			var maxThumbnails = Math.floor( ( embedPlayer.$interface.width() - 30 ) / ( this.imgWidth + this.imgMargin ) );
 			if ( embedPlayer.controlBuilder.inFullScreen ) {
 				maxThumbnails = Math.floor( screen.width / ( this.imgWidth + this.imgMargin ) );
 			}

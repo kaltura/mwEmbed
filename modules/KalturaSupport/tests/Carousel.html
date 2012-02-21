@@ -3,7 +3,7 @@
 <head>
 <title>Carousel Test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 </head>
 <body>
 	<h2> Carousel Test </h2>
@@ -29,7 +29,7 @@
 			<param name="allowNetworking" value="all" />
 			<param name="allowScriptAccess" value="always" />
 			<param name="bgcolor" value="#000000" />
-			<param name="flashVars" value="&flavorId=1_6evhmkq8" />
+			<param name="flashVars" value="playlistAPI.autoInsert=true&playlistAPI.kpl0Name=testList&playlistAPI.kpl0Url=http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fuid%3D%26partner_id%3D861182%26subp_id%3D86118200%26format%3D8%26ks%3D%7Bks%7D%26playlist_id%3D1_35tqydrp&customPlaylist=true" />
 			<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1329299975/wid/_861182/uiconf_id/7256681/entry_id/1_8ions2uv" />
 		</object>
 	</div>
@@ -38,7 +38,7 @@
 <layout id="full" name="basicPlayer" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
 	<HBox id="topLevel" width="100%" height="100%">
 		<VBox id="player" width="100%" height="100%" styleName="black">
-			<Plugin id="carousel" width="0%" height="0%" includeInLayour="false" playlist_id="1_35tqydrp" />
+			<Plugin id="carousel" width="0%" height="0%" includeInLayour="true" playlist_id="1_35tqydrp" />
 			<Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
 			<Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
 			<Canvas id="PlayerHolder" height="100%" width="100%" styleName="black">
