@@ -263,7 +263,7 @@ mw.DolStatistics.prototype = {
 		// Kaltura Playback ID ( kSessionId + playbackCounter )
 		params['KPLAYBACKID'] = this.embedPlayer.evaluate('{configProxy.sessionId}') + $( this.embedPlayer ).data('DolStatisticsCounter');
 		// Embedded Page Title
-		params['GENTITLE'] =  _this.getConfig('GENTITLE') || mw.getConfig( 'EmbedPlayer.IframeParentTitle' );
+		params['GENTITLE'] =  _this.getConfig('GENTITLE');
 		// Device id
 		params['DEVID'] =  _this.getConfig( 'DEVID' );
 		// Player protocol ( hard coded to html5 )
@@ -278,10 +278,12 @@ mw.DolStatistics.prototype = {
 		}
 		
 		// try and pull the page title from the parent:
-		try{
-			params['HTML5GenTitle'] = parent.document.title;
-		} catch (e){
-			// could not get title from parent frame
+		if( ! params['GENTITLE'] ){
+			try{
+				params['HTML5GenTitle'] = parent.document.title;
+			} catch (e){
+				// could not get title from parent frame
+			}
 		}
 		
 		

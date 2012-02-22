@@ -456,17 +456,19 @@ mw.KAdPlayer.prototype = {
 				return ;
 			} 
 			sentEvents[ eventName ] = 1;
-			// See if we have any beacons by that name: 
-			for(var i =0;i < trackingEvents.length; i++){
-				if( eventName == trackingEvents[ i ].eventName ){
-					mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + trackingEvents[ i ].beaconUrl );
-					mw.sendBeaconUrl( trackingEvents[ i ].beaconUrl );
+			if( trackingEvents ){
+				// See if we have any beacons by that name: 
+				for(var i =0;i < trackingEvents.length; i++){
+					if( eventName == trackingEvents[ i ].eventName ){
+						mw.log("KAdPlayer:: sendBeacon: " + eventName + ' to: ' + trackingEvents[ i ].beaconUrl );
+						mw.sendBeaconUrl( trackingEvents[ i ].beaconUrl );
+					}
 				}
 			}
 		};
 		
 		// On end stop monitor / clear interval: 
-		$( videoPlayer ).bind('ended' +  _this.trackingBindPostfix, function(){			
+		$( videoPlayer ).bind( 'ended' +  _this.trackingBindPostfix, function(){			
 			sendBeacon( 'complete' );
 			_this.stopAdTracking();
 		});

@@ -1776,11 +1776,17 @@ mw.EmbedPlayer.prototype = {
 		this.isPauseLoading = true;
 	},
 	addPlayerSpinner: function(){
+		var sId = 'loadingSpinner_' + this.id;
 		// remove any old spinner
-		$( '#loadingSpinner_' + this.id ).remove();
+		$( '#' + sId ).remove();
 		// re add an absolute positioned spinner: 
-		$( this ).getAbsoluteOverlaySpinner()
-		.attr( 'id', 'loadingSpinner_' + this.id );
+		if( this.$interface ) {
+			 this.$interface.getAbsoluteOverlaySpinner()
+			.attr( 'id', sId );
+		} else {
+			$( this ).getAbsoluteOverlaySpinner()
+			.attr( 'id', sId );
+		}
 	},
 	hidePlayerSpinner: function(){
 		this.isPauseLoading = false;

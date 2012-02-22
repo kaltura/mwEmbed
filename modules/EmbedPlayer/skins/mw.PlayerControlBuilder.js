@@ -2446,7 +2446,7 @@ mw.PlayerControlBuilder.prototype = {
 								embedPlayer.updateThumbPerc( perc );
 							}
 						},
-						change:function( event, ui ) {
+						change: function( event, ui ) {
 							// Only run the onChange event if done by a user slide
 							// (otherwise it runs times it should not)
 							if ( embedPlayer.userSlide ) {

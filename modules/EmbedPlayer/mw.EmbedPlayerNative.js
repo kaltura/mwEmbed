@@ -346,12 +346,9 @@ mw.EmbedPlayerNative = {
 				// We support URLTimeEncoding call parent seek:
 				this.parent_seek( percent );
 			}
-		} else if ( this.playerElement && this.playerElement.duration && stopAfterSeek ) {
-			// (could also check bufferedPercent > percent seek (and issue oggz_chop request or not)
-			this.doNativeSeek( percent );
 		} else {
 			// Try to do a play then seek:
-			this.doPlayThenSeek( percent );
+			this.doNativeSeek( percent );
 		}
 	},
 
@@ -363,8 +360,8 @@ mw.EmbedPlayerNative = {
 	doNativeSeek: function( percent, callback ) {
 		// If player already seeking, exit
 		var _this = this;
-		var isChrome = (navigator.userAgent.indexOf('Chrome') === -1) ? false : true;
-		if( isChrome && _this.playerElement.seeking ) {
+		// chrome crashes with multiple seeks: 
+		if( (navigator.userAgent.indexOf('Chrome') === -1) && _this.playerElement.seeking ) {
 			return ;
 		}
 		
@@ -372,6 +369,9 @@ mw.EmbedPlayerNative = {
 		this.seeking = true;
 		
 		this.seekTimeSec = 0;
+		// hide iPad video off screen ( shows quicktime logo during seek ) 
+		this.hideIpadPlayerOffScreen();
+		
 		this.setCurrentTime( ( percent * this.duration ) , function(){
 			// Update the current time ( so that there is not a monitor delay in reflecting "seeked time" )
 			_this.currentTime = _this.getPlayerElement().currentTime;
@@ -380,18 +380,25 @@ mw.EmbedPlayerNative = {
 				$( _this ).trigger( 'seeked' );
 				_this.seeking = false;
 			}
+			// restore iPad video position: 
+			_this.restoreIpadPlayerOnScreen();
+			
 			_this.monitor();
+			// issue the callback: 
+			if( callback ){
+				callback();
+			}
 		});
 	},
 
 	/**
-	* Seek in a existing stream
+	* Seek in a existing stream, we first play then seek to work around issues with iPad seeking. 
 	*
 	* @param {Float} percent
 	* 		percent of the stream to seek to between 0 and 1
 	*/
 	doPlayThenSeek: function( percent ) {
-		mw.log( 'EmbedPlayerNative::doPlayThenSeek::' + percent );
+		mw.log( 'EmbedPlayerNative::doPlayThenSeek::' + percent + ' isPaused ' + this.paused);
 		var _this = this;
 		var oldPauseState = this.paused;
 		this.play();
@@ -400,10 +407,12 @@ mw.EmbedPlayerNative = {
 			_this.getPlayerElement();
 			// If we have duration then we are ready to do the seek
 			if ( _this.playerElement && _this.playerElement.duration ) {
-				if( oldPauseState ){
-					_this.pause();
-				}
-				_this.doNativeSeek( percent );
+				_this.doNativeSeek( percent, function(){
+					// restore pause if paused: 
+					if( oldPauseState ){
+						_this.pause();
+					}
+				} );
 			} else {
 				// Try to get player for  30 seconds:
 				// (it would be nice if the onmetadata type callbacks where fired consistently)
@@ -556,6 +565,8 @@ mw.EmbedPlayerNative = {
 					mw.log( 'Error: EmbedPlayerNative switchPlaySource no vid');
 					return ;
 				}
+				_this.hideIpadPlayerOffScreen();
+				
 				// move the video offscreen while it switches ( hides quicktime logo only applies to iPad ) 
 				if( mw.isIpad() ){
 					$( vid ).css( {
@@ -563,12 +574,16 @@ mw.EmbedPlayerNative = {
 						'left': '-4048px'
 					});
 				}
+				_this.addPlayerSpinner(); 
+				
 				// Do the actual source switch: 
 				vid.src = src;
 				
 				$( vid ).bind( 'loadedmetadata', function(){
 					// restore video position: 
-					$( vid ).css( 'left', '0px');
+					_this.restoreIpadPlayerOnScreen();
+					// now hide the spinner
+					_this.hidePlayerSpinner();
 				})
 				// Give iOS 50ms to figure out the src got updated ( iPad OS 3.x )
 				setTimeout( function() {
@@ -623,8 +638,19 @@ mw.EmbedPlayerNative = {
 			}
 		}
 	},
-	doSwitchNativeSource:function(){
-		
+	hideIpadPlayerOffScreen:function( vid ){
+		var vid = this.getPlayerElement();
+		// move the video offscreen while it switches ( hides quicktime logo only applies to iPad ) 
+		if( mw.isIpad() ){
+			$( vid ).css( {
+				'position' : 'absolute', 
+				'left': '-4048px'
+			});
+		}
+	},
+	restoreIpadPlayerOnScreen: function( vid ){
+		var vid = this.getPlayerElement();
+		$( vid ).css( 'left', '0px');
 	},
 	/**
 	 * switchPlaySource switches the player source
@@ -687,7 +713,7 @@ mw.EmbedPlayerNative = {
 		if( _this.parent_play() ){
 			this.getPlayerElement();
 			if ( this.playerElement && this.playerElement.play ) {
-				// Dont play if in pauseloading state
+				// Dont play if in pause loading state
 				if( this.isPauseLoading ){
 					this.playerElement.pause();
 				} else {

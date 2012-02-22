@@ -41,7 +41,7 @@ function jsKalturaPlayerTest( videoId ){
 	}
 	function onPlayerSeekStart( playerId ){
 		var kdp = $( '#' + playerId )[0];
-		alert( kdp.evaluate( '{video.player.currentTime}' ) );
+		mw.log( " ON start seek: " +  kdp.evaluate( '{video.player.currentTime}' ) );
 	}
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
