@@ -186,7 +186,8 @@ mw.IFramePlayerApiClient.prototype = {
 			if( orginalViewPortContent ){
 				$('meta[name="viewport"]').attr('content', orginalViewPortContent );
 			} else{
-				// Restore user zoom: 
+				// Restore user zoom: ( NOTE, there does not appear to be a way to know the 
+				// initial scale, so we just restore to 1 in the absence of explicit viewport tag ) 
 				$('meta[name="viewport"]').attr('content', 'width=device-width; initial-scale=1;');
 			}
 			

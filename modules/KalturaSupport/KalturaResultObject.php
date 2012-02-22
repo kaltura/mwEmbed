@@ -365,9 +365,7 @@ class KalturaResultObject {
 		if( $this->urlParameters[ 'flashvars' ] ) {
 			$flashVars = $this->urlParameters[ 'flashvars' ];
 			foreach( $flashVars as $fvKey => $fvValue) {
-				if( $fvKey && $fvValue ) {
-					$vars[ $fvKey ] = $this->formatString( $fvValue );
-				}
+				$vars[ $fvKey ] = $this->formatString( $fvValue );
 			}
 		}
 
@@ -387,7 +385,6 @@ class KalturaResultObject {
 				$vars[ $key ] = $this->formatString($value);
 			}
 		}
-		
 		// Set Plugin attributes from uiVars/flashVars to our plugins array
 		foreach( $vars as $key => $value ) {
 			// If this is not a plugin setting, continue
@@ -411,7 +408,6 @@ class KalturaResultObject {
 					$pluginAttribute => $value
 				);
 			}
-
 			// Removes from vars array (keep only flat vars)
 			unset( $vars[ $key ] );
 		}

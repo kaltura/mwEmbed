@@ -333,6 +333,10 @@ mw.DolStatistics.prototype = {
 		for(var i = 0; i < namespaces.length; i++) {
 			context = context[namespaces[i]];
 		}
-		return context[func].apply(this, args);
+		try {
+			return context[func].apply(this, args);
+		} catch( e ){
+			mw.log("DolStatistics:: Error could not find function: " + functionName );
+		}
 	}
 };
