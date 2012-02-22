@@ -2996,7 +2996,7 @@ if( window.jQuery ){
 		// TODO don't add hover for any touch interface
 		if( mw.isIpad() ){
 			// don't add hover for iPad ( results in always hover state ) 
-			return ;
+			return this;
 		}
 		$( this ).hover(
 			function() {
