@@ -166,7 +166,7 @@ class KalturaResultObject {
 			return $this->isPlaylist;
 		}
 		// Check if its a playlist url exists ( better check for playlist than playlist id )
-		$this->isPlaylist = ( !! $this->getPlayerConfig('playlistAPI', 'kpl0Url') ) && ( !! $this->getPlayerConfig( 'list' ) );
+		$this->isPlaylist = !! $this->getPlayerConfig('playlistAPI', 'kpl0Url');
 		return $this->isPlaylist;
 	}
 	function isJavascriptRewriteObject() {
