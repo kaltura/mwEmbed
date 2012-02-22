@@ -2993,12 +2993,17 @@ if( window.jQuery ){
 
 	// Shortcut to bind hover state
 	$.fn.buttonHover = function() {
-		$j( this ).hover(
+		// TODO don't add hover for any touch interface
+		if( mw.isIpad() ){
+			// don't add hover for iPad ( results in always hover state ) 
+			return ;
+		}
+		$( this ).hover(
 			function() {
-				$j( this ).addClass( 'ui-state-hover' );
+				$( this ).addClass( 'ui-state-hover' );
 			},
 			function() {
-				$j( this ).removeClass( 'ui-state-hover' );
+				$( this ).removeClass( 'ui-state-hover' );
 			}
 		);
 		return this;
