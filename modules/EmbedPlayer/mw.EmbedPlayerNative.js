@@ -143,6 +143,7 @@ mw.EmbedPlayerNative = {
 		if( !cssSet ){
 			cssSet = {};
 		}
+			
 		// Set default width height to 100% of parent container
 		if( !cssSet['width'] ) cssSet['width'] = '100%';
 		if( !cssSet['height'] ) cssSet['height'] = '100%';
@@ -605,14 +606,7 @@ mw.EmbedPlayerNative = {
 						});
 					}, 50);
 				};
-				if (navigator.userAgent.toLowerCase().indexOf('chrome') != -1) {
-					// Null the src and wait 50ms ( helps unload video without crashing
-					// google chrome 7.x )
-					vid.src = '';
-					setTimeout( updateSrcAndPlay, 100);
-				} else {
-					updateSrcAndPlay();
-				}
+				updateSrcAndPlay();
 			} catch (e) {
 				mw.log("Error: EmbedPlayerNative Error in switching source playback");
 			}
