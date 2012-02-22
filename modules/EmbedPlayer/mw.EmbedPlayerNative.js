@@ -551,62 +551,73 @@ mw.EmbedPlayerNative = {
 				// Hide controls ( to not display native play button while switching sources ) 
 				vid.removeAttribute('controls');
 				
-				// Local scope update source and play function to work around google chrome bug
-				var updateSrcAndPlay = function() {
+				var vid = _this.getPlayerElement();
+				if (!vid){
+					mw.log( 'Error: EmbedPlayerNative switchPlaySource no vid');
+					return ;
+				}
+				// move the video offscreen while it switches ( hides quicktime logo only applies to iPad ) 
+				if( mw.isIpad() ){
+					$( vid ).css( {
+						'position' : 'absolute', 
+						'left': '-4048px'
+					});
+				}
+				// Do the actual source switch: 
+				vid.src = src;
+				
+				$( vid ).bind( 'loadedmetadata', function(){
+					// restore video position: 
+					$( vid ).css( 'left', '0px');
+				})
+				// Give iOS 50ms to figure out the src got updated ( iPad OS 3.x )
+				setTimeout( function() {
 					var vid = _this.getPlayerElement();
 					if (!vid){
 						mw.log( 'Error: EmbedPlayerNative switchPlaySource no vid');
 						return ;
-					}
-					vid.src = src;
-					// Give iOS 50ms to figure out the src got updated ( iPad OS 3.x )
-					setTimeout( function() {
+					}	
+					mw.log("EmbedPlayerNative:: playerSwichSource> vid.play() ");
+					vid.load();
+					vid.play();
+					// Wait another 50ms then bind the end event and any custom events
+					// for the switchCallback
+					setTimeout(function() {
 						var vid = _this.getPlayerElement();
-						if (!vid){
-							mw.log( 'Error: EmbedPlayerNative switchPlaySource no vid');
-							return ;
-						}	
-						mw.log("EmbedPlayerNative:: playerSwichSource> vid.play() ");
-						vid.load();
-						vid.play();
-						// Wait another 100ms then bind the end event and any custom events
-						// for the switchCallback
-						setTimeout(function() {
-							var vid = _this.getPlayerElement();
-							// dissable seeking ( if we were in a seeking state before the switch )
-							_this.seeking = false;
-							// Restore controls 
-							vid.controls = orginalControlsState;
-							// add the end binding: 
-							$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
-								// remove end binding: 
-								$( vid ).unbind( switchBindPostfix );
-								
-								if(typeof doneCallback == 'function' ){
-									doneCallback();
-								}
-								return false;
-							});
-							if ( switchCallback ) {
-								switchCallback( vid );
-								switchCallback = null;
-							}
-							_this.hidePlayerSpinner();
-						}, 50);
-						// restore events after we get the pause trigger
-						$( vid ).bind( 'pause' + switchBindPostfix, function(){
-							// remove pause binding: 
-							$( vid ).unbind( 'pause' + switchBindPostfix );
+						// dissable seeking ( if we were in a seeking state before the switch )
+						_this.seeking = false;
+						// Restore controls 
+						vid.controls = orginalControlsState;
+						// add the end binding: 
+						$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
+							// remove end binding: 
+							$( vid ).unbind( switchBindPostfix );
 							
-							if ( switchCallback ) {
-								_this.play();
-								switchCallback( vid );
-								switchCallback = null;
+							if( typeof doneCallback == 'function' ){
+								doneCallback();
 							}
+							return false;
 						});
+						if ( switchCallback ) {
+							switchCallback( vid );
+							switchCallback = null;
+						}
+						_this.hidePlayerSpinner();
 					}, 50);
-				};
-				updateSrcAndPlay();
+					
+					// restore events after we get the pause trigger
+					$( vid ).bind( 'pause' + switchBindPostfix, function(){
+
+						// remove pause binding: 
+						$( vid ).unbind( 'pause' + switchBindPostfix );
+						
+						if ( switchCallback ) {
+							_this.play();
+							switchCallback( vid );
+							switchCallback = null;
+						}
+					});
+				}, 50);
 			} catch (e) {
 				mw.log("Error: EmbedPlayerNative Error in switching source playback");
 			}
