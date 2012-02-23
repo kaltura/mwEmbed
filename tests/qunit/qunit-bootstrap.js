@@ -32,7 +32,7 @@ var qunitWaitForJQuery = function( callback ){
 	}
 };
 // Check for the url for runQunitTests argument
-if( document.URL.indexOf('runQunitTests') != -1 ){
+if( document.URL.indexOf('runQunitTests') != -1 || document.URL.indexOf('runFlashQunitTests') != -1 ){
 	document.write('' +
 			'<link rel="stylesheet" href="' + getQunitPath() + 'lib/qunit.css" type="text/css" media="screen" />' +
 			'<script type="text/javascript" src="' + getQunitPath() + 'lib/qunit.js"></script>' + 
@@ -61,14 +61,25 @@ if( document.URL.indexOf('runQunitTests') != -1 ){
 	window.addRunTestLink = function(){
 		var url = document.URL;
 		url += ( url.indexOf('?') === -1 )? '?' : '&';
-		url += 'runQunitTests=1';
 		jQuery('body').append( 
-			jQuery('<a />')
-			.attr({
-				'id':'runQunitLink',
-				'href' : url
-			})
-			.text( 'run qunit tests')
+			jQuery('<span />').append(
+				jQuery('<a />')
+				.attr({
+					'id':'runQunitLink',
+					'href' : url + 'runQunitTests=1'
+				})
+				.text( 'html5 qunit')
+				,
+				jQuery( '<span />').text( ' | ')
+				,
+				jQuery('<a />')
+				.attr({
+					'id':'runQunitLink',
+					'href' : url + 'runFlashQunitTests=1',
+					'title' : 'note: not all test work with flash!'
+				})
+				.text( 'flash qunit')
+			)
 			.css({ 
 				'position': 'absolute', 
 				'display': 'block',

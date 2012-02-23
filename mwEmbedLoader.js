@@ -66,7 +66,6 @@ if( ! mw.getConfig ){
 /**
  * Url flags:
  */
-
 // Note forceMobileHTML5 can be disabled by uiConf 
 if( document.URL.indexOf('forceMobileHTML5') !== -1 ){
 	mw.setConfig( 'forceMobileHTML5', true );
@@ -77,7 +76,7 @@ if( document.URL.indexOf('forceMobileHTML5') !== -1 ){
  * {Major}.{MinorN}.{Patch}
  * 
  * @param {String}
- *            minVersion Minnium version needed
+ *            minVersion Minimum version needed
  * @param {String}
  *            clientVersion Client version to be checked
  * 

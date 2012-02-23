@@ -6,42 +6,73 @@
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
-	
 	// Name this module
 	module( "Buffer Events" );
-
-	var $iframe = $( '#' + videoId + '_ifp' ).contents();
-	var iframeContext = window.frames['kaltura_player_ifp'];
+	var kdp = $( '#' + videoId ).get(0);
 	
-	test( "Iframe in DOM", function() {
-		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
-		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+	test( "Add buffer listeners", function() {
+		kdp.addJsListener( 'bytesDownloadedChange', 'testBytesDownloadedChange' );
+		kdp.addJsListener( 'bytesTotalChange', 'testBytesTotalChange' );
+		kdp.addJsListener( 'bufferProgress',  'testBufferProgress' );
+		kdp.addJsListener( 'bufferChange',  'testBufferChange' );
+		kdp.addJsListener( 'playerDownloadComplete', 'testPlayerDownloadComplete' );
+		ok( true, "Added buffer listeners" );
+		// Start playback after 1 second: 
+		setTimeout( function(){
+			kdp.sendNotification( 'doPlay' );
+		}, 2000 );
 	});
-
-	asyncTest("Iframe layout elements", function(){
-		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
-			start();
+	
+	var firstEventBytesDownloadedChange = true;
+	window['testBytesDownloadedChange'] = function( eventData ){
+		test( "bytesDownloadedChange", function(){
+			if( firstEventBytesDownloadedChange ){
+				firstEventBytesDownloadedChange = false;
+				ok( true, "Got testBytesDownloadedChange event");
+			}
+			// check for new value: 
+			ok( eventData.newValue >= 0, 'Bytes Downloaded Change sends newValue:' + eventData.newValue);
 		});
-	});
-	asyncTest("Iframe config", function(){
-		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
-		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
-		// Test page context config: 
-		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
-		start();
-	});
+	};
+	
+	window['testBytesTotalChange'] = function( eventData ){
+		test( "bytesTotalChange", function(){
+			ok( true, "BytesTotalChange:" + eventData.newValue);
+		});
+	};
+	
+	var prevBufferTime = 0;
+	var firstBuffProgress = true;
+	window['testBufferProgress'] = function( eventData ){
+		test( "bufferProgress", function(){
+			if( firstBuffProgress ){
+				firstBuffProgress = false;
+				ok(true, "Got bufferProgress event");
+			}
+			ok( eventData.newTime >= prevBufferTime, "Buffer is increasing: " + eventData.newTime  );
+			prevBufferTime = eventData.newTime;
+		});
+	};
+	
+	var bufferToggle = true;
+	window['testBufferChange'] = function( isBuffering  ){
+		test( "bufferChange", function(){
+			equal( bufferToggle, isBuffering, "Buffer state in sync: " + isBuffering);
+			bufferToggle = !bufferToggle;
+		});
+	};
+	
+	window['testPlayerDownloadComplete'] = function( eventData ){
+		test( "playerDownloadComplete", function(){
+			ok( true, "Got playerDownloadComplete event");
+		});
+	};
+	
 }
 </script>
 <script>
 	function jsCallbackReady( playerId ){
 		var kdp = $( '#' + playerId )[0];
-		kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
-	}
-	function onPlayerSeekStart( playerId ){
-		var kdp = $( '#' + playerId )[0];
-		alert( kdp.evaluate( '{video.player.currentTime}' ) );
 	}
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
@@ -51,17 +82,25 @@ function jsKalturaPlayerTest( videoId ){
 <h2> Buffer Events test </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" />
+<object id="kaltura_player_1330021939" 
+	name="kaltura_player_1330021939" 
+	type="application/x-shockwave-flash" 
+	allowFullScreen="true" 
+	allowNetworking="all" 
+	allowScriptAccess="always" 
+	height="333" width="400" 
+	bgcolor="#000000" 
+	xmlns:dc="http://purl.org/dc/terms/" 
+	xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
+	rel="media:video" 
+	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1330021939/wid/_243342/uiconf_id/7235092/entry_id/0_wm82kqmm" 
+	data="http://www.kaltura.com/index.php/kwidget/cache_st/1330021939/wid/_243342/uiconf_id/7235092/entry_id/0_wm82kqmm">
+		<param name="allowFullScreen" value="true" />
+		<param name="allowNetworking" value="all" />
+		<param name="allowScriptAccess" value="always" />
+		<param name="bgcolor" value="#000000" />
+		<param name="flashVars" value="&" />
+		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1330021939/wid/_243342/uiconf_id/7235092/entry_id/0_wm82kqmm" />
 </object>
 </body>
 </html>

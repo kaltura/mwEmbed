@@ -447,7 +447,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		
 		// check for decendent margin-left
 		$item.find('.hasMarginLeft' ).slice(1).css('margin-left', '');
-		
 			
 		return $item;
 	},

@@ -1,14 +1,15 @@
 //must come after qunit-bootstrap.js and after mwEmbedLoader.php
 if( window.QUnit ){
 	
-	mw.setConfig( 'forceMobileHTML5', true );	
+	// force html5 if not running flash qUnit tests:
+	if( document.URL.indexOf('runFlashQunitTests') === -1 ){
+		mw.setConfig( 'forceMobileHTML5', true );	
+	}
+	
 	if( window['jsCallbackReady'] ){
 		window['orgJsCallbackReady'] = window['jsCallbackReady'];
 	}
 	jsCallbackCalled = false;
-	
-	window['']
-	
 	
 	window['jsCallbackReady'] = function( videoId ) {
 		// check if the test can access the iframe

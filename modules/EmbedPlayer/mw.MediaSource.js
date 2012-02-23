@@ -47,6 +47,7 @@ mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 	'data-width', // the width of the stream
 	'data-height', // the height of the stream
 	'data-bandwidth', // the overall bitrate of the stream
+	'data-sizebytes', // the size of the stream in bytes
 	'data-framerate', // the framereate of the stream
 	'data-flavorid', // a source flavor id ( useful for targeting devices )
 	
@@ -450,6 +451,15 @@ mw.MediaSource.prototype = {
 	getBitrate: function() {
 		if( this.bandwidth ){
 			return this.bandwidth / 1024;
+		}
+		return 0;
+	},
+	/**
+	 * Get the size of the stream in bytes
+	 */
+	getSize: function(){
+		if( this.sizebytes ){
+			return this.sizebytes;
 		}
 		return 0;
 	}

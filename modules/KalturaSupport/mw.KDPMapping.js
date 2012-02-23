@@ -664,7 +664,59 @@
 				case 'metadataReceived':
 					b('KalturaSupport_MetadataReceived');
 					break;
+				
+				/**
+				 * Buffer related listeners 
+				 */	
+				case 'bufferChange':
+					var triggeredBufferStart = false;
+					var triggeredBufferEnd = false;
+					// html5 has no buffer change event.. just trigger buffering on progress then again on bufferPercent == 1;
+					b( 'monitorEvent', function(){
+						if( !triggeredBufferStart){
+							callback( true, embedPlayer.id );
+							triggeredBufferStart = true;
+						}
+						if( !triggeredBufferEnd && embedPlayer.bufferedPercent == 1 ){
+							callback( false, embedPlayer.id );
+							triggeredBufferEnd = true;
+						}
+					})
+					break;
+				case 'bytesDownloadedChange':
+					// KDP sends an initial bytes loaded zeor at player ready: 
+					var prevBufferBytes = 0;
+					b( 'monitorEvent', function(){
+						if( embedPlayer.bufferedPercent ){
+							var bufferBytes = parseInt( embedPlayer.bufferedPercent *  embedPlayer.mediaElement.selectedSource.getSize() );
+							if( bufferBytes != prevBufferBytes ){
+								callback( { 'newValue': bufferBytes }, embedPlayer.id );
+								prevBufferBytes = bufferBytes;
+							}
+						}
+					})
+					break;
+				case 'bufferProgress':
+					var prevBufferTime = 0;
+					b( 'monitorEvent', function(){
+						if( embedPlayer.bufferedPercent ){
+							var bufferTime = parseInt( embedPlayer.bufferedPercent * embedPlayer.duration );
+							if( bufferTime != prevBufferTime ){
+								callback( { 'newTime': bufferTime }, embedPlayer.id );
+								prevBufferTime = bufferTime;
+							}
+						}
+					})
+					break;
+				case 'bytesTotalChange':
+					var prevBufferBytesTotal = 0;
+					// Fired once per media loaded: 
+					b( 'mediaLoaded', function(){
+						callback( { 'newValue': embedPlayer.mediaElement.selectedSource.getSize()  } );
+					})
+					break;
 					
+				
 				/**
 				 * Ad support listeneres
 				 *  TODO move to AdTimeline.js ( not in core KDPMapping )
