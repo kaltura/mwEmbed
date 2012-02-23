@@ -48,9 +48,11 @@ $( document ).ready(function(){
 	var hidden = false;
 	$("#testHide").click( function(){
 		if( !hidden){
+			$('#kaltura_player').get(0).sendNotification( 'doPause' );
 			$('#playerHolder').css('left', '-2048px' );
 			hidden = true;
 		} else {
+			$('#kaltura_player').get(0).sendNotification( 'doPlay' );
 			$('#playerHolder').css('left', '20%' );
 			hidden = false;
 		}
