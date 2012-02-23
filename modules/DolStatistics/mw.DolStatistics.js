@@ -304,18 +304,21 @@ mw.DolStatistics.prototype = {
 		// If we have access to parent, call the jsFunction provided
 		if( this.getConfig( 'jsFunctionName' ) && window.parent ) {
 			var callbackName = this.getConfig( 'jsFunctionName' );
-			this._executeFunctionByName( callbackName, window.parent, params);
-		} else {
-			// Use beacon to send event data
-			var statsUrl = this.getConfig( 'protocol' ) + '://' + this.getConfig( 'host' ) + '?' + $.param(params);
-			$('body').append(
-				$( '<img />' ).attr({
-					'src' : statsUrl,
-					'width' : 0,
-					'height' : 0
-				})
-			);
+			var executeSuccess = this._executeFunctionByName( callbackName, window.parent, params);
+			// Check that the function executes correctly, else call the fallback statsUrl
+			if( executeSuccess !== false ){
+				return ;
+			}
 		}
+		// Use beacon to send event data
+		var statsUrl = this.getConfig( 'protocol' ) + '://' + this.getConfig( 'host' ) + '?' + $.param(params);
+		$('body').append(
+			$( '<img />' ).attr({
+				'src' : statsUrl,
+				'width' : 0,
+				'height' : 0
+			})
+		);
 	},
 
 	destroy: function() {
@@ -336,9 +339,10 @@ mw.DolStatistics.prototype = {
 			context = context[namespaces[i]];
 		}
 		try {
-			return context[func].apply(this, args);
+			return context[func].apply( this, args );
 		} catch( e ){
 			mw.log("DolStatistics:: Error could not find function: " + functionName );
+			return false;
 		}
 	}
 };
