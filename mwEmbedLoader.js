@@ -129,9 +129,9 @@ function kDoIframeRewriteList( rewriteObjects ){
 		
 		// If we have no flash &  no html5 fallback and don't care about about player rewrite 
 		if( ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && !mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) {
-			kDirectDownloadFallback( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings, options );
+			kDirectDownloadFallback( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
 		} else {
-			kalturaIframeEmbed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings, options );
+			kalturaIframeEmbed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
 		}
 	}
 }

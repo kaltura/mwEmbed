@@ -12,7 +12,6 @@
 			if( embedPlayer.isPluginEnabled( 'related' ) && embedPlayer.isPluginEnabled( 'playlistAPI' ) ) {
 				window[ 'carouselPlugin' ].init( embedPlayer );
 			}
-
 			// Continue player build-out
 			callback();
 		} );

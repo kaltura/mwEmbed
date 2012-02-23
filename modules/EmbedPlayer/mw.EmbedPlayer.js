@@ -1780,13 +1780,8 @@ mw.EmbedPlayer.prototype = {
 		// remove any old spinner
 		$( '#' + sId ).remove();
 		// re add an absolute positioned spinner: 
-		if( this.$interface ) {
-			 this.$interface.getAbsoluteOverlaySpinner()
-			.attr( 'id', sId );
-		} else {
-			$( this ).getAbsoluteOverlaySpinner()
-			.attr( 'id', sId );
-		}
+		$( this ).getAbsoluteOverlaySpinner()
+		.attr( 'id', sId );
 	},
 	hidePlayerSpinner: function(){
 		this.isPauseLoading = false;
