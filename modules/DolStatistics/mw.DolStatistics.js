@@ -227,7 +227,7 @@ mw.DolStatistics.prototype = {
 		// Setup event params
 		var params = {};
 		// App name
-		params['app'] = this.appName;
+		params['app'] = _this.getConfig('APP') || this.appName;
 		// The asset id: 
 		params['ASSETNAME'] = _this.getConfig('ASSETNAME');
 		// Kaltura Event name
@@ -262,8 +262,13 @@ mw.DolStatistics.prototype = {
 		params['GENURL'] =  _this.getConfig('GENURL') || window.kWidgetSupport.getHostPageUrl();
 		// Kaltura Playback ID ( kSessionId + playbackCounter )
 		params['KPLAYBACKID'] = this.embedPlayer.evaluate('{configProxy.sessionId}') + $( this.embedPlayer ).data('DolStatisticsCounter');
-		// Embedded Page Title
-		params['GENTITLE'] =  _this.getConfig('GENTITLE');
+
+		// Embedded Page Title:
+		try{
+			params['GENTITLE'] = parent.document.title;
+		} catch( e ){
+			// no title at all if we can't access the parent
+		}
 		// Device id
 		params['DEVID'] =  _this.getConfig( 'DEVID' );
 		// Player protocol ( hard coded to html5 )
@@ -276,16 +281,6 @@ mw.DolStatistics.prototype = {
 				params[ _this.getConfig( 'customDataKey' + i ) ] =  _this.getConfig( 'customDataValue' + i );
 			}
 		}
-		
-		// try and pull the page title from the parent:
-		if( ! params['GENTITLE'] ){
-			try{
-				params['HTML5GenTitle'] = parent.document.title;
-			} catch (e){
-				// could not get title from parent frame
-			}
-		}
-		
 		
 		// filter out undefined == NULL 
 		// TODO this is kind of an ugly hack we should have 
