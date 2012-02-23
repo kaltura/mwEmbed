@@ -687,7 +687,7 @@
 					// KDP sends an initial bytes loaded zeor at player ready: 
 					var prevBufferBytes = 0;
 					b( 'monitorEvent', function(){
-						if( embedPlayer.bufferedPercent ){
+						if( typeof embedPlayer.bufferedPercent != 'undefined' ){
 							var bufferBytes = parseInt( embedPlayer.bufferedPercent *  embedPlayer.mediaElement.selectedSource.getSize() );
 							if( bufferBytes != prevBufferBytes ){
 								callback( { 'newValue': bufferBytes }, embedPlayer.id );
@@ -696,10 +696,17 @@
 						}
 					})
 					break;
+				case 'playerDownloadComplete':
+					b( 'monitorEvent', function(){
+						if(  embedPlayer.bufferedPercent == 1 ){
+							callback( embedPlayer.id );
+						}
+					});
+					break;
 				case 'bufferProgress':
 					var prevBufferTime = 0;
 					b( 'monitorEvent', function(){
-						if( embedPlayer.bufferedPercent ){
+						if( typeof embedPlayer.bufferedPercent != 'undefined' ){
 							var bufferTime = parseInt( embedPlayer.bufferedPercent * embedPlayer.duration );
 							if( bufferTime != prevBufferTime ){
 								callback( { 'newTime': bufferTime }, embedPlayer.id );
