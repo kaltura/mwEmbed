@@ -311,8 +311,8 @@ mw.EmbedPlayer.prototype = {
 	 */
 	loadPlayerSize: function( element ) {
 		// check for direct element attribute:
-		this.height = element.height ? element.height + '' : $(element).css( 'height' );
-		this.width = element.width ? element.width + '' : $(element).css( 'width' );
+		this.height = ( element.height > 0 ) ? element.height + '' : $(element).css( 'height' );
+		this.width = ( element.width > 0 ) ? element.width + '' : $(element).css( 'width' );
 		
 		// Special check for chrome 100% with re-mapping to 32px
 		// Video embed at 32x32 will have to wait for intrensic video size later on
@@ -420,9 +420,9 @@ mw.EmbedPlayer.prototype = {
 	 * @return {Number} pixel height of the video
 	 */
 	getPlayerWidth: function() {
-        if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
+        /*if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
             return ( $( this ).parent().parent().width() );
-        }
+        }*/
 		return $( this ).width();
 	},
 
