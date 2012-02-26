@@ -829,8 +829,8 @@ mw.KWidgetSupport.prototype = {
 			mw.log("Error: KWidgetSupport: flavorData is not defined ");
 			return ;
 		}
-		// Remove the ':' from the protocol
-		var protocol = location.protocol.substr(0, location.protocol.length-1); 
+
+		var protocol = mw.getConfig('Kaltura.Protocol');
 
 		// Setup the deviceSources array
 		var deviceSources = [];

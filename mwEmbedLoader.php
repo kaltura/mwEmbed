@@ -37,6 +37,7 @@ $loaderJs .= file_get_contents( 'modules/KalturaSupport/kdpPageJs/checkUserAgent
 $exportedJsConfig= array(
 	'debug' => $wgEnableScriptDebug,
 	'Kaltura.UseManifestUrls' => $wgKalturaUseManifestUrls,
+	'Kaltura.Protocol'	=>	$wgHTTPProtocol,
 	'Kaltura.ServiceUrl' => $wgKalturaServiceUrl,
 	'Kaltura.ServiceBase' => $wgKalturaServiceBase,
 	'Kaltura.CdnUrl' => $wgKalturaCDNUrl,
