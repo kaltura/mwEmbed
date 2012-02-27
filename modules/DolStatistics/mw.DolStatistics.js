@@ -306,7 +306,7 @@ mw.DolStatistics.prototype = {
 			}
 		}
 		// Use beacon to send event data
-		var statsUrl = this.getConfig( 'protocol' ) + '://' + this.getConfig( 'host' ) + '?' + $.param(params);
+		var statsUrl = this.getConfig( 'host' ) + '?' + $.param(params);
 		$('body').append(
 			$( '<img />' ).attr({
 				'src' : statsUrl,
