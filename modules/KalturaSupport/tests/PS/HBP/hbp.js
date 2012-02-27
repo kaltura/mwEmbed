@@ -3,6 +3,8 @@
 		embedPlayer.attributionbutton = false;
 		mw.log("ExternalResources:: IframeCustomPluginJs1:: newEmbedPlayerEvent");
 		mw.setConfig( 'EmbedPlayer.TimeDisplayWidth', 85 );
+		mw.setConfig( 'EmbedPlayer.EnableOptionsMenu', false );
+
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
 			var embedPlayer = this;
 			var bindPostFix = '.hbpCustomSkin';
@@ -48,15 +50,26 @@
 			// No volume slider
 			$interface.find( '.vol_container' ).remove();
 			
-			// Currently options button is the last on the right - re-adding the border radius
-			$interface.find( '.options-btn' ).css( {
+			var $lastButton = _this.lastButton( embedPlayer );
+			$lastButton.css( {
 				'-moz-border-radius' : '6px !important',
 				'-webkit-border-radius' : '6px !important',
 				'-khtml-border-radius' : '6px !important',
-				'border-radius' : '6px !important'
+				'border-radius' : '6px !important',
+				'-moz-border-radius-topleft' : '0px !important',
+				'-moz-border-radius-bottomleft' : '0px !important',
+				'-webkit-border-top-left-radius' : '0px !important',
+				'-webkit-border-bottom-left-radius' : '0px !important',
+				'-khtml-border-top-left-radius' : '0px !important',
+				'-khtml-border-bottom-left-radius' : '0px !important',
+				'border-top-left-radius' : '0px !important',
+				'border-bottom-left-radius' : '0px !important',
+				'margin-right' : '3px !important',
+				'border-right' : '0px !important'
 			} );
 			
-			// Strething playhead to the available space
+			
+			// Stretching playhead to the available space
 			var playHeadEnd = embedPlayer.getWidth() - $interface.find( '.time-disp' ).position().left + 5;
 			if ( embedPlayer.controlBuilder.inFullScreen ) {
 				playHeadEnd = screen.width - $interface.find( '.time-disp' ).position().left + 5;
@@ -116,7 +129,19 @@
 			} else {
 				embedPlayer.$interface.find( '.ui-icon-comment' ).addClass( 'active' );
 			}
-		}
+		},
 		
+		lastButton : function ( embedPlayer ) {
+			var maxPosition = 0;
+			var $lastButton = null;
+			embedPlayer.$interface.find( '.rButton' ).each( function() {
+				if ( $(this).position().left > maxPosition ) {
+					maxPosition = $(this).position().left;
+					$lastButton = $(this);
+				}
+			} );
+			return $lastButton;
+		}
+	
 	}
 })( window.mw, jQuery );

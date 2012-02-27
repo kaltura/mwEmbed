@@ -593,5 +593,3 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .play_head { border: 1px solid #373737 !important; }
 
 .control-bar { background: #000000 !important; }
-
-.options-btn { padding-right: 0px !important; margin-right: 3px !important; border-right: 0px !important; }
