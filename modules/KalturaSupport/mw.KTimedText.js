@@ -97,7 +97,7 @@
 						(  fontsize > 24 )?  emFontMap[ 24 ]+'em' : emFontMap[ 6 ];
 			}
 			if( this.getConfig('useGlow' ) && this.getConfig('glowBlur') && this.getConfig('glowColor') ) {
-				style["text-shadow"] = '0 0 ' + this.getConfrig('glowBlur') + 'px ' + mw.getHexColor( this.getConfig('glowColor') );
+				style["text-shadow"] = '0 0 ' + this.getConfig('glowBlur') + 'px ' + mw.getHexColor( this.getConfig('glowColor') );
 			}
 			return style;
 		},
