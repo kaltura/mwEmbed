@@ -387,12 +387,12 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		// Check for mediaPlayFrom
-		var mediaPlayFrom = this.getPluginConfig( embedPlayer, '', 'mediaProxy.mediaPlayFrom');		
+		var mediaPlayFrom = embedPlayer.evaluate('{mediaProxy.mediaPlayFrom}');	
 		if( mediaPlayFrom ) {
 			embedPlayer.startTime = parseFloat( mediaPlayFrom );
 		}
 		// Check for mediaPlayTo
-		var mediaPlayTo = this.getPluginConfig( embedPlayer, '', 'mediaProxy.mediaPlayTo');
+		var mediaPlayTo = embedPlayer.evaluate('{mediaProxy.mediaPlayTo}');
 		if( mediaPlayTo ) {
 			embedPlayer.pauseTime = parseFloat( mediaPlayTo );
 		}

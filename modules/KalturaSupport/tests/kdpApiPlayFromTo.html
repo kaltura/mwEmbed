@@ -60,39 +60,6 @@
 			return time;
 		}
 		</script>
-		<script type="text/javascript">
-		/*
-		function jsKalturaPlayerTest( videoId ){
-			// Name this module
-			module( "CuePoints" );
-
-			var kdp = $j( '#kdp3' )[0];
-
-			asyncTest("start cue point", function(){
-				kalturaQunitWaitForPlayer(function(){
-					$j( testEventObject ).bind('preCueEvent', function(event, qPoint){
-						var type = (qPoint.context) ? 'Ad' : 'Code';
-						equal( qPoint.cuePoint.name, "Preroll", "Preroll event sent" );
-						equal( qPoint.context, "pre", "Preroll Ad cue event sent" );
-						// continue testing
-						start();
-					});
-					kdp.sendNotification('doPlay');
-				});
-			});
-			asyncTest("CuePoint 1 at 3 seconds", function(){
-				$j( testEventObject ).bind('cueEvent', function( event, qPoint ){
-					equal( qPoint.cuePoint.name, "cuePoint 1", "CuePoint 1 event text sent");
-					equal( qPoint.cuePoint.startTime, 3000, "CuePoint 1 Ad cue event sent" );
-					// Finish tests:
-					kdp.sendNotification('doPause');
-					start();
-				});
-			});
-
-		}
-		*/
-		</script>
 	</head>
 	<body>
 		<h1>Kdp Api Play From/To attributes</h1>

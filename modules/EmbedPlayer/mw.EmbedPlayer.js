@@ -1722,7 +1722,8 @@ mw.EmbedPlayer.prototype = {
 				$this.trigger( 'replayEvent' );
 			}
 		}
-		// if we have start time defined, start playing from that point
+		
+		// If we have start time defined, start playing from that point
 		if( this.currentTime < this.startTime ) {
 			$this.bind('playing.startSeek', function(){
 				var percent = parseFloat( _this.startTime ) / _this.getDuration();
