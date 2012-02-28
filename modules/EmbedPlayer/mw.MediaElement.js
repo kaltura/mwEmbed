@@ -173,14 +173,15 @@ mw.MediaElement.prototype = {
 			_this.selectedSource = source;
 			return _this.selectedSource;
 		};
-		// Set via user-preference
-		$.each( playableSources, function( inx, source ){
-			var mimeType =source.mimeType;
-			if ( mw.EmbedTypes.getMediaPlayers().preference[ 'format_preference' ] == mimeType ) {
-				 mw.log( 'MediaElement::autoSelectSource: Set via format_preference: ' + source.mimeType );
+		// TODO fix user pref
+		/*$.each( playableSources, function( inx, source ){
+			var mimeType = source.mimeType;
+			var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( mimeType );
+			if ( mw.EmbedTypes.getMediaPlayers().preference[ mimeType ] == player.id ) {
+				 mw.log( 'MediaElement::autoSelectSource: Set via formatPreference ' + mimeType + ' matchs default player:' + player.id  );
 				 return setSelectedSource( source );
 			}
-		});
+		});*/
 
 		// Set via module driven preference:
 		$( this ).trigger( 'AutoSelectSource', playableSources );
