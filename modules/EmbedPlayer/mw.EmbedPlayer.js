@@ -420,9 +420,9 @@ mw.EmbedPlayer.prototype = {
 	 * @return {Number} pixel height of the video
 	 */
 	getPlayerWidth: function() {
-        /*if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
+        if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
             return ( $( this ).parent().parent().width() );
-        }*/
+        }
 		return $( this ).width();
 	},
 
