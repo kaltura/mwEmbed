@@ -1,9 +1,19 @@
 ( function( mw, $ ) {
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 		embedPlayer.attributionbutton = false;
-		mw.log("ExternalResources:: IframeCustomPluginJs1:: newEmbedPlayerEvent");
+		mw.log('ExternalResources:: IframeCustomPluginJs1:: newEmbedPlayerEvent');
 		mw.setConfig( 'EmbedPlayer.TimeDisplayWidth', 85 );
 		mw.setConfig( 'EmbedPlayer.EnableOptionsMenu', false );
+		mw.addMessages( {
+			'mwe-embedplayer-pause_clip' : 'Pause',
+			'mwe-embedplayer-play_clip' : 'Play',
+			'mwe-embedplayer-player_fullscreen' : 'Full Screen',
+			'mwe-embedplayer-player_fullscreen-exit' : 'Exit Full Screen',
+			'mwe-embedplayer-timed_text' : 'Captions On',
+			'mwe-embedplayer-timed_text-off' : 'Captions Off',
+			'mwe-embedplayer-volume_control' : 'Mute',
+			'mwe-embedplayer-volume_control-unmute' : 'Unmute'
+		} );
 
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
 			var embedPlayer = this;
@@ -34,7 +44,7 @@
 				window[ 'hbpSkin' ].toggleFullscreen( embedPlayer );
 			} );
 
-			mw.log("ExternalResources:: IframeCustomPluginJs1:: KalturaSupport_CheckUiConf");
+			mw.log('ExternalResources:: IframeCustomPluginJs1:: KalturaSupport_CheckUiConf');
 			// continue player build out
 			callback();
 		});
@@ -131,25 +141,35 @@
 		toggleMute : function( embedPlayer ) {
 			if ( embedPlayer.muted ) {
 				embedPlayer.$interface.find( '.volume_control span' ).removeClass( 'ui-icon-volume-on' ).addClass( 'ui-icon-volume-off' );
+				embedPlayer.$interface.find( '.volume_control' ).attr( 'title', gM( 'mwe-embedplayer-volume_control-unmute' ) );
 			} else {
 				embedPlayer.$interface.find( '.volume_control span' ).removeClass( 'ui-icon-volume-off' ).addClass( 'ui-icon-volume-on' );
+				embedPlayer.$interface.find( '.volume_control' ).attr( 'title', gM( 'mwe-embedplayer-volume_control' ) );
 			}
 		},
 		
 		toggleFullscreen : function( embedPlayer ) {
 			if ( embedPlayer.controlBuilder.inFullScreen ) {
-				embedPlayer.$interface.find( '.ui-icon-arrow-4-diag' ).addClass( 'minimize' );
+				embedPlayer.$interface.find( '.ui-icon-arrow-4-diag' )
+					.addClass( 'minimize' )
+					.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen-exit' ) );
 			} else {
-				embedPlayer.$interface.find( '.ui-icon-arrow-4-diag' ).removeClass( 'minimize' );
+				embedPlayer.$interface.find( '.ui-icon-arrow-4-diag' )
+					.removeClass( 'minimize' )
+					.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) );
 			}			
 		},
 		
 		toggleCC : function( embedPlayer ) {
 			var layout = embedPlayer.timedText.config.layout;
-			if ( layout == "off" ) {
-				embedPlayer.$interface.find( '.ui-icon-comment' ).removeClass( 'active' );
+			if ( layout == 'off' ) {
+				embedPlayer.$interface.find( '.ui-icon-comment' )
+					.removeClass( 'active' )
+					.attr( 'title', gM( 'mwe-embedplayer-timed_text' ) );
 			} else {
-				embedPlayer.$interface.find( '.ui-icon-comment' ).addClass( 'active' );
+				embedPlayer.$interface.find( '.ui-icon-comment' )
+					.addClass( 'active' )
+					.attr( 'title', gM( 'mwe-embedplayer-timed_text-off' ) );
 			}
 		},
 		
