@@ -101,6 +101,16 @@
 						if( notificationName == 'doSeek' ){
 							playerProxy.kPreSeekTime = playerProxy.currentTime;
 						}
+						// Reach into the player and issue the play call ( if in iOS to capture the user gesture click event if present )
+						if( notificationName == 'doPlay' &&  mw.isIOS() ){
+							$( '#' + playerProxy.id + '_ifp' )
+								.get(0).contentWindow
+								.$( '#' + playerProxy.id ).get(0).play();
+							// Do not also issue iframe postMessage ( so we avoid sending two play requests ) 
+							return false;
+						}
+						// By default do issue the postMessage api call for the given sendNotification. 
+						return true;
 					}
 					// @@TODO if we split kaltura playlist into its own folder with own loader we can move that there. 
 					playerMethods[ 'setKDPAttribute' ] = function( componentName, property, value ){
