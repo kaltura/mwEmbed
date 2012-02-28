@@ -47,6 +47,9 @@
 			var $play_head = $interface.find( '.play_head' );
 			var $button = $interface.find( 'div.rButton' ).first();
 			
+			// Move CC icon to be the rightmost button
+			$interface.find( '.timed-text' ).prependTo( $( '.control-bar' ) );
+			
 			// No volume slider
 			$interface.find( '.vol_container' ).remove();
 			
@@ -76,6 +79,7 @@
 			}
 			$play_head.css( 'right', playHeadEnd + 'px' );
 			
+			
 			var buttonMargin = parseInt ( $button.css( 'margin-top' ) );
 			var buttonPadding = parseInt ( $button.css( 'padding-top' ) );
 			var buttonHeight = $button.height();
@@ -100,6 +104,12 @@
 				$interface.find( '.custom-background').remove();
 			}
 			$interface.find( '.control-bar' ).prepend( $newBG );
+			
+			$interface.find( '.time-disp').css( {
+				'height' : buttonHeight + ( 2 * buttonPadding ) + 'px',
+				'line-height' : buttonHeight + ( 2 * buttonPadding ) + 'px'
+			} );
+			
 			$interface.find( '.timed-text' ).unbind( 'click.hbpSkin' );
 			$interface.find( '.timed-text' ).bind( 'click.hbpSkin', function() {
 				_this.toggleCC( embedPlayer );

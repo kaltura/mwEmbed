@@ -576,9 +576,9 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 
 .ui-icon.ui-icon-arrow-4-diag.minimize { background-image: url( images/minimize-btn.png ) !important; }
 
-.ui-icon.ui-icon-comment { background-image: url( images/cc-btn.png ) !important; }
+.ui-icon.ui-icon-comment { background-image: url( images/cc-btn1.png ) !important; }
 
-.ui-icon.ui-icon-comment.active { background-image: url( images/cc-btn-active.png ) !important; }
+.ui-icon.ui-icon-comment.active { background-image: url( images/cc-btn-active1.png ) !important; }
 
 .ui-icon.ui-icon-wrench { background-image: url( images/wrench.png ) !important; }
 
@@ -586,10 +586,12 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 
 .mv-player .play_head { margin-top: 8px !important; }
 
-.mv-player .time-disp { text-align: center; margin-top: -2px; }
+.mv-player .time-disp { text-align: center; margin-top: 2px; }
 
 .time-disp, .rButton { padding-right: 5px !important; margin-left: 0px !important; margin-right: 0px !important; border-right: 1px solid #191919 !important; }
 
 .play_head { border: 1px solid #373737 !important; }
 
 .control-bar { background: #000000 !important; }
+
+.timed-text { padding-left: 5px !important; }
