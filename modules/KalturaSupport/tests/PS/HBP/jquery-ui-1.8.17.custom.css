@@ -576,9 +576,9 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 
 .ui-icon.ui-icon-arrow-4-diag.minimize { background-image: url( images/minimize-btn.png ) !important; }
 
-.ui-icon.ui-icon-comment { background-image: url( images/cc-btn1.png ) !important; }
+.ui-icon.ui-icon-comment { background-image: url( images/cc-btn.png ) !important; }
 
-.ui-icon.ui-icon-comment.active { background-image: url( images/cc-btn-active1.png ) !important; }
+.ui-icon.ui-icon-comment.active { background-image: url( images/cc-btn-active.png ) !important; }
 
 .ui-icon.ui-icon-wrench { background-image: url( images/wrench.png ) !important; }
 
@@ -595,3 +595,5 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .control-bar { background: #000000 !important; }
 
 .timed-text { padding-left: 5px !important; }
+
+.padded-border { border: 1px solid #929395; z-index: 1; position: absolute; }

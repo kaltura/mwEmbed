@@ -78,7 +78,19 @@
 				playHeadEnd = screen.width - $interface.find( '.time-disp' ).position().left + 5;
 			}
 			$play_head.css( 'right', playHeadEnd + 'px' );
-			
+			// Playhead padded border
+			var $paddedBorder = $( '<div />' )
+				.addClass( 'padded-border' )
+				.css( {
+					'width' : $play_head.width() + 2 + 'px',
+					'height' : $play_head.height() + 2 + 'px',
+					'left' : $play_head.position().left + parseInt( $play_head.css( 'margin-left' ) ) - 1 + 'px',
+					'top' : $play_head.position().top + parseInt( $play_head.css( 'margin-top' ) ) - 1 + 'px'
+				} )
+			if ( $interface.find( '.padded-border').length ) {
+				$interface.find( '.padded-border').remove();
+			}
+			$play_head.before( $paddedBorder );
 			
 			var buttonMargin = parseInt ( $button.css( 'margin-top' ) );
 			var buttonPadding = parseInt ( $button.css( 'padding-top' ) );
@@ -89,7 +101,7 @@
 				backgroundWidth = screen.width - backgroundLeft - 7;
 			}
 			// Controls background
-			$newBG = $( '<div />' )
+			var $newBG = $( '<div />' )
 				.css( {
 					'position' : 'absolute',
 					'background-color' : '#2B2B2B',
