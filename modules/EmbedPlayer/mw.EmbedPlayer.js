@@ -1725,10 +1725,18 @@ mw.EmbedPlayer.prototype = {
 		
 		// If we have start time defined, start playing from that point
 		if( this.currentTime < this.startTime ) {
-			$this.bind('playing.startSeek', function(){
-				var percent = parseFloat( _this.startTime ) / _this.getDuration();
-				_this.seek( percent );
-				$this.unbind('playing.startSeek');
+			$this.bind('playing.startTime', function(){
+				$this.unbind('playing.startTime');
+				if( !mw.isIOS() ){
+					_this.setCurrentTime( _this.startTime );
+				} else { 
+					// iPad seeking on syncronus play event sucks
+					setTimeout(function(){
+						_this.setCurrentTime( _this.startTime, function(){
+							_this.play();
+						});
+					}, 500)
+				}
 			});
 		}
 		

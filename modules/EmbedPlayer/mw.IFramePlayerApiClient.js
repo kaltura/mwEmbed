@@ -65,14 +65,17 @@ mw.IFramePlayerApiClient.prototype = {
 		
 		$.each( this.exportedMethods, function( na, method ){
 			_this.playerProxy[ method ] = function(){
+				var doPostMessage = true;
 				// Call any local named callbacks
 				if( $.isFunction( namedMethodCallbacks[ method ] ) ){
-					namedMethodCallbacks[ method ].apply( this, $.makeArray( arguments ) );
+					doPostMessage = namedMethodCallbacks[ method ].apply( this, $.makeArray( arguments ) );
 				}
-				_this.postMessage( {
-					'method' : method,
-					'args' : $.makeArray( arguments )
-				} );
+				if( doPostMessage ){
+					_this.postMessage( {
+						'method' : method,
+						'args' : $.makeArray( arguments )
+					} );
+				}
 			};
 		});
 	},
