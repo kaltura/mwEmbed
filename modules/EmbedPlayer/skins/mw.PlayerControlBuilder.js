@@ -901,6 +901,14 @@ mw.PlayerControlBuilder.prototype = {
 				.show()
 				.hover( bindSpaceUp, bindSpaceDown );
 			
+			// include touch start pause binding
+			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
+				if( embedPlayer.paused ) {
+					embedPlayer.play();
+				} else {
+					embedPlayer.pause();
+				}
+			});
 		} else { // hide show controls:
 			
 			// Bind a startTouch to show controls
