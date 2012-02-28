@@ -603,16 +603,15 @@ mw.EmbedPlayerNative = {
 						_this.seeking = false;
 						// Restore controls 
 						vid.controls = orginalControlsState;
-						// add the end binding: 
-						$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
-							// remove end binding: 
-							$( vid ).unbind( switchBindPostfix );
-							
-							if( typeof doneCallback == 'function' ){
-								doneCallback();
-							}
-							return false;
-						});
+						// add the end binding if we have a post event: 
+						if( typeof doneCallback == 'function' ){
+							$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
+								// remove end binding: 
+								$( vid ).unbind( switchBindPostfix );
+									doneCallback();
+								return false;
+							});
+						}
 						if ( switchCallback ) {
 							switchCallback( vid );
 							switchCallback = null;
