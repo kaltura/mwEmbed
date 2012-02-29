@@ -148,7 +148,7 @@ mw.includeAllModuleMessages();
 				// Check if we are in fullscreen or not, if so add an additional bottom offset of 
 				// double the default bottom padding. 
 				var textOffset = _this.embedPlayer.controlBuilder.inFullScreen ? 
-						mw.getConfig("TimedText.BottomPadding") *2 : 
+						mw.getConfig("TimedText.BottomPadding") * 2 : 
 						mw.getConfig("TimedText.BottomPadding");
 						
 				var textCss = _this.getInterfaceSizeTextCss({
@@ -1134,17 +1134,20 @@ mw.includeAllModuleMessages();
 			} else {
 				// give the dom time to resize. 
 				setTimeout(function(){
-					var height = ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 ) +
-									parseInt( $( _this.embedPlayer ).height() ) + parseInt( _this.embedPlayer.controlBuilder.getHeight() );
-					
 					// get the orginal player height
-					_this.originalPlayerHeight = _this.embedPlayer.$interface.css('height');
+					_this.originalPlayerHeight = _this.embedPlayer.$interface.css( 'height' );			
 					
-					_this.embedPlayer.$interface.css({
-						'height': height
-					});
+					var height = parseInt( _this.originalPlayerHeight ) + ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 );
+					var newCss = {
+						'height' : height + 'px'
+					};
+						
+					_this.embedPlayer.$interface.css( newCss );
+					$( _this.embedPlayer ).css( newCss );
+					$( _this.embedPlayer.getPlayerElement() ).css( newCss );
+					
 					// Trigger an event to resize the iframe: 
-					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );					
+					_this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : height}] );
 				}, 50);
 			}
 		},
@@ -1181,16 +1184,8 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			var $belowContainer = _this.embedPlayer.$interface.find('.captionContainer');
 			if( $belowContainer.length ){
-				
-				var cBarHeight =  ( _this.embedPlayer.controlBuilder.isOverlayControls() ) ?
-						0 :
-						_this.embedPlayer.controlBuilder.getHeight();
-							
 				var newCss = {};
-				newCss.top = parseInt( $( _this.embedPlayer ).css( 'top' ) ) - ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') * .5 );
-				if( newCss.top < 0 ){
-					newCss.top = 0;
-				}
+				newCss.top = 0;
 				if( _this.embedPlayer.controlBuilder.inFullScreen 
 						&&
 					$( _this.embedPlayer ).height() > _this.embedPlayer.$interface.height() - mw.getConfig('TimedText.BelowVideoBlackBoxHeight')
@@ -1200,10 +1195,15 @@ mw.includeAllModuleMessages();
 					if( $( _this.embedPlayer ).height() > _this.embedPlayer.getHeight() ){
 						newCss.height = _this.embedPlayer.getHeight();
 					}
+					else {
+						newCss.height = _this.embedPlayer.$interface.height() - _this.embedPlayer.controlBuilder.getHeight() - mw.getConfig('TimedText.BelowVideoBlackBoxHeight') - 8;
+					}
 				}
 				$( _this.embedPlayer ).css( newCss );
 				$( _this.embedPlayer.getPlayerElement() ).css( newCss );
 				$belowContainer.css( 'top', newCss.top + $( _this.embedPlayer.getPlayerElement() ).height() );
+				var newPlayBtnTop = parseInt( _this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top' ) ) - ( mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' ) * .5 ) - 4;
+				_this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top', newPlayBtnTop + 'px' );
 			}
 		},
 		/**
