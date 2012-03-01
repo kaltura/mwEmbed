@@ -1,4 +1,4 @@
-( function( mw, $){
+( function( mw, $ ) { "use strict";
 
 mw.addResourcePaths({
 	"mw.DoubleClick": "mw.DoubleClick.js"

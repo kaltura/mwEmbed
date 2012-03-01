@@ -1,4 +1,4 @@
-( function( mw, $){
+( function( mw, $ ) { "use strict";
 
 mw.DoubleClick = function( embedPlayer, callback ){
 	this.init( embedPlayer, callback);

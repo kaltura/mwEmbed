@@ -1,5 +1,5 @@
 
-( function( mw, $){
+( function( mw, $ ) { "use strict";
 
 mw.addResourcePaths({
 	"mw.Omniture": "mw.Omniture.js"

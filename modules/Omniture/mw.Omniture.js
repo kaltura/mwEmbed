@@ -3,7 +3,7 @@
  * @param embedPlayer
  * @param config
  */
-( function( mw, $){
+( function( mw, $ ) { "use strict";
 
 mw.Omniture = function( embedPlayer, config ){
  	return this.init( embedPlayer,  config );
