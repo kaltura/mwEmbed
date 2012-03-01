@@ -4,7 +4,7 @@
 * Should look at: 
 * http://developer.yahoo.com/flash/articles/flex-layout.html
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 mw.KLayout = function( options ){
 	this.init( options );

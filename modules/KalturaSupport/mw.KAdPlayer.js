@@ -1,7 +1,7 @@
 /**
 * Supports the display of kaltura VAST ads. 
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 	
 mw.KAdPlayer = function( embedPlayer ) {
@@ -499,8 +499,8 @@ mw.KAdPlayer.prototype = {
 				_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  null );
 				clearInterval( _this.adMonitorInterval );
 			}
-			time =  videoPlayer.currentTime;
-			dur = videoPlayer.duration;
+			var time =  videoPlayer.currentTime;
+			var dur = videoPlayer.duration;
 			
 			// Update the timeRemaining sequence proxy
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining', parseInt ( dur - time ) );

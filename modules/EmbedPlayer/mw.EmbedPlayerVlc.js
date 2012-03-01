@@ -3,7 +3,7 @@
 * javascript api: http://www.videolan.org/doc/play-howto/en/ch04.html
 *  assume version > 0.8.5.1
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 mw.EmbedPlayerVlc = {
 

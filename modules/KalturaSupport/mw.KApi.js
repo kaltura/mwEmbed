@@ -14,7 +14,7 @@
  * 		Array An Array of request params for multi-request 
  * 		Object Named request params
  */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 mw.KApi = function( partner_id ){
 	return this.init( partner_id );	

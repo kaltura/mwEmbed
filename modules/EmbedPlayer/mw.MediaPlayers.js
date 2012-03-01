@@ -3,7 +3,7 @@
  *
  * @constructor
  */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 mw.MediaPlayers = function(){
 	this.init();
@@ -141,6 +141,17 @@ mw.MediaPlayers.prototype = {
 	},
 
 	/**
+	 * Loads the user preference settings from a cookie
+	 */
+	loadPreferences : function ( ) {
+		this.preference = { };		
+		// See if we have a cookie set to a clientSupported type:
+		if( $.cookie( 'EmbedPlayer.Preference' ) ) {
+			this.preference = JSON.parse( $.cookie( 'EmbedPlayer.Preference' ) );
+		}
+	},
+	
+	/**
 	 * Sets the player preference
 	 *
 	 * @param {String}
@@ -169,17 +180,6 @@ mw.MediaPlayers.prototype = {
 					embedPlayer.selectPlayer( selectedPlayer );
 				}
 			});
-		}
-	},
-
-	/**
-	 * Loads the user preference settings from a cookie
-	 */
-	loadPreferences : function ( ) {
-		this.preference = { };		
-		// See if we have a cookie set to a clientSupported type:
-		if( $.cookie( 'EmbedPlayer.Preference' ) ) {
-			this.preference = JSON.parse( $.cookie( 'EmbedPlayer.Preference' ) );
 		}
 	}
 };

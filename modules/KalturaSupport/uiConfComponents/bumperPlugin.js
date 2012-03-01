@@ -1,7 +1,7 @@
 /**
 * Adds bumper support
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 // xxx removed once we move to the new resource loader
 window.bumperPlugin = true;

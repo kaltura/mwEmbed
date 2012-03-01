@@ -4,7 +4,7 @@
  * http://www.kaltura.org/demos/kdp3/docs.html#jsapi
  */
 // scope in mw
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	mw.KDPMapping = function( ) {
 		return this.init();
 	};

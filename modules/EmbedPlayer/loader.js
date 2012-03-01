@@ -4,7 +4,7 @@
 /**
 * Default player module configuration
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 	mw.setDefaultConfig( {
 		// If the player controls should be overlaid on top of the video ( if supported by playback method)

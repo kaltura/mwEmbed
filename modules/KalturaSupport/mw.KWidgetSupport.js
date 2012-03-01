@@ -1,4 +1,4 @@
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 mw.KWidgetSupport = function( options ) {
 	// Create KWidgetSupport instance

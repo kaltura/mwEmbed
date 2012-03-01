@@ -1,7 +1,7 @@
 /**
  * Adds uiConf based playlist support
  */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 // XXX RL17 remove
 window.playlistPlugin = true;

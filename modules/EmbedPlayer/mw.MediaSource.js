@@ -11,7 +11,7 @@
  * http://dev.w3.org/html5/spec/Overview.html#the-source-element
  */
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 	// source id

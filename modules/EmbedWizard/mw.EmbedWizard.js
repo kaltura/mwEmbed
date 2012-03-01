@@ -1,7 +1,7 @@
 /**
 * EmbedWizard interface  
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 	// Can be removed once we move to new resource loader:
 	mw.includeAllModuleMessages();

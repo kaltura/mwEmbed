@@ -49,7 +49,7 @@
  *
  */
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	/** 
  	 * Constructs URI object. Throws error if arguments are illegal/impossible, or otherwise don't parse.
 	 * @constructor

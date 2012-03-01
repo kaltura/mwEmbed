@@ -4,7 +4,7 @@
 * Enables embedPlayer support for native html5 browser playback system
 */
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 mw.EmbedPlayerNative = {
 
@@ -608,7 +608,7 @@ mw.EmbedPlayerNative = {
 							$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
 								// remove end binding: 
 								$( vid ).unbind( switchBindPostfix );
-									doneCallback();
+								doneCallback();
 								return false;
 							});
 						}
@@ -943,7 +943,7 @@ mw.EmbedPlayerNative = {
 	/**
 	* Local method for end of media event
 	*/
-	_onended: function() {
+	_onended: function( event ) {
 		var _this = this;
 		if( this.getPlayerElement() ){
 			mw.log( 'EmbedPlayer:native: onended:' + this.playerElement.currentTime + ' real dur:' + this.getDuration() + ' ended ' + this._propagateEvents );

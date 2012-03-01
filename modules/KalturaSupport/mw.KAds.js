@@ -1,7 +1,7 @@
 /**
 * Supports the parsing of ads
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict"; 
 //Global mw.addKAd manager
 mw.addKalturaAds = function( embedPlayer, callback ) {
 	embedPlayer.kAds = new mw.KAds( embedPlayer, callback );
@@ -36,7 +36,6 @@ mw.KAds.prototype = {
 	
 	init: function( embedPlayer, callback ){
 		var _this = this; 
-
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 		

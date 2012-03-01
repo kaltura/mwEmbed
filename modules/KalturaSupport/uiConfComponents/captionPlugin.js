@@ -1,5 +1,5 @@
 // Wrap in mw
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 // Check for new Embed Player events: 
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){

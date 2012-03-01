@@ -1,4 +1,4 @@
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	// Add class file paths
 	mw.addResourcePaths( {
 		"mw.EmbedWizard" : "mw.EmbedWizard.js"

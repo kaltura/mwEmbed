@@ -4,7 +4,7 @@
  * @param {Object} source Source object to extend
  * @param {Object} textProvider [Optional] The text provider interface ( to load source from api )
  */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 	mw.TextSource = function( source ) {
 		return this.init( source );
@@ -326,7 +326,7 @@
 		 		var captionText = "";
 				var caption = false;
 				captionText = caplist[i];
-				s = captionText.split(/\n/);
+				var s = captionText.split(/\n/);
 				if (s.length < 2) {
 					// file format error or comment lines
 					continue;

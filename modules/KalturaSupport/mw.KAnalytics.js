@@ -1,7 +1,7 @@
 /**
  * Kaltura style analytics reporting class
  */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 // Avoid undefined symbol for javascript response "Kaltura" from the api
 window['Kaltura'] = true;

@@ -2,7 +2,7 @@
 * Simple embed object for unknown application/ogg plugin
 */
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 mw.EmbedPlayerGeneric = {
 	// List of supported features of the generic plugin

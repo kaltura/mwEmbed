@@ -2,7 +2,7 @@
 * Msg text is inherited from embedPlayer
 */
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 /**
 * mw.PlayerControlBuilder object
 *	@param the embedPlayer element we are targeting
@@ -568,7 +568,7 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Check every 2 seconds reset flag status if controls are overlay
 		if( _this.isOverlayControls() ){
-			function checkMovedMouse(){
+			var checkMovedMouse = function(){
 				if( _this.inFullScreen ){
 					if( _this.mouseMovedFlag ){
 						_this.mouseMovedFlag = false;
@@ -1402,7 +1402,7 @@ mw.PlayerControlBuilder.prototype = {
 	* Get the options menu ul with li menu items
 	*/
 	getOptionsMenu: function( ) {
-		$optionsMenu = $( '<ul />' );
+		var $optionsMenu = $( '<ul />' );
 		for( var menuItemKey in this.optionMenuItems ){
 
 			// Make sure its supported in the current controlBuilder config:
@@ -1577,7 +1577,7 @@ mw.PlayerControlBuilder.prototype = {
 			} )
 		);
         
-        $closeButton = [];
+        var $closeButton = [];
         
 		if ( !hideCloseButton ) {
             // Setup the close button
@@ -1618,7 +1618,7 @@ mw.PlayerControlBuilder.prototype = {
 			'padding' : '4px',
 			'z-index' : 3
 		};
-		$overlayMenu = $('<div />')
+		var $overlayMenu = $('<div />')
 			.addClass( 'overlay-win ui-state-default ui-widget-header ui-corner-all' )
 			.css( overlayMenuCss )
 			.append(
@@ -1633,7 +1633,7 @@ mw.PlayerControlBuilder.prototype = {
 		shadowCss['height' ] = 210;
 		shadowCss['width' ] = 260;
 		shadowCss[ 'z-index' ] = 2;
-		$overlayShadow = $( '<div />' )
+		var $overlayShadow = $( '<div />' )
 			.addClass('ui-widget-shadow ui-corner-all')
 			.css( shadowCss );
 
@@ -1858,7 +1858,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		var _this = this;
 
-		$playerSelect = $('<div />')
+		var $playerSelect = $('<div />')
 		.append(
 			$( '<h2 />' )
 			.text( gM( 'mwe-embedplayer-choose_player' ) )
@@ -1875,7 +1875,7 @@ mw.PlayerControlBuilder.prototype = {
 			);
 
 			if ( isPlayable ) {
-				$playerList = $('<ul />');
+				var $playerList = $('<ul />');
 				// output the player select code:
 
 				var supportingPlayers = mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( source.getMIMEType() );
@@ -1884,7 +1884,7 @@ mw.PlayerControlBuilder.prototype = {
 					// Add link to select the player if not already selected )
 					if( embedPlayer.selectedPlayer.id == supportingPlayers[i].id && isSelected ) {
 						// Active player ( no link )
-						$playerLine = $( '<span />' )
+						var $playerLine = $( '<span />' )
 						.append(
 							$('<a />')
 							.attr({
@@ -2041,11 +2041,11 @@ mw.PlayerControlBuilder.prototype = {
 			);
 		}
 	},
-	getSwichSourceMenu: function(){
+	getSwitchSourceMenu: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		// for each source with "native playback" 			
-		$sourceMenu = $('<ul />');
+		var $sourceMenu = $('<ul />');
 		
 		// Local function to closure the "source" variable scope: 
 		function addToSourceMenu( source ){			
@@ -2053,15 +2053,22 @@ mw.PlayerControlBuilder.prototype = {
 			var icon = ( source.getSrc() == embedPlayer.mediaElement.selectedSource.getSrc() ) ? 'bullet' : 'radio-on';
 			$sourceMenu.append(
 				$.getLineItem( source.getShortTitle() , icon, function(){
-					mw.log( 'PlayerControlBuilder::SwichSourceMenu: ' + source.getSrc() );
+					mw.log( 'PlayerControlBuilder::SwitchSourceMenu: ' + source.getSrc() );
+					// update menu selecting parent li siblings
+					$( this ).parent().siblings().find('span.ui-icon').removeClass( 'ui-icon-bullet').addClass( 'ui-icon-radio-on' );
+					$( this ).find('span.ui-icon').removeClass( 'ui-icon-radio-on').addClass( 'ui-icon-bullet' );
+					// update control bar text 
+					embedPlayer.$interface.find( '.source-switch' ).text( source.getShortTitle() );
+					
+					
 					// TODO this logic should be in mw.EmbedPlayer
 					embedPlayer.mediaElement.setSource( source );					
 					if( ! _this.embedPlayer.isStopped() ){
 						// Get the exact play time from the video element ( instead of parent embed Player ) 
 						var oldMediaTime = _this.embedPlayer.getPlayerElement().currentTime;
-						var oldPaused =  _this.embedPlayer.paused
+						var oldPaused =  _this.embedPlayer.paused;
 						// Do a live switch
-						embedPlayer.switchPlaySource(source, function( vid ){
+						embedPlayer.switchPlaySrc(source.getSrc(), function( vid ){
 							// issue a seek
 							embedPlayer.setCurrentTime( oldMediaTime );
 							// reflect pause state
@@ -2249,7 +2256,7 @@ mw.PlayerControlBuilder.prototype = {
 		'fullscreen': {
 			'w': 28,
 			'o': function( ctrlObj ) {
-				$btn = $( '<div />' )
+				var $btn = $( '<div />' )
 						.attr( 'title', gM( 'mwe-embedplayer-player_fullscreen' ) )
 						.addClass( "ui-state-default ui-corner-all ui-icon_link rButton fullscreen-btn" )
 						.append(
@@ -2346,7 +2353,7 @@ mw.PlayerControlBuilder.prototype = {
 			'w' : 28,
 			'o' : function( ctrlObj ) {
 				mw.log( 'PlayerControlBuilder::Set up volume control for: ' + ctrlObj.embedPlayer.id );
-				$volumeOut = $( '<span />' );
+				var $volumeOut = $( '<span />' );
 				if ( ctrlObj.volume_layout == 'horizontal' ) {
 					$volumeOut.append(
 						$( '<div />' )
@@ -2389,7 +2396,7 @@ mw.PlayerControlBuilder.prototype = {
 					.append(
 						ctrlObj.embedPlayer.mediaElement.selectedSource.getShortTitle()
 					).menu( {
-						'content' : ctrlObj.getSwichSourceMenu(),
+						'content' : ctrlObj.getSwitchSourceMenu(),
 						'zindex' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 2,
 						'width' : 115,
 						'positionOpts' : {

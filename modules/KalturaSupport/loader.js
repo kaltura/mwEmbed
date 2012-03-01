@@ -7,7 +7,7 @@
  *  this refactor can happen post rl_17 resource loader support
  */
 // Scope everything in "mw" ( keeps the global namespace clean ) 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 	mw.setDefaultConfig( {
 		'Kaltura.ServiceUrl' : 'http://www.kaltura.com',
@@ -189,7 +189,7 @@
 			if( mw.isHTML5FallForwardNative() || mw.getConfig( 'Kaltura.IframeRewrite' ) ){
 				
 				// setup load flags
-				var loadEmbedPlayerFlag = loadWidgetFlag = false;
+				var loadEmbedPlayerFlag = false, loadWidgetFlag = false;
 				
 				$.each( kalturaObjectPlayerList, function( inx, element ){
 					// don't rewrite special id

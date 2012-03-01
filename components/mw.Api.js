@@ -2,7 +2,7 @@
 * API Helper functions
 */
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	// xxx note we should namespace the following helper functions into Api class.
 	mw.Api = {};
 

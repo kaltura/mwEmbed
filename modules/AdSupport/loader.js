@@ -1,5 +1,5 @@
 // Scope everything in "mw" ( keeps the global namespace clean ) 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 	mw.addResourcePaths({
 		"mw.AdTimeline" : "mw.AdTimeline.js",

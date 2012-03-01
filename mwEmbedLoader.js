@@ -1138,10 +1138,7 @@ window.checkForKDPCallback = function(){
 	var pushAlreadyCalled = function( player_id ){
 		window.KalturaKDPCallbackAlreadyCalled.push( player_id );
 	}
-	if( window.jsCallbackReady && window.jsCallbackReady.toString() != pushAlreadyCalled.toString() 
-			&&
-		window.KalturaKDPCallbackReady
-	){
+	if( window.jsCallbackReady && window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
 		window.originalKDPCallbackReady = window.jsCallbackReady;
 	}
 	// Always update the jsCallbackReady to call pushAlreadyCalled

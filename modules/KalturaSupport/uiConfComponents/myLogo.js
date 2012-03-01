@@ -2,7 +2,7 @@
 * Adds my logo support
 * Read the mylogo plugin from the UiConf
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){

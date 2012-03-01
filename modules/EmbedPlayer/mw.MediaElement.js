@@ -9,7 +9,7 @@
  *      videoElement <video> element used for initialization.
  * @constructor
  */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 mw.MediaElement = function( element ) {
 	this.init( element );
@@ -163,7 +163,7 @@ mw.MediaElement.prototype = {
 		var _this = this;
 		// Select the default source
 		var playableSources = this.getPlayableSources();
-		var flash_flag = ogg_flag = false;
+		var flash_flag = false, ogg_flag = false;
 
 		// Check if there are any playableSources
 		if( playableSources.length == 0 ){
@@ -178,7 +178,7 @@ mw.MediaElement.prototype = {
 			var mimeType = source.mimeType;
 			var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( mimeType );
 			if ( mw.EmbedTypes.getMediaPlayers().preference[ mimeType ] == player.id ) {
-				 mw.log( 'MediaElement::autoSelectSource: Set via formatPreference ' + mimeType + ' matchs default player:' + player.id  );
+				 mw.log( 'MediaElement::autoSelectSource: Set via formatPreference ' + mimeType + ' match default player:' + player.id  );
 				 return setSelectedSource( source );
 			}
 		});*/

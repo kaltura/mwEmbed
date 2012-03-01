@@ -40,6 +40,9 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
  * The global mw object:
  */
 ( function( mw ) {
+	// Use strict ECMAScript 5
+	"use strict";
+	
 	// The version of mwEmbed
 	mw.version = MW_EMBED_VERSION;
 	
@@ -1330,6 +1333,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 *         undefined
 	 */
 	mw.isset = function( objectPath ) {
+		var ptest;
 		if ( !objectPath || typeof objectPath != 'string') {
 			return false;
 		}
@@ -1338,7 +1342,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 
 		for ( var p = 0; p < pathSet.length; p++ ) {
 			cur_path = ( cur_path == '' ) ? cur_path + pathSet[p] : cur_path + '.' + pathSet[p];
-			eval( 'var ptest = typeof ( ' + cur_path + ' ); ' );
+			var ptest = eval( 'typeof ( ' + cur_path + ' ); ' );
 			if ( ptest == 'undefined' ) {
 				return false;
 			}
@@ -1609,6 +1613,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		// scriptRequest
 		// ( presently script loader only handles "classes" not relative urls:
 		var scriptLoaderPath = mw.getResourceLoaderPath();
+		var url;
 
 		// Check if its a resource name, ( ie does not start with "/" and does
 		// not include ://
@@ -1837,7 +1842,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 			//mw.log("Warning: trying to get npt time on NaN:" + sec);			
 			return '0:00:00';
 		}
-		
+		var hoursStr;
 		var tm = mw.seconds2Measurements( sec );
 				
 		// Round the number of seconds to the required number of significant
@@ -1927,7 +1932,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		var min = 0;
 		var sec = 0;
 
-		times = npt_str.split( ':' );
+		var times = npt_str.split( ':' );
 		if ( times.length == 3 ) {
 			sec = times[2];
 			min = times[1];

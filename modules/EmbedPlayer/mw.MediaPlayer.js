@@ -9,7 +9,7 @@
  *      library external script containing the plugin interface code.
  * @constructor
  */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 mw.MediaPlayer = function( id, supportedTypes, library )
 {

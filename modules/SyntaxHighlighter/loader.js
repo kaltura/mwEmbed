@@ -2,7 +2,7 @@
 * mwEmbed loader for SyntaxHighligher
 */
 // Wrap in mw to not pollute global namespace
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 /**
  * Presently we only include the php, css, javascript and xml brushes 

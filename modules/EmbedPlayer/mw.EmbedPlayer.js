@@ -7,7 +7,7 @@
 * mw.PlayerControlBuilder Handles skinning of the player controls
 */
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 /**
  * Add the messages text:
@@ -324,7 +324,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Set to parent size ( resize events will cause player size updates)
 		if( this.height.indexOf('100%') != -1 || this.width.indexOf('100%') != -1 ){
-			$relativeParent = $(element).parents().filter(function() {
+			var $relativeParent = $(element).parents().filter(function() {
 				 // reduce to only relative position or "body" elements
 				 return $( this ).is('body') || $( this ).css('position') == 'relative';
 			}).slice(0,1); // grab only the "first"
@@ -552,7 +552,7 @@ mw.EmbedPlayer.prototype = {
 		if ( this.instanceOf ) {
 			// Update the prev instance var used for swiching interfaces to know the previous instance.  
 			$( this ).data( 'previousInstanceOf', this.instanceOf );
-			eval( 'var tmpObj = mw.EmbedPlayer' + this.instanceOf );
+			var tmpObj = window['mw.EmbedPlayer' + this.instanceOf ];
 			for ( var i in tmpObj ) { 
 				// Restore parent into local location
 				if ( typeof this[ 'parent_' + i ] != 'undefined' ) {
@@ -998,7 +998,7 @@ mw.EmbedPlayer.prototype = {
 	showErrorMsg: function( errorMsg ){
 		// remove a loading spinner: 
 		this.hidePlayerSpinner();
-		
+		var $target;
 		if( this.$interface ){
 			$target = this.$interface;
 		} else{
@@ -1511,7 +1511,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	getShareIframeObject: function(){
 		// TODO move to getShareIframeSrc
-		iframeUrl = this.getIframeSourceUrl();
+		var iframeUrl = this.getIframeSourceUrl();
 
 		// Set up embedFrame src path
 		var embedCode = '&lt;iframe src=&quot;' + mw.escapeQuotesHTML( iframeUrl ) + '&quot; ';
@@ -2247,7 +2247,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	updateBufferStatus: function() {
 		// Get the buffer target based for playlist vs clip
-		$buffer = this.$interface.find( '.mw_buffer' );
+		var $buffer = this.$interface.find( '.mw_buffer' );
 
 		// mw.log(' set bufferd %:' + this.bufferedPercent );
 		// Update the buffer progress bar (if available )
@@ -2287,7 +2287,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	updatePlayHead: function( perc ) {
 		//mw.log( 'EmbedPlayer: updatePlayHead: '+ perc);
-		$playHead = this.$interface.find( '.play_head' );
+		var $playHead = this.$interface.find( '.play_head' );
 		if ( !this.useNativePlayerControls() && $playHead.length != 0 ) {
 			var val = parseInt( perc * 1000 );
 			$playHead.slider( 'value', val );
@@ -2359,7 +2359,7 @@ mw.EmbedPlayer.prototype = {
 	getCompatibleSource: function( videoFiles ){
 		// Convert videoFiles json into HTML element:
 		// TODO mediaElement should probably accept JSON
-		$media = $('<video />');
+		var $media = $('<video />');
 		$.each(videoFiles, function( inx, source){
 			$media.append( $('<source />').attr({
 				'src' : source.src,

@@ -2,6 +2,11 @@
  * KWidget static object.
  * Will eventually host all the loader logic.
  */
+(function(){
+	
+// Use strict ECMAScript 5
+"use strict";
+
 window.kWidget = {
 	// Stores widgets that are ready:
 	readyWidgets: {},
@@ -211,5 +216,6 @@ window.kWidget = {
 		(navigator.userAgent.indexOf('iPad') != -1) );
 	 }
 };
-// Support upper case kWidget calls
+// Export upper case kWidget calls
 window.KWidget = window.kWidget;
+})();

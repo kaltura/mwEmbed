@@ -1,4 +1,4 @@
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 // XXX can be removed once we move to new resource loader: 
 window.adPlugin = true;
 
@@ -8,7 +8,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
 		// Check if the kaltura ad plugin is enabled:
 		if( embedPlayer.isPluginEnabled('vast') ){
-			loadingAdPlugin = true;
+			var loadingAdPlugin = true;
 			// Load the Kaltura Ads and AdSupport Module:
 			mw.load( [ "AdSupport", "mw.KAds" ], function(){
 				// Add the ads to the player:

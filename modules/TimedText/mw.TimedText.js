@@ -12,7 +12,7 @@
  */
 mw.includeAllModuleMessages();
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 	// Merge in timed text related attributes:
 	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [

@@ -1,5 +1,5 @@
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 mw.addResourcePaths({
 	"mw.FreeWheelController": "mw.FreeWheelController.js"
@@ -14,7 +14,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		if( embedPlayer.isPluginEnabled( 'freeWheel' ) ){
 			mw.load( ["FreeWheel"], function(){
 				// pass the freewheel plugin 
-				embedPlayer.freeWheel = new mw.FreeWheelController( embedPlayer, callback, pluginName );
+				embedPlayer.freeWheel = new mw.FreeWheelController( embedPlayer, callback );
 			});
 		} else {
 			// No FreeWheel plugin issue callback to continue player build out

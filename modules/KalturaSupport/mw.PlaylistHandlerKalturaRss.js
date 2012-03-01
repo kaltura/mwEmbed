@@ -1,4 +1,4 @@
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 mw.PlaylistHandlerKalturaRss = function( playlist, options ){
 	return this.init( playlist, options);

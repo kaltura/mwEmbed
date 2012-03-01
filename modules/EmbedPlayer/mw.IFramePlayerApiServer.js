@@ -14,7 +14,7 @@
 *  fallback iframe cross domain hack will target IE6/7
 */
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 
 // Bind apiServer to newEmbedPlayers:
@@ -79,10 +79,10 @@ mw.IFramePlayerApiServer.prototype = {
 				// Only wait 250ms for the handshake to come through otherwise continue: 
 				setTimeout(function(){
 					if( !proxyHandShakeComplete ){
-						mw.log("Error: could not establish iframe postMessage handshake")
+						mw.log( "Error: could not establish iframe postMessage handshake" );
 						callback();
 					}
-				}, 250);
+				}, 500); // 250ms sometimes runs into a race condition, give the script 500ms to handshake
 				// Trigger the proxyReady event ( will add all the prePlayerProxy listeners 
 				mw.log( "IframePlayerApiServer::trigger: proxyReady :: for playerID: " + embedPlayer.id );
 				$( embedPlayer ).trigger( 'proxyReady' );

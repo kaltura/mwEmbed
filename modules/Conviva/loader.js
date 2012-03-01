@@ -2,7 +2,7 @@
 * Conviva loader
 */
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 /*
 mw.addResourcePaths({

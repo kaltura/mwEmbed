@@ -3,7 +3,7 @@
 * Read the fader plugin from the UIConf
 * <Plugin id="fader" width="0%" height="0%" includeInLayout="false" target="{controllersVbox}" hoverTarget="{PlayerHolder}" duration="0.5"/>
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){

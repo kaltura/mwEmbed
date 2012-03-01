@@ -1,7 +1,7 @@
 /**
 * Playlist Embed. Enables the embedding of a playlist using the mwEmbed player
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 // Get all our message text
 mw.includeAllModuleMessages();
@@ -77,7 +77,7 @@ mw.Playlist.prototype = {
 			options.type:
 			mw.getConfig('Playlist.DefaultType' );
 
-		var namedOptions = ['layout', 'playerAspect', 'itemThumbWidth', 'titleHeight', 'titleLength', 'descriptionLength'];
+		var namedOptions = [ 'layout', 'playerAspect', 'itemThumbWidth', 'titleHeight', 'titleLength', 'descriptionLength' ];
 		$.each( namedOptions, function(inx, optionName ){
 			var confName = 'Playlist.' + optionName.charAt(0).toUpperCase() + optionName.substr(1);
 			_this[ optionName ] = ( typeof options[ optionName ] != 'undefined' )?
@@ -159,7 +159,9 @@ mw.Playlist.prototype = {
 			.css({
 				'float' : 'left'
 			})
-			.append( $('<div />').addClass( 'media-rss-video-player' ).css( 'position', 'relative' ) );
+			.append( 
+				$('<div />').addClass( 'media-rss-video-player' ).css( 'position', 'relative' ) 
+			);
 	},
 	/**
 	* Draw the media rss playlist ui
@@ -602,14 +604,14 @@ mw.Playlist.prototype = {
 		// add previous / next buttons if not present: 
 		// TODO (HACK) we should do real controlBar support for custom buttons
 		if( embedPlayer.controlBuilder ){
-			$controlBar = embedPlayer.$interface.find('.control-bar');
+			var $controlBar = embedPlayer.$interface.find('.control-bar');
 			
 			if( $controlBar.find( '.ui-icon-seek-next' ).length != 0 ){
 				// already have seek buttons
 				return false;
 			}
 			
-			$plButton = $('<div />')
+			var $plButton = $('<div />')
 				.addClass("ui-state-default ui-corner-all ui-icon_link lButton")
 				.buttonHover()
 				.append(
@@ -617,14 +619,14 @@ mw.Playlist.prototype = {
 					.addClass( "ui-icon")
 				);
 				
-			$playButton = $controlBar.find( '.play-btn');
+			var $playButton = $controlBar.find( '.play-btn');
 			
 			if( _this.sourceHandler.isNextButtonDisplayed() ){	
 			 	// make space ( reduce playhead length ) 
 				var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 28;
 				$controlBar.find('.play_head').css('left', pleft);
 					
-				$nextButton = $plButton.clone().attr({
+				var $nextButton = $plButton.clone().attr({
 							'title' : 'Next clip'
 						})
 						.click(function(){
@@ -633,7 +635,7 @@ mw.Playlist.prototype = {
 								_this.playClip( _this.clipIndex );
 								return ;
 							}
-							mw.log("Cant next: cur:" + _this.clipIndex );
+							mw.log( "Error: mw.playlist can't next: current: " + _this.clipIndex );
 						})
 						.find('span').addClass('ui-icon-seek-next')
 						.parent()
@@ -647,7 +649,7 @@ mw.Playlist.prototype = {
 				var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 28;
 				$controlBar.find('.play_head').css('left', pleft);
 				
-				$prevButton = $plButton.clone().attr({
+				var $prevButton = $plButton.clone().attr({
 							'title' : 'Previous clip'
 						})
 						.click(function(){					
@@ -716,7 +718,7 @@ mw.Playlist.prototype = {
 	*/
 	addMediaList: function() {
 		var _this = this;
-		$targetItemList = $( this.target + ' .media-rss-video-list');
+		var $targetItemList = $( this.target + ' .media-rss-video-list');
 		// update the playlistItme total available width
 		this.playlistItemWidth = $targetItemList.width();
 		$.each( this.sourceHandler.getClipList(), function( inx, clip ){
@@ -725,7 +727,7 @@ mw.Playlist.prototype = {
 				return false;
 			}
 			// Output each item with the current selected index:
-			$itemBlock = $('<div />')
+			var $itemBlock = $('<div />')
 				.addClass( 'ui-widget-content ui-corner-all playlistItem ui-helper-clearfix' );
 
 			if( _this.clipIndex == inx ){

@@ -4,7 +4,7 @@
 * @The module fetches subtitles from Subply by kaltura's entryId
 * @author Elizabeth Marr
 */
-( function( mw, $ ) {	
+( function( mw, $ ) { "use strict";	
 	// List named resource paths
 	mw.addResourcePaths({
 		"plymedia.style" :  "styles/plymediaStyles.css",

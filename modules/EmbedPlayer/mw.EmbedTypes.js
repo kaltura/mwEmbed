@@ -3,7 +3,7 @@
  * closely mirrors OggHandler so that its easier to share efforts in this area:
  * http://svn.wikimedia.org/viewvc/mediawiki/trunk/extensions/OggHandler/OggPlayer.js
  */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 
 /**
  * Setup local players and supported mime types In an ideal world we would query the plugin

@@ -1,7 +1,7 @@
 /**
 * Adds cue points support
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 mw.KCuePoints = function( embedPlayer ){
 	return this.init( embedPlayer );

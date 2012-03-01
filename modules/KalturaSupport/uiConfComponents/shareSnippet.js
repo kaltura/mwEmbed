@@ -26,7 +26,7 @@ color5="16777215" font="Arial" />
 *
 */
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	// Bind to new player event
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){

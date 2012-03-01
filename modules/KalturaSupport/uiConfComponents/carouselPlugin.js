@@ -4,7 +4,7 @@
 	width="100%" height="100" hoverItemName="" styleName="List_background_default" columnWidth="100" 
 	rowHeight="100" columnCount="4" direction="horizontal" dataProvider="{playlistAPI.dataProvider}" itemRenderer="playlistItemRenderer" />
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	// Bind to new player event
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){

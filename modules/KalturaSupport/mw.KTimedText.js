@@ -1,7 +1,7 @@
 /**
 * Adds captions support
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 	mw.KTimedText = function( embedPlayer, captionPluginName, callback ){
 		return this.init( embedPlayer, captionPluginName, callback );

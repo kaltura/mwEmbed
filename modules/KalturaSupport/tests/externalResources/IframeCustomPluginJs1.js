@@ -1,4 +1,4 @@
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 	
 	mw.log("ExternalResources:: IframeCustomPluginJs1:: newEmbedPlayerEvent");

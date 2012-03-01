@@ -1,7 +1,7 @@
 /**
 * Adds Power Point Widget Support
 */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 // Temporary location for slide images: 
 mw.setConfig('Kaltura.PPTWidgetSlidePath', 'http://projects.kaltura.com/thomson-reuters/public/slides/');
 	

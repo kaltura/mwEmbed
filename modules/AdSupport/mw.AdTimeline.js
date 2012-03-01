@@ -82,7 +82,7 @@
  * 		]
  * }
  */
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 mw.addAdTimeline = function( embedPlayer ){
 	embedPlayer.adTimeline = new mw.AdTimeline( embedPlayer );

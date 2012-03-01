@@ -19,7 +19,7 @@
 * and enabled in mwEnabledModuleList below.
 */
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 
 var mwCoreComponentList = [

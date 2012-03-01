@@ -7,7 +7,7 @@
  *
  */
 
-( function( mw, $ ) {
+( function( mw, $ ) { "use strict";
 	
 mw.processEmbedPlayers = function( playerSelect, callback ) {
 	mw.log( 'processEmbedPlayers:: playerSelector: '+ playerSelect);
@@ -185,7 +185,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 		}
 
 		// Firefox default width height is ~sometimes~ 150 / 300
-		if( this.height == 150 && this.width == 300 ){
+		if( playerElement.height == 150 && playerElement.width == 300 ){
 			waitForMeta = true;
 		}
 
