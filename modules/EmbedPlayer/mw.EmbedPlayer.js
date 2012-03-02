@@ -1702,7 +1702,7 @@ mw.EmbedPlayer.prototype = {
 			// Check if we should Trigger the play event
 			mw.log("EmbedPlayer:: trigger play event::" + !this.paused + ' events:' + this._propagateEvents );
 			// We need first play event for analytics purpose
-			if( this.firstPlay ) {
+			if( this.firstPlay && this._propagateEvents) {
 				this.firstPlay = false;
 				$this.trigger( 'firstPlay' );
 			}
@@ -2091,11 +2091,11 @@ mw.EmbedPlayer.prototype = {
 			_this.updateBufferStatus();
 			
 			// mw.log('trigger:monitor:: ' + this.currentTime );
-			$( this ).trigger( 'monitorEvent' );
+			$( _this ).trigger( 'monitorEvent' );
 			
 			// Trigger the "progress" event per HTML5 api support
-			if( this.progressEventData ) {
-				$( this ).trigger( 'progress', this.progressEventData );
+			if( _this.progressEventData ) {
+				$( _this ).trigger( 'progress', _this.progressEventData );
 			}
 		}
 	},
