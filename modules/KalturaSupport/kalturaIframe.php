@@ -226,17 +226,8 @@ class kalturaIframe {
 		if( $this->playerError == KalturaResultObject::NO_ENTRY_ID_FOUND ){
 			$o.= ' data-blockPlayerDisplay="true" ';
 		}
-		
 		// Close the open video tag attribute set
 		$o.='>';
-
-		// To be on the safe side include the flash player and
-		// direct file link as a child of the video tag
-		// ( if javascript is "off" and they don't have video tag support for example )
-		$o.= "\n\t\t\t" . $this->getFlashEmbedHTML(
-			$this->getFileLinkHTML(), 
-			'kaltura_player_iframe_no_rewrite'
-		);
 
 		$o.= "\n" . "</video>\n";
 		
