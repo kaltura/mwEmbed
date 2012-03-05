@@ -7,7 +7,7 @@
 // Use strict ECMAScript 5
 "use strict";
 
-window.kWidget = {
+var kWidget = {
 	// Stores widgets that are ready:
 	readyWidgets: {},
 
@@ -479,6 +479,8 @@ window.kWidget = {
 		return false;
 	 }
 };
-// Export upper case kWidget calls
-window.KWidget = window.kWidget;
+// Export to kWidget and KWidget
+window.KWidget = kWidget;
+window.kWidget = kWidget;
+
 })();
