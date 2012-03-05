@@ -52,12 +52,11 @@ window.kWidget = {
 			return ;
 		}
 
-		var uiconf_id = settings.uiconf_id;
 		settings.isHTML5 = kWidget.isHTML5FallForward();
 		// Check if we even need to rewrite the page at all
 		// Evaluate per user agent rules:
-		if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
-			var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
+		if( settings.uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ settings.uiconf_id ]){
+			var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ settings.uiconf_id ] );
 			// Default play mode, if here and really using flash remap:
 			switch( playerAction.mode ){
 				case 'flash':
@@ -94,7 +93,12 @@ window.kWidget = {
 			kWidget.outputHTML5Iframe( targetId, settings );
 			return ;
 		} else {
-			restoreKalturaKDPCallback();
+			if( settings.uiconf_id ) {
+				// we use setTimeout to handle race condition when restore get called before dom ready
+				setTimeout( function() {
+					restoreKalturaKDPCallback();
+				}, 0);
+			}
 			kWidget.outputFlashObject( targetId, settings );
 			return ;
 		}
@@ -133,36 +137,41 @@ window.kWidget = {
 			// we may have to borrow more from:
 			// http://code.google.com/p/swfobject/source/browse/trunk/swfobject/src/swfobject.js#407
 			// There seems to be issue with passing all the flashvars in playlist context.
-			
+
 			var defaultParamSet = {
 				'allowFullScreen': 'true',
 				'allowNetworking': 'all',
 				'allowScriptAccess': 'always',
 				'bgcolor': '#000000'
+			};
+	
+			var output = '<object width="' + width +
+					'" height="' + height +
+					'" style="width:' + width + 'px;height:' + height + 'px;' +
+					'" id="' + targetId +
+					'" name="' + targetId + '"';
+
+			output += ' data="' + swfUrl + '" type="application/x-shockwave-flash"';
+			if( window.ActiveXObject ){
+				output += ' classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"';
 			}
-			var o = '<object id="' + pId + '" ' +
-				'name="' + pId + '" ';
-			// output classid if in IE
-			if(  window.ActiveXObject ){
-				o += 'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
+			output += '>';
+
+			output += '<param name="movie" value="' + swfUrl + '" />';
+			output += '<param name="flashvars" value="' + flashvarValue + '" />';
+
+			for (var key in defaultParamSet) {
+				if (defaultParamSet[key]) {
+					output += '<param name="'+ key +'" value="'+ defaultParamSet[key] +'" />';
+				}
 			}
-			o += 'width="' + width +'" ' +
-				'height="' + height + '" ' +
-				'style="width:' + width + 'px;height:' + height + 'px;" ' +
-				'resource="' + swfUrl + '" ' +
-				'data="' + swfUrl + '" ';
-			var p = '<param name="flashVars" value="' + flashvarValue + '" /> ' +
-					'<param name="movie" value="' + swfUrl + '" />';
-			
-			for( var key in defaultParamSet ){
-				var value = ( typeof settings[key] != 'undefined' ) ? settings[key]: defaultParamSet[ key ];
-				o+= key + '="' + value + '" ';
-				p+= '<param name="' + key + '" value="' + value + '" />';
-			}
-			var objectTag = o + ' > ' + p + '</object>'; 
-			// update the span target: 
+
+			output += "</object>";
+
+			// update the span target:
 			elm.parentNode.replaceChild( spanTarget, elm );
-			spanTarget.innerHTML = 	objectTag;	
+			spanTarget.innerHTML = output;
+
 		}
 	},
 
