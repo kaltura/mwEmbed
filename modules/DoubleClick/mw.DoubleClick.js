@@ -114,7 +114,7 @@ mw.DoubleClick.prototype = {
 	},
 	
 	 // This function requests the ads.
-	requestAds: function( adTagUrl, callback ) {
+	requestAds: function( adTagUrl ) {
 		var _this = this;
 		// Create ad request object.
 		var adRequest = {};
@@ -196,14 +196,17 @@ mw.DoubleClick.prototype = {
 		// Add ad listeners: 
 		adsListener( 'CLICK' );
 		adsListener( 'CONTENT_PAUSE_REQUESTED' );
-		adsListener( 'CONTENT_RESUME_REQUESTED');
 		adsListener( 'LOADED', function(){
 			_this.adsManager.resize( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL );
+			// show the loading spinner until we start ad playback
+			_this.embedPlayer.addPlayerSpinner();
 		} );
 		adsListener( 'STARTED', function(){
+			// hide spinner: 
+			_this.embedPlayer.hidePlayerSpinner();
+			// set ad playing flag: 
 			_this.adPlaying = true;
-			// hide content: 
-			$( _this.getContent() ).hide();
+			_this.hideContent();
 			// Monitor ad progress ( for sequence proxy )
 			_this.monitorAdProgress();
 		} );
@@ -212,12 +215,27 @@ mw.DoubleClick.prototype = {
 		adsListener( 'MIDPOINT' );
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE' );
-		adsListener( 'ALL_ADS_COMPLETED', function(){
-			// hide the ad container: 
-			$( _this.getAdContainer() ).hide();
-			// show the content:
-			$( _this.getContent() ).show();
+		// Resume content:
+		adsListener( 'CONTENT_RESUME_REQUESTED', function(){
+			_this.restorePlayer();
 		});
+		adsListener( 'ALL_ADS_COMPLETED', function(){
+			_this.restorePlayer();
+		});
+	},
+	hideContent: function(){
+		// show the ad container: 
+		$( this.getAdContainer() ).show();
+		// hide content ( if not iOS  ... doubleClick IMA does a source switch)
+		if( !mw.isIOS() ){
+			$( this.getContent() ).hide();
+		}
+	},
+	showContent: function(){
+		// show content
+		$( this.getContent() ).show();
+		// hide the ad container: 
+		$( this.getAdContainer() ).hide();
 	},
 	addEmbedPlayerListeners: function(){
 		var _this = this;
@@ -248,7 +266,24 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		// check if we are still playing an ad:
 		if( !_this.adPlaying ){
+			// update 'timeRemaining' and duration for no-ad ) 
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  null );
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration', null );
 			return ;
+		}
+		// Update sequence property per active ad: 
+		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
+		var $adVid = $( _this.getAdContainer() ).find( 'video' );
+		if( $adVid.length ){
+			var vid = $adVid.get(0);
+			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
+			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
+			
+			// TODO player interface updates should be configurable see Mantis 14076 and 14019
+			_this.embedPlayer.controlBuilder.setStatus( 
+					mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration ) 
+			);
+			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}
 		// Keep monitoring ad progress at MonitorRate as long as ad is playing: 
 		setTimeout( function(){
@@ -265,13 +300,18 @@ mw.DoubleClick.prototype = {
 	},
 	restorePlayer: function(){
 		this.adPlaying = false;
+		// show the content:
+		this.showContent();
 		// remove any in Ad Bindings
-		this.unbindHelper( this.inAdBindPostFix );
+		this.embedPlayer.unbindHelper( this.inAdBindPostFix );
 		if( this.restorePlayerCallback  ){
 			this.restorePlayerCallback();
+		} else {
+			// managed midroll ( just play content directly )
+			this.embedPlayer.play();
 		}
 	},
-/*
+	/*
 	// Start button click handler.
 	function start() {
 		demoStartTime = Date.now();
