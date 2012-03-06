@@ -26,6 +26,9 @@ mw.DoubleClick.prototype = {
 	contentPlaying: false,
 	adDuration: null,
 	demoStartTime: null,
+	
+	// The current ad Slot type by default "managed" i.e doubleClick manages the player sequence. 
+	currentAdSlotType : null,
 
 	init: function( embedPlayer, callback ){
 		this.embedPlayer = embedPlayer;
@@ -54,9 +57,11 @@ mw.DoubleClick.prototype = {
 	},
 	addManagedBinding: function(){
 		var _this = this;
+		mw.log( "DoubleClick::addManagedBinding" );
 		_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 			// Add the slot to the given sequence proxy target target
 			sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function( callback ){
+				
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
@@ -70,7 +75,57 @@ mw.DoubleClick.prototype = {
 		return this.embedPlayer.getPlayerElement();
 	},
 	addKalturaCuePointBindings: function(){
-		// cue points here
+		var _this = this;
+		// Add a binding for cuepoints:
+		_this.embedPlayer.bindHelper( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event,  cuePointWrapper ){
+			var cuePoint = cuePointWrapper.cuePoint;
+			// Check if trackCuePoints has been disabled 
+			if( _this.getConfig( 'trackCuePoints') === false){
+				return ;
+			}
+			
+			// Check that the cue point is protocolType = 0 and cuePointType == adCuePoint.Ad
+			if( cuePoint.protocolType !== 0 || cuePoint.cuePointType != 'adCuePoint.Ad' ){
+				return ;
+			}
+			// Check if we have a provider filter:
+			var providerFilter = _this.getConfig('provider');
+			if( providerFilter && cuePoint.tags.toLowerCase().indexOf( providerFilter.toLowerCase() ) === -1 ){
+				// skip the cuepoint that did not match the provider filter
+				mw.log( "mw.DoubleClick:: skip cuePoint with tag: " + cuePoint.tags + ' != ' + providerFilter );
+				return ;
+			}
+			
+			// Get the ad type for each cuepoint
+			var adType = _this.embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
+			
+			mw.log("DoubleClick:: AdOpportunity:: " + cuePoint.startTime + ' ad type: ' + adType);
+			if( adType == 'overlay' ){
+				_this.loadAndDisplayOverlay( cuePoint );
+				return true; // continue to next cue point
+			}
+			
+			// Check if video type: 
+			if( adType == 'midroll'  ||  adType == 'preroll' || adType == 'postroll'  ){
+				_this.currentAdSlotType = adType;
+				// All cuepoints act as "midrolls" 
+				_this.requestAds( cuePoint.sourceUrl );
+			}
+		});
+	},
+	/**
+	 * Load and display an overlay 
+	 * @param cuePoint
+	 * @return
+	 */
+	loadAndDisplayOverlay: function( cuePoint ){
+		var _this = this;
+		// Don't display overlays if in an ad: 
+		if( this.embedPlayer.evaluate('{sequenceProxy.isInSequence}') ){
+			return ;
+		}
+		// Request the ad ( will trigger the currentAdCallback and onResumeRequestedCallback when done )
+		_this.requestAds( cuePoint.sourceUrl, 'overlay' );
 	},
 	getAdContainer: function(){
 		var adContainerId ='adContainer' + this.embedPlayer.id;
@@ -114,11 +169,14 @@ mw.DoubleClick.prototype = {
 	},
 	
 	 // This function requests the ads.
-	requestAds: function( adTagUrl ) {
+	requestAds: function( adTagUrl, adType ) {
 		var _this = this;
 		// Create ad request object.
 		var adRequest = {};
 		adRequest.adTagUrl = adTagUrl;
+		if( adType ){
+			adRequest['adType'] = adType;
+		}
 
 		// Create ads loader.
 		_this.adsLoader = new google.ima.AdsLoader();
@@ -195,7 +253,13 @@ mw.DoubleClick.prototype = {
 		
 		// Add ad listeners: 
 		adsListener( 'CLICK' );
-		adsListener( 'CONTENT_PAUSE_REQUESTED' );
+		adsListener( 'CONTENT_PAUSE_REQUESTED', function(){
+			// if we are not already in a sequence setup the player for ad playback: 
+			if( ! _this.embedPlayer.sequenceProxy.isInSequence ){
+				_this.embedPlayer.pauseLoading();
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+			}
+		} );
 		adsListener( 'LOADED', function(){
 			_this.adsManager.resize( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL );
 			// show the loading spinner until we start ad playback
@@ -204,9 +268,13 @@ mw.DoubleClick.prototype = {
 		adsListener( 'STARTED', function(){
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
+			
 			// set ad playing flag: 
 			_this.adPlaying = true;
+			_this.embedPlayer.sequenceProxy.isInSequence = true;
+			
 			_this.hideContent();
+			
 			// Monitor ad progress ( for sequence proxy )
 			_this.monitorAdProgress();
 		} );
@@ -300,6 +368,7 @@ mw.DoubleClick.prototype = {
 	},
 	restorePlayer: function(){
 		this.adPlaying = false;
+		this.embedPlayer.sequenceProxy.isInSequence = true;
 		// show the content:
 		this.showContent();
 		// remove any in Ad Bindings

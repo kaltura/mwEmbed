@@ -327,7 +327,7 @@ mw.AdTimeline.prototype = {
 		runSequeceProxyInx( seqInx );
 	},
 	updateUiForAdPlayback: function( slotType ){
-		mw.log( "AdTimeline:: updateUiForAdPlayback" );
+		mw.log( "AdTimeline:: updateUiForAdPlayback: slotType:" + slotType );
 		var embedPlayer = this.embedPlayer;
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		embedPlayer.stopEventPropagation();
