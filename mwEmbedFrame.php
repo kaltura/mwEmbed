@@ -22,9 +22,9 @@ $mwEmbedRoot = dirname( __FILE__ );
 // @@TODO Need a php based configuration system for modules so they 
 // can extend / override entry points
 
-if( isset( $myMwEmbedFrame->kwidgetid ) || isset($_REQUEST['wid']) ){
+if( isset( $myMwEmbedFrame->kwidgetid ) ){	
 	require(  dirname( __FILE__ ) . '/modules/KalturaSupport/kalturaIframe.php');
-	exit();
+	exit(1);
 }
 
 // Do mwEmbedFrame video output:
@@ -43,8 +43,7 @@ class mwEmbedFrame {
 	var $playerAttributes = array(
 		'apiTitleKey',
 		'apiProvider',
-		'autoplay',
-		'durationHint',
+		'data-durationhint',
 		'poster',
 		'kentryid',
 		'kwidgetid',
@@ -68,6 +67,10 @@ class mwEmbedFrame {
 
 	// Parse the embedFrame request and sanitize input
 	private function parseRequest(){
+		if( isset($_REQUEST['iaid'])  &&  include('/petabox/setup.inc') ){
+		  Video::mwEmbedSetup(); // archive.org media
+		}
+          
 		// Check for / attribute type request and update "REQUEST" global 
 		// ( uses kaltura standard entry_id/{entryId} request )
 		// normalize to the REQUEST object
@@ -144,7 +147,22 @@ class mwEmbedFrame {
 	
 	function outputIFrame( ){
 		// Setup the embed string based on attribute set:
-		$embedResourceList = 'window.jQuery,mwEmbed';
+		$embedResourceList = 'window.jQuery,mwEmbed,mw.style.mwCommon,$j.fn.menu,mw.style.jquerymenu,mw.EmbedPlayer,mw.EmbedPlayerNative,mw.EmbedPlayerJava,mw.PlayerControlBuilder,$j.fn.hoverIntent,mw.style.EmbedPlayer,$j.cookie,$j.ui,mw.style.ui_'.$this->theme.',$j.widget,$j.ui.mouse,mw.PlayerSkinKskin,mw.style.PlayerSkinKskin,mw.TimedText,mw.style.TimedText,$j.ui.slider';
+		
+		if( isset( $this->kentryid ) ){
+			 $embedResourceList.= ',' . implode(',', array(
+			 		'KalturaClientBase',
+					'KalturaClient',
+					'KalturaAccessControlService',
+					'KalturaAccessControlOrderBy',
+					'KalturaAccessControl',
+					'MD5',
+					'mw.KWidgetSupport',
+					'mw.KAnalytics', 
+					'mw.KDPMapping',
+					'mw.KAds'
+			) );
+		}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -178,14 +196,14 @@ class mwEmbedFrame {
 
 			// Enable the iframe player server:
 			mw.setConfig( 'EmbedPlayer.EnableIframeApi', true );
-
+			
 			mw.ready(function(){
 				// Bind window resize to reize the player: 
-				$j(window).resize(function(){
-					$j( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
-						[0].resizePlayer({
-							'width' : $j(window).width(),
-							'height' : $j(window).height()
+				$(window).resize(function(){
+					$( '#<?php echo htmlspecialchars( $this->playerIframeId )?>' )
+						.get(0).resizePlayer({
+							'width' : $(window).width(),
+							'height' : $(window).height()
 						}); 
 				});
 			});

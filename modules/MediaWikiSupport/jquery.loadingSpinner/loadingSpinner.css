@@ -1,0 +1,9 @@
+.loadingSpinner {
+	background-image: url('loadingDots.png');
+	width: 32px;
+	height: 32px;
+}
+.absoluteOverlaySpinner {
+	position : absolute;
+	z-index: 3;
+}

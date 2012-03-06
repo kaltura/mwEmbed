@@ -1,0 +1,3 @@
+
+These resource loader files should support being copied directly from MediaWiki trunk without modification, 
+this enables us to stay in-sync with resource loader updates. 

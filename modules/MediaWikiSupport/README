@@ -1,5 +1,3 @@
-This folder contains all the mediaWiki specific helpers. Especially related to the embedPlayer
-This allows you to use mediaWiki title keys to pull in video assets. 
+This is the mwEmbed Support module it supplies common functionality that other mwEmbed modules depend on.
 
-This is a transitional process. It will be a long time before "all" mediaWiki specific code makes
-it into this folder. 
+Modules can express the dependency as 'mwEmbedSupport'
