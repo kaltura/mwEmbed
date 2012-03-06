@@ -4,6 +4,14 @@
  * ( it stubs mediaWiki function and class calls where needed )
  */
 
+/** 
+ * Defines: 
+ */
+/**
+ * Protocol constants for wfExpandUrl()
+ */
+define( 'PROTO_RELATIVE', '//' );
+
 /**
  * global functions
  */
