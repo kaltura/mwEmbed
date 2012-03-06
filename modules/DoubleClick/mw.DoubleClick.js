@@ -375,7 +375,10 @@ mw.DoubleClick.prototype = {
 		this.embedPlayer.unbindHelper( this.inAdBindPostFix );
 		if( this.restorePlayerCallback  ){
 			this.restorePlayerCallback();
+			this.restorePlayerCallback = null;
 		} else {
+			// stop ad playback: 
+			this.embedPlayer.adTimeline.restorePlayer();
 			// managed midroll ( just play content directly )
 			this.embedPlayer.play();
 		}
