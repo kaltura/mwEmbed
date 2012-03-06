@@ -85,7 +85,7 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 
 	// Create cache directory if not exists
 	if( ! file_exists( $wgScriptCacheDirectory ) ) {
-		$created = mkdir( $wgScriptCacheDirectory );
+		$created = @mkdir( $wgScriptCacheDirectory );
 		if( ! $created ) {
 			echo "if( console ){ console.log('Error in creating cache directory: ". $wgScriptCacheDirectory . "'); }";
 		}
@@ -101,7 +101,9 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 		echo $loaderComment . file_get_contents( $loaderCacheFile );
 	} else {
 		$loaderMin = JSMin::minify( $loaderJs );
-		file_put_contents( $loaderCacheFile, $loaderMin );
+		if( !@file_put_contents( $loaderCacheFile, $loaderMin ) ){
+			echo "if( console ){ console.log('Error in creating loader cache: ". $wgScriptCacheDirectory . "'); }";
+		}
 		echo $loaderComment . $loaderMin;
 	}
 }
