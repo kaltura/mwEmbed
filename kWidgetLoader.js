@@ -120,11 +120,11 @@ var kWidget = {
 				swfUrl+= '/cache_st/' + settings.cache_st;
 			}
 			// Get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
-			var width = ( settings.width ) ? settings.width :
+			var width = ( settings.width ) ? settings.width.replace(/px/, '' ) :
 							( elm.width ) ? elm.width :
 								( elm.style.width ) ? parseInt( elm.style.width ) : 400;
 
-			var height = ( settings.height ) ? settings.height :
+			var height = ( settings.height ) ? settings.height.replace(/px/, '' ) :
 							( elm.height ) ? elm.height :
 								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 
@@ -146,8 +146,8 @@ var kWidget = {
 			if(  window.ActiveXObject ){
 				o += 'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
 			}
-			o += 'width="' + width +'" ' +
-				'height="' + height + '" ' +
+			o += 'width="' + width.replace(/px/, '' ) +'" ' +
+				'height="' + height.replace(/px/, '' ) + '" ' +
 				'style="width:' + width + 'px;height:' + height + 'px;" ' +
 				'resource="' + swfUrl + '" ' +
 				'data="' + swfUrl + '" ';
@@ -195,10 +195,10 @@ var kWidget = {
 				};
 
 				var additionalTargetCss = kGetAdditionalTargetCss();
-				$j.extend(targetCss, additionalTargetCss);
-				$j('#' + targetId ).css(targetCss);
+				$.extend(targetCss, additionalTargetCss);
+				$('#' + targetId ).css(targetCss);
 				// Do kaltura iframe player
-				$j('#' + targetId ).kalturaIframePlayer( settings );
+				$('#' + targetId ).kalturaIframePlayer( settings );
 			});
 		}
 	},
@@ -233,8 +233,8 @@ var kWidget = {
 		var iframe = document.createElement('iframe');
 		iframe.src = iframeSrc;
 		iframe.id = replaceTargetId;
-		iframe.width = (kEmbedSettings.width) ? kEmbedSettings.width : '100%';
-		iframe.height = (kEmbedSettings.height) ? kEmbedSettings.height : '100%';
+		iframe.width = (kEmbedSettings.width) ? kEmbedSettings.width.replace(/px/, '' ) : '100%';
+		iframe.height = (kEmbedSettings.height) ? kEmbedSettings.height.replace(/px/, '' ) : '100%';
 		iframe.style.border = '0px';
 		iframe.style.overflow = 'hidden';
 
