@@ -261,7 +261,8 @@ mw.DoubleClick.prototype = {
 			}
 		} );
 		adsListener( 'LOADED', function(){
-			_this.adsManager.resize( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL );
+			var size = _this.getPlayerSize();
+			_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );			
 			// show the loading spinner until we start ad playback
 			_this.embedPlayer.addPlayerSpinner();
 		} );
@@ -290,6 +291,12 @@ mw.DoubleClick.prototype = {
 		adsListener( 'ALL_ADS_COMPLETED', function(){
 			_this.restorePlayer();
 		});
+	},
+	getPlayerSize: function(){
+		return {
+			'width': this.embedPlayer.$interface.width(),
+			'height': this.embedPlayer.getPlayerHeight() 
+		}
 	},
 	hideContent: function(){
 		// show the ad container: 

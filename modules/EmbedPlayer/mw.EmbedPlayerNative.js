@@ -706,7 +706,7 @@ mw.EmbedPlayerNative = {
 	* Play back the video stream
 	* calls parent_play to update the interface
 	*/
-	play: function( ) {
+	play: function() {
 		var _this = this;
 		// Always at least "load" content on play request: 
 		if( this.getPlayerElement() ){
