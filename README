@@ -11,7 +11,13 @@ The library supports a seamless fallback with Flash based playback using [Kaltur
 While support for HTML5 video is growing, there is large percentage of the web browser market that is presently best served by the Adobe Flash plugin and an associated player. A base component of the Kaltura HTML5 javascript library bridges this gap, by cascading to an underlining Flash player in browsers that do not support the native HTML5 video player. In addition, Kaltura's player maintains a unified look & feel across formats and browsers.
 
 
+## Release Notes
 
+Release Notes are stored on the [html5video.org wiki](http://html5video.org/wiki/Kaltura_HTML5_Release_Notes)
+
+## Documentation
+
+Library documentation for installation, configuration, and usage is maintained on the [html5video.org wiki](http://html5video.org/wiki/Category:Kaltura_HTML5_Video_Library_Documentation)
 
 ## Library Features
 
@@ -214,17 +220,9 @@ This project started as a part of the MediaWiki HTML5 media functionality projec
 
 *mwEmbed* provides the basis for other MediaWiki media functionality. For more info see <a href="http://www.mediawiki.org/wiki/Media_Projects_Overview">the projects overview on MediaWiki</a> and the associated integration (currently called <a href="http://www.mediawiki.org/wiki/JS2_Overview">js2</a>) 
 
-<h1 id="dev">Become a Developer</h1>
+# Become a Developer
 
 If you find this software useful, stop by #kaltura in FreeNode.
-
-<h2 id="source">Get Project Source Code</h2>
-
-<p class="note">MwEmbed is released under the GPL2 and hosted by the wikimedia foundation.<br />
-You may check out a read-only working copy anonymously over HTTP:<br />
-<span style="padding: 3px 0px 0px 30px; color:#555555;font-weight: bold;">svn checkout <a href="http://www.kaltura.org/kalorg/html5video/trunk/mwEmbed/" title="Kaltura Project Code - HTML5 and JS Media Library" target="_blank">http://www.kaltura.org/kalorg/html5video/trunk/mwEmbed/</a></span>
-<span style="padding: 0px 0px 5px 0px; color:#885555;">If you'd like commit access, please submit a request to <a href="../join-project?lightframe" rel="lightframe[|width:570px; height:650px; scrolling: auto;]">join this project.</a>.</span>
-</p>
 
 <h2 id="compile_docs">Compile Developer Docs</h2>
 
