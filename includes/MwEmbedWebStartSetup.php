@@ -77,7 +77,7 @@ if ( !defined('MW_CONFIG_FILE') )
 # LocalSettings.php is the per site customization file. If it does not exist
 # error out
 if( !file_exists( MW_CONFIG_FILE ) ) {
-	print "if( console && typeof console.log == 'function' ){ console.log('MwEmbed could not find LocalSettings.php ( using default configuration )');";
+	print "if( console && typeof console.log == 'function' ){ console.log('MwEmbed could not find LocalSettings.php ( using default configuration )'); }\n";
 } else {
 	# Load local settings
 	require_once( "$IP/LocalSettings.php" );
