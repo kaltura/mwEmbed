@@ -141,10 +141,6 @@ mw.DoubleClick.prototype = {
 		}
 		return $('#' + adContainerId ).get(0);
 	},
-	removeAdDisplayContainer: function(){
-		$( this.getAdContainer() ).remove();
-		this.adDisplayContainer = null;
-	},
 	getAdDisplayContainer: function(){
 		//  Create the ad display container. Use an existing DOM element
 		//	to house the ad display container. Ideally, the element is
@@ -269,7 +265,9 @@ mw.DoubleClick.prototype = {
 		} );
 		adsListener( 'LOADED', function(){
 			var size = _this.getPlayerSize();
-			_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );			
+			_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );	
+			// Hide player content
+			_this.hideContent();
 			// show the loading spinner until we start ad playback
 			_this.embedPlayer.addPlayerSpinner();
 			// if on iPad hide the quicktime logo: 
@@ -285,8 +283,6 @@ mw.DoubleClick.prototype = {
 			// set ad playing flag: 
 			_this.adPlaying = true;
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
-			
-			_this.hideContent();
 			
 			// Monitor ad progress ( for sequence proxy )
 			_this.monitorAdProgress();
@@ -326,14 +322,13 @@ mw.DoubleClick.prototype = {
 		$( this.getAdContainer() ).find('video').css( 'left', '0px');
 	},
 	hideContent: function(){
+		var _this = this;
 		// show the ad container: 
 		$( this.getAdContainer() ).show();
+		// hide content:
 		$( this.getContent() ).hide();
 	},
 	showContent: function(){
-		// in iOS we need to remove the ad container to show content 
-		// ( two loaded video tags  in the dom does not work well ) 
-		this.removeAdDisplayContainer();
 		// show content
 		$( this.getContent() ).show();
 		// hide the ad container: 
@@ -403,6 +398,15 @@ mw.DoubleClick.prototype = {
 	restorePlayer: function(){
 		this.adPlaying = false;
 		this.embedPlayer.sequenceProxy.isInSequence = true;
+		
+		// iOS can't play a new video with an active one in the dom: 
+		// remove the ad video tag ( before trying to restore player ) 
+		var $adVid = $( this.getAdContainer() ).find('video');
+		var adSrc = $adVid.attr('src');
+		var adStyle = $adVid.attr('style');
+		var $adVidParent = 	$adVid.parent();
+		$adVid.remove();
+		
 		// show the content:
 		this.showContent();
 		// remove any in Ad Bindings
@@ -416,6 +420,14 @@ mw.DoubleClick.prototype = {
 			// managed midroll ( just play content directly )
 			this.embedPlayer.play();
 		}
+		setTimeout(function(){
+			// after we have issued play we can restore an uninitialized ad video: 
+			$adVidParent.prepend( $('<video />').attr({
+				'src': adSrc,
+				'style' : adStyle
+				}) 
+			);
+		}, 1000 );
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 
