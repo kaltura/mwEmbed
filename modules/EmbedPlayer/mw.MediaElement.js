@@ -258,66 +258,67 @@ mw.MediaElement.prototype = {
 			}
 		});
 		
-		// if we have native sources to chouse from chouse based on embed size: 
-		if( nativePlayableSources.length ){
-			// Set via embed resolution closest to relative to display size 
-			var minSizeDelta = null;
-			if( this.parentEmbedId ){
-				var displayWidth = $('#' + this.parentEmbedId).width();
-				$.each( nativePlayableSources, function(inx, source ){
-					if( source.width && displayWidth ){
-						var sizeDelta =  Math.abs( source.width - displayWidth );
-						mw.log('MediaElement::autoSelectSource: size delta : ' + sizeDelta + ' for s:' + source.width );
-						if( minSizeDelta == null ||  sizeDelta < minSizeDelta){
-							minSizeDelta = sizeDelta;
-							setSelectedSource( source );
-						}
-					}
-				});
-			}
-		}
-		// If we found a source via display resolution return true
-		if ( this.selectedSource ) {
-			mw.log('MediaElement::autoSelectSource: Set via embed resolution:' + this.selectedSource.width + ' close to: ' + displayWidth );
-			return this.selectedSource;
-		}
-		
-		
 		// Prefer native playback ( and prefer WebM over ogg and h.264 )
-		var namedSources = {};
+		var namedSourceSet = {};
 		$.each( playableSources, function(inx, source ){
 			var mimeType = source.mimeType;
 			var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( mimeType );
 			if ( player && player.library == 'Native'	) {
 				switch( player.id	){
 					case 'mp3Native':
-						namedSources['mp3'] = source;
+						var shortName = 'mp3';
 						break;
 					case 'oggNative':
-						namedSources['ogg'] = source;
+						var shortName = 'ogg';
 						break;
 					case 'webmNative':
-						namedSources['webm'] = source;
+						var shortName = 'webm';
 						break;
 					case 'h264Native':
-						namedSources['h264'] = source;
+						var shortName = 'h264';
 						break;
 					case 'appleVdn': 
-						namedSources['appleVdn'] = source;
+						var shortName = 'appleVdn';
 						break;
 				}
+				if( !namedSourceSet[ shortName ] ){
+					namedSourceSet[ shortName ] = [];
+				}
+				namedSourceSet[ shortName ].push( source );
 			}
 		});
 		
 		var codecPref = mw.getConfig( 'EmbedPlayer.CodecPreference');
 		for(var i =0; i < codecPref.length; i++){
 			var codec = codecPref[ i ];
-			if( namedSources[ codec ]){
-				mw.log('MediaElement::autoSelectSource: set via EmbedPlayer.CodecPreference: ' + namedSources[ codec ].getTitle() );
-				return setSelectedSource( namedSources[ codec ] );
+			if( namedSourceSet[ codec ].length == 1 ){
+				mw.log('MediaElement::autoSelectSource: Set 1 source via EmbedPlayer.CodecPreference: ' + namedSourceSet[ codec ][0].getTitle() );
+				return setSelectedSource( namedSourceSet[ codec ][0] );
+			} else if( namedSourceSet[ codec ].length > 1 ) {
+				// select based on size: 
+				// Set via embed resolution closest to relative to display size 
+				var minSizeDelta = null;
+				if( this.parentEmbedId ){
+					var displayWidth = $('#' + this.parentEmbedId).width();
+					$.each( namedSourceSet[ codec ], function(inx, source ){
+						if( source.width && displayWidth ){
+							var sizeDelta =  Math.abs( source.width - displayWidth );
+							mw.log('MediaElement::autoSelectSource: size delta : ' + sizeDelta + ' for s:' + source.width );
+							if( minSizeDelta == null ||  sizeDelta < minSizeDelta){
+								minSizeDelta = sizeDelta;
+								setSelectedSource( source );
+							}
+						}
+					});
+				}
+				// If we found a source via display size return:
+				if ( this.selectedSource ) {
+					mw.log('MediaElement::autoSelectSource: from  ' + this.selectedSource.mimeType + ' because of resolution:' + this.selectedSource.width + ' close to: ' + displayWidth );
+					return this.selectedSource;
+				}
 			}
 		};
-
+		
 		// Set h264 via native or flash fallback
 		$.each( playableSources, function(inx, source ){
 			var mimeType = source.mimeType;
