@@ -317,8 +317,8 @@ mw.DolStatistics.prototype = {
 	},
 	getAutoPlayFlag: function(){
 		var embedPlayer = this.embedPlayer;
-		// check if the playlist autoContinue is set: 
-		if( embedPlayer.evaluate( '{playlistAPI.autoContinue}' ) ){
+		// Check if in playlist mode: 
+		if( embedPlayer.evaluate( '{playlistAPI.kpl0Url}' ) ){
 			if( $( embedPlayer ).data('DolStatisticsCounter') == 1 ){
 				return embedPlayer.autoplay;
 			} else {
