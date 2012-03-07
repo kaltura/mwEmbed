@@ -146,8 +146,19 @@ var kWidget = {
 			if(  window.ActiveXObject ){
 				o += 'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
 			}
-			o += 'width="' + width.replace(/px/, '' ) +'" ' +
-				'height="' + height.replace(/px/, '' ) + '" ' +
+			
+			// Attributes support % but not 'px'
+			var widthAttr = width;
+			if( typeof widthAttr == 'string' ){
+				widthAttr = widthAttr.replace(/px/, '' );
+			}
+			var heightAttr = height;
+			if( typeof heightAttr == 'string' ){
+				heightAttr = heightAttr.replace(/px/, '' );
+			}
+			
+			o += 'width="' + widthAttr +'" ' +
+				'height="' + heightAttr + '" ' +
 				'style="width:' + width + 'px;height:' + height + 'px;" ' +
 				'resource="' + swfUrl + '" ' +
 				'data="' + swfUrl + '" ';
