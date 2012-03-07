@@ -37,7 +37,7 @@ mw.DoubleClick.prototype = {
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 		
 		// Determine if we are in managed or kaltura point based mode. 
-		if( this.getConfig("preSequence") && this.getConfig("adTagUrl") ){
+		if( this.getConfig( "preSequence" ) && this.getConfig( "adTagUrl" ) ){
 			// managed:
 			this.addManagedBinding();
 		} else {
@@ -61,7 +61,6 @@ mw.DoubleClick.prototype = {
 		_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 			// Add the slot to the given sequence proxy target target
 			sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function( callback ){
-				
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
@@ -142,6 +141,10 @@ mw.DoubleClick.prototype = {
 		}
 		return $('#' + adContainerId ).get(0);
 	},
+	removeAdDisplayContainer: function(){
+		$( this.getAdContainer() ).remove();
+		this.adDisplayContainer = null;
+	},
 	getAdDisplayContainer: function(){
 		//  Create the ad display container. Use an existing DOM element
 		//	to house the ad display container. Ideally, the element is
@@ -177,7 +180,10 @@ mw.DoubleClick.prototype = {
 		if( adType ){
 			adRequest['adType'] = adType;
 		}
-
+		// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
+		this.getAdDisplayContainer();
+		
+		
 		// Create ads loader.
 		_this.adsLoader = new google.ima.AdsLoader();
 		
@@ -204,7 +210,7 @@ mw.DoubleClick.prototype = {
 	// event is issued and error handler is invoked.
 	onAdsManagerLoaded: function( loadedEvent ) {
 		var _this = this;
-		mw.log('DoubleClick:: onAdsManagerLoaded');
+		mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
 		// 1. Retrieve the ads manager. Regardless of ad type (video ad,
 		//	overlay or ad playlist controlled by ad rules), the API is the
@@ -235,13 +241,14 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		var adsListener = function( eventType, callback ){
 			_this.adsManager.addEventListener(
-					google.ima.AdEvent.Type[ eventType ],
-					function( event ){
-						mw.log( "DoubleClick::AdsEvent:" + eventType );
-						if( callback )
-							callback( event );
-					},
-					false );
+				google.ima.AdEvent.Type[ eventType ],
+				function( event ){
+					mw.log( "DoubleClick::AdsEvent:" + eventType );
+					if( callback )
+						callback( event );
+				},
+				false 
+			);
 		}
 		
 		// Add error listener: 
@@ -265,10 +272,15 @@ mw.DoubleClick.prototype = {
 			_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );			
 			// show the loading spinner until we start ad playback
 			_this.embedPlayer.addPlayerSpinner();
+			// if on iPad hide the quicktime logo: 
+			_this.hideIpadPlayerOffScreen();
 		} );
 		adsListener( 'STARTED', function(){
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
+			
+			// if on iPad hide restore player from quicktime logo hide: 
+			_this.restoreIpadPlayerOnScreen();
 			
 			// set ad playing flag: 
 			_this.adPlaying = true;
@@ -283,7 +295,10 @@ mw.DoubleClick.prototype = {
 		adsListener( 'FIRST_QUARTILE' );
 		adsListener( 'MIDPOINT' );
 		adsListener( 'THIRD_QUARTILE' );
-		adsListener( 'COMPLETE' );
+		adsListener( 'COMPLETE', function(){
+			// the current ad is complete hide offscreen ( until next ad plays ) 
+			_this.hideIpadPlayerOffScreen();
+		});
 		// Resume content:
 		adsListener( 'CONTENT_RESUME_REQUESTED', function(){
 			_this.restorePlayer();
@@ -298,15 +313,27 @@ mw.DoubleClick.prototype = {
 			'height': this.embedPlayer.getPlayerHeight() 
 		}
 	},
+	/**
+	 * iPad displays a quicktime logo while loading, this helps hide that
+	 */
+	hideIpadPlayerOffScreen:function(){
+		$( this.getAdContainer() ).find('video').css({
+			'position' : 'absolute', 
+			'left': '-4048px'
+		})
+	},
+	restoreIpadPlayerOnScreen:function(){
+		$( this.getAdContainer() ).find('video').css( 'left', '0px');
+	},
 	hideContent: function(){
 		// show the ad container: 
 		$( this.getAdContainer() ).show();
-		// hide content ( if not iOS  ... doubleClick IMA does a source switch)
-		if( !mw.isIOS() ){
-			$( this.getContent() ).hide();
-		}
+		$( this.getContent() ).hide();
 	},
 	showContent: function(){
+		// in iOS we need to remove the ad container to show content 
+		// ( two loaded video tags  in the dom does not work well ) 
+		this.removeAdDisplayContainer();
 		// show content
 		$( this.getContent() ).show();
 		// hide the ad container: 
