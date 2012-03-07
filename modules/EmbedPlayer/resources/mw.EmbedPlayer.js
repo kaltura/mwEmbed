@@ -9,11 +9,174 @@
 
 ( function( mw, $ ) { "use strict";
 
-/**
- * Add the messages text:
- *  TODO remove once we switch to RL17 
+/** 
+ * Merge in the default video attributes supported by embedPlayer:
  */
-mw.includeAllModuleMessages();
+mw.mergeConfig('EmbedPlayer.Attributes', {
+	/*
+	 * Base html element attributes:
+	 */
+
+	// id: Auto-populated if unset
+	"id" : null,
+
+	// Width: alternate to "style" to set player width
+	"width" : null,
+
+	// Height: alternative to "style" to set player height
+	"height" : null,
+
+	/*
+	 * Base html5 video element attributes / states also see:
+	 * http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html
+	 */
+
+	// Media src URI, can be relative or absolute URI
+	"src" : null,
+
+	// Poster attribute for displaying a place holder image before loading
+	// or playing the video
+	"poster" : null,
+
+	// Autoplay if the media should start playing
+	"autoplay" : false,
+
+	// Loop attribute if the media should repeat on complete
+	"loop" : false,
+
+	// If the player controls should be displayed
+	"controls" : true,
+
+	// Video starts "paused"
+	"paused" : true,
+
+	// ReadyState an attribute informs clients of video loading state:
+	// see: http://www.whatwg.org/specs/web-apps/current-work/#readystate
+	"readyState" : 0,
+
+	// Loading state of the video element
+	"networkState" : 0,
+
+	// Current playback position
+	"currentTime" : 0,
+
+	// Previous player set time
+	// Lets javascript use $('#videoId')[0].currentTime = newTime;
+	"previousTime" : 0,
+
+	// Previous player set volume
+	// Lets javascript use $('#videoId')[0].volume = newVolume;
+	"previousVolume" : 1,
+
+	// Initial player volume:
+	"volume" : 0.75,
+
+	// Caches the volume before a mute toggle
+	"preMuteVolume" : 0.75,
+
+	// Media duration: Value is populated via
+	// custom data-durationhint attribute or via the media file once its played
+	"duration" : null,
+
+	// A hint to the duration of the media file so that duration
+	// can be displayed in the player without loading the media file
+	'data-durationhint': null,
+	
+	// Also support direct durationHint attribute ( backwards compatibly )
+	// @deprecated please use data-durationhint instead. 
+	'durationHint' : null,
+	
+	// Mute state
+	"muted" : false,
+
+	/**
+	 * Custom attributes for embedPlayer player: (not part of the html5
+	 * video spec)
+	 */
+
+	// Default video aspect ratio
+	'videoAspect' : '4:3',
+
+	// Start time of the clip
+	"start" : 0,
+
+	// End time of the clip
+	"end" : null,
+
+	// If the player controls should be overlaid
+	// ( Global default via config EmbedPlayer.OverlayControls in module
+	// loader.js)
+	"overlaycontrols" : true,
+
+	// Attribute to use 'native' controls
+	"usenativecontrols" : false,
+
+	// If the player should include an attribution button:
+	'attributionbutton' : true,
+	
+	// A player error string
+	// * Used to display an error instead of a play button 
+	// * The full player api available
+	'data-playerError': null,
+	
+	// A flag to hide the player gui and disable autoplay
+	// * Used for empty players or a player where you want to dynamically set sources, then play.
+	// * The player API remains active. 
+	'data-blockPlayerDisplay': null,
+
+	// If serving an ogg_chop segment use this to offset the presentation time
+	// ( for some plugins that use ogg page time rather than presentation time )
+	"startOffset" : 0,
+
+	// If the download link should be shown
+	"download_link" : true,
+
+	// Content type of the media
+	"type" : null
+	
+} );
+
+
+/**
+ * The base source attribute checks also see:
+ * http://dev.w3.org/html5/spec/Overview.html#the-source-element
+ */
+mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
+	// source id
+	'id',
+
+	// media url
+	'src',
+
+	// Title string for the source asset
+	'title',
+	
+	// The html5 spec uses label instead of 'title' for naming sources
+	'label',
+
+	// boolean if we support temporal url requests on the source media
+	'URLTimeEncoding',
+
+	// Media has a startOffset ( used for plugins that
+	// display ogg page time rather than presentation time
+	'startOffset',
+
+	// Media start time
+	'start',
+
+	// Media end time
+	'end',
+
+	// If the source is the default source
+	'default',
+	
+	// Title of the source
+	'title',
+	
+	// titleKey ( used for api lookups TODO move into mediaWiki specific support
+	'titleKey'
+] );
+
 
 /**
  * Base embedPlayer object
@@ -101,10 +264,9 @@ mw.EmbedPlayer.prototype = {
 	 */
 	init: function( element ) {
 		var _this = this;
-		mw.log('EmbedPlayer: initEmbedPlayer: ' + $(element).width() );
+		mw.log('EmbedPlayer: initEmbedPlayer: ' + $(element).attr( 'id' ) );
 
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
-
 		// Store the rewrite element tag type
 		this.rewriteElementTagName = element.tagName.toLowerCase();
 

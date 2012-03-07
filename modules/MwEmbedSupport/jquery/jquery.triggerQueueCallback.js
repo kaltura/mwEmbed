@@ -26,6 +26,10 @@
 ( function( $ ) {
 	$.fn.triggerQueueCallback = function( triggerName, triggerParam, callback ){
 		var targetObject = this;
+		if( !targetObject.length ){
+			mw.log("Error:: triggerQueueCallback: no targetObject to trigger event on");
+			return ;
+		}
 		// Support optional triggerParam data
 		if( !callback && typeof triggerParam == 'function' ){
 			callback = triggerParam;

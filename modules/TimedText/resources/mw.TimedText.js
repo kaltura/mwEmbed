@@ -10,7 +10,6 @@
  * @author: Michael Dale
  *
  */
-mw.includeAllModuleMessages();
 
 ( function( mw, $ ) { "use strict";
 

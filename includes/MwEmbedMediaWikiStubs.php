@@ -29,6 +29,19 @@ function wfProfileOut($na){
 function wfDebug( $text, $logonly = false ) {
 	return ;
 }
+/**
+ * Get the path to a specified script file, respecting file
+ * extensions; this is a wrapper around $wgScriptExtension etc.
+ *
+ * @param $script String: script filename, sans extension
+ * @return String
+ */
+function wfScript( $script = 'index' ) {
+	global $wgScriptPath, $wgScriptExtension;
+	return "{$wgScriptPath}/{$script}{$wgScriptExtension}";
+}
+
+
 // Stub userLang ( if no language code provided 
 class UserLang {
 	// getCode (default english )

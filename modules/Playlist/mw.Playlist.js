@@ -3,9 +3,6 @@
 */
 ( function( mw, $ ) { "use strict";
 
-// Get all our message text
-mw.includeAllModuleMessages();
-
 mw.Playlist = function( options ){
 	return this.init( options );
 };

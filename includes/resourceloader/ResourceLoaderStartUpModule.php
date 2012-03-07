@@ -118,12 +118,13 @@ class ResourceLoaderStartUpModule extends ResourceLoaderModule {
 		$resourceLoader = $context->getResourceLoader();
 
 		// Register sources
-		$out .= ResourceLoader::makeLoaderSourcesScript( $resourceLoader->getSources() );
-
+		$out .= $resourceLoader->makeLoaderSourcesScript( $resourceLoader->getSources() );
+		
 		// Register modules
 		foreach ( $resourceLoader->getModuleNames() as $name ) {
 			$module = $resourceLoader->getModule( $name );
 			// Support module loader scripts
+			//die("get loader code@!");
 			$loader = $module->getLoaderScript();
 			if ( $loader !== false ) {
 				$deps = $module->getDependencies();

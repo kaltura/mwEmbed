@@ -333,7 +333,9 @@ return array(
 		'debugScripts' => 'resources/mediawiki.util/mediawiki.util.test.js',
 	),
 	*/
-
+	'mediawiki.Uri' => array(
+		'scripts' => 'resources/mediawiki/mediawiki.Uri.js',
+	),
 	
 	'mediawiki.language' => array(
 		'scripts' => 'resources/mediawiki.language/mediawiki.language.js',

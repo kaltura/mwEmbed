@@ -178,3 +178,16 @@ if( is_file( $wgLocalSettingsFile ) ){
 	require_once( $wgLocalSettingsFile );
 }
 
+/**
+ * Extensions should register foreign module sources here. 'local' is a
+ * built-in source that is not in this array, but defined by
+ * ResourceLoader::__construct() so that it cannot be unset.
+ *
+ * Example:
+ *   $wgResourceLoaderSources['foo'] = array(
+ *       'loadScript' => 'http://example.org/w/load.php',
+ *       'apiScript' => 'http://example.org/w/api.php'
+ *   );
+ */
+$wgResourceLoaderSources = array();
+

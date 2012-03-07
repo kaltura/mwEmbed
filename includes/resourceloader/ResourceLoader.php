@@ -190,7 +190,6 @@ class ResourceLoader {
 		global $IP, $wgResourceModules, $wgResourceLoaderSources, $wgLoadScript, $wgEnableJavaScriptTest;
 
 		wfProfileIn( __METHOD__ );
-
 		// Add 'local' source first
 		$this->addSource( 'local', array( 'loadScript' => $wgLoadScript, 'apiScript' => wfScript( 'api' ) ) );
 
@@ -206,7 +205,6 @@ class ResourceLoader {
 		if ( $wgEnableJavaScriptTest === true ) {
 			$this->registerTestModules();
 		}
-
 
 		wfProfileOut( __METHOD__ );
 	}

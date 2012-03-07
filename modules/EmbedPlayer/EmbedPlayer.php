@@ -17,6 +17,7 @@
 
 			"mw.EmbedPlayer" => array( 
 				'scripts' => array( 
+					"resources/mw.processEmbedPlayers.js",
 					"resources/mw.EmbedPlayer.js", 
 					"resources/skins/mw.PlayerControlBuilder.js",
 				),

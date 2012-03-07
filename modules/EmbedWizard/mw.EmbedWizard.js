@@ -3,9 +3,6 @@
 */
 ( function( mw, $ ) { "use strict";
 	
-	// Can be removed once we move to new resource loader:
-	mw.includeAllModuleMessages();
-
 	mw.setDefaultConfig( 'EmbedWizard.DefaultAttributes', {
 		'width' : 400,
 		'height': 300,

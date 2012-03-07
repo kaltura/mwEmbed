@@ -2,7 +2,6 @@
 * EmbedPlayer loader
 */
 ( function( mw, $ ) {
-	alert('runs?');
 	/**
 	* Add a DOM ready check for player tags
 	*
@@ -45,11 +44,6 @@
 			$.merge( dependencySet, ['jquery.pngFix'] );
 		}
 		
-		// Guess at playback system for 90+% of users the browser indicates playback mode: 
-		// NOTE: this does not affect a given playback library being loaded on-demand later. 
-		if( ( $.browser.msie && $.browser.version < 9 ) || $.browser.safari ) {			
-			$.merge( dependencySet, ['mw.EmbedPlayerJava'] );
-		}
 		// If video tag is supported add native lib:
 		if( document.createElement('video').canPlayType && !$.browser.safari) {
 			$.merge( dependencySet, ['mw.EmbedPlayerNative'] );
