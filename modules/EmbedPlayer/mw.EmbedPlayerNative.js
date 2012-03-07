@@ -708,10 +708,6 @@ mw.EmbedPlayerNative = {
 	*/
 	play: function() {
 		var _this = this;
-		// Always at least "load" content on play request: 
-		if( this.getPlayerElement() ){
-			this.getPlayerElement().load();
-		}
 		// Run parent play:
 		if( _this.parent_play() ){
 			this.getPlayerElement();
