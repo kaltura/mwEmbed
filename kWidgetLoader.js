@@ -303,8 +303,12 @@ var kWidget = {
 
 		var parentNode = targetNode.parentNode;
 		var div = document.createElement('div');
-		div.style.width = settings.width + 'px';
-		div.style.height = settings.height + 'px';
+		try {
+			div.style.width = settings.width + 'px';
+			div.style.height = settings.height + 'px';
+		} catch (e) {
+			// Do nothing
+		}
 
 		div.innerHTML = ddHTML;
 		parentNode.replaceChild( div, targetNode );
