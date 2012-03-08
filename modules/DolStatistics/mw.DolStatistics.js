@@ -294,7 +294,7 @@ mw.DolStatistics.prototype = {
 			}
 		}
 		
-		mw.log('DolStatistics:: Send Stats Data ' + statsUrl, params);
+		mw.log( 'DolStatistics:: Send Stats Data ' + statsUrl, params);
 		
 		// If we have access to parent, call the jsFunction provided
 		if( this.getConfig( 'jsFunctionName' ) && window.parent ) {

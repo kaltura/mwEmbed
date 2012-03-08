@@ -407,9 +407,10 @@ mw.DoubleClick.prototype = {
 		var $adVidParent = 	$adVid.parent();
 		$adVid.remove();
 		
-		// show the content:
+		// Show the content:
 		this.showContent();
-		// remove any in Ad Bindings
+		
+		// Remove any in Ad Bindings
 		this.embedPlayer.unbindHelper( this.inAdBindPostFix );
 		if( this.restorePlayerCallback  ){
 			this.restorePlayerCallback();
@@ -422,12 +423,13 @@ mw.DoubleClick.prototype = {
 		}
 		setTimeout(function(){
 			// after we have issued play we can restore an uninitialized ad video: 
-			$adVidParent.prepend( $('<video />').attr({
-				'src': adSrc,
-				'style' : adStyle
+			$adVidParent.prepend( 
+				$('<video />').attr({
+					'src': adSrc,
+					'style' : adStyle
 				}) 
 			);
-		}, 1000 );
+		}, 2000 );
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 
