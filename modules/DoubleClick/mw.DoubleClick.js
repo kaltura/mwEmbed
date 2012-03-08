@@ -73,7 +73,7 @@ mw.DoubleClick.prototype = {
 				_this.restorePlayerCallback = callback;
 				// trigger the double click end sequence:
 				_this.adsLoader.contentComplete();
-			});
+			};
 		});
 	},
 	// get the content video tag
