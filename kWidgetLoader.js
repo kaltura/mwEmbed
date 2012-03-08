@@ -1,10 +1,9 @@
 /**
  * KWidget static object.
  * Will eventually host all the loader logic.
- * Test Commit
  */
 (function(){
-	
+
 // Use strict ECMAScript 5
 "use strict";
 
@@ -53,12 +52,11 @@ var kWidget = {
 			return ;
 		}
 
-		var uiconf_id = settings.uiconf_id;
 		settings.isHTML5 = kWidget.isHTML5FallForward();
 		// Check if we even need to rewrite the page at all
 		// Evaluate per user agent rules:
-		if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
-			var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
+		if( settings.uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ settings.uiconf_id ]){
+			var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ settings.uiconf_id ] );
 			// Default play mode, if here and really using flash remap:
 			switch( playerAction.mode ){
 				case 'flash':
@@ -95,7 +93,12 @@ var kWidget = {
 			kWidget.outputHTML5Iframe( targetId, settings );
 			return ;
 		} else {
-			restoreKalturaKDPCallback();
+			if( settings.uiconf_id ) {
+				// we use setTimeout to handle race condition when restore get called before dom ready
+				setTimeout( function() {
+					restoreKalturaKDPCallback();
+				}, 0);
+			}
 			kWidget.outputFlashObject( targetId, settings );
 			return ;
 		}
@@ -113,7 +116,7 @@ var kWidget = {
 			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+
 				'/wid/' + settings.wid +
 				'/uiconf_id/' + settings.uiconf_id;
-			
+
 			if( settings.entry_id ){
 				swfUrl+= '/entry_id/' + settings.entry_id;
 			}
@@ -121,60 +124,54 @@ var kWidget = {
 				swfUrl+= '/cache_st/' + settings.cache_st;
 			}
 			// Get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
-			var width = ( settings.width ) ? settings.width.replace(/px/, '' ) :
+			var width = ( settings.width ) ? settings.width :
 							( elm.width ) ? elm.width :
 								( elm.style.width ) ? parseInt( elm.style.width ) : 400;
 
-			var height = ( settings.height ) ? settings.height.replace(/px/, '' ) :
+			var height = ( settings.height ) ? settings.height :
 							( elm.height ) ? elm.height :
 								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 
 			var flashvarValue = ( settings.flashvars ) ? kFlashVarsToString( settings.flashvars ) : '&';
-			
+
 			// we may have to borrow more from:
 			// http://code.google.com/p/swfobject/source/browse/trunk/swfobject/src/swfobject.js#407
 			// There seems to be issue with passing all the flashvars in playlist context.
-			
+
 			var defaultParamSet = {
 				'allowFullScreen': 'true',
 				'allowNetworking': 'all',
 				'allowScriptAccess': 'always',
 				'bgcolor': '#000000'
+			};
+
+			var output = '<object width="' + width +
+					'" height="' + height +
+					'" style="width:' + width + 'px;height:' + height + 'px;' +
+					'" id="' + targetId +
+					'" name="' + targetId + '"';
+
+			output += ' data="' + swfUrl + '" type="application/x-shockwave-flash"';
+			if( window.ActiveXObject ){
+				output += ' classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"';
 			}
-			var o = '<object id="' + pId + '" ' +
-				'name="' + pId + '" ';
-			// output classid if in IE
-			if(  window.ActiveXObject ){
-				o += 'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
+			output += '>';
+
+			output += '<param name="movie" value="' + swfUrl + '" />';
+			output += '<param name="flashvars" value="' + flashvarValue + '" />';
+
+			for (var key in defaultParamSet) {
+				if (defaultParamSet[key]) {
+					output += '<param name="'+ key +'" value="'+ defaultParamSet[key] +'" />';
+				}
 			}
-			
-			// Attributes support % but not 'px'
-			var widthAttr = width;
-			if( typeof widthAttr == 'string' ){
-				widthAttr = widthAttr.replace(/px/, '' );
-			}
-			var heightAttr = height;
-			if( typeof heightAttr == 'string' ){
-				heightAttr = heightAttr.replace(/px/, '' );
-			}
-			
-			o += 'width="' + widthAttr +'" ' +
-				'height="' + heightAttr + '" ' +
-				'style="width:' + width + 'px;height:' + height + 'px;" ' +
-				'resource="' + swfUrl + '" ' +
-				'data="' + swfUrl + '" ';
-			var p = '<param name="flashVars" value="' + flashvarValue + '" /> ' +
-					'<param name="movie" value="' + swfUrl + '" />';
-			
-			for( var key in defaultParamSet ){
-				var value = ( typeof settings[key] != 'undefined' ) ? settings[key]: defaultParamSet[ key ];
-				o+= key + '="' + value + '" ';
-				p+= '<param name="' + key + '" value="' + value + '" />';
-			}
-			var objectTag = o + ' > ' + p + '</object>'; 
-			// update the span target: 
+
+			output += "</object>";
+
+			// update the span target:
 			elm.parentNode.replaceChild( spanTarget, elm );
-			spanTarget.innerHTML = 	objectTag;	
+			spanTarget.innerHTML = output;
+
 		}
 	},
 
@@ -207,17 +204,17 @@ var kWidget = {
 				};
 
 				var additionalTargetCss = kGetAdditionalTargetCss();
-				$.extend(targetCss, additionalTargetCss);
-				$('#' + targetId ).css(targetCss);
+				$j.extend(targetCss, additionalTargetCss);
+				$j('#' + targetId ).css(targetCss);
 				// Do kaltura iframe player
-				$('#' + targetId ).kalturaIframePlayer( settings );
+				$j('#' + targetId ).kalturaIframePlayer( settings );
 			});
 		}
 	},
 
-	outputIframeWithoutApi: function( replaceTargetId, kEmbedSettings ) {
+	outputIframeWithoutApi: function( targetId, settings ) {
 		var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
-		iframeSrc += '?' + kEmbedSettingsToUrl( kEmbedSettings );
+		iframeSrc += '?' + kEmbedSettingsToUrl( settings );
 
 		// If remote service is enabled pass along service arguments:
 		if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) &&
@@ -240,25 +237,25 @@ var kWidget = {
 		// Also append the script version to purge the cdn cache for iframe:
 		iframeSrc += '&urid=' + KALTURA_LOADER_VERSION;
 
-		var targetNode = document.getElementById( replaceTargetId );
+		var targetNode = document.getElementById( targetId );
 		var parentNode = targetNode.parentNode;
 		var iframe = document.createElement('iframe');
 		iframe.src = iframeSrc;
-		iframe.id = replaceTargetId;
-		iframe.width = (kEmbedSettings.width) ? kEmbedSettings.width.replace(/px/, '' ) : '100%';
-		iframe.height = (kEmbedSettings.height) ? kEmbedSettings.height.replace(/px/, '' ) : '100%';
+		iframe.id = targetId;
+		iframe.width = (settings.width) ? settings.width : '100%';
+		iframe.height = (settings.height) ? settings.height : '100%';
 		iframe.style.border = '0px';
 		iframe.style.overflow = 'hidden';
 
 		parentNode.replaceChild( iframe, targetNode );
 	},
 
-	outputDirectDownload: function( replaceTargetId, kEmbedSettings ) {
+	outputDirectDownload: function( targetId, settings ) {
 
 		// Empty the replace target:
-		var targetNode = document.getElementById( replaceTargetId );
+		var targetNode = document.getElementById( targetId );
 		if( ! targetNode ){
-				kWidget.log( "Error could not find object target: " + replaceTargetId );
+				kWidget.log( "Error could not find object target: " + targetId );
 		}
 		// remove all object children
 		// use try/catch to fix ie issue
@@ -270,55 +267,39 @@ var kWidget = {
 		//while ( targetNode.hasChildNodes() ) {
 		//   targetNode.removeChild( targetNode.lastChild );
 		//}
-		if(!options)
-			options = {};
-
-		// look some other places for sizes:
-		if( !options.width && kEmbedSettings.width )
-			options.width = kEmbedSettings.width;
-		if( !options.height && kEmbedSettings.height )
-			options.height = kEmbedSettings.height;
-		if( !options.width && targetNode.style.width )
-			options.width = targetNode.style.width;
-		if( !options.height && targetNode.style.height )
-			options.height = targetNode.style.height;
-		if( !options.height )
-			options.height = 300;
-		if( !options.width )
-			options.width = 400;
 
 		// TODO: Add playEventUrl for stats
 		var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
-		var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + kEmbedSettings.wid;
+		var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + settings.wid;
 
 		// Also add the uiconf id to the url:
-		if( kEmbedSettings.uiconf_id ){
-			downloadUrl += '/uiconf_id/' + kEmbedSettings.uiconf_id;
+		if( settings.uiconf_id ){
+			downloadUrl += '/uiconf_id/' + settings.uiconf_id;
 		}
 
-		if( kEmbedSettings.entry_id ) {
-			downloadUrl += '/entry_id/'+ kEmbedSettings.entry_id;
+		if( settings.entry_id ) {
+			downloadUrl += '/entry_id/'+ settings.entry_id;
 		}
 
 		var thumbSrc = mw.getKalturaThumbUrl({
-			'entry_id' : kEmbedSettings.entry_id,
-			'partner_id' : kEmbedSettings.p,
-			'width' : parseInt( options.width),
-			'height' : parseInt( options.height)
+			'entry_id' : settings.entry_id,
+			'partner_id' : settings.p,
+			'width' : parseInt( (settings.width) ? settings.width : 400 ),
+			'height' : parseInt( (settings.height) ? settings.height : 300 )
 		});
 		var playButtonUrl = baseUrl + 'skins/common/images/player_big_play_button.png';
 		var playButtonCss = 'background: url(\'' + playButtonUrl + '\'); width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
 		var ddId = 'dd_' + Math.random();
 
-		var ddHTML = '<div id="' + ddId + '" style="width: ' + options.width + ';height:' + options.height + ';position:relative">' +
+		var ddHTML = '<div id="' + ddId + '" style="width: ' + settings.width + ';height:' + settings.height + ';position:relative">' +
 				'<img style="width:100%;height:100%" src="' + thumbSrc + '" >' +
 				'<a href="' + downloadUrl + '" target="_blank" style="' + playButtonCss + '"></a>' +
 				 '</div>';
 
 		var parentNode = targetNode.parentNode;
 		var div = document.createElement('div');
-		div.style.width = options.width + 'px';
-		div.style.height = options.height + 'px';
+		div.style.width = settings.width + 'px';
+		div.style.height = settings.height + 'px';
 
 		div.innerHTML = ddHTML;
 		parentNode.replaceChild( div, targetNode );
