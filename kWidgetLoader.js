@@ -37,6 +37,11 @@ var kWidget = {
 			});
 		}
 
+		// Adds partner_id if not found
+		if( ! settings.partner_id ) {
+			settings.partner_id = settings.wid.replace('_', '');
+		}
+
 		// Empty the replace target:
 		var elm = document.getElementById( targetId );
 		if( ! elm ){
@@ -283,13 +288,13 @@ var kWidget = {
 
 		var thumbSrc = mw.getKalturaThumbUrl({
 			'entry_id' : settings.entry_id,
-			'partner_id' : settings.p,
+			'partner_id' : settings.partner_id,
 			'width' : parseInt( (settings.width) ? settings.width : 400 ),
 			'height' : parseInt( (settings.height) ? settings.height : 300 )
 		});
 		var playButtonUrl = baseUrl + 'skins/common/images/player_big_play_button.png';
 		var playButtonCss = 'background: url(\'' + playButtonUrl + '\'); width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
-		var ddId = 'dd_' + Math.random();
+		var ddId = 'dd_' + Math.round( Math.random() );
 
 		var ddHTML = '<div id="' + ddId + '" style="width: ' + settings.width + ';height:' + settings.height + ';position:relative">' +
 				'<img style="width:100%;height:100%" src="' + thumbSrc + '" >' +
