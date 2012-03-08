@@ -67,6 +67,14 @@ mw.DoubleClick.prototype = {
 				_this.requestAds( unescape( _this.getConfig("adTagUrl") ) );	
 			};
 		});
+		_this.embedPlayer.bindHelper( 'AdSupport_postroll' + _this.bindPostfix, function( event, sequenceProxy ){
+			sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = function( callback ){
+				// Setup the restore callback
+				_this.restorePlayerCallback = callback;
+				// trigger the double click end sequence:
+				_this.adsLoader.contentComplete();
+			});
+		});
 	},
 	// get the content video tag
 	getContent:function(){
