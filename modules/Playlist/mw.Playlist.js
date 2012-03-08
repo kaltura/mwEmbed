@@ -241,7 +241,7 @@ mw.Playlist.prototype = {
 				if( inx != 0 ){
 					$plListSet.append( $('<span />').text( ' | ') );
 				}
-				$plLink = $('<a />')
+				var $plLink = $('<a />')
 					.attr('href', '#')
 					.text( playlist.name )
 					.click( function(){
