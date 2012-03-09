@@ -571,7 +571,8 @@ mw.Playlist.prototype = {
 			// Do another resize on a timeout ( takes time for iframe to resize )
 			setTimeout(function(){
 				embedPlayer.resizePlayer( playerSize, false);	
-			}, 100);
+			}, 250);
+			
 			$(uiSelector).show();
 		});
 	},
