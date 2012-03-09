@@ -572,6 +572,10 @@ mw.Playlist.prototype = {
 			setTimeout(function(){
 				embedPlayer.resizePlayer( playerSize, false);	
 			}, 100);
+			// add a secondary resize call @@todo clean up race condition that makes this needed. 
+			setTimeout(function(){
+				embedPlayer.resizePlayer( playerSize, false);	
+			}, 250);
 			$(uiSelector).show();
 		});
 	},
