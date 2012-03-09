@@ -2286,10 +2286,12 @@ mw.EmbedPlayer.prototype = {
 	 */
 	updatePlayHead: function( perc ) {
 		//mw.log( 'EmbedPlayer: updatePlayHead: '+ perc);
-		var $playHead = this.$interface.find( '.play_head' );
-		if ( !this.useNativePlayerControls() && $playHead.length != 0 ) {
-			var val = parseInt( perc * 1000 );
-			$playHead.slider( 'value', val );
+		if( this.$interface ){
+			var $playHead = this.$interface.find( '.play_head' );
+			if ( !this.useNativePlayerControls() && $playHead.length != 0 ) {
+				var val = parseInt( perc * 1000 );
+				$playHead.slider( 'value', val );
+			}
 		}
 		$( this ).trigger('updatePlayHeadPercent', perc);
 	},
