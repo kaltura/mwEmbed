@@ -69,6 +69,9 @@ function jsKalturaPlayerTest( videoId ){
 		$('#play2ndItem').click( function(){
 			kdp().setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 1 );
 		});
+		$('#switchTab').click( function(){
+			kdp().setKDPAttribute('tabBar', 'selectedIndex', 1);
+		})
 	})
 </script>
 </head>
@@ -77,7 +80,7 @@ function jsKalturaPlayerTest( videoId ){
 <a href="?forceMobileHTML5"> Force HTML5</a> for testing with desktop chrome and safari.
 <br />
 
-<p>Multiple Playlists with api</p>
+<p>Multiple Playlists with api</p> <a href="#" id="switchTab"> Switch to Tab 1</a>
 <p>alerts: <a href="#" id="currentIndex"> Current Index</a> | 
 <a href="#" id="plData"> Playlist Data </a> 
 </p>

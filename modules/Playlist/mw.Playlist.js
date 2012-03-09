@@ -245,30 +245,7 @@ mw.Playlist.prototype = {
 					.attr('href', '#')
 					.text( playlist.name )
 					.click( function(){
-						
-						$(this)
-						.addClass( 'ui-state-active' )
-						.siblings().removeClass('ui-state-active');
-						
-						 _this.sourceHandler.setPlaylistIndex( inx );
-						 mw.log( 'mw.Playlist:: selectPlaylist:' + inx );
-						 $( _this.target + ' .media-rss-video-list')
-						 .empty()
-						 .append(
-							$('<div />')
-							.css({
-								'position' : 'absolute',
-								'top' : '45%',
-								'left' : '45%'
-							})
-							.loadingSpinner()
-						 )
-						 
-						 _this.sourceHandler.loadCurrentPlaylist( function(){
-							 $( _this.target + ' .media-rss-video-list').empty();
-							_this.addMediaList();
-						 });
-						 
+						_this.switchTab( inx );
 						return false;
 					})
 					.buttonHover();
@@ -410,6 +387,36 @@ mw.Playlist.prototype = {
 			if( callback ) 
 				callback();
 		});
+	},
+	switchTab: function( inx ){
+		var _this = this;
+		
+		var $tabSet = $( _this.target ).find( '.playlist-set-list' );
+
+		$tabSet
+		.find('a')
+		.eq( inx )
+		.addClass( 'ui-state-active' )
+		.siblings().removeClass('ui-state-active');
+		
+		 _this.sourceHandler.setPlaylistIndex( inx );
+		 mw.log( 'mw.Playlist:: selectPlaylist:' + inx );
+		 $( _this.target + ' .media-rss-video-list')
+		 .empty()
+		 .append(
+			$('<div />')
+			.css({
+				'position' : 'absolute',
+				'top' : '45%',
+				'left' : '45%'
+			})
+			.loadingSpinner()
+		 )
+		 
+		 _this.sourceHandler.loadCurrentPlaylist( function(){
+			 $( _this.target + ' .media-rss-video-list').empty();
+			_this.addMediaList();
+		 });
 	},
 	/**
 	* Update the target size of the player

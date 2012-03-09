@@ -199,7 +199,7 @@
  * @cat Plugins/Image Gallery
  * @author Ganeshji Marwaha/ganeshread@gmail.com
  */
-
+	
 (function($) {                                          // Compliant with jquery.noConflict()
 // export the class name for Resource Loader, 
 // TODO can be removed with New Resource Loader

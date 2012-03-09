@@ -71,6 +71,7 @@ mw.IFramePlayerApiClient.prototype = {
 					doPostMessage = namedMethodCallbacks[ method ].apply( this, $.makeArray( arguments ) );
 				}
 				if( doPostMessage ){
+					mw.log("IframePlayerApi:: postMessage > " + method );
 					_this.postMessage( {
 						'method' : method,
 						'args' : $.makeArray( arguments )
