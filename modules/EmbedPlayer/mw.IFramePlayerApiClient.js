@@ -138,7 +138,7 @@ mw.IFramePlayerApiClient.prototype = {
 			if( !$('meta[name="viewport"]').length ){
 				$('head').append( $( '<meta />' ).attr('name', 'viewport') );
 			}
-			$('meta[name="viewport"]').attr('content', 'width=device-width; initial-scale=1; user-scalable:no;' );
+			$('meta[name="viewport"]').attr('content', 'initial-scale=1;' );
 			
 			// iPad 5 supports fixed position in a bad way, use absolute pos for iOS
 			var playerCssPosition = ( mw.isIOS() ) ? 'absolute': 'fixed';
@@ -192,7 +192,7 @@ mw.IFramePlayerApiClient.prototype = {
 			} else{
 				// Restore user zoom: ( NOTE, there does not appear to be a way to know the 
 				// initial scale, so we just restore to 1 in the absence of explicit viewport tag ) 
-				$('meta[name="viewport"]').attr('content', 'width=device-width; initial-scale=1;');
+				$('meta[name="viewport"]').attr('content', 'initial-scale=1;');
 			}
 			
 			$iframe
@@ -217,6 +217,7 @@ mw.IFramePlayerApiClient.prototype = {
 		// Bind orientation change to resize player ( if fullscreen )
 		$(window).bind( 'orientationchange', function(e){
 			if( localIframeInFullscreen ){
+				$('meta[name="viewport"]').attr('content', 'initial-scale=1;  maximum-scale=1.0');
 				doFullscreen();
 			}
 		});
