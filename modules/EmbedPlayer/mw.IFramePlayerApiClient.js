@@ -71,6 +71,7 @@ mw.IFramePlayerApiClient.prototype = {
 					doPostMessage = namedMethodCallbacks[ method ].apply( this, $.makeArray( arguments ) );
 				}
 				if( doPostMessage ){
+					mw.log("IframePlayerApi:: postMessage > " + method );
 					_this.postMessage( {
 						'method' : method,
 						'args' : $.makeArray( arguments )
@@ -156,8 +157,8 @@ mw.IFramePlayerApiClient.prototype = {
 			
 			// Don't resize bellow original size: 
 			var targetSize = {
-				'width' : $( window ).width(),
-				'height' : $( window ).height()
+				'width' : window.innerWidth,
+				'height' : window.innerHeight
 			};
 			if( targetSize.width < orgSize.width ){
 				targetSize.width = orgSize.width;

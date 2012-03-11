@@ -383,8 +383,16 @@ mw.PlaylistHandlerKaltura.prototype = {
 				case "playlistAPI.dataProvider":
 					_this.doDataProviderAction( property, value );
 				break;
+				case 'tabBar':
+					_this.switchTab( property, value )
+				break;
 			}
 		});
+	},
+	switchTab:function( property, value ){
+		if( property == 'selectedIndex' ){
+			this.playlist.switchTab( value );
+		}
 	},
 	doDataProviderAction: function ( property, value ){
 		 switch( property ){

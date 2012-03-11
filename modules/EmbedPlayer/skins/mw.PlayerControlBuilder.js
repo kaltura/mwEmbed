@@ -1443,7 +1443,9 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	setStatus: function( value ) {
 		// update status:
-		this.embedPlayer.$interface.find( '.time-disp' ).text( value );
+		if( this.embedPlayer.$interface ){
+			this.embedPlayer.$interface.find( '.time-disp' ).text( value );
+		}
 	},
 
 	/**

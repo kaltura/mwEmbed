@@ -291,6 +291,9 @@ mw.MediaElement.prototype = {
 		var codecPref = mw.getConfig( 'EmbedPlayer.CodecPreference');
 		for(var i =0; i < codecPref.length; i++){
 			var codec = codecPref[ i ];
+			if( !  namedSourceSet[ codec ] ){
+				continue;
+			}
 			if( namedSourceSet[ codec ].length == 1 ){
 				mw.log('MediaElement::autoSelectSource: Set 1 source via EmbedPlayer.CodecPreference: ' + namedSourceSet[ codec ][0].getTitle() );
 				return setSelectedSource( namedSourceSet[ codec ][0] );
