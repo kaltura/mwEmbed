@@ -737,7 +737,6 @@ mw.includeAllModuleMessages();
 		getLayoutMenu: function() {
 			var _this = this;
 			mw.log( 'TimedText:: getLayoutMenu layout: ' + _this.config.layout );
-
 			var layoutOptions = [];
 			//Only display the "ontop" option if the player supports it:
 			if( this.embedPlayer.supports[ 'overlays' ] ){
@@ -746,7 +745,7 @@ mw.includeAllModuleMessages();
 			// Support below player display: 
 			layoutOptions.push( 'below', 'off'  );
 
-			$ul = $('<ul>');
+			var $ul = $('<ul>');
 			$.each( layoutOptions, function( na, layoutMode ) {
 				var icon = ( _this.config.layout == layoutMode ) ? 'bullet' : 'radio-on';
 				$ul.append(
