@@ -656,8 +656,8 @@ mw.PlayerControlBuilder.prototype = {
 		$( this.embedPlayer ).bind( 'onCloseFullScreen', hideTip );
 		// After 5 seconds,
 		setTimeout( hideTip, 5000 );
-		// or if we catch an f11 button press
-		$(document).keyup( function( event ){
+		// Or if we catch an f11 button press
+		$( document ).keyup( function( event ){
 			if( event.keyCode == 122 ){
 				hideTip();
 			}

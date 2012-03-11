@@ -431,7 +431,7 @@ mw.DoubleClick.prototype = {
 		}
 		setTimeout(function(){
 			// after we have issued play we can restore an uninitialized ad video: 
-			$adVidParent.prepend($adVid);
+			$adVidParent.prepend( $adVid );
 		}, 2000 );
 	},
 	/**
