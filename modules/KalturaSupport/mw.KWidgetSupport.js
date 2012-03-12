@@ -244,14 +244,12 @@ mw.KWidgetSupport.prototype = {
 			// Add any custom metadata:
 			if( playerData.entryMeta ){
 				embedPlayer.kalturaEntryMetaData = playerData.entryMeta;
-				$( embedPlayer ).trigger( 'KalturaSupport_MetadataReceived', embedPlayer.kalturaEntryMetaData );
 			}
 			// Apply player metadata
 			if( playerData.meta ) {
 				embedPlayer.duration = playerData.meta.duration;
 				// We have to assign embedPlayer metadata as an attribute to bridge the iframe
 				embedPlayer.kalturaPlayerMetaData = playerData.meta;
-				$( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
 			}
 			if( playerData.entryCuePoints && playerData.entryCuePoints.length > 0 ) {
 				mw.log( "KCuePoints:: Added " + playerData.entryCuePoints.length + " CuePoints to embedPlayer");
@@ -271,6 +269,14 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kalturaPlaylistData = playerData.playlistData;
 		}
 		_this.handleUiConf( embedPlayer, callback );
+		
+		// Trigger the early player events ( after uiConf handling has a chance to setup bindings 
+		if( embedPlayer.kalturaPlayerMetaData ){
+			$( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
+		}
+		if( embedPlayer.kalturaEntryMetaData ){
+			$( embedPlayer ).trigger( 'KalturaSupport_MetadataReceived', embedPlayer.kalturaEntryMetaData );
+		}
 	},
 	addPlayerMethods: function( embedPlayer ){
 		var _this = this;
