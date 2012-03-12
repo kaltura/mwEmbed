@@ -823,8 +823,9 @@ function kGetKalturaEmbedSettings( swfUrl, flashvars ){
 	}
 
 	// Always pass cache_st
-	if( ! embedSettings.cache_st )
+	if( ! embedSettings.cache_st ){
 		embedSettings.cache_st = 1;
+	}
 	
 	return embedSettings;
 }

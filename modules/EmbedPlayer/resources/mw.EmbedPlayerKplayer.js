@@ -86,7 +86,8 @@ mw.EmbedPlayerKplayer = {
 					width :				'100%',
 					bgcolor :			"#000000",
 					allowNetworking : 	"all",
-					version :			[10,0]
+					version :			[10,0],
+					wmode : 			"opaque"
 				},
 				flashvars
 		)

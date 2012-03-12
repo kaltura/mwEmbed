@@ -7,9 +7,6 @@ mw.DoubleClick.prototype = {
 	// The bind postfix to keep track of doubleclick bindings. 
 	bindPostfix: '.DoubleClick',
 	
-	// in ad bindings:
-	inAdBindPostFix: '.DoubleClickInAd',
-	
 	// The content video element.
 	content: null,
 	
@@ -37,7 +34,7 @@ mw.DoubleClick.prototype = {
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 		
 		// Determine if we are in managed or kaltura point based mode. 
-		if( this.getConfig("preSequence") && this.getConfig("adTagUrl") ){
+		if( this.getConfig( "preSequence" ) && this.getConfig( "adTagUrl" ) ){
 			// managed:
 			this.addManagedBinding();
 		} else {
@@ -61,11 +58,18 @@ mw.DoubleClick.prototype = {
 		_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 			// Add the slot to the given sequence proxy target target
 			sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function( callback ){
-				
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
 				_this.requestAds( unescape( _this.getConfig("adTagUrl") ) );	
+			};
+		});
+		_this.embedPlayer.bindHelper( 'AdSupport_postroll' + _this.bindPostfix, function( event, sequenceProxy ){
+			sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = function( callback ){
+				// Setup the restore callback
+				_this.restorePlayerCallback = callback;
+				// trigger the double click end sequence:
+				_this.adsLoader.contentComplete();
 			};
 		});
 	},
@@ -177,7 +181,10 @@ mw.DoubleClick.prototype = {
 		if( adType ){
 			adRequest['adType'] = adType;
 		}
-
+		// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
+		this.getAdDisplayContainer();
+		
+		
 		// Create ads loader.
 		_this.adsLoader = new google.ima.AdsLoader();
 		
@@ -204,7 +211,7 @@ mw.DoubleClick.prototype = {
 	// event is issued and error handler is invoked.
 	onAdsManagerLoaded: function( loadedEvent ) {
 		var _this = this;
-		mw.log('DoubleClick:: onAdsManagerLoaded');
+		mw.log( 'DoubleClick:: onAdsManagerLoaded' );
 
 		// 1. Retrieve the ads manager. Regardless of ad type (video ad,
 		//	overlay or ad playlist controlled by ad rules), the API is the
@@ -235,13 +242,14 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		var adsListener = function( eventType, callback ){
 			_this.adsManager.addEventListener(
-					google.ima.AdEvent.Type[ eventType ],
-					function( event ){
-						mw.log( "DoubleClick::AdsEvent:" + eventType );
-						if( callback )
-							callback( event );
-					},
-					false );
+				google.ima.AdEvent.Type[ eventType ],
+				function( event ){
+					mw.log( "DoubleClick::AdsEvent:" + eventType );
+					if( callback )
+						callback( event );
+				},
+				false 
+			);
 		}
 		
 		// Add error listener: 
@@ -261,19 +269,25 @@ mw.DoubleClick.prototype = {
 			}
 		} );
 		adsListener( 'LOADED', function(){
-			_this.adsManager.resize( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL );
+			var size = _this.getPlayerSize();
+			_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );	
+			// Hide player content
+			_this.hideContent();
 			// show the loading spinner until we start ad playback
 			_this.embedPlayer.addPlayerSpinner();
+			// if on iPad hide the quicktime logo: 
+			_this.hideIpadPlayerOffScreen();
 		} );
 		adsListener( 'STARTED', function(){
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
 			
+			// if on iPad hide restore player from quicktime logo hide: 
+			_this.restoreIpadPlayerOnScreen();
+			
 			// set ad playing flag: 
 			_this.adPlaying = true;
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
-			
-			_this.hideContent();
 			
 			// Monitor ad progress ( for sequence proxy )
 			_this.monitorAdProgress();
@@ -282,7 +296,10 @@ mw.DoubleClick.prototype = {
 		adsListener( 'FIRST_QUARTILE' );
 		adsListener( 'MIDPOINT' );
 		adsListener( 'THIRD_QUARTILE' );
-		adsListener( 'COMPLETE' );
+		adsListener( 'COMPLETE', function(){
+			// the current ad is complete hide offscreen ( until next ad plays ) 
+			_this.hideIpadPlayerOffScreen();
+		});
 		// Resume content:
 		adsListener( 'CONTENT_RESUME_REQUESTED', function(){
 			_this.restorePlayer();
@@ -291,13 +308,30 @@ mw.DoubleClick.prototype = {
 			_this.restorePlayer();
 		});
 	},
+	getPlayerSize: function(){
+		return {
+			'width': this.embedPlayer.$interface.width(),
+			'height': this.embedPlayer.getPlayerHeight() 
+		}
+	},
+	/**
+	 * iPad displays a quicktime logo while loading, this helps hide that
+	 */
+	hideIpadPlayerOffScreen:function(){
+		$( this.getAdContainer() ).find('video').css({
+			'position' : 'absolute', 
+			'left': '-4048px'
+		})
+	},
+	restoreIpadPlayerOnScreen:function(){
+		$( this.getAdContainer() ).find('video').css( 'left', '0px');
+	},
 	hideContent: function(){
+		var _this = this;
 		// show the ad container: 
 		$( this.getAdContainer() ).show();
-		// hide content ( if not iOS  ... doubleClick IMA does a source switch)
-		if( !mw.isIOS() ){
-			$( this.getContent() ).hide();
-		}
+		// hide content:
+		$( this.getContent() ).hide();
 	},
 	showContent: function(){
 		// show content
@@ -309,25 +343,33 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		
-		embedPlayer.bindHelper( 'onResizePlayer' + this.inAdBindPostFix, function( event, size, animate ) {
-			mw.log("DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
-			// Resize the ad manager on player resize: ( no support for animate )
-			_this.adsManager.resize(size.width, size.height, google.ima.ViewMode.NORMAL);
+		embedPlayer.bindHelper( 'onResizePlayer' + this.bindPostfix, function( event, size, animate ) {
+			if( _this.adPlaying ){
+				mw.log("DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
+				// Resize the ad manager on player resize: ( no support for animate )
+				_this.adsManager.resize(size.width, size.height, google.ima.ViewMode.NORMAL);
+			}
 		});
 		
-		embedPlayer.bindHelper( 'volumeChanged' + this.inAdBindPostFix, function(event, percent){
-			mw.log("DoubleClick::volumeChanged:" + percent );
-			_this.adsManager.setVolume( percent );
+		embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
+			if( _this.adPlaying ){
+				mw.log("DoubleClick::volumeChanged:" + percent );
+				_this.adsManager.setVolume( percent );
+			}
 		});
 		
 		// May have to fix these bindings to support pause play on ads. 
-		embedPlayer.bindHelper( 'onpause' + this.inAdBindPostFix, function( event, percent){
-			mw.log("DoubleClick::onpause:" + percent );
-			_this.adsManager.pause();
+		embedPlayer.bindHelper( 'onpause' + this.bindPostfix, function( event, percent){
+			if( _this.adPlaying ){
+				mw.log("DoubleClick::onpause:" + percent );
+				_this.adsManager.pause();
+			}
 		});
-		embedPlayer.bindHelper( 'onplay' + this.inAdBindPostFix, function( event, percent){
-			mw.log("DoubleClick::onplay:" + percent );
-			_this.adsManager.resume();
+		embedPlayer.bindHelper( 'onplay' + this.bindPostfix, function( event, percent){
+			if( _this.adPlaying ){
+				mw.log("DoubleClick::onplay:" + percent );
+				_this.adsManager.resume();
+			}
 		});
 	},
 	monitorAdProgress: function(){
@@ -369,10 +411,19 @@ mw.DoubleClick.prototype = {
 	restorePlayer: function(){
 		this.adPlaying = false;
 		this.embedPlayer.sequenceProxy.isInSequence = true;
-		// show the content:
+		
+		// iOS can't play a new video with an active one in the dom: 
+		// remove the ad video tag ( before trying to restore player ) 
+		/*var $adVid = $( this.getAdContainer() ).find('video');
+		var adSrc = $adVid.attr('src');
+		var adStyle = $adVid.attr('style');
+		var $adVidParent = 	$adVid.parent();
+		$adVid.remove();
+		*/
+		
+		// Show the content:
 		this.showContent();
-		// remove any in Ad Bindings
-		this.embedPlayer.unbindHelper( this.inAdBindPostFix );
+		
 		if( this.restorePlayerCallback  ){
 			this.restorePlayerCallback();
 			this.restorePlayerCallback = null;
@@ -382,6 +433,10 @@ mw.DoubleClick.prototype = {
 			// managed midroll ( just play content directly )
 			this.embedPlayer.play();
 		}
+		/*setTimeout(function(){
+			// after we have issued play we can restore an uninitialized ad video: 
+			$adVidParent.prepend( $adVid );
+		}, 2000 );*/
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 

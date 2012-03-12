@@ -124,6 +124,8 @@
 									.$( '#' + playerProxy.id ).get(0).play();
 							}
 						}
+						// always send postMessage on setKDPAttribute
+						return true;
 					};
 				});
 				
