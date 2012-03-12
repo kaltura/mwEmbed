@@ -7,9 +7,6 @@ mw.DoubleClick.prototype = {
 	// The bind postfix to keep track of doubleclick bindings. 
 	bindPostfix: '.DoubleClick',
 	
-	// in ad bindings:
-	inAdBindPostFix: '.DoubleClickInAd',
-	
 	// The content video element.
 	content: null,
 	
@@ -346,25 +343,33 @@ mw.DoubleClick.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		
-		embedPlayer.bindHelper( 'onResizePlayer' + this.inAdBindPostFix, function( event, size, animate ) {
-			mw.log("DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
-			// Resize the ad manager on player resize: ( no support for animate )
-			_this.adsManager.resize(size.width, size.height, google.ima.ViewMode.NORMAL);
+		embedPlayer.bindHelper( 'onResizePlayer' + this.bindPostfix, function( event, size, animate ) {
+			if( _this.adPlaying ){
+				mw.log("DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
+				// Resize the ad manager on player resize: ( no support for animate )
+				_this.adsManager.resize(size.width, size.height, google.ima.ViewMode.NORMAL);
+			}
 		});
 		
-		embedPlayer.bindHelper( 'volumeChanged' + this.inAdBindPostFix, function(event, percent){
-			mw.log("DoubleClick::volumeChanged:" + percent );
-			_this.adsManager.setVolume( percent );
+		embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
+			if( _this.adPlaying ){
+				mw.log("DoubleClick::volumeChanged:" + percent );
+				_this.adsManager.setVolume( percent );
+			}
 		});
 		
 		// May have to fix these bindings to support pause play on ads. 
-		embedPlayer.bindHelper( 'onpause' + this.inAdBindPostFix, function( event, percent){
-			mw.log("DoubleClick::onpause:" + percent );
-			_this.adsManager.pause();
+		embedPlayer.bindHelper( 'onpause' + this.bindPostfix, function( event, percent){
+			if( _this.adPlaying ){
+				mw.log("DoubleClick::onpause:" + percent );
+				_this.adsManager.pause();
+			}
 		});
-		embedPlayer.bindHelper( 'onplay' + this.inAdBindPostFix, function( event, percent){
-			mw.log("DoubleClick::onplay:" + percent );
-			_this.adsManager.resume();
+		embedPlayer.bindHelper( 'onplay' + this.bindPostfix, function( event, percent){
+			if( _this.adPlaying ){
+				mw.log("DoubleClick::onplay:" + percent );
+				_this.adsManager.resume();
+			}
 		});
 	},
 	monitorAdProgress: function(){
@@ -409,17 +414,16 @@ mw.DoubleClick.prototype = {
 		
 		// iOS can't play a new video with an active one in the dom: 
 		// remove the ad video tag ( before trying to restore player ) 
-		var $adVid = $( this.getAdContainer() ).find('video');
+		/*var $adVid = $( this.getAdContainer() ).find('video');
 		var adSrc = $adVid.attr('src');
 		var adStyle = $adVid.attr('style');
 		var $adVidParent = 	$adVid.parent();
 		$adVid.remove();
+		*/
 		
 		// Show the content:
 		this.showContent();
 		
-		// Remove any in Ad Bindings
-		this.embedPlayer.unbindHelper( this.inAdBindPostFix );
 		if( this.restorePlayerCallback  ){
 			this.restorePlayerCallback();
 			this.restorePlayerCallback = null;
@@ -429,10 +433,10 @@ mw.DoubleClick.prototype = {
 			// managed midroll ( just play content directly )
 			this.embedPlayer.play();
 		}
-		setTimeout(function(){
+		/*setTimeout(function(){
 			// after we have issued play we can restore an uninitialized ad video: 
 			$adVidParent.prepend( $adVid );
-		}, 2000 );
+		}, 2000 );*/
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 
