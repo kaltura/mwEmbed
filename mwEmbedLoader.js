@@ -23,6 +23,32 @@ window.restoreKalturaKDPCallback = function(){
 	}
 };
 
+window.KalturaKDPCallbackAlreadyCalled = [];
+
+/**
+ * To support kaltura kdp mapping override
+ */
+window.checkForKDPCallback = function(){
+	var pushAlreadyCalled = function( player_id ){
+		window.KalturaKDPCallbackAlreadyCalled.push( player_id );
+	}
+	if( window.jsCallbackReady && window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
+		window.originalKDPCallbackReady = window.jsCallbackReady;
+	}
+	// Always update the jsCallbackReady to call pushAlreadyCalled
+	if( !window.jsCallbackReady || window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
+		window.jsCallbackReady = pushAlreadyCalled;
+	}
+	if( !window.KalturaKDPCallbackReady ){
+		window.KalturaKDPCallbackReady = function( playerId ){
+			if( window.originalKDPCallbackReady ){
+				window.originalKDPCallbackReady( playerId );
+			}
+			window.KWidget.globalJsReadyCallback( playerId );
+		};
+	}
+};
+
 // Try and override the swfObject at runtime
 // In case it was included before mwEmbedLoader and the embedSWF call is inline ( so we can't wait for dom ready )
 kOverideJsFlashEmbed();
@@ -38,7 +64,6 @@ if( !window['preMwEmbedConfig'] ) {
 
 if( ! mw.setConfig ){
 	mw.setConfig = function( set, value ){
-		var valueQueue = {};
 		if( typeof value != 'undefined'  ) {
 			window.preMwEmbedConfig[ set ] = value;
 		} else if ( typeof set == 'object' ){
@@ -110,7 +135,6 @@ if( !mw.ready ){
 	};
 }
 
-
 // Set iframe config if in the client page, will be passed to the iframe along with other config
 if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 	mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL );
@@ -121,17 +145,10 @@ if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 
 function kDoIframeRewriteList( rewriteObjects ){
 	for( var i=0; i < rewriteObjects.length; i++ ){
-		
 		var settings = rewriteObjects[i].kEmbedSettings;
 		settings.width = rewriteObjects[i].width;
 		settings.height = rewriteObjects[i].height;
-		
-		// If we have no flash &  no html5 fallback and don't care about about player rewrite 
-		if( ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && !mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) {
-			kWidget.outputDirectDownload( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
-		} else {
-			kWidget.embed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
-		}
+		kWidget.embed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
 	}
 }
 
@@ -154,15 +171,6 @@ function kEmbedSettingsToUrl( kEmbedSettings ){
 
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
 function kOverideJsFlashEmbed(){
-	var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTargetId, widthStr, heightStr ){
-			if( widthStr ) {
-				kEmbedSettings.width = widthStr;
-			}
-			if( heightStr ) {
-				kEmbedSettings.height = heightStr;
-			}
-			kWidget.embed( replaceTargetId, kEmbedSettings );
-	};
 	// flashobject
 	if( window['flashembed'] && !window['originalFlashembed'] ){
 		window['originalFlashembed'] = window['flashembed'];
@@ -171,23 +179,8 @@ function kOverideJsFlashEmbed(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( attributes.src, flashvars);
 				kEmbedSettings.width = attributes.width;
 				kEmbedSettings.height = attributes.height;
-				
-				if( ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
-					kWidget.outputDirectDownload( targetId, kEmbedSettings, {'width':attributes.width, 'height':attributes.height} );
-					return ;
-				}
-				if( kEmbedSettings.uiconf_id && kWidget.isHTML5FallForward()  ){
-					document.getElementById( targetId ).innerHTML = '<div id="' + attributes.id + '"></div>';
-					
-					doEmbedSettingsWrite( kEmbedSettings, attributes.id, attributes.width, attributes.height);
-				} else {
-					// if its a kaltura player embed restore kdp callback:
-					if( kEmbedSettings.uiconf_id ){
-						restoreKalturaKDPCallback();
-					}
-					// Use the original flash player embed:  
-					originalFlashembed( targetId, attributes, flashvars );
-				}
+
+				kWidget.embed( targetId, kEmbedSettings );
 			});
 		};
 	}
@@ -199,22 +192,10 @@ function kOverideJsFlashEmbed(){
 			var _this = this;
 			kAddReadyHook(function(){			
 				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, _this.params.flashVars);
-		
-				if( kEmbedSettings.uiconf_id && ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
-					kWidget.outputDirectDownload( targetId, kEmbedSettings );
-					return ;
-				}
+				kEmbedSettings.width = _this.attributes.width;
+				kEmbedSettings.height = _this.attributes.height;
 
-				if( kWidget.isHTML5FallForward() && kEmbedSettings.uiconf_id ){
-					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
-				} else {
-					// if its a kaltura player embed restore kdp callback:
-					if( kEmbedSettings.uiconf_id ){
-						restoreKalturaKDPCallback();
-					}
-					// use the original flash player embed:  
-					_this.originalWrite( targetId );
-				}
+				kWidget.embed( targetId, kEmbedSettings );
 			});
 		};
 	}
@@ -228,16 +209,12 @@ function kOverideJsFlashEmbed(){
 		{
 			kAddReadyHook(function(){
 				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj );
-
-
-				if( kEmbedSettings.uiconf_id && ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
-					kWidget.outputDirectDownload( targetId, kEmbedSettings, {'width' : widthStr, 'height' :  heightStr} );
-					return ;
-				}
+				kEmbedSettings.width = widthStr;
+				kEmbedSettings.height = heightStr;
 
 				// Check if IsHTML5FallForward
 				if( kWidget.isHTML5FallForward() && kEmbedSettings.uiconf_id ){
-					doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
+					kWidget.embed( replaceElemIdStr, kEmbedSettings );
 				} else {
 					// if its a kaltura player embed restore kdp callback:
 					if( kEmbedSettings.uiconf_id ){
@@ -848,32 +825,6 @@ kAddReadyHook(function() {
 		mw.setConfig('EmbedPlayer.EnableIpadHTMLControls', false );
 	}
 })
-
-window.KalturaKDPCallbackAlreadyCalled = [];
-
-/**
- * To support kaltura kdp mapping override
- */
-window.checkForKDPCallback = function(){
-	var pushAlreadyCalled = function( player_id ){
-		window.KalturaKDPCallbackAlreadyCalled.push( player_id );
-	}
-	if( window.jsCallbackReady && window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
-		window.originalKDPCallbackReady = window.jsCallbackReady;
-	}
-	// Always update the jsCallbackReady to call pushAlreadyCalled
-	if( !window.jsCallbackReady || window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
-		window.jsCallbackReady = pushAlreadyCalled;
-	}
-	if( !window.KalturaKDPCallbackReady ){
-		window.KalturaKDPCallbackReady = function( playerId ){
-			if( window.originalKDPCallbackReady ){
-				window.originalKDPCallbackReady( playerId );
-			}
-			window.KWidget.globalJsReadyCallback( playerId );
-		};
-	}
-};
 
 // Include legacy support for supports html5
 function kIsIOS(){
