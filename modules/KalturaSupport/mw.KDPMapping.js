@@ -573,7 +573,7 @@
 						if( ! embedPlayer[ 'data-playerError' ] ){
 							embedPlayer.kdpEmptyFlag = false;
 						}
-						callback( {}, embedPlayer.id );
+						callback( embedPlayer.id );
 					});
 					break;
 				case 'playerReady':
