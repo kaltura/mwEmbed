@@ -315,7 +315,7 @@ mw.EmbedPlayer.prototype = {
 		this.width = ( element.width > 0 ) ? element.width + '' : $(element).css( 'width' );
 		
 		// Special check for chrome 100% with re-mapping to 32px
-		// Video embed at 32x32 will have to wait for intrensic video size later on
+		// Video embed at 32x32 will have to wait for intrinsic video size later on
 		if( this.height == '32px' || this.height =='32px' ){
 			this.width = '100%';
 			this.height = '100%';
@@ -775,7 +775,7 @@ mw.EmbedPlayer.prototype = {
 			// Show the control bar:
 			this.controlBuilder.showControlBar();
 
-			// Update the clip done playing count:
+			// Update the clip done playing count:	
 			this.donePlayingCount ++;
 
 			// TOOD we should improve the end event flow
@@ -882,12 +882,6 @@ mw.EmbedPlayer.prototype = {
 			});
 			$( this ).show();
 		}
-		if( !this.useNativePlayerControls() && !this.isPersistentNativePlayer() && !_this.controlBuilder.isOverlayControls() ){
-			// Update the video size per available control space.
-			$(this).css('height', this.height - _this.controlBuilder.height );
-		}
-
-
 		// Add controls if enabled:
 		if ( !this.useNativePlayerControls() && this.controls ) {
 			this.controlBuilder.addControls();
@@ -906,10 +900,12 @@ mw.EmbedPlayer.prototype = {
 			this.$interface.css('height', this.controlBuilder.height); // Set the interface height to controlbar height
 		}
 
-		// Check for intrinsic width and maintain aspect ratio
-		setTimeout(function(){
-			_this.applyIntrinsicAspect();
-		}, 0);
+		// resize the player into the allocated space: 
+		_this.controlBuilder.resizePlayer( { 
+			'width' : _this.$interface.width(),
+			'height' : _this.$interface.height()
+		});
+		
 		// Update the playerReady flag
 		this.playerReady = true;
 		mw.log("EmbedPlayer:: Trigger: playerReady");
