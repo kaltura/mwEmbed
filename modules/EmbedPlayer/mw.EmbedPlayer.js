@@ -903,11 +903,14 @@ mw.EmbedPlayer.prototype = {
 			this.$interface.css('height', this.controlBuilder.height); // Set the interface height to controlbar height
 		}
 
-		// Resize the player into the allocated space: 
-		this.controlBuilder.resizePlayer( {
-			'width' : this.$interface.width(),
-			'height' : this.$interface.height()
-		} );
+		// Resize the player into the allocated space if aspect ratio is off: 
+		var aspect = Math.round( ( this.width / this.height ) *10 )/10;
+		if( aspect != this.controlBuilder.getIntrinsicAspect() ){
+			this.controlBuilder.resizePlayer( {
+				'width' : this.$interface.width(),
+				'height' : this.$interface.height()
+			} );
+		}
 		
 		// Update the playerReady flag
 		this.playerReady = true;
@@ -1327,7 +1330,8 @@ mw.EmbedPlayer.prototype = {
 
 		// Update PersistentNativePlayer poster:
 		if( this.isPersistentNativePlayer() ){
-			$( '#' + this.pid ).attr( 'poster', posterSrc );
+			var $vid = $( '#' + this.pid );
+			$vid.attr( 'poster', posterSrc );
 			// Add a quick timeout hide / show ( firefox 4x bug with native poster updates )
 			if( $.browser.mozilla ){
 				$vid.hide();
