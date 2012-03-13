@@ -320,29 +320,43 @@ mw.PlayerControlBuilder.prototype = {
 	 * 			size object with width and height
 	 */
 	getIntrinsicSize: function(){
-		var size = {};
 		var vid = this.embedPlayer.getPlayerElement()
 		// Check for embedVideo size: 
-		if( vid ){
-			size.width = vid.videoWidth;
-			size.height = vid.videoHeight;
+		if( vid && vid.videoWidth && vid.videoHeight ){
+			return {
+				'width' : vid.videoWidth,
+				'height' : vid.videoHeight
+			}
 		}
+		
+		// See if we have source data attributes available: 
+		if( this.embedPlayer.mediaElement && 
+			this.embedPlayer.mediaElement.selectedSource )
+		{
+			var ss = this.embedPlayer.mediaElement.selectedSource;
+			if( ss.width && ss.height ){
+				return {
+					'width' : ss.width,
+					'height' : ss.height
+				}
+			}
+		}
+		
+		
 		// check for posterImage size: ( should have Intrinsic aspect size as well ) 
 		var img = this.embedPlayer.$interface.find('.playerPoster')[0];
-		if( !size.width && img && img.naturalWidth){
-			size.width = img.naturalWidth;
+		if( img && img.naturalWidth && img.naturalHeight){
+			return {
+				'width' : img.naturalWidth,
+				'height' : img.naturalHeight
+			}
 		}
-		if( !size.height && img && img.naturalHeight ){
-			size.height = img.naturalHeight;
-		}
+		
 		// if all else fails use embedPlayer.getWidth()
-		if( !size.width ){
-			size.width = this.embedPlayer.getWidth();
+		return {
+			'width' : this.embedPlayer.getWidth(),
+			'height' : this.embedPlayer.getHeight()
 		}
-		if( !size.height ){
-			size.height = this.embedPlayer.getHeight();
-		}
-		return size;
 	},
 	
 	/**
