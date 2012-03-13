@@ -582,7 +582,7 @@
 				case 'changeVolume':
 				case 'volumeChanged':
 					b( 'volumeChanged', function(event, percent){
-						callback( {'newVolume' : percent}, embedPlayer.id );
+						callback( { 'newVolume' : percent }, embedPlayer.id );
 					});
 					break;
 				case 'playerStateChange':

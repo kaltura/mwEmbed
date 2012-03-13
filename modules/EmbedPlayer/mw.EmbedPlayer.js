@@ -900,11 +900,11 @@ mw.EmbedPlayer.prototype = {
 			this.$interface.css('height', this.controlBuilder.height); // Set the interface height to controlbar height
 		}
 
-		// resize the player into the allocated space: 
-		_this.controlBuilder.resizePlayer( { 
-			'width' : _this.$interface.width(),
-			'height' : _this.$interface.height()
-		});
+		// Resize the player into the allocated space: 
+		this.controlBuilder.resizePlayer( {
+			'width' : this.$interface.width(),
+			'height' : this.$interface.height()
+		} );
 		
 		// Update the playerReady flag
 		this.playerReady = true;

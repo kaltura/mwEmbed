@@ -288,15 +288,13 @@ mw.PlayerControlBuilder.prototype = {
 			windowSize.height = windowSize.height - this.height;
 		}
 		
-		// Check if we can read intrinsic size, if not just take image or video tag size
-		var intrinsicSize = _this.getIntrinsicSize();
 		// Set target width
 		var targetWidth = windowSize.width;
-		var targetHeight = targetWidth * ( intrinsicSize.height / intrinsicSize.width );
+		var targetHeight = targetWidth * ( 1 / _this.getIntrinsicAspect() );
 		// Check if it exceeds the height constraint:
 		if( targetHeight > windowSize.height ){
 			targetHeight = windowSize.height;
-			targetWidth = parseInt( targetHeight * ( intrinsicSize.width / intrinsicSize.height ) );
+			targetWidth = parseInt( targetHeight * _this.getIntrinsicAspect() );
 		}
 		var offsetTop = 0;
 		//  Move the video down 1/2 of the difference of window height
@@ -315,18 +313,15 @@ mw.PlayerControlBuilder.prototype = {
 	},
 
 	/**
-	 * Get the intrinsic media size
-	 * @return {object}
+	 * Get the intrinsic aspect ratio of media  ( width / height )
+	 * @return {float}
 	 * 			size object with width and height
 	 */
-	getIntrinsicSize: function(){
+	getIntrinsicAspect: function(){
 		var vid = this.embedPlayer.getPlayerElement()
 		// Check for embedVideo size: 
 		if( vid && vid.videoWidth && vid.videoHeight ){
-			return {
-				'width' : vid.videoWidth,
-				'height' : vid.videoHeight
-			}
+			return vid.videoWidth / vid.videoHeight;
 		}
 		
 		// See if we have source data attributes available: 
@@ -334,29 +329,26 @@ mw.PlayerControlBuilder.prototype = {
 			this.embedPlayer.mediaElement.selectedSource )
 		{
 			var ss = this.embedPlayer.mediaElement.selectedSource;
-			if( ss.width && ss.height ){
-				return {
-					'width' : ss.width,
-					'height' : ss.height
-				}
+			// see if we have a hardcoded aspect to the source ( Adaptive streams don't have width / height ) 
+			if( ss.aspect ){
+				return ss.aspect;
 			}
+			
+			if( ss.width && ss.height ){
+				return ss.width / ss.height
+			}
+
 		}
 		
 		
 		// check for posterImage size: ( should have Intrinsic aspect size as well ) 
 		var img = this.embedPlayer.$interface.find('.playerPoster')[0];
 		if( img && img.naturalWidth && img.naturalHeight){
-			return {
-				'width' : img.naturalWidth,
-				'height' : img.naturalHeight
-			}
+			return img.naturalWidth /  img.naturalHeight
 		}
 		
 		// if all else fails use embedPlayer.getWidth()
-		return {
-			'width' : this.embedPlayer.getWidth(),
-			'height' : this.embedPlayer.getHeight()
-		}
+		return this.embedPlayer.getWidth() / this.embedPlayer.getHeight()
 	},
 	
 	/**
