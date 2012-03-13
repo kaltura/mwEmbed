@@ -260,7 +260,7 @@ mw.EmbedPlayerKplayer = {
 		waitForJsListen( function(){
 			var gPlayerReady = 'kdp_' + _this.id + '_switchSrcReady';
 			var gDoneName = 'kdp_' + _this.id + '_switchSrcEnd';
-			window[gPlayerReady] = function(){
+			window[ gPlayerReady ] = function(){
 				mw.log("Kplayer switchPlaySource: " + src);
 				
 				_this.getPlayerElement().sendNotification("changeMedia", { 'entryId': src } );

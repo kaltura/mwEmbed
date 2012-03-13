@@ -468,6 +468,8 @@ mw.EmbedPlayer.prototype = {
 			this.mediaElement.sources = [];
 			this.mediaElement.selectedSource = null;
 		}
+		// setup pointer to old source:
+		this.prevPlayer = this.selectedPlayer;
 		this.selectedPlayer =null;
 	},
 
@@ -506,34 +508,33 @@ mw.EmbedPlayer.prototype = {
 	 */
 	setupSourcePlayer: function() {
 		mw.log("EmbedPlayer::setupSourcePlayer: " + this.id + ' sources: ' + this.mediaElement.sources.length );
-		var prevPlayer = this.selectedPlayer;
 		// Autoseletct the media source
 		this.mediaElement.autoSelectSource();
 		
 		// Auto select player based on default order
 		if ( !this.mediaElement.selectedSource ) {
-			mw.log( 'setupSourcePlayer:: no sources, type:' + this.type );
+			mw.log( "EmbedPlayer:: Error setupSourcePlayer no playable sources found" );
 		} else {
 			this.selectedPlayer = mw.EmbedTypes.getMediaPlayers().defaultPlayer( this.mediaElement.selectedSource.mimeType );
 		}
-		if( !this.selectedPlayer ){
-			this.showPluginMissingHTML();
-			if( typeof callback != 'undefined' ){
-				callback();
-			}
-			mw.log( "EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
-			this.playerReady = true;
-			// trigger the player ready event;
-			$( this ).trigger( 'playerReady' );
-			return ;
-		}
-		if ( prevPlayer != this.selectedPlayer ) {
+		
+		// Check if we need to switch player rendering libraries: 
+		if ( this.selectedPlayer && ( !this.prevPlayer || this.prevPlayer.library != this.selectedPlayer.library ) ) {
 			// Inherit the playback system of the selected player:
 			this.updatePlaybackInterface();
-		} else {
-			// Show the interface: 
-			this.$interface.find( '.control-bar,.play-btn-large').show();
+			return ;
 		}
+		// Check if no 
+		if( !this.selectedPlayer ){
+			this.showPluginMissingHTML();
+			mw.log( "EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
+		}
+		// Show the interface: 
+		this.$interface.find( '.control-bar,.play-btn-large').show();
+		// trigger ready: 
+		this.playerReady = true;
+		// trigger the player ready event;
+		$( this ).trigger( 'playerReady' );
 	},
 
 	/**
@@ -768,10 +769,11 @@ mw.EmbedPlayer.prototype = {
 			return ;
 		}
 		mw.log( 'EmbedPlayer::onClipDone: propagate:' +  _this._propagateEvents + ' id:' + this.id + ' doneCount:' + this.donePlayingCount + ' stop state:' +this.isStopped() );
-		
 		// Only run stopped once:
 		if( !this.isStopped() ){
-			this.stop();
+			// set the "stopped" flag:
+			this.stopped = true;
+			
 			// Show the control bar:
 			this.controlBuilder.showControlBar();
 
@@ -805,6 +807,7 @@ mw.EmbedPlayer.prototype = {
 				mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
 				// Prevent the native "onPlay" event from propagating that happens when we rewind:
 				this.stopEventPropagation();
+				// Stop for real: 
 				this.stop();
 				// Restore events after we rewind the player
 				this.restoreEventPropagation(); 
@@ -911,7 +914,6 @@ mw.EmbedPlayer.prototype = {
 		mw.log("EmbedPlayer:: Trigger: playerReady");
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
-
 		
 		// Check if we want to block the player display
 		if( this['data-blockPlayerDisplay'] ){
@@ -1212,7 +1214,6 @@ mw.EmbedPlayer.prototype = {
 		mw.log( 'EmbedPlayer:: changeMedia ');
 		// Empty out embedPlayer object sources
 		this.emptySources();
-		
 		// onChangeMedia triggered at the start of the change media commands
 		$this.trigger( 'onChangeMedia' );
 		
@@ -1253,6 +1254,7 @@ mw.EmbedPlayer.prototype = {
 		var bindName = 'playerReady.changeMedia';
 		$this.unbind( bindName ).bind( bindName, function(){
 			mw.log('mw.EmbedPlayer::changeMedia playerReady callback');
+			
 			// Always show the control bar on switch:
 			if( _this.controlBuilder ){
 				_this.controlBuilder.showControlBar();
@@ -1264,7 +1266,7 @@ mw.EmbedPlayer.prototype = {
 				_this.$interface.find( '.play-btn-large' ).show();
 			}
 			
-			if( _this.isPersistentNativePlayer() ){
+			if( _this.isPersistentNativePlayer() || _this.useNativePlayerControls() ){
 				// If switching a Persistent native player update the source:
 				// ( stop and play won't refresh the source  )
 				_this.switchPlaySource( _this.getSource(), function(){
@@ -1313,8 +1315,9 @@ mw.EmbedPlayer.prototype = {
 		var thumb_html = '';
 		var class_atr = '';
 		var style_atr = '';
+		
 		if( this.useNativePlayerControls() && this.mediaElement.selectedSource ){
-			this.showNativePlayer();
+			this.embedNativePlayer();
 			return ;
 		}
 
@@ -1324,8 +1327,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Update PersistentNativePlayer poster:
 		if( this.isPersistentNativePlayer() ){
-			var $vid = $( '#' + this.pid );
-			$vid.attr( 'poster', posterSrc );
+			$( '#' + this.pid ).attr( 'poster', posterSrc );
 			// Add a quick timeout hide / show ( firefox 4x bug with native poster updates )
 			if( $.browser.mozilla ){
 				$vid.hide();
@@ -1406,13 +1408,13 @@ mw.EmbedPlayer.prototype = {
 
 
 	/**
-	 * Show the native player embed code
+	 * Embed the native player
 	 *
 	 * This is for cases where the main library needs to "get out of the way"
 	 * since the device only supports a limited subset of the html5 and won't
 	 * work with an html javascirpt interface
 	 */
-	showNativePlayer: function(){
+	embedNativePlayer: function(){
 		var _this = this;
 		// Empty the player of any child nodes
 		$(this).empty();
