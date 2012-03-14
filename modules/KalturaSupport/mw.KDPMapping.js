@@ -124,6 +124,8 @@
 									.$( '#' + playerProxy.id ).get(0).play();
 							}
 						}
+						// always send postMessage on setKDPAttribute
+						return true;
 					};
 				});
 				
@@ -571,7 +573,7 @@
 						if( ! embedPlayer[ 'data-playerError' ] ){
 							embedPlayer.kdpEmptyFlag = false;
 						}
-						callback( {}, embedPlayer.id );
+						callback( embedPlayer.id );
 					});
 					break;
 				case 'playerReady':
@@ -580,7 +582,7 @@
 				case 'changeVolume':
 				case 'volumeChanged':
 					b( 'volumeChanged', function(event, percent){
-						callback( {'newVolume' : percent}, embedPlayer.id );
+						callback( { 'newVolume' : percent }, embedPlayer.id );
 					});
 					break;
 				case 'playerStateChange':
@@ -903,6 +905,7 @@
 					    embedPlayer.emptySources();
 					    break;
 					}
+
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1) || (notificationData.referenceId && notificationData.referenceId != -1) ){
 						// Check if we use referenceId
@@ -926,9 +929,10 @@
 						// clear ad data ..
 						embedPlayer.kAds = null;
 
-						// Update the poster
-						embedPlayer.updatePosterSrc();
-						
+						// Update the poster ( if not on iPhone ) 
+						if( !mw.isIphone() ){
+							embedPlayer.updatePosterSrc();
+						}
 						// run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
 						break;

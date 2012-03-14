@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Tall Player Layout test</title>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	
+	// Name this module
+	module( "Tall Player Layout" );
+
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
+	var iframeContext = window.frames['kaltura_player_ifp'];
+	
+	test( "Iframe in DOM", function() {
+		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
+		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+	});
+
+	asyncTest("Iframe layout elements", function(){
+		kalturaQunitWaitForPlayer(function(){
+			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
+			ok( $iframe.find('.play-btn').length, ".play-btn found" );
+			start();
+		});
+	});
+	asyncTest("Iframe config", function(){
+		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
+		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
+		// Test page context config: 
+		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
+		start();
+	});
+}
+</script>
+<script>
+	function jsCallbackReady( playerId ){
+		var kdp = $( '#' + playerId )[0];
+		kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
+	}
+	function onPlayerSeekStart( playerId ){
+		var kdp = $( '#' + playerId )[0];
+		mw.log( " ON start seek: " +  kdp.evaluate( '{video.player.currentTime}' ) );
+	}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+<h2> Tall Player Layout test </h2>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br />
+<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
+allowNetworking="all" allowScriptAccess="always" height="500" width="400" xmlns:dc="http://purl.org/dc/terms/" 
+xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
+resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" 
+data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4">
+	<param name="allowFullScreen" value="true" />
+	<param name="allowNetworking" value="all" />
+	<param name="allowScriptAccess" value="always" />
+	<param name="bgcolor" value="#000000" />
+	<param name="flashVars" value="&externalInterfaceDisabled=false" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" />
+</object>
+</body>
+</html>
