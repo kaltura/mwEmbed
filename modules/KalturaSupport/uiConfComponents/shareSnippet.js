@@ -124,12 +124,11 @@ color5="16777215" font="Arial" />
 			if( this.getConfig('generatorEmbedPrefix') ) {
 				generatorPageUrl = this.getConfig('generatorEmbedPrefix') + this.getConfig('uuid');
 			} else {
-				showError = true;
-				generatorPageUrl = "Plugin is not configured correctly. Generator page prefix is not set";
+				generatorPageUrl = this.getConfig('uuid');
 			}
 
 			if( showError ) {
-				customSnippet = generatorPageUrl;
+				customSnippet = '';
 			} else {
 				customSnippet = unescape(this.getConfig('customSnippetBefore')) + generatorPageUrl + unescape(this.getConfig('customSnippetAfter'));
 			}

@@ -481,6 +481,46 @@ var kWidget = {
 		return false;
 	 }
 };
+
+// Define mw ( if not already set ) 
+if( !window['mw'] ) {
+	window['mw'] = {};
+}
+
+// Setup preMwEmbedReady queue
+if( !window['preMwEmbedReady'] ){
+	window.preMwEmbedReady = [];
+}
+// Setup preMwEmbedConfig if not set: 
+if( !window['preMwEmbedConfig'] ) {
+	window.preMwEmbedConfig = {};
+}
+
+if( ! mw.setConfig ){
+	mw.setConfig = function( set, value ){
+		if( typeof value != 'undefined'  ) {
+			window.preMwEmbedConfig[ set ] = value;
+		} else if ( typeof set == 'object' ){
+			for( var i in set ){
+				window.preMwEmbedConfig[ i ] = set[i];
+			}
+		}
+	};
+}
+
+if( ! mw.getConfig ){
+	mw.getConfig = function ( key, defaultValue ){
+		if( typeof window.preMwEmbedConfig[ key ] == 'undefined' ){
+			if( typeof defaultValue != 'undefined' ){
+				return defaultValue;
+			}
+			return null;
+		} else {
+			return window.preMwEmbedConfig[ key ];
+		}
+	};
+}
+
 // Export to kWidget and KWidget
 window.KWidget = kWidget;
 window.kWidget = kWidget;

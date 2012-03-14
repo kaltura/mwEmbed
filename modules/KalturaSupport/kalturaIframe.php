@@ -762,7 +762,7 @@ class kalturaIframe {
 				?>
 				// Because IE has out of order execution issues, we don't check the dom until we get here: 
 				setTimeout(function(){
-					kRunMwDomReady( 'endOfIframeJs' );
+					kWidget.domReady.runDomReady( 'endOfIframeJs' );
 				},0);
 			});
 		</script>
@@ -773,7 +773,7 @@ class kalturaIframe {
 	private function javaScriptPlayerLogic(){
 		?>
 		
-		var isHTML5 = kIsHTML5FallForward();
+		var isHTML5 = kWidget.isHTML5FallForward();
 		if( window.kUserAgentPlayerRules ) {
 			var playerAction = window.checkUserAgentPlayerRules( window.kUserAgentPlayerRules[ '<?php echo $this->getResultObject()->getUiConfId() ?>' ] );
 			if( playerAction.mode == 'leadWithHTML5' ){

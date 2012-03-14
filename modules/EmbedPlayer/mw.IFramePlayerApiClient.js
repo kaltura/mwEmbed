@@ -370,7 +370,7 @@ jQuery.fn.iFramePlayer = function( readyCallback ){
 	// Bind the iFrame player ready callback
 	if( readyCallback ){
 		$( playerProxy ).bind( 'playerReady', readyCallback );		
-	};
+	}
 	
 	// Setup the iframe:
 	var iframe = $('#' + iframePlayerId)[0];

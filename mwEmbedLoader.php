@@ -28,6 +28,9 @@ $loaderJs .= "window['KALTURA_LOADER_VERSION'] = '$wgMwEmbedVersion';\n";
 // Get resource (  kWidgetLoader.js )
 $loaderJs .= file_get_contents( 'kWidgetLoader.js' );
 
+// Get resource (  kDomReady.js )
+$loaderJs .= file_get_contents( 'kDomReady.js' );
+
 // Get resource (  mwEmbedLoader.js )
 $loaderJs .= file_get_contents( 'mwEmbedLoader.js' );
 

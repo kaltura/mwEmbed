@@ -178,7 +178,7 @@
 		}else {
 		
 			// Check if we are NOT rewriting tags: 
-			if( !kIsHTML5FallForward() ) {
+			if( !kWidget.isHTML5FallForward() ) {
 				restoreKalturaKDPCallback();
 				rewriteDoneCallback();
 				return ;
@@ -486,7 +486,7 @@
 			var iframeRequest = '';
 			for( var key in iframeParams ){
 				// don't put flashvars or readyCallback into the post url ( will be a request param ) 
-				if( key == 'flashvars' || key == 'readyCallback' || key == 'isHTML5' ){
+				if( key == 'flashvars' || key == 'readyCallback' || key == 'isHTML5' || key == 'partner_id' || key == 'targetId' || key == 'width' || key == 'height' ){
 					continue;
 				}
 				
