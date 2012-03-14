@@ -167,6 +167,9 @@ mw.KAnalytics.prototype = {
 		for( var i in eventSet){
 			eventRequest[ 'event:' + i] = eventSet[i];
 		}
+		// Add referer parameter
+		eventRequest['referrer'] = encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') );
+		
 		// Do the api request: 
 		this.kClient.doRequest( eventRequest );
 	},

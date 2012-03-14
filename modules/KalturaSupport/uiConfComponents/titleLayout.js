@@ -61,14 +61,18 @@
 		}
 		function updatePlayerLayout(){
 			var $vid = $( embedPlayer.getPlayerElement() );
-			var vidHeight;
+			var vidHeight = $vid.height();
 			// Check if we are using flash ( don't move the player element )
 			if( embedPlayer.instanceOf != 'Native' || $vid.length == 0 ){
 				$vid = $();
 				vidHeight = embedPlayer.getHeight();
 			} else {
-				vidHeight = ( $vid.height() - titleScreenHeight );
+				vidHeight = embedPlayer.$interface.height() - titleScreenHeight;
+				if( !embedPlayer.controlBuilder.isOverlayControls() ){
+					vidHeight = vidHeight - embedPlayer.controlBuilder.height; 
+				}
 			}
+			mw.log("TitleLayout:: update height: " + titleScreenHeight );
 			// add space for the title: 
 			$vid
 			.css({
@@ -76,12 +80,8 @@
 				'height' : vidHeight
 			});
 			if( !belowPlayer ){
-				if( parseInt( $vid.css( 'top' ) ) < titleScreenHeight ){
-					$vid.css( 'top', titleScreenHeight + 'px' );
-				}
-				/* embedPlayer.$interface.find(".play-btn-large").css({
-					'top' : parseInt( ( vidHeight + parseInt( titleScreenHeight ) ) / 2 )  + 'px'
-				});*/
+				mw.log("TitleLayout:: update top: " + titleScreenHeight );
+				$vid.css( 'top', titleScreenHeight + 'px' );
 			} else {
 				// $( embedPlayer ).css('height', vidHeight )
 				embedPlayer.$interface.css( 'height', vidHeight +  embedPlayer.controlBuilder.getHeight() );

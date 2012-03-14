@@ -77,7 +77,7 @@
 				'-khtml-border-bottom-left-radius' : '0px !important',
 				'border-top-left-radius' : '0px !important',
 				'border-bottom-left-radius' : '0px !important',
-				'margin-right' : '3px !important',
+				'margin-right' : '4px !important',
 				'border-right' : '0px !important'
 			} );
 			
@@ -87,7 +87,10 @@
 			if ( embedPlayer.controlBuilder.inFullScreen ) {
 				playHeadEnd = screen.width - $interface.find( '.time-disp' ).position().left + 5;
 			}
-			$play_head.css( 'right', playHeadEnd + 'px' );
+			$play_head.css( {
+				'right' : playHeadEnd + 'px',
+				'height' : '7px'
+			} );
 			// Playhead padded border
 			var $paddedBorder = $( '<div />' )
 				.addClass( 'padded-border' )
@@ -118,7 +121,7 @@
 					'width' : backgroundWidth + 'px',
 					'height' : buttonHeight + ( 2 * buttonPadding ) + 'px',
 					'margin' : buttonMargin + 'px',
-					'left' :  backgroundLeft + 'px',
+					'left' :  backgroundLeft - 2 + 'px',
 					'z-index' : -1
 				} )
 				.addClass ( 'ui-corner-all custom-background' );
