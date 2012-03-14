@@ -295,13 +295,13 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Check if entry id already matches ( and is loaded ) 
 		if( embedPlayer.kentryid == this.getClip( clipIndex ).id ){
 			if( this.loadingEntry ){
-				mw.log("Error: PlaylistHandlerKaltura possible double playClip request");
+				mw.log("Error: PlaylistHandlerKaltura is loading Entry, possible double playClip request");
 			}else {
 				embedPlayer.play();
 			}
 			return ;
 		}	
-		// update the loadingEntry flag:
+		// Update the loadingEntry flag:
 		this.loadingEntry = this.getClip( clipIndex ).id;
 		
 		// Listen for change media done

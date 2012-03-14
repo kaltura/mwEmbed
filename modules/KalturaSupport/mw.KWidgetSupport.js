@@ -853,18 +853,27 @@ mw.KWidgetSupport.prototype = {
 			var flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
 				   '/sp/' +  partnerId + '00/flvclipper';
 		}
-
+		var clipAspect = null;
 		// Add all avaliable sources: 
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 			var asset = flavorData[i];
 			var entryId = asset.entryId;
+			
+			var newAspect = Math.round( ( asset.width / asset.height)  * 100 )  / 100
+			if( clipAspect !== null && clipAspect != newAspect ){
+				mw.log("KWidgetSupport:: Possible Error clipApsect mispach: " + clipAspect + " != " + newAspect );
+			}
+			clipAspect = newAspect;
+			
 			// Setup a source object:
 			var source = {
 				'data-sizebytes' : asset.size * 1024,
 				'data-bandwidth' : asset.bitrate * 1024,
 				'data-width' : asset.width,
-				'data-height' : asset.height
+				'data-height' : asset.height,
+				'data-aspect' : clipAspect
 			};
+			
 			// Continue if clip is not ready (2) and not in a transcoding state (4 )
 			if( asset.status != 2  ) {
 				// if an asset is transcoding and no other source is found bind an error callback: 
@@ -956,17 +965,19 @@ mw.KWidgetSupport.prototype = {
 			}
 		}
 		
-		// Create iPad flavor for Akamai HTTP
-		if( ipadAdaptiveFlavors.length != 0 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
+		// Create iPad flavor for Akamai HTTP if we have more than one flavor
+		if( ipadAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
 			deviceSources.push({
+				'data-aspect' : clipAspect,
 				'data-flavorid' : 'iPadNew',
 				'type' : 'application/vnd.apple.mpegurl',
 				'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
 			});
 		}
 		// Create iPhone flavor for Akamai HTTP
-		if(iphoneAdaptiveFlavors.length != 0 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
+		if(iphoneAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
 			deviceSources.push({
+				'data-aspect' : clipAspect,
 				'data-flavorid' : 'iPhoneNew',
 				'type' : 'application/vnd.apple.mpegurl',
 				'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
