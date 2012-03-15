@@ -550,7 +550,6 @@ mw.EmbedPlayerNative = {
 		this.duration = 0;
 		this.currentTime = 0;
 		this.previousTime = 0;
-	
 		if ( vid ) {
 			try {
 				// Remove all switch player bindings
@@ -566,14 +565,7 @@ mw.EmbedPlayerNative = {
 					return ;
 				}
 				_this.hideIpadPlayerOffScreen();
-				
-				// move the video offscreen while it switches ( hides quicktime logo only applies to iPad ) 
-				if( mw.isIpad() ){
-					$( vid ).css( {
-						'position' : 'absolute', 
-						'left': '-4048px'
-					});
-				}
+				// add a loading indicator: 
 				_this.addPlayerSpinner(); 
 				
 				// Do the actual source switch: 
@@ -706,12 +698,8 @@ mw.EmbedPlayerNative = {
 	* Play back the video stream
 	* calls parent_play to update the interface
 	*/
-	play: function( ) {
+	play: function() {
 		var _this = this;
-		// Always at least "load" content on play request: 
-		if( this.getPlayerElement() ){
-			this.getPlayerElement().load();
-		}
 		// Run parent play:
 		if( _this.parent_play() ){
 			this.getPlayerElement();

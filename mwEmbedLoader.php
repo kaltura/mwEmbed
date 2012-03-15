@@ -6,7 +6,8 @@
 require_once( realpath( dirname( __FILE__ ) ) . '/includes/DefaultSettings.php' );
 
 // Kaltura Comment
-$loaderComment = "/**
+$loaderComment = "'video audio source track'.replace(/\w+/g, function(n){ document.createElement(n); });
+/**
 * Kaltura HTML5 Library v$wgMwEmbedVersion 
 * Library Page http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
 * 

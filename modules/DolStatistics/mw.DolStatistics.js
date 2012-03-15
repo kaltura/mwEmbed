@@ -241,11 +241,11 @@ mw.DolStatistics.prototype = {
 		// Always include the current time: 
 		params['KDPDAT_PLAYHEAD'] = Math.round( this.embedPlayer.currentTime * 1000 ) / 1000;
 		// The auto played property; 
-		params['AUTO'] = embedPlayer.autoplay;
+		params['AUTO'] = this.getAutoPlayFlag();
 		// Current Timestamp
 		params['GENTIME'] = new Date().getTime();
 		// Asset Id
-		params['ASSETID'] = _this.getConfig( 'ASSETID' );
+		params['ASSETID'] = this.getConfig( 'ASSETID' );
 		// Kaltura Player ID
 		params['KDPID'] = this.embedPlayer.kuiconfid;
 		// Video length
@@ -264,7 +264,7 @@ mw.DolStatistics.prototype = {
 		params['KPLAYBACKID'] = this.embedPlayer.evaluate('{configProxy.sessionId}') + $( this.embedPlayer ).data('DolStatisticsCounter');
 
 		// Embedded Page Title:
-		try{
+		try {
 			params['GENTITLE'] = parent.document.title;
 		} catch( e ){
 			// no title at all if we can't access the parent
@@ -290,11 +290,11 @@ mw.DolStatistics.prototype = {
 				// Find undefined with no space on either side
 				params[i] = params[i].replace( /undefined/g, '' );
 			} else if( typeof params[i] == 'undefined' ){
-				params[i] == '';
+				params[i] = '';
 			}
 		}
 		
-		mw.log('DolStatistics:: Send Stats Data ' + statsUrl, params);
+		mw.log( 'DolStatistics:: Send Stats Data ' + statsUrl, params);
 		
 		// If we have access to parent, call the jsFunction provided
 		if( this.getConfig( 'jsFunctionName' ) && window.parent ) {
@@ -315,7 +315,18 @@ mw.DolStatistics.prototype = {
 			})
 		);
 	},
-
+	getAutoPlayFlag: function(){
+		var embedPlayer = this.embedPlayer;
+		// Check if in playlist mode: 
+		if( embedPlayer.evaluate( '{playlistAPI.kpl0Url}' ) ){
+			if( $( embedPlayer ).data('DolStatisticsCounter') == 1 ){
+				return embedPlayer.autoplay;
+			} else {
+				return !!embedPlayer.evaluate( '{playlistAPI.autoContinue}' );
+			}
+		}
+		return embedPlayer.autoplay;
+	},
 	destroy: function() {
 		clearInterval( this.playheadInterval );
 		this.playheadInterval = 0;

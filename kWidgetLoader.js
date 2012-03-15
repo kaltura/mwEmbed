@@ -52,11 +52,12 @@ var kWidget = {
 			return ;
 		}
 
+		var uiconf_id = settings.uiconf_id;
 		settings.isHTML5 = kWidget.isHTML5FallForward();
 		// Check if we even need to rewrite the page at all
 		// Evaluate per user agent rules:
-		if( settings.uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ settings.uiconf_id ]){
-			var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ settings.uiconf_id ] );
+		if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
+			var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
 			// Default play mode, if here and really using flash remap:
 			switch( playerAction.mode ){
 				case 'flash':
@@ -93,12 +94,7 @@ var kWidget = {
 			kWidget.outputHTML5Iframe( targetId, settings );
 			return ;
 		} else {
-			if( settings.uiconf_id ) {
-				// we use setTimeout to handle race condition when restore get called before dom ready
-				setTimeout( function() {
-					restoreKalturaKDPCallback();
-				}, 0);
-			}
+			restoreKalturaKDPCallback();
 			kWidget.outputFlashObject( targetId, settings );
 			return ;
 		}
@@ -124,11 +120,11 @@ var kWidget = {
 				swfUrl+= '/cache_st/' + settings.cache_st;
 			}
 			// Get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
-			var width = ( settings.width ) ? settings.width :
+			var width = ( settings.width ) ? settings.width.replace(/px/, '' ) :
 							( elm.width ) ? elm.width :
 								( elm.style.width ) ? parseInt( elm.style.width ) : 400;
 
-			var height = ( settings.height ) ? settings.height :
+			var height = ( settings.height ) ? settings.height.replace(/px/, '' ) :
 							( elm.height ) ? elm.height :
 								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 
@@ -137,41 +133,47 @@ var kWidget = {
 			// we may have to borrow more from:
 			// http://code.google.com/p/swfobject/source/browse/trunk/swfobject/src/swfobject.js#407
 			// There seems to be issue with passing all the flashvars in playlist context.
-
+			
 			var defaultParamSet = {
 				'allowFullScreen': 'true',
 				'allowNetworking': 'all',
 				'allowScriptAccess': 'always',
 				'bgcolor': '#000000'
-			};
-	
-			var output = '<object width="' + width +
-					'" height="' + height +
-					'" style="width:' + width + 'px;height:' + height + 'px;' +
-					'" id="' + targetId +
-					'" name="' + targetId + '"';
-
-			output += ' data="' + swfUrl + '" type="application/x-shockwave-flash"';
-			if( window.ActiveXObject ){
-				output += ' classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"';
 			}
-			output += '>';
-
-			output += '<param name="movie" value="' + swfUrl + '" />';
-			output += '<param name="flashvars" value="' + flashvarValue + '" />';
-
-			for (var key in defaultParamSet) {
-				if (defaultParamSet[key]) {
-					output += '<param name="'+ key +'" value="'+ defaultParamSet[key] +'" />';
-				}
+			var o = '<object id="' + pId + '" ' +
+				'name="' + pId + '" ';
+			// output classid if in IE
+			if(  window.ActiveXObject ){
+				o += 'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
 			}
-
-			output += "</object>";
-
-			// update the span target:
+			
+			// Attributes support % but not 'px'
+			var widthAttr = width;
+			if( typeof widthAttr == 'string' ){
+				widthAttr = widthAttr.replace(/px/, '' );
+			}
+			var heightAttr = height;
+			if( typeof heightAttr == 'string' ){
+				heightAttr = heightAttr.replace(/px/, '' );
+			}
+			
+			o += 'width="' + widthAttr +'" ' +
+				'height="' + heightAttr + '" ' +
+				'style="width:' + width + 'px;height:' + height + 'px;" ' +
+				'resource="' + swfUrl + '" ' +
+				'data="' + swfUrl + '" ';
+			var p = '<param name="flashVars" value="' + flashvarValue + '" /> ' +
+					'<param name="movie" value="' + swfUrl + '" />';
+			
+			for( var key in defaultParamSet ){
+				var value = ( typeof settings[key] != 'undefined' ) ? settings[key]: defaultParamSet[ key ];
+				o+= key + '="' + value + '" ';
+				p+= '<param name="' + key + '" value="' + value + '" />';
+			}
+			var objectTag = o + ' > ' + p + '</object>'; 
+			// update the span target: 
 			elm.parentNode.replaceChild( spanTarget, elm );
-			spanTarget.innerHTML = output;
-
+			spanTarget.innerHTML = 	objectTag;	
 		}
 	},
 
@@ -196,7 +198,7 @@ var kWidget = {
 							( elm.height ) ? elm.height :
 								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 
-				var sizeUnit = (typeof settings.width == 'string' && settings.width.indexOf("px") === -1) ? 'px' : '';
+				var sizeUnit = (typeof width == 'string' && width.indexOf("px") === -1 && width.indexOf("%") === -1 ) ? 'px' : '';
 
 				var targetCss = {
 					'width': width + sizeUnit,
@@ -204,10 +206,10 @@ var kWidget = {
 				};
 
 				var additionalTargetCss = kGetAdditionalTargetCss();
-				$j.extend(targetCss, additionalTargetCss);
-				$j('#' + targetId ).css(targetCss);
+				$.extend(targetCss, additionalTargetCss);
+				$('#' + targetId ).css(targetCss);
 				// Do kaltura iframe player
-				$j('#' + targetId ).kalturaIframePlayer( settings );
+				$('#' + targetId ).kalturaIframePlayer( settings );
 			});
 		}
 	},
@@ -242,8 +244,8 @@ var kWidget = {
 		var iframe = document.createElement('iframe');
 		iframe.src = iframeSrc;
 		iframe.id = replaceTargetId;
-		iframe.width = (kEmbedSettings.width) ? kEmbedSettings.width : '100%';
-		iframe.height = (kEmbedSettings.height) ? kEmbedSettings.height : '100%';
+		iframe.width = (kEmbedSettings.width) ? kEmbedSettings.width.replace(/px/, '' ) : '100%';
+		iframe.height = (kEmbedSettings.height) ? kEmbedSettings.height.replace(/px/, '' ) : '100%';
 		iframe.style.border = '0px';
 		iframe.style.overflow = 'hidden';
 

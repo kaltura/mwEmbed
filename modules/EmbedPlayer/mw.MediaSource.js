@@ -50,6 +50,7 @@ mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 	'data-sizebytes', // the size of the stream in bytes
 	'data-framerate', // the framereate of the stream
 	'data-flavorid', // a source flavor id ( useful for targeting devices )
+	'data-aspect', // the aspect ratio, useful for adaptive protocal urls that don't have a strict height / width
 	
 	// Media start time
 	'start',
