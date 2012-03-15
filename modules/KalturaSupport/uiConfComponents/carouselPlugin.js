@@ -222,7 +222,7 @@
 				.attr( {
 					'id' : 'prev',
 					'title' : 'Previous',
-					'src' : '../../../skins/common/images/leftarrow-white.png',
+					'src' : '../../../skins/common/images/leftarrow.png',
 					'width' : '15px'
 				} )
 				.css( { 
@@ -232,11 +232,11 @@
 				} )
 				.hover(
 					function() {
-						$( this ).attr( 'src', '../../../skins/common/images/leftarrow-orange.png' )
+						$( this ).attr( 'src', '../../../skins/common/images/leftarrow-hover.png' )
 							.css( 'cursor', 'pointer' );
 					},
 					function() {
-						$( this ).attr( 'src', '../../../skins/common/images/leftarrow-white.png' );
+						$( this ).attr( 'src', '../../../skins/common/images/leftarrow.png' );
 					}
 				);
 					
@@ -245,7 +245,7 @@
 				.attr( {
 					'id' : 'next',
 					'title' : 'Next',
-					'src' : '../../../skins/common/images/rightarrow-white.png',
+					'src' : '../../../skins/common/images/rightarrow.png',
 					'width' : '15px'
 				} )
 				.css( { 
@@ -255,11 +255,11 @@
 				} )
 				.hover(
 					function() {
-						$( this ).attr( 'src', '../../../skins/common/images/rightarrow-orange.png' )
+						$( this ).attr( 'src', '../../../skins/common/images/rightarrow-hover.png' )
 							.css( 'cursor', 'pointer' );
 					},
 					function() {
-						$( this ).attr( 'src', '../../../skins/common/images/rightarrow-white.png' );
+						$( this ).attr( 'src', '../../../skins/common/images/rightarrow.png' );
 					}
 				);
 					
