@@ -716,13 +716,12 @@ mw.EmbedPlayerNative = {
 		if( _this.parent_play() ){
 			this.getPlayerElement();
 			if ( this.playerElement && this.playerElement.play ) {
-				// Dont play if in pause loading state
+				// If in pauseloading state make sure the loading spinner is present: 
 				if( this.isPauseLoading ){
-					this.playerElement.pause();
-				} else {
-					// issue a play request 
-					this.playerElement.play();
+					this.hideSpinnerOncePlaying()
 				}
+				// issue a play request 
+				this.playerElement.play();
 				// re-start the monitor:
 				this.monitor();
 			}
