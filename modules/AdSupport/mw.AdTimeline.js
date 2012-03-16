@@ -180,6 +180,8 @@ mw.AdTimeline.prototype = {
 									// Restore the player if we played an ad: 
 									_this.restorePlayer();
 								}
+								// Sync player size
+								embedPlayer.controlBuilder.syncPlayerSize();								
 								// Trigger onplay ( even if there were no ads ) 
 								embedPlayer.triggerHelper( 'onplay' );
 								
