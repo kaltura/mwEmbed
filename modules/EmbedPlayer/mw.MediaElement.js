@@ -164,7 +164,6 @@ mw.MediaElement.prototype = {
 		// Select the default source
 		var playableSources = this.getPlayableSources();
 		var flash_flag = false, ogg_flag = false;
-
 		// Check if there are any playableSources
 		if( playableSources.length == 0 ){
 			return false;
@@ -318,6 +317,10 @@ mw.MediaElement.prototype = {
 				if ( this.selectedSource ) {
 					mw.log('MediaElement::autoSelectSource: from  ' + this.selectedSource.mimeType + ' because of resolution:' + this.selectedSource.width + ' close to: ' + displayWidth );
 					return this.selectedSource;
+				}
+				// if no size info is set just select the first source:
+				if( namedSourceSet[ codec ][0] ){
+					return setSelectedSource( namedSourceSet[ codec ][0] );
 				}
 			}
 		};
