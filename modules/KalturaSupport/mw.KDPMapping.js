@@ -899,7 +899,8 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
-					// Check if we don't have entryId and referenceId and they both not -1 - Empty sources
+					alert("change media: " + notificationData.entryId);
+					// ChecchangeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
 						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) ) {
 					    embedPlayer.emptySources();
