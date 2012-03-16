@@ -78,10 +78,21 @@ mw.VastAdParser = {
 				}
 				
 				if(  type == 'video/h264' || type == 'video/ogg' || type == 'video/webm' ){
-					currentAd.videoFiles.push({ 
-						'src' :_this.getURLFromNode( mediaFile ),
-						'type' : type
-					});
+					var source = { 
+							'src' :_this.getURLFromNode( mediaFile ),
+							'type' : type
+						};
+					if( $( mediaFile ).attr('bitrate') ){
+						source['data-bandwith']  = $( mediaFile ).attr('bitrate')* 1024;
+					}
+					if( $( mediaFile ).attr('width') ){
+						source['data-width'] =  $( mediaFile ).attr('width');
+					}
+					if( $( mediaFile ).attr('height') ){
+						source['data-height'] =  $( mediaFile ).attr('height');
+					}
+					// Add the source object: 
+					currentAd.videoFiles.push( source );
 					mw.log( "VastAdParser::add MediaFile:" + currentAd.videoFile );
 				}
 			});

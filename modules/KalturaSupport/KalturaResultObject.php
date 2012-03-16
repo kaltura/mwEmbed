@@ -356,7 +356,7 @@ class KalturaResultObject {
 					if( $key == "id" ) {
 						continue;
 					}
-					$plugins[ $pluginId ][ $key ] = $this->formatString((string) $value);
+					$plugins[ $pluginId ][ $key ] = $this->formatString( (string) $value );
 				}
 			}
 		}
@@ -371,7 +371,7 @@ class KalturaResultObject {
 
 		// uiVars
 		if( $this->uiConfFile ) {
-			$uiVarsXml = $this->getUiConfXML()->xpath("*//var");
+			$uiVarsXml = $this->getUiConfXML()->xpath( "*//var" );
 			for( $i=0; $i < count($uiVarsXml); $i++ ) {
 
 				$key = ( string ) $uiVarsXml[ $i ]->attributes()->key;
@@ -385,6 +385,7 @@ class KalturaResultObject {
 				$vars[ $key ] = $this->formatString($value);
 			}
 		}
+		
 		// Set Plugin attributes from uiVars/flashVars to our plugins array
 		foreach( $vars as $key => $value ) {
 			// If this is not a plugin setting, continue

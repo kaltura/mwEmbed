@@ -206,15 +206,15 @@ mw.MediaElement.prototype = {
 			// Check for device flags: 
 			var desktopVdn, mobileVdn;
 			$.each( vndSources, function( inx, source) {
-				// kaltura tags vdn sources with iphonenew
+				// Kaltura tags vdn sources with iphonenew
 				if( source.getFlavorId() && source.getFlavorId().toLowerCase() == 'iphonenew' ){
 					mobileVdn = source;
 				} else {
 					desktopVdn = source;
 				}
 			})
-			// NOTE: We really should not have two vdn sources the point of vdn is to be a set of adaptive streams. 
-			// This work around is a result of kaltura HLS stream tagging 
+			// NOTE: We really should not have two VDN sources the point of vdn is to be a set of adaptive streams. 
+			// This work around is a result of Kaltura HLS stream tagging 
 			if( mw.isIphone() && mobileVdn ){
 				setSelectedSource( mobileVdn );
 			} else if( desktopVdn ){
@@ -225,8 +225,6 @@ mw.MediaElement.prototype = {
 			mw.log('MediaElement::autoSelectSource: Set via Adaptive HLS: source flavor id:' + _this.selectedSource.getFlavorId() + ' src: ' + _this.selectedSource.getSrc() );
 			return this.selectedSource;
 		}
-		
-		
 
 		//Set via user bandwidth pref will always set source to closest bandwidth allocation while not going over  EmbedPlayer.UserBandwidth
 		if( $.cookie('EmbedPlayer.UserBandwidth') ){
