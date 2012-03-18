@@ -83,7 +83,7 @@ mw.DolStatistics.prototype = {
 		});
 		
 		// On change media remove any existing bindings:
-		embedPlayer.bindHelper( 'onChangeMediaDone' + _this.bindPostFix, function(){
+		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
 			if( ! embedPlayer['data-playerError'] ){
 				$embedPlayer.data('DolStatisticsCounter', $embedPlayer.data('DolStatisticsCounter') + 1 );
 			}
