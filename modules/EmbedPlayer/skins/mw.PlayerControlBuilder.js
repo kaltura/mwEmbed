@@ -457,6 +457,7 @@ mw.PlayerControlBuilder.prototype = {
 		setTimeout( function(){ _this.syncPlayerSize() }, 200);
 	},
 	syncPlayerSize: function(){
+		mw.log( "PlayerControlBuilder::syncPlayerSize" );
 		var embedPlayer = this.embedPlayer;
 		if( $( embedPlayer ).width() != $(window).width() ){
 			embedPlayer.resizePlayer( this.getWindowSize() );
@@ -857,7 +858,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		var bindFirstPlay = false;		
 		_this.addRightClickBinding();
-		
+		debugger;
 		// check if the player takes up the full window size: 
 		if( $( embedPlayer ).width() == $(window).width() ){
 			this.isWindowSizePlayer = true;
