@@ -228,7 +228,7 @@
 				'filter:entryIdEqual' : _this.embedPlayer.kentryid,
 				'filter:statusEqual' : 2
 			}, function( data ) {
-				mw.log( "KTimedText:: getTextSourcesFromApi: " + data.totalCount, data.objects);
+				mw.log( "KTimedText:: getTextSourcesFromApi: " + data.totalCount, data.objects );
 				// TODO is this needed does the api not return an empty set?
 				if( data.totalCount > 0 ) {
 					callback( data.objects );

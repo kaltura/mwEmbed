@@ -410,7 +410,7 @@ class KalturaResultObject {
 				);
 			}
 			// Removes from vars array (keep only flat vars)
-			unset( $vars[ $key ] );
+			//unset( $vars[ $key ] );
 		}
 
 		$this->playerConfig = array(

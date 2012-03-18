@@ -33,6 +33,9 @@ mw.DoubleClick.prototype = {
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 		
+		// remove any old bindings: 
+		embedPlayer.unbindHelper( this.bindPostfix );
+		
 		// Determine if we are in managed or kaltura point based mode. 
 		if( this.getConfig( "preSequence" ) && this.getConfig( "adTagUrl" ) ){
 			// managed:
@@ -80,6 +83,7 @@ mw.DoubleClick.prototype = {
 	},
 	addKalturaCuePointBindings: function(){
 		var _this = this;
+		mw.log("DoubleClick::addKalturaCuePointBindings");
 		// Add a binding for cuepoints:
 		_this.embedPlayer.bindHelper( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event,  cuePointWrapper ){
 			var cuePoint = cuePointWrapper.cuePoint;
@@ -409,6 +413,7 @@ mw.DoubleClick.prototype = {
 		this.restorePlayer();
 	},
 	restorePlayer: function(){
+		mw.log("DoubleClick::restorePlayer");
 		this.adPlaying = false;
 		this.embedPlayer.sequenceProxy.isInSequence = true;
 		
@@ -424,10 +429,11 @@ mw.DoubleClick.prototype = {
 		// Show the content:
 		this.showContent();
 		
+		// Check for sequence proxy style restore: 
 		if( this.restorePlayerCallback  ){
 			this.restorePlayerCallback();
 			this.restorePlayerCallback = null;
-		} else {
+		} else { // do a manual restore: 
 			// stop ad playback: 
 			this.embedPlayer.adTimeline.restorePlayer();
 			// managed midroll ( just play content directly )
