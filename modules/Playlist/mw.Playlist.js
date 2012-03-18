@@ -50,6 +50,7 @@ mw.Playlist.prototype = {
 		
 		if( options.embedPlayer ) {
 			this.embedPlayer = options.embedPlayer;
+			this.embedPlayer.playlist = this;
 		}
 		
 		// We assign the base player the id of the playlist ( since we want the player api to be 
@@ -384,8 +385,9 @@ mw.Playlist.prototype = {
 						'hideScrollbar' : false 
 					});
 			}				
-			if( callback ) 
+			if( callback ) {
 				callback();
+			}
 		});
 	},
 	switchTab: function( inx ){
@@ -579,19 +581,23 @@ mw.Playlist.prototype = {
 			if( !_this.sourceHandler.includeInLayout ){
 				return ;
 			}
-			var playerSize = {
-				'width' : $( _this.target + ' .media-rss-video-player-container' ).width() + 'px',
-				'height' : ( $( _this.target + ' .media-rss-video-player-container' ).height() - _this.getTitleHeight() ) + 'px'
-			};
+			
 			// Do another resize on a timeout ( takes time for iframe to resize )
 			setTimeout(function(){
-				embedPlayer.resizePlayer( playerSize, false);	
+				_this.syncPlayerSize();
 			}, 250);
 			
 			$(uiSelector).show();
 		});
 	},
-	
+	syncPlayerSize: function(){
+		var _this = this;
+		var playerSize = {
+			'width' : $( _this.target + ' .media-rss-video-player-container' ).width() + 'px',
+			'height' : ( $( _this.target + ' .media-rss-video-player-container' ).height() - _this.getTitleHeight() ) + 'px'
+		};
+		_this.embedPlayer.resizePlayer( playerSize, false );
+	},
 	updatePlayerUi:function( clipIndex ){
 		var _this = this;
 		// Give a chance for sourceHandler to update player ui

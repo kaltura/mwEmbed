@@ -182,7 +182,7 @@ mw.AdTimeline.prototype = {
 								}
 								// Sync player size
 								embedPlayer.bindHelper('playing', function() {
-									//embedPlayer.controlBuilder.syncPlayerSize();									
+									embedPlayer.controlBuilder.syncPlayerSize();									
 								});
 								// Trigger onplay ( even if there were no ads ) 
 								embedPlayer.triggerHelper( 'onplay' );
