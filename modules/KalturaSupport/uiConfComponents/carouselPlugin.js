@@ -37,23 +37,25 @@
 			var _this = this;
             var embedPlayer = this.embedPlayer;
 			
-			embedPlayer.unbindHelper( _this.bindPostFix );
-			
 			// Add carousel when player is ready
+			embedPlayer.unbindHelper( 'playerReady' + _this.bindPostFix );
 			embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix, function() {
 				_this.addCarousel();
 			} );
 			
 			// Add carousel when pausing
-			embedPlayer.bindHelper( 'pause' + _this.bindPostFix, function() {
+			embedPlayer.unbindHelper( 'pause' + _this.bindPostFix );
+            embedPlayer.bindHelper( 'pause' + _this.bindPostFix, function() {
 				_this.addCarousel();
             } );
 			
 			// Remove carousel when playing
+			embedPlayer.unbindHelper( 'onplay' + _this.bindPostFix );
 			embedPlayer.bindHelper( 'onplay' + _this.bindPostFix, function() {
 				_this.removeAll();
 			} );
 			
+			embedPlayer.unbindHelper( 'onOpenFullScreen' + _this.bindPostFix );
 			embedPlayer.bindHelper( 'onOpenFullScreen' + _this.bindPostFix, function() {
 				_this.removeAll();
 				if ( embedPlayer.paused ) {
@@ -61,6 +63,7 @@
 				}
 			} );
 			
+			embedPlayer.unbindHelper( 'onCloseFullScreen' + _this.bindPostFix );
 			embedPlayer.bindHelper( 'onCloseFullScreen' + _this.bindPostFix, function() {
 				_this.removeAll();
 				if ( embedPlayer.paused ) {
@@ -70,6 +73,7 @@
 				}
 			} );
 			
+			embedPlayer.unbindHelper( 'onResizePlayer' + _this.bindPostFix );
 			embedPlayer.bindHelper( 'onResizePlayer' + _this.bindPostFix, function() {
 				_this.removeAll();
 				if ( embedPlayer.paused ) {
@@ -88,13 +92,36 @@
 				videoName = embedPlayer.kalturaPlayerMetaData.name;
 			}
 			var $titleContainer = $( '<div />' )
-				.addClass( 'carouselVideoTitle' );
+				.addClass( 'carouselVideoTitle' )
+				.css( {
+					'position' : 'absolute',
+					'top' : '0px',
+					'left' : '0px',
+					'width' : '100%',
+					'background' : 'rgba(0, 0, 0, 0.8)',
+					'color' : 'white',
+					'font-size' : 'small',
+					'font-weight' : 'bold',
+					'z-index' : 5
+				} );
 			var $title = $( '<div />' )
 				.text( videoName )
-				.addClass( 'carouselVideoTitleText' );
+				.css( {
+					'display' : 'block',
+					'padding' : '10px 10px 10px 20px'
+				} );
 			var $duration = $( '<div />' )
 				.text( mw.seconds2npt( embedPlayer.duration, false) )
-				.addClass( 'carouselTitleDuration' );
+				.css( {
+					'position' : 'absolute',
+					'top' : '0px',
+					'right' : '0px',
+					'padding' : '2px',
+					'background-color' : '#5A5A5A',
+					'color' : '#D9D9D9',
+					'font-size' : 'smaller',
+					'z-index' : 6
+				} );
 			$titleContainer.append( $title, $duration );
 			// Add the title to the interface
 			embedPlayer.$interface.append( $titleContainer );
@@ -132,7 +159,13 @@
 			var $imgTitle = $( '<div />')
 				.addClass( 'carouselImgTitle' )
 				.css( {
+					'position' : 'absolute',
 					'bottom' : embedPlayer.controlBuilder.getHeight() + 10 + 'px',
+					'width' : '100%',
+					'text-align' : 'center',
+					'color' : 'white',
+					'font-size' : 'small',
+					'background' : 'rgba(0, 0, 0, 0.4)'
 				} );
 
 			// Iterate over playlist entries and generate thumbnails
@@ -165,7 +198,15 @@
 				// Entry duration is overlayed on the thumbnail
 				var $imgOverlay = $( '<span />' )
 					.text( mw.seconds2npt( currEntryObj.duration, false) )
-					.addClass( 'carouselImgDuration' );
+					.css( { 
+						'position' : 'absolute',
+						'top' : '2px',
+						'left' : '2px',
+						'background' : 'rgba( 0, 0, 0, 0.7 )',
+						'color' : 'white',
+						'padding' : '1px 6px',
+						'font-size' : 'small'
+					} );
                 var $currentEntry = $( '<li />')
 					.css( 'position', 'relative' )
                     .append( $img, $imgOverlay )
@@ -184,7 +225,11 @@
 					'src' : '../../../skins/common/images/leftarrow.png',
 					'width' : '15px'
 				} )
-				.addClass( 'carouselPrevButton' )
+				.css( { 
+					'display' : 'block',
+					'position' : 'absolute',
+					'left' : '5px'
+				} )
 				.hover(
 					function() {
 						$( this ).attr( 'src', '../../../skins/common/images/leftarrow-hover.png' )
@@ -203,7 +248,11 @@
 					'src' : '../../../skins/common/images/rightarrow.png',
 					'width' : '15px'
 				} )
-				.addClass( 'carouselNextButton' )
+				.css( { 
+					'position' : 'absolute',
+					'right' : '6px',
+					'display' : 'block'
+				} )
 				.hover(
 					function() {
 						$( this ).attr( 'src', '../../../skins/common/images/rightarrow-hover.png' )
@@ -231,16 +280,22 @@
 				$carouselContainer.after( $imgTitle );
 			}
 			// Place the next/previous buttons in the middle of the thumbnails vertically
+			$prevButton.css( 'bottom', parseInt( ( _this.imgHeight / 2 ) ) - parseInt( ( $prevButton.height() / 2 ) ) + 2 + 'px' );
+			$nextButton.css( 'bottom', parseInt( ( _this.imgHeight / 2 ) ) - parseInt( ( $nextButton.height() / 2 ) ) + 2 + 'px' );
 			$carousel.jCarouselLite( {
-				btnNext: '#next',
-				btnPrev: '#prev',
+				btnNext: "#next",
+				btnPrev: "#prev",
 				circular: false,
 				// TODO: make number of visible thumbnails configurable or computed (i.e how many that fit)
 				visible: visibleThumbnails,
 				scroll: 1
 			} );
-			$carouselContainer.addClass( 'carouselContainer' )
-				.css( 'bottom', embedPlayer.controlBuilder.getHeight() + 30 + 'px' );
+			$carouselContainer.css( { 
+				'position' : 'absolute', 
+				'bottom' : ( embedPlayer.controlBuilder.getHeight() + 30 ) + 'px',
+				'width' : '100%',
+				'z-index' : 100
+			} );
 			if ( mw.isIphone() ) {
 				$carouselContainer.css( { 
 					'bottom' : '0px'
@@ -259,8 +314,8 @@
 				if ( mw.isIphone() ) {
 					$searchNode = $searchNode.parent();
 				}
-				if ( $searchNode.find( '.carouselContainer' ).length ) {
-					$searchNode.find( '.carouselContainer' ).remove();
+				if ( $searchNode.find( ".carouselContainer" ).length ) {
+					$searchNode.find( ".carouselContainer" ).remove();
 				}
 			}
 		},
@@ -268,8 +323,8 @@
 		removeImageTitle: function() {
 			var embedPlayer = this.embedPlayer;
 			if ( embedPlayer.$interface ) {
-				if ( embedPlayer.$interface.find( '.carouselImgTitle' ).length	) {
-					embedPlayer.$interface.find( '.carouselImgTitle' ).remove();
+				if ( embedPlayer.$interface.find( ".carouselImgTitle" ).length	) {
+					embedPlayer.$interface.find( ".carouselImgTitle" ).remove();
 				}
 			}
 			return true;
@@ -278,8 +333,8 @@
 		removeVideoTitle: function() {
 			var embedPlayer = this.embedPlayer;
 			if ( embedPlayer.$interface ) {
-				if ( embedPlayer.$interface.find( '.carouselVideoTitle' ).length ) {
-					embedPlayer.$interface.find( '.carouselVideoTitle' ).remove();
+				if ( embedPlayer.$interface.find( ".carouselVideoTitle" ).length ) {
+					embedPlayer.$interface.find( ".carouselVideoTitle" ).remove();
 				}
 			}
 		},
