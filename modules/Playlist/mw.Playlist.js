@@ -479,7 +479,7 @@ mw.Playlist.prototype = {
 		return $( this.target + ' .media-rss-video-player' );
 	},
 	// Play a clipIndex, if the player is already in the page swap the player src to the new target
-	playClip: function( clipIndex ){
+	playClip: function( clipIndex, autoContinue ){
 		var _this = this;
 		mw.log( "mw.Playlist::playClip > " + clipIndex );
 		// Check for a video/audio tag already in the page:
@@ -489,6 +489,9 @@ mw.Playlist.prototype = {
 			mw.log("Error: Playlist:: playClip called with null embedPlayer ");
 			return ;
 		}
+		// trigger a playlist_playClip event: 
+		embedPlayer.triggerHelper( 'Playlist_PlayClip', [ clipIndex, !!autoContinue ]);
+		
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex, function(){
 			mw.log( "mw.Playlist::playClip > sourceHandler playClip callback ");
@@ -552,7 +555,7 @@ mw.Playlist.prototype = {
 					embedPlayer.onDoneInterfaceFlag = false;
 					_this.clipIndex = parseInt( _this.clipIndex ) + 1;
 					// update the player and play the next clip
-					_this.playClip( _this.clipIndex );
+					_this.playClip( _this.clipIndex, true );
 				} else {
 					mw.log("mw.Playlist:: End of playlist, run normal end action" );
 					// Update the onDone action object to not run the base control done:
