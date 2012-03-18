@@ -1224,6 +1224,8 @@ mw.EmbedPlayer.prototype = {
 		var chnagePlayingMedia = this.isPlaying();
 		// Reset first play to true, to count that play event
 		this.firstPlay = true;
+		// reset donePlaying count on change media.
+		this.donePlayingCount = 0;
 		this.triggeredEndDone = false;
 		this.preSequence = false;
 		this.postSequence = false;
