@@ -2,48 +2,6 @@
 var logIfInIframe = ( typeof preMwEmbedConfig != 'undefined' && preMwEmbedConfig['EmbedPlayer.IsIframeServer'] ) ? ' ( iframe ) ': '';
 kWidget.log( 'Kaltura HTML5 Version: ' + KALTURA_LOADER_VERSION  + logIfInIframe );
 
-window.restoreKalturaKDPCallback = function(){
-	// To restore when we are not rewriting:
-	if( window.KalturaKDPCallbackReady ){
-		window.jsCallbackReady = window.KalturaKDPCallbackReady;
-		window.KalturaKDPCallbackReady = null;
-		if( window.KalturaKDPCallbackAlreadyCalled && window.KalturaKDPCallbackAlreadyCalled.length ){
-			for( var i =0 ; i < window.KalturaKDPCallbackAlreadyCalled.length; i++ ){
-				var playerId = window.KalturaKDPCallbackAlreadyCalled[i];
-				window.jsCallbackReady( playerId );
-				window.KWidget.globalJsReadyCallback( playerId );
-			}
-		}
-		// Should have to do nothing.. kdp will call window.jsCallbackReady directly
-	}
-};
-
-window.KalturaKDPCallbackAlreadyCalled = [];
-
-/**
- * To support kaltura kdp mapping override
- */
-window.checkForKDPCallback = function(){
-	var pushAlreadyCalled = function( player_id ){
-		window.KalturaKDPCallbackAlreadyCalled.push( player_id );
-	}
-	if( window.jsCallbackReady && window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
-		window.originalKDPCallbackReady = window.jsCallbackReady;
-	}
-	// Always update the jsCallbackReady to call pushAlreadyCalled
-	if( !window.jsCallbackReady || window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
-		window.jsCallbackReady = pushAlreadyCalled;
-	}
-	if( !window.KalturaKDPCallbackReady ){
-		window.KalturaKDPCallbackReady = function( playerId ){
-			if( window.originalKDPCallbackReady ){
-				window.originalKDPCallbackReady( playerId );
-			}
-			window.KWidget.globalJsReadyCallback( playerId );
-		};
-	}
-};
-
 /**
  * Url flags:
  */
@@ -174,7 +132,7 @@ function kOverideJsFlashEmbed(){
 				} else {
 					// if its a kaltura player embed restore kdp callback:
 					if( kEmbedSettings.uiconf_id ){
-						restoreKalturaKDPCallback();
+						kWidget.restoreKDPCallback();
 					}
 					// Else call the original EmbedSWF with all its arguments 
 					window['swfobject']['originalEmbedSWF']( swfUrlStr, replaceElemIdStr, widthStr,
@@ -260,8 +218,8 @@ function kCheckAddScript(){
 		return ;
 	}
 	// Restore the jsCallbackReady ( we are not rewriting )
-	if( kGetKalturaPlayerList().length && window.restoreKalturaKDPCallback ){
-		window.restoreKalturaKDPCallback();
+	if( kGetKalturaPlayerList().length ){
+		kWidget.restoreKDPCallback();
 	}
 }
 
@@ -728,5 +686,5 @@ kOverideJsFlashEmbed();
 kWidget.domReady.ready( kOverideJsFlashEmbed );
 
 // Check inline and when the DOM is ready:
-checkForKDPCallback();
-kWidget.domReady.ready( checkForKDPCallback );
+kWidget.checkForKDPCallback();
+kWidget.domReady.ready( kWidget.checkForKDPCallback );

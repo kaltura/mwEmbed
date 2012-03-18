@@ -13,13 +13,19 @@ var kWidget = {
 
 	// First ready callback issued
 	readyCallbacks: [],
+	
+	// Store id of widgets already called
+	alreadyCalledWidgets: [],
+	
+	// Store original jsCallbackReady function
+	originalCallbackReady: false,
 
 	/**
 	 * The base embed method
 	 * TODO move kalturaIframeEmbed to this method and have kalturaIframeEmbed call KWidget.embed :
 	 */
 	embed: function( targetId, settings ){
-		window.checkForKDPCallback();
+		kWidget.checkForKDPCallback();
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
@@ -66,7 +72,7 @@ var kWidget = {
 			switch( playerAction.mode ){
 				case 'flash':
 					if( !kWidget.isHTML5FallForward() && elm.nodeName.toLowerCase() == 'object'){
-						restoreKalturaKDPCallback();
+						kWidget.restoreKDPCallback();
 						return ;
 					}
 				break;
@@ -101,7 +107,7 @@ var kWidget = {
 			if( settings.uiconf_id ) {
 				// we use setTimeout to handle race condition when restore get called before dom ready
 				setTimeout( function() {
-					restoreKalturaKDPCallback();
+					kWidget.restoreKDPCallback();
 				}, 0);
 			}
 			kWidget.outputFlashObject( targetId, settings );
@@ -352,6 +358,50 @@ var kWidget = {
 		// TODO: needs refactor ASAP!
 		kAddedScript = false;
 		kCheckAddScript();
+	},
+	
+	/*
+	 * Support KDP mapping override
+	 */
+	checkForKDPCallback: function(){
+		var pushAlreadyCalled = function( player_id ){
+			kWidget.alreadyCalledWidgets.push( player_id );
+		}
+		// Save original jsCallbackReady if exists
+		if( window.jsCallbackReady && window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
+			kWidget.originalCallbackReady = window.jsCallbackReady;
+		}
+		// Always update the jsCallbackReady to call pushAlreadyCalled
+		if( !window.jsCallbackReady || window.jsCallbackReady.toString() != pushAlreadyCalled.toString() ){
+			window.jsCallbackReady = pushAlreadyCalled;
+		}
+		if( !window.KalturaKDPCallbackReady ){
+			window.KalturaKDPCallbackReady = function( playerId ){
+				if( kWidget.originalCallbackReady ){
+					kWidget.originalCallbackReady( playerId );
+				}
+				window.KWidget.globalJsReadyCallback( playerId );
+			};
+		}
+	},
+	
+	/*
+	 * Restore the callback if it's flash player
+	 */
+	restoreKDPCallback: function(){
+		// To restore when we are not rewriting:
+		if( window.KalturaKDPCallbackReady ){
+			window.jsCallbackReady = window.KalturaKDPCallbackReady;
+			window.KalturaKDPCallbackReady = null;
+			if( kWidget.alreadyCalledWidgets.length ){
+				for( var i =0 ; i < kWidget.alreadyCalledWidgets.length; i++ ){
+					var playerId = kWidget.alreadyCalledWidgets[i];
+					window.jsCallbackReady( playerId );
+					window.KWidget.globalJsReadyCallback( playerId );
+				}
+			}
+			// Should have to do nothing.. kdp will call window.jsCallbackReady directly
+		}
 	},
 
 	/*
