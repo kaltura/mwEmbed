@@ -863,7 +863,7 @@ class kalturaIframe {
 				window.kCollectCallback = function(){ return ; }; // callback for jsonp
 
 				document.getElementById('directFileLinkButton').onclick = function() {
-					kAppendScriptUrl( '<?php echo $this->getPlayEventUrl() ?>' + '&callback=kCollectCallback' );
+					kWidget.appendScript( '<?php echo $this->getPlayEventUrl() ?>' + '&callback=kCollectCallback' );
 					return true;
 				};
 			}

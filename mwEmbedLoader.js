@@ -56,33 +56,6 @@ if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 	mw.setConfig('EmbedPlayer.IframeParentReferrer', document.referrer);
 }
 
-
-function kDoIframeRewriteList( rewriteObjects ){
-	for( var i=0; i < rewriteObjects.length; i++ ){
-		var settings = rewriteObjects[i].kEmbedSettings;
-		settings.width = rewriteObjects[i].width;
-		settings.height = rewriteObjects[i].height;
-		kWidget.embed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
-	}
-}
-
-function kEmbedSettingsToUrl( kEmbedSettings ){
-	var url ='';
-	var kalturaAttributeList = ['uiconf_id', 'entry_id', 'wid', 'p', 'cache_st'];
-	for(var attrKey in kEmbedSettings ){
-		// Check if the attrKey is in the kalturaAttributeList:
-		for( var i =0 ; i < kalturaAttributeList.length; i++){
-			if( kalturaAttributeList[i] == attrKey ){
-				url += '&' + attrKey + '=' + encodeURIComponent( kEmbedSettings[attrKey] );  
-			}
-		}
-	}
-	// Add the flashvars:
-	url += kFlashVarsToUrl( kEmbedSettings.flashvars );
-	
-	return url;
-}
-
 // Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
 function kOverideJsFlashEmbed(){
 	// flashobject
@@ -150,11 +123,11 @@ function kCheckAddScript(){
 	if( mw.getConfig( 'Kaltura.EnableEmbedUiConfJs' ) && 
 		! mw.getConfig( 'Kaltura.UiConfJsLoaded') && ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
-		var playerList = kGetKalturaPlayerList();
+		var playerList = kWidget.getKalturaPlayerList();
 		var baseUiConfJsUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'services.php?service=uiconfJs');
 		var requestCount = playerList.length -1;
 		for( var i=0;i < playerList.length; i++){
-			kAppendScriptUrl( baseUiConfJsUrl + kEmbedSettingsToUrl( playerList[i].kEmbedSettings), function(){
+			kWidget.appendScript( baseUiConfJsUrl + kWidget.embedSettingsToURL( playerList[i].kEmbedSettings ), function(){
 				requestCount--;
 				if( requestCount == 0){
 					kCheckAddScript();
@@ -203,7 +176,7 @@ function kCheckAddScript(){
 	// If document includes kaltura embed tags && isMobile safari:
 	if ( kWidget.isHTML5FallForward()
 			&&
-		kGetKalturaPlayerList().length
+		kWidget.getKalturaPlayerList().length
 	) {
 		// Check for Kaltura objects in the page
 		kAddScript();
@@ -218,7 +191,7 @@ function kCheckAddScript(){
 		return ;
 	}
 	// Restore the jsCallbackReady ( we are not rewriting )
-	if( kGetKalturaPlayerList().length ){
+	if( kWidget.getKalturaPlayerList().length ){
 		kWidget.restoreKDPCallback();
 	}
 }
@@ -249,7 +222,10 @@ function kAddScript( callback ){
 			kLoadJsRequestSet( jsRequestSet, callback );
 			return ;
 		} else {
-			kDoIframeRewriteList( kGetKalturaPlayerList() );
+			var rewriteObjects = kWidget.getKalturaPlayerList();
+			for( var i=0; i < rewriteObjects.length; i++ ){
+					kWidget.embed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
+			}		
 			// if we don't have a mw.ready function we don't need to load the script library
 			if( !window.preMwEmbedReady.length ){
 				return ;
@@ -317,7 +293,7 @@ function kAddScript( callback ){
 		}
 	}
 	
-	var objectPlayerList = kGetKalturaPlayerList();
+	var objectPlayerList = kWidget.getKalturaPlayerList();
 
 	// Check if we are doing object rewrite ( add the kaltura library ) 
 	if ( kWidget.isHTML5FallForward() || objectPlayerList.length ){
@@ -363,29 +339,6 @@ function kAddScript( callback ){
 	kLoadJsRequestSet( jsRequestSet, callback );
 }
 
-function kAppendCssUrl( url ){
-	var head = document.getElementsByTagName("head")[0];         
-	var cssNode = document.createElement('link');
-	cssNode.type = 'text/css';
-	cssNode.rel = 'stylesheet';
-	cssNode.media = 'screen';
-	cssNode.href = url;
-	head.appendChild(cssNode);
-}
-function kAppendScriptUrl( url, callback ) {
-	// If the dom is not ready yet, write our script directly
-	var script = document.createElement( 'script' );
-	script.type = 'text/javascript';
-	script.src = url;
-	// xxx fixme integrate with new callback system ( resource loader rewrite )
-	if( callback ){
-		// IE sucks .. issues onload callback before ready 
-		// xxx could conditional the callback delay on user 
-		script.onload = callback;
-	}
-	document.getElementsByTagName('head')[0].appendChild( script );	
-}
-
 function kLoadJsRequestSet( jsRequestSet, callback ){
 	if( typeof SCRIPT_LOADER_URL == 'undefined' ){
 		alert( 'Error invalid entry point');
@@ -404,7 +357,7 @@ function kLoadJsRequestSet( jsRequestSet, callback ){
 	}
 	
 	// Check for special global callback for script load
-	kAppendScriptUrl(url, function(){
+	kWidget.appendScript(url, function(){
 		if( window['pre$Lib'] ){
 			jQuery.noConflict();
 			window['$'] = window['pre$Lib'];
@@ -428,93 +381,6 @@ function kPageHasAudioOrVideoTags(){
 	return false;
 }
 
-/**
- * Get the list of embed objects on the page that are 'kaltura players'
- */
-function kGetKalturaPlayerList(){
-	var kalturaPlayers = [];
-	// Check all objects for kaltura compatible urls 
-	var objectList = document.getElementsByTagName('object');
-	if( !objectList.length && document.getElementById('kaltura_player') ){
-		objectList = [ document.getElementById('kaltura_player') ];
-	}
-	// local function to attempt to add the kalturaEmbed
-	var tryAddKalturaEmbed = function( url , flashvars){
-		var settings = kGetKalturaEmbedSettings( url, flashvars );
-		if( settings && settings.uiconf_id && settings.wid ){
-			objectList[i].kEmbedSettings = settings;
-			kalturaPlayers.push(  objectList[i] );
-			return true;
-		}
-		return false;
-	};
-	for( var i =0; i < objectList.length; i++){
-		if( ! objectList[i] ){
-			continue;
-		}
-		var swfUrl = '';
-		var flashvars = {};
-		var paramTags = objectList[i].getElementsByTagName('param');
-		for( var j = 0; j < paramTags.length; j++){
-			var pName = paramTags[j].getAttribute('name').toLowerCase();
-			var pVal = paramTags[j].getAttribute('value');
-			if( pName == 'data' ||	pName == 'src' || pName == 'movie' ) {
-				swfUrl =  pVal;
-			}
-			if( pName == 'flashvars' ){
-				flashvars =	kFlashVars2Object( pVal );
-			}
-		}
-
-		if( tryAddKalturaEmbed( swfUrl, flashvars) ){
-			continue;
-		}
-
-		// Check for object data style url: 
-		if( objectList[i].getAttribute('data') ){
-			if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) )
-				continue;
-		}
-	}
-	return kalturaPlayers;
-};
-
-function kFlashVars2Object( flashvarsString ){
-	var flashVarsSet = ( flashvarsString )? flashvarsString.split('&'): [];
-	var flashvars = {};
-	for( var i =0 ;i < flashVarsSet.length; i ++){
-		var currentVar = flashVarsSet[i].split('=');
-		if( currentVar[0] && currentVar[1] ){
-			flashvars[ currentVar[0] ] = currentVar[1];
-		}
-	}
-	return flashvars;
-}
-function kServiceConfigToUrl(){
-	var serviceVars = ['ServiceUrl', 'CdnUrl', 'ServiceBase', 'UseManifestUrls'];
-	var urlParam = '';
-	for( var i=0; i < serviceVars.length; i++){
-		if( mw.getConfig('Kaltura.' + serviceVars[i] ) !== null ){
-			urlParam += '&' + serviceVars[i] + '=' + encodeURIComponent( mw.getConfig('Kaltura.' + serviceVars[i] ) );
-		}
-	}
-	return urlParam;
-}
-
-function kFlashVarsToUrl( flashVarsObject ){
-	var params = '';
-	for( var i in flashVarsObject ){
-		params+= '&' + 'flashvars[' + encodeURIComponent( i ) + ']=' + encodeURIComponent( flashVarsObject[i] );
-	}
-	return params;
-}
-function kFlashVarsToString( flashVarsObject ) {
-	var params = '';
-	for( var i in flashVarsObject ){
-		params+= '&' + '' + encodeURIComponent( i ) + '=' + encodeURIComponent( flashVarsObject[i] );
-	}
-	return params;
-}
 /**
  * Get Kaltura thumb url from entry object
  */
@@ -547,7 +413,7 @@ function kGetKalturaEmbedSettings( swfUrl, flashvars ){
 	var embedSettings = {};	
 	// Convert flashvars if in string format:
 	if( typeof flashvars == 'string' ){
-		flashvars = kFlashVars2Object( flashvars );
+		flashvars = kWidget.flashVarsToObject( flashvars );
 	}
 	
 	if( !flashvars ){

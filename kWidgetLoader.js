@@ -143,7 +143,7 @@ var kWidget = {
 							( elm.height ) ? elm.height :
 								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 
-			var flashvarValue = ( settings.flashvars ) ? kFlashVarsToString( settings.flashvars ) : '&';
+			var flashvarValue = ( settings.flashvars ) ? kWidget.flashVarsToString( settings.flashvars ) : '&';
 
 			// we may have to borrow more from:
 			// http://code.google.com/p/swfobject/source/browse/trunk/swfobject/src/swfobject.js#407
@@ -225,7 +225,7 @@ var kWidget = {
 
 	outputIframeWithoutApi: function( targetId, settings ) {
 		var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
-		iframeSrc += '?' + kEmbedSettingsToUrl( settings );
+		iframeSrc += '?' + kWidget.embedSettingsToURL( settings );
 
 		// If remote service is enabled pass along service arguments:
 		if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) &&
@@ -234,7 +234,7 @@ var kWidget = {
 				mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1
 			)
 		){
-			iframeSrc += kServiceConfigToUrl();
+			iframeSrc += kWidget.serviceConfigToURL();
 		}
 
 		// add the forceMobileHTML5 to the iframe if present on the client:
@@ -403,6 +403,63 @@ var kWidget = {
 			// Should have to do nothing.. kdp will call window.jsCallbackReady directly
 		}
 	},
+	
+	/*
+	 * Return an array of all kaltura players (flash) on the page 
+	 */
+	
+	getKalturaPlayerList: function() {
+		var kalturaPlayers = [];
+		// Check all objects for kaltura compatible urls 
+		var objectList = document.getElementsByTagName('object');
+		if( !objectList.length && document.getElementById('kaltura_player') ){
+			objectList = [ document.getElementById('kaltura_player') ];
+		}
+		// local function to attempt to add the kalturaEmbed
+		var tryAddKalturaEmbed = function( url , flashvars ){
+			var settings = kGetKalturaEmbedSettings( url, flashvars );
+			if( settings && settings.uiconf_id && settings.wid ){
+				// grab width & height from object tag
+				settings.width = objectList[i].width;
+				settings.height = objectList[i].height;
+				objectList[i].kEmbedSettings = settings;
+				kalturaPlayers.push(  objectList[i] );
+				return true;
+			}
+			return false;
+		};
+		
+		for( var i =0; i < objectList.length; i++){
+			if( ! objectList[i] ){
+				continue;
+			}
+			var swfUrl = '';
+			var flashvars = {};
+			var paramTags = objectList[i].getElementsByTagName('param');
+			for( var j = 0; j < paramTags.length; j++){
+				var pName = paramTags[j].getAttribute('name').toLowerCase();
+				var pVal = paramTags[j].getAttribute('value');
+				if( pName == 'data' ||	pName == 'src' || pName == 'movie' ) {
+					swfUrl = pVal;
+				}
+				if( pName == 'flashvars' ){
+					flashvars =	kWidget.flashVarsToObject( pVal );
+				}
+			}
+
+			if( tryAddKalturaEmbed( swfUrl, flashvars ) ){
+				continue;
+			}
+
+			// Check for object data style url: 
+			if( objectList[i].getAttribute('data') ){
+				if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) ) {
+					continue;
+				}
+			}
+		}
+		return kalturaPlayers;		
+	},
 
 	/*
 	 * Write log to console
@@ -529,7 +586,86 @@ var kWidget = {
 
 		// No video tag or flash, or iframe, normal "install flash" user flow )
 		return false;
-	 }
+	 },
+	 
+	/*
+	 * Transform settings object to URL parameters
+	 */
+	embedSettingsToURL: function( settings ) {
+		var url ='';
+		var requestVars = [ 'uiconf_id', 'entry_id', 'wid', 'p', 'cache_st' ];
+		for(var key in settings ){
+			// Check if the attrKey is in the kalturaAttributeList:
+			for( var i =0 ; i < requestVars.length; i++){
+				if( requestVars[i] == key ){
+					url += '&' + key + '=' + encodeURIComponent( settings[key] );  
+				}
+			}
+		}
+		
+		// Add the flashvars:
+		var flashVars = settings.flashvars;
+		for( var fv in flashVars ){
+			url += '&' + 'flashvars[' + encodeURIComponent( fv ) + ']=' + encodeURIComponent( flashVars[ fv ] );
+		}
+
+		return url;
+	},
+	
+	flashVarsToObject: function( flashVarsString ) {
+		var flashVarsSet = ( flashVarsString )? flashVarsString.split('&') : [];
+		var flashVars = {};
+		for( var i =0 ;i < flashVarsSet.length; i ++){
+			var currentVar = flashVarsSet[i].split('=');
+			if( currentVar[0] && currentVar[1] ){
+				flashVars[ currentVar[0] ] = currentVar[1];
+			}
+		}
+		return flashVars;		
+	},
+	
+	flashVarsToString: function( flashVarsObject ) {
+		var params = '';
+		for( var i in flashVarsObject ){
+			params += '&' + '' + encodeURIComponent( i ) + '=' + encodeURIComponent( flashVarsObject[i] );
+		}
+		return params;
+	},
+	
+	serviceConfigToURL: function() {
+		var serviceVars = [ 'ServiceUrl', 'CdnUrl', 'ServiceBase', 'UseManifestUrls' ];
+		var urlParam = '';
+		for( var i=0; i < serviceVars.length; i++){
+			if( mw.getConfig('Kaltura.' + serviceVars[i] ) !== null ){
+				urlParam += '&' + serviceVars[i] + '=' + encodeURIComponent( mw.getConfig('Kaltura.' + serviceVars[i] ) );
+			}
+		}
+		return urlParam;
+	},
+	
+	appendCSS: function( url ) {
+		var head = document.getElementsByTagName("head")[0];         
+		var cssNode = document.createElement('link');
+		cssNode.type = 'text/css';
+		cssNode.rel = 'stylesheet';
+		cssNode.media = 'screen';
+		cssNode.href = url;
+		head.appendChild(cssNode);
+	},
+	
+	appendScript: function( url, callback ) {
+		// If the dom is not ready yet, write our script directly
+		var script = document.createElement( 'script' );
+		script.type = 'text/javascript';
+		script.src = url;
+		// xxx fixme integrate with new callback system ( resource loader rewrite )
+		if( callback ){
+			// IE sucks .. issues onload callback before ready 
+			// xxx could conditional the callback delay on user 
+			script.onload = callback;
+		}
+		document.getElementsByTagName('head')[0].appendChild( script );			
+	}
 };
 
 // Define mw ( if not already set ) 

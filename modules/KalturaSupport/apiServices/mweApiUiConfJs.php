@@ -36,20 +36,20 @@ class mweApiUiConfJs {
 		foreach( $playerConfig['plugins'] as $pluginName => $plugin){
 			foreach( $plugin as $pluginAttr => $pluginAttrValue ){
 				if( strpos( $pluginAttr, 'onPageJs' ) === 0 ){
-					$o.= "kAppendScriptUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
+					$o.= "kWidget.appendScript( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
 				}
 				if( strpos( $pluginAttr, 'onPageCss' ) === 0 ){
-					$o.= "kAppendCssUrl( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
+					$o.= "kWidget.appendCSS( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
 				}
 			}
 		}
 		foreach( $playerConfig['vars'] as $varName => $varValue){
 			// check for vars based plugin config: 
 			if( strpos( $varName, 'onPageJs' ) === 0 ){
-				$o.= "kAppendScriptUrl( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
+				$o.= "kWidget.appendScript( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
 			}
 			if( strpos( $varName, 'onPageCss' ) === 0 ){
-				$o.= "kAppendCssUrl( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
+				$o.= "kWidget.appendCSS( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
 			}
 		}
 		return $o;

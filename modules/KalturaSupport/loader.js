@@ -164,12 +164,12 @@
 	
 	// Check if the document has kaltura objects ( for fall forward support ) 
 	$( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
-		// if kGetKalturaPlayerList is not defined ( we are not in a kaltura env )
-		if( typeof kGetKalturaPlayerList == 'undefined'){
+		// if kWidget.getKalturaPlayerList is not defined ( we are not in a kaltura env )
+		if( typeof kWidget.getKalturaPlayerList == 'undefined'){
 			return ;
 		}
 		
-		var kalturaObjectPlayerList = kGetKalturaPlayerList();
+		var kalturaObjectPlayerList = kWidget.getKalturaPlayerList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
 		if( ! kalturaObjectPlayerList.length ) {
 			// No players to rewrite ( and don't run  window.KalturaKDPCallbackReady )
@@ -484,15 +484,14 @@
 		function doRewriteIframe (iframeParams,  playerTarget ){
 			// Build the iframe request from supplied iframeParams: 
 			var iframeRequest = '';
+			
+			var requestVars = [ 'wid', 'uiconf_id', 'entry_id' ];
 			for( var key in iframeParams ){
-				// don't put flashvars or readyCallback into the post url ( will be a request param ) 
-				if( key == 'flashvars' || key == 'readyCallback' || key == 'isHTML5' || key == 'partner_id' || key == 'targetId' || key == 'width' || key == 'height' ){
-					continue;
+				if( $.inArray(key, requestVars) !== -1 ){
+					iframeRequest+= '/' + key + '/' + encodeURIComponent( iframeParams [ key ] );
 				}
-				
-				iframeRequest+= '/' + key + 
-					'/' + encodeURIComponent( iframeParams [ key ] );
 			}
+			
 			// Add the player id: 
 			iframeRequest+= '/?playerId=' + $( playerTarget ).attr('id');
 			
@@ -512,7 +511,7 @@
 					mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1 
 				)
 			){
-				iframeRequest += kServiceConfigToUrl();
+				iframeRequest += kWidget.serviceConfigToURL();
 			}
 		
 			// Add no cache flag if set:
