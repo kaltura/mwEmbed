@@ -874,7 +874,7 @@
 		 * Master send action list: 
 		 */
 		sendNotification: function( embedPlayer, notificationName, notificationData ){
-			mw.log('KDPMapping:: sendNotification > '+ notificationName );
+			mw.log('KDPMapping:: sendNotification > '+ notificationName,  notificationData );
 			switch( notificationName ){
 				case 'doPlay':
 					embedPlayer.play();
