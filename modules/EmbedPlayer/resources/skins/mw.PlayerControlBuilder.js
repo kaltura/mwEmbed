@@ -457,10 +457,18 @@ mw.PlayerControlBuilder.prototype = {
 		setTimeout( function(){ _this.syncPlayerSize() }, 200);
 	},
 	syncPlayerSize: function(){
+		mw.log( "PlayerControlBuilder::syncPlayerSize" );
 		var embedPlayer = this.embedPlayer;
-		if( $( embedPlayer ).width() != $(window).width() ){
-			embedPlayer.resizePlayer( this.getWindowSize() );
-		};
+		// resize to the playlist  container
+		// TODO  change this to an event so player with interface around it ( ppt widget etc ) can
+		// set the player to the right size. 
+		if( embedPlayer.playlist && ! this.inFullScreen ){
+			embedPlayer.playlist.syncPlayerSize();
+		} else {
+			if( $( embedPlayer ).width() != $(window).width() ){
+				embedPlayer.resizePlayer( this.getWindowSize() );
+			};
+		}
 	},
 	getWindowSize: function(){
 		return {
@@ -857,7 +865,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		var bindFirstPlay = false;		
 		_this.addRightClickBinding();
-		
+
 		// check if the player takes up the full window size: 
 		if( $( embedPlayer ).width() == $(window).width() ){
 			this.isWindowSizePlayer = true;

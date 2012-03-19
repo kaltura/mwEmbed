@@ -1,4 +1,4 @@
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 		embedPlayer.attributionbutton = false;
 		mw.log('ExternalResources:: IframeCustomPluginJs1:: newEmbedPlayerEvent');
@@ -19,30 +19,8 @@
 			var embedPlayer = this;
 			var bindPostFix = '.hbpCustomSkin';
 			
-			embedPlayer.unbindHelper( 'playerReady' + bindPostFix );
-			embedPlayer.bindHelper( 'playerReady' + bindPostFix, function() {
-				window[ 'hbpSkin' ].customizeSkin( embedPlayer );
-			} );
+			window[ 'hbpSkin'].addRemoveBindings( embedPlayer, bindPostFix );
 			
-			embedPlayer.unbindHelper( 'onResizePlayer' + bindPostFix );
-			embedPlayer.bindHelper( 'onResizePlayer' + bindPostFix, function() {
-				window[ 'hbpSkin' ].customizeSkin( embedPlayer );
-			} );
-			
-			embedPlayer.unbindHelper( 'onToggleMute' + bindPostFix );
-			embedPlayer.bindHelper( 'onToggleMute' + bindPostFix, function() {
-				window[ 'hbpSkin' ].toggleMute( embedPlayer );
-			} );
-
-			embedPlayer.unbindHelper( 'onOpenFullScreen' + bindPostFix );
-			embedPlayer.bindHelper( 'onOpenFullScreen' + bindPostFix, function() {
-				window[ 'hbpSkin' ].toggleFullscreen( embedPlayer );
-			} );
-			
-			embedPlayer.unbindHelper( 'onCloseFullScreen' + bindPostFix );
-			embedPlayer.bindHelper( 'onCloseFullScreen' + bindPostFix, function() {
-				window[ 'hbpSkin' ].toggleFullscreen( embedPlayer );
-			} );
 
 			mw.log('ExternalResources:: IframeCustomPluginJs1:: KalturaSupport_CheckUiConf');
 			// continue player build out
@@ -51,6 +29,30 @@
 	});
 	
 	window[ 'hbpSkin' ] = {
+		addRemoveBindings : function( embedPlayer, bindPostFix ) {
+			embedPlayer.unbindHelper( bindPostFix );
+			
+			embedPlayer.bindHelper( 'playerReady' + bindPostFix, function() {
+				window[ 'hbpSkin' ].customizeSkin( embedPlayer );
+			} );
+
+			embedPlayer.bindHelper( 'onResizePlayer' + bindPostFix, function() {
+				window[ 'hbpSkin' ].customizeSkin( embedPlayer );
+			} );
+			
+			embedPlayer.bindHelper( 'onToggleMute' + bindPostFix, function() {
+				window[ 'hbpSkin' ].toggleMute( embedPlayer );
+			} );
+
+			embedPlayer.bindHelper( 'onOpenFullScreen' + bindPostFix, function() {
+				window[ 'hbpSkin' ].toggleFullscreen( embedPlayer );
+			} );
+			
+			embedPlayer.bindHelper( 'onCloseFullScreen' + bindPostFix, function() {
+				window[ 'hbpSkin' ].toggleFullscreen( embedPlayer );
+			} );
+		},
+		
 		customizeSkin : function( embedPlayer ) {
 			var _this = this;
 			var $interface = embedPlayer.$interface;
@@ -80,34 +82,11 @@
 				'margin-right' : '4px !important',
 				'border-right' : '0px !important'
 			} );
-			
-			
-			// Stretching playhead to the available space
-			var playHeadEnd = embedPlayer.getWidth() - $interface.find( '.time-disp' ).position().left + 5;
-			if ( embedPlayer.controlBuilder.inFullScreen ) {
-				playHeadEnd = screen.width - $interface.find( '.time-disp' ).position().left + 5;
-			}
-			$play_head.css( {
-				'right' : playHeadEnd + 'px',
-				'height' : '7px'
-			} );
-			// Playhead padded border
-			var $paddedBorder = $( '<div />' )
-				.addClass( 'padded-border' )
-				.css( {
-					'width' : $play_head.width() + 2 + 'px',
-					'height' : $play_head.height() + 2 + 'px',
-					'left' : $play_head.position().left + parseInt( $play_head.css( 'margin-left' ) ) - 1 + 'px',
-					'top' : $play_head.position().top + parseInt( $play_head.css( 'margin-top' ) ) - 1 + 'px'
-				} )
-			if ( $interface.find( '.padded-border').length ) {
-				$interface.find( '.padded-border').remove();
-			}
-			$play_head.before( $paddedBorder );
-			
+						
 			var buttonMargin = parseInt ( $button.css( 'margin-top' ) );
 			var buttonPadding = parseInt ( $button.css( 'padding-top' ) );
 			var buttonHeight = $button.height();
+			var buttonWidth = $button.width();
 			var backgroundLeft = $play_head.position().left - 2;
 			var backgroundWidth = $interface.width() - backgroundLeft - 7;
 			if ( embedPlayer.controlBuilder.inFullScreen ) {
@@ -129,7 +108,6 @@
 				$interface.find( '.custom-background').remove();
 			}
 			$interface.find( '.control-bar' ).prepend( $newBG );
-			
 			$interface.find( '.time-disp').css( {
 				'height' : buttonHeight + ( 2 * buttonPadding ) + 'px',
 				'line-height' : buttonHeight + ( 2 * buttonPadding ) + 'px'
@@ -139,6 +117,33 @@
 			$interface.find( '.timed-text' ).bind( 'click.hbpSkin', function() {
 				_this.toggleCC( embedPlayer );
 			} );
+			
+			// Stretching playhead to the available space
+			if ( $interface.find( '.time-disp' ).length ) {
+				var playHeadEnd = embedPlayer.getWidth() - $interface.find( '.time-disp' ).position().left + 5;;
+				if ( embedPlayer.controlBuilder.inFullScreen ) {
+					var totalWidth = screen.width;
+					playHeadEnd = screen.width - $interface.find( '.time-disp' ).position().left + 5;
+				}
+				$play_head.css( {
+					'right' : playHeadEnd + 'px',
+					'height' : '7px'
+				} );									
+			}
+			
+			// Playhead padded border
+			var $paddedBorder = $( '<div />' )
+				.addClass( 'padded-border' )
+				.css( {
+					'width' : $play_head.width() + 2 + 'px',
+					'height' : $play_head.height() + 2 + 'px',
+					'left' : $play_head.position().left + parseInt( $play_head.css( 'margin-left' ) ) - 1 + 'px',
+					'top' : $play_head.position().top + parseInt( $play_head.css( 'margin-top' ) ) - 1 + 'px'
+				} )
+			if ( $interface.find( '.padded-border').length ) {
+				$interface.find( '.padded-border').remove();
+			}
+			$play_head.before( $paddedBorder );
 		},
 		
 		toggleMute : function( embedPlayer ) {

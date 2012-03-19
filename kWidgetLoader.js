@@ -198,7 +198,7 @@ var kWidget = {
 							( elm.height ) ? elm.height :
 								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 
-				var sizeUnit = (typeof settings.width == 'string' && settings.width.indexOf("px") === -1) ? 'px' : '';
+				var sizeUnit = (typeof width == 'string' && width.indexOf("px") === -1 && width.indexOf("%") === -1 ) ? 'px' : '';
 
 				var targetCss = {
 					'width': width + sizeUnit,

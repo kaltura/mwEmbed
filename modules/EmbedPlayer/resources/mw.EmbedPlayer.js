@@ -643,6 +643,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	switchPlaySource: function( source, switchCallback, doneCallback ){
 		var _this = this;
+
 		var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType ) ;
 		if( targetPlayer.id != this.selectedPlayer.id ){
 			this.selectedPlayer = targetPlayer;
@@ -1386,6 +1387,8 @@ mw.EmbedPlayer.prototype = {
 		var chnagePlayingMedia = this.isPlaying();
 		// Reset first play to true, to count that play event
 		this.firstPlay = true;
+		// reset donePlaying count on change media.
+		this.donePlayingCount = 0;
 		this.triggeredEndDone = false;
 		this.preSequence = false;
 		this.postSequence = false;
@@ -1439,7 +1442,9 @@ mw.EmbedPlayer.prototype = {
 					if( chnagePlayingMedia ){
 						_this.play();
 					} else {
-						// need to confirm this pause is not needed ( mdale )
+						// pause is need to keep pause sate, while
+						// switch source calls .play() that some browsers require. 
+						// to reflect source swiches. 
 						_this.pause();
 					}
 					if( callback ){
@@ -1838,6 +1843,7 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 		var $this = $( this );
 
+		
 		mw.log( "EmbedPlayer:: play: " + this._propagateEvents + ' poster: ' +  this.stopped );
 		// Store the absolute play time ( to track native events that should not invoke interface updates )
 		this.absoluteStartPlayTime =  new Date().getTime();

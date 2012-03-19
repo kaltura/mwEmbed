@@ -47,6 +47,7 @@ mw.Playlist.prototype = {
 		
 		if( options.embedPlayer ) {
 			this.embedPlayer = options.embedPlayer;
+			this.embedPlayer.playlist = this;
 		}
 		
 		// We assign the base player the id of the playlist ( since we want the player api to be 
@@ -381,8 +382,9 @@ mw.Playlist.prototype = {
 						'hideScrollbar' : false 
 					});
 			}				
-			if( callback ) 
+			if( callback ) {
 				callback();
+			}
 		});
 	},
 	switchTab: function( inx ){
@@ -476,7 +478,7 @@ mw.Playlist.prototype = {
 		return $( this.target + ' .media-rss-video-player' );
 	},
 	// Play a clipIndex, if the player is already in the page swap the player src to the new target
-	playClip: function( clipIndex ){
+	playClip: function( clipIndex, autoContinue ){
 		var _this = this;
 		mw.log( "mw.Playlist::playClip > " + clipIndex );
 		// Check for a video/audio tag already in the page:
@@ -486,6 +488,9 @@ mw.Playlist.prototype = {
 			mw.log("Error: Playlist:: playClip called with null embedPlayer ");
 			return ;
 		}
+		// trigger a playlist_playClip event: 
+		embedPlayer.triggerHelper( 'Playlist_PlayClip', [ clipIndex, !!autoContinue ]);
+		
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex, function(){
 			mw.log( "mw.Playlist::playClip > sourceHandler playClip callback ");
@@ -549,7 +554,7 @@ mw.Playlist.prototype = {
 					embedPlayer.onDoneInterfaceFlag = false;
 					_this.clipIndex = parseInt( _this.clipIndex ) + 1;
 					// update the player and play the next clip
-					_this.playClip( _this.clipIndex );
+					_this.playClip( _this.clipIndex, true );
 				} else {
 					mw.log("mw.Playlist:: End of playlist, run normal end action" );
 					// Update the onDone action object to not run the base control done:
@@ -573,19 +578,23 @@ mw.Playlist.prototype = {
 			if( !_this.sourceHandler.includeInLayout ){
 				return ;
 			}
-			var playerSize = {
-				'width' : $( _this.target + ' .media-rss-video-player-container' ).width() + 'px',
-				'height' : ( $( _this.target + ' .media-rss-video-player-container' ).height() - _this.getTitleHeight() ) + 'px'
-			};
+			
 			// Do another resize on a timeout ( takes time for iframe to resize )
 			setTimeout(function(){
-				embedPlayer.resizePlayer( playerSize, false);	
+				_this.syncPlayerSize();
 			}, 250);
 			
 			$(uiSelector).show();
 		});
 	},
-	
+	syncPlayerSize: function(){
+		var _this = this;
+		var playerSize = {
+			'width' : $( _this.target + ' .media-rss-video-player-container' ).width() + 'px',
+			'height' : ( $( _this.target + ' .media-rss-video-player-container' ).height() - _this.getTitleHeight() ) + 'px'
+		};
+		_this.embedPlayer.resizePlayer( playerSize, false );
+	},
 	updatePlayerUi:function( clipIndex ){
 		var _this = this;
 		// Give a chance for sourceHandler to update player ui
