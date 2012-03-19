@@ -133,6 +133,7 @@ mw.addResourcePaths( {
 	"mw.style.ui_start" : "skins/jquery.ui.themes/start/jquery-ui-1.7.2.css",
 	"mw.style.ui_sunny" : "skins/jquery.ui.themes/sunny/jquery-ui-1.7.2.css",
 	"mw.style.ui_kdark" : "skins/jquery.ui.themes/kaltura-dark/jquery-ui-1.7.2.css",
+	"mw.style.ui_smoothness" : "skins/jquery.ui.themes/smoothness/jquery-ui-1.7.2.css",
 
 	"mw.style.mwCommon"		: "skins/common/mw.style.mwCommon.css",
 	

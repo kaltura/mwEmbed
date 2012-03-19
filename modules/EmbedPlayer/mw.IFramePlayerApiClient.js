@@ -217,7 +217,7 @@ mw.IFramePlayerApiClient.prototype = {
 		// Bind orientation change to resize player ( if fullscreen )
 		$(window).bind( 'orientationchange', function(e){
 			if( localIframeInFullscreen ){
-				$('meta[name="viewport"]').attr('content', 'initial-scale=1;  maximum-scale=1.0');
+				$('meta[name="viewport"]').attr('content', 'initial-scale=1');
 				doFullscreen();
 			}
 		});

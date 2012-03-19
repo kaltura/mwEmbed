@@ -65,11 +65,16 @@ mw.DolStatistics.prototype = {
 		});
 
 		// On change media remove any existing bindings:
-		embedPlayer.bindHelper( 'onChangeMediaDone' + _this.bindPostFix, function(){
+		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
 			if( ! embedPlayer['data-playerError'] ){
 				$embedPlayer.data('DolStatisticsCounter', $embedPlayer.data('DolStatisticsCounter') + 1 );
 			}
 		});
+		// Set the local autoplay flag: 
+		embedPlayer.bindHelper( 'Playlist_PlayClip' + _this.bindPostFix, function(event, clipIndex, autoPlay){
+			$( embedPlayer ).data('playlistAutoPlayFlag',  autoPlay);
+		});
+		
 		// Register to our events
 		$.each(this.eventsList, function(k, eventName) {
 			switch( eventName ) {
@@ -298,12 +303,8 @@ mw.DolStatistics.prototype = {
 	getAutoPlayFlag: function(){
 		var embedPlayer = this.embedPlayer;
 		// Check if in playlist mode: 
-		if( embedPlayer.evaluate( '{playlistAPI.kpl0Url}' ) ){
-			if( $( embedPlayer ).data('DolStatisticsCounter') == 1 ){
-				return embedPlayer.autoplay;
-			} else {
-				return !!embedPlayer.evaluate( '{playlistAPI.autoContinue}' );
-			}
+		if( typeof $( embedPlayer ).data('playlistAutoPlayFlag') != 'undefined' ){
+			return $( embedPlayer ).data('playlistAutoPlayFlag');
 		}
 		return embedPlayer.autoplay;
 	},

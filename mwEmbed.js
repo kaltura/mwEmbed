@@ -1756,7 +1756,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 				'type' : 'text/css',
 				'href' : url
 			} )
-		);
+		);			
 		// No easy way to check css "onLoad" attribute
 		// In production sheets are loaded via resource loader and fire the
 		// onDone function call.
