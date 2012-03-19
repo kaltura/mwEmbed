@@ -1465,11 +1465,12 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		if ( mw.getConfig( 'Mw.LogPrepend' ) && arguments.length > 0 ){
 			arguments[0] = mw.getConfig('Mw.LogPrepend') + arguments[0];
 		}
-		if(window.console){
+		if( window.console ){
 			if (arguments.length == 1) {
 				console.log( /*'ss:' + mw.getCallStack().length + ' ' + */ arguments[0] );
 			} else {
-				console.log( Array.prototype.slice.call(arguments) );
+				var args = Array.prototype.slice.call(arguments);  
+				console.log( args[0], args.slice( 1 ) );
 			}
 		}
 		// To debug stack size ( useful for iPad / safari that have a 100 call
