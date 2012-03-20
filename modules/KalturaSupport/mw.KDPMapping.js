@@ -955,5 +955,5 @@
 	if( !window.KDPMapping ){
 		window.KDPMapping = new mw.KDPMapping();
 	}
-	mw.log("KDPMapping::done ");
+	//mw.log("KDPMapping::done ");
 } )( window.mw, jQuery );

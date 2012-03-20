@@ -48,13 +48,13 @@ mw.IFramePlayerApiClient.prototype = {
 	 */
 	'getIframeSrc' : function(){
 		if( $( this.iframe ).attr('src') ){
-			 return $( this.iframe ).attr('src')
+			 return $( this.iframe ).attr('src');
 		} else {
 			return document.URL.replace(/#.*/, '');
 		}
 	},
 	'addPlayerSendApi': function(){
-		var _this = this;		
+		var _this = this;
 		
 		// Allow modules to extend the list of iframeExported bindings
 		$( mw ).trigger( 'AddIframePlayerMethods', [ this.exportedMethods ]);

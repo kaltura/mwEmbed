@@ -39,7 +39,7 @@ class mweApiUiConfJs {
 					$o.= "kWidget.appendScript( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
 				}
 				if( strpos( $pluginAttr, 'onPageCss' ) === 0 ){
-					$o.= "kWidget.appendCSS( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
+					$o.= "kWidget.appendStyle( '". $this->getExternalResourceUrl( $pluginAttrValue) . "' );\n";
 				}
 			}
 		}
@@ -49,7 +49,7 @@ class mweApiUiConfJs {
 				$o.= "kWidget.appendScript( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
 			}
 			if( strpos( $varName, 'onPageCss' ) === 0 ){
-				$o.= "kWidget.appendCSS( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
+				$o.= "kWidget.appendStyle( '". $this->getExternalResourceUrl( $varValue) . "' );\n";
 			}
 		}
 		return $o;

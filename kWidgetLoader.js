@@ -214,8 +214,7 @@ var kWidget = {
 					'height': height + sizeUnit
 				};
 
-				var additionalTargetCss = kGetAdditionalTargetCss();
-				$j.extend(targetCss, additionalTargetCss);
+				$j.extend(targetCss, kWidget.getAdditionalTargetCss() );
 				$j('#' + targetId ).css(targetCss);
 				// Do kaltura iframe player
 				$j('#' + targetId ).kalturaIframePlayer( settings );
@@ -643,7 +642,7 @@ var kWidget = {
 		return urlParam;
 	},
 	
-	appendCSS: function( url ) {
+	appendStyle: function( url ) {
 		var head = document.getElementsByTagName("head")[0];         
 		var cssNode = document.createElement('link');
 		cssNode.type = 'text/css';
