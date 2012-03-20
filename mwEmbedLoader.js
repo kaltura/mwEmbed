@@ -492,18 +492,18 @@ function kGetKalturaEmbedSettings( swfUrl, flashvars ){
  * mw.setConfig('FramesetSupport.PlayerCssProperties', {}); - CSS properties object to apply to the player
  * We will use 'PlayerCssProperties' only for iOS devices running version 3-4 ( the position issue was fixed in iOS5)
  */
-function kGetAdditionalTargetCss() {
+kWidget.getAdditionalTargetCss = function() {
 	var ua = navigator.userAgent;
 	if( mw.getConfig('FramesetSupport.Enabled') && kWidget.isIOS() && (ua.indexOf('OS 3') > 0 || ua.indexOf('OS 4') > 0) ) {
 		return mw.getConfig('FramesetSupport.PlayerCssProperties') || {};
 	}
 	return {};
-}
+};
 kWidget.domReady.ready(function() {
 	if( mw.getConfig('FramesetSupport.Enabled') && kWidget.isIOS() ) {
 		mw.setConfig('EmbedPlayer.EnableIpadHTMLControls', false );
 	}
-})
+});
 
 // Include legacy support for supports html5
 function kIsIOS(){
