@@ -106,15 +106,3 @@ foreach( $wgMwEmbedEnabledModules as $moduleName ){
 # Add the resource loader hooks
 $wgHooks['ResourceLoaderRegisterModules'][] = 'MwEmbedResourceManager::registerModules';
 $wgHooks['ResourceLoaderGetConfigVars'][] =  'MwEmbedResourceManager::registerConfigVars';
-
-
-// Add MwEmbedSupport to Startup:
-function MwUpdateStartupModules( &$modules ){
-	global $wgStandAloneResourceLoaderMode, $wgDefaultSkin;
-	
-	array_push( $modules, 'jquery.triggerQueueCallback', 'jquery.loadingSpinner', 
-				'jquery.mwEmbedUtil', 'mw.MwEmbedSupport' );
-
-	return true;
-}
-$wgHooks['ResourceLoaderGetStartupModules'][] = 'MwUpdateStartupModules';

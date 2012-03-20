@@ -27,6 +27,9 @@
 					'mediawiki.UtilitiesTime',
 					'mediawiki.Uri',
 					'mediawiki.absoluteUrl',
+
+					// Browser fullscreen api support: 
+					'fullScreenApi',
 				
 					// Sub classes:
 					'mw.MediaElement',

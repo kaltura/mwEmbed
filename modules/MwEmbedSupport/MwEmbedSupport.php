@@ -45,6 +45,9 @@ return array(
 		'debugRaw' => false,
 		'dependencies' => array( 'mediawiki.language', 'mediawiki.util' ),
 	),
+	'fullScreenApi'=> array(
+		'scripts' => 'fullScreenApi/fullScreenApi.js'
+	),
 	'jquery.menu' => array(
 		'scripts' => 'jquery.menu/jquery.menu.js',
 		'styles' => 'jquery.menu/jquery.menu.css'
