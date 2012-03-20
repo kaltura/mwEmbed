@@ -224,7 +224,6 @@ class ResourceLoader {
 	 */
 	public function register( $name, $info = null ) {
 		wfProfileIn( __METHOD__ );
-
 		// Allow multiple modules to be registered in one call
 		$registrations = is_array( $name ) ? $name : array( $name => $info );
 		foreach ( $registrations as $name => $info ) {

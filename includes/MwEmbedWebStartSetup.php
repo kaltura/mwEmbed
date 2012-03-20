@@ -90,6 +90,11 @@ $wgRequest = new WebRequest;
 
 $wgLang = new UserLang();
 
+// Check for required module "MwEmbedSupport"
+if( in_array( "MwEmbedSupport",  $wgMwEmbedEnabledModules ) == false ){
+	array_push( $wgMwEmbedEnabledModules, "MwEmbedSupport" );
+}
+
 # Register / load all the mwEmbed modules
 foreach( $wgMwEmbedEnabledModules as $moduleName ){
 	$modulePath = "modules/$moduleName";
@@ -104,8 +109,12 @@ $wgHooks['ResourceLoaderGetConfigVars'][] =  'MwEmbedResourceManager::registerCo
 
 
 // Add MwEmbedSupport to Startup:
-function MwUpdateStartupModules( &$modules ){	
-	array_push($modules, 'jquery.triggerQueueCallback', 'jquery.loadingSpinner', 'jquery.mwEmbedUtil', 'mw.MwEmbedSupport' );		
-		return true;
+function MwUpdateStartupModules( &$modules ){
+	global $wgStandAloneResourceLoaderMode, $wgDefaultSkin;
+	
+	array_push( $modules, 'jquery.triggerQueueCallback', 'jquery.loadingSpinner', 
+				'jquery.mwEmbedUtil', 'mw.MwEmbedSupport' );
+
+	return true;
 }
 $wgHooks['ResourceLoaderGetStartupModules'][] = 'MwUpdateStartupModules';

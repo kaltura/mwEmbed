@@ -1,5 +1,4 @@
 <?php 
-
 return array(
 	"mw.MwEmbedSupport" => array( 
 		'scripts' => array( 
@@ -11,6 +10,7 @@ return array(
 			'jquery.triggerQueueCallback',
 			'jquery.loadingSpinner',
 			'jquery.mwEmbedUtil',
+			'mw.MwEmbedSupport.style',
 		),
 		'messageFile' => 'MwEmbedSupport.i18n.php',
 	),

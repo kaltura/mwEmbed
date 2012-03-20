@@ -22,11 +22,6 @@
 
 ( function( mw, $ ) {
 
-	/**
-	 * Set the mwEmbedVersion
-	 */
-	window.MW_EMBED_VERSION = '1.1g';
-	
 	// Globals to pre-set ready functions in dynamic loading of mwEmbed
 	if( typeof window.preMwEmbedReady == 'undefined'){
 		window.preMwEmbedReady = [];	
