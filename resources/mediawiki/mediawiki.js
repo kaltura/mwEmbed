@@ -247,7 +247,7 @@ var mw = ( function ( $, undefined ) {
 		 * Dummy function which in debug mode can be replaced with a function that
 		 * emulates console.log in console-less environments.
 		 */
-		log: function() { },
+		log: function( msg ) { console.log( msg  ); },
 	
 		/**
 		 * @var constructor Make the Map constructor publicly available.
@@ -750,6 +750,7 @@ var mw = ( function ( $, undefined ) {
 								} ) );
 							}
 						} else if ( typeof style === 'string' ) {
+							debugger;
 							addInlineCSS( style );
 						}
 					}
@@ -759,7 +760,7 @@ var mw = ( function ( $, undefined ) {
 					mw.messages.set( registry[module].messages );
 				}
 				// Execute script
-				try {
+				//try {
 					script = registry[module].script;
 					markModuleReady = function() {
 						registry[module].state = 'ready';
@@ -789,7 +790,7 @@ var mw = ( function ( $, undefined ) {
 						script();
 						markModuleReady();
 					}
-				} catch ( e ) {
+				/*} catch ( e ) {
 					// This needs to NOT use mw.log because these errors are common in production mode
 					// and not in debug mode, such as when a symbol that should be global isn't exported
 					if ( window.console && typeof window.console.log === 'function' ) {
@@ -797,7 +798,7 @@ var mw = ( function ( $, undefined ) {
 						console.log( e );
 					}
 					registry[module].state = 'error';
-				}
+				}*/
 			}
 	
 			/**

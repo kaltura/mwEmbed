@@ -178,6 +178,7 @@ mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
 ] );
 
 
+
 /**
  * Base embedPlayer object
  *
@@ -264,9 +265,10 @@ mw.EmbedPlayer.prototype = {
 	 */
 	init: function( element ) {
 		var _this = this;
-		mw.log('EmbedPlayer: initEmbedPlayer: ' + $(element).attr( 'id' ) );
+		mw.log('EmbedPlayer: initEmbedPlayer: ' + $(element).width() );
 
 		var playerAttributes = mw.getConfig( 'EmbedPlayer.Attributes' );
+
 		// Store the rewrite element tag type
 		this.rewriteElementTagName = element.tagName.toLowerCase();
 
@@ -837,17 +839,17 @@ mw.EmbedPlayer.prototype = {
 	 * Get the player height
 	 */
 	getHeight: function() {
-		return this.height;
+		return $( this ).height();
 	},
 
 	/**
 	 * Get the player width
 	 */
 	getWidth: function(){
-        if ( $.browser.mozilla && parseFloat($.browser.version) < 2 ) {
-            return ( $(this).parent().parent().width() );
+        if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
+            return ( $( this ).parent().parent().width() );
         }
-		return this.width;
+		return $( this ).width();
 	},
 
 	/**

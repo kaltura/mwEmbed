@@ -157,10 +157,11 @@ class ResourceLoader {
 		try {
 			switch ( $filter ) {
 				case 'minify-js':
-					$result = JavaScriptMinifier::minify( $data,
+					$result = $data;
+					/*$result = JavaScriptMinifier::minify( $data,
 						$wgResourceLoaderMinifierStatementsOnOwnLine,
 						$wgResourceLoaderMinifierMaxLineLength
-					);
+					);*/
 					$result .= "\n\n/* cache key: $key */\n";
 					break;
 				case 'minify-css':
@@ -190,6 +191,7 @@ class ResourceLoader {
 		global $IP, $wgResourceModules, $wgResourceLoaderSources, $wgLoadScript, $wgEnableJavaScriptTest;
 
 		wfProfileIn( __METHOD__ );
+
 		// Add 'local' source first
 		$this->addSource( 'local', array( 'loadScript' => $wgLoadScript, 'apiScript' => wfScript( 'api' ) ) );
 
@@ -206,6 +208,7 @@ class ResourceLoader {
 			$this->registerTestModules();
 		}
 
+
 		wfProfileOut( __METHOD__ );
 	}
 
@@ -213,7 +216,7 @@ class ResourceLoader {
 	 * Registers a module with the ResourceLoader system.
 	 *
 	 * @param $name Mixed: Name of module as a string or List of name/object pairs as an array
-	 * @param $info Module info array. For backwards compatibility with 1.17alpha,
+	 * @param $info array Module info array. For backwards compatibility with 1.17alpha,
 	 *   this may also be a ResourceLoaderModule object. Optional when using
 	 *   multiple-registration calling style.
 	 * @throws MWException: If a duplicate module registration is attempted
@@ -224,6 +227,7 @@ class ResourceLoader {
 	 */
 	public function register( $name, $info = null ) {
 		wfProfileIn( __METHOD__ );
+
 		// Allow multiple modules to be registered in one call
 		$registrations = is_array( $name ) ? $name : array( $name => $info );
 		foreach ( $registrations as $name => $info ) {
@@ -351,6 +355,7 @@ class ResourceLoader {
 	 * @return Array
 	 */
 	public function getTestModuleNames( $framework = 'all' ) {
+		/// @TODO: api siteinfo prop testmodulenames modulenames
 		if ( $framework == 'all' ) {
 			return $this->testModuleNames;
 		} elseif ( isset( $this->testModuleNames[$framework] ) && is_array( $this->testModuleNames[$framework] ) ) {
@@ -744,6 +749,9 @@ class ResourceLoader {
 								}
 							}
 						}
+						print "on $name\n";
+						print_r( $styles );
+					
 						$out .= self::makeLoaderImplementScript( $name, $scripts, $styles,
 							new XmlJsCode( $messagesBlob ) );
 						break;
@@ -813,6 +821,11 @@ class ResourceLoader {
 			array(
 				$name,
 				$scripts,
+				// Force objects. mw.loader.implement requires them to be javascript objects.
+				// Although these variables are associative arrays, which become javascript
+				// objects through json_encode. In many cases they will be empty arrays, and
+				// PHP/json_encode() consider empty arrays to be numerical arrays and
+				// output javascript "[]" instead of "{}". This fixes that.
 				(object)$styles,
 				(object)$messages
 			) );
@@ -898,7 +911,7 @@ class ResourceLoader {
 	public static function makeCustomLoaderScript( $name, $version, $dependencies, $group, $source, $script ) {
 		$script = str_replace( "\n", "\n\t", trim( $script ) );
 		return Xml::encodeJsCall(
-			"( function( name, version, dependencies, group, source ) {\n\t$script\n} )",
+			"( function ( name, version, dependencies, group, source ) {\n\t$script\n} )",
 			array( $name, $version, $dependencies, $group, $source ) );
 	}
 
@@ -971,7 +984,7 @@ class ResourceLoader {
 	 * @return string
 	 */
 	public static function makeLoaderConditionalScript( $script ) {
-		return "if(window.mw){\n".trim( $script )."\n}";
+		return "if(window.mw){\n" . trim( $script ) . "\n}";
 	}
 
 	/**

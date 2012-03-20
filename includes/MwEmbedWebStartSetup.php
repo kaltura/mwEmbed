@@ -71,8 +71,9 @@ require_once( "$IP/includes/MwEmbedMediaWikiGlobalFunctions.php" );
 require_once( "$IP/includes/DefaultSettings.php" );
 
 
-if ( !defined('MW_CONFIG_FILE') )
+if ( !defined('MW_CONFIG_FILE') ){
 	define('MW_CONFIG_FILE', "$IP/LocalSettings.php");
+}
 
 # LocalSettings.php is the per site customization file. If it does not exist
 # error out
@@ -84,6 +85,15 @@ if( !file_exists( MW_CONFIG_FILE ) ) {
 }
 # Include utility files: 
 require_once( "$IP/includes/Hooks.php");
+
+/**
+ * Legay mappings for mwEmbed config 
+ */
+if( isset( $wgEnableScriptDebug ) ){
+	$wgResourceLoaderDebug = $wgEnableScriptDebug;
+}
+
+
 
 # Create the wgRequest global: 
 $wgRequest = new WebRequest;

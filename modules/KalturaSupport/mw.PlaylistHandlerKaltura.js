@@ -309,15 +309,19 @@ mw.PlaylistHandlerKaltura.prototype = {
 		$( embedPlayer).unbind( bindName ).bind( bindName, function(){
 			mw.log( 'mw.PlaylistHandlerKaltura:: onChangeMediaDone' );
 			_this.loadingEntry = false;
+			// Sync player size
+			embedPlayer.bindHelper( 'loadeddata', function() {
+				embedPlayer.controlBuilder.syncPlayerSize();									
+			});
 			embedPlayer.play();
 			if( callback ){
 				callback();
 			}
 		});
 		mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
-		
 		// Use internal changeMedia call to issue all relevant events
 		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );
+
 		// Update the playlist data selectedIndex
 		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
 	},
