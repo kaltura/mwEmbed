@@ -2,10 +2,10 @@
 	// Bind the KalturaWatermark where the uiconf includes the Kaltura Watermark 
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
+			
 			var bindPostFix = '.watermark';
 			// remove any old watermark bindings: 
 			embedPlayer.unbindHelper( bindPostFix );
-			
 			
 			// Check if the uiConf xml includes a watermark 'tag' ( not a normal plugin )
 			if( $uiConf.find( 'watermark' ).length ){
@@ -46,7 +46,7 @@
 						};
 					});
 					// Center image once control object build out is done:
-					$(embedPlayer).bind('controlBarBuildDone' + bindPostFix, function(){
+					embedPlayer.bindHelper('controlBarBuildDone' + bindPostFix, function(){
 						embedPlayer.$interface.find( '.control-bar' ).find( '.k-watermark-plugin img' ).load(function(){
 							var cHeight = embedPlayer.controlBuilder.getHeight();
 							// check  aspect size:
@@ -54,7 +54,7 @@
 								 $( this ).css( 'top',  ( cHeight - (  cHeight - ( $( this ).height() / 2)  ) ) );
 							}
 						})
-					})
+					});
 				} else {
 					// Wait for the player to be ready 
 					embedPlayer.bindHelper( 'playerReady' + bindPostFix, function(){
