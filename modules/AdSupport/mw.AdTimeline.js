@@ -171,7 +171,7 @@ mw.AdTimeline.prototype = {
 							embedPlayer.triggerHelper( 'AdSupport_PreSequenceComplete' );
 							
 							// Avoid function stack
-							setTimeout(function(){ 
+							setTimeout( function(){
 								// trigger another onplay ( to match the kaltura kdp ) on play event
 								// after the ad plays are complete 
 								if( _this.displayedSlotCount > 0 ){

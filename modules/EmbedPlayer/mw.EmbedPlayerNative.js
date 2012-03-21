@@ -528,14 +528,12 @@ mw.EmbedPlayerNative = {
 		this.isPauseLoading = false;
 		// Make sure the switch source is different: 
 		if( !src || src == vid.src ){
-			if( switchCallback ){
+			if( $.isFunction( switchCallback ) ){
 				switchCallback( vid );
 			}
 			// Delay done callback to allow any non-blocking switch callback code to fully execute
-			if( doneCallback ){
-				setTimeout(function(){
-					doneCallback();
-				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ));
+			if( $.isFunction( doneCallback ) ){
+				doneCallback();
 			}
 			return ;
 		}
