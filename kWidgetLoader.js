@@ -94,7 +94,12 @@ var kWidget = {
 			kWidget.outputHTML5Iframe( targetId, settings );
 			return ;
 		} else {
-			restoreKalturaKDPCallback();
+			if( settings.uiconf_id ) {
+				// we use setTimeout to handle race condition when restore get called before dom ready
+				setTimeout( function() {
+					restoreKalturaKDPCallback();
+				}, 0);
+			}			
 			kWidget.outputFlashObject( targetId, settings );
 			return ;
 		}
