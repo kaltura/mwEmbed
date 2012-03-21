@@ -15,6 +15,8 @@ mw.DolStatistics.prototype = {
 	playheadFrequency: 5,
 	playheadInterval: 0,
 	
+	duringChangeMediaFlag: false,
+	
 	// Entry duration
 	duration: 0,
 
@@ -52,7 +54,7 @@ mw.DolStatistics.prototype = {
 		// Setup player counter, ( used global, because on change media we re-initialize the plugin and reset all vars )
 		if( typeof $( embedPlayer ).data('DolStatisticsCounter') == 'undefined' ) {
 			if( embedPlayer['data-playerError'] ){
-				$( embedPlayer ).data('DolStatisticsCounter', 0 ) 
+				$( embedPlayer ).data('DolStatisticsCounter', 0 );
 			} else {
 				$( embedPlayer ).data('DolStatisticsCounter', 1 );
 			}
@@ -85,6 +87,7 @@ mw.DolStatistics.prototype = {
 		// On change media remove any existing bindings:
 		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
 			if( ! embedPlayer['data-playerError'] ){
+				_this.duringChangeMediaFlag = true;
 				$embedPlayer.data('DolStatisticsCounter', $embedPlayer.data('DolStatisticsCounter') + 1 );
 			}
 		});
@@ -228,6 +231,12 @@ mw.DolStatistics.prototype = {
 		if( this.eventsList.indexOf( eventName ) === -1 ) {
 			return ;
 		}
+		// if flagged a change media call disregard everything until changeMedia
+		if( _this.duringChangeMediaFlag && eventName != 'changeMedia' ){
+			return ;
+		}
+		_this.duringChangeMediaFlag = false;
+		
 		
 		// Setup event params
 		var params = {};

@@ -356,6 +356,10 @@ mw.PlayerControlBuilder.prototype = {
 	*/
 	getPlayButtonPosition: function( size ) {
 		var _this = this;
+		// Set the width to screen's width if in fullscreen
+		if( this.inFullScreen ) {
+			size.width = screen.width;
+		}
 		// Set the offset depending if controls are hidden or displayed: 
 		var pheight = this.getComponentHeight( 'playButtonLarge' );
 		var topCompoentOffset = ( this.isOverlayControls() ) ? pheight : pheight / 2;
