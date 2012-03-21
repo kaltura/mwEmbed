@@ -310,7 +310,9 @@ mw.DoubleClick.prototype = {
 			_this.restorePlayer();
 		});
 		adsListener( 'ALL_ADS_COMPLETED', function(){
-			_this.restorePlayer();
+			var onPostRoll = true;
+			// restore the player but don't play content since ads are done:
+			_this.restorePlayer( onPostRoll );
 		});
 	},
 	getPlayerSize: function(){
@@ -423,7 +425,7 @@ mw.DoubleClick.prototype = {
 		}
 		this.restorePlayer();
 	},
-	restorePlayer: function(){
+	restorePlayer: function( onPostRoll ){
 		mw.log("DoubleClick::restorePlayer");
 		this.adPlaying = false;
 		this.embedPlayer.sequenceProxy.isInSequence = true;
@@ -431,8 +433,10 @@ mw.DoubleClick.prototype = {
 		// Show the content:
 		this.showContent();
 
-		// do an async play call ( without events )
-		this.getContent().play();
+		// do an async play call ( without events if not on postroll)
+		if( !onPostRoll ){
+			this.getContent().play();
+		}
 		
 		// Check for sequence proxy style restore: 
 		if( $.isFunction( this.restorePlayerCallback ) ){

@@ -1882,7 +1882,6 @@ mw.EmbedPlayer.prototype = {
 	stop: function() {
 		var _this = this;
 		mw.log( 'EmbedPlayer::stop:' + this.id );
-		
 		// update the player to stopped state: 
 		this.stopped = true;
 
@@ -2169,7 +2168,11 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		// Check if a javascript currentTime change based seek has occurred
-		if( parseInt( _this.previousTime ) != parseInt( _this.currentTime ) && !this.userSlide && !this.seeking && !this.isStopped() ){
+		if( parseInt( _this.previousTime ) != parseInt( _this.currentTime ) && 
+				!this.userSlide && 
+				!this.seeking && 
+				!this.isStopped() 
+		){
 			// If the time has been updated and is in range issue a seek
 			if( _this.getDuration() && _this.currentTime <= _this.getDuration() ){
 				var seekPercent = _this.currentTime / _this.getDuration();
