@@ -112,7 +112,7 @@ var kWidget = {
 			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+
 				'/wid/' + settings.wid +
 				'/uiconf_id/' + settings.uiconf_id;
-			
+
 			if( settings.entry_id ){
 				swfUrl+= '/entry_id/' + settings.entry_id;
 			}
@@ -120,60 +120,54 @@ var kWidget = {
 				swfUrl+= '/cache_st/' + settings.cache_st;
 			}
 			// Get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
-			var width = ( settings.width ) ? settings.width.replace(/px/, '' ) :
+			var width = ( settings.width ) ? settings.width :
 							( elm.width ) ? elm.width :
 								( elm.style.width ) ? parseInt( elm.style.width ) : 400;
 
-			var height = ( settings.height ) ? settings.height.replace(/px/, '' ) :
+			var height = ( settings.height ) ? settings.height :
 							( elm.height ) ? elm.height :
 								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 
 			var flashvarValue = ( settings.flashvars ) ? kFlashVarsToString( settings.flashvars ) : '&';
-			
+
 			// we may have to borrow more from:
 			// http://code.google.com/p/swfobject/source/browse/trunk/swfobject/src/swfobject.js#407
 			// There seems to be issue with passing all the flashvars in playlist context.
-			
+
 			var defaultParamSet = {
 				'allowFullScreen': 'true',
 				'allowNetworking': 'all',
 				'allowScriptAccess': 'always',
 				'bgcolor': '#000000'
+			};
+
+			var output = '<object width="' + width +
+					'" height="' + height +
+					'" style="width:' + width + 'px;height:' + height + 'px;' +
+					'" id="' + targetId +
+					'" name="' + targetId + '"';
+
+			output += ' data="' + swfUrl + '" type="application/x-shockwave-flash"';
+			if( window.ActiveXObject ){
+				output += ' classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"';
 			}
-			var o = '<object id="' + pId + '" ' +
-				'name="' + pId + '" ';
-			// output classid if in IE
-			if(  window.ActiveXObject ){
-				o += 'classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" ';
+			output += '>';
+
+			output += '<param name="movie" value="' + swfUrl + '" />';
+			output += '<param name="flashvars" value="' + flashvarValue + '" />';
+
+			for (var key in defaultParamSet) {
+				if (defaultParamSet[key]) {
+					output += '<param name="'+ key +'" value="'+ defaultParamSet[key] +'" />';
+				}
 			}
-			
-			// Attributes support % but not 'px'
-			var widthAttr = width;
-			if( typeof widthAttr == 'string' ){
-				widthAttr = widthAttr.replace(/px/, '' );
-			}
-			var heightAttr = height;
-			if( typeof heightAttr == 'string' ){
-				heightAttr = heightAttr.replace(/px/, '' );
-			}
-			
-			o += 'width="' + widthAttr +'" ' +
-				'height="' + heightAttr + '" ' +
-				'style="width:' + width + 'px;height:' + height + 'px;" ' +
-				'resource="' + swfUrl + '" ' +
-				'data="' + swfUrl + '" ';
-			var p = '<param name="flashVars" value="' + flashvarValue + '" /> ' +
-					'<param name="movie" value="' + swfUrl + '" />';
-			
-			for( var key in defaultParamSet ){
-				var value = ( typeof settings[key] != 'undefined' ) ? settings[key]: defaultParamSet[ key ];
-				o+= key + '="' + value + '" ';
-				p+= '<param name="' + key + '" value="' + value + '" />';
-			}
-			var objectTag = o + ' > ' + p + '</object>'; 
-			// update the span target: 
+
+			output += "</object>";
+
+			// update the span target:
 			elm.parentNode.replaceChild( spanTarget, elm );
-			spanTarget.innerHTML = 	objectTag;	
+			spanTarget.innerHTML = output;
+
 		}
 	},
 
