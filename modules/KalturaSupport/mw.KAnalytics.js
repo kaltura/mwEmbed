@@ -213,11 +213,11 @@ mw.KAnalytics.prototype = {
 		
 		// When the fullscreen button is pressed
 		// ( presently does not register iPhone / iPad until it has js bindings )
-		b( 'openFullScreen', 'OPEN_FULL_SCREEN' );
+		b( 'onOpenFullScreen', 'OPEN_FULL_SCREEN' );
 		
 		// When the close fullscreen button is pressed.
 		// ( presently does not register iphone / ipad until it has js bindings )
-		b( 'closeFullScreen', 'CLOSE_FULL_SCREEN' );
+		b( 'onCloseFullScreen', 'CLOSE_FULL_SCREEN' );
 		
 		// When the user plays (after the ondone event was fired )
 		b( 'replayEvent', 'REPLAY' );	
