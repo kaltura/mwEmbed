@@ -146,7 +146,7 @@ class KalturaResultObject {
 	// we just have to use the 
 	function isEmptyPlayer(){
 		if( !$this->urlParameters['entry_id'] && ! isset( $this->urlParameters['flashvars']['referenceId'] ) && !$this->isJavascriptRewriteObject()
-			&& !$this->isPlaylist() ){
+			&& !$this->isPlaylist() && !$this->isCarousel() ){
 			return true;
 		}
 		return false;
