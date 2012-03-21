@@ -863,7 +863,9 @@ mw.KWidgetSupport.prototype = {
 			if( clipAspect !== null && clipAspect != newAspect ){
 				mw.log("KWidgetSupport:: Possible Error clipApsect mispach: " + clipAspect + " != " + newAspect );
 			}
-			clipAspect = newAspect;
+			if( ! isNaN( newAspect) ){
+				clipAspect = newAspect;
+			}
 			
 			// Setup a source object:
 			var source = {
