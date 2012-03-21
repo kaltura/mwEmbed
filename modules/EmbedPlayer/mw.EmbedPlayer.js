@@ -675,17 +675,19 @@ mw.EmbedPlayer.prototype = {
 	 * Get the player height
 	 */
 	getHeight: function() {
-		return $( this ).height();
+		var el = ( this.$interface ) ? this.$interface : this;
+		return $( el ).height();
 	},
 
 	/**
 	 * Get the player width
 	 */
 	getWidth: function(){
+		var el = ( this.$interface ) ? this.$interface : this;
         if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
             return ( $( this ).parent().parent().width() );
         }
-		return $( this ).width();
+		return $( el ).width();
 	},
 
 	/**

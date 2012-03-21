@@ -108,6 +108,11 @@ color5="16777215" font="Arial" />
 				shareUrl,
 				generatorPageUrl,
 				customSnippet;
+				
+			var isPlaying = embedPlayer.isPlaying();
+			if( isPlaying ) {
+				embedPlayer.pause();
+			}
 
 			// Generate Share URL
 			if( this.getConfig('landingPagePrefix') ) {
@@ -124,12 +129,11 @@ color5="16777215" font="Arial" />
 			if( this.getConfig('generatorEmbedPrefix') ) {
 				generatorPageUrl = this.getConfig('generatorEmbedPrefix') + this.getConfig('uuid');
 			} else {
-				showError = true;
-				generatorPageUrl = "Plugin is not configured correctly. Generator page prefix is not set";
+				generatorPageUrl = this.getConfig('uuid');
 			}
 
 			if( showError ) {
-				customSnippet = generatorPageUrl;
+				customSnippet = '';
 			} else {
 				customSnippet = unescape(this.getConfig('customSnippetBefore')) + generatorPageUrl + unescape(this.getConfig('customSnippetAfter'));
 			}
@@ -137,18 +141,18 @@ color5="16777215" font="Arial" />
 			var $title = $('<h2 />').text('Share');
 			var $shareLink = $('<div />').append(
 				$('<span />').text('Email or IM this to your friends:'),
-				$('<textarea />')
-				.css({'width': '95%', 'height': '15px'})
-				.text(shareUrl)
+				$('<input />')
+				.css({'width': '95%', 'background': '#E4E4E4', 'color': '#666'})
+				.val(shareUrl)
 				.click( function() {
 					this.select();
 				})
 			);
 			var $shareCode = $('<div />').append(
 				$('<span />').text('Copy this code to your website or blog:'),
-				$('<textarea />')
-				.css({'width': '95%', 'height': '30px'})
-				.text(customSnippet)
+				$('<input />')
+				.css({'width': '95%', 'background': '#E4E4E4', 'color': '#666'})
+				.val(customSnippet)
 				.click( function() {
 					this.select();
 				})
@@ -162,7 +166,7 @@ color5="16777215" font="Arial" />
 				.addClass( 'ui-state-default ui-corner-all copycode' )
 				.text( gM( 'mwe-embedplayer-copy-code' ) )
 				.click(function() {
-					$shareLink.find( 'textarea' ).focus().select();
+					$shareLink.find( 'input' ).focus().select();
 					// Copy the text if supported:
 					if ( document.selection ) {
 						CopiedTxt = document.selection.createRange();
@@ -177,7 +181,7 @@ color5="16777215" font="Arial" />
 				.addClass( 'ui-state-default ui-corner-all copycode' )
 				.text( gM( 'mwe-embedplayer-copy-code' ) )
 				.click(function() {
-					$shareCode.find( 'textarea' ).focus().select();
+					$shareCode.find( 'input' ).focus().select();
 					// Copy the text if supported:
 					if ( document.selection ) {
 						CopiedTxt = document.selection.createRange();
@@ -191,8 +195,14 @@ color5="16777215" font="Arial" />
 			var $shareScreen = $('<div />').append(
 				$title, $shareLink, $shareCode
 			);
+				
+			var closeCallback = function() {
+				if( isPlaying ) {
+					embedPlayer.play();
+				}
+			};
 
-			embedPlayer.controlBuilder.displayMenuOverlay( $shareScreen );
+			embedPlayer.controlBuilder.displayMenuOverlay( $shareScreen, closeCallback );
 		}
 	};
 
