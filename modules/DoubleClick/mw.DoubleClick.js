@@ -310,9 +310,8 @@ mw.DoubleClick.prototype = {
 			_this.restorePlayer();
 		});
 		adsListener( 'ALL_ADS_COMPLETED', function(){
-			var onPostRoll = true;
 			// restore the player but don't play content since ads are done:
-			_this.restorePlayer( onPostRoll );
+			_this.restorePlayer( true );
 		});
 	},
 	getPlayerSize: function(){
@@ -425,7 +424,7 @@ mw.DoubleClick.prototype = {
 		}
 		this.restorePlayer();
 	},
-	restorePlayer: function( onPostRoll ){
+	restorePlayer: function( onContentComplete ){
 		mw.log("DoubleClick::restorePlayer");
 		this.adPlaying = false;
 		this.embedPlayer.sequenceProxy.isInSequence = true;
@@ -434,13 +433,12 @@ mw.DoubleClick.prototype = {
 		this.showContent();
 
 		// do an async play call ( without events if not on postroll)
-		if( !onPostRoll ){
+		if( !onContentComplete ){
 			this.getContent().play();
 		}
 		
 		// Check for sequence proxy style restore: 
 		if( $.isFunction( this.restorePlayerCallback ) ){
-			
 			// also do the normal restore ( will issue an async play call ) 
 			this.restorePlayerCallback();
 			this.restorePlayerCallback = null;
@@ -448,7 +446,11 @@ mw.DoubleClick.prototype = {
 			// restore player with normal events: 
 			this.embedPlayer.adTimeline.restorePlayer();
 			// managed midroll ( just play content directly )
-			this.embedPlayer.play();
+			if( onContentComplete ){
+				this.embedPlayer.onClipDone();
+			} else {
+				this.embedPlayer.play();
+			}
 		}
 	
 	},
