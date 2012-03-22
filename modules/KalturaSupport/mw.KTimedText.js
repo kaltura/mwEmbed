@@ -39,6 +39,13 @@
 				existingLayout =  'off';
 			}
 			
+			// Set captions layout of player based on plugin Name: 
+			if( this.pluginName == 'closedCaptionsOverPlayer' ){
+				this.defaultDisplayMode = 'ontop';
+			} else if( this.pluginName == 'closedCaptionsUnderPlayer' ){
+				this.defaultDisplayMode = 'below';
+			}
+			
 			// Update the layout options per existing layout or uiConf preference. 
 			if( existingLayout !== null ){
 				embedPlayer.timedText.setLayoutMode( existingLayout );
