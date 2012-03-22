@@ -743,7 +743,7 @@ mw.includeAllModuleMessages();
 				layoutOptions.push( 'ontop' );
 			}
 			// Support below player display: 
-			layoutOptions.push( 'below', 'off'  );
+			layoutOptions.push( 'off'  );
 
 			var $ul = $('<ul>');
 			$.each( layoutOptions, function( na, layoutMode ) {
@@ -1159,24 +1159,13 @@ mw.includeAllModuleMessages();
             	// too soon
             	return ;
             }
-            
             if( !_this.embedPlayer.controlBuilder.inFullScreen && _this.originalPlayerHeight ){
                 _this.embedPlayer.$interface.css({
                     'height': _this.originalPlayerHeight
                 });
                 _this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : _this.originalPlayerHeight}] );
             } else {
-                var cBarHeight =  ( _this.embedPlayer.controlBuilder.isOverlayControls() ) ?
-                        0 :
-                        _this.embedPlayer.controlBuilder.getHeight();
-                var newCss = {
-                    'height': _this.embedPlayer.$interface.height() -cBarHeight
-                }
-                if( parseInt( $( _this.embedPlayer ).css('top') ) < 0 ){
-                    newCss.top = 0;
-                }
-                $( _this.embedPlayer ).css( newCss );
-                $( _this.embedPlayer.getPlayerElement() ).css( newCss );
+            	// removed resize on container content, since syncPlayerSize calls now handle keeping player aspect. 
             }
         },
 		positionCaptionContainer: function(){

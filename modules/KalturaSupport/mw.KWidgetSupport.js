@@ -859,11 +859,13 @@ mw.KWidgetSupport.prototype = {
 			var asset = flavorData[i];
 			var entryId = asset.entryId;
 			
-			var newAspect = Math.round( ( asset.width / asset.height)  * 100 )  / 100
+			var newAspect = Math.round( ( asset.width / asset.height )  * 100 )  / 100
 			if( clipAspect !== null && clipAspect != newAspect ){
 				mw.log("KWidgetSupport:: Possible Error clipApsect mispach: " + clipAspect + " != " + newAspect );
 			}
-			clipAspect = newAspect;
+			if( ! isNaN( newAspect) ){
+				clipAspect = newAspect;
+			}
 			
 			// Setup a source object:
 			var source = {

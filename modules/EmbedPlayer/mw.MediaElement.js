@@ -198,8 +198,6 @@ mw.MediaElement.prototype = {
 			}
 		});
 		
-		
-		
 		// Set apple adaptive ( if available )
 		var vndSources = this.getPlayableSources('application/vnd.apple.mpegurl')
 		if( vndSources.length && mw.EmbedTypes.getMediaPlayers().getMIMETypePlayers( 'application/vnd.apple.mpegurl' ).length ){

@@ -29,6 +29,9 @@ mw.EmbedPlayerNative = {
 	
 	// A flag to designate the first play event, as to not propagate the native event in this case
 	isFirstEmbedPlay: null,
+	
+	// Base left offset ( for hide and restore player position ) 
+	basePlayerOffsetLeft: null,
 
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
@@ -528,14 +531,12 @@ mw.EmbedPlayerNative = {
 		this.isPauseLoading = false;
 		// Make sure the switch source is different: 
 		if( !src || src == vid.src ){
-			if( switchCallback ){
+			if( $.isFunction( switchCallback ) ){
 				switchCallback( vid );
 			}
 			// Delay done callback to allow any non-blocking switch callback code to fully execute
-			if( doneCallback ){
-				setTimeout(function(){
-					doneCallback();
-				}, mw.getConfig( 'EmbedPlayer.MonitorRate' ));
+			if( $.isFunction( doneCallback ) ){
+				doneCallback();
 			}
 			return ;
 		}
@@ -631,7 +632,10 @@ mw.EmbedPlayerNative = {
 	},
 	hideIpadPlayerOffScreen:function( vid ){
 		var vid = this.getPlayerElement();
-		// move the video offscreen while it switches ( hides quicktime logo only applies to iPad ) 
+		if( this.basePlayerOffsetLeft !== null ){
+			this.basePlayerOffsetLeft = $( vid ).css( 'left' );
+		}
+		// Move the video offscreen while it switches ( hides quicktime logo only applies to iPad ) 
 		if( mw.isIpad() ){
 			$( vid ).css( {
 				'position' : 'absolute', 
@@ -641,7 +645,8 @@ mw.EmbedPlayerNative = {
 	},
 	restoreIpadPlayerOnScreen: function( vid ){
 		var vid = this.getPlayerElement();
-		$( vid ).css( 'left', '0px');
+		$( vid ).css( 'left', this.basePlayerOffsetLeft);
+		this.basePlayerOffsetLeft = null;
 	},
 	/**
 	 * switchPlaySource switches the player source

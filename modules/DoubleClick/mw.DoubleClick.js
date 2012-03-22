@@ -206,7 +206,7 @@ mw.DoubleClick.prototype = {
 			 },
 			 false);
 
-		mw.log('DoubleClick::requestAds > ' + adTagUrl );
+		mw.log( 'DoubleClick::requestAds > ' + adTagUrl );
 
 		// 4. Make the request.
 		_this.adsLoader.requestAds( adRequest );
@@ -249,8 +249,9 @@ mw.DoubleClick.prototype = {
 				google.ima.AdEvent.Type[ eventType ],
 				function( event ){
 					mw.log( "DoubleClick::AdsEvent:" + eventType );
-					if( callback )
+					if( $.isFunction( callback ) ){
 						callback( event );
+					}
 				},
 				false 
 			);
@@ -280,14 +281,14 @@ mw.DoubleClick.prototype = {
 			// show the loading spinner until we start ad playback
 			_this.embedPlayer.addPlayerSpinner();
 			// if on iPad hide the quicktime logo: 
-			_this.hideIpadPlayerOffScreen();
+			_this.hideIpadPlayerOffScreen( _this.getAdContainer()  );
 		} );
 		adsListener( 'STARTED', function(){
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
 			
 			// if on iPad hide restore player from quicktime logo hide: 
-			_this.restoreIpadPlayerOnScreen();
+			_this.restoreIpadPlayerOnScreen( _this.getAdContainer() );
 			
 			// set ad playing flag: 
 			_this.adPlaying = true;
@@ -309,7 +310,8 @@ mw.DoubleClick.prototype = {
 			_this.restorePlayer();
 		});
 		adsListener( 'ALL_ADS_COMPLETED', function(){
-			_this.restorePlayer();
+			// restore the player but don't play content since ads are done:
+			_this.restorePlayer( true );
 		});
 	},
 	getPlayerSize: function(){
@@ -318,31 +320,41 @@ mw.DoubleClick.prototype = {
 			'height': this.embedPlayer.getPlayerHeight() 
 		}
 	},
+	hideContent: function(){
+		var _this = this;
+		// show the ad container: 
+		this.restoreIpadPlayerOnScreen( 
+			$( this.getAdContainer() ).find('video').get(0) 
+		);
+		// hide content:
+		this.hideIpadPlayerOffScreen(
+			this.getContent()
+		)
+	},
+	showContent: function(){
+		// show content
+		this.restoreIpadPlayerOnScreen( 
+			this.getContent()
+		);
+		// hide the ad container: 
+		this.hideIpadPlayerOffScreen(
+			this.getAdContainer()
+		);
+	},
 	/**
 	 * iPad displays a quicktime logo while loading, this helps hide that
 	 */
-	hideIpadPlayerOffScreen:function(){
-		$( this.getAdContainer() ).find('video').css({
+	hideIpadPlayerOffScreen:function(target){
+		$( target ).css({
 			'position' : 'absolute', 
 			'left': '-4048px'
 		})
 	},
-	restoreIpadPlayerOnScreen:function(){
-		$( this.getAdContainer() ).find('video').css( 'left', '0px');
+	/* restore iPad Player */
+	restoreIpadPlayerOnScreen:function( target ){
+		$( target ).css( 'left', '0px');
 	},
-	hideContent: function(){
-		var _this = this;
-		// show the ad container: 
-		$( this.getAdContainer() ).show();
-		// hide content:
-		$( this.getContent() ).hide();
-	},
-	showContent: function(){
-		// show content
-		$( this.getContent() ).show();
-		// hide the ad container: 
-		$( this.getAdContainer() ).hide();
-	},
+	
 	addEmbedPlayerListeners: function(){
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
@@ -412,37 +424,35 @@ mw.DoubleClick.prototype = {
 		}
 		this.restorePlayer();
 	},
-	restorePlayer: function(){
+	restorePlayer: function( onContentComplete ){
 		mw.log("DoubleClick::restorePlayer");
 		this.adPlaying = false;
 		this.embedPlayer.sequenceProxy.isInSequence = true;
 		
-		// iOS can't play a new video with an active one in the dom: 
-		// remove the ad video tag ( before trying to restore player ) 
-		/*var $adVid = $( this.getAdContainer() ).find('video');
-		var adSrc = $adVid.attr('src');
-		var adStyle = $adVid.attr('style');
-		var $adVidParent = 	$adVid.parent();
-		$adVid.remove();
-		*/
-		
 		// Show the content:
 		this.showContent();
+
+		// do an async play call ( without events if not on postroll)
+		if( !onContentComplete ){
+			this.getContent().play();
+		}
 		
 		// Check for sequence proxy style restore: 
-		if( this.restorePlayerCallback  ){
+		if( $.isFunction( this.restorePlayerCallback ) ){
+			// also do the normal restore ( will issue an async play call ) 
 			this.restorePlayerCallback();
 			this.restorePlayerCallback = null;
 		} else { // do a manual restore: 
-			// stop ad playback: 
+			// restore player with normal events: 
 			this.embedPlayer.adTimeline.restorePlayer();
 			// managed midroll ( just play content directly )
-			this.embedPlayer.play();
+			if( onContentComplete ){
+				this.embedPlayer.onClipDone();
+			} else {
+				this.embedPlayer.play();
+			}
 		}
-		/*setTimeout(function(){
-			// after we have issued play we can restore an uninitialized ad video: 
-			$adVidParent.prepend( $adVid );
-		}, 2000 );*/
+	
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 
