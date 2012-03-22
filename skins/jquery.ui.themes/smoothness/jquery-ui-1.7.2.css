@@ -403,3 +403,5 @@
 ----------------------------------*/
 .ui-progressbar { height:2em; text-align: left; }
 .ui-progressbar .ui-progressbar-value {margin: -1px; height:100%; }
+
+.mv-player .overlay-win textarea { color: black !important; }

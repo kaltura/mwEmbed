@@ -27,6 +27,8 @@
 		
 		imgMargin: 15,
 		
+		carouselLeft: 30,
+		
         init: function( embedPlayer ) {
             this.embedPlayer = embedPlayer;
             this.addPlayerBindings();
@@ -109,6 +111,15 @@
 			var maxThumbnails = _this.getMaxThumbnails();
 			visibleThumbnails = ( ( typeof visibleThumbnails ) !== 'undefined' ) ? visibleThumbnails : maxThumbnails;
 
+			// If fixedThumbnails flag is true then try to get number of thumbnails, otherwise default to maximum thumbnails
+			if ( embedPlayer.playerConfig['vars'].fixedThumbnails && embedPlayer.playerConfig['vars'].numOfThumbnails ) {
+				if ( parseInt( embedPlayer.playerConfig['vars'].numOfThumbnails ) <= maxThumbnails ) {
+					visibleThumbnails = parseInt( embedPlayer.playerConfig['vars'].numOfThumbnails );
+					_this.imgMargin = parseInt( ( embedPlayer.$interface.width() - 41 - ( visibleThumbnails * _this.imgWidth ) ) / ( visibleThumbnails + 1 ) );
+					_this.carouselLeft += _this.imgMargin - 10;
+				}
+			}
+
 			// Remove any previous carousel
 			_this.removeCarousel();
 
@@ -144,7 +155,7 @@
 					} )
 					.css( {
 						'margin-right' : _this.imgMargin + 'px',
-						'border' : '1px solid white'
+						'border' : '1px groove white'
 					} )
 					.hover( 
 						function() {
@@ -158,6 +169,15 @@
 					.bind( 'click', function() {
 						$imgTitle.remove();
 						_this.removeCarousel();
+						embedPlayer.bindHelper( 'onChangeMediaDone', function() {
+							embedPlayer.play();
+							embedPlayer.bindHelper( 'loadeddata', function() {
+								embedPlayer.play();
+							} );
+							embedPlayer.bindHelper( 'playing', function() {
+								embedPlayer.controlBuilder.syncPlayerSize();
+							} );
+						} );
 						embedPlayer.sendNotification( "changeMedia", {'entryId' : currEntryObj.id} ); 
 					} );
 				// Entry duration is overlayed on the thumbnail
@@ -174,22 +194,23 @@
 			// Add the carousel main component
 			$carouselContainer.append( $carousel );
 
+			var imagesUrl = window['SCRIPT_LOADER_URL'].replace('ResourceLoader.php','skins/common/images/')
 			// Carousel scroll back 
 			var $prevButton = $( '<img />' )
 				.attr( {
 					'id' : 'prev',
 					'title' : 'Previous',
-					'src' : '../../../skins/common/images/leftarrow.png',
+					'src' : imagesUrl + 'leftarrow.png',
 					'width' : '15px'
 				} )
 				.addClass( 'carouselPrevButton' )
 				.hover(
 					function() {
-						$( this ).attr( 'src', '../../../skins/common/images/leftarrow-hover.png' )
+						$( this ).attr( 'src', imagesUrl + 'leftarrow-hover.png' )
 							.css( 'cursor', 'pointer' );
 					},
 					function() {
-						$( this ).attr( 'src', '../../../skins/common/images/leftarrow.png' );
+						$( this ).attr( 'src', imagesUrl + 'leftarrow.png' );
 					}
 				);
 
@@ -198,20 +219,20 @@
 				.attr( {
 					'id' : 'next',
 					'title' : 'Next',
-					'src' : '../../../skins/common/images/rightarrow.png',
+					'src' : imagesUrl + 'rightarrow.png',
 					'width' : '15px'
 				} )
 				.addClass( 'carouselNextButton' )
 				.hover(
 					function() {
-						$( this ).attr( 'src', '../../../skins/common/images/rightarrow-hover.png' )
+						$( this ).attr( 'src', imagesUrl + 'rightarrow-hover.png' )
 							.css( 'cursor', 'pointer' );
 					},
 					function() {
-						$( this ).attr( 'src', '../../../skins/common/images/rightarrow.png' );
+						$( this ).attr( 'src', imagesUrl + 'rightarrow.png' );
 					}
 				);
-
+					
 			_this.addTitle();
 
 			// iPhone uses native player so the carousel should be drawn below the player and not on top of it. 
@@ -234,14 +255,16 @@
 				circular: false,
 				// TODO: make number of visible thumbnails configurable or computed (i.e how many that fit)
 				visible: visibleThumbnails,
-				scroll: 1
+				scroll: 1,
 			} );
 			$carouselContainer.addClass( 'carouselContainer' )
 				.css( 'bottom', embedPlayer.controlBuilder.getHeight() + 30 + 'px' );
 			if ( mw.isIphone() ) {
 				$carouselContainer.css( 'bottom', '0px' );
 			}
-			$carousel.css( 'left', '30px' );
+			$carousel.css( 'left', _this.carouselLeft + 'px' );
+			_this.carouselLeft = 30;
+			_this.imgMargin = 15;
 			return true;
         },
 
