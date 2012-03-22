@@ -1473,6 +1473,10 @@ mw.PlayerControlBuilder.prototype = {
 	* 	'li' a li line item with click action for that menu item
 	*/
 	optionMenuItems: {
+		
+		/*
+		 * Commented out, replaced by flavor selector
+		 * TODO: need to remove all switch player related code
 		// Player select menu item
 		'playerSelect': function( ctrlObj ){
 			if( mw.isIpad() ){
@@ -1488,7 +1492,10 @@ mw.PlayerControlBuilder.prototype = {
 				}
 			);
 		},
-
+		*/
+	    /*
+		 * Commented out, replaced by 'download button' configured by uiConf
+		 * TODO: need to remove all related code
 		// Download the file menu
 		'download': function( ctrlObj ) {
 			if( mw.isIpad() ) return false;
@@ -1505,7 +1512,7 @@ mw.PlayerControlBuilder.prototype = {
 				}
 			);
 		},
-
+		*/
 		// Share the video menu
 		'share': function( ctrlObj ) {
 			return $.getLineItem(
