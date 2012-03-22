@@ -781,7 +781,7 @@ class kalturaIframe {
 	private function javaScriptPlayerLogic(){
 		?>
 		
-		var isHTML5 = kIsHTML5FallForward();
+		var isHTML5 = kWidget.isHTML5FallForward();
 		if( window.kUserAgentPlayerRules ) {
 			var playerAction = window.checkUserAgentPlayerRules( window.kUserAgentPlayerRules[ '<?php echo $this->getResultObject()->getUiConfId() ?>' ] );
 			if( playerAction.mode == 'leadWithHTML5' ){
