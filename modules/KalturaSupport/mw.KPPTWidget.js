@@ -69,7 +69,8 @@ mw.KPPTWidget.prototype = {
 			// Update embed player
 			_this.$target.find( 'video' ).embedPlayer( function(){
 				// Add slide tags
-				_this.addSlideTags();
+				// Commented out for now, we can't support slides on mobile
+				//_this.addSlideTags();
 				
 				// Add Player bindings
 				_this.addBindings();

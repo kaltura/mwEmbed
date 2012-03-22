@@ -178,7 +178,7 @@
 		}else {
 		
 			// Check if we are NOT rewriting tags: 
-			if( !kIsHTML5FallForward() ) {
+			if( !kWidget.isHTML5FallForward() ) {
 				restoreKalturaKDPCallback();
 				rewriteDoneCallback();
 				return ;
@@ -251,7 +251,11 @@
 						'heigth' : $( element ).attr('height')
 					};
 					
-					if( kEmbedSettings.entry_id || kEmbedSettings.reference_id ) {
+					var isPPTWidget = function() {
+						return (flashvars && flashvars.videoPresentationEntryId) ? true : false;
+					};
+					
+					if( ( kEmbedSettings.entry_id || kEmbedSettings.reference_id ) && ! isPPTWidget() ) {
 						loadEmbedPlayerFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
 						
