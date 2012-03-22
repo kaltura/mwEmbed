@@ -118,7 +118,7 @@
 	color : white;
 	font-size : small;
 	font-weight : bold;
-	z-index : 5;
+	z-index : 2;
 }
 
 .carouselVideoTitleText {
@@ -134,7 +134,7 @@
 	background-color : #5A5A5A;
 	color : #D9D9D9;
 	font-size : smaller;
-	z-index : 6;
+	z-index : 2;
 }
 
 .carouselImgTitle {
