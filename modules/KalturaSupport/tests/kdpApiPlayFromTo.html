@@ -30,8 +30,6 @@
 				startTime = toSeconds(startTime);
 				endTime = toSeconds(endTime);
 
-				kdp.sendNotification("doStop");
-
 				kdp.setKDPAttribute("mediaProxy", "mediaPlayFrom", startTime );
 				kdp.setKDPAttribute("mediaProxy", "mediaPlayTo", endTime );
 
@@ -69,7 +67,7 @@
 			<param name="allowNetworking" value="all" />
 			<param name="allowScriptAccess" value="always" />
 			<param name="bgcolor" value="#000000" />
-			<param name="flashVars" value="&externalInterfaceDisabled=false&steamerType=rtmp&mediaProxy.mediaPlayFrom=30&mediaProxy.mediaPlayTo=40" />
+			<param name="flashVars" value="&externalInterfaceDisabled=false&steamerType=rtmp&mediaProxy.mediaPlayFrom=10&mediaProxy.mediaPlayTo=30" />
 			<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1308649222/wid/_423851/uiconf_id/4792432/entry_id/1_sfrj36g3" />
 		</object>
 		<br /><br />
