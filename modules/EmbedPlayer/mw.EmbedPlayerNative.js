@@ -635,7 +635,7 @@ mw.EmbedPlayerNative = {
 		if( this.basePlayerOffsetLeft !== null ){
 			this.basePlayerOffsetLeft = $( vid ).css( 'left' );
 		}
-		// move the video offscreen while it switches ( hides quicktime logo only applies to iPad ) 
+		// Move the video offscreen while it switches ( hides quicktime logo only applies to iPad ) 
 		if( mw.isIpad() ){
 			$( vid ).css( {
 				'position' : 'absolute', 
