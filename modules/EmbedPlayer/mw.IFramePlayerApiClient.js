@@ -145,12 +145,18 @@ mw.IFramePlayerApiClient.prototype = {
 				'width' : window.innerWidth,
 				'height' : window.innerHeight
 			};
+			/*
+			 * We don't need that check anymore.
+			 * On Desktop browsers we use native fullscreen so you unable to resize the window
+			 * and that fixes issue on iPad when you enter the player while zoomed in.
+			 * 
 			if( targetSize.width < orgSize.width ){
 				targetSize.width = orgSize.width;
 			}
 			if( targetSize.height < orgSize.height ){
 				targetSize.height =  orgSize.height;
 			}
+			*/
 			// Make the iframe fullscreen
 			$iframe
 				.css({
