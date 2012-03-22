@@ -171,7 +171,6 @@ mw.KPPTWidget.prototype = {
 				'right' : '0px',
 				'background-color' : '#DDD',
 				'background-image' : '-webkit-gradient(linear, left top, left bottom, from(#FFF), to(#CCC))',
-				'background-image' : '-moz-linear-gradient(top, #FFF, #CCC)'
 			})
 		);
 		// Check for Scrubber
@@ -202,8 +201,7 @@ mw.KPPTWidget.prototype = {
 			'border-radius' : '3px',
 			'margin' : '5px',
 			'float' : 'left',
-			'background-image' : '-webkit-gradient(linear, left top, left bottom, from(#FFF), to(#BBB))',
-			'background-image' : '-moz-linear-gradient(top, #FFF, #BBB)'
+			'background-image' : '-webkit-gradient(linear, left top, left bottom, from(#FFF), to(#BBB))'
 		};
 		// check for prev 
 		var $prvConf = $syncButtonsConfig.find('#syncPrevButton');
@@ -407,7 +405,6 @@ mw.KPPTWidget.prototype = {
 				'border' : 'solid thin #333',
 				'background-color' : '#AAA',
 				'background-image' : '-webkit-gradient(linear, left top, left bottom, from(#AAA), to(#666))',
-				'background-image' : '-moz-linear-gradient(top, #AAA, #666)',
 				'-moz-border-radius' : '3px',
 				'border-radius' : '3px'
 			})
