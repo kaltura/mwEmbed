@@ -29,9 +29,6 @@ mw.EmbedPlayerNative = {
 	
 	// A flag to designate the first play event, as to not propagate the native event in this case
 	isFirstEmbedPlay: null,
-	
-	// Base left offset ( for hide and restore player position ) 
-	basePlayerOffsetLeft: null,
 
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
@@ -572,7 +569,8 @@ mw.EmbedPlayerNative = {
 				// Do the actual source switch: 
 				vid.src = src;
 				
-				$( vid ).bind( 'loadedmetadata', function(){
+				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
+					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix );
 					// restore video position: 
 					_this.restoreIpadPlayerOnScreen();
 					// now hide the spinner
@@ -630,23 +628,25 @@ mw.EmbedPlayerNative = {
 			}
 		}
 	},
-	hideIpadPlayerOffScreen:function( vid ){
+	hideIpadPlayerOffScreen: function(){
 		var vid = this.getPlayerElement();
-		if( this.basePlayerOffsetLeft !== null ){
-			this.basePlayerOffsetLeft = $( vid ).css( 'left' );
-		}
-		// Move the video offscreen while it switches ( hides quicktime logo only applies to iPad ) 
-		if( mw.isIpad() ){
+		if ( mw.isIpad() ) {
 			$( vid ).css( {
+				'-webkit-transform' : 'translateX(-4048px)',
 				'position' : 'absolute', 
-				'left': '-4048px'
-			});
+				'left' : '-4048px'
+			} );
 		}
 	},
-	restoreIpadPlayerOnScreen: function( vid ){
+	restoreIpadPlayerOnScreen: function(){
 		var vid = this.getPlayerElement();
-		$( vid ).css( 'left', this.basePlayerOffsetLeft);
-		this.basePlayerOffsetLeft = null;
+		if ( mw.isIpad() ) {
+			$( vid ).css( {
+				'-webkit-transform' : 'translateX(0px)',
+				'left' : '0px'
+			} );
+			this.controlBuilder.syncPlayerSize();
+		}
 	},
 	/**
 	 * switchPlaySource switches the player source
@@ -711,7 +711,7 @@ mw.EmbedPlayerNative = {
 			if ( this.playerElement && this.playerElement.play ) {
 				// If in pauseloading state make sure the loading spinner is present: 
 				if( this.isPauseLoading ){
-					this.hideSpinnerOncePlaying()
+					this.hideSpinnerOncePlaying();
 				}
 				// issue a play request 
 				this.playerElement.play();

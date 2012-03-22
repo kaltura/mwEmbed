@@ -171,9 +171,6 @@
 						_this.removeCarousel();
 						embedPlayer.bindHelper( 'onChangeMediaDone', function() {
 							embedPlayer.play();
-							embedPlayer.bindHelper( 'loadeddata', function() {
-								embedPlayer.play();
-							} );
 							embedPlayer.bindHelper( 'playing', function() {
 								embedPlayer.controlBuilder.syncPlayerSize();
 							} );
@@ -255,7 +252,7 @@
 				circular: false,
 				// TODO: make number of visible thumbnails configurable or computed (i.e how many that fit)
 				visible: visibleThumbnails,
-				scroll: 1,
+				scroll: 1
 			} );
 			$carouselContainer.addClass( 'carouselContainer' )
 				.css( 'bottom', embedPlayer.controlBuilder.getHeight() + 30 + 'px' );
