@@ -632,7 +632,7 @@ mw.EmbedPlayerNative = {
 	},
 	hideIpadPlayerOffScreen:function( vid ){
 		var vid = this.getPlayerElement();
-		if( !this.basePlayerOffsetLeft ){
+		if( this.basePlayerOffsetLeft !== null ){
 			this.basePlayerOffsetLeft = $( vid ).css( 'left' );
 		}
 		// move the video offscreen while it switches ( hides quicktime logo only applies to iPad ) 
