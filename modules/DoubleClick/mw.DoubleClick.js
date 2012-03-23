@@ -44,15 +44,17 @@ mw.DoubleClick.prototype = {
 			// add cuepoint bindings
 			this.addKalturaCuePointBindings();
 		}
-		// Load double click ima library and issue the callback: 
-		$.getScript('http://www.google.com/jsapi', function(){
-			google.load("ima", "3", {
-				"callback" : function(){
-					if( callback ){
-						callback();
-					}
+		// Load double click ima per doc:
+		// http://code.google.com/apis/ima/docs/sdks/googlehtml5_ads_v3.html#loadsdk
+		$.getScript('http://s0.2mdn.net/instream/html5/ima.js', function(){
+			google.ima.SdkLoader.setCallbacks(function(){
+				if( $.isFunction( callback) ){
+					callback();
 				}
+			}, function( errorCode ){
+				mw.log( "Error::DoubleClick Error: " + errorCode );
 			});
+			google.ima.SdkLoader.load("3");
 		});
 	},
 	addManagedBinding: function(){
@@ -302,7 +304,7 @@ mw.DoubleClick.prototype = {
 		adsListener( 'MIDPOINT' );
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE', function(){
-			// the current ad is complete hide offscreen ( until next ad plays ) 
+			// the current ad is complete hide off screen ( until next ad plays ) 
 			_this.hideIpadPlayerOffScreen();
 		});
 		// Resume content:
