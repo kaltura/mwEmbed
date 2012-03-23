@@ -47,7 +47,7 @@ mw.DoubleClick.prototype = {
 		// Load double click ima per doc:
 		// http://code.google.com/apis/ima/docs/sdks/googlehtml5_ads_v3.html#loadsdk
 		$.getScript('http://s0.2mdn.net/instream/html5/ima.js', function(){
-			google.ima.SdkLoader.setCallbacks(function(){
+			google.ima.SdkLoader.setCallbacks( function(){
 				if( $.isFunction( callback) ){
 					callback();
 				}
@@ -73,6 +73,8 @@ mw.DoubleClick.prototype = {
 			sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = function( callback ){
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
+				// 
+				
 				// trigger the double click end sequence:
 				_this.adsLoader.contentComplete();
 			};
@@ -187,9 +189,18 @@ mw.DoubleClick.prototype = {
 		if( adType ){
 			adRequest['adType'] = adType;
 		}
+		
+		// Set the size in the adRequest 
+		var size = _this.getPlayerSize();
+		adsRequest.linearAdSlotWidth = size.width;
+		adsRequest.linearAdSlotHeight = size.height;
+
+		adsRequest.nonLinearAdSlotWidth = size.width;
+		adsRequest.nonLinearAdSlotHeight = size.height;
+
+		
 		// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 		this.getAdDisplayContainer();
-		
 		
 		// Create ads loader.
 		_this.adsLoader = new google.ima.AdsLoader();
@@ -306,6 +317,7 @@ mw.DoubleClick.prototype = {
 		adsListener( 'COMPLETE', function(){
 			// the current ad is complete hide off screen ( until next ad plays ) 
 			_this.hideIpadPlayerOffScreen();
+			if( _this.c )
 		});
 		// Resume content:
 		adsListener( 'CONTENT_RESUME_REQUESTED', function(){
@@ -363,7 +375,7 @@ mw.DoubleClick.prototype = {
 		
 		embedPlayer.bindHelper( 'onResizePlayer' + this.bindPostfix, function( event, size, animate ) {
 			if( _this.adPlaying ){
-				mw.log("DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
+				mw.log( "DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
 				// Resize the ad manager on player resize: ( no support for animate )
 				_this.adsManager.resize(size.width, size.height, google.ima.ViewMode.NORMAL);
 			}
