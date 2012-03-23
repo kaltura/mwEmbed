@@ -489,8 +489,10 @@
 			// Build the iframe request from supplied iframeParams: 
 			var iframeRequest = '';
 			for( var key in iframeParams ){
-				// don't put flashvars or readyCallback into the post url ( will be a request param ) 
-				if( key == 'flashvars' || key == 'readyCallback' || key == 'isHTML5' ){
+				// Only encode valid kwidget attributes into the url
+				if( key != 'p' || key != 'cache_st' || key != 'wid' 
+					|| key != 'uiconf_id' || key != 'entry_id' 
+				){
 					continue;
 				}
 				
