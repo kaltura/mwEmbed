@@ -300,7 +300,7 @@ function kCheckAddScript(){
 		return ;
 	}
 	// Restore the jsCallbackReady ( we are not rewriting )
-	if( window.restoreKalturaKDPCallback && kGetKalturaPlayerList().length ){
+	if( kGetKalturaPlayerList().length && window.restoreKalturaKDPCallback ){
 		window.restoreKalturaKDPCallback();
 	}
 }
