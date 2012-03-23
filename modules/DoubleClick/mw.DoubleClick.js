@@ -24,6 +24,12 @@ mw.DoubleClick.prototype = {
 	adDuration: null,
 	demoStartTime: null,
 	
+	// Flags for a fallback check for all ads completed .
+	contentDoneFlag: null,
+	
+	allAdsCompletedFlag: null,
+	
+	
 	// The current ad Slot type by default "managed" i.e doubleClick manages the player sequence. 
 	currentAdSlotType : null,
 
@@ -32,6 +38,10 @@ mw.DoubleClick.prototype = {
 		
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
+		
+		// reset the contentDoneFlag flags:
+		this.contentDoneFlag = null;
+		this.allAdsCompletedFlag = null;
 		
 		// remove any old bindings: 
 		embedPlayer.unbindHelper( this.bindPostfix );
@@ -73,7 +83,9 @@ mw.DoubleClick.prototype = {
 			sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = function( callback ){
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
-				// 
+				
+				// set content complete flag
+				_this.contentDoneFlag = true;
 				
 				// trigger the double click end sequence:
 				_this.adsLoader.contentComplete();
@@ -184,20 +196,19 @@ mw.DoubleClick.prototype = {
 	requestAds: function( adTagUrl, adType ) {
 		var _this = this;
 		// Create ad request object.
-		var adRequest = {};
-		adRequest.adTagUrl = adTagUrl;
+		var adsRequest = {};
+		adsRequest.adTagUrl = adTagUrl;
 		if( adType ){
-			adRequest['adType'] = adType;
+			adsRequest['adType'] = adType;
 		}
 		
-		// Set the size in the adRequest 
+		// Set the size in the adsRequest 
 		var size = _this.getPlayerSize();
 		adsRequest.linearAdSlotWidth = size.width;
 		adsRequest.linearAdSlotHeight = size.height;
 
 		adsRequest.nonLinearAdSlotWidth = size.width;
 		adsRequest.nonLinearAdSlotHeight = size.height;
-
 		
 		// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 		this.getAdDisplayContainer();
@@ -222,7 +233,7 @@ mw.DoubleClick.prototype = {
 		mw.log( 'DoubleClick::requestAds > ' + adTagUrl );
 
 		// 4. Make the request.
-		_this.adsLoader.requestAds( adRequest );
+		_this.adsLoader.requestAds( adsRequest );
 	},
 	// Handles the ads manager loaded event. In case of no ads, the AD_ERROR
 	// event is issued and error handler is invoked.
@@ -317,13 +328,24 @@ mw.DoubleClick.prototype = {
 		adsListener( 'COMPLETE', function(){
 			// the current ad is complete hide off screen ( until next ad plays ) 
 			_this.hideIpadPlayerOffScreen();
-			if( _this.c )
+			if( _this.contentDoneFlag ){
+				// Include a fallback check for ALL_ADS_COMPLETED
+				setTimeout(function(){
+					if( !_this.allAdsCompletedFlag ){
+						mw.log("DoubleClick:: Fallback ALL_ADS_COMPLETED call");
+						// restore the player but don't play content since ads are done:
+						_this.restorePlayer( true );
+					}
+				},1000)
+			}
 		});
 		// Resume content:
 		adsListener( 'CONTENT_RESUME_REQUESTED', function(){
 			_this.restorePlayer();
 		});
 		adsListener( 'ALL_ADS_COMPLETED', function(){
+			// set the allAdsCompletedFlag to not call restore player twice
+			_this.allAdsCompletedFlag = true;
 			// restore the player but don't play content since ads are done:
 			_this.restorePlayer( true );
 		});
@@ -446,7 +468,7 @@ mw.DoubleClick.prototype = {
 		// Show the content:
 		this.showContent();
 
-		// do an async play call ( without events if not on postroll)
+		// do an async play call ( without events if not on postroll )
 		if( !onContentComplete ){
 			this.getContent().play();
 		}
@@ -459,7 +481,7 @@ mw.DoubleClick.prototype = {
 		} else { // do a manual restore: 
 			// restore player with normal events: 
 			this.embedPlayer.adTimeline.restorePlayer();
-			// managed midroll ( just play content directly )
+			// managed complete ... call clip done if content complete. 
 			if( onContentComplete ){
 				this.embedPlayer.onClipDone();
 			} else {
