@@ -211,12 +211,10 @@ var kWidget = {
 			kAddScript( function(){
 
 				var width = ( settings.width ) ? settings.width :
-							( elm.width ) ? elm.width :
-								( elm.style.width ) ? parseInt( elm.style.width ) : 400;
+							$( elm ).width() ? $( elm ).width() : 400;
 
 				var height = ( settings.height ) ? settings.height :
-							( elm.height ) ? elm.height :
-								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
+							$( elm ).height() ? $( elm ).height() : 300;
 
 				var sizeUnit = (typeof width == 'string' && width.indexOf("px") === -1 && width.indexOf("%") === -1 ) ? 'px' : '';
 
