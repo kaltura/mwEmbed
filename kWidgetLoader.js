@@ -110,17 +110,20 @@ var kWidget = {
 	 */
 	outputFlashObject: function( targetId, settings ) {
 		var elm = document.getElementById( targetId );
-		var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+
-			'/wid/' + settings.wid +
-			'/uiconf_id/' + settings.uiconf_id;
-	
-		if( settings.entry_id ){
-			swfUrl+= '/entry_id/' + settings.entry_id;
+		// only generate a swf source if not defined. 
+		if( !settings.src ){
+			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+
+				'/wid/' + settings.wid +
+				'/uiconf_id/' + settings.uiconf_id;
+		
+			if( settings.entry_id ){
+				swfUrl+= '/entry_id/' + settings.entry_id;
+			}
+			if( settings.cache_st ){
+				swfUrl+= '/cache_st/' + settings.cache_st;
+			}
+			settings['src'] = swfUrl;
 		}
-		if( settings.cache_st ){
-			swfUrl+= '/cache_st/' + settings.cache_st;
-		}
-		settings['src'] = swfUrl;
 		settings['id'] = elm.id;
 		// update the container id: 
 		elm.setAttribute( 'id', elm.id + '_container' );
