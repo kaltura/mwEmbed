@@ -70,6 +70,17 @@ mw.DoubleClick.prototype = {
 			});
 			google.ima.SdkLoader.load("3");
 		});
+		
+		// Load double click ima library and issue the callback:
+		/*$.getScript('http://www.google.com/jsapi', function(){
+			google.load("ima", "3", {
+				"callback" : function(){
+					if( callback ){
+						callback();
+					}
+				}
+			});
+		});*/
 	},
 	addManagedBinding: function(){
 		var _this = this;
@@ -309,14 +320,14 @@ mw.DoubleClick.prototype = {
 			// show the loading spinner until we start ad playback
 			_this.embedPlayer.addPlayerSpinner();
 			// if on iPad hide the quicktime logo: 
-			_this.hideIpadPlayerOffScreen( _this.getAdContainer()  );
+			_this.hidePlayerOffScreen( _this.getAdContainer()  );
 		} );
 		adsListener( 'STARTED', function(){
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
 			
 			// if on iPad hide restore player from quicktime logo hide: 
-			_this.restoreIpadPlayerOnScreen( _this.getAdContainer() );
+			_this.restorePlayerOnScreen( _this.getAdContainer() );
 			
 			// set ad playing flag: 
 			_this.adPlaying = true;
@@ -331,7 +342,7 @@ mw.DoubleClick.prototype = {
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE', function(){
 			// the current ad is complete hide off screen ( until next ad plays ) 
-			_this.hideIpadPlayerOffScreen();
+			_this.hidePlayerOffScreen();
 			if( _this.contentDoneFlag ){
 				// Include a fallback check for ALL_ADS_COMPLETED
 				setTimeout(function(){
@@ -363,35 +374,35 @@ mw.DoubleClick.prototype = {
 	hideContent: function(){
 		var _this = this;
 		// show the ad container: 
-		this.restoreIpadPlayerOnScreen( 
+		this.restorePlayerOnScreen( 
 			$( this.getAdContainer() ).find('video').get(0) 
 		);
 		// hide content:
-		this.hideIpadPlayerOffScreen(
+		this.hidePlayerOffScreen(
 			this.getContent()
 		)
 	},
 	showContent: function(){
 		// show content
-		this.restoreIpadPlayerOnScreen( 
+		this.restorePlayerOnScreen( 
 			this.getContent()
 		);
 		// hide the ad container: 
-		this.hideIpadPlayerOffScreen(
+		this.hidePlayerOffScreen(
 			this.getAdContainer()
 		);
 	},
 	/**
 	 * iPad displays a quicktime logo while loading, this helps hide that
 	 */
-	hideIpadPlayerOffScreen:function(target){
+	hidePlayerOffScreen:function(target){
 		$( target ).css({
 			'position' : 'absolute', 
 			'left': '-4048px'
 		})
 	},
 	/* restore iPad Player */
-	restoreIpadPlayerOnScreen:function( target ){
+	restorePlayerOnScreen:function( target ){
 		$( target ).css( 'left', '0px');
 	},
 	

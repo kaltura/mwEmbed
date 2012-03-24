@@ -30,9 +30,6 @@ mw.EmbedPlayerNative = {
 	// A flag to designate the first play event, as to not propagate the native event in this case
 	isFirstEmbedPlay: null,
 	
-	// Base left offset ( for hide and restore player position ) 
-	basePlayerOffsetLeft: null,
-
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -373,7 +370,7 @@ mw.EmbedPlayerNative = {
 		
 		this.seekTimeSec = 0;
 		// hide iPad video off screen ( shows quicktime logo during seek ) 
-		this.hideIpadPlayerOffScreen();
+		this.hidePlayerOffScreen();
 		
 		this.setCurrentTime( ( percent * this.duration ) , function(){
 			// Update the current time ( so that there is not a monitor delay in reflecting "seeked time" )
@@ -384,7 +381,7 @@ mw.EmbedPlayerNative = {
 				_this.seeking = false;
 			}
 			// restore iPad video position: 
-			_this.restoreIpadPlayerOnScreen();
+			_this.restorePlayerOnScreen();
 			
 			_this.monitor();
 			// issue the callback: 
@@ -565,7 +562,7 @@ mw.EmbedPlayerNative = {
 					mw.log( 'Error: EmbedPlayerNative switchPlaySource no vid');
 					return ;
 				}
-				_this.hideIpadPlayerOffScreen();
+				_this.hidePlayerOffScreen();
 				// add a loading indicator: 
 				_this.addPlayerSpinner(); 
 				
@@ -573,10 +570,10 @@ mw.EmbedPlayerNative = {
 				vid.src = src;
 				
 				$( vid ).bind( 'loadedmetadata', function(){
-					// restore video position: 
-					_this.restoreIpadPlayerOnScreen();
-					// now hide the spinner
+					// hide the spinner
 					_this.hidePlayerSpinner();
+					// restore video position: 
+					_this.restorePlayerOnScreen();
 				})
 				// Give iOS 50ms to figure out the src got updated ( iPad OS 3.x )
 				setTimeout( function() {
@@ -630,23 +627,22 @@ mw.EmbedPlayerNative = {
 			}
 		}
 	},
-	hideIpadPlayerOffScreen:function( vid ){
+	hidePlayerOffScreen:function( vid ){
 		var vid = this.getPlayerElement();
-		if( this.basePlayerOffsetLeft !== null ){
-			this.basePlayerOffsetLeft = $( vid ).css( 'left' );
-		}
 		// Move the video offscreen while it switches ( hides quicktime logo only applies to iPad ) 
-		if( mw.isIpad() ){
-			$( vid ).css( {
-				'position' : 'absolute', 
-				'left': '-4048px'
-			});
-		}
+		$( vid ).css( {
+			'position' : 'absolute', 
+			'left': '-4048px'
+		});
 	},
-	restoreIpadPlayerOnScreen: function( vid ){
+	restorePlayerOnScreen: function( vid ){
 		var vid = this.getPlayerElement();
-		$( vid ).css( 'left', this.basePlayerOffsetLeft);
-		this.basePlayerOffsetLeft = null;
+		// fallback to 
+		$( vid ).css( 'left', '0px');
+		// always sync player size after a restore ( won't be left 0px );
+		if( this.controlBuilder ){
+			this.controlBuilder.syncPlayerSize();
+		}
 	},
 	/**
 	 * switchPlaySource switches the player source
