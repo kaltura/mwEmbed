@@ -34,6 +34,8 @@ mw.DoubleClick.prototype = {
 	currentAdSlotType : null,
 
 	init: function( embedPlayer, callback ){
+		var _this = this;
+		
 		this.embedPlayer = embedPlayer;
 		
 		// Inherit BaseAdPlugin
@@ -46,23 +48,25 @@ mw.DoubleClick.prototype = {
 		// remove any old bindings: 
 		embedPlayer.unbindHelper( this.bindPostfix );
 		
-		// Determine if we are in managed or kaltura point based mode. 
-		if( this.getConfig( "preSequence" ) && this.getConfig( "adTagUrl" ) ){
-			// managed:
-			this.addManagedBinding();
-		} else {
-			// add cuepoint bindings
-			this.addKalturaCuePointBindings();
-		}
 		// Load double click ima per doc:
 		// http://code.google.com/apis/ima/docs/sdks/googlehtml5_ads_v3.html#loadsdk
 		$.getScript('http://s0.2mdn.net/instream/html5/ima.js', function(){
 			google.ima.SdkLoader.setCallbacks( function(){
 				if( $.isFunction( callback) ){
+					// Determine if we are in managed or kaltura point based mode. 
+					if( _this.getConfig( "preSequence" ) && _this.getConfig( "adTagUrl" ) ){
+						// Managed bindings
+						_this.addManagedBinding();
+					} else {
+						// Add cuepoint bindings
+						_this.addKalturaCuePointBindings();
+					}
 					callback();
 				}
 			}, function( errorCode ){
-				mw.log( "Error::DoubleClick Error: " + errorCode );
+				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
+				// Don't add any bindings directly issue callback: 
+				callback();
 			});
 			google.ima.SdkLoader.load("3");
 		});
@@ -336,7 +340,7 @@ mw.DoubleClick.prototype = {
 						// restore the player but don't play content since ads are done:
 						_this.restorePlayer( true );
 					}
-				},1000)
+				}, 1000 );
 			}
 		});
 		// Resume content:
