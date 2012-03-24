@@ -1797,6 +1797,10 @@ mw.EmbedPlayer.prototype = {
 		var sId = 'loadingSpinner_' + this.id;
 		// remove any old spinner
 		$( '#' + sId ).remove();
+		// hide the play btn if present
+		if( this.$interface ) {
+			this.$interface.find('.play-btn-large').hide();
+		}
 		// re add an absolute positioned spinner: 
 		$( this ).getAbsoluteOverlaySpinner()
 		.attr( 'id', sId );
