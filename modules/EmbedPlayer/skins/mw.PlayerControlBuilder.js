@@ -943,7 +943,7 @@ mw.PlayerControlBuilder.prototype = {
 				clearTimeout( _this.hideControlBarCallback );
 				_this.hideControlBarCallback = setTimeout( function() {
 					_this.hideControlBar()
-				}, 3500 );
+				}, 5000 );
 				// ( Once the user touched the video "don't hide" )
 				return true;
 			} );
