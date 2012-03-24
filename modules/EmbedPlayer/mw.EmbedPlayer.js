@@ -477,7 +477,7 @@ mw.EmbedPlayer.prototype = {
 	 * Switch and play a video source
 	 * 
 	 * Checks if the target source is the same playback mode and does player switch if needed.
-	 * and calls playerSwichSource 
+	 * and calls playerSwitchSource 
 	 */
 	switchPlaySource: function( source, switchCallback, doneCallback ){
 		var _this = this;
@@ -486,17 +486,17 @@ mw.EmbedPlayer.prototype = {
 		if( targetPlayer.id != this.selectedPlayer.id ){
 			this.selectedPlayer = targetPlayer;
 			this.updatePlaybackInterface( function(){
-				_this.playerSwichSource( source, switchCallback, doneCallback );
+				_this.playerSwitchSource( source, switchCallback, doneCallback );
 			});
 		} else {
 			// Call the player switch directly:
-			_this.playerSwichSource( source, switchCallback, doneCallback );
+			_this.playerSwitchSource( source, switchCallback, doneCallback );
 		}
 	},
 	/**
 	 * abstract function  player interface must support actual source switch
 	 */
-	playerSwichSource: function( source, switchCallback, doneCallback  ){
+	playerSwitchSource: function( source, switchCallback, doneCallback  ){
 		mw.log( "Error player interface must support actual source switch");
 	},
 
