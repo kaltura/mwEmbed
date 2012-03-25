@@ -351,7 +351,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// update the selected index: 
 		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
 
-		// check if player already ready: 
+		// check if player already ready:
 		if( embedPlayer.playerReady ){
 			callback();
 		} else {
