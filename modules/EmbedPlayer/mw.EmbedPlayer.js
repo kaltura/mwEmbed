@@ -1801,7 +1801,7 @@ mw.EmbedPlayer.prototype = {
 		if( this.$interface ) {
 			this.$interface.find('.play-btn-large').hide();
 		}
-		// set the interface into a paused state 
+		// put the interface into a paused state 
 		this.pauseInterfaceUpdate();
 		// re add an absolute positioned spinner: 
 		$( this ).getAbsoluteOverlaySpinner()
