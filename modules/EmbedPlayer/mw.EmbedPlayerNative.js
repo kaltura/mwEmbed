@@ -29,11 +29,7 @@ mw.EmbedPlayerNative = {
 	
 	// A flag to designate the first play event, as to not propagate the native event in this case
 	isFirstEmbedPlay: null,
-<<<<<<< HEAD
 
-=======
-	
->>>>>>> 9c55193b4271d9bbc1412b4ef9e5e02d78bf640b
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -579,20 +575,12 @@ mw.EmbedPlayerNative = {
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback");
 				});
 				
-<<<<<<< HEAD
-				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
-					$( vid ).unbind( 'loadedmetadata' + switchBindPostfix );
-					// restore video position: 
-					_this.restoreIpadPlayerOnScreen();
-					// now hide the spinner
-=======
 				// once playing issue callbacks:
 				$( vid ).bind( 'playing' + switchBindPostfix, function(){
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback");
 					// restore video position ( now that we are playing with metadata size  )
 					_this.restorePlayerOnScreen();
 					// play hide loading spinner:
->>>>>>> 9c55193b4271d9bbc1412b4ef9e5e02d78bf640b
 					_this.hidePlayerSpinner();
 					// Restore controls 
 					vid.controls = orginalControlsState;
@@ -633,25 +621,6 @@ mw.EmbedPlayerNative = {
 			}
 		}
 	},
-<<<<<<< HEAD
-	hideIpadPlayerOffScreen: function(){
-		var vid = this.getPlayerElement();
-		if ( mw.isIpad() ) {
-			$( vid ).css( {
-				'-webkit-transform' : 'translateX(-4048px)',
-				'position' : 'absolute', 
-				'left' : '-4048px'
-			} );
-		}
-	},
-	restoreIpadPlayerOnScreen: function(){
-		var vid = this.getPlayerElement();
-		if ( mw.isIpad() ) {
-			$( vid ).css( {
-				'-webkit-transform' : 'translateX(0px)',
-				'left' : '0px'
-			} );
-=======
 	hidePlayerOffScreen:function( vid ){
 		var vid = this.getPlayerElement();
 		// Move the video offscreen while it switches ( hides quicktime logo only applies to iPad ) 
@@ -666,7 +635,6 @@ mw.EmbedPlayerNative = {
 		$( vid ).css( 'left', '0px');
 		// always sync player size after a restore ( won't be left 0px );
 		if( this.controlBuilder ){
->>>>>>> 9c55193b4271d9bbc1412b4ef9e5e02d78bf640b
 			this.controlBuilder.syncPlayerSize();
 		}
 	},
