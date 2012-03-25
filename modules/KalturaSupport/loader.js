@@ -449,7 +449,7 @@
 		} 
 		var plId =  mw.parseUri( kplUrl0 ).queryKey['playlist_id'];
 		// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
-		if( plId && mw.parseUri( kplUrl0 ).queryKey['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
+		if( embedPlayer.kalturaPlaylistData || plId && mw.parseUri( kplUrl0 ).queryKey['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
 			playlistConfig.playlist_id = plId;
 			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
 			return ;

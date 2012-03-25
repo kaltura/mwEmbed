@@ -170,12 +170,6 @@ class KalturaResultObject {
 		return $this->isPlaylist;
 	}
 	function isJavascriptRewriteObject() {
-		// If our playlist is Mrss, handle the playlist in the client side
-		$playlistUrl = $this->getPlayerConfig('playlistAPI', 'kpl0Url');
-		if( $playlistUrl && strpos($playlistUrl, "partnerservices") === false ) {
-			return true;
-		}
-
 		// If this is a pptWidget, handle in client side
 		if( $this->getPlayerConfig('pptWidgetAPI', 'plugin') ) {
 			return true;
@@ -594,7 +588,7 @@ class KalturaResultObject {
 			if ( !$this->isCarousel() ) {
 				$this->isPlaylist = true;
 			}
-			// check if we have playlistAPI.initItemEntryId
+			// Check if we have playlistAPI.initItemEntryId
 			if( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) ){
 				$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
 			} else {

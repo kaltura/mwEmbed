@@ -328,6 +328,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	drawEmbedPlayer: function( clipIndex, callback){
 		var _this = this;
 		var $target = _this.playlist.getVideoPlayerTarget();
+		mw.log( "PlaylistHandlerKaltura::drawEmbedPlayer:" + clipIndex );
 		// Check for the embedPlayer at the target
 		if( ! $('#' + _this.playlist.getVideoPlayerId() ).length ){
 			mw.log("Warning: Playlist Handler works best with video pre-loaded in the DOM");
@@ -349,10 +350,17 @@ mw.PlaylistHandlerKaltura.prototype = {
 
 		// update the selected index: 
 		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
-		// Set up ready binding (for ready )
-		$( embedPlayer ).bind('playerReady' + this.bindPostFix, function(){
+
+		// check if player already ready: 
+		if( embedPlayer.playerReady ){
 			callback();
-		});
+		} else {
+			// Set up ready binding (for ready )
+			$( embedPlayer ).bind('playerReady' + this.bindPostFix, function(){
+				callback();
+			});
+		}
+		
 	},	
 	updatePlayerUi: function( clipIndex ){
 		// no updates need since kaltura player interface components are managed by the player
