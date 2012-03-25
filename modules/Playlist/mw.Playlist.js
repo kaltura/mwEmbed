@@ -513,7 +513,6 @@ mw.Playlist.prototype = {
 		var _this = this;
 		mw.log( "mw.Playlist:: updatePlayer " + clipIndex );
 		this.clipIndex = clipIndex;
-		
 		// Check if we really have to update: 
 		var embedPlayer = _this.getEmbedPlayer();
 		if( $( embedPlayer ).data('clipIndex') == clipIndex ){

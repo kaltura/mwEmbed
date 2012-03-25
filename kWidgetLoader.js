@@ -110,17 +110,20 @@ var kWidget = {
 	 */
 	outputFlashObject: function( targetId, settings ) {
 		var elm = document.getElementById( targetId );
-		var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+
-			'/wid/' + settings.wid +
-			'/uiconf_id/' + settings.uiconf_id;
-	
-		if( settings.entry_id ){
-			swfUrl+= '/entry_id/' + settings.entry_id;
+		// only generate a swf source if not defined. 
+		if( !settings.src ){
+			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+
+				'/wid/' + settings.wid +
+				'/uiconf_id/' + settings.uiconf_id;
+		
+			if( settings.entry_id ){
+				swfUrl+= '/entry_id/' + settings.entry_id;
+			}
+			if( settings.cache_st ){
+				swfUrl+= '/cache_st/' + settings.cache_st;
+			}
+			settings['src'] = swfUrl;
 		}
-		if( settings.cache_st ){
-			swfUrl+= '/cache_st/' + settings.cache_st;
-		}
-		settings['src'] = swfUrl;
 		settings['id'] = elm.id;
 		// update the container id: 
 		elm.setAttribute( 'id', elm.id + '_container' );
@@ -208,12 +211,10 @@ var kWidget = {
 			kAddScript( function(){
 
 				var width = ( settings.width ) ? settings.width :
-							( elm.width ) ? elm.width :
-								( elm.style.width ) ? parseInt( elm.style.width ) : 400;
+							$( elm ).width() ? $( elm ).width() : 400;
 
 				var height = ( settings.height ) ? settings.height :
-							( elm.height ) ? elm.height :
-								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
+							$( elm ).height() ? $( elm ).height() : 300;
 
 				var sizeUnit = (typeof width == 'string' && width.indexOf("px") === -1 && width.indexOf("%") === -1 ) ? 'px' : '';
 

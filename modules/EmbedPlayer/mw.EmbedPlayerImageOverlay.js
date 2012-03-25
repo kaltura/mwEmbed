@@ -199,7 +199,7 @@ mw.EmbedPlayerImageOverlay = {
 	/**
 	 * Switch the image playback 
 	 */
-	playerSwichSource: function(  source, switchCallback, doneCallback ){
+	playerSwitchSource: function(  source, switchCallback, doneCallback ){
 		var _this = this;
 		this.selectedSource = source;
 		this.embedPlayerHTML();
@@ -209,8 +209,8 @@ mw.EmbedPlayerImageOverlay = {
 			switchCallback( this );
 		}
 		// Wait for ended event to tr
-		$( this ).bind('ended.playerSwichSource', function(){
-			$( _this ).unbind('ended.playerSwichSource');
+		$( this ).bind('ended.playerSwitchSource', function(){
+			$( _this ).unbind('ended.playerSwitchSource');
 			if( doneCallback ) {
 				doneCallback( this );
 			}

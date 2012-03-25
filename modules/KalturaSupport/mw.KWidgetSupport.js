@@ -881,23 +881,12 @@ mw.KWidgetSupport.prototype = {
 				// if an asset is transcoding and no other source is found bind an error callback: 
 				if( asset.status == 4 ){
 					source.error = 'not-ready-transcoding';
+					mw.log("KWidgetSupport:: Skip sources that are not ready: " +  asset.id + ' ' +  asset.tags );
+					
 					// don't add sources that are not ready ( for now ) 
-					//deviceSources.push( source );
+					// deviceSources.push( source );
 				}
 				continue;
-			}
-			
-			// Add iPad Akamai flavor to iPad flavor Ids list id list
-			if( asset.tags.toLowerCase().indexOf('ipadnew') != -1 ){
-				ipadAdaptiveFlavors.push( asset.id );
-				// We don't need to continue, the ipadnew/iphonenew flavor are used also for progressive download
-				//continue;
-			}
-			
-			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
-			if( asset.tags.toLowerCase().indexOf('iphonenew') != -1 ){
-				ipadAdaptiveFlavors.push( asset.id );
-				iphoneAdaptiveFlavors.push( asset.id );
 			}
 			
 			// Check playManifest conditional
@@ -964,6 +953,27 @@ mw.KWidgetSupport.prototype = {
 			// Add the source ( if a src was defined ):
 			if( source['src'] ){
 				deviceSources.push( source );
+			}
+			
+			/**
+			 * Add Adaptive flavors:
+			 */
+			
+			// Android does not support audio flavors in the adaptive stream set:
+			if(  navigator.userAgent.indexOf( 'Android' ) !== -1 && 
+					asset.width == 0  && asset.height == 0  ){
+				continue;
+			}
+			
+			// Add iPad Akamai flavor to iPad flavor Ids list id list
+			if( asset.tags.toLowerCase().indexOf('ipadnew') != -1 ){
+				ipadAdaptiveFlavors.push( asset.id );
+			}
+			
+			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
+			if( asset.tags.toLowerCase().indexOf('iphonenew') != -1 ){
+				ipadAdaptiveFlavors.push( asset.id );
+				iphoneAdaptiveFlavors.push( asset.id );
 			}
 		}
 		

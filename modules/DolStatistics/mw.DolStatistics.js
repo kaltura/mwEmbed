@@ -243,7 +243,7 @@ mw.DolStatistics.prototype = {
 		// App name
 		params['app'] = _this.getConfig('APP') || this.appName;
 		// The asset id: 
-		params['ASSETNAME'] = _this.getConfig('ASSETNAME');
+		params['ASSETNAME'] = _this.getMediaType() + _this.getConfig('ASSETNAME');
 		// Kaltura Event name
 		params['KDPEVNT'] = eventName;
 		// KDP Event Data
@@ -328,6 +328,18 @@ mw.DolStatistics.prototype = {
 				'height' : 0
 			})
 		);
+	},
+	/**
+	 * get a media type string acorrding to dol mapping. 
+	 */
+	getMediaType: function(){
+		// get the media type: 
+		var mediaType = this.embedPlayer.evaluate('{mediaProxy.entry.mediaType}');
+		if( mediaType == 5 ){
+			return 'aud';
+		}
+		// else return video: 
+		return 'vid';
 	},
 	getAutoPlayFlag: function(){
 		var embedPlayer = this.embedPlayer;

@@ -449,7 +449,7 @@
 		} 
 		var plId =  mw.parseUri( kplUrl0 ).queryKey['playlist_id'];
 		// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
-		if( plId && mw.parseUri( kplUrl0 ).queryKey['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
+		if( embedPlayer.kalturaPlaylistData || plId && mw.parseUri( kplUrl0 ).queryKey['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
 			playlistConfig.playlist_id = plId;
 			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
 			return ;
@@ -489,11 +489,12 @@
 			// Build the iframe request from supplied iframeParams: 
 			var iframeRequest = '';
 			for( var key in iframeParams ){
-				// don't put flashvars or readyCallback into the post url ( will be a request param ) 
-				if( key == 'flashvars' || key == 'readyCallback' || key == 'isHTML5' ){
+				// Only encode valid kwidget attributes into the url
+				if( key != 'p' && key && 'cache_st' && key != 'wid' 
+					&& key != 'uiconf_id' && key != 'entry_id' 
+				){
 					continue;
 				}
-				
 				iframeRequest+= '/' + key + 
 					'/' + encodeURIComponent( iframeParams [ key ] );
 			}

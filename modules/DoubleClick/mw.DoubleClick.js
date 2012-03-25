@@ -24,28 +24,55 @@ mw.DoubleClick.prototype = {
 	adDuration: null,
 	demoStartTime: null,
 	
+	// Flags for a fallback check for all ads completed .
+	contentDoneFlag: null,
+	
+	allAdsCompletedFlag: null,
+	
+	
 	// The current ad Slot type by default "managed" i.e doubleClick manages the player sequence. 
 	currentAdSlotType : null,
 
 	init: function( embedPlayer, callback ){
+		var _this = this;
+		
 		this.embedPlayer = embedPlayer;
 		
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
 		
+		// reset the contentDoneFlag flags:
+		this.contentDoneFlag = null;
+		this.allAdsCompletedFlag = null;
+		
 		// remove any old bindings: 
 		embedPlayer.unbindHelper( this.bindPostfix );
 		
-		// Determine if we are in managed or kaltura point based mode. 
-		if( this.getConfig( "preSequence" ) && this.getConfig( "adTagUrl" ) ){
-			// managed:
-			this.addManagedBinding();
-		} else {
-			// add cuepoint bindings
-			this.addKalturaCuePointBindings();
-		}
-		// Load double click ima library and issue the callback: 
-		$.getScript('http://www.google.com/jsapi', function(){
+		// Load double click ima per doc:
+		// http://code.google.com/apis/ima/docs/sdks/googlehtml5_ads_v3.html#loadsdk
+		$.getScript('http://s0.2mdn.net/instream/html5/ima.js', function(){
+			google.ima.SdkLoader.setCallbacks( function(){
+				if( $.isFunction( callback) ){
+					// Determine if we are in managed or kaltura point based mode. 
+					if( _this.getConfig( "preSequence" ) && _this.getConfig( "adTagUrl" ) ){
+						// Managed bindings
+						_this.addManagedBinding();
+					} else {
+						// Add cuepoint bindings
+						_this.addKalturaCuePointBindings();
+					}
+					callback();
+				}
+			}, function( errorCode ){
+				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
+				// Don't add any bindings directly issue callback: 
+				callback();
+			});
+			google.ima.SdkLoader.load("3");
+		});
+		
+		// Load double click ima library and issue the callback:
+		/*$.getScript('http://www.google.com/jsapi', function(){
 			google.load("ima", "3", {
 				"callback" : function(){
 					if( callback ){
@@ -53,7 +80,7 @@ mw.DoubleClick.prototype = {
 					}
 				}
 			});
-		});
+		});*/
 	},
 	addManagedBinding: function(){
 		var _this = this;
@@ -71,6 +98,10 @@ mw.DoubleClick.prototype = {
 			sequenceProxy[ _this.getSequenceIndex( 'postroll' ) ] = function( callback ){
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
+				
+				// set content complete flag
+				_this.contentDoneFlag = true;
+				
 				// trigger the double click end sequence:
 				_this.adsLoader.contentComplete();
 			};
@@ -180,14 +211,22 @@ mw.DoubleClick.prototype = {
 	requestAds: function( adTagUrl, adType ) {
 		var _this = this;
 		// Create ad request object.
-		var adRequest = {};
-		adRequest.adTagUrl = adTagUrl;
+		var adsRequest = {};
+		adsRequest.adTagUrl = adTagUrl;
 		if( adType ){
-			adRequest['adType'] = adType;
+			adsRequest['adType'] = adType;
 		}
+		
+		// Set the size in the adsRequest 
+		var size = _this.getPlayerSize();
+		adsRequest.linearAdSlotWidth = size.width;
+		adsRequest.linearAdSlotHeight = size.height;
+
+		adsRequest.nonLinearAdSlotWidth = size.width;
+		adsRequest.nonLinearAdSlotHeight = size.height;
+		
 		// Make sure the  this.getAdDisplayContainer() is created as part of the initial ad request:
 		this.getAdDisplayContainer();
-		
 		
 		// Create ads loader.
 		_this.adsLoader = new google.ima.AdsLoader();
@@ -209,7 +248,7 @@ mw.DoubleClick.prototype = {
 		mw.log( 'DoubleClick::requestAds > ' + adTagUrl );
 
 		// 4. Make the request.
-		_this.adsLoader.requestAds( adRequest );
+		_this.adsLoader.requestAds( adsRequest );
 	},
 	// Handles the ads manager loaded event. In case of no ads, the AD_ERROR
 	// event is issued and error handler is invoked.
@@ -281,14 +320,14 @@ mw.DoubleClick.prototype = {
 			// show the loading spinner until we start ad playback
 			_this.embedPlayer.addPlayerSpinner();
 			// if on iPad hide the quicktime logo: 
-			_this.hideIpadPlayerOffScreen( _this.getAdContainer()  );
+			_this.hidePlayerOffScreen( _this.getAdContainer()  );
 		} );
 		adsListener( 'STARTED', function(){
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
 			
 			// if on iPad hide restore player from quicktime logo hide: 
-			_this.restoreIpadPlayerOnScreen( _this.getAdContainer() );
+			_this.restorePlayerOnScreen( _this.getAdContainer() );
 			
 			// set ad playing flag: 
 			_this.adPlaying = true;
@@ -302,14 +341,26 @@ mw.DoubleClick.prototype = {
 		adsListener( 'MIDPOINT' );
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE', function(){
-			// the current ad is complete hide offscreen ( until next ad plays ) 
-			_this.hideIpadPlayerOffScreen();
+			// the current ad is complete hide off screen ( until next ad plays ) 
+			_this.hidePlayerOffScreen();
+			if( _this.contentDoneFlag ){
+				// Include a fallback check for ALL_ADS_COMPLETED
+				setTimeout(function(){
+					if( !_this.allAdsCompletedFlag ){
+						mw.log("DoubleClick:: Fallback ALL_ADS_COMPLETED call");
+						// restore the player but don't play content since ads are done:
+						_this.restorePlayer( true );
+					}
+				}, 1000 );
+			}
 		});
 		// Resume content:
 		adsListener( 'CONTENT_RESUME_REQUESTED', function(){
 			_this.restorePlayer();
 		});
 		adsListener( 'ALL_ADS_COMPLETED', function(){
+			// set the allAdsCompletedFlag to not call restore player twice
+			_this.allAdsCompletedFlag = true;
 			// restore the player but don't play content since ads are done:
 			_this.restorePlayer( true );
 		});
@@ -323,35 +374,35 @@ mw.DoubleClick.prototype = {
 	hideContent: function(){
 		var _this = this;
 		// show the ad container: 
-		this.restoreIpadPlayerOnScreen( 
+		this.restorePlayerOnScreen( 
 			$( this.getAdContainer() ).find('video').get(0) 
 		);
 		// hide content:
-		this.hideIpadPlayerOffScreen(
+		this.hidePlayerOffScreen(
 			this.getContent()
 		)
 	},
 	showContent: function(){
 		// show content
-		this.restoreIpadPlayerOnScreen( 
+		this.restorePlayerOnScreen( 
 			this.getContent()
 		);
 		// hide the ad container: 
-		this.hideIpadPlayerOffScreen(
+		this.hidePlayerOffScreen(
 			this.getAdContainer()
 		);
 	},
 	/**
 	 * iPad displays a quicktime logo while loading, this helps hide that
 	 */
-	hideIpadPlayerOffScreen:function(target){
+	hidePlayerOffScreen:function(target){
 		$( target ).css({
 			'position' : 'absolute', 
 			'left': '-4048px'
 		})
 	},
 	/* restore iPad Player */
-	restoreIpadPlayerOnScreen:function( target ){
+	restorePlayerOnScreen:function( target ){
 		$( target ).css( 'left', '0px');
 	},
 	
@@ -361,7 +412,7 @@ mw.DoubleClick.prototype = {
 		
 		embedPlayer.bindHelper( 'onResizePlayer' + this.bindPostfix, function( event, size, animate ) {
 			if( _this.adPlaying ){
-				mw.log("DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
+				mw.log( "DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
 				// Resize the ad manager on player resize: ( no support for animate )
 				_this.adsManager.resize(size.width, size.height, google.ima.ViewMode.NORMAL);
 			}
@@ -432,7 +483,7 @@ mw.DoubleClick.prototype = {
 		// Show the content:
 		this.showContent();
 
-		// do an async play call ( without events if not on postroll)
+		// do an async play call ( without events if not on postroll )
 		if( !onContentComplete ){
 			this.getContent().play();
 		}
@@ -445,7 +496,7 @@ mw.DoubleClick.prototype = {
 		} else { // do a manual restore: 
 			// restore player with normal events: 
 			this.embedPlayer.adTimeline.restorePlayer();
-			// managed midroll ( just play content directly )
+			// managed complete ... call clip done if content complete. 
 			if( onContentComplete ){
 				this.embedPlayer.onClipDone();
 			} else {

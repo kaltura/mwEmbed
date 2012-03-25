@@ -211,7 +211,7 @@ mw.EmbedPlayerKplayer = {
 		this.parent_pause();
 	},
 	/**
-	 * playerSwichSource switches the player source working around a few bugs in browsers
+	 * playerSwitchSource switches the player source working around a few bugs in browsers
 	 * 
 	 * @param {object}
 	 *            source Video Source object to switch to.
@@ -220,7 +220,7 @@ mw.EmbedPlayerKplayer = {
 	 * @param {function}
 	 *            doneCallback Function to call once the clip has completed playback
 	 */
-	playerSwichSource: function( source, switchCallback, doneCallback ){
+	playerSwitchSource: function( source, switchCallback, doneCallback ){
 		var _this = this;
 		var waitCount = 0;
 		var src = source.getSrc();
