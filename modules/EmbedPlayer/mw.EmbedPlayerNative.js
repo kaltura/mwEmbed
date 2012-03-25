@@ -29,7 +29,7 @@ mw.EmbedPlayerNative = {
 	
 	// A flag to designate the first play event, as to not propagate the native event in this case
 	isFirstEmbedPlay: null,
-	
+
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
 	nativeEvents : [
@@ -701,7 +701,7 @@ mw.EmbedPlayerNative = {
 			if ( this.playerElement && this.playerElement.play ) {
 				// If in pauseloading state make sure the loading spinner is present: 
 				if( this.isPauseLoading ){
-					this.hideSpinnerOncePlaying()
+					this.hideSpinnerOncePlaying();
 				}
 				// issue a play request 
 				this.playerElement.play();

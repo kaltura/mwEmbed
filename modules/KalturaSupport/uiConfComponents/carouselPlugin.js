@@ -142,7 +142,7 @@
 			// When hovering over an entry, display entry name below carousel
 			var $imgTitle = $( '<div />')
 				.addClass( 'carouselImgTitle' )
-				.css( 'bottom', embedPlayer.controlBuilder.getHeight() + 10 + 'px' );
+				.css( 'bottom', ( embedPlayer.controlBuilder.getHeight() + 10 ) + 'px' );
 
 			// Iterate over playlist entries and generate thumbnails
 			$.each( entriesArray, function( i, currEntryObj ) {
@@ -167,14 +167,13 @@
 						}
 					)
 					.bind( 'click', function() {
+						var bindPostFix = '.thumbnailClick';
 						$imgTitle.remove();
 						_this.removeCarousel();
-						embedPlayer.bindHelper( 'onChangeMediaDone', function() {
+						embedPlayer.unbindHelper( bindPostFix );
+						embedPlayer.bindHelper( 'onChangeMediaDone' + bindPostFix, function() {
 							embedPlayer.play();
-							embedPlayer.bindHelper( 'loadeddata', function() {
-								embedPlayer.play();
-							} );
-							embedPlayer.bindHelper( 'playing', function() {
+							embedPlayer.bindHelper( 'playing' + bindPostFix, function() {
 								embedPlayer.controlBuilder.syncPlayerSize();
 							} );
 						} );
