@@ -403,10 +403,93 @@ var kWidget = {
 		}
 	},
 	
+	/**
+	* Get kaltura embed settings from a swf url and flashvars object
+	*
+	* @param {string} swfUrl
+	* 	url to kaltura platform hosted swf
+	* @param {object} flashvars
+	* 	object mapping kaltura variables, ( overrides url based variables )
+	*/
+	getEmbedSettings: function( swfUrl, flashVars ) {
+		var embedSettings = {};	
+		// Convert flashvars if in string format:
+		if( typeof flashVars == 'string' ){
+			flashVars = kWidget.flashVarsToObject( flashVars );
+		}
+
+		if( ! flashVars ){
+			flashVars= {};
+		}
+
+		var trim = function ( str ) {
+			return str.replace(/^\s+|\s+$/g,"");
+		}
+
+		// Include flashvars
+		embedSettings.flashvars = flashVars;
+		var dataUrlParts = swfUrl.split('/');
+
+		// Search backward for key value pairs
+		var prevUrlPart = null;
+		while( dataUrlParts.length ){
+			var curUrlPart =  dataUrlParts.pop();
+			switch( curUrlPart ){
+				case 'p':
+					embedSettings.wid = '_' + prevUrlPart;
+					embedSettings.p = prevUrlPart;
+				break;
+				case 'wid':
+					embedSettings.wid = prevUrlPart;
+					embedSettings.p = prevUrlPart.replace(/_/,'');
+				break;
+				case 'entry_id':
+					embedSettings.entry_id = prevUrlPart;
+				break;
+				case 'uiconf_id': case 'ui_conf_id':
+					embedSettings.uiconf_id = prevUrlPart;
+				break;
+				case 'cache_st':
+					embedSettings.cache_st = prevUrlPart;
+				break;
+			}
+			prevUrlPart = trim( curUrlPart );
+		}
+		// Add in Flash vars embedSettings ( they take precedence over embed url )
+		for( var key in flashVars ){
+			var val = flashVars[ key ];
+			key = key.toLowerCase();
+			// Normalize to the url based settings: 
+			if( key == 'entryid' ){
+				embedSettings.entry_id = val;
+			}
+			if(  key == 'uiconfid' ){
+				embedSettings.uiconf_id = val;
+			}
+			if( key == 'widgetid' || key == 'widget_id' ){
+				embedSettings.wid = val;
+				embedSettings.p = val.replace(/_/,'');
+			}	
+			if( key == 'partnerid' ||  key == 'partner_id'){
+				embedSettings.wid = '_' + val;
+				embedSettings.p = val;
+			}
+			if( key == 'referenceid' ){
+				embedSettings.reference_id = val;
+			}
+		}
+
+		// Always pass cache_st
+		if( ! embedSettings.cache_st ){
+			embedSettings.cache_st = 1;
+		}
+
+		return embedSettings;		
+	},
+	
 	/*
 	 * Return an array of all kaltura players (flash) on the page 
 	 */
-	
 	getKalturaPlayerList: function() {
 		var kalturaPlayers = [];
 		// Check all objects for kaltura compatible urls 
@@ -416,7 +499,7 @@ var kWidget = {
 		}
 		// local function to attempt to add the kalturaEmbed
 		var tryAddKalturaEmbed = function( url , flashvars ){
-			var settings = kGetKalturaEmbedSettings( url, flashvars );
+			var settings = kWidget.getEmbedSettings( url, flashvars );
 			if( settings && settings.uiconf_id && settings.wid ){
 				// grab width & height from object tag
 				settings.width = objectList[i].width;
@@ -458,6 +541,53 @@ var kWidget = {
 			}
 		}
 		return kalturaPlayers;		
+	},
+	
+	/*
+	 *
+	 */
+	overideJsFlashEmbed: function(){
+		// flashobject
+		if( window['flashembed'] && !window['originalFlashembed'] ){
+			window['originalFlashembed'] = window['flashembed'];
+			window['flashembed'] = function( targetId, attributes, flashvars ){
+				kWidget.domReady.ready(function(){
+					var kEmbedSettings = kWidget.getEmbedSettings( attributes.src, flashvars);
+					kEmbedSettings.width = attributes.width;
+					kEmbedSettings.height = attributes.height;
+
+					kWidget.embed( targetId, kEmbedSettings );
+				});
+			};
+		}
+
+		// SWFObject v 2.0
+		if( window['swfobject'] && !window['swfobject']['originalEmbedSWF'] ){
+			window['swfobject']['originalEmbedSWF'] = window['swfobject']['embedSWF'];
+			// Override embedObject for our own ends
+			window['swfobject']['embedSWF'] = function( swfUrlStr, replaceElemIdStr, widthStr,
+					heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn)
+			{
+				kWidget.domReady.ready(function(){
+					var kEmbedSettings = kWidget.getEmbedSettings( swfUrlStr, flashvarsObj );
+					kEmbedSettings.width = widthStr;
+					kEmbedSettings.height = heightStr;
+
+					// Check if IsHTML5FallForward
+					if( kWidget.isHTML5FallForward() && kEmbedSettings.uiconf_id ){
+						kWidget.embed( replaceElemIdStr, kEmbedSettings );
+					} else {
+						// if its a kaltura player embed restore kdp callback:
+						if( kEmbedSettings.uiconf_id ){
+							kWidget.restoreKDPCallback();
+						}
+						// Else call the original EmbedSWF with all its arguments 
+						window['swfobject']['originalEmbedSWF']( swfUrlStr, replaceElemIdStr, widthStr,
+								heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn );
+					}
+				});
+			};
+		}
 	},
 
 	/*

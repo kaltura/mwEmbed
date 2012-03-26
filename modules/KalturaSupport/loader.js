@@ -220,7 +220,7 @@
 					if( !swfSource ) {
 						swfSource = $( element ).find( "param[name=data]" ).attr( 'value' );						                                      
 					}
-					var kEmbedSettings = kGetKalturaEmbedSettings( swfSource, flashvars );
+					var kEmbedSettings = kWidget.getEmbedSettings( swfSource, flashvars );
 
 					// Check if its a playlist or a entryId
 					mw.log( "KalturaSupport:: Got object settings: entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
@@ -534,7 +534,7 @@
 			var iframeId = $( playerTarget ).attr('id') + '_ifp';
 			var iframeStyle = ( $( playerTarget ).attr('style') ) ? $( playerTarget ).attr('style') : '';
 			var iframeCss = { 'border': '0px' };
-			var additionalIframeCss = kGetAdditionalTargetCss();
+			var additionalIframeCss = kWidget.getAdditionalTargetCss();
 			
 			$.extend(iframeCss, additionalIframeCss);
 			

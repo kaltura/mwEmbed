@@ -56,66 +56,6 @@ if( ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 	mw.setConfig('EmbedPlayer.IframeParentReferrer', document.referrer);
 }
 
-// Test if swfObject exists, try and override its embed method to wrap html5 rewrite calls. 
-function kOverideJsFlashEmbed(){
-	// flashobject
-	if( window['flashembed'] && !window['originalFlashembed'] ){
-		window['originalFlashembed'] = window['flashembed'];
-		window['flashembed'] = function( targetId, attributes, flashvars ){
-			kWidget.domReady.ready(function(){
-				var kEmbedSettings = kGetKalturaEmbedSettings( attributes.src, flashvars);
-				kEmbedSettings.width = attributes.width;
-				kEmbedSettings.height = attributes.height;
-
-				kWidget.embed( targetId, kEmbedSettings );
-			});
-		};
-	}
-	
-	// SWFObject v 1.5 
-	if( window['SWFObject']  && !window['SWFObject'].prototype['originalWrite']){
-		window['SWFObject'].prototype['originalWrite'] = window['SWFObject'].prototype.write;
-		window['SWFObject'].prototype['write'] = function( targetId ){
-			var _this = this;
-			kWidget.domReady.ready(function(){			
-				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, _this.params.flashVars);
-				kEmbedSettings.width = _this.attributes.width;
-				kEmbedSettings.height = _this.attributes.height;
-
-				kWidget.embed( targetId, kEmbedSettings );
-			});
-		};
-	}
-
-	// SWFObject v 2.0
-	if( window['swfobject'] && !window['swfobject']['originalEmbedSWF'] ){
-		window['swfobject']['originalEmbedSWF'] = window['swfobject']['embedSWF'];
-		// Override embedObject for our own ends
-		window['swfobject']['embedSWF'] = function( swfUrlStr, replaceElemIdStr, widthStr,
-				heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn)
-		{
-			kWidget.domReady.ready(function(){
-				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj );
-				kEmbedSettings.width = widthStr;
-				kEmbedSettings.height = heightStr;
-
-				// Check if IsHTML5FallForward
-				if( kWidget.isHTML5FallForward() && kEmbedSettings.uiconf_id ){
-					kWidget.embed( replaceElemIdStr, kEmbedSettings );
-				} else {
-					// if its a kaltura player embed restore kdp callback:
-					if( kEmbedSettings.uiconf_id ){
-						kWidget.restoreKDPCallback();
-					}
-					// Else call the original EmbedSWF with all its arguments 
-					window['swfobject']['originalEmbedSWF']( swfUrlStr, replaceElemIdStr, widthStr,
-							heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn );
-				}
-			});
-		};
-	}
-}
-
 // Check DOM for Kaltura embeds ( fall forward ) 
 // && html5 video tag ( for fallback & html5 player interface )
 function kCheckAddScript(){
@@ -401,89 +341,6 @@ mw.getKalturaThumbUrl = function ( entry ){
 		entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
 		parseInt(entry.width) + '/height/' + parseInt(entry.height) + ks;
 };
-/**
- * Get kaltura embed settings from a swf url and flashvars object
- *
- * @param {string} swfUrl
- * 	url to kaltura platform hosted swf
- * @param {object} flashvars
- * 	object mapping kaltura variables, ( overrides url based variables )
- */
-function kGetKalturaEmbedSettings( swfUrl, flashvars ){
-	var embedSettings = {};	
-	// Convert flashvars if in string format:
-	if( typeof flashvars == 'string' ){
-		flashvars = kWidget.flashVarsToObject( flashvars );
-	}
-	
-	if( !flashvars ){
-		flashvars= {};
-	}
-
-	var trim = function ( str ) {
-		return str.replace(/^\s+|\s+$/g,"");
-	}
-	
-	// Include flashvars
-	embedSettings.flashvars = flashvars;	
-	var dataUrlParts = swfUrl.split('/');
-	
-	// Search backward for key value pairs
-	var prevUrlPart = null;
-	while( dataUrlParts.length ){
-		var curUrlPart =  dataUrlParts.pop();
-		switch( curUrlPart ){
-			case 'p':
-				embedSettings.wid = '_' + prevUrlPart;
-				embedSettings.p = prevUrlPart;
-			break;
-			case 'wid':
-				embedSettings.wid = prevUrlPart;
-				embedSettings.p = prevUrlPart.replace(/_/,'');
-			break;
-			case 'entry_id':
-				embedSettings.entry_id = prevUrlPart;
-			break;
-			case 'uiconf_id': case 'ui_conf_id':
-				embedSettings.uiconf_id = prevUrlPart;
-			break;
-			case 'cache_st':
-				embedSettings.cache_st = prevUrlPart;
-			break;
-		}
-		prevUrlPart = trim( curUrlPart );
-	}
-	// Add in Flash vars embedSettings ( they take precedence over embed url )
-	for( var key in flashvars ){
-		var val = flashvars[key];
-		key = key.toLowerCase();
-		// Normalize to the url based settings: 
-		if( key == 'entryid' ){
-			embedSettings.entry_id = val;
-		}
-		if(  key == 'uiconfid' ){
-			embedSettings.uiconf_id = val;
-		}
-		if( key == 'widgetid' || key == 'widget_id' ){
-			embedSettings.wid = val;
-			embedSettings.p = val.replace(/_/,'');
-		}	
-		if( key == 'partnerid' ||  key == 'partner_id'){
-			embedSettings.wid = '_' + val;
-			embedSettings.p = val;
-		}
-		if( key == 'referenceid' ){
-			embedSettings.reference_id = val;
-		}
-	}
-
-	// Always pass cache_st
-	if( ! embedSettings.cache_st ){
-		embedSettings.cache_st = 1;
-	}
-	
-	return embedSettings;
-}
 
 /*
  * When using Frameset that have iframe with video tag inside, the iframe is not positioned correctly. and you can't click on the controls.
@@ -522,6 +379,10 @@ function kSupportsFlash(){
 	kWidget.log('kSupportsFlash is deprecated. Please use kWidget.supportsFlash');
 	return kWidget.supportsFlash();
 }
+function kGetKalturaEmbedSettings( swfUrl, flashvars ){
+	kWidget.log('kGetKalturaEmbedSettings is deprecated. Please use kWidget.getEmbedSettings');
+	return kWidget.getEmbedSettings( swfUrl, flashvars );	
+}
 function kalturaIframeEmbed( targetId, settings ){
 	kWidget.log('kalturaIframeEmbed is deprecated. Please use kWidget.embed');
 	kWidget.embed( targetId, settings );
@@ -542,14 +403,18 @@ function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
 	kWidget.log('kDirectDownloadFallback is deprecated. Please use kWidget.outputDirectDownload');
 	return kWidget.outputDirectDownload( replaceTargetId, kEmbedSettings , options );
 }
+function kOverideJsFlashEmbed() {
+	kWidget.log('kOverideJsFlashEmbed is deprecated. Please use kWidget.overrideJsFlashEmbed');
+	kWidget.overideJsFlashEmbed();
+}
 function kIsIE(){
 	return /msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);
 }
 
 // Try and override the swfObject at runtime
 // In case it was included before mwEmbedLoader and the embedSWF call is inline ( so we can't wait for dom ready )
-kOverideJsFlashEmbed();
-kWidget.domReady.ready( kOverideJsFlashEmbed );
+kWidget.overideJsFlashEmbed();
+kWidget.domReady.ready( kWidget.overideJsFlashEmbed );
 
 // Check inline and when the DOM is ready:
 kWidget.checkForKDPCallback();

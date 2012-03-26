@@ -54,13 +54,13 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 		// Kaltura mediaRss feeds define a single "content" tag with flash swf as the url
 		if( clipSources[0] && 
 			clipSources.length == 1 && 
-			kGetKalturaEmbedSettings( clipSources[0].src )['entry_id']
+			kWidget.getEmbedSettings( clipSources[0].src )['entry_id']
 		){	
-			return kGetKalturaEmbedSettings( clipSources[0].src );
+			return kWidget.getEmbedSettings( clipSources[0].src );
 		}
 		mw.log("Error: kalturaPlaylist MediaRss used with multiple sources or non-kaltura flash applet url");
-		return {}
+		return {};
 	}
 };
 
-})( mediaWiki, jQuery );
+})( window.mw, window.jQuery );
