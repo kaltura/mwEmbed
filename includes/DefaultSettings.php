@@ -59,7 +59,7 @@ $wgStandAloneResourceLoaderMode = true;
 $wgResourceModules = array();	
 
 /* Default skin can be any jquery based skin */
-$wgDefaultSkin = 'redmond';
+$wgDefaultSkin = 'kaltura-dark';
 
 // If the resource loader is in 'debug mode'
 $wgResourceLoaderDebug = false;

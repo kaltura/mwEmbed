@@ -749,9 +749,6 @@ class ResourceLoader {
 								}
 							}
 						}
-						print "on $name\n";
-						print_r( $styles );
-					
 						$out .= self::makeLoaderImplementScript( $name, $scripts, $styles,
 							new XmlJsCode( $messagesBlob ) );
 						break;

@@ -247,7 +247,7 @@ var mw = ( function ( $, undefined ) {
 		 * Dummy function which in debug mode can be replaced with a function that
 		 * emulates console.log in console-less environments.
 		 */
-		log: function( msg ) { console.log( msg  ); },
+		log: function( msg ) { },
 	
 		/**
 		 * @var constructor Make the Map constructor publicly available.
@@ -750,7 +750,6 @@ var mw = ( function ( $, undefined ) {
 								} ) );
 							}
 						} else if ( typeof style === 'string' ) {
-							debugger;
 							addInlineCSS( style );
 						}
 					}
