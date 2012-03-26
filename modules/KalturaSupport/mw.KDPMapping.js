@@ -743,7 +743,9 @@
 				 *  TODO move to AdTimeline.js ( not in core KDPMapping )
 				 */
 				case 'adStart':
-					b('AdSupport_StartAdPlayback');	
+					b('AdSupport_StartAdPlayback', function( event, slotType ){
+						callback( slotType, embedPlayer.id );
+					});	
 					break;
 				case 'adEnd':
 					b('AdSupport_EndAdPlayback');
