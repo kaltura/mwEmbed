@@ -45,6 +45,10 @@
 			//Set the default kind of timedText to display ( un-categorized timed-text is by default "subtitles" )
 			'userKind' : 'subtitles'
 		},
+		
+		// The default display mode is 'ontop'
+		defaultDisplayMode : 'ontop',
+		
 		// The bind prefix:
 		bindPostFix: '.timedText',
 		
@@ -742,7 +746,7 @@
 				layoutOptions.push( 'ontop' );
 			}
 			// Support below player display: 
-			layoutOptions.push( 'below', 'off'  );
+			layoutOptions.push( 'off'  );
 
 			var $ul = $('<ul>');
 			$.each( layoutOptions, function( na, layoutMode ) {
@@ -768,8 +772,7 @@
 			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' + _this.config.layout + ' )' );
 			if( layoutMode != _this.config.layout ) {
 				// Update the config and redraw layout
-				_this.config.layout = layoutMode;						
-				
+				_this.config.layout = layoutMode;
 				// Update the display:
 				_this.updateLayout();
 			}
@@ -777,7 +780,7 @@
 		toggleCaptions: function(){
 			mw.log( "TimedText:: toggleCaptions was:" + this.config.layout );
 			if( this.config.layout == 'off' ){
-				this.setLayoutMode( 'below' );
+				this.setLayoutMode( this.defaultDisplayMode );
 			} else {
 				this.setLayoutMode( 'off' );
 			}
@@ -830,7 +833,7 @@
 				var $playerTarget = this.embedPlayer.$interface;
 				$playerTarget.find('.track').text( gM('mwe-timedtext-loading-text') );
 				// Load the text:
-				source.load( function() {
+				source.load( function(){
 					// Refresh the interface:
 					_this.refreshDisplay();
 				});
@@ -893,7 +896,7 @@
 					// Init Category menu item if it does not already exist:
 					if( !categorySourceList[ categoryKey ] ) {
 						// Set up catList pointer:
-						categorySourceList[ categoryKey ] = [ ];
+						categorySourceList[ categoryKey ] = [];
 						sourcesWithCategoryCount++;
 					}
 					// Append to the source kind key menu item:
@@ -1158,24 +1161,13 @@
             	// too soon
             	return ;
             }
-            
             if( !_this.embedPlayer.controlBuilder.inFullScreen && _this.originalPlayerHeight ){
                 _this.embedPlayer.$interface.css({
                     'height': _this.originalPlayerHeight
                 });
                 _this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : _this.originalPlayerHeight}] );
             } else {
-                var cBarHeight =  ( _this.embedPlayer.controlBuilder.isOverlayControls() ) ?
-                        0 :
-                        _this.embedPlayer.controlBuilder.getHeight();
-                var newCss = {
-                    'height': _this.embedPlayer.$interface.height() -cBarHeight
-                }
-                if( parseInt( $( _this.embedPlayer ).css('top') ) < 0 ){
-                    newCss.top = 0;
-                }
-                $( _this.embedPlayer ).css( newCss );
-                $( _this.embedPlayer.getPlayerElement() ).css( newCss );
+            	// removed resize on container content, since syncPlayerSize calls now handle keeping player aspect. 
             }
         },
 		positionCaptionContainer: function(){

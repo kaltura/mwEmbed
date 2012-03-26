@@ -641,7 +641,7 @@ mw.EmbedPlayer.prototype = {
 	 * Switch and play a video source
 	 * 
 	 * Checks if the target source is the same playback mode and does player switch if needed.
-	 * and calls playerSwichSource 
+	 * and calls playerSwitchSource 
 	 */
 	switchPlaySource: function( source, switchCallback, doneCallback ){
 		var _this = this;
@@ -650,17 +650,17 @@ mw.EmbedPlayer.prototype = {
 		if( targetPlayer.id != this.selectedPlayer.id ){
 			this.selectedPlayer = targetPlayer;
 			this.updatePlaybackInterface( function(){
-				_this.playerSwichSource( source, switchCallback, doneCallback );
+				_this.playerSwitchSource( source, switchCallback, doneCallback );
 			});
 		} else {
 			// Call the player switch directly:
-			_this.playerSwichSource( source, switchCallback, doneCallback );
+			_this.playerSwitchSource( source, switchCallback, doneCallback );
 		}
 	},
 	/**
 	 * abstract function  player interface must support actual source switch
 	 */
-	playerSwichSource: function( source, switchCallback, doneCallback  ){
+	playerSwitchSource: function( source, switchCallback, doneCallback  ){
 		mw.log( "Error player interface must support actual source switch");
 	},
 
@@ -839,17 +839,19 @@ mw.EmbedPlayer.prototype = {
 	 * Get the player height
 	 */
 	getHeight: function() {
-		return $( this ).height();
+		var el = ( this.$interface ) ? this.$interface : this;
+		return $( el ).height();
 	},
 
 	/**
 	 * Get the player width
 	 */
 	getWidth: function(){
+		var el = ( this.$interface ) ? this.$interface : this;
         if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
             return ( $( this ).parent().parent().width() );
         }
-		return $( this ).width();
+		return $( el ).width();
 	},
 
 	/**
@@ -1959,6 +1961,12 @@ mw.EmbedPlayer.prototype = {
 		var sId = 'loadingSpinner_' + this.id;
 		// remove any old spinner
 		$( '#' + sId ).remove();
+		// hide the play btn if present
+		if( this.$interface ) {
+			this.$interface.find('.play-btn-large').hide();
+		}
+		// put the interface into a paused state 
+		this.pauseInterfaceUpdate();
 		// re add an absolute positioned spinner: 
 		$( this ).getAbsoluteOverlaySpinner()
 		.attr( 'id', sId );
@@ -2044,6 +2052,8 @@ mw.EmbedPlayer.prototype = {
 	stop: function() {
 		var _this = this;
 		mw.log( 'EmbedPlayer::stop:' + this.id );
+		// update the player to stopped state: 
+		this.stopped = true;
 
 		// Trigger the stop event:
 		$( this ).trigger( 'doStop' );
@@ -2073,8 +2083,6 @@ mw.EmbedPlayer.prototype = {
 			this.bufferedPercent = 0; // reset buffer state
 			this.controlBuilder.setStatus( this.getTimeRange() );
 		}
-		// update the player to stopped state: 
-		this.stopped = true;
 		// Reset the playhead
 		this.updatePlayHead( 0 );
 		// update the status: 
@@ -2330,7 +2338,11 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		// Check if a javascript currentTime change based seek has occurred
-		if( parseInt( _this.previousTime ) != parseInt( _this.currentTime ) && !this.userSlide && !this.seeking){
+		if( parseInt( _this.previousTime ) != parseInt( _this.currentTime ) && 
+				!this.userSlide && 
+				!this.seeking && 
+				!this.isStopped() 
+		){
 			// If the time has been updated and is in range issue a seek
 			if( _this.getDuration() && _this.currentTime <= _this.getDuration() ){
 				var seekPercent = _this.currentTime / _this.getDuration();

@@ -129,8 +129,10 @@ class kalturaIframe {
 	}
 	
 	private function getPlaylistPlayerSizeCss(){
+		// default size: 
 		$width = 400;
 		$height = 300;
+		
 		// check if we have iframeSize paramater: 
 		if( isset( $_GET[ 'iframeSize' ] ) ){
 			list( $iframeWidth, $iframeHeight ) = explode( 'x',  $_GET[ 'iframeSize' ]);
@@ -163,6 +165,12 @@ class kalturaIframe {
 				}
 			}
 		}
+		// If audio player adjust height:
+		$entryResult = $this->getResultObject()->getResultObject();
+		if( isset( $entryResult['meta'] ) && $entryResult['meta']->mediaType == 5 ){
+			$height = 30;
+		}
+		
 		return "width:{$width}px;height:{$height}px;";
 	}
 	// outputs the playlist wrapper 
@@ -773,7 +781,7 @@ class kalturaIframe {
 	private function javaScriptPlayerLogic(){
 		?>
 		
-		var isHTML5 = kIsHTML5FallForward();
+		var isHTML5 = kWidget.isHTML5FallForward();
 		if( window.kUserAgentPlayerRules ) {
 			var playerAction = window.checkUserAgentPlayerRules( window.kUserAgentPlayerRules[ '<?php echo $this->getResultObject()->getUiConfId() ?>' ] );
 			if( playerAction.mode == 'leadWithHTML5' ){

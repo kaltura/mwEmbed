@@ -146,7 +146,7 @@ class KalturaResultObject {
 	// we just have to use the 
 	function isEmptyPlayer(){
 		if( !$this->urlParameters['entry_id'] && ! isset( $this->urlParameters['flashvars']['referenceId'] ) && !$this->isJavascriptRewriteObject()
-			&& !$this->isPlaylist() ){
+			&& !$this->isPlaylist() && !$this->isCarousel() ){
 			return true;
 		}
 		return false;
@@ -170,12 +170,6 @@ class KalturaResultObject {
 		return $this->isPlaylist;
 	}
 	function isJavascriptRewriteObject() {
-		// If our playlist is Mrss, handle the playlist in the client side
-		$playlistUrl = $this->getPlayerConfig('playlistAPI', 'kpl0Url');
-		if( $playlistUrl && strpos($playlistUrl, "partnerservices") === false ) {
-			return true;
-		}
-
 		// If this is a pptWidget, handle in client side
 		if( $this->getPlayerConfig('pptWidgetAPI', 'plugin') ) {
 			return true;
@@ -585,7 +579,7 @@ class KalturaResultObject {
 	function getPlaylistResult(){
 		// Get the first playlist list:
 		$playlistId =  $this->getFirstPlaylistId();
-
+		
 		$playlistObject = $this->getPlaylistObject( $playlistId  );
 		
 		// Create an empty resultObj
@@ -594,7 +588,7 @@ class KalturaResultObject {
 			if ( !$this->isCarousel() ) {
 				$this->isPlaylist = true;
 			}
-			// check if we have playlistAPI.initItemEntryId
+			// Check if we have playlistAPI.initItemEntryId
 			if( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) ){
 				$this->urlParameters['entry_id'] = 	htmlspecialchars( $this->getPlayerConfig('playlistAPI', 'initItemEntryId' ) );
 			} else {
@@ -618,30 +612,76 @@ class KalturaResultObject {
 	 * Get playlist object
 	 */
 	function getPlaylistObject( $playlistId ){
-		
-		$client = $this->getClient();
 		// Build the reqeust: 
 		$kparams = array();
 		if( !$this->playlistObject ){
-			$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . '.' . $this->getCacheSt() . $playlistId;
-			if( $this->canUseCacheFile( $cacheFile ) ){
-				return unserialize( file_get_contents( $cacheFile ) );
+			// Check if we are dealing with a playlist url: 
+			if( preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $playlistId) != 0 ){
+				$this->playlistObject = $this->getPlaylistObjectFromMrss( $playlistId );
 			} else {
-				try {
-					$client->addParam( $kparams, "id", $playlistId);
-					$client->queueServiceActionCall( "playlist", "execute", $kparams );
-					
-					$this->playlistObject = $client->doQueue();
-					$this->putCacheFile( $cacheFile, serialize( $this->playlistObject) );
-				
-				} catch( Exception $e ){
-					// Throw an Exception and pass it upward
-					throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
-					return false;
-				}
+				// kaltura playlist id:
+				$this->playlistObject = $this->getPlaylistObjectFromKalturaApi( $playlistId );
 			}
 		}
 		return $this->playlistObject;
+	}
+	function getPlaylistObjectFromMrss( $mrssUrl ){
+		$mrssXml = @file_get_contents( $mrssUrl );	
+		if( ! $mrssXml ){
+			$this->error = 'Could not load mrss url';
+			return array();
+		}
+		try{
+			$xml = new SimpleXMLElement( $mrssXml );
+		} catch( Exception $e ){
+			$this->error = 'Could not parse mrss xml';
+			return array();
+		}
+		// Build the entry set array:		
+		$entrySet = array();
+		foreach ($xml->channel->item as $item) {
+			$kaltuarNS = $item->children('http://kaltura.com/playlist/1.0'); 
+			if( isset( $kaltuarNS->entryId ) ){
+				$entrySet[] = $kaltuarNS->entryId;
+			}
+		}
+		
+		$client = $this->getClient();
+		try {
+			$kparams = array();
+			$client->addParam( $kparams, "entryIds", implode(',', $entrySet ) );
+			$client->queueServiceActionCall( "baseEntry", "getByIds", $kparams );
+			$this->playlistObject = $client->doQueue();
+				
+		} catch( Exception $e ){
+			// Throw an Exception and pass it upward
+			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+			return array();
+		}
+		return $this->playlistObject;
+	}
+	function getPlaylistObjectFromKalturaApi( $playlistId ){
+		$client = $this->getClient();
+		$cacheFile = $this->getCacheDir() . '/' . $this->getPartnerId() . '.' . $this->getCacheSt() . $playlistId;
+		if( $this->canUseCacheFile( $cacheFile ) ){
+			$this->playlistObject = unserialize( file_get_contents( $cacheFile ) );
+		} else {
+			try {
+				$kparams = array();
+				
+				$client->addParam( $kparams, "id", $playlistId);
+				$client->queueServiceActionCall( "playlist", "execute", $kparams );
+				
+				$this->playlistObject = $client->doQueue();
+				$this->putCacheFile( $cacheFile, serialize( $this->playlistObject) );
+			
+			} catch( Exception $e ){
+				// Throw an Exception and pass it upward
+				throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+				return false;
+			}
+		}
+		return $this->playlistObject; 
 	}
 	/**
 	 * Get the XML for the first playlist ( the one likely to be displayed ) 
@@ -670,7 +710,6 @@ class KalturaResultObject {
 	
 	function getEntryResult(){
 		$client = $this->getClient();
-		$client->startMultiRequest();
 		try {
 			// NOTE this should probably be wrapped in a service class
 			$kparams = array();

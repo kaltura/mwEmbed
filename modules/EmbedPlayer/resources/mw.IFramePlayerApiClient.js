@@ -90,7 +90,6 @@ mw.IFramePlayerApiClient.prototype = {
 		var _this = this;
 		var parentsAbsoluteList = [];
 		var parentsRelativeList = [];
-		var fullscreenMode = false;
 		var $iframe = $( _this.iframe );
 		var orgSize = {
 			'width' : $iframe.width(),
@@ -98,7 +97,6 @@ mw.IFramePlayerApiClient.prototype = {
 			'position' : $iframe.css( 'position' )
 		};
 		var orgStyle = $iframe.attr('style');
-		
 		var orginalViewPortContent =  $('meta[name="viewport"]').attr('content');
 		
 		// Add a local scope variable to register 
@@ -107,20 +105,7 @@ mw.IFramePlayerApiClient.prototype = {
 		// orientation change ) 
 		var localIframeInFullscreen = false;
 		var verticalScrollPosition = 0;
-		var viewPortTag;
 		
-		/* Un-used for now
-		var disableZoom = function() {
-			viewPortTag = $('head meta[name=viewport]')[0];
-			$('head meta[name=viewport]').remove();
-			$('head').prepend('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
-		};
-
-		var restoreZoom = function() {
-			$('head meta[name=viewport]').remove();
-			$('head').prepend( viewPortTag );
-		};
-		*/
 		var storeVerticalScroll = function(){
 			verticalScrollPosition = (document.all ? document.scrollTop : window.pageYOffset);
 		}
@@ -160,12 +145,18 @@ mw.IFramePlayerApiClient.prototype = {
 				'width' : window.innerWidth,
 				'height' : window.innerHeight
 			};
+			/*
+			 * We don't need that check anymore.
+			 * On Desktop browsers we use native fullscreen so you unable to resize the window
+			 * and that fixes issue on iPad when you enter the player while zoomed in.
+			 * 
 			if( targetSize.width < orgSize.width ){
 				targetSize.width = orgSize.width;
 			}
 			if( targetSize.height < orgSize.height ){
 				targetSize.height =  orgSize.height;
 			}
+			*/
 			// Make the iframe fullscreen
 			$iframe
 				.css({

@@ -318,15 +318,15 @@ mw.KWidgetSupport.prototype = {
 		};
 		
 		// Add getFlashvars to embed player:
-		embedPlayer.getFlashvars = function() {
-			var fv = $( embedPlayer ).data( 'flashvars' );
-			if( !fv
-					&& 
-				mw.getConfig( 'KalturaSupport.PlayerConfig' )
-					&& 
-				mw.getConfig( 'KalturaSupport.PlayerConfig' )['vars']
-			){
-				fv = mw.getConfig( 'KalturaSupport.PlayerConfig' )['vars'] || {};
+		embedPlayer.getFlashvars = function( param ) {
+			var fv = embedPlayer.playerConfig['vars'] || {};
+			if ( param ) {
+				if ( param in fv ) {
+					return fv[param];
+				}
+				else {
+					return undefined;
+				}
 			}
 			return fv;
 		}
@@ -859,11 +859,13 @@ mw.KWidgetSupport.prototype = {
 			var asset = flavorData[i];
 			var entryId = asset.entryId;
 			
-			var newAspect = Math.round( ( asset.width / asset.height)  * 100 )  / 100
+			var newAspect = Math.round( ( asset.width / asset.height )  * 100 )  / 100
 			if( clipAspect !== null && clipAspect != newAspect ){
 				mw.log("KWidgetSupport:: Possible Error clipApsect mispach: " + clipAspect + " != " + newAspect );
 			}
-			clipAspect = newAspect;
+			if( ! isNaN( newAspect) ){
+				clipAspect = newAspect;
+			}
 			
 			// Setup a source object:
 			var source = {
@@ -879,23 +881,12 @@ mw.KWidgetSupport.prototype = {
 				// if an asset is transcoding and no other source is found bind an error callback: 
 				if( asset.status == 4 ){
 					source.error = 'not-ready-transcoding';
+					mw.log("KWidgetSupport:: Skip sources that are not ready: " +  asset.id + ' ' +  asset.tags );
+					
 					// don't add sources that are not ready ( for now ) 
-					//deviceSources.push( source );
+					// deviceSources.push( source );
 				}
 				continue;
-			}
-			
-			// Add iPad Akamai flavor to iPad flavor Ids list id list
-			if( asset.tags.toLowerCase().indexOf('ipadnew') != -1 ){
-				ipadAdaptiveFlavors.push( asset.id );
-				// We don't need to continue, the ipadnew/iphonenew flavor are used also for progressive download
-				//continue;
-			}
-			
-			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
-			if( asset.tags.toLowerCase().indexOf('iphonenew') != -1 ){
-				ipadAdaptiveFlavors.push( asset.id );
-				iphoneAdaptiveFlavors.push( asset.id );
 			}
 			
 			// Check playManifest conditional
@@ -962,6 +953,27 @@ mw.KWidgetSupport.prototype = {
 			// Add the source ( if a src was defined ):
 			if( source['src'] ){
 				deviceSources.push( source );
+			}
+			
+			/**
+			 * Add Adaptive flavors:
+			 */
+			
+			// Android does not support audio flavors in the adaptive stream set:
+			if(  navigator.userAgent.indexOf( 'Android' ) !== -1 && 
+					asset.width == 0  && asset.height == 0  ){
+				continue;
+			}
+			
+			// Add iPad Akamai flavor to iPad flavor Ids list id list
+			if( asset.tags.toLowerCase().indexOf('ipadnew') != -1 ){
+				ipadAdaptiveFlavors.push( asset.id );
+			}
+			
+			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
+			if( asset.tags.toLowerCase().indexOf('iphonenew') != -1 ){
+				ipadAdaptiveFlavors.push( asset.id );
+				iphoneAdaptiveFlavors.push( asset.id );
 			}
 		}
 		

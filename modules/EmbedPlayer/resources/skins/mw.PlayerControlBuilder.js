@@ -319,7 +319,7 @@ mw.PlayerControlBuilder.prototype = {
 	 */
 	getIntrinsicAspect: function(){
 		var vid = this.embedPlayer.getPlayerElement()
-		// Check for embedVideo size: 
+		// Check for raw intrinsic media size: 
 		if( vid && vid.videoWidth && vid.videoHeight ){
 			return vid.videoWidth / vid.videoHeight;
 		}
@@ -461,7 +461,7 @@ mw.PlayerControlBuilder.prototype = {
 		setTimeout( function(){ _this.syncPlayerSize() }, 200);
 	},
 	syncPlayerSize: function(){
-		mw.log( "PlayerControlBuilder::syncPlayerSize" );
+		mw.log( "PlayerControlBuilder::syncPlayerSize: window:" +  $(window).width() + ' player: ' + $( embedPlayer ).width() );
 		var embedPlayer = this.embedPlayer;
 		// resize to the playlist  container
 		// TODO  change this to an event so player with interface around it ( ppt widget etc ) can
@@ -821,16 +821,16 @@ mw.PlayerControlBuilder.prototype = {
 			// Update player size
 			$( embedPlayer ).css( targetAspectSize );
 			
+			if( embedPlayer.getPlayerElement() ){
+				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
+			}
+
 			// Update play button pos
 			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition( buttonScale ) );
 			
 			// if a spinner is displayed re-add to center: 
 			if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
 				embedPlayer.addPlayerSpinner();
-			}
-			
-			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
 			}
 			
 			if( callback ){
@@ -943,7 +943,7 @@ mw.PlayerControlBuilder.prototype = {
 				clearTimeout( _this.hideControlBarCallback );
 				_this.hideControlBarCallback = setTimeout( function() {
 					_this.hideControlBar()
-				}, 3500 );
+				}, 5000 );
 				// ( Once the user touched the video "don't hide" )
 				return true;
 			} );
@@ -1473,6 +1473,10 @@ mw.PlayerControlBuilder.prototype = {
 	* 	'li' a li line item with click action for that menu item
 	*/
 	optionMenuItems: {
+		
+		/*
+		 * Commented out, replaced by flavor selector
+		 * TODO: need to remove all switch player related code
 		// Player select menu item
 		'playerSelect': function( ctrlObj ){
 			if( mw.isIpad() ){
@@ -1488,7 +1492,10 @@ mw.PlayerControlBuilder.prototype = {
 				}
 			);
 		},
-
+		*/
+	    /*
+		 * Commented out, replaced by 'download button' configured by uiConf
+		 * TODO: need to remove all related code
 		// Download the file menu
 		'download': function( ctrlObj ) {
 			if( mw.isIpad() ) return false;
@@ -1505,7 +1512,7 @@ mw.PlayerControlBuilder.prototype = {
 				}
 			);
 		},
-
+		*/
 		// Share the video menu
 		'share': function( ctrlObj ) {
 			return $.getLineItem(

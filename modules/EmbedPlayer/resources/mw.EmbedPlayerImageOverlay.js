@@ -1,7 +1,7 @@
 /**
  * Used to Overlay images and take over player controls
  * 
- *  extends EmbedPlayerNative with image overlay support
+ *  extends EmbedPlayerNative object image overlay support
  */
 
 mw.EmbedPlayerImageOverlay = {
@@ -125,9 +125,10 @@ mw.EmbedPlayerImageOverlay = {
 		}
 		// call the parent play ( to update interface and call respective triggers )
 		this.parent_play();
-		this.clockStartTime = new Date().getTime();
+		
+		/*_this.clockStartTime = new Date().getTime();
 		// Start up monitor:
-		this.monitor();
+		_this.monitor();*/
 	},
 	/**
 	* Stops the playback
@@ -198,7 +199,7 @@ mw.EmbedPlayerImageOverlay = {
 	/**
 	 * Switch the image playback 
 	 */
-	playerSwichSource: function(  source, switchCallback, doneCallback ){
+	playerSwitchSource: function(  source, switchCallback, doneCallback ){
 		var _this = this;
 		this.selectedSource = source;
 		this.embedPlayerHTML();
@@ -208,8 +209,8 @@ mw.EmbedPlayerImageOverlay = {
 			switchCallback( this );
 		}
 		// Wait for ended event to tr
-		$( this ).bind('ended.playerSwichSource', function(){
-			$( _this ).unbind('ended.playerSwichSource');
+		$( this ).bind('ended.playerSwitchSource', function(){
+			$( _this ).unbind('ended.playerSwitchSource');
 			if( doneCallback ) {
 				doneCallback( this );
 			}
@@ -226,6 +227,7 @@ mw.EmbedPlayerImageOverlay = {
 	* Get the "embed" html for the html player
 	*/
 	embedPlayerHTML: function() {
+		var _this = this;
 		// remove any old imageOverlay:
 		this.$interface.find('.imageOverlay').remove();
 		mw.log( 'EmbedPlayerImageOverlay :doEmbedHTML: ' + this.id );
@@ -246,7 +248,12 @@ mw.EmbedPlayerImageOverlay = {
 			.attr({
 				'src' : currentSoruceObj.getSrc()
 			})
-			.addClass( 'imageOverlay' );
+			.addClass( 'imageOverlay' )
+			.load( function(){
+				// reset clock time:
+				_this.clockStartTime = new Date().getTime();
+				_this.monitor();
+			})
 		
 		// move the video element off screen: 
 		$( this.getPlayerElement() ).css({
