@@ -744,12 +744,12 @@
 				 */
 				case 'adStart':
 					b('AdSupport_StartAdPlayback', function( e, slotType ){
-						callback( slotType, embedPlayer.id );
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});	
 					break;
 				case 'adEnd':
 					b('AdSupport_EndAdPlayback', function( e, slotType){
-						callback( slotType, embedPlayer.id )
+						callback( { 'timeSlot': slotType }, embedPlayer.id )
 					});
 					break;
 				// Pre sequences: 
