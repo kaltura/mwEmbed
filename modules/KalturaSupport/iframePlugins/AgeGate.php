@@ -27,9 +27,9 @@ class AgeGate {
 		
 		// Else print out the age form with some simple js help to set cookie, and say not old enough
 		$this->outputAgeForm();
-		ob_end_flush();
+		//ob_end_flush();
 		// Iframe error exit
-		exit( 1 );
+		//exit( 1 );
 	}
 	function data_uri($file, $mime) {  
 	  $contents = file_get_contents($file);
