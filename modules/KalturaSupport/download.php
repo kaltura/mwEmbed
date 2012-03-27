@@ -44,7 +44,7 @@ class downloadEntry {
 	private function fatalError( $errorMsg ) {
 		header( "X-Kaltura: error-6" );
 		header( "X-Kaltura-App: exiting on error 6 - requested flavor was not found" );
-		header( "X-Kaltura-Error: " . htmlspecialchar( $errorMsg ) );
+		header( "X-Kaltura-Error: " . htmlspecialchars( $errorMsg ) );
 		// Then redirect to no-sources video: 
 		$this->sources = $this->getErrorVideoSources();
 		$flavorUrl = $this->getSourceForUserAgent();
