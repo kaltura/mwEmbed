@@ -593,6 +593,32 @@ var kWidget = {
 	},
 
 	/*
+	 * Exteneds the player object and add jsApi methods
+	 */
+	setupJsApi: function( playerId ) {
+		
+		var player = document.getElementById( playerId );
+		var embedPlayer = document.getElementById( playerId + '_ifp' ).contentWindow.document.getElementById( playerId );
+
+		player.addJsListener = function( listenerString, globalFuncName ){
+			embedPlayer.addJsListener(listenerString, globalFuncName );
+		}
+
+		player.removeJsListener = function( listenerString, callbackName ) {
+			embedPlayer.removeJsListener( listenerString, callbackName );
+		}
+
+		player.sendNotification = function( notificationName, notificationData ){
+			embedPlayer.sendNotification( notificationName, notificationData );
+		};
+		player.evaluate = function( objectString ){
+			return embedPlayer.evaluate( objectString );
+		};
+		player.setKDPAttribute = function( componentName, property, value ) {
+			embedPlayer.setKDPAttribute( componentName, property, value );
+		};				
+	},
+	/*
 	 * Write log to console
 	 */
 	 log: function( msg ) {

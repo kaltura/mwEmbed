@@ -492,8 +492,6 @@
 		if ( mw.getConfig('EmbedPlayer.IsIframeServer' ) 
 		){
 			dependencyRequest[0].push('mw.EmbedPlayerNative');
-			dependencyRequest[0].push('$.postMessage');
-			dependencyRequest[0].push('mw.IFramePlayerApiServer');
 		}
 
 		// Return the set of libs to be loaded

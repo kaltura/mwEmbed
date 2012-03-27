@@ -15,18 +15,7 @@
 		* Add Player hooks for supporting Kaltura api stuff
 		*/ 
 		init: function( ){
-			if( mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
-				this.addIframePlayerServerBindings();
-			} else {
-				// For client side of the iframe add iframe hooks and player hooks ( will bind to 
-				// different build player build outs and lets us support pages with both
-				// iframe and no iframes players
-				this.addIframePlayerClientBindings();
-			}
-			// if not an api server include non-iframe player hooks 
-			if( window.kWidgetSupport && !window.kWidgetSupport.isIframeApiServer() ){
-				this.addPlayerHooks();
-			}
+			this.addPlayerHooks();
 		},
 		addPlayerHooks: function(){
 			var _this = this;
@@ -46,160 +35,20 @@
 				embedPlayer.evaluate = function( objectString ){
 					return _this.evaluate( embedPlayer, objectString);
 				};
-				
-				// TODO per KDP docs this should be "attribute" but thats a protected native method. 
-				// the emulation has to do something more tricky like listen to componentName changes 
-				// in the attribute space!
 				embedPlayer.setKDPAttribute = function( componentName, property, value ) {
 					_this.setKDPAttribute( embedPlayer, componentName, property, value );
 				};
+				
+				// Setup parent bindings
+				try {
+					window.parent.kWidget.setupJsApi( embedPlayer.id );
+				} catch (e) {
+					// do nothing
+				}
 				// Fire the KalturaKDPCallbackReady event with the player id: 
 				if( window.KalturaKDPCallbackReady ){
 					window.KalturaKDPCallbackReady( embedPlayer.id );
 				}
-			});
-		},
-		
-		/***************************************
-		 * Client side kdp mapping iframe player setup: 
-		 **************************************/	
-		addIframePlayerClientBindings: function(){
-			var _this = this;
-			mw.log( "KDPMapping::addIframePlayerClientBindings" );
-
-			$( mw ).bind( 'AddIframePlayerMethods', function( event, playerMethods ){
-				playerMethods.push( 'addJsListener', 'removeJsListener', 'sendNotification', 'setKDPAttribute' );
-			});
-			
-			$( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ) {
-				$( playerProxy ).bind( 'jsListenerEvent', function( event, globalFuncName, listenerArgs ){
-					// check if globalFuncName has descendant properties
-					if( typeof window[ globalFuncName ] == 'function' ){
-						window[ globalFuncName ].apply( window[ globalFuncName ], listenerArgs );
-					} else {
-						// try to send the global function name: 
-						try{
-							var winPrefix = ( globalFuncName.indexOf( 'window.' ) === 0 )?'':'window.';
-							var evalFunction = eval( winPrefix + globalFuncName );
-							// try to get the parent 
-							try{
-								var evalFunctionParent =  eval( globalFuncName.split('.').slice(0,-1).join('.') );
-							} catch (e ){
-								// can't get the parent just pass the function scope: 
-								var evalFunctionParent = evalFunction;
-							}
-							evalFunction.apply( evalFunctionParent, listenerArgs );
-						} catch (e){
-							mw.log( "KDPMapping:: Error in jsListenerEvent callback: " + e );
-						}
-					}
-				});
-				// Add local callbacks for local updates of properties in async requests 
-				$( playerProxy ).bind( 'AddIframePlayerMethodCallbacks', function( event, playerMethods ){
-					playerMethods[ 'sendNotification' ] = function( notificationName, notificationData ){
-						// Emulate kdp seek behavior by setting local property at doSeek time. 
-						if( notificationName == 'doSeek' ){
-							playerProxy.kPreSeekTime = playerProxy.currentTime;
-						}
-						// Reach into the player and issue the play call ( if in iOS to capture the user gesture click event if present )
-						if( notificationName == 'doPlay' &&  mw.isIOS() ){
-							$( '#' + playerProxy.id + '_ifp' )
-								.get(0).contentWindow
-								.$( '#' + playerProxy.id ).get(0).play();
-							// Do not also issue iframe postMessage ( so we avoid sending two play requests ) 
-							return false;
-						}
-						// By default do issue the postMessage api call for the given sendNotification. 
-						return true;
-					}
-					// @@TODO if we split kaltura playlist into its own folder with own loader we can move that there. 
-					playerMethods[ 'setKDPAttribute' ] = function( componentName, property, value ){
-						// Check for playlist change media call and issue a play directly on the video element
-						// gets around iOS restriction on async playback
-						if( componentName == 'playlistAPI.dataProvider' && property == 'selectedIndex' ){
-							// only iOS devices have the autoPlay restriction 
-							if( mw.isIOS() ){
-								$( '#' + playerProxy.id + '_ifp' )
-									.get(0).contentWindow
-									.$( '#' + playerProxy.id ).get(0).play();
-							}
-						}
-						// always send postMessage on setKDPAttribute
-						return true;
-					};
-				});
-				
-				// Directly build out the evaluate call on the playerProxy
-				playerProxy.evaluate = function( objectString ){
-					return _this.evaluate( playerProxy, objectString);			
-				};
-				// Listen for the proxyReady event from the server: 
-				$( playerProxy ).bind( 'proxyReady', function(){
-					if( window.KalturaKDPCallbackReady ){
-						window.KalturaKDPCallbackReady( playerProxy.id );
-					}
-				});
-			});			
-		},
-		
-		/***************************************
-		 * Server side kdp mapping iframe player setup: 
-		 **************************************/
-		addIframePlayerServerBindings: function(){
-			var _this = this;
-			mw.log("KDPMapping::addIframePlayerServerBindings");
-			$( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings ){
-				exportedBindings.push( 'jsListenerEvent', 'Kaltura.SendAnalyticEvent' );
-			});
-			
-			$( mw ).bind( 'newIframePlayerServerSide', function( event, embedPlayer ){
-
-				embedPlayer.addJsListener = function( eventName, globalFuncName){
-					// Check for function based binding ( and do  internal event bind ) 
-					if( typeof globalFuncName == 'function' ){
-						_this.addJsListener( embedPlayer, eventName, globalFuncName );
-						return ;
-					}
-					
-					var listenEventName = 'gcb_' + _this.getListenerId( embedPlayer, eventName, globalFuncName); 					
-					window[ listenEventName ] = function(){
-						// Check if the globalFuncName is defined on this side of the iframe and call it
-						if( window[ globalFuncName ] && typeof window[ globalFuncName ] == 'function' ){
-							window[ globalFuncName ].apply( this, $.makeArray( arguments ) );
-						}
-						var args = [ globalFuncName, $.makeArray( arguments ) ];
-						$( embedPlayer ).trigger( 'jsListenerEvent', args );
-					};					
-					_this.addJsListener( embedPlayer, eventName, listenEventName);
-				};
-				
-				embedPlayer.removeJsListener = function( eventName, globalFuncName){
-					var listenEventName = 'gcb_' + _this.getListenerId( embedPlayer, eventName, globalFuncName);
-					_this.removeJsListener( embedPlayer, eventName, listenEventName );
-				};
-				
-				// sendNotification method export: 
-				embedPlayer.sendNotification = function( notificationName, notificationData ){
-					_this.sendNotification( embedPlayer, notificationName, notificationData);
-				};
-
-				// setKDPAttribute method export:
-				embedPlayer.setKDPAttribute = function( componentName, property, value ) {
-					_this.setKDPAttribute( embedPlayer, componentName, property, value );
-				};
-				
-				embedPlayer.evaluate = function( objectString ){
-					return _this.evaluate( embedPlayer, objectString);
-				};
-				
-				// Add preSeek event binding to upate the kPreSeekTime var
-				$( embedPlayer ).bind( 'preSeek', function(event, percent){					
-					embedPlayer.kPreSeekTime = embedPlayer.currentTime;
-				});
-				// Once a seek is complete null the kPreSeekTime ( so we can use currentTime ) in evaluate calls
-				$( embedPlayer ).bind( 'seeked', function( event ){
-					embedPlayer.kPreSeekTime = null;
-				});
 			});
 		},
 		
@@ -512,7 +361,7 @@
 		addJsListener: function( embedPlayer, eventName, callbackName ){
 			var _this = this;
 			//mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
-
+			var callback;
 			// We can pass [eventName.namespace] as event name, we need it in order to remove listeners with their namespace
 			if( typeof eventName == 'string' ) {
 				var eventData = eventName.split('.', 2);
@@ -522,7 +371,7 @@
 			
 			if( typeof callbackName == 'string' ){
 				this.listenerList[  this.getListenerId( embedPlayer, eventName, callbackName)  ] = window[ callbackName ];
-				var callback = function(){
+				callback = function(){
 					var listnerId = _this.getListenerId( embedPlayer, eventName, callbackName) ;
 					// Check that the listener is still valid and run the callback with supplied arguments
 					if( $.isFunction( _this.listenerList [ listnerId ] ) ){
@@ -532,7 +381,7 @@
 			} else if( typeof callbackName == 'function' ){
 				// Make life easier for internal usage of the listener mapping by supporting
 				// passing a callback by function ref
-				var callback = callbackName;
+				callback = callbackName;
 			} else {
 				mw.log( "Error: KDPMapping : bad callback type" );
 				return ;
@@ -956,4 +805,4 @@
 		window.KDPMapping = new mw.KDPMapping();
 	}
 	//mw.log("KDPMapping::done ");
-} )( window.mw, jQuery );
+} )( window.mw, window.jQuery );
