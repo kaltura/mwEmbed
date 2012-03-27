@@ -157,11 +157,10 @@ class ResourceLoader {
 		try {
 			switch ( $filter ) {
 				case 'minify-js':
-					$result = $data;
-					/*$result = JavaScriptMinifier::minify( $data,
+					$result = JavaScriptMinifier::minify( $data,
 						$wgResourceLoaderMinifierStatementsOnOwnLine,
 						$wgResourceLoaderMinifierMaxLineLength
-					);*/
+					);
 					$result .= "\n\n/* cache key: $key */\n";
 					break;
 				case 'minify-css':

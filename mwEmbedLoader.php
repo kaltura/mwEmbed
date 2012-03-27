@@ -26,10 +26,10 @@ $loaderJs = "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl 
 $loaderJs .= "window['KALTURA_LOADER_VERSION'] = '$wgMwEmbedVersion';\n";
 
 // Get resource (  kWidgetLoader.js )
-$loaderJs .= file_get_contents( 'kWidgetLoader.js' );
+$loaderJs .= file_get_contents( 'kWidget/kWidget.embed.js' );
 
 // Get resource (  mwEmbedLoader.js )
-$loaderJs .= file_get_contents( 'mwEmbedLoader.js' );
+$loaderJs .= file_get_contents( 'kWidget/kWidget.legacy.js' );
 
 // Include checkUserAgentPlayer code
 $loaderJs .= file_get_contents( 'modules/KalturaSupport/kdpPageJs/checkUserAgentPlayerRules.js' );
@@ -72,7 +72,7 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	echo $loaderComment . $loaderJs;
 } else {
 	// Get the JSmin class:
-	require_once( realpath( dirname( __FILE__ ) ) . '/includes/library/JSMin.php' );
+	require_once( realpath( dirname( __FILE__ ) ) . '/includes/libs/JavaScriptMinifier.php' );
 	
 	// Set the expire time for the loader to 5 min. ( it controls the version of the actual library payload )
 	$max_age = 60*5; 
@@ -101,7 +101,7 @@ if( isset( $_GET['debug'] ) || $wgEnableScriptDebug ){
 	if( is_file( $loaderCacheFile ) && $javascriptModTime < $cacheModTime ){
 		echo $loaderComment . file_get_contents( $loaderCacheFile );
 	} else {
-		$loaderMin = JSMin::minify( $loaderJs );
+		$loaderMin = JavaScriptMinifier::minify( $loaderJs );
 		if( !@file_put_contents( $loaderCacheFile, $loaderMin ) ){
 			echo "if( console ){ console.log('Error in creating loader cache: ". $wgScriptCacheDirectory . "'); }";
 		}

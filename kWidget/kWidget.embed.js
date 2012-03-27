@@ -233,7 +233,7 @@ var kWidget = {
 	},
 
 	outputIframeWithoutApi: function( replaceTargetId, kEmbedSettings ) {
-		var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
+		var iframeSrc = SCRIPT_LOADER_URL.replace( 'load.php', 'mwEmbedFrame.php' );
 		iframeSrc += '?' + kEmbedSettingsToUrl( kEmbedSettings );
 
 		// If remote service is enabled pass along service arguments:
@@ -305,7 +305,7 @@ var kWidget = {
 			options.width = 400;
 
 		// TODO: Add playEventUrl for stats
-		var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
+		var baseUrl = SCRIPT_LOADER_URL.replace( 'load.php', '' );
 		var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + kEmbedSettings.wid;
 
 		// Also add the uiconf id to the url:

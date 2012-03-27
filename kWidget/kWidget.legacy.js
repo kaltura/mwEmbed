@@ -233,7 +233,7 @@ function kCheckAddScript(){
 		! mw.getConfig( 'Kaltura.UiConfJsLoaded') && ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
 		// We have not yet loaded uiConfJS... load it for each ui_conf id
 		var playerList = kGetKalturaPlayerList();
-		var baseUiConfJsUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'services.php?service=uiconfJs');
+		var baseUiConfJsUrl = SCRIPT_LOADER_URL.replace( 'load.php', 'services.php?service=uiconfJs');
 		var requestCount = playerList.length -1;
 		for( var i=0;i < playerList.length; i++){
 			kAppendScriptUrl( baseUiConfJsUrl + kEmbedSettingsToUrl( playerList[i].kEmbedSettings), function(){
