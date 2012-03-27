@@ -24,6 +24,9 @@ $wgScriptPath = '';
 // Default Load Script path
 $wgLoadScript = $wgServer . $wgScriptPath . 'load.php';
 
+// Support legacy $wgResourceLoaderUrl url. 
+$wgResourceLoaderUrl = $wgLoadScript;
+
 // If we should use simple php file cache infront of resource loader 
 // helps performance in situations where you don't reverse proxy the resource loader.  
 $mwUsePoorManSquidProxy = true;
