@@ -854,6 +854,10 @@ mw.KWidgetSupport.prototype = {
 				   '/sp/' +  partnerId + '00/flvclipper';
 		}
 		var clipAspect = null;
+		
+		// flag to tell if we added applembr flavor
+		var addedAppleMBRFlavor = false;
+		
 		// Add all avaliable sources: 
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 			var asset = flavorData[i];
@@ -894,7 +898,16 @@ mw.KWidgetSupport.prototype = {
 				var src  = flavorUrl + '/entryId/' + asset.entryId;
 				// Check if Apple http streaming is enabled and the tags include applembr
 				if( asset.tags.indexOf('applembr') != -1 ) {
+					addedAppleMBRFlavor = true;
 					src += '/format/applehttp/protocol/' + protocol + '/a.m3u8';
+					
+					deviceSources.push({
+						'data-aspect' : clipAspect,
+						'data-flavorid' : 'AppleMBR',
+						'type' : 'application/vnd.apple.mpegurl',
+						'src' : src
+					});
+					
 					continue;
 				} else {
 					src += '/flavorId/' + asset.id + '/format/url/protocol/' + protocol;
@@ -977,23 +990,26 @@ mw.KWidgetSupport.prototype = {
 			}
 		}
 		
-		// Create iPad flavor for Akamai HTTP if we have more than one flavor
-		if( ipadAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
-			deviceSources.push({
-				'data-aspect' : clipAspect,
-				'data-flavorid' : 'iPadNew',
-				'type' : 'application/vnd.apple.mpegurl',
-				'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
-			});
-		}
-		// Create iPhone flavor for Akamai HTTP
-		if(iphoneAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
-			deviceSources.push({
-				'data-aspect' : clipAspect,
-				'data-flavorid' : 'iPhoneNew',
-				'type' : 'application/vnd.apple.mpegurl',
-				'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
-			});
+		// We don't need adaptive flavors (iphonenew/ipadnew) if we already added applembr flavor
+		if( ! addedAppleMBRFlavor ) {
+			// Create iPad flavor for Akamai HTTP if we have more than one flavor
+			if( ipadAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
+				deviceSources.push({
+					'data-aspect' : clipAspect,
+					'data-flavorid' : 'iPadNew',
+					'type' : 'application/vnd.apple.mpegurl',
+					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
+				});
+			}
+			// Create iPhone flavor for Akamai HTTP
+			if( iphoneAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
+				deviceSources.push({
+					'data-aspect' : clipAspect,
+					'data-flavorid' : 'iPhoneNew',
+					'type' : 'application/vnd.apple.mpegurl',
+					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
+				});
+			}
 		}
 		
 		// Append KS to all source if available 
