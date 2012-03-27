@@ -2,7 +2,9 @@
 * Dom Ready object, extends kWidget object
 * holds all document ready related functions ( similar to jQuery.ready )  
 */
-(function( window, document, undefined ){
+(function( window, undefined ){
+	
+	var document = window.document;
 	
 	// Get kWidget object or create new one
 	var kWidget = window.kWidget || {};
@@ -122,4 +124,4 @@
 	// Check for dom ready
 	kWidget.domReady.checkDomReady();
 	
-})( window, document );
+})( window );

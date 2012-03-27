@@ -2,10 +2,12 @@
  * KWidget static object.
  * Will eventually host all the loader logic.
  */
-(function(){
+(function( window ){
 
 // Use strict ECMAScript 5
 "use strict";
+
+var document = window.document;
 
 var kWidget = {
 	// Stores widgets that are ready:
@@ -30,7 +32,7 @@ var kWidget = {
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
 			if( ! settings.targetId ) {
-				console.log('Error: Missing target element Id');
+				kWidget.log('Error: Missing target element Id');
 			}
 			targetId = settings.targetId;
 		}
@@ -51,7 +53,7 @@ var kWidget = {
 		// Empty the replace target:
 		var elm = document.getElementById( targetId );
 		if( ! elm ){
-			return false; // No target found ( probably already done )
+			return ; // No target found ( probably already done )
 		}
 		try {
 			elm.innerHTML = '';
@@ -840,4 +842,4 @@ if( ! mw.getConfig ){
 window.KWidget = kWidget;
 window.kWidget = kWidget;
 
-})();
+})( window );
