@@ -318,15 +318,15 @@ mw.KWidgetSupport.prototype = {
 		};
 		
 		// Add getFlashvars to embed player:
-		embedPlayer.getFlashvars = function() {
-			var fv = $( embedPlayer ).data( 'flashvars' );
-			if( !fv
-					&& 
-				mw.getConfig( 'KalturaSupport.PlayerConfig' )
-					&& 
-				mw.getConfig( 'KalturaSupport.PlayerConfig' )['vars']
-			){
-				fv = mw.getConfig( 'KalturaSupport.PlayerConfig' )['vars'] || {};
+		embedPlayer.getFlashvars = function( param ) {
+			var fv = embedPlayer.playerConfig['vars'] || {};
+			if ( param ) {
+				if ( param in fv ) {
+					return fv[param];
+				}
+				else {
+					return undefined;
+				}
 			}
 			return fv;
 		}

@@ -743,10 +743,14 @@
 				 *  TODO move to AdTimeline.js ( not in core KDPMapping )
 				 */
 				case 'adStart':
-					b('AdSupport_StartAdPlayback');	
+					b('AdSupport_StartAdPlayback', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
 					break;
 				case 'adEnd':
-					b('AdSupport_EndAdPlayback');
+					b('AdSupport_EndAdPlayback', function( e, slotType){
+						callback( { 'timeSlot': slotType }, embedPlayer.id )
+					});
 					break;
 				// Pre sequences: 
 				case 'preSequenceStart':
