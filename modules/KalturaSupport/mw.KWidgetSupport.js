@@ -824,6 +824,9 @@ mw.KWidgetSupport.prototype = {
 		if( hostUrl.indexOf("#") !== -1 ) {
 			hostUrl = hostUrl.substr(0, hostUrl.indexOf("#"));
 		}
+		
+		// Only domain is needed, so removing everything (incl.) after the third slash, resulting in shorter referrer not breaking the 1024 chars limit (iOS)
+		hostUrl = hostUrl.substr( 0, hostUrl.indexOf( "/", 8 ) );
 		return hostUrl;
 	},
 	/**
