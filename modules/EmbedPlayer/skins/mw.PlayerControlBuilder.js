@@ -329,7 +329,7 @@ mw.PlayerControlBuilder.prototype = {
 			this.embedPlayer.mediaElement.selectedSource )
 		{
 			var ss = this.embedPlayer.mediaElement.selectedSource;
-			// see if we have a hardcoded aspect to the source ( Adaptive streams don't have width / height ) 
+			// See if we have a hardcoded aspect to the source ( Adaptive streams don't have width / height ) 
 			if( ss.aspect ){
 				return ss.aspect;
 			}
@@ -337,9 +337,7 @@ mw.PlayerControlBuilder.prototype = {
 			if( ss.width && ss.height ){
 				return ss.width / ss.height
 			}
-
 		}
-		
 		
 		// check for posterImage size: ( should have Intrinsic aspect size as well ) 
 		var img = this.embedPlayer.$interface.find('.playerPoster')[0];

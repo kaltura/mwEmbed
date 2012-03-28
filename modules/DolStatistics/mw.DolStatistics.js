@@ -354,7 +354,7 @@ mw.DolStatistics.prototype = {
 				return 'img';
 			break;
 		}
-		// Return video:
+		// By default return video
 		return 'vid';
 	},
 	getAutoPlayFlag: function(){
