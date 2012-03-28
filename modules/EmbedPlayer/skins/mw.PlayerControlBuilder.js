@@ -775,7 +775,7 @@ mw.PlayerControlBuilder.prototype = {
 	 * Resize the player to a target size keeping aspect ratio
 	 */
 	resizePlayer: function( size, animate, callback ){
-		mw.log("PlayerControlBuilder:: resizePlayer: " + size.width + 'x' + size.height );
+		mw.log("PlayerControlBuilder:: resizePlayer: " + size.width + ' ' + size.height );
 		var _this = this;
 		// Update interface container:
 		var interfaceCss = {
@@ -1150,7 +1150,6 @@ mw.PlayerControlBuilder.prototype = {
 	* set to true for the player or via config
 	*/
 	isOverlayControls: function(){
-
 		//if the player "supports" overlays:
 		if( ! this.embedPlayer.supports['overlays'] ){
 			return false;
@@ -1171,17 +1170,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) === false){
 			return false;
 		}
-		// iPad supports overlays but the touch events mean we want the controls displayed all the 
-		// time for now. 
-		/*if( mw.isIpad() ){
-			return false;
-		}*/
 
-		// Don't hide controls when content "height" is 0px ( audio tags )
-		if( this.embedPlayer.getPlayerHeight() === 0 &&
-			$(this.embedPlayer).css('height').indexOf('%') === -1 ){
-			return false;
-		}
 		if( this.embedPlayer.controls === false ){
 			return false;
 		}
