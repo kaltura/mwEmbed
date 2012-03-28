@@ -50,6 +50,7 @@ $exportedJsConfig= array(
 	'EmbedPlayer.EnableIframeApi'  => $wgEnableIframeApi,
 	'EmbedPlayer.EnableIpadHTMLControls' => $wgEnableIpadHTMLControls,
 	'EmbedPlayer.UseFlashOnAndroid' => true,
+	'Kaltura.LoadScriptForVideoTags' => true,
 	'Kaltura.AllowIframeRemoteService' => $wgKalturaAllowIframeRemoteService,
 	'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
 	'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs

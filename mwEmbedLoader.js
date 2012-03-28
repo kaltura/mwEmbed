@@ -106,6 +106,14 @@ function kCheckAddScript(){
 		kAddScript();
 		return ;
 	}
+	
+	if( ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )
+		&&
+		( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) && kWidget.pageHasAudioOrVideoTags()  )
+	){
+		kAddScript();
+		return ;
+	}
 	// If document includes kaltura embed tags && isMobile safari:
 	if ( kWidget.isHTML5FallForward()
 			&&
@@ -148,7 +156,7 @@ function kAddScript( callback ){
 		jsRequestSet.push( 'window.jQuery' );
 	}
 	// Check if we are using an iframe ( load only the iframe api client ) 
-	if( mw.getConfig( 'Kaltura.IframeRewrite' ) ) {
+	if( mw.getConfig( 'Kaltura.IframeRewrite' ) && ! kWidget.pageHasAudioOrVideoTags() ) {
 		if( !window.kUserAgentPlayerRules && mw.getConfig( 'EmbedPlayer.EnableIframeApi') && ( kWidget.supportsFlash() || kWidget.supportsHTML5() ) ){
 			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', 'mw.EmbedPlayerNative', 'mw.KWidgetSupport', 'JSON', 'fullScreenApi' );		
 			// Load a minimal set of modules for iframe api
@@ -314,6 +322,19 @@ mw.getKalturaThumbUrl = function ( entry ){
 		parseInt(entry.width) + '/height/' + parseInt(entry.height) + ks;
 };
 
+kWidget.pageHasAudioOrVideoTags = function(){
+	// if selector is set to false or is empty return false
+	if( mw.getConfig( 'EmbedPlayer.RewriteSelector' ) === false || 
+		mw.getConfig( 'EmbedPlayer.RewriteSelector' ) == '' ){
+		return false;
+	}
+	// If document includes audio or video tags
+	if( document.getElementsByTagName('video').length != 0
+		|| document.getElementsByTagName('audio').length != 0 ) {
+		return true;
+	}
+	return false;
+};
 /*
  * When using Frameset that have iframe with video tag inside, the iframe is not positioned correctly. and you can't click on the controls.
  * If order to fix that, we allow to hosting page to pass the following configuration:
@@ -340,7 +361,7 @@ function kIsIOS(){
 	return kWidget.isIOS();
 }
 function kPageHasAudioOrVideoTags(){
-	kWidget.log('kPageHasAudioOrVideoTags is deprecated and not supported any more.');
+	kWidget.log('kPageHasAudioOrVideoTags is deprecated. Please use kWidget.pageHasAudioOrVideoTags');
 	return false;
 }
 function kSupportsHTML5(){
