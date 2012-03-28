@@ -39,15 +39,12 @@
 					_this.setKDPAttribute( embedPlayer, componentName, property, value );
 				};
 				
-				// Setup parent bindings
+				// Setup parent bindings all issue jsReadyCallback
 				try {
 					window.parent.kWidget.setupJsApi( embedPlayer.id );
+					window.parent.KalturaKDPCallbackReady( embedPlayer.id );
 				} catch (e) {
 					// do nothing
-				}
-				// Fire the KalturaKDPCallbackReady event with the player id: 
-				if( window.KalturaKDPCallbackReady ){
-					window.KalturaKDPCallbackReady( embedPlayer.id );
 				}
 			});
 		},

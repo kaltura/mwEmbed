@@ -616,7 +616,8 @@ var kWidget = {
 		};
 		player.setKDPAttribute = function( componentName, property, value ) {
 			embedPlayer.setKDPAttribute( componentName, property, value );
-		};				
+		};
+		
 	},
 	/*
 	 * Write log to console
