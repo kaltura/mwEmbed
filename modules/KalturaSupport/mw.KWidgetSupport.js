@@ -840,7 +840,9 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		var protocol = mw.getConfig('Kaltura.Protocol');
-
+		if( !protocol ){
+			protocol = window.location.protocol.replace(':','');
+		}
 		// Setup the deviceSources array
 		var deviceSources = [];
 		
