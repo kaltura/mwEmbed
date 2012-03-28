@@ -573,11 +573,12 @@ mw.EmbedPlayerNative = {
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback");
+					// keep going towards playback! ( chrome weird pause issue ) 
+					// we need the "playing" event to trigger the switch callback
+					vid.play();
 				});
 				
-				// once playing issue callbacks:
-				$( vid ).bind( 'playing' + switchBindPostfix, function(){
-					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback");
+				var handleSwitchCallback = function(){
 					// restore video position ( now that we are playing with metadata size  )
 					_this.restorePlayerOnScreen();
 					// play hide loading spinner:
@@ -589,6 +590,12 @@ mw.EmbedPlayerNative = {
 						switchCallback( vid );
 						switchCallback = null;
 					}
+				}
+				
+				// once playing issue callbacks:
+				$( vid ).bind( 'playing' + switchBindPostfix, function(){
+					mw.log("EmbedPlayerNative:: playerSwitchSource> playing callback");
+					handleSwitchCallback();
 				});
 				
 				// Add the end binding if we have a post event: 
@@ -600,21 +607,25 @@ mw.EmbedPlayerNative = {
 						return false;
 					});
 				}
-				// Sometimes on switch we get a "pause" trigger check for that:
-				$( vid ).bind( 'pause' + switchBindPostfix, function(){
-					mw.log("EmbedPlayerNative:: playerSwitchSource> pause trigger! ");
-					// remove pause binding: 
-					$( vid ).unbind( 'pause' + switchBindPostfix );
-					
-					// Check if we have called the switch yet: ( see if the playing event has already fired ) 
-					if ( $.isFunction( switchCallback ) ){
-						// try to play again:
-						_this.play();
-					}
-				});
 				
 				// issue the play request:
 				vid.play();
+				
+				// check if ready state is loading or doing anything ( iOS play restriction ) 
+				// give iOS 5 seconds to ~start~ loading media
+				setTimeout(function(){
+					// Check that the player got out of readyState 0
+					if( vid.readyState === 0 ){
+						mw.log("EmbedPlayerNative:: iOS play without gesture failed, issue callback");
+						// hand off to the swtich callback method.
+						handleSwitchCallback();
+						// make sure we are in a pause state ( failed to change and play media );
+						_this.pause();
+						// show the big play button so the user can give us a user gesture: 
+						_this.addPlayBtnLarge();
+					}
+				}, 6000 );
+				
 				
 			} catch (e) {
 				mw.log("Error: EmbedPlayerNative Error in switching source playback");
