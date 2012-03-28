@@ -1760,6 +1760,7 @@ mw.EmbedPlayer.prototype = {
 	},
 	playInterfaceUpdate: function(){
 		var _this = this;
+		mw.log( 'EmbedPlayer:: playInterfaceUpdate' );
 		// Hide any overlay:
 		if( this.controlBuilder ){
 			this.controlBuilder.closeMenuOverlay();
@@ -1801,8 +1802,6 @@ mw.EmbedPlayer.prototype = {
 		if( this.$interface ) {
 			this.$interface.find('.play-btn-large').hide();
 		}
-		// put the interface into a paused state 
-		this.pauseInterfaceUpdate();
 		// re add an absolute positioned spinner: 
 		$( this ).getAbsoluteOverlaySpinner()
 		.attr( 'id', sId );
@@ -1847,6 +1846,7 @@ mw.EmbedPlayer.prototype = {
 	},
 	pauseInterfaceUpdate: function(){
 		var _this =this;
+		mw.log("EmbedPlayer::pauseInterfaceUpdate");
 		// Update the ctrl "paused state"
 		if( this.$interface ){
 			this.$interface.find('.play-btn span' )
