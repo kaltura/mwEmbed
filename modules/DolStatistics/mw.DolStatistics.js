@@ -91,6 +91,17 @@ mw.DolStatistics.prototype = {
 				$embedPlayer.data('DolStatisticsCounter', $embedPlayer.data('DolStatisticsCounter') + 1 );
 			}
 		});
+		// make sure we always fire 100% at end time
+		embedPlayer.bindHelper( 'ended' + _this.bindPostFix, function(){
+			// check if the last cue point was fired: 
+			var dur = Math.round( _this.getDuration() );
+			if( !_this.percentCuePoints[ dur ] ){
+				mw.log("DolStatistics: Used backup 'ended' event");
+				_this.percentCuePoints[ dur ] = false;
+				_this.sendStatsData( 'percentReached', _this.percentCuePointsMap[ currentTime ] );
+			}
+		});
+		
 		// Set the local autoplay flag: 
 		embedPlayer.bindHelper( 'Playlist_PlayClip' + _this.bindPostFix, function(event, clipIndex, autoPlay){
 			$( embedPlayer ).data('playlistAutoPlayFlag',  autoPlay);
@@ -147,7 +158,7 @@ mw.DolStatistics.prototype = {
 		var _this = this;
 		var duration = this.getDuration();
 
-		for( var i=0; i<=100; i=i+10 ) {
+		for( var i=0; i<=100; i =i+10 ) {
 			var cuePoint = Math.round( duration / 100 * i );
 			// if on the last cuePoint subtract 1 second to ensure event, 
 			// ( because of monitor interval checks an end event can be triggered before the 
@@ -333,12 +344,17 @@ mw.DolStatistics.prototype = {
 	 * get a media type string acorrding to dol mapping. 
 	 */
 	getMediaType: function(){
-		// get the media type: 
+		// Get the media type: 
 		var mediaType = this.embedPlayer.evaluate('{mediaProxy.entry.mediaType}');
-		if( mediaType == 5 ){
-			return 'aud';
+		switch( mediaType ){
+			case 5:
+				return 'aud';
+			break;
+			case 2:
+				return 'img';
+			break;
 		}
-		// else return video: 
+		// By default return video
 		return 'vid';
 	},
 	getAutoPlayFlag: function(){

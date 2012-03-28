@@ -318,15 +318,15 @@ mw.KWidgetSupport.prototype = {
 		};
 		
 		// Add getFlashvars to embed player:
-		embedPlayer.getFlashvars = function() {
-			var fv = $( embedPlayer ).data( 'flashvars' );
-			if( !fv
-					&& 
-				mw.getConfig( 'KalturaSupport.PlayerConfig' )
-					&& 
-				mw.getConfig( 'KalturaSupport.PlayerConfig' )['vars']
-			){
-				fv = mw.getConfig( 'KalturaSupport.PlayerConfig' )['vars'] || {};
+		embedPlayer.getFlashvars = function( param ) {
+			var fv = embedPlayer.playerConfig['vars'] || {};
+			if ( param ) {
+				if ( param in fv ) {
+					return fv[param];
+				}
+				else {
+					return undefined;
+				}
 			}
 			return fv;
 		}
@@ -824,6 +824,9 @@ mw.KWidgetSupport.prototype = {
 		if( hostUrl.indexOf("#") !== -1 ) {
 			hostUrl = hostUrl.substr(0, hostUrl.indexOf("#"));
 		}
+		
+		// Only domain is needed, so removing everything (incl.) after the third slash, resulting in shorter referrer not breaking the 1024 chars limit (iOS)
+		hostUrl = hostUrl.substr( 0, hostUrl.indexOf( "/", 8 ) );
 		return hostUrl;
 	},
 	/**
@@ -837,7 +840,9 @@ mw.KWidgetSupport.prototype = {
 		}
 
 		var protocol = mw.getConfig('Kaltura.Protocol');
-
+		if( !protocol ){
+			protocol = window.location.protocol.replace(':','');
+		}
 		// Setup the deviceSources array
 		var deviceSources = [];
 		

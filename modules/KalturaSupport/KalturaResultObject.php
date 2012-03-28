@@ -637,31 +637,28 @@ class KalturaResultObject {
 			$this->error = 'Could not parse mrss xml';
 			return array();
 		}
-		$client = $this->getClient();
-		//  Build a multrequest: 
-		$namedMultiRequest = new KalturaNamedMultiRequest( $client );
-		$plResult = array();
-		$inx = 0;
+		// Build the entry set array:		
+		$entrySet = array();
 		foreach ($xml->channel->item as $item) {
 			$kaltuarNS = $item->children('http://kaltura.com/playlist/1.0'); 
 			if( isset( $kaltuarNS->entryId ) ){
-				$entryId = (string)  $kaltuarNS->entryId;
-				$namedMultiRequest->addNamedRequest( 
-					$inx, 
-					'baseEntry', 
-					'get', 
-					array( 'entryId' => $entryId )
-				);
-				$inx++;
+				$entrySet[] = $kaltuarNS->entryId;
 			}
 		}
-		// build a multrequest: 
-		$resultObject = $namedMultiRequest->doQueue();
 		
-		foreach( $resultObject as $inx => $entryResult ){
-			$plResult[ intval( $inx) ] = $entryResult;
+		$client = $this->getClient();
+		try {
+			$kparams = array();
+			$client->addParam( $kparams, "entryIds", implode(',', $entrySet ) );
+			$client->queueServiceActionCall( "baseEntry", "getByIds", $kparams );
+			$this->playlistObject = $client->doQueue();
+				
+		} catch( Exception $e ){
+			// Throw an Exception and pass it upward
+			throw new Exception( KALTURA_GENERIC_SERVER_ERROR . "\n" . $e->getMessage() );
+			return array();
 		}
-		return $plResult;
+		return $this->playlistObject;
 	}
 	function getPlaylistObjectFromKalturaApi( $playlistId ){
 		$client = $this->getClient();
@@ -670,6 +667,7 @@ class KalturaResultObject {
 			$this->playlistObject = unserialize( file_get_contents( $cacheFile ) );
 		} else {
 			try {
+				$kparams = array();
 				
 				$client->addParam( $kparams, "id", $playlistId);
 				$client->queueServiceActionCall( "playlist", "execute", $kparams );

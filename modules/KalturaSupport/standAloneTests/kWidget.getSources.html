@@ -12,23 +12,36 @@
 	<script src="kWidget.getSources.js"></script>
 	
 	<script>
-			$('#getSources').click(function(){
-				$('#sourceSet').html('loading <blink>...</blink>');
-				kWidget.getSources({
-					'partnerId': $('#partnerId').val(),
-					'entryId': $('#entryId').val(),
-					'callback': function( sourceSet ){
-						var o = '';
-						for( var i in sourceSet ){
-							var source = sourceSet[i];
-							o += ' <br/>' + ' Source <a href="' + source['src'] + '" >' + source['data-flavorid'] + '</a>, ';
-							o += ( source['data-bitrate'] )? ' bitrate:' + source['data-bitrate'] + ' size: ' + source['data-width'] + 'x' + source['data-height'] : ' ( adaptive ) ';
-							o += '<br />';
-						}
-						$('#sourceSet').html( o );
+		function loadSources(){
+			$('#sourceSet').html('loading <blink>...</blink>');
+			kWidget.getSources({
+				'partnerId': $('#partnerId').val(),
+				'entryId': $('#entryId').val(),
+				'callback': function( sourceSet ){
+					var o = '';
+					for( var i in sourceSet ){
+						var source = sourceSet[i];
+						o += ' <br/>' + ' Source <a href="' + source['src'] + '" >' + source['data-flavorid'] + '</a>, ';
+						o += ( source['data-bitrate'] )? ' bitrate:' + source['data-bitrate'] + ' size: ' + source['data-width'] + 'x' + source['data-height'] : ' ( adaptive ) ';
+						o += '<br />';
 					}
-				})
-		});
+					$('#sourceSet').html( o );
+				}
+			})
+		}
+		$('#getSources').click(function(){
+			location.hash = '#__' +  $('#partnerId').val() + ',' + $('#entryId').val();
+			loadSources();
+		})
+		// always test if we want to do the update on page load:
+		var pHash = location.hash;
+		if( pHash.substr( 1, 2) == '__'  ){
+			var args =  pHash.substr(3);
+			var argsParts = args.split(',');
+			$('#partnerId').val( argsParts[0] );
+			$('#entryId').val( argsParts[1] );
+			loadSources();
+		};
 	</script>
 </body>
 </html>
