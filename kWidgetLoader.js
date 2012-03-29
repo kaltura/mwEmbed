@@ -471,7 +471,7 @@ var kWidget = {
 		}
 
 		// Special check for Android:
-		if( navigator.userAgent.indexOf('Android 2.') != -1 ){
+		if( navigator.userAgent.indexOf('Android ') != -1 ){
 			if( mw.getConfig( 'EmbedPlayer.UseFlashOnAndroid' )
 				&&
 				kWidget.supportsFlash()
