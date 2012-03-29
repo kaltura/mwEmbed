@@ -182,10 +182,7 @@ mw.KAds.prototype = {
 					embedPlayer.switchPlaySource( originalSource, function() {
 						mw.log( "AdTimeline:: restored original src:" + vid.src);
 						// Restore embedPlayer native bindings
-						// async for iPhone issues
-						setTimeout(function(){
-							embedPlayer.adTimeline.restorePlayer();
-						}, 100 );
+						embedPlayer.adTimeline.restorePlayer();
 
 						// Sometimes the duration of the video is zero after switching source
 						// So i'm re-setting it to it's old duration

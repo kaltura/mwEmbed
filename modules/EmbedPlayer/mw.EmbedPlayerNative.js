@@ -577,9 +577,11 @@ mw.EmbedPlayerNative = {
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
 					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback");
-					// keep going towards playback! ( chrome weird pause issue ) 
+					// keep going towards playback! if  switchCallback has not been called yet 
 					// we need the "playing" event to trigger the switch callback
-					vid.play();
+					if ( !$.isFunction( switchCallback ) ){
+						vid.play();
+					}
 				});
 				
 				var handleSwitchCallback = function(){
@@ -619,7 +621,7 @@ mw.EmbedPlayerNative = {
 				// give iOS 5 seconds to ~start~ loading media
 				setTimeout(function(){
 					// Check that the player got out of readyState 0
-					if( vid.readyState === 0 ){
+					if( vid.readyState === 0 && $.isFunction( switchCallback ) ){
 						mw.log("EmbedPlayerNative:: iOS play without gesture failed, issue callback");
 						// hand off to the swtich callback method.
 						handleSwitchCallback();

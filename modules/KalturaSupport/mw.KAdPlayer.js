@@ -183,6 +183,9 @@ mw.KAdPlayer.prototype = {
 				return true;				
 			});
 		}
+		// make sure we are in a play state:
+		_this.embedPlayer.playInterfaceUpdate();
+
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 			_this.playVideoSibling(	
