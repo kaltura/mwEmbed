@@ -216,6 +216,12 @@ class kalturaIframe {
 			'style="' . $playerStyle . '" ';
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
+		// Check for webkit-airplay option
+		$playerConfig = $this->getResultObject()->getPlayerConfig();
+		if( isset( $playerConfig['vars']['EmbedPlayer.WebKitPlaysInline'] ) ){
+			$o.= 'x-webkit-airplay="allow" ';
+		}
+		
 		// Add any additional attributes:
 		foreach( $urlParams as $key => $val ){
 			if( isset( $videoTagMap[ $key ] ) && $val != null ) {

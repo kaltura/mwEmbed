@@ -27,6 +27,9 @@
 		// to play inline on iPhone
 		'EmbedPlayer.WebKitPlaysInline': false,
 		
+		// Adds a airplay attribute to the video tag to support apple content mirror
+		'EmbedPlayer.WebKitAllowAirplay': false, 
+		
 		// If webkitSupportsFullscreen is true, this option will make the fullscreen button 
 		// use the native players fullscreen ( rather  than pop-up a new window with the in-browser
 		// fullscreen. 
