@@ -483,7 +483,7 @@ mw.EmbedPlayer.prototype = {
 		var _this = this;
 
 		var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType ) ;
-		if( targetPlayer.id != this.selectedPlayer.id ){
+		if( targetPlayer.library != this.selectedPlayer.library ){
 			this.selectedPlayer = targetPlayer;
 			this.updatePlaybackInterface( function(){
 				_this.playerSwitchSource( source, switchCallback, doneCallback );

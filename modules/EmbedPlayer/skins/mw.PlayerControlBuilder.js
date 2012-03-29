@@ -459,8 +459,8 @@ mw.PlayerControlBuilder.prototype = {
 		setTimeout( function(){ _this.syncPlayerSize() }, 200);
 	},
 	syncPlayerSize: function(){
-		mw.log( "PlayerControlBuilder::syncPlayerSize: window:" +  $(window).width() + ' player: ' + $( embedPlayer ).width() );
 		var embedPlayer = this.embedPlayer;
+		mw.log( "PlayerControlBuilder::syncPlayerSize: window:" +  $(window).width() + ' player: ' + $( embedPlayer ).width() );
 		// resize to the playlist  container
 		// TODO  change this to an event so player with interface around it ( ppt widget etc ) can
 		// set the player to the right size. 
