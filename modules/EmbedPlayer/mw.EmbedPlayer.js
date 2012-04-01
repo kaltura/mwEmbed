@@ -530,6 +530,8 @@ mw.EmbedPlayer.prototype = {
 			this.showPluginMissingHTML();
 			mw.log( "EmbedPlayer:: setupSourcePlayer > player ready ( but with errors ) ");
 		}
+		// Trigger layout ready event
+		$( this ).trigger( 'layoutReady' );
 		// Show the interface: 
 		this.$interface.find( '.control-bar,.play-btn-large').show();
 		// trigger ready: 
