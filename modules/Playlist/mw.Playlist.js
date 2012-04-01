@@ -589,6 +589,9 @@ mw.Playlist.prototype = {
 			
 			$(uiSelector).show();
 		});
+		
+		// Trigger playlistsListed when we get the data
+		$( embedPlayer ).trigger( 'playlistsListed' );		
 	},
 	syncPlayerSize: function(){
 		var _this = this;
