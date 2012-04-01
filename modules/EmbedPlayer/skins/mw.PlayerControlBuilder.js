@@ -1024,8 +1024,6 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		
-		
-		
 		// prevent scrolling when in fullscreen:
 		document.ontouchmove = function( e ){
 			mw.log( 'touchmove! ' + _this.inFullScreen )
@@ -1033,11 +1031,12 @@ mw.PlayerControlBuilder.prototype = {
 				e.preventDefault();
 			}
 		};
-		
+		// Remove old click bindings before adding: 
+		this.removePlayerClickBindings();
 		
 		// Setup "dobuleclick" fullscreen binding to embedPlayer ( if enabled ) 
 		if ( this.supportedComponents['fullscreen'] ){
-			$( embedPlayer ).bind( "dblclick" + this.bindPostfix, function(){
+			$( embedPlayer ).bind( "dblclick" + _this.bindPostfix, function(){
 				embedPlayer.fullscreen();
 			});
 		}
@@ -1046,9 +1045,9 @@ mw.PlayerControlBuilder.prototype = {
 		var lastClickTime = 0;
 		var didDblClick = false;
 	
-		// Remove parent dbl click ( so we can handle play clicks )
-		$( embedPlayer ).bind( "click" + this.bindPostfix, function() {
-			// Don't bind anything if native controls displayed:
+		// Check for click
+		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
+			// Don't do anything if native controls displayed:
 			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() || mw.isIpad() ) {
 				return true;
 			}		
@@ -2147,6 +2146,21 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		return 0;
 	},
+	
+	// Set up the disable playhead function: 
+	// TODO this will move into the disableSeekBar binding in the new theme framework
+	disableSeekBar : function(){
+		var $playHead = this.embedPlayer.$interface.find( ".play_head" );
+		if( $playHead.length ){
+			$playHead.slider( "option", "disabled", true );
+		}
+	},
+	enableSeekBar : function(){
+		var $playHead = this.embedPlayer.$interface.find( ".play_head" );
+		if( $playHead.length ){
+			$playHead.slider( "option", "disabled", false);
+		}
+	},
 
 	/**
 	* Components Object
@@ -2494,21 +2508,6 @@ mw.PlayerControlBuilder.prototype = {
 							}
 						}
 					};
-			
-				// Set up the disable playhead function: 
-				// TODO this will move into the disableSeekBar binding in the new theme framework
-				ctrlObj.disableSeekBar = function(){
-					var $playHead = ctrlObj.embedPlayer.$interface.find( ".play_head" );
-					if( $playHead.length ){
-						$playHead.slider( "option", "disabled", true );
-					}
-				}
-				ctrlObj.enableSeekBar = function(){
-					var $playHead = ctrlObj.embedPlayer.$interface.find( ".play_head" );
-					if( $playHead.length ){
-						$playHead.slider( "option", "disabled", false);
-					}
-				}
 			
 				var embedPlayer = ctrlObj.embedPlayer;
 				var _this = this;
