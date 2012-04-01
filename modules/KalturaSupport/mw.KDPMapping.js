@@ -612,8 +612,9 @@
 				case 'doPause':
 					b( "onpause" );
 					break;
-					
 				case 'playerPlayed':
+					b( "playing" );
+					break;
 				case 'play':
 				case 'doPlay':
 					b( "onplay" );
