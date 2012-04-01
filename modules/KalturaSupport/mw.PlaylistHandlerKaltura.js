@@ -79,7 +79,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		mw.log( "mw.PlaylistHandlerKaltura:: loadPlaylist > ");
 		// Get the kaltura client:
 		_this.getPlaylistUiConf( function( $uiConf ){
-			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );
+			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );			
 			_this.playlistSet = [];
 			// @@TODO clean up with getConf option
 			// Add in flashvars playlist id if present:
