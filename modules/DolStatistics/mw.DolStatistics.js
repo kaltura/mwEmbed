@@ -90,6 +90,7 @@ mw.DolStatistics.prototype = {
 				_this.duringChangeMediaFlag = true;
 				$embedPlayer.data('DolStatisticsCounter', $embedPlayer.data('DolStatisticsCounter') + 1 );
 			}
+			_this.destroy();
 		});
 		// make sure we always fire 100% at end time
 		embedPlayer.bindHelper( 'ended' + _this.bindPostFix, function(){
@@ -97,8 +98,8 @@ mw.DolStatistics.prototype = {
 			var dur = Math.round( _this.getDuration() );
 			if( !_this.percentCuePoints[ dur ] ){
 				mw.log("DolStatistics: Used backup 'ended' event");
-				_this.percentCuePoints[ dur ] = false;
-				_this.sendStatsData( 'percentReached', _this.percentCuePointsMap[ currentTime ] );
+				_this.percentCuePoints[ dur ] = true;
+				_this.sendStatsData( 'percentReached', _this.percentCuePointsMap[ dur ] );
 			}
 		});
 		
@@ -112,7 +113,7 @@ mw.DolStatistics.prototype = {
 			switch( eventName ) {
 				// Special events
 				case 'percentReached':
-					embedPlayer.bindHelper( 'playerReady', function(){
+					embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady' + _this.bindPostFix, function(){
 						_this.calcCuePoints();
 						embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostFix, function() {
 							_this.monitorPercentage();
@@ -219,7 +220,7 @@ mw.DolStatistics.prototype = {
 	getDuration: function() {
 		// try to get the "raw" duration 
 		if( this.embedPlayer.getPlayerElement() ){
-			var rawDur = this.embedPlayer.getPlayerElement().duration
+			var rawDur = this.embedPlayer.getPlayerElement().duration;
 			if( ! isNaN( rawDur ) ){
 				return rawDur;
 			}
@@ -258,7 +259,7 @@ mw.DolStatistics.prototype = {
 		// Kaltura Event name
 		params['KDPEVNT'] = eventName;
 		// KDP Event Data
-		if( eventData !== '' ){
+		if( eventData !== '' && eventData !== undefined ){
 			params['KDPDAT_VALUE'] = eventData.toString();
 		}
 		// Flavor Bitrate
