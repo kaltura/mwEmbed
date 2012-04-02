@@ -286,14 +286,44 @@ mw.KWidgetSupport.prototype = {
 			if( !embedPlayer.playerConfig ){
 				embedPlayer.playerConfig = {};
 			}
-			if( !embedPlayer.playerConfig[ pluginName ] ){
-				embedPlayer.playerConfig[ pluginName ] = objectSet;
+			if( !embedPlayer.playerConfig[ 'plugins' ][ pluginName ] ){
+				embedPlayer.playerConfig[ 'plugins' ][ pluginName ] = objectSet;
 			} else {
-				$.extend( embedPlayer.playerConfig[ pluginName ], objectSet);
+				$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ], objectSet);
 			}
 			// Sync iframe with attribute data updates:
 			$( embedPlayer ).trigger( 'updateIframeData' );
-		}
+		};
+		
+		// Same as addExportedObject 
+		embedPlayer.setKalturaConfig = function( pluginName, key, value ) {
+			if ( value === undefined ) {
+				return false;
+			} 
+			var obj = {};
+			if( typeof key === "string" ) {
+				obj[ key ] = value;
+			}
+			else if( typeof key === "object" ) {
+				obj = key;
+			}
+			else {
+				return false;
+			}
+			if( !embedPlayer.playerConfig ) {
+				embedPlayer.playerConfig = {};
+			}
+			if( !embedPlayer.playerConfig[ 'plugins' ][ pluginName ] ){
+				embedPlayer.playerConfig[ 'plugins' ][ pluginName ] = obj;
+			} else {
+				if ( !embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] ) {
+					embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] = value;
+				}
+				else {
+					$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ], value );
+				}
+			}
+		};
 
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
@@ -578,7 +608,8 @@ mw.KWidgetSupport.prototype = {
 		var returnSet = $.extend( {}, config ); 
 		$.each( returnSet, function( attrName, value ) {
 			// Unescape values that would come in from flashvars
-			if( value ){
+
+			if( value && ( typeof value === 'string' ) ){
 				returnSet[ attrName ] = unescape( value );
 			}
 			
