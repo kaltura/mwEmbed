@@ -205,22 +205,8 @@ mw.KAds.prototype = {
 								}, 100 );
 							}
 						} else {
-							var waitForPlaybackCount = 0;
-							var waitForPlayback = function(){
-								var vid = embedPlayer.getPlayerElement();
-								waitForPlaybackCount++;
-								// Wait for playback for 10 seconds 
-								if( vid.currentTime > 0 || waitForPlaybackCount > 400 ){
-									// Seek to where we did the switch
-									embedPlayer.seek( seekPerc );
-								} else {
-									setTimeout(function(){waitForPlayback()}, 50)
-								}
-							};
-							waitForPlayback();
-							
 							// Seek to where we did the switch
-							//embedPlayer.seek( seekPerc );
+							embedPlayer.seek( seekPerc );
 						}
 					});
 				} else {
