@@ -593,7 +593,7 @@ mw.KWidgetSupport.prototype = {
 		var returnSet = $.extend( {}, config ); 
 		$.each( returnSet, function( attrName, value ) {
 			// Unescape values that would come in from flashvars
-			if( value ){
+			if( value && (typeof value === 'string') ){
 				returnSet[ attrName ] = unescape( value );
 			}
 			
