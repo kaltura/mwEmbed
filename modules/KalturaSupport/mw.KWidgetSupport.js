@@ -293,7 +293,22 @@ mw.KWidgetSupport.prototype = {
 			}
 			// Sync iframe with attribute data updates:
 			$( embedPlayer ).trigger( 'updateIframeData' );
-		}
+		};
+		
+		// Same as addExportedObject 
+		embedPlayer.setKalturaConfig = function( pluginName, key, value ) {
+
+			if( typeof key === "string" && value !== undefined ) {
+				var obj = {};
+				obj[ key ] = value;
+				key = obj;
+			}
+			
+			if( typeof key === "object" ) {
+				embedPlayer.addExportedObject( pluginName, key );
+				return ;
+			}			
+		};
 
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
