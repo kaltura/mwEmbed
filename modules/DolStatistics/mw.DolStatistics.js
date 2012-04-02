@@ -67,7 +67,7 @@ mw.DolStatistics.prototype = {
 		embedPlayer.bindHelper('replayEvent' + this.bindPostFix, function(){
 			// reset the percentage reached counter: 
 			_this.calcCuePoints();
-			_this.setConfig( 'playbackCounter', parseInt( _this.getConfig('playbackCounter') ) + 1 );
+			_this.setConfig( 'playbackCounter', _this.getConfig('playbackCounter') + 1 );
 			mw.log( 'DolStatistics:: replayEvent> reset cuePoints and increment counter: ' + _this.getConfig('playbackCounter') );
 		});
 		
@@ -75,7 +75,7 @@ mw.DolStatistics.prototype = {
 		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
 			if( ! embedPlayer['data-playerError'] ){
 				_this.duringChangeMediaFlag = true;
-				_this.setConfig( 'playbackCounter', parseInt( _this.getConfig('playbackCounter') ) + 1 );
+				_this.setConfig( 'playbackCounter', _this.getConfig('playbackCounter') + 1 );
 			}
 			_this.destroy();
 		});
@@ -83,7 +83,7 @@ mw.DolStatistics.prototype = {
 		embedPlayer.bindHelper( 'ended' + _this.bindPostFix, function(){
 			// check if the last cue point was fired: 
 			var dur = Math.round( _this.getDuration() );
-			if( !_this.percentCuePoints[ dur ] ){
+			if( ! _this.percentCuePoints[ dur ] ){
 				mw.log("DolStatistics: Used backup 'ended' event");
 				_this.percentCuePoints[ dur ] = true;
 				_this.sendStatsData( 'percentReached', _this.percentCuePointsMap[ dur ] );
@@ -206,12 +206,12 @@ mw.DolStatistics.prototype = {
 	/* Retrive video duration */
 	getDuration: function() {
 		// try to get the "raw" duration 
-		if( this.embedPlayer.getPlayerElement() ){
+		/*if( this.embedPlayer.getPlayerElement() ){
 			var rawDur = this.embedPlayer.getPlayerElement().duration;
 			if( ! isNaN( rawDur ) ){
 				return rawDur;
 			}
-		}
+		}*/
 		return this.embedPlayer.evaluate('{duration}');
 	},
 
