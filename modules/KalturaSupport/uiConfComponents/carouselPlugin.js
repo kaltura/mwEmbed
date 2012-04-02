@@ -83,17 +83,23 @@
 			if ( embedPlayer.kalturaPlayerMetaData ) {
 				videoName = embedPlayer.kalturaPlayerMetaData.name;
 			}
-			var $titleContainer = $( '<div />' )
-				.addClass( 'carouselVideoTitle' );
-			var $title = $( '<div />' )
-				.text( videoName )
-				.addClass( 'carouselVideoTitleText' );
-			var $duration = $( '<div />' )
-				.text( mw.seconds2npt( embedPlayer.duration, false) )
-				.addClass( 'carouselTitleDuration' );
-			$titleContainer.append( $title, $duration );
-			// Add the title to the interface
-			embedPlayer.$interface.append( $titleContainer );
+			if ( !this.isCarouselDrawn ) {
+				var $titleContainer = $( '<div />' )
+					.addClass( 'carouselVideoTitle' );
+				var $title = $( '<div />' )
+					.text( videoName )
+					.addClass( 'carouselVideoTitleText' );
+				var $duration = $( '<div />' )
+					.text( mw.seconds2npt( embedPlayer.duration, false) )
+					.addClass( 'carouselTitleDuration' );
+				$titleContainer.append( $title, $duration );
+				// Add the title to the interface
+				embedPlayer.$interface.append( $titleContainer );
+			}
+			else {
+				embedPlayer.$interface.find( '.carouselVideoTitleText' ).text( videoName );
+				embedPlayer.$interface.find( '.carouselTitleDuration' ).text( mw.seconds2npt( embedPlayer.duration, false) );
+			}
 			return true;
 		},
 		
@@ -126,7 +132,9 @@
 			// When hovering over an entry, display entry name below carousel
 			_this.$hoverTitle = $( '<div />')
 				.addClass( 'carouselImgTitle' );
-
+			
+			var bindPostFix = '.thumbnailClick';
+			embedPlayer.unbindHelper( bindPostFix );
 			// Iterate over playlist entries and generate thumbnails
 			$.each( entriesArray, function( i, currEntryObj ) {
 				var $img = $( '<img />' )
@@ -148,16 +156,16 @@
 							_this.$hoverTitle.text( '' ) ;
 						}
 					)
-					.bind( 'click', function() {
-						var bindPostFix = '.thumbnailClick';
-						embedPlayer.unbindHelper( bindPostFix );
+					.unbind( 'click' + bindPostFix )
+					.bind( 'click' + bindPostFix, function() {
 						embedPlayer.bindHelper( 'onChangeMediaDone' + bindPostFix, function() {
 							embedPlayer.play();
 							embedPlayer.bindHelper( 'playing' + bindPostFix, function() {
 								embedPlayer.controlBuilder.syncPlayerSize();
 							} );
 						} );
-						embedPlayer.sendNotification( 'changeMedia', {'entryId' : currEntryObj.id} ); 
+						_this.toggleVideoTitle( false );
+						embedPlayer.sendNotification( 'changeMedia', {'entryId' : currEntryObj.id} );
 					} );
 				// Entry duration is overlayed on the thumbnail
 				var $imgOverlay = $( '<span />' )
