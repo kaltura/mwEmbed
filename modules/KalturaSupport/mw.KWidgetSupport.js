@@ -297,17 +297,32 @@ mw.KWidgetSupport.prototype = {
 		
 		// Same as addExportedObject 
 		embedPlayer.setKalturaConfig = function( pluginName, key, value ) {
-
-			if( typeof key === "string" && value !== undefined ) {
-				var obj = {};
+			if ( value === undefined ) {
+				return false;
+			} 
+			var obj = {};
+			if( typeof key === "string" ) {
 				obj[ key ] = value;
-				key = obj;
 			}
-			
-			if( typeof key === "object" ) {
-				embedPlayer.addExportedObject( pluginName, key );
-				return ;
-			}			
+			else if( typeof key === "object" ) {
+				obj = key;
+			}
+			else {
+				return false;
+			}
+			if( !embedPlayer.playerConfig ) {
+				embedPlayer.playerConfig = {};
+			}
+			if( !embedPlayer.playerConfig[ 'plugins' ][ pluginName ] ){
+				embedPlayer.playerConfig[ 'plugins' ][ pluginName ] = obj;
+			} else {
+				if ( !embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] ) {
+					embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] = value;
+				}
+				else {
+					$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ], value );
+				}
+			}
 		};
 
 		// Add isPluginEnabled to embed player:
@@ -593,7 +608,8 @@ mw.KWidgetSupport.prototype = {
 		var returnSet = $.extend( {}, config ); 
 		$.each( returnSet, function( attrName, value ) {
 			// Unescape values that would come in from flashvars
-			if( value && (typeof value === 'string') ){
+
+			if( value && ( typeof value === 'string' ) ){
 				returnSet[ attrName ] = unescape( value );
 			}
 			
