@@ -286,10 +286,10 @@ mw.KWidgetSupport.prototype = {
 			if( !embedPlayer.playerConfig ){
 				embedPlayer.playerConfig = {};
 			}
-			if( !embedPlayer.playerConfig[ pluginName ] ){
-				embedPlayer.playerConfig[ pluginName ] = objectSet;
+			if( !embedPlayer.playerConfig[ 'plugins' ][ pluginName ] ){
+				embedPlayer.playerConfig[ 'plugins' ][ pluginName ] = objectSet;
 			} else {
-				$.extend( embedPlayer.playerConfig[ pluginName ], objectSet);
+				$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ], objectSet);
 			}
 			// Sync iframe with attribute data updates:
 			$( embedPlayer ).trigger( 'updateIframeData' );
