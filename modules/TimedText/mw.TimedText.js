@@ -12,7 +12,7 @@
  */
 mw.includeAllModuleMessages();
 
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 
 	// Merge in timed text related attributes:
 	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
@@ -161,12 +161,14 @@ mw.includeAllModuleMessages();
 				});
 				
 				mw.log( 'TimedText::set text size for: : ' + embedPlayer.$interface.width() + ' = ' + textCss['font-size'] );
-				
+				if ( embedPlayer.controlBuilder.isOverlayControls() && !embedPlayer.$interface.find( '.control-bar' ).is( ':hidden' ) ) {
+					textOffset += _this.embedPlayer.controlBuilder.getHeight();
+				}
 				embedPlayer.$interface.find( '.track' )
 				.css( textCss )
 				.css({
 					// Get the text size scale then set it to control bar height + TimedText.BottomPadding; 
-					'bottom': ( _this.embedPlayer.controlBuilder.getHeight() + textOffset ) + 'px'
+					'bottom': textOffset + 'px'
 				});
 			});
 			
@@ -197,17 +199,21 @@ mw.includeAllModuleMessages();
 
 			// Setup display binding
 			$( embedPlayer ).bind( 'onShowControlBar'+ this.bindPostFix, function(event, layout ){
-				// Move the text track if present
-				embedPlayer.$interface.find( '.track' )
-				.stop()
-				.animate( layout, 'fast' );
+				if ( embedPlayer.controlBuilder.isOverlayControls() ) {
+					// Move the text track if present
+					embedPlayer.$interface.find( '.track' )
+					.stop()
+					.animate( layout, 'fast' );
+				}
 			});
 			
 			$( embedPlayer ).bind( 'onHideControlBar'+ this.bindPostFix, function(event, layout ){
-				// Move the text track down if present
-				embedPlayer.$interface.find( '.track' )
-				.stop()
-				.animate( layout, 'fast' );
+				if ( embedPlayer.controlBuilder.isOverlayControls() ) {
+					// Move the text track down if present
+					embedPlayer.$interface.find( '.track' )
+					.stop()
+					.animate( layout, 'fast' );
+				}
 			});
 		},
 		addInterface: function(){

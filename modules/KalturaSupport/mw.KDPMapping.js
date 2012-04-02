@@ -241,7 +241,7 @@
 		evaluate: function( embedPlayer, objectString ){
 			var _this = this;
 			var result;
-			if( typeof objectString != 'string'){
+			if( typeof objectString !== 'string'){
 				return objectString;
 			}
 			// Check if a simple direct evaluation: 
