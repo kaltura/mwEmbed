@@ -486,10 +486,7 @@ mw.EmbedPlayerNative = {
 			if( vid.currentTime > 0 ){
 				callbackHandler();
 			} else {
-				mw.log( "EmbedPlayerNative seeked callback, error:" + vid.currentTime );
-				// iPad fires 
-				_this.waitForPositiveCurrentTimeCount = 0;
-				_this.waitForPositiveCurrentTime( callbackHandler );
+				mw.log( "Error:: seek callback without time updatet " + vid.currentTime );
 			}
 		};
 		
