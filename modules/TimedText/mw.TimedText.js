@@ -1054,10 +1054,14 @@ mw.includeAllModuleMessages();
 				mw.log("Possible Error, layout mode not recognized: " + this.getLayoutMode() );
 			}
 		},
-		getDefaultStyle: function(){ 
+		getDefaultStyle: function(){
+			var defaultBottom = 15;
+			if( this.embedPlayer.controlBuilder.isOverlayControls() && !this.embedPlayer.$interface.find( '.control-bar' ).is( ':hidden' ) ) {
+				defaultBottom += this.embedPlayer.controlBuilder.getHeight();
+			}				
 			var baseCss =  {
 					'position':'absolute',
-					'bottom': 10,
+					'bottom': defaultBottom,
 					'width': '100%',
 					'display': 'block',
 					'opacity': .8,
