@@ -2877,7 +2877,7 @@ if( window.jQuery ){
 		if(!opts)
 			opts = {};
 		if( $(this).height() < 36 ) {
-			opts = $.extend( { 'length' : 6, 'width' : 2, 'radius' : 5 }, opts );
+			opts = $.extend( { 'length' : 5, 'width' : 2, 'radius' : 4 }, opts );
 		}
 		opts = $.extend( {'color' : '#eee', 'shadow': true }, opts);
 		this.each(function() {
@@ -2903,11 +2903,11 @@ if( window.jQuery ){
 		var pos = $j( this ).offset();
 		var posLeft = ( $j( this ).width() ) ?
 			parseInt( pos.left + ( .5 * $j( this ).width() ) ) :
-			pos.left + 30;
+			parseInt( pos.left + ( .5 * $j( this ).parent().width() ) );
 
 		var posTop = ( $j( this ).height() ) ?
 			parseInt( pos.top + ( .5 * $j( this ).height() ) ) :
-			pos.top + 30;
+			parseInt( pos.top + ( .5 * $j( this ).parent().height() ) ) - 2;
 
 		var $spinner = $j('<div />')
 			.loadingSpinner()
