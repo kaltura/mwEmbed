@@ -76,7 +76,7 @@
 				var arr = str.split("&");
 				var entryid = getValue("entryid");
 				// find the index of the matching entry in the list:
-				var content = mykdp.evaluate('{playlistAPI.dataProvider.content}');		
+				var content = mykdp.evaluate('{playlistAPI.dataProvider.content}');
 				var l = content.length;
 				for (var i = l-1; i>=0; i--) {
 					if (content[i].entryId == entryid || content[i].id == entryid) {

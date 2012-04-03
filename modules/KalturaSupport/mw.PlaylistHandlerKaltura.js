@@ -222,13 +222,16 @@ mw.PlaylistHandlerKaltura.prototype = {
 			this.mrssHandler.loadPlaylist( function(){
 				_this.clipList = _this.mrssHandler.getClipList();
 				callback();
+				embedPlayer.triggerHelper( 'playlistReady' );
 			});
 			return ;
 		}
 		// Check for playlist cache
 		if( embedPlayer.kalturaPlaylistData && embedPlayer.kalturaPlaylistData[ playlist_id ] ){
 			_this.clipList = embedPlayer.kalturaPlaylistData[ playlist_id ];
+			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', { 'content' : _this.clipList } );
 			callback();
+			embedPlayer.triggerHelper( 'playlistReady' );
 			return ;
 		}
 				
@@ -263,6 +266,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			// update the clipList:
 			_this.clipList = playlistData;
 			callback();
+			embedPlayer.triggerHelper( 'playlistReady' );
 		});
 	},	
 	
