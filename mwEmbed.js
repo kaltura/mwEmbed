@@ -2848,7 +2848,7 @@ if( window.jQuery ){
 	 */
 	$.fn.loadingSpinner = function( opts ) {
 		// empty the target: 
-		$(this).empty();
+		$( this ).empty();
 
 		// If we have loader path defined, load an image
 		if( mw.getConfig('LoadingSpinner.ImageUrl') ) {
@@ -2867,28 +2867,27 @@ if( window.jQuery ){
 							'margin-left': '-' + (this.width/2) + 'px'
 						});
 					});
-					thisSpinner = $this.append($loadingSpinner);
+					thisSpinner = $this.append( $loadingSpinner);
 				}
 			});
 			return this;
 		}
 
-		// Else, use Spin.js
-		if(!opts)
+		// Else, use Spin.js defaults
+		if( !opts ){
 			opts = {};
-		if( $(this).height() < 36 ) {
-			opts = $.extend( { 'length' : 5, 'width' : 2, 'radius' : 4 }, opts );
 		}
+		// add color and shadow:
 		opts = $.extend( {'color' : '#eee', 'shadow': true }, opts);
-		this.each(function() {
+		this.each( function() {
 			var $this = $(this).empty();
 			var thisSpinner = $this.data('spinner');
 			if (thisSpinner) {
 				thisSpinner.stop();
 				delete thisSpinner;
 			}
-			if (opts !== false) {
-				thisSpinner = new Spinner($.extend({color: $this.css('color')}, opts)).spin(this);
+			if ( opts !== false ) {
+				thisSpinner = new Spinner( $.extend( { color: $this.css('color') }, opts ) ).spin( this );
 			}
 		});
 		// correct the position: 
@@ -2900,17 +2899,20 @@ if( window.jQuery ){
 	 * element does not display child elements, ( images, video )
 	 */
 	$.fn.getAbsoluteOverlaySpinner = function(){
-		var pos = $j( this ).offset();
-		var posLeft = ( $j( this ).width() ) ?
-			parseInt( pos.left + ( .5 * $j( this ).width() ) ) :
-			parseInt( pos.left + ( .5 * $j( this ).parent().width() ) );
+		var pos = $( this ).offset();
+		
+		var posLeft = ( $( this ).width() ) ?
+			parseInt( pos.left + ( .5 * $( this ).width() ) ) :
+			parseInt( pos.left + ( .5 * $( this ).parent().width() ) );
 
-		var posTop = ( $j( this ).height() ) ?
-			parseInt( pos.top + ( .5 * $j( this ).height() ) ) :
-			parseInt( pos.top + ( .5 * $j( this ).parent().height() ) ) - 2;
+		var posTop = ( $( this ).height() ) ?
+			parseInt( pos.top + ( .5 * $( this ).height() ) ) :
+			parseInt( pos.top + ( .5 * $( this ).parent().height() ) ) - 2;
 
-		var $spinner = $j('<div />')
-			.loadingSpinner()
+		// Set the spin size to "small" ( length 5 ) if video height is small
+		var spinOps = ( $( this ).height() < 36 )? { 'length' : 5, 'width' : 2, 'radius' : 4 }: {};
+			
+		var $spinner = $('<div />')
 			.css({
 				'width' : 45,
 				'height' : 45,
@@ -2918,7 +2920,10 @@ if( window.jQuery ){
 				'top' : posTop + 'px',
 				'left' : posLeft + 'px',
 				'z-index' : 100
-			});
+			})
+			.loadingSpinner(
+				spinOps
+			)
 		$j('body').append( $spinner	);
 		return $spinner;
 	};
