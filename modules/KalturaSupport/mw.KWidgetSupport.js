@@ -191,10 +191,11 @@ mw.KWidgetSupport.prototype = {
 					mw.log( 'KWidgetSupport:: KalturaSupport_FreePreviewEnd set onDoneInterfaceFlag = false' );
 					embedPlayer.onDoneInterfaceFlag = false;
 					var closeAcMessage = function(){
-						$( embedPlayer ).unbind('postEnded.acpreview');
+						$( embedPlayer ).unbind('.acpreview');
 						embedPlayer.controlBuilder.closeMenuOverlay();
 						embedPlayer.onClipDone();
 					};
+					$( embedPlayer ).bind('onChangeMedia.acpreview', closeAcMessage);
 					// Display player dialog 
 					// TODO i8ln!!
 					embedPlayer.controlBuilder.displayMenuOverlay(
