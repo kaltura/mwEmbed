@@ -235,7 +235,7 @@ mw.DolStatistics.prototype = {
 			return ;
 		}
 		// If no event data for percentReached, exit
-		if( eventName === 'percentReached' && ! eventData ) {
+		if( eventName === 'percentReached' && typeof eventData !== 'number' ) {
 			return ;
 		}
 		_this.duringChangeMediaFlag = false;
@@ -388,4 +388,3 @@ mw.DolStatistics.prototype = {
 };
 
 }( window.mw, window.jQuery ));
-
