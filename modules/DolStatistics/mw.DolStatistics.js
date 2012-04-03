@@ -234,6 +234,10 @@ mw.DolStatistics.prototype = {
 		if( _this.duringChangeMediaFlag && eventName != 'changeMedia' ){
 			return ;
 		}
+		// If no event data for percentReached, exit
+		if( eventName === 'percentReached' && ! eventData ) {
+			return ;
+		}
 		_this.duringChangeMediaFlag = false;
 		
 		
@@ -251,8 +255,13 @@ mw.DolStatistics.prototype = {
 		}
 		// Flavor Bitrate
 		params['BITRATE'] = this.getBitrate();
-		// Always include the current time: 
-		params['KDPDAT_PLAYHEAD'] = Math.round( embedPlayer.currentTime * 1000 ) / 1000;
+		// Hack: use duration to send the actual data instead of 0
+		if( eventName == 'playerPlayEnd' ) {
+			params['KDPDAT_PLAYHEAD'] = _this.getDuration().toFixed(2);
+		} else {
+			// Always include the current time: 
+			params['KDPDAT_PLAYHEAD'] = Math.round( embedPlayer.currentTime * 1000 ) / 1000;
+		}
 		// The auto played property; 
 		params['AUTO'] = this.getAutoPlayFlag();
 		// Current Timestamp
