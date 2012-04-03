@@ -418,6 +418,7 @@ mw.Playlist.prototype = {
 		 _this.sourceHandler.loadCurrentPlaylist( function(){
 			 $( _this.target + ' .media-rss-video-list').empty();
 			_this.addMediaList();
+			_this.embedPlayer.triggerHelper( 'indexChanged', { 'newIndex' : inx } );
 		 });
 	},
 	/**
@@ -589,6 +590,9 @@ mw.Playlist.prototype = {
 			
 			$(uiSelector).show();
 		});
+		
+		// Trigger playlistsListed when we get the data
+		$( embedPlayer ).trigger( 'playlistsListed' );		
 	},
 	syncPlayerSize: function(){
 		var _this = this;

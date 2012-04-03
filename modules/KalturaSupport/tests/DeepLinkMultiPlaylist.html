@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<!-- Example URL: <this_file_location>#pl=1&entryid=1_gju0odse -->
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<title>Multi playlist deep-linking example</title>
+
+	<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+	<script type="text/javascript">
+		// a reference to the player
+		var mykdp; 
+		
+		// a flag to know the tabbar is ready and can be reached, and the playlists are listed
+		var pluginsReady = false;
+		
+		// a flag to know that the initial entry was truely changed
+		var changedEntry = false;
+		
+		// playlist to start with
+		var playlist;
+		
+		// entry to start with
+		var entry;
+		
+		// register notifications callbacks
+		function jsCallbackReady () {
+			playlist = getValue("pl");
+			entry = getValue("entryid"); 
+			mykdp = document.getElementById("kaltura_player");
+			mykdp.addJsListener("changeMedia", "changeMediaHandler");
+			mykdp.addJsListener("indexChanged", "indexChangedHandler");
+			mykdp.addJsListener("playlistReady", "playlistReadyHandler");
+			mykdp.addJsListener("playlistsListed", "playlistsListedHandler");
+			mykdp.addJsListener("layoutReady", "playlistsListedHandler");
+		}
+			
+		// save entry id to the url hash
+		function changeMediaHandler(data, id) {
+			if ( changedEntry && (data.entryId != undefined && data.entryId != null) ) {
+				// get the playlist index and keep it
+				var str = "";
+				var pl = getValue("pl");		
+				if (pl) {
+					str = "pl=" + pl + "&";
+				}
+				// add the entryid
+				str += "entryid=" + data.entryId;
+				location.hash = str;
+			} else {
+				changedEntry = true;
+			}
+		}
+		
+		// save the new playlist index to the url hash
+		function indexChangedHandler(data, id) {
+			if (data.newIndex != playlist) {
+				// load a new playlist after the initial one, need to keep it
+				location.hash = "pl=" + data.newIndex;
+			}
+			else {
+				// forget the initial playlist, we don't need it anymore
+				playlist = -1;
+			}
+		}
+		
+		// if have hash data use it, otherwise start playing normally
+		function playlistReadyHandler(data, id) {
+			mykdp.setKDPAttribute('playlistAPI', 'autoInsert', 'true');
+			if (location.hash) {
+				// get the dataprovider, find the index of the given entryid and select it.
+				// get the entryid to play (assume more than one parameter after the #):
+				var str = location.hash;
+				// remove # sign
+				str = str.substring(1, str.length); 
+				var arr = str.split("&");
+				var entryid = getValue("entryid");
+				// find the index of the matching entry in the list:
+				var content = mykdp.evaluate('{playlistAPI.dataProvider.content}');
+				var l = content.length;
+				for (var i = l-1; i>=0; i--) {
+					if (content[i].entryId == entryid || content[i].id == entryid) {
+						break;
+					}
+				}
+				// if the entry wasn't found, get the first entry.
+				if (i == -1) i = 0;
+				
+				// start playing the i'th entry in the playlist.
+				mykdp.setKDPAttribute('playlistAPI.dataProvider', 'selectedIndex', i);
+				
+			}
+			else {
+				// play the first element on the list.
+				mykdp.setKDPAttribute('playlistAPI.dataProvider', 'selectedIndex', '0');
+			}
+			mykdp.removeJsListener("changeMedia", "changeMediaHandler");
+			mykdp.removeJsListener("indexChanged", "indexChangedHandler");
+			mykdp.removeJsListener("playlistReady", "playlistReadyHandler");
+			mykdp.removeJsListener("playlistsListed", "playlistsListedHandler");
+			mykdp.removeJsListener("layoutReady", "playlistsListedHandler");
+		}
+	
+		// load the playlist we need
+		function playlistsListedHandler(data, id) {
+			if (pluginsReady) {
+				var playlistIndex = getValue("pl");
+				if (!playlistIndex) {
+					// if there's no value for playlistIndex, we need the first playlist.
+					playlistIndex = 0;
+				}
+				mykdp.setKDPAttribute('tabBar', 'selectedIndex', playlistIndex);
+			}
+			else {
+				pluginsReady = true;
+			}
+		}
+		
+		// parse the hash data and return the value matching the given key
+		function getValue( key ) {
+			var result = null;
+			var str = location.hash;
+			// remove # sign
+			str = str.substring(1, str.length); 
+			var arr = str.split("&");
+			// find the relevant key and save the value
+			for (var i = 0; i<arr.length; i++) {
+				var arr2 = arr[i].split("=");
+				if (arr2[0] == key) {
+					result = arr2[1];
+					break;
+			  	}
+			}
+			return result; 
+		}
+		
+	</script>
+
+</head>
+
+<body scroll="no">
+
+<object id="kaltura_player" 
+		name="kaltura_player"
+		type="application/x-shockwave-flash" allowFullScreen="true"
+		allowNetworking="all" allowScriptAccess="always" height="330"
+		width="740" xmlns:dc="http://purl.org/dc/terms/"
+		xmlns:media="http://search.yahoo.com/searchmonkey/media/"
+		rel="media:video"
+		resource="http://www.kaltura.com/index.php/kwidget/cache_st/1286887860/wid/_321011/uiconf_id/2492121"
+		data="http://www.kaltura.com/index.php/kwidget/cache_st/1286887860/wid/_321011/uiconf_id/2492121">
+	<param name="allowFullScreen" value="true" />
+	<param name="allowNetworking" value="all" />
+	<param name="allowScriptAccess" value="always" />
+	<param name="bgcolor" value="#000000" />
+	<param name="flashVars" value="playlistAPI.autoInsert=false&playlistAPI.playlistAutoInsert=false&playlistAPI.autoPlay=true"/>
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1286887860/wid/_321011/uiconf_id/2492121" />
+</object>
+		
+</body>
+</html>
