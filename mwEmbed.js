@@ -2876,6 +2876,9 @@ if( window.jQuery ){
 		// Else, use Spin.js
 		if(!opts)
 			opts = {};
+		if( $(this).height() < 36 ) {
+			opts = $.extend( { 'length' : 6, 'width' : 2, 'radius' : 5 }, opts );
+		}
 		opts = $.extend( {'color' : '#eee', 'shadow': true }, opts);
 		this.each(function() {
 			var $this = $(this).empty();
