@@ -404,6 +404,11 @@ mw.PlayerControlBuilder.prototype = {
 		this.inFullScreen = true;
 		var triggerOnOpenFullScreen = true;
 		
+		// if overlaying controls add hide show player binding. 
+		if( _this.isOverlayControls() ){
+			_this.addFullscreenMouseMoveHideShowControls();
+		}
+		
 		// Store the current scroll location on the iframe: 
 		$( embedPlayer ).trigger( 'fullScreenStoreVerticalScroll' );
 		
@@ -502,11 +507,12 @@ mw.PlayerControlBuilder.prototype = {
 		);
 		
 		// get the original interface to absolute positioned:
-		if( ! this.windowPositionStyle  )
+		if( ! this.windowPositionStyle  ){
 			this.windowPositionStyle = $interface.css( 'position' );
-		if( !this.windowZindex )
+		}
+		if( !this.windowZindex ){
 			this.windowZindex = $interface.css( 'z-index' );
-
+		}
 		// Get the base offset:
 		this.windowOffset = this.getWindowOffset();
 		
@@ -576,33 +582,6 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		});
 
-		// Bind mouse move in interface to hide control bar
-		_this.mouseMovedFlag = false;
-		$interface.mousemove( function(e){
-			_this.mouseMovedFlag = true;
-		});
-		
-		// Check every 2 seconds reset flag status if controls are overlay
-		if( _this.isOverlayControls() ){
-			var checkMovedMouse = function(){
-				if( _this.inFullScreen ){
-					if( _this.mouseMovedFlag ){
-						_this.mouseMovedFlag = false;
-						_this.showControlBar();
-						// Once we move the mouse keep displayed for 4 seconds
-						setTimeout(checkMovedMouse, 4000);
-					} else {
-						// Check for mouse movement every 250ms
-						_this.hideControlBar();
-						setTimeout(checkMovedMouse, 250 );
-					}
-				}
-			};
-			checkMovedMouse();
-		}
-
-		// Bind Scroll position update
-
 		// Bind resize resize window to resize window
 		$( window ).resize( function() {
 			if( _this.inFullScreen ){
@@ -628,6 +607,35 @@ mw.PlayerControlBuilder.prototype = {
 				_this.restoreWindowPlayer();
 			}
 		} );
+	},
+	addFullscreenMouseMoveHideShowControls:function(){
+		var _this = this;
+		// Bind mouse move in interface to hide control bar
+		_this.mouseMovedFlag = false;
+		_this.embedPlayer.$interface.mousemove( function(e){
+			_this.mouseMovedFlag = true;
+		});
+		
+		// Check every 2 seconds reset flag status if controls are overlay
+		var checkMovedMouse = function(){
+			if( _this.inFullScreen ){
+				if( _this.mouseMovedFlag ){
+					_this.mouseMovedFlag = false;
+					_this.showControlBar();
+					// Once we move the mouse keep displayed for 3 seconds
+					setTimeout(checkMovedMouse, 3000);
+				} else {
+					// Check for mouse movement every 250ms
+					_this.hideControlBar();
+					setTimeout(checkMovedMouse, 250 );
+				}
+				return;
+			}
+		};
+		// always initially show the control bar: 
+		_this.showControlBar();
+		// start monitoring for moving mouse
+		checkMovedMouse();
 	},
 	getWindowOffset: function(){
 		var windowOffset = this.embedPlayer.$interface.offset();
