@@ -270,14 +270,6 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.kalturaPlaylistData = playerData.playlistData;
 		}
 		_this.handleUiConf( embedPlayer, callback );
-		
-		// Trigger the early player events ( after uiConf handling has a chance to setup bindings 
-		if( embedPlayer.kalturaPlayerMetaData ){
-			$( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
-		}
-		if( embedPlayer.kalturaEntryMetaData ){
-			$( embedPlayer ).trigger( 'KalturaSupport_MetadataReceived', embedPlayer.kalturaEntryMetaData );
-		}
 	},
 	addPlayerMethods: function( embedPlayer ){
 		var _this = this;
@@ -290,19 +282,46 @@ mw.KWidgetSupport.prototype = {
 			return _this.getPluginConfig( embedPlayer, confPrefix, attr );
 		};
 		
-		// Add an exported plugin value: 
-		embedPlayer.addExportedObject = function( pluginName, objectSet ){
-			if( !embedPlayer.playerConfig ){
+		// Extend plugin configuration
+		embedPlayer.setKalturaConfig = function( pluginName, key, value ) {
+			// no plugin/key - exit
+			if ( ! pluginName || ! key ) {
+				return false;
+			} 
+			
+			// Always create obj with plugin properties
+			var objectSet = {};
+			if( typeof key === "string" ) {
+				objectSet[ key ] = value;
+			}
+			// The key could be an object with all plugin properties
+			if( typeof key === "object" ) {
+				objectSet = key;
+			}
+			
+			// No player config, create the object
+			if( ! embedPlayer.playerConfig ) {
 				embedPlayer.playerConfig = {};
 			}
-			if( !embedPlayer.playerConfig[ pluginName ] ){
-				embedPlayer.playerConfig[ pluginName ] = objectSet;
+			// Plugin doesn't exists -> create it
+			if( ! embedPlayer.playerConfig[ 'plugins' ][ pluginName ] ){
+				embedPlayer.playerConfig[ 'plugins' ][ pluginName ] = objectSet;
 			} else {
-				$.extend( embedPlayer.playerConfig[ pluginName ], objectSet);
+				// If our key is an object, and the plugin already exists, merge the two objects together
+				if( typeof key === 'object' ) {
+					$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ], objectSet);
+					return false;
+				}
+				// If the old value is an object and the new value is an object merge them
+				if( typeof embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] === 'object' && typeof value === 'object' ) {
+					$.extend( true, embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ], value );
+				} else {
+					embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] = value;
+				}
 			}
 			// Sync iframe with attribute data updates:
-			$( embedPlayer ).trigger( 'updateIframeData' );
-		}
+			$( embedPlayer ).trigger( 'updateIframeData' );			
+		};
 
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
@@ -345,6 +364,15 @@ mw.KWidgetSupport.prototype = {
 				// Allow other plugins to subscribe to cuePoint ready event:
 				$( embedPlayer ).trigger( 'KalturaSupport_CuePointsReady', embedPlayer.rawCuePoints );
 			};
+			
+			// Trigger the early player events ( after uiConf handling has a chance to setup bindings 
+			if( embedPlayer.kalturaPlayerMetaData ){
+				$( embedPlayer ).trigger( 'KalturaSupport_EntryDataReady', embedPlayer.kalturaPlayerMetaData );
+			}
+			if( embedPlayer.kalturaEntryMetaData ){
+				$( embedPlayer ).trigger( 'KalturaSupport_MetadataReceived', embedPlayer.kalturaEntryMetaData );
+			}
+			
 			// Run the DoneWithUiConf trigger 
 			// Allows modules that depend on other modules initialization to do what they need to do. 
 			mw.log("KWidgetSupport:: trigger KalturaSupport_DoneWithUiConf");
@@ -459,7 +487,7 @@ mw.KWidgetSupport.prototype = {
 			if( !attr ){
 				return plugins[ confPrefix ];
 			}
-			if( attr && typeof plugins[ confPrefix ][ attr ] != 'undefined' ){
+			if( attr && typeof plugins[ confPrefix ][ attr ] !== 'undefined' ){
 				returnConfig[ attr ] = plugins[ confPrefix ][ attr ];
 			}
             if ( attr && typeof attr == 'object' ) {
@@ -573,15 +601,14 @@ mw.KWidgetSupport.prototype = {
 		}
 		return config;
 	},
-	postProcessConfig: function(embedPlayer, config ){
+	postProcessConfig: function( embedPlayer, config ){
 		var _this = this;
 		var returnSet = $.extend( {}, config ); 
 		$.each( returnSet, function( attrName, value ) {
 			// Unescape values that would come in from flashvars
-			if( value ){
+			if( value && ( typeof value === 'string' ) ){
 				returnSet[ attrName ] = unescape( value );
 			}
-			
 			// Do any value handling  ... myPlugin.cat = {video.currentTime}
 			// If JS Api disabled, evaluate is undefined
 			if( embedPlayer.evaluate ){
