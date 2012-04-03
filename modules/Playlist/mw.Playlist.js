@@ -419,7 +419,6 @@ mw.Playlist.prototype = {
 			 $( _this.target + ' .media-rss-video-list').empty();
 			_this.addMediaList();
 			_this.embedPlayer.triggerHelper( 'indexChanged', { 'newIndex' : inx } );
-			_this.embedPlayer.triggerHelper( 'playlistReady' );
 		 });
 	},
 	/**
