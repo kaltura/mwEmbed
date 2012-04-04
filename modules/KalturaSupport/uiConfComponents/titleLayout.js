@@ -2,12 +2,13 @@
 	// 	Check for the Title 
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-
-			// If native controls don't show the title
-			if( embedPlayer.useNativePlayerControls() ) {
+			
+			// If native controls and iOS4 don't show the title
+			if( mw.isIOS4() && embedPlayer.useNativePlayerControls() ) {
 				callback();
 				return ;
 			}
+			
 			// Check for Titles: 
 			if( $uiConf.find( '#TopTitleScreen' ).length ){
 				// Bind changeMedia to update title  
@@ -25,7 +26,7 @@
 		
 		var belowPlayer = embedPlayer.$uiConf.find( '#controlsHolder' ).next( '#TopTitleScreen' ).length
 		
-		function doTitleLayout(){
+		var doTitleLayout = function(){
 			// unbind any old bindings: 
 			$( embedPlayer ).unbind( ".titleLayout" );
 			
@@ -51,15 +52,15 @@
 				}
 				updatePlayerLayout();
 			});
-		}
-		function getTitleBox(){
+		};
+		var getTitleBox = function(){
 			var titleLayout = new mw.KLayout({
 				'$layoutBox' : $titleConfig,
 				'embedPlayer' : embedPlayer
 			});
 			return titleLayout.getLayout();
-		}
-		function updatePlayerLayout(){
+		};
+		var updatePlayerLayout = function(){
 			var $vid = $( embedPlayer.getPlayerElement() );
 			var vidHeight = $vid.height();
 			// Check if we are using flash ( don't move the player element )
@@ -99,4 +100,4 @@
 		doTitleLayout();
 	};
 	
-})( window.mw, jQuery );
+})( window.mw, window.jQuery );

@@ -1212,6 +1212,9 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	mw.isIOS = function(){
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
 	};
+	mw.isIOS4 = function(){
+		return /OS 4_/.test( navigator.userAgent ) && ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
+	};
 	mw.isIOS5 = function(){
 		return /OS 5_/.test( navigator.userAgent ) && ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
 	};
