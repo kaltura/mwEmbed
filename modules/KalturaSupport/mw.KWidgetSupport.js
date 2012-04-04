@@ -703,11 +703,6 @@ mw.KWidgetSupport.prototype = {
 		// Add the flashvars
 		playerRequest.flashvars = $( embedPlayer ).data( 'flashvars' ); 
 
-		if( mw.getConfig( 'KalturaSupport.PlayerConfig' ) ){
-			embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
-			mw.setConfig('KalturaSupport.PlayerConfig', null );
-		}
-		
 		// Check if we have the player data bootstrap from the iframe
 		var bootstrapData = mw.getConfig("KalturaSupport.IFramePresetPlayerData");
 		// Insure the bootStrap data has all the required info: 
