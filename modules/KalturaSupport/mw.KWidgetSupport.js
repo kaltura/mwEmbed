@@ -314,7 +314,7 @@ mw.KWidgetSupport.prototype = {
 				}
 				// If the old value is an object and the new value is an object merge them
 				if( typeof embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] === 'object' && typeof value === 'object' ) {
-					$.extend( true, embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ], value );
+					$.extend( embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ], value );
 				} else {
 					embedPlayer.playerConfig[ 'plugins' ][ pluginName ][ key ] = value;
 				}
