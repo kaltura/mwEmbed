@@ -6,14 +6,9 @@
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
-	
 	// Name this module
 	module( "Flashvars ready at jsCallbackReady time" );
-
-	var $iframe = $( '#' + videoId + '_ifp' ).contents();
-	var iframeContext = window.frames['kaltura_player_ifp'];
 	var kdp =  $( '#' + videoId ).get(0);
-	
 	test( "Flashvars foo accessible", function() {
 		equal( kdp.evaluate('{configProxy.flashvars.foo}' ), 'bar', "Flashvar foo set to bar" );
 	});
