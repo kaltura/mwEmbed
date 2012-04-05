@@ -68,7 +68,7 @@ mw.IFramePlayerApiServer.prototype = {
 		// Block until we receive prePlayerProxyListnersDone event. When we have a parent url 
 		// and we are not in fullscreen iframe ( no parent ) 
 		if( this.getParentUrl() && !mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
-			$( embedPlayer ).bind( 'startPlayerBuildOut', function(event, callback ){
+			$( embedPlayer ).bind( 'startPlayerBuildOut', function( event, callback ){
 				var proxyHandShakeComplete = false;
 				// Once the iframe client is done adding its pre-player listeners the client calls:
 				// proxyAcknowledgment
