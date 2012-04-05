@@ -94,9 +94,8 @@
 				var content = mykdp.evaluate('{playlistAPI.dataProvider.content}');
 				var l = content.length;
 				for (var i = l-1; i>=0; i--) {
-					console.log("\n\n\n\n\n\nentry " + i + " id = \n" + content[i].id);
 					if (content[i].entryId == entryid || content[i].id == entryid) {
-						//break;
+						break;
 					}
 				}
 				// if the entry wasn't found, get the first entry.
