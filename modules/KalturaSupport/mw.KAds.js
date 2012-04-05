@@ -138,8 +138,14 @@ mw.KAds.prototype = {
 			_this.embedPlayer.pauseLoading();
 		}
 		
+		// Disable play controls while loading the ad: 
+		_this.embedPlayer.disablePlayControls();
+		
 		mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
 			if( ! adConf ){
+				// Ad skip re-enable play controls: 
+				_this.embedPlayer.enablePlayControls();
+				
 				// Resume content playback
 				setTimeout( function() { 
 					_this.embedPlayer.play();
