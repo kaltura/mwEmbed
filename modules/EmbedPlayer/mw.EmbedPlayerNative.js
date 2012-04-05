@@ -330,11 +330,11 @@ mw.EmbedPlayerNative = {
 		$( this ).trigger( 'preSeek', percent );
 		
 		this.seeking = true;
-		// Update the current time
-		this.currentTime = ( percent * this.duration ).toFixed( 1 ) ;
+		// Update the current time ( local property )
+		this.currentTime = ( percent * this.duration ).toFixed( 2 ) ;
 		
 		// trigger the seeking event: 
-		mw.log('EmbedPlayerNative::seek:trigger');
+		mw.log( 'EmbedPlayerNative::seek:trigger' );
 		$( this ).trigger( 'seeking' );
 		
 		// Run the onSeeking interface update
@@ -439,52 +439,104 @@ mw.EmbedPlayerNative = {
 	* @param {Function} callback
 	* 		Function called once time has been set.
 	*/
-	setCurrentTime: function( time , callback, callbackCount ) {
+	setCurrentTime: function( seekTime , callback, callbackCount ) {
 		var _this = this;
 		if( !callbackCount ){
 			callbackCount = 0;
 		}
 		var vid = this.getPlayerElement();
 		
+		// add a callback handler to null out callback:
+		var callbackHandler = function(){
+			if( $.isFunction( callback ) ){
+				callback();
+				callback = null;
+			}
+		}
 		// Check if player is ready for seek:
 		if( vid.readyState < 1 ){
-			if( callbackCount >= 400 ){
-				mw.log("Error with seek request, media never in ready state");
+			// Try to seek for 4 seconds: 
+			if( callbackCount >= 40 ){
+				mw.log("Error:: EmbedPlayerNative: with seek request, media never in ready state");
+				callbackHandler();
 				return ;
 			}
 			setTimeout( function(){
-				_this.setCurrentTime( time, callback , callbackCount++);
+				_this.setCurrentTime( seekTime, callback , callbackCount++);
 			}, 100 );
 			return ;
 		}
 		// Check if currentTime is already set to the seek target: 
-		if( vid.currentTime == time ){
-			if( callback ){
-				callback();
-			}
+		if( vid.currentTime == seekTime ){
+			callbackHandler();
 			return;
 		}
+		// setup a namespaced seek bind: 
+		var seekBind = 'seeked.nativeSeekBind';
 		
-		// Setup a local function callback for successful seek
-		var once = function( event ) {
-			// Remove the listner:
-			vid.removeEventListener( 'seeked', once, false );
-			if( callback ){
-				callback();
+		// Remove any old listeners
+		$( vid ).unbind( seekBind );
+		// Bind a seeked listener for the callback
+		$( vid ).bind( seekBind, function( event ) {
+			// Remove the listener:
+			$( vid ).unbind( seekBind );
+			
+			// Check if seeking to zero: 
+			if( seekTime == 0 && vid.currentTime == 0 ){
+				callbackHandler();
+				return ;
 			}
-		};
-		// Assume we will get to add the Listener before the seek is done
-		vid.addEventListener( 'seeked', once, false );
+			
+			// Check if we got a valid seek: 
+			if( vid.currentTime > 0 ){
+				callbackHandler();
+			} else {
+				mw.log( "Error:: seek callback without time updatet " + vid.currentTime );
+			}
+		});
+		setTimeout(function(){
+			if( $.isFunction( callback ) ){
+				mw.log( "Error:: Seek still has not made a callback after 5 seconds, retry");
+				_this.setCurrentTime( seekTime, callback , callbackCount++ );
+			}
+		}, 5000);
+		
 		// Try to update the playerElement time: 
 		try {
-			vid.currentTime = time.toFixed( 2 );
-		} catch (e) {
-			mw.log("Error Could not set video tag time");
-			callback();
-			return;
+			vid.currentTime = seekTime.toFixed( 2 );
+		} catch ( e ) {
+			mw.log("Error:: EmbedPlayerNative: Could not set video tag seekTime");
+			callbackHandler();
+			return ;
+		}
+		
+		// Check for seeking state ( some player iOS / iPad can only seek while playing ) 
+		if(! vid.seeking ){
+			mw.log( "Error:: not entering seek state, play and wait for positive time" );
+			vid.play();
+			setTimeout(function(){
+				_this.waitForPositiveCurrentTime( function(){
+					mw.log("EmbedPlayerNative:: Trying to seek again");
+					_this.setCurrentTime( seekTime , callback, callbackCount );
+				});
+			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 		}
 	},
-
+	waitForPositiveCurrentTime: function( callback ){
+		var _this = this;
+		var vid = this.getPlayerElement();
+		this.waitForPositiveCurrentTimeCount++;
+		// Wait for playback for 10 seconds 
+		if( vid.currentTime > 0 ){
+			mw.log( 'EmbedPlayerNative:: waitForPositiveCurrentTime success' );
+			callback();
+		} else if( this.waitForPositiveCurrentTimeCount > 200 ){
+			mw.log( "Error:: waitForPositiveCurrentTime failed to reach possitve time");
+			callback();
+		} else {
+			setTimeout(function(){ _this.waitForPositiveCurrentTime( callback ) }, 50 )
+		}
+	},
 	/**
 	* Get the embed player time
 	*/
@@ -834,7 +886,7 @@ mw.EmbedPlayerNative = {
 	* fired when "seeking"
 	*/
 	_onseeking: function() {
-		mw.log( "EmbedPlayerNative::onSeeking " + this.seeking);
+		mw.log( "EmbedPlayerNative::onSeeking " + this.seeking + ' new time: ' + this.getPlayerElement().currentTime );
 		// Trigger the html5 seeking event
 		//( if not already set from interface )
 		if( !this.seeking ) {
