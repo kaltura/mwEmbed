@@ -2902,32 +2902,25 @@ if( window.jQuery ){
 	 * element does not display child elements, ( images, video )
 	 */
 	$.fn.getAbsoluteOverlaySpinner = function(){
-		var pos = $( this ).offset();
-		
-		var posLeft = ( $( this ).width() ) ?
-			parseInt( pos.left + ( .5 * $( this ).width() ) ) :
-			parseInt( pos.left + ( .5 * $( this ).parent().width() ) );
-
-		var posTop = ( $( this ).height() ) ?
-			parseInt( pos.top + ( .5 * $( this ).height() ) ) :
-			parseInt( pos.top + ( .5 * $( this ).parent().height() ) ) - 2;
-
 		// Set the spin size to "small" ( length 5 ) if video height is small
 		var spinOps = ( $( this ).height() < 36 )? { 'length' : 5, 'width' : 2, 'radius' : 4 }: {};
-			
+		var spinerSize = {
+				'width' : 45, 
+				'height' : 45
+		};
 		var $spinner = $('<div />')
 			.css({
-				'width' : 45,
-				'height' : 45,
+				'width' : spinerSize.width,
+				'height' : spinerSize.height,
 				'position': 'absolute',
-				'top' : posTop + 'px',
-				'left' : posLeft + 'px',
+				'top' : '50%',
+				'left' : '50%',
 				'z-index' : 100
 			})
 			.loadingSpinner(
 				spinOps
 			)
-		$j('body').append( $spinner	);
+		$( this ).append( $spinner	);
 		return $spinner;
 	};
 

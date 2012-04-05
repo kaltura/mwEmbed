@@ -289,6 +289,7 @@
 				}
 				// Add an absolute positioned loader
 				$( element )
+					.parent()
 					.getAbsoluteOverlaySpinner()
 					.attr('id', 'loadingSpinner_' + $( element ).attr('id') )
 					.addClass( 'playerLoadingSpinner' );
