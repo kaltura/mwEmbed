@@ -139,7 +139,9 @@ mw.KAds.prototype = {
 		}
 		
 		// Disable play controls while loading the ad: 
-		_this.embedPlayer.disablePlayControls();
+		if( adType !== 'overlay' ) {
+			_this.embedPlayer.disablePlayControls();
+		}
 		
 		mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
 			if( ! adConf ){
