@@ -1,3 +1,36 @@
+<!--
+	First playlist (pl=0)
+	---------------------
+	1. 1_eb8bcw2s
+	2. 1_sjfe57ui
+
+	Second playlist (pl=1)
+	----------------------
+	1. 1_slywpint
+	2. 1_lg5oexsk
+	3. 1_gju0odse
+	4. 1_g1schbec
+	5. 1_5dfhhowp
+	6. 1_v8qlc4nt
+	7. 1_2nfn0xr7
+	8. 1_8scm462i
+	9. 1_eb8bcw2s
+	10. 1_yeg6a6zk
+
+	Third playlist (pl=2)
+	---------------------
+	1. 1_sjfe57ui
+	2. 1_g1schbec
+	3. 1_8scm462i
+	4. 1_v8qlc4nt
+	5. 1_5dfhhowp
+	6. 1_2nfn0xr7
+	7. 1_eb8bcw2s
+	8. 1_gju0odse
+	9. 1_yeg6a6zk
+	10. 1_lg5oexsk
+	11. 1_slywpint
+-->
 <!DOCTYPE HTML>
 <!-- Example URL: <this_file_location>#pl=1&entryid=1_gju0odse -->
 <html>
@@ -61,8 +94,9 @@
 				var content = mykdp.evaluate('{playlistAPI.dataProvider.content}');
 				var l = content.length;
 				for (var i = l-1; i>=0; i--) {
+					console.log("\n\n\n\n\n\nentry " + i + " id = \n" + content[i].id);
 					if (content[i].entryId == entryid || content[i].id == entryid) {
-						break;
+						//break;
 					}
 				}
 				// if the entry wasn't found, get the first entry.
@@ -113,31 +147,21 @@
 </head>
 
 <body scroll="no">
-
-<!--<object id="kaltura_player" name="kaltura_player_1333531249" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="740" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://prod.kaltura.co.cc/index.php/kwidget/cache_st/1333531249/wid/_1401/uiconf_id/4630731" data="http://prod.kaltura.co.cc/index.php/kwidget/cache_st/1333531249/wid/_1401/uiconf_id/4630731"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://prod.kaltura.co.cc/index.php/kwidget/cache_st/1333531249/wid/_1401/uiconf_id/4630731" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a>  </object>-->
-
-
-<!-- <object id="kaltura_player" 
-		name="kaltura_player"
-		type="application/x-shockwave-flash" allowFullScreen="true"
-		allowNetworking="all" allowScriptAccess="always" height="330"
-		width="740" xmlns:dc="http://purl.org/dc/terms/"
-		xmlns:media="http://search.yahoo.com/searchmonkey/media/"
-		rel="media:video"
-		resource="http://www.kaltura.com/index.php/kwidget/cache_st/1286887860/wid/_321011/uiconf_id/2492121"
-		data="http://www.kaltura.com/index.php/kwidget/cache_st/1286887860/wid/_321011/uiconf_id/2492121">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="playlistAPI.autoInsert=false&playlistAPI.playlistAutoInsert=false&playlistAPI.autoPlay=true"/>
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1286887860/wid/_321011/uiconf_id/2492121" />
-</object> -->
-
-<object id="kaltura_player" name="kaltura_player_1333551397" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="740" bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://prod.kaltura.co.cc/index.php/kwidget/cache_st/1333551397/wid/_1401/uiconf_id/4630731" data="http://prod.kaltura.co.cc/index.php/kwidget/cache_st/1333551397/wid/_1401/uiconf_id/4630731"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://prod.kaltura.co.cc/index.php/kwidget/cache_st/1333551397/wid/_1401/uiconf_id/4630731" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a>  </object>
-
-
-
-		
+	<object id="kaltura_player" 
+			name="kaltura_player"
+			type="application/x-shockwave-flash" allowFullScreen="true"
+			allowNetworking="all" allowScriptAccess="always" height="330"
+			width="740" xmlns:dc="http://purl.org/dc/terms/"
+			xmlns:media="http://search.yahoo.com/searchmonkey/media/"
+			rel="media:video"
+			resource="http://www.kaltura.com/index.php/kwidget/cache_st/1286887860/wid/_321011/uiconf_id/2492121"
+			data="http://www.kaltura.com/index.php/kwidget/cache_st/1286887860/wid/_321011/uiconf_id/2492121">
+		<param name="allowFullScreen" value="true" />
+		<param name="allowNetworking" value="all" />
+		<param name="allowScriptAccess" value="always" />
+		<param name="bgcolor" value="#000000" />
+		<param name="flashVars" value="playlistAPI.autoInsert=false&playlistAPI.playlistAutoInsert=false&playlistAPI.autoPlay=true"/>
+		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1286887860/wid/_321011/uiconf_id/2492121" />
+	</object>
 </body>
 </html>
