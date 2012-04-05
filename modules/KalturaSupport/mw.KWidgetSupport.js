@@ -1014,7 +1014,7 @@ mw.KWidgetSupport.prototype = {
 			}
 		}
 		// Only add flavor sources if no appleMBR flavor exists. 
-		if( $.grep(deviceSources, function(a){ 
+		if( $.grep(deviceSources, function( a ){ 
 				if( a['data-flavorid'] == 'AppleMBR' ){ 
 					return true;
 				}
