@@ -1213,10 +1213,10 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
 	};
 	mw.isIOS4 = function(){
-		return /OS 4_/.test( navigator.userAgent ) && ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
+		return /OS 4_/.test( navigator.userAgent ) && mw.isIOS();
 	};
 	mw.isIOS5 = function(){
-		return /OS 5_/.test( navigator.userAgent ) && ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
+		return /OS 5_/.test( navigator.userAgent ) && mw.isIOS();
 	};
 	mw.isIE9 = function(){
 		return ( /msie 9/.test( navigator.userAgent.toLowerCase() ) );
