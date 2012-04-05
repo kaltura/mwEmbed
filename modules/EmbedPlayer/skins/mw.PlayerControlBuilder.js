@@ -352,19 +352,14 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	* Get the play button css
 	*/
-	getPlayButtonPosition: function( size ) {
+	getPlayButtonPosition: function() {
 		var _this = this;
-		// Set the width to screen's width if in fullscreen
-		if( this.inFullScreen ) {
-			size.width = screen.width;
-		}
-		// Set the offset depending if controls are hidden or displayed: 
-		var pheight = this.getComponentHeight( 'playButtonLarge' );
-		var topCompoentOffset = ( this.isOverlayControls() ) ? pheight : pheight / 2;
 		return {
 			'position' : 'absolute',
-			'left' : ( ( parseInt( size.width ) - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
-			'top' : ( ( parseInt( size.height ) - topCompoentOffset ) / 2 )
+			'left' : '50%',
+			'top' : '50%',
+			'margin-left' : - .5 * this.getComponentWidth( 'playButtonLarge' ),
+			'margin-top' : - .5 * this.getComponentHeight( 'playButtonLarge' )
 		};
 	},
 
@@ -806,7 +801,7 @@ mw.PlayerControlBuilder.prototype = {
 			$interface.find('.playerPoster' ).animate( targetAspectSize  );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large' ).animate(  _this.getPlayButtonPosition( buttonScale ) );
+			$interface.find('.play-btn-large' ).animate(  _this.getPlayButtonPosition() );
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
@@ -832,7 +827,7 @@ mw.PlayerControlBuilder.prototype = {
 			}
 
 			// Update play button pos
-			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition( buttonScale ) );
+			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition() );
 			
 			// if a spinner is displayed re-add to center: 
 			if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
@@ -2195,10 +2190,7 @@ mw.PlayerControlBuilder.prototype = {
 						'class'	: "play-btn-large"
 					} )
 					// Get dynamic position for big play button
-					.css( ctrlObj.getPlayButtonPosition({
-						'width' : ctrlObj.embedPlayer.getWidth(),
-						'height' :  ctrlObj.embedPlayer.getHeight()
-					}) )
+					.css( ctrlObj.getPlayButtonPosition() )
 					// Add play hook:
 					.click( function() {
 						$( this ).remove();

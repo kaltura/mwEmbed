@@ -815,11 +815,11 @@ mw.EmbedPlayer.prototype = {
 				mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
 				// Prevent the native "onPlay" event from propagating that happens when we rewind:
 				this.stopEventPropagation();
-				// Stop for real: 
-				this.stop();
-				
 				// Rewind the player to the start: 
 				this.setCurrentTime(0, function(){
+					// set to stopped state:
+					_this.stop();
+					
 					// Restore events after we rewind the player
 					_this.restoreEventPropagation(); 
 					

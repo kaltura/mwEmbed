@@ -445,7 +445,6 @@ mw.EmbedPlayerNative = {
 			callbackCount = 0;
 		}
 		var vid = this.getPlayerElement();
-		
 		// add a callback handler to null out callback:
 		var callbackHandler = function(){
 			if( $.isFunction( callback ) ){
