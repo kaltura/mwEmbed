@@ -1,3 +1,4 @@
+<!DOCTYPE HTML>
 <!--
 	First playlist (pl=0)
 	---------------------
@@ -30,9 +31,9 @@
 	9. 1_yeg6a6zk
 	10. 1_lg5oexsk
 	11. 1_slywpint
+
+Example URL: <this_file_location>#pl=1&entryid=1_gju0odse 
 -->
-<!DOCTYPE HTML>
-<!-- Example URL: <this_file_location>#pl=1&entryid=1_gju0odse -->
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -65,18 +66,6 @@
 			mykdp.addJsListener("playlistReady", "playlistReadyHandler");
 			mykdp.addJsListener("playlistsListed", "playlistsListedHandler");
 			mykdp.addJsListener("layoutReady", "playlistsListedHandler");
-		}
-		
-		// save the new playlist index to the url hash
-		function indexChangedHandler(data, id) {
-			if (data.newIndex != playlist) {
-				// load a new playlist after the initial one, need to keep it
-				location.hash = "pl=" + data.newIndex;
-			}
-			else {
-				// forget the initial playlist, we don't need it anymore
-				playlist = -1;
-			}
 		}
 		
 		// if have hash data use it, otherwise start playing normally
