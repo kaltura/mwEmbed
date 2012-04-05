@@ -883,9 +883,6 @@ mw.KWidgetSupport.prototype = {
 		}
 		var clipAspect = null;
 		
-		// flag to tell if we added applembr flavor
-		var addedAppleMBRFlavor = false;
-		
 		// Add all avaliable sources: 
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 			var asset = flavorData[i];
@@ -926,7 +923,6 @@ mw.KWidgetSupport.prototype = {
 				var src  = flavorUrl + '/entryId/' + asset.entryId;
 				// Check if Apple http streaming is enabled and the tags include applembr
 				if( asset.tags.indexOf('applembr') != -1 ) {
-					addedAppleMBRFlavor = true;
 					src += '/format/applehttp/protocol/' + protocol + '/a.m3u8';
 					
 					deviceSources.push({
@@ -1017,9 +1013,13 @@ mw.KWidgetSupport.prototype = {
 				iphoneAdaptiveFlavors.push( asset.id );
 			}
 		}
-		
-		// We don't need adaptive flavors (iphonenew/ipadnew) if we already added applembr flavor
-		if( ! addedAppleMBRFlavor ) {
+		// Only add flavor sources if no appleMBR flavor exists. 
+		if( $.grep(deviceSources, function(a){ 
+				if( a['data-flavorid'] == 'AppleMBR' ){ 
+					return true;
+				}
+			}).length  == 0
+		) {
 			// Create iPad flavor for Akamai HTTP if we have more than one flavor
 			if( ipadAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
 				deviceSources.push({
