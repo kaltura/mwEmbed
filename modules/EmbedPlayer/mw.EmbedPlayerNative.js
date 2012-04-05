@@ -448,14 +448,15 @@ mw.EmbedPlayerNative = {
 		
 		// add a callback handler to null out callback:
 		var callbackHandler = function(){
-			if( callback && $.isFunction( callback ) ){
+			if( $.isFunction( callback ) ){
 				callback();
 				callback = null;
 			}
 		}
 		// Check if player is ready for seek:
 		if( vid.readyState < 1 ){
-			if( callbackCount >= 400 ){
+			// Try to seek for 4 seconds: 
+			if( callbackCount >= 40 ){
 				mw.log("Error:: EmbedPlayerNative: with seek request, media never in ready state");
 				callbackHandler();
 				return ;
@@ -470,11 +471,15 @@ mw.EmbedPlayerNative = {
 			callbackHandler();
 			return;
 		}
+		// setup a namespaced seek bind: 
+		var seekBind = 'seeked.nativeSeekBind';
 		
-		// Setup a local function callback for successful seek
-		var once = function( event ) {
-			// Remove the listner:
-			vid.removeEventListener( 'seeked', once, false );
+		// Remove any old listeners
+		$( vid ).unbind( seekBind );
+		// Bind a seeked listener for the callback
+		$( vid ).bind( seekBind, function( event ) {
+			// Remove the listener:
+			$( vid ).unbind( seekBind );
 			
 			// Check if seeking to zero: 
 			if( seekTime == 0 && vid.currentTime == 0 ){
@@ -488,10 +493,13 @@ mw.EmbedPlayerNative = {
 			} else {
 				mw.log( "Error:: seek callback without time updatet " + vid.currentTime );
 			}
-		};
-		
-		// Assume we will get to add the Listener before the seek is done
-		vid.addEventListener( 'seeked', once, false );
+		});
+		setTimeout(function(){
+			if( $.isFunction( callback ) ){
+				mw.log( "Error:: Seek still has not made a callback after 5 seconds, retry");
+				_this.setCurrentTime( seekTime, callback , callbackCount++ );
+			}
+		}, 5000);
 		
 		// Try to update the playerElement time: 
 		try {
@@ -878,7 +886,7 @@ mw.EmbedPlayerNative = {
 	* fired when "seeking"
 	*/
 	_onseeking: function() {
-		mw.log( "EmbedPlayerNative::onSeeking " + this.seeking);
+		mw.log( "EmbedPlayerNative::onSeeking " + this.seeking + ' new time: ' + this.getPlayerElement().currentTime );
 		// Trigger the html5 seeking event
 		//( if not already set from interface )
 		if( !this.seeking ) {
