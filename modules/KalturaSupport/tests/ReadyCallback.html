@@ -35,8 +35,8 @@
 			alert( "kWidget player ready: " + playerId );
 			var kdp = document.getElementById( playerId );
 			kdp.addJsListener( 'doPlay', 'doPlayCallback');
-			kdp.addJsListener( 'onOpenFullScreen', 'openFull');
-			kdp.addJsListener( 'onCloseFullScreen', 'closeFull');
+			kdp.addJsListener( 'openFullScreen', 'openFull');
+			kdp.addJsListener( 'closeFullScreen', 'closeFull');			
 		}
 	});
 </script>
