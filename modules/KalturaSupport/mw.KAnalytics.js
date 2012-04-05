@@ -13,9 +13,7 @@ mw.KAnalytics = function( embedPlayer ){
 
 // Add analytics to the embed player: 
 mw.addKAnalytics = function( embedPlayer ) {
-	if( ! embedPlayer.kAnalytics ) {
-		embedPlayer.kAnalytics = new mw.KAnalytics( embedPlayer );
-	}
+	embedPlayer.kAnalytics = new mw.KAnalytics( embedPlayer );
 }
 
 mw.KAnalytics.prototype = {
@@ -32,6 +30,8 @@ mw.KAnalytics.prototype = {
 	// Stores the last time we issued a seek event
 	// avoids sending lots of seeks while scrubbing 
 	lastSeekEventTime: 0,
+	
+	bindPostFix: '.kAnalytics',
 	
 	// Start Time
 	startReportTime: 0, 
@@ -74,28 +74,28 @@ mw.KAnalytics.prototype = {
 	 * 			kalturaClient Kaltura client object for the api session.  
 	 */
 	init: function( embedPlayer ) {
-	
 		// Setup the local reference to the embed player
 		this.embedPlayer = embedPlayer;
 		if( ! this.kClient ) {
 			this.kClient = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
 		}
+		// Remove any old bindings: 
+		$( embedPlayer ).unbind( this.bindPostFix );
 		
 		// Setup the initial state of some flags
+		this.resetPlayerflags();
+		
+		// Add relevant hooks for reporting beacons
+		this.bindPlayerEvents();		
+	},
+	resetPlayerflags:function(){
 		this._p25Once = false;
 		this._p50Once = false;
 		this._p75Once = false;
 		this._p100Once = false;
 		this.hasSeeked = false;
 		this.lastSeek = 0;
-		
-		// Setup the stats service
-		//this.kalturaCollector = new KalturaStatsService( kalturaClient );
-		
-		// Add relevant hooks for reporting beacons
-		this.bindPlayerEvents();		
 	},
-	
 	/**
 	 * Get the current report set
 	 * 
@@ -185,7 +185,7 @@ mw.KAnalytics.prototype = {
 		
 		// Setup shortcut anonymous function for player bindings
 		var b = function( hookName, eventType ){
-			$( _this.embedPlayer ).bind( hookName, function(){
+			$( _this.embedPlayer ).bind( hookName + _this.bindPostFix, function(){
 				_this.sendAnalyticsEvent( eventType );
 			});
 		};
@@ -223,7 +223,7 @@ mw.KAnalytics.prototype = {
 		b( 'replayEvent', 'REPLAY' );	
 	
 		// Bind on the seek event
-		$( embedPlayer ).bind( 'seeked', function( seekTarget ) {
+		$( embedPlayer ).bind( 'seeked' + this.bindPostFix, function( seekTarget ) {
 			// Don't send a bunch of seeks on scrub:
 			if( _this.lastSeekEventTime == 0 || 
 				_this.lastSeekEventTime + 2000	< new Date().getTime() )
@@ -241,7 +241,7 @@ mw.KAnalytics.prototype = {
 		
 		// Let updateTimeStats handle the currentTime monitor timing
 
-		$( embedPlayer ).bind( 'monitorEvent', function(){
+		$( embedPlayer ).bind( 'monitorEvent' + this.bindPostFix, function(){
 			_this.updateTimeStats();			
 		}); 
 				
