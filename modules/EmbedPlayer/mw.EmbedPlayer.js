@@ -759,6 +759,9 @@ mw.EmbedPlayer.prototype = {
 	 */
 	setCurrentTime: function( time, callback ) {
 		mw.log( 'Error: setCurrentTime not overriden' );
+		if( $.isFunction( callback ) ){
+			callback();
+		}
 	},
 
 	/**
@@ -814,28 +817,33 @@ mw.EmbedPlayer.prototype = {
 				this.stopEventPropagation();
 				// Stop for real: 
 				this.stop();
-				// Restore events after we rewind the player
-				this.restoreEventPropagation(); 
 				
-				this.serverSeekTime = 0;
-				this.updatePlayHead( 0 );
-				
-				// Check if we have the "loop" property set
-				if( this.loop ) {
-					this.play();
-					return;
-				}
-				// Check if we should hide the large play button on end: 
-				if( $( this ).data( 'hideEndPlayButton' ) ){
-					this.$interface.find('.play-btn-large').hide();
-				}
-				
-				// An event for once the all ended events are done.
-				mw.log("EmbedPlayer:: trigger: onEndedDone");
-				if ( !this.triggeredEndDone ){
-					this.triggeredEndDone = true;
-					$( this ).trigger( 'onEndedDone' );
-				}				
+				// Rewind the player to the start: 
+				this.setCurrentTime(0, function(){
+					// Restore events after we rewind the player
+					_this.restoreEventPropagation(); 
+					
+					// Check if we have the "loop" property set
+					if( _this.loop ) {
+						_this.play();
+						return;
+					} else {
+						// make sure we are in a paused state. 
+						_this.pause();
+					}
+					// Check if we should hide the large play button on end: 
+					if( $( _this ).data( 'hideEndPlayButton' ) ){
+						__this.$interface.find('.play-btn-large').hide();
+					} else {
+						_this.addPlayBtnLarge();
+					}
+					// An event for once the all ended events are done.
+					mw.log("EmbedPlayer:: trigger: onEndedDone");
+					if ( !_this.triggeredEndDone ){
+						_this.triggeredEndDone = true;
+						$( _this ).trigger( 'onEndedDone' );
+					}		
+				})
 			}
 		}
 	},
@@ -1475,9 +1483,8 @@ mw.EmbedPlayer.prototype = {
 		if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') && mw.isIphone() ) {
 			return ;
 		}
-		
-		if( this.$interface.find( '.play-btn-large').length ){
-			this.$interface.find( '.play-btn-large').show();
+		if( this.$interface.find( '.play-btn-large' ).length ){
+			this.$interface.find( '.play-btn-large' ).show();
 		} else {
 			this.$interface.append( 
 				this.controlBuilder.getComponent( 'playButtonLarge' )
