@@ -2,22 +2,47 @@
 <html>
 <head>
 <title>ReadyCallback Test</title>
-<script type="text/javascript" src="http://cdnsecakmi.kaltura.com/html5/html5lib/v1.6.9.6/mwEmbedLoader.php?debug=true"></script>
-<script type="text/javascript">
-	function jsCallbackReady( playerId ) {
-		$( "#" + playerId ).bind('onOpenFullScreen', function() {
-			alert('Fullscreen opened');
-		});
-		$( "#" + playerId ).bind('onCloseFullScreen', function() {
-			alert('Fullscreen closed');
-		});
-	}
-</script>
+<script type="text/javascript" src="http://cdnbakmi.kaltura.com/html5/html5lib/v1.6.10.4/mwEmbedLoader.php"></script>
 </head>
 <body>
 <h2> ReadyCallback Test </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
+<div id="myVideoTarget" style="width:400px;height:257px;"></div>
+<script type="text/javascript">
+	window['doPlayCallback'] = function( playerId ) {
+		console.log( 'kwidget doPlayCallback ' + playerId );
+		alert( 'kwidget doPlayCallback ' + playerId );
+	};
+	window['openFull'] = function() {
+		console.log( 'Entering full screen' );
+		alert( 'Entering full screen' );
+	}
+	window['closeFull'] = function() {
+		console.log( 'Exiting full screen' );
+		alert( 'Exiting full screen' );
+	}
+	kWidget.embed({
+		'targetId': 'myVideoTarget',
+		'wid': '_861182',
+		'uiconf_id' : '7645091',
+		'entry_id' : '1_wjdhr96i',
+		'flashvars':{
+			'externalInterfaceDisabled' : false,
+			'autoPlay' : true
+		},
+		'readyCallback': function( playerId ){
+			alert( "kWidget player ready: " + playerId );
+			var kdp = document.getElementById( playerId );
+			kdp.addJsListener( 'doPlay', 'doPlayCallback');
+			kdp.addJsListener( 'onOpenFullScreen', 'openFull');
+			kdp.addJsListener( 'onCloseFullScreen', 'closeFull');
+		}
+	});
+</script>
+
+<!-- Static player
+
 <object id="kaltura_player_1332852244"
 	name="kaltura_player_1332852244"
 	type="application/x-shockwave-flash"
@@ -38,6 +63,7 @@
 	<param name="bgcolor" value="#000000" />
 	<param name="flashVars" value="&" />
 	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1332852244/wid/_861182/uiconf_id/7645091/entry_id/1_wjdhr96i" />
-</object>
+</object>-->
+
 </body>
 </html>
