@@ -466,7 +466,7 @@ mw.EmbedPlayerNative = {
 			return ;
 		}
 		// Check if currentTime is already set to the seek target: 
-		if( vid.currentTime == seekTime ){
+		if( vid.currentTime.toFixed(2) == seekTime.toFixed(2) ){
 			callbackHandler();
 			return;
 		}
@@ -515,7 +515,7 @@ mw.EmbedPlayerNative = {
 			vid.play();
 			setTimeout(function(){
 				_this.waitForPositiveCurrentTime( function(){
-					mw.log("EmbedPlayerNative:: Trying to seek again");
+					mw.log("EmbedPlayerNative:: Got possitive time:" + vid.currentTime + ", trying to seek again");
 					_this.setCurrentTime( seekTime , callback, callbackCount );
 				});
 			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
