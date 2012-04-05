@@ -123,7 +123,7 @@ mw.IFramePlayerApiClient.prototype = {
 			if( !$('meta[name="viewport"]').length ){
 				$('head').append( $( '<meta />' ).attr('name', 'viewport') );
 			}
-			$('meta[name="viewport"]').attr('content', 'initial-scale=1;' );
+			$('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=1; minimum-scale=1;' );
 			
 			// iPad 5 supports fixed position in a bad way, use absolute pos for iOS
 			var playerCssPosition = ( mw.isIOS() ) ? 'absolute': 'fixed';
