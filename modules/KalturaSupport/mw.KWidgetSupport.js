@@ -1013,8 +1013,8 @@ mw.KWidgetSupport.prototype = {
 				iphoneAdaptiveFlavors.push( asset.id );
 			}
 		}
-		// Only add flavor sources if no appleMBR flavor exists. 
-		if( $.grep(deviceSources, function( a ){ 
+		// Only add flavor sources if no appleMBR flavor exists and Kaltura.UseFlavorIdsUrls
+		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') && $.grep(deviceSources, function( a ){ 
 				if( a['data-flavorid'] == 'AppleMBR' ){ 
 					return true;
 				}
