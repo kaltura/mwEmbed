@@ -467,9 +467,9 @@ mw.PlayerControlBuilder.prototype = {
 		if( embedPlayer.playlist && ! this.inFullScreen ){
 			embedPlayer.playlist.syncPlayerSize();
 		} else {
-			if( $( embedPlayer ).width() != $(window).width() ){
+			//if( $( embedPlayer ).width() != $(window).width() ){
 				embedPlayer.resizePlayer( this.getWindowSize() );
-			};
+			//}
 		}
 	},
 	getWindowSize: function(){
