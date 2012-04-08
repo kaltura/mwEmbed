@@ -494,6 +494,7 @@ class kalturaIframe {
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Kaltura Embed Player iFrame</title>
 		<style type="text/css">
+			html { margin: 0; padding: 0; width: 100%; height: 100%; }
 			body {
 				margin:0;
 				position:fixed;
@@ -544,7 +545,7 @@ class kalturaIframe {
 				#videoContainer {
 					position: absolute;
 					width: 100%;
-					height: 100%;
+					min-height: 100%;
 				}
 				#directFileLinkContainer{
 					position:abolute;

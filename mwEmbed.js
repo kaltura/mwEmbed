@@ -2919,7 +2919,7 @@ if( window.jQuery ){
 			})
 			.loadingSpinner(
 				spinOps
-			)
+			);
 		$( this ).append( $spinner	);
 		return $spinner;
 	};

@@ -564,7 +564,7 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		// Hide any loading spinner
 		this.embedPlayer.hidePlayerSpinner();
-		
+		this.embedPlayer.pause();
 		// include a timeout for the pause event to propagate
 		setTimeout( function(){
 			// make sure the embed player is "paused" 
