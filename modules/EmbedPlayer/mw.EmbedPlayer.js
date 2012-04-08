@@ -890,12 +890,6 @@ mw.EmbedPlayer.prototype = {
 
 		// If a isPersistentNativePlayer ( overlay the controls )
 		if( !this.useNativePlayerControls() && this.isPersistentNativePlayer() ){
-			this.$interface.css({
-				'position' : 'absolute',
-				'top' : '0px',
-				'left' : '0px',
-				'background': null
-			});
 			$( this ).show();
 		}
 		// Add controls if enabled:
@@ -950,10 +944,14 @@ mw.EmbedPlayer.prototype = {
 		}
 	},
 	getPlayerInterface: function(){
-		if( !this.$interface ){
+		if( !this.$interface ){		
 			var posObj = {
-					'width' : this.width + 'px',
-					'height' : this.height + 'px'
+				'width' : this.width + 'px',
+				'height' : this.height + 'px',
+				'position' : 'absolute',
+				'top' : '0px',
+				'left' : '0px',
+				'background': null					
 			};
 			if( !mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
 				posObj['position'] = 'relative';
