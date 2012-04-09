@@ -36,6 +36,9 @@ mw.DolStatistics.prototype = {
 		this.eventsList = eventList.split(",");
 		
 		mw.log( 'DolStatistics:: eventList:' + this.eventsList );
+		
+		// Export the media type on plugin init so any dispatched  events can reference mediaTypeName 
+		this.embedPlayer.setKalturaConfig( this.pluginName, 'mediaTypeName', this.getMediaTypeName() );
 
 		//Setup player counter, ( used global, because on change media we re-initialize the plugin and reset all vars
 		if( typeof this.getConfig('playbackCounter') == 'undefined' ) {
@@ -246,7 +249,7 @@ mw.DolStatistics.prototype = {
 		// App name
 		params['app'] = _this.getConfig('APP') || this.appName;
 		// The asset id: 
-		params['ASSETNAME'] = _this.getMediaType() + _this.getConfig('ASSETNAME');
+		params['ASSETNAME'] = _this.getConfig('ASSETNAME');
 		// Kaltura Event name
 		params['KDPEVNT'] = eventName;
 		// KDP Event Data
@@ -340,7 +343,7 @@ mw.DolStatistics.prototype = {
 	/**
 	 * get a media type string acorrding to dol mapping. 
 	 */
-	getMediaType: function(){
+	getMediaTypeName: function(){
 		// Get the media type: 
 		var mediaType = this.embedPlayer.evaluate('{mediaProxy.entry.mediaType}');
 		switch( mediaType ){
