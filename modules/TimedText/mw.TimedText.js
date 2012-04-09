@@ -1096,13 +1096,7 @@ mw.includeAllModuleMessages();
 				$captionsOverlayTarget = $( '<div />' )
 				 	.addClass( 'captionsOverlay' )
 					.css( layoutCss )
-					.bind ( 'click' + _this.bindPostFix, function() { 
-						if( _this.embedPlayer.paused ) {
-							_this.embedPlayer.play();
-						} else {
-							_this.embedPlayer.pause();
-						}
-					} );					
+					.css('pointer-events', 'none');
 				this.embedPlayer.$interface.append( $captionsOverlayTarget );					
                 this.resizeInterface();
 			}
