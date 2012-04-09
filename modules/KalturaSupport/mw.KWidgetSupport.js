@@ -881,28 +881,20 @@ mw.KWidgetSupport.prototype = {
 			var flavorUrl = mw.getConfig('Kaltura.CdnUrl') + '/p/' + partnerId +
 				   '/sp/' +  partnerId + '00/flvclipper';
 		}
-		var clipAspect = null;
 		
 		// Add all avaliable sources: 
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 			var asset = flavorData[i];
 			var entryId = asset.entryId;
 			
-			var newAspect = Math.round( ( asset.width / asset.height )  * 100 )  / 100
-			if( clipAspect !== null && clipAspect != newAspect ){
-				mw.log("KWidgetSupport:: Possible Error clipApsect mispach: " + clipAspect + " != " + newAspect );
-			}
-			if( ! isNaN( newAspect) ){
-				clipAspect = newAspect;
-			}
-			
+			var sourceAspect = Math.round( ( asset.width / asset.height )  * 100 )  / 100
 			// Setup a source object:
 			var source = {
 				'data-sizebytes' : asset.size * 1024,
 				'data-bandwidth' : asset.bitrate * 1024,
 				'data-width' : asset.width,
 				'data-height' : asset.height,
-				'data-aspect' : clipAspect
+				'data-aspect' : sourceAspect // not all sources have valid aspect ratios
 			};
 			
 			// Continue if clip is not ready (2) and not in a transcoding state (4 )
@@ -926,7 +918,7 @@ mw.KWidgetSupport.prototype = {
 					src += '/format/applehttp/protocol/' + protocol + '/a.m3u8';
 					
 					deviceSources.push({
-						'data-aspect' : clipAspect,
+						'data-aspect' : sourceAspect,
 						'data-flavorid' : 'AppleMBR',
 						'type' : 'application/vnd.apple.mpegurl',
 						'src' : src
@@ -1012,7 +1004,18 @@ mw.KWidgetSupport.prototype = {
 				ipadAdaptiveFlavors.push( asset.id );
 				iphoneAdaptiveFlavors.push( asset.id );
 			}
+		} // end source loop
+		
+		// Make sure all the sources have valid aspect ratios ( if not get from other sources )
+		for( var i=0; i < deviceSources.length; i++ ){
+			var source = deviceSources[i];
+			
+			if( ! this.isValidAspect( source['data-aspect'] ) ){
+				source['data-aspect'] = this.getValidAspect( deviceSources );
+			}
+			mw.log( "KWidgetSupport:: set aspect for: " + source['data-flavorid'] + ' = ' + source['data-aspect'] );
 		}
+		
 		// Only add flavor sources if no appleMBR flavor exists and Kaltura.UseFlavorIdsUrls
 		if( mw.getConfig('Kaltura.UseFlavorIdsUrls') && $.grep(deviceSources, function( a ){ 
 				if( a['data-flavorid'] == 'AppleMBR' ){ 
@@ -1020,10 +1023,11 @@ mw.KWidgetSupport.prototype = {
 				}
 			}).length  == 0
 		) {
+			var validClipAspect = this.getValidAspect( deviceSources );
 			// Create iPad flavor for Akamai HTTP if we have more than one flavor
 			if( ipadAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
 				deviceSources.push({
-					'data-aspect' : clipAspect,
+					'data-aspect' : validClipAspect,
 					'data-flavorid' : 'iPadNew',
 					'type' : 'application/vnd.apple.mpegurl',
 					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + ipadAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
@@ -1032,7 +1036,7 @@ mw.KWidgetSupport.prototype = {
 			// Create iPhone flavor for Akamai HTTP
 			if( iphoneAdaptiveFlavors.length > 1 && mw.getConfig('Kaltura.UseAppleAdaptive') ) {
 				deviceSources.push({
-					'data-aspect' : clipAspect,
+					'data-aspect' : validClipAspect,
 					'data-flavorid' : 'iPhoneNew',
 					'type' : 'application/vnd.apple.mpegurl',
 					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
@@ -1055,7 +1059,23 @@ mw.KWidgetSupport.prototype = {
 		
 		return deviceSources;
 	},
-
+	getValidAspect: function( sources ){
+		var _this = this;
+		for( var i=0; i < sources.length; i++ ){
+			var source = sources[i];
+			var aspect = source['data-aspect'];
+			if( this.isValidAspect( aspect ) ){
+				// return valid aspect and exit out of the loop:
+				return aspect;
+			}
+		};
+		// Always return a valid apsect ( assume default aspect if none is found ) 
+		var aspectParts = mw.getConfig( 'EmbedPlayer.DefaultSize' ).split( 'x' );
+		return  Math.round( ( aspectParts[0] / aspectParts[1]) * 100 ) / 100;;
+	},
+	isValidAspect: function( aspect ){
+		return  ! isNaN( aspect) && isFinite( aspect );
+	},
 	generateGUID: function() {
 		var S4 = function() {
 		   return (((1+Math.random())*0x10000)|0).toString(16).substring(1);

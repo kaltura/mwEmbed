@@ -318,7 +318,7 @@ mw.PlayerControlBuilder.prototype = {
 	 * 			size object with width and height
 	 */
 	getIntrinsicAspect: function(){
-		var vid = this.embedPlayer.getPlayerElement()
+		var vid = this.embedPlayer.getPlayerElement();
 		// Check for raw intrinsic media size: 
 		if( vid && vid.videoWidth && vid.videoHeight ){
 			return vid.videoWidth / vid.videoHeight;
