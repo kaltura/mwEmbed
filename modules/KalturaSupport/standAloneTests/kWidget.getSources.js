@@ -62,6 +62,14 @@ if( ! window.kWidget ){
 			// Check if Apple http streaming is enabled and the tags include applembr ( single stream HLS )
 			if( asset.tags.indexOf('applembr') != -1 ) {
 				src += '/format/applehttp/protocol/'+ protocol + '/a.m3u8';
+				
+				deviceSources.push({
+					'data-flavorid' : 'AppleMBR',
+					'type' : 'application/vnd.apple.mpegurl',
+					'src' : src
+				});
+				
+				continue;
 			} else {
 				src += '/flavorId/' + asset.id + '/format/url/protocol/' + protocol;
 			}

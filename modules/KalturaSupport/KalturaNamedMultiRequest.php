@@ -7,6 +7,7 @@ class KalturaNamedMultiRequest {
 	var $requestInx;
 	function __construct( $client, $defaultParams = array() ) {	
 		$this->client = $client;
+		$client->startMultiRequest();
 		$this->defualt_params = $defaultParams;
 		$this->requestInx = array();
 	}
@@ -15,7 +16,7 @@ class KalturaNamedMultiRequest {
 		foreach( $params as $pKey => $pVal ){
 			$this->client->addParam($kparams, $pKey, $pVal );
 		}
-		$this->client->queueServiceActionCall($service, $action, $kparams );
+		$this->client->queueServiceActionCall( $service, $action, $kparams );
 		$this->requestInx[ count( $this->requestInx ) ] = $name;
 		return count( $this->requestInx );
 	}

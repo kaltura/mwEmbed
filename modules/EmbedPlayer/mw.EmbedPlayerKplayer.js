@@ -12,6 +12,8 @@ mw.EmbedPlayerKplayer = {
 
 	// Instance name:
 	instanceOf : 'Kplayer',
+	
+	bindPostfix: '.kPlayer',
 
 	// List of supported features:
 	supports : {
@@ -33,9 +35,10 @@ mw.EmbedPlayerKplayer = {
 	embedPlayerHTML : function() {
 		var _this = this;
 
-		mw.log("kPlayer:: embed src::" + _this.getSrc());
+		mw.log("EmbedPlayerKplayer:: embed src::" + _this.getSrc());
 		var flashvars = {};
 		flashvars.autoPlay = "true";
+		flashvars.loop = "false";
 
 		var playerPath = mw.getMwEmbedPath() + 'modules/EmbedPlayer/binPlayers/kaltura-player';
 		flashvars.entryId = mw.absoluteUrl( _this.getSrc() );
@@ -91,12 +94,14 @@ mw.EmbedPlayerKplayer = {
 				},
 				flashvars
 		)
+		// Remove any old bindings: 
+		$(_this).unbind( this.bindPostfix );
 		
 		// Flash player loses its bindings once it changes sizes::
-		$(_this).bind('onOpenFullScreen', function() {
+		$(_this).bind('onOpenFullScreen' + this.bindPostfix , function() {
 			_this.postEmbedActions();
 		});
-		$(_this).bind('onCloseFullScreen', function() {
+		$(_this).bind('onCloseFullScreen' + this.bindPostfix, function() {
 			_this.postEmbedActions();
 		});
 	},
@@ -110,7 +115,6 @@ mw.EmbedPlayerKplayer = {
 	postEmbedActions : function() {
 		var _this = this;
 		this.getPlayerElement();
-		
 		if ( this.playerElement && this.playerElement.addJsListener ) {
 			var bindEventMap = {
 				'playerPaused' : 'onPause',
@@ -137,7 +141,7 @@ mw.EmbedPlayerKplayer = {
 			}
 			setTimeout(function() {
 				_this.postEmbedActions();
-			}, 10);
+			}, 100);
 		}
 	},
 
@@ -152,19 +156,26 @@ mw.EmbedPlayerKplayer = {
 	 *            function callback name
 	 */
 	bindPlayerFunction : function(bindName, methodName) {
+		mw.log( 'EmbedPlayerKplayer:: bindPlayerFunction:' + bindName );
 		// The kaltura kdp can only call a global function by given name
 		var gKdpCallbackName = 'kdp_' + methodName + '_cb_' + this.id.replace(/[^a-zA-Z 0-9]+/g,'');
 
 		// Create an anonymous function with local player scope
 		var createGlobalCB = function(cName, embedPlayer) {
 			window[ cName ] = function(data) {
+				// Track all events ( except for playerUpdatePlayhead ) 
+				if( bindName != 'playerUpdatePlayhead' ){
+					mw.log("EmbedPlayerKplayer:: event: " + bindName);
+				}
 				if ( embedPlayer._propagateEvents ) {
 					embedPlayer[methodName](data);
 				}
 			};
 		}(gKdpCallbackName, this);
+		// Remove the listener ( if it exists already )
+		this.playerElement.removeJsListener( bindName, gKdpCallbackName );
 		// Add the listener to the KDP flash player:
-		this.playerElement.addJsListener(bindName, gKdpCallbackName);
+		this.playerElement.addJsListener( bindName, gKdpCallbackName);
 	},
 
 	/**
@@ -211,7 +222,7 @@ mw.EmbedPlayerKplayer = {
 		this.parent_pause();
 	},
 	/**
-	 * playerSwichSource switches the player source working around a few bugs in browsers
+	 * playerSwitchSource switches the player source working around a few bugs in browsers
 	 * 
 	 * @param {object}
 	 *            source Video Source object to switch to.
@@ -220,12 +231,12 @@ mw.EmbedPlayerKplayer = {
 	 * @param {function}
 	 *            doneCallback Function to call once the clip has completed playback
 	 */
-	playerSwichSource: function( source, switchCallback, doneCallback ){
+	playerSwitchSource: function( source, switchCallback, doneCallback ){
 		var _this = this;
 		var waitCount = 0;
 		var src = source.getSrc();
 		// Check if the source is already set to the target:
-		if( !src || src == this.getSrc ){
+		if( !src || src == this.getSrc() ){
 			if( switchCallback ){
 				switchCallback();
 			}
@@ -242,7 +253,7 @@ mw.EmbedPlayerKplayer = {
 			} else {
 				// waited for 2 seconds fail
 				if( waitCount > 20 ){
-					mw.log( "Error: Failed to swtich player source");
+					mw.log( "Error: Failed to swtich player source!");
 					if( switchCallback )
 						switchCallback();
 					if( doneCallback )
@@ -258,24 +269,41 @@ mw.EmbedPlayerKplayer = {
 		};
 		// wait for jslistener to be ready:
 		waitForJsListen( function(){
-			var gPlayerReady = 'kdp_' + _this.id + '_switchSrcReady';
-			var gDoneName = 'kdp_' + _this.id + '_switchSrcEnd';
+			var gPlayerReady = 'kdp_switch_' + _this.id + '_switchSrcReady';
+			var gDoneName = 'kdp_switch_' + _this.id + '_switchSrcEnd';
+			var gChangeMedia =  'kdp_switch_' + _this.id + '_changeMedia';
 			window[ gPlayerReady ] = function(){
-				mw.log("Kplayer switchPlaySource: " + src);
+				mw.log("EmbedPlayerKplayer:: playerSwitchSource: " + src);
+				// remove the binding as soon as possible ( we only want this event once )  
+				_this.getPlayerElement().removeJsListener( 'playerReady', gPlayerReady );
 				
 				_this.getPlayerElement().sendNotification("changeMedia", { 'entryId': src } );
-				_this.monitor();
-				switchCallback( _this );
+				
+				window[ gChangeMedia ] = function (){
+					mw.log("EmbedPlayerKplayer:: Media changed: " + src);
+					if( $.isFunction( switchCallback) ){
+						switchCallback( _this );
+						switchCallback = null
+					}
+					// restore monitor: 
+					_this.monitor();
+				}
+				// Add change media binding
+				_this.getPlayerElement().removeJsListener('changeMedia', gChangeMedia);
+				_this.getPlayerElement().addJsListener( 'changeMedia', gChangeMedia);
 				
 				window[ gDoneName ] = function(){
-					if( doneCallback )
+					if( $.isFunction( doneCallback ) ){
 						doneCallback();
+						doneCallback = null;
+					}
 				};
+				_this.getPlayerElement().removeJsListener('playerPlayEnd', gDoneName);
 				_this.getPlayerElement().addJsListener( 'playerPlayEnd', gDoneName);
 			};
-			// This is very fragile..it sucks we can't use 
+			// Remove then add the event: 
+			_this.getPlayerElement().removeJsListener( 'playerReady', gPlayerReady );
 			_this.getPlayerElement().addJsListener( 'playerReady', gPlayerReady );
-		
 		});
 	},
 	
@@ -343,7 +371,7 @@ mw.EmbedPlayerKplayer = {
 	 *            percentage Percentage of the stream to seek to between 0 and 1
 	 */
 	doPlayThenSeek : function(percentage) {
-		mw.log('flash::doPlayThenSeek::');
+		mw.log('EmbedPlayerKplayer::doPlayThenSeek::');
 		var _this = this;
 		// issue the play request
 		this.play();
@@ -368,7 +396,7 @@ mw.EmbedPlayerKplayer = {
 					setTimeout(readyForSeek, 50);
 					getPlayerCount++;
 				} else {
-					mw.log('Error:doPlayThenSeek failed');
+					mw.log('Error: doPlayThenSeek failed');
 				}
 			}
 		};

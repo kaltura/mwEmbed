@@ -241,7 +241,7 @@
 		evaluate: function( embedPlayer, objectString ){
 			var _this = this;
 			var result;
-			if( typeof objectString != 'string'){
+			if( typeof objectString !== 'string'){
 				return objectString;
 			}
 			// Check if a simple direct evaluation: 
@@ -260,7 +260,7 @@
 				return result;
 			}
 			// Return undefined to string: undefined, null, ''
-			if( result === "undefined" || result === "null" || result == "" )
+			if( result === "undefined" || result === "null" || result === "" )
 				result = undefined;
 
 			if( result === "false"){
@@ -300,15 +300,17 @@
 			
 			// Check the exported kaltura object ( for manual overrides of any mapping ) 
 			if( embedPlayer.playerConfig
-					&&  
-				embedPlayer.playerConfig[ objectPath[0] ] 
+					&&
+				embedPlayer.playerConfig.plugins
+					&&
+				embedPlayer.playerConfig.plugins[ objectPath[0] ] 
 			){
-				var kObj = embedPlayer.playerConfig[ objectPath[0] ] ;
+				var kObj = embedPlayer.playerConfig.plugins[ objectPath[0] ] ;
 				// TODO SHOULD USE A FUNCTION map
 				if( !objectPath[1] ){
 					return kObj;
 				}
-				if( !objectPath[2] && kObj[ objectPath[1] ] ){
+				if( !objectPath[2] && (objectPath[1] in kObj) ){
 					return kObj[ objectPath[1] ];
 				}
 				if( objectPath[2] && kObj[ objectPath[1] ] && kObj[ objectPath[1] ][ objectPath[2] ]  ){
@@ -408,15 +410,17 @@
 					}
 				break;
 				case 'configProxy':
+					// get flashvars from playerConfig where possible
+					// TODO deprecate $( embedPlayer ).data('flashvars');
+					var fv;
+					if( embedPlayer.playerConfig && embedPlayer.playerConfig['vars'] ){
+						fv = embedPlayer.playerConfig['vars'];
+					} else {
+						fv = $( embedPlayer ).data('flashvars');
+					}
 					switch( objectPath[1] ){
 						case 'flashvars':
 							if( objectPath[2] ) {
-								var fv;
-								if( embedPlayer.playerConfig && embedPlayer.playerConfig['vars'] ){
-									fv = embedPlayer.playerConfig['vars'];
-								} else {
-									fv = $( embedPlayer ).data('flashvars');
-								}
 								switch( objectPath[2] ) {
 									case 'autoPlay':
 										// get autoplay
@@ -439,15 +443,19 @@
 								}
 							} else {
 								// Get full flashvars object
-								return $( embedPlayer ).data( 'flashvars' );
+								return fv;
 							}
 						break;
 						case 'sessionId':
 							return window.kWidgetSupport.getGUID();
 						break;
 					}
-					// no objectPath[1] match return the full configProx object: 
-					return {'flashvars' : $( embedPlayer ).data( 'flashvars' )}
+					// No objectPath[1] match return the full configProx object: 
+					// TODO I don't think this is supported in KDP ( we might want to return null instead )
+					return { 
+							'flashvars' : fv,
+							'sessionId' : window.kWidgetSupport.getGUID()
+						};
 				break;	
 				case 'playerStatusProxy':
 					switch( objectPath[1] ){
@@ -610,8 +618,9 @@
 				case 'doPause':
 					b( "onpause" );
 					break;
-					
 				case 'playerPlayed':
+					b( "playing" );
+					break;
 				case 'play':
 				case 'doPlay':
 					b( "onplay" );
@@ -741,10 +750,14 @@
 				 *  TODO move to AdTimeline.js ( not in core KDPMapping )
 				 */
 				case 'adStart':
-					b('AdSupport_StartAdPlayback');	
+					b('AdSupport_StartAdPlayback', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
 					break;
 				case 'adEnd':
-					b('AdSupport_EndAdPlayback');
+					b('AdSupport_EndAdPlayback', function( e, slotType){
+						callback( { 'timeSlot': slotType }, embedPlayer.id )
+					});
 					break;
 				// Pre sequences: 
 				case 'preSequenceStart':
@@ -872,7 +885,7 @@
 		 * Master send action list: 
 		 */
 		sendNotification: function( embedPlayer, notificationName, notificationData ){
-			mw.log('KDPMapping:: sendNotification > '+ notificationName );
+			mw.log('KDPMapping:: sendNotification > '+ notificationName,  notificationData );
 			switch( notificationName ){
 				case 'doPlay':
 					embedPlayer.play();
@@ -899,7 +912,7 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
-					// Check if we don't have entryId and referenceId and they both not -1 - Empty sources
+					// ChecchangeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
 						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) ) {
 					    embedPlayer.emptySources();

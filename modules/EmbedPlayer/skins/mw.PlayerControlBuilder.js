@@ -319,7 +319,7 @@ mw.PlayerControlBuilder.prototype = {
 	 */
 	getIntrinsicAspect: function(){
 		var vid = this.embedPlayer.getPlayerElement()
-		// Check for embedVideo size: 
+		// Check for raw intrinsic media size: 
 		if( vid && vid.videoWidth && vid.videoHeight ){
 			return vid.videoWidth / vid.videoHeight;
 		}
@@ -329,7 +329,7 @@ mw.PlayerControlBuilder.prototype = {
 			this.embedPlayer.mediaElement.selectedSource )
 		{
 			var ss = this.embedPlayer.mediaElement.selectedSource;
-			// see if we have a hardcoded aspect to the source ( Adaptive streams don't have width / height ) 
+			// See if we have a hardcoded aspect to the source ( Adaptive streams don't have width / height ) 
 			if( ss.aspect ){
 				return ss.aspect;
 			}
@@ -337,9 +337,7 @@ mw.PlayerControlBuilder.prototype = {
 			if( ss.width && ss.height ){
 				return ss.width / ss.height
 			}
-
 		}
-		
 		
 		// check for posterImage size: ( should have Intrinsic aspect size as well ) 
 		var img = this.embedPlayer.$interface.find('.playerPoster')[0];
@@ -354,15 +352,14 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	* Get the play button css
 	*/
-	getPlayButtonPosition: function( size ) {
+	getPlayButtonPosition: function() {
 		var _this = this;
-		// Set the offset depending if controls are hidden or displayed: 
-		var pheight = this.getComponentHeight( 'playButtonLarge' );
-		var topCompoentOffset = ( this.isOverlayControls() ) ? pheight : pheight / 2;
 		return {
 			'position' : 'absolute',
-			'left' : ( ( parseInt( size.width ) - this.getComponentWidth( 'playButtonLarge' ) ) / 2 ),
-			'top' : ( ( parseInt( size.height ) - topCompoentOffset ) / 2 )
+			'left' : '50%',
+			'top' : '50%',
+			'margin-left' : - .5 * this.getComponentWidth( 'playButtonLarge' ),
+			'margin-top' : - .5 * this.getComponentHeight( 'playButtonLarge' )
 		};
 	},
 
@@ -401,6 +398,11 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		this.inFullScreen = true;
 		var triggerOnOpenFullScreen = true;
+		
+		// if overlaying controls add hide show player binding. 
+		if( _this.isOverlayControls() ){
+			_this.addFullscreenMouseMoveHideShowControls();
+		}
 		
 		// Store the current scroll location on the iframe: 
 		$( embedPlayer ).trigger( 'fullScreenStoreVerticalScroll' );
@@ -458,9 +460,17 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	syncPlayerSize: function(){
 		var embedPlayer = this.embedPlayer;
-		if( $( embedPlayer ).width() != $(window).width() ){
-			embedPlayer.resizePlayer( this.getWindowSize() );
-		};
+		mw.log( "PlayerControlBuilder::syncPlayerSize: window:" +  $(window).width() + ' player: ' + $( embedPlayer ).width() );
+		// resize to the playlist  container
+		// TODO  change this to an event so player with interface around it ( ppt widget etc ) can
+		// set the player to the right size. 
+		if( embedPlayer.playlist && ! this.inFullScreen ){
+			embedPlayer.playlist.syncPlayerSize();
+		} else {
+			//if( $( embedPlayer ).width() != $(window).width() ){
+				embedPlayer.resizePlayer( this.getWindowSize() );
+			//}
+		}
 	},
 	getWindowSize: function(){
 		return {
@@ -492,11 +502,12 @@ mw.PlayerControlBuilder.prototype = {
 		);
 		
 		// get the original interface to absolute positioned:
-		if( ! this.windowPositionStyle  )
+		if( ! this.windowPositionStyle  ){
 			this.windowPositionStyle = $interface.css( 'position' );
-		if( !this.windowZindex )
+		}
+		if( !this.windowZindex ){
 			this.windowZindex = $interface.css( 'z-index' );
-
+		}
 		// Get the base offset:
 		this.windowOffset = this.getWindowOffset();
 		
@@ -566,33 +577,6 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		});
 
-		// Bind mouse move in interface to hide control bar
-		_this.mouseMovedFlag = false;
-		$interface.mousemove( function(e){
-			_this.mouseMovedFlag = true;
-		});
-		
-		// Check every 2 seconds reset flag status if controls are overlay
-		if( _this.isOverlayControls() ){
-			var checkMovedMouse = function(){
-				if( _this.inFullScreen ){
-					if( _this.mouseMovedFlag ){
-						_this.mouseMovedFlag = false;
-						_this.showControlBar();
-						// Once we move the mouse keep displayed for 4 seconds
-						setTimeout(checkMovedMouse, 4000);
-					} else {
-						// Check for mouse movement every 250ms
-						_this.hideControlBar();
-						setTimeout(checkMovedMouse, 250 );
-					}
-				}
-			};
-			checkMovedMouse();
-		}
-
-		// Bind Scroll position update
-
 		// Bind resize resize window to resize window
 		$( window ).resize( function() {
 			if( _this.inFullScreen ){
@@ -618,6 +602,35 @@ mw.PlayerControlBuilder.prototype = {
 				_this.restoreWindowPlayer();
 			}
 		} );
+	},
+	addFullscreenMouseMoveHideShowControls:function(){
+		var _this = this;
+		// Bind mouse move in interface to hide control bar
+		_this.mouseMovedFlag = false;
+		_this.embedPlayer.$interface.mousemove( function(e){
+			_this.mouseMovedFlag = true;
+		});
+		
+		// Check every 2 seconds reset flag status if controls are overlay
+		var checkMovedMouse = function(){
+			if( _this.inFullScreen ){
+				if( _this.mouseMovedFlag ){
+					_this.mouseMovedFlag = false;
+					_this.showControlBar();
+					// Once we move the mouse keep displayed for 3 seconds
+					setTimeout(checkMovedMouse, 3000);
+				} else {
+					// Check for mouse movement every 250ms
+					_this.hideControlBar();
+					setTimeout(checkMovedMouse, 250 );
+				}
+				return;
+			}
+		};
+		// always initially show the control bar: 
+		_this.showControlBar();
+		// start monitoring for moving mouse
+		checkMovedMouse();
 	},
 	getWindowOffset: function(){
 		var windowOffset = this.embedPlayer.$interface.offset();
@@ -763,7 +776,7 @@ mw.PlayerControlBuilder.prototype = {
 	 * Resize the player to a target size keeping aspect ratio
 	 */
 	resizePlayer: function( size, animate, callback ){
-		mw.log("PlayerControlBuilder:: resizePlayer: " + size.width + 'x' + size.height );
+		mw.log("PlayerControlBuilder:: resizePlayer: " + size.width + ' ' + size.height );
 		var _this = this;
 		// Update interface container:
 		var interfaceCss = {
@@ -788,7 +801,7 @@ mw.PlayerControlBuilder.prototype = {
 			$interface.find('.playerPoster' ).animate( targetAspectSize  );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large' ).animate(  _this.getPlayButtonPosition( buttonScale ) );
+			$interface.find('.play-btn-large' ).animate(  _this.getPlayButtonPosition() );
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
@@ -809,16 +822,16 @@ mw.PlayerControlBuilder.prototype = {
 			// Update player size
 			$( embedPlayer ).css( targetAspectSize );
 			
+			if( embedPlayer.getPlayerElement() ){
+				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
+			}
+
 			// Update play button pos
-			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition( buttonScale ) );
+			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition() );
 			
 			// if a spinner is displayed re-add to center: 
 			if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
 				embedPlayer.addPlayerSpinner();
-			}
-			
-			if( embedPlayer.getPlayerElement() ){
-				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
 			}
 			
 			if( callback ){
@@ -857,7 +870,7 @@ mw.PlayerControlBuilder.prototype = {
 
 		var bindFirstPlay = false;		
 		_this.addRightClickBinding();
-		
+
 		// check if the player takes up the full window size: 
 		if( $( embedPlayer ).width() == $(window).width() ){
 			this.isWindowSizePlayer = true;
@@ -931,7 +944,7 @@ mw.PlayerControlBuilder.prototype = {
 				clearTimeout( _this.hideControlBarCallback );
 				_this.hideControlBarCallback = setTimeout( function() {
 					_this.hideControlBar()
-				}, 3500 );
+				}, 5000 );
 				// ( Once the user touched the video "don't hide" )
 				return true;
 			} );
@@ -1014,20 +1027,18 @@ mw.PlayerControlBuilder.prototype = {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
 		
-		
-		
 		// prevent scrolling when in fullscreen:
 		document.ontouchmove = function( e ){
-			mw.log( 'touchmove! ' + _this.inFullScreen )
 			if( _this.inFullScreen ){
 				e.preventDefault();
 			}
 		};
-		
+		// Remove old click bindings before adding: 
+		this.removePlayerClickBindings();
 		
 		// Setup "dobuleclick" fullscreen binding to embedPlayer ( if enabled ) 
 		if ( this.supportedComponents['fullscreen'] ){
-			$( embedPlayer ).bind( "dblclick" + this.bindPostfix, function(){
+			$( embedPlayer ).bind( "dblclick" + _this.bindPostfix, function(){
 				embedPlayer.fullscreen();
 			});
 		}
@@ -1036,9 +1047,9 @@ mw.PlayerControlBuilder.prototype = {
 		var lastClickTime = 0;
 		var didDblClick = false;
 	
-		// Remove parent dbl click ( so we can handle play clicks )
-		$( embedPlayer ).bind( "click" + this.bindPostfix, function() {
-			// Don't bind anything if native controls displayed:
+		// Check for click
+		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
+			// Don't do anything if native controls displayed:
 			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() || mw.isIpad() ) {
 				return true;
 			}		
@@ -1138,7 +1149,6 @@ mw.PlayerControlBuilder.prototype = {
 	* set to true for the player or via config
 	*/
 	isOverlayControls: function(){
-
 		//if the player "supports" overlays:
 		if( ! this.embedPlayer.supports['overlays'] ){
 			return false;
@@ -1159,17 +1169,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.getConfig( 'EmbedPlayer.OverlayControls' ) === false){
 			return false;
 		}
-		// iPad supports overlays but the touch events mean we want the controls displayed all the 
-		// time for now. 
-		/*if( mw.isIpad() ){
-			return false;
-		}*/
 
-		// Don't hide controls when content "height" is 0px ( audio tags )
-		if( this.embedPlayer.getPlayerHeight() === 0 &&
-			$(this.embedPlayer).css('height').indexOf('%') === -1 ){
-			return false;
-		}
 		if( this.embedPlayer.controls === false ){
 			return false;
 		}
@@ -1461,6 +1461,10 @@ mw.PlayerControlBuilder.prototype = {
 	* 	'li' a li line item with click action for that menu item
 	*/
 	optionMenuItems: {
+		
+		/*
+		 * Commented out, replaced by flavor selector
+		 * TODO: need to remove all switch player related code
 		// Player select menu item
 		'playerSelect': function( ctrlObj ){
 			if( mw.isIpad() ){
@@ -1476,7 +1480,10 @@ mw.PlayerControlBuilder.prototype = {
 				}
 			);
 		},
-
+		*/
+	    /*
+		 * Commented out, replaced by 'download button' configured by uiConf
+		 * TODO: need to remove all related code
 		// Download the file menu
 		'download': function( ctrlObj ) {
 			if( mw.isIpad() ) return false;
@@ -1493,7 +1500,7 @@ mw.PlayerControlBuilder.prototype = {
 				}
 			);
 		},
-
+		*/
 		// Share the video menu
 		'share': function( ctrlObj ) {
 			return $.getLineItem(
@@ -2141,6 +2148,21 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		return 0;
 	},
+	
+	// Set up the disable playhead function: 
+	// TODO this will move into the disableSeekBar binding in the new theme framework
+	disableSeekBar : function(){
+		var $playHead = this.embedPlayer.$interface.find( ".play_head" );
+		if( $playHead.length ){
+			$playHead.slider( "option", "disabled", true );
+		}
+	},
+	enableSeekBar : function(){
+		var $playHead = this.embedPlayer.$interface.find( ".play_head" );
+		if( $playHead.length ){
+			$playHead.slider( "option", "disabled", false);
+		}
+	},
 
 	/**
 	* Components Object
@@ -2167,10 +2189,7 @@ mw.PlayerControlBuilder.prototype = {
 						'class'	: "play-btn-large"
 					} )
 					// Get dynamic position for big play button
-					.css( ctrlObj.getPlayButtonPosition({
-						'width' : ctrlObj.embedPlayer.getWidth(),
-						'height' :  ctrlObj.embedPlayer.getHeight()
-					}) )
+					.css( ctrlObj.getPlayButtonPosition() )
 					// Add play hook:
 					.click( function() {
 						$( this ).remove();
@@ -2488,21 +2507,6 @@ mw.PlayerControlBuilder.prototype = {
 							}
 						}
 					};
-			
-				// Set up the disable playhead function: 
-				// TODO this will move into the disableSeekBar binding in the new theme framework
-				ctrlObj.disableSeekBar = function(){
-					var $playHead = ctrlObj.embedPlayer.$interface.find( ".play_head" );
-					if( $playHead.length ){
-						$playHead.slider( "option", "disabled", true );
-					}
-				}
-				ctrlObj.enableSeekBar = function(){
-					var $playHead = ctrlObj.embedPlayer.$interface.find( ".play_head" );
-					if( $playHead.length ){
-						$playHead.slider( "option", "disabled", false);
-					}
-				}
 			
 				var embedPlayer = ctrlObj.embedPlayer;
 				var _this = this;

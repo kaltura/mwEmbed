@@ -10,6 +10,7 @@
 		bindPostfix : '.kTimedText',
 		init: function( embedPlayer, captionPluginName, callback ){
 			var _this = this;
+			
 			this.embedPlayer = embedPlayer;
 			// Set the caption plugin name so that we can get config from the correct location. 
 			this.pluginName = captionPluginName;
@@ -22,6 +23,13 @@
 			var existingLayout = null;
 			if( embedPlayer.timedText ){
 				existingLayout = embedPlayer.timedText.config.layout;
+			}
+			
+			// Set captions layout of player based on plugin Name: 
+			if( this.pluginName == 'closedCaptionsOverPlayer' ){
+				this.defaultDisplayMode = 'ontop';
+			} else if( this.pluginName == 'closedCaptionsUnderPlayer' ){
+				this.defaultDisplayMode = 'below';
 			}
 			
 			// Inherit the timed text support via the base TimedText module:
@@ -228,7 +236,7 @@
 				'filter:entryIdEqual' : _this.embedPlayer.kentryid,
 				'filter:statusEqual' : 2
 			}, function( data ) {
-				mw.log( "KTimedText:: getTextSourcesFromApi: " + data.totalCount, data.objects);
+				mw.log( "KTimedText:: getTextSourcesFromApi: " + data.totalCount, data.objects );
 				// TODO is this needed does the api not return an empty set?
 				if( data.totalCount > 0 ) {
 					callback( data.objects );

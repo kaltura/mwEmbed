@@ -43,12 +43,13 @@ mw.KAds.prototype = {
 		
 		// Setup the ad player: 
 		_this.adPlayer = new mw.KAdPlayer( embedPlayer );
+
+		// Clear any existing bindings: 
+		_this.destroy();
 		
 		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
 		});
-		// Clear any existing bindings: 
-		_this.destroy();
 		
 		// Setup local pointer: 
 		var $uiConf = embedPlayer.$uiConf;
@@ -138,8 +139,18 @@ mw.KAds.prototype = {
 			_this.embedPlayer.pauseLoading();
 		}
 		
+		// Disable play controls while loading the ad: 
+		if( adType !== 'overlay' ) {
+			_this.embedPlayer.disablePlayControls();
+		}
+		
+		var baseDisplayConf = this.getBaseDisplayConf();
+		
 		mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
+			// No Ad configuration, continue playback
 			if( ! adConf ){
+				// Ad skip re-enable play controls: 
+				_this.embedPlayer.enablePlayControls();
 				// Resume content playback
 				setTimeout( function() { 
 					_this.embedPlayer.play();
@@ -156,16 +167,11 @@ mw.KAds.prototype = {
 				ads: [
 					$.extend( adConf.ads[0], adCuePointConf )
 				],
-				skipBtn: {
-					'text' : "Skip ad", // TODO i8ln 
-					'css' : {
-						'right': '5px',
-						'bottom' : '5px'
-					}
-				},
 				type: adType
 			};
 
+			$.extend( adsCuePointConf, baseDisplayConf );
+			
 			var originalSource = embedPlayer.getSource();
 			var seekPerc = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
 			var oldDuration = embedPlayer.duration;
@@ -182,10 +188,7 @@ mw.KAds.prototype = {
 					embedPlayer.switchPlaySource( originalSource, function() {
 						mw.log( "AdTimeline:: restored original src:" + vid.src);
 						// Restore embedPlayer native bindings
-						// async for iPhone issues
-						setTimeout(function(){
-							embedPlayer.adTimeline.restorePlayer();
-						}, 100 );
+						embedPlayer.adTimeline.restorePlayer();
 
 						// Sometimes the duration of the video is zero after switching source
 						// So i'm re-setting it to it's old duration
@@ -208,18 +211,8 @@ mw.KAds.prototype = {
 								}, 100 );
 							}
 						} else {
-							var waitForPlaybackCount = 0;
-							waitForPlayback = function(){
-								waitForPlaybackCount++;
-								// Wait for playback for 10 seconds 
-								if( vid.currentTime > 0 || waitForPlaybackCount > 200 ){
-									// Seek to where we did the switch
-									embedPlayer.seek( seekPerc );
-								} else {
-									setTimeout(function(){waitForPlayback()}, 50)
-								}
-							}
-							waitForPlayback();
+							// Seek to where we did the switch
+							embedPlayer.seek( seekPerc );
 						}
 					});
 				} else {

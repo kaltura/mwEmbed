@@ -1,4 +1,4 @@
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 
 mw.PlaylistHandlerKaltura = function( playlist, options ){
 	return this.init( playlist, options );
@@ -79,7 +79,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		mw.log( "mw.PlaylistHandlerKaltura:: loadPlaylist > ");
 		// Get the kaltura client:
 		_this.getPlaylistUiConf( function( $uiConf ){
-			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );
+			mw.log("PlaylistHandlerKaltura:: loadPlaylist: got playerData" );			
 			_this.playlistSet = [];
 			// @@TODO clean up with getConf option
 			// Add in flashvars playlist id if present:
@@ -202,6 +202,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Update the player data ( if we can ) 
 		if( embedPlayer.kalturaPlaylistData ){
 			embedPlayer.kalturaPlaylistData.currentPlaylistId = this.playlist_id;
+			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', { 'selectedIndex' : playlistIndex } );
 		}
 		// Make sure the iframe contains this currentPlaylistId update: 
 		$( embedPlayer ).trigger( 'updateIframeData' );
@@ -221,13 +222,16 @@ mw.PlaylistHandlerKaltura.prototype = {
 			this.mrssHandler.loadPlaylist( function(){
 				_this.clipList = _this.mrssHandler.getClipList();
 				callback();
+				embedPlayer.triggerHelper( 'playlistReady' );
 			});
 			return ;
 		}
 		// Check for playlist cache
 		if( embedPlayer.kalturaPlaylistData && embedPlayer.kalturaPlaylistData[ playlist_id ] ){
 			_this.clipList = embedPlayer.kalturaPlaylistData[ playlist_id ];
+			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', { 'content' : _this.clipList } );
 			callback();
+			embedPlayer.triggerHelper( 'playlistReady' );
 			return ;
 		}
 				
@@ -257,10 +261,12 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 			// Add it to the cache:
 			embedPlayer.kalturaPlaylistData[ playlist_id ] = playlistData;
+			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', { 'content' : playlistData } );
 			$( embedPlayer ).trigger('updateIframeData');
 			// update the clipList:
 			_this.clipList = playlistData;
 			callback();
+			embedPlayer.triggerHelper( 'playlistReady' );
 		});
 	},	
 	
@@ -309,21 +315,26 @@ mw.PlaylistHandlerKaltura.prototype = {
 		$( embedPlayer).unbind( bindName ).bind( bindName, function(){
 			mw.log( 'mw.PlaylistHandlerKaltura:: onChangeMediaDone' );
 			_this.loadingEntry = false;
+			// Sync player size
+			embedPlayer.bindHelper( 'loadeddata', function() {
+				embedPlayer.controlBuilder.syncPlayerSize();									
+			});
 			embedPlayer.play();
 			if( callback ){
 				callback();
 			}
 		});
 		mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
-		
 		// Use internal changeMedia call to issue all relevant events
-		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );
+		embedPlayer.sendNotification( "changeMedia", {'entryId' : this.getClip( clipIndex ).id} );
+
 		// Update the playlist data selectedIndex
 		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
 	},
 	drawEmbedPlayer: function( clipIndex, callback){
 		var _this = this;
 		var $target = _this.playlist.getVideoPlayerTarget();
+		mw.log( "PlaylistHandlerKaltura::drawEmbedPlayer:" + clipIndex );
 		// Check for the embedPlayer at the target
 		if( ! $('#' + _this.playlist.getVideoPlayerId() ).length ){
 			mw.log("Warning: Playlist Handler works best with video pre-loaded in the DOM");
@@ -345,10 +356,17 @@ mw.PlaylistHandlerKaltura.prototype = {
 
 		// update the selected index: 
 		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
-		// Set up ready binding (for ready )
-		$( embedPlayer ).bind('playerReady' + this.bindPostFix, function(){
+
+		// check if player already ready: 
+		if( embedPlayer.playerReady ){
 			callback();
-		});
+		} else {
+			// Set up ready binding (for ready )
+			$( embedPlayer ).bind('playerReady' + this.bindPostFix, function(){
+				callback();
+			});
+		}
+		
 	},	
 	updatePlayerUi: function( clipIndex ){
 		// no updates need since kaltura player interface components are managed by the player
@@ -573,7 +591,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 					$target.data('id', idName);
 					$target.addClass(idName);
 					break;
-				case 'stylename': 
+				case 'stylename':
 					styleName = attr.nodeValue;
 					$target.addClass(styleName);
 					break;
@@ -634,7 +652,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		var objectPath = parsedString.split('.');
 		//mw.log("mw.Playlist:: uiConfValueLookup >: " + objectPath[0]);
 		switch( objectPath[0] ){
-			case 'div10002(this': 
+			case 'div10002(this':
 				return this.uiConfValueLookup(clipIndex, 'this.' + objectPath[1].replace( /\)/, '' ) );
 				break;
 			// XXX todo a more complete parser and ui-conf evaluate property / text emulator

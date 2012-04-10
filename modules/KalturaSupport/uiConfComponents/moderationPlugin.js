@@ -91,6 +91,11 @@
 		drawModal: function() {
 
 			var embedPlayer = this.embedPlayer;
+			
+			var isPlaying = embedPlayer.isPlaying();
+			if( isPlaying ) {
+				embedPlayer.pause();
+			}			
             
             var $header = $( '<h2 />' ).text(embedPlayer.getKalturaConfig( 'moderation', 'header' ));
 			var $moderationMessage = $( '<div />' ).append(
@@ -121,7 +126,13 @@
 
 			var $moderationScreen = $( '<div />' ).append($header, $moderationMessage );
 
-			embedPlayer.controlBuilder.displayMenuOverlay( $moderationScreen );
+			var closeCallback = function() {
+				if( isPlaying ) {
+					embedPlayer.play();
+				}
+			};
+			
+			embedPlayer.controlBuilder.displayMenuOverlay( $moderationScreen, closeCallback );
 		},
         
         submitFlag: function(flagObj) {

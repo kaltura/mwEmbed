@@ -17,6 +17,8 @@
 		'Kaltura.NoApiCache' : false, // By default tell the client to cache results
 		// By default support apple adaptive 
 		'Kaltura.UseAppleAdaptive': true,
+		// By default we should include flavorIds urls for supporting akami HD 
+		'Kaltura.UseFlavorIdsUrls': true,
 		// A video file for when no suitable flavor can be found
 		'Kaltura.MissingFlavorSources' : [
 		    { 
@@ -148,6 +150,15 @@
 		} );
 	};
 	
+	
+	// Make sure flashvars and player config are ready as soon as we create a new player
+	$( mw ).bind( 'newEmbedPlayerEvent', function(event, embedPlayer){
+		if( mw.getConfig( 'KalturaSupport.PlayerConfig' ) ){
+			embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
+			mw.setConfig('KalturaSupport.PlayerConfig', null );
+		}
+	});
+	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
 		return $.merge( kalturaSupportRequestSet, [
 			  'mw.PlaylistHandlerKaltura', 
@@ -178,7 +189,7 @@
 		}else {
 		
 			// Check if we are NOT rewriting tags: 
-			if( !kIsHTML5FallForward() ) {
+			if( !kWidget.isHTML5FallForward() ) {
 				restoreKalturaKDPCallback();
 				rewriteDoneCallback();
 				return ;
@@ -251,7 +262,11 @@
 						'heigth' : $( element ).attr('height')
 					};
 					
-					if( kEmbedSettings.entry_id || kEmbedSettings.reference_id ) {
+					var isPPTWidget = function() {
+						return (flashvars && flashvars.videoPresentationEntryId) ? true : false;
+					};
+					
+					if( ( kEmbedSettings.entry_id || kEmbedSettings.reference_id ) && ! isPPTWidget() ) {
 						loadEmbedPlayerFlag = true;
 						kalturaSwapObjectClass = 'mwEmbedKalturaVideoSwap';
 						
@@ -445,7 +460,7 @@
 		} 
 		var plId =  mw.parseUri( kplUrl0 ).queryKey['playlist_id'];
 		// If the url has a partner_id and executeplaylist in its url assume its a "kaltura services playlist"
-		if( plId && mw.parseUri( kplUrl0 ).queryKey['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
+		if( embedPlayer.kalturaPlaylistData || plId && mw.parseUri( kplUrl0 ).queryKey['partner_id'] && kplUrl0.indexOf('executeplaylist') != -1 ){
 			playlistConfig.playlist_id = plId;
 			playlist.sourceHandler = new mw.PlaylistHandlerKaltura( playlist, playlistConfig );
 			return ;
@@ -485,11 +500,12 @@
 			// Build the iframe request from supplied iframeParams: 
 			var iframeRequest = '';
 			for( var key in iframeParams ){
-				// don't put flashvars or readyCallback into the post url ( will be a request param ) 
-				if( key == 'flashvars' || key == 'readyCallback' || key == 'isHTML5' ){
+				// Only encode valid kwidget attributes into the url
+				if( key != 'p' && key && 'cache_st' && key != 'wid' 
+					&& key != 'uiconf_id' && key != 'entry_id' 
+				){
 					continue;
 				}
-				
 				iframeRequest+= '/' + key + 
 					'/' + encodeURIComponent( iframeParams [ key ] );
 			}

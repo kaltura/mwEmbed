@@ -183,6 +183,9 @@ mw.KAdPlayer.prototype = {
 				return true;				
 			});
 		}
+		// make sure we are in a play state:
+		_this.embedPlayer.playInterfaceUpdate();
+
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 			_this.playVideoSibling(	
@@ -290,6 +293,14 @@ mw.KAdPlayer.prototype = {
 				$('#' +skipId ).css('bottom', bottomPos + _this.embedPlayer.controlBuilder.getHeight() );
 			}
 		}
+		// Support Audio controls on ads:
+		$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
+			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
+			if( _this.isVideoSiblingEnabled() ) {
+				_this.getVideoAdSiblingElement().volume = changeValue;
+			}
+		});
+		
 		// AD slot should include flag for progress monitoring ( for now always update playhead )
 		var progressMonitor = function(){
 			if( _this.adTrackingFlag ){
@@ -517,17 +528,21 @@ mw.KAdPlayer.prototype = {
 			}
 			
 			
-			if( time > 0 )
+			if( time > 0 ){
 				sendBeacon( 'start' );
+			}
 				
-			if( time > dur / 4 )
+			if( time > dur / 4 ){
 				sendBeacon( 'firstQuartile' );
+			}
 			
-			if( time > dur / 2 )
+			if( time > dur / 2 ){
 				sendBeacon( 'midpoint' );
+			}
 			
-			if( time > dur / 1.5 )
+			if( time > dur / 1.5 ){
 				sendBeacon( 'thirdQuartile' );
+			}
 			
 		}, mw.getConfig('EmbedPlayer.MonitorRate') );		
 	},
@@ -549,7 +564,7 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		// Hide any loading spinner
 		this.embedPlayer.hidePlayerSpinner();
-		
+		this.embedPlayer.pause();
 		// include a timeout for the pause event to propagate
 		setTimeout( function(){
 			// make sure the embed player is "paused" 

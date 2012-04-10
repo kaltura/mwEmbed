@@ -58,7 +58,7 @@ function jsKalturaPlayerTest( videoId ){
 		return document.getElementById( 'kaltura_player_1306453594' );
 	}
 	// TODO add these to the qUnit test!
-	$(document).ready(function(){
+	kWidget.addReadyCallback( function(){
 		$('#currentIndex').click( function(){
 			alert( kdp().evaluate( "{playlistAPI.dataProvider.selectedIndex}" ) );
 		});
@@ -72,7 +72,7 @@ function jsKalturaPlayerTest( videoId ){
 		$('#switchTab').click( function(){
 			kdp().setKDPAttribute('tabBar', 'selectedIndex', 1);
 		})
-	})
+	});
 </script>
 </head>
 <body>

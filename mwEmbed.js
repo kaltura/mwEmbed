@@ -1212,8 +1212,11 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	mw.isIOS = function(){
 		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
 	};
+	mw.isIOS4 = function(){
+		return /OS 4_/.test( navigator.userAgent ) && mw.isIOS();
+	};
 	mw.isIOS5 = function(){
-		return /OS 5_/.test( navigator.userAgent ) && ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
+		return /OS 5_/.test( navigator.userAgent ) && mw.isIOS();
 	};
 	mw.isIE9 = function(){
 		return ( /msie 9/.test( navigator.userAgent.toLowerCase() ) );
@@ -1465,11 +1468,12 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 		if ( mw.getConfig( 'Mw.LogPrepend' ) && arguments.length > 0 ){
 			arguments[0] = mw.getConfig('Mw.LogPrepend') + arguments[0];
 		}
-		if(window.console){
+		if( window.console ){
 			if (arguments.length == 1) {
 				console.log( /*'ss:' + mw.getCallStack().length + ' ' + */ arguments[0] );
 			} else {
-				console.log( Array.prototype.slice.call(arguments) );
+				var args = Array.prototype.slice.call(arguments);  
+				console.log( args[0], args.slice( 1 ) );
 			}
 		}
 		// To debug stack size ( useful for iPad / safari that have a 100 call
@@ -1756,7 +1760,7 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 				'type' : 'text/css',
 				'href' : url
 			} )
-		);
+		);			
 		// No easy way to check css "onLoad" attribute
 		// In production sheets are loaded via resource loader and fire the
 		// onDone function call.
@@ -2847,7 +2851,7 @@ if( window.jQuery ){
 	 */
 	$.fn.loadingSpinner = function( opts ) {
 		// empty the target: 
-		$(this).empty();
+		$( this ).empty();
 
 		// If we have loader path defined, load an image
 		if( mw.getConfig('LoadingSpinner.ImageUrl') ) {
@@ -2866,25 +2870,27 @@ if( window.jQuery ){
 							'margin-left': '-' + (this.width/2) + 'px'
 						});
 					});
-					thisSpinner = $this.append($loadingSpinner);
+					thisSpinner = $this.append( $loadingSpinner);
 				}
 			});
 			return this;
 		}
 
-		// Else, use Spin.js
-		if(!opts)
+		// Else, use Spin.js defaults
+		if( !opts ){
 			opts = {};
+		}
+		// add color and shadow:
 		opts = $.extend( {'color' : '#eee', 'shadow': true }, opts);
-		this.each(function() {
+		this.each( function() {
 			var $this = $(this).empty();
 			var thisSpinner = $this.data('spinner');
 			if (thisSpinner) {
 				thisSpinner.stop();
 				delete thisSpinner;
 			}
-			if (opts !== false) {
-				thisSpinner = new Spinner($.extend({color: $this.css('color')}, opts)).spin(this);
+			if ( opts !== false ) {
+				thisSpinner = new Spinner( $.extend( { color: $this.css('color') }, opts ) ).spin( this );
 			}
 		});
 		// correct the position: 
@@ -2896,26 +2902,25 @@ if( window.jQuery ){
 	 * element does not display child elements, ( images, video )
 	 */
 	$.fn.getAbsoluteOverlaySpinner = function(){
-		var pos = $j( this ).offset();
-		var posLeft = ( $j( this ).width() ) ?
-			parseInt( pos.left + ( .5 * $j( this ).width() ) ) :
-			pos.left + 30;
-
-		var posTop = ( $j( this ).height() ) ?
-			parseInt( pos.top + ( .5 * $j( this ).height() ) ) :
-			pos.top + 30;
-
-		var $spinner = $j('<div />')
-			.loadingSpinner()
+		// Set the spin size to "small" ( length 5 ) if video height is small
+		var spinOps = ( $( this ).height() < 36 )? { 'length' : 5, 'width' : 2, 'radius' : 4 }: {};
+		var spinerSize = {
+				'width' : 45, 
+				'height' : 45
+		};
+		var $spinner = $('<div />')
 			.css({
-				'width' : 45,
-				'height' : 45,
+				'width' : spinerSize.width,
+				'height' : spinerSize.height,
 				'position': 'absolute',
-				'top' : posTop + 'px',
-				'left' : posLeft + 'px',
+				'top' : '50%',
+				'left' : '50%',
 				'z-index' : 100
-			});
-		$j('body').append( $spinner	);
+			})
+			.loadingSpinner(
+				spinOps
+			);
+		$( this ).append( $spinner	);
 		return $spinner;
 	};
 

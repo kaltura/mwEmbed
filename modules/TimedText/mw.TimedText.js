@@ -12,7 +12,7 @@
  */
 mw.includeAllModuleMessages();
 
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 
 	// Merge in timed text related attributes:
 	mw.mergeConfig( 'EmbedPlayer.SourceAttributes', [
@@ -46,6 +46,13 @@ mw.includeAllModuleMessages();
 			//Set the default kind of timedText to display ( un-categorized timed-text is by default "subtitles" )
 			'userKind' : 'subtitles'
 		},
+		
+		// The default display mode is 'ontop'
+		defaultDisplayMode : 'ontop',
+		
+		// Save last layout mode
+		lastLayout : 'ontop',
+		
 		// The bind prefix:
 		bindPostFix: '.timedText',
 		
@@ -157,12 +164,14 @@ mw.includeAllModuleMessages();
 				});
 				
 				mw.log( 'TimedText::set text size for: : ' + embedPlayer.$interface.width() + ' = ' + textCss['font-size'] );
-				
+				if ( embedPlayer.controlBuilder.isOverlayControls() && !embedPlayer.$interface.find( '.control-bar' ).is( ':hidden' ) ) {
+					textOffset += _this.embedPlayer.controlBuilder.getHeight();
+				}
 				embedPlayer.$interface.find( '.track' )
 				.css( textCss )
 				.css({
 					// Get the text size scale then set it to control bar height + TimedText.BottomPadding; 
-					'bottom': ( _this.embedPlayer.controlBuilder.getHeight() + textOffset ) + 'px'
+					'bottom': textOffset + 'px'
 				});
 			});
 			
@@ -193,18 +202,32 @@ mw.includeAllModuleMessages();
 
 			// Setup display binding
 			$( embedPlayer ).bind( 'onShowControlBar'+ this.bindPostFix, function(event, layout ){
-				// Move the text track if present
-				embedPlayer.$interface.find( '.track' )
-				.stop()
-				.animate( layout, 'fast' );
+				if ( embedPlayer.controlBuilder.isOverlayControls() ) {
+					// Move the text track if present
+					embedPlayer.$interface.find( '.track' )
+					.stop()
+					.animate( layout, 'fast' );
+				}
 			});
 			
 			$( embedPlayer ).bind( 'onHideControlBar'+ this.bindPostFix, function(event, layout ){
-				// Move the text track down if present
-				embedPlayer.$interface.find( '.track' )
-				.stop()
-				.animate( layout, 'fast' );
+				if ( embedPlayer.controlBuilder.isOverlayControls() ) {
+					// Move the text track down if present
+					embedPlayer.$interface.find( '.track' )
+					.stop()
+					.animate( layout, 'fast' );
+				}
 			});
+			
+			$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + this.bindPostFix, function() {
+				_this.lastLayout = _this.getLayoutMode();
+				_this.setLayoutMode( 'off' );
+			} );
+			
+			$( embedPlayer ).bind( 'AdSupport_EndAdPlayback' + this.bindPostFix, function() {
+				_this.setLayoutMode( _this.lastLayout );
+			} );
+			
 		},
 		addInterface: function(){
 			var _this = this;
@@ -743,7 +766,7 @@ mw.includeAllModuleMessages();
 				layoutOptions.push( 'ontop' );
 			}
 			// Support below player display: 
-			layoutOptions.push( 'below', 'off'  );
+			layoutOptions.push( 'off'  );
 
 			var $ul = $('<ul>');
 			$.each( layoutOptions, function( na, layoutMode ) {
@@ -769,8 +792,7 @@ mw.includeAllModuleMessages();
 			mw.log("TimedText:: setLayoutMode: " + layoutMode + ' ( old mode: ' + _this.config.layout + ' )' );
 			if( layoutMode != _this.config.layout ) {
 				// Update the config and redraw layout
-				_this.config.layout = layoutMode;						
-				
+				_this.config.layout = layoutMode;
 				// Update the display:
 				_this.updateLayout();
 			}
@@ -778,7 +800,7 @@ mw.includeAllModuleMessages();
 		toggleCaptions: function(){
 			mw.log( "TimedText:: toggleCaptions was:" + this.config.layout );
 			if( this.config.layout == 'off' ){
-				this.setLayoutMode( 'below' );
+				this.setLayoutMode( this.defaultDisplayMode );
 			} else {
 				this.setLayoutMode( 'off' );
 			}
@@ -831,7 +853,7 @@ mw.includeAllModuleMessages();
 				var $playerTarget = this.embedPlayer.$interface;
 				$playerTarget.find('.track').text( gM('mwe-timedtext-loading-text') );
 				// Load the text:
-				source.load( function() {
+				source.load( function(){
 					// Refresh the interface:
 					_this.refreshDisplay();
 				});
@@ -894,7 +916,7 @@ mw.includeAllModuleMessages();
 					// Init Category menu item if it does not already exist:
 					if( !categorySourceList[ categoryKey ] ) {
 						// Set up catList pointer:
-						categorySourceList[ categoryKey ] = [ ];
+						categorySourceList[ categoryKey ] = [];
 						sourcesWithCategoryCount++;
 					}
 					// Append to the source kind key menu item:
@@ -995,6 +1017,7 @@ mw.includeAllModuleMessages();
 			// TOOD we should scrub this for non-formating html
 			$textTarget.append( 
 				$('<span />')
+					.addClass( 'ttmlStyled' )
 					.css( this.getCaptionCss() )
 					.html( caption.content )
 			);
@@ -1027,11 +1050,10 @@ mw.includeAllModuleMessages();
 			// Update the style of the text object if set
 			if( caption.styleId ){
 				var capCss = source.getStyleCssById( caption.styleId );
-				$textTarget.find('span').css(
+				$textTarget.find('span.ttmlStyled').css(
 					capCss
 				);
 			}
-		
 			$textTarget.fadeIn('fast');
 		},
 		displayTextTarget: function( $textTarget ){
@@ -1045,10 +1067,14 @@ mw.includeAllModuleMessages();
 				mw.log("Possible Error, layout mode not recognized: " + this.getLayoutMode() );
 			}
 		},
-		getDefaultStyle: function(){ 
+		getDefaultStyle: function(){
+			var defaultBottom = 15;
+			if( this.embedPlayer.controlBuilder.isOverlayControls() && !this.embedPlayer.$interface.find( '.control-bar' ).is( ':hidden' ) ) {
+				defaultBottom += this.embedPlayer.controlBuilder.getHeight();
+			}				
 			var baseCss =  {
 					'position':'absolute',
-					'bottom': 10,
+					'bottom': defaultBottom,
 					'width': '100%',
 					'display': 'block',
 					'opacity': .8,
@@ -1083,8 +1109,8 @@ mw.includeAllModuleMessages();
 				$captionsOverlayTarget = $( '<div />' )
 				 	.addClass( 'captionsOverlay' )
 					.css( layoutCss )
-				this.embedPlayer.$interface.append( $captionsOverlayTarget );
-                
+					.css('pointer-events', 'none');
+				this.embedPlayer.$interface.append( $captionsOverlayTarget );					
                 this.resizeInterface();
 			}
 			// Append the text:
@@ -1159,24 +1185,13 @@ mw.includeAllModuleMessages();
             	// too soon
             	return ;
             }
-            
             if( !_this.embedPlayer.controlBuilder.inFullScreen && _this.originalPlayerHeight ){
                 _this.embedPlayer.$interface.css({
                     'height': _this.originalPlayerHeight
                 });
                 _this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : _this.originalPlayerHeight}] );
             } else {
-                var cBarHeight =  ( _this.embedPlayer.controlBuilder.isOverlayControls() ) ?
-                        0 :
-                        _this.embedPlayer.controlBuilder.getHeight();
-                var newCss = {
-                    'height': _this.embedPlayer.$interface.height() -cBarHeight
-                }
-                if( parseInt( $( _this.embedPlayer ).css('top') ) < 0 ){
-                    newCss.top = 0;
-                }
-                $( _this.embedPlayer ).css( newCss );
-                $( _this.embedPlayer.getPlayerElement() ).css( newCss );
+            	// removed resize on container content, since syncPlayerSize calls now handle keeping player aspect. 
             }
         },
 		positionCaptionContainer: function(){

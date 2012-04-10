@@ -44,7 +44,7 @@ class downloadEntry {
 	private function fatalError( $errorMsg ) {
 		header( "X-Kaltura: error-6" );
 		header( "X-Kaltura-App: exiting on error 6 - requested flavor was not found" );
-		header( "X-Kaltura-Error: " . htmlspecialchar( $errorMsg ) );
+		header( "X-Kaltura-Error: " . htmlspecialchars( $errorMsg ) );
 		// Then redirect to no-sources video: 
 		$this->sources = $this->getErrorVideoSources();
 		$flavorUrl = $this->getSourceForUserAgent();
@@ -60,8 +60,8 @@ class downloadEntry {
 		header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		if ( $this->forceDownload ) {
 			header( "Content-Description: File Transfer" );
-			header( "Content-Type: application/force-download" ); 
-            $extension = strrchr( strstr( $flavorUrl, "?ks=", true ), '.' );
+			header( "Content-Type: application/force-download" );
+			$extension = strrchr( substr( $flavorUrl, 0, strpos( $flavorUrl, "?ks=" ) ), '.' );
             $flavorId = substr( strrchr( strstr( $flavorUrl, "/format/", true ), '/' ), 1 );
             $filename = $flavorId . $extension;
 			header( "Content-Disposition: attachment; filename=$filename" );

@@ -129,8 +129,10 @@ class kalturaIframe {
 	}
 	
 	private function getPlaylistPlayerSizeCss(){
+		// default size: 
 		$width = 400;
 		$height = 300;
+		
 		// check if we have iframeSize paramater: 
 		if( isset( $_GET[ 'iframeSize' ] ) ){
 			list( $iframeWidth, $iframeHeight ) = explode( 'x',  $_GET[ 'iframeSize' ]);
@@ -163,6 +165,12 @@ class kalturaIframe {
 				}
 			}
 		}
+		// If audio player adjust height:
+		$entryResult = $this->getResultObject()->getResultObject();
+		if( isset( $entryResult['meta'] ) && $entryResult['meta']->mediaType == 5 ){
+			$height = 30;
+		}
+		
 		return "width:{$width}px;height:{$height}px;";
 	}
 	// outputs the playlist wrapper 
@@ -207,6 +215,12 @@ class kalturaIframe {
 		$o.='id="' . htmlspecialchars( $this->getIframeId() ) . '" ' .
 			'style="' . $playerStyle . '" ';
 		$urlParams = $this->getResultObject()->getUrlParameters();
+		
+		// Check for webkit-airplay option
+		$playerConfig = $this->getResultObject()->getPlayerConfig();
+		if( isset( $playerConfig['vars']['EmbedPlayer.WebKitPlaysInline'] ) ){
+			$o.= 'x-webkit-airplay="allow" ';
+		}
 		
 		// Add any additional attributes:
 		foreach( $urlParams as $key => $val ){
@@ -480,6 +494,7 @@ class kalturaIframe {
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Kaltura Embed Player iFrame</title>
 		<style type="text/css">
+			html { margin: 0; padding: 0; width: 100%; height: 100%; }
 			body {
 				margin:0;
 				position:fixed;
@@ -530,7 +545,7 @@ class kalturaIframe {
 				#videoContainer {
 					position: absolute;
 					width: 100%;
-					height: 100%;
+					min-height: 100%;
 				}
 				#directFileLinkContainer{
 					position:abolute;
@@ -773,7 +788,7 @@ class kalturaIframe {
 	private function javaScriptPlayerLogic(){
 		?>
 		
-		var isHTML5 = kIsHTML5FallForward();
+		var isHTML5 = kWidget.isHTML5FallForward();
 		if( window.kUserAgentPlayerRules ) {
 			var playerAction = window.checkUserAgentPlayerRules( window.kUserAgentPlayerRules[ '<?php echo $this->getResultObject()->getUiConfId() ?>' ] );
 			if( playerAction.mode == 'leadWithHTML5' ){

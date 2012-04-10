@@ -104,6 +104,8 @@ mw.AdTimeline.prototype = {
 	
 	bindPostfix: '.AdTimeline',
 	
+	currentAdSlotType: null,
+	
 	/**
 	 * @constructor
 	 * @param {Object}
@@ -171,7 +173,7 @@ mw.AdTimeline.prototype = {
 							embedPlayer.triggerHelper( 'AdSupport_PreSequenceComplete' );
 							
 							// Avoid function stack
-							setTimeout(function(){ 
+							setTimeout( function(){
 								// trigger another onplay ( to match the kaltura kdp ) on play event
 								// after the ad plays are complete 
 								if( _this.displayedSlotCount > 0 ){
@@ -182,7 +184,6 @@ mw.AdTimeline.prototype = {
 								}
 								// Trigger onplay ( even if there were no ads ) 
 								embedPlayer.triggerHelper( 'onplay' );
-								
 								// Continue playback
 								embedPlayer.play();
 							},0);
@@ -314,7 +315,7 @@ mw.AdTimeline.prototype = {
 				// Trigger the EndAdPlayback between each ad in the sequence proxy 
 				// ( if we have more ads to go )
 				if( sequenceProxy[ keyList[ seqInx ] ] ){
-					_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback' );
+					_this.embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', _this.currentAdSlotType );
 				}
 				// call with a timeout to avoid function stack
 				setTimeout(function(){
@@ -328,7 +329,11 @@ mw.AdTimeline.prototype = {
 	},
 	updateUiForAdPlayback: function( slotType ){
 		mw.log( "AdTimeline:: updateUiForAdPlayback: slotType:" + slotType );
+		
 		var embedPlayer = this.embedPlayer;
+		
+		// Set the current slot type :
+		this.currentAdSlotType = slotType;
 		// Stop the native embedPlayer events so we can play the preroll and bumper
 		embedPlayer.stopEventPropagation();
 		// TODO read the add disable control bar to ad config and check that here. 
@@ -346,7 +351,7 @@ mw.AdTimeline.prototype = {
 	 * Restore a player from ad state
 	 * @return
 	 */
-	restorePlayer: function(  ){
+	restorePlayer: function( ){
 		mw.log( "AdTimeline:: restorePlayer " );
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.restoreEventPropagation();
@@ -356,7 +361,7 @@ mw.AdTimeline.prototype = {
 		// restore in sequence property; 
 		embedPlayer.sequenceProxy.isInSequence = false;
 		// trigger an event so plugins can restore their content based actions
-		embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback');
+		embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', this.currentAdSlotType);
 	}
 };
 
