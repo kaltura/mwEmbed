@@ -10,6 +10,7 @@
 		bindPostfix : '.kTimedText',
 		init: function( embedPlayer, captionPluginName, callback ){
 			var _this = this;
+			
 			this.embedPlayer = embedPlayer;
 			// Set the caption plugin name so that we can get config from the correct location. 
 			this.pluginName = captionPluginName;
@@ -22,6 +23,13 @@
 			var existingLayout = null;
 			if( embedPlayer.timedText ){
 				existingLayout = embedPlayer.timedText.config.layout;
+			}
+			
+			// Set captions layout of player based on plugin Name: 
+			if( this.pluginName == 'closedCaptionsOverPlayer' ){
+				this.defaultDisplayMode = 'ontop';
+			} else if( this.pluginName == 'closedCaptionsUnderPlayer' ){
+				this.defaultDisplayMode = 'below';
 			}
 			
 			// Inherit the timed text support via the base TimedText module:
@@ -37,13 +45,6 @@
 			// if using the customCaptionsButton existingLayout always starts as "off"
 			if ( _this.embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
 				existingLayout =  'off';
-			}
-			
-			// Set captions layout of player based on plugin Name: 
-			if( this.pluginName == 'closedCaptionsOverPlayer' ){
-				this.defaultDisplayMode = 'ontop';
-			} else if( this.pluginName == 'closedCaptionsUnderPlayer' ){
-				this.defaultDisplayMode = 'below';
 			}
 			
 			// Update the layout options per existing layout or uiConf preference. 

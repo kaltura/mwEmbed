@@ -109,7 +109,7 @@ mw.Playlist.prototype = {
 			if( _this.sourceHandler.autoPlay || _this.autoPlay ){
 				// only auto play if ipad3x ( iPad 4 and iOS does not let you autoplay )
 				if( !mw.isIOS() || mw.isIpad3() ){
-					_this.playClip( _this.clipIndex );
+					_this.playClip( _this.clipIndex, (_this.sourceHandler.autoPlay || _this.autoPlay) );
 				}
 			}
 			drawDoneCallback();
@@ -415,6 +415,7 @@ mw.Playlist.prototype = {
 		 _this.sourceHandler.loadCurrentPlaylist( function(){
 			 $( _this.target + ' .media-rss-video-list').empty();
 			_this.addMediaList();
+			_this.embedPlayer.triggerHelper( 'indexChanged', { 'newIndex' : inx } );
 		 });
 	},
 	/**
@@ -586,6 +587,9 @@ mw.Playlist.prototype = {
 			
 			$(uiSelector).show();
 		});
+		
+		// Trigger playlistsListed when we get the data
+		$( embedPlayer ).trigger( 'playlistsListed' );		
 	},
 	syncPlayerSize: function(){
 		var _this = this;

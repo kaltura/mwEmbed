@@ -183,6 +183,9 @@ mw.KAdPlayer.prototype = {
 				return true;				
 			});
 		}
+		// make sure we are in a play state:
+		_this.embedPlayer.playInterfaceUpdate();
+
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 			_this.playVideoSibling(	
@@ -561,7 +564,7 @@ mw.KAdPlayer.prototype = {
 		var _this = this;
 		// Hide any loading spinner
 		this.embedPlayer.hidePlayerSpinner();
-		
+		this.embedPlayer.pause();
 		// include a timeout for the pause event to propagate
 		setTimeout( function(){
 			// make sure the embed player is "paused" 

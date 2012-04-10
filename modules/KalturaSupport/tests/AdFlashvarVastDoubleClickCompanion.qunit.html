@@ -26,7 +26,6 @@ function jsKalturaPlayerTest( videoId ){
 					$('#testCompanion').find('a').length ){
 					equal( $('#testLongCompanion').find('a').attr('href'), "http://www.google.com", "testLongCompanion updated link" );
 					equal( $('#testCompanion').find('a').attr('href'), "http://www.google.com", "testCompanion updated link" );
-					kdp.sendNotification( 'doPause' );
 					start();
 					return ;
 				}

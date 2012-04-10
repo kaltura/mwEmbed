@@ -241,7 +241,7 @@
 		evaluate: function( embedPlayer, objectString ){
 			var _this = this;
 			var result;
-			if( typeof objectString != 'string'){
+			if( typeof objectString !== 'string'){
 				return objectString;
 			}
 			// Check if a simple direct evaluation: 
@@ -410,14 +410,16 @@
 					}
 				break;
 				case 'configProxy':
+					// get flashvars from playerConfig where possible
+					// TODO deprecate $( embedPlayer ).data('flashvars');
+					var fv;
+					if( embedPlayer.playerConfig && embedPlayer.playerConfig['vars'] ){
+						fv = embedPlayer.playerConfig['vars'];
+					} else {
+						fv = $( embedPlayer ).data('flashvars');
+					}
 					switch( objectPath[1] ){
 						case 'flashvars':
-							var fv;
-							if( embedPlayer.playerConfig && embedPlayer.playerConfig['vars'] ){
-								fv = embedPlayer.playerConfig['vars'];
-							} else {
-								fv = $( embedPlayer ).data('flashvars');
-							}
 							if( objectPath[2] ) {
 								switch( objectPath[2] ) {
 									case 'autoPlay':
@@ -448,8 +450,12 @@
 							return window.kWidgetSupport.getGUID();
 						break;
 					}
-					// no objectPath[1] match return the full configProx object: 
-					return {'flashvars' : $( embedPlayer ).data( 'flashvars' )}
+					// No objectPath[1] match return the full configProx object: 
+					// TODO I don't think this is supported in KDP ( we might want to return null instead )
+					return { 
+							'flashvars' : fv,
+							'sessionId' : window.kWidgetSupport.getGUID()
+						};
 				break;	
 				case 'playerStatusProxy':
 					switch( objectPath[1] ){
@@ -612,8 +618,9 @@
 				case 'doPause':
 					b( "onpause" );
 					break;
-					
 				case 'playerPlayed':
+					b( "playing" );
+					break;
 				case 'play':
 				case 'doPlay':
 					b( "onplay" );

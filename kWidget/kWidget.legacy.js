@@ -307,10 +307,12 @@ function kCheckAddScript(){
 
 // Add the kaltura html5 mwEmbed script
 var kAddedScript = false;
+var kQuenedAddScriptCallbacks = [];
 function kAddScript( callback ){
 	if( kAddedScript ){
-		if( callback )
-			callback();
+		if( callback ){
+			kQuenedAddScriptCallbacks.push( callback );
+		}
 		return ;
 	}
 	kAddedScript = true;
@@ -328,7 +330,14 @@ function kAddScript( callback ){
 		if( !window.kUserAgentPlayerRules && mw.getConfig( 'EmbedPlayer.EnableIframeApi') && ( kWidget.supportsFlash() || kWidget.supportsHTML5() ) ){
 			jsRequestSet.push( 'mwEmbed', 'mw.style.mwCommon', '$j.cookie', '$j.postMessage', 'mw.EmbedPlayerNative', 'mw.IFramePlayerApiClient', 'mw.KWidgetSupport', 'mw.KDPMapping', 'JSON', 'fullScreenApi' );		
 			// Load a minimal set of modules for iframe api
-			kLoadJsRequestSet( jsRequestSet, callback );
+			kLoadJsRequestSet( jsRequestSet, function(){
+				while( kQuenedAddScriptCallbacks.length ){
+					kQuenedAddScriptCallbacks.pop()();
+				}
+				if( callback ){
+					callback();
+				}
+			} );
 			return ;
 		} else {
 			kDoIframeRewriteList( kGetKalturaPlayerList() );
