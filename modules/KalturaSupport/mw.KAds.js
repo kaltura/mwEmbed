@@ -51,10 +51,12 @@ mw.KAds.prototype = {
 			_this.destroy();
 		});
 		
-		// Setup local pointer: 
-		var $uiConf = embedPlayer.$uiConf;
-		this.$notice = $uiConf.find( 'label#noticeMessage' );
-		this.$skipBtn = $uiConf.find( 'button#skipBtn' );
+		if( ! _this.getConfig( 'preSequence' ) ) {
+			_this.config[ 'preSequence' ] = 0;
+		}
+		if( ! _this.getConfig( 'postSequence' ) ) {
+			_this.config[ 'postSequence' ] = 0;
+		}		
 		
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
@@ -132,6 +134,13 @@ mw.KAds.prototype = {
 				return ;
 			}
 			
+			if( adType == 'preroll' ) {
+				_this.config[ 'preSequence' ]++;
+			}
+			if( adType == 'postroll' ) {
+				_this.config[ 'postSequence' ]++;
+			}
+			
 			var adCuePointConf = {
 				duration:  (cuePoint.endTime - cuePoint.startTime) / 1000,
 				start:  cuePoint.startTime / 1000 
@@ -145,7 +154,7 @@ mw.KAds.prototype = {
 				type: adType
 			};
 			
-			_this.addSequenceProxyBinding( adType, adConfigWrapper );
+			_this.addSequenceProxyBinding( adType, adConfigWrapper, _this.getSequenceIndex( adType ) );
 		});
 	},
 	/**
@@ -303,7 +312,7 @@ mw.KAds.prototype = {
 				// Add to timeline only if we have ads
 				if( adConfigSet[ adType ].ads ) {
 					if( adType == 'midroll' ||  adType == 'postroll' || adType =='preroll' ){
-						_this.addSequenceProxyBinding( adType, adConfigSet );
+						_this.addSequenceProxyBinding( adType, adConfigSet, _this.getSequenceIndex( adType ) );
 					}
 					if( adType == 'overlay' ){
 						_this.addOverlayBinding( adConfigSet[ adType ] );
@@ -314,12 +323,13 @@ mw.KAds.prototype = {
 			callback();
 		});
 	},
-	addSequenceProxyBinding: function( adType, adConfigSet ){
+	addSequenceProxyBinding: function( adType, adConfigSet, sequenceIndex ){
 		var _this = this;
 		var baseDisplayConf = this.getBaseDisplayConf();
+		sequenceIndex = sequenceIndex || _this.getSequenceIndex( adType );
 		$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
 			// add to sequenceProxy:
-			sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( doneCallback ){		
+			sequenceProxy[ sequenceIndex ] = function( doneCallback ){		
 				var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
 				adConfig.type = adType;
 				_this.adPlayer.display( adConfig, doneCallback );
@@ -375,10 +385,15 @@ mw.KAds.prototype = {
 		var config = {	
 			'companionTargets' : this.getCompanionTargets()
 		};
+		
+		// Setup local pointer: 
+		var notice = this.embedPlayer.getKalturaConfig('noticeMessage');
+		var skipBtn = this.embedPlayer.getKalturaConfig('skipBtn');
+		
 		// Add notice if present
-		if( this.$notice.length ){
+		if( notice ){
 			config.notice = {
-				'evalText' : this.$notice.attr('text'),
+				'evalText' : notice['text'],
 				'css' : {
 					'top': '5px',
 					'left' : '5px'
@@ -386,9 +401,9 @@ mw.KAds.prototype = {
 			};
 		}
 		
-		if( this.$skipBtn.length ){
+		if( skipBtn ){
 			config.skipBtn = {
-				'text' : this.$skipBtn.attr('label'),
+				'text' : skipBtn['label'],
 				'css' : {
 					'right': '5px',
 					'bottom' : '5px'
