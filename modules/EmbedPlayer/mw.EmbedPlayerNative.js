@@ -490,13 +490,20 @@ mw.EmbedPlayerNative = {
 			if( vid.currentTime > 0 ){
 				callbackHandler();
 			} else {
-				mw.log( "Error:: seek callback without time updatet " + vid.currentTime );
+				mw.log( "Error:: EmbedPlayerNative: seek callback without time updatet " + vid.currentTime );
 			}
 		});
 		setTimeout(function(){
 			if( $.isFunction( callback ) ){
-				mw.log( "Error:: Seek still has not made a callback after 5 seconds, retry");
-				_this.setCurrentTime( seekTime, callback , callbackCount++ );
+				// if seek is within 5 seconds of the target assume success. ( key frame intervals can mess with seek accuracy ) 
+				// this only runs where the seek callback failed ( i.e broken html5 seek ? ) 
+				if( Math.abs( vid.currentTime - seekTime ) < 5 ){
+					mw.log( "EmbedPlayerNative:: Seek time is within 5 seconds of target, sucessfull seek");
+					callback();
+				} else {
+					mw.log( "Error:: EmbedPlayerNative: Seek still has not made a callback after 5 seconds, retry");
+					_this.setCurrentTime( seekTime, callback , callbackCount++ );
+				}
 			}
 		}, 5000);
 		
