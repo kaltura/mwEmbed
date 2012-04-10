@@ -3238,6 +3238,7 @@ jQuery.event = {
 
 					// Prevent re-triggering of the same event, since we already bubbled it above
 					jQuery.event.triggered = type;
+					// XXX added by dale, to support triggering events on objects ( seems to work in IE despite the above warning )
 					if( elem[ type ] && typeof elem[ type ] == 'function' ){
 						elem[ type ]();
 					}
