@@ -481,7 +481,6 @@ mw.EmbedPlayer.prototype = {
 	 */
 	switchPlaySource: function( source, switchCallback, doneCallback ){
 		var _this = this;
-
 		var targetPlayer =  mw.EmbedTypes.getMediaPlayers().defaultPlayer( source.mimeType ) ;
 		if( targetPlayer.library != this.selectedPlayer.library ){
 			this.selectedPlayer = targetPlayer;
@@ -2232,7 +2231,7 @@ mw.EmbedPlayer.prototype = {
 			}
 			// Check if we are "done"
 			var endPresentationTime = ( this.startOffset ) ? ( this.startOffset + this.duration ) : this.duration;
-			if ( this.currentTime >= endPresentationTime ) {
+			if ( this.currentTime >= endPresentationTime && !this.isStopped()  ) {
 				mw.log( "mw.EmbedPlayer::updatePlayheadStatus > should run clip done :: " + this.currentTime + ' > ' + endPresentationTime );
 				this.onClipDone();
 			}
