@@ -28,24 +28,26 @@
 	 * element does not display child elements, ( images, video )
 	 */
 	$.fn.getAbsoluteOverlaySpinner = function(){
-		var pos = $( this ).offset();				
-		var posLeft = (  $( this ).width() ) ? 
-			parseInt( pos.left + ( .5 * $( this ).width() ) -16 ) : 
-			pos.left + 30;
-			
-		var posTop = (  $( this ).height() ) ? 
-			parseInt( pos.top + ( .5 * $( this ).height() ) -16 ) : 
-			pos.top + 30;
-		
+		// Set the spin size to "small" ( length 5 ) if video height is small
+		var spinOps = ( $( this ).height() < 36 )? { 'length' : 5, 'width' : 2, 'radius' : 4 }: {};
+		var spinerSize = {
+				'width' : 45, 
+				'height' : 45
+		};
 		var $spinner = $('<div />')
-			.addClass('absoluteOverlaySpinner')
-			.loadingSpinner()				
-			.css({				
-				'top' : posTop + 'px',
-				'left' : posLeft + 'px'
-			});
-		$('body').append( $spinner	);
+			.css({
+				'width' : spinerSize.width,
+				'height' : spinerSize.height,
+				'position': 'absolute',
+				'top' : '50%',
+				'left' : '50%',
+				'z-index' : 100
+			})
+			.loadingSpinner(
+				spinOps
+			)
+		$( this ).append( $spinner	);
 		return $spinner;
-	};	
+	};
 	
 } )( jQuery );
