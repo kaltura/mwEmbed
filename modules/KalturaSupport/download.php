@@ -60,8 +60,8 @@ class downloadEntry {
 		header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 		if ( $this->forceDownload ) {
 			header( "Content-Description: File Transfer" );
-			header( "Content-Type: application/force-download" ); 
-            $extension = strrchr( strstr( $flavorUrl, "?ks=", true ), '.' );
+			header( "Content-Type: application/force-download" );
+			$extension = strrchr( substr( $flavorUrl, 0, strpos( $flavorUrl, "?ks=" ) ), '.' );
             $flavorId = substr( strrchr( strstr( $flavorUrl, "/format/", true ), '/' ), 1 );
             $filename = $flavorId . $extension;
 			header( "Content-Disposition: attachment; filename=$filename" );
