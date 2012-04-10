@@ -50,6 +50,9 @@ mw.includeAllModuleMessages();
 		// The default display mode is 'ontop'
 		defaultDisplayMode : 'ontop',
 		
+		// Save last layout mode
+		lastLayout : 'ontop',
+		
 		// The bind prefix:
 		bindPostFix: '.timedText',
 		
@@ -215,6 +218,16 @@ mw.includeAllModuleMessages();
 					.animate( layout, 'fast' );
 				}
 			});
+			
+			$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + this.bindPostFix, function() {
+				_this.lastLayout = _this.getLayoutMode();
+				_this.setLayoutMode( 'off' );
+			} );
+			
+			$( embedPlayer ).bind( 'AdSupport_EndAdPlayback' + this.bindPostFix, function() {
+				_this.setLayoutMode( _this.lastLayout );
+			} );
+			
 		},
 		addInterface: function(){
 			var _this = this;
