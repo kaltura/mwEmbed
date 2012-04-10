@@ -220,23 +220,17 @@
 					}
 					cssObject[ cssName ] = attr.nodeValue;
 				});
-				//for(var i =0; i< style.length )
+				// for(var i =0; i< style.length )
 				_this.styleCss[ $( style).attr('id') ] = cssObject;
 			});
 			
 			$( xml ).find( 'p' ).each( function( inx, p ){
 
-				// Get text content ( just a quick hack, we need more detailed spec or TTML parser )
+				// Get text content by converting ttml node to html
 				var content = '';
-				$( p.childNodes ).each(function(inx,node){
-				   if( node.nodeName != '#text' && node.nodeName != 'metadata' ){
-					   // Add any html tags:
-					   content +='<' + node.nodeName + '>' + node.textContent + '</' + node.nodeName + '>' ;
-				    } else {
-				    	content += node.textContent;
-				    }
+				$.each( p.childNodes, function(inx, node){
+					content+= _this.convertTTML2HTML( node );
 				});
-				
 				// Get the end time:
 				var end = null;
 				if( $( p ).attr( 'end' ) ){
@@ -252,7 +246,7 @@
 				var captionObj ={
 					'start': mw.npt2seconds( $( p ).attr( 'begin' ) ),
 					'end': end,
-					'content':  content
+					'content': content
 				};
 				
 				// See if we have custom metadata for position of this caption object 
@@ -293,6 +287,34 @@
 				captions.push( captionObj);
 			});
 			return captions;
+		},
+		convertTTML2HTML: function( node ){
+			var _this = this;
+			if( node.childNodes.length ){
+				var nodeString = '';
+				$.each( node.childNodes, function( inx, childNode ){
+					// look for text node: 
+					if( node.nodeType == 3 ){
+						nodeString += node.text;
+					} else { 
+						// skip metadata nodes: 
+						if( node.nodeName == 'metadata' ){
+							return true;
+						}
+						
+						var styleAttr = '';
+						if( node.getAttribute('tts:color') ){
+							styleAttr = 'style="color:' +  node.getAttribute('tts:color') +'" ';
+						}
+						nodeString += '<' + node.nodeName + ' ' + styleAttr + '>' + 
+						 	_this.convertTTML2HTML( childNode ) +
+						 	'</' + node.nodeName + '>';
+					}
+				} );
+				return nodeString;
+			} else {
+				return node.textContent;
+			}
 		},
 		/**
 		 * srt timed text parse handle:
