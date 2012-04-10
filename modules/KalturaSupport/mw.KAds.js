@@ -55,12 +55,6 @@ mw.KAds.prototype = {
 		var $uiConf = embedPlayer.$uiConf;
 		this.$notice = $uiConf.find( 'label#noticeMessage' );
 		this.$skipBtn = $uiConf.find( 'button#skipBtn' );
-
-		// Load the Ads from uiConf
-		_this.loadAds( function(){
-			mw.log( "KAds::All ads have been loaded" );
-			callback();
-		});
 		
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
@@ -68,7 +62,7 @@ mw.KAds.prototype = {
 			$( embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event, cuePointWrapper ) {
 				// Check for  protocolType == 1 ( type = vast )
 				if( cuePointWrapper.cuePoint.protocolType == 1 ){
-					_this.loadAndDisplayAd( cuePointWrapper );
+					_this.handleAdOpportunity( cuePointWrapper );
 				}
 			});
 
@@ -76,6 +70,12 @@ mw.KAds.prototype = {
 				embedPlayer.play();
 			});
 		}
+		
+		// Load the Ads from uiConf
+		_this.loadAds( function(){
+			mw.log( "KAds::All ads have been loaded" );
+			callback();
+		});		
 	},
 	
 	/**
@@ -100,6 +100,53 @@ mw.KAds.prototype = {
 			this.config = this.embedPlayer.getKalturaConfig( 'vast', configSet );
 		}
 		return this.config[ name ];
+	},
+	
+	handleAdOpportunity: function( cuePointWrapper ) {
+		var _this = this;
+		switch( _this.embedPlayer.kCuePoints.getAdSlotType( cuePointWrapper ) ) {
+			case 'preroll':
+			case 'postroll':
+				_this.loadAndAddToSequence( cuePointWrapper );
+				break;
+				
+			case 'midroll':
+			case 'overlay':
+				_this.loadAndDisplayAd( cuePointWrapper );
+				break;
+		}
+	},
+	
+	loadAndAddToSequence: function( cuePointWrapper ) {
+		var _this = this;
+		var cuePoint = cuePointWrapper.cuePoint;
+		var adType = _this.embedPlayer.kCuePoints.getAdSlotType( cuePointWrapper );
+		
+		// Check for empty ad:
+		if( !cuePoint.sourceUrl || $.trim( cuePoint.sourceUrl ) === '' ) {
+			return ;
+		}
+		// Load Ad
+		mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
+			if( ! adConf ) {
+				return ;
+			}
+			
+			var adCuePointConf = {
+				duration:  (cuePoint.endTime - cuePoint.startTime) / 1000,
+				start:  cuePoint.startTime / 1000 
+			};
+			
+			var adConfigWrapper = {};
+			adConfigWrapper[ adType ] = {
+				ads: [
+					$.extend( adConf.ads[0], adCuePointConf )
+				],
+				type: adType
+			};
+			
+			_this.addSequenceProxyBinding( adType, adConfigWrapper );
+		});
 	},
 	/**
 	 * load and display an ad
@@ -135,7 +182,7 @@ mw.KAds.prototype = {
 		}
 		
 		// If ad type is midroll pause the video
-		if( cuePoint.adType == 1 ) {
+		if( adType == 'midroll' ) {
 			_this.embedPlayer.pauseLoading();
 		}
 		

@@ -10,17 +10,43 @@ mw.KCuePoints.prototype = {
 		
 	// The bind postfix:
 	bindPostfix: '.kCuePoints',
+	midCuePointsArray: [],
 	
 	init: function( embedPlayer ){
+		var _this = this;
 		// Remove any old bindings: 
 		this.destroy();
 		// Setup player ref:
 		this.embedPlayer = embedPlayer;
-		// Add player bindings:
-		this.addPlayerBindings();
+		
+		// Proccess cue points
+		embedPlayer.bindHelper('KalturaSupport_CuePointsReady' + this.bindPostfix, function() {
+			_this.processCuePoints();
+			// Add player bindings:
+			_this.addPlayerBindings();			
+		});
 	},
 	destroy: function(){
 		$( this.embedPlayer ).unbind( this.bindPostfix );
+	},
+	/*
+	 * Trigger Pre/Post cue points and create Mid cue points array
+	 */
+	processCuePoints: function() {
+		var _this = this;
+		var cuePoints = this.getCuePoints();
+		// Create new array with midrolls only
+		var newCuePointsArray = [];
+		$.each( cuePoints, function( idx, cuePoint ){
+			if( _this.getVideoAdType( cuePoint ) == 'pre' || _this.getVideoAdType( cuePoint ) == 'post' ) {
+				_this.triggerCuePoint( cuePoint );
+			} else {
+				// Midroll
+				newCuePointsArray.push( cuePoint );
+			}
+		});
+		
+		this.midCuePointsArray = newCuePointsArray;
 	},
 	/**
 	 * Adds player cue point bindings
@@ -36,49 +62,9 @@ mw.KCuePoints.prototype = {
 			return ;
 		}
 		
-		// Handle first cue point (preRoll)
-		if( currentCuePoint.startTime == 0 ) {
-			currentCuePoint.startTime = 1;
-		}
-
-		// Bind to monitorEvent to trigger the cue points events
-		$( embedPlayer ).bind( "monitorEvent" + this.bindPostfix, function() {
-			var currentTime = embedPlayer.currentTime * 1000;
-			var cuePointType = _this.getRawAdSlotType( currentCuePoint );
-			
-			// Check if the currentCuePoint exists
-			if( ! currentCuePoint  ){
-				return ;
-			}
-			
-			// Don't trigger postrolls
-			// TODO: we should remove preroll / postroll from the cuePoints array and handle 
-			// via the adSupport sequence proxy
-			if( currentTime > currentCuePoint.startTime 
-					&& 
-				cuePointType != 'postroll' 
-					&& 
-				embedPlayer._propagateEvents 
-			){
-				// Make a copy of the cue point to be triggered.
-				// Sometimes the trigger can result in monitorEvent being called and an 
-				// infinite loop ( ie ad network error, no ad received, and restore player calling monitor() ) 
-				var cuePointToBeTriggered = $.extend( {}, currentCuePoint);
-				// Update the current Cue Point to the "next" cue point
-				currentCuePoint = _this.getNextCuePoint( currentTime  );
-				// Trigger the cue point 
-				_this.triggerCuePoint( cuePointToBeTriggered );
-			}
-		});
-
-		// Handle last cue point (postRoll)
-		$( embedPlayer ).bind( "ended" + this.bindPostfix, function(){
-			var cuePoints = _this.getCuePoints();
-			var lastCuePoint = cuePoints[ cuePoints.length - 1];
-			if( lastCuePoint.startTime >= _this.getEndTime() ) {
-				// Found postRoll, trigger cuePoint
-				_this.triggerCuePoint( lastCuePoint );
-			}
+		// Destroy on changeMedia
+		$( embedPlayer ).bind( 'onChangeMedia' + this.bindPostfix, function(){
+			_this.destroy();
 		});
 
 		// Bind for seeked event to update the nextCuePoint
@@ -86,10 +72,26 @@ mw.KCuePoints.prototype = {
 			var currentTime = embedPlayer.currentTime * 1000;
 			currentCuePoint = _this.getNextCuePoint( currentTime );
 		});
-
-		$( embedPlayer ).bind( 'onChangeMedia' + this.bindPostfix, function(){
-			_this.destroy();
-		});
+		
+		// Bind to monitorEvent to trigger the cue points events
+		$( embedPlayer ).bind( "monitorEvent" + this.bindPostfix, function() {		
+			// Check if the currentCuePoint exists
+			if( ! currentCuePoint  ){
+				return ;
+			}
+			
+			var currentTime = embedPlayer.currentTime * 1000;
+			if( currentTime > currentCuePoint.startTime && embedPlayer._propagateEvents ){
+				// Make a copy of the cue point to be triggered.
+				// Sometimes the trigger can result in monitorEvent being called and an 
+				// infinite loop ( ie ad network error, no ad received, and restore player calling monitor() ) 
+				var cuePointToBeTriggered = $.extend( {}, currentCuePoint);
+				// Update the current Cue Point to the "next" cue point
+				currentCuePoint = _this.getNextCuePoint( currentTime );
+				// Trigger the cue point 
+				_this.triggerCuePoint( cuePointToBeTriggered );
+			}
+		});	
 	},
 	getEndTime: function(){
 		return this.embedPlayer.evaluate('{mediaProxy.entry.msDuration}');
@@ -105,7 +107,7 @@ mw.KCuePoints.prototype = {
 	* @param {Number} time Time in milliseconds
 	*/
 	getNextCuePoint: function( time ){
-		var cuePoints = this.getCuePoints();
+		var cuePoints = this.midCuePointsArray;
 		// Start looking for the cue point via time, return first match:
 		for( var i = 0; i < cuePoints.length; i++) {
 			if( cuePoints[i].startTime >= time ) {
@@ -152,7 +154,7 @@ mw.KCuePoints.prototype = {
 	
 	// Get Ad Type from Cue Point
 	getVideoAdType: function( rawCuePoint ) {
-		if( rawCuePoint.startTime == 1 ) {
+		if( rawCuePoint.startTime === 0 ) {
 			return 'pre';
 		} else if( rawCuePoint.startTime == this.getEndTime() ) {
 			return 'post';
@@ -166,7 +168,7 @@ mw.KCuePoints.prototype = {
 	 * @param cuePointWrapper
 	 * @return
 	 */
-	getAdSlotType: function( cuePointWrapper ) {		
+	getAdSlotType: function( cuePointWrapper ) {
 		if( cuePointWrapper.cuePoint.adType == 1 ) {
 			return this.getVideoAdType( cuePointWrapper.cuePoint ) + 'roll';
 		} else {
