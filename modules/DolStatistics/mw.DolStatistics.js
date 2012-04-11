@@ -206,20 +206,15 @@ mw.DolStatistics.prototype = {
 		});
 	},
 
-	/* Retrive video duration */
+	/* Retrieve video duration */
 	getDuration: function() {
-		// try to get the "raw" duration 
-		/*if( this.embedPlayer.getPlayerElement() ){
-			var rawDur = this.embedPlayer.getPlayerElement().duration;
-			if( ! isNaN( rawDur ) ){
-				return rawDur;
-			}
-		}*/
 		return this.embedPlayer.evaluate('{duration}');
 	},
-
+	/**
+	 * Get video bitrate, return zero if not found. 
+	 */
 	getBitrate: function() {
-		if( this.embedPlayer.mediaElement.selectedSource ) {
+		if( this.embedPlayer.mediaElement && this.embedPlayer.mediaElement.selectedSource ) {
 			return this.embedPlayer.mediaElement.selectedSource.getBitrate() || 0;
 		}
 		return 0;

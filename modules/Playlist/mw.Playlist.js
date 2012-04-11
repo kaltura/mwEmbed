@@ -209,8 +209,9 @@ mw.Playlist.prototype = {
 				// just the default left side assignment ( updates once we have player size ) 
 				var leftPx = '444px';
 				var playerSize = _this.getTargetPlayerSize();
-				if( playerSize.width )
+				if( playerSize.width ){
 					leftPx = playerSize.width;
+				}
 			}
 			var $plListContainer =$('<div />')
 			.addClass( 'playlist-set-container' )

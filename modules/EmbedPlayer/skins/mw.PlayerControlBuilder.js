@@ -922,6 +922,7 @@ mw.PlayerControlBuilder.prototype = {
 			
 			// include touch start pause binding
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
+				mw.log( "PlayerControlBuilder:: touchstart:"  + ' isPause:' + embedPlayer.paused);
 				if( embedPlayer.paused ) {
 					embedPlayer.play();
 				} else {
@@ -1049,6 +1050,7 @@ mw.PlayerControlBuilder.prototype = {
 	
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
+			mw.log( "PlayerControlBuilder:: click:"  + ' isPause:' + embedPlayer.paused);
 			// Don't do anything if native controls displayed:
 			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() || mw.isIpad() ) {
 				return true;
@@ -1056,7 +1058,7 @@ mw.PlayerControlBuilder.prototype = {
 			var clickTime = new Date().getTime();
 			if( clickTime -lastClickTime < dblClickTime ) {
 				didDblClick = true;
-				setTimeout( function(){ 
+				setTimeout( function(){
 					didDblClick = false; 
 				},  dblClickTime + 10 );
 			}
