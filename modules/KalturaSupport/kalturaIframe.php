@@ -167,7 +167,7 @@ class kalturaIframe {
 		}
 		// If audio player adjust height:
 		$entryResult = $this->getResultObject()->getResultObject();
-		if( isset( $entryResult['meta'] ) && $entryResult['meta']->mediaType == 5 ){
+		if( isset( $entryResult['meta'] ) && isset( $entryResult['meta']->mediaType ) && $entryResult['meta']->mediaType == 5 ){
 			$height = 30;
 		}
 		
