@@ -216,7 +216,6 @@ mw.DoubleClick.prototype = {
 		if( adType ){
 			adsRequest['adType'] = adType;
 		}
-		
 		// Set the size in the adsRequest 
 		var size = _this.getPlayerSize();
 		adsRequest.linearAdSlotWidth = size.width;
@@ -359,10 +358,14 @@ mw.DoubleClick.prototype = {
 			_this.restorePlayer();
 		});
 		adsListener( 'ALL_ADS_COMPLETED', function(){
-			// set the allAdsCompletedFlag to not call restore player twice
-			_this.allAdsCompletedFlag = true;
-			// restore the player but don't play content since ads are done:
-			_this.restorePlayer( true );
+			// check that content is done before we restore the player, managed players with only pre-rolls fired 
+			// ALL_ADS_COMPLETED after preroll not after all ad opportunities for this content have expired. 
+			if( _this.contentDoneFlag ){
+				// set the allAdsCompletedFlag to not call restore player twice
+				_this.allAdsCompletedFlag = true;
+				// restore the player but don't play content since ads are done:
+				_this.restorePlayer( true );
+			}
 		});
 	},
 	getPlayerSize: function(){
@@ -483,7 +486,7 @@ mw.DoubleClick.prototype = {
 		// Show the content:
 		this.showContent();
 
-		// do an async play call ( without events if not on postroll )
+		// Do an async play call ( without events if not on postroll )
 		if( !onContentComplete ){
 			this.getContent().play();
 		}
