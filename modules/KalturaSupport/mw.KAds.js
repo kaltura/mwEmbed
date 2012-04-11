@@ -43,12 +43,13 @@ mw.KAds.prototype = {
 		
 		// Setup the ad player: 
 		_this.adPlayer = new mw.KAdPlayer( embedPlayer );
+
+		// Clear any existing bindings: 
+		_this.destroy();
 		
 		$( embedPlayer ).bind( 'onChangeMedia' + _this.bindPostfix, function(){
 			_this.destroy();
 		});
-		// Clear any existing bindings: 
-		_this.destroy();
 		
 		// Setup local pointer: 
 		var $uiConf = embedPlayer.$uiConf;
@@ -143,11 +144,13 @@ mw.KAds.prototype = {
 			_this.embedPlayer.disablePlayControls();
 		}
 		
+		var baseDisplayConf = this.getBaseDisplayConf();
+		
 		mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
+			// No Ad configuration, continue playback
 			if( ! adConf ){
 				// Ad skip re-enable play controls: 
 				_this.embedPlayer.enablePlayControls();
-				
 				// Resume content playback
 				setTimeout( function() { 
 					_this.embedPlayer.play();
@@ -164,16 +167,11 @@ mw.KAds.prototype = {
 				ads: [
 					$.extend( adConf.ads[0], adCuePointConf )
 				],
-				skipBtn: {
-					'text' : "Skip ad", // TODO i8ln 
-					'css' : {
-						'right': '5px',
-						'bottom' : '5px'
-					}
-				},
 				type: adType
 			};
 
+			$.extend( adsCuePointConf, baseDisplayConf );
+			
 			var originalSource = embedPlayer.getSource();
 			var seekPerc = ( parseFloat( cuePoint.startTime / 1000 ) / parseFloat( embedPlayer.duration ) );
 			var oldDuration = embedPlayer.duration;

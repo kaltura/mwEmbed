@@ -699,9 +699,7 @@ mw.EmbedPlayerNative = {
 	},
 	restorePlayerOnScreen: function( vid ){
 		var vid = this.getPlayerElement();
-		// fallback to 
-		$( vid ).css( 'left', '0px');
-		// always sync player size after a restore ( won't be left 0px );
+		// always sync player size after a restore
 		if( this.controlBuilder ){
 			this.controlBuilder.syncPlayerSize();
 		}

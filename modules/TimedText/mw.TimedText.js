@@ -50,6 +50,9 @@ mw.includeAllModuleMessages();
 		// The default display mode is 'ontop'
 		defaultDisplayMode : 'ontop',
 		
+		// Save last layout mode
+		lastLayout : 'ontop',
+		
 		// The bind prefix:
 		bindPostFix: '.timedText',
 		
@@ -215,6 +218,16 @@ mw.includeAllModuleMessages();
 					.animate( layout, 'fast' );
 				}
 			});
+			
+			$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + this.bindPostFix, function() {
+				_this.lastLayout = _this.getLayoutMode();
+				_this.setLayoutMode( 'off' );
+			} );
+			
+			$( embedPlayer ).bind( 'AdSupport_EndAdPlayback' + this.bindPostFix, function() {
+				_this.setLayoutMode( _this.lastLayout );
+			} );
+			
 		},
 		addInterface: function(){
 			var _this = this;
@@ -1004,6 +1017,7 @@ mw.includeAllModuleMessages();
 			// TOOD we should scrub this for non-formating html
 			$textTarget.append( 
 				$('<span />')
+					.addClass( 'ttmlStyled' )
 					.css( this.getCaptionCss() )
 					.html( caption.content )
 			);
@@ -1036,11 +1050,10 @@ mw.includeAllModuleMessages();
 			// Update the style of the text object if set
 			if( caption.styleId ){
 				var capCss = source.getStyleCssById( caption.styleId );
-				$textTarget.find('span').css(
+				$textTarget.find('span.ttmlStyled').css(
 					capCss
 				);
 			}
-		
 			$textTarget.fadeIn('fast');
 		},
 		displayTextTarget: function( $textTarget ){

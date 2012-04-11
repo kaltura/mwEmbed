@@ -789,6 +789,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var $interface = embedPlayer.$interface;
 		var targetAspectSize = _this.getAspectPlayerWindowCss( size );
+		
 		// Setup button scale to not reflect controls offset  
 		var buttonScale = $.extend( {}, interfaceCss);
 		if( !_this.isOverlayControls() ){
@@ -825,7 +826,6 @@ mw.PlayerControlBuilder.prototype = {
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
 			}
-
 			// Update play button pos
 			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition() );
 			

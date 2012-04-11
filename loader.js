@@ -97,7 +97,7 @@ mw.setConfig( 'loaderContext', '' );
  */
 mw.addResourcePaths( {
 	"mwEmbed"				: "mwEmbed.js",
-	"window.jQuery"			: "libraries/jquery/jquery-1.6.2.js",
+	"window.jQuery"			: "libraries/jquery/jquery-1.7.2.js",
 
 	"$j.mobile"				: "libraries/jquerymobile/jquery.mobile-1.0a2.js",
 	"mw.style.mobile"		: "libraries/jquerymobile/jquery.mobile-1.0a2.css",
