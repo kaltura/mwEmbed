@@ -832,7 +832,7 @@ mw.EmbedPlayer.prototype = {
 					}
 					// Check if we should hide the large play button on end: 
 					if( $( _this ).data( 'hideEndPlayButton' ) ){
-						__this.$interface.find('.play-btn-large').hide();
+						_this.$interface.find('.play-btn-large').hide();
 					} else {
 						_this.addPlayBtnLarge();
 					}
