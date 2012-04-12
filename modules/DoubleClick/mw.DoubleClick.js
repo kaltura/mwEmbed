@@ -36,12 +36,13 @@ mw.DoubleClick.prototype = {
 	init: function( embedPlayer, callback, pluginName ){
 		var _this = this;
 		
-		this.pluginName = pluginName;
-		
 		this.embedPlayer = embedPlayer;
 		
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
+		
+		// Set the plugin name
+		this.pluginName = pluginName;
 		
 		// reset the contentDoneFlag flags:
 		this.contentDoneFlag = null;
