@@ -117,21 +117,24 @@ mw.DoubleClick.prototype = {
 		mw.log("DoubleClick::addKalturaCuePointBindings");
 		// Add a binding for cuepoints:
 		_this.embedPlayer.bindHelper( 'KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event,  cuePointWrapper ){
+			mw.log( "DoubleClick:: evaluate ad oppertunity");
 			var cuePoint = cuePointWrapper.cuePoint;
 			// Check if trackCuePoints has been disabled 
 			if( _this.getConfig( 'trackCuePoints') === false){
+				mw.log( "DoubleClick:: trackCuePoints is false");
 				return ;
 			}
 			
 			// Check that the cue point is protocolType = 0 and cuePointType == adCuePoint.Ad
 			if( cuePoint.protocolType !== 0 || cuePoint.cuePointType != 'adCuePoint.Ad' ){
+				mw.log( "DoubleClick:: cuePoint protocol != 0 or type != adCuePoint.ad" );
 				return ;
 			}
 			// Check if we have a provider filter:
 			var providerFilter = _this.getConfig('provider');
 			if( providerFilter && cuePoint.tags.toLowerCase().indexOf( providerFilter.toLowerCase() ) === -1 ){
 				// skip the cuepoint that did not match the provider filter
-				mw.log( "mw.DoubleClick:: skip cuePoint with tag: " + cuePoint.tags + ' != ' + providerFilter );
+				mw.log( "DoubleClick:: skip cuePoint with tag: " + cuePoint.tags + ' != ' + providerFilter );
 				return ;
 			}
 			
@@ -390,6 +393,11 @@ mw.DoubleClick.prototype = {
 		this.restorePlayerOnScreen( 
 			this.getContent()
 		);
+		// make sure content is in sync with aspect size: 
+		if( this.embedPlayer.controlBuilder ){
+			this.embedPlayer.controlBuilder.syncPlayerSize();
+		}
+		
 		// hide the ad container: 
 		this.hidePlayerOffScreen(
 			this.getAdContainer()

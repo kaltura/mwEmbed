@@ -789,6 +789,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var $interface = embedPlayer.$interface;
 		var targetAspectSize = _this.getAspectPlayerWindowCss( size );
+		
 		// Setup button scale to not reflect controls offset  
 		var buttonScale = $.extend( {}, interfaceCss);
 		if( !_this.isOverlayControls() ){
@@ -825,7 +826,6 @@ mw.PlayerControlBuilder.prototype = {
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
 			}
-
 			// Update play button pos
 			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition() );
 			
@@ -922,6 +922,7 @@ mw.PlayerControlBuilder.prototype = {
 			
 			// include touch start pause binding
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
+				mw.log( "PlayerControlBuilder:: touchstart:"  + ' isPause:' + embedPlayer.paused);
 				if( embedPlayer.paused ) {
 					embedPlayer.play();
 				} else {
@@ -1049,6 +1050,7 @@ mw.PlayerControlBuilder.prototype = {
 	
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
+			mw.log( "PlayerControlBuilder:: click:"  + ' isPause:' + embedPlayer.paused);
 			// Don't do anything if native controls displayed:
 			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() || mw.isIpad() ) {
 				return true;
@@ -1056,7 +1058,7 @@ mw.PlayerControlBuilder.prototype = {
 			var clickTime = new Date().getTime();
 			if( clickTime -lastClickTime < dblClickTime ) {
 				didDblClick = true;
-				setTimeout( function(){ 
+				setTimeout( function(){
 					didDblClick = false; 
 				},  dblClickTime + 10 );
 			}

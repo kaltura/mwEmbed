@@ -12,7 +12,6 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			callback();
 			return ;
 		}
-		
 		// Check if plugin is enabled
 	 	if( embedPlayer.isPluginEnabled( 'doubleClick' ) ){
 			mw.load( 'DoubleClick', function(){

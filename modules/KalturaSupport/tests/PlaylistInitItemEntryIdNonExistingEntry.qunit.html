@@ -1,37 +1,67 @@
 <!DOCTYPE HTML>
 <html>
-  <head>
-    <title>Playlist Inline Item Entry</title>
-    </head>
-   <body>
-   	<h3> Playlist Inline Item Entry </h3> 
-   	Starts with 3rd item in the playlist ( 0_ntovmku5 )
-   	 <a href="?forceMobileHTML5"> Force Mobile HTML5</a>  <br> <br>
-   		<div class='video_wrap'>
-              <div id='kplayer'></div>
-       </div>
-      <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
-	  <object id="kaltura_player_1319935596" 
-	  	name="kaltura_player_1319935596" 
-	  	type="application/x-shockwave-flash" 
-	  	allowFullScreen="true" 
-	  	allowNetworking="all" 
-	  	allowScriptAccess="always" 
-	  	height="620" 
-	  	width="400" 
-	  	bgcolor="#000000" 
-	  	xmlns:dc="http://purl.org/dc/terms/" 
-	  	xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
-	  	rel="media:video" 
-	  	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1319935596/wid/_243342/uiconf_id/5783651" 
-	  	data="http://www.kaltura.com/index.php/kwidget/cache_st/1319935596/wid/_243342/uiconf_id/5783651">
-	  		<param name="allowFullScreen" value="true" />
-	  		<param name="allowNetworking" value="all" />
-	  		<param name="allowScriptAccess" value="always" />
-	  		<param name="bgcolor" value="#000000" />
-	  		<param name="flashvars" value="playlistAPI.initItemEntryId=0_ntovmku5&playlistAPI.autoInsert=true&playlistAPI.kpl0Name=test 4 item playlist&playlistAPI.kpl0Url=http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fuid%3D%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%26playlist_id%3D0_q79jh71b&" />
-	  		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1319935596/wid/_243342/uiconf_id/5783651" />
-	  </object>
+
+<head>
+	<title>Playlist Inline Item Entry - Non Existing Entry</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>	
+	<script type="text/javascript">
+		var entryPlaying = null;
+		function jsCallbackReady( videoId ) {
+			var kdp = $( '#' + videoId ).get( 0 );
+			kdp.addJsListener( 'doPlay', 'doPlayCallback' );
+		}
+		
+		function jsKalturaPlayerTest( videoId ){
+			var kdp = $( '#' + videoId ).get( 0 );
+			// Name this module
+			module( "playlistAPI" );
+
+			test( "initItemEntryId is set", function(){
+				ok( kdp.getKalturaConfig( 'playlistAPI', 'initItemEntryId' ), 'playlistAPI.initItemEntryId flashvar is set' );
+			});
+		}
+		
+		function doPlayCallback( videoId ) {
+			var kdp = $( '#' + videoId ).get( 0 );
+			test( "Playing first entry", function() {
+				equal( kdp.kentryid, '0_uka1msg4', 'Started playing entry ' + kdp.kentryid );
+			});
+		}
+	</script>
+	
+	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+
+<body>
+   	<h3> Playlist Inline Item Entry - Non Existing Entry </h3> 
+   	Since false entry (not existing in this playlist) is passed, should play the first one ( 0_uka1msg4 )
+	<br /> <br />
+	<a href="?forceMobileHTML5"> Force Mobile HTML5</a>  
+	<br /> <br />
+
+	<object id="kaltura_player_1319935596" 
+		name="kaltura_player_1319935596" 
+		type="application/x-shockwave-flash" 
+		allowFullScreen="true" 
+		allowNetworking="all" 
+		allowScriptAccess="always" 
+		height="620" 
+		width="400" 
+		bgcolor="#000000" 
+		xmlns:dc="http://purl.org/dc/terms/" 
+		xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
+		rel="media:video" 
+		resource="http://www.kaltura.com/index.php/kwidget/cache_st/1319935596/wid/_243342/uiconf_id/5783651" 
+		data="http://www.kaltura.com/index.php/kwidget/cache_st/1319935596/wid/_243342/uiconf_id/5783651">
+		<param name="allowFullScreen" value="true" />
+		<param name="allowNetworking" value="all" />
+		<param name="allowScriptAccess" value="always" />
+		<param name="bgcolor" value="#000000" />
+		<param name="flashvars" value="playlistAPI.initItemEntryId=0_ntavmku5&playlistAPI.autoInsert=true&playlistAPI.kpl0Name=test 4 item playlist&playlistAPI.kpl0Url=http%3A%2F%2Fwww.kaltura.com%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fuid%3D%26partner_id%3D243342%26subp_id%3D24334200%26format%3D8%26ks%3D%7Bks%7D%26playlist_id%3D0_q79jh71b&" />
+		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1319935596/wid/_243342/uiconf_id/5783651" />
+	</object>
 	  
 <!-- 
 	
@@ -204,5 +234,6 @@
 </layout>
 	
 	 -->
-  </body>
+</body>
+
 </html>
