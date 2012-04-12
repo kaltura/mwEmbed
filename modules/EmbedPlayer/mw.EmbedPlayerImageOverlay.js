@@ -94,6 +94,8 @@ mw.EmbedPlayerImageOverlay = {
 		} else {
 			this.duration = mw.getConfig( "EmbedPlayer.DefaultImageDuration" );
 		}
+		// make sure duration has type float: 
+		this.duration = parseFloat( this.duration );
 
 		// Reset playback if currentTime > duration:
 		if( this.currentTime > this.duration ) {
