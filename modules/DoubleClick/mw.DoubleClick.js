@@ -33,8 +33,10 @@ mw.DoubleClick.prototype = {
 	// The current ad Slot type by default "managed" i.e doubleClick manages the player sequence. 
 	currentAdSlotType : null,
 
-	init: function( embedPlayer, callback ){
+	init: function( embedPlayer, callback, pluginName ){
 		var _this = this;
+		
+		this.pluginName = pluginName;
 		
 		this.embedPlayer = embedPlayer;
 		
@@ -521,7 +523,7 @@ mw.DoubleClick.prototype = {
 	 */
 	getConfig: function( attrName ){
 		// always get the config from the embedPlayer so that is up-to-date
-		return this.embedPlayer.getKalturaConfig( 'doubleClick', attrName );
+		return this.embedPlayer.getKalturaConfig( this.pluginName, attrName );
 	}
 };
 	
