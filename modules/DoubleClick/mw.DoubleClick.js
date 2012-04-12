@@ -1,7 +1,7 @@
 ( function( mw, $ ) { "use strict";
 
-mw.DoubleClick = function( embedPlayer, callback ){
-	this.init( embedPlayer, callback);
+mw.DoubleClick = function( embedPlayer, callback, pluginName ){
+	this.init( embedPlayer, callback, pluginName);
 };
 mw.DoubleClick.prototype = {
 	// The bind postfix to keep track of doubleclick bindings. 
