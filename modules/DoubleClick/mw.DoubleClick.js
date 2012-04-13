@@ -1,7 +1,7 @@
 ( function( mw, $ ) { "use strict";
 
-mw.DoubleClick = function( embedPlayer, callback ){
-	this.init( embedPlayer, callback);
+mw.DoubleClick = function( embedPlayer, callback, pluginName ){
+	this.init( embedPlayer, callback, pluginName);
 };
 mw.DoubleClick.prototype = {
 	// The bind postfix to keep track of doubleclick bindings. 
@@ -33,13 +33,16 @@ mw.DoubleClick.prototype = {
 	// The current ad Slot type by default "managed" i.e doubleClick manages the player sequence. 
 	currentAdSlotType : null,
 
-	init: function( embedPlayer, callback ){
+	init: function( embedPlayer, callback, pluginName ){
 		var _this = this;
 		
 		this.embedPlayer = embedPlayer;
 		
 		// Inherit BaseAdPlugin
 		mw.inherit( this, new mw.BaseAdPlugin( embedPlayer, callback ) );
+		
+		// Set the plugin name
+		this.pluginName = pluginName;
 		
 		// reset the contentDoneFlag flags:
 		this.contentDoneFlag = null;
@@ -521,7 +524,7 @@ mw.DoubleClick.prototype = {
 	 */
 	getConfig: function( attrName ){
 		// always get the config from the embedPlayer so that is up-to-date
-		return this.embedPlayer.getKalturaConfig( 'doubleClick', attrName );
+		return this.embedPlayer.getKalturaConfig( this.pluginName, attrName );
 	}
 };
 	

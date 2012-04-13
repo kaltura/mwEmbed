@@ -15,18 +15,20 @@
 		function jsKalturaPlayerTest( videoId ){
 			var kdp = $( '#' + videoId ).get( 0 );
 			// Name this module
-			module( "playlistAPI" );
+			module( "playlistAPI::initItemEntryId" );
 
 			test( "initItemEntryId is set", function(){
-				ok( kdp.getKalturaConfig( 'playlistAPI', 'initItemEntryId' ), 'playlistAPI.initItemEntryId flashvar is set' );
+				equal( kdp.getKalturaConfig( 'playlistAPI', 'initItemEntryId' ), '0_ntavmku5', 'playlistAPI.initItemEntryId flashvar is set and equals to 0_ntavmku5' );
 			});
 		}
 		
 		function doPlayCallback( videoId ) {
 			var kdp = $( '#' + videoId ).get( 0 );
-			test( "Playing first entry", function() {
-				equal( kdp.kentryid, '0_uka1msg4', 'Started playing entry ' + kdp.kentryid );
-			});
+			if( document.URL.indexOf('runQunitTests') != -1 || document.URL.indexOf('runFlashQunitTests') != -1 ) {
+				test( "Playing first entry", function() {
+					equal( kdp.kentryid, '0_uka1msg4', 'Started playing entry ' + kdp.kentryid );
+				});
+			}
 		}
 	</script>
 	

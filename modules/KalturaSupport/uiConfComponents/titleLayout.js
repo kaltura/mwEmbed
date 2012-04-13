@@ -58,7 +58,11 @@
 				'$layoutBox' : $titleConfig,
 				'embedPlayer' : embedPlayer
 			});
-			return titleLayout.getLayout();
+			var $returnLayout = titleLayout.getLayout();
+			if ( $returnLayout.find('span').text() == 'null' ) {
+				$returnLayout.find('span').text('');
+			}
+			return $returnLayout;
 		};
 		var updatePlayerLayout = function(){
 			var $vid = $( embedPlayer.getPlayerElement() );

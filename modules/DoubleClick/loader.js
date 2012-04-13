@@ -13,9 +13,11 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 			return ;
 		}
 		// Check if plugin is enabled
-	 	if( embedPlayer.isPluginEnabled( 'doubleClick' ) ){
+	 	if( embedPlayer.isPluginEnabled( 'doubleClick' ) || embedPlayer.isPluginEnabled( 'doubleclick' )  ){
+	 		// support both case types:
+	 		var pluginName = ( embedPlayer.isPluginEnabled( 'doubleClick' ) )? 'doubleClick' : 'doubleclick';
 			mw.load( 'DoubleClick', function(){
-				new mw.DoubleClick( embedPlayer, callback );
+				new mw.DoubleClick( embedPlayer, callback, pluginName );
 			});
 		} else {
 			callback();
