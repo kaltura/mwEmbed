@@ -29,6 +29,9 @@ mw.EmbedPlayerNative = {
 	
 	// A flag to designate the first play event, as to not propagate the native event in this case
 	isFirstEmbedPlay: null,
+	
+	// A local var to store the current seek target time: 
+	currentSeekTargetTime: null,
 
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
@@ -444,6 +447,8 @@ mw.EmbedPlayerNative = {
 		if( !callbackCount ){
 			callbackCount = 0;
 		}
+		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
+		
 		var vid = this.getPlayerElement();
 		// add a callback handler to null out callback:
 		var callbackHandler = function(){
@@ -467,6 +472,8 @@ mw.EmbedPlayerNative = {
 		}
 		// Check if currentTime is already set to the seek target: 
 		if( vid.currentTime.toFixed(2) == seekTime.toFixed(2) ){
+			mw.log(" EmbedPlayerNative:: setCurrentTime: current time matches seek target: " +
+					vid.currentTime.toFixed(2) + ' == ' +  seekTime.toFixed(2) );
 			callbackHandler();
 			return;
 		}
@@ -490,18 +497,21 @@ mw.EmbedPlayerNative = {
 			if( vid.currentTime > 0 ){
 				callbackHandler();
 			} else {
-				mw.log( "Error:: seek callback without time updatet " + vid.currentTime );
+				mw.log( "Error:: seek callback without time update: target:" + seekTime + " actual:" + vid.currentTime + ' will retry seek in 5 seconds' );
 			}
 		});
 		setTimeout(function(){
 			if( $.isFunction( callback ) ){
 				mw.log( "Error:: Seek still has not made a callback after 5 seconds, retry");
-				_this.setCurrentTime( seekTime, callback , callbackCount++ );
+				_this.seeking = true;
+				_this.setCurrentTime( seekTime, callback , callbackCount+1 );
 			}
 		}, 5000);
 		
 		// Try to update the playerElement time: 
 		try {
+			_this.currentSeekTargetTime = seekTime;
+			// use toFixed ( iOS issue with float seek times ) 
 			vid.currentTime = seekTime.toFixed( 2 );
 		} catch ( e ) {
 			mw.log("Error:: EmbedPlayerNative: Could not set video tag seekTime");
@@ -515,8 +525,8 @@ mw.EmbedPlayerNative = {
 			vid.play();
 			setTimeout(function(){
 				_this.waitForPositiveCurrentTime( function(){
-					mw.log("EmbedPlayerNative:: Got possitive time:" + vid.currentTime + ", trying to seek again");
-					_this.setCurrentTime( seekTime , callback, callbackCount );
+					mw.log("EmbedPlayerNative:: Got possitive time:" + vid.currentTime.toFixed(3) + ", trying to seek again");
+					_this.setCurrentTime( seekTime , callback, callbackCount+1 );
 				});
 			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 		}
@@ -907,10 +917,22 @@ mw.EmbedPlayerNative = {
 		mw.log("EmbedPlayerNative::onSeeked " + this.seeking + ' ct:' + this.playerElement.currentTime );
 		// sync the seek checks so that we don't re-issue the seek request
 		this.previousTime = this.currentTime = this.playerElement.currentTime;
+		 
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
+			
+			// safari triggers onseek when its not even close to the target time,
+			// we don't want to trigger the seek event for these "fake" onseeked triggers
+			if( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 ){
+				mw.log( "Error:: EmbedPlayerNative:seeked triggred with time mismatch: target:" +  
+						this.currentSeekTargetTime + 
+						' actual:' + this.getPlayerElement().currentTime );
+				return ;
+			} 
+			
 			this.seeking = false;
 			if( this._propagateEvents ){
+				mw.log( "EmbedPlayerNative:: trigger: seeked" );
 				$( this ).trigger( 'seeked' );
 			}
 		}

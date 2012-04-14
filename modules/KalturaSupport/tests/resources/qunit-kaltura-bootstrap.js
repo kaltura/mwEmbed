@@ -71,7 +71,7 @@ if( window.QUnit ){
 			mediaReadyAlreadyCalled = true;
 		}, 0 );
 	};
-	window['kalturaQunitWaitForPlayer'] = function( callback ){		
+	window['kalturaQunitWaitForPlayer'] = function( callback ){
 		if( mediaReadyAlreadyCalled ){
 			callback();
 			return ;

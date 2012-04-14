@@ -10,8 +10,9 @@ function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "Seek Api" );
 	var kdp = document.getElementById( videoId );
+	var targetSeekTime = 30;
 	
-	asyncTest("Seek tests", function(){
+	asyncTest("Seek Events", function(){
 		kalturaQunitWaitForPlayer(function(){
 			// start playback: 
 			kdp.sendNotification('doPlay' );
@@ -23,7 +24,7 @@ function jsKalturaPlayerTest( videoId ){
 			
 			// after 1 second of playback issue a seek to 30 seconds
 			setTimeout(function(){
-				kdp.sendNotification('doSeek', 30 );
+				kdp.sendNotification('doSeek', targetSeekTime );
 			}, 1000 );
 			
 			window['all_done_with_tests'] = function(){
@@ -42,7 +43,13 @@ function jsKalturaPlayerTest( videoId ){
 	window[ 'onPlayerSeekEnd' ] = function(){
 		ok( true,  'Seek end event fired ( playerSeekEnd )' );
 		var seekTime = new Date().getTime() - window['onPlayerSeekStartTime'];
-		ok( ( seekTime > 0 ), "Took possitive time: " + seekTime + "ms to complete seek" );
+		ok( ( seekTime > 0 ), "Took " + seekTime + "ms to complete seek" );
+		
+		ok( ( Math.abs( targetSeekTime - kdp.evaluate('{video.player.currentTime}') ) < 2 ), 
+			"Seek time within 2 seconds of target: " + targetSeekTime + ' actual: ' + 
+			kdp.evaluate('{video.player.currentTime}')	
+		);
+		
 		all_done_with_tests();
 	}
 }
