@@ -303,8 +303,20 @@
 						}
 						
 						var styleAttr = '';
-						if( node.getAttribute('tts:color') ){
-							styleAttr = 'style="color:' +  node.getAttribute('tts:color') +'" ';
+						var fontColor = '';
+						var fontWeight = '';
+						var fontStyle = '';
+						if ( node.getAttribute( 'tts:color' ) ){
+							fontColor = 'color: ' + node.getAttribute( 'tts:color' ) + ';';
+						}
+						if ( node.getAttribute( 'tts:fontWeight' ) ){
+							fontWeight = 'font-weight: ' + node.getAttribute( 'tts:fontWeight' ) + ';';
+						}
+						if ( node.getAttribute( 'tts:fontStyle' ) ){
+							fontStyle = 'font-style: ' + node.getAttribute( 'tts:fontStyle' ) + ';';
+						}
+						if ( fontColor || fontWeight || fontStyle ) {
+							styleAttr = 'style="' + fontColor + fontWeight + fontStyle + '"';
 						}
 						nodeString += '<' + node.nodeName + ' ' + styleAttr + '>' + 
 						 	_this.convertTTML2HTML( childNode ) +
