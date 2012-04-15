@@ -290,6 +290,12 @@
 		},
 		convertTTML2HTML: function( node ){
 			var _this = this;
+			// Setup tts mappings TODO should be static property of a ttmlSource object. 
+			var ttsStyleMap = {
+				'tts:color' : 'color',
+				'tts:fontWeight' : 'font-weight',
+				'tts:fontStyle' : 'font-style'
+			};
 			if( node.childNodes.length ){
 				var nodeString = '';
 				$.each( node.childNodes, function( inx, childNode ){
@@ -301,24 +307,13 @@
 						if( node.nodeName == 'metadata' ){
 							return true;
 						}
-						
-						var styleAttr = '';
-						var fontColor = '';
-						var fontWeight = '';
-						var fontStyle = '';
-						if ( node.getAttribute( 'tts:color' ) ){
-							fontColor = 'color: ' + node.getAttribute( 'tts:color' ) + ';';
+						var styleVal = '';
+						for( var attr in ttsStyleMap ){
+							if( node.getAttribute( attr ) ){
+								styleVal+= ttsStyleMap[ attr ] + ':' +  node.getAttribute( attr ) + ';';
+							}
 						}
-						if ( node.getAttribute( 'tts:fontWeight' ) ){
-							fontWeight = 'font-weight: ' + node.getAttribute( 'tts:fontWeight' ) + ';';
-						}
-						if ( node.getAttribute( 'tts:fontStyle' ) ){
-							fontStyle = 'font-style: ' + node.getAttribute( 'tts:fontStyle' ) + ';';
-						}
-						if ( fontColor || fontWeight || fontStyle ) {
-							styleAttr = 'style="' + fontColor + fontWeight + fontStyle + '"';
-						}
-						nodeString += '<' + node.nodeName + ' ' + styleAttr + '>' + 
+						nodeString += '<' + node.nodeName + ' style="' + styleVal + '" >' + 
 						 	_this.convertTTML2HTML( childNode ) +
 						 	'</' + node.nodeName + '>';
 					}
