@@ -325,15 +325,21 @@ mw.KAds.prototype = {
 	 * Get base display configuration:
 	 */
 	getBaseDisplayConf: function(){
+		var embedPlayer = this.embedPlayer;
 		var config = {	
 			'companionTargets' : this.getCompanionTargets()
 		};
 		// Add notice if present
 		if( this.$notice.length ){
+			var noticeTop = 5;
+			// If video title is present, move the notice down
+			if ( embedPlayer.$interface && embedPlayer.$interface.find( '.titleContainer' ).length ) {
+				noticeTop += 15;
+			}
 			config.notice = {
 				'evalText' : this.$notice.attr('text'),
 				'css' : {
-					'top': '5px',
+					'top': noticeTop,
 					'left' : '5px'
 				}
 			};
