@@ -769,6 +769,10 @@ mw.KWidgetSupport.prototype = {
 		if( ac.isSiteRestricted ){
 			return 'site restricted';
 		}
+		// This is normally handled at the iframe level, but check is included here for completeness
+		if( ac.isUserAgentRestricted ){
+			return "User Agent Restricted\nWe're sorry, this content is not available for your device.";
+		}
 		return true;
 	},
 	

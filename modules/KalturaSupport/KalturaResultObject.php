@@ -823,7 +823,7 @@ class KalturaResultObject {
 		// Check access control and throw an exception if not allowed: 
 		$acStatus = $this->isAccessControlAllowed( $resultObject );
 		if( $acStatus !== true ){
-			throw new Exception( $acStatus );
+			$this->error = $acStatus;
 		}	
 		
 		return $resultObject;
