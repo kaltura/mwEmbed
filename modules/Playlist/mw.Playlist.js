@@ -551,7 +551,6 @@ mw.Playlist.prototype = {
 		// Setup ondone playing binding to play next clip (if autoContinue is true )
 		if( _this.sourceHandler.autoContinue == true ){
 			$( embedPlayer ).bind( 'postEnded' + _this.bindPostfix, function(event ){
-				debugger;
 				mw.log("mw.Playlist:: postEnded > on inx: " + _this.clipIndex );
 				// Play next clip
 				if( parseInt(  _this.clipIndex ) + 1 < _this.sourceHandler.getClipCount() && parseInt( _this.clipIndex ) + 1 <= parseInt( mw.getConfig( 'Playlist.MaxClips' ) ) ){
