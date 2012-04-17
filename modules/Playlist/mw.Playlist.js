@@ -553,7 +553,7 @@ mw.Playlist.prototype = {
 			$( embedPlayer ).bind( 'postEnded' + _this.bindPostfix, function(event ){
 				mw.log("mw.Playlist:: postEnded > on inx: " + _this.clipIndex );
 				// Play next clip
-				if( parseInt(  _this.clipIndex ) + 1 < _this.sourceHandler.getClipCount() ){
+				if( parseInt(  _this.clipIndex ) + 1 < _this.sourceHandler.getClipCount() && parseInt( _this.clipIndex ) + 1 <= parseInt( mw.getConfig( 'Playlist.MaxClips' ) ) ){
 					// Update the onDone action object to not run the base control done:
 					mw.log("mw.Playlist:: postEnded > continue playlist set: onDoneInterfaceFlag false ");
 					embedPlayer.onDoneInterfaceFlag = false;
@@ -657,7 +657,7 @@ mw.Playlist.prototype = {
 							'title' : 'Next clip'
 						})
 						.click(function(){
-							if(_this.enableClipSwitch &&  _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
+							if( _this.enableClipSwitch &&  parseInt( _this.clipIndex ) + 1 < _this.sourceHandler.getClipCount() && parseInt( _this.clipIndex ) + 1 <= parseInt( mw.getConfig( 'Playlist.MaxClips' ) ) ){
 								_this.clipIndex++;
 								_this.playClip( _this.clipIndex );
 								return ;

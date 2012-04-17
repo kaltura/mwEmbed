@@ -247,7 +247,7 @@ class KalturaResultObject {
 			return true;
 		}
 		$accessControl = $resultObject['accessControl'];
-		
+
 		// Check if we had no access control due to playlist
 		if( is_array( $accessControl ) && isset( $accessControl['code'] )){
 			// Error ? .. should do better error checking.
@@ -282,7 +282,7 @@ class KalturaResultObject {
 			return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
 		}
 
-		if( $accessControl->isScheduledNow === 0) {
+		if( $accessControl->isScheduledNow === 0 || $accessControl->isScheduledNow === false ) {
 			return "Out of scheduling\nWe're sorry, this content is currently unavailable.";
 		}
 		
