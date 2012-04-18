@@ -177,9 +177,8 @@ class kalturaIframe {
 	private function getPlaylistWraper( $videoHtml ){
 		// XXX this hard codes some layout assumptions ( but no good way around that for now )
 		return '<div id="playlistContainer" style="width:100%;height:100%">
-					<span class="media-rss-video-player-container" style="float:left;' . 
-					$this->getPlaylistPlayerSizeCss() . '">' . 
-					'<div class="media-rss-video-player" style="position:relative;">' . 
+				<span class="media-rss-video-player-container" style="float:left;' . $this->getPlaylistPlayerSizeCss() . '">' . 
+					'<div class="media-rss-video-player" style="position:relative;height:100%;">' . 
 						$videoHtml .
 					'</div>' . 
 				'</span>
