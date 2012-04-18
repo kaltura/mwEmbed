@@ -127,10 +127,19 @@ var kWidget = {
 		settings['id'] = elm.id;
 		// update the container id: 
 		elm.setAttribute( 'id', elm.id + '_container' );
-		// call kWdigetFlashembed
-		kFlashembed( targetId + '_container', settings, settings.flashvars);
 		
-		/*var elm = document.getElementById( targetId );
+		// XXX IE9 about 1/2 the time on fresh loads does not fire the jsCallbackready 
+		//     when you dynamically embed the flash object before dom ready.   
+		// XXX firefox with firebug enabled locks up the browser 
+		// For 1.7 we should see if we can avoid waiting for domReady with flashvar based callback. 
+		// note this is true for either flashembed or the object insert method bellow. 
+		kAddReadyHook( function(){
+			kFlashembed( targetId + '_container', settings, settings.flashvars);
+		});
+		
+		
+		/*
+		var elm = document.getElementById( targetId );
 		// Output a normal flash object tag:
 		if( elm && elm.parentNode ){
 			var spanTarget = document.createElement("span");
@@ -193,8 +202,8 @@ var kWidget = {
 			// update the span target:
 			elm.parentNode.replaceChild( spanTarget, elm );
 			spanTarget.innerHTML = output;
-
-		}*/
+		}
+		*/
 	},
 
 	outputHTML5Iframe: function( targetId, settings ) {
