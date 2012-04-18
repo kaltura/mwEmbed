@@ -174,13 +174,11 @@ mw.KWidgetSupport.prototype = {
 			}
 		}
 		
-		// Check access controls ( this is kind of silly and needs to be done on the server ) 
+		// Check access controls 
 		if( playerData.accessControl ){
 			var acStatus = _this.getAccessControlStatus( playerData.accessControl );
 			if( acStatus !== true ){
-				embedPlayer.hidePlayerSpinner();
-				embedPlayer.showErrorMsg( acStatus );
-				return ;
+				embedPlayer['data-playerError'] = acStatus;
 			}
 			// Check for preview access control and add special onEnd binding:
 			if( playerData.accessControl.previewLength && playerData.accessControl.previewLength != -1 ){
@@ -768,6 +766,10 @@ mw.KWidgetSupport.prototype = {
 		}
 		if( ac.isSiteRestricted ){
 			return 'site restricted';
+		}
+		// This is normally handled at the iframe level, but check is included here for completeness
+		if( ac.isUserAgentRestricted ){
+			return "User Agent Restricted\nWe're sorry, this content is not available for your device.";
 		}
 		return true;
 	},

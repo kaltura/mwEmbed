@@ -171,15 +171,14 @@ class kalturaIframe {
 			$height = 30;
 		}
 		
-		return "width:{$width}px;height:{$height}px;";
+		return "position:absolute;width:{$width}px;height:{$height}px;";
 	}
 	// outputs the playlist wrapper 
 	private function getPlaylistWraper( $videoHtml ){
 		// XXX this hard codes some layout assumptions ( but no good way around that for now )
 		return '<div id="playlistContainer" style="width:100%;height:100%">
-					<span class="media-rss-video-player-container" style="float:left;' . 
-					$this->getPlaylistPlayerSizeCss() . '">' . 
-					'<div class="media-rss-video-player" style="position:relative;">' . 
+				<span class="media-rss-video-player-container" style="float:left;' . $this->getPlaylistPlayerSizeCss() . '">' . 
+					'<div class="media-rss-video-player" style="position:relative;height:100%;">' . 
 						$videoHtml .
 					'</div>' . 
 				'</span>
@@ -246,7 +245,7 @@ class kalturaIframe {
 		$o.= "\n" . "</video>\n";
 		
 		// Wrap in a videoContainer
-		return  '<div id="videoContainer" > ' . $o . '</div>';
+		return  '<div id="videoContainer" style="height:100%" > ' . $o . '</div>';
 	}
 	/**
 	 * Get Flash embed code with default flashvars:
