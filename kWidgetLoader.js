@@ -204,11 +204,9 @@ var kWidget = {
 		} else {
 			// IE needs to wait till dom ready
 			if( navigator.userAgent.indexOf("MSIE") != -1 ){
-				kAddReadyHook( function(){
-					setTimeout(function(){ // MSIE fires DOM ready early sometimes
-						outputElemnt();
-					},0);
-				});
+				setTimeout(function(){ // MSIE fires DOM ready early sometimes
+					outputElemnt();
+				},0);
 			} else {
 				outputElemnt();
 			}
