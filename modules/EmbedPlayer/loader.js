@@ -293,7 +293,6 @@
 					.getAbsoluteOverlaySpinner()
 					.attr('id', 'loadingSpinner_' + $( element ).attr('id') )
 					.addClass( 'playerLoadingSpinner' );
-
 			});
 			// Load the embedPlayer module ( then run queued hooks )
 			mw.load( 'EmbedPlayer', function ( ) {
