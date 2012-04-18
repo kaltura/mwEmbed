@@ -171,7 +171,7 @@ class kalturaIframe {
 			$height = 30;
 		}
 		
-		return "width:{$width}px;height:{$height}px;";
+		return "position:absolute;width:{$width}px;height:{$height}px;";
 	}
 	// outputs the playlist wrapper 
 	private function getPlaylistWraper( $videoHtml ){
