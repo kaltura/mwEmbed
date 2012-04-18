@@ -415,6 +415,14 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.autoplay = true;
 		}
 		
+		// Check for loop:
+		var loop = this.getPluginConfig( embedPlayer, '', 'loop');
+		if( loop ){
+			embedPlayer.loop = true;
+		}
+
+
+
 		// Check for imageDefaultDuration
 		var imageDuration = this.getPluginConfig( embedPlayer, '', 'imageDefaultDuration');
 		if( imageDuration ){
