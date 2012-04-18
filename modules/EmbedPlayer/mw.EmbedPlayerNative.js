@@ -576,6 +576,15 @@ mw.EmbedPlayerNative = {
 		this.parent_updatePosterSrc( src );
 	},
 	/**
+	 * Empty player sources from the active video tag element
+	 */
+	emptySources: function(){
+		// empty player source: 
+		$( this.getPlayerElement() ).attr( 'src', null );
+		// empty out generic sources: 
+		this.parent_emptySources();
+	},
+	/**
 	 * playerSwitchSource switches the player source working around a few bugs in browsers
 	 * 
 	 * @param {Object}
