@@ -109,7 +109,7 @@ var kWidget = {
 	 * Create flash object tag
 	 */
 	outputFlashObject: function( targetId, settings ) {
-		var elm = document.getElementById( targetId );
+		/*var elm = document.getElementById( targetId );
 		// only generate a swf source if not defined. 
 		if( !settings.src ){
 			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+
@@ -126,7 +126,80 @@ var kWidget = {
 		}
 		settings['id'] = elm.id;
 		// update the container id: 
-		elm.setAttribute( 'id', elm.id + '_container' );
+		elm.setAttribute( 'id', elm.id + '_container' );*/
+		
+		
+		
+		
+		var elm = document.getElementById( targetId );
+		// Output a normal flash object tag:
+		if( !elm && !elm.parentNode ){
+			kWidget.log( "Error embed target missing" );
+		}
+		
+		var spanTarget = document.createElement("span");
+		var pId =  ( settings.id )? settings.id : elm.id
+		var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+
+			'/wid/' + settings.wid +
+			'/uiconf_id/' + settings.uiconf_id;
+
+		if( settings.entry_id ){
+			swfUrl+= '/entry_id/' + settings.entry_id;
+		}
+		if( settings.cache_st ){
+			swfUrl+= '/cache_st/' + settings.cache_st;
+		}
+		// Get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
+		var width = ( settings.width ) ? settings.width :
+						( elm.width ) ? elm.width :
+							( elm.style.width ) ? parseInt( elm.style.width ) : 400;
+
+		var height = ( settings.height ) ? settings.height :
+						( elm.height ) ? elm.height :
+							( elm.style.height ) ? parseInt( elm.style.height ) : 300;
+
+		var flashvarValue = ( settings.flashvars ) ? kFlashVarsToString( settings.flashvars ) : '&';
+
+		// we may have to borrow more from:
+		// http://code.google.com/p/swfobject/source/browse/trunk/swfobject/src/swfobject.js#407
+		// There seems to be issue with passing all the flashvars in playlist context.
+
+		var defaultParamSet = {
+			'allowFullScreen': 'true',
+			'allowNetworking': 'all',
+			'allowScriptAccess': 'always',
+			'bgcolor': '#000000'
+		};
+
+		var output = '<object width="' + width +
+				'" height="' + height +
+				'" style="width:' + width + 'px;height:' + height + 'px;' +
+				'" id="' + targetId +
+				'" name="' + targetId + '"';
+
+		output += ' data="' + swfUrl + '" type="application/x-shockwave-flash"';
+		if( window.ActiveXObject ){
+			output += ' classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"';
+		}
+		output += '>';
+
+		output += '<param name="movie" value="' + swfUrl + '" />';
+		output += '<param name="flashvars" value="' + flashvarValue + '" />';
+
+		for (var key in defaultParamSet) {
+			if (defaultParamSet[key]) {
+				output += '<param name="'+ key +'" value="'+ defaultParamSet[key] +'" />';
+			}
+		}
+
+		output += "</object>";
+
+		var outputElemnt = function(){
+			// update the span target:
+			elm.parentNode.replaceChild( spanTarget, elm );
+			spanTarget.innerHTML = output;
+		}
+		
 		
 		// XXX IE9 about 1/2 the time on fresh loads does not fire the jsCallbackready 
 		//     when you dynamically embed the flash object before dom ready.   
@@ -139,7 +212,7 @@ var kWidget = {
 					', ( delaying embed )');
 			kAddReadyHook( function(){
 				setTimeout(function(){
-					kFlashembed( targetId + '_container', settings, settings.flashvars);
+					outputElemnt( targetId + '_container', settings, settings.flashvars);
 				},1000);
 			});
 		} else {
@@ -147,81 +220,14 @@ var kWidget = {
 			if( navigator.userAgent.indexOf("MSIE") != -1 ){
 				kAddReadyHook( function(){
 					setTimeout(function(){ // MSIE fires DOM ready early sometimes
-						kFlashembed( targetId + '_container', settings, settings.flashvars);
+						outputElemnt( targetId + '_container', settings, settings.flashvars);
 					},0);
 				});
 			} else {
-				kFlashembed( targetId + '_container', settings, settings.flashvars);
+				outputElemnt( targetId + '_container', settings, settings.flashvars);
 			}
 		}
-	
 		
-		/*
-		var elm = document.getElementById( targetId );
-		// Output a normal flash object tag:
-		if( elm && elm.parentNode ){
-			var spanTarget = document.createElement("span");
-			var pId =  ( settings.id )? settings.id : elm.id
-			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+
-				'/wid/' + settings.wid +
-				'/uiconf_id/' + settings.uiconf_id;
-
-			if( settings.entry_id ){
-				swfUrl+= '/entry_id/' + settings.entry_id;
-			}
-			if( settings.cache_st ){
-				swfUrl+= '/cache_st/' + settings.cache_st;
-			}
-			// Get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
-			var width = ( settings.width ) ? settings.width :
-							( elm.width ) ? elm.width :
-								( elm.style.width ) ? parseInt( elm.style.width ) : 400;
-
-			var height = ( settings.height ) ? settings.height :
-							( elm.height ) ? elm.height :
-								( elm.style.height ) ? parseInt( elm.style.height ) : 300;
-
-			var flashvarValue = ( settings.flashvars ) ? kFlashVarsToString( settings.flashvars ) : '&';
-
-			// we may have to borrow more from:
-			// http://code.google.com/p/swfobject/source/browse/trunk/swfobject/src/swfobject.js#407
-			// There seems to be issue with passing all the flashvars in playlist context.
-
-			var defaultParamSet = {
-				'allowFullScreen': 'true',
-				'allowNetworking': 'all',
-				'allowScriptAccess': 'always',
-				'bgcolor': '#000000'
-			};
-
-			var output = '<object width="' + width +
-					'" height="' + height +
-					'" style="width:' + width + 'px;height:' + height + 'px;' +
-					'" id="' + targetId +
-					'" name="' + targetId + '"';
-
-			output += ' data="' + swfUrl + '" type="application/x-shockwave-flash"';
-			if( window.ActiveXObject ){
-				output += ' classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"';
-			}
-			output += '>';
-
-			output += '<param name="movie" value="' + swfUrl + '" />';
-			output += '<param name="flashvars" value="' + flashvarValue + '" />';
-
-			for (var key in defaultParamSet) {
-				if (defaultParamSet[key]) {
-					output += '<param name="'+ key +'" value="'+ defaultParamSet[key] +'" />';
-				}
-			}
-
-			output += "</object>";
-
-			// update the span target:
-			elm.parentNode.replaceChild( spanTarget, elm );
-			spanTarget.innerHTML = output;
-		}
-		*/
 	},
 
 	outputHTML5Iframe: function( targetId, settings ) {
