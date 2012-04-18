@@ -1269,7 +1269,11 @@ mw.EmbedPlayer.prototype = {
 		var bindName = 'playerReady.changeMedia';
 		$this.unbind( bindName ).bind( bindName, function(){
 			mw.log('mw.EmbedPlayer::changeMedia playerReady callback');
-			
+			// check for an erro on change media: 
+			if( _this['data-playerError'] ){
+				_this.showErrorMsg( this['data-playerError'] );
+				return ;
+			}
 			// Always show the control bar on switch:
 			if( _this.controlBuilder ){
 				_this.controlBuilder.showControlBar();
@@ -1300,13 +1304,13 @@ mw.EmbedPlayer.prototype = {
 				});
 				// we are handling trigger and callback asynchronously return here. 
 				return ;
-			} else {
-				// Stop should unload the native player
-				_this.stop();
-				// reload the player
-				if( chnagePlayingMedia ){
-					_this.play()
-				}
+			} 
+			
+			// Stop should unload the native player
+			_this.stop();
+			// reload the player
+			if( chnagePlayingMedia ){
+				_this.play()
 			}
 			$this.trigger( 'onChangeMediaDone' );
 			if( callback ) {
