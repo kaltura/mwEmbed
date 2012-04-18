@@ -983,6 +983,15 @@ mw.EmbedPlayerNative = {
 	*/
 	_onloadedmetadata: function() {
 		this.getPlayerElement();
+		
+		// Sync player size
+		// XXX sometimes source metadata does not include accurate aspect size in metadata
+		// sync player size uses native video size when possible so sync based on that once 
+		// its avaliable. 
+		if( this.controlBuilder ){
+			this.controlBuilder.syncPlayerSize();
+		}
+		
 		if ( this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration) ) {
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );
 			this.duration = this.playerElement.duration;
