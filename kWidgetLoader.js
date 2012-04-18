@@ -133,10 +133,28 @@ var kWidget = {
 		// XXX firefox with firebug enabled locks up the browser 
 		// For 1.7 we should see if we can avoid waiting for domReady with flashvar based callback. 
 		// note this is true for either flashembed or the object insert method bellow. 
-		kAddReadyHook( function(){
-			kFlashembed( targetId + '_container', settings, settings.flashvars);
-		});
-		
+		// detect firebug: 
+		if ( window.console && ( window.console.firebug || window.console.exception ) ) {
+			console.log( 'Warning firebug with javascript and kdp flash that causes lockups in firefox' + 
+					', ( delaying embed )');
+			kAddReadyHook( function(){
+				setTimeout(function(){
+					kFlashembed( targetId + '_container', settings, settings.flashvars);
+				},1000);
+			});
+		} else {
+			// IE needs to wait till dom ready
+			if( navigator.userAgent.indexOf("MSIE") != -1 ){
+				kAddReadyHook( function(){
+					setTimeout(function(){ // MSIE fires DOM ready early sometimes
+						kFlashembed( targetId + '_container', settings, settings.flashvars);
+					},0);
+				});
+			} else {
+				kFlashembed( targetId + '_container', settings, settings.flashvars);
+			}
+		}
+	
 		
 		/*
 		var elm = document.getElementById( targetId );
