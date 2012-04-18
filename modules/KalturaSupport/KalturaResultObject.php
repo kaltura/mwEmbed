@@ -286,8 +286,10 @@ class KalturaResultObject {
 			return "Out of scheduling\nWe're sorry, this content is currently unavailable.";
 		}
 		
-		//echo $this->getUserAgent() . '<br />';
-		//echo '<pre>'; print_r($accessControl); exit();
+		/*echo $this->getUserAgent() . '<br />';
+		echo '<pre>'; print_r($accessControl); 
+		exit();*/
+		
 		$userAgentMessage = "User Agent Restricted\nWe're sorry, this content is not available for your device.";
 		if( isset( $accessControl->isUserAgentRestricted ) && $accessControl->isUserAgentRestricted ) {
 			return $userAgentMessage;
@@ -742,7 +744,12 @@ class KalturaResultObject {
 			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'getByEntryId', $entryParam );
 				
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
-			$params = array_merge( $entryParam, array( "contextDataParams" => array( 'referrer' =>  $this->getReferer() ) ) );
+			$params = array_merge( $entryParam, 
+				array( "contextDataParams" => array( 
+							'referrer' =>  $this->getReferer()
+						)
+					)
+			);
 			$namedMultiRequest->addNamedRequest( 'accessControl', 'baseEntry', 'getContextData', $params );
 			
 			// Entry Custom Metadata
@@ -824,7 +831,7 @@ class KalturaResultObject {
 		$acStatus = $this->isAccessControlAllowed( $resultObject );
 		if( $acStatus !== true ){
 			$this->error = $acStatus;
-		}	
+		}
 		
 		return $resultObject;
 	}
