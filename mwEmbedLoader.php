@@ -52,6 +52,9 @@ $exportedJsConfig= array(
 	'Kaltura.UseAppleAdaptive' => $wgKalturaUseAppleAdaptive,
 	'Kaltura.EnableEmbedUiConfJs' => $wgKalturaEnableEmbedUiConfJs
 );
+if( isset( $wgXmlProxyUrl )){
+	$exportedJsConfig['Mw.XmlProxyUrl'] = $wgXmlProxyUrl;
+}
 
 // Append Custom config: 
 foreach( $exportedJsConfig as $key => $val ){
