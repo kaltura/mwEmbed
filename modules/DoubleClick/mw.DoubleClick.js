@@ -94,6 +94,7 @@ mw.DoubleClick.prototype = {
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
+				mw.log( "DoubleClick:: addManagedBinding : requestAds");
 				_this.requestAds( unescape( _this.getConfig("adTagUrl") ) );	
 			};
 		});
@@ -154,6 +155,10 @@ mw.DoubleClick.prototype = {
 			if( adType == 'midroll'  ||  adType == 'preroll' || adType == 'postroll'  ){
 				_this.currentAdSlotType = adType;
 				// All cuepoints act as "midrolls" 
+				mw.log( "DoubleClick:: addKalturaCuePointBindings : requestAds");
+				// pause the player while requesting adds
+				_this.embedPlayer.pauseLoading();
+				// request the ads: 
 				_this.requestAds( cuePoint.sourceUrl );
 			}
 		});
@@ -400,7 +405,6 @@ mw.DoubleClick.prototype = {
 		if( this.embedPlayer.controlBuilder ){
 			this.embedPlayer.controlBuilder.syncPlayerSize();
 		}
-		
 		// hide the ad container: 
 		this.hidePlayerOffScreen(
 			this.getAdContainer()
