@@ -247,7 +247,7 @@ class KalturaResultObject {
 			return true;
 		}
 		$accessControl = $resultObject['accessControl'];
-
+		
 		// Check if we had no access control due to playlist
 		if( is_array( $accessControl ) && isset( $accessControl['code'] )){
 			// Error ? .. should do better error checking.
@@ -278,8 +278,10 @@ class KalturaResultObject {
 		}
 
 		/* Session Restricted */
-		if( $accessControl->isSessionRestricted && $accessControl->previewLength == -1 ) {
-			return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
+		if( $accessControl->isSessionRestricted && 
+				( $accessControl->previewLength == -1 || $accessControl->previewLength == null ) )
+		{
+			return $this->getKalturaMsg( 'NO_KS' );
 		}
 
 		if( $accessControl->isScheduledNow === 0 || $accessControl->isScheduledNow === false ) {
@@ -309,7 +311,24 @@ class KalturaResultObject {
 		}
 		return true;
 	}
-
+	/**
+	 * Get the kaltura message key message text
+	 * @param string $msgKey
+	 */
+	function getKalturaMsg( $msgKey ){
+		global $messages;
+		if( $this->getPlayerConfig( 'strings', $msgKey ) ){
+			return $this->getPlayerConfig( 'strings', $msgKey );
+		}
+		// kind of a hack.. manually load the kaltura message file ( 
+		// TODO clean up so we can use normal wfMsg stubs with loaded modules. 
+		require_once 'KalturaSupport.i8ln.php';
+		if( isset( $messages['ks-' . $msgKey ] )){
+			return $messages['ks-' . $msgKey ];
+		}
+		return $msgKey;
+	}
+	
 	function formatString( $str ) {
 		// trim any whitespace
 		$str = trim( $str );
@@ -356,7 +375,24 @@ class KalturaResultObject {
 				}
 			}
 		}
-
+		
+		// Strings
+		if( $this->uiConfFile ) {
+			$uiStrings = $this->getUiConfXML()->xpath("*//string");
+			for( $i=0; $i < count($uiStrings); $i++ ) {
+				$key = ( string ) $uiStrings[ $i ]->attributes()->key;
+				$value = ( string ) $uiStrings[ $i ]->attributes()->value;
+				
+				// setup string s plugin: 
+				if( !isset( $plugins[ 'strings' ] ) ){
+					$plugins[ 'strings' ] = array ();
+				}
+				// add the current key value pair: 
+				$plugins[ 'strings' ][ $key ] = $value;
+			}
+		}
+		
+		
 		// Flashvars
 		if( $this->urlParameters[ 'flashvars' ] ) {
 			$flashVars = $this->urlParameters[ 'flashvars' ];
@@ -801,7 +837,6 @@ class KalturaResultObject {
 				$resultObject['meta'] = array();
 			}
 		}
-
 		// Check that the ks was valid on the first response ( flavors ) 
 		if( is_array( $resultObject['meta'] ) && isset( $resultObject['meta']['code'] ) && $resultObject['meta']['code'] == 'INVALID_KS' ){
 			$this->error = 'Error invalid KS';

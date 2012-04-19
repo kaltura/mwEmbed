@@ -1,5 +1,12 @@
 ( function( mw, $ ) { "use strict";
 	
+/**
+ * Add the messages text:
+ *  TODO remove once we switch to RL17 
+ */
+mw.includeAllModuleMessages();
+
+
 mw.KWidgetSupport = function( options ) {
 	// Create KWidgetSupport instance
 	return this.init( options );
@@ -174,45 +181,6 @@ mw.KWidgetSupport.prototype = {
 			}
 		}
 		
-		// Check access controls 
-		if( playerData.accessControl ){
-			var acStatus = _this.getAccessControlStatus( playerData.accessControl );
-			if( acStatus !== true ){
-				embedPlayer['data-playerError'] = acStatus;
-			}
-			// Check for preview access control and add special onEnd binding:
-			if( playerData.accessControl.previewLength && playerData.accessControl.previewLength != -1 ){
-				$( embedPlayer ).bind('postEnded.acpreview', function(){
-					mw.log( 'KWidgetSupport:: postEnded.acpreview>' );
-					$( embedPlayer ).trigger( 'KalturaSupport_FreePreviewEnd' );
-					// Don't run normal onend action: 
-					mw.log( 'KWidgetSupport:: KalturaSupport_FreePreviewEnd set onDoneInterfaceFlag = false' );
-					embedPlayer.onDoneInterfaceFlag = false;
-					var closeAcMessage = function(){
-						$( embedPlayer ).unbind('.acpreview');
-						embedPlayer.controlBuilder.closeMenuOverlay();
-						embedPlayer.onClipDone();
-					};
-					$( embedPlayer ).bind('onChangeMedia.acpreview', closeAcMessage);
-					// Display player dialog 
-					// TODO i8ln!!
-					embedPlayer.controlBuilder.displayMenuOverlay(
-						$('<div />').append( 
-							$('<h3 />').append( 'Free preview completed, need to purchase'),
-							$('<span />').text( 'Access to the rest of the content is restricted' ),
-							$('<br />'),$('<br />'),
-							$('<button />').attr({'type' : "button"})
-							.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
-							.append( 
-								$('<span />').addClass( "ui-button-text" )
-								.text( 'Ok' )
-								.css('margin', '10')
-							).click( closeAcMessage )
-						), closeAcMessage
-					);
-				});
-			}
-		}
 		// Apply player Sources
 		if( playerData.flavors ){
 			_this.addFlavorSources( embedPlayer, playerData.flavors );
@@ -267,6 +235,47 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.playlistData ){
 			embedPlayer.kalturaPlaylistData = playerData.playlistData;
 		}
+
+		// Check access controls ( must come after addPlayerMethods for custom messages )
+		if( playerData.accessControl ){
+			var acStatus = _this.getAccessControlStatus( playerData.accessControl, embedPlayer );
+			if( acStatus !== true ){
+				embedPlayer['data-playerError'] = acStatus;
+			}
+			// Check for preview access control and add special onEnd binding:
+			if( playerData.accessControl.previewLength && playerData.accessControl.previewLength != -1 ){
+				$( embedPlayer ).bind('postEnded.acpreview', function(){
+					mw.log( 'KWidgetSupport:: postEnded.acpreview>' );
+					$( embedPlayer ).trigger( 'KalturaSupport_FreePreviewEnd' );
+					// Don't run normal onend action: 
+					mw.log( 'KWidgetSupport:: KalturaSupport_FreePreviewEnd set onDoneInterfaceFlag = false' );
+					embedPlayer.onDoneInterfaceFlag = false;
+					var closeAcMessage = function(){
+						$( embedPlayer ).unbind('.acpreview');
+						embedPlayer.controlBuilder.closeMenuOverlay();
+						embedPlayer.onClipDone();
+					};
+					$( embedPlayer ).bind('onChangeMedia.acpreview', closeAcMessage);
+					// Display player dialog 
+					// TODO i8ln!!
+					embedPlayer.controlBuilder.displayMenuOverlay(
+						$('<div />').append( 
+							$('<h3 />').append( 'Free preview completed, need to purchase'),
+							$('<span />').text( 'Access to the rest of the content is restricted' ),
+							$('<br />'),$('<br />'),
+							$('<button />').attr({'type' : "button"})
+							.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
+							.append( 
+								$('<span />').addClass( "ui-button-text" )
+								.text( 'Ok' )
+								.css('margin', '10')
+							).click( closeAcMessage )
+						), closeAcMessage
+					);
+				});
+			}
+		}
+		
 		_this.handleUiConf( embedPlayer, callback );
 	},
 	addPlayerMethods: function( embedPlayer ){
@@ -348,6 +357,17 @@ mw.KWidgetSupport.prototype = {
 			}
 			return fv;
 		}
+		
+		// Adds support for custom message strings
+		embedPlayer.getKalturaMsg = function ( msgKey ){
+			// Check for uiConf configured msgs: 
+			if( _this.getPluginConfig( embedPlayer, 'strings', msgKey ) ){
+				return _this.getPluginConfig( embedPlayer, 'strings', msgKey );
+			} 
+			// If not found in the "strings" mapping then fallback to mwEmbed hosted default string:
+			// XXX should be mw.getMsg in 1.7
+			return gM('ks-' + msgKey );
+		};
 	},
 	/**
 	 * Handle the ui conf 
@@ -725,12 +745,6 @@ mw.KWidgetSupport.prototype = {
 		} else {
 			// Run the request: ( run async to avoid function call stack overflow )
 			_this.kClient = mw.KApiPlayerLoader( playerRequest, function( playerData ){
-				
-				if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
-					$('.loadingSpinner').remove();
-					$(embedPlayer).replaceWith( "Error invalid KS" );
-					return ;
-				}
 				if( playerData.meta && playerData.meta.id ) {
 					embedPlayer.kentryid = playerData.meta.id;
 					
@@ -740,6 +754,13 @@ mw.KWidgetSupport.prototype = {
 					poster += '/height/' + embedPlayer.getHeight();
 					embedPlayer.updatePosterSrc( poster );
 				}
+				
+				// Check for flavors error code: ( INVALID_KS )
+				if( playerData.flavors &&  playerData.flavors.code == "INVALID_KS" ){
+					$('.loadingSpinner').remove();
+					embedPlayer['data-playerError'] = embedPlayer.getKalturaMsg( "NO_KS" );
+				}
+				
 				callback( playerData );
 			});
 		}
@@ -756,7 +777,7 @@ mw.KWidgetSupport.prototype = {
 	 * 		true if the media can be played
 	 * 		false if the media should not be played. 
 	 */
-	getAccessControlStatus: function( ac ){
+	getAccessControlStatus: function( ac, embedPlayer ){
 		if( ac.isAdmin ){
 			return true;
 		}
@@ -777,11 +798,10 @@ mw.KWidgetSupport.prototype = {
 		}
 		// This is normally handled at the iframe level, but check is included here for completeness
 		if( ac.isUserAgentRestricted ){
-			return "User Agent Restricted\nWe're sorry, this content is not available for your device.";
+			return embedPlayer.getKalturaMsg( 'USER_AGENT_RESTRICTED' );
 		}
 		return true;
 	},
-	
 	/**
 	 * Get the uiconf id
 	 */
