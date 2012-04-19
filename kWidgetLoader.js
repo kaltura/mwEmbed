@@ -367,10 +367,10 @@ var kWidget = {
 	 */
 	addReadyCallback: function( readyCallback ){
 		// issue the ready callback for any existing ready widgets:
-		for( var wid in this.readyWidgets ){
-			// Make sure the widget is not already ready
-			if( document.getElementById( wid ) ){
-				readyCallback( wid );
+		for( var playerId in this.readyWidgets ){
+			// Make sure the widget is not already ready and is still in the dom:
+			if( document.getElementById( playerId ) ){
+				readyCallback( playerId );
 			}
 		}
 		// Add the callback to the readyCallbacks array for any other players that become ready
@@ -381,12 +381,12 @@ var kWidget = {
 	 * @param playerId
 	 * @return
 	 */
-	globalJsReadyCallback: function( widgetId ){
+	globalJsReadyCallback: function( playerId ){
 		// issue the callback for all readyCallbacks
-		while( this.readyCallbacks.length ){
-			this.readyCallbacks.shift()( widgetId );
+		for( var i = 0; i < this.readyCallbacks.length; i++ ){
+			this.readyCallbacks[i]( playerId );
 		}
-		this.readyWidgets[ widgetId ] = true;
+		this.readyWidgets[ playerId ] = true;
 	},
 
 	/*
