@@ -23,7 +23,9 @@ function jsKalturaPlayerTest( videoId ){
 	});
 }
 function readyCallbackFired( playerId ){
-	window.kWidgetCallbackWithID = playerId;
+	if( playerId == 'myVideoTarget' ){
+		window.kWidgetCallbackWithID = playerId;
+	}
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
