@@ -117,7 +117,7 @@ var kWidget = {
 		
 		// only generate a swf source if not defined. 
 		if( !settings.src ){
-			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget/'+
+			var swfUrl = mw.getConfig( 'Kaltura.ServiceUrl' ) + '/index.php/kwidget'+
 				'/wid/' + settings.wid +
 				'/uiconf_id/' + settings.uiconf_id;
 		
