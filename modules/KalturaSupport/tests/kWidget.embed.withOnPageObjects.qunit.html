@@ -1,18 +1,18 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>kWidget Player test</title>
+<title>kWidget with Object tag on page test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
 window.kWidgetCallbackWithID = false;
 function jsKalturaPlayerTest( videoId ){
 	if( videoId != 'myVideoTarget' ){
-		// don't run tests for non-kWidget player
+		// don't run tests for non-kWidget with Object tag on page
 		return ;
 	}
 	// Name this module
-	module( "kWidget Player" );
+	module( "kWidget with Object tag on page" );
 
 	asyncTest("Inline readyCallback fired", function(){
 		kalturaQunitWaitForPlayer(function(){
@@ -32,7 +32,7 @@ function readyCallbackFired( playerId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> kWidget Player test </h2>
+<h2> kWidget with Object tag on page test </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
 
