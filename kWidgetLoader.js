@@ -194,7 +194,7 @@ var kWidget = {
 		// note this is true for either flashembed or the object insert method bellow. 
 		// detect firebug: 
 		if ( window.console && ( window.console.firebug || window.console.exception ) ) {
-			console.log( 'Warning firebug with javascript and kdp flash that causes lockups in firefox' + 
+			console.log( 'Warning firebug + firefox and dynamic flash kdp embed causes lockups in firefox' + 
 					', ( delaying embed )');
 			kAddReadyHook( function(){
 				setTimeout(function(){
