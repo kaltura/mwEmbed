@@ -944,7 +944,7 @@ mw.KWidgetSupport.prototype = {
 			if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
 				var src  = flavorUrl + '/entryId/' + asset.entryId;
 				// Check if Apple http streaming is enabled and the tags include applembr
-				if( asset.tags.indexOf('applembr') != -1 ) {
+				if( mw.getConfig('Kaltura.UseAppleAdaptive') && asset.tags.indexOf('applembr') != -1 ) {
 					src += '/format/applehttp/protocol/' + protocol + '/a.m3u8';
 					
 					deviceSources.push({
