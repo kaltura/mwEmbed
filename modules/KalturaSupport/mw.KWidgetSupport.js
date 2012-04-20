@@ -329,6 +329,18 @@ mw.KWidgetSupport.prototype = {
 			// Sync iframe with attribute data updates:
 			$( embedPlayer ).trigger( 'updateIframeData' );			
 		};
+		
+		// Add an exported plugin value: 
+		embedPlayer.addExportedObject = function( pluginName, objectSet ){
+			// TODO we should support log levels in 1.7 
+			// https://github.com/kaltura/mwEmbed/issues/80
+			if( console && console.log ){
+				console.log( "KwidgetSupport:: addExportedObject is deprecated, please use standard setKalturaConfig" );
+			}
+			for( var key in objectSet ){
+				embedPlayer.setKalturaConfig( pluginName, key, objectSet[i] );
+			}
+		};
 
 		// Add isPluginEnabled to embed player:
 		embedPlayer.isPluginEnabled = function( pluginName ) {
