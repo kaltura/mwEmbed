@@ -181,49 +181,6 @@ mw.KWidgetSupport.prototype = {
 			}
 		}
 		
-<<<<<<< HEAD
-		// Check access controls 
-		if( playerData.accessControl ){
-			var acStatus = _this.getAccessControlStatus( playerData.accessControl );
-			if( acStatus !== true ){
-				embedPlayer['data-playerError'] = acStatus;
-			}
-			// Check for preview access control and add special onEnd binding:
-			if( playerData.accessControl.previewLength && playerData.accessControl.previewLength != -1 ){
-				$( embedPlayer ).bind('postEnded.acpreview', function(){
-					mw.log( 'KWidgetSupport:: postEnded.acpreview>' );
-					$( embedPlayer ).trigger( 'KalturaSupport_FreePreviewEnd' );
-					// Don't run normal onend action: 
-					mw.log( 'KWidgetSupport:: KalturaSupport_FreePreviewEnd set onDoneInterfaceFlag = false' );
-					embedPlayer.onDoneInterfaceFlag = false;
-					var closeAcMessage = function(){
-						$( embedPlayer ).unbind('.acpreview');
-						embedPlayer.controlBuilder.closeMenuOverlay();
-						embedPlayer.onClipDone();
-					};
-					$( embedPlayer ).bind('onChangeMedia.acpreview', closeAcMessage);
-					// Display player dialog 
-					// TODO i8ln!!
-					embedPlayer.controlBuilder.displayMenuOverlay(
-						$('<div />').append( 
-							$('<h3 />').append( 'Free preview completed, need to purchase'),
-							$('<span />').text( 'Access to the rest of the content is restricted' ),
-							$('<br />'),$('<br />'),
-							$('<button />').attr({'type' : "button"})
-							.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
-							.append( 
-								$('<span />').addClass( "ui-button-text" )
-								.text( 'Ok' )
-								.css('margin', '10')
-							).click( closeAcMessage )
-						), closeAcMessage
-					);
-				});
-			}
-		}
-		
-=======
->>>>>>> develop
 		// Apply player Sources
 		if( playerData.flavors ){
 			_this.addFlavorSources( embedPlayer, playerData );
@@ -962,7 +919,9 @@ mw.KWidgetSupport.prototype = {
 				'data-height' : asset.height,
 				'data-aspect' : sourceAspect // not all sources have valid aspect ratios
 			};
-			
+			// setup tags array: 
+			var tags = asset.tags.toLowerCase().split(',');
+
 			// Continue if clip is not ready (2) and not in a transcoding state (4 )
 			if( asset.status != 2  ) {
 				// if an asset is transcoding and no other source is found bind an error callback: 
@@ -980,7 +939,7 @@ mw.KWidgetSupport.prototype = {
 			if( mw.getConfig( 'Kaltura.UseManifestUrls' ) ){
 				var src  = flavorUrl + '/entryId/' + asset.entryId;
 				// Check if Apple http streaming is enabled and the tags include applembr
-				if( mw.getConfig('Kaltura.UseAppleAdaptive') && asset.tags.indexOf('applembr') != -1 ) {
+				if( mw.getConfig('Kaltura.UseAppleAdaptive') && $.inArray( 'applembr', tags ) != -1 ) {
 					src += '/format/applehttp/protocol/' + protocol + '/a.m3u8';
 					
 					deviceSources.push({
@@ -1000,14 +959,14 @@ mw.KWidgetSupport.prototype = {
 			}
 			
 			// Check the tags to read what type of mp4 source
-			if( asset.tags.toLowerCase().indexOf('ipad') != -1 ){
+			if( $.inArray( 'ipad', tags ) != -1 ){
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPad';
 				source['type'] = 'video/h264';
 			}
 
 			// Check for iPhone src
-			if( asset.tags.toLowerCase().indexOf('iphone') != -1 ){
+			if( $.inArray( 'iphone', tags ) != -1 ){
 				source['src'] = src + '/a.mp4';
 				source['data-flavorid'] = 'iPhone';
 				source['type'] = 'video/h264';
@@ -1028,7 +987,7 @@ mw.KWidgetSupport.prototype = {
 			// Check for webm source
 			if( asset.fileExt && ( asset.fileExt == 'webm' 
 				|| 
-				asset.tags.indexOf('webm') != -1 
+				$.inArray( 'webm' , tags) != -1 
 				|| // Kaltura transcodes give: 'matroska'
 				asset.containerFormat.toLowerCase() == 'matroska'
 				|| // some ingestion systems give "webm" 
@@ -1061,17 +1020,17 @@ mw.KWidgetSupport.prototype = {
 			}
 			
 			// Add iPad Akamai flavor to iPad flavor Ids list id list
-			if( asset.tags.toLowerCase().indexOf('ipadnew') != -1 ){
+			if( $.inArray( 'ipadnew', tags ) != -1 ){
 				ipadAdaptiveFlavors.push( asset.id );
 			}
 			
 			// Add iPhone Akamai flavor to iPad&iPhone flavor Ids list
-			if( asset.tags.toLowerCase().indexOf('iphonenew') != -1 ){
+			if( $.inArray( 'iphonenew', tags ) != -1 ){
 				ipadAdaptiveFlavors.push( asset.id );
 				iphoneAdaptiveFlavors.push( asset.id );
 			}
 		} // end source loop
-		
+
 		// Make sure all the sources have valid aspect ratios ( if not get from other sources )
 		for( var i=0; i < deviceSources.length; i++ ){
 			var source = deviceSources[i];
