@@ -1073,11 +1073,6 @@ mw.KWidgetSupport.prototype = {
 		if( playerData.meta.duration < 10 ) {
 			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
-		// Android 3x lies about HLS support
-		if( navigator.userAgent.indexOf( 'Android 3.') ){
-			deviceSources = this.removeAdaptiveFlavors( deviceSources );
-		}
-		
 		
 		// Append KS to all source if available 
 		// Get KS for playManifest URL ( this should run synchronously since ks should already be available )
