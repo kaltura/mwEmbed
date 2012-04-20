@@ -181,9 +181,52 @@ mw.KWidgetSupport.prototype = {
 			}
 		}
 		
+<<<<<<< HEAD
+		// Check access controls 
+		if( playerData.accessControl ){
+			var acStatus = _this.getAccessControlStatus( playerData.accessControl );
+			if( acStatus !== true ){
+				embedPlayer['data-playerError'] = acStatus;
+			}
+			// Check for preview access control and add special onEnd binding:
+			if( playerData.accessControl.previewLength && playerData.accessControl.previewLength != -1 ){
+				$( embedPlayer ).bind('postEnded.acpreview', function(){
+					mw.log( 'KWidgetSupport:: postEnded.acpreview>' );
+					$( embedPlayer ).trigger( 'KalturaSupport_FreePreviewEnd' );
+					// Don't run normal onend action: 
+					mw.log( 'KWidgetSupport:: KalturaSupport_FreePreviewEnd set onDoneInterfaceFlag = false' );
+					embedPlayer.onDoneInterfaceFlag = false;
+					var closeAcMessage = function(){
+						$( embedPlayer ).unbind('.acpreview');
+						embedPlayer.controlBuilder.closeMenuOverlay();
+						embedPlayer.onClipDone();
+					};
+					$( embedPlayer ).bind('onChangeMedia.acpreview', closeAcMessage);
+					// Display player dialog 
+					// TODO i8ln!!
+					embedPlayer.controlBuilder.displayMenuOverlay(
+						$('<div />').append( 
+							$('<h3 />').append( 'Free preview completed, need to purchase'),
+							$('<span />').text( 'Access to the rest of the content is restricted' ),
+							$('<br />'),$('<br />'),
+							$('<button />').attr({'type' : "button"})
+							.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
+							.append( 
+								$('<span />').addClass( "ui-button-text" )
+								.text( 'Ok' )
+								.css('margin', '10')
+							).click( closeAcMessage )
+						), closeAcMessage
+					);
+				});
+			}
+		}
+		
+=======
+>>>>>>> develop
 		// Apply player Sources
 		if( playerData.flavors ){
-			_this.addFlavorSources( embedPlayer, playerData.flavors );
+			_this.addFlavorSources( embedPlayer, playerData );
 		}
 		
 		// Check for "image" mediaType ( 2 ) 
@@ -679,18 +722,7 @@ mw.KWidgetSupport.prototype = {
 					}];
 			} else {
 				// Get device sources 
-				sources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), playerData.flavors );
-			}
-			// Apple adaptive streaming is sometimes broken for short videos
-			// remove adaptive sources if duration is less then 10 seconds, 
-			if( playerData.meta.duration < 10 ) {
-				for( var i =0 ; i < sources.length; i++ ){
-					if( sources[i].type == 'application/vnd.apple.mpegurl' ){
-						// Remove the current source:
-						sources.splice( i, 1 );
-						i--;
-					}
-				}
+				sources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData.flavors, playerData.meta.duration );
 			}
 			// Return the valid source set
 			callback( sources );
@@ -836,9 +868,10 @@ mw.KWidgetSupport.prototype = {
 	* @param {Object} embedPlayer Player object to apply sources to
 	* @param {Object} flavorData Function to be called once sources are ready 
 	*/ 
-	addFlavorSources: function( embedPlayer, flavorData ) {
+	addFlavorSources: function( embedPlayer, playerData ) {
 		var _this = this;
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
+		var flavorData = playerData.flavors
 		// Set the poster ( if not already set ) 
 		if( !embedPlayer.poster && embedPlayer.kentryid ){
 			embedPlayer.poster = mw.getKalturaThumbUrl({
@@ -854,7 +887,7 @@ mw.KWidgetSupport.prototype = {
 			return ;
 		}
 		// Else get sources from flavor data :
-		var flavorSources = _this.getEntryIdSourcesFromFlavorData( _this.kClient.getPartnerId(), flavorData );
+		var flavorSources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
 		// Add all the sources to the player element: 
 		for( var i=0; i < flavorSources.length; i++) {
 			mw.log( 'KWidgetSupport:: addSource::' + embedPlayer.id + ' : ' +  flavorSources[i].src + ' type: ' +  flavorSources[i].type);
@@ -884,9 +917,12 @@ mw.KWidgetSupport.prototype = {
 	},
 	/**
 	 * Get client entry id sources: 
+	 * @param {string} partnerId Used to build asset urls
+	 * @param {object} playerData The flavor data object
 	 */
-	getEntryIdSourcesFromFlavorData: function( partnerId, flavorData ){
+	getEntryIdSourcesFromPlayerData: function( partnerId, playerData ){
 		var _this = this;
+		var flavorData = playerData.flavors;
 		if( !flavorData ){
 			mw.log("Error: KWidgetSupport: flavorData is not defined ");
 			return ;
@@ -1071,6 +1107,17 @@ mw.KWidgetSupport.prototype = {
 					'type' : 'application/vnd.apple.mpegurl',
 					'src' : flavorUrl + '/entryId/' + asset.entryId + '/flavorIds/' + iphoneAdaptiveFlavors.join(',')  + '/format/applehttp/protocol/' + protocol + '/a.m3u8'
 				});
+			}
+		}
+		// Apple adaptive streaming is broken for short videos
+		// remove adaptive sources if duration is less then 10 seconds, 
+		if( playerData.meta.duration < 10 ) {
+			for( var i =0 ; i < deviceSources.length; i++ ){
+				if( deviceSources[i].type == 'application/vnd.apple.mpegurl' ){
+					// Remove the current source:
+					deviceSources.splice( i, 1 );
+					i--;
+				}
 			}
 		}
 		
