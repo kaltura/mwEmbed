@@ -338,7 +338,7 @@ mw.KWidgetSupport.prototype = {
 				console.log( "KwidgetSupport:: addExportedObject is deprecated, please use standard setKalturaConfig" );
 			}
 			for( var key in objectSet ){
-				embedPlayer.setKalturaConfig( pluginName, key, objectSet[i] );
+				embedPlayer.setKalturaConfig( pluginName, key, objectSet[key] );
 			}
 		};
 
