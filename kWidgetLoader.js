@@ -96,9 +96,9 @@ var kWidget = {
 		} else {
 			if( settings.uiconf_id ) {
 				// we use setTimeout to handle race condition when restore get called before dom ready
-				setTimeout( function() {
+				//setTimeout( function() {
 					restoreKalturaKDPCallback();
-				}, 0);
+				//}, 0);
 			}			
 			kWidget.outputFlashObject( targetId, settings );
 			return ;
