@@ -199,7 +199,7 @@ var kWidget = {
 			kAddReadyHook( function(){
 				setTimeout(function(){
 					outputElemnt();
-				},1000);
+				}, 2000);
 			});
 		} else {
 			// IE needs to wait till dom ready
