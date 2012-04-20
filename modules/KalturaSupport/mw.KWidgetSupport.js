@@ -1071,14 +1071,13 @@ mw.KWidgetSupport.prototype = {
 		// Apple adaptive streaming is broken for short videos
 		// remove adaptive sources if duration is less then 10 seconds, 
 		if( playerData.meta.duration < 10 ) {
-			for( var i =0 ; i < deviceSources.length; i++ ){
-				if( deviceSources[i].type == 'application/vnd.apple.mpegurl' ){
-					// Remove the current source:
-					deviceSources.splice( i, 1 );
-					i--;
-				}
-			}
+			deviceSources = this.removeAdaptiveFlavors( deviceSources );
 		}
+		// Android 3x lies about HLS support
+		if( navigator.userAgent.indexOf( 'Android 3.') ){
+			deviceSources = this.removeAdaptiveFlavors( deviceSources );
+		}
+		
 		
 		// Append KS to all source if available 
 		// Get KS for playManifest URL ( this should run synchronously since ks should already be available )
@@ -1094,6 +1093,16 @@ mw.KWidgetSupport.prototype = {
 		}
 		
 		return deviceSources;
+	},
+	removeAdaptiveFlavors: function( sources ){
+		for( var i =0 ; i < sources.length; i++ ){
+			if( sources[i].type == 'application/vnd.apple.mpegurl' ){
+				// Remove the current source:
+				sources.splice( i, 1 );
+				i--;
+			}
+		}
+		return sources;
 	},
 	getValidAspect: function( sources ){
 		var _this = this;
