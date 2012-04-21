@@ -34,6 +34,14 @@ function jsKalturaPlayerTest( videoId ){
 	});
 }
 </script>
+<script>
+	function jsCallbackReady(videoId){
+		if( console && console.log ){
+			console.log( 'jsCallbackReady: ' + videoId );
+		}
+	}
+</script>
+
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>

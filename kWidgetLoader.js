@@ -95,10 +95,9 @@ var kWidget = {
 			return ;
 		} else {
 			if( settings.uiconf_id ) {
-				// we use setTimeout to handle race condition when restore get called before dom ready
-				//setTimeout( function() {
-					restoreKalturaKDPCallback();
-				//}, 0);
+				// We directly restore the KDP callback because a cached output of the flashObject, 
+				// seems to run into too much recursion errors. 
+				restoreKalturaKDPCallback();
 			}			
 			kWidget.outputFlashObject( targetId, settings );
 			return ;
