@@ -680,6 +680,11 @@ mw.EmbedPlayerNative = {
 						// remove end binding: 
 						$( vid ).unbind( switchBindPostfix );
 						doneCallback();
+						
+						// Support loop for older iOS
+						if ( _this.loop ) {
+							vid.play();
+						}
 						return false;
 					});
 				}
