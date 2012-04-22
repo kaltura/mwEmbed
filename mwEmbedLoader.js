@@ -191,7 +191,32 @@ function kOverideJsFlashEmbed(){
 			});
 		};
 	}
-	
+
+	// SWFObject v 1.5 
+	if( window['SWFObject']  && !window['SWFObject'].prototype['originalWrite']){
+		window['SWFObject'].prototype['originalWrite'] = window['SWFObject'].prototype.write;
+		window['SWFObject'].prototype['write'] = function( targetId ){
+			var _this = this;
+			kAddReadyHook(function(){      
+				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, _this.params.flashVars);
+				if( kEmbedSettings.uiconf_id && ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+					kWidget.outputDirectDownload( targetId, kEmbedSettings );
+					return ;
+				}
+
+				if( kWidget.isHTML5FallForward() && kEmbedSettings.uiconf_id ){
+					doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
+				} else {
+				// if its a kaltura player embed restore kdp callback:
+				if( kEmbedSettings.uiconf_id ){
+					restoreKalturaKDPCallback();
+				}
+				// use the original flash player embed:  
+				_this.originalWrite( targetId );
+				}
+			});
+		};
+	}
 	// SWFObject v 2.x
 	if( window['swfobject'] && !window['swfobject']['originalEmbedSWF'] ){
 		window['swfobject']['originalEmbedSWF'] = window['swfobject']['embedSWF'];
