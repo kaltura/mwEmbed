@@ -2,7 +2,7 @@
 * Msg text is inherited from embedPlayer
 */
 
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 /**
 * mw.PlayerControlBuilder object
 *	@param the embedPlayer element we are targeting
@@ -165,7 +165,7 @@ mw.PlayerControlBuilder.prototype = {
 		embedPlayer.$interface.append( $controlBar );
         
         if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
-			embedPlayer.triggerHelper( 'resizeIframeContainer', [ { 'height' : embedPlayer.height + $controlBar.height() - 1 } ] );
+			embedPlayer.triggerHelper( 'resizeIframeContainer', [ {'height' : embedPlayer.height + $controlBar.height() - 1} ] );
         }
 
 		// Add the Controls Component
@@ -302,9 +302,10 @@ mw.PlayerControlBuilder.prototype = {
 		// if the video is very tall in a short window adjust the size:
 		var offsetLeft = ( targetWidth < windowSize.width )? parseInt( windowSize.width- targetWidth ) / 2 : 0;
 
+		var position = (mw.isIOS4()) ? 'static' : 'absolute';
 		mw.log( 'PlayerControlBuilder::getAspectPlayerWindowCss: ' + ' h:' + targetHeight + ' w:' + targetWidth + ' t:' + offsetTop + ' l:' + offsetLeft );
 		return {
-			'position' : 'absolute',
+			'position' : position,
 			'height': parseInt( targetHeight ),
 			'width' : parseInt( targetWidth ),
 			'top' : parseInt( offsetTop ),
@@ -455,8 +456,8 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		
 		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
-		setTimeout( function(){ _this.syncPlayerSize() }, 50);
-		setTimeout( function(){ _this.syncPlayerSize() }, 200);
+		setTimeout( function(){_this.syncPlayerSize()}, 50);
+		setTimeout( function(){_this.syncPlayerSize()}, 200);
 	},
 	syncPlayerSize: function(){
 		var embedPlayer = this.embedPlayer;
@@ -710,12 +711,12 @@ mw.PlayerControlBuilder.prototype = {
 		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			this.restoreWindowPlayerDom();
-		}  else {
+		} else {
 			// if an iframe server make sure the player size is in sync with the iframe window size: 
 			// ( iPad sometimes does not fire resize events ) 
 			if( this.isWindowSizePlayer ){
-				setTimeout( function(){ _this.syncPlayerSize() }, 50);
-				setTimeout( function(){ _this.syncPlayerSize() }, 200);
+				setTimeout( function(){_this.syncPlayerSize()}, 50);
+				setTimeout( function(){_this.syncPlayerSize()}, 200);
 			}
 		}
 		// Restore scrolling on iPad
@@ -1746,7 +1747,7 @@ mw.PlayerControlBuilder.prototype = {
         $.each( $buttonSet, function(i) {
             var label = this.toString();
             var $currentButton = $( '<button />' )
-                .css( { 'padding' : '5px', 'font-size' : '12px' } )
+                .css( {'padding' : '5px', 'font-size' : '12px'} )
                 .text( label )
                 .click( function( eventObject ) {
                     callback( eventObject );
