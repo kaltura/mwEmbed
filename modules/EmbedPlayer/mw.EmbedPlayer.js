@@ -7,7 +7,7 @@
 * mw.PlayerControlBuilder Handles skinning of the player controls
 */
 
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 
 /**
  * Add the messages text:
@@ -1401,7 +1401,7 @@ mw.EmbedPlayer.prototype = {
 
 		// Do some device detection devices that don't support overlays
 		// and go into full screen once play is clicked:
-		if( mw.isAndroid2() || mw.isIpod()  || mw.isIphone() ){
+		if( mw.isAndroid2() || mw.isIpod()  || mw.isIphone() || kWidget.isBlackBerryHTML5Support() ){
 			return true;
 		}
 		
@@ -1559,7 +1559,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		// old style embed:
 		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
-		var params = { 'src[]' : [] };
+		var params = {'src[]' : []};
 
 		// TODO move to mediaWiki Support module
 		if( this.apiTitleKey ) {

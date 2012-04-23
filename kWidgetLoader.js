@@ -303,9 +303,9 @@ var kWidget = {
 		//while ( targetNode.hasChildNodes() ) {
 		//   targetNode.removeChild( targetNode.lastChild );
 		//}
-		if(!options)
-			options = {};
-
+		if( typeof options == 'undefined' ) {
+			var options = {};
+		}
 		// look some other places for sizes:
 		if( !options.width && kEmbedSettings.width )
 			options.width = kEmbedSettings.width;
@@ -412,7 +412,7 @@ var kWidget = {
 	supportsHTML5: function(){
 		var dummyvid = document.createElement( "video" );
 		// Blackberry does not really support html5
-		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
+		if( ! kWidget.isBlackBerryHTML5Support() ){
 			return false;
 		}
 		if( dummyvid.canPlayType ) {
@@ -470,6 +470,18 @@ var kWidget = {
 		return ( (navigator.userAgent.indexOf('iPhone') != -1) ||
 		(navigator.userAgent.indexOf('iPod') != -1) ||
 		(navigator.userAgent.indexOf('iPad') != -1) );
+	 },
+	 
+	 /*
+	  * Checks for BlackBerry HTML5 support (version 7+)
+	  */
+	 isBlackBerryHTML5Support: function() {
+		var ua = navigator.userAgent;
+		if( ua.indexOf("BlackBerry") != -1 && ua.indexOf("Version/") != -1 ) {
+			var verPosition = ua.indexOf("Version/") + 8;
+            return ( parseInt(ua.substring(verPosition, verPosition + 3)) >= 7 ) ? true : false;
+		}
+		return false;
 	 },
 
 	 /*

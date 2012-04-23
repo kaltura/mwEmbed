@@ -319,9 +319,9 @@ function kCheckAddScript(){
 
 	// Check if no flash and no html5 and no forceFlash ( direct download link )
 	// for debug purpose:
-	// kSupportsFlash = function() {return false}; kWidget.supportsHTML5 = function() {return false};
+	// kWidget.supportsFlash = function() {return false}; kWidget.supportsHTML5 = function() {return false};
 	if( ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
-		kAddScript();
+		kDoIframeRewriteList( kGetKalturaPlayerList() );
 		return ;
 	}
 	// Restore the jsCallbackReady ( we are not rewriting )
