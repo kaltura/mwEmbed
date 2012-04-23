@@ -987,7 +987,7 @@ mw.EmbedPlayerNative = {
 			// make sure the interface reflects the current play state if not calling parent_play()
 			this.playInterfaceUpdate();
 		}
-		// set firstEmbedPlay state to false to avoid initial play invocation : 
+		// Set firstEmbedPlay state to false to avoid initial play invocation : 
 		this.isFirstEmbedPlay = false;
 	},
 
@@ -1014,8 +1014,8 @@ mw.EmbedPlayerNative = {
 			this.duration = this.playerElement.duration;
 		}
 
-		// check if in "playing" state if so continue to playback: 
-		if( !this.paused ){
+		// Check if in "playing" state and we are _propagateEvents events and continue to playback: 
+		if( !this.paused && this._propagateEvents ){
 			this.getPlayerElement().play();
 		}
 		
