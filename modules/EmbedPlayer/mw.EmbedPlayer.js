@@ -1274,6 +1274,8 @@ mw.EmbedPlayer.prototype = {
 		var bindName = 'playerReady.changeMedia';
 		$this.unbind( bindName ).bind( bindName, function(){
 			mw.log('mw.EmbedPlayer::changeMedia playerReady callback');
+			// hide the loading spinner: 
+			_this.hidePlayerSpinner();
 			// check for an erro on change media: 
 			if( _this['data-playerError'] ){
 				_this.showErrorMsg( this['data-playerError'] );
@@ -1313,6 +1315,7 @@ mw.EmbedPlayer.prototype = {
 			
 			// Stop should unload the native player
 			_this.stop();
+			
 			// reload the player
 			if( chnagePlayingMedia ){
 				_this.play()
@@ -2047,7 +2050,7 @@ mw.EmbedPlayer.prototype = {
 	fullscreen: function() {
 		this.controlBuilder.toggleFullscreen();
 	},
-
+	
 	/**
 	 * Abstract method to be run post embedding the player Generally should be
 	 * overwritten by the plug-in / player
