@@ -787,17 +787,19 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		// Run parent play:
 		if( _this.parent_play() ){
-			this.getPlayerElement();
-			if ( this.playerElement && this.playerElement.play ) {
+			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
+				mw.log( "EmbedPlayerNative:: issue native play call" );
 				// If in pauseloading state make sure the loading spinner is present: 
 				if( this.isPauseLoading ){
 					this.hideSpinnerOncePlaying();
 				}
 				// issue a play request 
-				this.playerElement.play();
+				this.getPlayerElement().play();
 				// re-start the monitor:
 				this.monitor();
 			}
+		} else {
+			mw.log( "EmbedPlayerNative:: parent play returned false, don't issue play on native element");
 		}
 	},
 	
@@ -977,14 +979,15 @@ mw.EmbedPlayerNative = {
 	*/
 	_onplay: function(){
 		mw.log("EmbedPlayerNative:: OnPlay:: propogate:" +  this._propagateEvents + ' paused: ' + this.paused);
-		// make sure the interface reflects the current play state:
-		this.playInterfaceUpdate();
 		
 		// Update the interface ( if paused )
 		if( ! this.isFirstEmbedPlay && this._propagateEvents && this.paused ){
 			this.parent_play();
+		} else {
+			// make sure the interface reflects the current play state if not calling parent_play()
+			this.playInterfaceUpdate();
 		}
-		// restore firstEmbedPlay state: 
+		// set firstEmbedPlay state to false to avoid initial play invocation : 
 		this.isFirstEmbedPlay = false;
 	},
 
@@ -1011,6 +1014,11 @@ mw.EmbedPlayerNative = {
 			this.duration = this.playerElement.duration;
 		}
 
+		// check if in "playing" state if so continue to playback: 
+		if( !this.paused ){
+			this.getPlayerElement().play();
+		}
+		
 		//Fire "onLoaded" flags if set
 		if( typeof this.onLoadedCallback == 'function' ) {
 			this.onLoadedCallback();

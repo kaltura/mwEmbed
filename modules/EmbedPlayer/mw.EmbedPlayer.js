@@ -1852,8 +1852,8 @@ mw.EmbedPlayer.prototype = {
 			this.paused = true;
 			if(  this._propagateEvents ){
 				mw.log( 'EmbedPlayer:trigger pause:' + this.paused );
-				// "pause" will be deprecated in favor of "onpause"
-				$( this ).trigger( 'pause' );
+				// we only trigger "onpause" to avoid event propagation to the native object method
+				// i.e in jQuery ( this ).trigger('pause') also calls: this.pause();
 				$( this ).trigger( 'onpause' );
 			}
 		}
