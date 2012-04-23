@@ -2,13 +2,6 @@
 	// 	Check for the Title 
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			
-			// If native controls and iOS4 don't show the title
-			if( mw.isIOS4() && embedPlayer.useNativePlayerControls() ) {
-				callback();
-				return ;
-			}
-			
 			// Check for Titles: 
 			if( $uiConf.find( '#TopTitleScreen' ).length ){
 				// Bind changeMedia to update title  
@@ -77,11 +70,12 @@
 					vidHeight = vidHeight - embedPlayer.controlBuilder.height; 
 				}
 			}
+			var position = (mw.isIOS4()) ? 'static' : 'absolute';
 			mw.log("TitleLayout:: update height: " + titleScreenHeight );
 			// add space for the title: 
 			$vid
 			.css({
-				'position' : 'absolute',
+				'position' : position,
 				'height' : vidHeight
 			});
 			if( !belowPlayer ){
