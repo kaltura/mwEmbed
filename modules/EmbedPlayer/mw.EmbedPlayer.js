@@ -944,7 +944,7 @@ mw.EmbedPlayer.prototype = {
 	},
 	getPlayerInterface: function(){
 		if( !this.$interface ){		
-			var posObj = {
+			var interfaceCss = {
 				'width' : this.width + 'px',
 				'height' : this.height + 'px',
 				'position' : 'absolute',
@@ -952,14 +952,19 @@ mw.EmbedPlayer.prototype = {
 				'left' : '0px',
 				'background': null					
 			};
+			// if using "native" interface don't do any pointer events:
+			if( this.useNativePlayerControls() ){
+				interfaceCss['pointer-events'] = 'none'
+			}
+			
 			if( !mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
-				posObj['position'] = 'relative';
+				interfaceCss['position'] = 'relative';
 			}
 			// Make sure we have mwplayer_interface
 			$( this ).wrap(
 				$('<div />')
 				.addClass( 'mwplayer_interface ' + this.controlBuilder.playerClass )
-				.css( posObj )
+				.css( interfaceCss )
 			)
 			// position the "player" absolute inside the relative interface
 			// parent:
@@ -1387,10 +1392,6 @@ mw.EmbedPlayer.prototype = {
 	 *     false if the mwEmbed player interface should not be used
 	 */
 	useNativePlayerControls: function() {
- 		if( mw.getConfig('EmbedPlayer.WebKitPlaysInline') === true && mw.isIphone() ) {
- 			return false;
- 		}
-
 		if( this.usenativecontrols === true ){
 			return true;
 		}
@@ -1398,6 +1399,11 @@ mw.EmbedPlayer.prototype = {
 		if( mw.getConfig('EmbedPlayer.NativeControls') === true ) {
 			return true;
 		}
+		
+		// Check for special webkit property that allows inline iPhone playback:
+ 		if( mw.getConfig('EmbedPlayer.WebKitPlaysInline') === true && mw.isIphone() ) {
+ 			return false;
+ 		}
 
 		// Do some device detection devices that don't support overlays
 		// and go into full screen once play is clicked:
