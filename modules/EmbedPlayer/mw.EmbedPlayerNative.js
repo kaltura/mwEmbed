@@ -682,9 +682,10 @@ mw.EmbedPlayerNative = {
 						doneCallback();
 						
 						// Support loop for older iOS
-						if ( _this.loop ) {
-							vid.play();
-						}
+						// Temporarly disabled pending more testing or refactor into a better place. 
+						//if ( _this.loop ) {
+						//	vid.play();
+						//}
 						return false;
 					});
 				}
