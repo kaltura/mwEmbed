@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title> Native Fullscreen Link Playback test </title>
+
+<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+</head>
+<body>
+<h2> Native Fullscreen Link Playback test </h2>
+<div class="fullscreenLinks">
+	<span data-entryid="0_uka1msg4"> Play folger coffee </span> <br />
+	<span data-entryid="0_ntovmku5"> Play Sita Trailer </span> <br />
+</div>
+
+<!--  We always include a player offscreen to support user gesture capture play for the first click -->
+<div id="myVideoContainer" style="position:absolute;left:-4000px;" >
+	<div id=myVideoTarget style="width:400px;height:330px;">
+		<!--  SEO can go here -->
+	</div>
+</div>
+
+<script>
+	kWidget.embed({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '2877502',
+		'entry_id' : '0_uka1msg4',
+		'readyCallback': function( playerId ){
+			console.log( "kWidget player ready: " + playerId );
+			$('.fullscreenLinks span').each( function(){
+				var _thisSpan = this;
+				$( _thisSpan ).wrap( '<a />' ).click( function(){
+					alert( $( _thisSpan ).attr('data-entryid') );
+				})
+			})
+		}
+	});
+</script>
+
+</body>
+</html>
