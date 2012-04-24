@@ -25,11 +25,17 @@ $loaderJs = "window['SCRIPT_LOADER_URL'] = '". addslashes( $wgResourceLoaderUrl 
 // Add the library version: 
 $loaderJs .= "window['KALTURA_LOADER_VERSION'] = '$wgMwEmbedVersion';\n";
 
-// Get resource (  kWidgetLoader.js )
-$loaderJs .= file_get_contents( 'kWidgetLoader.js' );
+// Get resource (  kWidget.js )
+$loaderJs .= file_get_contents( 'kWidget.js' );
+
+// By default include deprecated globals ( could be optional in the future )
+$loaderJs .= file_get_contents( 'kWidget.deprecatedGlobals.js' ) . "\n";
+
+// Get resource ( domReady.js )
+$loaderJs .= file_get_contents( 'kWidget.domReady.js' ). "\n";
 
 // Get resource (  mwEmbedLoader.js )
-$loaderJs .= file_get_contents( 'mwEmbedLoader.js' );
+$loaderJs .= file_get_contents( 'mwEmbedLoader.js' ) . "\n";
 
 // Include checkUserAgentPlayer code
 $loaderJs .= file_get_contents( 'modules/KalturaSupport/kdpPageJs/checkUserAgentPlayerRules.js' );

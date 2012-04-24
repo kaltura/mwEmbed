@@ -1,125 +1,148 @@
-/**
-* Dom Ready object, extends kWidget object
-* holds all document ready related functions ( similar to jQuery.ready )  
-*/
-(function( window, document, undefined ){
+(function(kWidget){
+
+    var DomReady = window.DomReady = {};
+
+	// Everything that has to do with properly supporting our document ready event. Brought over from the most awesome jQuery. 
+
+    var userAgent = navigator.userAgent.toLowerCase();
+
+    // Figure out what browser is being used
+    var browser = {
+    	version: (userAgent.match( /.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/ ) || [])[1],
+    	safari: /webkit/.test(userAgent),
+    	opera: /opera/.test(userAgent),
+    	msie: (/msie/.test(userAgent)) && (!/opera/.test( userAgent )),
+    	mozilla: (/mozilla/.test(userAgent)) && (!/(compatible|webkit)/.test(userAgent))
+    };    
+
+	var readyBound = false;	
+	var isReady = false;
+	var readyList = [];
+
+	// Handle when the DOM is ready
+	function domReady() {
+		// Make sure that the DOM is not already loaded
+		if(!isReady) {
+			// Remember that the DOM is ready
+			isReady = true;
+        
+	        if(readyList) {
+	            for(var fn = 0; fn < readyList.length; fn++) {
+	                readyList[fn].call(window, []);
+	            }
+            
+	            readyList = [];
+	        }
+		}
+	};
+
+	// From Simon Willison. A safe way to fire onload w/o screwing up everyone else.
+	function addLoadEvent(func) {
+	  var oldonload = window.onload;
+	  if (typeof window.onload != 'function') {
+	    window.onload = func;
+	  } else {
+	    window.onload = function() {
+	      if (oldonload) {
+	        oldonload();
+	      }
+	      func();
+	    }
+	  }
+	};
+
+	// does the heavy work of working through the browsers idiosyncracies (let's call them that) to hook onload.
+	function bindReady() {
+		if(readyBound) {
+		    return;
+	    }
 	
-	// Get kWidget object or create new one
-	var kWidget = window.kWidget || {};
-	
-	kWidget.domReady = {
-		
-		// Array of callbacks to perform when dom ready
-		callbacks: [],
-		
-		isReady: false,
-		
-		// Adds callback to run when dom ready
-		ready: function( callback ) {
-			if( kWidget.domReady.isReady ){
-				callback();
-			} else {
-				this.callbacks.push( callback );
-			}			
-		},
-		
-		runDomReady: function( event ) {
-			// run dom ready with a 1ms timeout to prevent sync execution in browsers like chrome
-			// Async call give a chance for configuration variables to be set
-			kWidget.domReady.isReady  = true;
-			while( kWidget.domReady.callbacks.length ){
-				kWidget.domReady.callbacks.shift()();
-			}
+		readyBound = true;
 
-			// When in iframe, wait for endOfIframe event status. ( IE9 has issues ) 
-			if( mw.getConfig('EmbedPlayer.IsIframeServer')  && event !== 'endOfIframeJs' ){
-				return ;
-			}
-			kCheckAddScript();			
-		},
-		
-		checkDomReady: function() {
+		// Mozilla, Opera (see further below for it) and webkit nightlies currently support this event
+		if (document.addEventListener && !browser.opera) {
+			// Use the handy event callback
+			document.addEventListener("DOMContentLoaded", domReady, false);
+		}
 
-			// Check if already ready: 
-			if ( document.readyState === "complete" ) {
-				kWidget.domReady.runDomReady();
-			}
-			// Fallback function that should fire for all browsers ( only for non-iframe ) 
-			if( ! mw.getConfig( 'EmbedPlayer.IsIframeServer') ){
-				var originalOnLoad = false;
-				var kDomReadyCall = function(){
-					if( typeof originalOnLoad == 'function' ){
-						originalOnLoad();
-					}
-					kWidget.domReady.runDomReady();
-				};
-				if( window.onload && window.onload.toString() != kDomReadyCall.toString() ){
-					originalOnLoad = window.onload;
-				}
-				window.onload = kDomReadyCall;
-			}
-			// Cleanup functions for the document ready method
-			if ( document.addEventListener ) {
-				DOMContentLoaded = function() {
-					document.removeEventListener( "DOMContentLoaded", DOMContentLoaded, false );
-					kWidget.domReady.runDomReady();
-				};
-
-			} else if ( document.attachEvent ) {
-				DOMContentLoaded = function() {
-					// Make sure body exists, at least, in case IE gets a little overzealous (ticket #5443).
-					if ( document.readyState === "complete" ) {
-						document.detachEvent( "onreadystatechange", DOMContentLoaded );
-						kWidget.domReady.runDomReady();
-					}
-				};
-			}
-
-			// Mozilla, Opera and webkit nightlies currently support this event
-			if ( document.addEventListener ) {
-				// Use the handy event callback
-				document.addEventListener( "DOMContentLoaded", DOMContentLoaded, false );
-			// If IE event model is used
-			} else if ( document.attachEvent ) {
-				// ensure firing before onload,
-				// maybe late but safe also for iframes
-				document.attachEvent("onreadystatechange", DOMContentLoaded);
-				// If IE and not a frame
-				// continually check to see if the document is ready
-				var toplevel = false;
-				try {
-					toplevel = window.frameElement == null;
-				} catch(e) {
-				}
-				if ( document.documentElement.doScroll && toplevel ) {
-					this.doScrollCheck();
-				}
-			}
-			// A document addEventListener
-			if ( document.addEventListener ) {
-				window.addEventListener( "load", kWidget.domReady.runDomReady, false );
-			}
-		},
-		
-		// The DOM ready check for Internet Explorer
-		doScrollCheck: function() {
-			if ( kWidget.domReady.isReady ) {
-				return;
-			}
+		// If IE is used and is not in a frame
+		// Continually check to see if the document is ready
+		if (browser.msie && window == top) (function(){
+			if (isReady) return;
 			try {
 				// If IE is used, use the trick by Diego Perini
 				// http://javascript.nwbox.com/IEContentLoaded/
 				document.documentElement.doScroll("left");
-			} catch( error ) {
-				setTimeout( kWidget.domReady.doScrollCheck, 1 );
+			} catch(error) {
+				setTimeout(arguments.callee, 0);
 				return;
 			}
 			// and execute any waiting functions
-			kWidget.domReady.runDomReady();
+		    domReady();
+		})();
+
+		if(browser.opera) {
+			document.addEventListener( "DOMContentLoaded", function () {
+				if (isReady) return;
+				for (var i = 0; i < document.styleSheets.length; i++)
+					if (document.styleSheets[i].disabled) {
+						setTimeout( arguments.callee, 0 );
+						return;
+					}
+				// and execute any waiting functions
+	            domReady();
+			}, false);
 		}
+
+		if(browser.safari) {
+		    var numStyles;
+			(function(){
+				if (isReady) return;
+				if (document.readyState != "loaded" && document.readyState != "complete") {
+					setTimeout( arguments.callee, 0 );
+					return;
+				}
+				if (numStyles === undefined) {
+	                var links = document.getElementsByTagName("link");
+	                for (var i=0; i < links.length; i++) {
+	                	if(links[i].getAttribute('rel') == 'stylesheet') {
+	                	    numStyles++;
+	                	}
+	                }
+	                var styles = document.getElementsByTagName("style");
+	                numStyles += styles.length;
+				}
+				if (document.styleSheets.length != numStyles) {
+					setTimeout( arguments.callee, 0 );
+					return;
+				}
+			
+				// and execute any waiting functions
+				domReady();
+			})();
+		}
+
+		// A fallback to window.onload, that will always work
+	    addLoadEvent(domReady);
 	};
+
+	// This is the public function that people can use to hook up ready.
+	DomReady.ready = function(fn, args) {
+		// Attach the listeners
+		bindReady();
+    
+		// If the DOM is already ready
+		if (isReady) {
+			// Execute the function immediately
+			fn.call(window, []);
+	    } else {
+			// Add the function to the wait list
+	        readyList.push( function() { return fn.call(window, []); } );
+	    }
+	};
+	bindReady();
 	
-	// Check for dom ready
-	kWidget.domReady.checkDomReady();
+	// Export to the kWidget object: 
+	kWidget.domReady = DomReady.ready;
 	
-})( window, document );
+})(window.kWidget);

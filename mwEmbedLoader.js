@@ -23,10 +23,6 @@ window.restoreKalturaKDPCallback = function(){
 	}
 };
 
-// Try and override the swfObject at runtime
-// In case it was included before mwEmbedLoader and the embedSWF call is inline ( so we can't wait for dom ready )
-kOverideJsFlashEmbed();
-
 // Setup preMwEmbedReady queue
 if( !window['preMwEmbedReady'] ){
 	window.preMwEmbedReady = [];
@@ -104,7 +100,7 @@ if( ! mw.versionIsAtLeast ){
 if( !mw.ready ){
 	mw.ready = function( fn ){	
 		window.preMwEmbedReady.push( fn );
-		kAddReadyHook(function(){
+		kWidget.domReady(function(){
 			kAddScript();
 		});
 	};
@@ -167,8 +163,8 @@ function kOverideJsFlashEmbed(){
 	if( window['flashembed'] && !window['originalFlashembed'] ){
 		window['originalFlashembed'] = window['flashembed'];
 		window['flashembed'] = function( targetId, attributes, flashvars ){
-			kAddReadyHook(function(){
-				var kEmbedSettings = kGetKalturaEmbedSettings( attributes.src, flashvars);
+			kWidget.domReady(function(){
+				var kEmbedSettings = kWidget.getEmbedSettings( attributes.src, flashvars);
 				kEmbedSettings.width = attributes.width;
 				kEmbedSettings.height = attributes.height;
 				
@@ -197,8 +193,8 @@ function kOverideJsFlashEmbed(){
 		window['SWFObject'].prototype['originalWrite'] = window['SWFObject'].prototype.write;
 		window['SWFObject'].prototype['write'] = function( targetId ){
 			var _this = this;
-			kAddReadyHook(function(){      
-				var kEmbedSettings = kGetKalturaEmbedSettings( _this.attributes.swf, _this.params.flashVars);
+			kWidget.domReady(function(){      
+				var kEmbedSettings = kWidget.getEmbedSettings( _this.attributes.swf, _this.params.flashVars);
 				if( kEmbedSettings.uiconf_id && ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 					kWidget.outputDirectDownload( targetId, kEmbedSettings );
 					return ;
@@ -224,8 +220,8 @@ function kOverideJsFlashEmbed(){
 		window['swfobject']['embedSWF'] = function( swfUrlStr, replaceElemIdStr, widthStr,
 				heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn)
 		{
-			kAddReadyHook(function(){
-				var kEmbedSettings = kGetKalturaEmbedSettings( swfUrlStr, flashvarsObj );
+			kWidget.domReady(function(){
+				var kEmbedSettings = kWidget.getEmbedSettings( swfUrlStr, flashvarsObj );
 
 
 				if( kEmbedSettings.uiconf_id && ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
@@ -247,86 +243,6 @@ function kOverideJsFlashEmbed(){
 				}
 			});
 		};
-	}
-}
-
-// Check DOM for Kaltura embeds ( fall forward ) 
-// && html5 video tag ( for fallback & html5 player interface )
-function kCheckAddScript(){
-	// Check if we already have got uiConfJs or not
-	if( mw.getConfig( 'Kaltura.EnableEmbedUiConfJs' ) && 
-		! mw.getConfig( 'Kaltura.UiConfJsLoaded') && ! mw.getConfig('EmbedPlayer.IsIframeServer') ){
-		// We have not yet loaded uiConfJS... load it for each ui_conf id
-		var playerList = kGetKalturaPlayerList();
-		var baseUiConfJsUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'services.php?service=uiconfJs');
-		var requestCount = playerList.length -1;
-		for( var i=0;i < playerList.length; i++){
-			kAppendScriptUrl( baseUiConfJsUrl + kEmbedSettingsToUrl( playerList[i].kEmbedSettings), function(){
-				requestCount--;
-				if( requestCount == 0){
-					kCheckAddScript();
-				}
-			});
-		}
-		mw.setConfig( 'Kaltura.UiConfJsLoaded', true );
-		return ;
-	}
-
-	// Set url based config ( as long as it not disabled ) 
-	if( mw.getConfig( 'disableForceMobileHTML5') ){
-		mw.setConfig( 'forceMobileHTML5', false );
-	}
-	
-	// Check if we have player rules and then issue kAddScript call
-	if( window.kUserAgentPlayerRules ){
-		kAddScript();
-		return ;
-	}
-
-	/**
-	 * If Kaltura.AllowIframeRemoteService is not enabled force in page rewrite:
-	 */
-	var serviceUrl = mw.getConfig('Kaltura.ServiceUrl');
-	if( ! mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) ) {
-		if( ! serviceUrl || serviceUrl.indexOf( 'kaltura.com' ) === -1 ){
-			// if not hosted on kaltura for now we can't use the iframe to load the player
-			mw.setConfig( 'Kaltura.IframeRewrite', false );
-			mw.setConfig( 'Kaltura.UseManifestUrls', false);
-		}
-	}
-
-	// If user javascript is using mw.ready add script
-	if( window.preMwEmbedReady.length ) {
-		kAddScript();
-		return ;
-	}
-	if( ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )
-			&&
-		( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) && kPageHasAudioOrVideoTags()  )
-	){
-		kAddScript();
-		return ;
-	}
-	// If document includes kaltura embed tags && isMobile safari:
-	if ( kWidget.isHTML5FallForward()
-			&&
-		kGetKalturaPlayerList().length
-	) {
-		// Check for Kaltura objects in the page
-		kAddScript();
-		return ;
-	}
-
-	// Check if no flash and no html5 and no forceFlash ( direct download link )
-	// for debug purpose:
-	// kSupportsFlash = function() {return false}; kWidget.supportsHTML5 = function() {return false};
-	if( ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
-		kAddScript();
-		return ;
-	}
-	// Restore the jsCallbackReady ( we are not rewriting )
-	if( kGetKalturaPlayerList().length && window.restoreKalturaKDPCallback ){
-		window.restoreKalturaKDPCallback();
 	}
 }
 
@@ -365,7 +281,7 @@ function kAddScript( callback ){
 			} );
 			return ;
 		} else {
-			kDoIframeRewriteList( kGetKalturaPlayerList() );
+			kDoIframeRewriteList( kWidget.getKalutaObjectList() );
 			// if we don't have a mw.ready function we don't need to load the script library
 			if( !window.preMwEmbedReady.length ){
 				return ;
@@ -433,7 +349,7 @@ function kAddScript( callback ){
 		}
 	}
 	
-	var objectPlayerList = kGetKalturaPlayerList();
+	var objectPlayerList = kWidget.getKalutaObjectList();
 
 	// Check if we are doing object rewrite ( add the kaltura library ) 
 	if ( kWidget.isHTML5FallForward() || objectPlayerList.length ){
@@ -544,159 +460,6 @@ function kPageHasAudioOrVideoTags(){
 	return false;
 }
 
-/**
-* DOM-ready setup ( similar to jQuery.ready )  
-*/
-var kReadyHookSet = [];
-function kAddReadyHook( callback ){
-	if( kWidget.domIsReady ){
-		callback();
-	} else {
-		kReadyHookSet.push( callback );
-	}
-}
-function kRunMwDomReady( event ){
-	// run dom ready with a 1ms timeout to prevent sync execution in browsers like chrome
-	// Async call give a chance for configuration variables to be set
-	kWidget.domIsReady  = true;
-	while( kReadyHookSet.length ){
-		kReadyHookSet.shift()();
-	}
-	kOverideJsFlashEmbed();
-	// When in iframe, wait for endOfIframe event status. ( IE9 has issues ) 
-	if( mw.getConfig('EmbedPlayer.IsIframeServer')  && event !== 'endOfIframeJs' ){
-		return ;
-	}
-	kCheckAddScript();
-}
-
-// Check if already ready: 
-if ( document.readyState === "complete" ) {
-	kRunMwDomReady();
-}
-// Fallback function that should fire for all browsers ( only for non-iframe ) 
-if( ! mw.getConfig( 'EmbedPlayer.IsIframeServer') ){
-	kSiteOnLoadCall = false;
-	var kDomReadyCall = function(){
-		if( typeof kSiteOnLoadCall == 'function' ){
-			kSiteOnLoadCall();
-		}
-		kRunMwDomReady();
-	};
-	if( window.onload && window.onload.toString() != kDomReadyCall.toString() ){
-		kSiteOnLoadCall = window.onload;
-	}
-	window.onload = kDomReadyCall;
-}
-// Cleanup functions for the document ready method
-if ( document.addEventListener ) {
-	DOMContentLoaded = function() {
-		document.removeEventListener( "DOMContentLoaded", DOMContentLoaded, false );
-		kRunMwDomReady();
-	};
-
-} else if ( document.attachEvent ) {
-	DOMContentLoaded = function() {
-		// Make sure body exists, at least, in case IE gets a little overzealous (ticket #5443).
-		if ( document.readyState === "complete" ) {
-			document.detachEvent( "onreadystatechange", DOMContentLoaded );
-			kRunMwDomReady();
-		}
-	};
-}
-
-// Mozilla, Opera and webkit nightlies currently support this event
-if ( document.addEventListener ) {
-	// Use the handy event callback
-	document.addEventListener( "DOMContentLoaded", DOMContentLoaded, false );
-// If IE event model is used
-} else if ( document.attachEvent ) {
-	// ensure firing before onload,
-	// maybe late but safe also for iframes
-	document.attachEvent("onreadystatechange", DOMContentLoaded);
-	// If IE and not a frame
-	// continually check to see if the document is ready
-	var toplevel = false;
-	try {
-		toplevel = window.frameElement == null;
-	} catch(e) {
-	}
-	if ( document.documentElement.doScroll && toplevel ) {
-		doScrollCheck();
-	}
-}
-// A document addEventListener
-if ( document.addEventListener ) {
-	window.addEventListener( "load", kRunMwDomReady, false );
-}
-// The DOM ready check for Internet Explorer
-function doScrollCheck() {
-	if ( kWidget.domIsReady ) {
-		return;
-	}
-	try {
-		// If IE is used, use the trick by Diego Perini
-		// http://javascript.nwbox.com/IEContentLoaded/
-		document.documentElement.doScroll("left");
-	} catch( error ) {
-		setTimeout( doScrollCheck, 1 );
-		return;
-	}
-	// and execute any waiting functions
-	kRunMwDomReady();
-}
-
-/**
- * Get the list of embed objects on the page that are 'kaltura players'
- */
-function kGetKalturaPlayerList(){
-	var kalturaPlayers = [];
-	// Check all objects for kaltura compatible urls 
-	var objectList = document.getElementsByTagName('object');
-	if( !objectList.length && document.getElementById('kaltura_player') ){
-		objectList = [ document.getElementById('kaltura_player') ];
-	}
-	// local function to attempt to add the kalturaEmbed
-	var tryAddKalturaEmbed = function( url , flashvars){
-		var settings = kGetKalturaEmbedSettings( url, flashvars );
-		if( settings && settings.uiconf_id && settings.wid ){
-			objectList[i].kEmbedSettings = settings;
-			kalturaPlayers.push(  objectList[i] );
-			return true;
-		}
-		return false;
-	};
-	for( var i =0; i < objectList.length; i++){
-		if( ! objectList[i] ){
-			continue;
-		}
-		var swfUrl = '';
-		var flashvars = {};
-		var paramTags = objectList[i].getElementsByTagName('param');
-		for( var j = 0; j < paramTags.length; j++){
-			var pName = paramTags[j].getAttribute('name').toLowerCase();
-			var pVal = paramTags[j].getAttribute('value');
-			if( pName == 'data' ||	pName == 'src' || pName == 'movie' ) {
-				swfUrl =  pVal;
-			}
-			if( pName == 'flashvars' ){
-				flashvars =	kFlashVars2Object( pVal );
-			}
-		}
-
-		if( tryAddKalturaEmbed( swfUrl, flashvars) ){
-			continue;
-		}
-
-		// Check for object data style url: 
-		if( objectList[i].getAttribute('data') ){
-			if( tryAddKalturaEmbed( objectList[i].getAttribute('data'), flashvars ) )
-				continue;
-		}
-	}
-	return kalturaPlayers;
-};
-
 function kFlashVars2Object( flashvarsString ){
 	var flashVarsSet = ( flashvarsString )? flashvarsString.split('&'): [];
 	var flashvars = {};
@@ -733,130 +496,6 @@ function kFlashVarsToString( flashVarsObject ) {
 	}
 	return params;
 }
-/**
- * Get Kaltura thumb url from entry object
- */
-mw.getKalturaThumbUrl = function ( entry ){
-	if( entry.width == '100%')
-		entry.width = 400;
-	if( entry.height == '100%')
-		entry.height = 300;
-
-	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
-
-	// Support widget_id based thumbs: 
-	if( entry.widget_id && ! entry.partner_id ){
-		entry.partner_id = entry.widget_id.substr(1);
-	}
-	
-	return mw.getConfig('Kaltura.CdnUrl') + '/p/' + entry.partner_id + '/sp/' +
-		entry.partner_id + '00/thumbnail/entry_id/' + entry.entry_id + '/width/' +
-		parseInt(entry.width) + '/height/' + parseInt(entry.height) + ks;
-};
-/**
- * Get kaltura embed settings from a swf url and flashvars object
- *
- * @param {string} swfUrl
- * 	url to kaltura platform hosted swf
- * @param {object} flashvars
- * 	object mapping kaltura variables, ( overrides url based variables )
- */
-function kGetKalturaEmbedSettings( swfUrl, flashvars ){
-	var embedSettings = {};	
-	// Convert flashvars if in string format:
-	if( typeof flashvars == 'string' ){
-		flashvars = kFlashVars2Object( flashvars );
-	}
-	
-	if( !flashvars ){
-		flashvars= {};
-	}
-
-	var trim = function ( str ) {
-		return str.replace(/^\s+|\s+$/g,"");
-	}
-	
-	// Include flashvars
-	embedSettings.flashvars = flashvars;	
-	var dataUrlParts = swfUrl.split('/');
-	
-	// Search backward for key value pairs
-	var prevUrlPart = null;
-	while( dataUrlParts.length ){
-		var curUrlPart =  dataUrlParts.pop();
-		switch( curUrlPart ){
-			case 'p':
-				embedSettings.wid = '_' + prevUrlPart;
-				embedSettings.p = prevUrlPart;
-			break;
-			case 'wid':
-				embedSettings.wid = prevUrlPart;
-				embedSettings.p = prevUrlPart.replace(/_/,'');
-			break;
-			case 'entry_id':
-				embedSettings.entry_id = prevUrlPart;
-			break;
-			case 'uiconf_id': case 'ui_conf_id':
-				embedSettings.uiconf_id = prevUrlPart;
-			break;
-			case 'cache_st':
-				embedSettings.cache_st = prevUrlPart;
-			break;
-		}
-		prevUrlPart = trim( curUrlPart );
-	}
-	// Add in Flash vars embedSettings ( they take precedence over embed url )
-	for( var key in flashvars ){
-		var val = flashvars[key];
-		var key = key.toLowerCase();
-		// Normalize to the url based settings: 
-		if( key == 'entryid' ){
-			embedSettings.entry_id = val;
-		}
-		if(  key == 'uiconfid' ){
-			embedSettings.uiconf_id = val;
-		}
-		if( key == 'widgetid' || key == 'widget_id' ){
-			embedSettings.wid = val;
-			embedSettings.p = val.replace(/_/,'');
-		}	
-		if( key == 'partnerid' ||  key == 'partner_id'){
-			embedSettings.wid = '_' + val;
-			embedSettings.p = val;
-		}
-		if( key == 'referenceid' ){
-			embedSettings.reference_id = val;
-		}
-	}
-
-	// Always pass cache_st
-	if( ! embedSettings.cache_st ){
-		embedSettings.cache_st = 1;
-	}
-	
-	return embedSettings;
-}
-
-/*
- * When using Frameset that have iframe with video tag inside, the iframe is not positioned correctly. and you can't click on the controls.
- * If order to fix that, we allow to hosting page to pass the following configuration:
- * mw.setConfig('FramesetSupport.Enabled', true); - Disable HTML controls on iPad
- * mw.setConfig('FramesetSupport.PlayerCssProperties', {}); - CSS properties object to apply to the player
- * We will use 'PlayerCssProperties' only for iOS devices running version 3-4 ( the position issue was fixed in iOS5)
- */
-function kGetAdditionalTargetCss() {
-	var ua = navigator.userAgent;
-	if( mw.getConfig('FramesetSupport.Enabled') && kWidget.isIOS() && (ua.indexOf('OS 3') > 0 || ua.indexOf('OS 4') > 0) ) {
-		return mw.getConfig('FramesetSupport.PlayerCssProperties') || {};
-	}
-	return {};
-}
-kAddReadyHook(function() {
-	if( mw.getConfig('FramesetSupport.Enabled') && kWidget.isIOS() ) {
-		mw.setConfig('EmbedPlayer.EnableIpadHTMLControls', false );
-	}
-})
-
 window.KalturaKDPCallbackAlreadyCalled = [];
 
 /**
@@ -883,47 +522,22 @@ window.checkForKDPCallback = function(){
 	}
 };
 
-// Include legacy support for supports html5
-function kIsIOS(){
-	kWidget.log('kIsIOS is deprecated. Please use kWidget.isIOS');
-	return kWidget.isIOS();
-}
-function kSupportsHTML5(){
-	kWidget.log('kSupportsHTML5 is deprecated. Please use kWidget.supportsHTML5');
-	return kWidget.supportsHTML5();
-}
-function kGetFlashVersion(){
-	kWidget.log('kGetFlashVersion is deprecated. Please use kWidget.getFlashVersion');
-	return kWidget.getFlashVersion();
-}
-function kSupportsFlash(){
-	kWidget.log('kSupportsFlash is deprecated. Please use kWidget.supportsFlash');
-	return kWidget.supportsFlash();
-}
-function kalturaIframeEmbed( targetId, settings ){
-	kWidget.log('kalturaIframeEmbed is deprecated. Please use kWidget.embed');
-	kWidget.embed( targetId, settings );
-}
-function kOutputFlashObject( targetId, settings ) {
-	kWidget.log('kOutputFlashObject is deprecated. Please use kWidget.outputFlashObject');
-	kWidget.outputFlashObject( targetId, settings );
-}
-function kIsHTML5FallForward( ){
-	kWidget.log('kIsHTML5FallForward is deprecated. Please use kWidget.isHTML5FallForward');
-	return kWidget.isHTML5FallForward();
-}
-function kIframeWithoutApi( replaceTargetId, kEmbedSettings ){
-	kWidget.log('kIframeWithoutApi is deprecated. Please use kWidget.outputIframeWithoutApi');
-	return kWidget.outputIframeWithoutApi( replaceTargetId, kEmbedSettings );
-}
-function kDirectDownloadFallback( replaceTargetId, kEmbedSettings , options ) {
-	kWidget.log('kDirectDownloadFallback is deprecated. Please use kWidget.outputDirectDownload');
-	return kWidget.outputDirectDownload( replaceTargetId, kEmbedSettings , options );
-}
-function kIsIE(){
-	return /msie/i.test(navigator.userAgent) && !/opera/i.test(navigator.userAgent);
-}
+// mw based globals that got converted to kWidget
+mw.getKalturaThumbUrl = function( entry ){
+	kWidget.log('mw.getKalturaThumbUrl is deprecated. Please use kWidget.getKalturaThumbUrl');
+	return  kWidget.getKalturaThumbUrl( entry );
+};
+
+
+//Try and override the swfObject at runtime
+//In case it was included before mwEmbedLoader and the embedSWF call is inline ( so we can't wait for dom ready )
+kOverideJsFlashEmbed();
+kWidget.domReady( kOverideJsFlashEmbed );
 
 // Check inline and when the DOM is ready:
 checkForKDPCallback();
-kAddReadyHook( checkForKDPCallback );
+kWidget.domReady( checkForKDPCallback );
+
+// Rewrite object tags ( where needed ) inline and when the DOM is ready: 
+kWidget.domReady( kWidget.rewriteObjectTags );
+

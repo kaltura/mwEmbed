@@ -175,12 +175,12 @@
 	
 	// Check if the document has kaltura objects ( for fall forward support ) 
 	$( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
-		// if kGetKalturaPlayerList is not defined ( we are not in a kaltura env )
-		if( typeof kGetKalturaPlayerList == 'undefined'){
+		// if kGetKalturaPlayerList is not defined ( we are not in a kaltura enviornment )
+		if( typeof kWidget == 'undefined' ){
 			return ;
 		}
 		
-		var kalturaObjectPlayerList = kGetKalturaPlayerList();
+		var kalturaObjectPlayerList = kWidget.getKalutaObjectList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
 		if( ! kalturaObjectPlayerList.length ) {
 			// No players to rewrite ( and don't run  window.KalturaKDPCallbackReady )
@@ -231,7 +231,7 @@
 					if( !swfSource ) {
 						swfSource = $( element ).find( "param[name=data]" ).attr( 'value' );						                                      
 					}
-					var kEmbedSettings = kGetKalturaEmbedSettings( swfSource, flashvars );
+					var kEmbedSettings = kWidget.getEmbedSetting( swfSource, flashvars );
 
 					// Check if its a playlist or a entryId
 					mw.log( "KalturaSupport:: Got object settings: entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
@@ -278,7 +278,7 @@
 							videoEmbedAttributes.kentryid = kEmbedSettings.entry_id;
 							// If we have flashvar  we need to pass the ks to thumbnail url
 							var ks = ( flashvars && flashvars.loadThumbnailWithKs ) ? flashvars.ks : false;
-							var thumb_url =  mw.getKalturaThumbUrl({
+							var thumb_url =  kWidget.getKalturaThumbUrl({
 								'partner_id': kEmbedSettings.p,
 								'entry_id' :  kEmbedSettings.entry_id,
 								'ks' : ks,
