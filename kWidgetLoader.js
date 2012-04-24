@@ -94,11 +94,6 @@ var kWidget = {
 			kWidget.outputHTML5Iframe( targetId, settings );
 			return ;
 		} else {
-			if( settings.uiconf_id ) {
-				// We directly restore the KDP callback because a cached output of the flashObject, 
-				// seems to run into too much recursion errors. 
-				restoreKalturaKDPCallback();
-			}			
 			kWidget.outputFlashObject( targetId, settings );
 			return ;
 		}
@@ -185,6 +180,8 @@ var kWidget = {
 			// update the target:
 			elm.parentNode.replaceChild( spanTarget, elm );
 			spanTarget.innerHTML = output;
+			// once the flash object is in the page restore KDP callback
+			restoreKalturaKDPCallback();
 		}
 		// XXX IE9 about 1/2 the time on fresh loads does not fire the jsCallbackready 
 		//     when you dynamically embed the flash object before dom ready.   
