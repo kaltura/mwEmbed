@@ -679,6 +679,7 @@ mw.EmbedPlayerNative = {
 					$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
 						// remove end binding: 
 						$( vid ).unbind( switchBindPostfix );
+						// issue the doneCallback
 						doneCallback();
 						
 						// Support loop for older iOS
@@ -698,15 +699,17 @@ mw.EmbedPlayerNative = {
 				setTimeout(function(){
 					// Check that the player got out of readyState 0
 					if( vid.readyState === 0 && $.isFunction( switchCallback ) ){
-						mw.log("EmbedPlayerNative:: iOS play without gesture failed, issue callback");
+						mw.log("EmbedPlayerNative:: possible iOS play without gesture failed, issue callback");
 						// hand off to the swtich callback method.
 						handleSwitchCallback();
 						// make sure we are in a pause state ( failed to change and play media );
 						_this.pause();
 						// show the big play button so the user can give us a user gesture: 
-						_this.addPlayBtnLarge();
+						if( ! _this.useNativePlayerControls() ){
+							_this.addPlayBtnLarge();
+						}
 					}
-				}, 6000 );
+				}, 12000 );
 				
 				
 			} catch (e) {
@@ -724,6 +727,8 @@ mw.EmbedPlayerNative = {
 	},
 	restorePlayerOnScreen: function( vid ){
 		var vid = this.getPlayerElement();
+		// Restore video pos before calling sync syze
+		$( vid ).css( 'left', '0px' );
 		// always sync player size after a restore
 		if( this.controlBuilder ){
 			this.controlBuilder.syncPlayerSize();
