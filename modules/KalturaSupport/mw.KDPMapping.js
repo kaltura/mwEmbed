@@ -912,13 +912,13 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
-					// ChecchangeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
+					// Check changeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
 						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) ) {
+						mw.log( "KDPMapping:: ChangeMedia missing entryId or refrenceid, empty sources.")
 					    embedPlayer.emptySources();
 					    break;
 					}
-
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1) || (notificationData.referenceId && notificationData.referenceId != -1) ){
 						// Check if we use referenceId
@@ -942,8 +942,8 @@
 						// clear ad data ..
 						embedPlayer.kAds = null;
 
-						// Update the poster ( if not on iPhone ) 
-						if( !mw.isIphone() ){
+						// Update the poster if not using native controls. 
+						if( ! embedPlayer.useNativePlayerControls() ){
 							embedPlayer.updatePosterSrc();
 						}
 						// run the embedPlayer changeMedia function
