@@ -943,7 +943,7 @@
 						embedPlayer.kAds = null;
 
 						// Update the poster if not using native controls. 
-						if( !mw.isIphone() && ! embedPlayer.useNativePlayerControls()  ){
+						if( ! embedPlayer.useNativePlayerControls()  ){
 							embedPlayer.updatePosterSrc();
 						}
 						// run the embedPlayer changeMedia function
