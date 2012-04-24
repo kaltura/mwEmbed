@@ -103,8 +103,7 @@
         "downloadPlugin"    :   "uiConfComponents/downloadPlugin.js",
         "captureThumbnailPlugin"    :   "uiConfComponents/captureThumbnailPlugin.js",
         "jCarousel"     :   "uiConfComponents/jcarousellite_1.0.1.js",
-        "carouselPlugin"    :   "uiConfComponents/carouselPlugin.js",
-		"googleAnalytics"	:	"uiConfComponents/kGoogleAnalytics.js"
+        "carouselPlugin"    :   "uiConfComponents/carouselPlugin.js"
 	} );
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
@@ -138,8 +137,7 @@
 		'bumperPlugin',
 		'playlistPlugin',
 		'jCarousel',
-		'carouselPlugin',
-		'googleAnalytics'
+		'carouselPlugin'
 	];
 	
 	mw.newEmbedPlayerCheckUiConf = function( callback ){
