@@ -488,7 +488,7 @@ mw.DoubleClick.prototype = {
 	// Handler for various ad errors.
 	onAdError: function( errorEvent ) {
 		mw.log('DoubleClick:: onAdError: ' + errorEvent.getError() );
-		if (this.adsManager) {
+		if (this.adsManager && $.isFunction(this.adsManager.unload) ) {
 			this.adsManager.unload();
 		}
 		this.restorePlayer();
