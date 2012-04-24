@@ -64,7 +64,7 @@
 			});
 			var firstRunChangeMediaDone = false; 
 			window['onPlayerPlayEnd'] = function(){
-				// reture fullscreen: 
+				// toggle fullscreen to restore window player: 
 				$iframe.find('#' + playerId).get(0).fullscreen();
 			}
 			window['onCloseFullScreen'] = function(){
