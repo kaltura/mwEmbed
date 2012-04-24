@@ -17,7 +17,7 @@
 	</div>
 </div>
 <!--  We always include a player offscreen to support user gesture capture play for the first click -->
-<div id="myVideoContainer" style="position:absolute;left:0px;" >
+<div id="myVideoContainer" style="position:absolute;left:-4000px;" >
 	<div id=myVideoTarget style="width:400px;height:330px;">
 		<!--  SEO can go here -->
 	</div>
@@ -99,6 +99,7 @@
 									kdp.sendNotification('doPlay');
 								},1000);
 							} else{
+								<!-- you may want to display a loading screen here --> 
 								kdp.sendNotification('doPlay');
 							}
 						}

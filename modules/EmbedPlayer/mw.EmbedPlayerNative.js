@@ -445,6 +445,7 @@ mw.EmbedPlayerNative = {
 	setCurrentTime: function( seekTime , callback, callbackCount ) {
 		var _this = this;
 		if( !callbackCount ){
+			mw.log(  "EmbedPlayerNative:: setCurrentTime called without callbackCount, set to zero" );
 			callbackCount = 0;
 		}
 		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
@@ -466,7 +467,7 @@ mw.EmbedPlayerNative = {
 				return ;
 			}
 			setTimeout( function(){
-				_this.setCurrentTime( seekTime, callback , callbackCount++);
+				_this.setCurrentTime( seekTime, callback , callbackCount+1);
 			}, 100 );
 			return ;
 		}
