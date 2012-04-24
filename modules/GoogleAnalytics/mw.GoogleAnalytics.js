@@ -4,25 +4,12 @@ uiConf Examples:
 <Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" customEvent=”doPlay” width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/>
 <Plugin id="googleAnalytics" visualDebug="false” path="googleAnalyticsPlugin.swf" customEvent=”doPlay,playerStateChange,addThis” addThisCategory=”My AddThis Category” addThisAction=”My AddThis Action” addThisLabel=”My AddThis Label” addThisValue=”1” width="0%" height="0%" loadingPolicy="wait" urchinCode="UA-30149691-1"/> 
 **/
-
 ( function( mw, $ ) {"use strict";
-	// Bind to new player event
-	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
-		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			// Check if plugin exists
-			if( embedPlayer.isPluginEnabled( 'googleAnalytics' ) ) {
-				var options = {
-					'urchinCode' : embedPlayer.getKalturaConfig( 'googleAnalytics', 'urchinCode' ),
-				};
-                window[ 'googleAnalytics' ].init( embedPlayer, options );
-			}
-
-			// Continue player build-out
-			callback();
-		});
-	});
+	mw.GoogleAnalytics = function( embedPlayer, callback ) {
+		return this.init( embedPlayer, callback );
+	}
 	
-	window[ 'googleAnalytics' ] = {
+	mw.GoogleAnalytics.prototype = {
 		
 		// Bind PostFix
 		bindPostFix : '.googleAnalytics',
@@ -144,9 +131,12 @@ uiConf Examples:
 			'doDownload'
 		],
 
-        init: function( embedPlayer, options ) {
-            this.embedPlayer = embedPlayer;
-
+        init: function( embedPlayer, callback ) {
+            var _this = this;
+			this.embedPlayer = embedPlayer;
+			// Unbind any existing bindings
+			this.embedPlayer.unbindHelper( _this.bindPostfix );
+			var options = this.embedPlayer.getKalturaConfig( 'googleAnalytics' );
 			// Validate the eventTrackList
 			if( options.eventTrackList ) {
 				for( var i = 0 ; i < options.eventTrackList.length; i ++ ) {
@@ -160,10 +150,8 @@ uiConf Examples:
 				this.eventTrackList = this.defaultTrackList;
 			}
 			
-			if( embedPlayer.getKalturaConfig( 'googleAnalytics', 'trackEventMonitor' ) ) {
-				if ( window.parent[ embedPlayer.getKalturaConfig( 'googleAnalytics', 'trackEventMonitor' ) ] ) {
-					this.trackEventMonitor = window.parent[ embedPlayer.getKalturaConfig( 'googleAnalytics', 'trackEventMonitor' ) ];
-				}
+			if( options.trackEventMonitor && window.parent[ options.trackEventMonitor ] ) {
+				this.trackEventMonitor = window.parent[ options.trackEventMonitor ];
 			}
 
 			// Setup the initial state of some flags
@@ -187,6 +175,7 @@ uiConf Examples:
 			s.parentNode.insertBefore(ga, s);
 
 			this.addPlayerBindings();
+			callback();
         },
 		
 		// Add the player bindings 
