@@ -1,0 +1,159 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title> Native Fullscreen Link Playback test </title>
+
+<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+</head>
+<body>
+<h2> Native Fullscreen Link Playback test </h2>
+<span id="loading"> loading<blink>...</blink></span><br />
+<div class="fullscreenLinks" style="display:none">
+	<a href="#" id="showLinks" >Show links</a>
+	<div id="playlinks" style="display:none">
+		<span data-entryid="0_uka1msg4"> Play folger coffee </span> <br />
+		<span data-entryid="0_swup5zao"> Play fish </span> <br />
+	</div>
+</div>
+<!--  We always include a player offscreen to support user gesture capture play for the first click -->
+<div id="myVideoContainer" style="position:absolute;left:-4000px;" >
+	<div id=myVideoTarget style="width:400px;height:330px;">
+		<!--  SEO can go here -->
+	</div>
+</div>
+
+<script>
+	// just for html5: 
+	mw.setConfig( 'forceMobileHTML5', true );
+	mw.setConfig( 'EmbedPlayer.NativeControls', true);
+	
+	
+	
+	kWidget.embed({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '2877502',
+		'entry_id' : '0_uka1msg4',
+		'readyCallback': function( playerId ){
+			console.log( "kWidget player ready: " + playerId );
+			var kdp = $('#' + playerId ).get(0);
+			var $iframe = $( '#' + playerId + '_ifp' ).contents();
+			var vid = $iframe.find('video').get(0);
+			
+			
+			$('#showLinks').click( function(){
+				$( this ).hide();
+				// iPad can't go into fullscreen in a syncrouns call thread of "play" 
+				if( mw.isIpad() ){
+					$('#loading').show();
+					window['onContentStartedDownloading'] = function(){
+						kdp.removeJsListener( 'bytesTotalChange', 'onContentStartedDownloading' );
+						kdp.sendNotification( 'doPause' );
+						$('#loading').hide();
+						$('#playlinks').show();
+					};
+					kdp.addJsListener( 'bytesTotalChange', 'onContentStartedDownloading');
+					kdp.sendNotification('doPlay');
+				} else {
+					$('#playlinks').show();
+				}
+			})
+			
+			
+			var hasEnteredFullscreen = false;
+			var isSwitchingStreams = false;
+			$('#loading').hide();
+			
+			$('.fullscreenLinks').show().find('span').each( function(){
+				var _thisSpan = this;
+				var _thisEntryId = $( _thisSpan ).attr('data-entryid')
+				$( _thisSpan ).wrap( 
+					$( '<a />' ).attr('href', '#' + _thisEntryId)
+					.click( function(){
+						var vid = $iframe.find('video').get(0);
+						// if its an ipad we can't wrap it in a try catch
+						if( mw.isIpad() ){
+							vid.webkitEnterFullScreen();
+						} else if( !mw.isIphone() ){
+							try{
+								vid.webkitEnterFullScreen();
+							} catch( error ) {
+								// do player fullscreen
+								$iframe.find('#' + playerId).get(0).fullscreen();
+							}
+						}
+						
+						// We should have entered fullscreen: 
+						hasEnteredFullscreen = true;
+						
+						// Check if we need to change media: 
+						if( kdp.evaluate('{mediaProxy.entry.id}') != _thisEntryId ){
+							isSwitchingStreams = true;
+							// change media to given entry ( and play) if iOS delay since fullscreen and play conflict 
+							kdp.sendNotification('changeMedia', { 'entryId' : _thisEntryId } );
+						} else{
+							// do the playback in a timeout ( iPad issues )
+							if( mw.isIpad() ){
+								setTimeout(function(){
+									kdp.sendNotification('doPlay');
+								},1000);
+							} else{
+								<!-- you may want to display a loading screen here --> 
+								kdp.sendNotification('doPlay');
+							}
+						}
+					})
+				);
+			});
+			// poll for exit fullscreen ( if webkitDisplayingFullscreen is supported )
+			if( vid.webkitSupportsFullscreen ){
+				var intervalID = setInterval( function(){
+					var currentFS = vid.webkitDisplayingFullscreen;
+					// Check if we have entered fullscreen but the player 
+					// has exited fullscreen with native controls click
+					if( hasEnteredFullscreen && !currentFS ){
+						kdp.sendNotification('doStop');
+						hasEnteredFullscreen = false;
+					}
+				}, 250 );
+			}
+			
+			var firstRunChangeMediaDone = false; 
+			window['onChangeMedia'] = function(){
+				if( firstRunChangeMediaDone ){
+					// play on change media done
+					kdp.sendNotification('doPlay');
+					// iPad when buffering does not "play", 2 seconds seems to work
+					setTimeout(function(){
+						kdp.sendNotification('doPlay');
+					}, 2000);
+					// change media done no longer switching streams: 
+					isSwitchingStreams = false;
+				}
+				firstRunChangeMediaDone = true;
+			};
+			window['onPlayerPlayEnd'] = function(){
+				if( ! isSwitchingStreams ){
+					try{
+						$iframe.find('video').get(0).webkitExitFullscreen();
+					} catch( error ) {
+						// do psusdo fullscreen 
+						$iframe.find('#' + playerId).get(0).fullscreen();
+					}
+				}
+			}
+			window['onCloseFullScreen'] = function(){
+				kdp.sendNotification('doStop');
+			};
+			// Listen to change media event: 
+			kdp.addJsListener( 'changeMedia', 'onChangeMedia');
+			kdp.addJsListener( 'playerPlayEnd', 'onPlayerPlayEnd');
+			kdp.addJsListener( 'closeFullScreen', 'onCloseFullScreen'); 
+			
+		}
+	});
+</script>
+
+</body>
+</html>

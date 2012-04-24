@@ -375,7 +375,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( this.inFullScreen ){			
 			this.restoreWindowPlayer();
 		}else {
-			this.doFullScreenPlayer();		
+			this.doFullScreenPlayer();
 		}
 	},
 
@@ -456,8 +456,8 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		
 		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
-		setTimeout( function(){_this.syncPlayerSize()}, 50);
-		setTimeout( function(){_this.syncPlayerSize()}, 200);
+		setTimeout( function(){ _this.syncPlayerSize() }, 50);
+		setTimeout( function(){ _this.syncPlayerSize() }, 200);
 	},
 	syncPlayerSize: function(){
 		var embedPlayer = this.embedPlayer;
@@ -468,9 +468,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( embedPlayer.playlist && ! this.inFullScreen ){
 			embedPlayer.playlist.syncPlayerSize();
 		} else {
-			//if( $( embedPlayer ).width() != $(window).width() ){
-				embedPlayer.resizePlayer( this.getWindowSize() );
-			//}
+			embedPlayer.resizePlayer( this.getWindowSize() );
 		}
 	},
 	getWindowSize: function(){
