@@ -640,7 +640,9 @@
 					b( "seeked" );
 					break;
 				case 'playerPlayEnd':
-					b( "onEndedDone" );
+					// Player Play end should subscribe to postEnded which is fired at the end
+					// of ads and between clips in a playlist. 
+					b( "postEnded" );
 					break;
 				case 'durationChange':
 					b( "durationchange", function(){
