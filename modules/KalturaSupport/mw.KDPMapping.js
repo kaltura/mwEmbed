@@ -494,11 +494,18 @@
 					}
 				break;
 			}
-			// Look for a plugin based config: 
-			var pluginConfigValue = embedPlayer.getKalturaConfig( objectPath[0], objectPath[1]);
-			if( $.isEmptyObject( pluginConfigValue ) ){
-				return ;
-			} 
+			// Look for a plugin based config: typeof
+			var pluginConfigValue = null;
+			// See if we are looking for a top level property
+			if( !objectPath[1] && $.isEmptyObject( embedPlayer.getKalturaConfig( objectPath[0] ) ) ){
+				// Return the top level property directly ( {loop} {autoPlay} etc. ) 
+				pluginConfigValue = embedPlayer.getKalturaConfig( '', objectPath[0] );
+			} else {
+				pluginConfigValue = embedPlayer.getKalturaConfig( objectPath[0], objectPath[1]);
+				if( $.isEmptyObject( pluginConfigValue ) ){
+					return ;
+				} 
+			}
 			return pluginConfigValue;
 		},
 		evaluateStringFunction: function( functionName, value ){
