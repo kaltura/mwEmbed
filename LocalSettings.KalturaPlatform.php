@@ -47,6 +47,6 @@ $wgEnableScriptDebug = false;
 // Define which modules to load
 $wgMwEmbedEnabledModules =  array( 'EmbedPlayer', 'KalturaSupport', 'AdSupport', 'Playlist', 'TimedText', 'Omniture',
 		'Plymedia', 'FreeWheel', 'EmbedWizard',  'SyntaxHighlighter', 'DoubleClick', 'Conviva',
-		'NielsenCombined', 'NielsenVideoCensus', 'Comscore', 'DolStatistics' );
+		'NielsenCombined', 'NielsenVideoCensus', 'Comscore', 'DolStatistics', 'GoogleAnalytics' );
 
 ?>
