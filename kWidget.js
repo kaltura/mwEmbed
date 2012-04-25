@@ -102,9 +102,9 @@ var kWidget = {
 		}
 	},
 	/**
-	 * The method called instead of the proxiedJsCallback
+	 * The kWidget proxied jsCallbackReady
 	 */
-	jsReadyCallback: function( widgetId ){
+	jsCallbackReady: function( widgetId ){
 		// Check for proxyed jsReadyCallback: 
 		if( this.proxiedJsCallback ){
 			this.proxiedJsCallback( widgetId );
@@ -116,7 +116,7 @@ var kWidget = {
 		// call any callbacks in the queue:
 		for( var i=0;i < this.jsReadyCalledForIds.length; i++ ){
 			var widgetId = this.jsReadyCalledForIds[i];
-			this.jsReadyCallback( widgetId );
+			this.jsCallbackReady( widgetId );
 		}
 		// empty out the ready callback queue
 		this.jsReadyCalledForIds = [];
@@ -154,6 +154,7 @@ var kWidget = {
 		} catch ( e ){
 			// could not clear inner html
 		}
+		
 		// Don't rewrite special key kaltura_player_iframe_no_rewrite
 		if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
 			return ;
@@ -163,20 +164,17 @@ var kWidget = {
 		
 		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id )
 		
-		// Check if we even need to rewrite the page at all
-		// Evaluate per user agent rules:
-		if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
+		// Evaluate per user agent rules for actions
+		if( uiconf_id && window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ] ){
 			var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
 			// Default play mode, if here and really using flash remap:
 			switch( playerAction.mode ){
 				case 'flash':
-					if( !kWidget.isHTML5FallForward() && elm.nodeName.toLowerCase() == 'object'){
+					if( !this.isHTML5FallForward() && elm.nodeName.toLowerCase() == 'object'){
+						// do do anything if we are already trying to rewrite an object tag
 						return ;
 					}
 				break;
-				case 'leadWithHTML5':
-					settings.isHTML5 = kWidget.supportsHTML5();
-					break;
 				case 'forceMsg':
 					var msg = playerAction.val;
 					// write out a message:
@@ -193,16 +191,14 @@ var kWidget = {
 		}
 
 		// Check if we are dealing with an html5 player or flash player or direct download
-		if( ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ) {
-			kWidget.outputDirectDownload( targetId, settings );
+		if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ) {
+			this.outputDirectDownload( targetId, settings );
 			return ;
 		}
 		if( settings.isHTML5 ){
-			kWidget.outputHTML5Iframe( targetId, settings );
-			return ;
+			this.outputHTML5Iframe( targetId, settings );
 		} else {
-			kWidget.outputFlashObject( targetId, settings );
-			return ;
+			this.outputFlashObject( targetId, settings );
 		}
 	},
 	/**
@@ -216,10 +212,10 @@ var kWidget = {
 			settings.height = rewriteObjects[i].height;
 			
 			// If we have no flash &  no html5 fallback and don't care about about player rewrite 
-			if( ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && !mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) {
-				kWidget.outputDirectDownload( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
+			if( ! this.supportsFlash() && ! this.supportsHTML5() && !mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) {
+				this.outputDirectDownload( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
 			} else {
-				kWidget.embed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
+				this.embed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
 			}
 		}
 	},
@@ -265,7 +261,20 @@ var kWidget = {
 						( elm.height ) ? elm.height :
 							( elm.style.height ) ? parseInt( elm.style.height ) : 300;
 
-		var flashvarValue = ( settings.flashvars ) ? kFlashVarsToString( settings.flashvars ) : '&';
+		// make sure flashvars are init: 
+		if( ! settings.flashvars ){
+			settings.flashvars = {};
+		}
+		// Set our special callback flashvar: 
+		if( settings.flashvars['jsCallbackReady'] ){
+			kWidget.log("Error: please do not set jsCallbackReady")
+		}
+		window['tempTest123'] = function(){
+			alert('ready');
+		}
+		settings.flashvars['jsCallbackReady'] = 'tempTest123';
+		
+		var flashvarValue = this.flashVarsToString( settings.flashvars );
 
 		// we may have to borrow more from:
 		// http://code.google.com/p/swfobject/source/browse/trunk/swfobject/src/swfobject.js#407
@@ -315,7 +324,7 @@ var kWidget = {
 		if ( window.console && ( window.console.firebug || window.console.exception ) ) {
 			console.log( 'Warning firebug + firefox and dynamic flash kdp embed causes lockups in firefox' + 
 					', ( delaying embed )');
-			kAddReadyHook( function(){
+			this.domReady( function(){
 				setTimeout(function(){
 					outputElemnt();
 				}, 2000);
@@ -337,7 +346,7 @@ var kWidget = {
 		var elm = document.getElementById( targetId );
 		// Check for html with api off:
 		if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') ){
-			kWidget.outputIframeWithoutApi( targetId, settings );
+			this.outputIframeWithoutApi( targetId, settings );
 			return ;
 		} else {
 			// Output HTML5 IFrame with API
@@ -450,7 +459,7 @@ var kWidget = {
 			downloadUrl += '/entry_id/'+ kEmbedSettings.entry_id;
 		}
 
-		var thumbSrc = kWidget.getKalturaThumbUrl({
+		var thumbSrc = this.getKalturaThumbUrl({
 			'entry_id' : kEmbedSettings.entry_id,
 			'partner_id' : kEmbedSettings.p,
 			'width' : parseInt( options.width),
@@ -515,7 +524,7 @@ var kWidget = {
 	 */
 	rewriteObjectTags: function() {
 		// get the list of object tags to be rewritten: 
-		var playerList = kWidget.getKalutaObjectList();
+		var playerList = this.getKalutaObjectList();
 		var _this = this;
 
 		// Check if we need to load UiConf JS
@@ -559,7 +568,7 @@ var kWidget = {
 		}
 		
 		// If document includes kaltura embed tags && isMobile safari:
-		if ( kWidget.isHTML5FallForward()
+		if ( this.isHTML5FallForward()
 				&&
 			playerList.length
 		) {
@@ -570,7 +579,7 @@ var kWidget = {
 
 		// Check if no flash and no html5 and no forceFlash ( direct download link )
 		// for debug purpose:
-		if( ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
+		if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 			this.embedFromObjects( playerList );
 			return ;
 		}
@@ -704,7 +713,16 @@ var kWidget = {
 	  * Checks if a given uiconf_id is html5 or not
 	  */
 	 isUiConfIdHTML5: function( uiconf_id ){
-		 var baseSetting = kWidget.isHTML5FallForward();
+		 var isHTML5 = this.isHTML5FallForward();
+		 
+		 if( window.kUserAgentPlayerRules && kUserAgentPlayerRules[ uiconf_id ]){
+			 var playerAction = window.checkUserAgentPlayerRules( kUserAgentPlayerRules[ uiconf_id ] );
+			 if( playerAction.mode == 'leadWithHTML5' ){
+				 isHTML5 = this.supportsHTML5();
+			 }
+		 }
+		 
+		 return isHTML5;
 	 },
 	 /*
 	  * Fallforward by default prefers flash, uses html5 only if flash is not installed or not available
@@ -712,13 +730,13 @@ var kWidget = {
 	 isHTML5FallForward: function() {
 
 		 // Check for a mobile html5 user agent:
-		 if ( kWidget.isIOS() || mw.getConfig( 'forceMobileHTML5' )  ){
+		 if ( this.isIOS() || mw.getConfig( 'forceMobileHTML5' )  ){
 			 return true;
 		 }
 
 		 // Check for "Kaltura.LeadWithHTML5" attribute
 		 if( mw.getConfig( 'KalturaSupport.LeadWithHTML5' ) || mw.getConfig( 'Kaltura.LeadWithHTML5' ) ){
-			 return kWidget.supportsHTML5();
+			 return this.supportsHTML5();
 		 }
 
 		 // Special check for Android:
@@ -880,6 +898,16 @@ var kWidget = {
 		return flashvars;
 	 },
 	 /**
+	  * convert flashvars to a string
+	  */
+	 flashVarsToString: function( flashVarsObject ) {
+		 var params = '';
+		 for( var i in flashVarsObject ){
+			 params+= '&' + '' + encodeURIComponent( i ) + '=' + encodeURIComponent( flashVarsObject[i] );
+		 }
+		 return params;
+	 },
+	 /**
 	  * Converts a flashvar object into a url object string
 	  */
 	 flashVarsToUrl: function( flashVarsObject ){
@@ -906,6 +934,7 @@ var kWidget = {
 	 * Get the list of embed objects on the page that are 'kaltura players'
 	*/
 	getKalutaObjectList: function(){
+		var _this = this;
 		var kalturaPlayerList = [];
 	 	// Check all objects for kaltura compatible urls 
 		var objectList = document.getElementsByTagName('object');
@@ -914,7 +943,7 @@ var kWidget = {
 		}
 	 	// local function to attempt to add the kalturaEmbed
 	 	var tryAddKalturaEmbed = function( url , flashvars){
-	 		var settings = kWidget.getEmbedSettings( url, flashvars );
+	 		var settings = _this.getEmbedSettings( url, flashvars );
 	 		if( settings && settings.uiconf_id && settings.wid ){
 	 			objectList[i].kEmbedSettings = settings;
 	 			kalturaPlayerList.push(  objectList[i] );
@@ -1266,6 +1295,7 @@ var kWidget = {
 	 * overrides flash embed methods, as to optionally support HTML5 injection
 	 */
 	overrideFlashEmbedMethods: function(){
+		var _this = this;
 		var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTargetId, widthStr, heightStr ){
 			if( widthStr ) {
 				kEmbedSettings.width = widthStr;
@@ -1280,7 +1310,7 @@ var kWidget = {
 			window['originalFlashembed'] = window['flashembed'];
 			window['flashembed'] = function( targetId, attributes, flashvars ){
 				// TODO test with kWidget.embed replacement.
-				kWidget.domReady(function(){
+				_this.domReady(function(){
 					var kEmbedSettings = kWidget.getEmbedSettings( attributes.src, flashvars);
 					kEmbedSettings.width = attributes.width;
 					kEmbedSettings.height = attributes.height;
@@ -1307,7 +1337,7 @@ var kWidget = {
 			window['SWFObject'].prototype['write'] = function( targetId ){
 				var _this = this;
 				// TODO test with kWidget.embed replacement.
-				kWidget.domReady(function(){      
+				_this.domReady(function(){      
 					var kEmbedSettings = kWidget.getEmbedSettings( _this.attributes.swf, _this.params.flashVars);
 					if( kEmbedSettings.uiconf_id && ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 						kWidget.outputDirectDownload( targetId, kEmbedSettings );
@@ -1331,7 +1361,7 @@ var kWidget = {
 					heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn)
 			{
 				// TODO test with kWidget.embed replacement.
-				kWidget.domReady(function(){
+				_this.domReady(function(){
 					var kEmbedSettings = kWidget.getEmbedSettings( swfUrlStr, flashvarsObj );
 					
 					if( kEmbedSettings.uiconf_id && ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){

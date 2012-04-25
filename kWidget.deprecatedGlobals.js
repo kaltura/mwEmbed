@@ -27,6 +27,7 @@
 				'kAppendScriptUrl' : 'appendScriptUrl',
 				'kFlashVars2Object' : 'flashVars2Object',
 				'kFlashVarsToUrl' : 'flashVarsToUrl',
+				'kFlashVarsToString' : 'flashVarsToString',
 				'kServiceConfigToUrl' : 'serviceConfigToUrl',
 				// fully deprecated ( have no purpuse any more )
 				'restoreKalturaKDPCallback': false
