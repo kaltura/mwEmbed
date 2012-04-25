@@ -10,19 +10,30 @@
 			// Name this module
 			module( "Short Video Loop" );
 			var kdp = $( '#' + videoId ).get( 0 );
-			test( "Loop attribute set to true", function() {
-				equal( kdp.getKalturaConfig( '', 'loop' ), true, "Loop attribute is set to true");
+			
+			asyncTest( "Loop attribute set to true", function() {
+				kalturaQunitWaitForPlayer(function(){
+					equal( kdp.evaluate( '{loop}' ), true, "Loop attribute is set to true");
+					start();
+				});
 			} );
+			asyncTest( "replayEvent was Fired", function(){
+				window.replayCallback = function() {
+					mw.log("replayCallback");
+					window['playCount']++;
+					if ( window['playCount'] == 2 ) {
+						ok( true, "replayEvent was fired 2 times");
+						start();
+						// set stop in a timeout ( replay even is fired in stop state ) 
+						setTimeout(function(){
+							kdp.sendNotification('doStop');
+						},250 );
+					}
+				}
+			});
+			
+			// add a listner for replay: 
 			kdp.addJsListener( 'replayEvent', 'replayCallback' );
-		}
-		function replayCallback() {
-			window['playCount']++;
-			if ( window['playCount'] == 2 ) {
-				test( "replayEvent was Fired", function() {
-					ok( true, "replayEvent was fired 2 times");
-				} );
-				$('#kaltura_player').get(0).sendNotification('doStop');
-			}
 		}
 	</script>
 
