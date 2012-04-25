@@ -23,6 +23,12 @@
 		// With html controls you can support html themed controls, overlays, ads etc. )
 		'EmbedPlayer.EnableIpadHTMLControls': true,
 		
+		// The iPhone native play button does not interact well with sequenced events,
+		// so by default we display the html play button. 
+		// if you are not using ad plugins you may want to set this to false 
+		// and display the native play button:
+		'EmbedPlayer.iPhoneShowHTMLPlayBtn' : true,
+		
 		// If the webkit-playsinline attribute should be added to the video tag. Will cause the player
 		// to play inline on iPhone
 		'EmbedPlayer.WebKitPlaysInline': false,

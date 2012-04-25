@@ -87,7 +87,7 @@ mw.EmbedPlayerNative = {
 		}
 		this.parent_updateFeatureSupport();
 	},
-
+	
 	/**
 	* Return the embed code
 	*/
@@ -95,6 +95,11 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var vid = _this.getPlayerElement();
 		this.isFirstEmbedPlay = true;
+		
+		// Check if we should have a play button on the native player:
+		if( this.useLargePlayBtn() ){
+			this.addLargePlayBtn();
+		}
 		
 		if( vid && $( vid ).attr('src') == this.getSrc( this.currentTime ) ){
 			_this.postEmbedActions();
@@ -107,7 +112,6 @@ mw.EmbedPlayerNative = {
 			_this.postEmbedActions();
 			return ;
 		}
-		
 		// Reset some play state flags:
 		_this.bufferStartFlag = false;
 		_this.bufferEndFlag = false;
@@ -170,7 +174,6 @@ mw.EmbedPlayerNative = {
 	*/
 	postEmbedActions: function() {
 		var _this = this;
-
 		// Setup local pointer:
 		var vid = this.getPlayerElement();
 		if(!vid){
@@ -188,6 +191,7 @@ mw.EmbedPlayerNative = {
 		if( mw.getConfig( 'EmbedPlayer.WebKitAllowAirplay' ) ){
 			$( vid ).attr( 'x-webkit-airplay', "allow" );
 		}
+
 		// Apply media element bindings:
 		_this.applyMediaElementBindings();
 		
@@ -660,7 +664,7 @@ mw.EmbedPlayerNative = {
 					_this.restorePlayerOnScreen();
 					// play hide loading spinner:
 					_this.hidePlayerSpinner();
-					// Restore controls 
+					// Restore 	 
 					vid.controls = orginalControlsState;
 					// check if we have a switch callback and issue it now: 
 					if ( $.isFunction( switchCallback ) ){
@@ -706,8 +710,8 @@ mw.EmbedPlayerNative = {
 						// make sure we are in a pause state ( failed to change and play media );
 						_this.pause();
 						// show the big play button so the user can give us a user gesture: 
-						if( ! _this.useNativePlayerControls() ){
-							_this.addPlayBtnLarge();
+						if( ! _this.useLargePlayBtn() ){
+							_this.addLargePlayBtn();
 						}
 					}
 				}, 12000 );
@@ -986,6 +990,10 @@ mw.EmbedPlayerNative = {
 	*/
 	_onplay: function(){
 		mw.log("EmbedPlayerNative:: OnPlay:: propogate:" +  this._propagateEvents + ' paused: ' + this.paused);
+		// if using native controls make sure the inteface does not block the native controls interface: 
+		if( this.useNativePlayerControls() ){
+			this.$interface.css('pointer-events', 'none');
+		}
 		
 		// Update the interface ( if paused )
 		if( ! this.isFirstEmbedPlay && this._propagateEvents && this.paused ){

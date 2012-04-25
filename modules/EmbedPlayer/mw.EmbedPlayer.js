@@ -831,10 +831,10 @@ mw.EmbedPlayer.prototype = {
 						_this.pause();
 					}
 					// Check if we should hide the large play button on end: 
-					if( $( _this ).data( 'hideEndPlayButton' ) || this.useNativePlayerControls() ){
+					if( $( _this ).data( 'hideEndPlayButton' ) || !_this.useLargePlayBtn() ){
 						_this.$interface.find('.play-btn-large').hide();
 					} else {
-						_this.addPlayBtnLarge();
+						_this.addLargePlayBtn();
 					}
 					// An event for once the all ended events are done.
 					mw.log("EmbedPlayer:: trigger: onEndedDone");
@@ -953,8 +953,8 @@ mw.EmbedPlayer.prototype = {
 				'background': null					
 			};
 			// if using "native" interface don't do any pointer events:
-			if( this.useNativePlayerControls() ){
-				interfaceCss['pointer-events'] = 'none'
+			if( !this.useLargePlayBtn() ){
+				interfaceCss['pointer-events'] = 'none';
 			}
 			
 			if( !mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
@@ -1105,7 +1105,7 @@ mw.EmbedPlayer.prototype = {
 			);
 			$this.show();
 			// Make sure we have a play btn:
-			this.addPlayBtnLarge();
+			this.addLargePlayBtn();
 			
 			// Set the play button to the first available source:
 			this.$interface.find('.play-btn-large')
@@ -1345,7 +1345,7 @@ mw.EmbedPlayer.prototype = {
 		var style_atr = '';
 		
 		if( this.useNativePlayerControls() && this.mediaElement.selectedSource ){
-			this.embedNativePlayer();
+			this.embedPlayerHTML();
 			return ;
 		}
 
@@ -1379,14 +1379,26 @@ mw.EmbedPlayer.prototype = {
 				.addClass( 'playerPoster' )
 			);
 		}
-		if ( !this.useNativePlayerControls()  && this.controlBuilder
+		if ( !this.useLargePlayBtn()  && this.controlBuilder
 				&& 
 			this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
 		) {
-			this.addPlayBtnLarge();
+			this.addLargePlayBtn();
 		}
 	},
-
+	/**
+	 * Checks if a large play button should be displayed on the 
+	 * otherwise native player
+	 */
+	useLargePlayBtn: function(){
+		if( mw.isAndroid2() || 
+			( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayBtn' ) )
+		){
+			return true;
+		}
+		// else if we are using native controls return false: 
+		return !this.useNativePlayerControls();
+	},
 	/**
 	 * Checks if native controls should be used
 	 *
@@ -1436,58 +1448,14 @@ mw.EmbedPlayer.prototype = {
 		return $('#' + this.pid ).hasClass('persistentNativePlayer');
 	},
 
-
-	/**
-	 * Embed the native player
-	 *
-	 * This is for cases where the main library needs to "get out of the way"
-	 * since the device only supports a limited subset of the html5 and won't
-	 * work with an html javascirpt interface
-	 */
-	embedNativePlayer: function(){
-		var _this = this;
-		// Empty the player of any child nodes
-		$(this).empty();
-
-		// Remove the player loader spinner if it exists
-		this.hidePlayerSpinner();
-
-		// Get the selected source:
-		var source = this.mediaElement.selectedSource;
-		// Setup videoAttribues
-		var videoAttribues = {
-			'poster': _this.poster,
-			'src' : source.getSrc()
-		};
-		if( this.controls ){
-			videoAttribues.controls = 'true';
-		}
-		if( this.loop ){
-			videoAttribues.loop = 'true';
-		}
-		var cssStyle = {
-			'width' : _this.width,
-			'height' : _this.height
-		};
-		// Check if we need to insert
-		if( $( '#' + this.pid ).length == 0 ){
-			$( this ).append( $( '<div />').attr('id', this.pid ) );
-		}
-		$( '#' + this.pid ).replaceWith(
-			_this.getNativePlayerHtml( videoAttribues, cssStyle )
-		);
-
-		// Bind native events:
-		this.applyMediaElementBindings();
-
-		// Android only can play with a special play button, android 2x has no native controls
-		if( mw.isAndroid2() ){
-			this.addPlayBtnLarge();
-		}
-		return ;
-	},
 	// Add a play button (if not already there ) 
-	addPlayBtnLarge:function(){
+	addLargePlayBtn:function(){
+		// if using native controls make sure we can click the big play button by restoring 
+		// interface click events:
+		if( this.useNativePlayerControls() ){
+			this.$interface.css('pointer-events', 'auto');
+		}
+		
 		// iPhone in WebKitPlaysInline mode does not support clickable overlays as of iOS 5.0 
 		if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') && mw.isIphone() ) {
 			return ;
@@ -1929,8 +1897,8 @@ mw.EmbedPlayer.prototype = {
 			this.pause();
 		}
 		// Restore the play button ( if not native controls or is android ) 
-		if( !this.useNativePlayerControls() || mw.isAndroid2() ){
-			this.addPlayBtnLarge();
+		if( this.useLargePlayBtn() ){
+			this.addLargePlayBtn();
 			this.pauseInterfaceUpdate();
 		}
 		
@@ -1946,7 +1914,7 @@ mw.EmbedPlayer.prototype = {
 		// update the status: 
 		this.controlBuilder.setStatus( this.getTimeRange() );
 	},
-
+	
 	/**
 	 * Base Embed mute
 	 *
