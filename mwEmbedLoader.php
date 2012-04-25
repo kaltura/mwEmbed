@@ -29,13 +29,13 @@ $loaderJs .= "window['KALTURA_LOADER_VERSION'] = '$wgMwEmbedVersion';\n";
 $loaderJs .= file_get_contents( 'kWidget.js' );
 
 // By default include deprecated globals ( could be optional in the future )
-$loaderJs .= file_get_contents( 'kWidget.deprecatedGlobals.js' ) . "\n";
+$loaderJs .= file_get_contents( 'kWidget.deprecatedGlobals.js' );
 
 // Get resource ( domReady.js )
-$loaderJs .= file_get_contents( 'kWidget.domReady.js' ). "\n";
+$loaderJs .= file_get_contents( 'kWidget.domReady.js' );
 
 // Get resource (  mwEmbedLoader.js )
-$loaderJs .= file_get_contents( 'mwEmbedLoader.js' ) . "\n";
+$loaderJs .= file_get_contents( 'mwEmbedLoader.js' );
 
 // Include checkUserAgentPlayer code
 $loaderJs .= file_get_contents( 'modules/KalturaSupport/kdpPageJs/checkUserAgentPlayerRules.js' );

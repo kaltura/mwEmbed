@@ -135,9 +135,8 @@
 				};
 				// Listen for the proxyReady event from the server: 
 				$( playerProxy ).bind( 'proxyReady', function(){
-					if( window.KalturaKDPCallbackReady ){
-						window.KalturaKDPCallbackReady( playerProxy.id );
-					}
+					// issue the jsReadyCallback for the html5 player: 
+					kWidget.jsReadyCallback( playerProxy.id );
 				});
 			});			
 		},

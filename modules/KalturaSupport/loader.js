@@ -190,7 +190,6 @@
 		
 			// Check if we are NOT rewriting tags: 
 			if( !kWidget.isHTML5FallForward() ) {
-				restoreKalturaKDPCallback();
 				rewriteDoneCallback();
 				return ;
 			}
@@ -231,7 +230,7 @@
 					if( !swfSource ) {
 						swfSource = $( element ).find( "param[name=data]" ).attr( 'value' );						                                      
 					}
-					var kEmbedSettings = kWidget.getEmbedSetting( swfSource, flashvars );
+					var kEmbedSettings = kWidget.getEmbedSettings( swfSource, flashvars );
 
 					// Check if its a playlist or a entryId
 					mw.log( "KalturaSupport:: Got object settings: entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
