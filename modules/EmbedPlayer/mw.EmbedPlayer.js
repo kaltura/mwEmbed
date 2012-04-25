@@ -1721,8 +1721,13 @@ mw.EmbedPlayer.prototype = {
 			mw.log( "EmbedPlayer:: trigger preSequence " );
 			$this.trigger( 'preSequence' );
 			this.playInterfaceUpdate();
+			// if we entered into ad loading return 
+			if(  _this.sequenceProxy && _this.sequenceProxy.isInSequence ){
+				mw.log("EmbedPlayer:: isInSequence, do NOT play content")
+				return false;
+			}
 		}
-		
+
 		if( this.paused === true ){
 			this.paused = false;
 			// Check if we should Trigger the play event

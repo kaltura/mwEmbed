@@ -17,7 +17,15 @@ function jsKalturaPlayerTest( videoId ){
 		ok( $( '#' + videoId + '_ifp' ).length , 'iframe found' );
 		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
 	});
+	
 }
+$(function(){
+	$( '#adPlay').click(function(){
+		$( '#kaltura_player' ).get(0).sendNotification( 'doPlay' );
+	})	
+})
+	
+
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
@@ -25,12 +33,13 @@ function jsKalturaPlayerTest( videoId ){
 <body>
 <h2> Iphone Compatible preroll DoubleClick ( only preroll ) </h2>
 
+<a id="adPlay" href="#">test ad play</a> <br>
 all ad slots and overlays are loaded from server. 
 <br /><br />
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
-<object id="kaltura_player_1316310055" 
-	name="kaltura_player_1316310055" 
+<object id="kaltura_player" 
+	name="kaltura_player" 
 	type="application/x-shockwave-flash" 
 	allowFullScreen="true" 
 	allowNetworking="all" 
