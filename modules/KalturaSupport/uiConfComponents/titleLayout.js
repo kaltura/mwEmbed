@@ -58,7 +58,7 @@
 			return $returnLayout;
 		};
 		var updatePlayerLayout = function(){
-			var $vid = $( embedPlayer.getPlayerElement() );
+			var $vid = $( '#' + embedPlayer.pid + ',.playerPoster' );
 			var vidHeight = $vid.height();
 			// Check if we are using flash ( don't move the player element )
 			if( embedPlayer.instanceOf != 'Native' || $vid.length == 0 ){

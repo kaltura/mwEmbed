@@ -117,7 +117,7 @@ mw.EmbedPlayerNative = {
 				'background-size': '100%',
 				'background-attachment':'fixed',
 				'background-repeat':'no-repeat',
-				'background-position':'center' 
+				'background-position':'top' 
 			})
 			.attr({
 				'src' : posterSrc
