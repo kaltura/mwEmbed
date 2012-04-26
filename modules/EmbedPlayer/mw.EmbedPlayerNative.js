@@ -109,7 +109,7 @@ mw.EmbedPlayerNative = {
 		if( this.$interface.find( '.playerPoster' ).length ){
 			this.$interface.find( '.playerPoster' ).css('background-image', 'url(\'' + this.poster + '\')' );
 		} else {
-			this.$interface.append( 
+			this.$interface.append(
 				$( '<div />' )
 				.css({
 					'position' : 'absolute',
