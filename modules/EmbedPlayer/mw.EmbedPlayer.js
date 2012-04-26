@@ -392,6 +392,12 @@ mw.EmbedPlayer.prototype = {
 	 * controlBuilder.resizePlayer function
 	 */
 	resizePlayer: function( size , animate, callback){
+		// Don't resize / re position the player if we have a keep off screen flag
+		if( this.keepPlayerOffScreenFlag ){
+			if( callback )
+				callback();
+			return ;
+		}
 		// check for empty resize call: 
 		if( !size ){
 			return ;
@@ -1344,11 +1350,18 @@ mw.EmbedPlayer.prototype = {
 		var class_atr = '';
 		var style_atr = '';
 		
-		if( this.useNativePlayerControls() && this.mediaElement.selectedSource ){
-			this.embedPlayerHTML();
+		
+		
+		if( this.useNativePlayerControls() && 
+			this.mediaElement.selectedSource 
+		){
+			if( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') ){
+				this.addPlayScreenWithNativeOffScreen();
+			} else {
+				this.embedPlayerHTML();
+			}
 			return ;
 		}
-
 		// Set by default thumb value if not found
 		var posterSrc = ( this.poster ) ? this.poster :
 						mw.getConfig( 'EmbedPlayer.BlackPixel' );
@@ -1385,6 +1398,10 @@ mw.EmbedPlayer.prototype = {
 		) {
 			this.addLargePlayBtn();
 		}
+	},
+	addPlayScreenWithNativeOffScreen: function(){
+		mw.log( "Error: must be override with native method" );
+		return ;
 	},
 	/**
 	 * Checks if a large play button should be displayed on the 

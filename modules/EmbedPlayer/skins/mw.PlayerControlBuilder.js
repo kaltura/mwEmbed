@@ -775,6 +775,13 @@ mw.PlayerControlBuilder.prototype = {
 	 * Resize the player to a target size keeping aspect ratio
 	 */
 	resizePlayer: function( size, animate, callback ){
+		// Don't resize / re position the player if we have a keep off screen flag
+		if( this.embedPlayer.keepPlayerOffScreenFlag ){
+			if( callback )
+				callback();
+			return ;
+		}
+		
 		mw.log("PlayerControlBuilder:: resizePlayer: " + size.width + ' ' + size.height );
 		var _this = this;
 		// Update interface container:

@@ -27,6 +27,9 @@ mw.EmbedPlayerNative = {
 	// If the media loaded event has been fired
 	mediaLoadedFlag: null,
 	
+	// A flag to keep the video tag offscreen. 
+	keepPlayerOffScreenFlag: null,
+	
 	// A flag to designate the first play event, as to not propagate the native event in this case
 	isFirstEmbedPlay: null,
 	
@@ -87,7 +90,39 @@ mw.EmbedPlayerNative = {
 		}
 		this.parent_updateFeatureSupport();
 	},
-	
+	/**
+	 * Adds an HTML screen and moves the video tag off screen, works around some iPhone bugs
+	 */
+	addPlayScreenWithNativeOffScreen: function(){
+		// hide the player offscreen:
+		this.hidePlayerOffScreen();
+		this.keepPlayerOffScreenFlag = true;
+		
+		// Add a play button on the native player:
+		this.addLargePlayBtn();
+		
+		// add an image poster: 
+		var posterSrc = ( this.poster ) ? this.poster :
+			mw.getConfig( 'EmbedPlayer.BlackPixel' );
+		this.$interface.append( 
+			$( '<div />' )
+			.css({
+				'position' : 'absolute',
+				'top' : '0px',
+				'left' : '0px',
+				'width': this.getWidth(),
+				'height': this.getHeight(),
+				'background': 'url(\'' + this.poster + '\')',
+				'background-size': '100%',
+				'background-attachment':'fixed',
+				'background-repeat':'no-repeat'
+			})
+			.attr({
+				'src' : posterSrc
+			})
+			.addClass( 'playerPoster' )
+		)
+	},
 	/**
 	* Return the embed code
 	*/
@@ -732,6 +767,9 @@ mw.EmbedPlayerNative = {
 	},
 	restorePlayerOnScreen: function( vid ){
 		var vid = this.getPlayerElement();
+		if( this.keepPlayerOffScreenFlag ){
+			return ;
+		}
 		// Restore video pos before calling sync syze
 		$( vid ).css( 'left', '0px' );
 		// always sync player size after a restore
