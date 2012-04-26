@@ -774,9 +774,6 @@ mw.EmbedPlayer.prototype = {
 			// Show the control bar:
 			this.controlBuilder.showControlBar();
 
-			// Update the clip done playing count:	
-			this.donePlayingCount ++;
-
 			// TOOD we should improve the end event flow
 			// First end event for ads or current clip ended bindings
 			if( ! this.onDoneInterfaceFlag ){
@@ -804,9 +801,14 @@ mw.EmbedPlayer.prototype = {
 				mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
 				// Prevent the native "onPlay" event from propagating that happens when we rewind:
 				this.stopEventPropagation();
+				
+				// Update the clip done playing count ( for keeping track of replays )
+				_this.donePlayingCount ++;
+				
 				// Rewind the player to the start: 
 				this.setCurrentTime(0, function(){
-					// set to stopped state:
+					
+					// Set to stopped state:
 					_this.stop();
 					
 					// Restore events after we rewind the player
