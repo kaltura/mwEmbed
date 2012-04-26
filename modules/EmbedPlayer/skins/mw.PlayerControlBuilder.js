@@ -2219,11 +2219,7 @@ mw.PlayerControlBuilder.prototype = {
 					.css( ctrlObj.getPlayButtonPosition() )
 					// Add play hook:
 					.click( function() {
-						// only remove the play button if 
-						if( ! ctrlObj.embedPlayer.isPersistantPlayBtn() ){
-							$( this ).remove();
-						}
-						ctrlObj.embedPlayer.play();		
+						ctrlObj.embedPlayer.play();
 						return false; // Event Stop Propagation
 					} );
 			}
