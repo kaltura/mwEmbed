@@ -335,8 +335,7 @@ mw.DoubleClick.prototype = {
 		adsListener( 'STARTED', function(){
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
-			
-			// if on iPad hide restore player from quicktime logo hide: 
+			// restore player position: 
 			_this.restorePlayerOnScreen( _this.getAdContainer() );
 			
 			// set ad playing flag: 
@@ -386,10 +385,11 @@ mw.DoubleClick.prototype = {
 		}
 	},
 	hideContent: function(){
+		mw.log("DoubleClick:: hide Content / show Ads");
 		var _this = this;
 		// show the ad container: 
 		this.restorePlayerOnScreen( 
-			$( this.getAdContainer() ).find('video').get(0) 
+			this.getAdContainer() 
 		);
 		// hide content:
 		this.hidePlayerOffScreen(
@@ -397,6 +397,7 @@ mw.DoubleClick.prototype = {
 		)
 	},
 	showContent: function(){
+		mw.log("DoubleClick:: show Content / hide Ads");
 		// show content
 		this.restorePlayerOnScreen( 
 			this.getContent()
@@ -419,7 +420,7 @@ mw.DoubleClick.prototype = {
 			'left': '-4048px'
 		})
 	},
-	/* restore iPad Player */
+	/* restore Player on screen*/
 	restorePlayerOnScreen:function( target ){
 		$( target ).css( 'left', '0px');
 	},
@@ -432,8 +433,16 @@ mw.DoubleClick.prototype = {
 			if( _this.adPlaying ){
 				mw.log( "DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
 				// Resize the ad manager on player resize: ( no support for animate )
-				_this.adsManager.resize(size.width, size.height, google.ima.ViewMode.NORMAL);
+				_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );
 			}
+		});
+		embedPlayer.bindHelper( 'onResizePlayerDone' + this.bindPostfix, function( event, size, animate ) {
+			// make sure the display states are in sync: 
+			if( _this.adPlaying ){
+				_this.hidePlayerOffScreen(
+					_this.getContent()
+				)
+			}	
 		});
 		
 		embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
@@ -496,7 +505,7 @@ mw.DoubleClick.prototype = {
 	restorePlayer: function( onContentComplete ){
 		mw.log("DoubleClick::restorePlayer");
 		this.adPlaying = false;
-		this.embedPlayer.sequenceProxy.isInSequence = true;
+		this.embedPlayer.sequenceProxy.isInSequence = false;
 		
 		// Show the content:
 		this.showContent();

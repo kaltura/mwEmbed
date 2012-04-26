@@ -387,37 +387,21 @@ mw.EmbedPlayer.prototype = {
 			}
 		}
 	},
+	
 	/**
 	 * Resize the player to a new size preserving aspect ratio Wraps the
 	 * controlBuilder.resizePlayer function
 	 */
 	resizePlayer: function( size , animate, callback){
-		// Don't resize / re position the player if we have a keep off screen flag
-		if( this.keepPlayerOffScreenFlag ){
-			if( callback )
-				callback();
-			return ;
-		}
-		// check for empty resize call: 
-		if( !size ){
-			return ;
-		}
-		mw.log("EmbedPlayer::resizePlayer:" + size.width + ' x ' + size.height );
-		var _this = this;
-		// Check if we are native display then resize the playerElement directly
-		if( this.useNativePlayerControls() ){
-			if( animate ){
-				$( this.getPlayerElement() ).animate( size , callback);
-			} else {
-				$( this.getPlayerElement() ).css( size );
-				if( callback ) {
-					callback();
-				}
-			}
-		} else {
-			this.controlBuilder.resizePlayer( size, animate, callback);
-		}
-		$( this ).trigger( 'onResizePlayer', [size, animate] );
+		// just wraps the controlBuilder method: 
+		this.controlBuilder.resizePlayer( size, animate, callback );
+	},
+	
+	/**
+	 * Wraps the control builder method to sync player size: 
+	 */
+	syncPlayerSize: function(){
+		return this.controlBuilder.syncPlayerSize();
 	},
 
 	/**
@@ -838,7 +822,7 @@ mw.EmbedPlayer.prototype = {
 					}
 					// Check if we should hide the large play button on end: 
 					if( $( _this ).data( 'hideEndPlayButton' ) || !_this.useLargePlayBtn() ){
-						_this.$interface.find('.play-btn-large').hide();
+						_this.hideLargePlayBtn();
 					} else {
 						_this.addLargePlayBtn();
 					}
@@ -1292,7 +1276,7 @@ mw.EmbedPlayer.prototype = {
 			}
 			// Make sure the play button reflects the original play state
 			if(  chnagePlayingMedia ){
-				_this.$interface.find( '.play-btn-large' ).hide();
+				_this.hideLargePlayBtn();
 			} else {
 				_this.$interface.find( '.play-btn-large' ).show();
 			}
@@ -1350,8 +1334,6 @@ mw.EmbedPlayer.prototype = {
 		var class_atr = '';
 		var style_atr = '';
 		
-		
-		
 		if( this.useNativePlayerControls() && 
 			this.mediaElement.selectedSource 
 		){
@@ -1392,7 +1374,7 @@ mw.EmbedPlayer.prototype = {
 				.addClass( 'playerPoster' )
 			);
 		}
-		if ( !this.useLargePlayBtn()  && this.controlBuilder
+		if ( this.useLargePlayBtn()  && this.controlBuilder
 				&& 
 			this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
 		) {
@@ -1408,13 +1390,15 @@ mw.EmbedPlayer.prototype = {
 	 * otherwise native player
 	 */
 	useLargePlayBtn: function(){
-		if( mw.isAndroid2() || 
-			( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayBtn' ) )
-		){
+		if( this.isPersistantPlayBtn() ){
 			return true;
 		}
 		// else if we are using native controls return false: 
 		return !this.useNativePlayerControls();
+	},
+	isPersistantPlayBtn: function(){
+		return mw.isAndroid2() || 
+				( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' ) );
 	},
 	/**
 	 * Checks if native controls should be used
@@ -1464,7 +1448,11 @@ mw.EmbedPlayer.prototype = {
 		}
 		return $('#' + this.pid ).hasClass('persistentNativePlayer');
 	},
-
+	hideLargePlayBtn: function(){
+		if( !this.isPersistantPlayBtn() ){
+			this.$interface.find( '.play-btn-large' ).hide();
+		}
+	},
 	// Add a play button (if not already there ) 
 	addLargePlayBtn:function(){
 		// if using native controls make sure we can click the big play button by restoring 
@@ -1700,7 +1688,6 @@ mw.EmbedPlayer.prototype = {
 				_this.embedPlayerHTML();
 			}
 		}
-		
 		if( !this.preSequence ) {
 			this.preSequence = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );
@@ -1774,7 +1761,8 @@ mw.EmbedPlayer.prototype = {
 		}
 		// Hide any buttons or errors  if present:
 		if( this.$interface ){
-			this.$interface.find( '.play-btn-large,.error' ).remove();
+			this.$interface.find( '.error' ).remove();
+			this.hideLargePlayBtn();
 		}
 		
 		this.$interface.find('.play-btn span')
@@ -1807,7 +1795,7 @@ mw.EmbedPlayer.prototype = {
 		$( '#' + sId ).remove();
 		// hide the play btn if present
 		if( this.$interface ) {
-			this.$interface.find('.play-btn-large').hide();
+			this.hideLargePlayBtn();
 		}
 		// re add an absolute positioned spinner: 
 		$( this ).getAbsoluteOverlaySpinner()
@@ -1819,7 +1807,7 @@ mw.EmbedPlayer.prototype = {
 		$( '#loadingSpinner_' + this.id + ',.loadingSpinner' ).remove();
 		// hide the play btn
 		if( this.$interface ) {
-			this.$interface.find('.play-btn-large').hide();
+			this.hideLargePlayBtn();
 		}
 	},
 	hideSpinnerOncePlaying: function(){
@@ -2176,7 +2164,7 @@ mw.EmbedPlayer.prototype = {
 		if( _this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
 			_this._checkHideSpinner = false;
 			// also hide the play button ( in case it was there somehow )
-			_this.$interface.find('.play-btn-large').hide()
+			_this.hideLargePlayBtn();
 			_this.hidePlayerSpinner();
 		}
 

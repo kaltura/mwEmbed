@@ -94,6 +94,7 @@ mw.EmbedPlayerNative = {
 	 * Adds an HTML screen and moves the video tag off screen, works around some iPhone bugs
 	 */
 	addPlayScreenWithNativeOffScreen: function(){
+		var _this = this;
 		// hide the player offscreen:
 		this.hidePlayerOffScreen();
 		this.keepPlayerOffScreenFlag = true;
@@ -115,7 +116,8 @@ mw.EmbedPlayerNative = {
 				'background': 'url(\'' + this.poster + '\')',
 				'background-size': '100%',
 				'background-attachment':'fixed',
-				'background-repeat':'no-repeat'
+				'background-repeat':'no-repeat',
+				'background-position':'center' 
 			})
 			.attr({
 				'src' : posterSrc

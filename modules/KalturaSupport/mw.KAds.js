@@ -225,7 +225,7 @@ mw.KAds.prototype = {
 
 			// If out ad is preroll/midroll/postroll, disable the player 
 			if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
-				_this.embedPlayer.$interface.find( '.play-btn-large' ).remove();
+				_this.embedPlayer.hideLargePlayBtn();
 			} else {
 				// in case of overlay do nothing
 				doneCallback = function() {};
