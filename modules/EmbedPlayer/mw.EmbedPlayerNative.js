@@ -105,26 +105,31 @@ mw.EmbedPlayerNative = {
 		// add an image poster: 
 		var posterSrc = ( this.poster ) ? this.poster :
 			mw.getConfig( 'EmbedPlayer.BlackPixel' );
-		this.$interface.append( 
-			$( '<div />' )
-			.css({
-				'position' : 'absolute',
-				'top' : '0px',
-				'left' : '0px',
-				'width': this.getWidth(),
-				'height': this.getHeight(),
-				'background': 'url(\'' + this.poster + '\')',
-				'background-size': '100%',
-				'background-attachment':'fixed',
-				'background-repeat':'no-repeat',
-				'background-position':'top',
-				'background-color' : '#000'
-			})
-			.attr({
-				'src' : posterSrc
-			})
-			.addClass( 'playerPoster' )
-		)
+		// check if the poster is already present:
+		if( this.$interface.find( '.playerPoster' ).length ){
+			this.$interface.find( '.playerPoster' ).css('background-image', 'url(\'' + this.poster + '\')' );
+		} else {
+			this.$interface.append( 
+				$( '<div />' )
+				.css({
+					'position' : 'absolute',
+					'top' : '0px',
+					'left' : '0px',
+					'width': this.getWidth(),
+					'height': this.getHeight(),
+					'background-image': 'url(\'' + this.poster + '\')',
+					'background-size': '100%',
+					'background-attachment':'fixed',
+					'background-repeat':'no-repeat',
+					'background-position':'top',
+					'background-color' : '#000'
+				})
+				.attr({
+					'src' : posterSrc
+				})
+				.addClass( 'playerPoster' )
+			)
+		}
 	},
 	/**
 	* Return the embed code

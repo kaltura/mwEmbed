@@ -943,8 +943,15 @@
 						// clear ad data ..
 						embedPlayer.kAds = null;
 
-						// Update the poster if not using native controls. 
-						embedPlayer.updatePosterSrc();
+						// Update the poster 
+						embedPlayer.updatePosterSrc(
+								mw.getKalturaThumbUrl({
+									'entry_id' : embedPlayer.kentryid,
+									'partner_id' : embedPlayer.kwidgetid.replace('_', ''),
+									'width' : parseInt( embedPlayer.width),
+									'height' : parseInt( embedPlayer.height)
+								})
+						);
 						
 						// run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
