@@ -914,7 +914,8 @@
 				case 'changeMedia':
 					// Check changeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
-						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) ) {
+						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) ) 
+					{
 						mw.log( "KDPMapping:: ChangeMedia missing entryId or refrenceid, empty sources.")
 					    embedPlayer.emptySources();
 					    break;
@@ -943,9 +944,8 @@
 						embedPlayer.kAds = null;
 
 						// Update the poster if not using native controls. 
-						if( ! embedPlayer.useNativePlayerControls() ){
-							embedPlayer.updatePosterSrc();
-						}
+						embedPlayer.updatePosterSrc();
+						
 						// run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
 						break;

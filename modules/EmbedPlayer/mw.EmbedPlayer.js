@@ -1339,10 +1339,8 @@ mw.EmbedPlayer.prototype = {
 		){
 			if( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') ){
 				this.addPlayScreenWithNativeOffScreen();
-			} else {
-				this.embedPlayerHTML();
+				return ;
 			}
-			return ;
 		}
 		// Set by default thumb value if not found
 		var posterSrc = ( this.poster ) ? this.poster :

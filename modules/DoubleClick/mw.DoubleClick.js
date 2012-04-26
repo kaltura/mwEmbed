@@ -510,7 +510,7 @@ mw.DoubleClick.prototype = {
 		// Show the content:
 		this.showContent();
 
-		// Do an async play call ( without events if not on postroll )
+		// Do an sync play call ( without events if not on postroll )
 		if( !onContentComplete ){
 			this.getContent().play();
 		}
@@ -530,7 +530,6 @@ mw.DoubleClick.prototype = {
 				this.embedPlayer.play();
 			}
 		}
-	
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 
