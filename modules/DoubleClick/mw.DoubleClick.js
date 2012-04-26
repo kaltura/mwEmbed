@@ -503,7 +503,7 @@ mw.DoubleClick.prototype = {
 		this.restorePlayer();
 	},
 	restorePlayer: function( onContentComplete ){
-		mw.log("DoubleClick::restorePlayer");
+		mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
 		this.adPlaying = false;
 		this.embedPlayer.sequenceProxy.isInSequence = false;
 		

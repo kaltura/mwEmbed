@@ -780,45 +780,6 @@ mw.EmbedPlayerNative = {
 		}
 	},
 	/**
-	 * switchPlaySource switches the player source
-	 * 
-	 * we don't appear to be able to use this simple sync switch ( fails on some browsers )
-	 * firefox 7x and iPad OS 3.2 right now) 
-	 */
-	/*switchPlaySource: function( src, switchCallback, doneCallback ){
-		var _this = this;
-		var vid = this.getPlayerElement();
-		var switchBindPostfix = '.switchPlaySource';
-		$(vid).unbind( switchBindPostfix );
-		
-		$( vid ).bind( 'ended' + switchBindPostfix, function( event ) {
-			$(vid).unbind( 'ended' + switchBindPostfix );
-			if( doneCallback ){
-				doneCallback();
-			}
-		});
-		// add a loading spinner: 
-		this.addPlayerSpinner();
-		
-		// once we can play remove the spinner
-		$( vid ).bind( 'canplaythrough' +switchBindPostfix, function( event ){
-			$(vid).unbind( 'canplaythrough' + switchBindPostfix );
-			_this.hidePlayerSpinner();
-		});
-		
-		// Swicth the src and play: 
-		try{
-			vid.src = src;
-			vid.load();
-			vid.play();
-		} catch ( e ){
-			mw.log("Error: could not switch source")
-		}
-		if( switchCallback ){
-			switchCallback();
-		}
-	},*/
-	/**
 	* Pause the video playback
 	* calls parent_pause to update the interface
 	*/
