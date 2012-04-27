@@ -212,10 +212,14 @@ mw.EmbedPlayerNative = {
 		// Check for load flag
 		if ( this.onlyLoadFlag || this.paused ) {
 			vid.pause();
-			vid.load();
+			if ( !_this.loop ) {
+				vid.load();
+			}
 		} else {
 			// Some mobile devices ( iOS need a load call before play will work )
-			vid.load();
+			if ( !_this.loop ) {
+				vid.load();
+			}
 			vid.play();
 		}
 	},
