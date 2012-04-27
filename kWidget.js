@@ -345,33 +345,31 @@ var kWidget = {
 	outputHTML5Iframe: function( targetId, settings ) {
 		var elm = document.getElementById( targetId );
 		// Check for html with api off:
-		if( mw.getConfig( 'EmbedPlayer.EnableIframeApi') ){
+		if( !mw.getConfig( 'EmbedPlayer.EnableIframeApi') ){
 			this.outputIframeWithoutApi( targetId, settings );
 			return ;
-		} else {
-			// Output HTML5 IFrame with API
-			this.loadHTML5Lib( function(){
-
-				var width = ( settings.width ) ? settings.width :
-							$( elm ).width() ? $( elm ).width() : 400;
-
-				var height = ( settings.height ) ? settings.height :
-							$( elm ).height() ? $( elm ).height() : 300;
-
-				var sizeUnit = (typeof width == 'string' && width.indexOf("px") === -1 && width.indexOf("%") === -1 ) ? 'px' : '';
-
-				var targetCss = {
-					'width': width + sizeUnit,
-					'height': height + sizeUnit
-				};
-
-				var additionalTargetCss = kGetAdditionalTargetCss();
-				$.extend( targetCss, additionalTargetCss );
-				$('#' + targetId ).css( targetCss );
-				// Do kaltura iframe player
-				$('#' + targetId ).kalturaIframePlayer( settings );
-			});
 		}
+		// Output HTML5 IFrame with API
+		this.loadHTML5Lib( function(){
+			var width = ( settings.width ) ? settings.width :
+						$( elm ).width() ? $( elm ).width() : 400;
+
+			var height = ( settings.height ) ? settings.height :
+						$( elm ).height() ? $( elm ).height() : 300;
+
+			var sizeUnit = (typeof width == 'string' && width.indexOf("px") === -1 && width.indexOf("%") === -1 ) ? 'px' : '';
+
+			var targetCss = {
+				'width': width + sizeUnit,
+				'height': height + sizeUnit
+			};
+
+			var additionalTargetCss = kGetAdditionalTargetCss();
+			$.extend( targetCss, additionalTargetCss );
+			$('#' + targetId ).css( targetCss );
+			// Do kaltura iframe player
+			$('#' + targetId ).kalturaIframePlayer( settings );
+		});
 	},
 
 	outputIframeWithoutApi: function( replaceTargetId, kEmbedSettings ) {
