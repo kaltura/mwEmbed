@@ -13,6 +13,9 @@ mw.DolStatistics.prototype = {
 	pluginVersion: "1.1",
 	bindPostFix: '.DolStatistics',
 	appName: 'KDP',
+	
+	// The monitor interval 
+	monitorInterval: null,
 
 	// Number of seconds between playhead event dispatches
 	playheadFrequency: 5,
@@ -30,7 +33,7 @@ mw.DolStatistics.prototype = {
 		this.embedPlayer = embedPlayer;
 		
 		this.playheadFrequency = this.getConfig( 'playheadFrequency' ) || 5;
-
+		
 		// List of events we need to track
 		var eventList = this.getConfig( 'listenTo' );
 		this.eventsList = eventList.split(",");
@@ -66,6 +69,9 @@ mw.DolStatistics.prototype = {
 		// Unbind any existing bindings
 		this.destroy();
 		
+		// reset cue points
+		_this.calcCuePoints();
+		
 		// Increment counter during replays: 
 		embedPlayer.bindHelper('replayEvent' + this.bindPostFix, function(){
 			// reset the percentage reached counter: 
@@ -76,8 +82,9 @@ mw.DolStatistics.prototype = {
 		
 		// On change media remove any existing bindings:
 		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
+			// Reset the monitor
+			clearInterval( _this.monitorInterval );
 			// reset the percentage reached counter: 
-			_this.calcCuePoints();
 			if( ! embedPlayer['data-playerError'] ){
 				_this.duringChangeMediaFlag = true;
 				_this.setConfig( 'playbackCounter', parseInt( _this.getConfig('playbackCounter') ) + 1 );
@@ -106,10 +113,9 @@ mw.DolStatistics.prototype = {
 				// Special events
 				case 'percentReached':
 					embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix, function(){
-						_this.calcCuePoints();
-						embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostFix, function() {
+						_this.monitorInterval = setInterval( function(){
 							_this.monitorPercentage();
-						});
+						}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 					})
 				break;
 				case 'changeVolume': 
@@ -150,7 +156,11 @@ mw.DolStatistics.prototype = {
 	calcCuePoints: function() {
 		var _this = this;
 		var duration = this.getDuration();
-
+		if( duration == 0 ){
+			// empty duration 
+			mw.log( 'Error:: DolStatistics: calcCuePoints: possible error, empty duration');
+			return ;
+		}
 		for( var i=0; i<=100; i =i+10 ) {
 			var cuePoint = Math.round( duration / 100 * i );
 			// if on the last cuePoint subtract 1 second to ensure event, 
@@ -226,6 +236,7 @@ mw.DolStatistics.prototype = {
 	sendStatsData: function( eventName, eventData ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
+		
 		// If event name not in our event list, exit
 		if( this.eventsList.indexOf( eventName ) === -1 ) {
 			return ;
