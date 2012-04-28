@@ -70,7 +70,7 @@ mw.DolStatistics.prototype = {
 		embedPlayer.bindHelper('replayEvent' + this.bindPostFix, function(){
 			// reset the percentage reached counter: 
 			_this.calcCuePoints();
-			_this.setConfig( 'playbackCounter', _this.getConfig('playbackCounter') + 1 );
+			_this.setConfig( 'playbackCounter', parseInt( _this.getConfig('playbackCounter') ) + 1 );
 			mw.log( 'DolStatistics:: replayEvent> reset cuePoints and increment counter: ' + _this.getConfig('playbackCounter') );
 		});
 		
