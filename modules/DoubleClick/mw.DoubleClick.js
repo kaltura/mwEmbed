@@ -151,11 +151,23 @@ mw.DoubleClick.prototype = {
 				return true; // continue to next cue point
 			}
 			
-			// Check if video type: 
-			if( adType == 'midroll'  ||  adType == 'preroll' || adType == 'postroll'  ){
+			if( adType == 'preroll' || adType == 'postroll' ){
+				_this.embedPlayer.bindHelper( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
+					// Add the slot to the given sequence proxy target target
+					sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( callback ){
+						// Setup the restore callback
+						_this.restorePlayerCallback = callback;
+						// Request ads
+						mw.log( "DoubleClick:: addManagedBinding : requestAds");
+						_this.requestAds( unescape( cuePoint.sourceUrl ) );	
+					};
+				});
+			}
+			// If cuepoint ad type is midroll request inline: 
+			if( adType == 'midroll' ){
 				_this.currentAdSlotType = adType;
 				// All cuepoints act as "midrolls" 
-				mw.log( "DoubleClick:: addKalturaCuePointBindings : requestAds");
+				mw.log( "DoubleClick:: addKalturaCuePointBindings: midroll -> requestAds");
 				// pause the player while requesting adds
 				_this.embedPlayer.pauseLoading();
 				// request the ads: 
@@ -380,7 +392,7 @@ mw.DoubleClick.prototype = {
 	},
 	getPlayerSize: function(){
 		return {
-			'width': this.embedPlayer.$interface.width(),
+			'width': this.embedPlayer.getPlayerWidth(),
 			'height': this.embedPlayer.getPlayerHeight() 
 		}
 	},
