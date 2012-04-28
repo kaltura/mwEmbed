@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>ReadyCallback Test</title>
+<script type="text/javascript" src="http://cdnbakmi.kaltura.com/html5/html5lib/v1.6.10.4/mwEmbedLoader.php"></script>
+</head>
+<body>
+<h2> ReadyCallback Test </h2>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br />
+<div id="myVideoTarget" style="width:400px;height:257px;"></div>
+<script type="text/javascript">
+	window['doPlayCallback'] = function( playerId ) {
+		console.log( 'kwidget doPlayCallback ' + playerId );
+		alert( 'kwidget doPlayCallback ' + playerId );
+	};
+	window['openFull'] = function() {
+		console.log( 'Entering full screen' );
+		alert( 'Entering full screen' );
+	}
+	window['closeFull'] = function() {
+		console.log( 'Exiting full screen' );
+		alert( 'Exiting full screen' );
+	}
+	kWidget.embed({
+		'targetId': 'myVideoTarget',
+		'wid': '_861182',
+		'uiconf_id' : '7645091',
+		'entry_id' : '1_wjdhr96i',
+		'flashvars':{
+			'externalInterfaceDisabled' : false,
+			'autoPlay' : true
+		},
+		'readyCallback': function( playerId ){
+			alert( "kWidget player ready: " + playerId );
+			var kdp = document.getElementById( playerId );
+			kdp.addJsListener( 'doPlay', 'doPlayCallback');
+			kdp.addJsListener( 'openFullScreen', 'openFull');
+			kdp.addJsListener( 'closeFullScreen', 'closeFull');			
+		}
+	});
+</script>
+
+<!-- Static player
+
+<object id="kaltura_player_1332852244"
+	name="kaltura_player_1332852244"
+	type="application/x-shockwave-flash"
+	allowFullScreen="true"
+	allowNetworking="all"
+	allowScriptAccess="always"
+	height="257"
+	width="400"
+	bgcolor="#000000"
+	xmlns:dc="http://purl.org/dc/terms/"
+	xmlns:media="http://search.yahoo.com/searchmonkey/media/"
+	rel="media:video"
+	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1332852244/wid/_861182/uiconf_id/7645091/entry_id/1_wjdhr96i"
+	data="http://www.kaltura.com/index.php/kwidget/cache_st/1332852244/wid/_861182/uiconf_id/7645091/entry_id/1_wjdhr96i">
+	<param name="allowFullScreen" value="true" />
+	<param name="allowNetworking" value="all" />
+	<param name="allowScriptAccess" value="always" />
+	<param name="bgcolor" value="#000000" />
+	<param name="flashVars" value="&" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1332852244/wid/_861182/uiconf_id/7645091/entry_id/1_wjdhr96i" />
+</object>-->
+
+</body>
+</html>

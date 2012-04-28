@@ -379,7 +379,7 @@ mw.DolStatistics.prototype = {
 		try {
 			return context[func].apply( this, args );
 		} catch( e ){
-			mw.log("DolStatistics:: Error could not find function: " + functionName );
+			mw.log("DolStatistics:: Error could not find function: " + functionName + ' error: ' + e);
 			return false;
 		}
 	}
