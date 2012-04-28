@@ -256,6 +256,10 @@ mw.EmbedPlayerNative = {
 				}, 10 );
 			};
 		}
+		// Some mobile devices ( iOS need a load call before play will work )
+		if ( !_this.loop ) {
+			vid.load();
+		}
 	},
 	// disabled for now.. use native layout support
 	applyIntrinsicAspect: function(){
