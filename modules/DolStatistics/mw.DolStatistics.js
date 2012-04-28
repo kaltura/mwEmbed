@@ -103,7 +103,7 @@ mw.DolStatistics.prototype = {
 			switch( eventName ) {
 				// Special events
 				case 'percentReached':
-					embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady' + _this.bindPostFix, function(){
+					embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix, function(){
 						_this.calcCuePoints();
 						embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostFix, function() {
 							_this.monitorPercentage();
