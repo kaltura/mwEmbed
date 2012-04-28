@@ -1398,7 +1398,7 @@ mw.PlayerControlBuilder.prototype = {
 				}
 			);
 		}
-
+		var userSlide=false;
 		// Setup volume slider:
 		var sliderConf = {
 			range: "min",
@@ -1409,6 +1409,7 @@ mw.PlayerControlBuilder.prototype = {
 				var percent = ui.value / 100;
 				mw.log('PlayerControlBuilder::slide:update volume:' + percent);
 				embedPlayer.setVolume( percent );
+				userSlide = true;
 			},
 			change: function( event, ui ) {
 				var percent = ui.value / 100;
@@ -1418,7 +1419,8 @@ mw.PlayerControlBuilder.prototype = {
 					embedPlayer.$interface.find( '.volume_control span' ).removeClass( 'ui-icon-volume-off' ).addClass( 'ui-icon-volume-on' );
 				}
 				mw.log('PlayerControlBuilder::change:update volume:' + percent);
-				embedPlayer.setVolume( percent, true );
+				embedPlayer.setVolume( percent, userSlide );
+				userSlide = false;
 			}
 		};
 
