@@ -78,7 +78,7 @@ mw.DolStatistics.prototype = {
 		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
 			if( ! embedPlayer['data-playerError'] ){
 				_this.duringChangeMediaFlag = true;
-				_this.setConfig( 'playbackCounter', _this.getConfig('playbackCounter') + 1 );
+				_this.setConfig( 'playbackCounter', parseInt( _this.getConfig('playbackCounter') ) + 1 );
 			}
 			_this.destroy();
 		});
