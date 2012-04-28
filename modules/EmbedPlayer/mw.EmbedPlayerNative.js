@@ -704,7 +704,7 @@ mw.EmbedPlayerNative = {
 				_this.hidePlayerOffScreen();
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
-					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback:" );
+					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src + ' switchCallback: ' + switchCallback);
 					// keep going towards playback! if  switchCallback has not been called yet 
 					// we need the "playing" event to trigger the switch callback
 					if ( $.isFunction( switchCallback ) ){
@@ -767,7 +767,7 @@ mw.EmbedPlayerNative = {
 							_this.addLargePlayBtn();
 						}
 					}
-				}, 12000 );
+				}, 5000 );
 				
 				
 			} catch (e) {

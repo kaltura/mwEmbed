@@ -76,6 +76,8 @@ mw.DolStatistics.prototype = {
 		
 		// On change media remove any existing bindings:
 		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
+			// reset the percentage reached counter: 
+			_this.calcCuePoints();
 			if( ! embedPlayer['data-playerError'] ){
 				_this.duringChangeMediaFlag = true;
 				_this.setConfig( 'playbackCounter', parseInt( _this.getConfig('playbackCounter') ) + 1 );
