@@ -112,7 +112,8 @@ mw.DolStatistics.prototype = {
 			switch( eventName ) {
 				// Special events
 				case 'percentReached':
-					embedPlayer.bindHelper( 'playerReady' + _this.bindPostFix, function(){
+					embedPlayer.bindHelper( 'onplay' + _this.bindPostFix, function(){
+						// monitor as soon as we start to play: 
 						_this.monitorInterval = setInterval( function(){
 							_this.monitorPercentage();
 						}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
@@ -136,7 +137,7 @@ mw.DolStatistics.prototype = {
 							eventData = JSON.stringify( argValue );
 							eventData = eventData.replace(/\"/g,'');
 						} else {
-							// check if argValue is the id in which case send nothing. 
+							// Check if argValue is the id in which case send nothing. 
 							if( argValue != embedPlayer.id ){
 								eventData = argValue;
 							}
@@ -184,7 +185,7 @@ mw.DolStatistics.prototype = {
 		var currentTime = Math.round( this.embedPlayer.currentTime );
 		//mw.log( 'DolStatistics:: monitorPercentage>' + currentTime );
 		
-		// make sure 0% is fired 
+		// Make sure 0% is fired 
 		if( currentTime > 0 && percentCuePoints[ 0 ] === false ){
 			percentCuePoints[ 0 ] = true;
 			_this.sendStatsData( 'percentReached', 0 );

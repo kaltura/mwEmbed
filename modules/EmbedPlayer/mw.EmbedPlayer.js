@@ -927,8 +927,8 @@ mw.EmbedPlayer.prototype = {
 			this.showErrorMsg( this['data-playerError'] );
 			return ;
 		}
-		// Auto play if not on an iPad with iOS > 3 
-		if (this.autoplay && (!mw.isIOS() || mw.isIpad3() ) ) {
+		// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3 
+		if ( this.isStopped() && this.autoplay && (!mw.isIOS() || mw.isIpad3() ) ) {
 			mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
 			_this.play();
 		}

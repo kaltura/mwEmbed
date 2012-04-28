@@ -485,7 +485,7 @@ mw.Playlist.prototype = {
 	// Play a clipIndex, if the player is already in the page swap the player src to the new target
 	playClip: function( clipIndex, autoContinue ){
 		var _this = this;
-		mw.log( "mw.Playlist::playClip > " + clipIndex );
+		mw.log( "Playlist::playClip: index: " + clipIndex + ' autoContinue: ' + autoContinue);
 		// Check for a video/audio tag already in the page:
 		var embedPlayer = this.getEmbedPlayer();
 		this.clipIndex = clipIndex;

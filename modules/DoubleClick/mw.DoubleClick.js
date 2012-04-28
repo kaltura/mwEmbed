@@ -328,11 +328,10 @@ mw.DoubleClick.prototype = {
 		// Add ad listeners: 
 		adsListener( 'CLICK' );
 		adsListener( 'CONTENT_PAUSE_REQUESTED', function(){
+			// loading ad:
+			_this.embedPlayer.pauseLoading();
 			// if we are not already in a sequence setup the player for ad playback: 
-			if( ! _this.embedPlayer.sequenceProxy.isInSequence ){
-				_this.embedPlayer.pauseLoading();
-				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
-			}
+			_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 		} );
 		adsListener( 'LOADED', function(){
 			var size = _this.getPlayerSize();
@@ -445,7 +444,7 @@ mw.DoubleClick.prototype = {
 			if( _this.adPlaying ){
 				mw.log( "DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
 				// Resize the ad manager on player resize: ( no support for animate )
-				_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );
+				_this.adsManager.resize( parseInt( size.width) , parseInt( size.height ), google.ima.ViewMode.NORMAL );
 			}
 		});
 		embedPlayer.bindHelper( 'onResizePlayerDone' + this.bindPostfix, function( event, size, animate ) {

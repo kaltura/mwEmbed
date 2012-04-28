@@ -219,7 +219,7 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		// Setup local pointer:
 		var vid = this.getPlayerElement();
-		if(!vid){
+		if( !vid ){
 			return ;
 		}
 		// Update the player source ( if needed ) 
@@ -255,19 +255,6 @@ mw.EmbedPlayerNative = {
 					checkReadyState();
 				}, 10 );
 			};
-		}
-		// Check for load flag
-		if ( this.onlyLoadFlag || this.paused ) {
-			vid.pause();
-			if ( !_this.loop ) {
-				vid.load();
-			}
-		} else {
-			// Some mobile devices ( iOS need a load call before play will work )
-			if ( !_this.loop ) {
-				vid.load();
-			}
-			vid.play();
 		}
 	},
 	// disabled for now.. use native layout support
@@ -704,7 +691,7 @@ mw.EmbedPlayerNative = {
 				_this.hidePlayerOffScreen();
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
-					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src + ' switchCallback: ' + switchCallback);
+					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src + ' switchCallback: ' + switchCallback );
 					// keep going towards playback! if  switchCallback has not been called yet 
 					// we need the "playing" event to trigger the switch callback
 					if ( $.isFunction( switchCallback ) ){
