@@ -758,6 +758,7 @@
 				 * Ad support listeneres
 				 *  TODO move to AdTimeline.js ( not in core KDPMapping )
 				 */
+				case 'prerollStarted':
 				case 'adStart':
 					b('AdSupport_StartAdPlayback', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
