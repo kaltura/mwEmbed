@@ -150,12 +150,25 @@ mw.DoubleClick.prototype = {
 				_this.loadAndDisplayOverlay( cuePoint );
 				return true; // continue to next cue point
 			}
+			// Update the ad slot type: 
+			_this.currentAdSlotType = adType;
 			
-			// Check if video type: 
-			if( adType == 'midroll'  ||  adType == 'preroll' || adType == 'postroll'  ){
-				_this.currentAdSlotType = adType;
+			if( adType == 'preroll' || adType == 'postroll' ){
+				_this.embedPlayer.bindHelper( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
+					// Add the slot to the given sequence proxy target target
+					sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( callback ){
+						// Setup the restore callback
+						_this.restorePlayerCallback = callback;
+						// Request ads
+						mw.log( "DoubleClick:: addManagedBinding : requestAds");
+						_this.requestAds( unescape( cuePoint.sourceUrl ) );	
+					};
+				});
+			}
+			// If cuepoint ad type is midroll request inline: 
+			if( adType == 'midroll' ){
 				// All cuepoints act as "midrolls" 
-				mw.log( "DoubleClick:: addKalturaCuePointBindings : requestAds");
+				mw.log( "DoubleClick:: addKalturaCuePointBindings: midroll -> requestAds");
 				// pause the player while requesting adds
 				_this.embedPlayer.pauseLoading();
 				// request the ads: 
@@ -315,12 +328,11 @@ mw.DoubleClick.prototype = {
 		
 		// Add ad listeners: 
 		adsListener( 'CLICK' );
-		adsListener( 'CONTENT_PAUSE_REQUESTED', function(){
+		adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
+			// loading ad:
+			_this.embedPlayer.pauseLoading();
 			// if we are not already in a sequence setup the player for ad playback: 
-			if( ! _this.embedPlayer.sequenceProxy.isInSequence ){
-				_this.embedPlayer.pauseLoading();
-				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
-			}
+			_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
 		} );
 		adsListener( 'LOADED', function(){
 			var size = _this.getPlayerSize();
@@ -335,8 +347,10 @@ mw.DoubleClick.prototype = {
 		adsListener( 'STARTED', function(){
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
+			// make sure the player is in play state: 
+			_this.embedPlayer.playInterfaceUpdate();
 			
-			// if on iPad hide restore player from quicktime logo hide: 
+			// restore player position: 
 			_this.restorePlayerOnScreen( _this.getAdContainer() );
 			
 			// set ad playing flag: 
@@ -381,15 +395,16 @@ mw.DoubleClick.prototype = {
 	},
 	getPlayerSize: function(){
 		return {
-			'width': this.embedPlayer.$interface.width(),
+			'width': this.embedPlayer.getPlayerWidth(),
 			'height': this.embedPlayer.getPlayerHeight() 
 		}
 	},
 	hideContent: function(){
+		mw.log("DoubleClick:: hide Content / show Ads");
 		var _this = this;
 		// show the ad container: 
 		this.restorePlayerOnScreen( 
-			$( this.getAdContainer() ).find('video').get(0) 
+			this.getAdContainer() 
 		);
 		// hide content:
 		this.hidePlayerOffScreen(
@@ -397,6 +412,7 @@ mw.DoubleClick.prototype = {
 		)
 	},
 	showContent: function(){
+		mw.log("DoubleClick:: show Content / hide Ads");
 		// show content
 		this.restorePlayerOnScreen( 
 			this.getContent()
@@ -419,7 +435,7 @@ mw.DoubleClick.prototype = {
 			'left': '-4048px'
 		})
 	},
-	/* restore iPad Player */
+	/* restore Player on screen*/
 	restorePlayerOnScreen:function( target ){
 		$( target ).css( 'left', '0px');
 	},
@@ -432,8 +448,16 @@ mw.DoubleClick.prototype = {
 			if( _this.adPlaying ){
 				mw.log( "DoubleClick::onResizePlayer: size:" + size.width + ' x ' + size.height );
 				// Resize the ad manager on player resize: ( no support for animate )
-				_this.adsManager.resize(size.width, size.height, google.ima.ViewMode.NORMAL);
+				_this.adsManager.resize( parseInt( size.width) , parseInt( size.height ), google.ima.ViewMode.NORMAL );
 			}
+		});
+		embedPlayer.bindHelper( 'onResizePlayerDone' + this.bindPostfix, function( event, size, animate ) {
+			// make sure the display states are in sync: 
+			if( _this.adPlaying ){
+				_this.hidePlayerOffScreen(
+					_this.getContent()
+				)
+			}	
 		});
 		
 		embedPlayer.bindHelper( 'volumeChanged' + this.bindPostfix, function(event, percent){
@@ -494,14 +518,14 @@ mw.DoubleClick.prototype = {
 		this.restorePlayer();
 	},
 	restorePlayer: function( onContentComplete ){
-		mw.log("DoubleClick::restorePlayer");
+		mw.log("DoubleClick::restorePlayer: content complete:" + onContentComplete);
 		this.adPlaying = false;
-		this.embedPlayer.sequenceProxy.isInSequence = true;
+		this.embedPlayer.sequenceProxy.isInSequence = false;
 		
 		// Show the content:
 		this.showContent();
 
-		// Do an async play call ( without events if not on postroll )
+		// Do an sync play call ( without events if not on postroll )
 		if( !onContentComplete ){
 			this.getContent().play();
 		}
@@ -521,7 +545,6 @@ mw.DoubleClick.prototype = {
 				this.embedPlayer.play();
 			}
 		}
-	
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 

@@ -79,7 +79,7 @@ mw.EmbedPlayerImageOverlay = {
 		this.embedPlayerHTML();
 		
 		// add the play btn: 
-		this.addPlayBtnLarge();
+		this.addLargePlayBtn();
 	},
 	
 	/**
