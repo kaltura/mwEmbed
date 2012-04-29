@@ -1289,11 +1289,11 @@ mw.EmbedPlayer.prototype = {
 			} else {
 				_this.$interface.find( '.play-btn-large' ).show();
 			}
-			
-			if( _this.isPersistentNativePlayer() || _this.useNativePlayerControls() ){
+			var source = _this.getSource();
+			if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
 				// If switching a Persistent native player update the source:
 				// ( stop and play won't refresh the source  )
-				_this.switchPlaySource( _this.getSource(), function(){
+				_this.switchPlaySource( source, function(){
 					$this.trigger( 'onChangeMediaDone' );
 					if( chnagePlayingMedia ){
 						_this.play();
