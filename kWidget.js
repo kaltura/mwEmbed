@@ -97,13 +97,13 @@ var kWidget = {
 	jsReadyCalledForIds: [],
 	proxyJsCallbackready: function(){
 		var _this = this;
-		if( window['jsCallbackReady'] && ! this.proxiedJsCallback ){
+		// check if we have not proxy yet and we have readyCallbacks 
+		if( ! this.proxiedJsCallback && 
+			( window['jsCallbackReady'] || this.readyCallbacks.length )){
 			// Setup a proxied ready function: 
 			this.proxiedJsCallback = window['jsCallbackReady'];
-			
 			// Override the actual jsCallbackReady
 			window['jsCallbackReady'] = function( widgetId ){
-				debugger;
 				// check if we need to wait. 
 				if( _this.waitForLibraryChecks ){
 					// wait for library checks
@@ -162,7 +162,9 @@ var kWidget = {
 				}
 			});
 		}
-
+		// Be sure to proxy JsCallbackready callback in dynamic embed call situations: 
+		this.proxyJsCallbackready();
+		
 		// Empty the replace target:
 		var elm = document.getElementById( targetId );
 		if( ! elm ){
@@ -286,7 +288,7 @@ var kWidget = {
 		}
 		// Set our special callback flashvar: 
 		if( settings.flashvars['jsCallbackReadyFunc'] ){
-			kWidget.log("Error: please do not set jsCallbackReadyFunc for kWidget embed")
+			kWidget.log("Error: Setting jsCallbackReadyFunc is not compatible with kWidget embed");
 		}
 		var flashvarValue = this.flashVarsToString( settings.flashvars );
 
