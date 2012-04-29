@@ -138,8 +138,8 @@ uiConf Examples:
 			this.embedPlayer.unbindHelper( _this.bindPostfix );
 			var options = this.embedPlayer.getKalturaConfig( 'googleAnalytics' );
 			// Validate the eventTrackList
-			if( options.eventTrackList ) {
-				for( var i = 0 ; i < options.eventTrackList.length; i ++ ) {
+			if ( options.eventTrackList ) {
+				for( var i = 0 ; i < options.eventTrackList.length; i++ ) {
 					// make sure its a valid event: 
 					if( $.inArray( options.eventTrackList[ i ], this.validEventList ) != -1 ) {
 						this.eventTrackList.push( options.eventTrackList[ i ] );
@@ -149,8 +149,21 @@ uiConf Examples:
 				// just use the default list: 
 				this.eventTrackList = this.defaultTrackList;
 			}
+			var customEvents = [];
+			if ( options.customEvent ) {
+				customEvents = options.customEvent.split( ',' );
+			}
 			
-			if( options.trackEventMonitor && window.parent[ options.trackEventMonitor ] ) {
+			// Remove duplicates
+			$.each( customEvents, function( i ) {
+				if ( _this.inArray( _this.eventTrackList, this ) ) {
+					customEvents.splice( i, 1 );
+				}
+			} );
+			
+			this.eventTrackList = $.merge( this.eventTrackList, customEvents );
+			
+			if ( options.trackEventMonitor && window.parent[ options.trackEventMonitor ] ) {
 				this.trackEventMonitor = window.parent[ options.trackEventMonitor ];
 			}
 
@@ -207,7 +220,7 @@ uiConf Examples:
 		playerEvent: function( methodName, data ){
 			var trackingArgs = this.getTrackingEvent( methodName, data );
 			// Don't track false events:
-			if( !trackingArgs )
+			if ( !trackingArgs )
 				return ;
 
 			// Send the google event:
@@ -228,7 +241,7 @@ uiConf Examples:
 				window._gaq.push( gaqAry );
 			}
 			// Send the event to the monitor ( if set in the initial options ) 
-			if( typeof this.trackEventMonitor == 'function'){
+			if ( typeof this.trackEventMonitor == 'function'){
 				this.trackEventMonitor.apply( this, trackingArgs );
 			}
 		},
@@ -247,16 +260,16 @@ uiConf Examples:
 			var seekPercent = this._lastSeek / entryDuration;
 
 			// Send updates based on logic present in StatisticsMediator.as
-			if( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {					
+			if ( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {					
 				_this._p25Once = true;			
 				return '25';									
 			} else if ( !_this._p50Once && percent >= .50 && seekPercent < .50 ) {
 				_this._p50Once = true;
 				return '50';
-			} else if( !_this._p75Once && percent >= .75 && seekPercent < .75 ) {
+			} else if ( !_this._p75Once && percent >= .75 && seekPercent < .75 ) {
 				_this._p75Once = true;
 				return '75';
-			} else if(  !_this._p100Once && percent >= .98 && seekPercent < 1) {
+			} else if (  !_this._p100Once && percent >= .98 && seekPercent < 1) {
 				_this._p100Once = true;
 				return '100';
 			}
@@ -264,13 +277,14 @@ uiConf Examples:
 		},
 
 		getTrackingEvent: function( methodName, data ){
+			var options = this.embedPlayer.getKalturaConfig( 'googleAnalytics' );
 			var optionLabel = this.getOptionalLabel( methodName, data );
 			var optionValue = this.getOptionalValue( methodName, data );
 			// check for special case of 'quartiles'
-			if( methodName == 'quartiles' ){				
+			if ( methodName == 'quartiles' ){				
 				var qStat = this.getQuartilesStatus( data );
 				// Don't process the tracking event
-				if( !qStat)
+				if ( !qStat)
 					return false;
 				methodName = qStat + "_pct_watched";
 				optionValue = this.embedPlayer.duration * parseInt( qStat ) / 100;
@@ -279,19 +293,33 @@ uiConf Examples:
 			// Special case don't track initial html5 volumeChange event ( triggered right after playback ) 
 			// xxx this is kind of broken we need to subscribe to the interface volume updates
 			// not the volumeChange event ( since html fires this at start and end of video ) 
-			if( methodName == 'volumeChanged' && ( this._lastPlayHeadTime < .25 || this._p100Once ) ){
+			if ( methodName == 'volumeChanged' && ( this._lastPlayHeadTime < .25 || this._p100Once ) ){
 				return false;
 			}
-
+			
+			var eventCategory = this.trackingCategory;
+			var eventAction = methodName;		
+			var customEvents = [];
+			if ( options.customEvent ) {
+				customEvents = options.customEvent.split( ',' );
+				if ( this.inArray( customEvents, methodName ) ) {
+					if ( options[ methodName + "Category" ] ) {
+						eventCategory = options[ methodName + "Category" ];
+					}
+					if ( options[ methodName + "Action" ] ) {
+						eventAction = options[methodName + "Action" ];
+					}
+				}
+			}
 			var trackEvent = [ 
-				this.trackingCategory.toString(), 
-				methodName.toString()
+				eventCategory.toString(), 
+				eventAction.toString()
 			];
 			
-			if( optionLabel !== null )
+			if ( optionLabel !== null )
 				trackEvent.push( optionLabel.toString() );
 
-			if( optionValue !== null )
+			if ( optionValue !== null )
 				trackEvent.push( parseInt( optionValue ) );
 
 			return trackEvent;
@@ -316,10 +344,22 @@ uiConf Examples:
 				this._lastSeek = this.embedPlayer.currentTime;
 				return this._lastSeek;
 			}
-			if( methodName == 'volumeChanged' ){
-				if( data.newVolume )
+			if ( methodName == 'volumeChanged' ){
+				if ( data.newVolume )
 					return data.newVolume;
 			}
+
+			var options = this.embedPlayer.getKalturaConfig( 'googleAnalytics' );
+			var customEvents = [];
+			if ( options.customEvent ) {
+				customEvents = options.customEvent.split( ',' );
+				if ( this.inArray( customEvents, methodName ) ) {
+					if ( options[ methodName + "Value" ] ) {
+						return options[ methodName + "Value" ];
+					}
+				}
+			}
+
 			if( $.inArray( methodName, this.defaultValueEventList ) != -1 ) {
 				return 1;
 			}			
