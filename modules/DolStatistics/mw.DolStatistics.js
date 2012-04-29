@@ -246,6 +246,7 @@ mw.DolStatistics.prototype = {
 		if( _this.duringChangeMediaFlag && eventName != 'changeMedia' ){
 			return ;
 		}
+		_this.duringChangeMediaFlag = false;
 		// if paused event and on the last or first second skip. 
 		if( eventName == 'playerPaused' && 
 				( Math.round( embedPlayer.currentTime ) == 0 ||
@@ -259,7 +260,7 @@ mw.DolStatistics.prototype = {
 		if( eventName === 'percentReached' && typeof eventData !== 'number' ) {
 			return ;
 		}
-		_this.duringChangeMediaFlag = false;
+		
 		
 		
 		// Setup event params

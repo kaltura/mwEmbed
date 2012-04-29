@@ -368,7 +368,7 @@
 					}
 				break;
 				case 'duration':
-					return embedPlayer.duration;
+					return embedPlayer.getDuration();
 					break;
 				case 'mediaProxy':
 					switch( objectPath[1] ){
@@ -963,7 +963,7 @@
 								})
 						);
 						
-						// run the embedPlayer changeMedia function
+						// Run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
 						break;
 					}
