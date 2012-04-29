@@ -97,7 +97,7 @@ var kWidget = {
 	jsReadyCalledForIds: [],
 	proxyJsCallbackready: function(){
 		var _this = this;
-		if( window['jsCallbackReady'] ){
+		if( window['jsCallbackReady'] && ! this.proxiedJsCallback ){
 			// Setup a proxied ready function: 
 			this.proxiedJsCallback = window['jsCallbackReady'];
 			
@@ -110,7 +110,7 @@ var kWidget = {
 					return ;
 				}
 				// else we can call the jsReadyCallback directly: 
-				_this.jsReadyCallback( widgetId );
+				_this.jsCallbackReady( widgetId );
 			}
 		}
 	},
@@ -122,6 +122,11 @@ var kWidget = {
 		if( this.proxiedJsCallback ){
 			this.proxiedJsCallback( widgetId );
 		}
+		// Issue the callback for all readyCallbacks
+		for( var i = 0; i < this.readyCallbacks.length; i++ ){
+			this.readyCallbacks[i]( playerId );
+		}
+		this.readyWidgets[ playerId ] = true;
 	},
 	playerModeChecksDone: function(){
 		// no need to wait for library checks any longer: 
@@ -511,18 +516,6 @@ var kWidget = {
 		}
 		// Add the callback to the readyCallbacks array for any other players that become ready
 		this.readyCallbacks.push( readyCallback );
-	},
-	/**
-	 * Takes in the global ready callback events and adds them to the readyWidgets array
-	 * @param playerId
-	 * @return
-	 */
-	globalJsReadyCallback: function( playerId ){
-		// issue the callback for all readyCallbacks
-		for( var i = 0; i < this.readyCallbacks.length; i++ ){
-			this.readyCallbacks[i]( playerId );
-		}
-		this.readyWidgets[ playerId ] = true;
 	},
 
 	/*
