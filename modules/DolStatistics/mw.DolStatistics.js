@@ -246,6 +246,15 @@ mw.DolStatistics.prototype = {
 		if( _this.duringChangeMediaFlag && eventName != 'changeMedia' ){
 			return ;
 		}
+		// if paused event and on the last or first second skip. 
+		if( eventName == 'playerPaused' && 
+				( Math.round( embedPlayer.currentTime ) == 0 ||
+				 embedPlayer.getDuration() - embedPlayer.currentTime < 1 )
+		){
+			// skip event
+			return ;
+		}
+		
 		// If no event data for percentReached, exit
 		if( eventName === 'percentReached' && typeof eventData !== 'number' ) {
 			return ;
