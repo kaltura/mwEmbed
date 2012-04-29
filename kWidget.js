@@ -124,9 +124,9 @@ var kWidget = {
 		}
 		// Issue the callback for all readyCallbacks
 		for( var i = 0; i < this.readyCallbacks.length; i++ ){
-			this.readyCallbacks[i]( playerId );
+			this.readyCallbacks[i]( widgetId );
 		}
-		this.readyWidgets[ playerId ] = true;
+		this.readyWidgets[ widgetId ] = true;
 	},
 	playerModeChecksDone: function(){
 		// no need to wait for library checks any longer: 
