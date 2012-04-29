@@ -338,10 +338,6 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var vid = _this.getPlayerElement();
 		
-		// Update duration
-		if( vid && vid.duration && isFinite( vid.duration ) ){
-			this.duration = vid.duration; 
-		}
 		// Update the bufferedPercent
 		if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
 			try{
@@ -492,6 +488,9 @@ mw.EmbedPlayerNative = {
 		}
 		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
 		
+		// Make sure all the timeouts don't seek to an expired target:
+		$( this ).data('currentSeekTarget', seekTime );
+		
 		var vid = this.getPlayerElement();
 		// add a callback handler to null out callback:
 		var callbackHandler = function(){
@@ -509,6 +508,11 @@ mw.EmbedPlayerNative = {
 				return ;
 			}
 			setTimeout( function(){
+				// Check that this seek did not expire: 
+				if( $( _this ).data('currentSeekTarget') != seekTime ){
+					mw.log("EmbedPlayerNative:: expired seek target");
+					return ;
+				}
 				_this.setCurrentTime( seekTime, callback , callbackCount+1);
 			}, 100 );
 			return ;
@@ -544,6 +548,12 @@ mw.EmbedPlayerNative = {
 			}
 		});
 		setTimeout(function(){
+			// Check that this seek did not expire: 
+			if( $( _this ).data('currentSeekTarget') != seekTime ){
+				mw.log("EmbedPlayerNative:: Expired seek target");
+				return ;
+			}
+			
 			if( $.isFunction( callback ) ){
 				// if seek is within 5 seconds of the target assume success. ( key frame intervals can mess with seek accuracy ) 
 				// this only runs where the seek callback failed ( i.e broken html5 seek ? ) 
@@ -665,7 +675,6 @@ mw.EmbedPlayerNative = {
 		mw.log( 'EmbedPlayerNative:: playerSwitchSource: ' + src + ' native time: ' + vid.currentTime );
 		
 		// Update some parent embedPlayer vars: 
-		this.duration = 0;
 		this.currentTime = 0;
 		this.previousTime = 0;
 		if ( vid ) {
