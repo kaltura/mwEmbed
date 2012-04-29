@@ -150,6 +150,8 @@ mw.DoubleClick.prototype = {
 				_this.loadAndDisplayOverlay( cuePoint );
 				return true; // continue to next cue point
 			}
+			// Update the ad slot type: 
+			_this.currentAdSlotType = adType;
 			
 			if( adType == 'preroll' || adType == 'postroll' ){
 				_this.embedPlayer.bindHelper( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
@@ -165,7 +167,6 @@ mw.DoubleClick.prototype = {
 			}
 			// If cuepoint ad type is midroll request inline: 
 			if( adType == 'midroll' ){
-				_this.currentAdSlotType = adType;
 				// All cuepoints act as "midrolls" 
 				mw.log( "DoubleClick:: addKalturaCuePointBindings: midroll -> requestAds");
 				// pause the player while requesting adds
@@ -327,7 +328,7 @@ mw.DoubleClick.prototype = {
 		
 		// Add ad listeners: 
 		adsListener( 'CLICK' );
-		adsListener( 'CONTENT_PAUSE_REQUESTED', function(){
+		adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
 			// loading ad:
 			_this.embedPlayer.pauseLoading();
 			// if we are not already in a sequence setup the player for ad playback: 
@@ -346,6 +347,9 @@ mw.DoubleClick.prototype = {
 		adsListener( 'STARTED', function(){
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
+			// make sure the player is in play state: 
+			_this.playInterfaceUpdate();
+			
 			// restore player position: 
 			_this.restorePlayerOnScreen( _this.getAdContainer() );
 			
