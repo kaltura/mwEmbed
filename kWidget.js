@@ -103,6 +103,7 @@ var kWidget = {
 			
 			// Override the actual jsCallbackReady
 			window['jsCallbackReady'] = function( widgetId ){
+				debugger;
 				// check if we need to wait. 
 				if( _this.waitForLibraryChecks ){
 					// wait for library checks
@@ -284,14 +285,9 @@ var kWidget = {
 			settings.flashvars = {};
 		}
 		// Set our special callback flashvar: 
-		if( settings.flashvars['jsCallbackReady'] ){
-			kWidget.log("Error: please do not set jsCallbackReady")
+		if( settings.flashvars['jsCallbackReadyFunc'] ){
+			kWidget.log("Error: please do not set jsCallbackReadyFunc for kWidget embed")
 		}
-		window['tempTest123'] = function(){
-			alert('ready');
-		}
-		settings.flashvars['jsCallbackReady'] = 'tempTest123';
-		
 		var flashvarValue = this.flashVarsToString( settings.flashvars );
 
 		// we may have to borrow more from:
