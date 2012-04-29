@@ -1,13 +1,120 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title> DOL statistic </title>
+    <title> DOL statistics playlist</title>
   </head>
   <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
   <script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
   <script type="text/javascript">
-	var cto = {
+	function jsKalturaPlayerTest( videoId ){
+		var kdp = document.getElementById( videoId );
+		
+		// Name this module
+		module( "DOL statistics playlist" );
+
+		var sessionEvents = {
+			'changeMedia': '{entryId:0_uka1msg4}',
+			'mediaReady': true,
+			// At 6 seconds we seek to 47 seconds, so we expect: up to 10 then 80, 100 
+			'percentReached': [0,10,80,100],
+			'doPlay' : true,
+			'playerPlayed' : true,
+			'playerPaused': true,
+			'playerSeekStart': true,
+			'playerSeekEnd': true,
+			'playerPlayEnd' : true
+		};
+		
+		// stores completed events
+		var sessionEventsComplete ={};
+		// Complete list: 
+		// playerPaused,doGigya,mute,unmute,adStart,doubleclick,freePreviewEnd,
+		// closeFullScreen,postSequenceComplete,preSequenceComplete,prerollStarted,
+		// midrollStarted,postrollStarted,changeMedia,playerSeekEnd,playerSeekStart,
+		// playerUpdatePlayhead,mediaError,entryNotAvailable,entryFailed,aa,
+		// openFullScreen,mediaReady,percentReached,bb,mediaLoadError,playerPlayEnd,adEnd,volumeChanged
+
+		// listen for initial changeMedia call
+		asyncTest("DOL Event Verification Session 1", function(){
+			window.qunitHandleEvent = function( eventObject ){
+				if( sessionEvents[ eventObject.KDPEVNT ] 
+					&& !sessionEventsComplete[ eventObject.KDPEVNT ] ){
+					// check for value: 
+					var targetVal = sessionEvents[ eventObject.KDPEVNT ];
+					if( targetVal === true ){
+						ok( eventObject.KDPEVNT +  ' recived' );
+					} else if( typeof targetVal === 'string' ){
+						equal( eventObject.KDPDAT_VALUE, val, " Event " + eventObject.KDPEVNT + ' sent correctly' )
+					} else if( $.isArray( targetVal ) ){
+						// each subValue should show up once: remove from array once checked:
+						for( var i = 0 ; i < targetVal.length; i++ ){
+							var valIndex = $.inArray( targetVal, eventObject.KDPDAT_VALUE );
+							targetVal.splice(valIndex, 1 );
+						};
+					} else {
+						// unkown event value type? 
+					}
+				}
+				ok( verifyIncludedData( eventObject ), ' Becon dispatch verified' );
+			};
+		});
+		window.verifyIncludedData = function( eventObject ){
+			var beaconCompoents = {
+				'app': 'KDP',
+				'ASSETNAME': 'vid|0_uka1msg4||FolgersCoffe.mpeg',
+				'KDPEVNT': true,
+				'KDPDAT_VALUE': true,
+				'BITRATE': '758',
+				'KDPDAT_PLAYHEAD': '0',
+				'AUTO': true,
+				'GENTIME': true,
+				'ASSETID': true, 
+				'KDPID': '7190901',
+				'VIDLEN': '60',
+				'WIGID': '_243342',
+				'KSESSIONSEQ': '1',
+				'KSESSIONID': 'd2ca103f-2934-9054-c306-c1fb3a437367',
+				'USRAGNT': true,
+				'GENURL': true,
+				'KPLAYBACKID': 'd2ca103f-2934-9054-c306-c1fb3a4373671',
+				'GENTITLE': 'DOL statistics playlist',
+				'DEVID': '1',
+				'KDPPROTO': true,
+				'entryId': '0_uka1msg4'
+			}
+			for( var eventKey in eventObject ){
+				if( typeof beaconCompoents[ eventKey ] == 'undefined' ){
+					ok( false, "Error unkown beacon component: "+ eventKey );
+					return false;
+				}
+				var targetVal = beaconCompoents[ eventKey ];
+				// if just validating that the item exi
+				if( targetVal === true ){
+					continue;
+				}
+				if( targetVal == eventObject[eventKey] ){
+					continue;
+				}
+				ok( false, "Mismatch in beacon val: "+ targetVal + ' != ' + eventObject[eventKey] );
+				return false;
+			}
+			return true;
+		}
+	}
+	// hide the feedbackXml
+	if( window.QUnit ){
+		$(function(){
+			$('#feedbackXml').hide();
+		});
+	}
+	</script>
+  <script type="text/javascript">
+	window.cto = {
 		trackVideo:function(o) {
-			//alert(1);
+			if( window.QUnit ){
+				if( window.qunitHandleEvent) {
+					window.qunitHandleEvent(o);
+				}
+			}
 			var out = '\n';
 			for (var p in o) {
 		    	out += p + ': ' + o[p] + '\n';
@@ -18,16 +125,16 @@
 	}
  </script>
   <body>
-  	<h3> Test DOL statistic plugin</h3>
-  	<div id="kaltura_player_1328708786" style="height:620px;width:400px"></div>
+  	<h3> DOL statistics playlist test </h3>
+  	<div id="kaltura_player" style="height:620px;width:400px"></div>
   	<script>
   		kWidget.embed({
-  			targetId: 'kaltura_player_1328708786',
+  			targetId: 'kaltura_player',
   			wid : '_243342',
   			uiconf_id : '7190901',
   			cache_st : '2',
   			flashvars: {
-  				'autoPlay' : true,
+  				'autoPlay' : false,
   				'playlistAPI.autoInsert' : 'true',
   				'playlistAPI.autoContinue' : 'true',
   				'playlistAPI.kpl0Name' : 'test 4 item playlist',

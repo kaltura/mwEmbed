@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Loop Test For Clips Shorter Than 10sec</title>
+	<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+	<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+	<script type="text/javascript">
+		function jsKalturaPlayerTest( videoId ){
+			window['playCount'] = 0;
+			// Name this module
+			module( "Short Video Loop" );
+			var kdp = $( '#' + videoId ).get( 0 );
+			
+			asyncTest( "Loop attribute set to true", function() {
+				kalturaQunitWaitForPlayer(function(){
+					equal( kdp.evaluate( '{loop}' ), true, "Loop attribute is set to true");
+					start();
+				});
+			} );
+			asyncTest( "replayEvent was Fired", function(){
+				window.replayCallback = function() {
+					mw.log("replayCallback");
+					window['playCount']++;
+					if ( window['playCount'] == 2 ) {
+						ok( true, "replayEvent was fired 2 times");
+						start();
+						// set stop in a timeout ( replay even is fired in stop state ) 
+						setTimeout(function(){
+							kdp.sendNotification('doStop');
+						},250 );
+					}
+				}
+			});
+			
+			// add a listner for replay: 
+			kdp.addJsListener( 'replayEvent', 'replayCallback' );
+		}
+	</script>
+
+	<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+	<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+</head>
+<body>
+	<h2> Loop test for clips shorter than 10sec</h2>
+	<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+	<br />
+	<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" 
+			allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" 
+			bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" 
+			xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
+			rel="media:video" 
+			resource="http://www.kaltura.com/index.php/kwidget/cache_st/1335711760/wid/_861182/uiconf_id/7752572/entry_id/1_fy732m59" 
+			data="http://www.kaltura.com/index.php/kwidget/cache_st/1335711760/wid/_861182/uiconf_id/7752572/entry_id/1_fy732m59">
+		<param name="allowFullScreen" value="true" />
+		<param name="allowNetworking" value="all" />
+		<param name="allowScriptAccess" value="always" />
+		<param name="bgcolor" value="#000000" />
+		<param name="flashVars" value="&loop=true&autoPlay=true" />
+		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1335711760/wid/_861182/uiconf_id/7752572/entry_id/1_fy732m59" />	
+	</object>
+</body>
+</html>

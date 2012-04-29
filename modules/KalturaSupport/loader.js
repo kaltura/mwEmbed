@@ -131,15 +131,15 @@
 		'faderPlugin',
 		'watermarkPlugin',
 		'shareSnippet',
-        'moderationPlugin',
-        'captureThumbnailPlugin',
-        'downloadPlugin',
+		'moderationPlugin',
+		'captureThumbnailPlugin',
+		'downloadPlugin',
 		'adPlugin',
 		'captionPlugin',
 		'bumperPlugin',
 		'playlistPlugin',
-        'jCarousel',
-        'carouselPlugin'
+		'jCarousel',
+		'carouselPlugin'
 	];
 	
 	mw.newEmbedPlayerCheckUiConf = function( callback ){

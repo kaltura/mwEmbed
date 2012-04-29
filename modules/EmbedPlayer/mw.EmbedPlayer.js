@@ -387,31 +387,21 @@ mw.EmbedPlayer.prototype = {
 			}
 		}
 	},
+	
 	/**
 	 * Resize the player to a new size preserving aspect ratio Wraps the
 	 * controlBuilder.resizePlayer function
 	 */
 	resizePlayer: function( size , animate, callback){
-		// check for empty resize call: 
-		if( !size ){
-			return ;
-		}
-		mw.log("EmbedPlayer::resizePlayer:" + size.width + ' x ' + size.height );
-		var _this = this;
-		// Check if we are native display then resize the playerElement directly
-		if( this.useNativePlayerControls() ){
-			if( animate ){
-				$( this.getPlayerElement() ).animate( size , callback);
-			} else {
-				$( this.getPlayerElement() ).css( size );
-				if( callback ) {
-					callback();
-				}
-			}
-		} else {
-			this.controlBuilder.resizePlayer( size, animate, callback);
-		}
-		$( this ).trigger( 'onResizePlayer', [size, animate] );
+		// just wraps the controlBuilder method: 
+		this.controlBuilder.resizePlayer( size, animate, callback );
+	},
+	
+	/**
+	 * Wraps the control builder method to sync player size: 
+	 */
+	syncPlayerSize: function(){
+		return this.controlBuilder.syncPlayerSize();
 	},
 
 	/**
@@ -784,9 +774,6 @@ mw.EmbedPlayer.prototype = {
 			// Show the control bar:
 			this.controlBuilder.showControlBar();
 
-			// Update the clip done playing count:	
-			this.donePlayingCount ++;
-
 			// TOOD we should improve the end event flow
 			// First end event for ads or current clip ended bindings
 			if( ! this.onDoneInterfaceFlag ){
@@ -814,9 +801,14 @@ mw.EmbedPlayer.prototype = {
 				mw.log("EmbedPlayer::onDoneInterfaceFlag=true do interface done");
 				// Prevent the native "onPlay" event from propagating that happens when we rewind:
 				this.stopEventPropagation();
+				
+				// Update the clip done playing count ( for keeping track of replays )
+				_this.donePlayingCount ++;
+				
 				// Rewind the player to the start: 
 				this.setCurrentTime(0, function(){
-					// set to stopped state:
+					
+					// Set to stopped state:
 					_this.stop();
 					
 					// Restore events after we rewind the player
@@ -831,10 +823,10 @@ mw.EmbedPlayer.prototype = {
 						_this.pause();
 					}
 					// Check if we should hide the large play button on end: 
-					if( $( _this ).data( 'hideEndPlayButton' ) ){
-						_this.$interface.find('.play-btn-large').hide();
+					if( $( _this ).data( 'hideEndPlayButton' ) || !_this.useLargePlayBtn() ){
+						_this.hideLargePlayBtn();
 					} else {
-						_this.addPlayBtnLarge();
+						_this.addLargePlayBtn();
 					}
 					// An event for once the all ended events are done.
 					mw.log("EmbedPlayer:: trigger: onEndedDone");
@@ -935,9 +927,8 @@ mw.EmbedPlayer.prototype = {
 			this.showErrorMsg( this['data-playerError'] );
 			return ;
 		}
-		
-		// Auto play if not on an iPad with iOS > 3 
-		if (this.autoplay && (!mw.isIOS() || mw.isIpad3() ) ) {
+		// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3 
+		if ( this.isStopped() && this.autoplay && (!mw.isIOS() || mw.isIpad3() ) ) {
 			mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
 			_this.play();
 		}
@@ -953,8 +944,8 @@ mw.EmbedPlayer.prototype = {
 				'background': null					
 			};
 			// if using "native" interface don't do any pointer events:
-			if( this.useNativePlayerControls() ){
-				interfaceCss['pointer-events'] = 'none'
+			if( !this.useLargePlayBtn() ){
+				interfaceCss['pointer-events'] = 'none';
 			}
 			
 			if( !mw.getConfig( 'EmbedPlayer.IsIframeServer' ) ){
@@ -1105,7 +1096,7 @@ mw.EmbedPlayer.prototype = {
 			);
 			$this.show();
 			// Make sure we have a play btn:
-			this.addPlayBtnLarge();
+			this.addLargePlayBtn();
 			
 			// Set the play button to the first available source:
 			this.$interface.find('.play-btn-large')
@@ -1232,6 +1223,7 @@ mw.EmbedPlayer.prototype = {
 		mw.log( 'EmbedPlayer:: changeMedia ');
 		// Empty out embedPlayer object sources
 		this.emptySources();
+		
 		// onChangeMedia triggered at the start of the change media commands
 		$this.trigger( 'onChangeMedia' );
 		
@@ -1245,8 +1237,6 @@ mw.EmbedPlayer.prototype = {
 		this.preSequence = false;
 		this.postSequence = false;
 		
-		// Rest currentTime
-		this.currentTime = 0;
 		// Reset the playhead
 		this.updatePlayHead( 0 );
 		// update the status: 
@@ -1274,6 +1264,8 @@ mw.EmbedPlayer.prototype = {
 		var bindName = 'playerReady.changeMedia';
 		$this.unbind( bindName ).bind( bindName, function(){
 			mw.log('mw.EmbedPlayer::changeMedia playerReady callback');
+			// hide the loading spinner: 
+			_this.hidePlayerSpinner();
 			// check for an erro on change media: 
 			if( _this['data-playerError'] ){
 				_this.showErrorMsg( this['data-playerError'] );
@@ -1285,15 +1277,15 @@ mw.EmbedPlayer.prototype = {
 			}
 			// Make sure the play button reflects the original play state
 			if(  chnagePlayingMedia ){
-				_this.$interface.find( '.play-btn-large' ).hide();
+				_this.hideLargePlayBtn();
 			} else {
 				_this.$interface.find( '.play-btn-large' ).show();
 			}
-			
-			if( _this.isPersistentNativePlayer() || _this.useNativePlayerControls() ){
+			var source = _this.getSource();
+			if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
 				// If switching a Persistent native player update the source:
 				// ( stop and play won't refresh the source  )
-				_this.switchPlaySource( _this.getSource(), function(){
+				_this.switchPlaySource( source, function(){
 					$this.trigger( 'onChangeMediaDone' );
 					if( chnagePlayingMedia ){
 						_this.play();
@@ -1313,6 +1305,7 @@ mw.EmbedPlayer.prototype = {
 			
 			// Stop should unload the native player
 			_this.stop();
+			
 			// reload the player
 			if( chnagePlayingMedia ){
 				_this.play()
@@ -1342,11 +1335,14 @@ mw.EmbedPlayer.prototype = {
 		var class_atr = '';
 		var style_atr = '';
 		
-		if( this.useNativePlayerControls() && this.mediaElement.selectedSource ){
-			this.embedNativePlayer();
-			return ;
+		if( this.useNativePlayerControls() && 
+			this.mediaElement.selectedSource 
+		){
+			if( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') ){
+				this.addPlayScreenWithNativeOffScreen();
+				return ;
+			}
 		}
-
 		// Set by default thumb value if not found
 		var posterSrc = ( this.poster ) ? this.poster :
 						mw.getConfig( 'EmbedPlayer.BlackPixel' );
@@ -1377,14 +1373,32 @@ mw.EmbedPlayer.prototype = {
 				.addClass( 'playerPoster' )
 			);
 		}
-		if ( !this.useNativePlayerControls()  && this.controlBuilder
+		if ( this.useLargePlayBtn()  && this.controlBuilder
 				&& 
 			this.height > this.controlBuilder.getComponentHeight( 'playButtonLarge' )
 		) {
-			this.addPlayBtnLarge();
+			this.addLargePlayBtn();
 		}
 	},
-
+	addPlayScreenWithNativeOffScreen: function(){
+		mw.log( "Error: must be override with native method" );
+		return ;
+	},
+	/**
+	 * Checks if a large play button should be displayed on the 
+	 * otherwise native player
+	 */
+	useLargePlayBtn: function(){
+		if( this.isPersistantPlayBtn() ){
+			return true;
+		}
+		// else if we are using native controls return false: 
+		return !this.useNativePlayerControls();
+	},
+	isPersistantPlayBtn: function(){
+		return mw.isAndroid2() || 
+				( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' ) );
+	},
 	/**
 	 * Checks if native controls should be used
 	 *
@@ -1433,59 +1447,19 @@ mw.EmbedPlayer.prototype = {
 		}
 		return $('#' + this.pid ).hasClass('persistentNativePlayer');
 	},
-
-
-	/**
-	 * Embed the native player
-	 *
-	 * This is for cases where the main library needs to "get out of the way"
-	 * since the device only supports a limited subset of the html5 and won't
-	 * work with an html javascirpt interface
-	 */
-	embedNativePlayer: function(){
-		var _this = this;
-		// Empty the player of any child nodes
-		$(this).empty();
-
-		// Remove the player loader spinner if it exists
-		this.hidePlayerSpinner();
-
-		// Get the selected source:
-		var source = this.mediaElement.selectedSource;
-		// Setup videoAttribues
-		var videoAttribues = {
-			'poster': _this.poster,
-			'src' : source.getSrc()
-		};
-		if( this.controls ){
-			videoAttribues.controls = 'true';
+	hideLargePlayBtn: function(){
+		if( !this.isPersistantPlayBtn() ){
+			this.$interface.find( '.play-btn-large' ).hide();
 		}
-		if( this.loop ){
-			videoAttribues.loop = 'true';
-		}
-		var cssStyle = {
-			'width' : _this.width,
-			'height' : _this.height
-		};
-		// Check if we need to insert
-		if( $( '#' + this.pid ).length == 0 ){
-			$( this ).append( $( '<div />').attr('id', this.pid ) );
-		}
-		$( '#' + this.pid ).replaceWith(
-			_this.getNativePlayerHtml( videoAttribues, cssStyle )
-		);
-
-		// Bind native events:
-		this.applyMediaElementBindings();
-
-		// Android only can play with a special play button, android 2x has no native controls
-		if( mw.isAndroid2() ){
-			this.addPlayBtnLarge();
-		}
-		return ;
 	},
 	// Add a play button (if not already there ) 
-	addPlayBtnLarge:function(){
+	addLargePlayBtn:function(){
+		// if using native controls make sure we can click the big play button by restoring 
+		// interface click events:
+		if( this.useNativePlayerControls() ){
+			this.$interface.css('pointer-events', 'auto');
+		}
+		
 		// iPhone in WebKitPlaysInline mode does not support clickable overlays as of iOS 5.0 
 		if( mw.getConfig( 'EmbedPlayer.WebKitPlaysInline') && mw.isIphone() ) {
 			return ;
@@ -1713,14 +1687,18 @@ mw.EmbedPlayer.prototype = {
 				_this.embedPlayerHTML();
 			}
 		}
-		
 		if( !this.preSequence ) {
 			this.preSequence = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );
 			$this.trigger( 'preSequence' );
 			this.playInterfaceUpdate();
+			// if we entered into ad loading return 
+			if(  _this.sequenceProxy && _this.sequenceProxy.isInSequence ){
+				mw.log("EmbedPlayer:: isInSequence, do NOT play content")
+				return false;
+			}
 		}
-		
+
 		if( this.paused === true ){
 			this.paused = false;
 			// Check if we should Trigger the play event
@@ -1782,7 +1760,8 @@ mw.EmbedPlayer.prototype = {
 		}
 		// Hide any buttons or errors  if present:
 		if( this.$interface ){
-			this.$interface.find( '.play-btn-large,.error' ).remove();
+			this.$interface.find( '.error' ).remove();
+			this.hideLargePlayBtn();
 		}
 		
 		this.$interface.find('.play-btn span')
@@ -1815,7 +1794,7 @@ mw.EmbedPlayer.prototype = {
 		$( '#' + sId ).remove();
 		// hide the play btn if present
 		if( this.$interface ) {
-			this.$interface.find('.play-btn-large').hide();
+			this.hideLargePlayBtn();
 		}
 		// re add an absolute positioned spinner: 
 		$( this ).getAbsoluteOverlaySpinner()
@@ -1827,7 +1806,7 @@ mw.EmbedPlayer.prototype = {
 		$( '#loadingSpinner_' + this.id + ',.loadingSpinner' ).remove();
 		// hide the play btn
 		if( this.$interface ) {
-			this.$interface.find('.play-btn-large').hide();
+			this.hideLargePlayBtn();
 		}
 	},
 	hideSpinnerOncePlaying: function(){
@@ -1922,8 +1901,8 @@ mw.EmbedPlayer.prototype = {
 			this.pause();
 		}
 		// Restore the play button ( if not native controls or is android ) 
-		if( !this.useNativePlayerControls() || mw.isAndroid2() ){
-			this.addPlayBtnLarge();
+		if( this.useLargePlayBtn() ){
+			this.addLargePlayBtn();
 			this.pauseInterfaceUpdate();
 		}
 		
@@ -1939,7 +1918,7 @@ mw.EmbedPlayer.prototype = {
 		// update the status: 
 		this.controlBuilder.setStatus( this.getTimeRange() );
 	},
-
+	
 	/**
 	 * Base Embed mute
 	 *
@@ -2047,7 +2026,7 @@ mw.EmbedPlayer.prototype = {
 	fullscreen: function() {
 		this.controlBuilder.toggleFullscreen();
 	},
-
+	
 	/**
 	 * Abstract method to be run post embedding the player Generally should be
 	 * overwritten by the plug-in / player
@@ -2184,7 +2163,7 @@ mw.EmbedPlayer.prototype = {
 		if( _this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
 			_this._checkHideSpinner = false;
 			// also hide the play button ( in case it was there somehow )
-			_this.$interface.find('.play-btn-large').hide()
+			_this.hideLargePlayBtn();
 			_this.hidePlayerSpinner();
 		}
 

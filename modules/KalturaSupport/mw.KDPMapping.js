@@ -367,7 +367,7 @@
 					}
 				break;
 				case 'duration':
-					return embedPlayer.duration;
+					return embedPlayer.getDuration();
 					break;
 				case 'mediaProxy':
 					switch( objectPath[1] ){
@@ -493,11 +493,18 @@
 					}
 				break;
 			}
-			// Look for a plugin based config: 
-			var pluginConfigValue = embedPlayer.getKalturaConfig( objectPath[0], objectPath[1]);
-			if( $.isEmptyObject( pluginConfigValue ) ){
-				return ;
-			} 
+			// Look for a plugin based config: typeof
+			var pluginConfigValue = null;
+			// See if we are looking for a top level property
+			if( !objectPath[1] && $.isEmptyObject( embedPlayer.getKalturaConfig( objectPath[0] ) ) ){
+				// Return the top level property directly ( {loop} {autoPlay} etc. ) 
+				pluginConfigValue = embedPlayer.getKalturaConfig( '', objectPath[0] );
+			} else {
+				pluginConfigValue = embedPlayer.getKalturaConfig( objectPath[0], objectPath[1]);
+				if( $.isEmptyObject( pluginConfigValue ) ){
+					return ;
+				} 
+			}
 			return pluginConfigValue;
 		},
 		evaluateStringFunction: function( functionName, value ){
@@ -639,7 +646,9 @@
 					b( "seeked" );
 					break;
 				case 'playerPlayEnd':
-					b( "onEndedDone" );
+					// Player Play end should subscribe to postEnded which is fired at the end
+					// of ads and between clips in a playlist. 
+					b( "postEnded" );
 					break;
 				case 'durationChange':
 					b( "durationchange", function(){
@@ -748,6 +757,7 @@
 				 * Ad support listeneres
 				 *  TODO move to AdTimeline.js ( not in core KDPMapping )
 				 */
+				case 'prerollStarted':
 				case 'adStart':
 					b('AdSupport_StartAdPlayback', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
@@ -911,13 +921,14 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
-					// ChecchangeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
+					// Check changeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
-						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) ) {
+						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) ) 
+					{
+						mw.log( "KDPMapping:: ChangeMedia missing entryId or refrenceid, empty sources.")
 					    embedPlayer.emptySources();
 					    break;
 					}
-
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1) || (notificationData.referenceId && notificationData.referenceId != -1) ){
 						// Check if we use referenceId
@@ -941,11 +952,17 @@
 						// clear ad data ..
 						embedPlayer.kAds = null;
 
-						// Update the poster ( if not on iPhone ) 
-						if( !mw.isIphone() ){
-							embedPlayer.updatePosterSrc();
-						}
-						// run the embedPlayer changeMedia function
+						// Update the poster 
+						embedPlayer.updatePosterSrc(
+								mw.getKalturaThumbUrl({
+									'entry_id' : embedPlayer.kentryid,
+									'partner_id' : embedPlayer.kwidgetid.replace('_', ''),
+									'width' : parseInt( embedPlayer.width),
+									'height' : parseInt( embedPlayer.height)
+								})
+						);
+						
+						// Run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
 						break;
 					}

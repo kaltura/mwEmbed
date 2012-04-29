@@ -1,123 +1,90 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Cue Points 3 Ads example html5 / kdp</title>
+<title> iPhone Compatible preroll DoubleClick ( PreRoll )  </title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
-<script type="text/javascript">
-	var myPlayer;
-	
-	// Bind to cuePointReached event
-	var jsCallbackReady = function( playerId ) {
-		myPlayer = $j('#' + playerId )[0];
-
-		myPlayer.addJsListener("cuePointReached", "writeLog");
-		myPlayer.addJsListener("adOpportunity", "writeLog");
-	};
-
-	var writeLog = function( qPoint ) {
-		trackEventForTests( qPoint );
-		var type = (qPoint.context) ? 'Ad' : 'Code';
-		$j('#eventRowDesc').after(
-			$j('<tr />' ).append(
-				$j('<td />').text( (qPoint.cuePoint.title) ? qPoint.cuePoint.title : qPoint.cuePoint.description ),
-				$j('<td />').text( type ),
-				$j('<td />').text( qPoint.cuePoint.startTime )
-			)
-		);
-	};
-</script>
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 <script type="text/javascript">	
-var testEventObject = {};
-//we use this round about way of tracking events to show the events are being sent for google.
-function trackEventForTests( qPoint ) {
-	if(  qPoint.context == "pre" ){
-		$j( testEventObject ).trigger( 'preCueEvent', qPoint );
-	}
-	if( !qPoint.context ){
-		$j( testEventObject ).trigger( 'cueEvent', qPoint );
-	}
-}
+// for testing on desktop:
+mw.setConfig("Kaltura.UseAppleAdaptive", false );
+
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
-	module( "CuePoints" );
+	module( "DoubleClick Player" );
 
-	var kdp = $j( '#' + videoId )[0];
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
+	var iframeContext = window.frames['kaltura_player_ifp'];
 	
-	asyncTest("start cue point", function(){
-		kalturaQunitWaitForPlayer(function(){
-			$j( testEventObject ).bind('preCueEvent', function(event, qPoint){
-				var type = (qPoint.context) ? 'Ad' : 'Code';
-				equal( qPoint.cuePoint.title, "Preroll", "Preroll event sent" );
-				equal( qPoint.context, "pre", "Preroll Ad cue event sent" );
-				// continue testing
-				start();
-			});
-			kdp.sendNotification('doPlay');
-		});
+	test( "Iframe in DOM", function() {
+		ok( $( '#' + videoId + '_ifp' ).length , 'iframe found' );
+		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
 	});
-	asyncTest("CuePoint 1 at 3 seconds", function(){
-		$j( testEventObject ).bind('cueEvent', function( event, qPoint ){
-			equal( qPoint.cuePoint.description, "Code Cue Point", "Code Cue Point event text sent");
-			equal( qPoint.cuePoint.startTime, 3000, "Code Cue Point event sent" );
-			// Finish tests:
-			kdp.sendNotification('doPause');
-			start();
-		});		
-	});
-
+	
 }
+$(function(){
+	$( '#adPlay').click(function(){
+		$( '#kaltura_player' ).get(0).sendNotification( 'doPlay' );
+	})	
+})
+	
+
 </script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Cue Points 3 Ads for kdp flash player and html5 player </h2>
-<ol>
-<li>0:10 - Midroll</li>
-<li>0:20 - Overlay</li>
-<li>1:25 - Postroll</li>
-</ol>
-<a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
+<h2> Iphone Compatible preroll DoubleClick ( only preroll ) </h2>
 <br /><br />
-
-<div style="float:left">
-	<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" 
-			allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400"
-			xmlns:dc="http://purl.org/dc/terms/" 
-			xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
-			rel="media:video" 
-			resource="http://www.kaltura.com/index.php/kwidget/cache_st/1319629656/wid/_289812/uiconf_id/6116981/entry_id/1_j27tqm5k" 
-			data="http://www.kaltura.com/index.php/kwidget/cache_st/1319629656/wid/_289812/uiconf_id/6116981/entry_id/1_j27tqm5k">
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<br />
+<object id="kaltura_player" 
+	name="kaltura_player" 
+	type="application/x-shockwave-flash" 
+	allowFullScreen="true" 
+	allowNetworking="all" 
+	allowScriptAccess="always" 
+	height="330" width="400" 
+	bgcolor="#000000" 
+	xmlns:dc="http://purl.org/dc/terms/" 
+	xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
+	rel="media:video" 
+	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1231231246/wid/_243342/uiconf_id/7340952/entry_id/0_uka1msg4" 
+	data="http://www.kaltura.com/index.php/kwidget/cache_st/1231231246/wid/_243342/uiconf_id/7340952/entry_id/0_uka1msg4">
 		<param name="allowFullScreen" value="true" />
 		<param name="allowNetworking" value="all" />
 		<param name="allowScriptAccess" value="always" />
 		<param name="bgcolor" value="#000000" />
-		<param name="flashVars" value="&externalInterfaceDisabled=false" />
-		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1319629656/wid/_289812/uiconf_id/6116981/entry_id/1_j27tqm5k" />
-	</object>
-</div>
-<div style="float:left;padding-left:20px" >
-	<i>Cue Points events: </i><br />
-	<table border="1" width="520">
-	<tr id="eventRowDesc">
-		<td>Name</td>
-		<td>Type</td>
-		<td>Start Time</td>
-	</tr>
-	</table>
-</div>
+		<param name="flashVars" value="&playlistAPI.autoContinue=true" />
+		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1231231246/wid/_243342/uiconf_id/7340952/entry_id/0_uka1msg4" />
+</object>
 
 <!-- 
-<layout id="full" name="New player for testing CuePoints" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
+<layout id="full" name="DoubleClick Managed" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
-      <Plugin id="vast" overlayStartAt="120" overlayInterval="180" overlayUrl="http://www.ll.com" trackCuePoints="true" timeout="4"/>
+      
+      
+      <Plugin id="doubleClick" 
+	      	postSequence="0" 
+	      	preSequence="1" 
+			path="http://projects.kaltura.com/nu/wwwDoubleclick/plugins/doubleclickPlugin020512.swf"
+			debugMode="true"  
+			height="100%" 
+			width="100%"  	
+			trackCuePoints="true" 
+			cmsId="244"  
+			adTagUrl="http://pubads.g.doubleclick.net/gampad/ads?sz=400x300%26iu=%2F6062%2Fjeremy.site.video%2FBumpersAndAds%26ciu_szs=300x250%2C728x90%26impl=s%26gdfp_req=1%26env=vp%26output=xml_vast2%26unviewed_position_start=1%26url=[referrer_url]%26correlator=[timestamp]%26vid=GxkABvaN2ms%26cmsid=9884%26ad_rule=1%26" 	
+			adType= "" 
+			channels=""  
+			contentId= "0_kxoy0aqi"  
+			publisherId= "" 
+			disableCompanionAds= "" 
+		/>
+      
       <Canvas id="PlayerHolder" height="100%" width="100%" styleName="black">
         <Video id="video" width="100%" height="100%"/>
-        <Label id="noticeMessage" text="Video will start in {sequenceProxy.timeRemaining} seconds" height="18" width="100%" font="TimesNewRoman" styleName="movieName" dynamicColor="true" color1="14540253" visible="{sequenceProxy.isAdLoaded}" includeInLayout="{sequenceProxy.isAdLoaded}"/>
         <VBox id="offlineMessageHolder" verticalAlign="middle" horizontalAlign="center" includeInLayout="false" width="100%" height="100%">
           <Spacer height="100%"/>
           <Spacer height="100%"/>
@@ -129,12 +96,10 @@ function jsKalturaPlayerTest( videoId ){
         </VBox>
         <Screens id="screensLayer" width="100%" height="100%" mouseOverTarget="{PlayerHolder}" styleName="clickThrough" startScreenId="startScreen" startScreenOverId="startScreen" pauseScreenOverId="pauseScreen" pauseScreenId="pauseScreen" playScreenOverId="playScreen" endScreenId="endScreen" endScreenOverId="endScreen"/>
         <Watermark id="watermark" width="100%" height="100%" watermarkPath="http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png" watermarkClickPath="http://www.kaltura.com/" watermarkPosition="bottomLeft" padding="5"/>
-        <Plugin id="overlay" swfUrls="{vast.overlays}" overlayStartAt="{vast.overlayStartAt}" overlayInterval="{vast.overlayInterval}" displayDuration="5" width="100%" height="100%" trackCuePoints="true"/>
         <VBox id="skipBtnHolder" width="100%" height="100%">
           <Spacer height="100%"/>
           <HBox width="100%" height="30">
             <Spacer width="100%"/>
-            <Button id="skipBtn" visible="{sequenceProxy.isAdSkip}" includeInLayout="{sequenceProxy.isAdSkip}" type="labelButton" color1="14540253" color2="16777215" styleName="controllerScreen" height="30" width="20" allowDisable="false" label="skip ad >" kClick="sendNotification('sequenceSkipNext')"/>
           </HBox>
         </VBox>
         <Plugin id="gigya" width="100%" height="100%" loadingPolicy="noWait" title="{mediaProxy.entry.name}" shareEmailBody="Hi,&lt;br>I watched this video and thought you'd enjoy it too. &lt;br>$URL$ to watch.&lt;br> $sender$" shareEmailSubject="Take a look at this video"/>
@@ -226,7 +191,7 @@ function jsKalturaPlayerTest( videoId ){
               <post-buttons frame-color="#6a6a6a" gradient-color-end="Transparent"/>
             </buttons>
             <listboxes frame-color="#CACACA" corner-roundness="4;4;4;4" gradient-color-begin="#F4F4F4" gradient-color-end="#FFFFFF"/>
-            <checkboxes checkmark-color="#FFFFC8" frame-color="#6a6a6a" down-gradient-color-begin="#292929" down-gradient-color-end="#292929" background-color="#292929" corner-roundness="3;3;3;3" gradient-color-begin="Transparent" gradient-color-end="Transparent" over-background-color="#292929" down-background-color="#292929"/>
+            <checkboxes checkmark-color="#202020" frame-color="#6a6a6a" down-gradient-color-begin="#292929" down-gradient-color-end="#292929" background-color="#292929" corner-roundness="3;3;3;3" gradient-color-begin="Transparent" gradient-color-end="Transparent" over-background-color="#292929" down-background-color="#292929"/>
             <servicemarker gradient-color-begin="Transparent" gradient-color-end="#666666"/>
             <tooltips frame-thickness="0" color="#292929" gradient-color-begin="#FFFFFF" gradient-color-end="#FFFFC8" size="10" frame-color="#FFDBA4"/>
           </controls>
@@ -250,8 +215,6 @@ function jsKalturaPlayerTest( videoId ){
     <var key="autoMute" value="false"/>
   </uiVars>
 </layout>
-
- -->
-
+-->
 </body>
 </html>

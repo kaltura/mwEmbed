@@ -13,6 +13,9 @@ mw.DolStatistics.prototype = {
 	pluginVersion: "1.1",
 	bindPostFix: '.DolStatistics',
 	appName: 'KDP',
+	
+	// The monitor interval 
+	monitorInterval: null,
 
 	// Number of seconds between playhead event dispatches
 	playheadFrequency: 5,
@@ -30,7 +33,7 @@ mw.DolStatistics.prototype = {
 		this.embedPlayer = embedPlayer;
 		
 		this.playheadFrequency = this.getConfig( 'playheadFrequency' ) || 5;
-
+		
 		// List of events we need to track
 		var eventList = this.getConfig( 'listenTo' );
 		this.eventsList = eventList.split(",");
@@ -66,19 +69,25 @@ mw.DolStatistics.prototype = {
 		// Unbind any existing bindings
 		this.destroy();
 		
+		// reset cue points
+		_this.calcCuePoints();
+		
 		// Increment counter during replays: 
 		embedPlayer.bindHelper('replayEvent' + this.bindPostFix, function(){
 			// reset the percentage reached counter: 
 			_this.calcCuePoints();
-			_this.setConfig( 'playbackCounter', _this.getConfig('playbackCounter') + 1 );
+			_this.setConfig( 'playbackCounter', parseInt( _this.getConfig('playbackCounter') ) + 1 );
 			mw.log( 'DolStatistics:: replayEvent> reset cuePoints and increment counter: ' + _this.getConfig('playbackCounter') );
 		});
 		
 		// On change media remove any existing bindings:
 		embedPlayer.bindHelper( 'onChangeMedia' + _this.bindPostFix, function(){
+			// Reset the monitor
+			clearInterval( _this.monitorInterval );
+			// reset the percentage reached counter: 
 			if( ! embedPlayer['data-playerError'] ){
 				_this.duringChangeMediaFlag = true;
-				_this.setConfig( 'playbackCounter', _this.getConfig('playbackCounter') + 1 );
+				_this.setConfig( 'playbackCounter', parseInt( _this.getConfig('playbackCounter') ) + 1 );
 			}
 			_this.destroy();
 		});
@@ -103,11 +112,11 @@ mw.DolStatistics.prototype = {
 			switch( eventName ) {
 				// Special events
 				case 'percentReached':
-					embedPlayer.bindHelper( 'KalturaSupport_EntryDataReady' + _this.bindPostFix, function(){
-						_this.calcCuePoints();
-						embedPlayer.bindHelper( 'monitorEvent' + _this.bindPostFix, function() {
+					embedPlayer.bindHelper( 'onplay' + _this.bindPostFix, function(){
+						// monitor as soon as we start to play: 
+						_this.monitorInterval = setInterval( function(){
 							_this.monitorPercentage();
-						});
+						}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 					})
 				break;
 				case 'changeVolume': 
@@ -128,7 +137,7 @@ mw.DolStatistics.prototype = {
 							eventData = JSON.stringify( argValue );
 							eventData = eventData.replace(/\"/g,'');
 						} else {
-							// check if argValue is the id in which case send nothing. 
+							// Check if argValue is the id in which case send nothing. 
 							if( argValue != embedPlayer.id ){
 								eventData = argValue;
 							}
@@ -148,7 +157,11 @@ mw.DolStatistics.prototype = {
 	calcCuePoints: function() {
 		var _this = this;
 		var duration = this.getDuration();
-
+		if( duration == 0 ){
+			// empty duration 
+			mw.log( 'Error:: DolStatistics: calcCuePoints: possible error, empty duration');
+			return ;
+		}
 		for( var i=0; i<=100; i =i+10 ) {
 			var cuePoint = Math.round( duration / 100 * i );
 			// if on the last cuePoint subtract 1 second to ensure event, 
@@ -172,7 +185,7 @@ mw.DolStatistics.prototype = {
 		var currentTime = Math.round( this.embedPlayer.currentTime );
 		//mw.log( 'DolStatistics:: monitorPercentage>' + currentTime );
 		
-		// make sure 0% is fired 
+		// Make sure 0% is fired 
 		if( currentTime > 0 && percentCuePoints[ 0 ] === false ){
 			percentCuePoints[ 0 ] = true;
 			_this.sendStatsData( 'percentReached', 0 );
@@ -224,6 +237,7 @@ mw.DolStatistics.prototype = {
 	sendStatsData: function( eventName, eventData ) {
 		var _this = this;
 		var embedPlayer = this.embedPlayer;
+		
 		// If event name not in our event list, exit
 		if( this.eventsList.indexOf( eventName ) === -1 ) {
 			return ;
@@ -232,11 +246,23 @@ mw.DolStatistics.prototype = {
 		if( _this.duringChangeMediaFlag && eventName != 'changeMedia' ){
 			return ;
 		}
+		_this.duringChangeMediaFlag = false;
+		
+		// If paused event and on the last or first second skip. 
+		if( ( eventName == 'playerPaused' || eventName == 'doPause' )
+				&& 
+				( Math.round( embedPlayer.currentTime ) == 0 ||
+				 embedPlayer.getDuration() - embedPlayer.currentTime < 1 )
+		){
+			// skip event
+			return ;
+		}
+		
 		// If no event data for percentReached, exit
 		if( eventName === 'percentReached' && typeof eventData !== 'number' ) {
 			return ;
 		}
-		_this.duringChangeMediaFlag = false;
+		
 		
 		
 		// Setup event params
@@ -379,7 +405,7 @@ mw.DolStatistics.prototype = {
 		try {
 			return context[func].apply( this, args );
 		} catch( e ){
-			mw.log("DolStatistics:: Error could not find function: " + functionName );
+			mw.log("DolStatistics:: Error could not find function: " + functionName + ' error: ' + e);
 			return false;
 		}
 	}

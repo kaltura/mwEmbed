@@ -73,6 +73,19 @@ var kWidget = {
 			mw.setConfig('EmbedPlayer.IframeParentUrl', document.URL );
 			mw.setConfig('EmbedPlayer.IframeParentTitle', document.title);
 			mw.setConfig('EmbedPlayer.IframeParentReferrer', document.referrer);
+			
+			// Fix for iOS not rendering iframe correctly when moving back/forward
+			// http://stackoverflow.com/questions/7988967/problems-with-page-cache-in-ios-5-safari-when-navigating-back-unload-event-not
+			if ((/iphone|ipod|ipad.*os 5/gi).test(navigator.appVersion)) {
+				window.onpageshow = function(evt) {
+					// If persisted then it is in the page cache, force a reload of the page.
+					if (evt.persisted) {
+						document.body.style.display = "none";
+						location.reload();
+					}
+				};
+			} 
+			
 		}
 	},
 	/**
@@ -779,10 +792,12 @@ var kWidget = {
 	  * Get Kaltura thumb url from entry object
 	  */
 	 getKalturaThumbUrl: function ( entry ){
-	 	if( entry.width == '100%')
+	 	if( entry.width == '100%'){
 	 		entry.width = 400;
-	 	if( entry.height == '100%')
+	 	}
+	 	if( entry.height == '100%'){
 	 		entry.height = 300;
+	 	}
 
 	 	var ks = ( entry.ks ) ? '?ks=' + entry.ks : '';
 
