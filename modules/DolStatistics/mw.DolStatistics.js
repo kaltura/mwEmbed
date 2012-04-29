@@ -247,8 +247,10 @@ mw.DolStatistics.prototype = {
 			return ;
 		}
 		_this.duringChangeMediaFlag = false;
-		// if paused event and on the last or first second skip. 
-		if( eventName == 'playerPaused' && 
+		
+		// If paused event and on the last or first second skip. 
+		if( ( eventName == 'playerPaused' || eventName == 'doPause' )
+				&& 
 				( Math.round( embedPlayer.currentTime ) == 0 ||
 				 embedPlayer.getDuration() - embedPlayer.currentTime < 1 )
 		){

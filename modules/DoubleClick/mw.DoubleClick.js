@@ -348,7 +348,7 @@ mw.DoubleClick.prototype = {
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
 			// make sure the player is in play state: 
-			_this.playInterfaceUpdate();
+			_this.embedPlayer.playInterfaceUpdate();
 			
 			// restore player position: 
 			_this.restorePlayerOnScreen( _this.getAdContainer() );
