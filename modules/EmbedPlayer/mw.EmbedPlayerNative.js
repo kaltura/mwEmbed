@@ -234,7 +234,10 @@ mw.EmbedPlayerNative = {
 		if( mw.getConfig( 'EmbedPlayer.WebKitAllowAirplay' ) ){
 			$( vid ).attr( 'x-webkit-airplay', "allow" );
 		}
-
+		// make sure to display native controls if enabled: 
+		if( this.useNativePlayerControls() ){
+			$( vid ).attr( 'controls', "true" );
+		}
 		// Apply media element bindings:
 		_this.applyMediaElementBindings();
 		

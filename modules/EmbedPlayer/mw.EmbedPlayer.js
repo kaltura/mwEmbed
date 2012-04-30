@@ -884,8 +884,14 @@ mw.EmbedPlayer.prototype = {
 			$( this ).show();
 		}
 		// Add controls if enabled:
-		if ( !this.useNativePlayerControls() && this.controls ) {
-			this.controlBuilder.addControls();
+		if ( this.controls ) {
+			if( this.useNativePlayerControls() ){
+				if( this.getPlayerElement() ){
+					$(  this.getPlayerElement() ).attr('controls', true);
+				}
+			} else {
+				this.controlBuilder.addControls();
+			}
 		}
 
 		// Update Thumbnail for the "player"
