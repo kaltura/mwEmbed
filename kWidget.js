@@ -97,7 +97,7 @@ var kWidget = {
 	jsReadyCalledForIds: [],
 	proxyJsCallbackready: function(){
 		var _this = this;
-		// check if we have not proxy yet and we have readyCallbacks 
+		// Check if we have not proxy yet and we have readyCallbacks 
 		if( ! this.proxiedJsCallback && 
 			( window['jsCallbackReady'] || this.readyCallbacks.length )){
 			// Setup a proxied ready function: 
@@ -206,9 +206,6 @@ var kWidget = {
 					}
 					break;
 			}
-			// Clear out any kUserAgentPlayerRules
-			// XXX Ugly hack to recall AddScript ( loader is in desperate need of a refactor )
-			window.kUserAgentPlayerRules = false;
 		}
 
 		// Check if we are dealing with an html5 player or flash player or direct download
@@ -216,6 +213,7 @@ var kWidget = {
 			this.outputDirectDownload( targetId, settings );
 			return ;
 		}
+		
 		if( settings.isHTML5 ){
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
@@ -331,11 +329,7 @@ var kWidget = {
 			elm.parentNode.replaceChild( spanTarget, elm );
 			spanTarget.innerHTML = output;
 		}
-		// XXX IE9 about 1/2 the time on fresh loads does not fire the jsCallbackready 
-		//     when you dynamically embed the flash object before dom ready.   
 		// XXX firefox with firebug enabled locks up the browser 
-		// For 1.7 we should see if we can avoid waiting for domReady with flashvar based callback. 
-		// note this is true for either flashembed or the object insert method bellow. 
 		// detect firebug: 
 		if ( window.console && ( window.console.firebug || window.console.exception ) ) {
 			console.log( 'Warning firebug + firefox and dynamic flash kdp embed causes lockups in firefox' + 
@@ -1120,7 +1114,7 @@ var kWidget = {
 			 
 		 	// Check if we are using an iframe ( load only the iframe api client ) 
 		 	if( mw.getConfig( 'Kaltura.IframeRewrite' ) && 
-	 			!window.kUserAgentPlayerRules && 
+	 			! window.kUserAgentPlayerRules && 
 	 			mw.getConfig( 'EmbedPlayer.EnableIframeApi') && 
 	 			( kWidget.supportsFlash() || kWidget.supportsHTML5() ) )
 	 		{
@@ -1229,17 +1223,33 @@ var kWidget = {
 	 * @param {function} callback
 	 */
 	appendScriptUrl: function( url, callback ) {
-		// If the dom is not ready yet, write our script directly
-		var script = document.createElement( 'script' );
-		script.type = 'text/javascript';
+		var head = document.getElementsByTagName("head")[0] || document.documentElement;
+		var script = document.createElement("script");
 		script.src = url;
-		// xxx fixme integrate with new callback system ( resource loader rewrite )
-		if( callback ){
-			// IE sucks .. issues onload callback before ready 
-			// xxx could conditional the callback delay on user 
-			script.onload = callback;
-		}
-		document.getElementsByTagName('head')[0].appendChild( script );	
+
+		// Handle Script loading
+		var done = false;
+
+		// Attach handlers for all browsers
+		script.onload = script.onreadystatechange = function() {
+			if ( !done && (!this.readyState ||
+					this.readyState === "loaded" || this.readyState === "complete") ) {
+				done = true; 
+				if( typeof callback == 'function'){
+					callback();
+				}
+
+				// Handle memory leak in IE
+				script.onload = script.onreadystatechange = null;
+				if ( head && script.parentNode ) {
+					head.removeChild( script );
+				}
+			}
+		};
+
+		// Use insertBefore instead of appendChild  to circumvent an IE6 bug.
+		// This arises when a base node is used (#2709 and #4378).
+		head.insertBefore( script, head.firstChild );
 	},
 	/**
 	 * Add css to the dom

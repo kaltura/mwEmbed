@@ -130,9 +130,8 @@
 	DomReady.ready = function(fn, args) {
 		// Attach the listeners
 		bindReady();
-    
 		// If the DOM is already ready
-		if (isReady) {
+		if ( isReady || /loaded|complete/.test(document.readyState) ) {
 			// Execute the function immediately
 			fn.call(window, []);
 	    } else {
