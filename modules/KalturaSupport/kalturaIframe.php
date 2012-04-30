@@ -459,15 +459,7 @@ class kalturaIframe {
 	private function getMwEmbedLoaderLocation(){
 		global $wgResourceLoaderUrl;
 		$loaderPath = str_replace( 'ResourceLoader.php', 'mwEmbedLoader.php', $wgResourceLoaderUrl );
-		$versionParam = '?';
-		$urlParam = $this->getResultObject()->getUrlParameters();
-		if( isset( $urlParam['urid'] ) ){
-			$versionParam .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
-		}
-		if( isset( $ulrParam['debug'] ) ){
-			$versionParam .= '&debug=true';
-		}
-		
+
 		$xml = $this->getResultObject()->getUiConfXML();
 		if( $xml && isset( $xml->layout ) && isset( $xml->layout[0] ) ){
 			foreach($xml->layout[0]->attributes() as $name => $value) {
@@ -480,7 +472,7 @@ class kalturaIframe {
 				}
 			}
 		}
-		return $loaderPath . $versionParam;
+		return $loaderPath;
 	}
 	
 	/**
@@ -775,9 +767,10 @@ class kalturaIframe {
 					}
 				?>
 				// Because IE has out of order execution issues, we don't check the dom until we get here: 
-				setTimeout(function(){
+				/*setTimeout(function(){
 					kRunMwDomReady( 'endOfIframeJs' );
 				},0);
+				*/
 			});
 		</script>
 	</body>
@@ -865,7 +858,7 @@ class kalturaIframe {
 				// also we need to see if the entryId supports direct download links
 				document.write('<?php echo $this->getFileLinkHTML()?>');
 
-				var thumbSrc = mw.getKalturaThumbUrl({
+				var thumbSrc = kWidget.getKalturaThumbUrl({
 					'entry_id' : '<?php echo $this->getResultObject()->getEntryId() ?>',
 					'partner_id' : '<?php echo $this->getResultObject()->getPartnerId() ?>',
 					'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',

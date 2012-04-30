@@ -192,7 +192,7 @@ mw.KWidgetSupport.prototype = {
 			embedPlayer.mediaElement.tryAddSource(
 				$('<source />')
 				.attr( {
-					'src' : mw.getKalturaThumbUrl({
+					'src' : kWidget.getKalturaThumbUrl({
 						'partner_id' : this.kClient.getPartnerId(),
 						'entry_id' : embedPlayer.kentryid,
 						'width' : embedPlayer.getWidth(),
@@ -681,7 +681,7 @@ mw.KWidgetSupport.prototype = {
 			// see if we are dealing with an image asset ( no flavor sources )
 			if( playerData.meta && playerData.meta.mediaType == 2 ){ 
 				sources = [{
-						'src' : mw.getKalturaThumbUrl({
+						'src' : kWidget.getKalturaThumbUrl({
 							'widget_id' : widgetId,
 							'entry_id' : entryId,
 							'width' : size.width,
@@ -843,7 +843,7 @@ mw.KWidgetSupport.prototype = {
 		var flavorData = playerData.flavors
 		// Set the poster ( if not already set ) 
 		if( !embedPlayer.poster && embedPlayer.kentryid ){
-			embedPlayer.poster = mw.getKalturaThumbUrl({
+			embedPlayer.poster = kWidget.getKalturaThumbUrl({
 				'partner_id' : this.kClient.getPartnerId(),
 				'entry_id' : embedPlayer.kentryid,
 				'width' : embedPlayer.getWidth(),

@@ -431,7 +431,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		if(!size){
 			return clip.thumbnailUrl;
 		}
-		return mw.getKalturaThumbUrl({
+		return kWidget.getKalturaThumbUrl({
 			'width': size.width,
 			'height': size.height,
 			'entry_id' : clip.id,
