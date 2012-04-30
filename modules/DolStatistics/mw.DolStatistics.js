@@ -287,7 +287,7 @@ mw.DolStatistics.prototype = {
 			params['KDPDAT_PLAYHEAD'] = Math.round( embedPlayer.currentTime * 1000 ) / 1000;
 		}
 		// The auto played property; 
-		params['AUTO'] = this.getAutoPlayFlag();
+		params['AUTO'] = String( this.getAutoPlayFlag() );
 		// Current Timestamp
 		params['GENTIME'] = new Date().getTime();
 		// Asset Id
