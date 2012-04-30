@@ -1,71 +1,84 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Basic Player test</title>
-<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
-<script type="text/javascript">	
-function jsKalturaPlayerTest( videoId ){
-	
-	// Name this module
-	module( "Basic Player" );
-
-	var $iframe = $( '#' + videoId + '_ifp' ).contents();
-	var iframeContext = window.frames['kaltura_player_ifp'];
-	
-	test( "Iframe in DOM", function() {
-		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
-		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
-	});
-
-	asyncTest("Iframe layout elements", function(){
-		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
-			start();
-		});
-	});
-	asyncTest("Iframe config", function(){
-		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
-		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
-		// Test page context config: 
-		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
-		start();
-	});
-}
-</script>
-<script>
-	function jsCallbackReady( videoId ){
-		if( console && console.log ){
-			console.log( 'jsCallbackReady: ' + videoId );
-		}
-	}
-</script>
-
-<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
+<title>kWidget Dynamic Player Embed</title>
 </head>
 <body>
-<h2> Basic Player test </h2>
+<h2> kWidget Dynamic Player Embed </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
-<br />
+<br /><br />
+<a id="doIncludeLib" href="#">Include mwEmbed, then run kWidget.embed</a> </br>
+<div id="myVideoTarget" style="width:400px;height:330px;">
+	<!--  SEO and video metadata go here -->
+	<span property="dc:description" content="test folgers coffe"></span>
+	<span property="media:title" content="FolgersCoffe.mpeg"></span>
+	<span property="media:width" content="400"></span>
+	<span property="media:height" content="300"></span>
+</div>
 
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" />
-</object>
+<script>
+	function appendScriptUrl( url, callback ) {
+		var head = document.getElementsByTagName("head")[0] || document.documentElement;
+		var script = document.createElement("script");
+		script.src = url;
+	
+		// Handle Script loading
+		var done = false;
+	
+		// Attach handlers for all browsers
+		script.onload = script.onreadystatechange = function() {
+			if ( !done && (!this.readyState ||
+					this.readyState === "loaded" || this.readyState === "complete") ) {
+				done = true; 
+				if( typeof callback == 'function'){
+					callback();
+				}
+	
+				// Handle memory leak in IE
+				script.onload = script.onreadystatechange = null;
+				if ( head && script.parentNode ) {
+					head.removeChild( script );
+				}
+			}
+		};
+	
+		// Use insertBefore instead of appendChild  to circumvent an IE6 bug.
+		// This arises when a base node is used (#2709 and #4378).
+		head.insertBefore( script, head.firstChild );
+	};
+	window['doPlayCallback'] = function( playerId ){
+		console.log( 'kWidget doPlayCallback ' + playerId );
+		//$('body').append( '<div>started playback</div>' );
+	};
+	var doEmbedAndLink = document.getElementById('doIncludeLib');
+	doEmbedAndLink.onclick = function(){
+		// add the mwEmbed lib: 
+		appendScriptUrl('../../../mwEmbedLoader.php', function(){
+			// do the kWidget embed: 
+			kWidget.embed({
+				'targetId': 'myVideoTarget',
+				'wid': '_243342',
+				'uiconf_id' : '2877502',
+				'entry_id' : '0_uka1msg4',
+				'flashvars':{
+					'externalInterfaceDisabled' : false,
+					'autoPlay' : true,
+					'fooBar': 'cats'
+				},
+				'readyCallback': function( playerId ){
+					console.log( "kWidget player ready: " + playerId );
+					var kdp = document.getElementById( playerId );
+					kdp.addJsListener( 'doPlay', 'doPlayCallback');
+				}	
+			});
+		});
+	};
+</script>
 
+<p><p>
 <!-- 
-
-<layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">
+ 
+ <layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
@@ -81,7 +94,7 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/u
 				    <Label 
 				      id="offlineMessage" styleName="offlineMessage"
 				      text="{mediaProxy.entry.offlineMessage}" visible="{mediaProxy.isOffline}"
-				      width="100%" height="30"/> 
+				      width="100%" height="30"/>
 			     	<Spacer height="100%" />
 		    	</VBox>
         <Screens id="screensLayer" width="100%" height="100%" mouseOverTarget="{PlayerHolder}" styleName="clickThrough" startScreenId="startScreen" startScreenOverId="startScreen" pauseScreenOverId="pauseScreen" pauseScreenId="pauseScreen" playScreenOverId="playScreen" endScreenId="endScreen" endScreenOverId="endScreen"/>
@@ -237,7 +250,7 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/u
   </uiVars>
 </layout>
 
- -->
-
+  -->
+ 
 </body>
 </html>
