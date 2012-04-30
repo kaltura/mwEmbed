@@ -29,6 +29,7 @@
 				'kFlashVarsToUrl' : 'flashVarsToUrl',
 				'kFlashVarsToString' : 'flashVarsToString',
 				'kServiceConfigToUrl' : 'serviceConfigToUrl',
+				'kRunMwDomReady': 'rewriteObjectTags',
 				// fully deprecated ( have no purpuse any more )
 				'restoreKalturaKDPCallback': false
 		}
