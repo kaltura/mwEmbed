@@ -101,7 +101,7 @@ var kWidget = {
 		if( ! this.proxiedJsCallback && 
 			( window['jsCallbackReady'] || this.readyCallbacks.length )){
 			// Setup a proxied ready function: 
-			this.proxiedJsCallback = window['jsCallbackReady'];
+			this.proxiedJsCallback = window['jsCallbackReady'] || true;
 			// Override the actual jsCallbackReady
 			window['jsCallbackReady'] = function( widgetId ){
 				// check if we need to wait. 
@@ -120,7 +120,7 @@ var kWidget = {
 	 */
 	jsCallbackReady: function( widgetId ){
 		// Check for proxyed jsReadyCallback: 
-		if( this.proxiedJsCallback ){
+		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
 		}
 		// Issue the callback for all readyCallbacks
