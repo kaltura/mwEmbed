@@ -329,9 +329,7 @@ mw.AdTimeline.prototype = {
 		runSequeceProxyInx( seqInx );
 	},
 	updateUiForAdPlayback: function( slotType ){
-		
-		mw.log( "AdTimeline:: updateUiForAdPlayback: slotType:" + slotType + ' trigger: AdSupport_StartAdPlayback ' );
-		
+		mw.log( "AdTimeline:: updateUiForAdPlayback: slotType:" + slotType );
 		var embedPlayer = this.embedPlayer;
 		
 		// Set the current slot type :
@@ -346,14 +344,25 @@ mw.AdTimeline.prototype = {
 		embedPlayer.hidePlayerSpinner();
 		// Set inSequence property to "true" 
 		embedPlayer.sequenceProxy.isInSequence = true;
+		
+		// Trigger preroll started ( Note: updateUiForAdPlayback is our only
+		// indicator right now that a real ad is going to play )
+		// we can refactor but preroll must come before AdSupport_StartAdPlayback  )
+		mw.log( 'AdTimeline:: trigger: AdSupport_' + slotType + 'Started' );
+		embedPlayer.triggerHelper( 'AdSupport_' + slotType + 'Started' );
+		
 		// Trigger an ad start event once we enter an ad state
+		mw.log( 'AdTimeline:: trigger: AdSupport_StartAdPlayback' );
 		embedPlayer.triggerHelper( 'AdSupport_StartAdPlayback', slotType );
 	},
 	/**
 	 * Restore a player from ad state
 	 * @return
 	 */
-	restorePlayer: function( ){
+	restorePlayer: function( slotType ){
+		if( ! slotType ){
+			slotType = this.currentAdSlotType;
+		}
 		mw.log( "AdTimeline:: restorePlayer " );
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.restoreEventPropagation();
@@ -363,7 +372,12 @@ mw.AdTimeline.prototype = {
 		// restore in sequence property; 
 		embedPlayer.sequenceProxy.isInSequence = false;
 		// trigger an event so plugins can restore their content based actions
+		mw.log( 'AdTimeline:: trigger: AdSupport_EndAdPlayback')
 		embedPlayer.triggerHelper( 'AdSupport_EndAdPlayback', this.currentAdSlotType);
+		
+		// Trigger slot event ( always after AdEnd )
+		mw.log( 'AdTimeline:: trigger: AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete')
+		embedPlayer.triggerHelper( 'AdSupport_' + slotType.replace('roll', '') + 'SequenceComplete' );
 	}
 };
 

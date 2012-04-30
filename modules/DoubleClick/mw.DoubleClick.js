@@ -91,6 +91,8 @@ mw.DoubleClick.prototype = {
 		_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 			// Add the slot to the given sequence proxy target target
 			sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function( callback ){
+				// if a preroll set it as such: 
+				_this.currentAdSlotType = 'preroll';
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
@@ -105,6 +107,9 @@ mw.DoubleClick.prototype = {
 				
 				// set content complete flag
 				_this.contentDoneFlag = true;
+				
+				// set current slot to postRoll
+				_this.currentAdSlotType = 'postroll';
 				
 				// trigger the double click end sequence:
 				_this.adsLoader.contentComplete();
@@ -380,6 +385,11 @@ mw.DoubleClick.prototype = {
 		});
 		// Resume content:
 		adsListener( 'CONTENT_RESUME_REQUESTED', function(){
+			// Update slot type, if a preroll switch to midroll
+			if( _this.currentAdSlotType == 'preroll' ){
+				_this.currentAdSlotType = 'midroll';
+				// ( will be updated to postroll at contentDoneFlag update time ) 
+			}
 			_this.restorePlayer();
 		});
 		adsListener( 'ALL_ADS_COMPLETED', function(){
