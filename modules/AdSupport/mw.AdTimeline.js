@@ -188,9 +188,6 @@ mw.AdTimeline.prototype = {
 									// Restore the player if we played an ad: 
 									_this.restorePlayer();
 								}
-								// Trigger onplay ( to match the kaltura kdp ) on play event
-								// after the ad plays are complete 
-								//embedPlayer.triggerHelper( 'onplay' );
 								// Continue playback
 								embedPlayer.play();
 							},0);
