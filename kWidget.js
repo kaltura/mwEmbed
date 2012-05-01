@@ -775,6 +775,7 @@ var kWidget = {
 	 
 	 /**
 	  * Get Kaltura thumb url from entry object
+	  * TODO: Should be removed. we need to grab thumbnail path from api (baseEntry->thumbnailUrl)
 	  */
 	 getKalturaThumbUrl: function ( entry ){
 	 	if( entry.width == '100%'){
