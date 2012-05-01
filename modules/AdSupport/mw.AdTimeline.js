@@ -367,7 +367,6 @@ mw.AdTimeline.prototype = {
 			slotType = this.currentAdSlotType;
 		}
 		mw.log( "AdTimeline:: restorePlayer " );
-		debugger;
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.restoreEventPropagation();
 		embedPlayer.enablePlayControls();
