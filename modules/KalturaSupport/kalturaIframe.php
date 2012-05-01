@@ -778,6 +778,7 @@ class kalturaIframe {
 <?php
 	}
 	private function javaScriptPlayerLogic(){
+		// TODO: Move all this JS logic to external file ( better for caching and editing in IDE )
 		?>
 		
 		var isHTML5 = kWidget.isHTML5FallForward();
@@ -846,7 +847,7 @@ class kalturaIframe {
 				}
 			}
 			
-			if( kSupportsFlash() ||  mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){				
+			if( kWidget.supportsFlash() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){				
 				// Write out the embed object
 				document.write('<?php echo $this->getFlashEmbedHTML() ?>' );
 				
@@ -856,6 +857,7 @@ class kalturaIframe {
 				// NOTE we need to do some platform checks to see if the device can
 				// "actually" play back the file and or switch to 3gp version if nessesary.
 				// also we need to see if the entryId supports direct download links
+				// TODO: we should remove this fallback and create new EmbedPlayer type that will link to the optimnize flavor
 				document.write('<?php echo $this->getFileLinkHTML()?>');
 
 				var thumbSrc = kWidget.getKalturaThumbUrl({
@@ -870,7 +872,7 @@ class kalturaIframe {
 				window.kCollectCallback = function(){ return ; }; // callback for jsonp
 
 				document.getElementById('directFileLinkButton').onclick = function() {
-					kAppendScriptUrl( '<?php echo $this->getPlayEventUrl() ?>' + '&callback=kCollectCallback' );
+					kWidget.appendScriptUrl( '<?php echo $this->getPlayEventUrl() ?>' + '&callback=kCollectCallback' );
 					return true;
 				};
 			}

@@ -550,9 +550,8 @@
 			var iframeId = $( playerTarget ).attr('id') + '_ifp';
 			var iframeStyle = ( $( playerTarget ).attr('style') ) ? $( playerTarget ).attr('style') : '';
 			var iframeCss = { 'border': '0px' };
-			var additionalIframeCss = kGetAdditionalTargetCss();
 			
-			$.extend(iframeCss, additionalIframeCss);
+			$.extend(iframeCss, kWidget.getAdditionalTargetCss());
 			
 			var $iframe = $('<iframe />')
 				.attr({

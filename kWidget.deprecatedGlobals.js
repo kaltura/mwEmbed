@@ -46,7 +46,7 @@
 						kWidget.log( "Error kWidget missing method: " + globalFunctionMap[ gName] );
 						return ;
 					}
-					return kWidget[ globalFunctionMap[ gName] ].apply( kWidget, args );
+					return kWidget[ globalFunctionMap[ gName ] ].apply( kWidget, args );
 				}
 			})( gName );
 		}

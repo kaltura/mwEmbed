@@ -209,6 +209,7 @@ var kWidget = {
 		}
 
 		// Check if we are dealing with an html5 player or flash player or direct download
+		// TODO: We may want to always load the iframe and handle the fallback there
 		if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ) {
 			this.outputDirectDownload( targetId, settings );
 			return ;
@@ -230,12 +231,7 @@ var kWidget = {
 			settings.width = rewriteObjects[i].width;
 			settings.height = rewriteObjects[i].height;
 			
-			// If we have no flash &  no html5 fallback and don't care about about player rewrite 
-			if( ! this.supportsFlash() && ! this.supportsHTML5() && !mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) {
-				this.outputDirectDownload( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
-			} else {
-				this.embed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
-			}
+			this.embed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
 		}
 	},
 
@@ -374,7 +370,7 @@ var kWidget = {
 				'height': height + sizeUnit
 			};
 
-			var additionalTargetCss = kGetAdditionalTargetCss();
+			var additionalTargetCss = kWidget.getAdditionalTargetCss();
 			$.extend( targetCss, additionalTargetCss );
 			$('#' + targetId ).css( targetCss );
 			// Do kaltura iframe player
@@ -475,7 +471,7 @@ var kWidget = {
 		});
 		var playButtonUrl = baseUrl + 'skins/common/images/player_big_play_button.png';
 		var playButtonCss = 'background: url(\'' + playButtonUrl + '\'); width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
-		var ddId = 'dd_' + Math.random();
+		var ddId = 'dd_' + Math.round( Math.random() );
 
 		var ddHTML = '<div id="' + ddId + '" style="width: ' + options.width + ';height:' + options.height + ';position:relative">' +
 				'<img style="width:100%;height:100%" src="' + thumbSrc + '" >' +
@@ -1330,13 +1326,8 @@ var kWidget = {
 					kEmbedSettings.width = attributes.width;
 					kEmbedSettings.height = attributes.height;
 					
-					if( ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
-						kWidget.outputDirectDownload( targetId, kEmbedSettings, {'width':attributes.width, 'height':attributes.height} );
-						return ;
-					}
-					if( kEmbedSettings.uiconf_id && kWidget.isHTML5FallForward()  ){
+					if( kEmbedSettings.uiconf_id && ( kWidget.isHTML5FallForward() || ! kWidget.supportsFlash() ) ){
 						document.getElementById( targetId ).innerHTML = '<div id="' + attributes.id + '"></div>';
-						
 						doEmbedSettingsWrite( kEmbedSettings, attributes.id, attributes.width, attributes.height);
 					} else {
 						// Use the original flash player embed:  
@@ -1354,12 +1345,7 @@ var kWidget = {
 				// TODO test with kWidget.embed replacement.
 				_this.domReady(function(){      
 					var kEmbedSettings = kWidget.getEmbedSettings( _this.attributes.swf, _this.params.flashVars);
-					if( kEmbedSettings.uiconf_id && ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
-						kWidget.outputDirectDownload( targetId, kEmbedSettings );
-						return ;
-					}
-	
-					if( kWidget.isHTML5FallForward() && kEmbedSettings.uiconf_id ){
+					if( kEmbedSettings.uiconf_id && ( kWidget.isHTML5FallForward() || ! kWidget.supportsFlash() ) ){
 						doEmbedSettingsWrite( kEmbedSettings, targetId, _this.attributes.width, _this.attributes.height);
 					} else {
 						// use the original flash player embed:  
@@ -1378,15 +1364,9 @@ var kWidget = {
 				// TODO test with kWidget.embed replacement.
 				_this.domReady(function(){
 					var kEmbedSettings = kWidget.getEmbedSettings( swfUrlStr, flashvarsObj );
-					
-					if( kEmbedSettings.uiconf_id && ! kWidget.supportsFlash() && ! kWidget.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
-						kWidget.outputDirectDownload( targetId, kEmbedSettings, {'width' : widthStr, 'height' :  heightStr} );
-						return ;
-					}
-	
 					// Check if IsHTML5FallForward
-					if( kWidget.isHTML5FallForward() && kEmbedSettings.uiconf_id ){
-						doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr);
+					if( kEmbedSettings.uiconf_id && ( kWidget.isHTML5FallForward() || ! kWidget.supportsFlash() ) ){
+						doEmbedSettingsWrite( kEmbedSettings, replaceElemIdStr, widthStr,  heightStr );
 					} else {
 						// Else call the original EmbedSWF with all its arguments 
 						window['swfobject']['originalEmbedSWF']( swfUrlStr, replaceElemIdStr, widthStr,

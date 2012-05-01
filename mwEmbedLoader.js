@@ -78,7 +78,7 @@ if( !mw.ready ){
 	mw.ready = function( fn ){	
 		window.preMwEmbedReady.push( fn );
 		kWidget.domReady(function(){
-			kAddScript();
+			kWidget.loadHTML5Lib();
 		});
 	};
 }
