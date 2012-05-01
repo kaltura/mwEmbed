@@ -355,8 +355,8 @@ mw.DoubleClick.prototype = {
 			// make sure the player is in play state: 
 			_this.embedPlayer.playInterfaceUpdate();
 			
-			// restore player position: 
-			_this.restorePlayerOnScreen( _this.getAdContainer() );
+			// hide content / show playerplayer position: 
+			_this.hideContent();
 			
 			// set ad playing flag: 
 			_this.adPlaying = true;
@@ -413,9 +413,15 @@ mw.DoubleClick.prototype = {
 		mw.log("DoubleClick:: hide Content / show Ads");
 		var _this = this;
 		// show the ad container: 
-		this.restorePlayerOnScreen( 
-			this.getAdContainer() 
-		);
+		$( this.getAdContainer() ).css({
+			'top' : 0,
+			'left' : 0
+		});
+		if( this.adsManager && this.adsManager.resize ){
+			this.adsManager.resize( 
+					this.embedPlayer.width, this.embedPlayer.height, google.ima.ViewMode.NORMAL 
+				);
+		}
 		// hide content:
 		this.hidePlayerOffScreen(
 			this.getContent()
@@ -424,9 +430,8 @@ mw.DoubleClick.prototype = {
 	showContent: function(){
 		mw.log("DoubleClick:: show Content / hide Ads");
 		// show content
-		this.restorePlayerOnScreen( 
-			this.getContent()
-		);
+		this.embedPlayer.syncPlayerSize();
+		
 		// make sure content is in sync with aspect size: 
 		if( this.embedPlayer.controlBuilder ){
 			this.embedPlayer.controlBuilder.syncPlayerSize();
@@ -444,10 +449,6 @@ mw.DoubleClick.prototype = {
 			'position' : 'absolute', 
 			'left': '-4048px'
 		})
-	},
-	/* restore Player on screen*/
-	restorePlayerOnScreen:function( target ){
-		$( target ).css( 'left', '0px');
 	},
 	
 	addEmbedPlayerListeners: function(){
