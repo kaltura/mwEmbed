@@ -992,7 +992,7 @@ var kWidget = {
 		         'mw.EmbedPlayerNative', 
 		         'mw.KWidgetSupport', 
 		         'mw.KDPMapping', 
-		         'JSON', 
+		         'JSON'
                  ],
          playerClient:[
 		         'mw.IFramePlayerApiClient', 

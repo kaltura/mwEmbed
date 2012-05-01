@@ -30,7 +30,7 @@
 				'kFlashVarsToString' : 'flashVarsToString',
 				'kServiceConfigToUrl' : 'serviceConfigToUrl',
 				'kRunMwDomReady': 'rewriteObjectTags',
-				// fully deprecated ( have no purpuse any more )
+				// fully deprecated ( have no purpose any more )
 				'restoreKalturaKDPCallback': false
 		}
 		for( var gName in globalFunctionMap ){
