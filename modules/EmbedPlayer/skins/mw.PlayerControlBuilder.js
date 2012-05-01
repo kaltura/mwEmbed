@@ -1571,8 +1571,13 @@ mw.PlayerControlBuilder.prototype = {
 			$overlay.remove();
 		} );
 		
-		// Show the big play button:
-		if( embedPlayer.isStopped() ){
+		// Show the big play button: ( if not in an ad .. TODO clean up ) 
+		if( embedPlayer.isStopped() && 
+				( 
+					embedPlayer.sequenceProxy && 
+					embedPlayer.sequenceProxy.isInSequence == false
+				)
+		){
 			embedPlayer.$interface.find( '.play-btn-large' ).fadeIn( 'slow' );
 		}
 
