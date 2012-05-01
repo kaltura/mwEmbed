@@ -156,7 +156,7 @@ uiConf Examples:
 			
 			// Remove duplicates
 			$.each( customEvents, function( i ) {
-				if ( _this.inArray( _this.eventTrackList, this ) ) {
+				if ( $.inArray( this, _this.eventTrackList ) ) {
 					customEvents.splice( i, 1 );
 				}
 			} );
@@ -302,7 +302,7 @@ uiConf Examples:
 			var customEvents = [];
 			if ( options.customEvent ) {
 				customEvents = options.customEvent.split( ',' );
-				if ( this.inArray( customEvents, methodName ) ) {
+				if ( $.inArray( methodName, customEvents ) ) {
 					if ( options[ methodName + "Category" ] ) {
 						eventCategory = options[ methodName + "Category" ];
 					}
@@ -353,7 +353,7 @@ uiConf Examples:
 			var customEvents = [];
 			if ( options.customEvent ) {
 				customEvents = options.customEvent.split( ',' );
-				if ( this.inArray( customEvents, methodName ) ) {
+				if ( $.inArray( methodName, customEvents ) ) {
 					if ( options[ methodName + "Value" ] ) {
 						return options[ methodName + "Value" ];
 					}
