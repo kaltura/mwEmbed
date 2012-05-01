@@ -245,7 +245,6 @@ mw.AdTimeline.prototype = {
 							embedPlayer.onClipDone();
 						});
 					} else {
-						_this.restorePlayer();
 						// Restore ondone interface: 
 						embedPlayer.onDoneInterfaceFlag = true;
 						// on clip done can't be invoked with a stop state ( TOOD clean up end sequence ) 
@@ -329,6 +328,10 @@ mw.AdTimeline.prototype = {
 		runSequeceProxyInx( seqInx );
 	},
 	updateUiForAdPlayback: function( slotType ){
+		if( ! slotType ){
+			mw.log("Error:: please supply an ad type, " + slotType + ' provided.');
+			slotType = '';
+		}
 		mw.log( "AdTimeline:: updateUiForAdPlayback: slotType:" + slotType );
 		var embedPlayer = this.embedPlayer;
 		
@@ -364,6 +367,7 @@ mw.AdTimeline.prototype = {
 			slotType = this.currentAdSlotType;
 		}
 		mw.log( "AdTimeline:: restorePlayer " );
+		debugger;
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.restoreEventPropagation();
 		embedPlayer.enablePlayControls();
