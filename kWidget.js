@@ -985,15 +985,19 @@ var kWidget = {
 	  ***********************/
 	 library: {
 		 core : [
-		         'mwEmbed', 
-		         'mw.style.mwCommon', 
-		         '$j.cookie', 
-		         '$j.postMessage', 
-		         'mw.EmbedPlayerNative', 
-		         'mw.KWidgetSupport', 
-		         'mw.KDPMapping', 
-		         'JSON'
-                 ],
+		        'mwEmbed', 
+		        'mw.style.mwCommon', 
+	 		 	// default skin ( some skin overides dependent on pre-defined PlayerSkinMvpcf 
+		        'mw.style.EmbedPlayer',
+		        'mw.PlayerSkinMvpcf',
+	 		 	'mw.style.PlayerSkinMvpcf',
+		        '$j.cookie', 
+		        '$j.postMessage', 
+		        'mw.EmbedPlayerNative', 
+		        'mw.KWidgetSupport', 
+		        'mw.KDPMapping', 
+		        'JSON'
+                ],
          playerClient:[
 		         'mw.IFramePlayerApiClient', 
                  'fullScreenApi'
@@ -1020,9 +1024,6 @@ var kWidget = {
     		 		
     		 		'mw.style.EmbedPlayer',
     		 		'mw.PlayerControlBuilder',
-    		 		// default skin: 
-    		 		'mw.PlayerSkinMvpcf',
-    		 		'mw.style.PlayerSkinMvpcf',
     		 		// common playback methods:
     		 		'mw.EmbedPlayerNative',
     		 		'mw.EmbedPlayerKplayer',
