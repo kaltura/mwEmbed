@@ -1129,7 +1129,6 @@ var kWidget = {
 		 	if( mw.getConfig('EmbedPlayer.IsIframeServer') ){
 		 		jsRequestSet.push( _this.library.playerServer );
 		 	}
-		 	
 		 	// Add the jquery ui skin: 
 		 	if( ! mw.getConfig('IframeCustomjQueryUISkinCss' ) ){
 		 		if( mw.getConfig( 'jQueryUISkin' ) ){
