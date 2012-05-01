@@ -753,11 +753,45 @@
 					break;
 					
 				
-				/**
-				 * Ad support listeneres
-				 *  TODO move to AdTimeline.js ( not in core KDPMapping )
-				 */
+				// Pre Sequence:
+				case 'preSequenceStart':
 				case 'prerollStarted':
+					b('AdSupport_prerollStarted', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
+					break;
+					break;
+				case 'preSequenceComplete':
+					b('AdSupport_preSequenceComplete', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
+					break;
+					
+				// mid Sequence: 
+				case 'midrollStarted':
+					b('AdSupport_midrollStarted', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
+					break;
+				case 'midSequenceComplete':
+					b('AdSupport_midSequenceComplete', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
+					break;
+					
+				// post roll Sequence: 
+				case 'postRollStarted':
+					b('AdSupport_midrollStarted', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
+					break;
+				case 'postSequenceComplete':
+					b('AdSupport_postSequenceComplete', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
+					break;
+					
+				// generic events: 
 				case 'adStart':
 					b('AdSupport_StartAdPlayback', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
@@ -768,27 +802,22 @@
 						callback( { 'timeSlot': slotType }, embedPlayer.id )
 					});
 					break;
-				// Pre sequences: 
-				case 'preSequenceStart':
-				case 'pre1start':
-					b( 'AdSupport_PreSequence');
-					break;
-				case 'preSequenceComplete':
-					b( 'AdSupport_PreSequenceComplete');
-					break;
-				
-				// Post sequences:
-				case 'post1start':
-				case 'postSequenceStart':
-					b( 'AdSupport_PostSequence');
-					break;
-				case 'postSequenceComplete':
-					b( 'AdSupport_PostSequenceComplete' );
-					break;
+					
+				// generic ad time update
 				case 'adUpdatePlayhead': 
 					b( 'AdSupport_AdUpdatePlayhead', function( event, adTime) {
 						callback( adTime, embedPlayer.id );
 					});
+					break;
+					
+				/**OLD NUMERIC SEQUENCE EVENTS */
+					
+				case 'pre1start':
+					b( 'AdSupport_PreSequence');
+					break;
+				// Post sequences:
+				case 'post1start':
+					b( 'AdSupport_PostSequence');
 					break;
 					
 				/**

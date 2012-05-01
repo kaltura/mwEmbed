@@ -91,6 +91,8 @@ mw.DoubleClick.prototype = {
 		_this.embedPlayer.bindHelper( 'AdSupport_preroll' + _this.bindPostfix, function( event, sequenceProxy ){
 			// Add the slot to the given sequence proxy target target
 			sequenceProxy[ _this.getSequenceIndex( 'preroll' ) ] = function( callback ){
+				// if a preroll set it as such: 
+				_this.currentAdSlotType = 'preroll';
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
@@ -105,6 +107,9 @@ mw.DoubleClick.prototype = {
 				
 				// set content complete flag
 				_this.contentDoneFlag = true;
+				
+				// set current slot to postRoll
+				_this.currentAdSlotType = 'postroll';
 				
 				// trigger the double click end sequence:
 				_this.adsLoader.contentComplete();
@@ -350,8 +355,8 @@ mw.DoubleClick.prototype = {
 			// make sure the player is in play state: 
 			_this.embedPlayer.playInterfaceUpdate();
 			
-			// restore player position: 
-			_this.restorePlayerOnScreen( _this.getAdContainer() );
+			// hide content / show playerplayer position: 
+			_this.hideContent();
 			
 			// set ad playing flag: 
 			_this.adPlaying = true;
@@ -380,6 +385,11 @@ mw.DoubleClick.prototype = {
 		});
 		// Resume content:
 		adsListener( 'CONTENT_RESUME_REQUESTED', function(){
+			// Update slot type, if a preroll switch to midroll
+			if( _this.currentAdSlotType == 'preroll' ){
+				_this.currentAdSlotType = 'midroll';
+				// ( will be updated to postroll at contentDoneFlag update time ) 
+			}
 			_this.restorePlayer();
 		});
 		adsListener( 'ALL_ADS_COMPLETED', function(){
@@ -403,9 +413,15 @@ mw.DoubleClick.prototype = {
 		mw.log("DoubleClick:: hide Content / show Ads");
 		var _this = this;
 		// show the ad container: 
-		this.restorePlayerOnScreen( 
-			this.getAdContainer() 
-		);
+		$( this.getAdContainer() ).css({
+			'top' : 0,
+			'left' : 0
+		});
+		if( this.adsManager && this.adsManager.resize ){
+			this.adsManager.resize( 
+					this.embedPlayer.width, this.embedPlayer.height, google.ima.ViewMode.NORMAL 
+				);
+		}
 		// hide content:
 		this.hidePlayerOffScreen(
 			this.getContent()
@@ -414,9 +430,8 @@ mw.DoubleClick.prototype = {
 	showContent: function(){
 		mw.log("DoubleClick:: show Content / hide Ads");
 		// show content
-		this.restorePlayerOnScreen( 
-			this.getContent()
-		);
+		this.embedPlayer.syncPlayerSize();
+		
 		// make sure content is in sync with aspect size: 
 		if( this.embedPlayer.controlBuilder ){
 			this.embedPlayer.controlBuilder.syncPlayerSize();
@@ -434,10 +449,6 @@ mw.DoubleClick.prototype = {
 			'position' : 'absolute', 
 			'left': '-4048px'
 		})
-	},
-	/* restore Player on screen*/
-	restorePlayerOnScreen:function( target ){
-		$( target ).css( 'left', '0px');
 	},
 	
 	addEmbedPlayerListeners: function(){

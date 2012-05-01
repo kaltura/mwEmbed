@@ -985,11 +985,14 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			// Check for ogg source
-			if( asset.fileExt && ( asset.fileExt.toLowerCase() == 'ogg' 
+			if( asset.fileExt && 
+				( 
+				asset.fileExt.toLowerCase() == 'ogg' 
 				|| 
 				asset.fileExt.toLowerCase() == 'ogv'
 				||
-				asset.containerFormat.toLowerCase() == 'ogg' )
+				( asset.containerFormat && asset.containerFormat.toLowerCase() == 'ogg' )
+				)
 			){
 				source['src'] = src + '/a.ogg';
 				source['data-flavorid'] = 'ogg';
@@ -997,13 +1000,14 @@ mw.KWidgetSupport.prototype = {
 			}
 
 			// Check for webm source
-			if( asset.fileExt && ( asset.fileExt == 'webm' 
-				|| 
-				$.inArray( 'webm' , tags) != -1 
-				|| // Kaltura transcodes give: 'matroska'
-				asset.containerFormat.toLowerCase() == 'matroska'
-				|| // some ingestion systems give "webm" 
-				asset.containerFormat.toLowerCase() == 'webm' )
+			if( asset.fileExt && asset.containerFormat && ( asset.fileExt == 'webm' 
+					|| 
+					$.inArray( 'webm' , tags) != -1 
+					|| // Kaltura transcodes give: 'matroska'
+					asset.containerFormat.toLowerCase() == 'matroska'
+					|| // some ingestion systems give "webm" 
+					( asset.containerFormat.toLowerCase() == 'webm' )
+				)
 			){
 				source['src'] = src + '/a.webm';
 				source['data-flavorid'] = 'webm';

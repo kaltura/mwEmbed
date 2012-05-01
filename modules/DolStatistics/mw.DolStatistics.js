@@ -22,6 +22,9 @@ mw.DolStatistics.prototype = {
 	playheadInterval: 0,
 	
 	duringChangeMediaFlag: false,
+	
+	// A flag to store if an ad was played: 
+	playedAnAd: false,
 
 	// hold list of cue points per 10% of video duration
 	percentCuePoints: {},
@@ -101,6 +104,11 @@ mw.DolStatistics.prototype = {
 				_this.sendStatsData( 'percentReached', _this.percentCuePointsMap[ dur ] );
 			}
 		});
+		// set a flag for when a real ad is played: 
+		embedPlayer.bindHelper( 'AdSupport_StartAdPlayback', function(){
+			_this.playedAnAd = true;
+		})
+		
 		
 		// Set the local autoplay flag: 
 		embedPlayer.bindHelper( 'Playlist_PlayClip' + _this.bindPostFix, function(event, clipIndex, autoPlay){
@@ -219,10 +227,13 @@ mw.DolStatistics.prototype = {
 		});
 	},
 
-	/* Retrieve video duration */
+	/** 
+	 * Retrieve video duration 
+	 */
 	getDuration: function() {
 		return this.embedPlayer.evaluate('{duration}');
 	},
+	
 	/**
 	 * Get video bitrate, return zero if not found. 
 	 */
@@ -242,6 +253,11 @@ mw.DolStatistics.prototype = {
 		if( this.eventsList.indexOf( eventName ) === -1 ) {
 			return ;
 		}
+		// don't send preSequenceComplete if no ad: 
+		if( eventName == 'preSequenceComplete' && ! _this.playedAnAd ){
+			return ;
+		}
+		
 		// if flagged a change media call disregard everything until changeMedia
 		if( _this.duringChangeMediaFlag && eventName != 'changeMedia' ){
 			return ;

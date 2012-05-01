@@ -459,6 +459,15 @@ class kalturaIframe {
 	private function getMwEmbedLoaderLocation(){
 		global $wgResourceLoaderUrl;
 		$loaderPath = str_replace( 'ResourceLoader.php', 'mwEmbedLoader.php', $wgResourceLoaderUrl );
+		
+		$versionParam = '?';
+		$urlParam = $this->getResultObject()->getUrlParameters();
+		if( isset( $urlParam['urid'] ) ){
+			$versionParam .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
+		}
+		if( isset( $ulrParam['debug'] ) ){
+			$versionParam .= '&debug=true';
+		}
 
 		$xml = $this->getResultObject()->getUiConfXML();
 		if( $xml && isset( $xml->layout ) && isset( $xml->layout[0] ) ){
@@ -472,7 +481,7 @@ class kalturaIframe {
 				}
 			}
 		}
-		return $loaderPath;
+		return $loaderPath . $versionParam;
 	}
 	
 	/**

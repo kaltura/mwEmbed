@@ -187,8 +187,9 @@ class KalturaResultObject {
 	}
 	public function isCachedUiConfFile(){
 		global $wgEnableScriptDebug;
-		if( $wgEnableScriptDebug ) 
+		if( $wgEnableScriptDebug ) {
 			return false;
+		}
 		return $this->outputUiConfFileFromCache;
 	}
 	public function getUserAgent() {

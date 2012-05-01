@@ -146,11 +146,19 @@ class mweApiUiConfJs {
 		die( '/* Error: ' . $error . ' */' );
 	}
 	function sendHeaders(){
-		global $wgKalturaUiConfCacheTime;
-		// set content type to javascript:
+		global $wgKalturaUiConfCacheTime, $wgEnableScriptDebug, $wgKalturaForceResultCache;
+
+		// Set content type to javascript:
 		header("Content-type: text/javascript");
+		
+		// UiConf js should always send expire headers:
+		$useCacheHeaders = !$wgEnableScriptDebug;
+		if( $wgKalturaForceResultCache === true){
+			$useCacheHeaders = true;
+		}
+		
 		// Set relevent expire headers:
-		if( $this->getResultObject()->isCachedUiConfFile() ){
+		if( $useCacheHeaders ){
 			$time = $this->getResultObject()->getFileCacheTime();
 			header( 'Pragma: public' );
 			// Cache for $wgKalturaUiConfCacheTime
