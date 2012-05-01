@@ -1006,7 +1006,7 @@ mw.KWidgetSupport.prototype = {
 				|| // Kaltura transcodes give: 'matroska'
 				asset.containerFormat.toLowerCase() == 'matroska'
 				|| // some ingestion systems give "webm" 
-				asset.containerFormat.toLowerCase() == 'webm' )
+				( asset.containerFormat && asset.containerFormat.toLowerCase() == 'webm' )
 			){
 				source['src'] = src + '/a.webm';
 				source['data-flavorid'] = 'webm';
