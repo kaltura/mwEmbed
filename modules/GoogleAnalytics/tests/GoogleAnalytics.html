@@ -2,21 +2,29 @@
 <html>
 	<head>
 		<title>Google Analytics Test</title>
-
+		
 		<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 		<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 
 		<script type="text/javascript">
 			window[ 'trackFunc' ] = function( category, action, opt_label, opt_value ) {
-				trackEventForTests( category, action, opt_label, opt_value ); 
+				trackEventForTests( category, action, opt_label, opt_value );
+				var label = '';
+				var value = '';
+				if ( opt_label ) {
+					label = opt_label.toString();
+				}
+				if ( opt_value ) {
+					value = opt_value.toString();
+				}
 				$( '#eventRowDesc' ).after(
-					$( '<tr />' ).append(
-						$( '<td />' ).text( category ),
-						$( '<td />' ).text( action ),
-						$( '<td />' ).text( '' + opt_label ),
-						$( '<td />' ).text( '' + opt_value )
+					$( '<tr />').append(
+						$( '<td />').text( category ),
+						$( '<td />').text( action.toString() ),
+						$( '<td />').text( label ),
+						$( '<td />').text( value )
 					)
-				)
+				);
 			};
 		</script>
 		<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
@@ -99,10 +107,10 @@
 			<i>Google Analytics events: </i><br />
 			<table border="1" width="800">
 				<tr id="eventRowDesc">
-					<td>Category</td>
-					<td>Action</td>
-					<td>Label (Clip Title | Entry Id | Widget Id)</td>
-					<td>Value</td>
+					<th>Category</th>
+					<th>Action</th>
+					<th>Label (Clip Title | Entry Id | Widget Id)</th>
+					<th>Value</th>
 				</tr>
 			</table>
 		</div>

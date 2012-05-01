@@ -141,7 +141,7 @@ uiConf Examples:
 			if( options.eventTrackList ) {
 				for( var i = 0 ; i < options.eventTrackList.length; i ++ ) {
 					// make sure its a valid event: 
-					if( this.inArray( this.validEventList, options.eventTrackList[ i ] ) ) {
+					if( $.inArray( options.eventTrackList[ i ], this.validEventList ) != -1 ) {
 						this.eventTrackList.push( options.eventTrackList[ i ] );
 					}
 				}
@@ -160,20 +160,21 @@ uiConf Examples:
 			this._p75Once = false;
 			this._p100Once = false;
 			this.hasSeeked = false;
-			this.lastSeek = 0;
+			this.lastSeek = 0;			
 			window._gaq = window._gaq || [];
 			window._gaq.push( [ '_setAccount', options.urchinCode ] );
-			window._gaq.push(['_setDomainName', 'none']);
-			window._gaq.push(['_setAllowLinker', true]);
+			if ( mw.getConfig( 'debug' ) ) {
+				window._gaq.push( [ '_setDomainName', 'none' ] );
+				window._gaq.push( [ '_setAllowLinker', true ] );
+			}
 			window._gaq.push( [ '_trackPageview' ] );
-
 			var ga = document.createElement( 'script' );
 			ga.type = 'text/javascript';
 			ga.async = true;
 			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 			var s = document.getElementsByTagName('script')[0]; 
 			s.parentNode.insertBefore(ga, s);
-
+			
 			this.addPlayerBindings();
 			callback();
         },
@@ -211,7 +212,16 @@ uiConf Examples:
 
 			// Send the google event:
 			if( this.googlePageTracker ){
-				this.googlePageTracker._trackEvent.apply( trackingArgs );
+				var opt_label = null;
+				var opt_value = null;
+				if ( trackingArgs[2] ) {
+					opt_label = trackingArgs[2];
+				}
+				if ( trackingArgs[3] ) {
+					opt_value = trackingArgs[3];
+				}
+				// Passing an array to this function doesn't seem to work. Besides, have to make sure first three args are strings and last one is integer
+				this.googlePageTracker._trackEvent( trackingArgs[0], trackingArgs[1], trackingArgs[2], trackingArgs[3] );
 			} else {
 				var gaqAry = trackingArgs.slice(0);
 				gaqAry.unshift( "_trackEvent" );
@@ -221,7 +231,6 @@ uiConf Examples:
 			if( typeof this.trackEventMonitor == 'function'){
 				this.trackEventMonitor.apply( this, trackingArgs );
 			}
-
 		},
 		
 		/**
@@ -275,12 +284,12 @@ uiConf Examples:
 			}
 
 			var trackEvent = [ 
-				this.trackingCategory, 
-				methodName
+				this.trackingCategory.toString(), 
+				methodName.toString()
 			];
 			
 			if( optionLabel !== null )
-				trackEvent.push( optionLabel );
+				trackEvent.push( optionLabel.toString() );
 
 			if( optionValue !== null )
 				trackEvent.push( parseInt( optionValue ) );
@@ -302,6 +311,7 @@ uiConf Examples:
 		* Get an optional data value for the methodName
 		*/
 		getOptionalValue: function(  methodName, data ){
+			methodName = methodName.toString();
 			if( methodName == 'doSeek' ){
 				this._lastSeek = this.embedPlayer.currentTime;
 				return this._lastSeek;
@@ -310,21 +320,10 @@ uiConf Examples:
 				if( data.newVolume )
 					return data.newVolume;
 			}
-			if( this.inArray( this.defaultValueEventList, methodName ) ) {
+			if( $.inArray( methodName, this.defaultValueEventList ) != -1 ) {
 				return 1;
 			}			
 			return null;
-		},
-		
-		// not dependent on jQuery so add a utility inArray function: 
-		inArray: function( ary,  val ) {
-			for (var i =0; i < ary.length; i++ ) {
-				if (ary[i] === val) {
-					return true; // If you want the key of the matched value, change "true" to "key"
-				}
-			}
-			return false;
 		}
-
 	};
 })( window.mw, window.jQuery );
