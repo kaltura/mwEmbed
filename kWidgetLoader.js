@@ -97,7 +97,9 @@ var kWidget = {
 			if( settings.uiconf_id ) {
 				// We directly restore the KDP callback because a cached output of the flashObject, 
 				// seems to run into too much recursion errors. 
-				restoreKalturaKDPCallback();
+				setTimeout( function() {
+					restoreKalturaKDPCallback();
+				}, 0);
 			}			
 			kWidget.outputFlashObject( targetId, settings );
 			return ;
