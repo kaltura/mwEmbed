@@ -130,16 +130,21 @@ uiConf Examples:
 			'doSeek',
 			'doDownload'
 		],
+		
+		getConfig: function( attr )  {
+			return this.embedPlayer.getKalturaConfig( 'googleAnalytics', attr );
+		},
 
         init: function( embedPlayer, callback ) {
             var _this = this;
 			this.embedPlayer = embedPlayer;
 			// Unbind any existing bindings
-			this.embedPlayer.unbindHelper( _this.bindPostfix );
-			var options = this.embedPlayer.getKalturaConfig( 'googleAnalytics' );
+			this.embedPlayer.unbindHelper( _this.bindPostFix );
+
 			// Validate the eventTrackList
-			if ( options.eventTrackList ) {
-				for( var i = 0 ; i < options.eventTrackList.length; i++ ) {
+			var eventTrackList = this.getConfig( 'eventTrackList' );
+			if ( eventTrackList ) {
+				for( var i = 0 ; i < eventTrackList.length; i++ ) {
 					// make sure its a valid event: 
 					if( $.inArray( options.eventTrackList[ i ], this.validEventList ) != -1 ) {
 						this.eventTrackList.push( options.eventTrackList[ i ] );
@@ -150,8 +155,8 @@ uiConf Examples:
 				this.eventTrackList = this.defaultTrackList;
 			}
 			var customEvents = [];
-			if ( options.customEvent ) {
-				customEvents = options.customEvent.split( ',' );
+			if ( this.getConfig( 'customEvent' ) ) {
+				customEvents = this.getConfig( 'customEvent' ).split( ',' );
 			}
 			
 			// Remove duplicates
@@ -161,10 +166,10 @@ uiConf Examples:
 				}
 			} );
 			
-			this.eventTrackList = $.merge( this.eventTrackList, customEvents );
+			this.eventTrackList = $.merge( _this.eventTrackList, customEvents );
 			
-			if ( options.trackEventMonitor && window.parent[ options.trackEventMonitor ] ) {
-				this.trackEventMonitor = window.parent[ options.trackEventMonitor ];
+			if ( _this.getConfig( 'trackEventMonitor' ) && window.parent[ _this.getConfig( 'trackEventMonitor' ) ] ) {
+				this.trackEventMonitor = window.parent[ _this.getConfig( 'trackEventMonitor' ) ];
 			}
 
 			// Setup the initial state of some flags
@@ -175,7 +180,7 @@ uiConf Examples:
 			this.hasSeeked = false;
 			this.lastSeek = 0;			
 			window._gaq = window._gaq || [];
-			window._gaq.push( [ '_setAccount', options.urchinCode ] );
+			window._gaq.push( [ '_setAccount', _this.getConfig( 'urchinCode' ) ] );
 			if ( mw.getConfig( 'debug' ) ) {
 				window._gaq.push( [ '_setDomainName', 'none' ] );
 				window._gaq.push( [ '_setAllowLinker', true ] );
@@ -277,7 +282,7 @@ uiConf Examples:
 		},
 
 		getTrackingEvent: function( methodName, data ){
-			var options = this.embedPlayer.getKalturaConfig( 'googleAnalytics' );
+
 			var optionLabel = this.getOptionalLabel( methodName, data );
 			var optionValue = this.getOptionalValue( methodName, data );
 			// check for special case of 'quartiles'
@@ -300,14 +305,15 @@ uiConf Examples:
 			var eventCategory = this.trackingCategory;
 			var eventAction = methodName;		
 			var customEvents = [];
-			if ( options.customEvent ) {
-				customEvents = options.customEvent.split( ',' );
+
+			if ( this.getConfig( 'customEvent') ) {
+				customEvents = this.getConfig( 'customEvent').split( ',' );
 				if ( $.inArray( methodName, customEvents ) ) {
-					if ( options[ methodName + "Category" ] ) {
-						eventCategory = options[ methodName + "Category" ];
+					if ( this.getConfig( methodName + "Category" ) ) {
+						eventCategory = this.getConfig( methodName + "Category" );
 					}
-					if ( options[ methodName + "Action" ] ) {
-						eventAction = options[methodName + "Action" ];
+					if ( this.getConfig( methodName + "Action" ) ) {
+						eventAction = this.getConfig( methodName + "Action" );
 					}
 				}
 			}
@@ -348,14 +354,13 @@ uiConf Examples:
 				if ( data.newVolume )
 					return data.newVolume;
 			}
-
-			var options = this.embedPlayer.getKalturaConfig( 'googleAnalytics' );
+			
 			var customEvents = [];
-			if ( options.customEvent ) {
-				customEvents = options.customEvent.split( ',' );
+			if ( this.getConfig( 'customEvent' ) ) {
+				customEvents = this.getConfig( 'customEvent' ).split( ',' );
 				if ( $.inArray( methodName, customEvents ) ) {
-					if ( options[ methodName + "Value" ] ) {
-						return options[ methodName + "Value" ];
+					if ( this.getConfig( methodName + "Value" ) ) {
+						return this.getConfig( methodName + "Value" );
 					}
 				}
 			}
