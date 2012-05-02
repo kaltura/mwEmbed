@@ -471,7 +471,7 @@ var kWidget = {
 		});
 		var playButtonUrl = baseUrl + 'skins/common/images/player_big_play_button.png';
 		var playButtonCss = 'background: url(\'' + playButtonUrl + '\'); width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
-		var ddId = 'dd_' + Math.round( Math.random() );
+		var ddId = 'dd_' + Math.round( Math.random() * 1000 );
 
 		var ddHTML = '<div id="' + ddId + '" style="width: ' + options.width + ';height:' + options.height + ';position:relative">' +
 				'<img style="width:100%;height:100%" src="' + thumbSrc + '" >' +
