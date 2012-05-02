@@ -1747,6 +1747,7 @@ mw.EmbedPlayer.prototype = {
 						});
 					}, 500)
 				}
+				_this.startTime = 0;
 			});
 		}
 		
