@@ -400,7 +400,7 @@ mw.includeAllModuleMessages();
 				if( _this.embedPlayer.supports[ 'overlays' ] ){
 					var positionOpts = {
 						'directionV' : 'up',
-						'offsetY' : this.embedPlayer.controlBuilder.getHeight(),
+						'offsetY' : _this.embedPlayer.controlBuilder.getHeight(),
 						'directionH' : 'left',
 						'offsetX' : -28
 					};
