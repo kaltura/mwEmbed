@@ -239,7 +239,7 @@ class KalturaResultObject {
 			return $this->error;
 		}
 
-		if( !$resultObject ){
+		if( $resultObject === null ){
 			$resultObject =  $this->getResultObject();
 		}
 		// check for access control resultObject property:
