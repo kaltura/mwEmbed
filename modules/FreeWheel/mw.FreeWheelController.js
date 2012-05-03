@@ -369,7 +369,8 @@ mw.FreeWheelController.prototype = {
 			'height':  _this.orginalInterfaceHeight,
 			'bottom' : 0,
 			'top' : 0,
-		})
+			'left': 0
+		});
 		
 		// remove pause binding: 
 		var vid = this.embedPlayer.getPlayerElement();
