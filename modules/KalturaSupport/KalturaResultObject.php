@@ -748,6 +748,8 @@ class KalturaResultObject {
 	
 	function getEntryResult(){
 		$client = $this->getClient();
+		// define resultObject prior to try catch call
+		$resultObject = array();
 		try {
 			// NOTE this should probably be wrapped in a service class
 			$kparams = array();
