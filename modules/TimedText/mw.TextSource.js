@@ -225,7 +225,6 @@
 			});
 			
 			$( xml ).find( 'p' ).each( function( inx, p ){
-
 				// Get text content by converting ttml node to html
 				var content = '';
 				$.each( p.childNodes, function(inx, node){
@@ -290,6 +289,19 @@
 		},
 		convertTTML2HTML: function( node ){
 			var _this = this;
+			
+			// look for text node: 
+			if( node.nodeType == 3 ){
+				return node.textContent;
+			}
+			// skip metadata nodes: 
+			if( node.nodeName == 'metadata' ){
+				return '';
+			}
+			// if a br just append
+			if( node.nodeName == 'br' ){
+				return '<br />';
+			}
 			// Setup tts mappings TODO should be static property of a ttmlSource object. 
 			var ttsStyleMap = {
 				'tts:color' : 'color',
@@ -298,30 +310,20 @@
 			};
 			if( node.childNodes.length ){
 				var nodeString = '';
-				$.each( node.childNodes, function( inx, childNode ){
-					// look for text node: 
-					if( node.nodeType == 3 ){
-						nodeString += node.text;
-					} else { 
-						// skip metadata nodes: 
-						if( node.nodeName == 'metadata' ){
-							return true;
-						}
-						var styleVal = '';
-						for( var attr in ttsStyleMap ){
-							if( node.getAttribute( attr ) ){
-								styleVal+= ttsStyleMap[ attr ] + ':' +  node.getAttribute( attr ) + ';';
-							}
-						}
-						nodeString += '<' + node.nodeName + ' style="' + styleVal + '" >' + 
-						 	_this.convertTTML2HTML( childNode ) +
-						 	'</' + node.nodeName + '>';
+				var styleVal = '';
+				for( var attr in ttsStyleMap ){
+					if( node.getAttribute( attr ) ){
+						styleVal+= ttsStyleMap[ attr ] + ':' +  node.getAttribute( attr ) + ';';
 					}
-				} );
+				}
+				nodeString +=  '<' + node.nodeName + ' style="' + styleVal + '" >';
+				$.each( node.childNodes, function( inx, childNode ){
+					nodeString += _this.convertTTML2HTML( childNode );
+				});
+				nodeString += '</' + node.nodeName + '>';
 				return nodeString;
-			} else {
-				return node.textContent;
 			}
+			debugger;
 		},
 		/**
 		 * srt timed text parse handle:
