@@ -323,7 +323,6 @@
 				nodeString += '</' + node.nodeName + '>';
 				return nodeString;
 			}
-			debugger;
 		},
 		/**
 		 * srt timed text parse handle:
