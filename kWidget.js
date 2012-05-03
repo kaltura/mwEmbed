@@ -214,7 +214,6 @@ var kWidget = {
 			this.outputDirectDownload( targetId, settings );
 			return ;
 		}
-		
 		if( settings.isHTML5 ){
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
