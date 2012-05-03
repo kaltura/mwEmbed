@@ -492,7 +492,7 @@ mw.Playlist.prototype = {
 		if( !embedPlayer ){
 			mw.log("Error: Playlist:: playClip called with null embedPlayer ");
 			return ;
-		}
+		}	
 
 		// trigger a playlist_playClip event: 
 		embedPlayer.triggerHelper( 'Playlist_PlayClip', [ clipIndex, !!autoContinue ]);

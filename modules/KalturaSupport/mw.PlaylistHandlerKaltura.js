@@ -202,7 +202,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Update the player data ( if we can ) 
 		if( embedPlayer.kalturaPlaylistData ){
 			embedPlayer.kalturaPlaylistData.currentPlaylistId = this.playlist_id;
-			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', { 'selectedIndex' : playlistIndex } );
+			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'selectedIndex' : playlistIndex} );
 		}
 		// Make sure the iframe contains this currentPlaylistId update: 
 		$( embedPlayer ).trigger( 'updateIframeData' );
@@ -229,7 +229,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		// Check for playlist cache
 		if( embedPlayer.kalturaPlaylistData && embedPlayer.kalturaPlaylistData[ playlist_id ] ){
 			_this.clipList = embedPlayer.kalturaPlaylistData[ playlist_id ];
-			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', { 'content' : _this.clipList } );
+			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : _this.clipList} );
 			callback();
 			embedPlayer.triggerHelper( 'playlistReady' );
 			return ;
@@ -261,7 +261,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			}
 			// Add it to the cache:
 			embedPlayer.kalturaPlaylistData[ playlist_id ] = playlistData;
-			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', { 'content' : playlistData } );
+			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : playlistData} );
 			$( embedPlayer ).trigger('updateIframeData');
 			// update the clipList:
 			_this.clipList = playlistData;
@@ -309,6 +309,15 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}	
 		// Update the loadingEntry flag:
 		this.loadingEntry = this.getClip( clipIndex ).id;
+		
+		// Send notifications
+		if( clipIndex == 0 ) {
+			embedPlayer.triggerHelper( 'playlistFirstEntry' );
+		} else if( clipIndex == (_this.getClipCount()-1) ) {
+			embedPlayer.triggerHelper( 'playlistLastEntry' );
+		} else {
+			embedPlayer.triggerHelper( 'playlistMiddleEntry' );
+		}
 		
 		// Listen for change media done
 		var bindName = 'onChangeMediaDone' + this.bindPostFix;
