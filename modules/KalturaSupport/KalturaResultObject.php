@@ -240,7 +240,7 @@ class KalturaResultObject {
 			return $this->error;
 		}
 
-		if( !$resultObject ){
+		if( $resultObject === null ){
 			$resultObject =  $this->getResultObject();
 		}
 		// check for access control resultObject property:
@@ -749,6 +749,8 @@ class KalturaResultObject {
 	
 	function getEntryResult(){
 		$client = $this->getClient();
+		// define resultObject prior to try catch call
+		$resultObject = array();
 		try {
 			// NOTE this should probably be wrapped in a service class
 			$kparams = array();
@@ -864,11 +866,12 @@ class KalturaResultObject {
 		}
 		
 		// Check access control and throw an exception if not allowed: 
-		$acStatus = $this->isAccessControlAllowed( $resultObject );
-		if( $acStatus !== true ){
-			$this->error = $acStatus;
-		}
-		
+		if( isset( $resultObject['accessControl']) ){
+			$acStatus = $this->isAccessControlAllowed( $resultObject );
+			if( $acStatus !== true ){
+				$this->error = $acStatus;
+			}
+		}		
 		return $resultObject;
 	}
 
