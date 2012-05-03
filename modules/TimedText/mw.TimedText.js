@@ -397,7 +397,7 @@ mw.includeAllModuleMessages();
 			// Setup text sourcesS:
 			_this.setupTextSources( function() {
 				var positionOpts = { };
-				if( this.embedPlayer.supports[ 'overlays' ] ){
+				if( _this.embedPlayer.supports[ 'overlays' ] ){
 					var positionOpts = {
 						'directionV' : 'up',
 						'offsetY' : this.embedPlayer.controlBuilder.getHeight(),
@@ -406,11 +406,11 @@ mw.includeAllModuleMessages();
 					};
 				}
 				
-				if( !this.embedPlayer.$interface ){
+				if( !_this.embedPlayer.$interface ){
 					mw.log("TimedText:: interface called before interface ready, just wait for interface");
 					return ;
 				}
-				var $menuButton = this.embedPlayer.$interface.find( '.timed-text' );
+				var $menuButton = _this.embedPlayer.$interface.find( '.timed-text' );
 				// NOTE: Button target should be an option or config
 				$menuButton.unbind().menu( {
 					'content'	: _this.getMainMenu(),
