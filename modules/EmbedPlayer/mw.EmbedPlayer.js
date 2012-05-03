@@ -201,7 +201,9 @@ mw.EmbedPlayer.prototype = {
 		$( this ).bind( name, callback );
 	},
 	unbindHelper: function( bindName ){
-		$( this ).unbind( bindName ); 
+		if( bindName ) {
+			$( this ).unbind( bindName ); 
+		} 
 	},
 	triggerQueueCallback: function( name, callback ){
 		$( this ).triggerQueueCallback( name, callback );
@@ -1745,6 +1747,7 @@ mw.EmbedPlayer.prototype = {
 						});
 					}, 500)
 				}
+				_this.startTime = 0;
 			});
 		}
 		

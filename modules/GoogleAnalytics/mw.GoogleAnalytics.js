@@ -130,19 +130,24 @@ uiConf Examples:
 			'doSeek',
 			'doDownload'
 		],
+		
+		getConfig: function( attr )  {
+			return this.embedPlayer.getKalturaConfig( 'googleAnalytics', attr );
+		},
 
         init: function( embedPlayer, callback ) {
             var _this = this;
 			this.embedPlayer = embedPlayer;
 			// Unbind any existing bindings
-			this.embedPlayer.unbindHelper( _this.bindPostfix );
-			var options = this.embedPlayer.getKalturaConfig( 'googleAnalytics' );
+			this.embedPlayer.unbindHelper( _this.bindPostFix );
+
 			// Validate the eventTrackList
-			if ( options.eventTrackList ) {
-				for( var i = 0 ; i < options.eventTrackList.length; i++ ) {
+			var eventTrackList = this.getConfig( 'eventTrackList' );
+			if ( eventTrackList ) {
+				for( var i = 0 ; i < eventTrackList.length; i++ ) {
 					// make sure its a valid event: 
-					if ( this.inArray( this.validEventList, options.eventTrackList[ i ] ) ) {
-						this.eventTrackList.push( options.eventTrackList[ i ] );
+					if( $.inArray( eventTrackList[ i ], this.validEventList ) != -1 ) {
+						this.eventTrackList.push( eventTrackList[ i ] );
 					}
 				}
 			} else {
@@ -150,21 +155,21 @@ uiConf Examples:
 				this.eventTrackList = this.defaultTrackList;
 			}
 			var customEvents = [];
-			if ( options.customEvent ) {
-				customEvents = options.customEvent.split( ',' );
+			if ( this.getConfig( 'customEvent' ) ) {
+				customEvents = this.getConfig( 'customEvent' ).split( ',' );
 			}
 			
 			// Remove duplicates
 			$.each( customEvents, function( i ) {
-				if ( _this.inArray( _this.eventTrackList, this ) ) {
+				if ( $.inArray( this, _this.eventTrackList ) ) {
 					customEvents.splice( i, 1 );
 				}
 			} );
 			
-			this.eventTrackList = $.merge( this.eventTrackList, customEvents );
+			this.eventTrackList = $.merge( _this.eventTrackList, customEvents );
 			
-			if ( options.trackEventMonitor && window.parent[ options.trackEventMonitor ] ) {
-				this.trackEventMonitor = window.parent[ options.trackEventMonitor ];
+			if ( _this.getConfig( 'trackEventMonitor' ) && window.parent[ _this.getConfig( 'trackEventMonitor' ) ] ) {
+				this.trackEventMonitor = window.parent[ _this.getConfig( 'trackEventMonitor' ) ];
 			}
 
 			// Setup the initial state of some flags
@@ -173,20 +178,21 @@ uiConf Examples:
 			this._p75Once = false;
 			this._p100Once = false;
 			this.hasSeeked = false;
-			this.lastSeek = 0;
+			this.lastSeek = 0;			
 			window._gaq = window._gaq || [];
-			window._gaq.push( [ '_setAccount', options.urchinCode ] );
-			window._gaq.push(['_setDomainName', 'none']);
-			window._gaq.push(['_setAllowLinker', true]);
+			window._gaq.push( [ '_setAccount', _this.getConfig( 'urchinCode' ) ] );
+			if ( mw.getConfig( 'debug' ) ) {
+				window._gaq.push( [ '_setDomainName', 'none' ] );
+				window._gaq.push( [ '_setAllowLinker', true ] );
+			}
 			window._gaq.push( [ '_trackPageview' ] );
-
 			var ga = document.createElement( 'script' );
 			ga.type = 'text/javascript';
 			ga.async = true;
 			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 			var s = document.getElementsByTagName('script')[0]; 
 			s.parentNode.insertBefore(ga, s);
-
+			
 			this.addPlayerBindings();
 			callback();
         },
@@ -223,8 +229,17 @@ uiConf Examples:
 				return ;
 
 			// Send the google event:
-			if ( this.googlePageTracker ){
-				this.googlePageTracker._trackEvent.apply( trackingArgs );
+			if( this.googlePageTracker ){
+				var opt_label = null;
+				var opt_value = null;
+				if ( trackingArgs[2] ) {
+					opt_label = trackingArgs[2];
+				}
+				if ( trackingArgs[3] ) {
+					opt_value = trackingArgs[3];
+				}
+				// Passing an array to this function doesn't seem to work. Besides, have to make sure first three args are strings and last one is integer
+				this.googlePageTracker._trackEvent( trackingArgs[0], trackingArgs[1], trackingArgs[2], trackingArgs[3] );
 			} else {
 				var gaqAry = trackingArgs.slice(0);
 				gaqAry.unshift( "_trackEvent" );
@@ -234,7 +249,6 @@ uiConf Examples:
 			if ( typeof this.trackEventMonitor == 'function'){
 				this.trackEventMonitor.apply( this, trackingArgs );
 			}
-
 		},
 		
 		/**
@@ -268,7 +282,7 @@ uiConf Examples:
 		},
 
 		getTrackingEvent: function( methodName, data ){
-			var options = this.embedPlayer.getKalturaConfig( 'googleAnalytics' );
+
 			var optionLabel = this.getOptionalLabel( methodName, data );
 			var optionValue = this.getOptionalValue( methodName, data );
 			// check for special case of 'quartiles'
@@ -291,24 +305,24 @@ uiConf Examples:
 			var eventCategory = this.trackingCategory;
 			var eventAction = methodName;		
 			var customEvents = [];
-			if ( options.customEvent ) {
-				customEvents = options.customEvent.split( ',' );
-				if ( this.inArray( customEvents, methodName ) ) {
-					if ( options[ methodName + "Category" ] ) {
-						eventCategory = options[ methodName + "Category" ];
+			if ( this.getConfig( 'customEvent') ) {
+				customEvents = this.getConfig( 'customEvent').split( ',' );
+				if ( $.inArray( methodName, customEvents ) ) {
+					if ( this.getConfig( methodName + "Category" ) ) {
+						eventCategory = this.getConfig( methodName + "Category" );
 					}
-					if ( options[ methodName + "Action" ] ) {
-						eventAction = options[methodName + "Action" ];
+					if ( this.getConfig( methodName + "Action" ) ) {
+						eventAction = this.getConfig( methodName + "Action" );
 					}
 				}
 			}
 			var trackEvent = [ 
-				eventCategory, 
-				eventAction
+				eventCategory.toString(), 
+				eventAction.toString()
 			];
 			
 			if ( optionLabel !== null )
-				trackEvent.push( optionLabel );
+				trackEvent.push( optionLabel.toString() );
 
 			if ( optionValue !== null )
 				trackEvent.push( parseInt( optionValue ) );
@@ -330,7 +344,8 @@ uiConf Examples:
 		* Get an optional data value for the methodName
 		*/
 		getOptionalValue: function(  methodName, data ){
-			if ( methodName == 'doSeek' ){
+			methodName = methodName.toString();
+			if( methodName == 'doSeek' ){
 				this._lastSeek = this.embedPlayer.currentTime;
 				return this._lastSeek;
 			}
@@ -338,32 +353,22 @@ uiConf Examples:
 				if ( data.newVolume )
 					return data.newVolume;
 			}
-			var options = this.embedPlayer.getKalturaConfig( 'googleAnalytics' );
+
+			
 			var customEvents = [];
-			if ( options.customEvent ) {
-				customEvents = options.customEvent.split( ',' );
-				if ( this.inArray( customEvents, methodName ) ) {
-					if ( options[ methodName + "Value" ] ) {
-						return options[ methodName + "Value" ];
+			if ( this.getConfig( 'customEvent' ) ) {
+				customEvents = this.getConfig( 'customEvent' ).split( ',' );
+				if ( $.inArray( methodName, customEvents ) ) {
+					if ( this.getConfig( methodName + "Value" ) ) {
+						return this.getConfig( methodName + "Value" );
 					}
 				}
 			}
 
-			if ( this.inArray( this.defaultValueEventList, methodName ) ) {
+			if( $.inArray( methodName, this.defaultValueEventList ) != -1 ) {
 				return 1;
 			}			
 			return null;
-		},
-		
-		// not dependent on jQuery so add a utility inArray function: 
-		inArray: function( ary,  val ) {
-			for (var i =0; i < ary.length; i++ ) {
-				if (ary[i] === val) {
-					return true; // If you want the key of the matched value, change "true" to "key"
-				}
-			}
-			return false;
 		}
-
 	};
 })( window.mw, window.jQuery );
