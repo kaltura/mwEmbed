@@ -406,6 +406,17 @@ mw.PlaylistHandlerKaltura.prototype = {
 				break;
 			}
 		});
+		
+		$( embedPlayer ).bind( 'Kaltura_SendNotification'+ this.bindPostFix , function( event, notificationName, notificationData){
+			switch( notificationName ){
+				case 'playlistPlayNext':
+					_this.playlist.playNext();
+					break;
+				case 'playlistPlayPrevious':
+					_this.playlist.playPrevious();
+					break;
+			}
+		});		
 	},
 	switchTab:function( property, value ){
 		if( property == 'selectedIndex' ){
