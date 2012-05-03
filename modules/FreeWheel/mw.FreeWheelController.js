@@ -122,6 +122,9 @@ mw.FreeWheelController.prototype = {
 			
 			// Load add data ( will call onRequestComplete once ready )
 			mw.log( "FreeWheelController::submitRequest>" );
+			// set the inSequence flag while loading ads:
+			_this.embedPlayer.sequenceProxy.isInSequence = true;
+			
 			// Get Freewheel ads: 
 			_this.getContext().submitRequest();
 			// set the callback 
@@ -297,7 +300,6 @@ mw.FreeWheelController.prototype = {
 		slot.donePlaying = false;
 		
 		mw.log( 'mw.FreeWheelController:: playSlot:' + this.getSlotType( slot ) + ' adInstances: ' +  slot._adInstances.length );
-		
 		// if no ad slots are available return 
 		if( slot._adInstances.length == 0 ){
 			return false;			
@@ -311,8 +313,12 @@ mw.FreeWheelController.prototype = {
 		// Update the ad duration ( may change once the media is loaded ) 
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration', adMetaData.duration );
 		
+		// Update the player ad playback mode: 
+		_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.getSlotType( slot ) );
+		
 		// Play the slot
 		slot.play();
+		
 		// Update the active slot
 		this.activeSlot = slot;
 		// Monitor ad progress ( for sequence proxy )
