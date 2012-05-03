@@ -562,6 +562,7 @@ mw.Playlist.prototype = {
 					_this.playClip( _this.clipIndex, true );
 				} else {
 					mw.log("mw.Playlist:: End of playlist, run normal end action" );
+					embedPlayer.triggerHelper( 'playlistDone' );
 					// Update the onDone action object to not run the base control done:
 					embedPlayer.onDoneInterfaceFlag = true;
 				}
