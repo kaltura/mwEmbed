@@ -410,10 +410,8 @@ mw.PlaylistHandlerKaltura.prototype = {
 		$( embedPlayer ).bind( 'Kaltura_SendNotification'+ this.bindPostFix , function( event, notificationName, notificationData){
 			switch( notificationName ){
 				case 'playlistPlayNext':
-					_this.playlist.playNext();
-					break;
 				case 'playlistPlayPrevious':
-					_this.playlist.playPrevious();
+					$( embedPlayer ).trigger( notificationName );
 					break;
 			}
 		});		
