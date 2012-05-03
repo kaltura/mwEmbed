@@ -141,19 +141,9 @@ uiConf Examples:
 			// Unbind any existing bindings
 			this.embedPlayer.unbindHelper( _this.bindPostFix );
 
-			// Validate the eventTrackList
-			var eventTrackList = this.getConfig( 'eventTrackList' );
-			if ( eventTrackList ) {
-				for( var i = 0 ; i < eventTrackList.length; i++ ) {
-					// make sure its a valid event: 
-					if( $.inArray( options.eventTrackList[ i ], this.validEventList ) != -1 ) {
-						this.eventTrackList.push( options.eventTrackList[ i ] );
-					}
-				}
-			} else {
-				// just use the default list: 
-				this.eventTrackList = this.defaultTrackList;
-			}
+			// just use the default list: 
+			this.eventTrackList = this.defaultTrackList;
+			
 			var customEvents = [];
 			if ( this.getConfig( 'customEvent' ) ) {
 				customEvents = this.getConfig( 'customEvent' ).split( ',' );
@@ -282,19 +272,19 @@ uiConf Examples:
 		},
 
 		getTrackingEvent: function( methodName, data ){
-
-			var optionLabel = this.getOptionalLabel( methodName, data );
-			var optionValue = this.getOptionalValue( methodName, data );
+			var optionValue;
 			// check for special case of 'quartiles'
 			if ( methodName == 'quartiles' ){				
 				var qStat = this.getQuartilesStatus( data );
 				// Don't process the tracking event
-				if ( !qStat)
+				if ( !qStat ) {
 					return false;
+				}
 				methodName = qStat + "_pct_watched";
 				optionValue = this.embedPlayer.duration * parseInt( qStat ) / 100;
 			}	
-
+			var optionLabel = this.getOptionalLabel( methodName, data );
+			optionValue = this.getOptionalValue( methodName, data );
 			// Special case don't track initial html5 volumeChange event ( triggered right after playback ) 
 			// xxx this is kind of broken we need to subscribe to the interface volume updates
 			// not the volumeChange event ( since html fires this at start and end of video ) 
@@ -334,8 +324,8 @@ uiConf Examples:
 		/**
 		* Get an optional label for the methodName and data
 		*/
-		getOptionalLabel: function(  methodName, data ) {
-			var clipTitle = this.embedPlayer.kalturaPlayerMetaData.name;
+		getOptionalLabel: function( methodName, data ) {
+			var clipTitle = ( this.embedPlayer.kalturaPlayerMetaData && this.embedPlayer.kalturaPlayerMetaData.name ) ? this.embedPlayer.kalturaPlayerMetaData.name : '';
 			var entryId = this.embedPlayer.kentryid;
 			var widgetId = this.embedPlayer.kwidgetid;
 			return ( clipTitle + "|" + entryId + "|" + widgetId );
