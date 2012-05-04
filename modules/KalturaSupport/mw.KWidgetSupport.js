@@ -361,7 +361,7 @@ mw.KWidgetSupport.prototype = {
 			var fv = embedPlayer.playerConfig['vars'] || {};
 			if ( param ) {
 				if ( param in fv ) {
-					return fv[param];
+					return fv[ param ];
 				}
 				else {
 					return undefined;

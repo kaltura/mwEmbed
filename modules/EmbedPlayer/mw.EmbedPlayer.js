@@ -1019,14 +1019,18 @@ mw.EmbedPlayer.prototype = {
 		} else{
 			$target = $(this);
 		}
-		$target.append(
-			$('<div />').addClass('error').text(
-				errorMsg
-			)
-		)
-		.show() // Show the player
+		// Don't show error if disable alerts is true
+		if( $.isFunction(this.getFlashvars) && this.getFlashvars('disableAlerts') !== true ) {
+			$target.append(
+				$('<div />').addClass('error').text(
+					errorMsg
+				)
+			);
+		} 
+		
+		$target.show() // Show the player
 		// Hide the interface components
-		.find( '.control-bar,.play-btn-large').hide();		
+		.find( '.control-bar,.play-btn-large').hide();
 		return ;
 	},
 	hidePlayerInterface: function(){
@@ -1276,7 +1280,7 @@ mw.EmbedPlayer.prototype = {
 			_this.hidePlayerSpinner();
 			// check for an erro on change media: 
 			if( _this['data-playerError'] ){
-				_this.showErrorMsg( this['data-playerError'] );
+				_this.showErrorMsg( _this['data-playerError'] );
 				return ;
 			}
 			// Always show the control bar on switch:
