@@ -53,7 +53,7 @@
 			} else if( _this.getConfig( 'hideClosedCaptions' ) == true ){
 				embedPlayer.timedText.setLayoutMode( 'off' );
 			}
-			// Bind player: 
+			// Bind player at player ready time
 			_this.bindPlayer( embedPlayer );
 			callback();
 		},

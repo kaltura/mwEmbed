@@ -223,7 +223,6 @@ var kWidget = {
 			this.outputDirectDownload( targetId, settings );
 			return ;
 		}
-		
 		if( settings.isHTML5 ){
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
@@ -653,6 +652,7 @@ var kWidget = {
 				}
 				_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings ), function(){
 					_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
+					// see if this the last uiConf missing conf js
 					if( ! _this.isMissingUiConfJs( playerList ) ){
 						callback();
 					} else {
