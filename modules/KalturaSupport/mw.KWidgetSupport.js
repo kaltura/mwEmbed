@@ -458,7 +458,7 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for dissable bit rate cookie and overide default bandwidth cookie
 		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
-			$.cookie('EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR') );
+			$.cookie('EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR') * 1000 );
 		}
 
 		// Check for imageDefaultDuration

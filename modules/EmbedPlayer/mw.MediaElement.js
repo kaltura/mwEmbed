@@ -172,18 +172,9 @@ mw.MediaElement.prototype = {
 			_this.selectedSource = source;
 			return _this.selectedSource;
 		};
-		// TODO fix user pref
-		/*$.each( playableSources, function( inx, source ){
-			var mimeType = source.mimeType;
-			var player = mw.EmbedTypes.getMediaPlayers().defaultPlayer( mimeType );
-			if ( mw.EmbedTypes.getMediaPlayers().preference[ mimeType ] == player.id ) {
-				 mw.log( 'MediaElement::autoSelectSource: Set via formatPreference ' + mimeType + ' match default player:' + player.id  );
-				 return setSelectedSource( source );
-			}
-		});*/
 
 		// Set via module driven preference:
-		$( this ).trigger( 'AutoSelectSource', playableSources );
+		$( this ).trigger( 'onSelectSource', playableSources );
 		
 		if( _this.selectedSource ){
 			mw.log('MediaElement::autoSelectSource: Set via trigger::' + _this.selectedSource.getTitle() );
@@ -223,21 +214,23 @@ mw.MediaElement.prototype = {
 			mw.log('MediaElement::autoSelectSource: Set via Adaptive HLS: source flavor id:' + _this.selectedSource.getFlavorId() + ' src: ' + _this.selectedSource.getSrc() );
 			return this.selectedSource;
 		}
-
-		//Set via user bandwidth pref will always set source to closest bandwidth allocation while not going over  EmbedPlayer.UserBandwidth
+		
+		// Set via user bandwidth pref will always set source to closest bandwidth allocation while not going over  EmbedPlayer.UserBandwidth
 		if( $.cookie('EmbedPlayer.UserBandwidth') ){
-			var currentMaxBadwith = 0;
+			var bandwidthDelta = 999999999;
+			var bandwidthTarget = $.cookie('EmbedPlayer.UserBandwidth');
 			$.each( playableSources, function(inx, source ){
 				if( source.bandwidth ){
-					if( source.bandwidth > currentMaxBadwith && source.bandwidth <= $.cookie('EmbedPlayer.UserBandwidth') ){
-						currentMaxBadwith = source.bandwidth;
+					if( Math.abs( source.bandwidth - bandwidthTarget ) < bandwidthDelta ){
+						bandwidthDelta = Math.abs( source.bandwidth - bandwidthTarget );
 						setSelectedSource( source );
 					}
 				}
 			});
 		}
+		
 		if ( this.selectedSource ) {
-			mw.log('MediaElement::autoSelectSource: Set via bandwidth prefrence: source ' + source.bandwidth + ' user: ' + $.cookie('EmbedPlayer.UserBandwidth') );
+			mw.log('MediaElement::autoSelectSource: Set via bandwidth prefrence: source ' + this.selectedSource.bandwidth + ' user: ' + $.cookie('EmbedPlayer.UserBandwidth') );
 			return this.selectedSource;
 		}
 		
