@@ -6,11 +6,14 @@
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script>
 	mw.setConfig('EmbedPlayer.EnableFlavorSelector', true);
+	// also dissable adattive for more accurate bit selector test
+	mw.setConfig("Kaltura.UseAppleAdaptive", false );
 </script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "Flavor Selector" );
+	
 
 	asyncTest("Iframe layout elements", function(){
 		kalturaQunitWaitForPlayer(function(){
@@ -40,6 +43,7 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Flavor Selector test </h2>
+presently only works on browsers that support h.264 streams. 
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
 
