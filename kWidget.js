@@ -683,6 +683,11 @@ var kWidget = {
 		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
 			return false;
 		}
+		// IE9 is grade B HTML5 support only invoke it if forceMobileHTML5 is true, 
+		// but for normal tests we categorize it as ~not~ supporting html5 video. 
+		if( navigator.userAgent.indexOf( 'MSIE 9.' ) != -1 ){
+			return false;
+		}
 		if( dummyvid.canPlayType ) {
 			return true;
 		}
