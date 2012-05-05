@@ -309,7 +309,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}	
 		// Update the loadingEntry flag:
 		this.loadingEntry = this.getClip( clipIndex ).id;
-		
+
 		// Send notifications
 		if( clipIndex == 0 ) {
 			embedPlayer.triggerHelper( 'playlistFirstEntry' );

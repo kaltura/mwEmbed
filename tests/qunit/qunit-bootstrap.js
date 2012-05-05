@@ -32,7 +32,7 @@ var qunitWaitForJQuery = function( callback ){
 	}
 };
 window['kRunFlashTests'] = false;
-if( document.URL.indexOf('runFlashQunitTests') ){
+if( document.URL.indexOf('runFlashQunitTests') != -1 ){
 	window['kRunFlashTests'] = true;
 }
 

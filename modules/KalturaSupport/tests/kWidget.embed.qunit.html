@@ -13,7 +13,7 @@ function jsKalturaPlayerTest( videoId ){
 
 	asyncTest("Inline readyCallback fired", function(){
 		kalturaQunitWaitForPlayer(function(){
-			equal( window.kWidgetCallbackWithID, videoId, " ReadyCallback fired with id:" + videoId );
+			equal( window.kWidgetCallbackWithID, videoId, "ReadyCallback fired with id:" + videoId );
 			testAutoPlay();
 			// Done with async 
 			start();

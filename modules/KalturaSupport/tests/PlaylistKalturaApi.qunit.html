@@ -16,6 +16,14 @@ function jsKalturaPlayerTest( videoId ){
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var kdp = $('#' + videoId )[0];
 	
+	asyncTest( "Playlist is ready", function(){
+		window['onPlaylistReady'] = function(){
+			ok( true, 'playlistReady event recived');
+			start();
+		}
+	});
+	kdp.addJsListener("playlistReady", 'onPlaylistReady' );
+	
 	asyncTest("Playlist layout elements present", function(){
 		kalturaQunitWaitForPlayer(function(){
 			// Skip player dom tests if in flash mode: 
@@ -86,7 +94,7 @@ function jsKalturaPlayerTest( videoId ){
 	
 	
 	asyncTest("Switch tab test", function(){
-		window['onPlaylistReady'] = function(){
+		window['onSwitchPlaylistReady'] = function(){
 			ok(true, "Recived playlist ready event");
 			var playlistObj = kdp.evaluate("{playlistAPI.dataProvider}");
 			// the second tab playlist has 3 items:
@@ -100,7 +108,7 @@ function jsKalturaPlayerTest( videoId ){
 		
 		window['runSwitchTabTest'] = function(){
 			// listen for playlist ready for tab switch: 
-			kdp.addJsListener("playlistReady", 'onPlaylistReady' );
+			kdp.addJsListener("playlistReady", 'onSwitchPlaylistReady' );
 			kdp.setKDPAttribute('tabBar', 'selectedIndex', 1 );	
 		};
 	});
