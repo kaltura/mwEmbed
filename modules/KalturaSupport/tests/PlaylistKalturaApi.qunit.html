@@ -16,61 +16,133 @@ function jsKalturaPlayerTest( videoId ){
 	var $iframe = $('#' + videoId + '_ifp').contents();
 	var kdp = $('#' + videoId )[0];
 	
-	test("Playlist layout elements present", function(){
-		stop();
+	asyncTest("Playlist layout elements present", function(){
 		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
-			equal( $iframe.find('.playlist-set-list').find('a').length, 2, 'found two playlists');
+			// Skip player dom tests if in flash mode: 
+			if( !kRunFlashTests ){
+				ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
+				ok( $iframe.find('.play-btn').length, ".play-btn found" );
+				equal( $iframe.find('.playlist-set-list').find('a').length, 2, 'found two playlists');
+			}
+			
+			// continue tests
 			start();
+			// play first clip after 1 second
+			setTimeout(function(){
+				playFirstClipTest();
+			},1000);
 		});
 	});
 
-	test("Playlist switchEntry", function(){		
-		stop();	
-		window['kTestEntrySwitchReady'] = function(){
-			equal( kdp.evaluate( '{mediaProxy.entry.id}' ), "0_5diu7kzg", 'Switched entry to 0_5diu7kzg');
-			// dont' add test until ready to test
-			runLastTest();
-			start();							
-		};
-		kdp.addJsListener( "entryReady", "kTestEntrySwitchReady" );
-		kdp.sendNotification( "changeMedia", { entryId : "0_5diu7kzg" } );		
-	});
-	function runLastTest(){
-		// Test the next item in the playlist using
-		test("Playlist 2nd item, index 1", function(){
-			stop();	
-			window['kTestEntrySwitchReady'] = function(){
-				equal( kdp.evaluate( '{mediaProxy.entry.id}' ), "0_uka1msg4", 'Switched entry to 0_5diu7kzg');			
+	asyncTest( "Play first Clip", function(){
+		// Play first clip
+		window['onPlayFirstClipEntryEvent'] = function(){
+			ok( true, "recived playlistFirstEntry event" );
+			equal( kdp.evaluate( '{mediaProxy.entry.id}' ), '1_v1z55w0b', "playing first clip on play" );
+
+			// Continue tests after playing for 1 second
+			setTimeout(function(){
 				start();
-			};		
-			kdp.addJsListener( "entryReady", "kTestEntrySwitchReady" );
-			kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 1 );
-		});
-	}
+				runPlayNextTest();
+			},1000);
+		};
+		window['playFirstClipTest'] = function(){
+			// add listener for first entry played:
+			kdp.addJsListener( "playlistFirstEntry", 'onPlayFirstClipEntryEvent' );
+			// play the first entry:
+			kdp.sendNotification( 'doPlay' );
+		};
+		
+	});
+	
+	asyncTest("Playlist play next", function(){
+		var ranPlayNext =false;
+		window['onPlaylistPlayNext'] = function(){
+			ranPlayNext = true;
+			ok( true, "Recived playlistPlayNext event");
+			// check the new clip is currently selected:
+			equal( kdp.evaluate( '{mediaProxy.entry.id}' ), "0_5diu7kzg", 'play next set to correct entry to 0_5diu7kzg');
+		}
+		window['onPlaylistLastEntry'] = function(){
+			ok( true, "Recived playlistLastEntry event" );
+			// make sure we ranPlaynext before we run last entry event: 
+			ok( ranPlayNext, "Recived playlistPlayNext event before playlistLastEntry event" );
+			
+			// continue tests
+			start();
+			runSwitchTabTest();
+		}		
+		
+		// Test entry point: 
+		window['runPlayNextTest'] = function(){
+			// listen for playlist next event: 
+			kdp.addJsListener("playlistPlayNext", "onPlaylistPlayNext" );
+			// we have two items in the playlist so we should recive playlist end event: 
+			kdp.addJsListener("playlistLastEntry", "onPlaylistLastEntry" );
+			// send the playlist play next notification
+			kdp.sendNotification( "playlistAPI.dataProvider", "playlistPlayNext" );
+		}
+	});
+	
+	
+	asyncTest("Switch tab test", function(){
+		window['onPlaylistReady'] = function(){
+			ok(true, "Recived playlist ready event");
+			var playlistObj = kdp.evaluate("{playlistAPI.dataProvider}");
+			// the second tab playlist has 3 items:
+			equal( playlistObj.length, 3, "Playlist changed succesfull, has 3 items" );
+			equal( playlistObj.selectedIndex, 0, "Playlist selected index is 0" );
+			
+			// continue tests:
+			start();
+			playMiddleEntryTest();	
+		}
+		
+		window['runSwitchTabTest'] = function(){
+			// listen for playlist ready for tab switch: 
+			kdp.addJsListener("playlistReady", 'onPlaylistReady' );
+			kdp.setKDPAttribute('tabBar', 'selectedIndex', 1 );	
+		};
+	});
+	
+	
+	asyncTest("Play middle entry", function(){
+		window['onPlaylistMiddleEntry'] = function(){
+			ok( true, "Recived playlistMiddleEntry event" );
+			
+			// all done with tests ( pause player )
+			kdp.sendNotification( 'doPause' );
+			start();
+		}
+		
+		window['playMiddleEntryTest'] = function(){
+			// listen for middle entry playback: 
+			kdp.addJsListener( "playlistMiddleEntry", 'onPlaylistMiddleEntry' );
+			// play 'middle' entry:
+			kdp.setKDPAttribute( "playlistAPI.dataProvider", "selectedIndex", 1 );
+		};
+	});
+		
 }
 </script>
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 <script>
-	// simple function to return the page kdp: 
-	function kdp(){
-		return document.getElementById( 'kaltura_player_1306453594' );
-	}
 	// TODO add these to the qUnit test!
-	kWidget.addReadyCallback( function(){
+	kWidget.addReadyCallback( function( playerId ){
+		
+		var kdp = document.getElementById( playerId );
 		$('#currentIndex').click( function(){
-			alert( kdp().evaluate( "{playlistAPI.dataProvider.selectedIndex}" ) );
+			alert( kdp.evaluate( "{playlistAPI.dataProvider.selectedIndex}" ) );
 		});
 		$('#plData').click( function(){
-			alert( JSON.stringify( kdp().evaluate("{playlistAPI.dataProvider}") ) );
+			alert( JSON.stringify( kdp.evaluate("{playlistAPI.dataProvider}") ) );
 		});
 		
 		$('#play2ndItem').click( function(){
-			kdp().setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 1 );
+			kdp.setKDPAttribute("playlistAPI.dataProvider", "selectedIndex", 1 );
 		});
 		$('#switchTab').click( function(){
-			kdp().setKDPAttribute('tabBar', 'selectedIndex', 1);
+			kdp.setKDPAttribute('tabBar', 'selectedIndex', 1);
 		})
 	});
 </script>
