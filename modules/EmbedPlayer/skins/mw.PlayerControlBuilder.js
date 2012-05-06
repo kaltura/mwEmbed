@@ -455,6 +455,14 @@ mw.PlayerControlBuilder.prototype = {
 			$( embedPlayer ).trigger( 'onOpenFullScreen' );
 		}
 		
+		// Bind escape to restore in page clip
+		$( window ).keyup( function( event ) {
+			// Escape check
+			if( event.keyCode == 27 ){
+				_this.restoreWindowPlayer();
+			}
+		} );		
+		
 		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
 		setTimeout( function(){ _this.syncPlayerSize() }, 50);
 		setTimeout( function(){ _this.syncPlayerSize() }, 200);
