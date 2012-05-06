@@ -295,5 +295,5 @@ mw.EmbedPlayerImageOverlay = {
 				});
 			}
 		}
-	},
+	}
 };
