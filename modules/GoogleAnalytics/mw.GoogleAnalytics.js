@@ -336,7 +336,7 @@ uiConf Examples:
 		*/
 		getOptionalValue: function(  methodName, data ){
 			methodName = methodName.toString();
-			if( methodName == 'doSeek' ){
+			if( methodName == 'doSeek' || methodName.indexOf( 'pct_watched') != -1 ){
 				this._lastSeek = this.embedPlayer.currentTime;
 				return this._lastSeek;
 			}
