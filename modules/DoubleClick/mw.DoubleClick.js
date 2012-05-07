@@ -27,6 +27,9 @@ mw.DoubleClick.prototype = {
 	// Flags for a fallback check for all ads completed .
 	contentDoneFlag: null,
 	
+	// Flag for startting ad playback sequence:
+	startedAdPlayback: null,
+	
 	allAdsCompletedFlag: null,
 	
 	
@@ -334,12 +337,27 @@ mw.DoubleClick.prototype = {
 		// Add ad listeners: 
 		adsListener( 'CLICK' );
 		adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
+			// set a local method for true ad playback start. 
+			_this.startedAdPlayback = function(){
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+			}
 			// loading ad:
 			_this.embedPlayer.pauseLoading();
-			// if we are not already in a sequence setup the player for ad playback: 
-			_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+			// sometimes CONTENT_PAUSE_REQUESTED is the last event we receive :(
+			// give double click 6 seconds to load the ad, else return to content playback
+			setTimeout( function(){
+				if( $.isFunction( _this.startedAdPlayback ) ){
+					_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
+				}
+			}, 6000 );
 		} );
 		adsListener( 'LOADED', function(){
+			// check for startted ad playback sequence callback 
+			if( _this.startedAdPlayback ){
+				_this.startedAdPlayback();
+				_this.startedAdPlayback = null;
+			}
+			
 			var size = _this.getPlayerSize();
 			_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );	
 			// Hide player content
@@ -522,7 +540,8 @@ mw.DoubleClick.prototype = {
 	},
 	// Handler for various ad errors.
 	onAdError: function( errorEvent ) {
-		mw.log('DoubleClick:: onAdError: ' + errorEvent.getError() );
+		var errorMsg = ( errorEvent['getError'] )? errorEvent.getError() : errorEvent;
+		mw.log('DoubleClick:: onAdError: ' + errorMsg  );
 		if (this.adsManager && $.isFunction(this.adsManager.unload) ) {
 			this.adsManager.unload();
 		}
@@ -537,7 +556,7 @@ mw.DoubleClick.prototype = {
 		this.showContent();
 
 		// Do an sync play call ( without events if not on postroll )
-		if( !onContentComplete ){
+		if( !onContentComplete && this.getContent()['play'] ){
 			this.getContent().play();
 		}
 		
