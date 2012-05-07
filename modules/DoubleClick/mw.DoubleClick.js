@@ -340,22 +340,22 @@ mw.DoubleClick.prototype = {
 			// set a local method for true ad playback start. 
 			_this.startedAdPlayback = function(){
 				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+				_this.startedAdPlayback = null;
 			}
 			// loading ad:
 			_this.embedPlayer.pauseLoading();
 			// sometimes CONTENT_PAUSE_REQUESTED is the last event we receive :(
-			// give double click 6 seconds to load the ad, else return to content playback
+			// give double click 10 seconds to load the ad, else return to content playback
 			setTimeout( function(){
 				if( $.isFunction( _this.startedAdPlayback ) ){
 					_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
 				}
-			}, 6000 );
+			}, 10000 );
 		} );
 		adsListener( 'LOADED', function(){
 			// check for startted ad playback sequence callback 
 			if( _this.startedAdPlayback ){
 				_this.startedAdPlayback();
-				_this.startedAdPlayback = null;
 			}
 			
 			var size = _this.getPlayerSize();
@@ -371,7 +371,6 @@ mw.DoubleClick.prototype = {
 			// check for startted ad playback sequence callback 
 			if( _this.startedAdPlayback ){
 				_this.startedAdPlayback();
-				_this.startedAdPlayback = null;
 			}
 			
 			// hide spinner: 
