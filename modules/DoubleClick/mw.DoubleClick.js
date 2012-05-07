@@ -368,6 +368,12 @@ mw.DoubleClick.prototype = {
 			_this.hidePlayerOffScreen( _this.getAdContainer()  );
 		} );
 		adsListener( 'STARTED', function(){
+			// check for startted ad playback sequence callback 
+			if( _this.startedAdPlayback ){
+				_this.startedAdPlayback();
+				_this.startedAdPlayback = null;
+			}
+			
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
 			// make sure the player is in play state: 
