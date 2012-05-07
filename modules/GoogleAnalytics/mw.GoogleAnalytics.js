@@ -34,7 +34,7 @@ uiConf Examples:
 
 		// last seek:
 		_lastSeek : 0,
-
+		
 		// The Default Track List
 		defaultTrackList : [
 			'kdpReady',
@@ -204,6 +204,7 @@ uiConf Examples:
 		* don't match their corresponding kaltura listener binding name 
 		*/
 		getEventNameBinding: function( eventName ){
+			eventName = eventName.toString();
 			switch( eventName ){
 				case 'quartiles':
 					return 'playerUpdatePlayhead';
@@ -255,7 +256,7 @@ uiConf Examples:
 			var seekPercent = this._lastSeek / entryDuration;
 
 			// Send updates based on logic present in StatisticsMediator.as
-			if ( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {					
+			if ( !_this._p25Once && percent >= .25  &&  seekPercent <= .25 ) {
 				_this._p25Once = true;			
 				return '25';									
 			} else if ( !_this._p50Once && percent >= .50 && seekPercent < .50 ) {
@@ -271,10 +272,10 @@ uiConf Examples:
 			return false;
 		},
 
-		getTrackingEvent: function( methodName, data ){
+		getTrackingEvent: function( methodName, data ) {
 			var optionValue;
 			// check for special case of 'quartiles'
-			if ( methodName == 'quartiles' ){				
+			if ( methodName == 'quartiles' ){
 				var qStat = this.getQuartilesStatus( data );
 				// Don't process the tracking event
 				if ( !qStat ) {
