@@ -151,7 +151,7 @@ uiConf Examples:
 			
 			// Remove duplicates
 			$.each( customEvents, function( i ) {
-				if ( $.inArray( this, _this.eventTrackList ) ) {
+				if ( $.inArray( this, _this.eventTrackList ) != -1 ) {
 					customEvents.splice( i, 1 );
 				}
 			} );
@@ -298,7 +298,7 @@ uiConf Examples:
 
 			if ( this.getConfig( 'customEvent') ) {
 				customEvents = this.getConfig( 'customEvent').split( ',' );
-				if ( $.inArray( methodName, customEvents ) ) {
+				if ( $.inArray( methodName, customEvents ) != -1 ) {
 					if ( this.getConfig( methodName + "Category" ) ) {
 						eventCategory = this.getConfig( methodName + "Category" );
 					}
@@ -325,16 +325,27 @@ uiConf Examples:
 		* Get an optional label for the methodName and data
 		*/
 		getOptionalLabel: function( methodName, data ) {
+			methodName = methodName.toString();
 			var clipTitle = ( this.embedPlayer.kalturaPlayerMetaData && this.embedPlayer.kalturaPlayerMetaData.name ) ? this.embedPlayer.kalturaPlayerMetaData.name : '';
 			var entryId = this.embedPlayer.kentryid;
 			var widgetId = this.embedPlayer.kwidgetid;
+			var customEvents = [];
+			if ( this.getConfig( 'customEvent' ) ) {
+				customEvents = this.getConfig( 'customEvent' ).split( ',' );
+				if ( $.inArray( methodName, customEvents ) != -1 ) {
+					if ( this.getConfig( methodName + "Label" ) ) {
+						return this.getConfig( methodName + "Label" );
+					}
+				}
+				
+			}
 			return ( clipTitle + "|" + entryId + "|" + widgetId );
 		},
 		
 		/**
 		* Get an optional data value for the methodName
 		*/
-		getOptionalValue: function(  methodName, data ){
+		getOptionalValue: function(  methodName, data ) {
 			methodName = methodName.toString();
 			if( methodName == 'doSeek' || methodName.indexOf( 'pct_watched') != -1 ){
 				this._lastSeek = this.embedPlayer.currentTime;
@@ -344,11 +355,10 @@ uiConf Examples:
 				if ( data.newVolume )
 					return data.newVolume;
 			}
-			
 			var customEvents = [];
 			if ( this.getConfig( 'customEvent' ) ) {
 				customEvents = this.getConfig( 'customEvent' ).split( ',' );
-				if ( $.inArray( methodName, customEvents ) ) {
+				if ( $.inArray( methodName, customEvents ) != -1 ) {
 					if ( this.getConfig( methodName + "Value" ) ) {
 						return this.getConfig( methodName + "Value" );
 					}
