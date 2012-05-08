@@ -204,6 +204,7 @@ uiConf Examples:
 		* don't match their corresponding kaltura listener binding name 
 		*/
 		getEventNameBinding: function( eventName ){
+			// Explicitly casting eventName to string - iOS 4.3.1 tweak
 			eventName = eventName.toString();
 			switch( eventName ){
 				case 'quartiles':
