@@ -29,6 +29,9 @@ mw.DoubleClick.prototype = {
 	// Flags for a fallback check for all ads completed .
 	contentDoneFlag: null,
 	
+	// Flag for startting ad playback sequence:
+	startedAdPlayback: null,
+	
 	allAdsCompletedFlag: null,
 	
 	
@@ -336,12 +339,27 @@ mw.DoubleClick.prototype = {
 		// Add ad listeners: 
 		adsListener( 'CLICK' );
 		adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
+			// set a local method for true ad playback start. 
+			_this.startedAdPlayback = function(){
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+				_this.startedAdPlayback = null;
+			}
 			// loading ad:
 			_this.embedPlayer.pauseLoading();
-			// if we are not already in a sequence setup the player for ad playback: 
-			_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+			// sometimes CONTENT_PAUSE_REQUESTED is the last event we receive :(
+			// give double click 8000 seconds to load the ad, else return to content playback
+			setTimeout( function(){
+				if( $.isFunction( _this.startedAdPlayback ) ){
+					_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
+				}
+			}, 8000 );
 		} );
 		adsListener( 'LOADED', function(){
+			// check for startted ad playback sequence callback 
+			if( _this.startedAdPlayback ){
+				_this.startedAdPlayback();
+			}
+			
 			var size = _this.getPlayerSize();
 			_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );	
 			// Hide player content
@@ -352,6 +370,10 @@ mw.DoubleClick.prototype = {
 			_this.hidePlayerOffScreen( _this.getAdContainer()  );
 		} );
 		adsListener( 'STARTED', function(){
+			// check for startted ad playback sequence callback 
+			if( _this.startedAdPlayback ){
+				_this.startedAdPlayback();
+			}
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
 			// make sure the player is in play state: 
