@@ -90,6 +90,9 @@ mw.EmbedPlayer.prototype = {
 	
 	// If player should be displayed (in some caused like audio, we don't need the player to be visible
 	'displayPlayer': true, 
+	
+	// Widget loaded should only fire once
+	'widgetLoaded': false,
 
 	/**
 	 * embedPlayer
@@ -529,6 +532,11 @@ mw.EmbedPlayer.prototype = {
 		this.playerReady = true;
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
+		if ( !this.widgetLoaded ) {
+			this.widgetLoaded = true;
+			mw.log( "EmbedPlayer:: setupSourcePlayer > Trigger: widgetLoaded");
+			$( this ).trigger( 'widgetLoaded' );
+		}
 	},
 
 	/**
@@ -923,6 +931,12 @@ mw.EmbedPlayer.prototype = {
 		mw.log("EmbedPlayer:: Trigger: playerReady");
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
+		if ( !this.widgetLoaded ) {
+			this.widgetLoaded = true;
+			mw.log( "EmbedPlayer:: Trigger: widget loaded");
+			$( this ).trigger( 'widgetLoaded' );
+		}
+
 		
 		// Check if we want to block the player display
 		if( this['data-blockPlayerDisplay'] ){

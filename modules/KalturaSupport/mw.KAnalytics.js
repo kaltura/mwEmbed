@@ -191,7 +191,7 @@ mw.KAnalytics.prototype = {
 		};
 		
 		// When the player is ready
-		b( 'playerReady', 'WIDGET_LOADED' );
+		b( 'widgetLoaded', 'WIDGET_LOADED' );
 		
 		// When the poster or video ( when autoplay ) media is loaded
 		b( 'KalturaSupport_EntryDataReady', 'MEDIA_LOADED' );
