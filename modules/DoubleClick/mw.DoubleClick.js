@@ -20,8 +20,6 @@ mw.DoubleClick.prototype = {
 
 	// Status variables for ad and content playback.
 	adPlaying: false,
-	// store the ad start time
-	adPreviousTimeLeft: null,
 	contentPlaying: false,
 	adDuration: null,
 	demoStartTime: null,
@@ -364,8 +362,6 @@ mw.DoubleClick.prototype = {
 			_this.adPlaying = true;
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
 			
-			_this.adStartTime = new Date().getTime();
-			
 			// Monitor ad progress ( for sequence proxy )
 			_this.monitorAdProgress();
 		} );
@@ -505,23 +501,6 @@ mw.DoubleClick.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration', null );
 			return ;
 		}
-		// Check if we have an ad buffer underun that double click apparently does not check for :( 
-		if( _this.adPreviousTimeLeft == _this.adsManager.getRemainingTime()  ){
-			// reset the previus time check: 
-			_this.adPreviousTimeLeft = null;
-			setTimeout( function(){
-				if( _this.adPreviousTimeLeft ==  _this.adsManager.getRemainingTime()  ){
-					mw.log( "DoubleClick:: buffer underun pause? , try to continue playback ");
-					// try to restart playback: 
-					_this.adsManager.resume();
-					// restore the previous time check: 
-					_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime()
-				}
-			}, 2000)
-		}
-		// update the adPreviousTimeLeft
-		_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
-		
 		// Update sequence property per active ad: 
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
 		var $adVid = $( _this.getAdContainer() ).find( 'video' );
@@ -559,7 +538,7 @@ mw.DoubleClick.prototype = {
 
 		// Do an sync play call ( without events if not on postroll )
 		if( !onContentComplete ){
-			this.forceContentPlay();
+			this.getContent().play();
 		}
 		
 		// Check for sequence proxy style restore: 
@@ -577,20 +556,6 @@ mw.DoubleClick.prototype = {
 				this.embedPlayer.play();
 			}
 		}
-	},
-	forceContentPlay: function(){
-		var vid = this.getContent();
-		var isPlaying = false;
-		$(vid).bind('playing.dcForceContentPlay', function(){
-			isPlaying = true;
-		});
-		vid.play();
-		setTimeout(function(){
-			if( !isPlaying ){
-				// try again: 
-				vid.play();
-			}
-		}, 3000 );
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 
