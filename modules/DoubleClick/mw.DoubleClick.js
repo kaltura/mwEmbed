@@ -579,18 +579,24 @@ mw.DoubleClick.prototype = {
 		}
 	},
 	forceContentPlay: function(){
+		var _this = this;
 		var vid = this.getContent();
 		var isPlaying = false;
-		$(vid).bind('playing.dcForceContentPlay', function(){
+		var playBindStr = 'playing.dcForceContentPlay';
+		$( vid ).unbind( playBindStr ).bind( playBindStr, function(){
 			isPlaying = true;
+			$( vid ).unbind( playBindStr );
 		});
 		vid.play();
 		setTimeout(function(){
+			var vid = _this.getContent();
 			if( !isPlaying ){
 				// try again: 
+				vid.load();
 				vid.play();
+				_this.forceContentPlay();
 			}
-		}, 3000 );
+		}, 2000 );
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 
