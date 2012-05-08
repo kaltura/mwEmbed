@@ -448,7 +448,10 @@ class KalturaResultObject {
 
 		$this->playerConfig = array(
 			'plugins' => $plugins,
-			'vars' => $vars
+			'vars' => $vars,
+			'uiConfId' => $this->getUiConfId(),
+			'partnerId' => $this->getPartnerId(),
+			'entryId' => $this->getEntryId()
 		);
 
 		//echo '<pre>';
