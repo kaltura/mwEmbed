@@ -147,7 +147,7 @@ mw.includeAllModuleMessages();
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
 				// Hide the caption menu if presently displayed
-				$( '#textMenuContainer_' + embedPlayer.id ).parent().hide();
+				$( '#textMenuContainer_' + embedPlayer.id ).remove();
 			} );
 			
 			// Resize the timed text font size per window width
@@ -322,7 +322,7 @@ mw.includeAllModuleMessages();
 			var textMenuId = 'textMenuContainer_' + this.embedPlayer.id;
 			if( !$( '#' + textMenuId ).length ){
 				//Setup the menu:
-				$('body').append(
+				$( this.embedPlayer ).append(
 					$('<div>')
 						.addClass('ui-widget ui-widget-content ui-corner-all')
 						.attr( 'id', textMenuId )
