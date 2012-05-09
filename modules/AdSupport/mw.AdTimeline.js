@@ -184,6 +184,8 @@ mw.AdTimeline.prototype = {
 								}
 								// Trigger onplay ( even if there were no ads ) 
 								embedPlayer.triggerHelper( 'onplay' );
+								// Pause playback
+								embedPlayer.pause();
 								// Continue playback
 								embedPlayer.play();
 							},0);
