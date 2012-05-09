@@ -897,7 +897,7 @@ mw.EmbedPlayer.prototype = {
 		if ( this.controls ) {
 			if( this.useNativePlayerControls() ){
 				if( this.getPlayerElement() ){
-					$(  this.getPlayerElement() ).attr('controls', true);
+					$(  this.getPlayerElement() ).attr('controls', "true");
 				}
 			} else {
 				this.controlBuilder.addControls();
