@@ -73,7 +73,6 @@ mw.EmbedPlayerNative = {
 		'volumeControl' : true,
 		'overlays' : true
 	},
-
 	/**
 	 * Updates the supported features given the "type of player"
 	 */
@@ -88,6 +87,11 @@ mw.EmbedPlayerNative = {
 		if( mw.isIpad() ){
 			this.supports.volumeControl = false;
 		}
+		// Check if we already have a selected source and a player in the page, 
+		if( this.getPlayerElement() && this.getSrc() ){
+			$( this.getPlayerElement() ).attr( 'src', this.getSrc() );
+		}
+		
 		this.parent_updateFeatureSupport();
 	},
 	/**
@@ -238,6 +242,7 @@ mw.EmbedPlayerNative = {
 		if( this.useNativePlayerControls() ){
 			$( vid ).attr( 'controls', "true" );
 		}
+
 		// Apply media element bindings:
 		_this.applyMediaElementBindings();
 		
@@ -941,6 +946,10 @@ mw.EmbedPlayerNative = {
 	*/
 	_onseeking: function() {
 		mw.log( "EmbedPlayerNative::onSeeking " + this.seeking + ' new time: ' + this.getPlayerElement().currentTime );
+		if( this.seeking && Math.round( this.getPlayerElement().currentTime - this.currentSeekTargetTime ) > 2 ){
+			mw.log( "Error:: EmbedPlayerNative Seek time missmatch: target:" + this.getPlayerElement().currentTime + 
+					' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets');
+		}
 		// Trigger the html5 seeking event
 		//( if not already set from interface )
 		if( !this.seeking ) {
