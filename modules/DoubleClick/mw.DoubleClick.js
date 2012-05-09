@@ -347,7 +347,7 @@ mw.DoubleClick.prototype = {
 			// loading ad:
 			_this.embedPlayer.pauseLoading();
 			// sometimes CONTENT_PAUSE_REQUESTED is the last event we receive :(
-			// give double click 8000 seconds to load the ad, else return to content playback
+			// give double click 8 seconds to load the ad, else return to content playback
 			setTimeout( function(){
 				if( $.isFunction( _this.startedAdPlayback ) ){
 					_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
