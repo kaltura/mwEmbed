@@ -618,7 +618,7 @@ mw.DoubleClick.prototype = {
 				vid.play();
 				_this.forceContentPlay();
 			}
-		}, 2000 );
+		}, 8000 );
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 
