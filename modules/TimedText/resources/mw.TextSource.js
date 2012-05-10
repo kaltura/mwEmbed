@@ -220,23 +220,16 @@
 					}
 					cssObject[ cssName ] = attr.nodeValue;
 				});
-				//for(var i =0; i< style.length )
+				// for(var i =0; i< style.length )
 				_this.styleCss[ $( style).attr('id') ] = cssObject;
 			});
 			
 			$( xml ).find( 'p' ).each( function( inx, p ){
-
-				// Get text content ( just a quick hack, we need more detailed spec or TTML parser )
+				// Get text content by converting ttml node to html
 				var content = '';
-				$( p.childNodes ).each(function(inx,node){
-				   if( node.nodeName != '#text' && node.nodeName != 'metadata' ){
-					   // Add any html tags:
-					   content +='<' + node.nodeName + '>' + node.textContent + '</' + node.nodeName + '>' ;
-				    } else {
-				    	content += node.textContent;
-				    }
+				$.each( p.childNodes, function(inx, node){
+					content+= _this.convertTTML2HTML( node );
 				});
-				
 				// Get the end time:
 				var end = null;
 				if( $( p ).attr( 'end' ) ){
@@ -252,7 +245,7 @@
 				var captionObj ={
 					'start': mw.npt2seconds( $( p ).attr( 'begin' ) ),
 					'end': end,
-					'content':  content
+					'content': content
 				};
 				
 				// See if we have custom metadata for position of this caption object 
@@ -293,6 +286,43 @@
 				captions.push( captionObj);
 			});
 			return captions;
+		},
+		convertTTML2HTML: function( node ){
+			var _this = this;
+			
+			// look for text node: 
+			if( node.nodeType == 3 ){
+				return node.textContent;
+			}
+			// skip metadata nodes: 
+			if( node.nodeName == 'metadata' ){
+				return '';
+			}
+			// if a br just append
+			if( node.nodeName == 'br' ){
+				return '<br />';
+			}
+			// Setup tts mappings TODO should be static property of a ttmlSource object. 
+			var ttsStyleMap = {
+				'tts:color' : 'color',
+				'tts:fontWeight' : 'font-weight',
+				'tts:fontStyle' : 'font-style'
+			};
+			if( node.childNodes.length ){
+				var nodeString = '';
+				var styleVal = '';
+				for( var attr in ttsStyleMap ){
+					if( node.getAttribute( attr ) ){
+						styleVal+= ttsStyleMap[ attr ] + ':' +  node.getAttribute( attr ) + ';';
+					}
+				}
+				nodeString +=  '<' + node.nodeName + ' style="' + styleVal + '" >';
+				$.each( node.childNodes, function( inx, childNode ){
+					nodeString += _this.convertTTML2HTML( childNode );
+				});
+				nodeString += '</' + node.nodeName + '>';
+				return nodeString;
+			}
 		},
 		/**
 		 * srt timed text parse handle:

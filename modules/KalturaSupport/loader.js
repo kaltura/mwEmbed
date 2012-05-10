@@ -17,6 +17,8 @@
 		'Kaltura.NoApiCache' : false, // By default tell the client to cache results
 		// By default support apple adaptive 
 		'Kaltura.UseAppleAdaptive': true,
+		// By default we should include flavorIds urls for supporting akami HD 
+		'Kaltura.UseFlavorIdsUrls': true,
 		// A video file for when no suitable flavor can be found
 		'Kaltura.MissingFlavorSources' : [
 		    { 
@@ -129,15 +131,15 @@
 		'faderPlugin',
 		'watermarkPlugin',
 		'shareSnippet',
-        'moderationPlugin',
-        'captureThumbnailPlugin',
-        'downloadPlugin',
+		'moderationPlugin',
+		'captureThumbnailPlugin',
+		'downloadPlugin',
 		'adPlugin',
 		'captionPlugin',
 		'bumperPlugin',
 		'playlistPlugin',
-        'jCarousel',
-        'carouselPlugin'
+		'jCarousel',
+		'carouselPlugin'
 	];
 	
 	mw.newEmbedPlayerCheckUiConf = function( callback ){
@@ -147,6 +149,15 @@
 			})
 		} );
 	};
+	
+	
+	// Make sure flashvars and player config are ready as soon as we create a new player
+	$( mw ).bind( 'newEmbedPlayerEvent', function(event, embedPlayer){
+		if( mw.getConfig( 'KalturaSupport.PlayerConfig' ) ){
+			embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
+			mw.setConfig('KalturaSupport.PlayerConfig', null );
+		}
+	});
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {
 		return $.merge( kalturaSupportRequestSet, [
@@ -164,12 +175,12 @@
 	
 	// Check if the document has kaltura objects ( for fall forward support ) 
 	$( mw ).bind( 'LoadeRewritePlayerTags', function( event, rewriteDoneCallback ){
-		// if kGetKalturaPlayerList is not defined ( we are not in a kaltura env )
-		if( typeof kGetKalturaPlayerList == 'undefined'){
+		// if kGetKalturaPlayerList is not defined ( we are not in a kaltura enviornment )
+		if( typeof kWidget == 'undefined' ){
 			return ;
 		}
 		
-		var kalturaObjectPlayerList = kGetKalturaPlayerList();
+		var kalturaObjectPlayerList = kWidget.getKalutaObjectList();
 		mw.log( 'KalturaSupport found:: ' + kalturaObjectPlayerList.length + ' is mobile::' +  mw.isHTML5FallForwardNative() );
 		if( ! kalturaObjectPlayerList.length ) {
 			// No players to rewrite ( and don't run  window.KalturaKDPCallbackReady )
@@ -179,7 +190,6 @@
 		
 			// Check if we are NOT rewriting tags: 
 			if( !kWidget.isHTML5FallForward() ) {
-				restoreKalturaKDPCallback();
 				rewriteDoneCallback();
 				return ;
 			}
@@ -220,7 +230,7 @@
 					if( !swfSource ) {
 						swfSource = $( element ).find( "param[name=data]" ).attr( 'value' );						                                      
 					}
-					var kEmbedSettings = kGetKalturaEmbedSettings( swfSource, flashvars );
+					var kEmbedSettings = kWidget.getEmbedSettings( swfSource, flashvars );
 
 					// Check if its a playlist or a entryId
 					mw.log( "KalturaSupport:: Got object settings: entryId: " + kEmbedSettings.entry_id + " uiConf: " + kEmbedSettings.uiconf_id);
@@ -267,7 +277,7 @@
 							videoEmbedAttributes.kentryid = kEmbedSettings.entry_id;
 							// If we have flashvar  we need to pass the ks to thumbnail url
 							var ks = ( flashvars && flashvars.loadThumbnailWithKs ) ? flashvars.ks : false;
-							var thumb_url =  mw.getKalturaThumbUrl({
+							var thumb_url =  kWidget.getKalturaThumbUrl({
 								'partner_id': kEmbedSettings.p,
 								'entry_id' :  kEmbedSettings.entry_id,
 								'ks' : ks,
@@ -540,9 +550,8 @@
 			var iframeId = $( playerTarget ).attr('id') + '_ifp';
 			var iframeStyle = ( $( playerTarget ).attr('style') ) ? $( playerTarget ).attr('style') : '';
 			var iframeCss = { 'border': '0px' };
-			var additionalIframeCss = kGetAdditionalTargetCss();
 			
-			$.extend(iframeCss, additionalIframeCss);
+			$.extend(iframeCss, kWidget.getAdditionalTargetCss());
 			
 			var $iframe = $('<iframe />')
 				.attr({

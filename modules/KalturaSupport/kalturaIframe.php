@@ -167,19 +167,18 @@ class kalturaIframe {
 		}
 		// If audio player adjust height:
 		$entryResult = $this->getResultObject()->getResultObject();
-		if( isset( $entryResult['meta'] ) && $entryResult['meta']->mediaType == 5 ){
+		if( isset( $entryResult['meta'] ) && isset( $entryResult['meta']->mediaType ) && $entryResult['meta']->mediaType == 5 ){
 			$height = 30;
 		}
 		
-		return "width:{$width}px;height:{$height}px;";
+		return "position:absolute;width:{$width}px;height:{$height}px;";
 	}
 	// outputs the playlist wrapper 
 	private function getPlaylistWraper( $videoHtml ){
 		// XXX this hard codes some layout assumptions ( but no good way around that for now )
 		return '<div id="playlistContainer" style="width:100%;height:100%">
-					<span class="media-rss-video-player-container" style="float:left;' . 
-					$this->getPlaylistPlayerSizeCss() . '">' . 
-					'<div class="media-rss-video-player" style="position:relative">' . 
+				<span class="media-rss-video-player-container" style="float:left;' . $this->getPlaylistPlayerSizeCss() . '">' . 
+					'<div class="media-rss-video-player" style="position:relative;height:100%;">' . 
 						$videoHtml .
 					'</div>' . 
 				'</span>
@@ -216,6 +215,12 @@ class kalturaIframe {
 			'style="' . $playerStyle . '" ';
 		$urlParams = $this->getResultObject()->getUrlParameters();
 		
+		// Check for webkit-airplay option
+		$playerConfig = $this->getResultObject()->getPlayerConfig();
+		if( isset( $playerConfig['vars']['EmbedPlayer.WebKitPlaysInline'] ) ){
+			$o.= 'x-webkit-airplay="allow" ';
+		}
+		
 		// Add any additional attributes:
 		foreach( $urlParams as $key => $val ){
 			if( isset( $videoTagMap[ $key ] ) && $val != null ) {
@@ -240,7 +245,7 @@ class kalturaIframe {
 		$o.= "\n" . "</video>\n";
 		
 		// Wrap in a videoContainer
-		return  '<div id="videoContainer" > ' . $o . '</div>';
+		return  '<div id="videoContainer" style="height:100%" > ' . $o . '</div>';
 	}
 	/**
 	 * Get Flash embed code with default flashvars:
@@ -462,7 +467,7 @@ class kalturaIframe {
 		if( isset( $ulrParam['debug'] ) ){
 			$versionParam .= '&debug=true';
 		}
-		
+
 		$xml = $this->getResultObject()->getUiConfXML();
 		if( $xml && isset( $xml->layout ) && isset( $xml->layout[0] ) ){
 			foreach($xml->layout[0]->attributes() as $name => $value) {
@@ -488,6 +493,7 @@ class kalturaIframe {
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Kaltura Embed Player iFrame</title>
 		<style type="text/css">
+			html { margin: 0; padding: 0; width: 100%; height: 100%; }
 			body {
 				margin:0;
 				position:fixed;
@@ -538,7 +544,7 @@ class kalturaIframe {
 				#videoContainer {
 					position: absolute;
 					width: 100%;
-					height: 100%;
+					min-height: 100%;
 				}
 				#directFileLinkContainer{
 					position:abolute;
@@ -760,8 +766,8 @@ class kalturaIframe {
 					}
 				}
 				// For testing limited capacity browsers
-				//var kIsHTML5FallForward = function(){ return false };
-				//var kSupportsFlash = function(){ return false	 };
+				//kWidget.supportsHTML5 = function(){ return false };
+				//kWidget.supportsFlash= function(){ return false; };
 	
 				<?php
 					if( ! $this->getResultObject()->isJavascriptRewriteObject() ) {
@@ -769,9 +775,10 @@ class kalturaIframe {
 					}
 				?>
 				// Because IE has out of order execution issues, we don't check the dom until we get here: 
-				setTimeout(function(){
+				/*setTimeout(function(){
 					kRunMwDomReady( 'endOfIframeJs' );
 				},0);
+				*/
 			});
 		</script>
 	</body>
@@ -779,6 +786,7 @@ class kalturaIframe {
 <?php
 	}
 	private function javaScriptPlayerLogic(){
+		// TODO: Move all this JS logic to external file ( better for caching and editing in IDE )
 		?>
 		
 		var isHTML5 = kWidget.isHTML5FallForward();
@@ -847,7 +855,7 @@ class kalturaIframe {
 				}
 			}
 			
-			if( kSupportsFlash() ||  mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){				
+			if( kWidget.supportsFlash() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 				// Write out the embed object
 				document.write('<?php echo $this->getFlashEmbedHTML() ?>' );
 				
@@ -857,9 +865,10 @@ class kalturaIframe {
 				// NOTE we need to do some platform checks to see if the device can
 				// "actually" play back the file and or switch to 3gp version if nessesary.
 				// also we need to see if the entryId supports direct download links
+				// TODO: we should remove this fallback and create new EmbedPlayer type that will link to the optimnize flavor
 				document.write('<?php echo $this->getFileLinkHTML()?>');
 
-				var thumbSrc = mw.getKalturaThumbUrl({
+				var thumbSrc = kWidget.getKalturaThumbUrl({
 					'entry_id' : '<?php echo $this->getResultObject()->getEntryId() ?>',
 					'partner_id' : '<?php echo $this->getResultObject()->getPartnerId() ?>',
 					'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
@@ -871,7 +880,7 @@ class kalturaIframe {
 				window.kCollectCallback = function(){ return ; }; // callback for jsonp
 
 				document.getElementById('directFileLinkButton').onclick = function() {
-					kAppendScriptUrl( '<?php echo $this->getPlayEventUrl() ?>' + '&callback=kCollectCallback' );
+					kWidget.appendScriptUrl( '<?php echo $this->getPlayEventUrl() ?>' + '&callback=kCollectCallback' );
 					return true;
 				};
 			}

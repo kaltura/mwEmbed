@@ -79,7 +79,7 @@ mw.EmbedPlayerImageOverlay = {
 		this.embedPlayerHTML();
 		
 		// add the play btn: 
-		this.addPlayBtnLarge();
+		this.addLargePlayBtn();
 	},
 	
 	/**
@@ -94,6 +94,8 @@ mw.EmbedPlayerImageOverlay = {
 		} else {
 			this.duration = mw.getConfig( "EmbedPlayer.DefaultImageDuration" );
 		}
+		// make sure duration has type float: 
+		this.duration = parseFloat( this.duration );
 
 		// Reset playback if currentTime > duration:
 		if( this.currentTime > this.duration ) {
@@ -293,5 +295,5 @@ mw.EmbedPlayerImageOverlay = {
 				});
 			}
 		}
-	},
+	}
 };

@@ -109,7 +109,7 @@ mw.Playlist.prototype = {
 			if( _this.sourceHandler.autoPlay || _this.autoPlay ){
 				// only auto play if ipad3x ( iPad 4 and iOS does not let you autoplay )
 				if( !mw.isIOS() || mw.isIpad3() ){
-					_this.playClip( _this.clipIndex );
+					_this.playClip( _this.clipIndex, (_this.sourceHandler.autoPlay || _this.autoPlay) );
 				}
 			}
 			drawDoneCallback();
@@ -206,8 +206,9 @@ mw.Playlist.prototype = {
 				// just the default left side assignment ( updates once we have player size ) 
 				var leftPx = '444px';
 				var playerSize = _this.getTargetPlayerSize();
-				if( playerSize.width )
+				if( playerSize.width ){
 					leftPx = playerSize.width;
+				}
 			}
 			var $plListContainer =$('<div />')
 			.addClass( 'playlist-set-container' )
@@ -415,6 +416,7 @@ mw.Playlist.prototype = {
 		 _this.sourceHandler.loadCurrentPlaylist( function(){
 			 $( _this.target + ' .media-rss-video-list').empty();
 			_this.addMediaList();
+			_this.embedPlayer.triggerHelper( 'indexChanged', { 'newIndex' : inx } );
 		 });
 	},
 	/**
@@ -480,7 +482,7 @@ mw.Playlist.prototype = {
 	// Play a clipIndex, if the player is already in the page swap the player src to the new target
 	playClip: function( clipIndex, autoContinue ){
 		var _this = this;
-		mw.log( "mw.Playlist::playClip > " + clipIndex );
+		mw.log( "Playlist::playClip: index: " + clipIndex + ' autoContinue: ' + autoContinue);
 		// Check for a video/audio tag already in the page:
 		var embedPlayer = this.getEmbedPlayer();
 		this.clipIndex = clipIndex;
@@ -548,7 +550,7 @@ mw.Playlist.prototype = {
 			$( embedPlayer ).bind( 'postEnded' + _this.bindPostfix, function(event ){
 				mw.log("mw.Playlist:: postEnded > on inx: " + _this.clipIndex );
 				// Play next clip
-				if( parseInt(  _this.clipIndex ) + 1 < _this.sourceHandler.getClipCount() ){
+				if( parseInt(  _this.clipIndex ) + 1 < _this.sourceHandler.getClipCount() && parseInt( _this.clipIndex ) + 1 <= parseInt( mw.getConfig( 'Playlist.MaxClips' ) ) ){
 					// Update the onDone action object to not run the base control done:
 					mw.log("mw.Playlist:: postEnded > continue playlist set: onDoneInterfaceFlag false ");
 					embedPlayer.onDoneInterfaceFlag = false;
@@ -586,6 +588,9 @@ mw.Playlist.prototype = {
 			
 			$(uiSelector).show();
 		});
+		
+		// Trigger playlistsListed when we get the data
+		$( embedPlayer ).trigger( 'playlistsListed' );		
 	},
 	syncPlayerSize: function(){
 		var _this = this;
@@ -649,7 +654,7 @@ mw.Playlist.prototype = {
 							'title' : 'Next clip'
 						})
 						.click(function(){
-							if(_this.enableClipSwitch &&  _this.clipIndex + 1 < _this.sourceHandler.getClipCount() ){
+							if( _this.enableClipSwitch &&  parseInt( _this.clipIndex ) + 1 < _this.sourceHandler.getClipCount() && parseInt( _this.clipIndex ) + 1 <= parseInt( mw.getConfig( 'Playlist.MaxClips' ) ) ){
 								_this.clipIndex++;
 								_this.playClip( _this.clipIndex );
 								return ;

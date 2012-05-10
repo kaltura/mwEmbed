@@ -42,7 +42,6 @@
 						var $watermarkButton = $('<div />')
 						.addClass('rButton k-watermark-plugin' + myLogoConfig.className )
 						.css({
-							'top' : '4px',
 							'width' : myLogoConfig.width + 'px'
 						})
 						.append( 

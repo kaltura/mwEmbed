@@ -31,7 +31,16 @@
 	mw.isAndroid2 = function(){		
 		return ( navigator.userAgent.indexOf( 'Android 2.') != -1 );
 	};
-	
+	mw.isIOS = function(){
+		return ( mw.isIphone() || mw.isIpod() || mw.isIpad() );
+	};
+	mw.isIOS4 = function(){
+		return /OS 4_/.test( navigator.userAgent ) && mw.isIOS();
+	};
+	mw.isIOS5 = function(){
+		return /OS 5_/.test( navigator.userAgent ) && mw.isIOS();
+	};
+
 	/**
 	 * Fallforward system by default prefers flash.
 	 * 

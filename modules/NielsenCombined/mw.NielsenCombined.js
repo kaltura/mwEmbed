@@ -451,8 +451,9 @@ mw.NielsenCombined.prototype = {
 				}
 				var nolggGlobalParams = {
 					  clientid: clientId,
-					  vcid: _this.getConfig( "vcid" )
-				};	
+					  vcid: _this.getConfig( "vcid" ),
+					  cisuffix: _this.getConfig( "cisuffix" ) || ''
+				};
 				if( _this.getConfig( 'prod') ){
 					nolggGlobalParams['prod'] = _this.getConfig( 'prod');
 				}

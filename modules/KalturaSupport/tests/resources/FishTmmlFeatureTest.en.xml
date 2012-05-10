@@ -8,9 +8,9 @@
   </head>
   <body style="defaultCaption" id="thebody">
     <div>
-      <p begin="00:00:00.00" end="00:00:1.00"  tts:textAlign="left"><metadata ccrow="0" cccol="10"/>ALIGN LEFT, ROW 0 COL 10</p>
+      <p begin="00:00:00.00" end="00:00:3.00"  tts:textAlign="left"><metadata ccrow="0" cccol="10"/> <span tts:color="red">RED ALIGN LEFT, ROW 0 COL 10</span> </p>
       <p begin="00:00:01.50" end="00:00:03.67" tts:textAlign="right"><metadata ccrow="0" cccol="10"/>ALIGN RIGHT. ROW 0 COL 10<br/> Line Break.</p>
-      <p begin="00:00:05.83" end="00:00:10.83"><metadata ccrow="13" cccol="12"/> ROW 13 COL 12 <br/></p>
+      <p begin="00:00:05.83" end="00:00:10.83"><metadata ccrow="13" cccol="12"/> <span tts:color="green">GREEN ROW 13 COL 12</span> <br/></p>
       <p begin="00:00:05.83" end="00:00:15.00"><metadata ccrow="0" cccol="15"/>On screen for 10 sec</p>
       <p begin="00:00:08.83" end="00:00:15.00"><metadata ccrow="5" cccol="15"/>CCROW 8 COL 15 for 5 sec</p>
     </div>
