@@ -183,7 +183,8 @@ mw.IFramePlayerApiClient.prototype = {
 			} else{
 				// Restore user zoom: ( NOTE, there does not appear to be a way to know the 
 				// initial scale, so we just restore to 1 in the absence of explicit viewport tag ) 
-				$('meta[name="viewport"]').attr('content', 'initial-scale=1;');
+				// In order to restore zoom, we must set maximum-scale to a valid value
+				$('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=8; minimum-scale=1;' );
 			}
 			
 			$iframe
