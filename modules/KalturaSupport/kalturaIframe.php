@@ -548,6 +548,7 @@ class kalturaIframe {
 					min-height: 100%;
 				}
 				#directFileLinkContainer{
+					display: none;
 					position:abolute;
 					top:0px;
 					left:0px;
@@ -664,6 +665,7 @@ class kalturaIframe {
 			} 
 		}
 		?>
+		<div id="directFileLinkContainer"></div>
 		<script type="text/javascript">
 			// In same page iframe mode the script loading happens inline and not all the settings get set in time
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
@@ -778,11 +780,6 @@ class kalturaIframe {
 						echo $this->javascriptPlayerLogic();
 					}
 				?>
-				// Because IE has out of order execution issues, we don't check the dom until we get here: 
-				/*setTimeout(function(){
-					kRunMwDomReady( 'endOfIframeJs' );
-				},0);
-				*/
 			});
 		</script>
 	</body>
@@ -794,7 +791,6 @@ class kalturaIframe {
 		?>
 		window.kSettings = {
 			flashEmbedHTML: '<?php echo $this->getFlashEmbedHTML(); ?>',
-			fileLinkHTML: '<?php echo $this->getFileLinkHTML(); ?>',
 			playEventURL: '<?php echo $this->getPlayEventUrl(); ?>'
 		};
 		

@@ -171,6 +171,7 @@ class KalturaResultObject {
 	}
 	function isJavascriptRewriteObject() {
 		// If this is a pptWidget, handle in client side
+		// TODO: we should handle this widget the same as playlist
 		if( $this->getPlayerConfig('pptWidgetAPI', 'plugin') ) {
 			return true;
 		}
@@ -450,9 +451,13 @@ class KalturaResultObject {
 			'plugins' => $plugins,
 			'vars' => $vars,
 			'uiConfId' => $this->getUiConfId(),
-			'partnerId' => $this->getPartnerId(),
-			'entryId' => $this->getEntryId()
+			'partnerId' => $this->getPartnerId()
 		);
+		
+		// Add entry Id if exists
+		if( $this->getEntryId() ) {
+			$this->playerConfig['entryId'] = $this->getEntryId();
+		}
 
 		//echo '<pre>';
 		//echo json_encode( $this->playerConfig );
@@ -995,7 +1000,7 @@ class KalturaResultObject {
 		return substr( $this->urlParameters['wid'], 1 );
 	}
 	public function getEntryId(){
-		return $this->urlParameters['entry_id'];
+		return ( isset( $this->urlParameters['entry_id'] ) ) ? $this->urlParameters['entry_id'] : false;
 	}
 	public function getThumbnailUrl() {
 		// Get result object

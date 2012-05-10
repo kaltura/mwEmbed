@@ -1,23 +1,29 @@
-(function( mw ) {
+(function( mw ) { "use strict";
 	
 var playerConfig = mw.getConfig( 'KalturaSupport.PlayerConfig' );
+var playerId = mw.getConfig( 'EmbedPlayer.IframeParentPlayerId');
+
+var removeElement = function( elemId ) {
+	if( document.getElementById( elemId ) ){
+		try{
+			var el = document.getElementById( elemId );
+			el.parentNode.removeChild(el);
+		}catch(e){
+			// failed to remove element
+		}
+	}
+};
 
 if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) ){
 		// remove the no_rewrite flash object ( never used in rewrite )
-		var obj = document.getElementById('kaltura_player_iframe_no_rewrite');
-		if( obj ){
-			try {
-				document.getElementById( mw.getConfig( 'EmbedPlayer.IframeParentPlayerId') ).removeChild( obj );
-			} catch( e ){
-				// could not remove node
-			}
-		}
+		removeElement('kaltura_player_iframe_no_rewrite');
+		
 		// Load the mwEmbed resource library and add resize binding
 		mw.ready(function(){
 			// Try again to remove the flash player if not already removed: 
 			$('#kaltura_player_iframe_no_rewrite').remove();
 
-			var embedPlayer = $( '#' + mw.getConfig( 'EmbedPlayer.IframeParentPlayerId') )[0];
+			var embedPlayer = $( '#' + playerId )[0];
 			// Try to seek to the IframeSeekOffset time:
 			if( mw.getConfig( 'EmbedPlayer.IframeCurrentTime' ) ){
 				embedPlayer.currentTime = mw.getConfig( 'EmbedPlayer.IframeCurrentTime' );					
@@ -35,7 +41,7 @@ if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) ){
 				};
 			};
 			function doResizePlayer(){
-				var embedPlayer = $( '#' + mw.getConfig( 'EmbedPlayer.IframeParentPlayerId') )[0];						
+				var embedPlayer = $( '#' + playerId )[0];						
 				embedPlayer.resizePlayer( getWindowSize() );
 			};
 
@@ -52,14 +58,7 @@ if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) ){
 	// ( if javascript is off the child of the video tag so would be played,
 	//  but rewriting gives us flexiblity in in selection criteria as
 	// part of the javascript check kIsHTML5FallForward )
-	if( document.getElementById( 'videoContainer' ) ){
-		try{
-			var el = document.getElementById( 'videoContainer' );
-			el.parentNode.removeChild(el);
-		}catch(e){
-			// failed to remove video container
-		}
-	}
+	removeElement( 'videoContainer' );
 
 	if( kWidget.supportsFlash() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){				
 		// Write out the embed object
@@ -67,30 +66,40 @@ if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) ){
 
 	} else {
 
-		// Last resort just provide an image with a link to the file
-		// NOTE we need to do some platform checks to see if the device can
-		// "actually" play back the file and or switch to 3gp version if nessesary.
-		// also we need to see if the entryId supports direct download links
-		// TODO: we should remove this fallback and create new EmbedPlayer type that will link to the optimnize flavor
-		document.write( kSettings.fileLinkHTML );
-
-		var thumbSrc = kWidget.getKalturaThumbUrl({
-			'entry_id' : playerConfig.entryId,
-			'partner_id' : playerConfig.partnerId,
-			'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
-			'width' : ( document.body.clientHeight )? document.body.clientHeight : '400'
+		kWidget.outputDirectDownload( 'directFileLinkContainer', {
+			'id': playerId,
+			'partner_id': playerConfig.partnerId,
+			'uiconf_id': playerConfig.uiConfId,
+			'entry_id': playerConfig.entryId,
+			'height' : '100%',
+			'width' : '100%'
 		});
-		setTimeout( function() {
-			document.getElementById( 'directFileLinkThumb' ).innerHTML = '<img style="width:100%;height:100%" src="' + thumbSrc + '" >';
-		}, 0);
-
 
 		window.kCollectCallback = function(){ return ; }; // callback for jsonp
-
+		window.Kaltura = true;
 		document.getElementById('directFileLinkButton').onclick = function() {
 			kWidget.appendScriptUrl( kSettings.playEventURL + '&callback=kCollectCallback' );
 			return true;
 		};
+		
+		var player = document.getElementById( playerId );
+		player.addJsListener = function( eventName, callbackName ) {
+			console.log( eventName, callbackName );
+		};
+		player.evaluate = function( objectString ) {
+			console.log( objectString );
+		};
+		player.sendNotification = function( notificationName, notificationData ) {
+			console.log( notificationName, notificationData );
+		};
+		
+		// Trigger jsCallbackReady
+		try {
+			window.parent.kWidget.setupJsApi( playerId );
+			window.parent.kWidget.jsCallbackReady( playerId );
+		} catch ( e ) {
+			// do nothing
+		}
 	}
 }
 })( window.mw );

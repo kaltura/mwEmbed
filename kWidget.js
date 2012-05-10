@@ -243,6 +243,33 @@ var kWidget = {
 			this.embed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
 		}
 	},
+	
+	/*
+	 * Exteneds the player object and add jsApi methods
+	 */
+	setupJsApi: function( playerId ) {
+		
+		var player = document.getElementById( playerId );
+		var embedPlayer = document.getElementById( playerId + '_ifp' ).contentWindow.document.getElementById( playerId );
+
+		player.addJsListener = function( listenerString, globalFuncName ){
+			embedPlayer.addJsListener(listenerString, globalFuncName );
+		}
+
+		player.removeJsListener = function( listenerString, callbackName ) {
+			embedPlayer.removeJsListener( listenerString, callbackName );
+		}
+
+		player.sendNotification = function( notificationName, notificationData ){
+			embedPlayer.sendNotification( notificationName, notificationData );
+		};
+		player.evaluate = function( objectString ){
+			return embedPlayer.evaluate( objectString );
+		};
+		player.setKDPAttribute = function( componentName, property, value ) {
+			embedPlayer.setKDPAttribute( componentName, property, value );
+		};				
+	},	
 
 	/**
 	 * Outputs a flash object into the page
@@ -277,7 +304,6 @@ var kWidget = {
 		
 		// Output a normal flash object tag:
 		var spanTarget = document.createElement("span");
-		var pId =  ( settings.id )? settings.id : elm.id
 		
 		// Get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
 		var width = ( settings.width ) ? settings.width :
@@ -464,13 +490,11 @@ var kWidget = {
 		//while ( targetNode.hasChildNodes() ) {
 		//   targetNode.removeChild( targetNode.lastChild );
 		//}
-		if(!options)
-			options = {};
-
+		var options = {};
 		// look some other places for sizes:
-		if( !options.width && settings.width )
+		if( settings.width )
 			options.width = settings.width;
-		if( !options.height && settings.height )
+		if( settings.height )
 			options.height = settings.height;
 		if( !options.width && targetNode.style.width )
 			options.width = targetNode.style.width;
@@ -480,6 +504,14 @@ var kWidget = {
 			options.height = 300;
 		if( !options.width )
 			options.width = 400;
+		
+		if( ! settings.wid && settings.partner_id ) {
+			settings.wid = '_' + settings.partner_id;
+		}
+		
+		if( ! settings.partner_id && settings.wid ) {
+			settings.partner_id = settings.wid.replace('_', '');
+		}
 
 		// TODO: Add playEventUrl for stats
 		var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
@@ -496,17 +528,17 @@ var kWidget = {
 
 		var thumbSrc = this.getKalturaThumbUrl({
 			'entry_id' : settings.entry_id,
-			'partner_id' : settings.p,
-			'width' : parseInt( options.width),
-			'height' : parseInt( options.height)
+			'partner_id' : settings.partner_id,
+			'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
+			'width' : ( document.body.clientHeight )? document.body.clientHeight : '400'
 		});
 		var playButtonUrl = baseUrl + 'skins/common/images/player_big_play_button.png';
 		var playButtonCss = 'background: url(\'' + playButtonUrl + '\'); width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
-		var ddId = 'dd_' + Math.round( Math.random() * 1000 );
+		var ddId = ( settings.id ) ? settings.id : 'dd_' + Math.round( Math.random() * 1000 );
 
 		var ddHTML = '<div id="' + ddId + '" style="width: ' + options.width + ';height:' + options.height + ';position:relative">' +
 				'<img style="width:100%;height:100%" src="' + thumbSrc + '" >' +
-				'<a href="' + downloadUrl + '" target="_blank" style="' + playButtonCss + '"></a>' +
+				'<a id="directFileLinkButton" href="' + downloadUrl + '" target="_blank" style="' + playButtonCss + '"></a>' +
 				 '</div>';
 
 		var parentNode = targetNode.parentNode;

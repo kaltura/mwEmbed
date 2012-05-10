@@ -257,7 +257,6 @@ mw.KApi.prototype = {
 					 'action' : 'listByReferenceId',
 					 'refId' : kProperties.reference_id
 			});
-			useReferenceId = true;
 
 			if( kProperties.uiconf_id ) {
 				refIndex = 2;
