@@ -350,6 +350,7 @@ mw.DoubleClick.prototype = {
 			// give double click 8 seconds to load the ad, else return to content playback
 			setTimeout( function(){
 				if( $.isFunction( _this.startedAdPlayback ) ){
+					// ad error will resume playback
 					_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
 				}
 			}, 8000 );
