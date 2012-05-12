@@ -15,7 +15,7 @@ function jsKalturaPlayerTest( videoId ){
 	module( "Flavor Selector" );
 	
 
-	asyncTest("Iframe layout elements", function(){
+	asyncTest("Target bitrate", function(){
 		kalturaQunitWaitForPlayer(function(){
 			// check if the source was selected ( html5 only test for now )
 			var $iframe = $( '#' + videoId + '_ifp' ).contents();
@@ -23,7 +23,14 @@ function jsKalturaPlayerTest( videoId ){
 
 			// reach into the iframe grab the mediaElement: 
 			var source = $iframe.find( '#' + videoId)[0].getSource();
-			equal( source.bandwidth, 429056, "target bitrate selected");
+			// FIXME add more webm flavors to chouse from! 
+			if( source.mimeType == 'video/webm' && source.bandwidth == 690176 ){
+				// selected the single webm flavor
+				ok( true, "Single webm flavor selected");
+			} else {
+				// make sure the chrome, IE, safari select the correct h.264 flavor bitrate: 
+				equal( source.bandwidth, 429056, "target bitrate selected");
+			}
 			start();
 		});
 	});
