@@ -16,21 +16,23 @@ function jsKalturaPlayerTest( videoId ){
 	
 	asyncTest( "Timed text on screen", function() {
 		kalturaQunitWaitForPlayer(function(){
+			window['onPlayerSeekEnd'] = function(){
+				kdp.sendNotification( 'doPause', 2);
+				
+				ok( $iframe.find('.captionContainer').length, "Text container in DOM");
+				equal( $iframe.find('.track span').text(), "Harold is the coffee alright?", "Text matches srt");
+				start();
+			};
 			// Setup text:
 			iframeKdp.timedText.setupTextSources(function(){
 				ok( iframeKdp.timedText.textSources.length, "Text sources found" );
 				kdp.sendNotification( 'doPlay' );
+				// click show text button ( required for captions below player)
+				$iframe.find('.control-bar .timed-text').click();
 				setTimeout(function(){
-					// Check that the text is displayed: 
+					kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd');
+					// seek to a known text display time: 
 					kdp.sendNotification( 'doSeek', 2);
-					kdp.sendNotification( 'doPause', 2);
-
-					kdp.sendNotification( 'doSeek', 2);
-					setTimeout(function(){
-						ok( $iframe.find('.captionsOverlay').length, "Text container in DOM");
-						equal( $iframe.find('.track span').text(), "Harold is the coffee alright?", "Text matches srt");
-						start();
-					}, 500 );
 				},500);
 			});
 		});

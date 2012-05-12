@@ -29,7 +29,7 @@ function jsKalturaPlayerTest( videoId ){
 				ok( iframeKdp.timedText.textSources.length, "Text sources found" );
 				kdp.sendNotification( 'doPlay' );
 				setTimeout(function(){
-					kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd')
+					kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd');
 					
 					// Check that the text is displayed: 
 					kdp.sendNotification( 'doSeek', 2);
