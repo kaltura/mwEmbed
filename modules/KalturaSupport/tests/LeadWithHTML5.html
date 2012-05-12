@@ -1,73 +1,74 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Image Entry test</title>
+<title>Lead With HTML5 test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
+
+mw.setConfig( 'Kaltura.LeadWithHTML5', true )
+
 function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
-	module( "Image Entry" );
+	module( "Lead With HTML5" );
 
-	var $iframe = $('#' + videoId + '_ifp').contents();
-	var iframeContext = window.frames['kaltura_player_ifp'];
-	
-	test( "Iframe in DOM", function() {
-		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
-		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
-	});
-
-	asyncTest("Iframe layout elements", function(){
-		kalturaQunitWaitForPlayer(function(){
-			start();
-		});
-	});
-	asyncTest("Iframe config", function(){
-		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
-		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
-		// Test page context config: 
-		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
-		start();
-	});
 }
 </script>
 <script>
+	/*
 	function jsCallbackReady( playerId ){
 		var kdp = $( '#' + playerId )[0];
-		$( '#changeToVid' ).click(function(){
-			kdp.sendNotification( "changeMedia", { 'entryId' : '1_oz8y7d5a' });
-		})
-		$( '#changeToImage' ).click(function(){
-			kdp.sendNotification( "changeMedia", { 'entryId' : '1_ui4no6oc' });
-		})
+		kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
 	}
+	function onPlayerSeekStart( playerId ){
+		var kdp = $( '#' + playerId )[0];
+		alert( kdp.evaluate( '{video.player.currentTime}' ) );
+	}
+	*/
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Image Entry test </h2>
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<h2> Lead With HTML5 test </h2>
+
+Will use HTML5 on all browsers that support HTML5<br>
+<b>mw.setConfig( 'KalturaSupport.LeadWithHTML5', true ) </b><br>
+<i> Be sure to include webm flavors in your source video. </i><br>
+
 <br />
-<object id="kaltura_player_1318173596" name="kaltura_player_1318173596" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" bgcolor="#000000" data="http://www.kaltura.com/index.php/kwidget/cache_st/1318173596/wid/_423851/uiconf_id/5902462/entry_id/1_ui4no6oc">
+<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
+allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
+xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
+resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" 
+data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4">
 	<param name="allowFullScreen" value="true" />
 	<param name="allowNetworking" value="all" />
 	<param name="allowScriptAccess" value="always" />
 	<param name="bgcolor" value="#000000" />
 	<param name="flashVars" value="&" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1318173596/wid/_423851/uiconf_id/5902462/entry_id/1_ui4no6oc" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" />
 </object>
-<br />
-<a href="#" id="changeToVid"> Change to video entry </a> | <a href="#" id="changeToImage"> Change to image entry </a>
-<!-- 
+<br><br>
 
-<layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf‬">
+To avoid object tag representation you can use the <b>kWidget.embed</b> call: 
+<div id="video" style="width:400px;height:330px;"></div>
+<script type="text/javascript">
+        KWidget.embed('video', {
+            'wid' : '_243342',
+            'uiconf_id' : '2877502',
+            'entry_id' : '0_uka1msg4'
+        });
+</script>
+ <!-- 
+ 
+ 
+ <layout id="default player dark" skinPath="/content/uiconf/kaltura/kmc/nab/skin.swf?a=6‬">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
       <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
-      
       <Canvas height="100%" width="100%" id="PlayerHolder" styleName="black">
         <Video id="video" width="100%" height="100%" mantainAspectRatio="false"/>
         <VBox id="offlineMessageHolder" 
@@ -119,7 +120,7 @@ function jsKalturaPlayerTest( videoId ){
 					</HBox>
 				</VBox>
 
-          <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" height="20" buttonType="iconButton" tooltip="Change volume" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
+          <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" buttonType="iconButton" tooltip="Change volume" color1="11184810" color2="16777215" color3="16777215" color4="11184810" color5="0" font="Arial"/>
           <FlavorCombo id="flavorComboControllerScreen"  width="80" streamerType="{configProxy.flashvars.streamerType}"
 		   flavorDataProvider="{mediaProxy.kalturaMediaFlavorArray}" autoString="Auto"
 		   styleName="_kdp" color1="0xFF0000" hdOn="HD On" hdOff="HD Off" selectedMessage=""
@@ -159,6 +160,10 @@ function jsKalturaPlayerTest( videoId ){
     <screen id="playScreen">
       <VBox id="playContainer" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
         <Spacer height="100%"/>
+        <Tile id="playTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center">
+          <Button id="shareBtnPlayScreen" kClick="sendNotification('doGigya')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Share" styleName="onScreenBtn" upIcon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="48502" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+        </Tile>
+        <Spacer height="100%"/>
       </VBox>
     </screen>
     <screen id="endScreen">
@@ -173,14 +178,26 @@ function jsKalturaPlayerTest( videoId ){
     </screen>
   </screens>
   <renderers>
+    <renderer id="playlistItemRenderer">
+      <HBox height="100%" width="100%" x="10" y="10" verticalAlign="top">
+        <Image id="irImageIrScreen" height="30" width="40" url="{this.thumbnailUrl}" source="{this.thumbnailUrl}"/>
+        <VBox height="100%" width="100%" id="labelsHolder" verticalGap="0">
+
+          <Label id="irLinkIrScreen" width="100%" height="18" text="{this.name}" styleName="itemRendererLabel" label="{this.name}" prefix=""/>
+          <Label id="irDescriptionIrScreen" width="100%" height="18" text="{this.description}" styleName="itemRendererLabel" prefix=""/>
+          <Label id="irDurationIrScreen" width="100%" height="18" text="{formatDate(this.duration, 'NN:SS')}" styleName="itemRendererLabel" prefix=""/>
+        </VBox>
+      </HBox>
+    </renderer>
   </renderers>
   <strings>
-    <string key="ENTRY_CONVERTING" value="Entry is processing, please try again in a few minutes."/>
+    <string code="NO_MIX_PLUGIN_TITLE" text="N Plugin Mix"/>
+    <string code="NO_MIX_PLUGIN" text="Para ver la entrada de mezcla, debe agregar el plugin de la mezcla a la uiconf XML"/>
   </strings>
   <extraData>
     <GigyaUI theme="dark">
       <config>
-        <display showEmail="true" useTransitions="true" showBookmark="false" codeBoxHeight="auto" showCodeBox="true" showCloseButton="true" networksWithCodeBox="" networksToHide="livespaces, piczo, orkut, pageflakes, vox, tagged, hi5, multiply" networksToShow="facebook, twitter, wordpress" bookmarksToShow="googlebookmarks,delicious,digg,facebookshare,newsvine,reddit,twitter,ask,myaol,slashdot,skimbit,simpy,blogmarks,spurl,linkagogo,Magnolia,faves,segnalo,netvouz,blinklist,dropjack,feedmelinks"/>
+        <display showEmail="true" useTransitions="true" showBookmark="true" codeBoxHeight="auto" showCodeBox="true" showCloseButton="true" networksWithCodeBox="" networksToHide="livespaces, piczo, orkut, pageflakes, vox, tagged, hi5, wordpress, multiply" networksToShow="myspace, facebook, bebo, blogger, freewebs, livejournal, blackplanet, myyearbook, typepad, xanga, igoogle, netvibes, migente, friendster" bookmarksToShow="googlebookmarks,delicious,digg,facebookshare,newsvine,reddit,twitter,ask,myaol,slashdot,skimbit,simpy,blogmarks,spurl,linkagogo,Magnolia,faves,segnalo,netvouz,blinklist,dropjack,feedmelinks"/>
         <body>
           <background frame-color="#BFBFBF" background-color="#292929" frame-thickness="0" gradient-color-begin="#292929" gradient-color-end="#292929" corner-roundness="0;0;0;0"/>
           <controls corner-roundness="4;4;4;4" gradient-color-begin="#EAEAEA" gradient-color-end="#F4F4F4" bold="false">
@@ -219,7 +236,6 @@ function jsKalturaPlayerTest( videoId ){
   </uiVars>
 </layout>
 
- -->
-
+  -->
 </body>
 </html>
