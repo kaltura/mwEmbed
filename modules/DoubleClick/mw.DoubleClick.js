@@ -20,12 +20,17 @@ mw.DoubleClick.prototype = {
 
 	// Status variables for ad and content playback.
 	adPlaying: false,
+	// store the ad start time
+	adPreviousTimeLeft: null,
 	contentPlaying: false,
 	adDuration: null,
 	demoStartTime: null,
 	
 	// Flags for a fallback check for all ads completed .
 	contentDoneFlag: null,
+	
+	// Flag for startting ad playback sequence:
+	startedAdPlayback: null,
 	
 	allAdsCompletedFlag: null,
 	
@@ -334,12 +339,27 @@ mw.DoubleClick.prototype = {
 		// Add ad listeners: 
 		adsListener( 'CLICK' );
 		adsListener( 'CONTENT_PAUSE_REQUESTED', function(event){
+			// set a local method for true ad playback start. 
+			_this.startedAdPlayback = function(){
+				_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+				_this.startedAdPlayback = null;
+			}
 			// loading ad:
 			_this.embedPlayer.pauseLoading();
-			// if we are not already in a sequence setup the player for ad playback: 
-			_this.embedPlayer.adTimeline.updateUiForAdPlayback( _this.currentAdSlotType );
+			// sometimes CONTENT_PAUSE_REQUESTED is the last event we receive :(
+			// give double click 8 seconds to load the ad, else return to content playback
+			setTimeout( function(){
+				if( $.isFunction( _this.startedAdPlayback ) ){
+					_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
+				}
+			}, 8000 );
 		} );
 		adsListener( 'LOADED', function(){
+			// check for startted ad playback sequence callback 
+			if( _this.startedAdPlayback ){
+				_this.startedAdPlayback();
+			}
+			
 			var size = _this.getPlayerSize();
 			_this.adsManager.resize( size.width, size.height, google.ima.ViewMode.NORMAL );	
 			// Hide player content
@@ -350,6 +370,10 @@ mw.DoubleClick.prototype = {
 			_this.hidePlayerOffScreen( _this.getAdContainer()  );
 		} );
 		adsListener( 'STARTED', function(){
+			// check for startted ad playback sequence callback 
+			if( _this.startedAdPlayback ){
+				_this.startedAdPlayback();
+			}
 			// hide spinner: 
 			_this.embedPlayer.hidePlayerSpinner();
 			// make sure the player is in play state: 
@@ -361,6 +385,8 @@ mw.DoubleClick.prototype = {
 			// set ad playing flag: 
 			_this.adPlaying = true;
 			_this.embedPlayer.sequenceProxy.isInSequence = true;
+			
+			_this.adStartTime = new Date().getTime();
 			
 			// Monitor ad progress ( for sequence proxy )
 			_this.monitorAdProgress();
@@ -501,6 +527,23 @@ mw.DoubleClick.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration', null );
 			return ;
 		}
+		// Check if we have an ad buffer underun that double click apparently does not check for :( 
+		if( _this.adPreviousTimeLeft == _this.adsManager.getRemainingTime()  ){
+			// reset the previus time check: 
+			_this.adPreviousTimeLeft = null;
+			setTimeout( function(){
+				if( _this.adPreviousTimeLeft ==  _this.adsManager.getRemainingTime()  ){
+					mw.log( "DoubleClick:: buffer underun pause? , try to continue playback ");
+					// try to restart playback: 
+					_this.adsManager.resume();
+					// restore the previous time check: 
+					_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime()
+				}
+			}, 2000)
+		}
+		// update the adPreviousTimeLeft
+		_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
+		
 		// Update sequence property per active ad: 
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
 		var $adVid = $( _this.getAdContainer() ).find( 'video' );
@@ -538,7 +581,7 @@ mw.DoubleClick.prototype = {
 
 		// Do an sync play call ( without events if not on postroll )
 		if( !onContentComplete ){
-			this.getContent().play();
+			this.forceContentPlay();
 		}
 		
 		// Check for sequence proxy style restore: 
@@ -556,6 +599,26 @@ mw.DoubleClick.prototype = {
 				this.embedPlayer.play();
 			}
 		}
+	},
+	forceContentPlay: function(){
+		var _this = this;
+		var vid = this.getContent();
+		var isPlaying = false;
+		var playBindStr = 'playing.dcForceContentPlay';
+		$( vid ).unbind( playBindStr ).bind( playBindStr, function(){
+			isPlaying = true;
+			$( vid ).unbind( playBindStr );
+		});
+		vid.play();
+		setTimeout(function(){
+			var vid = _this.getContent();
+			if( !isPlaying ){
+				// try again: 
+				vid.load();
+				vid.play();
+				_this.forceContentPlay();
+			}
+		}, 8000 );
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 

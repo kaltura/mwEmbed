@@ -767,8 +767,8 @@ class kalturaIframe {
 					}
 				}
 				// For testing limited capacity browsers
-				//var kIsHTML5FallForward = function(){ return false };
-				//var kSupportsFlash = function(){ return false	 };
+				//kWidget.supportsHTML5 = function(){ return false };
+				//kWidget.supportsFlash= function(){ return false; };
 	
 				<?php
 					if( ! $this->getResultObject()->isJavascriptRewriteObject() ) {
@@ -856,7 +856,7 @@ class kalturaIframe {
 				}
 			}
 			
-			if( kWidget.supportsFlash() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){				
+			if( kWidget.supportsFlash() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 				// Write out the embed object
 				document.write('<?php echo $this->getFlashEmbedHTML() ?>' );
 				

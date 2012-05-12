@@ -760,7 +760,6 @@
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
 					});	
 					break;
-					break;
 				case 'preSequenceComplete':
 					b('AdSupport_preSequenceComplete', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );

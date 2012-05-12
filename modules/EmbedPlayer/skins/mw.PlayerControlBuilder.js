@@ -434,6 +434,14 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		}
 		
+		// Bind escape to restore in page clip ( IE9 needs a secondary escape binding ) 
+		$( window ).keyup( function( event ) {
+			// Escape check
+			if( event.keyCode == 27 ){
+				_this.restoreWindowPlayer();
+			}
+		} );
+		
 		// Check for hybrid html controls / native fullscreen support:
 		var vid = this.embedPlayer.getPlayerElement();
 		if( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen')
@@ -445,12 +453,15 @@ mw.PlayerControlBuilder.prototype = {
 		} else {
 			// do psyudo fullscren 
 			this.doFullScreenPlayerDom();
-		} 
+		}
+		
 		// Pass on touch move event to parent
 		$( document ).bind( 'touchend.fullscreen', function(e){
 			$( embedPlayer ).trigger( 'onTouchEnd' );
 		});
 		$( embedPlayer ).trigger( 'onOpenFullScreen' );
+		
+		
 	},
 	/**
 	 * supports hybrid native fullscreen, player html controls, and fullscreen is native
