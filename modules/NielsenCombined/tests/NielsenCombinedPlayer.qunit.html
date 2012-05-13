@@ -20,12 +20,14 @@ function jsKalturaPlayerTest( videoId ){
 		kalturaQunitWaitForPlayer(function(){
 			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
 			start();
-			testPlay();
+			setTimeout(function(){
+				testPlay();
+			},100);
 		});
 	});
-	function testPlay(){
-		// Playback 15 test
-		asyncTest("Playback 15", function(){
+	// Playback 15 test
+	asyncTest("Playback 15", function(){
+		window['testPlay'] = function(){
 			var playBeaconSent = false;
 			// look for play becaon:
 			$( player ).bind( 'NielsenCombined_DispatchEvent.play', function( event, args ){
@@ -51,10 +53,10 @@ function jsKalturaPlayerTest( videoId ){
 				}
 				start();
 			}, 1000 )
-		});
-	};
-	function testPause(){
-		asyncTest("Pause 6, Resume 5 test", function(){
+		}
+	});
+	asyncTest("Pause 6, Resume 5 test", function(){
+		window['testPause'] = function(){
 			var pauseTime = null;
 			var pauseBeaconSent = false;
 			$( player ).bind( 'NielsenCombined_DispatchEvent.pause', function( event, args ){
@@ -85,11 +87,11 @@ function jsKalturaPlayerTest( videoId ){
 				}
 				start();
 			}, 1000 )
-		});
-	}
-	
-	function testSeek(){
-		asyncTest("Seek  8 test", function(){
+		}
+	});
+
+	asyncTest("Seek  8 test", function(){
+		window['testSeek'] =function(){
 			$( player ).bind( 'NielsenCombined_DispatchEvent.seek', function( event, args ){
 				equal( args[0], 8, "8 seek argument" );
 				equal( Math.floor( args[2] ), 15, "Seek target time is 15 seconds" );
@@ -99,10 +101,11 @@ function jsKalturaPlayerTest( videoId ){
 				player.sendNotification( 'doPause' );
 				start();
 			});
-			// seek to 30 seconds: 
+			// seek to 15 seconds: 
 			player.sendNotification( 'doSeek', 15 );
-		});
-	}
+		}
+	});
+
 	
 }
 </script>
