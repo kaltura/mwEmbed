@@ -26,7 +26,7 @@
 			}
 			
 			// Set captions layout of player based on plugin Name: 
-			if( this.pluginName == 'closedCaptionsOverPlayer' ){
+			if( this.pluginName == 'closedCaptionsOverPlayer' ||  this.pluginName == 'closedCaptions' ){
 				this.defaultDisplayMode = 'ontop';
 			} else if( this.pluginName == 'closedCaptionsUnderPlayer' ){
 				this.defaultDisplayMode = 'below';
@@ -126,7 +126,7 @@
 						embedPlayer.timedText.toggleCaptions();
 						break;
 					case 'showClosedCaptions':
-						embedPlayer.timedText.setLayoutMode( );
+						embedPlayer.timedText.setLayoutMode(  embedPlayer.timedText.defaultDisplayMode );
 						break;
 					case 'hideClosedCaptions':
 						embedPlayer.timedText.setLayoutMode( 'off' );

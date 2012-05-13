@@ -11,7 +11,8 @@ function jsKalturaPlayerTest( videoId ){
 	module( "No HLS for Clips Less Than 10 Seconds" );
 	
 	var $iframe = $( '#' + videoId + '_ifp' ).contents();
-	asyncTest("Iframe layout elements", function(){
+	
+	asyncTest("HLS test", function(){
 		var dummyvid = document.createElement( "video" );
 		// check if the browser can even support HLS: 
 		if( mw.isIOS() || dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
@@ -24,6 +25,7 @@ function jsKalturaPlayerTest( videoId ){
 			});
 		} else {
 			ok( true, "This test only applies to HLS enabled browsers")
+			start();
 		}
 	});
 }

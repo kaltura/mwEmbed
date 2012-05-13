@@ -45,8 +45,8 @@ if( window.QUnit ){
 	asyncTest( "KalturaSupport::PlayerLoaded", function(){
 		var waitCount = 0;
 		var interval = setInterval(function(){
-			// Timeout in 30 seconds:
-			if( waitCount == 3000 ){
+			// Timeout in 60 seconds:
+			if( waitCount == 6000 ){
 				ok(false, "Player timed out");
 				clearInterval( interval );
 				start();
