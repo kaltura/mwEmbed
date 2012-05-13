@@ -1,4 +1,4 @@
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 	// 	Check for the Title 
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
@@ -31,7 +31,13 @@
 			$( embedPlayer ).unbind( ".titleLayout" );
 			
 			// Add bindings
-			$( embedPlayer ).bind( "onResizePlayer.titleLayout", updatePlayerLayout);
+			// Workaround for iOS4 issue with player resize
+			if ( mw.isIOS4() ) {
+				$( embedPlayer ).bind( "onOpenFullScreen.titleLayout onCloseFullScreen.titleLayout", updatePlayerLayout);
+			}
+			else {
+				$( embedPlayer ).bind( "onResizePlayer.titleLayout", updatePlayerLayout);
+			}
 			
 			// Add title div to interface:
 			$( embedPlayer ).bind("playerReady.titleLayout", function(){
@@ -67,37 +73,45 @@
 		var updatePlayerLayout = function(){
 			var $vid = $( embedPlayer.getPlayerElement() );
 			var vidHeight = $vid.height();
-			// Check if we are using flash ( don't move the player element )
-			if( embedPlayer.instanceOf != 'Native' || $vid.length == 0 ){
-				$vid = $();
-				vidHeight = embedPlayer.getHeight();
-			} else {
-				vidHeight = embedPlayer.$interface.height() - titleScreenHeight;
-				if( !embedPlayer.controlBuilder.isOverlayControls() ){
-					vidHeight = vidHeight - embedPlayer.controlBuilder.height; 
+			var interfaceHeight = embedPlayer.$interface.height();
+			var controlsHeight = ( embedPlayer.controlBuilder.isOverlayControls() ) ? 0 : parseInt( embedPlayer.controlBuilder.height );
+			titleScreenHeight = parseInt( titleScreenHeight );
+			// Check if we need extra space for the title
+			if ( vidHeight + controlsHeight + titleScreenHeight > interfaceHeight ) {
+				// Check if we are using flash ( don't move the player element )
+				if( embedPlayer.instanceOf != 'Native' || $vid.length == 0 ){
+					$vid = $();
+					vidHeight = embedPlayer.getHeight();
+				} else {
+					vidHeight = vidHeight - titleScreenHeight;
 				}
-			}
-			mw.log("TitleLayout:: update height: " + titleScreenHeight );
-			// add space for the title: 
-			$vid
-			.css({
-				'position' : 'absolute',
-				'height' : vidHeight
-			});
-			if( !belowPlayer ){
-				mw.log("TitleLayout:: update top: " + titleScreenHeight );
-				$vid.css( 'top', titleScreenHeight + 'px' );
-			} else {
-				// $( embedPlayer ).css('height', vidHeight )
-				embedPlayer.$interface.css( 'height', vidHeight +  embedPlayer.controlBuilder.getHeight() );
-				embedPlayer.$interface.parent().find( '.titleContainer' ).css({
-					'position': 'absolute',
-					'top' : vidHeight + embedPlayer.controlBuilder.getHeight()
-				})
-				var butonHeight = embedPlayer.controlBuilder.getComponentHeight( 'playButtonLarge' );
-				embedPlayer.$interface.find(".play-btn-large").css({
-					'top' : parseInt( ( vidHeight - butonHeight ) / 2 )  + 'px'
-				});
+				var position = (mw.isIOS4()) ? 'static' : 'absolute';
+				if( !belowPlayer ){
+					mw.log("TitleLayout:: update top: " + titleScreenHeight + ", height: " + vidHeight );
+					// add space for the title: 
+					$vid.css( {
+						'height' : vidHeight,
+						'top' : titleScreenHeight
+					} );
+				} else {
+					mw.log("TitleLayout:: update height: " + vidHeight );
+					// add space for the title:
+					$vid
+					.css({
+						'position' : position,
+						'height' : vidHeight
+					});
+					// $( embedPlayer ).css('height', vidHeight )
+					embedPlayer.$interface.css( 'height', vidHeight +  embedPlayer.controlBuilder.getHeight() );
+					embedPlayer.$interface.parent().find( '.titleContainer' ).css({
+						'position': position,
+						'top' : vidHeight + embedPlayer.controlBuilder.getHeight()
+					})
+					var butonHeight = embedPlayer.controlBuilder.getComponentHeight( 'playButtonLarge' );
+					embedPlayer.$interface.find(".play-btn-large").css({
+						'top' : parseInt( ( vidHeight - butonHeight ) / 2 )  + 'px'
+					});
+				}
 			}
 		};
 		// Once all functions are defined call the doTitleLayout
