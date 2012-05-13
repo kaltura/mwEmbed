@@ -112,7 +112,7 @@ mw.includeAllModuleMessages();
 				this.config = JSON.parse(  preferenceConfig );
 			}
 			// remove any old bindings on change media: 
-			$( this.embedPlayer ).bind('onChangeMedia', function(){
+			$( this.embedPlayer ).bind( 'onChangeMedia', function(){
 				_this.destroy();
 			});
 			// Remove any old bindings before we add the current bindings: 
@@ -150,6 +150,14 @@ mw.includeAllModuleMessages();
 				$( '#textMenuContainer_' + embedPlayer.id ).remove();
 			} );
 			
+			// Re-Initialize when changing media
+			$( embedPlayer ).bind( 'onChangeMedia' + this.bindPostFix, function() {
+				_this.destroy();
+				_this.updateLayout();
+				_this.setupTextSources();
+				$( '#textMenuContainer_' + embedPlayer.id ).remove();
+			} );
+
 			// Resize the timed text font size per window width
 			$( embedPlayer ).bind( 'onCloseFullScreen'+ this.bindPostFix + ' onOpenFullScreen'+ this.bindPostFix, function() {
 				// Check if we are in fullscreen or not, if so add an additional bottom offset of 
