@@ -16,6 +16,9 @@ function jsKalturaPlayerTest( videoId ){
 	
 	asyncTest( "Timed text on screen", function() {
 		kalturaQunitWaitForPlayer(function(){
+			// make sure we show captions
+			kdp.sendNotification( 'showClosedCaptions' );
+			
 			window['onPlayerSeekEnd'] = function(){
 				kdp.sendNotification( 'doPause', 2);
 				

@@ -16,10 +16,13 @@ function jsKalturaPlayerTest( videoId ){
 	
 	asyncTest( "Timed text on screen", function() {
 		kalturaQunitWaitForPlayer(function(){
+			// make sure we show captions
+			kdp.sendNotification( 'showClosedCaptions' );
+			
 			window['onPlayerSeekEnd'] = function(){
 				kdp.sendNotification( 'doPause', 2);
 				// check for captions: 
-				ok( $iframe.find('.captionsOverlay').length, "Text container in DOM");
+				ok( $iframe.find('.captionContainer').length, "Text container in DOM");
 				equal( $iframe.find('.track span').text(), "Harold is the coffee alright?", "Text matches srt");
 				start();
 			}
@@ -30,11 +33,8 @@ function jsKalturaPlayerTest( videoId ){
 				kdp.sendNotification( 'doPlay' );
 				setTimeout(function(){
 					kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd');
-					
 					// Check that the text is displayed: 
 					kdp.sendNotification( 'doSeek', 2);
-					
-
 				}, 1000);
 			});
 		});
