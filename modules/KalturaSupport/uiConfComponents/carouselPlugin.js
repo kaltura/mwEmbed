@@ -58,13 +58,13 @@
 			} );
 			
 			// Add carousel when pausing
-            embedPlayer.bindHelper( 'pause' + _this.bindPostFix, function() {
+            embedPlayer.bindHelper( 'onpause' + _this.bindPostFix, function() {
 				_this.toggleAll( true );
             } );
 			
 			// Remove all carousel components when playing
 			embedPlayer.bindHelper( 'onplay' + _this.bindPostFix, function() {
-				_this.toggleAll();
+				_this.toggleAll( false );
 			} );
 			
 			embedPlayer.bindHelper( 'onResizePlayer' + _this.bindPostFix, function() {
@@ -352,6 +352,7 @@
 		
 		// Show/hide all components
 		toggleAll: function( show ) {
+			mw.log( "carouselPlugin:: toggleAll: " + show );
 			this.toggleVideoTitle( show );
 			this.toggleImageTitle( show );
 			this.toggleCarousel( show );
