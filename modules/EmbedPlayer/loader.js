@@ -37,9 +37,11 @@
 		// Adds a airplay attribute to the video tag to support apple content mirror
 		'EmbedPlayer.WebKitAllowAirplay': false, 
 		
-		// If webkitSupportsFullscreen is true, this option will make the fullscreen button 
-		// use the native players fullscreen ( rather  than pop-up a new window with the in-browser
-		// fullscreen. 
+		// If we should use the native device fullscreen call, 
+		// this gives you hybrid player, where controls are in HTML for in browser playback, 
+		// and native controls when the fullscreen button is pressed. 
+		// its not the default since often users want playback control if using html controls,
+		// ( i.e no add skip etc ) 
 		'EmbedPlayer.EnableIpadNativeFullscreen': true,
 		
 		// The attribution library page
