@@ -540,7 +540,7 @@ mw.DoubleClick.prototype = {
 					// restore the previous time check: 
 					_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime()
 				}
-			}, 2000)
+			}, 2000);
 		}
 		// update the adPreviousTimeLeft
 		_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
@@ -566,8 +566,9 @@ mw.DoubleClick.prototype = {
 	},
 	// Handler for various ad errors.
 	onAdError: function( errorEvent ) {
-		mw.log('DoubleClick:: onAdError: ' + errorEvent.getError() );
-		if (this.adsManager && $.isFunction(this.adsManager.unload) ) {
+		var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
+		mw.log('DoubleClick:: onAdError: ' + errorMsg );
+		if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 			this.adsManager.unload();
 		}
 		this.restorePlayer();
