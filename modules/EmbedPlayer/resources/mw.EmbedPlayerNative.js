@@ -376,7 +376,7 @@ mw.EmbedPlayerNative = {
 		mw.log( 'EmbedPlayerNative::seek p: ' + percent + ' : ' + this.supportsURLTimeEncoding() + ' dur: ' + this.getDuration() + ' sts:' + this.seekTimeSec );
 		
 		// Trigger preSeek event for plugins that want to store pre seek conditions. 
-		$( this ).trigger( 'preSeek', percent );
+		this.triggerHelper( 'preSeek', percent );
 		
 		this.seeking = true;
 		// Update the current time ( local property )
@@ -384,7 +384,7 @@ mw.EmbedPlayerNative = {
 		
 		// trigger the seeking event: 
 		mw.log( 'EmbedPlayerNative::seek:trigger' );
-		$( this ).trigger( 'seeking' );
+		this.triggerHelper( 'seeking' );
 		
 		// Run the onSeeking interface update
 		this.controlBuilder.onSeek();
@@ -960,7 +960,7 @@ mw.EmbedPlayerNative = {
 			// Trigger the html5 "seeking" trigger
 			mw.log("EmbedPlayerNative::seeking:trigger:: " + this.seeking);
 			if( this._propagateEvents ){
-				$( this ).trigger( 'seeking' );
+				this.triggerHelper( 'seeking' );
 			}
 		}
 	},
@@ -989,7 +989,7 @@ mw.EmbedPlayerNative = {
 			this.seeking = false;
 			if( this._propagateEvents ){
 				mw.log( "EmbedPlayerNative:: trigger: seeked" );
-				$( this ).trigger( 'seeked' );
+				this.triggerHelper( 'seeked' );
 			}
 		}
 		// update the playhead status

@@ -200,9 +200,9 @@ mw.EmbedPlayer.prototype = {
 	'supports': { },
 
 	// If the player is done loading ( does not guarantee playability )
-	// for example if there is an error playerReady is still set to true once
+	// for example if there is an error playerReadyFlag is still set to true once
 	// no more loading is to be done
-	'playerReady' : false,
+	'playerReadyFlag' : false,
 
 	// Stores the loading errors
 	'loadError' : false,
@@ -246,10 +246,10 @@ mw.EmbedPlayer.prototype = {
 	// If the onDone interface should be displayed
 	'onDoneInterfaceFlag': true,
 	
-	// if we should check for a loading spinner in the monitor function: 
+	// if we should check for a loading spinner in the monitor function:
 	'_checkHideSpinner' : false,
 	
-	// If pause play controls click controls should be active: 
+	// If pause play controls click controls should be active:
 	'_playContorls' : true,
 	
 	// If player should be displayed (in some caused like audio, we don't need the player to be visible
@@ -292,7 +292,7 @@ mw.EmbedPlayer.prototype = {
 			if( this[ attr ] == "false" ) this[attr] = false;
 			if( this[ attr ] == "true" ) this[attr] = true;
 		}
-		
+
 		// Hide "controls" if using native player controls:
 		if( this.useNativePlayerControls() ){
 			_this.controls = true;
@@ -312,7 +312,7 @@ mw.EmbedPlayer.prototype = {
 		if ( !this.skinName ) {
 			this.skinName = mw.getConfig( 'EmbedPlayer.DefaultSkin' );
 		}
-		
+
 		// Support custom monitorRate Attribute ( if not use default )
 		if( !this.monitorRate ){
 			this.monitorRate = mw.getConfig( 'EmbedPlayer.MonitorRate' );
@@ -338,7 +338,7 @@ mw.EmbedPlayer.prototype = {
 		if ( _this.durationHint && ! _this.duration){
 			_this.duration = mw.npt2seconds( _this.durationHint );
 		}
-		
+
 		// Make sure duration is a float:
 		this.duration = parseFloat( this.duration );
 		mw.log( 'EmbedPlayer::mediaElement:' + this.id + " duration is: " + this.duration );
@@ -376,7 +376,11 @@ mw.EmbedPlayer.prototype = {
 		$( this ).triggerQueueCallback( name, callback );
 	},
 	triggerHelper: function( name, obj ){
-		$( this ).trigger( name, obj );
+		try{
+			$( this ).trigger( name, obj );
+		} catch(e){
+			mw.log( "Possible error in trgger:" + name );
+		}
 	},
 	/**
 	 * Stop events from Propagation and blocks interface updates and trigger events.
@@ -421,7 +425,7 @@ mw.EmbedPlayer.prototype = {
 			return ;
 		}
 		this._playContorls = false;
-		// turn off hover: 
+		// turn off hover:
 		this.$interface.find( '.play-btn' )
 			.unbind('mouseenter mouseleave')
 			.css('cursor', 'default' );
@@ -480,8 +484,8 @@ mw.EmbedPlayer.prototype = {
 	 */
 	loadPlayerSize: function( element ) {
 		// check for direct element attribute:
-		this.height = ( element.height > 0 ) ? element.height + '' : $(element).css( 'height' );
-		this.width = ( element.width > 0 ) ? element.width + '' : $(element).css( 'width' );
+		this.height = element.height > 0 ? element.height + '' : $(element).css( 'height' );
+		this.width = element.width > 0 ? element.width + '' : $(element).css( 'width' );
 		
 		// Special check for chrome 100% with re-mapping to 32px
 		// Video embed at 32x32 will have to wait for intrinsic video size later on
@@ -693,15 +697,15 @@ mw.EmbedPlayer.prototype = {
 		// Show the interface: 
 		this.$interface.find( '.control-bar,.play-btn-large').show();
 		// trigger ready: 
-		this.playerReady = true;
+		this.playerReadyFlag = true;
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
 		this.triggerWidgetLoaded();
 	},
 
 	/**
-	 * Updates the player interface 
-	 * 
+	 * Updates the player interface
+	 *
 	 * Loads and inherit methods from the selected player interface.
 	 *
 	 * @param {Function}
@@ -713,7 +717,7 @@ mw.EmbedPlayer.prototype = {
 		mw.log( "EmbedPlayer::updatePlaybackInterface: duration is: " + this.getDuration() + ' playerId: ' + this.id );
 		// Clear out any non-base embedObj methods:
 		if ( this.instanceOf ) {
-			// Update the prev instance var used for swiching interfaces to know the previous instance.  
+			// Update the prev instance var used for swiching interfaces to know the previous instance.
 			$( this ).data( 'previousInstanceOf', this.instanceOf );
 			var tmpObj = window['mw.EmbedPlayer' + this.instanceOf ];
 			for ( var i in tmpObj ) { 
@@ -1104,21 +1108,21 @@ mw.EmbedPlayer.prototype = {
 			this.showErrorMsg( this['data-playerError'] );
 			return ;
 		}
-		// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3 
+		// Auto play stopped ( no playerReady has already started playback ) and if not on an iPad with iOS > 3
 		if ( this.isStopped() && this.autoplay && (!mw.isIOS() || mw.isIpad3() ) ) {
-			mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );			
+			mw.log( 'EmbedPlayer::showPlayer::Do autoPlay' );
 			_this.play();
 		}
 	},
 	getPlayerInterface: function(){
-		if( !this.$interface ){		
+		if( !this.$interface ){
 			var interfaceCss = {
 				'width' : this.width + 'px',
 				'height' : this.height + 'px',
 				'position' : 'absolute',
 				'top' : '0px',
 				'left' : '0px',
-				'background': null					
+				'background': null
 			};
 			// if using "native" interface don't do any pointer events:
 			if( !this.useLargePlayBtn() ){
@@ -1882,7 +1886,7 @@ mw.EmbedPlayer.prototype = {
 		if( !this.preSequence ) {
 			this.preSequence = true;
 			mw.log( "EmbedPlayer:: trigger preSequence " );
-			$this.trigger( 'preSequence' );
+			this.triggerHelper( 'preSequence' );
 			this.playInterfaceUpdate();
 			// if we entered into ad loading return 
 			if(  _this.sequenceProxy && _this.sequenceProxy.isInSequence ){
@@ -1925,11 +1929,11 @@ mw.EmbedPlayer.prototype = {
 					_this.setCurrentTime( _this.startTime );
 				} else { 
 					// iPad seeking on syncronus play event sucks
-					setTimeout(function(){
+					setTimeout( function(){
 						_this.setCurrentTime( _this.startTime, function(){
 							_this.play();
 						});
-					}, 500)
+					}, 500 )
 				}
 				_this.startTime = 0;
 			});

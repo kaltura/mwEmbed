@@ -187,9 +187,9 @@ mw.PlayerControlBuilder.prototype = {
 		//Set up local var to control container:
 		var $controlBar = embedPlayer.$interface.find( '.control-bar' );
 
-		this.available_width = embedPlayer.getPlayerWidth();
+		this.availableWidth = embedPlayer.getPlayerWidth();
 
-		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.available_width );
+		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.availableWidth );
 		// Build the supportedComponents list
 		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );
 
@@ -216,12 +216,12 @@ mw.PlayerControlBuilder.prototype = {
 		
 		var addComponent = function( component_id ){
 			if ( _this.supportedComponents[ component_id ] ) {
-				if ( _this.available_width > _this.components[ component_id ].w ) {
+				if ( _this.availableWidth > _this.components[ component_id ].w ) {
 					// Append the component
 					$controlBar.append(
 						_this.getComponent( component_id )
 					);
-					_this.available_width -= _this.components[ component_id ].w;
+					_this.availableWidth -= _this.components[ component_id ].w;
 				} else {
 					mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + component_id );
 				}
@@ -253,7 +253,7 @@ mw.PlayerControlBuilder.prototype = {
 		}
 		// Add special case remaining components: 
 		addComponent( 'timeDisplay' );
-		if( this.available_width > 30 ){
+		if( this.availableWidth > 30 ){
 			addComponent( 'playHead' );	
 		}
 		$(embedPlayer).trigger( 'controlBarBuildDone' );
@@ -2556,7 +2556,7 @@ mw.PlayerControlBuilder.prototype = {
 					.css({
 						"position" : 'absolute',
 						"left" : '33px',
-						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.available_width ) ) + 'px'
+						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth ) ) + 'px'
 					})
 					// Playhead binding
 					.slider( sliderConfig );
