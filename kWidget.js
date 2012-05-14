@@ -1057,7 +1057,6 @@ var kWidget = {
                  'fullScreenApi'
                  ],
          playerServer:[
-   	 			'$j.postMessage',
    	 			'mw.IFramePlayerApiServer'
                  ],
 		 player: [ // mwEmbed utilities: 
@@ -1079,7 +1078,6 @@ var kWidget = {
     		 		'mw.style.EmbedPlayer',
     		 		'mw.PlayerControlBuilder',
     		 		// common playback methods:
-    		 		'mw.EmbedPlayerNative',
     		 		'mw.EmbedPlayerKplayer',
     		 		'mw.EmbedPlayerJava',
     		 		// jQuery lib
@@ -1087,8 +1085,6 @@ var kWidget = {
     		 		'$j.widget',
     		 		'$j.ui.mouse',
     		 		'$j.fn.hoverIntent',
-    		 		'$j.cookie',
-    		 		'JSON',
     		 		'$j.ui.slider',
     		 		'$j.fn.menu',
     		 		'mw.style.jquerymenu',
@@ -1102,9 +1098,7 @@ var kWidget = {
     		 		  'base64_encode',
     		 		  //'base64_decode',
     		 		  "mw.KApi",
-    		 		  'mw.KWidgetSupport',
     		 		  'mw.KAnalytics',
-    		 		  'mw.KDPMapping',
     		 		  'mw.KCuePoints',
     		 		  'mw.KTimedText',
     		 		  'mw.KLayout',
