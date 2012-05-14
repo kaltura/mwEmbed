@@ -27,8 +27,14 @@ mw.EmbedPlayerNative = {
 	// If the media loaded event has been fired
 	mediaLoadedFlag: null,
 	
+	// A flag to keep the video tag offscreen. 
+	keepPlayerOffScreenFlag: null,
+	
 	// A flag to designate the first play event, as to not propagate the native event in this case
 	isFirstEmbedPlay: null,
+	
+	// A local var to store the current seek target time: 
+	currentSeekTargetTime: null,
 
 	// All the native events per:
 	// http://www.w3.org/TR/html5/video.html#mediaevents
@@ -67,7 +73,6 @@ mw.EmbedPlayerNative = {
 		'volumeControl' : true,
 		'overlays' : true
 	},
-
 	/**
 	 * Updates the supported features given the "type of player"
 	 */
@@ -82,9 +87,54 @@ mw.EmbedPlayerNative = {
 		if( mw.isIpad() ){
 			this.supports.volumeControl = false;
 		}
+		// Check if we already have a selected source and a player in the page, 
+		if( this.getPlayerElement() && this.getSrc() ){
+			$( this.getPlayerElement() ).attr( 'src', this.getSrc() );
+		}
+		
 		this.parent_updateFeatureSupport();
 	},
-
+	/**
+	 * Adds an HTML screen and moves the video tag off screen, works around some iPhone bugs
+	 */
+	addPlayScreenWithNativeOffScreen: function(){
+		var _this = this;
+		// hide the player offscreen:
+		this.hidePlayerOffScreen();
+		this.keepPlayerOffScreenFlag = true;
+		
+		// Add a play button on the native player:
+		this.addLargePlayBtn();
+		
+		// add an image poster: 
+		var posterSrc = ( this.poster ) ? this.poster :
+			mw.getConfig( 'EmbedPlayer.BlackPixel' );
+		// check if the poster is already present:
+		if( this.$interface.find( '.playerPoster' ).length ){
+			this.$interface.find( '.playerPoster' ).css('background-image', 'url(\'' + this.poster + '\')' );
+		} else {
+			this.$interface.append(
+				$( '<div />' )
+				.css({
+					'position' : 'absolute',
+					'top' : '0px',
+					'left' : '0px',
+					'width': this.getWidth(),
+					'height': this.getHeight(),
+					'background-image': 'url(\'' + this.poster + '\')',
+					'background-size': '100%',
+					'background-attachment':'fixed',
+					'background-repeat':'no-repeat',
+					'background-position':'top',
+					'background-color' : '#000'
+				})
+				.attr({
+					'src' : posterSrc
+				})
+				.addClass( 'playerPoster' )
+			)
+		}
+	},
 	/**
 	* Return the embed code
 	*/
@@ -92,6 +142,11 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var vid = _this.getPlayerElement();
 		this.isFirstEmbedPlay = true;
+		
+		// Check if we should have a play button on the native player:
+		if( this.useLargePlayBtn() ){
+			this.addLargePlayBtn();
+		}
 		
 		if( vid && $( vid ).attr('src') == this.getSrc( this.currentTime ) ){
 			_this.postEmbedActions();
@@ -104,7 +159,6 @@ mw.EmbedPlayerNative = {
 			_this.postEmbedActions();
 			return ;
 		}
-		
 		// Reset some play state flags:
 		_this.bufferStartFlag = false;
 		_this.bufferEndFlag = false;
@@ -167,10 +221,9 @@ mw.EmbedPlayerNative = {
 	*/
 	postEmbedActions: function() {
 		var _this = this;
-
 		// Setup local pointer:
 		var vid = this.getPlayerElement();
-		if(!vid){
+		if( !vid ){
 			return ;
 		}
 		// Update the player source ( if needed ) 
@@ -185,6 +238,11 @@ mw.EmbedPlayerNative = {
 		if( mw.getConfig( 'EmbedPlayer.WebKitAllowAirplay' ) ){
 			$( vid ).attr( 'x-webkit-airplay', "allow" );
 		}
+		// make sure to display native controls if enabled: 
+		if( this.useNativePlayerControls() ){
+			$( vid ).attr( 'controls', "true" );
+		}
+
 		// Apply media element bindings:
 		_this.applyMediaElementBindings();
 		
@@ -206,14 +264,9 @@ mw.EmbedPlayerNative = {
 				}, 10 );
 			};
 		}
-		// Check for load flag
-		if ( this.onlyLoadFlag || this.paused ) {
-			vid.pause();
+		// Some mobile devices ( iOS need a load call before play will work )
+		if ( !_this.loop ) {
 			vid.load();
-		} else {
-			// Some mobile devices ( iOS need a load call before play will work )
-			vid.load();
-			vid.play();
 		}
 	},
 	// disabled for now.. use native layout support
@@ -293,10 +346,6 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		var vid = _this.getPlayerElement();
 		
-		// Update duration
-		if( vid && vid.duration && isFinite( vid.duration ) ){
-			this.duration = vid.duration; 
-		}
 		// Update the bufferedPercent
 		if( vid && vid.buffered && vid.buffered.end && vid.duration ) {
 			try{
@@ -442,8 +491,14 @@ mw.EmbedPlayerNative = {
 	setCurrentTime: function( seekTime , callback, callbackCount ) {
 		var _this = this;
 		if( !callbackCount ){
+			mw.log(  "EmbedPlayerNative:: setCurrentTime called without callbackCount, set to zero" );
 			callbackCount = 0;
 		}
+		mw.log( "EmbedPlayerNative:: setCurrentTime seekTime:" + seekTime + ' count:' + callbackCount );
+		
+		// Make sure all the timeouts don't seek to an expired target:
+		$( this ).data('currentSeekTarget', seekTime );
+		
 		var vid = this.getPlayerElement();
 		// add a callback handler to null out callback:
 		var callbackHandler = function(){
@@ -461,12 +516,19 @@ mw.EmbedPlayerNative = {
 				return ;
 			}
 			setTimeout( function(){
-				_this.setCurrentTime( seekTime, callback , callbackCount++);
+				// Check that this seek did not expire: 
+				if( $( _this ).data('currentSeekTarget') != seekTime ){
+					mw.log("EmbedPlayerNative:: expired seek target");
+					return ;
+				}
+				_this.setCurrentTime( seekTime, callback , callbackCount+1);
 			}, 100 );
 			return ;
 		}
 		// Check if currentTime is already set to the seek target: 
 		if( vid.currentTime.toFixed(2) == seekTime.toFixed(2) ){
+			mw.log(" EmbedPlayerNative:: setCurrentTime: current time matches seek target: " +
+					vid.currentTime.toFixed(2) + ' == ' +  seekTime.toFixed(2) );
 			callbackHandler();
 			return;
 		}
@@ -490,18 +552,33 @@ mw.EmbedPlayerNative = {
 			if( vid.currentTime > 0 ){
 				callbackHandler();
 			} else {
-				mw.log( "Error:: seek callback without time updatet " + vid.currentTime );
+				mw.log( "Error:: EmbedPlayerNative: seek callback without time updatet " + vid.currentTime );
 			}
 		});
 		setTimeout(function(){
+			// Check that this seek did not expire: 
+			if( $( _this ).data('currentSeekTarget') != seekTime ){
+				mw.log("EmbedPlayerNative:: Expired seek target");
+				return ;
+			}
+			
 			if( $.isFunction( callback ) ){
-				mw.log( "Error:: Seek still has not made a callback after 5 seconds, retry");
-				_this.setCurrentTime( seekTime, callback , callbackCount++ );
+				// if seek is within 5 seconds of the target assume success. ( key frame intervals can mess with seek accuracy ) 
+				// this only runs where the seek callback failed ( i.e broken html5 seek ? ) 
+				if( Math.abs( vid.currentTime - seekTime ) < 5 ){
+					mw.log( "EmbedPlayerNative:: Seek time is within 5 seconds of target, sucessfull seek");
+					callback();
+				} else {
+					mw.log( "Error:: EmbedPlayerNative: Seek still has not made a callback after 5 seconds, retry");
+					_this.setCurrentTime( seekTime, callback , callbackCount++ );
+				}
 			}
 		}, 5000);
 		
 		// Try to update the playerElement time: 
 		try {
+			_this.currentSeekTargetTime = seekTime;
+			// use toFixed ( iOS issue with float seek times ) 
 			vid.currentTime = seekTime.toFixed( 2 );
 		} catch ( e ) {
 			mw.log("Error:: EmbedPlayerNative: Could not set video tag seekTime");
@@ -515,8 +592,8 @@ mw.EmbedPlayerNative = {
 			vid.play();
 			setTimeout(function(){
 				_this.waitForPositiveCurrentTime( function(){
-					mw.log("EmbedPlayerNative:: Got possitive time:" + vid.currentTime + ", trying to seek again");
-					_this.setCurrentTime( seekTime , callback, callbackCount );
+					mw.log("EmbedPlayerNative:: Got possitive time:" + vid.currentTime.toFixed(3) + ", trying to seek again");
+					_this.setCurrentTime( seekTime , callback, callbackCount+1 );
 				});
 			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 		}
@@ -566,6 +643,15 @@ mw.EmbedPlayerNative = {
 		this.parent_updatePosterSrc( src );
 	},
 	/**
+	 * Empty player sources from the active video tag element
+	 */
+	emptySources: function(){
+		// empty player source: 
+		$( this.getPlayerElement() ).attr( 'src', null );
+		// empty out generic sources: 
+		this.parent_emptySources();
+	},
+	/**
 	 * playerSwitchSource switches the player source working around a few bugs in browsers
 	 * 
 	 * @param {Object}
@@ -597,7 +683,6 @@ mw.EmbedPlayerNative = {
 		mw.log( 'EmbedPlayerNative:: playerSwitchSource: ' + src + ' native time: ' + vid.currentTime );
 		
 		// Update some parent embedPlayer vars: 
-		this.duration = 0;
 		this.currentTime = 0;
 		this.previousTime = 0;
 		if ( vid ) {
@@ -627,10 +712,10 @@ mw.EmbedPlayerNative = {
 				_this.hidePlayerOffScreen();
 				// restore position once we have metadata
 				$( vid ).bind( 'loadedmetadata' + switchBindPostfix, function(){
-					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback");
+					mw.log("EmbedPlayerNative:: playerSwitchSource> loadedmetadata callback for:" + src + ' switchCallback: ' + switchCallback );
 					// keep going towards playback! if  switchCallback has not been called yet 
 					// we need the "playing" event to trigger the switch callback
-					if ( !$.isFunction( switchCallback ) ){
+					if ( $.isFunction( switchCallback ) ){
 						vid.play();
 					}
 				});
@@ -640,7 +725,7 @@ mw.EmbedPlayerNative = {
 					_this.restorePlayerOnScreen();
 					// play hide loading spinner:
 					_this.hidePlayerSpinner();
-					// Restore controls 
+					// Restore 	 
 					vid.controls = orginalControlsState;
 					// check if we have a switch callback and issue it now: 
 					if ( $.isFunction( switchCallback ) ){
@@ -660,7 +745,14 @@ mw.EmbedPlayerNative = {
 					$( vid ).bind( 'ended' + switchBindPostfix , function( event ) {
 						// remove end binding: 
 						$( vid ).unbind( switchBindPostfix );
+						// issue the doneCallback
 						doneCallback();
+						
+						// Support loop for older iOS
+						// Temporarly disabled pending more testing or refactor into a better place. 
+						//if ( _this.loop ) {
+						//	vid.play();
+						//}
 						return false;
 					});
 				}
@@ -673,15 +765,17 @@ mw.EmbedPlayerNative = {
 				setTimeout(function(){
 					// Check that the player got out of readyState 0
 					if( vid.readyState === 0 && $.isFunction( switchCallback ) ){
-						mw.log("EmbedPlayerNative:: iOS play without gesture failed, issue callback");
+						mw.log("EmbedPlayerNative:: possible iOS play without gesture failed, issue callback");
 						// hand off to the swtich callback method.
 						handleSwitchCallback();
 						// make sure we are in a pause state ( failed to change and play media );
 						_this.pause();
 						// show the big play button so the user can give us a user gesture: 
-						_this.addPlayBtnLarge();
+						if( ! _this.useLargePlayBtn() ){
+							_this.addLargePlayBtn();
+						}
 					}
-				}, 6000 );
+				}, 5000 );
 				
 				
 			} catch (e) {
@@ -699,52 +793,16 @@ mw.EmbedPlayerNative = {
 	},
 	restorePlayerOnScreen: function( vid ){
 		var vid = this.getPlayerElement();
-		// fallback to 
-		$( vid ).css( 'left', '0px');
-		// always sync player size after a restore ( won't be left 0px );
+		if( this.keepPlayerOffScreenFlag ){
+			return ;
+		}
+		// Restore video pos before calling sync syze
+		$( vid ).css( 'left', '0px' );
+		// always sync player size after a restore
 		if( this.controlBuilder ){
 			this.controlBuilder.syncPlayerSize();
 		}
 	},
-	/**
-	 * switchPlaySource switches the player source
-	 * 
-	 * we don't appear to be able to use this simple sync switch ( fails on some browsers )
-	 * firefox 7x and iPad OS 3.2 right now) 
-	 */
-	/*switchPlaySource: function( src, switchCallback, doneCallback ){
-		var _this = this;
-		var vid = this.getPlayerElement();
-		var switchBindPostfix = '.switchPlaySource';
-		$(vid).unbind( switchBindPostfix );
-		
-		$( vid ).bind( 'ended' + switchBindPostfix, function( event ) {
-			$(vid).unbind( 'ended' + switchBindPostfix );
-			if( doneCallback ){
-				doneCallback();
-			}
-		});
-		// add a loading spinner: 
-		this.addPlayerSpinner();
-		
-		// once we can play remove the spinner
-		$( vid ).bind( 'canplaythrough' +switchBindPostfix, function( event ){
-			$(vid).unbind( 'canplaythrough' + switchBindPostfix );
-			_this.hidePlayerSpinner();
-		});
-		
-		// Swicth the src and play: 
-		try{
-			vid.src = src;
-			vid.load();
-			vid.play();
-		} catch ( e ){
-			mw.log("Error: could not switch source")
-		}
-		if( switchCallback ){
-			switchCallback();
-		}
-	},*/
 	/**
 	* Pause the video playback
 	* calls parent_pause to update the interface
@@ -765,17 +823,19 @@ mw.EmbedPlayerNative = {
 		var _this = this;
 		// Run parent play:
 		if( _this.parent_play() ){
-			this.getPlayerElement();
-			if ( this.playerElement && this.playerElement.play ) {
+			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
+				mw.log( "EmbedPlayerNative:: issue native play call" );
 				// If in pauseloading state make sure the loading spinner is present: 
 				if( this.isPauseLoading ){
 					this.hideSpinnerOncePlaying();
 				}
 				// issue a play request 
-				this.playerElement.play();
+				this.getPlayerElement().play();
 				// re-start the monitor:
 				this.monitor();
 			}
+		} else {
+			mw.log( "EmbedPlayerNative:: parent play returned false, don't issue play on native element");
 		}
 	},
 	
@@ -886,6 +946,10 @@ mw.EmbedPlayerNative = {
 	*/
 	_onseeking: function() {
 		mw.log( "EmbedPlayerNative::onSeeking " + this.seeking + ' new time: ' + this.getPlayerElement().currentTime );
+		if( this.seeking && Math.round( this.getPlayerElement().currentTime - this.currentSeekTargetTime ) > 2 ){
+			mw.log( "Error:: EmbedPlayerNative Seek time missmatch: target:" + this.getPlayerElement().currentTime + 
+					' actual ' + this.currentSeekTargetTime + ', note apple HLS can only seek to 10 second targets');
+		}
 		// Trigger the html5 seeking event
 		//( if not already set from interface )
 		if( !this.seeking ) {
@@ -909,10 +973,22 @@ mw.EmbedPlayerNative = {
 		mw.log("EmbedPlayerNative::onSeeked " + this.seeking + ' ct:' + this.playerElement.currentTime );
 		// sync the seek checks so that we don't re-issue the seek request
 		this.previousTime = this.currentTime = this.playerElement.currentTime;
+		 
 		// Trigger the html5 action on the parent
 		if( this.seeking ){
+			
+			// safari triggers onseek when its not even close to the target time,
+			// we don't want to trigger the seek event for these "fake" onseeked triggers
+			if( Math.abs( this.currentSeekTargetTime - this.getPlayerElement().currentTime ) > 2 ){
+				mw.log( "Error:: EmbedPlayerNative:seeked triggred with time mismatch: target:" +  
+						this.currentSeekTargetTime + 
+						' actual:' + this.getPlayerElement().currentTime );
+				return ;
+			} 
+			
 			this.seeking = false;
 			if( this._propagateEvents ){
+				mw.log( "EmbedPlayerNative:: trigger: seeked" );
 				$( this ).trigger( 'seeked' );
 			}
 		}
@@ -943,14 +1019,19 @@ mw.EmbedPlayerNative = {
 	*/
 	_onplay: function(){
 		mw.log("EmbedPlayerNative:: OnPlay:: propogate:" +  this._propagateEvents + ' paused: ' + this.paused);
-		// make sure the interface reflects the current play state:
-		this.playInterfaceUpdate();
+		// if using native controls make sure the inteface does not block the native controls interface: 
+		if( this.useNativePlayerControls() ){
+			this.$interface.css('pointer-events', 'none');
+		}
 		
 		// Update the interface ( if paused )
 		if( ! this.isFirstEmbedPlay && this._propagateEvents && this.paused ){
 			this.parent_play();
+		} else {
+			// make sure the interface reflects the current play state if not calling parent_play()
+			this.playInterfaceUpdate();
 		}
-		// restore firstEmbedPlay state: 
+		// Set firstEmbedPlay state to false to avoid initial play invocation : 
 		this.isFirstEmbedPlay = false;
 	},
 
@@ -963,11 +1044,25 @@ mw.EmbedPlayerNative = {
 	*/
 	_onloadedmetadata: function() {
 		this.getPlayerElement();
+		
+		// Sync player size
+		// XXX sometimes source metadata does not include accurate aspect size in metadata
+		// sync player size uses native video size when possible so sync based on that once 
+		// its avaliable. 
+		if( this.controlBuilder ){
+			this.controlBuilder.syncPlayerSize();
+		}
+		
 		if ( this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration) ) {
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );
 			this.duration = this.playerElement.duration;
 		}
 
+		// Check if in "playing" state and we are _propagateEvents events and continue to playback: 
+		if( !this.paused && this._propagateEvents ){
+			this.getPlayerElement().play();
+		}
+		
 		//Fire "onLoaded" flags if set
 		if( typeof this.onLoadedCallback == 'function' ) {
 			this.onLoadedCallback();

@@ -75,7 +75,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 		var ranPlayerSwapFlag = false;			
 		
 		// Local callback to runPlayer swap once playerElement has metadata
-		function runPlayerSwap() {
+		var runPlayerSwap = function () {
 			// Don't run player swap twice
 			if( ranPlayerSwapFlag ){
 				return ;
@@ -107,7 +107,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 				// interface: make sure to use the element that is in the DOM:
 				inDomPlayer.checkPlayerSources();
 			});
-		}
+		};
 
 		if( waitForMeta && mw.getConfig('EmbedPlayer.WaitForMeta' ) ) {
 			mw.log('processEmbedPlayers::WaitForMeta ( video missing height (' +
@@ -268,7 +268,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 			'width' : playerInterface.width + 'px',
 			'height' : playerInterface.height + 'px'
 		} );
-
+	
 		// If we don't already have a loadSpiner add one:
 		if( $('#loadingSpinner_' + playerInterface.id ).length == 0 && !$.browser.mozilla ){
 			if( playerInterface.useNativePlayerControls() || playerInterface.isPersistentNativePlayer() ) {
@@ -279,6 +279,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 			}
 			$spinner.attr('id', 'loadingSpinner_' + playerInterface.id );
 		}
+		
 		return swapPlayerElement;
 	};
 

@@ -2,7 +2,7 @@
 * Msg text is inherited from embedPlayer
 */
 
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 /**
 * mw.PlayerControlBuilder object
 *	@param the embedPlayer element we are targeting
@@ -165,7 +165,7 @@ mw.PlayerControlBuilder.prototype = {
 		embedPlayer.$interface.append( $controlBar );
         
         if ( $.browser.mozilla && parseFloat( $.browser.version ) < 2 ) {
-			embedPlayer.triggerHelper( 'resizeIframeContainer', [ { 'height' : embedPlayer.height + $controlBar.height() - 1 } ] );
+			embedPlayer.triggerHelper( 'resizeIframeContainer', [ {'height' : embedPlayer.height + $controlBar.height() - 1} ] );
         }
 
 		// Add the Controls Component
@@ -302,9 +302,10 @@ mw.PlayerControlBuilder.prototype = {
 		// if the video is very tall in a short window adjust the size:
 		var offsetLeft = ( targetWidth < windowSize.width )? parseInt( windowSize.width- targetWidth ) / 2 : 0;
 
+		var position = (mw.isIOS4()) ? 'static' : 'absolute';
 		mw.log( 'PlayerControlBuilder::getAspectPlayerWindowCss: ' + ' h:' + targetHeight + ' w:' + targetWidth + ' t:' + offsetTop + ' l:' + offsetLeft );
 		return {
-			'position' : 'absolute',
+			'position' : position,
 			'height': parseInt( targetHeight ),
 			'width' : parseInt( targetWidth ),
 			'top' : parseInt( offsetTop ),
@@ -318,7 +319,7 @@ mw.PlayerControlBuilder.prototype = {
 	 * 			size object with width and height
 	 */
 	getIntrinsicAspect: function(){
-		var vid = this.embedPlayer.getPlayerElement()
+		var vid = this.embedPlayer.getPlayerElement();
 		// Check for raw intrinsic media size: 
 		if( vid && vid.videoWidth && vid.videoHeight ){
 			return vid.videoWidth / vid.videoHeight;
@@ -374,7 +375,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( this.inFullScreen ){			
 			this.restoreWindowPlayer();
 		}else {
-			this.doFullScreenPlayer();		
+			this.doFullScreenPlayer();
 		}
 	},
 
@@ -454,6 +455,14 @@ mw.PlayerControlBuilder.prototype = {
 			$( embedPlayer ).trigger( 'onOpenFullScreen' );
 		}
 		
+		// Bind escape to restore in page clip
+		$( window ).keyup( function( event ) {
+			// Escape check
+			if( event.keyCode == 27 ){
+				_this.restoreWindowPlayer();
+			}
+		} );		
+		
 		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
 		setTimeout( function(){ _this.syncPlayerSize() }, 50);
 		setTimeout( function(){ _this.syncPlayerSize() }, 200);
@@ -467,9 +476,7 @@ mw.PlayerControlBuilder.prototype = {
 		if( embedPlayer.playlist && ! this.inFullScreen ){
 			embedPlayer.playlist.syncPlayerSize();
 		} else {
-			//if( $( embedPlayer ).width() != $(window).width() ){
-				embedPlayer.resizePlayer( this.getWindowSize() );
-			//}
+			embedPlayer.resizePlayer( this.getWindowSize() );
 		}
 	},
 	getWindowSize: function(){
@@ -710,12 +717,12 @@ mw.PlayerControlBuilder.prototype = {
 		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			this.restoreWindowPlayerDom();
-		}  else {
+		} else {
 			// if an iframe server make sure the player size is in sync with the iframe window size: 
 			// ( iPad sometimes does not fire resize events ) 
 			if( this.isWindowSizePlayer ){
-				setTimeout( function(){ _this.syncPlayerSize() }, 50);
-				setTimeout( function(){ _this.syncPlayerSize() }, 200);
+				setTimeout( function(){_this.syncPlayerSize()}, 50);
+				setTimeout( function(){_this.syncPlayerSize()}, 200);
 			}
 		}
 		// Restore scrolling on iPad
@@ -775,9 +782,38 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	 * Resize the player to a target size keeping aspect ratio
 	 */
-	resizePlayer: function( size, animate, callback ){
-		mw.log("PlayerControlBuilder:: resizePlayer: " + size.width + ' ' + size.height );
+	resizePlayer: function( size, animate, resizePlayercallback ){
+		var embedPlayer = this.embedPlayer;
 		var _this = this;
+		mw.log( "ControlBuilder:: resizePlayer: w:" +  size.width + ' h:' + size.height );
+		// trigger the resize event: 
+		$( embedPlayer ).trigger( 'onResizePlayer', [size, animate] );
+		// proxy the callback to send a onResizePlayerDone event: 
+		var callback = function(){
+			if( $.isFunction( resizePlayercallback ) ){
+				resizePlayercallback();	
+			}
+			$( embedPlayer ).trigger( 'onResizePlayerDone', [size, animate] );
+		}
+		
+		
+		// Don't resize / re position the player if we have a keep off screen flag
+		if( embedPlayer.keepPlayerOffScreenFlag ){
+			callback();
+			return ;
+		}
+		
+		// Check if we are native display then resize the playerElement directly
+		if( embedPlayer.useNativePlayerControls() ){
+			if( animate ){
+				$( embedPlayer.getPlayerElement() ).animate( size , callback);
+			} else {
+				$( embedPlayer.getPlayerElement() ).css( size );
+				callback();
+			}
+			return ;
+		}
+		
 		// Update interface container:
 		var interfaceCss = {
 			'top' : ( size.top ) ? size.top : '0px',
@@ -789,6 +825,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var $interface = embedPlayer.$interface;
 		var targetAspectSize = _this.getAspectPlayerWindowCss( size );
+		
 		// Setup button scale to not reflect controls offset  
 		var buttonScale = $.extend( {}, interfaceCss);
 		if( !_this.isOverlayControls() ){
@@ -813,9 +850,7 @@ mw.PlayerControlBuilder.prototype = {
 				if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
 					embedPlayer.addPlayerSpinner();
 				}
-				if( $.isFunction( callback ) ){
-					callback();
-				}
+				callback();
 			});
 		} else {
 			$interface.css( interfaceCss );
@@ -825,7 +860,6 @@ mw.PlayerControlBuilder.prototype = {
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).css( targetAspectSize );
 			}
-
 			// Update play button pos
 			$interface.find('.play-btn-large' ).css(  _this.getPlayButtonPosition() );
 			
@@ -833,10 +867,7 @@ mw.PlayerControlBuilder.prototype = {
 			if( $( '#loadingSpinner_' + embedPlayer.id ).length ){
 				embedPlayer.addPlayerSpinner();
 			}
-			
-			if( callback ){
-				callback();
-			}
+			callback();
 		}
 	},
 	/**
@@ -922,6 +953,7 @@ mw.PlayerControlBuilder.prototype = {
 			
 			// include touch start pause binding
 			$( embedPlayer).bind( 'touchstart' + this.bindPostfix, function() {
+				mw.log( "PlayerControlBuilder:: touchstart:"  + ' isPause:' + embedPlayer.paused);
 				if( embedPlayer.paused ) {
 					embedPlayer.play();
 				} else {
@@ -1049,6 +1081,7 @@ mw.PlayerControlBuilder.prototype = {
 	
 		// Check for click
 		$( embedPlayer ).bind( "click" + _this.bindPostfix, function() {
+			mw.log( "PlayerControlBuilder:: click:"  + ' isPause:' + embedPlayer.paused);
 			// Don't do anything if native controls displayed:
 			if( embedPlayer.useNativePlayerControls() || _this.isControlsDisabled() || mw.isIpad() ) {
 				return true;
@@ -1056,7 +1089,7 @@ mw.PlayerControlBuilder.prototype = {
 			var clickTime = new Date().getTime();
 			if( clickTime -lastClickTime < dblClickTime ) {
 				didDblClick = true;
-				setTimeout( function(){ 
+				setTimeout( function(){
 					didDblClick = false; 
 				},  dblClickTime + 10 );
 			}
@@ -1373,7 +1406,7 @@ mw.PlayerControlBuilder.prototype = {
 				}
 			);
 		}
-
+		var userSlide=false;
 		// Setup volume slider:
 		var sliderConf = {
 			range: "min",
@@ -1384,6 +1417,7 @@ mw.PlayerControlBuilder.prototype = {
 				var percent = ui.value / 100;
 				mw.log('PlayerControlBuilder::slide:update volume:' + percent);
 				embedPlayer.setVolume( percent );
+				userSlide = true;
 			},
 			change: function( event, ui ) {
 				var percent = ui.value / 100;
@@ -1393,7 +1427,8 @@ mw.PlayerControlBuilder.prototype = {
 					embedPlayer.$interface.find( '.volume_control span' ).removeClass( 'ui-icon-volume-off' ).addClass( 'ui-icon-volume-on' );
 				}
 				mw.log('PlayerControlBuilder::change:update volume:' + percent);
-				embedPlayer.setVolume( percent, true );
+				embedPlayer.setVolume( percent, userSlide );
+				userSlide = false;
 			}
 		};
 
@@ -1543,9 +1578,16 @@ mw.PlayerControlBuilder.prototype = {
 		$overlay.fadeOut( "slow", function() {
 			$overlay.remove();
 		} );
-		// Show the big play button:
-		embedPlayer.$interface.find( '.play-btn-large' ).fadeIn( 'slow' );
-
+		
+		// Show the big play button: ( if not in an ad .. TODO clean up ) 
+		if( embedPlayer.isStopped() && 
+				( 
+					embedPlayer.sequenceProxy && 
+					embedPlayer.sequenceProxy.isInSequence == false
+				)
+		){
+			embedPlayer.$interface.find( '.play-btn-large' ).fadeIn( 'slow' );
+		}
 
 		$(embedPlayer).trigger( 'closeMenuOverlay' );
 
@@ -1570,7 +1612,7 @@ mw.PlayerControlBuilder.prototype = {
 
 
 		// Hide the big play button:
-		embedPlayer.$interface.find( '.play-btn-large' ).hide();
+		embedPlayer.hideLargePlayBtn();
 
 		// Check if overlay window is already present:
 		if ( embedPlayer.$interface.find( '.overlay-win' ).length != 0 ) {
@@ -1744,7 +1786,7 @@ mw.PlayerControlBuilder.prototype = {
         $.each( $buttonSet, function(i) {
             var label = this.toString();
             var $currentButton = $( '<button />' )
-                .css( { 'padding' : '5px', 'font-size' : '12px' } )
+                .css( {'padding' : '5px', 'font-size' : '12px'} )
                 .text( label )
                 .click( function( eventObject ) {
                     callback( eventObject );
@@ -2192,8 +2234,7 @@ mw.PlayerControlBuilder.prototype = {
 					.css( ctrlObj.getPlayButtonPosition() )
 					// Add play hook:
 					.click( function() {
-						$( this ).remove();
-						ctrlObj.embedPlayer.play();		
+						ctrlObj.embedPlayer.play();
 						return false; // Event Stop Propagation
 					} );
 			}

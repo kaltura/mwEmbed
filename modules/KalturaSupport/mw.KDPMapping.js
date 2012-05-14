@@ -135,9 +135,8 @@
 				};
 				// Listen for the proxyReady event from the server: 
 				$( playerProxy ).bind( 'proxyReady', function(){
-					if( window.KalturaKDPCallbackReady ){
-						window.KalturaKDPCallbackReady( playerProxy.id );
-					}
+					// issue the jsReadyCallback for the html5 player: 
+					kWidget.jsCallbackReady( playerProxy.id );
 				});
 			});			
 		},
@@ -368,7 +367,7 @@
 					}
 				break;
 				case 'duration':
-					return embedPlayer.duration;
+					return embedPlayer.getDuration();
 					break;
 				case 'mediaProxy':
 					switch( objectPath[1] ){
@@ -494,11 +493,18 @@
 					}
 				break;
 			}
-			// Look for a plugin based config: 
-			var pluginConfigValue = embedPlayer.getKalturaConfig( objectPath[0], objectPath[1]);
-			if( $.isEmptyObject( pluginConfigValue ) ){
-				return ;
-			} 
+			// Look for a plugin based config: typeof
+			var pluginConfigValue = null;
+			// See if we are looking for a top level property
+			if( !objectPath[1] && $.isEmptyObject( embedPlayer.getKalturaConfig( objectPath[0] ) ) ){
+				// Return the top level property directly ( {loop} {autoPlay} etc. ) 
+				pluginConfigValue = embedPlayer.getKalturaConfig( '', objectPath[0] );
+			} else {
+				pluginConfigValue = embedPlayer.getKalturaConfig( objectPath[0], objectPath[1]);
+				if( $.isEmptyObject( pluginConfigValue ) ){
+					return ;
+				} 
+			}
 			return pluginConfigValue;
 		},
 		evaluateStringFunction: function( functionName, value ){
@@ -640,7 +646,9 @@
 					b( "seeked" );
 					break;
 				case 'playerPlayEnd':
-					b( "onEndedDone" );
+					// Player Play end should subscribe to postEnded which is fired at the end
+					// of ads and between clips in a playlist. 
+					b( "postEnded" );
 					break;
 				case 'durationChange':
 					b( "durationchange", function(){
@@ -745,10 +753,44 @@
 					break;
 					
 				
-				/**
-				 * Ad support listeneres
-				 *  TODO move to AdTimeline.js ( not in core KDPMapping )
-				 */
+				// Pre Sequence:
+				case 'preSequenceStart':
+				case 'prerollStarted':
+					b('AdSupport_prerollStarted', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
+					break;
+				case 'preSequenceComplete':
+					b('AdSupport_preSequenceComplete', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
+					break;
+					
+				// mid Sequence: 
+				case 'midrollStarted':
+					b('AdSupport_midrollStarted', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
+					break;
+				case 'midSequenceComplete':
+					b('AdSupport_midSequenceComplete', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
+					break;
+					
+				// post roll Sequence: 
+				case 'postRollStarted':
+					b('AdSupport_midrollStarted', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
+					break;
+				case 'postSequenceComplete':
+					b('AdSupport_postSequenceComplete', function( e, slotType ){
+						callback( { 'timeSlot': slotType }, embedPlayer.id );
+					});	
+					break;
+					
+				// generic events: 
 				case 'adStart':
 					b('AdSupport_StartAdPlayback', function( e, slotType ){
 						callback( { 'timeSlot': slotType }, embedPlayer.id );
@@ -759,27 +801,22 @@
 						callback( { 'timeSlot': slotType }, embedPlayer.id )
 					});
 					break;
-				// Pre sequences: 
-				case 'preSequenceStart':
-				case 'pre1start':
-					b( 'AdSupport_PreSequence');
-					break;
-				case 'preSequenceComplete':
-					b( 'AdSupport_PreSequenceComplete');
-					break;
-				
-				// Post sequences:
-				case 'post1start':
-				case 'postSequenceStart':
-					b( 'AdSupport_PostSequence');
-					break;
-				case 'postSequenceComplete':
-					b( 'AdSupport_PostSequenceComplete' );
-					break;
+					
+				// generic ad time update
 				case 'adUpdatePlayhead': 
 					b( 'AdSupport_AdUpdatePlayhead', function( event, adTime) {
 						callback( adTime, embedPlayer.id );
 					});
+					break;
+					
+				/**OLD NUMERIC SEQUENCE EVENTS */
+					
+				case 'pre1start':
+					b( 'AdSupport_PreSequence');
+					break;
+				// Post sequences:
+				case 'post1start':
+					b( 'AdSupport_PostSequence');
 					break;
 					
 				/**
@@ -912,13 +949,14 @@
 					embedPlayer.emptySources();
 					break;
 				case 'changeMedia':
-					// ChecchangeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
+					// Check changeMediak if we don't have entryId and referenceId and they both not -1 - Empty sources
 					if( ( ! notificationData.entryId || notificationData.entryId == "" || notificationData.entryId == -1 )
-						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) ) {
+						&& ( ! notificationData.referenceId || notificationData.referenceId == "" || notificationData.referenceId == -1 ) ) 
+					{
+						mw.log( "KDPMapping:: ChangeMedia missing entryId or refrenceid, empty sources.")
 					    embedPlayer.emptySources();
 					    break;
 					}
-
 					// Check if we have entryId and it's not -1. than we change media
 					if( (notificationData.entryId && notificationData.entryId != -1) || (notificationData.referenceId && notificationData.referenceId != -1) ){
 						// Check if we use referenceId
@@ -942,11 +980,17 @@
 						// clear ad data ..
 						embedPlayer.kAds = null;
 
-						// Update the poster ( if not on iPhone ) 
-						if( !mw.isIphone() ){
-							embedPlayer.updatePosterSrc();
-						}
-						// run the embedPlayer changeMedia function
+						// Update the poster 
+						embedPlayer.updatePosterSrc(
+								mw.getKalturaThumbUrl({
+									'entry_id' : embedPlayer.kentryid,
+									'partner_id' : embedPlayer.kwidgetid.replace('_', ''),
+									'width' : parseInt( embedPlayer.width),
+									'height' : parseInt( embedPlayer.height)
+								})
+						);
+						
+						// Run the embedPlayer changeMedia function
 						embedPlayer.changeMedia();
 						break;
 					}

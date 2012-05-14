@@ -187,8 +187,9 @@ class KalturaResultObject {
 	}
 	public function isCachedUiConfFile(){
 		global $wgEnableScriptDebug;
-		if( $wgEnableScriptDebug ) 
+		if( $wgEnableScriptDebug ) {
 			return false;
+		}
 		return $this->outputUiConfFileFromCache;
 	}
 	public function getUserAgent() {
@@ -239,7 +240,7 @@ class KalturaResultObject {
 			return $this->error;
 		}
 
-		if( !$resultObject ){
+		if( $resultObject === null ){
 			$resultObject =  $this->getResultObject();
 		}
 		// check for access control resultObject property:
@@ -278,16 +279,20 @@ class KalturaResultObject {
 		}
 
 		/* Session Restricted */
-		if( $accessControl->isSessionRestricted && $accessControl->previewLength == -1 ) {
-			return "No KS where KS is required\nWe're sorry, access to this content is restricted.";
+		if( $accessControl->isSessionRestricted && 
+				( $accessControl->previewLength == -1 || $accessControl->previewLength == null ) )
+		{
+			return $this->getKalturaMsg( 'NO_KS' );
 		}
 
-		if( $accessControl->isScheduledNow === 0) {
+		if( $accessControl->isScheduledNow === 0 || $accessControl->isScheduledNow === false ) {
 			return "Out of scheduling\nWe're sorry, this content is currently unavailable.";
 		}
 		
-		//echo $this->getUserAgent() . '<br />';
-		//echo '<pre>'; print_r($accessControl); exit();
+		/*echo $this->getUserAgent() . '<br />';
+		echo '<pre>'; print_r($accessControl); 
+		exit();*/
+		
 		$userAgentMessage = "User Agent Restricted\nWe're sorry, this content is not available for your device.";
 		if( isset( $accessControl->isUserAgentRestricted ) && $accessControl->isUserAgentRestricted ) {
 			return $userAgentMessage;
@@ -307,7 +312,24 @@ class KalturaResultObject {
 		}
 		return true;
 	}
-
+	/**
+	 * Get the kaltura message key message text
+	 * @param string $msgKey
+	 */
+	function getKalturaMsg( $msgKey ){
+		global $messages;
+		if( $this->getPlayerConfig( 'strings', $msgKey ) ){
+			return $this->getPlayerConfig( 'strings', $msgKey );
+		}
+		// kind of a hack.. manually load the kaltura message file ( 
+		// TODO clean up so we can use normal wfMsg stubs with loaded modules. 
+		require_once 'KalturaSupport.i8ln.php';
+		if( isset( $messages['ks-' . $msgKey ] )){
+			return $messages['ks-' . $msgKey ];
+		}
+		return $msgKey;
+	}
+	
 	function formatString( $str ) {
 		// trim any whitespace
 		$str = trim( $str );
@@ -354,7 +376,24 @@ class KalturaResultObject {
 				}
 			}
 		}
-
+		
+		// Strings
+		if( $this->uiConfFile ) {
+			$uiStrings = $this->getUiConfXML()->xpath("*//string");
+			for( $i=0; $i < count($uiStrings); $i++ ) {
+				$key = ( string ) $uiStrings[ $i ]->attributes()->key;
+				$value = ( string ) $uiStrings[ $i ]->attributes()->value;
+				
+				// setup string s plugin: 
+				if( !isset( $plugins[ 'strings' ] ) ){
+					$plugins[ 'strings' ] = array ();
+				}
+				// add the current key value pair: 
+				$plugins[ 'strings' ][ $key ] = $value;
+			}
+		}
+		
+		
 		// Flashvars
 		if( $this->urlParameters[ 'flashvars' ] ) {
 			$flashVars = $this->urlParameters[ 'flashvars' ];
@@ -710,6 +749,8 @@ class KalturaResultObject {
 	
 	function getEntryResult(){
 		$client = $this->getClient();
+		// define resultObject prior to try catch call
+		$resultObject = array();
 		try {
 			// NOTE this should probably be wrapped in a service class
 			$kparams = array();
@@ -742,7 +783,12 @@ class KalturaResultObject {
 			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'getByEntryId', $entryParam );
 				
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
-			$params = array_merge( $entryParam, array( "contextDataParams" => array( 'referrer' =>  $this->getReferer() ) ) );
+			$params = array_merge( $entryParam, 
+				array( "contextDataParams" => array( 
+							'referrer' =>  $this->getReferer()
+						)
+					)
+			);
 			$namedMultiRequest->addNamedRequest( 'accessControl', 'baseEntry', 'getContextData', $params );
 			
 			// Entry Custom Metadata
@@ -794,7 +840,6 @@ class KalturaResultObject {
 				$resultObject['meta'] = array();
 			}
 		}
-
 		// Check that the ks was valid on the first response ( flavors ) 
 		if( is_array( $resultObject['meta'] ) && isset( $resultObject['meta']['code'] ) && $resultObject['meta']['code'] == 'INVALID_KS' ){
 			$this->error = 'Error invalid KS';
@@ -821,11 +866,12 @@ class KalturaResultObject {
 		}
 		
 		// Check access control and throw an exception if not allowed: 
-		$acStatus = $this->isAccessControlAllowed( $resultObject );
-		if( $acStatus !== true ){
-			throw new Exception( $acStatus );
-		}	
-		
+		if( isset( $resultObject['accessControl']) ){
+			$acStatus = $this->isAccessControlAllowed( $resultObject );
+			if( $acStatus !== true ){
+				$this->error = $acStatus;
+			}
+		}		
 		return $resultObject;
 	}
 

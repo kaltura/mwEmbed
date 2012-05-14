@@ -37,6 +37,8 @@
 
     window[ 'captureThumbnailPlugin' ] = {
         
+		bindPostFix : '.captureThumbnail',
+		
         init: function( embedPlayer ) {
             this.embedPlayer = embedPlayer;
             this.addPlayerBindings();
@@ -46,14 +48,18 @@
 		addPlayerBindings: function() {
 			var _this = this;
             var embedPlayer = this.embedPlayer;
-			embedPlayer.unbindHelper( 'captureThumbnail' );
+			
+			// Unbind previously binded events by namespace
+			embedPlayer.unbindHelper( _this.bindPostFix );
             embedPlayer.bindHelper( 'captureThumbnail', function() {
                 _this.captureThumbnail();
             } );
-            embedPlayer.unbindHelper( 'captureThumbnailFinished' );
             embedPlayer.bindHelper( 'captureThumbnailFinished', function( e, isPlaying ) {
                 _this.drawModal( isPlaying );
-            } )
+            } );
+            embedPlayer.bindHelper( 'captureThumbnailError', function( e, isPlaying ) {
+                _this.drawModal( isPlaying, true );
+            } );		
 		},
         
         addCaptureButton: function() {
@@ -63,7 +69,6 @@
 			
             mw.log( 'captureThumbnailPlugin :: add button' );
             embedPlayer.bindHelper( 'addControlBarComponent', function(event, controlBar ) {
-
                 var $captureButton = {
                     'w': 28,
                     'o': function( ctrlObj ) {
@@ -71,7 +76,6 @@
                             .attr( 'title', embedPlayer.getKalturaConfig( 'captureThumbBtnControllerScreen', 'tooltip' ) )
                             .addClass( "ui-state-default ui-corner-all ui-icon-image ui-icon_link rButton" )
                             .append( $( '<span />' ).addClass( "ui-icon ui-icon-image" ) )
-                            // TODO: Add label/text buttons support
                             .buttonHover()
                             .click(function() {
                                 embedPlayer.triggerHelper( 'captureThumbnail' );
@@ -102,6 +106,11 @@
                 'thumbParams:objectType': 'KalturaThumbParams',
                 'thumbParams:requiredPermissions:-': ''               
 			}, function( data ) {
+				// In case of error, print an error message
+				if ( data.message && data.message.indexOf( "Error" ) != -1 ) {
+					embedPlayer.triggerHelper( 'captureThumbnailError', isPlaying );
+					return false;
+				}
                 var thumbId = data.id;
                 if ( thumbId ) {
                     _this.kClient.doRequest( {
@@ -112,14 +121,13 @@
                         embedPlayer.triggerHelper( 'captureThumbnailFinished', isPlaying );
                     } );
                 }
+				return true;
             } );
         },
 
-		drawModal: function( isPlaying ) {
+		drawModal: function( isPlaying, isError ) {
 			var embedPlayer = this.embedPlayer;
-            
-            embedPlayer.hidePlayerSpinner();
-            embedPlayer.controlBuilder.displayAlert({
+            var alertObj = {
                 'title': 'Capture Thumbnail',
                 'message': 'New thumbnail has been set',
                 'buttons': [],
@@ -133,7 +141,12 @@
                 'props': {
                     'buttonRowSpacing': '5px'
                 }
-            } );
+			};
+			if ( isError ) {
+				alertObj.message = 'An error occurred while trying to capture thumbnail'
+			}
+            embedPlayer.hidePlayerSpinner();
+            embedPlayer.controlBuilder.displayAlert( alertObj );
 		},      
 
         getKalturaClient: function() {

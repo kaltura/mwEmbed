@@ -16,10 +16,10 @@ mw.BaseAdPlugin.prototype = {
 	 */
 	getSequenceIndex: function( slotType ){
 		var _this = this;
-		if( slotType == 'preroll' && _this.getConfig('preSequence')) {
+		if( slotType == 'preroll' && _this.getConfig('preSequence') ) {
 			return _this.getConfig('preSequence');
 		}
-		if( slotType == 'postroll' && _this.getConfig('postSequence')) {
+		if( slotType == 'postroll' && _this.getConfig('postSequence') ) {
 			return _this.getConfig('postSequence');
 		}
 		// TODO WHAT DOES FLASH DO? If a plugin has preroll cuepoint what place in the sequence proxy does it take?  

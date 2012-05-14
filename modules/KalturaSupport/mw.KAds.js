@@ -51,16 +51,12 @@ mw.KAds.prototype = {
 			_this.destroy();
 		});
 		
-		// Setup local pointer: 
-		var $uiConf = embedPlayer.$uiConf;
-		this.$notice = $uiConf.find( 'label#noticeMessage' );
-		this.$skipBtn = $uiConf.find( 'button#skipBtn' );
-
-		// Load the Ads from uiConf
-		_this.loadAds( function(){
-			mw.log( "KAds::All ads have been loaded" );
-			callback();
-		});
+		if( ! _this.getConfig( 'preSequence' ) ) {
+			_this.config[ 'preSequence' ] = 0;
+		}
+		if( ! _this.getConfig( 'postSequence' ) ) {
+			_this.config[ 'postSequence' ] = 0;
+		}		
 		
 		// We can add this binding here, because we will always have vast in the uiConf when having cue points
 		// Catch Ads from adOpportunity event
@@ -68,7 +64,7 @@ mw.KAds.prototype = {
 			$( embedPlayer ).bind('KalturaSupport_AdOpportunity' + _this.bindPostfix, function( event, cuePointWrapper ) {
 				// Check for  protocolType == 1 ( type = vast )
 				if( cuePointWrapper.cuePoint.protocolType == 1 ){
-					_this.loadAndDisplayAd( cuePointWrapper );
+					_this.handleAdOpportunity( cuePointWrapper );
 				}
 			});
 
@@ -76,6 +72,12 @@ mw.KAds.prototype = {
 				embedPlayer.play();
 			});
 		}
+		
+		// Load the Ads from uiConf
+		_this.loadAds( function(){
+			mw.log( "KAds::All ads have been loaded" );
+			callback();
+		});		
 	},
 	
 	/**
@@ -100,6 +102,60 @@ mw.KAds.prototype = {
 			this.config = this.embedPlayer.getKalturaConfig( 'vast', configSet );
 		}
 		return this.config[ name ];
+	},
+	
+	handleAdOpportunity: function( cuePointWrapper ) {
+		var _this = this;
+		switch( _this.embedPlayer.kCuePoints.getAdSlotType( cuePointWrapper ) ) {
+			case 'preroll':
+			case 'postroll':
+				_this.loadAndAddToSequence( cuePointWrapper );
+				break;
+				
+			case 'midroll':
+			case 'overlay':
+				_this.loadAndDisplayAd( cuePointWrapper );
+				break;
+		}
+	},
+	
+	loadAndAddToSequence: function( cuePointWrapper ) {
+		var _this = this;
+		var cuePoint = cuePointWrapper.cuePoint;
+		var adType = _this.embedPlayer.kCuePoints.getAdSlotType( cuePointWrapper );
+		
+		// Check for empty ad:
+		if( !cuePoint.sourceUrl || $.trim( cuePoint.sourceUrl ) === '' ) {
+			return ;
+		}
+		// Load Ad
+		mw.AdLoader.load( cuePoint.sourceUrl, function( adConf ){
+			if( ! adConf ) {
+				return ;
+			}
+			
+			if( adType == 'preroll' ) {
+				_this.config[ 'preSequence' ]++;
+			}
+			if( adType == 'postroll' ) {
+				_this.config[ 'postSequence' ]++;
+			}
+			
+			var adCuePointConf = {
+				duration:  (cuePoint.endTime - cuePoint.startTime) / 1000,
+				start:  cuePoint.startTime / 1000 
+			};
+			
+			var adConfigWrapper = {};
+			adConfigWrapper[ adType ] = {
+				ads: [
+					$.extend( adConf.ads[0], adCuePointConf )
+				],
+				type: adType
+			};
+			
+			_this.addSequenceProxyBinding( adType, adConfigWrapper, _this.getSequenceIndex( adType ) );
+		});
 	},
 	/**
 	 * load and display an ad
@@ -135,7 +191,7 @@ mw.KAds.prototype = {
 		}
 		
 		// If ad type is midroll pause the video
-		if( cuePoint.adType == 1 ) {
+		if( adType == 'midroll' ) {
 			_this.embedPlayer.pauseLoading();
 		}
 		
@@ -225,7 +281,7 @@ mw.KAds.prototype = {
 
 			// If out ad is preroll/midroll/postroll, disable the player 
 			if( adType == 'preroll' || adType == 'midroll' || adType == 'postroll' ){
-				_this.embedPlayer.$interface.find( '.play-btn-large' ).remove();
+				_this.embedPlayer.hideLargePlayBtn();
 			} else {
 				// in case of overlay do nothing
 				doneCallback = function() {};
@@ -256,7 +312,7 @@ mw.KAds.prototype = {
 				// Add to timeline only if we have ads
 				if( adConfigSet[ adType ].ads ) {
 					if( adType == 'midroll' ||  adType == 'postroll' || adType =='preroll' ){
-						_this.addSequenceProxyBinding( adType, adConfigSet );
+						_this.addSequenceProxyBinding( adType, adConfigSet, _this.getSequenceIndex( adType ) );
 					}
 					if( adType == 'overlay' ){
 						_this.addOverlayBinding( adConfigSet[ adType ] );
@@ -267,12 +323,13 @@ mw.KAds.prototype = {
 			callback();
 		});
 	},
-	addSequenceProxyBinding: function( adType, adConfigSet ){
+	addSequenceProxyBinding: function( adType, adConfigSet, sequenceIndex ){
 		var _this = this;
 		var baseDisplayConf = this.getBaseDisplayConf();
+		sequenceIndex = sequenceIndex || _this.getSequenceIndex( adType );
 		$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
 			// add to sequenceProxy:
-			sequenceProxy[ _this.getSequenceIndex( adType ) ] = function( doneCallback ){		
+			sequenceProxy[ sequenceIndex ] = function( doneCallback ){		
 				var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
 				adConfig.type = adType;
 				_this.adPlayer.display( adConfig, doneCallback );
@@ -325,23 +382,34 @@ mw.KAds.prototype = {
 	 * Get base display configuration:
 	 */
 	getBaseDisplayConf: function(){
+		var embedPlayer = this.embedPlayer;
 		var config = {	
 			'companionTargets' : this.getCompanionTargets()
 		};
+		
+		// Setup local pointer: 
+		var notice = this.embedPlayer.getRawKalturaConfig('noticeMessage');
+		var skipBtn = this.embedPlayer.getKalturaConfig('skipBtn');
+		
 		// Add notice if present
-		if( this.$notice.length ){
+		if( notice ){
+			var noticeTop = 5;
+			// If video title is present, move the notice down
+			if ( embedPlayer.$interface && embedPlayer.$interface.find( '.titleContainer' ).length ) {
+				noticeTop += 15;
+			}
 			config.notice = {
-				'evalText' : this.$notice.attr('text'),
+				'evalText' : notice['text'],
 				'css' : {
-					'top': '5px',
+					'top': noticeTop,
 					'left' : '5px'
 				}
 			};
 		}
 		
-		if( this.$skipBtn.length ){
+		if( skipBtn ){
 			config.skipBtn = {
-				'text' : this.$skipBtn.attr('label'),
+				'text' : skipBtn['label'],
 				'css' : {
 					'right': '5px',
 					'bottom' : '5px'

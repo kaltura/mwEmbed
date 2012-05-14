@@ -30,17 +30,27 @@ var allUIMenus = [];
 * @param {String} string Text to display for the menu item
 * @param {String} icon jQuery UI icon key displayed to the left of the menu item
 * @param {Function} callback Function called once the line item is selected
+* @param (String) optional class to add to the line
+* @param (Object) optional data to add to the line
 */
-$.getLineItem = function( string, icon , callback) {		
+$.getLineItem = function( string, icon , callback, opt_class, opt_data) {
 	var $li = $( '<li>' ).append(		
 		$('<a>')
 			.attr('href', '#')
 			.click( callback )
 	);
+	if ( !opt_class ) {
+		opt_class = '';
+	}
+	if ( !opt_data ) {
+		opt_data = [];
+	}
 	if( icon ) {
 		$li.find( 'a' ).append(	
 			$('<span style="float:left;"></span>')
 				.addClass( 'ui-icon ui-icon-' + icon ) 
+				.addClass( opt_class )
+				.data( opt_data )
 		);
 	}		
 	$li.find( 'a' ).append( $('<span>').text( string ) );

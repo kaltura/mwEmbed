@@ -3,24 +3,25 @@
 <head>
 <title>kWidget Player test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript" src="../../../mwEmbedLoader.php"></script>
 <script type="text/javascript">	
 window.kWidgetCallbackWithID = false;
 function jsKalturaPlayerTest( videoId ){
 	
-	// Name this module
+	// Name this module 
 	module( "kWidget Player" );
 
 	asyncTest("Inline readyCallback fired", function(){
 		kalturaQunitWaitForPlayer(function(){
 			equal( window.kWidgetCallbackWithID, videoId, " ReadyCallback fired with id:" + videoId );
 			testAutoPlay();
-			// done with async
+			// Done with async 
 			start();
 		});
 	});
 	
 	function testAutoPlay(){
+		var kdp = $( '#myVideoTarget' ).get( 0 );
 		test("AutoPlay flashvar passing", function(){
 			ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
 		});
