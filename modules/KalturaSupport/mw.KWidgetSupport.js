@@ -809,6 +809,28 @@ mw.KWidgetSupport.prototype = {
 		if( ac.isUserAgentRestricted ){
 			return embedPlayer.getKalturaMsg( 'USER_AGENT_RESTRICTED' );
 		}
+		
+		// New AC API
+		if( ac.accessControlActions && ac.accessControlActions.length ) {
+			$.each( ac.accessControlActions, function( key, val ) {
+				console.log( 'Actions: ', key, val );
+				if( val ) {
+					var message = '';
+					if( ac.accessControlMessages && ac.accessControlMessages.length ) {
+						$.each( ac.accessControlMessages, function( key, val ) {
+							console.log( 'Messages: ', key, val );
+						});
+						return message;
+					} else {
+						message = 'Access denied';
+					}
+					return message;
+				}
+			});
+			
+			debugger;
+		}
+		
 		return true;
 	},
 	/**
