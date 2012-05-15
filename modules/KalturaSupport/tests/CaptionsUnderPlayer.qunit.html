@@ -30,8 +30,6 @@ function jsKalturaPlayerTest( videoId ){
 			iframeKdp.timedText.setupTextSources(function(){
 				ok( iframeKdp.timedText.textSources.length, "Text sources found" );
 				kdp.sendNotification( 'doPlay' );
-				// click show text button ( required for captions below player)
-				$iframe.find('.control-bar .timed-text').click();
 				setTimeout(function(){
 					kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd');
 					// seek to a known text display time: 

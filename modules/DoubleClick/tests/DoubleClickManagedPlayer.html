@@ -9,14 +9,18 @@ function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "DoubleClick Player" );
 
-	var $iframe = $( '#' + videoId + '_ifp' ).contents();
-	var iframeContext = window.frames['kaltura_player_ifp'];
+	var kdp = $('#' + videoId ).get(0);
 	
-	test( "Iframe in DOM", function() {
-		ok( $( '#' + videoId + '_ifp' ).length , 'iframe found' );
-		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
+	asyncTest("Ad started playback", function(){
+		
+		kalturaQunitWaitForPlayer(function(){
+			// listen for ad start
+			
+			// send a play request:
+			kdp.sendNotification('doPlay');
+		});
+		
 	});
-
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
