@@ -59,61 +59,6 @@ class KalturaAttachmentType
 	const DOCUMENT = "3";
 }
 
-class KalturaAttachmentAsset extends KalturaAsset
-{
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $filename = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $title = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaAttachmentType
-	 */
-	public $format = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaAttachmentAssetStatus
-	 * @readonly
-	 */
-	public $status = null;
-
-
-}
-
-class KalturaAttachmentAssetListResponse extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var array of KalturaAttachmentAsset
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
-
-}
-
 abstract class KalturaAttachmentAssetBaseFilter extends KalturaAssetFilter
 {
 	/**
@@ -156,6 +101,62 @@ abstract class KalturaAttachmentAssetBaseFilter extends KalturaAssetFilter
 
 class KalturaAttachmentAssetFilter extends KalturaAttachmentAssetBaseFilter
 {
+
+}
+
+class KalturaAttachmentAsset extends KalturaAsset
+{
+	/**
+	 * The filename of the attachment asset content
+	 *
+	 * @var string
+	 */
+	public $filename = null;
+
+	/**
+	 * Attachment asset title
+	 *
+	 * @var string
+	 */
+	public $title = null;
+
+	/**
+	 * The attachment format
+	 *
+	 * @var KalturaAttachmentType
+	 */
+	public $format = null;
+
+	/**
+	 * The status of the asset
+	 * 
+	 *
+	 * @var KalturaAttachmentAssetStatus
+	 * @readonly
+	 */
+	public $status = null;
+
+
+}
+
+class KalturaAttachmentAssetListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaAttachmentAsset
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
 
 }
 

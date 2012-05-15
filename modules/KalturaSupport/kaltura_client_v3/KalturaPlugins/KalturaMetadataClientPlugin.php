@@ -34,6 +34,7 @@ require_once(dirname(__FILE__) . "/../KalturaTypes.php");
 class KalturaMetadataObjectType
 {
 	const ENTRY = "1";
+	const ANNOTATION = "annotationMetadata.Annotation";
 	const AD_CUE_POINT = "adCuePointMetadata.AdCuePoint";
 	const CODE_CUE_POINT = "codeCuePointMetadata.CodeCuePoint";
 }
@@ -78,95 +79,61 @@ class KalturaMetadataStatus
 	const DELETED = 3;
 }
 
-class KalturaMetadata extends KalturaObjectBase
+class KalturaCompareMetadataCondition extends KalturaCompareCondition
+{
+	/**
+	 * May contain the full xpath to the field in two formats
+	 * 
+	 *
+	 * @var string
+	 */
+	public $xPath = null;
+
+	/**
+	 * Metadata profile id
+	 *
+	 * @var int
+	 */
+	public $profileId = null;
+
+
+}
+
+class KalturaMatchMetadataCondition extends KalturaMatchCondition
+{
+	/**
+	 * May contain the full xpath to the field in two formats
+	 * 
+	 *
+	 * @var string
+	 */
+	public $xPath = null;
+
+	/**
+	 * Metadata profile id
+	 *
+	 * @var int
+	 */
+	public $profileId = null;
+
+
+}
+
+class KalturaMetadataSearchItem extends KalturaSearchOperator
 {
 	/**
 	 * 
 	 *
 	 * @var int
-	 * @readonly
-	 */
-	public $id = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $partnerId = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
 	 */
 	public $metadataProfileId = null;
 
 	/**
 	 * 
 	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $metadataProfileVersion = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaMetadataObjectType
-	 * @readonly
-	 */
-	public $metadataObjectType = null;
-
-	/**
-	 * 
-	 *
 	 * @var string
-	 * @readonly
 	 */
-	public $objectId = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $version = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $createdAt = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $updatedAt = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaMetadataStatus
-	 * @readonly
-	 */
-	public $status = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @readonly
-	 */
-	public $xml = null;
+	public $orderBy = null;
 
 
 }
@@ -300,6 +267,200 @@ class KalturaMetadataFilter extends KalturaMetadataBaseFilter
 
 }
 
+abstract class KalturaMetadataProfileBaseFilter extends KalturaFilter
+{
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $idEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $partnerIdEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaMetadataObjectType
+	 */
+	public $metadataObjectTypeEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $versionEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $nameEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $systemNameEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $systemNameIn = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $createdAtGreaterThanOrEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $createdAtLessThanOrEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $updatedAtGreaterThanOrEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $updatedAtLessThanOrEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaMetadataProfileStatus
+	 */
+	public $statusEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $statusIn = null;
+
+
+}
+
+class KalturaMetadataProfileFilter extends KalturaMetadataProfileBaseFilter
+{
+
+}
+
+class KalturaMetadata extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $id = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $partnerId = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $metadataProfileId = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $metadataProfileVersion = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaMetadataObjectType
+	 * @readonly
+	 */
+	public $metadataObjectType = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $objectId = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $version = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $createdAt = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $updatedAt = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaMetadataStatus
+	 * @readonly
+	 */
+	public $status = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $xml = null;
+
+
+}
+
 class KalturaMetadataListResponse extends KalturaObjectBase
 {
 	/**
@@ -418,111 +579,18 @@ class KalturaMetadataProfile extends KalturaObjectBase
 	/**
 	 * 
 	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $xslt = null;
+
+	/**
+	 * 
+	 *
 	 * @var KalturaMetadataProfileCreateMode
 	 */
 	public $createMode = null;
 
-
-}
-
-abstract class KalturaMetadataProfileBaseFilter extends KalturaFilter
-{
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $idEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $partnerIdEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaMetadataObjectType
-	 */
-	public $metadataObjectTypeEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $versionEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $nameEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $systemNameEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $systemNameIn = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $createdAtGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $createdAtLessThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $updatedAtGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $updatedAtLessThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaMetadataProfileStatus
-	 */
-	public $statusEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $statusIn = null;
-
-
-}
-
-class KalturaMetadataProfileFilter extends KalturaMetadataProfileBaseFilter
-{
 
 }
 
@@ -601,25 +669,6 @@ class KalturaMetadataProfileFieldListResponse extends KalturaObjectBase
 	 * @readonly
 	 */
 	public $totalCount = null;
-
-
-}
-
-class KalturaMetadataSearchItem extends KalturaSearchOperator
-{
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $metadataProfileId = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $orderBy = null;
 
 
 }
@@ -938,6 +987,21 @@ class KalturaMetadataProfileService extends KalturaServiceBase
 		$kfiles = array();
 		$this->client->addParam($kfiles, "viewsFile", $viewsFile);
 		$this->client->queueServiceActionCall("metadata_metadataprofile", "updateViewsFromFile", $kparams, $kfiles);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaMetadataProfile");
+		return $resultObject;
+	}
+
+	function updateTransformationFromFile($id, $xsltFile)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "id", $id);
+		$kfiles = array();
+		$this->client->addParam($kfiles, "xsltFile", $xsltFile);
+		$this->client->queueServiceActionCall("metadata_metadataprofile", "updateTransformationFromFile", $kparams, $kfiles);
 		if ($this->client->isMultiRequest())
 			return $this->client->getMultiRequestResult();
 		$resultObject = $this->client->doQueue();

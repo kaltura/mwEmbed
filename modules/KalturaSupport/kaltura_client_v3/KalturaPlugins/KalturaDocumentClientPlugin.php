@@ -82,24 +82,63 @@ class KalturaSwfFlavorParamsOutputOrderBy
 {
 }
 
-class KalturaDocumentEntry extends KalturaBaseEntry
+abstract class KalturaDocumentFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
 {
-	/**
-	 * 
-	 *
-	 * @var KalturaDocumentType
-	 * @insertonly
-	 */
-	public $documentType = null;
 
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @readonly
-	 */
-	public $assetParamsIds = null;
+}
 
+class KalturaDocumentFlavorParamsOutputFilter extends KalturaDocumentFlavorParamsOutputBaseFilter
+{
+
+}
+
+abstract class KalturaPdfFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
+{
+
+}
+
+class KalturaPdfFlavorParamsOutputFilter extends KalturaPdfFlavorParamsOutputBaseFilter
+{
+
+}
+
+abstract class KalturaSwfFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
+{
+
+}
+
+class KalturaSwfFlavorParamsOutputFilter extends KalturaSwfFlavorParamsOutputBaseFilter
+{
+
+}
+
+abstract class KalturaDocumentFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
+{
+
+}
+
+class KalturaDocumentFlavorParamsFilter extends KalturaDocumentFlavorParamsBaseFilter
+{
+
+}
+
+abstract class KalturaPdfFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
+{
+
+}
+
+class KalturaPdfFlavorParamsFilter extends KalturaPdfFlavorParamsBaseFilter
+{
+
+}
+
+abstract class KalturaSwfFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
+{
+
+}
+
+class KalturaSwfFlavorParamsFilter extends KalturaSwfFlavorParamsBaseFilter
+{
 
 }
 
@@ -141,6 +180,28 @@ class KalturaDocumentEntryFilter extends KalturaDocumentEntryBaseFilter
 
 }
 
+class KalturaDocumentEntry extends KalturaBaseEntry
+{
+	/**
+	 * The type of the document
+	 *
+	 * @var KalturaDocumentType
+	 * @insertonly
+	 */
+	public $documentType = null;
+
+	/**
+	 * Comma separated asset params ids that exists for this media entry
+	 * 
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $assetParamsIds = null;
+
+
+}
+
 class KalturaDocumentListResponse extends KalturaObjectBase
 {
 	/**
@@ -162,72 +223,43 @@ class KalturaDocumentListResponse extends KalturaObjectBase
 
 }
 
-abstract class KalturaDocumentFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
+class KalturaDocumentFlavorParamsOutput extends KalturaFlavorParamsOutput
 {
 
 }
 
-class KalturaDocumentFlavorParamsFilter extends KalturaDocumentFlavorParamsBaseFilter
+class KalturaPdfFlavorParamsOutput extends KalturaFlavorParamsOutput
 {
+	/**
+	 * 
+	 *
+	 * @var bool
+	 */
+	public $readonly = null;
+
 
 }
 
-abstract class KalturaDocumentFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
+class KalturaSwfFlavorParamsOutput extends KalturaFlavorParamsOutput
 {
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $flashVersion = null;
 
-}
+	/**
+	 * 
+	 *
+	 * @var bool
+	 */
+	public $poly2Bitmap = null;
 
-class KalturaDocumentFlavorParamsOutputFilter extends KalturaDocumentFlavorParamsOutputBaseFilter
-{
-
-}
-
-abstract class KalturaPdfFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
-{
-
-}
-
-class KalturaPdfFlavorParamsFilter extends KalturaPdfFlavorParamsBaseFilter
-{
-
-}
-
-abstract class KalturaPdfFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
-{
-
-}
-
-class KalturaPdfFlavorParamsOutputFilter extends KalturaPdfFlavorParamsOutputBaseFilter
-{
-
-}
-
-abstract class KalturaSwfFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
-{
-
-}
-
-class KalturaSwfFlavorParamsFilter extends KalturaSwfFlavorParamsBaseFilter
-{
-
-}
-
-abstract class KalturaSwfFlavorParamsOutputBaseFilter extends KalturaFlavorParamsOutputFilter
-{
-
-}
-
-class KalturaSwfFlavorParamsOutputFilter extends KalturaSwfFlavorParamsOutputBaseFilter
-{
 
 }
 
 class KalturaDocumentFlavorParams extends KalturaFlavorParams
-{
-
-}
-
-class KalturaDocumentFlavorParamsOutput extends KalturaFlavorParamsOutput
 {
 
 }
@@ -244,25 +276,22 @@ class KalturaPdfFlavorParams extends KalturaFlavorParams
 
 }
 
-class KalturaPdfFlavorParamsOutput extends KalturaFlavorParamsOutput
+class KalturaSwfFlavorParams extends KalturaFlavorParams
 {
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $flashVersion = null;
+
 	/**
 	 * 
 	 *
 	 * @var bool
 	 */
-	public $readonly = null;
+	public $poly2Bitmap = null;
 
-
-}
-
-class KalturaSwfFlavorParams extends KalturaFlavorParams
-{
-
-}
-
-class KalturaSwfFlavorParamsOutput extends KalturaFlavorParamsOutput
-{
 
 }
 

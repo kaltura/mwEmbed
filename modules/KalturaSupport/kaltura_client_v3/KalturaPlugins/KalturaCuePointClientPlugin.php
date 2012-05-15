@@ -51,147 +51,9 @@ class KalturaCuePointStatus
 
 class KalturaCuePointType
 {
+	const ANNOTATION = "annotation.Annotation";
 	const AD = "adCuePoint.Ad";
 	const CODE = "codeCuePoint.Code";
-}
-
-abstract class KalturaCuePoint extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @readonly
-	 */
-	public $id = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaCuePointType
-	 * @readonly
-	 */
-	public $cuePointType = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaCuePointStatus
-	 * @readonly
-	 */
-	public $status = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @insertonly
-	 */
-	public $entryId = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $partnerId = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $createdAt = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $updatedAt = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $tags = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $startTime = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @readonly
-	 */
-	public $userId = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $partnerData = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $partnerSortValue = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaNullableBoolean
-	 */
-	public $forceStop = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $thumbOffset = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $systemName = null;
-
-
-}
-
-class KalturaCuePointListResponse extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var array of KalturaCuePoint
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
-
 }
 
 abstract class KalturaCuePointBaseFilter extends KalturaFilter
@@ -383,6 +245,145 @@ abstract class KalturaCuePointBaseFilter extends KalturaFilter
 
 class KalturaCuePointFilter extends KalturaCuePointBaseFilter
 {
+
+}
+
+abstract class KalturaCuePoint extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $id = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaCuePointType
+	 * @readonly
+	 */
+	public $cuePointType = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaCuePointStatus
+	 * @readonly
+	 */
+	public $status = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @insertonly
+	 */
+	public $entryId = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $partnerId = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $createdAt = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $updatedAt = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $tags = null;
+
+	/**
+	 * Start tim ein milliseconds
+	 *
+	 * @var int
+	 */
+	public $startTime = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @readonly
+	 */
+	public $userId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $partnerData = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $partnerSortValue = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaNullableBoolean
+	 */
+	public $forceStop = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $thumbOffset = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $systemName = null;
+
+
+}
+
+class KalturaCuePointListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaCuePoint
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
 
 }
 
