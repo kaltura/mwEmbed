@@ -13,7 +13,7 @@ function jsKalturaPlayerTest( videoId ){
 	asyncTest("Beacon includes required properties", function(){
 		$("#" + videoId).bind('Kaltura.SendAnalyticEvent', function( event, aName, aEvent ){
 			if( aName != 'MEDIA_LOADED' ){
-				// only check for 'MEDIA_LOADED' for now
+				// Only check for 'MEDIA_LOADED' for now
 				return ;
 			}
 			equal( aName, 'MEDIA_LOADED', "Event name is MEDIA_LOADED");
@@ -46,11 +46,8 @@ function jsKalturaPlayerTest( videoId ){
 			
 			// flash var style events: 
 			equal( aEvent[ 'contextId'], 'customPC', "Set player context" );
-			
 			equal( aEvent[ 'featureType'], 'customOF', "Set origin Feature" ); 
-			
 			equal( aEvent[ 'applicationId'], 'customAN',  "Set application Name");
-			
 			equal( aEvent[ 'userId'], 'customUid', "Set Custom user id");
 			
 			start();
@@ -99,9 +96,7 @@ data="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/u
 	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao" />
 </object>
 
-
 <!-- 
-
 <layout id="default light player" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/skin_light.swf?a=20">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
