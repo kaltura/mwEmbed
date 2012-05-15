@@ -31,6 +31,11 @@ var qunitWaitForJQuery = function( callback ){
 		},10)
 	}
 };
+window['kRunFlashTests'] = false;
+if( document.URL.indexOf('runFlashQunitTests') != -1 ){
+	window['kRunFlashTests'] = true;
+}
+
 // Check for the url for runQunitTests argument
 if( document.URL.indexOf('runQunitTests') != -1 || document.URL.indexOf('runFlashQunitTests') != -1 ){
 	document.write('' +
