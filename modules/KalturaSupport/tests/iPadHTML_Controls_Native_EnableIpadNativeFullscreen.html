@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>iPad HTML5 controls native fullscreen controls</title>
+
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+
+<script type="text/javascript">
+	mw.setConfig('EmbedPlayer.EnableIpadNativeFullscreen', true);
+</script>
+
+</head>
+<body>
+<h2> iPad HTML5 controls native fullscreen controls</h2>
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
+<b>NOTE the native fullscreen button only works durring playback</b> ( device restriction )
+<pre>
+	If we should use the native device fullscreen call, 
+	this gives you hybrid player, where controls are in HTML for in browser playback, 
+	and native controls when the fullscreen button is pressed. 
+	its not the default since often users want playback control if using html controls,
+	( i.e no add skip etc )
+</pre> 
+<br />
+<div id="myVideoTarget" style="width:400px;height:330px;">
+</div>
+<script>
+	kWidget.embed({
+		'targetId': 'myVideoTarget',
+		'wid': '_243342',
+		'uiconf_id' : '2877502',
+		'entry_id' : '0_uka1msg4'
+	});
+</script>
+
+</body>
+</html>

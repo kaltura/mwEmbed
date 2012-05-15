@@ -398,7 +398,6 @@ mw.PlayerControlBuilder.prototype = {
 			return ;
 		}
 		this.inFullScreen = true;
-		var triggerOnOpenFullScreen = true;
 		
 		// if overlaying controls add hide show player binding. 
 		if( _this.isOverlayControls() ){
@@ -435,29 +434,56 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		}
 		
-		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			var vid = this.embedPlayer.getPlayerElement();
-			if( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen')
-					&&
-				vid && vid.webkitSupportsFullscreen 
-			){
-				this.embedPlayer.getPlayerElement().webkitEnterFullscreen();
-				triggerOnOpenFullScreen = false;
-			} else {
-				this.doFullScreenPlayerDom();
+		// Bind escape to restore in page clip ( IE9 needs a secondary escape binding ) 
+		$( window ).keyup( function( event ) {
+			// Escape check
+			if( event.keyCode == 27 ){
+				_this.restoreWindowPlayer();
 			}
+		} );
+		
+		// Check for hybrid html controls / native fullscreen support:
+		var vid = this.embedPlayer.getPlayerElement();
+		if( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen')
+				&&
+			vid && vid.webkitSupportsFullscreen 
+		){
+			this.doHybridNativeFullscreen();
+			return ;
+		} else {
+			// do psyudo fullscren 
+			this.doFullScreenPlayerDom();
 		}
+		
 		// Pass on touch move event to parent
 		$( document ).bind( 'touchend.fullscreen', function(e){
 			$( embedPlayer ).trigger( 'onTouchEnd' );
 		});
-		if( triggerOnOpenFullScreen ) {
-			$( embedPlayer ).trigger( 'onOpenFullScreen' );
-		}
+		$( embedPlayer ).trigger( 'onOpenFullScreen' );
 		
-		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
-		setTimeout( function(){ _this.syncPlayerSize() }, 50);
-		setTimeout( function(){ _this.syncPlayerSize() }, 200);
+		
+	},
+	/**
+	 * supports hybrid native fullscreen, player html controls, and fullscreen is native
+	 */
+	doHybridNativeFullscreen: function(){
+		var vid = this.embedPlayer.getPlayerElement();
+		var _this = this;
+		vid.webkitEnterFullscreen();
+		// start to pull for exit fullscreen:
+		this.fsIntervalID = setInterval( function(){
+			var currentFS = vid.webkitDisplayingFullscreen;
+			// Check if we have entered fullscreen but the player 
+			// has exited fullscreen with native controls click
+			if( _this.inFullScreen && !currentFS ){
+				// restore non-fullscreen player state
+				_this.inFullScreen = false;
+				// Trigger the onCloseFullscreen event: 
+				$( embedPlayer ).trigger( 'onCloseFullScreen' );
+				// stop polling for state change.
+				clearInterval( _this.fsIntervalID );
+			}
+		}, 250 );
 	},
 	syncPlayerSize: function(){
 		var embedPlayer = this.embedPlayer;
@@ -593,6 +619,10 @@ mw.PlayerControlBuilder.prototype = {
 				embedPlayer.resizePlayer( targetSize );
 			}
 		});
+		
+		// Add a secondary fallback resize ( sometimes iOS loses the $( window ).resize ) binding )
+		setTimeout( function(){ _this.syncPlayerSize() }, 50);
+		setTimeout( function(){ _this.syncPlayerSize() }, 200);
 
 		// Bind escape to restore in page clip
 		$( window ).keyup( function( event ) {
@@ -601,6 +631,8 @@ mw.PlayerControlBuilder.prototype = {
 				_this.restoreWindowPlayer();
 			}
 		} );
+		
+		
 	},
 	addFullscreenMouseMoveHideShowControls:function(){
 		var _this = this;

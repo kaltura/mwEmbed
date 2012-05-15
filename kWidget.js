@@ -1,6 +1,6 @@
 /**
  * KWidget static object.
- * Will eventually host all the loader logic.
+ * Will eventually host all the loader logic.  
  */
 (function(){
 	
@@ -8,6 +8,7 @@
 "use strict";
 
 var kWidget = {
+		
 	// Stores widgets that are ready:
 	readyWidgets: {},
 
@@ -51,7 +52,9 @@ var kWidget = {
 			_this.rewriteObjectTags();
 		});
 	},
-	// Checks the onPage environment context and sets appropriate flags. 
+	/**
+	 * Checks the onPage environment context and sets appropriate flags.
+	 */ 
 	checkEnvironment:function(){
 		
 		// Note forceMobileHTML5 url flag be disabled by uiConf on the iframe side of the player
@@ -88,6 +91,7 @@ var kWidget = {
 			
 		}
 	},
+	
 	/**
 	 * Checks for the existence of jsReadyCallback and stores it locally. 
 	 * all ready calls then are wrapped by the kWidget jsCallBackready function. 
@@ -117,6 +121,7 @@ var kWidget = {
 	},
 	/**
 	 * The kWidget proxied jsCallbackReady
+	 * @param {string} widgetId The id of the widget that is ready
 	 */
 	jsCallbackReady: function( widgetId ){
 		// Check for proxyed jsReadyCallback: 
@@ -129,6 +134,10 @@ var kWidget = {
 		}
 		this.readyWidgets[ widgetId ] = true;
 	},
+	
+	/**
+	 * Function to flag player mode checks.  
+	 */
 	playerModeChecksDone: function(){
 		// no need to wait for library checks any longer: 
 		this.waitForLibraryChecks = false;
@@ -214,7 +223,6 @@ var kWidget = {
 			this.outputDirectDownload( targetId, settings );
 			return ;
 		}
-		
 		if( settings.isHTML5 ){
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
@@ -223,6 +231,7 @@ var kWidget = {
 	},
 	/**
 	 * Embeds the player from a set of on page objects with kEmbedSettings properties
+	 * @param {object} rewriteObjects set of in page object tags to be rewritten
 	 */
 	embedFromObjects: function( rewriteObjects ){
 		for( var i=0; i < rewriteObjects.length; i++ ){
@@ -235,8 +244,11 @@ var kWidget = {
 		}
 	},
 
-	/*
-	 * Create flash object tag
+	/**
+	 * Outputs a flash object into the page
+	 * 
+	 * @param {string} targetId target container for iframe
+	 * @param {object} settings object used to build iframe settings
 	 */
 	outputFlashObject: function( targetId, settings ) {
 		var elm = document.getElementById( targetId );
@@ -347,7 +359,13 @@ var kWidget = {
 		}
 		
 	},
-
+	
+	/**
+	 * Output an html5 iframe player, once the html5 library is loaded
+	 * 
+	 * @param {string} targetId target container for iframe
+	 * @param {object} settings object used to build iframe settings
+	 */
 	outputHTML5Iframe: function( targetId, settings ) {
 		var elm = document.getElementById( targetId );
 		// Check for html with api off:
@@ -377,10 +395,17 @@ var kWidget = {
 			$('#' + targetId ).kalturaIframePlayer( settings );
 		});
 	},
-
-	outputIframeWithoutApi: function( replaceTargetId, kEmbedSettings ) {
+	
+	/**
+	 * Output an iframe without api. ( should rarely be used, this dissabe on page javascript api, 
+	 * as well as native fullscreen on browsers that support it.  
+	 * 
+	 * @param {string} replaceTargetId target container for iframe
+	 * @param {object} kEmbedSettings object used to build iframe settings
+	 */
+	outputIframeWithoutApi: function( targetId, settings ) {
 		var iframeSrc = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', 'mwEmbedFrame.php' );
-		iframeSrc += '?' + this.embedSettingsToUrl( kEmbedSettings );
+		iframeSrc += '?' + this.embedSettingsToUrl( settings );
 
 		// If remote service is enabled pass along service arguments:
 		if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' ) &&
@@ -403,20 +428,26 @@ var kWidget = {
 		// Also append the script version to purge the cdn cache for iframe:
 		iframeSrc += '&urid=' + KALTURA_LOADER_VERSION;
 
-		var targetNode = document.getElementById( replaceTargetId );
+		var targetNode = document.getElementById( targetId );
 		var parentNode = targetNode.parentNode;
 		var iframe = document.createElement('iframe');
 		iframe.src = iframeSrc;
-		iframe.id = replaceTargetId;
-		iframe.width = (kEmbedSettings.width) ? kEmbedSettings.width.replace(/px/, '' ) : '100%';
-		iframe.height = (kEmbedSettings.height) ? kEmbedSettings.height.replace(/px/, '' ) : '100%';
+		iframe.id = targetId;
+		iframe.width = (settings.width) ? settings.width.replace(/px/, '' ) : '100%';
+		iframe.height = (settings.height) ? settings.height.replace(/px/, '' ) : '100%';
 		iframe.style.border = '0px';
 		iframe.style.overflow = 'hidden';
 
 		parentNode.replaceChild( iframe, targetNode );
 	},
-
-	outputDirectDownload: function( replaceTargetId, kEmbedSettings ) {
+	
+	/**
+	 * Outputs a direct download link 
+	 * TODO replace with image link player for most limited device profiles
+	 * @param {string} replaceTargetId target container for direct download 
+	 * @param {object} settings object used to build download link
+	 */
+	outputDirectDownload: function( replaceTargetId, settings ) {
 
 		// Empty the replace target:
 		var targetNode = document.getElementById( replaceTargetId );
@@ -437,10 +468,10 @@ var kWidget = {
 			options = {};
 
 		// look some other places for sizes:
-		if( !options.width && kEmbedSettings.width )
-			options.width = kEmbedSettings.width;
-		if( !options.height && kEmbedSettings.height )
-			options.height = kEmbedSettings.height;
+		if( !options.width && settings.width )
+			options.width = settings.width;
+		if( !options.height && settings.height )
+			options.height = settings.height;
 		if( !options.width && targetNode.style.width )
 			options.width = targetNode.style.width;
 		if( !options.height && targetNode.style.height )
@@ -452,20 +483,20 @@ var kWidget = {
 
 		// TODO: Add playEventUrl for stats
 		var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
-		var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + kEmbedSettings.wid;
+		var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + settings.wid;
 
 		// Also add the uiconf id to the url:
-		if( kEmbedSettings.uiconf_id ){
-			downloadUrl += '/uiconf_id/' + kEmbedSettings.uiconf_id;
+		if( settings.uiconf_id ){
+			downloadUrl += '/uiconf_id/' + settings.uiconf_id;
 		}
 
-		if( kEmbedSettings.entry_id ) {
-			downloadUrl += '/entry_id/'+ kEmbedSettings.entry_id;
+		if( settings.entry_id ) {
+			downloadUrl += '/entry_id/'+ settings.entry_id;
 		}
 
 		var thumbSrc = this.getKalturaThumbUrl({
-			'entry_id' : kEmbedSettings.entry_id,
-			'partner_id' : kEmbedSettings.p,
+			'entry_id' : settings.entry_id,
+			'partner_id' : settings.p,
 			'width' : parseInt( options.width),
 			'height' : parseInt( options.height)
 		});
@@ -491,28 +522,31 @@ var kWidget = {
 			parentNode.insertBefore( div, targetNode );
 		}
 	},
+	
 	/**
 	 * Adds a ready callback to be called once the kdp or html5 player is ready
+	 * @param {function} readyCallback called once a player or widget is ready on the page
 	 */
 	addReadyCallback: function( readyCallback ){
-		// issue the ready callback for any existing ready widgets:
-		for( var playerId in this.readyWidgets ){
+		// Issue the ready callback for any existing ready widgets:
+		for( var widgetId in this.readyWidgets ){
 			// Make sure the widget is not already ready and is still in the dom:
-			if( document.getElementById( playerId ) ){
-				readyCallback( playerId );
+			if( document.getElementById( widgetId ) ){
+				readyCallback( widgetId );
 			}
 		}
 		// Add the callback to the readyCallbacks array for any other players that become ready
 		this.readyCallbacks.push( readyCallback );
 	},
 
-	/*
+	/**
 	 * Search the DOM for Object tags and rewrite them if they should be rewritten.
 	 * 
 	 * rewrite rules include: 
-	 * * userAgentRules
-	 * * forceMobileHTML5 flag
-	 * * 
+	 * - userAgentRules -- may result in loading uiConf rewrite rules 
+	 * - forceMobileHTML5 -- a url flag to force HTML5 for testing, can be dissabled on iframe side,
+	 * 						per uiConf vars
+	 * - ForceFlashOnDesktop -- forces flash for desktop browsers. 
 	 */
 	rewriteObjectTags: function() {
 		// get the list of object tags to be rewritten: 
@@ -528,12 +562,6 @@ var kWidget = {
 			return ;
 		}
 		
-		/*// Check if we have player rules and then issue this.loadHTML5Lib call
-		if( window.kUserAgentPlayerRules ){
-			this.loadHTML5Lib();
-			return ;
-		}*/
-
 		/**
 		 * If Kaltura.AllowIframeRemoteService is not enabled force in page rewrite:
 		 */
@@ -577,10 +605,13 @@ var kWidget = {
 		}
 		this.playerModeChecksDone();
 	},
+	// Global instance of uiConf ids and assoicated script loaded state
+	uiConfScriptLoadList: {},
+	
 	/**
 	 * Check if any player is missing uiConf javascript: 
+	 * @param {object} playerList List of players to check for missing uiConf js
 	 */
-	uiConfScriptLoadList: {},
 	isMissingUiConfJs: function( playerList ){
 		// Check if we need to load uiConfJs 
 		if( playerList.length == 0 || 
@@ -597,8 +628,11 @@ var kWidget = {
 		}
 		return false;
 	},
+	
 	/** 
-	 * Loads the uiConf js for 
+	 * Loads the uiConf js for a given playerList
+	 * @param {object} playerList list of players to check for uiConf js
+	 * @param {function} callback, called once all uiConf service calls have been made
 	 */
 	loadUiConfJs: function( playerList, callback ){
 		var _this = this;
@@ -618,6 +652,7 @@ var kWidget = {
 				}
 				_this.appendScriptUrl( baseUiConfJsUrl + _this.embedSettingsToUrl( settings ), function(){
 					_this.uiConfScriptLoadList[ settings.uiconf_id ] = true;
+					// see if this the last uiConf missing conf js
 					if( ! _this.isMissingUiConfJs( playerList ) ){
 						callback();
 					} else {
@@ -627,8 +662,10 @@ var kWidget = {
 			})( playerList[i].kEmbedSettings );
 		}
 	},
+	
 	/**
 	 * Write log message to the console
+	 * TODO support log levels: https://github.com/kaltura/mwEmbed/issues/80
 	 */
 	 log: function( msg ) {
 		if( typeof console != 'undefined' && console.log ) {
@@ -638,11 +675,17 @@ var kWidget = {
 
 	/**
 	 * If the current player supports html5:
+	 * @return {boolean} true or false if HTML5 video tag is supported
 	 */
 	supportsHTML5: function(){
 		var dummyvid = document.createElement( "video" );
 		// Blackberry does not really support html5
 		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
+			return false;
+		}
+		// IE9 is grade B HTML5 support only invoke it if forceMobileHTML5 is true, 
+		// but for normal tests we categorize it as ~not~ supporting html5 video. 
+		if( navigator.userAgent.indexOf( 'MSIE 9.' ) != -1 ){
 			return false;
 		}
 		if( dummyvid.canPlayType ) {
@@ -651,8 +694,9 @@ var kWidget = {
 		return false;
 	},
 
-	/*
+	/**
 	 * If the browser supports flash
+	 * @return {boolean} true or false if flash > 10 is supported. 
 	 */
 	supportsFlash: function() {
 		var version = this.getFlashVersion().split(',').shift();
@@ -662,10 +706,12 @@ var kWidget = {
 			return true;
 		}
 	},
-	 /*
-	  * Checks for flash version
-	  */
-	 getFlashVersion: function() {
+	
+	/**
+	 * Checks for flash version
+	 * @return {string} flash version string
+	 */
+	getFlashVersion: function() {
 		// navigator browsers:
 		if (navigator.plugins && navigator.plugins.length) {
 			try {
@@ -701,8 +747,10 @@ var kWidget = {
 		(navigator.userAgent.indexOf('iPod') != -1) ||
 		(navigator.userAgent.indexOf('iPad') != -1) );
 	 },
+	 
 	 /**
 	  * Checks if a given uiconf_id is html5 or not
+	  * @param {string} uiconf_id The uiconf id to check against user player agent rules 
 	  */
 	 isUiConfIdHTML5: function( uiconf_id ){
 		 var isHTML5 = this.isHTML5FallForward();
@@ -716,7 +764,8 @@ var kWidget = {
 		 
 		 return isHTML5;
 	 },
-	 /*
+	 
+	 /**
 	  * Fallforward by default prefers flash, uses html5 only if flash is not installed or not available
 	  */
 	 isHTML5FallForward: function() {
@@ -771,7 +820,10 @@ var kWidget = {
 	 
 	 /**
 	  * Get Kaltura thumb url from entry object
-	  * TODO: Should be removed. we need to grab thumbnail path from api (baseEntry->thumbnailUrl)
+ 	  * TODO We need to grab thumbnail path from api (baseEntry->thumbnailUrl)
+	  * 		or a specialized entry point for cases where we don't have the api readably available  
+	  * 	
+	  * @param {object} entry Entery settings used to gennerate the api url request
 	  */
 	 getKalturaThumbUrl: function ( entry ){
 	 	if( entry.width == '100%'){
@@ -893,7 +945,8 @@ var kWidget = {
 		return flashvars;
 	 },
 	 /**
-	  * convert flashvars to a string
+	  * Convert flashvars to a string
+	  * @param {object} flashVarsObject object to be string encoded
 	  */
 	 flashVarsToString: function( flashVarsObject ) {
 		 var params = '';
@@ -904,6 +957,7 @@ var kWidget = {
 	 },
 	 /**
 	  * Converts a flashvar object into a url object string
+	  * @param {object} flashVarsObject object to be url encoded
 	  */
 	 flashVarsToUrl: function( flashVarsObject ){
 		 var params = '';
@@ -912,6 +966,9 @@ var kWidget = {
 		 }
 		 return params;
 	 },
+	 /**
+	  * @return {boolean} true if page has audio video tags
+	  */
 	 pageHasAudioOrVideoTags: function (){
 		 // if selector is set to false or is empty return false
 		 if( mw.getConfig( 'EmbedPlayer.RewriteSelector' ) === false || 
@@ -1000,7 +1057,6 @@ var kWidget = {
                  'fullScreenApi'
                  ],
          playerServer:[
-   	 			'$j.postMessage',
    	 			'mw.IFramePlayerApiServer'
                  ],
 		 player: [ // mwEmbed utilities: 
@@ -1022,7 +1078,6 @@ var kWidget = {
     		 		'mw.style.EmbedPlayer',
     		 		'mw.PlayerControlBuilder',
     		 		// common playback methods:
-    		 		'mw.EmbedPlayerNative',
     		 		'mw.EmbedPlayerKplayer',
     		 		'mw.EmbedPlayerJava',
     		 		// jQuery lib
@@ -1030,8 +1085,6 @@ var kWidget = {
     		 		'$j.widget',
     		 		'$j.ui.mouse',
     		 		'$j.fn.hoverIntent',
-    		 		'$j.cookie',
-    		 		'JSON',
     		 		'$j.ui.slider',
     		 		'$j.fn.menu',
     		 		'mw.style.jquerymenu',
@@ -1045,9 +1098,7 @@ var kWidget = {
     		 		  'base64_encode',
     		 		  //'base64_decode',
     		 		  "mw.KApi",
-    		 		  'mw.KWidgetSupport',
     		 		  'mw.KAnalytics',
-    		 		  'mw.KDPMapping',
     		 		  'mw.KCuePoints',
     		 		  'mw.KTimedText',
     		 		  'mw.KLayout',
@@ -1073,12 +1124,13 @@ var kWidget = {
     	         ]
 	 },
 	 
-	 /**
-	  * Loads all context depencies for the html5 player in the current context 
-	  */
 	 depStartedLoading: false,
 	 depDoneLoading: false,
 	 queuedLoadDepsCallbacks: [],
+	 /**
+	  * Loads all context depencies for the html5 player in the current context 
+	  * @param {function} callback Function called once the html5 library is loaded 
+	  */
 	 loadHTML5Lib: function( callback ){
 		 var _this = this;
 		 // if we have already loaded files for this context, issue the callback directly. 
@@ -1162,7 +1214,9 @@ var kWidget = {
 		 } );
 	 },
 	 /**
-	  * Loads a set of depencies defined by a given request set
+	  * Loads a set of depencies arrays 
+	  * @param {object} requestSets Set of libraries to load
+	  * @param {function} callback Function called once loading is done
 	  */
 	 loadRequestSets: function( requestSets, callback ){
 		 var _this = this;
@@ -1182,6 +1236,12 @@ var kWidget = {
 			 });
 		 }
 	 },
+	 /**
+	  * Loads an array of resources in a single resource loader request. 
+	  * 
+	  * @param {object} jsRequestSet Set of libraries to load
+	  * @param {function} callback Function called once loading is done
+	  */
 	 loadSet: function ( jsRequestSet, callback ){
 		if( typeof SCRIPT_LOADER_URL == 'undefined' ){
 			alert( 'Error missing SCRIPT_LOADER_URL');
@@ -1250,6 +1310,7 @@ var kWidget = {
 	},
 	/**
 	 * Add css to the dom
+	 * @param {string} url to append to the dom
 	 */
 	appendCssUrl: function( url ){
 		var head = document.getElementsByTagName("head")[0];         
@@ -1260,6 +1321,9 @@ var kWidget = {
 		cssNode.href = url;
 		head.appendChild(cssNode);
 	},
+	/**
+	 * Converts service configuration to url params
+	 */
 	serviceConfigToUrl: function(){
 		var serviceVars = ['ServiceUrl', 'CdnUrl', 'ServiceBase', 'UseManifestUrls'];
 		var urlParam = '';
@@ -1270,19 +1334,23 @@ var kWidget = {
 		}
 		return urlParam;
 	},
-	embedSettingsToUrl: function( kEmbedSettings ){
+	/**
+	 * Converts settings to url params
+	 * @param {object} settings Settings to  be convert into url params 
+	 */
+	embedSettingsToUrl: function( settings ){
 		var url ='';
 		var kalturaAttributeList = ['uiconf_id', 'entry_id', 'wid', 'p', 'cache_st'];
-		for(var attrKey in kEmbedSettings ){
+		for(var attrKey in settings ){
 			// Check if the attrKey is in the kalturaAttributeList:
 			for( var i =0 ; i < kalturaAttributeList.length; i++){
 				if( kalturaAttributeList[i] == attrKey ){
-					url += '&' + attrKey + '=' + encodeURIComponent( kEmbedSettings[attrKey] );  
+					url += '&' + attrKey + '=' + encodeURIComponent( settings[attrKey] );  
 				}
 			}
 		}
 		// Add the flashvars:
-		url += this.flashVarsToUrl( kEmbedSettings.flashvars );
+		url += this.flashVarsToUrl( settings.flashvars );
 		
 		return url;
 	},
@@ -1303,18 +1371,18 @@ var kWidget = {
 	},
 	
 	/**
-	 * overrides flash embed methods, as to optionally support HTML5 injection
+	 * Overrides flash embed methods, as to optionally support HTML5 injection
 	 */
 	overrideFlashEmbedMethods: function(){
 		var _this = this;
-		var doEmbedSettingsWrite = function ( kEmbedSettings, replaceTargetId, widthStr, heightStr ){
+		var doEmbedSettingsWrite = function ( settings, replaceTargetId, widthStr, heightStr ){
 			if( widthStr ) {
-				kEmbedSettings.width = widthStr;
+				settings.width = widthStr;
 			}
 			if( heightStr ) {
-				kEmbedSettings.height = heightStr;
+				settings.height = heightStr;
 			}
-			kWidget.embed( replaceTargetId, kEmbedSettings );
+			kWidget.embed( replaceTargetId, settings );
 		};
 		// flashobject
 		if( window['flashembed'] && !window['originalFlashembed'] ){

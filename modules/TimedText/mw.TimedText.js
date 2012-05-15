@@ -112,7 +112,7 @@ mw.includeAllModuleMessages();
 				this.config = JSON.parse(  preferenceConfig );
 			}
 			// remove any old bindings on change media: 
-			$( this.embedPlayer ).bind('onChangeMedia', function(){
+			$( this.embedPlayer ).bind( 'onChangeMedia', function(){
 				_this.destroy();
 			});
 			// Remove any old bindings before we add the current bindings: 
@@ -147,9 +147,17 @@ mw.includeAllModuleMessages();
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
 				// Hide the caption menu if presently displayed
-				$( '#textMenuContainer_' + embedPlayer.id ).parent().remove();
+				$( '#textMenuContainer_' + embedPlayer.id ).remove();
 			} );
 			
+			// Re-Initialize when changing media
+			$( embedPlayer ).bind( 'onChangeMedia' + this.bindPostFix, function() {
+				_this.destroy();
+				_this.updateLayout();
+				_this.setupTextSources();
+				$( '#textMenuContainer_' + embedPlayer.id ).remove();
+			} );
+
 			// Resize the timed text font size per window width
 			$( embedPlayer ).bind( 'onCloseFullScreen'+ this.bindPostFix + ' onOpenFullScreen'+ this.bindPostFix, function() {
 				// Check if we are in fullscreen or not, if so add an additional bottom offset of 
@@ -322,7 +330,7 @@ mw.includeAllModuleMessages();
 			var textMenuId = 'textMenuContainer_' + this.embedPlayer.id;
 			if( !$( '#' + textMenuId ).length ){
 				//Setup the menu:
-				$('body').append(
+				$( this.embedPlayer ).append(
 					$('<div>')
 						.addClass('ui-widget ui-widget-content ui-corner-all')
 						.attr( 'id', textMenuId )
@@ -394,6 +402,12 @@ mw.includeAllModuleMessages();
 		*/
 		buildMenu: function( autoShow ) {
 			var _this = this;
+			var embedPlayer = this.embedPlayer;
+			// Don't rebuild if menu already built
+			if ( $( '#textMenuContainer_' + embedPlayer.id ).length ) {
+				return false;
+			}
+			
 			var $menuButton = this.embedPlayer.$interface.find( '.timed-text' );
 			var positionOpts = { };
 			if( this.embedPlayer.supports[ 'overlays' ] ){
@@ -409,8 +423,23 @@ mw.includeAllModuleMessages();
 			// We already have a loader in embedPlayer so the delay of
 			// setupTextSources is already taken into account
 			_this.setupTextSources( function() {
+				var positionOpts = { };
+				if( _this.embedPlayer.supports[ 'overlays' ] ){
+					var positionOpts = {
+						'directionV' : 'up',
+						'offsetY' : _this.embedPlayer.controlBuilder.getHeight(),
+						'directionH' : 'left',
+						'offsetX' : -28
+					};
+				}
+				
+				if( !_this.embedPlayer.$interface ){
+					mw.log("TimedText:: interface called before interface ready, just wait for interface");
+					return ;
+				}
+				var $menuButton = _this.embedPlayer.$interface.find( '.timed-text' );
 				// NOTE: Button target should be an option or config
-				$menuButton.unbind().menu( {
+				$menuButton.menu( {
 					'content'	: _this.getMainMenu(),
 					'zindex' : mw.getConfig( 'EmbedPlayer.FullScreenZIndex' ) + 2,
 					'crumbDefaultText' : ' ',
@@ -452,8 +481,8 @@ mw.includeAllModuleMessages();
 		 */
 		loadTextSources: function( callback ) {
 			var _this = this;
-			// check if text sources are already loaded ( not null )
-			if( this.textSources !== null ){
+			// check if text sources are already loaded ( not em )
+			if( this.textSources.length ){
 				callback( this.textSources );
 				return ;
 			}
@@ -489,7 +518,26 @@ mw.includeAllModuleMessages();
 		*/
 		autoSelectSource: function() {
 			var _this = this;
+			// If a source is enabled then don't auto select
+			if ( this.enabledSources.length ) {
+				return false;
+			}
 			this.enabledSources = [];
+
+			var setDefault = false;
+			// Check if any source is marked default:
+			$.each( this.textSources, function(inx, source){
+				if( source['default'] ){
+					_this.enableSource( source );
+					setDefault = true;
+					return false;
+				}
+			});
+			if ( setDefault ) {
+				return true;
+			}
+
+			var setLocalPref = false;
 			// Check if any source matches our "local" pref
 			$.each( this.textSources, function(inx, source){
 				if(	_this.config.userLanguage == source.srclang.toLowerCase() 
@@ -497,35 +545,45 @@ mw.includeAllModuleMessages();
 					_this.config.userKind == source.kind
 				) {
 					_this.enableSource( source );
-					return ;
+					setLocalPref = true;
+					return false;
 				}
 			});
-			// Check if any source is marked default:
-			$.each( this.textSources, function(inx, source){
-				if( source['default'] ){
-					_this.enableSource( source );
-					return ;
-				}
-			});
+			if ( setLocalPref ) {
+				return true;
+			}
 					
+			var setEnglish = false;
 			// If no userLang, source try enabling English:
 			if( this.enabledSources.length == 0 ) {
 				for( var i=0; i < this.textSources.length; i++ ) {
 					var source = this.textSources[ i ];
 					if( source.srclang.toLowerCase() == 'en' ) {
 						_this.enableSource( source );
-						return ;
+						setEnglish = true;
+						return false;
 					}
 				}
 			}
+			if ( setEnglish ) {
+				return true;
+			}
+			
+			var setFirst = false;
 			// If still no source try the first source we get;
 			if( this.enabledSources.length == 0 ) {
 				for( var i=0; i < this.textSources.length; i++ ) {
 					var source = this.textSources[ i ];
 					_this.enableSource( source );
-					return ;
+					setFirst = true;
+					return false;
 				}
 			}
+			if ( setFirst ) {
+				return true;
+			}
+			
+			return false;
 		},
 		/**
 		 * Enable a source and update the currentLangKey 
@@ -540,13 +598,17 @@ mw.includeAllModuleMessages();
 				_this.currentLangKey = source.srclang;
 				return ;
 			}
+			var sourceEnabled = false;
 			// Make sure the source is not already enabled
 			$.each( this.enabledSources, function( inx, enabledSource ){
-				if( source.id != enabledSource.id ){
-					_this.enabledSources.push( source );
-					_this.currentLangKey = source.srclang;
+				if( source.id == enabledSource.id ){
+					sourceEnabled = true;
 				}
 			});
+			if ( !sourceEnabled ) {
+				_this.enabledSources.push( source );
+				_this.currentLangKey = source.srclang;
+			}
 		},
 
 		/**
@@ -602,21 +664,56 @@ mw.includeAllModuleMessages();
 		* 	false if source is off
 		*/
 		isSourceEnabled: function( source ) {
+			var isEnabled = false;
 			$.each( this.enabledSources, function( inx, enabledSource ) {
 				if( source.id ) {
 					if( source.id === enabledSource.id ){
-						return true;
+						isEnabled = true;
 					}
 				}
-				if( source.srclang ) {
+				/*if( source.srclang ) {
 					if( source.srclang === enabledSource.srclang ){
 						return true;
 					}
-				}
+				}*/
 			});
-			return false;
+			return isEnabled;
 		},
-
+		
+		/**
+		 * Marks the active captions in the menu
+		 */
+		markActive: function( source ) {
+			var $menu = $( '#textMenuContainer_' + this.embedPlayer.id );
+			if ( $menu.length ) {
+				var $captionRows = $menu.find( '.captionRow' );
+				if ( $captionRows.length ) {
+					$captionRows.each( function() {
+						$( this ).removeClass( 'ui-icon-bullet ui-icon-radio-on' );
+						var iconClass = ( $( this ).data( 'caption-id' ) === source.id ) ? 'ui-icon-bullet' : 'ui-icon-radio-on';
+						$( this ).addClass( iconClass );
+					} );
+				}
+			}			
+		},
+		
+		/**
+		 * Marks the active layout mode in the menu
+		 */
+		markLayoutActive: function ( layoutMode ) {
+			var $menu = $( '#textMenuContainer_' + this.embedPlayer.id );
+			if ( $menu.length ) {
+				var $layoutRows = $menu.find( '.layoutRow' );
+				if ( $layoutRows.length ) {
+					$layoutRows.each( function() {
+						$( this ).removeClass( 'ui-icon-bullet ui-icon-radio-on' );
+						var iconClass = ( $( this ).data( 'layoutMode' ) === layoutMode ) ? 'ui-icon-bullet' : 'ui-icon-radio-on';
+						$( this ).addClass( iconClass );
+					} );
+				}
+			}
+		},
+		
 		/**
 		* Get a source object by language, returns "false" if not found
 		* @param {string} langKey The language key filter for selected source
@@ -727,7 +824,7 @@ mw.includeAllModuleMessages();
 			if( source.title ) {
 				return $.getLineItem( source.title, source_icon, function() {
 					_this.selectTextSource( source );
-				});
+				}, 'captionRow', { 'caption-id' : source.id } );
 			}	
 			if( source.srclang ) {
 				var langKey = source.srclang.toLowerCase();
@@ -736,7 +833,9 @@ mw.includeAllModuleMessages();
 					source_icon,
 					function() {
 						_this.selectTextSource( source );
-					}
+					},
+					'captionRow',
+					{ 'caption-id' : source.id }
 				);
 			}
 		},
@@ -775,10 +874,13 @@ mw.includeAllModuleMessages();
 					$.getLineItem(
 						gM( 'mwe-timedtext-layout-' + layoutMode),
 						icon,
-						function(){
+						function() {
 							_this.setLayoutMode( layoutMode );
-						})
-					);
+						},
+						'layoutRow',
+						{ 'layoutMode' : layoutMode }
+					)
+				);
 			});
 			return $ul;
 		},
@@ -796,7 +898,9 @@ mw.includeAllModuleMessages();
 				// Update the display:
 				_this.updateLayout();
 			}
+			_this.markLayoutActive( layoutMode );
 		},
+		
 		toggleCaptions: function(){
 			mw.log( "TimedText:: toggleCaptions was:" + this.config.layout );
 			if( this.config.layout == 'off' ){
@@ -860,6 +964,8 @@ mw.includeAllModuleMessages();
 			} else {
 				_this.refreshDisplay();
 			}
+			
+			_this.markActive( source );
 
 			// Trigger the event
 			$( this.embedPlayer ).trigger( 'TimedText_ChangeSource' );
@@ -879,9 +985,9 @@ mw.includeAllModuleMessages();
 			this.prevText = [];
 			
 			// Refresh the Menu (if it has a target to refresh)
-			mw.log( 'TimedText:: bind menu refresh display' );
+			mw.log( 'TimedText:: bind menu refresh display' );			
 			this.buildMenu( this.menuTarget, false );
-            
+			
             this.resizeInterface();
 			
             // add an empty catption: 
@@ -1057,6 +1163,9 @@ mw.includeAllModuleMessages();
 			$textTarget.fadeIn('fast');
 		},
 		displayTextTarget: function( $textTarget ){
+			if( this.getLayoutMode() == 'off' ){
+				return;
+			}
 			if( this.getLayoutMode() == 'ontop' ){
 				this.addTextOverlay(
 					$textTarget	

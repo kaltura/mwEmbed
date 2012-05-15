@@ -72,6 +72,7 @@ mw.KWidgetSupport.prototype = {
 		$( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
 		});
+		
 		// Add black sources: 
 		$( embedPlayer ).bind( 'AddEmptyBlackSources', function( event, vid ){
 			$.each( mw.getConfig('Kaltura.BlackVideoSources'), function(inx, sourceAttr ){
@@ -361,7 +362,7 @@ mw.KWidgetSupport.prototype = {
 			var fv = embedPlayer.playerConfig['vars'] || {};
 			if ( param ) {
 				if ( param in fv ) {
-					return fv[param];
+					return fv[ param ];
 				}
 				else {
 					return undefined;
@@ -434,27 +435,34 @@ mw.KWidgetSupport.prototype = {
 		}		
 	},
 	/**
-	 * Run base ui conf / flashvars checks
+	 * Run base ui conf / flashvars check
 	 * @param embedPlayer
 	 * @return
 	 */
 	baseUiConfChecks: function( embedPlayer ){
+		var _this = this;
+		var getAttr = function( attrName ){
+			return _this.getPluginConfig( embedPlayer, '', attrName );
+		}
 		// Check for autoplay:
-		var autoPlay = this.getPluginConfig( embedPlayer, '', 'autoPlay');
+		var autoPlay = getAttr( 'autoPlay' );
 		if( autoPlay ){
-			embedPlayer.autoplay = true;
+			embedPlayer.autoplay = true;    
 		}
 		
 		// Check for loop:
-		var loop = this.getPluginConfig( embedPlayer, '', 'loop');
+		var loop = getAttr( 'loop' );
 		if( loop ){
 			embedPlayer.loop = true;
 		}
-
-
+		
+		// Check for dissable bit rate cookie and overide default bandwidth cookie
+		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
+			$.cookie('EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR') * 1000 );
+		}
 
 		// Check for imageDefaultDuration
-		var imageDuration = this.getPluginConfig( embedPlayer, '', 'imageDefaultDuration');
+		var imageDuration = getAttr( 'imageDefaultDuration' );
 		if( imageDuration ){
 			embedPlayer.imageDuration = imageDuration;
 		}

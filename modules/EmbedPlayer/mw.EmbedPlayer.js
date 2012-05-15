@@ -90,6 +90,9 @@ mw.EmbedPlayer.prototype = {
 	
 	// If player should be displayed (in some caused like audio, we don't need the player to be visible
 	'displayPlayer': true, 
+	
+	// Widget loaded should only fire once
+	'widgetLoaded': false,
 
 	/**
 	 * embedPlayer
@@ -529,6 +532,7 @@ mw.EmbedPlayer.prototype = {
 		this.playerReady = true;
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
+		this.triggerWidgetLoaded();
 	},
 
 	/**
@@ -889,7 +893,7 @@ mw.EmbedPlayer.prototype = {
 		if ( this.controls ) {
 			if( this.useNativePlayerControls() ){
 				if( this.getPlayerElement() ){
-					$(  this.getPlayerElement() ).attr('controls', true);
+					$(  this.getPlayerElement() ).attr('controls', "true");
 				}
 			} else {
 				this.controlBuilder.addControls();
@@ -923,6 +927,7 @@ mw.EmbedPlayer.prototype = {
 		mw.log("EmbedPlayer:: Trigger: playerReady");
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
+		this.triggerWidgetLoaded();
 		
 		// Check if we want to block the player display
 		if( this['data-blockPlayerDisplay'] ){
@@ -1019,14 +1024,18 @@ mw.EmbedPlayer.prototype = {
 		} else{
 			$target = $(this);
 		}
-		$target.append(
-			$('<div />').addClass('error').text(
-				errorMsg
-			)
-		)
-		.show() // Show the player
+		// Don't show error if disable alerts is true
+		if( $.isFunction(this.getFlashvars) && this.getFlashvars('disableAlerts') !== true ) {
+			$target.append(
+				$('<div />').addClass('error').text(
+					errorMsg
+				)
+			);
+		} 
+		
+		$target.show() // Show the player
 		// Hide the interface components
-		.find( '.control-bar,.play-btn-large').hide();		
+		.find( '.control-bar,.play-btn-large').hide();
 		return ;
 	},
 	hidePlayerInterface: function(){
@@ -1276,7 +1285,7 @@ mw.EmbedPlayer.prototype = {
 			_this.hidePlayerSpinner();
 			// check for an erro on change media: 
 			if( _this['data-playerError'] ){
-				_this.showErrorMsg( this['data-playerError'] );
+				_this.showErrorMsg( _this['data-playerError'] );
 				return ;
 			}
 			// Always show the control bar on switch:
@@ -1329,6 +1338,17 @@ mw.EmbedPlayer.prototype = {
 			// Start player events leading to playerReady
 			_this.setupSourcePlayer();
 		});
+	},
+	
+	/**
+	 * Triggers widgetLoaded event - Needs to be triggered only once, at the first time playerReady is trigerred
+	 */
+	triggerWidgetLoaded: function() {
+		if ( !this.widgetLoaded ) {
+			this.widgetLoaded = true;
+			mw.log( "EmbedPlayer:: Trigger: widgetLoaded");
+			$( this ).trigger( 'widgetLoaded' );
+		}
 	},
 	
 	/**

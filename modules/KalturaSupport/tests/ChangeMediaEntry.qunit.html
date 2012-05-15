@@ -16,29 +16,31 @@ window['jsCallbackReady'] = function( videoId ){
 function jsKalturaPlayerTest( videoId ){
 	var kdp = document.getElementById( videoId );
 	// Name this module
-	module( "Entry with no sources" );
-
-	// Add the entry ready event: 
-	kdp.addJsListener( 'mediaReady', 'mediaReadyFunction');
+	module( "Change media, empty entry" );
+	
+	kdp.addJsListener( 'kdpEmpty', 'onKdpEmpty' );
+	
+	asyncTest( "Empty entry displayed", function() {
+		window['onKdpEmpty'] = function(){
+			ok( true, 'kdpEmpty event fired');
+			// wait for 1 second before issuing change media call
+			setTimeout(function(){
+				doChangeMediaTest();
+			}, 1000);
+			start();
+		};
+	});
 	
 	asyncTest("Change Media", function(){
-		window.mediaReadyFunction = function(){
-			var entry = kdp.evaluate('{mediaProxy.entry}');
-			// check for the inital entry ready:
-			if( entry.id == '1_2qy6yq5j' ){
-				equal(entry.id, "1_2qy6yq5j", "Mix entry ready" );
-				// switch to the next entry:
-				$( ".changeMedia" ).get(1).click();
-			} else if( entry.id == "1_oz8y7d5a" ) {
-				equal(entry.id, "1_oz8y7d5a", "Entry 1_oz8y7d5a change success" );
-				equal(entry.name, "kaltura test.avi", "name of entry updated");
-				$( ".changeMedia" ).get(2).click();
-			} else if ( entry.id == "1_ur8f1q6u" ){
-				equal(entry.id, "1_ur8f1q6u", "Entry 1_ur8f1q6u change success" );
-				// done with tests:
-				start();
-			}
-		};
+		window['onChangeMedia'] = function(){
+			var entryId = kdp.evaluate('{mediaProxy.entry.id}');
+			equal(entryId, "0_swup5zao", "Entry 0_swup5zao change success" );
+			start();
+		}
+		window['doChangeMediaTest'] = function(){
+			kdp.addJsListener( 'changeMedia', 'onChangeMedia' );
+			kdp.sendNotification( "changeMedia", { 'entryId' : '0_swup5zao' } );
+		}
 	});
 }
 
@@ -48,23 +50,26 @@ function jsKalturaPlayerTest( videoId ){
 </head>
 <body>
 <h2> Change media player </h2>
-<h3> Load Kaltura Mix entry and use changeMedia API to load different entry </h3>
+<h3> Load empty entry and use changeMedia API to load different entry </h3>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers
 <br />
-<object id="kdp3" name="kdp3" class="player" width="600" height="400" type="application/x-shockwave-flash" allowfullscreen="true" allownetworking="all" allowscriptaccess="always" rel="media:video" data="http://www.kaltura.com/kwidget/wid/_552701/uiconf_id/1426242">
-	<param name="movie" value="http://www.kaltura.com/kwidget/wid/_552701/uiconf_id/1426242">
-	<param name="quality" value="best">
-	<param name="wmode" value="opaque">
-	<param name="allowfullscreen" value="yes">
-	<param name="allowscriptaccess" value="always">
-	<param name="allownetworking" value="all">
-	<param name="flashVars" value="entryId=1_2qy6yq5j&amp;sourceType=entryId">
+<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
+allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
+xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
+resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/" 
+data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/">
+	<param name="allowFullScreen" value="true" />
+	<param name="allowNetworking" value="all" />
+	<param name="allowScriptAccess" value="always" />
+	<param name="bgcolor" value="#000000" />
+	<param name="flashVars" value="&externalInterfaceDisabled=false" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/" />
 </object>
 <br /><br />
-<input class="changeMedia" type="button" data-entryId="1_2qy6yq5j" value="Mix Entry" />
-<input class="changeMedia" type="button" data-entryId="1_oz8y7d5a" value="Entry 1" />
-<input class="changeMedia" type="button" data-entryId="1_ur8f1q6u" value="Entry 2" />
-<input class="changeMedia" type="button" data-entryId="1_6rugti8h" value="Entry 3" />
+<input class="changeMedia" type="button" data-entryId="404" value="Missing Entry" />
+<input class="changeMedia" type="button" data-entryId="0_swup5zao" value="Entry 1 fish" />
+<input class="changeMedia" type="button" data-entryId="0_wm82kqmm" value="Entry 2 electric sheep" />
+<input class="changeMedia" type="button" data-entryId="0_59x7sgqo" value="Entry 3 Kaltura logo" />
 
 <!-- 
 <layout id="full" name="player" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/skin.swf?a=12">

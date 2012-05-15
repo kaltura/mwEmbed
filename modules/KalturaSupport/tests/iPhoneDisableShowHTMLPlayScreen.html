@@ -1,54 +1,28 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>No HLS for Clips Less Than 10 Seconds test</title>
-<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+<title>iPhone show html5 player test</title>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
-function jsKalturaPlayerTest( videoId ){
-	
-	// Name this module
-	module( "No HLS for Clips Less Than 10 Seconds" );
-	
-	var $iframe = $( '#' + videoId + '_ifp' ).contents();
-	
-	asyncTest("HLS test", function(){
-		var dummyvid = document.createElement( "video" );
-		// check if the browser can even support HLS: 
-		if( mw.isIOS() || dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
-			kalturaQunitWaitForPlayer(function(){
-				var player = $iframe.find('#kaltura_player')[0];
-				var selectedSource = player.mediaElement.selectedSource;
-				notEqual( selectedSource.mimeType, "application/vnd.apple.mpegurl", 
-						"Adaptive stream NOT selected for content duration:" + player.getDuration() );
-				start();
-			});
-		} else {
-			ok( true, "This test only applies to HLS enabled browsers")
-			start();
-		}
-	});
-}
+	mw.setConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen', false );
 </script>
-<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
-<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> No HLS for Clips Less Than 10 Seconds test </h2>
+<h2> iPhone show html5 player test </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
 
 <object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
 allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
 xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_k4dkai5u" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_k4dkai5u">
+resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" 
+data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4">
 	<param name="allowFullScreen" value="true" />
 	<param name="allowNetworking" value="all" />
 	<param name="allowScriptAccess" value="always" />
 	<param name="bgcolor" value="#000000" />
 	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_k4dkai5u" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" />
 </object>
 
 <!-- 
