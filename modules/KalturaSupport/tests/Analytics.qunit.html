@@ -3,14 +3,74 @@
 <head>
 <title>Fall forward html5</title>
 
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+<script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript">	
+function jsKalturaPlayerTest( videoId ){
+	// Name this module
+	module( "Kaltura analytics" );
+	
+	asyncTest("Beacon includes required properties", function(){
+		$("#" + videoId).bind('Kaltura.SendAnalyticEvent', function( event, aName, aEvent ){
+			if( aName != 'MEDIA_LOADED' ){
+				// only check for 'MEDIA_LOADED' for now
+				return ;
+			}
+			equal( aName, 'MEDIA_LOADED', "Event name is MEDIA_LOADED");
+			
+			equal( aEvent['clientVer'], window['KALTURA_LOADER_VERSION'], ' Library version match');
+
+			equal( aEvent['currentPoint'], 0, 'Cuepoint is zero')
+			
+			equal( aEvent['duration'], 30, 'Duration is 30 seconds' );
+			
+			equal( aEvent['entryId'], "0_swup5zao", "Entry id is 0_swup5zao" );
+			
+			ok( !isNaN( aEvent['eventTimestamp'] ), "Timestamp is a number" );
+
+			equal( aEvent['eventType'], 2, "Event type is 2 ( MEDIA_LOADED) ");
+			
+			equal( aEvent['isFirstInSession'], "false", "Not first in session" );
+			
+			equal( aEvent[ 'objectType'], 'KalturaStatsEvent', " Object type is KalturaStatsEvent" );
+			
+			equal( aEvent[ 'partnerId'], "243342", "Partner id matches embed" );
+			
+			equal( aEvent[ 'seek' ], "false", "Seek is false" );
+			
+			ok(  aEvent[ 'sessionId'], "Session id present: " +  aEvent['sessionId'] );
+			
+			equal( aEvent[ 'uiconfId'], "48501", "Ui conf id set");
+			
+			equal( aEvent[ 'widgetId'], "_243342", "Widget id set");
+			
+			// flash var style events: 
+			equal( aEvent[ 'contextId'], 'customPC', "Set player context" );
+			
+			equal( aEvent[ 'featureType'], 'customOF', "Set origin Feature" ); 
+			
+			equal( aEvent[ 'applicationId'], 'customAN',  "Set application Name");
+			
+			equal( aEvent[ 'userId'], 'customUid', "Set Custom user id");
+			
+			start();
+		});
+	})
+}
+</script>
+<!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
+<script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 
 <script type="text/javascript">
+// non-jquery display of events: 
+if( window.QUnit ){
+	$(document).ready(function(){ $('#analyticsContainer').hide() });
+} else{
 	mw.setConfig( 'EmbedPlayer.OverlayControls', false );
-	$( document ).bind( 'Kaltura.SendAnalyticEvent', function(event,  analyticName ){
+	$( document ).bind( 'Kaltura.SendAnalyticEvent', function(event, analyticName ){
 		$('#analyticsLog').append( analyticName + "\n");
 	});
+}
 </script>
 </head>
 <body>
@@ -20,7 +80,7 @@
 <br />
 
 
-<div style="position:absolute;top:90px;left:450px;width:300px;height:300px;" >
+<div id="analyticsContainer" style="position:absolute;top:90px;left:450px;width:300px;height:300px;" >
 <i>Analytics events:</i> ( only html5 )<br />
 <textarea id="analyticsLog" cols='40' rows='24' ></textarea>
 </div>
@@ -30,17 +90,13 @@ type="application/x-shockwave-flash"
 allowFullScreen="true" allowNetworking="all" 
 allowScriptAccess="always" height="330" width="400" 
 data="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao">
-<param name="allowFullScreen" value="true" />
-<param name="allowNetworking" value="all" />
-<param name="allowScriptAccess" value="always" />
-<param name="bgcolor" value="#000000" />
-
-<param name="flashVars" value="&" />
-<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao" />
-<a href="http://corp.kaltura.com">video platform</a> 
-<a href="http://corp.kaltura.com/technology/video_management">video management</a> 
-<a href="http://corp.kaltura.com/solutions/overview">video solutions</a> 
-<a href="http://corp.kaltura.com/technology/video_player">video player</a>
+	<param name="allowFullScreen" value="true" />
+	<param name="allowNetworking" value="all" />
+	<param name="allowScriptAccess" value="always" />
+	<param name="bgcolor" value="#000000" />
+	
+	<param name="flashVars" value="&playbackContext=customPC&originFeature=customOF&applicationName=customAN&userId=customUid" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1274763304/wid/_243342/uiconf_id/48501/entry_id/0_swup5zao" />
 </object>
 
 
