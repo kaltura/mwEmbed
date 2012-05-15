@@ -188,161 +188,6 @@ class KalturaSshDropFolderOrderBy
 	const UPDATED_AT_DESC = "-updatedAt";
 }
 
-abstract class KalturaDropFolderFileHandlerConfig extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var KalturaDropFolderFileHandlerType
-	 * @readonly
-	 */
-	public $handlerType = null;
-
-
-}
-
-class KalturaDropFolder extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $id = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @insertonly
-	 */
-	public $partnerId = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $name = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $description = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaDropFolderType
-	 */
-	public $type = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaDropFolderStatus
-	 */
-	public $status = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $conversionProfileId = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $dc = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $path = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $fileSizeCheckInterval = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaDropFolderFileDeletePolicy
-	 */
-	public $fileDeletePolicy = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $autoFileDeleteDays = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaDropFolderFileHandlerType
-	 */
-	public $fileHandlerType = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $fileNamePatterns = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaDropFolderFileHandlerConfig
-	 */
-	public $fileHandlerConfig;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $tags = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $ignoreFileNamePatterns = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $createdAt = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $updatedAt = null;
-
-
-}
-
 abstract class KalturaDropFolderBaseFilter extends KalturaFilter
 {
 	/**
@@ -535,135 +380,53 @@ class KalturaDropFolderFilter extends KalturaDropFolderBaseFilter
 
 }
 
-class KalturaDropFolderListResponse extends KalturaObjectBase
+abstract class KalturaRemoteDropFolderBaseFilter extends KalturaDropFolderFilter
 {
-	/**
-	 * 
-	 *
-	 * @var array of KalturaDropFolder
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
 
 }
 
-class KalturaDropFolderFile extends KalturaObjectBase
+class KalturaRemoteDropFolderFilter extends KalturaRemoteDropFolderBaseFilter
 {
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $id = null;
 
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $partnerId = null;
+}
 
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @insertonly
-	 */
-	public $dropFolderId = null;
+abstract class KalturaFtpDropFolderBaseFilter extends KalturaRemoteDropFolderFilter
+{
 
-	/**
-	 * 
-	 *
-	 * @var string
-	 * @insertonly
-	 */
-	public $fileName = null;
+}
 
-	/**
-	 * 
-	 *
-	 * @var float
-	 */
-	public $fileSize = null;
+class KalturaFtpDropFolderFilter extends KalturaFtpDropFolderBaseFilter
+{
 
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $fileSizeLastSetAt = null;
+}
 
-	/**
-	 * 
-	 *
-	 * @var KalturaDropFolderFileStatus
-	 * @readonly
-	 */
-	public $status = null;
+abstract class KalturaSshDropFolderBaseFilter extends KalturaRemoteDropFolderFilter
+{
 
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $parsedSlug = null;
+}
 
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $parsedFlavor = null;
+class KalturaSshDropFolderFilter extends KalturaSshDropFolderBaseFilter
+{
 
-	/**
-	 * 
-	 *
-	 * @var KalturaDropFolderFileErrorCode
-	 */
-	public $errorCode = null;
+}
 
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $errorDescription = null;
+abstract class KalturaScpDropFolderBaseFilter extends KalturaSshDropFolderFilter
+{
 
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $lastModificationTime = null;
+}
 
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $createdAt = null;
+class KalturaScpDropFolderFilter extends KalturaScpDropFolderBaseFilter
+{
 
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $updatedAt = null;
+}
 
+abstract class KalturaSftpDropFolderBaseFilter extends KalturaSshDropFolderFilter
+{
+
+}
+
+class KalturaSftpDropFolderFilter extends KalturaSftpDropFolderBaseFilter
+{
 
 }
 
@@ -838,85 +601,27 @@ class KalturaDropFolderFileFilter extends KalturaDropFolderFileBaseFilter
 
 }
 
-class KalturaDropFolderFileListResponse extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var array of KalturaDropFolderFile
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
-
-}
-
-abstract class KalturaRemoteDropFolderBaseFilter extends KalturaDropFolderFilter
-{
-
-}
-
-class KalturaRemoteDropFolderFilter extends KalturaRemoteDropFolderBaseFilter
-{
-
-}
-
-abstract class KalturaFtpDropFolderBaseFilter extends KalturaRemoteDropFolderFilter
-{
-
-}
-
-class KalturaFtpDropFolderFilter extends KalturaFtpDropFolderBaseFilter
-{
-
-}
-
-abstract class KalturaSshDropFolderBaseFilter extends KalturaRemoteDropFolderFilter
-{
-
-}
-
-class KalturaSshDropFolderFilter extends KalturaSshDropFolderBaseFilter
-{
-
-}
-
-abstract class KalturaScpDropFolderBaseFilter extends KalturaSshDropFolderFilter
-{
-
-}
-
-class KalturaScpDropFolderFilter extends KalturaScpDropFolderBaseFilter
-{
-
-}
-
-abstract class KalturaSftpDropFolderBaseFilter extends KalturaSshDropFolderFilter
-{
-
-}
-
-class KalturaSftpDropFolderFilter extends KalturaSftpDropFolderBaseFilter
-{
-
-}
-
 class KalturaDropFolderFileResource extends KalturaDataCenterContentResource
 {
 	/**
-	 * 
+	 * Id of the drop folder file object
 	 *
 	 * @var int
 	 */
 	public $dropFolderFileId = null;
+
+
+}
+
+abstract class KalturaDropFolderFileHandlerConfig extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var KalturaDropFolderFileHandlerType
+	 * @readonly
+	 */
+	public $handlerType = null;
 
 
 }
@@ -932,12 +637,156 @@ class KalturaDropFolderContentFileHandlerConfig extends KalturaDropFolderFileHan
 
 	/**
 	 * Regular expression that defines valid file names to be handled.
+	 * The following might be extracted from the file name and used if defined:
 	 * - (?P<referenceId>\w+) - will be used as the drop folder file's parsed slug.
 	 * - (?P<flavorName>\w+)  - will be used as the drop folder file's parsed flavor.
+	 * 
 	 *
 	 * @var string
 	 */
 	public $slugRegex = null;
+
+
+}
+
+class KalturaDropFolder extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $id = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @insertonly
+	 */
+	public $partnerId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $name = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $description = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaDropFolderType
+	 */
+	public $type = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaDropFolderStatus
+	 */
+	public $status = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $conversionProfileId = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $dc = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $path = null;
+
+	/**
+	 * The ammount of time, in seconds, that should pass so that a file with no change in size we'll be treated as "finished uploading to folder"
+	 *
+	 * @var int
+	 */
+	public $fileSizeCheckInterval = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaDropFolderFileDeletePolicy
+	 */
+	public $fileDeletePolicy = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $autoFileDeleteDays = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaDropFolderFileHandlerType
+	 */
+	public $fileHandlerType = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $fileNamePatterns = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaDropFolderFileHandlerConfig
+	 */
+	public $fileHandlerConfig;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $tags = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $ignoreFileNamePatterns = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $createdAt = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $updatedAt = null;
 
 
 }
@@ -1041,6 +890,159 @@ class KalturaScpDropFolder extends KalturaSshDropFolder
 
 class KalturaSftpDropFolder extends KalturaSshDropFolder
 {
+
+}
+
+class KalturaDropFolderListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaDropFolder
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
+
+}
+
+class KalturaDropFolderFile extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $id = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $partnerId = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @insertonly
+	 */
+	public $dropFolderId = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 * @insertonly
+	 */
+	public $fileName = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 */
+	public $fileSize = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $fileSizeLastSetAt = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaDropFolderFileStatus
+	 * @readonly
+	 */
+	public $status = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $parsedSlug = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $parsedFlavor = null;
+
+	/**
+	 * 
+	 *
+	 * @var KalturaDropFolderFileErrorCode
+	 */
+	public $errorCode = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $errorDescription = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $lastModificationTime = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $createdAt = null;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $updatedAt = null;
+
+
+}
+
+class KalturaDropFolderFileListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaDropFolderFile
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
 
 }
 

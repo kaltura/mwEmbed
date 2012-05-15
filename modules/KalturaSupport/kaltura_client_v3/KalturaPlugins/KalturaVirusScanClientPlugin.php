@@ -44,6 +44,7 @@ class KalturaVirusScanEngineType
 	const SYMANTEC_SCAN_ENGINE = "symantecScanEngine.SymantecScanEngine";
 	const SYMANTEC_SCAN_JAVA_ENGINE = "symantecScanEngine.SymantecScanJavaEngine";
 	const SYMANTEC_SCAN_DIRECT_ENGINE = "symantecScanEngine.SymantecScanDirectEngine";
+	const CLAMAV_SCAN_ENGINE = "clamAVScanEngine.ClamAV";
 }
 
 class KalturaVirusScanProfileOrderBy

@@ -62,172 +62,6 @@ class KalturaCaptionType
 	const DFXP = "2";
 }
 
-class KalturaCaptionAsset extends KalturaAsset
-{
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @insertonly
-	 */
-	public $captionParamsId = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaLanguage
-	 */
-	public $language = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaLanguageCode
-	 * @readonly
-	 */
-	public $languageCode = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaNullableBoolean
-	 */
-	public $isDefault = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $label = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaCaptionType
-	 * @insertonly
-	 */
-	public $format = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaCaptionAssetStatus
-	 * @readonly
-	 */
-	public $status = null;
-
-
-}
-
-class KalturaCaptionAssetListResponse extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var array of KalturaCaptionAsset
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
-
-}
-
-class KalturaCaptionParams extends KalturaAssetParams
-{
-	/**
-	 * 
-	 *
-	 * @var KalturaLanguage
-	 * @insertonly
-	 */
-	public $language = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaNullableBoolean
-	 */
-	public $isDefault = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $label = null;
-
-	/**
-	 * 
-	 *
-	 * @var KalturaCaptionType
-	 * @insertonly
-	 */
-	public $format = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $sourceParamsId = null;
-
-
-}
-
-abstract class KalturaCaptionParamsBaseFilter extends KalturaAssetParamsFilter
-{
-	/**
-	 * 
-	 *
-	 * @var KalturaCaptionType
-	 */
-	public $formatEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var string
-	 */
-	public $formatIn = null;
-
-
-}
-
-class KalturaCaptionParamsFilter extends KalturaCaptionParamsBaseFilter
-{
-
-}
-
-class KalturaCaptionParamsListResponse extends KalturaObjectBase
-{
-	/**
-	 * 
-	 *
-	 * @var array of KalturaCaptionParams
-	 * @readonly
-	 */
-	public $objects;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $totalCount = null;
-
-
-}
-
 abstract class KalturaCaptionAssetBaseFilter extends KalturaAssetFilter
 {
 	/**
@@ -270,6 +104,183 @@ abstract class KalturaCaptionAssetBaseFilter extends KalturaAssetFilter
 
 class KalturaCaptionAssetFilter extends KalturaCaptionAssetBaseFilter
 {
+
+}
+
+abstract class KalturaCaptionParamsBaseFilter extends KalturaAssetParamsFilter
+{
+	/**
+	 * 
+	 *
+	 * @var KalturaCaptionType
+	 */
+	public $formatEqual = null;
+
+	/**
+	 * 
+	 *
+	 * @var string
+	 */
+	public $formatIn = null;
+
+
+}
+
+class KalturaCaptionParamsFilter extends KalturaCaptionParamsBaseFilter
+{
+
+}
+
+class KalturaCaptionAsset extends KalturaAsset
+{
+	/**
+	 * The Caption Params used to create this Caption Asset
+	 * 
+	 *
+	 * @var int
+	 * @insertonly
+	 */
+	public $captionParamsId = null;
+
+	/**
+	 * The language of the caption asset content
+	 * 
+	 *
+	 * @var KalturaLanguage
+	 */
+	public $language = null;
+
+	/**
+	 * The language of the caption asset content
+	 * 
+	 *
+	 * @var KalturaLanguageCode
+	 * @readonly
+	 */
+	public $languageCode = null;
+
+	/**
+	 * Is default caption asset of the entry
+	 * 
+	 *
+	 * @var KalturaNullableBoolean
+	 */
+	public $isDefault = null;
+
+	/**
+	 * Friendly label
+	 * 
+	 *
+	 * @var string
+	 */
+	public $label = null;
+
+	/**
+	 * The caption format
+	 * 
+	 *
+	 * @var KalturaCaptionType
+	 * @insertonly
+	 */
+	public $format = null;
+
+	/**
+	 * The status of the asset
+	 * 
+	 *
+	 * @var KalturaCaptionAssetStatus
+	 * @readonly
+	 */
+	public $status = null;
+
+
+}
+
+class KalturaCaptionParams extends KalturaAssetParams
+{
+	/**
+	 * The language of the caption content
+	 * 
+	 *
+	 * @var KalturaLanguage
+	 * @insertonly
+	 */
+	public $language = null;
+
+	/**
+	 * Is default caption asset of the entry
+	 * 
+	 *
+	 * @var KalturaNullableBoolean
+	 */
+	public $isDefault = null;
+
+	/**
+	 * Friendly label
+	 * 
+	 *
+	 * @var string
+	 */
+	public $label = null;
+
+	/**
+	 * The caption format
+	 * 
+	 *
+	 * @var KalturaCaptionType
+	 * @insertonly
+	 */
+	public $format = null;
+
+	/**
+	 * Id of the caption params or the flavor params to be used as source for the caption creation
+	 *
+	 * @var int
+	 */
+	public $sourceParamsId = null;
+
+
+}
+
+class KalturaCaptionAssetListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaCaptionAsset
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
+
+}
+
+class KalturaCaptionParamsListResponse extends KalturaObjectBase
+{
+	/**
+	 * 
+	 *
+	 * @var array of KalturaCaptionParams
+	 * @readonly
+	 */
+	public $objects;
+
+	/**
+	 * 
+	 *
+	 * @var int
+	 * @readonly
+	 */
+	public $totalCount = null;
+
 
 }
 
