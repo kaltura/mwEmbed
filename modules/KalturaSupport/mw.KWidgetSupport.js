@@ -699,7 +699,7 @@ mw.KWidgetSupport.prototype = {
 					}];
 			} else {
 				// Get device sources 
-				sources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData.flavors, playerData.meta.duration );
+				sources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
 			}
 			// Return the valid source set
 			callback( sources );
@@ -848,7 +848,6 @@ mw.KWidgetSupport.prototype = {
 	addFlavorSources: function( embedPlayer, playerData ) {
 		var _this = this;
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
-		var flavorData = playerData.flavors
 		// Set the poster ( if not already set ) 
 		if( !embedPlayer.poster && embedPlayer.kentryid ){
 			embedPlayer.poster = kWidget.getKalturaThumbUrl({
@@ -928,7 +927,6 @@ mw.KWidgetSupport.prototype = {
 		// Add all avaliable sources: 
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 			var asset = flavorData[i];
-			var entryId = asset.entryId;
 			
 			var sourceAspect = Math.round( ( asset.width / asset.height )  * 100 )  / 100
 			// Setup a source object:

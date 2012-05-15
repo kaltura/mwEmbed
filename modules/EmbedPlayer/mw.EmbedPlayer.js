@@ -1906,7 +1906,7 @@ mw.EmbedPlayer.prototype = {
 	 * Resets Playhead slider
 	 * Resets Status
 	 * 
-	 * Tirgger the "doStop" event
+	 * Trigger the "doStop" event
 	 */
 	stop: function() {
 		var _this = this;

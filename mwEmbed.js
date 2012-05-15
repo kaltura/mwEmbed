@@ -2841,8 +2841,8 @@ if( window.jQuery ){
 				callback( callbackData );
 			}
 		};
-		var tirggerArgs = ( triggerParam )? [ triggerParam, doCallbackCheck ] : [ doCallbackCheck ];
-		$( this ).trigger( triggerName, tirggerArgs);
+		var triggerArgs = ( triggerParam )? [ triggerParam, doCallbackCheck ] : [ doCallbackCheck ];
+		$( this ).trigger( triggerName, triggerArgs);
 		
 	};
 	
