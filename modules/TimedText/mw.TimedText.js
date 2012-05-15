@@ -1243,7 +1243,7 @@ mw.includeAllModuleMessages();
 				} )
 			);
 		},
-		addBelowVideoCaptionContainer: function(){debugger;
+		addBelowVideoCaptionContainer: function(){
 			var _this = this;
 			mw.log( "TimedText:: addBelowVideoCaptionContainer" );
 			var $playerTarget = this.embedPlayer.$interface;
@@ -1307,31 +1307,26 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			var $belowContainer = _this.embedPlayer.$interface.find('.captionContainer');
 			if( $belowContainer.length ){
-				var videoHeight = $( _this.embedPlayer ).height();
-				var playBtnTop = _this.embedPlayer.$interface.find( '.play-btn-large' ).position().top;
-				var boxHeight = parseInt( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') );
+				var newCss = {};
+				newCss.top = 0;
 				if( _this.embedPlayer.controlBuilder.inFullScreen 
 						&&
-					$( _this.embedPlayer ).height() > _this.embedPlayer.$interface.height() - boxHeight
+					$( _this.embedPlayer ).height() > _this.embedPlayer.$interface.height() - mw.getConfig('TimedText.BelowVideoBlackBoxHeight')
 				){
-					videoHeight = $( _this.embedPlayer ).height() - boxHeight;
-					playBtnTop -= boxHeight;
+					newCss.height = $( _this.embedPlayer ).height() - mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' );
 				} else {
 					if( $( _this.embedPlayer ).height() > _this.embedPlayer.getHeight() ){
-						videoHeight = _this.embedPlayer.getHeight();
+						newCss.height = _this.embedPlayer.getHeight();
 					}
 					else {
-						videoHeight = _this.embedPlayer.$interface.height() - _this.embedPlayer.controlBuilder.getHeight() - boxHeight - 8;
-						playBtnTop -= boxHeight;
+						newCss.height = _this.embedPlayer.$interface.height() - _this.embedPlayer.controlBuilder.getHeight() - mw.getConfig('TimedText.BelowVideoBlackBoxHeight') - 8;
 					}
-				}
-				var newCss = {
-					'height' : videoHeight,
-					'top' : 0
 				}
 				$( _this.embedPlayer ).css( newCss );
 				$( _this.embedPlayer.getPlayerElement() ).css( newCss );
-				_this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top', playBtnTop );
+				$belowContainer.css( 'top', newCss.top + $( _this.embedPlayer.getPlayerElement() ).height() );
+				var newPlayBtnTop = parseInt( _this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top' ) ) - ( mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' ) * .5 ) - 4;
+				_this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top', newPlayBtnTop + 'px' );
 			}
 		},
 		/**
