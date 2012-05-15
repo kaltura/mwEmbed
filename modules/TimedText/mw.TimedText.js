@@ -106,6 +106,10 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			mw.log("TimedText: init() ");
 			this.embedPlayer = embedPlayer;	
+			if ( embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
+				_this.defaultDisplayMode = 'below';
+			}
+
 			// Load user preferences config:
 			var preferenceConfig = $.cookie( 'TimedText.Preferences' );
 			if( preferenceConfig !== "false" && preferenceConfig != null ) {
@@ -1271,26 +1275,31 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			var $belowContainer = _this.embedPlayer.$interface.find('.captionContainer');
 			if( $belowContainer.length ){
-				var newCss = {};
-				newCss.top = 0;
+				var videoHeight = $( _this.embedPlayer ).height();
+				var playBtnTop = _this.embedPlayer.$interface.find( '.play-btn-large' ).position().top;
+				var boxHeight = parseInt( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') );
 				if( _this.embedPlayer.controlBuilder.inFullScreen 
 						&&
-					$( _this.embedPlayer ).height() > _this.embedPlayer.$interface.height() - mw.getConfig('TimedText.BelowVideoBlackBoxHeight')
+					$( _this.embedPlayer ).height() > _this.embedPlayer.$interface.height() - boxHeight
 				){
-					newCss.height = $( _this.embedPlayer ).height() - mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' );
+					videoHeight = $( _this.embedPlayer ).height() - boxHeight;
+					playBtnTop -= boxHeight;
 				} else {
 					if( $( _this.embedPlayer ).height() > _this.embedPlayer.getHeight() ){
-						newCss.height = _this.embedPlayer.getHeight();
+						videoHeight = _this.embedPlayer.getHeight();
 					}
 					else {
-						newCss.height = _this.embedPlayer.$interface.height() - _this.embedPlayer.controlBuilder.getHeight() - mw.getConfig('TimedText.BelowVideoBlackBoxHeight') - 8;
+						videoHeight = _this.embedPlayer.$interface.height() - _this.embedPlayer.controlBuilder.getHeight() - boxHeight - 8;
+						playBtnTop -= boxHeight;
 					}
+				}
+				var newCss = {
+					'height' : videoHeight,
+					'top' : 0
 				}
 				$( _this.embedPlayer ).css( newCss );
 				$( _this.embedPlayer.getPlayerElement() ).css( newCss );
-				$belowContainer.css( 'top', newCss.top + $( _this.embedPlayer.getPlayerElement() ).height() );
-				var newPlayBtnTop = parseInt( _this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top' ) ) - ( mw.getConfig( 'TimedText.BelowVideoBlackBoxHeight' ) * .5 ) - 4;
-				_this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top', newPlayBtnTop + 'px' );
+				_this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top', playBtnTop );
 			}
 		},
 		/**
