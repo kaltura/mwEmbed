@@ -157,10 +157,19 @@ mw.KAnalytics.prototype = {
 		if( this.embedPlayer.kwidgetid ) {
 			eventSet[ 'widgetId' ] = this.embedPlayer.kwidgetid;
 		}
-
-		// Send events for this player:
-		$( this.embedPlayer ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey ] );
-
+		var flashVarEvents = {
+				'playbackContext' : 'contextId',
+				'originFeature' : 'featureType',
+				'applicationName' : 'applicationId',
+				'userId' : 'userId'
+		}
+		for( var fvKey in flashVarEvents){
+			if( this.embedPlayer.getKalturaConfig( '', fvKey ) ){
+				eventSet[ flashVarEvents[ fvKey ] ] = this.embedPlayer.getKalturaConfig('', fvKey );
+			}
+		}
+		
+		
 		// Add in base service and action calls:
 		var eventRequest = {'service' : 'stats', 'action' : 'collect'};
 		// Add event parameters
@@ -169,6 +178,9 @@ mw.KAnalytics.prototype = {
 		}
 		// Add referer parameter
 		eventRequest['referrer'] = encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') );
+		
+		// Send events for this player:
+		$( this.embedPlayer ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey, eventSet ] );
 		
 		// Do the api request: 
 		this.kClient.doRequest( eventRequest );
