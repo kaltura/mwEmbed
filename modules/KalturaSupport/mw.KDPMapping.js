@@ -546,7 +546,7 @@
 				// passing a callback by function ref
 				var callback = callbackName;
 			} else {
-				mw.log( "Error: KDPMapping : bad callback type" );
+				mw.log( "Error: KDPMapping : bad callback type: " + callbackName );
 				return ;
 			}
 			
