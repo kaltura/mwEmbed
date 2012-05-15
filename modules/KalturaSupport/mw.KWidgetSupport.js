@@ -812,25 +812,24 @@ mw.KWidgetSupport.prototype = {
 		
 		// New AC API
 		if( ac.accessControlActions && ac.accessControlActions.length ) {
-			$.each( ac.accessControlActions, function( key, val ) {
-				console.log( 'Actions: ', key, val );
-				if( val ) {
-					var message = '';
+			var message = false;
+			$.each( ac.accessControlActions, function() {
+				if( this.type == 1 ) {
+					message = '';
 					if( ac.accessControlMessages && ac.accessControlMessages.length ) {
-						$.each( ac.accessControlMessages, function( key, val ) {
-							console.log( 'Messages: ', key, val );
+						$.each( ac.accessControlMessages, function() {
+							message += this.value + '\n';
 						});
-						return message;
 					} else {
 						message = 'Access denied';
 					}
-					return message;
 				}
 			});
 			
-			debugger;
+			if( message ) {
+				return message;
+			}
 		}
-		
 		return true;
 	},
 	/**
