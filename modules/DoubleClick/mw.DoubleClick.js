@@ -93,7 +93,6 @@ mw.DoubleClick.prototype = {
 		var currentAdIndex = $( this.embedPlayer ).data('DcAdPatternIndex');
 		if( typeof currentAdIndex === 'undefined' ){
 			currentAdIndex = 0;
-			$( this.embedPlayer ).data('DcAdPatternIndex', currentAdIndex);
 		} else{
 			// increment the index
 			currentAdIndex++
@@ -102,6 +101,9 @@ mw.DoubleClick.prototype = {
 				currentAdIndex = 0;
 			}
 		}
+		// update add index:
+		$( this.embedPlayer ).data('DcAdPatternIndex', currentAdIndex);
+		// return the adPattern index: 
 		return adPattern[currentAdIndex];
 	},
 	/**
@@ -184,7 +186,7 @@ mw.DoubleClick.prototype = {
 			// Get the ad type for each cuepoint
 			var adType = _this.embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
 			
-			mw.log("DoubleClick:: AdOpportunity:: " + cuePoint.startTime + ' ad type: ' + adType);
+			mw.log( "DoubleClick:: AdOpportunity:: " + cuePoint.startTime + ' ad type: ' + adType );
 			if( adType == 'overlay' ){
 				_this.loadAndDisplayOverlay( cuePoint );
 				return true; // continue to next cue point
