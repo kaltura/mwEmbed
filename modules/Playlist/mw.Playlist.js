@@ -492,7 +492,7 @@ mw.Playlist.prototype = {
 		if( !embedPlayer ){
 			mw.log("Error: Playlist:: playClip called with null embedPlayer ");
 			return ;
-		}
+		}	
 
 		// trigger a playlist_playClip event: 
 		embedPlayer.triggerHelper( 'Playlist_PlayClip', [ clipIndex, !!autoContinue ]);
@@ -562,6 +562,7 @@ mw.Playlist.prototype = {
 					_this.playClip( _this.clipIndex, true );
 				} else {
 					mw.log("mw.Playlist:: End of playlist, run normal end action" );
+					embedPlayer.triggerHelper( 'playlistDone' );
 					// Update the onDone action object to not run the base control done:
 					embedPlayer.onDoneInterfaceFlag = true;
 				}
@@ -591,6 +592,14 @@ mw.Playlist.prototype = {
 			
 			$(uiSelector).show();
 		});
+		
+		$( embedPlayer ).bind( 'playlistPlayPrevious' + this.bindPostfix, function() {
+			_this.playPrevious();
+		});
+		
+		$( embedPlayer ).bind( 'playlistPlayNext' + this.bindPostfix, function() {
+			_this.playNext();
+		});		
 		
 		// Trigger playlistsListed when we get the data
 		$( embedPlayer ).trigger( 'playlistsListed' );		
@@ -657,12 +666,7 @@ mw.Playlist.prototype = {
 							'title' : 'Next clip'
 						})
 						.click(function(){
-							if( _this.enableClipSwitch &&  parseInt( _this.clipIndex ) + 1 < _this.sourceHandler.getClipCount() && parseInt( _this.clipIndex ) + 1 <= parseInt( mw.getConfig( 'Playlist.MaxClips' ) ) ){
-								_this.clipIndex++;
-								_this.playClip( _this.clipIndex );
-								return ;
-							}
-							mw.log( "Error: mw.playlist can't next: current: " + _this.clipIndex );
+							$( embedPlayer ).trigger( 'playlistPlayNext' );
 						})
 						.find('span').addClass('ui-icon-seek-next')
 						.parent()
@@ -679,13 +683,8 @@ mw.Playlist.prototype = {
 				var $prevButton = $plButton.clone().attr({
 							'title' : 'Previous clip'
 						})
-						.click(function(){					
-							if( _this.enableClipSwitch && _this.clipIndex - 1 >= 0 ){
-								_this.clipIndex--;
-								_this.playClip( _this.clipIndex );
-								return ;
-							}
-							mw.log("Cant prev: cur:" + _this.clipIndex );
+						.click(function(){	
+							$( embedPlayer ).trigger( 'playlistPlayPrevious' );
 						})
 						.find('span').addClass('ui-icon-seek-prev')
 						.parent()
@@ -811,6 +810,26 @@ mw.Playlist.prototype = {
 		mw.log( 'mw.Playlist::play ');
 		var embedPlayer = $('#' + this.getVideoPlayerId() )[0];
 		embedPlayer.play();
+	},
+	
+	playNext: function() {
+		var _this = this;
+		if( _this.enableClipSwitch &&  parseInt( _this.clipIndex ) + 1 < _this.sourceHandler.getClipCount() && parseInt( _this.clipIndex ) + 1 <= parseInt( mw.getConfig( 'Playlist.MaxClips' ) ) ){
+			_this.clipIndex++;
+			_this.playClip( _this.clipIndex );
+			return ;
+		}
+		mw.log( "Error: mw.playlist can't next: current: " + _this.clipIndex );		
+	},
+	
+	playPrevious: function() {
+		var _this = this;
+		if( _this.enableClipSwitch && _this.clipIndex - 1 >= 0 ){
+			_this.clipIndex--;
+			_this.playClip( _this.clipIndex );
+			return ;
+		}
+		mw.log("Cant prev: cur:" + _this.clipIndex );		
 	},
 
 	/**

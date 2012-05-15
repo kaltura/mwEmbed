@@ -36,9 +36,9 @@ mw.EmbedPlayer.prototype = {
 	'supports': { },
 
 	// If the player is done loading ( does not guarantee playability )
-	// for example if there is an error playerReady is still set to true once
+	// for example if there is an error playerReadyFlag is still set to true once
 	// no more loading is to be done
-	'playerReady' : false,
+	'playerReadyFlag' : false,
 
 	// Stores the loading errors
 	'loadError' : false,
@@ -529,7 +529,7 @@ mw.EmbedPlayer.prototype = {
 		// Show the interface: 
 		this.$interface.find( '.control-bar,.play-btn-large').show();
 		// trigger ready: 
-		this.playerReady = true;
+		this.playerReadyFlag = true;
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
 		this.triggerWidgetLoaded();
@@ -923,7 +923,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		// Update the playerReady flag
-		this.playerReady = true;
+		this.playerReadyFlag = true;
 		mw.log("EmbedPlayer:: Trigger: playerReady");
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
