@@ -32,6 +32,11 @@
 				this.defaultDisplayMode = 'below';
 			}
 			
+			// Set captions layout if custom captions button exists
+			if ( _this.embedPlayer.getKalturaConfig( '', 'customCaptionsButton' ) ) {
+				_this.defaultDisplayMode = 'below';
+			}			
+			
 			// Inherit the timed text support via the base TimedText module:
 			var baseTimedText = new mw.TimedText( embedPlayer );
 			for( var i in _this ){
