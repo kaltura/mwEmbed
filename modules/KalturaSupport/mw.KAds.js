@@ -328,6 +328,8 @@ mw.KAds.prototype = {
 		var baseDisplayConf = this.getBaseDisplayConf();
 		sequenceIndex = sequenceIndex || _this.getSequenceIndex( adType );
 		$( _this.embedPlayer ).bind( 'AdSupport_' + adType + _this.bindPostfix, function( event, sequenceProxy ){
+			// Disable UI while playing ad
+			_this.embedPlayer.adTimeline.updateUiForAdPlayback( adType );
 			// add to sequenceProxy:
 			sequenceProxy[ sequenceIndex ] = function( doneCallback ){		
 				var adConfig = $.extend( {}, baseDisplayConf, adConfigSet[ adType ] );
