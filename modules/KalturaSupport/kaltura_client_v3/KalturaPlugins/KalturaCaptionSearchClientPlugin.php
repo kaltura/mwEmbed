@@ -138,6 +138,7 @@ class KalturaCaptionAssetItemFilter extends KalturaCaptionAssetFilter
 class KalturaCaptionAssetItem extends KalturaObjectBase
 {
 	/**
+	 * The Caption Asset object
 	 * 
 	 *
 	 * @var KalturaCaptionAsset
@@ -145,6 +146,7 @@ class KalturaCaptionAssetItem extends KalturaObjectBase
 	public $asset;
 
 	/**
+	 * The entry object
 	 * 
 	 *
 	 * @var KalturaBaseEntry

@@ -34,10 +34,6 @@ require_once(dirname(__FILE__) . "/KalturaCuePointClientPlugin.php");
 
 class KalturaCodeCuePointOrderBy
 {
-	const END_TIME_ASC = "+endTime";
-	const END_TIME_DESC = "-endTime";
-	const DURATION_ASC = "+duration";
-	const DURATION_DESC = "-duration";
 	const CREATED_AT_ASC = "+createdAt";
 	const CREATED_AT_DESC = "-createdAt";
 	const UPDATED_AT_ASC = "+updatedAt";
@@ -106,34 +102,6 @@ abstract class KalturaCodeCuePointBaseFilter extends KalturaCuePointFilter
 	 */
 	public $descriptionMultiLikeAnd = null;
 
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $endTimeGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $endTimeLessThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $durationGreaterThanOrEqual = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $durationLessThanOrEqual = null;
-
 
 }
 
@@ -157,21 +125,6 @@ class KalturaCodeCuePoint extends KalturaCuePoint
 	 * @var string
 	 */
 	public $description = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 */
-	public $endTime = null;
-
-	/**
-	 * 
-	 *
-	 * @var int
-	 * @readonly
-	 */
-	public $duration = null;
 
 
 }
