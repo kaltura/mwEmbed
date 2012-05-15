@@ -12,20 +12,21 @@ function jsKalturaPlayerTest( videoId ){
 	module( "kWidget Player" );
 
 	asyncTest("Inline readyCallback fired", function(){
-		kalturaQunitWaitForPlayer(function(){
+		
+		window['testAutoPlay'] = function(){
+			var kdp = $( '#myVideoTarget' ).get( 0 );
+			test("AutoPlay flashvar passing", function(){
+				ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
+			});
+		}
+		
+		kalturaQunitWaitForPlayer( function(){
 			equal( window.kWidgetCallbackWithID, videoId, "ReadyCallback fired with id:" + videoId );
 			testAutoPlay();
 			// Done with async 
 			start();
 		});
 	});
-	
-	function testAutoPlay(){
-		var kdp = $( '#myVideoTarget' ).get( 0 );
-		test("AutoPlay flashvar passing", function(){
-			ok( kdp.evaluate('{configProxy.flashvars.autoPlay}') , 'AutoPlay flashvar set');
-		});
-	}
 }
 function readyCallbackFired( playerId ){
 	window.kWidgetCallbackWithID = playerId;
