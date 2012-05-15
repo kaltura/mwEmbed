@@ -87,7 +87,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 			var inDomPlayer = swapEmbedPlayerElement( playerElement, playerInterface );	
 			
 			// Trigger the newEmbedPlayerEvent for embedPlayer interface
-			mw.log("processEmbedPlayers::tirgger:: newEmbedPlayerEvent " + inDomPlayer.id );
+			mw.log("processEmbedPlayers::trigger:: newEmbedPlayerEvent " + inDomPlayer.id );
 			
 			// Allow plugins to add bindings to the inDomPlayer
 			$( mw ).trigger ( 'newEmbedPlayerEvent', inDomPlayer );
