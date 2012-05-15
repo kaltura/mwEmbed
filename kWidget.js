@@ -88,7 +88,6 @@ var kWidget = {
 					}
 				};
 			} 
-			
 		}
 	},
 	
@@ -119,6 +118,7 @@ var kWidget = {
 			}
 		}
 	},
+	
 	/**
 	 * The kWidget proxied jsCallbackReady
 	 * @param {string} widgetId The id of the widget that is ready

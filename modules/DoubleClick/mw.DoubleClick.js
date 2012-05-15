@@ -57,39 +57,68 @@ mw.DoubleClick.prototype = {
 		embedPlayer.unbindHelper( this.bindPostfix );
 		
 		// Load double click ima per doc:
+		this.loadIma(function(){
+			// Determine if we are in managed or kaltura point based mode. 
+			if( _this.getConfig( "preSequence" ) && _this.getConfig( "adTagUrl" ) ){
+				// Check for adPattern 
+				if( _this.getConfig( 'adPattern' ) ){
+					var adIndex = _this.getAdPatternIndex();
+					mw.log( "DoubleClick:: adPattern: " + _this.getConfig( 'adPattern' ) +
+							" on index: " + adIndex );
+					if( adIndex == 'A' ){
+						// Managed bindings
+						_this.addManagedBinding();
+					}
+				} else{
+					// No defined ad pattern always use managed bindings
+					_this.addManagedBinding();
+				}
+			} else {
+				// Add cuepoint bindings
+				_this.addKalturaCuePointBindings();
+			}
+			// issue the callback to continue player build out: 
+			callback();
+		}, function( errorCode ){
+			mw.log( "Error::DoubleClick Loading Error: " + errorCode );
+			// Don't add any bindings directly issue callback: 
+			callback();
+		});
+	},
+	/**
+	 * Get the global adPattern index: 
+	 */
+	getAdPatternIndex:function(){
+		var adPattern = this.getConfig( 'adPattern' );
+		var currentAdIndex = $( this.embedPlayer ).data('DcAdPatternIndex');
+		if( typeof currentAdIndex === 'undefined' ){
+			currentAdIndex = 0;
+			$( this.embedPlayer ).data('DcAdPatternIndex', currentAdIndex);
+		} else{
+			// increment the index
+			currentAdIndex++
+			// index is past adPattern length reset to 0
+			if( currentAdIndex > adPattern.length -1 ){
+				currentAdIndex = 0;
+			}
+		}
+		return adPattern[currentAdIndex];
+	},
+	/**
+	 * Load the google IMA library: 
+	 */
+	loadIma:function( successCB, failureCB ){
 		// http://code.google.com/apis/ima/docs/sdks/googlehtml5_ads_v3.html#loadsdk
 		$.getScript('http://s0.2mdn.net/instream/html5/ima.js', function(){
 			google.ima.SdkLoader.setCallbacks( function(){
-				if( $.isFunction( callback) ){
-					// Determine if we are in managed or kaltura point based mode. 
-					if( _this.getConfig( "preSequence" ) && _this.getConfig( "adTagUrl" ) ){
-						// Managed bindings
-						_this.addManagedBinding();
-					} else {
-						// Add cuepoint bindings
-						_this.addKalturaCuePointBindings();
-					}
-					callback();
-				}
+				successCB();
 			}, function( errorCode ){
-				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
-				// Don't add any bindings directly issue callback: 
-				callback();
+				failureCB( errorCode );
 			});
 			google.ima.SdkLoader.load("3");
 		});
-		
-		// Load double click ima library and issue the callback:
-		/*$.getScript('http://www.google.com/jsapi', function(){
-			google.load("ima", "3", {
-				"callback" : function(){
-					if( callback ){
-						callback();
-					}
-				}
-			});
-		});*/
 	},
+	
 	addManagedBinding: function(){
 		var _this = this;
 		mw.log( "DoubleClick::addManagedBinding" );
@@ -530,16 +559,22 @@ mw.DoubleClick.prototype = {
 		}
 		// Check if we have an ad buffer underun that double click apparently does not check for :( 
 		if( _this.adPreviousTimeLeft == _this.adsManager.getRemainingTime()  ){
-			// reset the previus time check: 
+			// reset the previous time check: 
 			_this.adPreviousTimeLeft = null;
+			// if we already have an active buffer check continue: 
+			if( _this.activeBufferUnderunCheck ){
+				return ;
+			}
+			_this.activeBufferUnderunCheck = true;
 			setTimeout( function(){
 				if( _this.adPreviousTimeLeft ==  _this.adsManager.getRemainingTime()  ){
 					mw.log( "DoubleClick:: buffer underun pause? , try to continue playback ");
 					// try to restart playback: 
 					_this.adsManager.resume();
 					// restore the previous time check: 
-					_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime()
+					_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
 				}
+				_this.activeBufferUnderunCheck = false;
 			}, 2000);
 		}
 		// update the adPreviousTimeLeft
