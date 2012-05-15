@@ -210,10 +210,27 @@ mw.PlaylistHandlerKaltura.prototype = {
 	loadCurrentPlaylist: function( callback ){
 		this.loadPlaylistById( this.playlist_id, callback );
 	},
-	loadPlaylistById: function( playlist_id, callback ){
+	loadPlaylistById: function( playlist_id, loadedCallback ){
 		var _this = this;
 		mw.log("PlaylistHandlerKaltura::loadPlaylistById> " + playlist_id );
 		var embedPlayer = this.playlist.embedPlayer;
+		
+		// Local ready callback  to trigger playlistReady
+		var callback = function(){
+			// Check if player is ready before issuing playlist ready event
+			if( embedPlayer.playerReadyFlag ) {
+				embedPlayer.triggerHelper( 'playlistReady' );
+			} else {
+				embedPlayer.bindHelper('playerReady.playlistReady', function(){
+					$( embedPlayer ).unbind( 'playerReady.playlistReady' );
+					embedPlayer.triggerHelper( 'playlistReady' );
+				});
+			}
+			// Issue the callback if set: 
+			if( $.isFunction( loadedCallback ) ){
+				loadedCallback();
+			}
+		};
 		
 		// Check if the playlist is mrss url ( and use the mrss handler )
 		if( mw.isUrl( playlist_id ) ){
@@ -222,16 +239,15 @@ mw.PlaylistHandlerKaltura.prototype = {
 			this.mrssHandler.loadPlaylist( function(){
 				_this.clipList = _this.mrssHandler.getClipList();
 				callback();
-				embedPlayer.triggerHelper( 'playlistReady' );
 			});
 			return ;
 		}
+		
 		// Check for playlist cache
 		if( embedPlayer.kalturaPlaylistData && embedPlayer.kalturaPlaylistData[ playlist_id ] ){
 			_this.clipList = embedPlayer.kalturaPlaylistData[ playlist_id ];
 			embedPlayer.setKalturaConfig( 'playlistAPI', 'dataProvider', {'content' : _this.clipList} );
 			callback();
-			embedPlayer.triggerHelper( 'playlistReady' );
 			return ;
 		}
 				
@@ -266,7 +282,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 			// update the clipList:
 			_this.clipList = playlistData;
 			callback();
-			embedPlayer.triggerHelper( 'playlistReady' );
 		});
 	},	
 	
@@ -292,12 +307,21 @@ mw.PlaylistHandlerKaltura.prototype = {
 		return this.clipList;
 	},
 	playClip: function( embedPlayer, clipIndex, callback ){
-		var _this = this;
+		var _this = this
 		if( !embedPlayer ){
 			mw.log("Error:: PlaylistHandlerKaltura:playClip > no embed player");
 			callback();
 			return ;
 		}
+		// Send notifications per play request
+		if( clipIndex == 0 ) {
+			embedPlayer.triggerHelper( 'playlistFirstEntry' );
+		} else if( clipIndex == (_this.getClipCount()-1) ) {
+			embedPlayer.triggerHelper( 'playlistLastEntry' );
+		} else {
+			embedPlayer.triggerHelper( 'playlistMiddleEntry' );
+		}
+		
 		// Check if entry id already matches ( and is loaded ) 
 		if( embedPlayer.kentryid == this.getClip( clipIndex ).id ){
 			if( this.loadingEntry ){
@@ -309,15 +333,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 		}	
 		// Update the loadingEntry flag:
 		this.loadingEntry = this.getClip( clipIndex ).id;
-
-		// Send notifications
-		if( clipIndex == 0 ) {
-			embedPlayer.triggerHelper( 'playlistFirstEntry' );
-		} else if( clipIndex == (_this.getClipCount()-1) ) {
-			embedPlayer.triggerHelper( 'playlistLastEntry' );
-		} else {
-			embedPlayer.triggerHelper( 'playlistMiddleEntry' );
-		}
+		
 		
 		// Listen for change media done
 		var bindName = 'onChangeMediaDone' + this.bindPostFix;
@@ -420,6 +436,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			switch( notificationName ){
 				case 'playlistPlayNext':
 				case 'playlistPlayPrevious':
+					mw.log( "PlaylistHandlerKaltura:: trigger: " + notificationName );
 					$( embedPlayer ).trigger( notificationName );
 					break;
 			}
@@ -433,7 +450,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 	doDataProviderAction: function ( property, value ){
 		 switch( property ){
 		 	case 'selectedIndex':
-		 		// Update the selected clip ( and actually play it apparently ) 
+		 		// Update the selected clip ( and actually play it ) 
 		 		this.playlist.playClip( parseInt( value ) );
 			break;
 		 }
@@ -446,7 +463,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 			return this.mrssHandler.getClipPoster( clipIndex, size );
 		}
 		var clip = this.getClip( clipIndex );
-		if(!size){
+		if( !size ){
 			return clip.thumbnailUrl;
 		}
 		return kWidget.getKalturaThumbUrl({

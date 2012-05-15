@@ -73,6 +73,7 @@ mw.IFramePlayerApiServer.prototype = {
 				// Once the iframe client is done adding its pre-player listeners the client calls:
 				// proxyAcknowledgment
 				embedPlayer.proxyAcknowledgment = function(){
+					mw.log( "IframePlayerApiServer:: proxyAcknowledgment > proxyHandShake complete for: " + embedPlayer.id );
 					proxyHandShakeComplete = true;
 					callback();
 				};
@@ -111,7 +112,7 @@ mw.IFramePlayerApiServer.prototype = {
 	/**
 	 * Add iframe sender bindings:
 	 */
-	'addIframeSender': function(){		
+	'addIframeSender': function(){
 		var _this = this;		
 		// Get the parent page URL as it was passed in, for browsers that don't support
 		// window.postMessage (this URL could be hard-coded).

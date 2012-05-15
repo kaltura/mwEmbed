@@ -82,9 +82,9 @@
 							var winPrefix = ( globalFuncName.indexOf( 'window.' ) === 0 )?'':'window.';
 							var evalFunction = eval( winPrefix + globalFuncName );
 							// try to get the parent 
-							try{
+							try {
 								var evalFunctionParent =  eval( globalFuncName.split('.').slice(0,-1).join('.') );
-							} catch (e ){
+							} catch ( e ){
 								// can't get the parent just pass the function scope: 
 								var evalFunctionParent = evalFunction;
 							}
