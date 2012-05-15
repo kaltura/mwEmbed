@@ -31,6 +31,10 @@
 			} else if( this.pluginName == 'closedCaptionsUnderPlayer' ){
 				this.defaultDisplayMode = 'below';
 			}
+			// check for ttml type and default it to ontop of player: 
+			if( this.getConfig('type') == 'tt'){
+				this.defaultDisplayMode = 'ontop';
+			}
 			
 			// Inherit the timed text support via the base TimedText module:
 			var baseTimedText = new mw.TimedText( embedPlayer );
