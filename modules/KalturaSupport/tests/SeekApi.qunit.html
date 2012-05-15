@@ -13,6 +13,30 @@ function jsKalturaPlayerTest( videoId ){
 	var targetSeekTime = 30;
 	
 	asyncTest("Seek Events", function(){
+		window[ 'onPlayerSeekStart' ] = function(){
+			window['onPlayerSeekStartTime'] = new Date().getTime();
+			ok( true,  'Seek start event fired ( playerSeekStart )' );
+		}
+		
+		window[ 'onPlayerSeekEnd' ] = function(){
+			ok( true,  'Seek end event fired ( playerSeekEnd )' );
+			var seekTime = new Date().getTime() - window['onPlayerSeekStartTime'];
+			ok( ( seekTime > 0 ), "Took " + seekTime + "ms to complete seek" );
+			
+			ok( ( Math.abs( targetSeekTime - kdp.evaluate('{video.player.currentTime}') ) < 2 ), 
+				"Seek time within 2 seconds of target: " + targetSeekTime + ' actual: ' + 
+				kdp.evaluate('{video.player.currentTime}')	
+			);
+			
+			all_done_with_tests();
+		}
+		
+		window['all_done_with_tests'] = function(){
+			kdp.pause();
+			// done with async test: 
+			start();
+		}
+		
 		kalturaQunitWaitForPlayer(function(){
 			// start playback: 
 			kdp.sendNotification('doPlay' );
@@ -26,32 +50,8 @@ function jsKalturaPlayerTest( videoId ){
 			setTimeout(function(){
 				kdp.sendNotification('doSeek', targetSeekTime );
 			}, 1000 );
-			
-			window['all_done_with_tests'] = function(){
-				kdp.pause();
-				// done with async test: 
-				start();
-			}
 		});
 	});
-	
-	window[ 'onPlayerSeekStart' ] = function(){
-		window['onPlayerSeekStartTime'] = new Date().getTime();
-		ok( true,  'Seek start event fired ( playerSeekStart )' );
-	}
-	
-	window[ 'onPlayerSeekEnd' ] = function(){
-		ok( true,  'Seek end event fired ( playerSeekEnd )' );
-		var seekTime = new Date().getTime() - window['onPlayerSeekStartTime'];
-		ok( ( seekTime > 0 ), "Took " + seekTime + "ms to complete seek" );
-		
-		ok( ( Math.abs( targetSeekTime - kdp.evaluate('{video.player.currentTime}') ) < 2 ), 
-			"Seek time within 2 seconds of target: " + targetSeekTime + ' actual: ' + 
-			kdp.evaluate('{video.player.currentTime}')	
-		);
-		
-		all_done_with_tests();
-	}
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
