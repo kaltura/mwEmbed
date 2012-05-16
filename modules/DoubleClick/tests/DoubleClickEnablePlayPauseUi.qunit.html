@@ -18,20 +18,32 @@ function jsKalturaPlayerTest( videoId ){
 			ok( true, "adStart event sent");
 			equal( slot.timeSlot, 'preroll', "Started preroll ad playback" );
 			start();
+			setTimeout(function(){
+				doTestPause();				
+			},500)
 		}
 		kalturaQunitWaitForPlayer(function(){
-			
 			// Listen for ad start
 			kdp.addJsListener( 'adStart', 'onAdStart' );
-			
 			// Send a play request:
 			kdp.sendNotification('doPlay');
 		});
 	});
 	
 	asyncTest("Test play pause click", function(){
-		// click pause: 
-		$iframe.find( '.control-bar .play-btn').click();
+		window['onDoPause'] = function(){
+			kdp.removeJsListener( 'doPause', 'onDoPause' );
+			ok(true,  'do pause triggred via UI');
+			start();
+		}
+		
+		window['doTestPause'] = function(){
+			kdp.addJsListener( 'doPause', 'onDoPause' );
+			// click pause: 
+			setTimeout(function(){
+				$iframe.find( '.control-bar .play-btn').click();	
+			},500)
+		}
 	});
 	
 }
