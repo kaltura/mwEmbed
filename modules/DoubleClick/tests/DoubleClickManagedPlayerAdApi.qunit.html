@@ -39,7 +39,7 @@ function jsKalturaPlayerTest( videoId ){
 			kdp.removeJsListener( 'doPlay', 'onDoPlay' );
 			ok( true, "Recived doPlay event" );
 			setTimeout(function(){
-				kdp.sendNotification('doPause');
+				runDoStopTest();
 			},1000);
 			start();
 		}
@@ -60,6 +60,17 @@ function jsKalturaPlayerTest( videoId ){
 				kdp.addJsListener( 'doPause', 'onDoPause' );
 				kdp.sendNotification('doPause');
 			},500);
+		}
+	});
+	
+	asyncTest("Ad stop test", function(){
+		window['onDoStop'] = function(){
+			ok( true, "Recived doStop event");
+			start();
+		};
+		window['runDoStopTest'] = function(){
+			kdp.addJsListener( 'doStop', 'onDoStop' );
+			kdp.sendNotification('doStop');	
 		}
 	});
 }

@@ -551,6 +551,12 @@ mw.DoubleClick.prototype = {
 						_this.adsManager.resume()
 						$( embedPlayer ).trigger( 'onplay' );
 						break;
+					case 'doStop':
+						_this.adsManager.stop();
+						_this.adPlaying = false;
+						_this.embedPlayer.sequenceProxy.isInSequence = false;
+						_this.embedPlayer.stop();
+						break;
 				}
 			}
 		});
