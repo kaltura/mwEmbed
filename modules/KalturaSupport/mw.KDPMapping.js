@@ -523,7 +523,7 @@
 		 */
 		addJsListener: function( embedPlayer, eventName, callbackName ){
 			var _this = this;
-			//mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
+			// mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
 
 			// We can pass [eventName.namespace] as event name, we need it in order to remove listeners with their namespace
 			if( typeof eventName == 'string' ) {
@@ -566,7 +566,7 @@
 			};
 			switch( eventName ){
 				case 'mediaLoadError':
-					b( 'mediaLoadError');
+					b( 'mediaLoadError' );
 					break;
 				case 'mediaError':
 					b( 'mediaError' );
@@ -684,7 +684,7 @@
 				case 'mediaReady':
 					// Check for "media ready" ( namespace to kdpMapping )
 					b( 'playerReady',function( event ){
-						// only issue the media ready callback if entry is actually ready.
+						// Only issue the media ready callback if entry is actually ready.
 						if( embedPlayer.kentryid ){
 							callback( embedPlayer.id )
 						}
@@ -801,16 +801,13 @@
 						callback( { 'timeSlot': slotType }, embedPlayer.id )
 					});
 					break;
-					
-				// generic ad time update
+				// Generic ad time update
 				case 'adUpdatePlayhead': 
 					b( 'AdSupport_AdUpdatePlayhead', function( event, adTime) {
 						callback( adTime, embedPlayer.id );
 					});
 					break;
-					
 				/**OLD NUMERIC SEQUENCE EVENTS */
-					
 				case 'pre1start':
 					b( 'AdSupport_PreSequence');
 					break;
@@ -818,7 +815,6 @@
 				case 'post1start':
 					b( 'AdSupport_PostSequence');
 					break;
-					
 				/**
 				 * Cue point listeners TODO ( move to mw.kCuepoints.js )
 				 */
