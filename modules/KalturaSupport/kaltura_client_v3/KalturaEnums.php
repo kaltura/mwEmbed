@@ -29,10 +29,31 @@
 
 require_once("KalturaClientBase.php");
 
+class KalturaAccessControlActionType
+{
+	const BLOCK = "1";
+	const PREVIEW = "2";
+}
+
+class KalturaAccessControlContextType
+{
+	const PLAY = "1";
+	const DOWNLOAD = "2";
+	const THUMBNAIL = "3";
+}
+
 class KalturaAccessControlOrderBy
 {
 	const CREATED_AT_ASC = "+createdAt";
 	const CREATED_AT_DESC = "-createdAt";
+}
+
+class KalturaAccessControlProfileOrderBy
+{
+	const CREATED_AT_ASC = "+createdAt";
+	const CREATED_AT_DESC = "-createdAt";
+	const UPDATED_AT_ASC = "+updatedAt";
+	const UPDATED_AT_DESC = "-updatedAt";
 }
 
 class KalturaAdminUserOrderBy
@@ -58,7 +79,7 @@ class KalturaApiParameterPermissionItemAction
 	const READ = "read";
 	const UPDATE = "update";
 	const INSERT = "insert";
-	const USAGE = "all";
+	const USEAGE = "all";
 }
 
 class KalturaApiParameterPermissionItemOrderBy
@@ -307,6 +328,19 @@ class KalturaCommercialUseType
 {
 	const COMMERCIAL_USE = 1;
 	const NON_COMMERCIAL_USE = 0;
+}
+
+class KalturaConditionType
+{
+	const AUTHENTICATED = "1";
+	const COUNTRY = "2";
+	const IP_ADDRESS = "3";
+	const SITE = "4";
+	const USER_AGENT = "5";
+	const FIELD_MATCH = "6";
+	const FIELD_COMPARE = "7";
+	const METADATA_FIELD_MATCH = "metadata.FieldMatch";
+	const METADATA_FIELD_COMPARE = "metadata.FieldCompare";
 }
 
 class KalturaContainerFormat
@@ -563,6 +597,11 @@ class KalturaGenericXsltSyndicationFeedOrderBy
 	const TYPE_DESC = "-type";
 	const CREATED_AT_ASC = "+createdAt";
 	const CREATED_AT_DESC = "-createdAt";
+}
+
+class KalturaGeoCoderType
+{
+	const KALTURA = "1";
 }
 
 class KalturaGoogleSyndicationFeedAdultValues
@@ -1114,6 +1153,7 @@ class KalturaMediaParserType
 {
 	const MEDIAINFO = "0";
 	const FFMPEG = "1";
+	const REMOTE_MEDIAINFO = "remoteMediaInfo.RemoteMediaInfo";
 }
 
 class KalturaMediaType
@@ -1209,13 +1249,6 @@ class KalturaNullableBoolean
 	const TRUE_VALUE = 1;
 }
 
-class KalturaPartnerGroupType
-{
-	const PUBLISHER = 1;
-	const VAR_GROUP = 2;
-	const GROUP = 3;
-}
-
 class KalturaPartnerOrderBy
 {
 	const ID_ASC = "+id";
@@ -1253,7 +1286,6 @@ class KalturaPartnerType
 	const JOOMLA = 106;
 	const BLACKBOARD = 107;
 	const SAKAI = 108;
-	const ADMIN_CONSOLE = 109;
 }
 
 class KalturaPermissionItemOrderBy
@@ -1375,20 +1407,23 @@ class KalturaReportType
 class KalturaSchemaType
 {
 	const SYNDICATION = "syndication";
-	const SERVE_API = "cuePoint.serveAPI";
-	const INGEST_API = "cuePoint.ingestAPI";
 	const BULK_UPLOAD_XML = "bulkUploadXml.bulkUploadXML";
 	const BULK_UPLOAD_RESULT_XML = "bulkUploadXml.bulkUploadResultXML";
 	const DROP_FOLDER_XML = "dropFolderXmlBulkUpload.dropFolderXml";
+	const SERVE_API = "cuePoint.serveAPI";
+	const INGEST_API = "cuePoint.ingestAPI";
 }
 
 class KalturaSearchConditionComparison
 {
-	const EQUEL = 1;
-	const GREATER_THAN = 2;
-	const GREATER_THAN_OR_EQUEL = 3;
-	const LESS_THAN = 4;
-	const LESS_THAN_OR_EQUEL = 5;
+	const EQUAL = "1";
+	const GREATER_THAN = "2";
+	const GREATER_THAN_OR_EQUAL = "3";
+	const LESS_THAN = "4";
+	const LESS_THAN_OR_EQUAL = "5";
+	const EQUEL = "1";
+	const GREATER_THAN_OR_EQUEL = "3";
+	const LESS_THAN_OR_EQUEL = "5";
 }
 
 class KalturaSearchOperatorType
@@ -1437,6 +1472,7 @@ class KalturaSourceType
 	const SEARCH_PROVIDER = "6";
 	const AKAMAI_LIVE = "29";
 	const MANUAL_LIVE_STREAM = "30";
+	const LIMELIGHT_LIVE = "limeLight.LIVE_STREAM";
 }
 
 class KalturaStatsEventType
@@ -1579,14 +1615,6 @@ class KalturaStorageProfileStatus
 	const DISABLED = 1;
 	const AUTOMATIC = 2;
 	const MANUAL = 3;
-}
-
-class KalturaStorageServePriority
-{
-	const KALTURA_ONLY = 1;
-	const KALTURA_FIRST = 2;
-	const EXTERNAL_FIRST = 3;
-	const EXTERNAL_ONLY = 4;
 }
 
 class KalturaSyndicationFeedStatus

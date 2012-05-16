@@ -32,6 +32,83 @@ require_once("KalturaEnums.php");
 require_once("KalturaTypes.php");
 
 
+class KalturaAccessControlProfileService extends KalturaServiceBase
+{
+	function __construct(KalturaClient $client = null)
+	{
+		parent::__construct($client);
+	}
+
+	function add(KalturaAccessControlProfile $accessControlProfile)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "accessControlProfile", $accessControlProfile->toParams());
+		$this->client->queueServiceActionCall("accesscontrolprofile", "add", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaAccessControlProfile");
+		return $resultObject;
+	}
+
+	function get($id)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "id", $id);
+		$this->client->queueServiceActionCall("accesscontrolprofile", "get", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaAccessControlProfile");
+		return $resultObject;
+	}
+
+	function update($id, KalturaAccessControlProfile $accessControlProfile)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "id", $id);
+		$this->client->addParam($kparams, "accessControlProfile", $accessControlProfile->toParams());
+		$this->client->queueServiceActionCall("accesscontrolprofile", "update", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaAccessControlProfile");
+		return $resultObject;
+	}
+
+	function delete($id)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "id", $id);
+		$this->client->queueServiceActionCall("accesscontrolprofile", "delete", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "null");
+		return $resultObject;
+	}
+
+	function listAction(KalturaAccessControlProfileFilter $filter = null, KalturaFilterPager $pager = null)
+	{
+		$kparams = array();
+		if ($filter !== null)
+			$this->client->addParam($kparams, "filter", $filter->toParams());
+		if ($pager !== null)
+			$this->client->addParam($kparams, "pager", $pager->toParams());
+		$this->client->queueServiceActionCall("accesscontrolprofile", "list", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaAccessControlProfileListResponse");
+		return $resultObject;
+	}
+}
+
 class KalturaAccessControlService extends KalturaServiceBase
 {
 	function __construct(KalturaClient $client = null)
@@ -491,6 +568,20 @@ class KalturaBaseEntryService extends KalturaServiceBase
 		$this->client->validateObjectType($resultObject, "KalturaEntryContextDataResult");
 		return $resultObject;
 	}
+
+	function export($entryId, $storageProfileId)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "entryId", $entryId);
+		$this->client->addParam($kparams, "storageProfileId", $storageProfileId);
+		$this->client->queueServiceActionCall("baseentry", "export", $kparams);
+		if ($this->client->isMultiRequest())
+			return $this->client->getMultiRequestResult();
+		$resultObject = $this->client->doQueue();
+		$this->client->throwExceptionIfError($resultObject);
+		$this->client->validateObjectType($resultObject, "KalturaBaseEntry");
+		return $resultObject;
+	}
 }
 
 class KalturaBulkUploadService extends KalturaServiceBase
@@ -500,7 +591,7 @@ class KalturaBulkUploadService extends KalturaServiceBase
 		parent::__construct($client);
 	}
 
-	function add($conversionProfileId, $csvFileData, $bulkUploadType = null, $uploadedBy = null, $fileName = null)
+	function add($conversionProfileId, $csvFileData, $bulkUploadType = null, $uploadedBy = null)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "conversionProfileId", $conversionProfileId);
@@ -508,7 +599,6 @@ class KalturaBulkUploadService extends KalturaServiceBase
 		$this->client->addParam($kfiles, "csvFileData", $csvFileData);
 		$this->client->addParam($kparams, "bulkUploadType", $bulkUploadType);
 		$this->client->addParam($kparams, "uploadedBy", $uploadedBy);
-		$this->client->addParam($kparams, "fileName", $fileName);
 		$this->client->queueServiceActionCall("bulkupload", "add", $kparams, $kfiles);
 		if ($this->client->isMultiRequest())
 			return $this->client->getMultiRequestResult();
@@ -1348,41 +1438,18 @@ class KalturaFlavorAssetService extends KalturaServiceBase
 		$this->client->validateObjectType($resultObject, "array");
 		return $resultObject;
 	}
-}
 
-class KalturaFlavorParamsOutputService extends KalturaServiceBase
-{
-	function __construct(KalturaClient $client = null)
-	{
-		parent::__construct($client);
-	}
-
-	function get($id)
+	function export($assetId, $storageProfileId)
 	{
 		$kparams = array();
-		$this->client->addParam($kparams, "id", $id);
-		$this->client->queueServiceActionCall("flavorparamsoutput", "get", $kparams);
+		$this->client->addParam($kparams, "assetId", $assetId);
+		$this->client->addParam($kparams, "storageProfileId", $storageProfileId);
+		$this->client->queueServiceActionCall("flavorasset", "export", $kparams);
 		if ($this->client->isMultiRequest())
 			return $this->client->getMultiRequestResult();
 		$resultObject = $this->client->doQueue();
 		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaFlavorParamsOutput");
-		return $resultObject;
-	}
-
-	function listAction(KalturaFlavorParamsOutputFilter $filter = null, KalturaFilterPager $pager = null)
-	{
-		$kparams = array();
-		if ($filter !== null)
-			$this->client->addParam($kparams, "filter", $filter->toParams());
-		if ($pager !== null)
-			$this->client->addParam($kparams, "pager", $pager->toParams());
-		$this->client->queueServiceActionCall("flavorparamsoutput", "list", $kparams);
-		if ($this->client->isMultiRequest())
-			return $this->client->getMultiRequestResult();
-		$resultObject = $this->client->doQueue();
-		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaFlavorParamsOutputListResponse");
+		$this->client->validateObjectType($resultObject, "KalturaFlavorAsset");
 		return $resultObject;
 	}
 }
@@ -2295,15 +2362,19 @@ class KalturaPartnerService extends KalturaServiceBase
 		return $resultObject;
 	}
 
-	function listPartnersForUser()
+	function listAction(KalturaPartnerFilter $filter = null, KalturaFilterPager $pager = null)
 	{
 		$kparams = array();
-		$this->client->queueServiceActionCall("partner", "listPartnersForUser", $kparams);
+		if ($filter !== null)
+			$this->client->addParam($kparams, "filter", $filter->toParams());
+		if ($pager !== null)
+			$this->client->addParam($kparams, "pager", $pager->toParams());
+		$this->client->queueServiceActionCall("partner", "list", $kparams);
 		if ($this->client->isMultiRequest())
 			return $this->client->getMultiRequestResult();
 		$resultObject = $this->client->doQueue();
 		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaPartner");
+		$this->client->validateObjectType($resultObject, "KalturaPartnerListResponse");
 		return $resultObject;
 	}
 }
@@ -2738,6 +2809,16 @@ class KalturaReportService extends KalturaServiceBase
 		$resultObject = $this->client->getServeUrl();
 		return $resultObject;
 	}
+
+	function getCsvFromStringParams($id, $params = null)
+	{
+		$kparams = array();
+		$this->client->addParam($kparams, "id", $id);
+		$this->client->addParam($kparams, "params", $params);
+		$this->client->queueServiceActionCall('report', 'getCsvFromStringParams', $kparams);
+		$resultObject = $this->client->getServeUrl();
+		return $resultObject;
+	}
 }
 
 class KalturaSchemaService extends KalturaServiceBase
@@ -2936,20 +3017,6 @@ class KalturaStatsService extends KalturaServiceBase
 		$resultObject = $this->client->doQueue();
 		$this->client->throwExceptionIfError($resultObject);
 		$this->client->validateObjectType($resultObject, "KalturaCEError");
-		return $resultObject;
-	}
-
-	function reportError($errorCode, $errorMessage)
-	{
-		$kparams = array();
-		$this->client->addParam($kparams, "errorCode", $errorCode);
-		$this->client->addParam($kparams, "errorMessage", $errorMessage);
-		$this->client->queueServiceActionCall("stats", "reportError", $kparams);
-		if ($this->client->isMultiRequest())
-			return $this->client->getMultiRequestResult();
-		$resultObject = $this->client->doQueue();
-		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "null");
 		return $resultObject;
 	}
 }
@@ -3214,11 +3281,10 @@ class KalturaThumbAssetService extends KalturaServiceBase
 		return $resultObject;
 	}
 
-	function serve($thumbAssetId, $version = null)
+	function serve($thumbAssetId)
 	{
 		$kparams = array();
 		$this->client->addParam($kparams, "thumbAssetId", $thumbAssetId);
-		$this->client->addParam($kparams, "version", $version);
 		$this->client->queueServiceActionCall('thumbasset', 'serve', $kparams);
 		$resultObject = $this->client->getServeUrl();
 		return $resultObject;
@@ -3387,43 +3453,6 @@ class KalturaThumbAssetService extends KalturaServiceBase
 		$resultObject = $this->client->doQueue();
 		$this->client->throwExceptionIfError($resultObject);
 		$this->client->validateObjectType($resultObject, "KalturaRemotePathListResponse");
-		return $resultObject;
-	}
-}
-
-class KalturaThumbParamsOutputService extends KalturaServiceBase
-{
-	function __construct(KalturaClient $client = null)
-	{
-		parent::__construct($client);
-	}
-
-	function get($id)
-	{
-		$kparams = array();
-		$this->client->addParam($kparams, "id", $id);
-		$this->client->queueServiceActionCall("thumbparamsoutput", "get", $kparams);
-		if ($this->client->isMultiRequest())
-			return $this->client->getMultiRequestResult();
-		$resultObject = $this->client->doQueue();
-		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaThumbParamsOutput");
-		return $resultObject;
-	}
-
-	function listAction(KalturaThumbParamsOutputFilter $filter = null, KalturaFilterPager $pager = null)
-	{
-		$kparams = array();
-		if ($filter !== null)
-			$this->client->addParam($kparams, "filter", $filter->toParams());
-		if ($pager !== null)
-			$this->client->addParam($kparams, "pager", $pager->toParams());
-		$this->client->queueServiceActionCall("thumbparamsoutput", "list", $kparams);
-		if ($this->client->isMultiRequest())
-			return $this->client->getMultiRequestResult();
-		$resultObject = $this->client->doQueue();
-		$this->client->throwExceptionIfError($resultObject);
-		$this->client->validateObjectType($resultObject, "KalturaThumbParamsOutputListResponse");
 		return $resultObject;
 	}
 }
@@ -4161,206 +4190,206 @@ class KalturaClient extends KalturaClientBase
 	protected $apiVersion = '3.1.4';
 
 	/**
-	 * 
+	 * Manage access control profiles
+	 * @var KalturaAccessControlProfileService
+	 */
+	public $accessControlProfile = null;
+
+	/**
+	 * Add & Manage Access Controls
+	 * DEPRECATED - use accessControlProfile service instead
 	 * @var KalturaAccessControlService
 	 */
 	public $accessControl = null;
 
 	/**
-	 * 
+	 * Manage details for the administrative user
 	 * @var KalturaAdminUserService
 	 */
 	public $adminUser = null;
 
 	/**
-	 * 
+	 * Base Entry Service
 	 * @var KalturaBaseEntryService
 	 */
 	public $baseEntry = null;
 
 	/**
-	 * 
+	 * Bulk upload service is used to upload & manage bulk uploads using CSV files
 	 * @var KalturaBulkUploadService
 	 */
 	public $bulkUpload = null;
 
 	/**
-	 * 
+	 * Add & Manage Categories
 	 * @var KalturaCategoryService
 	 */
 	public $category = null;
 
 	/**
-	 * 
+	 * Manage the connection between Conversion Profiles and Asset Params
 	 * @var KalturaConversionProfileAssetParamsService
 	 */
 	public $conversionProfileAssetParams = null;
 
 	/**
-	 * 
+	 * Add & Manage Conversion Profiles
 	 * @var KalturaConversionProfileService
 	 */
 	public $conversionProfile = null;
 
 	/**
-	 * 
+	 * Data service lets you manage data content (textual content)
 	 * @var KalturaDataService
 	 */
 	public $data = null;
 
 	/**
-	 * 
+	 * Document service
+	 * DEPRECATED
 	 * @var KalturaDocumentService
 	 */
 	public $document = null;
 
 	/**
-	 * 
+	 * EmailIngestionProfile service lets you manage email ingestion profile records
 	 * @var KalturaEmailIngestionProfileService
 	 */
 	public $EmailIngestionProfile = null;
 
 	/**
-	 * 
+	 * Retrieve information and invoke actions on Flavor Asset
 	 * @var KalturaFlavorAssetService
 	 */
 	public $flavorAsset = null;
 
 	/**
-	 * 
-	 * @var KalturaFlavorParamsOutputService
-	 */
-	public $flavorParamsOutput = null;
-
-	/**
-	 * 
+	 * Add & Manage Flavor Params
 	 * @var KalturaFlavorParamsService
 	 */
 	public $flavorParams = null;
 
 	/**
-	 * 
+	 * Live Stream service lets you manage live stream channels
 	 * @var KalturaLiveStreamService
 	 */
 	public $liveStream = null;
 
 	/**
-	 * 
+	 * Media Info service
 	 * @var KalturaMediaInfoService
 	 */
 	public $mediaInfo = null;
 
 	/**
-	 * 
+	 * Media service lets you upload and manage media files (images / videos & audio)
 	 * @var KalturaMediaService
 	 */
 	public $media = null;
 
 	/**
 	 * A Mix is an XML unique format invented by Kaltura, it allows the user to create a mix of videos and images, in and out points, transitions, text overlays, soundtrack, effects and much more...
-	 * Mixing service lets you create a new mix, manage its metadata and make basic manipulations.
+	 * Mixing service lets you create a new mix, manage its metadata and make basic manipulations.   
 	 * @var KalturaMixingService
 	 */
 	public $mixing = null;
 
 	/**
-	 * 
+	 * Notification Service
 	 * @var KalturaNotificationService
 	 */
 	public $notification = null;
 
 	/**
-	 * 
+	 * partner service allows you to change/manage your partner personal details and settings as well
 	 * @var KalturaPartnerService
 	 */
 	public $partner = null;
 
 	/**
-	 * 
+	 * PermissionItem service lets you create and manage permission items
 	 * @var KalturaPermissionItemService
 	 */
 	public $permissionItem = null;
 
 	/**
-	 * 
+	 * Permission service lets you create and manage user permissions
 	 * @var KalturaPermissionService
 	 */
 	public $permission = null;
 
 	/**
-	 * 
+	 * Playlist service lets you create,manage and play your playlists
+	 * Playlists could be static (containing a fixed list of entries) or dynamic (baseed on a filter)
 	 * @var KalturaPlaylistService
 	 */
 	public $playlist = null;
 
 	/**
-	 * 
+	 * api for getting reports data by the report type and some inputFilter
 	 * @var KalturaReportService
 	 */
 	public $report = null;
 
 	/**
-	 * Expose the schema definitions for syndication MRSS, bulk upload XML and other schema types.
+	 * Expose the schema definitions for syndication MRSS, bulk upload XML and other schema types. 
+	 * 
 	 * @var KalturaSchemaService
 	 */
 	public $schema = null;
 
 	/**
-	 * 
+	 * Search service allows you to search for media in various media providers
+	 * This service is being used mostly by the CW component
 	 * @var KalturaSearchService
 	 */
 	public $search = null;
 
 	/**
-	 * 
+	 * Session service
 	 * @var KalturaSessionService
 	 */
 	public $session = null;
 
 	/**
-	 * 
+	 * Stats Service
 	 * @var KalturaStatsService
 	 */
 	public $stats = null;
 
 	/**
-	 * 
+	 * Storage Profiles service
 	 * @var KalturaStorageProfileService
 	 */
 	public $storageProfile = null;
 
 	/**
-	 * 
+	 * Add & Manage Syndication Feeds
 	 * @var KalturaSyndicationFeedService
 	 */
 	public $syndicationFeed = null;
 
 	/**
-	 * 
+	 * System service is used for internal system helpers & to retrieve system level information
 	 * @var KalturaSystemService
 	 */
 	public $system = null;
 
 	/**
-	 * 
+	 * Retrieve information and invoke actions on Thumb Asset
 	 * @var KalturaThumbAssetService
 	 */
 	public $thumbAsset = null;
 
 	/**
-	 * 
-	 * @var KalturaThumbParamsOutputService
-	 */
-	public $thumbParamsOutput = null;
-
-	/**
-	 * 
+	 * Add & Manage Thumb Params
 	 * @var KalturaThumbParamsService
 	 */
 	public $thumbParams = null;
 
 	/**
-	 * 
+	 * UiConf service lets you create and manage your UIConfs for the various flash components
+	 * This service is used by the KMC-ApplicationStudio
 	 * @var KalturaUiConfService
 	 */
 	public $uiConf = null;
@@ -4378,19 +4407,20 @@ class KalturaClient extends KalturaClientBase
 	public $uploadToken = null;
 
 	/**
-	 * 
+	 * UserRole service lets you create and manage user roles
 	 * @var KalturaUserRoleService
 	 */
 	public $userRole = null;
 
 	/**
-	 * 
+	 * Manage partner users on Kaltura's side
+	 * The userId in kaltura is the unique Id in the partner's system, and the [partnerId,Id] couple are unique key in kaltura's DB
 	 * @var KalturaUserService
 	 */
 	public $user = null;
 
 	/**
-	 * 
+	 * widget service for full widget management
 	 * @var KalturaWidgetService
 	 */
 	public $widget = null;
@@ -4410,6 +4440,7 @@ class KalturaClient extends KalturaClientBase
 	{
 		parent::__construct($config);
 		
+		$this->accessControlProfile = new KalturaAccessControlProfileService($this);
 		$this->accessControl = new KalturaAccessControlService($this);
 		$this->adminUser = new KalturaAdminUserService($this);
 		$this->baseEntry = new KalturaBaseEntryService($this);
@@ -4421,7 +4452,6 @@ class KalturaClient extends KalturaClientBase
 		$this->document = new KalturaDocumentService($this);
 		$this->EmailIngestionProfile = new KalturaEmailIngestionProfileService($this);
 		$this->flavorAsset = new KalturaFlavorAssetService($this);
-		$this->flavorParamsOutput = new KalturaFlavorParamsOutputService($this);
 		$this->flavorParams = new KalturaFlavorParamsService($this);
 		$this->liveStream = new KalturaLiveStreamService($this);
 		$this->mediaInfo = new KalturaMediaInfoService($this);
@@ -4441,7 +4471,6 @@ class KalturaClient extends KalturaClientBase
 		$this->syndicationFeed = new KalturaSyndicationFeedService($this);
 		$this->system = new KalturaSystemService($this);
 		$this->thumbAsset = new KalturaThumbAssetService($this);
-		$this->thumbParamsOutput = new KalturaThumbParamsOutputService($this);
 		$this->thumbParams = new KalturaThumbParamsService($this);
 		$this->uiConf = new KalturaUiConfService($this);
 		$this->upload = new KalturaUploadService($this);

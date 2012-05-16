@@ -1798,7 +1798,7 @@ mw.PlayerControlBuilder.prototype = {
         if ( alertObj.props && alertObj.props.buttonRowSpacing ) {
             $buttonsContainer.css( 'margin-top', alertObj.props.buttonRowSpacing );
         }
-        var $buttonSet = alertObj.buttons;
+        var $buttonSet = alertObj.buttons || [];
         
         // If no button was passed display just OK button
         var buttonsNum = $buttonSet.length;

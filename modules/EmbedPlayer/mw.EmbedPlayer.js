@@ -1018,25 +1018,16 @@ mw.EmbedPlayer.prototype = {
 	showErrorMsg: function( errorMsg ){
 		// remove a loading spinner: 
 		this.hidePlayerSpinner();
-		var $target;
-		if( this.$interface ){
-			$target = this.$interface;
-		} else{
-			$target = $(this);
+		if( this.controlBuilder ) {
+			if( $.isFunction(this.getFlashvars) && this.getFlashvars('disableAlerts') !== true ) {
+				this.controlBuilder.displayMenuOverlay(
+					$('<p />').addClass('error').text( errorMsg ), 
+					false, 
+					true 
+				);
+			}
 		}
-		// Don't show error if disable alerts is true
-		if( $.isFunction(this.getFlashvars) && this.getFlashvars('disableAlerts') !== true ) {
-			$target.append(
-				$('<div />').addClass('error').text(
-					errorMsg
-				)
-			);
-		} 
-		
-		$target.show() // Show the player
-		// Hide the interface components
-		.find( '.control-bar,.play-btn-large').hide();
-		return ;
+		return;
 	},
 	hidePlayerInterface: function(){
 		this.showErrorMsg();
