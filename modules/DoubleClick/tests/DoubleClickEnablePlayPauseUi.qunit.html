@@ -1,28 +1,23 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title> DoubleClick Managed Player Api( PreRoll, Midroll, and PostRoll )  </title>
+<title> DoubleClick Managed Player enable play pause UI  </title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
-	module( "DoubleClick Player API" );
+	module( "DoubleClick Player enable play pause ui" );
 
 	var kdp = $('#' + videoId ).get(0);
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
 	
 	asyncTest("Ad started playback", function(){
 		window[ 'onAdStart' ] = function( slot ){
 			kdp.removeJsListener( 'adStart', 'onAdStart' );
-			
 			ok( true, "adStart event sent");
-			
 			equal( slot.timeSlot, 'preroll', "Started preroll ad playback" );
-			
 			start();
-			setTimeout(function(){
-				runPausePlayTests();
-			},100);
 		}
 		kalturaQunitWaitForPlayer(function(){
 			
@@ -34,54 +29,20 @@ function jsKalturaPlayerTest( videoId ){
 		});
 	});
 	
-	asyncTest( "Ad pause play", function(){
-		window['onDoPlay'] = function(){
-			kdp.removeJsListener( 'doPlay', 'onDoPlay' );
-			ok( true, "Recived doPlay event" );
-			setTimeout(function(){
-				runDoStopTest();
-			},1000);
-			start();
-		}
-		
-		window['onDoPause'] = function(){
-			kdp.removeJsListener( 'doPause', 'onDoPause' );
-			ok( true, "Recived doPause event" );
-			
-			kdp.addJsListener( 'doPlay', 'onDoPlay' );
-			setTimeout(function(){
-				kdp.sendNotification( 'doPlay' );
-			},500);
-		};
-		
-		window['runPausePlayTests'] = function(){
-			// play for one second: 
-			setTimeout(function(){
-				kdp.addJsListener( 'doPause', 'onDoPause' );
-				kdp.sendNotification('doPause');
-			},500);
-		}
+	asyncTest("Test play pause click", function(){
+		// click pause: 
+		$iframe.find( '.control-bar .play-btn').click();
 	});
 	
-	asyncTest("Ad stop test", function(){
-		window['onDoStop'] = function(){
-			ok( true, "Recived doStop event");
-			start();
-		});
-		window['runDoStopTest'] = function(){
-			kdp.addJsListener( 'doStop', 'onDoStop' );
-			kdp.sendNotification('doStop');	
-		}
-	});
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="../../KalturaSupport/tests/resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> DoubleClick Managed Player Api ( PreRoll, Midroll, and PostRoll ) </h2>
+<h2> DoubleClick Managed Player enable play pause UI </h2>
 
-all ad slots and overlays are loaded from server. 
+doubleClick.playPauseUI is set to true to enable the play pause ui controls 
 <br /><br />
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
@@ -102,7 +63,7 @@ all ad slots and overlays are loaded from server.
 		<param name="allowNetworking" value="all" />
 		<param name="allowScriptAccess" value="always" />
 		<param name="bgcolor" value="#000000" />
-		<param name="flashVars" value="&" />
+		<param name="flashVars" value="&doubleClick.playPauseUI=true" />
 		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1231231246/wid/_243342/uiconf_id/7340952/entry_id/0_uka1msg4" />
 </object>
 

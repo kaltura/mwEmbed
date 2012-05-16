@@ -77,7 +77,7 @@ mw.DoubleClick.prototype = {
 				// Add cuepoint bindings
 				_this.addKalturaCuePointBindings();
 			}
-			// issue the callback to continue player build out: 
+			// Issue the callback to continue player build out: 
 			callback();
 		}, function( errorCode ){
 			mw.log( "Error::DoubleClick Loading Error: " + errorCode );
@@ -420,6 +420,10 @@ mw.DoubleClick.prototype = {
 			
 			_this.adStartTime = new Date().getTime();
 			
+			if( _this.getConfig('playPauseUI') ){
+				_this.enablePausePlayUI( true );
+			}
+			
 			// Monitor ad progress ( for sequence proxy )
 			_this.monitorAdProgress();
 		} );
@@ -460,6 +464,25 @@ mw.DoubleClick.prototype = {
 				_this.restorePlayer( true );
 			}
 		});
+	},
+	enablePausePlayUI:function( adPlayingBack ){
+		var _this = this;
+		// re-enable hover: 
+		this.embedPlayer.$interface.find( '.play-btn' )
+			.buttonHover()
+			.css('cursor', 'pointer' );
+		
+		// bind pause play
+		this.embedPlayer.$interface.find( '.play-btn' )
+		.unbind('click')
+		.click( function( ) {
+			mw.log("DoubleClick::proxied play btn click: isPlaying:" + adPlayingBack );
+			if( adPlayingBack ){
+				_this.embedPlayer.sendNotification('doPause');
+			} else {
+				_this.embedPlayer.sendNotification('doPlay' );
+			}
+		 })
 	},
 	getPlayerSize: function(){
 		return {
@@ -535,6 +558,7 @@ mw.DoubleClick.prototype = {
 				_this.adsManager.setVolume( percent );
 			}
 		});
+
 		
 		/**
 		 * Handle any send notification events: 
@@ -546,10 +570,17 @@ mw.DoubleClick.prototype = {
 					case 'doPause':
 						_this.adsManager.pause();
 						$( embedPlayer ).trigger( 'onpause' );
+						if( _this.getConfig('playPauseUI') ){
+							_this.enablePausePlayUI( false );
+						}
 						break;
 					case 'doPlay':
 						_this.adsManager.resume()
 						$( embedPlayer ).trigger( 'onplay' );
+						if( _this.getConfig('playPauseUI') ){
+							_this.enablePausePlayUI( true );
+						}
+						_this.monitorAdProgress();
 						break;
 					case 'doStop':
 						_this.adsManager.stop();
@@ -662,13 +693,13 @@ mw.DoubleClick.prototype = {
 		vid.play();
 		setTimeout(function(){
 			var vid = _this.getContent();
-			if( !isPlaying ){
+			if( ! isPlaying && ! _this.embedPlayer.paused ){
 				// try again: 
 				vid.load();
 				vid.play();
 				_this.forceContentPlay();
 			}
-		}, 8000 );
+		}, 4000 );
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 
