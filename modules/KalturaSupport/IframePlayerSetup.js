@@ -65,26 +65,30 @@ if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) ){
 		document.write( kSettings.flashEmbedHTML );
 
 	} else {
-
-		kWidget.outputDirectDownload( 'directFileLinkContainer', {
-			'id': playerId,
-			'partner_id': playerConfig.partnerId,
-			'uiconf_id': playerConfig.uiConfId,
-			'entry_id': playerConfig.entryId,
-			'height' : '100%',
-			'width' : '100%'
-		});
-
-		window.kCollectCallback = function(){ return ; }; // callback for jsonp
-		window.Kaltura = true;
-		document.getElementById('directFileLinkButton').onclick = function() {
-			kWidget.appendScriptUrl( kSettings.playEventURL + '&callback=kCollectCallback' );
-			return true;
-		};
+		
+		kWidget.loadSet( ['window.jQuery', 'mw.KApi'], function() {
+			
+			kWidget.outputDirectDownload( 'directFileLinkContainer', {
+				'id': playerId,
+				'partner_id': playerConfig.partnerId,
+				'uiconf_id': playerConfig.uiConfId,
+				'entry_id': playerConfig.entryId,
+				'height' : '100%',
+				'width' : '100%'
+			});	
+			
+			var embedPlayer = $('#' + playerId );
+			mw.KApiRequest( partnerId, requestObject, callback );
+		});		
 		
 		var player = document.getElementById( playerId );
 		player.addJsListener = function( eventName, callbackName ) {
-			console.log( eventName, callbackName );
+			switch( eventName ) {
+				case 'kdpEmpty':
+				case 'kdpReady':
+					//
+				break;
+			}
 		};
 		player.evaluate = function( objectString ) {
 			console.log( objectString );
@@ -92,6 +96,13 @@ if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) ){
 		player.sendNotification = function( notificationName, notificationData ) {
 			console.log( notificationName, notificationData );
 		};
+		
+		window.kCollectCallback = function(){ return ; }; // callback for jsonp
+		window.Kaltura = true;
+		document.getElementById('directFileLinkButton').onclick = function() {
+			kWidget.appendScriptUrl( kSettings.playEventURL + '&callback=kCollectCallback' );
+			return true;
+		};		
 		
 		// Trigger jsCallbackReady
 		try {
