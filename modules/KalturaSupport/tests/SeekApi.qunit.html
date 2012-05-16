@@ -14,8 +14,8 @@ function jsKalturaPlayerTest( videoId ){
 	
 	asyncTest("Seek Events", function(){
 		kalturaQunitWaitForPlayer(function(){
-			// start playback: 
-			kdp.sendNotification('doPlay' );
+			// Start playback: 
+			kdp.sendNotification( 'doPlay' );
 		
 			// add a seek listener: 
 			kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')

@@ -57,39 +57,70 @@ mw.DoubleClick.prototype = {
 		embedPlayer.unbindHelper( this.bindPostfix );
 		
 		// Load double click ima per doc:
+		this.loadIma(function(){
+			// Determine if we are in managed or kaltura point based mode. 
+			if( _this.getConfig( "preSequence" ) && _this.getConfig( "adTagUrl" ) ){
+				// Check for adPattern 
+				if( _this.getConfig( 'adPattern' ) ){
+					var adIndex = _this.getAdPatternIndex();
+					mw.log( "DoubleClick:: adPattern: " + _this.getConfig( 'adPattern' ) +
+							" on index: " + adIndex );
+					if( adIndex == 'A' ){
+						// Managed bindings
+						_this.addManagedBinding();
+					}
+				} else{
+					// No defined ad pattern always use managed bindings
+					_this.addManagedBinding();
+				}
+			} else {
+				// Add cuepoint bindings
+				_this.addKalturaCuePointBindings();
+			}
+			// Issue the callback to continue player build out: 
+			callback();
+		}, function( errorCode ){
+			mw.log( "Error::DoubleClick Loading Error: " + errorCode );
+			// Don't add any bindings directly issue callback: 
+			callback();
+		});
+	},
+	/**
+	 * Get the global adPattern index: 
+	 */
+	getAdPatternIndex:function(){
+		var adPattern = this.getConfig( 'adPattern' );
+		var currentAdIndex = $( this.embedPlayer ).data('DcAdPatternIndex');
+		if( typeof currentAdIndex === 'undefined' ){
+			currentAdIndex = 0;
+		} else{
+			// increment the index
+			currentAdIndex++
+			// index is past adPattern length reset to 0
+			if( currentAdIndex > adPattern.length -1 ){
+				currentAdIndex = 0;
+			}
+		}
+		// update add index:
+		$( this.embedPlayer ).data('DcAdPatternIndex', currentAdIndex);
+		// return the adPattern index: 
+		return adPattern[currentAdIndex];
+	},
+	/**
+	 * Load the google IMA library: 
+	 */
+	loadIma:function( successCB, failureCB ){
 		// http://code.google.com/apis/ima/docs/sdks/googlehtml5_ads_v3.html#loadsdk
 		$.getScript('http://s0.2mdn.net/instream/html5/ima.js', function(){
 			google.ima.SdkLoader.setCallbacks( function(){
-				if( $.isFunction( callback) ){
-					// Determine if we are in managed or kaltura point based mode. 
-					if( _this.getConfig( "preSequence" ) && _this.getConfig( "adTagUrl" ) ){
-						// Managed bindings
-						_this.addManagedBinding();
-					} else {
-						// Add cuepoint bindings
-						_this.addKalturaCuePointBindings();
-					}
-					callback();
-				}
+				successCB();
 			}, function( errorCode ){
-				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
-				// Don't add any bindings directly issue callback: 
-				callback();
+				failureCB( errorCode );
 			});
 			google.ima.SdkLoader.load("3");
 		});
-		
-		// Load double click ima library and issue the callback:
-		/*$.getScript('http://www.google.com/jsapi', function(){
-			google.load("ima", "3", {
-				"callback" : function(){
-					if( callback ){
-						callback();
-					}
-				}
-			});
-		});*/
 	},
+	
 	addManagedBinding: function(){
 		var _this = this;
 		mw.log( "DoubleClick::addManagedBinding" );
@@ -155,7 +186,7 @@ mw.DoubleClick.prototype = {
 			// Get the ad type for each cuepoint
 			var adType = _this.embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
 			
-			mw.log("DoubleClick:: AdOpportunity:: " + cuePoint.startTime + ' ad type: ' + adType);
+			mw.log( "DoubleClick:: AdOpportunity:: " + cuePoint.startTime + ' ad type: ' + adType );
 			if( adType == 'overlay' ){
 				_this.loadAndDisplayOverlay( cuePoint );
 				return true; // continue to next cue point
@@ -389,6 +420,10 @@ mw.DoubleClick.prototype = {
 			
 			_this.adStartTime = new Date().getTime();
 			
+			if( _this.getConfig('playPauseUI') ){
+				_this.enablePausePlayUI( true );
+			}
+			
 			// Monitor ad progress ( for sequence proxy )
 			_this.monitorAdProgress();
 		} );
@@ -429,6 +464,25 @@ mw.DoubleClick.prototype = {
 				_this.restorePlayer( true );
 			}
 		});
+	},
+	enablePausePlayUI:function( adPlayingBack ){
+		var _this = this;
+		// re-enable hover: 
+		this.embedPlayer.$interface.find( '.play-btn' )
+			.buttonHover()
+			.css('cursor', 'pointer' );
+		
+		// bind pause play
+		this.embedPlayer.$interface.find( '.play-btn' )
+		.unbind('click')
+		.click( function( ) {
+			mw.log("DoubleClick::proxied play btn click: isPlaying:" + adPlayingBack );
+			if( adPlayingBack ){
+				_this.embedPlayer.sendNotification('doPause');
+			} else {
+				_this.embedPlayer.sendNotification('doPlay' );
+			}
+		 })
 	},
 	getPlayerSize: function(){
 		return {
@@ -504,18 +558,37 @@ mw.DoubleClick.prototype = {
 				_this.adsManager.setVolume( percent );
 			}
 		});
+
 		
-		// May have to fix these bindings to support pause play on ads. 
-		embedPlayer.bindHelper( 'onpause' + this.bindPostfix, function( event, percent){
+		/**
+		 * Handle any send notification events: 
+		 */
+		embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
 			if( _this.adPlaying ){
-				mw.log("DoubleClick::onpause:" + percent );
-				_this.adsManager.pause();
-			}
-		});
-		embedPlayer.bindHelper( 'onplay' + this.bindPostfix, function( event, percent){
-			if( _this.adPlaying ){
-				mw.log("DoubleClick::onplay:" + percent );
-				_this.adsManager.resume();
+				mw.log("DoubleClick:: sendNotification: " + notificationName );
+				switch( notificationName ){
+					case 'doPause':
+						_this.adsManager.pause();
+						$( embedPlayer ).trigger( 'onpause' );
+						if( _this.getConfig('playPauseUI') ){
+							_this.enablePausePlayUI( false );
+						}
+						break;
+					case 'doPlay':
+						_this.adsManager.resume()
+						$( embedPlayer ).trigger( 'onplay' );
+						if( _this.getConfig('playPauseUI') ){
+							_this.enablePausePlayUI( true );
+						}
+						_this.monitorAdProgress();
+						break;
+					case 'doStop':
+						_this.adsManager.stop();
+						_this.adPlaying = false;
+						_this.embedPlayer.sequenceProxy.isInSequence = false;
+						_this.embedPlayer.stop();
+						break;
+				}
 			}
 		});
 	},
@@ -530,16 +603,22 @@ mw.DoubleClick.prototype = {
 		}
 		// Check if we have an ad buffer underun that double click apparently does not check for :( 
 		if( _this.adPreviousTimeLeft == _this.adsManager.getRemainingTime()  ){
-			// reset the previus time check: 
+			// reset the previous time check: 
 			_this.adPreviousTimeLeft = null;
+			// if we already have an active buffer check continue: 
+			if( _this.activeBufferUnderunCheck ){
+				return ;
+			}
+			_this.activeBufferUnderunCheck = true;
 			setTimeout( function(){
 				if( _this.adPreviousTimeLeft ==  _this.adsManager.getRemainingTime()  ){
 					mw.log( "DoubleClick:: buffer underun pause? , try to continue playback ");
 					// try to restart playback: 
 					_this.adsManager.resume();
 					// restore the previous time check: 
-					_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime()
+					_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
 				}
+				_this.activeBufferUnderunCheck = false;
 			}, 2000);
 		}
 		// update the adPreviousTimeLeft
@@ -614,13 +693,13 @@ mw.DoubleClick.prototype = {
 		vid.play();
 		setTimeout(function(){
 			var vid = _this.getContent();
-			if( !isPlaying ){
+			if( ! isPlaying && ! _this.embedPlayer.paused ){
 				// try again: 
 				vid.load();
 				vid.play();
 				_this.forceContentPlay();
 			}
-		}, 8000 );
+		}, 4000 );
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 
