@@ -536,17 +536,22 @@ mw.DoubleClick.prototype = {
 			}
 		});
 		
-		// May have to fix these bindings to support pause play on ads. 
-		embedPlayer.bindHelper( 'onpause' + this.bindPostfix, function( event, percent){
+		/**
+		 * Handle any send notification events: 
+		 */
+		embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
 			if( _this.adPlaying ){
-				mw.log("DoubleClick::onpause:" + percent );
-				_this.adsManager.pause();
-			}
-		});
-		embedPlayer.bindHelper( 'onplay' + this.bindPostfix, function( event, percent){
-			if( _this.adPlaying ){
-				mw.log("DoubleClick::onplay:" + percent );
-				_this.adsManager.resume();
+				mw.log("DoubleClick:: sendNotification: " + notificationName );
+				switch( notificationName ){
+					case 'doPause':
+						_this.adsManager.pause();
+						$( embedPlayer ).trigger( 'onpause' );
+						break;
+					case 'doPlay':
+						_this.adsManager.resume()
+						$( embedPlayer ).trigger( 'onplay' );
+						break;
+				}
 			}
 		});
 	},

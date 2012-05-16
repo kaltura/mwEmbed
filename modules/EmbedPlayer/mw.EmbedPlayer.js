@@ -1858,7 +1858,7 @@ mw.EmbedPlayer.prototype = {
 		// Trigger the pause event if not already paused and using native controls:
 		if( this.paused === false ){
 			this.paused = true;
-			if(  this._propagateEvents ){
+			if( this._propagateEvents ){
 				mw.log( 'EmbedPlayer:trigger pause:' + this.paused );
 				// we only trigger "onpause" to avoid event propagation to the native object method
 				// i.e in jQuery ( this ).trigger('pause') also calls: this.pause();
