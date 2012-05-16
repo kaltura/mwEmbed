@@ -90,6 +90,16 @@ var kWidget = {
 			} 
 			
 		}
+		
+		// For testing limited capacity browsers
+		if( mw.getConfig( 'forceDirectDownload' ) ) {
+			if( mw.getConfig( 'EmbedPlayer.IsIframeServer') ) {
+				kWidget.isHTML5FallForward = function(){return false;};
+				kWidget.supportsHTML5 = function(){return false;};				
+			}
+			kWidget.supportsFlash = function(){return false;};
+		}
+
 	},
 	
 	/**
@@ -219,10 +229,10 @@ var kWidget = {
 
 		// Check if we are dealing with an html5 player or flash player or direct download
 		// TODO: We may want to always load the iframe and handle the fallback there
-		if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ) {
-			this.outputDirectDownload( targetId, settings );
-			return ;
-		}
+		//if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ) {
+		//	this.outputDirectDownload( targetId, settings );
+		//	return ;
+		//}
 		if( settings.isHTML5 ){
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
@@ -628,9 +638,8 @@ var kWidget = {
 			this.loadHTML5Lib();
 			return ;
 		}
-
+		
 		// Check if no flash and no html5 and no forceFlash ( direct download link )
-		// for debug purpose:
 		if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 			this.embedFromObjects( playerList );
 			return ;

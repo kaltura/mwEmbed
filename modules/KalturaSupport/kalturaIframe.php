@@ -671,6 +671,9 @@ class kalturaIframe {
 			// its critical that at least EmbedPlayer.IsIframeServer is set early on. 
 			window.preMwEmbedConfig = {};
 			window.preMwEmbedConfig['EmbedPlayer.IsIframeServer'] = true;
+			<?php if( $_GET['forceDirectDownload'] ) { ?>
+			window.preMwEmbedConfig['forceDirectDownload'] = true;
+			<?php } ?>
 		</script>
 		<!--  Add the mwEmbedLoader.php -->
 		<script src="<?php echo $this->getMwEmbedLoaderLocation() ?>" type="text/javascript"></script>
@@ -771,10 +774,6 @@ class kalturaIframe {
 						mw.setConfig( "EmbedPlayer.NewWindowFullscreen", true ); 
 					}
 				}
-				// For testing limited capacity browsers
-				kWidget.isHTML5FallForward = function(){ return false; };
-				kWidget.supportsFlash = function(){ return false; };
-	
 				<?php
 					if( ! $this->getResultObject()->isJavascriptRewriteObject() ) {
 						echo $this->javascriptPlayerLogic();

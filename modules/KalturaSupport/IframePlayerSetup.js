@@ -1,4 +1,4 @@
-(function( mw ) { "use strict";
+(function( mw, kWidget ) { "use strict";
 	
 var playerConfig = mw.getConfig( 'KalturaSupport.PlayerConfig' );
 var playerId = mw.getConfig( 'EmbedPlayer.IframeParentPlayerId');
@@ -102,4 +102,4 @@ if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) ){
 		}
 	}
 }
-})( window.mw );
+})( window.mw, window.kWidget );

@@ -520,6 +520,10 @@
 				iframeRequest+= '&debug=true';
 			}
 			
+			if( mw.getConfig( 'forceDirectDownload' ) ){
+				iframeRequest+= '&forceDirectDownload=true';
+			}
+			
 			// If remote service is enabled pass along service arguments: 
 			if( mw.getConfig( 'Kaltura.AllowIframeRemoteService' )  && 
 				(
