@@ -161,14 +161,15 @@ mw.KAnalytics.prototype = {
 		// Send events for this player:
 		$( this.embedPlayer ).trigger( 'Kaltura.SendAnalyticEvent', [ KalturaStatsEventKey ] );
 
+		// Add referer parameter
+		eventSet[ 'referrer' ] = encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') );
+		
 		// Add in base service and action calls:
 		var eventRequest = {'service' : 'stats', 'action' : 'collect'};
 		// Add event parameters
 		for( var i in eventSet){
 			eventRequest[ 'event:' + i] = eventSet[i];
 		}
-		// Add referer parameter
-		eventRequest['referrer'] = encodeURIComponent( mw.getConfig('EmbedPlayer.IframeParentUrl') );
 		
 		// Do the api request: 
 		this.kClient.doRequest( eventRequest );
