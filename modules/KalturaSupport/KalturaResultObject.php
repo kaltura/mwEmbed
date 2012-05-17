@@ -779,8 +779,14 @@ class KalturaResultObject {
 			}
 			// Set entry parameter
 			$entryParam = array( 'entryId' => $entryIdParamValue );
+			
+			// getByEntryId is deprecated - Use list instead
+			$filter = new KalturaAssetFilter();
+			$filter->entryIdEqual = $entryIdParamValue;
+			$params = array( 'filter' => $filter );
+
 			// Flavors: 
-			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'getByEntryId', $entryParam );
+			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'list', $params );
 				
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
 			$params = array_merge( $entryParam, 
@@ -818,6 +824,8 @@ class KalturaResultObject {
 			$resultObject = $namedMultiRequest->doQueue();
 			// merge in the base result object:
 			$resultObject = array_merge( $this->getBaseResultObject(), $resultObject);
+			// flavors list contains a secondary 'objects' array
+			$resultObject['flavors'] = $resultObject['flavors']->objects;
 			
 			// Check if the server cached the result by search for "cached-dispatcher" in the request headers
 			// If not, do not cache the request (Used for Access control cache issue)
