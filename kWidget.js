@@ -678,6 +678,9 @@ var kWidget = {
 	 * @return {boolean} true or false if HTML5 video tag is supported
 	 */
 	supportsHTML5: function(){
+		if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
+			return false;
+		}
 		var dummyvid = document.createElement( "video" );
 		// Blackberry does not really support html5
 		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
@@ -699,6 +702,10 @@ var kWidget = {
 	 * @return {boolean} true or false if flash > 10 is supported. 
 	 */
 	supportsFlash: function() {
+		if( mw.getConfig('EmbedPlayer.DisableHTML5FlashFallback' ) ){
+			return false;
+		}
+
 		var version = this.getFlashVersion().split(',').shift();
 		if( version < 10 ){
 			return false;
