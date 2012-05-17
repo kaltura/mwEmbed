@@ -15,6 +15,7 @@
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "Download Link" );
+	var kdp = $( '#' + videoId ).get(0);
 	var $iframe = $( '#' + videoId + '_ifp' ).contents();
 	
 	asyncTest("Check for Download link", function(){
@@ -24,8 +25,24 @@ function jsKalturaPlayerTest( videoId ){
 			notEqual( link.indexOf( '/entryId/0_uka1msg4/' ), -1 ,
 					"Link includes entry path" );
 			start();
+			setTimeout(function(){
+				doChangeMediaTest();				
+			},100)
 		});
 	});
+	
+	asyncTest("Change Media of linked player", function(){
+		window['onChangeMedia'] = function(){
+			var entryId = kdp.evaluate('{mediaProxy.entry.id}');
+			equal(entryId, "0_swup5zao", "Entry 0_swup5zao change success" );
+			start();
+		}
+		window['doChangeMediaTest'] = function(){
+			kdp.addJsListener( 'changeMedia', 'onChangeMedia' );
+			kdp.sendNotification( "changeMedia", { 'entryId' : '0_swup5zao' } );
+		}
+	});
+	
 }
 </script>
 <script>
