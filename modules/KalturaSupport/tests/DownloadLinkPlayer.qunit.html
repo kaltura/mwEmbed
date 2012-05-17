@@ -8,6 +8,8 @@
 	// Disable flash and html5 to test download link: 
 	mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
 	mw.setConfig( 'EmbedPlayer.DisableHTML5FlashFallback', true );
+	// Enable the download link player: 
+	mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 </script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
@@ -17,9 +19,9 @@ function jsKalturaPlayerTest( videoId ){
 	
 	asyncTest("Check for Download link", function(){
 		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find( '#directFileLinkButton' ).length, "Found player link" );
-			var link = $iframe.find( '#directFileLinkButton' ).attr('href') || '';
-			notEqual( link.indexOf( 'download.php/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4' ), -1 ,
+			ok( $iframe.find( '.play-btn-large' ).length, "Found player link" );
+			var link = $iframe.find( '.play-btn-large' ).parent().attr('href') || '';
+			notEqual( link.indexOf( '/entryId/0_uka1msg4/' ), -1 ,
 					"Link includes entry path" );
 			start();
 		});
