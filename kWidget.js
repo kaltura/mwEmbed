@@ -414,7 +414,7 @@ var kWidget = {
 				mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1
 			)
 		){
-			iframeSrc += kServiceConfigToUrl();
+			iframeSrc += this.serviceConfigToUrl();
 		}
 
 		// add the forceMobileHTML5 to the iframe if present on the client:
