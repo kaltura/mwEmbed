@@ -42,7 +42,7 @@
 		// and native controls when the fullscreen button is pressed. 
 		// its not the default since often users want playback control if using html controls,
 		// ( i.e no add skip etc ) 
-		'EmbedPlayer.EnableIpadNativeFullscreen': true,
+		'EmbedPlayer.EnableIpadNativeFullscreen': false,
 		
 		// The attribution library page
 		'EmbedPlayer.LibraryPage': 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
