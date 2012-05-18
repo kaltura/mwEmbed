@@ -978,7 +978,7 @@
 
 						// Update the poster 
 						embedPlayer.updatePosterSrc(
-								mw.getKalturaThumbUrl({
+								kWidget.getKalturaThumbUrl({
 									'entry_id' : embedPlayer.kentryid,
 									'partner_id' : embedPlayer.kwidgetid.replace('_', ''),
 									'width' : parseInt( embedPlayer.width),
