@@ -736,6 +736,7 @@ mw.EmbedPlayerNative = {
 				
 				// once playing issue callbacks:
 				$( vid ).bind( 'playing' + switchBindPostfix, function(){
+					$( vid ).unbind( 'playing' + switchBindPostfix );
 					mw.log("EmbedPlayerNative:: playerSwitchSource> playing callback");
 					handleSwitchCallback();
 				});

@@ -59,6 +59,18 @@ mw.DoubleClick.prototype = {
 		// remove any old bindings: 
 		embedPlayer.unbindHelper( this.bindPostfix );
 		
+		// make sure any old ad Manager is unloaded:
+		var globalAdsManger = $(_this.embedPlayer).data( 'doubleClickAdsMangerRef' );
+		if( globalAdsManger ){
+			mw.log( "DoubleClick::unload old adManger" );
+			if ( $.isFunction( globalAdsManger.unload ) ) {
+				globalAdsManger.unload();
+			}
+			if( $('#' + this.getAdContainerId() ).length ){
+				$('#' + this.getAdContainerId() ).remove();
+			}
+		}
+		
 		// Load double click ima per doc:
 		this.loadIma(function(){
 			// Determine if we are in managed or kaltura point based mode. 
@@ -235,11 +247,10 @@ mw.DoubleClick.prototype = {
 		_this.requestAds( cuePoint.sourceUrl, 'overlay' );
 	},
 	getAdContainer: function(){
-		var adContainerId ='adContainer' + this.embedPlayer.id;
-		if( !$('#' + adContainerId ).length ){
+		if( !$('#' + this.getAdContainerId() ).length ){
 			$( this.getContent() ).after( 
 				$('<div />')
-					.attr( 'id',  adContainerId )
+					.attr( 'id',  this.getAdContainerId() )
 					.css({
 						'position' : 'absolute',
 						'top' : '0px',
@@ -247,7 +258,10 @@ mw.DoubleClick.prototype = {
 					})
 			)
 		}
-		return $('#' + adContainerId ).get(0);
+		return $('#' + this.getAdContainerId() ).get(0);
+	},
+	getAdContainerId: function(){
+		return 'adContainer' + this.embedPlayer.id;
 	},
 	getAdDisplayContainer: function(){
 		//  Create the ad display container. Use an existing DOM element
@@ -331,7 +345,9 @@ mw.DoubleClick.prototype = {
 		// previously and the content element, so the SDK can track content
 		// and play ads automatically.
 		_this.adsManager = loadedEvent.getAdsManager( this.getAdDisplayContainer(), this.getContent() );
-
+		// add a global ad manager refrence: 
+		$( _this.embedPlayer ).data( 'doubleClickAdsMangerRef', _this.adsManager );
+		
 		// Add Ad Manager Listeners 
 		_this.addAdMangerListeners();
 
@@ -369,6 +385,8 @@ mw.DoubleClick.prototype = {
 			function( event ){ _this.onAdError( event ) },
 			false
 		);
+		// A flag to protect against double ad start. 
+		var lastAdStartTime = null;
 		
 		// Add ad listeners: 
 		adsListener( 'CLICK' );
@@ -408,6 +426,24 @@ mw.DoubleClick.prototype = {
 			_this.monitorAdProgress();
 		} );
 		adsListener( 'STARTED', function(){
+			// Check for ad Stacking ( two starts in less then 250ms ) 
+			if( lastAdStartTime !== null &&
+				new Date().getTime() - lastAdStartTime < 250
+			){
+				mw.log("ERROR:: stacking Ad STARTED! :" + ( lastAdStartTime - new Date().getTime() ) );
+				// Not sure what we should do here:
+				// 1) we can't unload manager since we have to play back the active ads
+				// 2) we can't pause the ad since it could pause the really active ad
+				// 3) .. all we can do is break out of event flow for player and hope, double click,
+				// 		fixes this bug on their side. 
+				return ;
+			} else{
+				mw.log( 'DoubleClick:: time delta since last adStart: ' + 
+						( new Date().getTime() - lastAdStartTime ) ); 
+			}
+			// update the last ad start time: 
+			lastAdStartTime = new Date().getTime();
+			
 			// check for startted ad playback sequence callback 
 			if( _this.startedAdPlayback ){
 				_this.startedAdPlayback();
