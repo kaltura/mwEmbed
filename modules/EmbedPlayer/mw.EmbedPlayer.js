@@ -1478,7 +1478,7 @@ mw.EmbedPlayer.prototype = {
 	 * TODO move to player controls 
 	 */
 	hideLargePlayBtn: function(){
-		if( !this.isPersistantPlayBtn() ){
+		if( this.$interface ){
 			this.$interface.find( '.play-btn-large' ).hide();
 		}
 	},
@@ -1835,9 +1835,7 @@ mw.EmbedPlayer.prototype = {
 		// remove any old spinner
 		$( '#' + sId ).remove();
 		// hide the play btn if present
-		if( this.$interface ) {
-			this.hideLargePlayBtn();
-		}
+		this.hideLargePlayBtn();
 		// re add an absolute positioned spinner: 
 		$( this ).show().getAbsoluteOverlaySpinner()
 		.attr( 'id', sId );
@@ -1850,9 +1848,7 @@ mw.EmbedPlayer.prototype = {
 		// remove the spinner
 		$( '#loadingSpinner_' + this.id + ',.loadingSpinner' ).remove();
 		// hide the play btn
-		if( this.$interface ) {
-			this.hideLargePlayBtn();
-		}
+		this.hideLargePlayBtn();
 	},
 	/**
 	 * Hides the loading spinner once playing. 
