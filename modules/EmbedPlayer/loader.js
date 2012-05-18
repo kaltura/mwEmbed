@@ -113,6 +113,12 @@
 		// If fullscreen is global enabled.
 		"EmbedPlayer.EnableFullscreen" : true,
 		
+		// If the embed player time display should be shown
+		'EmbedPlayer.EnableTimeDisplay' : true, 
+		
+		// If the embed player volume control should be displayed
+		'EmbedPlayer.EnableVolumeControl' : true,
+		
 		// If fullscreen should pop-open a new window 
 		//( instead of trying to expand the video player to browser fullscreen ) 
 		"EmbedPlayer.NewWindowFullscreen" : false,
