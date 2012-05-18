@@ -105,7 +105,8 @@
         "downloadPlugin"    :   "uiConfComponents/downloadPlugin.js",
         "captureThumbnailPlugin"    :   "uiConfComponents/captureThumbnailPlugin.js",
         "jCarousel"     :   "uiConfComponents/jcarousellite_1.0.1.js",
-        "carouselPlugin"    :   "uiConfComponents/carouselPlugin.js"
+        "carouselPlugin"    :   "uiConfComponents/carouselPlugin.js",
+		"likePlugin"	:	"uiConfComponents/likePlugin.js"
 	} );
 	
 	// Set a local variable with the request set so we can append it to embedPlayer
@@ -139,7 +140,8 @@
 		'bumperPlugin',
 		'playlistPlugin',
 		'jCarousel',
-		'carouselPlugin'
+		'carouselPlugin',
+		'likePlugin'
 	];
 	
 	mw.newEmbedPlayerCheckUiConf = function( callback ){
