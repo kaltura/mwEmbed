@@ -497,6 +497,13 @@ mw.Playlist.prototype = {
 		// trigger a playlist_playClip event: 
 		embedPlayer.triggerHelper( 'Playlist_PlayClip', [ clipIndex, !!autoContinue ]);
 		
+		// iOS devices have a autoPlay restriction, we issue a raw play call on 
+		// the video tag to "capture the user gesture" so that future 
+		// javascript play calls can work
+		if( embedPlayer.getPlayerElement() ){
+			embedPlayer.getPlayerElement().play();
+		}
+		
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex, function(){
 			mw.log( "mw.Playlist::playClip > sourceHandler playClip callback ");
