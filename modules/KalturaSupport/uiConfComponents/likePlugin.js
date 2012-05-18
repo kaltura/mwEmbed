@@ -106,6 +106,7 @@
 					like = true;
 				}
 				_this.toggleButton( like );
+				embedPlayer.triggerHelper( 'onCheckLike', like )
 			} );
 		},
 		
