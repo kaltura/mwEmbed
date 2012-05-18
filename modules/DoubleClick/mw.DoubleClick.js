@@ -20,6 +20,9 @@ mw.DoubleClick.prototype = {
 
 	// Status variables for ad and content playback.
 	adPlaying: false,
+	// The monitor interval index:
+	adMonitor: null,
+	
 	// store the ad start time
 	adPreviousTimeLeft: null,
 	contentPlaying: false,
@@ -400,6 +403,9 @@ mw.DoubleClick.prototype = {
 			_this.embedPlayer.addPlayerSpinner();
 			// if on iPad hide the quicktime logo: 
 			_this.hidePlayerOffScreen( _this.getAdContainer()  );
+			
+			// Monitor ad progress 
+			_this.monitorAdProgress();
 		} );
 		adsListener( 'STARTED', function(){
 			// check for startted ad playback sequence callback 
@@ -424,11 +430,14 @@ mw.DoubleClick.prototype = {
 				_this.enablePausePlayUI( true );
 			}
 			
-			// Monitor ad progress ( for sequence proxy )
+			// Monitor ad progress 
 			_this.monitorAdProgress();
 		} );
 		adsListener( 'PAUSED' );
-		adsListener( 'FIRST_QUARTILE' );
+		adsListener( 'FIRST_QUARTILE', function(){
+			// Monitor ad progress ( if for some reason we are not already monitoring ) 
+			_this.monitorAdProgress();
+		});
 		adsListener( 'MIDPOINT' );
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE', function(){
@@ -564,6 +573,7 @@ mw.DoubleClick.prototype = {
 		 * Handle any send notification events: 
 		 */
 		embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
+			// Only take local api actions if in an Ad.
 			if( _this.adPlaying ){
 				mw.log("DoubleClick:: sendNotification: " + notificationName );
 				switch( notificationName ){
@@ -594,11 +604,22 @@ mw.DoubleClick.prototype = {
 	},
 	monitorAdProgress: function(){
 		var _this = this;
+		// Keep monitoring ad progress at MonitorRate as long as ad is playing: 
+		if( !this.adMonitor ){
+			this.adMonitor = setInterval( function(){
+				_this.doMonitorAdProgress();
+			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+		}
+	},
+	doMonitorAdProgress: function(){
+		var _this = this;
 		// check if we are still playing an ad:
 		if( !_this.adPlaying ){
 			// update 'timeRemaining' and duration for no-ad ) 
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  null );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration', null );
+			clearInterval( this.adMonitor );
+			this.adMonitor = 0;
 			return ;
 		}
 		// Check if we have an ad buffer underun that double click apparently does not check for :( 
@@ -628,7 +649,8 @@ mw.DoubleClick.prototype = {
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
 		var $adVid = $( _this.getAdContainer() ).find( 'video' );
 		if( $adVid.length ){
-			var vid = $adVid.get(0);
+			// always use the latest video: 
+			var vid = $adVid[ $adVid.length -1 ];
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
 			
@@ -638,10 +660,6 @@ mw.DoubleClick.prototype = {
 			);
 			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}
-		// Keep monitoring ad progress at MonitorRate as long as ad is playing: 
-		setTimeout( function(){
-			_this.monitorAdProgress();
-		}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 	},
 	// Handler for various ad errors.
 	onAdError: function( errorEvent ) {
