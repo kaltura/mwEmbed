@@ -464,8 +464,7 @@ var kWidget = {
 		//while ( targetNode.hasChildNodes() ) {
 		//   targetNode.removeChild( targetNode.lastChild );
 		//}
-		if(!options)
-			options = {};
+		options = options = {};
 
 		// look some other places for sizes:
 		if( !options.width && settings.width )
