@@ -392,7 +392,6 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Setup a local reference to the player interface:
 		var $interface = embedPlayer.$interface;
-
 		// Check fullscreen state ( if already true do nothing )
 		if( this.inFullScreen == true ){
 			return ;
@@ -420,6 +419,19 @@ mw.PlayerControlBuilder.prototype = {
 			// Make the iframe fullscreen:
 			parentWindow.fullScreenApi.requestFullScreen( parentTarget );
 			
+			// Make sure a size adjustment is requested:
+			// 250 and 500 ms seem to be good times for chrome and firefox
+			// 
+			// Right after the request fullscreen we are not fullscreen yet, and 
+			// there the fullscreen events are not always fired, so we just have some timeouts
+			// to sync to window size.
+			setTimeout( function(){
+				_this.syncPlayerSize();
+			}, 250);
+			setTimeout( function(){
+				_this.syncPlayerSize();
+			}, 500 );
+			
 			// There is a bug with mozfullscreenchange event in all versions of firefox with supportsFullScreen 
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=724816
 			// so we have to have an extra binding to check for size change and then restore. 
@@ -432,6 +444,19 @@ mw.PlayerControlBuilder.prototype = {
 					})
 				}, 250 );
 			}
+		} else {
+			// Check for hybrid html controls / native fullscreen support:
+			var vid = this.embedPlayer.getPlayerElement();
+			if( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen')
+					&&
+				vid && vid.webkitSupportsFullscreen 
+			){
+				this.doHybridNativeFullscreen();
+				return ;
+			} else {
+				// do psudo fullscren 
+				this.doFullScreenPlayerDom();
+			}
 		}
 		
 		// Bind escape to restore in page clip ( IE9 needs a secondary escape binding ) 
@@ -442,26 +467,13 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		} );
 		
-		// Check for hybrid html controls / native fullscreen support:
-		var vid = this.embedPlayer.getPlayerElement();
-		if( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen')
-				&&
-			vid && vid.webkitSupportsFullscreen 
-		){
-			this.doHybridNativeFullscreen();
-			return ;
-		} else {
-			// do psyudo fullscren 
-			this.doFullScreenPlayerDom();
-		}
-		
 		// Pass on touch move event to parent
 		$( document ).bind( 'touchend.fullscreen', function(e){
 			$( embedPlayer ).trigger( 'onTouchEnd' );
 		});
+		
+		// trigger the open fullscreen event: 
 		$( embedPlayer ).trigger( 'onOpenFullScreen' );
-		
-		
 	},
 	/**
 	 * supports hybrid native fullscreen, player html controls, and fullscreen is native

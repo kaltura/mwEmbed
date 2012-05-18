@@ -99,17 +99,25 @@ mw.EmbedPlayerNative = {
 	 */
 	addPlayScreenWithNativeOffScreen: function(){
 		var _this = this;
-		// hide the player offscreen:
+		// Hide the player offscreen:
 		this.hidePlayerOffScreen();
 		this.keepPlayerOffScreenFlag = true;
 		
 		// Add a play button on the native player:
 		this.addLargePlayBtn();
 		
-		// add an image poster: 
+		// Add a binding to show loader once  clicked to show the loader
+		// bad ui to leave the play button displayed
+		this.$interface.find( '.play-btn-large' ).click( function(){
+			_this.$interface.find( '.play-btn-large' ).hide();
+			_this.addPlayerSpinner();
+			_this.hideSpinnerOncePlaying();
+		});
+		
+		// Add an image poster: 
 		var posterSrc = ( this.poster ) ? this.poster :
 			mw.getConfig( 'EmbedPlayer.BlackPixel' );
-		// check if the poster is already present:
+		// Check if the poster is already present:
 		if( this.$interface.find( '.playerPoster' ).length ){
 			this.$interface.find( '.playerPoster' ).css('background-image', 'url(\'' + this.poster + '\')' );
 		} else {

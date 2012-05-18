@@ -430,7 +430,7 @@ mw.DoubleClick.prototype = {
 			if( lastAdStartTime !== null &&
 				new Date().getTime() - lastAdStartTime < 250
 			){
-				mw.log("ERROR:: stacking Ad STARTED! :" + ( lastAdStartTime - new Date().getTime() ) );
+				mw.log("ERROR:: Stacking Ad STARTED! :" + ( lastAdStartTime - new Date().getTime() ) );
 				// Not sure what we should do here:
 				// 1) we can't unload manager since we have to play back the active ads
 				// 2) we can't pause the ad since it could pause the really active ad

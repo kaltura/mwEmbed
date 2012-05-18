@@ -1839,7 +1839,7 @@ mw.EmbedPlayer.prototype = {
 			this.hideLargePlayBtn();
 		}
 		// re add an absolute positioned spinner: 
-		$( this ).getAbsoluteOverlaySpinner()
+		$( this ).show().getAbsoluteOverlaySpinner()
 		.attr( 'id', sId );
 	},
 	/**
