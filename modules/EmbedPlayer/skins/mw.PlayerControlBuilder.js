@@ -408,6 +408,9 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Check for native support for fullscreen and we are in an iframe server
 		if ( window.fullScreenApi.supportsFullScreen && mw.getConfig('EmbedPlayer.IsIframeServer' ) ) {
+			var preFullscreenHeight = $(window).height();
+			var fullscreenHeight = null;
+			
 			var parentWindow = window.parent; 
 			var parentTarget = parentWindow.document.getElementById( this.embedPlayer.id );
 			// Add a binding to catch "escape" fullscreen
@@ -436,12 +439,16 @@ mw.PlayerControlBuilder.prototype = {
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=724816
 			// so we have to have an extra binding to check for size change and then restore. 
 			if( $.browser.mozilla ){
-				// put in a timeout to give the browser time to ~enter~ fullscreen initially. 
-				setTimeout( function(){
-					$( window ).bind('resize.postFullScreenResize', function(){
-						$(window).unbind( '.postFullScreenResize' );
-						_this.restoreWindowPlayer();
-					})
+				_this.fullscreenRestoreCheck = setInterval( function(){
+						if( fullscreenHeight && $(window).height() < fullscreenHeight ){
+							// Mozilla triggered size change:
+							clearInterval ( _this.fullscreenRestoreCheck );
+							_this.restoreWindowPlayer();
+						}
+						// set fullscreen height: 
+						if( ! fullscreenHeight && preFullscreenHeight!= $(window).height() ){
+							fullscreenHeight = $(window).height();
+						}
 				}, 250 );
 			}
 		} else {
@@ -476,7 +483,7 @@ mw.PlayerControlBuilder.prototype = {
 		$( embedPlayer ).trigger( 'onOpenFullScreen' );
 	},
 	/**
-	 * supports hybrid native fullscreen, player html controls, and fullscreen is native
+	 * Supports hybrid native fullscreen, player html controls, and fullscreen is native
 	 */
 	doHybridNativeFullscreen: function(){
 		var vid = this.embedPlayer.getPlayerElement();
@@ -497,6 +504,9 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		}, 250 );
 	},
+	/**
+	 * Sync player size with the layout windo
+	 */
 	syncPlayerSize: function(){
 		var embedPlayer = this.embedPlayer;
 		mw.log( "PlayerControlBuilder::syncPlayerSize: window:" +  $(window).width() + ' player: ' + $( embedPlayer ).width() );
