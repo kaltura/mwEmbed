@@ -135,7 +135,6 @@ mw.DoubleClick.prototype = {
 			google.ima.SdkLoader.load("3");
 		});
 	},
-	
 	addManagedBinding: function(){
 		var _this = this;
 		mw.log( "DoubleClick::addManagedBinding" );
@@ -147,7 +146,7 @@ mw.DoubleClick.prototype = {
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
-				mw.log( "DoubleClick:: addManagedBinding : requestAds");
+				mw.log( "DoubleClick:: addManagedBinding : requestAds:" +  _this.getConfig("adTagUrl")  );
 				_this.requestAds( unescape( _this.getConfig("adTagUrl") ) );	
 			};
 		});
@@ -216,7 +215,7 @@ mw.DoubleClick.prototype = {
 						// Setup the restore callback
 						_this.restorePlayerCallback = callback;
 						// Request ads
-						mw.log( "DoubleClick:: addManagedBinding : requestAds");
+						mw.log( "DoubleClick:: addManagedBinding : requestAds: " + cuePoint.sourceUrl );
 						_this.requestAds( unescape( cuePoint.sourceUrl ) );	
 					};
 				});
@@ -224,7 +223,7 @@ mw.DoubleClick.prototype = {
 			// If cuepoint ad type is midroll request inline: 
 			if( adType == 'midroll' ){
 				// All cuepoints act as "midrolls" 
-				mw.log( "DoubleClick:: addKalturaCuePointBindings: midroll -> requestAds");
+				mw.log( "DoubleClick:: addKalturaCuePointBindings: midroll -> requestAds" );
 				// pause the player while requesting adds
 				_this.embedPlayer.pauseLoading();
 				// request the ads: 
