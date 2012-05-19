@@ -2209,9 +2209,16 @@ mw.EmbedPlayer.prototype = {
 		// Hide the spinner once we have time update: 
 		if( _this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
 			_this._checkHideSpinner = false;
-			// also hide the play button ( in case it was there somehow )
-			_this.hideLargePlayBtn();
 			_this.hidePlayerSpinner();
+			
+			if( _this.isPersistantPlayBtn() ){
+				// add the play button likely iphone or native player that needs the play button on
+				// non-event "exit native html5 player"
+				_this.addLargePlayBtn();
+			} else{
+				// also hide the play button ( in case it was there somehow )
+				_this.hideLargePlayBtn();
+			}
 		}
 
 		// Check if a javascript currentTime change based seek has occurred
