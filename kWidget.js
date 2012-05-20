@@ -1135,7 +1135,9 @@ var kWidget = {
 		 var _this = this;
 		 // if we have already loaded files for this context, issue the callback directly. 
 		 if( this.depDoneLoading ){
-			 callback();
+			 if( callback ){
+				 callback();
+			 }
 			 return;
 		 }
 		 // always include callback in queuedLoadDepsCallbacks
