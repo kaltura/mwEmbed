@@ -11,7 +11,7 @@ function jsKalturaPlayerTest( videoId ){
 	module( "Kaltura analytics" );
 	
 	asyncTest("Beacon includes required properties", function(){
-		$("#" + videoId).bind('Kaltura.SendAnalyticEvent', function( event, aName, aEvent ){
+		window[ 'sendKalturaSendAnalyticEvent' ] = function( aName, aEvent ){
 			if( aName != 'MEDIA_LOADED' ){
 				// Only check for 'MEDIA_LOADED' for now
 				return ;
@@ -51,7 +51,7 @@ function jsKalturaPlayerTest( videoId ){
 			equal( aEvent[ 'userId'], 'customUid', "Set Custom user id");
 			
 			start();
-		});
+		};
 	})
 }
 </script>
@@ -59,14 +59,16 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 
 <script type="text/javascript">
+$( document ).bind( 'Kaltura.SendAnalyticEvent', function(event, analyticName, analyticValue){
+	$('#analyticsLog').append( analyticName + "\n");
+	setTimeout(function(){
+		sendKalturaSendAnalyticEvent( analyticName, analyticValue );
+	},100);
+});
+
 // non-jquery display of events: 
 if( window.QUnit ){
 	$(document).ready(function(){ $('#analyticsContainer').hide() });
-} else{
-	mw.setConfig( 'EmbedPlayer.OverlayControls', false );
-	$( document ).bind( 'Kaltura.SendAnalyticEvent', function(event, analyticName ){
-		$('#analyticsLog').append( analyticName + "\n");
-	});
 }
 </script>
 </head>
