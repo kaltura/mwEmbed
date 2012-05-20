@@ -183,9 +183,6 @@ mw.KAdPlayer.prototype = {
 				return true;				
 			});
 		}
-		// make sure we are in a play state:
-		_this.embedPlayer.playInterfaceUpdate();
-
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 			_this.playVideoSibling(	
@@ -198,6 +195,7 @@ mw.KAdPlayer.prototype = {
 				} 
 			);
 		} else {
+			_this.embedPlayer.playInterfaceUpdate();
 			_this.embedPlayer.switchPlaySource( 
 				targetSource,
 				function( vid ) {
@@ -577,6 +575,9 @@ mw.KAdPlayer.prototype = {
 			vid.src = source.getSrc();
 			vid.load();
 			vid.play();
+			
+			// update the main player state per ad playback: 
+			_this.embedPlayer.playInterfaceUpdate();
 			
 			if( playingCallback ){
 				playingCallback( vid );
