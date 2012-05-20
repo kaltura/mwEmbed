@@ -14,6 +14,18 @@
 		// The preferred media format order 
 		'EmbedPlayer.CodecPreference': [ 'webm', 'h264', 'mp3', 'ogg' ],
 		
+		// If video tag support should be disabled all-together, used to test 
+		// fallback decoding methods and direct file links
+		'EmbedPlayer.DisableVideoTagSupport': false,
+		
+		// If detected browser flash support should be ignored, and flash support, 
+		// set to false. This will eliminate support for flash based playback.
+		'EmbedPlayer.DisableHTML5FlashFallback': false, 
+
+		// If the java cortado player should be disabled, true by default, 
+		// some installs that only have free codecs should leave this enabled. 
+		'EmbedPlayer.DisableJava' : true,
+		
 		// If the flavor selector menu option should be displayed: 
 		// This will be enabled by default in some future release of the library
 		'EmbedPlayer.EnableFlavorSelector' : false,
