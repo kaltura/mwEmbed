@@ -117,12 +117,12 @@
 						// Check for playlist change media call and issue a play directly on the video element
 						// gets around iOS restriction on async playback
 						if( componentName == 'playlistAPI.dataProvider' && property == 'selectedIndex' ){
-							// only iOS devices have the autoPlay restriction 
-							if( mw.isIOS() ){
-								$( '#' + playerProxy.id + '_ifp' )
-									.get(0).contentWindow
-									.$( '#' + playerProxy.id ).get(0).play();
-							}
+							// iOS devices have a autoPlay restriction, we issue a raw play call on 
+							// the video tag to "capture the user gesture" so that future 
+							// javascript play calls can work. 
+							$( '#' + playerProxy.id + '_ifp' )
+								.get(0).contentWindow
+								.$( '#' + playerProxy.id ).get(0).play();
 						}
 						// always send postMessage on setKDPAttribute
 						return true;
@@ -978,7 +978,7 @@
 
 						// Update the poster 
 						embedPlayer.updatePosterSrc(
-								mw.getKalturaThumbUrl({
+								kWidget.getKalturaThumbUrl({
 									'entry_id' : embedPlayer.kentryid,
 									'partner_id' : embedPlayer.kwidgetid.replace('_', ''),
 									'width' : parseInt( embedPlayer.width),

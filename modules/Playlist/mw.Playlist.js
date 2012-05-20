@@ -497,9 +497,17 @@ mw.Playlist.prototype = {
 		// trigger a playlist_playClip event: 
 		embedPlayer.triggerHelper( 'Playlist_PlayClip', [ clipIndex, !!autoContinue ]);
 		
+		// iOS devices have a autoPlay restriction, we issue a raw play call on 
+		// the video tag to "capture the user gesture" so that future 
+		// javascript play calls can work
+		if( embedPlayer.getPlayerElement() ){
+			mw.log("Playlist:: issue raw play call to capture play click");
+			embedPlayer.getPlayerElement().play();
+		}
+		
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex, function(){
-			mw.log( "mw.Playlist::playClip > sourceHandler playClip callback ");
+			mw.log( "Playlist::playClip > sourceHandler playClip callback ");
 			// Do any local player interface updates: 
 			_this.updatePlayerUi( clipIndex );
 			// Add playlist specific bindings: 
@@ -513,7 +521,7 @@ mw.Playlist.prototype = {
 	*/
 	drawEmbedPlayer: function( clipIndex , callback ){
 		var _this = this;
-		mw.log( "mw.Playlist:: updatePlayer " + clipIndex );
+		mw.log( "Playlist:: updatePlayer " + clipIndex );
 		this.clipIndex = clipIndex;
 		// Check if we really have to update: 
 		var embedPlayer = _this.getEmbedPlayer();
@@ -533,7 +541,7 @@ mw.Playlist.prototype = {
 	},
 	addClipBindings: function( ){
 		var _this = this;
-		mw.log( "mw.Playlist::addClipBindings" );
+		mw.log( "Playlist::addClipBindings" );
 		
 		var embedPlayer = _this.getEmbedPlayer();
 		// remove any old playlist bindings:
@@ -551,17 +559,17 @@ mw.Playlist.prototype = {
 		// Setup ondone playing binding to play next clip (if autoContinue is true )
 		if( _this.sourceHandler.autoContinue == true ){
 			$( embedPlayer ).bind( 'postEnded' + _this.bindPostfix, function(event ){
-				mw.log("mw.Playlist:: postEnded > on inx: " + _this.clipIndex );
+				mw.log("Playlist:: postEnded > on inx: " + _this.clipIndex );
 				// Play next clip
 				if( parseInt(  _this.clipIndex ) + 1 < _this.sourceHandler.getClipCount() && parseInt( _this.clipIndex ) + 1 <= parseInt( mw.getConfig( 'Playlist.MaxClips' ) ) ){
 					// Update the onDone action object to not run the base control done:
-					mw.log("mw.Playlist:: postEnded > continue playlist set: onDoneInterfaceFlag false ");
+					mw.log("Playlist:: postEnded > continue playlist set: onDoneInterfaceFlag false ");
 					embedPlayer.onDoneInterfaceFlag = false;
 					_this.clipIndex = parseInt( _this.clipIndex ) + 1;
 					// update the player and play the next clip
 					_this.playClip( _this.clipIndex, true );
 				} else {
-					mw.log("mw.Playlist:: End of playlist, run normal end action" );
+					mw.log("Playlist:: End of playlist, run normal end action" );
 					embedPlayer.triggerHelper( 'playlistDone' );
 					// Update the onDone action object to not run the base control done:
 					embedPlayer.onDoneInterfaceFlag = true;
