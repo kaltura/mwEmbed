@@ -49,6 +49,11 @@ mw.KAdPlayer.prototype = {
 		
 		adSlot.playbackDone = function(){
 			mw.log("KAdPlayer:: display: adSlot.playbackDone" );
+			// Restore overlay if hidden: 
+			if( $( '#' + _this.getOverlayId() ).length ){
+				$( '#' + _this.getOverlayId() ).show();
+			}
+			
 			// remove click binding if present
 			$( _this.embedPlayer ).unbind( 'click' + _this.adClickPostFix );
 			// stop any ad tracking: 
@@ -183,9 +188,9 @@ mw.KAdPlayer.prototype = {
 				return true;				
 			});
 		}
-		// make sure we are in a play state:
-		_this.embedPlayer.playInterfaceUpdate();
-
+		// hide any ad overlay 
+		$( '#' + this.getOverlayId() ).hide();
+		
 		// Play the ad as sibling to the current video element.
 		if( _this.isVideoSiblingEnabled( targetSource ) ) {
 			_this.playVideoSibling(	
@@ -198,6 +203,7 @@ mw.KAdPlayer.prototype = {
 				} 
 			);
 		} else {
+			_this.embedPlayer.playInterfaceUpdate();
 			_this.embedPlayer.switchPlaySource( 
 				targetSource,
 				function( vid ) {
@@ -364,6 +370,12 @@ mw.KAdPlayer.prototype = {
 		_this.embedPlayer.triggerHelper( 'AdSupport_UpdateCompanion', [ companionObject ] );
 	},
 	/**
+	 * gets the overlay id: 
+	 */
+	getOverlayId: function(){
+		return this.embedPlayer.id + '_overlay';
+	},
+	/**
 	 * Display a nonLinier add ( like a banner overlay )
 	 * @param adSlot
 	 * @param adConf
@@ -371,7 +383,7 @@ mw.KAdPlayer.prototype = {
 	 */
 	displayNonLinear: function( adSlot, adConf ){
 		var _this = this;
-		var overlayId =  _this.embedPlayer.id + '_overlay';
+		var overlayId = this.getOverlayId();
 		var nonLinearConf = _this.selectFromArray( adConf.nonLinear ); 
 		
 		// Add the overlay if not already present: 
@@ -434,7 +446,7 @@ mw.KAdPlayer.prototype = {
 		
 		// Only display the the overlay for allocated time:
 		adSlot.doneFunctions.push(function(){
-			$('#' +overlayId ).fadeOut('fast');
+			$('#' +overlayId ).remove();
 		});
 		
 	},
@@ -577,6 +589,9 @@ mw.KAdPlayer.prototype = {
 			vid.src = source.getSrc();
 			vid.load();
 			vid.play();
+			
+			// update the main player state per ad playback: 
+			_this.embedPlayer.playInterfaceUpdate();
 			
 			if( playingCallback ){
 				playingCallback( vid );

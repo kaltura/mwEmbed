@@ -1,34 +1,48 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Prefered Flavor Bit Rate test</title>
+<title>Download Link test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script>
+	// Disable flash and html5 to test download link: 
+	mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
+	mw.setConfig( 'EmbedPlayer.DisableHTML5FlashFallback', true );
+	// Enable the download link player: 
+	mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
+</script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
-	
 	// Name this module
-	module( "Prefered Flavor Bit Rate" );
-
-	test( "Iframe in DOM", function() {
-		ok( $('#' + videoId + '_ifp').length , 'iframe found' );
-		equal( typeof iframeContext, 'object', "iframe JavaScript context available" );
-	});
-
-	asyncTest("Iframe layout elements", function(){
+	module( "Download Link" );
+	var kdp = $( '#' + videoId ).get(0);
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
+	
+	asyncTest("Check for Download link", function(){
 		kalturaQunitWaitForPlayer(function(){
-			ok( $iframe.find('.play-btn-large').length, ".play-btn-large found" );
-			ok( $iframe.find('.play-btn').length, ".play-btn found" );
+			ok( $iframe.find( '.play-btn-large' ).length, "Found player link" );
+			var link = $iframe.find( '.play-btn-large' ).parent().attr('href') || '';
+			notEqual( link.indexOf( '/entryId/0_uka1msg4/' ), -1 ,
+					"Link includes entry path" );
 			start();
+			setTimeout(function(){
+				doChangeMediaTest();				
+			},100)
 		});
 	});
-	asyncTest("Iframe config", function(){
-		equal( iframeContext.mw.getConfig('Kaltura.IframeRewrite' ), false, "Kaltura.IframeRewrite" ); 
-		equal( iframeContext.mw.getConfig('Mw.LogPrepend'), 'iframe:', "Mw.LogPrepend ");
-		// Test page context config: 
-		equal( iframeContext.mw.getConfig('EmbedPlayer.EnableIpadHTMLControls'), true, 'EmbedPlayer.EnableIpadHTMLControls' );
-		start();
+	
+	asyncTest("Change Media of linked player", function(){
+		window['onChangeMedia'] = function(){
+			var entryId = kdp.evaluate('{mediaProxy.entry.id}');
+			equal(entryId, "0_swup5zao", "Entry 0_swup5zao change success" );
+			start();
+		}
+		window['doChangeMediaTest'] = function(){
+			kdp.addJsListener( 'changeMedia', 'onChangeMedia' );
+			kdp.sendNotification( "changeMedia", { 'entryId' : '0_swup5zao' } );
+		}
 	});
+	
 }
 </script>
 <script>
@@ -43,7 +57,7 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Prefered Flavor Bit Rate test </h2>
+<h2> Download Link test </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
 

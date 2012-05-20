@@ -29,11 +29,11 @@ var webmNativePlayer = new mw.MediaPlayer( 'webmNative', ['video/webm'], 'Native
 var imageOverlayPlayer = new mw.MediaPlayer( 'imageOverlay', ['image/jpeg', 'image/png'], 'ImageOverlay' );
 
 // VLC player
-var vlcMimeList = ['video/ogg', 'audio/ogg', 'audio/mpeg', 'application/ogg', 'video/x-flv', 'video/mp4', 'video/h264', 'video/x-msvideo', 'video/mpeg', 'video/3gp'];
-var vlcPlayer = new mw.MediaPlayer( 'vlc-player', vlcMimeList, 'Vlc' );
+//var vlcMimeList = ['video/ogg', 'audio/ogg', 'audio/mpeg', 'application/ogg', 'video/x-flv', 'video/mp4', 'video/h264', 'video/x-msvideo', 'video/mpeg', 'video/3gp'];
+//var vlcPlayer = new mw.MediaPlayer( 'vlc-player', vlcMimeList, 'Vlc' );
 
 // Generic plugin
-var oggPluginPlayer = new mw.MediaPlayer( 'oggPlugin', ['video/ogg', 'application/ogg'], 'Generic' );
+//var oggPluginPlayer = new mw.MediaPlayer( 'oggPlugin', ['video/ogg', 'application/ogg'], 'Generic' );
 
 	
 mw.EmbedTypes = {
@@ -80,15 +80,23 @@ mw.EmbedTypes = {
 		}
 		return false;
 	},
-
+	addFlashPlayer: function(){
+		if( !mw.getConfig( 'EmbedPlayer.DisableHTML5FlashFallback' ) ){
+			this.mediaPlayers.addPlayer( kplayer );
+		}
+	},
+	addJavaPlayer: function(){
+		if( !mw.getConfig( 'EmbedPlayer.DisableJava' ) ){
+			this.mediaPlayers.addPlayer( cortadoPlayer );
+		}
+	},
 	/**
 	 * Detects what plug-ins the client supports
 	 */
 	detectPlayers: function() {
 		mw.log( "mw.EmbedTypes::detectPlayers running detect" );
 		
-		// for now all players support "images" ( ImageOverlay is responsible for detecting "native only" players 
-		// and skip image overlays in such cases. 
+		// All players support for playing "images" 
 		this.mediaPlayers.addPlayer( imageOverlayPlayer );
 		
 		// In Mozilla, navigator.javaEnabled() only tells us about preferences, we need to
@@ -105,24 +113,23 @@ mw.EmbedTypes = {
 		// found. And it doesn't register an application/x-java-applet mime type like
 		// Mozilla does.
 		if ( javaEnabled && ( navigator.appName == 'Opera' ) ) {
-			this.mediaPlayers.addPlayer( cortadoPlayer );
+			this.addJavaPlayer();
 		}
 
 		// ActiveX plugins
 		if ( $.browser.msie ) {
 			// check for flash
-			if ( this.testActiveX( 'ShockwaveFlash.ShockwaveFlash' ) ) {
-				this.mediaPlayers.addPlayer( kplayer );
-				// this.mediaPlayers.addPlayer( flowPlayer );
+			if ( this.testActiveX( 'ShockwaveFlash.ShockwaveFlash' ) ){
+				this.addFlashPlayer();
 			}
 			 // VLC
-			 if ( this.testActiveX( 'VideoLAN.VLCPlugin.2' ) ) {
-				 this.mediaPlayers.addPlayer( vlcPlayer );
-			 }
+			 //if ( this.testActiveX( 'VideoLAN.VLCPlugin.2' ) ) {
+			 //	 this.mediaPlayers.addPlayer( vlcPlayer );
+			 //}
 
 			 // Java ActiveX
 			 if ( this.testActiveX( 'JavaWebStart.isInstalled' ) ) {
-				 this.mediaPlayers.addPlayer( cortadoPlayer );
+				 this.addJavaPlayer();
 			 }
 
 			 // quicktime (currently off)
@@ -131,9 +138,13 @@ mw.EmbedTypes = {
 			 // this.mediaPlayers.addPlayer(quicktimeActiveXPlayer);
 		 }
 		// <video> element
-		if ( typeof HTMLVideoElement == 'object' // Firefox, Safari
-				|| typeof HTMLVideoElement == 'function' ) // Opera
-		{
+		if ( ! mw.getConfig('EmbedPlayer.DisableVideoTagSupport' ) &&
+				( 
+				typeof HTMLVideoElement == 'object' // Firefox, Safari
+					|| 
+				typeof HTMLVideoElement == 'function' // Opera
+				)  
+		){
 			// Test what codecs the native player supports:
 			try {
 				var dummyvid = document.createElement( "video" );
@@ -194,33 +205,33 @@ mw.EmbedTypes = {
 					// In case it is null or undefined
 					pluginName = '';
 				}
-				if ( pluginName.toLowerCase() == 'vlc multimedia plugin' || pluginName.toLowerCase() == 'vlc multimedia plug-in' ) {
-					this.mediaPlayers.addPlayer( vlcPlayer );
-					continue;
-				}
+				//if ( pluginName.toLowerCase() == 'vlc multimedia plugin' || pluginName.toLowerCase() == 'vlc multimedia plug-in' ) {
+				//	this.mediaPlayers.addPlayer( vlcPlayer );
+				//	continue;
+				//}
 
 				if ( type == 'application/x-java-applet' ) {
-					this.mediaPlayers.addPlayer( cortadoPlayer );
+					this.addJavaPlayer();
 					continue;
 				}
 
-				if ( (type == 'video/mpeg' || type == 'video/x-msvideo') &&
-					pluginName.toLowerCase() == 'vlc multimedia plugin' ) {
-					this.mediaPlayers.addPlayer( vlcMozillaPlayer );
+				if ( (type == 'video/mpeg' || type == 'video/x-msvideo') ){
+					//pluginName.toLowerCase() == 'vlc multimedia plugin' ) {
+					//this.mediaPlayers.addPlayer( vlcMozillaPlayer );
 				}
 
 				if ( type == 'application/ogg' ) {
-					if ( pluginName.toLowerCase() == 'vlc multimedia plugin' ) {
-						this.mediaPlayers.addPlayer( vlcMozillaPlayer );
-					// else if ( pluginName.indexOf( 'QuickTime' ) > -1 )
-					// this.mediaPlayers.addPlayer(quicktimeMozillaPlayer);
-					} else {
-						this.mediaPlayers.addPlayer( oggPluginPlayer );
-					}
+					//if ( pluginName.toLowerCase() == 'vlc multimedia plugin' ) {
+						//this.mediaPlayers.addPlayer( vlcMozillaPlayer );
+					//else if ( pluginName.indexOf( 'QuickTime' ) > -1 )
+						//this.mediaPlayers.addPlayer(quicktimeMozillaPlayer);
+					//} else {
+						//this.mediaPlayers.addPlayer( oggPluginPlayer );
+					//}
 					continue;
 				} else if ( uniqueMimesOnly ) {
 					if ( type == 'application/x-vlc-player' ) {
-						this.mediaPlayers.addPlayer( vlcMozillaPlayer );
+						// this.mediaPlayers.addPlayer( vlcMozillaPlayer );
 						continue;
 					} else if ( type == 'video/quicktime' ) {
 						// this.mediaPlayers.addPlayer(quicktimeMozillaPlayer);
@@ -229,23 +240,12 @@ mw.EmbedTypes = {
 				}
 
 				if ( type == 'application/x-shockwave-flash' ) {
-
-					this.mediaPlayers.addPlayer( kplayer );
-					// this.mediaPlayers.addPlayer( flowPlayer );
-
-					// check version to add omtk:
-					if( navigator.plugins["Shockwave Flash"] ){
-						var flashDescription = navigator.plugins["Shockwave Flash"].description;
-						var descArray = flashDescription.split( " " );
-						var tempArrayMajor = descArray[2].split( "." );
-						var versionMajor = tempArrayMajor[0];
-						// mw.log("version of flash: " + versionMajor);
-					}
+					this.addFlashPlayer();
 					continue;
 				}
 			}
 		}
-
+		
 		// Allow extensions to detect and add their own "players"
 		mw.log("EmbedPlayer::trigger:embedPlayerUpdateMediaPlayersEvent");
 		$( mw ).trigger( 'embedPlayerUpdateMediaPlayersEvent' , this.mediaPlayers );
