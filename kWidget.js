@@ -21,7 +21,7 @@ var kWidget = {
 	 * 
 	 * MUST BE CALLED AFTER all of the mwEmbedLoader.php includes. 
 	 */
-	setup:function(){
+	setup: function(){
 		var _this = this;
 		/**
 		 *  Check the kWidget for environment settings and set appropriate flags
@@ -55,14 +55,20 @@ var kWidget = {
 	/**
 	 * Checks the onPage environment context and sets appropriate flags.
 	 */ 
-	checkEnvironment:function(){
+	checkEnvironment: function(){
 		
 		// Note forceMobileHTML5 url flag be disabled by uiConf on the iframe side of the player
 		// with: 
 		if( document.URL.indexOf('forceMobileHTML5') !== -1 &&
-			! mw.getConfig( 'disableForceMobileHTML5'))
-		{
+			! mw.getConfig( 'disableForceMobileHTML5')
+		){
 			mw.setConfig( 'forceMobileHTML5', true );
+		}
+		
+		// Check if browser should use flash ( IE < 9 )
+		var ieMatch = navigator.userAgent.match( /MSIE\s([0-9])/ );
+		if ( ieMatch && parseInt( ieMatch[1] ) < 9 ) {
+			mw.setConfig('Kaltura.ForceFlashOnDesktop', true );
 		}
 		
 		// TODO deprecate in 1.7 where we don't have client side api. 
@@ -678,6 +684,9 @@ var kWidget = {
 	 * @return {boolean} true or false if HTML5 video tag is supported
 	 */
 	supportsHTML5: function(){
+		if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
+			return false;
+		}
 		var dummyvid = document.createElement( "video" );
 		// Blackberry does not really support html5
 		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
@@ -699,6 +708,10 @@ var kWidget = {
 	 * @return {boolean} true or false if flash > 10 is supported. 
 	 */
 	supportsFlash: function() {
+		if( mw.getConfig('EmbedPlayer.DisableHTML5FlashFallback' ) ){
+			return false;
+		}
+
 		var version = this.getFlashVersion().split(',').shift();
 		if( version < 10 ){
 			return false;
