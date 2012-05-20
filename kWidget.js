@@ -82,7 +82,7 @@ var kWidget = {
 			if ((/iphone|ipod|ipad.*os 5/gi).test(navigator.appVersion)) {
 				window.onpageshow = function(evt) {
 					// If persisted then it is in the page cache, force a reload of the page.
-					if (evt.persisted) {
+					if ( evt.persisted ) {
 						document.body.style.display = "none";
 						location.reload();
 					}
@@ -464,8 +464,8 @@ var kWidget = {
 		//while ( targetNode.hasChildNodes() ) {
 		//   targetNode.removeChild( targetNode.lastChild );
 		//}
-		if(!options)
-			options = {};
+		if(!settings)
+			settings = {};
 
 		// look some other places for sizes:
 		if( !options.width && settings.width )

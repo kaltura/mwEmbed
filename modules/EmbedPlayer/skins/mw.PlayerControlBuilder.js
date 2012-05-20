@@ -24,7 +24,7 @@ mw.PlayerControlBuilder.prototype = {
 	longTimeDisp: true,
 
 	// Default volume layout is "vertical"
-	volume_layout : 'vertical',
+	volumeLayout : 'vertical',
 
 	// Default control bar height
 	height: mw.getConfig( 'EmbedPlayer.ControlsHeight' ),
@@ -187,9 +187,9 @@ mw.PlayerControlBuilder.prototype = {
 		//Set up local var to control container:
 		var $controlBar = embedPlayer.$interface.find( '.control-bar' );
 
-		this.available_width = embedPlayer.getPlayerWidth();
+		this.availableWidth = embedPlayer.getPlayerWidth();
 
-		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.available_width );
+		mw.log( 'PlayerControlsBuilder:: addControlComponents into:' + this.availableWidth );
 		// Build the supportedComponents list
 		this.supportedComponents = $.extend( this.supportedComponents, embedPlayer.supports );
 
@@ -206,6 +206,10 @@ mw.PlayerControlBuilder.prototype = {
 		if( mw.getConfig( 'EmbedPlayer.EnableOptionsMenu' ) === false ){
 			this.supportedComponents[ 'options'] = false;
 		}
+		// Check for volume control 
+		if( mw.getConfig( 'EmbedPlayer.EnableVolumeControl') === false ){
+			this.supportedComponents[ 'volumeControl'] = false;
+		}
 
 		// Check if we have multiple playable sources ( if only one source don't display source switch )
 		if( embedPlayer.mediaElement.getPlayableSources().length == 1 ){
@@ -214,46 +218,48 @@ mw.PlayerControlBuilder.prototype = {
 		
 		$( embedPlayer ).trigger( 'addControlBarComponent', this);
 		
-		var addComponent = function( component_id ){
-			if ( _this.supportedComponents[ component_id ] ) {
-				if ( _this.available_width > _this.components[ component_id ].w ) {
+		var addComponent = function( componentId ){
+			if ( _this.supportedComponents[ componentId ] ) {
+				if ( _this.availableWidth > _this.components[ componentId ].w ) {
 					// Append the component
 					$controlBar.append(
-						_this.getComponent( component_id )
+						_this.getComponent( componentId )
 					);
-					_this.available_width -= _this.components[ component_id ].w;
+					_this.availableWidth -= _this.components[ componentId ].w;
 				} else {
-					mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + component_id );
+					mw.log( 'PlayerControlBuilder:: Not enough space for control component:' + componentId );
 				}
 			}
 		};
 
 		// Change volumeControl width base on layout
-		if( this.volume_layout == 'horizontal' ) {
+		if( this.volumeLayout == 'horizontal' ) {
 			this.components.volumeControl.w = 70;
 		}
 		
 		// Output components
-		for ( var component_id in this.components ) {
+		for ( var componentId in this.components ) {
 			// Check for (component === false ) and skip
-			if( this.components[ component_id ] === false ){
+			if( this.components[ componentId ] === false ){
 				continue;
 			}
 
 			// Special case with playhead and time ( to make sure they are to the left of everything else )
-			if ( component_id == 'playHead' || component_id == 'timeDisplay'){
+			if ( componentId == 'playHead' || componentId == 'timeDisplay'){
 				continue;
 			}
 
 			// Skip "fullscreen" button for assets or where height is 0px ( audio )
-			if( component_id == 'fullscreen' && this.embedPlayer.isAudio() ){
+			if( componentId == 'fullscreen' && this.embedPlayer.isAudio() ){
 				continue;
 			}
-			addComponent( component_id );
+			addComponent( componentId );
 		}
 		// Add special case remaining components: 
-		addComponent( 'timeDisplay' );
-		if( this.available_width > 30 ){
+		if( mw.getConfig( 'EmbedPlayer.EnableTimeDisplay' ) ){
+			addComponent( 'timeDisplay' );
+		}
+		if( this.availableWidth > 30 ){
 			addComponent( 'playHead' );	
 		}
 		$(embedPlayer).trigger( 'controlBarBuildDone' );
@@ -392,7 +398,6 @@ mw.PlayerControlBuilder.prototype = {
 
 		// Setup a local reference to the player interface:
 		var $interface = embedPlayer.$interface;
-
 		// Check fullscreen state ( if already true do nothing )
 		if( this.inFullScreen == true ){
 			return ;
@@ -409,6 +414,9 @@ mw.PlayerControlBuilder.prototype = {
 		
 		// Check for native support for fullscreen and we are in an iframe server
 		if ( window.fullScreenApi.supportsFullScreen && mw.getConfig('EmbedPlayer.IsIframeServer' ) ) {
+			var preFullscreenHeight = $(window).height();
+			var fullscreenHeight = null;
+			
 			var parentWindow = window.parent; 
 			var parentTarget = parentWindow.document.getElementById( this.embedPlayer.id );
 			// Add a binding to catch "escape" fullscreen
@@ -420,17 +428,47 @@ mw.PlayerControlBuilder.prototype = {
 			// Make the iframe fullscreen:
 			parentWindow.fullScreenApi.requestFullScreen( parentTarget );
 			
+			// Make sure a size adjustment is requested:
+			// 250 and 500 ms seem to be good times for chrome and firefox
+			// 
+			// Right after the request fullscreen we are not fullscreen yet, and 
+			// there the fullscreen events are not always fired, so we just have some timeouts
+			// to sync to window size.
+			setTimeout( function(){
+				_this.syncPlayerSize();
+			}, 250);
+			setTimeout( function(){
+				_this.syncPlayerSize();
+			}, 500 );
+			
 			// There is a bug with mozfullscreenchange event in all versions of firefox with supportsFullScreen 
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=724816
 			// so we have to have an extra binding to check for size change and then restore. 
 			if( $.browser.mozilla ){
-				// put in a timeout to give the browser time to ~enter~ fullscreen initially. 
-				setTimeout( function(){
-					$( window ).bind('resize.postFullScreenResize', function(){
-						$(window).unbind( '.postFullScreenResize' );
-						_this.restoreWindowPlayer();
-					})
+				_this.fullscreenRestoreCheck = setInterval( function(){
+						if( fullscreenHeight && $(window).height() < fullscreenHeight ){
+							// Mozilla triggered size change:
+							clearInterval ( _this.fullscreenRestoreCheck );
+							_this.restoreWindowPlayer();
+						}
+						// set fullscreen height: 
+						if( ! fullscreenHeight && preFullscreenHeight!= $(window).height() ){
+							fullscreenHeight = $(window).height();
+						}
 				}, 250 );
+			}
+		} else {
+			// Check for hybrid html controls / native fullscreen support:
+			var vid = this.embedPlayer.getPlayerElement();
+			if( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen')
+					&&
+				vid && vid.webkitSupportsFullscreen 
+			){
+				this.doHybridNativeFullscreen();
+				return ;
+			} else {
+				// do psudo fullscren 
+				this.doFullScreenPlayerDom();
 			}
 		}
 		
@@ -442,29 +480,16 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		} );
 		
-		// Check for hybrid html controls / native fullscreen support:
-		var vid = this.embedPlayer.getPlayerElement();
-		if( mw.getConfig('EmbedPlayer.EnableIpadNativeFullscreen')
-				&&
-			vid && vid.webkitSupportsFullscreen 
-		){
-			this.doHybridNativeFullscreen();
-			return ;
-		} else {
-			// do psyudo fullscren 
-			this.doFullScreenPlayerDom();
-		}
-		
 		// Pass on touch move event to parent
 		$( document ).bind( 'touchend.fullscreen', function(e){
 			$( embedPlayer ).trigger( 'onTouchEnd' );
 		});
+		
+		// trigger the open fullscreen event: 
 		$( embedPlayer ).trigger( 'onOpenFullScreen' );
-		
-		
 	},
 	/**
-	 * supports hybrid native fullscreen, player html controls, and fullscreen is native
+	 * Supports hybrid native fullscreen, player html controls, and fullscreen is native
 	 */
 	doHybridNativeFullscreen: function(){
 		var vid = this.embedPlayer.getPlayerElement();
@@ -485,6 +510,9 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		}, 250 );
 	},
+	/**
+	 * Sync player size with the layout windo
+	 */
 	syncPlayerSize: function(){
 		var embedPlayer = this.embedPlayer;
 		mw.log( "PlayerControlBuilder::syncPlayerSize: window:" +  $(window).width() + ' player: ' + $( embedPlayer ).width() );
@@ -1406,7 +1434,7 @@ mw.PlayerControlBuilder.prototype = {
 		} );
 
 		// Add vertical volume display hover
-		if ( this.volume_layout == 'vertical' ) {
+		if ( this.volumeLayout == 'vertical' ) {
 			// Default volume binding:
 			var hoverOverDelay = false;
 			var $targetvol = embedPlayer.$interface.find( '.vol_container' ).hide();
@@ -1456,7 +1484,7 @@ mw.PlayerControlBuilder.prototype = {
 			}
 		};
 
-		if ( this.volume_layout == 'vertical' ) {
+		if ( this.volumeLayout == 'vertical' ) {
 			sliderConf[ 'orientation' ] = "vertical";
 		}
 
@@ -2176,11 +2204,11 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	* Get component
 	*
-	* @param {String} component_id Component key to grab html output
+	* @param {String} componentId Component key to grab html output
 	*/
-	getComponent: function( component_id ) {
-		if ( this.components[ component_id ] ) {
-			return this.components[ component_id ].o( this );
+	getComponent: function( componentId ) {
+		if ( this.components[ componentId ] ) {
+			return this.components[ componentId ].o( this );
 		} else {
 			return false;
 		}
@@ -2189,28 +2217,28 @@ mw.PlayerControlBuilder.prototype = {
 	/**
 	 * Get a component height
 	 *
-	 * @param {String} component_id Component key to grab height
+	 * @param {String} componentId Component key to grab height
 	 * @return height or false if not set
 	 */
-	getComponentHeight: function( component_id ) {
-		if ( this.components[ component_id ]
-			&& this.components[ component_id ].h )
+	getComponentHeight: function( componentId ) {
+		if ( this.components[ componentId ]
+			&& this.components[ componentId ].h )
 		{
-			return this.components[ component_id ].h;
+			return this.components[ componentId ].h;
 		}
 		return 0;
 	},
 
 	/**
 	* Get a component width
-	* @param {String} component_id Component key to grab width
+	* @param {String} componentId Component key to grab width
 	* @return width or false if not set
 	*/
-	getComponentWidth: function( component_id ){
-		if ( this.components[ component_id ]
-			&& this.components[ component_id ].w )
+	getComponentWidth: function( componentId ){
+		if ( this.components[ componentId ]
+			&& this.components[ componentId ].w )
 		{
-			return this.components[ component_id ].w;
+			return this.components[ componentId ].w;
 		}
 		return 0;
 	},
@@ -2446,7 +2474,7 @@ mw.PlayerControlBuilder.prototype = {
 			'o' : function( ctrlObj ) {
 				mw.log( 'PlayerControlBuilder::Set up volume control for: ' + ctrlObj.embedPlayer.id );
 				var $volumeOut = $( '<span />' );
-				if ( ctrlObj.volume_layout == 'horizontal' ) {
+				if ( ctrlObj.volumeLayout == 'horizontal' ) {
 					$volumeOut.append(
 						$( '<div />' )
 						.addClass( "ui-slider ui-slider-horizontal rButton volume-slider" )
@@ -2463,7 +2491,7 @@ mw.PlayerControlBuilder.prototype = {
 				 		.addClass( "ui-icon ui-icon-volume-on" )
 				 	)
 				 );
-				if ( ctrlObj.volume_layout == 'vertical' ) {
+				if ( ctrlObj.volumeLayout == 'vertical' ) {
 					$volumeOut.find('.volume_control').append(
 						$( '<div />' )
 						.hide()
@@ -2580,7 +2608,7 @@ mw.PlayerControlBuilder.prototype = {
 					.css({
 						"position" : 'absolute',
 						"left" : '33px',
-						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.available_width ) ) + 'px'
+						"right" : ( ( embedPlayer.getPlayerWidth() - ctrlObj.availableWidth ) ) + 'px'
 					})
 					// Playhead binding
 					.slider( sliderConfig );

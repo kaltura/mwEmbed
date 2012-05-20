@@ -42,7 +42,7 @@
 		// and native controls when the fullscreen button is pressed. 
 		// its not the default since often users want playback control if using html controls,
 		// ( i.e no add skip etc ) 
-		'EmbedPlayer.EnableIpadNativeFullscreen': true,
+		'EmbedPlayer.EnableIpadNativeFullscreen': false,
 		
 		// The attribution library page
 		'EmbedPlayer.LibraryPage': 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
@@ -112,6 +112,12 @@
 		
 		// If fullscreen is global enabled.
 		"EmbedPlayer.EnableFullscreen" : true,
+		
+		// If the embed player time display should be shown
+		'EmbedPlayer.EnableTimeDisplay' : true, 
+		
+		// If the embed player volume control should be displayed
+		'EmbedPlayer.EnableVolumeControl' : true,
 		
 		// If fullscreen should pop-open a new window 
 		//( instead of trying to expand the video player to browser fullscreen ) 
