@@ -1263,6 +1263,8 @@ mw.EmbedPlayer.prototype = {
 		
 		// Clear out the player error div:
 		this.$interface.find('.error').remove();
+		this.controlBuilder.closeMenuOverlay();
+		
 		// Restore the control bar:
 		this.$interface.find('.control-bar').show();
 		// Hide the play btn
