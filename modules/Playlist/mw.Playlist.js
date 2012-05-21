@@ -505,11 +505,12 @@ mw.Playlist.prototype = {
 			embedPlayer.getPlayerElement().play();
 		}
 		
+		// Update selected clip: 
+		_this.updatePlayerUi( clipIndex );
+		
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex, function(){
 			mw.log( "Playlist::playClip > sourceHandler playClip callback ");
-			// Do any local player interface updates: 
-			_this.updatePlayerUi( clipIndex );
 			// Add playlist specific bindings: 
 			_this.addClipBindings();
 			// Restore onDoneInterfaceFlag 
