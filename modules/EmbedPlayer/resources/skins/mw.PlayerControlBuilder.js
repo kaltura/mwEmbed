@@ -413,20 +413,20 @@ mw.PlayerControlBuilder.prototype = {
 		$( embedPlayer ).trigger( 'fullScreenStoreVerticalScroll' );
 		
 		// Check for native support for fullscreen and we are in an iframe server
-		if ( window.fullScreenApi.supportsFullScreen && mw.getConfig('EmbedPlayer.IsIframeServer' ) ) {
-			var preFullscreenHeight = $(window).height();
+		if ( window.fullScreenApi.supportsFullScreen ) {
+			var fsWindow = this.getFsWindowContext();
+			var preFullscreenHeight = this.getPreFsHeight();
 			var fullscreenHeight = null;
-			
-			var parentWindow = window.parent; 
-			var parentTarget = parentWindow.document.getElementById( this.embedPlayer.id );
+			var fsTarget = this.getFsTarget(); 
+				
 			// Add a binding to catch "escape" fullscreen
-			parentTarget.addEventListener( fullScreenApi.fullScreenEventName, function( event ) {
-				if ( ! parentWindow.fullScreenApi.isFullScreen() ) {
+			fsTarget.addEventListener( fullScreenApi.fullScreenEventName, function( event ) {
+				if ( ! fsWindow.fullScreenApi.isFullScreen() ) {
 					_this.restoreWindowPlayer();
 				}
 			});
 			// Make the iframe fullscreen:
-			parentWindow.fullScreenApi.requestFullScreen( parentTarget );
+			fsWindow.fullScreenApi.requestFullScreen( fsTarget );
 			
 			// Make sure a size adjustment is requested:
 			// 250 and 500 ms seem to be good times for chrome and firefox
@@ -742,7 +742,28 @@ mw.PlayerControlBuilder.prototype = {
 			return true;
 		});
 	},
-
+	// TOOD a little fs object abstraction? 
+	getPreFsHeight: function(){
+		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+			return $(window).height();
+		} else {
+			return this.embedPlayer.$interface.height();
+		}
+	},
+	getFsTarget: function(){
+		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+			return fsWindow.document.getElementById( this.embedPlayer.id )
+		} else{
+			return this.embedPlayer.$interface[0];
+		}
+	},
+	getFsWindowContext: function(){
+		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
+			return window.parent;
+		} else {
+			return window;
+		}
+	},
 	/**
 	* Restore the window player
 	*/
@@ -760,10 +781,10 @@ mw.PlayerControlBuilder.prototype = {
 		this.inFullScreen = false;
 
 		// Check for native support for fullscreen and support native fullscreen restore
-		if ( window.fullScreenApi.supportsFullScreen && mw.getConfig('EmbedPlayer.IsIframeServer' ) ) {
-			var parentWindow = window.parent; 
-			var parentTarget = parentWindow.document.getElementById( this.embedPlayer.id );
-			parentWindow.fullScreenApi.cancelFullScreen( parentTarget );
+		if ( window.fullScreenApi.supportsFullScreen ) {
+			var fsWindow = this.getFsWindowContext();
+			var fsTarget = this.getFsTarget(); 
+			fsWindow.fullScreenApi.cancelFullScreen( fsTarget );
 		}
 
 		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
@@ -773,8 +794,12 @@ mw.PlayerControlBuilder.prototype = {
 			// if an iframe server make sure the player size is in sync with the iframe window size: 
 			// ( iPad sometimes does not fire resize events ) 
 			if( this.isWindowSizePlayer ){
-				setTimeout( function(){_this.syncPlayerSize()}, 50);
-				setTimeout( function(){_this.syncPlayerSize()}, 200);
+				setTimeout( function(){
+					_this.syncPlayerSize();
+				}, 50);
+				setTimeout( function(){
+					_this.syncPlayerSize();
+				}, 200);
 			}
 		}
 		// Restore scrolling on iPad

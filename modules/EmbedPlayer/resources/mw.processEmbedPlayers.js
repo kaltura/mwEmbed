@@ -222,7 +222,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 		var swapPlayerElement = document.createElement('div');
 
 		// Add a class that identifies all embedPlayers: 
-		$( swapPlayerElement ).addClass( 'mwEmbedPlayer' );
+		$( swapPlayerElement ).addClass( 'mwEmbedPlayer' ).css('position', 'relative');
 		
 		// Get properties / methods from playerInterface:
 		for ( var method in playerInterface ) {
@@ -279,7 +279,6 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 			}
 			$spinner.attr('id', 'loadingSpinner_' + playerInterface.id );
 		}
-		
 		return swapPlayerElement;
 	};
 

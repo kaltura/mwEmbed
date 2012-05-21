@@ -8,11 +8,15 @@ return array(
 		'dependencies' => array(
 			// jQuery dependencies:
 			'jquery.triggerQueueCallback',
+			'Spinner',
 			'jquery.loadingSpinner',
 			'jquery.mwEmbedUtil',
 			'mw.MwEmbedSupport.style',
 		),
 		'messageFile' => 'MwEmbedSupport.i18n.php',
+	),
+	"Spinner" => array(
+		'scripts' => 'jquery.loadingSpinner/Spinner.js',
 	),
 	"jquery.loadingSpinner" => array(
 		'scripts' => 'jquery.loadingSpinner/jquery.loadingSpinner.js',
