@@ -4,7 +4,7 @@
 * Client side ( binds a given iFrames to expose the player api ) 
 */
 ( function( mw, $ ) { "use strict";
-	
+
 mw.IFramePlayerApiClient = function( iframe, playerProxy ){
 	return this.init( iframe , playerProxy );
 };

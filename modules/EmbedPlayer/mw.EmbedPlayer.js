@@ -1263,6 +1263,8 @@ mw.EmbedPlayer.prototype = {
 		
 		// Clear out the player error div:
 		this.$interface.find('.error').remove();
+		this.controlBuilder.closeMenuOverlay();
+		
 		// Restore the control bar:
 		this.$interface.find('.control-bar').show();
 		// Hide the play btn
@@ -1343,9 +1345,7 @@ mw.EmbedPlayer.prototype = {
 	},
 	
 	/**
-	 * Returns the HTML code for the video when it is in thumbnail mode.
-	 * playing, configuring the player, inline cmml display, HTML 
-	 * download, and embed code.
+	 * Updates the poster HTML
 	 */
 	updatePosterHTML: function () {
 		mw.log( 'EmbedPlayer:updatePosterHTML::' + this.id );
@@ -1399,8 +1399,11 @@ mw.EmbedPlayer.prototype = {
 			this.addLargePlayBtn();
 		}
 	},
+	/**
+	 * Abstract method, must be set by player inteface
+	 */
 	addPlayScreenWithNativeOffScreen: function(){
-		mw.log( "Error: must be override with native method" );
+		mw.log( "Error: must override with player inteface" );
 		return ;
 	},
 	/**
@@ -1411,9 +1414,13 @@ mw.EmbedPlayer.prototype = {
 		if( this.isPersistantPlayBtn() ){
 			return true;
 		}
-		// else if we are using native controls return false: 
+		// If we are using native controls return false: 
 		return !this.useNativePlayerControls();
 	},
+	/**
+	 * Checks if the play button should stay on screen during playback, 
+	 * cases where a native player is dipalyed such as iPhone.  
+	 */
 	isPersistantPlayBtn: function(){
 		return mw.isAndroid2() || 
 				( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen' ) );
@@ -1457,7 +1464,9 @@ mw.EmbedPlayer.prototype = {
 		}
 		return false;
 	},
-
+	/**
+	 * Checks if the native player is persistent in the dom since the intial page build out. 
+	 */
 	isPersistentNativePlayer: function(){
 		// Since we check this early on sometimes the player
 		// has not yet been updated to the pid location
@@ -1466,12 +1475,18 @@ mw.EmbedPlayer.prototype = {
 		}
 		return $('#' + this.pid ).hasClass('persistentNativePlayer');
 	},
+	/**
+	 * Hides the large play button
+	 * TODO move to player controls 
+	 */
 	hideLargePlayBtn: function(){
-		if( !this.isPersistantPlayBtn() ){
+		if( this.$interface ){
 			this.$interface.find( '.play-btn-large' ).hide();
 		}
 	},
-	// Add a play button (if not already there ) 
+	/**
+	 * Add a play button (if not already there ) 
+	 */
 	addLargePlayBtn:function(){
 		// if using native controls make sure we can click the big play button by restoring 
 		// interface click events:
@@ -1491,7 +1506,6 @@ mw.EmbedPlayer.prototype = {
 			);
 		}
 	},
-	
 	/**
 	 * Abstract method,
 	 * Get native player html ( should be set by mw.EmbedPlayerNative )
@@ -1545,6 +1559,9 @@ mw.EmbedPlayer.prototype = {
 		// Return the embed code
 		return embedCode;
 	},
+	/**
+	 * Gets the iframe source url
+	 */
 	getIframeSourceUrl: function(){
 		var iframeUrl = false;
 		$( this ).trigger( 'getShareIframeSrc', function( localIframeSrc ){
@@ -1597,7 +1614,7 @@ mw.EmbedPlayer.prototype = {
 		return iframeUrl;
 	},
 	/**
-	 * Get the share embed Video tag code
+	 * Get the share embed Video tag html to share the embed code. 
 	 */
 	getShareEmbedVideoJs: function(){
 
@@ -1771,6 +1788,10 @@ mw.EmbedPlayer.prototype = {
 			return false;
 		}
 	},
+	/**
+	 * Update the player inteface for playback
+	 * TODO move to controlBuilder
+	 */
 	playInterfaceUpdate: function(){
 		var _this = this;
 		mw.log( 'EmbedPlayer:: playInterfaceUpdate' );
@@ -1808,27 +1829,32 @@ mw.EmbedPlayer.prototype = {
 		this.addPlayerSpinner();
 		this.isPauseLoading = true;
 	},
+	/**
+	 * Adds a loading spinner to the player. 
+	 */
 	addPlayerSpinner: function(){
 		var sId = 'loadingSpinner_' + this.id;
 		// remove any old spinner
 		$( '#' + sId ).remove();
 		// hide the play btn if present
-		if( this.$interface ) {
-			this.hideLargePlayBtn();
-		}
+		this.hideLargePlayBtn();
 		// re add an absolute positioned spinner: 
-		$( this ).getAbsoluteOverlaySpinner()
+		$( this ).show().getAbsoluteOverlaySpinner()
 		.attr( 'id', sId );
 	},
+	/**
+	 * Hides the loading spinner
+	 */
 	hidePlayerSpinner: function(){
 		this.isPauseLoading = false;
 		// remove the spinner
 		$( '#loadingSpinner_' + this.id + ',.loadingSpinner' ).remove();
 		// hide the play btn
-		if( this.$interface ) {
-			this.hideLargePlayBtn();
-		}
+		this.hideLargePlayBtn();
 	},
+	/**
+	 * Hides the loading spinner once playing. 
+	 */
 	hideSpinnerOncePlaying: function(){
 		this._checkHideSpinner = true;
 		// if using native controls, hide the spinner directly
@@ -1858,6 +1884,9 @@ mw.EmbedPlayer.prototype = {
 		}
 		_this.pauseInterfaceUpdate();
 	},
+	/**
+	 * Sets the player interface to paused mode. 
+	 */
 	pauseInterfaceUpdate: function(){
 		var _this =this;
 		mw.log("EmbedPlayer::pauseInterfaceUpdate");
@@ -2182,9 +2211,16 @@ mw.EmbedPlayer.prototype = {
 		// Hide the spinner once we have time update: 
 		if( _this._checkHideSpinner && _this.currentTime != _this.getPlayerElementTime() ){
 			_this._checkHideSpinner = false;
-			// also hide the play button ( in case it was there somehow )
-			_this.hideLargePlayBtn();
 			_this.hidePlayerSpinner();
+			
+			if( _this.isPersistantPlayBtn() ){
+				// add the play button likely iphone or native player that needs the play button on
+				// non-event "exit native html5 player"
+				_this.addLargePlayBtn();
+			} else{
+				// also hide the play button ( in case it was there somehow )
+				_this.hideLargePlayBtn();
+			}
 		}
 
 		// Check if a javascript currentTime change based seek has occurred
@@ -2221,7 +2257,9 @@ mw.EmbedPlayer.prototype = {
 			_this.pauseTime = null;
 		}
 	},
-
+	/**
+	 * Updates the player time and playhead position based on currentTime
+	 */
 	updatePlayheadStatus: function(){
 		var _this = this;
 		if ( this.currentTime >= 0 && this.duration ) {

@@ -527,7 +527,7 @@
 					mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1 
 				)
 			){
-				iframeRequest += kServiceConfigToUrl();
+				iframeRequest += kWidget.serviceConfigToUrl();
 			}
 		
 			// Add no cache flag if set:
