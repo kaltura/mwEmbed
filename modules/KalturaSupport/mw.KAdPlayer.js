@@ -302,7 +302,7 @@ mw.KAdPlayer.prototype = {
 		$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
 			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
 			if( _this.isVideoSiblingEnabled() ) {
-				_this.getVideoAdSiblingElement().volume = changeValue;
+				vid.volume = changeValue;
 			}
 		});
 		
@@ -595,7 +595,7 @@ mw.KAdPlayer.prototype = {
 			// Update the main player state per ad playback: 
 			_this.embedPlayer.playInterfaceUpdate();
 			
-			if( playingCallback ){
+			if( $.isFunction( playingCallback ) ){
 				playingCallback( vid );
 			}
 			

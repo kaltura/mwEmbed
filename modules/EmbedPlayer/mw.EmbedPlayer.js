@@ -1990,7 +1990,7 @@ mw.EmbedPlayer.prototype = {
 			var percent = 0;
 		}
 		// will auto trigger because of slider change, so no need to trigger volume change in this call
-		this.setVolume( percent );
+		this.setVolume( percent, true );
 		// Update the interface
 		this.setInterfaceVolume( percent );
 		// trigger the onToggleMute event
