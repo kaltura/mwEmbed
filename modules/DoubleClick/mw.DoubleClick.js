@@ -20,6 +20,9 @@ mw.DoubleClick.prototype = {
 
 	// Status variables for ad and content playback.
 	adPlaying: false,
+	// The monitor interval index:
+	adMonitor: null,
+	
 	// store the ad start time
 	adPreviousTimeLeft: null,
 	contentPlaying: false,
@@ -56,39 +59,81 @@ mw.DoubleClick.prototype = {
 		// remove any old bindings: 
 		embedPlayer.unbindHelper( this.bindPostfix );
 		
+		// make sure any old ad Manager is unloaded:
+		var globalAdsManger = $(_this.embedPlayer).data( 'doubleClickAdsMangerRef' );
+		if( globalAdsManger ){
+			mw.log( "DoubleClick::unload old adManger" );
+			if ( $.isFunction( globalAdsManger.unload ) ) {
+				globalAdsManger.unload();
+			}
+			if( $('#' + this.getAdContainerId() ).length ){
+				$('#' + this.getAdContainerId() ).remove();
+			}
+		}
+		
 		// Load double click ima per doc:
+		this.loadIma(function(){
+			// Determine if we are in managed or kaltura point based mode. 
+			if( _this.getConfig( "preSequence" ) && _this.getConfig( "adTagUrl" ) ){
+				// Check for adPattern 
+				if( _this.getConfig( 'adPattern' ) ){
+					var adIndex = _this.getAdPatternIndex();
+					mw.log( "DoubleClick:: adPattern: " + _this.getConfig( 'adPattern' ) +
+							" on index: " + adIndex );
+					if( adIndex == 'A' ){
+						// Managed bindings
+						_this.addManagedBinding();
+					}
+				} else{
+					// No defined ad pattern always use managed bindings
+					_this.addManagedBinding();
+				}
+			} else {
+				// Add cuepoint bindings
+				_this.addKalturaCuePointBindings();
+			}
+			// Issue the callback to continue player build out: 
+			callback();
+		}, function( errorCode ){
+			mw.log( "Error::DoubleClick Loading Error: " + errorCode );
+			// Don't add any bindings directly issue callback: 
+			callback();
+		});
+	},
+	/**
+	 * Get the global adPattern index: 
+	 */
+	getAdPatternIndex:function(){
+		var adPattern = this.getConfig( 'adPattern' );
+		var currentAdIndex = $( this.embedPlayer ).data('DcAdPatternIndex');
+		if( typeof currentAdIndex === 'undefined' ){
+			currentAdIndex = 0;
+		} else{
+			// increment the index
+			currentAdIndex++
+			// index is past adPattern length reset to 0
+			if( currentAdIndex > adPattern.length -1 ){
+				currentAdIndex = 0;
+			}
+		}
+		// update add index:
+		$( this.embedPlayer ).data('DcAdPatternIndex', currentAdIndex);
+		// return the adPattern index: 
+		return adPattern[currentAdIndex];
+	},
+	/**
+	 * Load the google IMA library: 
+	 */
+	loadIma:function( successCB, failureCB ){
 		// http://code.google.com/apis/ima/docs/sdks/googlehtml5_ads_v3.html#loadsdk
 		$.getScript('http://s0.2mdn.net/instream/html5/ima.js', function(){
 			google.ima.SdkLoader.setCallbacks( function(){
-				if( $.isFunction( callback) ){
-					// Determine if we are in managed or kaltura point based mode. 
-					if( _this.getConfig( "preSequence" ) && _this.getConfig( "adTagUrl" ) ){
-						// Managed bindings
-						_this.addManagedBinding();
-					} else {
-						// Add cuepoint bindings
-						_this.addKalturaCuePointBindings();
-					}
-					callback();
-				}
+				successCB();
 			}, function( errorCode ){
-				mw.log( "Error::DoubleClick Loading Error: " + errorCode );
-				// Don't add any bindings directly issue callback: 
-				callback();
+				failureCB( errorCode );
 			});
 			google.ima.SdkLoader.load("3");
 		});
-		
-		// Load double click ima library and issue the callback:
-		/*$.getScript('http://www.google.com/jsapi', function(){
-			google.load("ima", "3", {
-				"callback" : function(){
-					if( callback ){
-						callback();
-					}
-				}
-			});
-		});*/
 	},
 	addManagedBinding: function(){
 		var _this = this;
@@ -101,7 +146,7 @@ mw.DoubleClick.prototype = {
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
-				mw.log( "DoubleClick:: addManagedBinding : requestAds");
+				mw.log( "DoubleClick:: addManagedBinding : requestAds:" +  _this.getConfig("adTagUrl")  );
 				_this.requestAds( unescape( _this.getConfig("adTagUrl") ) );	
 			};
 		});
@@ -155,7 +200,7 @@ mw.DoubleClick.prototype = {
 			// Get the ad type for each cuepoint
 			var adType = _this.embedPlayer.kCuePoints.getRawAdSlotType( cuePoint );
 			
-			mw.log("DoubleClick:: AdOpportunity:: " + cuePoint.startTime + ' ad type: ' + adType);
+			mw.log( "DoubleClick:: AdOpportunity:: " + cuePoint.startTime + ' ad type: ' + adType );
 			if( adType == 'overlay' ){
 				_this.loadAndDisplayOverlay( cuePoint );
 				return true; // continue to next cue point
@@ -170,7 +215,7 @@ mw.DoubleClick.prototype = {
 						// Setup the restore callback
 						_this.restorePlayerCallback = callback;
 						// Request ads
-						mw.log( "DoubleClick:: addManagedBinding : requestAds");
+						mw.log( "DoubleClick:: addManagedBinding : requestAds: " + cuePoint.sourceUrl );
 						_this.requestAds( unescape( cuePoint.sourceUrl ) );	
 					};
 				});
@@ -178,7 +223,7 @@ mw.DoubleClick.prototype = {
 			// If cuepoint ad type is midroll request inline: 
 			if( adType == 'midroll' ){
 				// All cuepoints act as "midrolls" 
-				mw.log( "DoubleClick:: addKalturaCuePointBindings: midroll -> requestAds");
+				mw.log( "DoubleClick:: addKalturaCuePointBindings: midroll -> requestAds" );
 				// pause the player while requesting adds
 				_this.embedPlayer.pauseLoading();
 				// request the ads: 
@@ -201,11 +246,10 @@ mw.DoubleClick.prototype = {
 		_this.requestAds( cuePoint.sourceUrl, 'overlay' );
 	},
 	getAdContainer: function(){
-		var adContainerId ='adContainer' + this.embedPlayer.id;
-		if( !$('#' + adContainerId ).length ){
+		if( !$('#' + this.getAdContainerId() ).length ){
 			$( this.getContent() ).after( 
 				$('<div />')
-					.attr( 'id',  adContainerId )
+					.attr( 'id',  this.getAdContainerId() )
 					.css({
 						'position' : 'absolute',
 						'top' : '0px',
@@ -213,7 +257,10 @@ mw.DoubleClick.prototype = {
 					})
 			)
 		}
-		return $('#' + adContainerId ).get(0);
+		return $('#' + this.getAdContainerId() ).get(0);
+	},
+	getAdContainerId: function(){
+		return 'adContainer' + this.embedPlayer.id;
 	},
 	getAdDisplayContainer: function(){
 		//  Create the ad display container. Use an existing DOM element
@@ -297,7 +344,9 @@ mw.DoubleClick.prototype = {
 		// previously and the content element, so the SDK can track content
 		// and play ads automatically.
 		_this.adsManager = loadedEvent.getAdsManager( this.getAdDisplayContainer(), this.getContent() );
-
+		// add a global ad manager refrence: 
+		$( _this.embedPlayer ).data( 'doubleClickAdsMangerRef', _this.adsManager );
+		
 		// Add Ad Manager Listeners 
 		_this.addAdMangerListeners();
 
@@ -335,6 +384,8 @@ mw.DoubleClick.prototype = {
 			function( event ){ _this.onAdError( event ) },
 			false
 		);
+		// A flag to protect against double ad start. 
+		var lastAdStartTime = null;
 		
 		// Add ad listeners: 
 		adsListener( 'CLICK' );
@@ -350,6 +401,7 @@ mw.DoubleClick.prototype = {
 			// give double click 8 seconds to load the ad, else return to content playback
 			setTimeout( function(){
 				if( $.isFunction( _this.startedAdPlayback ) ){
+					// ad error will resume playback
 					_this.onAdError( " CONTENT_PAUSE_REQUESTED without no ad LOADED! ");
 				}
 			}, 8000 );
@@ -368,8 +420,29 @@ mw.DoubleClick.prototype = {
 			_this.embedPlayer.addPlayerSpinner();
 			// if on iPad hide the quicktime logo: 
 			_this.hidePlayerOffScreen( _this.getAdContainer()  );
+			
+			// Monitor ad progress 
+			_this.monitorAdProgress();
 		} );
 		adsListener( 'STARTED', function(){
+			// Check for ad Stacking ( two starts in less then 250ms ) 
+			if( lastAdStartTime !== null &&
+				new Date().getTime() - lastAdStartTime < 250
+			){
+				mw.log("ERROR:: Stacking Ad STARTED! :" + ( lastAdStartTime - new Date().getTime() ) );
+				// Not sure what we should do here:
+				// 1) we can't unload manager since we have to play back the active ads
+				// 2) we can't pause the ad since it could pause the really active ad
+				// 3) .. all we can do is break out of event flow for player and hope, double click,
+				// 		fixes this bug on their side. 
+				return ;
+			} else{
+				mw.log( 'DoubleClick:: time delta since last adStart: ' + 
+						( new Date().getTime() - lastAdStartTime ) ); 
+			}
+			// update the last ad start time: 
+			lastAdStartTime = new Date().getTime();
+			
 			// check for startted ad playback sequence callback 
 			if( _this.startedAdPlayback ){
 				_this.startedAdPlayback();
@@ -388,11 +461,18 @@ mw.DoubleClick.prototype = {
 			
 			_this.adStartTime = new Date().getTime();
 			
-			// Monitor ad progress ( for sequence proxy )
+			if( _this.getConfig('playPauseUI') ){
+				_this.enablePausePlayUI( true );
+			}
+			
+			// Monitor ad progress 
 			_this.monitorAdProgress();
 		} );
 		adsListener( 'PAUSED' );
-		adsListener( 'FIRST_QUARTILE' );
+		adsListener( 'FIRST_QUARTILE', function(){
+			// Monitor ad progress ( if for some reason we are not already monitoring ) 
+			_this.monitorAdProgress();
+		});
 		adsListener( 'MIDPOINT' );
 		adsListener( 'THIRD_QUARTILE' );
 		adsListener( 'COMPLETE', function(){
@@ -428,6 +508,25 @@ mw.DoubleClick.prototype = {
 				_this.restorePlayer( true );
 			}
 		});
+	},
+	enablePausePlayUI:function( adPlayingBack ){
+		var _this = this;
+		// re-enable hover: 
+		this.embedPlayer.$interface.find( '.play-btn' )
+			.buttonHover()
+			.css('cursor', 'pointer' );
+		
+		// bind pause play
+		this.embedPlayer.$interface.find( '.play-btn' )
+		.unbind('click')
+		.click( function( ) {
+			mw.log("DoubleClick::proxied play btn click: isPlaying:" + adPlayingBack );
+			if( adPlayingBack ){
+				_this.embedPlayer.sendNotification('doPause');
+			} else {
+				_this.embedPlayer.sendNotification('doPlay' );
+			}
+		 })
 	},
 	getPlayerSize: function(){
 		return {
@@ -503,43 +602,80 @@ mw.DoubleClick.prototype = {
 				_this.adsManager.setVolume( percent );
 			}
 		});
+
 		
-		// May have to fix these bindings to support pause play on ads. 
-		embedPlayer.bindHelper( 'onpause' + this.bindPostfix, function( event, percent){
+		/**
+		 * Handle any send notification events: 
+		 */
+		embedPlayer.bindHelper( 'Kaltura_SendNotification' + this.bindPostfix, function(event, notificationName, notificationData){
+			// Only take local api actions if in an Ad.
 			if( _this.adPlaying ){
-				mw.log("DoubleClick::onpause:" + percent );
-				_this.adsManager.pause();
-			}
-		});
-		embedPlayer.bindHelper( 'onplay' + this.bindPostfix, function( event, percent){
-			if( _this.adPlaying ){
-				mw.log("DoubleClick::onplay:" + percent );
-				_this.adsManager.resume();
+				mw.log("DoubleClick:: sendNotification: " + notificationName );
+				switch( notificationName ){
+					case 'doPause':
+						_this.adsManager.pause();
+						$( embedPlayer ).trigger( 'onpause' );
+						if( _this.getConfig('playPauseUI') ){
+							_this.enablePausePlayUI( false );
+						}
+						break;
+					case 'doPlay':
+						_this.adsManager.resume()
+						$( embedPlayer ).trigger( 'onplay' );
+						if( _this.getConfig('playPauseUI') ){
+							_this.enablePausePlayUI( true );
+						}
+						_this.monitorAdProgress();
+						break;
+					case 'doStop':
+						_this.adsManager.stop();
+						_this.adPlaying = false;
+						_this.embedPlayer.sequenceProxy.isInSequence = false;
+						_this.embedPlayer.stop();
+						break;
+				}
 			}
 		});
 	},
 	monitorAdProgress: function(){
+		var _this = this;
+		// Keep monitoring ad progress at MonitorRate as long as ad is playing: 
+		if( !this.adMonitor ){
+			this.adMonitor = setInterval( function(){
+				_this.doMonitorAdProgress();
+			}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
+		}
+	},
+	doMonitorAdProgress: function(){
 		var _this = this;
 		// check if we are still playing an ad:
 		if( !_this.adPlaying ){
 			// update 'timeRemaining' and duration for no-ad ) 
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  null );
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration', null );
+			clearInterval( this.adMonitor );
+			this.adMonitor = 0;
 			return ;
 		}
 		// Check if we have an ad buffer underun that double click apparently does not check for :( 
 		if( _this.adPreviousTimeLeft == _this.adsManager.getRemainingTime()  ){
-			// reset the previus time check: 
+			// reset the previous time check: 
 			_this.adPreviousTimeLeft = null;
+			// if we already have an active buffer check continue: 
+			if( _this.activeBufferUnderunCheck ){
+				return ;
+			}
+			_this.activeBufferUnderunCheck = true;
 			setTimeout( function(){
 				if( _this.adPreviousTimeLeft ==  _this.adsManager.getRemainingTime()  ){
 					mw.log( "DoubleClick:: buffer underun pause? , try to continue playback ");
 					// try to restart playback: 
 					_this.adsManager.resume();
 					// restore the previous time check: 
-					_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime()
+					_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
 				}
-			}, 2000)
+				_this.activeBufferUnderunCheck = false;
+			}, 2000);
 		}
 		// update the adPreviousTimeLeft
 		_this.adPreviousTimeLeft = _this.adsManager.getRemainingTime();
@@ -548,7 +684,8 @@ mw.DoubleClick.prototype = {
 		_this.embedPlayer.adTimeline.updateSequenceProxy( 'timeRemaining',  _this.adsManager.getRemainingTime() );
 		var $adVid = $( _this.getAdContainer() ).find( 'video' );
 		if( $adVid.length ){
-			var vid = $adVid.get(0);
+			// always use the latest video: 
+			var vid = $adVid[ $adVid.length -1 ];
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  vid.duration );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', vid.currentTime );
 			
@@ -558,15 +695,12 @@ mw.DoubleClick.prototype = {
 			);
 			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
 		}
-		// Keep monitoring ad progress at MonitorRate as long as ad is playing: 
-		setTimeout( function(){
-			_this.monitorAdProgress();
-		}, mw.getConfig( 'EmbedPlayer.MonitorRate' ) );
 	},
 	// Handler for various ad errors.
 	onAdError: function( errorEvent ) {
-		mw.log('DoubleClick:: onAdError: ' + errorEvent.getError() );
-		if (this.adsManager && $.isFunction(this.adsManager.unload) ) {
+		var errorMsg = ( typeof errorEvent.getError != 'undefined' ) ? errorEvent.getError() : errorEvent;
+		mw.log('DoubleClick:: onAdError: ' + errorMsg );
+		if (this.adsManager && $.isFunction( this.adsManager.unload ) ) {
 			this.adsManager.unload();
 		}
 		this.restorePlayer();
@@ -612,13 +746,13 @@ mw.DoubleClick.prototype = {
 		vid.play();
 		setTimeout(function(){
 			var vid = _this.getContent();
-			if( !isPlaying ){
+			if( ! isPlaying && ! _this.embedPlayer.paused ){
 				// try again: 
 				vid.load();
 				vid.play();
 				_this.forceContentPlay();
 			}
-		}, 8000 );
+		}, 4000 );
 	},
 	/**
 	 * TODO should be provided by the generic ad plugin class. 

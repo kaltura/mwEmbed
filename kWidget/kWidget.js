@@ -21,7 +21,7 @@ var kWidget = {
 	 * 
 	 * MUST BE CALLED AFTER all of the mwEmbedLoader.php includes. 
 	 */
-	setup:function(){
+	setup: function(){
 		var _this = this;
 		/**
 		 *  Check the kWidget for environment settings and set appropriate flags
@@ -55,14 +55,20 @@ var kWidget = {
 	/**
 	 * Checks the onPage environment context and sets appropriate flags.
 	 */ 
-	checkEnvironment:function(){
+	checkEnvironment: function(){
 		
 		// Note forceMobileHTML5 url flag be disabled by uiConf on the iframe side of the player
 		// with: 
 		if( document.URL.indexOf('forceMobileHTML5') !== -1 &&
-			! mw.getConfig( 'disableForceMobileHTML5'))
-		{
+			! mw.getConfig( 'disableForceMobileHTML5')
+		){
 			mw.setConfig( 'forceMobileHTML5', true );
+		}
+		
+		// Check if browser should use flash ( IE < 9 )
+		var ieMatch = navigator.userAgent.match( /MSIE\s([0-9])/ );
+		if ( ieMatch && parseInt( ieMatch[1] ) < 9 ) {
+			mw.setConfig('Kaltura.ForceFlashOnDesktop', true );
 		}
 		
 		// TODO deprecate in 1.7 where we don't have client side api. 
@@ -82,13 +88,12 @@ var kWidget = {
 			if ((/iphone|ipod|ipad.*os 5/gi).test(navigator.appVersion)) {
 				window.onpageshow = function(evt) {
 					// If persisted then it is in the page cache, force a reload of the page.
-					if (evt.persisted) {
+					if ( evt.persisted ) {
 						document.body.style.display = "none";
 						location.reload();
 					}
 				};
 			} 
-			
 		}
 	},
 	
@@ -119,6 +124,7 @@ var kWidget = {
 			}
 		}
 	},
+	
 	/**
 	 * The kWidget proxied jsCallbackReady
 	 * @param {string} widgetId The id of the widget that is ready
@@ -414,7 +420,7 @@ var kWidget = {
 				mw.getConfig("Kaltura.ServiceUrl").indexOf('kaltura.org') === -1
 			)
 		){
-			iframeSrc += kServiceConfigToUrl();
+			iframeSrc += this.serviceConfigToUrl();
 		}
 
 		// add the forceMobileHTML5 to the iframe if present on the client:
@@ -464,8 +470,8 @@ var kWidget = {
 		//while ( targetNode.hasChildNodes() ) {
 		//   targetNode.removeChild( targetNode.lastChild );
 		//}
-		if(!options)
-			options = {};
+		if(!settings)
+			settings = {};
 
 		// look some other places for sizes:
 		if( !options.width && settings.width )
@@ -678,6 +684,9 @@ var kWidget = {
 	 * @return {boolean} true or false if HTML5 video tag is supported
 	 */
 	supportsHTML5: function(){
+		if( mw.getConfig('EmbedPlayer.DisableVideoTagSupport') ){
+			return false;
+		}
 		var dummyvid = document.createElement( "video" );
 		// Blackberry does not really support html5
 		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
@@ -699,6 +708,10 @@ var kWidget = {
 	 * @return {boolean} true or false if flash > 10 is supported. 
 	 */
 	supportsFlash: function() {
+		if( mw.getConfig('EmbedPlayer.DisableHTML5FlashFallback' ) ){
+			return false;
+		}
+
 		var version = this.getFlashVersion().split(',').shift();
 		if( version < 10 ){
 			return false;
@@ -1057,7 +1070,6 @@ var kWidget = {
                  'fullScreenApi'
                  ],
          playerServer:[
-   	 			'$j.postMessage',
    	 			'mw.IFramePlayerApiServer'
                  ],
 		 player: [ // mwEmbed utilities: 
@@ -1079,7 +1091,6 @@ var kWidget = {
     		 		'mw.style.EmbedPlayer',
     		 		'mw.PlayerControlBuilder',
     		 		// common playback methods:
-    		 		'mw.EmbedPlayerNative',
     		 		'mw.EmbedPlayerKplayer',
     		 		'mw.EmbedPlayerJava',
     		 		// jQuery lib
@@ -1087,8 +1098,6 @@ var kWidget = {
     		 		'$j.widget',
     		 		'$j.ui.mouse',
     		 		'$j.fn.hoverIntent',
-    		 		'$j.cookie',
-    		 		'JSON',
     		 		'$j.ui.slider',
     		 		'$j.fn.menu',
     		 		'mw.style.jquerymenu',
@@ -1102,9 +1111,7 @@ var kWidget = {
     		 		  'base64_encode',
     		 		  //'base64_decode',
     		 		  "mw.KApi",
-    		 		  'mw.KWidgetSupport',
     		 		  'mw.KAnalytics',
-    		 		  'mw.KDPMapping',
     		 		  'mw.KCuePoints',
     		 		  'mw.KTimedText',
     		 		  'mw.KLayout',
@@ -1141,7 +1148,9 @@ var kWidget = {
 		 var _this = this;
 		 // if we have already loaded files for this context, issue the callback directly. 
 		 if( this.depDoneLoading ){
-			 callback();
+			 if( callback ){
+				 callback();
+			 }
 			 return;
 		 }
 		 // always include callback in queuedLoadDepsCallbacks

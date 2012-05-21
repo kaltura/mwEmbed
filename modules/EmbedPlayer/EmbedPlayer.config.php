@@ -13,6 +13,18 @@
 			// Note user selected format order 
 			'EmbedPlayer.CodecPreference' => array( 'webm', 'h264', 'ogg' ),
 			
+			// If video tag support should be disabled all-together, used to test 
+			// fallback decoding methods and direct file links
+			'EmbedPlayer.DisableVideoTagSupport' => false,
+			
+			// If detected browser flash support should be ignored, and flash support, 
+			// set to false. This will eliminate support for flash based playback.
+			'EmbedPlayer.DisableHTML5FlashFallback'=> false, 
+	
+			// If the java cortado player should be disabled, true by default, 
+			// some installs that only have free codecs should leave this enabled. 
+			'EmbedPlayer.DisableJava' => true,
+	
 			// If the flavor selector menu option should be displayed: 
 			// This will be enabled by default in some future release of the library
 			'EmbedPlayer.EnableFlavorSelector' => false,
@@ -100,6 +112,12 @@
 			
 			// If fullscreen is global enabled.
 			"EmbedPlayer.EnableFullscreen" => true,
+			
+			// If the embed player time display should be shown
+			'EmbedPlayer.EnableTimeDisplay' => true, 
+		
+			// If the embed player volume control should be displayed
+			'EmbedPlayer.EnableVolumeControl' => true,
 			
 			// If fullscreen should pop-open a new window
 			//( instead of trying to expand the video player to browser fullscreen )

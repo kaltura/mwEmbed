@@ -4,7 +4,7 @@
 * Client side ( binds a given iFrames to expose the player api ) 
 */
 ( function( mw, $ ) { "use strict";
-	
+
 mw.IFramePlayerApiClient = function( iframe, playerProxy ){
 	return this.init( iframe , playerProxy );
 };
@@ -71,7 +71,7 @@ mw.IFramePlayerApiClient.prototype = {
 					doPostMessage = namedMethodCallbacks[ method ].apply( this, $.makeArray( arguments ) );
 				}
 				if( doPostMessage ){
-					mw.log("IframePlayerApi:: postMessage > " + method );
+					mw.log("IframePlayerApiClient:: postMessage > " + method  + ' : ' + arguments[0] );
 					_this.postMessage( {
 						'method' : method,
 						'args' : $.makeArray( arguments )
@@ -116,7 +116,7 @@ mw.IFramePlayerApiClient.prototype = {
 		var doFullscreen = function(){
 			localIframeInFullscreen = true;
 			
-			mw.log("iframeClient:: doFullscreen> verticalScrollPosition:" + verticalScrollPosition);
+			mw.log("IframePlayerApiClient:: doFullscreen> verticalScrollPosition:" + verticalScrollPosition);
 			scrollToTop();
 			
 			// make sure the page has a zoom of 1: 
@@ -174,7 +174,7 @@ mw.IFramePlayerApiClient.prototype = {
 		}; 
 		
 		var restoreWindowMode = function(){
-			mw.log("iframeClient:: restoreWindowMode> verticalScrollPosition:" + verticalScrollPosition);
+			mw.log("IframePlayerApiClient:: restoreWindowMode> verticalScrollPosition:" + verticalScrollPosition);
 			localIframeInFullscreen = false;
 			
 			// Restore document zoom: 
@@ -183,7 +183,8 @@ mw.IFramePlayerApiClient.prototype = {
 			} else{
 				// Restore user zoom: ( NOTE, there does not appear to be a way to know the 
 				// initial scale, so we just restore to 1 in the absence of explicit viewport tag ) 
-				$('meta[name="viewport"]').attr('content', 'initial-scale=1;');
+				// In order to restore zoom, we must set maximum-scale to a valid value
+				$('meta[name="viewport"]').attr('content', 'initial-scale=1; maximum-scale=8; minimum-scale=1;' );
 			}
 			
 			$iframe
@@ -305,7 +306,7 @@ mw.IFramePlayerApiClient.prototype = {
 				' src: ' + mw.absoluteUrl( $( this.iframe ).attr('src')  ) );*/
 		$.postMessage(
 			this.stringify( msgObject ), 
-			mw.absoluteUrl(  this.getIframeSrc() ), 
+			mw.absoluteUrl( this.getIframeSrc() ), 
 			this.iframe.contentWindow 
 		);
 	},

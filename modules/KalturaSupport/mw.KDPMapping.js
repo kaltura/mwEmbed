@@ -82,9 +82,9 @@
 							var winPrefix = ( globalFuncName.indexOf( 'window.' ) === 0 )?'':'window.';
 							var evalFunction = eval( winPrefix + globalFuncName );
 							// try to get the parent 
-							try{
+							try {
 								var evalFunctionParent =  eval( globalFuncName.split('.').slice(0,-1).join('.') );
-							} catch (e ){
+							} catch ( e ){
 								// can't get the parent just pass the function scope: 
 								var evalFunctionParent = evalFunction;
 							}
@@ -117,12 +117,12 @@
 						// Check for playlist change media call and issue a play directly on the video element
 						// gets around iOS restriction on async playback
 						if( componentName == 'playlistAPI.dataProvider' && property == 'selectedIndex' ){
-							// only iOS devices have the autoPlay restriction 
-							if( mw.isIOS() ){
-								$( '#' + playerProxy.id + '_ifp' )
-									.get(0).contentWindow
-									.$( '#' + playerProxy.id ).get(0).play();
-							}
+							// iOS devices have a autoPlay restriction, we issue a raw play call on 
+							// the video tag to "capture the user gesture" so that future 
+							// javascript play calls can work. 
+							$( '#' + playerProxy.id + '_ifp' )
+								.get(0).contentWindow
+								.$( '#' + playerProxy.id ).get(0).play();
 						}
 						// always send postMessage on setKDPAttribute
 						return true;
@@ -523,7 +523,7 @@
 		 */
 		addJsListener: function( embedPlayer, eventName, callbackName ){
 			var _this = this;
-			//mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
+			// mw.log("KDPMapping::addJsListener: " + eventName + ' cb:' + callbackName );
 
 			// We can pass [eventName.namespace] as event name, we need it in order to remove listeners with their namespace
 			if( typeof eventName == 'string' ) {
@@ -546,7 +546,7 @@
 				// passing a callback by function ref
 				var callback = callbackName;
 			} else {
-				mw.log( "Error: KDPMapping : bad callback type" );
+				mw.log( "Error: KDPMapping : bad callback type: " + callbackName );
 				return ;
 			}
 			
@@ -566,7 +566,7 @@
 			};
 			switch( eventName ){
 				case 'mediaLoadError':
-					b( 'mediaLoadError');
+					b( 'mediaLoadError' );
 					break;
 				case 'mediaError':
 					b( 'mediaError' );
@@ -684,7 +684,7 @@
 				case 'mediaReady':
 					// Check for "media ready" ( namespace to kdpMapping )
 					b( 'playerReady',function( event ){
-						// only issue the media ready callback if entry is actually ready.
+						// Only issue the media ready callback if entry is actually ready.
 						if( embedPlayer.kentryid ){
 							callback( embedPlayer.id )
 						}
@@ -801,16 +801,13 @@
 						callback( { 'timeSlot': slotType }, embedPlayer.id )
 					});
 					break;
-					
-				// generic ad time update
+				// Generic ad time update
 				case 'adUpdatePlayhead': 
 					b( 'AdSupport_AdUpdatePlayhead', function( event, adTime) {
 						callback( adTime, embedPlayer.id );
 					});
 					break;
-					
 				/**OLD NUMERIC SEQUENCE EVENTS */
-					
 				case 'pre1start':
 					b( 'AdSupport_PreSequence');
 					break;
@@ -818,7 +815,6 @@
 				case 'post1start':
 					b( 'AdSupport_PostSequence');
 					break;
-					
 				/**
 				 * Cue point listeners TODO ( move to mw.kCuepoints.js )
 				 */
@@ -982,7 +978,7 @@
 
 						// Update the poster 
 						embedPlayer.updatePosterSrc(
-								mw.getKalturaThumbUrl({
+								kWidget.getKalturaThumbUrl({
 									'entry_id' : embedPlayer.kentryid,
 									'partner_id' : embedPlayer.kwidgetid.replace('_', ''),
 									'width' : parseInt( embedPlayer.width),

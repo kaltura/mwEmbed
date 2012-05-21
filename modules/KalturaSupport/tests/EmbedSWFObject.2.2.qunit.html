@@ -1,56 +1,49 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Seek Api test</title>
+<title>SwfObject 2.2 embed test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
+
+<!--  SwfObject must come before mwEmbed include -->
+<script type="text/javascript" src="resources/swfobject/swfobject.js"></script>
+
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
 	
 	// Name this module
-	module( "Seek Api" );
+	module( "SwfObject 2.2 embed" );
 	var kdp = document.getElementById( videoId );
-	var targetSeekTime = 30;
 	
-	asyncTest("Seek Events", function(){
-		window[ 'onPlayerSeekStart' ] = function(){
-			window['onPlayerSeekStartTime'] = new Date().getTime();
-			ok( true,  'Seek start event fired ( playerSeekStart )' );
-		}
-		
-		window[ 'onPlayerSeekEnd' ] = function(){
-			ok( true,  'Seek end event fired ( playerSeekEnd )' );
-			var seekTime = new Date().getTime() - window['onPlayerSeekStartTime'];
-			ok( ( seekTime > 0 ), "Took " + seekTime + "ms to complete seek" );
+	asyncTest("SwfObject 2.2 is ready", function(){
+		window['onPlayerPlayed'] = function(){
+			ok( true, "playerPlayed event recived ( passed via flashvar )" );
 			
-			ok( ( Math.abs( targetSeekTime - kdp.evaluate('{video.player.currentTime}') ) < 2 ), 
-				"Seek time within 2 seconds of target: " + targetSeekTime + ' actual: ' + 
-				kdp.evaluate('{video.player.currentTime}')	
-			);
-			
-			all_done_with_tests();
-		}
-		
-		window['all_done_with_tests'] = function(){
-			kdp.pause();
-			// done with async test: 
+			kdp.sendNotification('doPause');
+			// test done:
 			start();
+			// give time for testSwarm cooldown.
+			setTimeout(function(){
+				testForNonKalturaSwf();
+			},100)
 		}
+		
+		kdp.addJsListener( 'playerPlayed', 'onPlayerPlayed')	
 		
 		kalturaQunitWaitForPlayer(function(){
-			// Start playback: 
-			kdp.sendNotification( 'doPlay' );
-		
-			// add a seek listener: 
-			kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
-			
-			kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd')
-			
-			// after 1 second of playback issue a seek to 30 seconds
-			setTimeout(function(){
-				kdp.sendNotification('doSeek', targetSeekTime );
-			}, 1000 );
+			ok(true, "Player loaded via swf object embed");
 		});
+	});
+	
+	asyncTest("SwfObject Non-Kaltura embed present", function(){
+		window['testForNonKalturaSwf'] = function(){
+			if( kWidget.supportsFlash() ){
+				ok( $('object#nonKalturaSwf').length, "Non kaltura object embed" );
+			} else {
+				ok( true, 'browser does not support flash');
+			}
+			start();
+		}
 	});
 }
 </script>
@@ -58,22 +51,51 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Seek Api test </h2>
+<h2> SwfObject 2.2 embed test </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
-
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" 
-allowNetworking="all" allowScriptAccess="always" height="333" width="400" xmlns:dc="http://purl.org/dc/terms/" 
-xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" 
-resource="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" 
-data="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4">
-	<param name="allowFullScreen" value="true" />
-	<param name="allowNetworking" value="all" />
-	<param name="allowScriptAccess" value="always" />
-	<param name="bgcolor" value="#000000" />
-	<param name="flashVars" value="&externalInterfaceDisabled=false" />
-	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" />
-</object>
+<div id="videoPlayerTarget">
+</div><br>
+Non-Kaltura swf object embed with swfObject:<br>
+<div id="nonKalturaSwf"></div>
+<script type="text/javascript">
+	var urlPath = window.location.href.split("SWFObject_2.2.html")[0];
+	// Embed video-player
+    var flashvars = {
+		autoPlay: true
+	};
+	var params = {
+		allowFullScreen: "true",
+		allowNetworking: "all",
+		allowScriptAccess: "always",
+		bgcolor: "#000000"
+	};
+	var attributes = {
+		id: "videoPlayer",
+		name: "videoPlayer"
+	};
+	
+	var flashObj = swfobject.embedSWF(
+			"http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4", 
+			"videoPlayerTarget", 
+			"400", 
+			"330", 
+			"10.0.0.0", 
+			"resources/swfobject/expressinstall.swf", 
+			flashvars, 
+			params, 
+			attributes
+	);
+	// Also embed non-kaltua swf:
+	swfobject.embedSWF(
+			"resources/swfobject/test.swf", 
+			"nonKalturaSwf", 
+			"300", 
+			"120", 
+			"9.0.0", 
+			"resources/swfobject/expressInstall.swf"
+	);
+</script>
 
 <!-- 
 

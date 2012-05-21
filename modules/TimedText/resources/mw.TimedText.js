@@ -111,7 +111,7 @@
 				this.config = JSON.parse(  preferenceConfig );
 			}
 			// remove any old bindings on change media: 
-			$( this.embedPlayer ).bind('onChangeMedia', function(){
+			$( this.embedPlayer ).bind( 'onChangeMedia', function(){
 				_this.destroy();
 			});
 			// Remove any old bindings before we add the current bindings: 
@@ -149,6 +149,14 @@
 				$( '#textMenuContainer_' + embedPlayer.id ).remove();
 			} );
 			
+			// Re-Initialize when changing media
+			$( embedPlayer ).bind( 'onChangeMedia' + this.bindPostFix, function() {
+				_this.destroy();
+				_this.updateLayout();
+				_this.setupTextSources();
+				$( '#textMenuContainer_' + embedPlayer.id ).remove();
+			} );
+
 			// Resize the timed text font size per window width
 			$( embedPlayer ).bind( 'onCloseFullScreen'+ this.bindPostFix + ' onOpenFullScreen'+ this.bindPostFix, function() {
 				// Check if we are in fullscreen or not, if so add an additional bottom offset of 
@@ -675,23 +683,36 @@
 		 * Marks the active captions in the menu
 		 */
 		markActive: function( source ) {
-			var _this = this;
-			var embedPlayer = _this.embedPlayer;
 			var $menu = $( '#textMenuContainer_' + this.embedPlayer.id );
 			if ( $menu.length ) {
 				var $captionRows = $menu.find( '.captionRow' );
 				if ( $captionRows.length ) {
 					$captionRows.each( function() {
-						$( this ).removeClass( 'ui-icon-bullet ui-icon-radio-on');
-						var iconClass = ( $( this ).data( 'caption-id') === source.id ) ? 'ui-icon-bullet' : 'ui-icon-radio-on';
+						$( this ).removeClass( 'ui-icon-bullet ui-icon-radio-on' );
+						var iconClass = ( $( this ).data( 'caption-id' ) === source.id ) ? 'ui-icon-bullet' : 'ui-icon-radio-on';
+						$( this ).addClass( iconClass );
+					} );
+				}
+			}			
+		},
+		
+		/**
+		 * Marks the active layout mode in the menu
+		 */
+		markLayoutActive: function ( layoutMode ) {
+			var $menu = $( '#textMenuContainer_' + this.embedPlayer.id );
+			if ( $menu.length ) {
+				var $layoutRows = $menu.find( '.layoutRow' );
+				if ( $layoutRows.length ) {
+					$layoutRows.each( function() {
+						$( this ).removeClass( 'ui-icon-bullet ui-icon-radio-on' );
+						var iconClass = ( $( this ).data( 'layoutMode' ) === layoutMode ) ? 'ui-icon-bullet' : 'ui-icon-radio-on';
 						$( this ).addClass( iconClass );
 					} );
 				}
 			}
-			
 		},
 		
-
 		/**
 		* Get a source object by language, returns "false" if not found
 		* @param {string} langKey The language key filter for selected source
@@ -852,10 +873,13 @@
 					$.getLineItem(
 						gM( 'mwe-timedtext-layout-' + layoutMode),
 						icon,
-						function(){
+						function() {
 							_this.setLayoutMode( layoutMode );
-						})
-					);
+						},
+						'layoutRow',
+						{ 'layoutMode' : layoutMode }
+					)
+				);
 			});
 			return $ul;
 		},
@@ -873,7 +897,9 @@
 				// Update the display:
 				_this.updateLayout();
 			}
+			_this.markLayoutActive( layoutMode );
 		},
+		
 		toggleCaptions: function(){
 			mw.log( "TimedText:: toggleCaptions was:" + this.config.layout );
 			if( this.config.layout == 'off' ){
@@ -1136,6 +1162,9 @@
 			$textTarget.fadeIn('fast');
 		},
 		displayTextTarget: function( $textTarget ){
+			if( this.getLayoutMode() == 'off' ){
+				return;
+			}
 			if( this.getLayoutMode() == 'ontop' ){
 				this.addTextOverlay(
 					$textTarget	

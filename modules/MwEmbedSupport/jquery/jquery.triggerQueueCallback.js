@@ -90,10 +90,7 @@
 				callback( callbackData );
 			}
 		};
-		if( triggerParam ){
-			$( this ).trigger( triggerName, [ triggerParam, doCallbackCheck ]);
-		} else {
-			$( this ).trigger( triggerName, [ doCallbackCheck ] );
-		}
+		var triggerArgs = ( triggerParam )? [ triggerParam, doCallbackCheck ] : [ doCallbackCheck ];
+		$( this ).trigger( triggerName, triggerArgs);
 	};
 } )( jQuery );

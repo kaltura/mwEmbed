@@ -10,20 +10,20 @@
 	
 	// Bind to cuePointReached event 
 	var jsCallbackReady = function( playerId ) {
-		myPlayer = $j('#' + playerId )[0];
+		myPlayer = $('#' + playerId )[0];
 
 		myPlayer.addJsListener( "cuePointReached", "writeLog" );
 		myPlayer.addJsListener( "adOpportunity", "writeLog" );
 	};
 
-	var writeLog = function( qPoint ) {
+	window['writeLog'] = function( qPoint ) {
 		trackEventForTests( qPoint );
 		var type = (qPoint.context) ? 'Ad' : 'Code';
-		$j('#eventRowDesc').after(
-			$j('<tr />' ).append(
-				$j('<td />').text( (qPoint.cuePoint.title) ? qPoint.cuePoint.title : qPoint.cuePoint.description ),
-				$j('<td />').text( type ),
-				$j('<td />').text( qPoint.cuePoint.startTime )
+		$('#eventRowDesc').after(
+			$('<tr />' ).append(
+				$('<td />').text( (qPoint.cuePoint.title) ? qPoint.cuePoint.title : qPoint.cuePoint.description ),
+				$('<td />').text( type ),
+				$('<td />').text( qPoint.cuePoint.startTime )
 			)
 		);
 	};
@@ -31,24 +31,24 @@
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 <script type="text/javascript">	
 var testEventObject = {};
-//we use this round about way of tracking events to show the events are being sent for google.
+//we use this round about way of tracking events
 function trackEventForTests( qPoint ) {
 	if(  qPoint.context == "pre" ){
-		$j( testEventObject ).trigger( 'preCueEvent', qPoint );
+		$( testEventObject ).trigger( 'preCueEvent', qPoint );
 	}
 	if( !qPoint.context ){
-		$j( testEventObject ).trigger( 'cueEvent', qPoint );
+		$( testEventObject ).trigger( 'cueEvent', qPoint );
 	}
 }
 function jsKalturaPlayerTest( videoId ){
 	// Name this module
 	module( "CuePoints" );
 
-	var kdp = $j( '#' + videoId )[0];
+	var kdp = $( '#' + videoId )[0];
 	
 	asyncTest("start cue point", function(){
 		kalturaQunitWaitForPlayer(function(){
-			$j( testEventObject ).bind('preCueEvent', function(event, qPoint){
+			$( testEventObject ).bind('preCueEvent', function(event, qPoint){
 				var type = (qPoint.context) ? 'Ad' : 'Code';
 				equal( qPoint.cuePoint.title, "Preroll", "Preroll event sent" );
 				equal( qPoint.context, "pre", "Preroll Ad cue event sent" );
@@ -58,8 +58,8 @@ function jsKalturaPlayerTest( videoId ){
 			kdp.sendNotification('doPlay');
 		});
 	});
-	asyncTest("CuePoint 1 at 3 seconds", function(){
-		$j( testEventObject ).bind('cueEvent', function( event, qPoint ){
+	asyncTest("CuePoint 1 at 5 seconds", function(){
+		$( testEventObject ).bind('cueEvent', function( event, qPoint ){
 			equal( qPoint.cuePoint.description, "Code Cue Point", "Code Cue Point event text sent");
 			equal( qPoint.cuePoint.startTime, 3000, "Code Cue Point event sent" );
 			// Finish tests:

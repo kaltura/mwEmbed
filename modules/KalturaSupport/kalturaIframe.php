@@ -113,9 +113,9 @@ class kalturaIframe {
 
 	// Returns a simple image with a direct link to the asset
 	private function getFileLinkHTML(){
-		
+		global $wgResourceLoaderUrl;		
 		$params = $this->getResultObject()->getUrlParameters();
-		$downloadPath = str_replace( 'mwEmbedFrame.php', 'modules/KalturaSupport/download.php', $_SERVER['SCRIPT_NAME']);
+		$downloadPath = str_replace( 'load.php', 'modules/KalturaSupport/download.php', $wgResourceLoaderUrl );		
 		$downloadUrl = $downloadPath . '/wid/' . $params['wid'] . '/uiconf_id/' . $params['uiconf_id'] . '/entry_id/' . $params['entry_id'];
 
 		// The outer container:

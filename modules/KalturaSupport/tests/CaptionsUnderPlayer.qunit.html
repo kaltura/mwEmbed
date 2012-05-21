@@ -1,105 +1,73 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>External Resources test</title>
+<title>Captions Under Player</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
-<script type="text/javascript" >
-	window.testExternalResourceInclude = function( resourceName ){
-		if( console && console.log ){
-			console.log( resourceName );
-		}
-	}
-</script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
-// Enable uiconf js which includes external resources 
-mw.setConfig('Kaltura.EnableEmbedUiConfJs', true);
-mw.setConfig('LoadingSpinner.ImageUrl', 'externalResources/loading.gif');
-
 function jsKalturaPlayerTest( videoId ){
-	
+	var kdp = $( '#' + videoId )[0];
 	// Name this module
-	module( "External Resources" );
-	var kdp = $('#' + videoId )[0];
-	var $iframe = $('#' + videoId + '_ifp').contents();
-	
-	asyncTest("Check for On Page resource loading", function(){
-		kalturaQunitWaitForPlayer(function(){
-			equal( $('.fooBar' ).css('background-color'), 'rgb(255, 0, 0)', "On page CSS active" );
-			equal( $('#testPluginTarget').text(),  'update via on page js', "On page JS active" );
+	module( "Captions kaltura" );
 
-			start();
-			setTimeout(function(){
-				testIframeResources();
-			},100);
+	var $iframe = $('#' + videoId + '_ifp').contents();
+	var iframeKdp = $iframe.find( '#' + videoId )[0];
+	var iframeContext = window.frames['kaltura_player_ifp'];
+	
+	asyncTest( "Timed text on screen", function() {
+		kalturaQunitWaitForPlayer(function(){
+			// make sure we show captions
+			kdp.sendNotification( 'showClosedCaptions' );
+			
+			window['onPlayerSeekEnd'] = function(){
+				kdp.sendNotification( 'doPause', 2);
+				
+				ok( $iframe.find('.captionContainer').length, "Text container in DOM");
+				equal( $iframe.find('.track span').text(), "Harold is the coffee alright?", "Text matches srt");
+				start();
+			};
+			// Setup text:
+			iframeKdp.timedText.setupTextSources(function(){
+				ok( iframeKdp.timedText.textSources.length, "Text sources found" );
+				kdp.sendNotification( 'doPlay' );
+				setTimeout(function(){
+					kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd');
+					// seek to a known text display time: 
+					kdp.sendNotification( 'doSeek', 2);
+				},500);
+			});
 		});
 	});
-	
-	asyncTest("Check for iFrame resource loading", function(){
-		window['testIframeResources'] = function(){
-			var iframeContext = $('#kaltura_player_ifp')[0].contentWindow;
-			equal( iframeContext.IframeCustomPluginJS2Var,  "iframe resource is loaded", "Iframe resource loaded");
-			equal( kdp.evaluate( '{myCustomPlugin.foo}' ), 'bar', "setKDP attribute export working" );
-			start();
-		};
-		
-	});
 }
-
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> External Resources test </h2>
-<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
-<br />
-<h3>OnPage resources</h3>
-<ul>
-	<li><a href="externalResources/onPageCss1_fooBarPlugin.css">onPageCss1_fooBar.css</a> -- <span class="fooBar">sets this to red</span></li>
-	<li><a href="externalResources/onPageJs1_fooBarPlugin.js">onPageJs1_fooBarPlugin.js</a> -- console logs player ready event and update this span: <span id="testPluginTarget">update me</span></li>
-</ul>
-<h3>Iframe HTML5 player resources</h3>
-<ul>
-	<li><a href="externalResources/iframeHTML5_fooBarPlugin.js">Iframe fooBarPlugin.js</a> -- shows javascript associated with a plugin line attribute ( instead of a custom var resource ) 
-	<li><a href="externalResources/IframeCustomPluginJs1.js">IframeCustomPluginJs1</a> -- shows that the resource is loaded early on and can do normal plugin "loader" bindings</li>
-    <li><a href="externalResources/IframeCustomPluginJs2.js">IframeCustomPluginJs2</a> -- just a console log showing multiple plugins </li>
-    <li><a href="externalResources/IframeCustomPluginCss1.css">IframeCustomPluginCss1</a> -- custom css file ( changes play button to a flower )</li>
-	<li>Custom Loading Spinner - mw.setConfig('LoadingSpinner.ImageUrl', 'externalResources/loading.gif');</li>
-</ul>
+<h2> Captions Under Player for kdp flash player and html5 player </h2>
+<a href="?forceMobileHTML5"> Force Mobile Safari</a> for testing with desktop chrome and safari.
+<br /><br />
+<div style="float:left">
+	<object id="kaltura_player_1311316805" name="kaltura_player_1311316805" type="application/x-shockwave-flash" 
+			allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400" 
+			bgcolor="#000000" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
+			rel="media:video" 
+			resource="http://www.kaltura.com/index.php/kwidget/cache_st/1311316805/wid/_243342/uiconf_id/5260062/entry_id/0_uka1msg4" 
+			data="http://www.kaltura.com/index.php/kwidget/cache_st/1311803/wid/_243342/uiconf_id/5260062/entry_id/0_uka1msg4">
+		<param name="allowFullScreen" value="true" />
+		<param name="allowNetworking" value="all" />
+		<param name="allowScriptAccess" value="always" />
+		<param name="bgcolor" value="#000000" />
+		<param name="flashVars" value="&customCaptionsButton=true" />
+		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1311316805/wid/_243342/uiconf_id/5260062/entry_id/0_uka1msg4" />
+	</object>
+</div>
+<!-- 
 
-<object id="kaltura_player" name="kaltura_player" 
-type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" 
-allowScriptAccess="always" height="330" width="400" bgcolor="#000000" 
-xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/"
- rel="media:video" 
- resource="http://www.kaltura.com/index.php/kwidget/cache_st/1318418799/wid/_243342/uiconf_id/5994862/entry_id/0_uka1msg4" 
- data="http://www.kaltura.com/index.php/kwidget/cache_st/1318418799/wid/_243342/uiconf_id/5994862/entry_id/0_uka1msg4">
- <param name="allowFullScreen" value="true" />
- <param name="allowNetworking" value="all" />
- <param name="allowScriptAccess" value="always" />
- <param name="bgcolor" value="#000000" />
- <param name="flashVars" value="&" />
- <param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1318418799/wid/_243342/uiconf_id/5994862/entry_id/0_uka1msg4" />
-</object>
-
-</body>
-<!--  UiConf file used in this example: 
-<layout id="full" name="Custom Resource Includes Test" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/eagle/skin/v3.5.9/skin.swf">
+<layout id="full" name="Captions Player" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/dragonfly/skin/skin_3.5.5/skin.swf">
   <HBox id="topLevel" width="100%" height="100%">
     <VBox id="player" width="100%" height="100%" styleName="black">
-    
-      <Plugin id="fooBar" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand" 
-      	onPageJs1="externalResources/onPageJs1_fooBarPlugin.js"
-      	onPageCss1="externalResources/onPageCss1_fooBarPlugin.css"
-      	iframeHTML5Js1="externalResources/iframeHTML5_fooBarPlugin.js"
-      />
-      
-      <Plugin id="catTest" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand" 
-      	onPageJs2="externalResources/onPageJs2_catTestPlugin.js"
-      />
-    
-      <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand" />
+      <Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
       <Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
       <Canvas id="PlayerHolder" height="100%" width="100%" styleName="black">
         <Video id="video" width="100%" height="100%"/>
@@ -136,9 +104,10 @@ xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/search
                 <Timer id="timerControllerScreen2" width="40" styleName="timerProgressRight" format="mm:ss" height="12" timerType="total" dynamicColor="true" color1="14540253"/>
               </HBox>
             </VBox>
-            <VolumeBar id="volumeBar" styleName="volumeBtn" buttonWidth="20" width="20" height="20" buttonType="iconButton" tooltip="Change volume" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+            <VolumeBar id="volumeBar" styleName="volumeBtn" width="20" height="20" buttonType="iconButton" tooltip="Change volume" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
             <Button id="shareBtnControllerScreen" buttonType="iconButton" kClick="sendNotification('doGigya')" height="22" styleName="controllerScreen" focusRectPadding="0" icon="shareIcon" tooltip="share with friends" k_buttonType="buttonIconControllerArea" uiconfId="" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
             <Button id="fullScreenBtnControllerScreen" command="fullScreen" buttonType="iconButton" height="22" styleName="controllerScreen" icon="openFullScreenIcon" selectedUpIcon="closeFullScreenIcong" selectedOverIcon="closeFullScreenIcon" selectedDownIcon="closeFullScreenIcon" selectedDisabledIcon="closeFullScreenIcon" focusRectPadding="0" allowDisable="false" tooltip="Toggle fullscreen" k_buttonType="buttonIconControllerArea" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+            <Button id="custom1BtnControllerScreen" height="22" focusRectPadding="0" buttonType="iconButton" kClick="jsCall('customFunc1', mediaProxy.entry.id )" styleName="controllerScreen" icon="generalIcon" k_buttonType="buttonIconControllerArea" tooltip="captions" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
           </HBox>
           <Spacer width="13"/>
           <Button id="kalturaLogo" height="50" width="100" kClick="navigate('http://www.kaltura.com')" styleName="controllerScreen" icon="kalturaLogo"/>
@@ -171,7 +140,9 @@ xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/search
     <screen id="playScreen">
       <VBox id="playContainer" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
         <Spacer height="100%"/>
-        <Tile id="playTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center"/>
+        <Tile id="playTile" width="100%" verticalGap="10" verticalAlign="middle" horizontalAlign="center">
+          <Button id="shareBtnPlayScreen" kClick="sendNotification('doGigya')" buttonType="onScreenButton" minWidth="60" labelPlacement="top" label="Share" styleName="onScreenBtn" upIcon="shareIcon" k_buttonType="buttonIconControllerArea" tooltip="share with friends" uiconfId="" color1="14540253" color2="16777215" color3="3355443" color4="10066329" color5="16777215" font="Arial"/>
+        </Tile>
         <Spacer height="100%"/>
       </VBox>
     </screen>
@@ -186,13 +157,15 @@ xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/search
       </VBox>
     </screen>
   </screens>
-  <strings>
-    <string key="ENTRY_CONVERTING" value="Entry is processing, please try again in a few minutes."/>
-  </strings>
+  <strings/>
+  <managers>
+    <manager id="alertManager"/>
+    <manager id="tooltipManager"/>
+  </managers>
   <extraData>
     <GigyaUI theme="dark">
       <config>
-        <display showEmail="true" useTransitions="true" showBookmark="false" codeBoxHeight="auto" showCodeBox="true" showCloseButton="true" networksWithCodeBox="" networksToHide="livespaces, piczo, orkut, pageflakes, vox, tagged, hi5, multiply" networksToShow="facebook, twitter, wordpress" bookmarksToShow="googlebookmarks,delicious,digg,facebookshare,newsvine,reddit,twitter,ask,myaol,slashdot,skimbit,simpy,blogmarks,spurl,linkagogo,Magnolia,faves,segnalo,netvouz,blinklist,dropjack,feedmelinks"/>
+        <display showEmail="true" useTransitions="true" showBookmark="true" codeBoxHeight="auto" showCodeBox="true" showCloseButton="true" networksWithCodeBox="" networksToHide="livespaces, piczo, orkut, pageflakes, vox, tagged, hi5, wordpress, multiply" networksToShow="myspace, facebook, bebo, blogger, freewebs, livejournal, blackplanet, myyearbook, typepad, xanga, igoogle, netvibes, migente, friendster" bookmarksToShow="googlebookmarks,delicious,digg,facebookshare,newsvine,reddit,twitter,ask,myaol,slashdot,skimbit,simpy,blogmarks,spurl,linkagogo,Magnolia,faves,segnalo,netvouz,blinklist,dropjack,feedmelinks"/>
         <body>
           <background frame-color="#BFBFBF" background-color="#292929" frame-thickness="0" gradient-color-begin="#292929" gradient-color-end="#292929" corner-roundness="0;0;0;0"/>
           <controls corner-roundness="4;4;4;4" gradient-color-begin="#EAEAEA" gradient-color-end="#F4F4F4" bold="false">
@@ -231,15 +204,29 @@ xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/search
     <var key="imageDefaultDuration" value="2"/>
     <var key="autoPlay" value="false"/>
     <var key="autoMute" value="false"/>
-    <var key="IframeCustomPluginJs1" value="externalResources/IframeCustomPluginJs1.js" />
-    <var key="IframeCustomPluginJs2" value="externalResources/IframeCustomPluginJs2.js" />
-    <var key="IframeCustomPluginCss1" value="externalResources/IframeCustomPluginCss1.css" />
-    <var key="onPageJs1" value="externalResources/onPageJs1.js" />
-  	<var key="onPageCss1" value="externalResources/onPageCss1.css" />
+    <var key="custom1BtnControllerScreen.visible" value="{mediaProxy.entryMetadata.CaptionsUrl}" overrideFlashvar="true"/>
+    <var key=" custom1BtnControllerScreen.includeInLayout" value="{mediaProxy.entryMetadata.CaptionsUrl}" overrideFlashvar="true"/>
+    <var key="custom1BtnControllerScreen.kClick" value="sendNotification('showHideClosedCaptions')" overrideFlashvar="true"/>
+    <var key="custom1BtnControllerScreen.visible" value="{mediaProxy.entryMetadata.CaptionsUrl}" overrideFlashvar="true"/>
+    <var key=" custom1BtnControllerScreen.includeInLayout" value="{mediaProxy.entryMetadata.CaptionsUrl}" overrideFlashvar="true"/>
+    <var key="custom1BtnControllerScreen.kClick" value="sendNotification('showHideClosedCaptions')" overrideFlashvar="true"/>
+    <var key="requiredMetadataFields" value="true" overrideFlashvar="true"/>
+    <var key="closedCaptions.plugin" value="true" overrideFlashvar="true"/>
+    <var key="closedCaptions.relativeTo" value="PlayerHolder" overrideFlashvar="true"/>
+    <var key="closedCaptions.position" value="after" overrideFlashvar="true"/>
+    <var key="closedCaptions.width" value="100%" overrideFlashvar="true"/>
+    <var key="closedCaptions.height" value="10%" overrideFlashvar="true"/>
+    <var key="closedCaptions.skin" value="black" overrideFlashvar="true"/>
+    <var key="closedCaptions.bg" value="0x000000" overrideFlashvar="true"/>
+    <var key="closedCaptions.fontsize" value="14" overrideFlashvar="true"/>
+    <var key="closedCaptions.opacity" value="0.5" overrideFlashvar="true"/>
+    <var key="closedCaptions.fontFamily" value="Arial" overrideFlashvar="true"/>
+    <var key="closedCaptions.type" value="{mediaProxy.entryMetadata.CaptionsType}" overrideFlashvar="true"/>
+    <var key="closedCaptions.ccUrl" value="{mediaProxy.entryMetadata.CaptionsUrl}" overrideFlashvar="true"/>
   </uiVars>
 </layout>
 
--->
+ -->
 
-
+</body>
 </html>

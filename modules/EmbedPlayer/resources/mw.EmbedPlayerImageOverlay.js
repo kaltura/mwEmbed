@@ -50,7 +50,7 @@ mw.EmbedPlayerImageOverlay = {
 		// Reset lastPauseTime
 		this.lastPauseTime  = 0;
 		// Clear imageOverlay sibling:
-		$( this ).siblings( '.imageOverlay' ).remove();
+		$( this ).find( '.imageOverlay' ).remove();
 		// Restore the video element on screen position:  
 		$( this.getPlayerElement() ).css('left', 0 );
 		// Call normal parent updatePlaybackInterface
@@ -89,16 +89,9 @@ mw.EmbedPlayerImageOverlay = {
 		mw.log( 'EmbedPlayerImageOverlay::play> lastPauseTime:' + this.lastPauseTime + ' ct: ' + this.currentTime );
 		this.applyIntrinsicAspect();
 		// Check for image duration  
-		if( this.imageDuration ){
-			this.duration = this.imageDuration ;
-		} else {
-			this.duration = mw.getConfig( "EmbedPlayer.DefaultImageDuration" );
-		}
-		// make sure duration has type float: 
-		this.duration = parseFloat( this.duration );
 
 		// Reset playback if currentTime > duration:
-		if( this.currentTime > this.duration ) {
+		if( this.currentTime > this.getDuration() ) {
 			this.currentTime = this.pauseTime = 0;
 		}
 		
@@ -127,10 +120,25 @@ mw.EmbedPlayerImageOverlay = {
 		}
 		// call the parent play ( to update interface and call respective triggers )
 		this.parent_play();
+		// make sure we are in play interface:
+		this.playInterfaceUpdate();
 		
-		/*_this.clockStartTime = new Date().getTime();
+		this.clockStartTime = new Date().getTime();
 		// Start up monitor:
-		_this.monitor();*/
+		this.monitor();
+	},
+	getDuration: function(){
+		if( this.duration ){
+			return this.duration;
+		}
+		if( this.imageDuration ){
+			this.duration = this.imageDuration ;
+		} else {
+			this.duration = mw.getConfig( "EmbedPlayer.DefaultImageDuration" );
+		}
+		// make sure duration has type float: 
+		this.duration = parseFloat( this.duration );
+		return this.duration;
 	},
 	/**
 	* Stops the playback
@@ -264,7 +272,7 @@ mw.EmbedPlayerImageOverlay = {
 		});
 		
 		// Add the image before the video element or before the playerInterface 
-		$( this ).before( $image ); 
+		$( this ).html( $image ); 
 		
 		this.applyIntrinsicAspect();
 	},
@@ -276,7 +284,7 @@ mw.EmbedPlayerImageOverlay = {
 	applyIntrinsicAspect: function(){
 		var $this = this.$interface;
 		// Check if a image thumbnail is present:
-		if(  this.$interface && this.$interface.find('.imageOverlay').length ){
+		/*if(  this.$interface && this.$interface.find('.imageOverlay').length ){
 			var img = this.$interface.find('.imageOverlay')[0];
 			var pHeight = $this.height();
 			// Check for intrinsic width and maintain aspect ratio
@@ -294,6 +302,6 @@ mw.EmbedPlayerImageOverlay = {
 					'position' : 'absolute'
 				});
 			}
-		}
+		}*/
 	}
 };

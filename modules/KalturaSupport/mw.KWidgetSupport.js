@@ -72,6 +72,7 @@ mw.KWidgetSupport.prototype = {
 		$( embedPlayer ).bind( 'checkPlayerSourcesEvent', function( event, callback ) {
 			_this.loadAndUpdatePlayerData( embedPlayer, callback );
 		});
+		
 		// Add black sources: 
 		$( embedPlayer ).bind( 'AddEmptyBlackSources', function( event, vid ){
 			$.each( mw.getConfig('Kaltura.BlackVideoSources'), function(inx, sourceAttr ){
@@ -434,27 +435,34 @@ mw.KWidgetSupport.prototype = {
 		}		
 	},
 	/**
-	 * Run base ui conf / flashvars checks
+	 * Run base ui conf / flashvars check
 	 * @param embedPlayer
 	 * @return
 	 */
 	baseUiConfChecks: function( embedPlayer ){
+		var _this = this;
+		var getAttr = function( attrName ){
+			return _this.getPluginConfig( embedPlayer, '', attrName );
+		}
 		// Check for autoplay:
-		var autoPlay = this.getPluginConfig( embedPlayer, '', 'autoPlay');
+		var autoPlay = getAttr( 'autoPlay' );
 		if( autoPlay ){
-			embedPlayer.autoplay = true;
+			embedPlayer.autoplay = true;    
 		}
 		
 		// Check for loop:
-		var loop = this.getPluginConfig( embedPlayer, '', 'loop');
+		var loop = getAttr( 'loop' );
 		if( loop ){
 			embedPlayer.loop = true;
 		}
-
-
+		
+		// Check for dissable bit rate cookie and overide default bandwidth cookie
+		if( getAttr( 'disableBitrateCookie' ) && getAttr( 'mediaProxy.preferedFlavorBR') ){
+			$.cookie('EmbedPlayer.UserBandwidth', getAttr( 'mediaProxy.preferedFlavorBR') * 1000 );
+		}
 
 		// Check for imageDefaultDuration
-		var imageDuration = this.getPluginConfig( embedPlayer, '', 'imageDefaultDuration');
+		var imageDuration = getAttr( 'imageDefaultDuration' );
 		if( imageDuration ){
 			embedPlayer.imageDuration = imageDuration;
 		}
@@ -691,7 +699,7 @@ mw.KWidgetSupport.prototype = {
 					}];
 			} else {
 				// Get device sources 
-				sources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData.flavors, playerData.meta.duration );
+				sources = _this.getEntryIdSourcesFromPlayerData( _this.kClient.getPartnerId(), playerData );
 			}
 			// Return the valid source set
 			callback( sources );
@@ -801,6 +809,27 @@ mw.KWidgetSupport.prototype = {
 		if( ac.isUserAgentRestricted ){
 			return embedPlayer.getKalturaMsg( 'USER_AGENT_RESTRICTED' );
 		}
+		
+		// New AC API
+		if( ac.accessControlActions && ac.accessControlActions.length ) {
+			var message = false;
+			$.each( ac.accessControlActions, function() {
+				if( this.type == 1 ) {
+					message = '';
+					if( ac.accessControlMessages && ac.accessControlMessages.length ) {
+						$.each( ac.accessControlMessages, function() {
+							message += this.value + '\n';
+						});
+					} else {
+						message = 'Access denied';
+					}
+				}
+			});
+			
+			if( message ) {
+				return message;
+			}
+		}
 		return true;
 	},
 	/**
@@ -840,7 +869,6 @@ mw.KWidgetSupport.prototype = {
 	addFlavorSources: function( embedPlayer, playerData ) {
 		var _this = this;
 		mw.log( 'KWidgetSupport::addEntryIdSources:');
-		var flavorData = playerData.flavors
 		// Set the poster ( if not already set ) 
 		if( !embedPlayer.poster && embedPlayer.kentryid ){
 			embedPlayer.poster = kWidget.getKalturaThumbUrl({
@@ -920,7 +948,6 @@ mw.KWidgetSupport.prototype = {
 		// Add all avaliable sources: 
 		for( var i = 0 ; i < flavorData.length; i ++ ) {
 			var asset = flavorData[i];
-			var entryId = asset.entryId;
 			
 			var sourceAspect = Math.round( ( asset.width / asset.height )  * 100 )  / 100
 			// Setup a source object:

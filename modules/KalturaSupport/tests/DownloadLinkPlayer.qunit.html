@@ -1,64 +1,63 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Seek Api test</title>
+<title>Download Link test</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script>
+	// Disable flash and html5 to test download link: 
+	mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
+	mw.setConfig( 'EmbedPlayer.DisableHTML5FlashFallback', true );
+	// Enable the download link player: 
+	mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
+</script>
 <script type="text/javascript">	
 function jsKalturaPlayerTest( videoId ){
-	
 	// Name this module
-	module( "Seek Api" );
-	var kdp = document.getElementById( videoId );
-	var targetSeekTime = 30;
+	module( "Download Link" );
+	var kdp = $( '#' + videoId ).get(0);
+	var $iframe = $( '#' + videoId + '_ifp' ).contents();
 	
-	asyncTest("Seek Events", function(){
-		window[ 'onPlayerSeekStart' ] = function(){
-			window['onPlayerSeekStartTime'] = new Date().getTime();
-			ok( true,  'Seek start event fired ( playerSeekStart )' );
-		}
-		
-		window[ 'onPlayerSeekEnd' ] = function(){
-			ok( true,  'Seek end event fired ( playerSeekEnd )' );
-			var seekTime = new Date().getTime() - window['onPlayerSeekStartTime'];
-			ok( ( seekTime > 0 ), "Took " + seekTime + "ms to complete seek" );
-			
-			ok( ( Math.abs( targetSeekTime - kdp.evaluate('{video.player.currentTime}') ) < 2 ), 
-				"Seek time within 2 seconds of target: " + targetSeekTime + ' actual: ' + 
-				kdp.evaluate('{video.player.currentTime}')	
-			);
-			
-			all_done_with_tests();
-		}
-		
-		window['all_done_with_tests'] = function(){
-			kdp.pause();
-			// done with async test: 
-			start();
-		}
-		
+	asyncTest("Check for Download link", function(){
 		kalturaQunitWaitForPlayer(function(){
-			// Start playback: 
-			kdp.sendNotification( 'doPlay' );
-		
-			// add a seek listener: 
-			kdp.addJsListener( 'playerSeekStart', 'onPlayerSeekStart')
-			
-			kdp.addJsListener( 'playerSeekEnd', 'onPlayerSeekEnd')
-			
-			// after 1 second of playback issue a seek to 30 seconds
+			ok( $iframe.find( '.play-btn-large' ).length, "Found player link" );
+			var link = $iframe.find( '.play-btn-large' ).parent().attr('href') || '';
+			notEqual( link.indexOf( '/entryId/0_uka1msg4/' ), -1 ,
+					"Link includes entry path" );
+			start();
 			setTimeout(function(){
-				kdp.sendNotification('doSeek', targetSeekTime );
-			}, 1000 );
+				doChangeMediaTest();				
+			},100)
 		});
 	});
+	
+	asyncTest("Change Media of linked player", function(){
+		window['onChangeMedia'] = function(){
+			var entryId = kdp.evaluate('{mediaProxy.entry.id}');
+			equal(entryId, "0_swup5zao", "Entry 0_swup5zao change success" );
+			start();
+		}
+		window['doChangeMediaTest'] = function(){
+			kdp.addJsListener( 'changeMedia', 'onChangeMedia' );
+			kdp.sendNotification( "changeMedia", { 'entryId' : '0_swup5zao' } );
+		}
+	});
+	
 }
 </script>
+<script>
+	function jsCallbackReady( videoId ){
+		if( console && console.log ){
+			console.log( 'jsCallbackReady: ' + videoId );
+		}
+	}
+</script>
+
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Seek Api test </h2>
+<h2> Download Link test </h2>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
 
