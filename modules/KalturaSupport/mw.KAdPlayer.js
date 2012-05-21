@@ -305,18 +305,6 @@ mw.KAdPlayer.prototype = {
 				vid.volume = changeValue;
 			}
 		});
-		
-		// AD slot should include flag for progress monitoring ( for now always update playhead )
-		var progressMonitor = function(){
-			if( _this.adTrackingFlag ){
-				_this.embedPlayer.controlBuilder.setStatus( 
-						mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration ) 
-				);
-				_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
-				setTimeout(progressMonitor,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) )
-			}
-		}
-		progressMonitor();
 	},
 
 	/**
