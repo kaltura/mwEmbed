@@ -1488,6 +1488,11 @@ mw.EmbedPlayer.prototype = {
 	 * Add a play button (if not already there ) 
 	 */
 	addLargePlayBtn:function(){
+		// check if we are pauseLoading ( i.e switching media, seeking, etc. and don't display play btn:
+		if( this.isPauseLoading ){
+			mw.log("EmbedPlayer:: addLargePlayBtn ( skip play button, during load )");
+			return;
+		}
 		// if using native controls make sure we can click the big play button by restoring 
 		// interface click events:
 		if( this.useNativePlayerControls() ){
