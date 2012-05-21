@@ -954,7 +954,8 @@ mw.EmbedPlayer.prototype = {
 				'position' : 'absolute',
 				'top' : '0px',
 				'left' : '0px',
-				'background': null					
+				'z-index': 1,
+				'background': null
 			};
 			// if using "native" interface don't do any pointer events:
 			if( !this.useLargePlayBtn() ){
