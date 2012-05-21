@@ -3,19 +3,18 @@
 	return array(
 			"mw.MediaElement" => array( 'scripts' => 'resources/mw.MediaElement.js' ),
 			"mw.MediaPlayer" => array( 'scripts' => 'resources/mw.MediaPlayer.js' ),
-			"mw.MediaPlayers" => array( 
+			"mw.MediaPlayers" => array(
 				'scripts' => 'resources/mw.MediaPlayers.js',
 				'dependencies' => 'mw.MediaPlayer'
 			),
 			"mw.MediaSource" => array( 'scripts' => 'resources/mw.MediaSource.js' ),
-			"mw.EmbedTypes" => array( 
+			"mw.EmbedTypes" => array(
 				'scripts' => 'resources/mw.EmbedTypes.js', 
 				'dependencies' =>  array(
 					'mw.MediaPlayers'
 				)
 			),
-
-			"mw.EmbedPlayer" => array( 
+			"mw.EmbedPlayer" => array(
 				'scripts' => array( 
 					"resources/mw.processEmbedPlayers.js",
 					"resources/mw.EmbedPlayer.js", 

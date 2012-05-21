@@ -44,7 +44,7 @@
 				'height' : spinerSize.height,
 				'position': 'absolute',
 				'top' : '50%',
-				'left' : '50%'
+				'left' : '50%',
 				'z-index' : 100
 			});
 		$( this ).append( $spinner );
