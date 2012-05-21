@@ -842,7 +842,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
 		mw.log( "ControlBuilder:: resizePlayer: w:" +  size.width + ' h:' + size.height );
-		// trigger the resize event: 
+		// Trigger the resize event: 
 		$( embedPlayer ).trigger( 'onResizePlayer', [size, animate] );
 		// proxy the callback to send a onResizePlayerDone event: 
 		var callback = function(){
@@ -851,7 +851,6 @@ mw.PlayerControlBuilder.prototype = {
 			}
 			$( embedPlayer ).trigger( 'onResizePlayerDone', [size, animate] );
 		}
-		
 		
 		// Don't resize / re position the player if we have a keep off screen flag
 		if( embedPlayer.keepPlayerOffScreenFlag ){
@@ -894,7 +893,7 @@ mw.PlayerControlBuilder.prototype = {
 			$interface.find('.playerPoster' ).animate( targetAspectSize  );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large' ).animate(  _this.getPlayButtonPosition() );
+			$interface.find( '.play-btn-large' ).animate(  _this.getPlayButtonPosition() );
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );
