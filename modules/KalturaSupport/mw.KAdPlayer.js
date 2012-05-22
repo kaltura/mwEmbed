@@ -311,6 +311,7 @@ mw.KAdPlayer.prototype = {
 	 * Display companion ads
 	 * @param adSlot
 	 * @param adConf
+	 * @param timeTargetType
 	 * @return
 	 */
 	displayCompanions:  function( adSlot, adConf, timeTargetType ){
