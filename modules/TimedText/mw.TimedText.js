@@ -400,20 +400,7 @@ mw.includeAllModuleMessages();
 				return false;
 			}
 			
-			var $menuButton = this.embedPlayer.$interface.find( '.timed-text' );
-			var positionOpts = { };
-			if( this.embedPlayer.supports[ 'overlays' ] ){
-				var positionOpts = {
-					'directionV' : 'up',
-					'offsetY' : this.embedPlayer.controlBuilder.getHeight(),
-					'directionH' : 'left',
-					'offsetX' : -28
-				};
-			}
-
-			// Else bind and show the menu
-			// We already have a loader in embedPlayer so the delay of
-			// setupTextSources is already taken into account
+			// Setup text Sources:
 			_this.setupTextSources( function() {
 				var positionOpts = { };
 				if( _this.embedPlayer.supports[ 'overlays' ] ){
