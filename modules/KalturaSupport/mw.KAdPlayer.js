@@ -16,6 +16,9 @@ mw.KAdPlayer.prototype = {
 
 	// The local interval for monitoring ad playback: 
 	adMonitorInterval: null,
+	
+	// Local interval for control bar timers
+	adTimersInterval: null,
 
 	// Ad tracking flag:
 	adTrackingFlag: false,
@@ -305,6 +308,15 @@ mw.KAdPlayer.prototype = {
 				vid.volume = changeValue;
 			}
 		});
+		
+		// Update the status bar 
+		this.adTimersInterval = setInterval(function() {
+			var endTime = ( _this.embedPlayer.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( vid.duration ) : '';
+			_this.embedPlayer.controlBuilder.setStatus(
+				mw.seconds2npt(	vid.currentTime ) + endTime
+			);
+			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );				
+		}, mw.getConfig('EmbedPlayer.MonitorRate') );
 	},
 
 	/**
@@ -521,15 +533,6 @@ mw.KAdPlayer.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  dur );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', time );
 			
-			// Check if isVideoSiblingEnabled and update the status bar 
-			if( _this.isVideoSiblingEnabled() ) {
-				var endTime = ( _this.embedPlayer.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( dur ) : '';
-				_this.embedPlayer.controlBuilder.setStatus(
-					mw.seconds2npt(	time ) + endTime
-				);
-				_this.embedPlayer.updatePlayHead( time / dur );
-			}
-			
 			
 			if( time > 0 ){
 				sendBeacon( 'start' );
@@ -554,6 +557,7 @@ mw.KAdPlayer.prototype = {
 		this.adTrackingFlag = false;
 		// stop monitor
 		clearInterval( _this.adMonitorInterval );
+		clearInterval( _this.adTimersInterval );
 		// clear any bindings 
 		$(  _this.getVideoElement() ).unbind( _this.trackingBindPostfix );
 	},
