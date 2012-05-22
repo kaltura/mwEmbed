@@ -234,11 +234,17 @@ var kWidget = {
 				var height = ( settings.height ) ? settings.height :
 							$( elm ).height() ? $( elm ).height() : 300;
 
-				var sizeUnit = (typeof width == 'string' && width.indexOf("px") === -1 && width.indexOf("%") === -1 ) ? 'px' : '';
+				if( typeof width == 'string' && width.indexOf('%') === -1 ) {
+					width = parseInt( width );
+				}
+
+				if( typeof height == 'string' && height.indexOf('%') === -1 ) {
+					height = parseInt( height );
+				}
 
 				var targetCss = {
-					'width': width + sizeUnit,
-					'height': height + sizeUnit
+					'width': width,
+					'height': height
 				};
 
 				var additionalTargetCss = kGetAdditionalTargetCss();
