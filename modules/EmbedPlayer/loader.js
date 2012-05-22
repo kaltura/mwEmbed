@@ -476,6 +476,7 @@
 				'$j.fn.menu',
 				'mw.style.jquerymenu',
 				'$j.ui.slider',
+				'$j.ui.touch-punch',
 				'mw.Uri',
 				'fullScreenApi'
 			],

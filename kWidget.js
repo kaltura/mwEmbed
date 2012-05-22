@@ -1100,6 +1100,7 @@ var kWidget = {
     		 		'$j.fn.hoverIntent',
     		 		'$j.ui.slider',
     		 		'$j.fn.menu',
+					'$j.ui.touch-punch',					
     		 		'mw.style.jquerymenu',
     		 		// Timed Text module
     		 		'mw.TimedText',
