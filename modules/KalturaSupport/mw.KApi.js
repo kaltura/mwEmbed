@@ -281,9 +281,9 @@ mw.KApi.prototype = {
 		
 		 // Get flavorasset
 		requestObject.push({
-	        	 'entryId' : entryIdValue,
 	        	 'service' : 'flavorasset',
-	        	 'action' : 'getByEntryId'
+	        	 'action' : 'list',
+				 'filter:entryIdEqual' : entryIdValue
 	    });
 					
 	    // Get custom Metadata	
@@ -363,7 +363,7 @@ mw.KApi.prototype = {
 			dataIndex++;
 			namedData['accessControl'] = data[ dataIndex ];
 			dataIndex++;
-			namedData['flavors'] = data[ dataIndex ];
+			namedData['flavors'] = data[ dataIndex ].objects;
 			dataIndex++;
 			namedData['entryMeta'] = _this.convertCustomDataXML( data[ dataIndex ] );
 			dataIndex++;
