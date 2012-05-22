@@ -163,51 +163,49 @@ mw.includeAllModuleMessages();
 			} );
 
 			// Resize the timed text font size per window width
-			$( embedPlayer ).bind( 'onCloseFullScreen'+ this.bindPostFix + ' onOpenFullScreen'+ this.bindPostFix, function() {
+			$( embedPlayer ).bind( 'onCloseFullScreen'+ this.bindPostFix + ' onOpenFullScreen'+ this.bindPostFix, function() {debugger;
 				// Check if we are in fullscreen or not, if so add an additional bottom offset of 
 				// double the default bottom padding. 
 				var textOffset = _this.embedPlayer.controlBuilder.inFullScreen ? 
 						mw.getConfig("TimedText.BottomPadding") * 2 : 
 						mw.getConfig("TimedText.BottomPadding");
 						
-				var textCss = _this.getInterfaceSizeTextCss({
+				/*var textCss = _this.getInterfaceSizeTextCss({
 					'width' :  embedPlayer.$interface.width(),
 					'height' : embedPlayer.$interface.height()
-				});
+				});*/
 				
-				mw.log( 'TimedText::set text size for: : ' + embedPlayer.$interface.width() + ' = ' + textCss['font-size'] );
+				//mw.log( 'TimedText::set text size for: : ' + embedPlayer.$interface.width() + ' = ' + textCss['font-size'] );
 				if ( embedPlayer.controlBuilder.isOverlayControls() && !embedPlayer.$interface.find( '.control-bar' ).is( ':hidden' ) ) {
 					textOffset += _this.embedPlayer.controlBuilder.getHeight();
 				}
-				embedPlayer.$interface.find( '.track' )
-				.css( textCss )
+				/*embedPlayer.$interface.find( '.track' )
 				.css({
 					// Get the text size scale then set it to control bar height + TimedText.BottomPadding; 
 					'bottom': textOffset + 'px'
-				});
-			});
-			
-			// Add caption container after restore
-			$(_this.embedPlayer ).bind ( 'onCloseFullScreen' + _this.bindPostFix, function(){
-				// Resize the below captions text. 
+				});*/
 				var $belowContainer = _this.embedPlayer.$interface.find('.captionContainer')
 				if( $belowContainer.length ){
 					$belowContainer.remove();
 					_this.addBelowVideoCaptionContainer();
 				}
 			});
-			
+
 			// Update the timed text size
 			$( embedPlayer ).bind( 'onResizePlayer'+ this.bindPostFix, function(event, size, animate) {
 				// If the the player resize action is an animation, animate text resize, 
 				// else instantly adjust the css. 
-				var textCss = _this.getInterfaceSizeTextCss( size );
+				//var textCss = _this.getInterfaceSizeTextCss( size );
+				/*var textCss = _this.getInterfaceSizeTextCss({
+					'width' :  embedPlayer.$interface.width(),
+					'height' : embedPlayer.$interface.height()
+				});
 				mw.log( 'TimedText::onResizePlayer: ' + textCss['font-size']);
 				if ( animate ) {
-					embedPlayer.$interface.find( '.track' ).animate( textCss);
+					embedPlayer.$interface.find( '.track' ).animate( textCss );
 				} else {
 					embedPlayer.$interface.find( '.track' ).css( textCss );
-				}
+				}*/
 				
 				_this.positionCaptionContainer();											
 			});
@@ -301,7 +299,7 @@ mw.includeAllModuleMessages();
 		/**
 		* Get the fullscreen text css
 		*/
-		getInterfaceSizeTextCss: function( size ) {			
+		getInterfaceSizeTextCss: function( size ) {
 			//mw.log(' win size is: ' + $( window ).width() + ' ts: ' + textSize );
 			return {
 				'font-size' : this.getInterfaceSizePercent( size ) + '%'
@@ -1118,11 +1116,11 @@ mw.includeAllModuleMessages();
 			this.displayTextTarget( $textTarget );
 			
 			// apply any interface size adjustments: 
-			$textTarget.css( this.getInterfaceSizeTextCss({
+			/*$textTarget.css( this.getInterfaceSizeTextCss({
 					'width' :  this.embedPlayer.$interface.width(),
 					'height' : this.embedPlayer.$interface.height()
 				})
-			);
+			);*/
 			
 			// Update the style of the text object if set
 			if( caption.styleId ){
@@ -1220,7 +1218,7 @@ mw.includeAllModuleMessages();
 				$('<div>').addClass( 'captionContainer' )
 				.css({
 					'position' : 'absolute',
-					'top' : this.embedPlayer.getHeight(),
+					'top' : _this.embedPlayer.$interface.height() - _this.embedPlayer.controlBuilder.getHeight() - parseInt( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') ) - 8,//this.embedPlayer.getHeight() - _this.embedPlayer.controlBuilder.getHeight(),
 					'display' : 'block',
 					'width' : '100%',
 					'height' : mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 'px',
@@ -1237,7 +1235,7 @@ mw.includeAllModuleMessages();
 				// give the dom time to resize. 
 				setTimeout(function(){
 					// get the orginal player height
-					_this.originalPlayerHeight = _this.embedPlayer.$interface.css( 'height' );			
+					_this.originalPlayerHeight = _this.embedPlayer.$interface.css( 'height' );
 					
 					var height = parseInt( _this.originalPlayerHeight ) + ( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') + 8 );
 					var newCss = {
@@ -1268,6 +1266,9 @@ mw.includeAllModuleMessages();
                 });
                 _this.embedPlayer.triggerHelper( 'resizeIframeContainer', [{'height' : _this.originalPlayerHeight}] );
             } else {
+				var newHeight = parseInt( _this.embedPlayer.$interface.css( 'height' ) ) - _this.embedPlayer.controlBuilder.getHeight();
+				$( _this.embedPlayer ).css( 'height', newHeight );
+				$( _this.embedPlayer.getPlayerElement() ).css( 'height', newHeight );
             	// removed resize on container content, since syncPlayerSize calls now handle keeping player aspect. 
             }
         },
@@ -1275,31 +1276,41 @@ mw.includeAllModuleMessages();
 			var _this = this;
 			var $belowContainer = _this.embedPlayer.$interface.find('.captionContainer');
 			if( $belowContainer.length ){
-				var videoHeight = $( _this.embedPlayer ).height();
-				var playBtnTop = _this.embedPlayer.$interface.find( '.play-btn-large' ).position().top;
+				//var videoHeight = $( _this.embedPlayer ).height();
+				var playBtnTop = null;
+				if ( _this.embedPlayer.$interface.find( '.play-btn-large' ).length ) {
+					playBtnTop = _this.embedPlayer.$interface.find( '.play-btn-large' ).position().top;
+				}
 				var boxHeight = parseInt( mw.getConfig('TimedText.BelowVideoBlackBoxHeight') );
-				if( _this.embedPlayer.controlBuilder.inFullScreen 
+				/*if( _this.embedPlayer.controlBuilder.inFullScreen 
 						&&
 					$( _this.embedPlayer ).height() > _this.embedPlayer.$interface.height() - boxHeight
 				){
 					videoHeight = $( _this.embedPlayer ).height() - boxHeight;
-					playBtnTop -= boxHeight;
+					if ( playBtnTop ) {
+						playBtnTop -= boxHeight;
+					}
 				} else {
 					if( $( _this.embedPlayer ).height() > _this.embedPlayer.getHeight() ){
 						videoHeight = _this.embedPlayer.getHeight();
 					}
 					else {
 						videoHeight = _this.embedPlayer.$interface.height() - _this.embedPlayer.controlBuilder.getHeight() - boxHeight - 8;
-						playBtnTop -= boxHeight;
+						if ( playBtnTop ) {
+							playBtnTop -= boxHeight;
+						}
 					}
-				}
+				}*/
+				
+				var videoHeight = _this.embedPlayer.$interface.height() - _this.embedPlayer.controlBuilder.getHeight() - boxHeight - 8;
+				playBtnTop -= boxHeight;
 				var newCss = {
 					'height' : videoHeight,
 					'top' : 0
 				}
 				$( _this.embedPlayer ).css( newCss );
 				$( _this.embedPlayer.getPlayerElement() ).css( newCss );
-				_this.embedPlayer.$interface.find( '.play-btn-large' ).css( 'top', playBtnTop );
+				$belowContainer.css( 'top', videoHeight );
 			}
 		},
 		/**
