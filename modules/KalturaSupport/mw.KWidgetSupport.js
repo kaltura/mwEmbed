@@ -758,9 +758,11 @@ mw.KWidgetSupport.prototype = {
 					embedPlayer.kentryid = playerData.meta.id;
 					
 					var poster = playerData.meta.thumbnailUrl;
-					// Include width and height info if avaliable: 
-					poster += '/width/' + embedPlayer.getWidth();
-					poster += '/height/' + embedPlayer.getHeight();
+					// Include width and height info if avaliable:
+					if( poster.indexOf( "thumbnail/entry_id" ) != -1 ){
+						poster += '/width/' + embedPlayer.getWidth();
+						poster += '/height/' + embedPlayer.getHeight();
+					}
 					embedPlayer.updatePosterSrc( poster );
 				}
 				
