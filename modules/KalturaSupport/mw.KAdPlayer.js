@@ -570,7 +570,7 @@ mw.KAdPlayer.prototype = {
 	playVideoSibling: function( source, playingCallback, doneCallback ){
 		var _this = this;
 		// Hide any loading spinner
-		this.embedPlayer.hidePlayerSpinner();
+		this.embedPlayer.hideSpinnerAndPlayBtn();
 		this.embedPlayer.pause();
 		// include a timeout for the pause event to propagate
 		setTimeout( function(){

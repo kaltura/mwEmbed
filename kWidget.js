@@ -1170,6 +1170,7 @@ var kWidget = {
     		 		  'faderPlugin',
     		 		  'watermarkPlugin',
     		 		  'adPlugin',
+    		 		  'acPreview',
     		 		  'captionPlugin',
     		 		  'bumperPlugin',
     		 		  'myLogo'
