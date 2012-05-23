@@ -10,7 +10,7 @@
  */
 (function ($) {
 	// for resource loader, XXX can be removed in 1.7
-	jQuery.ui['touch-punch'] = true;
+	jQuery.ui['touchPunch'] = true;
 
 	// Detect touch support
 	$.support.touch = 'ontouchend' in document;

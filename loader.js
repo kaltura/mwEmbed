@@ -182,7 +182,7 @@ mw.addResourcePaths( {
 	"$j.ui.sortable"		: "libraries/jquery/jquery.ui/ui/jquery.ui.sortable.js",
 	"$j.ui.tabs"			: "libraries/jquery/jquery.ui/ui/jquery.ui.tabs.js",
 	
-	"$j.ui.touch-punch"		: "libraries/jquery/plugins/jquery.ui.touch-punch.js"
+	"$j.ui.touchPunch"		: "libraries/jquery/plugins/jquery.ui.touchPunch.js"
 
 
 } );
