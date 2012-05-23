@@ -2,11 +2,13 @@
 <html>
 <head>
 <title>MediaSpace v3</title>
-<script>
-window.preMwEmbedConfig = {};
-window.preMwEmbedConfig['forceDirectDownload'] = true;
-</script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript">
+mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
+mw.setConfig( 'EmbedPlayer.DisableHTML5FlashFallback', true );
+//Enable the download link player: 
+mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
+</script>
 </head>
 <body>
 <h2>MediaSpace v3</h2>	
@@ -62,6 +64,5 @@ var doEntryReady = function() {
 };
 
 </script>
-<br />
 </body>
 </html>

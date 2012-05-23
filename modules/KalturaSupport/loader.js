@@ -157,6 +157,22 @@
 			embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
 			mw.setConfig('KalturaSupport.PlayerConfig', null );
 		}
+		
+					
+		embedPlayer.bindHelper( 'DirectDownloadLink', function() {
+			var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
+			var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + this.kwidgetid;
+
+			// Also add the uiconf id to the url:
+			if( this.kuiconfid ){
+				downloadUrl += '/uiconf_id/' + this.kuiconfid;
+			}
+
+			if( this.kentryid ) {
+				downloadUrl += '/entry_id/'+ this.kentryid;
+			}			
+			mw.setConfig( 'EmbedPlayer.DirectDownloadUrl', downloadUrl );
+		});
 	});
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {

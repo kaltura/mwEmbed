@@ -56,7 +56,7 @@ var kWidget = {
 	 * Checks the onPage environment context and sets appropriate flags.
 	 */ 
 	checkEnvironment: function(){
-		
+
 		// Note forceMobileHTML5 url flag be disabled by uiConf on the iframe side of the player
 		// with: 
 		if( document.URL.indexOf('forceMobileHTML5') !== -1 &&
@@ -65,10 +65,17 @@ var kWidget = {
 			mw.setConfig( 'forceMobileHTML5', true );
 		}
 		
+		var ua = navigator.userAgent;
 		// Check if browser should use flash ( IE < 9 )
-		var ieMatch = navigator.userAgent.match( /MSIE\s([0-9])/ );
+		var ieMatch = ua.match( /MSIE\s([0-9])/ );
 		if ( ieMatch && parseInt( ieMatch[1] ) < 9 ) {
 			mw.setConfig('Kaltura.ForceFlashOnDesktop', true );
+		}
+		
+		// Blackberry does not really support html5
+		if( ua.indexOf('BlackBerry') != -1 ){
+			mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
+			mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 		}
 		
 		// TODO deprecate in 1.7 where we don't have client side api. 
@@ -719,10 +726,6 @@ var kWidget = {
 			return false;
 		}
 		var dummyvid = document.createElement( "video" );
-		// Blackberry does not really support html5
-		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
-			return false;
-		}
 		// IE9 is grade B HTML5 support only invoke it if forceMobileHTML5 is true, 
 		// but for normal tests we categorize it as ~not~ supporting html5 video. 
 		if( navigator.userAgent.indexOf( 'MSIE 9.' ) != -1 ){

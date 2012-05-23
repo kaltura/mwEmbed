@@ -14,7 +14,7 @@ var removeElement = function( elemId ) {
 	}
 };
 
-if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) ){
+if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) || !( kWidget.supportsFlash() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) ){
 		// remove the no_rewrite flash object ( never used in rewrite )
 		removeElement('kaltura_player_iframe_no_rewrite');
 		
@@ -32,7 +32,7 @@ if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) ){
 			if( mw.getConfig('EmbedPlayer.IframeIsPlaying') ){
 				embedPlayer.play();
 			}
-
+			
 
 			function getWindowSize(){
 				return {
@@ -65,7 +65,7 @@ if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) ){
 		document.write( kSettings.flashEmbedHTML );
 
 	} else {
-			
+		/*
 		kWidget.outputDirectDownload( 'directFileLinkContainer', {
 			'id': playerId,
 			'partner_id': playerConfig.partnerId,
@@ -83,13 +83,13 @@ if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) ){
 		};		
 		
 		// Trigger jsCallbackReady
-		/*
 		try {
 			window.parent.kWidget.setupJsApi( playerId );
 			window.parent.kWidget.jsCallbackReady( playerId );
 		} catch ( e ) {
 			// do nothing
-		}*/
+		}
+		*/
 	}
 }
 })( window.mw, window.kWidget );
