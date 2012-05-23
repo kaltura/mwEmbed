@@ -1120,8 +1120,14 @@ mw.EmbedPlayer.prototype = {
 			.click( function() {
 				$this.trigger( 'firstPlay' ); // To send stats event for play
 				$this.trigger( 'playing' );
-				window.open( $( _this ).data( 'directDownloadUrl' ) , '_blank' );
-			});
+				return true;
+			})
+			.wrap( 
+				$( '<a />' ).attr({
+					"href": $( _this ).data( 'directDownloadUrl' ),
+					"target" : "_blank"
+				})
+			)
 		}
 		// TODO we should have a smart done Loading system that registers player
 		// states
