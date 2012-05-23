@@ -1071,7 +1071,6 @@ mw.EmbedPlayer.prototype = {
 			return ;
 		}
 		
-		
 		// Set the top level container to relative position:
 		$this.css('position', 'relative');
 	
@@ -1118,7 +1117,7 @@ mw.EmbedPlayer.prototype = {
 			.attr( 'title', gM('mwe-embedplayer-play_clip') )
 			.show()
 			.unbind( 'click' )
-			.click(function() {
+			.click( function() {
 				$this.trigger( 'firstPlay' ); // To send stats event for play
 				$this.trigger( 'playing' );
 				window.open( $( _this ).data( 'directDownloadUrl' ) , '_blank' );

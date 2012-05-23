@@ -159,7 +159,8 @@
 			mw.setConfig('KalturaSupport.PlayerConfig', null );
 		}
 		
-					
+		// Overrides the direct download link to kaltura specific download.php tool for
+		// selecting a download / playback flavor based on user agent. 
 		embedPlayer.bindHelper( 'directDownloadLink', function() {
 			var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
 			var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + this.kwidgetid;
