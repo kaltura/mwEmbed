@@ -56,6 +56,9 @@ function jsKalturaPlayerTest( videoId ){
 			window['onDoSeek'] = function(){
 				kdp.sendNotification( 'doPlay' );
 				setTimeout(function(){
+					kdp.sendNotification( 'doPlay' );
+				},1000)
+				setTimeout(function(){
 					ok( kdp.evaluate('{video.player.currentTime}') > 11, 'Playing content past 11 seconds');
 					kdp.sendNotification('doPause');
 					// done will all tests
