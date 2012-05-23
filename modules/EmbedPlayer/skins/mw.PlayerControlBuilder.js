@@ -787,7 +787,6 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	restoreWindowPlayerDom:function(){
 		var _this = this;
-		debugger;
 		// local ref to embedPlayer: 
 		var embedPlayer = this.embedPlayer; 
 		
