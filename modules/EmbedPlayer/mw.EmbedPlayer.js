@@ -1106,17 +1106,20 @@ mw.EmbedPlayer.prototype = {
 			// Make sure we have a play btn:
 			this.addLargePlayBtn();
 			
+			mw.setConfig('EmbedPlayer.DirectDownloadUrl', this.mediaElement.sources[0].getSrc());
+			// Trigger direct download player
+			this.triggerHelper( 'DirectDownloadLink' );
+			
 			// Set the play button to the first available source:
 			this.$interface.find('.play-btn-large')
+			.attr('title', gM('mwe-embedplayer-play_clip'))
 			.show()
 			.unbind('click')
-			.wrap(
-				$('<a />').attr( {
-					'target' : '_new',
-					'href': this.mediaElement.sources[0].getSrc(),
-					'title' : gM('mwe-embedplayer-play_clip')
-				} )
-			);
+			.click(function() {
+				$this.trigger('firstPlay'); // To send stats event for play
+				$this.trigger('playing');
+				window.open( mw.getConfig('EmbedPlayer.DirectDownloadUrl'), '_blank' );
+			});
 		}
 		// TODO we should have a smart done Loading system that registers player
 		// states
