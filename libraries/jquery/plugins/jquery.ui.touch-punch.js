@@ -9,7 +9,9 @@
  *  jquery.ui.mouse.js
  */
 (function ($) {
-  window.punch = true;
+  // for resource loader, XXX can be removed in 1.7
+  jQuery.ui['touch-punch'] = true;
+	
   // Detect touch support
   $.support.touch = 'ontouchend' in document;
 
