@@ -211,6 +211,11 @@
 		setKDPAttribute: function( embedPlayer, componentName, property, value ) {
 			mw.log("KDPMapping::setKDPAttribute " + componentName + " p:" + property + " v:" + value  + ' for: ' + embedPlayer.id );
 			switch( property ) {
+				case 'ks':
+					if( componentName == 'servicesProxy.kalturaClient' ){
+						this.updateKS( embedPlayer, value );
+					}
+					break;
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
 				break;
@@ -236,16 +241,29 @@
 						if( !pConf[ componentName ][subComponent] ){
 							pConf[ componentName ][ subComponent ] = {};
 						}
-						embedPlayer.playerConfig['plugins'][ componentName ][subComponent][property] = value;
+						pConf[ componentName ][subComponent][property] = value;
 					} else {
-						embedPlayer.playerConfig['plugins'][ componentName ][ property ] = value;
+						pConf[ componentName ][ property ] = value;
 					}
 				break;
 			}
 			// Give kdp plugins a chance to take attribute actions 
 			$( embedPlayer ).trigger( 'Kaltura_SetKDPAttribute', [componentName, property, value] );
 		},
-		
+		updateKS: function ( embedPlayer, ks){
+			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
+			// clear out any old player data cache:
+			client.clearCache();
+			// update the new ks:
+			client.setKS( ks );
+			// add a loading spinner: 
+			embedPlayer.addPlayerSpinner();
+			// reload the player:
+			kWidgetSupport.loadAndUpdatePlayerData( embedPlayer, function(){
+				// ks should now be updated
+				embedPlayer.hideSpinner();
+			});
+		},
 		/**
 		 * Emulates kaltura evaluate function
 		 * 

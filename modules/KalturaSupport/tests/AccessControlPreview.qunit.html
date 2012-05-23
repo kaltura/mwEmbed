@@ -54,8 +54,8 @@ to demonstrate end to end preview -> purchase work flow. <br><br>
 					$.getJSON( '../../../services.php?service=KSTest&entry_id=1_20x0ca3l&wid=_243342', function( ksJSON ){
 						if( ksJSON.error ){
 							$('.myPurchaseDialog').html( ksJSON.error)
-						}else if( ksJSON.ks ){
-							myKdp.setKDPAttribute( 'ks', ksJSON.ks );
+						} else if( ksJSON.ks ){
+							myKdp.setKDPAttribute( 'servicesProxy.kalturaClient', 'ks', ksJSON.ks );
 							$('.myPurchaseDialog').remove();
 							// player should be in "ready to play" state. 
 						}

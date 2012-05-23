@@ -16,7 +16,7 @@ $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		callback();
 	});
 });
-
+// TODO convert to normal mw.AcPreview style plugin
 window.acPreview = function( embedPlayer ){
 	/**
 	 * Trigger an access control preview dialog
@@ -54,7 +54,8 @@ window.acPreview = function( embedPlayer ){
 			);
 		}
 	};
-	
+	// clear out any old bindings:
+	$(embedPlayer).unbind( '.acPreview' );
 	var ac  = embedPlayer.kalturaAccessControl;
 	// TODO move getAccessControlStatus to local method
 	var acStatus = kWidgetSupport.getAccessControlStatus( ac, embedPlayer );
@@ -64,11 +65,11 @@ window.acPreview = function( embedPlayer ){
 	}
 	// Check for preview access control and add special onEnd binding:
 	if( ac.previewLength && ac.previewLength != -1 ){
-		$( embedPlayer ).bind('postEnded.acpreview', function(){
+		$( embedPlayer ).bind('postEnded.acPreview', function(){
 			acEndPreview( embedPlayer );
 		});
 		// sometimes content does not have a content end at ac preview end time:
-		$( embedPlayer ).bind( 'monitorEvent', function(){
+		$( embedPlayer ).bind( 'monitorEvent.acPreview', function(){
 			if( embedPlayer.currentTime >= ac.previewLength ){
 				// Stop content and show preview dialog: 
 				embedPlayer.stop();

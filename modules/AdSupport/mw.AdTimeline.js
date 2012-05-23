@@ -344,7 +344,7 @@ mw.AdTimeline.prototype = {
 		// Update the interface to play state:
 		embedPlayer.playInterfaceUpdate();
 		// make sure to hide the spinner
-		embedPlayer.hidePlayerSpinner();
+		embedPlayer.hideSpinnerAndPlayBtn();
 		// Set inSequence property to "true" 
 		embedPlayer.sequenceProxy.isInSequence = true;
 		

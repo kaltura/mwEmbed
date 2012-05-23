@@ -448,7 +448,7 @@ mw.DoubleClick.prototype = {
 				_this.startedAdPlayback();
 			}
 			// hide spinner: 
-			_this.embedPlayer.hidePlayerSpinner();
+			_this.embedPlayer.hideSpinnerAndPlayBtn();
 			// make sure the player is in play state: 
 			_this.embedPlayer.playInterfaceUpdate();
 			
