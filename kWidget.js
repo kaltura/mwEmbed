@@ -258,8 +258,12 @@ var kWidget = {
 	},
 	
 	/*
-	 * Exteneds the player object and add jsApi methods
+	 * Extends the player object and add jsApi methods
+	 * 
+	 * TODO enable this API and deprecate iframe api client / server ( version 1.7 )
+	 * ( presently disabled, and not called from anywhere ) 
 	 */
+	/*
 	setupJsApi: function( playerId ) {
 		
 		var player = document.getElementById( playerId );
@@ -282,7 +286,8 @@ var kWidget = {
 		player.setKDPAttribute = function( componentName, property, value ) {
 			embedPlayer.setKDPAttribute( componentName, property, value );
 		};				
-	},	
+	},
+	*/
 
 	/**
 	 * Outputs a flash object into the page
