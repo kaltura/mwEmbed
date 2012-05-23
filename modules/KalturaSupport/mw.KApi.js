@@ -363,7 +363,10 @@ mw.KApi.prototype = {
 			dataIndex++;
 			namedData['accessControl'] = data[ dataIndex ];
 			dataIndex++;
-			namedData['flavors'] = data[ dataIndex ].objects;
+			namedData['flavors'] = data[ dataIndex ];
+			if ( data[ dataIndex ].objects ) {
+				namedData['flavors'] = data[ dataIndex ].objects;
+			}
 			dataIndex++;
 			namedData['entryMeta'] = _this.convertCustomDataXML( data[ dataIndex ] );
 			dataIndex++;
