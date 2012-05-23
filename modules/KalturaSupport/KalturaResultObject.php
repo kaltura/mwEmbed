@@ -824,8 +824,10 @@ class KalturaResultObject {
 			$resultObject = $namedMultiRequest->doQueue();
 			// merge in the base result object:
 			$resultObject = array_merge( $this->getBaseResultObject(), $resultObject);
-			// flavors list contains a secondary 'objects' array
-			$resultObject['flavors'] = $resultObject['flavors']->objects;
+			// If flavors are fetched, list contains a secondary 'objects' array
+			if ( isset( $resultObject['flavors']->objects ) ) {
+				$resultObject['flavors'] = $resultObject['flavors']->objects;
+			}
 			
 			// Check if the server cached the result by search for "cached-dispatcher" in the request headers
 			// If not, do not cache the request (Used for Access control cache issue)
