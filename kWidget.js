@@ -553,6 +553,7 @@ var kWidget = {
 		var thumbSrc = this.getKalturaThumbUrl({
 			'entry_id' : settings.entry_id,
 			'partner_id' : settings.partner_id,
+			// By default set the thumbnail size to the full window size. 
 			'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
 			'width' : ( document.body.clientHeight )? document.body.clientHeight : '400'
 		});

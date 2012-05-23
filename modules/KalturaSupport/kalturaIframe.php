@@ -286,7 +286,7 @@ class kalturaIframe {
 		// output the escaped flash vars from get arguments
 		$s = 'externalInterfaceDisabled=false';
 		if( isset( $_REQUEST['flashvars'] ) && is_array( $_REQUEST['flashvars'] ) ){
-			foreach( $_REQUEST['flashvars'] as $key=>$val ){
+			foreach( $_REQUEST['flashvars'] as $key => $val ){
 				$s.= '&' . htmlspecialchars( $key ) . '=' . urlencode( $val );
 			}
 		}
@@ -776,10 +776,14 @@ class kalturaIframe {
 				//kWidget.supportsFlash= function(){ return false; };
 			});
 			// Setup required properties: 
-			window.kSettings = {
-				flashEmbedHTML: '<?php echo $this->getFlashEmbedHTML(); ?>',
-				playEventURL: '<?php echo $this->getPlayEventUrl(); ?>'
-			};
+			window.kSettings = <?php
+			 echo json_encode(
+					array(
+						'flashEmbedHTML' => $this->getFlashEmbedHTML(),
+						'playEventURL' => $this->getPlayEventUrl()
+					)
+				); 
+			?>;
 		</script>
 		<?php
 			if( ! $this->getResultObject()->isJavascriptRewriteObject() ) {
