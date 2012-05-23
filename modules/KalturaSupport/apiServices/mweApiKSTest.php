@@ -33,6 +33,7 @@ class mweApiKSTest {
 				null, 
 				"sview:{$this->entryId}"
 			);
+		header( 'Content-type: text/javascript');
 		print json_encode(array('ks' => $ks ) );
 	}
 	function getClient(){
@@ -54,6 +55,7 @@ class mweApiKSTest {
 		}
 	}
 	function outputError( $msg ){
+		header( 'Content-type: text/javascript');
 		json_encode(array( 'error' => $msg  ) );
 		exit(1);
 	}

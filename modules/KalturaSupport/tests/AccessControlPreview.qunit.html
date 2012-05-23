@@ -51,11 +51,11 @@ to demonstrate end to end preview -> purchase work flow. <br><br>
 					// set to loading 
 					$('.myPurchaseDialog').html('loading...');
 					// Query the service for a ks:
-					$.get( '../../../services.php?service=KSTest&entry_id=1_20x0ca3l&wid=_243342', function( ksJSON ){
+					$.getJSON( '../../../services.php?service=KSTest&entry_id=1_20x0ca3l&wid=_243342', function( ksJSON ){
 						if( ksJSON.error ){
 							$('.myPurchaseDialog').html( ksJSON.error)
-						}else if( ksJSON.js ){
-							kdp.setKDPAttribute( 'ks', ksJSON.js );
+						}else if( ksJSON.ks ){
+							myKdp.setKDPAttribute( 'ks', ksJSON.ks );
 							$('.myPurchaseDialog').remove();
 							// player should be in "ready to play" state. 
 						}
@@ -83,8 +83,8 @@ to demonstrate end to end preview -> purchase work flow. <br><br>
 			'disableAlerts': true
 		},
 		'readyCallback': function( playerId ){
-			var myKdp = $('#' + playerId)[0];
-			kdp.addJsListener( 'freePreviewEnd', 'doPurchaseDialog' );		
+			myKdp = $('#' + playerId)[0];
+			myKdp.addJsListener( 'freePreviewEnd', 'doPurchaseDialog' );		
 		}
 	});
 </script>
