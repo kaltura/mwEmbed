@@ -592,7 +592,7 @@ mw.KAdPlayer.prototype = {
 				playingCallback( vid );
 			}
 			
-			if( doneCallback ){
+			if( $.isFunction( doneCallback ) ){
 				$( vid ).bind('ended.playVideoSibling', function(){
 					$( vid ).unbind( 'ended.playVideoSibling' );
 					doneCallback();
