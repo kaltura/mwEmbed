@@ -931,7 +931,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Check if we want to block the player display
 		if( this['data-blockPlayerDisplay'] ){
-			this.hidePlayerInterface();
+			this.blockPlayerDisplay();
 			return ;
 		}
 		
@@ -1008,7 +1008,21 @@ mw.EmbedPlayer.prototype = {
 			this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) );
 		}
 	},
-
+	/**
+	 * Sets an error message on the player
+	 * 
+	 * @param {string}
+	 *            errorMsg
+	 */
+	setError: function( errorMsg ){
+		this['data-playerError'] = errorMsg;
+	},
+	/**
+	 * Gets the current player error
+	 */
+	getError: function(){
+		return this['data-playerError'];
+	},
 	/**
 	 * Show an error message on the player
 	 * 
@@ -1029,7 +1043,10 @@ mw.EmbedPlayer.prototype = {
 		}
 		return;
 	},
-	hidePlayerInterface: function(){
+	/**
+	 * Blocks the player display by invoking an empty error msg
+	 */
+	blockPlayerDisplay: function(){
 		this.showErrorMsg();
 		this.$interface.find( '.error' ).hide();
 	},
@@ -1059,7 +1076,7 @@ mw.EmbedPlayer.prototype = {
 		
 		// Check if we want to block the player display ( no error displayed )
 		if( this['data-blockPlayerDisplay'] ){
-			this.hidePlayerInterface();
+			this.blockPlayerDisplay();
 			return ;
 		}
 		

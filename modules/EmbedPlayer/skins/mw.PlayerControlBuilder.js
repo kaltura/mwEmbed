@@ -1782,7 +1782,6 @@ mw.PlayerControlBuilder.prototype = {
     *   body Alert body
     *   buttonSet[label,callback] Array of buttons
     *   style CSS object
-    *   
     */
     displayAlert: function( alertObj ) {
 		var embedPlayer = this.embedPlayer;
