@@ -1993,7 +1993,7 @@ mw.EmbedPlayer.prototype = {
 			this.preMuteVolume = this.volume;
 			var percent = 0;
 		}
-		// will auto trigger because of slider change, so no need to trigger volume change in this call
+		// Change the volume and trigger the volume change so that other plugins can listen.
 		this.setVolume( percent, true );
 		// Update the interface
 		this.setInterfaceVolume( percent );
