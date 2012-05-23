@@ -448,9 +448,16 @@ class KalturaResultObject {
 
 		$this->playerConfig = array(
 			'plugins' => $plugins,
-			'vars' => $vars
+			'vars' => $vars,
+			'uiConfId' => $this->getUiConfId(),
+			'partnerId' => $this->getPartnerId()
 		);
-
+		
+		// Add entry Id if exists
+		if( $this->getEntryId() ) {
+			$this->playerConfig['entryId'] = $this->getEntryId();
+		}
+		
 		//echo '<pre>';
 		//echo json_encode( $this->playerConfig );
 		//print_r( $this->playerConfig );
@@ -992,7 +999,7 @@ class KalturaResultObject {
 		return substr( $this->urlParameters['wid'], 1 );
 	}
 	public function getEntryId(){
-		return $this->urlParameters['entry_id'];
+		return ( isset( $this->urlParameters['entry_id'] ) ) ? $this->urlParameters['entry_id'] : false;
 	}
 	public function getThumbnailUrl() {
 		// Get result object
