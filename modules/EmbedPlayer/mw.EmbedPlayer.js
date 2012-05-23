@@ -1041,6 +1041,7 @@ mw.EmbedPlayer.prototype = {
 	 *            [misssingType] missing type mime
 	 */
 	showPluginMissingHTML: function( ) {
+		var _this = this;
 		var $this = $( this );
 		mw.log("EmbedPlayer::showPluginMissingHTML");
 		// Hide loader
@@ -1107,19 +1108,20 @@ mw.EmbedPlayer.prototype = {
 			// Make sure we have a play btn:
 			this.addLargePlayBtn();
 			
-			mw.setConfig('EmbedPlayer.DirectDownloadUrl', this.mediaElement.sources[0].getSrc());
-			// Trigger direct download player
-			this.triggerHelper( 'DirectDownloadLink' );
+			// Set the default direct download url: 
+			$( this ).data( 'directDownloadUrl', this.mediaElement.sources[0].getSrc() );
+			// Allow plugins to update the download url
+			this.triggerHelper( 'directDownloadLink' );
 			
 			// Set the play button to the first available source:
 			this.$interface.find('.play-btn-large')
-			.attr('title', gM('mwe-embedplayer-play_clip'))
+			.attr( 'title', gM('mwe-embedplayer-play_clip') )
 			.show()
-			.unbind('click')
+			.unbind( 'click' )
 			.click(function() {
-				$this.trigger('firstPlay'); // To send stats event for play
-				$this.trigger('playing');
-				window.open( mw.getConfig('EmbedPlayer.DirectDownloadUrl'), '_blank' );
+				$this.trigger( 'firstPlay' ); // To send stats event for play
+				$this.trigger( 'playing' );
+				window.open( $( _this ).data( 'directDownloadUrl' ) , '_blank' );
 			});
 		}
 		// TODO we should have a smart done Loading system that registers player

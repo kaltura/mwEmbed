@@ -160,7 +160,7 @@
 		}
 		
 					
-		embedPlayer.bindHelper( 'DirectDownloadLink', function() {
+		embedPlayer.bindHelper( 'directDownloadLink', function() {
 			var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
 			var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + this.kwidgetid;
 
@@ -172,7 +172,7 @@
 			if( this.kentryid ) {
 				downloadUrl += '/entry_id/'+ this.kentryid;
 			}			
-			mw.setConfig( 'EmbedPlayer.DirectDownloadUrl', downloadUrl );
+			$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
 		});
 	});
 	
