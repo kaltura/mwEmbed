@@ -220,11 +220,26 @@
 				case 'mediaPlayTo':
 					embedPlayer.pauseTime = parseFloat(value);
 				break;
-				default: 
-					if( !embedPlayer.playerConfig['plugins'][ componentName ] ){
-						embedPlayer.playerConfig['plugins'][ componentName ] = {}; 
+				default:
+					var subComponent = null;
+					var pConf = embedPlayer.playerConfig['plugins'];
+					// support decedent properties
+					if( componentName.indexOf('.') != -1 ){
+						cparts = componentName.split('.');
+						componentName = cparts[0];
+						subComponent = cparts[1];
 					}
-					embedPlayer.playerConfig['plugins'][ componentName ][ property ] = value; 
+					if( !pConf[ componentName ] ){
+						pConf[ componentName ] = {}; 
+					}
+					if( subComponent ){
+						if( !pConf[ componentName ][subComponent] ){
+							pConf[ componentName ][ subComponent ] = {};
+						}
+						embedPlayer.playerConfig['plugins'][ componentName ][subComponent][property] = value;
+					} else {
+						embedPlayer.playerConfig['plugins'][ componentName ][ property ] = value;
+					}
 				break;
 			}
 			// Give kdp plugins a chance to take attribute actions 
