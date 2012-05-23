@@ -8,21 +8,67 @@
 function jsKalturaPlayerTest( videoId ){
 	var kdp = $('#' + videoId)[0];
 	// Name this module
-	module( "Access Control Preview" );
-	// start playback 
-	asyncTest( "on Free Preview End", function(){
+	asyncTest("Free Preview End event", function(){
+		
 		window['onFreePreviewEnd'] = function(){
+			kdp.removeJsListener( 'freePreviewEnd', 'onFreePreviewEnd');
 			ok( true, 'Recived onFreePreviewEnd event' );
-			start();
-		}
-		kdp.addJsListener( 'freePreviewEnd', 'onFreePreviewEnd' );
-		// Start playback
-		kdp.sendNotification( 'doPlay' );
-		// Seek to 8 seconds ( no sense in waiting for 10 seconds )
-		setTimeout(function(){
-			kdp.sendNotification( 'doSeek', 8 );
-		},1000)
-	})
+			runTriggerPurchase();
+			QUnit.start();
+		};
+		
+		kalturaQunitWaitForPlayer(function(){
+			kdp.addJsListener( 'freePreviewEnd', 'onFreePreviewEnd' );
+			// Start playback
+			kdp.sendNotification( 'doPlay' );
+			// Seek to 8 seconds ( no sense in waiting for 10 seconds )
+			setTimeout(function(){
+				kdp.sendNotification( 'doSeek', 8 );
+			},1000);
+		});
+	});
+	
+	window['runTriggerPurchase'] = function(){
+		asyncTest("Trigger purchase", 2, function(){
+			var localKs = null;
+			window['onChangeMedia'] = function(){
+				kdp.removeJsListener( 'changeMedia', 'onChangeMedia');
+				// validate the updated ks: 
+				equal( kdp.evaluate( '{servicesProxy.kalturaClient.ks}' ), localKs, 'KS updated on change media' );
+				runPlaybackWithValidatedKS();
+				start();
+			}
+			
+			window['onPurchaseResult'] = function( rawResult ){
+				ok( rawResult.ks, "KS present in purchase result" );
+				// update ks...
+				localKs = rawResult.ks;
+				// add a change media listener for the KS update: 
+				kdp.addJsListener('changeMedia', 'onChangeMedia');
+			}
+			
+			$('.myPurchaseDialog').find("button").click();
+		});
+	};
+	window['runPlaybackWithValidatedKS'] = function(){
+		asyncTest("Playback full content", 1, function(){
+			window['onDoSeek'] = function(){
+				kdp.sendNotification( 'doPlay' );
+				setTimeout(function(){
+					ok( kdp.evaluate('{video.player.currentTime}') > 11, 'Playing content past 11 seconds');
+					kdp.sendNotification('doPause');
+					// done will all tests
+					start();
+				},4000);
+			};
+			// Start playback
+			kdp.sendNotification( 'doPlay' );
+			// Seek to 8 seconds ( no sense in waiting for 10 seconds )
+			kdp.addJsListener('doSeek', 'onDoSeek' );
+			// seek past end time:
+			kdp.sendNotification( 'doSeek', 10 );
+		});
+	};
 	
 }
 </script>
@@ -49,9 +95,12 @@ to demonstrate end to end preview -> purchase work flow. <br><br>
 				.html('simulate purchase')
 				.click( function(){
 					// set to loading 
-					$('.myPurchaseDialog').html('loading...');
+					$('.myPurchaseDialog').html( 'loading ...' );
 					// Query the service for a ks:
 					$.getJSON( '../../../services.php?service=KSTest&entry_id=1_20x0ca3l&wid=_243342', function( ksJSON ){
+						if( window['onPurchaseResult'] ){
+							window['onPurchaseResult']( ksJSON );
+						}
 						if( ksJSON.error ){
 							$('.myPurchaseDialog').html( ksJSON.error)
 						} else if( ksJSON.ks ){

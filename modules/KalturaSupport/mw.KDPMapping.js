@@ -211,11 +211,6 @@
 		setKDPAttribute: function( embedPlayer, componentName, property, value ) {
 			mw.log("KDPMapping::setKDPAttribute " + componentName + " p:" + property + " v:" + value  + ' for: ' + embedPlayer.id );
 			switch( property ) {
-				case 'ks':
-					if( componentName == 'servicesProxy.kalturaClient' ){
-						this.updateKS( embedPlayer, value );
-					}
-					break;
 				case 'autoPlay':
 					embedPlayer.autoplay = value;
 				break;
@@ -230,7 +225,7 @@
 					var pConf = embedPlayer.playerConfig['plugins'];
 					// support decedent properties
 					if( componentName.indexOf('.') != -1 ){
-						cparts = componentName.split('.');
+						var cparts = componentName.split('.');
 						componentName = cparts[0];
 						subComponent = cparts[1];
 					}
@@ -247,8 +242,15 @@
 					}
 				break;
 			}
+			// TODO move to a "ServicesProxy" plugin
+			if( componentName == 'servicesProxy' 
+				&& subComponent && subComponent == 'kalturaClient' 
+				&& property == 'ks' 
+			){
+				this.updateKS( embedPlayer, value );
+			}
 			// Give kdp plugins a chance to take attribute actions 
-			$( embedPlayer ).trigger( 'Kaltura_SetKDPAttribute', [componentName, property, value] );
+			$( embedPlayer ).trigger( 'Kaltura_SetKDPAttribute', [ componentName, property, value ] );
 		},
 		updateKS: function ( embedPlayer, ks){
 			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
@@ -256,13 +258,16 @@
 			client.clearCache();
 			// update the new ks:
 			client.setKS( ks );
+			// TODO confirm flash KDP issues a changeMedia internally for ks updates
+			embedPlayer.sendNotification( 'changeMedia', {'entryId': embedPlayer.kentryid });
+			
 			// add a loading spinner: 
-			embedPlayer.addPlayerSpinner();
+			//embedPlayer.addPlayerSpinner();
 			// reload the player:
-			kWidgetSupport.loadAndUpdatePlayerData( embedPlayer, function(){
+			//kWidgetSupport.loadAndUpdatePlayerData( embedPlayer, function(){
 				// ks should now be updated
-				embedPlayer.hideSpinner();
-			});
+			//	embedPlayer.hideSpinner();
+			//});
 		},
 		/**
 		 * Emulates kaltura evaluate function
@@ -328,8 +333,6 @@
 			
 			// Split the uiConf expression into parts separated by '.'
 			var objectPath = expression.split('.');
-			
-			
 			// Check the exported kaltura object ( for manual overrides of any mapping ) 
 			if( embedPlayer.playerConfig
 					&&
