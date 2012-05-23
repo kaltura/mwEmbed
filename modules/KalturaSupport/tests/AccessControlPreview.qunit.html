@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Access Control Preview</title>
+<title>Access Control Preview, custom purchase</title>
 <script type="text/javascript" src="../../../tests/qunit/qunit-bootstrap.js"></script>
 <script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
 <script type="text/javascript">	
@@ -30,15 +30,62 @@ function jsKalturaPlayerTest( videoId ){
 <script type="text/javascript" src="resources/qunit-kaltura-bootstrap.js"></script>
 </head>
 <body>
-<h2> Access Control Preview </h2>
+<h2> Access Control Preview, custom purchase </h2>
+The default free preview dialog is repressed with <i>disableAlerts</i>, and an custom action is overlaid, <br>
+to demonstrate end to end preview -> purchase work flow. <br><br>
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop chrome and safari.
 <br />
 <div id="playerTarget" style="width:400px;height:330px;"></div>
-<script> 
+<script>
+	var myKdp = null;
+	window['doPurchaseDialog'] = function(){
+		var pos = $('#playerTarget').position();
+		$('#playerTarget').after(
+			$('<div />').append(
+				$('<h2>Sample purchase flow:</h2>'),
+				$('<br />'),
+				$('<button />')
+				.attr('type', 'button')
+				.html('simulate purchase')
+				.click( function(){
+					// set to loading 
+					$('.myPurchaseDialog').html('loading...');
+					// Query the service for a ks:
+					$.get( '../../../services.php?service=KSTest&entry_id=1_20x0ca3l&wid=_243342', function( ksJSON ){
+						if( ksJSON.error ){
+							$('.myPurchaseDialog').html( ksJSON.error)
+						}else if( ksJSON.js ){
+							kdp.setKDPAttribute( 'ks', ksJSON.js );
+							$('.myPurchaseDialog').remove();
+							// player should be in "ready to play" state. 
+						}
+					})
+				})
+			)
+			.addClass('myPurchaseDialog')
+			.css({
+				'position':'absolute',
+				'top': pos.top,
+				'left': pos.left,
+				'width' : "400px",
+				'height' : "330px",
+				'opacity': .8,
+				'background-color': 'black',
+				'color': 'white'
+			})
+		)
+	}
 	kWidget.embed( 'playerTarget', {
 		'wid' : '_243342',
 		'uiconf_id' : '8145862',
-		'entry_id' : '1_20x0ca3l'
+		'entry_id' : '1_20x0ca3l',
+		'flashvars':{
+			'disableAlerts': true
+		},
+		'readyCallback': function( playerId ){
+			var myKdp = $('#' + playerId)[0];
+			kdp.addJsListener( 'freePreviewEnd', 'doPurchaseDialog' );		
+		}
 	});
 </script>
 

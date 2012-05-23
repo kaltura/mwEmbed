@@ -118,6 +118,10 @@ $wgEnableIpadHTMLControls = true;
 
 $wgKalturaUseManifestUrls = true;
 
+// The admin secret should be set to an integration admin secret key for testing 
+// api actions that require admin rights, like granting a ks for preview / play:
+$wgKalturaAdminSecret = null;
+
 // By default do allow custom resource includes. 
 $wgAllowCustomResourceIncludes = true;
 
@@ -130,6 +134,7 @@ $wgKalturaUseAppleAdaptive = ($wgHTTPProtocol == 'https') ? false : true;
 // Add Kaltura api services: ( should be part of kaltura module config)
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiUiConfJs.php' );
 include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiSleepTest.php' );
+include_once( realpath( dirname( __FILE__ ) )  . '/../modules/KalturaSupport/apiServices/mweApiKSTest.php' );
 
 /*********************************************************
  * Include local settings override:

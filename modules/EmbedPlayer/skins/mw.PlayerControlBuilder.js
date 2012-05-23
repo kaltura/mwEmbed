@@ -1797,8 +1797,7 @@ mw.PlayerControlBuilder.prototype = {
             if ( alertObj.isExternal ) {
                 // TODO better support of running external JS functions, instead of window.parent
                 callback = window.parent[ alertObj.callbackFunction ];
-            }
-            else {
+            } else {
                 callback = window[ alertObj.callbackFunction ];
             }
         } else if( typeof alertObj.callbackFunction == 'function' ) {

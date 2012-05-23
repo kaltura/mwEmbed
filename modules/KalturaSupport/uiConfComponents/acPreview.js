@@ -32,23 +32,27 @@ window.acPreview = function( embedPlayer ){
 			embedPlayer.controlBuilder.closeMenuOverlay();
 			embedPlayer.onClipDone();
 		};
-		$( embedPlayer ).bind('onChangeMedia.acpreview', closeAcMessage);
+		// On change media reset acPreview binding
+		$( embedPlayer ).bind( 'onChangeMedia.acpreview', closeAcMessage );
 		// Display player dialog 
 		// TODO i8ln!!
-		embedPlayer.controlBuilder.displayMenuOverlay(
-			$('<div />').append( 
-				$('<h3 />').append( 'Free preview completed, need to purchase'),
-				$('<span />').text( 'Access to the rest of the content is restricted' ),
-				$('<br />'),$('<br />'),
-				$('<button />').attr({'type' : "button"})
-				.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
-				.append( 
-					$('<span />').addClass( "ui-button-text" )
-					.text( 'Ok' )
-					.css('margin', '10')
-				).click( closeAcMessage )
-			), closeAcMessage
-		);
+		// TODO migrate to displayAlert call
+		if( embedPlayer.getKalturaConfig('', 'disableAlerts' ) !== true ){
+			embedPlayer.controlBuilder.displayMenuOverlay(
+				$('<div />').append( 
+					$('<h3 />').append( 'Free preview completed, need to purchase'),
+					$('<span />').text( 'Access to the rest of the content is restricted' ),
+					$('<br />'),$('<br />'),
+					$('<button />').attr({'type' : "button"})
+					.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
+					.append( 
+						$('<span />').addClass( "ui-button-text" )
+						.text( 'Ok' )
+						.css('margin', '10')
+					).click( closeAcMessage )
+				), closeAcMessage
+			);
+		}
 	};
 	
 	var ac  = embedPlayer.kalturaAccessControl;

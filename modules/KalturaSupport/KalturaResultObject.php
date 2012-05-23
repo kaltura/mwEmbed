@@ -93,7 +93,6 @@ class KalturaResultObject {
 				return $wgKalturaUseManifestUrls;
 				break;
 		}
-		// else thorw an erro? 
 	}
 	function getError() {
 		return $this->error;
