@@ -105,7 +105,7 @@
 						if( notificationName == 'doPlay' &&  mw.isIOS() ){
 							$( '#' + playerProxy.id + '_ifp' )
 								.get(0).contentWindow
-								.$( '#' + playerProxy.id ).get(0).play();
+								.$( '#' + playerProxy.id ).get(0).sendNotification( 'doPlay' );
 							// Do not also issue iframe postMessage ( so we avoid sending two play requests ) 
 							return false;
 						}
