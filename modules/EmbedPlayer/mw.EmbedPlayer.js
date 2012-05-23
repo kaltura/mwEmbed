@@ -824,11 +824,17 @@ mw.EmbedPlayer.prototype = {
 						// make sure we are in a paused state. 
 						_this.pause();
 					}
-					// Check if we should hide the large play button on end: 
-					if( $( _this ).data( 'hideEndPlayButton' ) || !_this.useLargePlayBtn() ){
-						_this.hideLargePlayBtn();
-					} else {
+					
+					// Check if have a force display of the large play button
+					if( mw.getConfig('EmbedPlayer.ForceLargeReplayButton') === true ){
 						_this.addLargePlayBtn();
+					} else{
+						// Check if we should hide the large play button on end: 
+						if( $( _this ).data( 'hideEndPlayButton' ) || !_this.useLargePlayBtn() ){
+							_this.hideLargePlayBtn();
+						} else {
+							_this.addLargePlayBtn();
+						}
 					}
 					// An event for once the all ended events are done.
 					mw.log("EmbedPlayer:: trigger: onEndedDone");
