@@ -9,7 +9,7 @@
  *  jquery.ui.mouse.js
  */
 (function ($) {
-
+  window.punch = true;
   // Detect touch support
   $.support.touch = 'ontouchend' in document;
 

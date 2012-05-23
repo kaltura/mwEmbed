@@ -16,6 +16,9 @@ mw.KAdPlayer.prototype = {
 
 	// The local interval for monitoring ad playback: 
 	adMonitorInterval: null,
+	
+	// Local interval for control bar timers
+	adTimersInterval: null,
 
 	// Ad tracking flag:
 	adTrackingFlag: false,
@@ -105,7 +108,6 @@ mw.KAdPlayer.prototype = {
 			adSlot.currentlyDisplayed = true;
 		}
 
-		
 		// Start monitoring for display duration end ( if not supplied we depend on videoFile end )
 		if( displayDuration ){
 			// Monitor time for display duration display utility function
@@ -303,26 +305,25 @@ mw.KAdPlayer.prototype = {
 		$( _this.embedPlayer ).bind('volumeChanged' + _this.trackingBindPostfix, function( e, changeValue ){
 			// when using siblings we need to adjust the sibling volume on volumeChange evnet.
 			if( _this.isVideoSiblingEnabled() ) {
-				_this.getVideoAdSiblingElement().volume = changeValue;
+				vid.volume = changeValue;
 			}
 		});
 		
-		// AD slot should include flag for progress monitoring ( for now always update playhead )
-		var progressMonitor = function(){
-			if( _this.adTrackingFlag ){
-				_this.embedPlayer.controlBuilder.setStatus( 
-						mw.seconds2npt( vid.currentTime ) + '/' + mw.seconds2npt( vid.duration ) 
-				);
-				_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );
-				setTimeout(progressMonitor,  mw.getConfig( 'EmbedPlayer.MonitorRate' ) )
-			}
-		}
-		progressMonitor();
+		// Update the status bar 
+		this.adTimersInterval = setInterval(function() {
+			var endTime = ( _this.embedPlayer.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( vid.duration ) : '';
+			_this.embedPlayer.controlBuilder.setStatus(
+				mw.seconds2npt(	vid.currentTime ) + endTime
+			);
+			_this.embedPlayer.updatePlayHead( vid.currentTime / vid.duration );				
+		}, mw.getConfig('EmbedPlayer.MonitorRate') );
 	},
+
 	/**
 	 * Display companion ads
 	 * @param adSlot
 	 * @param adConf
+	 * @param timeTargetType
 	 * @return
 	 */
 	displayCompanions:  function( adSlot, adConf, timeTargetType ){
@@ -369,12 +370,14 @@ mw.KAdPlayer.prototype = {
 		};
 		_this.embedPlayer.triggerHelper( 'AdSupport_UpdateCompanion', [ companionObject ] );
 	},
+	
 	/**
-	 * gets the overlay id: 
+	 * Gets the overlay id: 
 	 */
 	getOverlayId: function(){
 		return this.embedPlayer.id + '_overlay';
 	},
+	
 	/**
 	 * Display a nonLinier add ( like a banner overlay )
 	 * @param adSlot
@@ -404,7 +407,7 @@ mw.KAdPlayer.prototype = {
 			'margin-left': -(nonLinearConf.width /2 )+ 'px'
 		};			
 		
-		// check if the controls are visible ( @@todo need to replace this with 
+		// Check if the controls are visible ( @@todo need to replace this with 
 		// a layout engine managed by the controlBuilder ) 
 		if( _this.embedPlayer.$interface.find( '.control-bar' ).is(':visible') ){
 			layout.bottom = (_this.embedPlayer.$interface.find( '.control-bar' ).height() + 10) + 'px';
@@ -530,15 +533,6 @@ mw.KAdPlayer.prototype = {
 			_this.embedPlayer.adTimeline.updateSequenceProxy( 'duration',  dur );
 			_this.embedPlayer.triggerHelper( 'AdSupport_AdUpdatePlayhead', time );
 			
-			// Check if isVideoSiblingEnabled and update the status bar 
-			if( _this.isVideoSiblingEnabled() ) {
-				var endTime = ( _this.embedPlayer.controlBuilder.longTimeDisp )? '/' + mw.seconds2npt( dur ) : '';
-				_this.embedPlayer.controlBuilder.setStatus(
-					mw.seconds2npt(	time ) + endTime
-				);
-				_this.embedPlayer.updatePlayHead( time / dur );
-			}
-			
 			
 			if( time > 0 ){
 				sendBeacon( 'start' );
@@ -563,6 +557,7 @@ mw.KAdPlayer.prototype = {
 		this.adTrackingFlag = false;
 		// stop monitor
 		clearInterval( _this.adMonitorInterval );
+		clearInterval( _this.adTimersInterval );
 		// clear any bindings 
 		$(  _this.getVideoElement() ).unbind( _this.trackingBindPostfix );
 	},
@@ -590,16 +585,18 @@ mw.KAdPlayer.prototype = {
 			vid.load();
 			vid.play();
 			
-			// update the main player state per ad playback: 
+			// Update the main player state per ad playback: 
 			_this.embedPlayer.playInterfaceUpdate();
 			
-			if( playingCallback ){
+			if( $.isFunction( playingCallback ) ){
 				playingCallback( vid );
 			}
+			
 			if( doneCallback ){
-				$( vid ).bind('ended', function(){
+				$( vid ).bind('ended.playVideoSibling', function(){
+					$( vid ).unbind( 'ended.playVideoSibling' );
 					doneCallback();
-				})
+				});
 			}
 			
 		}, 0);

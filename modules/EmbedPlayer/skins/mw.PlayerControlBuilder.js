@@ -751,7 +751,7 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log("PlayerControlBuilder :: restoreWindowPlayer" );
 		var embedPlayer = this.embedPlayer;
 		embedPlayer.$interface.css({'position':'relative'});
-	  
+
 		// Check if fullscreen mode is already restored: 
 		if( this.inFullScreen === false ){
 			return ;
@@ -766,6 +766,9 @@ mw.PlayerControlBuilder.prototype = {
 			parentWindow.fullScreenApi.cancelFullScreen( parentTarget );
 		}
 
+		// always remove fullscreen overlay if present: 
+		$('.mw-fullscreen-overlay').remove();
+		
 		// Check if iFrame mode ( fullscreen is handled by the iframe parent dom )
 		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
 			this.restoreWindowPlayerDom();
@@ -784,6 +787,7 @@ mw.PlayerControlBuilder.prototype = {
 	},
 	restoreWindowPlayerDom:function(){
 		var _this = this;
+		debugger;
 		// local ref to embedPlayer: 
 		var embedPlayer = this.embedPlayer; 
 		
@@ -796,7 +800,7 @@ mw.PlayerControlBuilder.prototype = {
 		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
 			
 		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
-		$('.mw-fullscreen-overlay').fadeOut( 'slow' );
+		$('.mw-fullscreen-overlay').remove( 'slow' );
 	
 		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight() );
 		
@@ -838,7 +842,7 @@ mw.PlayerControlBuilder.prototype = {
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
 		mw.log( "ControlBuilder:: resizePlayer: w:" +  size.width + ' h:' + size.height );
-		// trigger the resize event: 
+		// Trigger the resize event: 
 		$( embedPlayer ).trigger( 'onResizePlayer', [size, animate] );
 		// proxy the callback to send a onResizePlayerDone event: 
 		var callback = function(){
@@ -847,7 +851,6 @@ mw.PlayerControlBuilder.prototype = {
 			}
 			$( embedPlayer ).trigger( 'onResizePlayerDone', [size, animate] );
 		}
-		
 		
 		// Don't resize / re position the player if we have a keep off screen flag
 		if( embedPlayer.keepPlayerOffScreenFlag ){
@@ -890,7 +893,7 @@ mw.PlayerControlBuilder.prototype = {
 			$interface.find('.playerPoster' ).animate( targetAspectSize  );
 			
 			// Update play button pos
-			$interface.find('.play-btn-large' ).animate(  _this.getPlayButtonPosition() );
+			$interface.find( '.play-btn-large' ).animate(  _this.getPlayButtonPosition() );
 			
 			if( embedPlayer.getPlayerElement() ){
 				$( embedPlayer.getPlayerElement() ).animate( interfaceCss );

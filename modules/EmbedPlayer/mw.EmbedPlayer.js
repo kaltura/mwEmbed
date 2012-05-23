@@ -954,7 +954,8 @@ mw.EmbedPlayer.prototype = {
 				'position' : 'absolute',
 				'top' : '0px',
 				'left' : '0px',
-				'background': null					
+				'z-index': 1,
+				'background': null
 			};
 			// if using "native" interface don't do any pointer events:
 			if( !this.useLargePlayBtn() ){
@@ -1491,6 +1492,11 @@ mw.EmbedPlayer.prototype = {
 	 * Add a play button (if not already there ) 
 	 */
 	addLargePlayBtn:function(){
+		// check if we are pauseLoading ( i.e switching media, seeking, etc. and don't display play btn:
+		if( this.isPauseLoading ){
+			mw.log("EmbedPlayer:: addLargePlayBtn ( skip play button, during load )");
+			return;
+		}
 		// if using native controls make sure we can click the big play button by restoring 
 		// interface click events:
 		if( this.useNativePlayerControls() ){
@@ -1988,7 +1994,7 @@ mw.EmbedPlayer.prototype = {
 			var percent = 0;
 		}
 		// will auto trigger because of slider change, so no need to trigger volume change in this call
-		this.setVolume( percent );
+		this.setVolume( percent, true );
 		// Update the interface
 		this.setInterfaceVolume( percent );
 		// trigger the onToggleMute event
