@@ -76,6 +76,7 @@
 	]);
 	
 	mw.addResourcePaths( {
+		"IframePlayerSetup" : "IframePlayerSetup.js",
 		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
 		"mw.KCuePoints" : "mw.KCuePoints.js",
 		"mw.KTimedText" : "mw.KTimedText.js",

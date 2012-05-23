@@ -457,7 +457,7 @@ class kalturaIframe {
 	 * Get the location of the mwEmbed library
 	 */
 	private function getMwEmbedLoaderLocation(){
-		global $wgResourceLoaderUrl;
+		global $wgResourceLoaderUrl, $wgEnableScriptDebug;
 		$loaderPath = str_replace( 'ResourceLoader.php', 'mwEmbedLoader.php', $wgResourceLoaderUrl );
 		
 		$versionParam = '?';
@@ -465,7 +465,7 @@ class kalturaIframe {
 		if( isset( $urlParam['urid'] ) ){
 			$versionParam .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
 		}
-		if( isset( $ulrParam['debug'] ) ){
+		if( isset( $ulrParam['debug'] ) || $wgEnableScriptDebug ){
 			$versionParam .= '&debug=true';
 		}
 
@@ -774,27 +774,34 @@ class kalturaIframe {
 				// For testing limited capacity browsers
 				//kWidget.supportsHTML5 = function(){ return false };
 				//kWidget.supportsFlash= function(){ return false; };
-	
-				<?php
-					if( ! $this->getResultObject()->isJavascriptRewriteObject() ) {
-						echo $this->javascriptPlayerLogic();
-					}
-				?>
 			});
+			// Setup required properties: 
+			window.kSettings = {
+				flashEmbedHTML: '<?php echo $this->getFlashEmbedHTML(); ?>',
+				playEventURL: '<?php echo $this->getPlayEventUrl(); ?>'
+			};
 		</script>
+		<?php
+			if( ! $this->getResultObject()->isJavascriptRewriteObject() ) {
+				global $wgResourceLoaderUrl, $wgEnableScriptDebug;
+				// Output a resource loader url for iframePlayerSetup: 
+				$urlParam = $this->getResultObject()->getUrlParameters();
+				$rlUrl = $wgResourceLoaderUrl;
+				$rlUrl.= '?class=IframePlayerSetup';
+				if( isset( $urlParam['urid'] ) ){
+					$rlUrl .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
+				}
+				if( isset( $ulrParam['debug'] ) || $wgEnableScriptDebug ){
+					$rlUrl .= '&debug=true';
+				}
+				?>
+				<script type="text/javascript" src="<?php echo  $rlUrl?>"></script>
+				<?php 
+			}
+		?>
 	</body>
 </html>
 <?php
-	}
-	private function javaScriptPlayerLogic(){
-		?>
-		window.kSettings = {
-			flashEmbedHTML: '<?php echo $this->getFlashEmbedHTML(); ?>',
-			playEventURL: '<?php echo $this->getPlayEventUrl(); ?>'
-		};
-		
-		document.write("<script type='text/javascript' src='<?php echo $this->getPath(); ?>/modules/KalturaSupport/IframePlayerSetup.js'><\/sc" + "ript>");
-		<?php 
 	}
 	/**
 	 * Very simple error handling for now: 
