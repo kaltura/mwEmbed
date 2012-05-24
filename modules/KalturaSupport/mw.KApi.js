@@ -29,11 +29,17 @@ mw.KApi.prototype = {
 		'ignoreNull' : 1
 	},
 	playerLoaderCache: [],
-	
 	// The local kaltura session key ( so it does not have to be re-grabbed with every request
 	ks : null,
 	init: function( partner_id ){
 		this.partner_id = partner_id;
+	},
+	/**
+	 * Clears the local cache for the ks and player data:
+	 */
+	clearCache:function(){
+		this.playerLoaderCache = [];
+		this.ks = null;
 	},
 	// Stores a callback index for duplicate api requests
 	callbackIndex:0,
