@@ -220,17 +220,55 @@
 				case 'mediaPlayTo':
 					embedPlayer.pauseTime = parseFloat(value);
 				break;
-				default: 
-					if( !embedPlayer.playerConfig['plugins'][ componentName ] ){
-						embedPlayer.playerConfig['plugins'][ componentName ] = {}; 
+				default:
+					var subComponent = null;
+					var pConf = embedPlayer.playerConfig['plugins'];
+					// support decedent properties
+					if( componentName.indexOf('.') != -1 ){
+						var cparts = componentName.split('.');
+						componentName = cparts[0];
+						subComponent = cparts[1];
 					}
-					embedPlayer.playerConfig['plugins'][ componentName ][ property ] = value; 
+					if( !pConf[ componentName ] ){
+						pConf[ componentName ] = {}; 
+					}
+					if( subComponent ){
+						if( !pConf[ componentName ][subComponent] ){
+							pConf[ componentName ][ subComponent ] = {};
+						}
+						pConf[ componentName ][subComponent][property] = value;
+					} else {
+						pConf[ componentName ][ property ] = value;
+					}
 				break;
 			}
+			// TODO move to a "ServicesProxy" plugin
+			if( componentName == 'servicesProxy' 
+				&& subComponent && subComponent == 'kalturaClient' 
+				&& property == 'ks' 
+			){
+				this.updateKS( embedPlayer, value );
+			}
 			// Give kdp plugins a chance to take attribute actions 
-			$( embedPlayer ).trigger( 'Kaltura_SetKDPAttribute', [componentName, property, value] );
+			$( embedPlayer ).trigger( 'Kaltura_SetKDPAttribute', [ componentName, property, value ] );
 		},
-		
+		updateKS: function ( embedPlayer, ks){
+			var client = mw.kApiGetPartnerClient( embedPlayer.kwidgetid );
+			// clear out any old player data cache:
+			client.clearCache();
+			// update the new ks:
+			client.setKS( ks );
+			// TODO confirm flash KDP issues a changeMedia internally for ks updates
+			embedPlayer.sendNotification( 'changeMedia', {'entryId': embedPlayer.kentryid });
+			
+			// add a loading spinner: 
+			//embedPlayer.addPlayerSpinner();
+			// reload the player:
+			//kWidgetSupport.loadAndUpdatePlayerData( embedPlayer, function(){
+				// ks should now be updated
+			//	embedPlayer.hideSpinner();
+			//});
+		},
 		/**
 		 * Emulates kaltura evaluate function
 		 * 
@@ -295,8 +333,6 @@
 			
 			// Split the uiConf expression into parts separated by '.'
 			var objectPath = expression.split('.');
-			
-			
 			// Check the exported kaltura object ( for manual overrides of any mapping ) 
 			if( embedPlayer.playerConfig
 					&&

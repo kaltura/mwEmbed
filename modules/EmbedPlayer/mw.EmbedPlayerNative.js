@@ -732,7 +732,7 @@ mw.EmbedPlayerNative = {
 					// restore video position ( now that we are playing with metadata size  )
 					_this.restorePlayerOnScreen();
 					// play hide loading spinner:
-					_this.hidePlayerSpinner();
+					_this.hideSpinnerAndPlayBtn();
 					// Restore 	 
 					vid.controls = orginalControlsState;
 					// check if we have a switch callback and issue it now: 
@@ -1002,7 +1002,7 @@ mw.EmbedPlayerNative = {
 			}
 		}
 		// update the playhead status
-		this.hidePlayerSpinner();
+		this.hideSpinnerAndPlayBtn();
 		this.monitor();
 	},
 

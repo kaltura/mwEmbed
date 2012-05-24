@@ -145,7 +145,7 @@
 			if ( isError ) {
 				alertObj.message = 'An error occurred while trying to capture thumbnail'
 			}
-            embedPlayer.hidePlayerSpinner();
+            embedPlayer.hideSpinnerAndPlayBtn();
             embedPlayer.controlBuilder.displayAlert( alertObj );
 		},      
 
