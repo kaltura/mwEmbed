@@ -1359,7 +1359,16 @@ mw.EmbedPlayer.prototype = {
 			_this.setupSourcePlayer();
 		});
 	},
-	
+	/**
+	 * Checks if the current player / configuration is an image play screen: 
+	 */
+	isImagePlayScreen:function(){
+		return ( this.useNativePlayerControls() && 
+			this.mediaElement.selectedSource && 
+			mw.isIphone() && 
+			mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') 
+		);
+	},
 	/**
 	 * Triggers widgetLoaded event - Needs to be triggered only once, at the first time playerReady is trigerred
 	 */
@@ -1381,14 +1390,11 @@ mw.EmbedPlayer.prototype = {
 		var class_atr = '';
 		var style_atr = '';
 		
-		if( this.useNativePlayerControls() && 
-			this.mediaElement.selectedSource 
-		){
-			if( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') ){
-				this.addPlayScreenWithNativeOffScreen();
-				return ;
-			}
+		if( this.isImagePlayScreen() ){
+			this.addPlayScreenWithNativeOffScreen();
+			return ;
 		}
+		
 		// Set by default thumb value if not found
 		var posterSrc = ( this.poster ) ? this.poster :
 						mw.getConfig( 'EmbedPlayer.BlackPixel' );
@@ -1746,7 +1752,7 @@ mw.EmbedPlayer.prototype = {
 		this.absoluteStartPlayTime =  new Date().getTime();
 		
 		// Check if thumbnail is being displayed and embed html
-		if ( _this.stopped ) {
+		if ( _this.isStopped() ) {
 			if ( !_this.selectedPlayer ) {
 				_this.showPluginMissingHTML();
 				return false;
@@ -1812,7 +1818,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		
 		this.playInterfaceUpdate();
-		// If play controls are enabled continue to video playback:
+		// If play controls are enabled continue to video content element playback:
 		if( _this._playContorls ){
 			return true;
 		} else {
