@@ -620,7 +620,7 @@ mw.Playlist.prototype = {
 			.css('cursor', 'pointer' )
 			.click(function(){
 				if( $( this).hasClass( 'playlistPlayPrevious' ) ){
-					$( embedPlayer ).trigger( 'playlistPlayNext' );
+					$( embedPlayer ).trigger( 'playlistPlayPrevious' );
 				} else if( $( this ).hasClass( 'playlistPlayNext' ) ){
 					$( embedPlayer ).trigger( 'playlistPlayNext');
 				}
