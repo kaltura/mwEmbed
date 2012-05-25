@@ -3,7 +3,6 @@
 *
 * Enables embedPlayer support for native html5 browser playback system
 */
-
 ( function( mw, $ ) { "use strict";
 
 mw.EmbedPlayerNative = {
@@ -110,30 +109,20 @@ mw.EmbedPlayerNative = {
 		var posterSrc = ( this.poster ) ? this.poster :
 			mw.getConfig( 'EmbedPlayer.BlackPixel' );
 		// check if the poster is already present:
-		if( this.$interface.find( '.playerPoster' ).length ){
-			this.$interface.find( '.playerPoster' ).css('background-image', 'url(\'' + this.poster + '\')' );
+		if( $( this ).find( '.playerPoster' ).length ){
+			$( this ).find( '.playerPoster' ).css('background-image', 'url(\'' + this.poster + '\')' );
 		} else {
-			this.$interface.append(
-				$( '<div />' )
-				.css({
-					'position' : 'absolute',
-					'top' : '0px',
-					'left' : '0px',
-					'width': this.getWidth(),
-					'height': this.getHeight(),
-					'background-image': 'url(\'' + this.poster + '\')',
-					'background-size': '100%',
-					'background-attachment':'fixed',
-					'background-repeat':'no-repeat',
-					'background-position':'top',
-					'background-color' : '#000'
+			$( this ).append(
+				$('<img />').css({
+					'margin' : 'auto',
+					'max-width': '100%',
+					'max-height': '100%'
 				})
-				.attr({
-					'src' : posterSrc
-				})
-				.addClass( 'playerPoster' )
+				.attr( 'src', this.poster )
+				.addClass('playerPoster')
 			)
 		}
+		$( this ).show();
 	},
 	/**
 	* Return the embed code
@@ -796,6 +785,8 @@ mw.EmbedPlayerNative = {
 		if( this.keepPlayerOffScreenFlag ){
 			return ;
 		}
+		// remove any poster div ( that would overlay the player ) 
+		$( this ).find('.playerPoster').remove();
 		// Restore video pos before calling sync syze
 		$( vid ).css( 'left', '0px' );
 		// always sync player size after a restore
@@ -821,6 +812,11 @@ mw.EmbedPlayerNative = {
 	*/
 	play: function() {
 		var _this = this;
+		// if starting playback from stoped state and not in an ad or otherise blocked controls state:
+		// restore player: 
+		if( this.isStopped() && this._playContorls ){
+			this.restorePlayerOnScreen();
+		}
 		// Run parent play:
 		if( _this.parent_play() ){
 			if ( this.getPlayerElement() && this.getPlayerElement().play ) {
@@ -1103,6 +1099,21 @@ mw.EmbedPlayerNative = {
 				this.onClipDone();
 			}
 		}
+	},
+	/**
+	 * Local onClip done function for native player. 
+	 */
+	onClipDone: function(){
+		var _this = this;
+		// add clip done binding ( will only run on sequence complete ) 
+		$(this).unbind().bind( 'onEndedDone', function(){
+			_this.addPlayScreenWithNativeOffScreen();
+			// if not a legitmate play screen don't keep the player offscreen when playback starts:
+			if( !_this.isImagePlayScreen() ){
+				_this.keepPlayerOffScreenFlag =false; 
+			}
+		});
+		this.parent_onClipDone();
 	}
 };
 
