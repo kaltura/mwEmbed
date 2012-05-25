@@ -628,7 +628,6 @@ mw.Playlist.prototype = {
 			.buttonHover();
 		});
 		
-		
 		// Trigger playlistsListed when we get the data
 		$( embedPlayer ).trigger( 'playlistsListed' );		
 	},
