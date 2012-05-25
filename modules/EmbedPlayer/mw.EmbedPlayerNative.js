@@ -110,7 +110,7 @@ mw.EmbedPlayerNative = {
 			mw.getConfig( 'EmbedPlayer.BlackPixel' );
 		// check if the poster is already present:
 		if( $( this ).find( '.playerPoster' ).length ){
-			$( this ).find( '.playerPoster' ).css('background-image', 'url(\'' + this.poster + '\')' );
+			$( this ).find( '.playerPoster' ).css('background-image', 'url(\'' + posterSrc + '\')' );
 		} else {
 			$( this ).append(
 				$('<img />').css({
@@ -118,7 +118,7 @@ mw.EmbedPlayerNative = {
 					'max-width': '100%',
 					'max-height': '100%'
 				})
-				.attr( 'src', this.poster )
+				.attr( 'src', posterSrc )
 				.addClass('playerPoster')
 			)
 		}
