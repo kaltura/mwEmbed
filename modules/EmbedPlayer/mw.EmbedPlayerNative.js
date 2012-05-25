@@ -1106,7 +1106,7 @@ mw.EmbedPlayerNative = {
 	onClipDone: function(){
 		var _this = this;
 		// add clip done binding ( will only run on sequence complete ) 
-		$(this).unbind().bind( 'onEndedDone', function(){
+		$(this).unbind('onEndedDone').bind( 'onEndedDone', function(){
 			_this.addPlayScreenWithNativeOffScreen();
 			// if not a legitmate play screen don't keep the player offscreen when playback starts:
 			if( !_this.isImagePlayScreen() ){
