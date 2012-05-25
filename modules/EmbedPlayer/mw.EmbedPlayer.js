@@ -812,7 +812,8 @@ mw.EmbedPlayer.prototype = {
 				_this.donePlayingCount ++;
 				
 				// Rewind the player to the start: 
-				this.setCurrentTime(0, function(){
+				// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
+				this.setCurrentTime(0.01, function(){
 					
 					// Set to stopped state:
 					_this.stop();
