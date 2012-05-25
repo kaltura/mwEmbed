@@ -812,7 +812,8 @@ mw.EmbedPlayer.prototype = {
 				_this.donePlayingCount ++;
 				
 				// Rewind the player to the start: 
-				this.setCurrentTime(0, function(){
+				// NOTE: Setting to 0 causes lags on iPad when replaying, thus setting to 0.01
+				this.setCurrentTime(0.01, function(){
 					
 					// Set to stopped state:
 					_this.stop();
@@ -1130,7 +1131,7 @@ mw.EmbedPlayer.prototype = {
 			this.triggerHelper( 'directDownloadLink' );
 			
 			// Set the play button to the first available source:
-			this.$interface.find('.play-btn-large')
+			var $pBtn = this.$interface.find('.play-btn-large')
 			.attr( 'title', gM('mwe-embedplayer-play_clip') )
 			.show()
 			.unbind( 'click' )
@@ -1138,13 +1139,11 @@ mw.EmbedPlayer.prototype = {
 				$this.trigger( 'firstPlay' ); // To send stats event for play
 				$this.trigger( 'playing' );
 				return true;
-			})
-			.wrap( 
-				$( '<a />' ).attr({
-					"href": $( _this ).data( 'directDownloadUrl' ),
-					"target" : "_blank"
-				})
-			)
+			});
+			if( !$pBtn.parent('a').length ){
+				$pBtn.wrap( $( '<a />' ).attr("target", "_blank" ) );
+			}
+			$pBtn.parent('a').attr( "href", $( _this ).data( 'directDownloadUrl' ) );
 		}
 		// TODO we should have a smart done Loading system that registers player
 		// states

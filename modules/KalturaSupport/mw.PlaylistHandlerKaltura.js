@@ -375,7 +375,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 
 		// Hide our player if not needed
 		var $playerHolder = embedPlayer.getKalturaConfig('PlayerHolder', ["visible", "includeInLayout"]);
-		if( $playerHolder.visible === false  || $playerHolder.includeInLayout === false ) {
+		if( ( $playerHolder.visible === false  || $playerHolder.includeInLayout === false ) && !embedPlayer.useNativePlayerControls() ) {
 			embedPlayer.displayPlayer = false;
 		}
 
