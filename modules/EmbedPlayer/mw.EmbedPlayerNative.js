@@ -998,8 +998,11 @@ mw.EmbedPlayerNative = {
 				$( this ).trigger( 'seeked' );
 			}
 		}
+		this.hideSpinner();
 		// update the playhead status
-		this.hideSpinnerAndPlayBtn();
+		if( this.isStopped() ){
+			this.addLargePlayBtn();
+		}
 		this.monitor();
 	},
 

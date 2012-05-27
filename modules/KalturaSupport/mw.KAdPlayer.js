@@ -558,8 +558,10 @@ mw.KAdPlayer.prototype = {
 		// stop monitor
 		clearInterval( _this.adMonitorInterval );
 		clearInterval( _this.adTimersInterval );
-		// clear any bindings 
-		$(  _this.getVideoElement() ).unbind( _this.trackingBindPostfix );
+		// clear any bindings ( on a single player ( else sibling video will be removed ) 
+		if( ! this.isVideoSiblingEnabled() ) {
+			$(  this.getOriginalPlayerElement() ).unbind( _this.trackingBindPostfix );
+		}
 	},
 	/**
 	 * Select a random element from the array and return it 
@@ -594,7 +596,11 @@ mw.KAdPlayer.prototype = {
 			
 			if( $.isFunction( doneCallback ) ){
 				$( vid ).bind('ended.playVideoSibling', function(){
+					mw.log("kAdPlayer::playVideoSibling: ended");
 					$( vid ).unbind( 'ended.playVideoSibling' );
+					// remove the sibling video: 
+					$( vid ).remove();
+					// call the deon callback: 
 					doneCallback();
 				});
 			}
