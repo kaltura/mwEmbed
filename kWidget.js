@@ -137,7 +137,7 @@ var kWidget = {
 	 * @param {string} widgetId The id of the widget that is ready
 	 */
 	jsCallbackReady: function( widgetId ){
-		// Check for proxyed jsReadyCallback: 
+		// Check for proxied jsReadyCallback: 
 		if( typeof this.proxiedJsCallback == 'function' ){
 			this.proxiedJsCallback( widgetId );
 		}
@@ -165,17 +165,40 @@ var kWidget = {
 	/**
 	 * The base embed method
 	 * @param targetId {String} Optional targetID string ( if not included, you must include in json) 
-	 * @param settings {Object} Object of settings to be used in embeding. 
+	 * @param settings {Object} Object of settings to be used in embedding. 
 	 */
 	embed: function( targetId, settings ){
 		// Supports passing settings object as the first parameter
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
 			if( ! settings.targetId ) {
-				console.log('Error: Missing target element Id');
+				this.log('Error: Missing target element Id');
 			}
 			targetId = settings.targetId;
 		}
+		/** 
+		 * Embed settings checks
+		 */
+		if( !settings.wid ){
+			this.log("Error: kWidget.embed missing wid");
+			return ;
+		}
+		var uiconf_id = settings.uiconf_id;
+		if( !uiconf_id ){
+			this.log("Error: kWidget.embed missing uiconf_id");
+			return ;
+		}
+		// Make sure the replace target exists:
+		var elm = document.getElementById( targetId );
+		if( ! elm ){
+			this.log("Error: kWidget.embed could not find target: " + targetId );
+			return false; // No target found ( probably already done )
+		}
+		// Don't rewrite special key kaltura_player_iframe_no_rewrite
+		if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
+			return ;
+		}
+		
 		if( settings.readyCallback ){
 			// Only add the ready callback for the current targetId being rewritten.
 			this.addReadyCallback( function( videoId ){
@@ -186,24 +209,6 @@ var kWidget = {
 		}
 		// Be sure to proxy JsCallbackready callback in dynamic embed call situations: 
 		this.proxyJsCallbackready();
-		
-		// Empty the replace target:
-		var elm = document.getElementById( targetId );
-		if( ! elm ){
-			return false; // No target found ( probably already done )
-		}
-		try {
-			elm.innerHTML = '';
-		} catch ( e ){
-			// could not clear inner html
-		}
-		
-		// Don't rewrite special key kaltura_player_iframe_no_rewrite
-		if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
-			return ;
-		}
-
-		var uiconf_id = settings.uiconf_id;
 		
 		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id )
 		
@@ -618,7 +623,19 @@ var kWidget = {
 			})
 			return ;
 		}
-		
+		var loadHTML5LibAndRewriteTags = function(){
+			// when the the html5 lib is first loaded it will
+			// check the dom for object tags
+			// if html5 is already loaded we have to call rewrites
+			if(  _this.depDoneLoading ){
+				mw.rewritePagePlayerTags( function(){
+					// no callback action.
+					
+				});
+			} else{ 
+				_this.loadHTML5Lib();
+			}
+		}
 		/**
 		 * If Kaltura.AllowIframeRemoteService is not enabled force in page rewrite:
 		 */
@@ -633,14 +650,14 @@ var kWidget = {
 
 		// If user javascript is using mw.ready add script
 		if( window.preMwEmbedReady.length ) {
-			this.loadHTML5Lib();
+			loadHTML5LibAndRewriteTags();
 			return ;
 		}
 		if( ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )
 				&&
 			( mw.getConfig( 'Kaltura.LoadScriptForVideoTags' ) && this.pageHasAudioOrVideoTags()  )
 		){
-			this.loadHTML5Lib();
+			loadHTML5LibAndRewriteTags();
 			return ;
 		}
 		
@@ -650,7 +667,7 @@ var kWidget = {
 			playerList.length
 		) {
 			// Check for Kaltura objects in the page
-			this.loadHTML5Lib();
+			loadHTML5LibAndRewriteTags();
 			return ;
 		}
 		
@@ -1197,7 +1214,7 @@ var kWidget = {
 		 // if we have already loaded files for this context, issue the callback directly. 
 		 if( this.depDoneLoading ){
 			 if( callback ){
-				 callback();
+				callback();
 			 }
 			 return;
 		 }

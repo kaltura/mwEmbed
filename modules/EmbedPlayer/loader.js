@@ -42,6 +42,9 @@
 		// and display the native play button:
 		'EmbedPlayer.iPhoneShowHTMLPlayScreen': true,
 		
+		// If the large play button should be disabled on replay:
+		'EmbedPlayer.ForceLargeReplayButton': false,
+		
 		// If the webkit-playsinline attribute should be added to the video tag. Will cause the player
 		// to play inline on iPhone
 		'EmbedPlayer.WebKitPlaysInline': false,
@@ -303,7 +306,6 @@
 		var doModuleTagRewrites = function(){
 			$( mw ).triggerQueueCallback( 'LoadeRewritePlayerTags', callback);
 		};
-		
 		if( mw.documentHasPlayerTags() ) {
 			var rewriteElementCount = 0;
 
