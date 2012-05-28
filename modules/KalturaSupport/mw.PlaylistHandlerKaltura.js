@@ -680,7 +680,7 @@ mw.PlaylistHandlerKaltura.prototype = {
 					$target.text( _this.playlist.formatTitle( $target.text() ) );
 				}
 				if( $target.text() == 'null' ){
-					$target.text('');
+					$target.text( '' );
 				}
 				break;
 		}
