@@ -628,7 +628,7 @@ mw.Playlist.prototype = {
 	disablePrevNext: function(){
 		this.embedPlayer.$interface.find('.playlistPlayPrevious,.playlistPlayNext')
 	 		.unbind('mouseenter mouseleave click')
-	 		.cs('cursor', 'default' );
+	 		.css('cursor', 'default' );
 	},
 	enablePrevNext: function(){
 		var _this = this;
