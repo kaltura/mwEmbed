@@ -7,7 +7,7 @@
 * mw.PlayerControlBuilder Handles skinning of the player controls
 */
 
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 
 /**
  * Add the messages text:
@@ -527,7 +527,8 @@ mw.EmbedPlayer.prototype = {
 		// Trigger layout ready event
 		$( this ).trigger( 'layoutReady' );
 		// Show the interface: 
-		this.$interface.find( '.control-bar,.play-btn-large').show();
+		this.$interface.find( '.control-bar').show();
+		this.addLargePlayBtn();
 		// trigger ready: 
 		this.playerReadyFlag = true;
 		// trigger the player ready event;
@@ -1121,7 +1122,7 @@ mw.EmbedPlayer.prototype = {
 				.addClass('error')
 				.html( noSourceMsg )
 			);
-			this.$interface.find('.play-btn-large').remove();
+			this.hideLargePlayBtn();
 		} else {
 			// Add the warning
 			this.controlBuilder.addWarningBinding( 'EmbedPlayer.DirectFileLinkWarning',
@@ -1301,7 +1302,7 @@ mw.EmbedPlayer.prototype = {
 		// Restore the control bar:
 		this.$interface.find('.control-bar').show();
 		// Hide the play btn
-		this.$interface.find('.play-btn-large').hide(); 
+		this.hideLargePlayBtn();
 		
 		//If we are change playing media add a ready binding:
 		var bindName = 'playerReady.changeMedia';
@@ -1322,7 +1323,7 @@ mw.EmbedPlayer.prototype = {
 			if(  chnagePlayingMedia ){
 				_this.hideLargePlayBtn();
 			} else {
-				_this.$interface.find( '.play-btn-large' ).show();
+				_this.addLargePlayBtn();
 			}
 			var source = _this.getSource();
 			if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
@@ -1619,7 +1620,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		// old style embed:
 		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
-		var params = { 'src[]' : [] };
+		var params = {'src[]' : []};
 
 		// TODO move to mediaWiki Support module
 		if( this.apiTitleKey ) {
