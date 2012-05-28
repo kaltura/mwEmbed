@@ -11,7 +11,6 @@
 
 mw.processEmbedPlayers = function( playerSelect, callback ) {
 	mw.log( 'processEmbedPlayers:: playerSelector: '+ playerSelect);
-
 	// The player id list container
 	var playerIdList = [];
 
@@ -19,7 +18,7 @@ mw.processEmbedPlayers = function( playerSelect, callback ) {
 	var areSelectedPlayersReady = function(){
 		var playersLoaded = true;
 		$.each( playerIdList, function(inx, playerId){
-			if( ! $( '#' + playerId )[0].playerReady ){
+			if( ! $( '#' + playerId )[0].playerReadyFlag ){
 				playersLoaded = false;
 				return false;
 			}

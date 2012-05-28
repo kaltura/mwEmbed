@@ -603,7 +603,6 @@
 				if( window[ cbName ] ){
 					mw.log( "Error: iframe callback already defined: " + cbName );
 					cbName += parseInt( Math.random()* 1000 );
-					return ;
 				}
 				window[ cbName ] = function( iframeData ){
 					var newDoc = $( '#' + iframeId )[0].contentDocument;

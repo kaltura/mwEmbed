@@ -152,10 +152,12 @@ mw.KApi.prototype = {
 		}
 		window[ globalCBName ] = function( data ){
 			// issue the local scope callback:
-			if( callback )
+			if( callback ){
 				callback( data );
-			// null this global function name:
-			window[ globalCBName ] = null;
+				callback = null;
+			}
+			// don't null this global function name  
+			// window[ globalCBName ] = null;
 		};
 		requestURL+= '&callback=' + globalCBName;
 		mw.log("kAPI:: doApiRequest: " + requestURL);

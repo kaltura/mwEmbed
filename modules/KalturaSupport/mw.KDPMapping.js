@@ -135,7 +135,7 @@
 				};
 				// Listen for the proxyReady event from the server:
 				$( playerProxy ).bind( 'proxyReady', function(){
-					// issue the jsReadyCallback for the html5 player:
+					// Issue the jsReadyCallback for the html5 player:
 					kWidget.jsCallbackReady( playerProxy.id );
 				});
 			});

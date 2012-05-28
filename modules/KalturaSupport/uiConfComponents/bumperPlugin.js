@@ -70,13 +70,14 @@ window.bumperPlugin = function( embedPlayer, callback ){
 						'clickThrough' : bumperConfig.clickUrl
 					}
 				],
-				'lockUI': bumperConfig.lockUi,
+				'lockUI': bumperConfig.lockUI,
 				'playOnce': bumperConfig.playOnce
 			};
 			// handle prerolls
 			if( bumperConfig.preSequence ){
 				$( embedPlayer ).bind( 'AdSupport_bumper' + bumpPostfix, function( event, sequenceProxy ){
 					adConf.type = 'bumper';
+					embedPlayer.adTimeline.updateUiForAdPlayback( adConf.type );
 					sequenceProxy[ bumperConfig.preSequence ] = function( doneCallback ){
 						// bumper triggers play event:
 						$( embedPlayer ).trigger( 'onplay' );
@@ -88,6 +89,7 @@ window.bumperPlugin = function( embedPlayer, callback ){
 			if( bumperConfig.postSequence ){
 				$( embedPlayer ).bind( 'AdSupport_postroll' + bumpPostfix, function(event, sequenceProxy){
 					adConf.type = 'postroll';
+					embedPlayer.adTimeline.updateUiForAdPlayback( adConf.type );
 					sequenceProxy[ bumperConfig.postSequence ] = function( doneCallback ){
 						// bumper triggers play event:
 						$( embedPlayer ).trigger( 'onplay' );

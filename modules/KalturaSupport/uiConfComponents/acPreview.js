@@ -60,7 +60,7 @@ window.acPreview = function( embedPlayer ){
 	// TODO move getAccessControlStatus to local method
 	var acStatus = kWidgetSupport.getAccessControlStatus( ac, embedPlayer );
 	if( acStatus !== true ){
-		embedPlayer.setPlayerError( acStatus );
+		embedPlayer.setError( acStatus );
 		return ;
 	}
 	// Check for preview access control and add special onEnd binding:

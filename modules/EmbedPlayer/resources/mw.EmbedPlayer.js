@@ -7,7 +7,7 @@
 * mw.PlayerControlBuilder Handles skinning of the player controls
 */
 
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 
 /**
  * Merge in the default video attributes supported by embedPlayer:
@@ -694,9 +694,10 @@ mw.EmbedPlayer.prototype = {
 		}
 		// Trigger layout ready event
 		$( this ).trigger( 'layoutReady' );
-		// Show the interface:
-		this.$interface.find( '.control-bar,.play-btn-large').show();
-		// trigger ready:
+		// Show the interface: 
+		this.$interface.find( '.control-bar').show();
+		this.addLargePlayBtn();
+		// set the player ready flag:
 		this.playerReadyFlag = true;
 		// trigger the player ready event;
 		$( this ).trigger( 'playerReady' );
@@ -997,11 +998,16 @@ mw.EmbedPlayer.prototype = {
 						// make sure we are in a paused state.
 						_this.pause();
 					}
-					// Check if we should hide the large play button on end:
-					if( $( _this ).data( 'hideEndPlayButton' ) || !_this.useLargePlayBtn() ){
-						_this.hideLargePlayBtn();
-					} else {
+					// Check if have a force display of the large play button
+					if( mw.getConfig('EmbedPlayer.ForceLargeReplayButton') === true ){
 						_this.addLargePlayBtn();
+					} else{
+						// Check if we should hide the large play button on end: 
+						if( $( _this ).data( 'hideEndPlayButton' ) || !_this.useLargePlayBtn() ){
+							_this.hideLargePlayBtn();
+						} else {
+							_this.addLargePlayBtn();
+						}
 					}
 					// An event for once the all ended events are done.
 					mw.log("EmbedPlayer:: trigger: onEndedDone");
@@ -1283,7 +1289,7 @@ mw.EmbedPlayer.prototype = {
 				.addClass('error')
 				.html( noSourceMsg )
 			);
-			this.$interface.find('.play-btn-large').remove();
+			this.hideLargePlayBtn();
 		} else {
 			// Add the warning
 			this.controlBuilder.addWarningBinding( 'EmbedPlayer.DirectFileLinkWarning',
@@ -1463,8 +1469,8 @@ mw.EmbedPlayer.prototype = {
 		// Restore the control bar:
 		this.$interface.find('.control-bar').show();
 		// Hide the play btn
-		this.$interface.find('.play-btn-large').hide();
-
+		this.hideLargePlayBtn();
+		
 		//If we are change playing media add a ready binding:
 		var bindName = 'playerReady.changeMedia';
 		$this.unbind( bindName ).bind( bindName, function(){
@@ -1484,7 +1490,7 @@ mw.EmbedPlayer.prototype = {
 			if(  chnagePlayingMedia ){
 				_this.hideLargePlayBtn();
 			} else {
-				_this.$interface.find( '.play-btn-large' ).show();
+				_this.addLargePlayBtn();
 			}
 			var source = _this.getSource();
 			if( (_this.isPersistentNativePlayer() || _this.useNativePlayerControls()) && source ){
@@ -1527,7 +1533,16 @@ mw.EmbedPlayer.prototype = {
 			_this.setupSourcePlayer();
 		});
 	},
-
+	/**
+	 * Checks if the current player / configuration is an image play screen: 
+	 */
+	isImagePlayScreen:function(){
+		return ( this.useNativePlayerControls() && 
+			this.mediaElement.selectedSource && 
+			mw.isIphone() && 
+			mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') 
+		);
+	},
 	/**
 	 * Triggers widgetLoaded event - Needs to be triggered only once, at the first time playerReady is trigerred
 	 */
@@ -1548,15 +1563,12 @@ mw.EmbedPlayer.prototype = {
 		var thumb_html = '';
 		var class_atr = '';
 		var style_atr = '';
-
-		if( this.useNativePlayerControls() &&
-			this.mediaElement.selectedSource
-		){
-			if( mw.isIphone() && mw.getConfig( 'EmbedPlayer.iPhoneShowHTMLPlayScreen') ){
-				this.addPlayScreenWithNativeOffScreen();
-				return ;
-			}
+		
+		if( this.isImagePlayScreen() ){
+			this.addPlayScreenWithNativeOffScreen();
+			return ;
 		}
+		
 		// Set by default thumb value if not found
 		var posterSrc = ( this.poster ) ? this.poster :
 						mw.getConfig( 'EmbedPlayer.BlackPixel' );
@@ -1775,7 +1787,7 @@ mw.EmbedPlayer.prototype = {
 		}
 		// old style embed:
 		var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php?';
-		var params = { 'src[]' : [] };
+		var params = {'src[]' : []};
 
 		// TODO move to mediaWiki Support module
 		if( this.apiTitleKey ) {
@@ -1914,7 +1926,7 @@ mw.EmbedPlayer.prototype = {
 		this.absoluteStartPlayTime =  new Date().getTime();
 
 		// Check if thumbnail is being displayed and embed html
-		if ( _this.stopped ) {
+		if ( _this.isStopped() ) {
 			if ( !_this.selectedPlayer ) {
 				_this.showPluginMissingHTML();
 				return false;
@@ -1980,7 +1992,7 @@ mw.EmbedPlayer.prototype = {
 		}
 
 		this.playInterfaceUpdate();
-		// If play controls are enabled continue to video playback:
+		// If play controls are enabled continue to video content element playback:
 		if( _this._playContorls ){
 			return true;
 		} else {

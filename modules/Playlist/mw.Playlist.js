@@ -504,11 +504,16 @@ mw.Playlist.prototype = {
 
 		// Update selected clip:
 		_this.updatePlayerUi( clipIndex );
-
-        // Hand off play clip request to sourceHandler:
+		
+		// disable switching playlist items while loading the next one
+		_this.disablePrevNext();
+		
+        // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex, function(){
 			mw.log( "Playlist::playClip > sourceHandler playClip callback ");
-			// Add playlist specific bindings:
+			// restore next prev buttons: 
+			_this.enablePrevNext();
+			// Add playlist specific bindings: 
 			_this.addClipBindings();
 			// Restore onDoneInterfaceFlag
 			embedPlayer.onDoneInterfaceFlag = true;
@@ -608,26 +613,31 @@ mw.Playlist.prototype = {
 		});
 		// check for interface events and update playlist specific interface components:
 		$( embedPlayer ).bind( 'onDisableInterfaceComponents' + this.bindPostfix, function(){
-			 embedPlayer.$interface.find('.playlistPlayPrevious,.playlistPlayNext')
-			 	.unbind('mouseenter mouseleave click')
-				.css('cursor', 'default' );
+			_this.disablePrevNext();
 		});
 		$( embedPlayer ).bind( 'onEnableInterfaceComponents' + this.bindPostfix, function(){
-			embedPlayer.$interface.find('.playlistPlayPrevious,.playlistPlayNext')
-			.css('cursor', 'pointer' )
-			.click(function(){
-				if( $( this).hasClass( 'playlistPlayPrevious' ) ){
-					$( embedPlayer ).trigger( 'playlistPlayNext' );
-				} else if( $( this ).hasClass( 'playlistPlayNext' ) ){
-					$( embedPlayer ).trigger( 'playlistPlayNext');
-				}
-			})
-			.buttonHover();
+			_this.enablePrevNext();
 		});
-
-
 		// Trigger playlistsListed when we get the data
 		$( embedPlayer ).trigger( 'playlistsListed' );
+	},
+	disablePrevNext: function(){
+		this.embedPlayer.$interface.find('.playlistPlayPrevious,.playlistPlayNext')
+	 		.unbind('mouseenter mouseleave click')
+	 		.css('cursor', 'default' );
+	},
+	enablePrevNext: function(){
+		var _this = this;
+		this.embedPlayer.$interface.find('.playlistPlayPrevious,.playlistPlayNext')
+		.css('cursor', 'pointer' )
+		.click(function(){
+			if( $( this).hasClass( 'playlistPlayPrevious' ) ){
+				$( _this.embedPlayer ).trigger( 'playlistPlayPrevious' );
+			} else if( $( this ).hasClass( 'playlistPlayNext' ) ){
+				$( _this.embedPlayer ).trigger( 'playlistPlayNext');
+			}
+		})
+		.buttonHover();
 	},
 	syncPlayerSize: function(){
 		var _this = this;
@@ -664,62 +674,62 @@ mw.Playlist.prototype = {
 		}
 		// add previous / next buttons if not present:
 		// TODO (HACK) we should do real controlBar support for custom buttons
-		if( embedPlayer.controlBuilder ){
-			var $controlBar = embedPlayer.$interface.find('.control-bar');
-
-			if( $controlBar.find( '.ui-icon-seek-next' ).length != 0 ){
-				// already have seek buttons
-				return false;
-			}
-
-			var $plButton = $('<div />')
-				.addClass("ui-state-default ui-corner-all ui-icon_link lButton")
-				.buttonHover()
-				.append(
-					$('<span />')
-					.addClass( "ui-icon")
-				);
-
-			var $playButton = $controlBar.find( '.play-btn');
-
-			if( _this.sourceHandler.isNextButtonDisplayed() ){
-			 	// make space ( reduce playhead length )
-				var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 28;
-				$controlBar.find('.play_head').css('left', pleft);
-
-				var $nextButton = $plButton.clone().attr({
-							'title' : 'Next clip'
-						})
-						.click(function(){
-							$( embedPlayer ).trigger( 'playlistPlayNext' );
-						})
-						.addClass( 'playlistPlayNext' )
-						.find('span')
-						.addClass('ui-icon-seek-next')
-						.parent()
-						.buttonHover();
-
-				$playButton.after($nextButton);
-			}
-
-			if(  _this.sourceHandler.isPreviousButtonDisplayed() ){
-				// make space ( reduce playhead length )
-				var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 28;
-				$controlBar.find('.play_head').css('left', pleft);
-
-				var $prevButton = $plButton.clone().attr({
-							'title' : 'Previous clip'
-						})
-						.click(function(){
-							$( embedPlayer ).trigger( 'playlistPlayPrevious' );
-						})
-						.addClass( 'playlistPlayPrevious' )
-						.find('span').addClass('ui-icon-seek-prev')
-						.parent()
-						.buttonHover();
-
-				$playButton.after($prevButton);
-			}
+		if( ! embedPlayer.controlBuilder ){
+			return ;
+		}
+		var $controlBar = embedPlayer.$interface.find('.control-bar');
+		if( $controlBar.find( '.ui-icon-seek-next' ).length != 0 ){
+			// already have seek buttons
+			return false;
+		}
+		
+		var $plButton = $('<div />')
+			.addClass("ui-state-default ui-corner-all ui-icon_link lButton")
+			.buttonHover()
+			.append(
+				$('<span />')
+				.addClass( "ui-icon")
+			);
+			
+		var $playButton = $controlBar.find( '.play-btn');
+		
+		if( _this.sourceHandler.isNextButtonDisplayed() ){	
+		 	// make space ( reduce playhead length ) 
+			var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 28;
+			$controlBar.find('.play_head').css('left', pleft);
+				
+			var $nextButton = $plButton.clone().attr({
+						'title' : 'Next clip'
+					})
+					.click(function(){
+						$( embedPlayer ).trigger( 'playlistPlayNext' );
+					})
+					.addClass( 'playlistPlayNext' )
+					.find('span')
+					.addClass('ui-icon-seek-next')
+					.parent()
+					.buttonHover();
+					
+			$playButton.after($nextButton);
+		}
+			
+		if(  _this.sourceHandler.isPreviousButtonDisplayed() ){
+			// make space ( reduce playhead length ) 
+			var pleft =  parseInt( $controlBar.find( '.play_head' ).css( 'left' ) ) + 28;
+			$controlBar.find('.play_head').css('left', pleft);
+			
+			var $prevButton = $plButton.clone().attr({
+						'title' : 'Previous clip'
+					})
+					.click(function(){	
+						$( embedPlayer ).trigger( 'playlistPlayPrevious' );
+					})
+					.addClass( 'playlistPlayPrevious' )
+					.find('span').addClass('ui-icon-seek-prev')
+					.parent()
+					.buttonHover();
+					
+			$playButton.after($prevButton);
 		}
 	},
 	// add bindings for playlist playback ( disable playlist item selection during ad Playback )
