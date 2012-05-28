@@ -228,11 +228,19 @@ mw.includeAllModuleMessages();
 			});
 			
 			$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + this.bindPostFix, function() {
+				var $textButton = embedPlayer.$interface.find( '.timed-text' );
+				if ( $textButton.length ) {
+					$textButton.unbind( 'click.textMenu' );
+				}
 				_this.lastLayout = _this.getLayoutMode();
 				_this.setLayoutMode( 'off' );
 			} );
 			
 			$( embedPlayer ).bind( 'AdSupport_EndAdPlayback' + this.bindPostFix, function() {
+				var $textButton = embedPlayer.$interface.find( '.timed-text' );
+				if ( $textButton.length ) {
+					_this.bindTextButton( $textButton );
+				}
 				_this.setLayoutMode( _this.lastLayout );
 			} );
 			
@@ -286,7 +294,7 @@ mw.includeAllModuleMessages();
 			};
 		},
 		
-		bindTextButton: function($textButton){
+		bindTextButton: function( $textButton ){
 			var _this = this;
 			$textButton.unbind('click.textMenu').bind('click.textMenu', function() {
                 _this.showTextMenu();
