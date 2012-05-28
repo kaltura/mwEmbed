@@ -172,10 +172,33 @@ var kWidget = {
 		if( typeof targetId === 'object' ) {
 			settings = targetId;
 			if( ! settings.targetId ) {
-				console.log('Error: Missing target element Id');
+				this.log('Error: Missing target element Id');
 			}
 			targetId = settings.targetId;
 		}
+		/** 
+		 * Embed settings checks
+		 */
+		if( !settings.wid ){
+			this.log("Error: kWidget.embed missing wid");
+			return ;
+		}
+		var uiconf_id = settings.uiconf_id;
+		if( !uiconf_id ){
+			this.log("Error: kWidget.embed missing uiconf_id");
+			return ;
+		}
+		// Make sure the replace target exists:
+		var elm = document.getElementById( targetId );
+		if( ! elm ){
+			this.log("Error: kWidget.embed could not find target: " + targetId );
+			return false; // No target found ( probably already done )
+		}
+		// Don't rewrite special key kaltura_player_iframe_no_rewrite
+		if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
+			return ;
+		}
+		
 		if( settings.readyCallback ){
 			// Only add the ready callback for the current targetId being rewritten.
 			this.addReadyCallback( function( videoId ){
@@ -186,24 +209,6 @@ var kWidget = {
 		}
 		// Be sure to proxy JsCallbackready callback in dynamic embed call situations: 
 		this.proxyJsCallbackready();
-		
-		// Empty the replace target:
-		var elm = document.getElementById( targetId );
-		if( ! elm ){
-			return false; // No target found ( probably already done )
-		}
-		try {
-			elm.innerHTML = '';
-		} catch ( e ){
-			// could not clear inner html
-		}
-		
-		// Don't rewrite special key kaltura_player_iframe_no_rewrite
-		if( elm.getAttribute('name') == 'kaltura_player_iframe_no_rewrite' ){
-			return ;
-		}
-
-		var uiconf_id = settings.uiconf_id;
 		
 		settings.isHTML5 = this.isUiConfIdHTML5( uiconf_id )
 		
