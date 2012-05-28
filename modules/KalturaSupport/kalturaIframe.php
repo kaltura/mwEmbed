@@ -775,35 +775,77 @@ class kalturaIframe {
 				// For testing limited capacity browsers
 				//kWidget.supportsHTML5 = function(){ return false };
 				//kWidget.supportsFlash= function(){ return false; };
+
+				<?php if( ! $this->getResultObject()->isJavascriptRewriteObject() ) { ?>
+				// Setup required properties: 
+				var flashEmbedHTML = <?php echo json_encode( $this->getFlashEmbedHTML()); ?>;
+				// Setup player
+				var playerConfig = mw.getConfig( 'KalturaSupport.PlayerConfig' );
+				var playerId = mw.getConfig( 'EmbedPlayer.IframeParentPlayerId');
+
+				var removeElement = function( elemId ) {
+					if( document.getElementById( elemId ) ){
+						try{
+							var el = document.getElementById( elemId );
+							el.parentNode.removeChild(el);
+						}catch(e){
+							// failed to remove element
+						}
+					}
+				};
+
+				if( kWidget.isUiConfIdHTML5( playerConfig.uiConfId ) || !( kWidget.supportsFlash() || mw.getConfig( 'Kaltura.ForceFlashOnDesktop' )) ){
+						// remove the no_rewrite flash object ( never used in rewrite )
+						removeElement('kaltura_player_iframe_no_rewrite');
+
+						// Load the mwEmbed resource library and add resize binding
+						mw.ready(function(){
+							// Try again to remove the flash player if not already removed: 
+							$('#kaltura_player_iframe_no_rewrite').remove();
+
+							var embedPlayer = $( '#' + playerId )[0];
+							// Try to seek to the IframeSeekOffset time:
+							if( mw.getConfig( 'EmbedPlayer.IframeCurrentTime' ) ){
+								embedPlayer.currentTime = mw.getConfig( 'EmbedPlayer.IframeCurrentTime' );					
+							}
+							// Maintain play state for html5 browsers
+							if( mw.getConfig('EmbedPlayer.IframeIsPlaying') ){
+								embedPlayer.play();
+							}
+
+
+							function getWindowSize(){
+								return {
+									'width' : $( window ).width(),
+									'height' : $( window ).height()
+								};
+							};
+							function doResizePlayer(){
+								var embedPlayer = $( '#' + playerId )[0];						
+								embedPlayer.resizePlayer( getWindowSize() );
+							};
+
+							// Bind window resize to reize the player:
+							$( window ).resize( doResizePlayer );
+
+							// Resize the player per player on ready
+							if( mw.getConfig('EmbedPlayer.IsFullscreenIframe') ){
+								doResizePlayer();
+							}
+						});
+				} else {
+					// Remove the video tag and output a clean "object" or file link
+					// ( if javascript is off the child of the video tag so would be played,
+					//  but rewriting gives us flexiblity in in selection criteria as
+					// part of the javascript check kIsHTML5FallForward )
+					removeElement( 'videoContainer' );
+					// Write out the embed object
+					document.write( flashEmbedHTML );
+				}
+				<?php } ?>
 			});
-			// Setup required properties: 
-			window.kSettings = <?php
-			 echo json_encode(
-					array(
-						'flashEmbedHTML' => $this->getFlashEmbedHTML(),
-						'playEventURL' => $this->getPlayEventUrl()
-					)
-				); 
-			?>;
+
 		</script>
-		<?php
-			if( ! $this->getResultObject()->isJavascriptRewriteObject() ) {
-				global $wgResourceLoaderUrl, $wgEnableScriptDebug;
-				// Output a resource loader url for iframePlayerSetup: 
-				$urlParam = $this->getResultObject()->getUrlParameters();
-				$rlUrl = $wgResourceLoaderUrl;
-				$rlUrl.= '?class=IframePlayerSetup';
-				if( isset( $urlParam['urid'] ) ){
-					$rlUrl .= '&urid=' . htmlspecialchars( $urlParam['urid'] );
-				}
-				if( isset( $ulrParam['debug'] ) || $wgEnableScriptDebug ){
-					$rlUrl .= '&debug=true';
-				}
-				?>
-				<script type="text/javascript" src="<?php echo  $rlUrl?>"></script>
-				<?php 
-			}
-		?>
 	</body>
 </html>
 <?php
