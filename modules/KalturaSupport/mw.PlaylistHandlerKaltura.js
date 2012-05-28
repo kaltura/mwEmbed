@@ -679,6 +679,9 @@ mw.PlaylistHandlerKaltura.prototype = {
 				} else{
 					$target.text( _this.playlist.formatTitle( $target.text() ) );
 				}
+				if( $target.text() == 'null' ){
+					$target.text('');
+				}
 				break;
 		}
 	},
