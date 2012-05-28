@@ -1,7 +1,7 @@
 /**
 * Supports the display of kaltura VAST ads. 
 */
-( function( mw, $ ) { "use strict";
+( function( mw, $ ) {"use strict";
 
 	
 mw.KAdPlayer = function( embedPlayer ) {
@@ -307,6 +307,13 @@ mw.KAdPlayer.prototype = {
 			if( _this.isVideoSiblingEnabled() ) {
 				vid.volume = changeValue;
 			}
+		});
+		
+		// Make sure we remove large play button
+		$( vid ).bind('playing', function() { 
+			setTimeout( function() {
+				_this.embedPlayer.hideLargePlayBtn();
+			}, 100);
 		});
 		
 		// Update the status bar 

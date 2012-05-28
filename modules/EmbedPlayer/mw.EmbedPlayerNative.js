@@ -123,9 +123,9 @@ mw.EmbedPlayerNative = {
 		} else {
 			$( this ).append(
 				$('<img />').css({
-					'margin' : 'auto',
-					'max-width': '100%',
-					'max-height': '100%'
+					'margin' : '0',
+					'width': '100%',
+					'height': '100%'
 				})
 				.attr( 'src', posterSrc)
 				.addClass('playerPoster')
