@@ -131,11 +131,11 @@
 				
 				// Directly build out the evaluate call on the playerProxy
 				playerProxy.evaluate = function( objectString ){
-					return _this.evaluate( playerProxy, objectString);			
+					return _this.evaluate( playerProxy, objectString);
 				};
 				// Listen for the proxyReady event from the server: 
 				$( playerProxy ).bind( 'proxyReady', function(){
-					// issue the jsReadyCallback for the html5 player: 
+					// Issue the jsReadyCallback for the html5 player:
 					kWidget.jsCallbackReady( playerProxy.id );
 				});
 			});			

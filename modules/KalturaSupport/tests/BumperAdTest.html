@@ -11,11 +11,40 @@
 
 </head>
 <body>
-<h2> Bumber Video </h2>	
+<h2> Preroll ad + Preroll Bumper </h2>	
 <a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers
 <br />
-<object id="kaltura_player" name="kaltura_player" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="330" width="400" xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" rel="media:video" resource="http://www.kaltura.com/index.php/kwidget/cache_st/1296118817/wid/_423851/uiconf_id/3351381/entry_id/1_uida6ix6" data="http://www.kaltura.com/index.php/kwidget/cache_st/1296118817/wid/_423851/uiconf_id/3351381/entry_id/1_uida6ix6"><param name="allowFullScreen" value="true" /><param name="allowNetworking" value="all" /><param name="allowScriptAccess" value="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="&" /><param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1296118817/wid/_423851/uiconf_id/3351381/entry_id/1_uida6ix6" /><a href="http://corp.kaltura.com">video platform</a> <a href="http://corp.kaltura.com/video_platform/video_management">video management</a> <a href="http://corp.kaltura.com/solutions/video_solution">video solutions</a> <a href="http://corp.kaltura.com/video_platform/video_publishing">video player</a> <a rel="media:thumbnail" href="http://cdnbakmi.kaltura.com/p/423851/sp/42385100/thumbnail/entry_id/1_uida6ix6/width/120/height/90/bgcolor/000000/type/2" /> <span property="dc:description" content="" /><span property="media:title" content="Apple iPhone Ad_ Calamari.flv" /> <span property="media:width" content="400" /><span property="media:height" content="330" /> <span property="media:type" content="application/x-shockwave-flash" /> </object>
+<object id="kaltura_player" name="kaltura_player" 
+	type="application/x-shockwave-flash" allowFullScreen="true" 
+	allowNetworking="all" allowScriptAccess="always" height="330" width="400" 
+	xmlns:dc="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/searchmonkey/media/" 
+	rel="media:video" 
+	resource="http://www.kaltura.com/index.php/kwidget/cache_st/1296118817/wid/_423851/uiconf_id/3351381/entry_id/1_uida6ix6" 
+	data="http://www.kaltura.com/index.php/kwidget/cache_st/1296118817/wid/_423851/uiconf_id/3351381/entry_id/1_uida6ix6">
+		<param name="allowFullScreen" value="true" />
+		<param name="allowNetworking" value="all" />
+		<param name="allowScriptAccess" value="always" />
+		<param name="bgcolor" value="#000000" />
+		<param name="flashVars" value="&" />
+		<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1296118817/wid/_423851/uiconf_id/3351381/entry_id/1_uida6ix6" />
+</object>
 <br />
+<h2> Postroll ad + Postroll Bumper </h2>	
+<div id="kPlayer" style="width:400px;height:330px"></div>
+<script>
+	kWidget.embed('kPlayer', {
+		'wid': '_423851',
+		'entry_id':'1_uida6ix6',
+		'uiconf_id':'3351381',
+		'flashvars':{
+			'vast.postrollUrl': 'http://d1.openx.org/fc.php?script=bannerTypeHtml:vastInlineBannerTypeHtml:vastInlineHtml&source=&format=vast&charset=UTF_8&nz=1&zones=z1=182104',
+			'vast.preSequence': 0,
+			'vast.postSequence' : 2,
+			'bumper.preSequence': 0,
+			'bumper.postSequence': 1
+		}
+	});
+</script>
 
 <!-- 
 

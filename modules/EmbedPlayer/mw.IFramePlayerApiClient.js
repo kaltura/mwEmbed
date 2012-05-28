@@ -5,6 +5,9 @@
 */
 ( function( mw, $ ) { "use strict";
 
+// global flag to flag one message per player id
+window['IFramePlayerApiProxyIds'] = {};
+
 mw.IFramePlayerApiClient = function( iframe, playerProxy ){
 	return this.init( iframe , playerProxy );
 };
@@ -81,7 +84,12 @@ mw.IFramePlayerApiClient.prototype = {
 		});
 	},
 	'addPlayerReciveApi': function(){
-		var _this = this;		
+		var _this = this;
+		if( window['IFramePlayerApiProxyIds'][this.playerProxy.id] ){
+			return ;
+		}
+		// Set the flag for the current global message receiver 
+		window['IFramePlayerApiProxyIds'][this.playerProxy.id] = true;
 		$.receiveMessage( function( event ){
 			_this.handleReceiveMessage( event );
 		}, this.iframeServer);
