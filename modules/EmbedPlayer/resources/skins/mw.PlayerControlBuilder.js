@@ -415,7 +415,7 @@ mw.PlayerControlBuilder.prototype = {
 		// Check for native support for fullscreen and we are in an iframe server
 		if ( window.fullScreenApi.supportsFullScreen ) {
 			var fsWindow = this.getFsWindowContext();
-			var preFullscreenHeight = this.getPreFsHeight();
+			_this.preFullscreenPlayerSize = this.getPlayerSize();
 			var fullscreenHeight = null;
 			var fsTarget = this.getFsTarget(); 
 				
@@ -446,15 +446,15 @@ mw.PlayerControlBuilder.prototype = {
 			// so we have to have an extra binding to check for size change and then restore. 
 			if( $.browser.mozilla ){
 				_this.fullscreenRestoreCheck = setInterval( function(){
-						if( fullscreenHeight && $(window).height() < fullscreenHeight ){
-							// Mozilla triggered size change:
-							clearInterval ( _this.fullscreenRestoreCheck );
-							_this.restoreWindowPlayer();
-						}
-						// set fullscreen height: 
-						if( ! fullscreenHeight && preFullscreenHeight!= $(window).height() ){
-							fullscreenHeight = $(window).height();
-						}
+					if( fullscreenHeight && $(window).height() < fullscreenHeight ){
+						// Mozilla triggered size change:
+						clearInterval ( _this.fullscreenRestoreCheck );
+						_this.restoreWindowPlayer();
+					}
+					// set fullscreen height: 
+					if( ! fullscreenHeight && _this.preFullscreenPlayerSize.height != $(window).height() ){
+						fullscreenHeight = $(window).height();
+					}
 				}, 250 );
 			}
 		} else {
@@ -516,6 +516,10 @@ mw.PlayerControlBuilder.prototype = {
 	syncPlayerSize: function(){
 		var embedPlayer = this.embedPlayer;
 		mw.log( "PlayerControlBuilder::syncPlayerSize: window:" +  $(window).width() + ' player: ' + $( embedPlayer ).width() );
+		// don't sync player size if inline player while not fullscreen.
+		if( !mw.getConfig('EmbedPlayer.IsIframeServer' ) && ! this.inFullScreen ){
+			return ;
+		}
 		// resize to the playlist  container
 		// TODO  change this to an event so player with interface around it ( ppt widget etc ) can
 		// set the player to the right size. 
@@ -742,12 +746,19 @@ mw.PlayerControlBuilder.prototype = {
 			return true;
 		});
 	},
-	// TOOD a little fs object abstraction? 
-	getPreFsHeight: function(){
+	// TOOD fullscreen iframe vs inpage object abstraction 
+	//( avoid repatiave conditionals in getters )  
+	getPlayerSize: function(){
 		if( mw.getConfig('EmbedPlayer.IsIframeServer' ) ){
-			return $(window).height();
+			return {
+				'height' : $(window).height(),
+				'width' : $(window).width()
+			}
 		} else {
-			return this.embedPlayer.$interface.height();
+			return {
+				'height' : this.embedPlayer.$interface.height(),
+				'width' : this.embedPlayer.$interface.width()
+			}
 		}
 	},
 	getFsTarget: function(){
@@ -823,17 +834,13 @@ mw.PlayerControlBuilder.prototype = {
 		// only animate if we are not inside an iframe
 		var aninmate = !mw.getConfig( 'EmbedPlayer.IsIframeServer' );
 			
-		mw.log( 'restoreWindowPlayer:: h:' + interfaceHeight + ' w:' + embedPlayer.getWidth());
-		$('.mw-fullscreen-overlay').remove( 'slow' );
+		mw.log( 'PlayerControlBuilder:: restoreWindowPlayer:: w:' + _this.preFullscreenPlayerSize.width + ' h:' + _this.preFullscreenPlayerSize.height);
+		$('.mw-fullscreen-overlay').remove();
 	
-		mw.log( 'restore embedPlayer:: ' + embedPlayer.getWidth() + ' h: ' + embedPlayer.getHeight() );
-		
 		// Restore the player:
 		embedPlayer.resizePlayer( {
-			'top' : _this.windowOffset.top + 'px',
-			'left' : _this.windowOffset.left + 'px',
-			'width' : embedPlayer.getWidth(),
-			'height' : embedPlayer.getHeight()
+			'width' : _this.preFullscreenPlayerSize.width,
+			'height' : _this.preFullscreenPlayerSize.height
 		}, aninmate, function(){
 			var topPos = {
 				'position' : _this.windowPositionStyle,
@@ -865,7 +872,7 @@ mw.PlayerControlBuilder.prototype = {
 	resizePlayer: function( size, animate, resizePlayercallback ){
 		var embedPlayer = this.embedPlayer;
 		var _this = this;
-		mw.log( "ControlBuilder:: resizePlayer: w:" +  size.width + ' h:' + size.height );
+		mw.log( "PlayerControlBuilder:: resizePlayer: w:" +  size.width + ' h:' + size.height );
 		// Trigger the resize event: 
 		$( embedPlayer ).trigger( 'onResizePlayer', [size, animate] );
 		// proxy the callback to send a onResizePlayerDone event: 
