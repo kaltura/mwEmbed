@@ -51,6 +51,9 @@
  			// and display the native play button:
 			'EmbedPlayer.iPhoneShowHTMLPlayScreen' => true,
 			
+			// If the large play button should be disabled on replay:
+			'EmbedPlayer.ForceLargeReplayButton' => false,
+	
 			// The attribution library page
 			'EmbedPlayer.LibraryPage' => 'http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library',
 	

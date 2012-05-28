@@ -2,10 +2,6 @@
 * Supports the parsing of ads
 */
 ( function( mw, $ ) { "use strict"; 
-//Global mw.addKAd manager
-mw.addKalturaAds = function( embedPlayer, callback ) {
-	embedPlayer.kAds = new mw.KAds( embedPlayer, callback );
-};
 
 mw.sendBeaconUrl = function( beaconUrl ){
 	$('body').append( 

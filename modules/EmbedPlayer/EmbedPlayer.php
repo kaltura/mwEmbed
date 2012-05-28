@@ -42,7 +42,8 @@
 					'jquery.cookie',
 					'jquery.ui.mouse',
 					'jquery.menu',
-					'jquery.ui.slider'					
+					'jquery.ui.slider',
+					'jquery.ui.touchPunch',
 				),
 				'styles' => "resources/skins/EmbedPlayer.css",
 				'messageFile' => 'EmbedPlayer.i18n.php',		

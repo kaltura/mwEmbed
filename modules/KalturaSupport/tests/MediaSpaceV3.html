@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>MediaSpace v3</title>
+<script type="text/javascript" src="../../../mwEmbedLoader.php?debug=true"></script>
+<script type="text/javascript">
+mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
+mw.setConfig( 'EmbedPlayer.DisableHTML5FlashFallback', true );
+//Enable the download link player: 
+mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
+</script>
+</head>
+<body>
+<h2>MediaSpace v3</h2>	
+<a href="?forceMobileHTML5"> Force Mobile HTML5</a> for testing with desktop html5 browsers
+<br />
+<object id="kdp" name="kdp" type="application/x-shockwave-flash" allowFullScreen="true" allowNetworking="all" allowScriptAccess="always" height="333" width="400" bgcolor="#000000" data="http://www.kaltura.com/index.php/kwidget/cache_st/1336295412/wid/_423851/uiconf_id/7752572/entry_id/1_9t28c1xt">
+	<param name="allowFullScreen" value="true" />
+	<param name="allowNetworking" value="all" />
+	<param name="allowScriptAccess" value="always" />
+	<param name="bgcolor" value="#000000" />
+	<param name="flashVars" value="&externalInterfaceDisabled=false" />
+	<param name="movie" value="http://www.kaltura.com/index.php/kwidget/cache_st/1336295412/wid/_423851/uiconf_id/7752572/entry_id/1_9t28c1xt" />
+</object>
+<script>
+var jsCallbackReady = function (playerId) {
+    var kdp = window.kdp = document.getElementById( playerId );
+    var isEmpty = (kdp) ? kdp.evaluate("{playerStatusProxy.kdpStatus}") : false;
+
+	if(isEmpty) {
+		playerReady();
+	}
+	else {
+		kdp.addJsListener("kdpEmpty", "playerReady");
+		kdp.addJsListener("kdpReady", "playerReady");
+		kdp.addJsListener("entryFailed", "jsCallbackFailed");
+		kdp.addJsListener("entryReady", "doEntryReady");
+		kdp.addJsListener("playerPlayed", "playerPlayedCallback");
+	}
+}
+
+var jsCallbackFailed = function (e) {
+    console.log('Entry Failed callback from KDP: ' + e);
+}
+
+var playerPlayedCallback = function() {
+	console.log('KDP :: playerPlayedCallback');
+}
+// script to hide the gallery on play
+// script for KDP callbacks
+var playerLoaded = false;
+var playerReady = function() {
+    if(playerLoaded == false) {
+        console.log('KDP player Ready');
+        playerLoaded = true;
+    }
+}
+// end script for KDP callbacks
+var doEntryReady = function() {
+	var kdpEntry = kdp.evaluate("{mediaProxy.entry}");
+	console.log( 'Entry Ready: ', kdpEntry );
+	
+	//kdp.sendNotification('changeMedia', {entryId: '1_scr5cmvu'});
+};
+
+</script>
+</body>
+</html>

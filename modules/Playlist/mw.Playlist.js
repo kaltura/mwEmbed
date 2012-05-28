@@ -502,11 +502,12 @@ mw.Playlist.prototype = {
 			embedPlayer.getPlayerElement().play();
 		}
 		
+		// Update selected clip: 
+		_this.updatePlayerUi( clipIndex );
+		
         // Hand off play clip request to sourceHandler: 
 		_this.sourceHandler.playClip( embedPlayer, clipIndex, function(){
 			mw.log( "Playlist::playClip > sourceHandler playClip callback ");
-			// Do any local player interface updates: 
-			_this.updatePlayerUi( clipIndex );
 			// Add playlist specific bindings: 
 			_this.addClipBindings();
 			// Restore onDoneInterfaceFlag 
@@ -604,7 +605,26 @@ mw.Playlist.prototype = {
 		
 		$( embedPlayer ).bind( 'playlistPlayNext' + this.bindPostfix, function() {
 			_this.playNext();
-		});		
+		});
+		// check for interface events and update playlist specific interface components: 
+		$( embedPlayer ).bind( 'onDisableInterfaceComponents' + this.bindPostfix, function(){
+			 embedPlayer.$interface.find('.playlistPlayPrevious,.playlistPlayNext')
+			 	.unbind('mouseenter mouseleave click')
+				.css('cursor', 'default' );
+		});
+		$( embedPlayer ).bind( 'onEnableInterfaceComponents' + this.bindPostfix, function(){
+			embedPlayer.$interface.find('.playlistPlayPrevious,.playlistPlayNext')
+			.css('cursor', 'pointer' )
+			.click(function(){
+				if( $( this).hasClass( 'playlistPlayPrevious' ) ){
+					$( embedPlayer ).trigger( 'playlistPlayNext' );
+				} else if( $( this ).hasClass( 'playlistPlayNext' ) ){
+					$( embedPlayer ).trigger( 'playlistPlayNext');
+				}
+			})
+			.buttonHover();
+		});
+		
 		
 		// Trigger playlistsListed when we get the data
 		$( embedPlayer ).trigger( 'playlistsListed' );		
@@ -673,7 +693,9 @@ mw.Playlist.prototype = {
 						.click(function(){
 							$( embedPlayer ).trigger( 'playlistPlayNext' );
 						})
-						.find('span').addClass('ui-icon-seek-next')
+						.addClass( 'playlistPlayNext' )
+						.find('span')
+						.addClass('ui-icon-seek-next')
 						.parent()
 						.buttonHover();
 						
@@ -691,6 +713,7 @@ mw.Playlist.prototype = {
 						.click(function(){	
 							$( embedPlayer ).trigger( 'playlistPlayPrevious' );
 						})
+						.addClass( 'playlistPlayPrevious' )
 						.find('span').addClass('ui-icon-seek-prev')
 						.parent()
 						.buttonHover();

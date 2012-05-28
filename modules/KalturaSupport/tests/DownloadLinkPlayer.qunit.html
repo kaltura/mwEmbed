@@ -22,7 +22,7 @@ function jsKalturaPlayerTest( videoId ){
 		kalturaQunitWaitForPlayer(function(){
 			ok( $iframe.find( '.play-btn-large' ).length, "Found player link" );
 			var link = $iframe.find( '.play-btn-large' ).parent().attr('href') || '';
-			notEqual( link.indexOf( '/entryId/0_uka1msg4/' ), -1 ,
+			notEqual( link.indexOf( '/entry_id/0_uka1msg4' ), -1 ,
 					"Link includes entry path" );
 			start();
 			setTimeout(function(){

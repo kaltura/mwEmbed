@@ -76,6 +76,7 @@
 	]);
 	
 	mw.addResourcePaths( {
+		"IframePlayerSetup" : "IframePlayerSetup.js",
 		"mw.KWidgetSupport" : "mw.KWidgetSupport.js",
 		"mw.KCuePoints" : "mw.KCuePoints.js",
 		"mw.KTimedText" : "mw.KTimedText.js",
@@ -93,6 +94,7 @@
 		"faderPlugin" : "uiConfComponents/faderPlugin.js",
 		"watermarkPlugin" :  "uiConfComponents/watermarkPlugin.js",
 		"adPlugin"	: 	"uiConfComponents/adPlugin.js",
+		"acPreview" : "uiConfComponents/acPreview.js",
 		"captionPlugin"	: 	"uiConfComponents/captionPlugin.js",		
 		"bumperPlugin"	: 	"uiConfComponents/bumperPlugin.js",
 		"myLogo" : "uiConfComponents/myLogo.js",
@@ -135,6 +137,7 @@
 		'captureThumbnailPlugin',
 		'downloadPlugin',
 		'adPlugin',
+		'acPreview',
 		'captionPlugin',
 		'bumperPlugin',
 		'playlistPlugin',
@@ -157,6 +160,23 @@
 			embedPlayer.playerConfig =  mw.getConfig( 'KalturaSupport.PlayerConfig' );
 			mw.setConfig('KalturaSupport.PlayerConfig', null );
 		}
+		
+		// Overrides the direct download link to kaltura specific download.php tool for
+		// selecting a download / playback flavor based on user agent. 
+		embedPlayer.bindHelper( 'directDownloadLink', function() {
+			var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
+			var downloadUrl = baseUrl + 'modules/KalturaSupport/download.php/wid/' + this.kwidgetid;
+
+			// Also add the uiconf id to the url:
+			if( this.kuiconfid ){
+				downloadUrl += '/uiconf_id/' + this.kuiconfid;
+			}
+
+			if( this.kentryid ) {
+				downloadUrl += '/entry_id/'+ this.kentryid;
+			}			
+			$( embedPlayer ).data( 'directDownloadUrl', downloadUrl );
+		});
 	});
 	
 	mw.addModuleLoader( 'KalturaPlaylist', function() {

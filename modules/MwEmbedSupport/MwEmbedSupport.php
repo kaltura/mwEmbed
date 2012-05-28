@@ -55,7 +55,10 @@ return array(
 	'jquery.menu' => array(
 		'scripts' => 'jquery.menu/jquery.menu.js',
 		'styles' => 'jquery.menu/jquery.menu.css'
-	),			
+	),
+	'jquery.ui.touchPunch' => array(
+		'scripts' => 'jquery/jquery.ui.touchPunch.js'
+	),
 	// Startup modules must set debugRaw to false
 	"jquery.triggerQueueCallback"	=> array( 
 		'scripts'=> "jquery/jquery.triggerQueueCallback.js",

@@ -222,14 +222,6 @@ uiConf Examples:
 
 			// Send the google event:
 			if( this.googlePageTracker ){
-				var opt_label = null;
-				var opt_value = null;
-				if ( trackingArgs[2] ) {
-					opt_label = trackingArgs[2];
-				}
-				if ( trackingArgs[3] ) {
-					opt_value = trackingArgs[3];
-				}
 				// Passing an array to this function doesn't seem to work. Besides, have to make sure first three args are strings and last one is integer
 				this.googlePageTracker._trackEvent( trackingArgs[0], trackingArgs[1], trackingArgs[2], trackingArgs[3] );
 			} else {

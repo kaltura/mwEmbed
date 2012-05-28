@@ -56,7 +56,7 @@ var kWidget = {
 	 * Checks the onPage environment context and sets appropriate flags.
 	 */ 
 	checkEnvironment: function(){
-		
+
 		// Note forceMobileHTML5 url flag be disabled by uiConf on the iframe side of the player
 		// with: 
 		if( document.URL.indexOf('forceMobileHTML5') !== -1 &&
@@ -65,10 +65,17 @@ var kWidget = {
 			mw.setConfig( 'forceMobileHTML5', true );
 		}
 		
+		var ua = navigator.userAgent;
 		// Check if browser should use flash ( IE < 9 )
-		var ieMatch = navigator.userAgent.match( /MSIE\s([0-9])/ );
+		var ieMatch = ua.match( /MSIE\s([0-9])/ );
 		if ( ieMatch && parseInt( ieMatch[1] ) < 9 ) {
 			mw.setConfig('Kaltura.ForceFlashOnDesktop', true );
+		}
+		
+		// Blackberry does not really support html5
+		if( ua.indexOf('BlackBerry') != -1 ){
+			mw.setConfig( 'EmbedPlayer.DisableVideoTagSupport', true );
+			mw.setConfig( 'EmbedPlayer.NotPlayableDownloadLink', true );
 		}
 		
 		// TODO deprecate in 1.7 where we don't have client side api. 
@@ -225,10 +232,10 @@ var kWidget = {
 
 		// Check if we are dealing with an html5 player or flash player or direct download
 		// TODO: We may want to always load the iframe and handle the fallback there
-		if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ) {
-			this.outputDirectDownload( targetId, settings );
-			return ;
-		}
+		//if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ) {
+		//	this.outputDirectDownload( targetId, settings );
+		//	return ;
+		//}
 		if( settings.isHTML5 ){
 			this.outputHTML5Iframe( targetId, settings );
 		} else {
@@ -249,6 +256,38 @@ var kWidget = {
 			this.embed( rewriteObjects[i].id, rewriteObjects[i].kEmbedSettings );
 		}
 	},
+	
+	/*
+	 * Extends the player object and add jsApi methods
+	 * 
+	 * TODO enable this API and deprecate iframe api client / server ( version 1.7 )
+	 * ( presently disabled, and not called from anywhere ) 
+	 */
+	/*
+	setupJsApi: function( playerId ) {
+		
+		var player = document.getElementById( playerId );
+		var embedPlayer = document.getElementById( playerId + '_ifp' ).contentWindow.document.getElementById( playerId );
+
+		player.addJsListener = function( listenerString, globalFuncName ){
+			embedPlayer.addJsListener(listenerString, globalFuncName );
+		}
+
+		player.removeJsListener = function( listenerString, callbackName ) {
+			embedPlayer.removeJsListener( listenerString, callbackName );
+		}
+
+		player.sendNotification = function( notificationName, notificationData ){
+			embedPlayer.sendNotification( notificationName, notificationData );
+		};
+		player.evaluate = function( objectString ){
+			return embedPlayer.evaluate( objectString );
+		};
+		player.setKDPAttribute = function( componentName, property, value ) {
+			embedPlayer.setKDPAttribute( componentName, property, value );
+		};				
+	},
+	*/
 
 	/**
 	 * Outputs a flash object into the page
@@ -283,7 +322,6 @@ var kWidget = {
 		
 		// Output a normal flash object tag:
 		var spanTarget = document.createElement("span");
-		var pId =  ( settings.id )? settings.id : elm.id
 		
 		// Get height/width embedSettings, attribute, style ( percentage or px ), or default 400x300
 		var width = ( settings.width ) ? settings.width :
@@ -386,14 +424,20 @@ var kWidget = {
 
 			var height = ( settings.height ) ? settings.height :
 						$( elm ).height() ? $( elm ).height() : 300;
-
-			var sizeUnit = (typeof width == 'string' && width.indexOf("px") === -1 && width.indexOf("%") === -1 ) ? 'px' : '';
+					
+			if( typeof width == 'string' && width.indexOf('%') === -1 ) {
+				width = parseInt( width );
+			}
+			
+			if( typeof height == 'string' && height.indexOf('%') === -1 ) {
+				height = parseInt( height );
+			}
 
 			var targetCss = {
-				'width': width + sizeUnit,
-				'height': height + sizeUnit
+				'width': width,
+				'height': height
 			};
-
+			
 			var additionalTargetCss = kWidget.getAdditionalTargetCss();
 			$.extend( targetCss, additionalTargetCss );
 			$('#' + targetId ).css( targetCss );
@@ -470,13 +514,11 @@ var kWidget = {
 		//while ( targetNode.hasChildNodes() ) {
 		//   targetNode.removeChild( targetNode.lastChild );
 		//}
-		if(!settings)
-			settings = {};
-
+		var options = {};
 		// look some other places for sizes:
-		if( !options.width && settings.width )
+		if( settings.width )
 			options.width = settings.width;
-		if( !options.height && settings.height )
+		if( settings.height )
 			options.height = settings.height;
 		if( !options.width && targetNode.style.width )
 			options.width = targetNode.style.width;
@@ -486,6 +528,14 @@ var kWidget = {
 			options.height = 300;
 		if( !options.width )
 			options.width = 400;
+		
+		if( ! settings.wid && settings.partner_id ) {
+			settings.wid = '_' + settings.partner_id;
+		}
+		
+		if( ! settings.partner_id && settings.wid ) {
+			settings.partner_id = settings.wid.replace('_', '');
+		}
 
 		// TODO: Add playEventUrl for stats
 		var baseUrl = SCRIPT_LOADER_URL.replace( 'ResourceLoader.php', '' );
@@ -502,17 +552,18 @@ var kWidget = {
 
 		var thumbSrc = this.getKalturaThumbUrl({
 			'entry_id' : settings.entry_id,
-			'partner_id' : settings.p,
-			'width' : parseInt( options.width),
-			'height' : parseInt( options.height)
+			'partner_id' : settings.partner_id,
+			// By default set the thumbnail size to the full window size. 
+			'height' : ( document.body.clientHeight )? document.body.clientHeight : '300',
+			'width' : ( document.body.clientHeight )? document.body.clientHeight : '400'
 		});
 		var playButtonUrl = baseUrl + 'skins/common/images/player_big_play_button.png';
 		var playButtonCss = 'background: url(\'' + playButtonUrl + '\'); width: 70px; height: 53px; position: absolute; top:50%; left:50%; margin: -26px 0 0 -35px;';
-		var ddId = 'dd_' + Math.round( Math.random() * 1000 );
+		var ddId = ( settings.id ) ? settings.id : 'dd_' + Math.round( Math.random() * 1000 );
 
 		var ddHTML = '<div id="' + ddId + '" style="width: ' + options.width + ';height:' + options.height + ';position:relative">' +
 				'<img style="width:100%;height:100%" src="' + thumbSrc + '" >' +
-				'<a href="' + downloadUrl + '" target="_blank" style="' + playButtonCss + '"></a>' +
+				'<a id="directFileLinkButton" href="' + downloadUrl + '" target="_blank" style="' + playButtonCss + '"></a>' +
 				 '</div>';
 
 		var parentNode = targetNode.parentNode;
@@ -602,9 +653,8 @@ var kWidget = {
 			this.loadHTML5Lib();
 			return ;
 		}
-
+		
 		// Check if no flash and no html5 and no forceFlash ( direct download link )
-		// for debug purpose:
 		if( ! this.supportsFlash() && ! this.supportsHTML5() && ! mw.getConfig( 'Kaltura.ForceFlashOnDesktop' ) ){
 			this.embedFromObjects( playerList );
 			return ;
@@ -688,10 +738,6 @@ var kWidget = {
 			return false;
 		}
 		var dummyvid = document.createElement( "video" );
-		// Blackberry does not really support html5
-		if( navigator.userAgent.indexOf('BlackBerry') != -1 ){
-			return false;
-		}
 		// IE9 is grade B HTML5 support only invoke it if forceMobileHTML5 is true, 
 		// but for normal tests we categorize it as ~not~ supporting html5 video. 
 		if( navigator.userAgent.indexOf( 'MSIE 9.' ) != -1 ){
@@ -913,7 +959,7 @@ var kWidget = {
 	 	// Add in Flash vars embedSettings ( they take precedence over embed url )
 	 	for( var key in flashvars ){
 	 		var val = flashvars[key];
-	 		var key = key.toLowerCase();
+	 		key = key.toLowerCase();
 	 		// Normalize to the url based settings: 
 	 		if( key == 'entryid' ){
 	 			embedSettings.entry_id = val;
@@ -1100,6 +1146,7 @@ var kWidget = {
     		 		'$j.fn.hoverIntent',
     		 		'$j.ui.slider',
     		 		'$j.fn.menu',
+					'$j.ui.touchPunch',					
     		 		'mw.style.jquerymenu',
     		 		// Timed Text module
     		 		'mw.TimedText',
@@ -1123,6 +1170,7 @@ var kWidget = {
     		 		  'faderPlugin',
     		 		  'watermarkPlugin',
     		 		  'adPlugin',
+    		 		  'acPreview',
     		 		  'captionPlugin',
     		 		  'bumperPlugin',
     		 		  'myLogo'
@@ -1188,7 +1236,7 @@ var kWidget = {
 	 			
 	 			_this.loadRequestSets( jsRequestSet );
 	 			return ;
-		 	};
+		 	}
 		 	
 		 	// If an iframe server include iframe server library: 
 		 	if( mw.getConfig('EmbedPlayer.IsIframeServer') ){

@@ -301,14 +301,28 @@ mw.IFramePlayerApiClient.prototype = {
 		}
 	},
 	'postMessage': function( msgObject ){
-		/*mw.log( "IFramePlayerApiClient:: postMessage(): " + JSON.stringify( msgObject ) + 
+		/*mw.log( "IFramePlayerApiClient:: postMessage(): " + this.stringify( msgObject ) + 
 				' iframe: ' +  this.iframe + ' cw:' + this.iframe.contentWindow + 
 				' src: ' + mw.absoluteUrl( $( this.iframe ).attr('src')  ) );*/
+		// remove undeifned properties
+		msgObject = this.removeUndefined( msgObject );
+		
 		$.postMessage(
 			this.stringify( msgObject ), 
 			mw.absoluteUrl( this.getIframeSrc() ), 
 			this.iframe.contentWindow 
 		);
+	},
+	'removeUndefined': function( obj ){
+		for( var i in obj ){
+			if( typeof obj[i] == 'undefined' ){
+				delete obj[i];
+			}
+			if( typeof obj[i] == 'object' ){
+				obj[i] = this.removeUndefined( obj[i] );
+			}
+		}
+		return obj;
 	},
 	// local stringify function to prevent prototype override 
 	'stringify' : function stringify( obj ) {

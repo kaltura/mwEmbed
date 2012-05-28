@@ -146,8 +146,8 @@ mw.DoubleClick.prototype = {
 				// Setup the restore callback
 				_this.restorePlayerCallback = callback;
 				// Request ads
-				mw.log( "DoubleClick:: addManagedBinding : requestAds:" +  _this.getConfig("adTagUrl")  );
-				_this.requestAds( unescape( _this.getConfig("adTagUrl") ) );	
+				mw.log( "DoubleClick:: addManagedBinding : requestAds:" +  _this.getAdTagUrl()  );
+				_this.requestAds( _this.getAdTagUrl() );	
 			};
 		});
 		_this.embedPlayer.bindHelper( 'AdSupport_postroll' + _this.bindPostfix, function( event, sequenceProxy ){
@@ -166,7 +166,24 @@ mw.DoubleClick.prototype = {
 			};
 		});
 	},
-	// get the content video tag
+	/**
+	 * Get the AdTagUrl append the custom params
+	 */
+	getAdTagUrl: function(){
+		var adUrl = this.getConfig( 'adTagUrl' );
+		if( !adUrl ){
+			return false;
+		}
+		var paramSeperator = adUrl.indexOf( '?' ) === -1 ? '?' : 
+			adUrl[ adUrl.length -1 ] == '&' ? '': '&';
+		var postFix = this.getConfig( 'customParams' ) ? 
+				'cust_params=' + encodeURIComponent( this.getConfig( 'customParams' ) ) : 
+				'';
+		return unescape( this.getConfig( 'adTagUrl' ) ) + paramSeperator + postFix;
+	},
+	/**
+	 * Get the content video tag
+	 */
 	getContent:function(){
 		// Set the content element to player element: 
 		return this.embedPlayer.getPlayerElement();
@@ -291,6 +308,9 @@ mw.DoubleClick.prototype = {
 	 // This function requests the ads.
 	requestAds: function( adTagUrl, adType ) {
 		var _this = this;
+		// Update the local lastRequestedAdTagUrl for debug and audits
+		_this.embedPlayer.setKDPAttribute( this.pluginName, 'requestedAdTagUrl', adTagUrl );
+		
 		// Create ad request object.
 		var adsRequest = {};
 		adsRequest.adTagUrl = adTagUrl;
@@ -448,7 +468,7 @@ mw.DoubleClick.prototype = {
 				_this.startedAdPlayback();
 			}
 			// hide spinner: 
-			_this.embedPlayer.hidePlayerSpinner();
+			_this.embedPlayer.hideSpinnerAndPlayBtn();
 			// make sure the player is in play state: 
 			_this.embedPlayer.playInterfaceUpdate();
 			

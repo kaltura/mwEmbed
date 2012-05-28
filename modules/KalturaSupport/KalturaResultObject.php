@@ -93,7 +93,6 @@ class KalturaResultObject {
 				return $wgKalturaUseManifestUrls;
 				break;
 		}
-		// else thorw an erro? 
 	}
 	function getError() {
 		return $this->error;
@@ -171,6 +170,7 @@ class KalturaResultObject {
 	}
 	function isJavascriptRewriteObject() {
 		// If this is a pptWidget, handle in client side
+		// TODO: we should handle this widget the same as playlist
 		if( $this->getPlayerConfig('pptWidgetAPI', 'plugin') ) {
 			return true;
 		}
@@ -448,8 +448,15 @@ class KalturaResultObject {
 
 		$this->playerConfig = array(
 			'plugins' => $plugins,
-			'vars' => $vars
+			'vars' => $vars,
+			'uiConfId' => $this->getUiConfId(),
+			'partnerId' => $this->getPartnerId()
 		);
+		
+		// Add entry Id if exists
+		if( $this->getEntryId() ) {
+			$this->playerConfig['entryId'] = $this->getEntryId();
+		}
 
 		//echo '<pre>';
 		//echo json_encode( $this->playerConfig );
@@ -779,8 +786,14 @@ class KalturaResultObject {
 			}
 			// Set entry parameter
 			$entryParam = array( 'entryId' => $entryIdParamValue );
+			
+			// getByEntryId is deprecated - Use list instead
+			$filter = new KalturaAssetFilter();
+			$filter->entryIdEqual = $entryIdParamValue;
+			$params = array( 'filter' => $filter );
+
 			// Flavors: 
-			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'getByEntryId', $entryParam );
+			$namedMultiRequest->addNamedRequest( 'flavors', 'flavorAsset', 'list', $params );
 				
 			// Access control NOTE: kaltura does not use http header spelling of Referer instead kaltura uses: "referrer"
 			$params = array_merge( $entryParam, 
@@ -818,6 +831,10 @@ class KalturaResultObject {
 			$resultObject = $namedMultiRequest->doQueue();
 			// merge in the base result object:
 			$resultObject = array_merge( $this->getBaseResultObject(), $resultObject);
+			// If flavors are fetched, list contains a secondary 'objects' array
+			if ( isset( $resultObject['flavors']->objects ) ) {
+				$resultObject['flavors'] = $resultObject['flavors']->objects;
+			}
 			
 			// Check if the server cached the result by search for "cached-dispatcher" in the request headers
 			// If not, do not cache the request (Used for Access control cache issue)
@@ -992,7 +1009,7 @@ class KalturaResultObject {
 		return substr( $this->urlParameters['wid'], 1 );
 	}
 	public function getEntryId(){
-		return $this->urlParameters['entry_id'];
+		return ( isset( $this->urlParameters['entry_id'] ) ) ? $this->urlParameters['entry_id'] : false;
 	}
 	public function getThumbnailUrl() {
 		// Get result object
