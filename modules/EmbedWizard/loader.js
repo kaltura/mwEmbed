@@ -8,7 +8,7 @@
          "mw.EmbedWizard",
          "$j.ui",
      	 "$j.widget",
-     	 
+
          "$j.ui.accordion",
          "$j.ui.tabs"
     ];
@@ -20,7 +20,7 @@
 			'top' : $(this).height() / 2,
 			'left' : $(this).width() / 2
 		})
-		
+
 		mw.load( EmbedWizardRequestSet, function(){
 			$(_this).find('.loadingSpinner').remove();
 			$(_this).each( function( inx, node) {

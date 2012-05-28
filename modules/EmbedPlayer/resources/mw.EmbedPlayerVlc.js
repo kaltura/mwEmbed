@@ -4,7 +4,7 @@
 *  assume version > 0.8.5.1
 */
 ( function( mw, $ ) { "use strict";
-	
+
 mw.EmbedPlayerVlc = {
 
 	//Instance Name:
@@ -56,7 +56,7 @@ mw.EmbedPlayerVlc = {
 					'>' +
 			'</object>'
 		)
-		// Call postEmbedActions directly ( postEmbedJs will wait for player ready ) 
+		// Call postEmbedActions directly ( postEmbedJs will wait for player ready )
 		_this.postEmbedActions();
 	},
 
@@ -108,7 +108,7 @@ mw.EmbedPlayerVlc = {
 	*/
 	seek : function( percent ) {
 		this.getPlayerElement();
-		// Use the parent (re) embed with new seek url method if urlTimeEncoding is supported. 
+		// Use the parent (re) embed with new seek url method if urlTimeEncoding is supported.
 		if ( this.supportsURLTimeEncoding() ) {
 			this.parent_seek( percent );
 		} else if ( this.playerElement ) {
@@ -162,7 +162,7 @@ mw.EmbedPlayerVlc = {
 		if ( ! this.playerElement ){
 			return ;
 		}
-		// Try to get relay vlc log messages to the console. 
+		// Try to get relay vlc log messages to the console.
 		try{
 			if ( this.playerElement.log.messages.count > 0 ) {
 				// there is one or more messages in the log
@@ -221,7 +221,7 @@ mw.EmbedPlayerVlc = {
 	* Events:
 	*/
 	onOpen: function() {
-		// Open is considered equivalent to other players buffer status: 
+		// Open is considered equivalent to other players buffer status:
 		this.controlBuilder.setStatus( gM('mwe-embedplayer-buffering') );
 	},
 	onBuffer: function() {
@@ -250,7 +250,7 @@ mw.EmbedPlayerVlc = {
 
 	onPause: function() {
 		// Update the interface if paused via native plugin
-		this.parent_pause(); 
+		this.parent_pause();
 	},
 	onStop: function() {
 		mw.log( 'EmbedPlayerVlc:: onStop' );

@@ -1,31 +1,31 @@
 ( function( mw, $ ) { "use strict";
-	// 	Check for the Title 
+	// 	Check for the Title
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			// Check for Titles: 
+			// Check for Titles:
 			if( $uiConf.find( '#TopTitleScreen' ).length ){
-				// Bind changeMedia to update title  
+				// Bind changeMedia to update title
 				window.titleLayout( embedPlayer );
 			}
 			// Continue regardless of title is found or not
 			callback();
 		});
 	});
-	
+
 	// xxx can be removed once we move to RL
 	window.titleLayout = function( embedPlayer ){
 		var $titleConfig = embedPlayer.$uiConf.find( '#TopTitleScreen' );
 		var titleScreenHeight = $titleConfig.attr( 'height' );
-		
+
 		var belowPlayer = embedPlayer.$uiConf.find( '#controlsHolder' ).next( '#TopTitleScreen' ).length
-		
+
 		var doTitleLayout = function(){
-			// unbind any old bindings: 
+			// unbind any old bindings:
 			$( embedPlayer ).unbind( ".titleLayout" );
-			
+
 			// Add bindings
 			$( embedPlayer ).bind( "onResizePlayer.titleLayout", updatePlayerLayout);
-			
+
 			// Add title div to interface:
 			$( embedPlayer ).bind("playerReady.titleLayout", function(){
 				var $titleContainerDiv = $('<div />')
@@ -38,7 +38,7 @@
 					embedPlayer.$interface.after(
 						$titleContainerDiv
 					);
-				}else { 
+				}else {
 					embedPlayer.$interface.prepend(
 						$titleContainerDiv
 					);
@@ -66,12 +66,12 @@
 			} else {
 				vidHeight = embedPlayer.$interface.height() - titleScreenHeight;
 				if( !embedPlayer.controlBuilder.isOverlayControls() ){
-					vidHeight = vidHeight - embedPlayer.controlBuilder.height; 
+					vidHeight = vidHeight - embedPlayer.controlBuilder.height;
 				}
 			}
 			var position = (mw.isIOS4()) ? 'static' : 'absolute';
 			mw.log("TitleLayout:: update height: " + titleScreenHeight );
-			// add space for the title: 
+			// add space for the title:
 			$vid
 			.css({
 				'position' : position,
@@ -96,5 +96,5 @@
 		// Once all functions are defined call the doTitleLayout
 		doTitleLayout();
 	};
-	
+
 })( window.mw, window.jQuery );

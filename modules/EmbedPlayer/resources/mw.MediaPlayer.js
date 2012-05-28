@@ -10,7 +10,7 @@
  * @constructor
  */
 ( function( mw, $ ) { "use strict";
-	
+
 mw.MediaPlayer = function( id, supportedTypes, library )
 {
 	this.id = id;

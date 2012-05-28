@@ -19,12 +19,12 @@ $.whileAsync = function(opts) {
 		test = opts.test || function(){ return true; },
 		loop = opts.loop || function(){},
 		end = opts.end || function(){};
-	
+
 	(function(){
 
 		var t = false,
 			begin = new Date();
-			
+
 		while( t = test() ) {
 			loop();
 			if( bulk === 0 || (new Date() - begin) > bulk ) {
@@ -37,7 +37,7 @@ $.whileAsync = function(opts) {
 		else {
 			end();
 		}
-		
+
 	})();
 };
 
@@ -49,7 +49,7 @@ $.eachAsync = function(array, opts) {
 	var	i = 0,
 		l = array.length,
 		loop = opts.loop || function(){};
-	
+
 	$.whileAsync(
 		$.extend(opts, {
 			test: function() { return i < l; },

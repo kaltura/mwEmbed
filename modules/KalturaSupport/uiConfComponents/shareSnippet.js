@@ -30,7 +30,7 @@ color5="16777215" font="Arial" />
 	// Bind to new player event
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 		$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
-			
+
 			// Check if plugin exists
 			if( embedPlayer.isPluginEnabled( 'shareSnippet' ) ) {
 				window['shareSnippet'].init( embedPlayer );
@@ -108,7 +108,7 @@ color5="16777215" font="Arial" />
 				shareUrl,
 				generatorPageUrl,
 				customSnippet;
-				
+
 			var isPlaying = embedPlayer.isPlaying();
 			if( isPlaying ) {
 				embedPlayer.pause();
@@ -195,7 +195,7 @@ color5="16777215" font="Arial" />
 			var $shareScreen = $('<div />').append(
 				$title, $shareLink, $shareCode
 			);
-				
+
 			var closeCallback = function() {
 				if( isPlaying ) {
 					embedPlayer.play();

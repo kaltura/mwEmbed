@@ -199,9 +199,9 @@
  * @cat Plugins/Image Gallery
  * @author Ganeshji Marwaha/ganeshread@gmail.com
  */
-	
+
 (function($) {                                          // Compliant with jquery.noConflict()
-// export the class name for Resource Loader, 
+// export the class name for Resource Loader,
 // TODO can be removed with New Resource Loader
 window.jCarousel = true;
 
@@ -268,7 +268,7 @@ $.fn.jCarouselLite = function(o) {
                 return go(curr-o.scroll);
             });
 		}
-		
+
         if(o.btnNext) {
 			$(o.btnNext).show();
 			if ( v >= itemLength ) {

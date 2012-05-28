@@ -42,11 +42,11 @@ for (var i = 0; i < brushes.length; i++)
 	var name = brushes[i],
 		brush = require('shBrush' + name).Brush
 		;
-		
+
 	brush = new brush();
 	brush.init({ toolbar: false });
-	
+
 	var result = brush.getHtml(code);
-	
+
 	sys.puts(name + (result != null ? ': ok' : ': NOT OK'));
 }

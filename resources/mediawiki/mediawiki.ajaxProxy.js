@@ -6,25 +6,25 @@
 		if( ! $.isFunction( options.error ) ) {
 			options.error = function() {};
 		}
-		
+
 		this.options = options;
 		this.ajax();
 	};
-	
+
 	ajaxProxy.prototype = {
-	
+
 		ajax: function( useProxy ) {
 			var _this = this;
 			var ajaxOptions = {
-				success: function( result ) { 
-						_this.handleResult( result ); 
+				success: function( result ) {
+						_this.handleResult( result );
 				}
 			};
-			
+
 			if( useProxy ) {
 				ajaxOptions = {
 					url: mw.getConfig( 'Mw.XmlProxyUrl' ) + encodeURIComponent( _this.options.url ),
-					error: function() { 
+					error: function() {
 						mw.log( "mw.ajaxProxy :: Error: request failed with proxy." );
 						_this.options.error();
 					}
@@ -38,7 +38,7 @@
 					}
 				};
 			}
-			
+
 			// make the request
 			try {
 				$.ajax( ajaxOptions );
@@ -46,7 +46,7 @@
 				// do nothing
 			}
 		},
-		
+
 		proxy: function() {
 			var _this = this;
 			var type = mw.getConfig( 'Mw.XmlProxyType' ); // Default jsonp
@@ -55,7 +55,7 @@
 				if( type == 'jsonp' ) {
 					$.getJSON( mw.getConfig( 'Mw.XmlProxyUrl' ) + '?url=' + encodeURIComponent( _this.options.url ) + '&callback=?', function( result ){
 						_this.handleResult( result, true );
-					});				
+					});
 				} else {
 					_this.ajax( true );
 				}
@@ -64,7 +64,7 @@
 				this.options.error();
 			}
 		},
-		
+
 		handleResult: function( result, isJsonP ) {
 			var _this = this;
 			if( isJsonP ) {
@@ -72,7 +72,7 @@
 					mw.log("mw.ajaxProxy :: Error: load error with http response");
 					_this.options.error();
 					return ;
-				}			
+				}
 				try {
 					var resultXML = $.parseXML( result['contents'] );
 				} catch (e){
@@ -81,12 +81,12 @@
 					return ;
 				}
 				_this.options.success( resultXML );
-			} else { 
+			} else {
 				_this.options.success( result );
 			}
 		}
 	};
-	
+
 	// Export our module to mw global object
 	mw.ajaxProxy = ajaxProxy;
 })( window.mw, window.jQuery );

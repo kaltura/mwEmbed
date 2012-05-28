@@ -2,7 +2,7 @@
 
     var DomReady = window.DomReady = {};
 
-	// Everything that has to do with properly supporting our document ready event. Brought over from the most awesome jQuery. 
+	// Everything that has to do with properly supporting our document ready event. Brought over from the most awesome jQuery.
 
     var userAgent = navigator.userAgent.toLowerCase();
 
@@ -13,9 +13,9 @@
     	opera: /opera/.test(userAgent),
     	msie: (/msie/.test(userAgent)) && (!/opera/.test( userAgent )),
     	mozilla: (/mozilla/.test(userAgent)) && (!/(compatible|webkit)/.test(userAgent))
-    };    
+    };
 
-	var readyBound = false;	
+	var readyBound = false;
 	var isReady = false;
 	var readyList = [];
 
@@ -25,12 +25,12 @@
 		if(!isReady) {
 			// Remember that the DOM is ready
 			isReady = true;
-        
+
 	        if(readyList) {
 	            for(var fn = 0; fn < readyList.length; fn++) {
 	                readyList[fn].call(window, []);
 	            }
-            
+
 	            readyList = [];
 	        }
 		}
@@ -56,7 +56,7 @@
 		if(readyBound) {
 		    return;
 	    }
-	
+
 		readyBound = true;
 
 		// Mozilla, Opera (see further below for it) and webkit nightlies currently support this event
@@ -116,7 +116,7 @@
 					setTimeout( arguments.callee, 0 );
 					return;
 				}
-			
+
 				// and execute any waiting functions
 				domReady();
 			})();
@@ -140,8 +140,8 @@
 	    }
 	};
 	bindReady();
-	
-	// Export to the kWidget object: 
+
+	// Export to the kWidget object:
 	kWidget.domReady = DomReady.ready;
-	
+
 })(window.kWidget);

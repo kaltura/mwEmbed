@@ -1,9 +1,9 @@
 /**
  * jQuery bindings for use with MediaWiki message system.
  * Allows jQuery objects to be passed into parameterized messages, which then can return jQuery objects.
- * 
+ *
  * Why you would want this: if you would like to enhance a link within a MediaWiki message with a jQuery binding.
- * It is impractical (sometimes impossible) to find the exact link you should bind to by examining the message 
+ * It is impractical (sometimes impossible) to find the exact link you should bind to by examining the message
  * output. So it is better to pass in a jQuery object already bound the way you like.
  *
  * @author Michael Dale <mdale@wikimedia.org>
@@ -15,7 +15,7 @@
  *
  *   'myMsg' : 'Thanks for the fish, [$1 close dialog] or [$2 new fish window]'
  *
- *   $( 'div#closeLabel' ).mwMessage( 'myMsg', 
+ *   $( 'div#closeLabel' ).mwMessage( 'myMsg',
  *				      function(){ $dialog.close() },
  *				      $( '<a/>' ).attr( 'target', '_new' )
  *  				    );
@@ -51,8 +51,8 @@ jQuery.fn.mwMessage = function( key, parameters ) {
 		var indexIdAttribute = '';
 		// Check if the link is a swap index or just a string
 		if( link[0] == '$' ){
-			var index = parseInt( link.replace(/\$/,''), 10 ) - 1;		    		
-			// If the parameter is a text string directly replace it 
+			var index = parseInt( link.replace(/\$/,''), 10 ) - 1;
+			// If the parameter is a text string directly replace it
 			if( typeof parameters[ index ] == 'string' ){
 				link =  parameters[ index ];
 			} else if ( needsSpecialSwap( parameters[ index ] ) ) {
@@ -63,7 +63,7 @@ jQuery.fn.mwMessage = function( key, parameters ) {
 				throw new Error( 'Cannot substitute parameter with unrecognized type ' + typeof parameters[index] );
 			}
 		}
-		
+
 		return '<a href="' + link + '" ' + indexIdAttribute + '>' + linkText + '</a>';
 	});
 
@@ -79,15 +79,15 @@ jQuery.fn.mwMessage = function( key, parameters ) {
 			return index in parameters ? parameters[index] : '$' + match;
 		}
 	} );
-	
+
 
 	// Create a parser object with default set of options:
 	var parsedText = new mediaWiki.language.parser( text, {} );
-	// Get the html representation of wikitext ( all that messages deal with right now ) 
-	this.html( parsedText.getHTML() );			
+	// Get the html representation of wikitext ( all that messages deal with right now )
+	this.html( parsedText.getHTML() );
 
 	// If the parameters are jQuery objects or functions, we should now "swap" those objects in.
-	if( doSpecialSwap ) {			
+	if( doSpecialSwap ) {
 		// Add bindings to swap index and return binded html jQuery objects
 		for( var index=0; index < parameters.length; index++ ) {
 			var parameter = parameters[index];
@@ -100,9 +100,9 @@ jQuery.fn.mwMessage = function( key, parameters ) {
 			if( typeof parameter == 'function' ){
 				$swapTarget.click( parameter );
 			}
-	
+
 			// if parameter was a jQuery object, make it "wrap around" the text we have
-			if( parameter instanceof jQuery ){			
+			if( parameter instanceof jQuery ){
 				// make the jQuery parameter contain the same text as the swap target
 				parameter.text( $swapTarget.text() );
 				// replace the swap target with the jQuery parameter

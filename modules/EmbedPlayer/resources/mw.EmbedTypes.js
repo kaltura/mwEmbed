@@ -25,7 +25,7 @@ var appleVdnPlayer = new mw.MediaPlayer( 'appleVdn', ['application/vnd.apple.mpe
 var mp3NativePlayer = new mw.MediaPlayer( 'mp3Native', ['audio/mpeg'], 'Native' );
 var webmNativePlayer = new mw.MediaPlayer( 'webmNative', ['video/webm'], 'Native' );
 
-// Image Overlay player ( extends native ) 
+// Image Overlay player ( extends native )
 var imageOverlayPlayer = new mw.MediaPlayer( 'imageOverlay', ['image/jpeg', 'image/png'], 'ImageOverlay' );
 
 // VLC player
@@ -35,10 +35,10 @@ var imageOverlayPlayer = new mw.MediaPlayer( 'imageOverlay', ['image/jpeg', 'ima
 // Generic plugin
 //var oggPluginPlayer = new mw.MediaPlayer( 'oggPlugin', ['video/ogg', 'application/ogg'], 'Generic' );
 
-	
+
 mw.EmbedTypes = {
 
-	 // MediaPlayers object ( supports methods for quering set of browser players ) 
+	 // MediaPlayers object ( supports methods for quering set of browser players )
 	mediaPlayers: null,
 
 	 // Detect flag for completion
@@ -54,7 +54,7 @@ mw.EmbedTypes = {
 		this.detect();
 		this.detect_done = true;
 	},
-	
+
 	getMediaPlayers: function(){
 		if( this.mediaPlayers  ){
 			return this.mediaPlayers;
@@ -95,10 +95,10 @@ mw.EmbedTypes = {
 	 */
 	detectPlayers: function() {
 		mw.log( "mw.EmbedTypes::detectPlayers running detect" );
-		
-		// All players support for playing "images" 
+
+		// All players support for playing "images"
 		this.mediaPlayers.addPlayer( imageOverlayPlayer );
-		
+
 		// In Mozilla, navigator.javaEnabled() only tells us about preferences, we need to
 		// search navigator.mimeTypes to see if it's installed
 		try{
@@ -139,11 +139,11 @@ mw.EmbedTypes = {
 		 }
 		// <video> element
 		if ( ! mw.getConfig('EmbedPlayer.DisableVideoTagSupport' ) &&
-				( 
+				(
 				typeof HTMLVideoElement == 'object' // Firefox, Safari
-					|| 
+					||
 				typeof HTMLVideoElement == 'function' // Opera
-				)  
+				)
 		){
 			// Test what codecs the native player supports:
 			try {
@@ -158,18 +158,18 @@ mw.EmbedTypes = {
 					if ( this.supportedMimeType('audio/mpeg') ) {
 							this.mediaPlayers.addPlayer( mp3NativePlayer );
 					}
-                                  
+
 					// Test for h264:
 					if ( dummyvid.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"' ) ) {
 						this.mediaPlayers.addPlayer( h264NativePlayer );
-						// Check for iOS for vdn player support ( apple adaptive ) or vdn canPlayType != '' ( ie maybe/probably ) 
+						// Check for iOS for vdn player support ( apple adaptive ) or vdn canPlayType != '' ( ie maybe/probably )
 						if( mw.isIOS() || dummyvid.canPlayType('application/vnd.apple.mpegurl; codecs="avc1.42E01E"' ) ){
 							// Android 3x lies about HLS support ( only add if not Android 3.x )
 							if( navigator.userAgent.indexOf( 'Android 3.') == -1 ){
 								this.mediaPlayers.addPlayer( appleVdnPlayer );
 							}
 						}
-						
+
 					}
 					// For now if Android assume we support h264Native (FIXME
 					// test on real devices )
@@ -245,7 +245,7 @@ mw.EmbedTypes = {
 				}
 			}
 		}
-		
+
 		// Allow extensions to detect and add their own "players"
 		mw.log("EmbedPlayer::trigger:embedPlayerUpdateMediaPlayersEvent");
 		$( mw ).trigger( 'embedPlayerUpdateMediaPlayersEvent' , this.mediaPlayers );

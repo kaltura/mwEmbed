@@ -1,14 +1,14 @@
 /**
- * Get a user agent player rules 
+ * Get a user agent player rules
  * @param {Object} ruleSet Object containing the rule set and actions
  * @return {String} What player should the browser lead with:
- * 		 'flash' ( default, lead with flash) | leadWithHTML5 | forceFlash | forceMsg Raw html message string to be displayed ( instead of player ) 
+ * 		 'flash' ( default, lead with flash) | leadWithHTML5 | forceFlash | forceMsg Raw html message string to be displayed ( instead of player )
  */
 window.getUserAgentPlayerRulesMsg = function( ruleSet ){
 	return window.checkUserAgentPlayerRules( ruleSet, true );
 };
 window.checkUserAgentPlayerRules = function( ruleSet, getMsg ){
-	var ua = ( mw.getConfig( 'KalturaSupport_ForceUserAgent' ) )? 
+	var ua = ( mw.getConfig( 'KalturaSupport_ForceUserAgent' ) )?
 			mw.getConfig( 'KalturaSupport_ForceUserAgent' ) : navigator.userAgent;
 	var flashMode = {
 		mode: 'flash',

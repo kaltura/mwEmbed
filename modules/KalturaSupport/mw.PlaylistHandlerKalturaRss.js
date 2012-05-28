@@ -5,7 +5,7 @@ mw.PlaylistHandlerKalturaRss = function( playlist, options ){
 };
 
 mw.PlaylistHandlerKalturaRss.prototype = {
-			
+
 	init: function ( playlist, options ){
 		this.playlist = playlist;
 		// Inherit PlaylistHandlerMediaRss
@@ -26,13 +26,13 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 		var kEmbedSettings = this.getKalturaClipAttributes( clipIndex );
 		var bindName = 'onChangeMediaDone.playlist';
 		$( embedPlayer ).unbind( bindName ).bind( bindName, function( event ){
-			// Run play after we switch 
+			// Run play after we switch
 			embedPlayer.play();
 			if( callback ){
 				callback();
 			}
 		});
-		embedPlayer.sendNotification( "changeMedia", { 'entryId' : kEmbedSettings.entry_id } );	
+		embedPlayer.sendNotification( "changeMedia", { 'entryId' : kEmbedSettings.entry_id } );
 	},
 	/**
 	 * Kaltura rss playlist include entry and widget id's to build the player source list
@@ -42,20 +42,20 @@ mw.PlaylistHandlerKalturaRss.prototype = {
 	 */
 	updateVideoSources: function( clipIndex, $video ){
 		var kEmbedSettings = this.getKalturaClipAttributes( clipIndex );
-		$video.attr({ 
+		$video.attr({
 			'kentryid' : kEmbedSettings.entry_id,
 			'kwidgetid' :kEmbedSettings.wid
 		});
 	},
 	getKalturaClipAttributes: function( clipIndex ){
-		// Get the sources via parent mediaRss parser: 
+		// Get the sources via parent mediaRss parser:
 		var clipSources = this.getClipSources( clipIndex );
-		
+
 		// Kaltura mediaRss feeds define a single "content" tag with flash swf as the url
-		if( clipSources[0] && 
-			clipSources.length == 1 && 
+		if( clipSources[0] &&
+			clipSources.length == 1 &&
 			kWidget.getEmbedSettings( clipSources[0].src )['entry_id']
-		){	
+		){
 			return kWidget.getEmbedSettings( clipSources[0].src );
 		}
 		mw.log("Error: kalturaPlaylist MediaRss used with multiple sources or non-kaltura flash applet url");

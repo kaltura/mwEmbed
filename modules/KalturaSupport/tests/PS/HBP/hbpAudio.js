@@ -16,18 +16,18 @@
 			var embedPlayer = this;
 			var bindPostFix = '.hbpCustomSkin';
 			window[ 'hbpSkin'].addRemoveBindings( embedPlayer, bindPostFix );
-			
+
 
 			mw.log('ExternalResources:: IframeCustomPluginJs1:: KalturaSupport_CheckUiConf');
 			// continue player build out
 			callback();
 		});
 	});
-	
+
 	window[ 'hbpSkin' ] = {
 		addRemoveBindings : function( embedPlayer, bindPostFix ) {
 			embedPlayer.unbindHelper( bindPostFix );
-			
+
 			embedPlayer.bindHelper( 'playerReady' + bindPostFix, function() {
 				window[ 'hbpSkin' ].customizeSkin( embedPlayer );
 			} );
@@ -36,7 +36,7 @@
 				window[ 'hbpSkin' ].toggleMute( embedPlayer );
 			} );
 		},
-		
+
 		customizeSkin : function( embedPlayer ) {
 			var _this = this;
 			var $interface = embedPlayer.$interface;
@@ -70,7 +70,7 @@
 
 			// No volume slider
 			$interface.find( '.vol_container' ).remove();
-			
+
 			var buttonMargin = 2;
 			var buttonPadding = 4;
 			var buttonHeight = 16;
@@ -102,14 +102,14 @@
 				'height' : buttonHeight + ( 2 * buttonPadding ) + 'px',
 				'line-height' : buttonHeight + ( 2 * buttonPadding ) + 'px'
 			} );
-						
+
 			// Stretching playhead to the available space
 			if ( $interface.find( '.time-disp' ).length ) {
 				var playHeadEnd = embedPlayer.getWidth() - $interface.find( '.time-disp' ).position().left + 5;
 				$play_head.css( {
 					'right' : playHeadEnd + 'px',
 					'height' : '7px'
-				} );									
+				} );
 			}
 
 			// Playhead padded border
@@ -126,7 +126,7 @@
 			}
 			$play_head.before( $paddedBorder );
 		},
-		
+
 		toggleMute : function( embedPlayer ) {
 			if ( embedPlayer.muted ) {
 				embedPlayer.$interface.find( '.volume_control span' ).removeClass( 'ui-icon-volume-on' ).addClass( 'ui-icon-volume-off' );
@@ -136,7 +136,7 @@
 				embedPlayer.$interface.find( '.volume_control' ).attr( 'title', gM( 'mwe-embedplayer-volume_control' ) );
 			}
 		},
-		
+
 		lastButton : function ( embedPlayer ) {
 			var maxPosition = 0;
 			var $lastButton = null;
@@ -148,6 +148,6 @@
 			} );
 			return $lastButton;
 		}
-	
+
 	}
 })( window.mw, jQuery );

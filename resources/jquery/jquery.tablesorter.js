@@ -218,17 +218,17 @@
 		}
 		table.tBodies[0].appendChild( fragment );
 	}
-	
+
 	/**
 	 * Find all header rows in a thead-less table and put them in a <thead> tag.
 	 * This only treats a row as a header row if it contains only <th>s (no <td>s)
 	 * and if it is preceded entirely by header rows. The algorithm stops when
 	 * it encounters the first non-header row.
-	 * 
+	 *
 	 * After this, it will look at all rows at the bottom for footer rows
 	 * And place these in a tfoot using similar rules.
 	 * @param $table jQuery object for a <table>
-	 */ 
+	 */
 	function emulateTHeadAndFoot( $table ) {
 		var $rows = $table.find( '> tbody > tr' );
 		if( !$table.get(0).tHead ) {
@@ -251,7 +251,7 @@
 					break;
 				}
 				$tfoot.prepend( $( $rows[i] ));
-			} 
+			}
 			$table.append( $tfoot );
 		}
 	}
@@ -551,7 +551,7 @@
 						// No thead found. Look for rows with <th>s and
 						// move them into a <thead> tag or a <tfoot> tag
 						emulateTHeadAndFoot( $table );
-						
+
 						// Still no thead? Then quit
 						if ( !table.tHead ) {
 							return;

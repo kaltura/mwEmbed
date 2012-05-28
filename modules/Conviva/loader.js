@@ -9,9 +9,9 @@ mw.addResourcePaths({
 	"mw.Conviva": "mw.Conviva.js"
 })
 */
-	
+
 mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
-    
+
     embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
         // Disable Conviva with IE9
         if( mw.isIE9() ) {
@@ -20,7 +20,7 @@ mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 	    }
         if( embedPlayer.isPluginEnabled ( 'Conviva' ) ) {
             var config = embedPlayer.getKalturaConfig( 'Conviva', [ 'convivaKalturaHTML5Lib', 'convivaAjaxTimeout', 'convivaCustomerId', 'convivaServiceUrl' ] );
-            
+
             var initParameter = function( parameter, defaultValue ) {
                 if ( ! config[ parameter ] ) {
                     if ( defaultValue ) {
@@ -31,13 +31,13 @@ mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
                 }
                 return true;
             }
-            
+
             // Check for required and set default config parameters
             var isError = false;
-            
+
             // Initialize optional config parameters whith default values if not present explicitly
             initParameter( 'convivaAjaxTimeout', 1000 ); // default to 1 second unless explicitly set
-            
+
             if ( ! initParameter( 'convivaKalturaHTML5Lib' ) ) {
                 isError = true;
                 mw.log( 'Conviva: Error: "Conviva.convivaKalturaHTML5Lib" is a required parameter!' );
@@ -50,7 +50,7 @@ mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
                 isError = true;
                 mw.log( 'Conviva: Error: "Conviva.convivaServiceUrl" is a required parameter!' );
             }
-            
+
             // If required parameters are missing continue with the player build out
             if ( isError ) {
                 callback();
@@ -62,7 +62,7 @@ mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
             });
              */
 
-            
+
             $.ajax({
                 type: "GET",
                 url: config[ 'convivaKalturaHTML5Lib' ],
@@ -78,9 +78,9 @@ mw.bindHelper( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
                }
             });
             return;
-                       
+
         }
-        
+
         // don't block player build out if Coviva module is not enabled
         callback();
     });

@@ -6,7 +6,7 @@ mw.BaseAdPlugin = function( embedPlayer, callback){
 };
 
 mw.BaseAdPlugin.prototype = {
-		
+
 	init: function( embedPlayer, callback  ){
 		this.embedPlayer = embedPlayer;
 		return this;
@@ -22,13 +22,13 @@ mw.BaseAdPlugin.prototype = {
 		if( slotType == 'postroll' && _this.getConfig('postSequence') ) {
 			return _this.getConfig('postSequence');
 		}
-		// TODO WHAT DOES FLASH DO? If a plugin has preroll cuepoint what place in the sequence proxy does it take?  
+		// TODO WHAT DOES FLASH DO? If a plugin has preroll cuepoint what place in the sequence proxy does it take?
 		// for now we just add it to slot 1.
-		// What about multiple cuepoints? 
+		// What about multiple cuepoints?
 		return 1;
 	},
 	destroy: function(){
-		// Remove player bindings: 
+		// Remove player bindings:
 		$( this.embedPlayer ).unbind( this.bindPostfix );
 	}
 };

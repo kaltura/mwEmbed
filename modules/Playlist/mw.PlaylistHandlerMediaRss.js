@@ -9,10 +9,10 @@ mw.PlaylistHandlerMediaRss.prototype = {
 
 	// If playback should continue to the next clip on clip complete
 	autoContinue: true,
-	
+
 	// if the playlist should automatically start:
-	autoPlay: false, 
-	
+	autoPlay: false,
+
 	// If the playlist ui should be displayed
 	includeInLayout: true,
 
@@ -37,8 +37,8 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			callback( _this.$rss );
 			return ;
 		}
-		
-		
+
+
 		// Show an error if a cross domain request:
 		if( mw.isLocalDomain( this.getSrc() ) ) {
 			// Note this only works with local sources
@@ -52,7 +52,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			var proxyUrl = mw.getConfig( 'Mw.XmlProxyUrl' );
 			if( !proxyUrl ){
 				mw.log("Error: mw.KAds : missing kaltura proxy url ( can't load ad ) ");
-				return ; 
+				return ;
 			}
 			$.getJSON( proxyUrl + '?url=' + encodeURIComponent( this.getSrc() ) + '&callback=?', function( result ){
 				if( result['http_code'] == 'ERROR' || result['http_code'] == 0 ){
@@ -69,11 +69,11 @@ mw.PlaylistHandlerMediaRss.prototype = {
 	},
 	hasMultiplePlaylists: function(){
 		return false;
-	},	
+	},
 	hasPlaylistUi: function(){
 		if( this.playlist.layout == 'noClipList' ){
 			return false;
-		} 
+		}
 		return this.includeInLayout;
 	},
 	isNextButtonDisplayed: function(){
@@ -104,7 +104,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		embedPlayer.updatePosterSrc( _this.getClipPoster( clipIndex, _this.playlist.getTargetPlayerSize() ) );
 		// Empty existing sources
 	    embedPlayer.emptySources();
-	    
+
 	    var clipSources = this.getClipSources( clipIndex );
 		if( !clipSources ){
 			mw.log("Error: mw.Playlist no sources found for clipIndex:" + clipIndex);
@@ -116,32 +116,32 @@ mw.PlaylistHandlerMediaRss.prototype = {
 			embedPlayer.mediaElement.tryAddSource( $source[0] ) ;
 		}
 		embedPlayer.changeMedia( function(){
-			// restore playlist bindings and update update Ui: 
+			// restore playlist bindings and update update Ui:
 			_this.playlist.updatePlayerUi( _this.clipIndex );
-			
-			// Add playlist specific bindings: 
+
+			// Add playlist specific bindings:
 			_this.playlist.addClipBindings();
-			
-			// do the actual play: 
+
+			// do the actual play:
 			embedPlayer.play();
-			
+
 			// if there was a play callback call it
 			if( callback ){
 				callback();
 			}
 		});
 	},
-	
+
 	drawEmbedPlayer: function( clipIndex, callback ){
 		var _this = this;
 		var playerSize = _this.playlist.getTargetPlayerSize();
 		var $target = _this.playlist.getVideoPlayerTarget();
 		var $video;
-		// Check that the player is not already in the dom: 
+		// Check that the player is not already in the dom:
 		if( $('#' + _this.playlist.getVideoPlayerId()).length ){
 			mw.log( 'Error :: PlaylistHandler: drawEmbedPlayer player already in DOM? ');
 		} else {
-			
+
 			// Build the video tag object:
 			$video = $( '<video />' )
 			.attr({
@@ -152,14 +152,14 @@ mw.PlaylistHandlerMediaRss.prototype = {
 				playerSize
 			);
 			_this.updateVideoSources( clipIndex, $video );
-			
+
 			// Add the video to the target:
 			$target.append( $video );
 
 			// God knows why we have to do this. ( bug in chrome, this is not needed in firefox)
 			jQuery.fn.embedPlayer = window.jQueryEmbedPlayer;
 
-			// create the EmbedPlayer and issue the callback: 
+			// create the EmbedPlayer and issue the callback:
 			$video.embedPlayer( callback );
 		}
 	},
@@ -258,9 +258,9 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		mw.log("Error could not find title for clip: " + clipIndex );
 		return gM('mwe-mediarss-untitled');
 	},
-	
+
 	/**
-	 *  Get a clip description 
+	 *  Get a clip description
 	 */
 	getClipDesc: function( clipIndex ){
 		var $item = this.$rss.find('item').eq( clipIndex ) ;
@@ -305,9 +305,9 @@ mw.PlaylistHandlerMediaRss.prototype = {
 				.append(
 					$('<span />')
 					.addClass('clipTitle')
-					.text( 
-						_this.playlist.formatTitle( 
-								_this.getClipTitle( clipIndex ) 
+					.text(
+						_this.playlist.formatTitle(
+								_this.getClipTitle( clipIndex )
 						)
 					)
 					,
@@ -322,7 +322,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 				,
 				$('<div />').css('clear', 'right')
 				,
-				$('<span />').addClass('clipDescription').text( 
+				$('<span />').addClass('clipDescription').text(
 					_this.playlist.formatDescription(
 						_this.getClipDesc( clipIndex )
 					)
@@ -332,7 +332,7 @@ mw.PlaylistHandlerMediaRss.prototype = {
 		return $item;
 	},
 	adjustTextWidthAfterDisplay: function( $clipList ){
-		// no action 
+		// no action
 	}
 };
 

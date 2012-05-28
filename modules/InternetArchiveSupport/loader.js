@@ -1,13 +1,13 @@
 /**
-* Loader for Internet archive type assets. 
-* 
-* This is for 'native' lookup of Internet Archive.org assets 
-* ( similar to KalturaSupport and mediaWikiSupport modules ) 
-* 
-* ie: 
+* Loader for Internet archive type assets.
+*
+* This is for 'native' lookup of Internet Archive.org assets
+* ( similar to KalturaSupport and mediaWikiSupport modules )
+*
+* ie:
 * <video data-internetArchiveId ="{detailsId}"></video>
-* 
-* This module also hosts an Internet Archive specific embedFrame 
+*
+* This module also hosts an Internet Archive specific embedFrame
 */
 
 
@@ -20,7 +20,7 @@ mw.IA =
   VIDEO_WIDTH:640,
   VIDEO_HEIGHT:480,
   VIDEO_PLAYLIST_HEIGHT:80,
-  
+
   video:true, //false means we are audio
 
 
@@ -79,7 +79,7 @@ mw.IA =
       return '/details/'+location.pathname.replace(/^\/embed\/([^\/]+).*$/,
                                                    '$1');
     }
-    
+
     if (typeof(document.getElementsByTagName)!='undefined')
     {
       var els = document.getElementsByTagName('object');
@@ -100,7 +100,7 @@ mw.IA =
         }
       }
     }
-    
+
     return '';
   },
 
@@ -142,16 +142,16 @@ mw.IA =
     // Now put a nice looking "track number" in front of each playlist entry title
     $('div.playlistItem span.clipTitle').html(function(i,html) {
       return html.replace(/^(\d+)(.*)/, '<span class="tn">$1</span>$2');
-    });    
+    });
 
-    
+
     if (window.jQuery('#nowplaying').length)
     {
       mw.IA.log('this is tvarchive');
       return;
     }
-    
-    
+
+
     var player = $('#mwplayer');
     if (!player)
       return;
@@ -159,16 +159,16 @@ mw.IA =
     if (typeof(mw.IA.mrss)!='undefined')
     {
       player.unbind('onplay').bind('onplay', mw.IA.onPlay);
-        
+
       if (mw.IA.video)
       {
         mw.IA.log('this is /details/ video!');
         mw.IA.video = true;
 
-        // player.bind('pause', mw.IA.pause); //xxx hash not quite ready yet 
+        // player.bind('pause', mw.IA.pause); //xxx hash not quite ready yet
         if (!mw.isMobileDevice())
         {
-          player.bind('onCloseFullScreen', function(){ setTimeout(function() { 
+          player.bind('onCloseFullScreen', function(){ setTimeout(function() {
             mw.IA.onPlay(); }, 500); });
         }
       }
@@ -178,8 +178,8 @@ mw.IA =
       }
     }
   },
-    
-    
+
+
   pause:function()
   {
     mw.IA.log('paused');
@@ -187,17 +187,17 @@ mw.IA =
     // for hitting play:
     // location.hash = '#' + group['ORIG']; //xxxx hash not quite ready yet
 
-    
+
     location.hash = '#' + // [get ORIG video file from playlist item and then matched back thru mrss variable etc.?]  +
       '/start=' + Math.round($('#mwplayer')[0].currentTime * 10) / 10;
   },
 
-  
+
   indicateIsPlaying:function()
   {
     if (!mw.IA.playlist)
       return;
-    
+
     var player = $('#'+mw.playerManager.getPlayerList()[0])[0];
     if (!player)
       return;
@@ -205,22 +205,22 @@ mw.IA =
     $('div.playlistItem').removeClass('IA-active');
     $($('div.playlistItem').get(mw.IA.playlist.clipIndex)).addClass('IA-active');
   },
-  
+
 
   onPlay:function()
   {
     if (mw.isMobileDevice())
       return;
-   
+
     mw.IA.indicateIsPlaying();
-    
+
     if (!mw.IA.video)
       return;
-    
+
     mw.IA.log('onPlay');
-    
+
     var av=$('div.mv-player video, div.mv-player object, div.mv-player embed').parent()[0];
-    
+
     if (typeof(av)=='undefined'  &&  $('img.playerPoster').length > 0)
     {
       var wd = mw.IA.VIDEO_WIDTH / 2;
@@ -230,20 +230,20 @@ mw.IA =
     {
       var wd = mw.IA.VIDEO_WIDTH;
       var ht = mw.IA.VIDEO_HEIGHT;
-      
+
       if (typeof(av)!='undefined')
         av.resizePlayer({'width': wd, 'height':ht}, true);
     }
 
     $('#video-list-wrapper-plholder_mwplayer').css('top', ht);
-      
+
     $('#avplaydiv').css('width', wd);
-      
+
     $(         '#mwplayer').css('width',  wd);
     $('#plholder_mwplayer').css('width',  wd);
     $(         '#mwplayer').css('height', ht + mw.IA.VIDEO_PLAYLIST_HEIGHT);
     $('#plholder_mwplayer').css('height', ht + mw.IA.VIDEO_PLAYLIST_HEIGHT);
-    
+
     // NOTE: done this way to override jQuery dynamic $...css() re/setting
     mw.IA.css(
       ".mv-player .overlay-win { "+
@@ -258,7 +258,7 @@ mw.IA =
   {
     if ( typeof console == 'undefined' )
       return;
-    
+
     if (str==mw.IA.mrss)
     {
       console.dirxml($.parseXML(unescape(mw.IA.mrss).replace(/\+/g,' ')));
@@ -267,7 +267,7 @@ mw.IA =
     mw.log('      ---IA------------------------------>   '+str);
   },
 
-  
+
   // This gets called once our MRSS playlist has been parsed and mw is ready/setup
   // ( see petabox/www/common/Details.inc )
   start:function(playlist)
@@ -277,7 +277,7 @@ mw.IA =
       return;
     mw.IA.startcalled = true;
     mw.IA.playlist = playlist; //stash this away for "indicateIsPlaying()"
-    
+
     var star = (mw.IA.arg('start') ? parseFloat(mw.IA.arg('start')) : 0);
     if (!star)
     {
@@ -291,7 +291,7 @@ mw.IA =
       var a = location.hash.slice(1).split('/');
       star=(mw.IA.argin('start',a) ? parseFloat(mw.IA.argin('start',a)) : 0);
     }
-    
+
     if (star)
     {
       mw.ready(function(){
@@ -299,16 +299,16 @@ mw.IA =
         var player = $('#'+mw.playerManager.getPlayerList()[0])[0];
         if (!player)
           return;
-                 
+
       //debugger;
-      playlist.loadPlaylistHandler(function() { 
+      playlist.loadPlaylistHandler(function() {
         mw.IA.log('playlist loaded, seek to '+star); });
 
       player.showPlayer();
       player.stop();
       //debugger;
       player.setupSourcePlayer();
-                 
+
       {
     	setTimeout(function(){
           player.stop();
@@ -327,14 +327,14 @@ mw.IA =
     }
   },
 
-  
+
   isURLTimeEncoding:function(src)// called in mw.MediaSource.js
   {
     var suffix = src.substr(src.length-4).toLowerCase();
     return (suffix=='.mp4'  ||  suffix=='.ogv');
   },
-  
-  
+
+
   oldswapper:function()// unused.  just here now for reminiscence
   {
     mw.ready(function(){
@@ -343,7 +343,7 @@ mw.IA =
       var IAD = {'identifier':'night_of_the_living_dead'};
       var group = {'SRC':['night_of_the_living_dead.ogv',
                           'night_of_the_living_dead_512kb.mp4']};
-                 
+
       player.stop();
       player.emptySources();
       var prefix = '/download/'+IAD.identifier+'/';
@@ -368,7 +368,7 @@ mw.IA =
       player.setupSourcePlayer( function(){
     	setTimeout(function(){
     	  player.play();
-          player.currentTime = star;           
+          player.currentTime = star;
     	},100);
       });
     });
@@ -376,7 +376,7 @@ mw.IA =
 
 
   setup: function() {
-    
+
     mw.IA.css("\n\
 audio { z-index:666 !important; position:absolute !important; bottom:0px !important; } \n\
 \n\
@@ -431,7 +431,7 @@ div.maudio div.control-bar { display:block !important; } \n\
 div.maudio div.overlay-content { border:1px solid #385C74; background-color:#333 !important; -moz-border-radius:6px; -webkit-border-radius:6px; -khtml-border-radius:6px; border-radius:6px; } \n\
 ");
 
-    
+
     mw.setConfig( {
         // We want our video player to attribute something...
         "EmbedPlayer.AttributionButton" : true,
@@ -444,9 +444,9 @@ div.maudio div.overlay-content { border:1px solid #385C74; background-color:#333
           'href' : 'http://www.archive.org' + mw.IA.detailsLink(),
           'class' : 'archive-icon'
         },
-                    
+
         'imagesPath' : 'http://www/archive.org/images/', //xxxxxxx not working yet
-                    
+
         'Playlist.MaxClips': 1000, // default is *20* !
         'Playlist.TitleLength': 26
       });

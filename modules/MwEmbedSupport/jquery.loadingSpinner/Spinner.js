@@ -35,7 +35,7 @@
 
 	/**
 	 * Insert a new stylesheet to hold the
-	 * 
+	 *
 	 * @keyframe or VML rules.
 	 */
 	// ins(document.getElementsByTagName('head')[0], createEl('style'));

@@ -1,10 +1,10 @@
 ( function( mw, $ ) { "use strict";
-	
+
 	mw.addResourcePaths( {
 		"mw.GoogleAnalytics" : "mw.GoogleAnalytics.js"
 	} );
 
-	// Check if the plugin is enabled: 
+	// Check if the plugin is enabled:
 	$( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ) {
 		embedPlayer.bindHelper( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ) {
 			// Check if plugin exists

@@ -184,7 +184,7 @@ function getElementStyles() {
 			}
 		}
 	}
-	
+
 	return newStyle;
 }
 
@@ -208,7 +208,7 @@ function filterStyles(styles) {
 			delete styles[name];
 		}
 	}
-	
+
 	return styles;
 }
 
@@ -449,7 +449,7 @@ $.fn.extend({
 				callback: args[3]
 			},
 			effectMethod = $.effects[effect];
-		
+
 		return effectMethod && !$.fx.off ? effectMethod.call(this, args2) : this;
 	},
 

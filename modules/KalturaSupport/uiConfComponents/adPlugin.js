@@ -1,8 +1,8 @@
 ( function( mw, $ ) { "use strict";
-// XXX can be removed once we move to new resource loader: 
+// XXX can be removed once we move to new resource loader:
 window.adPlugin = true;
 
-// Check for new Embed Player events: 
+// Check for new Embed Player events:
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	// Check for KalturaSupport uiConf
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){

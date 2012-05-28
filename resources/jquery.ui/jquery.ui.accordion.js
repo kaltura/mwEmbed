@@ -38,7 +38,7 @@ $.widget("ui.accordion", {
 		this.running = 0;
 
 		this.element.addClass("ui-accordion ui-widget ui-helper-reset");
-		
+
 		// in lack of child-selectors in CSS we need to mark top-LIs in a UL-accordion for some IE-fix
 		this.element.children("li").addClass("ui-accordion-li-fix");
 
@@ -111,7 +111,7 @@ $.widget("ui.accordion", {
 		}
 
 	},
-	
+
 	_createIcons: function() {
 		var o = this.options;
 		if (o.icons) {
@@ -120,7 +120,7 @@ $.widget("ui.accordion", {
 			this.element.addClass("ui-accordion-icons");
 		}
 	},
-	
+
 	_destroyIcons: function() {
 		this.headers.children(".ui-icon").remove();
 		this.element.removeClass("ui-accordion-icons");
@@ -149,10 +149,10 @@ $.widget("ui.accordion", {
 
 		return this;
 	},
-	
+
 	_setOption: function(key, value) {
 		$.Widget.prototype._setOption.apply(this, arguments);
-			
+
 		if (key == "active") {
 			this.activate(value);
 		}
@@ -162,7 +162,7 @@ $.widget("ui.accordion", {
 				this._createIcons();
 			}
 		}
-		
+
 	},
 
 	_keydown: function(event) {
@@ -207,11 +207,11 @@ $.widget("ui.accordion", {
 		var o = this.options, maxHeight;
 
 		if (o.fillSpace) {
-			
+
 			if($.browser.msie) { var defOverflow = this.element.parent().css('overflow'); this.element.parent().css('overflow', 'hidden'); }
 			maxHeight = this.element.parent().height();
 			if($.browser.msie) { this.element.parent().css('overflow', defOverflow); }
-	
+
 			this.headers.each(function() {
 				maxHeight -= $(this).outerHeight(true);
 			});
@@ -280,7 +280,7 @@ $.widget("ui.accordion", {
 		// get the click target
 		var clicked = $(event.currentTarget || target);
 		var clickedIsActive = clicked[0] == this.active[0];
-		
+
 		// TODO the option is changed, is that correct?
 		// TODO if it is correct, shouldn't that happen after determining that the click is valid?
 		o.active = o.collapsible && clickedIsActive ? false : $('.ui-accordion-header', this.element).index(clicked);
@@ -420,7 +420,7 @@ $.widget("ui.accordion", {
 				overflow: ""
 			});
 		}
-		
+
 		// other classes are removed before the animation; this one needs to stay until completed
 		this.toHide.removeClass("ui-accordion-content-active");
 
@@ -456,10 +456,10 @@ $.extend($.ui.accordion, {
 			var s = options.toShow;
 			originalWidth = s[0].style.width;
 			s.width( parseInt(s.parent().width(),10) - parseInt(s.css("paddingLeft"),10) - parseInt(s.css("paddingRight"),10) - (parseInt(s.css("borderLeftWidth"),10) || 0) - (parseInt(s.css("borderRightWidth"),10) || 0) );
-			
+
 			$.each(fxAttrs, function(i, prop) {
 				hideProps[prop] = 'hide';
-				
+
 				var parts = ('' + $.css(options.toShow[0], prop)).match(/^([\d+-.]+)(.*)$/);
 				showProps[prop] = {
 					value: parts[1],
@@ -476,7 +476,7 @@ $.extend($.ui.accordion, {
 						percentDone = ( settings.end - settings.start === 0 ) ? 0 :
 							(settings.now - settings.start) / (settings.end - settings.start);
 					}
-					
+
 					options.toShow[0].style[settings.prop] =
 						(percentDone * showProps[settings.prop].value) + showProps[settings.prop].unit;
 				},

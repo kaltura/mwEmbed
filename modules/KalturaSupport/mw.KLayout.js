@@ -1,35 +1,35 @@
 /**
 * Adds flex style layout for HTML
-* 
-* Should look at: 
+*
+* Should look at:
 * http://developer.yahoo.com/flash/articles/flex-layout.html
 */
 ( function( mw, $ ) { "use strict";
-	
+
 mw.KLayout = function( options ){
 	this.init( options );
 };
 mw.KLayout.prototype = {
-		
-	// Default length for titles 
+
+	// Default length for titles
 	titleLength: 45,
-	
+
 	// Default length for descriptions
 	descriptionLength: 75,
-	
+
 	/**
-	 * 
-	 * @param {Object} options 
+	 *
+	 * @param {Object} options
 	 * 		'$layoutBox' {jQuery} top level layoutbox
 	 * 		'embedPlayer' {optional} an embedPlayer object can be used for evaluate properties
-	 * 		'evaluateCallback' {optional|Function} a callback overrides embedPlayer evaluate, should accept 
+	 * 		'evaluateCallback' {optional|Function} a callback overrides embedPlayer evaluate, should accept
 	 * 									an evaluation string as an argument and return its value
-	 * 		'getEmbedPlayerCallback' {function} a callback for displaying the player 
+	 * 		'getEmbedPlayerCallback' {function} a callback for displaying the player
 	 * @return
 	 */
 	init: function( options ){
 		var _this = this;
-		var validOptions = ['$layoutBox', 'embedPlayer', 'evaluateCallback', 'getEmbedPlayerCallback', 
+		var validOptions = ['$layoutBox', 'embedPlayer', 'evaluateCallback', 'getEmbedPlayerCallback',
 		                    'titleLength', 'descriptionLength' ];
 		$.each( validOptions, function(inx, optionName ){
 			if( options[ optionName ] ){
@@ -45,12 +45,12 @@ mw.KLayout.prototype = {
 		var offsetLeft = 0;
 		var $boxContainer = $('<div />');
 		$j.each( $uiConfBox.children(), function( inx, boxItem ){
-			var $node = $('<div />'); 
+			var $node = $('<div />');
 			switch( boxItem.nodeName.toLowerCase() ){
 				case 'video':
 					if( _this.getEmbedPlayerCallback ){
-						$node.append( 
-							_this.getEmbedPlayerCallback() 
+						$node.append(
+							_this.getEmbedPlayerCallback()
 						);
 					}
 					break;
@@ -62,9 +62,9 @@ mw.KLayout.prototype = {
 				case 'canvas':
 					if( offsetLeft )
 						$node.css('margin-left', offsetLeft );
-					
-					$node.append( 
-						_this.getLayout( $(boxItem) ) 
+
+					$node.append(
+						_this.getLayout( $(boxItem) )
 					);
 					break;
 				case 'spacer':
@@ -95,15 +95,15 @@ mw.KLayout.prototype = {
 				$boxContainer.append( $node );
 				// For hboxes add another div with the given height to block out any space represented by inline text types
 				if(  boxItem.nodeName.toLowerCase() == 'hbox' ){
-					$boxContainer.append( 
-						$("<div />").css( 'height', $node.css('height') ) 
+					$boxContainer.append(
+						$("<div />").css( 'height', $node.css('height') )
 					);
 				}
 			}
 		});
 		// Apply props to the outer box:
-		this.applyUiConfAttributes( $boxContainer, $uiConfBox[0] ); 
-			
+		this.applyUiConfAttributes( $boxContainer, $uiConfBox[0] );
+
 		return $boxContainer;
 	},
 	applyUiConfAttributes:function( $target, confTag ){
@@ -121,7 +121,7 @@ mw.KLayout.prototype = {
 						.data('id', idName)
 						.addClass( idName );
 					break;
-				case 'stylename': 
+				case 'stylename':
 					styleName = attr.nodeValue;
 					$target.addClass(styleName);
 					break;

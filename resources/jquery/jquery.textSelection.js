@@ -137,7 +137,7 @@ encapsulateSelection: function( options ) {
 			if ( options.selectionStart !== undefined ) {
 				$(this).textSelection( 'setSelection', { 'start': options.selectionStart, 'end': options.selectionEnd } );
 			}
-			
+
 			var selText = $(this).textSelection( 'getSelection' );
 			var startPos = this.selectionStart;
 			var endPos = this.selectionEnd;
@@ -191,7 +191,7 @@ encapsulateSelection: function( options ) {
 			if ( options.selectionStart !== undefined ) {
 				$(this).textSelection( 'setSelection', { 'start': options.selectionStart, 'end': options.selectionEnd } );
 			}
-			
+
 			var selText = $(this).textSelection( 'getSelection' );
 			var scrollTop = this.scrollTop;
 			var range = document.selection.createRange();

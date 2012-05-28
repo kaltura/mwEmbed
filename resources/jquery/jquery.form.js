@@ -49,7 +49,7 @@ $.fn.ajaxSubmit = function(options) {
 		log('ajaxSubmit: skipping submit process - no element selected');
 		return this;
 	}
-	
+
 	var method, action, url, $form = this;
 
 	if (typeof options == 'function') {
@@ -148,7 +148,7 @@ $.fn.ajaxSubmit = function(options) {
 	}
 
 	options.success = function(data, status, xhr) { // jQuery 1.4+ passes xhr as 3rd arg
-		var context = options.context || options;   // jQuery 1.4+ supports scope context 
+		var context = options.context || options;   // jQuery 1.4+ supports scope context
 		for (var i=0, max=callbacks.length; i < max; i++) {
 			callbacks[i].apply(context, [data, status, xhr || $form, $form]);
 		}
@@ -173,7 +173,7 @@ $.fn.ajaxSubmit = function(options) {
    }
    else {
 		// IE7 massage (see issue 57)
-		if ($.browser.msie && method == 'get') { 
+		if ($.browser.msie && method == 'get') {
 			var ieMeth = $form[0].getAttribute('method');
 			if (typeof ieMeth === 'string')
 				options.type = ieMeth;
@@ -205,7 +205,7 @@ $.fn.ajaxSubmit = function(options) {
 			alert('Error: Form elements must not have name or id of "submit".');
 			return;
 		}
-		
+
 		s = $.extend(true, {}, $.ajaxSettings, options);
 		s.context = s.context || s;
 		id = 'jqFormIO' + (new Date().getTime());
@@ -277,7 +277,7 @@ $.fn.ajaxSubmit = function(options) {
 				}
 			}
 		}
-		
+
 		var CLIENT_TIMEOUT_ABORT = 1;
 		var SERVER_ABORT = 2;
 
@@ -285,7 +285,7 @@ $.fn.ajaxSubmit = function(options) {
 			var doc = frame.contentWindow ? frame.contentWindow.document : frame.contentDocument ? frame.contentDocument : frame.document;
 			return doc;
 		}
-		
+
 		// take a breath so that pending repaints get some cpu time before the upload starts
 		function doSubmit() {
 			// make sure form attrs are set
@@ -312,7 +312,7 @@ $.fn.ajaxSubmit = function(options) {
 			if (s.timeout) {
 				timeoutHandle = setTimeout(function() { timedOut = true; cb(CLIENT_TIMEOUT_ABORT); }, s.timeout);
 			}
-			
+
 			// look for server aborts
 			function checkState() {
 				try {

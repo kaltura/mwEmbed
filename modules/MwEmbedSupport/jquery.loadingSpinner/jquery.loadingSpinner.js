@@ -3,7 +3,7 @@
 	 * Set a given selector html to the loading spinner:
 	 */
 	$.fn.loadingSpinner = function( opts ) {
-		// empty the target: 
+		// empty the target:
 		$( this ).empty();
 
 		// If we have loader path defined, load an image
@@ -46,10 +46,10 @@
 				thisSpinner = new Spinner( $.extend( { color: $this.css('color') }, opts ) ).spin( this );
 			}
 		});
-		// correct the position: 
+		// correct the position:
 		return this;
 	};
-	
+
 	/**
 	 * Add an absolute overlay spinner useful for cases where the
 	 * element does not display child elements, ( images, video )
@@ -58,7 +58,7 @@
 		// Set the spin size to "small" ( length 5 ) if video height is small
 		var spinOps = ( $( this ).height() < 36 )? { 'length' : 5, 'width' : 2, 'radius' : 4 }: {};
 		var spinerSize = {
-				'width' : 45, 
+				'width' : 45,
 				'height' : 45
 		};
 		var $spinner = $('<div />')

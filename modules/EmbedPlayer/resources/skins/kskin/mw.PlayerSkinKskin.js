@@ -179,7 +179,7 @@ mw.PlayerSkinKskin = {
 		} );
 
 	},
-	
+
 	/**
 	* checks for menu overlay and runs menu bindings if unset
 	*/

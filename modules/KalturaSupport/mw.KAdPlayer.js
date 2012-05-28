@@ -652,4 +652,3 @@ mw.KAdPlayer.prototype = {
 
 } )( window.mw, window.jQuery );
 
-	

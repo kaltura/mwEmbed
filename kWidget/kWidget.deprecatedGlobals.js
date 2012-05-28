@@ -1,8 +1,8 @@
 (function(mw, kWidget){
-	
+
 	kWidget.deprecatedGlobals = function(){
 		// Note not all these were likely to be used externally,
-		// we can more aggressively remove in a later library version. 
+		// we can more aggressively remove in a later library version.
 		var globalFunctionMap = {
 				'kIsIOS': 'isIOS',
 				'kSupportsHTML5': 'supportsHTML5',
@@ -54,5 +54,5 @@
 	}
 	// Add all the deprecated globals:
 	kWidget.deprecatedGlobals();
-	
+
 })( window.mw, window.kWidget );

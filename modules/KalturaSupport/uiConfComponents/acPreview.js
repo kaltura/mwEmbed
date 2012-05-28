@@ -3,10 +3,10 @@
 */
 ( function( mw, $ ) { "use strict";
 
-// XXX can be removed once we move to new resource loader: 
+// XXX can be removed once we move to new resource loader:
 window.acPreview = true;
 
-//Check for new Embed Player events: 
+//Check for new Embed Player events:
 $( mw ).bind( 'newEmbedPlayerEvent', function( event, embedPlayer ){
 	// Check for KalturaSupport uiConf
 	$( embedPlayer ).bind( 'KalturaSupport_CheckUiConf', function( event, $uiConf, callback ){
@@ -24,7 +24,7 @@ window.acPreview = function( embedPlayer ){
 	function acEndPreview(){
 		mw.log( 'KWidgetSupport:: acEndPreview >' );
 		$( embedPlayer ).trigger( 'KalturaSupport_FreePreviewEnd' );
-		// Don't run normal onend action: 
+		// Don't run normal onend action:
 		mw.log( 'KWidgetSupport:: KalturaSupport_FreePreviewEnd set onDoneInterfaceFlag = false' );
 		embedPlayer.onDoneInterfaceFlag = false;
 		var closeAcMessage = function(){
@@ -34,18 +34,18 @@ window.acPreview = function( embedPlayer ){
 		};
 		// On change media reset acPreview binding
 		$( embedPlayer ).bind( 'onChangeMedia.acpreview', closeAcMessage );
-		// Display player dialog 
+		// Display player dialog
 		// TODO i8ln!!
 		// TODO migrate to displayAlert call
 		if( embedPlayer.getKalturaConfig('', 'disableAlerts' ) !== true ){
 			embedPlayer.controlBuilder.displayMenuOverlay(
-				$('<div />').append( 
+				$('<div />').append(
 					$('<h3 />').append( 'Free preview completed, need to purchase'),
 					$('<span />').text( 'Access to the rest of the content is restricted' ),
 					$('<br />'),$('<br />'),
 					$('<button />').attr({'type' : "button"})
 					.addClass( "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" )
-					.append( 
+					.append(
 						$('<span />').addClass( "ui-button-text" )
 						.text( 'Ok' )
 						.css('margin', '10')
@@ -71,7 +71,7 @@ window.acPreview = function( embedPlayer ){
 		// sometimes content does not have a content end at ac preview end time:
 		$( embedPlayer ).bind( 'monitorEvent.acPreview', function(){
 			if( embedPlayer.currentTime >= ac.previewLength ){
-				// Stop content and show preview dialog: 
+				// Stop content and show preview dialog:
 				embedPlayer.stop();
 				acEndPreview( embedPlayer );
 			}

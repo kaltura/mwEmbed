@@ -177,7 +177,7 @@ $.widget( "ui.button", {
 	},
 
 	_determineButtonType: function() {
-		
+
 		if ( this.element.is(":checkbox") ) {
 			this.type = "checkbox";
 		} else {
@@ -191,7 +191,7 @@ $.widget( "ui.button", {
 				}
 			}
 		}
-		
+
 		if ( this.type === "checkbox" || this.type === "radio" ) {
 			// we don't search against the document in case the element
 			// is disconnected from the DOM
@@ -314,7 +314,7 @@ $.widget( "ui.buttonset", {
 		this.element.addClass( "ui-buttonset" );
 		this._init();
 	},
-	
+
 	_init: function() {
 		this.refresh();
 	},
@@ -326,7 +326,7 @@ $.widget( "ui.buttonset", {
 
 		$.Widget.prototype._setOption.apply( this, arguments );
 	},
-	
+
 	refresh: function() {
 		this.buttons = this.element.find( ":button, :submit, :reset, :checkbox, :radio, a, :data(button)" )
 			.filter( ":ui-button" )

@@ -53,15 +53,15 @@ $.expandableField = {
 
 };
 $.fn.expandableField = function() {
-	
+
 	// Multi-context fields
 	var returnValue = null;
 	var args = arguments;
-	
+
 	$( this ).each( function() {
 
 		/* Construction / Loading */
-		
+
 		var context = $( this ).data( 'expandableField-context' );
 		if ( context == null ) {
 			context = {
@@ -79,7 +79,7 @@ $.fn.expandableField = function() {
 				}
 			};
 		}
-		
+
 		/* API */
 		// Handle various calling styles
 		if ( args.length > 0 ) {
@@ -98,9 +98,9 @@ $.fn.expandableField = function() {
 				}
 			}
 		}
-		
+
 		/* Initialization */
-		
+
 		if ( typeof context.data == 'undefined' ) {
 			context.data = {
 				// The width of the field in it's condensed state
@@ -110,7 +110,7 @@ $.fn.expandableField = function() {
 				// Reference to the field
 				'$field': $( this )
 			};
-			
+
 			$( this )
 				.addClass( 'expandableField' )
 				.focus( function( e ) {

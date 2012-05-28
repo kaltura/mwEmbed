@@ -4,63 +4,63 @@
 
 /**
  * MwEmbedSupport includes shared mwEmbed utilities that either
- * wrap core mediawiki functionality or support legacy mwEmbed module code  
- * 
+ * wrap core mediawiki functionality or support legacy mwEmbed module code
+ *
  * @license
  * mwEmbed
  * Dual licensed under the MIT or GPL Version 2 licenses.
- * 
- * @copyright (C) 2010 Kaltura 
+ *
+ * @copyright (C) 2010 Kaltura
  * @author Michael Dale ( michael.dale at kaltura.com )
- * 
+ *
  * @url http://www.kaltura.org/project/HTML5_Video_Media_JavaScript_Library
  *
  * Libraries used include code license in headers
- * 
- * @dependencies  
+ *
+ * @dependencies
  */
 
 ( function( mw, $ ) {
 
 	// Globals to pre-set ready functions in dynamic loading of mwEmbed
 	if( typeof window.preMwEmbedReady == 'undefined'){
-		window.preMwEmbedReady = [];	
+		window.preMwEmbedReady = [];
 	}
 	// Globals to pre-set config values in dynamic loading of mwEmbed
 	if( typeof window.preMwEmbedConfig == 'undefined') {
 		window.preMwEmbedConfig = [];
 	}
-	
+
 	/**
-	 * Enables javascript modules and pages to target a "interfaces ready" state. 
-	 * 
+	 * Enables javascript modules and pages to target a "interfaces ready" state.
+	 *
 	 * This is different from jQuery(document).ready() ( jQuery ready is not
 	 * friendly with dynamic includes and not friendly with core interface
 	 * asynchronous build out. ) This allows core interface components to do async conditional
 	 * load calls, and trigger a ready event once the javascript interface build out is complete
-	 * 
+	 *
 	 * For example making <video> tags on the page have a video api even if the browser
 	 * does not support html5 requires dynamic loading that can only happen once the page dom is
-	 * ready 
-	 * 
+	 * ready
+	 *
 	 * @param {Function}
 	 *            callback Function to run once DOM and jQuery are ready
 	 */
 	// mw.interfacesReadyFlag ( set to true once interfaces are ready )
-	mw.interfacesReadyFlag = false; 
-	
-	mw.ready = function( callback ) {						
-		if( mw.interfacesReadyFlag  === false ) {		
+	mw.interfacesReadyFlag = false;
+
+	mw.ready = function( callback ) {
+		if( mw.interfacesReadyFlag  === false ) {
 			// Add the callbcak to the onLoad function stack
 			$( mw ).bind( 'InterfacesReady', callback );
-		} else { 
+		} else {
 			// If mwReadyFlag is already "true" issue the callback directly:
 			callback();
-		}		
+		}
 	};
 		// Once interfaces are ready update the mwReadyFlag
-	$( mw ).bind('InterfacesReady', function(){ mw.interfacesReadyFlag  = true; } );	
-	
+	$( mw ).bind('InterfacesReady', function(){ mw.interfacesReadyFlag  = true; } );
+
 	// Once the DOM is ready start setting up interfaces
 	$( document ).ready(function(){
 		$( mw ).triggerQueueCallback('SetupInterface', function(){
@@ -69,11 +69,11 @@
 		});
 	});
 
-	
+
 	/**
-	 * Aliased functions 
-	 * 
-	 * Wrap mediaWiki functionality while we port over the libraries 
+	 * Aliased functions
+	 *
+	 * Wrap mediaWiki functionality while we port over the libraries
 	 */
 	mw.setConfig = function( name, value ){
 		mediaWiki.config.set( name, value );
@@ -94,8 +94,8 @@
 			// failed to load
 			mw.log("Failed to load resources:"  + resources );
 		});
-	};	
-	
+	};
+
 	/**
 	 * legacy support to get the mwEmbed resource path:
 	 */
@@ -105,7 +105,7 @@
 		}
 		return false;
 	};
-	
+
 	/**
 	 * Merge in a configuration value:
 	 */
@@ -135,7 +135,7 @@
 	};
 
 	/**
-	* Check if an object is empty or if its an empty string. 
+	* Check if an object is empty or if its an empty string.
 	*
 	* @param {Object} object Object to be checked
 	* @return {Boolean}
@@ -143,7 +143,7 @@
 	mw.isEmpty = function( obj ) {
 		if( typeof obj === 'string' ) {
 			if( obj === '' ) return true;
-			// Non empty string: 
+			// Non empty string:
 			return false;
 		}
 
@@ -153,7 +153,7 @@
 			return true;
 		}
 
-		// Else check as an obj: 
+		// Else check as an obj:
 		for( var i in obj ) { return false; }
 
 		// Else obj is empty:
@@ -177,7 +177,7 @@
 	 * @return boolean
 	 */
 	mw.isDefined = function( obj ) {
-		return typeof obj !== 'undefined'; 
+		return typeof obj !== 'undefined';
 	};
 
 
@@ -189,29 +189,29 @@
 	mw.ucfirst = function( s ) {
 		return s.substring(0,1).toUpperCase() + s.substr(1);
 	};
-	
+
 	/**
 	 * legacy entry point for mw.getMessage
 	 */
 	window.gM = function(){
 		return mw.msg.apply(this, $.makeArray( arguments ) );
 	};
-	
+
 	/**
 	 * Utility Functions
-	 */		
-	
+	 */
+
 	/**
 	 * A version comparison utility function Handles version of types
 	 * {Major}.{MinorN}.{Patch}
-	 * 
+	 *
 	 * Note this just handles version numbers not patch letters.
-	 * 
+	 *
 	 * @param {String}
 	 *            minVersion Minimum version needed
 	 * @param {String}
 	 *            clientVersion Client version to be checked
-	 * 
+	 *
 	 * @return true if the version is at least of minVersion false if the
 	 *         version is less than minVersion
 	 */
@@ -229,11 +229,11 @@
 		// Same version:
 		return true;
 	};
-	
-	
+
+
 	/**
 	 * addLoaderDialog small helper for displaying a loading dialog
-	 * 
+	 *
 	 * @param {String}
 	 *            dialogHtml text Html of the loader msg
 	 */
@@ -242,35 +242,35 @@
 			dialogHtml = gM('mwe-loading');
 		}
 		$dialog = mw.addDialog({
-			'title' : dialogHtml, 
-			'content' : dialogHtml + '<br>' + 
+			'title' : dialogHtml,
+			'content' : dialogHtml + '<br>' +
 				$('<div />')
 				.loadingSpinner()
-				.html() 
+				.html()
 		});
 		return $dialog;
 	};
-	
-	
-	
+
+
+
 	/**
 	 * Add a dialog window:
-	 * 
-	 * @param {Object} with following keys: 
+	 *
+	 * @param {Object} with following keys:
 	 *            title: {String} Title string for the dialog
 	 *            content: {String} to be inserted in msg box
 	 *            buttons: {Object} A button object for the dialog Can be a string
 	 *            				for the close button
-	 * 			  any jquery.ui.dialog option 
+	 * 			  any jquery.ui.dialog option
 	 */
 	mw.addDialog = function ( options ) {
 		// Remove any other dialog
-		$( '#mweDialog' ).remove();			
-		
+		$( '#mweDialog' ).remove();
+
 		if( !options){
 			options = {};
 		}
-	
+
 		// Extend the default options with provided options
 		var options = $j.extend({
 			'bgiframe': true,
@@ -278,15 +278,15 @@
 			'resizable': false,
 			'modal': true
 		}, options );
-		
+
 		if( ! options.title || ! options.content ){
 			mw.log("Error: mwEmbed addDialog missing required options ( title, content ) ");
 			return ;
 		}
-		
+
 		// Append the dialog div on top:
-		$( 'body' ).append( 
-			$('<div />') 
+		$( 'body' ).append(
+			$('<div />')
 			.attr( {
 				'id' : "mweDialog",
 				'title' : options.title
@@ -296,7 +296,7 @@
 			})
 			.append( options.content )
 		);
-	
+
 		// Build the uiRequest
 		var uiRequest = [ 'jquery.ui.dialog' ];
 		if( options.draggable ){
@@ -305,15 +305,15 @@
 		if( options.resizable ){
 			uiRequest.push( 'jquery.ui.resizable' );
 		}
-		
-		// Special button string 
+
+		// Special button string
 		if ( typeof options.buttons == 'string' ) {
 			var buttonMsg = options.buttons;
 			buttons = { };
 			options.buttons[ buttonMsg ] = function() {
 				$( this ).dialog( 'close' );
 			};
-		}				
+		}
 
 		// Load the dialog resources
 		mw.load(uiRequest, function() {
@@ -321,13 +321,13 @@
 		} );
 		return $( '#mweDialog' );
 	};
-	
+
 	/**
 	 * Close the loader dialog created with addLoaderDialog
 	 */
-	mw.closeLoaderDialog = function() {		
+	mw.closeLoaderDialog = function() {
 		$( '#mweDialog' ).dialog( 'destroy' ).remove();
 	};
-	
-	
+
+
 } )( mediaWiki, jQuery );

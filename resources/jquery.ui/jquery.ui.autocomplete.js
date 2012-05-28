@@ -233,7 +233,7 @@ $.widget( "ui.autocomplete", {
 			this.menu.deactivate();
 		}
 	},
-	
+
 	_change: function( event ) {
 		if ( this.previous !== this.element.val() ) {
 			this._trigger( "change", event, { item: this.selectedItem } );
@@ -280,7 +280,7 @@ $.widget( "ui.autocomplete", {
 		textWidth = this.element.width();
 		ul.width( Math.max( menuWidth, textWidth ) );
 	},
-	
+
 	_renderMenu: function( ul, items ) {
 		var self = this;
 		$.each( items, function( index, item ) {
@@ -330,7 +330,7 @@ $.extend( $.ui.autocomplete, {
 
 /*
  * jQuery UI Menu (not officially released)
- * 
+ *
  * This widget isn't yet finished and the API is subject to change. We plan to finish
  * it for the next release. You're welcome to give it a try anyway and give us feedback,
  * as long as you're okay with migrating your code later on. We can help with that, too.
@@ -366,7 +366,7 @@ $.widget("ui.menu", {
 			});
 		this.refresh();
 	},
-	
+
 	refresh: function() {
 		var self = this;
 
@@ -374,7 +374,7 @@ $.widget("ui.menu", {
 		var items = this.element.children("li:not(.ui-menu-item):has(a)")
 			.addClass("ui-menu-item")
 			.attr("role", "menuitem");
-		
+
 		items.children("a")
 			.addClass("ui-corner-all")
 			.attr("tabindex", -1)
