@@ -85,6 +85,7 @@ mw.IFramePlayerApiClient.prototype = {
 	},
 	'addPlayerReciveApi': function(){
 		var _this = this;
+		// Don't add the recive api if already defined for this player proxy id
 		if( window['IFramePlayerApiProxyIds'][this.playerProxy.id] ){
 			return ;
 		}
