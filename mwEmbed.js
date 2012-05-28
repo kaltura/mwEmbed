@@ -1560,7 +1560,6 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 *            callback Function to run once DOM and jQuery are ready
 	 */
 	mw.ready = function( callback ) {
-		//alert( 'run ready function! : ' + callback);
 		if( mwReadyFlag === false ) {
 			// Add the callbcak to the onLoad function stack
 			mwOnLoadFunctions.push ( callback );
@@ -1574,7 +1573,6 @@ if( typeof window.preMwEmbedConfig == 'undefined') {
 	 * Runs all the queued functions called by mwEmbedSetup
 	 */
 	mw.runReadyFunctions = function ( ) {
-		mw.log('mw.runReadyFunctions: ' + mwOnLoadFunctions.length + ' preMwEmbedReady:' );
 		// Run any pre-setup ready functions
 		while( window.preMwEmbedReady.length ){
 			window.preMwEmbedReady.shift()();

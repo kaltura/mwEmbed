@@ -306,7 +306,6 @@
 		var doModuleTagRewrites = function(){
 			$( mw ).triggerQueueCallback( 'LoadeRewritePlayerTags', callback);
 		};
-		
 		if( mw.documentHasPlayerTags() ) {
 			var rewriteElementCount = 0;
 
