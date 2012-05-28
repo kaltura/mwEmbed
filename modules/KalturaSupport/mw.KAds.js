@@ -308,7 +308,10 @@ mw.KAds.prototype = {
 				// Add to timeline only if we have ads
 				if( adConfigSet[ adType ].ads ) {
 					if( adType == 'midroll' ||  adType == 'postroll' || adType =='preroll' ){
-						_this.addSequenceProxyBinding( adType, adConfigSet, _this.getSequenceIndex( adType ) );
+						var seqInx =  parseInt( _this.getSequenceIndex( adType ) );
+						if( seqInx ){
+							_this.addSequenceProxyBinding( adType, adConfigSet, _this.getSequenceIndex( adType ) );
+						}
 					}
 					if( adType == 'overlay' ){
 						_this.addOverlayBinding( adConfigSet[ adType ] );

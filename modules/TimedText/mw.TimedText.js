@@ -147,7 +147,7 @@ mw.includeAllModuleMessages();
 				// Will load and setup timedText sources (if not loaded already loaded )
 				_this.setupTextSources();
 				// Hide the caption menu if presently displayed
-				$( '#textMenuContainer_' + embedPlayer.id ).remove();
+				$( '#textMenuContainer_' + embedPlayer.id ).hide();
 			} );
 			
 			// Re-Initialize when changing media
@@ -155,7 +155,7 @@ mw.includeAllModuleMessages();
 				_this.destroy();
 				_this.updateLayout();
 				_this.setupTextSources();
-				$( '#textMenuContainer_' + embedPlayer.id ).remove();
+				$( '#textMenuContainer_' + embedPlayer.id ).hide();
 			} );
 
 			// Resize the timed text font size per window width
@@ -228,11 +228,19 @@ mw.includeAllModuleMessages();
 			});
 			
 			$( embedPlayer ).bind( 'AdSupport_StartAdPlayback' + this.bindPostFix, function() {
+				var $textButton = embedPlayer.$interface.find( '.timed-text' );
+				if ( $textButton.length ) {
+					$textButton.unbind( 'click.textMenu' );
+				}
 				_this.lastLayout = _this.getLayoutMode();
 				_this.setLayoutMode( 'off' );
 			} );
 			
 			$( embedPlayer ).bind( 'AdSupport_EndAdPlayback' + this.bindPostFix, function() {
+				var $textButton = embedPlayer.$interface.find( '.timed-text' );
+				if ( $textButton.length ) {
+					_this.bindTextButton( $textButton );
+				}
 				_this.setLayoutMode( _this.lastLayout );
 			} );
 			
@@ -286,7 +294,7 @@ mw.includeAllModuleMessages();
 			};
 		},
 		
-		bindTextButton: function($textButton){
+		bindTextButton: function( $textButton ){
 			var _this = this;
 			$textButton.unbind('click.textMenu').bind('click.textMenu', function() {
                 _this.showTextMenu();
@@ -688,7 +696,7 @@ mw.includeAllModuleMessages();
 			if ( $menu.length ) {
 				var $captionRows = $menu.find( '.captionRow' );
 				if ( $captionRows.length ) {
-					$captionRows.each( function() {
+					$captionRows.each( function() { 
 						$( this ).removeClass( 'ui-icon-bullet ui-icon-radio-on' );
 						var iconClass = ( $( this ).data( 'caption-id' ) === source.id ) ? 'ui-icon-bullet' : 'ui-icon-radio-on';
 						$( this ).addClass( iconClass );
